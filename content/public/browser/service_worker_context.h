@@ -157,6 +157,11 @@ class CONTENT_EXPORT ServiceWorkerContext {
   virtual void UnregisterServiceWorker(const GURL& scope,
                                        const blink::StorageKey& key,
                                        ResultCallback callback) = 0;
+  // As above, but clears the service worker registration immediately rather
+  // than waiting if the service worker is active and has controllees.
+  virtual void UnregisterServiceWorkerImmediately(const GURL& scope,
+                                                  const blink::StorageKey& key,
+                                                  ResultCallback callback) = 0;
 
   // Mechanism for embedder to increment/decrement ref count of a service
   // worker.

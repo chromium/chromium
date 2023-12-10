@@ -38,8 +38,7 @@ class WebFeedFollowIntroView {
     private final AppMenuHandler mAppMenuHandler;
     private final Handler mHandler = new Handler();
     private final View mMenuButtonAnchorView;
-    @Nullable
-    private final Tracker mFeatureEngagementTracker;
+    @Nullable private final Tracker mFeatureEngagementTracker;
     private final Runnable mIntroDismissedCallback;
 
     private ClickableTextBubble mFollowBubble;
@@ -52,8 +51,11 @@ class WebFeedFollowIntroView {
      * @param appMenuHandler The {@link AppMenuHandler} to highlight the Web Feed menu item.
      * @param menuButtonAnchorView The menu button {@link View} to serve as an anchor.
      */
-    WebFeedFollowIntroView(Activity activity, AppMenuHandler appMenuHandler,
-            View menuButtonAnchorView, @Nullable Tracker featureEngagementTracker,
+    WebFeedFollowIntroView(
+            Activity activity,
+            AppMenuHandler appMenuHandler,
+            View menuButtonAnchorView,
+            @Nullable Tracker featureEngagementTracker,
             Runnable introDismissedCallback) {
         mActivity = activity;
         mAppMenuHandler = appMenuHandler;
@@ -61,11 +63,16 @@ class WebFeedFollowIntroView {
         mFeatureEngagementTracker = featureEngagementTracker;
         mIntroDismissedCallback = introDismissedCallback;
 
-        mShowTimeoutMillis = ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
-                ChromeFeatureList.WEB_FEED, PARAM_SHOW_TIMEOUT_MILLIS, DEFAULT_SHOW_TIMEOUT_MILLIS);
+        mShowTimeoutMillis =
+                ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
+                        ChromeFeatureList.WEB_FEED,
+                        PARAM_SHOW_TIMEOUT_MILLIS,
+                        DEFAULT_SHOW_TIMEOUT_MILLIS);
     }
 
-    void showAccelerator(View.OnTouchListener onTouchListener, Runnable introShownCallback,
+    void showAccelerator(
+            View.OnTouchListener onTouchListener,
+            Runnable introShownCallback,
             Runnable introNotShownCallback) {
         if (mFeatureEngagementTracker != null
                 && !mFeatureEngagementTracker.shouldTriggerHelpUI(
@@ -74,10 +81,17 @@ class WebFeedFollowIntroView {
             return;
         }
 
-        mFollowBubble = new ClickableTextBubble(mActivity, mMenuButtonAnchorView,
-                R.string.menu_follow, R.string.menu_follow, createRectProvider(), R.drawable.ic_add,
-                ChromeAccessibilityUtil.get().isAccessibilityEnabled(), onTouchListener,
-                /*inverseColor*/ false);
+        mFollowBubble =
+                new ClickableTextBubble(
+                        mActivity,
+                        mMenuButtonAnchorView,
+                        R.string.menu_follow,
+                        R.string.menu_follow,
+                        createRectProvider(),
+                        R.drawable.ic_add,
+                        ChromeAccessibilityUtil.get().isAccessibilityEnabled(),
+                        onTouchListener,
+                        /* inverseColor= */ false);
         mFollowBubble.addOnDismissListener(this::introDismissed);
         // TODO(crbug/1152592): Figure out a way to dismiss on outside taps as well.
         mFollowBubble.setAutoDismissTimeout(mShowTimeoutMillis);
@@ -87,30 +101,36 @@ class WebFeedFollowIntroView {
         introShownCallback.run();
     }
 
-    void showIPH(UserEducationHelper helper, Runnable introShownCallback,
+    void showIPH(
+            UserEducationHelper helper,
+            Runnable introShownCallback,
             Runnable introNotShownCallback) {
         int iphStringResource = R.string.follow_accelerator;
         int iphAccessibilityStringResource = R.string.accessibility_follow_accelerator_iph;
 
         // Make the request to show the IPH.
         helper.requestShowIPH(
-                new IPHCommandBuilder(mMenuButtonAnchorView.getContext().getResources(),
-                        FeatureConstants.IPH_WEB_FEED_FOLLOW_FEATURE, iphStringResource,
-                        iphAccessibilityStringResource)
+                new IPHCommandBuilder(
+                                mMenuButtonAnchorView.getContext().getResources(),
+                                FeatureConstants.IPH_WEB_FEED_FOLLOW_FEATURE,
+                                iphStringResource,
+                                iphAccessibilityStringResource)
                         .setAnchorView(mMenuButtonAnchorView)
                         .setDismissOnTouch(false)
                         .setAutoDismissTimeout(mShowTimeoutMillis)
-                        .setOnShowCallback(() -> {
-                            turnOnHighlightForFollowMenuItem();
-                            introShownCallback.run();
-                        })
+                        .setOnShowCallback(
+                                () -> {
+                                    turnOnHighlightForFollowMenuItem();
+                                    introShownCallback.run();
+                                })
                         .setOnNotShownCallback(introNotShownCallback)
                         .setOnDismissCallback(this::introDismissed)
                         .build());
     }
 
     private void introDismissed() {
-        mHandler.postDelayed(this::turnOffHighlightForFollowMenuItem,
+        mHandler.postDelayed(
+                this::turnOffHighlightForFollowMenuItem,
                 ViewHighlighter.IPH_MIN_DELAY_BETWEEN_TWO_HIGHLIGHTS);
         mIntroDismissedCallback.run();
     }
@@ -136,10 +156,17 @@ class WebFeedFollowIntroView {
     }
 
     void showFollowingBubble() {
-        TextBubble followingBubble = new ClickableTextBubble(mActivity, mMenuButtonAnchorView,
-                R.string.menu_following, R.string.menu_following, createRectProvider(),
-                R.drawable.ic_done_blue, ChromeAccessibilityUtil.get().isAccessibilityEnabled(),
-                /* touchListener */ null, /* isInverseColor */ false);
+        TextBubble followingBubble =
+                new ClickableTextBubble(
+                        mActivity,
+                        mMenuButtonAnchorView,
+                        R.string.menu_following,
+                        R.string.menu_following,
+                        createRectProvider(),
+                        R.drawable.ic_done_blue,
+                        ChromeAccessibilityUtil.get().isAccessibilityEnabled(),
+                        /* onTouchListener= */ null,
+                        /* inverseColor= */ false);
         followingBubble.setDismissOnTouchInteraction(true);
         followingBubble.show();
     }
@@ -161,6 +188,7 @@ class WebFeedFollowIntroView {
     private void turnOffHighlightForFollowMenuItem() {
         mAppMenuHandler.clearMenuHighlight();
     }
+
     boolean wasFollowBubbleShownForTesting() {
         return mFollowBubble != null;
     }

@@ -21,8 +21,14 @@ import java.lang.annotation.RetentionPolicy;
  */
 public interface BottomSheetController {
     /** The different states that the bottom sheet can have. */
-    @IntDef({SheetState.NONE, SheetState.HIDDEN, SheetState.PEEK, SheetState.HALF, SheetState.FULL,
-            SheetState.SCROLLING})
+    @IntDef({
+        SheetState.NONE,
+        SheetState.HIDDEN,
+        SheetState.PEEK,
+        SheetState.HALF,
+        SheetState.FULL,
+        SheetState.SCROLLING
+    })
     @Retention(RetentionPolicy.SOURCE)
     @interface SheetState {
         /**
@@ -30,6 +36,7 @@ public interface BottomSheetController {
          * transitioning between states.
          */
         int NONE = -1;
+
         // Values are used for indexing mStateRatios, should start from 0
         // and can't have gaps. Additionally order is important for these,
         // they go from smallest to largest.
@@ -48,11 +55,19 @@ public interface BottomSheetController {
      * persisted to logs. Entries should not be renumbered and numeric values should never be
      * reused.
      */
-    @IntDef({StateChangeReason.NONE, StateChangeReason.SWIPE, StateChangeReason.BACK_PRESS,
-            StateChangeReason.TAP_SCRIM, StateChangeReason.NAVIGATION,
-            StateChangeReason.COMPOSITED_UI, StateChangeReason.VR, StateChangeReason.PROMOTE_TAB,
-            StateChangeReason.OMNIBOX_FOCUS, StateChangeReason.INTERACTION_COMPLETE,
-            StateChangeReason.MAX_VALUE})
+    @IntDef({
+        StateChangeReason.NONE,
+        StateChangeReason.SWIPE,
+        StateChangeReason.BACK_PRESS,
+        StateChangeReason.TAP_SCRIM,
+        StateChangeReason.NAVIGATION,
+        StateChangeReason.COMPOSITED_UI,
+        StateChangeReason.VR,
+        StateChangeReason.PROMOTE_TAB,
+        StateChangeReason.OMNIBOX_FOCUS,
+        StateChangeReason.INTERACTION_COMPLETE,
+        StateChangeReason.MAX_VALUE
+    })
     @Retention(RetentionPolicy.SOURCE)
     @interface StateChangeReason {
         int NONE = 0;
@@ -98,9 +113,7 @@ public interface BottomSheetController {
     /** @param observer The observer to remove. */
     void removeObserver(BottomSheetObserver observer);
 
-    /**
-     * Expand the sheet. If there is no content in the sheet, this is a noop.
-     */
+    /** Expand the sheet. If there is no content in the sheet, this is a noop. */
     void expandSheet();
 
     /**

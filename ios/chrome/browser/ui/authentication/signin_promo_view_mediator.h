@@ -15,6 +15,7 @@ class AuthenticationService;
 class ChromeAccountManagerService;
 class PrefService;
 @protocol SigninPresenter;
+@protocol AccountSettingsPresenter;
 @class SigninPromoViewConfigurator;
 @protocol SigninPromoViewConsumer;
 @protocol SystemIdentity;
@@ -56,8 +57,13 @@ enum class SigninPromoAction {
   // Secondary button opens a floating dialog with the available accounts. When
   // an account is tapped, it is signed in instantly.
   kInstantSignin,
+  // Single button. If there is an account, ask which account to use. Otherwise,
+  // add the add account dialog, and then sign-in directly.
+  kSigninWithNoDefaultIdentity,
   // Performs AuthenticationOperationSigninOnly.
   kSigninSheet,
+  // Shows account settings.
+  kReviewAccountSettings,
 };
 
 // Class that monitors the available identities and creates
@@ -125,7 +131,9 @@ enum class SigninPromoAction {
                       prefService:(PrefService*)prefService
                       syncService:(syncer::SyncService*)syncService
                       accessPoint:(signin_metrics::AccessPoint)accessPoint
-                        presenter:(id<SigninPresenter>)presenter
+                  signinPresenter:(id<SigninPresenter>)signinPresenter
+         accountSettingsPresenter:
+             (id<AccountSettingsPresenter>)accountSettingsPresenter
     NS_DESIGNATED_INITIALIZER;
 
 - (SigninPromoViewConfigurator*)createConfigurator;

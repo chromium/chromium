@@ -2,11 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-interface ImageTransformation {
+import type {ExifEntry} from '../../../externs/exif_entry.js';
+
+import type {ExifTag} from './exif_constants.js';
+
+export interface ImageTransformation {
   scaleX: number;
   scaleY: number;
   rotate90: number;
 }
+
+export type MetadataKey = keyof MetadataItem;
 
 /**
  * Metadata of a file.
@@ -144,6 +150,8 @@ export class MetadataItem {
    */
   ifd?: object;
 
+  ifdError?: Error;
+
   exifLittleEndian?: boolean;
 
   canCopy?: boolean;
@@ -206,4 +214,57 @@ export class MetadataItem {
    * "completed" sync status.
    */
   syncCompletedTime?: number;
+}
+
+export interface Id3v2Frame {
+  // Three to four character identifier for the type of frame.
+  name: string;
+  headerSize: number;
+  // Size excludes the header.
+  size: number;
+  // Only set for v2.3 and v2.4.
+  flags?: number;
+
+  // Various optional fields set depending on the type of frame.
+  encoding?: number;
+  value?: string;
+
+  description?: string;
+
+  format?: string;
+  mime?: string;
+  pictureType?: number;
+  imageUrl?: string;
+}
+
+export class ParserMetadata {
+  imageTransform?: ImageTransformation;
+  thumbnailTransform?: ImageTransformation;
+  thumbnailURL?: string;
+  littleEndian?: boolean;
+  ifd?: {
+    image?: Record<ExifTag, ExifEntry>,
+    thumbnail?: Record<ExifTag, ExifEntry>,
+    exif?: Record<ExifTag, ExifEntry>,
+    gps?: Record<ExifTag, ExifEntry>,
+  };
+  height?: number;
+  width?: number;
+  duration?: number;
+  mimeType?: string;
+
+  title?: string;
+  artist?: string;
+  album?: string;
+  description?: Array<{key: string, value: string}>;
+
+  mpegBrand?: string;
+
+  id3v2?: {
+    majorVersion: number,
+    minorVersion: number,
+    flags: number,
+    size: number,
+    frames: {[frameName: string]: Id3v2Frame},
+  };
 }

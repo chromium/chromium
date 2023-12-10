@@ -324,9 +324,7 @@ struct v4l2_av1_cdef FillCdefParams(const libgav1::Cdef& cdef,
                                     uint8_t color_bitdepth) {
   struct v4l2_av1_cdef v4l2_cdef = {};
 
-  // Damping value parsed in libgav1 is from the spec + (bitdepth - 8).
-  // All the strength values parsed in libgav1 are from the spec and left
-  // shifted by (bitdepth - 8).
+  // Damping value parsed in libgav1 is from the spec + (|color_bitdepth| - 8).
   CHECK_GE(color_bitdepth, 8u);
   const uint8_t coeff_shift = color_bitdepth - 8u;
 
@@ -355,6 +353,16 @@ struct v4l2_av1_cdef FillCdefParams(const libgav1::Cdef& cdef,
   SafeArrayMemcpy(v4l2_cdef.y_sec_strength, cdef.y_secondary_strength);
   SafeArrayMemcpy(v4l2_cdef.uv_pri_strength, cdef.uv_primary_strength);
   SafeArrayMemcpy(v4l2_cdef.uv_sec_strength, cdef.uv_secondary_strength);
+
+  // All the strength values parsed in libgav1 are from the AV1 spec and left
+  // shifted by (|color_bitdepth| - 8). So these values need to be right shifted
+  // by (|color_bitdepth| - 8) before passing to a driver.
+  for (size_t i = 0; i < libgav1::kMaxCdefStrengths; i++) {
+    v4l2_cdef.y_pri_strength[i] >>= coeff_shift;
+    v4l2_cdef.y_sec_strength[i] >>= coeff_shift;
+    v4l2_cdef.uv_pri_strength[i] >>= coeff_shift;
+    v4l2_cdef.uv_sec_strength[i] >>= coeff_shift;
+  }
 
   return v4l2_cdef;
 }
@@ -753,6 +761,18 @@ scoped_refptr<AV1Picture> V4L2VideoDecoderDelegateAV1::CreateAV1Picture(
   return new V4L2AV1Picture(std::move(dec_surface));
 }
 
+scoped_refptr<AV1Picture> V4L2VideoDecoderDelegateAV1::CreateAV1PictureSecure(
+    bool apply_grain,
+    uint64_t secure_handle) {
+  scoped_refptr<V4L2DecodeSurface> dec_surface =
+      surface_handler_->CreateSecureSurface(secure_handle);
+  if (!dec_surface) {
+    return nullptr;
+  }
+
+  return new V4L2AV1Picture(std::move(dec_surface));
+}
+
 DecodeStatus V4L2VideoDecoderDelegateAV1::SubmitDecode(
     const AV1Picture& pic,
     const libgav1::ObuSequenceHeader& sequence_header,
@@ -793,7 +813,8 @@ DecodeStatus V4L2VideoDecoderDelegateAV1::SubmitDecode(
       .controls = ext_ctrl_array};
 
   const auto* v4l2_pic = static_cast<const V4L2AV1Picture*>(&pic);
-  v4l2_pic->dec_surface()->PrepareSetCtrls(&ext_ctrls);
+  auto dec_surface = v4l2_pic->dec_surface();
+  dec_surface->PrepareSetCtrls(&ext_ctrls);
   if (device_->Ioctl(VIDIOC_S_EXT_CTRLS, &ext_ctrls) != 0) {
     RecordVidiocIoctlErrorUMA(VidiocIoctlRequests::kVidiocSExtCtrls);
     VPLOGF(1) << "ioctl() failed: VIDIOC_S_EXT_CTRLS";
@@ -809,11 +830,13 @@ DecodeStatus V4L2VideoDecoderDelegateAV1::SubmitDecode(
       ref_surfaces.emplace_back(std::move(v4l2_ref_pic->dec_surface()));
     }
   }
-  v4l2_pic->dec_surface()->SetReferenceSurfaces(std::move(ref_surfaces));
+  dec_surface->SetReferenceSurfaces(std::move(ref_surfaces));
 
   // Copies the frame data into the V4L2 buffer.
-  if (!surface_handler_->SubmitSlice(v4l2_pic->dec_surface().get(),
-                                     stream.data(), stream.size())) {
+  if (!surface_handler_->SubmitSlice(
+          dec_surface.get(),
+          dec_surface->secure_handle() ? nullptr : stream.data(),
+          stream.size())) {
     return DecodeStatus::kFail;
   }
 

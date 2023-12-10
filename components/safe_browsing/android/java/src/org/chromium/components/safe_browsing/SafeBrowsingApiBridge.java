@@ -113,9 +113,7 @@ public final class SafeBrowsingApiBridge {
         }
     }
 
-    /**
-     * Observer to record latency from requests to GmsCore.
-     */
+    /** Observer to record latency from requests to GmsCore. */
     public interface UrlCheckTimeObserver {
         /**
          * @param urlCheckTimeDeltaMicros Time it took for {@link SafetyNetApiHandler} to check
@@ -183,18 +181,23 @@ public final class SafeBrowsingApiBridge {
                 long callbackId, int resultStatus, String metadata, long checkDelta) {
             synchronized (sSafetyNetApiHandlerLock) {
                 if (DEBUG) {
-                    Log.i(TAG,
-                            "onUrlCheckDone resultStatus=" + resultStatus
-                                    + ", metadata=" + metadata);
+                    Log.i(
+                            TAG,
+                            "onUrlCheckDone resultStatus="
+                                    + resultStatus
+                                    + ", metadata="
+                                    + metadata);
                 }
                 if (sSafetyNetApiUrlCheckTimeObserver != null) {
                     sSafetyNetApiUrlCheckTimeObserver.onUrlCheckTime(checkDelta);
-                    TraceEvent.instant("FirstSafeBrowsingResponseFromSafetyNetApi",
+                    TraceEvent.instant(
+                            "FirstSafeBrowsingResponseFromSafetyNetApi",
                             String.valueOf(checkDelta));
                     sSafetyNetApiUrlCheckTimeObserver = null;
                 }
-                SafeBrowsingApiBridgeJni.get().onUrlCheckDoneBySafetyNetApi(
-                        callbackId, resultStatus, metadata, checkDelta);
+                SafeBrowsingApiBridgeJni.get()
+                        .onUrlCheckDoneBySafetyNetApi(
+                                callbackId, resultStatus, metadata, checkDelta);
             }
         }
     }
@@ -202,15 +205,26 @@ public final class SafeBrowsingApiBridge {
     private static class SafeBrowsingApiLookupDoneObserver
             implements SafeBrowsingApiHandler.Observer {
         @Override
-        public void onUrlCheckDone(long callbackId, @LookupResult int lookupResult, int threatType,
-                int[] threatAttributes, int responseStatus, long checkDelta) {
+        public void onUrlCheckDone(
+                long callbackId,
+                @LookupResult int lookupResult,
+                int threatType,
+                int[] threatAttributes,
+                int responseStatus,
+                long checkDelta) {
             synchronized (sSafeBrowsingApiHandlerLock) {
                 if (sSafeBrowsingApiUrlCheckTimeObserver != null) {
                     sSafeBrowsingApiUrlCheckTimeObserver.onUrlCheckTime(checkDelta);
                     sSafeBrowsingApiUrlCheckTimeObserver = null;
                 }
-                SafeBrowsingApiBridgeJni.get().onUrlCheckDoneBySafeBrowsingApi(callbackId,
-                        lookupResult, threatType, threatAttributes, responseStatus, checkDelta);
+                SafeBrowsingApiBridgeJni.get()
+                        .onUrlCheckDoneBySafeBrowsingApi(
+                                callbackId,
+                                lookupResult,
+                                threatType,
+                                threatAttributes,
+                                responseStatus,
+                                checkDelta);
             }
         }
     }
@@ -226,8 +240,8 @@ public final class SafeBrowsingApiBridge {
         synchronized (sSafetyNetApiHandlerLock) {
             assert sSafetyNetApiHandlerInitCalled;
             assert sSafetyNetApiHandler != null;
-            try (TraceEvent t = TraceEvent.scoped(
-                         "SafeBrowsingApiBridge.startUriLookupBySafetyNetApi")) {
+            try (TraceEvent t =
+                    TraceEvent.scoped("SafeBrowsingApiBridge.startUriLookupBySafetyNetApi")) {
                 if (DEBUG) {
                     Log.i(TAG, "Starting request: %s", uri);
                 }
@@ -280,7 +294,13 @@ public final class SafeBrowsingApiBridge {
     interface Natives {
         void onUrlCheckDoneBySafetyNetApi(
                 long callbackId, int resultStatus, String metadata, long checkDelta);
-        void onUrlCheckDoneBySafeBrowsingApi(long callbackId, int lookupResult, int threatType,
-                int[] threatAttributes, int responseStatus, long checkDelta);
+
+        void onUrlCheckDoneBySafeBrowsingApi(
+                long callbackId,
+                int lookupResult,
+                int threatType,
+                int[] threatAttributes,
+                int responseStatus,
+                long checkDelta);
     }
 }

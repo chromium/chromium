@@ -88,6 +88,7 @@ class FrameNodeImpl
   bool HasNonemptyBeforeUnload() const override;
   const GURL& GetURL() const override;
   bool IsCurrent() const override;
+  const PriorityAndReason& GetPriorityAndReason() const override;
   bool GetNetworkAlmostIdle() const override;
   bool IsAdFrame() const override;
   bool IsHoldingWebLock() const override;
@@ -95,7 +96,7 @@ class FrameNodeImpl
   bool HadFormInteraction() const override;
   bool HadUserEdits() const override;
   bool IsAudible() const override;
-  bool IsCapturingVideoStream() const override;
+  bool IsCapturingMediaStream() const override;
   absl::optional<bool> IntersectsViewport() const override;
   Visibility GetVisibility() const override;
   const RenderFrameHostProxy& GetRenderFrameHostProxy() const override;
@@ -109,39 +110,19 @@ class FrameNodeImpl
   PageNodeImpl* page_node() const;
   ProcessNodeImpl* process_node() const;
   int render_frame_id() const;
-  content::BrowsingInstanceId browsing_instance_id() const;
-  content::SiteInstanceId site_instance_id() const;
-  const RenderFrameHostProxy& render_frame_host_proxy() const;
 
   // Getters for non-const properties. These are not thread safe.
   const base::flat_set<FrameNodeImpl*>& child_frame_nodes() const;
   const base::flat_set<PageNodeImpl*>& opened_page_nodes() const;
   const base::flat_set<PageNodeImpl*>& embedded_page_nodes() const;
-  LifecycleState lifecycle_state() const;
-  bool has_nonempty_beforeunload() const;
-  const GURL& url() const;
-  bool is_current() const;
-  bool network_almost_idle() const;
-  bool is_ad_frame() const;
-  bool is_holding_weblock() const;
-  bool is_holding_indexeddb_lock() const;
   const base::flat_set<WorkerNodeImpl*>& child_worker_nodes() const;
-  const PriorityAndReason& priority_and_reason() const;
-  bool had_form_interaction() const;
-  bool had_user_edits() const;
-  bool is_audible() const;
-  bool is_capturing_video_stream() const;
-  absl::optional<bool> intersects_viewport() const;
-  Visibility visibility() const;
-  uint64_t resident_set_kb_estimate() const;
-  uint64_t private_footprint_kb_estimate() const;
 
   // Setters are not thread safe.
   void SetIsCurrent(bool is_current);
   void SetIsHoldingWebLock(bool is_holding_weblock);
   void SetIsHoldingIndexedDBLock(bool is_holding_indexeddb_lock);
   void SetIsAudible(bool is_audible);
-  void SetIsCapturingVideoStream(bool is_capturing_video_stream);
+  void SetIsCapturingMediaStream(bool is_capturing_media_stream);
   void SetIntersectsViewport(bool intersects_viewport);
   void SetInitialVisibility(Visibility visibility);
   void SetVisibility(Visibility visibility);
@@ -206,7 +187,6 @@ class FrameNodeImpl
   const base::flat_set<const WorkerNode*> GetChildWorkerNodes() const override;
   bool VisitChildDedicatedWorkers(
       const WorkerNodeVisitor& visitor) const override;
-  const PriorityAndReason& GetPriorityAndReason() const override;
 
   // Properties associated with a Document, which are reset when a
   // different-document navigation is committed in the frame.
@@ -361,11 +341,11 @@ class FrameNodeImpl
       NotifiesOnlyOnChanges<bool, &FrameNodeObserver::OnIsAudibleChanged>
           is_audible_{false};
 
-  // Indicates if the frame is capturing a video stream.
+  // Indicates if the frame is capturing at least one media stream.
   ObservedProperty::NotifiesOnlyOnChanges<
       bool,
-      &FrameNodeObserver::OnIsCapturingVideoStreamChanged>
-      is_capturing_video_stream_{false};
+      &FrameNodeObserver::OnIsCapturingMediaStreamChanged>
+      is_capturing_media_stream_{false};
 
   // Indicates if the frame intersects with the viewport.
   //

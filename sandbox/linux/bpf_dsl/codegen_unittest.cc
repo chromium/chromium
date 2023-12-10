@@ -8,11 +8,11 @@
 #include <stdint.h>
 
 #include <map>
+#include <string_view>
 #include <utility>
 #include <vector>
 
 #include "base/hash/md5.h"
-#include "base/strings/string_piece.h"
 #include "sandbox/linux/system_headers/linux_filter.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -58,9 +58,8 @@ class Hash {
  private:
   template <typename T>
   void HashValue(base::MD5Context* ctx, const T& value) {
-    base::MD5Update(ctx,
-                    base::StringPiece(reinterpret_cast<const char*>(&value),
-                                      sizeof(value)));
+    base::MD5Update(ctx, std::string_view(reinterpret_cast<const char*>(&value),
+                                          sizeof(value)));
   }
 
   std::string Base16() const {

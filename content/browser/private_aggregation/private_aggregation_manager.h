@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_PRIVATE_AGGREGATION_PRIVATE_AGGREGATION_MANAGER_H_
 #define CONTENT_BROWSER_PRIVATE_AGGREGATION_PRIVATE_AGGREGATION_MANAGER_H_
 
+#include <optional>
 #include <string>
 
 #include "base/functional/callback_forward.h"
@@ -13,7 +14,6 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/storage_partition.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/private_aggregation/private_aggregation_host.mojom-forward.h"
 
 namespace url {
@@ -46,9 +46,9 @@ class CONTENT_EXPORT PrivateAggregationManager {
       url::Origin worklet_origin,
       url::Origin top_frame_origin,
       PrivateAggregationBudgetKey::Api api_for_budgeting,
-      absl::optional<std::string> context_id,
-      absl::optional<base::TimeDelta> timeout,
-      absl::optional<url::Origin> aggregation_coordinator_origin,
+      std::optional<std::string> context_id,
+      std::optional<base::TimeDelta> timeout,
+      std::optional<url::Origin> aggregation_coordinator_origin,
       mojo::PendingReceiver<blink::mojom::PrivateAggregationHost>
           pending_receiver) = 0;
 

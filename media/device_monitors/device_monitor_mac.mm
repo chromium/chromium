@@ -147,8 +147,7 @@ void SuspendObserverDelegate::OnDeviceChanged() {
   if (avfoundation_monitor_impl_) {
     // Forward the event to MediaDevicesManager::OnDevicesChanged, which will
     // enumerate the devices on its own.
-    avfoundation_monitor_impl_->monitor()->NotifyDeviceChanged(
-        base::SystemMonitor::DEVTYPE_VIDEO_CAPTURE);
+    avfoundation_monitor_impl_->monitor()->NotifyDeviceChanged();
   }
 }
 
@@ -339,11 +338,10 @@ void DeviceMonitorMac::StartMonitoring() {
       std::make_unique<AVFoundationMonitorImpl>(this, device_task_runner_);
 }
 
-void DeviceMonitorMac::NotifyDeviceChanged(
-    base::SystemMonitor::DeviceType type) {
+void DeviceMonitorMac::NotifyDeviceChanged() {
   DCHECK(thread_checker_.CalledOnValidThread());
-  // TODO(xians): Remove the global variable for SystemMonitor.
-  base::SystemMonitor::Get()->ProcessDevicesChanged(type);
+  base::SystemMonitor::Get()->ProcessDevicesChanged(
+      base::SystemMonitor::DEVTYPE_VIDEO_CAPTURE);
 }
 
 }  // namespace media

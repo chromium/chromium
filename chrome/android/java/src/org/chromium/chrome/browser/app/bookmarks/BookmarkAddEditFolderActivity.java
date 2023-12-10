@@ -37,8 +37,8 @@ import java.util.List;
  * mode and editing mode. Depending on different modes, it should be started via two static creator
  * functions.
  */
-public class BookmarkAddEditFolderActivity
-        extends SynchronousInitializationActivity implements OnClickListener {
+public class BookmarkAddEditFolderActivity extends SynchronousInitializationActivity
+        implements OnClickListener {
     static final String INTENT_IS_ADD_MODE = "BookmarkAddEditFolderActivity.isAddMode";
     static final String INTENT_BOOKMARK_ID = "BookmarkAddEditFolderActivity.BookmarkId";
     static final String INTENT_CREATED_BOOKMARK = "BookmarkAddEditFolderActivity.createdBookmark";
@@ -58,45 +58,50 @@ public class BookmarkAddEditFolderActivity
     private BookmarkId mFolderId;
     private MenuItem mDeleteButton;
 
-    private BookmarkModelObserver mBookmarkModelObserver = new BookmarkModelObserver() {
-        @Override
-        public void bookmarkModelChanged() {
-            if (mIsAddMode) {
-                if (mModel.doesBookmarkExist(mParentId)) {
-                    updateParent(mParentId);
-                } else {
-                    updateParent(mModel.getDefaultFolder());
+    private BookmarkModelObserver mBookmarkModelObserver =
+            new BookmarkModelObserver() {
+                @Override
+                public void bookmarkModelChanged() {
+                    if (mIsAddMode) {
+                        if (mModel.doesBookmarkExist(mParentId)) {
+                            updateParent(mParentId);
+                        } else {
+                            updateParent(mModel.getDefaultFolder());
+                        }
+                    } else {
+                        // Partner bookmark deletion is notified via bookmarkModelChanged().
+                        if (mModel.doesBookmarkExist(mFolderId)) {
+                            updateParent(mModel.getBookmarkById(mFolderId).getParentId());
+                        } else {
+                            finish();
+                        }
+                    }
                 }
-            } else {
-                // Partner bookmark deletion is notified via bookmarkModelChanged().
-                if (mModel.doesBookmarkExist(mFolderId)) {
-                    updateParent(mModel.getBookmarkById(mFolderId).getParentId());
-                } else {
+
+                @Override
+                public void bookmarkNodeMoved(
+                        BookmarkItem oldParent,
+                        int oldIndex,
+                        BookmarkItem newParent,
+                        int newIndex) {
+                    if (!oldParent.getId().equals(newParent.getId())
+                            && mModel.getChildAt(newParent.getId(), newIndex).equals(mFolderId)) {
+                        updateParent(newParent.getId());
+                    }
+                }
+
+                @Override
+                public void bookmarkNodeRemoved(
+                        BookmarkItem parent,
+                        int oldIndex,
+                        BookmarkItem node,
+                        boolean isDoingExtensiveChanges) {
+                    if (!node.getId().equals(mFolderId)) return;
                     finish();
                 }
-            }
-        }
+            };
 
-        @Override
-        public void bookmarkNodeMoved(
-                BookmarkItem oldParent, int oldIndex, BookmarkItem newParent, int newIndex) {
-            if (!oldParent.getId().equals(newParent.getId())
-                    && mModel.getChildAt(newParent.getId(), newIndex).equals(mFolderId)) {
-                updateParent(newParent.getId());
-            }
-        }
-
-        @Override
-        public void bookmarkNodeRemoved(BookmarkItem parent, int oldIndex, BookmarkItem node,
-                boolean isDoingExtensiveChanges) {
-            if (!node.getId().equals(mFolderId)) return;
-            finish();
-        }
-    };
-
-    /**
-     * Starts an edit folder activity. Require the context to fire an intent.
-     */
+    /** Starts an edit folder activity. Require the context to fire an intent. */
     public static void startEditFolderActivity(Context context, BookmarkId idToEdit) {
         RecordUserAction.record("MobileBookmarkManagerEditFolder");
         Intent intent = new Intent(context, BookmarkAddEditFolderActivity.class);
@@ -131,15 +136,18 @@ public class BookmarkAddEditFolderActivity
         mModel.addObserver(mBookmarkModelObserver);
         mIsAddMode = getIntent().getBooleanExtra(INTENT_IS_ADD_MODE, false);
         if (mIsAddMode) {
-            List<String> stringList = getIntent().getStringArrayListExtra(
-                    BookmarkFolderSelectActivity.INTENT_BOOKMARKS_TO_MOVE);
+            List<String> stringList =
+                    getIntent()
+                            .getStringArrayListExtra(
+                                    BookmarkFolderSelectActivity.INTENT_BOOKMARKS_TO_MOVE);
             mBookmarksToMove = new ArrayList<>(stringList.size());
             for (String string : stringList) {
                 mBookmarksToMove.add(BookmarkId.getBookmarkIdFromString(string));
             }
         } else {
-            mFolderId = BookmarkId.getBookmarkIdFromString(
-                    getIntent().getStringExtra(INTENT_BOOKMARK_ID));
+            mFolderId =
+                    BookmarkId.getBookmarkIdFromString(
+                            getIntent().getStringExtra(INTENT_BOOKMARK_ID));
         }
         setContentView(R.layout.bookmark_add_edit_folder_activity);
 
@@ -170,9 +178,13 @@ public class BookmarkAddEditFolderActivity
 
         View shadow = findViewById(R.id.shadow);
         View scrollView = findViewById(R.id.scroll_view);
-        scrollView.getViewTreeObserver().addOnScrollChangedListener(() -> {
-            shadow.setVisibility(scrollView.getScrollY() > 0 ? View.VISIBLE : View.GONE);
-        });
+        scrollView
+                .getViewTreeObserver()
+                .addOnScrollChangedListener(
+                        () -> {
+                            shadow.setVisibility(
+                                    scrollView.getScrollY() > 0 ? View.VISIBLE : View.GONE);
+                        });
     }
 
     @Override
@@ -189,16 +201,22 @@ public class BookmarkAddEditFolderActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         if (mIsAddMode) {
-            final Drawable drawable = TintedDrawable.constructTintedDrawable(
-                    this, R.drawable.bookmark_check_gray, R.color.default_icon_color_tint_list);
-            mSaveButton = menu.add(R.string.save)
-                                  .setIcon(drawable)
-                                  .setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+            final Drawable drawable =
+                    TintedDrawable.constructTintedDrawable(
+                            this,
+                            R.drawable.bookmark_check_gray,
+                            R.color.default_icon_color_tint_list);
+            mSaveButton =
+                    menu.add(R.string.save)
+                            .setIcon(drawable)
+                            .setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_IF_ROOM);
         } else {
-            mDeleteButton = menu.add(R.string.bookmark_toolbar_delete)
-                                    .setIcon(TintedDrawable.constructTintedDrawable(
+            mDeleteButton =
+                    menu.add(R.string.bookmark_toolbar_delete)
+                            .setIcon(
+                                    TintedDrawable.constructTintedDrawable(
                                             this, R.drawable.ic_delete_white_24dp))
-                                    .setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+                            .setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_IF_ROOM);
         }
 
         return super.onCreateOptionsMenu(menu);
@@ -249,8 +267,10 @@ public class BookmarkAddEditFolderActivity
         super.onActivityResult(requestCode, resultCode, data);
         assert mIsAddMode;
         if (requestCode == PARENT_FOLDER_REQUEST_CODE && resultCode == RESULT_OK) {
-            BookmarkId selectedBookmark = BookmarkId.getBookmarkIdFromString(
-                    data.getStringExtra(BookmarkFolderSelectActivity.INTENT_SELECTED_FOLDER));
+            BookmarkId selectedBookmark =
+                    BookmarkId.getBookmarkIdFromString(
+                            data.getStringExtra(
+                                    BookmarkFolderSelectActivity.INTENT_SELECTED_FOLDER));
             updateParent(selectedBookmark);
         }
     }

@@ -49,11 +49,10 @@ View* ElementToView(ui::TrackedElement* element) {
 
 // A subclass of View that has metadata.
 class TypedView : public View {
- public:
-  METADATA_HEADER(TypedView);
+  METADATA_HEADER(TypedView, View)
 };
 
-BEGIN_METADATA(TypedView, View)
+BEGIN_METADATA(TypedView)
 END_METADATA
 
 // Watches events on the ElementTracker and converts the resulting values back

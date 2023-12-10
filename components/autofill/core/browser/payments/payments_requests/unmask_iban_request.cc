@@ -19,7 +19,7 @@ const char kUnmaskIbanRequestFormat[] =
 }  // namespace
 
 UnmaskIbanRequest::UnmaskIbanRequest(
-    const PaymentsClient::UnmaskIbanRequestDetails& request_details,
+    const PaymentsNetworkInterface::UnmaskIbanRequestDetails& request_details,
     bool full_sync_enabled,
     base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
                             const std::u16string&)> callback)

@@ -257,7 +257,7 @@ void NetworkStateHandler::RequestTrafficCounters(
   // network is a Tether network or is a non shill Cellular network.
   // see b/266972302.
   if (!network || network->IsNonProfileType()) {
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
 

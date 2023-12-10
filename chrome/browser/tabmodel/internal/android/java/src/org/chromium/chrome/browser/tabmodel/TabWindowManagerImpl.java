@@ -11,6 +11,8 @@ import android.util.SparseArray;
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ApplicationStatus.ActivityStateListener;
+import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
 
@@ -33,8 +35,10 @@ public class TabWindowManagerImpl implements ActivityStateListener, TabWindowMan
 
     private Map<Activity, TabModelSelector> mAssignments = new HashMap<>();
 
-    TabWindowManagerImpl(TabModelSelectorFactory selectorFactory,
-            AsyncTabParamsManager asyncTabParamsManager, int maxSelectors) {
+    TabWindowManagerImpl(
+            TabModelSelectorFactory selectorFactory,
+            AsyncTabParamsManager asyncTabParamsManager,
+            int maxSelectors) {
         mSelectorFactory = selectorFactory;
         mAsyncTabParamsManager = asyncTabParamsManager;
         ApplicationStatus.registerStateListenerForAllActivities(this);
@@ -48,8 +52,11 @@ public class TabWindowManagerImpl implements ActivityStateListener, TabWindowMan
     }
 
     @Override
-    public Pair<Integer, TabModelSelector> requestSelector(Activity activity,
-            TabCreatorManager tabCreatorManager, NextTabPolicySupplier nextTabPolicySupplier,
+    public Pair<Integer, TabModelSelector> requestSelector(
+            Activity activity,
+            OneshotSupplier<ProfileProvider> profileProviderSupplier,
+            TabCreatorManager tabCreatorManager,
+            NextTabPolicySupplier nextTabPolicySupplier,
             int index) {
         if (index < 0 || index >= mSelectors.size()) return null;
 
@@ -79,8 +86,12 @@ public class TabWindowManagerImpl implements ActivityStateListener, TabWindowMan
         // Too many activities going at once.
         if (mSelectors.get(index) != null) return null;
 
-        TabModelSelector selector = mSelectorFactory.buildSelector(
-                activity, tabCreatorManager, nextTabPolicySupplier, index);
+        TabModelSelector selector =
+                mSelectorFactory.buildSelector(
+                        activity,
+                        profileProviderSupplier,
+                        tabCreatorManager,
+                        nextTabPolicySupplier);
         mSelectors.set(index, selector);
         mAssignments.put(activity, selector);
 

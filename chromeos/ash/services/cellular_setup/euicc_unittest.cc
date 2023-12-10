@@ -145,9 +145,7 @@ class EuiccTest_SmdsSupportDisabled : public EuiccTest {
   EuiccTest_SmdsSupportDisabled()
       : EuiccTest(
             /*enabled_features=*/{},
-            /*disabled_features=*/{ash::features::kSmdsDbusMigration,
-                                   ash::features::kSmdsSupport,
-                                   ash::features::kSmdsSupportEuiccUpload}) {}
+            /*disabled_features=*/{ash::features::kSmdsSupport}) {}
   ~EuiccTest_SmdsSupportDisabled() override = default;
 };
 
@@ -160,9 +158,7 @@ class EuiccTest_SmdsSupportEnabled : public EuiccTest {
  protected:
   EuiccTest_SmdsSupportEnabled()
       : EuiccTest(
-            /*enabled_features=*/{ash::features::kSmdsDbusMigration,
-                                  ash::features::kSmdsSupport,
-                                  ash::features::kSmdsSupportEuiccUpload},
+            /*enabled_features=*/{ash::features::kSmdsSupport},
             /*disabled_features=*/{}) {}
   ~EuiccTest_SmdsSupportEnabled() override = default;
 };
@@ -329,7 +325,7 @@ TEST_F(EuiccTest_SmdsSupportDisabled, RequestPendingProfiles) {
       "Network.Cellular.ESim.ProfileDiscovery.Latency", 1);
   histogram_tester.ExpectBucketCount(
       kOperationResultMetric, Euicc::RequestPendingProfilesResult::kSuccess,
-      /*expected_count=*/1);
+      /*expected_count=*/0);
 }
 
 TEST_F(EuiccTest_SmdsSupportDisabled, GetEidQRCode) {
@@ -349,115 +345,6 @@ TEST_F(EuiccTest_SmdsSupportDisabled, GetEidQRCode) {
 
   ASSERT_FALSE(qr_code_result.is_null());
   EXPECT_LT(0, qr_code_result->size);
-}
-
-TEST_F(EuiccTest_SmdsSupportDisabled, RequestAvailableProfiles) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {ash::features::kSmdsDbusMigration, ash::features::kSmdsSupport,
-       ash::features::kSmdsSupportEuiccUpload},
-      {});
-
-  mojo::Remote<mojom::Euicc> euicc = GetEuiccForEid(ESimTestBase::kTestEid);
-  ASSERT_TRUE(euicc.is_bound());
-
-  absl::optional<mojom::ESimOperationResult> result;
-  absl::optional<std::vector<mojom::ESimProfilePropertiesPtr>>
-      profile_properties_list;
-
-  base::RunLoop run_loop;
-  euicc->RequestAvailableProfiles(base::BindLambdaForTesting(
-      [&](mojom::ESimOperationResult returned_result,
-          std::vector<mojom::ESimProfilePropertiesPtr>
-              returned_profile_properties_list) {
-        result = returned_result;
-        profile_properties_list = std::move(returned_profile_properties_list);
-        run_loop.Quit();
-      }));
-  run_loop.Run();
-
-  ASSERT_TRUE(result.has_value());
-  EXPECT_EQ(*result, mojom::ESimOperationResult::kSuccess);
-
-  const std::vector<std::string> smds_activation_codes =
-      cellular_utils::GetSmdsActivationCodes();
-
-  ASSERT_TRUE(profile_properties_list.has_value());
-  EXPECT_EQ(smds_activation_codes.size(), profile_properties_list->size());
-
-  for (const auto& profile_properties : *profile_properties_list) {
-    EXPECT_EQ(profile_properties->eid, GetEuiccProperties(euicc)->eid);
-    EXPECT_NE(
-        std::find(smds_activation_codes.begin(), smds_activation_codes.end(),
-                  profile_properties->activation_code),
-        smds_activation_codes.end());
-  }
-}
-
-TEST_F(EuiccTest_SmdsSupportDisabled, RequestAvailableProfiles_FailToInhibit) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {ash::features::kSmdsDbusMigration, ash::features::kSmdsSupport,
-       ash::features::kSmdsSupportEuiccUpload},
-      {});
-
-  mojo::Remote<mojom::Euicc> euicc = GetEuiccForEid(ESimTestBase::kTestEid);
-  ASSERT_TRUE(euicc.is_bound());
-
-  // The cellular device is inhibited by setting a device property. Simulate a
-  // failure to inhibit by making the next attempt to set a property fail.
-  SetErrorForNextSetPropertyAttempt("error_name");
-
-  absl::optional<mojom::ESimOperationResult> result;
-  absl::optional<std::vector<mojom::ESimProfilePropertiesPtr>>
-      profile_properties_list;
-
-  {
-    base::RunLoop run_loop;
-    euicc->RequestAvailableProfiles(base::BindLambdaForTesting(
-        [&](mojom::ESimOperationResult returned_result,
-            std::vector<mojom::ESimProfilePropertiesPtr>
-                returned_profile_properties_list) {
-          result = returned_result;
-          profile_properties_list = std::move(returned_profile_properties_list);
-          run_loop.Quit();
-        }));
-    run_loop.Run();
-  }
-
-  ASSERT_TRUE(result.has_value());
-  EXPECT_EQ(*result, mojom::ESimOperationResult::kFailure);
-
-  ASSERT_TRUE(profile_properties_list.has_value());
-  EXPECT_TRUE(profile_properties_list->empty());
-
-  {
-    base::RunLoop run_loop;
-    euicc->RequestAvailableProfiles(base::BindLambdaForTesting(
-        [&](mojom::ESimOperationResult returned_result,
-            std::vector<mojom::ESimProfilePropertiesPtr>
-                returned_profile_properties_list) {
-          result = returned_result;
-          profile_properties_list = std::move(returned_profile_properties_list);
-          run_loop.Quit();
-        }));
-    run_loop.Run();
-  }
-
-  EXPECT_EQ(*result, mojom::ESimOperationResult::kSuccess);
-
-  const std::vector<std::string> smds_activation_codes =
-      cellular_utils::GetSmdsActivationCodes();
-
-  EXPECT_EQ(smds_activation_codes.size(), profile_properties_list->size());
-
-  for (const auto& profile_properties : *profile_properties_list) {
-    EXPECT_EQ(profile_properties->eid, GetEuiccProperties(euicc)->eid);
-    EXPECT_NE(
-        std::find(smds_activation_codes.begin(), smds_activation_codes.end(),
-                  profile_properties->activation_code),
-        smds_activation_codes.end());
-  }
 }
 
 TEST_F(EuiccTest_SmdsSupportEnabled, GetProperties) {
@@ -664,17 +551,11 @@ TEST_F(EuiccTest_SmdsSupportEnabled, GetEidQRCode) {
 }
 
 TEST_F(EuiccTest_SmdsSupportEnabled, RequestAvailableProfiles) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {ash::features::kSmdsDbusMigration, ash::features::kSmdsSupport,
-       ash::features::kSmdsSupportEuiccUpload},
-      {});
-
   mojo::Remote<mojom::Euicc> euicc = GetEuiccForEid(ESimTestBase::kTestEid);
   ASSERT_TRUE(euicc.is_bound());
 
-  absl::optional<mojom::ESimOperationResult> result;
-  absl::optional<std::vector<mojom::ESimProfilePropertiesPtr>>
+  std::optional<mojom::ESimOperationResult> result;
+  std::optional<std::vector<mojom::ESimProfilePropertiesPtr>>
       profile_properties_list;
 
   base::RunLoop run_loop;
@@ -707,12 +588,6 @@ TEST_F(EuiccTest_SmdsSupportEnabled, RequestAvailableProfiles) {
 }
 
 TEST_F(EuiccTest_SmdsSupportEnabled, RequestAvailableProfiles_FailToInhibit) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {ash::features::kSmdsDbusMigration, ash::features::kSmdsSupport,
-       ash::features::kSmdsSupportEuiccUpload},
-      {});
-
   mojo::Remote<mojom::Euicc> euicc = GetEuiccForEid(ESimTestBase::kTestEid);
   ASSERT_TRUE(euicc.is_bound());
 
@@ -720,8 +595,8 @@ TEST_F(EuiccTest_SmdsSupportEnabled, RequestAvailableProfiles_FailToInhibit) {
   // failure to inhibit by making the next attempt to set a property fail.
   SetErrorForNextSetPropertyAttempt("error_name");
 
-  absl::optional<mojom::ESimOperationResult> result;
-  absl::optional<std::vector<mojom::ESimProfilePropertiesPtr>>
+  std::optional<mojom::ESimOperationResult> result;
+  std::optional<std::vector<mojom::ESimProfilePropertiesPtr>>
       profile_properties_list;
 
   {

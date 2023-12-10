@@ -46,7 +46,11 @@ public class TextInputState {
         }
     }
 
-    public TextInputState(CharSequence text, Range selection, Range composition, boolean singleLine,
+    public TextInputState(
+            CharSequence text,
+            Range selection,
+            Range composition,
+            boolean singleLine,
             boolean replyToRequest) {
         selection.clamp(0, text.length());
         if (composition.start() != -1 || composition.end() != -1) {
@@ -102,8 +106,11 @@ public class TextInputState {
     public SurroundingText getSurroundingText(int beforeLength, int afterLength) {
         SurroundingTextInternal surroundingText =
                 getSurroundingTextInternal(beforeLength, afterLength);
-        return new SurroundingText(surroundingText.mText, surroundingText.mSelectionStart,
-                surroundingText.mSelectionEnd, surroundingText.mOffset);
+        return new SurroundingText(
+                surroundingText.mText,
+                surroundingText.mSelectionStart,
+                surroundingText.mSelectionEnd,
+                surroundingText.mOffset);
     }
 
     @VisibleForTesting
@@ -111,8 +118,9 @@ public class TextInputState {
             int beforeLength, int afterLength) {
         beforeLength = Math.max(0, Math.min(beforeLength, mSelection.start()));
         afterLength = Math.max(0, Math.min(afterLength, mText.length() - mSelection.end()));
-        CharSequence text = TextUtils.substring(
-                mText, mSelection.start() - beforeLength, mSelection.end() + afterLength);
+        CharSequence text =
+                TextUtils.substring(
+                        mText, mSelection.start() - beforeLength, mSelection.end() + afterLength);
         return new SurroundingTextInternal(
                 text, beforeLength, mSelection.end() - (mSelection.start() - beforeLength), -1);
     }
@@ -122,15 +130,20 @@ public class TextInputState {
         if (!(o instanceof TextInputState)) return false;
         TextInputState t = (TextInputState) o;
         if (t == this) return true;
-        return TextUtils.equals(mText, t.mText) && mSelection.equals(t.mSelection)
-                && mComposition.equals(t.mComposition) && mSingleLine == t.mSingleLine
+        return TextUtils.equals(mText, t.mText)
+                && mSelection.equals(t.mSelection)
+                && mComposition.equals(t.mComposition)
+                && mSingleLine == t.mSingleLine
                 && mReplyToRequest == t.mReplyToRequest;
     }
 
     @Override
     public int hashCode() {
-        return mText.hashCode() * 7 + mSelection.hashCode() * 11 + mComposition.hashCode() * 13
-                + (mSingleLine ? 19 : 0) + (mReplyToRequest ? 23 : 0);
+        return mText.hashCode() * 7
+                + mSelection.hashCode() * 11
+                + mComposition.hashCode() * 13
+                + (mSingleLine ? 19 : 0)
+                + (mReplyToRequest ? 23 : 0);
     }
 
     @SuppressWarnings("unused")
@@ -140,8 +153,13 @@ public class TextInputState {
 
     @Override
     public String toString() {
-        return String.format(Locale.US, "TextInputState {[%s] SEL%s COM%s %s%s}", mText, mSelection,
-                mComposition, mSingleLine ? "SIN" : "MUL",
+        return String.format(
+                Locale.US,
+                "TextInputState {[%s] SEL%s COM%s %s%s}",
+                mText,
+                mSelection,
+                mComposition,
+                mSingleLine ? "SIN" : "MUL",
                 mReplyToRequest ? " ReplyToRequest" : "");
     }
 }

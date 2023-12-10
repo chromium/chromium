@@ -1,0 +1,31 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Generates files for message formatting.
+template("generate_message_formatting_data") {
+  action(target_name) {
+    if (defined(invoker.testonly)) {
+      testonly = invoker.testonly
+    }
+    script = "//chrome/browser/resources/chromeos/accessibility/tools/generate_message_formatting_data.py"
+    inputs = invoker.inputs
+    outputs = []
+    output_dir = invoker.output_dir
+    args = [
+      "-o",
+      rebase_path(output_dir, root_build_dir),
+    ]
+    foreach(input, inputs) {
+      args += [
+        "-i",
+        rebase_path(input, root_build_dir),
+      ]
+
+      outputs += [ "$output_dir/" + get_path_info(input, "name") + "_data.js" ]
+    }
+    if (defined(invoker.deps)) {
+      deps = invoker.deps
+    }
+  }
+}

@@ -49,8 +49,7 @@ BubbleDialogModelHost::ContentsView* SetAndGetContentsView(
     ui::ModalType modal_type) {
   const bool is_modal_dialog = modal_type != ui::MODAL_TYPE_NONE;
   auto contents_view_unique =
-      std::make_unique<BubbleDialogModelHost::ContentsView>(parent,
-                                                            is_modal_dialog);
+      std::make_unique<BubbleDialogModelHost::ContentsView>(is_modal_dialog);
   BubbleDialogModelHost::ContentsView* contents_view =
       contents_view_unique.get();
 
@@ -89,6 +88,9 @@ BubbleDialogModelHost::FieldType GetFieldTypeForField(
       return BubbleDialogModelHost::FieldType::kControl;
     case ui::DialogModelField::kMenuItem:
       return BubbleDialogModelHost::FieldType::kMenuItem;
+    case ui::DialogModelField::kSection:
+      // TODO(pbos): Handle nested/multiple sections.
+      NOTREACHED_NORETURN();
     case ui::DialogModelField::kSeparator:
       return BubbleDialogModelHost::FieldType::kMenuItem;
     case ui::DialogModelField::kCustom:
@@ -161,8 +163,9 @@ int GetDialogBottomMargins(LayoutProvider* layout_provider,
 // Label/StyledLabel to be clickable, while supporting Links which requires a
 // StyledLabel.
 class CheckboxControl : public Checkbox {
+  METADATA_HEADER(CheckboxControl, Checkbox)
+
  public:
-  METADATA_HEADER(CheckboxControl);
   CheckboxControl(std::unique_ptr<View> label, int label_line_height)
       : label_line_height_(label_line_height) {
     auto* layout = SetLayoutManager(std::make_unique<BoxLayout>());
@@ -204,7 +207,7 @@ class CheckboxControl : public Checkbox {
   const int label_line_height_;
 };
 
-BEGIN_METADATA(CheckboxControl, Checkbox)
+BEGIN_METADATA(CheckboxControl)
 END_METADATA
 
 }  // namespace
@@ -224,8 +227,7 @@ std::unique_ptr<View> BubbleDialogModelHost::CustomView::TransferView() {
 // into this class. This was done in steps to limit the size of the diff.
 class BubbleDialogModelHost::ContentsView : public BoxLayoutView {
  public:
-  ContentsView(BubbleDialogModelHost* parent, bool is_modal_dialog)
-      : parent_(parent) {
+  explicit ContentsView(bool is_modal_dialog) {
     // Note that between-child spacing is manually handled using kMarginsKey.
     SetOrientation(views::BoxLayout::Orientation::kVertical);
     // Margins are added directly in the dialog. When the dialog is modal, these
@@ -238,31 +240,16 @@ class BubbleDialogModelHost::ContentsView : public BoxLayoutView {
     // from the dialog margins.
     // TODO(crbug.com/1348165): Remove this workaround when contents view
     // directly supports a scroll view.
-    if (is_modal_dialog)
+    if (is_modal_dialog) {
       SetInsideBorderInsets(gfx::Insets::VH(kScrollViewVerticalMargin, 0));
-  }
-
-  void OnThemeChanged() override {
-    View::OnThemeChanged();
-    if (!parent_->ShouldShowWindowIcon())
-      return;
-    const ui::ImageModel dark_mode_icon =
-        parent_->model_->dark_mode_icon(parent_->GetPassKey());
-    if (!dark_mode_icon.IsEmpty() &&
-        color_utils::IsDark(parent_->GetBackgroundColor())) {
-      parent_->SetIcon(dark_mode_icon);
-      return;
     }
-    parent_->SetIcon(parent_->model_->icon(GetPassKey()));
   }
-
- private:
-  const raw_ptr<BubbleDialogModelHost, DanglingUntriaged> parent_;
 };
 
 class BubbleDialogModelHost::LayoutConsensusView : public View {
+  METADATA_HEADER(LayoutConsensusView, View)
+
  public:
-  METADATA_HEADER(LayoutConsensusView);
   LayoutConsensusView(LayoutConsensusGroup* group, std::unique_ptr<View> view)
       : group_(group) {
     group->AddView(this);
@@ -301,6 +288,18 @@ END_METADATA
 BubbleDialogModelHost::LayoutConsensusGroup::LayoutConsensusGroup() = default;
 BubbleDialogModelHost::LayoutConsensusGroup::~LayoutConsensusGroup() {
   DCHECK(children_.empty());
+}
+
+BubbleDialogModelHost::ThemeChangedObserver::ThemeChangedObserver(
+    BubbleDialogModelHost* parent,
+    ContentsView* contents_view)
+    : parent_(parent) {
+  observation_.Observe(contents_view);
+}
+BubbleDialogModelHost::ThemeChangedObserver::~ThemeChangedObserver() = default;
+
+void BubbleDialogModelHost::ThemeChangedObserver::OnViewThemeChanged(View*) {
+  parent_->UpdateWindowIcon();
 }
 
 void BubbleDialogModelHost::LayoutConsensusGroup::AddView(
@@ -355,7 +354,8 @@ BubbleDialogModelHost::BubbleDialogModelHost(
     ui::ModalType modal_type)
     : BubbleDialogDelegate(anchor_view, arrow),
       model_(std::move(model)),
-      contents_view_(SetAndGetContentsView(this, modal_type)) {
+      contents_view_(SetAndGetContentsView(this, modal_type)),
+      theme_observer_(this, contents_view_) {
   model_->set_host(GetPassKey(), this);
 
   // Note that this needs to be called before IsModalDialog() is called later in
@@ -601,6 +601,9 @@ void BubbleDialogModelHost::OnFieldAdded(ui::DialogModelField* field) {
     case ui::DialogModelField::kMenuItem:
       AddOrUpdateMenuItem(field->AsMenuItem(GetPassKey()));
       break;
+    case ui::DialogModelField::kSection:
+      // TODO(pbos): Handle nested/multiple sections.
+      NOTREACHED_NORETURN();
     case ui::DialogModelField::kSeparator:
       AddOrUpdateSeparator(field);
       break;
@@ -647,6 +650,18 @@ void BubbleDialogModelHost::AddInitialFields() {
   const auto& fields = model_->fields(GetPassKey());
   for (const auto& field : fields)
     OnFieldAdded(field.get());
+}
+
+void BubbleDialogModelHost::UpdateWindowIcon() {
+  if (!ShouldShowWindowIcon()) {
+    return;
+  }
+  const ui::ImageModel dark_mode_icon = model_->dark_mode_icon(GetPassKey());
+  if (!dark_mode_icon.IsEmpty() && color_utils::IsDark(GetBackgroundColor())) {
+    SetIcon(dark_mode_icon);
+    return;
+  }
+  SetIcon(model_->icon(GetPassKey()));
 }
 
 void BubbleDialogModelHost::UpdateSpacingAndMargins() {

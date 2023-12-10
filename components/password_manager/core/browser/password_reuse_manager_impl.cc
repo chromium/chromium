@@ -5,6 +5,7 @@
 #include "components/password_manager/core/browser/password_reuse_manager_impl.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -17,7 +18,14 @@
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#include "components/signin/public/base/consent_level.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "base/json/json_reader.h"
+#include "base/json/json_writer.h"
+#include "google_apis/gaia/gaia_auth_util.h"
+#endif
 
 using base::RecordAction;
 using base::UserMetricsAction;
@@ -30,6 +38,11 @@ namespace {
 // Time in seconds by which calls to the password store happening on startup
 // should be delayed.
 constexpr base::TimeDelta kPasswordStoreCallDelaySeconds = base::Seconds(5);
+// Keys for accessing credentials passed from Android.
+// Must be kept in sync with PasswordProtectionBroadcastReceiver.java.
+constexpr char kLoginAccountIdentifier[] = "Login.accountIdentifier";
+constexpr char kLoginHashedPassword[] = "Login.hashedPassword";
+constexpr char kLoginSalt[] = "Login.salt";
 #endif
 
 bool IsPasswordReuseDetectionEnabled() {
@@ -52,7 +65,7 @@ class CheckReuseRequest : public PasswordReuseDetectorConsumer {
   void OnReuseCheckDone(
       bool is_reuse_found,
       size_t password_length,
-      absl::optional<PasswordHashData> reused_protected_password_hash,
+      std::optional<PasswordHashData> reused_protected_password_hash,
       const std::vector<MatchingReusedCredential>& matching_reused_credentials,
       int saved_passwords,
       const std::string& domain,
@@ -72,7 +85,7 @@ CheckReuseRequest::~CheckReuseRequest() = default;
 void CheckReuseRequest::OnReuseCheckDone(
     bool is_reuse_found,
     size_t password_length,
-    absl::optional<PasswordHashData> reused_protected_password_hash,
+    std::optional<PasswordHashData> reused_protected_password_hash,
     const std::vector<MatchingReusedCredential>& matching_reused_credentials,
     int saved_passwords,
     const std::string& domain,
@@ -107,7 +120,9 @@ void PasswordReuseManagerImpl::Shutdown() {
     account_store_->RemoveObserver(this);
     profile_store_.reset();
   }
-
+  if (identity_manager_) {
+    identity_manager_->RemoveObserver(this);
+  }
   if (notifier_)
     notifier_->UnsubscribeFromSigninEvents();
 
@@ -116,11 +131,21 @@ void PasswordReuseManagerImpl::Shutdown() {
   }
 }
 
-void PasswordReuseManagerImpl::Init(PrefService* prefs,
-                                    PasswordStoreInterface* profile_store,
-                                    PasswordStoreInterface* account_store) {
+void PasswordReuseManagerImpl::Init(
+    PrefService* prefs,
+    PasswordStoreInterface* profile_store,
+    PasswordStoreInterface* account_store,
+    signin::IdentityManager* identity_manager,
+    std::unique_ptr<SharedPreferencesDelegate> shared_pref_delegate) {
   prefs_ = prefs;
   hash_password_manager_.set_prefs(prefs_);
+  identity_manager_ = identity_manager;
+#if BUILDFLAG(IS_ANDROID)
+  if (shared_pref_delegate) {
+    shared_pref_delegate_ = std::move(shared_pref_delegate);
+    identity_manager_->AddObserver(this);
+  }
+#endif
   main_task_runner_ = base::SequencedTaskRunner::GetCurrentDefault();
   DCHECK(main_task_runner_);
 
@@ -174,8 +199,7 @@ void PasswordReuseManagerImpl::CheckReuse(
     PasswordReuseDetectorConsumer* consumer) {
   DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
   if (!reuse_detector_) {
-    consumer->OnReuseCheckDone(false, 0, absl::nullopt, {}, 0, std::string(),
-                               0);
+    consumer->OnReuseCheckDone(false, 0, std::nullopt, {}, 0, std::string(), 0);
     return;
   }
   ScheduleTask(base::BindOnce(
@@ -229,7 +253,7 @@ void PasswordReuseManagerImpl::SaveProtectedPasswordHash(
                                               is_sync_password_for_metrics);
     }
     // This method is not being called on startup so it shouldn't log metrics.
-    SchedulePasswordHashUpdate(/*sign_in_state_for_metrics=*/absl::nullopt);
+    SchedulePasswordHashUpdate(/*sign_in_state_for_metrics=*/std::nullopt);
   }
 }
 
@@ -240,7 +264,7 @@ void PasswordReuseManagerImpl::SaveSyncPasswordHash(
   if (hash_password_manager_.SavePasswordHash(sync_password_data)) {
     metrics_util::LogGaiaPasswordHashChange(event,
                                             /*is_sync_password=*/true);
-    SchedulePasswordHashUpdate(/*sign_in_state_for_metrics=*/absl::nullopt);
+    SchedulePasswordHashUpdate(/*sign_in_state_for_metrics=*/std::nullopt);
   }
 }
 
@@ -303,7 +327,7 @@ void PasswordReuseManagerImpl::SetPasswordStoreSigninNotifier(
 }
 
 void PasswordReuseManagerImpl::SchedulePasswordHashUpdate(
-    absl::optional<metrics_util::SignInState> sign_in_state_for_metrics) {
+    std::optional<metrics_util::SignInState> sign_in_state_for_metrics) {
   DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
 
   if (!reuse_detector_) {
@@ -410,4 +434,61 @@ void PasswordReuseManagerImpl::AccountStoreStateChanged() {
   account_store_->GetAutofillableLogins(weak_ptr_factory_.GetWeakPtr());
 }
 
+void PasswordReuseManagerImpl::OnPrimaryAccountChanged(
+    const signin::PrimaryAccountChangeEvent& event_details) {
+  if (!shared_pref_delegate_) {
+    return;
+  }
+#if BUILDFLAG(IS_ANDROID)
+  // Check for a Chrome sign-in event.
+  if (event_details.GetEventTypeFor(signin::ConsentLevel::kSignin) ==
+      signin::PrimaryAccountChangeEvent::Type::kSet) {
+    // On Android, check if there are any gaia credentials saved for this user.
+    auto saved_creds = shared_pref_delegate_->GetCredentials("");
+    if (saved_creds.empty()) {
+      return;
+    }
+    auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(
+        saved_creds, base::JSON_ALLOW_TRAILING_COMMAS);
+    if (!parsed_json.has_value()) {
+      LOG(ERROR) << "Error parsing JSON: " << parsed_json.error().message;
+      return;
+    }
+    if (!parsed_json->is_list()) {
+      LOG(ERROR) << "Error parsing JSON: Expected a list but got non-list.";
+      return;
+    }
+    auto& saved_creds_list = parsed_json->GetList();
+    if (saved_creds_list.empty()) {
+      return;
+    }
+    for (size_t i = 0; i < saved_creds_list.size(); i++) {
+      base::Value::Dict* saved_creds_entry = saved_creds_list[i].GetIfDict();
+      const std::string* account_id =
+          saved_creds_entry->FindString(kLoginAccountIdentifier);
+      CHECK(account_id);
+      if (identity_manager_
+              ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+              .email == *account_id) {
+        PasswordHashData password_hash_data;
+        password_hash_data.username = gaia::CanonicalizeEmail(*account_id);
+        password_hash_data.length = 8;  // Min size for gaia passwords is 8.
+        password_hash_data.salt = *saved_creds_entry->FindString(kLoginSalt);
+        password_hash_data.hash = static_cast<uint64_t>(
+            saved_creds_entry->FindDouble(kLoginHashedPassword).value());
+        password_hash_data.force_update = true;
+        hash_password_manager_.SavePasswordHash(password_hash_data);
+        metrics_util::LogGaiaPasswordHashChange(
+            metrics_util::GaiaPasswordHashChange::SAVED_ON_CHROME_SIGNIN,
+            /*is_sync_password=*/true);
+        // Remove the saved credential that matched the signed in user.
+        saved_creds_list.EraseValue(saved_creds_list[i]);
+        shared_pref_delegate_->SetCredentials(
+            base::WriteJson(saved_creds_list).value());
+        break;
+      }
+    }
+  }
+#endif
+}
 }  // namespace password_manager

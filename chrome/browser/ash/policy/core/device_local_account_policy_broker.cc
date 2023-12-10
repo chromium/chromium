@@ -189,7 +189,7 @@ void DeviceLocalAccountPolicyBroker::CreateComponentCloudPolicyService(
     CloudPolicyClient* client) {
   std::unique_ptr<ResourceCache> resource_cache(new ResourceCache(
       component_policy_cache_path_, resource_cache_task_runner_,
-      /* max_cache_size */ absl::nullopt));
+      /* max_cache_size */ std::nullopt));
 
   component_policy_service_ = std::make_unique<ComponentCloudPolicyService>(
       dm_protocol::kChromeExtensionPolicyType, this, &schema_registry_, core(),

@@ -37,6 +37,7 @@ suite('AboutPageTest', function() {
       'chrome://resources/images/throbber_small_dark.svg';
 
   setup(function() {
+    loadTimeData.overrideValues({isRevampWayfindingEnabled: false});
     userActionRecorder = new FakeUserActionRecorder();
     setUserActionRecorderForTesting(userActionRecorder);
 

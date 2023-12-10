@@ -7,12 +7,12 @@
 
 #import <Cocoa/Cocoa.h>
 
+#include <optional>
 #include <ostream>
 #include <string>
 #include <vector>
 
 #include "base/check_op.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chrome {
 
@@ -145,7 +145,7 @@ class MenuItemBuilder {
 
   bool is_removed_ = false;
 
-  absl::optional<std::vector<MenuItemBuilder>> submenu_;
+  std::optional<std::vector<MenuItemBuilder>> submenu_;
 
   bool is_hidden_ = false;
 

@@ -82,6 +82,14 @@ luci.bucket(
                 ci.gpu.SHADOW_SERVICE_ACCOUNT,
             ],
         ),
+        # TODO(crbug.com/1501383): Remove this binding after shadow bucket
+        # could inherit the view permission from the actual bucket.
+        luci.binding(
+            roles = "role/buildbucket.reader",
+            groups = [
+                "all",
+            ],
+        ),
         # Allow ci builders to create invocations in their own builds.
         luci.binding(
             roles = "role/resultdb.invocationCreator",
@@ -169,6 +177,7 @@ consoles.console_view(
     category = category,
     short_name = short_name,
 ) for name, category, short_name in (
+    ("fuchsia-arm64-rel-ready", "gardener|p/chrome|arm64", "rel-ready"),
     ("fuchsia-arm64-nest-sd", "gardener|p/chrome|arm64", "nest-arm"),
     ("fuchsia-builder-perf-arm64", "gardener|p/chrome|arm64", "perf-arm"),
     ("fuchsia-cast-astro", "gardener|hardware|cast", "ast"),
@@ -193,7 +202,6 @@ exec("./ci/chromium.accessibility.star")
 exec("./ci/chromium.android.star")
 exec("./ci/chromium.android.fyi.star")
 exec("./ci/chromium.angle.star")
-exec("./ci/chromium.build.star")
 exec("./ci/chromium.cft.star")
 exec("./ci/chromium.chromiumos.star")
 exec("./ci/chromium.clang.star")

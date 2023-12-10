@@ -5,13 +5,14 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <optional>
+
 #include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "chromeos/components/onc/onc_signature.h"
 #include "chromeos/components/onc/onc_validator.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 namespace onc {
@@ -32,7 +33,7 @@ struct Environment {
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   static Environment env;
 
-  absl::optional<base::Value> parsed_json = base::JSONReader::Read(
+  std::optional<base::Value> parsed_json = base::JSONReader::Read(
       base::StringPiece(reinterpret_cast<const char*>(data), size));
   if (!parsed_json || !parsed_json->is_dict())
     return 0;

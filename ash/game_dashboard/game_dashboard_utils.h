@@ -5,9 +5,10 @@
 #ifndef ASH_GAME_DASHBOARD_GAME_DASHBOARD_UTILS_H_
 #define ASH_GAME_DASHBOARD_GAME_DASHBOARD_UTILS_H_
 
+#include <optional>
+
 #include "ash/ash_export.h"
 #include "ash/public/cpp/arc_game_controls_flag.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace aura {
 class Window;
@@ -35,13 +36,17 @@ ASH_EXPORT ArcGameControlsFlag UpdateFlag(ArcGameControlsFlag flags,
 
 // Returns flags value if Game Controls is available on `window`. Otherwise, it
 // returns nullopt.
-absl::optional<ArcGameControlsFlag> GetGameControlsFlag(aura::Window* window);
+std::optional<ArcGameControlsFlag> GetGameControlsFlag(aura::Window* window);
 
 // Updates Game Controls mapping hint button tooltip text. `button`
 // refers to `game_controls_tile_` in `GameDashboardMainMenuView` or
 // `game_controls_button_` in `GameDashboardToolbarView`.
 void UpdateGameControlsHintButtonToolTipText(views::Button* button,
                                              ArcGameControlsFlag flags);
+
+// Returns true if `window` is not ARC game window, or Game Controls state is
+// known and not in edit mode.
+bool ShouldEnableGameDashboardButton(aura::Window* window);
 
 }  // namespace ash::game_dashboard_utils
 

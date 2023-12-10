@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/views/page_info/about_this_site_side_panel_view.h"
 
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/page_info/about_this_site_side_panel_throttle.h"
 #include "chrome/browser/profiles/profile.h"

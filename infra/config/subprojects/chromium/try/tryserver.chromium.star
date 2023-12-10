@@ -37,6 +37,12 @@ try_.builder(
     mirrors = [
         "ci/android-official",
     ],
+    gn_args = gn_args.config(
+        configs = [
+            "ci/android-official",
+            "dcheck_always_on",
+        ],
+    ),
     ssd = True,
     contact_team_email = "clank-engprod@google.com",
 )
@@ -47,6 +53,13 @@ try_.builder(
     mirrors = [
         "ci/fuchsia-official",
     ],
+    gn_args = gn_args.config(
+        configs = [
+            "ci/fuchsia-official",
+            "minimal_symbols",
+            "dcheck_always_on",
+        ],
+    ),
     ssd = True,
 )
 
@@ -56,10 +69,10 @@ try_.builder(
     mirrors = [
         "ci/linux-official",
     ],
-    ssd = True,
     gn_args = gn_args.config(
         configs = ["ci/linux-official", "try_builder"],
     ),
+    ssd = True,
 )
 
 try_.builder(
@@ -68,6 +81,13 @@ try_.builder(
     mirrors = [
         "ci/mac-official",
     ],
+    gn_args = gn_args.config(
+        configs = [
+            "ci/mac-official",
+            "minimal_symbols",
+            "dcheck_always_on",
+        ],
+    ),
     builderless = False,
     cores = None,
     os = os.MAC_ANY,
@@ -83,6 +103,12 @@ try_.builder(
     mirrors = [
         "ci/win-official",
     ],
+    gn_args = gn_args.config(
+        configs = [
+            "ci/win-official",
+            "dcheck_always_on",
+        ],
+    ),
     os = os.WINDOWS_DEFAULT,
     execution_timeout = 6 * time.hour,
 )
@@ -93,6 +119,13 @@ try_.builder(
     mirrors = [
         "ci/win32-official",
     ],
+    gn_args = gn_args.config(
+        configs = [
+            "ci/win32-official",
+            "minimal_symbols",
+            "dcheck_always_on",
+        ],
+    ),
     os = os.WINDOWS_DEFAULT,
     execution_timeout = 6 * time.hour,
 )

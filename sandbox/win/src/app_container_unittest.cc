@@ -179,7 +179,7 @@ void CheckLowBoxToken(AppContainerBase* container,
                       const base::win::AccessToken& base_token,
                       bool impersonation,
                       size_t expected_cap_count) {
-  absl::optional<base::win::AccessToken> token =
+  std::optional<base::win::AccessToken> token =
       impersonation ? container->BuildImpersonationToken(base_token)
                     : container->BuildPrimaryToken(base_token);
   ASSERT_TRUE(token);
@@ -418,7 +418,7 @@ TEST(AppContainerTest, BuildImpersonationToken) {
   if (!features::IsAppContainerSandboxSupported()) {
     return;
   }
-  absl::optional<base::win::AccessToken> base_token =
+  std::optional<base::win::AccessToken> base_token =
       base::win::AccessToken::FromCurrentProcess(
           /*impersonation=*/false, TOKEN_DUPLICATE);
   ASSERT_TRUE(base_token);
@@ -438,7 +438,7 @@ TEST(AppContainerTest, BuildPrimaryToken) {
   if (!features::IsAppContainerSandboxSupported()) {
     return;
   }
-  absl::optional<base::win::AccessToken> base_token =
+  std::optional<base::win::AccessToken> base_token =
       base::win::AccessToken::FromCurrentProcess(
           /*impersonation=*/false, TOKEN_DUPLICATE);
   ASSERT_TRUE(base_token);

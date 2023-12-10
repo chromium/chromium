@@ -265,7 +265,7 @@ bool WrappedSkImageBacking::InitializeWithData(
   textures_.resize(1);
 
   {
-    absl::optional<gpu::raster::GrShaderCache::ScopedCacheUse> cache_use;
+    std::optional<gpu::raster::GrShaderCache::ScopedCacheUse> cache_use;
     // ScopedCacheUse is used to avoid the empty/invalid client id DCHECKS
     // caused while accessing GrShaderCache. Even though other clients can
     // create shared images, the context used to create the backend texture

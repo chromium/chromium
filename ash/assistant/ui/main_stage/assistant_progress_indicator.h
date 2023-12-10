@@ -6,12 +6,15 @@
 #define ASH_ASSISTANT_UI_MAIN_STAGE_ASSISTANT_PROGRESS_INDICATOR_H_
 
 #include "base/component_export.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 namespace ash {
 
 class COMPONENT_EXPORT(ASSISTANT_UI) AssistantProgressIndicator
     : public views::View {
+  METADATA_HEADER(AssistantProgressIndicator, views::View)
+
  public:
   AssistantProgressIndicator();
 

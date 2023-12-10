@@ -47,4 +47,4 @@ class RemoteActivityNotificationScreenHandler
 
 }  // namespace ash
 
-#endif
+#endif  // CHROME_BROWSER_UI_WEBUI_ASH_LOGIN_REMOTE_ACTIVITY_NOTIFICATION_SCREEN_HANDLER_H_

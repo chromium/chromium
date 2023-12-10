@@ -11,11 +11,12 @@
 #include <linux/joystick.h>
 #include <sys/ioctl.h>
 
+#include <string_view>
+
 #include "base/containers/fixed_flat_set.h"
 #include "base/functional/callback_helpers.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
@@ -191,7 +192,7 @@ bool StartOrStopEffect(const base::ScopedFD& fd, int effect_id, bool do_start) {
   return nbytes == sizeof(start_stop);
 }
 
-uint16_t HexStringToUInt16WithDefault(base::StringPiece input,
+uint16_t HexStringToUInt16WithDefault(std::string_view input,
                                       uint16_t default_value) {
   uint32_t out = 0;
   if (!base::HexStringToUInt(input, &out) ||
@@ -235,9 +236,9 @@ void OpenPathWithPermissionBroker(
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-// Small helper to avoid constructing a StringPiece from nullptr.
-base::StringPiece ToStringPiece(const char* str) {
-  return str ? base::StringPiece(str) : base::StringPiece();
+// Small helper to avoid constructing a std::string_view from nullptr.
+std::string_view ToStringView(const char* str) {
+  return str ? std::string_view(str) : std::string_view();
 }
 
 }  // namespace
@@ -455,14 +456,14 @@ bool GamepadDeviceLinux::OpenJoydevNode(const UdevGamepadLinux& pad_info,
       device::udev_device_get_parent_with_subsystem_devtype(
           device, kInputSubsystem, nullptr);
 
-  const base::StringPiece vendor_id =
-      ToStringPiece(udev_device_get_sysattr_value(parent_device, "id/vendor"));
-  const base::StringPiece product_id =
-      ToStringPiece(udev_device_get_sysattr_value(parent_device, "id/product"));
-  const base::StringPiece hid_version =
-      ToStringPiece(udev_device_get_sysattr_value(parent_device, "id/version"));
-  const base::StringPiece name =
-      ToStringPiece(udev_device_get_sysattr_value(parent_device, "name"));
+  const std::string_view vendor_id =
+      ToStringView(udev_device_get_sysattr_value(parent_device, "id/vendor"));
+  const std::string_view product_id =
+      ToStringView(udev_device_get_sysattr_value(parent_device, "id/product"));
+  const std::string_view hid_version =
+      ToStringView(udev_device_get_sysattr_value(parent_device, "id/version"));
+  const std::string_view name =
+      ToStringView(udev_device_get_sysattr_value(parent_device, "name"));
 
   uint16_t vendor_id_int = HexStringToUInt16WithDefault(vendor_id, 0);
   uint16_t product_id_int = HexStringToUInt16WithDefault(product_id, 0);
@@ -478,10 +479,10 @@ bool GamepadDeviceLinux::OpenJoydevNode(const UdevGamepadLinux& pad_info,
           parent_device, kUsbSubsystem, kUsbDeviceType);
   std::string name_string(name);
   if (usb_device) {
-    const base::StringPiece usb_vendor_id =
-        ToStringPiece(udev_device_get_sysattr_value(usb_device, "idVendor"));
-    const base::StringPiece usb_product_id =
-        ToStringPiece(udev_device_get_sysattr_value(usb_device, "idProduct"));
+    const std::string_view usb_vendor_id =
+        ToStringView(udev_device_get_sysattr_value(usb_device, "idVendor"));
+    const std::string_view usb_product_id =
+        ToStringView(udev_device_get_sysattr_value(usb_device, "idProduct"));
 
     if (vendor_id == usb_vendor_id && product_id == usb_product_id) {
       const char* manufacturer =
@@ -496,8 +497,8 @@ bool GamepadDeviceLinux::OpenJoydevNode(const UdevGamepadLinux& pad_info,
       }
     }
 
-    const base::StringPiece version_number =
-        ToStringPiece(udev_device_get_sysattr_value(usb_device, "bcdDevice"));
+    const std::string_view version_number =
+        ToStringView(udev_device_get_sysattr_value(usb_device, "bcdDevice"));
     version_number_int = HexStringToUInt16WithDefault(version_number, 0);
   }
 

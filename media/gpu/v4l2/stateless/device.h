@@ -10,10 +10,13 @@
 #include <utility>
 #include <vector>
 
+#include <poll.h>
+
 #include "base/files/scoped_file.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "media/base/video_codecs.h"
+#include "media/gpu/chromeos/fourcc.h"
 #include "media/gpu/media_gpu_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
@@ -32,7 +35,8 @@ class Buffer {
   Buffer(BufferType buffer_type,
          MemoryType memory_type,
          uint32_t index,
-         uint32_t plane_count);
+         uint32_t plane_count,
+         struct timeval time_val);
   ~Buffer();
   Buffer(const Buffer&);
 
@@ -54,6 +58,10 @@ class Buffer {
   BufferType GetBufferType() const { return buffer_type_; }
   MemoryType GetMemoryType() const { return memory_type_; }
 
+  void SetTimeAsFrameID(uint64_t usec);
+  struct timeval GetTimeval() const;
+  uint64_t GetTimeAsFrameID() const;
+
   // Method for copying compressed input data into a Buffer's backing store. It
   // is limited to destination buffers that have a single plane and are memory
   // mapped.
@@ -72,6 +80,35 @@ class Buffer {
   const MemoryType memory_type_;
   const uint32_t index_;
   std::vector<Plane> planes_;
+  struct timeval time_val_;
+};
+
+class PlaneFormat {
+ public:
+  PlaneFormat(uint32_t stride, uint32_t image_size)
+      : stride(stride), image_size(image_size) {}
+  // Width of decompressed frame in bytes. It must be equal to or larger than
+  // the size of the displayed image. This allows the internal buffers to be
+  // better aligned for reading/writing/caching, etc.
+  uint32_t stride;
+  // Size of the buffer to hold the data passed back and forth to the driver.
+  // When the buffer is compressed this will be the size of the compressed data
+  // in bytes. When the buffer is uncompressed this will be stride * height
+  // of the plane.
+  uint32_t image_size;
+};
+
+class BufferFormat {
+ public:
+  BufferFormat(Fourcc fourcc, gfx::Size resolution, BufferType buffer_type);
+  BufferFormat(const BufferFormat& other);
+  ~BufferFormat();
+
+  uint32_t NumPlanes() const { return planes.size(); }
+  Fourcc fourcc;
+  gfx::Size resolution;
+  std::vector<PlaneFormat> planes;
+  BufferType buffer_type;
 };
 
 // Encapsulates the v4l2 subsystem and prevents <linux/videodev2.h> from
@@ -94,6 +131,14 @@ class MEDIA_GPU_EXPORT Device : public base::RefCountedThreadSafe<Device> {
                       gfx::Size resolution,
                       size_t encoded_buffer_size);
 
+  // To negotiate an output format the format must first be retrieved from
+  // the driver via |GetOutputFormat|. If the desired format does not match
+  // up with the retrieved format, |TryOutputFormat| and |SetOutputFormat| are
+  // used.
+  absl::optional<BufferFormat> GetOutputFormat();
+  absl::optional<BufferFormat> TryOutputFormat(const BufferFormat& format);
+  absl::optional<BufferFormat> SetOutputFormat(const BufferFormat& format);
+
   // Stops streaming on the |type| of buffer using the VIDIOC_STREAMOFF ioctl.
   bool StreamOff(BufferType type);
 
@@ -105,13 +150,26 @@ class MEDIA_GPU_EXPORT Device : public base::RefCountedThreadSafe<Device> {
   // number does not need to be the same as |count|.
   absl::optional<uint32_t> RequestBuffers(BufferType type,
                                           MemoryType memory,
-                                          size_t count);
+                                          uint32_t count);
 
   // Uses the VIDIOC_QUERYBUF ioctl to fill out and return a |Buffer|.
   absl::optional<Buffer> QueryBuffer(BufferType type,
                                      MemoryType memory,
                                      uint32_t index,
                                      uint32_t num_planes);
+
+  // Wrap the buffer that was allocated from the driver so that it can be
+  // passed on to other consumers.
+  std::vector<base::ScopedFD> ExportAsDMABUF(int index, uint32_t num_planes);
+
+  // Enqueue a buffer allocated through |RequestBuffers| with the driver for
+  // processing.
+  bool QueueBuffer(const Buffer& buffer, const base::ScopedFD& request_fd);
+
+  // Used during frame processing on a per frame basis.
+  absl::optional<Buffer> DequeueBuffer(BufferType buffer_type,
+                                       MemoryType memory_type,
+                                       uint32_t num_planes);
 
   // Query the driver for the smallest and largest uncompressed frame sizes that
   // are supported using the VIDIOC_ENUM_FRAMESIZES ioctl.
@@ -126,6 +184,9 @@ class MEDIA_GPU_EXPORT Device : public base::RefCountedThreadSafe<Device> {
 
   // unmmap the |buffer| when read/write access is no longer needed.
   void MunmapBuffer(Buffer& buffer);
+
+  // Return the structure of events that should be waited on
+  struct pollfd GetPollEvent();
 
   // Capabilities are queried using VIDIOC_QUERYCAP. Stateless and
   // stateful drivers need different capabilities.
@@ -142,6 +203,12 @@ class MEDIA_GPU_EXPORT Device : public base::RefCountedThreadSafe<Device> {
   // The actual device fd.
   base::ScopedFD device_fd_;
 
+  // |TryOutputFormat| and |SetOutputFormat| are identical calls, with the
+  // difference being that |TryOutputFormat| does not change the state of the
+  // driver while |SetOutputFormat| does.
+  absl::optional<BufferFormat> TrySetOutputFormat(int request,
+                                                  const BufferFormat& format);
+
  protected:
   virtual ~Device();
   int Ioctl(const base::ScopedFD& fd, uint64_t request, void* arg);
@@ -149,6 +216,6 @@ class MEDIA_GPU_EXPORT Device : public base::RefCountedThreadSafe<Device> {
   bool OpenDevice();
 };
 
-}  //  namespace media
+}  // namespace media
 
 #endif  // MEDIA_GPU_V4L2_STATELESS_DEVICE_H_

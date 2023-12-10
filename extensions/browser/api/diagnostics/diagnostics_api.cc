@@ -25,7 +25,7 @@ const char kSize[] = "size";
 
 bool ParseResult(const std::string& status, std::string* ip, double* latency) {
   // Parses the result and returns IP and latency.
-  absl::optional<base::Value> parsed_value(base::JSONReader::Read(status));
+  std::optional<base::Value> parsed_value(base::JSONReader::Read(status));
   if (!parsed_value || !parsed_value->is_dict())
     return false;
 
@@ -38,7 +38,7 @@ bool ParseResult(const std::string& status, std::string* ip, double* latency) {
   if (!iterator->second.is_dict())
     return false;
 
-  absl::optional<double> avg = iterator->second.GetDict().FindDouble("avg");
+  std::optional<double> avg = iterator->second.GetDict().FindDouble("avg");
   if (!avg)
     return false;
   *latency = *avg;
@@ -75,7 +75,7 @@ ExtensionFunction::ResponseAction DiagnosticsSendPacketFunction::Run() {
 }
 
 void DiagnosticsSendPacketFunction::OnTestICMPCompleted(
-    absl::optional<std::string> status) {
+    std::optional<std::string> status) {
   std::string ip;
   double latency;
   if (!status.has_value() || !ParseResult(status.value(), &ip, &latency)) {

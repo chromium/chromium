@@ -33,7 +33,7 @@ FakeAndroidSmsAppSetupController::GetAppMetadataAtUrl(
 
 void FakeAndroidSmsAppSetupController::SetAppAtUrl(
     const GURL& install_url,
-    const absl::optional<webapps::AppId>& id_for_app) {
+    const std::optional<webapps::AppId>& id_for_app) {
   if (!id_for_app) {
     install_url_to_metadata_map_.erase(install_url);
     return;
@@ -45,7 +45,7 @@ void FakeAndroidSmsAppSetupController::SetAppAtUrl(
 void FakeAndroidSmsAppSetupController::CompletePendingSetUpAppRequest(
     const GURL& expected_app_url,
     const GURL& expected_install_url,
-    const absl::optional<webapps::AppId>& id_for_app) {
+    const std::optional<webapps::AppId>& id_for_app) {
   DCHECK(!pending_set_up_app_requests_.empty());
 
   auto request = std::move(pending_set_up_app_requests_.front());
@@ -95,7 +95,7 @@ void FakeAndroidSmsAppSetupController::CompleteRemoveAppRequest(
   DCHECK_EQ(expected_migrated_to_app_url, std::get<2>(*request));
 
   if (should_succeed)
-    SetAppAtUrl(expected_install_url, absl::nullopt /* id_for_app */);
+    SetAppAtUrl(expected_install_url, std::nullopt /* id_for_app */);
 
   std::move(std::get<3>(*request)).Run(should_succeed);
 }
@@ -107,11 +107,11 @@ void FakeAndroidSmsAppSetupController::SetUpApp(const GURL& app_url,
       app_url, install_url, std::move(callback)));
 }
 
-absl::optional<webapps::AppId> FakeAndroidSmsAppSetupController::GetPwa(
+std::optional<webapps::AppId> FakeAndroidSmsAppSetupController::GetPwa(
     const GURL& install_url) {
   auto it = install_url_to_metadata_map_.find(install_url);
   if (it == install_url_to_metadata_map_.end())
-    return absl::nullopt;
+    return std::nullopt;
   return it->second.pwa;
 }
 

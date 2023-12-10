@@ -180,6 +180,7 @@ namespace webrtcLoggingPrivate {
     // Returns the directory entry for the "WebRTC Logs" directory. If the
     // directory doesn't exist yet, this will create it. If the directory
     // cannot be created, this call will fail with a runtime error.
+    [doesNotSupportPromises="Custom hook sets lastError crbug.com/1504349"]
     static void getLogsDirectory(GetLogsDirectoryCallback callback);
   };
 };

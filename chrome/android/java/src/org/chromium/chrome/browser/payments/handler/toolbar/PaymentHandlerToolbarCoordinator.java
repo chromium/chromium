@@ -41,9 +41,7 @@ public class PaymentHandlerToolbarCoordinator implements PaymentHandlerToolbarMe
     private final PaymentHandlerToolbarMediator mMediator;
     private final Supplier<ModalDialogManager> mModalDialogManagerSupplier;
 
-    /**
-     * Observer for the error of the payment handler toolbar.
-     */
+    /** Observer for the error of the payment handler toolbar. */
     public interface PaymentHandlerToolbarObserver {
         /** Called when the close button is clicked. */
         void onToolbarCloseButtonClicked();
@@ -57,8 +55,10 @@ public class PaymentHandlerToolbarCoordinator implements PaymentHandlerToolbarMe
      *         "PaymentRequestEvent.openWindow(url)".
      * @param modalDialogManagerSupplier Supplies the {@link ModalDialogManager}.
      */
-    public PaymentHandlerToolbarCoordinator(@NonNull Activity activity,
-            @NonNull WebContents webContents, @NonNull GURL url,
+    public PaymentHandlerToolbarCoordinator(
+            @NonNull Activity activity,
+            @NonNull WebContents webContents,
+            @NonNull GURL url,
             @NonNull Supplier<ModalDialogManager> modalDialogManagerSupplier) {
         assert activity != null;
         assert webContents != null;
@@ -67,20 +67,25 @@ public class PaymentHandlerToolbarCoordinator implements PaymentHandlerToolbarMe
         mActivity = activity;
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
         int defaultSecurityLevel = ConnectionSecurityLevel.NONE;
-        mModel = new PropertyModel.Builder(PaymentHandlerToolbarProperties.ALL_KEYS)
-                         .with(PaymentHandlerToolbarProperties.PROGRESS_VISIBLE, true)
-                         .with(PaymentHandlerToolbarProperties.LOAD_PROGRESS,
-                                 PaymentHandlerToolbarMediator.MINIMUM_LOAD_PROGRESS)
-                         .with(PaymentHandlerToolbarProperties.SECURITY_ICON,
-                                 getSecurityIconResource(defaultSecurityLevel))
-                         .with(PaymentHandlerToolbarProperties.SECURITY_ICON_CONTENT_DESCRIPTION,
-                                 getSecurityIconContentDescription(defaultSecurityLevel))
-                         .with(PaymentHandlerToolbarProperties.URL, url)
-                         .with(PaymentHandlerToolbarProperties.SECURITY_ICON_ON_CLICK_CALLBACK,
-                                 this::showPageInfoDialog)
-                         .build();
+        mModel =
+                new PropertyModel.Builder(PaymentHandlerToolbarProperties.ALL_KEYS)
+                        .with(PaymentHandlerToolbarProperties.PROGRESS_VISIBLE, true)
+                        .with(
+                                PaymentHandlerToolbarProperties.LOAD_PROGRESS,
+                                PaymentHandlerToolbarMediator.MINIMUM_LOAD_PROGRESS)
+                        .with(
+                                PaymentHandlerToolbarProperties.SECURITY_ICON,
+                                getSecurityIconResource(defaultSecurityLevel))
+                        .with(
+                                PaymentHandlerToolbarProperties.SECURITY_ICON_CONTENT_DESCRIPTION,
+                                getSecurityIconContentDescription(defaultSecurityLevel))
+                        .with(PaymentHandlerToolbarProperties.URL, url)
+                        .with(
+                                PaymentHandlerToolbarProperties.SECURITY_ICON_ON_CLICK_CALLBACK,
+                                this::showPageInfoDialog)
+                        .build();
         mIsSmallDevice = !DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity);
-        mMediator = new PaymentHandlerToolbarMediator(mModel, webContents, /*delegate=*/this);
+        mMediator = new PaymentHandlerToolbarMediator(mModel, webContents, /* delegate= */ this);
         mToolbarView = new PaymentHandlerToolbarView(mActivity);
         webContents.addObserver(mMediator);
         PropertyModelChangeProcessor.create(
@@ -126,9 +131,11 @@ public class PaymentHandlerToolbarCoordinator implements PaymentHandlerToolbarMe
     // Implement PaymentHandlerToolbarMediatorDelegate.
     @Override
     public @DrawableRes int getSecurityIconResource(@ConnectionSecurityLevel int securityLevel) {
-        return SecurityStatusIcon.getSecurityIconResource(securityLevel, mIsSmallDevice,
-                /*skipIconForNeutralState=*/false,
-                /*useUpdatedConnectionSecurityIndicators=*/false);
+        return SecurityStatusIcon.getSecurityIconResource(
+                securityLevel,
+                mIsSmallDevice,
+                /* skipIconForNeutralState= */ false,
+                /* useUpdatedConnectionSecurityIndicators= */ false);
     }
 
     // Implement PaymentHandlerToolbarMediatorDelegate.
@@ -144,15 +151,21 @@ public class PaymentHandlerToolbarCoordinator implements PaymentHandlerToolbarMe
         // storeInfoActionHandlerSupplier or ephemeralTabCoordinatorSupplier and don't show
         // "store info" row because this UI is already in a bottom sheet and clicking "store info"
         // row would trigger another bottom sheet.
-        PageInfoController.show(mActivity, mWebContents, null,
+        PageInfoController.show(
+                mActivity,
+                mWebContents,
+                null,
                 PageInfoController.OpenedFromSource.TOOLBAR,
-                new ChromePageInfoControllerDelegate(mActivity, mWebContents,
+                new ChromePageInfoControllerDelegate(
+                        mActivity,
+                        mWebContents,
                         mModalDialogManagerSupplier,
-                        /*offlinePageLoadUrlDelegate=*/
-                        new OfflinePageUtils.WebContentsOfflinePageLoadUrlDelegate(mWebContents),
-                        /*storeInfoActionHandlerSupplier=*/null,
-                        /*ephemeralTabCoordinatorSupplier=*/null,
-                        ChromePageInfoHighlight.noHighlight(), null),
+                        /* offlinePageLoadUrlDelegate= */ new OfflinePageUtils
+                                .WebContentsOfflinePageLoadUrlDelegate(mWebContents),
+                        /* storeInfoActionHandlerSupplier= */ null,
+                        /* ephemeralTabCoordinatorSupplier= */ null,
+                        ChromePageInfoHighlight.noHighlight(),
+                        null),
                 ChromePageInfoHighlight.noHighlight());
     }
 }

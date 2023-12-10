@@ -338,20 +338,18 @@ FormSubmission* FormSubmission::Create(HTMLFormElement* form,
       copied_attributes.Target().empty() ? document.BaseTarget()
                                          : copied_attributes.Target());
 
-  if (RuntimeEnabledFeatures::FormRelAttributeEnabled() &&
-      form->HasRel(HTMLFormElement::kNoReferrer)) {
+  if (form->HasRel(HTMLFormElement::kNoReferrer)) {
     frame_request.SetNoReferrer();
     frame_request.SetNoOpener();
   }
-  if (RuntimeEnabledFeatures::FormRelAttributeEnabled() &&
-      (form->HasRel(HTMLFormElement::kNoOpener) ||
-       (EqualIgnoringASCIICase(target_or_base_target, "_blank") &&
-        !form->HasRel(HTMLFormElement::kOpener) &&
-        form->GetDocument()
-            .domWindow()
-            ->GetFrame()
-            ->GetSettings()
-            ->GetTargetBlankImpliesNoOpenerEnabledWillBeRemoved()))) {
+  if (form->HasRel(HTMLFormElement::kNoOpener) ||
+      (EqualIgnoringASCIICase(target_or_base_target, "_blank") &&
+       !form->HasRel(HTMLFormElement::kOpener) &&
+       form->GetDocument()
+           .domWindow()
+           ->GetFrame()
+           ->GetSettings()
+           ->GetTargetBlankImpliesNoOpenerEnabledWillBeRemoved())) {
     frame_request.SetNoOpener();
   }
 

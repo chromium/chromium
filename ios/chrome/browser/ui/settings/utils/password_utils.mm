@@ -14,6 +14,31 @@
 
 namespace password_manager {
 
+namespace {
+
+// Returns whether `string` contains `substring`. The comparison
+// is done in lower-case (`substring` must be lower case).
+bool ContainsSubStringLowerCase(const std::string& string,
+                                const std::string& substring) {
+  DCHECK_EQ(substring, base::ToLowerASCII(substring));
+
+  const std::string lower_case_string = base::ToLowerASCII(string);
+  return lower_case_string.find(substring) != std::string::npos;
+}
+
+// Returns whether any of the credential groups matches the given search term.
+bool MatchGroupCredentialsForTerm(const AffiliatedGroup& affiliated_group,
+                                  const std::string& search_term) {
+  for (const auto& credential : affiliated_group.GetCredentials()) {
+    if (MatchCredentialForTerm(credential, search_term)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+}  // namespace
+
 std::pair<NSString*, NSString*> GetPasswordAlertTitleAndMessageForOrigins(
     NSArray<NSString*>* origins) {
   DCHECK(origins.count >= 1);
@@ -78,6 +103,29 @@ id<ReauthenticationProtocol> BuildReauthenticationModule(
                    initWithSuccessfulReauthTimeAccessor:
                        successfulReauthTimeAccessor]
              : [[ReauthenticationModule alloc] init];
+}
+
+bool MatchCredentialForTerm(const CredentialUIEntry& credential,
+                            const std::string& search_term) {
+  DCHECK(!search_term.empty());
+  DCHECK_EQ(search_term, base::ToLowerASCII(search_term));
+
+  for (const auto& domain_info : credential.GetAffiliatedDomains()) {
+    if (ContainsSubStringLowerCase(domain_info.name, search_term)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+bool MatchAffiliatedGroupsForTerm(const AffiliatedGroup& affiliated_group,
+                                  const std::string& search_term) {
+  DCHECK(!search_term.empty());
+  DCHECK_EQ(search_term, base::ToLowerASCII(search_term));
+
+  return ContainsSubStringLowerCase(affiliated_group.GetDisplayName(),
+                                    search_term) ||
+         MatchGroupCredentialsForTerm(affiliated_group, search_term);
 }
 
 }  // namespace password_manager

@@ -7,9 +7,7 @@ package org.chromium.base;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
-/**
- * A simple interface to Android's EventLog to be used by native code.
- */
+/** A simple interface to Android's EventLog to be used by native code. */
 @JNINamespace("base::android")
 public class EventLog {
 

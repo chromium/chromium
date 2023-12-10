@@ -5,5 +5,4 @@ mojom("mojom_web_apps_enum") {
 
   public_deps = []
   webui_module_path = "/"
-  use_typescript_sources = true
 }

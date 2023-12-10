@@ -5,15 +5,11 @@
 #include "components/segmentation_platform/internal/database/cached_result_provider.h"
 
 #include "base/logging.h"
-#include "base/task/single_thread_task_runner.h"
 #include "components/segmentation_platform/internal/logging.h"
 #include "components/segmentation_platform/internal/metadata/metadata_utils.h"
-#include "components/segmentation_platform/internal/post_processor/post_processor.h"
 #include "components/segmentation_platform/internal/stats.h"
 #include "components/segmentation_platform/public/config.h"
-#include "components/segmentation_platform/public/constants.h"
 #include "components/segmentation_platform/public/proto/prediction_result.pb.h"
-#include "components/segmentation_platform/public/result.h"
 
 namespace segmentation_platform {
 
@@ -22,9 +18,9 @@ CachedResultProvider::CachedResultProvider(
     const std::vector<std::unique_ptr<Config>>& configs)
     : configs_(configs), result_prefs_(std::move(prefs)) {
   for (const auto& config : *configs_) {
-    absl::optional<proto::ClientResult> client_result =
+    const proto::ClientResult* client_result =
         result_prefs_->ReadClientResultFromPrefs(config->segmentation_key);
-    bool has_valid_result = client_result.has_value() &&
+    bool has_valid_result = client_result &&
                             client_result->client_result().result_size() > 0 &&
                             client_result->client_result().has_output_config();
     has_valid_result = has_valid_result &&

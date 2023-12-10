@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<grit-part>
+    <!-- Experimental enterprise plus_addresses feature strings -->
+    <!-- Modal strings -->
+    <message name="IDS_PLUS_ADDRESS_MODAL_TITLE" desc="Title for the experimental enterprise plus addresses feature modal" translateable="false">
+      Lorem Ipsum
+    </message>
+    <message name="IDS_PLUS_ADDRESS_MODAL_PLUS_ADDRESS_LABEL" desc="Label for the upper portion of the plus addresses modal" translateable="false">
+      Lorem Ipsum
+    </message>
+    <message name="IDS_PLUS_ADDRESS_MODAL_PROPOSED_PLUS_ADDRESS_AND_COPY" desc="The plus address with some descriptive text around it." translateable="false">
+      Use <ph name="PLUS_ADDRESS">$1<ex>plus@plus.plus</ex>?</ph>
+    </message>
+    <message name="IDS_PLUS_ADDRESS_MODAL_PLUS_ADDRESS_LINK_TEXT" desc="The text of the link shown on the Plus Address modal." translateable="false">
+      Settings
+    </message>
+    <message name="IDS_PLUS_ADDRESS_MODAL_PLUS_ADDRESS_DESCRIPTION_START" desc="The start of the plus address description that has a placeholder for a link." translateable="false">
+      Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua <ph name="LINK">$1</ph>. Ut enim ad minim veniam...
+    </message>
+    <message name="IDS_PLUS_ADDRESS_MODAL_PLUS_ADDRESS_DESCRIPTION_END" desc="The end of the plus address description that has a placeholder for the primary email address." translateable="false">
+      Lorem <ph name="REGULAR_ADDRESS">$1</ph>.
+    </message>
+    <message name="IDS_PLUS_ADDRESS_MODAL_ERROR_MESSAGE" desc="The error message shown on the modal." translateable="false">
+      Lorem ipsum or whatever
+    </message>
+    <message name="IDS_PLUS_ADDRESS_MODAL_PROPOSED_PLUS_ADDRESS_PLACEHOLDER" desc="A placeholder for the plus address" translateable="false">
+      Lorem Ipsum or whatever
+    </message>
+    <message name="IDS_PLUS_ADDRESS_MODAL_REGULAR_ADDRESS_LABEL" desc="A label for the regular address in the plus address modal" translateable="false">
+      For <ph name="REGULAR_ADDRESS">$1<ex>test@example.test</ex></ph>
+    </message>
+    <message name="IDS_PLUS_ADDRESS_MODAL_PLUS_ADDRESS_DESCRIPTION" desc="An illustrative description of the plus addresses modal" translateable="false">
+      Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+    </message>
+    <message name="IDS_PLUS_ADDRESS_MODAL_CANCEL_TEXT" desc="Cancel button text for the experimental enterprise plus addresses feature modal" translateable="false">
+      Dolor
+    </message>
+    <message name="IDS_PLUS_ADDRESS_MODAL_OK_TEXT" desc="Ok button text for the experimental enterprise plus addresses feature modal" translateable="false">
+      Sit
+    </message>
+    <message name="IDS_PLUS_ADDRESS_MODAL_PLUS_ADDRESS_DESCRIPTION_V2" desc="An illustrative description of the plus addresses modal" translateable="false">
+      Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua <ph name="BEGIN_LINK">&lt;link&gt;</ph>Ut enim ad minim veniam<ph name="END_LINK">&lt;/link&gt;</ph> for <ph name="BEGIN_BOLD">&lt;b&gt;</ph><ph name="REGULAR_ADDRESS">$1<ex>test@example.test</ex></ph><ph name="END_BOLD">&lt;/b&gt;</ph>.
+    </message>
+    <message name="IDS_PLUS_ADDRESS_MODAL_PLUS_ADDRESS_DESCRIPTION_IOS" desc="An illustrative description of the plus addresses modal, with iOS formatting" translateable="false">
+      Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua <ph name="BEGIN_LINK">BEGIN_LINK</ph>Ut enim ad minim veniam<ph name="END_LINK">END_LINK</ph>. For
+    </message>
+    <!-- Settings strings -->
+    <message name="IDS_PLUS_ADDRESS_SETTINGS_LABEL" desc="A button in settings for management of experimental enterprise plus addresses" translateable="false">
+      Lorem Ipsum
+    </message>
+
+</grit-part>

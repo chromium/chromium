@@ -1,0 +1,10 @@
+{
+  "gn_args": {
+    "dcheck_always_on": false,
+    "is_component_build": false,
+    "is_debug": false,
+    "is_msan": true,
+    "msan_track_origins": 2,
+    "use_remoteexec": true
+  }
+}

@@ -15,6 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 
 namespace url {
 class Origin;
@@ -27,6 +28,8 @@ namespace ash {
 class ASH_EXPORT ScreenCaptureTrayItemView
     : public TrayItemView,
       public MultiCaptureServiceClient::Observer {
+  METADATA_HEADER(ScreenCaptureTrayItemView, TrayItemView)
+
  public:
   struct ScreenCaptureTrayItemMetadata {
     explicit ScreenCaptureTrayItemMetadata(base::TimeTicks time_created);

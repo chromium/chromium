@@ -60,9 +60,9 @@ public class WebServer implements AutoCloseable {
         if (body == null) {
             body = new byte[0];
         }
-        output.write(("HTTP/1.1 " + status + "\r\nContent-Length: " + String.valueOf(body.length)
-                + "\r\n\r\n")
-                             .getBytes());
+        output.write(
+                String.format("HTTP/1.1 %s\r\nContent-Length: %s\r\n\r\n", status, body.length)
+                        .getBytes());
         output.write(body);
         output.flush();
     }
@@ -71,11 +71,13 @@ public class WebServer implements AutoCloseable {
     public static class HTTPHeader {
         public final String key;
         public final String value;
+
         /** Constructs an HTTP header. */
         public HTTPHeader(String key, String value) {
             this.key = key;
             this.value = value;
         }
+
         /**
          * Parse an HTTP header from a string line. Returns null if the line is not a valid HTTP
          * header.
@@ -252,7 +254,7 @@ public class WebServer implements AutoCloseable {
             }
             if (contentLength >= 0) {
                 byte[] content = new byte[contentLength];
-                for (int offset = 0; offset < contentLength;) {
+                for (int offset = 0; offset < contentLength; ) {
                     int bytesRead = stream.read(content, offset, contentLength);
                     if (bytesRead == -1) { // short read, keep truncated content.
                         content = Arrays.copyOf(content, offset);
@@ -290,8 +292,8 @@ public class WebServer implements AutoCloseable {
 
     /** Handle an HTTP request. Calls |mRequestHandler| if set. */
     private void handleRequest(HTTPRequest request, OutputStream stream) {
-        assert Thread.currentThread()
-                == mServerThread : "handleRequest called from non-server thread";
+        assert Thread.currentThread() == mServerThread
+                : "handleRequest called from non-server thread";
         if (mRequestHandler != null) {
             mRequestHandler.handleRequest(request, stream);
         }
@@ -299,10 +301,16 @@ public class WebServer implements AutoCloseable {
 
     public void setServerHost(String hostname) {
         try {
-            mServerUri = new java.net
-                                 .URI(mSsl ? "https" : "http", null, hostname,
-                                         mServerThread.mSocket.getLocalPort(), null, null, null)
-                                 .toString();
+            mServerUri =
+                    new java.net.URI(
+                                    mSsl ? "https" : "http",
+                                    null,
+                                    hostname,
+                                    mServerThread.mSocket.getLocalPort(),
+                                    null,
+                                    null,
+                                    null)
+                            .toString();
         } catch (java.net.URISyntaxException e) {
             Log.wtf(TAG, e.getMessage());
         }
@@ -325,16 +333,24 @@ public class WebServer implements AutoCloseable {
         if (mSsl) {
             if ((additional && WebServer.sSecureInstances.isEmpty())
                     || (!additional && !WebServer.sSecureInstances.isEmpty())) {
-                throw new IllegalStateException("There are " + WebServer.sSecureInstances.size()
-                        + " SSL WebServer instances. Expected " + (additional ? ">=1" : "0")
-                        + " because additional is " + additional);
+                throw new IllegalStateException(
+                        "There are "
+                                + WebServer.sSecureInstances.size()
+                                + " SSL WebServer instances. Expected "
+                                + (additional ? ">=1" : "0")
+                                + " because additional is "
+                                + additional);
             }
         } else {
             if ((additional && WebServer.sInstances.isEmpty())
                     || (!additional && !WebServer.sInstances.isEmpty())) {
-                throw new IllegalStateException("There are " + WebServer.sSecureInstances.size()
-                        + " WebServer instances. Expected " + (additional ? ">=1" : "0")
-                        + " because additional is " + additional);
+                throw new IllegalStateException(
+                        "There are "
+                                + WebServer.sSecureInstances.size()
+                                + " WebServer instances. Expected "
+                                + (additional ? ">=1" : "0")
+                                + " because additional is "
+                                + additional);
             }
         }
         mServerThread = new ServerThread(mPort, mSsl);
@@ -360,9 +376,7 @@ public class WebServer implements AutoCloseable {
         this(port, ssl, false);
     }
 
-    /**
-     * Terminate the http server.
-     */
+    /** Terminate the http server. */
     public void shutdown() {
         if (mSsl) {
             WebServer.sSecureInstances.remove(this);
@@ -412,40 +426,42 @@ public class WebServer implements AutoCloseable {
         private SSLContext mSslContext;
 
         private final Object mLock = new Object();
+
         @GuardedBy("mLock")
         private boolean mIsCancelled;
+
         @GuardedBy("mLock")
         private Socket mCurrentRequestSocket;
 
         /**
-         * Defines the keystore contents for the server, BKS version. Holds just a
-         * single self-generated key. The subject name is "Test Server".
+         * Defines the keystore contents for the server, BKS version. Holds just a single
+         * self-generated key. The subject name is "Test Server".
          */
         private static final String SERVER_KEYS_BKS =
                 "AAAAAQAAABQDkebzoP1XwqyWKRCJEpn/t8dqIQAABDkEAAVteWtleQAAARpYl20nAAAAAQAFWC41"
-                + "MDkAAAJNMIICSTCCAbKgAwIBAgIESEfU1jANBgkqhkiG9w0BAQUFADBpMQswCQYDVQQGEwJVUzET"
-                + "MBEGA1UECBMKQ2FsaWZvcm5pYTEMMAoGA1UEBxMDTVRWMQ8wDQYDVQQKEwZHb29nbGUxEDAOBgNV"
-                + "BAsTB0FuZHJvaWQxFDASBgNVBAMTC1Rlc3QgU2VydmVyMB4XDTA4MDYwNTExNTgxNFoXDTA4MDkw"
-                + "MzExNTgxNFowaTELMAkGA1UEBhMCVVMxEzARBgNVBAgTCkNhbGlmb3JuaWExDDAKBgNVBAcTA01U"
-                + "VjEPMA0GA1UEChMGR29vZ2xlMRAwDgYDVQQLEwdBbmRyb2lkMRQwEgYDVQQDEwtUZXN0IFNlcnZl"
-                + "cjCBnzANBgkqhkiG9w0BAQEFAAOBjQAwgYkCgYEA0LIdKaIr9/vsTq8BZlA3R+NFWRaH4lGsTAQy"
-                + "DPMF9ZqEDOaL6DJuu0colSBBBQ85hQTPa9m9nyJoN3pEi1hgamqOvQIWcXBk+SOpUGRZZFXwniJV"
-                + "zDKU5nE9MYgn2B9AoiH3CSuMz6HRqgVaqtppIe1jhukMc/kHVJvlKRNy9XMCAwEAATANBgkqhkiG"
-                + "9w0BAQUFAAOBgQC7yBmJ9O/eWDGtSH9BH0R3dh2NdST3W9hNZ8hIa8U8klhNHbUCSSktZmZkvbPU"
-                + "hse5LI3dh6RyNDuqDrbYwcqzKbFJaq/jX9kCoeb3vgbQElMRX8D2ID1vRjxwlALFISrtaN4VpWzV"
-                + "yeoHPW4xldeZmoVtjn8zXNzQhLuBqX2MmAAAAqwAAAAUvkUScfw9yCSmALruURNmtBai7kQAAAZx"
-                + "4Jmijxs/l8EBaleaUru6EOPioWkUAEVWCxjM/TxbGHOi2VMsQWqRr/DZ3wsDmtQgw3QTrUK666sR"
-                + "MBnbqdnyCyvM1J2V1xxLXPUeRBmR2CXorYGF9Dye7NkgVdfA+9g9L/0Au6Ugn+2Cj5leoIgkgApN"
-                + "vuEcZegFlNOUPVEs3SlBgUF1BY6OBM0UBHTPwGGxFBBcetcuMRbUnu65vyDG0pslT59qpaR0TMVs"
-                + "P+tcheEzhyjbfM32/vwhnL9dBEgM8qMt0sqF6itNOQU/F4WGkK2Cm2v4CYEyKYw325fEhzTXosck"
-                + "MhbqmcyLab8EPceWF3dweoUT76+jEZx8lV2dapR+CmczQI43tV9btsd1xiBbBHAKvymm9Ep9bPzM"
-                + "J0MQi+OtURL9Lxke/70/MRueqbPeUlOaGvANTmXQD2OnW7PISwJ9lpeLfTG0LcqkoqkbtLKQLYHI"
-                + "rQfV5j0j+wmvmpMxzjN3uvNajLa4zQ8l0Eok9SFaRr2RL0gN8Q2JegfOL4pUiHPsh64WWya2NB7f"
-                + "V+1s65eA5ospXYsShRjo046QhGTmymwXXzdzuxu8IlnTEont6P4+J+GsWk6cldGbl20hctuUKzyx"
-                + "OptjEPOKejV60iDCYGmHbCWAzQ8h5MILV82IclzNViZmzAapeeCnexhpXhWTs+xDEYSKEiG/camt"
-                + "bhmZc3BcyVJrW23PktSfpBQ6D8ZxoMfF0L7V2GQMaUg+3r7ucrx82kpqotjv0xHghNIm95aBr1Qw"
-                + "1gaEjsC/0wGmmBDg1dTDH+F1p9TInzr3EFuYD0YiQ7YlAHq3cPuyGoLXJ5dXYuSBfhDXJSeddUkl"
-                + "k1ufZyOOcskeInQge7jzaRfmKg3U94r+spMEvb0AzDQVOKvjjo1ivxMSgFRZaDb/4qw=";
+                    + "MDkAAAJNMIICSTCCAbKgAwIBAgIESEfU1jANBgkqhkiG9w0BAQUFADBpMQswCQYDVQQGEwJVUzET"
+                    + "MBEGA1UECBMKQ2FsaWZvcm5pYTEMMAoGA1UEBxMDTVRWMQ8wDQYDVQQKEwZHb29nbGUxEDAOBgNV"
+                    + "BAsTB0FuZHJvaWQxFDASBgNVBAMTC1Rlc3QgU2VydmVyMB4XDTA4MDYwNTExNTgxNFoXDTA4MDkw"
+                    + "MzExNTgxNFowaTELMAkGA1UEBhMCVVMxEzARBgNVBAgTCkNhbGlmb3JuaWExDDAKBgNVBAcTA01U"
+                    + "VjEPMA0GA1UEChMGR29vZ2xlMRAwDgYDVQQLEwdBbmRyb2lkMRQwEgYDVQQDEwtUZXN0IFNlcnZl"
+                    + "cjCBnzANBgkqhkiG9w0BAQEFAAOBjQAwgYkCgYEA0LIdKaIr9/vsTq8BZlA3R+NFWRaH4lGsTAQy"
+                    + "DPMF9ZqEDOaL6DJuu0colSBBBQ85hQTPa9m9nyJoN3pEi1hgamqOvQIWcXBk+SOpUGRZZFXwniJV"
+                    + "zDKU5nE9MYgn2B9AoiH3CSuMz6HRqgVaqtppIe1jhukMc/kHVJvlKRNy9XMCAwEAATANBgkqhkiG"
+                    + "9w0BAQUFAAOBgQC7yBmJ9O/eWDGtSH9BH0R3dh2NdST3W9hNZ8hIa8U8klhNHbUCSSktZmZkvbPU"
+                    + "hse5LI3dh6RyNDuqDrbYwcqzKbFJaq/jX9kCoeb3vgbQElMRX8D2ID1vRjxwlALFISrtaN4VpWzV"
+                    + "yeoHPW4xldeZmoVtjn8zXNzQhLuBqX2MmAAAAqwAAAAUvkUScfw9yCSmALruURNmtBai7kQAAAZx"
+                    + "4Jmijxs/l8EBaleaUru6EOPioWkUAEVWCxjM/TxbGHOi2VMsQWqRr/DZ3wsDmtQgw3QTrUK666sR"
+                    + "MBnbqdnyCyvM1J2V1xxLXPUeRBmR2CXorYGF9Dye7NkgVdfA+9g9L/0Au6Ugn+2Cj5leoIgkgApN"
+                    + "vuEcZegFlNOUPVEs3SlBgUF1BY6OBM0UBHTPwGGxFBBcetcuMRbUnu65vyDG0pslT59qpaR0TMVs"
+                    + "P+tcheEzhyjbfM32/vwhnL9dBEgM8qMt0sqF6itNOQU/F4WGkK2Cm2v4CYEyKYw325fEhzTXosck"
+                    + "MhbqmcyLab8EPceWF3dweoUT76+jEZx8lV2dapR+CmczQI43tV9btsd1xiBbBHAKvymm9Ep9bPzM"
+                    + "J0MQi+OtURL9Lxke/70/MRueqbPeUlOaGvANTmXQD2OnW7PISwJ9lpeLfTG0LcqkoqkbtLKQLYHI"
+                    + "rQfV5j0j+wmvmpMxzjN3uvNajLa4zQ8l0Eok9SFaRr2RL0gN8Q2JegfOL4pUiHPsh64WWya2NB7f"
+                    + "V+1s65eA5ospXYsShRjo046QhGTmymwXXzdzuxu8IlnTEont6P4+J+GsWk6cldGbl20hctuUKzyx"
+                    + "OptjEPOKejV60iDCYGmHbCWAzQ8h5MILV82IclzNViZmzAapeeCnexhpXhWTs+xDEYSKEiG/camt"
+                    + "bhmZc3BcyVJrW23PktSfpBQ6D8ZxoMfF0L7V2GQMaUg+3r7ucrx82kpqotjv0xHghNIm95aBr1Qw"
+                    + "1gaEjsC/0wGmmBDg1dTDH+F1p9TInzr3EFuYD0YiQ7YlAHq3cPuyGoLXJ5dXYuSBfhDXJSeddUkl"
+                    + "k1ufZyOOcskeInQge7jzaRfmKg3U94r+spMEvb0AzDQVOKvjjo1ivxMSgFRZaDb/4qw=";
 
         private static final String PASSWORD = "android";
 

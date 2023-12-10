@@ -4,14 +4,15 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {PdfOcrUserSelection, SettingsTextToSpeechSubpageElement} from 'chrome://os-settings/lazy_load.js';
+import {PdfOcrUserSelection, ScreenAiInstallStatus, SettingsTextToSpeechSubpageElement} from 'chrome://os-settings/lazy_load.js';
 import {CrSettingsPrefs, Router, routes, SettingsPrefsElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
 import {assert} from 'chrome://resources/js/assert.js';
+import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
-import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
+import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
 suite('<settings-text-to-speech-subpage>', function() {
@@ -104,14 +105,14 @@ suite('<settings-text-to-speech-subpage>', function() {
         const pdfOcrToggle =
             page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
                 '#crosPdfOcrToggle');
-        assert(pdfOcrToggle);
+        assertTrue(!!pdfOcrToggle);
         assertTrue(isVisible(pdfOcrToggle));
         // PDF OCR pref is on by default.
         assertTrue(pdfOcrToggle.checked);
         assertTrue(page.prefs.settings.a11y.pdf_ocr_always_active.value);
         pdfOcrToggle.click();
 
-        await waitAfterNextRender(pdfOcrToggle);
+        await flushTasks();
         assertFalse(pdfOcrToggle.checked);
         assertFalse(page.prefs.settings.a11y.pdf_ocr_always_active.value);
       });
@@ -129,15 +130,15 @@ suite('<settings-text-to-speech-subpage>', function() {
     const pdfOcrToggle =
         page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
             '#crosPdfOcrToggle');
-    assert(pdfOcrToggle);
+    assertTrue(!!pdfOcrToggle);
 
     // PDF OCR is on by default, so need to turn off and then on again.
     pdfOcrToggle.click();
-    await waitAfterNextRender(pdfOcrToggle);
+    await flushTasks();
     assertFalse(pdfOcrToggle.checked);
     // Turn on PDF OCR again.
     pdfOcrToggle.click();
-    await waitAfterNextRender(pdfOcrToggle);
+    await flushTasks();
     assertTrue(pdfOcrToggle.checked);
     assertEquals(
         1,
@@ -160,17 +161,56 @@ suite('<settings-text-to-speech-subpage>', function() {
         page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
             '#crosPdfOcrToggle');
     // PDF OCR is on by default.
-    assert(pdfOcrToggle);
+    assertTrue(!!pdfOcrToggle);
     assertTrue(pdfOcrToggle.checked);
 
     // Turn off PDF OCR.
     pdfOcrToggle.click();
-    await waitAfterNextRender(pdfOcrToggle);
+    await flushTasks();
     assertFalse(pdfOcrToggle.checked);
     assertEquals(
         1,
         metrics.count(
             'Accessibility.PdfOcr.UserSelection',
             PdfOcrUserSelection.TURN_OFF_FROM_SETTINGS));
+  });
+
+  test('test pdf ocr toggle subtitle', async () => {
+    // `features::kPdfOcr` is enabled in os_settings_v3_browsertest.js
+    assertTrue(loadTimeData.getBoolean('pdfOcrEnabled'));
+
+    await initPage();
+    // Simulate enabling the ChromeVox.
+    page.hasScreenReader = true;
+
+    const pdfOcrToggle =
+        page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            '#crosPdfOcrToggle');
+    assertTrue(!!pdfOcrToggle);
+    await flushTasks();
+
+    webUIListenerCallback(
+        'pdf-ocr-state-changed', ScreenAiInstallStatus.NOT_DOWNLOADED);
+    assertEquals(page.i18n('pdfOcrSubtitle'), pdfOcrToggle.subLabel);
+
+    webUIListenerCallback(
+        'pdf-ocr-state-changed', ScreenAiInstallStatus.FAILED);
+    assertEquals(page.i18n('pdfOcrDownloadErrorLabel'), pdfOcrToggle.subLabel);
+
+    webUIListenerCallback(
+        'pdf-ocr-state-changed', ScreenAiInstallStatus.DOWNLOADING);
+    assertEquals(page.i18n('pdfOcrDownloadingLabel'), pdfOcrToggle.subLabel);
+
+    webUIListenerCallback('pdf-ocr-downloading-progress-changed', 50);
+    assertEquals(
+        page.i18n('pdfOcrDownloadProgressLabel', 50), pdfOcrToggle.subLabel);
+
+    webUIListenerCallback(
+        'pdf-ocr-state-changed', ScreenAiInstallStatus.DOWNLOADED);
+    assertEquals(
+        page.i18n('pdfOcrDownloadCompleteLabel'), pdfOcrToggle.subLabel);
+
+    webUIListenerCallback('pdf-ocr-state-changed', ScreenAiInstallStatus.READY);
+    assertEquals(page.i18n('pdfOcrSubtitle'), pdfOcrToggle.subLabel);
   });
 });

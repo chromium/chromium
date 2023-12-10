@@ -7,7 +7,6 @@
 #include "ash/constants/app_types.h"
 #include "ash/public/cpp/app_types_util.h"
 #include "ash/shell.h"
-#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_state_observer.h"
 #include "ash/wm/window_util.h"
@@ -21,6 +20,8 @@
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window_observer.h"
 #include "ui/base/ui_base_types.h"
+#include "ui/display/screen.h"
+#include "ui/display/tablet_state.h"
 
 namespace arc {
 
@@ -28,20 +29,20 @@ namespace {
 
 // Histogram of the delay for window maximizing operation.
 constexpr char kWindowMaximizedTimeHistogramPrefix[] =
-    "Arc.WM.WindowMaximizedDelayTime.";
+    "Arc.WM.WindowMaximizedDelayTimeV2.";
 // Histogram of the delay for window minimizing operation.
 constexpr char kWindowMinimizedTimeHistogramPrefix[] =
     "Arc.WM.WindowMinimizedDelayTime.";
 // Histogram of the delay for window closing operation.
 constexpr char kWindowClosedTimeHistogramPrefix[] =
-    "Arc.WM.WindowClosedDelayTime.";
+    "Arc.WM.WindowClosedDelayTimeV2.";
 // Histogram of the delay for window state transition when entering into tablet
 // mode.
 constexpr char kWindowEnterTabletModeTimeHistogramPrefix[] =
-    "Arc.WM.WindowEnterTabletModeDelayTime.";
+    "Arc.WM.WindowEnterTabletModeDelayTimeV2.";
 // Histogram of the delay for window state transition when exiting tablet mode.
 constexpr char kWindowExitTabletModeTimeHistogramPrefix[] =
-    "Arc.WM.WindowExitTabletModeDelayTime.";
+    "Arc.WM.WindowExitTabletModeDelayTimeV2.";
 
 constexpr char kArcHistogramName[] = "ArcApp";
 constexpr char kBrowserHistogramName[] = "Browser";
@@ -110,14 +111,14 @@ class ArcWmMetrics::WindowStateChangeObserver
   void RecordWindowStateChangeDelay(ash::WindowState* state) {
     const ash::AppType app_type =
         static_cast<ash::AppType>(window_->GetProperty(aura::client::kAppType));
-    if (ash::Shell::Get()->tablet_mode_controller()->InTabletMode()) {
+    if (display::Screen::GetScreen()->InTabletMode()) {
       // When entering tablet mode, we only collect the data of visible window.
       if (state->IsMaximized() && window_->IsVisible()) {
         base::UmaHistogramCustomTimes(
             ArcWmMetrics::GetWindowEnterTabletModeTimeHistogramName(app_type),
             window_operation_elapsed_timer_.Elapsed(),
             /*minimum=*/base::Milliseconds(1),
-            /*maximum=*/base::Seconds(2), 100);
+            /*maximum=*/base::Seconds(5), 100);
       }
     } else {
       if (state->IsMaximized()) {
@@ -125,7 +126,7 @@ class ArcWmMetrics::WindowStateChangeObserver
             ArcWmMetrics::GetWindowMaximizedTimeHistogramName(app_type),
             window_operation_elapsed_timer_.Elapsed(),
             /*minimum=*/base::Milliseconds(1),
-            /*maximum=*/base::Seconds(2), 100);
+            /*maximum=*/base::Seconds(3), 100);
       } else if (state->IsMinimized()) {
         base::UmaHistogramCustomTimes(
             ArcWmMetrics::GetWindowMinimizedTimeHistogramName(app_type),
@@ -137,7 +138,7 @@ class ArcWmMetrics::WindowStateChangeObserver
             ArcWmMetrics::GetWindowExitTabletModeTimeHistogramName(app_type),
             window_operation_elapsed_timer_.Elapsed(),
             /*minimum=*/base::Milliseconds(1),
-            /*maximum=*/base::Seconds(2), 100);
+            /*maximum=*/base::Seconds(5), 100);
       }
     }
   }
@@ -180,7 +181,7 @@ class ArcWmMetrics::WindowCloseObserver : public aura::WindowObserver {
         ArcWmMetrics::GetArcWindowClosedTimeHistogramName(),
         window_close_elapsed_timer_.Elapsed(),
         /*minimum=*/base::Milliseconds(1),
-        /*maximum=*/base::Seconds(2), 100);
+        /*maximum=*/base::Seconds(3), 100);
   }
 
   // Tracks the elapsed time from the window closing operation happens until the
@@ -195,11 +196,6 @@ class ArcWmMetrics::WindowCloseObserver : public aura::WindowObserver {
 ArcWmMetrics::ArcWmMetrics() {
   if (aura::Env::HasInstance()) {
     env_observation_.Observe(aura::Env::GetInstance());
-  }
-
-  if (ash::Shell::HasInstance()) {
-    tablet_mode_observation_.Observe(
-        ash::Shell::Get()->tablet_mode_controller());
   }
 }
 
@@ -276,7 +272,7 @@ void ArcWmMetrics::OnWindowPropertyChanged(aura::Window* window,
     return;
   }
 
-  if (ash::Shell::Get()->tablet_mode_controller()->InTabletMode()) {
+  if (display::Screen::GetScreen()->InTabletMode()) {
     return;
   }
 
@@ -330,7 +326,12 @@ void ArcWmMetrics::OnWindowDestroying(aura::Window* window) {
   }
 }
 
-void ArcWmMetrics::OnTabletModeStarting() {
+void ArcWmMetrics::OnDisplayTabletStateChanged(display::TabletState state) {
+  if (state == display::TabletState::kInTabletMode ||
+      state == display::TabletState::kInClamshellMode) {
+    return;
+  }
+
   aura::Window* top_window = ash::window_util::GetTopNonFloatedWindow();
   if (!top_window) {
     return;
@@ -338,25 +339,17 @@ void ArcWmMetrics::OnTabletModeStarting() {
 
   chromeos::WindowStateType window_state_type =
       ash::WindowState::Get(top_window)->GetStateType();
-  if (IsNormalWindowStateType(window_state_type)) {
+
+  if (state == display::TabletState::kEnteringTabletMode &&
+      IsNormalWindowStateType(window_state_type)) {
     state_change_observing_windows_.emplace(
         top_window,
         std::make_unique<WindowStateChangeObserver>(
             top_window, top_window->GetProperty(aura::client::kShowStateKey),
             base::BindOnce(&ArcWmMetrics::OnOperationCompleted,
                            base::Unretained(this), top_window)));
-  }
-}
-
-void ArcWmMetrics::OnTabletModeEnding() {
-  aura::Window* top_window = ash::window_util::GetTopNonFloatedWindow();
-  if (!top_window) {
-    return;
-  }
-
-  chromeos::WindowStateType window_state_type =
-      ash::WindowState::Get(top_window)->GetStateType();
-  if (window_state_type == chromeos::WindowStateType::kMaximized) {
+  } else if (state == display::TabletState::kExitingTabletMode &&
+             window_state_type == chromeos::WindowStateType::kMaximized) {
     exiting_tablet_mode_observing_windows_.emplace(
         top_window,
         std::make_unique<WindowStateChangeObserver>(
@@ -364,10 +357,6 @@ void ArcWmMetrics::OnTabletModeEnding() {
             base::BindOnce(&ArcWmMetrics::OnOperationCompleted,
                            base::Unretained(this), top_window)));
   }
-}
-
-void ArcWmMetrics::OnTabletControllerDestroyed() {
-  tablet_mode_observation_.Reset();
 }
 
 void ArcWmMetrics::OnOperationCompleted(aura::Window* window) {

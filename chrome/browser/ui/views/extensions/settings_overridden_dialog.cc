@@ -56,7 +56,7 @@ class SettingsOverriddenDialogDelegate : public ui::DialogModelDelegate {
     controller_->HandleDialogResult(result);
   }
   std::unique_ptr<SettingsOverriddenDialogController> controller_;
-  absl::optional<DialogResult> result_;
+  std::optional<DialogResult> result_;
 };
 
 }  // namespace

@@ -56,7 +56,7 @@ class AppMenu : public views::MenuDelegate,
 
   // views::MenuDelegate:
   const gfx::FontList* GetLabelFontList(int command_id) const override;
-  absl::optional<SkColor> GetLabelColor(int command_id) const override;
+  std::optional<SkColor> GetLabelColor(int command_id) const override;
   std::u16string GetTooltipText(int command_id,
                                 const gfx::Point& p) const override;
   bool IsTriggerableEvent(views::MenuItemView* menu,
@@ -139,10 +139,10 @@ class AppMenu : public views::MenuDelegate,
   // in |command_id_to_entry_|.
   size_t ModelIndexFromCommandId(int command_id) const;
 
-  // The views menu. Owned by |menu_runner_|.
-  raw_ptr<views::MenuItemView, DanglingUntriaged> root_ = nullptr;
-
   std::unique_ptr<views::MenuRunner> menu_runner_;
+
+  // The views menu. Owned by `menu_runner_`.
+  raw_ptr<views::MenuItemView> root_ = nullptr;
 
   // Maps from the command ID in model to the model/index pair the item came
   // from.

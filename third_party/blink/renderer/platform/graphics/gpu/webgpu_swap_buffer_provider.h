@@ -112,7 +112,7 @@ class PLATFORM_EXPORT WebGPUSwapBufferProvider
   struct SwapBuffer : WTF::RefCounted<SwapBuffer> {
     SwapBuffer(
         base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider,
-        gpu::Mailbox mailbox,
+        scoped_refptr<gpu::ClientSharedImage> shared_image,
         gpu::SyncToken creation_token,
         gfx::Size size);
     SwapBuffer(const SwapBuffer&) = delete;
@@ -120,7 +120,7 @@ class PLATFORM_EXPORT WebGPUSwapBufferProvider
     ~SwapBuffer();
 
     gfx::Size size;
-    gpu::Mailbox mailbox;
+    scoped_refptr<gpu::ClientSharedImage> shared_image;
     scoped_refptr<WebGPUMailboxTexture> mailbox_texture;
 
     // A weak ptr to the context provider so that the destructor can

@@ -39,17 +39,22 @@ public final class PasswordProtectionBroadcastReceiver extends BroadcastReceiver
         long hashedPassword = intent.getLongExtra(EXTRA_HASHED_PASSWORD, 0);
         // This should never happen. However, if it does, we should quit early.
         if (accountIdentifier.isEmpty() || salt.isEmpty() || hashedPassword == 0) {
-            Log.w(TAG,
-                    String.format(Locale.US,
+            Log.w(
+                    TAG,
+                    String.format(
+                            Locale.US,
                             "Invalid extras seen. Account: %s, Salt: %s, HashedPassword: %d",
-                            accountIdentifier, salt, hashedPassword));
+                            accountIdentifier,
+                            salt,
+                            hashedPassword));
             return;
         }
         try {
-            JSONObject entry = new JSONObject()
-                                       .put(EXTRA_ACCOUNT_IDENTIFIER, accountIdentifier)
-                                       .put(EXTRA_SALT, salt)
-                                       .put(EXTRA_HASHED_PASSWORD, hashedPassword);
+            JSONObject entry =
+                    new JSONObject()
+                            .put(EXTRA_ACCOUNT_IDENTIFIER, accountIdentifier)
+                            .put(EXTRA_SALT, salt)
+                            .put(EXTRA_HASHED_PASSWORD, hashedPassword);
             SharedPreferencesManager manager = ChromeSharedPreferences.getInstance();
             String accounts =
                     manager.readString(ChromePreferenceKeys.PASSWORD_PROTECTION_ACCOUNTS, null);
@@ -63,8 +68,8 @@ public final class PasswordProtectionBroadcastReceiver extends BroadcastReceiver
                 int indexToRemove = -1;
                 for (int i = 0; i < entries.length(); i++) {
                     if (((JSONObject) entries.get(i))
-                                    .getString(EXTRA_ACCOUNT_IDENTIFIER)
-                                    .equals(accountIdentifier)) {
+                            .getString(EXTRA_ACCOUNT_IDENTIFIER)
+                            .equals(accountIdentifier)) {
                         indexToRemove = i;
                         break;
                     }

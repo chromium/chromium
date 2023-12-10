@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/arc/net/cert_manager_impl.h"
 
+#include <optional>
 #include <string>
 
 #include "base/functional/callback.h"
@@ -18,7 +19,6 @@
 #include "net/cert/scoped_nss_types.h"
 #include "net/cert/x509_util_nss.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/boringssl/src/pki/pem.h"
 
 namespace arc {
@@ -109,16 +109,16 @@ constexpr char kUserCert[] =
     "-----END CERTIFICATE-----";
 
 class ImportDoneWaiter
-    : public base::test::TestFuture<absl::optional<std::string>,
-                                    absl::optional<int>> {
+    : public base::test::TestFuture<std::optional<std::string>,
+                                    std::optional<int>> {
  public:
   CertManager::ImportPrivateKeyAndCertCallback GetCallback() {
-    return TestFuture::GetCallback<const absl::optional<std::string>&,
-                                   const absl::optional<int>&>();
+    return TestFuture::GetCallback<const std::optional<std::string>&,
+                                   const std::optional<int>&>();
   }
 
-  absl::optional<std::string> imported_cert_id() { return Get<0>(); }
-  absl::optional<int> imported_slot_id() { return Get<1>(); }
+  std::optional<std::string> imported_cert_id() { return Get<0>(); }
+  std::optional<int> imported_slot_id() { return Get<1>(); }
 };
 
 }  // namespace

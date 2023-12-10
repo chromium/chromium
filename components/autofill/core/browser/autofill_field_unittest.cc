@@ -5,11 +5,86 @@
 #include "components/autofill/core/browser/autofill_field.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
 namespace {
+
+class AutofillFieldTest : public testing::Test {
+ public:
+  AutofillFieldTest() = default;
+
+ private:
+  test::AutofillUnitTestEnvironment autofill_test_environment_;
+};
+
+// Tests that if both autocomplete attributes and server agree it's a phone
+// field, always use server predicted type. If they disagree with autocomplete
+// says it's a phone field, always use autocomplete attribute.
+TEST_F(AutofillFieldTest, Type_ServerPredictionOfCityAndNumber_OverrideHtml) {
+  AutofillField field;
+
+  field.SetHtmlType(HtmlFieldType::kTel, HtmlFieldMode::kNone);
+
+  field.set_server_predictions(
+      {::autofill::test::CreateFieldPrediction(PHONE_HOME_CITY_AND_NUMBER)});
+  EXPECT_EQ(PHONE_HOME_CITY_AND_NUMBER, field.Type().GetStorableType());
+
+  // Overrides to another number format.
+  field.set_server_predictions(
+      {::autofill::test::CreateFieldPrediction(PHONE_HOME_NUMBER)});
+  EXPECT_EQ(PHONE_HOME_NUMBER, field.Type().GetStorableType());
+
+  // Overrides autocomplete=tel-national too.
+  field.SetHtmlType(HtmlFieldType::kTelNational, HtmlFieldMode::kNone);
+  field.set_server_predictions(
+      {::autofill::test::CreateFieldPrediction(PHONE_HOME_WHOLE_NUMBER)});
+  EXPECT_EQ(PHONE_HOME_WHOLE_NUMBER, field.Type().GetStorableType());
+
+  // If autocomplete=tel-national but server says it's not a phone field,
+  // do not override.
+  field.SetHtmlType(HtmlFieldType::kTelNational, HtmlFieldMode::kNone);
+  field.set_server_predictions({::autofill::test::CreateFieldPrediction(
+      CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR)});
+  EXPECT_EQ(PHONE_HOME_CITY_AND_NUMBER, field.Type().GetStorableType());
+
+  // If html type not specified, we still use server prediction.
+  field.SetHtmlType(HtmlFieldType::kUnspecified, HtmlFieldMode::kNone);
+  field.set_server_predictions(
+      {::autofill::test::CreateFieldPrediction(PHONE_HOME_CITY_AND_NUMBER)});
+  EXPECT_EQ(PHONE_HOME_CITY_AND_NUMBER, field.Type().GetStorableType());
+}
+
+TEST_F(AutofillFieldTest, IsFieldFillable) {
+  AutofillField field;
+  ASSERT_EQ(UNKNOWN_TYPE, field.Type().GetStorableType());
+
+  // Type is unknown.
+  EXPECT_FALSE(field.IsFieldFillable());
+
+  // Only heuristic type is set.
+  field.set_heuristic_type(GetActiveHeuristicSource(), NAME_FIRST);
+  EXPECT_TRUE(field.IsFieldFillable());
+
+  // Only server type is set.
+  field.set_heuristic_type(GetActiveHeuristicSource(), UNKNOWN_TYPE);
+  field.set_server_predictions(
+      {::autofill::test::CreateFieldPrediction(NAME_LAST)});
+  EXPECT_TRUE(field.IsFieldFillable());
+
+  // Both types set.
+  field.set_heuristic_type(GetActiveHeuristicSource(), NAME_FIRST);
+  field.set_server_predictions(
+      {::autofill::test::CreateFieldPrediction(NAME_LAST)});
+  EXPECT_TRUE(field.IsFieldFillable());
+
+  // Field has autocomplete="off" set. Since autofill was able to make a
+  // prediction, it is still considered a fillable field.
+  field.should_autocomplete = false;
+  EXPECT_TRUE(field.IsFieldFillable());
+}
 
 // Parameters for `PrecedenceOverAutocompleteTest`
 struct PrecedenceOverAutocompleteParams {
@@ -93,16 +168,6 @@ INSTANTIATE_TEST_SUITE_P(
 
         PrecedenceOverAutocompleteParams{
             .heuristic_precedence_scope =
-                features::PrecedenceOverAutocompleteScope::kAddressLine1And2,
-            .server_precedence_scope =
-                features::PrecedenceOverAutocompleteScope::kNone,
-            .html_field_type = HtmlFieldType::kUnrecognized,
-            .server_type = ADDRESS_HOME_STREET_NAME,
-            .heuristic_type = ADDRESS_HOME_HOUSE_NUMBER,
-            .expected_result = UNKNOWN_TYPE},
-
-        PrecedenceOverAutocompleteParams{
-            .heuristic_precedence_scope =
                 features::PrecedenceOverAutocompleteScope::kRecognized,
             .server_precedence_scope =
                 features::PrecedenceOverAutocompleteScope::kNone,
@@ -110,16 +175,6 @@ INSTANTIATE_TEST_SUITE_P(
             .server_type = NAME_FIRST,
             .heuristic_type = ADDRESS_HOME_HOUSE_NUMBER,
             .expected_result = ADDRESS_HOME_HOUSE_NUMBER},
-
-        PrecedenceOverAutocompleteParams{
-            .heuristic_precedence_scope =
-                features::PrecedenceOverAutocompleteScope::kRecognized,
-            .server_precedence_scope =
-                features::PrecedenceOverAutocompleteScope::kNone,
-            .html_field_type = HtmlFieldType::kUnrecognized,
-            .server_type = ADDRESS_HOME_STREET_NAME,
-            .heuristic_type = ADDRESS_HOME_HOUSE_NUMBER,
-            .expected_result = UNKNOWN_TYPE},
 
         PrecedenceOverAutocompleteParams{
             .heuristic_precedence_scope =
@@ -153,16 +208,6 @@ INSTANTIATE_TEST_SUITE_P(
 
         PrecedenceOverAutocompleteParams{
             .heuristic_precedence_scope =
-                features::PrecedenceOverAutocompleteScope::kAddressLine1And2,
-            .server_precedence_scope =
-                features::PrecedenceOverAutocompleteScope::kAddressLine1And2,
-            .html_field_type = HtmlFieldType::kUnrecognized,
-            .server_type = ADDRESS_HOME_HOUSE_NUMBER,
-            .heuristic_type = ADDRESS_HOME_STREET_NAME,
-            .expected_result = UNKNOWN_TYPE},
-
-        PrecedenceOverAutocompleteParams{
-            .heuristic_precedence_scope =
                 features::PrecedenceOverAutocompleteScope::kRecognized,
             .server_precedence_scope =
                 features::PrecedenceOverAutocompleteScope::kAddressLine1And2,
@@ -170,16 +215,6 @@ INSTANTIATE_TEST_SUITE_P(
             .server_type = ADDRESS_HOME_STREET_NAME,
             .heuristic_type = ADDRESS_HOME_HOUSE_NUMBER,
             .expected_result = ADDRESS_HOME_HOUSE_NUMBER},
-
-        PrecedenceOverAutocompleteParams{
-            .heuristic_precedence_scope =
-                features::PrecedenceOverAutocompleteScope::kRecognized,
-            .server_precedence_scope =
-                features::PrecedenceOverAutocompleteScope::kAddressLine1And2,
-            .html_field_type = HtmlFieldType::kUnrecognized,
-            .server_type = ADDRESS_HOME_HOUSE_NUMBER,
-            .heuristic_type = ADDRESS_HOME_STREET_NAME,
-            .expected_result = UNKNOWN_TYPE},
 
         PrecedenceOverAutocompleteParams{
             .heuristic_precedence_scope =
@@ -213,42 +248,12 @@ INSTANTIATE_TEST_SUITE_P(
 
         PrecedenceOverAutocompleteParams{
             .heuristic_precedence_scope =
-                features::PrecedenceOverAutocompleteScope::kRecognized,
-            .server_precedence_scope =
-                features::PrecedenceOverAutocompleteScope::kRecognized,
-            .html_field_type = HtmlFieldType::kUnrecognized,
-            .server_type = ADDRESS_HOME_HOUSE_NUMBER,
-            .heuristic_type = ADDRESS_HOME_STREET_NAME,
-            .expected_result = UNKNOWN_TYPE},
-
-        PrecedenceOverAutocompleteParams{
-            .heuristic_precedence_scope =
                 features::PrecedenceOverAutocompleteScope::kSpecified,
             .server_precedence_scope =
                 features::PrecedenceOverAutocompleteScope::kRecognized,
             .html_field_type = HtmlFieldType::kGivenName,
             .server_type = ADDRESS_HOME_STREET_NAME,
             .heuristic_type = NAME_FIRST,
-            .expected_result = ADDRESS_HOME_STREET_NAME},
-
-        PrecedenceOverAutocompleteParams{
-            .heuristic_precedence_scope =
-                features::PrecedenceOverAutocompleteScope::kSpecified,
-            .server_precedence_scope =
-                features::PrecedenceOverAutocompleteScope::kRecognized,
-            .html_field_type = HtmlFieldType::kUnrecognized,
-            .server_type = ADDRESS_HOME_HOUSE_NUMBER,
-            .heuristic_type = NAME_FIRST,
-            .expected_result = UNKNOWN_TYPE},
-
-        PrecedenceOverAutocompleteParams{
-            .heuristic_precedence_scope =
-                features::PrecedenceOverAutocompleteScope::kSpecified,
-            .server_precedence_scope =
-                features::PrecedenceOverAutocompleteScope::kSpecified,
-            .html_field_type = HtmlFieldType::kUnrecognized,
-            .server_type = ADDRESS_HOME_HOUSE_NUMBER,
-            .heuristic_type = ADDRESS_HOME_STREET_NAME,
             .expected_result = ADDRESS_HOME_STREET_NAME},
 
         PrecedenceOverAutocompleteParams{
@@ -386,6 +391,16 @@ INSTANTIATE_TEST_SUITE_P(
             .heuristic_type = ADDRESS_HOME_BETWEEN_STREETS,
             .expected_result = ADDRESS_HOME_BETWEEN_STREETS},
         AutofillLocalHeuristicsOverridesParams{
+            .html_field_type = HtmlFieldType::kUnspecified,
+            .server_type = ADDRESS_HOME_LINE1,
+            .heuristic_type = ADDRESS_HOME_BETWEEN_STREETS,
+            .expected_result = ADDRESS_HOME_BETWEEN_STREETS},
+        AutofillLocalHeuristicsOverridesParams{
+            .html_field_type = HtmlFieldType::kUnspecified,
+            .server_type = ADDRESS_HOME_LINE2,
+            .heuristic_type = ADDRESS_HOME_BETWEEN_STREETS,
+            .expected_result = ADDRESS_HOME_BETWEEN_STREETS},
+        AutofillLocalHeuristicsOverridesParams{
             .html_field_type = HtmlFieldType::kAddressLevel1,
             .server_type = ADDRESS_HOME_STREET_ADDRESS,
             .heuristic_type = ADDRESS_HOME_ADMIN_LEVEL2,
@@ -420,12 +435,6 @@ INSTANTIATE_TEST_SUITE_P(
             .server_type = ADDRESS_HOME_LINE2,
             .heuristic_type = ADDRESS_HOME_OVERFLOW,
             .expected_result = ADDRESS_HOME_OVERFLOW},
-        // Final type is unknown if the html type is not valid.
-        AutofillLocalHeuristicsOverridesParams{
-            .html_field_type = HtmlFieldType::kUnrecognized,
-            .server_type = ADDRESS_HOME_CITY,
-            .heuristic_type = ADDRESS_HOME_ADMIN_LEVEL2,
-            .expected_result = UNKNOWN_TYPE},
         // Test non-override behaviour.
         AutofillLocalHeuristicsOverridesParams{
             .html_field_type = HtmlFieldType::kStreetAddress,

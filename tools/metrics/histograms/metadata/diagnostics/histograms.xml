@@ -221,16 +221,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Diagnostics.RecoveryRun" enum="DiagnosticsRecoveryRun"
-    expires_after="M77">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <summary>
-    Count of the number of times diagnostics recovery is invoked or not, and how
-    it was invoked. A sample is added to this histogram once for each startup of
-    Chrome.
-  </summary>
-</histogram>
-
 <histogram name="Diagnostics.Test.DiskSpace" enum="DiagnosticsResult"
     expires_after="2018-08-30">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>

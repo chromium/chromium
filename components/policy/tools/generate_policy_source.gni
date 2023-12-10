@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//chrome/version.gni")
 import("//components/policy/resources/policy_templates.gni")
 
 # Generate .proto files and constants based on policy_templates.json.
@@ -46,21 +47,16 @@ template("generate_policy_source") {
         "$policy_templates_base_dir/policy_templates.json"
 
     script = "//components/policy/tools/generate_policy_source.py"
-    chrome_version_abspath = "//chrome/VERSION"
-    chrome_version_path = rebase_path(chrome_version_abspath, root_build_dir)
 
     deps = [ "//components/policy:generate_policy_templates" ]
-    inputs = [
-      chrome_version_abspath,
-      policy_templates_generated_json_path,
-    ]
+    inputs = [ policy_templates_generated_json_path ]
     outputs = [
       chrome_settings_proto_path,
       cloud_policy_proto_path,
     ]
     args = [
       # Input information.
-      "--chrome-version-file=" + chrome_version_path,
+      "--chrome-version-major=" + chrome_version_major,
       "--policy-templates-file=" +
           rebase_path(policy_templates_generated_json_path, root_build_dir),
       "--target-platform=" + target_os,

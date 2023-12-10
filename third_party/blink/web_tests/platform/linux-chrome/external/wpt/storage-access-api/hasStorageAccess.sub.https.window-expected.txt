@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+[FAIL] [cross-site-frame] document.hasStorageAccess() should not be allowed by default unless in top-level frame or same-origin iframe.
+  assert_false: Access should not be granted in secure cross-origin iframes. expected false got true
+[FAIL] [nested-cross-site-frame] document.hasStorageAccess() should not be allowed by default unless in top-level frame or same-origin iframe.
+  assert_false: Access should not be granted in secure cross-origin iframes. expected false got true
+Harness: the test ran to completion.

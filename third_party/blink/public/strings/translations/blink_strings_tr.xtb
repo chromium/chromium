@@ -30,6 +30,7 @@
 <translation id="2226276347425096477">Lütfen bu metni <ph name="MAX_CHARACTERS" /> veya daha az karakter olacak şekilde kısaltın (şu anda <ph name="CURRENT_LENGTH" /> karakter kullanıyorsunuz).</translation>
 <translation id="2247351761944213033"><ph name="WEEKNUMBER" />. hafta, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904"><ph name="NUMBER" />. parça</translation>
+<translation id="2353297238722298836">Kamera ve mikrofona izin verildi</translation>
 <translation id="2393030564806080191">On altılı renk değeri</translation>
 <translation id="2398813069815436052">iletişim kutusu açıldı.</translation>
 <translation id="245932805758469625">saniye olarak videonun kalan süresi</translation>
@@ -60,10 +61,12 @@
 <translation id="3822383571486410024">Lütfen bu metni <ph name="MIN_CHARACTERS" /> karakter veya daha fazla olacak şekilde uzatın (şu anda <ph name="CURRENT_LENGTH" /> karakter kullanıyorsunuz).</translation>
 <translation id="383465348367842624">Başında "<ph name="ATSIGN" />" bulunan kısımda "<ph name="INVALIDCHARACTER" />" simgesi bulunmamalıdır.</translation>
 <translation id="3846214748874656680">Tam ekran modundan çık</translation>
+<translation id="4031179711345676612">Mikrofona izin verildi</translation>
 <translation id="4103419683916926126">Milisaniye</translation>
 <translation id="4201051445878709314">Önceki ayı göster</translation>
 <translation id="4360991593054037559">Lütfen geçerli bir değer girin. En yakın iki geçerli değer şunlardır: <ph name="VALID_VALUE_LOW" /> ve <ph name="VALID_VALUE_HIGHER" />.</translation>
 <translation id="4522570452068850558">Ayrıntılar</translation>
+<translation id="4663373278480897665">Kameraya izin veriliyor</translation>
 <translation id="4664250907885839816">Başında "<ph name="ATSIGN" />" bulunan kısımda "<ph name="INVALIDCHARACTER" />" simgesi bulunmamalıdır.</translation>
 <translation id="4718048029184481307">Pencere içinde pencere modunda oynatılıyor</translation>
 <translation id="4748357248530471599">ekran kesimi alanını tam ekran olarak değiştirin</translation>
@@ -137,6 +140,7 @@
 <translation id="6941933287844615239">medyayı indir</translation>
 <translation id="698788488269350478">genişletildi.</translation>
 <translation id="6989848892321993519">Lütfen bu metni <ph name="MIN_CHARACTERS" /> karakter veya daha fazla olacak şekilde uzatın (şu anda 1 karakter kullanıyorsunuz).</translation>
+<translation id="7080893216867146095">Konum paylaşımına izin veriliyor</translation>
 <translation id="709897737746224366">Lütfen istenen biçimi eşleştirin.</translation>
 <translation id="7102274145889307184">geçerli konum</translation>
 <translation id="7263440858009898357">Lütfen listeden bir öğe seçin.</translation>

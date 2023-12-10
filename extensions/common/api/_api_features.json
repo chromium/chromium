@@ -466,6 +466,11 @@
       "chrome://os-settings/*"
     ]
   }],
+  "odfsConfigPrivate": {
+    "dependencies": ["permission:odfsConfigPrivate"],
+    "contexts": ["blessed_extension"],
+    "feature_flag": "ApiOdfsConfigPrivate"
+  },
   "offscreen": {
     "dependencies": ["permission:offscreen"],
     "contexts": ["blessed_extension"]
@@ -541,8 +546,7 @@
   },
   "runtime.getContexts": {
     "min_manifest_version": 3,
-    "contexts": ["blessed_extension"],
-    "feature_flag": "ApiRuntimeGetContexts"
+    "contexts": ["blessed_extension"]
   },
   "runtime.getURL": {
     "contexts": [
@@ -742,7 +746,7 @@
       "chrome://extensions/*",
       // System Web App version of File Manager.
       "chrome://file-manager/*",
-      "chrome://test/*"
+      "chrome://webui-test/*"
     ]
   }, {
     "channel": "stable",

@@ -10,14 +10,14 @@
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/tray/tri_view.h"
 #include "ash/system/tray/view_click_listener.h"
-#include "ui/views/layout/fill_layout.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/view.h"
 
 namespace ash {
 
 NetworkListHeaderView::NetworkListHeaderView() {
   TrayPopupUtils::ConfigureAsStickyHeader(this);
-  SetLayoutManager(std::make_unique<views::FillLayout>());
+  SetUseDefaultFillLayout(true);
   entry_row_ =
       AddChildView(std::make_unique<HoverHighlightView>(/*listener=*/this));
   entry_row_->SetFocusBehavior(FocusBehavior::NEVER);
@@ -30,5 +30,8 @@ void NetworkListHeaderView::OnViewClicked(views::View* sender) {
     UpdateToggleState(/*has_new_state=*/false);
   }
 }
+
+BEGIN_METADATA(NetworkListHeaderView)
+END_METADATA
 
 }  // namespace ash

@@ -145,7 +145,7 @@ class MinidumpMiscInfoWriter final : public internal::MinidumpStreamWriter {
 
 //! \brief Conversion functions from a native UTF16 C-string to a char16_t
 //!     C-string. No-op where the native UTF16 string is std::u16string.
-#if defined(WCHAR_T_IS_UTF16) || DOXYGEN
+#if defined(WCHAR_T_IS_16_BIT) || DOXYGEN
 inline const char16_t* AsU16CStr(const wchar_t* str) {
   return reinterpret_cast<const char16_t*>(str);
 }

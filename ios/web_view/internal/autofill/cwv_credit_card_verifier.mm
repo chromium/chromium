@@ -114,7 +114,7 @@ class WebViewCardUnmaskPromptView : public autofill::CardUnmaskPromptView {
         base::BindOnce(^autofill::CardUnmaskPromptView*() {
           return [weakSelf createUnmaskingView];
         }),
-        creditCard, autofill::CardUnmaskPromptOptions(absl::nullopt, reason),
+        creditCard, autofill::CardUnmaskPromptOptions(std::nullopt, reason),
         delegate);
   }
   return self;

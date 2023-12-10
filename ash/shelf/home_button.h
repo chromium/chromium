@@ -19,6 +19,7 @@
 #include "ash/shell_observer.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/views/view_targeter_delegate.h"
@@ -55,6 +56,8 @@ class ASH_EXPORT HomeButton : public ShelfControlButton,
                               public ShelfConfig::Observer,
                               public AppListModelProvider::Observer,
                               public QuickAppAccessModel::Observer {
+  METADATA_HEADER(HomeButton, ShelfControlButton)
+
  public:
   class ScopedNoClipRect {
    public:
@@ -86,8 +89,6 @@ class ASH_EXPORT HomeButton : public ShelfControlButton,
     virtual void NudgeLabelShown(HomeButton* home_button) = 0;
   };
 
-  static const char kViewClassName[];
-
   explicit HomeButton(Shelf* shelf);
 
   HomeButton(const HomeButton&) = delete;
@@ -101,7 +102,6 @@ class ASH_EXPORT HomeButton : public ShelfControlButton,
 
   // views::Button:
   void OnGestureEvent(ui::GestureEvent* event) override;
-  const char* GetClassName() const override;
   std::u16string GetTooltipText(const gfx::Point& p) const override;
 
   // ShelfButtonDelegate:

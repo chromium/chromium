@@ -33,20 +33,20 @@ class VideoAcceleratorUtil {
     private static final String TAG = "VAUtil";
 
     private static final String[] SUPPORTED_ENCODER_TYPES = {
-            MediaCodecUtil.MimeTypes.VIDEO_VP8,
-            MediaCodecUtil.MimeTypes.VIDEO_VP9,
-            MediaCodecUtil.MimeTypes.VIDEO_AV1,
-            MediaCodecUtil.MimeTypes.VIDEO_H264,
-            MediaCodecUtil.MimeTypes.VIDEO_HEVC,
+        MediaCodecUtil.MimeTypes.VIDEO_VP8,
+        MediaCodecUtil.MimeTypes.VIDEO_VP9,
+        MediaCodecUtil.MimeTypes.VIDEO_AV1,
+        MediaCodecUtil.MimeTypes.VIDEO_H264,
+        MediaCodecUtil.MimeTypes.VIDEO_HEVC,
     };
 
     private static final String[] SUPPORTED_DECODER_TYPES = {
-            MediaCodecUtil.MimeTypes.VIDEO_VP8,
-            MediaCodecUtil.MimeTypes.VIDEO_VP9,
-            MediaCodecUtil.MimeTypes.VIDEO_AV1,
-            MediaCodecUtil.MimeTypes.VIDEO_H264,
-            MediaCodecUtil.MimeTypes.VIDEO_HEVC,
-            MediaCodecUtil.MimeTypes.VIDEO_DV,
+        MediaCodecUtil.MimeTypes.VIDEO_VP8,
+        MediaCodecUtil.MimeTypes.VIDEO_VP9,
+        MediaCodecUtil.MimeTypes.VIDEO_AV1,
+        MediaCodecUtil.MimeTypes.VIDEO_H264,
+        MediaCodecUtil.MimeTypes.VIDEO_HEVC,
+        MediaCodecUtil.MimeTypes.VIDEO_DV,
     };
 
     private static class SupportedProfileAdapter {
@@ -210,10 +210,12 @@ class VideoAcceleratorUtil {
 
                 MediaCodecInfo.EncoderCapabilities encoderCapabilities =
                         capabilities.getEncoderCapabilities();
-                boolean supportsCbr = encoderCapabilities.isBitrateModeSupported(
-                        MediaCodecInfo.EncoderCapabilities.BITRATE_MODE_CBR);
-                boolean supportsVbr = encoderCapabilities.isBitrateModeSupported(
-                        MediaCodecInfo.EncoderCapabilities.BITRATE_MODE_VBR);
+                boolean supportsCbr =
+                        encoderCapabilities.isBitrateModeSupported(
+                                MediaCodecInfo.EncoderCapabilities.BITRATE_MODE_CBR);
+                boolean supportsVbr =
+                        encoderCapabilities.isBitrateModeSupported(
+                                MediaCodecInfo.EncoderCapabilities.BITRATE_MODE_VBR);
 
                 MediaCodecInfo.VideoCapabilities videoCapabilities =
                         capabilities.getVideoCapabilities();
@@ -225,8 +227,8 @@ class VideoAcceleratorUtil {
                         videoCapabilities.getSupportedHeightsFor(supportedWidths.getUpper());
                 boolean needsPortraitEntry =
                         !supportedHeights.getUpper().equals(supportedWidths.getUpper())
-                        && videoCapabilities.isSizeSupported(
-                                supportedHeights.getUpper(), supportedWidths.getUpper());
+                                && videoCapabilities.isSizeSupported(
+                                        supportedHeights.getUpper(), supportedWidths.getUpper());
 
                 // The frame rate entry in the supported profile is independent of the resolution
                 // range, so we don't query based on the maximum resolution.
@@ -333,7 +335,7 @@ class VideoAcceleratorUtil {
 
                 // Skip tunnel decoders because it's not supported by the media pipeline.
                 if (capabilities.isFeatureRequired(
-                            MediaCodecInfo.CodecCapabilities.FEATURE_TunneledPlayback)) {
+                        MediaCodecInfo.CodecCapabilities.FEATURE_TunneledPlayback)) {
                     continue;
                 }
 
@@ -347,8 +349,8 @@ class VideoAcceleratorUtil {
                         videoCapabilities.getSupportedHeightsFor(supportedWidths.getUpper());
                 boolean needsPortraitEntry =
                         !supportedHeights.getUpper().equals(supportedWidths.getUpper())
-                        && videoCapabilities.isSizeSupported(
-                                supportedHeights.getUpper(), supportedWidths.getUpper());
+                                && videoCapabilities.isSizeSupported(
+                                        supportedHeights.getUpper(), supportedWidths.getUpper());
 
                 // See video_codecs.h
                 final int kNoVideoCodecLevel = 0;
@@ -359,27 +361,35 @@ class VideoAcceleratorUtil {
                 int codec = CodecProfileLevelList.getCodecFromMime(type);
                 for (CodecProfileLevel cpl : capabilities.profileLevels) {
                     try {
-                        int profile = CodecProfileLevelList.mediaCodecProfileToChromiumMediaProfile(
-                                codec, cpl.profile);
+                        int profile =
+                                CodecProfileLevelList.mediaCodecProfileToChromiumMediaProfile(
+                                        codec, cpl.profile);
 
                         // Some devices don't provide valid level information, zero means
                         // no level.
                         int level = kNoVideoCodecLevel;
                         try {
-                            level = CodecProfileLevelList.mediaCodecLevelToChromiumMediaLevel(
-                                    codec, cpl.level);
+                            level =
+                                    CodecProfileLevelList.mediaCodecLevelToChromiumMediaLevel(
+                                            codec, cpl.level);
                         } catch (RuntimeException e) {
                             // This may mean mediaCodecLevelToChromiumMediaLevel() needs updating,
                             // but may also just mean the device has invalid levels.
-                            Log.w(TAG,
-                                    "Unknown level: " + cpl.level + " for profile " + cpl.profile
-                                            + " of codec " + type);
+                            Log.w(
+                                    TAG,
+                                    "Unknown level: "
+                                            + cpl.level
+                                            + " for profile "
+                                            + cpl.profile
+                                            + " of codec "
+                                            + type);
                         }
 
                         // We use kNoVideoCodecLevel -1 here so level == kNoVideoCodecLevel adds a
                         // supportedProfileLevels entry.
-                        int supportedLevel = supportedProfileLevels.getOrDefault(
-                                profile, kNoVideoCodecLevel - 1);
+                        int supportedLevel =
+                                supportedProfileLevels.getOrDefault(
+                                        profile, kNoVideoCodecLevel - 1);
                         if (level > supportedLevel) {
                             supportedProfileLevels.put(profile, level);
                         }
@@ -398,8 +408,10 @@ class VideoAcceleratorUtil {
                 // larger than or equal to the requested level. So here we the 'no level'
                 // sentinel value, if Android doesn't list required levels.
                 if (supportedProfileLevels.isEmpty()) {
-                    Log.d(TAG,
-                            "CodecCapabilities.profileLevels is missing for codec " + type
+                    Log.d(
+                            TAG,
+                            "CodecCapabilities.profileLevels is missing for codec "
+                                    + type
                                     + ". Assuming default support.");
                     switch (codec) {
                         case VideoCodec.VP8:
@@ -428,17 +440,20 @@ class VideoAcceleratorUtil {
                 }
 
                 // Prior to Oreo, high profile support wasn't advertised properly.
-                if (codec == VideoCodec.H264 && Build.VERSION.SDK_INT < Build.VERSION_CODES.O
+                if (codec == VideoCodec.H264
+                        && Build.VERSION.SDK_INT < Build.VERSION_CODES.O
                         && hasHighProfileSupport(info.getName())) {
                     supportedProfileLevels.put(
                             VideoCodecProfile.H264PROFILE_HIGH, kNoVideoCodecLevel);
                 }
 
                 boolean isSoftwareCodec = MediaCodecUtil.isSoftwareCodec(info);
-                boolean supportsSecurePlayback = capabilities.isFeatureSupported(
-                        MediaCodecInfo.CodecCapabilities.FEATURE_SecurePlayback);
-                boolean requiresSecurePlayback = capabilities.isFeatureRequired(
-                        MediaCodecInfo.CodecCapabilities.FEATURE_SecurePlayback);
+                boolean supportsSecurePlayback =
+                        capabilities.isFeatureSupported(
+                                MediaCodecInfo.CodecCapabilities.FEATURE_SecurePlayback);
+                boolean requiresSecurePlayback =
+                        capabilities.isFeatureRequired(
+                                MediaCodecInfo.CodecCapabilities.FEATURE_SecurePlayback);
                 for (Map.Entry<Integer, Integer> profileLevel : supportedProfileLevels.entrySet()) {
                     SupportedProfileAdapter profile = new SupportedProfileAdapter();
                     profile.profile = profileLevel.getKey();
@@ -453,13 +468,28 @@ class VideoAcceleratorUtil {
                     profile.requiresSecurePlayback = requiresSecurePlayback;
                     profiles.add(profile);
 
-                    Log.d(TAG,
-                            "Support: name=" + info.getName() + ", profile=" + profile.profile
-                                    + ", level=" + profile.level + ", min=" + profile.minWidth + "x"
-                                    + profile.minHeight + ", max=" + profile.maxWidth + "x"
-                                    + profile.maxHeight + ", is_sw=" + profile.isSoftwareCodec
-                                    + ", supports_secure=" + profile.supportsSecurePlayback
-                                    + ", requires_secure=" + profile.requiresSecurePlayback);
+                    Log.d(
+                            TAG,
+                            "Support: name="
+                                    + info.getName()
+                                    + ", profile="
+                                    + profile.profile
+                                    + ", level="
+                                    + profile.level
+                                    + ", min="
+                                    + profile.minWidth
+                                    + "x"
+                                    + profile.minHeight
+                                    + ", max="
+                                    + profile.maxWidth
+                                    + "x"
+                                    + profile.maxHeight
+                                    + ", is_sw="
+                                    + profile.isSoftwareCodec
+                                    + ", supports_secure="
+                                    + profile.supportsSecurePlayback
+                                    + ", requires_secure="
+                                    + profile.requiresSecurePlayback);
 
                     // Invert min/max height/width for a portrait mode entry if needed.
                     if (needsPortraitEntry) {

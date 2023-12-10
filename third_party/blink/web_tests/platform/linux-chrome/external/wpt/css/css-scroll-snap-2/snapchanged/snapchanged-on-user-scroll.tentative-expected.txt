@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] snapchanged event fires after snap target changes on touch scroll
+  promise_test: Unhandled rejection with value: "error: Action action_sequence failed"
+[FAIL] snapchanged event fires after snap target changes on scrollbar drag
+  promise_test: Unhandled rejection with value: "error: Action action_sequence failed"
+Harness: the test ran to completion.
+

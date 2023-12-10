@@ -1,0 +1,5 @@
+WebView textSize:16.00 style:0 bundle:[display="", htmlTag="#document"]
+++View textSize:16.00 style:0 bundle:[display="block", htmlTag="div"]
+++++TextView text:"Unfocusable div" textSize:16.00 style:0 bundle:[display="", htmlTag=""]
+++View textSize:16.00 style:0 bundle:[display="block", htmlTag="div", tabindex="0"]
+++++TextView text:"Focusable div" textSize:16.00 style:0 bundle:[display="", htmlTag=""]

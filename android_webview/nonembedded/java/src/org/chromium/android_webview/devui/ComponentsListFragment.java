@@ -91,7 +91,9 @@ public class ComponentsListFragment extends DevUiBaseFragment {
         mOnDemandUpdate = true;
         Switch onDemandUpdateToggle = (Switch) view.findViewById(R.id.on_demand_update);
         onDemandUpdateToggle.setOnCheckedChangeListener(
-                (buttonView, isChecked) -> { mOnDemandUpdate = isChecked; });
+                (buttonView, isChecked) -> {
+                    mOnDemandUpdate = isChecked;
+                });
     }
 
     /**
@@ -131,43 +133,52 @@ public class ComponentsListFragment extends DevUiBaseFragment {
      * data is loaded.
      */
     public void updateComponentInfoList(Boolean showToast) {
-        AsyncTask<ArrayList<ComponentInfo>> asyncTask = new AsyncTask<ArrayList<ComponentInfo>>() {
-            @Override
-            @WorkerThread
-            protected ArrayList<ComponentInfo> doInBackground() {
-                ComponentsInfoLoader componentInfoLoader = new ComponentsInfoLoader(new File(
-                        ComponentsProviderPathUtil.getComponentUpdateServiceDirectoryPath()));
-                ArrayList<ComponentInfo> retrievedComponentInfoList =
-                        componentInfoLoader.getComponentsInfo();
+        AsyncTask<ArrayList<ComponentInfo>> asyncTask =
+                new AsyncTask<ArrayList<ComponentInfo>>() {
+                    @Override
+                    @WorkerThread
+                    protected ArrayList<ComponentInfo> doInBackground() {
+                        ComponentsInfoLoader componentInfoLoader =
+                                new ComponentsInfoLoader(
+                                        new File(
+                                                ComponentsProviderPathUtil
+                                                        .getComponentUpdateServiceDirectoryPath()));
+                        ArrayList<ComponentInfo> retrievedComponentInfoList =
+                                componentInfoLoader.getComponentsInfo();
 
-                return retrievedComponentInfoList;
-            }
-
-            @Override
-            protected void onPostExecute(ArrayList<ComponentInfo> retrievedComponentInfoList) {
-                mComponentInfoListAdapter.clear();
-                mComponentInfoListAdapter.addAll(retrievedComponentInfoList);
-                mComponentsSummaryView.setText(String.format(
-                        Locale.US, "Components (%d)", retrievedComponentInfoList.size()));
-
-                // show toast only if the user is viewing current fragment
-                if (showToast && ComponentsListFragment.this.isVisible()) {
-                    // show toast only if it is not already showing, prevent toast spam
-                    if (mUpdatedToast.getView() != null
-                            && mUpdatedToast.getView().getWindowVisibility() != View.VISIBLE) {
-                        mUpdatedToast.show();
+                        return retrievedComponentInfoList;
                     }
-                }
 
-                if (sComponentInfoLoadedListener != null) sComponentInfoLoadedListener.run();
-            }
-        };
+                    @Override
+                    protected void onPostExecute(
+                            ArrayList<ComponentInfo> retrievedComponentInfoList) {
+                        mComponentInfoListAdapter.clear();
+                        mComponentInfoListAdapter.addAll(retrievedComponentInfoList);
+                        mComponentsSummaryView.setText(
+                                String.format(
+                                        Locale.US,
+                                        "Components (%d)",
+                                        retrievedComponentInfoList.size()));
+
+                        // show toast only if the user is viewing current fragment
+                        if (showToast && ComponentsListFragment.this.isVisible()) {
+                            // show toast only if it is not already showing, prevent toast spam
+                            if (mUpdatedToast.getView() != null
+                                    && mUpdatedToast.getView().getWindowVisibility()
+                                            != View.VISIBLE) {
+                                mUpdatedToast.show();
+                            }
+                        }
+
+                        if (sComponentInfoLoadedListener != null) {
+                            sComponentInfoLoadedListener.run();
+                        }
+                    }
+                };
         asyncTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
-    /**
-     * Notifies the caller when all ComponentInfo is reloaded in the ListView.
-     */
+    /** Notifies the caller when all ComponentInfo is reloaded in the ListView. */
     public static void setComponentInfoLoadedListenerForTesting(@Nullable Runnable listener) {
         ThreadUtils.assertOnUiThread();
         sComponentInfoLoadedListener = listener;
@@ -189,12 +200,14 @@ public class ComponentsListFragment extends DevUiBaseFragment {
             MainActivity.logMenuSelection(MainActivity.MenuChoice.COMPONENTS_UPDATE);
             Intent intent = new Intent();
             intent.setClassName(mContext.getPackageName(), sComponentUpdateServiceName);
-            intent.putExtra(SERVICE_FINISH_CALLBACK, new ResultReceiver(null) {
-                @Override
-                public void onReceiveResult(int resultCode, Bundle resultData) {
-                    updateComponentInfoList(/* showToast= */ true);
-                }
-            });
+            intent.putExtra(
+                    SERVICE_FINISH_CALLBACK,
+                    new ResultReceiver(null) {
+                        @Override
+                        public void onReceiveResult(int resultCode, Bundle resultData) {
+                            updateComponentInfoList(/* showToast= */ true);
+                        }
+                    });
             intent.putExtra(ON_DEMAND_UPDATE_REQUEST, mOnDemandUpdate);
             // show toast only if the user is viewing current fragment
             if (ComponentsListFragment.this.isVisible()) {

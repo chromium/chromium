@@ -37,7 +37,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="interstitial.CloseReason" enum="InterstitialCloseReason"
-    expires_after="2024-03-10">
+    expires_after="2024-05-12">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -49,7 +49,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="interstitial.enterprise_block.decision"
-    enum="SecurityInterstitialDecision" expires_after="2024-03-24">
+    enum="SecurityInterstitialDecision" expires_after="2024-05-26">
   <owner>domfc@chromium.org</owner>
   <owner>dpr-eng@google.com</owner>
   <summary>
@@ -69,7 +69,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="interstitial.enterprise_block.interaction"
-    enum="SecurityInterstitialInteraction" expires_after="2024-03-24">
+    enum="SecurityInterstitialInteraction" expires_after="2024-05-26">
   <owner>domfc@chromium.org</owner>
   <owner>dpr-eng@google.com</owner>
   <summary>
@@ -249,7 +249,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TypedNavigationUpgradeThrottle.Event"
-    enum="TypedNavigationUpgradeThrottleEvent" expires_after="2024-03-17">
+    enum="TypedNavigationUpgradeThrottleEvent" expires_after="2024-05-19">
   <owner>meacer@chromium.org</owner>
   <owner>trusty-transport@chromium.org</owner>
   <summary>

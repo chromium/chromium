@@ -45,11 +45,11 @@ VirtualCardEnrollmentProcessState::~VirtualCardEnrollmentProcessState() =
 
 VirtualCardEnrollmentManager::VirtualCardEnrollmentManager(
     PersonalDataManager* personal_data_manager,
-    payments::PaymentsClient* payments_client,
+    payments::PaymentsNetworkInterface* payments_network_interface,
     AutofillClient* autofill_client)
     : autofill_client_(autofill_client),
       personal_data_manager_(personal_data_manager),
-      payments_client_(payments_client) {
+      payments_network_interface_(payments_network_interface) {
   // |autofill_client_| does not exist on Clank settings page where this flow
   // can also be triggered.
   if (base::FeatureList::IsEnabled(
@@ -66,8 +66,8 @@ VirtualCardEnrollmentManager::~VirtualCardEnrollmentManager() = default;
 void VirtualCardEnrollmentManager::InitVirtualCardEnroll(
     const CreditCard& credit_card,
     VirtualCardEnrollmentSource virtual_card_enrollment_source,
-    absl::optional<
-        payments::PaymentsClient::GetDetailsForEnrollmentResponseDetails>
+    absl::optional<payments::PaymentsNetworkInterface::
+                       GetDetailsForEnrollmentResponseDetails>
         get_details_for_enrollment_response_details,
     PrefService* user_prefs,
     RiskAssessmentFunction risk_assessment_function,
@@ -129,7 +129,7 @@ void VirtualCardEnrollmentManager::Enroll(
   LogUpdateVirtualCardEnrollmentRequestAttempt(
       state_.virtual_card_enrollment_fields.virtual_card_enrollment_source,
       VirtualCardEnrollmentRequestType::kEnroll);
-  payments::PaymentsClient::UpdateVirtualCardEnrollmentRequestDetails
+  payments::PaymentsNetworkInterface::UpdateVirtualCardEnrollmentRequestDetails
       request_details;
   request_details.virtual_card_enrollment_source =
       state_.virtual_card_enrollment_fields.virtual_card_enrollment_source;
@@ -144,7 +144,7 @@ void VirtualCardEnrollmentManager::Enroll(
   virtual_card_enrollment_update_response_callback_ =
       std::move(virtual_card_enrollment_update_response_callback);
 
-  payments_client_->UpdateVirtualCardEnrollment(
+  payments_network_interface_->UpdateVirtualCardEnrollment(
       request_details,
       base::BindOnce(&VirtualCardEnrollmentManager::
                          OnDidGetUpdateVirtualCardEnrollmentResponse,
@@ -165,7 +165,7 @@ void VirtualCardEnrollmentManager::Unenroll(
       VirtualCardEnrollmentSource::kSettingsPage,
       VirtualCardEnrollmentRequestType::kUnenroll);
 
-  payments::PaymentsClient::UpdateVirtualCardEnrollmentRequestDetails
+  payments::PaymentsNetworkInterface::UpdateVirtualCardEnrollmentRequestDetails
       request_details;
   state_.virtual_card_enrollment_fields.virtual_card_enrollment_source =
       VirtualCardEnrollmentSource::kSettingsPage;
@@ -183,7 +183,7 @@ void VirtualCardEnrollmentManager::Unenroll(
   virtual_card_enrollment_update_response_callback_ =
       std::move(virtual_card_enrollment_update_response_callback);
 
-  payments_client_->UpdateVirtualCardEnrollment(
+  payments_network_interface_->UpdateVirtualCardEnrollment(
       request_details,
       base::BindOnce(&VirtualCardEnrollmentManager::
                          OnDidGetUpdateVirtualCardEnrollmentResponse,
@@ -294,7 +294,7 @@ void VirtualCardEnrollmentManager::OnDidGetUpdateVirtualCardEnrollmentResponse(
 }
 
 void VirtualCardEnrollmentManager::Reset() {
-  payments_client_->CancelRequest();
+  payments_network_interface_->CancelRequest();
   weak_ptr_factory_.InvalidateWeakPtrs();
   state_ = VirtualCardEnrollmentProcessState();
   avatar_animation_complete_ = false;
@@ -395,7 +395,7 @@ void VirtualCardEnrollmentManager::OnRiskDataLoadedForVirtualCard(
 }
 
 void VirtualCardEnrollmentManager::GetDetailsForEnroll() {
-  payments::PaymentsClient::GetDetailsForEnrollmentRequestDetails
+  payments::PaymentsNetworkInterface::GetDetailsForEnrollmentRequestDetails
       request_details;
   request_details.app_locale = personal_data_manager_->app_locale();
   request_details.risk_data = state_.risk_data.value_or("");
@@ -408,7 +408,7 @@ void VirtualCardEnrollmentManager::GetDetailsForEnroll() {
 
   get_details_for_enrollment_request_sent_timestamp_ = AutofillClock::Now();
 
-  payments_client_->GetVirtualCardEnrollmentDetails(
+  payments_network_interface_->GetVirtualCardEnrollmentDetails(
       request_details,
       base::BindOnce(
           &VirtualCardEnrollmentManager::OnDidGetDetailsForEnrollResponse,
@@ -419,8 +419,8 @@ void VirtualCardEnrollmentManager::GetDetailsForEnroll() {
 
 void VirtualCardEnrollmentManager::OnDidGetDetailsForEnrollResponse(
     AutofillClient::PaymentsRpcResult result,
-    const payments::PaymentsClient::GetDetailsForEnrollmentResponseDetails&
-        response) {
+    const payments::PaymentsNetworkInterface::
+        GetDetailsForEnrollmentResponseDetails& response) {
   if (get_details_for_enrollment_request_sent_timestamp_.has_value()) {
     LogGetDetailsForEnrollmentRequestLatency(
         state_.virtual_card_enrollment_fields.virtual_card_enrollment_source,
@@ -468,8 +468,8 @@ void VirtualCardEnrollmentManager::OnDidGetDetailsForEnrollResponse(
 }
 
 void VirtualCardEnrollmentManager::SetGetDetailsForEnrollmentResponseDetails(
-    const payments::PaymentsClient::GetDetailsForEnrollmentResponseDetails&
-        response) {
+    const payments::PaymentsNetworkInterface::
+        GetDetailsForEnrollmentResponseDetails& response) {
   enroll_response_details_received_ = true;
   state_.virtual_card_enrollment_fields.google_legal_message =
       std::move(response.google_legal_message);
@@ -551,8 +551,9 @@ void VirtualCardEnrollmentManager::SetInitialVirtualCardEnrollFields(
 
 bool VirtualCardEnrollmentManager::
     IsValidGetDetailsForEnrollmentResponseDetails(
-        const payments::PaymentsClient::GetDetailsForEnrollmentResponseDetails&
-            get_details_for_enrollment_response_details) {
+        const payments::PaymentsNetworkInterface::
+            GetDetailsForEnrollmentResponseDetails&
+                get_details_for_enrollment_response_details) {
   if (get_details_for_enrollment_response_details.google_legal_message.empty())
     return false;
 

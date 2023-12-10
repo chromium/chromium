@@ -122,8 +122,9 @@ class MEDIA_GPU_EXPORT V4L2StatefulVideoDecoder : public VideoDecoderMixin {
   bool TryAndEnqueueOUTPUTQueueBuffers();
 
   // Prints a VLOG with the state of |OUTPUT_queue| and |CAPTURE_queue_| for
-  // debugging, preceded with |from_here|s function name.
-  void PrintOutQueueStatesForVLOG(const base::Location& from_here);
+  // debugging, preceded with |from_here|s function name. Also TRACEs the
+  // queues' state.
+  void PrintAndTraceQueueStates(const base::Location& from_here);
 
   // Returns true if this class has successfully Initialize()d.
   bool IsInitialized() const;

@@ -8,6 +8,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/carrier_lock/common.h"
+#include "chromeos/ash/components/network/network_3gpp_handler.h"
 #include "chromeos/ash/components/network/network_state_handler_observer.h"
 #include "components/gcm_driver/gcm_driver.h"
 #include "components/session_manager/core/session_manager_observer.h"
@@ -95,10 +96,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CARRIER_LOCK) CarrierLockManager
   static void RegisterLocalPrefs(PrefRegistrySimple*);
 
   // Return current status of modem lock configuration
-  ModemLockStatus GetModemLockStatus();
-
- private:
-  friend class CarrierLockManagerTest;
+  static ModemLockStatus GetModemLockStatus();
 
   static std::unique_ptr<CarrierLockManager> CreateForTesting(
       PrefService*,
@@ -106,6 +104,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CARRIER_LOCK) CarrierLockManager
       std::unique_ptr<FcmTopicSubscriber>,
       std::unique_ptr<PsmClaimVerifier>,
       std::unique_ptr<ProvisioningConfigFetcher>);
+
+ private:
+  friend class CarrierLockManagerTest;
 
   // ash::NetworkStateHandlerObserver:
   void DefaultNetworkChanged(const NetworkState*) override;

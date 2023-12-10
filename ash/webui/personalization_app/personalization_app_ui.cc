@@ -337,7 +337,15 @@ void AddStrings(content::WebUIDataSource* source) {
       {"timeOfDayBannerDescriptionNoScreensaver",
        IDS_PERSONALIZATION_APP_TIME_OF_DAY_BANNER_DESCRIPTION_NO_SCREENSAVER},
       {"timeOfDayWallpaperCollectionSublabel",
-       IDS_PERSONALIZATION_APP_TIME_OF_DAY_WALLPAPER_COLLECTION_SUBLABEL}};
+       IDS_PERSONALIZATION_APP_TIME_OF_DAY_WALLPAPER_COLLECTION_SUBLABEL},
+      {"timeOfDayWallpaperDialogTitle",
+       IDS_PERSONALIZATION_APP_TIME_OF_DAY_WALLPAPER_DIALOG_TITLE},
+      {"timeOfDayWallpaperDialogContent",
+       IDS_PERSONALIZATION_APP_TIME_OF_DAY_WALLPAPER_DIALOG_CONTENT},
+      {"timeOfDayWallpaperDialogBackButton",
+       IDS_PERSONALIZATION_APP_TIME_OF_DAY_WALLPAPER_DIALOG_BACK_BUTTON},
+      {"timeOfDayWallpaperDialogConfirmButton",
+       IDS_PERSONALIZATION_APP_TIME_OF_DAY_WALLPAPER_DIALOG_CONFIRM_BUTTON}};
 
   source->AddLocalizedStrings(kLocalizedStrings);
 
@@ -418,8 +426,7 @@ PersonalizationAppUI::PersonalizationAppUI(
 
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ScriptSrc,
-      "script-src chrome://resources chrome://test chrome://webui-test "
-      "'self';");
+      "script-src chrome://resources chrome://webui-test 'self';");
 
   ash::EnableTrustedTypesCSP(source);
 
@@ -505,6 +512,9 @@ void PersonalizationAppUI::AddBooleans(content::WebUIDataSource* source) {
 
   source->AddBoolean("isTimeOfDayWallpaperEnabled",
                      features::IsTimeOfDayWallpaperEnabled());
+
+  source->AddBoolean("isTimeOfDayWallpaperForcedAutoScheduleEnabled",
+                     features::IsTimeOfDayWallpaperForcedAutoScheduleEnabled());
 
   source->AddBoolean(
       "isSeaPenEnabled",

@@ -267,7 +267,14 @@ IN_PROC_BROWSER_TEST_F(ScriptingAPITest,
 // Test that if an extension with persistent scripts is quickly unloaded while
 // these scripts are being fetched, requests that wait on that extension's
 // script load will be unblocked. Regression for crbug.com/1250575
-IN_PROC_BROWSER_TEST_F(ScriptingAPITest, RapidLoadUnload) {
+// TODO(crbug.com/1484659): Disabled on ASAN due to leak caused by renderer gin
+// objects which are intended to be leaked.
+#if defined(ADDRESS_SANITIZER)
+#define MAYBE_RapidLoadUnload DISABLED_RapidLoadUnload
+#else
+#define MAYBE_RapidLoadUnload RapidLoadUnload
+#endif
+IN_PROC_BROWSER_TEST_F(ScriptingAPITest, MAYBE_RapidLoadUnload) {
   ResultCatcher result_catcher;
   const Extension* extension = LoadExtension(
       test_data_dir_.AppendASCII("scripting/register_one_script"));

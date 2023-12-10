@@ -2,19 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/accessibility/live_caption/live_caption_speech_recognition_host.h"
+#include "chrome/browser/accessibility/live_caption/live_caption_speech_recognition_host_browsertest.h"
 
 #include <string>
 #include <vector>
 
-#include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/accessibility/live_caption/live_caption_controller_factory.h"
+#include "chrome/browser/accessibility/live_caption/live_caption_speech_recognition_host.h"
 #include "chrome/browser/accessibility/live_caption/live_caption_test_util.h"
 #include "chrome/browser/accessibility/live_translate_controller_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/live_caption/caption_bubble_controller.h"
 #include "components/live_caption/live_caption_controller.h"
@@ -24,164 +22,144 @@
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/test/browser_test.h"
+#include "media/mojo/mojom/speech_recognition.mojom.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/constants/ash_features.h"
-#endif
-
 namespace {
-// A WebContentsObserver that allows waiting for some media to start or stop
-// playing fullscreen.
-class FullscreenEventsWaiter : public content::WebContentsObserver {
- public:
-  explicit FullscreenEventsWaiter(content::WebContents* web_contents)
-      : WebContentsObserver(web_contents) {}
-  FullscreenEventsWaiter(const FullscreenEventsWaiter& rhs) = delete;
-  FullscreenEventsWaiter& operator=(const FullscreenEventsWaiter& rhs) = delete;
-  ~FullscreenEventsWaiter() override = default;
+FullscreenEventsWaiter::FullscreenEventsWaiter(
+    content::WebContents* web_contents)
+    : WebContentsObserver(web_contents) {}
 
-  void MediaEffectivelyFullscreenChanged(bool value) override {
-    if (run_loop_)
-      run_loop_->Quit();
+FullscreenEventsWaiter::~FullscreenEventsWaiter() = default;
+
+void FullscreenEventsWaiter::MediaEffectivelyFullscreenChanged(bool value) {
+  if (run_loop_) {
+    run_loop_->Quit();
   }
+}
 
-  // Wait for the current media playing fullscreen mode to be equal to
-  // |expected_media_fullscreen_mode|.
-  void Wait() {
-    run_loop_ = std::make_unique<base::RunLoop>();
-    run_loop_->Run();
-  }
-
- private:
-  std::unique_ptr<base::RunLoop> run_loop_;
-};
+void FullscreenEventsWaiter::Wait() {
+  run_loop_ = std::make_unique<base::RunLoop>();
+  run_loop_->Run();
+}
 }  // namespace
 
 namespace captions {
+MockLiveTranslateController::MockLiveTranslateController(
+    PrefService* profile_prefs,
+    content::BrowserContext* browser_context)
+    : LiveTranslateController(profile_prefs, browser_context) {}
 
-class MockLiveTranslateController : public LiveTranslateController {
- public:
-  MockLiveTranslateController(PrefService* profile_prefs,
-                              content::BrowserContext* browser_context)
-      : LiveTranslateController(profile_prefs, browser_context) {}
+MockLiveTranslateController::~MockLiveTranslateController() = default;
 
-  void GetTranslation(const std::string& result,
-                      std::string source_language,
-                      std::string target_language,
-                      OnTranslateEventCallback callback) override {
-    translation_requests_.push_back(result);
-    std::move(callback).Run(result);
-  }
+void MockLiveTranslateController::GetTranslation(
+    const std::string& result,
+    std::string source_language,
+    std::string target_language,
+    OnTranslateEventCallback callback) {
+  translation_requests_.push_back(result);
+  std::move(callback).Run(result);
+}
 
-  // Returns a collection of strings passed into `GetTranslation()`.
-  std::vector<std::string> GetTranslationRequests() {
-    return translation_requests_;
-  }
+std::vector<std::string> MockLiveTranslateController::GetTranslationRequests() {
+  return translation_requests_;
+}
 
- private:
-  std::vector<std::string> translation_requests_;
-};
+LiveCaptionSpeechRecognitionHostTest::LiveCaptionSpeechRecognitionHostTest() =
+    default;
+LiveCaptionSpeechRecognitionHostTest::~LiveCaptionSpeechRecognitionHostTest() =
+    default;
 
-class LiveCaptionSpeechRecognitionHostTest : public LiveCaptionBrowserTest {
- public:
-  LiveCaptionSpeechRecognitionHostTest() = default;
-  ~LiveCaptionSpeechRecognitionHostTest() override = default;
-  LiveCaptionSpeechRecognitionHostTest(
-      const LiveCaptionSpeechRecognitionHostTest&) = delete;
-  LiveCaptionSpeechRecognitionHostTest& operator=(
-      const LiveCaptionSpeechRecognitionHostTest&) = delete;
+std::unique_ptr<KeyedService>
+LiveCaptionSpeechRecognitionHostTest::SetLiveTranslateController(
+    content::BrowserContext* context) {
+  return std::make_unique<testing::NiceMock<MockLiveTranslateController>>(
+      browser()->profile()->GetPrefs(), browser()->profile());
+}
 
-  std::unique_ptr<KeyedService> SetLiveTranslateController(
-      content::BrowserContext* context) {
-    return std::make_unique<testing::NiceMock<MockLiveTranslateController>>(
-        browser()->profile()->GetPrefs(), browser()->profile());
-  }
+void LiveCaptionSpeechRecognitionHostTest::SetUp() {
+  // This is required for the fullscreen video tests.
+  embedded_test_server()->ServeFilesFromSourceDirectory(
+      base::FilePath(FILE_PATH_LITERAL("content/test/data")));
+  LiveCaptionBrowserTest::SetUp();
+}
 
-  // LiveCaptionBrowserTest:
-  void SetUp() override {
-    // This is required for the fullscreen video tests.
-    embedded_test_server()->ServeFilesFromSourceDirectory(
-        base::FilePath(FILE_PATH_LITERAL("content/test/data")));
-    LiveCaptionBrowserTest::SetUp();
-  }
+void LiveCaptionSpeechRecognitionHostTest::SetUpOnMainThread() {
+  LiveTranslateControllerFactory::GetInstance()->SetTestingFactory(
+      browser()->profile(),
+      base::BindRepeating(
+          &LiveCaptionSpeechRecognitionHostTest::SetLiveTranslateController,
+          base::Unretained(this)));
+  LiveCaptionBrowserTest::SetUpOnMainThread();
+  ASSERT_TRUE(embedded_test_server()->Start());
+}
 
-  void SetUpOnMainThread() override {
-    LiveTranslateControllerFactory::GetInstance()->SetTestingFactory(
-        browser()->profile(),
-        base::BindRepeating(
-            &LiveCaptionSpeechRecognitionHostTest::SetLiveTranslateController,
-            base::Unretained(this)));
-    LiveCaptionBrowserTest::SetUpOnMainThread();
-    ASSERT_TRUE(embedded_test_server()->Start());
-  }
+void LiveCaptionSpeechRecognitionHostTest::
+    CreateLiveCaptionSpeechRecognitionHost(
+        content::RenderFrameHost* frame_host) {
+  mojo::Remote<media::mojom::SpeechRecognitionRecognizerClient> remote;
+  mojo::PendingReceiver<media::mojom::SpeechRecognitionRecognizerClient>
+      receiver;
+  remote.Bind(receiver.InitWithNewPipeAndPassRemote());
+  LiveCaptionSpeechRecognitionHost::Create(frame_host, std::move(receiver));
+  remotes_.emplace(frame_host, std::move(remote));
+}
 
-  void CreateLiveCaptionSpeechRecognitionHost(
-      content::RenderFrameHost* frame_host) {
-    mojo::Remote<media::mojom::SpeechRecognitionRecognizerClient> remote;
-    mojo::PendingReceiver<media::mojom::SpeechRecognitionRecognizerClient>
-        receiver;
-    remote.Bind(receiver.InitWithNewPipeAndPassRemote());
-    LiveCaptionSpeechRecognitionHost::Create(frame_host, std::move(receiver));
-    remotes_.emplace(frame_host, std::move(remote));
-  }
+void LiveCaptionSpeechRecognitionHostTest::OnSpeechRecognitionRecognitionEvent(
+    content::RenderFrameHost* frame_host,
+    std::string text,
+    bool expected_success,
+    bool is_final) {
+  remotes_[frame_host]->OnSpeechRecognitionRecognitionEvent(
+      media::SpeechRecognitionResult(text, is_final),
+      base::BindOnce(
+          &LiveCaptionSpeechRecognitionHostTest::DispatchTranscriptionCallback,
+          base::Unretained(this), expected_success));
+}
 
-  void OnSpeechRecognitionRecognitionEvent(content::RenderFrameHost* frame_host,
-                                           std::string text,
-                                           bool expected_success,
-                                           bool is_final = false) {
-    remotes_[frame_host]->OnSpeechRecognitionRecognitionEvent(
-        media::SpeechRecognitionResult(text, is_final),
-        base::BindOnce(&LiveCaptionSpeechRecognitionHostTest::
-                           DispatchTranscriptionCallback,
-                       base::Unretained(this), expected_success));
-  }
+void LiveCaptionSpeechRecognitionHostTest::OnLanguageIdentificationEvent(
+    content::RenderFrameHost* frame_host,
+    const std::string& language,
+    const media::mojom::ConfidenceLevel confidence_level,
+    const media::mojom::AsrSwitchResult asr_switch_result) {
+  remotes_[frame_host]->OnLanguageIdentificationEvent(
+      media::mojom::LanguageIdentificationEvent::New(language, confidence_level,
+                                                     asr_switch_result));
+}
 
-  void OnLanguageIdentificationEvent(
-      content::RenderFrameHost* frame_host,
-      const std::string& language,
-      const media::mojom::ConfidenceLevel confidence_level,
-      const media::mojom::AsrSwitchResult asr_switch_result) {
-    remotes_[frame_host]->OnLanguageIdentificationEvent(
-        media::mojom::LanguageIdentificationEvent::New(
-            language, confidence_level, asr_switch_result));
-  }
+void LiveCaptionSpeechRecognitionHostTest::OnSpeechRecognitionError(
+    content::RenderFrameHost* frame_host) {
+  remotes_[frame_host]->OnSpeechRecognitionError();
+}
 
-  void OnSpeechRecognitionError(content::RenderFrameHost* frame_host) {
-    remotes_[frame_host]->OnSpeechRecognitionError();
-  }
+bool LiveCaptionSpeechRecognitionHostTest::HasBubbleController() {
+  return LiveCaptionControllerFactory::GetForProfile(browser()->profile())
+             ->caption_bubble_controller_for_testing() != nullptr;
+}
 
-  bool HasBubbleController() {
-    return LiveCaptionControllerFactory::GetForProfile(browser()->profile())
-               ->caption_bubble_controller_for_testing() != nullptr;
-  }
-
-  void ExpectIsWidgetVisible(bool visible) {
+void LiveCaptionSpeechRecognitionHostTest::ExpectIsWidgetVisible(bool visible) {
 #if defined(TOOLKIT_VIEWS)
     CaptionBubbleController* bubble_controller =
         LiveCaptionControllerFactory::GetForProfile(browser()->profile())
             ->caption_bubble_controller_for_testing();
     EXPECT_EQ(visible, bubble_controller->IsWidgetVisibleForTesting());
 #endif
-  }
+}
 
-  std::vector<std::string> GetTranslationRequests() {
-    return static_cast<MockLiveTranslateController*>(
-               LiveTranslateControllerFactory::GetForProfile(
-                   browser()->profile()))
-        ->GetTranslationRequests();
-  }
+std::vector<std::string>
+LiveCaptionSpeechRecognitionHostTest::GetTranslationRequests() {
+  return static_cast<MockLiveTranslateController*>(
+             LiveTranslateControllerFactory::GetForProfile(
+                 browser()->profile()))
+      ->GetTranslationRequests();
+}
 
- private:
-  void DispatchTranscriptionCallback(bool expected_success, bool success) {
-    EXPECT_EQ(expected_success, success);
-  }
-
-  std::map<content::RenderFrameHost*,
-           mojo::Remote<media::mojom::SpeechRecognitionRecognizerClient>>
-      remotes_;
-};
+void LiveCaptionSpeechRecognitionHostTest::DispatchTranscriptionCallback(
+    bool expected_success,
+    bool success) {
+  EXPECT_EQ(expected_success, success);
+}
 
 // Disabled due to flaky crashes; https://crbug.com/1216304.
 IN_PROC_BROWSER_TEST_F(LiveCaptionSpeechRecognitionHostTest,

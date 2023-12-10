@@ -184,7 +184,9 @@ void SharedGpuContext::CreateContextProviderIfNeeded(
 void SharedGpuContext::SetContextProviderFactoryForTesting(
     ContextProviderFactory factory) {
   SharedGpuContext* this_ptr = GetInstanceForCurrentThread();
-  DCHECK(!this_ptr->context_provider_wrapper_);
+  DCHECK(!this_ptr->context_provider_wrapper_)
+      << this_ptr->context_provider_wrapper_.get();
+
   this_ptr->context_provider_factory_ = std::move(factory);
 }
 

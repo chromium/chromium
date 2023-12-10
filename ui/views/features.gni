@@ -2,9 +2,15 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromecast_build.gni")
+import("//build/config/cast.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/ui.gni")
 
 # Enable desktop-oriented features implemented by DesktopNativeWidgetAura.
 enable_desktop_aura = use_aura && !is_chromeos_ash && !is_castos
+
+# Supports accessible text offsets computation by Views. When this feature is
+# enabled, characters offsets and word boundaries become available to ATs for
+# select Views. Currently only used on Windows, but could be used by other
+# platforms if needed.
+supports_ax_text_offsets = is_win

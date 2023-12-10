@@ -250,6 +250,19 @@ template("nacl_irt_toolchain") {
     # so we need to link w/ the C++ linker.
     ld = "${python_path} ${link_irt} --tls-edit=${tls_edit} --link-cmd=${cxx} --readelf-cmd=${readelf}"
 
+    # reclient requires explicit upload of toolchain lib
+    if (is_chromeos_ash && use_remoteexec) {
+      if (defined(invoker.extra_cppflags) && invoker.extra_cppflags != "") {
+        extra_cppflags = " " + invoker.extra_cppflags
+      } else {
+        extra_cppflags = ""
+      }
+
+      libdir = rebase_path("${nacl_toolchain_dir}/${toolchain_package}/lib",
+                      root_build_dir)
+      extra_cppflags += " -B${libdir}"
+    }
+
     toolchain_args = {
       current_cpu = toolchain_cpu
       is_clang = true

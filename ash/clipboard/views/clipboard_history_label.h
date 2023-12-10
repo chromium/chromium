@@ -12,9 +12,9 @@ namespace ash {
 
 // The text label used by the clipboard history menu.
 class ClipboardHistoryLabel : public views::Label {
- public:
-  METADATA_HEADER(ClipboardHistoryLabel);
+  METADATA_HEADER(ClipboardHistoryLabel, views::Label)
 
+ public:
   ClipboardHistoryLabel(const std::u16string& text,
                         gfx::ElideBehavior elide_behavior,
                         size_t max_lines);

@@ -88,22 +88,29 @@ factories contain a list of valid host names. A valid hostname generates a
 controller.
 
 In the case of `chrome:` URLs, these factories are registered early in the
-browser process lifecycle.
+browser process lifecycle. Before the first `WebUIConfig` is registered, the
+`WebUIConfigMap` instance is created. This map creates and registers a
+factory (`WebUIConfigMapWebUIControllerFactory`) in its constructor.
+This factory looks at the global `WebUIConfigMap`, which maps hosts to
+`WebUIConfig`s, to see if any of the configs handle the requested URL. It calls
+the method on the config to create the corresponding controller if it finds a
+config to handle the URL.
 
 ```c++
 // ChromeBrowserMainParts::PreMainMessageLoopRunImpl():
+
+// Legacy WebUIControllerFactory registration
 content::WebUIControllerFactory::RegisterFactory(
    ChromeWebUIControllerFactory::GetInstance());
+
+// Factory for all WebUIs using WebUIConfig will be created here.
+RegisterChromeWebUIConfigs();
+RegisterChromeUntrustedWebUIConfigs();
 ```
 
 When a URL is requested, a new renderer is created to load the URL, and a
 corresponding class in the browser is set up to handle messages from the
 renderer to the browser (a `RenderFrameHost`).
-
-One factory that serves WebUI URLs is `WebUIConfigMapWebUIControllerFactory`.
-This factory looks at a global map from hosts to `WebUIConfig`s to see if any
-of the configs handle the requested URL, and calls a method to create the
-corresponding controller if so.
 
 ```c++
 auto* config = config_map_->GetConfig(browser_context, url);
@@ -508,7 +515,6 @@ import("//mojo/public/tools/bindings/mojom.gni")
 mojom("mojo_bindings") {
   sources = [ "donuts.mojom" ]
   webui_module_path = "/"
-  use_typescript_sources = true
 }
 ```
 

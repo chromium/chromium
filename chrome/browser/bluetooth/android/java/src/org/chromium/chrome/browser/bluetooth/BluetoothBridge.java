@@ -8,9 +8,7 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.content_public.browser.WebContents;
 
-/**
- * Java access point for BluetoothBridge, allowing for querying Bluetooth state.
- */
+/** Java access point for BluetoothBridge, allowing for querying Bluetooth state. */
 public class BluetoothBridge {
     public static boolean isWebContentsConnectedToBluetoothDevice(WebContents webContents) {
         if (webContents == null) return false;
@@ -25,6 +23,7 @@ public class BluetoothBridge {
     @NativeMethods
     interface Natives {
         boolean isWebContentsConnectedToBluetoothDevice(WebContents webContents);
+
         boolean isWebContentsScanningForBluetoothDevices(WebContents webContents);
     }
 }

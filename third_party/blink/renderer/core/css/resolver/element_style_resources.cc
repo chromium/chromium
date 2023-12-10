@@ -48,9 +48,8 @@
 #include "third_party/blink/renderer/core/style/style_generated_image.h"
 #include "third_party/blink/renderer/core/style/style_image.h"
 #include "third_party/blink/renderer/core/style/style_image_set.h"
+#include "third_party/blink/renderer/core/style/style_mask_source_image.h"
 #include "third_party/blink/renderer/core/style/style_pending_image.h"
-#include "third_party/blink/renderer/core/style/style_svg_mask_reference_image.h"
-#include "third_party/blink/renderer/core/svg/svg_resource.h"
 #include "third_party/blink/renderer/core/svg/svg_tree_scope_resources.h"
 #include "third_party/blink/renderer/platform/geometry/length.h"
 #include "third_party/blink/renderer/platform/loader/fetch/cross_origin_attribute_value.h"
@@ -340,10 +339,14 @@ StyleImage* ElementStyleResources::LoadMaskSource(CSSValue& pending_value) {
         element_.OriginatingTreeScope().EnsureSVGTreeScopedResources();
     SVGResource* resource = tree_scope_resources.ResourceForId(
         image_value->NormalizedFragmentIdentifier());
-    return MakeGarbageCollected<StyleSVGMaskReferenceImage>(resource,
-                                                            image_value);
+    return MakeGarbageCollected<StyleMaskSourceImage>(resource, image_value);
   }
-  return nullptr;
+  StyleImage* image = image_value->CacheImage(
+      element_.GetDocument(), FetchParameters::ImageRequestBehavior::kNone,
+      kCrossOriginAttributeAnonymous);
+  return MakeGarbageCollected<StyleMaskSourceImage>(
+      To<StyleFetchedImage>(image), image_value->EnsureSVGResource(),
+      image_value);
 }
 
 void ElementStyleResources::LoadPendingImages(ComputedStyleBuilder& builder) {

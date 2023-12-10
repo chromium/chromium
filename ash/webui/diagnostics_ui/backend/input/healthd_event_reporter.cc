@@ -30,7 +30,7 @@ std::vector<uint32_t> ExtractSetToVector(
 HealthdEventReporter::HealthdEventReporter() {
   mojo_service_manager::GetServiceManagerProxy()->Request(
       chromeos::mojo_services::kCrosHealthdAshEventReporter,
-      absl::make_optional<base::TimeDelta>(kReporterInitializationTimeout),
+      std::make_optional<base::TimeDelta>(kReporterInitializationTimeout),
       healthd_ash_event_reporter_.BindNewPipeAndPassReceiver().PassPipe());
 }
 

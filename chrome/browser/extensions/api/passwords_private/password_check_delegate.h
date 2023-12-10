@@ -28,10 +28,6 @@
 
 class Profile;
 
-namespace password_manager {
-class PasswordChangeSuccessTracker;
-}  // namespace password_manager
-
 namespace extensions {
 
 extern const char kPasswordCheckDataKey[];
@@ -106,6 +102,7 @@ class PasswordCheckDelegate
       password_manager::BulkLeakCheckService::State state) override;
   void OnCredentialDone(const password_manager::LeakCheckCredential& credential,
                         password_manager::IsLeaked is_leaked) override;
+  void OnBulkCheckServiceShutDown() override;
 
   // Starts the analyses of whether credentials are compromised and/or weak.
   // Assumes that `StartPasswordCheck()` was called prior.
@@ -127,11 +124,6 @@ class PasswordCheckDelegate
   // Constructs `PasswordUiEntry` from `CredentialUIEntry`.
   api::passwords_private::PasswordUiEntry ConstructInsecureCredentialUiEntry(
       password_manager::CredentialUIEntry entry);
-
-  // Returns a raw pointer to the `PasswordChangeSuccessTracker` associated
-  // with `profile_`.
-  password_manager::PasswordChangeSuccessTracker*
-  GetPasswordChangeSuccessTracker() const;
 
   // Raw pointer to the underlying profile. Needs to outlive this instance.
   raw_ptr<Profile> profile_ = nullptr;

@@ -4,12 +4,13 @@
 
 #include <ntstatus.h>
 
+#include <string_view>
+
 #include "base/environment.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/writable_shared_memory_region.h"
 #include "base/scoped_environment_variable_override.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/win/scoped_process_information.h"
 #include "base/win/win_util.h"
@@ -481,7 +482,7 @@ TEST(PolicyTargetTest, ShareHandleTest) {
   BrokerServices* broker = GetBroker();
   ASSERT_TRUE(broker);
 
-  base::StringPiece contents = "Hello World";
+  std::string_view contents = "Hello World";
   base::WritableSharedMemoryRegion writable_region =
       base::WritableSharedMemoryRegion::Create(contents.size());
   ASSERT_TRUE(writable_region.IsValid());

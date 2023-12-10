@@ -4,17 +4,17 @@
 
 #include "mojo/public/cpp/bindings/generic_pending_associated_receiver.h"
 
+#include <string_view>
 #include <utility>
 
 #include "base/check.h"
-#include "base/strings/string_piece.h"
 
 namespace mojo {
 
 GenericPendingAssociatedReceiver::GenericPendingAssociatedReceiver() = default;
 
 GenericPendingAssociatedReceiver::GenericPendingAssociatedReceiver(
-    base::StringPiece interface_name,
+    std::string_view interface_name,
     mojo::ScopedInterfaceEndpointHandle handle)
     : interface_name_(std::string(interface_name)),
       handle_(std::move(handle)) {}

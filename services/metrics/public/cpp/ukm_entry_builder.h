@@ -5,6 +5,8 @@
 #ifndef SERVICES_METRICS_PUBLIC_CPP_UKM_ENTRY_BUILDER_H_
 #define SERVICES_METRICS_PUBLIC_CPP_UKM_ENTRY_BUILDER_H_
 
+#include <string_view>
+
 #include "services/metrics/public/cpp/metrics_export.h"
 #include "services/metrics/public/cpp/ukm_entry_builder_base.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -27,14 +29,14 @@ namespace ukm {
 class METRICS_EXPORT UkmEntryBuilder final
     : public ukm::internal::UkmEntryBuilderBase {
  public:
-  UkmEntryBuilder(SourceId source_id, base::StringPiece event_name);
+  UkmEntryBuilder(SourceId source_id, std::string_view event_name);
 
   UkmEntryBuilder(const UkmEntryBuilder&) = delete;
   UkmEntryBuilder& operator=(const UkmEntryBuilder&) = delete;
 
   ~UkmEntryBuilder() override;
 
-  void SetMetric(base::StringPiece metric_name, int64_t value);
+  void SetMetric(std::string_view metric_name, int64_t value);
 };
 
 }  // namespace ukm

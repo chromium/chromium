@@ -1,0 +1,27 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="pa">
+<translation id="1220509181886849806">ਕੀ ਰੱਖਿਅਤ ਕੀਤਾ ਪਾਸਵਰਡ ਵਰਤਣਾ ਹੈ?</translation>
+<translation id="1435940442311036198">ਕਿਸੇ ਵੱਖਰੇ ਡੀਵਾਈਸ 'ਤੇ ਪਾਸਕੀ ਵਰਤੋ</translation>
+<translation id="1717486229951421299">ਸਪਰਸ਼ ਕਰਕੇ ਭਰੇ ਜਾਣ ਵਾਲੇ ਕ੍ਰੀਡੈਂਸ਼ੀਅਲਾਂ ਦੀ ਸੂਚੀ ਅੱਧੀ ਉਚਾਈ ਤੱਕ ਖੁੱਲ੍ਹੀ ਹੋਈ ਹੈ।</translation>
+<translation id="2359808026110333948">ਜਾਰੀ ਰੱਖੋ</translation>
+<translation id="2364266287022099258">ਕੀ ਰੱਖਿਅਤ ਕੀਤੀ ਪਾਸਕੀ ਦੀ ਵਰਤੋਂ ਕਰਨੀ ਹੈ?</translation>
+<translation id="3399357656427473483">ਸਪਰਸ਼ ਕਰਕੇ ਭਰੇ ਜਾਣ ਵਾਲੇ ਕ੍ਰੀਡੈਂਸ਼ੀਅਲਾਂ ਦੀ ਸੂਚੀ</translation>
+<translation id="3653689374478248324">ਤੁਸੀਂ <ph name="SITE_NAME" /> ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕਰੋਗੇ</translation>
+<translation id="3950820424414687140">ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
+<translation id="4553044860350038560">ਹੋਰ ਪਾਸਕੀਆਂ</translation>
+<translation id="4598345735110653698">ਪਾਸਕੀਆਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
+<translation id="4722735765955348426"><ph name="USERNAME" /> ਦਾ ਪਾਸਵਰਡ</translation>
+<translation id="4907224763885298217">ਆਪਣਾ ਸਕ੍ਰੀਨ ਲਾਕ ਵਰਤੋ</translation>
+<translation id="5012523644916800014">ਪਾਸਵਰਡਾਂ ਅਤੇ ਪਾਸਕੀਆਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
+<translation id="5441504010984421144">ਸਪਰਸ਼ ਕਰਕੇ ਭਰੇ ਜਾਣ ਵਾਲੇ ਕ੍ਰੀਡੈਂਸ਼ੀਅਲਾਂ ਦੀ ਸੂਚੀ ਪੂਰੀ ਉਚਾਈ ਤੱਕ ਖੁੱਲ੍ਹੀ ਹੋਈ ਹੈ।</translation>
+<translation id="5591247451101092906">ਕੀ ਰੱਖਿਅਤ ਕੀਤੇ ਪਾਸਵਰਡ ਜਾਂ ਪਾਸਕੀ ਦੀ ਵਰਤੋਂ ਕਰਨੀ ਹੈ?</translation>
+<translation id="5624120631404540903">ਪਾਸਵਰਡ ਵਿਵਸਥਿਤ ਕਰੋ</translation>
+<translation id="6560306912274274630"><ph name="USERNAME" /> ਲਈ ਪਾਸਕੀ, ਆਪਣਾ ਸਕ੍ਰੀਨ ਲਾਕ ਵਰਤੋ</translation>
+<translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{ਇਸ ਸਾਈਟ ਲਈ ਨਵਾਂ ਪਾਸਵਰਡ}one{ਇਸ ਸਾਈਟ ਲਈ ਨਵਾਂ ਪਾਸਵਰਡ}other{ਇਸ ਸਾਈਟ ਲਈ ਨਵੇਂ ਪਾਸਵਰਡ}}</translation>
+<translation id="7286867818472074330">ਪਾਸਕੀ ਚੁਣੋ</translation>
+<translation id="7669320311687290322"><ph name="ITEM_LABEL" />, <ph name="ITEMS_TOTAL" /> ਵਿੱਚੋਂ <ph name="ITEM_POSITION" />.</translation>
+<translation id="7738288782501322815">ਤੁਹਾਨੂੰ <ph name="SITE_NAME" /> ਦੇ ਪਾਸਵਰਡ ਪ੍ਰਾਪਤ ਹੋਏ ਹਨ</translation>
+<translation id="8614995815226664591"><ph name="SENDER_NAME" /> ਨੇ ਤੁਹਾਡੇ ਨਾਲ <ph name="SITE_NAME" /> ਦਾ ਪਾਸਵਰਡ ਸਾਂਝਾ ਕੀਤਾ ਹੈ</translation>
+<translation id="8891372124884726271">ਕ੍ਰੀਡੈਂਸ਼ੀਅਲ ਦੀ ਸੂਚੀ ਬੰਦ ਹੈ।</translation>
+</translationbundle>

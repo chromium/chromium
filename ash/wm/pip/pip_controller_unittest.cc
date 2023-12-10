@@ -158,19 +158,42 @@ TEST_F(PipControllerTest, TuckDimsWindow) {
   EXPECT_EQ(test_api.dimmer()->window()->layer()->opacity(), 0.f);
 }
 
-TEST_F(PipControllerTest, TuckHandleIsShownOnTuck) {
+TEST_F(PipControllerTest, TuckHandleIsShownAtCorrectPosition) {
   PipController* controller = Shell::Get()->pip_controller();
   PipControllerTestAPI test_api(controller);
 
-  const gfx::Rect bounds(0, 0, kPipWidth, kPipHeight);
-  std::unique_ptr<aura::Window> window(CreatePipWindow(bounds));
+  const gfx::Rect pip_bounds(kCollisionWindowWorkAreaInsetsDp,
+                             kCollisionWindowWorkAreaInsetsDp, kPipWidth,
+                             kPipHeight);
+  std::unique_ptr<aura::Window> window(CreatePipWindow(pip_bounds));
 
-  // Tuck the window and confirm that the dimmer is shown.
+  // Tuck the window and confirm that the tuck handle is shown at the correct
+  // position.
   controller->TuckWindow(/*left=*/true);
   EXPECT_TRUE(test_api.scoped_window_tucker());
   EXPECT_TRUE(test_api.scoped_window_tucker()->tuck_handle_widget());
+  gfx::Rect tuck_handle_bounds(
+      0,
+      kCollisionWindowWorkAreaInsetsDp +
+          (kPipHeight - ScopedWindowTucker::kTuckHandleHeight) / 2,
+      ScopedWindowTucker::kTuckHandleWidth,
+      ScopedWindowTucker::kTuckHandleHeight);
+  EXPECT_EQ(tuck_handle_bounds, test_api.scoped_window_tucker()
+                                    ->tuck_handle_widget()
+                                    ->GetWindowBoundsInScreen());
 
-  // Untuck the window and confirm that the dimmer's opacity is now 0.
+  // Move PiP and confirm that the tuck handle follows.
+  gfx::Rect tucked_pip_bounds = window->GetBoundsInScreen();
+  tucked_pip_bounds.Offset(0, 100);
+  SetBoundsWMEvent event(tucked_pip_bounds, /*animate=*/false);
+  WindowState* window_state = WindowState::Get(window.get());
+  window_state->OnWMEvent(&event);
+  tuck_handle_bounds.Offset(0, 100);
+  EXPECT_EQ(tuck_handle_bounds, test_api.scoped_window_tucker()
+                                    ->tuck_handle_widget()
+                                    ->GetWindowBoundsInScreen());
+
+  // Untuck the window and confirm that the tuck handle is gone.
   controller->UntuckWindow();
   EXPECT_FALSE(test_api.scoped_window_tucker());
 }

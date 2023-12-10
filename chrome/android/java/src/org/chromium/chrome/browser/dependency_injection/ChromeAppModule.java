@@ -11,6 +11,9 @@ import android.content.Context;
 
 import androidx.browser.trusted.TrustedWebActivityServiceConnectionPool;
 
+import dagger.Module;
+import dagger.Provides;
+
 import org.chromium.base.ContextUtils;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.WarmupManager;
@@ -28,16 +31,13 @@ import org.chromium.chrome.browser.webapps.WebappRegistry;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
-import dagger.Module;
-import dagger.Provides;
-
-/**
- * Module for {@link ChromeAppComponent}.
- */
+/** Module for {@link ChromeAppComponent}. */
 @Module
 public class ChromeAppModule {
     /** See {@link ModuleFactoryOverrides} */
-    public interface Factory { ChromeAppModule create(); }
+    public interface Factory {
+        ChromeAppModule create();
+    }
 
     @Provides
     @Named(LAST_USED_REGULAR_PROFILE)

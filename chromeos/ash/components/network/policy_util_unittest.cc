@@ -4,13 +4,13 @@
 
 #include "chromeos/ash/components/network/policy_util.h"
 
+#include <optional>
 #include <string>
 
 #include "base/test/values_test_util.h"
 #include "base/values.h"
 #include "components/onc/onc_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::policy_util {
 namespace {
@@ -23,7 +23,7 @@ constexpr char kSmdsActivationCode[] = "smds_activation_code";
 }  // namespace
 
 TEST_F(PolicyUtilTest, GetActivationCodesFromONC) {
-  absl::optional<SmdxActivationCode> activation_code;
+  std::optional<SmdxActivationCode> activation_code;
 
   // Start with an empty configuration and slowly populate it.
   base::Value::Dict onc_config;

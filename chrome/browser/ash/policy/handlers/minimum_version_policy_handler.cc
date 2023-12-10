@@ -456,10 +456,10 @@ void MinimumVersionPolicyHandler::StartObservingUpdate() {
     build_state->AddObserver(this);
 }
 
-absl::optional<int> MinimumVersionPolicyHandler::GetTimeRemainingInDays() {
+std::optional<int> MinimumVersionPolicyHandler::GetTimeRemainingInDays() {
   const base::Time now = clock_->Now();
   if (!state_ || update_required_deadline_ <= now)
-    return absl::nullopt;
+    return std::nullopt;
   base::TimeDelta time_remaining = update_required_deadline_ - now;
   return GetDaysRounded(time_remaining);
 }
@@ -468,7 +468,7 @@ void MinimumVersionPolicyHandler::MaybeShowNotificationOnLogin() {
   // |days| could be null if |update_required_deadline_timer_| expired while
   // login was in progress, else we would have shown the update required screen
   // at startup.
-  absl::optional<int> days = GetTimeRemainingInDays();
+  std::optional<int> days = GetTimeRemainingInDays();
   if (days && days.value() <= 1)
     MaybeShowNotification(base::Days(days.value()));
 }

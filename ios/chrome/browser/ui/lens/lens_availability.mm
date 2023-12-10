@@ -28,9 +28,6 @@ namespace lens_availability {
 bool CheckAndLogAvailabilityForLensEntryPoint(
     LensEntrypoint entry_point,
     BOOL is_google_default_search_engine) {
-  // Check if the feature is enabled for the entry point. Starts at
-  // YES to account for removing flags for launched features.
-  BOOL flag_enabled = YES;
   const char* availability_metric_name = nullptr;
 
   switch (entry_point) {
@@ -38,42 +35,21 @@ bool CheckAndLogAvailabilityForLensEntryPoint(
       availability_metric_name = kIOSLensContextMenuSupportStatusHistogramName;
       break;
     case LensEntrypoint::Keyboard:
-      if (!base::FeatureList::IsEnabled(kEnableLensInKeyboard)) {
-        flag_enabled = NO;
-      }
       availability_metric_name = kIOSLensKeyboardSupportStatusHistogramName;
       break;
     case LensEntrypoint::NewTabPage:
-      if (!base::FeatureList::IsEnabled(kEnableLensInNTP)) {
-        flag_enabled = NO;
-      }
       availability_metric_name = kIOSLensNewTabPageSupportStatusHistogramName;
       break;
     case LensEntrypoint::HomeScreenWidget:
-      if (!base::FeatureList::IsEnabled(kEnableLensInHomeScreenWidget)) {
-        flag_enabled = NO;
-      }
       // Home screen widget cannot log availailability.
       break;
     case LensEntrypoint::AppIconLongPress:
-      // App icon entrypoint is controlled by the home screen widget flag.
-      if (!base::FeatureList::IsEnabled(kEnableLensInHomeScreenWidget)) {
-        flag_enabled = NO;
-      }
       // App icon long press cannot log availailability.
       break;
     case LensEntrypoint::Spotlight:
-      // Spotlight entrypoint is controlled by the home screen widget flag.
-      if (!base::FeatureList::IsEnabled(kEnableLensInHomeScreenWidget)) {
-        flag_enabled = NO;
-      }
       availability_metric_name = kIOSSpotlightSupportStatusHistogramName;
       break;
     case LensEntrypoint::PlusButton:
-      // Plus Button entrypoint is controlled by the ntp flag.
-      if (!base::FeatureList::IsEnabled(kEnableLensInNTP)) {
-        flag_enabled = NO;
-      }
       availability_metric_name = kIOSPlusButtonSupportStatusHistogramName;
       break;
     default:
@@ -83,8 +59,6 @@ bool CheckAndLogAvailabilityForLensEntryPoint(
   LensSupportStatus lens_support_status;
   if (!ios::provider::IsLensSupported()) {
     lens_support_status = LensSupportStatus::ProviderUnsupported;
-  } else if (!flag_enabled) {
-    lens_support_status = LensSupportStatus::DisabledByFlag;
   } else if (!GetApplicationContext()->GetLocalState()->GetBoolean(
                  prefs::kLensCameraAssistedSearchPolicyAllowed)) {
     lens_support_status = LensSupportStatus::DisabledByEnterprisePolicy;

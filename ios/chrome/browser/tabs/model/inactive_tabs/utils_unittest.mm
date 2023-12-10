@@ -7,8 +7,8 @@
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
-#import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
-#import "ios/chrome/browser/ntp/new_tab_page_tab_helper_delegate.h"
+#import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
+#import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper_delegate.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -20,7 +20,7 @@
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/chrome/browser/tabs/model/inactive_tabs/features.h"
 #import "ios/chrome/browser/tabs/model/inactive_tabs/utils.h"
-#import "ios/chrome/browser/web/web_navigation_util.h"
+#import "ios/chrome/browser/web/model/web_navigation_util.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -87,6 +87,7 @@ class InactiveTabsUtilsTest : public PlatformTest {
       web::WebState* current_web_state = web_state_list->GetWebStateAt(index);
       int time_since_last_activation =
           (base::Time::Now() - current_web_state->GetLastActiveTime()).InDays();
+      ASSERT_LT(index, static_cast<int>(expected_inactivity_days.size()));
       EXPECT_EQ(time_since_last_activation, expected_inactivity_days[index]);
     }
   }
@@ -242,6 +243,12 @@ TEST_F(InactiveTabsUtilsTest, InactiveTabStaysInactive) {
 
 // Restore all inactive tab.
 TEST_F(InactiveTabsUtilsTest, RestoreAllInactive) {
+  // RestoreAllInactive checks that it is called when the feature is disabled,
+  // either via the flag, or via the user pref. Disable in both places.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kTabInactivityThreshold);
+  local_state_.Get()->SetInteger(prefs::kInactiveTabsTimeThreshold, -1);
+
   WebStateList* active_web_state_list = browser_active_->GetWebStateList();
   WebStateList* inactive_web_state_list = browser_inactive_->GetWebStateList();
 
@@ -379,8 +386,11 @@ TEST_F(InactiveTabsUtilsTest, ComplicatedMove) {
 // Ensure that restore function is working with complicated lists (multiple
 // tabs, un-ordered, pinned tabs).
 TEST_F(InactiveTabsUtilsTest, ComplicatedRestore) {
+  // RestoreAllInactive checks that it is called when the feature is disabled,
+  // either via the flag, or via the user pref. Disable in both places.
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(kTabInactivityThreshold);
+  local_state_.Get()->SetInteger(prefs::kInactiveTabsTimeThreshold, -1);
 
   WebStateList* active_web_state_list = browser_active_->GetWebStateList();
   WebStateList* inactive_web_state_list = browser_inactive_->GetWebStateList();
@@ -558,6 +568,12 @@ TEST_F(InactiveTabsUtilsTest, EnsurePreferencePriority) {
 // Checks that Inactive Tabs migration method RestoreAllInactiveTabs filters out
 // duplicates across browsers.
 TEST_F(InactiveTabsUtilsTest, RestoreAllInactiveTabsRemovesCrossDuplicates) {
+  // RestoreAllInactive checks that it is called when the feature is disabled,
+  // either via the flag, or via the user pref. Disable in both places.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kTabInactivityThreshold);
+  local_state_.Get()->SetInteger(prefs::kInactiveTabsTimeThreshold, -1);
+
   // Create known identifiers and last_active_time.
   const web::WebStateID unique_identifier = web::WebStateID::NewUnique();
   const base::Time last_active_time = base::Time::Now();

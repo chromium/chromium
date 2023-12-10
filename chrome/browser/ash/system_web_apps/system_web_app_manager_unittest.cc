@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "ash/constants/ash_features.h"
@@ -38,7 +39,6 @@
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "content/public/test/test_utils.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/idle/idle.h"
 #include "ui/base/idle/scoped_set_idle_state.h"
 #include "url/gurl.h"
@@ -182,7 +182,7 @@ class SystemWebAppManagerTest : public ChromeRenderViewHostTestHarness {
 
   bool IsInstalled(const GURL& install_url) {
     return provider().registrar_unsafe().IsInstalled(
-        web_app::GenerateAppId(/*manifest_id=*/absl::nullopt, install_url));
+        web_app::GenerateAppId(/*manifest_id=*/std::nullopt, install_url));
   }
 
   void InitRegistrarWithSystemApps(
@@ -1067,7 +1067,7 @@ TEST_F(SystemWebAppManagerTest, IsSWABeforeSync) {
   system_web_app_manager().set_current_version(base::Version("1.0.0.0"));
   StartAndWaitForAppsToSynchronize();
   EXPECT_TRUE(system_web_app_manager().IsSystemWebApp(
-      web_app::GenerateAppId(/*manifest_id=*/absl::nullopt, AppUrl1())));
+      web_app::GenerateAppId(/*manifest_id=*/std::nullopt, AppUrl1())));
 
   auto unsynced_system_web_app_manager =
       std::make_unique<TestSystemWebAppManager>(profile());
@@ -1084,7 +1084,7 @@ TEST_F(SystemWebAppManagerTest, IsSWABeforeSync) {
   }
 
   EXPECT_TRUE(unsynced_system_web_app_manager->IsSystemWebApp(
-      web_app::GenerateAppId(/*manifest_id=*/absl::nullopt, AppUrl1())));
+      web_app::GenerateAppId(/*manifest_id=*/std::nullopt, AppUrl1())));
 }
 
 class TimerSystemAppDelegate : public UnittestingSystemAppDelegate {
@@ -1093,19 +1093,19 @@ class TimerSystemAppDelegate : public UnittestingSystemAppDelegate {
                          const std::string& name,
                          const GURL& url,
                          web_app::WebAppInstallInfoFactory info_factory,
-                         absl::optional<base::TimeDelta> period,
+                         std::optional<base::TimeDelta> period,
                          bool open_immediately)
       : UnittestingSystemAppDelegate(type, name, url, std::move(info_factory)),
         period_(period),
         open_immediately_(open_immediately) {}
-  absl::optional<SystemWebAppBackgroundTaskInfo> GetTimerInfo() const override;
+  std::optional<SystemWebAppBackgroundTaskInfo> GetTimerInfo() const override;
 
  private:
-  absl::optional<base::TimeDelta> period_;
+  std::optional<base::TimeDelta> period_;
   bool open_immediately_;
 };
 
-absl::optional<SystemWebAppBackgroundTaskInfo>
+std::optional<SystemWebAppBackgroundTaskInfo>
 TimerSystemAppDelegate::GetTimerInfo() const {
   return SystemWebAppBackgroundTaskInfo(period_, GetInstallUrl(),
                                         open_immediately_);
@@ -1116,7 +1116,7 @@ class SystemWebAppManagerTimerTest : public SystemWebAppManagerTest {
   SystemWebAppManagerTimerTest()
       : SystemWebAppManagerTest(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
-  void SetupTimer(absl::optional<base::TimeDelta> period,
+  void SetupTimer(std::optional<base::TimeDelta> period,
                   bool open_immediately) {
     SystemWebAppDelegateMap system_apps;
     system_apps.emplace(
@@ -1277,7 +1277,7 @@ TEST_F(SystemWebAppManagerTimerTest,
 
 TEST_F(SystemWebAppManagerTimerTest, TestTimerStartsImmediately) {
   ui::ScopedSetIdleState idle(ui::IDLE_STATE_IDLE);
-  SetupTimer(absl::nullopt, true);
+  SetupTimer(std::nullopt, true);
   web_app::TestWebAppUrlLoader* loader = nullptr;
   SystemWebAppWaiter waiter(&system_web_app_manager());
 
@@ -1303,7 +1303,7 @@ TEST_F(SystemWebAppManagerTimerTest, TestTimerStartsImmediately) {
   task_environment()->FastForwardBy(base::Seconds(121));
   EXPECT_EQ(1u, timers.size());
   EXPECT_EQ(true, timers[0]->open_immediately_for_testing());
-  EXPECT_EQ(absl::nullopt, timers[0]->period_for_testing());
+  EXPECT_EQ(std::nullopt, timers[0]->period_for_testing());
   EXPECT_EQ(1u, timers[0]->timer_activated_count_for_testing());
   EXPECT_EQ(1u, timers[0]->opened_count_for_testing());
 

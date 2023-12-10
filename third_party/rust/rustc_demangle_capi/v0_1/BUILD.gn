@@ -2,7 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# @generated from third_party/rust/BUILD.gn.hbs by tools/crates/gnrt.
+# @generated from third_party/rust/chromium_crates_io/BUILD.gn.hbs by
+# tools/crates/gnrt.
 # Do not edit!
 
 import("//build/rust/cargo_crate.gni")
@@ -11,11 +12,10 @@ cargo_crate("lib") {
   crate_name = "rustc_demangle_capi"
   epoch = "0.1"
   crate_type = "cdylib"
-  crate_root = "crate/src/lib.rs"
-  sources = [ "//third_party/rust/rustc_demangle_capi/v0_1/crate/src/lib.rs" ]
-  inputs = [ "//third_party/rust/rustc_demangle_capi/v0_1/crate/include/rustc_demangle.h" ]
+  crate_root = "//third_party/rust/chromium_crates_io/vendor/rustc-demangle-capi-0.1.0/src/lib.rs"
+  sources = [ "//third_party/rust/chromium_crates_io/vendor/rustc-demangle-capi-0.1.0/src/lib.rs" ]
+  inputs = []
 
-  # Unit tests skipped. Generate with --with-tests to include them.
   build_native_rust_unit_tests = false
   edition = "2015"
   cargo_pkg_version = "0.1.0"

@@ -13,13 +13,17 @@
 #include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
 #include "chrome/browser/nearby_sharing/constants.h"
 #include "chrome/browser/nearby_sharing/public/cpp/nearby_connections_manager.h"
+#include "chromeos/ash/components/nearby/presence/conversions/proto_conversions.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_connections_types.mojom.h"
+#include "chromeos/ash/services/nearby/public/mojom/nearby_presence.mojom.h"
 #include "components/cross_device/logging/logging.h"
 #include "crypto/random.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/network_change_notifier.h"
 
 namespace {
+
+using NearbyPresenceService = ash::nearby::presence::NearbyPresenceService;
 
 const char kFastAdvertisementServiceUuid[] =
     "0000fef3-0000-1000-8000-00805f9b34fb";
@@ -103,6 +107,56 @@ std::string MediumSelectionToString(
   ss << "}";
 
   return ss.str();
+}
+
+// TODO(b/311040986): Migrate these to a conversions class. This requires moving
+// NearbyPresenceService::PresenceDevice and NearbyPresenceService::Action out
+// of NearbyPresenceService to avoid a dependency cycle.
+ash::nearby::presence::mojom::ActionType ConvertPresenceServiceActionToMojom(
+    NearbyPresenceService::Action action) {
+  switch (action) {
+    case NearbyPresenceService::Action::kActiveUnlock:
+      return ash::nearby::presence::mojom::ActionType::kActiveUnlockAction;
+    case NearbyPresenceService::Action::kNearbyShare:
+      return ash::nearby::presence::mojom::ActionType::kNearbyShareAction;
+    case NearbyPresenceService::Action::kInstantTethering:
+      return ash::nearby::presence::mojom::ActionType::kInstantTetheringAction;
+    case NearbyPresenceService::Action::kPhoneHub:
+      return ash::nearby::presence::mojom::ActionType::kPhoneHubAction;
+    case NearbyPresenceService::Action::kPresenceManager:
+      return ash::nearby::presence::mojom::ActionType::kPresenceManagerAction;
+    case NearbyPresenceService::Action::kFinder:
+      return ash::nearby::presence::mojom::ActionType::kFinderAction;
+    case NearbyPresenceService::Action::kFastPairSass:
+      return ash::nearby::presence::mojom::ActionType::kFastPairSassAction;
+    case NearbyPresenceService::Action::kTapToTransfer:
+      return ash::nearby::presence::mojom::ActionType::kTapToTransferAction;
+    case NearbyPresenceService::Action::kLast:
+      return ash::nearby::presence::mojom::ActionType::kLastAction;
+  }
+}
+
+ash::nearby::presence::mojom::MetadataPtr MetadataToMojom(
+    ::nearby::internal::Metadata metadata) {
+  return ash::nearby::presence::mojom::Metadata::New(
+      ash::nearby::presence::proto::DeviceTypeToMojom(metadata.device_type()),
+      metadata.account_name(), metadata.device_name(), metadata.user_name(),
+      metadata.device_profile_url(),
+      std::vector<uint8_t>(metadata.bluetooth_mac_address().begin(),
+                           metadata.bluetooth_mac_address().end()));
+}
+
+ash::nearby::presence::mojom::PresenceDevicePtr
+BuildPresenceMojomFromServiceDevice(
+    NearbyPresenceService::PresenceDevice device) {
+  std::vector<ash::nearby::presence::mojom::ActionType> actions;
+  for (auto action : device.GetActions()) {
+    actions.push_back(ConvertPresenceServiceActionToMojom(action));
+  }
+
+  return ash::nearby::presence::mojom::PresenceDevice::New(
+      device.GetEndpointId(), std::move(actions), device.GetStableId(),
+      MetadataToMojom(device.GetMetadata()));
 }
 
 }  // namespace
@@ -332,6 +386,18 @@ void NearbyConnectionsManagerImpl::OnConnectionRequested(
   // TODO(crbug/1111458): Support TransferManager.
 }
 
+void NearbyConnectionsManagerImpl::OnConnectionRequestedV3(
+    NearbyPresenceService::PresenceDevice remote_device,
+    ConnectionsStatus status) {
+  if (status != ConnectionsStatus::kSuccess) {
+    CD_LOG(ERROR, Feature::NC)
+        << "Failed to connect (v3) to remote device with result: "
+        << ConnectionsStatusToString(status);
+    DisconnectV3(std::move(remote_device));
+    return;
+  }
+}
+
 void NearbyConnectionsManagerImpl::Disconnect(const std::string& endpoint_id) {
   // TODO(https://crbug.com/1177088): Determine if we should attempt to bind to
   // process.
@@ -495,6 +561,7 @@ NearbyConnectionsManagerImpl::GetRawAuthenticationToken(
 
   return it->second->raw_authentication_token;
 }
+
 void NearbyConnectionsManagerImpl::RegisterBandwidthUpgradeListener(
     base::WeakPtr<BandwidthUpgradeListener> listener) {
   CHECK(!bandwidth_upgrade_listener_);
@@ -529,6 +596,74 @@ void NearbyConnectionsManagerImpl::UpgradeBandwidth(
                 status == ConnectionsStatus::kSuccess);
           },
           endpoint_id));
+}
+
+void NearbyConnectionsManagerImpl::ConnectV3(
+    NearbyPresenceService::PresenceDevice remote_presence_device,
+    DataUsage data_usage,
+    NearbyConnectionCallback callback) {
+  nearby::connections::mojom::NearbyConnections* nearby_connections =
+      GetNearbyConnections();
+  CHECK(nearby_connections);
+
+  // TODO(b/287340241): Enable BLE connections as an allowed medium.
+  auto allowed_mediums = MediumSelection::New(
+      /*bluetooth=*/true,
+      /*ble=*/false, ShouldEnableWebRtc(data_usage, PowerLevel::kHighPower),
+      /*wifi_lan=*/ShouldEnableWifiLan(data_usage, PowerLevel::kHighPower));
+  CD_LOG(VERBOSE, Feature::NC)
+      << __func__ << ": " << "data_usage=" << data_usage
+      << ", allowed_mediums=" << MediumSelectionToString(*allowed_mediums);
+
+  mojo::PendingRemote<ConnectionListenerV3> connection_listener_v3;
+  connection_listener_v3s_.Add(
+      this, connection_listener_v3.InitWithNewPipeAndPassReceiver());
+
+  pending_outgoing_connections_.emplace(remote_presence_device.GetEndpointId(),
+                                        std::move(callback));
+
+  auto timeout_timer = std::make_unique<base::OneShotTimer>();
+  timeout_timer->Start(
+      FROM_HERE, kInitiateNearbyConnectionTimeout,
+      base::BindOnce(&NearbyConnectionsManagerImpl::OnConnectionTimedOut,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     remote_presence_device.GetEndpointId()));
+  connect_timeout_timers_.emplace(remote_presence_device.GetEndpointId(),
+                                  std::move(timeout_timer));
+
+  nearby_connections->RequestConnectionV3(
+      service_id_, BuildPresenceMojomFromServiceDevice(remote_presence_device),
+      ConnectionOptions::New(std::move(allowed_mediums),
+                             /*bluetooth_mac_address=*/std::nullopt,
+                             /*keep_alive_interval_millis=*/std::nullopt,
+                             /*keep_alive_timeout_millis=*/std::nullopt),
+      std::move(connection_listener_v3),
+      base::BindOnce(&NearbyConnectionsManagerImpl::OnConnectionRequestedV3,
+                     weak_ptr_factory_.GetWeakPtr(), remote_presence_device));
+}
+
+void NearbyConnectionsManagerImpl::DisconnectV3(
+    NearbyPresenceService::PresenceDevice remote_presence_device) {
+  if (!process_reference_) {
+    return;
+  }
+
+  ash::nearby::presence::mojom::PresenceDevicePtr presence_device_mojom =
+      BuildPresenceMojomFromServiceDevice(remote_presence_device);
+
+  process_reference_->GetNearbyConnections()->DisconnectFromDeviceV3(
+      service_id_, presence_device_mojom.Clone(),
+      base::BindOnce([](ConnectionsStatus status) {
+        CD_LOG(VERBOSE, Feature::NC)
+            << __func__ << ": Disconnect (V3) from device "
+            << "attempted over Nearby Connections with result: "
+            << ConnectionsStatusToString(status);
+      }));
+
+  // `OnDisconnected()` is called because if the remote_presence_device hasn't
+  // been connected yet, ConnectionListenerV3 is not notified of the
+  // disconnection event. Directly calling here will ensure the cleanup.
+  OnDisconnected(std::move(presence_device_mojom));
 }
 
 base::WeakPtr<NearbyConnectionsManager>
@@ -640,7 +775,8 @@ void NearbyConnectionsManagerImpl::OnConnectionAccepted(
     }
 
     auto result = connections_.emplace(
-        endpoint_id, std::make_unique<NearbyConnectionImpl>(this, endpoint_id));
+        endpoint_id, std::make_unique<NearbyConnectionImpl>(
+                         weak_ptr_factory_.GetWeakPtr(), endpoint_id));
     DCHECK(result.second);
     incoming_connection_listener_->OnIncomingConnectionAccepted(
         endpoint_id, it->second->endpoint_info, result.first->second.get());
@@ -652,7 +788,8 @@ void NearbyConnectionsManagerImpl::OnConnectionAccepted(
     }
 
     auto result = connections_.emplace(
-        endpoint_id, std::make_unique<NearbyConnectionImpl>(this, endpoint_id));
+        endpoint_id, std::make_unique<NearbyConnectionImpl>(
+                         weak_ptr_factory_.GetWeakPtr(), endpoint_id));
     DCHECK(result.second);
     std::move(pending_it->second).Run(result.first->second.get());
     pending_outgoing_connections_.erase(pending_it);
@@ -689,9 +826,10 @@ void NearbyConnectionsManagerImpl::OnDisconnected(
   // Destroying the NearbyConnectionImpl object may start a chain of callbacks
   // that can delete this NearbyConnectionsManagerImpl object. This may result
   // in a crash (see b/303675257). Update the |connections_| map, but wait to
-  // destroy the connection object until after this NearbyConnectionsManagerImpl
-  // object is no longer in use.
-  auto connection = std::move(connections_[endpoint_id]);
+  // destroy the connection object until after we're done modifying internal
+  // state in OnDisconnected() by letting the connection go out of scope.
+  std::unique_ptr<NearbyConnectionImpl> connection =
+      std::move(connections_[endpoint_id]);
   connections_.erase(endpoint_id);
 
   if (base::Contains(requested_bwu_endpoint_ids_, endpoint_id)) {
@@ -702,10 +840,6 @@ void NearbyConnectionsManagerImpl::OnDisconnected(
   requested_bwu_endpoint_ids_.erase(endpoint_id);
   on_bandwidth_changed_endpoint_ids_.erase(endpoint_id);
   current_upgraded_mediums_.erase(endpoint_id);
-
-  // The NearbyConnectionImpl object may now be safely destroyed.
-  connection.reset();
-  // TODO(crbug/1111458): Support TransferManager.
 }
 
 void NearbyConnectionsManagerImpl::OnBandwidthChanged(
@@ -804,6 +938,48 @@ void NearbyConnectionsManagerImpl::OnPayloadTransferUpdate(
       << "Writing incoming byte message to NearbyConnection.";
   connections_it->second->WriteMessage(
       payload_it->second->content->get_bytes()->bytes);
+}
+
+void NearbyConnectionsManagerImpl::OnConnectionInitiated(
+    PresenceDevicePtr remote_device,
+    InitialConnectionInfoV3Ptr info) {
+  if (!process_reference_) {
+    return;
+  }
+
+  if (info->authentication_status ==
+      nearby::connections::mojom::AuthenticationStatus::kSuccess) {
+    mojo::PendingRemote<PayloadListenerV3> payload_listener;
+    payload_listener_v3s_.Add(
+        this, payload_listener.InitWithNewPipeAndPassReceiver());
+
+    process_reference_->GetNearbyConnections()->AcceptConnectionV3(
+        service_id_, std::move(remote_device), std::move(payload_listener),
+        base::BindOnce([](ConnectionsStatus status) {
+          CD_LOG(VERBOSE, Feature::NC)
+              << __func__ << ": Accept connection (V3) attempted to device "
+              << " over Nearby Connections with result: "
+              << ConnectionsStatusToString(status);
+        }));
+  } else {
+    process_reference_->GetNearbyConnections()->RejectConnectionV3(
+        service_id_, std::move(remote_device),
+        base::BindOnce([](ConnectionsStatus status) {
+          CD_LOG(VERBOSE, Feature::NC)
+              << __func__ << ": Reject connection (V3) attempted to device "
+              << " over Nearby Connections with result: "
+              << ConnectionsStatusToString(status);
+        }));
+  }
+}
+
+void NearbyConnectionsManagerImpl::OnDisconnected(
+    PresenceDevicePtr remote_device) {
+  // TODO(b/311263430): Implement when the `OnResult()` callback is implemented
+  // and the appropriate |NearbyConnection| is created upon
+  // ConnectionsStatus::kSuccess. This function will then tear down the
+  // established |NearbyConnection|.
+  NOTIMPLEMENTED();
 }
 
 nearby::connections::mojom::NearbyConnections*

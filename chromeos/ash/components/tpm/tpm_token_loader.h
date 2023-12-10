@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_COMPONENTS_TPM_TPM_TOKEN_LOADER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -17,7 +18,6 @@
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/ash/components/tpm/tpm_token_info_getter.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class SequencedTaskRunner;
@@ -94,7 +94,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_TPM) TPMTokenLoader
   void ContinueTokenInitialization();
   void OnTPMTokenEnabledForNSS();
   void OnGotTpmTokenInfo(
-      absl::optional<user_data_auth::TpmTokenInfo> token_info);
+      std::optional<user_data_auth::TpmTokenInfo> token_info);
   void OnTPMTokenInitialized(bool success);
 
   // Notifies observers that the TPM token is ready.

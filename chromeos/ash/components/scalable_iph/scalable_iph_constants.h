@@ -144,6 +144,10 @@ inline constexpr char kEventNameOpenPersonalizationApp[] =
 // Recorded when a print job is created.
 constexpr char kEventNamePrintJobCreated[] = "ScalableIphPrintJobCreated";
 
+// Recorded when a game window is opened.
+inline constexpr char kEventNameGameWindowOpened[] =
+    "ScalableIphGameWindowOpened";
+
 // `FiveMinTick` event is recorded every five minutes after OOBE completion.
 inline constexpr char kEventNameFiveMinTick[] = "ScalableIphFiveMinTick";
 

@@ -42,6 +42,11 @@ void MaybeFreezePageOnUIThread(const WebContentsProxy& contents_proxy) {
     return;
   }
 
+  // A visible page should not be frozen.
+  if (contents->GetVisibility() == content::Visibility::VISIBLE) {
+    return;
+  }
+
   contents->SetPageFrozen(true);
 }
 

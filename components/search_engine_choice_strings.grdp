@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <grit-part>
-<if expr="not is_android">
   <if expr="use_titlecase">
     <message name="IDS_SEARCH_ENGINE_CHOICE_PAGE_TITLE" desc="This string is the heading of a screen that prompts the user to select the search engine that they want to use by default. (A search engine provides answers to search queries; this is different from a browser, which displays web pages. A search engine powers many experiences within a browser.) We want users to read this screen and understand that they can use any search engine with Chrome.">
       Choose Your Search Engine
@@ -60,7 +59,7 @@
     Search with <ph name="PRODUCT_NAME">$1<ex>Google</ex></ph>
   </message>
 
-  <message name="IDS_SEARCH_ENGINE_CHOICE_SETTINGS_SUBTITLE" desc="This is the body text of a dialog where the user can change their default search engine. This string explains that the list of search engines reflects the user’s region and are randomized (not in order of recommendation). We want users to understand that they can use any search engine with Chrome.">
+  <message name="IDS_SEARCH_ENGINE_CHOICE_SETTINGS_SUBTITLE" desc="This is the body text of a dialog where the user can change their default search engine. This string explains that the list of search engines reflects the user’s region and are randomized (not in order of recommendation). We want users to understand that they can use any search engine with Chrome." formatter_data="android_java">
     These search engines are popular in your region and are shown in random order
   </message>
 
@@ -72,5 +71,11 @@
     Change
   </message>
 
-</if>
+  <message name="IDS_SEARCH_ENGINE_FALLBACK_MARKETING_SNIPPET" desc="This string describes what a search engine can do. The string is only shown if a search engine does not provide their own marketing snippet. The string is ambiguous and has a neutral, unopinionated tone.">
+    You can use <ph name="SEARCH_ENGINE_NAME">$1<ex>Google</ex></ph> to search the web.
+  </message>
+
+  <message name="IDS_SEARCH_ENGINE_CHOICE_MORE_BUTTON" desc="Title of the button to scroll the choice screen when it is too small to show everything at once.">
+    More
+  </message>
 </grit-part>

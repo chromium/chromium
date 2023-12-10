@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 
@@ -22,7 +23,12 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.supplier.LazyOneshotSupplier;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.back_press.BackPressManager;
+import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.ui.base.TestActivity;
 
 /** Unit tests for {@link HubProvider}. */
@@ -34,12 +40,16 @@ public class HubProviderUnitTest {
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(TestActivity.class);
 
+    @Mock private TabModelSelector mTabModelSelector;
     @Mock private Pane mMockPane;
+    @Mock private BackPressManager mBackPressManagerMock;
+    @Mock private ObservableSupplier<Tab> mTabSupplierMock;
 
     private Activity mActivity;
 
     @Before
     public void setUp() {
+        when(mTabModelSelector.getCurrentTabSupplier()).thenReturn(mTabSupplierMock);
         mActivityScenarioRule.getScenario().onActivity(this::onActivity);
     }
 
@@ -50,7 +60,12 @@ public class HubProviderUnitTest {
     @Test
     @SmallTest
     public void testHubProvider() {
-        HubProvider provider = new HubProvider(mActivity, new DefaultPaneOrderController());
+        HubProvider provider =
+                new HubProvider(
+                        mActivity,
+                        new DefaultPaneOrderController(),
+                        mBackPressManagerMock,
+                        () -> mTabModelSelector);
 
         PaneListBuilder builder = provider.getPaneListBuilder();
 
@@ -58,7 +73,7 @@ public class HubProviderUnitTest {
         assertNotNull(hubManagerSupplier);
         assertFalse(hubManagerSupplier.hasValue());
 
-        builder.registerPane(PaneId.TAB_SWITCHER, () -> mMockPane);
+        builder.registerPane(PaneId.TAB_SWITCHER, LazyOneshotSupplier.fromValue(mMockPane));
         assertFalse(builder.isBuilt());
 
         HubManager hubManager = hubManagerSupplier.get();

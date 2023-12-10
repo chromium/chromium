@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_UI_SETTINGS_GOOGLE_SERVICES_GOOGLE_SERVICES_SETTINGS_COMMAND_HANDLER_H_
 #define IOS_CHROME_BROWSER_UI_SETTINGS_GOOGLE_SERVICES_GOOGLE_SERVICES_SETTINGS_COMMAND_HANDLER_H_
 
-#import "ios/chrome/browser/signin/constants.h"
+#import "ios/chrome/browser/signin/model/constants.h"
 #import "ios/chrome/browser/ui/authentication/authentication_ui_util.h"
 
 // Protocol to communicate user actions from the mediator to its coordinator.

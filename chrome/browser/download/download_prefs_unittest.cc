@@ -707,6 +707,7 @@ TEST(DownloadPrefsTest, ManagedPromptForDownload) {
 
 #else  // !is_android
 // Verifies the returned value of PromptForDuplicateFile().
+// TODO(chlily): Clean up this test/pref. We no longer plan to implement this.
 TEST(DownloadPrefsTest, PromptForDuplicateFile) {
   content::BrowserTaskEnvironment task_environment;
   TestingProfile profile;
@@ -717,32 +718,14 @@ TEST(DownloadPrefsTest, PromptForDuplicateFile) {
                                  false);
   EXPECT_FALSE(prefs.PromptForDuplicateFile());
 
-  // BubbleV2 enabled and duplicate prompt enabled.
-  {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitWithFeatures(
-        /*enabled_features=*/{safe_browsing::kDownloadBubble,
-                              safe_browsing::kDownloadBubbleV2},
-        /*disabled_features=*/{});
-    profile.GetPrefs()->SetBoolean(prefs::kDownloadDuplicateFilePromptEnabled,
-                                   true);
+  // Duplicate prompt enabled.
+  profile.GetPrefs()->SetBoolean(prefs::kDownloadDuplicateFilePromptEnabled,
+                                 true);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    EXPECT_FALSE(prefs.PromptForDuplicateFile());
+  EXPECT_FALSE(prefs.PromptForDuplicateFile());
 #else
-    EXPECT_TRUE(prefs.PromptForDuplicateFile());
+  EXPECT_TRUE(prefs.PromptForDuplicateFile());
 #endif
-  }
-
-  // BubbleV2 disabled and duplicate prompt enabled.
-  {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitWithFeatures(
-        /*enabled_features=*/{safe_browsing::kDownloadBubble},
-        /*disabled_features=*/{safe_browsing::kDownloadBubbleV2});
-    profile.GetPrefs()->SetBoolean(prefs::kDownloadDuplicateFilePromptEnabled,
-                                   true);
-    EXPECT_FALSE(prefs.PromptForDuplicateFile());
-  }
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 

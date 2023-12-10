@@ -1,20 +1,12 @@
 This is a testharness.js-based test.
-[PASS] Property text-decoration-line value 'none'
-[PASS] Property text-decoration-line value 'underline'
-[PASS] Property text-decoration-line value 'overline'
-[PASS] Property text-decoration-line value 'line-through'
 [FAIL] Property text-decoration-line value 'blink'
   assert_equals: expected "blink" but got "none"
-[PASS] Property text-decoration-line value 'underline overline'
-[PASS] Property text-decoration-line value 'underline line-through'
 [FAIL] Property text-decoration-line value 'underline blink'
   assert_equals: expected "underline blink" but got "underline"
-[PASS] Property text-decoration-line value 'overline line-through'
 [FAIL] Property text-decoration-line value 'overline blink'
   assert_equals: expected "overline blink" but got "overline"
 [FAIL] Property text-decoration-line value 'line-through blink'
   assert_equals: expected "line-through blink" but got "line-through"
-[PASS] Property text-decoration-line value 'underline overline line-through'
 [FAIL] Property text-decoration-line value 'underline overline blink'
   assert_equals: expected "underline overline blink" but got "underline overline"
 [FAIL] Property text-decoration-line value 'underline line-through blink'
@@ -23,7 +15,5 @@ This is a testharness.js-based test.
   assert_equals: expected "overline line-through blink" but got "overline line-through"
 [FAIL] Property text-decoration-line value 'underline overline line-through blink'
   assert_equals: expected "underline overline line-through blink" but got "underline overline line-through"
-[PASS] Property text-decoration-line value 'spelling-error'
-[PASS] Property text-decoration-line value 'grammar-error'
 Harness: the test ran to completion.
 

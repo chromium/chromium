@@ -191,6 +191,10 @@ class ReadAnythingAppModel {
   // be ran again to check for the correct structure.
   bool IsPDFFormatted() const;
 
+  // Google Docs need special handling.
+  void set_is_google_docs(bool is_google_docs) { is_docs_ = is_google_docs; }
+  bool is_docs() const { return is_docs_; }
+
  private:
   void EraseTree(ui::AXTreeID tree_id);
 
@@ -211,7 +215,12 @@ class ReadAnythingAppModel {
       ui::AXTreeID tree_id);
 
   void ProcessNonGeneratedEvents(const std::vector<ui::AXEvent>& events);
-  void ProcessGeneratedEvents(const ui::AXEventGenerator& event_generator);
+
+  // The tree size arguments are used to determine if distillation of a PDF is
+  // necessary.
+  void ProcessGeneratedEvents(const ui::AXEventGenerator& event_generator,
+                              size_t prev_tree_size,
+                              size_t tree_size);
 
   ui::AXNode* GetParentForSelection(ui::AXNode* node);
 
@@ -304,6 +313,10 @@ class ReadAnythingAppModel {
   // webpage. We record the result of the distill() call for this entire
   // webpage, so we only make the call once the webpage finished loading.
   bool page_finished_loading_for_data_collection_ = false;
+
+  // Google Docs are different from regular webpages. We want to distill content
+  // from the annotated canvas elements, not the main tree.
+  bool is_docs_ = false;
 };
 
 #endif  // CHROME_RENDERER_ACCESSIBILITY_READ_ANYTHING_APP_MODEL_H_

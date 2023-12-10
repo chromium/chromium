@@ -153,7 +153,7 @@ class TestRunner : public system_extensions_test::mojom::TestRunner {
 
   void GetCurrentRunName(GetCurrentRunNameCallback callback) override {
     if (!is_multi_run_test_) {
-      std::move(callback).Run(absl::nullopt);
+      std::move(callback).Run(std::nullopt);
       return;
     }
     if (!current_run_name_.empty()) {

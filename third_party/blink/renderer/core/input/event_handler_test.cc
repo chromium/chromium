@@ -236,6 +236,143 @@ ShadowRoot* EventHandlerTest::SetShadowContent(const char* shadow_content,
   return shadow_root;
 }
 
+// Tests that WebFeature::kMouseDragOnCancelledMouseMove is use-counted after a
+// cancelled "mousemove" iff "selectstart" was not cancelled.
+TEST_F(EventHandlerTest, UseCountSelectionChangeOnCancelledMouseMove) {
+  ScopedMouseDragOnCancelledMouseMoveForTest scoped_feature(true);
+
+  SetHtmlInnerHTML(
+      "<style>"
+      "  body { margin:0px; }"
+      "  div { display:block; width:100px; height:100px; }"
+      "</style>"
+      "<body>"
+      "  <div>Text</div>"
+      "</body>");
+
+  GetDocument().GetSettings()->SetScriptEnabled(true);
+
+  Element* script = GetDocument().CreateRawElement(html_names::kScriptTag);
+  script->setInnerHTML(
+      "document.onmousemove = e => e.preventDefault();"
+      "document.onselectstart = e => e.preventDefault();");
+  GetDocument().body()->AppendChild(script);
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+
+  WebMouseEvent mouse_down_event(WebInputEvent::Type::kMouseDown,
+                                 gfx::PointF(1, 1), gfx::PointF(1, 1),
+                                 WebPointerProperties::Button::kLeft, 1,
+                                 WebInputEvent::Modifiers::kLeftButtonDown,
+                                 WebInputEvent::GetStaticTimeStampForTests());
+  WebMouseEvent mouse_move_event(WebInputEvent::Type::kMouseMove,
+                                 gfx::PointF(99, 99), gfx::PointF(99, 99),
+                                 WebPointerProperties::Button::kLeft, 1,
+                                 WebInputEvent::Modifiers::kLeftButtonDown,
+                                 WebInputEvent::GetStaticTimeStampForTests());
+  WebMouseEvent mouse_up_event(
+      WebMouseEvent::Type::kMouseUp, gfx::PointF(99, 99), gfx::PointF(99, 99),
+      WebPointerProperties::Button::kLeft, 1, WebInputEvent::kNoModifiers,
+      WebInputEvent::GetStaticTimeStampForTests());
+
+  // Drag the mouse on div.
+  GetDocument().GetFrame()->GetEventHandler().HandleMousePressEvent(
+      mouse_down_event);
+  GetDocument().GetFrame()->GetEventHandler().HandleMouseMoveEvent(
+      mouse_move_event, Vector<WebMouseEvent>(), Vector<WebMouseEvent>());
+  GetDocument().GetFrame()->GetEventHandler().HandleMouseReleaseEvent(
+      mouse_up_event);
+
+  // Because both "mousemove" and "selectstart" were cancelled,
+  // kMouseDragOnCancelledMouseMove use-counter should not be affected.
+  EXPECT_FALSE(GetDocument().Loader()->GetUseCounter().IsCounted(
+      WebFeature::kMouseDragOnCancelledMouseMove));
+
+  // Add another script tag to remove the selection start handler added above.
+  script = GetDocument().CreateRawElement(html_names::kScriptTag);
+  script->setInnerHTML("document.onselectstart = () => {};");
+  GetDocument().body()->AppendChild(script);
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+
+  // Drag the mouse on div again.
+  GetDocument().GetFrame()->GetEventHandler().HandleMousePressEvent(
+      mouse_down_event);
+  GetDocument().GetFrame()->GetEventHandler().HandleMouseMoveEvent(
+      mouse_move_event, Vector<WebMouseEvent>(), Vector<WebMouseEvent>());
+  GetDocument().GetFrame()->GetEventHandler().HandleMouseReleaseEvent(
+      mouse_up_event);
+
+  // Because "mousemove" was cancelled here and "selectstart" was not,
+  // kMouseDragOnCancelledMouseMove use-counter should be updated.
+  EXPECT_TRUE(GetDocument().Loader()->GetUseCounter().IsCounted(
+      WebFeature::kMouseDragOnCancelledMouseMove));
+}
+
+TEST_F(EventHandlerTest, UseCountDragDropOnCancelledMouseMove) {
+  ScopedMouseDragOnCancelledMouseMoveForTest scoped_feature(true);
+
+  SetHtmlInnerHTML(
+      "<style>"
+      "  body { margin: 0px; }"
+      "  img { width:100px; height:100px; }"
+      "</style>"
+      "<img id='target'>");
+
+  GetDocument().GetSettings()->SetScriptEnabled(true);
+
+  Element* script = GetDocument().CreateRawElement(html_names::kScriptTag);
+  script->setInnerHTML("document.onmousemove = e => e.preventDefault();");
+  GetDocument().body()->AppendChild(script);
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+
+  WebMouseEvent mouse_down_event(WebInputEvent::Type::kMouseDown,
+                                 gfx::PointF(1, 1), gfx::PointF(1, 1),
+                                 WebPointerProperties::Button::kLeft, 1,
+                                 WebInputEvent::Modifiers::kLeftButtonDown,
+                                 WebInputEvent::GetStaticTimeStampForTests());
+  WebMouseEvent mouse_move_event(WebInputEvent::Type::kMouseMove,
+                                 gfx::PointF(99, 99), gfx::PointF(99, 99),
+                                 WebPointerProperties::Button::kLeft, 1,
+                                 WebInputEvent::Modifiers::kLeftButtonDown,
+                                 WebInputEvent::GetStaticTimeStampForTests());
+  WebMouseEvent mouse_up_event(
+      WebMouseEvent::Type::kMouseUp, gfx::PointF(99, 99), gfx::PointF(99, 99),
+      WebPointerProperties::Button::kLeft, 1, WebInputEvent::kNoModifiers,
+      WebInputEvent::GetStaticTimeStampForTests());
+
+  // Drag the mouse on div.
+  GetDocument().GetFrame()->GetEventHandler().HandleMousePressEvent(
+      mouse_down_event);
+  GetDocument().GetFrame()->GetEventHandler().HandleMouseMoveEvent(
+      mouse_move_event, Vector<WebMouseEvent>(), Vector<WebMouseEvent>());
+  GetDocument().GetFrame()->GetEventHandler().HandleMouseReleaseEvent(
+      mouse_up_event);
+
+  // Because "dragstart" is not affected by "mousemove" cancellation, we don't
+  // expect kMouseDragOnCancelledMouseMove to update for an uncancelled
+  // "dragstart".
+  EXPECT_FALSE(GetDocument().Loader()->GetUseCounter().IsCounted(
+      WebFeature::kMouseDragOnCancelledMouseMove));
+
+  // Add another script tag to remove the drag start handler added above.
+  script = GetDocument().CreateRawElement(html_names::kScriptTag);
+  script->setInnerHTML("document.ondragstart = e => e.preventDefault();");
+  GetDocument().body()->AppendChild(script);
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+
+  // Drag the mouse on div again.
+  GetDocument().GetFrame()->GetEventHandler().HandleMousePressEvent(
+      mouse_down_event);
+  GetDocument().GetFrame()->GetEventHandler().HandleMouseMoveEvent(
+      mouse_move_event, Vector<WebMouseEvent>(), Vector<WebMouseEvent>());
+  GetDocument().GetFrame()->GetEventHandler().HandleMouseReleaseEvent(
+      mouse_up_event);
+
+  // For the same reason above, we don't expect kMouseDragOnCancelledMouseMove
+  // to update even for a cancelled "dragstart".
+  EXPECT_FALSE(GetDocument().Loader()->GetUseCounter().IsCounted(
+      WebFeature::kMouseDragOnCancelledMouseMove));
+}
+
 TEST_F(EventHandlerTest, dragSelectionAfterScroll) {
   SetHtmlInnerHTML(
       "<style> body { margin: 0px; } .upper { width: 300px; height: 400px; }"
@@ -299,6 +436,11 @@ TEST_F(EventHandlerTest, dragSelectionAfterScroll) {
                                  Selection().GetSelectionInDOMTree().Extent()));
   ASSERT_TRUE(range);
   EXPECT_EQ("Line 1\nLine 2", range->GetText());
+
+  // Because "mousemove" was not cancelled here, kMouseDragOnCancelledMouseMove
+  // use-counter should not be affected.
+  EXPECT_FALSE(GetDocument().Loader()->GetUseCounter().IsCounted(
+      WebFeature::kMouseDragOnCancelledMouseMove));
 }
 
 TEST_F(EventHandlerTest, multiClickSelectionFromTap) {
@@ -401,6 +543,11 @@ TEST_F(EventHandlerTest, draggedInlinePositionTest) {
                                     .GetFrame()
                                     ->GetEventHandler()
                                     .DragDataTransferLocationForTesting());
+
+  // Because "mousemove" was not cancelled here, kMouseDragOnCancelledMouseMove
+  // use-counter should not be affected.
+  EXPECT_FALSE(GetDocument().Loader()->GetUseCounter().IsCounted(
+      WebFeature::kMouseDragOnCancelledMouseMove));
 }
 
 TEST_F(EventHandlerTest, draggedSVGImagePositionTest) {

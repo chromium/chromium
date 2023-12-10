@@ -16,7 +16,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_base.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
 #include "components/metrics/metrics_reporting_default_state.h"
@@ -37,11 +37,20 @@ class NetworkTimeTracker;
 
 namespace metrics {
 
+// This SourceType is saved in Local state by unsent_log_store.cc and entries
+// should not be renumbered.
+enum UkmLogSourceType {
+  UKM_ONLY = 0,            // Log contains only UKM data.
+  APPKM_ONLY = 1,          // Log contains only AppKM data.
+  BOTH_UKM_AND_APPKM = 2,  // Log contains both AppKM and UKM data.
+};
+
 // Holds optional metadata associated with a log to be stored.
 struct LogMetadata {
   LogMetadata();
   LogMetadata(absl::optional<base::HistogramBase::Count> samples_count,
-              absl::optional<uint64_t> user_id);
+              absl::optional<uint64_t> user_id,
+              absl::optional<UkmLogSourceType> log_source_type);
   LogMetadata(const LogMetadata& other);
   ~LogMetadata();
 
@@ -54,6 +63,9 @@ struct LogMetadata {
 
   // User id associated with the log.
   absl::optional<uint64_t> user_id;
+
+  // For UKM logs, indicates the type of data.
+  absl::optional<UkmLogSourceType> log_source_type;
 };
 
 class MetricsServiceClient;

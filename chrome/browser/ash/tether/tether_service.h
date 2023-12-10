@@ -66,7 +66,6 @@ class TetherService
       device_sync::DeviceSyncClient* device_sync_client,
       secure_channel::SecureChannelClient* secure_channel_client,
       multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client,
-      NetworkStateHandler* network_state_handler,
       session_manager::SessionManager* session_manager);
   TetherService(const TetherService&) = delete;
   TetherService& operator=(const TetherService&) = delete;
@@ -157,7 +156,12 @@ class TetherService
   FRIEND_TEST_ALL_PREFIXES(TetherServiceTest, TestProhibitedByPolicy);
   FRIEND_TEST_ALL_PREFIXES(TetherServiceTest, TestIsBluetoothPowered);
   FRIEND_TEST_ALL_PREFIXES(TetherServiceTest, TestCellularIsUnavailable);
-  FRIEND_TEST_ALL_PREFIXES(TetherServiceTest, TestCellularIsAvailable);
+  FRIEND_TEST_ALL_PREFIXES(
+      TetherServiceTest,
+      TestCellularIsAvailable_InstantHotspotRebrandDisabled);
+  FRIEND_TEST_ALL_PREFIXES(
+      TetherServiceTest,
+      TestCellularIsAvailable_InstantHotspotRebrandEnabled);
   FRIEND_TEST_ALL_PREFIXES(TetherServiceTest, TestDisabled);
   FRIEND_TEST_ALL_PREFIXES(TetherServiceTest, TestEnabled);
   FRIEND_TEST_ALL_PREFIXES(TetherServiceTest,

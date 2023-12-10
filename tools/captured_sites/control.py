@@ -64,6 +64,8 @@ import subprocess
 import sys
 import time
 
+from collections import namedtuple
+
 # Checking for environment variables.
 _HOME_DIR = os.environ['HOME']
 _DEFAULT_USER_DATA_DIR = os.path.join(_HOME_DIR, 'data/userdir')
@@ -98,6 +100,9 @@ _PASSWORD_MANAGER_REFRESH = '*/CapturedSitesPasswordManagerRefresh'
 _VMODULE_AUTOFILL_FILE = 'autofill_captured_sites_interactive_uitest'
 _VMODULE_PASSWORD_FILE = 'password_manager_captured_sites_interactive_uitest'
 
+_WPR_SUPPORT_FILES_PATH = ('components/test/data/autofill/'
+                           'web_page_replay_support_files')
+
 _STABLE_GOOGLE_CHROME = '/usr/bin/google-chrome'
 _RELEASE_BUILD_CHROME = 'out/Release/chrome'
 
@@ -111,6 +116,16 @@ _AUTOFILL_CACHE_TYPE_LOOKUP = {
     'c': 'SavedCache',
     'p': 'ProductionServer',
     'n': 'OnlyLocalHeuristics'
+}
+
+WprInfo = namedtuple('WprInfo', ['cert', 'key', 'hash'])
+_WPR_CERT_LOOKUP = {
+    'ecdsa':
+    WprInfo('ecdsa_cert.pem', 'ecdsa_key.pem',
+            '2HcXCSKKJS0lEXLQEWhpHUfGuojiU0tiT5gOF9LP6IQ='),
+    'rsa':
+    WprInfo('wpr_cert.pem', 'wpr_key.pem',
+            'PoNnQAwghMiLUPg1YNFtvTfGreNT8r9oeLEyzgNCJWc='),
 }
 
 
@@ -146,6 +161,7 @@ def _add_chrome_args(parser):
                       dest='start_url',
                       action='store',
                       help='Grab starting URL from test recipe.')
+  _add_cert_args(parser)
 
 
 def _add_wpr_args(parser):
@@ -153,6 +169,7 @@ def _add_wpr_args(parser):
                       choices=['record', 'replay'],
                       help=('Whether to record new traffic to an archive, '
                             'or replay from an existing archive.'))
+  _add_cert_args(parser)
 
 
 def _add_run_args(parser):
@@ -216,6 +233,17 @@ def _add_run_args(parser):
                       dest='wpr_verbose',
                       action='store_true',
                       help='Also include verbose WPR output.')
+
+
+def _add_cert_args(parser):
+  parser.add_argument(
+      '-c',
+      '--cert-type',
+      dest='cert_type',
+      action='store',
+      default='all',
+      choices=['ecdsa', 'rsa', 'all'],
+      help='Define tls certificate type for the session. Defaults to `all`.')
 
 
 def _add_shared_args(parser):
@@ -284,6 +312,22 @@ def _print_starting_url(url):
   print('')
 
 
+def _retrieve_cert_info(cert_type):
+  cert_paths = []
+  key_paths = []
+  hashes = []
+  for cert_name, cert_info in _WPR_CERT_LOOKUP.items():
+    if cert_type == 'all' or cert_type == cert_name:
+      cert_paths.append(f'{_WPR_SUPPORT_FILES_PATH}/{cert_info.cert}')
+      key_paths.append(f'{_WPR_SUPPORT_FILES_PATH}/{cert_info.key}')
+      hashes.append(cert_info.hash)
+  cert_arg = '--https_cert_file=' + ','.join(cert_paths)
+  key_arg = '--https_key_file=' + ','.join(key_paths)
+  ignore_cert_list_arg = '--ignore-certificate-errors-spki-list=' + ','.join(
+      hashes)
+  return cert_arg, key_arg, ignore_cert_list_arg
+
+
 def _launch_chrome(options, forward_args):
   if options.start_url:
     _print_starting_url(options.start_url)
@@ -294,9 +338,9 @@ def _launch_chrome(options, forward_args):
     raise ValueError('Must set environment variable $CAPTURED_SITES_USER_DATA_D'
                      'IR or ensure default _USER_DATA_DIR_PATH exists')
 
+  _, _, ignore_cert_list_arg = _retrieve_cert_info(options.cert_type)
   command_args = [
-      options.build_target, '--ignore-certificate-errors-spki-list='
-      'PoNnQAwghMiLUPg1YNFtvTfGreNT8r9oeLEyzgNCJWc=',
+      options.build_target, ignore_cert_list_arg,
       '--user-data-dir="%s"' % _USER_DATA_DIR_PATH,
       '--disable-application-cache', '--show-autofill-signatures',
       '--enable-features=AutofillShowTypePredictions',
@@ -310,13 +354,13 @@ def _launch_chrome(options, forward_args):
 def _launch_wpr(options, forward_args):
   command_args = [
       'third_party/catapult/telemetry/telemetry/bin/linux/x86_64/wpr',
-      options.subhead, '--https_cert_file=components/test/data/autofill/'
-      'web_page_replay_support_files/wpr_cert.pem',
-      '--https_key_file=components/test/data/autofill/'
-      'web_page_replay_support_files/wpr_key.pem', '--http_port=8080',
-      '--https_port=8081', _WPR_INJECT_SCRIPTS
+      options.subhead, '--http_port=8080', '--https_port=8081'
   ]
+  cert_arg, key_arg, _ = _retrieve_cert_info(options.cert_type)
+  command_args.append(cert_arg)
+  command_args.append(key_arg)
 
+  command_args.append(_WPR_INJECT_SCRIPTS)
   if options.subhead == 'replay':
     command_args.append('--serve_response_in_chronological_sequence')
 

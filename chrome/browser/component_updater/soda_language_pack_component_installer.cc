@@ -58,8 +58,7 @@ std::string SodaLanguagePackComponentInstallerPolicy::GetExtensionId(
       speech::GetLanguageComponentConfig(language_code);
 
   if (config) {
-    return crx_file::id_util::GenerateIdFromHash(
-        config.value().public_key_sha, sizeof(config.value().public_key_sha));
+    return crx_file::id_util::GenerateIdFromHash(config.value().public_key_sha);
   }
 
   return std::string();
@@ -70,8 +69,7 @@ SodaLanguagePackComponentInstallerPolicy::GetExtensionIds() {
   base::flat_set<std::string> ids;
   for (const speech::SodaLanguagePackComponentConfig& config :
        speech::kLanguageComponentConfigs) {
-    ids.insert(crx_file::id_util::GenerateIdFromHash(
-        config.public_key_sha, sizeof(config.public_key_sha)));
+    ids.insert(crx_file::id_util::GenerateIdFromHash(config.public_key_sha));
   }
 
   return ids;

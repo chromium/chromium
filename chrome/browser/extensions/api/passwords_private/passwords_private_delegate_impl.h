@@ -15,6 +15,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/api/passwords_private/password_access_auth_timeout_handler.h"
 #include "chrome/browser/extensions/api/passwords_private/password_check_delegate.h"
@@ -28,9 +29,10 @@
 #include "components/password_manager/core/browser/export/export_progress_status.h"
 #include "components/password_manager/core/browser/export/password_manager_exporter.h"
 #include "components/password_manager/core/browser/sharing/recipients_fetcher.h"
-#include "components/password_manager/core/browser/sync/password_account_storage_settings_watcher.h"
 #include "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
+#include "components/sync/service/sync_service.h"
+#include "components/sync/service/sync_service_observer.h"
 #include "extensions/browser/extension_function.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -54,10 +56,10 @@ namespace extensions {
 class PasswordsPrivateDelegateImpl
     : public PasswordsPrivateDelegate,
       public password_manager::SavedPasswordsPresenter::Observer,
+      public syncer::SyncServiceObserver,
       public web_app::WebAppInstallManagerObserver {
  public:
   using AuthResultCallback = base::OnceCallback<void(bool)>;
-  using AuthResultIntermediateCallback = base::OnceCallback<bool(bool)>;
 
   explicit PasswordsPrivateDelegateImpl(Profile* profile);
 
@@ -195,7 +197,8 @@ class PasswordsPrivateDelegateImpl
       api::passwords_private::PasswordStoreSet from_stores);
   void UndoRemoveSavedPasswordOrExceptionInternal();
 
-  void MaybeShowPasswordShareButtonIPH(content::WebContents* web_contents);
+  void MaybeShowPasswordShareButtonIPH(
+      base::WeakPtr<content::WebContents> web_contents);
 
   // Callback for when the password list has been written to the destination.
   void OnPasswordsExportProgress(
@@ -209,15 +212,16 @@ class PasswordsPrivateDelegateImpl
       bool authenticated);
 
   // Callback for RequestCredentialDetails() after authentication check.
-  void OnRequestCredentialDetailsAuthResult(const std::vector<int>& ids,
-                                            UiEntriesCallback callback,
-                                            content::WebContents* web_contents,
-                                            bool authenticated);
+  void OnRequestCredentialDetailsAuthResult(
+      const std::vector<int>& ids,
+      UiEntriesCallback callback,
+      base::WeakPtr<content::WebContents> web_contents,
+      bool authenticated);
 
   // Callback for ExportPasswords() after authentication check.
   void OnExportPasswordsAuthResult(
       base::OnceCallback<void(const std::string&)> accepted_callback,
-      content::WebContents* web_contents,
+      base::WeakPtr<content::WebContents> web_contents,
       bool authenticated);
 
   // Callback for ContinueImport() after authentication check.
@@ -225,7 +229,9 @@ class PasswordsPrivateDelegateImpl
                                    const std::vector<int>& selected_ids,
                                    bool authenticated);
 
-  void OnAccountStorageOptInStateChanged();
+  // SyncServiceObserver overrides.
+  void OnStateChanged(syncer::SyncService* sync_service) override;
+  void OnSyncShutdown(syncer::SyncService* sync) override;
 
   void OnFetchingFamilyMembersCompleted(
       FetchFamilyResultsCallback callback,
@@ -238,7 +244,7 @@ class PasswordsPrivateDelegateImpl
       api::passwords_private::PlaintextReason reason);
 
   // Callback for biometric authentication after authentication check.
-  bool OnReauthCompleted(bool authenticated);
+  void OnReauthCompleted(bool authenticated);
 
   // Invokes PasswordsPrivateEventRouter::OnPasswordManagerAuthTimeout().
   void OsReauthTimeoutCall();
@@ -263,9 +269,6 @@ class PasswordsPrivateDelegateImpl
   std::unique_ptr<PasswordManagerPorterInterface> password_manager_porter_;
 
   PasswordAccessAuthTimeoutHandler auth_timeout_handler_;
-
-  std::unique_ptr<password_manager::PasswordAccountStorageSettingsWatcher>
-      password_account_storage_settings_watcher_;
 
   PasswordCheckDelegate password_check_delegate_;
 
@@ -292,6 +295,9 @@ class PasswordsPrivateDelegateImpl
 
   // Device authenticator used to authenticate users in settings.
   std::unique_ptr<device_reauth::DeviceAuthenticator> device_authenticator_;
+
+  base::ScopedObservation<syncer::SyncService, syncer::SyncServiceObserver>
+      sync_service_observation_{this};
 
   base::ScopedObservation<web_app::WebAppInstallManager,
                           web_app::WebAppInstallManagerObserver>

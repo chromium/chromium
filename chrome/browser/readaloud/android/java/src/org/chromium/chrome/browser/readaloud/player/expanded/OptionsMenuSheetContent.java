@@ -8,9 +8,10 @@ import android.content.Context;
 import android.content.res.Resources;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.Log;
+import org.chromium.chrome.browser.readaloud.player.InteractionHandler;
 import org.chromium.chrome.browser.readaloud.player.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -24,6 +25,8 @@ class OptionsMenuSheetContent extends MenuSheetContent {
     private static final String TAG = "ReadAloudOptions";
     private final Context mContext;
     private final PropertyModel mModel;
+    private VoiceMenuSheetContent mVoiceSheet;
+    private InteractionHandler mHandler;
 
     @IntDef({Item.VOICE, Item.TRANSLATE, Item.HIGHLIGHT})
     @Retention(RetentionPolicy.SOURCE)
@@ -62,38 +65,65 @@ class OptionsMenuSheetContent extends MenuSheetContent {
 
         mMenu.addItem(
                 Item.VOICE,
-                R.drawable.graphic_eq_24,
+                R.drawable.voice_selection_24,
                 res.getString(R.string.readaloud_voice_menu_title),
-                MenuItem.Action.EXPAND);
-        mMenu.addItem(
-                Item.TRANSLATE,
-                R.drawable.translate_24,
-                res.getString(R.string.readaloud_translate_menu_title),
-                MenuItem.Action.EXPAND);
+                MenuItem.Action.EXPAND,
+                res.getString(R.string.readaloud_voice_menu_title));
         mMenu.addItem(
                 Item.HIGHLIGHT,
                 R.drawable.format_ink_highlighter_24,
                 res.getString(R.string.readaloud_highlight_toggle_name),
-                MenuItem.Action.TOGGLE);
+                MenuItem.Action.TOGGLE,
+                res.getString(R.string.readaloud_highlight_toggle_name));
 
         mMenu.setItemClickHandler(this::onClick);
     }
 
+    void setInteractionHandler(InteractionHandler handler) {
+        mHandler = handler;
+        mMenu.getItem(Item.HIGHLIGHT)
+                .setToggleHandler(
+                        (value) -> {
+                            handler.onHighlightingChange(value);
+                        });
+    }
+
+    void setHighlightingSupported(boolean supported) {
+        mMenu.getItem(Item.HIGHLIGHT).setItemEnabled(supported);
+    }
+
+    void setHighlightingEnabled(boolean enabled) {
+        mMenu.getItem(Item.HIGHLIGHT).setValue(enabled);
+    }
+
     @Override
-    public void notifySheetClosed() {
-        super.notifySheetClosed();
+    public void notifySheetClosed(BottomSheetContent closingContent) {
+        super.notifySheetClosed(closingContent);
+        if (closingContent == mVoiceSheet && mHandler != null) {
+            mHandler.onVoiceMenuClosed();
+        }
+        if (mVoiceSheet != null) {
+            mVoiceSheet.notifySheetClosed(closingContent);
+        }
+    }
+
+    @Nullable
+    VoiceMenuSheetContent getVoiceMenu() {
+        return mVoiceSheet;
     }
 
     private void onClick(int itemId) {
         switch (itemId) {
             case Item.VOICE:
-                Log.i(TAG, "Voice menu item not implemented.");
-                // TODO: open voice sheet
-                break;
-
-            case Item.TRANSLATE:
-                Log.i(TAG, "Translate menu item not implemented.");
-                // TODO: open translate sheet
+                if (mVoiceSheet == null) {
+                    mVoiceSheet =
+                            new VoiceMenuSheetContent(
+                                    mContext,
+                                    /* parent= */ this,
+                                    getBottomSheetController(),
+                                    mModel);
+                }
+                openSheet(mVoiceSheet);
                 break;
 
             case Item.HIGHLIGHT:

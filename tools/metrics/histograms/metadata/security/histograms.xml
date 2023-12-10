@@ -172,7 +172,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.HttpsFirstMode.InterstitialReason"
-    enum="HttpsFirstModeInterstitialReason" expires_after="2024-03-31">
+    enum="HttpsFirstModeInterstitialReason" expires_after="2024-06-02">
   <owner>meacer@chromium.org</owner>
   <owner>trusty-transport@chromium.org</owner>
   <summary>
@@ -182,7 +182,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.HttpsFirstMode.NavigationEvent"
-    enum="HttpsFirstModeNavigationEvent" expires_after="2024-01-14">
+    enum="HttpsFirstModeNavigationEvent" expires_after="2024-07-14">
   <owner>cthomp@chromium.org</owner>
   <owner>trusty-transport@chromium.org</owner>
   <summary>
@@ -193,7 +193,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.HttpsFirstMode.SettingChanged" enum="BooleanEnabled"
-    expires_after="2024-03-17">
+    expires_after="2024-05-19">
   <owner>cthomp@chromium.org</owner>
   <owner>trusty-transport@chromium.org</owner>
   <summary>
@@ -203,8 +203,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Security.HttpsFirstMode.SettingChanged2"
+    enum="HttpsFirstModeSetting" expires_after="2024-07-01">
+  <owner>cthomp@chromium.org</owner>
+  <owner>trusty-transport@chromium.org</owner>
+  <summary>
+    Records the HTTPS-First Mode setting state when it changes for a profile.
+    Recorded for regular profiles only (not for Incognito, Guest, or Sign-in
+    profiles). Supersedes Security.HttpsFirstMode.SettingChanged after the
+    rollout of HTTPS-First Mode in Incognito.
+  </summary>
+</histogram>
+
 <histogram name="Security.HttpsFirstMode.SettingEnabledAtStartup"
-    enum="BooleanEnabled" expires_after="2024-03-17">
+    enum="BooleanEnabled" expires_after="2024-05-19">
   <owner>cthomp@chromium.org</owner>
   <owner>trusty-transport@chromium.org</owner>
   <summary>
@@ -214,9 +226,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Security.HttpsFirstMode.SettingEnabledAtStartup2"
+    enum="HttpsFirstModeSetting" expires_after="2024-07-01">
+  <owner>cthomp@chromium.org</owner>
+  <owner>trusty-transport@chromium.org</owner>
+  <summary>
+    Records the HTTPS-First Mode setting state at profile startup. Recorded for
+    regular profiles only (not for Incognito, Guest, or Sign-in profiles).
+    Supercedes Security.HttpsFirstMode.SettingEnabledAtStartup after the rollout
+    of HTTPS-First Mode in Incognito.
+  </summary>
+</histogram>
+
 <histogram
     name="Security.HttpsFirstModeWithEngagementHeuristic.AccumulatedHostCount"
-    units="hostnames" expires_after="2024-03-24">
+    units="hostnames" expires_after="2024-05-26">
   <owner>meacer@chromium.org</owner>
   <owner>trusty-transport@chromium.org</owner>
   <summary>
@@ -227,7 +251,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.HttpsFirstModeWithEngagementHeuristic.Duration"
-    units="seconds" expires_after="2024-03-24">
+    units="seconds" expires_after="2024-05-26">
   <owner>meacer@chromium.org</owner>
   <owner>trusty-transport@chromium.org</owner>
   <summary>
@@ -238,7 +262,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.HttpsFirstModeWithEngagementHeuristic.HostCount"
-    units="hostnames" expires_after="2024-03-24">
+    units="hostnames" expires_after="2024-05-26">
   <owner>meacer@chromium.org</owner>
   <owner>trusty-transport@chromium.org</owner>
   <summary>
@@ -250,7 +274,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Security.HttpsFirstModeWithEngagementHeuristic.NavigationEvent"
-    enum="HttpsFirstModeNavigationEvent" expires_after="2024-03-24">
+    enum="HttpsFirstModeNavigationEvent" expires_after="2024-05-26">
   <owner>meacer@chromium.org</owner>
   <owner>cthomp@chromium.org</owner>
   <owner>trusty-transport@chromium.org</owner>
@@ -262,7 +286,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.HttpsFirstModeWithEngagementHeuristic.State"
-    enum="SiteEngagementHeuristicState" expires_after="2024-03-24">
+    enum="SiteEngagementHeuristicState" expires_after="2024-05-26">
   <owner>meacer@chromium.org</owner>
   <owner>trusty-transport@chromium.org</owner>
   <summary>
@@ -302,7 +326,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.NavigationRequestSecurityLevel"
-    enum="NavigationRequestSecurityLevel" expires_after="2024-03-01">
+    enum="NavigationRequestSecurityLevel" expires_after="2024-05-05">
   <owner>jdeblasio@chromium.org</owner>
   <owner>trusty-transport@chromium.org</owner>
   <summary>
@@ -312,7 +336,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Security.PageEndReason" enum="PageEndReason"
-    expires_after="2024-03-17">
+    expires_after="2024-05-19">
   <owner>cthomp@chromium.org</owner>
   <owner>trusty-transport@chromium.org</owner>
   <summary>
@@ -322,7 +346,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.PageInfo.AboutThisSiteInteraction"
-    enum="AboutThisSiteInteraction" expires_after="2024-03-24">
+    enum="AboutThisSiteInteraction" expires_after="2024-05-26">
   <owner>dullweber@chromium.org</owner>
   <owner>olesiamarukhno@chromium.org</owner>
   <summary>
@@ -383,7 +407,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.PageInfo.TimeOpen.Action" units="ms"
-    expires_after="2024-03-17">
+    expires_after="2024-05-19">
   <owner>cthomp@chromium.org</owner>
   <owner>security-enamel@chromium.org</owner>
   <summary>
@@ -453,7 +477,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.PrivateNetworkAccess.PrivateIpResolveMatch"
-    enum="Boolean" expires_after="2024-03-03">
+    enum="Boolean" expires_after="2024-05-05">
   <owner>titouan@chromium.org</owner>
   <owner>lyf@chromium.org</owner>
   <owner>clamy@chromium.org</owner>
@@ -501,7 +525,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.SafetyTips.SafetyTipShown" enum="SafetyTipStatus"
-    expires_after="2024-03-24">
+    expires_after="2024-05-26">
   <owner>jdeblasio@chromium.org</owner>
   <owner>trusty-transport@chromium.org</owner>
   <summary>
@@ -511,7 +535,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.SCTAuditing.NumPersistedReportsLoaded"
-    units="reports" expires_after="2024-03-17">
+    units="reports" expires_after="2024-05-19">
   <owner>cthomp@chromium.org</owner>
   <owner>trusty-transport@chromium.org</owner>
   <summary>
@@ -543,7 +567,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.SCTAuditing.OptIn.ReportDeduplicated" enum="Boolean"
-    expires_after="2024-03-24">
+    expires_after="2024-05-26">
   <owner>cthomp@chromium.org</owner>
   <owner>trusty-transport@chromium.org</owner>
   <summary>
@@ -554,7 +578,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.SCTAuditing.OptIn.ReportersHWM" units="reporters"
-    expires_after="2024-03-24">
+    expires_after="2024-05-26">
   <owner>cthomp@chromium.org</owner>
   <owner>trusty-transport@chromium.org</owner>
   <summary>
@@ -564,7 +588,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.SCTAuditing.OptIn.ReportSampled" enum="Boolean"
-    expires_after="2024-03-24">
+    expires_after="2024-05-26">
   <owner>cthomp@chromium.org</owner>
   <owner>trusty-transport@chromium.org</owner>
   <summary>
@@ -575,7 +599,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.SCTAuditing.OptIn.ReportSize" units="bytes"
-    expires_after="2024-03-24">
+    expires_after="2024-05-26">
   <owner>cthomp@chromium.org</owner>
   <owner>trusty-transport@chromium.org</owner>
   <summary>
@@ -585,7 +609,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.SCTAuditing.OptIn.ReportSucceeded" enum="Boolean"
-    expires_after="2024-03-24">
+    expires_after="2024-05-26">
   <owner>cthomp@chromium.org</owner>
   <owner>trusty-transport@chromium.org</owner>
   <summary>
@@ -596,7 +620,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.SCTAuditing.OptOut.DroppedDueToLogNotFound"
-    enum="Boolean" expires_after="2024-03-24">
+    enum="Boolean" expires_after="2024-05-26">
   <owner>cthomp@chromium.org</owner>
   <owner>trusty-transport@chromium.org</owner>
   <summary>
@@ -607,7 +631,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.SCTAuditing.OptOut.LookupQueryResult"
-    enum="SCTLookupQueryResult" expires_after="2024-03-24">
+    enum="SCTLookupQueryResult" expires_after="2024-05-26">
   <owner>cthomp@chromium.org</owner>
   <owner>nsatragno@chromium.org</owner>
   <owner>trusty-transport@chromium.org</owner>
@@ -618,7 +642,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.SCTAuditing.OptOut.PopularSCTSkipped" enum="Boolean"
-    expires_after="2024-03-24">
+    expires_after="2024-05-26">
   <owner>cthomp@chromium.org</owner>
   <owner>nsatragno@chromium.org</owner>
   <owner>trusty-transport@chromium.org</owner>
@@ -630,7 +654,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.SCTAuditing.OptOut.ReportCount" units="reports"
-    expires_after="2024-03-24">
+    expires_after="2024-05-26">
   <owner>cthomp@chromium.org</owner>
   <owner>jdeblasio@chromium.org</owner>
   <summary>
@@ -696,7 +720,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.SecurityLevel.OnComplete" enum="SecurityLevel"
-    expires_after="2024-03-10">
+    expires_after="2024-05-12">
   <owner>cthomp@chromium.org</owner>
   <owner>security-enamel@chromium.org</owner>
   <summary>
@@ -719,7 +743,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Security.TimeOnPage2" units="ms"
-    expires_after="2024-01-14">
+    expires_after="2024-07-14">
   <owner>cthomp@chromium.org</owner>
   <owner>security-enamel@chromium.org</owner>
   <summary>
@@ -743,7 +767,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SiteIsolation.BrowsingInstanceCount" units="units"
-    expires_after="2024-03-17">
+    expires_after="2024-05-19">
   <owner>alexmos@chromium.org</owner>
   <owner>creis@chromium.org</owner>
   <summary>
@@ -752,7 +776,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SiteIsolation.IsolatableSandboxedIframes" units="processes"
-    expires_after="2024-03-17">
+    expires_after="2024-05-19">
   <owner>wjmaclean@chromium.org</owner>
   <owner>alexmos@chromium.org</owner>
   <owner>creis@chromium.org</owner>
@@ -771,7 +795,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SiteIsolation.IsolatableSandboxedIframes.UniqueOrigins"
-    units="processes" expires_after="2024-03-17">
+    units="processes" expires_after="2024-05-19">
   <owner>wjmaclean@chromium.org</owner>
   <owner>alexmos@chromium.org</owner>
   <owner>creis@chromium.org</owner>
@@ -786,7 +810,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SiteIsolation.IsolatableSandboxedIframes.UniqueSites"
-    units="processes" expires_after="2024-03-17">
+    units="processes" expires_after="2024-05-19">
   <owner>wjmaclean@chromium.org</owner>
   <owner>alexmos@chromium.org</owner>
   <owner>creis@chromium.org</owner>
@@ -806,6 +830,18 @@ chromium-metrics-reviews@google.com.
     Logs whether or not a password form was submitted from a site-isolated
     process that's dedicated to a single site. Recorded when a password form is
     submitted.
+  </summary>
+</histogram>
+
+<histogram
+    name="SiteIsolation.NewProcessUsedForNavigationWhenSameSiteProcessExists"
+    units="Boolean" expires_after="2024-04-20">
+  <owner>bashi@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    Records whether a new process is used for navigation when there are other
+    same site process(es). Recorded for the outer-most main frame navigation
+    when navigation is committed (cross-origin redirects are not recorded).
   </summary>
 </histogram>
 
@@ -849,62 +885,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="SiteIsolation.ORB.ResponseHeadersHeuristic.Decision"
-    enum="OpaqueResponseBlocking_ResponseHeadersHeuristic" expires_after="M92">
-  <obsolete>
-    Removed in Feb 2022 / M100.
-
-    Old results are preserved in
-    https://docs.google.com/document/d/1LkF7a-_RXg0uQQdk86FQHq7CMW5pKozPDmmbnJJRhY8/edit#heading=h.6labqs212jfn
-  </obsolete>
-  <owner>creis@chromium.org</owner>
-  <owner>lukasza@chromium.org</owner>
-  <summary>
-    The approximation of a route that Opaque Response Blocking (ORB) algorithm
-    would have taken to decide whether to block the response or not. The logged
-    value is based on heuristics that only look at the HTTP response headers,
-    and attempt to approximate if the full ORB algorithm would need to parse the
-    response body as Javascript (vs also reaching a decision purely based on the
-    HTTP response headers).
-
-    Note that only partial ORB algorithm is used for logging the UMA (e.g. no
-    multimedia sniffing and/or 206-response processing is done). This means that
-    the results overestimate how many responses need Javascript parsing.
-
-    Logged for each final HTTP/HTTPS response processed by the NetworkService.
-  </summary>
-</histogram>
-
-<histogram name="SiteIsolation.ORB.ResponseHeadersHeuristic.{OrbDecision}"
-    enum="RequestDestination" expires_after="M92">
-  <obsolete>
-    Removed in Feb 2022 / M100.
-
-    Old results are preserved in
-    https://docs.google.com/document/d/1LkF7a-_RXg0uQQdk86FQHq7CMW5pKozPDmmbnJJRhY8/edit#heading=h.6labqs212jfn
-  </obsolete>
-  <owner>creis@chromium.org</owner>
-  <owner>lukasza@chromium.org</owner>
-  <summary>
-    The request destination (e.g. script vs image) of a response that Opaque
-    Response Blocking (ORB) algorithm processed {OrbDecision}.
-
-    Note that only partial ORB algorithm is used for logging the UMA (e.g. no
-    multimedia sniffing and/or 206-response processing is done). This means that
-    the results overestimate how many responses need Javascript parsing.
-
-    Logged for each final HTTP/HTTPS response processed by the NetworkService.
-  </summary>
-  <token key="OrbDecision">
-    <variant name="ProcessedBasedOnHeaders"
-        summary="based on HTTP response headers"/>
-    <variant name="RequiresJavascriptParsing"
-        summary="with required Javascript parsing"/>
-  </token>
-</histogram>
-
 <histogram name="SiteIsolation.OutOfProcessIframes" units="oopifs"
-    expires_after="2024-03-24">
+    expires_after="2024-05-26">
   <owner>alexmos@chromium.org</owner>
   <owner>creis@chromium.org</owner>
   <owner>lukasza@chromium.org</owner>
@@ -915,7 +897,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SiteIsolation.OutOfProcessInnerFrameTrees" units="frame trees"
-    expires_after="2024-03-14">
+    expires_after="2024-05-19">
   <owner>alexmos@chromium.org</owner>
   <owner>creis@chromium.org</owner>
   <owner>lukasza@chromium.org</owner>
@@ -940,7 +922,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SiteIsolation.ProxyCount" units="proxies"
-    expires_after="2024-03-17">
+    expires_after="2024-05-19">
   <owner>alexmos@chromium.org</owner>
   <owner>creis@chromium.org</owner>
   <owner>lukasza@chromium.org</owner>
@@ -1026,7 +1008,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SiteIsolation.SiteInstancesPerBrowsingInstance" units="units"
-    expires_after="2024-03-17">
+    expires_after="2024-05-19">
   <owner>alexmos@chromium.org</owner>
   <owner>creis@chromium.org</owner>
   <owner>lukasza@chromium.org</owner>

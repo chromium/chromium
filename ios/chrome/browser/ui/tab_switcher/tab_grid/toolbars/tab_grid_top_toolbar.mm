@@ -532,6 +532,12 @@ const CGFloat kSymbolSearchImagePointSize = 22;
   if (sel_isEqual(action, @selector(keyCommand_undo))) {
     return _undoActive;
   }
+  if (sel_isEqual(action, @selector(keyCommand_close))) {
+    return _doneButton.enabled || _mode == TabGridModeSearch;
+  }
+  if (sel_isEqual(action, @selector(keyCommand_find))) {
+    return _searchButton.enabled;
+  }
   return [super canPerformAction:action withSender:sender];
 }
 
@@ -547,26 +553,50 @@ const CGFloat kSymbolSearchImagePointSize = 22;
   [self closeAllButtonTapped:nil];
 }
 
+- (void)keyCommand_close {
+  base::RecordAction(base::UserMetricsAction("MobileKeyCommandClose"));
+  if (_mode == TabGridModeSearch) {
+    [self cancelSearchButtonTapped:nil];
+  } else {
+    [self doneButtonTapped:nil];
+  }
+}
+
+- (void)keyCommand_find {
+  base::RecordAction(base::UserMetricsAction("MobileKeyCommandSearchTabs"));
+  [self searchButtonTapped:nil];
+}
+
 #pragma mark - Control actions
 
 - (void)closeAllButtonTapped:(id)sender {
-  [self.buttonsDelegate closeAllButtonTapped:sender];
+  if (_closeAllOrUndoButton.enabled) {
+    [self.buttonsDelegate closeAllButtonTapped:sender];
+  }
 }
 
 - (void)doneButtonTapped:(id)sender {
-  [self.buttonsDelegate doneButtonTapped:sender];
+  if (_doneButton.enabled) {
+    [self.buttonsDelegate doneButtonTapped:sender];
+  }
 }
 
 - (void)selectAllButtonTapped:(id)sender {
-  [self.buttonsDelegate selectAllButtonTapped:sender];
+  if (_selectAllButton.enabled) {
+    [self.buttonsDelegate selectAllButtonTapped:sender];
+  }
 }
 
 - (void)searchButtonTapped:(id)sender {
-  [self.buttonsDelegate searchButtonTapped:sender];
+  if (_searchButton.enabled) {
+    [self.buttonsDelegate searchButtonTapped:sender];
+  }
 }
 
 - (void)cancelSearchButtonTapped:(id)sender {
-  [self.buttonsDelegate cancelSearchButtonTapped:sender];
+  if (_cancelSearchButton.enabled) {
+    [self.buttonsDelegate cancelSearchButtonTapped:sender];
+  }
 }
 
 @end

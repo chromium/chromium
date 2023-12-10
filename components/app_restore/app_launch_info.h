@@ -79,6 +79,8 @@ struct COMPONENT_EXPORT(APP_RESTORE) AppLaunchInfo {
   // in full restore are persistsed by sessions. This field is not converted to
   // base::Value in base value conversions.
   std::vector<tab_groups::TabGroupInfo> tab_group_infos;
+  // Lacros only, the ID of the lacros profile that this browser uses.
+  absl::optional<uint64_t> lacros_profile_id;
 };
 
 }  // namespace app_restore

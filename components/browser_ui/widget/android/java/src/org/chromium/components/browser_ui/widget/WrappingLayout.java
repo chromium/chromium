@@ -17,16 +17,17 @@ import java.util.ArrayList;
 /**
  * A horizontal layout that can wrap to the next line, if there's not enough space to fit all views.
  * Accounts for padding set on self and margins on children, but uniform spacing between elements
- * can be set through attributes, e.g.:
- *
- *     <org.chromium.components.browser_ui.widget.WrappingLayout
- *         android:id="@+id/wrapping_layout"
- *         android:layout_width="match_parent"
- *         android:layout_height="match_parent"
- *         app:horizontalSpacing="10dp"
- *         app:verticalSpacing="5dp">
+ * can be set through attributes, as seen in the example below.
  */
 public class WrappingLayout extends ViewGroup {
+    // Example use of this class in xml:
+    //      <org.chromium.components.browser_ui.widget.WrappingLayout
+    //          android:id="@+id/wrapping_layout"
+    //          android:layout_width="match_parent"
+    //          android:layout_height="match_parent"
+    //          app:horizontalSpacing="10dp"
+    //          app:verticalSpacing="5dp">
+
     // The amount of horizontal space to apply to each child view (in pixels), in addition to any
     // margins set by the child.
     private int mHorizontalSpacing;
@@ -50,8 +51,9 @@ public class WrappingLayout extends ViewGroup {
     public WrappingLayout(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
 
-        TypedArray array = getContext().obtainStyledAttributes(
-                attrs, R.styleable.WrappingLayout, defStyleAttr, 0);
+        TypedArray array =
+                getContext()
+                        .obtainStyledAttributes(attrs, R.styleable.WrappingLayout, defStyleAttr, 0);
         mHorizontalSpacing =
                 array.getDimensionPixelSize(R.styleable.WrappingLayout_horizontalSpacing, 0);
         mVerticalSpacing =
@@ -60,6 +62,7 @@ public class WrappingLayout extends ViewGroup {
 
     /**
      * Sets the amount of spacing between views.
+     *
      * @param horizontal The amount of horizontal spacing to add (in pixels).
      * @param vertical The amount of vertical spacing to add (in pixels).
      */
@@ -164,18 +167,23 @@ public class WrappingLayout extends ViewGroup {
         measuredHeight += getPaddingTop() + getPaddingBottom();
 
         setMeasuredDimension(
-                resolveSizeAndState(measureDimension(measuredWidth, getSuggestedMinimumWidth(),
-                                            widthMeasureSpec),
-                        widthMeasureSpec, 0),
-                resolveSizeAndState(measureDimension(measuredHeight, getSuggestedMinimumHeight(),
-                                            heightMeasureSpec),
-                        heightMeasureSpec, 0));
+                resolveSizeAndState(
+                        measureDimension(
+                                measuredWidth, getSuggestedMinimumWidth(), widthMeasureSpec),
+                        widthMeasureSpec,
+                        0),
+                resolveSizeAndState(
+                        measureDimension(
+                                measuredHeight, getSuggestedMinimumHeight(), heightMeasureSpec),
+                        heightMeasureSpec,
+                        0));
 
         mVisibleChildren.clear();
     }
 
     /**
      * Resolves the actual size, after taking the measure spec into account.
+     *
      * @param desiredSize The desired size of the view (in pixels).
      * @param minSize The suggested minimum size (in pixels).
      * @param measureSpec The measure spec to use to determine the actual size.

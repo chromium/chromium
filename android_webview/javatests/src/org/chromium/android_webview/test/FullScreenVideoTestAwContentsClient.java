@@ -18,9 +18,7 @@ import org.chromium.base.test.util.CallbackHelper;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-/**
- * This class is a AwContentsClient for full screen video test.
- */
+/** This class is a AwContentsClient for full screen video test. */
 public class FullScreenVideoTestAwContentsClient extends TestAwContentsClient {
     public static final long WAITING_SECONDS = 20L;
     private CallbackHelper mOnShowCustomViewCallbackHelper = new CallbackHelper();
@@ -33,8 +31,8 @@ public class FullScreenVideoTestAwContentsClient extends TestAwContentsClient {
     private View mCustomView;
     private AwContentsClient.CustomViewCallback mExitCallback;
 
-    public FullScreenVideoTestAwContentsClient(Activity activity,
-            boolean allowHardwareAcceleration) {
+    public FullScreenVideoTestAwContentsClient(
+            Activity activity, boolean allowHardwareAcceleration) {
         mActivity = activity;
         mAllowHardwareAcceleration = allowHardwareAcceleration;
     }
@@ -48,21 +46,24 @@ public class FullScreenVideoTestAwContentsClient extends TestAwContentsClient {
             mCustomView.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
         }
         mExitCallback = callback;
-        mActivity.getWindow().setFlags(
-                WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        mActivity
+                .getWindow()
+                .setFlags(
+                        WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                        WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
-        mActivity.getWindow().addContentView(view,
-                new FrameLayout.LayoutParams(
-                        ViewGroup.LayoutParams.MATCH_PARENT,
-                        ViewGroup.LayoutParams.MATCH_PARENT,
-                        Gravity.CENTER));
+        mActivity
+                .getWindow()
+                .addContentView(
+                        view,
+                        new FrameLayout.LayoutParams(
+                                ViewGroup.LayoutParams.MATCH_PARENT,
+                                ViewGroup.LayoutParams.MATCH_PARENT,
+                                Gravity.CENTER));
         mOnShowCustomViewCallbackHelper.notifyCalled();
     }
 
-    /**
-     * Sets a task that will be run when {@link #onHideCustomView()} is invoked.
-     */
+    /** Sets a task that will be run when {@link #onHideCustomView()} is invoked. */
     public void setOnHideCustomViewRunnable(Runnable runnable) {
         mOnHideCustomViewRunnable = runnable;
     }

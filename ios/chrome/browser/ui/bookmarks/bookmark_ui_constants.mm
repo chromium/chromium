@@ -46,7 +46,7 @@ NSString* const kBookmarksHomeSearchBarIdentifier =
 NSString* const kBookmarksHomeSearchScrimIdentifier =
     @"kBookmarksHomeSearchScrimIdentifier";
 
-const CGFloat kBookmarkCellViewSpacing = 10.0f;
+const CGFloat kBookmarkCellViewSpacing = 16.0f;
 const CGFloat kBookmarkCellVerticalInset = 11.0f;
 const CGFloat kBookmarkCellHorizontalLeadingInset = 16.0f;
 const CGFloat kBookmarkCellHorizontalTrailingInset = 24.0f;
@@ -60,3 +60,10 @@ NSString* const kBookmarkCreateNewAccountFolderCellIdentifier =
 
 NSString* const kBookmarkEmptyStateExplanatoryLabelIdentifier =
     @"kBookmarkEmptyStateExplanatoryLabelIdentifier";
+
+NSString* const kBookmarksHomeBatchUploadRecommendationItemIdentifier =
+    @"kBookmarksHomeBatchUploadRecommendationItemIdentifier";
+NSString* const kBookmarksHomeBatchUploadButtonIdentifier =
+    @"kBookmarksHomeBatchUploadButtonIdentifier";
+NSString* const kBookmarksHomeBatchUploadAlertIdentifier =
+    @"kBookmarksHomeBatchUploadAlertIdentifier";

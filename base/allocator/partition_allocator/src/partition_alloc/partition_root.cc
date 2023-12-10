@@ -2,44 +2,44 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_root.h"
+#include "partition_alloc/partition_root.h"
 
 #include <cstdint>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/freeslot_bitmap.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/oom.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/page_allocator.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_address_space.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc-inl.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/bits.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/compiler_specific.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/component_export.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/debug/debugging_buildflags.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/thread_annotations.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_check.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_config.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_constants.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_bucket.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_cookie.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_oom.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_page.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_ref_count.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/reservation_offset_table.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/tagging.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/thread_isolation/thread_isolation.h"
 #include "build/build_config.h"
+#include "partition_alloc/freeslot_bitmap.h"
+#include "partition_alloc/oom.h"
+#include "partition_alloc/page_allocator.h"
+#include "partition_alloc/partition_address_space.h"
+#include "partition_alloc/partition_alloc-inl.h"
+#include "partition_alloc/partition_alloc_base/bits.h"
+#include "partition_alloc/partition_alloc_base/compiler_specific.h"
+#include "partition_alloc/partition_alloc_base/component_export.h"
+#include "partition_alloc/partition_alloc_base/debug/debugging_buildflags.h"
+#include "partition_alloc/partition_alloc_base/thread_annotations.h"
+#include "partition_alloc/partition_alloc_buildflags.h"
+#include "partition_alloc/partition_alloc_check.h"
+#include "partition_alloc/partition_alloc_config.h"
+#include "partition_alloc/partition_alloc_constants.h"
+#include "partition_alloc/partition_bucket.h"
+#include "partition_alloc/partition_cookie.h"
+#include "partition_alloc/partition_oom.h"
+#include "partition_alloc/partition_page.h"
+#include "partition_alloc/partition_ref_count.h"
+#include "partition_alloc/reservation_offset_table.h"
+#include "partition_alloc/tagging.h"
+#include "partition_alloc/thread_isolation/thread_isolation.h"
 
 #if BUILDFLAG(IS_MAC)
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/mac/mac_util.h"
+#include "partition_alloc/partition_alloc_base/mac/mac_util.h"
 #endif
 
 #if BUILDFLAG(USE_STARSCAN)
-#include "base/allocator/partition_allocator/src/partition_alloc/starscan/pcscan.h"
+#include "partition_alloc/starscan/pcscan.h"
 #endif
 
 #if !BUILDFLAG(HAS_64_BIT_POINTERS)
-#include "base/allocator/partition_allocator/src/partition_alloc/address_pool_manager_bitmap.h"
+#include "partition_alloc/address_pool_manager_bitmap.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -406,7 +406,7 @@ static size_t PartitionPurgeSlotSpan(PartitionRoot* root,
   uintptr_t slot_span_start = SlotSpanMetadata::ToSlotSpanStart(slot_span);
   // First, walk the freelist for this slot span and make a bitmap of which
   // slots are not in use.
-  for (EncodedNextFreelistEntry* entry = slot_span->get_freelist_head(); entry;
+  for (PartitionFreelistEntry* entry = slot_span->get_freelist_head(); entry;
        entry = entry->GetNext(slot_size)) {
     size_t slot_number =
         bucket->GetSlotNumber(SlotStartPtr2Addr(entry) - slot_span_start);
@@ -481,7 +481,7 @@ static size_t PartitionPurgeSlotSpan(PartitionRoot* root,
     slot_span->num_unprovisioned_slots = new_unprovisioned_slots;
 
     size_t num_new_freelist_entries = 0;
-    internal::EncodedNextFreelistEntry* back = nullptr;
+    internal::PartitionFreelistEntry* back = nullptr;
     if (straighten) {
       // Rewrite the freelist to "straighten" it. This achieves two things:
       // getting rid of unprovisioned entries, ordering etnries based on how
@@ -496,13 +496,13 @@ static size_t PartitionPurgeSlotSpan(PartitionRoot* root,
         }
         // Add the slot to the end of the list. The most proper thing to do
         // would be to null-terminate the new entry with:
-        //   auto* entry = EncodedNextFreelistEntry::EmplaceAndInitNull(
+        //   auto* entry = PartitionFreelistEntry::EmplaceAndInitNull(
         //       slot_span_start + (slot_size * slot_index));
         // But no need to do this, as it's last-ness is likely temporary, and
         // the next iteration's back->SetNext(), or the post-loop
-        // EncodedNextFreelistEntry::EmplaceAndInitNull(back) will override it
+        // PartitionFreelistEntry::EmplaceAndInitNull(back) will override it
         // anyway.
-        auto* entry = static_cast<EncodedNextFreelistEntry*>(
+        auto* entry = static_cast<PartitionFreelistEntry*>(
             SlotStartAddr2Ptr(slot_span_start + (slot_size * slot_index)));
         if (num_new_freelist_entries) {
           back->SetNext(entry);
@@ -518,7 +518,7 @@ static size_t PartitionPurgeSlotSpan(PartitionRoot* root,
       uintptr_t first_unprovisioned_slot =
           slot_span_start + (num_provisioned_slots * slot_size);
       bool skipped = false;
-      for (EncodedNextFreelistEntry* entry = slot_span->get_freelist_head();
+      for (PartitionFreelistEntry* entry = slot_span->get_freelist_head();
            entry; entry = entry->GetNext(slot_size)) {
         uintptr_t entry_addr = SlotStartPtr2Addr(entry);
         if (entry_addr >= first_unprovisioned_slot) {
@@ -545,7 +545,7 @@ static size_t PartitionPurgeSlotSpan(PartitionRoot* root,
     if (straighten || unprovisioned_bytes) {
       if (num_new_freelist_entries) {
         PA_DCHECK(back);
-        EncodedNextFreelistEntry::EmplaceAndInitNull(back);
+        PartitionFreelistEntry::EmplaceAndInitNull(back);
 #if !BUILDFLAG(IS_WIN)
         // Memorize index of the last slot in the list, as it may be able to
         // participate in an optimization related to page discaring (below), due
@@ -611,12 +611,12 @@ static size_t PartitionPurgeSlotSpan(PartitionRoot* root,
     bool can_discard_free_list_pointer = false;
 #if !BUILDFLAG(IS_WIN)
     if (i != last_slot) {
-      begin_addr += sizeof(internal::EncodedNextFreelistEntry);
+      begin_addr += sizeof(internal::PartitionFreelistEntry);
     } else {
       can_discard_free_list_pointer = true;
     }
 #else
-    begin_addr += sizeof(internal::EncodedNextFreelistEntry);
+    begin_addr += sizeof(internal::PartitionFreelistEntry);
 #endif
 
     uintptr_t rounded_up_begin_addr = RoundUpToSystemPage(begin_addr);
@@ -991,6 +991,8 @@ void PartitionRoot::Init(PartitionOptions opts) {
         (opts.use_configurable_pool == PartitionOptions::kAllowed) &&
         IsConfigurablePoolAvailable();
     PA_DCHECK(!settings.use_configurable_pool || IsConfigurablePoolAvailable());
+    settings.zapping_by_free_flags =
+        opts.zapping_by_free_flags == PartitionOptions::kEnabled;
 #if PA_CONFIG(HAS_MEMORY_TAGGING)
     settings.memory_tagging_enabled_ =
         opts.memory_tagging.enabled == PartitionOptions::kEnabled;
@@ -1132,12 +1134,21 @@ void PartitionRoot::Init(PartitionOptions opts) {
 
 PartitionRoot::Settings::Settings() = default;
 
-PartitionRoot::PartitionRoot() : scheduler_loop_quarantine(this) {}
+PartitionRoot::PartitionRoot()
+    : scheduler_loop_quarantine_root(*this),
+      scheduler_loop_quarantine(
+          scheduler_loop_quarantine_root
+              .CreateBranch<internal::SchedulerLoopQuarantineBranch::
+                                kQuarantineCapacityCount>()) {}
 
 PartitionRoot::PartitionRoot(PartitionOptions opts)
-    : scheduler_loop_quarantine(
-          this,
-          opts.scheduler_loop_quarantine_capacity_in_bytes) {
+    : scheduler_loop_quarantine_root(
+          *this,
+          opts.scheduler_loop_quarantine_capacity_in_bytes),
+      scheduler_loop_quarantine(
+          scheduler_loop_quarantine_root
+              .CreateBranch<internal::SchedulerLoopQuarantineBranch::
+                                kQuarantineCapacityCount>()) {
   Init(opts);
 }
 
@@ -1316,7 +1327,7 @@ bool PartitionRoot::TryReallocInPlaceForNormalBuckets(void* object,
   // statistics (and cookie, if present).
   if (slot_span->CanStoreRawSize()) {
 #if BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT) && BUILDFLAG(PA_DCHECK_IS_ON)
-    internal::PartitionRefCount* old_ref_count;
+    internal::PartitionRefCount* old_ref_count = nullptr;
     if (brp_enabled()) {
       old_ref_count = internal::PartitionRefCountPointer(slot_start);
     }
@@ -1439,7 +1450,7 @@ void PartitionRoot::DumpStats(const char* partition_name,
   }
   PartitionBucketMemoryStats bucket_stats[internal::kNumBuckets];
   size_t num_direct_mapped_allocations = 0;
-  PartitionMemoryStats stats = {0};
+  PartitionMemoryStats stats = {};
 
   stats.syscall_count = syscall_count.load(std::memory_order_relaxed);
   stats.syscall_total_time_ns =
@@ -1707,6 +1718,11 @@ EXPORT_TEMPLATE void* PartitionRoot::AlignedAlloc<AllocFlags::kNone>(size_t,
                                                                      size_t);
 #undef EXPORT_TEMPLATE
 
+// TODO(https://crbug.com/1500662) Stop ignoring the -Winvalid-offsetof warning.
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Winvalid-offsetof"
+#endif
 static_assert(offsetof(PartitionRoot, sentinel_bucket) ==
                   offsetof(PartitionRoot, buckets) +
                       internal::kNumBuckets * sizeof(PartitionRoot::Bucket),
@@ -1715,5 +1731,8 @@ static_assert(offsetof(PartitionRoot, sentinel_bucket) ==
 static_assert(
     offsetof(PartitionRoot, lock_) >= 64,
     "The lock should not be on the same cacheline as the read-mostly flags");
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif
 
 }  // namespace partition_alloc

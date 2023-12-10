@@ -29,15 +29,16 @@ namespace safe_browsing {
 
 WebSocketSBHandshakeThrottle::WebSocketSBHandshakeThrottle(
     mojom::SafeBrowsing* safe_browsing,
-    int render_frame_id)
-    : render_frame_id_(render_frame_id), safe_browsing_(safe_browsing) {}
+    base::optional_ref<const blink::LocalFrameToken> local_frame_token)
+    : frame_token_(local_frame_token.CopyAsOptional()),
+      safe_browsing_(safe_browsing) {}
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 WebSocketSBHandshakeThrottle::WebSocketSBHandshakeThrottle(
     mojom::SafeBrowsing* safe_browsing,
-    int render_frame_id,
+    base::optional_ref<const blink::LocalFrameToken> local_frame_token,
     mojom::ExtensionWebRequestReporter* extension_web_request_reporter)
-    : render_frame_id_(render_frame_id),
+    : frame_token_(local_frame_token.CopyAsOptional()),
       safe_browsing_(safe_browsing),
       extension_web_request_reporter_(
           std::move(extension_web_request_reporter)) {}
@@ -90,7 +91,7 @@ void WebSocketSBHandshakeThrottle::ThrottleHandshake(
 
   base::UmaHistogramBoolean("SafeBrowsing.WebSocketCheck.Skipped", false);
   safe_browsing_->CreateCheckerAndCheck(
-      render_frame_id_, url_checker_.BindNewPipeAndPassReceiver(), url, "GET",
+      frame_token_, url_checker_.BindNewPipeAndPassReceiver(), url, "GET",
       net::HttpRequestHeaders(), load_flags,
       network::mojom::RequestDestination::kEmpty, false /* has_user_gesture */,
       false /* originated_from_service_worker */,

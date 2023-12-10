@@ -1,0 +1,27 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="vi">
+<translation id="1220509181886849806">Sử dụng mật khẩu đã lưu?</translation>
+<translation id="1435940442311036198">Sử dụng khoá đăng nhập trên một thiết bị khác</translation>
+<translation id="1717486229951421299">Danh sách thông tin đăng nhập mà bạn có thể chạm để điền đã được mở ở nửa dưới của màn hình.</translation>
+<translation id="2359808026110333948">Tiếp tục</translation>
+<translation id="2364266287022099258">Sử dụng khoá đăng nhập đã lưu?</translation>
+<translation id="3399357656427473483">Danh sách các thông tin đăng nhập mà bạn có thể chạm để điền.</translation>
+<translation id="3653689374478248324">Bạn sẽ đăng nhập vào <ph name="SITE_NAME" /></translation>
+<translation id="3950820424414687140">Đăng nhập</translation>
+<translation id="4553044860350038560">Khoá truy cập khác</translation>
+<translation id="4598345735110653698">Quản lý khoá đăng nhập</translation>
+<translation id="4722735765955348426">Mật khẩu của <ph name="USERNAME" /></translation>
+<translation id="4907224763885298217">Sử dụng phương thức khoá màn hình</translation>
+<translation id="5012523644916800014">Quản lý mật khẩu và khoá đăng nhập</translation>
+<translation id="5441504010984421144">Danh sách các thông tin xác thực mà bạn có thể chạm để điền đã được mở ở toàn độ cao.</translation>
+<translation id="5591247451101092906">Sử dụng mật khẩu hoặc khoá đăng nhập đã lưu?</translation>
+<translation id="5624120631404540903">Quản lý mật khẩu</translation>
+<translation id="6560306912274274630">Khoá truy cập cho <ph name="USERNAME" />, dùng phương thức khoá màn hình</translation>
+<translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{Mật khẩu mới cho trang web này}other{Các mật khẩu mới cho trang web này}}</translation>
+<translation id="7286867818472074330">Chọn khoá truy cập</translation>
+<translation id="7669320311687290322"><ph name="ITEM_LABEL" />, <ph name="ITEM_POSITION" />/<ph name="ITEMS_TOTAL" />.</translation>
+<translation id="7738288782501322815">Bạn đã nhận được mật khẩu cho <ph name="SITE_NAME" /></translation>
+<translation id="8614995815226664591"><ph name="SENDER_NAME" /> đã chia sẻ với bạn một mật khẩu cho <ph name="SITE_NAME" /></translation>
+<translation id="8891372124884726271">Danh sách thông tin xác thực đã đóng.</translation>
+</translationbundle>

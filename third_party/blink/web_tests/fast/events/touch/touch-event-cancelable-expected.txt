@@ -6,7 +6,5 @@ CONSOLE ERROR: Ignored attempt to cancel a touchmove event with cancelable=false
 CONSOLE MESSAGE: Sending uncancelable touchmove
 CONSOLE ERROR: Ignored attempt to cancel a touchmove event with cancelable=false, for example because scrolling is in progress and cannot be interrupted.
 This is a testharness.js-based test.
-[PASS] Test that touch events may or may not be marked cancelable. http://crbug.com/365681
-[PASS] Test that warning occurs in default mode
 Harness: the test ran to completion.
 

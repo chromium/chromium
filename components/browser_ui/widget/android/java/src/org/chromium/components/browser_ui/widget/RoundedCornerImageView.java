@@ -77,19 +77,26 @@ public class RoundedCornerImageView extends AppCompatImageView {
         int color = Color.TRANSPARENT;
 
         if (attrs != null) {
-            TypedArray a = getContext().obtainStyledAttributes(
-                    attrs, R.styleable.RoundedCornerImageView, 0, 0);
-            radiusTopStart = a.getDimensionPixelSize(
-                    R.styleable.RoundedCornerImageView_cornerRadiusTopStart, 0);
-            radiusTopEnd = a.getDimensionPixelSize(
-                    R.styleable.RoundedCornerImageView_cornerRadiusTopEnd, 0);
-            radiusBottomStart = a.getDimensionPixelSize(
-                    R.styleable.RoundedCornerImageView_cornerRadiusBottomStart, 0);
-            radiusBottomEnd = a.getDimensionPixelSize(
-                    R.styleable.RoundedCornerImageView_cornerRadiusBottomEnd, 0);
+            TypedArray a =
+                    getContext()
+                            .obtainStyledAttributes(
+                                    attrs, R.styleable.RoundedCornerImageView, 0, 0);
+            radiusTopStart =
+                    a.getDimensionPixelSize(
+                            R.styleable.RoundedCornerImageView_cornerRadiusTopStart, 0);
+            radiusTopEnd =
+                    a.getDimensionPixelSize(
+                            R.styleable.RoundedCornerImageView_cornerRadiusTopEnd, 0);
+            radiusBottomStart =
+                    a.getDimensionPixelSize(
+                            R.styleable.RoundedCornerImageView_cornerRadiusBottomStart, 0);
+            radiusBottomEnd =
+                    a.getDimensionPixelSize(
+                            R.styleable.RoundedCornerImageView_cornerRadiusBottomEnd, 0);
 
-            color = a.getColor(
-                    R.styleable.RoundedCornerImageView_roundedfillColor, Color.TRANSPARENT);
+            color =
+                    a.getColor(
+                            R.styleable.RoundedCornerImageView_roundedfillColor, Color.TRANSPARENT);
             a.recycle();
         }
 
@@ -129,21 +136,43 @@ public class RoundedCornerImageView extends AppCompatImageView {
         refreshState();
     }
 
-    public void setRoundedCorners(int cornerRadiusTopStart, int cornerRadiusTopEnd,
-            int cornerRadiusBottomStart, int cornerRadiusBottomEnd) {
-        mRoundCorners = (cornerRadiusTopStart != 0 || cornerRadiusTopEnd != 0
-                || cornerRadiusBottomStart != 0 || cornerRadiusBottomEnd != 0);
+    public void setRoundedCorners(
+            int cornerRadiusTopStart,
+            int cornerRadiusTopEnd,
+            int cornerRadiusBottomStart,
+            int cornerRadiusBottomEnd) {
+        mRoundCorners =
+                (cornerRadiusTopStart != 0
+                        || cornerRadiusTopEnd != 0
+                        || cornerRadiusBottomStart != 0
+                        || cornerRadiusBottomEnd != 0);
         if (!mRoundCorners) return;
 
         float[] radii;
         if (ViewCompat.getLayoutDirection(this) == ViewCompat.LAYOUT_DIRECTION_LTR) {
-            radii = new float[] {cornerRadiusTopStart, cornerRadiusTopStart, cornerRadiusTopEnd,
-                    cornerRadiusTopEnd, cornerRadiusBottomEnd, cornerRadiusBottomEnd,
-                    cornerRadiusBottomStart, cornerRadiusBottomStart};
+            radii =
+                    new float[] {
+                        cornerRadiusTopStart,
+                        cornerRadiusTopStart,
+                        cornerRadiusTopEnd,
+                        cornerRadiusTopEnd,
+                        cornerRadiusBottomEnd,
+                        cornerRadiusBottomEnd,
+                        cornerRadiusBottomStart,
+                        cornerRadiusBottomStart
+                    };
         } else {
-            radii = new float[] {cornerRadiusTopEnd, cornerRadiusTopEnd, cornerRadiusTopStart,
-                    cornerRadiusTopStart, cornerRadiusBottomStart, cornerRadiusBottomStart,
-                    cornerRadiusBottomEnd, cornerRadiusBottomEnd};
+            radii =
+                    new float[] {
+                        cornerRadiusTopEnd,
+                        cornerRadiusTopEnd,
+                        cornerRadiusTopStart,
+                        cornerRadiusTopStart,
+                        cornerRadiusBottomStart,
+                        cornerRadiusBottomStart,
+                        cornerRadiusBottomEnd,
+                        cornerRadiusBottomEnd
+                    };
         }
 
         mRoundedRectangle = new RoundRectShape(radii, null, null);
@@ -212,7 +241,8 @@ public class RoundedCornerImageView extends AppCompatImageView {
                 Drawable drawable = getDrawable();
                 Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
                 mTmpMatrix.set(getImageMatrix());
-                mTmpMatrix.preScale((float) drawable.getIntrinsicWidth() / bitmap.getWidth(),
+                mTmpMatrix.preScale(
+                        (float) drawable.getIntrinsicWidth() / bitmap.getWidth(),
                         (float) drawable.getIntrinsicHeight() / bitmap.getHeight());
 
                 shader.setLocalMatrix(mTmpMatrix);

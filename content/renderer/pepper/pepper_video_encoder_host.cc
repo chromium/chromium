@@ -328,7 +328,7 @@ int32_t PepperVideoEncoderHost::OnHostMsgRequestEncodingParametersChange(
     return encoder_last_error_;
 
   encoder_->RequestEncodingParametersChange(
-      media::Bitrate::ConstantBitrate(bitrate), framerate);
+      media::Bitrate::ConstantBitrate(bitrate), framerate, absl::nullopt);
 
   return PP_OK;
 }

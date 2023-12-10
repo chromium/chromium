@@ -21,9 +21,6 @@
           "script": "//tools/perf/process_perf_results.py"
         },
         "name": "performance_test_suite",
-        "override_compile_targets": [
-          "performance_test_suite_android_clank_monochrome"
-        ],
         "resultdb": {
           "enable": true
         },
@@ -68,9 +65,6 @@
           "script": "//tools/perf/process_perf_results.py"
         },
         "name": "performance_test_suite",
-        "override_compile_targets": [
-          "performance_test_suite_android_clank_monochrome"
-        ],
         "resultdb": {
           "enable": true
         },
@@ -123,9 +117,6 @@
           "script": "//tools/perf/process_perf_results.py"
         },
         "name": "performance_test_suite_android_clank_trichrome_bundle",
-        "override_compile_targets": [
-          "performance_test_suite_android_clank_trichrome_bundle"
-        ],
         "resultdb": {
           "enable": true
         },
@@ -169,9 +160,6 @@
           "script": "//tools/perf/process_perf_results.py"
         },
         "name": "performance_webview_test_suite",
-        "override_compile_targets": [
-          "performance_webview_test_suite"
-        ],
         "resultdb": {
           "enable": true
         },
@@ -215,9 +203,6 @@
           "script": "//tools/perf/process_perf_results.py"
         },
         "name": "performance_webview_test_suite",
-        "override_compile_targets": [
-          "performance_webview_test_suite"
-        ],
         "resultdb": {
           "enable": true
         },
@@ -262,9 +247,6 @@
           "script": "//tools/perf/process_perf_results.py"
         },
         "name": "performance_test_suite_android_clank_trichrome_chrome_google_64_32_bundle",
-        "override_compile_targets": [
-          "performance_test_suite_android_clank_trichrome_chrome_google_64_32_bundle"
-        ],
         "resultdb": {
           "enable": true
         },
@@ -303,9 +285,6 @@
           "script": "//tools/perf/process_perf_results.py"
         },
         "name": "performance_test_suite_android_clank_trichrome_chrome_google_64_32_bundle",
-        "override_compile_targets": [
-          "performance_test_suite_android_clank_trichrome_chrome_google_64_32_bundle"
-        ],
         "resultdb": {
           "enable": true
         },
@@ -344,9 +323,6 @@
           "script": "//tools/perf/process_perf_results.py"
         },
         "name": "performance_test_suite_android_clank_trichrome_chrome_google_64_32_bundle",
-        "override_compile_targets": [
-          "performance_test_suite_android_clank_trichrome_chrome_google_64_32_bundle"
-        ],
         "resultdb": {
           "enable": true
         },
@@ -385,9 +361,6 @@
           "script": "//tools/perf/process_perf_results.py"
         },
         "name": "performance_test_suite_android_clank_trichrome_chrome_google_64_32_bundle",
-        "override_compile_targets": [
-          "performance_test_suite_android_clank_trichrome_chrome_google_64_32_bundle"
-        ],
         "resultdb": {
           "enable": true
         },
@@ -430,9 +403,6 @@
           "script": "//tools/perf/process_perf_results.py"
         },
         "name": "performance_test_suite_android_clank_monochrome_64_32_bundle",
-        "override_compile_targets": [
-          "performance_test_suite_android_clank_monochrome_64_32_bundle"
-        ],
         "resultdb": {
           "enable": true
         },
@@ -478,9 +448,6 @@
           "script": "//tools/perf/process_perf_results.py"
         },
         "name": "performance_test_suite_android_clank_monochrome_64_32_bundle",
-        "override_compile_targets": [
-          "performance_test_suite_android_clank_monochrome_64_32_bundle"
-        ],
         "resultdb": {
           "enable": true
         },
@@ -537,9 +504,6 @@
           "script": "//tools/perf/process_perf_results.py"
         },
         "name": "performance_webview_test_suite",
-        "override_compile_targets": [
-          "performance_webview_test_suite"
-        ],
         "resultdb": {
           "enable": true
         },
@@ -584,9 +548,6 @@
           "script": "//tools/perf/process_perf_results.py"
         },
         "name": "performance_webview_test_suite",
-        "override_compile_targets": [
-          "performance_webview_test_suite"
-        ],
         "resultdb": {
           "enable": true
         },
@@ -639,9 +600,6 @@
           "script": "//tools/perf/process_perf_results.py"
         },
         "name": "performance_test_suite_android_clank_trichrome_bundle",
-        "override_compile_targets": [
-          "performance_test_suite_android_clank_trichrome_bundle"
-        ],
         "resultdb": {
           "enable": true
         },
@@ -686,9 +644,6 @@
           "script": "//tools/perf/process_perf_results.py"
         },
         "name": "performance_test_suite_android_clank_trichrome_bundle",
-        "override_compile_targets": [
-          "performance_test_suite_android_clank_trichrome_bundle"
-        ],
         "resultdb": {
           "enable": true
         },
@@ -733,9 +688,6 @@
           "script": "//tools/perf/process_perf_results.py"
         },
         "name": "performance_webview_test_suite",
-        "override_compile_targets": [
-          "performance_webview_test_suite"
-        ],
         "resultdb": {
           "enable": true
         },
@@ -780,9 +732,6 @@
           "script": "//tools/perf/process_perf_results.py"
         },
         "name": "performance_test_suite_android_clank_trichrome_bundle",
-        "override_compile_targets": [
-          "performance_test_suite_android_clank_trichrome_bundle"
-        ],
         "resultdb": {
           "enable": true
         },
@@ -827,9 +776,6 @@
           "script": "//tools/perf/process_perf_results.py"
         },
         "name": "performance_test_suite_android_clank_trichrome_bundle",
-        "override_compile_targets": [
-          "performance_test_suite_android_clank_trichrome_bundle"
-        ],
         "resultdb": {
           "enable": true
         },
@@ -874,9 +820,6 @@
           "script": "//tools/perf/process_perf_results.py"
         },
         "name": "performance_test_suite_android_clank_trichrome_bundle",
-        "override_compile_targets": [
-          "performance_test_suite_android_clank_trichrome_bundle"
-        ],
         "resultdb": {
           "enable": true
         },
@@ -921,9 +864,6 @@
           "script": "//tools/perf/process_perf_results.py"
         },
         "name": "performance_test_suite_android_clank_trichrome_bundle",
-        "override_compile_targets": [
-          "performance_test_suite_android_clank_trichrome_bundle"
-        ],
         "resultdb": {
           "enable": true
         },
@@ -991,9 +931,6 @@
           "script": "//tools/perf/process_perf_results.py"
         },
         "name": "performance_test_suite_eve",
-        "override_compile_targets": [
-          "performance_test_suite_eve"
-        ],
         "resultdb": {
           "enable": true
         },
@@ -1039,9 +976,6 @@
           "script": "//tools/perf/process_perf_results.py"
         },
         "name": "performance_test_suite_octopus",
-        "override_compile_targets": [
-          "performance_test_suite_octopus"
-        ],
         "resultdb": {
           "enable": true
         },
@@ -1093,9 +1027,6 @@
           "script": "//tools/perf/process_perf_results.py"
         },
         "name": "performance_test_suite",
-        "override_compile_targets": [
-          "performance_test_suite"
-        ],
         "resultdb": {
           "enable": true
         },
@@ -1140,9 +1071,6 @@
           "script": "//tools/perf/process_perf_results.py"
         },
         "name": "performance_test_suite",
-        "override_compile_targets": [
-          "performance_test_suite"
-        ],
         "resultdb": {
           "enable": true
         },
@@ -1187,9 +1115,6 @@
           "script": "//tools/perf/process_perf_results.py"
         },
         "name": "performance_test_suite",
-        "override_compile_targets": [
-          "performance_test_suite"
-        ],
         "resultdb": {
           "enable": true
         },
@@ -1242,9 +1167,6 @@
           "script": "//tools/perf/process_perf_results.py"
         },
         "name": "performance_test_suite",
-        "override_compile_targets": [
-          "performance_test_suite"
-        ],
         "resultdb": {
           "enable": true
         },
@@ -1297,9 +1219,6 @@
           "script": "//tools/perf/process_perf_results.py"
         },
         "name": "performance_test_suite",
-        "override_compile_targets": [
-          "performance_test_suite"
-        ],
         "resultdb": {
           "enable": true
         },
@@ -1345,9 +1264,6 @@
           "script": "//tools/perf/process_perf_results.py"
         },
         "name": "performance_test_suite",
-        "override_compile_targets": [
-          "performance_test_suite"
-        ],
         "resultdb": {
           "enable": true
         },
@@ -1405,9 +1321,6 @@
           "script": "//tools/perf/process_perf_results.py"
         },
         "name": "performance_test_suite",
-        "override_compile_targets": [
-          "performance_test_suite"
-        ],
         "resultdb": {
           "enable": true
         },
@@ -1453,9 +1366,6 @@
           "script": "//tools/perf/process_perf_results.py"
         },
         "name": "performance_test_suite",
-        "override_compile_targets": [
-          "performance_test_suite"
-        ],
         "resultdb": {
           "enable": true
         },
@@ -1509,9 +1419,6 @@
           "script": "//tools/perf/process_perf_results.py"
         },
         "name": "performance_test_suite",
-        "override_compile_targets": [
-          "performance_test_suite"
-        ],
         "resultdb": {
           "enable": true
         },
@@ -1556,9 +1463,6 @@
           "script": "//tools/perf/process_perf_results.py"
         },
         "name": "performance_test_suite",
-        "override_compile_targets": [
-          "performance_test_suite"
-        ],
         "resultdb": {
           "enable": true
         },
@@ -1603,9 +1507,6 @@
           "script": "//tools/perf/process_perf_results.py"
         },
         "name": "performance_test_suite",
-        "override_compile_targets": [
-          "performance_test_suite"
-        ],
         "resultdb": {
           "enable": true
         },
@@ -1654,9 +1555,6 @@
           "script": "//tools/perf/process_perf_results.py"
         },
         "name": "performance_test_suite",
-        "override_compile_targets": [
-          "performance_test_suite"
-        ],
         "resultdb": {
           "enable": true
         },
@@ -1701,9 +1599,6 @@
           "script": "//tools/perf/process_perf_results.py"
         },
         "name": "performance_test_suite",
-        "override_compile_targets": [
-          "performance_test_suite"
-        ],
         "resultdb": {
           "enable": true
         },
@@ -1756,9 +1651,6 @@
           "script": "//tools/perf/process_perf_results.py"
         },
         "name": "performance_test_suite",
-        "override_compile_targets": [
-          "performance_test_suite"
-        ],
         "resultdb": {
           "enable": true
         },
@@ -1803,9 +1695,6 @@
           "script": "//tools/perf/process_perf_results.py"
         },
         "name": "performance_test_suite",
-        "override_compile_targets": [
-          "performance_test_suite"
-        ],
         "resultdb": {
           "enable": true
         },
@@ -1854,9 +1743,6 @@
           "script": "//tools/perf/process_perf_results.py"
         },
         "name": "performance_test_suite",
-        "override_compile_targets": [
-          "performance_test_suite"
-        ],
         "resultdb": {
           "enable": true
         },
@@ -1901,9 +1787,6 @@
           "script": "//tools/perf/process_perf_results.py"
         },
         "name": "performance_test_suite",
-        "override_compile_targets": [
-          "performance_test_suite"
-        ],
         "resultdb": {
           "enable": true
         },

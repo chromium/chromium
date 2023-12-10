@@ -5,9 +5,12 @@
 #include "chrome/browser/page_load_metrics/observers/third_party_cookie_deprecation_page_load_metrics_observer.h"
 
 #include "base/metrics/histogram_macros.h"
+#include "chrome/browser/content_settings/cookie_settings_factory.h"
+#include "chrome/browser/privacy_sandbox/tracking_protection_onboarding_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tpcd/experiment/experiment_manager_impl.h"
 #include "chrome/browser/tpcd/experiment/tpcd_experiment_features.h"
+#include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
 #include "content/public/browser/web_contents.h"
@@ -16,6 +19,11 @@
 #include "url/gurl.h"
 
 namespace {
+
+using ThirdPartyCookieAllowMechanism =
+    content_settings::CookieSettingsBase::ThirdPartyCookieAllowMechanism;
+using OnboardingStatus =
+    privacy_sandbox::TrackingProtectionOnboarding::OnboardingStatus;
 
 bool IsSameSite(const GURL& url1, const GURL& url2) {
   return url1.SchemeIs(url2.scheme()) &&
@@ -29,8 +37,12 @@ bool IsSameSite(const GURL& url1, const GURL& url2) {
 ThirdPartyCookieDeprecationMetricsObserver::
     ThirdPartyCookieDeprecationMetricsObserver(
         content::BrowserContext* context) {
-  experiment_manager_ = tpcd::experiment::ExperimentManagerImpl::GetForProfile(
-      Profile::FromBrowserContext(context));
+  Profile* profile = Profile::FromBrowserContext(context);
+  experiment_manager_ =
+      tpcd::experiment::ExperimentManagerImpl::GetForProfile(profile);
+  cookie_settings_ = CookieSettingsFactory::GetForProfile(profile);
+  tracking_protection_onboarding_ =
+      TrackingProtectionOnboardingFactory::GetForProfile(profile);
 }
 
 ThirdPartyCookieDeprecationMetricsObserver::
@@ -63,8 +75,10 @@ void ThirdPartyCookieDeprecationMetricsObserver::OnCookiesRead(
     const GURL& url,
     const GURL& first_party_url,
     bool blocked_by_policy,
-    bool is_ad_tagged) {
-  RecordCookieUseCounters(url, first_party_url, blocked_by_policy);
+    bool is_ad_tagged,
+    const net::CookieSettingOverrides& cookie_setting_overrides) {
+  RecordCookieUseCounters(url, first_party_url, blocked_by_policy,
+                          cookie_setting_overrides);
   RecordCookieReadUseCounters(url, first_party_url, blocked_by_policy,
                               is_ad_tagged);
 }
@@ -74,31 +88,94 @@ void ThirdPartyCookieDeprecationMetricsObserver::OnCookieChange(
     const GURL& first_party_url,
     const net::CanonicalCookie& cookie,
     bool blocked_by_policy,
-    bool is_ad_tagged) {
-  RecordCookieUseCounters(url, first_party_url, blocked_by_policy);
+    bool is_ad_tagged,
+    const net::CookieSettingOverrides& cookie_setting_overrides) {
+  RecordCookieUseCounters(url, first_party_url, blocked_by_policy,
+                          cookie_setting_overrides);
 }
 
 void ThirdPartyCookieDeprecationMetricsObserver::RecordCookieUseCounters(
     const GURL& url,
     const GURL& first_party_url,
-    bool blocked_by_policy) {
+    bool blocked_by_policy,
+    const net::CookieSettingOverrides& cookie_setting_overrides) {
   if (blocked_by_policy || !IsThirdParty(url, first_party_url)) {
     return;
   }
 
   // Record third party cookie metrics if the access is blocked by third
-  // party cookies deprecation experiment.
+  // party cookies deprecation experiment when some mechanism re-enable the
+  // third party cookie access.
   bool is_blocked_by_experiment = IsBlockedByThirdPartyDeprecationExperiment();
   UMA_HISTOGRAM_BOOLEAN(
-      "PageLoad.Clients.ThirdPartyCookieAccessBlockedByExperiment",
+      "PageLoad.Clients.TPCD.ThirdPartyCookieAccessBlockedByExperiment2",
       is_blocked_by_experiment);
 
-  if (is_blocked_by_experiment) {
+  const ThirdPartyCookieAllowMechanism allow_mechanism =
+      cookie_settings_->GetThirdPartyCookieAllowMechanism(
+          url, first_party_url, cookie_setting_overrides);
+  if (allow_mechanism != ThirdPartyCookieAllowMechanism::kNone) {
+    UMA_HISTOGRAM_ENUMERATION(
+        "PageLoad.Clients.TPCD.CookieAccess.ThirdPartyCookieAllowMechanism",
+        allow_mechanism);
+  }
+
+  if (!is_blocked_by_experiment) {
+    return;
+  }
+
+  // Record the following blink feature usage cookie metrics when the 3PCD
+  // experiment is actual block third party cookies, which means tracking
+  // protection is onboard.
+  std::vector<blink::mojom::WebFeature> third_party_cookie_features;
+  third_party_cookie_features.push_back(
+      blink::mojom::WebFeature::kThirdPartyCookieAccessBlockByExperiment);
+
+  switch (allow_mechanism) {
+    case ThirdPartyCookieAllowMechanism::kAllowByExplicitSetting:
+      third_party_cookie_features.push_back(
+          blink::mojom::WebFeature::
+              kThirdPartyCookieDeprecation_AllowByExplicitSetting);
+      break;
+    case ThirdPartyCookieAllowMechanism::kAllowByGlobalSetting:
+      third_party_cookie_features.push_back(
+          blink::mojom::WebFeature::
+              kThirdPartyCookieDeprecation_AllowByGlobalSetting);
+      break;
+    case ThirdPartyCookieAllowMechanism::kAllowBy3PCDMetadata:
+      third_party_cookie_features.push_back(
+          blink::mojom::WebFeature::
+              kThirdPartyCookieDeprecation_AllowBy3PCDMetadata);
+      break;
+    case ThirdPartyCookieAllowMechanism::kAllowBy3PCD:
+      third_party_cookie_features.push_back(
+          blink::mojom::WebFeature::kThirdPartyCookieDeprecation_AllowBy3PCD);
+      break;
+    case ThirdPartyCookieAllowMechanism::kAllowBy3PCDHeuristics:
+      third_party_cookie_features.push_back(
+          blink::mojom::WebFeature::
+              kThirdPartyCookieDeprecation_AllowBy3PCDHeuristics);
+      break;
+    case ThirdPartyCookieAllowMechanism::kAllowByStorageAccess:
+      third_party_cookie_features.push_back(
+          blink::mojom::WebFeature::
+              kThirdPartyCookieDeprecation_AllowByStorageAccess);
+      break;
+    case ThirdPartyCookieAllowMechanism::kAllowByTopLevelStorageAccess:
+      third_party_cookie_features.push_back(
+          blink::mojom::WebFeature::
+              kThirdPartyCookieDeprecation_AllowByTopLevelStorageAccess);
+      break;
+    default:
+      // No feature usage recorded for unknow mechanism values.
+      break;
+  }
+
+  // Report the feature usage if there's anything to report.
+  if (third_party_cookie_features.size() > 0) {
     page_load_metrics::MetricsWebContentsObserver::RecordFeatureUsage(
         GetDelegate().GetWebContents()->GetPrimaryMainFrame(),
-        std::vector<blink::mojom::WebFeature>{
-            blink::mojom::WebFeature::
-                kThirdPartyCookieAccessBlockByExperiment});
+        std::move(third_party_cookie_features));
   }
 }
 
@@ -114,14 +191,14 @@ void ThirdPartyCookieDeprecationMetricsObserver::RecordCookieReadUseCounters(
   bool is_blocked_by_experiment = IsBlockedByThirdPartyDeprecationExperiment();
   if (is_ad_tagged) {
     UMA_HISTOGRAM_BOOLEAN(
-        "PageLoad.Clients.TPCD.AdTPCAccess.BlockedByExperiment",
+        "PageLoad.Clients.TPCD.AdTPCAccess.BlockedByExperiment2",
         is_blocked_by_experiment);
   }
   if (!is_blocked_by_experiment) {
     return;
   }
   UMA_HISTOGRAM_BOOLEAN(
-      "PageLoad.Clients.TPCD.TPCAccess.BlockedByExperiment.IsAdOrNonAd",
+      "PageLoad.Clients.TPCD.TPCAccess.BlockedByExperiment.IsAdOrNonAd2",
       is_ad_tagged);
 
   if (is_ad_tagged) {
@@ -160,7 +237,13 @@ bool ThirdPartyCookieDeprecationMetricsObserver::
     return false;
   }
 
+  // Only record the metric when cookie deprecation label onboarding since third
+  // party cookie is not really disabled before onboarding.
   return experiment_manager_ &&
          experiment_manager_->IsClientEligible() == true &&
-         tpcd::experiment::kDisable3PCookies.Get();
+         tpcd::experiment::kDisable3PCookies.Get() &&
+         tracking_protection_onboarding_ &&
+         tracking_protection_onboarding_->GetOnboardingStatus() ==
+             OnboardingStatus::kOnboarded;
+  ;
 }

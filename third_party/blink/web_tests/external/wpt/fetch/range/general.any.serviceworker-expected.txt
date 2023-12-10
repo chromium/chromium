@@ -1,10 +1,4 @@
 This is a testharness.js-based test.
-[PASS] Range header setting allowed for guard type: none
-[PASS] Range header setting allowed for guard type: response
-[PASS] Range header setting allowed for guard type: request
-[PASS] Privileged header not allowed for guard type: request-no-cors
-[PASS] Fetch with range header will be sent with Accept-Encoding: identity
-[PASS] Cross Origin Fetch with non safe range header
 [FAIL] Cross Origin Fetch with safe range header
   promise_test: Unhandled rejection with value: "failed load with range header bytes=0-10"
 Harness: the test ran to completion.

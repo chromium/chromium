@@ -5,7 +5,6 @@
 <translation id="1076394037877376434">ລຶບໜ້າທີ <ph name="PAGE_NUMBER" /></translation>
 <translation id="1113173431709655881">ໂໝດກ້ອງຖ່າຍຮູບ</translation>
 <translation id="1153190633558910465">ປິດເສັ້ນຕາຕະລາງແລ້ວ</translation>
-<translation id="1175958423215084756">ກວດພົບລິ້ງ. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213">ລຶບໜ້າທີ <ph name="PAGE_NUMBER" /> ແລ້ວ</translation>
 <translation id="1258009455399840361">ໝຸນ 90 ອົງສາຕາມເຂັມໂມງ</translation>
 <translation id="1417314334557041815">ແກ້ໄຂໜ້າ <ph name="INDEX" /></translation>
@@ -60,14 +59,12 @@
 <translation id="3642192109456033823">ກຳລັງປະມວນຜົນວິດີໂອ...</translation>
 <translation id="3789724198583203151">ໝຸນ 90 ອົງສາທວນເຂັມໂມງ</translation>
 <translation id="3810838688059735925">ວິ​ດີ​ໂອ</translation>
-<translation id="3892148308691398805">ສຳເນົາຂໍ້ຄວາມ</translation>
 <translation id="4060608699153044055">ທ່ານບໍ່ສາມາດບັນທຶກໄດ້ເນື່ອງຈາກພື້ນທີ່ຈັດເກັບຂໍ້ມູນອຸປະກອນເຫຼືອໜ້ອຍ. ເພື່ອເລີ່ມການບັນທຶກ, ທ່ານຈະຕ້ອງສ້າງພື້ນທີ່ຫວ່າງຢູ່ອຸປະກອນຂອງທ່ານກ່ອນ.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
 <translation id="4118525110028899586">ຢຸດການບັນທຶກໄວ້ຊົ່ວຄາວ</translation>
 <translation id="4121305183798804752">ກວດພົບເອກະສານ</translation>
 <translation id="414641094616694804">ກ້ອງຖ່າຍຮູບນີ້ບໍ່ສາມາດປ່ຽນຄວາມລະອຽດໄດ້</translation>
 <translation id="4176463684765177261">ປິດໃຊ້ງານແລ້ວ</translation>
-<translation id="4269820728363426813">ກັອບປີ້ທີ່ຢູ່ລິ້ງ</translation>
 <translation id="428234092390943511">ຮູບຕົວຢ່າງໜ້າ</translation>
 <translation id="4349714250734879769">ປັບຂະໜາດເຟຣມຕາມ Chrome</translation>
 <translation id="4383571725254449280">ພິມບັນທຶກປະສິດທິພາບ</translation>
@@ -144,7 +141,6 @@
 <translation id="7726641833034062494">ບັນທຶກວິດີໂອປົກກະຕິ</translation>
 <translation id="7748344063862150053">ມຸມຂວາເທິງຂອງເອກະສານ</translation>
 <translation id="7933675232020478311">ກຳລັງຍ້າຍໄປທາງຂວາລຸ່ມ</translation>
-<translation id="7983668134180549431">ກວດພົບຂໍ້ຄວາມ.</translation>
 <translation id="8079255378695216066">ບໍ່ສາມາດເລີ່ມການບັນທຶກໄດ້</translation>
 <translation id="8120146556401698679">ເລື່ອນ ອຽງ ຊູມ</translation>
 <translation id="8131740175452115882">ຢືນ​ຢັນ</translation>
@@ -163,6 +159,7 @@
 <translation id="8870695351537079478">ບໍ່ສາມາດເລີ່ມການບັນທຶກໄດ້</translation>
 <translation id="8880167521484863515">4 ຕໍ່ 3</translation>
 <translation id="8903921497873541725">ຊຸມເຂົ້າ</translation>
+<translation id="8926890870105777777">ເຂົ້າຮ່ວມເຄືອຂ່າຍ "<ph name="WIFINAME" />"</translation>
 <translation id="9045010116236796332">ວາງຂອບທັງໝົດຂອງເອກະສານໄວ້ພາຍໃນເຟຣມ</translation>
 <translation id="9045155556724273246">10 ວິນາທີ</translation>
 <translation id="906331135292332864">ກຳລັງປະມວນຜົນຮູບ...</translation>

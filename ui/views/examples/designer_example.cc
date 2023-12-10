@@ -50,8 +50,9 @@
 namespace views::examples {
 
 class DesignerSurface : public View {
+  METADATA_HEADER(DesignerSurface, View)
+
  public:
-  METADATA_HEADER(DesignerSurface);
   explicit DesignerSurface(int grid_size = 8);
   DesignerSurface(const DesignerSurface&) = delete;
   DesignerSurface& operator=(const DesignerSurface&) = delete;
@@ -106,7 +107,7 @@ void DesignerSurface::RebuildGridImage() {
   grid_image_ = gfx::ImageSkia::CreateFrom1xBitmap(grid_canvas->GetBitmap());
 }
 
-BEGIN_METADATA(DesignerSurface, View)
+BEGIN_METADATA(DesignerSurface)
 ADD_PROPERTY_METADATA(int, GridSize)
 END_METADATA
 
@@ -252,8 +253,8 @@ class ClassRegistration<ImageButton> : public BaseClassRegistration {
   ~ClassRegistration() override = default;
   std::unique_ptr<View> CreateView() override {
     return Builder<ImageButton>()
-        .SetImage(Button::ButtonState::STATE_NORMAL,
-                  gfx::CreateVectorIcon(kPinIcon, ui::kColorIcon))
+        .SetImageModel(Button::ButtonState::STATE_NORMAL,
+                       ui::ImageModel::FromVectorIcon(kPinIcon, ui::kColorIcon))
         .SetAccessibleName(
             l10n_util::GetStringUTF16(IDS_DESIGNER_IMAGEBUTTON_NAME))
         .Build();

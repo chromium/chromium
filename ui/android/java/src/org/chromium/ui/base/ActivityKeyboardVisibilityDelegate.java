@@ -18,8 +18,8 @@ import java.lang.ref.WeakReference;
  * notifies {@link KeyboardVisibilityDelegate.KeyboardVisibilityListener} whenever the layout change
  * is suspected to be caused by a keyboard.
  */
-public class ActivityKeyboardVisibilityDelegate
-        extends KeyboardVisibilityDelegate implements View.OnLayoutChangeListener {
+public class ActivityKeyboardVisibilityDelegate extends KeyboardVisibilityDelegate
+        implements View.OnLayoutChangeListener {
     private boolean mIsKeyboardShowing;
     private WeakReference<Activity> mActivity;
 
@@ -53,8 +53,16 @@ public class ActivityKeyboardVisibilityDelegate
     }
 
     @Override
-    public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft,
-            int oldTop, int oldRight, int oldBottom) {
+    public void onLayoutChange(
+            View v,
+            int left,
+            int top,
+            int right,
+            int bottom,
+            int oldLeft,
+            int oldTop,
+            int oldRight,
+            int oldBottom) {
         Activity activity = getActivity();
         if (activity == null) return;
         boolean isShowing = isKeyboardShowing(activity, v);

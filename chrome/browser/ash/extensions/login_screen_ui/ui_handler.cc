@@ -157,7 +157,7 @@ void UiHandler::RemoveWindowForExtension(const std::string& extension_id) {
 
 void UiHandler::OnWindowClosed(const std::string& extension_id) {
   if (!close_callback_.is_null()) {
-    std::move(close_callback_).Run(/*success=*/true, absl::nullopt);
+    std::move(close_callback_).Run(/*success=*/true, std::nullopt);
     close_callback_.Reset();
   }
 

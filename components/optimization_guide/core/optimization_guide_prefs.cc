@@ -60,6 +60,10 @@ const char kStoreFilePathsToDelete[] =
 const char kModelExecutionMainToggleSettingState[] =
     "optimization_guide.model_execution_main_toggle_setting_state";
 
+// An integer pref that contains the user's client id.
+const char kModelQualityLogggingClientId[] =
+    "optimization_guide.model_quality_logging_client_id";
+
 // Pref that contains user opt-in state for different features.
 std::string GetSettingEnabledPrefName(proto::ModelExecutionFeature feature) {
   switch (feature) {
@@ -107,6 +111,20 @@ const char kModelStoreMetadata[] = "optimization_guide.model_store_metadata";
 const char kModelCacheKeyMapping[] =
     "optimization_guide.model_cache_key_mapping";
 
+// Preference of the last version checked. Used to determine when the
+// disconnect count is reset.
+const char kOnDeviceModelChromeVersion[] =
+    "optimization_guide.on_device.last_version";
+
+// Preference where number of disconnects (crashes) of on device model is
+// stored.
+const char kOnDeviceModelCrashCount[] =
+    "optimization_guide.on_device.model_crash_count";
+
+// Preference where number of timeouts of on device model is stored.
+const char kOnDeviceModelTimeoutCount[] =
+    "optimization_guide.on_device.timeout_count";
+
 // A dictionary pref that stores the file paths that need to be deleted as keys.
 // The value will not be used.
 const char kStoreFilePathsToDelete[] =
@@ -134,13 +152,19 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
                                    PrefRegistry::LOSSY_PREF);
   registry->RegisterDictionaryPref(kStoreFilePathsToDelete,
                                    PrefRegistry::LOSSY_PREF);
+  registry->RegisterInt64Pref(kModelQualityLogggingClientId, 0,
+                              PrefRegistry::LOSSY_PREF);
 
   RegisterSettingsEnabledPrefs(registry);
 }
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
+  registry->RegisterStringPref(localstate::kOnDeviceModelChromeVersion,
+                               std::string());
   registry->RegisterDictionaryPref(localstate::kModelStoreMetadata);
   registry->RegisterDictionaryPref(localstate::kModelCacheKeyMapping);
+  registry->RegisterIntegerPref(localstate::kOnDeviceModelCrashCount, 0);
+  registry->RegisterIntegerPref(localstate::kOnDeviceModelTimeoutCount, 0);
   registry->RegisterDictionaryPref(localstate::kStoreFilePathsToDelete);
 }
 

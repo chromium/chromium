@@ -68,8 +68,7 @@ class CORE_EXPORT ShadowData {
         style_(style),
         opacity_(opacity) {}
 
-  bool operator==(const ShadowData&) const;
-  bool operator!=(const ShadowData& o) const { return !(*this == o); }
+  bool operator==(const ShadowData&) const = default;
 
   static ShadowData NeutralValue();
 

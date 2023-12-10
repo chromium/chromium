@@ -6,16 +6,16 @@
 #define CHROME_BROWSER_AUTOFILL_AUTOFILL_ML_PREDICTION_MODEL_SERVICE_FACTORY_H_
 
 #include "base/no_destructor.h"
-#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "components/autofill/core/browser/ml_model/autofill_ml_prediction_model_handler.h"
+#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "content/public/browser/browser_context.h"
 
 namespace autofill {
 
-// A factory for creating one `AutofillMlPredictionModelHandler` per profile.
-// It will ensure that the same keyed service is used for irregular profiles
+// A factory for creating one `AutofillMlPredictionModelHandler` per browser
+// context.
 class AutofillMlPredictionModelServiceFactory
-    : public ProfileKeyedServiceFactory {
+    : public BrowserContextKeyedServiceFactory {
  public:
   static AutofillMlPredictionModelServiceFactory* GetInstance();
   static AutofillMlPredictionModelHandler* GetForBrowserContext(
@@ -32,6 +32,9 @@ class AutofillMlPredictionModelServiceFactory
   AutofillMlPredictionModelServiceFactory();
   ~AutofillMlPredictionModelServiceFactory() override;
 
+  // BrowserContextKeyedServiceFactory overrides:
+  content::BrowserContext* GetBrowserContextToUse(
+      content::BrowserContext* context) const override;
   std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* profile) const override;
 };

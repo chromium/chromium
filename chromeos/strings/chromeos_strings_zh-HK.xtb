@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-HK">
+<translation id="1003363546227723021">在螢幕閒置時，顯示相片、時間、天氣和媒體資訊</translation>
 <translation id="1014750484722996375">桌面</translation>
 <translation id="1018219910092211213">無法解析 DNS</translation>
 <translation id="1018656279737460067">已取消</translation>
@@ -28,6 +29,7 @@
 <translation id="1175697296044146566">此 <ph name="DEVICE_TYPE" /> 由 <ph name="MANAGER" /> 管理。</translation>
 <translation id="1175951029573070619">一般 (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">移除</translation>
+<translation id="1191518099344003522">啟用咗 APN。</translation>
 <translation id="1195447618553298278">未知的錯誤。</translation>
 <translation id="1196959502276349371">版本：<ph name="VERSION" /></translation>
 <translation id="1199355487114804640">播放/暫停</translation>
@@ -79,6 +81,7 @@
 <translation id="1515129336378114413">瀏覽器首頁</translation>
 <translation id="1526389707933164996">螢幕保護程式動畫</translation>
 <translation id="152892567002884378">調高音量</translation>
+<translation id="1539242642795599947">呢個 APN 係預設兼附加 APN。</translation>
 <translation id="1555130319947370107">藍色</translation>
 <translation id="155865706765934889">觸控板</translation>
 <translation id="1561927818299383735">背光顏色</translation>
@@ -134,6 +137,7 @@
 <translation id="1852934301711881861">安裝 ChromeOS Flex</translation>
 <translation id="1856388568474281774">向下箭咀</translation>
 <translation id="1858620243986915808">附加螢幕截圖</translation>
+<translation id="1871413952174074704">APN 不可超過 <ph name="CHAR_LIMIT" /> 個字元</translation>
 <translation id="1871569928317311284">關閉深色主題背景</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">關閉暗光模式</translation>
@@ -255,6 +259,7 @@
 <translation id="2872961005593481000">關閉</translation>
 <translation id="2873483161362553159">瀏覽器導覽</translation>
 <translation id="2874939134665556319">上一首曲目</translation>
+<translation id="2875812231449496375">為達到此桌布的最佳效果，請開啟此設定。你可隨時關閉此設定。</translation>
 <translation id="2878387241690264070">已在 <ph name="NUM_SECONDS" /> 秒內放電 <ph name="RATE" />。</translation>
 <translation id="2880569433548999039">雲朵動態螢幕保護程式</translation>
 <translation id="2926057806159140518">輸入使用者名稱和密碼，或掃瞄 QR 碼</translation>
@@ -336,6 +341,7 @@
 <translation id="3577473026931028326">發生錯誤，請再試一次。</translation>
 <translation id="357889014807611375">按用量收費的 Wi-Fi</translation>
 <translation id="3583278742022654445">訊號強度較弱，請嘗試移近 Wi-Fi 訊號來源。</translation>
+<translation id="3594280220611906414"><ph name="USER_FRIENDLY_APN_NAME" /> 係 <ph name="APN_NAME" /> 較多人認識嘅名稱。</translation>
 <translation id="3595596368722241419">電池已滿</translation>
 <translation id="3600339377155080675">螢幕鏡像</translation>
 <translation id="3602290021589620013">預覽</translation>
@@ -434,7 +440,7 @@
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> 張圖片</translation>
 <translation id="4333390807948134856">㩒咗 <ph name="KEY_NAME" /> 制</translation>
 <translation id="4354430579665871434">鍵</translation>
-<translation id="435692326371619097">管理網絡 APN 設定。APN 會在流動網絡和互聯網之間建立連線。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
+<translation id="4361257691546579041">呢個 APN 係預設 APN。</translation>
 <translation id="437294888293595148">重設所有快速鍵</translation>
 <translation id="4378373042927530923">未執行</translation>
 <translation id="4378551569595875038">連線中…</translation>
@@ -534,7 +540,6 @@
 <translation id="4999333166442584738">隱藏報告</translation>
 <translation id="500920857929044050">停止測試</translation>
 <translation id="5017508259293544172">LEAP</translation>
-<translation id="5019310272469539976">在螢幕閒置時，顯示相片、時間、天氣和媒體資訊。</translation>
 <translation id="5035083460461104704">主題顏色</translation>
 <translation id="5038292761217083259">多色鍵盤</translation>
 <translation id="5039804452771397117">允許</translation>
@@ -547,6 +552,7 @@
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
 <translation id="5137451382116112100">全螢幕</translation>
 <translation id="5142961317498132443">驗證</translation>
+<translation id="5145081769226915336">要自動開啟深色模式嗎？</translation>
 <translation id="5154917547274118687">記憶體</translation>
 <translation id="5160857336552977725">登入您的 <ph name="DEVICE_TYPE" /></translation>
 <translation id="5166918508782100047">「快速解答」設定</translation>
@@ -625,6 +631,7 @@
 <translation id="574392208103952083">中</translation>
 <translation id="5757187557809630523">下一首歌</translation>
 <translation id="5760715441271661976">入口網站狀態</translation>
+<translation id="5763838252932650682">正在重新啟動並更新「<ph name="APP_NAME" />」</translation>
 <translation id="576835345334454681">顯示屏校光亮度</translation>
 <translation id="57838592816432529">静音</translation>
 <translation id="5784136236926853061">HTTP 延遲時間過長</translation>
@@ -655,6 +662,7 @@
 <translation id="5946538341867151940">您尚未連線。如果您的流動網絡供應商建議使用自訂 APN，請選取「+ 新增 APN」來輸入 APN 資料</translation>
 <translation id="5972388717451707488">更新引擎</translation>
 <translation id="5984145644188835034">預設桌布</translation>
+<translation id="6001235009374883388">呢個 APN 係附加 APN。</translation>
 <translation id="6017514345406065928">綠色</translation>
 <translation id="6019566113895157499">鍵盤快速鍵</translation>
 <translation id="6034694447310538551">啟用每月自動重設功能</translation>
@@ -821,6 +829,7 @@
 <translation id="7180611975245234373">重新整理</translation>
 <translation id="7180865173735832675">自訂</translation>
 <translation id="7184043045742675738">按一下任何鍵即可自訂按鈕。使用滑鼠或方向鍵以調整位置。</translation>
+<translation id="7212547870105584639">管理網絡 APN 設定。APN 會在流動網絡和互聯網之間建立連線。<ph name="BEGIN_LINK_LEARN_MORE" />瞭解詳情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">外部裝置適用的韌體更新</translation>
 <translation id="7216409898977639127">流動服務供應商</translation>
 <translation id="725133483556299729">揀電郵地址</translation>
@@ -831,6 +840,7 @@
 <translation id="7287310195820267359">桌布收藏</translation>
 <translation id="7297226631177386107">無法透過防火牆連線至 HTTPS 網站</translation>
 <translation id="7297726121602187087">深綠色</translation>
+<translation id="7301262279595293068">正在更新此應用程式，請稍候</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7308203371573257315">在 Chromebook 說明論壇中詢問專家</translation>
@@ -1103,4 +1113,5 @@
 <translation id="979450713603643090">淺粉紅色</translation>
 <translation id="982713511914535780">執行放電測試</translation>
 <translation id="987264212798334818">一般</translation>
+<translation id="995062385528875723">無法使用重音字母、非拉丁字母或符號</translation>
 </translationbundle>

@@ -5,12 +5,13 @@
 #ifndef CHROMEOS_ASH_SERVICES_DEVICE_SYNC_CRYPTAUTH_KEY_BUNDLE_H_
 #define CHROMEOS_ASH_SERVICES_DEVICE_SYNC_CRYPTAUTH_KEY_BUNDLE_H_
 
+#include <optional>
+
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/values.h"
 #include "chromeos/ash/services/device_sync/cryptauth_key.h"
 #include "chromeos/ash/services/device_sync/proto/cryptauth_directive.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::device_sync {
 
@@ -54,10 +55,10 @@ class CryptAuthKeyBundle {
   static const base::flat_set<CryptAuthKeyBundle::Name>& AllEnrollableNames();
 
   static std::string KeyBundleNameEnumToString(CryptAuthKeyBundle::Name name);
-  static absl::optional<CryptAuthKeyBundle::Name> KeyBundleNameStringToEnum(
+  static std::optional<CryptAuthKeyBundle::Name> KeyBundleNameStringToEnum(
       const std::string& name);
 
-  static absl::optional<CryptAuthKeyBundle> FromDictionary(
+  static std::optional<CryptAuthKeyBundle> FromDictionary(
       const base::Value::Dict& dict);
 
   explicit CryptAuthKeyBundle(Name name);
@@ -72,7 +73,7 @@ class CryptAuthKeyBundle {
     return handle_to_key_map_;
   }
 
-  const absl::optional<cryptauthv2::KeyDirective>& key_directive() const {
+  const std::optional<cryptauthv2::KeyDirective>& key_directive() const {
     return key_directive_;
   }
 
@@ -109,7 +110,7 @@ class CryptAuthKeyBundle {
   using HandleToKeyMap = base::flat_map<std::string, CryptAuthKey>;
   Name name_;
   HandleToKeyMap handle_to_key_map_;
-  absl::optional<cryptauthv2::KeyDirective> key_directive_;
+  std::optional<cryptauthv2::KeyDirective> key_directive_;
 };
 
 }  // namespace ash::device_sync

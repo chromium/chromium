@@ -130,8 +130,9 @@ BubbleFrameView::BubbleFrameView(const gfx::Insets& title_margins,
   close->SetVisible(false);
   close_ = AddChildView(std::move(close));
 
-  auto progress_indicator = std::make_unique<ProgressBar>(
-      kProgressIndicatorHeight, /*allow_round_corner=*/false);
+  auto progress_indicator = std::make_unique<ProgressBar>();
+  progress_indicator->SetPreferredHeight(kProgressIndicatorHeight);
+  progress_indicator->SetPreferredCornerRadii(absl::nullopt);
   progress_indicator->SetBackgroundColor(SK_ColorTRANSPARENT);
   progress_indicator->SetVisible(false);
   progress_indicator->GetViewAccessibility().OverrideIsIgnored(true);
@@ -318,12 +319,11 @@ void BubbleFrameView::ResetWindowControls() {
 
 void BubbleFrameView::UpdateWindowIcon() {
   DCHECK(GetWidget());
-  gfx::ImageSkia image;
+  ui::ImageModel image;
   if (GetWidget()->widget_delegate()->ShouldShowWindowIcon()) {
-    image = GetWidget()->widget_delegate()->GetWindowIcon().Rasterize(
-        GetColorProvider());
+    image = GetWidget()->widget_delegate()->GetWindowIcon();
   }
-  title_icon_->SetImage(&image);
+  title_icon_->SetImage(image);
 }
 
 void BubbleFrameView::UpdateWindowTitle() {
@@ -368,6 +368,8 @@ void BubbleFrameView::UpdateSubtitle() {
   subtitle_->SetVisible(!bubble_delegate->GetSubtitle().empty() &&
                         default_title_->GetVisible());
   subtitle_->SetText(bubble_delegate->GetSubtitle());
+  subtitle_->SetAllowCharacterBreak(
+      bubble_delegate->GetSubtitleAllowCharacterBreak());
   InvalidateLayout();
 }
 
@@ -421,11 +423,11 @@ void BubbleFrameView::UpdateMainImage() {
 
     const int border_radius = LayoutProvider::Get()->GetCornerRadiusMetric(
         Emphasis::kHigh, gfx::Size());
-    main_image_->SetImage(
+    main_image_->SetImage(ui::ImageModel::FromImageSkia(
         gfx::ImageSkiaOperations::CreateCroppedCenteredRoundRectImage(
             gfx::Size(main_image_dimension, main_image_dimension),
             border_radius - 2 * kBorderStrokeThickness,
-            model.GetImage().AsImageSkia()));
+            model.GetImage().AsImageSkia())));
     main_image_->SetBorder(views::CreateRoundedRectBorder(
         kBorderStrokeThickness, border_radius, image_insets,
         GetColorProvider()
@@ -1191,7 +1193,7 @@ std::unique_ptr<Label> BubbleFrameView::CreateLabelWithContextAndStyle(
   return label;
 }
 
-BEGIN_METADATA(BubbleFrameView, NonClientFrameView)
+BEGIN_METADATA(BubbleFrameView)
 ADD_PROPERTY_METADATA(absl::optional<double>, Progress)
 ADD_PROPERTY_METADATA(gfx::Insets, ContentMargins)
 ADD_PROPERTY_METADATA(gfx::Insets, FootnoteMargins)

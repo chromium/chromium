@@ -11,9 +11,7 @@ import org.chromium.net.RequestFinishedInfo;
 
 import java.util.Date;
 
-/**
- * Implementation of {@link RequestFinishedInfo.Metrics}.
- */
+/** Implementation of {@link RequestFinishedInfo.Metrics}. */
 @VisibleForTesting
 public final class CronetMetrics extends RequestFinishedInfo.Metrics {
     private final long mRequestStartMs;
@@ -32,15 +30,11 @@ public final class CronetMetrics extends RequestFinishedInfo.Metrics {
     private final boolean mSocketReused;
 
     // TODO(mgersh): Delete after the switch to the new API http://crbug.com/629194
-    @Nullable
-    private final Long mTtfbMs;
+    @Nullable private final Long mTtfbMs;
     // TODO(mgersh): Delete after the switch to the new API http://crbug.com/629194
-    @Nullable
-    private final Long mTotalTimeMs;
-    @Nullable
-    private final Long mSentByteCount;
-    @Nullable
-    private final Long mReceivedByteCount;
+    @Nullable private final Long mTotalTimeMs;
+    @Nullable private final Long mSentByteCount;
+    @Nullable private final Long mReceivedByteCount;
 
     @Nullable
     private static Date toDate(long timestamp) {
@@ -60,8 +54,11 @@ public final class CronetMetrics extends RequestFinishedInfo.Metrics {
      * Old-style constructor
      * TODO(mgersh): Delete after the switch to the new API http://crbug.com/629194
      */
-    public CronetMetrics(@Nullable Long ttfbMs, @Nullable Long totalTimeMs,
-            @Nullable Long sentByteCount, @Nullable Long receivedByteCount) {
+    public CronetMetrics(
+            @Nullable Long ttfbMs,
+            @Nullable Long totalTimeMs,
+            @Nullable Long sentByteCount,
+            @Nullable Long receivedByteCount) {
         mTtfbMs = ttfbMs;
         mTotalTimeMs = totalTimeMs;
         mSentByteCount = sentByteCount;
@@ -84,13 +81,24 @@ public final class CronetMetrics extends RequestFinishedInfo.Metrics {
         mSocketReused = false;
     }
 
-    /**
-     * New-style constructor
-     */
-    public CronetMetrics(long requestStartMs, long dnsStartMs, long dnsEndMs, long connectStartMs,
-            long connectEndMs, long sslStartMs, long sslEndMs, long sendingStartMs,
-            long sendingEndMs, long pushStartMs, long pushEndMs, long responseStartMs,
-            long requestEndMs, boolean socketReused, long sentByteCount, long receivedByteCount) {
+    /** New-style constructor */
+    public CronetMetrics(
+            long requestStartMs,
+            long dnsStartMs,
+            long dnsEndMs,
+            long connectStartMs,
+            long connectEndMs,
+            long sslStartMs,
+            long sslEndMs,
+            long sendingStartMs,
+            long sendingEndMs,
+            long pushStartMs,
+            long pushEndMs,
+            long responseStartMs,
+            long requestEndMs,
+            boolean socketReused,
+            long sentByteCount,
+            long receivedByteCount) {
         // Check that no end times are before corresponding start times,
         // or exist when start time doesn't.
         assert checkOrder(dnsStartMs, dnsEndMs);

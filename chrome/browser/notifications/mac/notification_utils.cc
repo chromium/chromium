@@ -7,7 +7,7 @@
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/i18n/number_formatting.h"
-#include "base/process/process_handle.h"
+#include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/notifications/notification_display_service_impl.h"
@@ -17,6 +17,7 @@
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/chrome_paths.h"
 #include "chrome/common/notifications/notification_constants.h"
 #include "chrome/common/notifications/notification_operation.h"
 #include "chrome/services/mac_notifications/public/cpp/mac_notification_metrics.h"
@@ -53,6 +54,11 @@ void DoProcessMacNotificationResponse(
                      std::move(info->meta->origin_url),
                      std::move(info->meta->id->id), std::move(action_index),
                      std::move(info->reply), true /* by_user */));
+}
+
+// Get the user data directory.
+std::string GetUserDataDir() {
+  return base::PathService::CheckedGet(chrome::DIR_USER_DATA).value();
 }
 
 }  // namespace
@@ -120,7 +126,7 @@ bool VerifyMacNotificationData(
     return false;
   }
 
-  if (info->meta->creator_pid != base::GetCurrentProcId()) {
+  if (info->meta->user_data_dir != GetUserDataDir()) {
     return false;
   }
 
@@ -191,7 +197,7 @@ mac_notifications::mojom::NotificationPtr CreateMacNotification(
 
   auto meta = mac_notifications::mojom::NotificationMetadata::New(
       std::move(notification_identifier), static_cast<int>(notification_type),
-      notification.origin_url(), base::GetCurrentProcId());
+      notification.origin_url(), GetUserDataDir());
 
   std::vector<mac_notifications::mojom::NotificationActionButtonPtr> buttons;
   for (const message_center::ButtonInfo& button : notification.buttons()) {

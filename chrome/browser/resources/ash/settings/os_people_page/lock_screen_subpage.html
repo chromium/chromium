@@ -70,20 +70,18 @@
       </settings-radio-group>
     </div>
   </template>
-  <template is="dom-if" if="[[cryptohomeRecoveryEnabled_]]">
-    <settings-toggle-button
-        id="recoveryToggle"
-        label="$i18n{recoveryToggleLabel}"
-        sub-label="[[recoveryToggleSubLabel_(recovery_)]]"
-        learn-more-url="[[recoveryToggleLearnMoreUrl_(recovery_)]]"
-        pref="{{recoveryTogglePref_(recovery_)}}"
-        disabled="[[recoveryToggleDisabled_(recovery_,
-                        recoveryChangeInProcess_)]]"
-        deep-link-focus-id$="[[Setting.kDataRecovery]]"
-        no-set-pref
-        on-settings-boolean-control-change="onRecoveryChange_">
-    </settings-toggle-button>
-  </template>
+  <settings-toggle-button
+      id="recoveryToggle"
+      label="$i18n{recoveryToggleLabel}"
+      sub-label="[[recoveryToggleSubLabel_(recovery_)]]"
+      learn-more-url="[[recoveryToggleLearnMoreUrl_(recovery_)]]"
+      pref="{{recoveryTogglePref_(recovery_)}}"
+      disabled="[[recoveryToggleDisabled_(recovery_,
+                      recoveryChangeInProcess_)]]"
+      deep-link-focus-id$="[[Setting.kDataRecovery]]"
+      no-set-pref
+      on-settings-boolean-control-change="onRecoveryChange_">
+  </settings-toggle-button>
   <template is="dom-if" if="[[showDisableRecoveryDialog_]]" restamp>
     <local-data-recovery-dialog id="localDataRecoveryDialog"
       auth-token="[[authToken]]"

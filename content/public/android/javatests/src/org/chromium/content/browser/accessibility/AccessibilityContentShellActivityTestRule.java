@@ -10,6 +10,7 @@ import static org.chromium.content.browser.accessibility.AccessibilityContentShe
 import static org.chromium.content.browser.accessibility.AccessibilityContentShellTestUtils.READY_FOR_TEST_ERROR;
 import static org.chromium.content.browser.accessibility.AccessibilityContentShellTestUtils.sContentShellDelegate;
 import static org.chromium.ui.accessibility.AccessibilityState.EVENT_TYPE_MASK_ALL;
+import static org.chromium.ui.accessibility.AccessibilityState.StateIdentifierForTesting.EVENT_TYPE_MASK;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
@@ -40,9 +41,7 @@ import java.lang.reflect.Method;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 
-/**
- * Custom activity test rule for any content shell tests related to accessibility.
- */
+/** Custom activity test rule for any content shell tests related to accessibility. */
 @SuppressLint("VisibleForTests")
 public class AccessibilityContentShellActivityTestRule extends ContentShellActivityTestRule {
     // Test output error messages.
@@ -96,11 +95,12 @@ public class AccessibilityContentShellActivityTestRule extends ContentShellActiv
      */
     /* @Before */
     public void setupTestFramework() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            AccessibilityState.setIsAnyAccessibilityServiceEnabledForTesting(true);
-            AccessibilityState.setIsScreenReaderEnabledForTesting(true);
-            AccessibilityState.setEventTypeMaskForTesting(EVENT_TYPE_MASK_ALL);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    AccessibilityState.setIsAnyAccessibilityServiceEnabledForTesting(true);
+                    AccessibilityState.setIsScreenReaderEnabledForTesting(true);
+                    AccessibilityState.setStateMaskForTesting(EVENT_TYPE_MASK, EVENT_TYPE_MASK_ALL);
+                });
 
         mWcax = getWebContentsAccessibility();
         mNodeProvider = getAccessibilityNodeProvider();
@@ -112,10 +112,11 @@ public class AccessibilityContentShellActivityTestRule extends ContentShellActiv
     }
 
     public void setupTestFrameworkForBasicMode() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            AccessibilityState.setIsAnyAccessibilityServiceEnabledForTesting(true);
-            AccessibilityState.setEventTypeMaskForTesting(EVENT_TYPE_MASK_ALL);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    AccessibilityState.setIsAnyAccessibilityServiceEnabledForTesting(true);
+                    AccessibilityState.setStateMaskForTesting(EVENT_TYPE_MASK, EVENT_TYPE_MASK_ALL);
+                });
 
         mWcax = getWebContentsAccessibility();
         mNodeProvider = getAccessibilityNodeProvider();
@@ -127,11 +128,12 @@ public class AccessibilityContentShellActivityTestRule extends ContentShellActiv
     }
 
     public void setupTestFrameworkForFormControlsMode() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            AccessibilityState.setIsAnyAccessibilityServiceEnabledForTesting(true);
-            AccessibilityState.setIsOnlyPasswordManagersEnabledForTesting(true);
-            AccessibilityState.setEventTypeMaskForTesting(EVENT_TYPE_MASK_ALL);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    AccessibilityState.setIsAnyAccessibilityServiceEnabledForTesting(true);
+                    AccessibilityState.setIsOnlyPasswordManagersEnabledForTesting(true);
+                    AccessibilityState.setStateMaskForTesting(EVENT_TYPE_MASK, EVENT_TYPE_MASK_ALL);
+                });
 
         mWcax = getWebContentsAccessibility();
         mNodeProvider = getAccessibilityNodeProvider();
@@ -142,9 +144,7 @@ public class AccessibilityContentShellActivityTestRule extends ContentShellActiv
         FeatureList.setTestCanUseDefaultsForTesting();
     }
 
-    /**
-     * Helper method to tear down our tests so we can start the next test clean.
-     */
+    /** Helper method to tear down our tests so we can start the next test clean. */
     @After
     public void tearDown() {
         mTracker = null;
@@ -202,8 +202,10 @@ public class AccessibilityContentShellActivityTestRule extends ContentShellActiv
      * AccessibilityNodeProvider and return one whose text or contentDescription equals |text|.
      * Returns the virtual view ID of the matching node, if found, and View.NO_ID if not.
      */
-    private <T> int findNodeMatching(int virtualViewId,
-            AccessibilityContentShellTestUtils.AccessibilityNodeInfoMatcher<T> matcher, T element) {
+    private <T> int findNodeMatching(
+            int virtualViewId,
+            AccessibilityContentShellTestUtils.AccessibilityNodeInfoMatcher<T> matcher,
+            T element) {
         AccessibilityNodeInfoCompat node = mNodeProvider.createAccessibilityNodeInfo(virtualViewId);
         Assert.assertNotEquals(node, null);
 
@@ -228,13 +230,16 @@ public class AccessibilityContentShellActivityTestRule extends ContentShellActiv
      */
     public <T> int waitForNodeMatching(
             AccessibilityContentShellTestUtils.AccessibilityNodeInfoMatcher<T> matcher, T element) {
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat(
-                    findNodeMatching(View.NO_ID, matcher, element), Matchers.not(View.NO_ID));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            findNodeMatching(View.NO_ID, matcher, element),
+                            Matchers.not(View.NO_ID));
+                });
 
-        int virtualViewId = TestThreadUtils.runOnUiThreadBlockingNoException(
-                () -> findNodeMatching(View.NO_ID, matcher, element));
+        int virtualViewId =
+                TestThreadUtils.runOnUiThreadBlockingNoException(
+                        () -> findNodeMatching(View.NO_ID, matcher, element));
         Assert.assertNotEquals(View.NO_ID, virtualViewId);
         return virtualViewId;
     }
@@ -266,16 +271,15 @@ public class AccessibilityContentShellActivityTestRule extends ContentShellActiv
      * @throws ExecutionException          Error
      * @throws Throwable                   Error
      */
-    public boolean performActionOnUiThread(int viewId, int action, Bundle args,
-            Callable<Boolean> criteria) throws ExecutionException, Throwable {
+    public boolean performActionOnUiThread(
+            int viewId, int action, Bundle args, Callable<Boolean> criteria)
+            throws ExecutionException, Throwable {
         boolean returnValue = performActionOnUiThread(viewId, action, args);
         CriteriaHelper.pollUiThread(criteria, NODE_TIMEOUT_ERROR);
         return returnValue;
     }
 
-    /**
-     * Helper method for executing a given JS method for the current web contents.
-     */
+    /** Helper method for executing a given JS method for the current web contents. */
     public void executeJS(String method) {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> getWebContents().evaluateJavaScriptForTests(method, null));
@@ -289,17 +293,24 @@ public class AccessibilityContentShellActivityTestRule extends ContentShellActiv
      */
     public void focusNode(int virtualViewId) throws Throwable {
         // Focus given node, assert actions were performed, then poll until node is updated.
-        Assert.assertTrue(performActionOnUiThread(
-                virtualViewId, AccessibilityNodeInfoCompat.ACTION_FOCUS, null));
-        Assert.assertTrue(performActionOnUiThread(
-                virtualViewId, AccessibilityNodeInfoCompat.ACTION_ACCESSIBILITY_FOCUS, null));
+        Assert.assertTrue(
+                performActionOnUiThread(
+                        virtualViewId, AccessibilityNodeInfoCompat.ACTION_FOCUS, null));
+        Assert.assertTrue(
+                performActionOnUiThread(
+                        virtualViewId,
+                        AccessibilityNodeInfoCompat.ACTION_ACCESSIBILITY_FOCUS,
+                        null));
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> mNodeProvider.createAccessibilityNodeInfo(virtualViewId));
 
-        CriteriaHelper.pollUiThread(() -> {
-            return mNodeProvider.createAccessibilityNodeInfo(virtualViewId)
-                    .isAccessibilityFocused();
-        }, NODE_TIMEOUT_ERROR);
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    return mNodeProvider
+                            .createAccessibilityNodeInfo(virtualViewId)
+                            .isAccessibilityFocused();
+                },
+                NODE_TIMEOUT_ERROR);
     }
 
     /**
@@ -372,8 +383,12 @@ public class AccessibilityContentShellActivityTestRule extends ContentShellActiv
         String directory = Environment.getExternalStorageDirectory().getPath() + BASE_DIRECTORY;
 
         File expectedFile = new File(directory, "/" + file);
-        Assert.assertTrue(MISSING_FILE_ERROR + " could not find the directory: " + directory
-                        + ", and/or file: " + expectedFile.getPath(),
+        Assert.assertTrue(
+                MISSING_FILE_ERROR
+                        + " could not find the directory: "
+                        + directory
+                        + ", and/or file: "
+                        + expectedFile.getPath(),
                 expectedFile.exists());
     }
 }

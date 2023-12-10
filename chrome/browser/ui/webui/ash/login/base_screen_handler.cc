@@ -31,7 +31,7 @@ BaseScreenHandler::BaseScreenHandler(OobeScreenId oobe_screen)
 
 BaseScreenHandler::~BaseScreenHandler() = default;
 
-void BaseScreenHandler::ShowInWebUI(absl::optional<base::Value::Dict> data) {
+void BaseScreenHandler::ShowInWebUI(std::optional<base::Value::Dict> data) {
   if (!GetOobeUI()) {
     return;
   }

@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="lo">
+<translation id="1003363546227723021">ເມື່ອໜ້າຈໍຂອງທ່ານບໍ່ໄດ້ເປີດນຳໃຊ້, ສະແດງຮູບພາບ, ເວລາ, ສະພາບອາກາດ ແລະ ຂໍ້ມູນສື່</translation>
 <translation id="1014750484722996375">ໂຕະ</translation>
 <translation id="1018219910092211213">ບໍ່ສາມາດລະບຸ DNS ໄດ້</translation>
 <translation id="1018656279737460067">ຍົກ​ເລີກ​ແລ້ວ</translation>
@@ -28,6 +29,7 @@
 <translation id="1175697296044146566"><ph name="DEVICE_TYPE" /> ນີ້ຈັດການໂດຍ <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">ສະເລ່ຍ (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">ລຶບອອກ</translation>
+<translation id="1191518099344003522">APN ເປີດການນຳໃຊ້ຢູ່.</translation>
 <translation id="1195447618553298278">ຄວາມຜິດພາດທີ່ບໍ່ຮູ້ຈັກ.</translation>
 <translation id="1196959502276349371">ເວີຊັນ <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">ຫຼິ້ນ/ຢຸດຊົ່ວຄາວ</translation>
@@ -79,6 +81,7 @@
 <translation id="1515129336378114413">ໜ້າຫຼັກຂອງໂປຣແກຣມທ່ອງເວັບ</translation>
 <translation id="1526389707933164996">ອະນິເມຊັນພາບພັກໜ້າຈໍ</translation>
 <translation id="152892567002884378">ເປີດສຽງຂຶ້ນ</translation>
+<translation id="1539242642795599947">APN ເປັນປະເພດຄ່າເລີ່ມຕົ້ນ ແລະ ການແນບໄຟລ໌.</translation>
 <translation id="1555130319947370107">ສີ​ຟ້າ</translation>
 <translation id="155865706765934889">ແຜ່ນສໍາຜັດ</translation>
 <translation id="1561927818299383735">ສີຂອງແສງຈາກສາກຫຼັງ</translation>
@@ -256,6 +259,7 @@
 <translation id="2872961005593481000">ມອດ</translation>
 <translation id="2873483161362553159">ການນຳທາງໂປຣແກຣມທ່ອງເວັບ</translation>
 <translation id="2874939134665556319">ເພງກ່ອນນີ້</translation>
+<translation id="2875812231449496375">ເປີດການຕັ້ງຄ່ານີ້ໄວ້ເພື່ອຜົນໄດ້ຮັບທີ່ດີທີ່ສຸດສຳລັບຮູບພື້ນຫຼັງນີ້. ທ່ານສາມາດປິດການຕັ້ງຄ່ານີ້ຕອນໃດກໍໄດ້.</translation>
 <translation id="2878387241690264070">ຄາຍປະຈຸ <ph name="RATE" /> ໃນ <ph name="NUM_SECONDS" /> ວິນາທີ.</translation>
 <translation id="2880569433548999039">ພາບພັກໜ້າຈໍການເຄື່ອນທີ່ຂອງເມກ</translation>
 <translation id="2926057806159140518">ລະບຸຊື່ຜູ້ໃຊ້ ແລະ ລະຫັດຜ່ານຂອງທ່ານ ຫຼື ສະແກນລະຫັດ QR ທ່ານ</translation>
@@ -337,6 +341,7 @@
 <translation id="3577473026931028326">ມີບາງຢ່າງຜິດພາດເກີດຂຶ້ນ. ກະລຸນາລອງໃໝ່.</translation>
 <translation id="357889014807611375">Wi-Fi ທີ່ວັດແທກການໃຊ້ອິນເຕີເນັດ</translation>
 <translation id="3583278742022654445">ຄວາມແຮງສັນຍານອ່ອນ. ໃຫ້ລອງຍ້າຍໄປໃກ້ແຫຼ່ງສັນຍານ Wi-Fi ຫຼາຍຂຶ້ນ.</translation>
+<translation id="3594280220611906414"><ph name="USER_FRIENDLY_APN_NAME" /> ແມ່ນຊື່ທີ່ເໝາະກັບຜູ້ໃຊ້ສຳລັບ <ph name="APN_NAME" />.</translation>
 <translation id="3595596368722241419">ແບັດເຕີຣີເຕັມ</translation>
 <translation id="3600339377155080675">ສະທ້ອນໜ້າຈໍ</translation>
 <translation id="3602290021589620013">ເບິ່ງຕົວຢ່າງ</translation>
@@ -435,7 +440,7 @@
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> ຮູບ</translation>
 <translation id="4333390807948134856">ກົດປຸ່ມ <ph name="KEY_NAME" /> ແລ້ວ</translation>
 <translation id="4354430579665871434">ປຸ່ມ</translation>
-<translation id="435692326371619097">ຈັດການການຕັ້ງຄ່າ APN ຂອງເຄືອຂ່າຍ. APN ສ້າງການເຊື່ອມຕໍ່ລະຫວ່າງເຄືອຂ່າຍມືຖື ແລະ ອິນເຕີເນັດ. <ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK" /></translation>
+<translation id="4361257691546579041">APN ເປັນປະເພດຄ່າເລີ່ມຕົ້ນ.</translation>
 <translation id="437294888293595148">ຣີເຊັດທາງລັດທັງໝົດ</translation>
 <translation id="4378373042927530923">ບໍ່ໄດ້ເອີ້ນໃຊ້</translation>
 <translation id="4378551569595875038">ກໍາລັງ​ເຊື່ອມ​ຕໍ່ ...</translation>
@@ -535,7 +540,6 @@
 <translation id="4999333166442584738">ເຊື່ອງລາຍງານ</translation>
 <translation id="500920857929044050">ຢຸດການທົດສອບ</translation>
 <translation id="5017508259293544172">LEAP</translation>
-<translation id="5019310272469539976">ເມື່ອໜ້າຈໍຂອງທ່ານຢູ່ລ້າໆ, ໃຫ້ສະແດງຮູບພາບ, ເວລາ, ສະພາບອາກາດ ແລະ ຂໍ້ມູນມີເດຍ.</translation>
 <translation id="5035083460461104704">ສີຂອງຮູບແບບສີສັນ</translation>
 <translation id="5038292761217083259">ແປນພິມຫຼາກສີ</translation>
 <translation id="5039804452771397117">ອະ​ນຸ​ຍາດ​</translation>
@@ -548,6 +552,7 @@
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
 <translation id="5137451382116112100">ເຕັມໜ້າຈໍ</translation>
 <translation id="5142961317498132443">ການຮັບຮອງຄວາມຖືກຕ້ອງ</translation>
+<translation id="5145081769226915336">ເປີດໃຊ້ໂໝດມືດໂດຍອັດຕະໂນມັດບໍ?</translation>
 <translation id="5154917547274118687">ຄວາມ​ຈໍາ</translation>
 <translation id="5160857336552977725">ລົງຊື່ເຂົ້າ <ph name="DEVICE_TYPE" /> ຂອງ​ທ່ານ</translation>
 <translation id="5166918508782100047">ການຕັ້ງຄ່າຄຳຕອບດ່ວນ</translation>
@@ -626,6 +631,7 @@
 <translation id="574392208103952083">ສື່ກາງ</translation>
 <translation id="5757187557809630523">ເພງຕໍ່ໄປ</translation>
 <translation id="5760715441271661976">ສະຖານະຜອດໂທລ</translation>
+<translation id="5763838252932650682">ກຳລັງຣີສະຕາດ ແລະ ອັບເດດ <ph name="APP_NAME" /></translation>
 <translation id="576835345334454681">ເພີ່ມຄວາມສະຫວ່າງການສະແດງຜົນ</translation>
 <translation id="57838592816432529">ປິດສຽງ</translation>
 <translation id="5784136236926853061">ການຕອບສະໜອງ HTTP ສູງ</translation>
@@ -656,6 +662,7 @@
 <translation id="5946538341867151940">ທ່ານຍັງບໍ່ໄດ້ເຊື່ອມຕໍ່ເທື່ອ. ຫາກຜູ້ໃຫ້ບໍລິການມືຖືຂອງທ່ານແນະນຳ APN ແບບກຳນົດເອງ, ໃຫ້ລະບຸຂໍ້ມູນ APN ດັ່ງກ່າວໂດຍເລືອກ "+ APN ໃໝ່"</translation>
 <translation id="5972388717451707488">ອັບເດດລະບົບ</translation>
 <translation id="5984145644188835034">ຮູບພື້ນຫຼັງເລີ່ມຕົ້ນ</translation>
+<translation id="6001235009374883388">APN ເປັນປະເພດການແນບໄຟລ໌.</translation>
 <translation id="6017514345406065928">ສີ​ຂຽວ</translation>
 <translation id="6019566113895157499">ຄີລັດ</translation>
 <translation id="6034694447310538551">ເປີດການນຳໃຊ້ການຣີເຊັດລາຍເດືອນອັດຕະໂນມັດ</translation>
@@ -823,6 +830,7 @@
 <translation id="7180611975245234373">ຣີເຟຣຊ</translation>
 <translation id="7180865173735832675">ກໍານົດເອງ</translation>
 <translation id="7184043045742675738">ຄລິກໃສ່ປຸ່ມໃດກໍໄດ້ເພື່ອປັບແຕ່ງປຸ່ມຂອງທ່ານ. ປ່ຽນຕຳແໜ່ງປຸ່ມດ້ວຍເມົ້າ ຫຼື ປຸ່ມລູກສອນ.</translation>
+<translation id="7212547870105584639">ຈັດການການຕັ້ງຄ່າ APN ຂອງເຄືອຂ່າຍ. APN ສ້າງການເຊື່ອມຕໍ່ລະຫວ່າງເຄືອຂ່າຍມືຖື ແລະ ອິນເຕີເນັດ. <ph name="BEGIN_LINK_LEARN_MORE" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">ອັບເດດເຟີມແວສຳລັບອຸປະກອນພາຍໃນ</translation>
 <translation id="7216409898977639127">ຜູ້ໃຫ້ບໍລິການມືຖື</translation>
 <translation id="725133483556299729">ເລືອກອີເມວ</translation>
@@ -833,6 +841,7 @@
 <translation id="7287310195820267359">ຄໍເລັກຊັນຮູບພື້ນຫຼັງ</translation>
 <translation id="7297226631177386107">ບໍ່ສາມາດເຊື່ອມຕໍ່ຜ່ານ firewall ຫາເວັບໄຊ HTTPS ໄດ້</translation>
 <translation id="7297726121602187087">ສີຂຽວເຂັ້ມ</translation>
+<translation id="7301262279595293068">ກະລຸນາລໍຖ້າໃນລະຫວ່າງທີ່ແອັບພລິເຄຊັນນີ້ກຳລັງອັບເດດ</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7308203371573257315">ຖາມຜູ້ຊ່ຽວຊານໃນກະດານຊ່ວຍເຫຼືອ Chromebook</translation>

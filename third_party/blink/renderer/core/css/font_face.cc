@@ -642,7 +642,6 @@ FontSelectionCapabilities FontFace::GetFontSelectionCapabilities() const {
                                 FontSelectionRange::RangeType::kSetExplicitly};
           break;
         case CSSValueID::kAuto:
-          DCHECK(RuntimeEnabledFeatures::CSSFontFaceAutoVariableRangeEnabled());
           capabilities.width = {kNormalWidthValue, kNormalWidthValue,
                                 FontSelectionRange::RangeType::kSetFromAuto};
           break;
@@ -708,7 +707,6 @@ FontSelectionCapabilities FontFace::GetFontSelectionCapabilities() const {
                                 FontSelectionRange::RangeType::kSetExplicitly};
           break;
         case CSSValueID::kAuto:
-          DCHECK(RuntimeEnabledFeatures::CSSFontFaceAutoVariableRangeEnabled());
           capabilities.slope = {kNormalSlopeValue, kNormalSlopeValue,
                                 FontSelectionRange::RangeType::kSetFromAuto};
           break;
@@ -782,7 +780,6 @@ FontSelectionCapabilities FontFace::GetFontSelectionCapabilities() const {
                                  FontSelectionRange::RangeType::kSetExplicitly};
           break;
         case CSSValueID::kAuto:
-          DCHECK(RuntimeEnabledFeatures::CSSFontFaceAutoVariableRangeEnabled());
           capabilities.weight = {kNormalWeightValue, kNormalWeightValue,
                                  FontSelectionRange::RangeType::kSetFromAuto};
           break;

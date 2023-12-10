@@ -769,21 +769,6 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
   [self waitForPageToFinishLoading];
 }
 
-- (void)triggerRestoreViaTabGridRemoveAllUndo {
-  [ChromeEarlGrey showTabSwitcher];
-  GREYWaitForAppToIdle(@"App failed to idle");
-  [ChromeEarlGrey
-      waitForAndTapButton:grey_allOf(chrome_test_util::TabGridEditButton(),
-                                     grey_sufficientlyVisible(), nil)];
-  [ChromeEarlGrey
-      waitForAndTapButton:chrome_test_util::TabGridEditMenuCloseAllButton()];
-  [ChromeEarlGrey
-      waitForAndTapButton:chrome_test_util::TabGridUndoCloseAllButton()];
-  [ChromeEarlGrey waitForAndTapButton:chrome_test_util::TabGridDoneButton()];
-  [self waitForRestoreSessionToFinish];
-  [self waitForPageToFinishLoading];
-}
-
 - (BOOL)webStateWebViewUsesContentInset {
   return [ChromeEarlGreyAppInterface webStateWebViewUsesContentInset];
 }
@@ -1378,10 +1363,6 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
   return [ChromeEarlGreyAppInterface isWebChannelsEnabled];
 }
 
-- (BOOL)isUIButtonConfigurationEnabled {
-  return [ChromeEarlGreyAppInterface isUIButtonConfigurationEnabled];
-}
-
 - (BOOL)isBottomOmniboxSteadyStateEnabled {
   return [ChromeEarlGreyAppInterface isBottomOmniboxSteadyStateEnabled];
 }
@@ -1535,6 +1516,16 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
   NSString* prefName = base::SysUTF8ToNSString(UTF8PrefName);
   return [ChromeEarlGreyAppInterface setIntegerValue:value
                                          forUserPref:prefName];
+}
+
+- (bool)prefWithNameIsDefaultValue:(const std::string&)prefName {
+  return [ChromeEarlGreyAppInterface
+      prefWithNameIsDefaultValue:base::SysUTF8ToNSString(prefName)];
+}
+
+- (void)clearUserPrefWithName:(const std::string&)prefName {
+  [ChromeEarlGreyAppInterface
+      clearUserPrefWithName:base::SysUTF8ToNSString(prefName)];
 }
 
 - (void)resetBrowsingDataPrefs {

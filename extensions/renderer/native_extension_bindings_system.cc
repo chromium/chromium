@@ -217,13 +217,21 @@ bool ArePromisesAllowed(v8::Local<v8::Context> context) {
   if (extension && extension->manifest_version() >= 3) {
     return true;
   }
-  if (script_context->context_type() == Feature::WEBUI_CONTEXT) {
-    return true;
+  switch (script_context->context_type()) {
+    case Feature::WEBUI_CONTEXT:
+    case Feature::WEBUI_UNTRUSTED_CONTEXT:
+    case Feature::WEB_PAGE_CONTEXT:
+      return true;
+    case Feature::UNSPECIFIED_CONTEXT:
+    case Feature::BLESSED_WEB_PAGE_CONTEXT:
+    case Feature::BLESSED_EXTENSION_CONTEXT:
+    case Feature::LOCK_SCREEN_EXTENSION_CONTEXT:
+    case Feature::OFFSCREEN_EXTENSION_CONTEXT:
+    case Feature::UNBLESSED_EXTENSION_CONTEXT:
+    case Feature::USER_SCRIPT_CONTEXT:
+    case Feature::CONTENT_SCRIPT_CONTEXT:
+      return false;
   }
-  if (script_context->context_type() == Feature::WEB_PAGE_CONTEXT) {
-    return true;
-  }
-  return false;
 }
 
 // Instantiates the binding object for the given |name|. |name| must specify a

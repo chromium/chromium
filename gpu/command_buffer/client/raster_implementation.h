@@ -13,6 +13,7 @@
 #include <utility>
 #include <vector>
 
+#include <optional>
 #include "base/memory/raw_ptr.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "cc/paint/paint_cache.h"
@@ -31,7 +32,6 @@
 #include "gpu/command_buffer/common/id_allocator.h"
 #include "gpu/command_buffer/common/raster_cmd_format.h"
 #include "gpu/raster_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace cc {
 class TransferCacheSerializeHelper;
@@ -211,6 +211,8 @@ class RASTER_EXPORT RasterImplementation : public RasterInterface,
                            int plane_index,
                            void* dst_pixels) override;
   GLuint CreateAndConsumeForGpuRaster(const gpu::Mailbox& mailbox) override;
+  GLuint CreateAndConsumeForGpuRaster(
+      const scoped_refptr<gpu::ClientSharedImage>& shared_image) override;
   void DeleteGpuRasterTexture(GLuint texture) override;
   void BeginGpuRaster() override;
   void EndGpuRaster() override;
@@ -399,8 +401,8 @@ class RASTER_EXPORT RasterImplementation : public RasterInterface,
   // Used to check for single threaded access.
   int use_count_;
 
-  absl::optional<ScopedMappedMemoryPtr> font_mapped_buffer_;
-  absl::optional<ScopedTransferBufferPtr> raster_mapped_buffer_;
+  std::optional<ScopedMappedMemoryPtr> font_mapped_buffer_;
+  std::optional<ScopedTransferBufferPtr> raster_mapped_buffer_;
 
   base::RepeatingCallback<void(const char*, int32_t)> error_message_callback_;
 
@@ -431,7 +433,7 @@ class RASTER_EXPORT RasterImplementation : public RasterInterface,
     bool can_use_lcd_text = false;
     sk_sp<SkColorSpace> color_space;
   };
-  absl::optional<RasterProperties> raster_properties_;
+  std::optional<RasterProperties> raster_properties_;
 
   uint32_t max_inlined_entry_size_;
   ClientTransferCache transfer_cache_;

@@ -106,31 +106,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) VirtualCtap2Device
     // transports_in_get_info, if not empty, contains the transports that will
     // be reported via getInfo. Otherwise no transports will be reported.
     std::vector<FidoTransportProtocol> transports_in_get_info;
-    // device_public_key_support controls whether the devicePubKey extension is
-    // supported. See https://github.com/w3c/webauthn/pull/1663
-    bool device_public_key_support = false;
-    // device_public_key_support_attestation controls whether a DPK attestation
-    // will ever be returned.
-    bool device_public_key_support_attestation = false;
-    // device_public_key_always_return_attestation causes the DPK response to
-    // always contain an attestation, no matter the request.
-    bool device_public_key_always_return_attestation = false;
-    // device_public_key_enterprise_attestation, if true, causes enterprise
-    // attestation requests to be honoured if the RP ID is in
-    // |enterprise_attestation_rps|.
-    bool device_public_key_support_enterprise_attestation = false;
-    // device_public_key_always_return_attestation causes the DPK response to
-    // always signal that an attestation is an enterprise attestation.
-    bool device_public_key_always_return_enterprise_attestation = false;
-    // device_public_key_drop_extension_response causes the extension output
-    // (but not the signature) to be omitted.
-    bool device_public_key_drop_extension_response = false;
-    // device_public_key_drop_signature causes the signature (but not the
-    // extension output) to be omitted.
-    bool device_public_key_drop_signature = false;
-    // backup_eligible, if true, causes credentials to set the BE (Backup
-    // Eligible) flag to indicate that they can be synced.
-    bool backup_eligible = false;
 
     IncludeCredential include_credential_in_assertion_response =
         IncludeCredential::ONLY_IF_NEEDED;
@@ -345,11 +320,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) VirtualCtap2Device
       UserVerificationRequirement user_verification,
       bool user_presence_required,
       bool* out_user_verified);
-  absl::optional<cbor::Value> HandleDevicePublicKey(
-      const DevicePublicKeyRequest& request,
-      const std::string& rp_id,
-      const uint32_t primary_credential_cose_algorithm,
-      absl::optional<std::unique_ptr<PrivateKey>>* const private_key);
   absl::optional<CtapDeviceResponseCode> OnMakeCredential(
       base::span<const uint8_t> request,
       std::vector<uint8_t>* response);

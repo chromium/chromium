@@ -1,0 +1,11 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# List of files that should be passed to html_to_wrapper().
+tab_resumption_v2_web_component_files =
+    [ "modules/v2/tab_resumption/module.ts" ]
+
+# List of files that don't need to be passed to html_to_wrapper().
+tab_resumption_v2_non_web_component_files =
+    [ "modules/v2/tab_resumption/tab_resumption_proxy.ts" ]

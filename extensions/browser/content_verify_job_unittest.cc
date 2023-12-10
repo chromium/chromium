@@ -202,7 +202,7 @@ class ContentVerifyJobUnittest : public ExtensionsTest {
   // extension resources in |extension_path|, including manifest.json.
   scoped_refptr<Extension> CreateAndLoadTestExtensionToTempDir(
       TestExtensionDir* temp_dir,
-      absl::optional<std::map<base::FilePath, std::string>>
+      std::optional<std::map<base::FilePath, std::string>>
           resources_for_hashes) {
     WriteManifest(temp_dir);
 
@@ -669,7 +669,7 @@ TEST_F(ContentVerifyJobWithoutSignedHashesUnittest, ExtensionWithoutHashes) {
   const base::FilePath kResourcePath(FILE_PATH_LITERAL("script-ok.js"));
 
   scoped_refptr<Extension> extension =
-      CreateAndLoadTestExtensionToTempDir(&temp_dir, absl::nullopt);
+      CreateAndLoadTestExtensionToTempDir(&temp_dir, std::nullopt);
   ASSERT_TRUE(extension);
   base::FilePath unzipped_path = temp_dir.UnpackedPath();
   const std::string kContents = "console.log('Nothing special');";
@@ -819,7 +819,7 @@ class ContentVerifyJobWithHashFetchUnittest : public ContentVerifyJobUnittest {
   bool ready_to_respond_ = false;
 
   // Copy of the contents of verified_contents.json.
-  absl::optional<std::string> verified_contents_;
+  std::optional<std::string> verified_contents_;
 };
 
 // Regression test for https://crbug.com/995436.

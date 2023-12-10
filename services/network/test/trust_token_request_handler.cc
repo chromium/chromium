@@ -10,7 +10,6 @@
 #include "base/functional/callback.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -174,7 +173,7 @@ std::string TrustTokenRequestHandler::GetKeyCommitmentRecord() const {
 }
 
 absl::optional<std::string> TrustTokenRequestHandler::Issue(
-    base::StringPiece issuance_request) {
+    std::string_view issuance_request) {
   base::AutoLock lock(mutex_);
 
   if (rep_->issuance_outcome == ServerOperationOutcome::kUnconditionalFailure) {
@@ -218,7 +217,7 @@ absl::optional<std::string> TrustTokenRequestHandler::Issue(
 }
 
 absl::optional<std::string> TrustTokenRequestHandler::Redeem(
-    base::StringPiece redemption_request) {
+    std::string_view redemption_request) {
   base::AutoLock lock(mutex_);
 
   if (rep_->redemption_outcome ==

@@ -37,6 +37,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "base/test/values_test_util.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -94,6 +95,7 @@
 #include "net/dns/public/secure_dns_policy.h"
 #include "net/http/http_byte_range.h"
 #include "net/http/http_cache.h"
+#include "net/http/http_connection_info.h"
 #include "net/http/http_network_layer.h"
 #include "net/http/http_network_session.h"
 #include "net/http/http_request_headers.h"
@@ -1811,6 +1813,7 @@ TEST_F(URLRequestTest, OnConnected) {
   TransportInfo expected_transport;
   expected_transport.endpoint =
       IPEndPoint(IPAddress::IPv4Localhost(), test_server.port());
+  expected_transport.negotiated_protocol = kProtoUnknown;
   EXPECT_THAT(delegate.transports(), ElementsAre(expected_transport));
 
   // Make sure URL_REQUEST_DELEGATE_CONNECTED is logged correctly.
@@ -1848,6 +1851,7 @@ TEST_F(URLRequestTest, OnConnectedRedirect) {
   TransportInfo expected_transport;
   expected_transport.endpoint =
       IPEndPoint(IPAddress::IPv4Localhost(), test_server.port());
+  expected_transport.negotiated_protocol = kProtoUnknown;
   EXPECT_THAT(delegate.transports(), ElementsAre(expected_transport));
 
   request->FollowDeferredRedirect(/*removed_headers=*/{},
@@ -1877,6 +1881,7 @@ TEST_F(URLRequestTest, OnConnectedError) {
   TransportInfo expected_transport;
   expected_transport.endpoint =
       IPEndPoint(IPAddress::IPv4Localhost(), test_server.port());
+  expected_transport.negotiated_protocol = kProtoUnknown;
   EXPECT_THAT(delegate.transports(), ElementsAre(expected_transport));
 
   EXPECT_TRUE(delegate.request_failed());
@@ -3567,6 +3572,87 @@ TEST_P(URLRequestSameSiteCookiesTest, SettingSameSiteCookies_Redirect) {
 INSTANTIATE_TEST_SUITE_P(/* no label */,
                          URLRequestSameSiteCookiesTest,
                          ::testing::Bool());
+
+TEST_F(URLRequestTest, PartitionedCookiesRedirect) {
+  EmbeddedTestServer https_server(EmbeddedTestServer::TYPE_HTTPS);
+  https_server.SetSSLConfig(EmbeddedTestServer::CERT_TEST_NAMES);
+  RegisterDefaultHandlers(&https_server);
+  ASSERT_TRUE(https_server.Start());
+
+  const std::string kHost = "a.test";
+  const std::string kCrossSiteHost = "b.test";
+
+  const GURL create_cookie_url = https_server.GetURL(kHost, "/");
+
+  auto context_builder = CreateTestURLRequestContextBuilder();
+  context_builder->SetCookieStore(
+      std::make_unique<CookieMonster>(nullptr, nullptr));
+  auto context = context_builder->Build();
+  auto& cm = *static_cast<CookieMonster*>(context->cookie_store());
+
+  // Set partitioned cookie with same-site partitionkey.
+  {
+    auto same_site_partitioned_cookie = CanonicalCookie::Create(
+        create_cookie_url, "samesite_partitioned=1;Secure;Partitioned",
+        base::Time::Now(), absl::nullopt,
+        CookiePartitionKey::FromURLForTesting(create_cookie_url));
+    ASSERT_TRUE(same_site_partitioned_cookie);
+    ASSERT_TRUE(same_site_partitioned_cookie->IsPartitioned());
+    base::test::TestFuture<CookieAccessResult> future;
+    cm.SetCanonicalCookieAsync(
+        std::move(same_site_partitioned_cookie), create_cookie_url,
+        CookieOptions::MakeAllInclusive(), future.GetCallback());
+    ASSERT_TRUE(future.Get().status.IsInclude());
+  }
+
+  // Set a partitioned cookie with a cross-site partition key.
+  // In the redirect below from site B to A, this cookie's partition key is site
+  // B it should not be sent in the redirected request.
+  {
+    auto cross_site_partitioned_cookie = CanonicalCookie::Create(
+        create_cookie_url, "xsite_partitioned=1;Secure;Partitioned",
+        base::Time::Now(), absl::nullopt,
+        CookiePartitionKey::FromURLForTesting(
+            https_server.GetURL(kCrossSiteHost, "/")));
+    ASSERT_TRUE(cross_site_partitioned_cookie);
+    ASSERT_TRUE(cross_site_partitioned_cookie->IsPartitioned());
+    base::test::TestFuture<CookieAccessResult> future;
+    cm.SetCanonicalCookieAsync(
+        std::move(cross_site_partitioned_cookie), create_cookie_url,
+        CookieOptions::MakeAllInclusive(), future.GetCallback());
+    ASSERT_TRUE(future.Get().status.IsInclude());
+  }
+
+  const auto kCrossSiteOrigin =
+      url::Origin::Create(https_server.GetURL(kCrossSiteHost, "/"));
+  const auto kCrossSiteSiteForCookies =
+      SiteForCookies::FromOrigin(kCrossSiteOrigin);
+
+  // Test that when a request is redirected that the partitioned cookies
+  // attached to the redirected request match the partition key of the new
+  // request.
+  TestDelegate d;
+  GURL url = https_server.GetURL(
+      kCrossSiteHost,
+      "/server-redirect?" +
+          https_server.GetURL(kHost, "/echoheader?Cookie").spec());
+  std::unique_ptr<URLRequest> req = context->CreateRequest(
+      url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS);
+  req->set_isolation_info(IsolationInfo::Create(
+      IsolationInfo::RequestType::kMainFrame, kCrossSiteOrigin,
+      kCrossSiteOrigin, kCrossSiteSiteForCookies));
+  req->set_first_party_url_policy(
+      RedirectInfo::FirstPartyURLPolicy::UPDATE_URL_ON_REDIRECT);
+  req->set_site_for_cookies(kCrossSiteSiteForCookies);
+  req->set_initiator(kCrossSiteOrigin);
+  req->Start();
+  d.RunUntilComplete();
+
+  EXPECT_EQ(2u, req->url_chain().size());
+  EXPECT_NE(std::string::npos,
+            d.data_received().find("samesite_partitioned=1"));
+  EXPECT_EQ(std::string::npos, d.data_received().find("xsite_partitioned=1"));
+}
 
 // Tests that __Secure- cookies can't be set on non-secure origins.
 TEST_F(URLRequestTest, SecureCookiePrefixOnNonsecureOrigin) {
@@ -10547,9 +10633,10 @@ class HTTPSCertNetFetchingTest : public HTTPSRequestTest {
   }
 
   void UpdateCertVerifier(scoped_refptr<CRLSet> crl_set) {
-    net::CertVerifyProcFactory::ImplParams params;
+    net::CertVerifyProc::ImplParams params;
     params.crl_set = std::move(crl_set);
-    updatable_cert_verifier_->UpdateVerifyProcData(cert_net_fetcher_, params);
+    updatable_cert_verifier_->UpdateVerifyProcData(cert_net_fetcher_, params,
+                                                   {});
   }
 
   scoped_refptr<CertNetFetcherURLRequest> cert_net_fetcher_;
@@ -11697,7 +11784,7 @@ TEST_F(HTTPSLocalCRLSetTest, KnownInterceptionBlocked) {
   // Configure a CRL that will mark |root_ca_cert| as a blocked interception
   // root.
   std::string crl_set_bytes;
-  net::CertVerifyProcFactory::ImplParams params;
+  net::CertVerifyProc::ImplParams params;
   ASSERT_TRUE(
       base::ReadFileToString(GetTestCertsDirectory().AppendASCII(
                                  "crlset_blocked_interception_by_root.raw"),
@@ -11705,7 +11792,7 @@ TEST_F(HTTPSLocalCRLSetTest, KnownInterceptionBlocked) {
   ASSERT_TRUE(CRLSet::Parse(crl_set_bytes, &params.crl_set));
 
   updatable_cert_verifier_->UpdateVerifyProcData(
-      /*cert_net_fetcher=*/nullptr, params);
+      /*cert_net_fetcher=*/nullptr, params, {});
 
   // Verify the connection fails as being a known interception root.
   {

@@ -29,7 +29,8 @@ const char* LayerTreeHostPixelResourceTest::GetRendererSuffix() const {
       return "skia_gl";
     case viz::RendererType::kSkiaVk:
       return "skia_vk";
-    case viz::RendererType::kSkiaGraphite:
+    case viz::RendererType::kSkiaGraphiteDawn:
+    case viz::RendererType::kSkiaGraphiteMetal:
       return "skia_graphite";
     case viz::RendererType::kSoftware:
       return "sw";
@@ -96,7 +97,7 @@ LayerTreeHostPixelResourceTest::CreateRasterBufferProvider(
       EXPECT_FALSE(use_software_renderer());
 
       return std::make_unique<ZeroCopyRasterBufferProvider>(
-          gpu_memory_buffer_manager, compositor_context_provider, raster_caps);
+          compositor_context_provider, raster_caps);
     case TestRasterType::kOneCopy:
       EXPECT_TRUE(compositor_context_provider);
       EXPECT_TRUE(worker_context_provider);

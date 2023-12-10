@@ -44,6 +44,15 @@ config("runtime_library") {
 
   defines += [ "CR_LIBCXX_REVISION=$libcxx_revision" ]
 
+  # Temporarily add a define to force a rebuild when changing
+  # buildtools/third_party/libc++/__config_site which isn't picked up by
+  # dependency tracking (because it's an #include of headers included via
+  # -isysroot).
+  # TODO(thakis): Remove this after a few days.
+  if (is_android) {
+    defines += [ "TEMP_REBUILD_HACK" ]
+  }
+
   if (is_win) {
     # Intentionally not using libc++abi on Windows because libc++abi only
     # implements the Itanium C++ ABI, and not the Microsoft ABI which we use on

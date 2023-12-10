@@ -1,6 +1,6 @@
 (async function(testRunner) {
   const {session, dp} = await testRunner.startBlank(
-    `Test that Fetch.requestFulfill at reponse stage without body parameter will use original response body`);
+    `Test that Fetch.continueResponse without body parameter will use original response body`);
 
   await dp.Runtime.enable();
   await dp.Network.enable();

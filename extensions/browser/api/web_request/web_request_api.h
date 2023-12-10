@@ -9,11 +9,11 @@
 
 #include <list>
 #include <map>
+#include <optional>
 #include <set>
 #include <string>
 #include <utility>
 #include <vector>
-
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
@@ -36,6 +36,7 @@
 #include "extensions/browser/extension_api_frame_id_map.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/extension_registry_observer.h"
+#include "extensions/browser/guest_view/web_view/web_view_guest.h"
 #include "ipc/ipc_sender.h"
 #include "net/base/auth.h"
 #include "net/base/completion_once_callback.h"
@@ -43,7 +44,6 @@
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/public/mojom/websocket.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 
@@ -73,7 +73,7 @@ class WebRequestAPI : public BrowserContextKeyedAPI,
   // Otherwise any supplied |credentials| will be used. If no credentials are
   // supplied, default browser behavior will follow (e.g. UI prompt for login).
   using AuthRequestCallback = base::OnceCallback<void(
-      const absl::optional<net::AuthCredentials>& credentials,
+      const std::optional<net::AuthCredentials>& credentials,
       bool should_cancel)>;
 
   // An interface which is held by ProxySet defined below.
@@ -83,7 +83,7 @@ class WebRequestAPI : public BrowserContextKeyedAPI,
 
     // Asks the Proxy to handle an auth request on behalf of one of its known
     // in-progress network requests. If the request will *not* be handled by
-    // the proxy, |callback| should be invoked with |absl::nullopt|.
+    // the proxy, |callback| should be invoked with |std::nullopt|.
     virtual void HandleAuthRequest(
         const net::AuthChallengeInfo& auth_info,
         scoped_refptr<net::HttpResponseHeaders> response_headers,
@@ -199,7 +199,7 @@ class WebRequestAPI : public BrowserContextKeyedAPI,
       content::RenderFrameHost* frame,
       int render_process_id,
       content::ContentBrowserClient::URLLoaderFactoryType type,
-      absl::optional<int64_t> navigation_id,
+      std::optional<int64_t> navigation_id,
       ukm::SourceIdObj ukm_source_id,
       mojo::PendingReceiver<network::mojom::URLLoaderFactory>* factory_receiver,
       mojo::PendingRemote<network::mojom::TrustedURLLoaderHeaderClient>*
@@ -218,7 +218,8 @@ class WebRequestAPI : public BrowserContextKeyedAPI,
       scoped_refptr<net::HttpResponseHeaders> response_headers,
       const content::GlobalRequestID& request_id,
       bool is_main_frame,
-      AuthRequestCallback callback);
+      AuthRequestCallback callback,
+      WebViewGuest* web_view_guest);
 
   // Starts proxying the connection with |factory|. This function can be called
   // only when MayHaveProxies() returns true.
@@ -227,7 +228,7 @@ class WebRequestAPI : public BrowserContextKeyedAPI,
       content::ContentBrowserClient::WebSocketFactory factory,
       const GURL& url,
       const net::SiteForCookies& site_for_cookies,
-      const absl::optional<std::string>& user_agent,
+      const std::optional<std::string>& user_agent,
       mojo::PendingRemote<network::mojom::WebSocketHandshakeClient>
           handshake_client);
 
@@ -254,6 +255,11 @@ class WebRequestAPI : public BrowserContextKeyedAPI,
   // will be refactored to live somewhere else so that we don't have to
   // create a full proxy just for telemetry.
   bool MayHaveWebsocketProxiesForExtensionTelemetry() const;
+
+  // Indicates whether the WebRequestAPI is available to a RenderFrameHost
+  // that embeds a WebView instance.
+  bool IsAvailableToWebViewEmbedderFrame(
+      content::RenderFrameHost* render_frame_host) const;
 
   bool HasExtraHeadersListenerForTesting();
 

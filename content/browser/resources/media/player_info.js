@@ -43,7 +43,7 @@ export class PlayerInfo {
 
     this.properties[key] = value;
 
-    var recordValue = {
+    const recordValue = {
       time: timestamp - this.firstTimestamp_,
       key: key,
       value: value,

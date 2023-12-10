@@ -11,5 +11,8 @@ found in the LICENSE file.
     android:id="@+id/image_view_widget"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
+    android:minHeight="@dimen/min_touch_target_size"
+    android:minWidth="@dimen/min_touch_target_size"
+    android:scaleType="center"
     android:visibility="gone"
     tools:ignore="contentDescription" />

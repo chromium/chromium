@@ -79,8 +79,7 @@ class PolicyDetails:
       raise RuntimeError('Platform "%s" is not supported' % platform)
     return PLATFORM_STRINGS[platform]
 
-  def __init__(self, policy, chrome_major_version, deprecation_milestone_buffer,
-               target_platform, valid_tags):
+  def __init__(self, policy, chrome_major_version, target_platform, valid_tags):
     self.id = policy['id']
     self.name = policy['name']
     self.tags = policy.get('tags', None)
@@ -127,8 +126,7 @@ class PolicyDetails:
       # does not support the policy.
       if chrome_major_version:
         if (int(version_min) > chrome_major_version
-            or version_max != '' and int(version_max) <
-            chrome_major_version - deprecation_milestone_buffer):
+            or version_max != '' and int(version_max) < chrome_major_version):
           continue
       self.platforms.update(self._ConvertPlatform(platform))
 
@@ -216,18 +214,6 @@ class PolicyAtomicGroup:
                            self.name + '.\n')
 
 
-def ParseVersionFile(version_path):
-  chrome_major_version = None
-  for line in open(version_path, 'r').readlines():
-    key, val = line.rstrip('\r\n').split('=', 1)
-    if key == 'MAJOR':
-      chrome_major_version = val
-      break
-  if chrome_major_version is None:
-    raise RuntimeError('VERSION file does not contain major version.')
-  return int(chrome_major_version)
-
-
 def main():
   parser = ArgumentParser(usage=__doc__)
   parser.add_argument(
@@ -281,11 +267,10 @@ def main():
       help='generate source file of policy constants for use in '
       'Chrome OS',
       metavar='FILE')
-  parser.add_argument(
-      '--chrome-version-file',
-      dest='chrome_version_file',
-      help='path to src/chrome/VERSION',
-      metavar='FILE')
+  parser.add_argument('--chrome-version-major',
+                      dest='chrome_version_major',
+                      help='Chrome major version',
+                      type=int)
   parser.add_argument(
       '--all-chrome-versions',
       action='store_true',
@@ -303,13 +288,6 @@ def main():
       dest='policy_templates_file',
       help='path to the policy_templates.json input file',
       metavar='FILE')
-  parser.add_argument(
-      '--deprecation-milestone-buffer',
-      dest='deprecation_milestone_buffer',
-      type=int,
-      help='Number of major versions before a code for a policy stops being '
-      'generated',
-      default=3)  # Temporary fix for tree closure. crbug.com/1383391
   parser.add_argument(
       '--no-chunking',
       action='store_false',
@@ -329,9 +307,9 @@ def main():
           ' --policy-templates-file=<path to policy_templates.json>')
     has_arg_error = True
 
-  if not args.chrome_version_file and not args.all_chrome_versions:
+  if not args.chrome_version_major and not args.all_chrome_versions:
     print('Error: Missing'
-          ' --chrome-version-file=<path to src/chrome/VERSION>\n'
+          ' --chrome-version-major=<major version>\n'
           ' or --all-chrome-versions')
     has_arg_error = True
 
@@ -340,10 +318,8 @@ def main():
     parser.print_help()
     return 2
 
-  version_path = args.chrome_version_file
   target_platform = args.target_platform
   template_file_name = args.policy_templates_file
-  deprecation_milestone_buffer = int(args.deprecation_milestone_buffer)
 
   # --target-platform accepts "chromeos" as its input because that's what is
   # used within GN. Within policy templates, "chrome_os" is used instead.
@@ -353,13 +329,13 @@ def main():
   if args.all_chrome_versions:
     chrome_major_version = None
   else:
-    chrome_major_version = ParseVersionFile(version_path)
+    chrome_major_version = args.chrome_version_major
 
   template_file_contents = _LoadJSONFile(template_file_name)
   risk_tags = RiskTags(template_file_contents)
   policy_details = [
-      PolicyDetails(policy, chrome_major_version, deprecation_milestone_buffer,
-                    target_platform, risk_tags.GetValidTags())
+      PolicyDetails(policy, chrome_major_version, target_platform,
+                    risk_tags.GetValidTags())
       for policy in template_file_contents['policy_definitions']
       if policy['type'] != 'group'
   ]
@@ -1066,14 +1042,14 @@ def _GenerateDefaultValue(value):
   elif type(value) == str:
     return [], 'base::Value("%s")' % value
   elif type(value) == list:
-    setup = ['base::Value default_value(base::Value::Type::LIST);']
+    setup = ['base::Value::List default_value;']
     for entry in value:
       decl, fetch = _GenerateDefaultValue(entry)
       # Nested lists are not supported.
       if decl:
         return [], None
       setup.append('default_value.Append(%s);' % fetch)
-    return setup, 'std::move(default_value)'
+    return setup, 'base::Value(std::move(default_value))'
   return [], None
 
 

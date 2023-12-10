@@ -31,6 +31,9 @@ class V4L2VideoDecoderDelegateAV1 : public AV1Decoder::AV1Accelerator {
 
   // AV1Decoder::AV1Accelerator implementation.
   scoped_refptr<AV1Picture> CreateAV1Picture(bool apply_grain) override;
+  scoped_refptr<AV1Picture> CreateAV1PictureSecure(
+      bool apply_grain,
+      uint64_t secure_handle) override;
 
   Status SubmitDecode(const AV1Picture& pic,
                       const libgav1::ObuSequenceHeader& sequence_header,

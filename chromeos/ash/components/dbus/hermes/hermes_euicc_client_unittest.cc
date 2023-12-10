@@ -4,10 +4,8 @@
 
 #include <deque>
 
-#include "ash/constants/ash_features.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_client_test_base.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_euicc_client.h"
@@ -414,8 +412,6 @@ TEST_F(HermesEuiccClientTest, TestRefreshInstalledProfiles) {
 }
 
 TEST_F(HermesEuiccClientTest, TestRefreshSmdxProfiles) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(ash::features::kSmdsDbusMigration);
 
   dbus::ObjectPath test_euicc_path(kTestEuiccPath);
   dbus::MethodCall method_call(hermes::kHermesEuiccInterface,

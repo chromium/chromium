@@ -1,6 +1,47 @@
-<style include="tab-organization-shared-style"></style>
+<style include="tab-organization-shared-style">
+  .footer {
+    background-color: var(--color-bubble-footer-background);
+    display: flex;
+    flex-direction: column;
+    margin: 0 -20px;
+    padding: 16px var(--mwb-list-item-horizontal-margin);
+  }
 
-<div class="tab-organization-text-container">
-  <div class="tab-organization-header">[[getTitle_(error)]]</div>
-  <div class="tab-organization-body">[[getBody_(error)]]</div>
+  .inline {
+    display: inline-block;
+  }
+
+  /* Explicitly provide a hard-coded width for each text block.
+   * This ensures accuracy in the tab-organization-page calculation for
+   * animating bubble height, as text wraps when rendered offscreen.
+   */
+  .tab-organization-body {
+    width: 280px;
+  }
+</style>
+
+<div class="tab-organization-container">
+  <div class="tab-organization-text-container">
+    <div class="tab-organization-header">[[getTitle_(error)]]</div>
+    <div class="tab-organization-body">
+      [[getBodyPreLink_(error)]]
+      <div class="tab-organization-link inline"
+          role="link"
+          tabindex="0"
+          on-click="onCheckNow_">
+        [[getBodyLink_(error)]]
+      </div>
+      [[getBodyPostLink_(error)]]
+    </div>
+  </div>
+  <template is="dom-if" if="[[showFre]]">
+    <div class="footer">
+      <div class="tab-organization-body">
+        <b>$i18n{tipTitle}</b> $i18n{tipBody}
+      </div>
+      <div class="tab-organization-link" tabindex="0" on-click="onTipClick_">
+        $i18n{tipAction}
+      </div>
+    </div>
+  </template>
 </div>

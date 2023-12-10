@@ -270,4 +270,14 @@ TEST_F(ConverterTest, MoveOnlyParameters) {
   func->Call(context, v8::Undefined(isolate), 1, argv).ToLocalChecked();
 }
 
+TEST_F(ConverterTest, VectorOfMoveOnly) {
+  v8::Isolate* isolate = instance_->isolate();
+  v8::HandleScope handle_scope(isolate);
+
+  v8::Local<v8::Value> v8_value = v8::Array::New(instance_->isolate(), 1);
+  std::vector<MoveOnlyObject> out_value;
+  ASSERT_TRUE(ConvertFromV8(instance_->isolate(), v8_value, &out_value));
+  EXPECT_EQ(out_value.size(), 1u);
+}
+
 }  // namespace gin

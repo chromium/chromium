@@ -5,7 +5,6 @@
 #include "gpu/ipc/service/image_transport_surface.h"
 
 #include "build/build_config.h"
-#include "gpu/ipc/service/pass_through_image_transport_surface.h"
 #include "ui/gl/init/gl_factory.h"
 
 namespace gpu {
@@ -30,16 +29,7 @@ scoped_refptr<gl::GLSurface> ImageTransportSurface::CreateNativeGLSurface(
     SurfaceHandle surface_handle,
     gl::GLSurfaceFormat format) {
   DCHECK_NE(surface_handle, kNullSurfaceHandle);
-  scoped_refptr<gl::GLSurface> surface =
-      gl::init::CreateViewGLSurface(display, surface_handle);
-  bool override_vsync_for_multi_window_swap = false;
-  if (gl::GetGLImplementation() == gl::kGLImplementationEGLANGLE) {
-    override_vsync_for_multi_window_swap = true;
-  }
-  if (!surface)
-    return surface;
-  return scoped_refptr<gl::GLSurface>(new PassThroughImageTransportSurface(
-      delegate, surface.get(), override_vsync_for_multi_window_swap));
+  return gl::init::CreateViewGLSurface(display, surface_handle);
 }
 
 }  // namespace gpu

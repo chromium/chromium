@@ -38,9 +38,19 @@ public class CompromisedCredential implements Parcelable {
                     final boolean leaked = boolArguments[0];
                     final boolean phished = boolArguments[1];
 
-                    return new CompromisedCredential(signonRealm, associatedUrl, username,
-                            displayOrigin, displayUsername, password, passwordChangeUrl,
-                            associatedApp, creationTime, lastUsedTime, leaked, phished);
+                    return new CompromisedCredential(
+                            signonRealm,
+                            associatedUrl,
+                            username,
+                            displayOrigin,
+                            displayUsername,
+                            password,
+                            passwordChangeUrl,
+                            associatedApp,
+                            creationTime,
+                            lastUsedTime,
+                            leaked,
+                            phished);
                 }
 
                 @Override
@@ -80,18 +90,26 @@ public class CompromisedCredential implements Parcelable {
      * @param isOnlyLeaked True if the credential was (only) discovered to be in a leak.
      * @param isOnlyPhished True if the credential was (only) entered on an unsafe site.
      */
-    public CompromisedCredential(String signonRealm, GURL associatedUrl, String username,
-            String displayOrigin, String displayUsername, String password, String passwordChangeUrl,
-            String associatedApp, long creationTime, long lastUsedTime, boolean isOnlyLeaked,
+    public CompromisedCredential(
+            String signonRealm,
+            GURL associatedUrl,
+            String username,
+            String displayOrigin,
+            String displayUsername,
+            String password,
+            String passwordChangeUrl,
+            String associatedApp,
+            long creationTime,
+            long lastUsedTime,
+            boolean isOnlyLeaked,
             boolean isOnlyPhished) {
-        assert associatedUrl
-                != null : "Credential associated URL is null! Pass an empty one instead.";
+        assert associatedUrl != null
+                : "Credential associated URL is null! Pass an empty one instead.";
         assert signonRealm != null;
         assert passwordChangeUrl != null : "Change URL may be empty but not null!";
         assert associatedApp != null : "App package name may be empty but not null!";
-        assert !passwordChangeUrl.isEmpty()
-                || !associatedApp.isEmpty()
-            : "Change URL and app name may not be empty at the same time!";
+        assert !passwordChangeUrl.isEmpty() || !associatedApp.isEmpty()
+                : "Change URL and app name may not be empty at the same time!";
         mSignonRealm = signonRealm;
         mAssociatedUrl = associatedUrl;
         mUsername = username;
@@ -110,40 +128,51 @@ public class CompromisedCredential implements Parcelable {
     public String getSignonRealm() {
         return mSignonRealm;
     }
+
     @CalledByNative
     public String getUsername() {
         return mUsername;
     }
+
     @CalledByNative
     public GURL getAssociatedUrl() {
         return mAssociatedUrl;
     }
+
     @CalledByNative
     public String getPassword() {
         return mPassword;
     }
+
     public String getDisplayUsername() {
         return mDisplayUsername;
     }
+
     public String getDisplayOrigin() {
         return mDisplayOrigin;
     }
+
     public String getAssociatedApp() {
         return mAssociatedApp;
     }
+
     public long getCreationTime() {
         return mCreationTime;
     }
+
     @CalledByNative
     public long getLastUsedTime() {
         return mLastUsedTime;
     }
+
     public String getPasswordChangeUrl() {
         return mPasswordChangeUrl;
     }
+
     public boolean isOnlyLeaked() {
         return mOnlyLeaked;
     }
+
     public boolean isOnlyPhished() {
         return mOnlyPhished;
     }
@@ -153,33 +182,73 @@ public class CompromisedCredential implements Parcelable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         CompromisedCredential that = (CompromisedCredential) o;
-        return mSignonRealm.equals(that.mSignonRealm) && mAssociatedUrl.equals(that.mAssociatedUrl)
-                && mUsername.equals(that.mUsername) && mDisplayOrigin.equals(that.mDisplayOrigin)
+        return mSignonRealm.equals(that.mSignonRealm)
+                && mAssociatedUrl.equals(that.mAssociatedUrl)
+                && mUsername.equals(that.mUsername)
+                && mDisplayOrigin.equals(that.mDisplayOrigin)
                 && mDisplayUsername.equals(that.mDisplayUsername)
                 && mPassword.equals(that.mPassword)
                 && mPasswordChangeUrl.equals(that.mPasswordChangeUrl)
-                && mAssociatedApp.equals(that.mAssociatedApp) && mCreationTime == that.mCreationTime
-                && mLastUsedTime == that.mLastUsedTime && mOnlyLeaked == that.mOnlyLeaked
+                && mAssociatedApp.equals(that.mAssociatedApp)
+                && mCreationTime == that.mCreationTime
+                && mLastUsedTime == that.mLastUsedTime
+                && mOnlyLeaked == that.mOnlyLeaked
                 && mOnlyPhished == that.mOnlyPhished;
     }
 
     @Override
     public String toString() {
         return "CompromisedCredential{"
-                + "signonRealm='" + mSignonRealm + ", associatedUrl='" + mAssociatedUrl + '\''
-                + '\'' + ", username='" + mUsername + '\'' + ", displayOrigin='" + mDisplayOrigin
-                + '\'' + ", displayUsername='" + mDisplayUsername + '\'' + ", password='"
-                + mPassword + '\'' + ", passwordChangeUrl='" + mPasswordChangeUrl + '\''
-                + ", associatedApp='" + mAssociatedApp + '\'' + ", creationTime=" + mCreationTime
-                + ". lastUsedTime=" + mLastUsedTime + ", leaked=" + mOnlyLeaked
-                + ", phished=" + mOnlyPhished + '}';
+                + "signonRealm='"
+                + mSignonRealm
+                + ", associatedUrl='"
+                + mAssociatedUrl
+                + '\''
+                + '\''
+                + ", username='"
+                + mUsername
+                + '\''
+                + ", displayOrigin='"
+                + mDisplayOrigin
+                + '\''
+                + ", displayUsername='"
+                + mDisplayUsername
+                + '\''
+                + ", password='"
+                + mPassword
+                + '\''
+                + ", passwordChangeUrl='"
+                + mPasswordChangeUrl
+                + '\''
+                + ", associatedApp='"
+                + mAssociatedApp
+                + '\''
+                + ", creationTime="
+                + mCreationTime
+                + ". lastUsedTime="
+                + mLastUsedTime
+                + ", leaked="
+                + mOnlyLeaked
+                + ", phished="
+                + mOnlyPhished
+                + '}';
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(mSignonRealm, mAssociatedUrl.getPossiblyInvalidSpec(), mUsername,
-                mDisplayOrigin, mDisplayUsername, mPassword, mPasswordChangeUrl, mAssociatedApp,
-                mCreationTime, mLastUsedTime, mOnlyLeaked, mOnlyPhished);
+        return Objects.hash(
+                mSignonRealm,
+                mAssociatedUrl.getPossiblyInvalidSpec(),
+                mUsername,
+                mDisplayOrigin,
+                mDisplayUsername,
+                mPassword,
+                mPasswordChangeUrl,
+                mAssociatedApp,
+                mCreationTime,
+                mLastUsedTime,
+                mOnlyLeaked,
+                mOnlyPhished);
     }
 
     @Override

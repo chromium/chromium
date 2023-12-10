@@ -71,10 +71,8 @@ MenuRunnerImplInterface* MenuRunnerImplInterface::Create(
 }
 #endif
 
-MenuRunnerImpl::MenuRunnerImpl(MenuItemView* menu)
-    : menu_(menu),
-
-      controller_(nullptr) {}
+MenuRunnerImpl::MenuRunnerImpl(std::unique_ptr<MenuItemView> menu)
+    : menu_(std::move(menu)) {}
 
 bool MenuRunnerImpl::IsRunning() const {
   return running_;
@@ -111,13 +109,15 @@ void MenuRunnerImpl::Release() {
   delete this;
 }
 
-void MenuRunnerImpl::RunMenuAt(Widget* parent,
-                               MenuButtonController* button_controller,
-                               const gfx::Rect& bounds,
-                               MenuAnchorPosition anchor,
-                               int32_t run_types,
-                               gfx::NativeView native_view_for_gestures,
-                               absl::optional<gfx::RoundedCornersF> corners) {
+void MenuRunnerImpl::RunMenuAt(
+    Widget* parent,
+    MenuButtonController* button_controller,
+    const gfx::Rect& bounds,
+    MenuAnchorPosition anchor,
+    int32_t run_types,
+    gfx::NativeView native_view_for_gestures,
+    absl::optional<gfx::RoundedCornersF> corners,
+    absl::optional<std::string> show_menu_host_duration_histogram) {
   closing_event_time_ = base::TimeTicks();
   if (running_) {
     // Ignore requests to show the menu while it's already showing. MenuItemView
@@ -180,8 +180,13 @@ void MenuRunnerImpl::RunMenuAt(Widget* parent,
   menu_->set_controller(controller_.get());
   menu_->PrepareForRun(has_mnemonics,
                        !for_drop_ && ShouldShowMnemonics(run_types));
+  if (show_menu_host_duration_histogram.has_value() &&
+      !show_menu_host_duration_histogram.value().empty()) {
+    controller->SetShowMenuHostDurationHistogram(
+        std::move(show_menu_host_duration_histogram));
+  }
 
-  controller->Run(parent, button_controller, menu_, bounds, anchor,
+  controller->Run(parent, button_controller, menu_.get(), bounds, anchor,
                   (run_types & MenuRunner::CONTEXT_MENU) != 0,
                   (run_types & MenuRunner::NESTED_DRAG) != 0,
                   native_view_for_gestures);
@@ -240,12 +245,12 @@ void MenuRunnerImpl::OnMenuClosed(NotifyType type,
 }
 
 void MenuRunnerImpl::SiblingMenuCreated(MenuItemView* menu) {
-  if (menu != menu_ && sibling_menus_.count(menu) == 0)
+  if (menu != menu_.get() && sibling_menus_.count(menu) == 0) {
     sibling_menus_.insert(menu);
+  }
 }
 
 MenuRunnerImpl::~MenuRunnerImpl() {
-  delete menu_;
   for (auto* sibling_menu : sibling_menus_)
     delete sibling_menu;
 }

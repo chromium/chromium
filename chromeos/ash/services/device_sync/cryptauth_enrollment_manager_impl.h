@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_SERVICES_DEVICE_SYNC_CRYPTAUTH_ENROLLMENT_MANAGER_IMPL_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
@@ -16,7 +17,6 @@
 #include "chromeos/ash/services/device_sync/cryptauth_gcm_manager.h"
 #include "chromeos/ash/services/device_sync/proto/cryptauth_api.pb.h"
 #include "chromeos/ash/services/device_sync/sync_scheduler.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefRegistrySimple;
 class PrefService;
@@ -99,7 +99,7 @@ class CryptAuthEnrollmentManagerImpl : public CryptAuthEnrollmentManager,
   void Start() override;
   void ForceEnrollmentNow(
       cryptauth::InvocationReason invocation_reason,
-      const absl::optional<std::string>& session_id) override;
+      const std::optional<std::string>& session_id) override;
   bool IsEnrollmentValid() const override;
   base::Time GetLastEnrollmentTime() const override;
   base::TimeDelta GetTimeToNextAttempt() const override;
@@ -137,8 +137,8 @@ class CryptAuthEnrollmentManagerImpl : public CryptAuthEnrollmentManager,
   // CryptAuthGCMManager::Observer:
   void OnGCMRegistrationResult(bool success) override;
   void OnReenrollMessage(
-      const absl::optional<std::string>& session_id,
-      const absl::optional<CryptAuthFeatureType>& feature_type) override;
+      const std::optional<std::string>& session_id,
+      const std::optional<CryptAuthFeatureType>& feature_type) override;
 
   // Callback when a new keypair is generated.
   void OnKeyPairGenerated(const std::string& public_key,

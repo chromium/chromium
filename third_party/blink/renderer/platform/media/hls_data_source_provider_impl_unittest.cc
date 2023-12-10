@@ -258,8 +258,7 @@ TEST_F(HlsDataSourceProviderImplUnittest, TestAbortMidDownload) {
   ASSERT_FALSE(has_been_read);
   ASSERT_TRUE(!!read_cb);
 
-  // Deleting the HlsDataSourceproviderImpl will abort all existing reads.
-  EXPECT_CALL(*mock_data_source, Abort());
+  // Deleting the HlsDataSourceproviderImpl will stop all existing reads.
   EXPECT_CALL(*mock_data_source, Stop());
   RecreateImpl();
   task_environment_.RunUntilIdle();
@@ -269,6 +268,30 @@ TEST_F(HlsDataSourceProviderImplUnittest, TestAbortMidDownload) {
 
   task_environment_.RunUntilIdle();
   ASSERT_TRUE(has_been_read);
+}
+
+TEST_F(HlsDataSourceProviderImplUnittest, AbortMidInit) {
+  auto* mock_data_source = factory_->PregenerateNextMock();
+
+  // Don't run init cb!
+  EXPECT_CALL(*mock_data_source, Initialize);
+  EXPECT_CALL(*mock_data_source, Stop());
+
+  bool has_been_read = false;
+  impl_->ReadFromUrl(GURL("example.com"), absl::nullopt,
+                     base::BindOnce(
+                         [](bool* read_canary,
+                            media::HlsDataSourceProvider::ReadResult result) {
+                           *read_canary = true;
+                         },
+                         &has_been_read));
+
+  // Despite the init never returning, it is stored in the `data_source_map_`
+  // and all entries there get stopped on teardown.
+  task_environment_.RunUntilIdle();
+
+  // Should be false, because the stream init function won't post it's callback.
+  ASSERT_FALSE(has_been_read);
 }
 
 }  // namespace blink

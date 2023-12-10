@@ -22,9 +22,7 @@ public interface LayoutManagerHost {
      */
     static final boolean LOG_CHROME_VIEW_SHOW_TIME = false;
 
-    /**
-     * Requests a refresh of the visuals.
-     */
+    /** Requests a refresh of the visuals. */
     void requestRender();
 
     /**
@@ -103,9 +101,7 @@ public interface LayoutManagerHost {
      */
     FullscreenManager getFullscreenManager();
 
-    /**
-     * Called when the currently visible content has been changed.
-     */
+    /** Called when the currently visible content has been changed. */
     void onContentChanged();
 
     /**

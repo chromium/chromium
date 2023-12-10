@@ -106,31 +106,31 @@ DOMWrapperWorld::DOMWrapperWorld(v8::Isolate* isolate,
   }
 }
 
-DOMWrapperWorld& DOMWrapperWorld::MainWorld() {
+DOMWrapperWorld& DOMWrapperWorld::MainWorld(v8::Isolate* isolate) {
   DCHECK(IsMainThread());
-  DEFINE_STATIC_REF(
-      DOMWrapperWorld, cached_main_world,
-      (DOMWrapperWorld::Create(v8::Isolate::GetCurrent(), WorldType::kMain)));
-  return *cached_main_world;
+  return V8PerIsolateData::From(isolate)->GetMainWorld();
 }
 
-void DOMWrapperWorld::AllWorldsInCurrentThread(
+void DOMWrapperWorld::AllWorldsInIsolate(
+    v8::Isolate* isolate,
     Vector<scoped_refptr<DOMWrapperWorld>>& worlds) {
   DCHECK(worlds.empty());
   WTF::CopyValuesToVector(GetWorldMap(), worlds);
-  if (IsMainThread())
-    worlds.push_back(&MainWorld());
+  if (IsMainThread()) {
+    worlds.push_back(&MainWorld(isolate));
+  }
 }
 
 DOMWrapperWorld::~DOMWrapperWorld() {
-  DCHECK(!IsMainWorld());
-  if (IsMainThread())
+  if (IsMainThread() && !IsMainWorld()) {
     number_of_non_main_worlds_in_main_thread_--;
+  }
 
   // WorkerWorld should be disposed of before the dtor.
-  if (!IsWorkerWorld())
+  if (!IsWorkerWorld()) {
     Dispose();
-  DCHECK(!GetWorldMap().Contains(world_id_));
+  }
+  DCHECK(IsMainWorld() || !GetWorldMap().Contains(world_id_));
 }
 
 void DOMWrapperWorld::Dispose() {
@@ -141,8 +141,10 @@ void DOMWrapperWorld::Dispose() {
     dom_data_store_->Dispose();
     dom_data_store_.Clear();
   }
-  DCHECK(GetWorldMap().Contains(world_id_));
-  GetWorldMap().erase(world_id_);
+  if (!IsMainWorld()) {
+    DCHECK(GetWorldMap().Contains(world_id_));
+    GetWorldMap().erase(world_id_);
+  }
 }
 
 scoped_refptr<DOMWrapperWorld> DOMWrapperWorld::EnsureIsolatedWorld(
@@ -286,20 +288,6 @@ int DOMWrapperWorld::GenerateWorldIdForType(WorldType world_type) {
   }
   NOTREACHED();
   return kInvalidWorldId;
-}
-
-bool DOMWrapperWorld::HasWrapperInAnyWorldInMainThread(
-    ScriptWrappable* script_wrappable) {
-  DCHECK(IsMainThread());
-
-  Vector<scoped_refptr<DOMWrapperWorld>> worlds;
-  DOMWrapperWorld::AllWorldsInCurrentThread(worlds);
-  for (const auto& world : worlds) {
-    DOMDataStore& dom_data_store = world->DomDataStore();
-    if (dom_data_store.ContainsWrapper(script_wrappable))
-      return true;
-  }
-  return false;
 }
 
 // static

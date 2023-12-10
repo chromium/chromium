@@ -213,7 +213,7 @@ fmp::IOTaskType GetIOTaskType(io_task::OperationType type) {
 }
 
 fmp::PolicyErrorType GetPolicyErrorType(
-    absl::optional<io_task::PolicyErrorType> type) {
+    std::optional<io_task::PolicyErrorType> type) {
   if (!type.has_value()) {
     return fmp::PolicyErrorType::kNone;
   }
@@ -622,7 +622,7 @@ EventRouter::EventRouter(Profile* profile)
 EventRouter::~EventRouter() = default;
 
 void EventRouter::OnIntentFiltersUpdated(
-    const absl::optional<std::string>& package_name) {
+    const std::optional<std::string>& package_name) {
   DCHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
   BroadcastEvent(profile_,
                  extensions::events::FILE_MANAGER_PRIVATE_ON_APPS_UPDATED,
@@ -1378,6 +1378,12 @@ void EventRouter::OnIOTaskStatus(const io_task::ProgressStatus& status) {
           status.pause_params.policy_params->always_show_review;
     }
     event_status.pause_params = std::move(pause_params);
+  }
+
+  for (const FileSystemURL& skipped_encrypted_file :
+       status.skipped_encrypted_files) {
+    event_status.skipped_encrypted_files.push_back(
+        skipped_encrypted_file.path().BaseName().value());
   }
 
   // The TrashIOTask is the only IOTask that uses the output Entry's, so don't

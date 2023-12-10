@@ -9,21 +9,20 @@ import androidx.annotation.IntDef;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-/**
- * Manages registration of {@link LifecycleObserver} instances.
- */
+/** Manages registration of {@link LifecycleObserver} instances. */
 public interface ActivityLifecycleDispatcher {
-    /**
-     * A set of states that represent the last state change of an Activity.
-     */
+    /** A set of states that represent the last state change of an Activity. */
     @Retention(RetentionPolicy.SOURCE)
-    @IntDef({ActivityState.CREATED_WITH_NATIVE, ActivityState.STARTED_WITH_NATIVE,
-            ActivityState.RESUMED_WITH_NATIVE, ActivityState.PAUSED_WITH_NATIVE,
-            ActivityState.STOPPED_WITH_NATIVE, ActivityState.DESTROYED})
+    @IntDef({
+        ActivityState.CREATED_WITH_NATIVE,
+        ActivityState.STARTED_WITH_NATIVE,
+        ActivityState.RESUMED_WITH_NATIVE,
+        ActivityState.PAUSED_WITH_NATIVE,
+        ActivityState.STOPPED_WITH_NATIVE,
+        ActivityState.DESTROYED
+    })
     @interface ActivityState {
-        /**
-         * Called when the activity is created, provided that native is initialized.
-         */
+        /** Called when the activity is created, provided that native is initialized. */
         int CREATED_WITH_NATIVE = 1;
 
         /**
@@ -32,19 +31,13 @@ public interface ActivityLifecycleDispatcher {
          */
         int STARTED_WITH_NATIVE = 2;
 
-        /**
-         * Called when the activity is resumed, provided that native is initialized.
-         */
+        /** Called when the activity is resumed, provided that native is initialized. */
         int RESUMED_WITH_NATIVE = 3;
 
-        /**
-         * Called when the activity is paused, provided that native is initialized.
-         */
+        /** Called when the activity is paused, provided that native is initialized. */
         int PAUSED_WITH_NATIVE = 4;
 
-        /**
-         * Called when the activity is stopped, provided that native is initialized.
-         */
+        /** Called when the activity is stopped, provided that native is initialized. */
         int STOPPED_WITH_NATIVE = 5;
 
         /**
@@ -61,9 +54,7 @@ public interface ActivityLifecycleDispatcher {
      */
     void register(LifecycleObserver observer);
 
-    /**
-     * Unregisters an observer.
-     */
+    /** Unregisters an observer. */
     void unregister(LifecycleObserver observer);
 
     /**

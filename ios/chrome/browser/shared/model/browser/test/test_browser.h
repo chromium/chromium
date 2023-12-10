@@ -17,10 +17,20 @@ class TestBrowser final : public Browser {
  public:
   // Constructor that takes a WebStateListDelegate.
   TestBrowser(ChromeBrowserState* browser_state,
+              SceneState* scene_state,
+              std::unique_ptr<WebStateListDelegate> web_state_list_delegate);
+
+  // Constructor that takes only a BrowserState and a SceneState; a fake
+  // WebStateListDelegate will be used.
+  TestBrowser(ChromeBrowserState* browser_state, SceneState* scene_state);
+
+  // Constructor that takes a ChromeBrowserState and WebStateListDelegate;
+  // SceneState will be nil.
+  TestBrowser(ChromeBrowserState* browser_state,
               std::unique_ptr<WebStateListDelegate> web_state_list_delegate);
 
   // Constructor that takes only a BrowserState; a fake WebStateListDelegate
-  // will be used.
+  // will be used. SceneState will be nil.
   TestBrowser(ChromeBrowserState* browser_state);
 
   TestBrowser(const TestBrowser&) = delete;
@@ -32,6 +42,7 @@ class TestBrowser final : public Browser {
   ChromeBrowserState* GetBrowserState() final;
   WebStateList* GetWebStateList() final;
   CommandDispatcher* GetCommandDispatcher() final;
+  SceneState* GetSceneState() final;
   void AddObserver(BrowserObserver* observer) final;
   void RemoveObserver(BrowserObserver* observer) final;
   base::WeakPtr<Browser> AsWeakPtr() final;
@@ -43,9 +54,11 @@ class TestBrowser final : public Browser {
 
  private:
   ChromeBrowserState* browser_state_ = nullptr;
+  __weak SceneState* scene_state_ = nil;
   std::unique_ptr<WebStateListDelegate> web_state_list_delegate_;
   std::unique_ptr<WebStateList> web_state_list_;
   __strong CommandDispatcher* command_dispatcher_ = nil;
+  std::unique_ptr<TestBrowser> inactive_browser_;
   base::ObserverList<BrowserObserver, /* check_empty= */ true> observers_;
 
   // Needs to be the last member field to ensure all weak pointers are

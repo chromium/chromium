@@ -46,8 +46,8 @@ class MockSSLHostStateDelegate : public SSLHostStateDelegate {
   void SetHttpsEnforcementForHost(const std::string& host,
                                   bool enforce,
                                   StoragePartition* storage_partition) override;
-  bool IsHttpsEnforcedForHost(const std::string& host,
-                              StoragePartition* storage_partition) override;
+  bool IsHttpsEnforcedForUrl(const GURL& url,
+                             StoragePartition* storage_partition) override;
 
   void RevokeUserAllowExceptions(const std::string& host) override;
 

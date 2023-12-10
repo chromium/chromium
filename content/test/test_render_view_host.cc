@@ -17,10 +17,10 @@
 #include "content/browser/dom_storage/dom_storage_context_wrapper.h"
 #include "content/browser/dom_storage/session_storage_namespace_impl.h"
 #include "content/browser/renderer_host/data_transfer_util.h"
-#include "content/browser/renderer_host/input/synthetic_gesture_target.h"
 #include "content/browser/renderer_host/render_frame_proxy_host.h"
 #include "content/browser/renderer_host/render_widget_host_input_event_router.h"
 #include "content/browser/storage_partition_impl.h"
+#include "content/common/input/synthetic_gesture_target.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_controller.h"
@@ -375,7 +375,6 @@ TestRenderViewHost::TestRenderViewHost(
                          std::move(main_browsing_context_state),
                          create_case),
       delete_counter_(nullptr) {
-  GetWidget()->SetViewIsFrameSinkIdOwner(true);
   if (frame_tree->is_fenced_frame()) {
     // TestRenderWidgetHostViewChildFrame deletes itself in
     // RenderWidgetHostViewChildFrame::Destroy.
@@ -417,6 +416,10 @@ bool TestRenderViewHost::CreateRenderView(
   } else {
     proxy_host =
         RenderFrameProxyHost::FromID(GetProcess()->GetID(), proxy_route_id);
+  }
+
+  if (!GetWidget()->view_is_frame_sink_id_owner()) {
+    main_frame->NotifyWillCreateRenderWidgetOnCommit();
   }
 
   DCHECK_EQ(!!main_frame, is_active());

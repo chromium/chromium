@@ -4,8 +4,8 @@
 
 #include "third_party/blink/renderer/core/layout/table/table_layout_algorithm_types.h"
 
-#include "third_party/blink/renderer/core/layout/ng/ng_block_node.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_constraint_space_builder.h"
+#include "third_party/blink/renderer/core/layout/block_node.h"
+#include "third_party/blink/renderer/core/layout/constraint_space_builder.h"
 #include "third_party/blink/renderer/core/layout/table/layout_table_caption.h"
 #include "third_party/blink/renderer/core/layout/table/layout_table_cell.h"
 #include "third_party/blink/renderer/core/layout/table/layout_table_column.h"
@@ -117,9 +117,9 @@ TableTypes::Column TableTypes::CreateColumn(
 
 // Implements https://www.w3.org/TR/css-tables-3/#computing-cell-measures
 // "outer min-content and outer max-content widths for table cells"
-// Note: this method calls NGBlockNode::ComputeMinMaxSizes.
+// Note: this method calls BlockNode::ComputeMinMaxSizes.
 TableTypes::CellInlineConstraint TableTypes::CreateCellInlineConstraint(
-    const NGBlockNode& node,
+    const BlockNode& node,
     WritingDirectionMode table_writing_direction,
     bool is_fixed_layout,
     const BoxStrut& cell_border,
@@ -139,13 +139,12 @@ TableTypes::CellInlineConstraint TableTypes::CreateCellInlineConstraint(
   auto MinMaxSizesFunc = [&]() -> MinMaxSizes {
     if (!cached_min_max_sizes) {
       const auto cell_writing_direction = style.GetWritingDirection();
-      NGConstraintSpaceBuilder builder(table_writing_mode,
-                                       cell_writing_direction,
-                                       /* is_new_fc */ true);
+      ConstraintSpaceBuilder builder(table_writing_mode, cell_writing_direction,
+                                     /* is_new_fc */ true);
       builder.SetTableCellBorders(cell_border, cell_writing_direction,
                                   table_writing_direction);
       builder.SetIsTableCell(true);
-      builder.SetCacheSlot(NGCacheSlot::kMeasure);
+      builder.SetCacheSlot(LayoutResultCacheSlot::kMeasure);
       if (!is_parallel) {
         // Only consider the ICB-size for the orthogonal fallback inline-size
         // (don't use the size of the containing-block).
@@ -212,7 +211,7 @@ TableTypes::CellInlineConstraint TableTypes::CreateCellInlineConstraint(
       css_percentage_inline_size, percent_border_padding, is_constrained};
 }
 
-TableTypes::Section TableTypes::CreateSection(const NGLayoutInputNode& section,
+TableTypes::Section TableTypes::CreateSection(const LayoutInputNode& section,
                                               wtf_size_t start_row,
                                               wtf_size_t row_count,
                                               LayoutUnit block_size,
@@ -295,11 +294,11 @@ void TableTypes::Column::Encompass(
   is_constrained |= cell->is_constrained;
 }
 
-TableGroupedChildren::TableGroupedChildren(const NGBlockNode& table)
-    : header(NGBlockNode(nullptr)), footer(NGBlockNode(nullptr)) {
-  for (NGLayoutInputNode child = table.FirstChild(); child;
+TableGroupedChildren::TableGroupedChildren(const BlockNode& table)
+    : header(BlockNode(nullptr)), footer(BlockNode(nullptr)) {
+  for (LayoutInputNode child = table.FirstChild(); child;
        child = child.NextSibling()) {
-    NGBlockNode block_child = To<NGBlockNode>(child);
+    BlockNode block_child = To<BlockNode>(child);
     if (block_child.IsTableCaption()) {
       captions.push_back(block_child);
     } else {
@@ -400,7 +399,7 @@ TableGroupedChildrenIterator& TableGroupedChildrenIterator::operator--() {
   return *this;
 }
 
-NGBlockNode TableGroupedChildrenIterator::operator*() const {
+BlockNode TableGroupedChildrenIterator::operator*() const {
   switch (current_section_) {
     case kHead:
       return grouped_children_.header;
@@ -411,7 +410,7 @@ NGBlockNode TableGroupedChildrenIterator::operator*() const {
     case kEnd:
     case kNone:
       NOTREACHED();
-      return NGBlockNode(nullptr);
+      return BlockNode(nullptr);
   }
 }
 

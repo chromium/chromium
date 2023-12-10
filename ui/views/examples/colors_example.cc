@@ -167,8 +167,9 @@ void CreateAllColorsView(ScrollView* scroll_view) {
 }
 
 class AllColorsScrollView : public ScrollView {
+  METADATA_HEADER(AllColorsScrollView, ScrollView)
+
  public:
-  METADATA_HEADER(AllColorsScrollView);
   AllColorsScrollView() {
     constexpr int kMaxHeight = 300;
     ClipHeightTo(0, kMaxHeight);
@@ -181,7 +182,7 @@ class AllColorsScrollView : public ScrollView {
   }
 };
 
-BEGIN_METADATA(AllColorsScrollView, ScrollView)
+BEGIN_METADATA(AllColorsScrollView)
 END_METADATA
 
 }  // namespace

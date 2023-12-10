@@ -17,9 +17,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-/**
- * A simple boilerplate implementation of {@link UrlRequest.Callback} that is used by smoke tests.
- */
+/** A simple boilerplate implementation of {@link UrlRequest.Callback} that is used by smoke tests. */
 class SmokeTestRequestCallback extends UrlRequest.Callback {
     private static final int READ_BUFFER_SIZE = 10000;
 
@@ -30,7 +28,12 @@ class SmokeTestRequestCallback extends UrlRequest.Callback {
     private final ConditionVariable mDone = new ConditionVariable();
 
     // The state of the request.
-    public enum State { NotSet, Succeeded, Failed, Canceled }
+    public enum State {
+        NotSet,
+        Succeeded,
+        Failed,
+        Canceled
+    }
 
     // The current state of the request.
     private State mState = State.NotSet;
@@ -83,9 +86,7 @@ class SmokeTestRequestCallback extends UrlRequest.Callback {
         return mExecutor;
     }
 
-    /**
-     * Blocks until the request is either succeeded, failed or canceled.
-     */
+    /** Blocks until the request is either succeeded, failed or canceled. */
     public void blockForDone() {
         mDone.block();
     }

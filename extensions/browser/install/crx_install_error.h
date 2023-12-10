@@ -5,9 +5,8 @@
 #ifndef EXTENSIONS_BROWSER_INSTALL_CRX_INSTALL_ERROR_H_
 #define EXTENSIONS_BROWSER_INSTALL_CRX_INSTALL_ERROR_H_
 
+#include <optional>
 #include <string>
-
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 
@@ -93,7 +92,7 @@ class CrxInstallError {
  private:
   CrxInstallErrorType type_;
   CrxInstallErrorDetail detail_;
-  absl::optional<SandboxedUnpackerFailureReason> sandbox_failure_detail_;
+  std::optional<SandboxedUnpackerFailureReason> sandbox_failure_detail_;
   std::u16string message_;
 };
 

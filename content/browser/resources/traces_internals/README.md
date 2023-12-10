@@ -22,8 +22,14 @@ scenarios: {
     }
     data_sources: { config: { name: "org.chromium.trace_metadata" } }
   }
-  start_rules: { name: "Timer Start" }
-  upload_rules: { name: "Timer End" delay_ms: 5000 }
+  start_rules: {
+    name: "Timer Start"
+    delay_ms: 0
+  }
+  upload_rules: {
+    name: "Timer End"
+    delay_ms: 5000
+  }
 }
 ```
 

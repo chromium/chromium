@@ -865,7 +865,7 @@ void CompositeEditCommand::RebalanceWhitespace() {
 static bool IsInsignificantText(const LayoutText& layout_text) {
   if (layout_text.HasInlineFragments())
     return false;
-  // Spaces causing line break don't have `NGFragmentItem` but it has
+  // Spaces causing line break don't have `FragmentItem` but it has
   // non-zero length. See http://crbug.com/1322746
   return !layout_text.ResolvedTextLength();
 }

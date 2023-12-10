@@ -394,10 +394,13 @@ void ReadAnythingUntrustedPageHandler::OnActiveWebContentsChanged() {
   // Enable accessibility for the top level render frame and all descendants.
   // This causes AXTreeSerializer to reset and send accessibility events of
   // the AXTree when it is re-serialized.
-  // TODO(crbug.com/1266555): Only enable kReadAnythingAXMode while still
-  // causing the reset.
+  // All components of kAXModeWebContentsOnly are needed. |ui::AXMode::kHTML| is
+  // needed for URL information. |ui::AXMode::kScreenReader| is needed for
+  // heading level information. |ui::AXMode::kInlineTextBoxes| is needed for
+  // complete Screen2x output -- if excluded, some nodes from the tree will not
+  // be identified as content nodes.
   if (web_contents) {
-    web_contents->EnableWebContentsOnlyAccessibilityMode();
+    web_contents->EnableAccessibilityMode(ui::kAXModeWebContentsOnly);
   }
   OnActiveAXTreeIDChanged();
 }
@@ -477,7 +480,11 @@ void ReadAnythingUntrustedPageHandler::EnablePDFContentAccessibility(
       contents->GetPrimaryMainFrame()->GetLastCommittedOrigin()));
   pdf_observer_ = std::make_unique<ReadAnythingWebContentsObserver>(
       weak_factory_.GetSafeRef(), contents);
-  contents->EnableWebContentsOnlyAccessibilityMode();
+
+  // Enable accessibility to receive events (data) from PDF. kPDFOcr is needed
+  // for inaccessible PDFs. Reset accessibility to get the new updated trees.
+  contents->EnableAccessibilityMode(ui::kAXModeWebContentsOnly |
+                                    ui::AXMode::kPDFOcr);
 
   // Trigger distillation.
   OnActiveAXTreeIDChanged(true);

@@ -1019,14 +1019,15 @@ bool AUAudioInputStream::IsRunning() {
   return (error == noErr && is_running);
 }
 
-void AUAudioInputStream::HandleError(OSStatus err) {
+void AUAudioInputStream::HandleError(OSStatus err,
+                                     const base::Location& location) {
   // Log the latest OSStatus error message and also change the sign of the
   // error if no callbacks are active. I.e., the sign of the error message
   // carries one extra level of information.
   base::UmaHistogramSparse("Media.InputErrorMac",
                            GetInputCallbackIsActive() ? err : (err * -1));
-  LOG(ERROR) << "Input error " << logging::DescriptionFromOSStatus(err) <<
-      " (" << err << ")";
+  LOG(ERROR) << "Input error " << logging::DescriptionFromOSStatus(err) << " ("
+             << err << ") at line " << location.line_number();
   if (sink_)
     sink_->OnError();
 }

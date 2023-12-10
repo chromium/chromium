@@ -10,9 +10,7 @@ import androidx.annotation.Nullable;
 
 import java.io.IOException;
 
-/**
- * Helper to subscribe to and unsubscribe from Google Cloud Messaging.
- */
+/** Helper to subscribe to and unsubscribe from Google Cloud Messaging. */
 public interface GoogleCloudMessagingSubscriber {
     /**
      * Subscribes to a source to start receiving messages from it.

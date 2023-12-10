@@ -10,6 +10,7 @@
 #include <string>
 
 #include "components/attribution_reporting/source_type.mojom-forward.h"
+#include "components/attribution_reporting/trigger_data_matching.mojom-forward.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -19,7 +20,6 @@ class AggregationKeys;
 class EventReportWindows;
 class FilterData;
 class MaxEventLevelReports;
-class TriggerConfig;
 }  // namespace attribution_reporting
 
 namespace sql {
@@ -51,7 +51,7 @@ std::string SerializeReadOnlySourceData(
     const attribution_reporting::EventReportWindows&,
     attribution_reporting::MaxEventLevelReports,
     double randomized_response_rate,
-    const attribution_reporting::TriggerConfig&,
+    attribution_reporting::mojom::TriggerDataMatching,
     bool debug_cookie_set);
 
 CONTENT_EXPORT absl::optional<proto::AttributionReadOnlySourceData>
@@ -81,7 +81,7 @@ std::string SerializeReportMetadata(
     const AttributionReport::NullAggregatableData&);
 
 [[nodiscard]] bool DeserializeReportMetadata(const std::string&,
-                                             uint64_t& trigger_data,
+                                             uint32_t& trigger_data,
                                              int64_t& priority);
 
 [[nodiscard]] bool DeserializeReportMetadata(

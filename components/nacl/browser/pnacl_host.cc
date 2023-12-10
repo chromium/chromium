@@ -406,7 +406,7 @@ scoped_refptr<net::DrainableIOBuffer> PnaclHost::CopyFileToBuffer(
   }
 
   buffer = base::MakeRefCounted<net::DrainableIOBuffer>(
-      base::MakeRefCounted<net::IOBuffer>(
+      base::MakeRefCounted<net::IOBufferWithSize>(
           base::checked_cast<size_t>(file_size)),
       base::checked_cast<size_t>(file_size));
   if (file->Read(0, buffer->data(), buffer->size()) != file_size) {

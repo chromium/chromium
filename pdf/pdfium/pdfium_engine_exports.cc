@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <utility>
 
+#include <optional>
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
 #include "build/build_config.h"
@@ -16,9 +17,9 @@
 #include "pdf/pdfium/pdfium_unsupported_features.h"
 #include "printing/nup_parameters.h"
 #include "printing/units.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/pdfium/public/cpp/fpdf_scopers.h"
 #include "third_party/pdfium/public/fpdf_catalog.h"
+#include "third_party/pdfium/public/fpdf_doc.h"
 #include "third_party/pdfium/public/fpdf_ppo.h"
 #include "third_party/pdfium/public/fpdf_structtree.h"
 #include "third_party/pdfium/public/fpdfview.h"
@@ -151,7 +152,7 @@ base::Value RecursiveGetStructTree(FPDF_STRUCTELEMENT struct_elem) {
   if (children_count <= 0)
     return base::Value();
 
-  absl::optional<std::u16string> opt_type =
+  std::optional<std::u16string> opt_type =
       CallPDFiumWideStringBufferApiAndReturnOptional(
           base::BindRepeating(FPDF_StructElement_GetType, struct_elem), true);
   if (!opt_type)
@@ -160,14 +161,14 @@ base::Value RecursiveGetStructTree(FPDF_STRUCTELEMENT struct_elem) {
   base::Value::Dict result;
   result.Set("type", *opt_type);
 
-  absl::optional<std::u16string> opt_alt =
+  std::optional<std::u16string> opt_alt =
       CallPDFiumWideStringBufferApiAndReturnOptional(
           base::BindRepeating(FPDF_StructElement_GetAltText, struct_elem),
           true);
   if (opt_alt)
     result.Set("alt", *opt_alt);
 
-  absl::optional<std::u16string> opt_lang =
+  std::optional<std::u16string> opt_lang =
       CallPDFiumWideStringBufferApiAndReturnOptional(
           base::BindRepeating(FPDF_StructElement_GetLang, struct_elem), true);
   if (opt_lang)
@@ -411,13 +412,13 @@ bool PDFiumEngineExports::GetPDFDocInfo(base::span<const uint8_t> pdf_buffer,
   return true;
 }
 
-absl::optional<bool> PDFiumEngineExports::IsPDFDocTagged(
+std::optional<bool> PDFiumEngineExports::IsPDFDocTagged(
     base::span<const uint8_t> pdf_buffer) {
   ScopedUnsupportedFeature scoped_unsupported_feature(
       ScopedUnsupportedFeature::kNoEngine);
   ScopedFPDFDocument doc = LoadPdfData(pdf_buffer);
   if (!doc)
-    return absl::nullopt;
+    return std::nullopt;
 
   return FPDFCatalog_IsTagged(doc.get());
 }
@@ -452,18 +453,30 @@ base::Value PDFiumEngineExports::GetPDFStructTreeForPage(
   return RecursiveGetStructTree(struct_root_elem);
 }
 
-absl::optional<gfx::SizeF> PDFiumEngineExports::GetPDFPageSizeByIndex(
+std::optional<bool> PDFiumEngineExports::PDFDocHasOutline(
+    base::span<const uint8_t> pdf_buffer) {
+  ScopedUnsupportedFeature scoped_unsupported_feature(
+      ScopedUnsupportedFeature::kNoEngine);
+  ScopedFPDFDocument doc = LoadPdfData(pdf_buffer);
+  if (!doc) {
+    return std::nullopt;
+  }
+
+  return FPDFBookmark_GetFirstChild(doc.get(), nullptr);
+}
+
+std::optional<gfx::SizeF> PDFiumEngineExports::GetPDFPageSizeByIndex(
     base::span<const uint8_t> pdf_buffer,
     int page_index) {
   ScopedUnsupportedFeature scoped_unsupported_feature(
       ScopedUnsupportedFeature::kNoEngine);
   ScopedFPDFDocument doc = LoadPdfData(pdf_buffer);
   if (!doc)
-    return absl::nullopt;
+    return std::nullopt;
 
   FS_SIZEF size;
   if (!FPDF_GetPageSizeByIndexF(doc.get(), page_index, &size))
-    return absl::nullopt;
+    return std::nullopt;
 
   return gfx::SizeF(size.width, size.height);
 }

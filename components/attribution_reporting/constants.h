@@ -9,7 +9,6 @@
 #include <stdint.h>
 
 #include "base/time/time.h"
-#include "components/attribution_reporting/source_type.mojom.h"
 
 namespace attribution_reporting {
 
@@ -34,16 +33,6 @@ static_assert(kMinSourceExpiry < kMaxSourceExpiry);
 constexpr base::TimeDelta kMinReportWindow = base::Hours(1);
 
 static_assert(kMinReportWindow <= kMinSourceExpiry);
-
-constexpr uint32_t DefaultTriggerDataCardinality(
-    mojom::SourceType source_type) {
-  switch (source_type) {
-    case mojom::SourceType::kNavigation:
-      return 8;
-    case mojom::SourceType::kEvent:
-      return 2;
-  }
-}
 
 }  // namespace attribution_reporting
 

@@ -75,7 +75,7 @@ class MEDIA_GPU_EXPORT PlatformVideoFramePool : public DmabufVideoFramePool {
   void SetCustomFrameAllocator(DmabufVideoFramePool::CreateFrameCB allocator);
 
  private:
-  friend class PlatformVideoFramePoolTest;
+  friend class PlatformVideoFramePoolTestBase;
 
   // Thunk to post OnFrameReleased() to |task_runner|.
   // Because this thunk may be called in any thread, We don't want to

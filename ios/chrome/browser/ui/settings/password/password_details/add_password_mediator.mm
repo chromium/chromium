@@ -102,9 +102,8 @@ bool CheckForDuplicates(
   if (_consumer == consumer)
     return;
   _consumer = consumer;
-  absl::optional<std::string> account =
-      password_manager::sync_util::GetAccountForSaving(_prefService,
-                                                       _syncService);
+  std::optional<std::string> account =
+      password_manager::sync_util::GetAccountForSaving(_syncService);
   if (account) {
     CHECK(!account->empty());
     [_consumer setAccountSavingPasswords:base::SysUTF8ToNSString(*account)];

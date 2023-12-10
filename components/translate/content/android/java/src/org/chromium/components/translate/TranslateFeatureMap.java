@@ -19,6 +19,7 @@ import org.chromium.base.FeatureMap;
 public final class TranslateFeatureMap extends FeatureMap {
     /** Alphabetical: */
     public static final String CONTENT_LANGUAGES_DISABLE_OBSERVERS_PARAM = "disable_observers";
+
     public static final String CONTENT_LANGUAGES_IN_LANGUAGE_PICKER =
             "ContentLanguagesInLanguagePicker";
     private static final TranslateFeatureMap sInstance = new TranslateFeatureMap();
@@ -26,16 +27,12 @@ public final class TranslateFeatureMap extends FeatureMap {
     // Do not instantiate this class.
     private TranslateFeatureMap() {}
 
-    /**
-     * @return the singleton TranslateFeatureMap.
-     */
+    /** @return the singleton TranslateFeatureMap. */
     public static TranslateFeatureMap getInstance() {
         return sInstance;
     }
 
-    /**
-     * Convenience method to call {@link #isEnabledInNative(String)} statically.
-     */
+    /** Convenience method to call {@link #isEnabledInNative(String)} statically. */
     public static boolean isEnabled(String featureName) {
         return getInstance().isEnabledInNative(featureName);
     }

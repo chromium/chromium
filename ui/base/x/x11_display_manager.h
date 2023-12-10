@@ -85,9 +85,6 @@ class COMPONENT_EXPORT(UI_BASE_X) XDisplayManager
   x11::Window x_root_window_;
   size_t primary_display_index_ = 0;
 
-  // XRandR version. MAJOR * 100 + MINOR. Zero if no xrandr is present.
-  const int xrandr_version_;
-
   // The task which fetches/updates display list info asynchronously.
   base::CancelableOnceClosure update_task_;
 

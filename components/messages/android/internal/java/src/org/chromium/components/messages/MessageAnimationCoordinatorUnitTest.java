@@ -175,9 +175,7 @@ public class MessageAnimationCoordinatorUnitTest {
         Assert.assertEquals(m2, currentMessage);
     }
 
-    /**
-     * The child animator is finished but the parent animator has not triggered the callback yet.
-     */
+    /** The child animator is finished but the parent animator has not triggered the callback yet. */
     @Test
     @SmallTest
     public void testSuspendBeforeHideCallbackIsTriggered_withoutStacking() {

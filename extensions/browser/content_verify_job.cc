@@ -77,10 +77,7 @@ ContentVerifyJob::ContentVerifyJob(const ExtensionId& extension_id,
       failure_callback_(std::move(failure_callback)),
       failed_(false) {}
 
-ContentVerifyJob::~ContentVerifyJob() {
-  UMA_HISTOGRAM_COUNTS_1M("ExtensionContentVerifyJob.TimeSpentUS",
-                          time_spent_.InMicroseconds());
-}
+ContentVerifyJob::~ContentVerifyJob() = default;
 
 void ContentVerifyJob::Start(ContentVerifier* verifier) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);

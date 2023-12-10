@@ -173,7 +173,9 @@ std::unique_ptr<FullNameField> FullNameField::Parse(
   bool should_ignore =
       ParseField(scanner, kNameIgnoredRe, name_ignored_patterns, nullptr,
                  {log_manager, "kNameIgnoredRe"}) ||
-      ParseField(scanner, kAddressNameIgnoredRe, address_name_ignored_patterns,
+      // This pattern fully migrated to the MatchPattern mechanism. There
+      // is no regular expression in autofill_regex_constants.h anymore.
+      ParseField(scanner, kNoLegacyPattern, address_name_ignored_patterns,
                  nullptr, {log_manager, "kAddressNameIgnoredRe"});
   scanner->Rewind();
   if (should_ignore)
@@ -240,9 +242,10 @@ FirstTwoLastNamesField::ParseComponentNames(AutofillScanner* scanner,
   while (!scanner->IsEnd()) {
     // Skip over address label fields, which can have misleading names
     // e.g. "title" or "name".
-    if (ParseField(scanner, kAddressNameIgnoredRe,
-                   address_name_ignored_patterns, nullptr,
-                   {log_manager, "kAddressNameIgnoredRe"})) {
+    // This pattern fully migrated to the MatchPattern mechanism. There is no
+    // regular expression in autofill_regex_constants.h anymore.
+    if (ParseField(scanner, kNoLegacyPattern, address_name_ignored_patterns,
+                   nullptr, {log_manager, "kAddressNameIgnoredRe"})) {
       continue;
     }
 
@@ -347,7 +350,9 @@ FirstLastNameField::ParseNameSurnameLabelSequence(
   bool should_ignore =
       ParseField(scanner, kNameIgnoredRe, name_ignored_patterns, nullptr,
                  {log_manager, "kNameIgnoredRe"}) ||
-      ParseField(scanner, kAddressNameIgnoredRe, address_name_ignored_patterns,
+      // This pattern fully migrated to the MatchPattern mechanism. There is no
+      // regular expression in autofill_regex_constants.h anymore.
+      ParseField(scanner, kNoLegacyPattern, address_name_ignored_patterns,
                  nullptr, {log_manager, "kAddressNameIgnoredRe"});
   scanner->Rewind();
 
@@ -445,9 +450,10 @@ FirstLastNameField::ParseSpecificComponentSequence(
   while (!scanner->IsEnd()) {
     // Skip over address label fields, which can have misleading names
     // e.g. "title" or "name".
-    if (ParseField(scanner, kAddressNameIgnoredRe,
-                   address_name_ignored_patterns, nullptr,
-                   {log_manager, "kAddressNameIgnoredRe"})) {
+    // This pattern fully migrated to the MatchPattern mechanism. There is no
+    // regular expression in autofill_regex_constants.h anymore.
+    if (ParseField(scanner, kNoLegacyPattern, address_name_ignored_patterns,
+                   nullptr, {log_manager, "kAddressNameIgnoredRe"})) {
       continue;
     }
 

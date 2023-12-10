@@ -47,7 +47,7 @@ BASE_EXPORT const char* GetAndroidFrameTimelineDurationHistogramName(
 BASE_EXPORT void RecordJankMetrics(
     JNIEnv* env,
     const base::android::JavaParamRef<jlongArray>& java_durations_ns,
-    const base::android::JavaParamRef<jbooleanArray>& java_jank_status,
+    const base::android::JavaParamRef<jintArray>& java_missed_vsyncs,
     jlong java_reporting_interval_start_time,
     jlong java_reporting_interval_duration,
     jint java_scenario_enum);

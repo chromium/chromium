@@ -138,8 +138,8 @@ void CupsPrintJobNotification::Close(bool by_user) {
 }
 
 void CupsPrintJobNotification::Click(
-    const absl::optional<int>& button_index,
-    const absl::optional<std::u16string>& reply) {
+    const std::optional<int>& button_index,
+    const std::optional<std::u16string>& reply) {
   // If we are in guest mode then we need to use the OffTheRecord profile to
   // open the Print Manageament App. There is a check in Browser::Browser
   // that only OffTheRecord profiles can open browser windows in guest mode.

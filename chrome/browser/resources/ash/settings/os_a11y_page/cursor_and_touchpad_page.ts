@@ -34,7 +34,7 @@ import {Route, Router, routes} from '../router.js';
 import {getTemplate} from './cursor_and_touchpad_page.html.js';
 import {CursorAndTouchpadPageBrowserProxy, CursorAndTouchpadPageBrowserProxyImpl} from './cursor_and_touchpad_page_browser_proxy.js';
 
-const DEFAULT_BLACK_CURSOR_COLOR: number = 0;
+const DEFAULT_BLACK_CURSOR_COLOR = 0;
 
 interface Option {
   name: string;
@@ -221,11 +221,25 @@ export class SettingsCursorAndTouchpadPageElement extends
        * Whether the face movements mouse cursor and keyboard control feature is
        * enabled.
        */
-      isAccessibilityFaceTrackingEnabled_: {
+      isAccessibilityFaceGazeEnabled_: {
         type: Boolean,
         value() {
+          return loadTimeData.getBoolean('isAccessibilityFaceGazeEnabled');
+        },
+      },
+
+      /**
+       * The maximum size in density-independent pixels of the large mouse
+       * cursor. Note that this has no effect if it is larger than the maximum
+       * set in CursorWindowController.
+       */
+      largeCursorMaxSize_: {
+        type: Number,
+        value() {
           return loadTimeData.getBoolean(
-              'isAccessibilityGameFaceIntegrationEnabled');
+                     'isAccessibilityExtraLargeCursorEnabled') ?
+              128 :
+              64;
         },
       },
 
@@ -262,7 +276,8 @@ export class SettingsCursorAndTouchpadPageElement extends
   private shelfNavigationButtonsPref_:
       chrome.settingsPrivate.PrefObject<boolean>;
   private showShelfNavigationButtonsSettings_: boolean;
-  private isAccessibilityFaceTrackingEnabled_: boolean;
+  private isAccessibilityFaceGazeEnabled_: boolean;
+  private readonly largeCursorMaxSize_: number;
 
   constructor() {
     super();

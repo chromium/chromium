@@ -11,6 +11,7 @@
 #include <set>
 #include <utility>
 
+#include <optional>
 #include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -26,7 +27,6 @@
 #include "remoting/host/linux/x11_keyboard_impl.h"
 #include "remoting/host/linux/x11_util.h"
 #include "remoting/proto/internal.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 #include "ui/gfx/x/xproto.h"
 
@@ -99,8 +99,8 @@ class InputInjectorX11 : public InputInjector {
     bool IsLockKey(x11::KeyCode keycode);
 
     // Sets the keyboard lock states to those provided.
-    void SetLockStates(absl::optional<bool> caps_lock,
-                       absl::optional<bool> num_lock);
+    void SetLockStates(std::optional<bool> caps_lock,
+                       std::optional<bool> num_lock);
 
     void InjectScrollWheelClicks(int button, int count);
 

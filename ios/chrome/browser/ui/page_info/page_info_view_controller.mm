@@ -145,10 +145,8 @@ float kTitleLabelMinimumScaleFactor = 0.7f;
         forSectionWithIdentifier:SectionIdentifierSecurityContent];
 
   // Permissions section.
-  if (@available(iOS 15.0, *)) {
-    if ([self.permissionsInfo count]) {
-      [self loadPermissionsModel];
-    }
+  if ([self.permissionsInfo count]) {
+    [self loadPermissionsModel];
   }
 }
 
@@ -310,25 +308,23 @@ float kTitleLabelMinimumScaleFactor = 0.7f;
 
 // Invoked when a permission switch is toggled.
 - (void)permissionSwitchToggled:(UISwitch*)sender {
-  if (@available(iOS 15.0, *)) {
-    web::Permission permission;
-    switch (sender.tag) {
-      case ItemTypePermissionsCamera:
-        permission = web::PermissionCamera;
-        break;
-      case ItemTypePermissionsMicrophone:
-        permission = web::PermissionMicrophone;
-        break;
-      case ItemTypePermissionsDescription:
-        NOTREACHED();
-        return;
-    }
-    PermissionInfo* permissionsDescription = [[PermissionInfo alloc] init];
-    permissionsDescription.permission = permission;
-    permissionsDescription.state =
-        sender.isOn ? web::PermissionStateAllowed : web::PermissionStateBlocked;
-    [self.permissionsDelegate updateStateForPermission:permissionsDescription];
+  web::Permission permission;
+  switch (sender.tag) {
+    case ItemTypePermissionsCamera:
+      permission = web::PermissionCamera;
+      break;
+    case ItemTypePermissionsMicrophone:
+      permission = web::PermissionMicrophone;
+      break;
+    case ItemTypePermissionsDescription:
+      NOTREACHED();
+      return;
   }
+  PermissionInfo* permissionsDescription = [[PermissionInfo alloc] init];
+  permissionsDescription.permission = permission;
+  permissionsDescription.state =
+      sender.isOn ? web::PermissionStateAllowed : web::PermissionStateBlocked;
+  [self.permissionsDelegate updateStateForPermission:permissionsDescription];
 }
 
 // Adds or removes a switch depending on the value of the PermissionState.
@@ -406,19 +402,17 @@ float kTitleLabelMinimumScaleFactor = 0.7f;
 }
 
 - (void)permissionStateChanged:(PermissionInfo*)permissionInfo {
-  if (@available(iOS 15.0, *)) {
-    // Add the Permissions section if it doesn't exist.
-    if (![self.tableViewModel
-            hasSectionForSectionIdentifier:SectionIdentifierPermissions]) {
-      [self loadPermissionsModel];
-      NSUInteger index = [self.tableViewModel
-          sectionForSectionIdentifier:SectionIdentifierPermissions];
-      [self.tableView insertSections:[NSIndexSet indexSetWithIndex:index]
-                    withRowAnimation:UITableViewRowAnimationAutomatic];
-    }
-
-    [self updateSwitchForPermission:permissionInfo tableViewLoaded:YES];
+  // Add the Permissions section if it doesn't exist.
+  if (![self.tableViewModel
+          hasSectionForSectionIdentifier:SectionIdentifierPermissions]) {
+    [self loadPermissionsModel];
+    NSUInteger index = [self.tableViewModel
+        sectionForSectionIdentifier:SectionIdentifierPermissions];
+    [self.tableView insertSections:[NSIndexSet indexSetWithIndex:index]
+                  withRowAnimation:UITableViewRowAnimationAutomatic];
   }
+
+  [self updateSwitchForPermission:permissionInfo tableViewLoaded:YES];
 }
 
 @end

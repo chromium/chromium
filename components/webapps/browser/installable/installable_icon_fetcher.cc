@@ -10,8 +10,8 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_restrictions.h"
-#include "components/favicon/content/large_favicon_provider_getter.h"
-#include "components/favicon/core/large_favicon_provider.h"
+#include "components/favicon/content/large_icon_service_getter.h"
+#include "components/favicon/core/large_icon_service.h"
 #include "components/favicon_base/favicon_types.h"
 #include "components/webapps/browser/features.h"
 #include "components/webapps/browser/installable/installable_evaluator.h"
@@ -191,14 +191,14 @@ void InstallableIconFetcher::OnManifestIconFetched(const GURL& icon_url,
 }
 
 void InstallableIconFetcher::FetchFavicon() {
-  favicon::LargeFaviconProvider* favicon_provider =
-      favicon::GetLargeFaviconProvider(web_contents_->GetBrowserContext());
-  if (!favicon_provider) {
+  favicon::LargeIconService* favicon_service =
+      favicon::GetLargeIconService(web_contents_->GetBrowserContext());
+  if (!favicon_service) {
     EndWithError(NO_ACCEPTABLE_ICON);
     return;
   }
 
-  favicon_provider->GetLargeIconRawBitmapForPageUrl(
+  favicon_service->GetLargeIconRawBitmapForPageUrl(
       web_contents_->GetLastCommittedURL(),
       GetIdealPrimaryIconSizeInPx(IconPurpose::ANY),
       base::BindOnce(&InstallableIconFetcher::OnFaviconFetched,

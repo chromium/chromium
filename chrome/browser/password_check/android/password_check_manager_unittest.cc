@@ -5,6 +5,7 @@
 #include "chrome/browser/password_check/android/password_check_manager.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -38,7 +39,6 @@
 #include "services/network/test/test_shared_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using password_manager::BulkLeakCheckService;
 using password_manager::InsecureType;
@@ -158,8 +158,8 @@ auto ExpectCompromisedCredentialForUI(
     const std::u16string& display_username,
     const std::u16string& display_origin,
     const GURL& url,
-    const absl::optional<std::string>& package_name,
-    const absl::optional<std::string>& change_password_url,
+    const std::optional<std::string>& package_name,
+    const std::optional<std::string>& change_password_url,
     InsecureType insecure_type) {
   auto package_name_field_matcher =
       package_name.has_value()
@@ -287,7 +287,7 @@ TEST_F(PasswordCheckManagerTest, CorrectlyCreatesUIStructForSiteCredential) {
   RunUntilIdle();
   EXPECT_THAT(manager().GetCompromisedCredentials(),
               ElementsAre(ExpectCompromisedCredentialForUI(
-                  kUsername1, u"example.com", GURL(kExampleCom), absl::nullopt,
+                  kUsername1, u"example.com", GURL(kExampleCom), std::nullopt,
                   "https://example.com/.well-known/change-password",
                   InsecureType::kLeaked)));
 }
@@ -318,15 +318,14 @@ TEST_F(PasswordCheckManagerTest, CorrectlyCreatesUIStructForAppCredentials) {
   store().AddLogin(MakeSavedAndroidPassword(kExampleOrg, kUsername2));
 
   EXPECT_THAT(manager().GetCompromisedCredentialsCount(), 2);
-  EXPECT_THAT(
-      manager().GetCompromisedCredentials(),
-      UnorderedElementsAre(
-          ExpectCompromisedCredentialForUI(
-              kUsername1, u"App (com.example.app)", GURL::EmptyGURL(),
-              "com.example.app", absl::nullopt, InsecureType::kLeaked),
-          ExpectCompromisedCredentialForUI(
-              kUsername2, u"Example App", GURL(kExampleCom), "com.example.app",
-              absl::nullopt, InsecureType::kLeaked)));
+  EXPECT_THAT(manager().GetCompromisedCredentials(),
+              UnorderedElementsAre(
+                  ExpectCompromisedCredentialForUI(
+                      kUsername1, u"App (com.example.app)", GURL::EmptyGURL(),
+                      "com.example.app", std::nullopt, InsecureType::kLeaked),
+                  ExpectCompromisedCredentialForUI(
+                      kUsername2, u"Example App", GURL(kExampleCom),
+                      "com.example.app", std::nullopt, InsecureType::kLeaked)));
 }
 
 TEST_F(PasswordCheckManagerTest, SetsTimestampOnSuccessfulCheck) {
@@ -370,7 +369,7 @@ TEST_F(PasswordCheckManagerTest, CorrectlyCreatesUIStruct) {
 
   EXPECT_THAT(manager().GetCompromisedCredentials(),
               ElementsAre(ExpectCompromisedCredentialForUI(
-                  kUsername1, u"example.com", GURL(kExampleCom), absl::nullopt,
+                  kUsername1, u"example.com", GURL(kExampleCom), std::nullopt,
                   "https://example.com/.well-known/change-password",
                   InsecureType::kLeaked)));
 }

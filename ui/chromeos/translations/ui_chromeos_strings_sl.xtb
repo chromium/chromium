@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="sl">
 <translation id="1000498691615767391">Izberite mapo, ki jo želite odpreti</translation>
+<translation id="1014208178561091457">Datoteke <ph name="FILE_NAME" /> ni bilo mogoče kopirati, ker je šifrirana.</translation>
 <translation id="1047956942837015229">Brisanje toliko elementov: <ph name="COUNT" /> ...</translation>
 <translation id="1049926623896334335">Wordov dokument</translation>
 <translation id="1056775291175587022">Ni omrežij</translation>
@@ -55,6 +56,7 @@
 <translation id="1435838927755162558">Deljenje mape s programom Parallels Desktop</translation>
 <translation id="1439919885608649279">Oseba z rožami</translation>
 <translation id="1458457385801829801">Izvrzi <ph name="TARGET_NAME" /></translation>
+<translation id="146691674290220697">Datotek (<ph name="NUMBER_OF_FILES" />) ni bilo mogoče kopirati, ker so šifrirane.</translation>
 <translation id="1471718551822868769">slovaščina</translation>
 <translation id="1482884275703521657">finščina</translation>
 <translation id="148466539719134488">švicarska</translation>
@@ -276,6 +278,7 @@
 <translation id="3253225298092156258">Ni na voljo</translation>
 <translation id="3254434849914415189">Izberite privzeto aplikacijo za datoteke <ph name="FILE_TYPE" />:</translation>
 <translation id="3255159654094949700">arabščina</translation>
+<translation id="326396468955264502">Datotek (<ph name="NUMBER_OF_FILES" />) ni bilo mogoče premakniti, ker so šifrirane.</translation>
 <translation id="3264582393905923483">Kontekst</translation>
 <translation id="3272909651715601089">Arhiva »<ph name="PATH" />« ni bilo mogoče odpreti.</translation>
 <translation id="3280431534455935878">Priprava</translation>
@@ -313,6 +316,7 @@
 <translation id="3523225005467146490">1 mapa je deljena z: <ph name="VM_NAME" /></translation>
 <translation id="3524311639100184459">Pozor: Te datoteke so začasne in bodo morda samodejno izbrisane, da se sprosti prostor na disku.  <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Mapa</translation>
+<translation id="3529424493985988200">Za podrobnosti se obrnite na skrbnika.</translation>
 <translation id="3548125359243647069">Prevečkrat ste vnesli napačno kodo PIN.</translation>
 <translation id="3549797760399244642">Pojdite na drive.google.com ...</translation>
 <translation id="3553048479571901246">Če želite datoteke odpreti z aplikacijo <ph name="APP_NAME" />, jih najprej kopirajte v mapo z datotekami sistema Windows.</translation>
@@ -701,6 +705,7 @@
 <translation id="637062427944097960">Ta datoteka je odprta na drugem namizju. Če si jo želite ogledati, preklopite na uporabnika <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />).</translation>
 <translation id="6394388407447716302">Samo za branje</translation>
 <translation id="6395575651121294044">Št. datotek: <ph name="NUMBER_OF_FILES" /></translation>
+<translation id="6407769893376380348">Datoteke <ph name="FILE_NAME" /> ni bilo mogoče premakniti, ker je šifrirana.</translation>
 <translation id="642282551015776456">Tega imena ne morete uporabiti kot ime za datoteko ali mapo</translation>
 <translation id="6423031066725912715">vietnamščina s tipkovnico TCVN</translation>
 <translation id="6430271654280079150">Imate še 1 poskus.</translation>

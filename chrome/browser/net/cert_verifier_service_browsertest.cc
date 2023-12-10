@@ -26,74 +26,56 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/test/base/android/android_browser_test.h"
+#else
+#include "chrome/test/base/in_process_browser_test.h"
+#endif
+
 #if BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
-class CertVerifierServiceChromeRootStoreFeaturePolicyTest
-    : public policy::PolicyTest,
-      public testing::WithParamInterface<
-          std::tuple<bool, absl::optional<bool>>> {
+class CertVerifierServiceChromeRootStoreOptionalTest
+    : public PlatformBrowserTest,
+      public testing::WithParamInterface<bool> {
  public:
-  void SetUpInProcessBrowserTestFixture() override {
+  void SetUpOnMainThread() override {
     // This test puts a test cert in the Chrome Root Store, which will fail in
     // builds where Certificate Transparency is required, so disable CT
     // during this test.
     SystemNetworkContextManager::SetEnableCertificateTransparencyForTesting(
         false);
-    scoped_feature_list_.InitWithFeatureState(
-        net::features::kChromeRootStoreUsed, feature_use_chrome_root_store());
+    previous_use_chrome_root_store_ =
+        SystemNetworkContextManager::IsUsingChromeRootStore();
 
-    policy::PolicyTest::SetUpInProcessBrowserTestFixture();
-
-#if BUILDFLAG(CHROME_ROOT_STORE_POLICY_SUPPORTED)
-    auto policy_val = policy_use_chrome_root_store();
-    if (policy_val.has_value()) {
-      SetPolicyValue(*policy_val);
-    }
-#endif
+    content::GetCertVerifierServiceFactory()->SetUseChromeRootStore(
+        use_chrome_root_store(), base::DoNothing());
   }
 
-  void SetPolicyValue(bool value) {
-    policy::PolicyMap policies;
-#if BUILDFLAG(CHROME_ROOT_STORE_POLICY_SUPPORTED)
-    SetPolicy(&policies, policy::key::kChromeRootStoreEnabled,
-              base::Value(value));
-#endif
-    UpdateProviderPolicy(policies);
-  }
-
-  void TearDownInProcessBrowserTestFixture() override {
+  void TearDownOnMainThread() override {
     SystemNetworkContextManager::SetEnableCertificateTransparencyForTesting(
         absl::nullopt);
+    content::GetCertVerifierServiceFactory()->SetUseChromeRootStore(
+        previous_use_chrome_root_store_, base::DoNothing());
   }
 
-  bool feature_use_chrome_root_store() const { return std::get<0>(GetParam()); }
+  bool use_chrome_root_store() const { return GetParam(); }
 
-  absl::optional<bool> policy_use_chrome_root_store() const {
-    return std::get<1>(GetParam());
-  }
-
-  bool expected_use_chrome_root_store() const {
-    auto policy_val = policy_use_chrome_root_store();
-    if (policy_val.has_value())
-      return *policy_val;
-    return feature_use_chrome_root_store();
+ protected:
+  content::WebContents* GetActiveWebContents() {
+    return chrome_test_utils::GetActiveWebContents(this);
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  bool previous_use_chrome_root_store_;
 };
 
-IN_PROC_BROWSER_TEST_P(CertVerifierServiceChromeRootStoreFeaturePolicyTest,
-                       Test) {
-  // IsUsingChromeRootStore return value should match the expected state.
-  EXPECT_EQ(expected_use_chrome_root_store(),
-            SystemNetworkContextManager::IsUsingChromeRootStore());
-
+IN_PROC_BROWSER_TEST_P(CertVerifierServiceChromeRootStoreOptionalTest, Test) {
   net::EmbeddedTestServer https_test_server(
       net::EmbeddedTestServer::TYPE_HTTPS);
   // Use a runtime generated cert, as the pre-generated ok_cert has too long of
   // a validity period to be accepted by a publicly trusted root.
   https_test_server.SetSSLConfig(
       net::test_server::EmbeddedTestServer::CERT_AUTO);
+  https_test_server.ServeFilesFromSourceDirectory("chrome/test/data");
   ASSERT_TRUE(https_test_server.Start());
 
   // Clear test roots so that cert validation only happens with
@@ -126,58 +108,21 @@ IN_PROC_BROWSER_TEST_P(CertVerifierServiceChromeRootStoreFeaturePolicyTest,
     update_run_loop.Run();
   }
 
-  ASSERT_TRUE(NavigateToUrl(https_test_server.GetURL("/simple.html"), this));
+  EXPECT_EQ(use_chrome_root_store(),
+            content::NavigateToURL(GetActiveWebContents(),
+                                   https_test_server.GetURL("/simple.html")));
 
   // The navigation should show an interstitial if CRS was not in use, since
   // the root was only trusted in the test CRS update and won't be trusted by
   // the platform roots that are used when CRS is not used.
-  EXPECT_NE(expected_use_chrome_root_store(),
+  EXPECT_NE(use_chrome_root_store(),
             chrome_browser_interstitials::IsShowingInterstitial(
-                chrome_test_utils::GetActiveWebContents(this)));
-
-#if BUILDFLAG(CHROME_ROOT_STORE_POLICY_SUPPORTED)
-  // Set the policy to the opposite.
-  bool new_expected_use_chrome_root_store = !expected_use_chrome_root_store();
-  SetPolicyValue(new_expected_use_chrome_root_store);
-
-  // IsUsingChromeRootStore return value should match the new policy setting.
-  EXPECT_EQ(new_expected_use_chrome_root_store,
-            SystemNetworkContextManager::IsUsingChromeRootStore());
-
-  // The SetUseChromeRootStore message should have been dispatched to the
-  // CertVerifierServiceFactory but may not have actually been processed yet.
-  // Doing a round-trip to the CertVerifierServiceFactory and back should
-  // ensure that the previous message in the queue has already been processed.
-  content::GetCertVerifierServiceFactoryRemoteForTesting().FlushForTesting();
-
-  ASSERT_TRUE(NavigateToUrl(https_test_server.GetURL("/title2.html"), this));
-
-  // Navigating to the test server again should respect the new policy setting.
-  EXPECT_NE(new_expected_use_chrome_root_store,
-            chrome_browser_interstitials::IsShowingInterstitial(
-                chrome_test_utils::GetActiveWebContents(this)));
-#endif
+                GetActiveWebContents()));
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    CertVerifierServiceChromeRootStoreFeaturePolicyTest,
-    ::testing::Combine(::testing::Bool(),
-                       ::testing::Values(absl::nullopt
-#if BUILDFLAG(CHROME_ROOT_STORE_POLICY_SUPPORTED)
-                                         ,
-                                         false,
-                                         true
-#endif
-                                         )),
-    [](const testing::TestParamInfo<
-        CertVerifierServiceChromeRootStoreFeaturePolicyTest::ParamType>& info) {
-      return base::StrCat(
-          {std::get<0>(info.param) ? "FeatureTrue" : "FeatureFalse",
-           std::get<1>(info.param).has_value()
-               ? (*std::get<1>(info.param) ? "PolicyTrue" : "PolicyFalse")
-               : "PolicyNotSet"});
-    });
+INSTANTIATE_TEST_SUITE_P(All,
+                         CertVerifierServiceChromeRootStoreOptionalTest,
+                         ::testing::Bool());
 #endif  // BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
 
 class CertVerifierServiceEnforceLocalAnchorConstraintsFeaturePolicyTest

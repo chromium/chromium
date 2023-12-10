@@ -5,7 +5,7 @@
 #include "extensions/browser/extensions_browser_client.h"
 
 #include <memory>
-
+#include <optional>
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
@@ -19,7 +19,6 @@
 #include "extensions/browser/updater/scoped_extension_updater_keep_alive.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/permissions/permission_set.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace extensions {
@@ -214,7 +213,7 @@ void ExtensionsBrowserClient::GetWebViewStoragePartitionConfig(
     content::SiteInstance* owner_site_instance,
     const std::string& partition_name,
     bool in_memory,
-    base::OnceCallback<void(absl::optional<content::StoragePartitionConfig>)>
+    base::OnceCallback<void(std::optional<content::StoragePartitionConfig>)>
         callback) {
   const GURL& owner_site_url = owner_site_instance->GetSiteURL();
   auto partition_config = content::StoragePartitionConfig::Create(

@@ -82,7 +82,6 @@ template("remoting_android_client_java_tmpl") {
 
     deps = [
       "//base:base_java",
-      "//base:jni_java",
       "//build/android:build_java",
       "//remoting/android:remoting_android_client_java_resources",
       "//remoting/android:remoting_apk_manifest",
@@ -93,6 +92,7 @@ template("remoting_android_client_java_tmpl") {
       "//third_party/androidx:androidx_core_core_java",
       "//third_party/androidx:androidx_drawerlayout_drawerlayout_java",
       "//third_party/androidx:androidx_mediarouter_mediarouter_java",
+      "//third_party/jni_zero:jni_zero_java",
       "//ui/android:ui_utils_java",
     ]
 

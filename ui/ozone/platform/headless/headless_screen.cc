@@ -10,6 +10,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
+#include "ui/display/tablet_state.h"
 #include "ui/ozone/public/ozone_switches.h"
 
 namespace ui {
@@ -103,5 +104,11 @@ void HeadlessScreen::AddObserver(display::DisplayObserver* observer) {
 void HeadlessScreen::RemoveObserver(display::DisplayObserver* observer) {
   display_list_.RemoveObserver(observer);
 }
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+display::TabletState HeadlessScreen::GetTabletState() const {
+  return display::TabletState::kInClamshellMode;
+}
+#endif
 
 }  // namespace ui

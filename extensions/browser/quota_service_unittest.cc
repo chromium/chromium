@@ -44,7 +44,7 @@ class Mapper : public QuotaLimitHeuristic::BucketMapper {
   void GetBucketsForArgs(const base::Value::List& args,
                          BucketList* buckets) override {
     for (const auto& val : args) {
-      absl::optional<int> id = val.GetIfInt();
+      std::optional<int> id = val.GetIfInt();
       ASSERT_TRUE(id.has_value());
       auto& entry = buckets_[*id];
       if (!entry) {

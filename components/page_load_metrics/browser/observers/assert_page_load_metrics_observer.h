@@ -186,21 +186,24 @@ class AssertPageLoadMetricsObserver final
                                 bool is_display_none) override {}
   void FrameSizeChanged(content::RenderFrameHost* render_frame_host,
                         const gfx::Size& frame_size) override {}
-  void OnCookiesRead(const GURL& url,
-                     const GURL& first_party_url,
-                     bool blocked_by_policy,
-                     bool is_ad_tagged) override {}
-  void OnCookieChange(const GURL& url,
-                      const GURL& first_party_url,
-                      const net::CanonicalCookie& cookie,
-                      bool blocked_by_policy,
-                      bool is_ad_tagged) override {}
+  void OnCookiesRead(
+      const GURL& url,
+      const GURL& first_party_url,
+      bool blocked_by_policy,
+      bool is_ad_tagged,
+      const net::CookieSettingOverrides& cookie_setting_overrides) override {}
+  void OnCookieChange(
+      const GURL& url,
+      const GURL& first_party_url,
+      const net::CanonicalCookie& cookie,
+      bool blocked_by_policy,
+      bool is_ad_tagged,
+      const net::CookieSettingOverrides& cookie_setting_overrides) override {}
   void OnStorageAccessed(const GURL& url,
                          const GURL& first_party_url,
                          bool blocked_by_policy,
                          page_load_metrics::StorageType access_type) override {}
   void OnPrefetchLikely() override {}
-  void DidActivatePortal(base::TimeTicks activation_time) override {}
   void OnV8MemoryChanged(const std::vector<page_load_metrics::MemoryUpdate>&
                              memory_updates) override {}
   void OnSharedStorageWorkletHostCreated() override {}

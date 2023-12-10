@@ -16,9 +16,7 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.ContextUtils;
 import org.chromium.ui.base.WindowAndroid;
 
-/**
- * This bridge allows native web C++ code to launch DeviceLockActivity.
- */
+/** This bridge allows native web C++ code to launch DeviceLockActivity. */
 public class DeviceLockBridge {
     /**
      * Whether the Device Lock page has been shown to the user and acknowledged with a device lock
@@ -77,20 +75,19 @@ public class DeviceLockBridge {
 
     @CalledByNative
     private static boolean isDeviceSecure() {
-        return ((KeyguardManager) ContextUtils.getApplicationContext().getSystemService(
-                        Context.KEYGUARD_SERVICE))
+        return ((KeyguardManager)
+                        ContextUtils.getApplicationContext()
+                                .getSystemService(Context.KEYGUARD_SERVICE))
                 .isDeviceSecure();
     }
 
     @CalledByNative
     public static boolean deviceLockPageHasBeenPassed() {
-        return ContextUtils.getAppSharedPreferences().getBoolean(
-                DEVICE_LOCK_PAGE_HAS_BEEN_PASSED, false);
+        return ContextUtils.getAppSharedPreferences()
+                .getBoolean(DEVICE_LOCK_PAGE_HAS_BEEN_PASSED, false);
     }
 
-    /**
-     * C++ method signatures.
-     */
+    /** C++ method signatures. */
     @NativeMethods
     interface Natives {
         void onDeviceLockUiFinished(long nativeDeviceLockBridge, boolean isDeviceLockSet);

@@ -167,6 +167,8 @@ class CORE_EXPORT InspectorCSSAgent final
       protocol::Maybe<protocol::Array<protocol::CSS::CSSPositionFallbackRule>>*,
       protocol::Maybe<protocol::Array<protocol::CSS::CSSPropertyRule>>*,
       protocol::Maybe<protocol::Array<protocol::CSS::CSSPropertyRegistration>>*,
+      protocol::Maybe<protocol::CSS::CSSFontPaletteValuesRule>*
+          out_cssFontPaletteValuesRule,
       protocol::Maybe<int>*) override;
   protocol::Response getInlineStylesForNode(
       int node_id,
@@ -343,6 +345,8 @@ class CORE_EXPORT InspectorCSSAgent final
       std::unique_ptr<protocol::Array<protocol::CSS::CSSPropertyRule>>,
       std::unique_ptr<protocol::Array<protocol::CSS::CSSPropertyRegistration>>>
   CustomPropertiesForNode(Element* element);
+  std::unique_ptr<protocol::CSS::CSSFontPaletteValuesRule> FontPalettesForNode(
+      Element& element);
 
   // If the |animating_element| is a pseudo element, then |element| is a
   // reference to its originating DOM element.
@@ -357,7 +361,7 @@ class CORE_EXPORT InspectorCSSAgent final
 
   void CollectPlatformFontsForLayoutObject(
       LayoutObject*,
-      HashCountedSet<std::pair<int, String>>*,
+      HashMap<std::pair<int, String>, std::pair<int, String>>*,
       unsigned descendants_depth);
 
   InspectorStyleSheet* BindStyleSheet(CSSStyleSheet*);
@@ -374,11 +378,12 @@ class CORE_EXPORT InspectorCSSAgent final
   String DetectOrigin(CSSStyleSheet* page_style_sheet,
                       Document* owner_document);
 
-  std::unique_ptr<protocol::CSS::CSSRule> BuildObjectForRule(CSSStyleRule*);
+  std::unique_ptr<protocol::CSS::CSSRule> BuildObjectForRule(CSSStyleRule*,
+                                                             Element* element);
   std::unique_ptr<protocol::CSS::RuleUsage> BuildCoverageInfo(CSSStyleRule*,
                                                               bool);
   std::unique_ptr<protocol::Array<protocol::CSS::RuleMatch>>
-  BuildArrayForMatchedRuleList(RuleIndexList*);
+  BuildArrayForMatchedRuleList(RuleIndexList*, Element*);
   std::unique_ptr<protocol::CSS::CSSStyle> BuildObjectForAttributesStyle(
       Element*);
   std::unique_ptr<protocol::Array<int>>

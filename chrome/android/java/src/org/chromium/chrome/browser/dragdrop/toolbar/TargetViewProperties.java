@@ -9,9 +9,7 @@ import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
-/**
- * Properties for TargetView.
- */
+/** Properties for TargetView. */
 class TargetViewProperties {
     // Visible related properties
     public static final WritableIntPropertyKey TARGET_VIEW_VISIBLE = new WritableIntPropertyKey();

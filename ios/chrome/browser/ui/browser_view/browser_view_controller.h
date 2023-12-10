@@ -20,13 +20,12 @@
 #import "ios/chrome/browser/ui/omnibox/omnibox_focus_delegate.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_presenter.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_height_delegate.h"
-#import "ios/chrome/browser/web/web_state_container_view_provider.h"
+#import "ios/chrome/browser/web/model/web_state_container_view_provider.h"
 
 @protocol ApplicationCommands;
 @class BookmarksCoordinator;
 @class BrowserContainerViewController;
 @class BubblePresenter;
-@protocol CRWResponderInputView;
 @protocol DefaultPromoNonModalPresentationDelegate;
 @protocol FindInPageCommands;
 class FullscreenController;
@@ -49,9 +48,7 @@ class TabUsageRecorderBrowserAgent;
 @class LayoutGuideCenter;
 @protocol LoadQueryCommands;
 class UrlLoadingBrowserAgent;
-class UrlLoadingNotifierBrowserAgent;
 @protocol VoiceSearchController;
-class WebStateUpdateBrowserAgent;
 
 typedef struct {
   BubblePresenter* bubblePresenter;
@@ -73,12 +70,10 @@ typedef struct {
   BOOL isOffTheRecord;
   PagePlaceholderBrowserAgent* pagePlaceholderBrowserAgent;
   UrlLoadingBrowserAgent* urlLoadingBrowserAgent;
-  UrlLoadingNotifierBrowserAgent* urlLoadingNotifierBrowserAgent;
   id<VoiceSearchController> voiceSearchController;
   TabUsageRecorderBrowserAgent* tabUsageRecorderBrowserAgent;
   base::WeakPtr<WebStateList> webStateList;
   SafeAreaProvider* safeAreaProvider;
-  WebStateUpdateBrowserAgent* webStateUpdateBrowserAgent;
 } BrowserViewControllerDependencies;
 
 // The top-level view controller for the browser UI. Manages other controllers

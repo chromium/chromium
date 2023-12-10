@@ -42,6 +42,7 @@
 #include "third_party/blink/renderer/modules/indexeddb/idb_key_path.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_value.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 
@@ -223,6 +224,7 @@ std::unique_ptr<IDBValue> CreateIDBValue(v8::Isolate* isolate,
 }
 
 TEST(IDBKeyFromValueAndKeyPathTest, TopLevelPropertyStringValue) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   v8::Isolate* isolate = scope.GetIsolate();
 
@@ -237,6 +239,7 @@ TEST(IDBKeyFromValueAndKeyPathTest, TopLevelPropertyStringValue) {
 }  // namespace
 
 TEST(IDBKeyFromValueAndKeyPathTest, TopLevelPropertyNumberValue) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   v8::Isolate* isolate = scope.GetIsolate();
 
@@ -249,6 +252,7 @@ TEST(IDBKeyFromValueAndKeyPathTest, TopLevelPropertyNumberValue) {
 }
 
 TEST(IDBKeyFromValueAndKeyPathTest, SubProperty) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   ScriptState* script_state = scope.GetScriptState();
   v8::Isolate* isolate = scope.GetIsolate();
@@ -263,6 +267,7 @@ TEST(IDBKeyFromValueAndKeyPathTest, SubProperty) {
 }
 
 TEST(IDBKeyFromValue, Number) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
 
   auto key = ScriptToKey(scope, "42.0");
@@ -273,6 +278,7 @@ TEST(IDBKeyFromValue, Number) {
 }
 
 TEST(IDBKeyFromValue, Date) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
 
   auto key = ScriptToKey(scope, "new Date(123)");
@@ -284,6 +290,7 @@ TEST(IDBKeyFromValue, Date) {
 }
 
 TEST(IDBKeyFromValue, String) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
 
   auto key = ScriptToKey(scope, "'abc'");
@@ -292,6 +299,7 @@ TEST(IDBKeyFromValue, String) {
 }
 
 TEST(IDBKeyFromValue, Binary) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
 
   // Key which is an ArrayBuffer.
@@ -310,6 +318,7 @@ TEST(IDBKeyFromValue, Binary) {
 }
 
 TEST(IDBKeyFromValue, InvalidSimpleKeyTypes) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
 
   const char* cases[] = {
@@ -321,6 +330,7 @@ TEST(IDBKeyFromValue, InvalidSimpleKeyTypes) {
 }
 
 TEST(IDBKeyFromValue, SimpleArrays) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
 
   {
@@ -341,6 +351,7 @@ TEST(IDBKeyFromValue, SimpleArrays) {
 }
 
 TEST(IDBKeyFromValue, NestedArray) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
 
   auto key = ScriptToKey(scope, "[0, ['xyz', Infinity], 'abc']");
@@ -357,6 +368,7 @@ TEST(IDBKeyFromValue, NestedArray) {
 }
 
 TEST(IDBKeyFromValue, CircularArray) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   auto key = ScriptToKey(scope,
                          "(() => {"
@@ -368,6 +380,8 @@ TEST(IDBKeyFromValue, CircularArray) {
 }
 
 TEST(IDBKeyFromValue, DeepArray) {
+  test::TaskEnvironment task_environment{
+      test::TaskEnvironment::RealMainThreadScheduler()};
   V8TestingScope scope;
   auto key = ScriptToKey(scope,
                          "(() => {"
@@ -379,6 +393,7 @@ TEST(IDBKeyFromValue, DeepArray) {
 }
 
 TEST(IDBKeyFromValue, SparseArray) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   auto key = ScriptToKey(scope, "[,1]");
   EXPECT_FALSE(key->IsValid());
@@ -393,6 +408,7 @@ TEST(IDBKeyFromValue, SparseArray) {
 }
 
 TEST(IDBKeyFromValue, ShrinkingArray) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   auto key = ScriptToKey(
       scope,
@@ -405,6 +421,7 @@ TEST(IDBKeyFromValue, ShrinkingArray) {
 }
 
 TEST(IDBKeyFromValue, Exceptions) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
 
   const char* cases[] = {
@@ -457,6 +474,7 @@ TEST(IDBKeyFromValue, Exceptions) {
 }
 
 TEST(IDBKeyFromValueAndKeyPathTest, Exceptions) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   ScriptValue script_value(
       scope.GetIsolate(),
@@ -492,6 +510,7 @@ TEST(IDBKeyFromValueAndKeyPathTest, Exceptions) {
 }
 
 TEST(IDBKeyFromValueAndKeyPathsTest, IndexKeys) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   ScriptState* script_state = scope.GetScriptState();
   v8::Isolate* isolate = scope.GetIsolate();
@@ -542,6 +561,7 @@ TEST(IDBKeyFromValueAndKeyPathsTest, IndexKeys) {
 }
 
 TEST(InjectIDBKeyTest, ImplicitValues) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   v8::Isolate* isolate = scope.GetIsolate();
   {
@@ -561,6 +581,7 @@ TEST(InjectIDBKeyTest, ImplicitValues) {
 }
 
 TEST(InjectIDBKeyTest, TopLevelPropertyStringValue) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
 
   // object = { foo: "zoo" }
@@ -578,6 +599,7 @@ TEST(InjectIDBKeyTest, TopLevelPropertyStringValue) {
 }
 
 TEST(InjectIDBKeyTest, SubProperty) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   ScriptState* script_state = scope.GetScriptState();
 
@@ -613,6 +635,7 @@ TEST(InjectIDBKeyTest, SubProperty) {
 }
 
 TEST(DeserializeIDBValueTest, CurrentVersions) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   v8::Isolate* isolate = scope.GetIsolate();
 
@@ -637,6 +660,7 @@ TEST(DeserializeIDBValueTest, CurrentVersions) {
 }
 
 TEST(DeserializeIDBValueTest, FutureV8Version) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   v8::Isolate* isolate = scope.GetIsolate();
 
@@ -661,6 +685,7 @@ TEST(DeserializeIDBValueTest, FutureV8Version) {
 }
 
 TEST(DeserializeIDBValueTest, InjectionIntoNonObject) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   v8::Isolate* isolate = scope.GetIsolate();
 
@@ -681,6 +706,7 @@ TEST(DeserializeIDBValueTest, InjectionIntoNonObject) {
 }
 
 TEST(DeserializeIDBValueTest, NestedInjectionIntoNonObject) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   v8::Isolate* isolate = scope.GetIsolate();
 

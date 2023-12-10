@@ -9,9 +9,7 @@ import androidx.annotation.NonNull;
 import org.chromium.android_webview.common.SafeModeAction;
 import org.chromium.android_webview.common.SafeModeActionIds;
 
-/**
- * A {@link SafeModeAction} to disable all origin trials
- */
+/** A {@link SafeModeAction} to disable all origin trials */
 public class DisableOriginTrialsSafeModeAction implements SafeModeAction {
     private static final String TAG = "WebViewSafeMode";
 

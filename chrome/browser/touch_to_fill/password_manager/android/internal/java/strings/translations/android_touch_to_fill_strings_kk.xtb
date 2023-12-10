@@ -1,0 +1,27 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="kk">
+<translation id="1220509181886849806">Сақталған құпия сөз қолданылсын ба?</translation>
+<translation id="1435940442311036198">Басқа құрылғыдағы кіру кілтін пайдалану</translation>
+<translation id="1717486229951421299">Түрту арқылы толтырылатын тіркелу деректерінің тізімі жарты экранға ашылған.</translation>
+<translation id="2359808026110333948">Жалғастыру</translation>
+<translation id="2364266287022099258">Сақталған кіру кілтін пайдалану керек пе?</translation>
+<translation id="3399357656427473483">Түрту арқылы толтырылатын тіркелу деректері тізімі.</translation>
+<translation id="3653689374478248324"><ph name="SITE_NAME" /> сайтына кіресіз.</translation>
+<translation id="3950820424414687140">Кіру</translation>
+<translation id="4553044860350038560">Басқа кіру кілттері</translation>
+<translation id="4598345735110653698">Кіру кілттерін басқару</translation>
+<translation id="4722735765955348426"><ph name="USERNAME" /> құпия сөзі</translation>
+<translation id="4907224763885298217">Экран құлпын пайдалану</translation>
+<translation id="5012523644916800014">Құпия сөздер мен кіру кілттерін басқару</translation>
+<translation id="5441504010984421144">Түрту арқылы толтырылатын тіркелу деректері тізімі толық экранға ашылған.</translation>
+<translation id="5591247451101092906">Сақталған құпия сөз бен кіру кілтінің қайсысын пайдалану керек?</translation>
+<translation id="5624120631404540903">Құпия сөздерді басқару</translation>
+<translation id="6560306912274274630">Пайдаланушының (<ph name="USERNAME" />) кіру кілті. Экран құлпын қолданыңыз.</translation>
+<translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{Бұл сайтқа арналған жаңа құпия сөз}other{Бұл сайтқа арналған жаңа құпия сөздер}}</translation>
+<translation id="7286867818472074330">Кіру кілтін таңдау</translation>
+<translation id="7669320311687290322"><ph name="ITEM_LABEL" />, <ph name="ITEM_POSITION" />/<ph name="ITEMS_TOTAL" />.</translation>
+<translation id="7738288782501322815">Сізге <ph name="SITE_NAME" /> веб-сайтына арналған құпия сөздер келді.</translation>
+<translation id="8614995815226664591"><ph name="SENDER_NAME" /> сізбен <ph name="SITE_NAME" /> веб-сайтына арналған құпия сөзді бөлісті.</translation>
+<translation id="8891372124884726271">Тіркелу деректерінің тізімі жабық.</translation>
+</translationbundle>

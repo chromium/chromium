@@ -12,9 +12,7 @@ import org.chromium.base.ObserverList;
 import org.chromium.ui.resources.Resource;
 import org.chromium.ui.resources.ResourceFactory;
 
-/**
- * A basic implementation of {@link DynamicResource} to handle updatable bitmaps.
- */
+/** A basic implementation of {@link DynamicResource} to handle updatable bitmaps. */
 public class BitmapDynamicResource implements DynamicResource {
     private final int mResId;
     private Bitmap mBitmap;
@@ -47,8 +45,9 @@ public class BitmapDynamicResource implements DynamicResource {
     @Override
     public void onResourceRequested() {
         if (!mOnResourceReadyObservers.isEmpty() && mBitmap != null) {
-            Resource resource = new DynamicResourceSnapshot(
-                    mBitmap, false, mSize, ResourceFactory.createBitmapResource(null));
+            Resource resource =
+                    new DynamicResourceSnapshot(
+                            mBitmap, false, mSize, ResourceFactory.createBitmapResource(null));
             for (Callback<Resource> observer : mOnResourceReadyObservers) {
                 observer.onResult(resource);
             }

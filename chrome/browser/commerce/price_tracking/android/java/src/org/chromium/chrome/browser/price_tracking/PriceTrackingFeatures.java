@@ -23,8 +23,10 @@ public class PriceTrackingFeatures {
     @VisibleForTesting
     public static final String ALLOW_DISABLE_PRICE_ANNOTATIONS_PARAM =
             "allow_disable_price_annotations";
+
     @VisibleForTesting
     public static final String PRICE_DROP_IPH_ENABLED_PARAM = "enable_price_drop_iph";
+
     private static final String PRICE_DROP_BADGE_ENABLED_PARAM = "enable_price_drop_badge";
     private static final String PRICE_ANNOTATIONS_ENABLED_METRICS_WINDOW_DURATION_PARAM =
             "price_annotations_enabled_metrics_window_duration_ms";
@@ -85,7 +87,8 @@ public class PriceTrackingFeatures {
         if (FeatureList.isInitialized()) {
             return ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
                     ChromeFeatureList.COMMERCE_PRICE_TRACKING,
-                    PRICE_ANNOTATIONS_ENABLED_METRICS_WINDOW_DURATION_PARAM, defaultDuration);
+                    PRICE_ANNOTATIONS_ENABLED_METRICS_WINDOW_DURATION_PARAM,
+                    defaultDuration);
         }
         return defaultDuration;
     }

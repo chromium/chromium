@@ -185,12 +185,11 @@ FrameTreeNode::FrameTreeNode(
 void FrameTreeNode::DestroyInnerFrameTreeIfExists() {
   // If `this` is an dummy outer delegate node, then we really are representing
   // an inner FrameTree for one of the following consumers:
-  //   - `Portal`
   //   - `FencedFrame`
   //   - `GuestView`
   // If we are representing a `FencedFrame` object, we need to destroy it
-  // alongside ourself. `Portals` and `GuestView` however, *currently* have a
-  // more complex lifetime and are dealt with separately.
+  // alongside ourself. `GuestView` however, *currently* has a more complex
+  // lifetime and is dealt with separately.
   bool is_outer_dummy_node = false;
   if (current_frame_host() &&
       current_frame_host()->inner_tree_main_frame_tree_node_id() !=
@@ -199,11 +198,7 @@ void FrameTreeNode::DestroyInnerFrameTreeIfExists() {
   }
 
   if (is_outer_dummy_node) {
-    FencedFrame* doomed_fenced_frame = FindFencedFrame(this);
-    // `doomed_fenced_frame` might not actually exist, because some outer dummy
-    // `FrameTreeNode`s might correspond to `Portal`s, which do not have their
-    // lifetime managed in the same way as `FencedFrames`.
-    if (doomed_fenced_frame) {
+    if (FencedFrame* doomed_fenced_frame = FindFencedFrame(this)) {
       parent()->DestroyFencedFrame(*doomed_fenced_frame);
     }
   }
@@ -363,14 +358,14 @@ RenderFrameHostImpl* FrameTreeNode::GetParentOrOuterDocumentHelper(
   }
 
   if (!escape_guest_view) {
-    // If we are not a fenced frame root nor inside a portal then return early.
+    // If we are not a fenced frame root then return early.
     // This code does not escape GuestViews.
-    if (!IsFencedFrameRoot() && !frame_tree_->delegate()->IsPortal()) {
+    if (!IsFencedFrameRoot()) {
       return nullptr;
     }
   }
 
-  // Find the parent in the outer embedder (GuestView, Portal, or Fenced Frame).
+  // Find the parent in the outer embedder (GuestView or Fenced Frame).
   FrameTreeNode* frame_in_embedder = render_manager()->GetOuterDelegateNode();
   if (frame_in_embedder) {
     return frame_in_embedder->current_frame_host()->GetParent();
@@ -731,7 +726,7 @@ void FrameTreeNode::DidFocus() {
 void FrameTreeNode::BeforeUnloadCanceled() {
   // TODO(clamy): Support BeforeUnload in subframes. Fenced Frames don't run
   // BeforeUnload. Maybe need to check whether other MPArch inner pages cases
-  // need beforeunload(e.g., portals, GuestView if it gets ported to MPArch).
+  // need beforeunload(e.g., GuestView if it gets ported to MPArch).
   if (!IsOutermostMainFrame())
     return;
 
@@ -830,11 +825,7 @@ bool FrameTreeNode::UpdateUserActivationState(
       break;
     case blink::mojom::UserActivationUpdateType::
         kNotifyActivationPendingBrowserVerification: {
-      const bool user_activation_verified = VerifyUserActivation();
-      // Add UMA metric for when browser user activation verification succeeds
-      base::UmaHistogramBoolean("Event.BrowserVerifiedUserActivation",
-                                user_activation_verified);
-      if (user_activation_verified) {
+      if (VerifyUserActivation()) {
         update_result = NotifyUserActivation(
             blink::mojom::UserActivationNotificationType::kInteraction);
         update_type = blink::mojom::UserActivationUpdateType::kNotifyActivation;
@@ -962,7 +953,8 @@ void FrameTreeNode::SetFencedFrameAutomaticBeaconReportEventData(
     const std::vector<blink::FencedFrame::ReportingDestination>& destinations,
     network::AttributionReportingRuntimeFeatures
         attribution_reporting_runtime_features,
-    bool once) {
+    bool once,
+    bool cross_origin_exposed) {
   absl::optional<FencedFrameProperties>& properties =
       GetFencedFramePropertiesForEditing();
   // `properties` will exist for both fenced frames as well as iframes loaded
@@ -986,7 +978,7 @@ void FrameTreeNode::SetFencedFrameAutomaticBeaconReportEventData(
   }
   properties->UpdateAutomaticBeaconData(event_type, event_data, destinations,
                                         attribution_reporting_runtime_features,
-                                        once);
+                                        once, cross_origin_exposed);
 }
 
 size_t FrameTreeNode::GetFencedFrameDepth(

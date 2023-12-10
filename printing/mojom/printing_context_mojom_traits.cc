@@ -191,7 +191,7 @@ bool StructTraits<
 #if BUILDFLAG(IS_MAC)
     // The dictionary must contain the destination type, page format, and
     // print settings.
-    absl::optional<int> destination_type = system_print_dialog_data.FindInt(
+    std::optional<int> destination_type = system_print_dialog_data.FindInt(
         printing::kMacSystemPrintDialogDataDestinationType);
     if (!destination_type.has_value()) {
       return false;

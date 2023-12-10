@@ -9,12 +9,16 @@
 
 import 'chrome://resources/cr_elements/cr_auto_img/cr_auto_img.js';
 import '../../../css/common.css.js';
+import './sparkle_placeholder_element.js';
+import '../../../css/sea_pen.css.js';
 
 import {SeaPenThumbnail} from '../../../sea_pen.mojom-webui.js';
 import {WithPersonalizationStore} from '../../personalization_store.js';
 import {getZerosArray, isNonEmptyArray} from '../../utils.js';
 
+import {selectSeaPenWallpaper} from './sea_pen_controller.js';
 import {getTemplate} from './sea_pen_images_element.html.js';
+import {getSeaPenProvider} from './sea_pen_interface_provider.js';
 
 export class SeaPenImagesElement extends WithPersonalizationStore {
   static get is() {
@@ -29,28 +33,28 @@ export class SeaPenImagesElement extends WithPersonalizationStore {
     return {
       templateId: String,
 
-      query_: String,
-
       thumbnails_: Object,
 
       thumbnailsLoading_: Boolean,
+
+      // The pending selected image. Not persisted in store as it is only
+      // temporarily available in this element.
+      pendingSelected_: Object,
     };
   }
 
   private templateId: string;
-  private query_: string|null;
   private thumbnails_: SeaPenThumbnail[]|null;
   private thumbnailsLoading_: boolean;
+  private pendingSelected_: SeaPenThumbnail|null;
 
   override connectedCallback() {
     super.connectedCallback();
-    this.watch<SeaPenImagesElement['query_']>(
-        'query_', state => state.wallpaper.seaPen.query);
     this.watch<SeaPenImagesElement['thumbnails_']>(
         'thumbnails_', state => state.wallpaper.seaPen.thumbnails);
     this.watch<SeaPenImagesElement['thumbnailsLoading_']>(
         'thumbnailsLoading_',
-        state => state.wallpaper.seaPen.thumbnailsLoading);
+        state => state.wallpaper.seaPen.loading.thumbnails);
     this.updateFromStore();
   }
 
@@ -64,7 +68,7 @@ export class SeaPenImagesElement extends WithPersonalizationStore {
   private shouldShowThumbnailPlaceholders_(
       thumbnailsLoading: boolean, thumbnails: SeaPenThumbnail[]|null): boolean {
     // Use placeholders before and during loading thumbnails.
-    return !thumbnails || thumbnailsLoading;
+    return !thumbnails && !thumbnailsLoading;
   }
 
   private shouldShowImageThumbnails_(
@@ -74,6 +78,20 @@ export class SeaPenImagesElement extends WithPersonalizationStore {
 
   private getPlaceholders_(x: number) {
     return getZerosArray(x);
+  }
+
+  private onThumbnailSelected_(event: Event&{model: {item: SeaPenThumbnail}}) {
+    this.pendingSelected_ = event.model.item;
+    selectSeaPenWallpaper(event.model.item, getSeaPenProvider());
+  }
+
+  private getAriaIndex_(i: number): number {
+    return i + 1;
+  }
+
+  private isThumbnailSelected_(
+      thumbnail: SeaPenThumbnail, pendingSelected: SeaPenThumbnail|null) {
+    return thumbnail === pendingSelected;
   }
 }
 

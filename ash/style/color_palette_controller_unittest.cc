@@ -133,7 +133,7 @@ class ColorPaletteControllerTest : public NoSessionAshTestBase {
   void UpdateWallpaperColor(SkColor color) {
     WallpaperControllerTestApi wallpaper(wallpaper_controller());
     wallpaper.SetCalculatedColors(
-        WallpaperCalculatedColors({}, kKMeanColor, color));
+        WallpaperCalculatedColors(kKMeanColor, color));
     base::RunLoop().RunUntilIdle();
   }
 
@@ -156,7 +156,7 @@ class ColorPaletteControllerTest : public NoSessionAshTestBase {
 TEST_F(ColorPaletteControllerTest, ExpectedEmptyValues) {
   EXPECT_EQ(kDefaultColorScheme,
             color_palette_controller()->GetColorScheme(kAccountId));
-  EXPECT_EQ(absl::nullopt,
+  EXPECT_EQ(std::nullopt,
             color_palette_controller()->GetStaticColor(kAccountId));
 }
 
@@ -175,7 +175,7 @@ TEST_F(ColorPaletteControllerTest, SetColorScheme) {
   SimulateUserLogin(kAccountId);
   WallpaperControllerTestApi wallpaper(wallpaper_controller());
   wallpaper.SetCalculatedColors(
-      WallpaperCalculatedColors({}, kKMeanColor, SK_ColorWHITE));
+      WallpaperCalculatedColors(kKMeanColor, SK_ColorWHITE));
   const style::mojom::ColorScheme color_scheme =
       style::mojom::ColorScheme::kExpressive;
 
@@ -184,7 +184,7 @@ TEST_F(ColorPaletteControllerTest, SetColorScheme) {
 
   EXPECT_EQ(color_scheme,
             color_palette_controller()->GetColorScheme(kAccountId));
-  EXPECT_EQ(absl::nullopt,
+  EXPECT_EQ(std::nullopt,
             color_palette_controller()->GetStaticColor(kAccountId));
   auto color_palette_seed =
       color_palette_controller()->GetColorPaletteSeed(kAccountId);
@@ -300,7 +300,7 @@ TEST_F(ColorPaletteControllerTest, ColorModeTriggersObserver) {
   // A seed color needs to be present for the observer to trigger.
   WallpaperControllerTestApi wallpaper(wallpaper_controller());
   wallpaper.SetCalculatedColors(
-      WallpaperCalculatedColors({}, kKMeanColor, SK_ColorWHITE));
+      WallpaperCalculatedColors(kKMeanColor, SK_ColorWHITE));
 
   // Initialize Dark mode to a known state.
   dark_light_controller()->SetDarkModeEnabledForTest(false);
@@ -323,7 +323,7 @@ TEST_F(ColorPaletteControllerTest, NativeTheme_DarkModeChanged) {
   dark_light_controller()->SetDarkModeEnabledForTest(true);
   WallpaperControllerTestApi wallpaper(wallpaper_controller());
   wallpaper.SetCalculatedColors(
-      WallpaperCalculatedColors({}, SK_ColorWHITE, kCelebiColor));
+      WallpaperCalculatedColors(SK_ColorWHITE, kCelebiColor));
   color_palette_controller()->SetColorScheme(
       style::mojom::ColorScheme::kVibrant, kAccountId, base::DoNothing());
 
@@ -361,8 +361,7 @@ TEST_F(ColorPaletteControllerTest, GenerateSampleScheme) {
                                                    // Vibrance 96%
 
   WallpaperControllerTestApi wallpaper(wallpaper_controller());
-  wallpaper.SetCalculatedColors(
-      WallpaperCalculatedColors({}, SK_ColorWHITE, seed));
+  wallpaper.SetCalculatedColors(WallpaperCalculatedColors(SK_ColorWHITE, seed));
 
   const style::mojom::ColorScheme schemes[] = {
       style::mojom::ColorScheme::kExpressive,
@@ -390,8 +389,7 @@ TEST_F(ColorPaletteControllerTest, GenerateSampleScheme_AllValues_Teal) {
                                                    // Vibrance 75%
 
   WallpaperControllerTestApi wallpaper(wallpaper_controller());
-  wallpaper.SetCalculatedColors(
-      WallpaperCalculatedColors({}, SK_ColorWHITE, seed));
+  wallpaper.SetCalculatedColors(WallpaperCalculatedColors(SK_ColorWHITE, seed));
 
   const style::mojom::ColorScheme schemes[] = {
       style::mojom::ColorScheme::kVibrant};
@@ -592,8 +590,7 @@ TEST_F(ColorPaletteControllerTest, GetSampleColorSchemes_WithKMeans) {
                                                    // Vibrance 96%
 
   WallpaperControllerTestApi wallpaper(wallpaper_controller());
-  wallpaper.SetCalculatedColors(
-      WallpaperCalculatedColors({}, SK_ColorWHITE, seed));
+  wallpaper.SetCalculatedColors(WallpaperCalculatedColors(SK_ColorWHITE, seed));
 
   const style::mojom::ColorScheme schemes[] = {
       style::mojom::ColorScheme::kExpressive,
@@ -640,7 +637,7 @@ class ColorPaletteControllerLocalPrefTest : public ColorPaletteControllerTest {
     return static_cast<style::mojom::ColorScheme>(local_color_scheme.value());
   }
 
-  absl::optional<bool> GetLocalUseKMeans() {
+  std::optional<bool> GetLocalUseKMeans() {
     const base::Value* local_color_scheme =
         user_manager::KnownUser(local_state())
             .FindPath(kAccountId, prefs::kDynamicColorUseKMeans);

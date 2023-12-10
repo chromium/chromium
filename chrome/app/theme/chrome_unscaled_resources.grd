@@ -14,101 +14,74 @@
   </outputs>
   <release seq="1">
     <includes>
+      <if expr="is_linux">
+        <then>
+          <include name="IDR_PRODUCT_LOGO_64" file="${branding_path_component}/linux/product_logo_64.png" type="BINDATA" />
+          <include name="IDR_PRODUCT_LOGO_128" file="${branding_path_component}/linux/product_logo_128.png" type="BINDATA" />
+          <include name="IDR_PRODUCT_LOGO_256" file="${branding_path_component}/linux/product_logo_256.png" type="BINDATA" />
+        </then>
+        <else>
+          <include name="IDR_PRODUCT_LOGO_64" file="${branding_path_component}/product_logo_64.png" type="BINDATA" />
+          <include name="IDR_PRODUCT_LOGO_128" file="${branding_path_component}/product_logo_128.png" type="BINDATA" />
+          <include name="IDR_PRODUCT_LOGO_256" file="${branding_path_component}/product_logo_256.png" type="BINDATA" />
+        </else>
+      </if>
+      <if expr="is_macosx">
+        <if expr="_is_chrome_for_testing_branded">
+          <then>
+            <include name="IDR_STATUS_TRAY_ICON" file="google_chrome/product_logo_22_mono.png" type="BINDATA" />
+          </then>
+          <else> <!-- not _is_chrome_for_testing_branded -->
+            <include name="IDR_STATUS_TRAY_ICON" file="${branding_path_component}/product_logo_22_mono.png" type="BINDATA" />
+          </else>
+        </if> <!-- _is_chrome_for_testing_branded -->
+      </if>
       <if expr="_google_chrome">
         <then>
+          <include name="IDR_PRODUCT_LOGO_SVG" file="${branding_path_component}/chrome_logo.svg" type="BINDATA" />
+          <include name="IDR_PRODUCT_LOGO_ANIMATION_SVG" file="${branding_path_component}/chrome_logo_animation.svg" type="BINDATA" />
           <if expr="is_linux">
-            <then>
-              <include name="IDR_PRODUCT_LOGO_64" file="google_chrome/linux/product_logo_64.png" type="BINDATA" />
-              <include name="IDR_PRODUCT_LOGO_128" file="google_chrome/linux/product_logo_128.png" type="BINDATA" />
-              <include name="IDR_PRODUCT_LOGO_128_BETA" file="google_chrome/linux/product_logo_128_beta.png" type="BINDATA" />
-              <include name="IDR_PRODUCT_LOGO_128_DEV" file="google_chrome/linux/product_logo_128_dev.png" type="BINDATA" />
-              <include name="IDR_PRODUCT_LOGO_256" file="google_chrome/linux/product_logo_256.png" type="BINDATA" />
-            </then>
-            <else>
-              <include name="IDR_PRODUCT_LOGO_64" file="google_chrome/product_logo_64.png" type="BINDATA" />
-              <include name="IDR_PRODUCT_LOGO_128" file="google_chrome/product_logo_128.png" type="BINDATA" />
-              <include name="IDR_PRODUCT_LOGO_256" file="google_chrome/product_logo_256.png" type="BINDATA" />
-            </else>
+            <include name="IDR_PRODUCT_LOGO_128_BETA" file="${branding_path_component}/linux/product_logo_128_beta.png" type="BINDATA" />
+            <include name="IDR_PRODUCT_LOGO_128_DEV" file="${branding_path_component}/linux/product_logo_128_dev.png" type="BINDATA" />
           </if>
-          <include name="IDR_CHROME_PASSWORD_MANAGER_LOGO" file="google_chrome/google_password_manager_logo.svg" type="BINDATA" />
-          <include name="IDR_CHROME_PASSWORD_MANAGER_PWA_ICON" file="google_chrome/google_password_manager_pwa_icon.svg" type="BINDATA" />
-          <include name="IDR_PRODUCT_LOGO_24PX_1X" file="google_chrome/chrome_24px_1x.svg" type="BINDATA" />
-          <include name="IDR_PRODUCT_LOGO_128PX_SVG" file="google_chrome/chrome_128px.svg" type="BINDATA" />
-          <include name="IDR_PRODUCT_LOGO_SVG" file="google_chrome/chrome_logo.svg" type="BINDATA" />
-          <include name="IDR_PRODUCT_LOGO_ANIMATION_SVG" file="google_chrome/chrome_logo_animation.svg" type="BINDATA" />
-          <include name="IDR_GSHIELD_ICON_SVG" file="google_chrome/gshield.svg" type="BINDATA" />
+          <include name="IDR_CHROME_PASSWORD_MANAGER_LOGO" file="${branding_path_component}/google_password_manager_logo.svg" type="BINDATA" />
+          <include name="IDR_CHROME_PASSWORD_MANAGER_PWA_ICON" file="${branding_path_component}/google_password_manager_pwa_icon.svg" type="BINDATA" />
+          <include name="IDR_PRODUCT_LOGO_24PX_1X" file="${branding_path_component}/chrome_24px_1x.svg" type="BINDATA" />
+          <include name="IDR_PRODUCT_LOGO_128PX_SVG" file="${branding_path_component}/chrome_128px.svg" type="BINDATA" />
+          <include name="IDR_GSHIELD_ICON_SVG" file="${branding_path_component}/gshield.svg" type="BINDATA" />
           <if expr="chromeos_ash">
-            <include name="IDR_PRODUCT_LOGO_24PX_2X" file="google_chrome/chrome_24px_2x.svg" type="BINDATA" />
+            <include name="IDR_PRODUCT_LOGO_24PX_2X" file="${branding_path_component}/chrome_24px_2x.svg" type="BINDATA" />
             <!-- Used by lacros. -->
-            <include name="IDR_PRODUCT_LOGO_256_CANARY" file="google_chrome/product_logo_256_canary.png" type="BINDATA" />
+            <include name="IDR_PRODUCT_LOGO_256_CANARY" file="${branding_path_component}/product_logo_256_canary.png" type="BINDATA" />
             <!-- Used by ChromeOS OOBE -->
-            <include name="IDR_CROS_OOBE_PRODUCT_NAME" file="google_chrome/chromeos/oobe/project_simon/product_name.txt" type="BINDATA" />
-            <include name="IDR_CROS_OOBE_WELCOME_BACKDROP" file="google_chrome/chromeos/oobe/project_simon/welcome_backdrop.svg" type="BINDATA" />
-          </if>
-          <!-- NOTE: product_logo_*.* files beyond what's listed above are
-              referenced by installer code; don't remove them unless you know
-              what you're doing! -->
-          <if expr="is_macosx">
-            <include name="IDR_STATUS_TRAY_ICON" file="google_chrome/product_logo_22_mono.png" type="BINDATA" />
-          </if>
-          <if expr="chromeos_ash">
-            <include name="IDR_CHROME_APP_ICON_32" file="google_chrome/chromeos/chrome_app_icon_32.png" type="BINDATA" />
-            <include name="IDR_CHROME_APP_ICON_192" file="google_chrome/chromeos/chrome_app_icon_192.png" type="BINDATA" />
-            <include name="IDR_DEBUG_CHROME_APP_ICON_32" file="google_chrome/chromeos/debug_chrome_app_icon_32.png" type="BINDATA" />
-            <include name="IDR_DEBUG_CHROME_APP_ICON_192" file="google_chrome/chromeos/debug_chrome_app_icon_192.png" type="BINDATA" />
-            <include name="IDR_WEBSTORE_APP_ICON_16" file="google_chrome/chromeos/webstore_app_icon_16.png" type="BINDATA" />
-            <include name="IDR_WEBSTORE_APP_ICON_128" file="google_chrome/chromeos/webstore_app_icon_128.png" type="BINDATA" />
+            <include name="IDR_CROS_OOBE_PRODUCT_NAME" file="${branding_path_component}/chromeos/oobe/project_simon/product_name.txt" type="BINDATA" />
+            <include name="IDR_CROS_OOBE_WELCOME_BACKDROP" file="${branding_path_component}/chromeos/oobe/project_simon/welcome_backdrop.svg" type="BINDATA" />
           </if>
         </then>
         <else> <!-- not _google_chrome -->
           <if expr="_is_chrome_for_testing_branded">
             <then>
-              <if expr="is_linux">
-                <then>
-                  <include name="IDR_PRODUCT_LOGO_64" file="google_chrome/google_chrome_for_testing/linux/product_logo_64.png" type="BINDATA" />
-                  <include name="IDR_PRODUCT_LOGO_128" file="google_chrome/google_chrome_for_testing/linux/product_logo_128.png" type="BINDATA" />
-                  <include name="IDR_PRODUCT_LOGO_256" file="google_chrome/google_chrome_for_testing/linux/product_logo_256.png" type="BINDATA" />
-                </then>
-                <else>
-                  <include name="IDR_PRODUCT_LOGO_64" file="google_chrome/google_chrome_for_testing/product_logo_64.png" type="BINDATA" />
-                  <include name="IDR_PRODUCT_LOGO_128" file="google_chrome/google_chrome_for_testing/product_logo_128.png" type="BINDATA" />
-                  <include name="IDR_PRODUCT_LOGO_256" file="google_chrome/google_chrome_for_testing/product_logo_256.png" type="BINDATA" />
-                </else>
-              </if>
+              <include name="IDR_PRODUCT_LOGO_SVG" file="chromium/product_logo.svg" type="BINDATA" />
+              <include name="IDR_PRODUCT_LOGO_ANIMATION_SVG" file="chromium/product_logo_animation.svg" type="BINDATA" />
             </then>
-            <else>  <!-- not _is_chrome_for_testing_branded -->
-              <if expr="is_linux">
-                <then>
-                  <include name="IDR_PRODUCT_LOGO_64" file="chromium/linux/product_logo_64.png" type="BINDATA" />
-                  <include name="IDR_PRODUCT_LOGO_128" file="chromium/linux/product_logo_128.png" type="BINDATA" />
-                  <include name="IDR_PRODUCT_LOGO_256" file="chromium/linux/product_logo_256.png" type="BINDATA" />
-                </then>
-                <else>
-                  <include name="IDR_PRODUCT_LOGO_64" file="chromium/product_logo_64.png" type="BINDATA" />
-                  <include name="IDR_PRODUCT_LOGO_128" file="chromium/product_logo_128.png" type="BINDATA" />
-                  <include name="IDR_PRODUCT_LOGO_256" file="chromium/product_logo_256.png" type="BINDATA" />
-                </else>
-              </if>
+            <else> <!-- not _is_chrome_for_testing_branded -->
+              <include name="IDR_PRODUCT_LOGO_SVG" file="${branding_path_component}/product_logo.svg" type="BINDATA" />
+              <include name="IDR_PRODUCT_LOGO_ANIMATION_SVG" file="${branding_path_component}/product_logo_animation.svg" type="BINDATA" />
             </else>
-          </if>
-          <!-- NOTE: product_logo_*.* files beyond what's listed above are
-              referenced by installer code; don't remove them unless you know
-              what you're doing! -->
-          <if expr="is_macosx">
-            <include name="IDR_STATUS_TRAY_ICON" file="chromium/product_logo_22_mono.png" type="BINDATA" />
-          </if>
-          <if expr="chromeos_ash">
-            <include name="IDR_CHROME_APP_ICON_32" file="chromium/chromeos/chrome_app_icon_32.png" type="BINDATA" />
-            <include name="IDR_CHROME_APP_ICON_192" file="chromium/chromeos/chrome_app_icon_192.png" type="BINDATA" />
-            <include name="IDR_DEBUG_CHROME_APP_ICON_32" file="chromium/chromeos/debug_chrome_app_icon_32.png" type="BINDATA" />
-            <include name="IDR_DEBUG_CHROME_APP_ICON_192" file="chromium/chromeos/debug_chrome_app_icon_192.png" type="BINDATA" />
-            <include name="IDR_WEBSTORE_APP_ICON_16" file="chromium/chromeos/webstore_app_icon_16.png" type="BINDATA" />
-            <include name="IDR_WEBSTORE_APP_ICON_128" file="chromium/chromeos/webstore_app_icon_128.png" type="BINDATA" />
-          </if>
-          <include name="IDR_PRODUCT_LOGO_SVG" file="chromium/product_logo.svg" type="BINDATA" />
-          <include name="IDR_PRODUCT_LOGO_ANIMATION_SVG" file="chromium/product_logo_animation.svg" type="BINDATA" />
+          </if> <!-- _is_chrome_for_testing_branded -->
         </else>
       </if> <!-- _google_chrome -->
+      <!-- NOTE: product_logo_*.* files beyond what's listed above are
+          referenced by installer code; don't remove them unless you know
+          what you're doing! -->
+      <if expr="chromeos_ash">
+        <include name="IDR_CHROME_APP_ICON_32" file="${branding_path_component}/chromeos/chrome_app_icon_32.png" type="BINDATA" />
+        <include name="IDR_CHROME_APP_ICON_192" file="${branding_path_component}/chromeos/chrome_app_icon_192.png" type="BINDATA" />
+        <include name="IDR_DEBUG_CHROME_APP_ICON_32" file="${branding_path_component}/chromeos/debug_chrome_app_icon_32.png" type="BINDATA" />
+        <include name="IDR_DEBUG_CHROME_APP_ICON_192" file="${branding_path_component}/chromeos/debug_chrome_app_icon_192.png" type="BINDATA" />
+        <include name="IDR_WEBSTORE_APP_ICON_16" file="${branding_path_component}/chromeos/webstore_app_icon_16.png" type="BINDATA" />
+        <include name="IDR_WEBSTORE_APP_ICON_128" file="${branding_path_component}/chromeos/webstore_app_icon_128.png" type="BINDATA" />
+      </if>
       <if expr="is_win">
         <!-- Double-size profile avatar images used for generating .ico
              files for Windows profile shortcuts. Included here because

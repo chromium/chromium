@@ -42,7 +42,7 @@ class ToggleEffectsButton : public views::Button {
                       bool toggle_state,
                       const std::u16string& label_text,
                       const int accessible_name_id,
-                      absl::optional<int> container_id,
+                      std::optional<int> container_id,
                       const VcEffectId effect_id,
                       int num_button_per_row);
 

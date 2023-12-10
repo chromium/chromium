@@ -16,7 +16,6 @@
 #include "components/password_manager/ios/password_manager_ios_util.h"
 #import "ios/web_view/internal/app/application_context.h"
 #import "ios/web_view/internal/passwords/web_view_account_password_store_factory.h"
-#import "ios/web_view/internal/passwords/web_view_password_change_success_tracker_factory.h"
 #import "ios/web_view/internal/passwords/web_view_password_manager_log_router_factory.h"
 #import "ios/web_view/internal/passwords/web_view_password_requirements_service_factory.h"
 #import "ios/web_view/internal/passwords/web_view_password_reuse_manager_factory.h"
@@ -60,13 +59,10 @@ WebViewPasswordManagerClient::Create(web::WebState* web_state,
   password_manager::PasswordRequirementsService* requirements_service =
       WebViewPasswordRequirementsServiceFactory::GetForBrowserState(
           browser_state, ServiceAccessType::EXPLICIT_ACCESS);
-  password_manager::PasswordChangeSuccessTracker* password_change_tracker =
-      WebViewPasswordChangeSuccessTrackerFactory::GetForBrowserState(
-          browser_state, ServiceAccessType::EXPLICIT_ACCESS);
   return std::make_unique<ios_web_view::WebViewPasswordManagerClient>(
       web_state, sync_service, browser_state->GetPrefs(), identity_manager,
       std::move(log_manager), profile_store.get(), account_store.get(),
-      reuse_manager, requirements_service, password_change_tracker);
+      reuse_manager, requirements_service);
 }
 
 WebViewPasswordManagerClient::WebViewPasswordManagerClient(
@@ -78,8 +74,7 @@ WebViewPasswordManagerClient::WebViewPasswordManagerClient(
     PasswordStoreInterface* profile_store,
     PasswordStoreInterface* account_store,
     password_manager::PasswordReuseManager* reuse_manager,
-    password_manager::PasswordRequirementsService* requirements_service,
-    password_manager::PasswordChangeSuccessTracker* password_change_tracker)
+    password_manager::PasswordRequirementsService* requirements_service)
     : web_state_(web_state),
       sync_service_(sync_service),
       pref_service_(pref_service),
@@ -88,13 +83,12 @@ WebViewPasswordManagerClient::WebViewPasswordManagerClient(
       profile_store_(profile_store),
       account_store_(account_store),
       reuse_manager_(reuse_manager),
-      password_feature_manager_(pref_service, sync_service),
+      password_feature_manager_(sync_service),
       credentials_filter_(
           this,
           base::BindRepeating(&WebViewPasswordManagerClient::GetSyncService,
                               base::Unretained(this))),
       requirements_service_(requirements_service),
-      password_change_tracker_(password_change_tracker),
       helper_(this) {
   saving_passwords_enabled_.Init(
       password_manager::prefs::kCredentialsEnableService, GetPrefs());
@@ -209,11 +203,6 @@ WebViewPasswordManagerClient::GetPasswordReuseManager() const {
   return reuse_manager_;
 }
 
-password_manager::PasswordChangeSuccessTracker*
-WebViewPasswordManagerClient::GetPasswordChangeSuccessTracker() {
-  return password_change_tracker_;
-}
-
 void WebViewPasswordManagerClient::NotifyUserAutoSignin(
     std::vector<std::unique_ptr<password_manager::PasswordForm>> local_forms,
     const url::Origin& origin) {
@@ -241,11 +230,14 @@ void WebViewPasswordManagerClient::NotifyStorePasswordCalled() {
 void WebViewPasswordManagerClient::NotifyUserCredentialsWereLeaked(
     password_manager::CredentialLeakType leak_type,
     const GURL& origin,
-    const std::u16string& username) {
+    const std::u16string& username,
+    bool in_account_store) {
   [bridge_ showPasswordBreachForLeakType:leak_type
                                      URL:origin
                                 username:username];
 }
+
+void WebViewPasswordManagerClient::NotifyKeychainError() {}
 
 bool WebViewPasswordManagerClient::IsSavingAndFillingEnabled(
     const GURL& url) const {

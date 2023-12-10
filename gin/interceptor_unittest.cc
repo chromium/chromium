@@ -35,6 +35,11 @@ class MyInterceptor : public Wrappable<MyInterceptor>,
     return CreateHandle(isolate, new MyInterceptor(isolate));
   }
 
+  void Clear() {
+    NamedPropertyInterceptor::ClearForTesting();
+    IndexedPropertyInterceptor::ClearForTesting();
+  }
+
   int value() const { return value_; }
   void set_value(int value) { value_ = value; }
 
@@ -166,6 +171,7 @@ class InterceptorTest : public V8Test {
     EXPECT_EQ("", try_catch.GetStackTrace());
 
     EXPECT_EQ(191, obj->value());
+    obj->Clear();
   }
 };
 

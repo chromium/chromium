@@ -23,18 +23,13 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-/**
- * An address editor. Can be used for either shipping or billing address editing.
- */
+/** An address editor. Can be used for either shipping or billing address editing. */
 public class AddressEditorCoordinator {
     private final AddressEditorMediator mMediator;
     private EditorDialogView mEditorDialog;
-    @Nullable
-    private PropertyModel mEditorModel;
+    @Nullable private PropertyModel mEditorModel;
 
-    /**
-     * Delegate used to subscribe to AddressEditor user interactions.
-     */
+    /** Delegate used to subscribe to AddressEditor user interactions. */
     public static interface Delegate {
         /**
          * The user has tapped "Done" button.
@@ -43,9 +38,7 @@ public class AddressEditorCoordinator {
          */
         default void onDone(AutofillAddress autofillAddress) {}
 
-        /**
-         * The user has canceled editing the address.
-         */
+        /** The user has canceled editing the address. */
         default void onCancel() {}
 
         /**
@@ -56,11 +49,13 @@ public class AddressEditorCoordinator {
         default void onDelete(AutofillAddress autofillAddress) {}
     }
 
-    /**
-     * Different types of user flows this editor supports.
-     */
-    @IntDef({UserFlow.CREATE_NEW_ADDRESS_PROFILE, UserFlow.SAVE_NEW_ADDRESS_PROFILE,
-            UserFlow.UPDATE_EXISTING_ADDRESS_PROFILE, UserFlow.MIGRATE_EXISTING_ADDRESS_PROFILE})
+    /** Different types of user flows this editor supports. */
+    @IntDef({
+        UserFlow.CREATE_NEW_ADDRESS_PROFILE,
+        UserFlow.SAVE_NEW_ADDRESS_PROFILE,
+        UserFlow.UPDATE_EXISTING_ADDRESS_PROFILE,
+        UserFlow.MIGRATE_EXISTING_ADDRESS_PROFILE
+    })
     @Retention(RetentionPolicy.SOURCE)
     public @interface UserFlow {
         // The user creates a new address from Chrome settings.
@@ -82,11 +77,20 @@ public class AddressEditorCoordinator {
      * @param profile Current user's profile.
      * @param saveToDisk Whether to save changes to disk after editing.
      */
-    public AddressEditorCoordinator(Activity activity, HelpAndFeedbackLauncher helpLauncher,
-            Delegate delegate, Profile profile, boolean saveToDisk) {
-        this(activity, helpLauncher, delegate, profile,
+    public AddressEditorCoordinator(
+            Activity activity,
+            HelpAndFeedbackLauncher helpLauncher,
+            Delegate delegate,
+            Profile profile,
+            boolean saveToDisk) {
+        this(
+                activity,
+                helpLauncher,
+                delegate,
+                profile,
                 new AutofillAddress(activity, AutofillProfile.builder().build()),
-                UserFlow.CREATE_NEW_ADDRESS_PROFILE, saveToDisk);
+                UserFlow.CREATE_NEW_ADDRESS_PROFILE,
+                saveToDisk);
     }
 
     /**
@@ -100,12 +104,23 @@ public class AddressEditorCoordinator {
      * @param userFlow the current user flow this editor is used for.
      * @param saveToDisk Whether to save changes to disk after editing.
      */
-    public AddressEditorCoordinator(Activity activity, HelpAndFeedbackLauncher helpLauncher,
-            Delegate delegate, Profile profile, AutofillAddress addressToEdit,
-            @UserFlow int userFlow, boolean saveToDisk) {
-        mMediator = new AddressEditorMediator(activity, delegate,
-                IdentityServicesProvider.get().getIdentityManager(profile),
-                SyncServiceFactory.getForProfile(profile), addressToEdit, userFlow, saveToDisk);
+    public AddressEditorCoordinator(
+            Activity activity,
+            HelpAndFeedbackLauncher helpLauncher,
+            Delegate delegate,
+            Profile profile,
+            AutofillAddress addressToEdit,
+            @UserFlow int userFlow,
+            boolean saveToDisk) {
+        mMediator =
+                new AddressEditorMediator(
+                        activity,
+                        delegate,
+                        IdentityServicesProvider.get().getIdentityManager(profile),
+                        SyncServiceFactory.getForProfile(profile),
+                        addressToEdit,
+                        userFlow,
+                        saveToDisk);
         mEditorDialog = new EditorDialogView(activity, helpLauncher);
     }
 
@@ -141,16 +156,12 @@ public class AddressEditorCoordinator {
         mMediator.setShouldTriggerDoneCallbackBeforeCloseAnimation(shouldTrigger);
     }
 
-    /**
-     * Notifies underlying view that device configuration has changed.
-     */
+    /** Notifies underlying view that device configuration has changed. */
     public void onConfigurationChanged() {
         mEditorDialog.onConfigurationChanged();
     }
 
-    /**
-     * Shows editor dialog to the user.
-     */
+    /** Shows editor dialog to the user. */
     public void showEditorDialog() {
         mEditorModel = mMediator.getEditorModel();
         PropertyModelChangeProcessor.create(
@@ -167,9 +178,7 @@ public class AddressEditorCoordinator {
         return mEditorDialog.isShowing();
     }
 
-    /**
-     * Dismiss currently visible editor dialog.
-     */
+    /** Dismiss currently visible editor dialog. */
     public void dismiss() {
         mEditorDialog.dismiss();
     }

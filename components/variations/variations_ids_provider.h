@@ -25,6 +25,11 @@
 namespace variations {
 class VariationsClient;
 
+namespace cros_early_boot::evaluate_seed {
+// For friend purposes (for DestroyInstanceForTesting().)
+class VariationsCrosEvaluateSeedMainTest;
+}  // namespace cros_early_boot::evaluate_seed
+
 // The key for a VariationsIdsProvider's |variations_headers_map_|. A
 // VariationsHeaderKey provides more details about the VariationsIDs included in
 // a particular header. For example, the header associated with a key with true
@@ -161,6 +166,9 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsIdsProvider
   typedef std::pair<VariationID, IDCollectionKey> VariationIDEntry;
 
   friend class ScopedVariationsIdsProvider;
+  // For DestroyInstanceForTesting
+  friend class cros_early_boot::evaluate_seed::
+      VariationsCrosEvaluateSeedMainTest;
 
   FRIEND_TEST_ALL_PREFIXES(VariationsIdsProviderTest, ForceVariationIds_Valid);
   FRIEND_TEST_ALL_PREFIXES(VariationsIdsProviderTest,
@@ -199,7 +207,7 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsIdsProvider
   // base::FieldTrialList::Observer:
   // This will add the variation ID associated with |trial_name| and
   // |group_name| to the variation ID cache.
-  void OnFieldTrialGroupFinalized(const std::string& trial_name,
+  void OnFieldTrialGroupFinalized(const base::FieldTrial& trial,
                                   const std::string& group_name) override;
 
   // metrics::SyntheticTrialObserver:

@@ -30,6 +30,7 @@
 <translation id="2226276347425096477">Forkort denne teksten til <ph name="MAX_CHARACTERS" /> tegn eller færre (for øyeblikket bruker du <ph name="CURRENT_LENGTH" /> tegn).</translation>
 <translation id="2247351761944213033">Uke <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Spor <ph name="NUMBER" /></translation>
+<translation id="2353297238722298836">Kameraet og mikrofonen er tillatt</translation>
 <translation id="2393030564806080191">Heksadesimal fargeverdi</translation>
 <translation id="2398813069815436052">En dialogboks er åpnet.</translation>
 <translation id="245932805758469625">antall sekunder med video som gjenstår</translation>
@@ -60,10 +61,12 @@
 <translation id="3822383571486410024">Du må forlenge denne teksten til <ph name="MIN_CHARACTERS" /> tegn eller mer (for øyeblikket bruker du <ph name="CURRENT_LENGTH" /> tegn).</translation>
 <translation id="383465348367842624">En del etterfulgt av «<ph name="ATSIGN" />» kan ikke inneholde symbolet «<ph name="INVALIDCHARACTER" />».</translation>
 <translation id="3846214748874656680">Avslutt fullskjermmodus</translation>
+<translation id="4031179711345676612">Mikrofonen er tillatt</translation>
 <translation id="4103419683916926126">Millisekunder</translation>
 <translation id="4201051445878709314">Se forrige måned</translation>
 <translation id="4360991593054037559">Skriv inn en gyldig verdi. De to nærmeste, gyldige verdiene er <ph name="VALID_VALUE_LOW" /> og <ph name="VALID_VALUE_HIGHER" />.</translation>
 <translation id="4522570452068850558">Detaljer</translation>
+<translation id="4663373278480897665">Kameraet er tillatt</translation>
 <translation id="4664250907885839816">En del etterfulgt av «<ph name="ATSIGN" />» kan ikke inneholde symbolet «<ph name="INVALIDCHARACTER" />».</translation>
 <translation id="4718048029184481307">Spiller av i bilde-i-bilde</translation>
 <translation id="4748357248530471599">slå av/på fullskjermsvisning av skjermutklipp</translation>
@@ -137,6 +140,7 @@
 <translation id="6941933287844615239">last ned medier</translation>
 <translation id="698788488269350478">vises.</translation>
 <translation id="6989848892321993519">Øk lengden på denne teksten med minst <ph name="MIN_CHARACTERS" /> tegn (du bruker for øyeblikket 1 tegn).</translation>
+<translation id="7080893216867146095">Deling av posisjon er tillatt</translation>
 <translation id="709897737746224366">Sørg for samsvar med det forespurte formatet.</translation>
 <translation id="7102274145889307184">nåværende posisjon</translation>
 <translation id="7263440858009898357">Velg en artikkel i listen.</translation>

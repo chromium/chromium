@@ -80,7 +80,8 @@ class CORE_EXPORT InspectorEmulationAgent final
       protocol::Maybe<bool> dont_set_visible_size,
       protocol::Maybe<protocol::Emulation::ScreenOrientation>,
       protocol::Maybe<protocol::Page::Viewport>,
-      protocol::Maybe<protocol::Emulation::DisplayFeature>) override;
+      protocol::Maybe<protocol::Emulation::DisplayFeature>,
+      protocol::Maybe<protocol::Emulation::DevicePosture>) override;
   protocol::Response clearDeviceMetricsOverride() override;
   protocol::Response setHardwareConcurrencyOverride(
       int hardware_concurrency) override;

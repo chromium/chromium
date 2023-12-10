@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -13,40 +14,39 @@
 #include "base/containers/flat_set.h"
 #include "base/values.h"
 #include "content/browser/aggregation_service/public_key.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
 namespace {
 
 // Constructs a public key from a single JSON key definition. Returns
-// `absl::nullopt`in case of an error or invalid JSON.
-absl::optional<PublicKey> GetPublicKey(base::Value& value) {
+// `std::nullopt`in case of an error or invalid JSON.
+std::optional<PublicKey> GetPublicKey(base::Value& value) {
   if (!value.is_dict())
-    return absl::nullopt;
+    return std::nullopt;
 
   base::Value::Dict& dict = value.GetDict();
   std::string* key_id = dict.FindString("id");
   if (!key_id) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (key_id->size() > PublicKey::kMaxIdSize) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   std::string* key = dict.FindString("key");
   if (!key) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   std::string key_string;
   if (!base::Base64Decode(*key, &key_string)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (key_string.size() != PublicKey::kKeyByteLength)
-    return absl::nullopt;
+    return std::nullopt;
 
   return PublicKey(std::move(*key_id),
                    std::vector<uint8_t>(key_string.begin(), key_string.end()));
@@ -74,7 +74,7 @@ std::vector<PublicKey> GetPublicKeys(base::Value& value) {
     if (public_keys.size() == PublicKeyset::kMaxNumberKeys)
       return {};
 
-    absl::optional<PublicKey> key = GetPublicKey(key_json);
+    std::optional<PublicKey> key = GetPublicKey(key_json);
 
     // Return error (i.e. empty vector) if any of the keys are invalid.
     if (!key.has_value())

@@ -54,6 +54,7 @@ class PolicyFetchTracker
         policy::UserPolicySigninServiceFactory::GetForProfile(profile_);
     policy_service->FetchPolicyForSignedInUser(
         AccountIdFromAccountInfo(account_info_), dm_token_, client_id_,
+        user_affiliation_ids_,
         profile_->GetDefaultStoragePartition()
             ->GetURLLoaderFactoryForBrowserProcess(),
         base::BindOnce(&PolicyFetchTracker::OnPolicyFetchComplete,
@@ -86,9 +87,11 @@ class PolicyFetchTracker
   }
 
  private:
-  void OnRegisteredForPolicy(base::OnceCallback<void(bool)> callback,
-                             const std::string& dm_token,
-                             const std::string& client_id) {
+  void OnRegisteredForPolicy(
+      base::OnceCallback<void(bool)> callback,
+      const std::string& dm_token,
+      const std::string& client_id,
+      const std::vector<std::string>& user_affiliation_ids) {
     // Indicates that the account isn't managed OR there is an error during the
     // registration
     if (dm_token.empty()) {
@@ -102,6 +105,7 @@ class PolicyFetchTracker
     DCHECK(client_id_.empty());
     dm_token_ = dm_token;
     client_id_ = client_id;
+    user_affiliation_ids_ = user_affiliation_ids;
     std::move(callback).Run(/*is_managed_account=*/true);
   }
 
@@ -133,6 +137,7 @@ class PolicyFetchTracker
   // a new profile for an enterprise user or not.
   std::string dm_token_;
   std::string client_id_;
+  std::vector<std::string> user_affiliation_ids_;
 
   base::OnceClosure on_policy_updated_callback_;
   base::OneShotTimer policy_update_timeout_timer_;

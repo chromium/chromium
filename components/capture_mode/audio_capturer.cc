@@ -6,7 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "base/sequence_checker.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "media/base/audio_bus.h"
 #include "services/audio/public/cpp/device_factory.h"
 

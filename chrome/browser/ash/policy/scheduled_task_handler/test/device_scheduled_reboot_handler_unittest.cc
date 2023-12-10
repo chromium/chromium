@@ -407,7 +407,7 @@ TEST_F(DeviceScheduledRebootHandlerTest,
       first_reboot_icu_time.get()));
   base::Time second_reboot_time =
       scheduled_task_test_util::IcuToBaseTime(*first_reboot_icu_time);
-  absl::optional<base::TimeDelta> second_reboot_delay =
+  std::optional<base::TimeDelta> second_reboot_delay =
       second_reboot_time - scheduled_task_executor_->GetCurrentTime();
   ASSERT_TRUE(second_reboot_delay.has_value());
   task_environment_.FastForwardBy(second_reboot_delay.value());
@@ -754,7 +754,7 @@ TEST_F(ScheduledRebootTimerFailureTest, SimulateTimerStartFailure) {
   EXPECT_EQ(notifications_scheduler_.GetCloseNotificationCalls(), 0);
   // Verify that the state is reset.
   EXPECT_EQ(device_scheduled_reboot_handler_->GetScheduledRebootDataForTest(),
-            absl::nullopt);
+            std::nullopt);
   EXPECT_EQ(device_scheduled_reboot_handler_->IsRebootSkippedForTest(), false);
 }
 
@@ -772,7 +772,7 @@ class ScheduledRebootDelayedServiceTest : public testing::Test {
                             base::Unretained(&wake_lock_provider_)));
     chromeos::PowerManagerClient::InitializeFake();
     chromeos::FakePowerManagerClient::Get()->SetServiceAvailability(
-        /*availability=*/absl::nullopt);
+        /*availability=*/std::nullopt);
     auto task_executor = std::make_unique<FakeScheduledTaskExecutor>(
         task_environment_.GetMockClock());
     scheduled_task_executor_ = task_executor.get();
@@ -838,7 +838,7 @@ TEST_F(ScheduledRebootDelayedServiceTest,
   chromeos::FakePowerManagerClient::Get()->SetServiceAvailability(
       /*availability=*/false);
   EXPECT_EQ(device_scheduled_reboot_handler_->GetScheduledRebootDataForTest(),
-            absl::nullopt);
+            std::nullopt);
   EXPECT_EQ(device_scheduled_reboot_handler_->IsRebootSkippedForTest(), false);
   EXPECT_EQ(device_scheduled_reboot_handler_->GetPolicyChangesProcessedCount(),
             expected_policy_processed_count);

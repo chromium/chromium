@@ -308,8 +308,8 @@ TEST_F(SQLitePersistentReportingAndNelStoreTest, TestInvalidMetaTableRecovery) {
   LoadNelPolicies(&policies);
   ASSERT_EQ(0U, policies.size());
 
-  hist_tester.ExpectUniqueSample("Net.SQLite.CorruptMetaTableRecovered", true,
-                                 1);
+  hist_tester.ExpectUniqueSample("ReportingAndNEL.CorruptMetaTableRecovered",
+                                 true, 1);
 
   // Verify that, after, recovery, the database persists properly.
   NetworkErrorLoggingService::NelPolicy policy2 = MakeNelPolicy(

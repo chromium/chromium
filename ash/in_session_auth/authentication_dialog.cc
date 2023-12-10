@@ -182,7 +182,7 @@ void AuthenticationDialog::ValidateAuthFactor() {
 
 void AuthenticationDialog::OnAuthFactorValidityChecked(
     std::unique_ptr<UserContext> user_context,
-    absl::optional<AuthenticationError> authentication_error) {
+    std::optional<AuthenticationError> authentication_error) {
   if (authentication_error.has_value()) {
     if (authentication_error.value().get_cryptohome_code() ==
         user_data_auth::CRYPTOHOME_INVALID_AUTH_SESSION_TOKEN) {
@@ -241,7 +241,7 @@ void AuthenticationDialog::ConfigureChildViews() {
 void AuthenticationDialog::OnAuthSessionInvalid(
     bool user_exists,
     std::unique_ptr<UserContext> user_context,
-    absl::optional<AuthenticationError> authentication_error) {
+    std::optional<AuthenticationError> authentication_error) {
   OnAuthSessionStarted(user_exists, std::move(user_context),
                        authentication_error);
   ValidateAuthFactor();
@@ -250,7 +250,7 @@ void AuthenticationDialog::OnAuthSessionInvalid(
 void AuthenticationDialog::OnAuthSessionStarted(
     bool user_exists,
     std::unique_ptr<UserContext> user_context,
-    absl::optional<AuthenticationError> authentication_error) {
+    std::optional<AuthenticationError> authentication_error) {
   if (authentication_error.has_value()) {
     LOG(ERROR) << "Error starting authsession for in session authentication: "
                << authentication_error.value().get_cryptohome_code();

@@ -10,6 +10,8 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_sequence.h"
 #include "ui/compositor/layer_animator.h"
@@ -39,6 +41,8 @@ constexpr int kLabelLineHeightDp = 20;
 constexpr int kLabelWrapperHeightDp = kLabelMaxLines * kLabelLineHeightDp;
 
 class AuthFactorsLabel : public views::Label {
+  METADATA_HEADER(AuthFactorsLabel, views::Label)
+
  public:
   AuthFactorsLabel(bool visible_to_screen_reader)
       : visible_to_screen_reader_(visible_to_screen_reader) {
@@ -76,6 +80,9 @@ class AuthFactorsLabel : public views::Label {
   // represent content that should be made accessible.
   bool visible_to_screen_reader_ = true;
 };
+
+BEGIN_METADATA(AuthFactorsLabel)
+END_METADATA
 
 }  // namespace
 
@@ -197,5 +204,8 @@ void AnimatedAuthFactorsLabelWrapper::SetLabelTextAndAccessibleName(
 gfx::Size AnimatedAuthFactorsLabelWrapper::CalculatePreferredSize() const {
   return gfx::Size(kAuthFactorsViewWidthDp, kLabelWrapperHeightDp);
 }
+
+BEGIN_METADATA(AnimatedAuthFactorsLabelWrapper)
+END_METADATA
 
 }  // namespace ash

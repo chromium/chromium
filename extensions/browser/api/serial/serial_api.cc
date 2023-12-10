@@ -45,7 +45,7 @@ const char kErrorSerialConnectionNotFound[] = "Serial connection not found.";
 const char kErrorGetControlSignalsFailed[] = "Failed to get control signals.";
 
 template <typename T>
-void SetDefaultOptionalValue(absl::optional<T>& field, const T& value) {
+void SetDefaultOptionalValue(std::optional<T>& field, const T& value) {
   if (!field)
     field = value;
 }

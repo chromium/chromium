@@ -8,9 +8,7 @@ import android.webkit.WebResourceError;
 
 import org.chromium.android_webview.AwContentsClient.AwWebResourceError;
 
-/**
- * Chromium implementation of {@link WebResourceError}.
- */
+/** Chromium implementation of {@link WebResourceError}. */
 public class WebResourceErrorAdapter extends WebResourceError {
     private final AwWebResourceError mError;
 

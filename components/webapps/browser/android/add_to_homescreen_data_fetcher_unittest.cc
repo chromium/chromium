@@ -19,8 +19,8 @@
 #include "base/task/cancelable_task_tracker.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "components/favicon/content/large_favicon_provider_getter.h"
-#include "components/favicon/core/large_favicon_provider.h"
+#include "components/favicon/content/large_icon_service_getter.h"
+#include "components/favicon/core/large_icon_service.h"
 #include "components/favicon_base/favicon_types.h"
 #include "components/webapps/browser/features.h"
 #include "components/webapps/browser/installable/installable_data.h"
@@ -59,10 +59,7 @@ const int kIconSizePx = 144;
 // called.
 class ObserverWaiter : public AddToHomescreenDataFetcher::Observer {
  public:
-  ObserverWaiter()
-      : is_webapk_compatible_(false),
-        title_available_(false),
-        data_available_(false) {}
+  ObserverWaiter() = default;
 
   ObserverWaiter(const ObserverWaiter&) = delete;
   ObserverWaiter& operator=(const ObserverWaiter&) = delete;
@@ -93,12 +90,14 @@ class ObserverWaiter : public AddToHomescreenDataFetcher::Observer {
   void OnDataAvailable(
       const ShortcutInfo& info,
       const SkBitmap& primary_icon,
+      AddToHomescreenParams::AppType app_type,
       const InstallableStatusCode installable_status) override {
     // This should only be called once.
     EXPECT_FALSE(data_available_);
     EXPECT_TRUE(title_available_);
     data_available_ = true;
     installable_status_ = installable_status;
+    app_type_ = app_type;
     if (quit_closure_)
       quit_closure_.Run();
   }
@@ -106,15 +105,17 @@ class ObserverWaiter : public AddToHomescreenDataFetcher::Observer {
   std::u16string title() const { return title_; }
   bool is_webapk_compatible() const { return is_webapk_compatible_; }
   bool title_available() const { return title_available_; }
+  AddToHomescreenParams::AppType app_type() const { return app_type_; }
   InstallableStatusCode installable_status() const {
     return installable_status_;
   }
 
  private:
   std::u16string title_;
-  bool is_webapk_compatible_;
-  bool title_available_;
-  bool data_available_;
+  bool is_webapk_compatible_ = false;
+  bool title_available_ = false;
+  bool data_available_ = false;
+  AddToHomescreenParams::AppType app_type_;
   InstallableStatusCode installable_status_;
   base::RepeatingClosure quit_closure_;
 };
@@ -242,10 +243,10 @@ class AddToHomescreenDataFetcherTest
     installable_manager_ = static_cast<TestInstallableManager*>(
         web_contents()->GetUserData(TestInstallableManager::UserDataKey()));
 
-    favicon::SetLargeFaviconProviderGetter(base::BindRepeating(
-        [](favicon::LargeFaviconProvider* provider,
-           content::BrowserContext* context) { return provider; },
-        &null_large_favicon_provider_));
+    favicon::SetLargeIconServiceGetter(base::BindRepeating(
+        [](favicon::LargeIconService* service,
+           content::BrowserContext* context) { return service; },
+        &null_large_icon_service_));
 
     NavigateAndCommit(GURL(kDefaultStartUrl));
   }
@@ -272,10 +273,13 @@ class AddToHomescreenDataFetcherTest
 
     EXPECT_EQ(is_webapk_compatible, waiter.is_webapk_compatible());
     EXPECT_TRUE(waiter.title_available());
-    if (is_webapk_compatible)
+    if (is_webapk_compatible) {
       EXPECT_EQ(waiter.title(), expected_name);
-    else
+      EXPECT_EQ(waiter.app_type(), AddToHomescreenParams::AppType::WEBAPK);
+    } else {
       EXPECT_EQ(waiter.title(), expected_user_title);
+      EXPECT_EQ(waiter.app_type(), AddToHomescreenParams::AppType::SHORTCUT);
+    }
 
     EXPECT_EQ(fetcher->shortcut_info().user_title, expected_user_title);
     EXPECT_EQ(display_mode, fetcher->shortcut_info().display);
@@ -315,10 +319,10 @@ class AddToHomescreenDataFetcherTest
   base::test::ScopedFeatureList scoped_feature_list_;
 
  private:
-  class NullLargeFaviconProvider : public favicon::LargeFaviconProvider {
+  class NullLargeIconService : public favicon::LargeIconService {
    public:
-    NullLargeFaviconProvider() = default;
-    virtual ~NullLargeFaviconProvider() = default;
+    NullLargeIconService() = default;
+    ~NullLargeIconService() override = default;
 
     MOCK_METHOD5(GetLargeIconRawBitmapOrFallbackStyleForPageUrl,
                  base::CancelableTaskTracker::TaskId(
@@ -334,6 +338,27 @@ class AddToHomescreenDataFetcherTest
                      int desired_size_in_pixel,
                      favicon_base::LargeIconImageCallback callback,
                      base::CancelableTaskTracker* tracker));
+    MOCK_METHOD5(GetLargeIconRawBitmapOrFallbackStyleForIconUrl,
+                 base::CancelableTaskTracker::TaskId(
+                     const GURL& icon_url,
+                     int min_source_size_in_pixel,
+                     int desired_size_in_pixel,
+                     favicon_base::LargeIconCallback callback,
+                     base::CancelableTaskTracker* tracker));
+    MOCK_METHOD4(GetIconRawBitmapOrFallbackStyleForPageUrl,
+                 base::CancelableTaskTracker::TaskId(
+                     const GURL& page_url,
+                     int desired_size_in_pixel,
+                     favicon_base::LargeIconCallback callback,
+                     base::CancelableTaskTracker* tracker));
+    MOCK_METHOD5(
+        GetLargeIconOrFallbackStyleFromGoogleServerSkippingLocalCache,
+        void(const GURL& page_url,
+             bool may_page_url_be_private,
+             bool should_trim_page_url_path,
+             const net::NetworkTrafficAnnotationTag& traffic_annotation,
+             favicon_base::GoogleFaviconServerCallback callback));
+    MOCK_METHOD1(TouchIconFromGoogleServer, void(const GURL& icon_url));
     base::CancelableTaskTracker::TaskId GetLargeIconRawBitmapForPageUrl(
         const GURL& page_url,
         int min_source_size_in_pixel,
@@ -347,7 +372,7 @@ class AddToHomescreenDataFetcherTest
   };
 
   raw_ptr<TestInstallableManager> installable_manager_;
-  NullLargeFaviconProvider null_large_favicon_provider_;
+  NullLargeIconService null_large_icon_service_;
 };
 
 TEST_F(AddToHomescreenDataFetcherTest, EmptyManifest) {
@@ -564,6 +589,74 @@ TEST_F(AddToHomescreenDataFetcherTest, UniversalManifestDisplay) {
 
   EXPECT_EQ(fetcher->shortcut_info().name, kDefaultManifestName);
   EXPECT_EQ(fetcher->shortcut_info().short_name, kDefaultManifestShortName);
+  EXPECT_FALSE(fetcher->primary_icon().drawsNothing());
+  EXPECT_EQ(fetcher->shortcut_info().best_primary_icon_url,
+            GURL(kDefaultIconUrl));
+}
+
+TEST_F(AddToHomescreenDataFetcherTest,
+       UniversalInstallEmptyManifestAtRootScope) {
+  scoped_feature_list_.InitWithFeatures(
+      {features::kUniversalInstallManifest,
+       features::kUniversalInstallRootScopeNoManifest,
+       features::kUniversalInstallIcon},
+      {});
+
+  NavigateAndCommit(GURL("https://www.example.com/index.html"));
+
+  SetManifest(blink::mojom::Manifest::New());
+  SetWebPageMetadata(BuildDefaultMetadata());
+  std::vector<blink::mojom::FaviconURLPtr> favicon_urls;
+  favicon_urls.push_back(blink::mojom::FaviconURL::New(
+      GURL{"http://www.google.com/favicon.ico"},
+      blink::mojom::FaviconIconType::kFavicon, std::vector<gfx::Size>(),
+      /*is_default_icon=*/false));
+  web_contents_tester()->TestSetFaviconURL(mojo::Clone(favicon_urls));
+  // Fake that |InstallableIconFetcher| fetched the icon correctly.
+  SetPrimaryIcon(GURL(kDefaultIconUrl));
+
+  ObserverWaiter waiter;
+  std::unique_ptr<AddToHomescreenDataFetcher> fetcher = BuildFetcher(&waiter);
+  RunFetcher(fetcher.get(), waiter, kWebAppInstallInfoTitle,
+             blink::mojom::DisplayMode::kMinimalUi, true,
+             InstallableStatusCode::NO_ERROR_DETECTED);
+
+  EXPECT_EQ(fetcher->shortcut_info().name, kWebAppInstallInfoTitle);
+  EXPECT_EQ(fetcher->shortcut_info().short_name, kWebAppInstallInfoTitle);
+  EXPECT_FALSE(fetcher->primary_icon().drawsNothing());
+  EXPECT_EQ(fetcher->shortcut_info().best_primary_icon_url,
+            GURL(kDefaultIconUrl));
+}
+
+TEST_F(AddToHomescreenDataFetcherTest,
+       UniversalInstallEmptyManifestNotRootScope) {
+  scoped_feature_list_.InitWithFeatures(
+      {features::kUniversalInstallManifest,
+       features::kUniversalInstallRootScopeNoManifest,
+       features::kUniversalInstallIcon},
+      {});
+
+  NavigateAndCommit(GURL("https://www.example.com/scope/index.html"));
+
+  SetManifest(blink::mojom::Manifest::New());
+  SetWebPageMetadata(BuildDefaultMetadata());
+  std::vector<blink::mojom::FaviconURLPtr> favicon_urls;
+  favicon_urls.push_back(blink::mojom::FaviconURL::New(
+      GURL{"http://www.google.com/favicon.ico"},
+      blink::mojom::FaviconIconType::kFavicon, std::vector<gfx::Size>(),
+      /*is_default_icon=*/false));
+  web_contents_tester()->TestSetFaviconURL(mojo::Clone(favicon_urls));
+  // Fake that |InstallableIconFetcher| fetched the icon correctly.
+  SetPrimaryIcon(GURL(kDefaultIconUrl));
+
+  ObserverWaiter waiter;
+  std::unique_ptr<AddToHomescreenDataFetcher> fetcher = BuildFetcher(&waiter);
+  RunFetcher(fetcher.get(), waiter, kWebAppInstallInfoTitle,
+             blink::mojom::DisplayMode::kBrowser, false,
+             InstallableStatusCode::MANIFEST_EMPTY);
+
+  EXPECT_EQ(fetcher->shortcut_info().name, kWebAppInstallInfoTitle);
+  EXPECT_EQ(fetcher->shortcut_info().short_name, kWebAppInstallInfoTitle);
   EXPECT_FALSE(fetcher->primary_icon().drawsNothing());
   EXPECT_EQ(fetcher->shortcut_info().best_primary_icon_url,
             GURL(kDefaultIconUrl));

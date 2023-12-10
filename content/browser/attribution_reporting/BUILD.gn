@@ -13,7 +13,6 @@ proto_library("attribution_reporting_proto") {
 mojom("mojo_bindings") {
   sources = [ "attribution_reporting.mojom" ]
   webui_module_path = "/"
-  use_typescript_sources = true
   generate_java = false
   disable_variants = true
   disallow_interfaces = true
@@ -26,7 +25,6 @@ mojom("registration_result_mojom") {
     "store_source_result.mojom",
   ]
   webui_module_path = "/"
-  use_typescript_sources = true
   generate_java = false
   disable_variants = true
   disallow_interfaces = true
@@ -43,7 +41,6 @@ mojom("internals_mojo_bindings") {
     "//url/mojom:url_mojom_origin",
   ]
   webui_module_path = "/"
-  use_typescript_sources = true
   generate_java = false
   disable_variants = true
 

@@ -10,9 +10,9 @@
 #include "base/functional/bind.h"
 #include "chrome/browser/nearby_sharing/certificates/common.h"
 #include "chrome/browser/nearby_sharing/certificates/constants.h"
-#include "chrome/browser/nearby_sharing/proto/rpc_resources.pb.h"
-#include "chrome/services/sharing/public/proto/wire_format.pb.h"
 #include "components/cross_device/logging/logging.h"
+#include "third_party/nearby/sharing/proto/rpc_resources.pb.h"
+#include "third_party/nearby/sharing/proto/wire_format.pb.h"
 
 namespace {
 
@@ -176,28 +176,33 @@ void PairedKeyVerificationRunner::OnReadPairedKeyResultFrame(
 
 void PairedKeyVerificationRunner::SendPairedKeyResultFrame(
     PairedKeyVerificationResult result) {
-  sharing::nearby::Frame frame;
-  frame.set_version(sharing::nearby::Frame::V1);
-  sharing::nearby::V1Frame* v1_frame = frame.mutable_v1();
-  v1_frame->set_type(sharing::nearby::V1Frame::PAIRED_KEY_RESULT);
-  sharing::nearby::PairedKeyResultFrame* result_frame =
+  nearby::sharing::service::proto::Frame frame;
+  frame.set_version(nearby::sharing::service::proto::Frame::V1);
+  nearby::sharing::service::proto::V1Frame* v1_frame = frame.mutable_v1();
+  v1_frame->set_type(
+      nearby::sharing::service::proto::V1Frame::PAIRED_KEY_RESULT);
+  nearby::sharing::service::proto::PairedKeyResultFrame* result_frame =
       v1_frame->mutable_paired_key_result();
 
   switch (result) {
     case PairedKeyVerificationResult::kUnable:
-      result_frame->set_status(sharing::nearby::PairedKeyResultFrame::UNABLE);
+      result_frame->set_status(
+          nearby::sharing::service::proto::PairedKeyResultFrame::UNABLE);
       break;
 
     case PairedKeyVerificationResult::kSuccess:
-      result_frame->set_status(sharing::nearby::PairedKeyResultFrame::SUCCESS);
+      result_frame->set_status(
+          nearby::sharing::service::proto::PairedKeyResultFrame::SUCCESS);
       break;
 
     case PairedKeyVerificationResult::kFail:
-      result_frame->set_status(sharing::nearby::PairedKeyResultFrame::FAIL);
+      result_frame->set_status(
+          nearby::sharing::service::proto::PairedKeyResultFrame::FAIL);
       break;
 
     case PairedKeyVerificationResult::kUnknown:
-      result_frame->set_status(sharing::nearby::PairedKeyResultFrame::UNKNOWN);
+      result_frame->set_status(
+          nearby::sharing::service::proto::PairedKeyResultFrame::UNKNOWN);
       break;
   }
 
@@ -209,20 +214,21 @@ void PairedKeyVerificationRunner::SendPairedKeyResultFrame(
 
 void PairedKeyVerificationRunner::SendCertificateInfo() {
   // TODO(https://crbug.com/1114765): Update once the bug is resolved.
-  std::vector<nearbyshare::proto::PublicCertificate> certificates;
+  std::vector<nearby::sharing::proto::PublicCertificate> certificates;
 
   if (certificates.empty()) {
     return;
   }
 
-  sharing::nearby::Frame frame;
-  frame.set_version(sharing::nearby::Frame::V1);
-  sharing::nearby::V1Frame* v1_frame = frame.mutable_v1();
-  v1_frame->set_type(sharing::nearby::V1Frame::CERTIFICATE_INFO);
-  sharing::nearby::CertificateInfoFrame* cert_frame =
+  nearby::sharing::service::proto::Frame frame;
+  frame.set_version(nearby::sharing::service::proto::Frame::V1);
+  nearby::sharing::service::proto::V1Frame* v1_frame = frame.mutable_v1();
+  v1_frame->set_type(
+      nearby::sharing::service::proto::V1Frame::CERTIFICATE_INFO);
+  nearby::sharing::service::proto::CertificateInfoFrame* cert_frame =
       v1_frame->mutable_certificate_info();
   for (const auto& certificate : certificates) {
-    sharing::nearby::PublicCertificate* cert =
+    nearby::sharing::service::proto::PublicCertificate* cert =
         cert_frame->add_public_certificate();
     cert->set_secret_id(certificate.secret_id());
     cert->set_authenticity_key(certificate.secret_key());
@@ -257,11 +263,12 @@ void PairedKeyVerificationRunner::SendPairedKeyEncryptionFrame() {
         GenerateRandomBytes(kNearbyShareNumBytesAuthenticationTokenHash);
   }
 
-  sharing::nearby::Frame frame;
-  frame.set_version(sharing::nearby::Frame::V1);
-  sharing::nearby::V1Frame* v1_frame = frame.mutable_v1();
-  v1_frame->set_type(sharing::nearby::V1Frame::PAIRED_KEY_ENCRYPTION);
-  sharing::nearby::PairedKeyEncryptionFrame* encryption_frame =
+  nearby::sharing::service::proto::Frame frame;
+  frame.set_version(nearby::sharing::service::proto::Frame::V1);
+  nearby::sharing::service::proto::V1Frame* v1_frame = frame.mutable_v1();
+  v1_frame->set_type(
+      nearby::sharing::service::proto::V1Frame::PAIRED_KEY_ENCRYPTION);
+  nearby::sharing::service::proto::PairedKeyEncryptionFrame* encryption_frame =
       v1_frame->mutable_paired_key_encryption();
   encryption_frame->set_signed_data(signature->data(), signature->size());
   encryption_frame->set_secret_id_hash(certificate_id_hash.data(),

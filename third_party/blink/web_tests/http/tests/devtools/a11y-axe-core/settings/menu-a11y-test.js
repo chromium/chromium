@@ -12,7 +12,7 @@ import * as UI from 'devtools/ui/legacy/legacy.js';
   TestRunner.addResult(
       'Tests accessibility in the settings menu using the axe-core linter.');
 
-  await UI.ActionRegistry.ActionRegistry.instance().action('settings.show').execute();
+  await UI.ActionRegistry.ActionRegistry.instance().getAction('settings.show').execute();
 
   const tabbedPane = Settings.SettingsScreen.SettingsScreen.instance().tabbedLocation.tabbedPane();
 

@@ -38,8 +38,8 @@ void ExtractContentSessionStorage(ContentWebState* web_state,
     std::unique_ptr<content::NavigationEntry> new_entry =
         content::NavigationController::CreateNavigationEntry(
             navigation_item_storage.virtualURL, content::Referrer(),
-            /* initiator_origin= */ absl::nullopt,
-            /* initiator_base_url= */ absl::nullopt, ui::PAGE_TRANSITION_RELOAD,
+            /* initiator_origin= */ std::nullopt,
+            /* initiator_base_url= */ std::nullopt, ui::PAGE_TRANSITION_RELOAD,
             /* is_renderer_initiated= */ false, std::string(), browser_context,
             /* blob_url_loader_factory= */ nullptr);
     new_entry->SetOriginalRequestURL(navigation_item_storage.URL);

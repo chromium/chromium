@@ -355,10 +355,8 @@ constexpr CGFloat kSymbolSize = 22;
   [primaryActionButton addTarget:self
                           action:@selector(didTapPrimaryActionButton)
                 forControlEvents:UIControlEventTouchUpInside];
-  [primaryActionButton
-      setTitle:l10n_util::GetNSString(IDS_IOS_SHARE_BUTTON_LABEL)
-      forState:UIControlStateNormal];
-  primaryActionButton.titleLabel.adjustsFontSizeToFitWidth = YES;
+  SetConfigurationTitle(primaryActionButton,
+                        l10n_util::GetNSString(IDS_IOS_SHARE_BUTTON_LABEL));
   [primaryActionButton
       setContentHuggingPriority:UILayoutPriorityDefaultHigh + 1
                         forAxis:UILayoutConstraintAxisVertical];

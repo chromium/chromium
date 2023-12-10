@@ -30,7 +30,6 @@ bool ShouldAutofillOnEmptyValues(
     // apply to them.
     case AutofillSuggestionTriggerSource::kShowCardsFromAccount:
     case mojom::AutofillSuggestionTriggerSource::kPasswordManager:
-    case mojom::AutofillSuggestionTriggerSource::kAndroidWebView:
     case mojom::AutofillSuggestionTriggerSource::kiOS:
     case AutofillSuggestionTriggerSource::kUnspecified:
       break;
@@ -55,7 +54,6 @@ bool RequiresCaretAtEnd(AutofillSuggestionTriggerSource trigger_source) {
     // apply to them.
     case AutofillSuggestionTriggerSource::kShowCardsFromAccount:
     case mojom::AutofillSuggestionTriggerSource::kPasswordManager:
-    case mojom::AutofillSuggestionTriggerSource::kAndroidWebView:
     case mojom::AutofillSuggestionTriggerSource::kiOS:
     case AutofillSuggestionTriggerSource::kUnspecified:
       break;
@@ -90,7 +88,6 @@ bool ShouldShowFullSuggestionListForPasswordManager(
     // renderer.
     case AutofillSuggestionTriggerSource::kShowCardsFromAccount:
     case mojom::AutofillSuggestionTriggerSource::kPasswordManager:
-    case mojom::AutofillSuggestionTriggerSource::kAndroidWebView:
     case mojom::AutofillSuggestionTriggerSource::kiOS:
     case AutofillSuggestionTriggerSource::kUnspecified:
       break;

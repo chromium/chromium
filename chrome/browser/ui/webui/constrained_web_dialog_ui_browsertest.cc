@@ -148,7 +148,8 @@ IN_PROC_BROWSER_TEST_F(ConstrainedWebDialogBrowserTest,
 // Tests that dialog autoresizes based on web contents when autoresizing
 // is enabled.
 // Flaky on CrOS: http://crbug.com/928924
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+// Flaky on Mac: http://crbug.com/1498848
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH)
 #define MAYBE_ContentResizeInAutoResizingDialog \
   DISABLED_ContentResizeInAutoResizingDialog
 #else

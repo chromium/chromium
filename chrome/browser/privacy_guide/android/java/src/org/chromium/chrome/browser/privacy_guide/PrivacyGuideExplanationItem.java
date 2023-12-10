@@ -15,19 +15,19 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-/**
- * A custom view for an item (icon + text) of a setting explanation for the privacy guide.
- */
+/** A custom view for an item (icon + text) of a setting explanation for the privacy guide. */
 public class PrivacyGuideExplanationItem extends LinearLayout {
     private final TextView mSummary;
+
     public PrivacyGuideExplanationItem(Context context, AttributeSet attrs) {
         super(context, attrs);
 
         View view =
                 LayoutInflater.from(context).inflate(R.layout.privacy_guide_explanation_item, this);
 
-        TypedArray a = context.obtainStyledAttributes(
-                attrs, R.styleable.PrivacyGuideExplanationItem, 0, 0);
+        TypedArray a =
+                context.obtainStyledAttributes(
+                        attrs, R.styleable.PrivacyGuideExplanationItem, 0, 0);
 
         mSummary = view.findViewById(R.id.summary);
         mSummary.setText(a.getText(R.styleable.PrivacyGuideExplanationItem_summaryText));
@@ -42,9 +42,7 @@ public class PrivacyGuideExplanationItem extends LinearLayout {
         a.recycle();
     }
 
-    /**
-     * Sets the summary shown in the explanation item.
-     */
+    /** Sets the summary shown in the explanation item. */
     public void setSummaryText(CharSequence summaryText) {
         mSummary.setText(summaryText);
     }

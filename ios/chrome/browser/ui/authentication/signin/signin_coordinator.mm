@@ -15,9 +15,9 @@
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/signin/authentication_service.h"
-#import "ios/chrome/browser/signin/authentication_service_factory.h"
-#import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/ui/authentication/signin/add_account_signin/add_account_signin_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/signin/advanced_settings_signin/advanced_settings_signin_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_promo_signin_coordinator.h"
@@ -37,6 +37,17 @@ using signin_metrics::AccessPoint;
 using signin_metrics::PromoAction;
 
 @implementation SigninCoordinator
+
+- (instancetype)initWithBaseViewController:(UIViewController*)viewController
+                                   browser:(Browser*)browser
+                               accessPoint:
+                                   (signin_metrics::AccessPoint)accessPoint {
+  self = [super initWithBaseViewController:viewController browser:browser];
+  if (self) {
+    _accessPoint = accessPoint;
+  }
+  return self;
+}
 
 + (void)registerBrowserStatePrefs:(user_prefs::PrefRegistrySyncable*)registry {
   // ConsistencyPromoSigninCoordinator.
@@ -60,7 +71,8 @@ using signin_metrics::PromoAction;
                          browser:browser
                         identity:identity
                     signinIntent:UserSigninIntentSignin
-                          logger:logger];
+                          logger:logger
+                     accessPoint:accessPoint];
 }
 
 + (instancetype)
@@ -80,14 +92,17 @@ using signin_metrics::PromoAction;
                      promoAction:promoAction];
 }
 
-+ (instancetype)forcedSigninCoordinatorWithBaseViewController:
-                    (UIViewController*)viewController
-                                                      browser:
-                                                          (Browser*)browser {
++ (instancetype)
+    forcedSigninCoordinatorWithBaseViewController:
+        (UIViewController*)viewController
+                                          browser:(Browser*)browser
+                                      accessPoint:(signin_metrics::AccessPoint)
+                                                      accessPoint {
   return [[ForcedSigninCoordinator alloc]
       initWithBaseViewController:viewController
                          browser:browser
-                  screenProvider:[[SigninScreenProvider alloc] init]];
+                  screenProvider:[[SigninScreenProvider alloc] init]
+                     accessPoint:accessPoint];
 }
 
 + (instancetype)
@@ -127,7 +142,8 @@ using signin_metrics::PromoAction;
                          browser:browser
                         identity:nil
                     signinIntent:UserSigninIntentUpgrade
-                          logger:logger];
+                          logger:logger
+                     accessPoint:accessPoint];
 }
 
 + (instancetype)
@@ -136,11 +152,15 @@ using signin_metrics::PromoAction;
                                                     browser:(Browser*)browser
                                                 signinState:
                                                     (IdentitySigninState)
-                                                        signinState {
+                                                        signinState
+                                                accessPoint:(signin_metrics::
+                                                                 AccessPoint)
+                                                                accessPoint {
   return [[AdvancedSettingsSigninCoordinator alloc]
       initWithBaseViewController:viewController
                          browser:browser
-                     signinState:signinState];
+                     signinState:signinState
+                     accessPoint:accessPoint];
 }
 
 + (instancetype)addAccountCoordinatorWithBaseViewController:
@@ -199,13 +219,18 @@ using signin_metrics::PromoAction;
                                                           trigger:
                                                               (syncer::
                                                                    TrustedVaultUserActionTriggerForUMA)
-                                                                  trigger {
+                                                                  trigger
+                                                      accessPoint:
+                                                          (signin_metrics::
+                                                               AccessPoint)
+                                                              accessPoint {
   DCHECK(!browser->GetBrowserState()->IsOffTheRecord());
   return [[TrustedVaultReauthenticationCoordinator alloc]
       initWithBaseViewController:viewController
                          browser:browser
                           intent:intent
-                         trigger:trigger];
+                         trigger:trigger
+                     accessPoint:accessPoint];
 }
 
 + (instancetype)

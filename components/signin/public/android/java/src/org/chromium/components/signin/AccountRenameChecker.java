@@ -23,16 +23,12 @@ import org.chromium.components.signin.base.CoreAccountInfo;
 import java.io.IOException;
 import java.util.List;
 
-/**
- * A checker of the account rename event.
- */
+/** A checker of the account rename event. */
 public final class AccountRenameChecker {
     private static final String TAG = "AccountRenameChecker";
     private static AccountRenameChecker sInstance;
 
-    /**
-     * The delegate is used to query the accounts rename event.
-     */
+    /** The delegate is used to query the accounts rename event. */
     @VisibleForTesting
     public interface Delegate {
         /**
@@ -46,9 +42,7 @@ public final class AccountRenameChecker {
     }
 
     private static final class SystemDelegate implements Delegate {
-        /**
-         * Gets the new account name of the renamed account.
-         */
+        /** Gets the new account name of the renamed account. */
         @Override
         public @Nullable String getNewNameOfRenamedAccount(String accountEmail) {
             final Context context = ContextUtils.getApplicationContext();
@@ -73,9 +67,7 @@ public final class AccountRenameChecker {
         mDelegate = delegate;
     }
 
-    /**
-     * @return The Singleton instance of {@link AccountRenameChecker}.
-     */
+    /** @return The Singleton instance of {@link AccountRenameChecker}. */
     public static AccountRenameChecker get() {
         if (sInstance == null) {
             sInstance = new AccountRenameChecker(new SystemDelegate());
@@ -83,9 +75,7 @@ public final class AccountRenameChecker {
         return sInstance;
     }
 
-    /**
-     * Overrides the {@link Delegate} for tests.
-     */
+    /** Overrides the {@link Delegate} for tests. */
     public static void overrideDelegateForTests(Delegate delegate) {
         sInstance = new AccountRenameChecker(delegate);
     }

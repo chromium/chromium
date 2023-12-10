@@ -13,7 +13,7 @@
 #include "content/public/browser/navigation_handle_timing.h"
 #include "content/public/browser/site_instance_process_assignment.h"
 #include "net/base/load_timing_info.h"
-#include "net/http/http_response_info.h"
+#include "net/http/http_connection_info.h"
 #include "net/nqe/effective_connection_type.h"
 #include "services/metrics/public/cpp/ukm_source.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -103,8 +103,6 @@ class UkmPageLoadMetricsObserver
   void OnCpuTimingUpdate(
       content::RenderFrameHost* subframe_rfh,
       const page_load_metrics::mojom::CpuTiming& timing) override;
-
-  void DidActivatePortal(base::TimeTicks activation_time) override;
 
   void OnFirstContentfulPaintInPage(
       const page_load_metrics::mojom::PageLoadTiming& timing) override;
@@ -325,10 +323,6 @@ class UkmPageLoadMetricsObserver
   // a different process.
   bool navigation_is_cross_process_ = false;
 
-  // True if this page was loaded in a portal and never activated. UKMs are
-  // not recorded for this page unless the portal is activated.
-  bool is_portal_ = false;
-
   // Difference between indices of the previous and current navigation entries
   // (i.e. item history for the current tab).
   // Typically -1/0/1 for back navigations / reloads / forward navigations.
@@ -351,7 +345,7 @@ class UkmPageLoadMetricsObserver
   base::Time navigation_start_time_;
 
   // The connection info for the committed URL.
-  absl::optional<net::HttpResponseInfo::ConnectionInfo> connection_info_;
+  absl::optional<net::HttpConnectionInfo> connection_info_;
 
   base::ReadOnlySharedMemoryMapping ukm_smoothness_data_;
 

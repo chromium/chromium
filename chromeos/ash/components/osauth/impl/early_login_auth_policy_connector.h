@@ -29,11 +29,11 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH)
   void SetLoginScreenAuthPolicyConnector(
       AuthPolicyConnector* connector) override;
 
-  absl::optional<bool> GetRecoveryInitialState(
+  std::optional<bool> GetRecoveryInitialState(
       const AccountId& account) override;
-  absl::optional<bool> GetRecoveryDefaultState(
+  std::optional<bool> GetRecoveryDefaultState(
       const AccountId& account) override;
-  absl::optional<bool> GetRecoveryMandatoryState(
+  std::optional<bool> GetRecoveryMandatoryState(
       const AccountId& account) override;
 
   bool IsAuthFactorManaged(const AccountId& account,

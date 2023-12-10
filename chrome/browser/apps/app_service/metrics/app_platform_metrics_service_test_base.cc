@@ -43,38 +43,46 @@ std::unique_ptr<KeyedService> TestingSyncFactoryFunction(
 
 }  // namespace
 
-AppPtr MakeApp(const std::string& app_id,
-               AppType app_type,
-               const std::string& publisher_id,
-               Readiness readiness,
-               InstallReason install_reason,
-               InstallSource install_source,
-               bool is_platform_app,
-               WindowMode window_mode) {
-  auto app = AppPublisher::MakeApp(app_type, app_id, readiness, publisher_id,
-                                   install_reason, install_source);
-  app->publisher_id = publisher_id;
-  app->is_platform_app = is_platform_app;
-  app->window_mode = window_mode;
-  return app;
+TestApp::TestApp(std::string app_id,
+                 AppType app_type,
+                 std::string publisher_id,
+                 Readiness readiness,
+                 InstallReason install_reason,
+                 InstallSource install_source,
+                 bool should_notify_initialized,
+                 bool is_platform_app,
+                 WindowMode window_mode)
+    : app_id(std::move(app_id)),
+      app_type(app_type),
+      publisher_id(std::move(publisher_id)),
+      readiness(readiness),
+      install_reason(install_reason),
+      install_source(install_source),
+      should_notify_initialized(should_notify_initialized),
+      is_platform_app(is_platform_app),
+      window_mode(window_mode) {}
+
+TestApp::TestApp() = default;
+
+TestApp::TestApp(const TestApp& other) = default;
+
+TestApp::TestApp(TestApp&& other) = default;
+
+AppPtr MakeApp(TestApp app) {
+  auto result = AppPublisher::MakeApp(app.app_type, app.app_id, app.readiness,
+                                      app.publisher_id, app.install_reason,
+                                      app.install_source);
+  result->publisher_id = app.publisher_id;
+  result->is_platform_app = app.is_platform_app;
+  result->window_mode = app.window_mode;
+  return result;
 }
 
-void AddApp(AppServiceProxy* proxy,
-            const std::string& app_id,
-            AppType app_type,
-            const std::string& publisher_id,
-            Readiness readiness,
-            InstallReason install_reason,
-            InstallSource install_source,
-            bool should_notify_initialized,
-            bool is_platform_app,
-            WindowMode window_mode) {
+void AddApp(AppServiceProxy* proxy, TestApp app) {
   CHECK(proxy);
   std::vector<AppPtr> deltas;
-  deltas.push_back(MakeApp(app_id, app_type, publisher_id, readiness,
-                           install_reason, install_source, is_platform_app,
-                           window_mode));
-  proxy->OnApps(std::move(deltas), app_type, should_notify_initialized);
+  deltas.push_back(MakeApp(app));
+  proxy->OnApps(std::move(deltas), app.app_type, app.should_notify_initialized);
 }
 
 AppPlatformMetricsServiceTestBase::AppPlatformMetricsServiceTestBase() =
@@ -96,7 +104,12 @@ void AppPlatformMetricsServiceTestBase::SetUp() {
       kAppPlatformMetricsDayId,
       start_time.UTCMidnight().since_origin().InDaysFloored());
 
-  ::chromeos::PowerManagerClient::InitializeFake();
+  if (!::chromeos::PowerManagerClient::Get()) {
+    ::chromeos::PowerManagerClient::InitializeFake();
+  }
+
+  // Wait for AppServiceProxy to be ready.
+  app_service_test_.SetUp(profile());
 
   app_platform_metrics_service_ =
       std::make_unique<AppPlatformMetricsService>(profile());
@@ -104,9 +117,9 @@ void AppPlatformMetricsServiceTestBase::SetUp() {
   // Install a BuiltIn app before app_platform_metrics_service_ started to
   // verify the install AppKM.
   AddApp(AppServiceProxyFactory::GetForProfile(profile()),
-         /*app_id=*/"bu", AppType::kBuiltIn, "", Readiness::kReady,
-         InstallReason::kSystem, InstallSource::kSystem,
-         true /* should_notify_initialized */);
+         {/*app_id=*/"bu", AppType::kBuiltIn, "", Readiness::kReady,
+          InstallReason::kSystem, InstallSource::kSystem,
+          /*should_notify_initialized=*/true});
 
   app_platform_metrics_service_->Start(
       AppServiceProxyFactory::GetForProfile(profile())->AppRegistryCache(),
@@ -125,11 +138,17 @@ void AppPlatformMetricsServiceTestBase::InstallOneApp(
     Readiness readiness,
     InstallSource install_source,
     bool is_platform_app,
-    WindowMode window_mode) {
+    WindowMode window_mode,
+    InstallReason install_reason) {
+  InstallOneApp({app_id, app_type, publisher_id, readiness, install_reason,
+                 install_source,
+                 /*should_notify_initialized=*/false, is_platform_app,
+                 window_mode});
+}
+
+void AppPlatformMetricsServiceTestBase::InstallOneApp(TestApp app) {
   auto* proxy = AppServiceProxyFactory::GetForProfile(profile());
-  AddApp(proxy, app_id, app_type, publisher_id, readiness, InstallReason::kUser,
-         install_source, false /* should_notify_initialized */, is_platform_app,
-         window_mode);
+  AddApp(proxy, app);
 }
 
 void AppPlatformMetricsServiceTestBase::ResetAppPlatformMetricsService() {

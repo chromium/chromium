@@ -68,7 +68,7 @@ void IbanBubbleControllerImpl::OfferLocalSave(
 
 void IbanBubbleControllerImpl::OfferUploadSave(
     const Iban& iban,
-    const LegalMessageLines& legal_message_lines,
+    LegalMessageLines legal_message_lines,
     bool should_show_prompt,
     AutofillClient::SaveIbanPromptCallback save_iban_prompt_callback) {
   // Don't show the bubble if it's already visible.
@@ -79,7 +79,7 @@ void IbanBubbleControllerImpl::OfferUploadSave(
   iban_ = iban;
   is_reshow_ = false;
   is_upload_save_ = true;
-  legal_message_lines_ = legal_message_lines;
+  legal_message_lines_ = std::move(legal_message_lines);
   save_iban_prompt_callback_ = std::move(save_iban_prompt_callback);
   current_bubble_type_ = IbanBubbleType::kUploadSave;
   // Save callback should not be null for IBAN save.
@@ -231,11 +231,11 @@ void IbanBubbleControllerImpl::OnBubbleClosed(
     if (closed_reason == PaymentsBubbleClosedReason::kCancelled) {
       std::move(save_iban_prompt_callback_)
           .Run(AutofillClient::SaveIbanOfferUserDecision::kDeclined,
-               absl::nullopt);
+               /*nickname=*/u"");
     } else if (closed_reason == PaymentsBubbleClosedReason::kClosed) {
       std::move(save_iban_prompt_callback_)
           .Run(AutofillClient::SaveIbanOfferUserDecision::kIgnored,
-               absl::nullopt);
+               /*nickname=*/u"");
     }
   }
 
@@ -313,10 +313,6 @@ bool IbanBubbleControllerImpl::ShouldShowSavingPaymentAnimation() const {
 
 bool IbanBubbleControllerImpl::ShouldShowPaymentSavedLabelAnimation() const {
   return should_show_iban_saved_label_animation_;
-}
-
-bool IbanBubbleControllerImpl::ShouldShowSaveFailureBadge() const {
-  return false;
 }
 
 void IbanBubbleControllerImpl::OnAnimationEnded() {

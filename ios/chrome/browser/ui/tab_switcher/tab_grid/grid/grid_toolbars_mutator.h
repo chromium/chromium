@@ -7,6 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_paging.h"
+
 @class TabGridToolbarsConfiguration;
 @protocol TabGridToolbarsButtonsDelegate;
 
@@ -19,6 +21,13 @@
 // Sends to tab grid toolbars model which delegates should handle buttons'
 // actions.
 - (void)setToolbarsButtonsDelegate:(id<TabGridToolbarsButtonsDelegate>)delegate;
+
+// Sends to the model the current mode.
+- (void)setToolbarsMode:(TabGridMode)mode;
+
+// Sends NO to disable all buttons and save the current configuration or YES to
+// enable the saved configuration.
+- (void)setButtonsEnabled:(BOOL)enabled;
 
 @end
 

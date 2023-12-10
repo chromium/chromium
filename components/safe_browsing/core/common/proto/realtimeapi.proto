@@ -186,4 +186,23 @@ message MatchedUrlNavigationRule {
   optional string rule_name = 2;
   // If the match was due to an URL category, it is found here.
   optional string matched_url_category = 3;
+
+  // Action for matched rule not implemented.
+  reserved 4;
+
+  message CustomMessage {
+    // Custom message provided by admin during rule creation. Contains text
+    // only.
+    optional string custom_message = 1;
+
+    // learn more link provided by admin during rule creation. Contains a single
+    // URL.
+    optional string learn_more_link = 2;
+
+    // Custom message containing <a> tags wrapping URLs. This is sanitized HTML
+    // restricted to <a> tags with "href" attribute.
+    optional string custom_message_with_links = 3;
+  }
+  // Contains custom interstitial message associated with this rule.
+  optional CustomMessage custom_message = 5;
 }

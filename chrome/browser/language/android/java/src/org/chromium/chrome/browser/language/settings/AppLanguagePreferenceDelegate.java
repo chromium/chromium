@@ -21,9 +21,7 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.Snackbar
  * representing the overridden app language.
  */
 public class AppLanguagePreferenceDelegate {
-    /**
-     * Interface for holding the Chrome restart action. Passed in from {@link SettingsActivity}.
-     */
+    /** Interface for holding the Chrome restart action. Passed in from {@link SettingsActivity}. */
     public interface RestartAction {
         void restart();
     }
@@ -58,9 +56,7 @@ public class AppLanguagePreferenceDelegate {
                 new SnackbarManager(mActivity, mActivity.findViewById(android.R.id.content), null);
     }
 
-    /**
-     * Show the {@link Snackbar} if one can be shown and there is a saved Snackbar to show.
-     */
+    /** Show the {@link Snackbar} if one can be shown and there is a saved Snackbar to show. */
     public void maybeShowSnackbar() {
         if (mSnackbar != null && mSnackbarManager.canShowSnackbar()) {
             mSnackbarManager.setParentView(mActivity.findViewById(android.R.id.content));
@@ -82,39 +78,41 @@ public class AppLanguagePreferenceDelegate {
         // Set language text and initial downloading summary.
         mPreference.setLanguageItem(code);
         CharSequence nativeName = mPreference.getLanguageItem().getNativeDisplayName();
-        CharSequence summary = mActivity.getResources().getString(
-                R.string.languages_split_downloading, nativeName);
+        CharSequence summary =
+                mActivity
+                        .getResources()
+                        .getString(R.string.languages_split_downloading, nativeName);
         mPreference.setSummary(summary);
 
         // Disable preference so a second downloaded cannot be started while one is in progress.
         mPreference.setEnabled(false);
 
-        AppLocaleUtils.setAppLanguagePref(code, (success) -> {
-            if (success) {
-                languageSplitDownloadComplete();
-            } else {
-                languageSplitDownloadFailed();
-            }
-        });
+        AppLocaleUtils.setAppLanguagePref(
+                code,
+                (success) -> {
+                    if (success) {
+                        languageSplitDownloadComplete();
+                    } else {
+                        languageSplitDownloadFailed();
+                    }
+                });
     }
 
-    /**
-     * Callback to update the UI when a language split has successfully been installed.
-     */
+    /** Callback to update the UI when a language split has successfully been installed. */
     private void languageSplitDownloadComplete() {
         CharSequence nativeName = mPreference.getLanguageItem().getNativeDisplayName();
         CharSequence appName = BuildInfo.getInstance().hostPackageLabel;
-        CharSequence summary = mActivity.getResources().getString(
-                R.string.languages_split_ready, nativeName, appName);
+        CharSequence summary =
+                mActivity
+                        .getResources()
+                        .getString(R.string.languages_split_ready, nativeName, appName);
         mPreference.setSummary(summary);
         mPreference.setEnabled(true);
 
         makeAndShowRestartSnackbar();
     }
 
-    /**
-     * Callback to update the UI when a language split installation has failed.
-     */
+    /** Callback to update the UI when a language split installation has failed. */
     private void languageSplitDownloadFailed() {
         CharSequence nativeName = mPreference.getLanguageItem().getNativeDisplayName();
         CharSequence summary =
@@ -132,8 +130,10 @@ public class AppLanguagePreferenceDelegate {
         String displayName = mPreference.getLanguageItem().getDisplayName();
         Resources resources = mActivity.getResources();
         Snackbar snackbar =
-                Snackbar.make(resources.getString(R.string.languages_infobar_ready, displayName),
-                                mSnackbarController, Snackbar.TYPE_PERSISTENT,
+                Snackbar.make(
+                                resources.getString(R.string.languages_infobar_ready, displayName),
+                                mSnackbarController,
+                                Snackbar.TYPE_PERSISTENT,
                                 Snackbar.UMA_LANGUAGE_SPLIT_RESTART)
                         .setAction(resources.getString(R.string.languages_infobar_restart), null);
         snackbar.setSingleLine(false);

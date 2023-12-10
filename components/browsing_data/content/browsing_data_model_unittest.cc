@@ -17,6 +17,7 @@
 #include "content/public/test/test_storage_partition.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "net/base/schemeful_site.h"
+#include "net/cookies/canonical_cookie.h"
 #include "net/extras/shared_dictionary/shared_dictionary_isolation_key.h"
 #include "net/extras/shared_dictionary/shared_dictionary_usage_info.h"
 #include "services/network/public/cpp/features.h"
@@ -58,6 +59,20 @@ class MockNetworkContext : public network::TestNetworkContext {
  private:
   mojo::Receiver<network::mojom::NetworkContext> receiver_;
 };
+
+std::unique_ptr<net::CanonicalCookie> MakeCanonicalCookie(
+    const std::string& name,
+    const std::string& domain,
+    absl::optional<net::CookiePartitionKey> cookie_partition_key =
+        absl::nullopt) {
+  return net::CanonicalCookie::CreateUnsafeCookieForTesting(
+      name, "1", domain, /*path=*/"/", /*creation=*/base::Time(),
+      /*expiration=*/base::Time(), /*last_access=*/base::Time(),
+      /*last_update=*/base::Time(),
+      /*secure=*/true, /*httponly=*/false, net::CookieSameSite::UNSPECIFIED,
+      net::CookiePriority::COOKIE_PRIORITY_DEFAULT, cookie_partition_key);
+}
+
 }  // namespace
 
 class BrowsingDataModelTest : public testing::Test {
@@ -360,16 +375,16 @@ class OriginOwnershipDelegate : public BrowsingDataModel::Delegate {
     std::move(callback).Run({});
   }
 
-  void RemoveDataKey(BrowsingDataModel::DataKey data_key,
+  void RemoveDataKey(const BrowsingDataModel::DataKey& data_key,
                      BrowsingDataModel::StorageTypeSet storage_types,
                      base::OnceClosure callback) override {
     std::move(callback).Run();
   }
 
   absl::optional<BrowsingDataModel::DataOwner> GetDataOwner(
-      BrowsingDataModel::DataKey data_key,
+      const BrowsingDataModel::DataKey& data_key,
       BrowsingDataModel::StorageType storage_type) const override {
-    url::Origin* origin = absl::get_if<url::Origin>(&data_key);
+    const url::Origin* origin = absl::get_if<url::Origin>(&data_key);
     if (origin && origin->host() == origin_owned_host_) {
       return *origin;
     }
@@ -377,9 +392,12 @@ class OriginOwnershipDelegate : public BrowsingDataModel::Delegate {
   }
 
   absl::optional<bool> IsBlockedByThirdPartyCookieBlocking(
+      const BrowsingDataModel::DataKey& data_key,
       BrowsingDataModel::StorageType storage_type) const override {
     return false;
   }
+
+  bool IsCookieDeletionDisabled(const GURL& url) override { return false; }
 
  private:
   std::string origin_owned_host_;
@@ -537,50 +555,106 @@ TEST_F(BrowsingDataModelTest, RemoveBasedOnPartitioning) {
 }
 
 TEST_F(BrowsingDataModelTest, ThirdPartyCookieTypes) {
+  // Create data keys for all storage types.
+  auto unpartitioned_storage_key =
+      blink::StorageKey::CreateFirstParty(kSiteOrigin);
+  auto partitioned_storage_key =
+      blink::StorageKey::Create(kSiteOrigin, net::SchemefulSite(kTestOrigin),
+                                blink::mojom::AncestorChainBit::kCrossSite,
+                                /*third_party_partitioning_allowed=*/true);
+  auto unpartitioned_session_storage_usage =
+      content::SessionStorageUsageInfo{unpartitioned_storage_key, "example"};
+  auto partitioned_session_storage_usage =
+      content::SessionStorageUsageInfo{partitioned_storage_key, "example"};
+
+  auto unpartitioned_shared_worker_info = browsing_data::SharedWorkerInfo(
+      kSiteOrigin.GetURL(), "example", unpartitioned_storage_key);
+  auto partitioned_shared_worker_info = browsing_data::SharedWorkerInfo(
+      kSiteOrigin.GetURL(), "example", partitioned_storage_key);
+
+  auto unpartitioned_cookie = MakeCanonicalCookie("name", kSiteOriginHost);
+
+  auto partitioned_cookie = MakeCanonicalCookie(
+      "__Host-partitioned", kSiteOriginHost,
+      net::CookiePartitionKey::FromURLForTesting(GURL(kTestOriginHost)));
+
+  auto partitioned_shared_dictionary_key = net::SharedDictionaryIsolationKey{
+      kSiteOrigin, net::SchemefulSite(kTestOrigin)};
+
+  content::InterestGroupManager::InterestGroupDataKey interest_group_key{
+      kSiteOrigin, kSiteOrigin};
+  content::AttributionDataModel::DataKey attribution_reporting_key{kSiteOrigin};
+  content::PrivateAggregationDataModel::DataKey private_aggregation_key{
+      kSiteOrigin};
+
+  std::map<BrowsingDataModel::StorageType, BrowsingDataModel::DataKey>
+      third_party_cookie_types = {
+          {BrowsingDataModel::StorageType::kSharedStorage,
+           unpartitioned_storage_key},
+          {BrowsingDataModel::StorageType::kLocalStorage,
+           unpartitioned_storage_key},
+          {BrowsingDataModel::StorageType::kQuotaStorage,
+           unpartitioned_storage_key},
+          {BrowsingDataModel::StorageType::kSessionStorage,
+           unpartitioned_session_storage_usage},
+          {BrowsingDataModel::StorageType::kSharedWorker,
+           unpartitioned_shared_worker_info},
+          {BrowsingDataModel::StorageType::kCookie, *unpartitioned_cookie}};
+
+  std::map<BrowsingDataModel::StorageType, BrowsingDataModel::DataKey>
+      non_third_party_cookie_types = {
+          {BrowsingDataModel::StorageType::kSharedStorage,
+           partitioned_storage_key},
+          {BrowsingDataModel::StorageType::kLocalStorage,
+           partitioned_storage_key},
+          {BrowsingDataModel::StorageType::kQuotaStorage,
+           partitioned_storage_key},
+          {BrowsingDataModel::StorageType::kSessionStorage,
+           partitioned_session_storage_usage},
+          {BrowsingDataModel::StorageType::kSharedWorker,
+           partitioned_shared_worker_info},
+          {BrowsingDataModel::StorageType::kCookie, *partitioned_cookie},
+          {BrowsingDataModel::StorageType::kTrustTokens, kSiteOrigin},
+          {BrowsingDataModel::StorageType::kInterestGroup, interest_group_key},
+          {BrowsingDataModel::StorageType::kAttributionReporting,
+           attribution_reporting_key},
+          {BrowsingDataModel::StorageType::kPrivateAggregation,
+           private_aggregation_key},
+          {BrowsingDataModel::StorageType::kSharedDictionary,
+           partitioned_shared_dictionary_key}};
+
   std::unique_ptr<BrowsingDataModel> model = BrowsingDataModel::BuildEmpty(
       storage_partition(),
       std::make_unique<browsing_data::TestBrowsingDataModelDelegate>());
 
-  constexpr BrowsingDataModel::StorageTypeSet third_party_cookie_types = {
-      BrowsingDataModel::StorageType::kLocalStorage,
-      BrowsingDataModel::StorageType::kSessionStorage,
-      BrowsingDataModel::StorageType::kQuotaStorage,
-      BrowsingDataModel::StorageType::kSharedWorker,
-  };
-
-  constexpr BrowsingDataModel::StorageTypeSet non_third_party_cookie_types = {
-      BrowsingDataModel::StorageType::kTrustTokens,
-      BrowsingDataModel::StorageType::kSharedStorage,
-      BrowsingDataModel::StorageType::kInterestGroup,
-      BrowsingDataModel::StorageType::kAttributionReporting,
-      BrowsingDataModel::StorageType::kPrivateAggregation,
-      BrowsingDataModel::StorageType::kSharedDictionary};
-
   for (int i = static_cast<int>(BrowsingDataModel::StorageType::kFirstType);
-       i < static_cast<int>(BrowsingDataModel::StorageType::kLastType); i++) {
+       i <= static_cast<int>(BrowsingDataModel::StorageType::kLastType); i++) {
     auto type = static_cast<BrowsingDataModel::StorageType>(i);
 
-    EXPECT_TRUE(third_party_cookie_types.Has(type) ||
-                non_third_party_cookie_types.Has(type))
+    EXPECT_TRUE(third_party_cookie_types.count(type) ||
+                non_third_party_cookie_types.count(type))
         << "All storage types should be tested";
+  }
 
-    bool is_considered_third_party_cookie =
-        model->IsBlockedByThirdPartyCookieBlocking(type);
-    EXPECT_EQ(third_party_cookie_types.Has(type),
-              is_considered_third_party_cookie);
-    EXPECT_EQ(non_third_party_cookie_types.Has(type),
-              !is_considered_third_party_cookie);
+  for (const auto& [type, key] : third_party_cookie_types) {
+    EXPECT_TRUE(model->IsBlockedByThirdPartyCookieBlocking(key, type))
+        << "Not blocking third_party_cookie_types of type: " << (int)type;
+  }
+
+  for (const auto& [type, key] : non_third_party_cookie_types) {
+    EXPECT_FALSE(model->IsBlockedByThirdPartyCookieBlocking(key, type))
+        << "Blocking non_third_party_cookie_types of type: " << (int)type;
   }
 
   // Ensure the delegate is also consulted.
   EXPECT_TRUE(model->IsBlockedByThirdPartyCookieBlocking(
-      static_cast<BrowsingDataModel::StorageType>(
-          browsing_data::TestBrowsingDataModelDelegate::StorageType::
-              kTestDelegateType)));
+      kTestOrigin, static_cast<BrowsingDataModel::StorageType>(
+                       browsing_data::TestBrowsingDataModelDelegate::
+                           StorageType::kTestDelegateType)));
   EXPECT_FALSE(model->IsBlockedByThirdPartyCookieBlocking(
-      static_cast<BrowsingDataModel::StorageType>(
-          browsing_data::TestBrowsingDataModelDelegate::StorageType::
-              kTestDelegateTypePartitioned)));
+      kTestOrigin, static_cast<BrowsingDataModel::StorageType>(
+                       browsing_data::TestBrowsingDataModelDelegate::
+                           StorageType::kTestDelegateTypePartitioned)));
 }
 
 TEST_F(BrowsingDataModelTest, HasThirdPartyPartitioningSite_True) {

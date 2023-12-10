@@ -22,6 +22,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/views/background.h"
@@ -165,8 +166,8 @@ void AssistantOnboardingView::OnOnboardingSuggestionsChanged(
 void AssistantOnboardingView::OnUiVisibilityChanged(
     AssistantVisibility new_visibility,
     AssistantVisibility old_visibility,
-    absl::optional<AssistantEntryPoint> entry_point,
-    absl::optional<AssistantExitPoint> exit_point) {
+    std::optional<AssistantEntryPoint> entry_point,
+    std::optional<AssistantExitPoint> exit_point) {
   if (new_visibility != AssistantVisibility::kVisible)
     return;
 
@@ -255,5 +256,8 @@ void AssistantOnboardingView::UpdateSuggestions() {
 void AssistantOnboardingView::UpdateGreeting() {
   greeting_->SetText(base::UTF8ToUTF16(GetGreetingMessage(delegate_)));
 }
+
+BEGIN_METADATA(AssistantOnboardingView)
+END_METADATA
 
 }  // namespace ash

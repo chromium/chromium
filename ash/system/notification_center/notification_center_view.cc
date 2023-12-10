@@ -6,6 +6,7 @@
 
 #include <climits>
 #include <memory>
+#include <optional>
 
 #include "ash/system/message_center/message_center_constants.h"
 #include "ash/system/message_center/message_center_scroll_bar.h"
@@ -14,7 +15,6 @@
 #include "ash/system/tray/tray_constants.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/user_metrics.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/insets.h"
@@ -65,7 +65,7 @@ void NotificationCenterView::Init() {
   scroller_->SetContents(std::move(scroller_contents_view));
   // Need to set the transparent background explicitly, since ScrollView has
   // set the default opaque background color.
-  scroller_->SetBackgroundColor(absl::nullopt);
+  scroller_->SetBackgroundColor(std::nullopt);
   scroller_->SetVerticalScrollBar(base::WrapUnique(scroll_bar_.get()));
   scroller_->SetDrawOverflowIndicator(false);
   scroller_->SetPaintToLayer();

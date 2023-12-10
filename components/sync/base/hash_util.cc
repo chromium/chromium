@@ -27,9 +27,8 @@ std::string GenerateSyncableBookmarkHash(
   serialized_type.AppendToString(&hash_input);
   hash_input.append(originator_cache_guid + originator_client_item_id);
 
-  std::string encode_output;
-  base::Base64Encode(base::SHA1HashString(hash_input), &encode_output);
-  return encode_output;
+  return base::Base64Encode(
+      base::SHA1HashSpan(base::as_bytes(base::make_span(hash_input))));
 }
 
 std::string GetUnhashedClientTagFromAutofillWalletSpecifics(
@@ -50,6 +49,8 @@ std::string GetUnhashedClientTagFromAutofillWalletSpecifics(
           {"payment_instrument:",
            base::NumberToString(
                specifics.payment_instrument().instrument_id())});
+    case sync_pb::AutofillWalletSpecifics::MASKED_IBAN:
+      return specifics.masked_iban().instrument_id();
     case sync_pb::AutofillWalletSpecifics::UNKNOWN:
       NOTREACHED();
       return std::string();

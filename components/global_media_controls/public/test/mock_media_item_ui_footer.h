@@ -7,11 +7,14 @@
 
 #include "components/global_media_controls/public/views/media_item_ui_footer.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 
 namespace global_media_controls {
 namespace test {
 
 class MockMediaItemUIFooter : public MediaItemUIFooter {
+  METADATA_HEADER(MockMediaItemUIFooter, MediaItemUIFooter)
+
  public:
   MockMediaItemUIFooter();
   MockMediaItemUIFooter(const MockMediaItemUIFooter&) = delete;

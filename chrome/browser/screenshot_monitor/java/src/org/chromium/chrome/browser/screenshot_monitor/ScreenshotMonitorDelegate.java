@@ -4,9 +4,7 @@
 
 package org.chromium.chrome.browser.screenshot_monitor;
 
-/**
- * This class serves as a callback from ScreenshotMonitor.
- */
+/** This class serves as a callback from ScreenshotMonitor. */
 public interface ScreenshotMonitorDelegate {
     void onScreenshotTaken();
 }

@@ -135,23 +135,31 @@ void FakeWebAppUiManager::ShowWebAppIdentityUpdateDialog(
   std::move(callback).Run(identity_update_dialog_action_for_testing.value());
 }
 
-void FakeWebAppUiManager::WaitForFirstRunAndLaunchWebApp(
-    apps::AppLaunchParams params,
-    LaunchWebAppWindowSetting launch_setting,
-    Profile& profile,
-    LaunchWebAppCallback callback,
-    AppLock& lock) {
+void FakeWebAppUiManager::LaunchWebApp(apps::AppLaunchParams params,
+                                       LaunchWebAppWindowSetting launch_setting,
+                                       Profile& profile,
+                                       LaunchWebAppDebugValueCallback callback,
+                                       WithAppResources& lock) {
   // Due to this sometimes causing confusion in tests, print that a launch has
   // been faked. To have launches create real WebContents in unit_tests (which
   // will be non-functional anyways), populate the WebAppUiManagerImpl in the
   // FakeWebAppProvider during startup.
   LOG(INFO) << "Pretending to launch web app " << params.app_id;
-  std::move(callback).Run(nullptr, nullptr,
-                          apps::LaunchContainer::kLaunchContainerNone);
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(std::move(callback), /*browser=*/nullptr,
+                     /*web_contents=*/nullptr, params.container,
+                     base::Value("FakeWebAppUiManager::LaunchWebApp")));
   if (on_launch_web_app_callback_) {
     on_launch_web_app_callback_.Run(std::move(params),
                                     std::move(launch_setting));
   }
+}
+
+void FakeWebAppUiManager::WaitForFirstRunService(
+    Profile& profile,
+    FirstRunServiceCompletedCallback callback) {
+  std::move(callback).Run(/*success=*/true);
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -171,6 +179,13 @@ void FakeWebAppUiManager::DisplayRunOnOsLoginNotification(
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+void FakeWebAppUiManager::NotifyAppRelaunchState(
+    const webapps::AppId& placeholder_app_id,
+    const webapps::AppId& final_app_id,
+    const std::u16string& final_app_name,
+    base::WeakPtr<Profile> profile,
+    AppRelaunchState relaunch_state) {}
 
 content::WebContents* FakeWebAppUiManager::CreateNewTab() {
   return nullptr;
@@ -216,5 +231,10 @@ void FakeWebAppUiManager::LaunchIsolatedWebAppInstaller(
 void FakeWebAppUiManager::MaybeCreateEnableSupportedLinksInfobar(
     content::WebContents* web_contents,
     const std::string& launch_name) {}
+
+void FakeWebAppUiManager::MaybeShowIPHPromoForAppsLaunchedViaLinkCapturing(
+    content::WebContents* web_contents,
+    Profile* profile,
+    const std::string& app_id) {}
 
 }  // namespace web_app

@@ -21,10 +21,15 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "chromeos/ash/components/carrier_lock/carrier_lock_manager.h"
+#include "chromeos/ash/components/carrier_lock/fake_fcm_topic_subscriber.h"
+#include "chromeos/ash/components/carrier_lock/fake_provisioning_config_fetcher.h"
+#include "chromeos/ash/components/carrier_lock/fake_psm_claim_verifier.h"
 #include "chromeos/ash/components/dbus/shill/fake_shill_device_client.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/ash/components/network/cellular_inhibitor.h"
 #include "chromeos/ash/components/network/cellular_metrics_logger.h"
+#include "chromeos/ash/components/network/fake_network_3gpp_handler.h"
 #include "chromeos/ash/components/network/fake_stub_cellular_networks_provider.h"
 #include "chromeos/ash/components/network/managed_network_configuration_handler.h"
 #include "chromeos/ash/components/network/metrics/cellular_network_metrics_logger.h"
@@ -297,6 +302,7 @@ class CrosNetworkConfigTest : public testing::Test {
   CrosNetworkConfigTest& operator=(const CrosNetworkConfigTest&) = delete;
 
   ~CrosNetworkConfigTest() override {
+    carrier_lock_manager_.reset();
     cros_network_config_test_helper_.reset();
     cros_network_config_.reset();
     helper_.reset();
@@ -321,6 +327,26 @@ class CrosNetworkConfigTest : public testing::Test {
     SetupNetworks();
   }
 
+  void SetupCarrierLock(bool is_locked) {
+    ash::carrier_lock::CarrierLockManager::RegisterLocalPrefs(
+        local_state_.registry());
+    if (is_locked) {
+      local_state_.SetBoolean(carrier_lock::kDisableManagerPref, false);
+      local_state_.SetString(carrier_lock::kFcmTopicPref, "testtopic");
+    }
+    fake_modem_handler_ = std::make_unique<FakeNetwork3gppHandler>();
+    fake_config_fetcher_ =
+        std::make_unique<carrier_lock::FakeProvisioningConfigFetcher>();
+    fake_psm_verifier_ = std::make_unique<carrier_lock::FakePsmClaimVerifier>();
+    fake_fcm_subscriber_ =
+        std::make_unique<carrier_lock::FakeFcmTopicSubscriber>();
+
+    carrier_lock_manager_ = carrier_lock::CarrierLockManager::CreateForTesting(
+        &local_state_, fake_modem_handler_.get(),
+        std::move(fake_fcm_subscriber_), std::move(fake_psm_verifier_),
+        std::move(fake_config_fetcher_));
+  }
+
   void SetupPolicy() {
     ManagedNetworkConfigurationHandler* managed_network_configuration_handler =
         NetworkHandler::Get()->managed_network_configuration_handler();
@@ -331,7 +357,7 @@ class CrosNetworkConfigTest : public testing::Test {
         /*global_network_config=*/base::Value::Dict());
 
     const std::string user_policy_ssid = "wifi2";
-    absl::optional<base::Value::Dict> wifi2_onc =
+    std::optional<base::Value::Dict> wifi2_onc =
         chromeos::onc::ReadDictionaryFromJson(base::StringPrintf(
             R"({"GUID": "wifi2_guid", "Type": "WiFi",
                 "Name": "wifi2", "Priority": 0,
@@ -342,7 +368,7 @@ class CrosNetworkConfigTest : public testing::Test {
                 .c_str()));
     ASSERT_TRUE(wifi2_onc.has_value());
 
-    absl::optional<base::Value::Dict> wifi_eap_onc =
+    std::optional<base::Value::Dict> wifi_eap_onc =
         chromeos::onc::ReadDictionaryFromJson(
             R"({ "GUID": "wifi_eap",
              "Name": "wifi_eap",
@@ -366,7 +392,7 @@ class CrosNetworkConfigTest : public testing::Test {
            })");
     ASSERT_TRUE(wifi_eap_onc.has_value());
 
-    absl::optional<base::Value::Dict> openvpn_onc =
+    std::optional<base::Value::Dict> openvpn_onc =
         chromeos::onc::ReadDictionaryFromJson(base::StringPrintf(
             R"({ "GUID": "openvpn_guid", "Name": "openvpn", "Type": "VPN", "VPN": {
           "Host": "my.vpn.example.com", "Type": "OpenVPN", "OpenVPN": {
@@ -635,7 +661,7 @@ class CrosNetworkConfigTest : public testing::Test {
         std::move(properties), shared,
         base::BindOnce(
             [](std::string* guidp, base::OnceClosure quit_closure,
-               const absl::optional<std::string>& guid,
+               const std::optional<std::string>& guid,
                const std::string& message) {
               if (guid)
                 *guidp = *guid;
@@ -662,7 +688,7 @@ class CrosNetworkConfigTest : public testing::Test {
   }
 
   bool SetCellularSimState(const std::string& current_pin_or_puk,
-                           absl::optional<std::string> new_pin,
+                           std::optional<std::string> new_pin,
                            bool require_pin) {
     bool success = false;
     base::RunLoop run_loop;
@@ -1109,8 +1135,8 @@ class CrosNetworkConfigTest : public testing::Test {
 
   void AssertCellularAllowTextMessages(
       const std::string& guid,
-      absl::optional<bool> expected_active_value,
-      absl::optional<bool> expected_policy_value,
+      std::optional<bool> expected_active_value,
+      std::optional<bool> expected_policy_value,
       ::chromeos::network_config::mojom::PolicySource policy_source) {
     mojom::ManagedPropertiesPtr properties = GetManagedProperties(guid);
 
@@ -1181,6 +1207,13 @@ class CrosNetworkConfigTest : public testing::Test {
   std::unique_ptr<CrosNetworkConfig> cros_network_config_;
   std::unique_ptr<CrosNetworkConfigTestHelper> cros_network_config_test_helper_;
   std::unique_ptr<CrosNetworkConfigTestObserver> observer_;
+  std::unique_ptr<carrier_lock::CarrierLockManager> carrier_lock_manager_;
+  std::unique_ptr<FakeNetwork3gppHandler> fake_modem_handler_;
+  std::unique_ptr<carrier_lock::FakeFcmTopicSubscriber> fake_fcm_subscriber_;
+  std::unique_ptr<carrier_lock::FakePsmClaimVerifier> fake_psm_verifier_;
+  std::unique_ptr<carrier_lock::FakeProvisioningConfigFetcher>
+      fake_config_fetcher_;
+
   std::string wifi1_path_;
   std::string vpn_path_;
 };
@@ -1507,7 +1540,7 @@ TEST_F(CrosNetworkConfigTest, GetDeviceStateList) {
   EXPECT_EQ(shill::kSIMLockPin, cellular->sim_lock_status->lock_type);
   EXPECT_EQ(3, cellular->sim_lock_status->retries_left);
   EXPECT_EQ(kCellularTestImei, cellular->imei);
-  EXPECT_EQ(absl::nullopt, cellular->serial);
+  EXPECT_EQ(std::nullopt, cellular->serial);
 
   mojom::DeviceStateProperties* vpn = devices[3].get();
   EXPECT_EQ(mojom::NetworkType::kVPN, vpn->type);
@@ -1560,7 +1593,45 @@ TEST_F(CrosNetworkConfigTest, GetDeviceStateListSerialFeatureDisable) {
   EXPECT_EQ(shill::kSIMLockPin, cellular->sim_lock_status->lock_type);
   EXPECT_EQ(3, cellular->sim_lock_status->retries_left);
   EXPECT_EQ(kCellularTestImei, cellular->imei);
-  EXPECT_EQ(absl::nullopt, cellular->serial);
+  EXPECT_EQ(std::nullopt, cellular->serial);
+}
+
+TEST_F(CrosNetworkConfigTest, GetDeviceStateListCarrierLocked) {
+  feature_list.InitAndEnableFeature(features::kCellularCarrierLock);
+  SetupCarrierLock(true);
+
+  std::vector<mojom::DeviceStatePropertiesPtr> devices = GetDeviceStateList();
+  ASSERT_EQ(4u, devices.size());
+
+  mojom::DeviceStateProperties* cellular = devices[2].get();
+  EXPECT_EQ(mojom::NetworkType::kCellular, cellular->type);
+  EXPECT_EQ(mojom::DeviceStateType::kEnabled, cellular->device_state);
+  EXPECT_FALSE(cellular->sim_absent);
+  ASSERT_TRUE(cellular->sim_lock_status);
+  EXPECT_TRUE(cellular->sim_lock_status->lock_enabled);
+  EXPECT_EQ(shill::kSIMLockPin, cellular->sim_lock_status->lock_type);
+  EXPECT_EQ(3, cellular->sim_lock_status->retries_left);
+  EXPECT_EQ(kCellularTestImei, cellular->imei);
+  ASSERT_TRUE(cellular->is_carrier_locked);
+}
+
+TEST_F(CrosNetworkConfigTest, GetDeviceStateListCarrierUnlocked) {
+  feature_list.InitAndEnableFeature(features::kCellularCarrierLock);
+  SetupCarrierLock(false);
+
+  std::vector<mojom::DeviceStatePropertiesPtr> devices = GetDeviceStateList();
+  ASSERT_EQ(4u, devices.size());
+
+  mojom::DeviceStateProperties* cellular = devices[2].get();
+  EXPECT_EQ(mojom::NetworkType::kCellular, cellular->type);
+  EXPECT_EQ(mojom::DeviceStateType::kEnabled, cellular->device_state);
+  EXPECT_FALSE(cellular->sim_absent);
+  ASSERT_TRUE(cellular->sim_lock_status);
+  EXPECT_TRUE(cellular->sim_lock_status->lock_enabled);
+  EXPECT_EQ(shill::kSIMLockPin, cellular->sim_lock_status->lock_type);
+  EXPECT_EQ(3, cellular->sim_lock_status->retries_left);
+  EXPECT_EQ(kCellularTestImei, cellular->imei);
+  ASSERT_FALSE(cellular->is_carrier_locked);
 }
 
 // Tests that no VPN device state is returned by GetDeviceStateList if no VPN
@@ -3221,7 +3292,7 @@ TEST_F(CrosNetworkConfigTest,
 
   // When never set, allow_text_messages will be true.
   AssertCellularAllowTextMessages(kCellularGuid, /*expected_active_value=*/true,
-                                  /*expected_policy_value=*/absl::nullopt,
+                                  /*expected_policy_value=*/std::nullopt,
                                   mojom::PolicySource::kNone);
 
   // When text message state is set to false, the value will be updated to
@@ -3237,7 +3308,7 @@ TEST_F(CrosNetworkConfigTest,
   ASSERT_TRUE(SetProperties(kCellularGuid, std::move(config)));
   AssertCellularAllowTextMessages(
       kCellularGuid, /*expected_active_value=*/false,
-      /*expected_policy_value=*/absl::nullopt, mojom::PolicySource::kNone);
+      /*expected_policy_value=*/std::nullopt, mojom::PolicySource::kNone);
 
   // When text message state is undefined, this will not update the last saved
   // value of false.
@@ -3247,7 +3318,7 @@ TEST_F(CrosNetworkConfigTest,
   ASSERT_TRUE(SetProperties(kCellularGuid, std::move(config)));
   AssertCellularAllowTextMessages(
       kCellularGuid, /*expected_active_value=*/false,
-      /*expected_policy_value=*/absl::nullopt, mojom::PolicySource::kNone);
+      /*expected_policy_value=*/std::nullopt, mojom::PolicySource::kNone);
 
   // When text message state is set to true, the value will be updated to true.
   config = mojom::ConfigProperties::New();
@@ -3261,7 +3332,7 @@ TEST_F(CrosNetworkConfigTest,
 
   ASSERT_TRUE(SetProperties(kCellularGuid, std::move(config)));
   AssertCellularAllowTextMessages(kCellularGuid, /*expected_active_value=*/true,
-                                  /*expected_policy_value=*/absl::nullopt,
+                                  /*expected_policy_value=*/std::nullopt,
                                   mojom::PolicySource::kNone);
 
   // When text message state is undefined, this will not update the last saved
@@ -3271,7 +3342,7 @@ TEST_F(CrosNetworkConfigTest,
       mojom::CellularConfigProperties::New());
   ASSERT_TRUE(SetProperties(kCellularGuid, std::move(config)));
   AssertCellularAllowTextMessages(kCellularGuid, /*expected_active_value=*/true,
-                                  /*expected_policy_value=*/absl::nullopt,
+                                  /*expected_policy_value=*/std::nullopt,
                                   mojom::PolicySource::kNone);
 }
 
@@ -3321,7 +3392,7 @@ TEST_F(CrosNetworkConfigTest,
 
   AssertCellularAllowTextMessages(kCellularGuid,
                                   /*expected_active_value=*/true,
-                                  /*expected_policy_value=*/absl::nullopt,
+                                  /*expected_policy_value=*/std::nullopt,
                                   mojom::PolicySource::kNone);
 
   // When global network configuration is not set, we treat it as unset.
@@ -3333,7 +3404,7 @@ TEST_F(CrosNetworkConfigTest,
 
   AssertCellularAllowTextMessages(kCellularGuid,
                                   /*expected_active_value=*/true,
-                                  /*expected_policy_value=*/absl::nullopt,
+                                  /*expected_policy_value=*/std::nullopt,
                                   mojom::PolicySource::kNone);
 }
 
@@ -3344,8 +3415,8 @@ TEST_F(CrosNetworkConfigTest,
 
   // When never set, this will return undefined.
   AssertCellularAllowTextMessages(kCellularGuid,
-                                  /*expected_active_value=*/absl::nullopt,
-                                  /*expected_policy_value=*/absl::nullopt,
+                                  /*expected_active_value=*/std::nullopt,
+                                  /*expected_policy_value=*/std::nullopt,
                                   mojom::PolicySource::kNone);
 
   // When set to any value, will still return undefined.
@@ -3356,8 +3427,8 @@ TEST_F(CrosNetworkConfigTest,
   new_text_message_state->allow_text_messages = true;
   cellular_config->text_message_allow_state = std::move(new_text_message_state);
   AssertCellularAllowTextMessages(kCellularGuid,
-                                  /*expected_active_value=*/absl::nullopt,
-                                  /*expected_policy_value=*/absl::nullopt,
+                                  /*expected_active_value=*/std::nullopt,
+                                  /*expected_policy_value=*/std::nullopt,
                                   mojom::PolicySource::kNone);
 }
 
@@ -3533,7 +3604,7 @@ TEST_F(CrosNetworkConfigTest, SetCellularSimState) {
 
   // Unlock the sim with the correct pin. |require_pin| should be ignored.
   EXPECT_TRUE(SetCellularSimState(FakeShillDeviceClient::kDefaultSimPin,
-                                  /*new_pin=*/absl::nullopt,
+                                  /*new_pin=*/std::nullopt,
                                   /*require_pin=*/false));
 
   // Sim should be unlocked, locking should still be enabled.
@@ -3544,7 +3615,7 @@ TEST_F(CrosNetworkConfigTest, SetCellularSimState) {
 
   // Set |require_pin| to false (disable locking).
   EXPECT_TRUE(SetCellularSimState(FakeShillDeviceClient::kDefaultSimPin,
-                                  /*new_pin=*/absl::nullopt,
+                                  /*new_pin=*/std::nullopt,
                                   /*require_pin=*/false));
 
   // Sim should be unlocked, locking should be disabled.
@@ -3555,7 +3626,7 @@ TEST_F(CrosNetworkConfigTest, SetCellularSimState) {
 
   // Set |require_pin| to true (enable locking).
   EXPECT_TRUE(SetCellularSimState(FakeShillDeviceClient::kDefaultSimPin,
-                                  /*new_pin=*/absl::nullopt,
+                                  /*new_pin=*/std::nullopt,
                                   /*require_pin=*/true));
 
   // Sim should remain unlocked, locking should be enabled.
@@ -3573,7 +3644,7 @@ TEST_F(CrosNetworkConfigTest, SetCellularSimState) {
   ASSERT_EQ(shill::kSIMLockPin, cellular->sim_lock_status->lock_type);
 
   // Attempt to unlock the sim with an incorrect pin. Call should fail.
-  EXPECT_FALSE(SetCellularSimState("incorrect pin", /*new_pin=*/absl::nullopt,
+  EXPECT_FALSE(SetCellularSimState("incorrect pin", /*new_pin=*/std::nullopt,
                                    /*require_pin=*/false));
 
   // Ensure sim is still locked and retry count has decreased.
@@ -3585,7 +3656,7 @@ TEST_F(CrosNetworkConfigTest, SetCellularSimState) {
 
   // Additional attempts should set the sim to puk locked.
   for (int i = retries - 1; i > 0; --i) {
-    SetCellularSimState("incorrect pin", /*new_pin=*/absl::nullopt, false);
+    SetCellularSimState("incorrect pin", /*new_pin=*/std::nullopt, false);
   }
   cellular = GetDeviceStateFromList(mojom::NetworkType::kCellular);
   ASSERT_TRUE(cellular && cellular->sim_lock_status);
@@ -3594,18 +3665,17 @@ TEST_F(CrosNetworkConfigTest, SetCellularSimState) {
 
   // Attempt to unblock the sim with the incorrect puk. Call should fail.
   const std::string new_pin = "2222";
-  EXPECT_FALSE(SetCellularSimState("incorrect puk",
-                                   absl::make_optional(new_pin),
+  EXPECT_FALSE(SetCellularSimState("incorrect puk", std::make_optional(new_pin),
                                    /*require_pin=*/false));
 
   // Attempt to unblock the sim with np pin. Call should fail.
   EXPECT_FALSE(SetCellularSimState(FakeShillDeviceClient::kSimPuk,
-                                   /*new_pin=*/absl::nullopt,
+                                   /*new_pin=*/std::nullopt,
                                    /*require_pin=*/false));
 
   // Attempt to unlock the sim with the correct puk.
   EXPECT_TRUE(SetCellularSimState(FakeShillDeviceClient::kSimPuk,
-                                  absl::make_optional(new_pin),
+                                  std::make_optional(new_pin),
                                   /*require_pin=*/false));
 
   // Sim should be unlocked
@@ -3616,7 +3686,7 @@ TEST_F(CrosNetworkConfigTest, SetCellularSimState) {
 
 TEST_F(CrosNetworkConfigTest, SelectCellularMobileNetwork) {
   // Create fake list of found networks.
-  absl::optional<base::Value> found_networks_list =
+  std::optional<base::Value> found_networks_list =
       base::JSONReader::Read(base::StringPrintf(
           R"([{"network_id": "network1", "technology": "GSM",
                "status": "current"},

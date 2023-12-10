@@ -310,7 +310,6 @@ class PLATFORM_EXPORT FrameWidget {
 
   virtual void OnTaskCompletedForFrame(base::TimeTicks start_time,
                                        base::TimeTicks end_time,
-                                       base::TimeTicks desired_execution_time,
                                        LocalFrame*) = 0;
 };
 

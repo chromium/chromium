@@ -11,14 +11,14 @@ namespace mojo {
 
 bool StructTraits<proxy_resolver::mojom::ProxyInfoDataView, net::ProxyInfo>::
     Read(proxy_resolver::mojom::ProxyInfoDataView data, net::ProxyInfo* out) {
-  std::vector<net::ProxyServer> proxy_servers;
-  if (!data.ReadProxyServers(&proxy_servers)) {
+  std::vector<net::ProxyChain> proxy_chains;
+  if (!data.ReadProxyChains(&proxy_chains)) {
     return false;
   }
 
   net::ProxyList proxy_list;
-  for (const auto& server : proxy_servers) {
-    proxy_list.AddProxyServer(server);
+  for (const auto& chain : proxy_chains) {
+    proxy_list.AddProxyChain(chain);
   }
 
   out->UseProxyList(proxy_list);

@@ -13,6 +13,7 @@
 #include "content/browser/browser_interface_broker_impl.h"
 #include "content/browser/buckets/bucket_context.h"
 #include "content/browser/renderer_host/code_cache_host_impl.h"
+#include "content/public/browser/dedicated_worker_creator.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_process_host_observer.h"
@@ -92,8 +93,7 @@ class DedicatedWorkerHost final
       DedicatedWorkerServiceImpl* service,
       const blink::DedicatedWorkerToken& token,
       RenderProcessHost* worker_process_host,
-      absl::optional<GlobalRenderFrameHostId> creator_render_frame_host_id,
-      absl::optional<blink::DedicatedWorkerToken> creator_worker_token,
+      DedicatedWorkerCreator creator,
       GlobalRenderFrameHostId ancestor_render_frame_host_id,
       const blink::StorageKey& creator_storage_key,
       const net::IsolationInfo& isolation_info,
@@ -116,6 +116,7 @@ class DedicatedWorkerHost final
   const GlobalRenderFrameHostId& GetAncestorRenderFrameHostId() const {
     return ancestor_render_frame_host_id_;
   }
+  DedicatedWorkerCreator GetCreator() const { return creator_; }
   const absl::optional<GURL>& GetFinalResponseURL() const {
     return final_response_url_;
   }
@@ -326,13 +327,10 @@ class DedicatedWorkerHost final
   base::ScopedObservation<RenderProcessHost, RenderProcessHostObserver>
       scoped_process_host_observation_{this};
 
-  // The ID of the frame that directly starts this worker. This is absl::nullopt
-  // when this worker is nested.
-  const absl::optional<GlobalRenderFrameHostId> creator_render_frame_host_id_;
-
-  // The token of the dedicated worker that directly starts this worker. This is
-  // absl::nullopt when this worker is created from a frame.
-  const absl::optional<blink::DedicatedWorkerToken> creator_worker_token_;
+  // The creator of this worker. Holds a GlobalRenderFrameHostId if this worker
+  // was created by a frame, or holds a blink::DedicatedWorkerToken if this
+  // worker is nested.
+  const DedicatedWorkerCreator creator_;
 
   // The ID of the frame that owns this worker, either directly, or (in the case
   // of nested workers) indirectly via a tree of dedicated workers.

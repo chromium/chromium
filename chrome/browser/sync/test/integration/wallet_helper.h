@@ -20,7 +20,6 @@
 
 namespace autofill {
 struct AutofillMetadata;
-class AutofillProfile;
 class AutofillWebDataService;
 class CreditCard;
 struct CreditCardCloudTokenData;
@@ -37,7 +36,6 @@ class ModelTypeState;
 namespace wallet_helper {
 
 inline constexpr char kDefaultCardID[] = "wallet card ID";
-inline constexpr char kDefaultAddressID[] = "wallet address ID";
 inline constexpr char kDefaultCustomerID[] = "deadbeef";
 inline constexpr char kDefaultBillingAddressID[] = "billing address entity ID";
 inline constexpr char kDefaultCreditCardCloudTokenDataID[] =
@@ -59,9 +57,6 @@ void SetServerCreditCards(
     int profile,
     const std::vector<autofill::CreditCard>& credit_cards);
 
-void SetServerProfiles(int profile,
-                       const std::vector<autofill::AutofillProfile>& profiles);
-
 void SetPaymentsCustomerData(
     int profile,
     const autofill::PaymentsCustomerData& customer_data);
@@ -73,15 +68,7 @@ void SetCreditCardCloudTokenData(
 void UpdateServerCardMetadata(int profile,
                               const autofill::CreditCard& credit_card);
 
-void UpdateServerAddressMetadata(
-    int profile,
-    const autofill::AutofillProfile& server_address);
-
-std::map<std::string, autofill::AutofillMetadata> GetServerCardsMetadata(
-    int profile);
-
-std::map<std::string, autofill::AutofillMetadata> GetServerAddressesMetadata(
-    int profile);
+std::vector<autofill::AutofillMetadata> GetServerCardsMetadata(int profile);
 
 // Function supports AUTOFILL_WALLET_DATA and AUTOFILL_WALLET_OFFER.
 sync_pb::ModelTypeState GetWalletModelTypeState(syncer::ModelType type,
@@ -109,11 +96,6 @@ autofill::CreditCard GetDefaultCreditCard();
 autofill::CreditCard GetCreditCard(const std::string& name,
                                    const std::string& last_four);
 
-sync_pb::SyncEntity CreateDefaultSyncWalletAddress();
-
-sync_pb::SyncEntity CreateSyncWalletAddress(const std::string& name,
-                                            const std::string& company);
-
 sync_pb::SyncEntity CreateSyncCreditCardCloudTokenData(
     const std::string& cloud_token_data_id);
 sync_pb::SyncEntity CreateDefaultSyncCreditCardCloudTokenData();
@@ -122,19 +104,12 @@ sync_pb::SyncEntity CreateDefaultSyncCreditCardCloudTokenData();
 // the server. Then compare the cards directly.
 void ExpectDefaultCreditCardValues(const autofill::CreditCard& card);
 
-// TODO(sebsg): Instead add a function to create a profile, and one to inject in
-// the server. Then compare the profiles directly.
-void ExpectDefaultProfileValues(const autofill::AutofillProfile& profile);
-
 // Load current data from the database of profile |profile|.
-std::vector<autofill::AutofillProfile*> GetServerProfiles(int profile);
-std::vector<autofill::AutofillProfile*> GetLocalProfiles(int profile);
 std::vector<autofill::CreditCard*> GetServerCreditCards(int profile);
 
 }  // namespace wallet_helper
 
-// Checker to block until autofill wallet & server profiles match on both
-// profiles and until server profiles got converted to local profiles.
+// Checker to block until autofill wallet data matches on both profiles.
 class AutofillWalletChecker : public StatusChangeChecker,
                               public autofill::PersonalDataManagerObserver {
  public:
@@ -151,26 +126,6 @@ class AutofillWalletChecker : public StatusChangeChecker,
  private:
   const int profile_a_;
   const int profile_b_;
-};
-
-// Checker to block until autofill server profiles got converted to local
-// profiles.
-class AutofillWalletConversionChecker
-    : public StatusChangeChecker,
-      public autofill::PersonalDataManagerObserver {
- public:
-  explicit AutofillWalletConversionChecker(int profile);
-  ~AutofillWalletConversionChecker() override;
-
-  // StatusChangeChecker implementation.
-  bool Wait() override;
-  bool IsExitConditionSatisfied(std::ostream* os) override;
-
-  // autofill::PersonalDataManager implementation.
-  void OnPersonalDataChanged() override;
-
- private:
-  const int profile_;
 };
 
 // Checker to block until autofill wallet metadata sizes match on both profiles.

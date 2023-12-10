@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_FILE_SUGGEST_FILE_SUGGEST_KEYED_SERVICE_H_
 #define CHROME_BROWSER_ASH_FILE_SUGGEST_FILE_SUGGEST_KEYED_SERVICE_H_
 
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -17,7 +18,6 @@
 #include "chrome/browser/ash/app_list/search/util/persistent_proto.h"
 #include "chrome/browser/ash/file_suggest/file_suggest_util.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 
@@ -113,7 +113,7 @@ class FileSuggestKeyedService : public KeyedService {
   // not appear. Then returns the filtered result through `callback`.
   void FilterRemovedSuggestions(
       GetSuggestFileDataCallback callback,
-      const absl::optional<std::vector<FileSuggestData>>& suggestions);
+      const std::optional<std::vector<FileSuggestData>>& suggestions);
 
   // Returns whether `proto_` is initialized.
   bool IsProtoInitialized() const;

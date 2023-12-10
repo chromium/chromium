@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/net/network_diagnostics/tls_prober.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -20,7 +21,6 @@
 #include "net/base/net_errors.h"
 #include "services/network/public/cpp/resolve_host_client_base.h"
 #include "services/network/public/cpp/simple_host_resolver.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::network_diagnostics {
 
@@ -94,8 +94,8 @@ TlsProber::~TlsProber() = default;
 void TlsProber::OnHostResolutionComplete(
     int result,
     const net::ResolveErrorInfo&,
-    const absl::optional<net::AddressList>& resolved_addresses,
-    const absl::optional<net::HostResolverEndpointResults>&) {
+    const std::optional<net::AddressList>& resolved_addresses,
+    const std::optional<net::HostResolverEndpointResults>&) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   host_resolver_.reset();
@@ -120,7 +120,7 @@ void TlsProber::OnHostResolutionComplete(
   CHECK(network_context);
 
   network_context->CreateTCPConnectedSocket(
-      /*local_addr=*/absl::nullopt, resolved_addresses.value(),
+      /*local_addr=*/std::nullopt, resolved_addresses.value(),
       /*tcp_connected_socket_options=*/nullptr,
       net::MutableNetworkTrafficAnnotationTag(GetTrafficAnnotationTag()),
       std::move(pending_receiver), /*observer=*/mojo::NullRemote(),
@@ -129,8 +129,8 @@ void TlsProber::OnHostResolutionComplete(
 
 void TlsProber::OnConnectComplete(
     int result,
-    const absl::optional<net::IPEndPoint>& local_addr,
-    const absl::optional<net::IPEndPoint>& peer_addr,
+    const std::optional<net::IPEndPoint>& local_addr,
+    const std::optional<net::IPEndPoint>& peer_addr,
     mojo::ScopedDataPipeConsumerHandle receive_stream,
     mojo::ScopedDataPipeProducerHandle send_stream) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -168,7 +168,7 @@ void TlsProber::OnConnectComplete(
 void TlsProber::OnTlsUpgrade(int result,
                              mojo::ScopedDataPipeConsumerHandle receive_stream,
                              mojo::ScopedDataPipeProducerHandle send_stream,
-                             const absl::optional<net::SSLInfo>& ssl_info) {
+                             const std::optional<net::SSLInfo>& ssl_info) {
   // |send_stream| and |receive_stream|, created on the TLS connection, fall out
   // of scope when this method completes.
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);

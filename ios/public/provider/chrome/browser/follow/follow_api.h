@@ -7,8 +7,8 @@
 
 #include <memory>
 
-#include "ios/chrome/browser/follow/follow_configuration.h"
-#include "ios/chrome/browser/follow/follow_service.h"
+#include "ios/chrome/browser/follow/model/follow_configuration.h"
+#include "ios/chrome/browser/follow/model/follow_service.h"
 
 namespace ios {
 namespace provider {

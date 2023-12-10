@@ -8,11 +8,14 @@
 
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/location.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_observer.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_refresh_cookie_fetcher.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_refresh_cookie_fetcher_impl.h"
+#include "chrome/browser/signin/bound_session_credentials/bound_session_switches.h"
 #include "chrome/browser/signin/bound_session_credentials/session_binding_helper.h"
 #include "chrome/browser/signin/wait_for_network_callback_helper_chrome.h"
 #include "content/public/browser/storage_partition.h"
@@ -20,7 +23,17 @@
 
 namespace {
 using Result = BoundSessionRefreshCookieFetcher::Result;
+
+void RecordNumberOfSuccessiveTimeoutIfAny(size_t successive_timeout) {
+  if (successive_timeout == 0) {
+    return;
+  }
+
+  base::UmaHistogramCounts100(
+      "Signin.BoundSessionCredentials.ThrottledRequestsSuccessiveTimeout",
+      successive_timeout);
 }
+}  // namespace
 
 BoundSessionCookieControllerImpl::BoundSessionCookieControllerImpl(
     unexportable_keys::UnexportableKeyService& key_service,
@@ -42,12 +55,30 @@ BoundSessionCookieControllerImpl::BoundSessionCookieControllerImpl(
   // Preemptively load the binding key to speed up the generation of binding
   // key assertion.
   session_binding_helper_->MaybeLoadBindingKey();
+
+  absl::optional<base::TimeDelta> cookie_rotation_delay =
+      bound_session_credentials::GetCookieRotationDelayIfSetByCommandLine();
+
+  if (cookie_rotation_delay) {
+    // `base::Unretained(this)` is safe because `this` owns
+    // `artifical_cookie_rotation_delay_`.
+    artifical_cookie_rotation_delay_ =
+        std::make_unique<base::RetainingOneShotTimer>(
+            FROM_HERE, *cookie_rotation_delay,
+            base::BindRepeating(
+                &BoundSessionCookieControllerImpl::StartCookieRefresh,
+                base::Unretained(this)));
+  }
+
+  artificial_cookie_rotation_result_ =
+      bound_session_credentials::GetCookieRotationResultIfSetByCommandLine();
 }
 
 BoundSessionCookieControllerImpl::~BoundSessionCookieControllerImpl() {
   // On shutdown or session termination, resume blocked requests if any.
   ResumeBlockedRequests(
       ResumeBlockedRequestsTrigger::kShutdownOrSessionTermination);
+  RecordNumberOfSuccessiveTimeoutIfAny(successive_timeout_);
 }
 
 void BoundSessionCookieControllerImpl::Initialize() {
@@ -127,6 +158,8 @@ void BoundSessionCookieControllerImpl::SetCookieExpirationTimeAndNotify(
   it->second = expiration_time;
   if (AreAllCookiesFresh()) {
     ResumeBlockedRequests(ResumeBlockedRequestsTrigger::kObservedFreshCookies);
+    RecordNumberOfSuccessiveTimeoutIfAny(successive_timeout_);
+    successive_timeout_ = 0;
   }
 
   if (min_cookie_expiration_time() != old_min_expiration_time) {
@@ -175,18 +208,32 @@ void BoundSessionCookieControllerImpl::MaybeRefreshCookie() {
   if (refresh_cookie_fetcher_) {
     return;
   }
-  refresh_cookie_fetcher_ = CreateRefreshCookieFetcher();
-  DCHECK(refresh_cookie_fetcher_);
-  // `base::Unretained(this)` is safe because `this` owns
-  // `refresh_cookie_fetcher_`.
-  refresh_cookie_fetcher_->Start(
-      base::BindOnce(&BoundSessionCookieControllerImpl::OnCookieRefreshFetched,
-                     base::Unretained(this)));
+
+  if (!artifical_cookie_rotation_delay_) {
+    StartCookieRefresh();
+  } else if (!artifical_cookie_rotation_delay_->IsRunning()) {
+    // Runs `StartCookieRefresh()` after a certain delay.
+    artifical_cookie_rotation_delay_->Reset();
+  }
+}
+
+void BoundSessionCookieControllerImpl::StartCookieRefresh() {
+  CHECK(!refresh_cookie_fetcher_);
+
+  if (artificial_cookie_rotation_result_) {
+    OnCookieRefreshFetched(*artificial_cookie_rotation_result_);
+  } else {
+    refresh_cookie_fetcher_ = CreateRefreshCookieFetcher();
+    // `base::Unretained(this)` is safe because `this` owns
+    // `refresh_cookie_fetcher_`.
+    refresh_cookie_fetcher_->Start(base::BindOnce(
+        &BoundSessionCookieControllerImpl::OnCookieRefreshFetched,
+        base::Unretained(this)));
+  }
 }
 
 void BoundSessionCookieControllerImpl::OnCookieRefreshFetched(
     BoundSessionRefreshCookieFetcher::Result result) {
-  // TODO(b/263263352): Record histogram with the result of the fetch.
   refresh_cookie_fetcher_.reset();
 
   ResumeBlockedRequestsTrigger trigger =
@@ -194,6 +241,8 @@ void BoundSessionCookieControllerImpl::OnCookieRefreshFetched(
           ? ResumeBlockedRequestsTrigger::kCookieRefreshFetchSuccess
           : ResumeBlockedRequestsTrigger::kCookieRefreshFetchFailure;
   // Resume blocked requests regardless of the result.
+  // `SetCookieExpirationTimeAndNotify()` should be called around the same time
+  // as `OnCookieRefreshFetched()` if the fetch was successful.
   ResumeBlockedRequests(trigger);
 
   // Persistent errors result in session termination.
@@ -243,4 +292,5 @@ void BoundSessionCookieControllerImpl::OnResumeBlockedRequestsTimeout() {
   // kResumeBlockedRequestTimeout. New requests will trigger a new fetch.
   refresh_cookie_fetcher_.reset();
   ResumeBlockedRequests(ResumeBlockedRequestsTrigger::kTimeout);
+  successive_timeout_++;
 }

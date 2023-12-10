@@ -161,7 +161,7 @@ class UnlockManagerImpl : public UnlockManager,
   // if and only if |error| is empty. If the auth attempt is accepted, unlocks
   // the screen.
   void FinalizeAuthAttempt(
-      const absl::optional<
+      const std::optional<
           SmartLockMetricsRecorder::SmartLockAuthResultFailureReason>& error);
 
   // Failed to create a connection to the host during the "initial scan". See
@@ -277,8 +277,8 @@ class UnlockManagerImpl : public UnlockManager,
   // Stores the last value emitted to the
   // SmartLock.GetRemoteStatus.Unlock(.Failure) metrics. Should be |nullopt|
   // until the first time GetRemoteStatus succeeds or fails.
-  absl::optional<bool> get_remote_status_unlock_success_;
-  absl::optional<GetRemoteStatusResultFailureReason>
+  std::optional<bool> get_remote_status_unlock_success_;
+  std::optional<GetRemoteStatusResultFailureReason>
       get_remote_status_unlock_failure_reason_;
 
   // Used to track if the "initial scan" has timed out. See

@@ -19,8 +19,8 @@
 
 namespace blink {
 
+class BlockNode;
 class ComputedStyle;
-class NGBlockNode;
 struct BoxStrut;
 
 // When table has collapsed borders, computing borders for table parts is
@@ -61,7 +61,7 @@ struct BoxStrut;
 
 class TableBorders : public GarbageCollected<TableBorders> {
  public:
-  static const TableBorders* ComputeTableBorders(const NGBlockNode&);
+  static const TableBorders* ComputeTableBorders(const BlockNode&);
 
   TableBorders(const BoxStrut& table_border, const bool is_collapsed);
 
@@ -134,14 +134,7 @@ class TableBorders : public GarbageCollected<TableBorders> {
         border_style = EBorderStyle::kNone;
         break;
     }
-    // The spec (https://drafts.csswg.org/css-backgrounds-3/#border-style)
-    // states that outset is treated as grove in the collapsing border model,
-    // and inset is treated as ridge in the collapsing border model.
-    if (border_style == EBorderStyle::kOutset)
-      return EBorderStyle::kGroove;
-    if (border_style == EBorderStyle::kInset)
-      return EBorderStyle::kRidge;
-    return border_style;
+    return ComputedStyle::CollapsedBorderStyle(border_style);
   }
 
   static Color BorderColor(const ComputedStyle* style, EdgeSide edge_side);
@@ -189,7 +182,7 @@ class TableBorders : public GarbageCollected<TableBorders> {
 
   const BoxStrut& TableBorder() const { return table_border_; }
 
-  BoxStrut CellBorder(const NGBlockNode& cell,
+  BoxStrut CellBorder(const BlockNode& cell,
                       wtf_size_t row,
                       wtf_size_t column,
                       wtf_size_t section,

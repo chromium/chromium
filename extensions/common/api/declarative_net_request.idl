@@ -6,7 +6,7 @@
 // network requests by specifying declarative rules. This lets extensions
 // modify network requests without intercepting them and viewing their content,
 // thus providing more privacy.
-[generate_error_messages, modernised_enums]
+[generate_error_messages]
 namespace declarativeNetRequest {
   // This describes the resource type of the network request.
   enum ResourceType {
@@ -781,20 +781,20 @@ namespace declarativeNetRequest {
 
     // The maximum number of combined dynamic and session scoped rules an
     // extension can add.
-    [value=5000] static long MAX_NUMBER_OF_DYNAMIC_AND_SESSION_RULES();
+    [nodoc, value=5000] static long MAX_NUMBER_OF_DYNAMIC_AND_SESSION_RULES();
 
     // The maximum number of dynamic rules that an extension can add.
-    [nodoc, value=30000] static long MAX_NUMBER_OF_DYNAMIC_RULES();
+    [value=30000] static long MAX_NUMBER_OF_DYNAMIC_RULES();
 
     // The maximum number of "unsafe" dynamic rules that an extension can add.
-    [nodoc, value=5000] static long MAX_NUMBER_OF_UNSAFE_DYNAMIC_RULES();
+    [value=5000] static long MAX_NUMBER_OF_UNSAFE_DYNAMIC_RULES();
 
     // The maximum number of session scoped rules that an extension can add.
-    [nodoc, value=5000] static long MAX_NUMBER_OF_SESSION_RULES();
+    [value=5000] static long MAX_NUMBER_OF_SESSION_RULES();
 
     // The maximum number of "unsafe" session scoped rules that an extension can
     // add.
-    [nodoc, value=5000] static long MAX_NUMBER_OF_UNSAFE_SESSION_RULES();
+    [value=5000] static long MAX_NUMBER_OF_UNSAFE_SESSION_RULES();
 
     // Time interval within which <code>MAX_GETMATCHEDRULES_CALLS_PER_INTERVAL
     // getMatchedRules</code> calls can be made, specified in minutes.

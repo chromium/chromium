@@ -94,9 +94,8 @@ class NavigationEntryScreenshotCacheTest : public RenderViewHostTestHarness {
   void AssertBitmapOfColor(
       std::unique_ptr<NavigationEntryScreenshot> screenshot,
       SkColor color) {
-    auto ui_resource = screenshot->GetBitmap(0, false);
-    ASSERT_EQ(ui_resource.GetSize(), size_);
-    auto bitmap = ui_resource.GetBitmapForTesting();
+    ASSERT_EQ(screenshot->GetDimensions(), size_);
+    auto bitmap = screenshot->GetBitmapForTesting();
     int num_pixel_mismatch = 0;
     gfx::Rect err_bounding_box;
     for (int r = 0; r < size_.height(); ++r) {

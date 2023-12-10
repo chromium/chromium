@@ -1,0 +1,46 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module display.mojom;
+
+import "skia/public/mojom/skcolorspace.mojom";
+import "ui/display/mojom/gamma_ramp_rgb_entry.mojom";
+
+// A structure that specifies curves for the red, green, and blue color
+// channels.
+struct GammaCurve {
+  // An array of RGB samples that specify a look-up table (LUT) that uniformly
+  // samples the unit interval. This may have any number of entries (including
+  // 0 which evaluates to identity and 1 which evaluates to a constant).
+  array<GammaRampRGBEntry> lut;
+};
+
+// A structure that contains color calibration information extracted from an
+// ICC profile.
+struct ColorCalibration {
+  // The curve that converts from sRGB to sRGB linear space.
+  display.mojom.GammaCurve srgb_to_linear;
+
+  // The matrix that converts from sRGB linear space to the device's linear
+  // space.
+  skia.mojom.SkcmsMatrix3x3 srgb_to_device_matrix;
+
+  // The curve that converts from the device's linear space to the device's
+  // encoding space.
+  display.mojom.GammaCurve linear_to_device;
+};
+
+// A structure that contains the transformation to make to the display's color
+// due to adaptations for color temperature.
+struct ColorTemperatureAdjustment {
+  // A matrix to apply in sRGB space.
+  skia.mojom.SkcmsMatrix3x3 srgb_matrix;
+};
+
+// A structure that contains a per-channel transformation to make in the
+// display's color space to adjust the brightness of the screen.
+struct GammaAdjustment {
+  display.mojom.GammaCurve curve;
+};
+

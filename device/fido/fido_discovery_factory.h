@@ -94,8 +94,14 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDiscoveryFactory {
 
   // Provides the passkeys that will be made available to use for cloud-based
   // enclave authentication.
-  void SetEnclavePasskeys(
+  void set_enclave_passkeys(
       std::vector<sync_pb::WebauthnCredentialSpecifics> passkeys);
+
+  // Provides a callback that will be called when a passkey is created with
+  // the enclave authenticator in order to save the new passkey to sync data.
+  void set_enclave_passkey_creation_callback(
+      base::RepeatingCallback<void(sync_pb::WebauthnCredentialSpecifics)>
+          callback);
 
 #if BUILDFLAG(IS_MAC)
   // Configures the Touch ID authenticator. Set to absl::nullopt to disable it.
@@ -183,6 +189,8 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDiscoveryFactory {
 #endif  // BUILDFLAG(IS_CHROMEOS)
   base::flat_set<VidPid> hid_ignore_list_;
   std::vector<sync_pb::WebauthnCredentialSpecifics> enclave_passkeys_;
+  base::RepeatingCallback<void(sync_pb::WebauthnCredentialSpecifics)>
+      enclave_passkey_creation_callback_;
 };
 
 }  // namespace device

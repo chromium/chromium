@@ -1,9 +1,0 @@
-EVENT(webkitfullscreenchange)
-EXPECTED (computedStyle.minWidth == '0px') OK
-EXPECTED (computedStyle.maxWidth == 'none') OK
-EXPECTED (computedStyle.minHeight == '0px') OK
-EXPECTED (computedStyle.maxHeight == 'none') OK
-EXPECTED (computedStyle.width == '980px') OK
-EXPECTED (computedStyle.height == '735px') OK
-END OF TEST
-

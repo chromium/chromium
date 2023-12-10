@@ -18,18 +18,26 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/trace_event/trace_event.h"
+#include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/api/tab_groups/tab_groups_util.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_live_tab_context.h"
+#include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/tabs/organization/tab_organization_service.h"
+#include "chrome/browser/ui/tabs/organization/tab_organization_service_factory.h"
+#include "chrome/browser/ui/tabs/organization/tab_organization_utils.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_renderer_data.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
@@ -41,8 +49,12 @@
 #include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/browser/user_education/user_education_service_factory.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/grit/generated_resources.h"
+#include "components/optimization_guide/core/optimization_guide_model_executor.h"
+#include "components/signin/public/base/signin_metrics.h"
 #include "components/user_education/common/tutorial_identifier.h"
 #include "components/user_education/common/tutorial_service.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/time_format.h"
 #include "ui/color/color_provider.h"
 
@@ -111,6 +123,52 @@ gfx::ImageSkia ThemeFavicon(const gfx::ImageSkia& source,
       provider.GetColor(kColorTabSearchBackground));
 }
 
+TabOrganization* GetTabOrganization(TabOrganizationService* service,
+                                    int32_t session_id,
+                                    int32_t organization_id) {
+  Browser* browser = chrome::FindLastActive();
+  if (!browser) {
+    return nullptr;
+  }
+
+  if (!service) {
+    return nullptr;
+  }
+
+  TabOrganizationSession* session = service->GetSessionForBrowser(browser);
+  if (!session || session->session_id() != session_id) {
+    return nullptr;
+  }
+
+  TabOrganization* matching_organization = nullptr;
+  for (const std::unique_ptr<TabOrganization>& organization :
+       session->tab_organizations()) {
+    if (organization->organization_id() == organization_id) {
+      matching_organization = organization.get();
+      break;
+    }
+  }
+
+  return matching_organization;
+}
+
+tab_search::mojom::TabOrganizationSessionPtr CreateFailedMojoSession() {
+  tab_search::mojom::TabOrganizationSessionPtr mojo_session =
+      tab_search::mojom::TabOrganizationSession::New();
+  mojo_session->state = tab_search::mojom::TabOrganizationState::kFailure;
+  mojo_session->error = tab_search::mojom::TabOrganizationError::kGeneric;
+
+  return mojo_session;
+}
+
+tab_search::mojom::TabOrganizationSessionPtr CreateNotStartedMojoSession() {
+  tab_search::mojom::TabOrganizationSessionPtr mojo_session =
+      tab_search::mojom::TabOrganizationSession::New();
+  mojo_session->state = tab_search::mojom::TabOrganizationState::kNotStarted;
+
+  return mojo_session;
+}
+
 }  // namespace
 
 TabSearchPageHandler::TabSearchPageHandler(
@@ -130,6 +188,14 @@ TabSearchPageHandler::TabSearchPageHandler(
           base::BindRepeating(&TabSearchPageHandler::NotifyTabsChanged,
                               base::Unretained(this)))) {
   browser_tab_strip_tracker_.Init();
+  Profile* profile = Profile::FromWebUI(web_ui_);
+  if (TabOrganizationUtils::GetInstance()->IsEnabled(profile)) {
+    organization_service_ =
+        TabOrganizationServiceFactory::GetForProfile(profile);
+    if (organization_service_) {
+      organization_service_->AddObserver(this);
+    }
+  }
 }
 
 TabSearchPageHandler::~TabSearchPageHandler() {
@@ -139,10 +205,16 @@ TabSearchPageHandler::~TabSearchPageHandler() {
                                 called_switch_to_tab_
                                     ? TabSearchCloseAction::kTabSwitch
                                     : TabSearchCloseAction::kNoAction);
+  if (organization_service_) {
+    organization_service_->RemoveObserver(this);
+  }
+  for (TabOrganizationSession* session : listened_sessions_) {
+    session->RemoveObserver(this);
+  }
 }
 
 void TabSearchPageHandler::CloseTab(int32_t tab_id) {
-  absl::optional<TabDetails> optional_details = GetTabDetails(tab_id);
+  std::optional<TabDetails> optional_details = GetTabDetails(tab_id);
   if (!optional_details)
     return;
 
@@ -166,15 +238,68 @@ void TabSearchPageHandler::AcceptTabOrganization(
     int32_t organization_id,
     const std::u16string& name,
     std::vector<tab_search::mojom::TabPtr> tabs) {
-  // TODO(dpenning): Implement this
   Browser* browser = chrome::FindLastActive();
-  browser->profile()->GetPrefs()->SetBoolean(
-      tab_search_prefs::kTabOrganizationShowFRE, false);
+  if (!browser) {
+    return;
+  }
+
+  Profile* profile = Profile::FromWebUI(web_ui_);
+  if (browser->profile() != profile) {
+    return;
+  }
+
+  profile->GetPrefs()->SetBoolean(tab_search_prefs::kTabOrganizationShowFRE,
+                                  false);
+  if (!organization_service_) {
+    return;
+  }
+
+  TabOrganization* organization =
+      GetTabOrganization(organization_service_, session_id, organization_id);
+  if (!organization) {
+    return;
+  }
+
+  std::vector<int> tabs_tab_ids;
+  for (tab_search::mojom::TabPtr& tab : tabs) {
+    tabs_tab_ids.emplace_back(tab->tab_id);
+  }
+
+  std::vector<TabData::TabID> tab_ids_to_remove;
+  for (const auto& tab_data : organization->tab_datas()) {
+    if (!tab_data->web_contents() ||
+        !base::Contains(tabs_tab_ids, extensions::ExtensionTabUtil::GetTabId(
+                                          tab_data->web_contents()))) {
+      tab_ids_to_remove.emplace_back(tab_data->tab_id());
+    }
+  }
+
+  for (const auto& tab_id : tab_ids_to_remove) {
+    organization->RemoveTabData(tab_id);
+  }
+
+  if (organization->GetDisplayName() != name) {
+    organization->SetCurrentName(name);
+  }
+
+  organization_service_->AcceptTabOrganization(browser, session_id,
+                                               organization_id);
+
+  auto embedder = webui_controller_->embedder();
+  if (embedder) {
+    embedder->CloseUI();
+  }
 }
 
 void TabSearchPageHandler::RejectTabOrganization(int32_t session_id,
                                                  int32_t organization_id) {
-  // TODO(dpenning): Implement this
+  TabOrganization* organization =
+      GetTabOrganization(organization_service_, session_id, organization_id);
+  if (!organization) {
+    return;
+  }
+
+  organization->Reject();
 }
 
 void TabSearchPageHandler::GetProfileData(GetProfileDataCallback callback) {
@@ -205,12 +330,35 @@ void TabSearchPageHandler::GetProfileData(GetProfileDataCallback callback) {
 
 void TabSearchPageHandler::GetTabOrganizationSession(
     GetTabOrganizationSessionCallback callback) {
-  auto session = tab_search::mojom::TabOrganizationSession::New();
-  // TODO(dpenning): Fill out session
-  std::move(callback).Run(std::move(session));
+  Browser* browser = chrome::FindLastActive();
+  if (!browser) {
+    std::move(callback).Run(CreateFailedMojoSession());
+    return;
+  }
+
+  if (!organization_service_) {
+    std::move(callback).Run(CreateFailedMojoSession());
+    return;
+  }
+
+  TabOrganizationSession* session =
+      organization_service_->GetSessionForBrowser(browser);
+  if (!session) {
+    session = organization_service_->CreateSessionForBrowser(browser);
+  }
+
+  if (!base::Contains(listened_sessions_, session)) {
+    session->AddObserver(this);
+    listened_sessions_.emplace_back(session);
+  }
+
+  tab_search::mojom::TabOrganizationSessionPtr mojo_session =
+      GetMojoForTabOrganizationSession(session);
+
+  std::move(callback).Run(std::move(mojo_session));
 }
 
-absl::optional<TabSearchPageHandler::TabDetails>
+std::optional<TabSearchPageHandler::TabDetails>
 TabSearchPageHandler::GetTabDetails(int32_t tab_id) {
   for (auto* browser : *BrowserList::GetInstance()) {
     if (!ShouldTrackBrowser(browser)) {
@@ -226,12 +374,12 @@ TabSearchPageHandler::GetTabDetails(int32_t tab_id) {
     }
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void TabSearchPageHandler::SwitchToTab(
     tab_search::mojom::SwitchToTabInfoPtr switch_to_tab_info) {
-  absl::optional<TabDetails> optional_details =
+  std::optional<TabDetails> optional_details =
       GetTabDetails(switch_to_tab_info->tab_id);
   if (!optional_details)
     return;
@@ -270,7 +418,64 @@ void TabSearchPageHandler::OpenRecentlyClosedEntry(int32_t session_id) {
 }
 
 void TabSearchPageHandler::RequestTabOrganization() {
-  // TODO(dpenning): Implement this
+  Browser* browser = chrome::FindLastActive();
+  if (!browser) {
+    return;
+  }
+
+  if (!organization_service_) {
+    return;
+  }
+
+  TabOrganizationSession* session =
+      organization_service_->GetSessionForBrowser(browser);
+  if (!session) {
+    session = organization_service_->CreateSessionForBrowser(browser);
+  } else if (session->IsComplete()) {
+    session = organization_service_->ResetSessionForBrowser(browser);
+  }
+
+  if (!base::Contains(listened_sessions_, session)) {
+    session->AddObserver(this);
+    listened_sessions_.emplace_back(session);
+  }
+  session->StartRequest();
+}
+
+void TabSearchPageHandler::RemoveTabFromOrganization(
+    int32_t session_id,
+    int32_t organization_id,
+    tab_search::mojom::TabPtr tab) {
+  if (!organization_service_) {
+    return;
+  }
+
+  TabOrganization* organization =
+      GetTabOrganization(organization_service_, session_id, organization_id);
+  if (!organization) {
+    return;
+  }
+
+  for (const auto& tab_data : organization->tab_datas()) {
+    if (extensions::ExtensionTabUtil::GetTabId(tab_data->web_contents()) ==
+        tab->tab_id) {
+      organization->RemoveTabData(tab_data->tab_id());
+      break;
+    }
+  }
+}
+
+void TabSearchPageHandler::ResetSession() {
+  Browser* browser = chrome::FindLastActive();
+  if (!browser) {
+    return;
+  }
+
+  if (!organization_service_) {
+    return;
+  }
+
+  organization_service_->ResetSessionForBrowser(browser);
 }
 
 void TabSearchPageHandler::SaveRecentlyClosedExpandedPref(bool expanded) {
@@ -308,6 +513,89 @@ void TabSearchPageHandler::StartTabGroupTutorial() {
 
   user_education::TutorialIdentifier tutorial_id = kTabGroupTutorialId;
   tutorial_service->StartTutorial(tutorial_id, context);
+}
+
+void TabSearchPageHandler::TriggerFeedback(int32_t session_id) {
+  TabOrganizationSession* session =
+      organization_service_->GetSessionForBrowser(chrome::FindLastActive());
+  const std::u16string feedback_id = session->feedback_id();
+  // Bypass feedback flow if there is no feedback id, as in tests.
+  if (session->session_id() != session_id || feedback_id.length() == 0) {
+    return;
+  }
+  Browser* browser = chrome::FindLastActive();
+  base::Value::Dict feedback_metadata;
+  feedback_metadata.Set("log_id", feedback_id);
+  chrome::ShowFeedbackPage(
+      browser, chrome::kFeedbackSourceAI,
+      /*description_template=*/std::string(),
+      /*description_placeholder_text=*/
+      l10n_util::GetStringUTF8(IDS_TAB_ORGANIZATION_FEEDBACK_PLACEHOLDER),
+      /*category_tag=*/"tab_organization",
+      /*extra_diagnostics=*/std::string(),
+      /*autofill_metadata=*/base::Value::Dict(), std::move(feedback_metadata));
+}
+
+void TabSearchPageHandler::TriggerSync() {
+  Profile* profile = chrome::FindLastActive()->profile();
+  signin_ui_util::EnableSyncFromSingleAccountPromo(
+      profile,
+      IdentityManagerFactory::GetForProfile(profile)->GetPrimaryAccountInfo(
+          signin::ConsentLevel::kSignin),
+      signin_metrics::AccessPoint::ACCESS_POINT_TAB_ORGANIZATION);
+}
+
+void TabSearchPageHandler::TriggerSignIn() {
+  Profile* profile = chrome::FindLastActive()->profile();
+  signin_ui_util::ShowReauthForPrimaryAccountWithAuthError(
+      profile, signin_metrics::AccessPoint::ACCESS_POINT_TAB_ORGANIZATION);
+}
+
+void TabSearchPageHandler::OpenHelpPage() {
+  Browser* browser = chrome::FindLastActive();
+  GURL help_url("https://support.google.com/chrome?p=tab_organization");
+  NavigateParams params(browser, help_url,
+                        ui::PageTransition::PAGE_TRANSITION_LINK);
+  params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  Navigate(&params);
+}
+
+void TabSearchPageHandler::OpenSyncSettings() {
+  Browser* browser = chrome::FindLastActive();
+  GURL settings_url("chrome://settings/syncSetup/advanced");
+  NavigateParams params(browser, settings_url,
+                        ui::PageTransition::PAGE_TRANSITION_LINK);
+  params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  Navigate(&params);
+}
+
+void TabSearchPageHandler::SetUserFeedback(
+    int32_t session_id,
+    int32_t organization_id,
+    tab_search::mojom::UserFeedback feedback) {
+  optimization_guide::proto::UserFeedback user_feedback;
+  switch (feedback) {
+    case tab_search::mojom::UserFeedback::kUserFeedBackPositive:
+      user_feedback =
+          optimization_guide::proto::UserFeedback::USER_FEEDBACK_THUMBS_UP;
+      break;
+    case tab_search::mojom::UserFeedback::kUserFeedBackNegative:
+      user_feedback =
+          optimization_guide::proto::UserFeedback::USER_FEEDBACK_THUMBS_DOWN;
+      break;
+    case tab_search::mojom::UserFeedback::kUserFeedBackUnspecified:
+      user_feedback =
+          optimization_guide::proto::UserFeedback::USER_FEEDBACK_UNSPECIFIED;
+      break;
+  }
+
+  TabOrganization* organization =
+      GetTabOrganization(organization_service_, session_id, organization_id);
+  if (!organization) {
+    return;
+  }
+
+  organization->SetFeedback(user_feedback);
 }
 
 void TabSearchPageHandler::ShowUI() {
@@ -512,7 +800,7 @@ tab_search::mojom::TabPtr TabSearchPageHandler::GetTab(
   tab_data->active = tab_strip_model->active_index() == index;
   tab_data->tab_id = extensions::ExtensionTabUtil::GetTabId(contents);
   tab_data->index = index;
-  const absl::optional<tab_groups::TabGroupId> group_id =
+  const std::optional<tab_groups::TabGroupId> group_id =
       tab_strip_model->GetTabGroupForTab(index);
   if (group_id.has_value()) {
     tab_data->group_id = group_id.value().token();
@@ -561,6 +849,8 @@ tab_search::mojom::TabPtr TabSearchPageHandler::GetTab(
                           std::back_inserter(tab_data->alert_states),
                           [](TabAlertState alert) {
                             return alert == TabAlertState::MEDIA_RECORDING ||
+                                   alert == TabAlertState::AUDIO_RECORDING ||
+                                   alert == TabAlertState::VIDEO_RECORDING ||
                                    alert == TabAlertState::AUDIO_PLAYING ||
                                    alert == TabAlertState::AUDIO_MUTING;
                           });
@@ -676,13 +966,6 @@ void TabSearchPageHandler::TabChangedAt(content::WebContents* contents,
   page_->TabUpdated(std::move(tab_update_info));
 }
 
-void TabSearchPageHandler::OnTabOrganizationSessionChanged() {
-  auto session = tab_search::mojom::TabOrganizationSession::New();
-  // TODO(dpenning): Fill out session
-  session->state = tab_search::mojom::TabOrganizationState::kNotStarted;
-  page_->TabOrganizationSessionUpdated(std::move(session));
-}
-
 void TabSearchPageHandler::ScheduleDebounce() {
   if (!debounce_timer_->IsRunning())
     debounce_timer_->Reset();
@@ -717,6 +1000,10 @@ TabSearchPageHandler::GetMojoForTabOrganization(
 
   std::vector<tab_search::mojom::TabPtr> tabs;
   for (const std::unique_ptr<TabData>& tab_data : organization->tab_datas()) {
+    if (!tab_data->IsValidForOrganizing()) {
+      continue;
+    }
+
     tabs.emplace_back(GetMojoForTabData(tab_data.get()));
   }
 
@@ -729,15 +1016,15 @@ TabSearchPageHandler::GetMojoForTabOrganization(
 
 tab_search::mojom::TabOrganizationSessionPtr
 TabSearchPageHandler::GetMojoForTabOrganizationSession(
-    const TabOrganizationSession& session) const {
+    const TabOrganizationSession* session) const {
   tab_search::mojom::TabOrganizationSessionPtr mojo_session =
       tab_search::mojom::TabOrganizationSession::New();
 
-  mojo_session->session_id = session.session_id();
+  mojo_session->session_id = session->session_id();
   mojo_session->error = tab_search::mojom::TabOrganizationError::kNone;
   std::vector<tab_search::mojom::TabOrganizationPtr> organizations;
 
-  TabOrganizationRequest::State state = session.request()->state();
+  TabOrganizationRequest::State state = session->request()->state();
   switch (state) {
     case TabOrganizationRequest::State::NOT_STARTED: {
       mojo_session->state =
@@ -750,11 +1037,23 @@ TabSearchPageHandler::GetMojoForTabOrganizationSession(
       break;
     }
     case TabOrganizationRequest::State::COMPLETED: {
-      if (session.tab_organizations().size() > 0) {
-        mojo_session->state = tab_search::mojom::TabOrganizationState::kSuccess;
-        for (const auto& organization : session.tab_organizations()) {
+      if (session->tab_organizations().size() > 0) {
+        for (const std::unique_ptr<TabOrganization>& organization :
+             session->tab_organizations()) {
+          if (!organization->IsValidForOrganizing()) {
+            continue;
+          }
           organizations.emplace_back(
               GetMojoForTabOrganization(organization.get()));
+        }
+        if (organizations.size() > 0) {
+          mojo_session->state =
+              tab_search::mojom::TabOrganizationState::kSuccess;
+        } else {
+          mojo_session->state =
+              tab_search::mojom::TabOrganizationState::kFailure;
+          mojo_session->error =
+              tab_search::mojom::TabOrganizationError::kGrouping;
         }
       } else {
         mojo_session->state = tab_search::mojom::TabOrganizationState::kFailure;
@@ -773,6 +1072,43 @@ TabSearchPageHandler::GetMojoForTabOrganizationSession(
   mojo_session->organizations = std::move(organizations);
 
   return mojo_session;
+}
+
+void TabSearchPageHandler::OnTabOrganizationSessionUpdated(
+    const TabOrganizationSession* session) {
+  if (!base::Contains(listened_sessions_, session)) {
+    return;
+  }
+
+  tab_search::mojom::TabOrganizationSessionPtr mojo_session =
+      GetMojoForTabOrganizationSession(session);
+
+  page_->TabOrganizationSessionUpdated(std::move(mojo_session));
+}
+
+void TabSearchPageHandler::OnTabOrganizationSessionDestroyed(
+    TabOrganizationSession::ID session_id) {
+  for (auto session_iter = listened_sessions_.begin();
+       session_iter != listened_sessions_.end(); session_iter++) {
+    if (session_id == (*session_iter)->session_id()) {
+      listened_sessions_.erase(session_iter);
+      page_->TabOrganizationSessionUpdated(CreateNotStartedMojoSession());
+      return;
+    }
+  }
+}
+
+void TabSearchPageHandler::OnSessionCreated(const Browser* browser,
+                                            TabOrganizationSession* session) {
+  Profile* const profile = Profile::FromWebUI(web_ui_);
+  if (!browser || browser->profile() != profile) {
+    return;
+  }
+
+  session->AddObserver(this);
+  listened_sessions_.emplace_back(session);
+
+  OnTabOrganizationSessionUpdated(session);
 }
 
 bool TabSearchPageHandler::ShouldTrackBrowser(Browser* browser) {

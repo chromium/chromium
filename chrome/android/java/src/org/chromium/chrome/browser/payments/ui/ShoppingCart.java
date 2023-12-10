@@ -10,9 +10,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-/**
- * The shopping cart contents and total.
- */
+/** The shopping cart contents and total. */
 public class ShoppingCart {
     private LineItem mTotal;
     @Nullable private List<LineItem> mContents;
@@ -53,7 +51,8 @@ public class ShoppingCart {
      *
      * @return The shopping cart items. Can be null. Should not be modified.
      */
-    @Nullable public List<LineItem> getContents() {
+    @Nullable
+    public List<LineItem> getContents() {
         if (mContents == null && mAdditionalContents == null) return null;
 
         List<LineItem> result = new ArrayList<>();

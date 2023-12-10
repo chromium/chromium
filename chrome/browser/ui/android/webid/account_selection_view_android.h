@@ -24,24 +24,24 @@ class AccountSelectionViewAndroid : public AccountSelectionView {
   // AccountSelectionView:
   void Show(
       const std::string& top_frame_for_display,
-      const absl::optional<std::string>& iframe_for_display,
+      const std::optional<std::string>& iframe_for_display,
       const std::vector<content::IdentityProviderData>& identity_provider_data,
       Account::SignInMode sign_in_mode,
       bool show_auto_reauthn_checkbox) override;
   void ShowFailureDialog(
       const std::string& top_frame_for_display,
-      const absl::optional<std::string>& iframe_for_display,
+      const std::optional<std::string>& iframe_for_display,
       const std::string& idp_for_display,
       const blink::mojom::RpContext& rp_context,
       const content::IdentityProviderMetadata& idp_metadata) override;
   void ShowErrorDialog(const std::string& top_frame_for_display,
-                       const absl::optional<std::string>& iframe_for_display,
+                       const std::optional<std::string>& iframe_for_display,
                        const std::string& idp_for_display,
                        const blink::mojom::RpContext& rp_context,
                        const content::IdentityProviderMetadata& idp_metadata,
-                       const absl::optional<TokenError>& error) override;
+                       const std::optional<TokenError>& error) override;
   std::string GetTitle() const override;
-  absl::optional<std::string> GetSubtitle() const override;
+  std::optional<std::string> GetSubtitle() const override;
   content::WebContents* ShowModalDialog(const GURL& url) override;
   void CloseModalDialog() override;
 
@@ -52,9 +52,8 @@ class AccountSelectionViewAndroid : public AccountSelectionView {
       const base::android::JavaParamRef<jobject>& account_picture_url,
       bool is_sign_in);
   void OnDismiss(JNIEnv* env, jint dismiss_reason);
-  void OnSignInToIdp(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& idp_config_url);
+  void OnLoginToIdP(JNIEnv* env,
+                    const base::android::JavaParamRef<jobject>& idp_login_url);
   void OnMoreDetails(JNIEnv* env);
 
  private:

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/fast_checkout/fast_checkout_personal_data_helper_impl.h"
 
+#include <functional>
+
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -61,8 +63,7 @@ std::vector<autofill::CreditCard*>
 FastCheckoutPersonalDataHelperImpl::GetValidCreditCards() const {
   std::vector<autofill::CreditCard*> cards =
       GetPersonalDataManager()->GetCreditCardsToSuggest();
-  base::EraseIf(cards,
-                base::not_fn(&autofill::CreditCard::IsCompleteValidCard));
+  base::EraseIf(cards, std::not_fn(&autofill::CreditCard::IsCompleteValidCard));
   return cards;
 }
 

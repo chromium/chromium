@@ -1,7 +1,4 @@
 This is a testharness.js-based test.
-[PASS] Same events are ordered by elements
-[PASS] Same events on pseudo-elements follow the prescribed order
-[PASS] Same events on pseudo-elements follow the prescribed order (::marker)
 [FAIL] Start and iteration events are ordered by time
   assert_equals: Event #1 types should match (expected: animationiteration, animationstart, actual: animationstart, animationiteration) expected "animationiteration" but got "animationstart"
 [FAIL] Iteration and end events are ordered by time

@@ -9,6 +9,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/test/aura_test_base.h"
 #include "ui/aura/test/test_windows.h"
+#include "ui/wm/core/window_util.h"
 
 namespace ash {
 
@@ -21,6 +22,7 @@ TEST_F(WindowDimmerTest, Occlusion) {
       SK_ColorWHITE, 1, root_window->bounds(), root_window);
   bottom_window->TrackOcclusionState();
   WindowDimmer dimmer(root_window);
+
   EXPECT_EQ(aura::Window::OcclusionState::VISIBLE,
             bottom_window->GetOcclusionState());
   // Sanity check: An opaque window on top of |bottom_window| occludes it.
@@ -28,6 +30,10 @@ TEST_F(WindowDimmerTest, Occlusion) {
                                root_window);
   EXPECT_EQ(aura::Window::OcclusionState::OCCLUDED,
             bottom_window->GetOcclusionState());
+
+  // The dimming window should never be activate-able even when it's visible.
+  dimmer.window()->Show();
+  EXPECT_FALSE(wm::CanActivateWindow(dimmer.window()));
 }
 
 }  // namespace ash

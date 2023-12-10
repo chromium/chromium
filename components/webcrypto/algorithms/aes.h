@@ -7,7 +7,7 @@
 
 #include <stdint.h>
 
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "components/webcrypto/algorithm_implementation.h"
 
 namespace webcrypto {

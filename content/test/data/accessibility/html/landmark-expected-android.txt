@@ -74,3 +74,11 @@ android.webkit.WebView focusable focused scrollable
 ++++android.widget.TextView name='This should NOT have complementary role.'
 ++android.view.View role_description='main'
 ++++android.view.View role_description='complementary' name='This should have complementary role.'
+++android.view.View role_description='article'
+++++android.view.View role_description='complementary' name='This should have complementary role.'
+++android.view.View role_description='complementary'
+++++android.view.View role_description='complementary' name='This should have complementary role.'
+++android.view.View role_description='navigation'
+++++android.view.View role_description='complementary' name='This should have complementary role.'
+++android.view.View
+++++android.view.View role_description='complementary' name='This should have complementary role.'

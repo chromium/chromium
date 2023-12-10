@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+[FAIL] Fetching a resource from the same origin, but spelled with a trailing dot.
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to fetch"
+[FAIL] Fetching a resource from the same site, but spelled with a trailing dot.
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to fetch"
+[FAIL] Fetching a resource from a cross-site host, spelled with a trailing dot.
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to fetch"
+Harness: the test ran to completion.

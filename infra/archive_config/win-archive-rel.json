@@ -102,8 +102,6 @@
         },
         {
             "files": [
-                "blink_deprecated_test_plugin.dll",
-                "blink_test_plugin.dll",
                 "content_shell.exe",
                 "content_shell.pak",
                 "icudtl.dat",

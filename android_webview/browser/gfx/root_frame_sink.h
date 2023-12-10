@@ -94,6 +94,7 @@ class RootFrameSink : public base::RefCounted<RootFrameSink>,
   void ReclaimResources(std::vector<viz::ReturnedResource> resources) override;
   void OnCompositorFrameTransitionDirectiveProcessed(
       uint32_t sequence_id) override {}
+  void OnSurfaceEvicted(const viz::LocalSurfaceId& local_surface_id) override {}
 
   // viz::ExternalBeginFrameSourceClient overrides.
   void OnNeedsBeginFrames(bool needs_begin_frames) override;

@@ -122,11 +122,11 @@ void AppInfoGenerator::RegisterProfilePrefs(PrefRegistrySimple* registry) {
 const AppInfoGenerator::Result AppInfoGenerator::Generate() const {
   if (!should_report_) {
     VLOG(1) << "App usage reporting is not enabled for this user.";
-    return absl::nullopt;
+    return std::nullopt;
   }
   if (!provider_) {
     VLOG(1) << "No affiliated user session. Returning empty app list.";
-    return absl::nullopt;
+    return std::nullopt;
   }
   auto activity_periods = provider_->activity_storage.GetActivityPeriods();
   auto activity_compare = [](const em::TimePeriod& time_period1,

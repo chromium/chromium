@@ -3,8 +3,10 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/webui/management/management_ui_handler.h"
+
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <utility>
@@ -19,7 +21,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/ash/policy/remote_commands/fake_start_crd_session_job_delegate.h"
+#include "chrome/browser/ash/policy/remote_commands/crd/fake_start_crd_session_job_delegate.h"
 #include "chrome/browser/enterprise/connectors/test/deep_scanning_test_utils.h"
 #include "chrome/browser/enterprise/reporting/prefs.h"
 #include "chrome/browser/policy/dm_token_utils.h"
@@ -54,7 +56,6 @@
 #include "extensions/common/extension_builder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -362,7 +363,7 @@ class ManagementUIHandlerTests : public TestingBaseClass {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     extracted_.management_overview = ExtractPathFromDict(data, "overview");
     extracted_.update_required_eol = ExtractPathFromDict(data, "eolMessage");
-    absl::optional<bool> showProxyDisclosure =
+    std::optional<bool> showProxyDisclosure =
         data.FindBool("showMonitoredNetworkPrivacyDisclosure");
     extracted_.show_monitored_network_privacy_disclosure =
         showProxyDisclosure.has_value() && showProxyDisclosure.value();
@@ -370,7 +371,7 @@ class ManagementUIHandlerTests : public TestingBaseClass {
     extracted_.browser_management_notice =
         ExtractPathFromDict(data, "browserManagementNotice");
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-    absl::optional<bool> managed = data.FindBool("managed");
+    std::optional<bool> managed = data.FindBool("managed");
     extracted_.managed = managed.has_value() && managed.value();
   }
 

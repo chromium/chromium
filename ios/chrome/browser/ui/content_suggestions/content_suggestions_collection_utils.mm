@@ -6,9 +6,8 @@
 
 #import "base/i18n/rtl.h"
 #import "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/ntp/features.h"
-#import "ios/chrome/browser/ntp/home/features.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/elements/new_feature_badge_view.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
@@ -67,6 +66,14 @@ const CGFloat kLargeFakeboxGoogleSearchLogoHeight = 50;
 // The size of the symbol image.
 const CGFloat kSymbolContentSuggestionsPointSize = 18;
 
+// Constants for a symbol button with an new badge.
+const CGFloat kSymbolButtonSize = 37.0;
+const CGFloat kSymbolWithNewBadgePointSize = 18.0;
+const CGFloat kButtonShadowOpacity = 0.35;
+const CGFloat kButtonShadowRadius = 1.0;
+const CGFloat kButtonShadowVerticalOffset = 1.0;
+const CGFloat kNewBadgeOffsetFromButtonCenter = 14.0;
+
 // The height of the Fakebox.
 const CGFloat kFakeboxHeight = 65;
 const CGFloat kFakeboxHeightNonDynamic = 45;
@@ -74,6 +81,11 @@ const CGFloat kFakeboxHeightNonDynamic = 45;
 // The height of the Fakebox when it is pinned to the top.
 const CGFloat kPinnedFakeboxHeight = 48;
 const CGFloat kPinnedFakeboxHeightNonDynamic = 18;
+
+// Height and width of the new feature badge.
+const CGFloat kNewFeatureBadgeSize = 20;
+// Font size of the new feature badge label.
+const CGFloat kNewFeatureFontSize = 10;
 
 // Returns the amount of vertical margin to include in the Fake Toolbar.
 CGFloat FakeToolbarVerticalMargin() {
@@ -96,6 +108,45 @@ UIColor* FakeboxIconColor() {
     return [UIColor colorNamed:@"fake_omnibox_placeholder_color"];
   }
   return [UIColor colorNamed:kTextfieldPlaceholderColor];
+}
+
+// Sets up fakebox button with a symbol and a round background.
+void SetUpButtonWithNewFeatureBadge(UIButton* button, NSString* symbol_name) {
+  [button setTranslatesAutoresizingMaskIntoConstraints:NO];
+  UIImageSymbolConfiguration* configuration = [UIImageSymbolConfiguration
+      configurationWithPointSize:kSymbolWithNewBadgePointSize
+                          weight:UIImageSymbolWeightSemibold
+                           scale:UIImageSymbolScaleMedium];
+
+  UIImage* icon = MakeSymbolMulticolor(
+      CustomSymbolWithConfiguration(symbol_name, configuration));
+
+  button.backgroundColor = [UIColor colorNamed:kOmniboxKeyboardButtonColor];
+  [button setImage:icon forState:UIControlStateNormal];
+  button.layer.cornerRadius = kSymbolButtonSize / 2;
+
+  button.layer.shadowColor = [UIColor blackColor].CGColor;
+  button.layer.shadowOffset = CGSizeMake(0, kButtonShadowVerticalOffset);
+  button.layer.shadowOpacity = kButtonShadowOpacity;
+  button.layer.shadowRadius = kButtonShadowRadius;
+
+  NewFeatureBadgeView* badgeView =
+      [[NewFeatureBadgeView alloc] initWithBadgeSize:kNewFeatureBadgeSize
+                                            fontSize:kNewFeatureFontSize];
+  badgeView.translatesAutoresizingMaskIntoConstraints = NO;
+  badgeView.accessibilityElementsHidden = YES;
+  [button.imageView addSubview:badgeView];
+
+  [NSLayoutConstraint activateConstraints:@[
+    [button.widthAnchor constraintEqualToConstant:kSymbolButtonSize],
+    [button.heightAnchor constraintEqualToConstant:kSymbolButtonSize],
+    [badgeView.centerXAnchor
+        constraintEqualToAnchor:button.imageView.centerXAnchor
+                       constant:kNewBadgeOffsetFromButtonCenter],
+    [badgeView.centerYAnchor
+        constraintEqualToAnchor:button.imageView.centerYAnchor
+                       constant:-kNewBadgeOffsetFromButtonCenter],
+  ]];
 }
 }
 
@@ -273,20 +324,17 @@ void ConfigureVoiceSearchButton(UIButton* voice_search_button,
       CreateLiftEffectCirclePointerStyleProvider();
 }
 
-void ConfigureLensButton(UIButton* lens_button, UIView* search_tap_target) {
+void ConfigureLensButtonAppearance(UIButton* lens_button, BOOL use_new_badge) {
   lens_button.translatesAutoresizingMaskIntoConstraints = NO;
-  [search_tap_target addSubview:lens_button];
 
-  UIButtonConfiguration* buttonConfig =
-      [UIButtonConfiguration plainButtonConfiguration];
-  buttonConfig.contentInsets = NSDirectionalEdgeInsetsMake(0, 0, 0, 0);
-  lens_button.configuration = buttonConfig;
-
-  UIImage* camera_image = CustomSymbolWithPointSize(
-      kCameraLensSymbol, kSymbolContentSuggestionsPointSize);
-
-  [lens_button setImage:camera_image forState:UIControlStateNormal];
-  lens_button.tintColor = FakeboxIconColor();
+  if (IsUIButtonConfigurationEnabled()) {
+    UIButtonConfiguration* buttonConfig =
+        [UIButtonConfiguration plainButtonConfiguration];
+    buttonConfig.contentInsets = NSDirectionalEdgeInsetsMake(0, 0, 0, 0);
+    lens_button.configuration = buttonConfig;
+  } else {
+    SetAdjustsImageWhenHighlighted(lens_button, NO);
+  }
   lens_button.accessibilityLabel = l10n_util::GetNSString(IDS_IOS_ACCNAME_LENS);
   lens_button.accessibilityIdentifier = @"Lens";
 
@@ -294,6 +342,17 @@ void ConfigureLensButton(UIButton* lens_button, UIView* search_tap_target) {
   // Make the pointer shape fit the location bar's semi-circle end shape.
   lens_button.pointerStyleProvider =
       CreateLiftEffectCirclePointerStyleProvider();
+
+  if (use_new_badge) {
+    // Show the "New" badge and colored symbol.
+    SetUpButtonWithNewFeatureBadge(lens_button, kCameraLensSymbol);
+  } else {
+    // Use a monochrome symbol with no background.
+    UIImage* camera_image = CustomSymbolWithPointSize(
+        kCameraLensSymbol, kSymbolContentSuggestionsPointSize);
+    [lens_button setImage:camera_image forState:UIControlStateNormal];
+    lens_button.tintColor = FakeboxIconColor();
+  }
 }
 
 UIView* NearestAncestor(UIView* view, Class of_class) {

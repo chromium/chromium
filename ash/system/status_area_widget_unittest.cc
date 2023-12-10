@@ -61,7 +61,13 @@ using session_manager::SessionState;
 
 namespace ash {
 
-using StatusAreaWidgetTest = AshTestBase;
+class StatusAreaWidgetTest : public AshTestBase {
+ protected:
+  TrayBackgroundView::RoundedCornerBehavior GetTrayCornerBehavior(
+      TrayBackgroundView* tray) {
+    return tray->corner_behavior_;
+  }
+};
 
 // Tests that status area trays are constructed.
 TEST_F(StatusAreaWidgetTest, Basics) {
@@ -199,6 +205,28 @@ TEST_F(StatusAreaWidgetTest, OnlyOneOpenTrayBubble) {
 
   EXPECT_EQ(status_area->open_shelf_pod_bubble(),
             system_tray->bubble()->GetBubbleView());
+}
+
+// The corner radius of the date tray changes based on the visibility of the
+// `NotificationCenterTray`. The date tray should have rounded corners on the
+// left if the `NotificationCenterTray` is not visible and no rounded corners
+// otherwise.
+TEST_F(StatusAreaWidgetTest, DateTrayRoundedCornerBehavior) {
+  StatusAreaWidget* status_area =
+      StatusAreaWidgetTestHelper::GetStatusAreaWidget();
+  EXPECT_FALSE(status_area->notification_center_tray()->GetVisible());
+  EXPECT_EQ(GetTrayCornerBehavior(status_area->date_tray()),
+            TrayBackgroundView::RoundedCornerBehavior::kStartRounded);
+
+  status_area->notification_center_tray()->SetVisiblePreferred(true);
+
+  EXPECT_EQ(GetTrayCornerBehavior(status_area->date_tray()),
+            TrayBackgroundView::RoundedCornerBehavior::kNotRounded);
+
+  status_area->notification_center_tray()->SetVisiblePreferred(false);
+
+  EXPECT_EQ(GetTrayCornerBehavior(status_area->date_tray()),
+            TrayBackgroundView::RoundedCornerBehavior::kStartRounded);
 }
 
 class SystemTrayFocusTestObserver : public SystemTrayObserver {
@@ -748,47 +776,6 @@ TEST_F(StatusAreaWidgetCollapseStateTest,
   EXPECT_FALSE(drag_handle->GetVisible());
   EXPECT_FALSE(drag_handle->drag_handle_nudge());
   EXPECT_TRUE(!drag_handle_widget || drag_handle_widget->IsClosed());
-}
-
-class StatusAreaWidgetQSRevampTest : public AshTestBase {
- protected:
-  void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(features::kQsRevamp);
-    AshTestBase::SetUp();
-  }
-
-  TrayBackgroundView::RoundedCornerBehavior GetTrayCornerBehavior(
-      TrayBackgroundView* tray) {
-    return tray->corner_behavior_;
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-// The corner radius of the date tray changes based on the visibility of the
-// `NotificationCenterTray`. The date tray should have rounded corners on the
-// left if the `NotificationCenterTray` is not visible and no rounded corners
-// otherwise.
-TEST_F(StatusAreaWidgetQSRevampTest, DateTrayRoundedCornerBehavior) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kQsRevamp);
-
-  StatusAreaWidget* status_area =
-      StatusAreaWidgetTestHelper::GetStatusAreaWidget();
-  EXPECT_FALSE(status_area->notification_center_tray()->GetVisible());
-  EXPECT_EQ(GetTrayCornerBehavior(status_area->date_tray()),
-            TrayBackgroundView::RoundedCornerBehavior::kStartRounded);
-
-  status_area->notification_center_tray()->SetVisiblePreferred(true);
-
-  EXPECT_EQ(GetTrayCornerBehavior(status_area->date_tray()),
-            TrayBackgroundView::RoundedCornerBehavior::kNotRounded);
-
-  status_area->notification_center_tray()->SetVisiblePreferred(false);
-
-  EXPECT_EQ(GetTrayCornerBehavior(status_area->date_tray()),
-            TrayBackgroundView::RoundedCornerBehavior::kStartRounded);
 }
 
 class StatusAreaWidgetEcheTest : public AshTestBase {

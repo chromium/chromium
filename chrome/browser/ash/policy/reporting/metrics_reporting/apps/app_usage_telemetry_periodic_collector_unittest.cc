@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/apps/app_usage_telemetry_periodic_collector.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/test/task_environment.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/metric_reporting_prefs.h"
@@ -16,7 +17,6 @@
 #include "components/reporting/metrics/fakes/fake_sampler.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using ::testing::Eq;
 
@@ -136,7 +136,7 @@ TEST_F(AppUsageTelemetryPeriodicCollectorTest,
 
 TEST_F(AppUsageTelemetryPeriodicCollectorTest, CollectEmptyMetricData) {
   // Set up sampler to report empty metric data.
-  sampler_.SetMetricData(absl::nullopt);
+  sampler_.SetMetricData(std::nullopt);
 
   // Fast forward timer to trigger telemetry collection and verify no data is
   // being reported.

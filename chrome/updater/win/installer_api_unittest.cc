@@ -4,6 +4,7 @@
 
 #include "chrome/updater/win/installer_api.h"
 
+#include <optional>
 #include <string>
 
 #include "base/strings/utf_string_conversions.h"
@@ -14,7 +15,6 @@
 #include "chrome/updater/util/win_util.h"
 #include "chrome/updater/win/win_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
 namespace {
@@ -73,7 +73,7 @@ TEST_P(InstallerAPITest, GetInstallerOutcome) {
                                               installer_outcome));
   }
 
-  absl::optional<InstallerOutcome> installer_outcome =
+  std::optional<InstallerOutcome> installer_outcome =
       GetInstallerOutcome(updater_scope_, kAppId);
   ASSERT_TRUE(installer_outcome);
   EXPECT_EQ(installer_outcome->installer_result, InstallerResult::kSystemError);
@@ -83,7 +83,7 @@ TEST_P(InstallerAPITest, GetInstallerOutcome) {
   EXPECT_STREQ(installer_outcome->installer_cmd_line->c_str(), "some cmd line");
 
   // Checks that LastInstallerXXX values match the installer outcome.
-  for (absl::optional<InstallerOutcome> last_installer_outcome :
+  for (std::optional<InstallerOutcome> last_installer_outcome :
        {GetClientStateKeyLastInstallerOutcome(updater_scope_, kAppId),
         GetUpdaterKeyLastInstallerOutcome(updater_scope_)}) {
     ASSERT_TRUE(last_installer_outcome);
@@ -162,7 +162,7 @@ TEST_P(InstallerAPITest, MakeInstallerResult) {
     EXPECT_EQ(installer_result.extended_error, -2);
     EXPECT_STREQ(installer_result.installer_text.c_str(), "some text");
     EXPECT_TRUE(installer_result.installer_cmd_line.empty());
-    installer_outcome.installer_error = absl::nullopt;
+    installer_outcome.installer_error = std::nullopt;
     installer_result = MakeInstallerResult(installer_outcome, 10);
     EXPECT_EQ(installer_result.error, kErrorApplicationInstallerFailed);
     EXPECT_EQ(installer_result.original_error, 10);
@@ -184,7 +184,7 @@ TEST_P(InstallerAPITest, MakeInstallerResult) {
     EXPECT_EQ(installer_result.extended_error, -2);
     EXPECT_FALSE(installer_result.installer_text.empty());
     EXPECT_TRUE(installer_result.installer_cmd_line.empty());
-    installer_outcome.installer_error = absl::nullopt;
+    installer_outcome.installer_error = std::nullopt;
     installer_result = MakeInstallerResult(installer_outcome, 10);
     EXPECT_EQ(installer_result.error, kErrorApplicationInstallerFailed);
     EXPECT_EQ(installer_result.original_error, 10);
@@ -206,7 +206,7 @@ TEST_P(InstallerAPITest, MakeInstallerResult) {
     EXPECT_EQ(installer_result.extended_error, -2);
     EXPECT_FALSE(installer_result.installer_text.empty());
     EXPECT_TRUE(installer_result.installer_cmd_line.empty());
-    installer_outcome.installer_error = absl::nullopt;
+    installer_outcome.installer_error = std::nullopt;
     installer_result = MakeInstallerResult(installer_outcome, 10);
     EXPECT_EQ(installer_result.error, kErrorApplicationInstallerFailed);
     EXPECT_EQ(installer_result.original_error, 10);

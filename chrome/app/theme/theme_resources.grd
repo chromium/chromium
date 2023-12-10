@@ -112,8 +112,8 @@
       <if expr="not is_android">
         <structure type="chrome_scaled_image" name="IDR_INCOGNITO_DATA_NOT_SAVED_HEADER_DARK" file="common/incognito_data_not_saved_header_dark.png" />
         <structure type="chrome_scaled_image" name="IDR_INCOGNITO_DATA_NOT_SAVED_HEADER_LIGHT" file="common/incognito_data_not_saved_header_light.png" />
-      </if>
-
+      </if>  
+      <structure type="chrome_scaled_image" name="IDR_INCOGNITO_WHITE_CIRCLE" file="common/incognito_white_circle.png" />
       <structure type="chrome_scaled_image" name="IDR_INPUT_ALERT" file="common/input_alert.png" />
       <structure type="chrome_scaled_image" name="IDR_INPUT_ALERT_MENU" file="common/input_alert_menu.png" />
       <if expr="not is_android">
@@ -133,10 +133,17 @@
         <structure type="chrome_scaled_image" name="IDR_PASSWORD_CHECK_DARK" file="common/password_check_dark.png" />
         <if expr="_google_chrome">
           <then>
-            <structure type="chrome_scaled_image" name="IDR_PASSWORD_MANAGER_FAVICON" file="google_chrome/favicon_chrome_password_manager.png" />
+            <structure type="chrome_scaled_image" name="IDR_PASSWORD_MANAGER_FAVICON" file="${branding_path_component}/favicon_chrome_password_manager.png" />
           </then>
-          <else>
-            <structure type="chrome_scaled_image" name="IDR_PASSWORD_MANAGER_FAVICON" file="chromium/favicon_password_manager.png" />
+          <else> <!-- not _google_chrome -->
+            <if expr="_is_chrome_for_testing_branded">
+              <then>
+                <structure type="chrome_scaled_image" name="IDR_PASSWORD_MANAGER_FAVICON" file="chromium/favicon_password_manager.png" />
+              </then>
+              <else> <!-- not _is_chrome_for_testing_branded -->
+                <structure type="chrome_scaled_image" name="IDR_PASSWORD_MANAGER_FAVICON" file="${branding_path_component}/favicon_password_manager.png" />
+              </else>
+            </if> <!-- _is_chrome_for_testing_branded -->
           </else>
         </if>
       </if>
@@ -148,57 +155,49 @@
         <then>
           <if expr="is_linux">
             <then>
-              <structure type="chrome_scaled_image" name="IDR_PRODUCT_LOGO_16" file="google_chrome/linux/product_logo_16.png" />
-              <structure type="chrome_scaled_image" name="IDR_PRODUCT_LOGO_32" file="google_chrome/linux/product_logo_32.png" />
-              <structure type="chrome_scaled_image" name="IDR_PRODUCT_LOGO_32_BETA" file="google_chrome/linux/product_logo_32_beta.png" />
-              <structure type="chrome_scaled_image" name="IDR_PRODUCT_LOGO_32_DEV" file="google_chrome/linux/product_logo_32_dev.png" />
+              <structure type="chrome_scaled_image" name="IDR_PRODUCT_LOGO_16" file="${branding_path_component}/linux/product_logo_16.png" />
+              <structure type="chrome_scaled_image" name="IDR_PRODUCT_LOGO_32" file="${branding_path_component}/linux/product_logo_32.png" />
+              <structure type="chrome_scaled_image" name="IDR_PRODUCT_LOGO_32_BETA" file="${branding_path_component}/linux/product_logo_32_beta.png" />
+              <structure type="chrome_scaled_image" name="IDR_PRODUCT_LOGO_32_DEV" file="${branding_path_component}/linux/product_logo_32_dev.png" />
             </then>
             <else> <!-- not is_linux -->
               <if expr="not is_android">
-                <structure type="chrome_scaled_image" name="IDR_PRODUCT_LOGO_16" file="google_chrome/product_logo_16.png" />
-                <structure type="chrome_scaled_image" name="IDR_PRODUCT_LOGO_32" file="google_chrome/product_logo_32.png" />
+                <structure type="chrome_scaled_image" name="IDR_PRODUCT_LOGO_16" file="${branding_path_component}/product_logo_16.png" />
+                <structure type="chrome_scaled_image" name="IDR_PRODUCT_LOGO_32" file="${branding_path_component}/product_logo_32.png" />
               </if> <!-- not is_android -->
-              <structure type="chrome_scaled_image" name="IDR_PRODUCT_LOGO_32_BETA" file="google_chrome/product_logo_32_beta.png" />
-              <structure type="chrome_scaled_image" name="IDR_PRODUCT_LOGO_32_DEV" file="google_chrome/product_logo_32_dev.png" />
+              <structure type="chrome_scaled_image" name="IDR_PRODUCT_LOGO_32_BETA" file="${branding_path_component}/product_logo_32_beta.png" />
+              <structure type="chrome_scaled_image" name="IDR_PRODUCT_LOGO_32_DEV" file="${branding_path_component}/product_logo_32_dev.png" />
             </else>
           </if> <!-- is_linux -->
-          <structure type="chrome_scaled_image" name="IDR_PRODUCT_LOGO_32_CANARY" file="google_chrome/product_logo_32_canary.png" />
+          <structure type="chrome_scaled_image" name="IDR_PRODUCT_LOGO_32_CANARY" file="${branding_path_component}/product_logo_32_canary.png" />
           <if expr="not is_android">
-            <structure type="chrome_scaled_image" name="IDR_PRODUCT_LOGO_NAME_22" file="google_chrome/product_logo_name_22.png" />
-            <structure type="chrome_scaled_image" name="IDR_PRODUCT_LOGO_NAME_22_WHITE" file="google_chrome/product_logo_name_22_white.png" />
+            <structure type="chrome_scaled_image" name="IDR_PRODUCT_LOGO_NAME_22" file="${branding_path_component}/product_logo_name_22.png" />
+            <structure type="chrome_scaled_image" name="IDR_PRODUCT_LOGO_NAME_22_WHITE" file="${branding_path_component}/product_logo_name_22_white.png" />
           </if>
-          <structure type="chrome_scaled_image" name="IDR_PRODUCT_LOGO_ENTERPRISE" file="google_chrome/product_logo_enterprise.png" />
-          <structure type="chrome_scaled_image" name="IDR_PRODUCT_LOGO_ENTERPRISE_WHITE" file="google_chrome/product_logo_enterprise_white.png" />
+          <structure type="chrome_scaled_image" name="IDR_PRODUCT_LOGO_ENTERPRISE" file="${branding_path_component}/product_logo_enterprise.png" />
+          <structure type="chrome_scaled_image" name="IDR_PRODUCT_LOGO_ENTERPRISE_WHITE" file="${branding_path_component}/product_logo_enterprise_white.png" />
         </then>
         <else> <!-- not _google_chrome -->
+          <if expr="is_linux">
+            <then>
+              <structure type="chrome_scaled_image" name="IDR_PRODUCT_LOGO_16" file="${branding_path_component}/linux/product_logo_16.png" />
+              <structure type="chrome_scaled_image" name="IDR_PRODUCT_LOGO_32" file="${branding_path_component}/linux/product_logo_32.png" />
+            </then>
+            <else>
+              <structure type="chrome_scaled_image" name="IDR_PRODUCT_LOGO_16" file="${branding_path_component}/product_logo_16.png" />
+              <structure type="chrome_scaled_image" name="IDR_PRODUCT_LOGO_32" file="${branding_path_component}/product_logo_32.png" />
+            </else>
+          </if> <!-- is_linux -->
           <if expr="_is_chrome_for_testing_branded">
             <then>
-              <if expr="is_linux">
-                <then>
-                  <structure type="chrome_scaled_image" name="IDR_PRODUCT_LOGO_16" file="google_chrome/google_chrome_for_testing/linux/product_logo_16.png" />
-                  <structure type="chrome_scaled_image" name="IDR_PRODUCT_LOGO_32" file="google_chrome/google_chrome_for_testing/linux/product_logo_32.png" />
-                </then>
-                <else>
-                  <structure type="chrome_scaled_image" name="IDR_PRODUCT_LOGO_16" file="google_chrome/google_chrome_for_testing/product_logo_16.png" />
-                  <structure type="chrome_scaled_image" name="IDR_PRODUCT_LOGO_32" file="google_chrome/google_chrome_for_testing/product_logo_32.png" />
-                </else>
-              </if> <!-- is_linux -->
+              <structure type="chrome_scaled_image" name="IDR_PRODUCT_LOGO_NAME_22" file="chromium/product_logo_name_22.png" />
+              <structure type="chrome_scaled_image" name="IDR_PRODUCT_LOGO_NAME_22_WHITE" file="chromium/product_logo_name_22_white.png" />
             </then>
             <else> <!-- not _is_chrome_for_testing_branded -->
-              <if expr="is_linux">
-                <then>
-                  <structure type="chrome_scaled_image" name="IDR_PRODUCT_LOGO_16" file="chromium/linux/product_logo_16.png" />
-                  <structure type="chrome_scaled_image" name="IDR_PRODUCT_LOGO_32" file="chromium/linux/product_logo_32.png" />
-                </then>
-                <else>
-                  <structure type="chrome_scaled_image" name="IDR_PRODUCT_LOGO_16" file="chromium/product_logo_16.png" />
-                  <structure type="chrome_scaled_image" name="IDR_PRODUCT_LOGO_32" file="chromium/product_logo_32.png" />
-                </else>
-              </if> <!-- is_linux -->
+              <structure type="chrome_scaled_image" name="IDR_PRODUCT_LOGO_NAME_22" file="${branding_path_component}/product_logo_name_22.png" />
+              <structure type="chrome_scaled_image" name="IDR_PRODUCT_LOGO_NAME_22_WHITE" file="${branding_path_component}/product_logo_name_22_white.png" />
             </else>
           </if> <!-- _is_chrome_for_testing_branded -->
-          <structure type="chrome_scaled_image" name="IDR_PRODUCT_LOGO_NAME_22" file="chromium/product_logo_name_22.png" />
-          <structure type="chrome_scaled_image" name="IDR_PRODUCT_LOGO_NAME_22_WHITE" file="chromium/product_logo_name_22_white.png" />
         </else>
       </if> <!-- _google_chrome -->
       <if expr="not is_android">

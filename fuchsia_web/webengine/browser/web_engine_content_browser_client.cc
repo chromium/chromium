@@ -40,7 +40,6 @@
 #include "net/cert/x509_certificate.h"
 #include "net/http/http_util.h"
 #include "net/ssl/ssl_private_key.h"
-#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/network_switches.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/network_context.mojom.h"
@@ -226,7 +225,6 @@ void WebEngineContentBrowserClient::RegisterBrowserInterfaceBindersForFrame(
 void WebEngineContentBrowserClient::
     RegisterNonNetworkNavigationURLLoaderFactories(
         int frame_tree_node_id,
-        ukm::SourceIdObj ukm_source_id,
         NonNetworkURLLoaderFactoryMap* factories) {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kEnableContentDirectories)) {
@@ -239,7 +237,7 @@ void WebEngineContentBrowserClient::
     RegisterNonNetworkSubresourceURLLoaderFactories(
         int render_process_id,
         int render_frame_id,
-        const absl::optional<url::Origin>& request_initiator_origin,
+        const std::optional<url::Origin>& request_initiator_origin,
         NonNetworkURLLoaderFactoryMap* factories) {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kEnableContentDirectories)) {
@@ -321,7 +319,7 @@ WebEngineContentBrowserClient::CreateThrottlesForNavigation(
         navigation_handle, frame_impl->navigation_policy_handler()));
   }
 
-  const absl::optional<std::string>& explicit_sites_filter_error_page =
+  const std::optional<std::string>& explicit_sites_filter_error_page =
       frame_impl->explicit_sites_filter_error_page();
 
   if (explicit_sites_filter_error_page) {

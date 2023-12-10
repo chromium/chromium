@@ -59,7 +59,7 @@ class AuthenticationDialogTest : public AshTestBase {
     cryptohome::AuthFactor factor{std::move(ref), std::move(metadata)};
     user_context->SetSessionAuthFactors(
         SessionAuthFactors{{std::move(factor)}});
-    std::move(callback).Run(true, std::move(user_context), absl::nullopt);
+    std::move(callback).Run(true, std::move(user_context), std::nullopt);
   }
 
   void GetAuthToken(std::unique_ptr<UserContext> user_context,
@@ -115,7 +115,7 @@ class AuthenticationDialogTest : public AshTestBase {
     generator->ClickLeftButton();
   }
 
-  absl::optional<bool> success_;
+  std::optional<bool> success_;
   AuthProofToken token_;
   raw_ptr<AuthenticationDialog, AcrossTasksDanglingUntriaged> dialog_;
   std::unique_ptr<MockInSessionAuthTokenProvider> auth_token_provider_;
@@ -147,7 +147,7 @@ TEST_F(AuthenticationDialogTest, CorrectPasswordProvided) {
       .WillOnce([](const std::string& key_label, const std::string& password,
                    std::unique_ptr<UserContext> user_context,
                    AuthOperationCallback callback) {
-        std::move(callback).Run(std::move(user_context), absl::nullopt);
+        std::move(callback).Run(std::move(user_context), std::nullopt);
       });
 
   EXPECT_CALL(*auth_token_provider_, ExchangeForToken)
@@ -173,8 +173,8 @@ TEST_F(AuthenticationDialogTest, IncorrectPasswordProvidedThenCorrect) {
         std::move(callback).Run(
             std::move(user_context),
             password == kExpectedPassword
-                ? absl::nullopt
-                : absl::optional<AuthenticationError>{AuthenticationError{
+                ? std::nullopt
+                : std::optional<AuthenticationError>{AuthenticationError{
                       user_data_auth::
                           CRYPTOHOME_ERROR_AUTHORIZATION_KEY_NOT_FOUND}});
       });
@@ -208,8 +208,8 @@ TEST_F(AuthenticationDialogTest, AuthSessionRestartedWhenExpired) {
         std::move(callback).Run(
             std::move(user_context),
             number_of_calls++
-                ? absl::nullopt
-                : absl::optional<AuthenticationError>{AuthenticationError{
+                ? std::nullopt
+                : std::optional<AuthenticationError>{AuthenticationError{
                       user_data_auth::CRYPTOHOME_INVALID_AUTH_SESSION_TOKEN}});
       });
 

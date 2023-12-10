@@ -6,9 +6,7 @@ package org.chromium.mojo.bindings;
 
 import java.nio.ByteBuffer;
 
-/**
- * Header information for a message.
- */
+/** Header information for a message. */
 public class MessageHeader {
 
     private static final int SIMPLE_MESSAGE_SIZE = 24;
@@ -26,24 +24,16 @@ public class MessageHeader {
     private static final int FLAGS_OFFSET = 16;
     private static final int REQUEST_ID_OFFSET = 24;
 
-    /**
-     * Flag for a header of a simple message.
-     */
+    /** Flag for a header of a simple message. */
     public static final int NO_FLAG = 0;
 
-    /**
-     * Flag for a header of a message that expected a response.
-     */
+    /** Flag for a header of a message that expected a response. */
     public static final int MESSAGE_EXPECTS_RESPONSE_FLAG = 1 << 0;
 
-    /**
-     * Flag for a header of a message that is a response.
-     */
+    /** Flag for a header of a message that is a response. */
     public static final int MESSAGE_IS_RESPONSE_FLAG = 1 << 1;
 
-    /**
-     * Flag for a header of a message that is a response to a sync method.
-     */
+    /** Flag for a header of a message that is a response to a sync method. */
     public static final int MESSAGE_IS_SYNC_FLAG = 1 << 2;
 
     private final DataHeader mDataHeader;
@@ -51,9 +41,7 @@ public class MessageHeader {
     private final int mFlags;
     private long mRequestId;
 
-    /**
-     * Constructor for the header of a message which does not have a response.
-     */
+    /** Constructor for the header of a message which does not have a response. */
     public MessageHeader(int type) {
         mDataHeader = SIMPLE_MESSAGE_STRUCT_INFO;
         mType = type;
@@ -61,9 +49,7 @@ public class MessageHeader {
         mRequestId = 0;
     }
 
-    /**
-     * Constructor for the header of a message which have a response or being itself a response.
-     */
+    /** Constructor for the header of a message which have a response or being itself a response. */
     public MessageHeader(int type, int flags, long requestId) {
         assert mustHaveRequestId(flags);
         mDataHeader = MESSAGE_WITH_REQUEST_ID_STRUCT_INFO;
@@ -84,18 +70,20 @@ public class MessageHeader {
         // Currently associated interfaces are not supported.
         int interfaceId = decoder.readInt(INTERFACE_ID_OFFSET);
         if (interfaceId != 0) {
-          throw new DeserializationException("Non-zero interface ID, expecting zero since "
-                  + "associated interfaces are not yet supported.");
+            throw new DeserializationException(
+                    "Non-zero interface ID, expecting zero since "
+                            + "associated interfaces are not yet supported.");
         }
 
         mType = decoder.readInt(TYPE_OFFSET);
         mFlags = decoder.readInt(FLAGS_OFFSET);
         if (mustHaveRequestId(mFlags)) {
             if (mDataHeader.size < MESSAGE_WITH_REQUEST_ID_SIZE) {
-                throw new DeserializationException("Incorrect message size, expecting at least "
-                        + MESSAGE_WITH_REQUEST_ID_SIZE
-                        + " for a message with a request identifier, but got: " + mDataHeader.size);
-
+                throw new DeserializationException(
+                        "Incorrect message size, expecting at least "
+                                + MESSAGE_WITH_REQUEST_ID_SIZE
+                                + " for a message with a request identifier, but got: "
+                                + mDataHeader.size);
             }
             mRequestId = decoder.readLong(REQUEST_ID_OFFSET);
         } else {
@@ -103,37 +91,27 @@ public class MessageHeader {
         }
     }
 
-    /**
-     * Returns the size in bytes of the serialization of the header.
-     */
+    /** Returns the size in bytes of the serialization of the header. */
     public int getSize() {
         return mDataHeader.size;
     }
 
-    /**
-     * Returns the type of the message.
-     */
+    /** Returns the type of the message. */
     public int getType() {
         return mType;
     }
 
-    /**
-     * Returns the flags associated to the message.
-     */
+    /** Returns the flags associated to the message. */
     public int getFlags() {
         return mFlags;
     }
 
-    /**
-     * Returns if the message has the given flag.
-     */
+    /** Returns if the message has the given flag. */
     public boolean hasFlag(int flag) {
         return (mFlags & flag) == flag;
     }
 
-    /**
-     * Returns if the message has a request id.
-     */
+    /** Returns if the message has a request id. */
     public boolean hasRequestId() {
         return mustHaveRequestId(mFlags);
     }
@@ -146,9 +124,7 @@ public class MessageHeader {
         return mRequestId;
     }
 
-    /**
-     * Encode the header.
-     */
+    /** Encode the header. */
     public void encode(Encoder encoder) {
         encoder.encode(mDataHeader);
         // Set the interface ID field to 0.
@@ -165,8 +141,11 @@ public class MessageHeader {
      * about in order to allow this class to work with future version of the header format.
      */
     public boolean validateHeader(int expectedFlags) {
-        int knownFlags = getFlags()
-                & (MESSAGE_EXPECTS_RESPONSE_FLAG | MESSAGE_IS_RESPONSE_FLAG | MESSAGE_IS_SYNC_FLAG);
+        int knownFlags =
+                getFlags()
+                        & (MESSAGE_EXPECTS_RESPONSE_FLAG
+                                | MESSAGE_IS_RESPONSE_FLAG
+                                | MESSAGE_IS_SYNC_FLAG);
         return knownFlags == expectedFlags;
     }
 
@@ -208,47 +187,53 @@ public class MessageHeader {
                 && mType == other.mType);
     }
 
-    /**
-     * Set the request id on the message contained in the given buffer.
-     */
+    /** Set the request id on the message contained in the given buffer. */
     void setRequestId(ByteBuffer buffer, long requestId) {
         assert mustHaveRequestId(buffer.getInt(FLAGS_OFFSET));
         buffer.putLong(REQUEST_ID_OFFSET, requestId);
         mRequestId = requestId;
     }
 
-    /**
-     * Returns whether a message with the given flags must have a request Id.
-     */
+    /** Returns whether a message with the given flags must have a request Id. */
     private static boolean mustHaveRequestId(int flags) {
         return (flags & (MESSAGE_EXPECTS_RESPONSE_FLAG | MESSAGE_IS_RESPONSE_FLAG)) != 0;
     }
 
-    /**
-     * Validate that the given {@link DataHeader} can be the data header of a message header.
-     */
+    /** Validate that the given {@link DataHeader} can be the data header of a message header. */
     private static void validateDataHeader(DataHeader dataHeader) {
         if (dataHeader.elementsOrVersion < SIMPLE_MESSAGE_VERSION) {
-            throw new DeserializationException("Incorrect number of fields, expecting at least "
-                    + SIMPLE_MESSAGE_VERSION + ", but got: " + dataHeader.elementsOrVersion);
+            throw new DeserializationException(
+                    "Incorrect number of fields, expecting at least "
+                            + SIMPLE_MESSAGE_VERSION
+                            + ", but got: "
+                            + dataHeader.elementsOrVersion);
         }
         if (dataHeader.size < SIMPLE_MESSAGE_SIZE) {
             throw new DeserializationException(
-                    "Incorrect message size, expecting at least " + SIMPLE_MESSAGE_SIZE
-                    + ", but got: " + dataHeader.size);
+                    "Incorrect message size, expecting at least "
+                            + SIMPLE_MESSAGE_SIZE
+                            + ", but got: "
+                            + dataHeader.size);
         }
         if (dataHeader.elementsOrVersion == SIMPLE_MESSAGE_VERSION
                 && dataHeader.size != SIMPLE_MESSAGE_SIZE) {
-            throw new DeserializationException("Incorrect message size for a message with "
-                    + SIMPLE_MESSAGE_VERSION + " fields, expecting " + SIMPLE_MESSAGE_SIZE
-                    + ", but got: " + dataHeader.size);
+            throw new DeserializationException(
+                    "Incorrect message size for a message with "
+                            + SIMPLE_MESSAGE_VERSION
+                            + " fields, expecting "
+                            + SIMPLE_MESSAGE_SIZE
+                            + ", but got: "
+                            + dataHeader.size);
         }
         if (dataHeader.elementsOrVersion == MESSAGE_WITH_REQUEST_ID_VERSION
                 && dataHeader.size != MESSAGE_WITH_REQUEST_ID_SIZE) {
-            throw new DeserializationException("Incorrect message size for a message with "
-                    + MESSAGE_WITH_REQUEST_ID_VERSION + " fields, expecting "
-                    + MESSAGE_WITH_REQUEST_ID_SIZE + ", but got: " + dataHeader.size);
+            throw new DeserializationException(
+                    "Incorrect message size for a message with "
+                            + MESSAGE_WITH_REQUEST_ID_VERSION
+                            + " fields, expecting "
+                            + MESSAGE_WITH_REQUEST_ID_SIZE
+                            + ", but got: "
+                            + dataHeader.size);
         }
     }
-
 }

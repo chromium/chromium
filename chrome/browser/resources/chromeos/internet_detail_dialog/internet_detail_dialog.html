@@ -37,7 +37,7 @@
     height: var(--cr-section-two-line-min-height);
   }
 
-  #apnRowSublabel {
+  #apnRowSublabel:not([warning]) {
     color: var(--cros-text-color-positive);
   }
 
@@ -141,7 +141,9 @@
     <cr-expand-button id="apnRow" class="settings-box cr-row"
         expanded="{{apnExpanded_}}">
       <div id="apnRowTitle">$i18n{internetApnPageTitle}</div>
-      <div id="apnRowSublabel" class="cr-secondary-text">
+      <div id="apnRowSublabel"
+          class="cr-secondary-text"
+          warning$="[[showRestrictedConnectivity_(managedProperties_)]]">
         [[getApnRowSublabel_(managedProperties_, apnExpanded_)]]
       </div>
     </cr-expand-button>
@@ -151,6 +153,7 @@
           managed-cellular-properties="[[managedProperties_.typeProperties.cellular]]"
           guid="[[guid]]"
           error-state="[[managedProperties_.errorState]]"
+          portal-state="[[managedProperties_.portalState]]"
           should-omit-links>
       </apn-list>
       <div id="apnButtonTitle">
@@ -217,7 +220,8 @@
   <div class="cr-row">
     <!-- MAC Address. -->
     <div class="property-box single-column two-line"
-        hidden$="[[!deviceState_.macAddress]]">
+        id="macAddress"
+        hidden$="[[!shouldShowMacAddress_(deviceState_.macAddress)]]">
       <div>$i18n{OncMacAddress}</div>
       <div class="secondary">[[deviceState_.macAddress]]</div>
     </div>

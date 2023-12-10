@@ -103,8 +103,20 @@ public class ContextualSearchInstrumentationBase {
         public ContextualSearchPanelWrapper(
                 Context context,
                 LayoutManagerImpl layoutManager,
-                OverlayPanelManager panelManager) {
-            super(context, layoutManager, panelManager, null, null, null, 0, null, 0, null);
+                OverlayPanelManager panelManager,
+                Profile profile) {
+            super(
+                    context,
+                    layoutManager,
+                    panelManager,
+                    null,
+                    null,
+                    profile,
+                    null,
+                    0,
+                    null,
+                    0,
+                    null);
         }
 
         @Override
@@ -299,11 +311,7 @@ public class ContextualSearchInstrumentationBase {
         public Iterable<ParameterSet> getParameters() {
             return Arrays.asList(
                     new ParameterSet().value(EnabledFeature.NONE).name("default"),
-                    new ParameterSet().value(EnabledFeature.RELATED_SEARCHES).name("rsearches"),
-                    new ParameterSet().value(EnabledFeature.FORCE_CAPTION).name("caption"),
-                    new ParameterSet()
-                            .value(EnabledFeature.FORCE_CAPTION_WITH_RELATED_SEARCHES)
-                            .name("rs+caption"));
+                    new ParameterSet().value(EnabledFeature.RELATED_SEARCHES).name("rsearches"));
         }
     }
 
@@ -347,33 +355,14 @@ public class ContextualSearchInstrumentationBase {
     /** This represents the current fully-launched configuration, with no other Features. */
     protected static final ImmutableMap<String, Boolean> ENABLE_NONE =
             ImmutableMap.of(
-                    // All false
-                    ChromeFeatureList.RELATED_SEARCHES, false,
-                    ChromeFeatureList.CONTEXTUAL_SEARCH_FORCE_CAPTION, false);
+                    // Test setup for base feature
+                    ChromeFeatureList.RELATED_SEARCHES, false);
 
     /** This is the Related Searches Feature in the MVP configuration. */
     private static final ImmutableMap<String, Boolean> ENABLE_RELATED_SEARCHES =
             ImmutableMap.of(
-                    // Related Searches needs these 3:
-                    ChromeFeatureList.RELATED_SEARCHES, true,
-                    ChromeFeatureList.CONTEXTUAL_SEARCH_FORCE_CAPTION, false);
-
-    /** This is the helper-text Feature. */
-    private static final ImmutableMap<String, Boolean> ENABLE_FORCE_CAPTION =
-            ImmutableMap.of(
-                    ChromeFeatureList.RELATED_SEARCHES,
-                    false,
-                    // Just this one enabled:
-                    ChromeFeatureList.CONTEXTUAL_SEARCH_FORCE_CAPTION,
-                    true);
-
-    /** This is the helper-text Feature with Related Searches */
-    private static final ImmutableMap<String, Boolean> ENABLE_FORCE_CAPTION_WITH_RELATED_SEARCHES =
-            ImmutableMap.of(
-                    ChromeFeatureList.RELATED_SEARCHES,
-                    true,
-                    ChromeFeatureList.CONTEXTUAL_SEARCH_FORCE_CAPTION,
-                    true);
+                    // Test setup for a user that triggers Related Searches
+                    ChromeFeatureList.RELATED_SEARCHES, true);
 
     // --------------------------------------------------------------------------------------------
     // Feature maps that we use for individual tests.
@@ -403,18 +392,11 @@ public class ContextualSearchInstrumentationBase {
     // State for an individual test.
     private FakeSlowResolveSearch mLatestSlowResolveSearch;
 
-    @IntDef({
-        EnabledFeature.NONE,
-        EnabledFeature.RELATED_SEARCHES,
-        EnabledFeature.FORCE_CAPTION,
-        EnabledFeature.FORCE_CAPTION_WITH_RELATED_SEARCHES
-    })
+    @IntDef({EnabledFeature.NONE, EnabledFeature.RELATED_SEARCHES})
     @Retention(RetentionPolicy.SOURCE)
     @interface EnabledFeature {
         int NONE = 0;
         int RELATED_SEARCHES = 1;
-        int FORCE_CAPTION = 2;
-        int FORCE_CAPTION_WITH_RELATED_SEARCHES = 3;
     }
 
     // Tracks whether a long-press triggering experiment is active.
@@ -505,20 +487,13 @@ public class ContextualSearchInstrumentationBase {
             case EnabledFeature.RELATED_SEARCHES:
                 whichFeature = ENABLE_RELATED_SEARCHES;
                 break;
-            case EnabledFeature.FORCE_CAPTION:
-                whichFeature = ENABLE_FORCE_CAPTION;
-                break;
-            case EnabledFeature.FORCE_CAPTION_WITH_RELATED_SEARCHES:
-                whichFeature = ENABLE_FORCE_CAPTION_WITH_RELATED_SEARCHES;
-                break;
         }
         Assert.assertNotNull(
                 "Did you change test Features without setting the correct Map?", whichFeature);
         FeatureList.setTestFeatures(whichFeature);
         // If Related Searches is enabled we need to also set that it's OK to send page content.
         // TODO(donnd): Find a better way to discern if we need to establish sendingUrlOK is needed.
-        if (mEnabledFeature == EnabledFeature.RELATED_SEARCHES
-                || mEnabledFeature == EnabledFeature.FORCE_CAPTION_WITH_RELATED_SEARCHES) {
+        if (mEnabledFeature == EnabledFeature.RELATED_SEARCHES) {
             mPolicy.overrideAllowSendingPageUrlForTesting(true);
         }
     }

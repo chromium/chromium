@@ -8,14 +8,14 @@
 #import "components/infobars/core/infobar.h"
 #import "components/prefs/pref_service.h"
 #import "components/sync_sessions/session_sync_service.h"
-#import "ios/chrome/browser/infobars/infobar_ios.h"
-#import "ios/chrome/browser/infobars/infobar_manager_impl.h"
-#import "ios/chrome/browser/ntp/home/features.h"
-#import "ios/chrome/browser/ntp/new_tab_page_util.h"
+#import "ios/chrome/browser/infobars/model/infobar_ios.h"
+#import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
+#import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/sync/model/session_sync_service_factory.h"
 #import "ios/chrome/browser/synced_sessions/model/distant_session.h"
 #import "ios/chrome/browser/synced_sessions/model/distant_tab.h"
@@ -145,6 +145,9 @@ void TabPickupBrowserAgent::ForeignSessionsChanged() {
   auto const synced_sessions =
       std::make_unique<synced_sessions::SyncedSessions>(session_sync_service_);
 
+  if (!IsTabPickupFaviconAvaible()) {
+    CheckDistantTabsOrder(synced_sessions.get());
+  }
   LastActiveDistantTab last_active_tab =
       GetLastActiveDistantTab(synced_sessions.get(), TabPickupTimeThreshold());
   if (last_active_tab.tab) {

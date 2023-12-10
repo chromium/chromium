@@ -28,7 +28,7 @@ class ASH_EXPORT ClassroomBubbleStudentView : public ClassroomBubbleBaseView {
  public:
   METADATA_HEADER(ClassroomBubbleStudentView);
 
-  explicit ClassroomBubbleStudentView(DetailedViewDelegate* delegate);
+  ClassroomBubbleStudentView();
   ClassroomBubbleStudentView(const ClassroomBubbleStudentView&) = delete;
   ClassroomBubbleStudentView& operator=(const ClassroomBubbleStudentView&) =
       delete;

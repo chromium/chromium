@@ -10,7 +10,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "extensions/browser/entry_info.h"
@@ -51,8 +50,6 @@ void DispatchOnLaunchedEventImpl(const std::string& extension_id,
                                  app_runtime::LaunchSource source,
                                  base::Value::Dict launch_data,
                                  BrowserContext* context) {
-  UMA_HISTOGRAM_ENUMERATION("Extensions.AppLaunchSource", source);
-
   launch_data.Set("isDemoSession",
                   ExtensionsBrowserClient::Get()->IsInDemoMode());
 
@@ -174,7 +171,7 @@ void AppRuntimeEventRouter::DispatchOnLaunchedEvent(
     BrowserContext* context,
     const Extension* extension,
     extensions::AppLaunchSource source,
-    absl::optional<app_runtime::LaunchData> launch_data) {
+    std::optional<app_runtime::LaunchData> launch_data) {
   if (!launch_data) {
     launch_data.emplace();
   }
@@ -206,7 +203,7 @@ void AppRuntimeEventRouter::DispatchOnLaunchedEventWithFileEntries(
     const std::string& handler_id,
     const std::vector<EntryInfo>& entries,
     const std::vector<GrantedFileEntry>& file_entries,
-    absl::optional<app_runtime::ActionData> action_data) {
+    std::optional<app_runtime::ActionData> action_data) {
   app_runtime::LaunchSource source_enum = GetLaunchSourceEnum(source);
 
   // TODO(sergeygs): Use the same way of creating an event (using the generated

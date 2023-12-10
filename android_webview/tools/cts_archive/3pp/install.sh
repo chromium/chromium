@@ -279,6 +279,11 @@ unzip -j "$IN_ZIPFILE" "android-cts/testcases/CtsAssistService/arm64/CtsAssistSe
 unzip -j "$IN_ZIPFILE" "android-cts/testcases/CtsMockInputMethod/arm64/CtsMockInputMethod.apk" -d "$UNZIP_DEST"
 unzip -j "$IN_ZIPFILE" "android-cts/testcases/CtsAutoFillServiceTestCases/arm64/CtsAutoFillServiceTestCases.apk" -d "$UNZIP_DEST"
 unzip -j "$IN_ZIPFILE" "android-cts/testcases/CtsTextTestCases/arm64/CtsTextTestCases.apk" -d "$UNZIP_DEST"
+# host-driven CTS separator for readability
+# TODO: b/267730567 - Unzip "android-cts/tools/*" after r6 release.
+unzip "$IN_ZIPFILE" "android-cts/testcases/CtsHostsideWebViewTests/*"
+unzip -j "$IN_ZIPFILE" "android-cts/testcases/CtsSecurityTestCases/CtsDeviceInfo.apk" -d "$UNZIP_DEST"
+unzip -j "$IN_ZIPFILE" "android-cts/testcases/CtsPreconditions/arm64/CtsPreconditions.apk" -d "$UNZIP_DEST"
 
 zip -rm "$TARGET_DIR/$OUT_ZIPFILE" android-cts
 
@@ -299,5 +304,10 @@ unzip -j "$IN_ZIPFILE" "android-cts/testcases/CtsAssistService/x86_64/CtsAssistS
 unzip -j "$IN_ZIPFILE" "android-cts/testcases/CtsMockInputMethod/x86_64/CtsMockInputMethod.apk" -d "$UNZIP_DEST"
 unzip -j "$IN_ZIPFILE" "android-cts/testcases/CtsAutoFillServiceTestCases/x86_64/CtsAutoFillServiceTestCases.apk" -d "$UNZIP_DEST"
 unzip -j "$IN_ZIPFILE" "android-cts/testcases/CtsTextTestCases/x86_64/CtsTextTestCases.apk" -d "$UNZIP_DEST"
+# host-driven CTS separator for readability
+# TODO: b/267730567 - Unzip "android-cts/tools/*" after r6 release.
+unzip "$IN_ZIPFILE" "android-cts/testcases/CtsHostsideWebViewTests/*"
+unzip -j "$IN_ZIPFILE" "android-cts/testcases/CtsSecurityTestCases/CtsDeviceInfo.apk" -d "$UNZIP_DEST"
+unzip -j "$IN_ZIPFILE" "android-cts/testcases/CtsPreconditions/x86_64/CtsPreconditions.apk" -d "$UNZIP_DEST"
 
 zip -rm "$TARGET_DIR/$OUT_ZIPFILE" android-cts

@@ -59,7 +59,6 @@ interface CoreProbes {
   class FontFace;
   class HTMLDocumentParser;
   class HTMLInputElement;
-  class HTMLPortalElement;
   class PerformanceEntry;
   class Script;
   class ScriptState;
@@ -99,7 +98,7 @@ interface CoreProbes {
   void DidBlockRequest(CoreProbeSink*, const ResourceRequest&, DocumentLoader*, const KURL& fetch_context_url, const ResourceLoaderOptions&, ResourceRequestBlockedReason, ResourceType);
   void DidChangeResourcePriority(LocalFrame*, DocumentLoader*, uint64_t identifier, ResourceLoadPriority load_priority);
   void PrepareRequest(CoreProbeSink*, DocumentLoader*, ResourceRequest&, ResourceLoaderOptions&, ResourceType);
-  void WillSendRequest(CoreProbeSink*, DocumentLoader*, const KURL& fetch_context_url, const ResourceRequest&, const ResourceResponse& redirect_response, const ResourceLoaderOptions&, ResourceType, RenderBlockingBehavior, base::TimeTicks timestamp);
+  void WillSendRequest([Keep] ExecutionContext*, DocumentLoader*, const KURL& fetch_context_url, const ResourceRequest&, const ResourceResponse& redirect_response, const ResourceLoaderOptions&, ResourceType, RenderBlockingBehavior, base::TimeTicks timestamp);
   void WillSendNavigationRequest(CoreProbeSink*, uint64_t identifier, DocumentLoader*, const KURL&, const AtomicString& http_method, EncodedFormData*);
   void MarkResourceAsCached(LocalFrame*, DocumentLoader*, uint64_t identifier);
   void DidReceiveResourceResponse(CoreProbeSink*, uint64_t identifier, DocumentLoader*, const ResourceResponse&, const Resource*);
@@ -167,7 +166,7 @@ interface CoreProbes {
   UpdateLayout(Document* document);
 
   /* This is called only for script generated from script blocks (script element, setTimeout with code */
-  EvaluateScriptBlock([Keep] ExecutionContext* context, const KURL& source_url, bool is_module);
+  EvaluateScriptBlock([Keep] ExecutionContext* context, const KURL& source_url, bool is_module, bool sanitize);
 
   /* This is called once the script is ready to execute */
   ExecuteScript([Keep] ExecutionContext* context, v8::Local<v8::Context> v8_context, const String& script_url, int script_id);
@@ -194,7 +193,6 @@ interface CoreProbes {
   void DidProduceCompilationCache(CoreProbeSink*, const ClassicScript&, v8::Local<v8::Script> script);
   void ApplyCompilationModeOverride(ExecutionContext*, const ClassicScript&, v8::ScriptCompiler::CachedData** cached_data, v8::ScriptCompiler::CompileOptions*);
   void NodeCreated([Keep] Node* node);
-  void PortalRemoteFrameCreated(Document*, HTMLPortalElement* portal_element);
   void FileChooserOpened([Keep] LocalFrame* frame, HTMLInputElement* element, bool multiple, bool* intercepted);
   void PlayerErrorsRaised(ExecutionContext* context, String player_id, const Vector<InspectorPlayerError>& errors);
   void PlayerEventsAdded(ExecutionContext* context, String player_id, const Vector<InspectorPlayerEvent>& events);

@@ -8,6 +8,7 @@
 #include "base/location.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -32,6 +33,7 @@
 #include "extensions/common/api/automation_internal.h"
 #include "extensions/common/switches.h"
 #include "extensions/test/extension_test_message_listener.h"
+#include "extensions/test/test_extension_dir.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -57,8 +59,181 @@
 
 namespace extensions {
 
+namespace {
+
+constexpr char kManifestStub[] = R"(
+{
+  "name": "chrome.automation.test",
+  "key": "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC8xv6iO+j4kzj1HiBL93+XVJH/CRyAQMUHS/Z0l8nCAzaAFkW/JsNwxJqQhrZspnxLqbQxNncXs6g6bsXAwKHiEs+LSs+bIv0Gc/2ycZdhXJ8GhEsSMakog5dpQd1681c2gLK/8CrAoewE/0GIKhaFcp7a2iZlGh4Am6fgMKy0iQIDAQAB",
+  "version": "0.1",
+  "manifest_version": 2,
+  "description": "Tests for the Automation API.",
+  "background": { %s },
+  "permissions": %s,
+  "automation": %s
+}
+)";
+
+constexpr char kPersistentBackground[] = R"("scripts": ["common.js"])";
+constexpr char kServiceWorkerBackground[] = R"("service_worker": "common.js")";
+constexpr char kPermissionsDefault[] = R"(["tabs", "http://a.com/"])";
+
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS) || \
+    defined(USE_AURA)
+
+constexpr char kAutomationDesktop[] = R"({ "desktop": true })";
+
+#endif
+
+static constexpr char kCommonScript[] = R"(
+
+var assertEq = chrome.test.assertEq;
+var assertFalse = chrome.test.assertFalse;
+var assertTrue = chrome.test.assertTrue;
+
+var EventType = chrome.automation.EventType;
+var RoleType = chrome.automation.RoleType;
+var StateType = chrome.automation.StateType;
+
+var rootNode = null;
+var url = '';
+
+function findAutomationNode(root, condition) {
+  if (condition(root))
+    return root;
+
+  var children = root.children;
+  for (var i = 0; i < children.length; i++) {
+    var result = findAutomationNode(children[i], condition);
+    if (result)
+      return result;
+  }
+  return null;
+}
+
+function runWithDocument(docString, callback) {
+  var url = 'data:text/html,<!doctype html>' + docString;
+  var createParams = {
+    active: true,
+    url: url
+  };
+  createTabAndWaitUntilLoaded(url, function(tab) {
+    chrome.automation.getDesktop(desktop => {
+      const url = tab.url || tab.pendingUrl;
+      let rootNode = desktop.find({attributes: {docUrl: url}});
+      if (rootNode && rootNode.docLoaded) {
+        callback(rootNode);
+        return;
+      }
+
+      let listener = () => {
+        rootNode = desktop.find({attributes: {docUrl: url}});
+        if (rootNode && rootNode.docLoaded) {
+          desktop.removeEventListener('loadComplete', listener);
+          desktop.addEventListener('focus', () => {});
+          callback(rootNode);
+        }
+      };
+      desktop.addEventListener('loadComplete', listener);
+    });
+  });
+}
+
+function listenOnce(node, eventType, callback, capture) {
+  var innerCallback = function(evt) {
+    node.removeEventListener(eventType, innerCallback, capture);
+    callback(evt);
+  };
+  node.addEventListener(eventType, innerCallback, capture);
+}
+
+function setUpAndRunDesktopTests(allTests) {
+  chrome.automation.getDesktop(function(rootNodeArg) {
+    rootNode = rootNodeArg;
+    chrome.test.runTests(allTests);
+  });
+}
+
+function setUpAndRunTabsTests(allTests, opt_path, opt_ensurePersists = true) {
+  var path = opt_path || 'index.html';
+  getUrlFromConfig(path, function(url) {
+    createTabAndWaitUntilLoaded(url, function(unused_tab) {
+      chrome.automation.getDesktop(function(desktop) {
+        rootNode = desktop.find({attributes: {docUrl: url}});
+        if (rootNode && rootNode.docLoaded) {
+          chrome.test.runTests(allTests);
+          return;
+        }
+        function listener() {
+          rootNode = desktop.find({attributes: {docUrl: url}});
+          if (rootNode && rootNode.docLoaded) {
+            desktop.removeEventListener('loadComplete', listener);
+            if (opt_ensurePersists) {
+              desktop.addEventListener('focus', () => {});
+            }
+            chrome.test.runTests(allTests);
+          }
+        }
+        desktop.addEventListener('loadComplete', listener);
+      });
+    });
+  });
+}
+
+function getUrlFromConfig(path, callback) {
+  chrome.test.getConfig(function(config) {
+    assertTrue('testServer' in config, 'Expected testServer in config');
+    url = ('http://a.com:PORT/' + path)
+        .replace(/PORT/, config.testServer.port);
+    callback(url)
+  });
+}
+
+function createTabAndWaitUntilLoaded(url, callback) {
+  chrome.tabs.create({'url': url}, function(tab) {
+    chrome.tabs.onUpdated.addListener(function listener(tabId, changeInfo) {
+      if (tabId == tab.id && changeInfo.status == 'complete') {
+        chrome.tabs.onUpdated.removeListener(listener);
+        callback(tab);
+      }
+    });
+  });
+}
+
+async function pollUntil(predicate, pollEveryMs) {
+  return new Promise(r => {
+    const id = setInterval(() => {
+      let ret;
+      if (ret = predicate()) {
+        clearInterval(id);
+        r(ret);
+      }
+    }, pollEveryMs);
+  });
+}
+
+const scriptUrl = '_test_resources/api_test/automation/tests/%s';
+
+chrome.test.loadScript(scriptUrl).then(function() {
+  // The script will start the tests, so nothing to do here.
+}).catch(function(error) {
+  chrome.test.fail(scriptUrl + ' failed to load');
+});
+
+)";  // kCommonScript
+
+}  // namespace
+
+using ContextType = ExtensionBrowserTest::ContextType;
+
 class AutomationApiTest : public ExtensionApiTest {
  public:
+  explicit AutomationApiTest(ContextType context_type = ContextType::kNone)
+      : ExtensionApiTest(context_type) {}
+  ~AutomationApiTest() override = default;
+  AutomationApiTest(const AutomationApiTest&) = delete;
+  AutomationApiTest& operator=(const AutomationApiTest&) = delete;
+
   void SetUpOnMainThread() override {
     ExtensionApiTest::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
@@ -94,24 +269,65 @@ class AutomationApiTest : public ExtensionApiTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+class AutomationApiTestWithContextType
+    : public AutomationApiTest,
+      public testing::WithParamInterface<ContextType> {
+ public:
+  AutomationApiTestWithContextType() : AutomationApiTest(GetParam()) {}
+  ~AutomationApiTestWithContextType() override = default;
+  AutomationApiTestWithContextType(const AutomationApiTestWithContextType&) =
+      delete;
+  AutomationApiTestWithContextType& operator=(
+      const AutomationApiTestWithContextType&) = delete;
+
+ protected:
+  bool CreateExtensionAndRunTest(
+      const char* script_path,
+      const char* automation_type,
+      const char* permissions = kPermissionsDefault) {
+    TestExtensionDir test_dir;
+    const char* background_value = GetParam() == ContextType::kServiceWorker
+                                       ? kServiceWorkerBackground
+                                       : kPersistentBackground;
+    const std::string manifest = base::StringPrintf(
+        kManifestStub, background_value, permissions, automation_type);
+    const std::string common_script =
+        base::StringPrintf(kCommonScript, script_path);
+    test_dir.WriteManifest(manifest);
+    test_dir.WriteFile(FILE_PATH_LITERAL("common.js"), common_script);
+    return RunExtensionTest(test_dir.UnpackedPath(), {},
+                            {.context_type = ContextType::kFromManifest});
+  }
+};
+
 // Canvas tests rely on the harness producing pixel output in order to read back
 // pixels from a canvas element. So we have to override the setup function.
-class AutomationApiCanvasTest : public AutomationApiTest {
+class AutomationApiCanvasTest : public AutomationApiTestWithContextType {
  public:
   void SetUp() override {
     EnablePixelOutput();
-    ExtensionApiTest::SetUp();
+    AutomationApiTestWithContextType::SetUp();
   }
 };
 
 #if defined(USE_AURA)
+
+// TODO(crbug.com/1093066): This should be moved outside of the USE_AURA
+// block when tests are converted that are outside of this block.
+INSTANTIATE_TEST_SUITE_P(PersistentBackground,
+                         AutomationApiTestWithContextType,
+                         ::testing::Values(ContextType::kPersistentBackground));
+INSTANTIATE_TEST_SUITE_P(ServiceWorker,
+                         AutomationApiTestWithContextType,
+                         ::testing::Values(ContextType::kServiceWorker));
 
 namespace {
 static const char kDomain[] = "a.com";
 static const char kGotTree[] = "got_tree";
 }  // anonymous namespace
 
-IN_PROC_BROWSER_TEST_F(AutomationApiTest, TestRendererAccessibilityEnabled) {
+IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType,
+                       TestRendererAccessibilityEnabled) {
   StartEmbeddedTestServer();
   const GURL url = GetURLForPath(kDomain, "/index.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
@@ -153,14 +369,14 @@ IN_PROC_BROWSER_TEST_F(AutomationApiTest, ServiceWorker) {
   ASSERT_TRUE(tab->IsWebContentsOnlyAccessibilityModeForTesting());
 }
 
-IN_PROC_BROWSER_TEST_F(AutomationApiTest, SanityCheck) {
+IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType, SanityCheck) {
   StartEmbeddedTestServer();
-  ASSERT_TRUE(RunExtensionTest("automation/tests/tabs",
-                               {.extension_url = "sanity_check.html"}))
+  ASSERT_TRUE(
+      CreateExtensionAndRunTest("tabs/sanity_check.js", kAutomationDesktop))
       << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(AutomationApiTest, ImageLabels) {
+IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType, ImageLabels) {
   StartEmbeddedTestServer();
   const GURL url = GetURLForPath(kDomain, "/index.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
@@ -194,47 +410,51 @@ IN_PROC_BROWSER_TEST_F(AutomationApiTest, ImageLabels) {
   EXPECT_EQ(expected_mode, accessibility_mode);
 }
 
-IN_PROC_BROWSER_TEST_F(AutomationApiTest, Events) {
+IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType, Events) {
   StartEmbeddedTestServer();
-  ASSERT_TRUE(RunExtensionTest("automation/tests/tabs",
-                               {.extension_url = "events.html"}))
+  ASSERT_TRUE(CreateExtensionAndRunTest("tabs/events.js", kAutomationDesktop))
       << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(AutomationApiTest, Actions) {
+IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType, Actions) {
   StartEmbeddedTestServer();
-  ASSERT_TRUE(RunExtensionTest("automation/tests/tabs",
-                               {.extension_url = "actions.html"}))
+  ASSERT_TRUE(CreateExtensionAndRunTest("tabs/actions.js", kAutomationDesktop))
       << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(AutomationApiTest, Location) {
+IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType, Location) {
   StartEmbeddedTestServer();
-  ASSERT_TRUE(RunExtensionTest("automation/tests/tabs",
-                               {.extension_url = "location.html"}))
+  ASSERT_TRUE(CreateExtensionAndRunTest("tabs/location.js", kAutomationDesktop))
       << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(AutomationApiTest, Location2) {
+IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType, Location2) {
   StartEmbeddedTestServer();
-  ASSERT_TRUE(RunExtensionTest("automation/tests/tabs",
-                               {.extension_url = "location2.html"}))
+  ASSERT_TRUE(
+      CreateExtensionAndRunTest("tabs/location2.js", kAutomationDesktop))
       << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(AutomationApiTest, BoundsForRange) {
+IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType, BoundsForRange) {
   StartEmbeddedTestServer();
-  ASSERT_TRUE(RunExtensionTest("automation/tests/tabs",
-                               {.extension_url = "bounds_for_range.html"}))
+  ASSERT_TRUE(
+      CreateExtensionAndRunTest("tabs/bounds_for_range.js", kAutomationDesktop))
       << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(AutomationApiTest, LineStartOffsets) {
+IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType, LineStartOffsets) {
   StartEmbeddedTestServer();
-  ASSERT_TRUE(RunExtensionTest("automation/tests/tabs",
-                               {.extension_url = "line_start_offsets.html"}))
+  ASSERT_TRUE(CreateExtensionAndRunTest("tabs/line_start_offsets.js",
+                                        kAutomationDesktop))
       << message_;
 }
+
+INSTANTIATE_TEST_SUITE_P(PersistentBackground,
+                         AutomationApiCanvasTest,
+                         ::testing::Values(ContextType::kPersistentBackground));
+INSTANTIATE_TEST_SUITE_P(ServiceWorker,
+                         AutomationApiCanvasTest,
+                         ::testing::Values(ContextType::kServiceWorker));
 
 // Flaky on Mac: crbug.com/1338036
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
@@ -242,17 +462,17 @@ IN_PROC_BROWSER_TEST_F(AutomationApiTest, LineStartOffsets) {
 #else
 #define MAYBE_ImageData ImageData
 #endif
-IN_PROC_BROWSER_TEST_F(AutomationApiCanvasTest, MAYBE_ImageData) {
+IN_PROC_BROWSER_TEST_P(AutomationApiCanvasTest, MAYBE_ImageData) {
   StartEmbeddedTestServer();
-  ASSERT_TRUE(RunExtensionTest("automation/tests/tabs",
-                               {.extension_url = "image_data.html"}))
+  ASSERT_TRUE(
+      CreateExtensionAndRunTest("tabs/image_data.js", kAutomationDesktop))
       << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(AutomationApiTest, TableProperties) {
+IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType, TableProperties) {
   StartEmbeddedTestServer();
-  ASSERT_TRUE(RunExtensionTest("automation/tests/tabs",
-                               {.extension_url = "table_properties.html"}))
+  ASSERT_TRUE(
+      CreateExtensionAndRunTest("tabs/table_properties.js", kAutomationDesktop))
       << message_;
 }
 
@@ -262,77 +482,76 @@ IN_PROC_BROWSER_TEST_F(AutomationApiTest, TableProperties) {
 #else
 #define MAYBE_CloseTab CloseTab
 #endif
-IN_PROC_BROWSER_TEST_F(AutomationApiTest, MAYBE_CloseTab) {
-  StartEmbeddedTestServer();
-  ASSERT_TRUE(RunExtensionTest("automation/tests/tabs",
-                               {.extension_url = "close_tab.html"}))
-      << message_;
-}
-
-IN_PROC_BROWSER_TEST_F(AutomationApiTest, Find) {
+IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType, MAYBE_CloseTab) {
   StartEmbeddedTestServer();
   ASSERT_TRUE(
-      RunExtensionTest("automation/tests/tabs", {.extension_url = "find.html"}))
+      CreateExtensionAndRunTest("tabs/close_tab.js", kAutomationDesktop))
       << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(AutomationApiTest, Attributes) {
+IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType, Find) {
   StartEmbeddedTestServer();
-  ASSERT_TRUE(RunExtensionTest("automation/tests/tabs",
-                               {.extension_url = "attributes.html"}))
+  ASSERT_TRUE(CreateExtensionAndRunTest("tabs/find.js", kAutomationDesktop))
       << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(AutomationApiTest, ReverseRelations) {
+IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType, Attributes) {
   StartEmbeddedTestServer();
-  ASSERT_TRUE(RunExtensionTest("automation/tests/tabs",
-                               {.extension_url = "reverse_relations.html"}))
+  ASSERT_TRUE(
+      CreateExtensionAndRunTest("tabs/attributes.js", kAutomationDesktop))
       << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(AutomationApiTest, TreeChange) {
+IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType, ReverseRelations) {
   StartEmbeddedTestServer();
-  ASSERT_TRUE(RunExtensionTest("automation/tests/tabs",
-                               {.extension_url = "tree_change.html"}))
+  ASSERT_TRUE(CreateExtensionAndRunTest("tabs/reverse_relations.js",
+                                        kAutomationDesktop))
       << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(AutomationApiTest, TreeChangeIndirect) {
+IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType, TreeChange) {
   StartEmbeddedTestServer();
-  ASSERT_TRUE(RunExtensionTest("automation/tests/tabs",
-                               {.extension_url = "tree_change_indirect.html"}))
+  ASSERT_TRUE(
+      CreateExtensionAndRunTest("tabs/tree_change.js", kAutomationDesktop))
       << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(AutomationApiTest, DocumentSelection) {
+IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType, TreeChangeIndirect) {
   StartEmbeddedTestServer();
-  ASSERT_TRUE(RunExtensionTest("automation/tests/tabs",
-                               {.extension_url = "document_selection.html"}))
+  ASSERT_TRUE(CreateExtensionAndRunTest("tabs/tree_change_indirect.js",
+                                        kAutomationDesktop))
       << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(AutomationApiTest, HitTest) {
+IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType, DocumentSelection) {
   StartEmbeddedTestServer();
-  ASSERT_TRUE(RunExtensionTest("automation/tests/tabs",
-                               {.extension_url = "hit_test.html"}))
+  ASSERT_TRUE(CreateExtensionAndRunTest("tabs/document_selection.js",
+                                        kAutomationDesktop))
       << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(AutomationApiTest, WordBoundaries) {
+IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType, HitTest) {
   StartEmbeddedTestServer();
-  ASSERT_TRUE(RunExtensionTest("automation/tests/tabs",
-                               {.extension_url = "word_boundaries.html"}))
+  ASSERT_TRUE(CreateExtensionAndRunTest("tabs/hit_test.js", kAutomationDesktop))
       << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(AutomationApiTest, SentenceBoundaries) {
+IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType, WordBoundaries) {
   StartEmbeddedTestServer();
-  ASSERT_TRUE(RunExtensionTest("automation/tests/tabs",
-                               {.extension_url = "sentence_boundaries.html"}))
+  ASSERT_TRUE(
+      CreateExtensionAndRunTest("tabs/word_boundaries.js", kAutomationDesktop))
       << message_;
 }
 
-class AutomationApiTestWithLanguageDetection : public AutomationApiTest {
+IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType, SentenceBoundaries) {
+  StartEmbeddedTestServer();
+  ASSERT_TRUE(CreateExtensionAndRunTest("tabs/sentence_boundaries.js",
+                                        kAutomationDesktop))
+      << message_;
+}
+
+class AutomationApiTestWithLanguageDetection
+    : public AutomationApiTestWithContextType {
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     AutomationApiTest::SetUpCommandLine(command_line);
@@ -341,40 +560,46 @@ class AutomationApiTestWithLanguageDetection : public AutomationApiTest {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(AutomationApiTestWithLanguageDetection,
+INSTANTIATE_TEST_SUITE_P(PersistentBackground,
+                         AutomationApiTestWithLanguageDetection,
+                         ::testing::Values(ContextType::kPersistentBackground));
+INSTANTIATE_TEST_SUITE_P(ServiceWorker,
+                         AutomationApiTestWithLanguageDetection,
+                         ::testing::Values(ContextType::kServiceWorker));
+
+IN_PROC_BROWSER_TEST_P(AutomationApiTestWithLanguageDetection,
                        DetectedLanguage) {
   StartEmbeddedTestServer();
-  ASSERT_TRUE(RunExtensionTest("automation/tests/tabs",
-                               {.extension_url = "detected_language.html"}))
+  ASSERT_TRUE(CreateExtensionAndRunTest("tabs/detected_language.js",
+                                        kAutomationDesktop))
       << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(AutomationApiTest, IgnoredNodesNotReturned) {
+IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType,
+                       IgnoredNodesNotReturned) {
+  StartEmbeddedTestServer();
+  ASSERT_TRUE(CreateExtensionAndRunTest("tabs/ignored_nodes_not_returned.js",
+                                        kAutomationDesktop))
+      << message_;
+}
+
+IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType, ForceLayout) {
   StartEmbeddedTestServer();
   ASSERT_TRUE(
-      RunExtensionTest("automation/tests/tabs",
-                       {.extension_url = "ignored_nodes_not_returned.html"}))
+      CreateExtensionAndRunTest("tabs/force_layout.js", kAutomationDesktop))
       << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(AutomationApiTest, ForceLayout) {
+IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType, Intents) {
   StartEmbeddedTestServer();
-  ASSERT_TRUE(RunExtensionTest("automation/tests/tabs",
-                               {.extension_url = "force_layout.html"}))
+  ASSERT_TRUE(CreateExtensionAndRunTest("tabs/intents.js", kAutomationDesktop))
       << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(AutomationApiTest, Intents) {
+IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType, EnumValidity) {
   StartEmbeddedTestServer();
-  ASSERT_TRUE(RunExtensionTest("automation/tests/tabs",
-                               {.extension_url = "intents.html"}))
-      << message_;
-}
-
-IN_PROC_BROWSER_TEST_F(AutomationApiTest, EnumValidity) {
-  StartEmbeddedTestServer();
-  ASSERT_TRUE(RunExtensionTest("automation/tests/tabs",
-                               {.extension_url = "enum_validity.html"}))
+  ASSERT_TRUE(
+      CreateExtensionAndRunTest("tabs/enum_validity.js", kAutomationDesktop))
       << message_;
 }
 
@@ -570,15 +795,16 @@ IN_PROC_BROWSER_TEST_F(AutomationApiTest, Position) {
       << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(AutomationApiTest, AccessibilityFocus) {
+IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType, AccessibilityFocus) {
   StartEmbeddedTestServer();
-  ASSERT_TRUE(RunExtensionTest("automation/tests/tabs",
-                               {.extension_url = "accessibility_focus.html"}))
+  ASSERT_TRUE(CreateExtensionAndRunTest("tabs/accessibility_focus.js",
+                                        kAutomationDesktop))
       << message_;
 }
 
 // TODO(http://crbug.com/1162238): flaky on ChromeOS.
-IN_PROC_BROWSER_TEST_F(AutomationApiTest, DISABLED_TextareaAppendPerf) {
+IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType,
+                       DISABLED_TextareaAppendPerf) {
   StartEmbeddedTestServer();
 
   {
@@ -590,8 +816,8 @@ IN_PROC_BROWSER_TEST_F(AutomationApiTest, DISABLED_TextareaAppendPerf) {
     wait_for_tracing.Run();
   }
 
-  ASSERT_TRUE(RunExtensionTest("automation/tests/tabs",
-                               {.extension_url = "textarea_append_perf.html"}))
+  ASSERT_TRUE(CreateExtensionAndRunTest("tabs/textarea_append_perf.js",
+                                        kAutomationDesktop))
       << message_;
 
   base::test::TestFuture<std::unique_ptr<std::string>> stop_tracing_future;

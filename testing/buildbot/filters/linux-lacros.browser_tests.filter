@@ -84,3 +84,6 @@
 -ProfileHelperTest.OpenNewWindowForProfile
 -WebAppBrowserTest.WindowsOffsetForMultiWindowPWA
 -WebAppTabStripBrowserTest.ActiveTabColorIsBackgroundColor
+
+# crbug.com/1370019
+-All/BrowserNonClientFrameViewChromeOSTest.TopViewInset*

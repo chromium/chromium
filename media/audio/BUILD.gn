@@ -166,6 +166,7 @@ source_set("audio") {
 
   if (is_apple) {
     sources += [
+      "apple/audio_io_stream_client.h",
       "mac/audio_auhal_mac.cc",
       "mac/audio_auhal_mac.h",
       "mac/audio_input_mac.cc",
@@ -328,6 +329,10 @@ source_set("audio") {
       "pulse/audio_manager_pulse.h",
       "pulse/pulse_input.cc",
       "pulse/pulse_input.h",
+      "pulse/pulse_loopback.cc",
+      "pulse/pulse_loopback.h",
+      "pulse/pulse_loopback_manager.cc",
+      "pulse/pulse_loopback_manager.h",
       "pulse/pulse_output.cc",
       "pulse/pulse_output.h",
       "pulse/pulse_util.cc",
@@ -384,7 +389,6 @@ static_library("test_support") {
     "audio_device_info_accessor_for_tests.h",
     "audio_system_test_util.cc",
     "audio_system_test_util.h",
-    "audio_unittest_util.cc",
     "audio_unittest_util.h",
     "mock_aecdump_recording_manager.cc",
     "mock_aecdump_recording_manager.h",

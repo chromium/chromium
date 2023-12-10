@@ -37,9 +37,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-/**
- * Runs networking benchmarks and saves results to a file.
- */
+/** Runs networking benchmarks and saves results to a file. */
 public class CronetPerfTestActivity extends Activity {
     private static final String PRIVATE_DATA_DIRECTORY_SUFFIX = "cronet_perf_test";
     // Benchmark configuration passed down from host via Intent data.
@@ -50,9 +48,11 @@ public class CronetPerfTestActivity extends Activity {
     private String getConfigString(String key) {
         return mConfig.getQueryParameter(key);
     }
+
     private int getConfigInt(String key) {
         return Integer.parseInt(mConfig.getQueryParameter(key));
     }
+
     private boolean getConfigBoolean(String key) {
         return Boolean.parseBoolean(mConfig.getQueryParameter(key));
     }
@@ -62,14 +62,17 @@ public class CronetPerfTestActivity extends Activity {
         CRONET_HUC, // Benchmark Cronet's HttpURLConnection
         CRONET_ASYNC, // Benchmark Cronet's asynchronous API
     }
+
     private enum Direction {
         UP, // Benchmark upload (i.e. POST)
         DOWN, // Benchmark download (i.e. GET)
     }
+
     private enum Size {
         LARGE, // Large benchmark
         SMALL, // Small benchmark
     }
+
     private enum Protocol {
         HTTP,
         QUIC,
@@ -142,8 +145,13 @@ public class CronetPerfTestActivity extends Activity {
          * @param results Mapping of benchmark names to time required to run the benchmark in ms.
          *                When the benchmark completes this is updated with the result.
          */
-        public Benchmark(Mode mode, Direction direction, Size size, Protocol protocol,
-                int concurrency, JSONObject results) {
+        public Benchmark(
+                Mode mode,
+                Direction direction,
+                Size size,
+                Protocol protocol,
+                int concurrency,
+                JSONObject results) {
             mMode = mode;
             mDirection = direction;
             mProtocol = protocol;
@@ -157,8 +165,11 @@ public class CronetPerfTestActivity extends Activity {
                 case LARGE:
                     // When measuring a large upload, only download a small amount so download time
                     // isn't significant.
-                    resource = getConfigString(
-                            direction == Direction.UP ? "SMALL_RESOURCE" : "LARGE_RESOURCE");
+                    resource =
+                            getConfigString(
+                                    direction == Direction.UP
+                                            ? "SMALL_RESOURCE"
+                                            : "LARGE_RESOURCE");
                     mIterations = getConfigInt("LARGE_ITERATIONS");
                     mLength = getConfigInt("LARGE_RESOURCE_SIZE");
                     break;
@@ -194,7 +205,8 @@ public class CronetPerfTestActivity extends Activity {
             if (mProtocol == Protocol.QUIC) {
                 cronetEngineBuilder.enableQuic(true);
                 cronetEngineBuilder.addQuicHint(host, port, port);
-                CronetTestUtil.setMockCertVerifierForTesting(cronetEngineBuilder,
+                CronetTestUtil.setMockCertVerifierForTesting(
+                        cronetEngineBuilder,
                         MockCertVerifier.createMockCertVerifier(
                                 new String[] {getConfigString("QUIC_CERT_FILE")}, true));
             }
@@ -203,8 +215,7 @@ public class CronetPerfTestActivity extends Activity {
                 JSONObject hostResolverParams =
                         CronetTestUtil.generateHostResolverRules(getConfigString("HOST_IP"));
                 JSONObject experimentalOptions =
-                        new JSONObject()
-                                .put("HostResolverRules", hostResolverParams);
+                        new JSONObject().put("HostResolverRules", hostResolverParams);
                 cronetEngineBuilder.setExperimentalOptions(experimentalOptions.toString());
             } catch (JSONException e) {
                 throw new IllegalStateException("JSON failed: " + e);
@@ -213,9 +224,10 @@ public class CronetPerfTestActivity extends Activity {
             mName = buildBenchmarkName(mode, direction, protocol, concurrency, mIterations);
             mConcurrency = concurrency;
             mResults = results;
-            mBufferSize = mLength > getConfigInt("MAX_BUFFER_SIZE")
-                    ? getConfigInt("MAX_BUFFER_SIZE")
-                    : mLength;
+            mBufferSize =
+                    mLength > getConfigInt("MAX_BUFFER_SIZE")
+                            ? getConfigInt("MAX_BUFFER_SIZE")
+                            : mLength;
             mUseNetworkThread = getConfigBoolean("CRONET_ASYNC_USE_NETWORK_THREAD");
         }
 
@@ -348,23 +360,27 @@ public class CronetPerfTestActivity extends Activity {
                     mConcurrentFetchersDone++;
                     if (mUseNetworkThread) {
                         // Post empty task so message loop exit condition is retested.
-                        postToWorkQueue(new Runnable() {
-                            @Override
-                            public void run() {}
-                        });
+                        postToWorkQueue(
+                                new Runnable() {
+                                    @Override
+                                    public void run() {}
+                                });
                     }
                     return;
                 }
                 mRemainingRequests--;
-                final Runnable completionCallback = new Runnable() {
-                    @Override
-                    public void run() {
-                        initiateRequest(buffer);
-                    }
-                };
+                final Runnable completionCallback =
+                        new Runnable() {
+                            @Override
+                            public void run() {
+                                initiateRequest(buffer);
+                            }
+                        };
                 final UrlRequest.Builder builder =
-                        mCronetEngine.newUrlRequestBuilder(mUrl.toString(),
-                                new Callback(buffer, completionCallback), mWorkQueueExecutor);
+                        mCronetEngine.newUrlRequestBuilder(
+                                mUrl.toString(),
+                                new Callback(buffer, completionCallback),
+                                mWorkQueueExecutor);
                 if (mDirection == Direction.UP) {
                     builder.setUploadDataProvider(new Uploader(buffer), mWorkQueueExecutor);
                     builder.addHeader("Content-Type", "application/octet-stream");
@@ -441,8 +457,11 @@ public class CronetPerfTestActivity extends Activity {
                 @Override
                 public void onSucceeded(UrlRequest request, UrlResponseInfo info) {
                     if (info.getHttpStatusCode() != 200 || mBytesReceived != mLength) {
-                        System.out.println("Failed: response code: " + info.getHttpStatusCode()
-                                + " bytes: " + mBytesReceived);
+                        System.out.println(
+                                "Failed: response code: "
+                                        + info.getHttpStatusCode()
+                                        + " bytes: "
+                                        + mBytesReceived);
                         mFailed = true;
                     }
                     mCompletionCallback.run();
@@ -493,9 +512,7 @@ public class CronetPerfTestActivity extends Activity {
             }
         }
 
-        /**
-         * Executes the benchmark, times how long it takes, and records time in |mResults|.
-         */
+        /** Executes the benchmark, times how long it takes, and records time in |mResults|. */
         public void run() {
             final ExecutorService executor = Executors.newFixedThreadPool(mConcurrency);
             final List<Callable<Boolean>> tasks = new ArrayList<>(mIterations);
@@ -507,12 +524,13 @@ public class CronetPerfTestActivity extends Activity {
                         tasks.add(new SystemHttpURLConnectionFetchTask());
                     }
                     break;
-                case CRONET_HUC: {
-                    for (int i = 0; i < mIterations; i++) {
-                        tasks.add(new CronetHttpURLConnectionFetchTask());
+                case CRONET_HUC:
+                    {
+                        for (int i = 0; i < mIterations; i++) {
+                            tasks.add(new CronetHttpURLConnectionFetchTask());
+                        }
+                        break;
                     }
-                    break;
-                }
                 case CRONET_ASYNC:
                     tasks.add(new CronetAsyncFetchTask());
                     break;
@@ -563,59 +581,70 @@ public class CronetPerfTestActivity extends Activity {
         mConfig = getIntent().getData();
         // Execute benchmarks on another thread to avoid networking on main thread.
 
-        PostTask.postTask(TaskTraits.USER_BLOCKING, () -> {
-            JSONObject results = new JSONObject();
-            for (Mode mode : Mode.values()) {
-                for (Direction direction : Direction.values()) {
-                    for (Protocol protocol : Protocol.values()) {
-                        if (protocol == Protocol.QUIC && mode == Mode.SYSTEM_HUC) {
-                            // Unsupported; skip.
-                            continue;
+        PostTask.postTask(
+                TaskTraits.USER_BLOCKING,
+                () -> {
+                    JSONObject results = new JSONObject();
+                    for (Mode mode : Mode.values()) {
+                        for (Direction direction : Direction.values()) {
+                            for (Protocol protocol : Protocol.values()) {
+                                if (protocol == Protocol.QUIC && mode == Mode.SYSTEM_HUC) {
+                                    // Unsupported; skip.
+                                    continue;
+                                }
+                                // Run large and small benchmarks one at a time to test
+                                // single-threaded use.
+                                // Also run them four at a time to see how they benefit from
+                                // concurrency.
+                                // The value four was chosen as many devices are now quad-core.
+                                new Benchmark(mode, direction, Size.LARGE, protocol, 1, results)
+                                        .run();
+                                new Benchmark(mode, direction, Size.LARGE, protocol, 4, results)
+                                        .run();
+                                new Benchmark(mode, direction, Size.SMALL, protocol, 1, results)
+                                        .run();
+                                new Benchmark(mode, direction, Size.SMALL, protocol, 4, results)
+                                        .run();
+                                // Large benchmarks are generally bandwidth bound and unaffected by
+                                // per-request overhead.  Small benchmarks are not, so test at
+                                // further increased concurrency to see if further benefit is
+                                // possible.
+                                new Benchmark(mode, direction, Size.SMALL, protocol, 8, results)
+                                        .run();
+                            }
                         }
-                        // Run large and small benchmarks one at a time to test single-threaded use.
-                        // Also run them four at a time to see how they benefit from concurrency.
-                        // The value four was chosen as many devices are now quad-core.
-                        new Benchmark(mode, direction, Size.LARGE, protocol, 1, results).run();
-                        new Benchmark(mode, direction, Size.LARGE, protocol, 4, results).run();
-                        new Benchmark(mode, direction, Size.SMALL, protocol, 1, results).run();
-                        new Benchmark(mode, direction, Size.SMALL, protocol, 4, results).run();
-                        // Large benchmarks are generally bandwidth bound and unaffected by
-                        // per-request overhead.  Small benchmarks are not, so test at
-                        // further increased concurrency to see if further benefit is possible.
-                        new Benchmark(mode, direction, Size.SMALL, protocol, 8, results).run();
                     }
-                }
-            }
-            final File outputFile = new File(getConfigString("RESULTS_FILE"));
-            final File doneFile = new File(getConfigString("DONE_FILE"));
-            // If DONE_FILE exists, something is horribly wrong, produce no results to convey this.
-            if (doneFile.exists()) {
-                results = new JSONObject();
-            }
-            // Write out results to RESULTS_FILE, then create DONE_FILE.
-            FileOutputStream outputFileStream = null;
-            FileOutputStream doneFileStream = null;
-            try {
-                outputFileStream = new FileOutputStream(outputFile);
-                outputFileStream.write(results.toString().getBytes());
-                outputFileStream.close();
-                doneFileStream = new FileOutputStream(doneFile);
-                doneFileStream.close();
-            } catch (Exception e) {
-                System.out.println("Failed write results file: " + e);
-            } finally {
-                try {
-                    if (outputFileStream != null) {
+                    final File outputFile = new File(getConfigString("RESULTS_FILE"));
+                    final File doneFile = new File(getConfigString("DONE_FILE"));
+                    // If DONE_FILE exists, something is horribly wrong, produce no results to
+                    // convey this.
+                    if (doneFile.exists()) {
+                        results = new JSONObject();
+                    }
+                    // Write out results to RESULTS_FILE, then create DONE_FILE.
+                    FileOutputStream outputFileStream = null;
+                    FileOutputStream doneFileStream = null;
+                    try {
+                        outputFileStream = new FileOutputStream(outputFile);
+                        outputFileStream.write(results.toString().getBytes());
                         outputFileStream.close();
-                    }
-                    if (doneFileStream != null) {
+                        doneFileStream = new FileOutputStream(doneFile);
                         doneFileStream.close();
+                    } catch (Exception e) {
+                        System.out.println("Failed write results file: " + e);
+                    } finally {
+                        try {
+                            if (outputFileStream != null) {
+                                outputFileStream.close();
+                            }
+                            if (doneFileStream != null) {
+                                doneFileStream.close();
+                            }
+                        } catch (IOException e) {
+                            System.out.println("Failed to close output file: " + e);
+                        }
                     }
-                } catch (IOException e) {
-                    System.out.println("Failed to close output file: " + e);
-                }
-            }
-            finish();
-        });
+                    finish();
+                });
     }
 }

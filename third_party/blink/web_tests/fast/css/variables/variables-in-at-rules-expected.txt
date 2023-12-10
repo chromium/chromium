@@ -1,6 +1,5 @@
 This is a testharness.js-based test.
-[PASS] Custom properties are not allowed in @font-face rules
 [FAIL] Custom properties are not allowed in the outer scope of @keyframes rules
-  assert_equals: expected "@keyframes foo {\n  0% { --valid-var: 4; }\n  100% { left: 10px; }\n}" but got "@keyframes foo { \n  100% { left: 10px; }\n}"
+  assert_equals: expected "@keyframes foo {\\n  0% { --valid-var: 4; }\\n  100% { left: 10px; }\\n}" but got "@keyframes foo { \\n  100% { left: 10px; }\\n}"
 Harness: the test ran to completion.
 

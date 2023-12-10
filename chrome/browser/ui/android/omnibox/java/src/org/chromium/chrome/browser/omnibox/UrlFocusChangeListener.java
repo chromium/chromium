@@ -19,5 +19,4 @@ public interface UrlFocusChangeListener {
      * @param hasFocus Whether the URL field has gained focus.
      */
     default void onUrlAnimationFinished(boolean hasFocus) {}
-    ;
 }

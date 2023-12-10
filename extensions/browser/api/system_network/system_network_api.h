@@ -25,7 +25,7 @@ class SystemNetworkGetNetworkInterfacesFunction : public ExtensionFunction {
 
  private:
   void SendResponseOnUIThread(
-      const absl::optional<net::NetworkInterfaceList>& interface_list);
+      const std::optional<net::NetworkInterfaceList>& interface_list);
 };
 
 }  // namespace extensions::api

@@ -8,32 +8,44 @@
 
 #include "base/check.h"
 #include "base/functional/callback.h"
-#include "components/performance_manager/resource_attribution/query_scheduler.h"
+#include "components/performance_manager/public/resource_attribution/resource_contexts.h"
+#include "components/performance_manager/public/resource_attribution/resource_types.h"
 
 namespace performance_manager::resource_attribution {
 
-ScopedCPUQuery::ScopedCPUQuery(Graph* graph) {
-  auto* scheduler = QueryScheduler::GetFromGraph(graph);
-  CHECK(scheduler);
-  scheduler->AddCPUQuery();
-  scheduler_ = scheduler->GetWeakPtr();
+ScopedCPUQuery::ScopedCPUQuery()
+    : wrapped_query_(QueryBuilder()
+                         .AddResourceType(ResourceType::kCPUTime)
+                         .AddAllContextsOfType<FrameContext>()
+                         .AddAllContextsOfType<PageContext>()
+                         .AddAllContextsOfType<ProcessContext>()
+                         .AddAllContextsOfType<WorkerContext>()
+                         .CreateScopedQuery()) {
+  wrapped_query_.AddObserver(this);
 }
 
 ScopedCPUQuery::~ScopedCPUQuery() {
-  if (scheduler_) {
-    scheduler_->RemoveCPUQuery();
-  }
+  wrapped_query_.RemoveObserver(this);
 }
 
-void ScopedCPUQuery::QueryOnce(
-    base::OnceCallback<void(const QueryResultMap&)> callback,
-    scoped_refptr<base::TaskRunner> task_runner) {
-  if (scheduler_) {
-    scheduler_->RequestCPUResults(std::move(callback), task_runner);
+void ScopedCPUQuery::QueryOnce(ScopedCPUQuery::ResultCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (callbacks_.empty()) {
+    // No queries in flight, so start a new query. Further QueryOnce() calls
+    // before OnResourceUsageUpdate() clears the callback list will use the same
+    // query.
+    wrapped_query_.QueryOnce();
   }
-  // Drop the callback if the scheduler is unavailable, since this means
-  // PerformanceManager is being torn down so queries sent to the PM sequence
-  // would be dropped.
+  callbacks_.push_back(std::move(callback));
+}
+
+void ScopedCPUQuery::OnResourceUsageUpdated(const QueryResultMap& results) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(!callbacks_.empty());
+  for (ResultCallback& callback : callbacks_) {
+    std::move(callback).Run(results);
+  }
+  callbacks_.clear();
 }
 
 }  // namespace performance_manager::resource_attribution

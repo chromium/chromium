@@ -21,13 +21,25 @@ class MediaCodecBridgeBuilder {
     private static final String TAG = "MediaCodecBridge";
 
     @CalledByNative
-    static MediaCodecBridge createVideoDecoder(String mime, @CodecType int codecType,
-            MediaCrypto mediaCrypto, int width, int height, Surface surface, byte[] csd0,
-            byte[] csd1, HdrMetadata hdrMetadata, boolean allowAdaptivePlayback,
-            boolean useAsyncApi, String decoderName) {
+    static MediaCodecBridge createVideoDecoder(
+            String mime,
+            @CodecType int codecType,
+            MediaCrypto mediaCrypto,
+            int width,
+            int height,
+            Surface surface,
+            byte[] csd0,
+            byte[] csd1,
+            HdrMetadata hdrMetadata,
+            boolean allowAdaptivePlayback,
+            boolean useAsyncApi,
+            String decoderName) {
         CodecCreationInfo info = new CodecCreationInfo();
         try {
-            Log.i(TAG, "create MediaCodec video decoder, mime %s, decoder name %s", mime,
+            Log.i(
+                    TAG,
+                    "create MediaCodec video decoder, mime %s, decoder name %s",
+                    mime,
                     decoderName);
             if (!decoderName.isEmpty()) {
                 info = MediaCodecUtil.createDecoderByName(mime, decoderName);
@@ -40,8 +52,14 @@ class MediaCodecBridgeBuilder {
             MediaCodecBridge bridge =
                     new MediaCodecBridge(info.mediaCodec, info.bitrateAdjuster, useAsyncApi);
             byte[][] csds = {csd0, csd1};
-            MediaFormat format = MediaFormatBuilder.createVideoDecoderFormat(mime, width, height,
-                    csds, hdrMetadata, info.supportsAdaptivePlayback && allowAdaptivePlayback);
+            MediaFormat format =
+                    MediaFormatBuilder.createVideoDecoderFormat(
+                            mime,
+                            width,
+                            height,
+                            csds,
+                            hdrMetadata,
+                            info.supportsAdaptivePlayback && allowAdaptivePlayback);
 
             if (!bridge.configureVideo(format, surface, mediaCrypto, 0)) return null;
 
@@ -52,16 +70,27 @@ class MediaCodecBridgeBuilder {
 
             return bridge;
         } catch (Exception e) {
-            Log.e(TAG, "Failed to create MediaCodec video decoder: %s, codecType: %d", mime,
-                    codecType, e);
+            Log.e(
+                    TAG,
+                    "Failed to create MediaCodec video decoder: %s, codecType: %d",
+                    mime,
+                    codecType,
+                    e);
         }
 
         return null;
     }
 
     @CalledByNative
-    static MediaCodecBridge createVideoEncoder(String mime, int width, int height, int bitrateMode,
-            int bitRate, int frameRate, int iFrameInterval, int colorFormat) {
+    static MediaCodecBridge createVideoEncoder(
+            String mime,
+            int width,
+            int height,
+            int bitrateMode,
+            int bitRate,
+            int frameRate,
+            int iFrameInterval,
+            int colorFormat) {
         CodecCreationInfo info = new CodecCreationInfo();
         try {
             Log.i(TAG, "create MediaCodec video encoder, mime %s", mime);
@@ -74,13 +103,21 @@ class MediaCodecBridgeBuilder {
 
         // Create MediaCodecEncoder for H264 to meet WebRTC requirements to IDR/keyframes.
         // See https://crbug.com/761336 for more details.
-        MediaCodecBridge bridge = mime.equals(MimeTypes.VIDEO_H264)
-                ? new MediaCodecEncoder(info.mediaCodec, info.bitrateAdjuster)
-                : new MediaCodecBridge(info.mediaCodec, info.bitrateAdjuster, false);
-        MediaFormat format = MediaFormatBuilder.createVideoEncoderFormat(mime, width, height,
-                bitrateMode, bitRate,
-                BitrateAdjuster.getInitialFrameRate(info.bitrateAdjuster, frameRate),
-                iFrameInterval, colorFormat, info.supportsAdaptivePlayback);
+        MediaCodecBridge bridge =
+                mime.equals(MimeTypes.VIDEO_H264)
+                        ? new MediaCodecEncoder(info.mediaCodec, info.bitrateAdjuster)
+                        : new MediaCodecBridge(info.mediaCodec, info.bitrateAdjuster, false);
+        MediaFormat format =
+                MediaFormatBuilder.createVideoEncoderFormat(
+                        mime,
+                        width,
+                        height,
+                        bitrateMode,
+                        bitRate,
+                        BitrateAdjuster.getInitialFrameRate(info.bitrateAdjuster, frameRate),
+                        iFrameInterval,
+                        colorFormat,
+                        info.supportsAdaptivePlayback);
 
         if (!bridge.configureVideo(format, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE)) {
             return null;
@@ -94,8 +131,15 @@ class MediaCodecBridgeBuilder {
     }
 
     @CalledByNative
-    static MediaCodecBridge createAudioDecoder(String mime, MediaCrypto mediaCrypto, int sampleRate,
-            int channelCount, byte[] csd0, byte[] csd1, byte[] csd2, boolean frameHasAdtsHeader,
+    static MediaCodecBridge createAudioDecoder(
+            String mime,
+            MediaCrypto mediaCrypto,
+            int sampleRate,
+            int channelCount,
+            byte[] csd0,
+            byte[] csd1,
+            byte[] csd2,
+            boolean frameHasAdtsHeader,
             boolean useAsyncApi) {
         CodecCreationInfo info = new CodecCreationInfo();
         try {
@@ -110,8 +154,9 @@ class MediaCodecBridgeBuilder {
         MediaCodecBridge bridge =
                 new MediaCodecBridge(info.mediaCodec, info.bitrateAdjuster, useAsyncApi);
         byte[][] csds = {csd0, csd1, csd2};
-        MediaFormat format = MediaFormatBuilder.createAudioFormat(
-                mime, sampleRate, channelCount, csds, frameHasAdtsHeader);
+        MediaFormat format =
+                MediaFormatBuilder.createAudioFormat(
+                        mime, sampleRate, channelCount, csds, frameHasAdtsHeader);
 
         if (!bridge.configureAudio(format, mediaCrypto, 0)) return null;
 

@@ -183,8 +183,15 @@ public class TabBuilder {
 
         // Initializes Tab. Its user data objects are also initialized through the event
         // |onInitialized| of TabObserver they register.
-        tab.initialize(parent, mCreationType, mLoadUrlParams, mWebContents, mDelegateFactory,
-                mInitiallyHidden, mTabState, mInitializeRenderer);
+        tab.initialize(
+                parent,
+                mCreationType,
+                mLoadUrlParams,
+                mWebContents,
+                mDelegateFactory,
+                mInitiallyHidden,
+                mTabState,
+                mInitializeRenderer);
         return tab;
     }
 

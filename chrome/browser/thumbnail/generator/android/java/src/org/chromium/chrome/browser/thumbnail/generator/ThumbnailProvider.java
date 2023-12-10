@@ -13,9 +13,7 @@ import org.chromium.base.Callback;
 
 /** Provides thumbnails that represent different files. */
 public interface ThumbnailProvider {
-    /**
-     * Used to request the retrieval of a thumbnail.
-     */
+    /** Used to request the retrieval of a thumbnail. */
     public static interface ThumbnailRequest {
         /** Local storage path to the file. */
         @Nullable

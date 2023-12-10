@@ -15,19 +15,18 @@
 #import "components/prefs/ios/pref_observer_bridge.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/ios/browser/account_consistency_service.h"
-#import "components/supervised_user/core/browser/supervised_user_service.h"
+#import "components/supervised_user/core/browser/supervised_user_preferences.h"
 #import "components/supervised_user/core/common/supervised_user_utils.h"
 #import "ios/chrome/browser/app_launcher/model/app_launcher_tab_helper.h"
 #import "ios/chrome/browser/crash_report/model/crash_report_helper.h"
 #import "ios/chrome/browser/download/model/mime_type_util.h"
-#import "ios/chrome/browser/history/history_tab_helper.h"
+#import "ios/chrome/browser/history/model/history_tab_helper.h"
 #import "ios/chrome/browser/itunes_urls/model/itunes_urls_handler_tab_helper.h"
 #import "ios/chrome/browser/prerender/model/preload_controller_delegate.h"
 #import "ios/chrome/browser/prerender/model/prerender_pref.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
-#import "ios/chrome/browser/signin/account_consistency_service_factory.h"
-#import "ios/chrome/browser/supervised_user/model/supervised_user_service_factory.h"
+#import "ios/chrome/browser/signin/model/account_consistency_service_factory.h"
 #import "ios/chrome/browser/tabs/model/tab_helper_util.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
@@ -72,9 +71,6 @@ const char kPrerenderTabEvictionTrialGroup[] = "NoPrerendering";
 // The name of the histogram for recording final status (e.g. used/cancelled)
 // of prerender requests.
 const char kPrerenderFinalStatusHistogramName[] = "Prerender.FinalStatus";
-// The name of the histogram for recording the number of successful prerenders.
-const char kPrerendersPerSessionCountHistogramName[] =
-    "Prerender.PrerendersPerSessionCount";
 // The name of the histogram for recording time until a successful prerender.
 const char kPrerenderPrerenderTimeSaved[] = "Prerender.PrerenderTimeSaved";
 // Histogram to record that the load was complete when the prerender was used.
@@ -91,10 +87,8 @@ bool IsPrerenderTabEvictionExperimentalGroup() {
 // Returns true if the primary account is subject to parental controls and the
 // URL filtering control has been enabled.
 bool IsSubjectToParentalControls(ChromeBrowserState* browserState) {
-  supervised_user::SupervisedUserService* supervised_user_service =
-      SupervisedUserServiceFactory::GetForBrowserState(browserState);
-  return supervised_user_service &&
-         supervised_user_service->IsURLFilteringEnabled();
+  return browserState &&
+         supervised_user:: IsUrlFilteringEnabled(*browserState->GetPrefs());
 }
 
 // Returns whether `url` can be prerendered.
@@ -300,10 +294,6 @@ void DestroyPrerenderingWebState(std::unique_ptr<web::WebState> web_state) {
 // Whether or not the current connection is using WWAN.
 @property(nonatomic, assign) BOOL isOnCellularNetwork;
 
-// Number of successful prerenders (i.e. the user viewed the prerendered page)
-// during the lifetime of this controller.
-@property(nonatomic) NSUInteger successfulPrerendersPerSessionCount;
-
 // Tracks the time of the last attempt to load a prerender URL. Used for UMA
 // reporting of load durations.
 @property(nonatomic) base::TimeTicks startTime;
@@ -366,8 +356,6 @@ void DestroyPrerenderingWebState(std::unique_ptr<web::WebState> web_state) {
 }
 
 - (void)dealloc {
-  UMA_HISTOGRAM_COUNTS_1M(kPrerendersPerSessionCountHistogramName,
-                          self.successfulPrerendersPerSessionCount);
   [self cancelPrerender];
 }
 
@@ -473,7 +461,6 @@ void DestroyPrerenderingWebState(std::unique_ptr<web::WebState> web_state) {
     return nullptr;
   }
 
-  self.successfulPrerendersPerSessionCount++;
   [self recordReleaseMetrics];
   [self removeScheduledPrerenderRequests];
 

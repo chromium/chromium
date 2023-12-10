@@ -22,6 +22,7 @@
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_install_manager_observer.h"
+#include "chrome/browser/web_applications/web_app_pref_guardrails.h"
 #include "chrome/browser/web_applications/web_app_prefs_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
@@ -203,9 +204,9 @@ void AppBannerManagerDesktop::SaveInstallationDismissedForMl(
   Profile* profile =
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());
   CHECK(profile);
-  web_app::RecordMlInstallDismissed(
-      profile->GetPrefs(), web_app::GenerateAppIdFromManifestId(manifest_id),
-      base::Time::Now());
+  web_app::WebAppPrefGuardrails::GetForMlInstallPrompt(profile->GetPrefs())
+      .RecordDismiss(web_app::GenerateAppIdFromManifestId(manifest_id),
+                     base::Time::Now());
 }
 
 void AppBannerManagerDesktop::SaveInstallationIgnoredForMl(
@@ -214,9 +215,9 @@ void AppBannerManagerDesktop::SaveInstallationIgnoredForMl(
   Profile* profile =
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());
   CHECK(profile);
-  web_app::RecordMlInstallIgnored(
-      profile->GetPrefs(), web_app::GenerateAppIdFromManifestId(manifest_id),
-      base::Time::Now());
+  web_app::WebAppPrefGuardrails::GetForMlInstallPrompt(profile->GetPrefs())
+      .RecordIgnore(web_app::GenerateAppIdFromManifestId(manifest_id),
+                    base::Time::Now());
 }
 
 void AppBannerManagerDesktop::SaveInstallationAcceptedForMl(
@@ -225,9 +226,8 @@ void AppBannerManagerDesktop::SaveInstallationAcceptedForMl(
   Profile* profile =
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());
   CHECK(profile);
-  web_app::RecordMlInstallAccepted(
-      profile->GetPrefs(), web_app::GenerateAppIdFromManifestId(manifest_id),
-      base::Time::Now());
+  web_app::WebAppPrefGuardrails::GetForMlInstallPrompt(profile->GetPrefs())
+      .RecordAccept(web_app::GenerateAppIdFromManifestId(manifest_id));
 }
 
 bool AppBannerManagerDesktop::IsMlPromotionBlockedByHistoryGuardrail(
@@ -236,8 +236,9 @@ bool AppBannerManagerDesktop::IsMlPromotionBlockedByHistoryGuardrail(
   Profile* profile =
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());
   CHECK(profile);
-  return web_app::IsMlPromotionBlockedByHistoryGuardrail(
-      profile->GetPrefs(), web_app::GenerateAppIdFromManifestId(manifest_id));
+  return web_app::WebAppPrefGuardrails::GetForMlInstallPrompt(
+             profile->GetPrefs())
+      .IsBlockedByGuardrails(web_app::GenerateAppIdFromManifestId(manifest_id));
 }
 
 segmentation_platform::SegmentationPlatformService*

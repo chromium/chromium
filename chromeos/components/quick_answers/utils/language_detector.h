@@ -6,13 +6,13 @@
 #define CHROMEOS_COMPONENTS_QUICK_ANSWERS_UTILS_LANGUAGE_DETECTOR_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/services/machine_learning/public/mojom/text_classifier.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace quick_answers {
 
@@ -20,7 +20,7 @@ namespace quick_answers {
 class LanguageDetector {
  public:
   using DetectLanguageCallback =
-      base::OnceCallback<void(absl::optional<std::string>)>;
+      base::OnceCallback<void(std::optional<std::string>)>;
 
   explicit LanguageDetector(
       chromeos::machine_learning::mojom::TextClassifier* text_classifier);

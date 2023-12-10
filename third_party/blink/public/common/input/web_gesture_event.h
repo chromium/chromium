@@ -275,6 +275,7 @@ class BLINK_COMMON_EXPORT WebGestureEvent : public WebInputEvent {
       case Type::kGestureShortPress:
       case Type::kGestureLongPress:
       case Type::kGestureLongTap:
+      case Type::kGestureDoubleTap:
         return false;
       default:
         NOTREACHED();

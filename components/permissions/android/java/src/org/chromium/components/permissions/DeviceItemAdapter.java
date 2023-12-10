@@ -24,14 +24,10 @@ import androidx.core.util.ObjectsCompat;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * An adapter for keeping track of which items to show in the dialog.
- */
-public class DeviceItemAdapter
-        extends ArrayAdapter<DeviceItemRow> implements AdapterView.OnItemClickListener {
-    /**
-     * Item holder for performance boost.
-     */
+/** An adapter for keeping track of which items to show in the dialog. */
+public class DeviceItemAdapter extends ArrayAdapter<DeviceItemRow>
+        implements AdapterView.OnItemClickListener {
+    /** Item holder for performance boost. */
     private static class ViewHolder {
         private TextView mTextView;
         private @Nullable ImageView mImageView;
@@ -42,9 +38,7 @@ public class DeviceItemAdapter
         }
     }
 
-    /**
-     * An observer interface for item selection change in the adapter.
-     */
+    /** An observer interface for item selection change in the adapter. */
     public interface Observer {
         /**
          * Called when item selection changed in the adapter.
@@ -116,7 +110,10 @@ public class DeviceItemAdapter
      * @param icon Drawable to show next to the item.
      * @param iconDescription Description of the icon.
      */
-    public void addOrUpdate(String key, String description, @Nullable Drawable icon,
+    public void addOrUpdate(
+            String key,
+            String description,
+            @Nullable Drawable icon,
             @Nullable String iconDescription) {
         DeviceItemRow oldItem = mKeyToItemMap.get(key);
         if (oldItem != null) {
@@ -193,9 +190,10 @@ public class DeviceItemAdapter
         DeviceItemRow item = getItem(position);
         String description = item.mDescription;
         int counter = mItemDescriptionMap.get(description);
-        return counter == 1 ? description
-                            : mResources.getString(R.string.item_chooser_item_name_with_id,
-                                    description, item.mKey);
+        return counter == 1
+                ? description
+                : mResources.getString(
+                        R.string.item_chooser_item_name_with_id, description, item.mKey);
     }
 
     /**
@@ -277,9 +275,10 @@ public class DeviceItemAdapter
     }
 
     private void addToDescriptionsMap(String description) {
-        int count = mItemDescriptionMap.containsKey(description)
-                ? mItemDescriptionMap.get(description)
-                : 0;
+        int count =
+                mItemDescriptionMap.containsKey(description)
+                        ? mItemDescriptionMap.get(description)
+                        : 0;
         mItemDescriptionMap.put(description, count + 1);
     }
 

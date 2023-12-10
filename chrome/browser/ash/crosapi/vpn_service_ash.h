@@ -148,7 +148,7 @@ class VpnServiceForExtensionAsh : public crosapi::mojom::VpnServiceForExtension,
   void DispatchOnPlatformMessageEvent(
       const std::string& configuration_name,
       int32_t platform_message,
-      const absl::optional<std::string>& error = {});
+      const std::optional<std::string>& error = {});
 
  private:
   friend class VpnConfigurationImpl;
@@ -254,7 +254,7 @@ class VpnServiceAsh : public crosapi::mojom::VpnService,
   // configuration provided that it belongs to some enabled extension.
   void OnGetShillProperties(
       const std::string& service_path,
-      absl::optional<base::Value::Dict> configuration_properties);
+      std::optional<base::Value::Dict> configuration_properties);
 
   // Always returns a valid pointer.
   VpnServiceForExtensionAsh* GetVpnServiceForExtension(
@@ -288,7 +288,7 @@ class VpnServiceForExtensionAsh::VpnConfiguration
   virtual const std::string& key() const = 0;
   virtual const std::string& object_path() const = 0;
 
-  virtual const absl::optional<std::string>& service_path() const = 0;
+  virtual const std::optional<std::string>& service_path() const = 0;
   virtual void set_service_path(std::string) = 0;
 
   virtual void BindPepperVpnProxyObserver(

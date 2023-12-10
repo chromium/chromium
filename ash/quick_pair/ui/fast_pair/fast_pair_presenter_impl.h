@@ -6,6 +6,7 @@
 #define ASH_QUICK_PAIR_UI_FAST_PAIR_FAST_PAIR_PRESENTER_IMPL_H_
 
 #include <memory>
+#include <optional>
 
 #include "ash/quick_pair/common/protocol.h"
 #include "ash/quick_pair/proto/fastpair.pb.h"
@@ -15,7 +16,6 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace message_center {
 class MessageCenter;

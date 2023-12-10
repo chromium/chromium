@@ -4,6 +4,7 @@
 
 #include <stddef.h>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <type_traits>
@@ -17,7 +18,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/run_loop.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -102,7 +103,6 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
@@ -131,6 +131,9 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/metrics/structured/event_logging_features.h"
 #include "chrome/browser/metrics/structured/test/test_structured_metrics_recorder.h"
+#include "ui/views/test/dialog_test.h"
+#include "ui/views/widget/any_widget_observer.h"
+#include "ui/views/widget/widget.h"
 // TODO(crbug/4925196): enable gn check once it learn about conditional includes
 #include "components/metrics/structured/structured_events.h"  // nogncheck
 #endif
@@ -203,7 +206,7 @@ class WebAppBrowserTest : public WebAppControllerBrowserTest {
   }
 
   bool HasMinimalUiButtons(DisplayMode display_mode,
-                           absl::optional<DisplayMode> display_override_mode,
+                           std::optional<DisplayMode> display_override_mode,
                            bool open_as_window) {
     static int index = 0;
 
@@ -299,12 +302,12 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, ThemeColor) {
     auto web_app_info = WebAppInstallInfo::CreateWithStartUrlForTesting(
         GURL("http://example.org/2"));
     web_app_info->scope = GURL("http://example.org/");
-    web_app_info->theme_color = absl::optional<SkColor>();
+    web_app_info->theme_color = std::optional<SkColor>();
     webapps::AppId app_id = InstallWebApp(std::move(web_app_info));
     Browser* app_browser = LaunchWebAppBrowser(app_id);
 
     EXPECT_EQ(GetAppIdFromApplicationName(app_browser->app_name()), app_id);
-    EXPECT_EQ(absl::nullopt, app_browser->app_controller()->GetThemeColor());
+    EXPECT_EQ(std::nullopt, app_browser->app_controller()->GetThemeColor());
   }
 }
 
@@ -628,26 +631,26 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, AppLastLaunchTime) {
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, WithMinimalUiButtons) {
-  EXPECT_TRUE(HasMinimalUiButtons(DisplayMode::kBrowser, absl::nullopt,
+  EXPECT_TRUE(HasMinimalUiButtons(DisplayMode::kBrowser, std::nullopt,
                                   /*open_as_window=*/true));
-  EXPECT_TRUE(HasMinimalUiButtons(DisplayMode::kMinimalUi, absl::nullopt,
+  EXPECT_TRUE(HasMinimalUiButtons(DisplayMode::kMinimalUi, std::nullopt,
                                   /*open_as_window=*/true));
 
-  EXPECT_TRUE(HasMinimalUiButtons(DisplayMode::kBrowser, absl::nullopt,
+  EXPECT_TRUE(HasMinimalUiButtons(DisplayMode::kBrowser, std::nullopt,
                                   /*open_as_window=*/false));
-  EXPECT_TRUE(HasMinimalUiButtons(DisplayMode::kMinimalUi, absl::nullopt,
+  EXPECT_TRUE(HasMinimalUiButtons(DisplayMode::kMinimalUi, std::nullopt,
                                   /*open_as_window=*/false));
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, WithoutMinimalUiButtons) {
-  EXPECT_FALSE(HasMinimalUiButtons(DisplayMode::kStandalone, absl::nullopt,
+  EXPECT_FALSE(HasMinimalUiButtons(DisplayMode::kStandalone, std::nullopt,
                                    /*open_as_window=*/true));
-  EXPECT_FALSE(HasMinimalUiButtons(DisplayMode::kFullscreen, absl::nullopt,
+  EXPECT_FALSE(HasMinimalUiButtons(DisplayMode::kFullscreen, std::nullopt,
                                    /*open_as_window=*/true));
 
-  EXPECT_FALSE(HasMinimalUiButtons(DisplayMode::kStandalone, absl::nullopt,
+  EXPECT_FALSE(HasMinimalUiButtons(DisplayMode::kStandalone, std::nullopt,
                                    /*open_as_window=*/false));
-  EXPECT_FALSE(HasMinimalUiButtons(DisplayMode::kFullscreen, absl::nullopt,
+  EXPECT_FALSE(HasMinimalUiButtons(DisplayMode::kFullscreen, std::nullopt,
                                    /*open_as_window=*/false));
 }
 
@@ -1076,6 +1079,12 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, InstallInstallableSite) {
 
 #if BUILDFLAG(IS_CHROMEOS)
 class WebAppBrowserCrOSEventsTest : public WebAppBrowserTest {
+ protected:
+  GURL GetUrlWithScreenshots() {
+    return https_server()->GetURL(
+        "/banners/manifest_test_page_screenshots.html");
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_{
       metrics::structured::kAppDiscoveryLogging};
@@ -1094,6 +1103,66 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserCrOSEventsTest,
   auto* provider = WebAppProvider::GetForTest(profile());
   EXPECT_EQ(provider->registrar_unsafe().GetAppShortName(app_id),
             GetInstallableAppName());
+
+  // Installed PWAs should launch in their own window.
+  EXPECT_EQ(provider->registrar_unsafe().GetAppUserDisplayMode(app_id),
+            web_app::mojom::UserDisplayMode::kStandalone);
+
+  // Installed PWAs should have install time set.
+  EXPECT_TRUE(provider->registrar_unsafe().GetAppFirstInstallTime(app_id) >=
+              before_install_time);
+
+  const std::vector<metrics::structured::Event>& events =
+      test_recorder->GetEvents();
+  ASSERT_EQ(events.size(), 3U);
+
+  // Events that should be recorded will be ClickInstallAppFromMenu ->
+  // AppInstallDialogShown -> AppInstallDialogResult (Accepted).
+  cros_events::AppDiscovery_Browser_ClickInstallAppFromMenu event1;
+  event1.SetAppId(app_id);
+
+  EXPECT_EQ(events[0].event_name(), event1.event_name());
+  EXPECT_EQ(events[0].metric_values(), event1.metric_values());
+
+  cros_events::AppDiscovery_Browser_AppInstallDialogShown event2;
+  event2.SetAppId(app_id);
+
+  EXPECT_EQ(events[1].event_name(), event2.event_name());
+  EXPECT_EQ(events[1].metric_values(), event2.metric_values());
+
+  cros_events::AppDiscovery_Browser_AppInstallDialogResult event3;
+  event3.SetAppId(app_id).SetWebAppInstallStatus(
+      static_cast<int64_t>(web_app::WebAppInstallStatus::kAccepted));
+
+  EXPECT_EQ(events[2].event_name(), event3.event_name());
+  EXPECT_EQ(events[2].metric_values(), event3.metric_values());
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppBrowserCrOSEventsTest,
+                       DetailedInstallDialogSupport) {
+  auto test_recorder =
+      std::make_unique<metrics::structured::TestStructuredMetricsRecorder>();
+  test_recorder->Initialize();
+
+  base::Time before_install_time = base::Time::Now();
+  NavigateToURLAndWait(browser(), GetUrlWithScreenshots());
+
+  // Wait for the detailed install dialog to show up post install, and accept
+  // it.
+  views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
+                                       "WebAppDetailedInstallDialog");
+
+  WebAppTestInstallWithOsHooksObserver observer(browser()->profile());
+  observer.BeginListening();
+  WebAppProvider* provider = WebAppProvider::GetForTest(browser()->profile());
+  CHECK(chrome::ExecuteCommand(browser(), IDC_INSTALL_PWA));
+  views::Widget* widget = waiter.WaitIfNeededAndGet();
+  EXPECT_NE(widget, nullptr);
+  views::test::AcceptDialog(widget);
+  const webapps::AppId app_id = observer.Wait();
+
+  EXPECT_EQ(provider->registrar_unsafe().GetAppShortName(app_id),
+            "PWA Bottom Sheet");
 
   // Installed PWAs should launch in their own window.
   EXPECT_EQ(provider->registrar_unsafe().GetAppUserDisplayMode(app_id),
@@ -1341,7 +1410,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, ShortcutIconCorrectColor) {
   base::FilePath shortcut_path;
   auto* provider = WebAppProvider::GetForTest(profile());
   std::vector<SkColor> expected_pixel_colors = {SkColorSetRGB(92, 92, 92)};
-  absl::optional<SkColor> icon_pixel_color = absl::nullopt;
+  std::optional<SkColor> icon_pixel_color = std::nullopt;
 #if BUILDFLAG(IS_MAC)
   icon_pixel_color = registration->test_override->GetShortcutIconTopLeftColor(
       profile(), registration->test_override->chrome_apps_folder(), app_id,
@@ -2182,7 +2251,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_ManifestId, NoManifestId) {
   auto* app = provider->registrar_unsafe().GetAppById(app_id);
 
   EXPECT_EQ(web_app::GenerateAppId(
-                /*manifest_id=*/absl::nullopt,
+                /*manifest_id=*/std::nullopt,
                 provider->registrar_unsafe().GetAppStartUrl(app_id)),
             app_id);
   EXPECT_EQ(app->start_url(), app->manifest_id());
@@ -2200,7 +2269,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_ManifestId, ManifestIdSpecified) {
 
   EXPECT_EQ(web_app::GenerateAppIdFromManifestId(app->manifest_id()), app_id);
   EXPECT_NE(
-      web_app::GenerateAppId(/*manifest_id=*/absl::nullopt, app->start_url()),
+      web_app::GenerateAppId(/*manifest_id=*/std::nullopt, app->start_url()),
       app_id);
 }
 

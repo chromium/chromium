@@ -541,15 +541,27 @@ void SpdySessionPool::OnSSLConfigForServersChanged(
     const base::flat_set<HostPortPair>& servers) {
   WeakSessionList current_sessions = GetCurrentSessions();
   for (base::WeakPtr<SpdySession>& session : current_sessions) {
+    bool session_matches = false;
     if (!session)
       continue;
 
-    // TODO(crbug.com/1491092): Update to support multi-proxy chains.
-    const ProxyServer& proxy_server =
-        session->spdy_session_key().proxy_server();
-    if (servers.contains(session->host_port_pair()) ||
-        (proxy_server.is_http_like() && !proxy_server.is_http() &&
-         servers.contains(proxy_server.host_port_pair()))) {
+    // If the destination for this session is invalidated, or any of the proxy
+    // hops along the way, make the session go away.
+    if (servers.contains(session->host_port_pair())) {
+      session_matches = true;
+    } else {
+      const ProxyChain& proxy_chain = session->spdy_session_key().proxy_chain();
+
+      for (const ProxyServer& proxy_server : proxy_chain.proxy_servers()) {
+        if (proxy_server.is_http_like() && !proxy_server.is_http() &&
+            servers.contains(proxy_server.host_port_pair())) {
+          session_matches = true;
+          break;
+        }
+      }
+    }
+
+    if (session_matches) {
       session->MakeUnavailable();
       // Note this call preserves active streams but fails any streams that are
       // waiting on a stream ID.

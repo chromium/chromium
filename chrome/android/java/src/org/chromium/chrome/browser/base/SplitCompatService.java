@@ -83,9 +83,7 @@ public class SplitCompatService extends Service {
         super.attachBaseContext(context);
     }
 
-    /**
-     * Holds the implementation of service logic. Will be called by {@link SplitCompatService}.
-     */
+    /** Holds the implementation of service logic. Will be called by {@link SplitCompatService}. */
     public abstract static class Impl {
         private SplitCompatService mService;
 

@@ -3,10 +3,12 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/modules/mediastream/media_stream_constraints_util.h"
+
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_constraints_util_sets.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_constraint_factory.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_processor_options.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -38,6 +40,7 @@ class MediaStreamConstraintsUtilTest : public testing::Test {
  protected:
   using DoubleRangeSet = media_constraints::NumericRangeSet<double>;
   using ResolutionSet = media_constraints::ResolutionSet;
+  test::TaskEnvironment task_environment_;
 };
 
 TEST_F(MediaStreamConstraintsUtilTest, BooleanConstraints) {

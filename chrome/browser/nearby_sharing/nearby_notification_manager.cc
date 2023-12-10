@@ -30,6 +30,7 @@
 #include "chrome/browser/nearby_sharing/common/nearby_share_enums.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_prefs.h"
+#include "chrome/browser/nearby_sharing/common/nearby_share_resource_getter.h"
 #include "chrome/browser/nearby_sharing/nearby_share_metrics.h"
 #include "chrome/browser/nearby_sharing/nearby_sharing_service.h"
 #include "chrome/browser/notifications/notification_display_service.h"
@@ -84,7 +85,10 @@ message_center::Notification CreateNearbyNotification(const std::string& id) {
       /*title=*/std::u16string(),
       /*message=*/std::u16string(),
       /*icon=*/ui::ImageModel(),
-      l10n_util::GetStringUTF16(IDS_NEARBY_NOTIFICATION_SOURCE),
+      features::IsNameEnabled()
+          ? NearbyShareResourceGetter::GetInstance()->GetStringWithFeatureName(
+                IDS_NEARBY_NOTIFICATION_SOURCE_PH)
+          : l10n_util::GetStringUTF16(IDS_NEARBY_NOTIFICATION_SOURCE),
       /*origin_url=*/GURL(),
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
                                  kNearbyNotifier,
@@ -544,7 +548,21 @@ class SuccessNotificationDelegate : public NearbyNotificationDelegate {
         }
         break;
       case NearbyNotificationManager::ReceivedContentType::kSingleUrl:
-        OpenTextLink();
+        if (!action_index.has_value()) {
+          OpenTextLink();
+          break;
+        }
+        switch (*action_index) {
+          case 0:
+            OpenTextLink();
+            break;
+          case 1:
+            CopyTextToClipboard();
+            break;
+          default:
+            NOTREACHED();
+            break;
+        }
         break;
       case NearbyNotificationManager::ReceivedContentType::kSingleImage:
         if (!action_index.has_value()) {
@@ -969,8 +987,12 @@ void NearbyNotificationManager::ShowConnectionRequest(
 
   message_center::Notification notification =
       CreateNearbyNotification(kNearbyInProgressNotificationId);
-  notification.set_title(l10n_util::GetStringUTF16(
-      IDS_NEARBY_NOTIFICATION_CONNECTION_REQUEST_TITLE));
+  notification.set_title(
+      features::IsNameEnabled()
+          ? NearbyShareResourceGetter::GetInstance()->GetStringWithFeatureName(
+                IDS_NEARBY_NOTIFICATION_CONNECTION_REQUEST_TITLE_PH)
+          : l10n_util::GetStringUTF16(
+                IDS_NEARBY_NOTIFICATION_CONNECTION_REQUEST_TITLE));
   notification.set_message(
       GetConnectionRequestNotificationMessage(share_target, transfer_metadata));
   notification.set_icon(GetImageFromShareTarget(share_target));
@@ -997,6 +1019,8 @@ void NearbyNotificationManager::ShowNearbyDeviceTryingToShare() {
   if (!ShouldShowNearbyDeviceTryingToShareNotification(pref_service_))
     return;
 
+  CD_LOG(INFO, Feature::NS) << "Showing fast initiation notification.";
+
   message_center::Notification notification =
       CreateNearbyNotification(kNearbyDeviceTryingToShareNotificationId);
 
@@ -1005,9 +1029,18 @@ void NearbyNotificationManager::ShowNearbyDeviceTryingToShare() {
 
   notification.set_title(
       l10n_util::GetStringUTF16(IDS_NEARBY_NOTIFICATION_ONBOARDING_TITLE));
-  notification.set_message(l10n_util::GetStringUTF16(
-      is_onboarding_complete ? IDS_NEARBY_NOTIFICATION_GO_VISIBLE_MESSAGE
-                             : IDS_NEARBY_NOTIFICATION_ONBOARDING_MESSAGE));
+
+  const std::u16string onboarding_message =
+      features::IsNameEnabled()
+          ? NearbyShareResourceGetter::GetInstance()->GetStringWithFeatureName(
+                IDS_NEARBY_NOTIFICATION_ONBOARDING_MESSAGE_PH)
+          : l10n_util::GetStringUTF16(
+                IDS_NEARBY_NOTIFICATION_ONBOARDING_MESSAGE);
+
+  notification.set_message(is_onboarding_complete
+                               ? l10n_util::GetStringUTF16(
+                                     IDS_NEARBY_NOTIFICATION_GO_VISIBLE_MESSAGE)
+                               : onboarding_message);
 
   std::vector<message_center::ButtonInfo> notification_actions;
   notification_actions.emplace_back(l10n_util::GetStringUTF16(
@@ -1107,6 +1140,8 @@ void NearbyNotificationManager::ShowIncomingSuccess(
     case ReceivedContentType::kSingleUrl:
       notification_actions.emplace_back(
           l10n_util::GetStringUTF16(IDS_NEARBY_NOTIFICATION_ACTION_OPEN_URL));
+      notification_actions.emplace_back(l10n_util::GetStringUTF16(
+          IDS_NEARBY_NOTIFICATION_ACTION_COPY_TO_CLIPBOARD));
       break;
     case ReceivedContentType::kSingleImage:
       notification_actions.emplace_back(l10n_util::GetStringUTF16(

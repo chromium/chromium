@@ -15,9 +15,7 @@ import org.jni_zero.CalledByNative;
  */
 @FunctionalInterface
 public interface Callback<T> {
-    /**
-     * Invoked with the result of a computation.
-     */
+    /** Invoked with the result of a computation. */
     void onResult(T result);
 
     /**

@@ -459,6 +459,13 @@ gfx::NativeViewAccessible AXPlatformNodeBase::GetNativeViewAccessible() {
 }
 
 void AXPlatformNodeBase::NotifyAccessibilityEvent(ax::mojom::Event event_type) {
+  if (event_type == ax::mojom::Event::kAlert) {
+    CHECK(ui::IsAlert(GetRole()))
+        << "On some platforms, the alert event does not work correctly unless "
+           "it is fired on an object with an alert role. Role was "
+        << GetRole();
+  }
+
   OnNotifyEventCallbackMap& callback_map = GetOnNotifyEventCallbackMap();
   if (callback_map.find(event_type) != callback_map.end() &&
       callback_map[event_type]) {
@@ -467,7 +474,8 @@ void AXPlatformNodeBase::NotifyAccessibilityEvent(ax::mojom::Event event_type) {
 }
 
 #if BUILDFLAG(IS_APPLE)
-void AXPlatformNodeBase::AnnounceText(const std::u16string& text) {}
+void AXPlatformNodeBase::AnnounceTextAs(const std::u16string& text,
+                                        AnnouncementType announcement_type) {}
 #endif
 
 AXPlatformNodeDelegate* AXPlatformNodeBase::GetDelegate() const {

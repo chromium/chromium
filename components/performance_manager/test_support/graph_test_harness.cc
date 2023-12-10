@@ -9,6 +9,16 @@
 
 namespace performance_manager {
 
+RenderProcessHostId NextTestRenderProcessHostId() {
+  static RenderProcessHostId::Generator id_generator;
+  return id_generator.GenerateNextId();
+}
+
+BrowserChildProcessHostId NextTestBrowserChildProcessHostId() {
+  static BrowserChildProcessHostId::Generator id_generator;
+  return id_generator.GenerateNextId();
+}
+
 TestGraphImpl::TestGraphImpl() = default;
 TestGraphImpl::~TestGraphImpl() = default;
 
@@ -21,22 +31,21 @@ TestNodeWrapper<FrameNodeImpl> TestGraphImpl::CreateFrameNodeAutoId(
       /*outer_document_for_fenced_frame=*/nullptr, ++next_frame_routing_id_);
 }
 
-TestNodeWrapper<ProcessNodeImpl> TestGraphImpl::CreateProcessNodeAutoId(
-    content::ProcessType process_type) {
-  switch (process_type) {
-    case content::PROCESS_TYPE_BROWSER:
-      return TestNodeWrapper<ProcessNodeImpl>::Create(this,
-                                                      BrowserProcessNodeTag{});
-    case content::PROCESS_TYPE_RENDERER:
-      return TestNodeWrapper<ProcessNodeImpl>::Create(
-          this,
-          RenderProcessHostProxy::CreateForTesting(NextRenderProcessHostId()));
-    default:
-      return TestNodeWrapper<ProcessNodeImpl>::Create(
-          this, process_type,
-          BrowserChildProcessHostProxy::CreateForTesting(
-              NextBrowserChildProcessHostId()));
-  }
+TestNodeWrapper<ProcessNodeImpl> TestGraphImpl::CreateBrowserProcessNode() {
+  return TestNodeWrapper<ProcessNodeImpl>::Create(this,
+                                                  BrowserProcessNodeTag{});
+}
+
+TestNodeWrapper<ProcessNodeImpl> TestGraphImpl::CreateRendererProcessNode(
+    RenderProcessHostProxy proxy) {
+  return TestNodeWrapper<ProcessNodeImpl>::Create(this, std::move(proxy));
+}
+
+TestNodeWrapper<ProcessNodeImpl> TestGraphImpl::CreateBrowserChildProcessNode(
+    content::ProcessType process_type,
+    BrowserChildProcessHostProxy proxy) {
+  return TestNodeWrapper<ProcessNodeImpl>::Create(this, process_type,
+                                                  std::move(proxy));
 }
 
 GraphTestHarness::GraphTestHarness()

@@ -171,7 +171,7 @@ class KioskLaunchController : public KioskProfileLoader::Delegate,
   void OnAppPrepared() override;
   void OnAppLaunched() override;
   void OnAppDataUpdated() override;
-  void OnAppWindowCreated(const absl::optional<std::string>& app_name) override;
+  void OnAppWindowCreated(const std::optional<std::string>& app_name) override;
 
   // `KioskProfileLoader::Delegate`
   void OnProfileLoaded(Profile* profile) override;
@@ -179,9 +179,8 @@ class KioskLaunchController : public KioskProfileLoader::Delegate,
   void OnOldEncryptionDetected(
       std::unique_ptr<UserContext> user_context) override;
 
-  KioskAppManagerBase::App GetAppData();
-
-  void HandleWebAppInstallFailed();
+  // Returns the `Data` struct used to populate the splash screen.
+  AppLaunchSplashScreenView::Data GetSplashScreenAppData();
 
   // Continues launching after forced extensions are installed if required.
   // If it times out waiting for extensions to install, logs metrics via UMA.

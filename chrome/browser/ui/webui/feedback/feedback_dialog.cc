@@ -157,7 +157,7 @@ void FeedbackDialog::RequestMediaAccessPermission(
 
 bool FeedbackDialog::CheckMediaAccessPermission(
     content::RenderFrameHost* render_frame_host,
-    const GURL& security_origin,
+    const url::Origin& security_origin,
     blink::mojom::MediaStreamType type) {
   return true;
 }

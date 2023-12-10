@@ -8,10 +8,11 @@
 #include "ash/ash_export.h"
 #include "ash/system/network/network_detailed_network_view.h"
 #include "ash/system/network/network_list_item_view.h"
-#include "ash/system/network/network_list_mobile_header_view_impl.h"
+#include "ash/system/network/network_list_mobile_header_view.h"
 #include "ash/system/network/network_list_network_item_view.h"
-#include "ash/system/network/network_list_wifi_header_view_impl.h"
+#include "ash/system/network/network_list_wifi_header_view.h"
 #include "base/memory/raw_ptr.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 namespace ash {
@@ -21,6 +22,8 @@ class ASH_EXPORT FakeNetworkDetailedNetworkView
     : public NetworkDetailedNetworkView,
       public views::View,
       public ViewClickListener {
+  METADATA_HEADER(FakeNetworkDetailedNetworkView, views::View)
+
  public:
   explicit FakeNetworkDetailedNetworkView(Delegate* delegate);
   FakeNetworkDetailedNetworkView(const FakeNetworkDetailedNetworkView&) =

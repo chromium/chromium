@@ -237,14 +237,14 @@ CreateSuggestionGroupsMap(
   return result_map;
 }
 
-absl::optional<std::u16string> GetAdditionalText(
+std::optional<std::u16string> GetAdditionalText(
     const SuggestionAnswer::ImageLine& line) {
   if (line.additional_text()) {
     const auto additional_text = line.additional_text()->text();
     if (!additional_text.empty())
       return additional_text;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 std::u16string ImageLineToString16(const SuggestionAnswer::ImageLine& line) {
@@ -616,11 +616,22 @@ LocationBarModel* RealboxOmniboxClient::GetLocationBarModel() {
 // static
 void RealboxHandler::SetupWebUIDataSource(content::WebUIDataSource* source,
                                           Profile* profile) {
-  RealboxHandler::SetupDropdownWebUIDataSource(source, profile);
-
   static constexpr webui::LocalizedString kStrings[] = {
-      {"searchBoxHint", IDS_GOOGLE_SEARCH_BOX_EMPTY_HINT_MD}};
+      {"searchBoxHint", IDS_GOOGLE_SEARCH_BOX_EMPTY_HINT_MD},
+      {"realboxSeparator", IDS_AUTOCOMPLETE_MATCH_DESCRIPTION_SEPARATOR},
+      {"removeSuggestion", IDS_OMNIBOX_REMOVE_SUGGESTION},
+      {"hideSuggestions", IDS_TOOLTIP_HEADER_HIDE_SUGGESTIONS_BUTTON},
+      {"showSuggestions", IDS_TOOLTIP_HEADER_SHOW_SUGGESTIONS_BUTTON}};
   source->AddLocalizedStrings(kStrings);
+
+  source->AddBoolean(
+      "omniboxActionsUISimplification",
+      base::FeatureList::IsEnabled(omnibox::kOmniboxActionsUISimplification));
+  source->AddBoolean(
+      "realboxCr23ExpandedStateIcons",
+      base::FeatureList::IsEnabled(
+          ntp_features::kRealboxCr23ExpandedStateIcons) ||
+          base::FeatureList::IsEnabled(ntp_features::kRealboxCr23All));
 
   source->AddBoolean(
       "realboxMatchSearchboxTheme",
@@ -655,26 +666,15 @@ void RealboxHandler::SetupWebUIDataSource(content::WebUIDataSource* source,
   source->AddBoolean(
       "realboxLensDirectUpload",
       base::FeatureList::IsEnabled(ntp_features::kNtpLensDirectUpload));
-}
-
-// static
-void RealboxHandler::SetupDropdownWebUIDataSource(
-    content::WebUIDataSource* source,
-    Profile* profile) {
-  static constexpr webui::LocalizedString kStrings[] = {
-      {"realboxSeparator", IDS_AUTOCOMPLETE_MATCH_DESCRIPTION_SEPARATOR},
-      {"removeSuggestion", IDS_OMNIBOX_REMOVE_SUGGESTION},
-      {"hideSuggestions", IDS_TOOLTIP_HEADER_HIDE_SUGGESTIONS_BUTTON},
-      {"showSuggestions", IDS_TOOLTIP_HEADER_SHOW_SUGGESTIONS_BUTTON}};
-  source->AddLocalizedStrings(kStrings);
-
   source->AddBoolean(
-      "omniboxActionsUISimplification",
-      base::FeatureList::IsEnabled(omnibox::kOmniboxActionsUISimplification));
-  source->AddBoolean(
-      "realboxCr23ExpandedStateIcons",
+      "realboxCr23ExpandedStateLayout",
       base::FeatureList::IsEnabled(
-          ntp_features::kRealboxCr23ExpandedStateIcons) ||
+          ntp_features::kRealboxCr23ExpandedStateLayout) ||
+          base::FeatureList::IsEnabled(ntp_features::kRealboxCr23All));
+  source->AddBoolean(
+      "realboxCr23ConsistentRowHeight",
+      base::FeatureList::IsEnabled(
+          ntp_features::kRealboxCr23ConsistentRowHeight) ||
           base::FeatureList::IsEnabled(ntp_features::kRealboxCr23All));
 }
 

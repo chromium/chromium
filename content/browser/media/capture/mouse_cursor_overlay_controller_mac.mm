@@ -15,7 +15,8 @@
 #include "ui/base/cocoa/tracking_area.h"
 
 namespace {
-using LocationUpdateCallback = base::RepeatingCallback<void(const NSPoint&)>;
+using LocationUpdateCallback =
+    base::RepeatingCallback<void(const NSPoint&, bool cursor_within_surface)>;
 }  // namespace;
 
 // Uses a CrTrackingArea to monitor for mouse events and forwards them to the
@@ -57,15 +58,15 @@ using LocationUpdateCallback = base::RepeatingCallback<void(const NSPoint&)>;
 }
 
 - (void)mouseMoved:(NSEvent*)theEvent {
-  _callback.Run([theEvent locationInWindow]);
+  _callback.Run([theEvent locationInWindow], /*cursor_within_surface=*/true);
 }
 
 - (void)mouseEntered:(NSEvent*)theEvent {
-  _callback.Run([theEvent locationInWindow]);
+  _callback.Run([theEvent locationInWindow], /*cursor_within_surface=*/true);
 }
 
 - (void)mouseExited:(NSEvent*)theEvent {
-  _callback.Run([theEvent locationInWindow]);
+  _callback.Run([theEvent locationInWindow], /*cursor_within_surface=*/false);
 }
 
 @end
@@ -106,7 +107,8 @@ class MouseCursorOverlayController::Observer {
   }
 
  private:
-  void OnMouseMoved(const NSPoint& location_in_window) {
+  void OnMouseMoved(const NSPoint& location_in_window,
+                    bool cursor_within_surface) {
     // Compute the location within the view using Aura conventions: (0,0) is the
     // upper-left corner. So, if the NSView is flipped in Cocoa, it's not
     // flipped in Aura.
@@ -116,6 +118,12 @@ class MouseCursorOverlayController::Observer {
       location_aura.y = NSHeight([view_ bounds]) - location_aura.y;
     }
     controller_->OnMouseMoved(gfx::PointF(location_aura.x, location_aura.y));
+    if (controller_->ShouldSendMouseEvents()) {
+      controller_->OnMouseCoordinatesUpdated(
+          cursor_within_surface ? gfx::Point(std::round(location_aura.x),
+                                             std::round(location_aura.y))
+                                : kOutsideSurface);
+    }
   }
 
   const raw_ptr<MouseCursorOverlayController> controller_;
@@ -124,6 +132,8 @@ class MouseCursorOverlayController::Observer {
 };
 
 MouseCursorOverlayController::MouseCursorOverlayController()
+    // base::Unretained(this) is safe because we own mouse_activity_ended_timer_
+    // and its destructor calls TimerBase::AbandonScheduledTask().
     : mouse_activity_ended_timer_(
           FROM_HERE,
           kIdleTimeout,

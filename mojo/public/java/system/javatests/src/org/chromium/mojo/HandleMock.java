@@ -20,11 +20,13 @@ import org.chromium.mojo.system.impl.CoreImpl;
 import java.nio.ByteBuffer;
 import java.util.List;
 
-/**
- * A mock handle, that does nothing.
- */
-public class HandleMock implements UntypedHandle, MessagePipeHandle, ProducerHandle, ConsumerHandle,
-                                   SharedBufferHandle {
+/** A mock handle, that does nothing. */
+public class HandleMock
+        implements UntypedHandle,
+                MessagePipeHandle,
+                ProducerHandle,
+                ConsumerHandle,
+                SharedBufferHandle {
     /**
      * @see Handle#close()
      */

@@ -8,6 +8,10 @@ import java.util.Map;
 
 /** A simple HttpClient interface. */
 public interface ChromeHttpClient {
-    void send(String url, String requestType, byte[] body, Map<String, String> headers,
+    void send(
+            String url,
+            String requestType,
+            byte[] body,
+            Map<String, String> headers,
             HttpResponseCallback responseCallback);
 }

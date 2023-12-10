@@ -5,10 +5,10 @@
 #ifndef ASH_WEBUI_HELP_APP_UI_HELP_APP_UI_DELEGATE_H_
 #define ASH_WEBUI_HELP_APP_UI_HELP_APP_UI_DELEGATE_H_
 
+#include <optional>
 #include <string>
 
 #include "ash/webui/help_app_ui/help_app_ui.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 class PrefService;
@@ -24,7 +24,7 @@ class HelpAppUIDelegate {
   // Opens the native chrome feedback dialog scoped to chrome://help-app.
   // Returns an optional error message if unable to open the dialog or nothing
   // if the dialog was determined to have opened successfully.
-  virtual absl::optional<std::string> OpenFeedbackDialog() = 0;
+  virtual std::optional<std::string> OpenFeedbackDialog() = 0;
 
   // Opens OS Settings at the parental controls section.
   virtual void ShowParentalControls() = 0;
@@ -59,7 +59,7 @@ class HelpAppUIDelegate {
   // flag is enabled, this will automatically trigger the install dialog.
   // Failure to provide a valid https:// URL will cause the Help app renderer
   // process to crash.
-  virtual absl::optional<std::string> OpenUrlInBrowserAndTriggerInstallDialog(
+  virtual std::optional<std::string> OpenUrlInBrowserAndTriggerInstallDialog(
       const GURL& url) = 0;
 };
 

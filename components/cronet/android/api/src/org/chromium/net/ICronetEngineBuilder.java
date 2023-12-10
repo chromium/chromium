@@ -29,8 +29,11 @@ public abstract class ICronetEngineBuilder {
     public static final int QUIC_OPTIONS = 3;
 
     // Public API methods.
-    public abstract ICronetEngineBuilder addPublicKeyPins(String hostName, Set<byte[]> pinsSha256,
-            boolean includeSubdomains, Date expirationDate);
+    public abstract ICronetEngineBuilder addPublicKeyPins(
+            String hostName,
+            Set<byte[]> pinsSha256,
+            boolean includeSubdomains,
+            Date expirationDate);
 
     public abstract ICronetEngineBuilder addQuicHint(String host, int port, int alternatePort);
 

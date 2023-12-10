@@ -5,8 +5,6 @@
 import {isRTL} from 'chrome://resources/ash/common/util.js';
 import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 
-import {isJellyEnabled} from '../../../common/js/flags.js';
-
 export class BaseDialog {
   // @ts-ignore: error TS7006: Parameter 'parentNode' implicitly has an 'any'
   // type.
@@ -122,16 +120,12 @@ export class BaseDialog {
     // assignable to parameter of type 'Node'.
     this.frame.appendChild(this.title);
 
-    // Use cr-button as close button for refresh23 style.
-    if (isJellyEnabled()) {
-      this.closeButton = doc.createElement('cr-button');
-      const icon = doc.createElement('div');
-      icon.className = 'icon';
-      // @ts-ignore: error TS2531: Object is possibly 'null'.
-      this.closeButton.appendChild(icon);
-    } else {
-      this.closeButton = doc.createElement('div');
-    }
+    // Use cr-button as close button.
+    this.closeButton = doc.createElement('cr-button');
+    const icon = doc.createElement('div');
+    icon.className = 'icon';
+    // @ts-ignore: error TS2531: Object is possibly 'null'.
+    this.closeButton.appendChild(icon);
     // @ts-ignore: error TS2531: Object is possibly 'null'.
     this.closeButton.className = 'cr-dialog-close';
     // @ts-ignore: error TS2531: Object is possibly 'null'.
@@ -162,15 +156,13 @@ export class BaseDialog {
     this.okButton.className = 'cr-dialog-ok';
     // @ts-ignore: error TS2531: Object is possibly 'null'.
     this.okButton.textContent = BaseDialog.OK_LABEL;
-    // Add hover/ripple layer for button in FilesRefresh.
-    if (isJellyEnabled()) {
-      const hoverLayer = doc.createElement('div');
-      hoverLayer.className = 'hover-layer';
-      // @ts-ignore: error TS2531: Object is possibly 'null'.
-      this.okButton.appendChild(hoverLayer);
-      // @ts-ignore: error TS2531: Object is possibly 'null'.
-      this.okButton.appendChild(doc.createElement('paper-ripple'));
-    }
+    // Add hover/ripple layer for button.
+    const hoverLayerForOk = doc.createElement('div');
+    hoverLayerForOk.className = 'hover-layer';
+    // @ts-ignore: error TS2531: Object is possibly 'null'.
+    this.okButton.appendChild(hoverLayerForOk);
+    // @ts-ignore: error TS2531: Object is possibly 'null'.
+    this.okButton.appendChild(doc.createElement('paper-ripple'));
     // @ts-ignore: error TS2531: Object is possibly 'null'.
     this.okButton.addEventListener('click', this.onOkClick_.bind(this));
     // @ts-ignore: error TS2345: Argument of type 'Element | null' is not
@@ -185,15 +177,13 @@ export class BaseDialog {
     this.cancelButton.className = 'cr-dialog-cancel';
     // @ts-ignore: error TS2531: Object is possibly 'null'.
     this.cancelButton.textContent = BaseDialog.CANCEL_LABEL;
-    // Add hover/ripple layer for button in FilesRefresh.
-    if (isJellyEnabled()) {
-      const hoverLayer = doc.createElement('div');
-      hoverLayer.className = 'hover-layer';
-      // @ts-ignore: error TS2531: Object is possibly 'null'.
-      this.cancelButton.appendChild(hoverLayer);
-      // @ts-ignore: error TS2531: Object is possibly 'null'.
-      this.cancelButton.appendChild(doc.createElement('paper-ripple'));
-    }
+    // Add hover/ripple layer for button.
+    const hoverLayerForCancel = doc.createElement('div');
+    hoverLayerForCancel.className = 'hover-layer';
+    // @ts-ignore: error TS2531: Object is possibly 'null'.
+    this.cancelButton.appendChild(hoverLayerForCancel);
+    // @ts-ignore: error TS2531: Object is possibly 'null'.
+    this.cancelButton.appendChild(doc.createElement('paper-ripple'));
     // @ts-ignore: error TS2531: Object is possibly 'null'.
     this.cancelButton.addEventListener('click', this.onCancelClick_.bind(this));
     // @ts-ignore: error TS2345: Argument of type 'Element | null' is not
@@ -260,28 +250,18 @@ export class BaseDialog {
 
   /** @param {string} label */
   setOkLabel(label) {
-    if (isJellyEnabled()) {
-      // When Jelly is on, we have child elements inside the button, setting
-      // textContent of the button will remove all children.
-      // @ts-ignore: error TS2532: Object is possibly 'undefined'.
-      this.okButton.childNodes[0].textContent = label;
-    } else {
-      // @ts-ignore: error TS2531: Object is possibly 'null'.
-      this.okButton.textContent = label;
-    }
+    // We have child elements (hover/ripple) inside the button, setting
+    // textContent of the button will remove all children
+    // @ts-ignore: error TS2532: Object is possibly 'undefined'.
+    this.okButton.childNodes[0].textContent = label;
   }
 
   /** @param {string} label */
   setCancelLabel(label) {
-    if (isJellyEnabled()) {
-      // When Jelly is on, we have child elements inside the button, setting
-      // textContent of the button will remove all children.
-      // @ts-ignore: error TS2532: Object is possibly 'undefined'.
-      this.cancelButton.childNodes[0].textContent = label;
-    } else {
-      // @ts-ignore: error TS2531: Object is possibly 'null'.
-      this.cancelButton.textContent = label;
-    }
+    // We have child elements inside the button, setting
+    // textContent of the button will remove all children.
+    // @ts-ignore: error TS2532: Object is possibly 'undefined'.
+    this.cancelButton.childNodes[0].textContent = label;
   }
 
   setInitialFocusOnCancel() {

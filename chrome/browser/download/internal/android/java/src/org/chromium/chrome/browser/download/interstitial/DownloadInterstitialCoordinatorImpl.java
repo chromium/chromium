@@ -33,20 +33,31 @@ public class DownloadInterstitialCoordinatorImpl implements DownloadInterstitial
      * @param snackbarManager Snackbar manager for the current activity.
      * @param reloadCallback Callback run to reload the tab therefore restarting the download.
      */
-    public DownloadInterstitialCoordinatorImpl(Supplier<Context> contextSupplier,
-            String downloadUrl, OfflineContentProvider provider, SnackbarManager snackbarManager,
+    public DownloadInterstitialCoordinatorImpl(
+            Supplier<Context> contextSupplier,
+            String downloadUrl,
+            OfflineContentProvider provider,
+            SnackbarManager snackbarManager,
             Runnable reloadCallback) {
         mView = DownloadInterstitialView.create(contextSupplier.get());
         PropertyModel model =
                 new PropertyModel.Builder(DownloadInterstitialProperties.ALL_KEYS).build();
         model.set(DownloadInterstitialProperties.RELOAD_TAB, reloadCallback);
         ModalDialogManager modalDialogManager =
-                new ModalDialogManager(new AppModalPresenter(contextSupplier.get()),
+                new ModalDialogManager(
+                        new AppModalPresenter(contextSupplier.get()),
                         ModalDialogManager.ModalDialogType.APP);
-        mMediator = new DownloadInterstitialMediator(
-                contextSupplier, model, downloadUrl, provider, snackbarManager, modalDialogManager);
-        mModelChangeProcessor = PropertyModelChangeProcessor.create(
-                model, mView, DownloadInterstitialViewBinder::bind);
+        mMediator =
+                new DownloadInterstitialMediator(
+                        contextSupplier,
+                        model,
+                        downloadUrl,
+                        provider,
+                        snackbarManager,
+                        modalDialogManager);
+        mModelChangeProcessor =
+                PropertyModelChangeProcessor.create(
+                        model, mView, DownloadInterstitialViewBinder::bind);
     }
 
     @Override
@@ -57,8 +68,9 @@ public class DownloadInterstitialCoordinatorImpl implements DownloadInterstitial
     @Override
     public void onTabReparented(Context context) {
         // Update the ModalDialogManager as the context has changed.
-        mMediator.setModalDialogManager(new ModalDialogManager(
-                new AppModalPresenter(context), ModalDialogManager.ModalDialogType.APP));
+        mMediator.setModalDialogManager(
+                new ModalDialogManager(
+                        new AppModalPresenter(context), ModalDialogManager.ModalDialogType.APP));
     }
 
     @Override

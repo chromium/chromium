@@ -5,11 +5,8 @@
 package org.chromium.components.privacy_sandbox;
 
 import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.mockito.Mockito.when;
@@ -87,21 +84,5 @@ public class TrackingProtectionSettingsTest {
 
         onView(withText(R.string.privacy_sandbox_tracking_protection_description))
                 .check(matches(isDisplayed()));
-        onView(withId(R.id.preference_card)).check(doesNotExist());
-    }
-
-    @Test
-    @SmallTest
-    public void testShowTrackingProtectionOffboardingCard() {
-        when(mDelegate.isBlockAll3PCDEnabled()).thenReturn(true);
-        when(mDelegate.isDoNotTrackEnabled()).thenReturn(true);
-        when(mDelegate.shouldShowSettingsOffboardingNotice()).thenReturn(true);
-
-        launchTrackingProtectionSettings();
-
-        onView(withId(R.id.preference_card)).check(matches(isDisplayed()));
-
-        onView(withId(R.id.close_icon)).perform(click());
-        onView(withId(R.id.preference_card)).check(doesNotExist());
     }
 }

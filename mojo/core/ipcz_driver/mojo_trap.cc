@@ -8,6 +8,7 @@
 #include <tuple>
 #include <utility>
 
+#include <optional>
 #include "base/check_op.h"
 #include "base/memory/ref_counted.h"
 #include "base/notreached.h"
@@ -15,7 +16,6 @@
 #include "base/threading/thread_restrictions.h"
 #include "mojo/core/ipcz_api.h"
 #include "mojo/core/ipcz_driver/data_pipe.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/ipcz/include/ipcz/ipcz.h"
 
 namespace mojo::core::ipcz_driver {

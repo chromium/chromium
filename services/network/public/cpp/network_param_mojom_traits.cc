@@ -160,9 +160,20 @@ bool StructTraits<network::mojom::ProxyChainDataView, net::ProxyChain>::Read(
   }
   if (proxy_servers.has_value()) {
     *out = net::ProxyChain(std::move(proxy_servers).value());
-    return out->IsValid();
+    if (!out->IsValid()) {
+      return false;
+    }
   } else {
     *out = net::ProxyChain();
+  }
+
+  bool is_for_ip_protection = data.is_for_ip_protection();
+  if (is_for_ip_protection) {
+    // An invalid ProxyChain should not be marked as being for IP Protection.
+    if (!out->IsValid()) {
+      return false;
+    }
+    *out = std::move(*out).ForIpProtection();
   }
   return true;
 }

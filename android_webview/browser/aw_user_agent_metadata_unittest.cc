@@ -24,9 +24,9 @@ class AwUserAgentMetadataTest : public testing::Test {
 
   void verifyUaMetadata(blink::UserAgentMetadata expect,
                         blink::UserAgentMetadata actual) {
-    absl::optional<std::string> expect_str =
+    std::optional<std::string> expect_str =
         blink::UserAgentMetadata::Marshal(expect);
-    absl::optional<std::string> actual_str =
+    std::optional<std::string> actual_str =
         blink::UserAgentMetadata::Marshal(actual);
     EXPECT_TRUE(expect_str.has_value() == actual_str.has_value());
     if (expect_str.has_value()) {
@@ -79,7 +79,7 @@ TEST_F(AwUserAgentMetadataTest, TestJavaObjectCppObject_Metadata_Full) {
       .mobile = true,
       .bitness = "64",
       .wow64 = false,
-      .form_factor = ""};
+      .form_factor = {"Desktop", "Mobile"}};
   verifyUaMetadata(ua_metadata,
                    FromJavaAwUserAgentMetadata(
                        env(), ToJavaAwUserAgentMetadata(env(), ua_metadata)));
@@ -98,7 +98,7 @@ TEST_F(AwUserAgentMetadataTest,
       .mobile = true,
       .bitness = "64",
       .wow64 = false,
-      .form_factor = ""};
+      .form_factor = {"Desktop"}};
   verifyUaMetadata(ua_metadata,
                    FromJavaAwUserAgentMetadata(
                        env(), ToJavaAwUserAgentMetadata(env(), ua_metadata)));
@@ -117,7 +117,7 @@ TEST_F(AwUserAgentMetadataTest,
       .mobile = true,
       .bitness = "64",
       .wow64 = false,
-      .form_factor = ""};
+      .form_factor = {}};
   verifyUaMetadata(ua_metadata,
                    FromJavaAwUserAgentMetadata(
                        env(), ToJavaAwUserAgentMetadata(env(), ua_metadata)));
@@ -135,7 +135,7 @@ TEST_F(AwUserAgentMetadataTest, TestJavaObjectCppObject_Metadata_NoBrandList) {
       .mobile = true,
       .bitness = "64",
       .wow64 = false,
-      .form_factor = ""};
+      .form_factor = {"Desktop"}};
   verifyUaMetadata(ua_metadata,
                    FromJavaAwUserAgentMetadata(
                        env(), ToJavaAwUserAgentMetadata(env(), ua_metadata)));
@@ -153,7 +153,7 @@ TEST_F(AwUserAgentMetadataTest, TestJavaObjectCppObject_Metadata_LowEntropy) {
       .mobile = false,
       .bitness = "",
       .wow64 = false,
-      .form_factor = ""};
+      .form_factor = {"Desktop"}};
   verifyUaMetadata(ua_metadata,
                    FromJavaAwUserAgentMetadata(
                        env(), ToJavaAwUserAgentMetadata(env(), ua_metadata)));

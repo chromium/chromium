@@ -20,28 +20,28 @@ namespace {
 idl::ColorMode ColorModeProtoToIdl(proto::PrintSettings_ColorMode color_proto) {
   switch (color_proto) {
     case proto::PrintSettings_ColorMode_BLACK_AND_WHITE:
-      return idl::COLOR_MODE_BLACK_AND_WHITE;
+      return idl::ColorMode::kBlackAndWhite;
     case proto::PrintSettings_ColorMode_COLOR:
-      return idl::COLOR_MODE_COLOR;
+      return idl::ColorMode::kColor;
     default:
       NOTREACHED();
   }
-  return idl::COLOR_MODE_BLACK_AND_WHITE;
+  return idl::ColorMode::kBlackAndWhite;
 }
 
 idl::DuplexMode DuplexModeProtoToIdl(
     proto::PrintSettings_DuplexMode duplex_proto) {
   switch (duplex_proto) {
     case proto::PrintSettings_DuplexMode_ONE_SIDED:
-      return idl::DUPLEX_MODE_ONE_SIDED;
+      return idl::DuplexMode::kOneSided;
     case proto::PrintSettings_DuplexMode_TWO_SIDED_LONG_EDGE:
-      return idl::DUPLEX_MODE_TWO_SIDED_LONG_EDGE;
+      return idl::DuplexMode::kTwoSidedLongEdge;
     case proto::PrintSettings_DuplexMode_TWO_SIDED_SHORT_EDGE:
-      return idl::DUPLEX_MODE_TWO_SIDED_SHORT_EDGE;
+      return idl::DuplexMode::kTwoSidedShortEdge;
     default:
       NOTREACHED();
   }
-  return idl::DUPLEX_MODE_ONE_SIDED;
+  return idl::DuplexMode::kOneSided;
 }
 
 idl::MediaSize MediaSizeProtoToIdl(const proto::MediaSize& media_size_proto) {
@@ -67,43 +67,45 @@ idl::PrintJobSource PrintJobSourceProtoToIdl(
   switch (print_job_source_proto) {
     case proto::PrintJobInfo_PrintJobSource_PRINT_PREVIEW:
     case proto::PrintJobInfo_PrintJobSource_PRINT_PREVIEW_INCOGNITO:
-      return idl::PRINT_JOB_SOURCE_PRINT_PREVIEW;
+      return idl::PrintJobSource::kPrintPreview;
     case proto::PrintJobInfo_PrintJobSource_ARC:
-      return idl::PRINT_JOB_SOURCE_ANDROID_APP;
+      return idl::PrintJobSource::kAndroidApp;
     case proto::PrintJobInfo_PrintJobSource_EXTENSION:
-      return idl::PRINT_JOB_SOURCE_EXTENSION;
+      return idl::PrintJobSource::kExtension;
+    case proto::PrintJobInfo_PrintJobSource_ISOLATED_WEB_APP:
+      return idl::PrintJobSource::kIsolatedWebApp;
     default:
       NOTREACHED();
   }
-  return idl::PRINT_JOB_SOURCE_PRINT_PREVIEW;
+  return idl::PrintJobSource::kPrintPreview;
 }
 
 idl::PrintJobStatus PrintJobStatusProtoToIdl(
     proto::PrintJobInfo_PrintJobStatus print_job_status_proto) {
   switch (print_job_status_proto) {
     case proto::PrintJobInfo_PrintJobStatus_FAILED:
-      return idl::PRINT_JOB_STATUS_FAILED;
+      return idl::PrintJobStatus::kFailed;
     case proto::PrintJobInfo_PrintJobStatus_CANCELED:
-      return idl::PRINT_JOB_STATUS_CANCELED;
+      return idl::PrintJobStatus::kCanceled;
     case proto::PrintJobInfo_PrintJobStatus_PRINTED:
-      return idl::PRINT_JOB_STATUS_PRINTED;
+      return idl::PrintJobStatus::kPrinted;
     default:
       NOTREACHED();
   }
-  return idl::PRINT_JOB_STATUS_FAILED;
+  return idl::PrintJobStatus::kFailed;
 }
 
 idl::PrinterSource PrinterSourceProtoToIdl(
     proto::Printer_PrinterSource printer_source_proto) {
   switch (printer_source_proto) {
     case proto::Printer_PrinterSource_USER:
-      return idl::PRINTER_SOURCE_USER;
+      return idl::PrinterSource::kUser;
     case proto::Printer_PrinterSource_POLICY:
-      return idl::PRINTER_SOURCE_POLICY;
+      return idl::PrinterSource::kPolicy;
     default:
       NOTREACHED();
   }
-  return idl::PRINTER_SOURCE_USER;
+  return idl::PrinterSource::kUser;
 }
 
 idl::Printer PrinterProtoToIdl(const proto::Printer& printer_proto) {

@@ -6,6 +6,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/containers/contains.h"
@@ -19,7 +20,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
 #include "components/device_event_log/device_event_log.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 class PrefService;

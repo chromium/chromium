@@ -5,10 +5,11 @@
 #ifndef ASH_SYSTEM_BLUETOOTH_FAKE_BLUETOOTH_DEVICE_LIST_CONTROLLER_H_
 #define ASH_SYSTEM_BLUETOOTH_FAKE_BLUETOOTH_DEVICE_LIST_CONTROLLER_H_
 
+#include <optional>
+
 #include "ash/ash_export.h"
 #include "ash/system/bluetooth/bluetooth_device_list_controller.h"
 #include "chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -29,7 +30,7 @@ class ASH_EXPORT FakeBluetoothDeviceListController
     return previously_connected_devices_count_;
   }
 
-  const absl::optional<bool>& last_bluetooth_enabled_state() const {
+  const std::optional<bool>& last_bluetooth_enabled_state() const {
     return last_bluetooth_enabled_state_;
   }
 
@@ -42,7 +43,7 @@ class ASH_EXPORT FakeBluetoothDeviceListController
 
   size_t connected_devices_count_ = 0;
   size_t previously_connected_devices_count_ = 0;
-  absl::optional<bool> last_bluetooth_enabled_state_;
+  std::optional<bool> last_bluetooth_enabled_state_;
 };
 
 }  // namespace ash

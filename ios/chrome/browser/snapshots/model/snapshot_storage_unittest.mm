@@ -7,38 +7,18 @@
 
 #import <UIKit/UIKit.h>
 
-#import "base/apple/scoped_cftyperef.h"
 #import "base/files/file_path.h"
 #import "base/files/file_util.h"
 #import "base/files/scoped_temp_dir.h"
-#import "base/format_macros.h"
-#import "base/location.h"
 #import "base/run_loop.h"
-#import "base/strings/sys_string_conversions.h"
 #import "base/test/scoped_feature_list.h"
-#import "base/time/time.h"
 #import "components/sessions/core/session_id.h"
 #import "ios/chrome/browser/snapshots/model/features.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_id.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_scale.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_storage_observer.h"
 #import "ios/web/public/test/web_task_environment.h"
-#import "ios/web/public/thread/web_thread.h"
-#import "testing/gtest/include/gtest/gtest.h"
-#import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
-
-namespace {
-
-const NSUInteger kSnapshotCount = 10;
-const NSUInteger kSnapshotPixelSize = 8;
-
-// Constants used to construct path to test the storage migration.
-const base::FilePath::CharType kSnapshots[] = FILE_PATH_LITERAL("Snapshots");
-const base::FilePath::CharType kSessions[] = FILE_PATH_LITERAL("Sessions");
-const base::FilePath::CharType kIdentifier[] = FILE_PATH_LITERAL("Identifier");
-const base::FilePath::CharType kFilename[] = FILE_PATH_LITERAL("Filename.txt");
-
-}  // namespace
 
 @interface FakeSnapshotStorageObserver : NSObject <SnapshotStorageObserver>
 @property(nonatomic, assign) SnapshotID lastUpdatedID;
@@ -53,10 +33,19 @@ const base::FilePath::CharType kFilename[] = FILE_PATH_LITERAL("Filename.txt");
 
 namespace {
 
+const NSUInteger kSnapshotCount = 10;
+const NSUInteger kSnapshotPixelSize = 8;
+
+// Constants used to construct path to test the storage migration.
+const base::FilePath::CharType kSnapshots[] = FILE_PATH_LITERAL("Snapshots");
+const base::FilePath::CharType kSessions[] = FILE_PATH_LITERAL("Sessions");
+const base::FilePath::CharType kIdentifier[] = FILE_PATH_LITERAL("Identifier");
+const base::FilePath::CharType kFilename[] = FILE_PATH_LITERAL("Filename.txt");
+
 class SnapshotStorageTest : public PlatformTest {
  protected:
   void TearDown() override {
-    ClearDumpedImages();
+    ClearAllImages();
     [snapshot_storage_ shutdown];
     snapshot_storage_ = nil;
     PlatformTest::TearDown();
@@ -73,7 +62,7 @@ class SnapshotStorageTest : public PlatformTest {
     snapshot_storage_ = [[SnapshotStorage alloc]
         initWithStoragePath:scoped_temp_directory_.GetPath()];
 
-    CGFloat scale = [snapshot_storage_ snapshotScaleForDevice];
+    CGFloat scale = [SnapshotImageScale floatImageScaleForDevice];
 
     srand(1);
 
@@ -88,22 +77,6 @@ class SnapshotStorageTest : public PlatformTest {
   SnapshotStorage* GetSnapshotStorage() {
     DCHECK(snapshot_storage_);
     return snapshot_storage_;
-  }
-
-  // Adds a fake snapshot file into `directory` using `snapshot_id` in the
-  // filename.
-  base::FilePath AddSnapshotFileToDirectory(const base::FilePath directory,
-                                            SnapshotID snapshot_id) {
-    // Use the same filename as designated by SnapshotStorage.
-    base::FilePath storage_image_path =
-        [GetSnapshotStorage() imagePathForSnapshotID:snapshot_id];
-    base::FilePath image_filename = storage_image_path.BaseName();
-    base::FilePath image_path = directory.Append(image_filename);
-
-    EXPECT_TRUE(WriteFile(image_path, ""));
-    EXPECT_TRUE(base::PathExists(image_path));
-    EXPECT_FALSE(base::PathExists(storage_image_path));
-    return image_path;
   }
 
   // Generates an image of `scale`, filled with a random color.
@@ -143,7 +116,7 @@ class SnapshotStorageTest : public PlatformTest {
   }
 
   // This function removes the snapshots both from dictionary and from disk.
-  void ClearDumpedImages() {
+  void ClearAllImages() {
     if (!snapshot_storage_) {
       return;
     }
@@ -227,37 +200,6 @@ class SnapshotStorageTest : public PlatformTest {
     }
   }
 
-  // Guesses the order of the color channels in the image.
-  // Supports RGB, BGR, RGBA, BGRA, ARGB, ABGR.
-  // Returns the position of each channel between 0 and 3.
-  void ComputeColorComponents(CGImageRef cgImage,
-                              int* red,
-                              int* green,
-                              int* blue) {
-    CGBitmapInfo bitmapInfo = CGImageGetBitmapInfo(cgImage);
-    CGImageAlphaInfo alphaInfo = CGImageGetAlphaInfo(cgImage);
-    int byteOrder = bitmapInfo & kCGBitmapByteOrderMask;
-
-    *red = 0;
-    *green = 1;
-    *blue = 2;
-
-    if (alphaInfo == kCGImageAlphaLast ||
-        alphaInfo == kCGImageAlphaPremultipliedLast ||
-        alphaInfo == kCGImageAlphaNoneSkipLast) {
-      *red = 1;
-      *green = 2;
-      *blue = 3;
-    }
-
-    if (byteOrder != kCGBitmapByteOrder32Host) {
-      int lastChannel = (CGImageGetBitsPerPixel(cgImage) == 24) ? 2 : 3;
-      *red = lastChannel - *red;
-      *green = lastChannel - *green;
-      *blue = lastChannel - *blue;
-    }
-  }
-
   void TriggerMemoryWarning() {
     // _performMemoryWarning is a private API and must not be compiled into
     // official builds.
@@ -274,16 +216,16 @@ class SnapshotStorageTest : public PlatformTest {
   std::map<SnapshotID, UIImage*> test_images_;
 };
 
-// This test simply put all the snapshots in the storage and then gets them back
+// This test simply put all snapshots in the storage and then gets them back.
 // As the snapshots are kept in memory, the same pointer can be retrieved.
 // This test also checks that images are correctly removed from the disk.
-TEST_F(SnapshotStorageTest, Cache) {
+TEST_F(SnapshotStorageTest, ReadAndWriteCache) {
   ASSERT_TRUE(CreateSnapshotStorage());
   SnapshotStorage* storage = GetSnapshotStorage();
 
   NSUInteger expectedCacheSize = MIN(kSnapshotCount, [storage lruCacheMaxSize]);
 
-  // Put all images in the storage.
+  // Put all images to the cache.
   {
     NSUInteger inserted_images = 0;
     for (auto [snapshot_id, image] : test_images_) {
@@ -316,128 +258,35 @@ TEST_F(SnapshotStorageTest, Cache) {
   EXPECT_EQ(expectedCacheSize, numberOfCallbacks);
 }
 
-// This test puts all the snapshots in the storage and flushes them to disk.
-// The snapshots are then reloaded from the disk, and the colors are compared.
-TEST_F(SnapshotStorageTest, SaveToDisk) {
+// This test puts all snapshots in the storage, clears the LRU cache and checks
+// if the image can be retrieved via disk.
+TEST_F(SnapshotStorageTest, ReadAndWriteWithoutCache) {
   ASSERT_TRUE(CreateSnapshotStorage());
   SnapshotStorage* storage = GetSnapshotStorage();
 
-  // Put all images in the storage.
-  for (auto [snapshot_id, image] : test_images_) {
-    [storage setImage:image withSnapshotID:snapshot_id];
-  }
-  FlushRunLoops(storage);
+  LoadAllColorImagesIntoCache(true);
 
-  for (auto [snapshot_id, reference_image] : test_images_) {
-    // Check that images are on the disk.
-    const base::FilePath path = [storage imagePathForSnapshotID:snapshot_id];
-    EXPECT_TRUE(base::PathExists(path));
+  // Remove color images from LRU cache.
+  [storage clearCache];
 
-    // Check image colors by comparing the first pixel against the reference
-    // image.
-    UIImage* image =
-        [UIImage imageWithContentsOfFile:base::SysUTF8ToNSString(path.value())];
-    CGImageRef cgImage = [image CGImage];
-    ASSERT_TRUE(cgImage != nullptr);
+  __block NSUInteger numberOfCallbacks = 0;
 
-    base::apple::ScopedCFTypeRef<CFDataRef> pixelData(
-        CGDataProviderCopyData(CGImageGetDataProvider(cgImage)));
-    const char* pixels =
-        reinterpret_cast<const char*>(CFDataGetBytePtr(pixelData.get()));
-    EXPECT_TRUE(pixels);
-
-    CGImageRef referenceCgImage = [reference_image CGImage];
-    base::apple::ScopedCFTypeRef<CFDataRef> referenceData(
-        CGDataProviderCopyData(CGImageGetDataProvider(referenceCgImage)));
-    const char* referencePixels =
-        reinterpret_cast<const char*>(CFDataGetBytePtr(referenceData.get()));
-    EXPECT_TRUE(referencePixels);
-
-    if (pixels != nil && referencePixels != nil) {
-      // Color components may not be in the same order,
-      // because of writing to disk and reloading.
-      int red, green, blue;
-      ComputeColorComponents(cgImage, &red, &green, &blue);
-
-      int referenceRed, referenceGreen, referenceBlue;
-      ComputeColorComponents(referenceCgImage, &referenceRed, &referenceGreen,
-                             &referenceBlue);
-
-      // Colors may not be exactly the same (compression or rounding errors)
-      // thus a small difference is allowed.
-      EXPECT_NEAR(referencePixels[referenceRed], pixels[red], 1);
-      EXPECT_NEAR(referencePixels[referenceGreen], pixels[green], 1);
-      EXPECT_NEAR(referencePixels[referenceBlue], pixels[blue], 1);
-    }
-  }
-}
-
-TEST_F(SnapshotStorageTest, Purge) {
-  ASSERT_TRUE(CreateSnapshotStorage());
-  SnapshotStorage* storage = GetSnapshotStorage();
-
-  // Put all images in the storage.
-  for (auto [snapshot_id, image] : test_images_) {
-    [storage setImage:image withSnapshotID:snapshot_id];
-  }
-
-  ASSERT_FALSE(test_images_.empty());
-  std::vector<SnapshotID> liveSnapshotIDs = {test_images_.begin()->first};
-
-  // Purge the storage.
-  [storage purgeImagesOlderThan:(base::Time::Now() - base::Hours(1))
-                        keeping:liveSnapshotIDs];
-  FlushRunLoops(storage);
-
-  // Check that nothing has been deleted.
   for (auto [snapshot_id, _] : test_images_) {
     // Check that images are on the disk.
     const base::FilePath path = [storage imagePathForSnapshotID:snapshot_id];
     EXPECT_TRUE(base::PathExists(path));
+
+    [storage retrieveImageForSnapshotID:snapshot_id
+                               callback:^(UIImage* image) {
+                                 EXPECT_TRUE(image);
+                                 ++numberOfCallbacks;
+                               }];
   }
 
-  // Purge the storage.
-  [storage purgeImagesOlderThan:base::Time::Now() keeping:liveSnapshotIDs];
+  // Wait until all callbacks are called.
   FlushRunLoops(storage);
 
-  // Check that the file have been deleted.
-  for (auto [snapshot_id, _] : test_images_) {
-    // Check that images are on the disk.
-    const base::FilePath path = [storage imagePathForSnapshotID:snapshot_id];
-    if (snapshot_id == *liveSnapshotIDs.begin()) {
-      EXPECT_TRUE(base::PathExists(path));
-    } else {
-      EXPECT_FALSE(base::PathExists(path));
-    }
-  }
-}
-
-// Tests that migration code correctly rename the specified files and leave
-// the other files untouched.
-TEST_F(SnapshotStorageTest, RenameSnapshots) {
-  ASSERT_TRUE(CreateSnapshotStorage());
-  SnapshotStorage* storage = GetSnapshotStorage();
-
-  // This snapshot will be renamed.
-  NSString* image1_id = [[NSUUID UUID] UUIDString];
-  base::FilePath image1_path = [storage legacyImagePathForSnapshotID:image1_id];
-  ASSERT_TRUE(base::WriteFile(image1_path, "image1"));
-
-  // This snapshot will not be renamed.
-  NSString* image2_id = [[NSUUID UUID] UUIDString];
-  base::FilePath image2_path = [storage legacyImagePathForSnapshotID:image2_id];
-  ASSERT_TRUE(base::WriteFile(image2_path, "image2"));
-
-  SnapshotID new_id = SnapshotID(SessionID::NewUnique().id());
-  [storage renameSnapshotsWithIDs:@[ image1_id ] toIDs:{new_id}];
-  FlushRunLoops(storage);
-
-  // image1 should have been moved.
-  EXPECT_FALSE(base::PathExists(image1_path));
-  EXPECT_TRUE(base::PathExists([storage imagePathForSnapshotID:new_id]));
-
-  // image2 should not have moved.
-  EXPECT_TRUE(base::PathExists(image2_path));
+  EXPECT_EQ(numberOfCallbacks, kSnapshotCount);
 }
 
 // Tests that createGreyCache creates the grey snapshots in the background,
@@ -591,104 +440,63 @@ TEST_F(SnapshotStorageTest, GreyImageAllInBackground) {
   }
 }
 
-// Verifies that image size and scale are preserved when writing and reading
-// from disk.
-TEST_F(SnapshotStorageTest, SizeAndScalePreservation) {
-  ASSERT_TRUE(CreateSnapshotStorage());
-  SnapshotStorage* storage = GetSnapshotStorage();
-
-  // Create an image with the expected snapshot scale.
-  CGFloat scale = [storage snapshotScaleForDevice];
-  UIImage* image = GenerateRandomImage(scale);
-
-  // Add the image to the storage then call handle low memory to ensure the
-  // image is read from disk instead of the in-memory storage.
-  const SnapshotID kSnapshotID(SessionID::NewUnique().id());
-  [storage setImage:image withSnapshotID:kSnapshotID];
-  FlushRunLoops(storage);  // ensure the file is written to disk.
-  TriggerMemoryWarning();
-
-  // Retrive the image and have the callback verify the size and scale.
-  __block BOOL callbackComplete = NO;
-  [storage
-      retrieveImageForSnapshotID:kSnapshotID
-                        callback:^(UIImage* imageFromDisk) {
-                          EXPECT_EQ(image.size.width, imageFromDisk.size.width);
-                          EXPECT_EQ(image.size.height,
-                                    imageFromDisk.size.height);
-                          EXPECT_EQ(image.scale, imageFromDisk.scale);
-                          callbackComplete = YES;
-                        }];
-  FlushRunLoops(storage);
-  EXPECT_TRUE(callbackComplete);
-}
-
-// Verifies that retina-scale images are deleted properly.
-TEST_F(SnapshotStorageTest, DeleteRetinaImages) {
-  ASSERT_TRUE(CreateSnapshotStorage());
-  SnapshotStorage* storage = GetSnapshotStorage();
-  if ([storage snapshotScaleForDevice] != 2.0) {
-    return;
-  }
-
-  // Create an image with retina scale.
-  UIImage* image = GenerateRandomImage(2.0);
-
-  // Add the image to the storage then call handle low memory to ensure the
-  // image is read from disk instead of the in-memory storage.
-  const SnapshotID kSnapshotID(SessionID::NewUnique().id());
-  [storage setImage:image withSnapshotID:kSnapshotID];
-  FlushRunLoops(storage);  // ensure the file is written to disk.
-  TriggerMemoryWarning();
-
-  // Verify the file was writted with @2x in the file name.
-  base::FilePath retinaFile = [storage imagePathForSnapshotID:kSnapshotID];
-  EXPECT_TRUE(base::PathExists(retinaFile));
-
-  // Delete the image.
-  [storage removeImageWithSnapshotID:kSnapshotID];
-  FlushRunLoops(storage);  // ensure the file is removed.
-
-  EXPECT_FALSE(base::PathExists(retinaFile));
-}
-
-// Tests that image immediately deletes when calling
+// Tests that an image is immediately deleted when calling
 // `-removeImageWithSnapshotID:`.
 TEST_F(SnapshotStorageTest, ImageDeleted) {
   ASSERT_TRUE(CreateSnapshotStorage());
   SnapshotStorage* storage = GetSnapshotStorage();
+
   UIImage* image = GenerateRandomImage(0);
   const SnapshotID kSnapshotID(SessionID::NewUnique().id());
   [storage setImage:image withSnapshotID:kSnapshotID];
+
   base::FilePath image_path = [storage imagePathForSnapshotID:kSnapshotID];
+
+  // Remove the image and ensure the file is removed.
   [storage removeImageWithSnapshotID:kSnapshotID];
-  // Give enough time for deletion.
   FlushRunLoops(storage);
+
   EXPECT_FALSE(base::PathExists(image_path));
+  [storage retrieveImageForSnapshotID:kSnapshotID
+                             callback:^(UIImage* retrievedImage) {
+                               EXPECT_FALSE(retrievedImage);
+                             }];
 }
 
 // Tests that all images are deleted when calling `-removeAllImages`.
 TEST_F(SnapshotStorageTest, AllImagesDeleted) {
   ASSERT_TRUE(CreateSnapshotStorage());
   SnapshotStorage* storage = GetSnapshotStorage();
+
   UIImage* image = GenerateRandomImage(0);
   const SnapshotID kSnapshotID1(SessionID::NewUnique().id());
   const SnapshotID kSnapshotID2(SessionID::NewUnique().id());
   [storage setImage:image withSnapshotID:kSnapshotID1];
-  [storage setImage:image withSnapshotID:kSnapshotID1];
+  [storage setImage:image withSnapshotID:kSnapshotID2];
   base::FilePath image_1_path = [storage imagePathForSnapshotID:kSnapshotID1];
-  base::FilePath image_2_path = [storage imagePathForSnapshotID:kSnapshotID1];
+  base::FilePath image_2_path = [storage imagePathForSnapshotID:kSnapshotID2];
+
+  // Remove all images and ensure the files are removed.
   [storage removeAllImages];
-  // Give enough time for deletion.
   FlushRunLoops(storage);
+
   EXPECT_FALSE(base::PathExists(image_1_path));
   EXPECT_FALSE(base::PathExists(image_2_path));
+  [storage retrieveImageForSnapshotID:kSnapshotID1
+                             callback:^(UIImage* retrievedImage1) {
+                               EXPECT_FALSE(retrievedImage1);
+                             }];
+  [storage retrieveImageForSnapshotID:kSnapshotID2
+                             callback:^(UIImage* retrievedImage2) {
+                               EXPECT_FALSE(retrievedImage2);
+                             }];
 }
 
 // Tests that observers are notified when a snapshot is storaged and removed.
 TEST_F(SnapshotStorageTest, ObserversNotifiedOnSetAndRemoveImage) {
   ASSERT_TRUE(CreateSnapshotStorage());
   SnapshotStorage* storage = GetSnapshotStorage();
+
   FakeSnapshotStorageObserver* observer =
       [[FakeSnapshotStorageObserver alloc] init];
   [storage addObserver:observer];

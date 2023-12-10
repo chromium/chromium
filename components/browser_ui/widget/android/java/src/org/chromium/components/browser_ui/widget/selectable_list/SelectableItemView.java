@@ -43,15 +43,16 @@ public abstract class SelectableItemView<E> extends CheckableSelectableItemView<
 
     /** Layout res to be used when inflating the view, used to swap in the visual refresh. */
     private int mLayoutRes;
+
     /** Levels for the background. */
     private final int mDefaultLevel;
+
     private final int mSelectedLevel;
+
     /** The resource for the start icon background. */
     private int mStartIconBackgroundRes;
 
-    /**
-     * Constructor for inflating from XML.
-     */
+    /** Constructor for inflating from XML. */
     public SelectableItemView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
@@ -114,9 +115,7 @@ public abstract class SelectableItemView<E> extends CheckableSelectableItemView<
         setIconDrawable(iconDrawable);
     }
 
-    /**
-     * Returns the drawable set for the start icon view, if any.
-     */
+    /** Returns the drawable set for the start icon view, if any. */
     protected Drawable getStartIconDrawable() {
         return getIconDrawable();
     }

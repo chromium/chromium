@@ -45,10 +45,7 @@ class SessionContextTest : public testing::Test {
         session_context_->secondary_shared_secret();
     std::string secondary_shared_secret_bytes(secondary_shared_secret.begin(),
                                               secondary_shared_secret.end());
-    std::string secondary_shared_secret_base64;
-    base::Base64Encode(secondary_shared_secret_bytes,
-                       &secondary_shared_secret_base64);
-    return secondary_shared_secret_base64;
+    return base::Base64Encode(secondary_shared_secret_bytes);
   }
 
  protected:

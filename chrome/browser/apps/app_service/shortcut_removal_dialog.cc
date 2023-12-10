@@ -6,9 +6,19 @@
 
 #include "base/functional/bind.h"
 #include "chrome/browser/profiles/profile.h"
+#include "ui/base/models/image_model.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/views/native_window_tracker.h"
 #include "ui/views/widget/widget.h"
+
+namespace {
+
+// The dimensions used to create the shortcut icon.
+constexpr int kShortcutIconBackgroundRadius = 24;
+constexpr int kBadgeBackgroundRadius = 12;
+
+}  // namespace
 
 namespace apps {
 
@@ -34,10 +44,27 @@ void ShortcutRemovalDialog::CreateDialog(gfx::ImageSkia icon,
     OnDialogClosed(false);
     return;
   }
-  // TODO(crbug.com/1412708): Update this when System UI team provide new
-  // interface for the new visual.
-  gfx::ImageSkia icon_with_badge =
-      gfx::ImageSkiaOperations::CreateIconWithBadge(icon, badge_icon);
+
+  const int icon_background_size = 2 * kShortcutIconBackgroundRadius;
+  ui::ImageModel icon_with_badge = ui::ImageModel::FromImageGenerator(
+      base::BindRepeating(
+          [](gfx::ImageSkia icon, gfx::ImageSkia badge_icon,
+             const ui::ColorProvider* color_provider) {
+            return gfx::ImageSkiaOperations::CreateIconWithBadge(
+                gfx::ImageSkiaOperations::CreateImageWithCircleBackground(
+                    kShortcutIconBackgroundRadius,
+                    color_provider->GetColor(
+                        cros_tokens::kCrosSysSystemOnBaseOpaque),
+                    icon),
+                gfx::ImageSkiaOperations::CreateImageWithCircleBackground(
+                    kBadgeBackgroundRadius,
+                    color_provider->GetColor(
+                        cros_tokens::kCrosSysSystemOnBaseOpaque),
+                    badge_icon));
+          },
+          icon, badge_icon),
+      gfx::Size(icon_background_size, icon_background_size));
+
   widget_ = Create(profile_, shortcut_id_, icon_with_badge, parent_window_,
                    weak_ptr_factory_.GetWeakPtr());
 }

@@ -28,6 +28,7 @@
 
 import json
 import optparse
+import textwrap
 import unittest
 
 from blinkpy.common.checkout.baseline_optimizer import BaselineOptimizer, ResultDigest
@@ -921,6 +922,29 @@ class ResultDigestTest(unittest.TestCase):
         self.assertFalse(
             ResultDigest.from_file(
                 self.fs, '/failures/baz-expected.txt').is_extra_result)
+
+    def test_canonicalize_testharness(self):
+        self.fs.write_text_file(
+            '/platform/x/failures/baz-expected.txt',
+            textwrap.dedent("""\
+                This is a testharness.js-based test.
+                [FAIL] failing subtest
+                Harness: the test ran to completion.
+                """))
+        self.fs.write_text_file(
+            '/failures/baz-expected.txt',
+            textwrap.dedent("""\
+
+                This is a testharness.js-based test.
+                [FAIL] failing subtest
+                Harness: the test ran to completion.
+
+
+                  """))
+        self.assertEqual(
+            ResultDigest.from_file(self.fs,
+                                   '/platform/x/failures/baz-expected.txt'),
+            ResultDigest.from_file(self.fs, '/failures/baz-expected.txt'))
 
     def test_empty_result(self):
         self.assertFalse(

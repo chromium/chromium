@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/shared/ui/elements/chrome_activity_overlay_coordinator.h"
 
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
-#import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/ui/elements/chrome_activity_overlay_view_controller.h"
 #import "ios/chrome/browser/ui/scoped_ui_blocker/scoped_ui_blocker.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -44,8 +44,7 @@
       didMoveToParentViewController:self.baseViewController];
 
   if (self.blockAllWindows) {
-    SceneState* sceneState =
-        SceneStateBrowserAgent::FromBrowser(self.browser)->GetSceneState();
+    SceneState* sceneState = self.browser->GetSceneState();
     _windowUIBlocker = std::make_unique<ScopedUIBlocker>(sceneState);
   }
 

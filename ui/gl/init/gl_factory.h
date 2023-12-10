@@ -119,11 +119,6 @@ GL_INIT_EXPORT scoped_refptr<GLSurface> CreateOffscreenGLSurface(
     GLDisplay* display,
     const gfx::Size& size);
 
-GL_INIT_EXPORT scoped_refptr<GLSurface> CreateOffscreenGLSurfaceWithFormat(
-    GLDisplay* display,
-    const gfx::Size& size,
-    GLSurfaceFormat format);
-
 // Set platform dependent disabled extensions and re-initialize extension
 // bindings.
 GL_INIT_EXPORT void SetDisabledExtensionsPlatform(

@@ -7,8 +7,9 @@
 
 #import <Foundation/Foundation.h>
 
+#import <optional>
+
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
-#import "third_party/abseil-cpp/absl/types/optional.h"
 #import "url/gurl.h"
 
 namespace password_manager {
@@ -71,7 +72,7 @@ enum class DetailsContext {
 @property(nonatomic, assign, getter=isMuted) BOOL muted;
 
 // URL which allows to change the password of compromised credential.
-@property(nonatomic, readonly) absl::optional<GURL> changePasswordURL;
+@property(nonatomic, readonly) std::optional<GURL> changePasswordURL;
 
 // `shouldOfferToMoveToAccount` tells whether or not to show a move option.
 @property(nonatomic, assign) BOOL shouldOfferToMoveToAccount;

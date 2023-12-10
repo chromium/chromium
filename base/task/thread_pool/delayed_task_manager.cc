@@ -72,7 +72,6 @@ void DelayedTaskManager::Start(
     CheckedAutoLock auto_lock(queue_lock_);
     DCHECK(!service_thread_task_runner_);
     service_thread_task_runner_ = std::move(service_thread_task_runner);
-    align_wake_ups_ = FeatureList::IsEnabled(kAlignWakeUps);
     max_precise_delay = kMaxPreciseDelay.Get();
     std::tie(process_ripe_tasks_time, delay_policy) =
         GetTimeAndDelayPolicyToScheduleProcessRipeTasksLockRequired();

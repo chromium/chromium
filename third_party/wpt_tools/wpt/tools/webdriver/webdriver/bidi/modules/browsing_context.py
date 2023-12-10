@@ -178,5 +178,18 @@ class BrowsingContext(BidiModule):
         return result["data"]
 
     @command
-    def set_viewport(self, context: str, viewport: Optional[Mapping[str, Any]] = None) -> Mapping[str, Any]:
-        return {"context": context, "viewport": viewport}
+    def set_viewport(self,
+                     context: str,
+                     viewport: Optional[Mapping[str, Any]] = None,
+                     device_pixel_ratio: Optional[float] = None) -> Mapping[str, Any]:
+        params: MutableMapping[str, Any] = {
+            "context": context,
+        }
+
+        if viewport is not None:
+            params["viewport"] = viewport
+
+        if device_pixel_ratio is not None:
+            params["devicePixelRatio"] = device_pixel_ratio
+
+        return params

@@ -10,7 +10,7 @@ import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {assertEquals, assertFalse, assertThrows, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
-export function navigationViewPanelTestSuite() {
+suite('navigationViewPanelTestSuite', () => {
   /** @type {?NavigationViewPanelElement} */
   let viewElement = null;
 
@@ -363,4 +363,4 @@ export function navigationViewPanelTestSuite() {
     viewElement.selectPageById('does-not-exist');
     assertEquals('dummy3', viewElement.selectedItem.id);
   });
-}
+});

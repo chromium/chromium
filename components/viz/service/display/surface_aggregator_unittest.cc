@@ -509,9 +509,13 @@ class SurfaceAggregatorTest : public testing::Test, public DisplayTimeSource {
 
  protected:
   ServerSharedBitmapManager shared_bitmap_manager_;
+  gpu::SharedImageManager shared_image_manager_;
+  gpu::SyncPointManager sync_point_manager_;
+
   FrameSinkManagerImpl manager_{
       FrameSinkManagerImpl::InitParams(&shared_bitmap_manager_)};
-  DisplayResourceProviderSoftware resource_provider_{&shared_bitmap_manager_};
+  DisplayResourceProviderSoftware resource_provider_{
+      &shared_bitmap_manager_, &shared_image_manager_, &sync_point_manager_};
   FakeSurfaceObserver observer_{false};
   FakeCompositorFrameSinkClient fake_client_;
   std::unique_ptr<CompositorFrameSinkSupport> root_sink_;
@@ -6853,7 +6857,7 @@ CompositorFrame BuildCompositorFrameWithResources(
 
   for (ResourceId resource_id : resource_ids) {
     auto resource = TransferableResource::MakeSoftware(
-        SharedBitmap::GenerateId(), gfx::Size(1, 1),
+        SharedBitmap::GenerateId(), gpu::SyncToken(), gfx::Size(1, 1),
         SinglePlaneFormat::kRGBA_8888);
     resource.id = resource_id;
     if (!valid) {

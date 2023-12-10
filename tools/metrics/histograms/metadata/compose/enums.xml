@@ -26,6 +26,22 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
+<enum name="ComposeConsentSessionCloseReasonType">
+  <int value="0" label="Close button on the consent or disclaimer dialog"/>
+  <int value="1"
+      label="Page content consent was accepted and no insertion resulted"/>
+  <int value="2"
+      label="Page content disclaimer was acknowledged and no insertion
+             resulted"/>
+  <int value="3" label="Page content consent was declined"/>
+  <int value="4"
+      label="Page content consent was accepted/acknowledged and followed by
+             an inserted suggestion"/>
+  <int value="5"
+      label="Session implicitly closed, often by web contents destruction"/>
+  <int value="6" label="New session with selected text opened"/>
+</enum>
+
 <enum name="ComposeContextMenuCtrEvent">
   <int value="0" label="Menu item displayed"/>
   <int value="1" label="Compose opened from context menu"/>
@@ -42,6 +58,14 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="User permission is denied"/>
 </enum>
 
+<enum name="ComposeSessionCloseReasonType">
+  <int value="0" label="Accepted suggestion"/>
+  <int value="1" label="Close button"/>
+  <int value="2"
+      label="Session implicitly closed, often by web contents destruction"/>
+  <int value="3" label="New session with selected text opened"/>
+</enum>
+
 <enum name="ComposeShowStatus">
   <int value="0" label="Menu item displayed"/>
   <int value="1" label="Blocked for generic reason"/>
@@ -49,6 +73,12 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Blocked for MSBB not enabled"/>
   <int value="4" label="Blocked for user not signed in"/>
   <int value="5" label="Blocked for user language not supported"/>
+  <int value="6"
+      label="Blocked for form element appearing in cross-origin subframe"/>
+  <int value="7"
+      label="Blocked by Optimization Guide Result for main frame URL"/>
+  <int value="8"
+      label="Blocked for user was not allowed by optimization guide"/>
 </enum>
 
 </enums>

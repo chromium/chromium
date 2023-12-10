@@ -11,6 +11,12 @@ namespace views::features {
 
 // Please keep alphabetized.
 
+// Implements desktop widgets reparenting. Enabling this feature allows them
+// to function correctly as tab modals.
+BASE_FEATURE(kDesktopWidgetReparentAura,
+             "kDesktopWidgetReparentAura",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Use a high-contrast style for ink drops when in platform high-contrast mode,
 // including full opacity and a high-contrast color
 BASE_FEATURE(kEnablePlatformHighContrastInkDrop,
@@ -22,13 +28,6 @@ BASE_FEATURE(kEnablePlatformHighContrastInkDrop,
 // an invalid rectangle on the layer.
 BASE_FEATURE(kEnableViewPaintOptimization,
              "EnableViewPaintOptimization",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// When enabled, views::Label falls back to use the legacy preferred size
-// calculation in which the size bounds might be ignored to respect its
-// current width. TODO(crbug.com/1346889): remove this.
-BASE_FEATURE(kForceUseLegacyPreferredSize,
-             "ForceUseLegacyPreferredSize",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Used to enable keyboard-accessible tooltips in Views UI, as opposed

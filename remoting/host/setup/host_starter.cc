@@ -308,6 +308,7 @@ void HostStarterImpl::OnHostStarted(DaemonController::AsyncResult result) {
     unregistering_host_ = true;
     service_client_->UnregisterHost(start_host_params_.id,
                                     directory_access_token_, this);
+    // `on_done_` will be run after the UnregisterHost() call returns.
     return;
   }
   std::move(on_done_).Run(START_COMPLETE);

@@ -19,9 +19,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-/**
- * This class implements FencedFrameUtils
- */
+/** This class implements FencedFrameUtils */
 @JNINamespace("content")
 public class FencedFrameUtils {
     private FencedFrameUtils() {
@@ -30,38 +28,48 @@ public class FencedFrameUtils {
 
     private static int getCount(final RenderFrameHost frame) {
         return TestThreadUtils.runOnUiThreadBlockingNoException(
-                () -> { return FencedFrameUtilsJni.get().getCount(frame); });
+                () -> {
+                    return FencedFrameUtilsJni.get().getCount(frame);
+                });
     }
 
     public static RenderFrameHost getLastFencedFrame(
             final RenderFrameHost frame, final String url) {
         return TestThreadUtils.runOnUiThreadBlockingNoException(
-                () -> { return FencedFrameUtilsJni.get().getLastFencedFrame(frame, url); });
+                () -> {
+                    return FencedFrameUtilsJni.get().getLastFencedFrame(frame, url);
+                });
     }
 
-    public static RenderFrameHost createFencedFrame(final WebContents webContents,
-            final RenderFrameHost parentFrame, String url) throws TimeoutException {
-        RenderFrameHostTestExt frameExt = TestThreadUtils.runOnUiThreadBlockingNoException(
-                () -> new RenderFrameHostTestExt(parentFrame));
+    public static RenderFrameHost createFencedFrame(
+            final WebContents webContents, final RenderFrameHost parentFrame, String url)
+            throws TimeoutException {
+        RenderFrameHostTestExt frameExt =
+                TestThreadUtils.runOnUiThreadBlockingNoException(
+                        () -> new RenderFrameHostTestExt(parentFrame));
 
         int previousFencedFrameCount = getCount(parentFrame);
         final CountDownLatch latch = new CountDownLatch(1);
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            new WebContentsObserver(webContents) {
-                @Override
-                public void didStopLoading(GURL url, boolean isKnownValid) {
-                    latch.countDown();
-                    webContents.removeObserver(this);
-                }
-            };
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    new WebContentsObserver(webContents) {
+                        @Override
+                        public void didStopLoading(GURL url, boolean isKnownValid) {
+                            latch.countDown();
+                            webContents.removeObserver(this);
+                        }
+                    };
 
-            String script = "((async() => {"
-                    + " const fenced_frame = document.createElement('fencedframe');"
-                    + " fenced_frame.config = new FencedFrameConfig('" + url + "');"
-                    + " document.body.appendChild(fenced_frame);"
-                    + "})());";
-            frameExt.executeJavaScript(script, (String r) -> {});
-        });
+                    String script =
+                            "((async() => {"
+                                    + " const fenced_frame = document.createElement('fencedframe');"
+                                    + " fenced_frame.config = new FencedFrameConfig('"
+                                    + url
+                                    + "');"
+                                    + " document.body.appendChild(fenced_frame);"
+                                    + "})());";
+                    frameExt.executeJavaScript(script, (String r) -> {});
+                });
 
         try {
             Assert.assertTrue(latch.await(CallbackHelper.WAIT_TIMEOUT_SECONDS, TimeUnit.SECONDS));
@@ -78,6 +86,7 @@ public class FencedFrameUtils {
     @NativeMethods
     interface Natives {
         int getCount(RenderFrameHost frame);
+
         RenderFrameHost getLastFencedFrame(RenderFrameHost frame, String url);
     }
 }

@@ -52,12 +52,12 @@ TEST_F(HashPasswordManagerTest, SavingPasswordHashData) {
   EXPECT_TRUE(prefs_.HasPrefPath(prefs::kPasswordHashDataList));
 
   // Saves the same password again won't change password hash, length or salt.
-  absl::optional<PasswordHashData> current_password_hash_data =
+  std::optional<PasswordHashData> current_password_hash_data =
       hash_password_manager.RetrievePasswordHash(username,
                                                  /*is_gaia_password=*/true);
   hash_password_manager.SavePasswordHash(username, password,
                                          /*is_gaia_password=*/true);
-  absl::optional<PasswordHashData> existing_password_data =
+  std::optional<PasswordHashData> existing_password_data =
       hash_password_manager.RetrievePasswordHash(username,
                                                  /*is_gaia_password=*/true);
   EXPECT_EQ(current_password_hash_data->hash, existing_password_data->hash);
@@ -99,12 +99,12 @@ TEST_F(HashPasswordManagerTest, SavingPasswordHashDataNotCanonicalized) {
 
   // Saves the same password with not canonicalized username should not change
   // password hash.
-  absl::optional<PasswordHashData> current_password_hash_data =
+  std::optional<PasswordHashData> current_password_hash_data =
       hash_password_manager.RetrievePasswordHash(username,
                                                  /*is_gaia_password=*/true);
   hash_password_manager.SavePasswordHash(username, password,
                                          /*is_gaia_password=*/true);
-  absl::optional<PasswordHashData> existing_password_data =
+  std::optional<PasswordHashData> existing_password_data =
       hash_password_manager.RetrievePasswordHash(username,
                                                  /*is_gaia_password=*/true);
   EXPECT_EQ(current_password_hash_data->hash, existing_password_data->hash);
@@ -247,7 +247,7 @@ TEST_F(HashPasswordManagerTest, RetrievingPasswordHashData) {
                                          /*is_gaia_password=*/true);
   EXPECT_EQ(1u, hash_password_manager.RetrieveAllPasswordHashes().size());
 
-  absl::optional<PasswordHashData> password_hash_data =
+  std::optional<PasswordHashData> password_hash_data =
       hash_password_manager.RetrievePasswordHash("username@gmail.com",
                                                  /*is_gaia_password=*/false);
   ASSERT_FALSE(password_hash_data);
@@ -269,7 +269,7 @@ TEST_F(HashPasswordManagerTest, RetrievingPasswordHashData) {
       hash_password_manager.RetrievePasswordHash("USER.NAME@gmail.com",
                                                  /*is_gaia_password=*/true));
 
-  absl::optional<PasswordHashData> non_existing_data =
+  std::optional<PasswordHashData> non_existing_data =
       hash_password_manager.RetrievePasswordHash("non_existing_user", true);
   ASSERT_FALSE(non_existing_data);
 }

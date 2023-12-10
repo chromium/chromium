@@ -153,6 +153,7 @@ static_library("eche_app_ui") {
     "//mojo/public/js:resources",
     "//services/accessibility/android:android_lib",
     "//services/accessibility/android/public/mojom:mojom",
+    "//ui/display",
     "//ui/views/controls/webview",
     "//ui/webui",
   ]
@@ -242,6 +243,8 @@ source_set("unit_tests") {
     "//dbus",
     "//device/bluetooth:bluetooth",
     "//testing/gtest",
+    "//ui/display",
+    "//ui/display:test_support",
   ]
 }
 

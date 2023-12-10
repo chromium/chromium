@@ -166,14 +166,17 @@ public class Log {
     public static void i(String tag, String message) {
         android.util.Log.i(normalizeTag(tag), message);
     }
+
     @AlwaysInline
     public static void i(String tag, String message, Throwable t) {
         android.util.Log.i(normalizeTag(tag), message, t);
     }
+
     @DoNotInline
     public static void i(String tag, String messageTemplate, Object o) {
         i(tag, messageTemplate, new Object[] {o});
     }
+
     @DoNotInline
     public static void i(String tag, String messageTemplate, Object o1, Object o2) {
         i(tag, messageTemplate, new Object[] {o1, o2});
@@ -205,14 +208,17 @@ public class Log {
     public static void w(String tag, String message) {
         android.util.Log.w(normalizeTag(tag), message);
     }
+
     @AlwaysInline
     public static void w(String tag, String message, Throwable t) {
         android.util.Log.w(normalizeTag(tag), message, t);
     }
+
     @DoNotInline
     public static void w(String tag, String messageTemplate, Object o) {
         w(tag, messageTemplate, new Object[] {o});
     }
+
     @DoNotInline
     public static void w(String tag, String messageTemplate, Object o1, Object o2) {
         w(tag, messageTemplate, new Object[] {o1, o2});
@@ -244,14 +250,17 @@ public class Log {
     public static void e(String tag, String message) {
         android.util.Log.e(normalizeTag(tag), message);
     }
+
     @AlwaysInline
     public static void e(String tag, String message, Throwable t) {
         android.util.Log.e(normalizeTag(tag), message, t);
     }
+
     @DoNotInline
     public static void e(String tag, String messageTemplate, Object o) {
         e(tag, messageTemplate, new Object[] {o});
     }
+
     @DoNotInline
     public static void e(String tag, String messageTemplate, Object o1, Object o2) {
         e(tag, messageTemplate, new Object[] {o1, o2});

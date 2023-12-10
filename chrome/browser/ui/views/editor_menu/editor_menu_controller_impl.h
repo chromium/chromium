@@ -80,6 +80,10 @@ class EditorMenuControllerImpl : public chromeos::ReadWriteCardController,
   // hidden from the user's view.
   void OnEditorCardHidden();
 
+  // Disables the editor menu. We do this when we don't want the editor menu
+  // buttons or textfield to receive keyboard or mouse input.
+  void DisableEditorMenu();
+
   views::UniqueWidgetPtr editor_menu_widget_;
 
   // May hold the currently active editor card session. If this is nullptr then

@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_GRID_BASE_GRID_VIEW_CONTROLLER_SUBCLASSING_H_
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/base_grid_view_controller.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_layout.h"
 
 // TODO(crbug.com/1466000): Remove hard-coding of sections.
 extern const int kGridOpenTabsSectionIndex;
@@ -18,8 +19,11 @@ typedef NSDiffableDataSourceSnapshot<NSString*, GridItemIdentifier*>
 typedef UICollectionViewDiffableDataSource<NSString*, GridItemIdentifier*>
     GridDiffableDataSource;
 
-@interface BaseGridViewController (
-    Subclassing) <UICollectionViewDelegate, UICollectionViewDelegateFlowLayout>
+@interface BaseGridViewController (Subclassing) <
+    UICollectionViewDelegate,
+    // TODO(crbug.com/1504112): Remove when the compositional layout is fully
+    // landed.
+    UICollectionViewDelegateFlowLayout>
 
 // A collection view of items in a grid format.
 @property(nonatomic, weak, readonly) UICollectionView* collectionView;
@@ -44,6 +48,18 @@ typedef UICollectionViewDiffableDataSource<NSString*, GridItemIdentifier*>
 // selected item at the top.
 - (void)updateSelectedCollectionViewItemRingAndBringIntoView:
     (BOOL)shouldBringItemIntoView;
+
+// Returns the type of header to set in the given mode, in the current state of
+// the grid.
+// TODO(crbug.com/1504153): Refactor to avoid reusing the same section
+// definition for the different use cases.
+- (TabsSectionHeaderType)tabsSectionHeaderTypeForMode:(TabGridMode)mode;
+
+// Updates the layout with the tabs section header type returned by
+// `-tabsSectionHeaderTypeForMode:` with the current `mode`.
+// TODO(crbug.com/1504153): Refactor to avoid reusing the same section
+// definition for the different use cases.
+- (void)updateTabsSectionHeaderType;
 
 @end
 

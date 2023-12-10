@@ -99,6 +99,19 @@ const std::string& PageImpl::GetContentsMimeType() const {
   return contents_mime_type_;
 }
 
+void PageImpl::SetResizableForTesting(absl::optional<bool> resizable) {
+  SetResizable(resizable);
+}
+
+void PageImpl::SetResizable(absl::optional<bool> resizable) {
+  resizable_ = resizable;
+  delegate_->OnCanResizeFromWebAPIChanged();
+}
+
+absl::optional<bool> PageImpl::GetResizable() {
+  return resizable_;
+}
+
 void PageImpl::OnFirstVisuallyNonEmptyPaint() {
   did_first_visually_non_empty_paint_ = true;
   delegate_->OnFirstVisuallyNonEmptyPaint(*this);
@@ -174,40 +187,60 @@ void PageImpl::OnTextAutosizerPageInfoChanged(
 }
 
 void PageImpl::SetActivationStartTime(base::TimeTicks activation_start) {
-  DCHECK(!activation_start_time_for_prerendering_);
-  activation_start_time_for_prerendering_ = activation_start;
+  CHECK(!activation_start_time_);
+  activation_start_time_ = activation_start;
 }
 
-void PageImpl::ActivateForPrerendering(
+void PageImpl::Activate(
+    ActivationType type,
     StoredPage::RenderViewHostImplSafeRefSet& render_view_hosts,
-    absl::optional<blink::ViewTransitionState> view_transition_state) {
-  TRACE_EVENT0("navigation", "PageImpl::ActivateForPrerendering");
+    absl::optional<blink::ViewTransitionState> view_transition_state,
+    base::OnceCallback<void(base::TimeTicks)> completion_callback) {
+  TRACE_EVENT1("navigation", "PageImpl::Activate", "activation_type", type);
 
-  base::OnceClosure did_activate_render_views =
-      base::BindOnce(&PageImpl::DidActivateAllRenderViewsForPrerendering,
-                     weak_factory_.GetWeakPtr());
+  // SetActivationStartTime() should be called first as the value is used in
+  // the callback below.
+  CHECK(activation_start_time_.has_value());
+
+  base::OnceClosure did_activate_render_views = base::BindOnce(
+      &PageImpl::DidActivateAllRenderViewsForPrerenderingOrPreview,
+      weak_factory_.GetWeakPtr(), std::move(completion_callback));
 
   base::RepeatingClosure barrier = base::BarrierClosure(
       render_view_hosts.size(), std::move(did_activate_render_views));
+  bool view_transition_state_consumed = false;
   for (const auto& rvh : render_view_hosts) {
     auto params = blink::mojom::PrerenderPageActivationParams::New();
 
-    // Only send navigation_start to the RenderViewHost for the main frame to
-    // avoid sending the info cross-origin. Only this RenderViewHost needs the
-    // info, as we expect the other RenderViewHosts are made for cross-origin
-    // iframes which have not yet loaded their document. To the renderer, it
-    // just looks like an ongoing navigation is happening in the frame and has
-    // not yet committed. These RenderViews still need to know about activation
-    // so their documents are created in the non-prerendered state once their
-    // navigation is committed.
     if (main_document_->GetRenderViewHost() == &*rvh) {
-      params->activation_start = *activation_start_time_for_prerendering_;
+      // For prerendering activation, send activation_start only to the
+      // RenderViewHost for the main frame to avoid sending the info
+      // cross-origin. Only this RenderViewHost needs the info, as we expect the
+      // other RenderViewHosts are made for cross-origin iframes which have not
+      // yet loaded their document. To the renderer, it just looks like an
+      // ongoing navigation is happening in the frame and has not yet committed.
+      // These RenderViews still need to know about activation so their
+      // documents are created in the non-prerendered state once their
+      // navigation is committed.
+      params->activation_start = *activation_start_time_;
+      // Note that there cannot be a use-after-move since the if condition
+      // should be true at most once.
+      CHECK(!view_transition_state_consumed);
       params->view_transition_state = std::move(view_transition_state);
+      view_transition_state_consumed = true;
+    } else if (type == ActivationType::kPreview) {
+      // For preview activation, send activation_start to all RenderViewHosts
+      // as preview loads cross-origin subframes under the capability control,
+      // and activation_start time is meaningful there.
+      params->activation_start = *activation_start_time_;
     }
 
+    // For preview activation, there is no way to activate the previewed page
+    // other than with a user action, or testing only methods.
     params->was_user_activated =
-        main_document_->frame_tree_node()
-                ->has_received_user_gesture_before_nav()
+        (main_document_->frame_tree_node()
+             ->has_received_user_gesture_before_nav() ||
+         type == ActivationType::kPreview)
             ? blink::mojom::WasActivatedOption::kYes
             : blink::mojom::WasActivatedOption::kNo;
     rvh->ActivatePrerenderedPage(std::move(params), barrier);
@@ -223,7 +256,7 @@ void PageImpl::ActivateForPrerendering(
       [this](RenderFrameHostImpl* rfh) {
         if (&rfh->GetPage() != this)
           return;
-        rfh->RendererWillActivateForPrerendering();
+        rfh->RendererWillActivateForPrerenderingOrPreview();
       });
 }
 
@@ -252,7 +285,8 @@ void PageImpl::MaybeDispatchLoadEventsOnPrerenderActivation() {
       &RenderFrameHostImpl::MaybeDispatchDidFinishLoadOnPrerenderActivation);
 }
 
-void PageImpl::DidActivateAllRenderViewsForPrerendering() {
+void PageImpl::DidActivateAllRenderViewsForPrerenderingOrPreview(
+    base::OnceCallback<void(base::TimeTicks)> completion_callback) {
   TRACE_EVENT0("navigation",
                "PageImpl::DidActivateAllRenderViewsForPrerendering");
 
@@ -264,6 +298,8 @@ void PageImpl::DidActivateAllRenderViewsForPrerendering() {
         }
         rfh->RendererDidActivateForPrerendering();
       });
+  CHECK(activation_start_time_.has_value());
+  std::move(completion_callback).Run(*activation_start_time_);
 }
 
 RenderFrameHost& PageImpl::GetMainDocumentHelper() {

@@ -84,12 +84,14 @@ class AllPasswordsBottomSheetMediator {
      */
     private boolean shouldBeFiltered(final String searchQuery, final Credential credential) {
         return searchQuery != null
-                && !credential.getOriginUrl()
-                            .toLowerCase(Locale.ENGLISH)
-                            .contains(searchQuery.toLowerCase(Locale.ENGLISH))
-                && !credential.getUsername()
-                            .toLowerCase(Locale.getDefault())
-                            .contains(searchQuery.toLowerCase(Locale.getDefault()));
+                && !credential
+                        .getOriginUrl()
+                        .toLowerCase(Locale.ENGLISH)
+                        .contains(searchQuery.toLowerCase(Locale.ENGLISH))
+                && !credential
+                        .getUsername()
+                        .toLowerCase(Locale.getDefault())
+                        .contains(searchQuery.toLowerCase(Locale.getDefault()));
     }
 
     void onCredentialSelected(CredentialFillRequest credentialFillRequest) {
@@ -104,12 +106,14 @@ class AllPasswordsBottomSheetMediator {
     }
 
     private static int compareCredentials(Credential credential1, Credential credential2) {
-        String displayOrigin1 = credential1.isAndroidCredential()
-                ? credential1.getAppDisplayName().toLowerCase(Locale.ENGLISH)
-                : UrlUtilities.getDomainAndRegistry(credential1.getOriginUrl(), false);
-        String displayOrigin2 = credential2.isAndroidCredential()
-                ? credential2.getAppDisplayName().toLowerCase(Locale.ENGLISH)
-                : UrlUtilities.getDomainAndRegistry(credential2.getOriginUrl(), false);
+        String displayOrigin1 =
+                credential1.isAndroidCredential()
+                        ? credential1.getAppDisplayName().toLowerCase(Locale.ENGLISH)
+                        : UrlUtilities.getDomainAndRegistry(credential1.getOriginUrl(), false);
+        String displayOrigin2 =
+                credential2.isAndroidCredential()
+                        ? credential2.getAppDisplayName().toLowerCase(Locale.ENGLISH)
+                        : UrlUtilities.getDomainAndRegistry(credential2.getOriginUrl(), false);
         return displayOrigin1.compareTo(displayOrigin2);
     }
 }

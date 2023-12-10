@@ -79,7 +79,7 @@ InlineItem::InlineItem(InlineItemType type,
                      Member<LayoutObject>::AtomicInitializerTag{}),
       type_(type),
       text_type_(static_cast<unsigned>(TextItemType::kNormal)),
-      style_variant_(static_cast<unsigned>(NGStyleVariant::kStandard)),
+      style_variant_(static_cast<unsigned>(StyleVariant::kStandard)),
       end_collapse_type_(kNotCollapsible),
       bidi_level_(UBIDI_LTR),
       segment_data_(0),
@@ -117,6 +117,13 @@ InlineItem::InlineItem(const InlineItem& other,
 }
 
 InlineItem::~InlineItem() = default;
+
+const ShapeResult* InlineItem::TextShapeResultNotSharedSlow() {
+  DCHECK(shape_result_);
+  DCHECK(!shape_result_->HasOneRef());
+  shape_result_ = ShapeResult::Create(*shape_result_);
+  return shape_result_.get();
+}
 
 void InlineItem::ComputeBoxProperties() {
   DCHECK(!is_empty_item_);
@@ -240,7 +247,7 @@ String InlineItem::ToString() const {
   if (const auto* layout_text = DynamicTo<LayoutText>(GetLayoutObject())) {
     object_info = layout_text->GetText().EncodeForDebugging();
   } else {
-    object_info = GetLayoutObject()->DebugName();
+    object_info = GetLayoutObject()->ToString();
   }
   return String::Format("InlineItem %s. %s", InlineItemTypeToString(Type()),
                         object_info.Ascii().c_str());

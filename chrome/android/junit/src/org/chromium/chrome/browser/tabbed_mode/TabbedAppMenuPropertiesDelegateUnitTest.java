@@ -47,6 +47,7 @@ import org.chromium.chrome.browser.bookmarks.PowerBookmarkUtils;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.enterprise.util.ManagedBrowserUtils;
 import org.chromium.chrome.browser.enterprise.util.ManagedBrowserUtilsJni;
+import org.chromium.chrome.browser.feed.FeedFeatures;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedSnackbarController;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthController;
@@ -57,6 +58,7 @@ import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.readaloud.ReadAloudController;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -77,11 +79,13 @@ import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni;
 import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.power_bookmarks.PowerBookmarkMeta;
+import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.webapps.AppBannerManager;
 import org.chromium.components.webapps.AppBannerManagerJni;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.accessibility.UiAccessibilityFeatures;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.url.JUnitTestGURLs;
 
@@ -90,7 +94,11 @@ import java.util.List;
 
 /** Unit tests for {@link TabbedAppMenuPropertiesDelegate}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@EnableFeatures({ChromeFeatureList.WEB_FEED, ChromeFeatureList.BOOKMARKS_REFRESH})
+@EnableFeatures({
+    ChromeFeatureList.WEB_FEED,
+    ChromeFeatureList.BOOKMARKS_REFRESH,
+    UiAccessibilityFeatures.START_SURFACE_ACCESSIBILITY_CHECK
+})
 @DisableFeatures({ChromeFeatureList.SHOPPING_LIST})
 public class TabbedAppMenuPropertiesDelegateUnitTest {
     // Constants defining flags that determines multi-window menu items visibility.
@@ -104,8 +112,10 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     private static final boolean PHONE = false;
     private static final boolean API_YES = true; // multi-window API supported
     private static final boolean API_NO = false;
-    private static final boolean PARTNER_YES = true; // partner homepage enabled
-    private static final boolean PARTNER_NO = false;
+    private static final boolean MOVE_OTHER_YES =
+            true; // multi-window move to other window supported
+    private static final boolean MOVE_OTHER_NO = false;
+
     private static final boolean NEW_YES = true; // show 'new window'
     private static final boolean NEW_NO = false;
     private static final boolean MOVE_YES = true; // show 'move to other window'
@@ -141,6 +151,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     @Mock private ShoppingService mShoppingService;
     @Mock private AppBannerManager.Natives mAppBannerManagerJniMock;
     @Mock private ReadAloudController mReadAloudController;
+    @Mock private PrefService mPrefService;
 
     private OneshotSupplierImpl<LayoutStateProvider> mLayoutStateProviderSupplier =
             new OneshotSupplierImpl<>();
@@ -154,15 +165,14 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     private TabbedAppMenuPropertiesDelegate mTabbedAppMenuPropertiesDelegate;
 
     // Boolean flags to test multi-window menu visibility for various combinations.
-    private boolean mIsMultiTab;
     private boolean mIsMultiInstance;
     private boolean mIsMultiWindow;
-    private boolean mIsPartnerHomepageEnabled;
     private boolean mIsTabletScreen;
     private boolean mIsMultiWindowApiSupported;
+    private boolean mIsMoveToOtherWindowSupported;
 
     // Used to ensure all the combinations are tested.
-    private boolean[] mFlagCombinations = new boolean[1 << 6];
+    private boolean[] mFlagCombinations = new boolean[1 << 5];
 
     @Before
     public void setUp() {
@@ -181,6 +191,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         when(mTabModelSelector.getTabModelFilterProvider()).thenReturn(mTabModelFilterProvider);
         when(mTabModelFilterProvider.getCurrentTabModelFilter()).thenReturn(mTabModelFilter);
         when(mTabModelFilter.getTabModel()).thenReturn(mTabModel);
+        when(mTabModel.getProfile()).thenReturn(mProfile);
         jniMocker.mock(ManagedBrowserUtilsJni.TEST_HOOKS, mManagedBrowserUtilsJniMock);
         Profile.setLastUsedProfileForTesting(mProfile);
         jniMocker.mock(WebsitePreferenceBridgeJni.TEST_HOOKS, mWebsitePreferenceBridgeJniMock);
@@ -190,6 +201,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         IdentityServicesProvider.setInstanceForTests(mIdentityService);
         FeatureList.setTestCanUseDefaultsForTesting();
         PageZoomCoordinator.setShouldShowMenuItemForTesting(false);
+        FeedFeatures.setFakePrefsForTest(mPrefService);
         jniMocker.mock(AppBannerManagerJni.TEST_HOOKS, mAppBannerManagerJniMock);
         Mockito.when(mAppBannerManagerJniMock.getInstallableWebAppManifestId(any()))
                 .thenReturn(null);
@@ -265,28 +277,25 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         // Single window
         //
         // No API support (i.e. cannot enter multi-window through menu), do not show 'New Window'
-        testWindowMenu(X____, WIN_S, X____, X____, API_NO, X____, NEW_NO, X____);
+        testWindowMenu(WIN_S, X____, X____, API_NO, X____, NEW_NO, X____);
 
         // No 'New Window' on phone.
-        testWindowMenu(X____, WIN_S, INST_S, PHONE, X____, X____, NEW_NO, MOVE_NO);
+        testWindowMenu(WIN_S, INST_S, PHONE, X____, MOVE_OTHER_NO, NEW_NO, MOVE_NO);
 
         // Show 'New Window' only on tablet and API is supported.
-        testWindowMenu(X____, WIN_S, INST_S, TABLET, API_YES, X____, NEW_YES, MOVE_NO);
+        testWindowMenu(WIN_S, INST_S, TABLET, API_YES, X____, NEW_YES, MOVE_NO);
 
         //
         // Multi-window
         //
-        // In general multiple tab/window/instances, show 'Move to other window'
-        testWindowMenu(TAB_M, WIN_M, INST_M, X____, X____, X____, NEW_NO, MOVE_YES);
+        // Move to other window supported, show 'Move to other window'
+        testWindowMenu(WIN_M, INST_M, X____, X____, MOVE_OTHER_YES, X____, MOVE_YES);
+
+        // Move to other window not supported, hide 'Move to other window'
+        testWindowMenu(WIN_M, INST_M, X____, X____, MOVE_OTHER_NO, X____, MOVE_NO);
 
         // Single instance -> Show 'New window'
-        testWindowMenu(X____, WIN_M, INST_S, X____, X____, X____, NEW_YES, MOVE_NO);
-
-        // Single tab can be moved when partner homepage is disabled.
-        testWindowMenu(TAB_S, WIN_M, INST_M, X____, X____, PARTNER_NO, NEW_NO, MOVE_YES);
-
-        // Single tab cannot be moved when partner homepage is enabled.
-        testWindowMenu(TAB_S, WIN_M, INST_M, X____, X____, PARTNER_YES, NEW_NO, MOVE_NO);
+        testWindowMenu(WIN_M, INST_S, X____, X____, X____, NEW_YES, MOVE_NO);
 
         assertTestedAllCombinations();
     }
@@ -294,7 +303,9 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     @Test
     public void testPageMenuItems_instanceSwitcher_newWindow() {
         setUpMocksForPageMenu();
-        doReturn(true).when(mTabbedAppMenuPropertiesDelegate).instanceSwitcherEnabled();
+        doReturn(true)
+                .when(mTabbedAppMenuPropertiesDelegate)
+                .instanceSwitcherWithMultiInstanceEnabled();
 
         createInstance(0, "https://url0");
 
@@ -328,25 +339,21 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     @Test
     public void testPageMenuItems_instanceSwitcher_moveTabToOtherWindow() {
         setUpMocksForPageMenu();
-        doReturn(true).when(mTabbedAppMenuPropertiesDelegate).instanceSwitcherEnabled();
-
-        createInstance(0, "https://url0");
+        doReturn(true)
+                .when(mTabbedAppMenuPropertiesDelegate)
+                .instanceSwitcherWithMultiInstanceEnabled();
+        mIsMoveToOtherWindowSupported = true;
 
         Menu menu = createMenuForMultiWindow();
-        assertEquals(1, mMultiWindowModeStateDispatcher.getInstanceCount());
-        assertFalse(isMenuVisible(menu, R.id.move_to_other_window_menu_id));
-
-        createInstance(1, "https://url1");
-
-        Menu menu2 = createMenuForMultiWindow();
-        assertEquals(2, mMultiWindowModeStateDispatcher.getInstanceCount());
-        assertTrue(isMenuVisible(menu2, R.id.move_to_other_window_menu_id));
+        assertTrue(isMenuVisible(menu, R.id.move_to_other_window_menu_id));
     }
 
     @Test
     public void testPageMenuItems_instanceSwitcher_manageAllWindow() {
         setUpMocksForPageMenu();
-        doReturn(true).when(mTabbedAppMenuPropertiesDelegate).instanceSwitcherEnabled();
+        doReturn(true)
+                .when(mTabbedAppMenuPropertiesDelegate)
+                .instanceSwitcherWithMultiInstanceEnabled();
 
         createInstance(0, "https://url0");
 
@@ -413,6 +420,45 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                 mTabbedAppMenuPropertiesDelegate.getFooterResourceId());
     }
 
+    @Test
+    @EnableFeatures(ChromeFeatureList.NEW_TAB_SEARCH_ENGINE_URL_ANDROID)
+    public void getFooterResourceId_dseOff_doesNotReturnWebFeedMenuItem() {
+        setUpMocksForWebFeedFooter();
+        when(mIdentityManager.hasPrimaryAccount(anyInt())).thenReturn(true);
+        when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS_BY_DSE)).thenReturn(false);
+
+        assertNotEquals(
+                "Footer Resource ID should not be web_feed_main_menu_item.",
+                R.layout.web_feed_main_menu_item,
+                mTabbedAppMenuPropertiesDelegate.getFooterResourceId());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.NEW_TAB_SEARCH_ENGINE_URL_ANDROID)
+    public void getFooterResourceId_dseOn_returnsWebFeedMenuItem() {
+        setUpMocksForWebFeedFooter();
+        when(mIdentityManager.hasPrimaryAccount(anyInt())).thenReturn(true);
+        when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS_BY_DSE)).thenReturn(true);
+
+        assertEquals(
+                "Footer Resource ID should be web_feed_main_menu_item.",
+                R.layout.web_feed_main_menu_item,
+                mTabbedAppMenuPropertiesDelegate.getFooterResourceId());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.NEW_TAB_SEARCH_ENGINE_URL_ANDROID)
+    public void getFooterResourceId_signedOutUser_dseOn_doesNotReturnWebFeedMenuItem() {
+        setUpMocksForWebFeedFooter();
+        when(mIdentityManager.hasPrimaryAccount(anyInt())).thenReturn(false);
+        when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS_BY_DSE)).thenReturn(true);
+
+        assertNotEquals(
+                "Footer Resource ID should not be web_feed_main_menu_item.",
+                R.layout.web_feed_main_menu_item,
+                mTabbedAppMenuPropertiesDelegate.getFooterResourceId());
+    }
+
     private void setUpMocksForWebFeedFooter() {
         when(mActivityTabProvider.get()).thenReturn(mTab);
         when(mTab.isIncognito()).thenReturn(false);
@@ -433,7 +479,6 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         doReturn(false)
                 .when(mTabbedAppMenuPropertiesDelegate)
                 .shouldShowReaderModePrefs(any(Tab.class));
-        doReturn(false).when(mTabbedAppMenuPropertiesDelegate).isPartnerHomepageEnabled();
         doReturn(true).when(mTabbedAppMenuPropertiesDelegate).isTabletSizeScreen();
         doReturn(true).when(mTabbedAppMenuPropertiesDelegate).isAutoDarkWebContentsEnabled();
 
@@ -474,66 +519,54 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         return tempMenu.getMenu();
     }
 
-    private void setMultiWindowMenuFlags(int i) {
-        mIsMultiTab = (i & 1) == 1;
-        mIsMultiInstance = ((i >> 1) & 1) == 1;
-        mIsMultiWindow = ((i >> 2) & 1) == 1;
-        mIsPartnerHomepageEnabled = ((i >> 3) & 1) == 1;
-        mIsTabletScreen = ((i >> 4) & 1) == 1;
-        mIsMultiWindowApiSupported = ((i >> 5) & 1) == 1;
-    }
-
     private Menu createMenuForMultiWindow() {
-        doReturn(mIsMultiTab ? 2 : 1).when(mTabModelSelector).getTotalTabCount();
         doReturn(mIsMultiWindow).when(mMultiWindowModeStateDispatcher).isInMultiWindowMode();
         doReturn(mIsMultiWindowApiSupported)
                 .when(mMultiWindowModeStateDispatcher)
                 .canEnterMultiWindowMode();
         doReturn(mIsMultiInstance).when(mMultiWindowModeStateDispatcher).isMultiInstanceRunning();
-        doReturn(mIsPartnerHomepageEnabled)
-                .when(mTabbedAppMenuPropertiesDelegate)
-                .isPartnerHomepageEnabled();
         doReturn(mIsTabletScreen).when(mTabbedAppMenuPropertiesDelegate).isTabletSizeScreen();
         doReturn(MultiWindowUtils.getInstanceCount())
                 .when(mMultiWindowModeStateDispatcher)
                 .getInstanceCount();
+        doReturn(mIsMoveToOtherWindowSupported)
+                .when(mMultiWindowModeStateDispatcher)
+                .isMoveToOtherWindowSupported(mTabModelSelector);
         Menu menu = createTestMenu();
         mTabbedAppMenuPropertiesDelegate.prepareMenu(menu, null);
         return menu;
     }
 
     private void testWindowMenu(
-            Boolean multiTab,
             Boolean multiWindow,
             Boolean multiInstance,
             Boolean tablet,
             Boolean apiSupported,
-            Boolean partnerEnabled,
+            Boolean moveToOtherWindowSupported,
             Boolean showNewWindow,
             Boolean showMoveWindow) {
-        for (int i = 0; i < (1 << 6); ++i) {
-            boolean bitMultiTab = (i & 1) == 1;
-            boolean bitMultiWindow = ((i >> 1) & 1) == 1;
-            boolean bitMultiInstance = ((i >> 2) & 1) == 1;
-            boolean bitTabletScreen = ((i >> 3) & 1) == 1;
-            boolean bitApiSupported = ((i >> 4) & 1) == 1;
-            boolean bitPartnerEnabled = ((i >> 5) & 1) == 1;
+        for (int i = 0; i < (1 << 5); ++i) {
+            boolean bitMultiWindow = (i & 1) == 1;
+            boolean bitMultiInstance = ((i >> 1) & 1) == 1;
+            boolean bitTabletScreen = ((i >> 2) & 1) == 1;
+            boolean bitApiSupported = ((i >> 3) & 1) == 1;
+            boolean bitMoveToOtherWindowSupported = ((i >> 4) & 1) == 1;
 
-            if ((multiTab == null || bitMultiTab == multiTab)
-                    && (multiWindow == null || bitMultiWindow == multiWindow)
+            if ((multiWindow == null || bitMultiWindow == multiWindow)
                     && (multiInstance == null || bitMultiInstance == multiInstance)
                     && (tablet == null || bitTabletScreen == tablet)
                     && (apiSupported == null || bitApiSupported == apiSupported)
-                    && (partnerEnabled == null || bitPartnerEnabled == partnerEnabled)) {
-                mIsMultiTab = bitMultiTab;
+                    && (moveToOtherWindowSupported == null
+                            || bitMoveToOtherWindowSupported == moveToOtherWindowSupported)) {
                 mIsMultiWindow = bitMultiWindow;
                 mIsMultiInstance = bitMultiInstance;
                 mIsTabletScreen = bitTabletScreen;
                 mIsMultiWindowApiSupported = bitApiSupported;
-                mIsPartnerHomepageEnabled = bitPartnerEnabled;
+                mIsMoveToOtherWindowSupported = bitMoveToOtherWindowSupported;
 
                 // Ignore invalid combination.
-                if (!bitMultiWindow && bitMultiInstance) continue;
+                if ((!bitMultiWindow && bitMultiInstance)
+                        || (!bitMultiInstance && bitMoveToOtherWindowSupported)) continue;
 
                 mFlagCombinations[i] = true;
                 Menu menu = createMenuForMultiWindow();
@@ -558,40 +591,36 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     }
 
     private void assertTestedAllCombinations() {
-        for (int i = 0; i < (1 << 6); ++i) {
-            boolean bitMultiTab = (i & 1) == 1;
-            boolean bitMultiWindow = ((i >> 1) & 1) == 1;
-            boolean bitMultiInstance = ((i >> 2) & 1) == 1;
-            boolean bitTabletScreen = ((i >> 3) & 1) == 1;
-            boolean bitApiSupported = ((i >> 4) & 1) == 1;
-            boolean bitPartnerEnabled = ((i >> 5) & 1) == 1;
+        for (int i = 0; i < (1 << 5); ++i) {
+            boolean bitMultiWindow = (i & 1) == 1;
+            boolean bitMultiInstance = ((i >> 1) & 1) == 1;
+            boolean bitTabletScreen = ((i >> 2) & 1) == 1;
+            boolean bitApiSupported = ((i >> 3) & 1) == 1;
+            boolean bitMoveToOtherWindowSupported = ((i >> 4) & 1) == 1;
 
             // Ignore invalid combination.
-            if (!bitMultiWindow && bitMultiInstance) continue;
+            if ((!bitMultiWindow && bitMultiInstance)
+                    || (!bitMultiInstance && bitMoveToOtherWindowSupported)) continue;
 
             assertTrue(
                     "Not tested: "
                             + getFlags(
-                                    bitMultiTab,
                                     bitMultiWindow,
                                     bitMultiInstance,
                                     bitTabletScreen,
                                     bitApiSupported,
-                                    bitPartnerEnabled),
+                                    bitMoveToOtherWindowSupported),
                     mFlagCombinations[i]);
         }
     }
 
     private String getFlags(
-            boolean multiTab,
             boolean multiWindow,
             boolean multiInstance,
             boolean tablet,
             boolean apiSupported,
-            boolean partnerEnabled) {
+            boolean moveToOtherWindowSupported) {
         return "("
-                + (multiTab ? "TAB_M" : "TAB_S")
-                + ", "
                 + (multiWindow ? "WIN_M" : "WIN_S")
                 + ", "
                 + (multiInstance ? "INST_M" : "INST_S")
@@ -600,18 +629,17 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                 + ", "
                 + (apiSupported ? "API_YES" : "API_NO")
                 + ", "
-                + (partnerEnabled ? "PARTNER_YES" : "PARTNER_NO")
+                + (moveToOtherWindowSupported ? "MOVE_OTHER_YES" : "MOVE_OTHER_NO")
                 + ")";
     }
 
     private String getFlags() {
         return getFlags(
-                mIsMultiTab,
                 mIsMultiWindow,
                 mIsMultiInstance,
                 mIsTabletScreen,
                 mIsMultiWindowApiSupported,
-                mIsPartnerHomepageEnabled);
+                mIsMoveToOtherWindowSupported);
     }
 
     private void assertMenuItemsAreEqual(Menu menu, Integer... expectedItems) {

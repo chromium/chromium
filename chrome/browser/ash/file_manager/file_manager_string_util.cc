@@ -11,6 +11,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/system/time/calendar_utils.h"
 #include "ash/system/time/date_helper.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/feature_list.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -38,6 +39,7 @@
 #include "chromeos/constants/chromeos_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/user_manager/user_manager.h"
+#include "components/variations/service/variations_service.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/chromeos/strings/grit/ui_chromeos_strings.h"
@@ -85,6 +87,14 @@ const int kGoogleDriveErrorHelpNumber = 2649458;
 
 // Location of the help page about no-action-available files.
 const int kNoActionForFileHelpNumber = 1700055;
+
+// Supported locales of Google One offer banner.
+constexpr auto kGoogleOneOfferBannerSupportedLocales =
+    base::MakeFixedFlatSet<std::string>({"en-US", "en-GB", "en-AU", "en-CA"});
+
+// Supported countries of Google One offer banner.
+constexpr auto kGoogleOneOfferBannerSupportedCountries =
+    base::MakeFixedFlatSet<std::string>({"us", "gb", "au", "ca"});
 
 #define SET_STRING(id, idr) dict->Set(id, l10n_util::GetStringUTF16(idr))
 
@@ -464,6 +474,15 @@ void AddStringsGeneric(base::Value::Dict* dict) {
 
   SET_STRING("COPY_BUTTON_LABEL", IDS_FILE_BROWSER_COPY_BUTTON_LABEL);
   SET_STRING("COPY_FILESYSTEM_ERROR", IDS_FILE_BROWSER_COPY_FILESYSTEM_ERROR);
+  SET_STRING("COPY_SKIPPED_ENCRYPTED_SINGLE_FILE",
+             IDS_FILE_BROWSER_COPY_SKIPPED_ENCRYPTED_SINGLE_FILE);
+  SET_STRING("MOVE_SKIPPED_ENCRYPTED_SINGLE_FILE",
+             IDS_FILE_BROWSER_MOVE_SKIPPED_ENCRYPTED_SINGLE_FILE);
+  SET_STRING("COPY_SKIPPED_ENCRYPTED_FILES",
+             IDS_FILE_BROWSER_COPY_SKIPPED_ENCRYPTED_FILES);
+  SET_STRING("MOVE_SKIPPED_ENCRYPTED_FILES",
+             IDS_FILE_BROWSER_MOVE_SKIPPED_ENCRYPTED_FILES);
+  SET_STRING("ENCRYPTED_DETAILS", IDS_FILE_BROWSER_ENCRYPTED_DETAILS);
   SET_STRING("EMPTY_TRASH_UNEXPECTED_ERROR",
              IDS_FILE_BROWSER_EMPTY_TRASH_UNEXPECTED_ERROR);
   SET_STRING("TRASH_UNEXPECTED_ERROR", IDS_FILE_BROWSER_TRASH_UNEXPECTED_ERROR);
@@ -1209,6 +1228,17 @@ bool IsEligibleAndEnabledGoogleOneOfferFilesBanner() {
     return false;
   }
 
+  if (!kGoogleOneOfferBannerSupportedLocales.contains(
+          g_browser_process->GetApplicationLocale())) {
+    return false;
+  }
+
+  if (!kGoogleOneOfferBannerSupportedCountries.contains(
+          g_browser_process->variations_service()
+              ->GetStoredPermanentCountry())) {
+    return false;
+  }
+
   return base::FeatureList::IsEnabled(
       ash::features::kGoogleOneOfferFilesBanner);
 }
@@ -1342,8 +1372,6 @@ void AddFileManagerFeatureStrings(const std::string& locale,
   dict->Set("DRIVEFS_MIRRORING", ash::features::IsDriveFsMirroringEnabled());
 
   dict->Set("GUEST_OS", true);
-
-  dict->Set("JELLY", chromeos::features::IsJellyEnabled());
 
   dict->Set("DRIVE_FS_BULK_PINNING",
             drive::util::IsDriveFsBulkPinningAvailable(profile));

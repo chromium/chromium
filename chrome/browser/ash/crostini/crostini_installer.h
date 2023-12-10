@@ -129,7 +129,7 @@ class CrostiniInstaller : public KeyedService,
   void RecordSetupResult(SetupResult result);
 
   void OnCrostiniRestartFinished(crostini::CrostiniResult result);
-  void OnAvailableDiskSpace(absl::optional<int64_t> bytes);
+  void OnAvailableDiskSpace(std::optional<int64_t> bytes);
 
   void OnCrostiniRemovedAfterConfigurationFailed(
       crostini::CrostiniResult result);

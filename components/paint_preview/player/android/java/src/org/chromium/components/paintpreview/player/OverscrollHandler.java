@@ -4,13 +4,9 @@
 
 package org.chromium.components.paintpreview.player;
 
-/**
- * Interface for handling overscroll events in the player.
- */
+/** Interface for handling overscroll events in the player. */
 public interface OverscrollHandler {
-    /**
-     * Used to start an overscroll event. Returns true if it is able to be created/consumed.
-     */
+    /** Used to start an overscroll event. Returns true if it is able to be created/consumed. */
     boolean start();
 
     /**
@@ -26,8 +22,6 @@ public interface OverscrollHandler {
      */
     void release();
 
-    /**
-     * Resets the overscroll event if it was aborted.
-     */
+    /** Resets the overscroll event if it was aborted. */
     void reset();
 }

@@ -7,12 +7,15 @@
 
 #include "ash/ash_export.h"
 #include "ash/shelf/shelf_button.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 
 namespace ash {
 class Shelf;
 class ShelfButtonDelegate;
 
 class ASH_EXPORT ScrollArrowView : public ShelfButton {
+  METADATA_HEADER(ScrollArrowView, ShelfButton)
+
  public:
   enum ArrowType { kLeft, kRight };
   ScrollArrowView(ArrowType arrow_type,
@@ -34,7 +37,6 @@ class ASH_EXPORT ScrollArrowView : public ShelfButton {
 
   // views::View:
   void PaintButtonContents(gfx::Canvas* canvas) override;
-  const char* GetClassName() const override;
   void OnThemeChanged() override;
 
  private:

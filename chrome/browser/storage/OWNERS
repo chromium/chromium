@@ -1,5 +1,3 @@
-asully@chromium.org
-ayui@chromium.org
-jsbell@chromium.org
+file://storage/OWNERS
 
 per-file *permission_context*=file://components/permissions/PERMISSIONS_OWNERS

@@ -2,11 +2,14 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="sw">
 <translation id="1178581264944972037">Sitisha</translation>
-<translation id="2558806128245168542">Rudi nyuma</translation>
-<translation id="3523426587027570423">Gusa ili ufunge kichezaji cha "Sikiliza ukurasa huu".</translation>
+<translation id="1921351128855867012">Sogeza mbele haraka kwa sekunde <ph name="NUMBER_OF_SECONDS" /></translation>
+<translation id="1984328900355667246">Kipengele cha uchezaji hakipatikani</translation>
+<translation id="3023502830214299618">Samahani, kwa sasa kipengele cha uchezaji hakipatikani kwenye ukurasa huu. Tafadhali jaribu tena baadaye.</translation>
+<translation id="3807208219231826020">Sogeza Maudhui ya Kucheza</translation>
+<translation id="385051799172605136">Rudi nyuma</translation>
 <translation id="4431240646217225907">Angazia maandishi na usogeze kiotomatiki</translation>
 <translation id="4654641641922242357">Kichezaji cha "Sikiliza ukurasa huu".</translation>
-<translation id="4731877163452936634">Kasi ya kucheza: <ph name="PLAYBACK_SPEED" /> Bofya ili ubadilishe.</translation>
+<translation id="4872475766448853257">Rudi nyuma kwa sekunde <ph name="NUMBER_OF_SECONDS" /></translation>
 <translation id="5234971936051226002">Kichezaji cha "Sikiliza ukurasa huu" kimepunguzwa.</translation>
 <translation id="5596627076506792578">Chaguo zaidi</translation>
 <translation id="6315170314923504164">Sauti</translation>
@@ -15,8 +18,8 @@
 <translation id="6831043979455480757">Tafsiri</translation>
 <translation id="6846298663435243399">Inapakia…</translation>
 <translation id="7587250070160020374">Chrome sasa inacheza</translation>
-<translation id="7945822420239537236">Sogeza mbele kwa sekunde <ph name="NUMBER_OF_SECONDS" /></translation>
-<translation id="7972866381678406344">Rudisha nyuma kwa sekunde <ph name="NUMBER_OF_SECONDS" /></translation>
 <translation id="8136852699834914183">Uchezaji haupatikani kwenye ukurasa huu.</translation>
+<translation id="8264989794233974275">Ongeza au upunguze kasi mara <ph name="PLAYBACK_SPEED" />.</translation>
+<translation id="8407011429883244666">Funga kichezaji.</translation>
 <translation id="8953618380150219653">Kichezaji cha "Sikiliza ukurasa huu" kimefunguliwa katika skrini nzima.</translation>
 </translationbundle>

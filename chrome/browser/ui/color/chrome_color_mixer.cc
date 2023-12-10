@@ -150,6 +150,9 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorCaptionButtonBackground] = {SK_ColorTRANSPARENT};
   mixer[kColorCapturedTabContentsBorder] = {ui::kColorAccent};
   mixer[kColorCastDialogHelpIcon] = {ui::kColorAccent};
+  mixer[kColorChromeSigninBubbleBackground] = {kColorProfileMenuBackground};
+  mixer[kColorChromeSigninBubbleInfoBackground] = {
+      kColorProfileMenuSyncInfoBackground};
   mixer[kColorDesktopMediaTabListBorder] = {ui::kColorMidground};
   mixer[kColorDesktopMediaTabListPreviewBackground] = {ui::kColorMidground};
   mixer[kColorDownloadBubbleInfoBackground] = {
@@ -348,6 +351,8 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorPipWindowHangUpButtonForeground] = {gfx::kGoogleRed300};
   mixer[kColorPipWindowSkipAdButtonBackground] = {gfx::kGoogleGrey700};
   mixer[kColorPipWindowSkipAdButtonBorder] = {kColorPipWindowForeground};
+  mixer[kColorProfileMenuBackground] = {ui::kColorDialogBackground};
+  mixer[kColorProfileMenuSyncInfoBackground] = {ui::kColorSyncInfoBackground};
   // TODO(https://crbug.com/1315194): stop forcing the light theme once the
   // reauth dialog supports the dark mode.
   mixer[kColorProfilesReauthDialogBorder] = {SK_ColorWHITE};
@@ -367,7 +372,9 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorShareThisTabSourceViewBorder] = {ui::kColorMidground};
   mixer[kColorSidePanelBackground] = {kColorToolbar};
   mixer[kColorSidePanelContentAreaSeparator] = {ui::kColorSeparator};
+  mixer[kColorSidePanelComboboxEntryIcon] = {ui::kColorIcon};
   mixer[kColorSidePanelEntryIcon] = {ui::kColorIcon};
+  mixer[kColorSidePanelEntryTitle] = {ui::kColorLabelForeground};
   mixer[kColorSidePanelEntryDropdownIcon] = {ui::kColorIcon};
   mixer[kColorSidePanelHeaderButtonIcon] = {ui::kColorIcon};
   mixer[kColorSidePanelHeaderButtonIconDisabled] = {ui::kColorIconDisabled};
@@ -758,7 +765,7 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
                 : kColorReadAnythingBackgroundLight};
   mixer[kColorReadAnythingBackgroundBlue] = {gfx::kGoogleBlue100};
   mixer[kColorReadAnythingBackgroundDark] = {gfx::kGoogleGrey900};
-  mixer[kColorReadAnythingBackgroundLight] = {gfx::kGoogleGrey100};
+  mixer[kColorReadAnythingBackgroundLight] = {SK_ColorWHITE};
   mixer[kColorReadAnythingBackgroundYellow] = {gfx::kGoogleYellow100};
   // The Read Anything themes need to be hard coded because they do not
   // change with the chrome theme, which is the purpose of the Read Anything

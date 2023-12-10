@@ -85,9 +85,13 @@ END_METADATA
 }  // namespace
 
 HoverButton::HoverButton(PressedCallback callback, const std::u16string& text)
-    : views::LabelButton(callback, text, views::style::CONTEXT_BUTTON) {
+    : views::LabelButton(
+          base::BindRepeating(&HoverButton::OnPressed, base::Unretained(this)),
+          text,
+          views::style::CONTEXT_BUTTON),
+      callback_(std::move(callback)) {
   SetButtonController(std::make_unique<HoverButtonController>(
-      this, std::move(callback),
+      this,
       std::make_unique<views::Button::DefaultButtonControllerDelegate>(this)));
 
   views::InstallRectHighlightPathGenerator(this);
@@ -240,7 +244,7 @@ void HoverButton::SetTitleText(const std::u16string& text) {
 
 void HoverButton::SetTitleTextStyle(views::style::TextStyle text_style,
                                     SkColor background_color,
-                                    absl::optional<ui::ColorId> color_id) {
+                                    std::optional<ui::ColorId> color_id) {
   if (!title()) {
     return;
   }
@@ -326,6 +330,12 @@ views::View* HoverButton::GetTooltipHandlerForPoint(const gfx::Point& point) {
   }
 
   return this;
+}
+
+void HoverButton::OnPressed(const ui::Event& event) {
+  if (callback_) {
+    callback_.Run(event);
+  }
 }
 
 BEGIN_METADATA(HoverButton, views::LabelButton)

@@ -12,23 +12,31 @@
 // These are utils for ClientSafeBrowsing reports.
 namespace safe_browsing::client_report_utils {
 
+using CSBRR = ClientSafeBrowsingReportRequest;
+
+CSBRR::SafeBrowsingUrlApiType GetUrlApiTypeForThreatSource(
+    safe_browsing::ThreatSource source);
+
 // Helper function that converts SBThreatType to
-// ClientSafeBrowsingReportRequest::ReportType.
-ClientSafeBrowsingReportRequest::ReportType GetReportTypeFromSBThreatType(
+// CSBRR::ReportType.
+CSBRR::ReportType GetReportTypeFromSBThreatType(SBThreatType threat_type);
+
+// Helper function that converts SBThreatType to
+// CSBRR::WarningUXType.
+CSBRR::WarningShownInfo::WarningUXType GetWarningUXTypeFromSBThreatType(
     SBThreatType threat_type);
 
 // Helper function that converts mojom::RequestDestination to
-// ClientSafeBrowsingReportRequest::UrlRequestDestination.
-ClientSafeBrowsingReportRequest::UrlRequestDestination
+// CSBRR::UrlRequestDestination.
+CSBRR::UrlRequestDestination
 GetUrlRequestDestinationFromMojomRequestDestination(
     network::mojom::RequestDestination request_destination);
 
 // Helper function that converts SecurityInterstitialCommand to CSBRR
 // SecurityInterstitialInteraction.
-ClientSafeBrowsingReportRequest::InterstitialInteraction::
-    SecurityInterstitialInteraction
-    GetSecurityInterstitialInteractionFromCommand(
-        security_interstitials::SecurityInterstitialCommand command);
+CSBRR::InterstitialInteraction::SecurityInterstitialInteraction
+GetSecurityInterstitialInteractionFromCommand(
+    security_interstitials::SecurityInterstitialCommand command);
 
 // Helper function that returns true if we can send reports for the url.
 bool IsReportableUrl(const GURL& url);
@@ -42,13 +50,13 @@ GURL GetReferrerUrl(const security_interstitials::UnsafeResource& resource);
 // Set url, type, and url_request_destination fields in
 // `report` from `resource`.
 void FillReportBasicResourceDetails(
-    ClientSafeBrowsingReportRequest* report,
+    CSBRR* report,
     const security_interstitials::UnsafeResource& resource);
 
 // Helper that creates new InterstitialInteraction objects and adds them to the
 // report.
 void FillInterstitialInteractionsHelper(
-    ClientSafeBrowsingReportRequest* report,
+    CSBRR* report,
     security_interstitials::InterstitialInteractionMap*
         interstitial_interactions);
 

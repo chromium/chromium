@@ -452,8 +452,9 @@ IN_PROC_BROWSER_TEST_P(LoadDataWithBaseURLWithPossiblyEmptyURLsBrowserTest,
                        LoadDataWithBaseURLThenReload) {
 #if !BUILDFLAG(IS_ANDROID)
   // LoadDataAsStringWithBaseURL is only supported on Android.
-  if (use_load_data_as_string_with_base_url())
+  if (use_load_data_as_string_with_base_url()) {
     return;
+  }
 #endif
   // LoadDataWithBaseURL is never subject to --site-per-process policy today
   // (this API is only used by Android WebView [where OOPIFs have not shipped
@@ -17189,10 +17190,10 @@ IN_PROC_BROWSER_TEST_P(
 
   RenderFrameHost* frame = shell()->web_contents()->GetPrimaryMainFrame();
 
-  // Create an unload handler and force the browser process to wait before
+  // Create a pagehide handler and force the browser process to wait before
   // deleting |frame|.
   EXPECT_TRUE(ExecJs(frame, R"(
-             window.onunload=function(e){
+             window.onpagehide=function(e){
                window.domAutomationController.send('done');
              };)"));
 
@@ -17476,7 +17477,7 @@ class NavigationStarterBeforeDidCommitNavigation
     return true;
   }
 
-  raw_ptr<Shell> shell_;
+  raw_ptr<Shell> shell_ = nullptr;
   const raw_ref<const GURL> url_to_intercept_;
   const raw_ref<const GURL> url_to_start_;
 };
@@ -17843,67 +17844,50 @@ IN_PROC_BROWSER_TEST_P(SandboxedNavigationControllerWithBfcacheBrowserTest,
   EXPECT_EQ(1, controller.GetCurrentEntryIndex());
 }
 
-class SandboxedNavigationControllerPopupBrowserTest
-    : public NavigationControllerBrowserTest {
- protected:
-  void SetupNavigation() {
-    EXPECT_EQ(1u, Shell::windows().size());
-    NavigationControllerImpl& controller =
-        static_cast<NavigationControllerImpl&>(
-            shell()->web_contents()->GetController());
-    GURL preload_url(embedded_test_server()->GetURL(
-        "/navigation_controller/page_with_sandboxed_iframe_popup.html"));
-    EXPECT_TRUE(NavigateToURL(shell(), preload_url));
-    ASSERT_EQ(1, controller.GetEntryCount());
-
-    FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
-                              ->GetPrimaryFrameTree()
-                              .root();
-    ASSERT_EQ(1U, root->child_count());
-    ASSERT_NE(nullptr, root->child_at(0));
-    ShellAddedObserver new_shell_observer;
-    // Click link inside sandboxed iframe, causing popup open.
-    std::string script = "document.getElementById('test_link').click()";
-    EXPECT_TRUE(ExecJs(root->child_at(0), script));
-
-    popup_shell_ = new_shell_observer.GetShell();
-    EXPECT_TRUE(WaitForLoadStop(popup_shell_->web_contents()));
-    FrameTreeNode* popup_root =
-        static_cast<WebContentsImpl*>(popup_shell_->web_contents())
-            ->GetPrimaryFrameTree()
-            .root();
-    // Click link inside sandboxed popup, causing the frame to have an
-    // additional entry in history state.
-    std::string popup_script = "document.getElementById('test_anchor').click()";
-    EXPECT_TRUE(ExecJs(popup_root, popup_script));
-  }
-
- protected:
-  raw_ptr<Shell, DanglingUntriaged> popup_shell_ = nullptr;
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
 // Tests navigations that sandboxed top level frames still
 // can navigate.
-IN_PROC_BROWSER_TEST_P(SandboxedNavigationControllerPopupBrowserTest,
-                       NavigateSelf) {
-  SetupNavigation();
+IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest, NavigateSelf) {
+  EXPECT_EQ(1u, Shell::windows().size());
+  NavigationControllerImpl& controller = static_cast<NavigationControllerImpl&>(
+      shell()->web_contents()->GetController());
+  GURL preload_url(embedded_test_server()->GetURL(
+      "/navigation_controller/page_with_sandboxed_iframe_popup.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), preload_url));
+  ASSERT_EQ(1, controller.GetEntryCount());
 
-  std::string back_script = "history.back();";
-  FrameTreeNode* root =
-      static_cast<WebContentsImpl*>(popup_shell_->web_contents())
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetPrimaryFrameTree()
+                            .root();
+  ASSERT_EQ(1U, root->child_count());
+  ASSERT_NE(nullptr, root->child_at(0));
+  ShellAddedObserver new_shell_observer;
+  // Click link inside sandboxed iframe, causing popup open.
+  std::string script = "document.getElementById('test_link').click()";
+  EXPECT_TRUE(ExecJs(root->child_at(0), script));
+
+  Shell* popup_shell = new_shell_observer.GetShell();
+  EXPECT_TRUE(WaitForLoadStop(popup_shell->web_contents()));
+  FrameTreeNode* popup_root =
+      static_cast<WebContentsImpl*>(popup_shell->web_contents())
           ->GetPrimaryFrameTree()
           .root();
-  NavigationControllerImpl& controller = static_cast<NavigationControllerImpl&>(
-      popup_shell_->web_contents()->GetController());
-  ASSERT_EQ(2, controller.GetEntryCount());
-  EXPECT_EQ(1, controller.GetCurrentEntryIndex());
+
+  // Click link inside sandboxed popup, causing the frame to have an
+  // additional entry in history state.
+  std::string popup_script = "document.getElementById('test_anchor').click()";
+  EXPECT_TRUE(ExecJs(popup_root, popup_script));
+
+  NavigationControllerImpl& popup_controller =
+      static_cast<NavigationControllerImpl&>(
+          popup_shell->web_contents()->GetController());
+  ASSERT_EQ(2, popup_controller.GetEntryCount());
+  EXPECT_EQ(1, popup_controller.GetCurrentEntryIndex());
+
+  std::string back_script = "history.back();";
   // Navigate sandboxed top frame back.
-  EXPECT_TRUE(ExecJs(root, back_script));
-  EXPECT_TRUE(WaitForLoadStop(popup_shell_->web_contents()));
-  EXPECT_EQ(0, controller.GetCurrentEntryIndex());
+  EXPECT_TRUE(ExecJs(popup_root, back_script));
+  EXPECT_TRUE(WaitForLoadStop(popup_shell->web_contents()));
+  EXPECT_EQ(0, popup_controller.GetCurrentEntryIndex());
 }
 
 class NavigationControllerMainDocumentSequenceNumberBrowserTest
@@ -22087,6 +22071,20 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   url::Origin committed_origin =
       shell()->web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin();
   EXPECT_EQ(origin_to_commit.value(), committed_origin);
+
+  GURL site_url = contents()->GetSiteInstance()->GetSiteURL();
+  if (AreAllSitesIsolatedForTesting()) {
+    if (base::FeatureList::IsEnabled(features::kDataUrlsHaveOriginAsUrl)) {
+      EXPECT_EQ(site_url.spec(),
+                "data:" + origin_to_commit->GetNonceForTesting()->ToString());
+    } else {
+      EXPECT_EQ(site_url, data_url);
+    }
+  } else {
+    // Without site isolation, the data: URL ends up in the default
+    // SiteInstance.
+    EXPECT_EQ(site_url.spec(), "http://unisolated.invalid/");
+  }
 }
 
 // This tests a regression found in https://crbug.com/1487803.
@@ -22173,12 +22171,6 @@ INSTANTIATE_TEST_SUITE_P(
     SandboxedNavigationControllerWithBfcacheBrowserTest,
     testing::Combine(testing::ValuesIn(RenderDocumentFeatureLevelValues()),
                      testing::Values(true)),
-    NavigationControllerBrowserTest::DescribeParams);
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    SandboxedNavigationControllerPopupBrowserTest,
-    testing::Combine(testing::ValuesIn(RenderDocumentFeatureLevelValues()),
-                     testing::Bool()),
     NavigationControllerBrowserTest::DescribeParams);
 INSTANTIATE_TEST_SUITE_P(
     All,

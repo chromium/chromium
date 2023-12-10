@@ -50,7 +50,7 @@ bool ShouldFindNewCheckTime(Profile* profile) {
 
   base::TimeDelta update_interval =
       features::kBackgroundPasswordCheckInterval.Get();
-  absl::optional<base::TimeDelta> interval_used_for_scheduling =
+  std::optional<base::TimeDelta> interval_used_for_scheduling =
       base::ValueToTimeDelta(check_schedule_dict.Find(
           safety_hub_prefs::kPasswordCheckIntervalKey));
 
@@ -182,6 +182,16 @@ PasswordStatusCheckService::PasswordStatusCheckService(Profile* profile)
       AccountPasswordStoreFactory::GetForProfile(
           profile_, ServiceAccessType::IMPLICIT_ACCESS);
 
+  // ProfilePasswordStore may not exist for some cases like non-user profiles on
+  // Ash. If ProfilePasswordStore does not exist, then no other password
+  // operations can be done. Hence, here is an early return to prevent
+  // initializing checks.
+  // TODO(crbug.com/1443466): Add CHECK for profile_store after making this
+  // service null if the store does not exist.
+  if (!profile_store) {
+    return;
+  }
+
   profile_password_store_observation_.Observe(profile_store.get());
   if (account_store) {
     account_password_store_observation_.Observe(account_store.get());
@@ -231,41 +241,63 @@ void PasswordStatusCheckService::StartRepeatedUpdates() {
 
 void PasswordStatusCheckService::UpdateInsecureCredentialCountAsync() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  if (is_update_credential_count_pending_) {
+  // In case there is a running check, do not start checks again.
+  if (running_update_credential_count_ > 0) {
     return;
   }
 
-  is_update_credential_count_pending_ = true;
-
-  InitializePasswordCheckInfrastructure();
-
-  CHECK(saved_passwords_presenter_);
-  if (!saved_passwords_presenter_observation_.IsObserving()) {
-    saved_passwords_presenter_observation_.Observe(
-        saved_passwords_presenter_.get());
-  }
+  // Initializing the infra will cause the presenter to check for all saved
+  // passwords. running_update_credential_count_ will be increased in
+  // OnSavedPasswordsChanged where the weak and reused checks will be
+  // initialized.
+  MaybeInitializePasswordCheckInfrastructure();
 }
 
 void PasswordStatusCheckService::RunPasswordCheckAsync() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  if (is_password_check_running_) {
+  // In case there is a running check, do not start checks again.
+  if (password_check_state_ != PasswordCheckState::kStopped) {
     return;
   }
 
-  is_password_check_running_ = true;
+  // Initializing the infra will cause the presenter to check for all saved
+  // passwords.
+  MaybeInitializePasswordCheckInfrastructure();
 
-  InitializePasswordCheckInfrastructure();
-
-  CHECK(password_check_delegate_);
-  if (!bulk_leak_check_observation_.IsObserving()) {
-    bulk_leak_check_observation_.Observe(
-        BulkLeakCheckServiceFactory::GetForProfile(profile_));
-  }
-
-  password_check_delegate_->StartPasswordCheck();
+  // InitializePasswordCheckInfrastructure may return before the infra is ready.
+  // This is unexpected to happen just before the password check starts.
+  CHECK(IsInfrastructureReady());
+  password_check_state_ = PasswordCheckState::kStarting;
+  password_check_delegate_->StartPasswordCheck(
+      base::BindOnce(&PasswordStatusCheckService::OnStartedPasswordCheck,
+                     weak_ptr_factory_.GetWeakPtr()));
   base::RecordAction(base::UserMetricsAction("SafetyHub_PasswordCheckRun"));
+}
+
+void PasswordStatusCheckService::OnStartedPasswordCheck(
+    password_manager::BulkLeakCheckService::State state) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  switch (password_check_state_) {
+    case kStarting:
+      password_check_state_ = PasswordCheckState::kOnStartCallbackCompleted;
+      return;
+    case kOnStateChangedCalled:
+      password_check_state_ = PasswordCheckState::kStopped;
+      // If OnStateChanged and OnStartedPasswordCheck are already called, then
+      // it is safe to kill the infra asynchronously.
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE,
+          base::BindOnce(&PasswordStatusCheckService::MaybeResetInfrastructure,
+                         weak_ptr_factory_.GetWeakPtr()));
+      return;
+    case kOnStartCallbackCompleted:
+      NOTREACHED() << "PasswordCheckState::kOnStartCallbackCompleted";
+      return;
+    case kStopped:
+      NOTREACHED() << "PasswordCheckState::kStopped";
+      return;
+  }
 }
 
 void PasswordStatusCheckService::OnSavedPasswordsChanged(
@@ -273,9 +305,15 @@ void PasswordStatusCheckService::OnSavedPasswordsChanged(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   CHECK(IsInfrastructureReady());
 
-  no_passwords_saved_ =
-      saved_passwords_presenter_->GetSavedCredentials().size() == 0;
+  // Increase the counter for update credential count calls.
+  running_update_credential_count_++;
 
+  no_passwords_saved_ =
+      saved_passwords_presenter_->GetSavedCredentials().empty();
+
+  // TODO(crbug.com/1443466): Investigate if weak and reuse checks in
+  // InsecureCredentialsManager::OnSavedPasswordsChanged is enough to fetch
+  // insecure credential count instead of running checks here.
   base::RepeatingClosure on_done = base::BarrierClosure(
       /*num_closures=*/2,
       base::BindOnce(&PasswordStatusCheckService::OnWeakAndReuseChecksDone,
@@ -291,9 +329,12 @@ void PasswordStatusCheckService::OnSavedPasswordsChanged(
 }
 
 void PasswordStatusCheckService::OnWeakAndReuseChecksDone() {
-  is_update_credential_count_pending_ = false;
+  // Decrease the counter as one check is completed.
+  CHECK_GT(running_update_credential_count_, 0);
+  running_update_credential_count_--;
+
   UpdateInsecureCredentialCount();
-  MaybeResetInfrastructureAsync();
+  MaybeResetInfrastructure();
 }
 
 void PasswordStatusCheckService::OnStateChanged(
@@ -314,24 +355,35 @@ void PasswordStatusCheckService::OnStateChanged(
         kHashingFailure:
     case password_manager::BulkLeakCheckServiceInterface::State::kNetworkError:
     case password_manager::BulkLeakCheckServiceInterface::State::kQuotaLimit:
-      is_password_check_running_ = false;
 
-      // Set time for next password check and schedule the next run.
-      base::Time scheduled_check_time = GetScheduledPasswordCheckTime();
-      // If current check was scheduled to run a long time ago (larger than the
-      // interval) we make sure the next run is in the future with a minimum
-      // distance between subsequent checks.
-      while (scheduled_check_time <
-             base::Time::Now() + safety_hub::kMinTimeBetweenPasswordChecks) {
-        scheduled_check_time +=
-            features::kBackgroundPasswordCheckInterval.Get();
+      switch (password_check_state_) {
+        case kStarting:
+          // If password_check_delegate_->StartPasswordCheck is just called, the
+          // state should go to kOnStateChangedCalled.
+          password_check_state_ = PasswordCheckState::kOnStateChangedCalled;
+          ScheduleCheckAndStartRepeatedUpdates();
+          return;
+        case kOnStateChangedCalled:
+          // No-op, since if the state is already kOnStateChangedCalled, then
+          // ScheduleCheckAndStartRepeatedUpdates is called before. No need to
+          // call it again.
+          return;
+        case kOnStartCallbackCompleted:
+          ScheduleCheckAndStartRepeatedUpdates();
+          // If OnStateChanged and OnStartedPasswordCheck are already called,
+          // then
+          // it is safe to kill the infra asynchronously.
+          password_check_state_ = PasswordCheckState::kStopped;
+          base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+              FROM_HERE,
+              base::BindOnce(
+                  &PasswordStatusCheckService::MaybeResetInfrastructure,
+                  weak_ptr_factory_.GetWeakPtr()));
+          return;
+        case kStopped:
+          ScheduleCheckAndStartRepeatedUpdates();
+          return;
       }
-
-      SetPasswordCheckSchedulePrefsWithInterval(scheduled_check_time);
-
-      StartRepeatedUpdates();
-
-      MaybeResetInfrastructureAsync();
   }
 }
 
@@ -356,24 +408,40 @@ void PasswordStatusCheckService::OnLoginsRetained(
     password_manager::PasswordStoreInterface* store,
     const std::vector<password_manager::PasswordForm>& retained_passwords) {}
 
-void PasswordStatusCheckService::InitializePasswordCheckInfrastructure() {
+void PasswordStatusCheckService::MaybeInitializePasswordCheckInfrastructure() {
   if (IsInfrastructureReady()) {
     return;
   }
 
+  // ProfilePasswordStore must exist, otherwise the infrastructure couldn't have
+  // been initialized and this method could never have been called.
+  scoped_refptr<password_manager::PasswordStoreInterface> profile_store =
+      ProfilePasswordStoreFactory::GetForProfile(
+          profile_, ServiceAccessType::IMPLICIT_ACCESS);
+  CHECK(profile_store);
+
   credential_id_generator_ = std::make_unique<extensions::IdGenerator>();
   saved_passwords_presenter_ =
       std::make_unique<password_manager::SavedPasswordsPresenter>(
-          AffiliationServiceFactory::GetForProfile(profile_),
-          ProfilePasswordStoreFactory::GetForProfile(
-              profile_, ServiceAccessType::IMPLICIT_ACCESS),
+          AffiliationServiceFactory::GetForProfile(profile_), profile_store,
           AccountPasswordStoreFactory::GetForProfile(
               profile_, ServiceAccessType::IMPLICIT_ACCESS));
   saved_passwords_presenter_->Init();
+
   password_check_delegate_ =
       std::make_unique<extensions::PasswordCheckDelegate>(
           profile_, saved_passwords_presenter_.get(),
           credential_id_generator_.get());
+
+  // Observe new saved_passwords_presenter_.
+  saved_passwords_presenter_observation_.Reset();
+  saved_passwords_presenter_observation_.Observe(
+      saved_passwords_presenter_.get());
+
+  // Observe new BulkLeakCheckService.
+  bulk_leak_check_observation_.Reset();
+  bulk_leak_check_observation_.Observe(
+      BulkLeakCheckServiceFactory::GetForProfile(profile_));
 }
 
 void PasswordStatusCheckService::UpdateInsecureCredentialCount() {
@@ -404,24 +472,18 @@ void PasswordStatusCheckService::UpdateInsecureCredentialCount() {
   }
 }
 
-void PasswordStatusCheckService::MaybeResetInfrastructureAsync() {
+void PasswordStatusCheckService::MaybeResetInfrastructure() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  if (!is_update_credential_count_pending_ && !is_password_check_running_) {
-    saved_passwords_presenter_observation_.Reset();
-    bulk_leak_check_observation_.Reset();
-
-    // The reset is done as a task rather than directly because when observers
-    // are notified that e.g. the password check is done, it may be too early to
-    // reset the infrastructure immediately. Synchronous operations may still be
-    // ongoing in `SavedPasswordsPresenter`.
-    base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(
-        FROM_HERE, std::move(password_check_delegate_));
-    base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(
-        FROM_HERE, std::move(saved_passwords_presenter_));
-    base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(
-        FROM_HERE, std::move(credential_id_generator_));
+  if (IsUpdateRunning()) {
+    return;
   }
+
+  saved_passwords_presenter_observation_.Reset();
+  bulk_leak_check_observation_.Reset();
+
+  password_check_delegate_.reset();
+  saved_passwords_presenter_.reset();
+  credential_id_generator_.reset();
 }
 
 bool PasswordStatusCheckService::IsInfrastructureReady() const {
@@ -457,7 +519,7 @@ void PasswordStatusCheckService::SetPasswordCheckSchedulePrefsWithInterval(
 base::Time PasswordStatusCheckService::GetScheduledPasswordCheckTime() const {
   const base::Value::Dict& check_schedule_dict = profile_->GetPrefs()->GetDict(
       safety_hub_prefs::kBackgroundPasswordCheckTimeAndInterval);
-  absl::optional<base::Time> check_time = base::ValueToTime(
+  std::optional<base::Time> check_time = base::ValueToTime(
       check_schedule_dict.Find(safety_hub_prefs::kNextPasswordCheckTimeKey));
   CHECK(check_time.has_value());
   return check_time.value();
@@ -467,7 +529,7 @@ base::TimeDelta PasswordStatusCheckService::GetScheduledPasswordCheckInterval()
     const {
   const base::Value::Dict& check_schedule_dict = profile_->GetPrefs()->GetDict(
       safety_hub_prefs::kBackgroundPasswordCheckTimeAndInterval);
-  absl::optional<base::TimeDelta> check_interval = base::ValueToTimeDelta(
+  std::optional<base::TimeDelta> check_interval = base::ValueToTimeDelta(
       check_schedule_dict.Find(safety_hub_prefs::kPasswordCheckIntervalKey));
   CHECK(check_interval.has_value());
   return check_interval.value();
@@ -507,7 +569,54 @@ base::Value::Dict PasswordStatusCheckService::GetPasswordCardData(
   return GetNoWeakOrReusedPasswordCardData(signed_in);
 }
 
-const PasswordStatusCheckResult& PasswordStatusCheckService::GetCachedResult()
-    const {
-  return *latest_result_;
+void PasswordStatusCheckService::ScheduleCheckAndStartRepeatedUpdates() {
+  // Set time for next password check and schedule the next run.
+  base::Time scheduled_check_time = GetScheduledPasswordCheckTime();
+  // If current check was scheduled to run a long time ago (larger than the
+  // interval) we make sure the next run is in the future with a minimum
+  // distance between subsequent checks.
+  while (scheduled_check_time <
+         base::Time::Now() + safety_hub::kMinTimeBetweenPasswordChecks) {
+    scheduled_check_time += features::kBackgroundPasswordCheckInterval.Get();
+  }
+
+  SetPasswordCheckSchedulePrefsWithInterval(scheduled_check_time);
+
+  StartRepeatedUpdates();
+}
+
+void PasswordStatusCheckService::OnBulkCheckServiceShutDown() {
+  // Stop observing BulkLeakCheckService when the service shuts down.
+  CHECK(bulk_leak_check_observation_.IsObservingSource(
+      BulkLeakCheckServiceFactory::GetForProfile(profile_)));
+  bulk_leak_check_observation_.Reset();
+}
+
+bool PasswordStatusCheckService::IsUpdateRunning() const {
+  // CHECK to detect if the counters are decreased more than they are
+  // increased.
+  CHECK_GE(running_update_credential_count_, 0);
+  // If running_update_credential_count_ is larger than zero, then there are
+  // some ongoing insecure credential checks.
+  if (is_update_credential_count_pending()) {
+    return true;
+  }
+
+  // If password_check_state_ is not kStopped, then the password check is still
+  // ongoing.
+  if (is_password_check_running()) {
+    return true;
+  }
+
+  return false;
+}
+
+// TODO(crbug.com/1443466): Consider pass by value for GetCachedResult
+// functions.
+std::optional<std::unique_ptr<SafetyHubService::Result>>
+PasswordStatusCheckService::GetCachedResult() {
+  if (latest_result_) {
+    return std::make_unique<PasswordStatusCheckResult>(*latest_result_);
+  }
+  return std::nullopt;
 }

@@ -17,14 +17,12 @@
 #import "ios/chrome/app/application_delegate/fake_startup_information.h"
 #import "ios/chrome/app/application_delegate/memory_warning_helper.h"
 #import "ios/chrome/app/application_delegate/metrics_mediator.h"
-#import "ios/chrome/app/application_delegate/mock_tab_opener.h"
 #import "ios/chrome/app/application_delegate/startup_information.h"
-#import "ios/chrome/app/application_delegate/user_activity_handler.h"
 #import "ios/chrome/app/enterprise_app_agent.h"
 #import "ios/chrome/app/safe_mode_app_state_agent+private.h"
 #import "ios/chrome/app/safe_mode_app_state_agent.h"
 #import "ios/chrome/browser/crash_report/model/crash_helper.h"
-#import "ios/chrome/browser/device_sharing/device_sharing_manager.h"
+#import "ios/chrome/browser/device_sharing/model/device_sharing_manager.h"
 #import "ios/chrome/browser/shared/coordinator/scene/connection_information.h"
 #import "ios/chrome/browser/shared/coordinator/scene/test/fake_scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/test/stub_browser_provider.h"
@@ -128,14 +126,6 @@ namespace {
 
 // A block that takes self as argument and return a BOOL.
 typedef BOOL (^DecisionBlock)(id self);
-// A block that takes the arguments of UserActivityHandler's
-// +handleStartupParametersWithTabOpener.
-typedef void (^HandleStartupParam)(
-    id self,
-    id<TabOpening> tabOpener,
-    id<ConnectionInformation> connectionInformation,
-    id<StartupInformation> startupInformation,
-    ChromeBrowserState* browserState);
 // A block ths returns values of AppState connectedScenes.
 typedef NSArray<SceneState*>* (^ScenesBlock)(id self);
 
@@ -227,28 +217,6 @@ class AppStateTest : public BlockCleanupTest {
     safe_mode_swizzler_.reset(new ScopedBlockSwizzler(
         [SafeModeCoordinator class], @selector(shouldStart),
         safe_mode_swizzle_block_));
-  }
-
-  void SwizzleHandleStartupParameters(
-      id<TabOpening> expectedTabOpener,
-      ChromeBrowserState* expectedBrowserState) {
-    handle_startup_swizzle_block_ =
-        ^(id self, id<TabOpening> tabOpener,
-          id<ConnectionInformation> connectionInformation,
-          id<StartupInformation> startupInformation,
-          ChromeBrowserState* browserState) {
-          ASSERT_EQ(connection_information_mock_, connectionInformation);
-          ASSERT_EQ(startup_information_mock_, startupInformation);
-          ASSERT_EQ(expectedTabOpener, tabOpener);
-          ASSERT_EQ(expectedBrowserState, browserState);
-        };
-
-    handle_startup_swizzler_.reset(new ScopedBlockSwizzler(
-        [UserActivityHandler class],
-        @selector(handleStartupParametersWithTabOpener:
-                                 connectionInformation:startupInformation
-                                                      :browserState:initStage:),
-        handle_startup_swizzle_block_));
   }
 
   SafeModeAppAgent* GetSafeModeAppAgent() {
@@ -362,7 +330,6 @@ class AppStateTest : public BlockCleanupTest {
   StubBrowserProviderInterface* provider_interface_;
   ScenesBlock connected_scenes_swizzle_block_;
   DecisionBlock safe_mode_swizzle_block_;
-  HandleStartupParam handle_startup_swizzle_block_;
   std::unique_ptr<ScopedBlockSwizzler> safe_mode_swizzler_;
   std::unique_ptr<ScopedBlockSwizzler> connected_scenes_swizzler_;
   std::unique_ptr<ScopedBlockSwizzler> handle_startup_swizzler_;
@@ -463,15 +430,12 @@ TEST_F(AppStateTest, applicationWillEnterForeground) {
   id application = [OCMockObject mockForClass:[UIApplication class]];
   id metricsMediator = [OCMockObject mockForClass:[MetricsMediator class]];
   id memoryHelper = [OCMockObject mockForClass:[MemoryWarningHelper class]];
-  id tabOpener = [OCMockObject mockForProtocol:@protocol(TabOpening)];
   std::unique_ptr<Browser> browser =
       std::make_unique<TestBrowser>(GetBrowserState());
 
   [[metricsMediator expect] updateMetricsStateBasedOnPrefsUserTriggered:NO];
   [[memoryHelper expect] resetForegroundMemoryWarningCount];
   [[[memoryHelper stub] andReturnValue:@0] foregroundMemoryWarningCount];
-  [[[tabOpener stub] andReturnValue:@YES]
-      shouldOpenNTPTabOnActivationOfBrowser:browser.get()];
 
   id appStateMock = OCMPartialMock(GetAppStateWithMock());
   [[appStateMock expect] completeUIInitialization];

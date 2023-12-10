@@ -166,19 +166,12 @@ struct TraceInCollectionTrait<kNoWeakHandling,
     // already zeroed out).
     ANNOTATE_CHANGE_SIZE(array, length, 0, length);
 #endif  // ANNOTATE_CONTIGUOUS_CONTAINER
-    if (std::is_polymorphic<T>::value) {
+    if constexpr (IsTraceableInCollectionTrait<Traits>::value) {
       for (unsigned i = 0; i < length; ++i) {
-        if (blink::internal::VTableInitialized(&array[i])) {
-          blink::TraceIfNeeded<
-              T, IsTraceableInCollectionTrait<Traits>::value>::Trace(visitor,
-                                                                     array[i]);
+        if (!std::is_polymorphic_v<T> ||
+            blink::internal::VTableInitialized(&array[i])) {
+          visitor->Trace(array[i]);
         }
-      }
-    } else {
-      for (size_t i = 0; i < length; ++i) {
-        blink::TraceIfNeeded<
-            T, IsTraceableInCollectionTrait<Traits>::value>::Trace(visitor,
-                                                                   array[i]);
       }
     }
   }

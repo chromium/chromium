@@ -34,8 +34,6 @@
                 "icudtl.dat"
             ],
             "dirs": [
-                "blink_deprecated_test_plugin.plugin",
-                "blink_test_plugin.plugin",
                 "Content Shell.app",
                 "resources"
             ],

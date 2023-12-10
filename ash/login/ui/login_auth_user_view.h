@@ -6,7 +6,9 @@
 #define ASH_LOGIN_UI_LOGIN_AUTH_USER_VIEW_H_
 
 #include <stdint.h>
+
 #include <memory>
+#include <optional>
 
 #include "ash/ash_export.h"
 #include "ash/login/ui/auth_factor_model.h"
@@ -22,7 +24,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/view.h"
 
@@ -49,6 +51,8 @@ enum class SmartLockState;
 // receive some events about the results of those mojo
 // authentication attempts (ie, success/failure).
 class ASH_EXPORT LoginAuthUserView : public NonAccessibleView {
+  METADATA_HEADER(LoginAuthUserView, NonAccessibleView)
+
  public:
   // Flags which describe the set of currently visible auth methods.
   enum AuthMethods {
@@ -85,7 +89,7 @@ class ASH_EXPORT LoginAuthUserView : public NonAccessibleView {
     // User's pin length to use for autosubmit.
     size_t autosubmit_pin_length = 0;
     // Only present when the TPM is locked.
-    absl::optional<base::TimeDelta> time_until_tpm_unlock = absl::nullopt;
+    std::optional<base::TimeDelta> time_until_tpm_unlock = std::nullopt;
   };
 
   // Possible states that the input fields (PasswordView & PinInputView)
@@ -224,10 +228,10 @@ class ASH_EXPORT LoginAuthUserView : public NonAccessibleView {
   // Called with the result of the request started in |OnAuthSubmit| or
   // |AttemptAuthenticateWithExternalBinary|.
   void OnAuthComplete(bool authenticated_by_pin,
-                      absl::optional<bool> auth_success);
+                      std::optional<bool> auth_success);
   // Called with the result of the request started in
   // |AttemptAuthenticateWithChallengeResponse|.
-  void OnChallengeResponseAuthComplete(absl::optional<bool> auth_success);
+  void OnChallengeResponseAuthComplete(std::optional<bool> auth_success);
 
   // Create a new LoginRemoveAccountDialog for the user and make ot visible.
   // Existing dialog has to be deleted before this call.

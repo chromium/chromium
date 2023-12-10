@@ -6,7 +6,7 @@
 #define COMPONENTS_DEVICE_SIGNALS_TEST_WIN_SCOPED_EXECUTABLE_FILES_H_
 
 #include "base/files/scoped_temp_dir.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/threading/thread_restrictions.h"
 
 namespace base {

@@ -19,6 +19,7 @@
 #include "base/run_loop.h"
 #include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
 #include "base/values.h"
@@ -736,15 +737,6 @@ class MockCommandListener : public CommandListener {
   bool called_;
 };
 
-Status ExecuteAddListenerToSessionCommand(
-    std::unique_ptr<CommandListener> listener,
-    Session* session,
-    const base::Value::Dict& params,
-    std::unique_ptr<base::Value>* return_value) {
-  session->command_listeners.push_back(std::move(listener));
-  return Status(kOk);
-}
-
 Status ExecuteQuitSessionCommand(Session* session,
                                  const base::Value::Dict& params,
                                  std::unique_ptr<base::Value>* return_value) {
@@ -782,8 +774,13 @@ TEST(CommandsTest, SuccessNotifyingCommandListeners) {
   // We add |proxy| to the session instead of adding |listener| directly so that
   // after the session is destroyed by ExecuteQuitSessionCommand, we can still
   // verify the listener was called. The session owns and will destroy |proxy|.
-  SessionCommand cmd = base::BindRepeating(&ExecuteAddListenerToSessionCommand,
-                                           base::Passed(&proxy));
+  SessionCommand cmd =
+      base::BindLambdaForTesting([&](Session* session, const base::Value::Dict&,
+                                     std::unique_ptr<base::Value>*) {
+        CHECK(proxy);
+        session->command_listeners.push_back(std::move(proxy));
+        return Status(kOk);
+      });
   base::test::SingleThreadTaskEnvironment task_environment;
   base::RunLoop run_loop_addlistener;
 

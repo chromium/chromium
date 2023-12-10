@@ -12,14 +12,13 @@
 
 namespace content {
 
-DefaultLevelDBFactory::DefaultLevelDBFactory(
-    leveldb_env::Options database_options,
-    const std::string& in_memory_db_name)
+LevelDBFactory::LevelDBFactory(leveldb_env::Options database_options,
+                               const std::string& in_memory_db_name)
     : options_(database_options), in_memory_db_name_(in_memory_db_name) {}
-DefaultLevelDBFactory::~DefaultLevelDBFactory() = default;
+LevelDBFactory::~LevelDBFactory() = default;
 
 std::tuple<std::unique_ptr<leveldb::DB>, leveldb::Status>
-DefaultLevelDBFactory::OpenInMemoryDB(leveldb::Env* in_memory_env) {
+LevelDBFactory::OpenInMemoryDB(leveldb::Env* in_memory_env) {
   constexpr int64_t kBytesInOneMegabyte = 1024 * 1024;
   leveldb_env::Options in_memory_options = options_;
   in_memory_options.write_buffer_size =
@@ -34,9 +33,9 @@ DefaultLevelDBFactory::OpenInMemoryDB(leveldb::Env* in_memory_env) {
 }
 
 std::tuple<std::unique_ptr<leveldb::DB>, leveldb::Status>
-DefaultLevelDBFactory::OpenDB(const std::string& name,
-                              bool create_if_missing,
-                              size_t write_buffer_size) {
+LevelDBFactory::OpenDB(const std::string& name,
+                       bool create_if_missing,
+                       size_t write_buffer_size) {
   std::unique_ptr<leveldb::DB> db;
   options_.create_if_missing = create_if_missing;
   options_.write_buffer_size = write_buffer_size;
@@ -47,9 +46,9 @@ DefaultLevelDBFactory::OpenDB(const std::string& name,
 std::tuple<scoped_refptr<LevelDBState>,
            leveldb::Status,
            /* is_disk_full= */ bool>
-DefaultLevelDBFactory::OpenLevelDBState(const base::FilePath& file_name,
-                                        bool create_if_missing,
-                                        size_t write_buffer_size) {
+LevelDBFactory::OpenLevelDBState(const base::FilePath& file_name,
+                                 bool create_if_missing,
+                                 size_t write_buffer_size) {
   if (file_name.empty()) {
     if (!create_if_missing)
       return {nullptr, leveldb::Status::NotFound("", ""), false};
@@ -95,8 +94,7 @@ DefaultLevelDBFactory::OpenLevelDBState(const base::FilePath& file_name,
           status, false};
 }
 
-leveldb::Status DefaultLevelDBFactory::DestroyLevelDB(
-    const base::FilePath& path) {
+leveldb::Status LevelDBFactory::DestroyLevelDB(const base::FilePath& path) {
   return leveldb::DestroyDB(path.AsUTF8Unsafe(), options_);
 }
 

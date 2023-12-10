@@ -156,14 +156,14 @@ class TestDialActivityManager : public DialActivityManager {
 };
 
 // Helper function to create an IP endpoint object.
-// If |num| is 1, returns 192.168.0.101:8009;
-// If |num| is 2, returns 192.168.0.102:8009.
+// If `num` is 1, returns 192.168.0.101:8009;
+// If `num` is 2, returns 192.168.0.102:8009.
 net::IPEndPoint CreateIPEndPoint(int num);
 
 // Helper function to create a DIAL media sink object.
-// If |num| is 1, returns a media sink object with following data:
+// If `num` is 1, returns a media sink object with following data:
 // {
-//   id: "id 1",
+//   id: "dial:id1",
 //   name: "friendly name 1",
 //   extra_data {
 //     model_name: "model name 1"

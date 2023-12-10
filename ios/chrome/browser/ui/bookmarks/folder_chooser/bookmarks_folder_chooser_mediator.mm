@@ -9,7 +9,7 @@
 #import "components/bookmarks/common/bookmark_features.h"
 #import "components/sync/base/features.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_bridge_observer.h"
-#import "ios/chrome/browser/signin/authentication_service_observer_bridge.h"
+#import "ios/chrome/browser/signin/model/authentication_service_observer_bridge.h"
 #import "ios/chrome/browser/sync/model/sync_observer_bridge.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_ui_constants.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_utils_ios.h"
@@ -56,12 +56,8 @@ using bookmarks::BookmarkNode;
                              syncService:(syncer::SyncService*)syncService {
   DCHECK(localOrSyncableBookmarkModel);
   DCHECK(localOrSyncableBookmarkModel->loaded());
-  if (base::FeatureList::IsEnabled(syncer::kEnableBookmarksAccountStorage)) {
-    DCHECK(accountBookmarkModel);
-    DCHECK(accountBookmarkModel->loaded());
-  } else {
-    DCHECK(!accountBookmarkModel);
-  }
+  DCHECK(accountBookmarkModel);
+  DCHECK(accountBookmarkModel->loaded());
   DCHECK(authService->initialized());
 
   self = [super init];

@@ -10,6 +10,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/types/pass_key.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/menu_button.h"
@@ -30,6 +31,7 @@ class StyledLabel;
 class View;
 }  // namespace views
 
+class HoverButtonController;
 class PageInfoBubbleViewBrowserTest;
 
 // A button taking the full width of its parent that shows a background color
@@ -83,7 +85,7 @@ class HoverButton : public views::LabelButton {
   // Sets the title's enabled color to |color_id|, if present.
   void SetTitleTextStyle(views::style::TextStyle text_style,
                          SkColor background_color,
-                         absl::optional<ui::ColorId> color_id);
+                         std::optional<ui::ColorId> color_id);
 
   // Set the text context and style of the subtitle.
   void SetSubtitleTextStyle(int text_context,
@@ -94,6 +96,10 @@ class HoverButton : public views::LabelButton {
   void SetTooltipAndAccessibleName();
 
   views::StyledLabel* title() const { return title_; }
+
+  PressedCallback& callback(base::PassKey<HoverButtonController>) {
+    return callback_;
+  }
 
  protected:
   // views::MenuButton:
@@ -117,6 +123,10 @@ class HoverButton : public views::LabelButton {
   friend class AccountSelectionBubbleViewTest;
   friend class PageInfoBubbleViewBrowserTest;
 
+  void OnPressed(const ui::Event& event);
+
+  PressedCallback callback_;
+
   raw_ptr<views::StyledLabel> title_ = nullptr;
   raw_ptr<views::View> label_wrapper_ = nullptr;
   raw_ptr<views::Label> subtitle_ = nullptr;
@@ -131,7 +141,7 @@ BEGIN_VIEW_BUILDER(, HoverButton, views::LabelButton)
 VIEW_BUILDER_METHOD(SetTitleTextStyle,
                     views::style::TextStyle,
                     SkColor,
-                    absl::optional<ui::ColorId>)
+                    std::optional<ui::ColorId>)
 END_VIEW_BUILDER
 
 DEFINE_VIEW_BUILDER(, HoverButton)

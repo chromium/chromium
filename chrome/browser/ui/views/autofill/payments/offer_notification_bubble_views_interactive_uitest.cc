@@ -12,10 +12,12 @@
 #include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/autofill/payments/promo_code_label_button.h"
 #include "chrome/browser/ui/views/autofill/payments/promo_code_label_view.h"
+#include "chrome/browser/ui/views/controls/subpage_view.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/interactive_test_utils.h"
@@ -43,6 +45,7 @@
 #include "ui/events/base_event_utils.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/button/label_button.h"
+#include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/widget.h"
 
@@ -51,7 +54,7 @@ namespace autofill {
 struct OfferNotificationBubbleViewsInteractiveUiTestData {
   std::string name;
   AutofillOfferData::OfferType offer_type;
-  absl::optional<std::vector<base::test::FeatureRefAndParams>> enabled_features;
+  std::optional<std::vector<base::test::FeatureRefAndParams>> enabled_features;
 };
 
 std::string GetTestName(
@@ -213,12 +216,12 @@ INSTANTIATE_TEST_SUITE_P(
         OfferNotificationBubbleViewsInteractiveUiTestData{
             "FreeListingCoupon_on_navigation",
             AutofillOfferData::OfferType::FREE_LISTING_COUPON_OFFER,
-            absl::make_optional<std::vector<base::test::FeatureRefAndParams>>(
+            std::make_optional<std::vector<base::test::FeatureRefAndParams>>(
                 {{commerce::kShowDiscountOnNavigation, {}}})},
         OfferNotificationBubbleViewsInteractiveUiTestData{
             "FreeListingCoupon_on_navigation_chrome_refresh_style",
             AutofillOfferData::OfferType::FREE_LISTING_COUPON_OFFER,
-            absl::make_optional<std::vector<base::test::FeatureRefAndParams>>(
+            std::make_optional<std::vector<base::test::FeatureRefAndParams>>(
                 {{commerce::kShowDiscountOnNavigation, {}},
                  {::features::kChromeRefresh2023, {}}})}),
     GetTestName);
@@ -767,16 +770,16 @@ IN_PROC_BROWSER_TEST_P(
     return;
   }
 
-  const std::string domain_url = "www.merchantsite1.test";
-  const GURL with_offer_url = GetUrl(domain_url, "/product1");
-  const GURL without_offer_url = GetUrl(domain_url, "/product2");
-  const GURL with_merchant_wide_offer_url = GetUrl(domain_url, "/product3");
-  const std::string detail = "Discount description detail";
-  const std::string discount_code = "freelisting-discount-code";
-  const int64_t non_merchant_wide_discount_id = 123;
-  const int64_t merchant_wide_discount_id = 456;
-  const double expiry_time_sec =
-      (AutofillClock::Now() + base::Days(2)).InSecondsFSinceUnixEpoch();
+  constexpr char kDomainUrl[] = "www.merchantsite1.test";
+  constexpr char kOfferDetail[] = "Discount description detail";
+  constexpr char kDiscountCode[] = "freelisting-discount-code";
+  constexpr int64_t kNonMerchantWideDiscountId = 123;
+  constexpr int64_t kMerchantWideDiscountId = 456;
+
+  const GURL with_offer_url = GetUrl(kDomainUrl, "/product1");
+  const GURL without_offer_url = GetUrl(kDomainUrl, "/product2");
+  const GURL with_merchant_wide_offer_url = GetUrl(kDomainUrl, "/product3");
+  const base::Time expiry_time = AutofillClock::Now() + base::Days(2);
 
   auto* mock_shopping_service = static_cast<commerce::MockShoppingService*>(
       commerce::ShoppingServiceFactory::GetForBrowserContext(
@@ -789,7 +792,7 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_CALL(*mock_shopping_service, GetDiscountInfoForUrls)
       .Times(testing::AtLeast(4));
 
-  NavigateToAndWaitForForm(GetUrl(domain_url, "/"));
+  NavigateToAndWaitForForm(GetUrl(kDomainUrl, "/"));
   EXPECT_FALSE(IsIconVisible());
   EXPECT_FALSE(GetOfferNotificationBubbleViews());
 
@@ -798,10 +801,11 @@ IN_PROC_BROWSER_TEST_P(
   mock_shopping_service->SetResponseForGetDiscountInfoForUrls(
       {{with_offer_url,
         {commerce::CreateValidDiscountInfo(
-            detail, /*terms_and_conditions=*/"",
-            /*value_in_text=*/"$10 off", discount_code,
-            non_merchant_wide_discount_id,
-            /*is_merchant_wide=*/false, expiry_time_sec)}}});
+            kOfferDetail, /*terms_and_conditions=*/"",
+            /*value_in_text=*/"$10 off", kDiscountCode,
+            kNonMerchantWideDiscountId,
+            /*is_merchant_wide=*/false,
+            expiry_time.InSecondsFSinceUnixEpoch())}}});
 
   NavigateToAndWaitForForm(with_offer_url);
   EXPECT_TRUE(IsIconVisible());
@@ -812,15 +816,18 @@ IN_PROC_BROWSER_TEST_P(
     auto* promo_code_label_view =
         GetOfferNotificationBubbleViews()->promo_code_label_view_.get();
     EXPECT_TRUE(promo_code_label_view);
-    EXPECT_EQ(base::ASCIIToUTF16(discount_code),
+    EXPECT_EQ(base::ASCIIToUTF16(base::StringPiece(kDiscountCode)),
               promo_code_label_view->GetPromoCodeLabelTextForTesting());
   } else {
     auto* promo_code_label_button =
         GetOfferNotificationBubbleViews()->promo_code_label_button_.get();
     EXPECT_TRUE(promo_code_label_button);
-    EXPECT_EQ(base::ASCIIToUTF16(discount_code),
+    EXPECT_EQ(base::ASCIIToUTF16(base::StringPiece(kDiscountCode)),
               promo_code_label_button->GetText());
   }
+  EXPECT_EQ(nullptr,
+            GetOfferNotificationBubbleViews()
+                ->promo_code_value_prop_label_->GetFirstLinkForTesting());
 
   // Navigates to URL without offers will dismiss the icon.
   mock_shopping_service->SetResponseForGetDiscountInfoForUrls({});
@@ -833,10 +840,10 @@ IN_PROC_BROWSER_TEST_P(
   mock_shopping_service->SetResponseForGetDiscountInfoForUrls(
       {{with_merchant_wide_offer_url,
         {commerce::CreateValidDiscountInfo(
-            detail, /*terms_and_conditions=*/"",
-            /*value_in_text=*/"$10 off", discount_code,
-            merchant_wide_discount_id,
-            /*is_merchant_wide=*/true, expiry_time_sec)}}});
+            kOfferDetail, /*terms_and_conditions=*/"",
+            /*value_in_text=*/"$10 off", kDiscountCode, kMerchantWideDiscountId,
+            /*is_merchant_wide=*/true,
+            expiry_time.InSecondsFSinceUnixEpoch())}}});
 
   NavigateToAndWaitForForm(with_merchant_wide_offer_url);
   EXPECT_TRUE(IsIconVisible());
@@ -963,6 +970,65 @@ IN_PROC_BROWSER_TEST_P(
                 base::ASCIIToUTF16(GetDefaultTestSeeDetailsText()));
 }
 
+IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
+                       ShowTermsAndConditionsPage) {
+  // Applies to free listing coupons offers only
+  if (test_offer_type_ !=
+      AutofillOfferData::OfferType::FREE_LISTING_COUPON_OFFER) {
+    return;
+  }
+
+  constexpr char kMerchantDomainUrl[] = "www.merchantsite1.test";
+  constexpr char kOfferDetail[] = "Discount description detail $10 off";
+  constexpr char kDiscountCode[] = "freelisting-discount-code";
+  constexpr int64_t kDiscountId = 123;
+  constexpr char kValueInText[] = "$10 off";
+  constexpr char kTermsAndConditions[] =
+      "Additional seller's terms and conditions";
+  const base::Time kExpiryTime = AutofillClock::Now() + base::Days(2);
+  const GURL product_page_url = GetUrl(kMerchantDomainUrl, "/first");
+
+  auto* mock_shopping_service = static_cast<commerce::MockShoppingService*>(
+      commerce::ShoppingServiceFactory::GetForBrowserContext(
+          browser()->profile()));
+  mock_shopping_service->SetIsDiscountEligibleToShowOnNavigation(true);
+  // Simulate FreeListingOffer for a product page on the
+  // `kMerchantDomainUrl`.
+  mock_shopping_service->SetResponseForGetDiscountInfoForUrls(
+      {{product_page_url,
+        {commerce::CreateValidDiscountInfo(
+            kOfferDetail, kTermsAndConditions, kValueInText, kDiscountCode,
+            kDiscountId,
+            /*is_merchant_wide=*/false,
+            kExpiryTime.InSecondsFSinceUnixEpoch())}}});
+
+  // Expect to call this at least once on every navigation, this test is
+  // navigated 1 time.
+  EXPECT_CALL(*mock_shopping_service, IsDiscountEligibleToShowOnNavigation)
+      .Times(testing::AtLeast(1));
+  EXPECT_CALL(*mock_shopping_service, GetDiscountInfoForUrls)
+      .Times(testing::AtLeast(1));
+
+  NavigateToAndWaitForForm(product_page_url);
+  EXPECT_TRUE(IsIconVisible());
+  // Click on the omnibox icon to show the bubble and verify.
+  SimulateClickOnIconAndReshowBubble();
+  EXPECT_NE(nullptr,
+            GetOfferNotificationBubbleViews()
+                ->promo_code_value_prop_label_->GetFirstLinkForTesting());
+  EXPECT_FALSE(views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
+      kSubpageViewId, views::ElementTrackerViews::GetContextForView(
+                          GetOfferNotificationBubbleViews())));
+
+  // Click on the see seller's terms and conditions link and verify the terms
+  // and conditions page is showing.
+  GetOfferNotificationBubbleViews()
+      ->promo_code_value_prop_label_->ClickFirstLinkForTesting();
+  EXPECT_TRUE(views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
+      kSubpageViewId, views::ElementTrackerViews::GetContextForView(
+                          GetOfferNotificationBubbleViews())));
+}
+
 // TODO(crbug.com/1491942): This fails with the field trial testing config.
 class OfferNotificationBubbleViewsWithDiscountOnChromeHistoryClusterTest
     : public OfferNotificationBubbleViewsInteractiveUiTest {
@@ -981,12 +1047,12 @@ INSTANTIATE_TEST_SUITE_P(
         OfferNotificationBubbleViewsInteractiveUiTestData{
             "FreeListingCoupon_on_history_cluster",
             AutofillOfferData::OfferType::FREE_LISTING_COUPON_OFFER,
-            absl::make_optional<std::vector<base::test::FeatureRefAndParams>>(
+            std::make_optional<std::vector<base::test::FeatureRefAndParams>>(
                 {{ntp_features::kNtpHistoryClustersModuleDiscounts, {}}})},
         OfferNotificationBubbleViewsInteractiveUiTestData{
             "FreeListingCoupon_on_history_cluster_chrome_refresh_style",
             AutofillOfferData::OfferType::FREE_LISTING_COUPON_OFFER,
-            absl::make_optional<std::vector<base::test::FeatureRefAndParams>>(
+            std::make_optional<std::vector<base::test::FeatureRefAndParams>>(
                 {{ntp_features::kNtpHistoryClustersModuleDiscounts, {}},
                  {::features::kChromeRefresh2023, {}}})}),
     GetTestName);
@@ -1085,45 +1151,6 @@ IN_PROC_BROWSER_TEST_P(
 
   NavigateToAndWaitForForm(with_non_merchant_wide_offer_url);
   EXPECT_TRUE(IsIconVisible());
-  EXPECT_FALSE(GetOfferNotificationBubbleViews());
-}
-
-IN_PROC_BROWSER_TEST_P(
-    OfferNotificationBubbleViewsWithDiscountOnChromeHistoryClusterTest,
-    NotShowShoppingServiceFreeListingOfferWithoutUTM) {
-  const std::string non_merchant_wide_domain_url = "www.merchantsite1.test";
-  const GURL with_non_merchant_wide_offer_url =
-      GetUrl(non_merchant_wide_domain_url, "/first");
-  const std::string detail = "Discount description detail";
-  const std::string discount_code = "freelisting-discount-code";
-  const int64_t non_merchant_wide_discount_id = 123;
-  const double expiry_time_sec =
-      (AutofillClock::Now() + base::Days(2)).InSecondsFSinceUnixEpoch();
-
-  auto* mock_shopping_service = static_cast<commerce::MockShoppingService*>(
-      commerce::ShoppingServiceFactory::GetForBrowserContext(
-          browser()->profile()));
-  mock_shopping_service->SetIsDiscountEligibleToShowOnNavigation(true);
-  // Simulate FreeListingOffer for a product page on the
-  // `non_merchant_wide_domain_url`.
-  mock_shopping_service->SetResponseForGetDiscountInfoForUrls(
-      {{with_non_merchant_wide_offer_url,
-        {commerce::CreateValidDiscountInfo(
-            detail, /*terms_and_conditions=*/"",
-            /*value_in_text=*/"$10 off", discount_code,
-            non_merchant_wide_discount_id,
-            /*is_merchant_wide=*/false, expiry_time_sec)}}});
-
-  // Expect to call this at least once on every navigation, this test is
-  // navigated 1 time.
-  EXPECT_CALL(*mock_shopping_service, IsDiscountEligibleToShowOnNavigation)
-      .Times(testing::AtLeast(1));
-  EXPECT_CALL(*mock_shopping_service, GetDiscountInfoForUrls)
-      .Times(testing::AtLeast(1));
-
-  ResetEventWaiterForSequence({DialogEvent::BUBBLE_SHOWN});
-  NavigateToAndWaitForForm(with_non_merchant_wide_offer_url);
-  EXPECT_FALSE(IsIconVisible());
   EXPECT_FALSE(GetOfferNotificationBubbleViews());
 }
 

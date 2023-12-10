@@ -24,7 +24,7 @@
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/password_manager/ios/password_generation_provider.h"
 #import "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/autofill/personal_data_manager_factory.h"
+#import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_account_password_store_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
@@ -443,7 +443,6 @@ const CGFloat kIPHVerticalOffset = -5;
 #pragma mark - SecurityAlertCommands
 
 - (void)presentSecurityWarningAlertWithText:(NSString*)body {
-  [self stopChildren];
   NSString* alertTitle =
       l10n_util::GetNSString(IDS_IOS_MANUAL_FALLBACK_NOT_SECURE_TITLE);
   NSString* defaultActionTitle =
@@ -456,49 +455,13 @@ const CGFloat kIPHVerticalOffset = -5;
   UIAlertAction* defaultAction =
       [UIAlertAction actionWithTitle:defaultActionTitle
                                style:UIAlertActionStyleDefault
-                             handler:^(UIAlertAction* action){
-                             }];
+                             handler:nil];
   [alert addAction:defaultAction];
   UIViewController* presenter = self.baseViewController;
   while (presenter.presentedViewController) {
     presenter = presenter.presentedViewController;
   }
   [presenter presentViewController:alert animated:YES completion:nil];
-}
-
-- (void)showSetPasscodeDialog {
-  [self stopChildren];
-  UIAlertController* alertController = [UIAlertController
-      alertControllerWithTitle:l10n_util::GetNSString(
-                                   IDS_IOS_SETTINGS_SET_UP_SCREENLOCK_TITLE)
-                       message:l10n_util::GetNSString(
-                                   IDS_IOS_AUTOFILL_SET_UP_SCREENLOCK_CONTENT)
-                preferredStyle:UIAlertControllerStyleAlert];
-
-  __weak id<ApplicationCommands> applicationCommandsHandler =
-      HandlerForProtocol(self.browser->GetCommandDispatcher(),
-                         ApplicationCommands);
-  OpenNewTabCommand* command =
-      [OpenNewTabCommand commandWithURLFromChrome:GURL(kPasscodeArticleURL)];
-
-  UIAlertAction* learnAction = [UIAlertAction
-      actionWithTitle:l10n_util::GetNSString(
-                          IDS_IOS_SETTINGS_SET_UP_SCREENLOCK_LEARN_HOW)
-                style:UIAlertActionStyleDefault
-              handler:^(UIAlertAction*) {
-                [applicationCommandsHandler openURLInNewTab:command];
-              }];
-  [alertController addAction:learnAction];
-  UIAlertAction* okAction =
-      [UIAlertAction actionWithTitle:l10n_util::GetNSString(IDS_OK)
-                               style:UIAlertActionStyleDefault
-                             handler:nil];
-  [alertController addAction:okAction];
-  alertController.preferredAction = okAction;
-
-  [self.baseViewController presentViewController:alertController
-                                        animated:YES
-                                      completion:nil];
 }
 
 #pragma mark - CRWResponderInputView
@@ -557,16 +520,10 @@ const CGFloat kIPHVerticalOffset = -5;
   std::u16string origin = base::ASCIIToUTF16(
       password_manager::GetShownOrigin(url::Origin::Create(URL)));
 
-  bool useUpdatedStrings = base::FeatureList::IsEnabled(
-      password_manager::features::kIOSPasswordUISplit);
-
   NSString* title = l10n_util::GetNSString(
-      useUpdatedStrings ? IDS_IOS_MANUAL_FALLBACK_SELECT_PASSWORD_DIALOG_TITLE
-                        : IDS_IOS_CONFIRM_USING_OTHER_PASSWORD_TITLE);
+      IDS_IOS_MANUAL_FALLBACK_SELECT_PASSWORD_DIALOG_TITLE);
   NSString* message = l10n_util::GetNSStringF(
-      useUpdatedStrings ? IDS_IOS_MANUAL_FALLBACK_SELECT_PASSWORD_DIALOG_MESSAGE
-                        : IDS_IOS_CONFIRM_USING_OTHER_PASSWORD_DESCRIPTION,
-      origin);
+      IDS_IOS_MANUAL_FALLBACK_SELECT_PASSWORD_DIALOG_MESSAGE, origin);
 
   self.alertCoordinator = [[AlertCoordinator alloc]
       initWithBaseViewController:self.baseViewController

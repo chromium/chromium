@@ -8,6 +8,7 @@
 <translation id="1420684932347524586">Generisanje nasumičnog RSA privatnog ključa nije uspelo.</translation>
 <translation id="1445572445564823378">Ovaj dodatak usporava <ph name="PRODUCT_NAME" />. Trebalo bi da ga onemogućite da bi se učinak proizvoda <ph name="PRODUCT_NAME" /> vratio.</translation>
 <translation id="1468038450257740950">WebGL nije podržan.</translation>
+<translation id="1610570795592207282">Učitavanje css-a <ph name="RELATIVE_PATH" /> za skriptu nije uspelo.</translation>
 <translation id="1803557475693955505">Nije moguće učitati stranicu u pozadini „<ph name="BACKGROUND_PAGE" />“.</translation>
 <translation id="2159915644201199628">Nije moguće dekodirati sliku: „<ph name="IMAGE_NAME" />“</translation>
 <translation id="2350172092385603347">Korišćena je lokalizacija, ali parametar default_locale nije naveden u manifestu.</translation>
@@ -18,14 +19,12 @@
 <translation id="3115238746683532089">Nepoznati proizvod <ph name="PRODUCT_ID" /> prodavca <ph name="VENDOR_ID" /> (serijski broj <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">Zamena crx datoteke nije uspela. Proverite da li se datoteka koristi.</translation>
 <translation id="3163201441334626963">Nepoznati proizvod <ph name="PRODUCT_ID" /> prodavca <ph name="VENDOR_ID" /></translation>
-<translation id="3302709122321372472">Nije moguće učitati css „<ph name="RELATIVE_PATH" />“ za skriptu sadržaja.</translation>
 <translation id="3369521687965833290">Nije moguće otpakovati dodatak. Da biste bezbedno otpakovali dodatak, mora da postoji putanja do direktorijuma profila koja počinje slovom za oznaku jedinice i ne sadrži spoj, tačku povezivanja ili simboličku vezu. Za vaš profil ne postoji takva putanja.</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (serijski broj <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> prodavca <ph name="VENDOR_ID" /> (serijski broj <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Ulazna vrednost privatnog ključa mora biti važeća putanja.</translation>
 <translation id="388442998277590542">Nije moguće učitati stranicu opcija „<ph name="OPTIONS_PAGE" />“.</translation>
 <translation id="3984413272403535372">Došlo je do greške prilikom potpisivanja dodatka.</translation>
-<translation id="39964277676607559">Nije moguće učitati javascript „<ph name="RELATIVE_PATH" />“ za skriptu sadržaja.</translation>
 <translation id="4115165561519362854">Administrator ovog računara zahteva da <ph name="EXTENSION_NAME" /> ima minimalnu verziju <ph name="EXTENSION_VERSION" />. Ne možete da ga omogućite dok ga ne ažurirate na tu verziju (ili noviju).</translation>
 <translation id="4233778200880751280">Nije moguće učitati stranicu sa osnovnim podacima „<ph name="ABOUT_PAGE" />“.</translation>
 <translation id="471800408830181311">Formiranje izlaznih rezultata privatnog ključa nije uspelo.</translation>
@@ -33,6 +32,7 @@
 <translation id="4988792151665380515">Izvoz javnog ključa nije uspeo.</translation>
 <translation id="5026754133087629784">Veb-prikaz: <ph name="WEBVIEW_TAG_NAME" /></translation>
 <translation id="5098647635849512368">Nije moguće pronaći apsolutnu putanju do direktorijuma za pakovanje.</translation>
+<translation id="5160071981665899014">Učitavanje JavaScript-a <ph name="RELATIVE_PATH" /> za skriptu nije uspelo.</translation>
 <translation id="5356315618422219272">Prikaz aplikacije: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5436430103864390185">Prozori različitih oblika nisu podržani.</translation>
 <translation id="5456409301717116725">Ovaj dodatak sadrži datoteku ključa „<ph name="KEY_PATH" />“. Verovatno to ne želite.</translation>

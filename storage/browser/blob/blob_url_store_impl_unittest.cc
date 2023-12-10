@@ -158,7 +158,7 @@ class BlobURLStoreImplTestP
                           mojo::PendingRemote<blink::mojom::Blob>* blob_out,
                           const base::UnguessableToken& agent_registered,
                           mojo::PendingRemote<blink::mojom::Blob> blob,
-                          const absl::optional<base::UnguessableToken>&
+                          const std::optional<base::UnguessableToken>&
                               unsafe_agent_cluster_id) {
                          if (blob)
                            EXPECT_EQ(agent_registered, unsafe_agent_cluster_id);
@@ -373,9 +373,9 @@ TEST_P(BlobURLStoreImplTestP, ResolveAsURLLoaderFactory) {
       base::BindOnce(
           [](base::OnceClosure done,
              const base::UnguessableToken& agent_registered,
-             const absl::optional<base::UnguessableToken>&
+             const std::optional<base::UnguessableToken>&
                  unsafe_agent_cluster_id,
-             const absl::optional<net::SchemefulSite>& unsafe_top_level_site) {
+             const std::optional<net::SchemefulSite>& unsafe_top_level_site) {
             EXPECT_EQ(agent_registered, unsafe_agent_cluster_id);
             std::move(done).Run();
           },
@@ -411,7 +411,7 @@ TEST_P(BlobURLStoreImplTestP, ResolveForNavigation) {
       base::BindOnce(
           [](base::OnceClosure done,
              const base::UnguessableToken& agent_registered,
-             const absl::optional<base::UnguessableToken>&
+             const std::optional<base::UnguessableToken>&
                  unsafe_agent_cluster_id) {
             EXPECT_EQ(agent_registered, unsafe_agent_cluster_id);
             std::move(done).Run();

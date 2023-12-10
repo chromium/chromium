@@ -9,18 +9,19 @@ import androidx.annotation.IntDef;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 
-/**
- * Metrics helper class for the restore tabs feature.
- */
+/** Metrics helper class for the restore tabs feature. */
 public class RestoreTabsMetricsHelper {
     private static int sPromoShownCount;
 
     // These values are persisted to logs. Entries should not be renumbered and
     // numeric values should never be reused.
-    @IntDef({RestoreTabsOnFREPromoShowResult.SHOWN, RestoreTabsOnFREPromoShowResult.NOT_ELIGIBLE,
-            RestoreTabsOnFREPromoShowResult.NO_SYNCED_TABS,
-            RestoreTabsOnFREPromoShowResult.NULL_PROFILE,
-            RestoreTabsOnFREPromoShowResult.NUM_ENTRIES})
+    @IntDef({
+        RestoreTabsOnFREPromoShowResult.SHOWN,
+        RestoreTabsOnFREPromoShowResult.NOT_ELIGIBLE,
+        RestoreTabsOnFREPromoShowResult.NO_SYNCED_TABS,
+        RestoreTabsOnFREPromoShowResult.NULL_PROFILE,
+        RestoreTabsOnFREPromoShowResult.NUM_ENTRIES
+    })
     public @interface RestoreTabsOnFREPromoShowResult {
         int SHOWN = 0;
         int NOT_ELIGIBLE = 1;
@@ -33,9 +34,13 @@ public class RestoreTabsMetricsHelper {
 
     // These values are persisted to logs. Entries should not be renumbered and
     // numeric values should never be reused.
-    @IntDef({RestoreTabsOnFREResultAction.ACCEPTED, RestoreTabsOnFREResultAction.DISMISSED_SCRIM,
-            RestoreTabsOnFREResultAction.DISMISSED_BACKPRESS,
-            RestoreTabsOnFREResultAction.DISMISSED_SWIPE, RestoreTabsOnFREResultAction.NUM_ENTRIES})
+    @IntDef({
+        RestoreTabsOnFREResultAction.ACCEPTED,
+        RestoreTabsOnFREResultAction.DISMISSED_SCRIM,
+        RestoreTabsOnFREResultAction.DISMISSED_BACKPRESS,
+        RestoreTabsOnFREResultAction.DISMISSED_SWIPE,
+        RestoreTabsOnFREResultAction.NUM_ENTRIES
+    })
     public @interface RestoreTabsOnFREResultAction {
         int ACCEPTED = 0;
         int DISMISSED_SCRIM = 1;
@@ -48,8 +53,10 @@ public class RestoreTabsMetricsHelper {
 
     // These values are persisted to logs. Entries should not be renumbered and
     // numeric values should never be reused.
-    @IntDef({RestoreTabsOnFREBackPressType.SYSTEM_BACKPRESS,
-            RestoreTabsOnFREBackPressType.BACK_BUTTON})
+    @IntDef({
+        RestoreTabsOnFREBackPressType.SYSTEM_BACKPRESS,
+        RestoreTabsOnFREBackPressType.BACK_BUTTON
+    })
     public @interface RestoreTabsOnFREBackPressType {
         int SYSTEM_BACKPRESS = 0;
         int BACK_BUTTON = 1;
@@ -57,9 +64,12 @@ public class RestoreTabsMetricsHelper {
 
     // These values are persisted to logs. Entries should not be renumbered and
     // numeric values should never be reused.
-    @IntDef({RestoreTabsOnFRERestoredTabsResult.ALL, RestoreTabsOnFRERestoredTabsResult.SUBSET,
-            RestoreTabsOnFRERestoredTabsResult.NONE,
-            RestoreTabsOnFRERestoredTabsResult.NUM_ENTRIES})
+    @IntDef({
+        RestoreTabsOnFRERestoredTabsResult.ALL,
+        RestoreTabsOnFRERestoredTabsResult.SUBSET,
+        RestoreTabsOnFRERestoredTabsResult.NONE,
+        RestoreTabsOnFRERestoredTabsResult.NUM_ENTRIES
+    })
     public @interface RestoreTabsOnFRERestoredTabsResult {
         int ALL = 0;
         int SUBSET = 1;
@@ -71,10 +81,12 @@ public class RestoreTabsMetricsHelper {
 
     // These values are persisted to logs. Entries should not be renumbered and
     // numeric values should never be reused.
-    @IntDef({RestoreTabsOnFREDeviceRestoredFrom.DEFAULT,
-            RestoreTabsOnFREDeviceRestoredFrom.NON_DEFAULT,
-            RestoreTabsOnFREDeviceRestoredFrom.SINGLE_DEVICE,
-            RestoreTabsOnFREDeviceRestoredFrom.NUM_ENTRIES})
+    @IntDef({
+        RestoreTabsOnFREDeviceRestoredFrom.DEFAULT,
+        RestoreTabsOnFREDeviceRestoredFrom.NON_DEFAULT,
+        RestoreTabsOnFREDeviceRestoredFrom.SINGLE_DEVICE,
+        RestoreTabsOnFREDeviceRestoredFrom.NUM_ENTRIES
+    })
     public @interface RestoreTabsOnFREDeviceRestoredFrom {
         int DEFAULT = 0;
         int NON_DEFAULT = 1;
@@ -86,8 +98,10 @@ public class RestoreTabsMetricsHelper {
 
     // Histograms
     public static void recordPromoShowResultHistogram(@RestoreTabsOnFREPromoShowResult int action) {
-        RecordHistogram.recordEnumeratedHistogram("Android.RestoreTabsOnFRE.PromoShowResult",
-                action, RestoreTabsOnFREPromoShowResult.NUM_ENTRIES);
+        RecordHistogram.recordEnumeratedHistogram(
+                "Android.RestoreTabsOnFRE.PromoShowResult",
+                action,
+                RestoreTabsOnFREPromoShowResult.NUM_ENTRIES);
     }
 
     public static void recordResultActionHistogram(@RestoreTabsOnFREResultAction int action) {
@@ -96,12 +110,14 @@ public class RestoreTabsMetricsHelper {
         switch (count) {
             case 1:
                 RecordHistogram.recordEnumeratedHistogram(
-                        "Android.RestoreTabsOnFRE.ResultActionFirstShow", action,
+                        "Android.RestoreTabsOnFRE.ResultActionFirstShow2",
+                        action,
                         RestoreTabsOnFREResultAction.NUM_ENTRIES);
                 break;
             case 2:
                 RecordHistogram.recordEnumeratedHistogram(
-                        "Android.RestoreTabsOnFRE.ResultActionSecondShow", action,
+                        "Android.RestoreTabsOnFRE.ResultActionSecondShow2",
+                        action,
                         RestoreTabsOnFREResultAction.NUM_ENTRIES);
                 break;
         }
@@ -114,8 +130,10 @@ public class RestoreTabsMetricsHelper {
 
     public static void recordDeviceRestoredFromHistogram(
             @RestoreTabsOnFREDeviceRestoredFrom int action) {
-        RecordHistogram.recordEnumeratedHistogram("Android.RestoreTabsOnFRE.DeviceRestoredFrom",
-                action, RestoreTabsOnFREDeviceRestoredFrom.NUM_ENTRIES);
+        RecordHistogram.recordEnumeratedHistogram(
+                "Android.RestoreTabsOnFRE.DeviceRestoredFrom",
+                action,
+                RestoreTabsOnFREDeviceRestoredFrom.NUM_ENTRIES);
     }
 
     public static void recordEligibleTabsForRestoreCountHistogram(int count) {
@@ -135,8 +153,10 @@ public class RestoreTabsMetricsHelper {
 
     public static void recordRestoredTabsResultHistogram(
             @RestoreTabsOnFRERestoredTabsResult int action) {
-        RecordHistogram.recordEnumeratedHistogram("Android.RestoreTabsOnFRE.RestoredTabsResult",
-                action, RestoreTabsOnFRERestoredTabsResult.NUM_ENTRIES);
+        RecordHistogram.recordEnumeratedHistogram(
+                "Android.RestoreTabsOnFRE.RestoredTabsResult",
+                action,
+                RestoreTabsOnFRERestoredTabsResult.NUM_ENTRIES);
     }
 
     // Metrics
@@ -155,8 +175,10 @@ public class RestoreTabsMetricsHelper {
                 RecordUserAction.record("RestoreTabsOnFRE.PromoResultDismissedBySwipe");
                 break;
             default:
-                assert false : "Unexpected RestoreTabsOnFREResultAction value of " + actionId
-                               + " when calling recordResultActionMetrics.";
+                assert false
+                        : "Unexpected RestoreTabsOnFREResultAction value of "
+                                + actionId
+                                + " when calling recordResultActionMetrics.";
         }
     }
 
@@ -169,8 +191,10 @@ public class RestoreTabsMetricsHelper {
                 RecordUserAction.record("RestoreTabsOnFRE.BackPressTypeBackButton");
                 break;
             default:
-                assert false : "Unexpected RestoreTabsOnFREBackPressType value of " + actionId
-                               + " when calling recordBackPressTypeMetrics.";
+                assert false
+                        : "Unexpected RestoreTabsOnFREBackPressType value of "
+                                + actionId
+                                + " when calling recordBackPressTypeMetrics.";
         }
     }
 

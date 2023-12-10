@@ -36,8 +36,11 @@ public class MediaCaptureDevicesDispatcherAndroid {
     @NativeMethods
     interface Natives {
         boolean isCapturingAudio(WebContents webContents);
+
         boolean isCapturingVideo(WebContents webContents);
+
         boolean isCapturingScreen(WebContents webContents);
+
         void notifyStopped(WebContents webContents);
     }
 }

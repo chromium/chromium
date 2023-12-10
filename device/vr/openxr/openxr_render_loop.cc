@@ -69,8 +69,7 @@ mojom::XRFrameDataPtr OpenXrRenderLoop::GetNextFrameData() {
   frame_data->time_delta =
       base::Nanoseconds(openxr_->GetPredictedDisplayTime());
   frame_data->views = openxr_->GetViews();
-  frame_data->input_state = openxr_->GetInputState(
-      IsFeatureEnabled(device::mojom::XRSessionFeature::HAND_INPUT));
+  frame_data->input_state = openxr_->GetInputState();
 
   frame_data->mojo_from_viewer = openxr_->GetViewerPose();
 
@@ -217,44 +216,27 @@ void OpenXrRenderLoop::StopRuntime() {
 void OpenXrRenderLoop::EnableSupportedFeatures(
     const std::vector<device::mojom::XRSessionFeature>& required_features,
     const std::vector<device::mojom::XRSessionFeature>& optional_features) {
-  const OpenXrExtensionEnumeration* extension_enumeration =
-      extension_helper_->ExtensionEnumeration();
-
-  // Filter out features that are requested but not supported
-  auto openxr_extension_enabled_filter =
-      [extension_enumeration](device::mojom::XRSessionFeature feature) {
-        if (feature == device::mojom::XRSessionFeature::ANCHORS) {
-          return extension_enumeration->ExtensionSupported(
-              XR_MSFT_SPATIAL_ANCHOR_EXTENSION_NAME);
-        } else if (feature == device::mojom::XRSessionFeature::HAND_INPUT) {
-          return extension_enumeration->ExtensionSupported(
-              XR_MSFT_HAND_INTERACTION_EXTENSION_NAME);
-        } else if (feature == device::mojom::XRSessionFeature::HIT_TEST) {
-          return extension_enumeration->ExtensionSupported(
-              XR_MSFT_SCENE_UNDERSTANDING_EXTENSION_NAME);
-        } else if (feature ==
-                   device::mojom::XRSessionFeature::SECONDARY_VIEWS) {
-          return extension_enumeration->ExtensionSupported(
-              XR_MSFT_SECONDARY_VIEW_CONFIGURATION_EXTENSION_NAME);
-        }
-        return true;
-      };
-
   enabled_features_.clear();
-  // Currently, the initial filtering of supported devices happens on the
-  // browser side (BrowserXRRuntimeImpl::SupportsFeature()), so if we have
-  // reached this point, it is safe to assume that all requested features are
-  // enabled.
-  // TODO(https://crbug.com/995377): revisit the approach when the bug is fixed.
-  // If the session request has succeeded, we can assume that the required
-  // features are supported.
+  // `OpenXRDevice::RequestSession` validates that we can support all required
+  // features so that it can reject the session early, so we assume that all
+  // required features are enabled. Looping through and doing this string
+  // comparison again can be redundant, but this will help potentially catch
+  // a developer error.
+#if DCHECK_IS_ON()
+  CHECK(base::ranges::all_of(
+      required_features, [this](device::mojom::XRSessionFeature feature) {
+        return extension_helper_->IsFeatureSupported(feature);
+      }));
+#endif
   base::ranges::copy(
       required_features,
       std::inserter(enabled_features_, enabled_features_.begin()));
   base::ranges::copy_if(
       optional_features,
       std::inserter(enabled_features_, enabled_features_.begin()),
-      openxr_extension_enabled_filter);
+      [this](device::mojom::XRSessionFeature feature) {
+        return extension_helper_->IsFeatureSupported(feature);
+      });
 }
 
 device::mojom::XREnvironmentBlendMode OpenXrRenderLoop::GetEnvironmentBlendMode(
@@ -365,7 +347,7 @@ void OpenXrRenderLoop::OnWebXrTokenSignaled(
 }
 
 void OpenXrRenderLoop::UpdateStageParameters() {
-  XrExtent2Df stage_bounds;
+  std::vector<gfx::Point3F> stage_bounds;
   gfx::Transform local_from_stage;
   if (openxr_->GetStageParameters(stage_bounds, local_from_stage)) {
     mojom::VRStageParametersPtr stage_parameters =
@@ -373,8 +355,7 @@ void OpenXrRenderLoop::UpdateStageParameters() {
     // mojo_from_local is identity, as is stage_from_floor, so we can directly
     // assign local_from_stage and mojo_from_floor.
     stage_parameters->mojo_from_floor = local_from_stage;
-    stage_parameters->bounds = vr_utils::GetStageBoundsFromSize(
-        stage_bounds.width, stage_bounds.height);
+    stage_parameters->bounds = std::move(stage_bounds);
     SetStageParameters(std::move(stage_parameters));
   } else {
     SetStageParameters(nullptr);

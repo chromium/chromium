@@ -50,6 +50,7 @@ enum WallpaperType {
   kOnceGooglePhotos = 11,  // WallpaperInfo.location contains the Google Photos
                            // photo id.
   kOobe = 12,  // Wallpaper shown during OOBE if not overridden.
+  kSeaPen = 13,
 };
 
 // The image type specific to online wallpapers. This should be kept in sync
@@ -358,6 +359,9 @@ interface WallpaperProvider {
     // Cancels the wallpaper preview and reverts to the user wallpaper. Must be
     // called in preview mode.
     CancelPreviewWallpaper();
+
+    // Determines whether to show the time of day wallpaper dialog.
+    ShouldShowTimeOfDayWallpaperDialog() => (bool should_show_dialog);
 };
 
 // Static color options used to generate the system UI's color palette. These

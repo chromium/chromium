@@ -16,9 +16,7 @@ import org.chromium.base.ResettersForTesting;
 
 import java.util.Locale;
 
-/**
- * This class provides the locale related methods for the native library.
- */
+/** This class provides the locale related methods for the native library. */
 @JNINamespace("l10n_util")
 public class LocalizationUtils {
 
@@ -29,7 +27,9 @@ public class LocalizationUtils {
 
     private static Boolean sIsLayoutRtlForTesting;
 
-    private LocalizationUtils() { /* cannot be instantiated */ }
+    private LocalizationUtils() {
+        /* cannot be instantiated */
+    }
 
     @CalledByNative
     private static Locale getJavaLocale(String language, String country, String variant) {
@@ -55,9 +55,9 @@ public class LocalizationUtils {
         if (sIsLayoutRtlForTesting != null) return sIsLayoutRtlForTesting;
 
         return ContextUtils.getApplicationContext()
-                       .getResources()
-                       .getConfiguration()
-                       .getLayoutDirection()
+                        .getResources()
+                        .getConfiguration()
+                        .getLayoutDirection()
                 == View.LAYOUT_DIRECTION_RTL;
     }
 
@@ -127,6 +127,7 @@ public class LocalizationUtils {
     @NativeMethods
     interface Natives {
         int getFirstStrongCharacterDirection(String string);
+
         String getNativeUiLocale();
     }
 }

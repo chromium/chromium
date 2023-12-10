@@ -1,6 +1,9 @@
 {
   "$build/chromium_tests_builder_config": {
     "builder_config": {
+      "additional_exclusions": [
+        "infra/config/generated/builders/ci/android-12-x64-rel/gn-args.json"
+      ],
       "builder_db": {
         "entries": [
           {
@@ -85,10 +88,6 @@
         }
       ],
       "mirroring_builder_group_and_names": [
-        {
-          "builder": "android-12-x64-dual-coverage-exp-rel",
-          "group": "tryserver.chromium.android"
-        },
         {
           "builder": "android-12-x64-rel",
           "group": "tryserver.chromium.android"

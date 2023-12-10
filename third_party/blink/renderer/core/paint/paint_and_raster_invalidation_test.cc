@@ -6,6 +6,7 @@
 
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/loader/resource/image_resource_content.h"
 #include "third_party/blink/renderer/core/svg_names.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/testing/find_cc_layer.h"
@@ -448,7 +449,7 @@ TEST_P(PaintAndRasterInvalidationTest, NonCompositedLayoutViewResize) {
   GetDocument().View()->SetTracksRasterInvalidations(true);
   content->setAttribute(html_names::kStyleAttr, AtomicString("height: 500px"));
   UpdateAllLifecyclePhasesForTest();
-  // No invalidation because the changed part of layout overflow is clipped.
+  // No invalidation because the changed part of scrollable overflow is clipped.
   EXPECT_FALSE(GetRasterInvalidationTracking()->HasInvalidations());
   GetDocument().View()->SetTracksRasterInvalidations(false);
 
@@ -1120,6 +1121,88 @@ TEST_P(PaintAndRasterInvalidationTest, VisibilityChange) {
                   client->Id(), client->DebugName(), gfx::Rect(8, 8, 100, 100),
                   PaintInvalidationReason::kAppeared}));
   GetDocument().View()->SetTracksRasterInvalidations(false);
+}
+
+TEST_P(PaintAndRasterInvalidationTest,
+       DelayedInvalidationImageChangedFromAnimatedToStatic) {
+  const String kStaticImage =
+      "data:image/"
+      "png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABAQMAAAAl21bKAAAAA1BMVEUA/"
+      "wA0XsCoAAAACklEQVQIHWNgAAAAAgABz8g15QAAAABJRU5ErkJggg==";
+  SetBodyInnerHTML(R"HTML(
+    <div id="spacer" style="background-image:
+      url()HTML" + kStaticImage +
+                   R"HTML()">
+    </div>
+    <div style="height: 2250px"></div>
+    <div id="target" style="
+      background-image: url(data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==);
+      width: 100px;
+      height: 100px">
+    </div>
+  )HTML");
+
+  auto* target_element = GetElementById("target");
+  auto* spacer_element = GetElementById("spacer");
+  auto* target = GetLayoutObjectByElementId("target");
+  EXPECT_FALSE(target->ShouldDelayFullPaintInvalidation());
+
+  // Simulate an image change notification on #target.
+  auto* anim_background_image =
+      target->StyleRef().BackgroundLayers().GetImage();
+  ASSERT_TRUE(anim_background_image);
+  auto* anim_image_resource_content = anim_background_image->CachedImage();
+  ASSERT_TRUE(anim_image_resource_content);
+  ASSERT_TRUE(anim_image_resource_content->GetImage()->MaybeAnimated());
+  static_cast<ImageObserver*>(anim_image_resource_content)
+      ->Changed(anim_image_resource_content->GetImage());
+  EXPECT_TRUE(target->MayNeedPaintInvalidationAnimatedBackgroundImage());
+
+  // Change the paint offset of #target to get a layout/geometry paint
+  // invalidation reason.
+  spacer_element->SetInlineStyleProperty(CSSPropertyID::kHeight, 100,
+                                         CSSPrimitiveValue::UnitType::kPixels);
+
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(target->ShouldDelayFullPaintInvalidation());
+
+  GetDocument().View()->SetTracksRasterInvalidations(true);
+
+  // Update #target's style to point to a non-animated image.
+  target_element->SetInlineStyleProperty(
+      CSSPropertyID::kBackgroundImage,
+      AtomicString("url(" + kStaticImage + ")"));
+
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_THAT(
+      GetRasterInvalidationTracking()->Invalidations(),
+      UnorderedElementsAre(RasterInvalidationInfo{
+          target->Id(), target->DebugName(), gfx::Rect(8, 2358, 100, 100),
+          PaintInvalidationReason::kBackground}));
+  GetDocument().View()->SetTracksRasterInvalidations(false);
+}
+
+TEST_P(PaintAndRasterInvalidationTest, RepaintScrollbarThumbOnHover) {
+  USE_NON_OVERLAY_SCROLLBARS_OR_QUIT();
+  SetBodyInnerHTML(R"HTML(
+    <style>body {margin: 0}</style>
+    <div id="target" style="width: 100px; height: 100px; overflow-y: auto">
+      <div style="height: 200px"></div>
+    </div>
+  )HTML");
+
+  GetDocument().View()->SetTracksRasterInvalidations(true);
+  Scrollbar* scrollbar = GetLayoutBoxByElementId("target")
+                             ->GetScrollableArea()
+                             ->VerticalScrollbar();
+  scrollbar->SetHoveredPart(kThumbPart);
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+  EXPECT_THAT(
+      GetRasterInvalidationTracking()->Invalidations(),
+      UnorderedElementsAre(RasterInvalidationInfo{
+          scrollbar->Id(), scrollbar->DebugName(), scrollbar->FrameRect(),
+          PaintInvalidationReason::kScrollControl}));
 }
 
 class PaintInvalidatorTestClient : public RenderingTestChromeClient {

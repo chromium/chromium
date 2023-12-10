@@ -1,0 +1,12 @@
+{
+  "gn_args": {
+    "dcheck_always_on": false,
+    "ffmpeg_branding": "Chrome",
+    "is_asan": true,
+    "is_component_build": false,
+    "is_debug": false,
+    "is_lsan": true,
+    "proprietary_codecs": true,
+    "use_remoteexec": true
+  }
+}

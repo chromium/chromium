@@ -4,18 +4,36 @@
 
 module on_device_model.mojom;
 
-import "mojo/public/mojom/base/file.mojom";
-import "sandbox/policy/mojom/context.mojom";
-import "sandbox/policy/mojom/sandbox.mojom";
+// Specifies how a client should regard a completed response from a
+// StreamingResponder.
+enum ResponseStatus {
+  // The full response has been streamed successfully and should be taken as-is
+  // by the client.
+  kOk,
 
-// Streams a response from a call to execute a model.
+  // The response is done streaming, but it has been retracted by the service.
+  // The client should discard this response.
+  kRetracted,
+};
+
+// Streams a response from a call to execute a model. Close this pipe to cancel
+// the call to |Execute()|.
 interface StreamingResponder {
   // This is called N times each time a new chunk of text is available.
   OnResponse(string text);
 
   // This is called once when all text for the query has been returned.
   // OnResponse() will not be called after OnComplete() has been called.
-  OnComplete();
+  // `status` specifies how the client should regard this completion.
+  OnComplete(ResponseStatus status);
+};
+
+// Notifies the caller when the model is done processing context. Close this
+// pipe to cancel the call to |AddContext()|.
+interface ContextClient {
+  // Called when the context has finished processing with the number of tokens
+  // processed.
+  OnComplete(uint32 tokens_processed);
 };
 
 // Options to control how the model handles input.
@@ -25,7 +43,16 @@ struct InputOptions {
 
   // The maximum number of tokens that should be processed. If not set, will
   // process all tokens from this input.
-  int32? max_tokens;
+  uint32? max_tokens;
+
+  // After text is tokenized, the offset into that vector to start processing.
+  // If not set, will start at the first token.
+  uint32? token_offset;
+
+  // If this is true, indicates this is a one-off call that wants to ignore the
+  // context for this input. Note that this is less efficient than running on
+  // top of the current context, so only use when necessary.
+  bool ignore_context;
 };
 
 // A session for a model that allows adding context and then executing an input
@@ -33,11 +60,11 @@ struct InputOptions {
 interface Session {
   // Adds context to this session. Any context added here will build off of
   // previous calls to |AddContext()|.
-  AddContext(InputOptions input);
+  AddContext(InputOptions input, pending_remote<ContextClient>? client);
 
   // Executes model on the given input. The input will be added on top of the
   // context provided by |AddContext()|. The response will be streamed to
-  // |response|.
+  // |response|. To cancel the request, close the |response| pipe.
   Execute(InputOptions input, pending_remote<StreamingResponder> response);
 };
 
@@ -49,29 +76,16 @@ interface OnDeviceModel {
   StartSession(pending_receiver<Session> session);
 };
 
-// Opened file resources needed to define the model.
-struct ModelAssets {
-  mojo_base.mojom.File? sp_model;
-  mojo_base.mojom.File? model;
-  mojo_base.mojom.File? weights;
-};
-
-// The result of OnDeviceModelService.LoadModel().
-union LoadModelResult {
-  // On successful load, this field is populated with a Remote to control the
-  // loaded model.
-  pending_remote<OnDeviceModel> model;
-
-  // On load failure, this field is populated with a description of the failure.
-  string error;
-};
-
 // Classifies the device based on how fast it is estimated to be able to run a
-// model..
+// model.
 enum PerformanceClass {
   // There was an error running the benchmark. The device is likely not able to
   // run any models.
   kError,
+  // The GPU was blocked so the benchmark could not run.
+  kGpuBlocked,
+  // The library failed to load so the benchmark could not run.
+  kFailedToLoadLibrary,
 
   // The values below classify devices into a range of performance buckets.
   kVeryLow,
@@ -81,14 +95,8 @@ enum PerformanceClass {
   kVeryHigh,
 };
 
-// A service which allows loading trusted models which are stored on-device and
-// which may process untrustworthy data.
-[ServiceSandbox=sandbox.mojom.Sandbox.kOnDeviceModelExecution,
- RequireContext=sandbox.mojom.Context.kBrowser]
-interface OnDeviceModelService {
-  // Initializes a new model instance given `assets`.
-  LoadModel(ModelAssets assets) => (LoadModelResult result);
-
-  // Returns the performance class based on benchmarks run on the device.
-  GetEstimatedPerformanceClass() => (PerformanceClass performance_class);
+enum LoadModelResult {
+  kSuccess,
+  kGpuBlocked,
+  kFailedToLoadLibrary,
 };

@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <numeric>
+#include <optional>
 
 #include "base/auto_reset.h"
 #include "base/feature_list.h"
@@ -24,7 +25,6 @@
 #include "components/omnibox/browser/omnibox_controller.h"
 #include "components/omnibox/browser/omnibox_edit_model.h"
 #include "components/omnibox/common/omnibox_features.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/closure_animation_observer.h"
@@ -190,9 +190,12 @@ gfx::Image OmniboxPopupViewViews::GetMatchIcon(
 void OmniboxPopupViewViews::SetSelectedIndex(size_t index) {
   DCHECK(HasMatchAt(index));
 
-  OmniboxPopupSelection::LineState line_state = OmniboxPopupSelection::NORMAL;
-  model()->SetPopupSelection(OmniboxPopupSelection(index, line_state));
-  OnPropertyChanged(model(), views::kPropertyEffectsNone);
+  if (!OmniboxFieldTrial::IsKeywordModeRefreshEnabled() ||
+      index != model()->GetPopupSelection().line) {
+    OmniboxPopupSelection::LineState line_state = OmniboxPopupSelection::NORMAL;
+    model()->SetPopupSelection(OmniboxPopupSelection(index, line_state));
+    OnPropertyChanged(model(), views::kPropertyEffectsNone);
+  }
 }
 
 size_t OmniboxPopupViewViews::GetSelectedIndex() const {

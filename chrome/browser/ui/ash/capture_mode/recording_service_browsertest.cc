@@ -6,6 +6,7 @@
 #include <string>
 
 #include "ash/capture_mode/capture_mode_types.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/capture_mode/capture_mode_test_api.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "base/check.h"
@@ -31,6 +32,7 @@
 #include "media/base/mock_media_log.h"
 #include "media/base/stream_parser.h"
 #include "media/formats/webm/webm_stream_parser.h"
+#include "third_party/skia/include/codec/SkGifDecoder.h"
 #include "ui/aura/window.h"
 #include "ui/display/screen.h"
 #include "ui/display/test/display_manager_test_api.h"
@@ -65,6 +67,26 @@ base::FilePath WaitForVideoFileToBeSaved() {
       }));
   run_loop.Run();
   return result;
+}
+
+// Attempts to load and decode the GIF image whose file is at the given `path`,
+// and verifies that the decoding is successful.
+void VerifyGifImage(const base::FilePath& path) {
+  ASSERT_TRUE(path.MatchesExtension(".gif"));
+
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  ASSERT_TRUE(base::PathExists(path));
+  std::string file_content;
+  EXPECT_TRUE(base::ReadFileToString(path, &file_content));
+  EXPECT_FALSE(file_content.empty());
+  sk_sp<SkData> data =
+      SkData::MakeWithoutCopy(file_content.data(), file_content.size());
+  ASSERT_TRUE(SkGifDecoder::IsGif(data->bytes(), data->size()));
+  std::unique_ptr<SkCodec> codec = SkGifDecoder::Decode(data, nullptr);
+  ASSERT_TRUE(codec);
+  SkImageInfo targetInfo = codec->getInfo().makeAlphaType(kPremul_SkAlphaType);
+  sk_sp<SkImage> image = std::get<0>(codec->getImage(targetInfo));
+  ASSERT_TRUE(image);
 }
 
 // Verifies the contents of a WebM file by parsing it.
@@ -340,4 +362,38 @@ IN_PROC_BROWSER_TEST_F(RecordingServiceBrowserTest, InvalidDownloadsPath) {
   ash::CaptureModeTestApi test_api;
   test_api.StartForFullscreen(/*for_video=*/true);
   FinishVideoRecordingTest(&test_api);
+}
+
+// -----------------------------------------------------------------------------
+// GifRecordingBrowserTest:
+
+class GifRecordingBrowserTest : public InProcessBrowserTest {
+ public:
+  GifRecordingBrowserTest()
+      : scoped_feature_list_(ash::features::kGifRecording) {}
+  ~GifRecordingBrowserTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Records a GIF image of a region that fills the entire screen, then attempts
+// to decode the resulting file to verify the GIF encoding was successful.
+IN_PROC_BROWSER_TEST_F(GifRecordingBrowserTest, SuccessfulEncodeDecode) {
+  aura::Window* browser_window = browser()->window()->GetNativeWindow();
+  ash::CaptureModeTestApi test_api;
+  test_api.SetRecordingType(ash::RecordingType::kGif);
+  test_api.SetUserSelectedRegion(browser_window->GetRootWindow()->bounds());
+
+  test_api.StartForRegion(/*for_video=*/true);
+  test_api.PerformCapture();
+  WaitForMilliseconds(1000);
+  EXPECT_TRUE(test_api.IsVideoRecordingInProgress());
+  test_api.FlushRecordingServiceForTesting();
+
+  WaitForMilliseconds(2000);
+
+  test_api.StopVideoRecording();
+  base::FilePath gif_file = WaitForVideoFileToBeSaved();
+  VerifyGifImage(gif_file);
 }

@@ -16,6 +16,10 @@ TestPageBroadcast::TestPageBroadcast(
 
 TestPageBroadcast::~TestPageBroadcast() = default;
 
+void TestPageBroadcast::FlushForTesting() {
+  receiver_.FlushForTesting();
+}
+
 // The user should add functionality as needed.
 
 void TestPageBroadcast::SetPageLifecycleState(
@@ -33,8 +37,6 @@ void TestPageBroadcast::ActivatePrerenderedPage(
     ActivatePrerenderedPageCallback callback) {
   std::move(callback).Run();
 }
-
-void TestPageBroadcast::SetInsidePortal(bool is_inside_portal) {}
 
 void TestPageBroadcast::UpdateWebPreferences(
     const blink::web_pref::WebPreferences& preferences) {}
@@ -62,5 +64,8 @@ void TestPageBroadcast::UpdatePageBrowsingContextGroup(
 
 void TestPageBroadcast::SetPageAttributionSupport(
     network::mojom::AttributionSupport support) {}
+
+void TestPageBroadcast::UpdateColorProviders(
+    const blink::ColorProviderColorMaps& color_provider_colors) {}
 
 }  // namespace content

@@ -14,27 +14,23 @@ import org.chromium.dom_distiller.mojom.Theme;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Wrapper for the dom_distiller::DistilledPagePrefs.
- */
+/** Wrapper for the dom_distiller::DistilledPagePrefs. */
 @JNINamespace("dom_distiller::android")
 public final class DistilledPagePrefs {
 
     private final long mDistilledPagePrefsAndroid;
     private Map<Observer, DistilledPagePrefsObserverWrapper> mObserverMap;
 
-    /**
-     * Observer interface for observing DistilledPagePrefs changes.
-     */
+    /** Observer interface for observing DistilledPagePrefs changes. */
     public interface Observer {
         void onChangeFontFamily(int font);
+
         void onChangeTheme(int theme);
+
         void onChangeFontScaling(float scaling);
     }
 
-    /**
-     * Wrapper for dom_distiller::android::DistilledPagePrefsObserverAndroid.
-     */
+    /** Wrapper for dom_distiller::android::DistilledPagePrefsObserverAndroid. */
     static class DistilledPagePrefsObserverWrapper {
         private final Observer mDistilledPagePrefsObserver;
         private final long mNativeDistilledPagePrefsObserverAndroidPtr;
@@ -63,8 +59,8 @@ public final class DistilledPagePrefs {
         }
 
         public void destroy() {
-            DistilledPagePrefsJni.get().destroyObserverAndroid(
-                    mNativeDistilledPagePrefsObserverAndroidPtr);
+            DistilledPagePrefsJni.get()
+                    .destroyObserverAndroid(mNativeDistilledPagePrefsObserverAndroidPtr);
         }
 
         public long getNativePtr() {
@@ -86,8 +82,11 @@ public final class DistilledPagePrefs {
         if (mObserverMap.containsKey(obs)) return false;
         DistilledPagePrefsObserverWrapper wrappedObserver =
                 new DistilledPagePrefsObserverWrapper(obs);
-        DistilledPagePrefsJni.get().addObserver(mDistilledPagePrefsAndroid, DistilledPagePrefs.this,
-                wrappedObserver.getNativePtr());
+        DistilledPagePrefsJni.get()
+                .addObserver(
+                        mDistilledPagePrefsAndroid,
+                        DistilledPagePrefs.this,
+                        wrappedObserver.getNativePtr());
         mObserverMap.put(obs, wrappedObserver);
         return true;
     }
@@ -99,60 +98,77 @@ public final class DistilledPagePrefs {
     public boolean removeObserver(Observer obs) {
         DistilledPagePrefsObserverWrapper wrappedObserver = mObserverMap.remove(obs);
         if (wrappedObserver == null) return false;
-        DistilledPagePrefsJni.get().removeObserver(mDistilledPagePrefsAndroid,
-                DistilledPagePrefs.this, wrappedObserver.getNativePtr());
+        DistilledPagePrefsJni.get()
+                .removeObserver(
+                        mDistilledPagePrefsAndroid,
+                        DistilledPagePrefs.this,
+                        wrappedObserver.getNativePtr());
         wrappedObserver.destroy();
         return true;
     }
 
     public void setFontFamily(int fontFamily) {
         FontFamily.validate(fontFamily);
-        DistilledPagePrefsJni.get().setFontFamily(
-                mDistilledPagePrefsAndroid, DistilledPagePrefs.this, fontFamily);
+        DistilledPagePrefsJni.get()
+                .setFontFamily(mDistilledPagePrefsAndroid, DistilledPagePrefs.this, fontFamily);
     }
 
     public int getFontFamily() {
-        return DistilledPagePrefsJni.get().getFontFamily(
-                mDistilledPagePrefsAndroid, DistilledPagePrefs.this);
+        return DistilledPagePrefsJni.get()
+                .getFontFamily(mDistilledPagePrefsAndroid, DistilledPagePrefs.this);
     }
 
     public void setTheme(int theme) {
         Theme.validate(theme);
-        DistilledPagePrefsJni.get().setTheme(
-                mDistilledPagePrefsAndroid, DistilledPagePrefs.this, theme);
+        DistilledPagePrefsJni.get()
+                .setTheme(mDistilledPagePrefsAndroid, DistilledPagePrefs.this, theme);
     }
 
     public int getTheme() {
-        return DistilledPagePrefsJni.get().getTheme(
-                mDistilledPagePrefsAndroid, DistilledPagePrefs.this);
+        return DistilledPagePrefsJni.get()
+                .getTheme(mDistilledPagePrefsAndroid, DistilledPagePrefs.this);
     }
 
     public void setFontScaling(float scaling) {
-        DistilledPagePrefsJni.get().setFontScaling(
-                mDistilledPagePrefsAndroid, DistilledPagePrefs.this, scaling);
+        DistilledPagePrefsJni.get()
+                .setFontScaling(mDistilledPagePrefsAndroid, DistilledPagePrefs.this, scaling);
     }
 
     public float getFontScaling() {
-        return DistilledPagePrefsJni.get().getFontScaling(
-                mDistilledPagePrefsAndroid, DistilledPagePrefs.this);
+        return DistilledPagePrefsJni.get()
+                .getFontScaling(mDistilledPagePrefsAndroid, DistilledPagePrefs.this);
     }
 
     @NativeMethods
     interface Natives {
         long init(DistilledPagePrefs caller, long distilledPagePrefPtr);
+
         void setFontFamily(
                 long nativeDistilledPagePrefsAndroid, DistilledPagePrefs caller, int fontFamily);
+
         int getFontFamily(long nativeDistilledPagePrefsAndroid, DistilledPagePrefs caller);
+
         void setTheme(long nativeDistilledPagePrefsAndroid, DistilledPagePrefs caller, int theme);
+
         int getTheme(long nativeDistilledPagePrefsAndroid, DistilledPagePrefs caller);
+
         void setFontScaling(
                 long nativeDistilledPagePrefsAndroid, DistilledPagePrefs caller, float scaling);
+
         float getFontScaling(long nativeDistilledPagePrefsAndroid, DistilledPagePrefs caller);
-        void addObserver(long nativeDistilledPagePrefsAndroid, DistilledPagePrefs caller,
+
+        void addObserver(
+                long nativeDistilledPagePrefsAndroid,
+                DistilledPagePrefs caller,
                 long nativeObserverPtr);
-        void removeObserver(long nativeDistilledPagePrefsAndroid, DistilledPagePrefs caller,
+
+        void removeObserver(
+                long nativeDistilledPagePrefsAndroid,
+                DistilledPagePrefs caller,
                 long nativeObserverPtr);
+
         long initObserverAndroid(DistilledPagePrefsObserverWrapper caller);
+
         void destroyObserverAndroid(long nativeDistilledPagePrefsObserverAndroid);
     }
 }

@@ -507,6 +507,7 @@ struct SSLSocketDataProvider {
   absl::optional<bool> expected_send_client_cert;
   scoped_refptr<X509Certificate> expected_client_cert;
   absl::optional<HostPortPair> expected_host_and_port;
+  absl::optional<bool> expected_ignore_certificate_errors;
   absl::optional<NetworkAnonymizationKey> expected_network_anonymization_key;
   absl::optional<bool> expected_disable_sha1_server_signatures;
   absl::optional<std::vector<uint8_t>> expected_ech_config_list;
@@ -753,7 +754,6 @@ class MockClientSocket : public TransportClientSocket {
   int GetPeerAddress(IPEndPoint* address) const override;
   int GetLocalAddress(IPEndPoint* address) const override;
   const NetLogWithSource& NetLog() const override;
-  bool WasAlpnNegotiated() const override;
   NextProto GetNegotiatedProtocol() const override;
   int64_t GetTotalReceivedBytes() const override;
   void ApplySocketTag(const SocketTag& tag) override {}
@@ -902,7 +902,6 @@ class MockSSLClientSocket : public AsyncSocket, public SSLClientSocket {
   bool WasEverUsed() const override;
   int GetPeerAddress(IPEndPoint* address) const override;
   int GetLocalAddress(IPEndPoint* address) const override;
-  bool WasAlpnNegotiated() const override;
   NextProto GetNegotiatedProtocol() const override;
   absl::optional<base::StringPiece> GetPeerApplicationSettings() const override;
   bool GetSSLInfo(SSLInfo* ssl_info) override;
@@ -1270,7 +1269,6 @@ class WrappedStreamSocket : public TransportClientSocket {
   int GetLocalAddress(IPEndPoint* address) const override;
   const NetLogWithSource& NetLog() const override;
   bool WasEverUsed() const override;
-  bool WasAlpnNegotiated() const override;
   NextProto GetNegotiatedProtocol() const override;
   bool GetSSLInfo(SSLInfo* ssl_info) override;
   int64_t GetTotalReceivedBytes() const override;

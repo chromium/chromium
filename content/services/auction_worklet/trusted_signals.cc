@@ -356,6 +356,7 @@ std::unique_ptr<TrustedSignals> TrustedSignals::LoadBiddingSignals(
     const std::string& hostname,
     const GURL& trusted_bidding_signals_url,
     absl::optional<uint16_t> experiment_group_id,
+    const std::string& trusted_bidding_signals_slot_size_param,
     scoped_refptr<AuctionV8Helper> v8_helper,
     LoadSignalsCallback load_signals_callback) {
   DCHECK(!interest_group_names.empty());
@@ -377,6 +378,10 @@ std::unique_ptr<TrustedSignals> TrustedSignals::LoadBiddingSignals(
     base::StrAppend(&query_params,
                     {"&experimentGroupId=",
                      base::NumberToString(experiment_group_id.value())});
+  }
+  if (!trusted_bidding_signals_slot_size_param.empty()) {
+    base::StrAppend(&query_params,
+                    {"&", trusted_bidding_signals_slot_size_param});
   }
   GURL full_signals_url =
       SetQueryParam(trusted_bidding_signals_url, query_params);

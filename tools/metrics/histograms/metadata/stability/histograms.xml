@@ -32,23 +32,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Stability.Android.OomKillReverseRank" units="rank"
-    expires_after="2023-01-15">
-  <obsolete>
-    Removed in M111.
-  </obsolete>
-  <owner>boliu@chromium.org</owner>
-  <owner>ssid@chromium.org</owner>
-  <summary>
-    Records the reverse rank of a child process when it is killed by android if
-    applicable. Chrome on Android ranks some child processes and provides hints
-    to android that it should kill from lowest to highest ranked. The lowest
-    ranked process has reverse rank 0. This is a measure how good the hints to
-    android are; if hints were perfect, then all android kills should have
-    reverse rank 0.
-  </summary>
-</histogram>
-
 <histogram name="Stability.Android.ProcessedCrashCounts"
     enum="AndroidProcessedCrashCounts" expires_after="never">
 <!-- expires-never: Critical stability metric that includes OOM rate. -->
@@ -80,7 +63,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Stability.Android.RendererCrash" enum="Boolean"
-    expires_after="2024-03-17">
+    expires_after="2024-05-19">
   <owner>wnwen@chromium.org</owner>
   <summary>
     Counts renderer crashes including OOMs. Android only. Mirrors old stability
@@ -383,7 +366,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Stability.iOS.TabCountBefore{Event}" units="tabs"
-    expires_after="2024-03-21">
+    expires_after="2024-05-26">
   <owner>ajuma@chromium.org</owner>
   <owner>justincohen@chromium.org</owner>
   <summary>
@@ -550,7 +533,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Stability.MobileSessionShutdownType2"
-    enum="MobileSessionShutdownType" expires_after="2024-03-31">
+    enum="MobileSessionShutdownType" expires_after="2024-06-02">
   <owner>justincohen@chromium.org</owner>
   <owner>ajuma@chromium.org</owner>
   <summary>
@@ -564,6 +547,39 @@ chromium-metrics-reviews@google.com.
     Stability.MobileSessionShutdownType should be in the stability log, which
     will list the Chrome version at the time of the crash.
   </summary>
+</histogram>
+
+<histogram name="Stability.RendererAbnormalTermination.ByHostedContentType"
+    enum="RendererHostedContentType" expires_after="2024-06-30">
+  <owner>fdoray@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    Recorded when a renderer process exits abnormally. The value describes the
+    type of content hosted by the renderer at the time of abnormal exit.
+  </summary>
+</histogram>
+
+<histogram name="Stability.RendererAbnormalTermination.{HostedContentType}"
+    enum="TerminationStatus" expires_after="2024-06-30">
+  <owner>fdoray@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    Recorded when a renderer process hosting {HostedContentType} exits
+    abnormally. The value describes the exit reason.
+  </summary>
+  <token key="HostedContentType">
+    <variant name="BackgroundFrame"
+        summary="an active background frame (but no active foreground frame)"/>
+    <variant name="Extension" summary="an extension"/>
+    <variant name="ForegroundMainFrame"
+        summary="an active foreground main frame"/>
+    <variant name="ForegroundSubframe"
+        summary="an active foreground subframe (but no active foreground main
+                 frame)"/>
+    <variant name="InactiveFrame"
+        summary="an inactive frame (but no active frame)"/>
+    <variant name="NoFrameOrExtension" summary="no frame or extension"/>
+  </token>
 </histogram>
 
 </histograms>

@@ -59,7 +59,13 @@ class CORE_EXPORT HTMLDialogElement final : public HTMLElement {
   void CloseWatcherFiredCancel(Event*);
   void CloseWatcherFiredClose();
 
-  bool SupportsFocus() const override { return true; }
+  // Dialogs support focus, since the dialog focus algorithm
+  // https://html.spec.whatwg.org/multipage/interactive-elements.html#dialog-focusing-steps
+  // can decide to focus the dialog itself if the dialog does not have a focus
+  // delegate.
+  bool SupportsFocus(UpdateBehavior) const override { return true; }
+  bool IsKeyboardFocusable(UpdateBehavior update_behavior =
+                               UpdateBehavior::kStyleAndLayout) const override;
 
   // https://html.spec.whatwg.org/C/#the-dialog-element
   // Chooses the focused element when show() or showModal() is invoked.

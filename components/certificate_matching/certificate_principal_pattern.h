@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/component_export.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/values.h"
 
 namespace net {

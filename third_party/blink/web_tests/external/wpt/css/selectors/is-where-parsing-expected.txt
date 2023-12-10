@@ -1,42 +1,16 @@
 This is a testharness.js-based test.
-[PASS] ":is(div )" should be a valid selector
-[PASS] ":where(div )" should be a valid selector
-[PASS] ":is(div + bar, div ~ .baz)" should be a valid selector
-[PASS] ":where(div + bar, div ~ .baz)" should be a valid selector
-[PASS] ":is(:is(div))" should be a valid selector
-[PASS] ":where(:is(div))" should be a valid selector
-[PASS] ":is(:where(div))" should be a valid selector
-[PASS] ":where(:where(div))" should be a valid selector
-[PASS] ":host(:is(div))" should be a valid selector
-[PASS] ":host(:where(div))" should be a valid selector
-[PASS] ":host(:is(div ))" should be a valid selector
-[PASS] ":host(:where(div ))" should be a valid selector
 [FAIL] ":host(:is(div .foo))" should be a valid selector
   assert_equals: serialization should be canonical expected ":host(:is(div .foo))" but got ":host(:is())"
 [FAIL] ":host(:where(div .foo))" should be a valid selector
   assert_equals: serialization should be canonical expected ":host(:where(div .foo))" but got ":host(:where())"
-[PASS] ":is(:hover, :active)" should be a valid selector
-[PASS] ":where(:hover, :active)" should be a valid selector
-[PASS] ":is(div):hover" should be a valid selector
-[PASS] ":where(div):hover" should be a valid selector
-[PASS] ":is(div)::before" should be a valid selector
-[PASS] ":where(div)::before" should be a valid selector
 [FAIL] ":is(::before)" should be a valid selector
   assert_equals: serialization should be canonical expected ":is(::before)" but got ":is()"
 [FAIL] ":where(::before)" should be a valid selector
   assert_equals: serialization should be canonical expected ":where(::before)" but got ":where()"
-[PASS] ":is(div) + bar" should be a valid selector
-[PASS] ":where(div) + bar" should be a valid selector
-[PASS] "::part(foo):is(:hover)" should be a valid selector
-[PASS] "::part(foo):where(:hover)" should be a valid selector
 [FAIL] "::part(foo):is([attr='value'])" should be a valid selector
   assert_equals: serialization should be canonical expected "::part(foo):is([attr='value'])" but got "::part(foo):is()"
 [FAIL] "::part(foo):where([attr='value'])" should be a valid selector
   assert_equals: serialization should be canonical expected "::part(foo):where([attr='value'])" but got "::part(foo):where()"
-[PASS] ":not(:is(div))" should be a valid selector
-[PASS] ":not(:where(div))" should be a valid selector
-[PASS] ":not(:is(div .foo))" should be a valid selector
-[PASS] ":not(:where(div .foo))" should be a valid selector
 [FAIL] ":is(# C4Ñ”Ð°Ð½Ð¹Ñ‚Ð¶â••/â”˜Ð“ÐÐ¶Ð®Ð¥Ñ”Ð°â–“â”ÐÐ­Ð‘ÐœÑ”Ð°Ð¡ÐµÐÐ­Ð–Ð%=[ÑÐ¼Ð¼0)" should be an invalid selector
   assert_throws_dom: ":is(# C4Ñ”Ð°Ð½Ð¹Ñ‚Ð¶â••/â”˜Ð“ÐÐ¶Ð®Ð¥Ñ”Ð°â–“â”ÐÐ­Ð‘ÐœÑ”Ð°Ð¡ÐµÐÐ­Ð–Ð%=[ÑÐ¼Ð¼0)" should throw in querySelector function "() => document.querySelector(selector)" did not throw
 Harness: the test ran to completion.

@@ -53,8 +53,6 @@ function seeEligibleDetails() {
         'IsAnonymizedUrlDataCollectionEnabled',
         detail.isAnonymizedUrlDataCollectionEnabled));
     ul.appendChild(createLiElement(
-        'IsWebAndAppActivityEnabled', detail.isWebAndAppActivityEnabled));
-    ul.appendChild(createLiElement(
         'IsSubjectToParentalControls', detail.isSubjectToParentalControls));
 
     element.appendChild(ul);

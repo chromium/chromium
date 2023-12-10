@@ -45,6 +45,7 @@
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
@@ -95,6 +96,8 @@ bool HasSomeStylusDisplay() {
 }
 
 class BatteryView : public views::View {
+  METADATA_HEADER(BatteryView, views::View)
+
  public:
   BatteryView() {
     SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -158,7 +161,12 @@ class BatteryView : public views::View {
   raw_ptr<views::Label, ExperimentalAsh> label_ = nullptr;
 };
 
+BEGIN_METADATA(BatteryView)
+END_METADATA
+
 class TitleView : public views::View {
+  METADATA_HEADER(TitleView, views::View)
+
  public:
   explicit TitleView(PaletteTray* palette_tray) : palette_tray_(palette_tray) {
     // TODO(tdanderson|jdufault): Use TriView to handle the layout of the title.
@@ -217,9 +225,6 @@ class TitleView : public views::View {
 
   ~TitleView() override = default;
 
-  // views::View:
-  const char* GetClassName() const override { return "TitleView"; }
-
  private:
   void ButtonPressed(PaletteTrayOptions option,
                      base::RepeatingClosure callback) {
@@ -233,6 +238,9 @@ class TitleView : public views::View {
   raw_ptr<views::View, ExperimentalAsh> help_button_;
   raw_ptr<PaletteTray, DanglingUntriaged | ExperimentalAsh> palette_tray_;
 };
+
+BEGIN_METADATA(TitleView)
+END_METADATA
 
 // Used as a Shell pre-target handler to notify PaletteTray of stylus events.
 class StylusEventHandler : public ui::EventHandler {
@@ -795,5 +803,8 @@ void PaletteTray::OnAutoHideStateChanged(ShelfAutoHideState state) {
 
   bubble_->bubble_view()->ChangeAnchorRect(anchor_rect);
 }
+
+BEGIN_METADATA(PaletteTray)
+END_METADATA
 
 }  // namespace ash

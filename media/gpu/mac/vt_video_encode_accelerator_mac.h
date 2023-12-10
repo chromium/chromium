@@ -44,8 +44,10 @@ class MEDIA_GPU_EXPORT VTVideoEncodeAccelerator
                   std::unique_ptr<MediaLog> media_log = nullptr) override;
   void Encode(scoped_refptr<VideoFrame> frame, bool force_keyframe) override;
   void UseOutputBitstreamBuffer(BitstreamBuffer buffer) override;
-  void RequestEncodingParametersChange(const Bitrate& bitrate,
-                                       uint32_t framerate) override;
+  void RequestEncodingParametersChange(
+      const Bitrate& bitrate,
+      uint32_t framerate,
+      const absl::optional<gfx::Size>& size) override;
   void Destroy() override;
   void Flush(FlushCallback flush_callback) override;
   bool IsFlushSupported() override;

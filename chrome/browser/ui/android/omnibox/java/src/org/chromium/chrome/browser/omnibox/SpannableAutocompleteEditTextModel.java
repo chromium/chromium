@@ -43,7 +43,7 @@ public class SpannableAutocompleteEditTextModel implements AutocompleteEditTextM
     private static final Pattern NON_COMPOSITIONAL_TEXT_PATTERN =
             Pattern.compile(
                     "[\\p{script=latin}\\p{script=cyrillic}\\p{script=greek}\\p{script=hebrew}\\p{Punct}"
-                        + " 0-9]*");
+                            + " 0-9]*");
 
     private final AutocompleteEditTextModelBase.Delegate mDelegate;
 
@@ -231,7 +231,7 @@ public class SpannableAutocompleteEditTextModel implements AutocompleteEditTextM
         }
         // The current model's mechanism always moves the cursor at the end of user text, so we
         // don't need to update the display.
-        mDelegate.onAutocompleteTextStateChanged(false /* updateDisplay */);
+        mDelegate.onAutocompleteTextStateChanged(/* updateDisplay= */ false);
     }
 
     private void clearAutocompleteText() {

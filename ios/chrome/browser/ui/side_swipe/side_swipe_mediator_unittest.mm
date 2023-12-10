@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/side_swipe/side_swipe_mediator.h"
-#import "ios/chrome/browser/ui/side_swipe/side_swipe_mediator+private.h"
+#import "ios/chrome/browser/ui/side_swipe/side_swipe_mediator+Testing.h"
 
 #import <WebKit/WebKit.h>
 

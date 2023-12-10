@@ -138,10 +138,7 @@ BASE_FEATURE(kDesktopPWAsForceUnregisterOSIntegration,
 const char WebAppPolicyManager::kInstallResultHistogramName[];
 
 WebAppPolicyManager::WebAppPolicyManager(Profile* profile)
-    : profile_(profile),
-      pref_service_(profile_->GetPrefs()),
-      default_settings_(
-          std::make_unique<WebAppPolicyManager::WebAppSetting>()) {}
+    : profile_(profile), pref_service_(profile_->GetPrefs()) {}
 
 WebAppPolicyManager::~WebAppPolicyManager() = default;
 
@@ -213,7 +210,8 @@ void WebAppPolicyManager::ReinstallPlaceholderAppIfNecessary(
   }
 
   // No need to install a placeholder because there should be one already.
-  install_options.wait_for_windows_closed = true;
+  install_options.placeholder_resolution_behavior =
+      PlaceholderResolutionBehavior::kWaitForAppWindowsClosed;
 
   // If the app is not a placeholder app, ExternallyManagedAppManager will
   // ignore the request.
@@ -238,7 +236,8 @@ void WebAppPolicyManager::InitChangeRegistrarAndRefreshPolicy(
     pref_change_registrar_.Add(
         prefs::kWebAppInstallForceList,
         base::BindRepeating(&WebAppPolicyManager::RefreshPolicyInstalledApps,
-                            weak_ptr_factory_.GetWeakPtr()));
+                            weak_ptr_factory_.GetWeakPtr(),
+                            /*allow_close_and_relaunch=*/false));
     if (base::FeatureList::IsEnabled(
             features::kDesktopPWAsEnforceWebAppSettingsPolicy)) {
       pref_change_registrar_.Add(
@@ -248,7 +247,13 @@ void WebAppPolicyManager::InitChangeRegistrarAndRefreshPolicy(
 
       RefreshPolicySettings();
     }
-    RefreshPolicyInstalledApps();
+#if BUILDFLAG(IS_CHROMEOS)
+    RefreshPolicyInstalledApps(
+        /*allow_close_and_relaunch=*/base::FeatureList::IsEnabled(
+            features::kForcedAppRelaunchOnPlaceholderUpdate));
+#else
+    RefreshPolicyInstalledApps(/*allow_close_and_relaunch=*/false);
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS)
     pref_change_registrar_.Add(
@@ -317,7 +322,12 @@ bool WebAppPolicyManager::IsDisabledAppsModeHidden() const {
   return false;
 }
 
-void WebAppPolicyManager::RefreshPolicyInstalledApps() {
+void WebAppPolicyManager::RefreshPolicyInstalledApps(
+    bool allow_close_and_relaunch) {
+#if !BUILDFLAG(IS_CHROMEOS)
+  CHECK(!allow_close_and_relaunch);
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+
   if (!AreForceInstalledAppsAllowed(profile_)) {
     OnWebAppForceInstallPolicyParsed();
     return;
@@ -352,11 +362,18 @@ void WebAppPolicyManager::RefreshPolicyInstalledApps() {
     // When the policy gets refreshed, we should try to reinstall placeholder
     // apps but only if they are not being used. In the non-placeholder case, we
     // will not reinstall and there is no need to wait for windows being closed.
-    install_options.wait_for_windows_closed =
+    // Note: an exception to this rule is described in
+    // go/preventclose-waitforwindowsclosed.
+
+    install_options.placeholder_resolution_behavior =
         provider_->registrar_unsafe()
-            .LookupPlaceholderAppId(install_options.install_url,
-                                    WebAppManagement::kPolicy)
-            .has_value();
+                .LookupPlaceholderAppId(install_options.install_url,
+                                        WebAppManagement::kPolicy)
+                .has_value()
+            ? (allow_close_and_relaunch
+                   ? PlaceholderResolutionBehavior::kCloseAndRelaunch
+                   : PlaceholderResolutionBehavior::kWaitForAppWindowsClosed)
+            : PlaceholderResolutionBehavior::kClose;
 
     absl::optional<webapps::AppId> app_id =
         provider_->registrar_unsafe().LookupExternalAppId(
@@ -451,7 +468,7 @@ void WebAppPolicyManager::ParsePolicySettings() {
       pref_service_->GetList(prefs::kWebAppSettings);
 
   settings_by_url_.clear();
-  default_settings_ = std::make_unique<WebAppPolicyManager::WebAppSetting>();
+  default_settings_ = WebAppPolicyManager::WebAppSetting();
 
   // Read default policy, if provided.
   const auto it = base::ranges::find(
@@ -460,9 +477,9 @@ void WebAppPolicyManager::ParsePolicySettings() {
       });
 
   if (it != web_apps_list.end() && it->is_dict()) {
-    if (!default_settings_->Parse(it->GetDict(), true)) {
+    if (!default_settings_.Parse(it->GetDict(), true)) {
       SYSLOG(WARNING) << "Malformed default web app management setting.";
-      default_settings_->ResetSettings();
+      default_settings_ = WebAppPolicyManager::WebAppSetting();
     }
   }
 
@@ -480,7 +497,7 @@ void WebAppPolicyManager::ParsePolicySettings() {
       continue;
     }
 
-    WebAppPolicyManager::WebAppSetting by_url(*default_settings_);
+    WebAppPolicyManager::WebAppSetting by_url(default_settings_);
     if (by_url.Parse(dict, /*for_default_settings=*/false)) {
       settings_by_url_[url.spec()] = by_url;
     } else {
@@ -666,7 +683,7 @@ RunOnOsLoginPolicy WebAppPolicyManager::GetUrlRunOnOsLoginPolicyByManifestId(
   auto it = settings_by_url_.find(manifest_id);
   if (it != settings_by_url_.end())
     return it->second.run_on_os_login_policy;
-  return default_settings_->run_on_os_login_policy;
+  return default_settings_.run_on_os_login_policy;
 }
 
 void WebAppPolicyManager::SetOnAppsSynchronizedCompletedCallbackForTesting(
@@ -757,14 +774,17 @@ bool WebAppPolicyManager::IsPreventCloseEnabled(
   if (it != settings_by_url_.end()) {
     return it->second.prevent_close;
   }
-  return default_settings_->prevent_close;
+  // `default_settings_` must be ignored for prevent close feature. Only app
+  // specific value is applied.
+  return false;
 #else
   return false;
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
-void WebAppPolicyManager::RefreshPolicyInstalledAppsForTesting() {
-  RefreshPolicyInstalledApps();
+void WebAppPolicyManager::RefreshPolicyInstalledAppsForTesting(
+    bool allow_close_and_relaunch) {
+  RefreshPolicyInstalledApps(allow_close_and_relaunch);
 }
 
 void WebAppPolicyManager::OnAppsSynchronized(
@@ -786,10 +806,6 @@ void WebAppPolicyManager::OnAppsSynchronized(
   OnWebAppForceInstallPolicyParsed();
 }
 
-WebAppPolicyManager::WebAppSetting::WebAppSetting() {
-  ResetSettings();
-}
-
 bool WebAppPolicyManager::WebAppSetting::Parse(const base::Value::Dict& dict,
                                                bool for_default_settings) {
   const std::string* run_on_os_login_str = dict.FindString(kRunOnOsLogin);
@@ -806,19 +822,12 @@ bool WebAppPolicyManager::WebAppSetting::Parse(const base::Value::Dict& dict,
     }
   }
 
-#if BUILDFLAG(IS_CHROMEOS)
-  // The value of "prevent_close" shall only be considered if run-on-os-login
-  // is enforced.
-  if (base::FeatureList::IsEnabled(
-          features::kDesktopPWAsEnforceWebAppSettingsPolicy) &&
-      base::FeatureList::IsEnabled(features::kDesktopPWAsPreventClose) &&
+  // The value of "prevent_close" shall only be considered for non-default
+  // settings if run-on-os-login is enforced.
+  if (!for_default_settings &&
       run_on_os_login_policy == RunOnOsLoginPolicy::kRunWindowed) {
-    absl::optional<bool> prevent_close_value = dict.FindBool(kPreventClose);
-    if (prevent_close_value && *prevent_close_value) {
-      prevent_close = true;
-    }
+    prevent_close = dict.FindBool(kPreventClose).value_or(false);
   }
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
   if (IsForceUnregistrationPolicyEnabled()) {
     absl::optional<bool> force_unregistration_value =
@@ -827,12 +836,6 @@ bool WebAppPolicyManager::WebAppSetting::Parse(const base::Value::Dict& dict,
         force_unregistration_value.value_or(false);
   }
   return true;
-}
-
-void WebAppPolicyManager::WebAppSetting::ResetSettings() {
-  run_on_os_login_policy = RunOnOsLoginPolicy::kAllowed;
-  prevent_close = false;
-  force_unregister_os_integration = false;
 }
 
 WebAppPolicyManager::CustomManifestValues::CustomManifestValues() = default;

@@ -37,6 +37,7 @@ GetNewCertVerifierServiceRemoteParams(
   mojo::PendingReceiver<mojom::CertVerifierServiceClient> cert_verifier_client;
   cert_verifier_service_factory->GetNewCertVerifier(
       cert_verifier_remote.InitWithNewPipeAndPassReceiver(),
+      /*updater=*/mojo::NullReceiver(),
       cert_verifier_client.InitWithNewPipeAndPassRemote(),
       std::move(creation_params));
   return network::mojom::CertVerifierServiceRemoteParams::New(

@@ -21,7 +21,6 @@ import org.chromium.chrome.browser.merchant_viewer.MerchantTrustSignalsCoordinat
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.R;
-import org.chromium.chrome.browser.omnibox.SearchEngineLogoUtils;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
 import org.chromium.chrome.browser.page_info.ChromePageInfoHighlight;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -67,7 +66,6 @@ public class StatusCoordinator implements View.OnClickListener, LocationBarDataP
      * @param urlBarEditingTextStateProvider The url coordinator.
      * @param templateUrlServiceSupplier A supplier for {@link TemplateUrlService} used to query the
      *     default search engine.
-     * @param searchEngineLogoUtils Utils to query the state of the search engine logos feature.
      * @param windowAndroid The {@link WindowAndroid} that is used by the owning {@link Activity}.
      * @param pageInfoAction Displays page info popup.
      * @param merchantTrustSignalsCoordinatorSupplier Supplier of {@link
@@ -82,7 +80,6 @@ public class StatusCoordinator implements View.OnClickListener, LocationBarDataP
             UrlBarEditingTextStateProvider urlBarEditingTextStateProvider,
             LocationBarDataProvider locationBarDataProvider,
             OneshotSupplier<TemplateUrlService> templateUrlServiceSupplier,
-            SearchEngineLogoUtils searchEngineLogoUtils,
             Supplier<Profile> profileSupplier,
             WindowAndroid windowAndroid,
             PageInfoAction pageInfoAction,
@@ -113,7 +110,6 @@ public class StatusCoordinator implements View.OnClickListener, LocationBarDataP
                         isTablet,
                         locationBarDataProvider,
                         PermissionDialogController.getInstance(),
-                        searchEngineLogoUtils,
                         templateUrlServiceSupplier,
                         profileSupplier,
                         pageInfoIPHController,
@@ -221,7 +217,7 @@ public class StatusCoordinator implements View.OnClickListener, LocationBarDataP
         updateSecurityIcon();
     }
 
-    // LocationBarData.Observer implementation
+    // LocationBarData.Observer implementation.
     // Using the default empty onPrimaryColorChanged.
     // Using the default empty onTitleChanged.
     // Using the default empty onUrlChanged.
@@ -250,6 +246,11 @@ public class StatusCoordinator implements View.OnClickListener, LocationBarDataP
     @Override
     public void onPageLoadStopped() {
         mMediator.onPageLoadStopped();
+    }
+
+    @Override
+    public void onTabCrashed() {
+        mMediator.onTabCrashed();
     }
 
     /** Returns the resource identifier of the current security icon drawable. */

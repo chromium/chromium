@@ -4,16 +4,115 @@
 
 #include "chrome/browser/ash/scanning/fake_lorgnette_scanner_manager.h"
 
+#include <initializer_list>
 #include <utility>
 
+#include "base/containers/fixed_flat_map.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/notreached.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
+#include "chromeos/ash/components/dbus/lorgnette/lorgnette_service.pb.h"
 #include "third_party/re2/src/re2/re2.h"
+#include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/gfx/codec/jpeg_codec.h"
 
 namespace ash {
 
 namespace {
+
+using ProtoScanFailureMode = lorgnette::ScanFailureMode;
+using ProtoColorMode = lorgnette::ColorMode;
+using ProtoSourceType = lorgnette::SourceType;
+using ProtoImageFormat = lorgnette::ImageFormat;
+using ProtoScanRegion = lorgnette::ScanRegion;
+
+std::string GetColorModeString(ProtoColorMode color_mode) {
+  switch (color_mode) {
+    case ProtoColorMode::MODE_GRAYSCALE:
+      return "grayscale";
+    case lorgnette::MODE_COLOR:
+      return "color";
+    case lorgnette::MODE_LINEART:
+      return "black_and_white";
+    case lorgnette::MODE_UNSPECIFIED:
+    case ProtoColorMode::ColorMode_INT_MIN_SENTINEL_DO_NOT_USE_:
+    case ProtoColorMode::ColorMode_INT_MAX_SENTINEL_DO_NOT_USE_:
+      NOTREACHED_NORETURN();
+  }
+}
+
+static constexpr auto kPageSizeToPageSizeStrMap =
+    base::MakeFixedFlatMap<std::pair<double, double>, base::StringPiece>({
+        {{297, 420}, "a3"},           // ISO A3: 297 x 420 mm
+        {{210, 297}, "a4"},           // ISO A4: 210 x 297 mm.
+        {{257, 364}, "b4"},           // ISO B4: 257 x 364 mm.
+        {{215.9, 355.6}, "legal"},    // Legal: 215.9 x 355.6 mm.
+        {{215.9, 279.4}, "letter"},   // NA Letter: 215.9 x 279.4 mm.
+        {{279.4, 431.8}, "tabloid"},  // Tabloid: 279.4 x 431.8 mm.
+        {{0, 0}, "max"},              // Max: the scan region is left unset.
+    });
+
+std::string GetPageSizeString(const ProtoScanRegion& scan_region) {
+  auto bottom_right_x = scan_region.bottom_right_x();
+  auto bottom_right_y = scan_region.bottom_right_y();
+  const auto bottom_region = std::make_pair(bottom_right_x, bottom_right_y);
+  for (const auto& entry : kPageSizeToPageSizeStrMap) {
+    if (bottom_region == entry.first) {
+      return std::string(entry.second);
+    }
+  }
+
+  NOTREACHED_NORETURN();
+}
+
+std::string GetImageFormatString(ProtoImageFormat img_format) {
+  switch (img_format) {
+    case lorgnette::IMAGE_FORMAT_PNG:
+      return "png";
+    case lorgnette::IMAGE_FORMAT_JPEG:
+      return "jpeg";
+    case lorgnette::ImageFormat_INT_MIN_SENTINEL_DO_NOT_USE_:
+    case lorgnette::ImageFormat_INT_MAX_SENTINEL_DO_NOT_USE_:
+      NOTREACHED_NORETURN();
+  }
+}
+
+std::string GetResolution(uint32_t resolution) {
+  return base::StrCat({base::NumberToString(resolution), "_dpi"});
+}
+
+std::string GetScanSettingsMapKey(const lorgnette::ScanSettings& settings) {
+  std::initializer_list<std::string> parts = {
+      base::ToLowerASCII(settings.source_name()),
+      GetImageFormatString(settings.image_format()),
+      GetColorModeString(settings.color_mode()),
+      GetPageSizeString(settings.scan_region()),
+      GetResolution(settings.resolution())};
+  return base::JoinString(parts, "_");
+}
+
+// Maps a specific `ScanSettings` combination to an `alpha` which will be used
+// by `CreateJpeg` to generate a JPEG image. The generated JPEG image will
+// be used to validate that a set of scan settings will always produce the
+// same output.
+static constexpr auto kScanSettingsToAlphaMap =
+    base::MakeFixedFlatMap<base::StringPiece, int>(
+        {{"flatbed_jpeg_color_letter_300_dpi", /*alpha=*/1},
+         {"adf_simplex_jpeg_grayscale_max_150_dpi", /*alpha=*/2}});
+
+// Returns a manually generated JPEG image. `alpha` is used to make them unique.
+std::string CreateJpeg(const int alpha = 255) {
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(100, 100);
+  bitmap.eraseARGB(alpha, 0, 0, 255);
+  std::vector<unsigned char> bytes;
+  CHECK(gfx::JPEGCodec::Encode(bitmap, 90, &bytes));
+  return std::string(bytes.begin(), bytes.end());
+}
 
 // A list of Epson models that do not rotate alternating ADF scanned pages
 // to be excluded in IsRotateAlternate().
@@ -75,6 +174,7 @@ void FakeLorgnetteScannerManager::GetScannerNames(
 }
 
 void FakeLorgnetteScannerManager::GetScannerInfoList(
+    const std::string& client_id,
     LocalScannerFilter local_only,
     SecureScannerFilter secure_only,
     GetScannerInfoListCallback callback) {
@@ -101,6 +201,21 @@ void FakeLorgnetteScannerManager::CloseScanner(
     CloseScannerCallback callback) {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), close_scanner_response_));
+}
+
+void FakeLorgnetteScannerManager::SetOptions(
+    const lorgnette::SetOptionsRequest& request,
+    SetOptionsCallback callback) {
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), set_options_response_));
+}
+
+void FakeLorgnetteScannerManager::GetCurrentConfig(
+    const lorgnette::GetCurrentConfigRequest& request,
+    GetCurrentConfigCallback callback) {
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(std::move(callback), get_current_config_response_));
 }
 
 void FakeLorgnetteScannerManager::StartPreparedScan(
@@ -142,6 +257,7 @@ void FakeLorgnetteScannerManager::Scan(const std::string& scanner_name,
                                        ProgressCallback progress_callback,
                                        PageCallback page_callback,
                                        CompletionCallback completion_callback) {
+  MaybeSetScanDataBasedOnSettings(settings);
   if (scan_data_.has_value()) {
     uint32_t page_number = 1;
     for (const std::string& page_data : scan_data_.value()) {
@@ -204,6 +320,16 @@ void FakeLorgnetteScannerManager::SetCloseScannerResponse(
   close_scanner_response_ = response;
 }
 
+void FakeLorgnetteScannerManager::SetSetOptionsResponse(
+    const absl::optional<lorgnette::SetOptionsResponse>& response) {
+  set_options_response_ = response;
+}
+
+void FakeLorgnetteScannerManager::SetGetCurrentConfigResponse(
+    const absl::optional<lorgnette::GetCurrentConfigResponse>& response) {
+  get_current_config_response_ = response;
+}
+
 void FakeLorgnetteScannerManager::SetStartPreparedScanResponse(
     const absl::optional<lorgnette::StartPreparedScanResponse>& response) {
   start_prepared_scan_response_ = response;
@@ -222,6 +348,16 @@ void FakeLorgnetteScannerManager::SetScanResponse(
 void FakeLorgnetteScannerManager::SetCancelScanResponse(
     const absl::optional<lorgnette::CancelScanResponse>& response) {
   cancel_scan_response_ = response;
+}
+
+void FakeLorgnetteScannerManager::MaybeSetScanDataBasedOnSettings(
+    const lorgnette::ScanSettings& settings) {
+  const auto* match =
+      kScanSettingsToAlphaMap.find(GetScanSettingsMapKey(settings));
+  if (match != kScanSettingsToAlphaMap.end()) {
+    SetScanResponse(
+        std::initializer_list<std::string>{CreateJpeg(match->second)});
+  }
 }
 
 }  // namespace ash

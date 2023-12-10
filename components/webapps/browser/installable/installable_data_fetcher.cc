@@ -5,6 +5,7 @@
 #include "components/webapps/browser/installable/installable_data_fetcher.h"
 
 #include "base/functional/callback.h"
+#include "components/webapps/browser/features.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/common/constants.h"
 #include "content/public/browser/manifest_icon_downloader.h"
@@ -57,10 +58,13 @@ void InstallableDataFetcher::OnDidGetManifest(
     const GURL& manifest_url,
     blink::mojom::ManifestPtr manifest) {
   InstallableStatusCode error = NO_ERROR_DETECTED;
-  if (manifest_url.is_empty()) {
-    error = NO_MANIFEST;
-  } else if (blink::IsEmptyManifest(manifest)) {
-    error = MANIFEST_EMPTY;
+  if (!base::FeatureList::IsEnabled(
+          features::kUniversalInstallRootScopeNoManifest)) {
+    if (manifest_url.is_empty()) {
+      error = NO_MANIFEST;
+    } else if (blink::IsEmptyManifest(manifest)) {
+      error = MANIFEST_EMPTY;
+    }
   }
 
   page_data_->OnManifestFetched(std::move(manifest), manifest_url, error);

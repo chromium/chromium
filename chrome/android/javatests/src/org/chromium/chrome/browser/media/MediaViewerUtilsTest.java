@@ -19,6 +19,7 @@ import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
 import org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -40,6 +41,7 @@ public class MediaViewerUtilsTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/1489541")
     public void testCustomTabActivityInLightMode() throws Exception {
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(
                 CustomTabsIntentTestUtils.createMinimalCustomTabIntentWithTheme(

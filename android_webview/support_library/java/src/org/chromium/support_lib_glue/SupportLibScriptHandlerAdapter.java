@@ -11,9 +11,7 @@ import org.chromium.base.TraceEvent;
 import org.chromium.support_lib_boundary.ScriptHandlerBoundaryInterface;
 import org.chromium.support_lib_glue.SupportLibWebViewChromiumFactory.ApiCall;
 
-/**
- * Adapter between ScriptHandlerBoundaryInterface and ScriptHandler.
- */
+/** Adapter between ScriptHandlerBoundaryInterface and ScriptHandler. */
 class SupportLibScriptHandlerAdapter implements ScriptHandlerBoundaryInterface {
     private ScriptHandler mScriptHandler;
 
@@ -23,8 +21,8 @@ class SupportLibScriptHandlerAdapter implements ScriptHandlerBoundaryInterface {
 
     @Override
     public void remove() {
-        try (TraceEvent event = TraceEvent.scoped(
-                     "WebView.APICall.AndroidX.REMOVE_DOCUMENT_START_SCRIPT")) {
+        try (TraceEvent event =
+                TraceEvent.scoped("WebView.APICall.AndroidX.REMOVE_DOCUMENT_START_SCRIPT")) {
             recordApiCall(ApiCall.REMOVE_DOCUMENT_START_SCRIPT);
             mScriptHandler.remove();
         }

@@ -9,9 +9,7 @@ import androidx.annotation.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 
-/**
- * Provides access to internal AuxiliarySearch implementation parts, if they are available.
- */
+/** Provides access to internal AuxiliarySearch implementation parts, if they are available. */
 public interface AuxiliarySearchHooks {
     /** Whether the internal components of the Auxiliary Search are available.*/
     default boolean isEnabled() {

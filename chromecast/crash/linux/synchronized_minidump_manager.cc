@@ -15,6 +15,7 @@
 #include <string>
 #include <utility>
 
+#include <optional>
 #include "base/command_line.h"
 #include "base/files/dir_reader_posix.h"
 #include "base/files/file_util.h"
@@ -27,7 +28,6 @@
 #include "base/strings/string_split.h"
 #include "chromecast/base/path_utils.h"
 #include "chromecast/crash/linux/dump_info.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // if |cond| is false, returns |retval|.
 #define RCHECK(cond, retval) \
@@ -66,7 +66,7 @@ base::FilePath GetMinidumpPath() {
 // Gets the ratelimit parameter dictionary given a deserialized |metadata|.
 // Returns nullptr if invalid.
 base::Value::Dict* GetRatelimitParams(
-    absl::optional<base::Value::Dict>& metadata) {
+    std::optional<base::Value::Dict>& metadata) {
   if (!metadata)
     return nullptr;
   return metadata->FindDict(kLockfileRatelimitKey);
@@ -74,12 +74,11 @@ base::Value::Dict* GetRatelimitParams(
 
 // Returns the time of the current ratelimit period's start in |metadata|.
 // Returns base::Time() if an error occurs.
-base::Time GetRatelimitPeriodStart(
-    absl::optional<base::Value::Dict>& metadata) {
+base::Time GetRatelimitPeriodStart(std::optional<base::Value::Dict>& metadata) {
   base::Value::Dict* ratelimit_params = GetRatelimitParams(metadata);
   RCHECK(ratelimit_params, base::Time());
 
-  absl::optional<double> seconds =
+  std::optional<double> seconds =
       ratelimit_params->FindDouble(kLockfileRatelimitPeriodStartKey);
   RCHECK(seconds, base::Time());
 
@@ -91,7 +90,7 @@ base::Time GetRatelimitPeriodStart(
 
 // Sets the time of the current ratelimit period's start in |metadata| to
 // |period_start|. Returns true on success, false on error.
-bool SetRatelimitPeriodStart(absl::optional<base::Value::Dict>& metadata,
+bool SetRatelimitPeriodStart(std::optional<base::Value::Dict>& metadata,
                              base::Time period_start) {
   DCHECK(!period_start.is_null());
 
@@ -105,18 +104,18 @@ bool SetRatelimitPeriodStart(absl::optional<base::Value::Dict>& metadata,
 
 // Gets the number of dumps added to |metadata| in the current ratelimit
 // period. Returns < 0 on error.
-int GetRatelimitPeriodDumps(absl::optional<base::Value::Dict>& metadata) {
+int GetRatelimitPeriodDumps(std::optional<base::Value::Dict>& metadata) {
   base::Value::Dict* ratelimit_params = GetRatelimitParams(metadata);
   if (!ratelimit_params)
     return -1;
-  absl::optional<int> period_dumps =
+  std::optional<int> period_dumps =
       ratelimit_params->FindInt(kLockfileRatelimitPeriodDumpsKey);
   return period_dumps.value_or(-1);
 }
 
 // Sets the current ratelimit period's number of dumps in |metadata| to
 // |period_dumps|. Returns true on success, false on error.
-bool SetRatelimitPeriodDumps(absl::optional<base::Value::Dict>& metadata,
+bool SetRatelimitPeriodDumps(std::optional<base::Value::Dict>& metadata,
                              int period_dumps) {
   DCHECK_GE(period_dumps, 0);
 
@@ -129,7 +128,7 @@ bool SetRatelimitPeriodDumps(absl::optional<base::Value::Dict>& metadata,
 }
 
 // Returns true if |metadata| contains valid metadata, false otherwise.
-bool ValidateMetadata(absl::optional<base::Value::Dict>& metadata) {
+bool ValidateMetadata(std::optional<base::Value::Dict>& metadata) {
   RCHECK(metadata, false);
 
   // Validate ratelimit params
@@ -296,7 +295,7 @@ bool SynchronizedMinidumpManager::ParseFiles() {
   for (const std::string& line : lines) {
     if (line.size() == 0)
       continue;
-    absl::optional<base::Value> dump_info = base::JSONReader::Read(line);
+    std::optional<base::Value> dump_info = base::JSONReader::Read(line);
     RCHECK(dump_info.has_value(), false);
     DumpInfo info(&dump_info.value());
     RCHECK(info.valid(), false);
@@ -312,7 +311,7 @@ bool SynchronizedMinidumpManager::ParseFiles() {
       << "JSON error " << error_code << ":" << error_msg;
   RCHECK(metadata_ptr, false);
   RCHECK(metadata_ptr->is_dict(), false);
-  absl::optional<base::Value::Dict> metadata =
+  std::optional<base::Value::Dict> metadata =
       std::move(*metadata_ptr).TakeDict();
   RCHECK(ValidateMetadata(metadata), false);
 

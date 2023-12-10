@@ -9,7 +9,7 @@
 #include "third_party/blink/renderer/core/layout/inline/fragment_items.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_break_token.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_box_fragment.h"
+#include "third_party/blink/renderer/core/layout/logical_box_fragment.h"
 #include "third_party/blink/renderer/platform/fonts/character_range.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_buffer.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_view.h"

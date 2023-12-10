@@ -154,8 +154,8 @@ async def test_middle_click(bidi_session, top_context, load_static_test_page):
     assert len(events) == 3
 
     expected = [
-      {"type": "mousedown", "button": 1, "buttons": 4},
-      {"type": "mouseup", "button": 1, "buttons": 0},
+        {"type": "mousedown", "button": 1, "buttons": 4},
+        {"type": "mouseup", "button": 1, "buttons": 0},
     ]
     filtered_events = [filter_dict(e, expected[0]) for e in events]
     mousedown_mouseup_events = [
@@ -252,6 +252,7 @@ async def test_click_navigation(
     inline,
     subscribe_events,
     wait_for_event,
+    wait_for_future_safe,
     get_element,
 ):
     await subscribe_events(events=["browsingContext.load"])
@@ -281,5 +282,37 @@ async def test_click_navigation(
 
         on_entry = wait_for_event("browsingContext.load")
         await click_link()
-        event = await on_entry
+        event = await wait_for_future_safe(on_entry)
         assert event["url"] == destination
+
+
+@pytest.mark.parametrize("x, y, event_count", [
+    (0, 0, 0),
+    (1, 0, 1),
+    (0, 1, 1),
+], ids=["default value", "x", "y"])
+async def test_move_to_position_in_viewport(
+    bidi_session, load_static_test_page, top_context, x, y, event_count
+):
+    await load_static_test_page(page="test_actions.html")
+
+    actions = Actions()
+    actions.add_pointer().pointer_move(x=x, y=y)
+
+    await bidi_session.input.perform_actions(
+        actions=actions, context=top_context["context"]
+    )
+
+    events = await get_events(bidi_session, top_context["context"])
+    assert len(events) == event_count
+
+    # Move again to check that no further mouse move event is emitted.
+    actions = Actions()
+    actions.add_pointer().pointer_move(x=x, y=y)
+
+    await bidi_session.input.perform_actions(
+        actions=actions, context=top_context["context"]
+    )
+
+    events = await get_events(bidi_session, top_context["context"])
+    assert len(events) == event_count

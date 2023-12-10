@@ -15,6 +15,7 @@
 #include "ash/public/cpp/holding_space/holding_space_model_observer.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 namespace ui {
@@ -32,6 +33,8 @@ class ASH_EXPORT HoldingSpaceTrayChildBubble
     : public views::View,
       public HoldingSpaceControllerObserver,
       public HoldingSpaceModelObserver {
+  METADATA_HEADER(HoldingSpaceTrayChildBubble, views::View)
+
  public:
   explicit HoldingSpaceTrayChildBubble(HoldingSpaceViewDelegate* delegate);
   HoldingSpaceTrayChildBubble(const HoldingSpaceTrayChildBubble& other) =
@@ -79,7 +82,6 @@ class ASH_EXPORT HoldingSpaceTrayChildBubble
 
  private:
   // views::View:
-  const char* GetClassName() const override;
   void ChildPreferredSizeChanged(views::View* child) override;
   void ChildVisibilityChanged(views::View* child) override;
   void OnGestureEvent(ui::GestureEvent* event) override;

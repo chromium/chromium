@@ -9,8 +9,8 @@
 
 #include "base/observer_list.h"
 #include "components/password_manager/core/browser/form_fetcher.h"
-#include "components/password_manager/core/browser/interactions_stats.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/password_store/interactions_stats.h"
 
 namespace password_manager {
 
@@ -54,7 +54,9 @@ class FakeFormFetcher : public FormFetcher {
   const PasswordForm* GetPreferredMatch() const override;
   // Returns a new FakeFormFetcher.
   std::unique_ptr<FormFetcher> Clone() override;
-  absl::optional<PasswordStoreBackendError> GetProfileStoreBackendError()
+  std::optional<PasswordStoreBackendError> GetProfileStoreBackendError()
+      const override;
+  absl::optional<PasswordStoreBackendError> GetAccountStoreBackendError()
       const override;
 
   void set_stats(const std::vector<InteractionsStats>& stats) {
@@ -81,7 +83,10 @@ class FakeFormFetcher : public FormFetcher {
   void NotifyFetchCompleted();
 
   void SetProfileStoreBackendError(
-      absl::optional<PasswordStoreBackendError> error);
+      std::optional<PasswordStoreBackendError> error);
+
+  void SetAccountStoreBackendError(
+      std::optional<PasswordStoreBackendError> error);
 
  private:
   base::ObserverList<Consumer> consumers_;
@@ -94,7 +99,8 @@ class FakeFormFetcher : public FormFetcher {
   std::vector<const PasswordForm*> best_matches_;
   std::vector<const PasswordForm*> insecure_credentials_;
   bool is_blocklisted_ = false;
-  absl::optional<PasswordStoreBackendError> profile_store_backend_error_;
+  std::optional<PasswordStoreBackendError> profile_store_backend_error_;
+  std::optional<PasswordStoreBackendError> account_store_backend_error_;
 };
 
 }  // namespace password_manager

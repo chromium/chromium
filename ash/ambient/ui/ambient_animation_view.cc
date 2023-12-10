@@ -143,9 +143,13 @@ gfx::Outsets GetTextShadowCorrection(const gfx::ShadowValues& text_shadows) {
 // The border serves as padding between the GlanceableInfoView and its
 // parent view's bounds.
 std::unique_ptr<views::Border> CreateGlanceableInfoBorder(
+    bool include_text_shadow,
     const gfx::Vector2d& jitter = gfx::Vector2d()) {
-  gfx::Outsets shadow_text_correction =
-      GetTextShadowCorrection(ambient::util::GetTextShadowValues(nullptr));
+  gfx::Outsets shadow_text_correction;
+  if (include_text_shadow) {
+    shadow_text_correction =
+        GetTextShadowCorrection(ambient::util::GetTextShadowValues(nullptr));
+  }
   int top_padding =
       kWeatherTimeBorderPaddingDip - shadow_text_correction.top() + jitter.y();
   int left_padding =
@@ -184,6 +188,9 @@ AmbientAnimationView::AmbientAnimationView(
       progress_tracker_(progress_tracker),
       static_resources_(std::move(static_resources)),
       frame_rate_controller_(frame_rate_controller),
+      add_glanceable_info_text_shadow_(
+          static_resources_->GetUiSettings().theme() !=
+          personalization_app::mojom::AmbientTheme::kFeelTheBreeze),
       animation_photo_provider_(static_resources_.get(),
                                 view_delegate->GetAmbientBackendModel()),
       animation_jitter_calculator_(
@@ -286,9 +293,11 @@ void AmbientAnimationView::Init(
       views::BoxLayout::MainAxisAlignment::kStart);
   glanceable_info_container_->SetCrossAxisAlignment(
       views::BoxLayout::CrossAxisAlignment::kStart);
-  glanceable_info_container_->SetBorder(CreateGlanceableInfoBorder());
+  glanceable_info_container_->SetBorder(
+      CreateGlanceableInfoBorder(add_glanceable_info_text_shadow_));
   glanceable_info_container_->AddChildView(std::make_unique<GlanceableInfoView>(
-      view_delegate_.get(), this, kTimeFontSizeDip));
+      view_delegate_.get(), this, kTimeFontSizeDip,
+      add_glanceable_info_text_shadow_));
 
   // Media string should appear in the top-right corner of the
   // AmbientAnimationView's bounds.
@@ -434,7 +443,8 @@ void AmbientAnimationView::ApplyJitter() {
   // Sharing the same jitter between the animation and other peripheral content
   // keeps the spacing between features consistent.
   animated_image_view_->SetAdditionalTranslation(jitter);
-  glanceable_info_container_->SetBorder(CreateGlanceableInfoBorder(jitter));
+  glanceable_info_container_->SetBorder(
+      CreateGlanceableInfoBorder(add_glanceable_info_text_shadow_, jitter));
   media_string_container_->SetBorder(CreateMediaStringBorder(jitter));
 }
 

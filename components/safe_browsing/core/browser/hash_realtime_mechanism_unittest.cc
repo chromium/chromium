@@ -265,7 +265,6 @@ TEST_F(HashRealTimeMechanismTest, CheckUrl_HashRealTime_AllowlistMatchSafe) {
   base::MockCallback<SafeBrowsingLookupMechanism::CompleteCheckResultCallback>
       callback;
   auto result = mechanism->StartCheck(callback.Get());
-  EXPECT_EQ(result.did_check_url_real_time_allowlist, false);
   EXPECT_EQ(result.is_safe_synchronously, false);
 
   EXPECT_CALL(callback,
@@ -287,7 +286,6 @@ TEST_F(HashRealTimeMechanismTest, CheckUrl_HashRealTime_AllowlistMatchUnsafe) {
   base::MockCallback<SafeBrowsingLookupMechanism::CompleteCheckResultCallback>
       callback;
   auto result = mechanism->StartCheck(callback.Get());
-  EXPECT_EQ(result.did_check_url_real_time_allowlist, false);
   EXPECT_EQ(result.is_safe_synchronously, false);
 
   EXPECT_CALL(callback,
@@ -310,7 +308,6 @@ TEST_F(HashRealTimeMechanismTest, CheckUrl_HashRealTime_SafeLookup) {
   base::MockCallback<SafeBrowsingLookupMechanism::CompleteCheckResultCallback>
       callback;
   auto result = mechanism->StartCheck(callback.Get());
-  EXPECT_EQ(result.did_check_url_real_time_allowlist, false);
   EXPECT_EQ(result.is_safe_synchronously, false);
 
   EXPECT_CALL(
@@ -334,7 +331,6 @@ TEST_F(HashRealTimeMechanismTest, CheckUrl_HashRealTime_UnsafeLookup) {
   base::MockCallback<SafeBrowsingLookupMechanism::CompleteCheckResultCallback>
       callback;
   auto result = mechanism->StartCheck(callback.Get());
-  EXPECT_EQ(result.did_check_url_real_time_allowlist, false);
   EXPECT_EQ(result.is_safe_synchronously, false);
 
   EXPECT_CALL(
@@ -359,7 +355,6 @@ TEST_F(HashRealTimeMechanismTest, CheckUrl_HashRealTime_MissingService) {
   base::MockCallback<SafeBrowsingLookupMechanism::CompleteCheckResultCallback>
       callback;
   auto result = mechanism->StartCheck(callback.Get());
-  EXPECT_EQ(result.did_check_url_real_time_allowlist, false);
   EXPECT_EQ(result.is_safe_synchronously, false);
 
   EXPECT_CALL(callback,
@@ -384,7 +379,6 @@ TEST_F(HashRealTimeMechanismTest, CheckUrl_HashRealTime_UnsuccessfulLookup) {
   base::MockCallback<SafeBrowsingLookupMechanism::CompleteCheckResultCallback>
       callback;
   auto result = mechanism->StartCheck(callback.Get());
-  EXPECT_EQ(result.did_check_url_real_time_allowlist, false);
   EXPECT_EQ(result.is_safe_synchronously, false);
 
   EXPECT_CALL(callback,

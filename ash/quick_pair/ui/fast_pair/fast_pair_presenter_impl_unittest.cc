@@ -112,7 +112,7 @@ class TestMessageCenter : public message_center::FakeMessageCenter {
     EXPECT_EQ(id, notification_->id());
 
     notification_->delegate()->Click(/*button_index=*/button_index,
-                                     /*reply=*/absl::nullopt);
+                                     /*reply=*/std::nullopt);
   }
 
   void Close(const std::string& id, bool by_user) {

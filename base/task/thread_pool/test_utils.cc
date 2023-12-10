@@ -6,8 +6,10 @@
 
 #include <utility>
 
+#include "base/check.h"
 #include "base/debug/leak_annotations.h"
 #include "base/functional/bind.h"
+#include "base/functional/overloaded.h"
 #include "base/memory/raw_ptr.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/task/thread_pool/pooled_parallel_task_runner.h"
@@ -16,6 +18,7 @@
 #include "base/threading/scoped_blocking_call_internal.h"
 #include "base/threading/thread_restrictions.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace base {
 namespace internal {
@@ -61,8 +64,7 @@ bool MockJobTaskRunner::PostDelayedTask(const Location& from_here,
   auto job_task = base::MakeRefCounted<MockJobTask>(std::move(closure));
   scoped_refptr<JobTaskSource> task_source = job_task->GetJobTaskSource(
       from_here, traits_, pooled_task_runner_delegate_);
-  return pooled_task_runner_delegate_->EnqueueJobTaskSource(
-      std::move(task_source));
+  return task_source->NotifyConcurrencyIncrease();
 }
 
 scoped_refptr<TaskRunner> CreateJobTaskRunner(
@@ -263,32 +265,54 @@ MockJobTask::~MockJobTask() = default;
 MockJobTask::MockJobTask(
     base::RepeatingCallback<void(JobDelegate*)> worker_task,
     size_t num_tasks_to_run)
-    : worker_task_(std::move(worker_task)),
-      remaining_num_tasks_to_run_(num_tasks_to_run) {}
+    : task_(std::move(worker_task)),
+      remaining_num_tasks_to_run_(num_tasks_to_run) {
+  CHECK(!absl::get<decltype(worker_task)>(task_).is_null());
+}
 
 MockJobTask::MockJobTask(base::OnceClosure worker_task)
-    : worker_task_(base::BindRepeating(
-          [](base::OnceClosure&& worker_task, JobDelegate*) mutable {
-            std::move(worker_task).Run();
-          },
-          base::Passed(std::move(worker_task)))),
-      remaining_num_tasks_to_run_(1) {}
+    : task_(std::move(worker_task)), remaining_num_tasks_to_run_(1) {
+  CHECK(!absl::get<decltype(worker_task)>(task_).is_null());
+}
+
+void MockJobTask::SetNumTasksToRun(size_t num_tasks_to_run) {
+  if (num_tasks_to_run == 0) {
+    remaining_num_tasks_to_run_ = 0;
+    return;
+  }
+  if (auto* closure = absl::get_if<base::OnceClosure>(&task_); closure) {
+    // 0 is already handled above, so this can only be an attempt to set to
+    // a non-zero value for a OnceClosure. In that case, the only permissible
+    // value is 1, and the closure must not be null.
+    //
+    // Note that there is no need to check `!is_null()` for repeating callbacks,
+    // since `Run(JobDelegate*)` never consumes the repeating callback variant.
+    CHECK(!closure->is_null());
+    CHECK_EQ(1u, num_tasks_to_run);
+  }
+  remaining_num_tasks_to_run_ = num_tasks_to_run;
+}
 
 size_t MockJobTask::GetMaxConcurrency(size_t /* worker_count */) const {
   return remaining_num_tasks_to_run_.load();
 }
 
 void MockJobTask::Run(JobDelegate* delegate) {
-  worker_task_.Run(delegate);
-  size_t before = remaining_num_tasks_to_run_.fetch_sub(1);
-  DCHECK_GT(before, 0U);
+  absl::visit(
+      base::Overloaded{
+          [](OnceClosure& closure) { std::move(closure).Run(); },
+          [delegate](const RepeatingCallback<void(JobDelegate*)>& callback) {
+            callback.Run(delegate);
+          }},
+      task_);
+  CHECK_GT(remaining_num_tasks_to_run_.fetch_sub(1), 0u);
 }
 
 scoped_refptr<JobTaskSource> MockJobTask::GetJobTaskSource(
     const Location& from_here,
     const TaskTraits& traits,
     PooledTaskRunnerDelegate* delegate) {
-  return MakeRefCounted<JobTaskSource>(
+  return CreateJobTaskSource(
       from_here, traits, base::BindRepeating(&test::MockJobTask::Run, this),
       base::BindRepeating(&test::MockJobTask::GetMaxConcurrency, this),
       delegate);

@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/discover_feed/feed_constants.h"
+#import "ios/chrome/browser/discover_feed/model/feed_constants.h"
 
 @protocol FeedControlDelegate;
 @protocol FeedMenuCommands;
@@ -23,7 +23,7 @@
 @property(nonatomic, weak) id<FeedControlDelegate> feedControlDelegate;
 
 // Delegate to communicate back to the New Tab Page coordinator.
-@property(nonatomic, weak) id<NewTabPageDelegate> ntpDelegate;
+@property(nonatomic, weak) id<NewTabPageDelegate> NTPDelegate;
 
 // The currently selected sorting for the Following feed.
 @property(nonatomic, assign) FollowingFeedSortType followingFeedSortType;

@@ -41,15 +41,14 @@ namespace {
 //
 // network::mojom::URLLoaderNetworkServiceObserver::OnLoadingStateUpdate is
 // among the most frequent Mojo messages in traces from the field
-// (go/mojos-in-field-traces-2022). We'll disable it via a Canary/Dev-only
-// experiment to measure impact on performance. The user observable impact is
-// that the status bubble will no longer be displayed. We'll determine the next
-// steps after running the experiment.
+// (go/mojos-in-field-traces-2022). Inhibiting the messages has been tested all
+// the way to stable with no ill effect and performance gains.
 //
-// crbug.com/1433341
+// Remove when evaluation of combined performance gains is complete
+// crbug.com/1487544.
 BASE_FEATURE(kInhibitLoadingStateUpdate,
              "InhibitLoadingStateUpdate",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Helper used by the public URLLoaderFactoryParamsHelper::Create... methods.
 //

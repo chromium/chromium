@@ -73,8 +73,8 @@ class FakeAccessibilityController : ash::AccessibilityController {
   void UpdateDictationBubble(
       bool visible,
       ash::DictationBubbleIconType icon,
-      const absl::optional<std::u16string>& text,
-      const absl::optional<std::vector<ash::DictationBubbleHintType>>& hints)
+      const std::optional<std::u16string>& text,
+      const std::optional<std::vector<ash::DictationBubbleHintType>>& hints)
       override;
   void SilenceSpokenFeedback() override;
   void ShowToast(ash::AccessibilityToastType type) override;

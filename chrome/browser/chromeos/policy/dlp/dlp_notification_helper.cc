@@ -12,6 +12,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_types.h"
@@ -86,7 +87,7 @@ void ShowDlpNotification(const std::string& id,
       base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
           base::BindRepeating(&OnNotificationClicked, id)));
   // Set critical warning color.
-  notification.set_accent_color(gfx::kGoogleRed700);
+  notification.set_accent_color_id(ui::kColorSysError);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   notification.set_system_notification_warning_level(
       message_center::SystemNotificationWarningLevel::CRITICAL_WARNING);

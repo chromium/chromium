@@ -8,6 +8,7 @@
 <translation id="1420684932347524586">Error. No s'ha pogut generar la clau privada RSA aleatòria.</translation>
 <translation id="1445572445564823378">Aquesta extensió està alentint <ph name="PRODUCT_NAME" />. L'heu de desactivar per restaurar el rendiment de: <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1468038450257740950">WebGL no és compatible.</translation>
+<translation id="1610570795592207282">No s'ha pogut carregar el fitxer "<ph name="RELATIVE_PATH" />" de CSS per a l'script.</translation>
 <translation id="1803557475693955505">No s'ha pogut carregar la pàgina en segon pla "<ph name="BACKGROUND_PAGE" />".</translation>
 <translation id="2159915644201199628">No s'ha pogut descodificar la imatge: "<ph name="IMAGE_NAME" />"</translation>
 <translation id="2350172092385603347">S'ha utilitzat localització, però no s'ha especificat default_locale al manifest.</translation>
@@ -18,14 +19,12 @@
 <translation id="3115238746683532089">Producte desconegut <ph name="PRODUCT_ID" /> del proveïdor <ph name="VENDOR_ID" /> (número de sèrie <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">No s'ha pogut substituir el fitxer crx. Comproveu si el fitxer s'està utilitzant.</translation>
 <translation id="3163201441334626963">Producte desconegut <ph name="PRODUCT_ID" /> del proveïdor <ph name="VENDOR_ID" /></translation>
-<translation id="3302709122321372472">No s'ha pogut carregar el CSS "<ph name="RELATIVE_PATH" />" per a l'script de contingut.</translation>
 <translation id="3369521687965833290">No es pot desempaquetar l'extensió. Per desempaquetar l'extensió amb seguretat, cal un camí al directori del perfil que comenci amb la lletra d'una unitat i no contingui cap unió, punt de muntatge o enllaç simbòlic. No hi ha cap camí d'aquestes característiques al vostre perfil.</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (número de sèrie <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> del proveïdor <ph name="VENDOR_ID" /> (número de sèrie <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">El valor d'entrada per a la clau privada ha de ser un camí vàlid.</translation>
 <translation id="388442998277590542">No s'ha pogut carregar la pàgina d'opcions "<ph name="OPTIONS_PAGE" />".</translation>
 <translation id="3984413272403535372">S'ha produït un error en signar l'extensió.</translation>
-<translation id="39964277676607559">No s'ha pogut carregar el JavaScript "<ph name="RELATIVE_PATH" />" per a l'script de contingut.</translation>
 <translation id="4115165561519362854">L'administrador d'aquest ordinador requereix que <ph name="EXTENSION_NAME" /> tingui com a mínim la versió <ph name="EXTENSION_VERSION" />. No es pot activar fins que no s'hagi actualitzat a aquesta versió (o posterior).</translation>
 <translation id="4233778200880751280">No s'ha pogut carregar la pàgina d'informació "<ph name="ABOUT_PAGE" />".</translation>
 <translation id="471800408830181311">No s'ha pogut generar la clau privada.</translation>
@@ -33,6 +32,7 @@
 <translation id="4988792151665380515">No s'ha pogut exportar la clau pública.</translation>
 <translation id="5026754133087629784">Visualització del web: <ph name="WEBVIEW_TAG_NAME" /></translation>
 <translation id="5098647635849512368">No es pot trobar el camí absolut al directori per empaquetar.</translation>
+<translation id="5160071981665899014">No s'ha pogut carregar el fitxer "<ph name="RELATIVE_PATH" />" de JavaScript per a l'script.</translation>
 <translation id="5356315618422219272">Vista de l'aplicació: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5436430103864390185">Les finestres modelades no s'admeten.</translation>
 <translation id="5456409301717116725">Aquesta extensió inclou el fitxer de clau "<ph name="KEY_PATH" />". És probable que això no sigui convenient.</translation>

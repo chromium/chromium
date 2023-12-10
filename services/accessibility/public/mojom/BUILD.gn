@@ -45,25 +45,33 @@ if (supports_os_accessibility_service) {
       "file_loader.mojom",
       "speech_recognition.mojom",
       "tts.mojom",
+      "user_input.mojom",
       "user_interface.mojom",
     ]
     public_deps = [
       ":assistive_technology_type",
       "//mojo/public/mojom/base",
       "//skia/public/mojom:mojom",
+      "//ui/events/mojom:mojom",
       "//ui/gfx/geometry/mojom",
+      "//ui/latency/mojom:mojom",
     ]
   }
 
   group("os_accessibility_service_js") {
     testonly = true
     data = [
+      "$root_gen_dir/mojo/public/mojom/base/time.mojom-lite.js",
       "$root_gen_dir/skia/public/mojom/skcolor.mojom-lite.js",
+      "$root_gen_dir/ui/events/mojom/event_constants.mojom-lite.js",
+      "$root_gen_dir/ui/events/mojom/event.mojom-lite.js",
       "$root_gen_dir/ui/gfx/geometry/mojom/geometry.mojom-lite.js",
+      "$root_gen_dir/ui/latency/mojom/latency_info.mojom-lite.js",
       "$target_gen_dir/assistive_technology_type.mojom-lite.js",
       "$target_gen_dir/autoclick.mojom-lite.js",
       "$target_gen_dir/speech_recognition.mojom-lite.js",
       "$target_gen_dir/tts.mojom-lite.js",
+      "$target_gen_dir/user_input.mojom-lite.js",
       "$target_gen_dir/user_interface.mojom-lite.js",
     ]
     deps = [

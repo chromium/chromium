@@ -3,8 +3,12 @@
 // found in the LICENSE file.
 
 import 'chrome://shortcut-customization/js/accelerator_edit_view.js';
-import 'chrome://webui-test/mojo_webui_test_support.js';
+import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
+import {VKey} from 'chrome://resources/ash/common/shortcut_input_ui/accelerator_keys.mojom-webui.js';
+import {FakeShortcutInputProvider} from 'chrome://resources/ash/common/shortcut_input_ui/fake_shortcut_input_provider.js';
+import {KeyEvent} from 'chrome://resources/ash/common/shortcut_input_ui/input_device_settings.mojom-webui.js';
+import {Modifier as ModifierEnum} from 'chrome://resources/ash/common/shortcut_input_ui/shortcut_utils.js';
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {AcceleratorEditViewElement} from 'chrome://shortcut-customization/js/accelerator_edit_view.js';
@@ -12,6 +16,7 @@ import {AcceleratorLookupManager} from 'chrome://shortcut-customization/js/accel
 import {fakeAcceleratorConfig, fakeLayoutInfo} from 'chrome://shortcut-customization/js/fake_data.js';
 import {FakeShortcutProvider} from 'chrome://shortcut-customization/js/fake_shortcut_provider.js';
 import {setShortcutProviderForTesting} from 'chrome://shortcut-customization/js/mojo_interface_provider.js';
+import {setShortcutInputProviderForTesting} from 'chrome://shortcut-customization/js/shortcut_input_mojo_interface_provider.js';
 import {AcceleratorConfigResult, AcceleratorSource, Modifier} from 'chrome://shortcut-customization/js/shortcut_types.js';
 import {AcceleratorResultData, Subactions} from 'chrome://shortcut-customization/mojom-webui/ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -24,10 +29,13 @@ suite('acceleratorEditViewTest', function() {
   let editViewElement: AcceleratorEditViewElement|null = null;
   let manager: AcceleratorLookupManager|null = null;
   let provider: FakeShortcutProvider;
+  const shortcutInputProvider: FakeShortcutInputProvider =
+      new FakeShortcutInputProvider();
 
   setup(() => {
     provider = new FakeShortcutProvider();
     setShortcutProviderForTesting(provider);
+    setShortcutInputProviderForTesting(shortcutInputProvider);
 
     manager = AcceleratorLookupManager.getInstance();
     manager.setAcceleratorLookup(fakeAcceleratorConfig);
@@ -108,6 +116,7 @@ suite('acceleratorEditViewTest', function() {
 
     // Click on the edit button.
     getElementById('editButton')!.click();
+    await flushTasks();
 
     const fakeResult: AcceleratorResultData = {
       result: AcceleratorConfigResult.kSuccess,
@@ -117,16 +126,14 @@ suite('acceleratorEditViewTest', function() {
     provider.setFakeReplaceAcceleratorResult(fakeResult);
 
     // Press another shortcut, expect no error.
-    const viewElement = getElementById('acceleratorItem');
-    viewElement!.dispatchEvent(new KeyboardEvent('keydown', {
-      key: 'e',
-      keyCode: 69,
-      code: 'KeyE',
-      ctrlKey: true,
-      altKey: true,
-      shiftKey: false,
-      metaKey: false,
-    }));
+    const keyEvent: KeyEvent = {
+      vkey: VKey.kKeyE,
+      domCode: 0,
+      domKey: 0,
+      modifiers: ModifierEnum.ALT | ModifierEnum.CONTROL,
+      keyDisplay: 'e',
+    };
+    shortcutInputProvider.sendKeyPressEvent(keyEvent, keyEvent);
 
     await flushTasks();
     assertFalse(editViewElement!.hasError);
@@ -166,19 +173,18 @@ suite('acceleratorEditViewTest', function() {
 
     // Click on the edit button.
     getElementById('editButton')!.click();
+    await flushTasks();
 
     // Press 'Snap Window left' key, expect an error since it is a
     // pre-existing shortcut.
-    const viewElement = getElementById('acceleratorItem');
-    viewElement!.dispatchEvent(new KeyboardEvent('keydown', {
-      key: '[',
-      keyCode: 219,
-      code: 'Key[',
-      ctrlKey: false,
-      altKey: true,
-      shiftKey: false,
-      metaKey: false,
-    }));
+    const keyEvent: KeyEvent = {
+      vkey: VKey.kOem4,
+      domCode: 0,
+      domKey: 0,
+      modifiers: ModifierEnum.ALT | ModifierEnum.CONTROL,
+      keyDisplay: 'BracketLeft',
+    };
+    shortcutInputProvider.sendKeyPressEvent(keyEvent, keyEvent);
 
     await flushTasks();
     assertTrue(editViewElement!.hasError);
@@ -190,15 +196,14 @@ suite('acceleratorEditViewTest', function() {
 
     provider.setFakeReplaceAcceleratorResult(fakeResult2);
     // Press another shortcut, expect no error.
-    viewElement!.dispatchEvent(new KeyboardEvent('keydown', {
-      key: 'e',
-      keyCode: 69,
-      code: 'KeyE',
-      ctrlKey: true,
-      altKey: true,
-      shiftKey: false,
-      metaKey: false,
-    }));
+    const keyEvent2: KeyEvent = {
+      vkey: VKey.kKeyE,
+      domCode: 0,
+      domKey: 0,
+      modifiers: ModifierEnum.ALT | ModifierEnum.CONTROL,
+      keyDisplay: 'e',
+    };
+    shortcutInputProvider.sendKeyPressEvent(keyEvent2, keyEvent2);
 
     await flushTasks();
     assertFalse(editViewElement!.hasError);
@@ -238,19 +243,18 @@ suite('acceleratorEditViewTest', function() {
 
     // Click on the edit button.
     getElementById('editButton')!.click();
+    await flushTasks();
 
     // Press 'Snap Window left' key, expect an error since it is a
     // pre-existing shortcut.
-    const viewElement = getElementById('acceleratorItem');
-    viewElement!.dispatchEvent(new KeyboardEvent('keydown', {
-      key: '[',
-      keyCode: 219,
-      code: 'Key[',
-      ctrlKey: false,
-      altKey: true,
-      shiftKey: false,
-      metaKey: false,
-    }));
+    const keyEvent: KeyEvent = {
+      vkey: VKey.kOem4,
+      domCode: 0,
+      domKey: 0,
+      modifiers: ModifierEnum.ALT,
+      keyDisplay: 'BracketLeft',
+    };
+    shortcutInputProvider.sendKeyPressEvent(keyEvent, keyEvent);
 
     await flushTasks();
     assertTrue(editViewElement!.hasError);
@@ -282,32 +286,31 @@ suite('acceleratorEditViewTest', function() {
     // Click on the edit button.
     getElementById('editButton')!.click();
 
+    await flushTasks();
+
     // Press 'Snap Window left' key, expect an error since it is a
     // pre-existing shortcut.
-    const viewElement = getElementById('acceleratorItem');
-    viewElement!.dispatchEvent(new KeyboardEvent('keydown', {
-      key: '[',
-      keyCode: 219,
-      code: 'Key[',
-      ctrlKey: false,
-      altKey: true,
-      shiftKey: false,
-      metaKey: false,
-    }));
+    const keyEvent: KeyEvent = {
+      vkey: VKey.kOem4,
+      domCode: 0,
+      domKey: 0,
+      modifiers: ModifierEnum.ALT,
+      keyDisplay: 'BracketLeft',
+    };
+    shortcutInputProvider.sendKeyPressEvent(keyEvent, keyEvent);
 
     await flushTasks();
     assertTrue(editViewElement!.hasError);
 
     // Press a single key, expect error to be reset.
-    viewElement!.dispatchEvent(new KeyboardEvent('keydown', {
-      key: 'a',
-      keyCode: 220,
-      code: 'KeyA',
-      ctrlKey: false,
-      altKey: false,
-      shiftKey: false,
-      metaKey: false,
-    }));
+    const keyEvent2: KeyEvent = {
+      vkey: VKey.kKeyA,
+      domCode: 0,
+      domKey: 0,
+      modifiers: 0,
+      keyDisplay: 'a',
+    };
+    shortcutInputProvider.sendKeyPressEvent(keyEvent2, keyEvent2);
 
     await flushTasks();
     assertFalse(editViewElement!.hasError);

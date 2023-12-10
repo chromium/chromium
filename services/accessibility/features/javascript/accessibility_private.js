@@ -58,6 +58,12 @@ class AtpAccessibilityPrivate {
     BELOW_ACCESSIBILITY_BUBBLES: 'belowAccessibilityBubbles',
   };
 
+  /** @enum {string} */
+  SyntheticKeyboardEventType = {
+    KEYUP: 'keyup',
+    KEYDOWN: 'keydown',
+  };
+
   constructor() {
     // This is a singleton.
     console.assert(!chrome.accessibilityPrivate);
@@ -88,8 +94,22 @@ class AtpAccessibilityPrivate {
 
     // Private members.
 
+    this.userInputRemote_ = null;
     this.userInterfaceRemote_ = null;
     this.autoclickRemote_ = null;
+  }
+
+  /**
+   * Load user input remote on-demand. Not every consumer of
+   * AccessibilityPrivate will need this; this way we don't need to load the
+   * generated JS bindings for UserInput for every consumer.
+   * @return {!ax.mojom.UserInputRemote}
+   */
+  getUserInputRemote_() {
+    if (!this.userInputRemote_) {
+      this.userInputRemote_ = ax.mojom.UserInput.getRemote();
+    }
+    return this.userInputRemote_;
   }
 
   /**
@@ -119,11 +139,73 @@ class AtpAccessibilityPrivate {
   }
 
   /**
+   * Sends the given synthetic key event.
+   * Synthetic key events are only used for simulated keyboard navigation, and
+   * do not support internationalization. Any text entry should be done via IME.
+   *
+   * @param {!chrome.accessibilityPrivate.SyntheticKeyboardEvent} keyEvent
+   * @param {boolean} useRewriters (Deprecated)
+   */
+  sendSyntheticKeyEvent(keyEvent, useRewriters) {
+    let mojomKeyEvent = new ax.mojom.SyntheticKeyEvent();
+    switch (keyEvent.type) {
+      case this.SyntheticKeyboardEventType.KEYDOWN:
+        mojomKeyEvent.type = ui.mojom.EventType.KEY_PRESSED;
+        break;
+      case this.SyntheticKeyboardEventType.KEYUP:
+        mojomKeyEvent.type = ui.mojom.EventType.KEY_RELEASED;
+        break;
+      default:
+        console.error('Unknown key event type', keyEvent.type);
+        return;
+    }
+
+    mojomKeyEvent.keyData = new ui.mojom.KeyData();
+    mojomKeyEvent.keyData.keyCode = keyEvent.keyCode;
+    // TODO(b/307553499): Update SyntheticKeyEvent to use dom_code and dom_key.
+    mojomKeyEvent.keyData.domCode = 0;
+    mojomKeyEvent.keyData.domKey = 0;
+    mojomKeyEvent.keyData.isChar = false;
+
+    mojomKeyEvent.flags = ui.mojom.EVENT_FLAG_NONE;
+
+    if (keyEvent.modifiers) {
+      if (keyEvent.modifiers.alt) {
+        mojomKeyEvent.flags |= ui.mojom.EVENT_FLAG_ALT_DOWN;
+      }
+      if (keyEvent.modifiers.ctrl) {
+        mojomKeyEvent.flags |= ui.mojom.EVENT_FLAG_CONTROL_DOWN;
+      }
+      if (keyEvent.modifiers.search) {
+        mojomKeyEvent.flags |= ui.mojom.EVENT_FLAG_COMMAND_DOWN;
+      }
+      if (keyEvent.modifiers.shift) {
+        mojomKeyEvent.flags |= ui.mojom.EVENT_FLAG_SHIFT_DOWN;
+      }
+    }
+
+    this.getUserInputRemote_().sendSyntheticKeyEventForShortcutOrNavigation(
+        mojomKeyEvent);
+  }
+
+  /**
    * Darkens or undarkens the screen.
    * @param {boolean} darken
    */
   darkenScreen(darken) {
     this.getUserInterfaceRemote_().darkenScreen(darken);
+  }
+
+  /**
+   * Called to translate localeCodeToTranslate into a human-readable string in
+   * the locale specified by displayLocaleCode.
+   * @param {string} localeCodeToTranslate
+   * @param {string} displayLocaleCode
+   * @return {string} the human-readable locale string in the provided locale.
+   */
+  getDisplayNameForLocale(localeCodeToTranslate, displayLocaleCode) {
+    return chrome.syncOSState.getDisplayNameForLocale(
+        localeCodeToTranslate, displayLocaleCode);
   }
 
   /**

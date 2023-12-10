@@ -138,4 +138,4 @@ class MetricsLogsEventManager {
 
 }  // namespace metrics
 
-#endif  // COMPONENTS_METRICS_METRICS_LOG_EVENT_MANAGER_H_
+#endif  // COMPONENTS_METRICS_METRICS_LOGS_EVENT_MANAGER_H_

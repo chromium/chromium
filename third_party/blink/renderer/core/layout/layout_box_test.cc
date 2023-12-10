@@ -643,7 +643,7 @@ TEST_F(LayoutBoxTest, VisualOverflowRectWithOverflowClipMargin) {
   EXPECT_EQ(PhysicalRect(0, 0, 110, 55), clip3->VisualOverflowRect());
 }
 
-// |NGInkOverflow| stopped storing visual overflow contained by |BorderBoxRect|
+// |InkOverflow| stopped storing visual overflow contained by |BorderBoxRect|
 // because they are not useful, and they are inconsistent when fully contained
 // and partially contained.
 // TODO(crbug.com/1144203): Change this to "if (NG)" when NG always use
@@ -748,7 +748,7 @@ TEST_F(LayoutBoxTest, OverflowRectsContainPaint) {
   auto* container = GetLayoutBoxByElementId("container");
   EXPECT_TRUE(container->ShouldClipOverflowAlongEitherAxis());
   EXPECT_EQ(PhysicalRect(10, 10, 300, 400),
-            container->PhysicalLayoutOverflowRect());
+            container->ScrollableOverflowRect());
   EXPECT_EQ(PhysicalRect(0, 0, 120, 220), container->VisualOverflowRect());
   EXPECT_EQ(PhysicalRect(0, 0, 120, 220), container->SelfVisualOverflowRect());
   EXPECT_CONTENTS_VISUAL_OVERFLOW(PhysicalRect(10, 10, 300, 400), container);
@@ -767,7 +767,7 @@ TEST_F(LayoutBoxTest, OverflowRectsOverflowHidden) {
   auto* container = GetLayoutBoxByElementId("container");
   EXPECT_TRUE(container->ShouldClipOverflowAlongEitherAxis());
   EXPECT_EQ(PhysicalRect(10, 10, 300, 400),
-            container->PhysicalLayoutOverflowRect());
+            container->ScrollableOverflowRect());
   EXPECT_EQ(PhysicalRect(0, 0, 120, 220), container->VisualOverflowRect());
   EXPECT_EQ(PhysicalRect(0, 0, 120, 220), container->SelfVisualOverflowRect());
   EXPECT_CONTENTS_VISUAL_OVERFLOW(PhysicalRect(10, 10, 300, 400), container);
@@ -880,7 +880,7 @@ TEST_F(LayoutBoxTest, DelayedInvalidationLayoutViewScrolled) {
   EXPECT_FALSE(layout_view->ShouldDelayFullPaintInvalidation());
 }
 
-TEST_F(LayoutBoxTest, MarkerContainerLayoutOverflowRect) {
+TEST_F(LayoutBoxTest, MarkerContainerScrollableOverflowRect) {
   SetBodyInnerHTML(R"HTML(
     <style>
       html { font-size: 16px; }
@@ -893,7 +893,7 @@ TEST_F(LayoutBoxTest, MarkerContainerLayoutOverflowRect) {
   auto* marker_container =
       To<LayoutBox>(GetLayoutObjectByElementId("target")->SlowFirstChild());
   EXPECT_GE(marker_container->PhysicalLocation().top +
-                marker_container->PhysicalLayoutOverflowRect().Bottom(),
+                marker_container->ScrollableOverflowRect().Bottom(),
             LayoutUnit(50));
 }
 
@@ -1441,8 +1441,7 @@ TEST_F(LayoutBoxTest, GeometriesWithScrollbarsNonScrollable) {
   // 90 = border_left + padding_left, 30 = border_top + padding_top
   // 385 = width - scrollbar_width, 284 = height - scrollbar_height
   EXPECT_EQ(PhysicalRect(90, 30, 385, 284), normal->PhysicalContentBoxRect());
-  EXPECT_EQ(PhysicalRect(50, 20, 445, 324),
-            normal->PhysicalLayoutOverflowRect());
+  EXPECT_EQ(PhysicalRect(50, 20, 445, 324), normal->ScrollableOverflowRect());
 
   const auto* vlr = GetLayoutBoxByElementId("vlr");
   // Same as "normal"
@@ -1452,18 +1451,17 @@ TEST_F(LayoutBoxTest, GeometriesWithScrollbarsNonScrollable) {
   EXPECT_EQ(PhysicalRect(50, 20, 445, 324), vlr->NoOverflowRect());
   EXPECT_EQ(PhysicalRect(50, 20, 445, 324), vlr->PhysicalPaddingBoxRect());
   EXPECT_EQ(PhysicalRect(90, 30, 385, 284), vlr->PhysicalContentBoxRect());
-  EXPECT_EQ(PhysicalRect(50, 20, 445, 324), vlr->PhysicalLayoutOverflowRect());
+  EXPECT_EQ(PhysicalRect(50, 20, 445, 324), vlr->ScrollableOverflowRect());
 
   const auto* vrl = GetLayoutBoxByElementId("vrl");
-  // Same as "normal" except that the PaddingBoxRect, ContentBoxRect and
-  // LayoutOverflowRect are flipped.
+  // Same as "normal".
   EXPECT_ZERO_SCROLL(vrl);
   EXPECT_EQ(gfx::Vector2d(), vrl->OriginAdjustmentForScrollbars());
   EXPECT_EQ(PhysicalRect(0, 0, 540, 400), vrl->PhysicalBorderBoxRect());
   EXPECT_EQ(PhysicalRect(50, 20, 445, 324), vrl->NoOverflowRect());
   EXPECT_EQ(PhysicalRect(50, 20, 445, 324), vrl->PhysicalPaddingBoxRect());
   EXPECT_EQ(PhysicalRect(90, 30, 385, 284), vrl->PhysicalContentBoxRect());
-  EXPECT_EQ(PhysicalRect(50, 20, 445, 324), vrl->PhysicalLayoutOverflowRect());
+  EXPECT_EQ(PhysicalRect(50, 20, 445, 324), vrl->ScrollableOverflowRect());
 
   const auto* rtl = GetLayoutBoxByElementId("rtl");
   EXPECT_ZERO_SCROLL(rtl);
@@ -1474,7 +1472,7 @@ TEST_F(LayoutBoxTest, GeometriesWithScrollbarsNonScrollable) {
   EXPECT_EQ(PhysicalRect(65, 20, 445, 324), rtl->NoOverflowRect());
   EXPECT_EQ(PhysicalRect(65, 20, 445, 324), rtl->PhysicalPaddingBoxRect());
   EXPECT_EQ(PhysicalRect(105, 30, 385, 284), rtl->PhysicalContentBoxRect());
-  EXPECT_EQ(PhysicalRect(65, 20, 445, 324), rtl->PhysicalLayoutOverflowRect());
+  EXPECT_EQ(PhysicalRect(65, 20, 445, 324), rtl->ScrollableOverflowRect());
 
   const auto* rtl_vlr = GetLayoutBoxByElementId("rtl-vlr");
   // Same as "vlr".
@@ -1484,8 +1482,7 @@ TEST_F(LayoutBoxTest, GeometriesWithScrollbarsNonScrollable) {
   EXPECT_EQ(PhysicalRect(50, 20, 445, 324), rtl_vlr->NoOverflowRect());
   EXPECT_EQ(PhysicalRect(50, 20, 445, 324), rtl_vlr->PhysicalPaddingBoxRect());
   EXPECT_EQ(PhysicalRect(90, 30, 385, 284), rtl_vlr->PhysicalContentBoxRect());
-  EXPECT_EQ(PhysicalRect(50, 20, 445, 324),
-            rtl_vlr->PhysicalLayoutOverflowRect());
+  EXPECT_EQ(PhysicalRect(50, 20, 445, 324), rtl_vlr->ScrollableOverflowRect());
 
   const auto* rtl_vrl = GetLayoutBoxByElementId("rtl-vrl");
   // Same as "vrl".
@@ -1495,8 +1492,7 @@ TEST_F(LayoutBoxTest, GeometriesWithScrollbarsNonScrollable) {
   EXPECT_EQ(PhysicalRect(50, 20, 445, 324), rtl_vrl->NoOverflowRect());
   EXPECT_EQ(PhysicalRect(50, 20, 445, 324), rtl_vrl->PhysicalPaddingBoxRect());
   EXPECT_EQ(PhysicalRect(90, 30, 385, 284), rtl_vrl->PhysicalContentBoxRect());
-  EXPECT_EQ(PhysicalRect(50, 20, 445, 324),
-            rtl_vrl->PhysicalLayoutOverflowRect());
+  EXPECT_EQ(PhysicalRect(50, 20, 445, 324), rtl_vrl->ScrollableOverflowRect());
 }
 
 TEST_F(LayoutBoxTest, GeometriesWithScrollbarsScrollable) {
@@ -1529,8 +1525,7 @@ TEST_F(LayoutBoxTest, GeometriesWithScrollbarsScrollable) {
   EXPECT_EQ(PhysicalOffset(), normal->ScrolledContentOffset());
   EXPECT_EQ(gfx::Vector2d(), normal->OriginAdjustmentForScrollbars());
   EXPECT_EQ(gfx::Vector2d(), scrollable_area->ScrollOffsetInt());
-  EXPECT_EQ(PhysicalRect(50, 20, 2060, 1040),
-            normal->PhysicalLayoutOverflowRect());
+  EXPECT_EQ(PhysicalRect(50, 20, 2060, 1040), normal->ScrollableOverflowRect());
   EXPECT_EQ(gfx::Vector2d(1615, 716),
             scrollable_area->MaximumScrollOffsetInt());
   EXPECT_EQ(gfx::Vector2d(), scrollable_area->MinimumScrollOffsetInt());
@@ -1547,8 +1542,7 @@ TEST_F(LayoutBoxTest, GeometriesWithScrollbarsScrollable) {
   EXPECT_EQ(PhysicalOffset(), vlr->ScrolledContentOffset());
   EXPECT_EQ(gfx::Vector2d(), vlr->OriginAdjustmentForScrollbars());
   EXPECT_EQ(gfx::Vector2d(), scrollable_area->ScrollOffsetInt());
-  EXPECT_EQ(PhysicalRect(50, 20, 2060, 1040),
-            vlr->PhysicalLayoutOverflowRect());
+  EXPECT_EQ(PhysicalRect(50, 20, 2060, 1040), vlr->ScrollableOverflowRect());
   EXPECT_EQ(gfx::Vector2d(1615, 716),
             scrollable_area->MaximumScrollOffsetInt());
   EXPECT_EQ(gfx::Vector2d(), scrollable_area->MinimumScrollOffsetInt());
@@ -1566,8 +1560,7 @@ TEST_F(LayoutBoxTest, GeometriesWithScrollbarsScrollable) {
   EXPECT_EQ(gfx::Vector2d(), vrl->OriginAdjustmentForScrollbars());
   EXPECT_EQ(gfx::Vector2d(), scrollable_area->ScrollOffsetInt());
   // Same as "vlr" except for flipping.
-  EXPECT_EQ(PhysicalRect(-1565, 20, 2060, 1040),
-            vrl->PhysicalLayoutOverflowRect());
+  EXPECT_EQ(PhysicalRect(-1565, 20, 2060, 1040), vrl->ScrollableOverflowRect());
   EXPECT_EQ(gfx::Vector2d(0, 716), scrollable_area->MaximumScrollOffsetInt());
   EXPECT_EQ(gfx::Vector2d(-1615, 0), scrollable_area->MinimumScrollOffsetInt());
   EXPECT_EQ(gfx::Point(1615, 0), scrollable_area->ScrollOrigin());
@@ -1583,8 +1576,7 @@ TEST_F(LayoutBoxTest, GeometriesWithScrollbarsScrollable) {
   EXPECT_EQ(PhysicalOffset(), rtl->ScrolledContentOffset());
   EXPECT_EQ(gfx::Vector2d(15, 0), rtl->OriginAdjustmentForScrollbars());
   EXPECT_EQ(gfx::Vector2d(), scrollable_area->ScrollOffsetInt());
-  EXPECT_EQ(PhysicalRect(-1550, 20, 2060, 1040),
-            rtl->PhysicalLayoutOverflowRect());
+  EXPECT_EQ(PhysicalRect(-1550, 20, 2060, 1040), rtl->ScrollableOverflowRect());
   EXPECT_EQ(gfx::Vector2d(0, 716), scrollable_area->MaximumScrollOffsetInt());
   EXPECT_EQ(gfx::Vector2d(-1615, 0), scrollable_area->MinimumScrollOffsetInt());
   EXPECT_EQ(gfx::Point(1615, 0), scrollable_area->ScrollOrigin());
@@ -1601,7 +1593,7 @@ TEST_F(LayoutBoxTest, GeometriesWithScrollbarsScrollable) {
   EXPECT_EQ(gfx::Vector2d(), rtl_vlr->OriginAdjustmentForScrollbars());
   EXPECT_EQ(gfx::Vector2d(), scrollable_area->ScrollOffsetInt());
   EXPECT_EQ(PhysicalRect(50, -696, 2060, 1040),
-            rtl_vlr->PhysicalLayoutOverflowRect());
+            rtl_vlr->ScrollableOverflowRect());
   EXPECT_EQ(gfx::Vector2d(1615, 0), scrollable_area->MaximumScrollOffsetInt());
   EXPECT_EQ(gfx::Vector2d(0, -716), scrollable_area->MinimumScrollOffsetInt());
   EXPECT_EQ(gfx::Point(0, 716), scrollable_area->ScrollOrigin());
@@ -1619,7 +1611,7 @@ TEST_F(LayoutBoxTest, GeometriesWithScrollbarsScrollable) {
   EXPECT_EQ(gfx::Vector2d(), scrollable_area->ScrollOffsetInt());
   // Same as "vlr" except for flipping.
   EXPECT_EQ(PhysicalRect(-1565, -696, 2060, 1040),
-            rtl_vrl->PhysicalLayoutOverflowRect());
+            rtl_vrl->ScrollableOverflowRect());
   EXPECT_EQ(gfx::Vector2d(), scrollable_area->MaximumScrollOffsetInt());
   EXPECT_EQ(gfx::Vector2d(-1615, -716),
             scrollable_area->MinimumScrollOffsetInt());
@@ -1727,14 +1719,14 @@ TEST_F(LayoutBoxTest, SetNeedsOverflowRecalcLayoutBox) {
   )HTML");
   Element* element = GetElementById("img");
   LayoutObject* target = element->GetLayoutObject();
-  EXPECT_FALSE(target->SelfNeedsLayoutOverflowRecalc());
+  EXPECT_FALSE(target->SelfNeedsScrollableOverflowRecalc());
 
   element->classList().Add(AtomicString("transform"));
   element->GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
   EXPECT_TRUE(target->PaintingLayer()->NeedsVisualOverflowRecalc());
 
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_FALSE(target->SelfNeedsLayoutOverflowRecalc());
+  EXPECT_FALSE(target->SelfNeedsScrollableOverflowRecalc());
 
   element->classList().Remove(AtomicString("transform"));
   element->GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
@@ -1750,14 +1742,14 @@ TEST_F(LayoutBoxTest, SetNeedsOverflowRecalcFlexBox) {
   )HTML");
   Element* element = GetElementById("flex");
   LayoutObject* target = element->GetLayoutObject();
-  EXPECT_FALSE(target->SelfNeedsLayoutOverflowRecalc());
+  EXPECT_FALSE(target->SelfNeedsScrollableOverflowRecalc());
 
   element->classList().Add(AtomicString("transform"));
   element->GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
   EXPECT_TRUE(target->PaintingLayer()->NeedsVisualOverflowRecalc());
 
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_FALSE(target->SelfNeedsLayoutOverflowRecalc());
+  EXPECT_FALSE(target->SelfNeedsScrollableOverflowRecalc());
 
   element->classList().Remove(AtomicString("transform"));
   element->GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);

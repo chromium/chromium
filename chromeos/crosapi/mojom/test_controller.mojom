@@ -7,6 +7,7 @@ module crosapi.mojom;
 import "chromeos/crosapi/mojom/app_service_types.mojom";
 import "chromeos/crosapi/mojom/extension_keeplist.mojom";
 import "chromeos/crosapi/mojom/tts.mojom";
+import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/values.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "ui/gfx/range/mojom/range.mojom";
@@ -47,17 +48,38 @@ enum OptionalBoolean {
   kTrue,
 };
 
+// Dev mode IWAs are either installed from a proxy origin, or from a Web Bundle
+// file.
+[Stable]
+union IsolatedWebAppLocation {
+  url.mojom.Url proxy_origin;
+  mojo_base.mojom.FilePath bundle_path;
+};
+
+[Stable]
+union InstallWebAppResult {
+  string app_id;
+  string error_message;
+};
+
 [Stable]
 struct AppListItemAttributes {
   string item_position@0;
   string pin_position@1;
 };
 
+// For use with StandaloneBrowserTestController's ObserveDomMessages method.
+[Stable]
+interface DomMessageObserver {
+  // Invoked when a message arrived.
+  OnMessage@0(string message);
+};
+
 // Implemented in lacros-chrome.
 // Lets the Ash browser tests that require Lacros to send commands to this
 // lacros-chrome instance.
-// Next version: 6
-// Next method id: 6
+// Next version: 9
+// Next method id: 11
 [Stable, Uuid="20e7f031-f4e1-4ad9-bd91-ad59eb8b1504"]
 interface StandaloneBrowserTestController {
   // Installs a test web app in lacros-chrome given a start URL and mode (open
@@ -83,11 +105,38 @@ interface StandaloneBrowserTestController {
   TtsSpeak@4(TtsUtterance utterance,
              pending_remote<TtsUtteranceClient> utterance_client);
 
-  // Installs an app with the given start url as a sub app of the given parent
-  // app in Lacros.
+  // Installs an app with the start URL "parent_app_origin/'sub_app_path'" as a
+  // sub app of the given parent app in Lacros.
   [MinVersion=5]
-  InstallSubApp@5(string parent_app_id, string sub_app_start_url)
+  InstallSubApp@5(string parent_app_id, string sub_app_path)
     => (string sub_app_id);
+
+  // Installs the isolated web app hosted at 'location' in lacros-chrome and
+  // returns the ID of the installed app or the error message if the install
+  // failed.
+  [MinVersion=6]
+  InstallIsolatedWebApp@6(IsolatedWebAppLocation location, bool dev_mode)
+    => (InstallWebAppResult result);
+
+  // Sets WebAppSettings pref for a primary user profile.
+  [MinVersion=7]
+  SetWebAppSettingsPref@7(string policy) => (bool success);
+
+  // Installs an unpacked extension located at the given directory in Lacros and
+  // returns its id once the extensions registry signals loading is complete
+  // (which does NOT guarantee that any background script or views have finished
+  // loading). If installation/loading fails, the callback is never run.
+  [MinVersion=8]
+  InstallUnpackedExtension@8(string path) => (string extension_id);
+
+  // Removes the given component extension from Lacros.
+  [MinVersion=8]
+  RemoveComponentExtension@9(string extension_id) => ();
+
+  // Informs the given observer of future messages from the
+  // DOMAutomationController.
+  [MinVersion=8]
+  ObserveDomMessages@10(pending_remote<DomMessageObserver> observer) => ();
 };
 
 // Allows callers running in lacros to trigger test events that are passed to
@@ -272,8 +321,8 @@ enum AssistiveTechnologyType {
 // This interface is implemented by Ash-Chrome.
 // This interface provides tests a mechanism to mutate or query ash.
 // In the future, this interface may merge with an automation or a11y interface.
-// Next version: 30
-// Next method id: 44
+// Next version: 31
+// Next method id: 45
 [Stable, Uuid="1f93f9d7-e466-466c-a675-c21b48cf30d3"]
 interface TestController {
   // Clicks the middle of the views element identified by |element_name|.
@@ -476,7 +525,7 @@ interface TestController {
 
   // Checks whether local cache for saved desks is still loading.
   [MinVersion=25]
-  IsSavedDeskStorageReady@37() =>(bool is_saved_desk_storage_ready);
+  IsSavedDeskStorageReady@37() => (bool is_saved_desk_storage_ready);
 
   // Sets enabled state for the given Accessibility feature.
   [MinVersion=26]
@@ -512,4 +561,9 @@ interface TestController {
   // Gets the last committed URL for each browser tab currently open in Ash.
   [MinVersion=29]
   GetAllOpenTabURLs@43() => (array<url.mojom.Url> urls);
+
+  // Overrides the Almanac endpoint URL for testing, override is removed if
+  // nullopt is given.
+  [MinVersion=30]
+  SetAlmanacEndpointUrlForTesting@44(string? override) => ();
 };

@@ -21,6 +21,7 @@
 #include "third_party/blink/public/strings/grit/blink_accessibility_strings.h"
 #include "third_party/blink/public/strings/grit/blink_strings.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/accessibility/android/accessibility_state.h"
 #include "ui/accessibility/ax_assistant_structure.h"
 #include "ui/accessibility/ax_node_position.h"
 #include "ui/accessibility/ax_role_properties.h"
@@ -778,16 +779,14 @@ std::u16string BrowserAccessibilityAndroid::GetValueForControl() const {
   // Optionally replace entered password text with bullet characters
   // based on a user preference.
   if (IsPasswordField()) {
-    auto* manager =
-        static_cast<BrowserAccessibilityManagerAndroid*>(this->manager());
-    if (manager->ShouldRespectDisplayedPasswordText()) {
+    if (ui::AccessibilityState::ShouldRespectDisplayedPasswordText()) {
       // In the Chrome accessibility tree, the value of a password node is
       // unobscured. However, if ShouldRespectDisplayedPasswordText() returns
       // true we should try to expose whatever's actually visually displayed,
       // whether that's the actual password or dots or whatever. To do this
       // we rely on the password field's shadow dom.
       value = BrowserAccessibility::GetTextContentUTF16();
-    } else if (!manager->ShouldExposePasswordText()) {
+    } else if (!ui::AccessibilityState::ShouldExposePasswordText()) {
       value = std::u16string(value.size(), ui::kSecurePasswordBullet);
     }
   }

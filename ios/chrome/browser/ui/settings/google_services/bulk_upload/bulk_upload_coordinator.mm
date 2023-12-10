@@ -13,7 +13,7 @@
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
-#import "ios/chrome/browser/signin/identity_manager_factory.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/ui/settings/google_services/bulk_upload/bulk_upload_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/settings/google_services/bulk_upload/bulk_upload_mediator.h"

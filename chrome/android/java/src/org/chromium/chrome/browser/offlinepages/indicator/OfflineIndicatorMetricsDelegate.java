@@ -20,6 +20,7 @@ public class OfflineIndicatorMetricsDelegate {
     public interface Clock {
         long currentTimeMillis();
     }
+
     private static Clock sClock = System::currentTimeMillis;
 
     // UMA Histograms.
@@ -75,40 +76,46 @@ public class OfflineIndicatorMetricsDelegate {
 
         // Read stored state from Prefs
         if (sharedPreferencesManager.contains(
-                    ChromePreferenceKeys.OFFLINE_INDICATOR_V2_WALL_TIME_SHOWN_MS)) {
-            mIndicatorShownWallTimeMs = sharedPreferencesManager.readLong(
-                    ChromePreferenceKeys.OFFLINE_INDICATOR_V2_WALL_TIME_SHOWN_MS);
+                ChromePreferenceKeys.OFFLINE_INDICATOR_V2_WALL_TIME_SHOWN_MS)) {
+            mIndicatorShownWallTimeMs =
+                    sharedPreferencesManager.readLong(
+                            ChromePreferenceKeys.OFFLINE_INDICATOR_V2_WALL_TIME_SHOWN_MS);
             mIsTrackingShownDuration = true;
         }
 
         if (sharedPreferencesManager.contains(
-                    ChromePreferenceKeys.OFFLINE_INDICATOR_V2_LAST_UPDATE_WALL_TIME_MS)) {
-            mLastUpdateWallTimeMs = sharedPreferencesManager.readLong(
-                    ChromePreferenceKeys.OFFLINE_INDICATOR_V2_LAST_UPDATE_WALL_TIME_MS);
+                ChromePreferenceKeys.OFFLINE_INDICATOR_V2_LAST_UPDATE_WALL_TIME_MS)) {
+            mLastUpdateWallTimeMs =
+                    sharedPreferencesManager.readLong(
+                            ChromePreferenceKeys.OFFLINE_INDICATOR_V2_LAST_UPDATE_WALL_TIME_MS);
         }
 
         if (sharedPreferencesManager.contains(
-                    ChromePreferenceKeys.OFFLINE_INDICATOR_V2_TIME_IN_FOREGROUND_MS)) {
-            mTimeInForegroundMs = sharedPreferencesManager.readLong(
-                    ChromePreferenceKeys.OFFLINE_INDICATOR_V2_TIME_IN_FOREGROUND_MS);
+                ChromePreferenceKeys.OFFLINE_INDICATOR_V2_TIME_IN_FOREGROUND_MS)) {
+            mTimeInForegroundMs =
+                    sharedPreferencesManager.readLong(
+                            ChromePreferenceKeys.OFFLINE_INDICATOR_V2_TIME_IN_FOREGROUND_MS);
         }
 
         if (sharedPreferencesManager.contains(
-                    ChromePreferenceKeys.OFFLINE_INDICATOR_V2_TIME_IN_BACKGROUND_MS)) {
-            mTimeInBackgroundMs = sharedPreferencesManager.readLong(
-                    ChromePreferenceKeys.OFFLINE_INDICATOR_V2_TIME_IN_BACKGROUND_MS);
+                ChromePreferenceKeys.OFFLINE_INDICATOR_V2_TIME_IN_BACKGROUND_MS)) {
+            mTimeInBackgroundMs =
+                    sharedPreferencesManager.readLong(
+                            ChromePreferenceKeys.OFFLINE_INDICATOR_V2_TIME_IN_BACKGROUND_MS);
         }
 
         if (sharedPreferencesManager.contains(
-                    ChromePreferenceKeys.OFFLINE_INDICATOR_V2_FIRST_TIME_IN_FOREGROUND_MS)) {
-            mFirstTimeInForegroundMs = sharedPreferencesManager.readLong(
-                    ChromePreferenceKeys.OFFLINE_INDICATOR_V2_FIRST_TIME_IN_FOREGROUND_MS);
+                ChromePreferenceKeys.OFFLINE_INDICATOR_V2_FIRST_TIME_IN_FOREGROUND_MS)) {
+            mFirstTimeInForegroundMs =
+                    sharedPreferencesManager.readLong(
+                            ChromePreferenceKeys.OFFLINE_INDICATOR_V2_FIRST_TIME_IN_FOREGROUND_MS);
         }
 
         if (sharedPreferencesManager.contains(
-                    ChromePreferenceKeys.OFFLINE_INDICATOR_V2_NUM_TIMES_BACKGROUNDED)) {
-            mNumTimesBackgrounded = sharedPreferencesManager.readInt(
-                    ChromePreferenceKeys.OFFLINE_INDICATOR_V2_NUM_TIMES_BACKGROUNDED);
+                ChromePreferenceKeys.OFFLINE_INDICATOR_V2_NUM_TIMES_BACKGROUNDED)) {
+            mNumTimesBackgrounded =
+                    sharedPreferencesManager.readInt(
+                            ChromePreferenceKeys.OFFLINE_INDICATOR_V2_NUM_TIMES_BACKGROUNDED);
         }
     }
 
@@ -202,7 +209,7 @@ public class OfflineIndicatorMetricsDelegate {
             SharedPreferencesManager sharedPreferencesManager =
                     ChromeSharedPreferences.getInstance();
             if (!sharedPreferencesManager.contains(
-                        ChromePreferenceKeys.OFFLINE_INDICATOR_V2_FIRST_TIME_IN_FOREGROUND_MS)) {
+                    ChromePreferenceKeys.OFFLINE_INDICATOR_V2_FIRST_TIME_IN_FOREGROUND_MS)) {
                 mFirstTimeInForegroundMs = mTimeInForegroundMs;
                 sharedPreferencesManager.writeLong(
                         ChromePreferenceKeys.OFFLINE_INDICATOR_V2_FIRST_TIME_IN_FOREGROUND_MS,
@@ -254,9 +261,10 @@ public class OfflineIndicatorMetricsDelegate {
                 mTimeInBackgroundMs);
 
         mLastUpdateWallTimeMs = currentTimeMs;
-        ChromeSharedPreferences.getInstance().writeLong(
-                ChromePreferenceKeys.OFFLINE_INDICATOR_V2_LAST_UPDATE_WALL_TIME_MS,
-                mLastUpdateWallTimeMs);
+        ChromeSharedPreferences.getInstance()
+                .writeLong(
+                        ChromePreferenceKeys.OFFLINE_INDICATOR_V2_LAST_UPDATE_WALL_TIME_MS,
+                        mLastUpdateWallTimeMs);
     }
 
     /**
@@ -267,8 +275,8 @@ public class OfflineIndicatorMetricsDelegate {
         RecordHistogram.recordLongTimesHistogram100(
                 OFFLINE_INDICATOR_SHOWN_DURATION_V2, mTimeInForegroundMs + mTimeInBackgroundMs);
 
-        if (!ChromeSharedPreferences.getInstance().contains(
-                    ChromePreferenceKeys.OFFLINE_INDICATOR_V2_TIME_IN_BACKGROUND_MS)) {
+        if (!ChromeSharedPreferences.getInstance()
+                .contains(ChromePreferenceKeys.OFFLINE_INDICATOR_V2_TIME_IN_BACKGROUND_MS)) {
             assert mNumTimesBackgrounded == 0;
         }
     }

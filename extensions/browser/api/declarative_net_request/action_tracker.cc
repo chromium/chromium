@@ -4,6 +4,8 @@
 
 #include "extensions/browser/api/declarative_net_request/action_tracker.h"
 
+#include <list>
+#include <map>
 #include <tuple>
 #include <utility>
 
@@ -45,9 +47,9 @@ bool IsMainFrameNavigationRequest(const WebRequestInfo& request_info) {
 bool ShouldRecordMatchedRule(content::BrowserContext* browser_context,
                              const ExtensionId& extension_id,
                              int tab_id) {
-  const Extension* extension =
-      ExtensionRegistry::Get(browser_context)
-          ->GetExtensionById(extension_id, ExtensionRegistry::ENABLED);
+  const Extension* extension = ExtensionRegistry::Get(browser_context)
+                                   ->enabled_extensions()
+                                   .GetByID(extension_id);
   DCHECK(extension);
 
   const PermissionsData* permissions_data = extension->permissions_data();
@@ -206,8 +208,8 @@ void ActionTracker::ClearExtensionData(const ExtensionId& extension_id) {
     return it.first.extension_id == extension_id;
   };
 
-  base::EraseIf(rules_tracked_, compare_by_extension_id);
-  base::EraseIf(pending_navigation_actions_, compare_by_extension_id);
+  std::erase_if(rules_tracked_, compare_by_extension_id);
+  std::erase_if(pending_navigation_actions_, compare_by_extension_id);
 
   // Stop the timer if there are no more matched rules or pending actions.
   if (rules_tracked_.empty() && pending_navigation_actions_.empty())
@@ -225,7 +227,7 @@ void ActionTracker::ClearTabData(int tab_id) {
         return matches_tab_id;
       };
 
-  base::EraseIf(rules_tracked_, compare_by_tab_id);
+  std::erase_if(rules_tracked_, compare_by_tab_id);
 }
 
 void ActionTracker::ClearPendingNavigation(int64_t navigation_id) {
@@ -235,7 +237,7 @@ void ActionTracker::ClearPendingNavigation(int64_t navigation_id) {
         return it.first.secondary_id == navigation_id;
       };
 
-  base::EraseIf(pending_navigation_actions_, compare_by_navigation_id);
+  std::erase_if(pending_navigation_actions_, compare_by_navigation_id);
 }
 
 void ActionTracker::ResetTrackedInfoForTab(int tab_id, int64_t navigation_id) {
@@ -288,7 +290,7 @@ void ActionTracker::ResetTrackedInfoForTab(int tab_id, int64_t navigation_id) {
 
 std::vector<dnr_api::MatchedRuleInfo> ActionTracker::GetMatchedRules(
     const Extension& extension,
-    const absl::optional<int>& tab_id,
+    const std::optional<int>& tab_id,
     const base::Time& min_time_stamp) {
   TrimRulesFromNonActiveTabs();
 
@@ -475,7 +477,7 @@ void ActionTracker::TrimRulesFromNonActiveTabs() {
     }
 
     TrackedInfo& tracked_info = it->second;
-    base::EraseIf(tracked_info.matched_rules, older_than_lifespan);
+    std::erase_if(tracked_info.matched_rules, older_than_lifespan);
 
     if (tracked_info.matched_rules.empty())
       it = rules_tracked_.erase(it);

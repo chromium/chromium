@@ -85,7 +85,7 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxDialogBigWindowTest, Notice) {
 }
 
 // TODO(https://crbug.com/1446188): Re-enable the test.
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_Combined DISABLED_Combined
 #else
 #define MAYBE_Combined Combined

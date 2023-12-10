@@ -37,4 +37,4 @@ class PrinterXmlParserImpl : public mojom::PrinterXmlParser {
 
 }  // namespace printing
 
-#endif  // PRINTING_PRINTER_XML_PARSER_IMPL_H_
+#endif  // CHROME_BROWSER_PRINTING_PRINTER_XML_PARSER_IMPL_H_

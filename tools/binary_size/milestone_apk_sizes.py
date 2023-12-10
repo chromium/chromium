@@ -227,7 +227,7 @@ def _CheckGnArgs(unsigned_prefix):
       sys.stderr.write('Manually verify via: ' + ' '.join(args) + '\n')
       sys.exit(1)
 
-  check_arg('is_on_release_branch', 'true')
+  check_arg('v8_is_on_release_branch', 'true')
   check_arg('v8_enable_runtime_call_stats', 'false')
 
 

@@ -23,14 +23,14 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="PluginVm.DlcUseResult" enum="PluginVmDlcUseResult"
-    expires_after="2024-03-17">
+    expires_after="2024-05-05">
   <owner>kimjae@google.com</owner>
   <owner>timloh@google.com</owner>
   <summary>Recorded at each time PluginVM DLC is installed.</summary>
 </histogram>
 
 <histogram name="PluginVm.EngagementTime.Background" units="ms"
-    expires_after="2024-01-14">
+    expires_after="2024-05-05">
   <owner>timloh@google.com</owner>
   <owner>joelhockey@google.com</owner>
   <summary>
@@ -41,7 +41,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PluginVm.EngagementTime.Foreground" units="ms"
-    expires_after="2024-02-11">
+    expires_after="2024-05-05">
   <owner>timloh@google.com</owner>
   <owner>joelhockey@google.com</owner>
   <summary>
@@ -51,7 +51,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PluginVm.EngagementTime.PluginVmTotal" units="ms"
-    expires_after="2024-02-11">
+    expires_after="2024-05-05">
   <owner>timloh@google.com</owner>
   <owner>joelhockey@google.com</owner>
   <summary>
@@ -62,7 +62,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PluginVm.EngagementTime.Total" units="ms"
-    expires_after="2024-02-11">
+    expires_after="2024-05-05">
   <owner>timloh@google.com</owner>
   <owner>joelhockey@google.com</owner>
   <summary>
@@ -76,7 +76,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PluginVm.LaunchResult" enum="PluginVmLaunchResult"
-    expires_after="2024-01-14">
+    expires_after="2024-05-05">
   <owner>joelhockey@chromium.org</owner>
   <owner>okalitova@chromium.org</owner>
   <owner>timloh@chromium.org</owner>
@@ -87,14 +87,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PluginVm.SetupFailureReason" enum="PluginVmSetupFailureReason"
-    expires_after="2024-01-14">
+    expires_after="2024-05-05">
   <owner>timloh@chromium.org</owner>
   <owner>chromeos-core-services@google.com</owner>
   <summary>Recorded when the Plugin VM installer fails.</summary>
 </histogram>
 
 <histogram name="PluginVm.SetupResult" enum="PluginVmSetupResult"
-    expires_after="2024-01-14">
+    expires_after="2024-05-05">
   <owner>joelhockey@chromium.org</owner>
   <owner>okalitova@chromium.org</owner>
   <owner>timloh@chromium.org</owner>

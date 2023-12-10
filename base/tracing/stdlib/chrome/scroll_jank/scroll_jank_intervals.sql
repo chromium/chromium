@@ -8,23 +8,28 @@ INCLUDE PERFETTO MODULE common.slices;
 
 -- Selects EventLatency slices that correspond with janks in a scroll. This is
 -- based on the V3 version of scroll jank metrics.
---
--- @column id INT                     The slice id.
--- @column ts INT                     The start timestamp of the slice.
--- @column dur INT                    The duration of the slice.
--- @column track_id INT               The track_id for the slice.
--- @column name STRING                The name of the slice (EventLatency).
--- @column cause_of_jank STRING       The stage of EventLatency that the caused
---                                    the jank.
--- @column sub_cause_of_jank STRING   The stage of cause_of_jank that caused the
---                                    jank.
--- @column delayed_frame_count INT    How many vsyncs this frame missed its
---                                    deadline by.
--- @column frame_jank_ts INT          The start timestamp where frame
---                                    frame presentation was delayed.
--- @column frame_jank_dur INT         The duration in ms of the delay in frame
---                                    presentation.
-CREATE PERFETTO TABLE chrome_janky_event_latencies_v3 AS
+CREATE PERFETTO TABLE chrome_janky_event_latencies_v3(
+  -- The slice id.
+  id INT,
+  -- The start timestamp of the slice.
+  ts INT,
+  -- The duration of the slice.
+  dur INT,
+  -- The track_id for the slice.
+  track_id INT,
+  -- The name of the slice (EventLatency).
+  name STRING,
+  -- The stage of EventLatency that the caused the jank.
+  cause_of_jank STRING,
+  -- The stage of cause_of_jank that caused the jank.
+  sub_cause_of_jank STRING,
+  -- How many vsyncs this frame missed its deadline by.
+  delayed_frame_count INT,
+  -- The start timestamp where frame presentation was delayed.
+  frame_jank_ts INT,
+  -- The duration in ms of the delay in frame presentation.
+  frame_jank_dur INT
+) AS
 SELECT
   s.id,
   s.ts,
@@ -42,19 +47,22 @@ JOIN chrome_janky_frames e
 
 -- Frame presentation interval is the delta between when the frame was supposed
 -- to be presented and when it was actually presented.
---
--- @column id INT                     Unique id.
--- @column ts INT                     The start timestamp of the slice.
--- @column dur INT                    The duration of the slice.
--- @column delayed_frame_count INT    How many vsyncs this frame missed its
---                                    deadline by.
--- @column cause_of_jank STRING       The stage of EventLatency that the caused
---                                    the jank.
--- @column sub_cause_of_jank STRING   The stage of cause_of_jank that caused the
---                                    jank.
--- @column event_latency_id STRING    The id of the associated event latency in
---                                    the slice table.
-CREATE VIEW chrome_janky_frame_presentation_intervals AS
+CREATE PERFETTO VIEW chrome_janky_frame_presentation_intervals(
+  -- Unique id.
+  id INT,
+  -- The start timestamp of the slice.
+  ts INT,
+  -- The duration of the slice.
+  dur INT,
+  -- How many vsyncs this frame missed its deadline by.
+  delayed_frame_count INT,
+  -- The stage of EventLatency that the caused the jank.
+  cause_of_jank INT,
+  -- The stage of cause_of_jank that caused the jank.
+  sub_cause_of_jank INT,
+  -- The id of the associated event latency in the slice table.
+  event_latency_id INT
+) AS
 SELECT
   ROW_NUMBER() OVER(ORDER BY frame_jank_ts) AS id,
   frame_jank_ts AS ts,
@@ -66,14 +74,20 @@ SELECT
 FROM chrome_janky_event_latencies_v3;
 
 -- Scroll jank frame presentation stats for individual scrolls.
---
--- @column scroll_id INT              Id of the individual scroll.
--- @column missed_vsyncs INT          The number of missed vsyncs in the scroll.
--- @column frame_count INT            The number of frames in the scroll.
--- @column presented_frame_count INT  The number presented frames in the scroll.
--- @column janky_frame_count INT      The number of janky frames in the scroll.
--- @column janky_frame_percent FLOAT  The % of frames that janked in the scroll.
-CREATE VIEW chrome_scroll_stats AS
+CREATE PERFETTO VIEW chrome_scroll_stats(
+  -- Id of the individual scroll.
+  scroll_id INT,
+  -- The number of frames in the scroll.
+  frame_count INT,
+  -- The number of missed vsyncs in the scroll.
+  missed_vsyncs INT,
+  -- The number presented frames in the scroll.
+  presented_frame_count INT,
+  -- The number of janky frames in the scroll.
+  janky_frame_count INT,
+  -- The % of frames that janked in the scroll.
+  janky_frame_percent FLOAT
+) AS
 WITH vsyncs AS (
   SELECT
     COUNT() AS presented_vsync_count,
@@ -111,11 +125,14 @@ LEFT JOIN frame_stats
   USING (scroll_id);
 
 -- Defines slices for all of janky scrolling intervals in a trace.
---
--- @column id            The unique identifier of the janky interval.
--- @column ts            The start timestamp of the janky interval.
--- @column dur           The duration of the janky interval.
-CREATE PERFETTO TABLE chrome_scroll_jank_intervals_v3 AS
+CREATE PERFETTO TABLE chrome_scroll_jank_intervals_v3(
+  -- The unique identifier of the janky interval.
+  id INT,
+  -- The start timestamp of the janky interval.
+  ts INT,
+  -- The duration of the janky interval.
+  dur INT
+) AS
 -- Sub-table to retrieve all janky slice timestamps. Ordering calculations are
 -- based on timestamps rather than durations.
 WITH janky_latencies AS (

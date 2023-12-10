@@ -20,9 +20,7 @@ import org.chromium.components.embedder_support.util.Origin;
 
 import java.util.List;
 
-/**
- * Custom tabs connection service, used by the embedded Chrome activities.
- */
+/** Custom tabs connection service, used by the embedded Chrome activities. */
 public class CustomTabsConnectionServiceImpl extends CustomTabsConnectionService.Impl {
     private CustomTabsConnection mConnection;
     private Intent mBindIntent;
@@ -61,7 +59,10 @@ public class CustomTabsConnectionServiceImpl extends CustomTabsConnectionService
     }
 
     @Override
-    protected boolean mayLaunchUrl(CustomTabsSessionToken sessionToken, Uri url, Bundle extras,
+    protected boolean mayLaunchUrl(
+            CustomTabsSessionToken sessionToken,
+            Uri url,
+            Bundle extras,
             List<Bundle> otherLikelyBundles) {
         if (!isFirstRunDone()) return false;
         return mConnection.mayLaunchUrl(sessionToken, url, extras, otherLikelyBundles);
@@ -79,8 +80,10 @@ public class CustomTabsConnectionServiceImpl extends CustomTabsConnectionService
     }
 
     @Override
-    protected boolean requestPostMessageChannel(CustomTabsSessionToken sessionToken,
-            Uri postMessageSourceOrigin, @Nullable Uri postMessageTargetOrigin) {
+    protected boolean requestPostMessageChannel(
+            CustomTabsSessionToken sessionToken,
+            Uri postMessageSourceOrigin,
+            @Nullable Uri postMessageTargetOrigin) {
         Origin sourceOrigin = Origin.create(postMessageSourceOrigin);
         if (sourceOrigin == null) return false;
         return mConnection.requestPostMessageChannel(
@@ -107,8 +110,11 @@ public class CustomTabsConnectionServiceImpl extends CustomTabsConnectionService
     }
 
     @Override
-    protected boolean receiveFile(@NonNull CustomTabsSessionToken sessionToken, @NonNull Uri uri,
-            int purpose, @Nullable Bundle extras) {
+    protected boolean receiveFile(
+            @NonNull CustomTabsSessionToken sessionToken,
+            @NonNull Uri uri,
+            int purpose,
+            @Nullable Bundle extras) {
         return mConnection.receiveFile(sessionToken, uri, purpose, extras);
     }
 
@@ -119,8 +125,10 @@ public class CustomTabsConnectionServiceImpl extends CustomTabsConnectionService
     }
 
     @Override
-    protected boolean setEngagementSignalsCallback(CustomTabsSessionToken sessionToken,
-            EngagementSignalsCallback callback, Bundle extras) {
+    protected boolean setEngagementSignalsCallback(
+            CustomTabsSessionToken sessionToken,
+            EngagementSignalsCallback callback,
+            Bundle extras) {
         return mConnection.setEngagementSignalsCallback(sessionToken, callback, extras);
     }
 

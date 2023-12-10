@@ -8,6 +8,7 @@
 #include <stddef.h>
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
@@ -17,7 +18,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -30,6 +31,7 @@
 #include "components/safe_browsing/content/browser/web_api_handshake_checker.h"
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/content_browser_client.h"
+#include "content/public/browser/legacy_tech_cookie_issue_details.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/alternative_error_page_override_info.mojom-forward.h"
 #include "extensions/buildflags/buildflags.h"
@@ -79,9 +81,13 @@ class BluetoothDelegateImpl;
 }  // namespace permissions
 
 namespace safe_browsing {
+class AsyncCheckTracker;
 class RealTimeUrlLookupServiceBase;
 class SafeBrowsingService;
 class UrlCheckerDelegate;
+namespace hash_realtime_utils {
+enum class HashRealTimeSelection;
+}
 }  // namespace safe_browsing
 
 namespace sandbox {
@@ -172,13 +178,15 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       bool is_outermost_main_frame,
       const GURL& candidate_url,
       const GURL& destination_url) override;
-  bool ShouldUseMobileFlingCurve() override;
   bool ShouldUseProcessPerSite(content::BrowserContext* browser_context,
                                const GURL& site_url) override;
   bool ShouldUseSpareRenderProcessHost(content::BrowserContext* browser_context,
                                        const GURL& site_url) override;
   bool DoesSiteRequireDedicatedProcess(content::BrowserContext* browser_context,
                                        const GURL& effective_site_url) override;
+  bool ShouldAllowCrossProcessSandboxedFrameForPrecursor(
+      content::BrowserContext* browser_context,
+      const GURL& precursor) override;
   bool DoesWebUIUrlRequireProcessLock(const GURL& url) override;
   bool ShouldTreatURLSchemeAsFirstPartyWhenTopLevel(
       base::StringPiece scheme,
@@ -341,7 +349,8 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       content::RenderFrameHost* rfh,
       const url::Origin* impression_origin,
       const url::Origin* conversion_origin,
-      const url::Origin* reporting_origin) override;
+      const url::Origin* reporting_origin,
+      bool* can_bypass) override;
   bool IsSharedStorageAllowed(content::BrowserContext* browser_context,
                               content::RenderFrameHost* rfh,
                               const url::Origin& top_frame_origin,
@@ -364,6 +373,9 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       content::BrowserContext* browser_context,
       const url::Origin& top_frame_origin,
       const url::Origin& context_origin) override;
+  bool IsFullCookieAccessAllowed(content::BrowserContext* browser_context,
+                                 const GURL& url,
+                                 const blink::StorageKey& storage_key) override;
 #if BUILDFLAG(IS_CHROMEOS)
   void OnTrustAnchorUsed(content::BrowserContext* browser_context) override;
 #endif
@@ -521,6 +533,8 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       content::WebUIBrowserInterfaceBrokerRegistry& registry) override;
   void RegisterMojoBinderPoliciesForSameOriginPrerendering(
       content::MojoBinderPolicyMap& policy_map) override;
+  void RegisterMojoBinderPoliciesForPreview(
+      content::MojoBinderPolicyMap& policy_map) override;
   void RegisterBrowserInterfaceBindersForServiceWorker(
       content::BrowserContext* browser_context,
       const content::ServiceWorkerVersionBaseInfo& service_worker_version_info,
@@ -589,7 +603,6 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       int frame_tree_node_id) override;
   void RegisterNonNetworkNavigationURLLoaderFactories(
       int frame_tree_node_id,
-      ukm::SourceIdObj ukm_source_id,
       NonNetworkURLLoaderFactoryMap* factories) override;
   void RegisterNonNetworkWorkerMainResourceURLLoaderFactories(
       content::BrowserContext* browser_context,
@@ -898,7 +911,7 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   bool WillProvidePublicFirstPartySets() override;
 
   bool ShouldPreconnectNavigation(
-      content::BrowserContext* browser_context) override;
+      content::RenderFrameHost* render_frame_host) override;
 
   bool ShouldDisableOriginAgentClusterDefault(
       content::BrowserContext* browser_context) override;
@@ -957,6 +970,8 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
 
   void SetIsMinimalMode(bool minimal) override;
 
+  bool UseOutermostMainFrameOrEmbedderForSubCaptureTargets() const override;
+
 #if !BUILDFLAG(IS_ANDROID)
   void BindVideoEffectsManager(
       const std::string& device_id,
@@ -964,6 +979,15 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       mojo::PendingReceiver<video_capture::mojom::VideoEffectsManager>
           video_effects_manager) override;
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+  void PreferenceRankAudioDeviceInfos(
+      content::BrowserContext* browser_context,
+      blink::WebMediaDeviceInfoArray& infos) override;
+  void PreferenceRankVideoDeviceInfos(
+      content::BrowserContext* browser_context,
+      blink::WebMediaDeviceInfoArray& infos) override;
+  network::mojom::IpProtectionProxyBypassPolicy
+  GetIpProtectionProxyBypassPolicy() override;
 
  protected:
   static bool HandleWebUI(GURL* url, content::BrowserContext* browser_context);
@@ -1030,14 +1054,28 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       bool is_enterprise_lookup_enabled,
       bool is_consumer_lookup_enabled);
 
+  // Returns an AsyncCheckTracker object used for holding URL checkers for async
+  // Safe Browsing check. It may return nullptr if the WebContents is null,
+  // the ui_manager is null or the real-time check is not enabled.
+  safe_browsing::AsyncCheckTracker* GetAsyncCheckTracker(
+      const base::RepeatingCallback<content::WebContents*()>& wc_getter,
+      bool is_enterprise_lookup_enabled,
+      bool is_consumer_lookup_enabled,
+      safe_browsing::hash_realtime_utils::HashRealTimeSelection
+          hash_realtime_selection);
+
   // Try to upload an enterprise legacy tech event to the enterprise management
   // server for admins.
-  void ReportLegacyTechEvent(content::RenderFrameHost* render_frame_host,
-                             const std::string type,
-                             const GURL& url,
-                             const std::string& filename,
-                             uint64_t line,
-                             uint64_t column) override;
+  void ReportLegacyTechEvent(
+      content::RenderFrameHost* render_frame_host,
+      const std::string type,
+      const GURL& url,
+      const GURL& frame_url,
+      const std::string& filename,
+      uint64_t line,
+      uint64_t column,
+      std::optional<content::LegacyTechCookieIssueDetails> cookie_issue_details)
+      override;
 
   void SafeBrowsingWebApiHandshakeChecked(
       std::unique_ptr<safe_browsing::WebApiHandshakeChecker> checker,

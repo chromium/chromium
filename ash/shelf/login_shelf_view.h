@@ -28,6 +28,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/account_id/account_id.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/view.h"
 
@@ -56,6 +57,8 @@ class ASH_EXPORT LoginShelfView : public views::View,
                                   public LoginDataDispatcher::Observer,
                                   public EnterpriseDomainObserver,
                                   public ShelfConfig::Observer {
+  METADATA_HEADER(LoginShelfView, views::View)
+
  public:
   enum ButtonId {
     kShutdown = 1,          // Shut down the device.

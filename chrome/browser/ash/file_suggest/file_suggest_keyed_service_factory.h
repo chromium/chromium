@@ -35,4 +35,4 @@ class FileSuggestKeyedServiceFactory : public ProfileKeyedServiceFactory {
 
 }  // namespace ash
 
-#endif  // CHROME_BROWSER_ASH_APP_LIST_SEARCH_FILES_FILE_SUGGEST_KEYED_SERVICE_FACTORY_H_
+#endif  // CHROME_BROWSER_ASH_FILE_SUGGEST_FILE_SUGGEST_KEYED_SERVICE_FACTORY_H_

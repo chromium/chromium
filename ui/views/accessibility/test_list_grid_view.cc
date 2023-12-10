@@ -6,6 +6,7 @@
 
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 
 namespace views {
 namespace test {
@@ -52,6 +53,9 @@ void TestListGridView::UnsetTableSize() {
   table_row_count = absl::nullopt;
   table_column_count = absl::nullopt;
 }
+
+BEGIN_METADATA(TestListGridView)
+END_METADATA
 
 }  // namespace test
 }  // namespace views

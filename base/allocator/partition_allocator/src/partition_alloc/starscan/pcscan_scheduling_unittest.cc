@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/allocator/partition_allocator/src/partition_alloc/starscan/pcscan_scheduling.h"
+#include "partition_alloc/starscan/pcscan_scheduling.h"
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/time/time.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/time/time_override.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_lock.h"
+#include "partition_alloc/partition_alloc_base/time/time.h"
+#include "partition_alloc/partition_alloc_base/time/time_override.h"
+#include "partition_alloc/partition_lock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace partition_alloc::internal {

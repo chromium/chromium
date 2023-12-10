@@ -48,13 +48,12 @@ std::u16string DialogTitle(int num_sub_apps) {
 }
 
 ui::DialogModelLabel DialogDescription(int num_sub_apps,
-                                       std::u16string parent_app_name,
-                                       std::u16string parent_app_scope) {
+                                       std::u16string parent_app_name) {
   std::u16string description =
       base::i18n::MessageFormatter::FormatWithNamedArgs(
           l10n_util::GetStringUTF16(IDS_SUB_APPS_INSTALL_DIALOG_DESCRIPTION),
           /*name0=*/"NUM_SUB_APP_INSTALLS", num_sub_apps,
-          /*name1=*/"APP_NAME", parent_app_name, "DOMAIN", parent_app_scope);
+          /*name1=*/"APP_NAME", parent_app_name);
   ui::DialogModelLabel label = ui::DialogModelLabel(description);
   label.set_is_secondary().set_allow_character_break();
   return label;
@@ -132,10 +131,10 @@ std::unique_ptr<views::ScrollView> CreateSubAppsListView(
 
     auto* sub_app_icon =
         box->AddChildView(std::make_unique<views::ImageView>());
-    sub_app_icon->SetImage(
+    sub_app_icon->SetImage(ui::ImageModel::FromImageSkia(
         gfx::ImageSkia(std::make_unique<WebAppInfoImageSource>(
                            kSubAppIconSize, sub_app->icon_bitmaps.any),
-                       gfx::Size(kSubAppIconSize, kSubAppIconSize)));
+                       gfx::Size(kSubAppIconSize, kSubAppIconSize))));
     sub_app_icon->SetGroup(
         base::to_underlying(SubAppsInstallDialogController::
                                 SubAppsInstallDialogViewID::SUB_APP_ICON));
@@ -156,7 +155,6 @@ std::unique_ptr<views::ScrollView> CreateSubAppsListView(
 
 views::Widget* CreateSubAppsInstallDialogWidget(
     const std::u16string parent_app_name,
-    const std::u16string parent_app_scope,
     const std::vector<std::unique_ptr<web_app::WebAppInstallInfo>>& sub_apps,
     base::RepeatingClosure settings_page_callback,
     gfx::NativeWindow window) {
@@ -166,8 +164,7 @@ views::Widget* CreateSubAppsInstallDialogWidget(
           .SetInternalName("SubAppsInstallDialogController")
           .SetIcon(GetInstallAppIcon())
           .SetTitle(DialogTitle(num_sub_apps))
-          .AddParagraph(DialogDescription(num_sub_apps, parent_app_name,
-                                          parent_app_scope))
+          .AddParagraph(DialogDescription(num_sub_apps, parent_app_name))
           .AddCustomField(
               std::make_unique<views::BubbleDialogModelHost::CustomView>(
                   CreateSubAppsListView(sub_apps),

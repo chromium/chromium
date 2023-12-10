@@ -5,9 +5,10 @@
 #ifndef CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_AUTOFILL_PROGRESS_DIALOG_VIEW_H_
 #define CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_AUTOFILL_PROGRESS_DIALOG_VIEW_H_
 
+#include <optional>
+
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace autofill {
 

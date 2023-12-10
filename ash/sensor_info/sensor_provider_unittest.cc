@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <utility>
 #include <vector>
@@ -11,7 +12,6 @@
 #include "ash/sensor_info/sensor_provider.h"
 #include "ash/sensor_info/sensor_types.h"
 #include "ash/test/ash_test_helper.h"
-
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -21,7 +21,6 @@
 #include "chromeos/components/sensors/fake_sensor_hal_server.h"
 #include "chromeos/components/sensors/mojom/sensor.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -83,8 +82,8 @@ class SensorProviderTest : public testing::Test {
 
   void AddDevice(int32_t iio_device_id,
                  std::set<DeviceType> types,
-                 absl::optional<std::string> scale,
-                 absl::optional<std::string> location) {
+                 std::optional<std::string> scale,
+                 std::optional<std::string> location) {
     std::vector<chromeos::sensors::FakeSensorDevice::ChannelData> channels_data;
     int size = 0;
     if (base::Contains(types, DeviceType::ANGL)) {
@@ -145,7 +144,7 @@ class SensorProviderTest : public testing::Test {
 
 TEST_F(SensorProviderTest, CheckNoScale) {
   AddDevice(kFakeBaseAccelerometerId, std::set<DeviceType>{DeviceType::ACCEL},
-            absl::nullopt, kLocationStrings[1]);
+            std::nullopt, kLocationStrings[1]);
   StartConnection();
   provider_->EnableSensorReading();
   // Wait until all tasks done and no samples updated.
@@ -162,7 +161,7 @@ TEST_F(SensorProviderTest, CheckNoScale) {
 
 TEST_F(SensorProviderTest, CheckNoLocation) {
   AddDevice(kFakeBaseAccelerometerId, std::set<DeviceType>{DeviceType::ACCEL},
-            base::NumberToString(kFakeScaleValue), absl::nullopt);
+            base::NumberToString(kFakeScaleValue), std::nullopt);
 
   StartConnection();
   provider_->EnableSensorReading();
@@ -262,7 +261,7 @@ TEST_F(SensorProviderTest, GetSamplesOfBaseGyroscopeAndBaseAccel) {
   base::RunLoop().RunUntilIdle();
   // Overwriting with invalid AccelerometerBase.
   AddDevice(kFakeBaseAccelerometerId, std::set<DeviceType>{DeviceType::ACCEL},
-            absl::nullopt, absl::nullopt);
+            std::nullopt, std::nullopt);
   StartConnection();
   // Wait until the re-initialization done.
   base::RunLoop().RunUntilIdle();

@@ -568,7 +568,7 @@ void AddThreatProtectionPermission(const char* title,
 }
 
 std::string GetAccountManager(Profile* profile) {
-  absl::optional<std::string> manager =
+  std::optional<std::string> manager =
       chrome::GetAccountManagerIdentity(profile);
   if (!manager &&
       base::FeatureList::IsEnabled(features::kFlexOrgManagementDisclosure)) {

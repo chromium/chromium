@@ -153,7 +153,7 @@ Generated with: (see steps on the bug 69135)
 
   const int kSize = 20;
   ASSERT_EQ(net::OK, OpenEntry(key1, &entry));
-  scoped_refptr<net::IOBuffer> buf = base::MakeRefCounted<net::IOBuffer>(kSize);
+  auto buf = base::MakeRefCounted<net::IOBufferWithSize>(kSize);
   memset(buf->data(), 0, kSize);
   EXPECT_EQ(kSize, WriteData(entry, 0, 0, buf, kSize, false));
   entry->Close();

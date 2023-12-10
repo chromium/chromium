@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_AUTH_PANEL_AUTH_FACTOR_STORE_H_
 #define CHROMEOS_ASH_COMPONENTS_AUTH_PANEL_AUTH_FACTOR_STORE_H_
 
+#include <optional>
 #include <string>
 
 #include "ash/ime/ime_controller_impl.h"
@@ -12,7 +13,6 @@
 #include "base/callback_list.h"
 #include "chromeos/ash/components/auth_panel/auth_panel_event_dispatcher.h"
 #include "chromeos/ash/components/osauth/public/common_types.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -45,7 +45,7 @@ class AuthFactorStore {
     void InitializePasswordViewState(bool is_capslock_on);
 
     AuthenticationStage authentication_stage_ = AuthenticationStage::kIdle;
-    absl::optional<PasswordViewState> password_view_state_;
+    std::optional<PasswordViewState> password_view_state_;
   };
 
   using OnStateUpdatedCallback =

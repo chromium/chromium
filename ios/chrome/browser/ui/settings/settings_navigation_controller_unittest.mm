@@ -16,8 +16,6 @@
 #import "components/search_engines/template_url_service.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
-#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
-#import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state_manager.h"
@@ -26,9 +24,9 @@
 #import "ios/chrome/browser/shared/public/commands/browsing_data_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
-#import "ios/chrome/browser/signin/authentication_service.h"
-#import "ios/chrome/browser/signin/authentication_service_factory.h"
-#import "ios/chrome/browser/signin/fake_authentication_service_delegate.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
 #import "ios/chrome/browser/sync/model/sync_setup_service.h"
 #import "ios/chrome/browser/sync/model/sync_setup_service_factory.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_chrome_browser_state_manager.h"
@@ -69,10 +67,6 @@ class SettingsNavigationControllerTest : public PlatformTest {
         chrome_browser_state_.get(),
         std::make_unique<FakeAuthenticationServiceDelegate>());
     browser_ = std::make_unique<TestBrowser>(chrome_browser_state_.get());
-    browser_state_ = TestChromeBrowserState::Builder().Build();
-
-    scene_state_ = [[SceneState alloc] initWithAppState:nil];
-    SceneStateBrowserAgent::CreateForBrowser(browser_.get(), scene_state_);
 
     NSArray<Protocol*>* command_protocols = @[
       @protocol(ApplicationCommands), @protocol(BrowserCommands),
@@ -116,10 +110,8 @@ class SettingsNavigationControllerTest : public PlatformTest {
   IOSChromeScopedTestingChromeBrowserStateManager scoped_browser_state_manager_;
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
   std::unique_ptr<Browser> browser_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
   id mockDelegate_;
   NSString* initialValueForSpdyProxyEnabled_;
-  SceneState* scene_state_;
   ProtocolFake* fake_command_endpoint_;
 };
 

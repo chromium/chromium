@@ -9,10 +9,10 @@
 #include <initializer_list>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
-#include "base/strings/string_piece.h"
 #include "base/test/task_environment.h"
 #include "net/base/mime_sniffer.h"
 #include "net/http/http_util.h"
@@ -27,7 +27,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
-using base::StringPiece;
 using CorbResponseAnalyzer =
     network::corb::CrossOriginReadBlocking::CorbResponseAnalyzer;
 using CrossOriginProtectionDecision =
@@ -2161,7 +2160,7 @@ TEST_P(ResponseAnalyzerTest, OpaqueResponseBlocking) {
   // Unlike CORB, ORB blocks all 206 responses, unless there was an earlier
   // request to the same URL and that earlier request was classified (based on
   // the MIME type or sniffing) as an audio-or-video response.
-  base::StringPiece description = scenario.description;
+  std::string_view description = scenario.description;
   if (description == "Blocked-by-ORB: text/plain 206 media" ||
       description == "Blocked-by-ORB: Javascript 206" ||
       description == "Blocked-by-ORB: application/octet-stream 206 (middle)") {
@@ -2274,13 +2273,14 @@ TEST(CrossOriginReadBlockingTest, SniffForHTML) {
   EXPECT_EQ(SniffingResult::kYes, CORB::SniffForHTML("<!-- --> \x80 \n<b"));
 
   // Commented out html tag followed by non-html (" x").
-  StringPiece commented_out_html_tag_data("<!-- <html> <?xml> \n<html>-->\nx");
+  std::string_view commented_out_html_tag_data(
+      "<!-- <html> <?xml> \n<html>-->\nx");
   EXPECT_EQ(SniffingResult::kNo,
             CORB::SniffForHTML(commented_out_html_tag_data));
 
   // Prefixes of |commented_out_html_tag_data| should be indeterminate.
   // This covers testing "<!-" as well as "<!-- not terminated yet...".
-  StringPiece almost_html = commented_out_html_tag_data;
+  std::string_view almost_html = commented_out_html_tag_data;
   while (!almost_html.empty()) {
     almost_html.remove_suffix(1);
     EXPECT_EQ(SniffingResult::kMaybe, CORB::SniffForHTML(almost_html))
@@ -2297,9 +2297,10 @@ TEST(CrossOriginReadBlockingTest, SniffForHTML) {
 }
 
 TEST(CrossOriginReadBlockingTest, SniffForXML) {
-  StringPiece xml_data("   \t \r \n     <?xml version=\"1.0\"?>\n <catalog");
-  StringPiece non_xml_data("        var name=window.location;\nadfadf");
-  StringPiece empty_data("");
+  std::string_view xml_data(
+      "   \t \r \n     <?xml version=\"1.0\"?>\n <catalog");
+  std::string_view non_xml_data("        var name=window.location;\nadfadf");
+  std::string_view empty_data("");
 
   EXPECT_EQ(SniffingResult::kYes,
             CrossOriginReadBlocking::SniffForXML(xml_data));
@@ -2312,12 +2313,12 @@ TEST(CrossOriginReadBlockingTest, SniffForXML) {
 }
 
 TEST(CrossOriginReadBlockingTest, SniffForJSON) {
-  StringPiece json_data("\t\t\r\n   { \"name\" : \"chrome\", ");
-  StringPiece json_corrupt_after_first_key(
+  std::string_view json_data("\t\t\r\n   { \"name\" : \"chrome\", ");
+  std::string_view json_corrupt_after_first_key(
       "\t\t\r\n   { \"name\" :^^^^!!@#\1\", ");
-  StringPiece json_data2("{ \"key   \\\"  \"          \t\t\r\n:");
-  StringPiece non_json_data0("\t\t\r\n   { name : \"chrome\", ");
-  StringPiece non_json_data1("\t\t\r\n   foo({ \"name\" : \"chrome\", ");
+  std::string_view json_data2("{ \"key   \\\"  \"          \t\t\r\n:");
+  std::string_view non_json_data0("\t\t\r\n   { name : \"chrome\", ");
+  std::string_view non_json_data1("\t\t\r\n   foo({ \"name\" : \"chrome\", ");
 
   EXPECT_EQ(SniffingResult::kYes,
             CrossOriginReadBlocking::SniffForJSON(json_data));
@@ -2328,7 +2329,7 @@ TEST(CrossOriginReadBlockingTest, SniffForJSON) {
             CrossOriginReadBlocking::SniffForJSON(json_data2));
 
   // All prefixes prefixes of |json_data2| ought to be indeterminate.
-  StringPiece almost_json = json_data2;
+  std::string_view almost_json = json_data2;
   while (!almost_json.empty()) {
     almost_json.remove_suffix(1);
     EXPECT_EQ(SniffingResult::kMaybe,

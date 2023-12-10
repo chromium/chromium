@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include <optional>
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
@@ -18,7 +19,6 @@
 #include "chromecast/cast_core/runtime/browser/runtime_application_service_impl.h"
 #include "components/cast_receiver/browser/public/runtime_application_dispatcher.h"
 #include "components/cast_receiver/common/public/status.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cast_core/public/src/proto/metrics/metrics_recorder.castcore.pb.h"
 #include "third_party/cast_core/public/src/proto/runtime/runtime_service.castcore.pb.h"
 
@@ -118,12 +118,12 @@ class RuntimeServiceImpl final
   // Allows metrics, histogram, action recording, which can be reported by
   // CastRuntimeMetricsRecorderService if Cast Core starts it.
   CastRuntimeMetricsRecorder metrics_recorder_;
-  absl::optional<CastRuntimeActionRecorder> action_recorder_;
+  std::optional<CastRuntimeActionRecorder> action_recorder_;
 
-  absl::optional<cast::utils::GrpcServer> grpc_server_;
-  absl::optional<cast::metrics::MetricsRecorderServiceStub>
+  std::optional<cast::utils::GrpcServer> grpc_server_;
+  std::optional<cast::metrics::MetricsRecorderServiceStub>
       metrics_recorder_stub_;
-  absl::optional<CastRuntimeMetricsRecorderService> metrics_recorder_service_;
+  std::optional<CastRuntimeMetricsRecorderService> metrics_recorder_service_;
 
   // Heartbeat period as set by Cast Core.
   base::TimeDelta heartbeat_period_;

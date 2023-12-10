@@ -24,7 +24,7 @@ public class ChromeTabbedActivityPublicTransitEntryPoints {
     public EntryPageStation startOnBlankPage() {
         EntryPageStation entryPageStation =
                 new EntryPageStation(mChromeTabbedActivityTestRule, false);
-        return Trip.goSync(
+        return Trip.travelSync(
                 null,
                 entryPageStation,
                 (t) -> mChromeTabbedActivityTestRule.startMainActivityOnBlankPage());

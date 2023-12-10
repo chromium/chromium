@@ -422,9 +422,8 @@ void RecordSigninUserActionForAccessPoint(AccessPoint access_point) {
     case AccessPoint::ACCESS_POINT_SAVE_TO_PHOTOS_IOS:
     case AccessPoint::ACCESS_POINT_SETTINGS_SYNC_OFF_ROW:
     case AccessPoint::ACCESS_POINT_POST_DEVICE_RESTORE_BACKGROUND_SIGNIN:
-    case AccessPoint::ACCESS_POINT_DESKTOP_SIGNIN_MANAGER:
-    case AccessPoint::ACCESS_POINT_CHROME_SIGNIN_INTERCEPT_BUBBLE:
     case AccessPoint::ACCESS_POINT_RESTORE_PRIMARY_ACCOUNT_ON_PROFILE_LOAD:
+    case AccessPoint::ACCESS_POINT_DESKTOP_SIGNIN_MANAGER:
       NOTREACHED() << "Access point " << static_cast<int>(access_point)
                    << " is not supposed to log signin user actions.";
       break;
@@ -483,6 +482,14 @@ void RecordSigninUserActionForAccessPoint(AccessPoint access_point) {
     case AccessPoint::ACCESS_POINT_PASSWORD_MIGRATION_WARNING_ANDROID:
       base::RecordAction(base::UserMetricsAction(
           "Signin_Signin_FromPasswordMigrationWarningAndroid"));
+      break;
+    case AccessPoint::ACCESS_POINT_CHROME_SIGNIN_INTERCEPT_BUBBLE:
+      base::RecordAction(base::UserMetricsAction(
+          "Signin_Signin_FromChromeSigninInterceptBubble"));
+      break;
+    case AccessPoint::ACCESS_POINT_TAB_ORGANIZATION:
+      base::RecordAction(
+          base::UserMetricsAction("Signin_Signin_FromTabOrganization"));
       break;
     case AccessPoint::ACCESS_POINT_MAX:
       NOTREACHED();
@@ -614,6 +621,10 @@ void RecordSigninImpressionUserActionForAccessPoint(AccessPoint access_point) {
       base::RecordAction(
           base::UserMetricsAction("Signin_Impression_FromSetUpList"));
       break;
+    case AccessPoint::ACCESS_POINT_CHROME_SIGNIN_INTERCEPT_BUBBLE:
+      base::RecordAction(base::UserMetricsAction(
+          "Signin_Impression_FromChromeSigninInterceptBubble"));
+      break;
     case AccessPoint::ACCESS_POINT_ENTERPRISE_SIGNOUT_COORDINATOR:
     case AccessPoint::ACCESS_POINT_EXTENSIONS:
     case AccessPoint::ACCESS_POINT_SUPERVISED_USER:
@@ -634,8 +645,8 @@ void RecordSigninImpressionUserActionForAccessPoint(AccessPoint access_point) {
     case signin_metrics::AccessPoint::ACCESS_POINT_REAUTH_INFO_BAR:
     case signin_metrics::AccessPoint::ACCESS_POINT_ACCOUNT_CONSISTENCY_SERVICE:
     case AccessPoint::ACCESS_POINT_PASSWORD_MIGRATION_WARNING_ANDROID:
-    case AccessPoint::ACCESS_POINT_CHROME_SIGNIN_INTERCEPT_BUBBLE:
     case AccessPoint::ACCESS_POINT_RESTORE_PRIMARY_ACCOUNT_ON_PROFILE_LOAD:
+    case AccessPoint::ACCESS_POINT_TAB_ORGANIZATION:
     case AccessPoint::ACCESS_POINT_MAX:
       NOTREACHED() << "Signin_Impression_From* user actions"
                    << " are not recorded for access point "
@@ -727,7 +738,7 @@ void RecordConsistencyPromoUserAction(AccountConsistencyPromoAction action,
       histogram =
           "Signin.AccountConsistencyPromoAction.SuppressedAlreadySignedIn";
       break;
-    case AccountConsistencyPromoAction::SIGN_IN_FAILED:
+    case AccountConsistencyPromoAction::IOS_AUTH_FLOW_CANCELLED_OR_FAILED:
       histogram = "Signin.AccountConsistencyPromoAction.SignInFailed";
       break;
     case AccountConsistencyPromoAction::

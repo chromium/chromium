@@ -20,8 +20,8 @@ import org.chromium.content_public.browser.SelectionPopupController;
  * model and notifies whether the current selection popup controller is going to intercept the
  * back press.
  */
-public class SelectionPopupBackPressHandler
-        extends EmptyTabObserver implements BackPressHandler, TabModelObserver, Destroyable {
+public class SelectionPopupBackPressHandler extends EmptyTabObserver
+        implements BackPressHandler, TabModelObserver, Destroyable {
     private final ObservableSupplierImpl<Boolean> mBackPressChangedSupplier =
             new ObservableSupplierImpl<>();
     private final Callback<Boolean> mCallback = this::onActionBarShowingChanged;
@@ -40,8 +40,10 @@ public class SelectionPopupBackPressHandler
     @Override
     public @BackPressResult int handleBackPress() {
         assert mPopupController != null;
-        int res = mPopupController.isSelectActionBarShowing() ? BackPressResult.SUCCESS
-                                                              : BackPressResult.FAILURE;
+        int res =
+                mPopupController.isSelectActionBarShowing()
+                        ? BackPressResult.SUCCESS
+                        : BackPressResult.FAILURE;
         mPopupController.clearSelection();
         return res;
     }

@@ -15,17 +15,18 @@ import '../../components/common_styles/oobe_common_styles.css.js';
 import '../../components/common_styles/oobe_dialog_host_styles.css.js';
 import '../../components/dialogs/oobe_adaptive_dialog.js';
 import '../../components/dialogs/oobe_loading_dialog.js';
-import '../../components/quick_start_entry_point.js';
 
 import {assert} from '//resources/ash/common/assert.js';
 import {NetworkList} from '//resources/ash/common/network/network_list_types.js';
-import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
 import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/behaviors/multi_step_behavior.js';
 import {OobeDialogHostBehavior} from '../../components/behaviors/oobe_dialog_host_behavior.js';
 import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.js';
 import {NetworkSelectLogin} from '../../components/network_select_login.js';
+
+import {getTemplate} from './oobe_network.html.js';
 
 
 /**
@@ -81,7 +82,7 @@ class NetworkScreen extends NetworkScreenBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -119,12 +120,12 @@ class NetworkScreen extends NetworkScreenBase {
       },
 
       /**
-       * Whether Quick start feature is enabled. If it's enabled the quick start
-       * button will be shown in the network screen.
+       * Whether Quick start feature is visible. If it's set the quick start
+       * button will be shown in the network select login list as first item.
        * @type {boolean}
        * @private
        */
-      isQuickStartEnabled_: {
+      isQuickStartVisible_: {
         type: Boolean,
         value: false,
       },
@@ -149,7 +150,7 @@ class NetworkScreen extends NetworkScreenBase {
   }
 
   get EXTERNAL_API() {
-    return ['setError', 'setQuickStartEnabled'];
+    return ['setError', 'setQuickStartVisible'];
   }
 
   constructor() {
@@ -237,8 +238,8 @@ class NetworkScreen extends NetworkScreenBase {
     this.errorMessage_ = message;
   }
 
-  setQuickStartEnabled() {
-    this.isQuickStartEnabled_ = true;
+  setQuickStartVisible() {
+    this.isQuickStartVisible_ = true;
   }
 
   /**

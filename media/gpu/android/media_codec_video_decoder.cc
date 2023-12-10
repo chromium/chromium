@@ -45,14 +45,12 @@
 namespace media {
 namespace {
 
-void OutputBufferReleased(bool using_async_api,
-                          base::RepeatingClosure pump_cb,
-                          bool has_work) {
+void OutputBufferReleased(base::RepeatingClosure pump_cb, bool has_work) {
   // The asynchronous API doesn't need pumping upon calls to ReleaseOutputBuffer
   // unless we're draining or drained.
-  if (using_async_api && !has_work)
-    return;
-  pump_cb.Run();
+  if (has_work) {
+    pump_cb.Run();
+  }
 }
 
 bool IsSurfaceControlEnabled(const gpu::GpuFeatureInfo& info) {
@@ -307,7 +305,7 @@ void MediaCodecVideoDecoder::DestroyAsync(
   //
   // WARNING: This will lose the callback we've given to MediaCodecBridge for
   // asynchronous notifications; so we must not leave this function with any
-  // work necessary from StartTimerOrPumpCodec().
+  // work necessary from PumpCodec().
   self->weak_factory_.InvalidateWeakPtrs();
 
   if (self->media_crypto_context_) {
@@ -327,8 +325,7 @@ void MediaCodecVideoDecoder::DestroyAsync(
   self->StartDrainingCodec(DrainType::kForDestroy);
 
   // Per the WARNING above. Validate that no draining work remains.
-  if (self->using_async_api_)
-    DCHECK(!self->drain_type_.has_value());
+  DCHECK(!self->drain_type_.has_value());
 }
 
 void MediaCodecVideoDecoder::Initialize(const VideoDecoderConfig& config,
@@ -512,7 +509,7 @@ void MediaCodecVideoDecoder::OnCdmContextEvent(CdmContext::Event event) {
     return;
 
   waiting_for_key_ = false;
-  StartTimerOrPumpCodec();
+  PumpCodec();
 }
 
 void MediaCodecVideoDecoder::StartLazyInit() {
@@ -705,13 +702,9 @@ void MediaCodecVideoDecoder::CreateCodec() {
   SelectMediaCodec(decoder_config_, requires_secure_codec_, &config->name,
                    &is_software_codec_);
 
-  // Use the asynchronous API if we can.
-  if (device_info_->IsAsyncApiSupported()) {
-    using_async_api_ = true;
-    config->on_buffers_available_cb = base::BindPostTaskToCurrentDefault(
-        base::BindRepeating(&MediaCodecVideoDecoder::StartTimerOrPumpCodec,
-                            weak_factory_.GetWeakPtr()));
-  }
+  config->on_buffers_available_cb =
+      base::BindPostTaskToCurrentDefault(base::BindRepeating(
+          &MediaCodecVideoDecoder::PumpCodec, weak_factory_.GetWeakPtr()));
 
   // Note that this might be the same surface bundle that we've been using, if
   // we're reinitializing the codec without changing surfaces.  That's fine.
@@ -794,10 +787,9 @@ void MediaCodecVideoDecoder::OnCodecConfigured(
   codec_ = std::make_unique<CodecWrapper>(
       CodecSurfacePair(std::move(codec), std::move(surface_bundle)),
       base::BindRepeating(
-          &OutputBufferReleased, using_async_api_,
+          &OutputBufferReleased,
           base::BindPostTaskToCurrentDefault(base::BindRepeating(
-              &MediaCodecVideoDecoder::StartTimerOrPumpCodec,
-              weak_factory_.GetWeakPtr()))),
+              &MediaCodecVideoDecoder::PumpCodec, weak_factory_.GetWeakPtr()))),
       base::SequencedTaskRunner::GetCurrentDefault(),
       decoder_config_.coded_size(), coded_size_alignment);
 
@@ -812,7 +804,7 @@ void MediaCodecVideoDecoder::OnCodecConfigured(
   // Cache the frame information that goes with this codec.
   CacheFrameInformation();
 
-  StartTimerOrPumpCodec();
+  PumpCodec();
 }
 
 void MediaCodecVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
@@ -835,7 +827,7 @@ void MediaCodecVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
       StartLazyInit();
     return;
   }
-  PumpCodec(true);
+  PumpCodec();
 }
 
 void MediaCodecVideoDecoder::FlushCodec() {
@@ -876,66 +868,17 @@ void MediaCodecVideoDecoder::FlushCodec() {
     EnterTerminalState(State::kError, "Codec flush failed");
 }
 
-void MediaCodecVideoDecoder::PumpCodec(bool force_start_timer) {
+void MediaCodecVideoDecoder::PumpCodec() {
   DVLOG(4) << __func__;
-  bool did_work = false, did_input = false, did_output = false;
+  if (state_ != State::kRunning) {
+    return;
+  }
+
+  bool did_input = false, did_output = false;
   do {
     did_input = QueueInput();
     did_output = DequeueOutput();
-    if (did_input || did_output)
-      did_work = true;
   } while (did_input || did_output);
-
-  if (using_async_api_)
-    return;
-
-  if (did_work || force_start_timer)
-    StartTimerOrPumpCodec();
-  else
-    StopTimerIfIdle();
-}
-
-void MediaCodecVideoDecoder::StartTimerOrPumpCodec() {
-  DVLOG(4) << __func__;
-  if (state_ != State::kRunning)
-    return;
-
-  if (using_async_api_) {
-    PumpCodec(false);
-    return;
-  }
-
-  idle_timer_ = base::ElapsedTimer();
-
-  // Poll at 10ms somewhat arbitrarily.
-  // TODO: Don't poll on new devices; use the callback API.
-  // TODO: Experiment with this number to save power. Since we already pump the
-  // codec in response to receiving a decode and output buffer release, polling
-  // at this frequency is likely overkill in the steady state.
-  const auto kPollingPeriod = base::Milliseconds(10);
-  if (!pump_codec_timer_.IsRunning()) {
-    pump_codec_timer_.Start(
-        FROM_HERE, kPollingPeriod,
-        base::BindRepeating(&MediaCodecVideoDecoder::PumpCodec,
-                            base::Unretained(this), false));
-  }
-}
-
-void MediaCodecVideoDecoder::StopTimerIfIdle() {
-  DVLOG(4) << __func__;
-  DCHECK(!using_async_api_);
-
-  // Stop the timer if we've been idle for one second. Chosen arbitrarily.
-  const auto kTimeout = base::Seconds(1);
-  if (idle_timer_.Elapsed() > kTimeout) {
-    DVLOG(2) << "Stopping timer; idle timeout hit";
-    pump_codec_timer_.Stop();
-    // Draining for destroy can no longer proceed if the timer is stopping,
-    // because no more Decode() calls can be made, so complete it now to avoid
-    // leaking |this|.
-    if (drain_type_ == DrainType::kForDestroy)
-      OnCodecDrained();
-  }
 }
 
 bool MediaCodecVideoDecoder::QueueInput() {
@@ -1102,9 +1045,9 @@ bool MediaCodecVideoDecoder::DequeueOutput() {
   // SurfaceControl overlays, then this isn't needed; there is never a surface
   // transition anyway.
   if (!is_surface_control_enabled_) {
-    output_buffer->set_render_cb(base::BindPostTaskToCurrentDefault(
-        base::BindOnce(&MediaCodecVideoDecoder::StartTimerOrPumpCodec,
-                       weak_factory_.GetWeakPtr())));
+    output_buffer->set_render_cb(
+        base::BindPostTaskToCurrentDefault(base::BindOnce(
+            &MediaCodecVideoDecoder::PumpCodec, weak_factory_.GetWeakPtr())));
   }
   video_frame_factory_->CreateVideoFrame(
       std::move(output_buffer), presentation_time,
@@ -1187,27 +1130,12 @@ void MediaCodecVideoDecoder::StartDrainingCodec(DrainType drain_type) {
   if (codec_)
     codec_->DiscardOutputBuffers();
 
-  // Skip the drain if possible. Only VP8 codecs need draining because
-  // they can hang in release() or flush() otherwise
-  // (http://crbug.com/598963).
-  // TODO(watk): Strongly consider blocking VP8 (or specific MediaCodecs)
-  // instead. Draining is responsible for a lot of complexity.
-  if (decoder_config_.codec() != VideoCodec::kVP8 || !codec_ ||
-      codec_->IsFlushed() || codec_->IsDrained() || using_async_api_) {
-    // If the codec isn't already drained or flushed, then we have to remember
-    // that we owe it a flush.  We also have to remember not to deliver any
-    // output buffers that might still be in progress in the codec.
-    deferred_flush_pending_ =
-        codec_ && !codec_->IsDrained() && !codec_->IsFlushed();
-    OnCodecDrained();
-    return;
-  }
-
-  // Queue EOS if the codec isn't already processing one.
-  if (!codec_->IsDraining())
-    pending_decodes_.push_back(PendingDecode::CreateEos());
-
-  PumpCodec(true);
+  // If the codec isn't already drained or flushed, then we have to remember
+  // that we owe it a flush.  We also have to remember not to deliver any
+  // output buffers that might still be in progress in the codec.
+  deferred_flush_pending_ =
+      codec_ && !codec_->IsDrained() && !codec_->IsFlushed();
+  OnCodecDrained();
 }
 
 void MediaCodecVideoDecoder::OnCodecDrained() {
@@ -1243,7 +1171,6 @@ void MediaCodecVideoDecoder::EnterTerminalState(State state,
 
   // Cancel pending codec creation.
   codec_allocator_weak_factory_.InvalidateWeakPtrs();
-  pump_codec_timer_.Stop();
   ReleaseCodec();
   target_surface_bundle_ = nullptr;
   texture_owner_bundle_ = nullptr;

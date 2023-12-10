@@ -17,9 +17,7 @@ class AuthFactorConfig;
 // The implementation of the PinFactorEditor mojo service.
 class PinFactorEditor : public mojom::PinFactorEditor {
  public:
-  PinFactorEditor(AuthFactorConfig*,
-                  PinBackendDelegate* pin_backend,
-                  QuickUnlockStorageDelegate* storage);
+  PinFactorEditor(AuthFactorConfig*, PinBackendDelegate* pin_backend);
   ~PinFactorEditor() override;
 
   PinFactorEditor(const PinFactorEditor&) = delete;
@@ -65,7 +63,6 @@ class PinFactorEditor : public mojom::PinFactorEditor {
 
   raw_ptr<AuthFactorConfig> auth_factor_config_;
   raw_ptr<PinBackendDelegate> pin_backend_;
-  raw_ptr<QuickUnlockStorageDelegate> quick_unlock_storage_;
   mojo::ReceiverSet<mojom::PinFactorEditor> receivers_;
   AuthFactorEditor auth_factor_editor_;
   base::WeakPtrFactory<PinFactorEditor> weak_factory_{this};

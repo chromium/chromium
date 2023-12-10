@@ -2,7 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# @generated from third_party/rust/BUILD.gn.hbs by tools/crates/gnrt.
+# @generated from third_party/rust/chromium_crates_io/BUILD.gn.hbs by
+# tools/crates/gnrt.
 # Do not edit!
 
 import("//build/rust/cargo_crate.gni")
@@ -11,22 +12,15 @@ cargo_crate("lib") {
   crate_name = "hex"
   epoch = "0.4"
   crate_type = "rlib"
-
-  # Only for usage from third-party crates. Add the crate to
-  # third_party.toml to use it from first-party code.
-  visibility = [ "//third_party/rust/*" ]
-  crate_root = "crate/src/lib.rs"
+  crate_root =
+      "//third_party/rust/chromium_crates_io/vendor/hex-0.4.3/src/lib.rs"
   sources = [
-    "//third_party/rust/hex/v0_4/crate/benches/hex.rs",
-    "//third_party/rust/hex/v0_4/crate/src/error.rs",
-    "//third_party/rust/hex/v0_4/crate/src/lib.rs",
-    "//third_party/rust/hex/v0_4/crate/src/serde.rs",
-    "//third_party/rust/hex/v0_4/crate/tests/serde.rs",
-    "//third_party/rust/hex/v0_4/crate/tests/version-number.rs",
+    "//third_party/rust/chromium_crates_io/vendor/hex-0.4.3/src/error.rs",
+    "//third_party/rust/chromium_crates_io/vendor/hex-0.4.3/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/hex-0.4.3/src/serde.rs",
   ]
-  inputs = [ "//third_party/rust/hex/v0_4/crate/README.md" ]
+  inputs = []
 
-  # Unit tests skipped. Generate with --with-tests to include them.
   build_native_rust_unit_tests = false
   edition = "2018"
   cargo_pkg_version = "0.4.3"
@@ -42,8 +36,5 @@ cargo_crate("lib") {
     "alloc",
     "std",
   ]
-}
-group("test_support") {
-  public_deps = [ ":lib" ]
   testonly = true
 }

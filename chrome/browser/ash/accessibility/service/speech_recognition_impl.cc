@@ -70,8 +70,8 @@ void SpeechRecognitionImpl::Bind(
 void SpeechRecognitionImpl::Start(ax::mojom::StartOptionsPtr options,
                                   StartCallback callback) {
   // Extract arguments.
-  absl::optional<std::string> locale;
-  absl::optional<bool> interim_results;
+  std::optional<std::string> locale;
+  std::optional<bool> interim_results;
   if (options->locale) {
     locale = *options->locale;
   }
@@ -137,31 +137,34 @@ void SpeechRecognitionImpl::HandleSpeechRecognitionError(
 void SpeechRecognitionImpl::StartHelper(StartCallback callback,
                                         const std::string& key,
                                         speech::SpeechRecognitionType type,
-                                        absl::optional<std::string> error) {
-  if (error.has_value()) {
-    // TODO(b/304305202): Implement error handling.
-    return;
-  }
-
+                                        std::optional<std::string> error) {
   // Send relevant information back to the caller.
   auto info = ax::mojom::SpeechRecognitionStartInfo::New();
   info->type = ToMojo(type);
+  if (error.has_value()) {
+    info->observer_or_error =
+        ax::mojom::ObserverOrError::NewError(error.value());
+    std::move(callback).Run(std::move(info));
+    return;
+  }
+
   CreateEventObserverWrapper(key);
   auto* observer = GetEventObserverWrapper(key);
-  info->observer = observer->PassReceiver();
+  info->observer_or_error =
+      ax::mojom::ObserverOrError::NewObserver(observer->PassReceiver());
   std::move(callback).Run(std::move(info));
 }
 
 void SpeechRecognitionImpl::StopHelper(StopCallback callback,
                                        const std::string& key,
-                                       absl::optional<std::string> error) {
+                                       std::optional<std::string> error) {
+  RemoveEventObserverWrapper(key);
   if (error.has_value()) {
-    // TODO(b/304305202): Implement error handling.
+    std::move(callback).Run(std::move(error));
     return;
   }
 
-  RemoveEventObserverWrapper(key);
-  std::move(callback).Run();
+  std::move(callback).Run(std::optional<std::string>());
 }
 
 std::string SpeechRecognitionImpl::CreateKey(

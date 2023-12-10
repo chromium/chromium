@@ -672,10 +672,10 @@ TEST_P(ConnectionTest, DISABLED_VideoStats) {
 }
 
 // Slow/fails on Linux ASan/TSan (crbug.com/1045344) and flaky on Mac
-// (crbug.com/1237376).
+// (crbug.com/1237376) and Windows (crbug.com/1503680).
 #if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) &&               \
         (defined(ADDRESS_SANITIZER) || defined(THREAD_SANITIZER)) || \
-    BUILDFLAG(IS_MAC)
+    BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 #define MAYBE_Audio DISABLED_Audio
 #else
 #define MAYBE_Audio Audio

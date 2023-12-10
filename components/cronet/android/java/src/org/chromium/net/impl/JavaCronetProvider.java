@@ -57,6 +57,6 @@ public class JavaCronetProvider extends CronetProvider {
     public boolean equals(Object other) {
         return other == this
                 || (other instanceof JavaCronetProvider
-                           && this.mContext.equals(((JavaCronetProvider) other).mContext));
+                        && this.mContext.equals(((JavaCronetProvider) other).mContext));
     }
 }

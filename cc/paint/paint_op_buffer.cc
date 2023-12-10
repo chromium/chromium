@@ -87,14 +87,7 @@ PaintOpBuffer::DeserializeOptions::DeserializeOptions(
   DCHECK(scratch_buffer);
 }
 
-PaintOpBuffer::PaintOpBuffer()
-    : has_non_aa_paint_(false),
-      has_discardable_images_(false),
-      has_draw_ops_(false),
-      has_draw_text_ops_(false),
-      has_save_layer_ops_(false),
-      has_save_layer_alpha_ops_(false),
-      has_effects_preventing_lcd_text_for_save_layer_alpha_(false) {}
+PaintOpBuffer::PaintOpBuffer() = default;
 
 PaintOpBuffer::PaintOpBuffer(PaintOpBuffer&& other) {
   *this = std::move(other);

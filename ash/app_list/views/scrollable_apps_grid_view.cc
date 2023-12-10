@@ -296,8 +296,8 @@ void ScrollableAppsGridView::RecordAppMovingTypeMetrics(
                             kMaxAppListAppMovingType);
 }
 
-absl::optional<int> ScrollableAppsGridView::GetMaxRowsInPage(int page) const {
-  return absl::nullopt;
+std::optional<int> ScrollableAppsGridView::GetMaxRowsInPage(int page) const {
+  return std::nullopt;
 }
 
 gfx::Vector2d ScrollableAppsGridView::GetGridCenteringOffset(int page) const {
@@ -314,13 +314,13 @@ void ScrollableAppsGridView::EnsureViewVisible(const GridIndex& index) {
     view->ScrollViewToVisible();
 }
 
-absl::optional<ScrollableAppsGridView::VisibleItemIndexRange>
+std::optional<ScrollableAppsGridView::VisibleItemIndexRange>
 ScrollableAppsGridView::GetVisibleItemIndexRange() const {
   // Indicate the first row on which item views are visible.
-  absl::optional<int> first_visible_row;
+  std::optional<int> first_visible_row;
 
   // Indicate the first invisible row that is right after the last visible row.
-  absl::optional<int> first_invisible_row;
+  std::optional<int> first_invisible_row;
 
   const gfx::Rect scroll_view_visible_rect = scroll_view_->GetVisibleRect();
   for (size_t view_index = 0; view_index < view_model()->view_size();
@@ -357,7 +357,7 @@ ScrollableAppsGridView::GetVisibleItemIndexRange() const {
   }
 
   if (!first_visible_row)
-    return absl::nullopt;
+    return std::nullopt;
 
   VisibleItemIndexRange result;
   result.first_index = *first_visible_row * cols();

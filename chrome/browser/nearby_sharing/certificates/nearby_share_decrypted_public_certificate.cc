@@ -97,7 +97,7 @@ bool VerifyMetadataEncryptionKeyTag(
 // static
 absl::optional<NearbyShareDecryptedPublicCertificate>
 NearbyShareDecryptedPublicCertificate::DecryptPublicCertificate(
-    const nearbyshare::proto::PublicCertificate& public_certificate,
+    const nearby::sharing::proto::PublicCertificate& public_certificate,
     const NearbyShareEncryptedMetadataKey& encrypted_metadata_key) {
   // Note: The PublicCertificate.metadata_encryption_key and
   // PublicCertificate.for_selected_contacts are not returned from the server
@@ -152,7 +152,7 @@ NearbyShareDecryptedPublicCertificate::DecryptPublicCertificate(
     return absl::nullopt;
   }
 
-  nearbyshare::proto::EncryptedMetadata unencrypted_metadata;
+  nearby::sharing::proto::EncryptedMetadata unencrypted_metadata;
   if (!unencrypted_metadata.ParseFromArray(decrypted_metadata_bytes->data(),
                                            decrypted_metadata_bytes->size())) {
     CD_LOG(ERROR, Feature::NS)
@@ -173,7 +173,7 @@ NearbyShareDecryptedPublicCertificate::NearbyShareDecryptedPublicCertificate(
     std::unique_ptr<crypto::SymmetricKey> secret_key,
     std::vector<uint8_t> public_key,
     std::vector<uint8_t> id,
-    nearbyshare::proto::EncryptedMetadata unencrypted_metadata,
+    nearby::sharing::proto::EncryptedMetadata unencrypted_metadata,
     bool for_self_share)
     : not_before_(not_before),
       not_after_(not_after),

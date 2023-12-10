@@ -19,10 +19,11 @@ found in the LICENSE file.
 
         <DatePicker
             android:id="@+id/date_picker"
-            android:layout_gravity="center_horizontal"
+            android:layout_gravity="center"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:spinnersShown="true"
+            android:paddingStart="7.5dp"
             android:calendarViewShown="false"
             android:datePickerMode="spinner"
             android:contentDescription="@string/accessibility_datetime_picker_date"
@@ -30,7 +31,7 @@ found in the LICENSE file.
 
         <TimePicker
             android:id="@+id/time_picker"
-            android:layout_gravity="center_horizontal"
+            android:layout_gravity="center"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:timePickerMode="spinner"

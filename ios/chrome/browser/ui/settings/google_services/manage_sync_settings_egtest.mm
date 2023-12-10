@@ -6,11 +6,12 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/bookmarks/common/storage_type.h"
 #import "components/policy/policy_constants.h"
+#import "components/strings/grit/components_strings.h"
 #import "components/sync/base/features.h"
 #import "ios/chrome/browser/policy/policy_app_interface.h"
 #import "ios/chrome/browser/policy/policy_earl_grey_utils.h"
 #import "ios/chrome/browser/policy/policy_util.h"
-#import "ios/chrome/browser/signin/fake_system_identity.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_app_interface.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
@@ -28,6 +29,7 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
+#import "ios/chrome/test/earl_grey/chrome_earl_grey_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
@@ -59,14 +61,13 @@ void SignInWithPromoFromAccountSettings(FakeSystemIdentity* fake_identity,
                                    fake_identity.userEmail)]
       performAction:grey_tap()];
   [[EarlGrey
-      selectElementWithMatcher:grey_allOf(
-                                   grey_accessibilityLabel(
-                                       l10n_util::GetNSStringF(
-                                           IDS_IOS_FIRST_RUN_SIGNIN_CONTINUE_AS,
-                                           base::SysNSStringToUTF16(
-                                               fake_identity.userGivenName))),
-                                   grey_sufficientlyVisible(), nil)]
-      performAction:grey_tap()];
+      selectElementWithMatcher:
+          grey_allOf(
+              chrome_test_util::StaticTextWithAccessibilityLabel(
+                  l10n_util::GetNSStringF(
+                      IDS_IOS_FIRST_RUN_SIGNIN_CONTINUE_AS,
+                      base::SysNSStringToUTF16(fake_identity.userGivenName))),
+              grey_sufficientlyVisible(), nil)] performAction:grey_tap()];
   if (expect_history_sync) {
     [[EarlGrey selectElementWithMatcher:
                    chrome_test_util::SigninScreenPromoPrimaryButtonMatcher()]
@@ -296,6 +297,146 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
   // Verify the account settings row is not showing in the settings menu.
   [[EarlGrey selectElementWithMatcher:SettingsAccountButton()]
       assertWithMatcher:grey_notVisible()];
+}
+
+// Tests the unsynced data dialog shows when there are unsynced passwords. Also
+// verifies that the user is still signed in when the dialog Cancel button is
+// tapped. kReplaceSyncPromosWithSignInPromos is enabled.
+- (void)
+    testUnsyncedDataDialogShowsInCaseOfUnsyncedPasswords_SyncToSigninEnabled {
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+
+  [ChromeEarlGreyAppInterface disconnectFakeSyncServerNetwork];
+
+  password_manager_test_utils::SavePasswordFormToAccountStore(
+      @"password", @"user", @"https://example.com");
+
+  [ChromeEarlGreyUI openSettingsMenu];
+  [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
+
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TableViewSwitchCell(
+                                          kSyncPasswordsIdentifier,
+                                          /*is_toggled_on=*/YES,
+                                          /*enabled=*/YES)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  SignOutFromAccountSettings();
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabelId(
+                                   IDS_CANCEL)] performAction:grey_tap()];
+
+  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
+
+  // Re-connect the fake sync server to the network to be able to sign-in when
+  // the test gets run repeatedly.
+  [ChromeEarlGreyAppInterface connectFakeSyncServerNetwork];
+}
+
+// Tests the unsynced data dialog shows when there are unsynced readinglist
+// entries. Also verifies that the user is still signed in when the dialog
+// Cancel button is tapped. kReplaceSyncPromosWithSignInPromos is enabled.
+- (void)
+    testUnsyncedDataDialogShowsInCaseOfUnsyncedReadingListEntry_SyncToSigninEnabled {
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+
+  [ChromeEarlGreyAppInterface disconnectFakeSyncServerNetwork];
+
+  reading_list_test_utils::AddURLToReadingList(GURL("https://example.com"));
+
+  [ChromeEarlGreyUI openSettingsMenu];
+  [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
+
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TableViewSwitchCell(
+                                          kSyncReadingListIdentifier,
+                                          /*is_toggled_on=*/YES,
+                                          /*enabled=*/YES)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  SignOutFromAccountSettings();
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabelId(
+                                   IDS_CANCEL)] performAction:grey_tap()];
+
+  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
+
+  // Re-connect the fake sync server to the network to be able to sign-in when
+  // the test gets run repeatedly.
+  [ChromeEarlGreyAppInterface connectFakeSyncServerNetwork];
+}
+
+// Tests the unsynced data dialog shows when there are unsynced bookmarks. Also
+// verifies that the user still signed in when the dialog Cancel button is
+// tapped. kReplaceSyncPromosWithSignInPromos is enabled.
+- (void)
+    testCancelSigningOutFromUnsyncedDataDialogInCaseOfUnsyncedBookmarks_SyncToSigninEnabled {
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+  [ChromeEarlGreyUI openSettingsMenu];
+  [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
+
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TableViewSwitchCell(
+                                          kSyncBookmarksIdentifier,
+                                          /*is_toggled_on=*/YES,
+                                          /*enabled=*/YES)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  [ChromeEarlGreyAppInterface disconnectFakeSyncServerNetwork];
+
+  SaveBookmark(@"foo", @"https://www.foo.com");
+
+  SignOutFromAccountSettings();
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabelId(
+                                   IDS_CANCEL)] performAction:grey_tap()];
+
+  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
+
+  // Re-connect the fake sync server to the network to be able to sign-in when
+  // the test gets run repeatedly.
+  [ChromeEarlGreyAppInterface connectFakeSyncServerNetwork];
+}
+
+// Tests the unsynced data dialog shows when there are unsynced bookmarks. Also
+// verifies that the user is signed out when the dialog Delete and Sign Out
+// button is tapped. kReplaceSyncPromosWithSignInPromos is enabled.
+- (void)
+    testDeleteAndSignOutFromUnsyncedDataDialogInCaseOfUnsyncedBookmarks_SyncToSigninEnabled {
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+  [ChromeEarlGreyUI openSettingsMenu];
+  [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
+
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TableViewSwitchCell(
+                                          kSyncBookmarksIdentifier,
+                                          /*is_toggled_on=*/YES,
+                                          /*enabled=*/YES)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  [ChromeEarlGreyAppInterface disconnectFakeSyncServerNetwork];
+
+  SaveBookmark(@"foo", @"https://www.foo.com");
+
+  SignOutFromAccountSettings();
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::ButtonWithAccessibilityLabelId(
+                     IDS_IOS_SIGNOUT_DIALOG_SIGN_OUT_AND_DELETE_BUTTON)]
+      performAction:grey_tap()];
+
+  [SigninEarlGrey verifySignedOut];
+
+  // Re-connect the fake sync server to the network to be able to sign-in when
+  // the test gets run repeatedly.
+  [ChromeEarlGreyAppInterface connectFakeSyncServerNetwork];
 }
 
 // Tests that data type settings carry over signing out.

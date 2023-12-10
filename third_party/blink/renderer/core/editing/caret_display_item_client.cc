@@ -25,6 +25,7 @@
 
 #include "third_party/blink/renderer/core/editing/caret_display_item_client.h"
 
+#include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/local_caret_rect.h"
 #include "third_party/blink/renderer/core/editing/position_with_affinity.h"
@@ -32,7 +33,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/layout/layout_block.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
+#include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/paint/object_paint_invalidator.h"
 #include "third_party/blink/renderer/core/paint/paint_auto_dark_mode.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
@@ -132,7 +133,7 @@ void CaretDisplayItemClient::LayoutBlockWillBeDestroyed(
 }
 
 bool CaretDisplayItemClient::ShouldPaintCaret(
-    const NGPhysicalBoxFragment& box_fragment) const {
+    const PhysicalBoxFragment& box_fragment) const {
   const auto* const block =
       DynamicTo<LayoutBlock>(box_fragment.GetLayoutObject());
   if (!block)
@@ -174,7 +175,7 @@ void CaretDisplayItemClient::UpdateStyleAndLayoutIfNeeded(
     return;
   }
 
-  const NGPhysicalBoxFragment* const new_box_fragment =
+  const PhysicalBoxFragment* const new_box_fragment =
       rect_and_block.box_fragment;
   if (new_box_fragment != box_fragment_) {
     // The caret property tree space may have changed.
@@ -211,6 +212,16 @@ void CaretDisplayItemClient::SetActive(bool active) {
     return;
   is_active_ = active;
   needs_paint_invalidation_ = true;
+}
+
+void CaretDisplayItemClient::EnsureInvalidationOfPreviousLayoutBlock() {
+  if (!previous_layout_block_ || previous_layout_block_ == layout_block_) {
+    return;
+  }
+
+  PaintInvalidatorContext context;
+  context.painting_layer = previous_layout_block_->PaintingLayer();
+  InvalidatePaintInPreviousLayoutBlock(context);
 }
 
 void CaretDisplayItemClient::InvalidatePaint(

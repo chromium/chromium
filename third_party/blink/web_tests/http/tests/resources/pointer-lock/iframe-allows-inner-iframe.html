@@ -8,11 +8,15 @@
         parent.postMessage('inner frame load', '*');
     }
     window.addEventListener('message', (event) => {
-        parent.postMessage(event.data, '*');
+        if (event.data[0] == "clickBody") {
+            document.getElementById("nested-child").contentWindow.postMessage(event.data, "*");
+        } else {
+            parent.postMessage(event.data, '*');
+        }
     });
 </script>
 <body>
-    <iframe src="inner-iframe.html" sandbox="allow-pointer-lock allow-scripts" onload="onInnerFrameLoad()"></iframe>
+    <iframe id="nested-child" src="inner-iframe.html" sandbox="allow-pointer-lock allow-scripts" onload="onInnerFrameLoad()"></iframe>
     iframe-allows-inner-iframe.html
 </body>
 </html>

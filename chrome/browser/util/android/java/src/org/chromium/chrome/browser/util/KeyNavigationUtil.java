@@ -6,13 +6,9 @@ package org.chromium.chrome.browser.util;
 
 import android.view.KeyEvent;
 
-/**
- * This is a helper class to handle navigation related checks for key events.
- */
+/** This is a helper class to handle navigation related checks for key events. */
 public class KeyNavigationUtil {
-    /**
-     * This is a helper class with no instance.
-     */
+    /** This is a helper class with no instance. */
     private KeyNavigationUtil() {}
 
     /**

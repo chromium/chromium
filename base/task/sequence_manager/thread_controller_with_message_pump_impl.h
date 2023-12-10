@@ -93,6 +93,7 @@ class BASE_EXPORT ThreadControllerWithMessagePumpImpl
   void OnBeginWorkItem() override;
   void OnEndWorkItem(int run_level_depth) override;
   void BeforeWait() override;
+  void BeginNativeWorkBeforeDoWork() override;
   MessagePump::Delegate::NextWorkInfo DoWork() override;
   bool DoIdleWork() override;
   int RunDepth() override;
@@ -175,6 +176,7 @@ class BASE_EXPORT ThreadControllerWithMessagePumpImpl
       GUARDED_BY(task_runner_lock_);
 
   WorkDeduplicator work_deduplicator_;
+  bool in_native_work_batch_ = false;
 
   ThreadControllerPowerMonitor power_monitor_;
 

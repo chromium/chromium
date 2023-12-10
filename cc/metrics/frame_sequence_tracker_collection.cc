@@ -403,6 +403,13 @@ void FrameSequenceTrackerCollection::AddSortedFrame(
     tracker.second->AddSortedFrame(args, frame_info);
   for (auto& tracker : custom_frame_trackers_)
     tracker.second->AddSortedFrame(args, frame_info);
+
+  // Sorted frames could arrive after tracker are scheduled for termination.
+  // Removal trackers continue to report metrics for frames which they started
+  // observing.
+  for (auto& tracker : removal_trackers_) {
+    tracker->AddSortedFrame(args, frame_info);
+  }
 }
 
 }  // namespace cc

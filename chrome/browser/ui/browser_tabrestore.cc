@@ -136,7 +136,7 @@ void LoadRestoredTabIfVisible(Browser* browser,
 WebContents* AddRestoredTabImpl(std::unique_ptr<WebContents> web_contents,
                                 Browser* browser,
                                 int tab_index,
-                                absl::optional<tab_groups::TabGroupId> group,
+                                std::optional<tab_groups::TabGroupId> group,
                                 bool select,
                                 bool pin,
                                 bool from_session_restore) {
@@ -150,7 +150,7 @@ WebContents* AddRestoredTabImpl(std::unique_ptr<WebContents> web_contents,
   }
 
   if (tab_strip_model->group_model()) {
-    const absl::optional<tab_groups::TabGroupId> surrounding_group =
+    const std::optional<tab_groups::TabGroupId> surrounding_group =
         tab_strip_model->GetSurroundingTabGroup(tab_index);
 
     // If inserting at |tab_index| would put the tab within a different
@@ -231,7 +231,7 @@ WebContents* AddRestoredTab(
     int tab_index,
     int selected_navigation,
     const std::string& extension_app_id,
-    absl::optional<tab_groups::TabGroupId> group,
+    std::optional<tab_groups::TabGroupId> group,
     bool select,
     bool pin,
     base::TimeTicks last_active_time,
@@ -253,7 +253,7 @@ WebContents* AddRestoredTabFromCache(
     std::unique_ptr<WebContents> web_contents,
     Browser* browser,
     int tab_index,
-    absl::optional<tab_groups::TabGroupId> group,
+    std::optional<tab_groups::TabGroupId> group,
     bool select,
     bool pin,
     const sessions::SerializedUserAgentOverride& user_agent_override,

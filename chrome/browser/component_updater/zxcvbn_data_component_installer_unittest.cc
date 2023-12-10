@@ -90,11 +90,20 @@ class ZxcvbnDataComponentInstallerPolicyTest : public ::testing::Test {
     }
   }
 
-  void CreateEmptyCombinedBinaryFile() {
+  void CreateInvalidCombinedBinaryFile() {
+    constexpr uint8_t marker[1] = {0x70};
     ASSERT_TRUE(base::WriteFile(
         GetPath().Append(
             ZxcvbnDataComponentInstallerPolicy::kCombinedRankedDictsFileName),
-        ""));
+        marker));
+  }
+
+  void CreateValidCombinedBinaryFile() {
+    constexpr uint8_t marker[1] = {0x80};
+    ASSERT_TRUE(base::WriteFile(
+        GetPath().Append(
+            ZxcvbnDataComponentInstallerPolicy::kCombinedRankedDictsFileName),
+        marker));
   }
 
   void CreateTextFiles() {
@@ -160,8 +169,8 @@ class ZxcvbnDataComponentInstallerPolicyTest : public ::testing::Test {
 };
 
 // Tests that VerifyInstallation only returns true when both the text files and
-// the combined binary file are present in the case of the version with support
-// for memory mapping.
+// a combined binary file with a valid marker are present in the case of the
+// version with support for memory mapping.
 TEST_F(ZxcvbnDataComponentInstallerPolicyTest,
        VerifyInstallationForMemoryMappedVersion) {
   SetVersion(kMemoryMappedVersion);
@@ -172,11 +181,22 @@ TEST_F(ZxcvbnDataComponentInstallerPolicyTest,
   // The combined data file is still missing.
   EXPECT_FALSE(policy().VerifyInstallation(manifest(), GetPath()));
 
-  CreateEmptyCombinedBinaryFile();
+  CreateValidCombinedBinaryFile();
   EXPECT_TRUE(policy().VerifyInstallation(manifest(), GetPath()));
 
   base::DeleteFile(GetPath().Append(
       ZxcvbnDataComponentInstallerPolicy::kEnglishWikipediaTxtFileName));
+  EXPECT_FALSE(policy().VerifyInstallation(manifest(), GetPath()));
+}
+
+// Tests that VerifyInstallation fails if the first bit of the memory mapped
+// file is not a valid marker bit.
+TEST_F(ZxcvbnDataComponentInstallerPolicyTest,
+       VerifyInstallationForMemoryMappedVersionWithInvalidMarkerBit) {
+  SetVersion(kMemoryMappedVersion);
+
+  CreateEmptyTextFiles();
+  CreateInvalidCombinedBinaryFile();
   EXPECT_FALSE(policy().VerifyInstallation(manifest(), GetPath()));
 }
 

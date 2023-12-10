@@ -9,7 +9,6 @@
 #include <unordered_map>
 
 #include "base/check.h"
-#include "base/containers/cxx20_erase_unordered_map.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
@@ -68,7 +67,7 @@ class AddressToIdMap {
   // generated if the address is passed into CreateOrGetId.
   template <class Predicate>
   size_t EraseIf(Predicate pred) {
-    return base::EraseIf(address_to_id_, pred);
+    return std::erase_if(address_to_id_, pred);
   }
 
  private:

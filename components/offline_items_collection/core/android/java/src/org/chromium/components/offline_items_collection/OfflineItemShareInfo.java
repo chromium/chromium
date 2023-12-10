@@ -13,4 +13,6 @@ import android.net.Uri;
  * For all member variable descriptions see the C++ class.
  * TODO(dtrainor): Investigate making all class members for this and the C++ counterpart const.
  */
-public class OfflineItemShareInfo { public Uri uri; }
+public class OfflineItemShareInfo {
+    public Uri uri;
+}

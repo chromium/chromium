@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {decorate} from '../../../common/js/ui.js';
+import {decorate} from '../../../common/js/cr_ui.js';
 import {iconSetToCSSBackgroundImageValue} from '../../../common/js/util.js';
 import {ProvidersModel} from '../providers_model.js';
 
@@ -56,7 +56,7 @@ export class ProvidersMenu {
     // @ts-ignore: error TS2339: Property 'addMenuItem' does not exist on type
     // 'Menu'.
     const menuItem = this.menu_.addMenuItem({});
-    decorate(/** @type {!Element} */ (menuItem), FilesMenuItem);
+    decorate(/** @type {!HTMLElement} */ (menuItem), FilesMenuItem);
     return /** @type {!FilesMenuItem} */ (menuItem);
   }
 

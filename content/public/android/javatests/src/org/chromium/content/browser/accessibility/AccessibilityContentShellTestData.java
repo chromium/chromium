@@ -4,9 +4,7 @@
 
 package org.chromium.content.browser.accessibility;
 
-/**
- * Singleton used for tracking accessibility data during content shell unit tests.
- */
+/** Singleton used for tracking accessibility data during content shell unit tests. */
 public class AccessibilityContentShellTestData {
     private static AccessibilityContentShellTestData sInstance;
 

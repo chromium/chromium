@@ -162,6 +162,14 @@ TEST(LensUrlUtilsTest, GetFullscreenSearchQueryParameterTest) {
   EXPECT_THAT(query_param, MatchesRegex("ep=cfs&re=avsf&s=4&st=\\d+"));
 }
 
+TEST(LensUrlUtilsTest, GetVideoFrameSearchQueryParameterTest) {
+  auto lens_ep = lens::EntryPoint::CHROME_VIDEO_FRAME_SEARCH_CONTEXT_MENU_ITEM;
+  std::string query_param = lens::GetQueryParametersForLensRequest(
+      lens_ep, /*is_lens_side_panel_request=*/false,
+      /*is_full_screen_request=*/false);
+  EXPECT_THAT(query_param, MatchesRegex("ep=cvfs&re=df&s=4&st=\\d+"));
+}
+
 TEST(LensUrlUtilsTest, GetUnknownEntryPointTest) {
   std::string query_param = lens::GetQueryParametersForLensRequest(
       lens::EntryPoint::UNKNOWN, /*is_lens_side_panel_request=*/false,
@@ -305,7 +313,8 @@ TEST(LensUrlUtilsTest, AppendPopulatedLogsTest) {
   std::vector<lens::mojom::LatencyLogPtr> log_data;
   log_data.push_back(lens::mojom::LatencyLog::New(
       lens::mojom::Phase::DOWNSCALE_START, gfx::Size(), gfx::Size(),
-      lens::mojom::ImageFormat::ORIGINAL, base::Time::Now()));
+      lens::mojom::ImageFormat::ORIGINAL, base::Time::Now(),
+      /*encoded_size_bytes=*/0));
   std::string query_param = lens::GetQueryParametersForLensRequest(
       lens::EntryPoint::UNKNOWN,
       /*is_lens_side_panel_request=*/true,

@@ -21,12 +21,19 @@ class SandboxedWebUiAppTestBase : public MojoWebUIBrowserTest {
   SandboxedWebUiAppTestBase(const std::string& host_url,
                             const std::string& sandboxed_url,
                             const std::vector<base::FilePath>& scripts,
-                            const std::string& test_module = std::string());
+                            const std::string& guest_test_module = {},
+                            const std::string& test_harness_module = {});
   ~SandboxedWebUiAppTestBase() override;
 
   SandboxedWebUiAppTestBase(const SandboxedWebUiAppTestBase&) = delete;
   SandboxedWebUiAppTestBase& operator=(const SandboxedWebUiAppTestBase&) =
       delete;
+
+  // Runs the JavaScript test case corresponding to the current gtest. This
+  // requires `test_harness_module` to be configured. If provided, `helper` is a
+  // helper method on the current test harness that will be invoked with the
+  // name of the current test case.
+  void RunCurrentTest(const std::string& helper = {});
 
   // Configures and installs a handler to deliver testing resources into a
   // WebUIDataSource configured using MaybeConfigureTestableDataSource().
@@ -62,7 +69,8 @@ class SandboxedWebUiAppTestBase : public MojoWebUIBrowserTest {
   const std::string host_url_;
   const std::string sandboxed_url_;
   const std::vector<base::FilePath> scripts_;
-  const std::string test_module_;
+  const std::string guest_test_module_;
+  const std::string test_harness_module_;
 };
 
 #endif  // ASH_WEBUI_WEB_APPLICATIONS_TEST_SANDBOXED_WEB_UI_TEST_BASE_H_

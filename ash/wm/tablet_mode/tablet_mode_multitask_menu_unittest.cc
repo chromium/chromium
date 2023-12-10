@@ -11,6 +11,7 @@
 #include "ash/wm/splitview/split_view_constants.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/splitview/split_view_divider.h"
+#include "ash/wm/splitview/split_view_utils.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "ash/wm/tablet_mode/tablet_mode_multitask_cue_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_multitask_menu.h"
@@ -96,8 +97,7 @@ class TabletModeMultitaskMenuTest : public AshTestBase {
                                            : half_bounds.right_center());
     auto* split_view_controller = SplitViewController::Get(window);
     DCHECK_EQ(split_view_controller->GetPositionOfSnappedWindow(window),
-              left ? SplitViewController::SnapPosition::kPrimary
-                   : SplitViewController::SnapPosition::kSecondary);
+              left ? SnapPosition::kPrimary : SnapPosition::kSecondary);
   }
 
   void PressPartialPrimary(const aura::Window& window) {
@@ -400,10 +400,8 @@ TEST_F(TabletModeMultitaskMenuTest, CloseOnDoubleTapDivider) {
 
   auto* split_view_controller =
       SplitViewController::Get(Shell::GetPrimaryRootWindow());
-  split_view_controller->SnapWindow(
-      window1.get(), SplitViewController::SnapPosition::kPrimary);
-  split_view_controller->SnapWindow(
-      window2.get(), SplitViewController::SnapPosition::kSecondary);
+  split_view_controller->SnapWindow(window1.get(), SnapPosition::kPrimary);
+  split_view_controller->SnapWindow(window2.get(), SnapPosition::kSecondary);
 
   // Open the menu on one of the windows.
   ShowMultitaskMenu(*window1);
@@ -531,8 +529,7 @@ TEST_F(TabletModeMultitaskMenuTest, AdjustedMenuBounds) {
             GetMultitaskMenu()->widget()->GetWindowBoundsInScreen().right());
 
   // Swap windows so the 1/3 window is on the left. Test that the menu fits.
-  split_view_controller->SwapWindows(
-      SplitViewController::SwapWindowsSource::kDoubleTap);
+  split_view_controller->SwapWindows();
   ShowMultitaskMenu(*window2);
   EXPECT_EQ(work_area.x(),
             GetMultitaskMenu()->widget()->GetWindowBoundsInScreen().x());
@@ -700,12 +697,11 @@ TEST_F(TabletModeMultitaskMenuTest, ShowBottomMenuPortraitPrimary) {
       SplitViewController::Get(Shell::GetPrimaryRootWindow());
   std::unique_ptr<aura::Window> top_window(CreateAppWindow());
   std::unique_ptr<aura::Window> bottom_window(CreateAppWindow());
-  split_view_controller->SnapWindow(
-      top_window.get(), SplitViewController::SnapPosition::kPrimary);
-  split_view_controller->SnapWindow(
-      bottom_window.get(), SplitViewController::SnapPosition::kSecondary);
-  EXPECT_FALSE(split_view_controller->IsPhysicalLeftOrTop(
-      SplitViewController::SnapPosition::kSecondary, bottom_window.get()));
+  split_view_controller->SnapWindow(top_window.get(), SnapPosition::kPrimary);
+  split_view_controller->SnapWindow(bottom_window.get(),
+                                    SnapPosition::kSecondary);
+  EXPECT_FALSE(
+      IsPhysicalLeftOrTop(SnapPosition::kSecondary, bottom_window.get()));
   wm::ActivateWindow(bottom_window.get());
 
   // Event generation coordinates are relative to the natural origin, but
@@ -740,12 +736,11 @@ TEST_F(TabletModeMultitaskMenuTest, DISABLED_ShowBottomMenuPortraitSecondary) {
       SplitViewController::Get(Shell::GetPrimaryRootWindow());
   std::unique_ptr<aura::Window> bottom_window(CreateAppWindow());
   std::unique_ptr<aura::Window> top_window(CreateAppWindow());
-  split_view_controller->SnapWindow(
-      bottom_window.get(), SplitViewController::SnapPosition::kPrimary);
-  split_view_controller->SnapWindow(
-      top_window.get(), SplitViewController::SnapPosition::kSecondary);
-  EXPECT_FALSE(split_view_controller->IsPhysicalLeftOrTop(
-      SplitViewController::SnapPosition::kPrimary, bottom_window.get()));
+  split_view_controller->SnapWindow(bottom_window.get(),
+                                    SnapPosition::kPrimary);
+  split_view_controller->SnapWindow(top_window.get(), SnapPosition::kSecondary);
+  EXPECT_FALSE(
+      IsPhysicalLeftOrTop(SnapPosition::kPrimary, bottom_window.get()));
   wm::ActivateWindow(bottom_window.get());
 
   // Event generation coordinates are relative to the natural origin, but

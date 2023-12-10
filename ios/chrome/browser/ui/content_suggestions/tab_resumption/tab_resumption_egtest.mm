@@ -6,9 +6,9 @@
 #import "base/test/ios/wait_util.h"
 #import "components/sync/base/features.h"
 #import "components/url_formatter/elide_url.h"
-#import "ios/chrome/browser/ntp/home/features.h"
 #import "ios/chrome/browser/ntp_tiles/model/tab_resumption/tab_resumption_prefs.h"
-#import "ios/chrome/browser/signin/fake_system_identity.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
@@ -45,9 +45,10 @@ void WaitUntilTabResumptionTileVisibleOrTimeout(bool should_show) {
       conditionWithName:@"Tile shown"
                   block:^BOOL {
                     NSError* error;
-                    [[EarlGrey selectElementWithMatcher:
-                                   grey_accessibilityID(l10n_util::GetNSString(
-                                       IDS_IOS_TAB_RESUMPTION_TITLE))]
+                    [[EarlGrey
+                        selectElementWithMatcher:
+                            grey_accessibilityID(
+                                kMagicStackContentSuggestionsModuleTabResumptionAccessibilityIdentifier)]
                         assertWithMatcher:grey_notNil()
                                     error:&error];
                     return error == nil;
@@ -174,7 +175,7 @@ NSString* HostnameFromGURL(GURL URL) {
 // Tests that the tab resumption tile is correctly displayed for a local tab.
 - (void)testTabResumptionTileDisplayedForLocalTab {
   if ([ChromeEarlGrey isIPadIdiom]) {
-#if TARGET_IPHONE_SIMULATOR
+#if !TARGET_IPHONE_SIMULATOR
     // TODO(crbug.com/1494006): Test is flaky on iPad device. Re-enable the
     // test.
     EARL_GREY_TEST_DISABLED(@"Test is flaky on iPad device.");
@@ -215,7 +216,13 @@ NSString* HostnameFromGURL(GURL URL) {
 
 // Tests that interacting with the Shortcuts tile works when the tab resumption
 // tile is displayed.
-- (void)testInteractWithAnotherTile {
+// TODO(crbug.com/1504149): Test is failing on device.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_testInteractWithAnotherTile testInteractWithAnotherTile
+#else
+#define MAYBE_testInteractWithAnotherTile DISABLED_testInteractWithAnotherTile
+#endif
+- (void)MAYBE_testInteractWithAnotherTile {
   // Check that the tile is not displayed when there is no distant tab.
   WaitUntilTabResumptionTileVisibleOrTimeout(false);
 

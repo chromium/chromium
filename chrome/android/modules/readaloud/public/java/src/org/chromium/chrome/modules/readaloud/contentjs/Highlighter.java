@@ -106,4 +106,9 @@ public interface Highlighter {
      * @param tab the tab to clear highlights for. A no-op if highlighting was never requested.
      */
     default void clearHighlights(GlobalRenderFrameHostId frameId, Tab tab) {}
+
+    /** Whether or not this tab has highlighter initialized and ready. */
+    default boolean isInitialized(Tab tab) {
+        return false;
+    }
 }

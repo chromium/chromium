@@ -14,6 +14,9 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 
+import androidx.annotation.NonNull;
+
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.AutofillEditorBase;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
@@ -21,15 +24,16 @@ import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
 import org.chromium.chrome.browser.feedback.FragmentHelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.components.autofill.AutofillProfile;
+import org.chromium.ui.modaldialog.DialogDismissalCause;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.util.List;
 
-/**
- * The base class for credit card settings.
- */
-abstract class AutofillCreditCardEditor
-        extends AutofillEditorBase implements FragmentHelpAndFeedbackLauncher {
+/** The base class for credit card settings. */
+public abstract class AutofillCreditCardEditor extends AutofillEditorBase
+        implements FragmentHelpAndFeedbackLauncher {
     private HelpAndFeedbackLauncher mHelpAndFeedbackLauncher;
+    private Supplier<ModalDialogManager> mModalDialogManagerSupplier;
 
     protected CreditCard mCard;
     protected Spinner mBillingAddress;
@@ -42,13 +46,16 @@ abstract class AutofillCreditCardEditor
 
         // Do not use autofill for the fields.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            getActivity().getWindow().getDecorView().setImportantForAutofill(
-                    View.IMPORTANT_FOR_AUTOFILL_NO_EXCLUDE_DESCENDANTS);
+            getActivity()
+                    .getWindow()
+                    .getDecorView()
+                    .setImportantForAutofill(View.IMPORTANT_FOR_AUTOFILL_NO_EXCLUDE_DESCENDANTS);
         }
 
         // Populate the billing address dropdown.
-        ArrayAdapter<AutofillProfile> profilesAdapter = new ArrayAdapter<AutofillProfile>(
-                getActivity(), android.R.layout.simple_spinner_item);
+        ArrayAdapter<AutofillProfile> profilesAdapter =
+                new ArrayAdapter<AutofillProfile>(
+                        getActivity(), android.R.layout.simple_spinner_item);
         profilesAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
         AutofillProfile noSelection = AutofillProfile.builder().build();
@@ -103,8 +110,7 @@ abstract class AutofillCreditCardEditor
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.delete_menu_id) {
-            deleteEntry();
-            getActivity().finish();
+            showDeleteCreditCardConfirmationDialog();
             return true;
         }
         if (item.getItemId() == R.id.help_menu_id) {
@@ -119,5 +125,33 @@ abstract class AutofillCreditCardEditor
     @Override
     public void setHelpAndFeedbackLauncher(HelpAndFeedbackLauncher helpAndFeedbackLauncher) {
         mHelpAndFeedbackLauncher = helpAndFeedbackLauncher;
+    }
+
+    /**
+     * Sets Supplier for {@lnk ModalDialogManager} used to display {@link
+     * AutofillDeleteCreditCardConfirmationDialog}.
+     */
+    public void setModalDialogManagerSupplier(
+            @NonNull Supplier<ModalDialogManager> modalDialogManagerSupplier) {
+        mModalDialogManagerSupplier = modalDialogManagerSupplier;
+    }
+
+    private void showDeleteCreditCardConfirmationDialog() {
+        assert mModalDialogManagerSupplier != null;
+
+        ModalDialogManager modalDialogManager = mModalDialogManagerSupplier.get();
+        assert modalDialogManager != null;
+
+        AutofillDeleteCreditCardConfirmationDialog dialog =
+                new AutofillDeleteCreditCardConfirmationDialog(
+                        modalDialogManager,
+                        getContext(),
+                        dismissalCause -> {
+                            if (dismissalCause == DialogDismissalCause.POSITIVE_BUTTON_CLICKED) {
+                                deleteEntry();
+                                getActivity().finish();
+                            }
+                        });
+        dialog.show();
     }
 }

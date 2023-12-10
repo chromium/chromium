@@ -707,7 +707,7 @@ void WebTransport::OnIncomingUnidirectionalStreamAvailable() {
   }
 }
 
-void WebTransport::OnDatagramReceived(base::StringPiece datagram) {
+void WebTransport::OnDatagramReceived(std::string_view datagram) {
   if (torn_down_ || closing_) {
     return;
   }

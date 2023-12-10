@@ -2,7 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chromeos/ash/components/sync_wifi/synced_network_updater_impl.h"
+
 #include <memory>
+#include <optional>
 
 #include "ash/public/cpp/network_config_service.h"
 #include "base/functional/bind.h"
@@ -20,14 +23,12 @@
 #include "chromeos/ash/components/sync_wifi/network_test_helper.h"
 #include "chromeos/ash/components/sync_wifi/pending_network_configuration_tracker_impl.h"
 #include "chromeos/ash/components/sync_wifi/synced_network_metrics_logger.h"
-#include "chromeos/ash/components/sync_wifi/synced_network_updater_impl.h"
 #include "chromeos/ash/components/sync_wifi/test_data_generator.h"
 #include "chromeos/ash/services/network_config/cros_network_config.h"
 #include "chromeos/ash/services/network_config/in_process_instance.h"
 #include "chromeos/ash/services/network_config/public/cpp/cros_network_config_test_helper.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
 namespace ash::network_config {

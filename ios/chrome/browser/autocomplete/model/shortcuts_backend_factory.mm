@@ -12,7 +12,7 @@
 #import "components/omnibox/browser/shortcuts_backend.h"
 #import "components/omnibox/browser/shortcuts_constants.h"
 #import "components/prefs/pref_service.h"
-#import "ios/chrome/browser/history/history_service_factory.h"
+#import "ios/chrome/browser/history/model/history_service_factory.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/search_engines/model/ui_thread_search_terms_data.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"

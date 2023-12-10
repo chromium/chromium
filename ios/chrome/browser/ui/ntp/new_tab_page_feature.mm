@@ -7,9 +7,9 @@
 #import "base/ios/ios_util.h"
 #import "base/metrics/field_trial_params.h"
 #import "components/variations/service/variations_service.h"
-#import "ios/chrome/browser/ntp/home/features.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 
 #pragma mark - Constants
 
@@ -46,10 +46,6 @@ BASE_FEATURE(kFeedHeaderSettings,
 BASE_FEATURE(kOverrideFeedSettings,
              "OverrideFeedSettings",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kEnableFeedSyntheticCapabilities,
-             "EnableFeedSyntheticCapabilities",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kWebFeedFeedbackReroute,
              "WebFeedFeedbackReroute",
@@ -166,10 +162,6 @@ bool IsStickyHeaderDisabledForFollowingFeed() {
 bool IsDotEnabledForNewFollowedContent() {
   return base::GetFieldTrialParamByFeatureAsBool(
       kFeedHeaderSettings, kEnableDotForNewFollowedContent, false);
-}
-
-bool IsFeedSyntheticCapabilitiesEnabled() {
-  return base::FeatureList::IsEnabled(kEnableFeedSyntheticCapabilities);
 }
 
 int FollowingFeedHeaderHeight() {

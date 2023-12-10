@@ -6,12 +6,12 @@
 
 #include <string>
 
+#include <optional>
 #include "base/i18n/number_formatting.h"
 #include "base/i18n/rtl.h"
 #include "pdf/document_metadata.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace chrome_pdf {
@@ -44,7 +44,7 @@ class FormatPageSizeTest : public testing::Test {
 }  // namespace
 
 TEST_F(FormatPageSizeTest, NoUniformSize) {
-  EXPECT_EQ(FormatPageSize(absl::nullopt), u"Varies");
+  EXPECT_EQ(FormatPageSize(std::nullopt), u"Varies");
 }
 
 class FormatPageSizeMillimetersTest : public FormatPageSizeTest {

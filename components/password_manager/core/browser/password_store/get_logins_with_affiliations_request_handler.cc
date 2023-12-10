@@ -21,17 +21,13 @@
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
-#include "components/password_manager/core/browser/password_store_consumer.h"
+#include "components/password_manager/core/browser/password_store/password_store_consumer.h"
 #include "components/password_manager/core/browser/password_store/psl_matching_helper.h"
 #include "url/origin.h"
 
 namespace password_manager {
 
 namespace {
-
-using LoginsResult = std::vector<std::unique_ptr<PasswordForm>>;
-using LoginsResultOrError =
-    absl::variant<LoginsResult, PasswordStoreBackendError>;
 
 bool FormSupportsPSL(const PasswordFormDigest& digest) {
   return digest.scheme == PasswordForm::Scheme::kHtml &&
@@ -72,24 +68,24 @@ LoginsResultOrError ProccessExactAndPSLForms(
   }
 
   for (auto& form : absl::get<LoginsResult>(logins_or_error)) {
-    switch (GetMatchResult(*form, digest)) {
+    switch (GetMatchResult(form, digest)) {
       case MatchResult::NO_MATCH:
         NOTREACHED_NORETURN();
       case MatchResult::EXACT_MATCH:
       case MatchResult::FEDERATED_MATCH:
-        form->match_type = PasswordForm::MatchType::kExact;
+        form.match_type = PasswordForm::MatchType::kExact;
         break;
       case MatchResult::PSL_MATCH:
-        if (IsExtendedPublicSuffixDomainMatch(GURL(form->signon_realm),
+        if (IsExtendedPublicSuffixDomainMatch(GURL(form.signon_realm),
                                               GURL(digest.signon_realm),
                                               psl_extensions)) {
-          form->match_type = PasswordForm::MatchType::kPSL;
+          form.match_type = PasswordForm::MatchType::kPSL;
         }
         break;
       case MatchResult::FEDERATED_PSL_MATCH:
-        if (IsExtendedPublicSuffixDomainMatch(form->url, digest.url,
+        if (IsExtendedPublicSuffixDomainMatch(form.url, digest.url,
                                               psl_extensions)) {
-          form->match_type = PasswordForm::MatchType::kPSL;
+          form.match_type = PasswordForm::MatchType::kPSL;
         }
         break;
     }
@@ -114,21 +110,19 @@ void InjectAffiliationAndBrandingInformation(
 
 // Removes username-only credentials from |credentials|.
 // Transforms federated credentials into non zero-click ones.
-void TrimUsernameOnlyCredentials(
-    std::vector<std::unique_ptr<PasswordForm>>* credentials) {
+void TrimUsernameOnlyCredentials(std::vector<PasswordForm>& credentials) {
   // Remove username-only credentials which are not federated.
-  base::EraseIf(*credentials, [](const std::unique_ptr<PasswordForm>& form) {
-    return form->scheme == PasswordForm::Scheme::kUsernameOnly &&
-           form->federation_origin.opaque();
+  base::EraseIf(credentials, [](const PasswordForm& form) {
+    return form.scheme == PasswordForm::Scheme::kUsernameOnly &&
+           form.federation_origin.opaque();
   });
 
   // Set "skip_zero_click" on federated credentials.
-  base::ranges::for_each(
-      *credentials, [](const std::unique_ptr<PasswordForm>& form) {
-        if (form->scheme == PasswordForm::Scheme::kUsernameOnly) {
-          form->skip_zero_click = true;
-        }
-      });
+  base::ranges::for_each(credentials, [](PasswordForm& form) {
+    if (form.scheme == PasswordForm::Scheme::kUsernameOnly) {
+      form.skip_zero_click = true;
+    }
+  });
 }
 
 class GetLoginsHelper : public base::RefCounted<GetLoginsHelper> {
@@ -270,26 +264,26 @@ LoginsResultOrError GetLoginsHelper::MergeResults(
   }
 
   // PSL matches can also be affiliation/grouped matches.
-  for (const auto& form : final_result) {
-    switch (GetMatchResult(*form, requested_digest_)) {
+  for (auto& form : final_result) {
+    switch (GetMatchResult(form, requested_digest_)) {
       case MatchResult::EXACT_MATCH:
       case MatchResult::FEDERATED_MATCH:
         break;
       case MatchResult::NO_MATCH:
       case MatchResult::PSL_MATCH:
       case MatchResult::FEDERATED_PSL_MATCH: {
-        std::string signon_realm = form->signon_realm;
+        std::string signon_realm = form.signon_realm;
         // For web federated credentials the signon_realm has a different
         // style. Extract the origin from URL instead for the lookup.
-        if (form->IsFederatedCredential() &&
-            !IsValidAndroidFacetURI(form->signon_realm)) {
-          signon_realm = url::Origin::Create(form->url).GetURL().spec();
+        if (form.IsFederatedCredential() &&
+            !IsValidAndroidFacetURI(form.signon_realm)) {
+          signon_realm = url::Origin::Create(form.url).GetURL().spec();
         }
         if (base::Contains(affiliations_, signon_realm)) {
-          form->match_type |= PasswordForm::MatchType::kAffiliated;
+          form.match_type |= PasswordForm::MatchType::kAffiliated;
         }
         if (base::Contains(group_, signon_realm)) {
-          form->match_type |= PasswordForm::MatchType::kGrouped;
+          form.match_type |= PasswordForm::MatchType::kGrouped;
         }
         break;
       }
@@ -299,15 +293,15 @@ LoginsResultOrError GetLoginsHelper::MergeResults(
   // matched form was not marked as such inside ProccessExactAndPSLForms()
   // because of PSL extension list.
   base::EraseIf(final_result,
-                [](const auto& form) { return !form->match_type.has_value(); });
+                [](const auto& form) { return !form.match_type.has_value(); });
 
-  TrimUsernameOnlyCredentials(&final_result);
+  TrimUsernameOnlyCredentials(final_result);
   password_manager::metrics_util::LogGroupedPasswordsResults(final_result);
   // Remove grouped only matches if filling across groups is disabled.
   if (!base::FeatureList::IsEnabled(
           password_manager::features::kFillingAcrossGroupedSites)) {
     base::EraseIf(final_result, [](const auto& form) {
-      return form->match_type == PasswordForm::MatchType::kGrouped;
+      return form.match_type == PasswordForm::MatchType::kGrouped;
     });
   }
 

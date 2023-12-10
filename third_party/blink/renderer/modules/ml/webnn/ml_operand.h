@@ -21,7 +21,7 @@ class MLGraphBuilder;
 class MLOperator;
 
 DOMArrayBufferView::ViewType GetArrayBufferViewType(
-    V8MLOperandType::Enum operand_type);
+    V8MLOperandDataType::Enum operand_type);
 
 class MODULES_EXPORT MLOperand final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
@@ -33,17 +33,17 @@ class MODULES_EXPORT MLOperand final : public ScriptWrappable {
   // Otherwise return nullptr and set the corresponding error message.
   static base::expected<MLOperand*, String> ValidateAndCreateInput(
       MLGraphBuilder* builder,
-      const V8MLOperandType::Enum type,
+      const V8MLOperandDataType::Enum data_type,
       Vector<uint32_t> dimensions,
       String name);
   static base::expected<MLOperand*, String> ValidateAndCreateConstant(
       MLGraphBuilder* builder,
-      const V8MLOperandType::Enum type,
+      const V8MLOperandDataType::Enum data_type,
       Vector<uint32_t> dimensions,
       const DOMArrayBufferView* array_buffer_view);
   static base::expected<MLOperand*, String> ValidateAndCreateOutput(
       MLGraphBuilder* builder,
-      const V8MLOperandType::Enum type,
+      const V8MLOperandDataType::Enum data_type,
       Vector<uint32_t> dimensions,
       const MLOperator* ml_operator);
 
@@ -51,7 +51,7 @@ class MODULES_EXPORT MLOperand final : public ScriptWrappable {
   // Create* methods instead.
   MLOperand(MLGraphBuilder* builder,
             OperandKind kind,
-            const V8MLOperandType::Enum type,
+            const V8MLOperandDataType::Enum data_type,
             Vector<uint32_t> dimensions);
 
   MLOperand(const MLOperand&) = delete;
@@ -63,7 +63,7 @@ class MODULES_EXPORT MLOperand final : public ScriptWrappable {
 
   MLGraphBuilder* Builder() const;
   OperandKind Kind() const;
-  V8MLOperandType::Enum Type() const;
+  V8MLOperandDataType::Enum DataType() const;
   const Vector<uint32_t>& Dimensions() const;
   const String& Name() const;
   const DOMArrayBufferView* ArrayBufferView() const;
@@ -78,10 +78,14 @@ class MODULES_EXPORT MLOperand final : public ScriptWrappable {
   // https://www.w3.org/TR/webnn/#mloperanddescriptor-byte-length
   size_t ByteLength() const;
 
+  // IDL interface:
+  V8MLOperandDataType dataType() const;
+  Vector<uint32_t> shape() const;
+
  private:
   Member<MLGraphBuilder> builder_;
   OperandKind kind_;
-  V8MLOperandType::Enum type_;
+  V8MLOperandDataType::Enum data_type_;
   // The dimensions of the operand. For scalar value, set {1}.
   Vector<uint32_t> dimensions_;
   // The name of input operand. According to

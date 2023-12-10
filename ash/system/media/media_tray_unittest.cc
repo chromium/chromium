@@ -359,7 +359,7 @@ TEST_F(MediaTrayTest, ShowBubble) {
   // We start with no bubble view.
   EXPECT_EQ(nullptr, media_tray()->GetBubbleView());
 
-  EXPECT_CALL(*provider(), GetMediaNotificationListView(_, _, "", ""));
+  EXPECT_CALL(*provider(), GetMediaNotificationListView(_, _, _, ""));
   media_tray()->ShowBubble();
   EXPECT_NE(nullptr, media_tray()->GetBubbleView());
 }
@@ -369,7 +369,7 @@ TEST_F(MediaTrayTest, ShowBubbleWithItem) {
   EXPECT_EQ(nullptr, media_tray()->GetBubbleView());
 
   const std::string item_id = "my-item-id";
-  EXPECT_CALL(*provider(), GetMediaNotificationListView(_, _, item_id, ""));
+  EXPECT_CALL(*provider(), GetMediaNotificationListView(_, _, _, item_id));
   media_tray()->ShowBubbleWithItem(item_id);
   EXPECT_NE(nullptr, media_tray()->GetBubbleView());
 }

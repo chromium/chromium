@@ -24,6 +24,7 @@ group("providers") {
     "//ios/chrome/test/providers/omaha",
     "//ios/chrome/test/providers/overrides",
     "//ios/chrome/test/providers/partial_translate",
+    "//ios/chrome/test/providers/passcode_settings",
     "//ios/chrome/test/providers/password_auto_fill",
     "//ios/chrome/test/providers/photos",
     "//ios/chrome/test/providers/primes",

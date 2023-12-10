@@ -702,6 +702,23 @@ export class RemoteCallFilesApp extends RemoteCall {
     return repeatUntil(async () => {
       const element =
           await this.callRemoteTestUtil('getActiveElement', appId, []);
+      // TODO(b/285977941): Remove this special handling.
+      // For new directory tree implementation, directory tree itself
+      // ("#directory-tree") is not focusable, the underlying tree item will be
+      // focused, for directory tree related focus check, the `elementId` format
+      // will be "directory-tree#<tree item label>", so we need to check the
+      // label here for the new tree.
+      if (elementId.startsWith('directory-tree#')) {
+        const treeItemLabel = elementId.split('#')[1];
+        // For new tree.
+        if (element && element.attributes['label'] === treeItemLabel) {
+          return true;
+        }
+        // For old tree.
+        if (element && element.attributes['id'] === 'directory-tree') {
+          return true;
+        }
+      }
       if (element && element.attributes['id'] === elementId) {
         return true;
       }

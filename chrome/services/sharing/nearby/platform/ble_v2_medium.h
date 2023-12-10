@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
-#include "chrome/services/sharing/nearby/platform/ble_v2_peripheral.h"
+#include "chrome/services/sharing/nearby/platform/ble_v2_remote_peripheral.h"
 #include "device/bluetooth/public/mojom/adapter.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
@@ -103,7 +103,7 @@ class BleV2Medium : public ::nearby::api::ble_v2::BleMedium,
   void ProcessFoundDevice(bluetooth::mojom::DeviceInfoPtr device);
   bool IsScanning();
   uint64_t GenerateUniqueSessionId();
-  chrome::BleV2Peripheral* GetDiscoveredBlePeripheral(
+  chrome::BleV2RemotePeripheral* GetDiscoveredBlePeripheral(
       const std::string& address);
   Uuid BluetoothServiceUuidToNearbyUuid(
       const device::BluetoothUUID& bluetooth_service_uuid);
@@ -124,7 +124,7 @@ class BleV2Medium : public ::nearby::api::ble_v2::BleMedium,
   // BlePeripherals are passed to Nearby Connections. This is safe because, for
   // std::map, insert/emplace do not invalidate references, and the erase
   // operation only invalidates the reference to the erased element.
-  std::map<std::string, chrome::BleV2Peripheral>
+  std::map<std::string, chrome::BleV2RemotePeripheral>
       discovered_ble_peripherals_map_;
 
   // |adapter_observer_| is only set and bound during active discovery so that

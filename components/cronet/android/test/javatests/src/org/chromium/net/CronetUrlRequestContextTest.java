@@ -5,9 +5,9 @@
 package org.chromium.net;
 
 import static com.google.common.truth.Truth.assertThat;
+import static com.google.common.truth.TruthJUnit.assume;
 
 import static org.junit.Assert.assertThrows;
-import static org.junit.Assume.assumeTrue;
 
 import static org.chromium.net.CronetEngine.Builder.HTTP_CACHE_IN_MEMORY;
 import static org.chromium.net.CronetTestRule.getTestStorage;
@@ -46,6 +46,7 @@ import org.chromium.net.TestUrlRequestCallback.ResponseStep;
 import org.chromium.net.httpflags.BaseFeature;
 import org.chromium.net.httpflags.FlagValue;
 import org.chromium.net.httpflags.Flags;
+import org.chromium.net.impl.CronetExceptionImpl;
 import org.chromium.net.impl.CronetLibraryLoader;
 import org.chromium.net.impl.CronetManifest;
 import org.chromium.net.impl.CronetManifestInterceptor;
@@ -329,28 +330,27 @@ public class CronetUrlRequestContextTest {
     }
 
     private void setChromiumBaseFeatureLogFlag(boolean enable, String marker) {
-        mTestRule
-                .getTestFramework()
-                .setHttpFlags(
-                        Flags.newBuilder()
-                                .putFlags(
-                                        BaseFeature.FLAG_PREFIX + "CronetLogMe",
-                                        FlagValue.newBuilder()
-                                                .addConstrainedValues(
-                                                        FlagValue.ConstrainedValue.newBuilder()
-                                                                .setBoolValue(enable))
-                                                .build())
-                                .putFlags(
-                                        BaseFeature.FLAG_PREFIX
-                                                + "CronetLogMe"
-                                                + BaseFeature.PARAM_DELIMITER
-                                                + "message",
-                                        FlagValue.newBuilder()
-                                                .addConstrainedValues(
-                                                        FlagValue.ConstrainedValue.newBuilder()
-                                                                .setStringValue(marker))
-                                                .build())
-                                .build());
+        var flags =
+                Flags.newBuilder()
+                        .putFlags(
+                                BaseFeature.FLAG_PREFIX + "CronetLogMe",
+                                FlagValue.newBuilder()
+                                        .addConstrainedValues(
+                                                FlagValue.ConstrainedValue.newBuilder()
+                                                        .setBoolValue(enable))
+                                        .build())
+                        .putFlags(
+                                BaseFeature.FLAG_PREFIX
+                                        + "CronetLogMe"
+                                        + BaseFeature.PARAM_DELIMITER
+                                        + "message",
+                                FlagValue.newBuilder()
+                                        .addConstrainedValues(
+                                                FlagValue.ConstrainedValue.newBuilder()
+                                                        .setStringValue(marker))
+                                        .build())
+                        .build();
+        mTestRule.getTestFramework().setHttpFlags(flags);
     }
 
     @Test
@@ -501,26 +501,23 @@ public class CronetUrlRequestContextTest {
 
         // Post a task to main thread to init and shutdown on the main thread.
         Runnable blockingTask =
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        // Create new request context, loading the library.
-                        final CronetUrlRequestContext cronetEngine =
-                                (CronetUrlRequestContext)
-                                        mTestRule
-                                                .getTestFramework()
-                                                .createNewSecondaryBuilder(
-                                                        mTestRule.getTestFramework().getContext())
-                                                .build();
-                        // Shutdown right after init.
-                        cronetEngine.shutdown();
-                        // Verify that context is shutdown.
-                        Exception e =
-                                assertThrows(
-                                        Exception.class, cronetEngine::getUrlRequestContextAdapter);
-                        assertThat(e).hasMessageThat().isEqualTo("Engine is shut down.");
-                        block.open();
-                    }
+                () -> {
+                    // Create new request context, loading the library.
+                    final CronetUrlRequestContext cronetEngine =
+                            (CronetUrlRequestContext)
+                                    mTestRule
+                                            .getTestFramework()
+                                            .createNewSecondaryBuilder(
+                                                    mTestRule.getTestFramework().getContext())
+                                            .build();
+                    // Shutdown right after init.
+                    cronetEngine.shutdown();
+                    // Verify that context is shutdown.
+                    Exception e =
+                            assertThrows(
+                                    Exception.class, cronetEngine::getUrlRequestContextAdapter);
+                    assertThat(e).hasMessageThat().isEqualTo("Engine is shut down.");
+                    block.open();
                 };
         new Handler(Looper.getMainLooper()).post(blockingTask);
         // Wait for shutdown to complete on main thread.
@@ -590,7 +587,7 @@ public class CronetUrlRequestContextTest {
         ConnectivityManagerDelegate delegate =
                 new ConnectivityManagerDelegate(mTestRule.getTestFramework().getContext());
         Network defaultNetwork = delegate.getDefaultNetwork();
-        assumeTrue(defaultNetwork != null);
+        assume().that(defaultNetwork).isNotNull();
 
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
         // Allows to check the underlying network-bound context state while the request is in
@@ -655,7 +652,7 @@ public class CronetUrlRequestContextTest {
         ConnectivityManagerDelegate delegate =
                 new ConnectivityManagerDelegate(mTestRule.getTestFramework().getContext());
         Network defaultNetwork = delegate.getDefaultNetwork();
-        assumeTrue(defaultNetwork != null);
+        assume().that(defaultNetwork).isNotNull();
 
         urlRequestBuilder.bindToNetwork(defaultNetwork.getNetworkHandle());
         UrlRequest urlRequest = urlRequestBuilder.build();
@@ -691,21 +688,31 @@ public class CronetUrlRequestContextTest {
 
     @Test
     @RequiresMinAndroidApi(Build.VERSION_CODES.M)
-    @IgnoreFor(
-            implementations = {CronetImplementation.AOSP_PLATFORM},
-            reason = "crbug.com/1494917")
     public void testBindToInvalidNetworkFails() {
         ExperimentalCronetEngine cronetEngine = mTestRule.getTestFramework().startEngine();
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
+        if (mTestRule.implementationUnderTest() == CronetImplementation.AOSP_PLATFORM) {
+            // HttpEngine#bindToNetwork requires an android.net.Network object. So, in this case, it
+            // will be the wrapper layer that will fail to translate that to a Network, not
+            // something in net's code. Hence, the failure will manifest itself at bind time, not at
+            // request execution time.
+            // Note: this will never happen in prod, as translation failure can only happen if we're
+            // given a fake networkHandle.
+            assertThrows(
+                    IllegalArgumentException.class,
+                    () -> cronetEngine.bindToNetwork(-150 /* invalid network handle */));
+            return;
+        }
+
         cronetEngine.bindToNetwork(-150 /* invalid network handle */);
         ExperimentalUrlRequest.Builder builder =
                 cronetEngine.newUrlRequestBuilder(mUrl, callback, callback.getExecutor());
         builder.build().start();
         callback.blockForDone();
 
-        if (mTestRule.testingJavaImpl()) {
-            assertThat(callback.mError)
-                    .isInstanceOf(org.chromium.net.impl.CronetExceptionImpl.class);
+        assertThat(callback.mError).isNotNull();
+        if (mTestRule.implementationUnderTest() == CronetImplementation.FALLBACK) {
+            assertThat(callback.mError).isInstanceOf(CronetExceptionImpl.class);
             assertThat(callback.mError).hasCauseThat().isInstanceOf(NetworkExceptionImpl.class);
         } else {
             assertThat(callback.mError).isInstanceOf(NetworkExceptionImpl.class);
@@ -718,7 +725,7 @@ public class CronetUrlRequestContextTest {
         ConnectivityManagerDelegate delegate =
                 new ConnectivityManagerDelegate(mTestRule.getTestFramework().getContext());
         Network defaultNetwork = delegate.getDefaultNetwork();
-        assumeTrue(defaultNetwork != null);
+        assume().that(defaultNetwork).isNotNull();
 
         ExperimentalCronetEngine cronetEngine = mTestRule.getTestFramework().startEngine();
         cronetEngine.bindToNetwork(defaultNetwork.getNetworkHandle());
@@ -2138,18 +2145,15 @@ public class CronetUrlRequestContextTest {
     public void testHostResolverRules() throws Exception {
         String resolverTestHostname = "some-weird-hostname";
         URL testUrl = new URL(mUrl);
+        JSONObject hostResolverRules =
+                new JSONObject()
+                        .put(
+                                "host_resolver_rules",
+                                "MAP " + resolverTestHostname + " " + testUrl.getHost());
         mTestRule
                 .getTestFramework()
                 .applyEngineBuilderPatch(
                         (builder) -> {
-                            JSONObject hostResolverRules =
-                                    new JSONObject()
-                                            .put(
-                                                    "host_resolver_rules",
-                                                    "MAP "
-                                                            + resolverTestHostname
-                                                            + " "
-                                                            + testUrl.getHost());
                             JSONObject experimentalOptions =
                                     new JSONObject().put("HostResolverRules", hostResolverRules);
                             builder.setExperimentalOptions(experimentalOptions.toString());
@@ -2211,9 +2215,7 @@ public class CronetUrlRequestContextTest {
         engine.newUrlRequestBuilder("", callback, directExecutor).build().start();
     }
 
-    /**
-     * @returns the thread priority of {@code engine}'s network thread.
-     */
+    /** @returns the thread priority of {@code engine}'s network thread. */
     private static class ApiHelper {
         public static boolean doesContextExistForNetwork(CronetEngine engine, Network network)
                 throws Exception {
@@ -2231,9 +2233,7 @@ public class CronetUrlRequestContextTest {
         }
     }
 
-    /**
-     * @returns the thread priority of {@code engine}'s network thread.
-     */
+    /** @returns the thread priority of {@code engine}'s network thread. */
     private int getThreadPriority(CronetEngine engine) throws Exception {
         FutureTask<Integer> task =
                 new FutureTask<Integer>(

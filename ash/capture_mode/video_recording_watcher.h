@@ -5,18 +5,18 @@
 #ifndef ASH_CAPTURE_MODE_VIDEO_RECORDING_WATCHER_H_
 #define ASH_CAPTURE_MODE_VIDEO_RECORDING_WATCHER_H_
 
+#include <optional>
+
 #include "ash/ash_export.h"
 #include "ash/capture_mode/capture_mode_behavior.h"
 #include "ash/capture_mode/capture_mode_types.h"
 #include "ash/display/cursor_window_controller.h"
-#include "ash/public/cpp/tablet_mode_observer.h"
 #include "ash/wm/window_dimmer.h"
 #include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/viz/privileged/mojom/compositing/frame_sink_video_capture.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/scoped_window_capture_request.h"
 #include "ui/aura/window_observer.h"
 #include "ui/base/cursor/cursor.h"
@@ -28,6 +28,10 @@
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/wm/public/activation_change_observer.h"
+
+namespace display {
+enum class TabletState;
+}  // namespace display
 
 namespace wm {
 class CursorManager;
@@ -60,7 +64,6 @@ class ASH_EXPORT VideoRecordingWatcher
       public display::DisplayObserver,
       public WindowDimmer::Delegate,
       public ui::EventHandler,
-      public TabletModeObserver,
       public CursorWindowController::Observer,
       public ui::ColorProviderSourceObserver {
  public:
@@ -136,6 +139,7 @@ class ASH_EXPORT VideoRecordingWatcher
                          aura::Window* lost_active) override;
 
   // display::DisplayObserver:
+  void OnDisplayTabletStateChanged(display::TabletState state) override;
   void OnDisplayMetricsChanged(const display::Display& display,
                                uint32_t metrics) override;
 
@@ -147,10 +151,6 @@ class ASH_EXPORT VideoRecordingWatcher
   void OnKeyEvent(ui::KeyEvent* event) override;
   void OnMouseEvent(ui::MouseEvent* event) override;
   void OnTouchEvent(ui::TouchEvent* event) override;
-
-  // TabletModeObserver:
-  void OnTabletModeStarted() override;
-  void OnTabletModeEnded() override;
 
   // CursorWindowController::Observer:
   void OnCursorCompositingStateChanged(bool enabled) override;
@@ -281,7 +281,7 @@ class ASH_EXPORT VideoRecordingWatcher
   // Stores the location of the most recent throttled mouse event (i.e. received
   // while the |cursor_events_throttle_timer_| was running). The location is in
   // the |window_being_recorded_| coordinates.
-  absl::optional<gfx::PointF> throttled_cursor_location_;
+  std::optional<gfx::PointF> throttled_cursor_location_;
 
   // Resizing a window can generate many intermediate steps, and it would be
   // inefficient to push all of them to the recording service, causing a

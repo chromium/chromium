@@ -19,9 +19,7 @@ import org.chromium.base.TimeUtils;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 
-/**
- * A helper activity for routing Chrome link drag & drop launcher intents.
- */
+/** A helper activity for routing Chrome link drag & drop launcher intents. */
 public class DragAndDropLauncherActivity extends Activity {
     static final String ACTION_DRAG_DROP_VIEW = "org.chromium.chrome.browser.dragdrop.action.VIEW";
     static final String LAUNCHED_FROM_LINK_USER_ACTION = "MobileNewInstanceLaunchedFromDraggedLink";
@@ -49,8 +47,11 @@ public class DragAndDropLauncherActivity extends Activity {
         // extra, if required. This extra will be present when the maximum number of instances is
         // open, to determine which window to open the link in.
         if (intent.hasExtra(IntentHandler.EXTRA_WINDOW_ID)) {
-            int windowId = IntentUtils.safeGetIntExtra(
-                    intent, IntentHandler.EXTRA_WINDOW_ID, MultiWindowUtils.INVALID_INSTANCE_ID);
+            int windowId =
+                    IntentUtils.safeGetIntExtra(
+                            intent,
+                            IntentHandler.EXTRA_WINDOW_ID,
+                            MultiWindowUtils.INVALID_INSTANCE_ID);
             MultiWindowUtils.launchIntentInInstance(intent, windowId);
         } else {
             startActivity(intent);
@@ -64,17 +65,18 @@ public class DragAndDropLauncherActivity extends Activity {
      *
      * @param context The context used to retrieve the package name.
      * @param urlString The link URL string.
-     * @param windowId The window ID of the Chrome window in which the link will be opened, {@code
-     *         null} if there is no preference.
+     * @param windowId The window ID of the Chrome window in which the link will be opened,
+     *     |MultiWindowUtils.INVALID_INSTANCE_ID| if there is no preference.
      * @return The intent that will be used to create a new Chrome instance from a dragged link.
      */
-    public static Intent getLinkLauncherIntent(
-            Context context, String urlString, Integer windowId) {
-        windowId =
-                windowId == null ? MultiWindowUtils.getRunningInstanceIdForViewIntent() : windowId;
-        Intent intent = MultiWindowUtils.createNewWindowIntent(context.getApplicationContext(),
-                windowId, /*preferNew=*/true,
-                /*openAdjacently=*/false, /*addTrustedIntentExtras=*/false);
+    public static Intent getLinkLauncherIntent(Context context, String urlString, int windowId) {
+        Intent intent =
+                MultiWindowUtils.createNewWindowIntent(
+                        context.getApplicationContext(),
+                        windowId,
+                        /* preferNew= */ true,
+                        /* openAdjacently= */ false,
+                        /* addTrustedIntentExtras= */ false);
         intent.setClass(context, DragAndDropLauncherActivity.class);
         intent.setAction(DragAndDropLauncherActivity.ACTION_DRAG_DROP_VIEW);
         intent.addCategory(Intent.CATEGORY_BROWSABLE);
@@ -119,8 +121,9 @@ public class DragAndDropLauncherActivity extends Activity {
 
     @VisibleForTesting
     static Long getLinkDropTimeoutMs() {
-        return sLinkDropTimeoutForTesting == null ? LINK_DROP_TIMEOUT_MS
-                                                  : sLinkDropTimeoutForTesting;
+        return sLinkDropTimeoutForTesting == null
+                ? LINK_DROP_TIMEOUT_MS
+                : sLinkDropTimeoutForTesting;
     }
 
     static void setLinkDropTimeoutMsForTesting(Long timeout) {

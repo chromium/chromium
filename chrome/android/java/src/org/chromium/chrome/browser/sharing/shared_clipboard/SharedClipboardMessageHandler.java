@@ -24,17 +24,13 @@ import org.chromium.chrome.browser.sharing.SharingSendMessageResult;
 import org.chromium.chrome.browser.sharing.SharingServiceProxy;
 import org.chromium.components.browser_ui.notifications.PendingIntentProvider;
 
-/**
- * Handles Shared Clipboard messages and notifications for Android.
- */
+/** Handles Shared Clipboard messages and notifications for Android. */
 public class SharedClipboardMessageHandler {
     private static final String EXTRA_DEVICE_GUID = "SharedClipboard.EXTRA_DEVICE_GUID";
     private static final String EXTRA_DEVICE_CLIENT_NAME =
             "SharedClipboard.EXTRA_DEVICE_CLIENT_NAME";
 
-    /**
-     * Handles the tapping of an incoming notification when text is shared with current device.
-     */
+    /** Handles the tapping of an incoming notification when text is shared with current device. */
     public static final class TapReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -42,9 +38,7 @@ public class SharedClipboardMessageHandler {
         }
     }
 
-    /**
-     * Handles the tapping of an error notification which retries sharing text.
-     */
+    /** Handles the tapping of an error notification which retries sharing text. */
     public static final class TryAgainReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -75,7 +69,8 @@ public class SharedClipboardMessageHandler {
         SharingNotificationUtil.showSendingNotification(
                 NotificationUmaTracker.SystemNotificationType.SHARED_CLIPBOARD,
                 NotificationConstants.GROUP_SHARED_CLIPBOARD,
-                NotificationConstants.NOTIFICATION_ID_SHARED_CLIPBOARD_OUTGOING, name);
+                NotificationConstants.NOTIFICATION_ID_SHARED_CLIPBOARD_OUTGOING,
+                name);
 
         // After this point the native browser process must be fully initialized in order to use
         // the profile, which is accessed by SharingServiceProxy. It might not yet be fully
@@ -84,39 +79,52 @@ public class SharedClipboardMessageHandler {
         ChromeBrowserInitializer.getInstance().handleSynchronousStartup();
 
         // TODO(crbug.com/1015411): Wait for device info in a more central place.
-        SharingServiceProxy.getInstance().addDeviceCandidatesInitializedObserver(() -> {
-            SharingServiceProxy.getInstance().sendSharedClipboardMessage(
-                    guid, text, result -> {
-                        if (result == SharingSendMessageResult.SUCCESSFUL) {
-                            SharingNotificationUtil.dismissNotification(
-                                    NotificationConstants.GROUP_SHARED_CLIPBOARD,
-                                    NotificationConstants
-                                            .NOTIFICATION_ID_SHARED_CLIPBOARD_OUTGOING);
-                        } else {
-                            String contentTitle = getErrorNotificationTitle(result);
-                            String contentText = getErrorNotificationText(result, name);
-                            PendingIntentProvider tryAgainIntent = null;
+        SharingServiceProxy.getInstance()
+                .addDeviceCandidatesInitializedObserver(
+                        () -> onDeviceCandidatesInitialized(guid, text, name));
+    }
 
-                            if (result == SharingSendMessageResult.ACK_TIMEOUT
-                                    || result == SharingSendMessageResult.NETWORK_ERROR) {
-                                Context context = ContextUtils.getApplicationContext();
-                                tryAgainIntent = PendingIntentProvider.getBroadcast(context,
-                                        /*requestCode=*/0,
-                                        new Intent(context, TryAgainReceiver.class)
-                                                .putExtra(Intent.EXTRA_TEXT, text)
-                                                .putExtra(EXTRA_DEVICE_GUID, guid)
-                                                .putExtra(EXTRA_DEVICE_CLIENT_NAME, name),
-                                        PendingIntent.FLAG_UPDATE_CURRENT);
-                            }
+    private static void onDeviceCandidatesInitialized(String guid, String text, String name) {
+        SharingServiceProxy.getInstance()
+                .sendSharedClipboardMessage(
+                        guid,
+                        text,
+                        result -> onSharedClipboardMessageResult(guid, text, name, result));
+    }
 
-                            SharingNotificationUtil.showSendErrorNotification(
-                                    NotificationUmaTracker.SystemNotificationType.SHARED_CLIPBOARD,
-                                    NotificationConstants.GROUP_SHARED_CLIPBOARD,
-                                    NotificationConstants.NOTIFICATION_ID_SHARED_CLIPBOARD_OUTGOING,
-                                    contentTitle, contentText, tryAgainIntent);
-                        }
-                    });
-        });
+    private static void onSharedClipboardMessageResult(
+            String guid, String text, String name, Integer result) {
+        if (result == SharingSendMessageResult.SUCCESSFUL) {
+            SharingNotificationUtil.dismissNotification(
+                    NotificationConstants.GROUP_SHARED_CLIPBOARD,
+                    NotificationConstants.NOTIFICATION_ID_SHARED_CLIPBOARD_OUTGOING);
+            return;
+        }
+        String contentTitle = getErrorNotificationTitle(result);
+        String contentText = getErrorNotificationText(result, name);
+        PendingIntentProvider tryAgainIntent = null;
+
+        if (result == SharingSendMessageResult.ACK_TIMEOUT
+                || result == SharingSendMessageResult.NETWORK_ERROR) {
+            Context context = ContextUtils.getApplicationContext();
+            tryAgainIntent =
+                    PendingIntentProvider.getBroadcast(
+                            context,
+                            /* requestCode= */ 0,
+                            new Intent(context, TryAgainReceiver.class)
+                                    .putExtra(Intent.EXTRA_TEXT, text)
+                                    .putExtra(EXTRA_DEVICE_GUID, guid)
+                                    .putExtra(EXTRA_DEVICE_CLIENT_NAME, name),
+                            PendingIntent.FLAG_UPDATE_CURRENT);
+        }
+
+        SharingNotificationUtil.showSendErrorNotification(
+                NotificationUmaTracker.SystemNotificationType.SHARED_CLIPBOARD,
+                NotificationConstants.GROUP_SHARED_CLIPBOARD,
+                NotificationConstants.NOTIFICATION_ID_SHARED_CLIPBOARD_OUTGOING,
+                contentTitle,
+                contentText,
+                tryAgainIntent);
     }
 
     /**
@@ -138,7 +146,8 @@ public class SharedClipboardMessageHandler {
 
             case SharingSendMessageResult.PAYLOAD_TOO_LARGE:
                 return resources.getString(
-                        R.string.browser_sharing_shared_clipboard_error_dialog_title_payload_too_large);
+                        R.string
+                                .browser_sharing_shared_clipboard_error_dialog_title_payload_too_large);
 
             case SharingSendMessageResult.INTERNAL_ERROR:
             case SharingSendMessageResult.ENCRYPTION_ERROR:
@@ -175,7 +184,8 @@ public class SharedClipboardMessageHandler {
 
             case SharingSendMessageResult.PAYLOAD_TOO_LARGE:
                 return resources.getString(
-                        R.string.browser_sharing_shared_clipboard_error_dialog_text_payload_too_large);
+                        R.string
+                                .browser_sharing_shared_clipboard_error_dialog_text_payload_too_large);
 
             case SharingSendMessageResult.ACK_TIMEOUT:
                 return resources.getString(
@@ -202,20 +212,31 @@ public class SharedClipboardMessageHandler {
     @CalledByNative
     private static void showNotification(String name) {
         Context context = ContextUtils.getApplicationContext();
-        PendingIntentProvider contentIntent = PendingIntentProvider.getBroadcast(context,
-                /*requestCode=*/0, new Intent(context, TapReceiver.class),
-                PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntentProvider contentIntent =
+                PendingIntentProvider.getBroadcast(
+                        context,
+                        /* requestCode= */ 0,
+                        new Intent(context, TapReceiver.class),
+                        PendingIntent.FLAG_UPDATE_CURRENT);
         Resources resources = context.getResources();
-        String notificationTitle = TextUtils.isEmpty(name)
-                ? resources.getString(R.string.shared_clipboard_notification_title_unknown_device)
-                : resources.getString(R.string.shared_clipboard_notification_title, name);
+        String notificationTitle =
+                TextUtils.isEmpty(name)
+                        ? resources.getString(
+                                R.string.shared_clipboard_notification_title_unknown_device)
+                        : resources.getString(R.string.shared_clipboard_notification_title, name);
         SharingNotificationUtil.showNotification(
                 NotificationUmaTracker.SystemNotificationType.SHARED_CLIPBOARD,
                 NotificationConstants.GROUP_SHARED_CLIPBOARD,
-                NotificationConstants.NOTIFICATION_ID_SHARED_CLIPBOARD_INCOMING, contentIntent,
-                /*deleteIntent=*/null, /*confirmIntent=*/null, /*cancelIntent=*/null,
-                notificationTitle, resources.getString(R.string.shared_clipboard_notification_text),
-                R.drawable.ic_devices_16dp, R.drawable.shared_clipboard_40dp,
-                R.color.default_icon_color_accent1_baseline, /*startsActivity=*/false);
+                NotificationConstants.NOTIFICATION_ID_SHARED_CLIPBOARD_INCOMING,
+                contentIntent,
+                /* deleteIntent= */ null,
+                /* confirmIntent= */ null,
+                /* cancelIntent= */ null,
+                notificationTitle,
+                resources.getString(R.string.shared_clipboard_notification_text),
+                R.drawable.ic_devices_16dp,
+                R.drawable.shared_clipboard_40dp,
+                R.color.default_icon_color_accent1_baseline,
+                /* startsActivity= */ false);
     }
 }

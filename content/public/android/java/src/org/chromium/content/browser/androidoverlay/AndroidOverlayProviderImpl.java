@@ -34,19 +34,22 @@ public class AndroidOverlayProviderImpl implements AndroidOverlayProvider {
     private int mNumOverlays;
 
     // Runnable that notifies us that a client has been released.
-    private Runnable mNotifyReleasedRunnable = new Runnable() {
-        @Override
-        public void run() {
-            notifyReleased();
-        }
-    };
+    private Runnable mNotifyReleasedRunnable =
+            new Runnable() {
+                @Override
+                public void run() {
+                    notifyReleased();
+                }
+            };
 
     /**
      * Create an overlay matching |config| for |client|, and bind it to |request|.  Remember that
      * potentially many providers are created.
      */
     @Override
-    public void createOverlay(InterfaceRequest<AndroidOverlay> request, AndroidOverlayClient client,
+    public void createOverlay(
+            InterfaceRequest<AndroidOverlay> request,
+            AndroidOverlayClient client,
             AndroidOverlayConfig config) {
         ThreadUtils.assertOnUiThread();
 
@@ -63,7 +66,8 @@ public class AndroidOverlayProviderImpl implements AndroidOverlayProvider {
         mNumOverlays++;
 
         DialogOverlayImpl impl =
-                new DialogOverlayImpl(client, config, mNotifyReleasedRunnable, false /* asPanel*/);
+                new DialogOverlayImpl(
+                        client, config, mNotifyReleasedRunnable, /* asPanel= */ false);
         DialogOverlayImpl.MANAGER.bind(impl, request);
     }
 
@@ -96,11 +100,10 @@ public class AndroidOverlayProviderImpl implements AndroidOverlayProvider {
         return true;
     }
 
-    /**
-     * Mojo factory.
-     */
+    /** Mojo factory. */
     public static class Factory implements InterfaceFactory<AndroidOverlayProvider> {
         private static AndroidOverlayProviderImpl sImpl;
+
         public Factory() {}
 
         @Override

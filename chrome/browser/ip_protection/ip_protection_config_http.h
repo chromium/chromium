@@ -38,7 +38,8 @@ class IpProtectionConfigHttp : public quiche::BlindSignHttpInterface {
 
   using GetProxyConfigCallback = base::OnceCallback<void(
       absl::StatusOr<ip_protection::GetProxyConfigResponse>)>;
-  virtual void GetProxyConfig(GetProxyConfigCallback callback);
+  virtual void GetProxyConfig(GetProxyConfigCallback callback,
+                              bool for_testing = false);
 
  private:
   void OnDoRequestCompleted(

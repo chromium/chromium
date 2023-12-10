@@ -64,17 +64,24 @@ public class NfcSystemLevelPrompt implements ModalDialogProperties.Controller {
                 messageTextView, R.drawable.gm_filled_nfc_24, 0, 0, 0);
 
         Resources resources = activity.getResources();
-        PropertyModel model = new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
-                                      .with(ModalDialogProperties.CONTROLLER, this)
-                                      .with(ModalDialogProperties.CUSTOM_VIEW, customView)
-                                      .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, resources,
-                                              R.string.nfc_prompt_turn_on)
-                                      .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, resources,
-                                              R.string.cancel)
-                                      .with(ModalDialogProperties.CONTENT_DESCRIPTION, resources,
-                                              R.string.nfc_disabled_on_device_message)
-                                      .with(ModalDialogProperties.FILTER_TOUCH_FOR_SECURITY, true)
-                                      .build();
+        PropertyModel model =
+                new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
+                        .with(ModalDialogProperties.CONTROLLER, this)
+                        .with(ModalDialogProperties.CUSTOM_VIEW, customView)
+                        .with(
+                                ModalDialogProperties.POSITIVE_BUTTON_TEXT,
+                                resources,
+                                R.string.nfc_prompt_turn_on)
+                        .with(
+                                ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
+                                resources,
+                                R.string.cancel)
+                        .with(
+                                ModalDialogProperties.CONTENT_DESCRIPTION,
+                                resources,
+                                R.string.nfc_disabled_on_device_message)
+                        .with(ModalDialogProperties.FILTER_TOUCH_FOR_SECURITY, true)
+                        .build();
 
         mWindowAndroid = window;
         mCallback = callback;
@@ -87,18 +94,22 @@ public class NfcSystemLevelPrompt implements ModalDialogProperties.Controller {
         if (buttonType == ModalDialogProperties.ButtonType.NEGATIVE) {
             mModalDialogManager.dismissDialog(model, DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
         } else {
-            String nfcAction = (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
-                    ? Settings.Panel.ACTION_NFC
-                    : Settings.ACTION_NFC_SETTINGS;
+            String nfcAction =
+                    (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
+                            ? Settings.Panel.ACTION_NFC
+                            : Settings.ACTION_NFC_SETTINGS;
             Intent intent = new Intent(nfcAction);
             try {
-                mWindowAndroid.showIntent(intent, new WindowAndroid.IntentCallback() {
-                    @Override
-                    public void onIntentCompleted(int resultCode, Intent data) {
-                        mModalDialogManager.dismissDialog(
-                                model, DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
-                    }
-                }, null);
+                mWindowAndroid.showIntent(
+                        intent,
+                        new WindowAndroid.IntentCallback() {
+                            @Override
+                            public void onIntentCompleted(int resultCode, Intent data) {
+                                mModalDialogManager.dismissDialog(
+                                        model, DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
+                            }
+                        },
+                        null);
             } catch (android.content.ActivityNotFoundException ex) {
                 mModalDialogManager.dismissDialog(
                         model, DialogDismissalCause.POSITIVE_BUTTON_CLICKED);

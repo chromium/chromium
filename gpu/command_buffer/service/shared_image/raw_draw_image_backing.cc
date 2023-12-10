@@ -35,7 +35,7 @@ class RawDrawImageBacking::RasterRawDrawImageRepresentation
       scoped_refptr<SharedContextState> context_state,
       int final_msaa_count,
       const SkSurfaceProps& surface_props,
-      const absl::optional<SkColor4f>& clear_color,
+      const std::optional<SkColor4f>& clear_color,
       bool visible) override {
     return raw_draw_backing()->BeginRasterWriteAccess(
         std::move(context_state), final_msaa_count, surface_props, clear_color,
@@ -47,7 +47,7 @@ class RawDrawImageBacking::RasterRawDrawImageRepresentation
   }
 
   cc::PaintOpBuffer* BeginReadAccess(
-      absl::optional<SkColor4f>& clear_color) override {
+      std::optional<SkColor4f>& clear_color) override {
     return raw_draw_backing()->BeginRasterReadAccess(clear_color);
   }
 
@@ -252,7 +252,7 @@ cc::PaintOpBuffer* RawDrawImageBacking::BeginRasterWriteAccess(
     scoped_refptr<SharedContextState> context_state,
     int final_msaa_count,
     const SkSurfaceProps& surface_props,
-    const absl::optional<SkColor4f>& clear_color,
+    const std::optional<SkColor4f>& clear_color,
     bool visible) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   AutoLock auto_lock(this);
@@ -317,7 +317,7 @@ void RawDrawImageBacking::EndRasterWriteAccess(base::OnceClosure callback) {
 }
 
 cc::PaintOpBuffer* RawDrawImageBacking::BeginRasterReadAccess(
-    absl::optional<SkColor4f>& clear_color) {
+    std::optional<SkColor4f>& clear_color) {
   // paint ops will be read on compositor thread, so do not check thread with
   // DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   AutoLock auto_lock(this);

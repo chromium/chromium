@@ -98,7 +98,6 @@ HlsDataSourceProviderImpl::HlsDataSourceProviderImpl(
 HlsDataSourceProviderImpl::~HlsDataSourceProviderImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (auto& [id, source] : data_source_map_) {
-    source->Abort();
     source->Stop();
   }
 

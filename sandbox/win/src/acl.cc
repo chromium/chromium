@@ -10,7 +10,7 @@
 
 namespace sandbox {
 
-absl::optional<DWORD> GetIntegrityLevelRid(IntegrityLevel integrity_level) {
+std::optional<DWORD> GetIntegrityLevelRid(IntegrityLevel integrity_level) {
   switch (integrity_level) {
     case INTEGRITY_LEVEL_SYSTEM:
       return DWORD{SECURITY_MANDATORY_SYSTEM_RID};
@@ -27,18 +27,18 @@ absl::optional<DWORD> GetIntegrityLevelRid(IntegrityLevel integrity_level) {
     case INTEGRITY_LEVEL_UNTRUSTED:
       return DWORD{SECURITY_MANDATORY_UNTRUSTED_RID};
     case INTEGRITY_LEVEL_LAST:
-      return absl::nullopt;
+      return std::nullopt;
   }
 
   NOTREACHED();
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 DWORD SetObjectIntegrityLabel(HANDLE handle,
                               base::win::SecurityObjectType object_type,
                               DWORD mandatory_policy,
                               IntegrityLevel integrity_level) {
-  absl::optional<DWORD> value = GetIntegrityLevelRid(integrity_level);
+  std::optional<DWORD> value = GetIntegrityLevelRid(integrity_level);
   if (!value) {
     return ERROR_INVALID_SID;
   }

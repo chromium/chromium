@@ -43,7 +43,10 @@ std::string GetProxy(const net::HttpResponseInfo& info) {
   if (!info.proxy_chain.IsValid() || info.proxy_chain.is_direct()) {
     return net::HostPortPair().ToString();
   }
-  return info.proxy_chain.proxy_server().host_port_pair().ToString();
+  CHECK(info.proxy_chain.is_single_proxy());
+  return info.proxy_chain.GetProxyServer(/*chain_index=*/0)
+      .host_port_pair()
+      .ToString();
 }
 
 int CalculateLoadFlags(int load_flags,

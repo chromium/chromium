@@ -44,9 +44,19 @@ void* GLTexturePassthroughD3DImageRepresentation::GetEGLImage() {
 
 bool GLTexturePassthroughD3DImageRepresentation::BeginAccess(GLenum mode) {
   D3DImageBacking* d3d_image_backing = static_cast<D3DImageBacking*>(backing());
+
   const bool write_access =
       mode == GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM;
-  return d3d_image_backing->BeginAccessD3D11(d3d11_device_, write_access);
+  if (!d3d_image_backing->BeginAccessD3D11(d3d11_device_, write_access)) {
+    return false;
+  }
+
+  for (auto& gl_texture_holder : gl_texture_holders_) {
+    // Bind GLImage to texture if it is necessary.
+    gl_texture_holder->BindEGLImageToTexture();
+  }
+
+  return true;
 }
 
 void GLTexturePassthroughD3DImageRepresentation::EndAccess() {
@@ -116,7 +126,7 @@ void OverlayD3DImageRepresentation::EndReadAccess(
   static_cast<D3DImageBacking*>(backing())->EndAccessD3D11(d3d11_device_);
 }
 
-absl::optional<gl::DCLayerOverlayImage>
+std::optional<gl::DCLayerOverlayImage>
 OverlayD3DImageRepresentation::GetDCLayerOverlayImage() {
   return static_cast<D3DImageBacking*>(backing())->GetDCLayerOverlayImage();
 }

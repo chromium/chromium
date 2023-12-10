@@ -7,7 +7,14 @@ source_set("metrics") {
     "metrics.h",
     "metrics.mm",
   ]
-  deps = [ "//base" ]
+  deps = [
+    ":tracking_source",
+    "//base",
+  ]
+}
+
+source_set("tracking_source") {
+  sources = [ "tracking_source.h" ]
 }
 
 source_set("infobar_delegate") {
@@ -16,7 +23,9 @@ source_set("infobar_delegate") {
     "parcel_tracking_infobar_delegate.mm",
   ]
   deps = [
+    ":metrics",
     ":parcel_tracking_step",
+    ":tracking_source",
     ":util",
     "//base",
     "//components/commerce/core:proto",
@@ -25,7 +34,7 @@ source_set("infobar_delegate") {
     "//ios/chrome/browser/commerce/model:shopping_service",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/public/commands",
-    "//ios/chrome/browser/web/annotations",
+    "//ios/chrome/browser/web/model/annotations",
     "//ios/web/public",
     "//ios/web/public/annotations:custom_text_check_result",
   ]
@@ -53,7 +62,9 @@ source_set("util") {
   ]
   deps = [
     ":features",
+    ":metrics",
     ":prefs",
+    ":tracking_source",
     "//base",
     "//components/commerce/core:proto",
     "//components/commerce/core:shopping_service",
@@ -64,7 +75,7 @@ source_set("util") {
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/public/commands",
-    "//ios/chrome/browser/signin",
+    "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/ui/content_suggestions:constants",
     "//ios/chrome/browser/ui/ntp/metrics:home_metrics",
     "//ios/web/public/annotations:custom_text_check_result",
@@ -91,10 +102,10 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/public/features",
-    "//ios/chrome/browser/signin",
-    "//ios/chrome/browser/signin:fake_system_identity",
-    "//ios/chrome/browser/signin:fake_system_identity_manager",
-    "//ios/chrome/browser/signin:test_support",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:fake_system_identity",
+    "//ios/chrome/browser/signin/model:fake_system_identity_manager",
+    "//ios/chrome/browser/signin/model:test_support",
     "//ios/chrome/test:test_support",
     "//ios/web/public/test",
     "//testing/gtest",

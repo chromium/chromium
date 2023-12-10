@@ -5,6 +5,7 @@
 #include "chrome/browser/apps/app_service/publishers/extension_apps.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "build/build_config.h"
@@ -13,7 +14,6 @@
 #include "chrome/browser/web_applications/extension_status_utils.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "extensions/common/extension.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace apps {
 

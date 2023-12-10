@@ -9,7 +9,6 @@ import static org.mockito.Mockito.mock;
 
 import android.graphics.Bitmap;
 import android.graphics.Rect;
-import android.os.Build.VERSION_CODES;
 import android.view.DragEvent;
 import android.view.View;
 import android.view.View.DragShadowBuilder;
@@ -30,7 +29,6 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.chrome.browser.contextmenu.ContextMenuCoordinator;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -54,7 +52,6 @@ import java.util.concurrent.TimeoutException;
 
 /** Integration tests for drag interactions with context menu. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@MinAndroidSdkLevel(value = VERSION_CODES.O)
 @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
 @EnableFeatures({
     ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU,

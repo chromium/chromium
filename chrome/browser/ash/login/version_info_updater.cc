@@ -115,13 +115,13 @@ void VersionInfoUpdater::StartUpdate(bool is_chrome_branded) {
   }
 }
 
-absl::optional<bool> VersionInfoUpdater::IsSystemInfoEnforced() const {
+std::optional<bool> VersionInfoUpdater::IsSystemInfoEnforced() const {
   bool is_system_info_enforced = false;
   if (cros_settings_->GetBoolean(kDeviceLoginScreenSystemInfoEnforced,
                                  &is_system_info_enforced)) {
     return is_system_info_enforced;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void VersionInfoUpdater::UpdateVersionLabel() {
@@ -163,7 +163,7 @@ std::string VersionInfoUpdater::GetDeviceIdsLabel() {
   std::string device_ids_text;
 
   // Get the attested device ID and add the ZTE indication and the ID if needed.
-  const absl::optional<base::StringPiece> attested_device_id =
+  const std::optional<base::StringPiece> attested_device_id =
       system::StatisticsProvider::GetInstance()->GetMachineStatistic(
           system::kAttestedDeviceIdKey);
   // Start with the ZTE indication and the attested device ID if it exists.
@@ -176,7 +176,7 @@ std::string VersionInfoUpdater::GetDeviceIdsLabel() {
   }
 
   // Get the serial number and add it.
-  const absl::optional<base::StringPiece> serial_number =
+  const std::optional<base::StringPiece> serial_number =
       system::StatisticsProvider::GetInstance()->GetMachineID();
   if (serial_number && !serial_number->empty()) {
     if (!device_ids_text.empty())
@@ -188,7 +188,7 @@ std::string VersionInfoUpdater::GetDeviceIdsLabel() {
 
   return device_ids_text;
 }
-void VersionInfoUpdater::OnVersion(const absl::optional<std::string>& version) {
+void VersionInfoUpdater::OnVersion(const std::optional<std::string>& version) {
   version_text_ = version;
   UpdateVersionLabel();
 }

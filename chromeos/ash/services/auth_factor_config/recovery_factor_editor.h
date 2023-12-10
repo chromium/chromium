@@ -18,7 +18,7 @@ class AuthFactorConfig;
 // The implementation of the RecoveryFactorEditor service.
 class RecoveryFactorEditor : public mojom::RecoveryFactorEditor {
  public:
-  explicit RecoveryFactorEditor(AuthFactorConfig*, QuickUnlockStorageDelegate*);
+  explicit RecoveryFactorEditor(AuthFactorConfig*);
   RecoveryFactorEditor(const RecoveryFactorEditor&) = delete;
   RecoveryFactorEditor& operator=(const RecoveryFactorEditor&) = delete;
   ~RecoveryFactorEditor() override;
@@ -45,10 +45,9 @@ class RecoveryFactorEditor : public mojom::RecoveryFactorEditor {
       base::OnceCallback<void(mojom::ConfigureResult)> callback,
       const std::string& auth_token,
       std::unique_ptr<UserContext> context,
-      absl::optional<AuthenticationError> error);
+      std::optional<AuthenticationError> error);
 
   raw_ptr<AuthFactorConfig> auth_factor_config_;
-  raw_ptr<QuickUnlockStorageDelegate> quick_unlock_storage_;
   AuthFactorEditor auth_factor_editor_;
   mojo::ReceiverSet<mojom::RecoveryFactorEditor> receivers_;
   base::WeakPtrFactory<RecoveryFactorEditor> weak_factory_{this};

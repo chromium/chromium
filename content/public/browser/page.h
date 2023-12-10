@@ -99,6 +99,14 @@ class CONTENT_EXPORT Page : public base::SupportsUserData {
   // Returns the MIME type bound to the Page contents after a navigation.
   virtual const std::string& GetContentsMimeType() const = 0;
 
+  // Test version of `PageImpl::SetResizable` to allow tests outside of
+  // //content to simulate the value normally set by the
+  // window.setResizable(bool) API.
+  virtual void SetResizableForTesting(absl::optional<bool> resizable) = 0;
+  // Returns the value set by `window.setResizable(bool)` API or `absl::nullopt`
+  // if unset which can override `BrowserView::CanResize`.
+  virtual absl::optional<bool> GetResizable() = 0;
+
  private:
   // This method is needed to ensure that PageImpl can both implement a Page's
   // method and define a new GetMainDocument() returning RenderFrameHostImpl.

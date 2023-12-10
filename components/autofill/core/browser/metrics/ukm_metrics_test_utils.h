@@ -16,11 +16,11 @@
 
 namespace autofill::autofill_metrics {
 
-struct ExpectedUkmMetricsPair : public std::pair<const char*, int64_t> {
-  using std::pair<const char*, int64_t>::pair;
-  ExpectedUkmMetricsPair(const char* str, HtmlFieldMode mode)
+struct ExpectedUkmMetricsPair : public std::pair<std::string, int64_t> {
+  using std::pair<std::string, int64_t>::pair;
+  ExpectedUkmMetricsPair(std::string str, HtmlFieldMode mode)
       : ExpectedUkmMetricsPair(str, static_cast<int64_t>(mode)) {}
-  ExpectedUkmMetricsPair(const char* str, HtmlFieldType type)
+  ExpectedUkmMetricsPair(std::string str, HtmlFieldType type)
       : ExpectedUkmMetricsPair(str, static_cast<int64_t>(type)) {}
 };
 

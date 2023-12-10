@@ -54,13 +54,15 @@ void FakeModelTypeControllerDelegate::SimulateModelError(
   base::RunLoop().RunUntilIdle();
 }
 
-int FakeModelTypeControllerDelegate::clear_metadata_call_count() const {
-  return clear_metadata_call_count_;
+int FakeModelTypeControllerDelegate::clear_metadata_count() const {
+  return clear_metadata_count_;
 }
 
 void FakeModelTypeControllerDelegate::OnSyncStarting(
     const DataTypeActivationRequest& request,
     StartCallback callback) {
+  sync_started_ = true;
+
   error_handler_ = request.error_handler;
 
   // If the model has already experienced the error, report it immediately.
@@ -84,8 +86,9 @@ void FakeModelTypeControllerDelegate::OnSyncStarting(
 void FakeModelTypeControllerDelegate::OnSyncStopping(
     SyncStopMetadataFate metadata_fate) {
   if (metadata_fate == CLEAR_METADATA) {
-    ++clear_metadata_call_count_;
+    ++clear_metadata_count_;
   }
+  sync_started_ = false;
 }
 
 void FakeModelTypeControllerDelegate::GetAllNodesForDebugging(
@@ -114,8 +117,13 @@ FakeModelTypeControllerDelegate::MakeActivationResponse() const {
   return response;
 }
 
-void FakeModelTypeControllerDelegate::ClearMetadataWhileStopped() {
-  ++clear_metadata_call_count_;
+void FakeModelTypeControllerDelegate::ClearMetadataIfStopped() {
+  // If Sync is not actually stopped, ignore this call. This mirrors logic in
+  // ClientTagBasedModelTypeProcessor and BookmarkModelTypeProcessor.
+  if (sync_started_) {
+    return;
+  }
+  ++clear_metadata_count_;
 }
 
 }  // namespace syncer

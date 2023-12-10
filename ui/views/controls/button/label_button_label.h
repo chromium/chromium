@@ -20,8 +20,9 @@ namespace views::internal {
 // A Label subclass that can be disabled. This is only used internally for
 // views::LabelButton.
 class VIEWS_EXPORT LabelButtonLabel : public Label {
+  METADATA_HEADER(LabelButtonLabel, Label)
+
  public:
-  METADATA_HEADER(LabelButtonLabel);
   LabelButtonLabel(const std::u16string& text, int text_context);
   LabelButtonLabel(const LabelButtonLabel&) = delete;
   LabelButtonLabel& operator=(const LabelButtonLabel&) = delete;

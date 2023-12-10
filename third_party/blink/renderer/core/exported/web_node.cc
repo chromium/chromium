@@ -159,12 +159,7 @@ bool WebNode::IsInsideFocusableElementOrARIAWidget() const {
       *this->ConstUnwrap<Node>());
 }
 
-v8::Local<v8::Value> WebNode::ToV8Value(v8::Local<v8::Object> creation_context,
-                                        v8::Isolate* isolate) {
-  // We no longer use |creation_context| because it's often misused and points
-  // to a context faked by user script.
-  DCHECK(creation_context->GetCreationContextChecked() ==
-         isolate->GetCurrentContext());
+v8::Local<v8::Value> WebNode::ToV8Value(v8::Isolate* isolate) {
   if (!private_.Get())
     return v8::Local<v8::Value>();
   return ToV8(private_.Get(), isolate->GetCurrentContext()->Global(), isolate);
@@ -222,6 +217,15 @@ WebVector<WebElement> WebNode::QuerySelectorAll(
     return vector;
   }
   return WebVector<WebElement>();
+}
+
+WebString WebNode::FindTextInElementWith(const WebString& substring) const {
+  ContainerNode* container_node =
+      blink::DynamicTo<ContainerNode>(private_.Get());
+  if (!container_node) {
+    return WebString();
+  }
+  return WebString(container_node->FindTextInElementWith(substring));
 }
 
 bool WebNode::Focused() const {

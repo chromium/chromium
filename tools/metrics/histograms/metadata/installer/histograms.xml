@@ -22,12 +22,6 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
-<variants name="InstallerDownloadSources">
-  <variant name="HttpPeer" summary="Download Source: HTTP Peer"/>
-  <variant name="HttpServer" summary="Download Source: HTTP Server"/>
-  <variant name="HttpsServer" summary="Download Source: HTTPS Server"/>
-</variants>
-
 <histogram name="Installer.DevModeErrorCodes" enum="UpdateEngineErrorCode"
     expires_after="M85">
   <owner>zeuthen@chromium.org</owner>
@@ -70,7 +64,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Installer.Postinstall.EfiBootEntryFailedLoad" units="entries"
-    expires_after="2024-03-01">
+    expires_after="2024-05-05">
   <owner>tbrandston@google.com</owner>
   <owner>chromeos-flex-eng@google.com</owner>
   <summary>
@@ -86,7 +80,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Installer.Postinstall.EfiManagementEvent"
-    enum="ChromeOSEfiManagementEvent" expires_after="2024-03-01">
+    enum="ChromeOSEfiManagementEvent" expires_after="2024-05-12">
   <owner>tbrandston@google.com</owner>
   <owner>chromeos-flex-eng@google.com</owner>
   <summary>
@@ -136,7 +130,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Installer.Postinstall.NonChromebookBiosSuccess.{BiosType}"
-    enum="BooleanSuccess" expires_after="2024-03-01">
+    enum="BooleanSuccess" expires_after="2024-05-05">
   <owner>tbrandston@google.com</owner>
   <owner>chromeos-flex-eng@google.com</owner>
   <summary>

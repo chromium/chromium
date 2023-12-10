@@ -80,12 +80,12 @@ class PipeReaderWrapper : public base::SupportsWeakPtr<PipeReaderWrapper> {
         base::BindOnce(&PipeReaderWrapper::OnIOComplete, AsWeakPtr()));
   }
 
-  void OnIOComplete(absl::optional<std::string> result) {
+  void OnIOComplete(std::optional<std::string> result) {
     if (!result.has_value()) {
       VLOG(1) << "Failed to read data.";
       RecordGetFeedbackLogsV2DbusResult(
           GetFeedbackLogsV2DbusResult::kErrorReadingData);
-      RunCallbackAndDestroy(absl::nullopt);
+      RunCallbackAndDestroy(std::nullopt);
       return;
     }
 
@@ -96,7 +96,7 @@ class PipeReaderWrapper : public base::SupportsWeakPtr<PipeReaderWrapper> {
       VLOG(1) << "Failed to deserialize the JSON logs.";
       RecordGetFeedbackLogsV2DbusResult(
           GetFeedbackLogsV2DbusResult::kErrorDeserializingJSonLogs);
-      RunCallbackAndDestroy(absl::nullopt);
+      RunCallbackAndDestroy(std::nullopt);
       return;
     }
     std::map<std::string, std::string> data;
@@ -108,12 +108,12 @@ class PipeReaderWrapper : public base::SupportsWeakPtr<PipeReaderWrapper> {
 
   void TerminateStream() {
     VLOG(1) << "Terminated";
-    RunCallbackAndDestroy(absl::nullopt);
+    RunCallbackAndDestroy(std::nullopt);
   }
 
  private:
   void RunCallbackAndDestroy(
-      absl::optional<std::map<std::string, std::string>> result) {
+      std::optional<std::map<std::string, std::string>> result) {
     if (result.has_value()) {
       std::move(callback_).Run(true, std::move(result.value()));
     } else {
@@ -731,7 +731,7 @@ class DebugDaemonClientImpl : public DebugDaemonClient {
       chromeos::DBusMethodCallback<std::vector<std::string>> callback,
       dbus::Response* response) {
     if (!response) {
-      std::move(callback).Run(absl::nullopt);
+      std::move(callback).Run(std::nullopt);
       return;
     }
 
@@ -739,7 +739,7 @@ class DebugDaemonClientImpl : public DebugDaemonClient {
     dbus::MessageReader reader(response);
     if (!reader.PopArrayOfStrings(&routes)) {
       LOG(ERROR) << "Got non-array response from GetRoutes";
-      std::move(callback).Run(absl::nullopt);
+      std::move(callback).Run(std::nullopt);
       return;
     }
 
@@ -805,14 +805,14 @@ class DebugDaemonClientImpl : public DebugDaemonClient {
   void OnUint64Method(chromeos::DBusMethodCallback<uint64_t> callback,
                       dbus::Response* response) {
     if (!response) {
-      std::move(callback).Run(absl::nullopt);
+      std::move(callback).Run(std::nullopt);
       return;
     }
 
     dbus::MessageReader reader(response);
     uint64_t result;
     if (!reader.PopUint64(&result)) {
-      std::move(callback).Run(absl::nullopt);
+      std::move(callback).Run(std::nullopt);
       return;
     }
 
@@ -824,14 +824,14 @@ class DebugDaemonClientImpl : public DebugDaemonClient {
   void OnStringMethod(chromeos::DBusMethodCallback<std::string> callback,
                       dbus::Response* response) {
     if (!response) {
-      std::move(callback).Run(absl::nullopt);
+      std::move(callback).Run(std::nullopt);
       return;
     }
 
     dbus::MessageReader reader(response);
     std::string result;
     if (!reader.PopString(&result)) {
-      std::move(callback).Run(absl::nullopt);
+      std::move(callback).Run(std::nullopt);
       return;
     }
 
@@ -888,7 +888,7 @@ class DebugDaemonClientImpl : public DebugDaemonClient {
   void OnTestICMP(TestICMPCallback callback, dbus::Response* response) {
     std::string status;
     if (!response || !dbus::MessageReader(response).PopString(&status)) {
-      std::move(callback).Run(absl::nullopt);
+      std::move(callback).Run(std::nullopt);
       return;
     }
 
@@ -896,7 +896,7 @@ class DebugDaemonClientImpl : public DebugDaemonClient {
   }
 
   // Called when pipe i/o completes; pass data on and delete the instance.
-  void OnIOComplete(absl::optional<std::string> result) {
+  void OnIOComplete(std::optional<std::string> result) {
     pipe_reader_.reset();
     std::string pipe_data =
         result.has_value() ? std::move(result).value() : std::string();
@@ -1044,7 +1044,7 @@ class DebugDaemonClientImpl : public DebugDaemonClient {
       chromeos::DBusMethodCallback<std::set<std::string>> callback,
       dbus::Response* response) {
     if (!response) {
-      std::move(callback).Run(absl::nullopt);
+      std::move(callback).Run(std::nullopt);
       return;
     }
 
@@ -1052,7 +1052,7 @@ class DebugDaemonClientImpl : public DebugDaemonClient {
     dbus::MessageReader reader(response);
     if (!reader.PopString(&flags_string)) {
       LOG(ERROR) << "Failed to read GetU2fFlags response";
-      std::move(callback).Run(absl::nullopt);
+      std::move(callback).Run(std::nullopt);
       return;
     }
 

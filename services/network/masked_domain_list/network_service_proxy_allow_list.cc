@@ -13,7 +13,10 @@
 
 namespace network {
 
-NetworkServiceProxyAllowList::NetworkServiceProxyAllowList() = default;
+NetworkServiceProxyAllowList::NetworkServiceProxyAllowList(
+    network::mojom::IpProtectionProxyBypassPolicy policy)
+    : proxy_bypass_policy_{policy} {}
+
 NetworkServiceProxyAllowList::~NetworkServiceProxyAllowList() = default;
 
 NetworkServiceProxyAllowList::NetworkServiceProxyAllowList(
@@ -21,7 +24,9 @@ NetworkServiceProxyAllowList::NetworkServiceProxyAllowList(
 
 NetworkServiceProxyAllowList NetworkServiceProxyAllowList::CreateForTesting(
     std::map<std::string, std::set<std::string>> first_party_map) {
-  auto allow_list = NetworkServiceProxyAllowList();
+  auto allow_list = NetworkServiceProxyAllowList(
+      network::mojom::IpProtectionProxyBypassPolicy::
+          kFirstPartyToTopLevelFrame);
 
   for (auto const& [domain, properties] : first_party_map) {
     net::SchemeHostPortMatcher bypass_matcher;
@@ -40,9 +45,7 @@ NetworkServiceProxyAllowList NetworkServiceProxyAllowList::CreateForTesting(
 }
 
 bool NetworkServiceProxyAllowList::IsEnabled() {
-  return base::FeatureList::IsEnabled(
-             net::features::kEnableIpProtectionProxy) &&
-         base::FeatureList::IsEnabled(network::features::kMaskedDomainList);
+  return base::FeatureList::IsEnabled(network::features::kMaskedDomainList);
 }
 
 bool NetworkServiceProxyAllowList::IsPopulated() {
@@ -64,8 +67,8 @@ NetworkServiceProxyAllowList::MakeIpProtectionCustomProxyConfig() {
 void NetworkServiceProxyAllowList::AddDomainWithBypass(
     const std::string& domain,
     net::SchemeHostPortMatcher bypass_matcher) {
-  url_matcher_with_bypass_.AddDomainWithBypass(domain,
-                                               std::move(bypass_matcher));
+  url_matcher_with_bypass_.AddDomainWithBypass(
+      domain, std::move(bypass_matcher), /*include_subdomains=*/true);
 }
 
 size_t NetworkServiceProxyAllowList::EstimateMemoryUsage() const {
@@ -75,29 +78,57 @@ size_t NetworkServiceProxyAllowList::EstimateMemoryUsage() const {
 bool NetworkServiceProxyAllowList::Matches(
     const GURL& request_url,
     const net::NetworkAnonymizationKey& network_anonymization_key) {
-  if (!network_anonymization_key.GetTopFrameSite().has_value()) {
-    DVLOG(3) << "NSPAL::Matches(" << request_url
-             << ", empty top_frame_site) - false";
+  // TODO(https://crbug.com/1474932): Support proxying HTTP URLs by using
+  // CONNECT requests (i.e. tunnelling) instead of using the old-style proxy GET
+  // requests from the last proxy in the chain.
+  if (request_url.SchemeIs(url::kHttpScheme)) {
     return false;
   }
 
-  net::SchemefulSite top_frame_site =
-      network_anonymization_key.GetTopFrameSite().value();
-  DVLOG(3) << "NSPAL::Matches(" << request_url << ", " << top_frame_site << ")";
+  absl::optional<net::SchemefulSite> top_frame_site =
+      network_anonymization_key.GetTopFrameSite();
+  switch (proxy_bypass_policy_) {
+    case network::mojom::IpProtectionProxyBypassPolicy::kNone: {
+      return url_matcher_with_bypass_.Matches(request_url, top_frame_site, true)
+          .matches;
+    }
+    case network::mojom::IpProtectionProxyBypassPolicy::
+        kFirstPartyToTopLevelFrame: {
+      if (!network_anonymization_key.GetTopFrameSite().has_value()) {
+        DVLOG(3) << "NSPAL::Matches(" << request_url
+                 << ", empty top_frame_site) - false";
+        return false;
+      }
+      DVLOG(3) << "NSPAL::Matches(" << request_url << ", "
+               << top_frame_site.value() << ")";
 
-  // If the NAK is transient (has a nonce and/or top_frame_origin is opaque), we
-  // should skip the first party check and match only on the request_url.
-  UrlMatcherWithBypass::MatchResult result = url_matcher_with_bypass_.Matches(
-      request_url, top_frame_site, network_anonymization_key.IsTransient());
-  return result.matches && result.is_third_party;
+      // If the NAK is transient (has a nonce and/or top_frame_origin is
+      // opaque), we should skip the first party check and match only on the
+      // request_url.
+      UrlMatcherWithBypass::MatchResult result =
+          url_matcher_with_bypass_.Matches(
+              request_url, top_frame_site,
+              network_anonymization_key.IsTransient());
+      return result.matches && result.is_third_party;
+    }
+  }
 }
 
 void NetworkServiceProxyAllowList::UseMaskedDomainList(
     const masked_domain_list::MaskedDomainList& mdl) {
   url_matcher_with_bypass_.Clear();
   for (auto owner : mdl.resource_owners()) {
+    // Group domains by partition first so that only one set of the owner's
+    // bypass rules are created per partition.
+    std::map<std::string, std::vector<std::string>> owned_domains_by_partition;
     for (auto resource : owner.owned_resources()) {
-      url_matcher_with_bypass_.AddMaskedDomainListRules(resource.domain(),
+      const std::string partition =
+          UrlMatcherWithBypass::PartitionMapKey(resource.domain());
+      owned_domains_by_partition[partition].emplace_back(resource.domain());
+    }
+
+    for (const auto& [partition, domains] : owned_domains_by_partition) {
+      url_matcher_with_bypass_.AddMaskedDomainListRules(domains, partition,
                                                         owner);
     }
   }

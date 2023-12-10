@@ -17,6 +17,8 @@
 #import "ios/chrome/browser/passwords/model/ios_chrome_account_password_store_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_affiliation_service_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
+#import "ios/chrome/browser/passwords/model/metrics/ios_password_manager_metrics.h"
+#import "ios/chrome/browser/passwords/model/metrics/ios_password_manager_visits_recorder.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
@@ -26,7 +28,7 @@
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/signin/identity_manager_factory.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/ui/settings/elements/enterprise_info_popover_view_controller.h"
 #import "ios/chrome/browser/ui/settings/password/password_manager_ui_features.h"
@@ -151,6 +153,9 @@ constexpr const char* kBulkMovePasswordsToAccountConfirmationDialogAccepted =
   // Alert informing the user that passwords are being prepared for
   // export.
   UIAlertController* _preparingPasswordsAlert;
+
+  // For recording visits after successful authentication.
+  IOSPasswordManagerVisitsRecorder* _visitsRecorder;
 }
 
 #pragma mark - ChromeCoordinator
@@ -195,6 +200,16 @@ constexpr const char* kBulkMovePasswordsToAccountConfirmationDialogAccepted =
   _mediator.consumer = _passwordSettingsViewController;
   _passwordSettingsViewController.delegate = _mediator;
 
+  _visitsRecorder = [[IOSPasswordManagerVisitsRecorder alloc]
+      initWithPasswordManagerSurface:password_manager::PasswordManagerSurface::
+                                         kPasswordSettings];
+
+  // Only record visit if no auth is required, otherwise wait for successful
+  // auth.
+  if (_skipAuthenticationOnStart) {
+    [_visitsRecorder maybeRecordVisitMetric];
+  }
+
   [self startReauthCoordinatorWithAuthOnStart:!_skipAuthenticationOnStart];
 
   [self.baseViewController presentViewController:_settingsNavigationController
@@ -203,12 +218,16 @@ constexpr const char* kBulkMovePasswordsToAccountConfirmationDialogAccepted =
 }
 
 - (void)stop {
-  // If the parent coordinator is stopping `self` while the UI is still being
-  // presented, dismiss without animation. Dismissals due to user actions (e.g,
-  // swipe or tap on Done) are animated.
-  if (self.baseViewController.presentedViewController ==
-      _settingsNavigationController) {
-    [self.baseViewController dismissViewControllerAnimated:NO completion:nil];
+  [self stopWithUIDismissal:YES];
+}
+
+#pragma mark - PasswordSettingsCoordinator
+
+- (void)stopWithUIDismissal:(BOOL)shouldDismissUI {
+  if (shouldDismissUI) {
+    [_settingsNavigationController.presentingViewController
+        dismissViewControllerAnimated:NO
+                           completion:nil];
   }
 
   [_passwordsInOtherAppsCoordinator stop];
@@ -521,6 +540,12 @@ constexpr const char* kBulkMovePasswordsToAccountConfirmationDialogAccepted =
   [self restartReauthCoordinator];
 }
 
+#pragma mark - PasswordManagerReauthenticationDelegate
+
+- (void)dismissPasswordManagerAfterFailedReauthentication {
+  [_delegate dismissPasswordManagerAfterFailedReauthentication];
+}
+
 #pragma mark - SettingsNavigationControllerDelegate
 
 - (void)closeSettings {
@@ -540,7 +565,13 @@ constexpr const char* kBulkMovePasswordsToAccountConfirmationDialogAccepted =
 
 - (void)successfulReauthenticationWithCoordinator:
     (ReauthenticationCoordinator*)coordinator {
-  // No-op.
+  [_visitsRecorder maybeRecordVisitMetric];
+}
+
+- (void)dismissUIAfterFailedReauthenticationWithCoordinator:
+    (ReauthenticationCoordinator*)coordinator {
+  CHECK_EQ(_reauthCoordinator, coordinator);
+  [_delegate dismissPasswordManagerAfterFailedReauthentication];
 }
 
 - (void)willPushReauthenticationViewController {

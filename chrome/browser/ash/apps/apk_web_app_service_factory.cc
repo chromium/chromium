@@ -16,8 +16,10 @@ namespace ash {
 // static
 ApkWebAppService* ApkWebAppServiceFactory::GetForProfile(Profile* profile) {
   // ApkWebAppService is not supported if web apps aren't available.
-  if (!web_app::AreWebAppsEnabled(profile))
+  if (!web_app::AreWebAppsEnabled(profile) ||
+      !arc::IsArcAllowedForProfile(profile)) {
     return nullptr;
+  }
 
   return static_cast<ApkWebAppService*>(
       GetInstance()->GetServiceForBrowserContext(profile, true));

@@ -197,7 +197,7 @@ int main(int argc, char** argv) {
   }
 
   for (int i = 0; i < n_frames || n_frames == 0; i++) {
-    LOG(INFO) << "Frame " << i << "...";
+    VLOG(1) << "Frame " << i << "...";
 
     std::vector<uint8_t> y_plane;
     std::vector<uint8_t> u_plane;
@@ -206,7 +206,7 @@ int main(int argc, char** argv) {
     const VideoDecoder::Result res =
         dec->DecodeNextFrame(i, y_plane, u_plane, v_plane, size);
     if (res == VideoDecoder::kEOStream) {
-      LOG(INFO) << "End of stream.";
+      VLOG(1) << "End of stream.";
       break;
     } else if (res == VideoDecoder::kError) {
       LOG(ERROR) << "Unable to decode next frame.";

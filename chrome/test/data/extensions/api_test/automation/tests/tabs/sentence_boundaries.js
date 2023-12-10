@@ -42,4 +42,4 @@ function getExpections() {
     {starts: [0], ends: [27], text: 'This is the third sentence.', node: node6}
   ];
 }
-setUpAndRunTests(allTests, 'sentence_boundaries.html');
+setUpAndRunTabsTests(allTests, 'sentence_boundaries.html');

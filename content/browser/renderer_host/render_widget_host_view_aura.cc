@@ -2182,10 +2182,6 @@ void RenderWidgetHostViewAura::OnScrollEvent(ui::ScrollEvent* event) {
 
 void RenderWidgetHostViewAura::OnTouchEvent(ui::TouchEvent* event) {
   last_pointer_type_ = event->pointer_details().pointer_type;
-  ui::InputMethod* input_method = GetInputMethod();
-  if (window_ && window_->HasFocus() && input_method) {
-    input_method->OnTouch(event->pointer_details().pointer_type);
-  }
   event_handler_->OnTouchEvent(event);
 }
 
@@ -2384,9 +2380,19 @@ void RenderWidgetHostViewAura::CreateAuraWindow(aura::client::WindowType type) {
   window_->Init(ui::LAYER_SOLID_COLOR);
   window_->layer()->SetColor(GetBackgroundColor() ? *GetBackgroundColor()
                                                   : SK_ColorWHITE);
+  UpdateFrameSinkIdRegistration();
+}
+
+void RenderWidgetHostViewAura::UpdateFrameSinkIdRegistration() {
+  RenderWidgetHostViewBase::UpdateFrameSinkIdRegistration();
+
   // This needs to happen only after |window_| has been initialized using
   // Init(), because it needs to have the layer.
-  window_->SetEmbedFrameSinkId(frame_sink_id_);
+  if (window_) {
+    window_->SetEmbedFrameSinkId(is_frame_sink_id_owner() ? frame_sink_id_
+                                                          : viz::FrameSinkId());
+  }
+  delegated_frame_host_->SetIsFrameSinkIdOwner(is_frame_sink_id_owner());
 }
 
 void RenderWidgetHostViewAura::CreateDelegatedFrameHostClient() {
@@ -2787,12 +2793,15 @@ void RenderWidgetHostViewAura::CreateSelectionController() {
       selection_controller_client_.get(), tsc_config);
 }
 
-void RenderWidgetHostViewAura::DidNavigateMainFramePreCommit() {
+void RenderWidgetHostViewAura::OnOldViewDidNavigatePreCommit() {
   DCHECK(delegated_frame_host_) << "Cannot be invoked during destruction.";
 
   // Invalidate the surface so that we don't attempt to evict it multiple times.
   window_->InvalidateLocalSurfaceId();
   delegated_frame_host_->DidNavigateMainFramePreCommit();
+}
+
+void RenderWidgetHostViewAura::OnNewViewDidNavigatePostCommit() {
   CancelActiveTouches();
 }
 

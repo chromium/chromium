@@ -32,8 +32,7 @@ public class JavascriptEventObserver {
      * @param name the name of object used in javascript
      */
     public void register(WebContents webContents, String name) {
-        JavascriptInjector
-                .fromWebContents(
+        JavascriptInjector.fromWebContents(
                         webContents, AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_JAVA_JS_BRIDGE_MOJO))
                 .addPossiblyUnsafeInterface(this, name, null);
     }

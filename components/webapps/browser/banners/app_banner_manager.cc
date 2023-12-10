@@ -191,7 +191,7 @@ void AppBannerManager::SetTimeDeltaForTesting(int days) {
   gTimeDeltaInDaysForTesting = days;
 }
 
-void AppBannerManager::RequestAppBanner(const GURL& validated_url) {
+void AppBannerManager::RequestAppBanner() {
   DCHECK_EQ(State::INACTIVE, state_);
 
   UpdateState(State::ACTIVE);
@@ -202,7 +202,7 @@ void AppBannerManager::RequestAppBanner(const GURL& validated_url) {
   if (!has_sufficient_engagement_ &&
       (AppBannerSettingsHelper::HasSufficientEngagement(0) ||
        AppBannerSettingsHelper::HasSufficientEngagement(
-           GetSiteEngagementService()->GetScore(validated_url)))) {
+           GetSiteEngagementService()->GetScore(validated_url_)))) {
     has_sufficient_engagement_ = true;
   }
 
@@ -210,9 +210,6 @@ void AppBannerManager::RequestAppBanner(const GURL& validated_url) {
     status_reporter_ = std::make_unique<ConsoleStatusReporter>(web_contents());
   else
     status_reporter_ = std::make_unique<TrackingStatusReporter>();
-
-  if (validated_url_.is_empty())
-    validated_url_ = validated_url;
 
   UpdateState(State::FETCHING_MANIFEST);
   manager_->GetData(ParamsToGetManifest(),
@@ -330,8 +327,7 @@ bool AppBannerManager::ShouldDeferToRelatedNonWebApp() const {
 }
 
 std::string AppBannerManager::GetAppIdentifier() {
-  DCHECK(!blink::IsEmptyManifest(manifest()));
-  return manifest().start_url.spec();
+  return manifest_id_.spec();
 }
 
 std::u16string AppBannerManager::GetAppName() const {
@@ -382,12 +378,14 @@ void AppBannerManager::OnDidGetManifest(const InstallableData& data) {
     return;
   }
 
-  DCHECK(!data.manifest_url->is_empty());
-  DCHECK(!blink::IsEmptyManifest(*data.manifest));
-
   manifest_url_ = *(data.manifest_url);
   manifest_ = data.manifest->Clone();
   web_page_metadata_ = data.web_page_metadata->Clone();
+
+  manifest_id_ = manifest_->id;
+  if (!manifest_id_.is_valid()) {
+    manifest_id_ = validated_url_.GetWithoutRef();
+  }
 
   // Skip checks for PasswordManager WebUI page.
   if (content::HasWebUIScheme(validated_url_) &&
@@ -412,7 +410,10 @@ void AppBannerManager::OnDidGetManifest(const InstallableData& data) {
 InstallableParams AppBannerManager::ParamsToPerformInstallableWebAppCheck() {
   InstallableParams params;
   params.valid_primary_icon = true;
-  params.installable_criteria = InstallableCriteria::kValidManifestWithIcons;
+  params.installable_criteria =
+      base::FeatureList::IsEnabled(features::kUniversalInstallManifest)
+          ? InstallableCriteria::kImplicitManifestFieldsHTML
+          : InstallableCriteria::kValidManifestWithIcons;
   params.fetch_screenshots = true;
 
   return params;
@@ -478,32 +479,6 @@ void AppBannerManager::OnDidPerformInstallableWebAppCheck(
   has_maskable_primary_icon_ = data.has_maskable_primary_icon;
   screenshots_ = *(data.screenshots);
 
-  if (base::FeatureList::IsEnabled(features::kUniversalInstallManifest)) {
-    SetInstallableWebAppCheckResult(
-        InstallableWebAppCheckResult::kYes_ByUserRequest);
-
-    InstallableParams check_promotable_params;
-    check_promotable_params.installable_criteria =
-        InstallableCriteria::kValidManifestWithIcons;
-    manager_->GetData(
-        check_promotable_params,
-        base::BindOnce(&AppBannerManager::OnDidPerformPromotableWebAppCheck,
-                       GetWeakPtrForThisNavigation()));
-    return;
-  }
-
-  SetInstallableWebAppCheckResult(
-      InstallableWebAppCheckResult::kYes_Promotable);
-  CheckSufficientEngagement();
-}
-
-void AppBannerManager::OnDidPerformPromotableWebAppCheck(
-    const InstallableData& data) {
-  if (!data.errors.empty()) {
-    Stop(data.GetFirstError());
-    return;
-  }
-
   SetInstallableWebAppCheckResult(
       InstallableWebAppCheckResult::kYes_Promotable);
   CheckSufficientEngagement();
@@ -547,6 +522,7 @@ void AppBannerManager::ResetCurrentPageData() {
   active_media_players_.clear();
   manifest_ = blink::mojom::Manifest::New();
   web_page_metadata_ = mojom::WebPageMetadata::New();
+  manifest_id_ = GURL();
   manifest_url_ = GURL();
   validated_url_ = GURL();
   UpdateState(State::INACTIVE);
@@ -645,7 +621,7 @@ void AppBannerManager::RecheckInstallabilityForLoadedPage() {
   }
 
   UpdateState(State::INACTIVE);
-  RequestAppBanner(validated_url_);
+  RequestAppBanner();
 }
 
 void AppBannerManager::TrackInstallPath(bool bottom_sheet,
@@ -708,7 +684,7 @@ void AppBannerManager::DidFinishNavigation(content::NavigationHandle* handle) {
   ResetCurrentPageData();
 
   if (handle->IsServedFromBackForwardCache()) {
-    RequestAppBanner(validated_url_);
+    RequestAppBanner();
   }
 }
 
@@ -729,19 +705,7 @@ void AppBannerManager::DidFinishLoad(
 
   // Start the pipeline immediately if we haven't already started it.
   if (state_ == State::INACTIVE)
-    RequestAppBanner(validated_url);
-}
-
-void AppBannerManager::DidActivatePortal(
-    content::WebContents* predecessor_contents,
-    base::TimeTicks activation_time) {
-  // If this page was loaded in a portal, AppBannerManager may have been
-  // instantiated after DidFinishLoad. Trigger the banner pipeline now (on
-  // portal activation) if we missed the load event.
-  if (!load_finished_ && !web_contents()->ShouldShowLoadingUI()) {
-    DidFinishLoad(web_contents()->GetPrimaryMainFrame(),
-                  web_contents()->GetLastCommittedURL());
-  }
+    RequestAppBanner();
 }
 
 void AppBannerManager::DidUpdateWebManifestURL(
@@ -754,7 +718,7 @@ void AppBannerManager::DidUpdateWebManifestURL(
     case State::FETCHING_MANIFEST:
     case State::PENDING_INSTALLABLE_CHECK:
       UpdateState(State::INACTIVE);
-      RequestAppBanner(validated_url_);
+      RequestAppBanner();
       return;
     case State::ACTIVE:
     case State::FETCHING_NATIVE_DATA:
@@ -811,11 +775,12 @@ void AppBannerManager::OnEngagementEvent(
       // directly to sending the banner prompt request.
       UpdateState(State::ACTIVE);
       SendBannerPromptRequest();
-    } else if (load_finished_ && state_ == State::INACTIVE) {
+    } else if (load_finished_ && validated_url_ == url &&
+               state_ == State::INACTIVE) {
       // This performs some simple tests and starts async checks to test
       // installability. It should be safe to start in response to user input.
       // Don't call if we're already working on processing a banner request.
-      RequestAppBanner(url);
+      RequestAppBanner();
     }
   }
 }
@@ -868,7 +833,7 @@ std::string AppBannerManager::GetInstallableWebAppManifestId(
       return std::string();
     case InstallableWebAppCheckResult::kYes_ByUserRequest:
     case InstallableWebAppCheckResult::kYes_Promotable:
-      return manager->manifest().id.spec();
+      return manager->manifest_id_.spec();
   }
 }
 bool AppBannerManager::IsProbablyPromotableWebApp(

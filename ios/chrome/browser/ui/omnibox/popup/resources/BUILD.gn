@@ -34,3 +34,7 @@ colorset("omnibox_suggestion_icon_dark_color") {
 colorset("omnibox_suggestion_row_highlight_color") {
   sources = [ "omnibox_suggestion_row_highlight_color.colorset/Contents.json" ]
 }
+
+colorset("omnibox_suggestion_row_separator_color") {
+  sources = [ "omnibox_suggestion_row_separator_color.colorset/Contents.json" ]
+}

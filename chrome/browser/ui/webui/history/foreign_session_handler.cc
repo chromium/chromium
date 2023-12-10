@@ -45,10 +45,10 @@ namespace {
 const size_t kMaxSessionsToShow = 10;
 
 // Helper method to create JSON compatible objects from Session objects.
-absl::optional<base::Value::Dict> SessionTabToValue(
+std::optional<base::Value::Dict> SessionTabToValue(
     const ::sessions::SessionTab& tab) {
   if (tab.navigations.empty())
-    return absl::nullopt;
+    return std::nullopt;
 
   int selected_index = std::min(tab.current_navigation_index,
                                 static_cast<int>(tab.navigations.size() - 1));
@@ -56,7 +56,7 @@ absl::optional<base::Value::Dict> SessionTabToValue(
       tab.navigations.at(selected_index);
   GURL tab_url = current_navigation.virtual_url();
   if (!tab_url.is_valid() || tab_url.spec() == chrome::kChromeUINewTabURL)
-    return absl::nullopt;
+    return std::nullopt;
 
   base::Value::Dict dictionary;
   NewTabUI::SetUrlTitleAndDirection(&dictionary, current_navigation.title(),
@@ -86,10 +86,10 @@ base::Value::Dict BuildWindowData(base::Time modification_time,
 }
 
 // Helper method to create JSON compatible objects from SessionWindow objects.
-absl::optional<base::Value::Dict> SessionWindowToValue(
+std::optional<base::Value::Dict> SessionWindowToValue(
     const ::sessions::SessionWindow& window) {
   if (window.tabs.empty())
-    return absl::nullopt;
+    return std::nullopt;
 
   base::Value::List tab_values;
   // Calculate the last |modification_time| for all entries within a window.
@@ -102,7 +102,7 @@ absl::optional<base::Value::Dict> SessionWindowToValue(
     }
   }
   if (tab_values.empty())
-    return absl::nullopt;
+    return std::nullopt;
 
   base::Value::Dict dictionary =
       BuildWindowData(window.timestamp, window.window_id);
@@ -153,9 +153,10 @@ void ForeignSessionHandler::OpenForeignSessionWindows(
   if (!open_tabs)
     return;
 
-  std::vector<const ::sessions::SessionWindow*> windows;
   // Note: we don't own the ForeignSessions themselves.
-  if (!open_tabs->GetForeignSession(session_string_value, &windows)) {
+  std::vector<const ::sessions::SessionWindow*> windows =
+      open_tabs->GetForeignSession(session_string_value);
+  if (windows.empty()) {
     LOG(ERROR) << "ForeignSessionHandler failed to get session data from"
                   "OpenTabsUIDelegate.";
     return;
@@ -255,7 +256,7 @@ void ForeignSessionHandler::HandleGetForeignSessions(
 
   // Clear the initial list so that it will be reset in AllowJavascript if the
   // page is refreshed.
-  initial_session_list_ = absl::nullopt;
+  initial_session_list_ = std::nullopt;
 }
 
 base::Value::List ForeignSessionHandler::GetForeignSessions() {

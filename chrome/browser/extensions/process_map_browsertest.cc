@@ -13,6 +13,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/browser/site_isolation_policy.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -127,6 +128,103 @@ class ProcessMapBrowserTest : public ExtensionBrowserTest {
     run_loop.Run();
 
     EXPECT_EQ(u"injected", web_contents->GetTitle());
+  }
+
+  // Helper function to define the test body for tests that use
+  // AddExtensionWithSandboxedWebpage, defined below so it's near the tests that
+  // use it.
+  void VerifyWhetherSubframesAreIsolated(
+      const GURL& webpage_url,
+      const std::string& content,
+      bool expect_subframes_isolated_from_each_other,
+      bool expect_subframes_isolated_from_extension_page);
+
+  // Adds a new extension with a parent frame that in turn loads `url` in two
+  // iframes, one of which is sandboxed. If `url` is about:srcdoc, then the
+  // srcdoc attribute is set instead using the value contained in `content`.
+  const Extension* AddExtensionWithSandboxedWebpage(
+      const GURL& url,
+      const std::string& content) {
+    static constexpr char kManifest[] =
+        R"({
+             "name": "Sandboxed Page",
+             "manifest_version": 3,
+             "version": "0.1",
+             "host_permissions": [ "*://example.com/*" ]
+           })";
+    auto extension_dir = std::make_unique<TestExtensionDir>();
+    extension_dir->WriteManifest(kManifest);
+    std::string page_content;
+    if (url.IsAboutSrcdoc()) {
+      page_content = base::StringPrintf(
+          R"(<html>
+             <iframe sandbox srcdoc="%s"></iframe>
+             <iframe srcdoc="%s"></iframe>
+           </html>)",
+          content.c_str(), content.c_str());
+    } else {
+      page_content = base::StringPrintf(
+          R"(<html>
+             <iframe sandbox src="%s"></iframe>
+             <iframe src="%s"></iframe>
+           </html>)",
+          url.spec().c_str(), url.spec().c_str());
+    }
+    extension_dir->WriteFile(FILE_PATH_LITERAL("parent.html"), page_content);
+    const Extension* extension = LoadExtension(extension_dir->UnpackedPath());
+    extension_dirs_.push_back(std::move(extension_dir));
+    return extension;
+  }
+
+  // Create a pair of nested extensions, where `page.html` from the first
+  // extension is nested inside `parent.html` from the second extension.
+  std::pair<const Extension*, const Extension*> AddNestedExtensions() {
+    const Extension* extension1 = nullptr;
+    {
+      static constexpr char kManifestTemplate[] =
+          R"({
+             "name": "Extension1",
+             "manifest_version": 3,
+             "version": "0.1",
+             "web_accessible_resources": [
+               {
+                 "resources": [ "page.html" ],
+                 "matches": [ "%s://*/*" ]
+               }
+             ]
+           })";
+      auto extension_dir = std::make_unique<TestExtensionDir>();
+      extension_dir->WriteManifest(
+          base::StringPrintf(kManifestTemplate, kExtensionScheme));
+      extension_dir->WriteFile(FILE_PATH_LITERAL("page.html"),
+                               R"(<html>E1</html>)");
+      extension1 = LoadExtension(extension_dir->UnpackedPath());
+      extension_dirs_.push_back(std::move(extension_dir));
+    }
+    GURL e1_page_url = extension1->GetResourceURL("page.html");
+
+    const Extension* extension2 = nullptr;
+    {
+      static constexpr char kManifest[] =
+          R"({
+             "name": "Extension2",
+             "manifest_version": 3,
+             "version": "0.1"
+           })";
+      auto extension_dir = std::make_unique<TestExtensionDir>();
+      extension_dir->WriteManifest(kManifest);
+      static constexpr char kPageContent[] =
+          R"(<html>E2
+               <iframe sandbox="allow-scripts" src="%s"></iframe>
+             </html>)";
+      extension_dir->WriteFile(
+          FILE_PATH_LITERAL("parent.html"),
+          base::StringPrintf(kPageContent, e1_page_url.spec().c_str()));
+      extension2 = LoadExtension(extension_dir->UnpackedPath());
+      extension_dirs_.push_back(std::move(extension_dir));
+    }
+
+    return std::make_pair(extension1, extension2);
   }
 
   // Adds a new extension with a sandboxed frame, `sandboxed.html`, and a parent
@@ -507,6 +605,141 @@ IN_PROC_BROWSER_TEST_F(ProcessMapBrowserTest,
       "web page without extension passed");
 }
 
+// The following defines a common test body used by the
+// Sandboxed*Are*Isolated tests that follow. `webpage_url` defines the page to
+// be loaded, and may be an regular (http/s) page, a data url, or an
+// about:srcdoc url. If it's about:srcdoc, the iframe srcdoc attribute will be
+// used, and set to the value of `content`. `expect_isolated` indicates whether
+// the subframes are expected to be isolated from each other, and if the
+// sandboxed frame should have a sandboxed SiteInstance. This function is
+// defined here to keep it close to the tests that use it, for easier reference.
+void ProcessMapBrowserTest::VerifyWhetherSubframesAreIsolated(
+    const GURL& webpage_url,
+    const std::string& content,
+    bool expect_subframes_isolated_from_each_other,
+    bool expect_subframes_isolated_from_extension_page) {
+  const Extension* extension =
+      AddExtensionWithSandboxedWebpage(webpage_url, content);
+  ASSERT_TRUE(extension);
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), extension->GetResourceURL("parent.html")));
+
+  content::WebContents* web_contents = GetActiveTab();
+  content::RenderFrameHost* main_frame = web_contents->GetPrimaryMainFrame();
+  content::RenderFrameHost* sandboxed_child_frame =
+      content::ChildFrameAt(main_frame, 0);
+  content::RenderFrameHost* non_sandboxed_child_frame =
+      content::ChildFrameAt(main_frame, 1);
+
+  EXPECT_FALSE(ExtensionFrameIsSandboxed(main_frame));
+
+  int main_frame_process_id = main_frame->GetProcess()->GetID();
+  int sandboxed_frame_process_id = sandboxed_child_frame->GetProcess()->GetID();
+  int non_sandboxed_frame_process_id =
+      non_sandboxed_child_frame->GetProcess()->GetID();
+
+  if (expect_subframes_isolated_from_each_other) {
+    EXPECT_NE(sandboxed_frame_process_id, non_sandboxed_frame_process_id);
+    EXPECT_TRUE(content::HasSandboxedSiteInstance(sandboxed_child_frame));
+  } else {
+    EXPECT_EQ(sandboxed_frame_process_id, non_sandboxed_frame_process_id);
+    EXPECT_FALSE(content::HasSandboxedSiteInstance(sandboxed_child_frame));
+  }
+  if (expect_subframes_isolated_from_extension_page) {
+    EXPECT_NE(main_frame_process_id, sandboxed_frame_process_id);
+    EXPECT_NE(main_frame_process_id, non_sandboxed_frame_process_id);
+  } else {
+    EXPECT_EQ(main_frame_process_id, sandboxed_frame_process_id);
+    EXPECT_EQ(main_frame_process_id, non_sandboxed_frame_process_id);
+  }
+  EXPECT_FALSE(ExtensionFrameIsSandboxed(main_frame));
+  EXPECT_FALSE(content::HasSandboxedSiteInstance(non_sandboxed_child_frame));
+}
+
+// Tests that web pages loaded in sandboxed iframes inside an extension are
+// isolated from the extension and from non-sandboxed iframes of the same web
+// origin, if IsolateSandboxedIframes is enabled. There are three variations,
+// one for a web url, one for a data: url, and one for about:srcdoc.
+IN_PROC_BROWSER_TEST_F(ProcessMapBrowserTest,
+                       SandboxedNonExtensionWebPagesAreIsolated) {
+  GURL webpage_url =
+      embedded_test_server()->GetURL("example.com", "/simple.html");
+  bool expect_subframes_isolated_from_each_other =
+      content::SiteIsolationPolicy::AreIsolatedSandboxedIframesEnabled();
+  // The subframes should be cross-process to each other, and the sandboxed
+  // frame should be in a sandboxed SiteInstance. Web-based content inside an
+  // extension is always cross-process to the extension frame that contains it.
+  VerifyWhetherSubframesAreIsolated(
+      webpage_url, /*content=*/std::string(),
+      expect_subframes_isolated_from_each_other,
+      /*expect_subframes_isolated_from_extension_page=*/true);
+}
+
+IN_PROC_BROWSER_TEST_F(ProcessMapBrowserTest,
+                       SandboxedDataFramesAreNotIsolated) {
+  GURL webpage_url("data:text/html, foo");
+  // Srcdoc/data-url content inside an extension is always same-process to the
+  // extension frame that contains it.
+  // TODO(crbug.com/1501910): Change `expect_subframes_isolated_from_each_other`
+  // and `expect_subframes_isolated_from_extension_page` to 'true' below when
+  // this issue is resolved.
+  VerifyWhetherSubframesAreIsolated(
+      webpage_url, /*content=*/std::string(),
+      /*expect_subframes_isolated_from_each_other=*/false,
+      /*expect_subframes_isolated_from_extension_page=*/false);
+}
+
+IN_PROC_BROWSER_TEST_F(ProcessMapBrowserTest,
+                       SandboxedSrcdocFramesAreNotIsolated) {
+  GURL webpage_url("about:srcdoc");
+  // Srcdoc/data-url content inside an extension is always same-process to the
+  // extension frame that contains it.
+  // TODO(crbug.com/1501910): Change `expect_subframes_isolated_from_each_other`
+  // and `expect_subframes_isolated_from_extension_page` to 'true' below when
+  // this issue is resolved.
+  VerifyWhetherSubframesAreIsolated(
+      webpage_url, /*content=*/std::string("foo"),
+      /*expect_subframes_isolated_from_each_other=*/false,
+      /*expect_subframes_isolated_from_extension_page=*/false);
+}
+
+// Tests that an extension inside a sandboxed subframe of another extension
+// still has privileges. It will be process isolated regardless of the sandbox
+// attribute since extensions are isolated from one another.
+IN_PROC_BROWSER_TEST_F(ProcessMapBrowserTest,
+                       SandboxedSubframeExtensionHasPrivilege) {
+  std::pair<const Extension*, const Extension*> nested_extensions =
+      AddNestedExtensions();
+  const Extension* extension1 = nested_extensions.first;
+  const Extension* extension2 = nested_extensions.second;
+  ASSERT_TRUE(extension1);
+  ASSERT_TRUE(extension2);
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), extension2->GetResourceURL("parent.html")));
+
+  content::WebContents* web_contents = GetActiveTab();
+  content::RenderFrameHost* main_frame = web_contents->GetPrimaryMainFrame();
+  content::RenderFrameHost* sandboxed_child_frame =
+      content::ChildFrameAt(main_frame, 0);
+
+  int main_frame_process_id = main_frame->GetProcess()->GetID();
+  int sandboxed_frame_process_id = sandboxed_child_frame->GetProcess()->GetID();
+
+  // Since we normally process-isolate E1 from E2, placing E1 in a sandboxed
+  // iframe will make no difference.
+  EXPECT_NE(main_frame_process_id, sandboxed_frame_process_id);
+  EXPECT_TRUE(process_map()->IsPrivilegedExtensionProcess(
+      *extension2, main_frame_process_id));
+  EXPECT_TRUE(process_map()->IsPrivilegedExtensionProcess(
+      *extension1, sandboxed_frame_process_id));
+  // From an extensions point of view, applying 'sandbox' to the child iframe
+  // doesn't mean the extension it contains is "sandboxed".
+  EXPECT_FALSE(ExtensionFrameIsSandboxed(main_frame));
+  EXPECT_FALSE(ExtensionFrameIsSandboxed(sandboxed_child_frame));
+}
+
 // Tests that sandboxed extension frames are considered privileged
 // extension processes, since they execute within the same process (even
 // though they don't have direct API access). This isn't a security bug
@@ -532,6 +765,7 @@ IN_PROC_BROWSER_TEST_F(ProcessMapBrowserTest,
   int sandboxed_frame_process_id = sandboxed_frame->GetProcess()->GetID();
 
   EXPECT_EQ(main_frame_process_id, sandboxed_frame_process_id);
+
   EXPECT_TRUE(process_map()->IsPrivilegedExtensionProcess(
       *extension, main_frame_process_id));
   EXPECT_TRUE(process_map()->IsPrivilegedExtensionProcess(

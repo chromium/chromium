@@ -81,6 +81,8 @@ class BundleClientProxy : public mojom::CompositorFrameSinkClient {
     }
   }
 
+  void OnSurfaceEvicted(const LocalSurfaceId& local_surface_id) override {}
+
  private:
   FrameSinkBundleImpl* GetBundle() {
     return manager_->GetFrameSinkBundle(bundle_id_);

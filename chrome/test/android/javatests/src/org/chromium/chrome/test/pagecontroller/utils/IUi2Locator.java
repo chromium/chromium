@@ -10,9 +10,7 @@ import androidx.test.uiautomator.UiObject2;
 
 import java.util.List;
 
-/**
- * This interface unifies the various ways to find a UI node.
- */
+/** This interface unifies the various ways to find a UI node. */
 public interface IUi2Locator {
     /**
      * Locates a single node among all nodes found by the locator.

@@ -47,6 +47,7 @@
 #include "chromeos/ash/components/phonehub/phone_model.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -54,6 +55,7 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/border.h"
+#include "ui/views/controls/button/button_controller.h"
 #include "ui/views/controls/image_view.h"
 
 namespace ash {
@@ -97,6 +99,11 @@ PhoneHubTray::PhoneHubTray(Shelf* shelf)
   if (features::IsEcheSWAEnabled()) {
     auto eche_icon = std::make_unique<views::ImageButton>(base::BindRepeating(
         &PhoneHubTray::EcheIconActivated, weak_factory_.GetWeakPtr()));
+    eche_icon->SetButtonController(std::make_unique<views::ButtonController>(
+        /*views::Button*=*/eche_icon.get(),
+        std::make_unique<TrayBackgroundView::TrayButtonControllerDelegate>(
+            /*views::Button*=*/eche_icon.get(),
+            TrayBackgroundViewCatalogName::kPhoneHub)));
     eche_icon->SetImageVerticalAlignment(
         views::ImageButton::VerticalAlignment::ALIGN_MIDDLE);
     eche_icon->SetImageHorizontalAlignment(
@@ -112,6 +119,11 @@ PhoneHubTray::PhoneHubTray(Shelf* shelf)
   }
   auto icon = std::make_unique<views::ImageButton>(base::BindRepeating(
       &PhoneHubTray::PhoneHubIconActivated, weak_factory_.GetWeakPtr()));
+  icon->SetButtonController(std::make_unique<views::ButtonController>(
+      /*views::Button*=*/icon.get(),
+      std::make_unique<TrayBackgroundView::TrayButtonControllerDelegate>(
+          /*views::Button*=*/icon.get(),
+          TrayBackgroundViewCatalogName::kPhoneHub)));
   icon->SetFocusBehavior(FocusBehavior::NEVER);
   icon->SetTooltipText(
       l10n_util::GetStringUTF16(IDS_ASH_PHONE_HUB_TRAY_ACCESSIBLE_NAME));
@@ -534,4 +546,8 @@ bool PhoneHubTray::IsInPhoneHubNudgeExperimentGroup() {
   return features::IsPhoneHubOnboardingNotifierRevampEnabled() &&
          features::kPhoneHubOnboardingNotifierUseNudge.Get();
 }
+
+BEGIN_METADATA(PhoneHubTray)
+END_METADATA
+
 }  // namespace ash

@@ -255,7 +255,10 @@ void ChromeSavedDeskDelegate::GetAppLaunchDataForSavedDesk(
   const app_restore::RestoreData* full_restore_data =
       full_restore::FullRestoreSaveHandler::GetInstance()->GetRestoreData(
           user_profile->GetPath());
-  DCHECK(full_restore_data);
+  if (!full_restore_data) {
+    std::move(callback).Run({});
+    return;
+  }
 
   const std::string app_id = full_restore::GetAppId(window);
   // TODO: b/296445956 - Implement a long term fix for saving the arc ghost
@@ -368,7 +371,7 @@ bool ChromeSavedDeskDelegate::IsWindowPersistable(aura::Window* window) const {
          window->GetProperty(wm::kPersistableKey);
 }
 
-absl::optional<gfx::ImageSkia>
+std::optional<gfx::ImageSkia>
 ChromeSavedDeskDelegate::MaybeRetrieveIconForSpecialIdentifier(
     const std::string& identifier,
     const ui::ColorProvider* color_provider) const {
@@ -376,7 +379,7 @@ ChromeSavedDeskDelegate::MaybeRetrieveIconForSpecialIdentifier(
       "ui", "ChromeSavedDeskDelegate::MaybeRetrieveIconForSpecialIdentifier");
   if (identifier == chrome::kChromeUINewTabURL) {
     ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
-    return absl::make_optional<gfx::ImageSkia>(apps::CreateStandardIconImage(
+    return std::make_optional<gfx::ImageSkia>(apps::CreateStandardIconImage(
         rb.GetImageNamed(IDR_PRODUCT_LOGO_32).AsImageSkia()));
   } else if (identifier == ash::DeskTemplate::kIncognitoWindowIdentifier) {
     DCHECK(color_provider);
@@ -388,7 +391,7 @@ ChromeSavedDeskDelegate::MaybeRetrieveIconForSpecialIdentifier(
             .GetImageSkia(color_provider));
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void ChromeSavedDeskDelegate::GetFaviconForUrl(

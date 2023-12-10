@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+Harness Error. harness_status.status = 1 , harness_status.message = Error: Tried to run in a non-testharness window without a call to set_test_context
+[NOTRUN] Permissions-Policy idle-detection=* explicity set by top-level frame allows the top-level document.
+[NOTRUN] Permissions-Policy idle-detection=* explicity set by top-level frame allows same-origin iframes.
+[NOTRUN] Permissions-Policy idle-detection=* explicity set by top-level frame allows workers in same-origin iframes.
+[NOTRUN] Permissions-Policy idle-detection=* explicity set by top-level frame allows cross-origin iframes.
+[NOTRUN] Permissions-Policy idle-detection=* explicity set by top-level frame allows workers in cross-origin iframes.
+Harness: the test ran to completion.

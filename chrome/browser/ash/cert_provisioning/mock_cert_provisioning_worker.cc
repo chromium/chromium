@@ -79,5 +79,12 @@ void MockCertProvisioningWorker::SetExpectations(
       .WillRepeatedly(Return(failure_message_));
 }
 
+void MockCertProvisioningWorker::ResetExpected() {
+  testing::InSequence seq;
+  EXPECT_CALL(*this, IsWorkerMarkedForReset).WillOnce(Return(false));
+  EXPECT_CALL(*this, MarkWorkerForReset);
+  EXPECT_CALL(*this, IsWorkerMarkedForReset).WillRepeatedly(Return(true));
+}
+
 }  // namespace cert_provisioning
 }  // namespace ash

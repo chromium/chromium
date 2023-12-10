@@ -11,6 +11,7 @@
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/thread_pool.h"
+#include "components/manta/proto/manta.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace wallpaper_handlers {
@@ -21,7 +22,8 @@ std::vector<ash::SeaPenImage> MakeFakeImageResults() {
   std::vector<ash::SeaPenImage> image_results;
   for (uint32_t i = 1; i < 5; i++) {
     image_results.emplace_back(base::StringPrintf("fake_sea_pen_image_%d", i),
-                               i);
+                               i,
+                               manta::proto::ImageResolution::RESOLUTION_1024);
   }
   return image_results;
 }
@@ -29,13 +31,22 @@ std::vector<ash::SeaPenImage> MakeFakeImageResults() {
 }  // namespace
 
 MockSeaPenFetcher::MockSeaPenFetcher() {
-  ON_CALL(*this, Start)
+  ON_CALL(*this, FetchThumbnails)
       .WillByDefault(
-          [](const std::string& text, OnWallpaperSearchComplete callback) {
-            DVLOG(2) << __PRETTY_FUNCTION__ << " text=" << text;
+          [](const ash::personalization_app::mojom::SeaPenQueryPtr& query,
+             OnFetchThumbnailsComplete callback) {
             base::ThreadPool::PostTaskAndReplyWithResult(
                 FROM_HERE, base::BindOnce(&MakeFakeImageResults),
                 std::move(callback));
+          });
+
+  ON_CALL(*this, FetchWallpaper)
+      .WillByDefault(
+          [](const ash::SeaPenImage& image,
+             const ash::personalization_app::mojom::SeaPenQueryPtr& query,
+             OnFetchWallpaperComplete callback) {
+            std::move(callback).Run(
+                ash::SeaPenImage(image.jpg_bytes, image.id, image.resolution));
           });
 }
 

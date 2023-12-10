@@ -59,8 +59,7 @@ import java.util.concurrent.TimeUnit;
 @RunWith(Parameterized.class)
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
 public class AwContentsClientShouldOverrideUrlLoadingTest extends AwParameterizedTest {
-    @Rule
-    public AwActivityTestRule mActivityTestRule;
+    @Rule public AwActivityTestRule mActivityTestRule;
 
     private static final String DATA_URL = "data:text/html,<div/>";
     private static final String REDIRECT_TARGET_PATH = "/redirect_target.html";
@@ -1309,7 +1308,7 @@ public class AwContentsClientShouldOverrideUrlLoadingTest extends AwParameterize
     @Feature({"AndroidWebView"})
     public void testWindowOpenAboutBlankInPopup() throws Throwable {
         TestAwContentsClient.ShouldOverrideUrlLoadingHelper popupShouldOverrideUrlLoadingHelper =
-                createPopUp("about:blank", true /* wait for title */);
+                createPopUp("about:blank", /* waitForTitle= */ true);
         // Popup is just created, so testing against 0 is true.
         Assert.assertEquals(0, popupShouldOverrideUrlLoadingHelper.getCallCount());
     }
@@ -1397,7 +1396,7 @@ public class AwContentsClientShouldOverrideUrlLoadingTest extends AwParameterize
     private void verifyShouldOverrideUrlLoadingInPopup(
             String popupPath, String expectedPathInShouldOVerrideUrlLoading) throws Throwable {
         TestAwContentsClient.ShouldOverrideUrlLoadingHelper popupShouldOverrideUrlLoadingHelper =
-                createPopUp(popupPath, false /* wait for onpagefinished */);
+                createPopUp(popupPath, /* waitForTitle= */ false);
         Assert.assertEquals(
                 expectedPathInShouldOVerrideUrlLoading,
                 popupShouldOverrideUrlLoadingHelper.getShouldOverrideUrlLoadingUrl());

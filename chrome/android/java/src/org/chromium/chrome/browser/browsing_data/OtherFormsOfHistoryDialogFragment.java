@@ -26,11 +26,9 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 
-/**
- * Informs the user about the existence of other forms of browsing history.
- */
-public class OtherFormsOfHistoryDialogFragment
-        extends DialogFragment implements DialogInterface.OnClickListener {
+/** Informs the user about the existence of other forms of browsing history. */
+public class OtherFormsOfHistoryDialogFragment extends DialogFragment
+        implements DialogInterface.OnClickListener {
     private static final String TAG = "OtherFormsOfHistoryDialogFragment";
 
     /**
@@ -58,7 +56,7 @@ public class OtherFormsOfHistoryDialogFragment
                                 new NoUnderlineClickableSpan(
                                         getContext(),
                                         (widget) -> {
-                                            new ChromeAsyncTabLauncher(false /* incognito */)
+                                            new ChromeAsyncTabLauncher(/* incognito= */ false)
                                                     .launchUrl(
                                                             UrlConstants
                                                                     .MY_ACTIVITY_URL_IN_CBD_NOTICE,
@@ -97,16 +95,20 @@ public class OtherFormsOfHistoryDialogFragment
      * @param shown Whether the dialog was shown.
      */
     private static void recordDialogWasShown(boolean shown) {
-        ChromeSharedPreferences.getInstance().writeBoolean(
-                ChromePreferenceKeys.SETTINGS_PRIVACY_OTHER_FORMS_OF_HISTORY_DIALOG_SHOWN, shown);
+        ChromeSharedPreferences.getInstance()
+                .writeBoolean(
+                        ChromePreferenceKeys.SETTINGS_PRIVACY_OTHER_FORMS_OF_HISTORY_DIALOG_SHOWN,
+                        shown);
     }
 
     /**
      * @return Whether the dialog has already been shown to the user before.
      */
     static boolean wasDialogShown() {
-        return ChromeSharedPreferences.getInstance().readBoolean(
-                ChromePreferenceKeys.SETTINGS_PRIVACY_OTHER_FORMS_OF_HISTORY_DIALOG_SHOWN, false);
+        return ChromeSharedPreferences.getInstance()
+                .readBoolean(
+                        ChromePreferenceKeys.SETTINGS_PRIVACY_OTHER_FORMS_OF_HISTORY_DIALOG_SHOWN,
+                        false);
     }
 
     /**

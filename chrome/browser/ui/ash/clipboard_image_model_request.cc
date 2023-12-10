@@ -65,7 +65,7 @@ ClipboardImageModelRequest::Params::~Params() = default;
 
 ClipboardImageModelRequest::TestParams::TestParams(
     RequestStopCallback callback,
-    const absl::optional<bool>& enforce_auto_resize)
+    const std::optional<bool>& enforce_auto_resize)
     : callback(callback), enforce_auto_resize(enforce_auto_resize) {}
 
 ClipboardImageModelRequest::TestParams::~TestParams() = default;
@@ -209,7 +209,7 @@ bool ClipboardImageModelRequest::IsModifyingClipboard() const {
 }
 
 bool ClipboardImageModelRequest::IsRunningRequest(
-    absl::optional<base::UnguessableToken> request_id) const {
+    std::optional<base::UnguessableToken> request_id) const {
   return request_id.has_value() ? *request_id == request_id_
                                 : !request_id_.is_empty();
 }

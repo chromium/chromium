@@ -185,16 +185,20 @@
     top: 8px;
   }
 
+  .check-mark-icon-container {
+    left: 8px;
+    position: absolute;
+    top: 8px;
+    z-index: 2;
+  }
+
   iron-icon {
     --iron-icon-height: 20px;
     --iron-icon-width: 20px;
     animation-duration: 200ms;
     animation-name: iron-icon-scale;
     animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1.0);
-    left: 8px;
-    position: absolute;
-    top: 8px;
-    z-index: 2;
+    margin-inline: 0;
   }
 
   @keyframes iron-icon-scale {
@@ -246,5 +250,7 @@
       restamp>
     <info-svg id="infoIcon" title$="[[infoText]]" part="info-icon"></info-svg>
   </template>
-  <iron-icon part="icon" icon="[[checkmarkIcon_]]"></iron-icon>
+  <div class="check-mark-icon-container" part="icon">
+    <iron-icon icon="[[checkmarkIcon_]]"></iron-icon>
+  </div>
 </div>

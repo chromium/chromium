@@ -21,6 +21,10 @@
 #include "services/tracing/public/cpp/tracing_features.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
 
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY) && BUILDFLAG(IS_WIN)
+#include "components/tracing/common/etw_export_win.h"
+#endif
+
 namespace tracing {
 namespace {
 
@@ -39,6 +43,24 @@ bool CanBePropagatedViaCommandLine(
       trace_config.ToCategoryFilterString(),
       trace_config.ToTraceOptionsString());
   return reconstructed_config.ToString() == trace_config.ToString();
+}
+
+std::string CategoryFilterStringFromTrackEventConfig(
+    const perfetto::protos::gen::TrackEventConfig& te_cfg) {
+  std::string filter;
+  for (const auto& cat : te_cfg.disabled_categories()) {
+    if (!filter.empty()) {
+      filter += ",";
+    }
+    filter += "-" + cat;
+  }
+  for (const auto& cat : te_cfg.enabled_categories()) {
+    if (!filter.empty()) {
+      filter += ",";
+    }
+    filter += cat;
+  }
+  return filter;
 }
 #endif  // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
@@ -169,6 +191,8 @@ void InitTracingPostThreadPoolStartAndFeatureList(bool enable_consumer) {
                          ->ConnectToSystemService();
                    }));
   }
+#elif BUILDFLAG(IS_WIN)  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+  tracing::EnableETWExport();
 #endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 }
 
@@ -202,9 +226,26 @@ void PropagateTracingFlagsToChildProcessCmdLine(base::CommandLine* cmd_line) {
       return;
     }
     const auto chrome_config = data_source_config.chrome_config();
-    trace_config = base::trace_event::TraceConfig(chrome_config.trace_config());
-    privacy_filtering_enabled = chrome_config.privacy_filtering_enabled();
-    convert_to_legacy_json = chrome_config.convert_to_legacy_json();
+    if (chrome_config.trace_config().size() > 0) {
+      // If the chrome_config part of the data source config is set, propagate
+      // it as is.
+      trace_config =
+          base::trace_event::TraceConfig(chrome_config.trace_config());
+      privacy_filtering_enabled = chrome_config.privacy_filtering_enabled();
+      convert_to_legacy_json = chrome_config.convert_to_legacy_json();
+    } else {
+      // If chrome_config is not set, reconstruct category filter based on
+      // the track_event config to propagate the correct categories.
+      // See  perfetto::DataSourceBase::CanAdoptStartupSession for why
+      // category list must match exactly.
+      perfetto::protos::gen::TrackEventConfig te_cfg;
+      te_cfg.ParseFromString(data_source_config.track_event_config_raw());
+      trace_config = base::trace_event::TraceConfig(
+          CategoryFilterStringFromTrackEventConfig(te_cfg), "");
+      privacy_filtering_enabled = te_cfg.filter_debug_annotations() ||
+                                  te_cfg.filter_dynamic_event_names();
+      convert_to_legacy_json = false;
+    }
   } else {
     return;
   }

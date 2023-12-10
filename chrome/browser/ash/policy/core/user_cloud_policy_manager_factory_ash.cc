@@ -125,7 +125,8 @@ std::unique_ptr<UserCloudPolicyManagerAsh> CreateUserCloudPolicyManagerAsh(
     case AccountType::UNKNOWN:
     case AccountType::GOOGLE:
       // TODO(tnagel): Return nullptr for unknown accounts once AccountId
-      // migration is finished.  (KioskAppManager still needs to be migrated.)
+      // migration is finished.  (KioskChromeAppManager still needs to be
+      // migrated.)
       if (!user->HasGaiaAccount()) {
         DLOG(WARNING) << "No policy for users without Gaia accounts";
         return nullptr;

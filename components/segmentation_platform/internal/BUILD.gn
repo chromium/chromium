@@ -8,6 +8,7 @@ if (is_android) {
   import("//third_party/jni_zero/jni_zero.gni")
 }
 import("//components/optimization_guide/features.gni")
+import("//testing/libfuzzer/fuzzer_test.gni")
 
 static_library("internal") {
   visibility = [
@@ -16,7 +17,7 @@ static_library("internal") {
     "//chrome/browser/segmentation_platform:*",
     "//chrome/test:*",
     "//components/segmentation_platform/embedder/*",
-    "//ios/chrome/browser/segmentation_platform:*",
+    "//ios/chrome/browser/segmentation_platform/model:*",
   ]
 
   sources = [
@@ -185,14 +186,12 @@ static_library("internal") {
   ]
 
   deps = [
-    "//base",
     "//components/database_utils:database_utils",
     "//components/history/core/browser:browser",
     "//components/keyed_service/core",
     "//components/leveldb_proto",
     "//components/prefs",
     "//components/segmentation_platform/internal/proto",
-    "//components/segmentation_platform/public",
     "//components/segmentation_platform/public/proto",
     "//components/sync_device_info",
     "//components/ukm:ukm_recorder",
@@ -202,8 +201,11 @@ static_library("internal") {
     "//url:url",
   ]
 
-  public_deps =
-      [ "//components/optimization_guide/proto:optimization_guide_proto" ]
+  public_deps = [
+    "//base",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//components/segmentation_platform/public",
+  ]
 
   if (is_android) {
     sources += [
@@ -419,4 +421,9 @@ if (is_android) {
       "android/java/src/org/chromium/components/segmentation_platform/execution/processing/CustomDeviceUtils.java",
     ]
   }
+}
+
+fuzzer_test("segmentation_platform_config_parser_fuzzer") {
+  deps = [ ":internal" ]
+  sources = [ "config_parser_fuzzer.cc" ]
 }

@@ -332,6 +332,16 @@ RendererBlinkPlatformImpl::CreateWebSocketHandshakeThrottleProvider() {
       ->CreateWebSocketHandshakeThrottleProvider();
 }
 
+bool RendererBlinkPlatformImpl::IsolateStartsInBackground() {
+  if (auto* renderer = GetContentClient()->renderer()) {
+    // Isolates start in the background if we do not handle hidden/visibility
+    // changes for this process. See `RenderThreadImpl::OnRendererHidden` and
+    // `RenderThreadImpl::OnRendererVisible`.
+    return !renderer->RunIdleHandlerWhenWidgetsHidden();
+  }
+  return BlinkPlatformImpl::IsolateStartsInBackground();
+}
+
 WebString RendererBlinkPlatformImpl::DefaultLocale() {
   return WebString::FromASCII(RenderThread::Get()->GetLocale());
 }
@@ -666,6 +676,8 @@ RendererBlinkPlatformImpl::CreateOffscreenGraphicsContext3DProvider(
               .status_values[gpu::GPU_FEATURE_TYPE_CANVAS_OOP_RASTERIZATION] ==
           gpu::kGpuFeatureStatusEnabled;
   attributes.enable_gles2_interface = !attributes.enable_oop_rasterization;
+  attributes.enable_grcontext =
+      !attributes.enable_oop_rasterization && web_attributes.support_grcontext;
 
   attributes.gpu_preference = web_attributes.prefer_low_power_gpu
                                   ? gl::GpuPreference::kLowPower
@@ -678,14 +690,12 @@ RendererBlinkPlatformImpl::CreateOffscreenGraphicsContext3DProvider(
 
   constexpr bool automatic_flushes = true;
   constexpr bool support_locking = false;
-  const bool use_grcontext =
-      !attributes.enable_oop_rasterization && web_attributes.support_grcontext;
 
   return std::make_unique<WebGraphicsContext3DProviderImpl>(
       base::MakeRefCounted<viz::ContextProviderCommandBuffer>(
           std::move(gpu_channel_host), kGpuStreamIdDefault,
           kGpuStreamPriorityDefault, gpu::kNullSurfaceHandle,
-          GURL(document_url), automatic_flushes, support_locking, use_grcontext,
+          GURL(document_url), automatic_flushes, support_locking,
           gpu::SharedMemoryLimits(), attributes,
           viz::command_buffer_metrics::ContextType::WEBGL));
 }
@@ -716,20 +726,10 @@ RendererBlinkPlatformImpl::CreateSharedOffscreenGraphicsContext3DProvider() {
 
 //------------------------------------------------------------------------------
 
-std::unique_ptr<blink::WebGraphicsContext3DProvider>
-RendererBlinkPlatformImpl::CreateWebGPUGraphicsContext3DProvider(
-    const blink::WebURL& document_url) {
-#if !BUILDFLAG(USE_DAWN)
-  return nullptr;
-#else
-  scoped_refptr<gpu::GpuChannelHost> gpu_channel_host(
-      RenderThreadImpl::current()->EstablishGpuChannelSync());
-  if (!gpu_channel_host) {
-    // TODO(crbug.com/973017): Collect GPU info and surface context creation
-    // error.
-    return nullptr;
-  }
-
+static std::unique_ptr<blink::WebGraphicsContext3DProvider>
+CreateWebGPUGraphicsContext3DImpl(
+    const blink::WebURL& document_url,
+    scoped_refptr<gpu::GpuChannelHost> gpu_channel_host) {
   gpu::ContextCreationAttribs attributes;
   // TODO(kainino): It's not clear yet how GPU preferences work for WebGPU.
   attributes.gpu_preference = gl::GpuPreference::kHighPerformance;
@@ -738,7 +738,6 @@ RendererBlinkPlatformImpl::CreateWebGPUGraphicsContext3DProvider(
 
   constexpr bool automatic_flushes = true;
   constexpr bool support_locking = false;
-  constexpr bool support_grcontext = true;
 
   // WebGPU GPUBuffers, which are backed by shared memory transfer buffers, may
   // be accessed as ArrayBuffers from JavaScript. As such, the underlying
@@ -756,10 +755,54 @@ RendererBlinkPlatformImpl::CreateWebGPUGraphicsContext3DProvider(
           std::move(gpu_channel_host), kGpuStreamIdDefault,
           kGpuStreamPriorityDefault, gpu::kNullSurfaceHandle,
           GURL(document_url), automatic_flushes, support_locking,
-          support_grcontext, gpu::SharedMemoryLimits::ForWebGPUContext(),
-          attributes, viz::command_buffer_metrics::ContextType::WEBGPU,
-          buffer_mapper));
+          gpu::SharedMemoryLimits::ForWebGPUContext(), attributes,
+          viz::command_buffer_metrics::ContextType::WEBGPU, buffer_mapper));
+}
+
+std::unique_ptr<blink::WebGraphicsContext3DProvider>
+RendererBlinkPlatformImpl::CreateWebGPUGraphicsContext3DProvider(
+    const blink::WebURL& document_url) {
+#if !BUILDFLAG(USE_DAWN)
+  return nullptr;
+#else
+  scoped_refptr<gpu::GpuChannelHost> gpu_channel_host(
+      RenderThreadImpl::current()->EstablishGpuChannelSync());
+  if (!gpu_channel_host) {
+    // TODO(crbug.com/973017): Collect GPU info and surface context creation
+    // error.
+    return nullptr;
+  }
+
+  return CreateWebGPUGraphicsContext3DImpl(document_url, gpu_channel_host);
 #endif
+}
+
+void RendererBlinkPlatformImpl::CreateWebGPUGraphicsContext3DProviderAsync(
+    const blink::WebURL& document_url,
+    base::OnceCallback<
+        void(std::unique_ptr<blink::WebGraphicsContext3DProvider>)> callback) {
+#if !BUILDFLAG(USE_DAWN)
+  std::move(callback).Run(nullptr);
+#else
+  // Initiate the asynchronous call to establish the GPU channel
+  RenderThreadImpl::current()->EstablishGpuChannel(base::BindOnce(
+      &RendererBlinkPlatformImpl::OnGpuChannelEstablished,
+      weak_factory_.GetWeakPtr(), document_url, std::move(callback)));
+#endif
+}
+
+void RendererBlinkPlatformImpl::OnGpuChannelEstablished(
+    const blink::WebURL& document_url,
+    base::OnceCallback<
+        void(std::unique_ptr<blink::WebGraphicsContext3DProvider>)> callback,
+    scoped_refptr<gpu::GpuChannelHost> gpu_channel_host) {
+  if (!gpu_channel_host) {
+    std::move(callback).Run(nullptr);
+    return;
+  }
+
+  std::move(callback).Run(
+      CreateWebGPUGraphicsContext3DImpl(document_url, gpu_channel_host));
 }
 
 //------------------------------------------------------------------------------

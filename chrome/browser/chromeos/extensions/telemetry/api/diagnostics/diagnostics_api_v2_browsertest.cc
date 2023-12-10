@@ -332,6 +332,82 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiV2BrowserTest,
   )");
 }
 
+IN_PROC_BROWSER_TEST_F(
+    TelemetryExtensionDiagnosticsApiV2BrowserTest,
+    CreateMemoryRoutineNoOptionalConfigWithFeatureFlagSuccess) {
+  fake_service().SetOnCreateRoutineCalled(base::BindLambdaForTesting([this]() {
+    auto* control = fake_service().GetCreatedRoutineControlForRoutineType(
+        crosapi::TelemetryDiagnosticRoutineArgument::Tag::kMemory);
+    ASSERT_TRUE(control);
+
+    auto memtester_result = crosapi::TelemetryDiagnosticMemtesterResult::New();
+    memtester_result->passed_items = {
+        crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kSixteenBitWrites};
+    memtester_result->failed_items = {
+        crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kEightBitWrites};
+
+    auto memory_detail = crosapi::TelemetryDiagnosticMemoryRoutineDetail::New();
+    memory_detail->bytes_tested = 42;
+    memory_detail->result = std::move(memtester_result);
+
+    auto finished_state =
+        crosapi::TelemetryDiagnosticRoutineStateFinished::New();
+    finished_state->detail =
+        crosapi::TelemetryDiagnosticRoutineDetail::NewMemory(
+            std::move(memory_detail));
+    finished_state->has_passed = true;
+
+    auto state = crosapi::TelemetryDiagnosticRoutineState::New();
+    state->state_union =
+        crosapi::TelemetryDiagnosticRoutineStateUnion::NewFinished(
+            std::move(finished_state));
+
+    control->SetState(std::move(state));
+  }));
+
+  OpenAppUiAndMakeItSecure();
+
+  CreateExtensionAndRunServiceWorker(R"(
+    chrome.test.runTests([
+       async function createMemoryRoutine() {
+        let resolver;
+        // Set later once the routine was created.
+        var uuid = new Promise((resolve) => {
+          resolver = resolve;
+        });
+
+        let onInitCalled = false;
+        chrome.os.diagnostics.onRoutineInitialized.addListener(
+          async (status) => {
+          chrome.test.assertEq(status.uuid, await uuid);
+          onInitCalled = true;
+        });
+
+        // Only resolve the test once we got the final event.
+        chrome.os.diagnostics.onMemoryRoutineFinished.addListener(
+          async (status) => {
+          chrome.test.assertEq(status, {
+            "bytesTested": 42,
+            "has_passed": true,
+            "result": {
+                "failed_items": ["eight_bit_writes"],
+                "passed_items": ["sixteen_bit_writes"]
+            },
+            "uuid": await uuid,
+          });
+          chrome.test.assertTrue(onInitCalled);
+
+          chrome.test.succeed();
+        });
+
+        const response = await chrome.os.diagnostics.createMemoryRoutine({});
+        chrome.test.assertTrue(response !== undefined);
+        resolver(response.uuid);
+      }
+    ]);
+  )");
+}
+
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiV2BrowserTest,
                        StartRoutineWithFeatureFlagUnknownUuidError) {
   OpenAppUiAndMakeItSecure();
@@ -698,6 +774,203 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiV2BrowserTest,
         const response = await chrome.os.diagnostics.createVolumeButtonRoutine({
           button_type: "volume_up",
           timeout_seconds: 10,
+        });
+        chrome.test.assertTrue(response !== undefined);
+        resolver(response.uuid);
+      }
+    ]);
+  )");
+}
+
+IN_PROC_BROWSER_TEST_F(
+    TelemetryExtensionDiagnosticsApiV2BrowserTest,
+    IsFanRoutineArgSupportedWithFeatureFlagApiInternalError) {
+  fake_service().SetIsRoutineArgumentSupportedResponse(
+      crosapi::TelemetryExtensionSupportStatus::NewUnmappedUnionField(0));
+  OpenAppUiAndMakeItSecure();
+
+  CreateExtensionAndRunServiceWorker(R"(
+    chrome.test.runTests([
+      async function isFanRoutineArgSupported() {
+        await chrome.test.assertPromiseRejects(
+            chrome.os.diagnostics.isFanRoutineArgumentSupported({
+            }),
+            'Error: API internal error.'
+        );
+
+        chrome.test.succeed();
+      }
+    ]);
+  )");
+}
+
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiV2BrowserTest,
+                       IsFanRoutineArgSupportedWithFeatureFlagException) {
+  auto exception = crosapi::TelemetryExtensionException::New();
+  exception->debug_message = "TEST_MESSAGE";
+  fake_service().SetIsRoutineArgumentSupportedResponse(
+      crosapi::TelemetryExtensionSupportStatus::NewException(
+          std::move(exception)));
+  OpenAppUiAndMakeItSecure();
+
+  CreateExtensionAndRunServiceWorker(R"(
+    chrome.test.runTests([
+      async function isFanRoutineArgSupported() {
+        await chrome.test.assertPromiseRejects(
+            chrome.os.diagnostics.isFanRoutineArgumentSupported({
+            }),
+            'Error: TEST_MESSAGE'
+        );
+
+        chrome.test.succeed();
+      }
+    ]);
+  )");
+}
+
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiV2BrowserTest,
+                       IsFanRoutineArgSupportedWithFeatureFlagSuccess) {
+  fake_service().SetIsRoutineArgumentSupportedResponse(
+      crosapi::TelemetryExtensionSupportStatus::NewSupported(
+          crosapi::TelemetryExtensionSupported::New()));
+  OpenAppUiAndMakeItSecure();
+
+  CreateExtensionAndRunServiceWorker(R"(
+    chrome.test.runTests([
+      async function isFanRoutineArgSupported() {
+        const result = await chrome.os.diagnostics.
+          isFanRoutineArgumentSupported({
+        });
+
+        chrome.test.assertEq(result.status, 'supported');
+
+        chrome.test.succeed();
+      }
+    ]);
+  )");
+}
+
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiV2BrowserTest,
+                       CreateFanRoutineWithFeatureFlagCompanionUiNotOpenError) {
+  CreateExtensionAndRunServiceWorker(R"(
+    chrome.test.runTests([
+      async function createFanRoutineFail() {
+        await chrome.test.assertPromiseRejects(
+            chrome.os.diagnostics.createFanRoutine({
+            }),
+            'Error: Companion app UI is not open.'
+        );
+
+        chrome.test.succeed();
+      }
+    ]);
+    )");
+}
+
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiV2BrowserTest,
+                       CreateFanRoutineWithFeatureFlagResetConnection) {
+  fake_service().SetOnCreateRoutineCalled(base::BindLambdaForTesting([this]() {
+    auto* control = fake_service().GetCreatedRoutineControlForRoutineType(
+        crosapi::TelemetryDiagnosticRoutineArgument::Tag::kFan);
+    ASSERT_TRUE(control);
+
+    control->receiver().ResetWithReason(
+        static_cast<uint32_t>(
+            crosapi::TelemetryExtensionException::Reason::kUnsupported),
+        "test message");
+  }));
+
+  OpenAppUiAndMakeItSecure();
+
+  CreateExtensionAndRunServiceWorker(R"(
+    chrome.test.runTests([
+      async function createFanRoutineResetConnection() {
+        let resolver;
+        // Set later once the routine was created.
+        var uuid = new Promise((resolve) => {
+          resolver = resolve;
+        });
+
+        chrome.os.diagnostics.onRoutineException.addListener(async (status) => {
+          chrome.test.assertEq(status, {
+            "uuid": await uuid,
+            "reason": "unsupported",
+            "debugMessage": "test message"
+          });
+
+          chrome.test.succeed();
+        });
+
+        const response = await chrome.os.diagnostics.createFanRoutine({
+        });
+        chrome.test.assertTrue(response !== undefined);
+        resolver(response.uuid);
+      }
+    ]);
+    )");
+}
+
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiV2BrowserTest,
+                       CreateFanRoutineWithFeatureFlagSuccess) {
+  fake_service().SetOnCreateRoutineCalled(base::BindLambdaForTesting([this]() {
+    auto* control = fake_service().GetCreatedRoutineControlForRoutineType(
+        crosapi::TelemetryDiagnosticRoutineArgument::Tag::kFan);
+    ASSERT_TRUE(control);
+
+    auto fan_detail = crosapi::TelemetryDiagnosticFanRoutineDetail::New();
+    fan_detail->passed_fan_ids = {0};
+    fan_detail->failed_fan_ids = {1};
+    fan_detail->fan_count_status =
+        crosapi::TelemetryDiagnosticHardwarePresenceStatus::kMatched;
+
+    auto finished_state =
+        crosapi::TelemetryDiagnosticRoutineStateFinished::New();
+    finished_state->detail = crosapi::TelemetryDiagnosticRoutineDetail::NewFan(
+        std::move(fan_detail));
+    finished_state->has_passed = true;
+
+    auto state = crosapi::TelemetryDiagnosticRoutineState::New();
+    state->state_union =
+        crosapi::TelemetryDiagnosticRoutineStateUnion::NewFinished(
+            std::move(finished_state));
+
+    control->SetState(std::move(state));
+  }));
+
+  OpenAppUiAndMakeItSecure();
+
+  CreateExtensionAndRunServiceWorker(R"(
+    chrome.test.runTests([
+       async function createFanRoutine() {
+        let resolver;
+        // Set later once the routine was created.
+        var uuid = new Promise((resolve) => {
+          resolver = resolve;
+        });
+
+        let onInitCalled = false;
+        chrome.os.diagnostics.onRoutineInitialized.addListener(
+          async (status) => {
+          chrome.test.assertEq(status.uuid, await uuid);
+          onInitCalled = true;
+        });
+
+        // Only resolve the test once we got the final event.
+        chrome.os.diagnostics.onFanRoutineFinished.addListener(
+          async (status) => {
+          chrome.test.assertEq(status, {
+            "has_passed": true,
+            "uuid": await uuid,
+            "failed_fan_ids":[1],
+            "passed_fan_ids":[0],
+            "fan_count_status": "matched",
+          });
+          chrome.test.assertTrue(onInitCalled);
+
+          chrome.test.succeed();
+        });
+
+        const response = await chrome.os.diagnostics.createFanRoutine({
         });
         chrome.test.assertTrue(response !== undefined);
         resolver(response.uuid);

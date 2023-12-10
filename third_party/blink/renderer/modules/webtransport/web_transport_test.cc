@@ -1035,7 +1035,8 @@ bool IsRangeError(ScriptState* script_state,
                ->Get(script_state->GetContext(),
                      V8AtomicString(script_state->GetIsolate(), key))
                .ToLocal(&actual) &&
-           ToCoreStringWithUndefinedOrNullCheck(actual) == value;
+           ToCoreStringWithUndefinedOrNullCheck(script_state->GetIsolate(),
+                                                actual) == value;
   };
 
   return Has("name", "RangeError") && Has("message", message);

@@ -4,8 +4,34 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/typescript/ts_library.gni")
+import("../tools/run_jsbundler.gni")
 
 assert(is_chromeos_ash)
+
+braille_ime_out_dir =
+    "$root_out_dir/resources/chromeos/accessibility/braille_ime"
+tsc_out_dir = "$target_gen_dir/tsc"
+
+# TS files to compile.
+ts_modules = []
+
+# JS files required by TS compiler.
+js_deps = []
+
+group("build") {
+  deps = [
+    ":braille_ime_copied_files",
+    ":braille_ime_manifest",
+  ]
+}
+
+ts_library("ts_build") {
+  in_files = js_deps + ts_modules
+  out_dir = tsc_out_dir
+  definitions = []
+  tsconfig_base = "../tsconfig.base.json"
+}
 
 copy("braille_ime_manifest") {
   sources = [ "manifest.json" ]
@@ -14,20 +40,25 @@ copy("braille_ime_manifest") {
   ]
 }
 
-js_type_check("closure_compile") {
-  deps = [
-    ":braille_ime",
-    ":main",
+run_jsbundler("braille_ime_copied_files") {
+  mode = "copy"
+  dest_dir = braille_ime_out_dir
+  deps = [ ":ts_build" ]
+  sources = [
+    "braille_ime.js",
+    "main.js",
+  ]
+
+  foreach(_ts_file, ts_modules) {
+    sources += [ "$tsc_out_dir/" + get_path_info(_ts_file, "dir") + "/" +
+                 get_path_info(_ts_file, "name") + ".js" ]
+  }
+
+  rewrite_rules = [
+    rebase_path(tsc_out_dir, root_build_dir) + ":",
+    rebase_path(".", root_build_dir) + ":",
   ]
 }
 
-js_library("braille_ime") {
-  externs_list = [
-    "$externs_path/chrome_extensions.js",
-    "externs.js",
-  ]
-}
-
-js_library("main") {
-  deps = [ ":braille_ime" ]
+group("closure_compile") {
 }

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_CROSAPI_DOWNLOAD_STATUS_UPDATER_ASH_H_
 #define CHROME_BROWSER_ASH_CROSAPI_DOWNLOAD_STATUS_UPDATER_ASH_H_
 
+#include <memory>
 #include <string>
 
 #include "base/functional/callback_forward.h"
@@ -13,6 +14,12 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 
+class Profile;
+
+namespace ash::download_status {
+class DisplayManager;
+}  // namespace ash::download_status
+
 namespace crosapi {
 
 // The implementation of the interface which allows Lacros download status
@@ -20,7 +27,7 @@ namespace crosapi {
 // UI surface(s).
 class DownloadStatusUpdaterAsh : public mojom::DownloadStatusUpdater {
  public:
-  DownloadStatusUpdaterAsh();
+  explicit DownloadStatusUpdaterAsh(Profile* profile);
   DownloadStatusUpdaterAsh(const DownloadStatusUpdaterAsh&) = delete;
   DownloadStatusUpdaterAsh& operator=(const DownloadStatusUpdaterAsh&) = delete;
   ~DownloadStatusUpdaterAsh() override;
@@ -43,7 +50,7 @@ class DownloadStatusUpdaterAsh : public mojom::DownloadStatusUpdater {
       mojom::DownloadStatusUpdaterClient::ShowInBrowserCallback callback);
 
  private:
-  // DownloadStatusUpdater:
+  // mojom::DownloadStatusUpdater:
   void BindClient(
       mojo::PendingRemote<mojom::DownloadStatusUpdaterClient> client) override;
   void Update(mojom::DownloadStatusPtr status) override;
@@ -66,6 +73,10 @@ class DownloadStatusUpdaterAsh : public mojom::DownloadStatusUpdater {
   void Invoke(DownloadStatusUpdaterClientFunction func,
               const std::string& guid,
               HandledCallback callback);
+
+  // Displays download updates in Ash. Created only when the downloads
+  // integration V2 feature is enabled.
+  std::unique_ptr<ash::download_status::DisplayManager> display_manager_;
 
   // The set of receivers bound to `this` for use by crosapi.
   mojo::ReceiverSet<mojom::DownloadStatusUpdater> receivers_;

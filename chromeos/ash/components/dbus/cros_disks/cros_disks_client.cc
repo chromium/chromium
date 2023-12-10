@@ -9,6 +9,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <type_traits>
 #include <unordered_map>
 #include <utility>
@@ -33,7 +34,6 @@
 #include "dbus/object_path.h"
 #include "dbus/object_proxy.h"
 #include "dbus/values_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace ash {
@@ -791,13 +791,13 @@ bool DiskInfo::InitializeFromResponse(dbus::Response* response) {
   // dbus::PopDataAsValue() pops uint64_t as double. The top 11 bits of uint64_t
   // are dropped by the use of double. But, this works unless the size exceeds 8
   // PB.
-  absl::optional<double> device_size_double =
+  std::optional<double> device_size_double =
       dict.FindDouble(cros_disks::kDeviceSize);
   if (device_size_double.has_value())
     total_size_in_bytes_ = device_size_double.value();
 
   // dbus::PopDataAsValue() pops uint32_t as double.
-  absl::optional<double> media_type_double =
+  std::optional<double> media_type_double =
       dict.FindDouble(cros_disks::kDeviceMediaType);
   if (media_type_double.has_value())
     device_type_ = ToDeviceType(media_type_double.value());

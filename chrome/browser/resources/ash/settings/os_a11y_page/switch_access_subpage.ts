@@ -38,7 +38,7 @@ import {KeyAssignment, SwitchAccessAssignmentsChangedValue} from './switch_acces
 /**
  * The portion of the setting name common to all Switch Access preferences.
  */
-const PREFIX: string = 'settings.a11y.switch_access.';
+const PREFIX = 'settings.a11y.switch_access.';
 
 const POINT_SCAN_SPEED_RANGE_DIPS_PER_SECOND: number[] =
     [25, 50, 75, 100, 150, 200, 300];

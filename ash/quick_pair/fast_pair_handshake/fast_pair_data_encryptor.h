@@ -9,11 +9,11 @@
 #include <stdint.h>
 
 #include <array>
+#include <optional>
 
 #include "base/functional/callback.h"
 #include "chromeos/ash/services/quick_pair/public/cpp/decrypted_passkey.h"
 #include "chromeos/ash/services/quick_pair/public/cpp/decrypted_response.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 inline constexpr int kBlockSizeBytes = 16;
 constexpr int kNonceSizeBytes = 8;
@@ -32,18 +32,18 @@ class FastPairDataEncryptor {
   virtual const std::array<uint8_t, kBlockSizeBytes> EncryptBytes(
       const std::array<uint8_t, kBlockSizeBytes>& bytes_to_encrypt) = 0;
 
-  virtual const absl::optional<std::array<uint8_t, 64>>& GetPublicKey() = 0;
+  virtual const std::optional<std::array<uint8_t, 64>>& GetPublicKey() = 0;
 
   // Decrypt and parse decrypted response bytes with the stored secret key.
   virtual void ParseDecryptedResponse(
       const std::vector<uint8_t>& encrypted_response_bytes,
-      base::OnceCallback<void(const absl::optional<DecryptedResponse>&)>
+      base::OnceCallback<void(const std::optional<DecryptedResponse>&)>
           callback) = 0;
 
   // Decrypt and parse decrypted passkey bytes with the stored secret key.
   virtual void ParseDecryptedPasskey(
       const std::vector<uint8_t>& encrypted_passkey_bytes,
-      base::OnceCallback<void(const absl::optional<DecryptedPasskey>&)>
+      base::OnceCallback<void(const std::optional<DecryptedPasskey>&)>
           callback) = 0;
 
   // Creates data packet to write to GATT Additional Data Characteristic

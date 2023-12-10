@@ -18,6 +18,7 @@
 #include "base/task/task_runner.h"
 #include "chromeos/ash/components/network/device_state.h"
 #include "chromeos/ash/components/network/network_3gpp_handler.h"
+#include "chromeos/ash/components/network/network_connect.h"
 #include "chromeos/ash/components/network/network_device_handler.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
@@ -30,6 +31,8 @@
 namespace ash::carrier_lock {
 
 namespace {
+
+CarrierLockManager* g_instance = nullptr;
 
 // test configuration
 const char kFcmAppId[] = "com.google.chromeos.carrier_lock";
@@ -207,6 +210,7 @@ std::unique_ptr<CarrierLockManager> CarrierLockManager::Create(
 
   manager->Initialize();
 
+  g_instance = manager.get();
   return manager;
 }
 
@@ -230,6 +234,7 @@ std::unique_ptr<CarrierLockManager> CarrierLockManager::CreateForTesting(
   // Start with PSM check.
   manager->RunStep(ConfigurationState::kPsmCheckClaim);
 
+  g_instance = manager.get();
   return manager;
 }
 
@@ -243,17 +248,18 @@ void CarrierLockManager::RegisterLocalPrefs(PrefRegistrySimple* registry) {
   registry->RegisterStringPref(kSignedConfigPref, std::string());
 }
 
+// static
 ModemLockStatus CarrierLockManager::GetModemLockStatus() {
   if (!ash::features::IsCellularCarrierLockEnabled()) {
     return ModemLockStatus::kNotLocked;
   }
-  if (!local_state_) {
+  if (!g_instance || !g_instance->local_state_) {
     return ModemLockStatus::kUnknown;
   }
-  if (local_state_->GetBoolean(kDisableManagerPref)) {
+  if (g_instance->local_state_->GetBoolean(kDisableManagerPref)) {
     return ModemLockStatus::kNotLocked;
   }
-  if (!local_state_->GetString(kFcmTopicPref).empty()) {
+  if (!g_instance->local_state_->GetString(kFcmTopicPref).empty()) {
     return ModemLockStatus::kCarrierLocked;
   }
   return ModemLockStatus::kUnknown;
@@ -263,6 +269,7 @@ CarrierLockManager::CarrierLockManager(PrefService* local_state)
     : local_state_(local_state), retry_backoff_(&kRetryBackoffPolicy) {}
 
 CarrierLockManager::~CarrierLockManager() {
+  g_instance = nullptr;
   if (session_manager_) {
     session_manager_->RemoveObserver(this);
   }
@@ -767,6 +774,7 @@ void CarrierLockManager::CheckFcmTopic() {
     VLOG(2) << "FCM topic not provided with config, modem was unlocked.";
     base::UmaHistogramCounts100(kNumConsecutiveFailuresBeforeUnlock,
                                 error_counter_);
+    NetworkConnect::Get()->ShowCarrierUnlockNotification();
     RunStep(ConfigurationState::kDeviceUnlocked);
     return;
   }

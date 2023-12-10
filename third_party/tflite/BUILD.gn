@@ -149,13 +149,15 @@ tflite_static_library("tflite_builtin_op_resolver") {
     "src/tensorflow/lite/kernels/multinomial.cc",
     "src/tensorflow/lite/kernels/random_standard_normal_custom.cc",
     "src/tensorflow/lite/kernels/random_uniform_custom.cc",
-    "src/tensorflow/lite/kernels/reduce_window.cc",
     "src/tensorflow/lite/kernels/right_shift.cc",
     "src/tensorflow/lite/kernels/sign.cc",
     "src/tensorflow/lite/kernels/sign_custom.cc",
     "src/tensorflow/lite/kernels/stablehlo_add.cc",
     "src/tensorflow/lite/kernels/stablehlo_elementwise.cc",
+    "src/tensorflow/lite/kernels/stablehlo_min_max.cc",
     "src/tensorflow/lite/kernels/stablehlo_multiply.cc",
+    "src/tensorflow/lite/kernels/stablehlo_pad.cc",
+    "src/tensorflow/lite/kernels/stablehlo_reduce_window.cc",
     "src/tensorflow/lite/kernels/unsorted_segment.cc",
     "src/tensorflow/lite/kernels/var_handle.cc",
   ]
@@ -713,4 +715,14 @@ tflite_static_library("tflite") {
   }
 
   public_configs = [ ":tflite_config" ]
+
+  # In some configs "neon_check.h" includes "NEON_2_SSE.h" with no path.
+  # "NEON_2_SSE.h" comes from neon_2_sse. The target neon_2_sse has a config
+  # that adds to the "include_dirs". This means any file including
+  # "neon_check.h" needs the config, so that neon_2_sse should be in
+  # public_deps. Unfortunately neon_2_sse also adds some compiler flags we do
+  # not want propagated. For the time being, allow this in the standalone
+  # target (which is assumed to be for third-party code that is OK to have
+  # these switches).
+  public_deps_for_standalone = [ "//third_party/neon_2_sse" ]
 }

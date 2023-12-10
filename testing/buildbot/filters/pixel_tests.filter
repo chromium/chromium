@@ -19,6 +19,7 @@ ContentAnalysysDialogUiTest.*
 ContentSettingBubbleDialogTest.*
 CookieControlsBubbleViewPixelTest.*
 OldCookieControlsBubbleViewTest.*
+*CreatePopupRowViewTest.*
 CryptoModulePasswordDialogTest.*
 DeepScanningFailureModalDialogTest.*
 *DiceWebSigninInterceptionBubblePixelTest.InvokeUi_*
@@ -26,8 +27,8 @@ DeepScanningFailureModalDialogTest.*
 *DiceWebSigninInterceptionBubbleV2PixelTest.InvokeUi_*
 DeleteAddressProfileDialogControllerImplTest.InvokeUi_*
 EditAddressProfileDialogControllerImplTest.InvokeUi_*
-EnterpriseWelcomeUIDialogPixelTest.*
-EnterpriseWelcomeUIWindowPixelTest.*
+ManagedUserNoticeUIDialogPixelTest.*
+ManagedUserNoticeUIWindowPixelTest.*
 ExtensionInstallDialogViewInteractiveBrowserTest.*
 ExtensionUninstallDialogViewInteractiveBrowserTest.*
 *EyeDropperBrowserTest.*

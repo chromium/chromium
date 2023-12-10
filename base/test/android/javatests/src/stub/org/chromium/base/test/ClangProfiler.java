@@ -4,9 +4,7 @@
 
 package org.chromium.base.test;
 
-/**
- * Placeholder class used when clang profiling is not enabled at building.
- */
+/** Placeholder class used when clang profiling is not enabled at building. */
 public class ClangProfiler {
     private ClangProfiler() {}
 

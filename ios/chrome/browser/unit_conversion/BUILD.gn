@@ -1,0 +1,44 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("unit_conversion") {
+  sources = [
+    "unit_conversion_service.h",
+    "unit_conversion_service.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/keyed_service/core",
+    "//components/keyed_service/ios",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/public/provider/chrome/browser/unit_conversion:unit_conversion_api",
+  ]
+}
+
+source_set("unit_conversion_factory") {
+  sources = [
+    "unit_conversion_service_factory.h",
+    "unit_conversion_service_factory.mm",
+  ]
+  deps = [
+    ":unit_conversion",
+    "//base",
+    "//components/keyed_service/core",
+    "//components/keyed_service/ios",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/public/provider/chrome/browser/unit_conversion:unit_conversion_api",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "unit_conversion_service_unittest.mm" ]
+  deps = [
+    ":unit_conversion",
+    "//base",
+    "//base/test:test_support",
+    "//ios/chrome/test/providers/unit_conversion",
+    "//third_party/ocmock",
+  ]
+}

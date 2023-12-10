@@ -68,11 +68,11 @@ public class TileViewBinder {
         if (model.get(TileViewProperties.SHOW_LARGE_ICON)) {
             // Pick the large icon dimension as a rounding radius. This guarantees that the icon
             // will be fully circular.
-            roundingRadiusPx = getIconEdgeSizePx(view.getResources(), /* useLargeIcon=*/true);
+            roundingRadiusPx = getIconEdgeSizePx(view.getResources(), /* useLargeIcon= */ true);
         } else {
             roundingRadiusPx = model.get(TileViewProperties.SMALL_ICON_ROUNDING_RADIUS);
             assert roundingRadiusPx >= 0
-                : "Invalid rounding radius specified: must be non-negative integer";
+                    : "Invalid rounding radius specified: must be non-negative integer";
         }
         view.setRoundingRadius(roundingRadiusPx);
     }
@@ -83,7 +83,8 @@ public class TileViewBinder {
     }
 
     private static int getIconTopMarginSizePx(Resources res, boolean useLargeIcon) {
-        return res.getDimensionPixelSize(useLargeIcon
+        return res.getDimensionPixelSize(
+                useLargeIcon
                         ? R.dimen.tile_view_icon_background_margin_top_modern
                         : R.dimen.tile_view_icon_margin_top_modern);
     }

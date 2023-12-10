@@ -36,13 +36,14 @@ DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kDummyActivateView);
 class MockToolbarController : public ToolbarController {
  public:
   MockToolbarController(
-      std::vector<ui::ElementIdentifier> element_ids,
-      const ToolbarController::ResponsiveElementInfoMap& element_info_map,
+      const std::vector<ToolbarController::ResponsiveElementInfo>&
+          responsive_elements,
+      const std::vector<ui::ElementIdentifier>& elements_in_overflow_order,
       int element_flex_order_start,
       views::View* toolbar_container_view,
       views::View* overflow_button)
-      : ToolbarController(element_ids,
-                          element_info_map,
+      : ToolbarController(responsive_elements,
+                          elements_in_overflow_order,
                           element_flex_order_start,
                           toolbar_container_view,
                           overflow_button) {}
@@ -96,10 +97,10 @@ TEST_F(PopOutHandlerTest, PopOutAndEndPopOut) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kDummyButton);
 
   MockToolbarController toolbar_controller(
-      {kDummyButton},
-      ToolbarController::ResponsiveElementInfoMap(
-          {{kDummyButton, {0, kDummyActivateView, kDummyObservedView}}}),
-      1, container_view(), overflow_button());
+      std::vector<ToolbarController::ResponsiveElementInfo>(
+          {{kDummyButton, 0, kDummyActivateView, false, kDummyObservedView}}),
+      std::vector<ui::ElementIdentifier>({kDummyButton}), 1, container_view(),
+      overflow_button());
 
   ui::ElementContext context =
       views::ElementTrackerViews::GetContextForWidget(widget());
@@ -122,18 +123,20 @@ constexpr int kElementFlexOrderStart = 1;
 class TestToolbarController : public ToolbarController {
  public:
   TestToolbarController(
-      std::vector<ui::ElementIdentifier> element_ids,
-      const ToolbarController::ResponsiveElementInfoMap& element_info_map,
+      const std::vector<ToolbarController::ResponsiveElementInfo>&
+          responsive_elements,
+      const std::vector<ui::ElementIdentifier>& elements_in_overflow_order,
       int element_flex_order_start,
       views::View* toolbar_container_view,
       views::View* overflow_button)
-      : ToolbarController(element_ids,
-                          element_info_map,
+      : ToolbarController(responsive_elements,
+                          elements_in_overflow_order,
                           element_flex_order_start,
                           toolbar_container_view,
                           overflow_button) {}
 
-  std::u16string GetMenuText(ui::ElementIdentifier id) override {
+  std::u16string GetMenuText(const ToolbarController::ResponsiveElementInfo&
+                                 element_info) const override {
     static const auto kToolbarToMenuTextMap =
         base::MakeFixedFlatMap<ui::ElementIdentifier, std::u16string>({
             {kDummyButton1, u"DummyButton1"},
@@ -142,7 +145,7 @@ class TestToolbarController : public ToolbarController {
             {kDummyButton4, u"DummyButton4"},
         });
 
-    return kToolbarToMenuTextMap.at(id);
+    return kToolbarToMenuTextMap.at(element_info.overflow_identifier);
   }
 };
 
@@ -182,11 +185,12 @@ class ToolbarControllerUnitTest : public ChromeViewsTestBase {
         toolbar_container_view_->AddChildView(std::move(overflow_button));
     overflow_button_->SetVisible(false);
     toolbar_controller_ = std::make_unique<TestToolbarController>(
-        element_ids,
-        ToolbarController::ResponsiveElementInfoMap(
-            {{kDummyButton1, {0, kDummyActivateView, kDummyObservedView}},
-             {kDummyButton2, {0, kDummyActivateView, kDummyObservedView}},
-             {kDummyButton3, {0, kDummyActivateView, kDummyObservedView}}}),
+        std::vector<ToolbarController::ResponsiveElementInfo>(
+            {{kDummyButton1, 0, kDummyActivateView, false, kDummyObservedView},
+             {kDummyButton2, 0, kDummyActivateView, true, kDummyObservedView},
+             {kDummyButton3, 0, kDummyActivateView, true, kDummyObservedView}}),
+        std::vector<ui::ElementIdentifier>(
+            {kDummyButton3, kDummyButton2, kDummyButton1}),
         kElementFlexOrderStart, toolbar_container_view_, overflow_button_);
     overflow_button_->set_create_menu_model_callback(
         base::BindRepeating(&ToolbarController::CreateOverflowMenuModel,
@@ -233,8 +237,16 @@ class ToolbarControllerUnitTest : public ChromeViewsTestBase {
   const ui::SimpleMenuModel* overflow_menu() {
     return overflow_button_->menu_model_for_testing();
   }
-  std::vector<ui::ElementIdentifier> GetOverflowedElements() {
+  std::vector<const ToolbarController::ResponsiveElementInfo*>
+  GetOverflowedElements() {
     return toolbar_controller()->GetOverflowedElements();
+  }
+  const std::vector<ToolbarController::ResponsiveElementInfo>&
+  GetResponsiveElements() {
+    return toolbar_controller_->responsive_elements_;
+  }
+  bool IsOverflowed(const ToolbarController::ResponsiveElementInfo& element) {
+    return toolbar_controller_->IsOverflowed(element.overflow_identifier);
   }
 
  private:
@@ -277,16 +289,158 @@ TEST_F(ToolbarControllerUnitTest, OverflowedButtonsMatchMenu) {
   event_generator()->PressLeftButton();
 
   const ui::SimpleMenuModel* menu = overflow_menu();
-  std::vector<ui::ElementIdentifier> overflowed_buttons =
-      GetOverflowedElements();
+  const auto overflowed_buttons = GetOverflowedElements();
 
   // Overflowed buttons should match overflow menu.
   EXPECT_TRUE(menu);
-  EXPECT_EQ(overflowed_buttons.size(), menu->GetItemCount());
-  for (size_t i = 0; i < overflowed_buttons.size(); ++i) {
-    EXPECT_EQ(toolbar_controller()->GetMenuText(overflowed_buttons[i]),
-              menu->GetLabelAt(i));
+  const auto& responsive_elements = GetResponsiveElements();
+  for (size_t i = 0; i < responsive_elements.size(); ++i) {
+    if (IsOverflowed(responsive_elements[i])) {
+      EXPECT_EQ(toolbar_controller()->GetMenuText(responsive_elements[i]),
+                menu->GetLabelAt(menu->GetIndexOfCommandId(i).value()));
+    }
   }
+}
+
+TEST_F(ToolbarControllerUnitTest, MenuSeparator) {
+  // Set widget to be small enough to ensure all the buttons overflow.
+  widget()->SetSize(gfx::Size(1, 1));
+  SetOverflowButtonVisible(toolbar_controller()->ShouldShowOverflowButton());
+
+  // All 3 buttons overflowed.
+  EXPECT_EQ(GetOverflowedElements().size(), static_cast<size_t>(3));
+  const auto menu = toolbar_controller()->CreateOverflowMenuModel();
+  EXPECT_TRUE(menu);
+
+  // There is no separator between button1 and 2 because button1 is not a menu
+  // section end.
+  // There is a separator between button2 and button3 because
+  // 1) button2 is a section end;
+  // 2) the section button2 is in is valid;
+  // 3) the section button3 is in is valid.
+  // There is no separator after button3 because there is no valid next section.
+  EXPECT_EQ(menu->GetItemCount(), static_cast<size_t>(4));
+  EXPECT_EQ(menu->GetTypeAt(0), ui::MenuModel::ItemType::TYPE_COMMAND);
+  EXPECT_EQ(menu->GetLabelAt(0), u"DummyButton1");
+  EXPECT_EQ(menu->GetTypeAt(1), ui::MenuModel::ItemType::TYPE_COMMAND);
+  EXPECT_EQ(menu->GetLabelAt(1), u"DummyButton2");
+  EXPECT_EQ(menu->GetTypeAt(2), ui::MenuModel::ItemType::TYPE_SEPARATOR);
+  EXPECT_EQ(menu->GetTypeAt(3), ui::MenuModel::ItemType::TYPE_COMMAND);
+  EXPECT_EQ(menu->GetLabelAt(3), u"DummyButton3");
+}
+
+TEST_F(ToolbarControllerUnitTest, InValidFirstSectionAddsNoLeadingSeparator) {
+  std::unique_ptr<ToolbarController> test_controller =
+      std::make_unique<TestToolbarController>(
+          std::vector<ToolbarController::ResponsiveElementInfo>(
+              {{kDummyButton1, 0, kDummyActivateView, true},
+               {kDummyButton2, 0, kDummyActivateView, true},
+               {kDummyButton3, 0, kDummyActivateView, true}}),
+          std::vector<ui::ElementIdentifier>(
+              {kDummyButton3, kDummyButton2, kDummyButton1}),
+          kElementFlexOrderStart, toolbar_container_view(),
+          const_cast<views::View*>(overflow_button()));
+
+  widget()->SetSize(kButtonSize);
+  SetOverflowButtonVisible(toolbar_controller()->ShouldShowOverflowButton());
+  EXPECT_TRUE(overflow_button()->GetVisible());
+
+  views::View* button1 = test_buttons()[0];
+  views::View* button2 = test_buttons()[1];
+  views::View* button3 = test_buttons()[2];
+
+  // Button2 and 3 overflowed.
+  EXPECT_TRUE(button1->GetVisible());
+  EXPECT_FALSE(button2->GetVisible());
+  EXPECT_FALSE(button3->GetVisible());
+  EXPECT_EQ(GetOverflowedElements().size(), static_cast<size_t>(2));
+  const auto menu = test_controller->CreateOverflowMenuModel();
+  EXPECT_TRUE(menu);
+
+  // The first section (contains Button1) is invalid. It should not add a
+  // separator before Button2.
+  EXPECT_EQ(menu->GetItemCount(), static_cast<size_t>(3));
+  EXPECT_EQ(menu->GetTypeAt(0), ui::MenuModel::ItemType::TYPE_COMMAND);
+  EXPECT_EQ(menu->GetLabelAt(0), u"DummyButton2");
+  EXPECT_EQ(menu->GetTypeAt(1), ui::MenuModel::ItemType::TYPE_SEPARATOR);
+  EXPECT_EQ(menu->GetTypeAt(2), ui::MenuModel::ItemType::TYPE_COMMAND);
+  EXPECT_EQ(menu->GetLabelAt(2), u"DummyButton3");
+}
+
+TEST_F(ToolbarControllerUnitTest, InValidSectionInMiddleAddsNoExtraSeparator) {
+  std::unique_ptr<ToolbarController> test_controller =
+      std::make_unique<TestToolbarController>(
+          std::vector<ToolbarController::ResponsiveElementInfo>(
+              {{kDummyButton1, 0, kDummyActivateView, true},
+               {kDummyButton2, 0, kDummyActivateView, true},
+               {kDummyButton3, 0, kDummyActivateView, true}}),
+          std::vector<ui::ElementIdentifier>(
+              {kDummyButton1, kDummyButton3, kDummyButton2}),
+          kElementFlexOrderStart, toolbar_container_view(),
+          const_cast<views::View*>(overflow_button()));
+
+  widget()->SetSize(kButtonSize);
+  SetOverflowButtonVisible(toolbar_controller()->ShouldShowOverflowButton());
+  EXPECT_TRUE(overflow_button()->GetVisible());
+
+  views::View* button1 = test_buttons()[0];
+  views::View* button2 = test_buttons()[1];
+  views::View* button3 = test_buttons()[2];
+
+  // Button1 and 3 overflowed.
+  EXPECT_FALSE(button1->GetVisible());
+  EXPECT_TRUE(button2->GetVisible());
+  EXPECT_FALSE(button3->GetVisible());
+  EXPECT_EQ(GetOverflowedElements().size(), static_cast<size_t>(2));
+  const auto menu = test_controller->CreateOverflowMenuModel();
+  EXPECT_TRUE(menu);
+
+  // The second section (contains Button2) is invalid. It should not add a
+  // redundant separator.
+  EXPECT_EQ(menu->GetItemCount(), static_cast<size_t>(3));
+  EXPECT_EQ(menu->GetTypeAt(0), ui::MenuModel::ItemType::TYPE_COMMAND);
+  EXPECT_EQ(menu->GetLabelAt(0), u"DummyButton1");
+  EXPECT_EQ(menu->GetTypeAt(1), ui::MenuModel::ItemType::TYPE_SEPARATOR);
+  EXPECT_EQ(menu->GetTypeAt(2), ui::MenuModel::ItemType::TYPE_COMMAND);
+  EXPECT_EQ(menu->GetLabelAt(2), u"DummyButton3");
+}
+
+TEST_F(ToolbarControllerUnitTest, InValidLastSectionAddsNoTrailingSeparator) {
+  std::unique_ptr<ToolbarController> test_controller =
+      std::make_unique<TestToolbarController>(
+          std::vector<ToolbarController::ResponsiveElementInfo>(
+              {{kDummyButton1, 0, kDummyActivateView, true},
+               {kDummyButton2, 0, kDummyActivateView, true},
+               {kDummyButton3, 0, kDummyActivateView, true}}),
+          std::vector<ui::ElementIdentifier>(
+              {kDummyButton1, kDummyButton2, kDummyButton3}),
+          kElementFlexOrderStart, toolbar_container_view(),
+          const_cast<views::View*>(overflow_button()));
+
+  widget()->SetSize(kButtonSize);
+  SetOverflowButtonVisible(toolbar_controller()->ShouldShowOverflowButton());
+  EXPECT_TRUE(overflow_button()->GetVisible());
+
+  views::View* button1 = test_buttons()[0];
+  views::View* button2 = test_buttons()[1];
+  views::View* button3 = test_buttons()[2];
+
+  // Button1 and 2 overflowed.
+  EXPECT_FALSE(button1->GetVisible());
+  EXPECT_FALSE(button2->GetVisible());
+  EXPECT_TRUE(button3->GetVisible());
+  EXPECT_EQ(GetOverflowedElements().size(), static_cast<size_t>(2));
+  const auto menu = test_controller->CreateOverflowMenuModel();
+  EXPECT_TRUE(menu);
+
+  // The third section (contains Button3) is invalid. It should not add a
+  // redundant trailing separator.
+  EXPECT_EQ(menu->GetItemCount(), static_cast<size_t>(3));
+  EXPECT_EQ(menu->GetTypeAt(0), ui::MenuModel::ItemType::TYPE_COMMAND);
+  EXPECT_EQ(menu->GetLabelAt(0), u"DummyButton1");
+  EXPECT_EQ(menu->GetTypeAt(1), ui::MenuModel::ItemType::TYPE_SEPARATOR);
+  EXPECT_EQ(menu->GetTypeAt(2), ui::MenuModel::ItemType::TYPE_COMMAND);
+  EXPECT_EQ(menu->GetLabelAt(2), u"DummyButton2");
 }
 
 TEST_F(ToolbarControllerUnitTest, PopOutState) {
@@ -345,6 +499,85 @@ TEST_F(ToolbarControllerUnitTest, PopOutButton) {
   EXPECT_FALSE(toolbar_controller()->PopOut(kDummyButton4));
 }
 
+// Buttons overflow in order: 3, 2, 1.
+TEST_F(ToolbarControllerUnitTest, ButtonsOverflowRightToLeftInContainer) {
+  views::View* button1 = test_buttons()[0];
+  views::View* button2 = test_buttons()[1];
+  views::View* button3 = test_buttons()[2];
+
+  // Enough space to accommodate 3 buttons.
+  widget()->SetSize(gfx::Size(kButtonSize.width() * test_buttons().size(),
+                              kButtonSize.height()));
+  EXPECT_TRUE(button1->GetVisible());
+  EXPECT_TRUE(button2->GetVisible());
+  EXPECT_TRUE(button3->GetVisible());
+
+  // Not enough space. Button3 is hidden.
+  widget()->SetSize(gfx::Size(kButtonSize.width() * (test_buttons().size() - 1),
+                              kButtonSize.height()));
+  EXPECT_TRUE(button1->GetVisible());
+  EXPECT_TRUE(button2->GetVisible());
+  EXPECT_FALSE(button3->GetVisible());
+
+  // Keep resizing smaller. Button2 is hidden.
+  widget()->SetSize(gfx::Size(kButtonSize.width() * (test_buttons().size() - 2),
+                              kButtonSize.height()));
+  EXPECT_TRUE(button1->GetVisible());
+  EXPECT_FALSE(button2->GetVisible());
+  EXPECT_FALSE(button3->GetVisible());
+
+  // Keep resizing smaller. Button1 is hidden.
+  widget()->SetSize(gfx::Size(1, kButtonSize.height()));
+  EXPECT_FALSE(button1->GetVisible());
+  EXPECT_FALSE(button2->GetVisible());
+  EXPECT_FALSE(button3->GetVisible());
+}
+
+// Buttons overflow in order: 1, 2, 3.
+TEST_F(ToolbarControllerUnitTest, ButtonsOverflowLeftToRightInContainer) {
+  std::unique_ptr<ToolbarController> dummy_controller =
+      std::make_unique<TestToolbarController>(
+          std::vector<ToolbarController::ResponsiveElementInfo>(
+              {{kDummyButton1, 0, kDummyActivateView},
+               {kDummyButton2, 0, kDummyActivateView},
+               {kDummyButton3, 0, kDummyActivateView}}),
+          std::vector<ui::ElementIdentifier>(
+              {kDummyButton1, kDummyButton2, kDummyButton3}),
+          kElementFlexOrderStart, toolbar_container_view(),
+          const_cast<views::View*>(overflow_button()));
+
+  views::View* button1 = test_buttons()[0];
+  views::View* button2 = test_buttons()[1];
+  views::View* button3 = test_buttons()[2];
+
+  // Enough space to accommodate 3 buttons.
+  widget()->SetSize(gfx::Size(kButtonSize.width() * test_buttons().size(),
+                              kButtonSize.height()));
+  EXPECT_TRUE(button1->GetVisible());
+  EXPECT_TRUE(button2->GetVisible());
+  EXPECT_TRUE(button3->GetVisible());
+
+  // Not enough space. Button1 is hidden.
+  widget()->SetSize(gfx::Size(kButtonSize.width() * (test_buttons().size() - 1),
+                              kButtonSize.height()));
+  EXPECT_FALSE(button1->GetVisible());
+  EXPECT_TRUE(button2->GetVisible());
+  EXPECT_TRUE(button3->GetVisible());
+
+  // Keep resizing smaller. Button2 is hidden.
+  widget()->SetSize(gfx::Size(kButtonSize.width() * (test_buttons().size() - 2),
+                              kButtonSize.height()));
+  EXPECT_FALSE(button1->GetVisible());
+  EXPECT_FALSE(button2->GetVisible());
+  EXPECT_TRUE(button3->GetVisible());
+
+  // Keep resizing smaller. Button3 is hidden.
+  widget()->SetSize(gfx::Size(1, kButtonSize.height()));
+  EXPECT_FALSE(button1->GetVisible());
+  EXPECT_FALSE(button2->GetVisible());
+  EXPECT_FALSE(button3->GetVisible());
+}
+
 TEST_F(ToolbarControllerUnitTest, MenuItemUsability) {
   views::View* button3 = test_buttons()[2];
   button3->SetEnabled(false);
@@ -362,24 +595,26 @@ TEST_F(ToolbarControllerUnitTest, MenuItemUsability) {
   event_generator()->PressLeftButton();
 
   const ui::SimpleMenuModel* menu = overflow_menu();
-  std::vector<ui::ElementIdentifier> overflowed_buttons =
-      GetOverflowedElements();
+  const auto overflowed_buttons = GetOverflowedElements();
 
   EXPECT_TRUE(menu);
-  EXPECT_EQ(overflowed_buttons.size(), menu->GetItemCount());
-  for (size_t i = 0; i < overflowed_buttons.size(); ++i) {
-    EXPECT_EQ(ToolbarController::FindToolbarElementWithId(
-                  toolbar_container_view(), overflowed_buttons.at(i))
-                  ->GetEnabled(),
-              menu->IsEnabledAt(i));
+  const auto& responsive_elements = GetResponsiveElements();
+  for (size_t i = 0; i < responsive_elements.size(); ++i) {
+    if (IsOverflowed(responsive_elements[i])) {
+      EXPECT_EQ(ToolbarController::FindToolbarElementWithId(
+                    toolbar_container_view(),
+                    responsive_elements[i].overflow_identifier)
+                    ->GetEnabled(),
+                menu->IsEnabledAt(menu->GetIndexOfCommandId(i).value()));
+    }
   }
 }
 
 TEST_F(ToolbarControllerUnitTest, EveryActivateElementIdentifierHasActionName) {
-  for (auto& it : ToolbarController::GetDefaultElementInfoMap()) {
+  for (auto& it : ToolbarController::GetDefaultResponsiveElements()) {
     EXPECT_NE(ToolbarController::GetActionNameFromElementIdentifier(
-                  it.second.activate_identifier),
+                  it.activate_identifier),
               "")
-        << it.second.activate_identifier;
+        << it.activate_identifier;
   }
 }

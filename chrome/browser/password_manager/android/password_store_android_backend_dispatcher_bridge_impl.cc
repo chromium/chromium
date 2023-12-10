@@ -12,11 +12,11 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "chrome/browser/password_manager/android/jni_headers/PasswordStoreAndroidBackendDispatcherBridgeImpl_jni.h"
+#include "chrome/browser/password_manager/android/protos/list_passwords_result.pb.h"
+#include "chrome/browser/password_manager/android/protos/password_with_local_data.pb.h"
+#include "chrome/browser/password_manager/android/unified_password_manager_proto_utils.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_form.h"
-#include "components/password_manager/core/browser/password_store/unified_password_manager_proto_utils.h"
-#include "components/password_manager/core/browser/protos/list_passwords_result.pb.h"
-#include "components/password_manager/core/browser/protos/password_with_local_data.pb.h"
 #include "components/password_manager/core/browser/sync/password_proto_utils.h"
 
 namespace password_manager {
@@ -27,6 +27,7 @@ using JobId = PasswordStoreAndroidBackendDispatcherBridge::JobId;
 
 constexpr int kGMSCoreMinVersionForGetAffiliatedAPI = 232012000;
 constexpr int kGMSCoreMinVersionForGetAllLoginsWithBrandingAPI = 233812000;
+constexpr int kGMSCoreVersionWithFewerErrors = 225012000;
 
 base::android::ScopedJavaLocalRef<jstring> GetJavaStringFromAccount(
     PasswordStoreAndroidBackendDispatcherBridgeImpl::Account account) {
@@ -84,6 +85,26 @@ bool PasswordStoreAndroidBackendDispatcherBridge::
 
   return base::FeatureList::IsEnabled(
       password_manager::features::kUseGMSCoreForBrandingInfo);
+}
+
+bool PasswordStoreAndroidBackendDispatcherBridge::CanRemoveUnenrollment() {
+  base::android::BuildInfo* info = base::android::BuildInfo::GetInstance();
+  int current_gms_core_version;
+  if (!base::StringToInt(info->gms_version_code(), &current_gms_core_version)) {
+    return false;
+  }
+
+  if (current_gms_core_version < kGMSCoreVersionWithFewerErrors) {
+    return false;
+  }
+
+  // Check minimum GMSCore version from Finch in case it was bumped.
+  if (current_gms_core_version <
+      features::kMinimumGMSCoreVersionToRemoveUnenrollment.Get()) {
+    return false;
+  }
+
+  return base::FeatureList::IsEnabled(features::kRemoveUPMUnenrollment);
 }
 
 PasswordStoreAndroidBackendDispatcherBridgeImpl::

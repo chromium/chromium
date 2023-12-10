@@ -9,7 +9,6 @@
 
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/base/file_path_mojom_traits.h"
-#include "mojo/public/cpp/bindings/array_traits_web_vector.h"
 #include "mojo/public/cpp/bindings/string_traits_wtf.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "mojo/public/cpp/bindings/union_traits.h"

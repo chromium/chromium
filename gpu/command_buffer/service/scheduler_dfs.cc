@@ -279,12 +279,7 @@ void SchedulerDfs::Sequence::RemoveWaitFence(const SyncToken& sync_token,
 
 SchedulerDfs::SchedulerDfs(SyncPointManager* sync_point_manager,
                            const GpuPreferences& gpu_preferences)
-    : sync_point_manager_(sync_point_manager),
-      blocked_time_collection_enabled_(
-          gpu_preferences.enable_gpu_blocked_time_metric) {
-  if (blocked_time_collection_enabled_ && !base::ThreadTicks::IsSupported())
-    DLOG(ERROR) << "GPU Blocked time collection is enabled but not supported.";
-}
+    : sync_point_manager_(sync_point_manager) {}
 
 SchedulerDfs::~SchedulerDfs() {
   base::AutoLock auto_lock(lock_);
@@ -435,15 +430,6 @@ bool SchedulerDfs::ShouldYield(SequenceId sequence_id) {
     return false;
 
   return running_sequence->ShouldYieldTo(next_sequence);
-}
-
-base::TimeDelta SchedulerDfs::TakeTotalBlockingTime() {
-  if (!blocked_time_collection_enabled_ || !base::ThreadTicks::IsSupported())
-    return base::TimeDelta::Min();
-  base::AutoLock auto_lock(lock_);
-  base::TimeDelta result;
-  std::swap(result, total_blocked_time_);
-  return result;
 }
 
 base::SingleThreadTaskRunner* SchedulerDfs::GetTaskRunnerForTesting(
@@ -751,22 +737,7 @@ void SchedulerDfs::ExecuteSequence(const SequenceId sequence_id) {
     base::AutoUnlock auto_unlock(lock_);
     order_data->BeginProcessingOrderNumber(order_num);
 
-    if (blocked_time_collection_enabled_ && base::ThreadTicks::IsSupported()) {
-      // We can't call base::ThreadTicks::Now() if it's not supported
-      base::ThreadTicks thread_time_start = base::ThreadTicks::Now();
-      base::TimeTicks wall_time_start = base::TimeTicks::Now();
-
-      std::move(closure).Run();
-
-      base::TimeDelta thread_time_elapsed =
-          base::ThreadTicks::Now() - thread_time_start;
-      base::TimeDelta wall_time_elapsed =
-          base::TimeTicks::Now() - wall_time_start;
-
-      blocked_time += (wall_time_elapsed - thread_time_elapsed);
-    } else {
-      std::move(closure).Run();
-    }
+    std::move(closure).Run();
 
     if (order_data->IsProcessingOrderNumber())
       order_data->FinishProcessingOrderNumber(order_num);

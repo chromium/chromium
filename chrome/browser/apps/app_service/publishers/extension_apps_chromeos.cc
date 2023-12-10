@@ -170,6 +170,7 @@ ash::ShelfLaunchSource ConvertLaunchSource(apps::LaunchSource launch_source) {
     case apps::LaunchSource::kFromReparenting:
     case apps::LaunchSource::kFromProfileMenu:
     case apps::LaunchSource::kFromSysTrayCalendar:
+    case apps::LaunchSource::kFromInstaller:
       return ash::LAUNCH_FROM_UNKNOWN;
   }
 }

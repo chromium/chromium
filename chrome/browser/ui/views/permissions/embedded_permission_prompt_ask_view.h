@@ -15,8 +15,11 @@ class Browser;
 class EmbeddedPermissionPromptAskView
     : public EmbeddedPermissionPromptBaseView {
  public:
-  EmbeddedPermissionPromptAskView(Browser* browser,
-                                  base::WeakPtr<Delegate> delegate);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kAllowId);
+
+  EmbeddedPermissionPromptAskView(
+      Browser* browser,
+      base::WeakPtr<EmbeddedPermissionPromptViewDelegate> delegate);
   EmbeddedPermissionPromptAskView(const EmbeddedPermissionPromptAskView&) =
       delete;
   EmbeddedPermissionPromptAskView& operator=(

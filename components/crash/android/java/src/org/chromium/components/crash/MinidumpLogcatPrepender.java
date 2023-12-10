@@ -21,9 +21,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
 
-/**
- * Prepends a logcat file to a minidump file for upload.
- */
+/** Prepends a logcat file to a minidump file for upload. */
 public class MinidumpLogcatPrepender {
     private static final String TAG = "LogcatPrepender";
 
@@ -31,8 +29,7 @@ public class MinidumpLogcatPrepender {
     public static final String LOGCAT_CONTENT_DISPOSITION =
             "Content-Disposition: form-data; name=\"logcat\"; filename=\"logcat\"";
 
-    @VisibleForTesting
-    public static final String LOGCAT_CONTENT_TYPE = "Content-Type: text/plain";
+    @VisibleForTesting public static final String LOGCAT_CONTENT_TYPE = "Content-Type: text/plain";
 
     private final CrashFileManager mFileManager;
     private final File mMinidumpFile;
@@ -45,9 +42,7 @@ public class MinidumpLogcatPrepender {
         mLogcat = logcat;
     }
 
-    /**
-     * Read the boundary from the first line of the file.
-     */
+    /** Read the boundary from the first line of the file. */
     private static String getBoundary(File minidumpFile) throws IOException {
         BufferedReader reader = null;
         try {
@@ -144,8 +139,11 @@ public class MinidumpLogcatPrepender {
             appendMinidump(mMinidumpFile, targetFile);
             success = true;
         } catch (IOException e) {
-            Log.w(TAG, "Error while trying to annotate minidump file %s with logcat data",
-                    mMinidumpFile.getAbsoluteFile(), e);
+            Log.w(
+                    TAG,
+                    "Error while trying to annotate minidump file %s with logcat data",
+                    mMinidumpFile.getAbsoluteFile(),
+                    e);
             if (targetFile != null) {
                 CrashFileManager.deleteFile(targetFile);
             }

@@ -8,9 +8,12 @@
 
 #import "base/strings/stringprintf.h"
 #import "base/test/metrics/histogram_tester.h"
+#import "base/test/scoped_feature_list.h"
 #import "components/password_manager/core/browser/manage_passwords_referrer.h"
 #import "ios/chrome/app/app_startup_parameters.h"
+#import "ios/chrome/app/startup/app_launch_metrics.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
 #import "ios/components/webui/web_ui_url_constants.h"
 #import "testing/gtest_mac.h"
@@ -555,6 +558,173 @@ TEST_F(AppStartupParametersTest, ParseSearchPasswordsWidgetKit) {
   histogram_tester.ExpectBucketCount(
       "PasswordManager.ManagePasswordsReferrer",
       password_manager::ManagePasswordsReferrer::kSearchPasswordsWidget, 1);
+}
+
+// Tests that the external action scheme is not handled when the flag is
+// disabled.
+TEST_F(AppStartupParametersTest, ExternalActionSchemeHandlingDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled=*/{}, /*disabled=*/{kIOSExternalActionURLs});
+
+  base::HistogramTester histogram_tester;
+  NSURL* url = [NSURL
+      URLWithString:@"googlechromes://ChromeExternalAction/OpenNTP?test=1"];
+  ChromeAppStartupParameters* params =
+      [ChromeAppStartupParameters newChromeAppStartupParametersWithURL:url
+                                                 fromSourceApplication:nil];
+
+  EXPECT_NE(params, nil);
+  histogram_tester.ExpectBucketCount("IOS.LaunchSource",
+                                     AppLaunchSource::EXTERNAL_ACTION, 0);
+}
+
+// Tests that the external action scheme is handled correctly with the "OpenNTP"
+// action.
+TEST_F(AppStartupParametersTest, ExternalActionSchemeOpenNTP) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled=*/{kIOSExternalActionURLs}, /*disabled=*/{});
+
+  base::HistogramTester histogram_tester;
+  NSURL* url = [NSURL
+      URLWithString:@"googlechromes://ChromeExternalAction/OpenNTP?test=2"];
+  ChromeAppStartupParameters* params =
+      [ChromeAppStartupParameters newChromeAppStartupParametersWithURL:url
+                                                 fromSourceApplication:nil];
+
+  EXPECT_EQ(params.externalURL, GURL("chrome://newtab/"));
+  histogram_tester.ExpectBucketCount("IOS.LaunchSource",
+                                     AppLaunchSource::EXTERNAL_ACTION, 1);
+  histogram_tester.ExpectBucketCount("IOS.ExternalAction",
+                                     /*ACTION_OPEN_NTP*/ 1, 1);
+}
+
+// Tests that the external action scheme is handled correctly with the
+// "DefaultBrowserSettings" action.
+TEST_F(AppStartupParametersTest, ExternalActionSchemeDefaultBrowserSettings) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled=*/{kIOSExternalActionURLs}, /*disabled=*/{});
+
+  base::HistogramTester histogram_tester;
+  NSURL* url = [NSURL
+      URLWithString:
+          @"googlechrome://ChromeExternalAction/DefaultBrowserSettings?test=3"];
+  ChromeAppStartupParameters* params =
+      [ChromeAppStartupParameters newChromeAppStartupParametersWithURL:url
+                                                 fromSourceApplication:nil];
+
+  EXPECT_EQ(params.postOpeningAction, EXTERNAL_ACTION_SHOW_BROWSER_SETTINGS);
+  EXPECT_TRUE(params.externalURL.is_empty());
+  histogram_tester.ExpectBucketCount("IOS.LaunchSource",
+                                     AppLaunchSource::EXTERNAL_ACTION, 1);
+  histogram_tester.ExpectBucketCount("IOS.ExternalAction",
+                                     /*ACTION_DEFAULT_BROWSER_SETTINGS*/ 2, 1);
+}
+
+// Tests that the external action scheme is handled with a Chromium-flavored
+// URL.
+TEST_F(AppStartupParametersTest, ExternalActionSchemeChromiumURLHandled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled=*/{kIOSExternalActionURLs}, /*disabled=*/{});
+
+  base::HistogramTester histogram_tester;
+  NSURL* url =
+      [NSURL URLWithString:@"chromium://ChromeExternalAction/OpenNTP?test=4"];
+  ChromeAppStartupParameters* params =
+      [ChromeAppStartupParameters newChromeAppStartupParametersWithURL:url
+                                                 fromSourceApplication:nil];
+
+  EXPECT_EQ(params.externalURL, GURL("chrome://newtab/"));
+  histogram_tester.ExpectBucketCount("IOS.LaunchSource",
+                                     AppLaunchSource::EXTERNAL_ACTION, 1);
+  histogram_tester.ExpectBucketCount("IOS.ExternalAction",
+                                     /*ACTION_OPEN_NTP*/ 1, 1);
+}
+
+// Tests that the external action scheme does nothing when passed an invalid
+// action.
+TEST_F(AppStartupParametersTest, ExternalActionSchemeInvalidAction) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled=*/{kIOSExternalActionURLs}, /*disabled=*/{});
+
+  base::HistogramTester histogram_tester;
+  NSURL* url = [NSURL
+      URLWithString:@"googlechromes://ChromeExternalAction/invalid?test=5"];
+  ChromeAppStartupParameters* params =
+      [ChromeAppStartupParameters newChromeAppStartupParametersWithURL:url
+                                                 fromSourceApplication:nil];
+
+  EXPECT_EQ(params, nil);
+  histogram_tester.ExpectBucketCount("IOS.LaunchSource",
+                                     AppLaunchSource::EXTERNAL_ACTION, 1);
+  histogram_tester.ExpectBucketCount("IOS.ExternalAction", /*ACTION_INVALID*/ 0,
+                                     1);
+}
+
+// Tests that the external action scheme does nothing when passed an invalid
+// action (long path).
+TEST_F(AppStartupParametersTest, ExternalActionSchemeInvalidActionLongPath) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled=*/{kIOSExternalActionURLs}, /*disabled=*/{});
+
+  base::HistogramTester histogram_tester;
+  NSURL* url =
+      [NSURL URLWithString:
+                 @"googlechromes://ChromeExternalAction/long/path/test?test=5"];
+  ChromeAppStartupParameters* params =
+      [ChromeAppStartupParameters newChromeAppStartupParametersWithURL:url
+                                                 fromSourceApplication:nil];
+
+  EXPECT_EQ(params, nil);
+  histogram_tester.ExpectBucketCount("IOS.LaunchSource",
+                                     AppLaunchSource::EXTERNAL_ACTION, 1);
+  histogram_tester.ExpectBucketCount("IOS.ExternalAction", /*ACTION_INVALID*/ 0,
+                                     1);
+}
+
+// Tests that the external action scheme does nothing when passed an invalid
+// action (no action passed).
+TEST_F(AppStartupParametersTest, ExternalActionSchemeInvalidActionNoAction) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled=*/{kIOSExternalActionURLs}, /*disabled=*/{});
+
+  base::HistogramTester histogram_tester;
+  NSURL* url = [NSURL URLWithString:@"googlechromes://ChromeExternalAction/"];
+  ChromeAppStartupParameters* params =
+      [ChromeAppStartupParameters newChromeAppStartupParametersWithURL:url
+                                                 fromSourceApplication:nil];
+
+  EXPECT_EQ(params, nil);
+  histogram_tester.ExpectBucketCount("IOS.LaunchSource",
+                                     AppLaunchSource::EXTERNAL_ACTION, 1);
+  histogram_tester.ExpectBucketCount("IOS.ExternalAction", /*ACTION_INVALID*/ 0,
+                                     1);
+}
+
+// Tests that the external action scheme does nothing when passed an invalid
+// action (no path passed).
+TEST_F(AppStartupParametersTest, ExternalActionSchemeInvalidActionNoPath) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled=*/{kIOSExternalActionURLs}, /*disabled=*/{});
+
+  base::HistogramTester histogram_tester;
+  NSURL* url = [NSURL URLWithString:@"googlechrome://ChromeExternalAction"];
+  ChromeAppStartupParameters* params =
+      [ChromeAppStartupParameters newChromeAppStartupParametersWithURL:url
+                                                 fromSourceApplication:nil];
+
+  EXPECT_EQ(params, nil);
+  histogram_tester.ExpectBucketCount("IOS.LaunchSource",
+                                     AppLaunchSource::EXTERNAL_ACTION, 1);
+  histogram_tester.ExpectBucketCount("IOS.ExternalAction", /*ACTION_INVALID*/ 0,
+                                     1);
 }
 
 }  // namespace

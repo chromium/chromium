@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_V8_LOCAL_COMPILE_HINTS_CONSUMER_H_
 #define THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_V8_LOCAL_COMPILE_HINTS_CONSUMER_H_
 
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -14,7 +15,7 @@ class CachedMetadata;
 namespace v8_compile_hints {
 
 // Reads V8 compile hints from the cached data and makes them available for V8.
-class V8LocalCompileHintsConsumer {
+class CORE_EXPORT V8LocalCompileHintsConsumer {
  public:
   explicit V8LocalCompileHintsConsumer(CachedMetadata* cached_metadata);
 

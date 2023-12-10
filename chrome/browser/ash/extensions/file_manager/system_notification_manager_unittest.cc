@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/extensions/file_manager/system_notification_manager.h"
 
+#include <optional>
 #include <set>
 
 #include "ash/components/arc/arc_prefs.h"
@@ -43,7 +44,6 @@
 #include "storage/browser/test/test_file_system_context.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace file_manager {
@@ -122,7 +122,7 @@ class TestNotificationPlatformBridgeDelegator
       return;
     }
 
-    it->second->Click(button_index, absl::nullopt);
+    it->second->Click(button_index, std::nullopt);
   }
 
   // Clicks a notification body.
@@ -133,7 +133,7 @@ class TestNotificationPlatformBridgeDelegator
       return;
     }
 
-    it->second->Click(absl::nullopt, absl::nullopt);
+    it->second->Click(std::nullopt, std::nullopt);
   }
 
  private:
@@ -979,7 +979,7 @@ TEST_F(SystemNotificationManagerTest, HandleIOTaskProgressCopy) {
   status.total_bytes = 100;
   status.bytes_transferred = 0;
   status.sources.emplace_back(CreateTestFile("volume/src_file.txt"),
-                              absl::nullopt);
+                              std::nullopt);
   status.SetDestinationFolder(CreateTestFile("volume/dest_dir/"));
 
   // Send the copy begin/queued progress.
@@ -1023,7 +1023,7 @@ TEST_F(SystemNotificationManagerTest, HandleIOTaskProgressExtract) {
   status.total_bytes = 100;
   status.bytes_transferred = 0;
   status.sources.emplace_back(CreateTestFile("volume/src_file.zip"),
-                              absl::nullopt);
+                              std::nullopt);
   status.SetDestinationFolder(CreateTestFile("volume/src_file/"));
 
   // Send the copy begin/queued progress.
@@ -1067,7 +1067,7 @@ TEST_F(SystemNotificationManagerTest, CancelButtonIOTask) {
   status.total_bytes = 100;
   status.bytes_transferred = 0;
   auto src = CreateTestFile("volume/src_file.txt");
-  status.sources.emplace_back(src, absl::nullopt);
+  status.sources.emplace_back(src, std::nullopt);
   auto dst = CreateTestFile("volume/dest_dir/");
   status.SetDestinationFolder(dst);
 
@@ -1102,7 +1102,7 @@ TEST_F(SystemNotificationManagerTest, HandleIOTaskProgressPolicyScanning) {
   status.bytes_transferred = 123;
   status.sources_scanned = 1;
   status.sources.emplace_back(CreateTestFile("volume/src_file.txt"),
-                              absl::nullopt);
+                              std::nullopt);
   status.SetDestinationFolder(CreateTestFile("volume/dest_dir/"));
 
   // Send the scanning progress.
@@ -1815,9 +1815,9 @@ TEST_F(SystemNotificationManagerPolicyTest, HandleIOTaskProgressWarning) {
   status.total_bytes = 100;
   status.bytes_transferred = 0;
   status.sources.emplace_back(CreateTestFile("volume/src_file1.txt"),
-                              absl::nullopt);
+                              std::nullopt);
   status.sources.emplace_back(CreateTestFile("volume/src_file2.txt"),
-                              absl::nullopt);
+                              std::nullopt);
   status.SetDestinationFolder(CreateTestFile("volume/dest_dir/"));
 
   // Send the copy begin/queued progress.
@@ -1861,7 +1861,7 @@ TEST_F(SystemNotificationManagerPolicyTest, HandleIOTaskProgressPolicyError) {
   status.total_bytes = 100;
   status.bytes_transferred = 0;
   status.sources.emplace_back(CreateTestFile("volume/src_file.txt"),
-                              absl::nullopt);
+                              std::nullopt);
   status.SetDestinationFolder(CreateTestFile("volume/dest_dir/"));
 
   // Send the copy begin/queued progress.

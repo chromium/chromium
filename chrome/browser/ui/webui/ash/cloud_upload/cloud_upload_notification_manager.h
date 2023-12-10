@@ -55,10 +55,13 @@ class CloudUploadNotificationManager
   // time.
   void ShowUploadError(const std::string& message);
 
-  // This class owns a reference to itself that is only deleted once the
-  // notification life cycle has completed. Tests can use this method to avoid
-  // leaking instances of this class.
-  void CloseForTest();
+  // Closes any existing notification, interrupts ongoing timers, and calls the
+  // completion callback, destroying this instance. This is called internally
+  // after the notification has completed and timed out, or when the error
+  // notification is clicked. It only needs to be called publicly in tests to
+  // avoid leaking instances of this class, or when no notification was ever
+  // started.
+  void CloseNotification();
 
   void SetDestinationPath(base::FilePath destination_path) {
     destination_path_ = destination_path;
@@ -102,18 +105,14 @@ class CloudUploadNotificationManager
   // Updates the notification immediately to show the complete state.
   void ShowCompleteNotification();
 
-  // Called when the upload flow is complete: Ensures that notifications are
-  // closed, timers are interrupted and the completion callback has been called.
-  void CloseNotification();
-
   // "Cancel" click handler for upload progress notification.
-  void HandleProgressNotificationClick(absl::optional<int> button_index);
+  void HandleProgressNotificationClick(std::optional<int> button_index);
 
   // "Sign in" click handler for authentication error notification.
-  void HandleErrorNotificationClick(absl::optional<int> button_index);
+  void HandleErrorNotificationClick(std::optional<int> button_index);
 
   // "Show in folder" click handler for upload complete notification.
-  void HandleCompleteNotificationClick(absl::optional<int> button_index);
+  void HandleCompleteNotificationClick(std::optional<int> button_index);
 
   // A state machine and the possible transitions. The state of showing the
   // error notification is not explicit because it is never used to determine

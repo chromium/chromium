@@ -7,6 +7,8 @@
 // windows.h must be included first.
 #include <windows.h>
 
+#include <string_view>
+
 #define INITGUID
 
 #include <devpkey.h>
@@ -22,7 +24,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/scoped_generic.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece_forward.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
@@ -168,7 +169,7 @@ absl::optional<std::vector<std::wstring>> GetDeviceStringListProperty(
   }
 
   // Windows string list properties use a NUL character as the delimiter.
-  return base::SplitString(buffer, base::WStringPiece(L"\0", 1),
+  return base::SplitString(buffer, std::wstring_view(L"\0", 1),
                            base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
 }
 
@@ -180,7 +181,7 @@ std::wstring GetServiceName(HDEVINFO dev_info, SP_DEVINFO_DATA* dev_info_data) {
 
   // Windows pads this string with a variable number of NUL bytes for no
   // discernible reason.
-  return std::wstring(base::TrimString(*property, base::WStringPiece(L"\0", 1),
+  return std::wstring(base::TrimString(*property, std::wstring_view(L"\0", 1),
                                        base::TRIM_TRAILING));
 }
 

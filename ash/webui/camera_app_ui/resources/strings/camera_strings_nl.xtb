@@ -5,7 +5,6 @@
 <translation id="1076394037877376434">Pagina <ph name="PAGE_NUMBER" /> verwijderen</translation>
 <translation id="1113173431709655881">Cameramodus</translation>
 <translation id="1153190633558910465">Raster uit</translation>
-<translation id="1175958423215084756">Link gevonden. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213">Pagina <ph name="PAGE_NUMBER" /> verwijderd</translation>
 <translation id="1258009455399840361">90 graden rechtsom draaien</translation>
 <translation id="1417314334557041815">Pagina <ph name="INDEX" /> bewerken</translation>
@@ -60,14 +59,12 @@
 <translation id="3642192109456033823">Video verwerken…</translation>
 <translation id="3789724198583203151">90 graden linksom draaien</translation>
 <translation id="3810838688059735925">Video</translation>
-<translation id="3892148308691398805">Tekst kopiëren</translation>
 <translation id="4060608699153044055">Je kunt niet opnemen vanwege onvoldoende opslagruimte op het apparaat. Als je wilt opnemen, moet je ruimte vrijmaken op je apparaat.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
 <translation id="4118525110028899586">Opname onderbreken</translation>
 <translation id="4121305183798804752">Document waargenomen</translation>
 <translation id="414641094616694804">Deze camera kan de resolutie niet wijzigen</translation>
 <translation id="4176463684765177261">Uitgezet</translation>
-<translation id="4269820728363426813">Linkadres kopiëren</translation>
 <translation id="428234092390943511">Paginathumbnail</translation>
 <translation id="4349714250734879769">Frames schalen met Chrome</translation>
 <translation id="4383571725254449280">Prestatielogboeken afdrukken</translation>
@@ -144,7 +141,6 @@ Als je feedback over de afbeeldings- of videokwaliteit gaat, voeg dan een voorbe
 <translation id="7726641833034062494">Normale video opnemen</translation>
 <translation id="7748344063862150053">Rechterbovenhoek van document</translation>
 <translation id="7933675232020478311">Beweegt naar rechtsonder</translation>
-<translation id="7983668134180549431">Tekst gevonden.</translation>
 <translation id="8079255378695216066">Kan opname niet starten</translation>
 <translation id="8120146556401698679">Schuiven, kantelen, zoomen</translation>
 <translation id="8131740175452115882">Bevestigen</translation>
@@ -163,6 +159,7 @@ Als je feedback over de afbeeldings- of videokwaliteit gaat, voeg dan een voorbe
 <translation id="8870695351537079478">Kan opname niet starten</translation>
 <translation id="8880167521484863515">4 bij 3</translation>
 <translation id="8903921497873541725">Inzoomen</translation>
+<translation id="8926890870105777777">Verbinding maken met het netwerk <ph name="WIFINAME" /></translation>
 <translation id="9045010116236796332">Plaats alle randen van het document binnen het frame</translation>
 <translation id="9045155556724273246">10 seconden</translation>
 <translation id="906331135292332864">Afbeelding verwerken...</translation>

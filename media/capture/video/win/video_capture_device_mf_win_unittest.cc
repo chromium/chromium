@@ -292,6 +292,9 @@ class MockMFExtendedCameraControl final
       case KSPROPERTY_CAMERACONTROL_EXTENDED_BACKGROUNDSEGMENTATION:
         return (KSCAMERA_EXTENDEDPROP_BACKGROUNDSEGMENTATION_OFF |
                 KSCAMERA_EXTENDEDPROP_BACKGROUNDSEGMENTATION_BLUR);
+      case KSPROPERTY_CAMERACONTROL_EXTENDED_DIGITALWINDOW:
+        return (KSCAMERA_EXTENDEDPROP_DIGITALWINDOW_AUTOFACEFRAMING |
+                KSCAMERA_EXTENDEDPROP_DIGITALWINDOW_MANUAL);
       default:
         return 0;
     }
@@ -300,6 +303,8 @@ class MockMFExtendedCameraControl final
     switch (property_id_) {
       case KSPROPERTY_CAMERACONTROL_EXTENDED_BACKGROUNDSEGMENTATION:
         return KSCAMERA_EXTENDEDPROP_BACKGROUNDSEGMENTATION_OFF;
+      case KSPROPERTY_CAMERACONTROL_EXTENDED_DIGITALWINDOW:
+        return KSCAMERA_EXTENDEDPROP_DIGITALWINDOW_MANUAL;
       default:
         return 0;
     }
@@ -1987,6 +1992,14 @@ TEST_F(VideoCaptureDeviceMFWinTest, GetPhotoStateViaPhotoStream) {
                                 mojom::BackgroundBlurMode::BLUR),
             1);
   EXPECT_EQ(state->background_blur_mode, mojom::BackgroundBlurMode::OFF);
+
+  ASSERT_TRUE(state->supported_face_framing_modes);
+  EXPECT_EQ(2u, state->supported_face_framing_modes->size());
+  EXPECT_EQ(1, base::ranges::count(*state->supported_face_framing_modes,
+                                   mojom::MeteringMode::CONTINUOUS));
+  EXPECT_EQ(1, base::ranges::count(*state->supported_face_framing_modes,
+                                   mojom::MeteringMode::NONE));
+  EXPECT_EQ(mojom::MeteringMode::NONE, state->current_face_framing_mode);
 }
 
 // Given an |IMFCaptureSource| offering a video stream and a photo stream to

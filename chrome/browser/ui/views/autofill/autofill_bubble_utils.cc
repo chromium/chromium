@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/autofill/autofill_bubble_utils.h"
 
 #include <memory>
+#include <utility>
 
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "components/strings/grit/components_strings.h"
@@ -25,7 +26,7 @@ std::unique_ptr<views::ImageButton> CreateEditButton(
     views::Button::PressedCallback callback) {
   std::unique_ptr<views::ImageButton> button =
       views::CreateVectorImageButtonWithNativeTheme(
-          callback, vector_icons::kEditIcon, kIconSize);
+          std::move(callback), vector_icons::kEditIcon, kIconSize);
   button->SetAccessibleName(l10n_util::GetStringUTF16(
       IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_EDIT_BUTTON_TOOLTIP));
   button->SetTooltipText(l10n_util::GetStringUTF16(

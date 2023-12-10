@@ -50,7 +50,7 @@
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_shift_tracker.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
+#include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
@@ -149,6 +149,12 @@ void ScrollableArea::ClearScrollableArea() {
   }
   if (fade_overlay_scrollbars_timer_)
     fade_overlay_scrollbars_timer_->Value().Stop();
+}
+
+const ui::ColorProvider* ScrollableArea::GetColorProvider(
+    mojom::blink::ColorScheme color_scheme) const {
+  return GetLayoutBox()->GetDocument().GetColorProviderForPainting(
+      color_scheme);
 }
 
 MacScrollbarAnimator* ScrollableArea::GetMacScrollbarAnimator() const {
@@ -519,7 +525,8 @@ void ScrollableArea::ScrollToScrollStartTarget(
   params->behavior = mojom::blink::ScrollBehavior::kInstant;
   params->type = mojom::blink::ScrollType::kScrollStart;
   ScrollIntoView(
-      scroll_start_target->AbsoluteBoundingBoxRectForScrollIntoView(), params);
+      scroll_start_target->AbsoluteBoundingBoxRectForScrollIntoView(),
+      PhysicalBoxStrut(), params);
 }
 
 void ScrollableArea::ScrollToScrollStartTargets(
@@ -599,6 +606,10 @@ bool ScrollableArea::ProgrammaticScrollHelper(
       },
       std::move(callback), WrapWeakPersistent(this)));
 
+  // Enqueue snapchanging if necessary.
+  UpdateSnapChangingTargetsAndEnqueueSnapChanging(
+      gfx::PointF(offset.x(), offset.y()));
+
   if (should_use_animation) {
     GetProgrammaticScrollAnimator().AnimateToOffset(offset, is_sequenced_scroll,
                                                     std::move(callback));
@@ -641,6 +652,7 @@ void ScrollableArea::UserScrollHelper(
 
 PhysicalRect ScrollableArea::ScrollIntoView(
     const PhysicalRect& rect_in_absolute,
+    const PhysicalBoxStrut& scroll_margin,
     const mojom::blink::ScrollIntoViewParamsPtr& params) {
   // TODO(bokan): This should really be implemented here but ScrollAlignment is
   // in Core which is a dependency violation.
@@ -896,7 +908,7 @@ void ScrollableArea::SetScrollbarNeedsPaintInvalidation(
     }
   }
 
-  // TODO(crbug.com/1414885): we don't need to invalidate paint of scrollbar
+  // TODO(crbug.com/1505560): we don't need to invalidate paint of scrollbar
   // for changes inside of the scrollbar. We'll invalidate raster if needed
   // after paint. We can remove some of paint invalidation code in this class,
   // and move remaining paint invalidation code into
@@ -1295,6 +1307,16 @@ bool ScrollableArea::PerformSnapping(
     return false;
   }
 
+  // We should set the snapchanging targets of a snap container the first
+  // time it is laid out to avoid a spurious snapchanging event firing the first
+  // time the scroller is scrolled.
+  if (!GetSnapChangingTargetData()) {
+    std::set<cc::ElementId> snap_targets =
+        cc::SnapContainerData::FindSnappedTargetsAtScrollOffset(
+            GetSnapContainerData(), snap_point.value());
+    SetSnapChangingTargetData(cc::SnappedTargetData(std::move(snap_targets)));
+  }
+
   CancelScrollAnimation();
   CancelProgrammaticScrollAnimation();
   if (!SetScrollOffset(ScrollPositionToOffset(snap_point.value()),
@@ -1378,28 +1400,46 @@ bool ScrollableArea::ScrollOffsetIsNoop(const ScrollOffset& offset) const {
               : offset);
 }
 
-void ScrollableArea::EnqueueSnapChangedEvent() const {
-  DCHECK(RuntimeEnabledFeatures::CSSSnapChangedEventEnabled());
-  if (Node* target_node = EventTargetNode()) {
-    HeapVector<Member<Node>> snap_targets;
-    if (const cc::SnappedTargetData* snapped_target_data =
-            GetSnappedTargetData()) {
-      for (const cc::ElementId& id :
-           snapped_target_data->GetSnappedTargetIds()) {
-        if (Node* node =
-                DOMNodeIds::NodeForId(DOMNodeIdFromCompositorElementId(id))) {
-          snap_targets.push_back(node);
-        }
+HeapVector<Member<Node>> ScrollableArea::PrepareSnapEventTargets(
+    const cc::SnappedTargetData* target_data) const {
+  HeapVector<Member<Node>> target_nodes;
+  if (target_data) {
+    for (const cc::ElementId& id : target_data->GetSnappedTargetIds()) {
+      if (Node* node =
+              DOMNodeIds::NodeForId(DOMNodeIdFromCompositorElementId(id))) {
+        target_nodes.push_back(node);
       }
     }
     auto compare_targets = [](Node* node1, Node* node2) {
       return node1->compareDocumentPosition(node2) &
              Node::kDocumentPositionFollowing;
     };
-    std::sort(snap_targets.begin(), snap_targets.end(), compare_targets);
-    target_node->GetDocument().EnqueueSnapChangedEvent(target_node,
-                                                       snap_targets);
+    std::sort(target_nodes.begin(), target_nodes.end(), compare_targets);
   }
+  return target_nodes;
+}
+
+void ScrollableArea::EnqueueSnapChangedEvent() const {
+  DCHECK(RuntimeEnabledFeatures::CSSSnapChangedEventEnabled());
+  Node* target_node = EventTargetNode();
+  if (!target_node) {
+    return;
+  }
+  HeapVector<Member<Node>> snap_targets =
+      PrepareSnapEventTargets(GetSnappedTargetData());
+  target_node->GetDocument().EnqueueSnapChangedEvent(target_node, snap_targets);
+}
+
+void ScrollableArea::EnqueueSnapChangingEvent() const {
+  DCHECK(RuntimeEnabledFeatures::CSSSnapChangingEventEnabled());
+  Node* target_node = EventTargetNode();
+  if (!target_node) {
+    return;
+  }
+  HeapVector<Member<Node>> snap_targets =
+      PrepareSnapEventTargets(GetSnapChangingTargetData());
+  target_node->GetDocument().EnqueueSnapChangingEvent(target_node,
+                                                      snap_targets);
 }
 
 }  // namespace blink

@@ -49,18 +49,20 @@ class PrefetchKeyTraits<GURL> {
   }
 };
 
-template <typename T>
-class PrefetchKeyTraits<std::pair<T, GURL>> {
+template <>
+class PrefetchKeyTraits<PrefetchContainer::Key> {
  public:
-  using PrefetchKey = std::pair<T, GURL>;
-  static const GURL& GetURL(const PrefetchKey& key) { return key.second; }
-  static PrefetchKey KeyWithNewURL(const PrefetchKey& old_key,
-                                   const GURL& new_url) {
-    return PrefetchKey(old_key.first, new_url);
+  static const GURL& GetURL(const PrefetchContainer::Key& key) {
+    return key.prefetch_url();
   }
-  static bool NonUrlPartIsSame(const PrefetchKey& key1,
-                               const PrefetchKey& key2) {
-    return key1.first == key2.first;
+  static PrefetchContainer::Key KeyWithNewURL(
+      const PrefetchContainer::Key& old_key,
+      const GURL& new_url) {
+    return old_key.WithNewUrl(new_url);
+  }
+  static bool NonUrlPartIsSame(const PrefetchContainer::Key& key1,
+                               const PrefetchContainer::Key& key2) {
+    return key1.NonUrlPartIsSame(key2);
   }
 };
 
@@ -84,12 +86,11 @@ enum class IterateCandidateResult { kContinue, kFinish };
 // 1. Exact match (`MatchType::kExact`).
 // 2. No-Vary-Search matches (`MatchType::kNoVarySearch`), or
 //    URLs with the same non-ref/query part as `url` (`MatchType::kOther`).
-template <typename PrefetchKey>
+template <typename PrefetchKey, typename Value>
 void IterateCandidates(
     const PrefetchKey& key,
-    const std::map<PrefetchKey, base::WeakPtr<PrefetchContainer>>& prefetches,
-    base::RepeatingCallback<
-        IterateCandidateResult(base::WeakPtr<PrefetchContainer>, MatchType)>
+    const std::map<PrefetchKey, Value>& prefetches,
+    base::RepeatingCallback<IterateCandidateResult(const Value&, MatchType)>
         callback) {
   auto it_exact_match = prefetches.find(key);
   if (it_exact_match != prefetches.end() && it_exact_match->second) {
@@ -177,42 +178,41 @@ void IterateCandidates(
 // - Via exact match, or
 // - Via No-Vary-Search information if exact match is not found, the feature is
 // enabled and `SetNoVarySearchData()` is called for such `PrefetchContainer`s.
-template <typename PrefetchKey>
+template <typename PrefetchKey, typename Value>
 base::WeakPtr<PrefetchContainer> MatchUrl(
     const PrefetchKey& key,
-    const std::map<PrefetchKey, base::WeakPtr<PrefetchContainer>>& prefetches) {
+    const std::map<PrefetchKey, Value>& prefetches) {
   base::WeakPtr<PrefetchContainer> result = nullptr;
-  IterateCandidates(key, prefetches,
-                    base::BindRepeating(
-                        [](base::WeakPtr<PrefetchContainer>* result,
-                           base::WeakPtr<PrefetchContainer> prefetch_container,
-                           MatchType match_type) {
-                          switch (match_type) {
-                            case MatchType::kExact:
-                            case MatchType::kNoVarySearch:
-                              // TODO(crbug.com/1449360): Revisit which
-                              // PrefetchContainer to return when there are
-                              // multiple candidates. Currently we return the
-                              // first PrefetchContainer in URL lexicographic
-                              // order.
-                              *result = std::move(prefetch_container);
-                              return IterateCandidateResult::kFinish;
-                            case MatchType::kOther:
-                              return IterateCandidateResult::kContinue;
-                          }
-                        },
-                        base::Unretained(&result)));
+  IterateCandidates(
+      key, prefetches,
+      base::BindRepeating(
+          [](base::WeakPtr<PrefetchContainer>* result,
+             const Value& prefetch_container, MatchType match_type) {
+            switch (match_type) {
+              case MatchType::kExact:
+              case MatchType::kNoVarySearch:
+                // TODO(crbug.com/1449360): Revisit which PrefetchContainer to
+                // return when there are multiple candidates. Currently we
+                // return the first PrefetchContainer in URL lexicographic
+                // order.
+                *result = prefetch_container->GetWeakPtr();
+                return IterateCandidateResult::kFinish;
+              case MatchType::kOther:
+                return IterateCandidateResult::kContinue;
+            }
+          },
+          base::Unretained(&result)));
   return result;
 }
 
 // Return the (URL,PrefetchContainer) pairs for a specific Url without
 // query and reference. Allow as input urls with query and/or reference
 // for ease of use (remove query/reference during lookup).
-template <typename PrefetchKey>
+template <typename PrefetchKey, typename Value>
 std::vector<std::pair<GURL, base::WeakPtr<PrefetchContainer>>>
 GetAllForUrlWithoutRefAndQueryForTesting(
     const PrefetchKey& key,
-    const std::map<PrefetchKey, base::WeakPtr<PrefetchContainer>>& prefetches) {
+    const std::map<PrefetchKey, Value>& prefetches) {
   std::vector<std::pair<GURL, base::WeakPtr<PrefetchContainer>>> result;
 
   IterateCandidates(
@@ -220,10 +220,9 @@ GetAllForUrlWithoutRefAndQueryForTesting(
       base::BindRepeating(
           [](std::vector<std::pair<GURL, base::WeakPtr<PrefetchContainer>>>*
                  result,
-             base::WeakPtr<PrefetchContainer> prefetch_container,
-             MatchType match_type) {
+             const Value& prefetch_container, MatchType match_type) {
             result->emplace_back(prefetch_container->GetURL(),
-                                 prefetch_container);
+                                 prefetch_container->GetWeakPtr());
             return IterateCandidateResult::kContinue;
           },
           base::Unretained(&result)));

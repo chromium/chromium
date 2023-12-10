@@ -24,7 +24,9 @@ class OtpVerificationDialogBridge implements OtpVerificationDialogCoordinator.De
     private final long mNativeOtpVerificationDialogView;
     private OtpVerificationDialogCoordinator mDialogCoordinator;
 
-    OtpVerificationDialogBridge(long nativeOtpVerificationDialogView, Context context,
+    OtpVerificationDialogBridge(
+            long nativeOtpVerificationDialogView,
+            Context context,
             ModalDialogManager modalDialogManager) {
         this.mNativeOtpVerificationDialogView = nativeOtpVerificationDialogView;
         mDialogCoordinator =
@@ -86,9 +88,7 @@ class OtpVerificationDialogBridge implements OtpVerificationDialogCoordinator.De
         mDialogCoordinator.showOtpErrorMessage(errorMessage);
     }
 
-    /**
-     * Dismiss the dialog if it is already showing.
-     */
+    /** Dismiss the dialog if it is already showing. */
     @CalledByNative
     void dismissDialog() {
         mDialogCoordinator.dismissDialog();
@@ -102,7 +102,9 @@ class OtpVerificationDialogBridge implements OtpVerificationDialogCoordinator.De
     @NativeMethods
     interface Natives {
         void onConfirm(long nativeOtpVerificationDialogViewAndroid, String otp);
+
         void onNewOtpRequested(long nativeOtpVerificationDialogViewAndroid);
+
         void onDialogDismissed(long nativeOtpVerificationDialogViewAndroid);
     }
 }

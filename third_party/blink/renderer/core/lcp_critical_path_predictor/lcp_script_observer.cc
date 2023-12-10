@@ -32,8 +32,7 @@ HashSet<String> LCPScriptObserver::GetExecutingScriptUrls() {
 
   // Gather (promise) microtasks in execution. This is required as Probes
   // do not yet have an implementation that covers microtasks.
-  v8::Isolate* isolate = v8::Isolate::GetCurrent();
-  DCHECK(isolate);
+  v8::Isolate* isolate = v8::Isolate::TryGetCurrent();
   auto v8_stack_urls = GetScriptUrlsFromCurrentStack(isolate, 0);
   for (auto& url : v8_stack_urls) {
     if (url.empty()) {
@@ -56,10 +55,11 @@ String LCPScriptObserver::GetScriptUrlFromCallFunctionProbe(
       probe->function->GetScriptOrigin().ResourceName();
   String script_url;
   if (!resource_name.IsEmpty()) {
+    v8::Isolate* isolate = ToIsolate(local_root_);
     v8::MaybeLocal<v8::String> resource_name_string =
-        resource_name->ToString(ToIsolate(local_root_)->GetCurrentContext());
+        resource_name->ToString(isolate->GetCurrentContext());
     if (!resource_name_string.IsEmpty()) {
-      script_url = ToCoreString(resource_name_string.ToLocalChecked());
+      script_url = ToCoreString(isolate, resource_name_string.ToLocalChecked());
     }
   }
   return script_url;

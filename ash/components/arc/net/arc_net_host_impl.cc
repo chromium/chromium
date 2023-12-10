@@ -28,7 +28,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "chromeos/ash/components/dbus/patchpanel/patchpanel_client.h"
-#include "chromeos/ash/components/dbus/patchpanel/patchpanel_service.pb.h"
 #include "chromeos/ash/components/dbus/shill/shill_manager_client.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/ash/components/network/client_cert_util.h"
@@ -347,9 +346,9 @@ void ArcNetHostImpl::OnConnectionClosed() {
 }
 
 void ArcNetHostImpl::NetworkConfigurationChanged() {
-  // Get patchpanel devices and update active networks.
+  // Get patchpanel devices and update networks.
   ash::PatchPanelClient::Get()->GetDevices(base::BindOnce(
-      &ArcNetHostImpl::UpdateActiveNetworks, weak_factory_.GetWeakPtr()));
+      &ArcNetHostImpl::UpdateHostNetworks, weak_factory_.GetWeakPtr()));
 }
 
 void ArcNetHostImpl::GetNetworks(mojom::GetNetworksRequestType type,
@@ -374,8 +373,7 @@ void ArcNetHostImpl::GetNetworks(mojom::GetNetworksRequestType type,
 
   std::vector<mojom::NetworkConfigurationPtr> networks =
       net_utils::TranslateNetworkStates(arc_vpn_service_path_, network_states,
-                                        shill_network_properties_,
-                                        {} /* devices */);
+                                        shill_network_properties_);
   std::move(callback).Run(mojom::GetNetworksResponseType::New(
       arc::mojom::NetworkResult::SUCCESS, std::move(networks)));
 }
@@ -384,13 +382,14 @@ void ArcNetHostImpl::GetActiveNetworks(
     GetNetworksCallback callback,
     const std::vector<patchpanel::NetworkDevice>& devices) {
   // Retrieve list of currently active networks.
-  ash::NetworkStateHandler::NetworkStateList network_states;
+  ash::NetworkStateHandler::NetworkStateList active_network_states;
   GetStateHandler()->GetActiveNetworkListByType(
-      ash::NetworkTypePattern::Default(), &network_states);
+      ash::NetworkTypePattern::Default(), &active_network_states);
 
   std::vector<mojom::NetworkConfigurationPtr> networks =
-      net_utils::TranslateNetworkStates(arc_vpn_service_path_, network_states,
-                                        shill_network_properties_, devices);
+      net_utils::TranslateNetworkDevices(devices, arc_vpn_service_path_,
+                                         active_network_states,
+                                         shill_network_properties_);
   std::move(callback).Run(mojom::GetNetworksResponseType::New(
       arc::mojom::NetworkResult::SUCCESS, std::move(networks)));
 }
@@ -881,15 +880,15 @@ void ArcNetHostImpl::TranslateEapCredentialsToDict(
     return;
   }
   std::move(continue_callback)
-      .Run(/*cert_id=*/absl::nullopt,
-           /*slot_id=*/absl::nullopt);
+      .Run(/*cert_id=*/std::nullopt,
+           /*slot_id=*/std::nullopt);
 }
 
 void ArcNetHostImpl::TranslateEapCredentialsToOncDictWithCertID(
     const mojom::EapCredentialsPtr& eap,
     base::OnceCallback<void(base::Value::Dict)> callback,
-    const absl::optional<std::string>& cert_id,
-    const absl::optional<int>& slot_id) {
+    const std::optional<std::string>& cert_id,
+    const std::optional<int>& slot_id) {
   base::Value::Dict eap_dict;
 
   if (cert_id.has_value() && slot_id.has_value()) {
@@ -947,8 +946,8 @@ void ArcNetHostImpl::TranslateEapCredentialsToOncDictWithCertID(
 void ArcNetHostImpl::TranslateEapCredentialsToShillDictWithCertID(
     mojom::EapCredentialsPtr cred,
     base::OnceCallback<void(base::Value::Dict)> callback,
-    const absl::optional<std::string>& cert_id,
-    const absl::optional<int>& slot_id) {
+    const std::optional<std::string>& cert_id,
+    const std::optional<int>& slot_id) {
   if (!cred) {
     NET_LOG(ERROR) << __func__ << ": Empty EAP credentials";
     return;
@@ -1280,7 +1279,7 @@ void ArcNetHostImpl::NetworkPropertiesUpdated(
 
 void ArcNetHostImpl::ReceiveShillProperties(
     const std::string& service_path,
-    absl::optional<base::Value::Dict> shill_properties) {
+    std::optional<base::Value::Dict> shill_properties) {
   if (!shill_properties) {
     NET_LOG(ERROR) << __func__
                    << ": Failed to get shill Service properties for "
@@ -1298,19 +1297,21 @@ void ArcNetHostImpl::ReceiveShillProperties(
 
   // Get patchpanel devices and update active networks.
   ash::PatchPanelClient::Get()->GetDevices(base::BindOnce(
-      &ArcNetHostImpl::UpdateActiveNetworks, weak_factory_.GetWeakPtr()));
+      &ArcNetHostImpl::UpdateHostNetworks, weak_factory_.GetWeakPtr()));
 }
 
-void ArcNetHostImpl::UpdateActiveNetworks(
+void ArcNetHostImpl::UpdateHostNetworks(
+    // TODO(b/308365031): Rename mojo ActiveNetworkChanged to
+    // HostNetworkChanged.
     const std::vector<patchpanel::NetworkDevice>& devices) {
   auto* net_instance = ARC_GET_INSTANCE_FOR_METHOD(arc_bridge_service_->net(),
                                                    ActiveNetworksChanged);
   if (!net_instance)
     return;
 
-  net_instance->ActiveNetworksChanged(net_utils::TranslateNetworkStates(
-      arc_vpn_service_path_, GetHostActiveNetworks(), shill_network_properties_,
-      devices));
+  net_instance->ActiveNetworksChanged(net_utils::TranslateNetworkDevices(
+      devices, arc_vpn_service_path_, GetHostActiveNetworks(),
+      shill_network_properties_));
 }
 
 void ArcNetHostImpl::NetworkListChanged() {
@@ -1323,7 +1324,8 @@ void ArcNetHostImpl::NetworkListChanged() {
   // If there is no active networks, send an explicit ActiveNetworksChanged
   // event to ARC and skip updating Shill properties.
   if (active_networks.empty()) {
-    UpdateActiveNetworks({} /* devices */);
+    ash::PatchPanelClient::Get()->GetDevices(base::BindOnce(
+        &ArcNetHostImpl::UpdateHostNetworks, weak_factory_.GetWeakPtr()));
     return;
   }
   for (const auto* network : active_networks)

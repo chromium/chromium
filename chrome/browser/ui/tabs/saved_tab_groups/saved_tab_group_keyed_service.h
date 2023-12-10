@@ -60,7 +60,7 @@ class SavedTabGroupKeyedService : public KeyedService,
   void SavedTabGroupRemovedFromSync(const SavedTabGroup* group) override;
   void SavedTabGroupUpdatedFromSync(
       const base::Uuid& group_guid,
-      const absl::optional<base::Uuid>& tab_guid) override;
+      const std::optional<base::Uuid>& tab_guid) override;
 
  private:
   // Adds tabs to `tab_group` if `saved_group` was modified and has more tabs

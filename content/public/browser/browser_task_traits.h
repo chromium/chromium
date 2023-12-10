@@ -55,10 +55,8 @@ class CONTENT_EXPORT BrowserTaskTraits {
     ValidTrait(base::TaskPriority);
   };
 
-  template <
-      class... ArgTypes,
-      class CheckArgumentsAreValid = std::enable_if_t<
-          base::trait_helpers::AreValidTraits<ValidTrait, ArgTypes...>::value>>
+  template <class... ArgTypes>
+    requires base::trait_helpers::AreValidTraits<ValidTrait, ArgTypes...>
   // TaskTraits are intended to be implicitly-constructable (eg {}).
   // NOLINTNEXTLINE(google-explicit-constructor)
   constexpr BrowserTaskTraits(ArgTypes... args)

@@ -13,6 +13,8 @@
 #include "ash/system/tray/tray_constants.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/views/controls/label.h"
@@ -43,6 +45,8 @@ gfx::Size GetTaskContinuationChipSize() {
 }
 
 class HeaderView : public views::Label {
+  METADATA_HEADER(HeaderView, views::Label)
+
  public:
   HeaderView() {
     SetText(
@@ -69,10 +73,10 @@ class HeaderView : public views::Label {
   ~HeaderView() override = default;
   HeaderView(HeaderView&) = delete;
   HeaderView operator=(HeaderView&) = delete;
-
-  // views::View:
-  const char* GetClassName() const override { return "HeaderView"; }
 };
+
+BEGIN_METADATA(HeaderView)
+END_METADATA
 
 }  // namespace
 
@@ -101,10 +105,6 @@ TaskContinuationView::~TaskContinuationView() {
 
 void TaskContinuationView::OnModelChanged() {
   Update();
-}
-
-const char* TaskContinuationView::GetClassName() const {
-  return "TaskContinuationView";
 }
 
 TaskContinuationView::TaskChipsView::TaskChipsView() = default;
@@ -169,6 +169,9 @@ void TaskContinuationView::TaskChipsView::CalculateIdealBounds() {
   }
 }
 
+BEGIN_METADATA(TaskContinuationView, TaskChipsView, views::View)
+END_METADATA
+
 void TaskContinuationView::Update() {
   chips_view_->Reset();
 
@@ -198,5 +201,8 @@ void TaskContinuationView::Update() {
   PreferredSizeChanged();
   SetVisible(true);
 }
+
+BEGIN_METADATA(TaskContinuationView)
+END_METADATA
 
 }  // namespace ash

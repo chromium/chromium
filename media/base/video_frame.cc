@@ -848,8 +848,6 @@ scoped_refptr<VideoFrame> VideoFrame::WrapVideoFrame(
     VideoPixelFormat format,
     const gfx::Rect& visible_rect,
     const gfx::Size& natural_size) {
-  DCHECK(frame->visible_rect().Contains(visible_rect));
-
   if (!AreValidPixelFormatsForWrap(frame->format(), format)) {
     DLOG(ERROR) << __func__ << " Invalid format conversion."
                 << VideoPixelFormatToString(frame->format()) << " to "
@@ -1014,8 +1012,8 @@ gfx::Size VideoFrame::PlaneSizeInSamples(VideoPixelFormat format,
     // Align to multiple-of-two size overall. This ensures that non-subsampled
     // planes can be addressed by pixel with the same scaling as the subsampled
     // planes.
-    width = base::bits::AlignUp(width, 2);
-    height = base::bits::AlignUp(height, 2);
+    width = base::bits::AlignUpDeprecatedDoNotUse(width, 2);
+    height = base::bits::AlignUpDeprecatedDoNotUse(height, 2);
   }
 
   const gfx::Size subsample = SampleSize(format, plane);
@@ -1131,14 +1129,16 @@ std::vector<int32_t> VideoFrame::ComputeStrides(VideoPixelFormat format,
 size_t VideoFrame::Rows(size_t plane, VideoPixelFormat format, int height) {
   DCHECK(IsValidPlane(format, plane));
   const int sample_height = SampleSize(format, plane).height();
-  return base::bits::AlignUp(height, sample_height) / sample_height;
+  return base::bits::AlignUpDeprecatedDoNotUse(height, sample_height) /
+         sample_height;
 }
 
 // static
 size_t VideoFrame::Columns(size_t plane, VideoPixelFormat format, int width) {
   DCHECK(IsValidPlane(format, plane));
   const int sample_width = SampleSize(format, plane).width();
-  return base::bits::AlignUp(width, sample_width) / sample_width;
+  return base::bits::AlignUpDeprecatedDoNotUse(width, sample_width) /
+         sample_width;
 }
 
 // static
@@ -1279,9 +1279,10 @@ T VideoFrame::GetVisibleDataInternal(T data, size_t plane) const {
 
   // Calculate an offset that is properly aligned for all planes.
   const gfx::Size alignment = CommonAlignment(format());
-  const gfx::Point offset(
-      base::bits::AlignDown(visible_rect_.x(), alignment.width()),
-      base::bits::AlignDown(visible_rect_.y(), alignment.height()));
+  const gfx::Point offset(base::bits::AlignDownDeprecatedDoNotUse(
+                              visible_rect_.x(), alignment.width()),
+                          base::bits::AlignDownDeprecatedDoNotUse(
+                              visible_rect_.y(), alignment.height()));
 
   const gfx::Size subsample = SampleSize(format(), plane);
   DCHECK(offset.x() % subsample.width() == 0);
@@ -1478,8 +1479,10 @@ gfx::Size VideoFrame::DetermineAlignedSize(VideoPixelFormat format,
                                            const gfx::Size& dimensions) {
   const gfx::Size alignment = CommonAlignment(format);
   const gfx::Size adjusted =
-      gfx::Size(base::bits::AlignUp(dimensions.width(), alignment.width()),
-                base::bits::AlignUp(dimensions.height(), alignment.height()));
+      gfx::Size(base::bits::AlignUpDeprecatedDoNotUse(dimensions.width(),
+                                                      alignment.width()),
+                base::bits::AlignUpDeprecatedDoNotUse(dimensions.height(),
+                                                      alignment.height()));
   DCHECK((adjusted.width() % alignment.width() == 0) &&
          (adjusted.height() % alignment.height() == 0));
   return adjusted;
@@ -1688,9 +1691,9 @@ std::vector<size_t> VideoFrame::CalculatePlaneSize(
     // These values were chosen to mirror ffmpeg's get_video_buffer().
     // TODO(dalecurtis): This should be configurable; eventually ffmpeg wants
     // us to use av_cpu_max_align(), but... for now, they just hard-code 32.
-    const size_t height = base::bits::AlignUp(
-        static_cast<size_t>(Rows(plane, format, layout.coded_size().height())),
-        kFrameAddressAlignment);
+    const size_t height =
+        base::bits::AlignUp(Rows(plane, format, layout.coded_size().height()),
+                            kFrameAddressAlignment);
     const size_t width = std::abs(layout.planes()[plane].stride);
     plane_size[plane] = width * height;
   }

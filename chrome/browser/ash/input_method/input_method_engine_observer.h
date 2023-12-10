@@ -51,11 +51,6 @@ class InputMethodEngineObserver {
                        int context_id,
                        const TextInputMethod::InputContext& context) = 0;
 
-  // Called on a touch within a text field. Allows for features like changing
-  // virtual keyboard layout based on touch type after onfocus (since
-  // subsequent touches within the same input field do not send onfocus),
-  virtual void OnTouch(ui::EventPointerType pointerType) = 0;
-
   // Called when a text field loses focus, and will no longer generate events.
   virtual void OnBlur(const std::string& engine_id, int context_id) = 0;
 

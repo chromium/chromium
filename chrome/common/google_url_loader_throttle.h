@@ -40,6 +40,13 @@ class GoogleURLLoaderThrottle
   static void UpdateCorsExemptHeader(
       network::mojom::NetworkContextParams* params);
 
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+  static bool ShouldDeferRequestForBoundSession(
+      const GURL& request_url,
+      chrome::mojom::BoundSessionThrottlerParams*
+          bound_session_throttler_params);
+#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+
   // blink::URLLoaderThrottle:
   void DetachFromCurrentSequence() override;
   void WillStartRequest(network::ResourceRequest* request,
@@ -58,7 +65,6 @@ class GoogleURLLoaderThrottle
 #endif
  private:
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-  bool ShouldDeferRequestForBoundSession(const GURL& request_url) const;
   void OnDeferRequestForBoundSessionCompleted(
       BoundSessionRequestThrottledHandler::UnblockAction resume);
   void ResumeOrCancelRequest(
@@ -67,6 +73,7 @@ class GoogleURLLoaderThrottle
   std::unique_ptr<BoundSessionRequestThrottledHandler>
       bound_session_request_throttled_handler_;
   absl::optional<base::TimeTicks> bound_session_request_throttled_start_time_;
+  bool is_main_frame_navigation_ = false;
 #endif
 
 #if BUILDFLAG(IS_ANDROID)

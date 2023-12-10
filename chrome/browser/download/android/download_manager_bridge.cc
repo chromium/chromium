@@ -36,9 +36,6 @@ static void JNI_DownloadManagerBridge_OnAddCompletedDownloadDone(
 void DownloadManagerBridge::AddCompletedDownload(
     download::DownloadItem* download,
     AddCompletedDownloadCallback callback) {
-  DCHECK(base::FeatureList::IsEnabled(
-      download::features::kUseDownloadOfflineContentProvider));
-
   JNIEnv* env = base::android::AttachCurrentThread();
   ScopedJavaLocalRef<jstring> jfile_name =
       ConvertUTF8ToJavaString(env, download->GetFileNameToReportUser().value());
@@ -65,11 +62,6 @@ void DownloadManagerBridge::AddCompletedDownload(
 
 void DownloadManagerBridge::RemoveCompletedDownload(
     download::DownloadItem* download) {
-  if (!base::FeatureList::IsEnabled(
-          download::features::kUseDownloadOfflineContentProvider)) {
-    return;
-  }
-
   JNIEnv* env = base::android::AttachCurrentThread();
   ScopedJavaLocalRef<jstring> jdownload_guid =
       base::android::ConvertUTF8ToJavaString(env, download->GetGuid());

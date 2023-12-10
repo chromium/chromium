@@ -15,7 +15,7 @@
 #include "build/build_config.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_switches.h"
-#include "components/metrics/call_stack_profile_metrics_provider.h"
+#include "components/metrics/call_stacks/call_stack_profile_metrics_provider.h"
 #include "components/version_info/channel.h"
 #include "content/public/test/browser_test.h"
 #include "third_party/metrics_proto/sampled_profile.pb.h"

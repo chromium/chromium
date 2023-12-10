@@ -43,27 +43,30 @@ public class AwUncaughtExceptionTest extends AwParameterizedTest {
     // is started. This gives us the chance to process the uncaught
     // exception off the UI thread. An uncaught exception on the UI
     // thread appears to cause the test to fail to exit.
-    @Rule
-    public AwActivityTestRule mActivityTestRule;
+    @Rule public AwActivityTestRule mActivityTestRule;
 
     public AwUncaughtExceptionTest(AwSettingsMutation param) {
-        mActivityTestRule = new AwActivityTestRule(param.getMutation()) {
-            @Override
-            public boolean needsAwBrowserContextCreated() {
-                return false;
-            }
-            @Override
-            public boolean needsBrowserProcessStarted() {
-                return false;
-            }
-            @Override
-            public boolean needsAwContentsCleanup() {
-                // State of VM might be hosed after throwing and not catching exceptions.
-                // Do not assume it is safe to destroy AwContents by posting to the UI thread.
-                // Instead explicitly destroy any AwContents created in this test.
-                return false;
-            }
-        };
+        mActivityTestRule =
+                new AwActivityTestRule(param.getMutation()) {
+                    @Override
+                    public boolean needsAwBrowserContextCreated() {
+                        return false;
+                    }
+
+                    @Override
+                    public boolean needsBrowserProcessStarted() {
+                        return false;
+                    }
+
+                    @Override
+                    public boolean needsAwContentsCleanup() {
+                        // State of VM might be hosed after throwing and not catching exceptions.
+                        // Do not assume it is safe to destroy AwContents by posting to the UI
+                        // thread.
+                        // Instead explicitly destroy any AwContents created in this test.
+                        return false;
+                    }
+                };
     }
 
     private class BackgroundThread extends Thread {

@@ -52,15 +52,26 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
        * Dictionary defining page visibility.
        */
       pageVisibility: Object,
+
+      showAdvancedFeaturesMainControl_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('showAdvancedFeaturesMainControl'),
+      },
     };
   }
 
   pageVisibility: PageVisibility;
+  private showAdvancedFeaturesMainControl_: boolean;
   private routes_: SettingsRoutes;
 
   override ready() {
     super.ready();
     this.routes_ = Router.getInstance().getRoutes();
+  }
+
+  private showExperimentalMenuItem_(): boolean {
+    return this.showAdvancedFeaturesMainControl_ &&
+        (!this.pageVisibility || this.pageVisibility.ai !== false);
   }
 
   override currentRouteChanged(newRoute: Route) {

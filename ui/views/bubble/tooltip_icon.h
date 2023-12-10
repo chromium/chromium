@@ -27,6 +27,8 @@ class InfoBubble;
 class VIEWS_EXPORT TooltipIcon : public ImageView,
                                  public MouseWatcherListener,
                                  public WidgetObserver {
+  METADATA_HEADER(TooltipIcon, ImageView)
+
  public:
   class Observer : public base::CheckedObserver {
    public:
@@ -36,8 +38,6 @@ class VIEWS_EXPORT TooltipIcon : public ImageView,
     // Called when the TooltipIcon is being destroyed.
     virtual void OnTooltipIconDestroying(TooltipIcon* icon) = 0;
   };
-
-  METADATA_HEADER(TooltipIcon);
 
   explicit TooltipIcon(const std::u16string& tooltip,
                        int tooltip_icon_size = 16);

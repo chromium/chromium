@@ -8,7 +8,7 @@
 #import "components/segmentation_platform/embedder/default_model/device_switcher_model.h"
 #import "components/segmentation_platform/embedder/default_model/device_switcher_result_dispatcher.h"
 #import "components/segmentation_platform/public/result.h"
-#import "ios/chrome/browser/first_run/first_run.h"
+#import "ios/chrome/browser/first_run/model/first_run.h"
 #import "ios/chrome/browser/iph_for_new_chrome_user/model/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 
@@ -26,7 +26,7 @@ bool IsUserNewChromeUser(
   bool first_run = FirstRun::IsChromeFirstRun() ||
                    experimental_flags::AlwaysDisplayFirstRun();
   if (!first_run) {
-    absl::optional<base::File::Info> info = FirstRun::GetSentinelInfo();
+    std::optional<base::File::Info> info = FirstRun::GetSentinelInfo();
     if (info.has_value()) {
       base::Time first_run_time = info.value().creation_time;
       bool is_first_run_recent =

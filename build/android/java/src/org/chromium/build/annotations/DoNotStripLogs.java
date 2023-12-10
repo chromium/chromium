@@ -9,9 +9,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-/**
- * The annotated method or class will have -maximumremovedandroidloglevel 0 applied to it.
- */
+/** The annotated method or class will have -maximumremovedandroidloglevel 0 applied to it. */
 @Target({ElementType.CONSTRUCTOR, ElementType.METHOD, ElementType.TYPE})
 @Retention(RetentionPolicy.CLASS)
 public @interface DoNotStripLogs {}

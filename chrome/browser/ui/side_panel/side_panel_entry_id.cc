@@ -28,7 +28,7 @@ std::string SidePanelEntryIdToHistogramName(SidePanelEntryId id) {
                                             histogram_name)      \
   case SidePanelEntryId::entry_id:                               \
     return action_id;
-absl::optional<actions::ActionId> SidePanelEntryIdToActionId(
+std::optional<actions::ActionId> SidePanelEntryIdToActionId(
     SidePanelEntryId id) {
   switch (id) { SIDE_PANEL_ENTRY_IDS(SIDE_PANEL_ACTION_ID_CASE_STATEMENT) }
   NOTREACHED();

@@ -13,7 +13,6 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/strings/pattern.h"
 #include "base/strings/string_util.h"
 #include "base/synchronization/lock.h"
@@ -252,11 +251,12 @@ void SettingsAppMonitor::AutomationControllerDelegate::MaybeInvokeChooser(
 
   // Invoke the dialog and record whether it was successful.
   Microsoft::WRL::ComPtr<IUIAutomationInvokePattern> invoke_pattern;
-  bool succeeded = SUCCEEDED(browser_button->GetCachedPatternAs(
-                       UIA_InvokePatternId, IID_PPV_ARGS(&invoke_pattern))) &&
-                   invoke_pattern && SUCCEEDED(invoke_pattern->Invoke());
-
-  UMA_HISTOGRAM_BOOLEAN("DefaultBrowser.Win10ChooserInvoked", succeeded);
+  if (!invoke_pattern) {
+    return;
+  }
+  browser_button->GetCachedPatternAs(UIA_InvokePatternId,
+                                     IID_PPV_ARGS(&invoke_pattern));
+  invoke_pattern->Invoke();
 }
 
 SettingsAppMonitor::SettingsAppMonitor(Delegate* delegate)

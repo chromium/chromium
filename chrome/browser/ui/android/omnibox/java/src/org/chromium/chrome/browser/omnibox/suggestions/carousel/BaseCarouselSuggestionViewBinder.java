@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions.carousel;
 
-
-
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;

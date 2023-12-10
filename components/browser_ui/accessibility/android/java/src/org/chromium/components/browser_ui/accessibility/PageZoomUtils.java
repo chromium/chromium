@@ -83,8 +83,10 @@ public class PageZoomUtils {
         // Zoom levels are from |PAGE_ZOOM_MINIMUM_ZOOM_LEVEL| to |PAGE_ZOOM_MAXIMUM_ZOOM_LEVEL|,
         // and these should map linearly to the seekbar's 0 - 100 range.
         float seekbarPercent = (float) newValue / PAGE_ZOOM_MAXIMUM_SEEKBAR_VALUE;
-        float chosenZoomLevel = PAGE_ZOOM_MINIMUM_ZOOM_LEVEL
-                + ((PAGE_ZOOM_MAXIMUM_ZOOM_LEVEL - PAGE_ZOOM_MINIMUM_ZOOM_LEVEL) * seekbarPercent);
+        float chosenZoomLevel =
+                PAGE_ZOOM_MINIMUM_ZOOM_LEVEL
+                        + ((PAGE_ZOOM_MAXIMUM_ZOOM_LEVEL - PAGE_ZOOM_MINIMUM_ZOOM_LEVEL)
+                                * seekbarPercent);
 
         // The zoom level maps internally to a zoom factor, which is the exponent that
         // |kTextSizeMultiplierRatio| = 1.2 is raised to. For example, 1.2^-3.8 = 0.50, or
@@ -109,8 +111,9 @@ public class PageZoomUtils {
         // exponent to get the zoom level. Find where this level sits proportionately between the
         // min and max level, and use that percentage as the corresponding seek value.
         double zoomLevel = convertZoomFactorToZoomLevel(zoomFactor);
-        double zoomLevelPercent = (double) (zoomLevel - PAGE_ZOOM_MINIMUM_ZOOM_LEVEL)
-                / (PAGE_ZOOM_MAXIMUM_ZOOM_LEVEL - PAGE_ZOOM_MINIMUM_ZOOM_LEVEL);
+        double zoomLevelPercent =
+                (double) (zoomLevel - PAGE_ZOOM_MINIMUM_ZOOM_LEVEL)
+                        / (PAGE_ZOOM_MAXIMUM_ZOOM_LEVEL - PAGE_ZOOM_MINIMUM_ZOOM_LEVEL);
 
         return (int) Math.round(PAGE_ZOOM_MAXIMUM_SEEKBAR_VALUE * zoomLevelPercent);
     }
@@ -191,8 +194,8 @@ public class PageZoomUtils {
      * @return boolean
      */
     public static boolean hasUserSetShouldAlwaysShowZoomMenuItemOption() {
-        return ContextUtils.getAppSharedPreferences().contains(
-                AccessibilityConstants.PAGE_ZOOM_ALWAYS_SHOW_MENU_ITEM);
+        return ContextUtils.getAppSharedPreferences()
+                .contains(AccessibilityConstants.PAGE_ZOOM_ALWAYS_SHOW_MENU_ITEM);
     }
 
     /**
@@ -202,8 +205,8 @@ public class PageZoomUtils {
      * @return boolean
      */
     public static boolean shouldAlwaysShowZoomMenuItem() {
-        return ContextUtils.getAppSharedPreferences().getBoolean(
-                AccessibilityConstants.PAGE_ZOOM_ALWAYS_SHOW_MENU_ITEM, false);
+        return ContextUtils.getAppSharedPreferences()
+                .getBoolean(AccessibilityConstants.PAGE_ZOOM_ALWAYS_SHOW_MENU_ITEM, false);
     }
 
     /**
@@ -279,8 +282,9 @@ public class PageZoomUtils {
                     "currentZoomFactor should be greater than " + AVAILABLE_ZOOM_FACTORS[0]);
         } else if (!decrease
                 && currentZoomFactor >= AVAILABLE_ZOOM_FACTORS[AVAILABLE_ZOOM_FACTORS.length - 1]) {
-            throw new IllegalArgumentException("currentZoomFactor should be less than "
-                    + AVAILABLE_ZOOM_FACTORS[AVAILABLE_ZOOM_FACTORS.length - 1]);
+            throw new IllegalArgumentException(
+                    "currentZoomFactor should be less than "
+                            + AVAILABLE_ZOOM_FACTORS[AVAILABLE_ZOOM_FACTORS.length - 1]);
         }
 
         // BinarySearch will return the index of the first value equal to the given value.

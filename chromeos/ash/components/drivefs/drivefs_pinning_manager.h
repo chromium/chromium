@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_COMPONENTS_DRIVEFS_DRIVEFS_PINNING_MANAGER_H_
 
 #include <algorithm>
+#include <optional>
 #include <ostream>
 #include <unordered_map>
 #include <unordered_set>
@@ -34,7 +35,6 @@
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "components/drive/file_errors.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace drivefs::pinning {
 
@@ -436,7 +436,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinningManager
   // Callback used to query battery saver state from PowerManagerClient on
   // startup.
   void OnGotBatterySaverState(
-      absl::optional<power_manager::BatterySaverModeState> state);
+      std::optional<power_manager::BatterySaverModeState> state);
 
   // Starts and stops monitoring space using the SpacedClient::Observer.
   bool StartMonitoringSpace();

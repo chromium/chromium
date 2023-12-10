@@ -164,7 +164,7 @@ void HTMLHtmlElement::PropagateWritingModeAndDirectionFromBody() {
       continue;
     if (is_orthogonal) {
       // If the old and new writing-modes are orthogonal, reattach the layout
-      // objects to make sure we create or remove any LayoutNGTextCombine.
+      // objects to make sure we create or remove any LayoutTextCombine.
       node->SetNeedsReattachLayoutTree();
       continue;
     }

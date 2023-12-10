@@ -19,7 +19,7 @@
 #include "components/sync_bookmarks/bookmark_sync_service.h"
 #include "components/undo/bookmark_undo_service.h"
 #include "ios/chrome/browser/favicon/favicon_service_factory.h"
-#include "ios/chrome/browser/history/history_service_factory.h"
+#include "ios/chrome/browser/history/model/history_service_factory.h"
 
 BookmarkClientImpl::BookmarkClientImpl(
     ChromeBrowserState* browser_state,
@@ -40,6 +40,10 @@ void BookmarkClientImpl::Init(bookmarks::BookmarkModel* model) {
     managed_bookmark_service_->BookmarkModelCreated(model);
   }
   model_ = model;
+}
+
+bool BookmarkClientImpl::AreFoldersForAccountStorageAllowed() {
+  return false;
 }
 
 base::CancelableTaskTracker::TaskId

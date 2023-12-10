@@ -264,7 +264,8 @@ class ChromePrivateNetworkAccessOriginTrialTest
 };
 
 IN_PROC_BROWSER_TEST_F(ChromePrivateNetworkAccessOriginTrialTest,
-                       ValidTrialToken) {
+                       // TODO(crbug.com/1508819): Re-enable this test
+                       DISABLED_ValidTrialToken) {
   // Origin Trial key should be valid.
   EXPECT_EQ(blink::OriginTrialTokenStatus::kSuccess,
             blink::TrialTokenValidator()
@@ -323,7 +324,8 @@ IN_PROC_BROWSER_TEST_F(ChromePrivateNetworkAccessOriginTrialTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ChromePrivateNetworkAccessOriginTrialTest,
-                       RequestDevicesWithTrialTokenOnRequestHeader) {
+                       // TODO(crbug.com/1508819): Re-enable this test
+                       DISABLED_RequestDevicesWithTrialTokenOnRequestHeader) {
   content::URLLoaderInterceptor interceptor(base::BindLambdaForTesting(
       [&](content::URLLoaderInterceptor::RequestParams* params) {
         if (params->url_request.url.DeprecatedGetOriginAsURL() ==
@@ -369,7 +371,8 @@ IN_PROC_BROWSER_TEST_F(ChromePrivateNetworkAccessOriginTrialTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ChromePrivateNetworkAccessOriginTrialTest,
-                       RequestDevicesWithTrialTokenOnMetaTag) {
+                       // TODO(crbug.com/1508819): Re-enable this test
+                       DISABLED_RequestDevicesWithTrialTokenOnMetaTag) {
   content::URLLoaderInterceptor interceptor(base::BindLambdaForTesting(
       [&](content::URLLoaderInterceptor::RequestParams* params) {
         if (params->url_request.url.DeprecatedGetOriginAsURL() ==
@@ -434,7 +437,8 @@ class ChromePrivateNetworkAccessOriginTrialDisabledByChromeFlagTest
 
 IN_PROC_BROWSER_TEST_F(
     ChromePrivateNetworkAccessOriginTrialDisabledByChromeFlagTest,
-    RequestDevicesWithTrialTokenOnRequestHeader) {
+    // TODO(crbug.com/1508819): Re-enable this test
+    DISABLED_RequestDevicesWithTrialTokenOnRequestHeader) {
   content::URLLoaderInterceptor interceptor(base::BindLambdaForTesting(
       [&](content::URLLoaderInterceptor::RequestParams* params) {
         if (params->url_request.url.DeprecatedGetOriginAsURL() ==
@@ -481,7 +485,8 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(
     ChromePrivateNetworkAccessOriginTrialDisabledByChromeFlagTest,
-    RequestDevicesWithTrialTokenOnMetaTag) {
+    // TODO(crbug.com/1508819): Re-enable this test
+    DISABLED_RequestDevicesWithTrialTokenOnMetaTag) {
   content::URLLoaderInterceptor interceptor(base::BindLambdaForTesting(
       [&](content::URLLoaderInterceptor::RequestParams* params) {
         if (params->url_request.url.DeprecatedGetOriginAsURL() ==

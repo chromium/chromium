@@ -66,6 +66,9 @@ bool FakeVideoEncodeAccelerator::Initialize(
       base::BindOnce(&FakeVideoEncodeAccelerator::DoRequireBitstreamBuffers,
                      weak_this_factory_.GetWeakPtr(), kMinimumInputCount,
                      config.input_visible_size, kMinimumOutputBufferSize));
+  VideoEncoderInfo encoder_info;
+  encoder_info.supports_frame_size_change = true;
+  NotifyEncoderInfoChange(encoder_info);
   return true;
 }
 
@@ -87,18 +90,26 @@ void FakeVideoEncodeAccelerator::UseOutputBitstreamBuffer(
 
 void FakeVideoEncodeAccelerator::RequestEncodingParametersChange(
     const Bitrate& bitrate,
-    uint32_t framerate) {
+    uint32_t framerate,
+    const absl::optional<gfx::Size>& size) {
   // Reject bitrate mode changes.
   if (stored_bitrates_.empty() ||
       stored_bitrates_.back().mode() == bitrate.mode()) {
     stored_bitrates_.push_back(bitrate);
   }
+  if (size.has_value()) {
+    stored_frame_sizes_.push_back(size.value());
+  }
 }
 
 void FakeVideoEncodeAccelerator::RequestEncodingParametersChange(
     const VideoBitrateAllocation& bitrate,
-    uint32_t framerate) {
+    uint32_t framerate,
+    const absl::optional<gfx::Size>& size) {
   stored_bitrate_allocations_.push_back(bitrate);
+  if (size.has_value()) {
+    stored_frame_sizes_.push_back(size.value());
+  }
 }
 
 void FakeVideoEncodeAccelerator::Destroy() {

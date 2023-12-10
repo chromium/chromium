@@ -10,7 +10,7 @@
 
 #include "base/no_destructor.h"
 #include "content/browser/browser_url_handler_impl.h"
-#include "content/browser/portal/portal.h"
+#include "content/browser/display_cutout/display_cutout_host_impl.h"
 #include "content/browser/preloading/prerender/prerender_host.h"
 #include "content/browser/preloading/prerender/prerender_host_registry.h"
 #include "content/browser/renderer_host/cross_process_frame_connector.h"
@@ -420,34 +420,6 @@ base::UnguessableToken TestWebContents::GetAudioGroupId() {
   return audio_group_id_;
 }
 
-const blink::PortalToken& TestWebContents::CreatePortal(
-    std::unique_ptr<WebContents> web_contents) {
-  auto portal =
-      std::make_unique<Portal>(GetPrimaryMainFrame(), std::move(web_contents));
-  const blink::PortalToken& token = portal->portal_token();
-  // Create stub RemoteFrameInterfaces.
-  auto remote_frame_interfaces =
-      blink::mojom::RemoteFrameInterfacesFromRenderer::New();
-  remote_frame_interfaces->frame_host_receiver =
-      mojo::AssociatedRemote<blink::mojom::RemoteFrameHost>()
-          .BindNewEndpointAndPassDedicatedReceiver();
-  mojo::AssociatedRemote<blink::mojom::RemoteFrame> frame;
-  std::ignore = frame.BindNewEndpointAndPassDedicatedReceiver();
-  remote_frame_interfaces->frame = frame.Unbind();
-
-  portal->CreateProxyAndAttachPortal(std::move(remote_frame_interfaces));
-  GetPrimaryMainFrame()->OnPortalCreatedForTesting(std::move(portal));
-  return token;
-}
-
-WebContents* TestWebContents::GetPortalContents(
-    const blink::PortalToken& portal_token) {
-  Portal* portal = GetPrimaryMainFrame()->FindPortalByToken(portal_token);
-  if (!portal)
-    return nullptr;
-  return portal->GetPortalContents();
-}
-
 void TestWebContents::SetPageFrozen(bool frozen) {
   is_page_frozen_ = frozen;
 }
@@ -470,7 +442,7 @@ int TestWebContents::AddPrerender(const GURL& url) {
 
   TestRenderFrameHost* rfhi = GetPrimaryMainFrame();
   return GetPrerenderHostRegistry()->CreateAndStartHost(PrerenderAttributes(
-      url, PrerenderTriggerType::kSpeculationRule,
+      url, PreloadingTriggerType::kSpeculationRule,
       /*embedder_histogram_suffix=*/"",
       blink::mojom::SpeculationTargetHint::kNoHint, Referrer(),
       blink::mojom::SpeculationEagerness::kEager,
@@ -532,7 +504,7 @@ void TestWebContents::ActivatePrerenderedPage(const GURL& url) {
   DCHECK_EQ(GetPrimaryMainFrame()->GetLastCommittedURL(), url);
 
   DCHECK(prerender_host_observer.was_activated());
-  DCHECK_EQ(registry->FindReservedHostById(prerender_host_id), nullptr);
+  DCHECK(!registry->HasReservedHost());
 }
 
 void TestWebContents::ActivatePrerenderedPageFromAddressBar(const GURL& url) {
@@ -554,7 +526,7 @@ void TestWebContents::ActivatePrerenderedPageFromAddressBar(const GURL& url) {
   DCHECK_EQ(GetPrimaryMainFrame()->GetLastCommittedURL(), url);
 
   DCHECK(prerender_host_observer.was_activated());
-  DCHECK_EQ(registry->FindReservedHostById(prerender_host_id), nullptr);
+  DCHECK(!registry->HasReservedHost());
 }
 
 base::TimeTicks TestWebContents::GetTabSwitchStartTime() {
@@ -572,6 +544,11 @@ void TestWebContents::SetOverscrollNavigationEnabled(bool enabled) {
 
 bool TestWebContents::GetOverscrollNavigationEnabled() {
   return overscroll_enabled_;
+}
+
+void TestWebContents::SetSafeAreaInsetsHost(
+    std::unique_ptr<SafeAreaInsetsHost> safe_area_insets_host) {
+  safe_area_insets_host_ = std::move(safe_area_insets_host);
 }
 
 }  // namespace content

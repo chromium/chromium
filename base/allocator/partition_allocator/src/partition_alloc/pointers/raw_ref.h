@@ -9,11 +9,11 @@
 #include <type_traits>
 #include <utility>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/augmentations/compiler_specific.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/compiler_specific.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_config.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/pointers/raw_ptr.h"
+#include "partition_alloc/partition_alloc_base/augmentations/compiler_specific.h"
+#include "partition_alloc/partition_alloc_base/compiler_specific.h"
+#include "partition_alloc/partition_alloc_buildflags.h"
+#include "partition_alloc/partition_alloc_config.h"
+#include "partition_alloc/pointers/raw_ptr.h"
 
 namespace base {
 
@@ -53,8 +53,15 @@ constexpr inline bool is_raw_ref_v = is_raw_ref<T>::value;
 // Unlike a native `T&` reference, a mutable `raw_ref<T>` can be changed
 // independent of the underlying `T`, similar to `std::reference_wrapper`. That
 // means the reference inside it can be moved and reassigned.
-template <class T, RawPtrTraits Traits = RawPtrTraits::kEmpty>
+template <class T, RawPtrTraits ReferenceTraits = RawPtrTraits::kEmpty>
 class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ref {
+ public:
+  // Users may specify `RawPtrTraits` via raw_ref's second template parameter
+  // `ReferenceTraits`, or specialization of `raw_ptr_traits::kTypeTraits<T>`.
+  constexpr static auto Traits =
+      ReferenceTraits | raw_ptr_traits::kTypeTraits<T>;
+
+ private:
   // operator* is used with the expectation of GetForExtraction semantics:
   //
   // raw_ref<Foo> foo_raw_ref = something;

@@ -67,9 +67,9 @@ class TestDelegate : public permissions::PermissionPrompt::Delegate {
     return false;
   }
   bool ShouldCurrentRequestUseQuietUI() const override { return false; }
-  absl::optional<permissions::PermissionUiSelector::QuietUiReason>
+  std::optional<permissions::PermissionUiSelector::QuietUiReason>
   ReasonForUsingQuietUi() const override {
-    return absl::nullopt;
+    return std::nullopt;
   }
   void SetDismissOnTabClose() override {}
   void SetPromptShown() override {}

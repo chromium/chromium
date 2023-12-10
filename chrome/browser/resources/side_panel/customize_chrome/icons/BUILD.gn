@@ -13,6 +13,7 @@ generate_grd("build_grdp") {
     "chrome_web_store.svg",
     "corner_new_tab_page.svg",
     "coupons.svg",
+    "generated_image.svg",
     "gm3_corner_new_tab_page.svg",
     "gm3_mini_new_tab_page.svg",
     "image.svg",

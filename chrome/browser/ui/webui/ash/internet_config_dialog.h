@@ -49,7 +49,7 @@ class InternetConfigDialog : public SystemWebDialogDelegate {
   ~InternetConfigDialog() override;
 
   // SystemWebDialogDelegate
-  const std::string& Id() override;
+  std::string Id() override;
 
   // ui::WebDialogDelegate
   void GetDialogSize(gfx::Size* size) const override;

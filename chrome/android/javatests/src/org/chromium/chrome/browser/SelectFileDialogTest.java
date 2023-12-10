@@ -52,14 +52,14 @@ public class SelectFileDialogTest {
     private static final String DATA_URL =
             UrlUtils.encodeHtmlDataUri(
                     "<html><head><meta name=\"viewport\"content=\"width=device-width,"
-                        + " initial-scale=2.0, maximum-scale=2.0\" /></head><body><form"
-                        + " action=\"about:blank\"><input id=\"input_file\" type=\"file\""
-                        + " /><br/><input id=\"input_text\" type=\"file\" accept=\"text/plain\""
-                        + " /><br/><input id=\"input_any\" type=\"file\" accept=\"*/*\""
-                        + " /><br/><input id=\"input_file_multiple\" type=\"file\" multiple /><br"
-                        + " /><input id=\"input_image\" type=\"file\" accept=\"image/*\" capture"
-                        + " /><br/><input id=\"input_audio\" type=\"file\" accept=\"audio/*\""
-                        + " capture /></form></body></html>");
+                            + " initial-scale=2.0, maximum-scale=2.0\" /></head><body><form"
+                            + " action=\"about:blank\"><input id=\"input_file\" type=\"file\""
+                            + " /><br/><input id=\"input_text\" type=\"file\" accept=\"text/plain\""
+                            + " /><br/><input id=\"input_any\" type=\"file\" accept=\"*/*\""
+                            + " /><br/><input id=\"input_file_multiple\" type=\"file\" multiple /><br"
+                            + " /><input id=\"input_image\" type=\"file\" accept=\"image/*\" capture"
+                            + " /><br/><input id=\"input_audio\" type=\"file\" accept=\"audio/*\""
+                            + " capture /></form></body></html>");
 
     private static class ActivityWindowAndroidForTest extends ActivityWindowAndroid {
         public Intent lastIntent;

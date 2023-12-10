@@ -93,7 +93,7 @@ GamepadBusType QueryBusType(IOHIDDeviceRef device) {
 
 GamepadDeviceMac::GamepadDeviceMac(int location_id,
                                    IOHIDDeviceRef device_ref,
-                                   base::StringPiece product_name,
+                                   std::string_view product_name,
                                    int vendor_id,
                                    int product_id)
     : location_id_(location_id),

@@ -168,7 +168,7 @@ void ProcessPriorityAggregator::OnProcessNodeAdded(
   DCHECK(!DataImpl::Get(process_node_impl));
   DataImpl* data = DataImpl::GetOrCreate(process_node_impl);
   DCHECK(data->IsEmpty());
-  DCHECK_EQ(base::TaskPriority::LOWEST, process_node_impl->priority());
+  DCHECK_EQ(base::TaskPriority::LOWEST, process_node_impl->GetPriority());
   DCHECK_EQ(base::TaskPriority::LOWEST, data->GetPriority());
 }
 

@@ -8,10 +8,10 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/memory/raw_ptr_exclusion.h"
-#include "base/strings/string_piece.h"
 
 class PrefService;
 
@@ -39,7 +39,7 @@ class DictionaryValueUpdate;
 //
 class ScopedDictionaryPrefUpdate {
  public:
-  ScopedDictionaryPrefUpdate(PrefService* service, base::StringPiece path);
+  ScopedDictionaryPrefUpdate(PrefService* service, std::string_view path);
 
   ScopedDictionaryPrefUpdate(const ScopedDictionaryPrefUpdate&) = delete;
   ScopedDictionaryPrefUpdate& operator=(const ScopedDictionaryPrefUpdate&) =

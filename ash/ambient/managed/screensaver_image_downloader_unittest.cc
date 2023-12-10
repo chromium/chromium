@@ -3,11 +3,12 @@
 // found in the LICENSE file.
 
 #include "ash/ambient/managed/screensaver_image_downloader.h"
-#include "build/build_config.h"
 
 #include <memory>
+#include <optional>
 
 #include "ash/ambient/metrics/managed_screensaver_metrics.h"
+#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -19,10 +20,10 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/repeating_test_future.h"
 #include "base/test/task_environment.h"
+#include "build/build_config.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -89,8 +90,8 @@ class ScreensaverImageDownloaderTest : public testing::Test {
   }
 
   base::FilePath GetExpectedFilePath(const std::string url) {
-    const std::string hash = base::SHA1HashString(url);
-    const std::string encoded_hash = base::HexEncode(hash.data(), hash.size());
+    auto hash = base::SHA1HashSpan(base::as_bytes(base::make_span(url)));
+    const std::string encoded_hash = base::HexEncode(hash);
     return test_download_folder_.AppendASCII(encoded_hash + kCacheFileExt);
   }
 
@@ -105,9 +106,7 @@ class ScreensaverImageDownloaderTest : public testing::Test {
     ASSERT_EQ(expected_images.size(), image_list.size());
 
     for (const auto& [path, file_content] : expected_images) {
-      bool found = std::find(image_list.begin(), image_list.end(), path) !=
-                   image_list.end();
-      ASSERT_TRUE(found);
+      ASSERT_TRUE(base::Contains(image_list, path));
       ASSERT_TRUE(base::PathExists(path));
 
       std::string actual_file_contents;

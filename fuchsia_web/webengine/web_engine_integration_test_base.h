@@ -13,7 +13,7 @@
 
 #include "base/command_line.h"
 #include "base/fuchsia/filtered_service_directory.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/test/task_environment.h"
 #include "fuchsia_web/common/test/test_navigation_listener.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"

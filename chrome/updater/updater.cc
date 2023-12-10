@@ -41,7 +41,6 @@
 #include "chrome/updater/util/util.h"
 #include "components/crash/core/common/crash_key.h"
 #include "components/crash/core/common/crash_keys.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_POSIX)
 #include "chrome/updater/ipc/ipc_support.h"
@@ -79,13 +78,15 @@ void ReinitializeLoggingAfterCrashHandler(UpdaterScope updater_scope) {
   InitLogging(updater_scope);
 }
 
-void InitializeCrashReporting(UpdaterScope updater_scope,
-                              const base::CommandLine& command_line) {
+void InitializeCrashKeys(const base::CommandLine& command_line) {
   crash_reporter::InitializeCrashKeys();
   static crash_reporter::CrashKeyString<16> crash_key_process_type(
       "process_type");
   crash_key_process_type.Set("updater");
   crash_keys::SetSwitchesFromCommandLine(command_line, nullptr);
+}
+
+void InitializeCrashReporting(UpdaterScope updater_scope) {
   if (!CrashClient::GetInstance()->InitializeCrashReporting(updater_scope)) {
     VLOG(1) << "Crash reporting is not available.";
     return;
@@ -111,7 +112,7 @@ int HandleUpdaterCommands(UpdaterScope updater_scope,
   // Starts and connects to the external crash handler as early as possible.
   StartCrashReporter(updater_scope, kUpdaterVersion);
 
-  InitializeCrashReporting(updater_scope, *command_line);
+  InitializeCrashReporting(updater_scope);
 
   // Make the process more resilient to memory allocation issues.
   base::EnableTerminationOnHeapCorruption();
@@ -292,7 +293,7 @@ int UpdaterMain(int argc, const char* const* argv) {
 #if BUILDFLAG(IS_WIN)
   *command_line = GetCommandLineLegacyCompatible();
 #endif
-
+  InitializeCrashKeys(*command_line);
   const UpdaterScope updater_scope = GetUpdaterScope();
   InitLogging(updater_scope);
   VLOG(1) << "Version: " << kUpdaterVersion << ", " << BuildFlavor() << ", "

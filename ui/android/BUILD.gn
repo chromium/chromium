@@ -224,6 +224,7 @@ android_resources("ui_java_resources") {
     "java/res/values-sw600dp/values.xml",
     "java/res/values-sw720dp/values.xml",
     "java/res/values-v31/colors.xml",
+    "java/res/values-v31/dimens.xml",
     "java/res/values/attrs.xml",
     "java/res/values/color_palette.xml",
     "java/res/values/dimens.xml",
@@ -305,6 +306,7 @@ android_library("ui_no_recycler_view_java") {
     "java/src/org/chromium/ui/base/SPenSupport.java",
     "java/src/org/chromium/ui/base/SelectFileDialog.java",
     "java/src/org/chromium/ui/base/TouchDevice.java",
+    "java/src/org/chromium/ui/base/UiAndroidFeatureList.java",
     "java/src/org/chromium/ui/base/UiAndroidFeatureMap.java",
     "java/src/org/chromium/ui/base/ViewAndroidDelegate.java",
     "java/src/org/chromium/ui/base/ViewUtils.java",
@@ -343,6 +345,8 @@ android_library("ui_no_recycler_view_java") {
     "java/src/org/chromium/ui/listmenu/ListMenuItemAdapter.java",
     "java/src/org/chromium/ui/listmenu/ListMenuItemProperties.java",
     "java/src/org/chromium/ui/listmenu/ListMenuItemViewBinder.java",
+    "java/src/org/chromium/ui/listmenu/ListSectionDividerProperties.java",
+    "java/src/org/chromium/ui/listmenu/ListSectionDividerViewBinder.java",
     "java/src/org/chromium/ui/modaldialog/DialogDismissalCause.java",
     "java/src/org/chromium/ui/modaldialog/ModalDialogManager.java",
     "java/src/org/chromium/ui/modaldialog/ModalDialogManagerHolder.java",
@@ -534,7 +538,7 @@ android_library("ui_java_test_support") {
   ]
 }
 
-android_resources("ui_javatest_resources") {
+android_resources("ui_junit_resources") {
   testonly = true
   sources = [
     "junit/res/layout/inflated_view.xml",
@@ -545,7 +549,8 @@ android_resources("ui_javatest_resources") {
   android_manifest = "junit/AndroidManifest.xml"
 }
 
-robolectric_binary("ui_junit_tests") {
+robolectric_library("ui_android_junit_tests") {
+  testonly = true
   resources_package = "org.chromium.ui"
   sources = [
     "junit/src/org/chromium/ui/AsyncViewProviderTest.java",
@@ -590,14 +595,17 @@ robolectric_binary("ui_junit_tests") {
     "junit/src/org/chromium/ui/widget/ViewRectProviderTest.java",
   ]
   deps = [
+    ":ui_android_features_java",
     ":ui_java",
+    ":ui_java_resources",
     ":ui_java_test_support",
-    ":ui_javatest_resources",
+    ":ui_junit_resources",
     ":ui_junit_test_support",
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
     "//base/test:test_support_java",
+    "//build/android:build_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
     "//third_party/androidx:androidx_asynclayoutinflater_asynclayoutinflater_java",
@@ -608,15 +616,13 @@ robolectric_binary("ui_junit_tests") {
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/hamcrest:hamcrest_java",
     "//third_party/jni_zero:jni_zero_java",
+    "//third_party/junit:junit",
     "//third_party/mockito:mockito_java",
     "//ui/accessibility:ax_base_java",
-    "//ui/android:ui_android_features_java",
     "//ui/base/ime/mojom:mojom_java",
     "//url:gurl_java",
     "//url:gurl_junit_test_support",
   ]
-  android_manifest = "junit/AndroidManifest.xml"
-  shared_libraries = [ "//url:libgurl_robolectric($robolectric_toolchain)" ]
 }
 
 test("ui_android_unittests") {
@@ -667,6 +673,20 @@ android_library("clipboard_java_test_support") {
   ]
 }
 
+android_resources("test_java_resources") {
+  testonly = true
+  sources = [
+    "test/java/res/layout/text_view_with_leading_bad_text_appearance.xml",
+    "test/java/res/layout/text_view_with_leading_direct.xml",
+    "test/java/res/layout/text_view_with_leading_no_leading.xml",
+    "test/java/res/layout/text_view_with_leading_style.xml",
+    "test/java/res/layout/text_view_with_leading_style_into_text_appearance.xml",
+    "test/java/res/layout/text_view_with_leading_text_appearance.xml",
+    "test/java/res/values/attrs.xml",
+    "test/java/res/values/styles.xml",
+  ]
+}
+
 android_library("ui_unit_device_javatests") {
   testonly = true
   resources_package = "org.chromium.ui"
@@ -676,10 +696,13 @@ android_library("ui_unit_device_javatests") {
     "java/src/org/chromium/ui/resources/dynamics/HardwareDrawTest.java",
     "java/src/org/chromium/ui/widget/TextViewWithTightWrapTest.java",
     "javatests/src/org/chromium/ui/base/ClipboardAndroidTest.java",
+    "junit/src/org/chromium/ui/widget/TextViewWithLeadingTest.java",
   ]
 
   deps = [
     ":clipboard_java_test_support",
+    ":test_java_resources",
+    ":ui_android_features_java",
     ":ui_java",
     ":ui_java_test_support",
     "//base:base_java",

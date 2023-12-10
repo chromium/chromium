@@ -1018,6 +1018,10 @@ void LoginDisplayHostWebUI::ShowGuestTosScreen() {
   StartWizard(GuestTosScreenView::kScreenId);
 }
 
+void LoginDisplayHostWebUI::ShowRemoteActivityNotificationScreen() {
+  StartWizard(RemoteActivityNotificationView::kScreenId);
+}
+
 void LoginDisplayHostWebUI::HideOobeDialog(bool saml_page_closed) {
   NOTREACHED();
 }
@@ -1057,17 +1061,17 @@ bool LoginDisplayHostWebUI::HasUserPods() {
   return false;
 }
 
-void LoginDisplayHostWebUI::VerifyOwnerForKiosk(base::OnceClosure) {
+void LoginDisplayHostWebUI::StartUserRecovery(const AccountId& account_id) {
   NOTREACHED();
 }
 
-void LoginDisplayHostWebUI::ShowPasswordChangedDialogLegacy(
-    const AccountId& account_id,
-    bool show_password_error) {
+void LoginDisplayHostWebUI::UseAlternativeAuthentication(
+    std::unique_ptr<UserContext> user_context,
+    bool online_password_mismatch) {
   NOTREACHED();
 }
 
-void LoginDisplayHostWebUI::StartCryptohomeRecovery(
+void LoginDisplayHostWebUI::RunLocalAuthentication(
     std::unique_ptr<UserContext> user_context) {
   NOTREACHED();
 }

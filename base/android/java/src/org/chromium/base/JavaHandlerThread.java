@@ -14,9 +14,7 @@ import org.jni_zero.NativeMethods;
 
 import java.lang.Thread.UncaughtExceptionHandler;
 
-/**
- * Thread in Java with an Android Handler. This class is not thread safe.
- */
+/** Thread in Java with an Android Handler. This class is not thread safe. */
 @JNINamespace("base::android")
 public class JavaHandlerThread {
     private final HandlerThread mThread;
@@ -49,24 +47,29 @@ public class JavaHandlerThread {
     @CalledByNative
     private void startAndInitialize(final long nativeThread, final long nativeEvent) {
         maybeStart();
-        new Handler(mThread.getLooper()).post(new Runnable() {
-            @Override
-            public void run() {
-                JavaHandlerThreadJni.get().initializeThread(nativeThread, nativeEvent);
-            }
-        });
+        new Handler(mThread.getLooper())
+                .post(
+                        new Runnable() {
+                            @Override
+                            public void run() {
+                                JavaHandlerThreadJni.get()
+                                        .initializeThread(nativeThread, nativeEvent);
+                            }
+                        });
     }
 
     @CalledByNative
     private void quitThreadSafely(final long nativeThread) {
         // Allow pending java tasks to run, but don't run any delayed or newly queued up tasks.
-        new Handler(mThread.getLooper()).post(new Runnable() {
-            @Override
-            public void run() {
-                mThread.quit();
-                JavaHandlerThreadJni.get().onLooperStopped(nativeThread);
-            }
-        });
+        new Handler(mThread.getLooper())
+                .post(
+                        new Runnable() {
+                            @Override
+                            public void run() {
+                                mThread.quit();
+                                JavaHandlerThreadJni.get().onLooperStopped(nativeThread);
+                            }
+                        });
         // Signal that new tasks queued up won't be run.
         mThread.getLooper().quitSafely();
     }
@@ -97,12 +100,13 @@ public class JavaHandlerThread {
     // it generates crash dumps and kills the process.
     @CalledByNative
     private void listenForUncaughtExceptionsForTesting() {
-        mThread.setUncaughtExceptionHandler(new UncaughtExceptionHandler() {
-            @Override
-            public void uncaughtException(Thread t, Throwable e) {
-                mUnhandledException = e;
-            }
-        });
+        mThread.setUncaughtExceptionHandler(
+                new UncaughtExceptionHandler() {
+                    @Override
+                    public void uncaughtException(Thread t, Throwable e) {
+                        mUnhandledException = e;
+                    }
+                });
     }
 
     @CalledByNative
@@ -113,6 +117,7 @@ public class JavaHandlerThread {
     @NativeMethods
     interface Natives {
         void initializeThread(long nativeJavaHandlerThread, long nativeEvent);
+
         void onLooperStopped(long nativeJavaHandlerThread);
     }
 }

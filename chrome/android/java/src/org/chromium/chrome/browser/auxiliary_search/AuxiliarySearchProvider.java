@@ -22,9 +22,7 @@ import org.chromium.url.GURL;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * This class provides information for the auxiliary search.
- */
+/** This class provides information for the auxiliary search. */
 public class AuxiliarySearchProvider {
     private static final int kNumTabsToSend = 100;
 
@@ -81,21 +79,23 @@ public class AuxiliarySearchProvider {
         for (int i = 0; i < tabList.getCount(); i++) {
             listTab.add(tabList.getTabAt(i));
         }
-        mAuxiliarySearchBridge.getNonSensitiveTabs(listTab, new Callback<List<Tab>>() {
-            @Override
-            public void onResult(List<Tab> tabs) {
-                var tabGroupBuilder = AuxiliarySearchTabGroup.newBuilder();
+        mAuxiliarySearchBridge.getNonSensitiveTabs(
+                listTab,
+                new Callback<List<Tab>>() {
+                    @Override
+                    public void onResult(List<Tab> tabs) {
+                        var tabGroupBuilder = AuxiliarySearchTabGroup.newBuilder();
 
-                for (Tab tab : tabs) {
-                    AuxiliarySearchEntry entry = tabToAuxiliarySearchEntry(tab);
-                    if (entry != null) {
-                        tabGroupBuilder.addTab(entry);
+                        for (Tab tab : tabs) {
+                            AuxiliarySearchEntry entry = tabToAuxiliarySearchEntry(tab);
+                            if (entry != null) {
+                                tabGroupBuilder.addTab(entry);
+                            }
+                        }
+
+                        callback.onResult(tabGroupBuilder.build());
                     }
-                }
-
-                callback.onResult(tabGroupBuilder.build());
-            }
-        });
+                });
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)

@@ -10,13 +10,11 @@
 #import "components/feed/core/v2/public/ios/pref_names.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/flags/chrome_switches.h"
-#import "ios/chrome/browser/ntp/features.h"
-#import "ios/chrome/browser/ntp/home/features.h"
 #import "ios/chrome/browser/search_engines/model/search_engines_app_interface.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/signin/capabilities_types.h"
-#import "ios/chrome/browser/signin/fake_system_identity.h"
+#import "ios/chrome/browser/signin/model/capabilities_types.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
@@ -165,10 +163,12 @@ id<GREYMatcher> mostlyNotVisible() {
   config.features_disabled.push_back(kEnableFeedAblation);
   // TODO(crbug.com/1403077): Scrolling issues when promo is enabled.
   config.features_disabled.push_back(kEnableDiscoverFeedTopSyncPromo);
-  config.features_disabled.push_back(kIOSSetUpList);
 
   if ([self isRunningTest:@selector(testLargeFakeboxFocus)]) {
     config.features_enabled.push_back(kIOSLargeFakebox);
+  }
+  if ([self isRunningTest:@selector(testMinimumHeight)]) {
+    config.features_enabled.push_back(kMagicStack);
   }
   return config;
 }
@@ -183,6 +183,7 @@ id<GREYMatcher> mostlyNotVisible() {
        forUserPref:base::SysUTF8ToNSString(feed::prefs::kArticlesListVisible)];
 
   self.defaultSearchEngine = [SearchEnginesAppInterface defaultSearchEngine];
+  [NewTabPageAppInterface disableSetUpList];
 }
 
 - (void)tearDown {
@@ -202,9 +203,9 @@ id<GREYMatcher> mostlyNotVisible() {
 
 // Tests that the collections shortcut are displayed and working.
 - (void)testCollectionShortcuts {
-  AppLaunchConfiguration config = self.appConfigurationForTestCase;
-  config.relaunch_policy = ForceRelaunchByCleanShutdown;
-  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
+  // Close NTP and reopen.
+  [ChromeEarlGrey closeAllTabs];
+  [ChromeEarlGrey openNewTab];
 
   // Check the Bookmarks.
   [[EarlGrey
@@ -999,11 +1000,6 @@ id<GREYMatcher> mostlyNotVisible() {
 }
 
 - (void)testMinimumHeight {
-  // TODO(crbug.com/1493412): Re-enable on iPad
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_DISABLED(@"Test disabled on iPad.");
-  }
-
   [ChromeEarlGreyAppInterface
       setBoolValue:NO
        forUserPref:base::SysUTF8ToNSString(prefs::kArticlesForYouEnabled)];
@@ -1025,24 +1021,13 @@ id<GREYMatcher> mostlyNotVisible() {
                     kContentSuggestionsMostVisitedAccessibilityIdentifierPrefix,
                     index])] assertWithMatcher:grey_sufficientlyVisible()];
   }
-  if (IsMagicStackEnabled()) {
-    // Just check for Magic Stack visibility since the top module shown may
-    // vary.
-    [[EarlGrey
-        selectElementWithMatcher:grey_accessibilityID(
-                                     kMagicStackViewAccessibilityIdentifier)]
-        assertWithMatcher:grey_sufficientlyVisible()];
-  } else {
-    for (NSInteger index = 0; index < 4; index++) {
-      [[EarlGrey
-          selectElementWithMatcher:
-              grey_accessibilityID([NSString
-                  stringWithFormat:
-                      @"%@%li",
-                      kContentSuggestionsShortcutsAccessibilityIdentifierPrefix,
-                      index])] assertWithMatcher:grey_sufficientlyVisible()];
-    }
-  }
+
+  // Just check for Magic Stack visibility since the top module shown may
+  // vary.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kMagicStackViewAccessibilityIdentifier)]
+      assertWithMatcher:grey_sufficientlyVisible()];
 
   // Ensures that fake omnibox visibility is correct.
   // On iPads, fake omnibox disappears and becomes real omnibox. On other
@@ -1268,9 +1253,13 @@ id<GREYMatcher> mostlyNotVisible() {
 
 // Test that signing in and signing out results in the NTP scrolled to the top
 // and not in some unexpected layout state.
-// TODO(crbug.com/1433014): Non-stop animation on discover feed after signing
-// out.
-- (void)FLAKY_testSignInSignOutScrolledToTop {
+- (void)testSignInSignOutScrolledToTop {
+// TODO(crbug.com/1433014): test failing on ipad device
+#if !TARGET_IPHONE_SIMULATOR
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"This test doesn't pass on iPad device.");
+  }
+#endif
   [[EarlGrey selectElementWithMatcher:chrome_test_util::NTPLogo()]
       assertWithMatcher:grey_sufficientlyVisible()];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::FakeOmnibox()]

@@ -77,14 +77,15 @@ bool FileSystemProviderCapabilitiesHandler::Parse(Extension* extension,
     return true;
   }
 
-  api::manifest_types::FileSystemProviderCapabilities idl_capabilities;
-  if (!api::manifest_types::FileSystemProviderCapabilities::Populate(
-          *section, idl_capabilities, *error)) {
+  auto idl_capabilities =
+      api::manifest_types::FileSystemProviderCapabilities::FromValue(*section);
+  if (!idl_capabilities.has_value()) {
+    *error = std::move(idl_capabilities).error();
     return false;
   }
 
   FileSystemProviderSource source = SOURCE_FILE;
-  switch (idl_capabilities.source) {
+  switch (idl_capabilities->source) {
     case api::manifest_types::FileSystemProviderSource::kFile:
       source = SOURCE_FILE;
       break;
@@ -100,9 +101,9 @@ bool FileSystemProviderCapabilitiesHandler::Parse(Extension* extension,
 
   std::unique_ptr<FileSystemProviderCapabilities> capabilities(
       new FileSystemProviderCapabilities(
-          idl_capabilities.configurable.value_or(false) /* false by default */,
-          idl_capabilities.watchable.value_or(false) /* false by default */,
-          idl_capabilities.multiple_mounts.value_or(
+          idl_capabilities->configurable.value_or(false) /* false by default */,
+          idl_capabilities->watchable.value_or(false) /* false by default */,
+          idl_capabilities->multiple_mounts.value_or(
               false) /* false by default */,
           source));
 

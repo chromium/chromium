@@ -20,7 +20,7 @@ from scripts import common
 # A list of filename regexes that are allowed to have static initializers.
 # If something adds a static initializer, revert it. We don't accept regressions
 # in static initializers.
-_SHARED_LINUX_CROS_SI_ALLOWLIST = {
+_LINUX_SI_ALLOWLIST = {
     'chrome': [
         # Only in coverage builds, not production.
         'InstrProfilingRuntime\\.cpp : ' +
@@ -33,30 +33,11 @@ _SHARED_LINUX_CROS_SI_ALLOWLIST = {
         # https://github.com/rust-lang/rust/blob/b08148f6a76010ea3d4e91d61245aa7aac59e4b4/library/std/src/sys/unix/args.rs#L107-L127
         # https://github.com/rust-lang/rust/issues/111921
         '.* : std::sys::unix::args::imp::ARGV_INIT_ARRAY::init_wrapper',
+
+        # Added by libgcc due to USE_EH_FRAME_REGISTRY.
+        'crtstuff\\.c : frame_dummy',
     ],
-    'nacl_helper_bootstrap': [],
 }
-
-# The lists for Linux and ChromeOS are similar, but some Linux-specific entries
-# need to be added below.  If something adds a static initializer, revert it. We
-# don't accept regressions in static initializers.
-_LINUX_SI_ALLOWLIST = copy.deepcopy(_SHARED_LINUX_CROS_SI_ALLOWLIST)
-_LINUX_SI_ALLOWLIST['chrome'].extend([
-    # Added by libgcc due to USE_EH_FRAME_REGISTRY.
-    'crtstuff\\.c : frame_dummy',
-])
-
-# The lists for Linux and ChromeOS are similar, but some ChromeOS-specific
-# entries need to be added below.  If something adds a static initializer,
-# revert it. We don't accept regressions in static initializers.
-_CROS_SI_ALLOWLIST = copy.deepcopy(_SHARED_LINUX_CROS_SI_ALLOWLIST)
-_CROS_SI_ALLOWLIST['chrome'].extend([
-    '.*000100.*',       # libc++ uses init_priority 100 for iostreams.
-])
-
-# `nacl_helper` has the same expectations on Linux and CrOS.
-_LINUX_SI_ALLOWLIST['nacl_helper'] = _LINUX_SI_ALLOWLIST['chrome']
-_CROS_SI_ALLOWLIST['nacl_helper'] = _LINUX_SI_ALLOWLIST['chrome']
 
 # Mac can use this list when a dsym is available, otherwise it will fall back
 # to checking the count.
@@ -80,6 +61,13 @@ FALLBACK_EXPECTED_IOS_SI_COUNT = 2
 
 # For coverage builds, also allow 'IntrProfilingRuntime.cpp'
 COVERAGE_BUILD_FALLBACK_EXPECTED_MAC_SI_COUNT = 4
+
+
+# Returns true if args contains properties which look like a chromeos-esque
+# builder.
+def check_if_chromeos(args):
+  return 'buildername' in args.properties and \
+      'chromeos' in args.properties['buildername']
 
 def get_mod_init_count(executable, hermetic_xcode_path):
   # Find the __DATA,__mod_init_func section.
@@ -199,10 +187,9 @@ def main_mac(src_dir, hermetic_xcode_path, allow_coverage_initializer = False):
   return ret
 
 
-def main_linux(src_dir, is_chromeos):
+def main_linux(src_dir):
   ret = 0
-  allowlist = _CROS_SI_ALLOWLIST if is_chromeos else \
-      _LINUX_SI_ALLOWLIST
+  allowlist = _LINUX_SI_ALLOWLIST
   for binary_name in allowlist:
     if not os.path.exists(binary_name):
       continue
@@ -256,9 +243,11 @@ def main_run(args):
         allow_coverage_initializer = '--allow-coverage-initializer' in \
           args.args)
   elif sys.platform.startswith('linux'):
-    is_chromeos = 'buildername' in args.properties and \
-        'chromeos' in args.properties['buildername']
-    rc = main_linux(src_dir, is_chromeos)
+    # TODO(crbug.com/1492865): Delete this assert if it's not seen to fail
+    # anywhere.
+    assert not check_if_chromeos(args), (
+        "This script is no longer supported for CrOS")
+    rc = main_linux(src_dir)
   else:
     sys.stderr.write('Unsupported platform %s.\n' % repr(sys.platform))
     return 2
@@ -273,7 +262,7 @@ def main_compile_targets(args):
   if sys.platform.startswith('darwin'):
     compile_targets = ['chrome']
   elif sys.platform.startswith('linux'):
-    compile_targets = ['chrome', 'nacl_helper', 'nacl_helper_bootstrap']
+    compile_targets = ['chrome']
   else:
     compile_targets = []
 

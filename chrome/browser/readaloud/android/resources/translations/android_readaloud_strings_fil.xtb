@@ -2,11 +2,14 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="fil">
 <translation id="1178581264944972037">I-pause</translation>
-<translation id="2558806128245168542">Mag-navigate pabalik</translation>
-<translation id="3523426587027570423">I-tap para isara ang “Makinig sa page na ito.”</translation>
+<translation id="1921351128855867012">I-fast forward nang <ph name="NUMBER_OF_SECONDS" /> (na) segundo</translation>
+<translation id="1984328900355667246">Hindi available ang pag-playback</translation>
+<translation id="3023502830214299618">Sa kasamaang-palad, hindi available ang pag-playback para sa page na ito sa ngayon. Pakisubukan ulit sa ibang pagkakataon.</translation>
+<translation id="3807208219231826020">I-scrub ang Pag-playback</translation>
+<translation id="385051799172605136">Bumalik</translation>
 <translation id="4431240646217225907">Mag-highlight ng text at mag-auto scroll</translation>
 <translation id="4654641641922242357">Player ng “Makinig sa page na ito.”</translation>
-<translation id="4731877163452936634">Bilis ng playback: <ph name="PLAYBACK_SPEED" />. I-click para baguhin.</translation>
+<translation id="4872475766448853257">Bumalik nang <ph name="NUMBER_OF_SECONDS" /> (na) segundo</translation>
 <translation id="5234971936051226002">Na-minimize ang player ng “Makinig sa page na ito.”</translation>
 <translation id="5596627076506792578">Higit pang opsyon</translation>
 <translation id="6315170314923504164">Voice</translation>
@@ -15,8 +18,8 @@
 <translation id="6831043979455480757">Isalin</translation>
 <translation id="6846298663435243399">Naglo-load…</translation>
 <translation id="7587250070160020374">Nagpi-play ngayon sa Chrome</translation>
-<translation id="7945822420239537236">I-forward nang <ph name="NUMBER_OF_SECONDS" /> (na) segundo</translation>
-<translation id="7972866381678406344">Bumalik nang <ph name="NUMBER_OF_SECONDS" /> (na) segundo</translation>
 <translation id="8136852699834914183">Hindi available ang pag-playback para sa page na ito.</translation>
+<translation id="8264989794233974275"><ph name="PLAYBACK_SPEED" />x na dagdagan/bawasan ang bilis.</translation>
+<translation id="8407011429883244666">Isara ang player.</translation>
 <translation id="8953618380150219653">Binuksan ang player ng “Makinig sa page na ito” sa buong taas.</translation>
 </translationbundle>

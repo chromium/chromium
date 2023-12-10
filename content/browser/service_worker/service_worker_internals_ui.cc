@@ -156,9 +156,9 @@ base::Value::Dict UpdateVersionInfo(const ServiceWorkerVersionInfo& version) {
   for (auto& it : version.clients) {
     base::Value::Dict client;
     client.Set("client_id", it.first);
-    if (it.second.type() == blink::mojom::ServiceWorkerClientType::kWindow) {
-      RenderFrameHost* render_frame_host =
-          RenderFrameHost::FromID(it.second.GetRenderFrameHostId());
+    if (absl::holds_alternative<GlobalRenderFrameHostId>(it.second)) {
+      RenderFrameHost* render_frame_host = RenderFrameHost::FromID(
+          absl::get<GlobalRenderFrameHostId>(it.second));
       if (render_frame_host) {
         client.Set("url", render_frame_host->GetLastCommittedURL().spec());
       }
@@ -417,9 +417,10 @@ void ServiceWorkerInternalsHandler::OnJavascriptDisallowed() {
       web_ui()->GetWebContents()->GetBrowserContext();
   // Safe to use base::Unretained(this) because ForEachLoadedStoragePartition is
   // synchronous.
-  browser_context->ForEachLoadedStoragePartition(base::BindRepeating(
-      &ServiceWorkerInternalsHandler::RemoveObserverFromStoragePartition,
-      base::Unretained(this)));
+  browser_context->ForEachLoadedStoragePartition(
+      [this](StoragePartition* partition) {
+        RemoveObserverFromStoragePartition(partition);
+      });
   weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
@@ -519,11 +520,10 @@ void ServiceWorkerInternalsHandler::HandleGetAllRegistrations(
   AllowJavascript();
   BrowserContext* browser_context =
       web_ui()->GetWebContents()->GetBrowserContext();
-  // Safe to use base::Unretained(this) because
-  // ForEachLoadedStoragePartition is synchronous.
-  browser_context->ForEachLoadedStoragePartition(base::BindRepeating(
-      &ServiceWorkerInternalsHandler::AddContextFromStoragePartition,
-      base::Unretained(this)));
+  browser_context->ForEachLoadedStoragePartition(
+      [this](StoragePartition* partition) {
+        AddContextFromStoragePartition(partition);
+      });
 }
 
 void ServiceWorkerInternalsHandler::AddContextFromStoragePartition(
@@ -565,25 +565,20 @@ void ServiceWorkerInternalsHandler::RemoveObserverFromStoragePartition(
   context->RemoveObserver(observer.get());
 }
 
-void ServiceWorkerInternalsHandler::FindStoragePartitionById(
-    int partition_id,
-    StoragePartition** result_partition,
-    StoragePartition* storage_partition) const {
-  auto it = observers_.find(reinterpret_cast<uintptr_t>(storage_partition));
-  if (it != observers_.end() && partition_id == it->second->partition_id()) {
-    *result_partition = storage_partition;
-  }
-}
-
 bool ServiceWorkerInternalsHandler::GetServiceWorkerContext(
     int partition_id,
     scoped_refptr<ServiceWorkerContextWrapper>* context) {
   BrowserContext* browser_context =
       web_ui()->GetWebContents()->GetBrowserContext();
   StoragePartition* result_partition(nullptr);
-  browser_context->ForEachLoadedStoragePartition(base::BindRepeating(
-      &ServiceWorkerInternalsHandler::FindStoragePartitionById,
-      base::Unretained(this), partition_id, &result_partition));
+  browser_context->ForEachLoadedStoragePartition(
+      [&](StoragePartition* partition) {
+        auto it = observers_.find(reinterpret_cast<uintptr_t>(partition));
+        if (it != observers_.end() &&
+            partition_id == it->second->partition_id()) {
+          result_partition = partition;
+        }
+      });
   if (!result_partition)
     return false;
   *context = static_cast<ServiceWorkerContextWrapper*>(

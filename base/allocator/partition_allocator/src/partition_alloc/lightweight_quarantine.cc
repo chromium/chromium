@@ -2,11 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/allocator/partition_allocator/src/partition_alloc/lightweight_quarantine.h"
+#include "partition_alloc/lightweight_quarantine.h"
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_page.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_root.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_stats.h"
+#include "partition_alloc/partition_page.h"
+#include "partition_alloc/partition_root.h"
 
 namespace partition_alloc::internal {
 
@@ -17,124 +16,90 @@ size_t GetObjectSize(void* object) {
 }
 }  // namespace
 
-template <typename QuarantineEntry, size_t CapacityCount>
-uint32_t LightweightQuarantineList<QuarantineEntry, CapacityCount>::Quarantine(
-    QuarantineEntry&& entry) {
-  const auto entry_size = GetObjectSize(entry.GetObject());
+template <size_t QuarantineCapacityCount>
+bool LightweightQuarantineBranch<QuarantineCapacityCount>::Quarantine(
+    void* object) {
+  const auto entry_size = GetObjectSize(object);
 
   const size_t capacity_in_bytes =
-      capacity_in_bytes_.load(std::memory_order_relaxed);
-  if (capacity_in_bytes < entry_size) {
-    // Even this single entry does not fit within the capacity.
-    root_->Free(entry.GetObject());
-    quarantine_miss_count_.fetch_add(1u, std::memory_order_relaxed);
-    return kInvalidEntryID;
-  }
+      root_.capacity_in_bytes_.load(std::memory_order_relaxed);
 
-  size_t entry_id;
   {
-    // It may be possible to narrow down the locked section, but we will not
-    // make any detailed adjustments for now, as we aim to create a lock-free
-    // implementation by having a thread-local list.
-    ScopedGuard guard(lock_);
+    ConditionalScopedGuard guard(lock_required_, lock_);
 
-    // Dequarantine some entries as required.
-    size_t count = count_.load(std::memory_order_acquire);
-    size_t size_in_bytes = size_in_bytes_.load(std::memory_order_acquire);
-    while (kCapacityCount < count + 1 ||
-           capacity_in_bytes < size_in_bytes + entry_size) {
-      PA_DCHECK(0 < count);
-      // As quarantined entries are shuffled, picking last entry is equivalent
-      // to picking random entry.
-      void* to_free =
-          slots_[entry_ids_[count - 1] & kSlotIndexMask].GetObject();
-      size_t to_free_size = GetObjectSize(to_free);
-
-      PA_DCHECK(to_free);
-      // We don't guarantee the deferred `Free()` has the same `FreeFlags`.
-      root_->Free<FreeFlags::kNoHooks>(to_free);
-
-      // Increment the counter embedded in the entry id.
-      // This helps to identify the entry associated with this slot.
-      entry_ids_[count - 1] += kCapacityCount;
-      if (PA_UNLIKELY(entry_ids_[count - 1] == kInvalidEntryID)) {
-        // Increment again so that it does not collide with the invalid id.
-        entry_ids_[count - 1] += kCapacityCount;
-      }
-
-      count--;
-      size_in_bytes -= to_free_size;
-      // Contents of `slots_[...]` remains  as is, to keep the free-time
-      // information as much as possible.
+    const size_t size_in_bytes_held_by_others =
+        root_.size_in_bytes_.load(std::memory_order_relaxed) -
+        branch_size_in_bytes_;
+    if (capacity_in_bytes < size_in_bytes_held_by_others + entry_size) {
+      // Even if this branch dequarantines all entries held by it, this entry
+      // cannot fit within the capacity.
+      root_.allocator_root_.template Free<FreeFlags::kNoHooks>(object);
+      root_.quarantine_miss_count_.fetch_add(1u, std::memory_order_relaxed);
+      return false;
     }
 
-    // Obtain an entry id.
-    PA_DCHECK(count < kCapacityCount);
-    entry_id = entry_ids_[count];
-    count++;
-    size_in_bytes += entry_size;
+    // Dequarantine some entries as required.
+    PurgeInternal(kQuarantineCapacityCount - 1, capacity_in_bytes - entry_size);
 
     // Update stats (locked).
-    count_.store(count, std::memory_order_release);
-    size_in_bytes_.store(size_in_bytes, std::memory_order_release);
+    branch_count_++;
+    PA_DCHECK(branch_count_ <= kQuarantineCapacityCount);
+    branch_size_in_bytes_ += entry_size;
+    PA_DCHECK(branch_size_in_bytes_ <= capacity_in_bytes);
 
-    // Swap randomly so that the quarantine indices remain shuffled.
+    slots_[branch_count_ - 1] = object;
+
+    // Swap randomly so that the quarantine list remain shuffled.
     // This is not uniformly random, but sufficiently random.
-    const size_t random_index = random_.RandUint32() % count;
-    std::swap(entry_ids_[random_index], entry_ids_[count - 1]);
-
-    auto& slot = slots_[entry_id & kSlotIndexMask];
-    slot.entry_id = entry_id;
-    slot.entry = std::move(entry);
+    const size_t random_index = random_.RandUint32() % branch_count_;
+    std::swap(slots_[random_index], slots_[branch_count_ - 1]);
   }
 
   // Update stats (not locked).
-  cumulative_count_.fetch_add(1, std::memory_order_relaxed);
-  cumulative_size_in_bytes_.fetch_add(entry_size, std::memory_order_relaxed);
-  return entry_id;
+  root_.count_.fetch_add(1, std::memory_order_relaxed);
+  root_.size_in_bytes_.fetch_add(entry_size, std::memory_order_relaxed);
+  root_.cumulative_count_.fetch_add(1, std::memory_order_relaxed);
+  root_.cumulative_size_in_bytes_.fetch_add(entry_size,
+                                            std::memory_order_relaxed);
+  return true;
 }
 
-template <typename QuarantineEntry, size_t CapacityCount>
-void LightweightQuarantineList<QuarantineEntry, CapacityCount>::AccumulateStats(
-    LightweightQuarantineStats& stats) const {
-  stats.count += count_.load(std::memory_order_relaxed);
-  stats.size_in_bytes += size_in_bytes_.load(std::memory_order_relaxed);
-  stats.cumulative_count += cumulative_count_.load(std::memory_order_relaxed);
-  stats.cumulative_size_in_bytes +=
-      cumulative_size_in_bytes_.load(std::memory_order_relaxed);
-  stats.quarantine_miss_count +=
-      quarantine_miss_count_.load(std::memory_order_relaxed);
-}
+template <size_t QuarantineCapacityCount>
+void LightweightQuarantineBranch<QuarantineCapacityCount>::PurgeInternal(
+    size_t target_branch_count,
+    size_t target_size_in_bytes) {
+  size_t size_in_bytes = root_.size_in_bytes_.load(std::memory_order_acquire);
+  int64_t freed_count = 0;
+  int64_t freed_size_in_bytes = 0;
 
-template <typename QuarantineEntry, size_t CapacityCount>
-bool LightweightQuarantineList<QuarantineEntry, CapacityCount>::
-    IsQuarantinedForTesting(void* object) {
-  ScopedGuard guard(lock_);
-  for (size_t i = 0; i < count_; i++) {
-    if (slots_[entry_ids_[i] & kSlotIndexMask].GetObject() == object) {
-      return true;
-    }
-  }
-  return false;
-}
+  // Dequarantine some entries as required.
+  while (branch_count_ && (target_branch_count < branch_count_ ||
+                           target_size_in_bytes < size_in_bytes)) {
+    // As quarantined entries are shuffled, picking last entry is equivalent
+    // to picking random entry.
+    void* to_free = slots_[branch_count_ - 1];
+    size_t to_free_size = GetObjectSize(to_free);
 
-template <typename QuarantineEntry, size_t CapacityCount>
-void LightweightQuarantineList<QuarantineEntry, CapacityCount>::Purge() {
-  ScopedGuard guard(lock_);
-
-  size_t count = count_.load(std::memory_order_acquire);
-  while (0 < count) {
-    void* to_free = slots_[entry_ids_[count - 1] & kSlotIndexMask].GetObject();
     PA_DCHECK(to_free);
-    root_->Free<FreeFlags::kNoHooks>(to_free);
-    count--;
+    // We don't guarantee the deferred `Free()` has the same `FreeFlags`.
+    root_.allocator_root_.template Free<FreeFlags::kNoHooks>(to_free);
+
+    freed_count++;
+    freed_size_in_bytes += to_free_size;
+
+    branch_count_--;
+    size_in_bytes -= to_free_size;
   }
-  count_.store(0, std::memory_order_release);
-  size_in_bytes_.store(0, std::memory_order_release);
-  std::iota(entry_ids_.begin(), entry_ids_.end(), 0);
+
+  branch_size_in_bytes_ -= freed_size_in_bytes;
+  root_.count_.fetch_sub(freed_count, std::memory_order_relaxed);
+  root_.size_in_bytes_.fetch_sub(freed_size_in_bytes,
+                                 std::memory_order_release);
 }
 
-template class PA_EXPORT_TEMPLATE_DEFINE(PA_COMPONENT_EXPORT(PARTITION_ALLOC))
-    LightweightQuarantineList<LightweightQuarantineEntry, 1024>;
+#define EXPORT_TEMPLATE \
+  template class PA_EXPORT_TEMPLATE_DEFINE(PA_COMPONENT_EXPORT(PARTITION_ALLOC))
+EXPORT_TEMPLATE LightweightQuarantineBranch<1024>;
+#undef EXPORT_TEMPLATE
 
 }  // namespace partition_alloc::internal

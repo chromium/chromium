@@ -1611,7 +1611,7 @@ testcase.dirContextMenuComputers = async () => {
     ['#cut', true],
     ['#copy', true],
     ['#paste-into-folder', false],
-    ['#rename', true],
+    ['#rename', false],
     ['#delete', false],
     ['#new-folder', false],
   ];

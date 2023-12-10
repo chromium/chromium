@@ -1,5 +1,4 @@
 This is a testharness.js-based test.
-[PASS] RLO 1
 [FAIL] RLO 2
   assert_equals: expected 104 but got 111
 [FAIL] RLO 3
@@ -8,7 +7,6 @@ This is a testharness.js-based test.
   assert_equals: expected 104 but got 111
 [FAIL] RLO 5
   assert_equals: expected 104 but got 111
-[PASS] RLE 1
 [FAIL] RLE 2
   assert_equals: expected 101 but got 108
 [FAIL] RLE 3
@@ -17,7 +15,6 @@ This is a testharness.js-based test.
   assert_equals: expected 101 but got 108
 [FAIL] RLE 5
   assert_equals: expected 101 but got 108
-[PASS] RLI 1
 [FAIL] RLI 2
   assert_equals: expected 92 but got 99
 [FAIL] RLI 3
@@ -26,7 +23,6 @@ This is a testharness.js-based test.
   assert_equals: expected 92 but got 99
 [FAIL] RLI 5
   assert_equals: expected 92 but got 99
-[PASS] RLM 1
 [FAIL] RLM 2
   assert_equals: expected 110 but got 117
 [FAIL] RLM 3

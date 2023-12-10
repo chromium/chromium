@@ -21,6 +21,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "chrome/browser/ash/arc/enterprise/cert_store/cert_store_service.h"
 #include "chrome/browser/ash/arc/keymaster/arc_keymaster_bridge.h"
 #include "chrome/browser/ash/arc/keymint/arc_keymint_bridge.h"
@@ -185,7 +186,7 @@ class FakeArcKeymasterBridge : public ArcKeymasterBridge {
   std::vector<keymaster::mojom::ChromeOsKeyPtr> keys_;
 };
 
-std::unique_ptr<KeyedService> BuildFakeArcKeymasterBridge(
+std::unique_ptr<FakeArcKeymasterBridge> BuildFakeArcKeymasterBridge(
     content::BrowserContext* profile) {
   return std::make_unique<FakeArcKeymasterBridge>(profile);
 }
@@ -211,15 +212,9 @@ class FakeArcKeyMintBridge : public ArcKeyMintBridge {
   std::vector<keymint::mojom::ChromeOsKeyPtr> keys_;
 };
 
-std::unique_ptr<KeyedService> BuildFakeArcKeyMintBridge(
+std::unique_ptr<FakeArcKeyMintBridge> BuildFakeArcKeyMintBridge(
     content::BrowserContext* profile) {
   return std::make_unique<FakeArcKeyMintBridge>(profile);
-}
-
-std::unique_ptr<KeyedService> BuildCertStoreService(
-    std::unique_ptr<FakeArcCertInstaller> installer,
-    content::BrowserContext* profile) {
-  return std::make_unique<CertStoreService>(profile, std::move(installer));
 }
 
 // The following series of functions related to IsSystemSlotAvailable use the
@@ -471,26 +466,26 @@ void CertStoreServiceTest::SetUpOnMainThread() {
 
   if (test_data_.should_use_arc_keymint) {
     // Use fake ArcKeyMintBridge.
-    ArcKeyMintBridge::GetFactory()->SetTestingFactoryAndUse(
-        profile(), base::BindRepeating(&BuildFakeArcKeyMintBridge));
-    auto* keymint_bridge = ArcKeyMintBridge::GetForBrowserContext(profile());
-    keymint_bridge_ = static_cast<FakeArcKeyMintBridge*>(keymint_bridge);
+    keymint_bridge_ =
+        ArcKeyMintBridge::GetFactory()->SetTestingSubclassFactoryAndUse(
+            profile(), base::BindRepeating(&BuildFakeArcKeyMintBridge));
   } else {
     // Use fake ArcKeymasterBridge.
-    ArcKeymasterBridge::GetFactory()->SetTestingFactoryAndUse(
-        profile(), base::BindRepeating(&BuildFakeArcKeymasterBridge));
-    auto* keymaster_bridge =
-        ArcKeymasterBridge::GetForBrowserContext(profile());
-    keymaster_bridge_ = static_cast<FakeArcKeymasterBridge*>(keymaster_bridge);
+    keymaster_bridge_ =
+        ArcKeymasterBridge::GetFactory()->SetTestingSubclassFactoryAndUse(
+            profile(), base::BindRepeating(&BuildFakeArcKeymasterBridge));
   }
 
   // Use fake ArcCertInstaller in CertStoreService.
-  auto installer = std::make_unique<FakeArcCertInstaller>(
-      profile(), std::make_unique<policy::RemoteCommandsQueue>());
-  installer_ = installer.get();
-  CertStoreService::GetFactory()->SetTestingFactoryAndUse(
-      profile(), base::BindRepeating(&BuildCertStoreService,
-                                     base::Passed(std::move(installer))));
+  CertStoreService::GetFactory()->SetTestingSubclassFactoryAndUse(
+      profile(), base::BindLambdaForTesting([&](content::BrowserContext*) {
+        auto installer = std::make_unique<FakeArcCertInstaller>(
+            profile(), std::make_unique<policy::RemoteCommandsQueue>());
+        CHECK(!installer_);
+        installer_ = installer.get();
+        return std::make_unique<CertStoreService>(profile(),
+                                                  std::move(installer));
+      }));
 
   ASSERT_TRUE(IsSystemSlotAvailable(profile()));
 }

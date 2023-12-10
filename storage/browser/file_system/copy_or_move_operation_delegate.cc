@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/auto_reset.h"
+#include "base/check_is_test.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
@@ -237,6 +238,10 @@ class CopyOrMoveOperationDelegate::CopyOrMoveImpl {
 };
 
 namespace {
+
+// A non-owning pointer. Whoever calls `SetErrorUrlForTest` of
+// `CopyOrMoveOperationDelegate` should take care of its lifespan.
+const FileSystemURL* g_error_url_for_test = nullptr;
 
 // Copies or moves a file on a (same) file system. Just delegate the operation
 // to |operation_runner|.
@@ -596,8 +601,8 @@ class StreamCopyOrMoveImpl
     // check metadata first.
     operation_runner_->GetMetadata(
         src_url_,
-        FileSystemOperation::GET_METADATA_FIELD_IS_DIRECTORY |
-            FileSystemOperation::GET_METADATA_FIELD_LAST_MODIFIED,
+        {storage::FileSystemOperation::GetMetadataField::kIsDirectory,
+         storage::FileSystemOperation::GetMetadataField::kLastModified},
         base::BindOnce(&StreamCopyOrMoveImpl::RunAfterGetMetadataForSource,
                        weak_factory_.GetWeakPtr(), std::move(callback)));
   }
@@ -1087,7 +1092,8 @@ void CopyOrMoveOperationDelegate::DoProcessFile(const FileSystemURL& src_url,
   // Register the running task.
   CopyOrMoveImpl* impl_ptr = impl.get();
   running_copy_set_[impl_ptr] = std::move(impl);
-  if (src_url == error_url_for_test_) {
+  if (g_error_url_for_test && src_url == *g_error_url_for_test) {
+    CHECK_IS_TEST();
     impl_ptr->ForceCopyErrorForTest();  // IN-TEST
   }
   impl_ptr->Run(base::BindOnce(&CopyOrMoveOperationDelegate::DidCopyOrMoveFile,
@@ -1130,7 +1136,7 @@ void CopyOrMoveOperationDelegate::PostProcessDirectory(
   }
 
   operation_runner()->GetMetadata(
-      src_url, FileSystemOperation::GET_METADATA_FIELD_LAST_MODIFIED,
+      src_url, {storage::FileSystemOperation::GetMetadataField::kLastModified},
       base::BindOnce(
           &CopyOrMoveOperationDelegate::PostProcessDirectoryAfterGetMetadata,
           weak_factory_.GetWeakPtr(), src_url, std::move(callback)));
@@ -1139,6 +1145,11 @@ void CopyOrMoveOperationDelegate::PostProcessDirectory(
 void CopyOrMoveOperationDelegate::PostTask(base::OnceClosure closure) {
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,
                                                            std::move(closure));
+}
+
+// static
+void CopyOrMoveOperationDelegate::SetErrorUrlForTest(const FileSystemURL* url) {
+  g_error_url_for_test = url;
 }
 
 void CopyOrMoveOperationDelegate::OnCancel() {

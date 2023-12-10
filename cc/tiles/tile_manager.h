@@ -39,6 +39,7 @@
 #include "cc/tiles/tile_draw_info.h"
 #include "cc/tiles/tile_manager_settings.h"
 #include "cc/tiles/tile_task_manager.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "ui/gfx/display_color_spaces.h"
 #include "url/gurl.h"
 
@@ -236,8 +237,8 @@ class CC_EXPORT TileManager : CheckerImageTrackerClient,
       // The raster here never really happened, cuz tests. So just add an
       // arbitrary sync token.
       if (resource.gpu_backing()) {
-        resource.gpu_backing()->mailbox =
-            gpu::Mailbox::GenerateForSharedImage();
+        resource.gpu_backing()->shared_image =
+            gpu::ClientSharedImage::CreateForTesting();
         resource.gpu_backing()->mailbox_sync_token.Set(
             gpu::GPU_IO, gpu::CommandBufferId::FromUnsafeValue(1), 1);
       }

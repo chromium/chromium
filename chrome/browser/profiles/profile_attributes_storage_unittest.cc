@@ -1798,7 +1798,7 @@ TEST_F(ProfileAttributesStorageTest, PersistGAIAPicture) {
   VerifyAndResetCallExpectations();
   ProfileAttributesEntry* entry =
       storage()->GetProfileAttributesWithPath(profile_path);
-  gfx::Image gaia_image(gfx::test::CreateImage());
+  gfx::Image gaia_image(gfx::test::CreateImage(100, 50));
 
   EXPECT_CALL(observer(), OnProfileAvatarChanged(profile_path)).Times(1);
   EXPECT_CALL(observer(), OnProfileHighResAvatarLoaded(profile_path)).Times(1);
@@ -1840,7 +1840,7 @@ TEST_F(ProfileAttributesStorageTest, EmptyGAIAInfo) {
   ProfileAttributesEntry* entry =
       storage()->GetProfileAttributesWithPath(profile_path);
 
-  gfx::Image gaia_image(gfx::test::CreateImage());
+  gfx::Image gaia_image(gfx::test::CreateImage(100, 50));
   EXPECT_CALL(observer(), OnProfileAvatarChanged(profile_path)).Times(1);
   EXPECT_CALL(observer(), OnProfileHighResAvatarLoaded(profile_path)).Times(1);
   entry->SetGAIAPicture("GAIA_IMAGE_URL_WITH_SIZE_0", gaia_image);
@@ -1889,7 +1889,7 @@ TEST_F(ProfileAttributesStorageTest, GetGaiaImageForAvatarMenu) {
   ProfileAttributesEntry* entry =
       storage()->GetProfileAttributesWithPath(profile_path);
 
-  gfx::Image gaia_image(gfx::test::CreateImage());
+  gfx::Image gaia_image(gfx::test::CreateImage(100, 50));
   EXPECT_CALL(observer(), OnProfileAvatarChanged(profile_path)).Times(1);
   EXPECT_CALL(observer(), OnProfileHighResAvatarLoaded(profile_path)).Times(1);
   entry->SetGAIAPicture("GAIA_IMAGE_URL_WITH_SIZE_0", gaia_image);

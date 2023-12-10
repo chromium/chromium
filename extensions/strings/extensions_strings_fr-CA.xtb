@@ -8,6 +8,7 @@
 <translation id="1420684932347524586">Échec de génération de clé privée RSA aléatoire.</translation>
 <translation id="1445572445564823378">Cette extension ralentit <ph name="PRODUCT_NAME" />. Vous devez la désactiver pour rétablir les performances de <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1468038450257740950">WebGL n'est pas pris en charge.</translation>
+<translation id="1610570795592207282">Échec de chargement du fichier css « <ph name="RELATIVE_PATH" /> » pour le script.</translation>
 <translation id="1803557475693955505">Échec de chargement de la page d'arrière-plan <ph name="BACKGROUND_PAGE" />.</translation>
 <translation id="2159915644201199628">Impossible de décoder l'image : « <ph name="IMAGE_NAME" /> ».</translation>
 <translation id="2350172092385603347">Localisation utilisée, mais les paramètres régionaux par défaut (default_locale) n'ont pas été indiqués dans le fichier manifeste.</translation>
@@ -18,14 +19,12 @@
 <translation id="3115238746683532089">Produit inconnu <ph name="PRODUCT_ID" /> du fournisseur <ph name="VENDOR_ID" /> (numéro de série <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">Échec lors du remplacement du fichier CRX. Vérifiez qu'il n'est pas en cours d'utilisation.</translation>
 <translation id="3163201441334626963">Produit inconnu <ph name="PRODUCT_ID" /> du fournisseur <ph name="VENDOR_ID" /></translation>
-<translation id="3302709122321372472">Échec de chargement du fichier css « <ph name="RELATIVE_PATH" /> » pour le script de contenu.</translation>
 <translation id="3369521687965833290">Impossible de décompacter l'extension. Pour effectuer cette opération en toute sécurité, vous devez disposer d'un chemin d'accès à votre répertoire de profils commençant par une lettre de lecteur et ne contenant ni jonction, ni point de montage, ni lien symbolique. Aucun chemin de ce type n'existe pour votre profil.</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (numéro de série <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> du fournisseur <ph name="VENDOR_ID" /> (numéro de série <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Vous devez indiquer un chemin valide comme valeur de clé privée.</translation>
 <translation id="388442998277590542">Échec de chargement de la page d'options « <ph name="OPTIONS_PAGE" /> ».</translation>
 <translation id="3984413272403535372">Une erreur s'est produite lors de la signature de l'extension.</translation>
-<translation id="39964277676607559">Impossible de charger le fichier JavaScript « <ph name="RELATIVE_PATH" /> » du script de contenu.</translation>
 <translation id="4115165561519362854">L’administrateur de cette machine nécessite la version <ph name="EXTENSION_VERSION" /> ou ultérieure de <ph name="EXTENSION_NAME" />. L'activation sera impossible tant que la mise à jour vers cette version (ou une version ultérieure) n'aura pas été effectuée.</translation>
 <translation id="4233778200880751280">Impossible de charger la page « <ph name="ABOUT_PAGE" /> ».</translation>
 <translation id="471800408830181311">Échec de création de la clé privée</translation>
@@ -33,6 +32,7 @@
 <translation id="4988792151665380515">Échec d'exportation de la clé publique</translation>
 <translation id="5026754133087629784">Affichage Web : <ph name="WEBVIEW_TAG_NAME" /></translation>
 <translation id="5098647635849512368">Impossible de trouver le chemin d'accès absolu du répertoire à empaqueter.</translation>
+<translation id="5160071981665899014">Échec de chargement du code JavaScript « <ph name="RELATIVE_PATH" /> » pour le script.</translation>
 <translation id="5356315618422219272">Appview : <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5436430103864390185">Les fenêtres mises en forme ne sont pas prises en charge.</translation>
 <translation id="5456409301717116725">Cette extension comprend le fichier de clé « <ph name="KEY_PATH" /> ». Vous ne voulez probablement pas continuer.</translation>

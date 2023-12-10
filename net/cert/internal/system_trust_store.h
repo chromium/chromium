@@ -41,7 +41,7 @@ class SystemTrustStore {
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
   // Returns the current version of the Chrome Root Store being used. If
   // Chrome Root Store is not in use, returns 0.
-  virtual int64_t chrome_root_store_version() = 0;
+  virtual int64_t chrome_root_store_version() const = 0;
 #endif
 };
 
@@ -66,10 +66,6 @@ CreateSystemTrustStoreChromeForTesting(
     std::unique_ptr<TrustStoreChrome> trust_store_chrome,
     std::unique_ptr<bssl::TrustStore> trust_store_system);
 #endif  // BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
-
-// Creates an instance of SystemTrustStore that initially does not have any
-// trust roots.
-NET_EXPORT std::unique_ptr<SystemTrustStore> CreateEmptySystemTrustStore();
 
 #if BUILDFLAG(IS_MAC)
 // Initializes trust cache on a worker thread, if the builtin verifier is

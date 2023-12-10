@@ -38,11 +38,6 @@ class CORE_EXPORT MultiColumnFragmentainerGroup {
  public:
   explicit MultiColumnFragmentainerGroup(const LayoutMultiColumnSet&);
 
-  const LayoutMultiColumnSet& ColumnSet() const { return *column_set_; }
-
-  bool IsFirstGroup() const;
-  bool IsLastGroup() const;
-
   // Position within the LayoutMultiColumnSet.
   LayoutUnit LogicalTop() const { return logical_top_; }
   void SetLogicalTop(LayoutUnit logical_top) { logical_top_ = logical_top; }
@@ -69,10 +64,6 @@ class CORE_EXPORT MultiColumnFragmentainerGroup {
   bool IsLogicalHeightKnown() const { return is_logical_height_known_; }
 
   LogicalOffset OffsetFromColumnSet() const;
-
-  // Return the block offset from the enclosing fragmentation context, if
-  // nested. In the coordinate space of the enclosing fragmentation context.
-  LayoutUnit BlockOffsetInEnclosingFragmentationContext() const;
 
   // The top of our flow thread portion
   LayoutUnit LogicalTopInFlowThread() const {
@@ -106,24 +97,12 @@ class CORE_EXPORT MultiColumnFragmentainerGroup {
 
   void ResetColumnHeight();
 
-  PhysicalOffset FlowThreadTranslationAtOffset(LayoutUnit,
-                                               LayoutBox::PageBoundaryRule,
-                                               CoordinateSpaceConversion) const;
-  LayoutUnit ColumnLogicalTopForOffset(LayoutUnit offset_in_flow_thread) const;
+  PhysicalOffset FlowThreadTranslationAtOffset(
+      LayoutUnit,
+      LayoutBox::PageBoundaryRule) const;
 
-  // If SnapToColumnPolicy is SnapToColumn, visualPointToFlowThreadPoint() won't
-  // return points that lie outside the bounds of the columns: Before converting
-  // to a flow thread position, if the block direction coordinate is outside the
-  // column, snap to the bounds of the column, and reset the inline direction
-  // coordinate to the start position in the column. The effect of this is that
-  // if the block position is before the column rectangle, we'll get to the
-  // beginning of this column, while if the block position is after the column
-  // rectangle, we'll get to the beginning of the next column. This is behavior
-  // that positionForPoint() depends on.
-  enum SnapToColumnPolicy { kDontSnapToColumn, kSnapToColumn };
   LogicalOffset VisualPointToFlowThreadPoint(
-      const LogicalOffset& visual_point,
-      SnapToColumnPolicy = kDontSnapToColumn) const;
+      const LogicalOffset& visual_point) const;
 
   PhysicalRect FragmentsBoundingBox(
       const PhysicalRect& bounding_box_in_flow_thread) const;
@@ -139,8 +118,6 @@ class CORE_EXPORT MultiColumnFragmentainerGroup {
       LayoutUnit logical_bottom_in_flow_thread,
       unsigned& first_column,
       unsigned& last_column) const;
-
-  LogicalRect CalculateOverflow() const;
 
   unsigned ColumnIndexAtOffset(LayoutUnit offset_in_flow_thread,
                                LayoutBox::PageBoundaryRule) const;

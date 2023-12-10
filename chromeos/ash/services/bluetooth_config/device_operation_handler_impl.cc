@@ -150,12 +150,11 @@ device::BluetoothDevice* DeviceOperationHandlerImpl::FindDevice(
 
 void DeviceOperationHandlerImpl::RecordUserInitiatedReconnectionMetrics(
     const device::BluetoothTransport transport,
-    absl::optional<base::Time> reconnection_attempt_start,
-    absl::optional<device::BluetoothDevice::ConnectErrorCode> error_code)
-    const {
-  absl::optional<device::ConnectionFailureReason> failure_reason =
-      error_code ? absl::make_optional(GetConnectionFailureReason(*error_code))
-                 : absl::nullopt;
+    std::optional<base::Time> reconnection_attempt_start,
+    std::optional<device::BluetoothDevice::ConnectErrorCode> error_code) const {
+  std::optional<device::ConnectionFailureReason> failure_reason =
+      error_code ? std::make_optional(GetConnectionFailureReason(*error_code))
+                 : std::nullopt;
   device::RecordUserInitiatedReconnectionAttemptResult(
       failure_reason, device::UserInitiatedReconnectionUISurfaces::kSettings);
   if (reconnection_attempt_start) {
@@ -167,7 +166,7 @@ void DeviceOperationHandlerImpl::RecordUserInitiatedReconnectionMetrics(
 
 void DeviceOperationHandlerImpl::OnDeviceConnect(
     device::BluetoothTransport transport,
-    absl::optional<device::BluetoothDevice::ConnectErrorCode> error_code) {
+    std::optional<device::BluetoothDevice::ConnectErrorCode> error_code) {
   if (error_code.has_value()) {
     BLUETOOTH_LOG(ERROR) << "Connect failed with error code: "
                          << error_code.value();

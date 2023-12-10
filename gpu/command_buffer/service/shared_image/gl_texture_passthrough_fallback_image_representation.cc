@@ -14,16 +14,16 @@
 
 namespace gpu {
 namespace {
-GLFormatDesc GetGLFormatDesc(viz::SharedImageFormat format, int plane_index) {
+GLFormatDesc GetGLFormatDesc(viz::SharedImageFormat format,
+                             int plane_index,
+                             const GLFormatCaps& gl_format_caps) {
   GLFormatDesc gl_format_desc;
   if (format.is_multi_plane()) {
-    gl_format_desc =
-        ToGLFormatDesc(format, plane_index, /*use_angle_rgbx_format=*/false);
+    gl_format_desc = gl_format_caps.ToGLFormatDesc(format, plane_index);
   } else {
     // For legacy multiplanar formats, `format` is already plane format (eg.
     // RED, RG), so we pass plane_index=0.
-    gl_format_desc = ToGLFormatDesc(format, /*plane_index=*/0,
-                                    /*use_angle_rgbx_format=*/false);
+    gl_format_desc = gl_format_caps.ToGLFormatDesc(format, /*plane_index=*/0);
   }
   return gl_format_desc;
 }
@@ -63,7 +63,8 @@ GLTexturePassthroughFallbackImageRepresentation::
         SharedImageManager* manager,
         SharedImageBacking* backing,
         MemoryTypeTracker* tracker,
-        gl::ProgressReporter* progress_reporter)
+        gl::ProgressReporter* progress_reporter,
+        const GLFormatCaps& gl_format_caps)
     : GLTexturePassthroughImageRepresentation(manager, backing, tracker) {
   for (int plane = 0; plane < format().NumberOfPlanes(); plane++) {
     const gfx::Size plane_size = format().GetPlaneSize(plane, size());
@@ -77,7 +78,8 @@ GLTexturePassthroughFallbackImageRepresentation::
         base::bits::AlignUp(plane_info.minRowBytes(), kDefaultGLAlignment));
     plane_pixmaps_.push_back(plane_bitmaps_.back().pixmap());
 
-    const GLFormatDesc format_desc = GetGLFormatDesc(format(), plane);
+    const GLFormatDesc format_desc =
+        GetGLFormatDesc(format(), plane, gl_format_caps);
     plane_textures_
         .emplace_back(viz::SkColorTypeToSinglePlaneSharedImageFormat(plane_ct),
                       plane_size, /*is_passthrough=*/true, progress_reporter)

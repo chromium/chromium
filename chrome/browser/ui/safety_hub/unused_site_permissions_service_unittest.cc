@@ -21,8 +21,10 @@
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_service.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_test_util.h"
+#include "chrome/browser/ui/safety_hub/unused_site_permissions_service_factory.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/content_settings/core/browser/content_settings_utils.h"
@@ -33,10 +35,45 @@
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/features.h"
+#include "components/history/core/browser/history_database_params.h"
+#include "components/history/core/browser/history_service.h"
+#include "components/history/core/test/test_history_database.h"
+#include "components/keyed_service/core/refcounted_keyed_service.h"
 #include "components/permissions/constants.h"
+#include "components/permissions/permission_uma_util.h"
+#include "components/permissions/permission_util.h"
 #include "components/permissions/pref_names.h"
+#include "components/permissions/test/test_permissions_client.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "components/ukm/content/source_url_recorder.h"
+#include "components/ukm/test_ukm_recorder.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+namespace {
+
+std::unique_ptr<KeyedService> BuildUnusedSitePermissionsService(
+    content::BrowserContext* context) {
+  return std::make_unique<UnusedSitePermissionsService>(
+      context, Profile::FromBrowserContext(context)->GetPrefs());
+}
+
+scoped_refptr<RefcountedKeyedService> BuildTestHostContentSettingsMap(
+    content::BrowserContext* context) {
+  return base::MakeRefCounted<HostContentSettingsMap>(
+      Profile::FromBrowserContext(context)->GetPrefs(), false, true, false,
+      false);
+}
+
+std::unique_ptr<KeyedService> BuildTestHistoryService(
+    content::BrowserContext* context) {
+  auto service = std::make_unique<history::HistoryService>();
+  service->Init(history::TestHistoryDatabaseParamsForPath(context->GetPath()));
+  return service;
+}
+
+}  // namespace
 
 class UnusedSitePermissionsServiceTest
     : public ChromeRenderViewHostTestHarness {
@@ -53,40 +90,54 @@ class UnusedSitePermissionsServiceTest
     base::Time time;
     ASSERT_TRUE(base::Time::FromString("2022-09-07 13:00", &time));
     clock_.SetNow(time);
-    HostContentSettingsMap::RegisterProfilePrefs(prefs_.registry());
-    permissions::RegisterProfilePrefs(prefs_.registry());
-    prefs_.SetBoolean(
+    prefs()->SetBoolean(
         permissions::prefs::kUnusedSitePermissionsRevocationEnabled, true);
-    hcsm_ = base::MakeRefCounted<HostContentSettingsMap>(&prefs_, false, true,
-                                                         false, false);
-    hcsm_->SetClockForTesting(&clock_);
-    service_ =
-        std::make_unique<UnusedSitePermissionsService>(hcsm_.get(), &prefs_);
-    service_->SetClockForTesting(&clock_);
     callback_count_ = 0;
+
+    // The following lines also serve to first access and thus create the two
+    // services.
+    hcsm()->SetClockForTesting(&clock_);
+    service()->SetClockForTesting(&clock_);
   }
 
   void TearDown() override {
-    service_->SetClockForTesting(base::DefaultClock::GetInstance());
-    hcsm_->SetClockForTesting(base::DefaultClock::GetInstance());
-    service_->Shutdown();
-    hcsm_->ShutdownOnUIThread();
-    base::RunLoop().RunUntilIdle();
+    service()->SetClockForTesting(base::DefaultClock::GetInstance());
+    hcsm()->SetClockForTesting(base::DefaultClock::GetInstance());
+
+    // ~BrowserTaskEnvironment() will properly call Shutdown on the services.
     ChromeRenderViewHostTestHarness::TearDown();
   }
 
+  TestingProfile::TestingFactories GetTestingFactories() const override {
+    return {{HostContentSettingsMapFactory::GetInstance(),
+             base::BindRepeating(&BuildTestHostContentSettingsMap)},
+            // Needed for background UKM reporting.
+            {HistoryServiceFactory::GetInstance(),
+             base::BindRepeating(&BuildTestHistoryService)},
+            {UnusedSitePermissionsServiceFactory::GetInstance(),
+             base::BindRepeating(&BuildUnusedSitePermissionsService)}};
+  }
+
   void ResetService() {
-    service_ =
-        std::make_unique<UnusedSitePermissionsService>(hcsm_.get(), &prefs_);
+    // Setting the factory has the side effect of resetting the service
+    // instance.
+    UnusedSitePermissionsServiceFactory::GetInstance()->SetTestingFactory(
+        profile(), base::BindRepeating(&BuildUnusedSitePermissionsService));
   }
 
   base::SimpleTestClock* clock() { return &clock_; }
 
-  UnusedSitePermissionsService* service() { return service_.get(); }
+  UnusedSitePermissionsService* service() {
+    return UnusedSitePermissionsServiceFactory::GetForProfile(profile());
+  }
 
-  HostContentSettingsMap* hcsm() { return hcsm_.get(); }
+  HostContentSettingsMap* hcsm() {
+    return HostContentSettingsMapFactory::GetForProfile(profile());
+  }
 
-  sync_preferences::TestingPrefServiceSyncable* prefs() { return &prefs_; }
+  sync_preferences::TestingPrefServiceSyncable* prefs() {
+    return profile()->GetTestingPrefService();
+  }
 
   uint8_t callback_count() { return callback_count_; }
 
@@ -122,9 +173,6 @@ class UnusedSitePermissionsServiceTest
   }
 
  private:
-  sync_preferences::TestingPrefServiceSyncable prefs_;
-  std::unique_ptr<UnusedSitePermissionsService> service_;
-  scoped_refptr<HostContentSettingsMap> hcsm_;
   base::SimpleTestClock clock_;
   uint8_t callback_count_;
   base::test::ScopedFeatureList feature_list_;
@@ -134,6 +182,7 @@ TEST_F(UnusedSitePermissionsServiceTest, UnusedSitePermissionsServiceTest) {
   base::test::ScopedFeatureList scoped_feature;
   scoped_feature.InitAndEnableFeature(
       content_settings::features::kSafetyCheckUnusedSitePermissions);
+  ukm::InitializeSourceUrlRecorderForWebContents(web_contents());
 
   const GURL url1("https://example1.com");
   const GURL url2("https://example2.com");
@@ -146,6 +195,10 @@ TEST_F(UnusedSitePermissionsServiceTest, UnusedSitePermissionsServiceTest) {
   const base::TimeDelta precision =
       content_settings::GetCoarseVisitedTimePrecision();
 
+  auto* history_service = HistoryServiceFactory::GetForProfile(
+      profile(), ServiceAccessType::EXPLICIT_ACCESS);
+  history_service->AddPage(url1, base::Time::Now(),
+                           history::VisitSource::SOURCE_BROWSED);
   // Add one setting for `url1` and two settings for `url2`.
   hcsm()->SetContentSettingDefaultScope(
       url1, url1, type1, ContentSetting::CONTENT_SETTING_ALLOW, constraint);
@@ -184,7 +237,14 @@ TEST_F(UnusedSitePermissionsServiceTest, UnusedSitePermissionsServiceTest) {
   clock()->Advance(base::Days(50));
 
   // Unused permissions should be auto revoked.
+  base::HistogramTester histogram_tester;
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+  base::RunLoop wait_for_ukm_loop;
+  ukm_recorder.SetOnAddEntryCallback(ukm::builders::Permission::kEntryName,
+                                     wait_for_ukm_loop.QuitClosure());
+
   safety_hub_test_util::UpdateSafetyHubServiceAsync(service());
+
   // url2 should be on tracked permissions list.
   EXPECT_EQ(service()->GetTrackedUnusedPermissionsForTesting().size(), 2u);
   std::string url2_str =
@@ -201,6 +261,31 @@ TEST_F(UnusedSitePermissionsServiceTest, UnusedSitePermissionsServiceTest) {
       ContentSettingsPattern::FromURLNoWildcard(url1).ToString();
   EXPECT_EQ(url1_str,
             GetRevokedUnusedPermissions(hcsm())[0].primary_pattern.ToString());
+
+  // Revocation related histograms should be recorded for the revoked
+  // geolocation grant, but nothing for other permission types.
+  histogram_tester.ExpectUniqueSample(
+      "Permissions.Action.Geolocation",
+      static_cast<int>(permissions::PermissionAction::REVOKED), 1);
+  histogram_tester.ExpectTotalCount(
+      "Permissions.Revocation.ElapsedTimeSinceGrant.Geolocation", 1);
+  EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix("Permissions.Action."),
+              testing::SizeIs(1));
+  EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix(
+                  "Permissions.Revocation.ElapsedTimeSinceGrant."),
+              testing::SizeIs(1));
+
+  // Revocation UKM events should be emitted as well, and it takes a round
+  // trip to the HistoryService, so wait for it.
+  wait_for_ukm_loop.Run();
+
+  auto entries = ukm_recorder.GetEntriesByName("Permission");
+  ASSERT_EQ(1u, entries.size());
+  ukm_recorder.ExpectEntrySourceHasUrl(entries[0], url1);
+  ukm_recorder.ExpectEntryMetric(
+      entries[0], "Source",
+      static_cast<int64_t>(
+          permissions::PermissionSourceUI::SAFETY_HUB_AUTO_REVOCATION));
 }
 
 TEST_F(UnusedSitePermissionsServiceTest, TrackOnlySingleOriginTest) {
@@ -350,7 +435,9 @@ TEST_F(UnusedSitePermissionsServiceTest, MultipleRevocationsForSameOrigin) {
             ContentSettingsType::MEDIASTREAM_CAMERA);
 }
 
-TEST_F(UnusedSitePermissionsServiceTest, ClearRevokedPermissionsListAfter30d) {
+// TODO(crbug.com/1476021): Flaky on all platforms.
+TEST_F(UnusedSitePermissionsServiceTest,
+       DISABLED_ClearRevokedPermissionsListAfter30d) {
   base::test::ScopedFeatureList scoped_feature;
   scoped_feature.InitAndEnableFeature(
       content_settings::features::kSafetyCheckUnusedSitePermissions);
@@ -426,7 +513,7 @@ TEST_F(UnusedSitePermissionsServiceTest, RegrantPermissionsForOrigin) {
 
   // Undoing the changes should add `url1` back to the list of revoked
   // permissions and reset its permissions.
-  service()->UndoRegrantPermissionsForOrigin({type}, absl::nullopt,
+  service()->UndoRegrantPermissionsForOrigin({type}, std::nullopt,
                                              url::Origin::Create(GURL(url1)));
 
   revoked_permissions_list = hcsm()->GetSettingsForOneType(
@@ -679,9 +766,9 @@ TEST_F(UnusedSitePermissionsServiceTest, InitializeLatestResult) {
 
   // When we start up a new service instance, the latest result (i.e. the list
   // of revoked permissions) should be immediately available.
-  auto new_service =
-      std::make_unique<UnusedSitePermissionsService>(hcsm(), prefs());
-  absl::optional<std::unique_ptr<SafetyHubService::Result>> opt_result =
+  auto new_service = std::make_unique<UnusedSitePermissionsService>(
+      profile(), profile()->GetPrefs());
+  std::optional<std::unique_ptr<SafetyHubService::Result>> opt_result =
       new_service->GetCachedResult();
   EXPECT_TRUE(opt_result.has_value());
   auto* result =
@@ -835,21 +922,22 @@ class UnusedSitePermissionsServiceSafetyHubDisabledTest
     permissions::RegisterProfilePrefs(prefs_.registry());
     hcsm_ = base::MakeRefCounted<HostContentSettingsMap>(&prefs_, false, true,
                                                          false, false);
-    service_ =
-        std::make_unique<UnusedSitePermissionsService>(hcsm_.get(), &prefs_);
+    service_ = std::make_unique<UnusedSitePermissionsService>(
+        profile(), profile()->GetPrefs());
     callback_count_ = 0;
   }
 
   void TearDown() override {
     service_->Shutdown();
+    service_.reset();
     hcsm_->ShutdownOnUIThread();
     base::RunLoop().RunUntilIdle();
     ChromeRenderViewHostTestHarness::TearDown();
   }
 
   void ResetService() {
-    service_ =
-        std::make_unique<UnusedSitePermissionsService>(hcsm_.get(), &prefs_);
+    service_ = std::make_unique<UnusedSitePermissionsService>(
+        profile(), profile()->GetPrefs());
   }
 
   UnusedSitePermissionsService* service() { return service_.get(); }

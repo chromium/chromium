@@ -105,13 +105,6 @@ mojom("device_service") {
     enabled_features += [ "enable_hid" ]
   }
 
-  # While the device posture API applies to all platforms, only Android and
-  # Windows can fetch posture information so we only build mojo bindings on
-  # these platforms
-  if (is_android || is_win) {
-    enabled_features += [ "enable_device_posture" ]
-  }
-
   public_deps = [
     ":generic_sensor",
     ":geolocation_internals",
@@ -207,7 +200,6 @@ mojom("usb") {
   ]
 
   webui_module_path = "/"
-  use_typescript_sources = true
 
   # Generate legacy JS bindings in addition to WebUI TS bindings for Blink Web
   # Tests.
@@ -219,7 +211,6 @@ mojom("usb_test") {
   sources = [ "usb_manager_test.mojom" ]
   public_deps = [ "//url/mojom:url_mojom_gurl" ]
   webui_module_path = "/"
-  use_typescript_sources = true
 }
 
 mojom("geoposition") {

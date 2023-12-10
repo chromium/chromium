@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/check_is_test.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
@@ -24,12 +25,10 @@
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/tab_groups/tab_group_visual_data.h"
-#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_details.h"
 #include "content/public/browser/navigation_entry.h"
-#include "content/public/browser/notification_service.h"
-#include "content/public/browser/notification_types.h"
-#include "content/public/browser/render_process_host.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_user_data.h"
 #include "ui/gfx/range/range.h"
 
 namespace chrome {
@@ -49,50 +48,44 @@ void UMABrowsingActivityObserver::Init() {
 }
 
 UMABrowsingActivityObserver::UMABrowsingActivityObserver() {
-  registrar_.Add(this, content::NOTIFICATION_NAV_ENTRY_COMMITTED,
-                 content::NotificationService::AllSources());
   subscription_ = browser_shutdown::AddAppTerminatingCallback(base::BindOnce(
       &UMABrowsingActivityObserver::OnAppTerminating, base::Unretained(this)));
 }
 
-UMABrowsingActivityObserver::~UMABrowsingActivityObserver() {}
+UMABrowsingActivityObserver::~UMABrowsingActivityObserver() = default;
 
-void UMABrowsingActivityObserver::Observe(
-    int type,
-    const content::NotificationSource& source,
-    const content::NotificationDetails& details) {
-  if (type == content::NOTIFICATION_NAV_ENTRY_COMMITTED) {
-    const content::LoadCommittedDetails load =
-        *content::Details<content::LoadCommittedDetails>(details).ptr();
+void UMABrowsingActivityObserver::OnNavigationEntryCommitted(
+    content::WebContents* web_contents,
+    const content::LoadCommittedDetails& load_details) const {
+  // Track whether the page loaded is a search results page (SRP). Track
+  // the non-SRP navigations as well so there is a control.
+  base::RecordAction(base::UserMetricsAction("NavEntryCommitted"));
 
-    content::NavigationController* controller =
-        content::Source<content::NavigationController>(source).ptr();
-    // Track whether the page loaded is a search results page (SRP). Track
-    // the non-SRP navigations as well so there is a control.
-    base::RecordAction(base::UserMetricsAction("NavEntryCommitted"));
-
-    CHECK(load.entry);
-    // If the user is allowed to do searches in this profile (e.g., it's a
-    // regular profile, not something like a "system" profile), then record if
-    // this navigation appeared to go the default search engine.
-    auto* turl_service = TemplateURLServiceFactory::GetForProfile(
-        Profile::FromBrowserContext(controller->GetBrowserContext()));
-    if (turl_service) {
-      if (turl_service->IsSearchResultsPageFromDefaultSearchProvider(
-              load.entry->GetURL())) {
-        base::RecordAction(base::UserMetricsAction("NavEntryCommitted.SRP"));
-      }
+  // If the user is allowed to do searches in this profile (e.g., it's a
+  // regular profile, not something like a "system" profile), then record if
+  // this navigation appeared to go the default search engine.
+  auto* turl_service = TemplateURLServiceFactory::GetForProfile(
+      Profile::FromBrowserContext(web_contents->GetBrowserContext()));
+  if (turl_service) {
+    CHECK(load_details.entry);
+    if (turl_service->IsSearchResultsPageFromDefaultSearchProvider(
+            load_details.entry->GetURL())) {
+      base::RecordAction(base::UserMetricsAction("NavEntryCommitted.SRP"));
     }
-
-    if (!load.is_navigation_to_different_page())
-      return;  // Don't log for subframes or other trivial types.
-
-    LogBrowserTabCount();
   }
+
+  if (!load_details.is_navigation_to_different_page()) {
+    // Don't log for subframes or other trivial types.
+    return;
+  }
+
+  LogBrowserTabCount();
 }
 
 void UMABrowsingActivityObserver::OnAppTerminating() const {
   LogTimeBeforeUpdate();
+
+  DCHECK_EQ(this, g_uma_browsing_activity_observer_instance);
   delete g_uma_browsing_activity_observer_instance;
   g_uma_browsing_activity_observer_instance = nullptr;
 }
@@ -118,7 +111,6 @@ void UMABrowsingActivityObserver::LogBrowserTabCount() const {
   int collapsed_tab_group_count = 0;
   int customized_tab_group_count = 0;
   int pinned_tab_count = 0;
-  std::map<base::StringPiece, int> unique_domain;
 
   for (auto* browser : *BrowserList::GetInstance()) {
     // Record how many tabs each window has open.
@@ -129,13 +121,9 @@ void UMABrowsingActivityObserver::LogBrowserTabCount() const {
     tab_count += tab_strip_model->count();
 
     for (int i = 0; i < tab_strip_model->count(); ++i) {
-      base::StringPiece domain = tab_strip_model->GetWebContentsAt(i)
-                                     ->GetLastCommittedURL()
-                                     .host_piece();
-      unique_domain[domain]++;
-
-      if (tab_strip_model->IsTabPinned(i))
+      if (tab_strip_model->IsTabPinned(i)) {
         pinned_tab_count++;
+      }
     }
 
     if (tab_strip_model->group_model()) {
@@ -163,14 +151,6 @@ void UMABrowsingActivityObserver::LogBrowserTabCount() const {
     }
   }
 
-  // Record how many tabs share a domain based on the total number of tabs open.
-  const std::string tab_count_per_domain_histogram_name =
-      AppendTabBucketCountToHistogramName(tab_count);
-  for (auto domain : unique_domain) {
-    base::UmaHistogramSparse(tab_count_per_domain_histogram_name,
-                             std::clamp(domain.second, 0, 200));
-  }
-
   // Record how many tabs total are open (across all windows).
   UMA_HISTOGRAM_CUSTOM_COUNTS("Tabs.TabCountPerLoad", tab_count, 1, 200, 50);
 
@@ -186,7 +166,7 @@ void UMABrowsingActivityObserver::LogBrowserTabCount() const {
   if (current_browser) {
     TabStripModel* const tab_strip_model = current_browser->tab_strip_model();
     if (tab_strip_model->group_model()) {
-      const absl::optional<tab_groups::TabGroupId> active_group =
+      const std::optional<tab_groups::TabGroupId> active_group =
           tab_strip_model->GetTabGroupForTab(tab_strip_model->active_index());
       UMA_HISTOGRAM_COUNTS_100("Tabs.TabCountInGroupPerLoad",
                                active_group.has_value()
@@ -208,42 +188,25 @@ void UMABrowsingActivityObserver::LogBrowserTabCount() const {
                            collapsed_tab_group_count);
 }
 
-std::string UMABrowsingActivityObserver::AppendTabBucketCountToHistogramName(
-    int total_tab_count) const {
-  const char* bucket = nullptr;
-  if (total_tab_count < 6) {
-    bucket = "0to5";
-  } else if (total_tab_count < 11) {
-    bucket = "6to10";
-  } else if (total_tab_count < 16) {
-    bucket = "10to15";
-  } else if (total_tab_count < 21) {
-    bucket = "16to20";
-  } else if (total_tab_count < 31) {
-    bucket = "21to30";
-  } else if (total_tab_count < 41) {
-    bucket = "31to40";
-  } else if (total_tab_count < 61) {
-    bucket = "41to60";
-  } else if (total_tab_count < 81) {
-    bucket = "61to80";
-  } else if (total_tab_count < 101) {
-    bucket = "81to100";
-  } else if (total_tab_count < 151) {
-    bucket = "101to150";
-  } else if (total_tab_count < 201) {
-    bucket = "151to200";
-  } else if (total_tab_count < 301) {
-    bucket = "201to300";
-  } else if (total_tab_count < 401) {
-    bucket = "301to400";
-  } else if (total_tab_count < 501) {
-    bucket = "401to500";
-  } else {
-    bucket = "501+";
+UMABrowsingActivityObserver::TabHelper::TabHelper(
+    content::WebContents* web_contents)
+    : content::WebContentsObserver(web_contents),
+      content::WebContentsUserData<TabHelper>(*web_contents) {}
+
+UMABrowsingActivityObserver::TabHelper::~TabHelper() = default;
+
+void UMABrowsingActivityObserver::TabHelper::NavigationEntryCommitted(
+    const content::LoadCommittedDetails& load_details) {
+  // This is null in unit tests.
+  if (!g_uma_browsing_activity_observer_instance) {
+    CHECK_IS_TEST();
+    return;
   }
-  const char kHistogramBaseName[] = "Tabs.TabCountPerDomainPerLoad";
-  return base::StringPrintf("%s.%s", kHistogramBaseName, bucket);
+
+  g_uma_browsing_activity_observer_instance->OnNavigationEntryCommitted(
+      web_contents(), load_details);
 }
+
+WEB_CONTENTS_USER_DATA_KEY_IMPL(UMABrowsingActivityObserver::TabHelper);
 
 }  // namespace chrome

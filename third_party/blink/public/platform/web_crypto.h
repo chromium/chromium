@@ -58,6 +58,11 @@ enum WebCryptoErrorType {
   kWebCryptoErrorTypeOperation,
 };
 
+enum WebCryptoWarningType {
+  kWebCryptoWarningTypeNone,
+  kWebCryptoWarningTypeDeriveBitsTruncated,
+};
+
 class BLINK_PLATFORM_EXPORT WebCryptoResult {
  public:
   WebCryptoResult(const WebCryptoResult& o) { Assign(o); }
@@ -88,6 +93,8 @@ class BLINK_PLATFORM_EXPORT WebCryptoResult {
   // Returns true if the underlying operation was cancelled.
   // This method can be called from any thread.
   bool Cancelled() const;
+
+  void SetWarning(WebCryptoWarningType code);
 
 #if INSIDE_BLINK
   WebCryptoResult(CryptoResult*, scoped_refptr<CryptoResultCancel>);

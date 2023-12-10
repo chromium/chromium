@@ -83,7 +83,9 @@ public interface TasksSurface {
      * Called when the native initialization is completed. Anything to construct a TasksSurface but
      * require native initialization should be constructed here.
      */
-    void onFinishNativeInitialization(Context context, OmniboxStub omniboxStub,
+    void onFinishNativeInitialization(
+            Context context,
+            OmniboxStub omniboxStub,
             @Nullable FeedReliabilityLogger feedReliabilityLogger);
 
     /**
@@ -99,9 +101,7 @@ public interface TasksSurface {
     void removeHeaderOffsetChangeListener(
             AppBarLayout.OnOffsetChangedListener onOffsetChangedListener);
 
-    /**
-     * Called when the Tasks surface is hidden.
-     */
+    /** Called when the Tasks surface is hidden. */
     void onHide();
 
     @VisibleForTesting
@@ -130,8 +130,6 @@ public interface TasksSurface {
      */
     int getTabSwitcherTabListModelSize();
 
-    /**
-     * Set the tab switcher's current RecyclerViewPosition.
-     */
+    /** Set the tab switcher's current RecyclerViewPosition. */
     void setTabSwitcherRecyclerViewPosition(RecyclerViewPosition recyclerViewPosition);
 }

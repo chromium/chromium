@@ -46,7 +46,12 @@ void ShortcutRegistryCache::UpdateShortcut(ShortcutPtr delta) {
   if (state) {
     ShortcutUpdate::Merge(state, delta.get());
   } else {
-    states_.emplace(shortcut_id, delta->Clone());
+    // Call ShortcutUpdate::Merge to set the init value for the icon key's
+    // `update_version`.
+    auto shortcut =
+        std::make_unique<Shortcut>(delta->host_app_id, delta->local_id);
+    ShortcutUpdate::Merge(shortcut.get(), delta.get());
+    states_.emplace(shortcut_id, std::move(shortcut));
   }
 
   for (auto& obs : observers_) {

@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/ambient/ambient_ui_settings.h"
 #include "ash/app_list/app_list_public_test_util.h"
 #include "ash/app_list/views/search_box_view.h"
 #include "ash/components/arc/arc_prefs.h"
@@ -19,6 +20,7 @@
 #include "ash/components/arc/test/fake_arc_session.h"
 #include "ash/components/arc/test/fake_process_instance.h"
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/ambient/ambient_prefs.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/holding_space/holding_space_prefs.h"
 #include "ash/public/cpp/overview_test_api.h"
@@ -288,19 +290,18 @@ IN_PROC_BROWSER_TEST_P(AutotestPrivateHoldingSpaceApiTest,
       RunAutotestPrivateExtensionTest("holdingSpace", std::move(suite_args)))
       << message_;
 
-  absl::optional<base::Time> timeOfFirstAdd =
+  std::optional<base::Time> timeOfFirstAdd =
       ash::holding_space_prefs::GetTimeOfFirstAdd(prefs);
-  absl::optional<base::Time> timeOfFirstAvailability =
+  std::optional<base::Time> timeOfFirstAvailability =
       ash::holding_space_prefs::GetTimeOfFirstAvailability(prefs);
 
   ASSERT_TRUE(ash::holding_space_prefs::IsPreviewsEnabled(prefs));
   ASSERT_EQ(timeOfFirstAdd.has_value(), mark_time_of_first_add);
-  ASSERT_NE(timeOfFirstAvailability, absl::nullopt);
-  ASSERT_EQ(ash::holding_space_prefs::GetTimeOfFirstEntry(prefs),
-            absl::nullopt);
+  ASSERT_NE(timeOfFirstAvailability, std::nullopt);
+  ASSERT_EQ(ash::holding_space_prefs::GetTimeOfFirstEntry(prefs), std::nullopt);
   ASSERT_EQ(ash::holding_space_prefs::GetTimeOfFirstFilesAppChipPress(prefs),
-            absl::nullopt);
-  ASSERT_EQ(ash::holding_space_prefs::GetTimeOfFirstPin(prefs), absl::nullopt);
+            std::nullopt);
+  ASSERT_EQ(ash::holding_space_prefs::GetTimeOfFirstPin(prefs), std::nullopt);
 
   if (timeOfFirstAdd) {
     ASSERT_GT(timeOfFirstAdd, timeOfFirstAvailability);
@@ -447,17 +448,21 @@ class AutotestPrivateArcPerformanceTracing : public AutotestPrivateApiTest {
   // AutotestPrivateApiTest:
   void SetUpOnMainThread() override {
     AutotestPrivateApiTest::SetUpOnMainThread();
+
     tracing_helper_.SetUp(profile());
+    root_surface_ = std::make_unique<exo::Surface>();
     performance_tracing()->SetCustomSessionReadyCallbackForTesting(
         base::BindRepeating(
             &arc::ArcAppPerformanceTracingTestHelper::PlayDefaultSequence,
-            base::Unretained(&tracing_helper())));
+            base::Unretained(&tracing_helper_), root_surface_.get()));
   }
 
   void TearDownOnMainThread() override {
+    root_surface_.reset();
     performance_tracing()->SetCustomSessionReadyCallbackForTesting(
         arc::ArcAppPerformanceTracing::CustomSessionReadyCallback());
     tracing_helper_.TearDown();
+
     AutotestPrivateApiTest::TearDownOnMainThread();
   }
 
@@ -469,14 +474,15 @@ class AutotestPrivateArcPerformanceTracing : public AutotestPrivateApiTest {
     return tracing_helper_.GetTracing();
   }
 
+  std::unique_ptr<exo::Surface> root_surface_;
+
  private:
   arc::ArcAppPerformanceTracingTestHelper tracing_helper_;
 };
 
 IN_PROC_BROWSER_TEST_F(AutotestPrivateArcPerformanceTracing, Basic) {
-  exo::Surface root_surface;
   const auto arc_widget = arc::ArcTaskWindowBuilder()
-                              .SetShellRootSurface(&root_surface)
+                              .SetShellRootSurface(root_surface_.get())
                               .BuildOwnsNativeWidget();
 
   performance_tracing()->OnWindowActivated(
@@ -598,8 +604,14 @@ INSTANTIATE_TEST_SUITE_P(All,
                          AutotestPrivateSearchTest,
                          /* tablet_mode= */ ::testing::Bool());
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_LauncherSearchBoxStateAPITest \
+  DISABLED_LauncherSearchBoxStateAPITest
+#else
+#define MAYBE_LauncherSearchBoxStateAPITest LauncherSearchBoxStateAPITest
+#endif
 IN_PROC_BROWSER_TEST_P(AutotestPrivateSearchTest,
-                       LauncherSearchBoxStateAPITest) {
+                       MAYBE_LauncherSearchBoxStateAPITest) {
   ash::ShellTestApi().SetTabletModeEnabledForTest(GetParam());
   test::GetAppListClient()->ShowAppList(ash::AppListShowSource::kSearchKey);
   if (!GetParam()) {
@@ -655,6 +667,30 @@ IN_PROC_BROWSER_TEST_F(AutotestPrivateIsFieldTrialActiveApiTest,
                        IsFieldTrialActive) {
   ASSERT_TRUE(RunAutotestPrivateExtensionTest("isFieldTrialActive"))
       << message_;
+}
+
+IN_PROC_BROWSER_TEST_F(AutotestPrivateApiTest, ClearAllowedPref) {
+  static constexpr auto kTestTheme =
+      ash::personalization_app::mojom::AmbientTheme::kFloatOnBy;
+  ash::personalization_app::mojom::AmbientTheme default_theme =
+      ash::AmbientUiSettings::ReadFromPrefService(
+          *browser()->profile()->GetPrefs())
+          .theme();
+  ASSERT_NE(kTestTheme, default_theme);
+  ash::AmbientUiSettings(kTestTheme)
+      .WriteToPrefService(*browser()->profile()->GetPrefs());
+
+  base::Value::List suite_args;
+  suite_args.Append(base::Value(ash::ambient::prefs::kAmbientUiSettings));
+
+  ASSERT_TRUE(RunAutotestPrivateExtensionTest("clearAllowedPref",
+                                              std::move(suite_args)))
+      << message_;
+  // Value read back should be the default.
+  EXPECT_EQ(ash::AmbientUiSettings::ReadFromPrefService(
+                *browser()->profile()->GetPrefs())
+                .theme(),
+            default_theme);
 }
 
 }  // namespace extensions

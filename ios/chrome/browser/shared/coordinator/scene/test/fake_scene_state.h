@@ -33,6 +33,9 @@ class ChromeBrowserState;
 // and backed by an instance variable.
 @property(nonatomic, strong, readwrite) UIWindow* window;
 
+// Re-declare appState as readwrite.
+@property(nonatomic, weak, readwrite) AppState* appState;
+
 // Append a suitable web state test double to the receiver's main interface.
 - (void)appendWebStateWithURL:(const GURL)URL;
 

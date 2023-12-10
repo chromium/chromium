@@ -1534,10 +1534,10 @@ IN_PROC_BROWSER_TEST_F(ExternallyConnectableMessagingTest,
 
 #endif  // !BUILDFLAG(IS_WIN)
 
-// Tests that messages sent in the unload handler of a window arrive.
-IN_PROC_BROWSER_TEST_F(MessagingApiTest, MessagingOnUnload) {
+// Tests that messages sent in the pagehide handler of a window arrive.
+IN_PROC_BROWSER_TEST_F(MessagingApiTest, MessagingOnPagehide) {
   const Extension* extension =
-      LoadExtension(test_data_dir_.AppendASCII("messaging/on_unload"));
+      LoadExtension(test_data_dir_.AppendASCII("messaging/on_pagehide"));
   ExtensionTestMessageListener listener("listening");
   ASSERT_TRUE(extension);
   // Open a new tab to example.com. Since we'll be closing it later, we need
@@ -1562,7 +1562,7 @@ IN_PROC_BROWSER_TEST_F(MessagingApiTest, MessagingOnUnload) {
   chrome::CloseTab(browser());
   destroyed_watcher.Wait();
   base::RunLoop().RunUntilIdle();
-  // The extension should have sent a message from its unload handler.
+  // The extension should have sent a message from its pagehide handler.
   EXPECT_EQ(1, content::EvalJs(background_contents, "window.messageCount;"));
 }
 

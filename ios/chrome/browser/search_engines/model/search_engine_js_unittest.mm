@@ -7,7 +7,7 @@
 #import "base/time/time.h"
 #import "ios/chrome/browser/search_engines/model/search_engine_java_script_feature.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
-#import "ios/chrome/browser/web/chrome_web_client.h"
+#import "ios/chrome/browser/web/model/chrome_web_client.h"
 #import "ios/web/public/test/js_test_util.h"
 #import "ios/web/public/test/scoped_testing_web_client.h"
 #import "ios/web/public/test/web_state_test_util.h"

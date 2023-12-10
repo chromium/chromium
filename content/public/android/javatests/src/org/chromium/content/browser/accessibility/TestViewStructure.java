@@ -4,6 +4,10 @@
 
 package org.chromium.content.browser.accessibility;
 
+import static org.chromium.content.browser.accessibility.AccessibilityNodeInfoBuilder.EXTRAS_KEY_PAGE_ABSOLUTE_HEIGHT;
+import static org.chromium.content.browser.accessibility.AccessibilityNodeInfoBuilder.EXTRAS_KEY_PAGE_ABSOLUTE_LEFT;
+import static org.chromium.content.browser.accessibility.AccessibilityNodeInfoBuilder.EXTRAS_KEY_PAGE_ABSOLUTE_TOP;
+import static org.chromium.content.browser.accessibility.AccessibilityNodeInfoBuilder.EXTRAS_KEY_PAGE_ABSOLUTE_WIDTH;
 import static org.chromium.content.browser.accessibility.AccessibilityNodeInfoBuilder.EXTRAS_KEY_UNCLIPPED_HEIGHT;
 import static org.chromium.content.browser.accessibility.AccessibilityNodeInfoBuilder.EXTRAS_KEY_UNCLIPPED_LEFT;
 import static org.chromium.content.browser.accessibility.AccessibilityNodeInfoBuilder.EXTRAS_KEY_UNCLIPPED_TOP;
@@ -86,6 +90,11 @@ public class TestViewStructure extends ViewStructure {
                     || key.equals(EXTRAS_KEY_UNCLIPPED_TOP)
                     || key.equals(EXTRAS_KEY_UNCLIPPED_WIDTH)
                     || key.equals(EXTRAS_KEY_UNCLIPPED_HEIGHT)
+                    || key.equals(EXTRAS_KEY_PAGE_ABSOLUTE_LEFT)
+                    || key.equals(EXTRAS_KEY_PAGE_ABSOLUTE_TOP)
+                    || key.equals(EXTRAS_KEY_PAGE_ABSOLUTE_WIDTH)
+                    || key.equals(EXTRAS_KEY_PAGE_ABSOLUTE_HEIGHT)
+                    || key.equals("root_scroll_y")
                     || key.equals("url")) {
                 continue;
             }
@@ -151,6 +160,10 @@ public class TestViewStructure extends ViewStructure {
         if (mHtmlInfo != null) {
             builder.append(" htmlInfo:[");
             for (Pair<String, String> pair : mHtmlInfo.getAttributes()) {
+                // We add an extra html attribute for debugging, do not print these values in tests.
+                if (pair.first.equals("root_scroll_y")) {
+                    continue;
+                }
                 builder.append(" {").append(pair.first).append(",").append(pair.second).append("}");
             }
             builder.append(" ]");

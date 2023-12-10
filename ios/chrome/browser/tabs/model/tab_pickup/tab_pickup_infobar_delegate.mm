@@ -10,7 +10,7 @@
 #import "components/sync_sessions/session_sync_service.h"
 #import "ios/chrome/browser/favicon/favicon_loader.h"
 #import "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
-#import "ios/chrome/browser/metrics/new_tab_page_uma.h"
+#import "ios/chrome/browser/metrics/model/new_tab_page_uma.h"
 #import "ios/chrome/browser/sessions/session_util.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
@@ -49,6 +49,10 @@ TabPickupInfobarDelegate::~TabPickupInfobarDelegate() = default;
 
 void TabPickupInfobarDelegate::FetchFavIconImage(
     ProceduralBlock block_handler) {
+  if (!IsTabPickupFaviconAvaible()) {
+    block_handler();
+    return;
+  }
   favicon_loader_->FaviconForPageUrl(
       tab_url_, kDesiredSmallFaviconSizePt, kMinFaviconSizePt,
       /*fallback_to_google_server=*/true, ^(FaviconAttributes* attributes) {

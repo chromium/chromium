@@ -93,13 +93,6 @@ class WebContentsTags {
                                  extensions::mojom::ViewType view_type);
 #endif
 
-  // Tags a WebContents created for a Portal so that it shows up in the task
-  // manager. Calling this function creates a PortalTag, and attaches it to
-  // |web_contents|. If an instance is already attached, this does nothing.
-  // The resulting tag does not have to be cleaned up by the caller, as it is
-  // owned by |web_contents|.
-  static void CreateForPortal(content::WebContents* web_contents);
-
   // Tags a WebContents created for a tool so that it shows up in the task
   // manager. Calling this function creates a ToolTag, and attaches it to
   // |web_contents|. If an instance is already attached, this does nothing. The

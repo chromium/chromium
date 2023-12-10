@@ -14,6 +14,11 @@ suite('ComposeTextarea', () => {
   setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     textarea = document.createElement('compose-textarea');
+    textarea.inputParams = {
+      minWordLimit: 5,
+      maxWordLimit: 50,
+      maxCharacterLimit: 100,
+    };
     document.body.appendChild(textarea);
   });
 
@@ -51,18 +56,27 @@ suite('ComposeTextarea', () => {
     // No input yet, so should be invalid.
     assertFalse(textarea.validate());
 
-    // Has some input, should be valid.
-    textarea.$.input.value = 'Here is some input.';
+    // Has at least 5 words, should be valid.
+    textarea.$.input.value = 'Here is some input with more than 5 words.';
     assertTrue(textarea.validate());
 
-    // Too short of an input, should be invalid.
+    // Too short of an input, should be invalid and display an error.
     textarea.$.input.value = 'Short';
     assertFalse(textarea.validate());
-    assertFalse(isVisible(textarea.$.error));
+    assertTrue(isVisible(textarea.$.tooShortError));
 
-    // Too long of an input, should show error.
-    textarea.$.input.value = Array(300).join('a');
+    // Too many characters, should show error.
+    textarea.$.input.value = Array(101).fill('a').join('');
     assertFalse(textarea.validate());
-    assertTrue(isVisible(textarea.$.error));
+    assertTrue(isVisible(textarea.$.tooLongError));
+
+    // Should revalidate when value becomes valid.
+    textarea.$.input.value = 'Here is another input with more than 5 words.';
+    assertTrue(textarea.validate());
+
+    // Too many words, should show error.
+    textarea.$.input.value = Array(51).fill('a').join(' ');
+    assertFalse(textarea.validate());
+    assertTrue(isVisible(textarea.$.tooLongError));
   });
 });

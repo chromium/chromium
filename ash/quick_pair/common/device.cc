@@ -15,8 +15,8 @@ namespace {
 std::ostream& OutputToStream(std::ostream& stream,
                              const std::string& metadata_id,
                              const std::string& ble_address,
-                             const absl::optional<std::string>& classic_address,
-                             const absl::optional<std::string>& display_name,
+                             const std::optional<std::string>& classic_address,
+                             const std::optional<std::string>& display_name,
                              const ash::quick_pair::Protocol& protocol) {
   stream << "[Device: metadata_id=" << metadata_id;
 

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <tuple>
 
@@ -17,7 +18,6 @@
 #include "base/time/time.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/widget/widget.h"
 
@@ -38,10 +38,10 @@ class GlanceablesTaskViewPixelTest
     task_ = std::make_unique<api::Task>(
         "task-id", "Task title",
         /*completed=*/false,
-        has_due_date() ? absl::make_optional(due_date) : absl::nullopt,
+        has_due_date() ? std::make_optional(due_date) : std::nullopt,
         has_subtasks(),
         /*has_email_link=*/false,
-        /*has_notes=*/has_notes());
+        /*has_notes=*/has_notes(), /*updated=*/base::Time());
 
     widget_ = CreateFramelessTestWidget();
     widget_->SetBounds(gfx::Rect(/*width=*/370, /*height=*/50));
@@ -50,7 +50,7 @@ class GlanceablesTaskViewPixelTest
         /*save_callback=*/base::DoNothing()));
   }
 
-  absl::optional<pixel_test::InitParams> CreatePixelTestInitParams()
+  std::optional<pixel_test::InitParams> CreatePixelTestInitParams()
       const override {
     pixel_test::InitParams init_params;
     init_params.under_rtl = use_rtl();

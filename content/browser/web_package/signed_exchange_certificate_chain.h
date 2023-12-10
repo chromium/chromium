@@ -10,7 +10,7 @@
 #include "base/containers/span.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "content/browser/web_package/signed_exchange_consts.h"
 #include "content/common/content_export.h"
 #include "services/network/public/cpp/spki_hash_set.h"

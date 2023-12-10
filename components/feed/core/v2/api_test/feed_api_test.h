@@ -11,7 +11,7 @@
 #include <vector>
 
 #include "base/functional/callback_forward.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -442,12 +442,22 @@ class TestWireResponseTranslator : public WireResponseTranslator {
       StreamModelUpdateRequest::Source source,
       const AccountInfo& account_info,
       base::Time current_time) const override;
+  RefreshResponseData TranslateWireResponse(
+      supervised_user::GetDiscoverFeedResponse response,
+      StreamModelUpdateRequest::Source source,
+      const AccountInfo& account_info,
+      base::Time current_time) const override;
   void InjectResponse(std::unique_ptr<StreamModelUpdateRequest> response,
                       absl::optional<std::string> session_id = absl::nullopt);
   void InjectResponse(RefreshResponseData response_data);
   bool InjectedResponseConsumed() const;
 
  private:
+  absl::optional<RefreshResponseData> TranslateStreamSource(
+      StreamModelUpdateRequest::Source source,
+      const AccountInfo& account_info,
+      base::Time current_time) const;
+
   mutable std::vector<RefreshResponseData> injected_responses_;
 };
 

@@ -19,9 +19,7 @@ import org.chromium.chrome.browser.feature_guide.notifications.FeatureType;
 import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.components.embedder_support.util.UrlConstants;
 
-/**
- * Provides chrome layer dependencies required for {@link FeatureNotificationGuideService}.
- */
+/** Provides chrome layer dependencies required for {@link FeatureNotificationGuideService}. */
 public final class FeatureNotificationGuideDelegate
         implements FeatureNotificationGuideService.Delegate {
     /**
@@ -31,9 +29,10 @@ public final class FeatureNotificationGuideDelegate
     @Override
     public void launchActivityToShowIph(@FeatureType int featureType) {
         ThreadUtils.assertOnUiThread();
-        boolean shouldOpenNewTab = featureType == FeatureType.INCOGNITO_TAB
-                || featureType == FeatureType.VOICE_SEARCH
-                || featureType == FeatureType.NTP_SUGGESTION_CARD;
+        boolean shouldOpenNewTab =
+                featureType == FeatureType.INCOGNITO_TAB
+                        || featureType == FeatureType.VOICE_SEARCH
+                        || featureType == FeatureType.NTP_SUGGESTION_CARD;
         Class activityToLaunch = getActivityToLaunchForFeature(featureType);
         Context context = ContextUtils.getApplicationContext();
         Intent intent = new Intent(context, activityToLaunch);

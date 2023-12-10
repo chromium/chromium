@@ -6,6 +6,8 @@
 #define IOS_WEB_PUBLIC_TEST_FAKES_FAKE_WEB_CLIENT_H_
 
 #import <Foundation/Foundation.h>
+
+#include <optional>
 #include <vector>
 
 #import "ios/web/public/web_client.h"
@@ -43,10 +45,11 @@ class FakeWebClient : public web::WebClient {
                         NSError* error,
                         bool is_post,
                         bool is_off_the_record,
-                        const absl::optional<net::SSLInfo>& info,
+                        const std::optional<net::SSLInfo>& info,
                         int64_t navigation_id,
                         base::OnceCallback<void(NSString*)> callback) override;
   UIView* GetWindowedContainer() override;
+  bool EnableWebInspector(web::BrowserState* browser_state) const override;
   UserAgentType GetDefaultUserAgent(web::WebState* web_state,
                                     const GURL& url) const override;
 

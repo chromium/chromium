@@ -25,10 +25,8 @@
 #import "ios/chrome/browser/drag_and_drop/model/drag_item_util.h"
 #import "ios/chrome/browser/drag_and_drop/model/url_drag_drop_handler.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
-#import "ios/chrome/browser/ntp/home/features.h"
-#import "ios/chrome/browser/ntp/new_tab_page_util.h"
+#import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
-#import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/all_web_state_observation_forwarder.h"
@@ -50,8 +48,6 @@
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/chrome/browser/tabs/model/tab_title_util.h"
-#import "ios/chrome/browser/ui/bubble/bubble_util.h"
-#import "ios/chrome/browser/ui/bubble/bubble_view.h"
 #import "ios/chrome/browser/ui/fullscreen/scoped_fullscreen_disabler.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_utils.h"
 #import "ios/chrome/browser/ui/tabs/requirements/tab_strip_constants.h"
@@ -466,9 +462,7 @@ const CGFloat kSymbolSize = 18;
 
     // `self.view` setup.
     _useTabStacking = [self shouldUseTabStacking];
-    CGRect tabStripFrame = SceneStateBrowserAgent::FromBrowser(browser)
-                               ->GetSceneState()
-                               .window.bounds;
+    CGRect tabStripFrame = browser->GetSceneState().window.bounds;
     tabStripFrame.size.height = kTabStripHeight;
     _view = [[TabStripContainerView alloc] initWithFrame:tabStripFrame];
     _view.autoresizingMask = (UIViewAutoresizingFlexibleWidth |

@@ -33,7 +33,7 @@ std::u16string GetWindowTitleForShortcut(Profile* profile,
   std::u16string host_app_name;
   proxy->AppRegistryCache().ForOneApp(
       shortcut->host_app_id, [&host_app_name](const apps::AppUpdate& update) {
-        host_app_name = base::UTF8ToUTF16(update.Name());
+        host_app_name = base::UTF8ToUTF16(update.ShortName());
       });
   return l10n_util::GetStringFUTF16(IDS_PROMP_SHORTCUT_REMOVAL_TITLE,
                                     shortcut_name, host_app_name);
@@ -45,7 +45,7 @@ std::u16string GetWindowTitleForShortcut(Profile* profile,
 base::WeakPtr<views::Widget> apps::ShortcutRemovalDialog::Create(
     Profile* profile,
     const apps::ShortcutId& shortcut_id,
-    gfx::ImageSkia icon_with_badge,
+    const ui::ImageModel& icon_with_badge,
     gfx::NativeWindow parent_window,
     base::WeakPtr<apps::ShortcutRemovalDialog> shortcut_removal_dialog) {
   auto* dialog_view = new ShortcutRemovalDialogView(
@@ -59,9 +59,9 @@ base::WeakPtr<views::Widget> apps::ShortcutRemovalDialog::Create(
 ShortcutRemovalDialogView::ShortcutRemovalDialogView(
     Profile* profile,
     const apps::ShortcutId& shortcut_id,
-    gfx::ImageSkia icon_with_badge,
+    const ui::ImageModel& icon_with_badge,
     base::WeakPtr<apps::ShortcutRemovalDialog> shortcut_removal_dialog)
-    : AppDialogView(ui::ImageModel::FromImageSkia(icon_with_badge)),
+    : AppDialogView(icon_with_badge),
       profile_(profile),
       shortcut_removal_dialog_(shortcut_removal_dialog) {
   profile_observation_.Observe(profile);

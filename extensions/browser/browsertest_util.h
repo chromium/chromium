@@ -42,10 +42,14 @@ base::Value ExecuteScriptInBackgroundPage(
 // Same as ExecuteScriptInBackgroundPage, but doesn't wait for the script
 // to return a result. Fails the test and returns false if |extension_id|
 // isn't installed in |context| or doesn't have a background page, or if
-// executing the script fails.
-bool ExecuteScriptInBackgroundPageNoWait(content::BrowserContext* context,
-                                         const std::string& extension_id,
-                                         const std::string& script);
+// executing the script fails. The argument |script_user_activation|
+// determines if the script should be executed after a user activation.
+bool ExecuteScriptInBackgroundPageNoWait(
+    content::BrowserContext* context,
+    const std::string& extension_id,
+    const std::string& script,
+    ScriptUserActivation script_user_activation =
+        ScriptUserActivation::kDontActivate);
 
 // Waits until |script| calls "window.domAutomationController.send(result)",
 // where |result| is a string, and returns |result|. Fails the test and returns

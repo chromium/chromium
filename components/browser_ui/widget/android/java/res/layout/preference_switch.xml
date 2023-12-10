@@ -1,0 +1,14 @@
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<com.google.android.material.materialswitch.MaterialSwitch
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/Widget.BrowserUI.Switch"
+    android:id="@+id/switchWidget"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:focusable="false"
+    android:clickable="false"
+    android:background="@null"/>

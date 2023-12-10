@@ -29,8 +29,8 @@ public class Credential {
      * @param federation Identity provider name for this credential (empty for local credentials).
      * @param index position in array of credentials.
      */
-    public Credential(String username, String displayName, String originUrl, String federation,
-            int index) {
+    public Credential(
+            String username, String displayName, String originUrl, String federation, int index) {
         mUsername = username;
         mDisplayName = displayName;
         mOriginUrl = originUrl;

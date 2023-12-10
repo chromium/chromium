@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import 'chrome://diagnostics/percent_bar_chart.js';
-import 'chrome://webui-test/mojo_webui_test_support.js';
+import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
 import {PercentBarChartElement} from 'chrome://diagnostics/percent_bar_chart.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';

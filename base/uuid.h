@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <compare>
 #include <iosfwd>
 #include <string>
 
@@ -83,12 +84,9 @@ class BASE_EXPORT Uuid {
   const std::string& AsLowercaseString() const;
 
   // Invalid Uuids are equal.
-  bool operator==(const Uuid& other) const;
-  bool operator!=(const Uuid& other) const;
-  bool operator<(const Uuid& other) const;
-  bool operator<=(const Uuid& other) const;
-  bool operator>(const Uuid& other) const;
-  bool operator>=(const Uuid& other) const;
+  friend bool operator==(const Uuid&, const Uuid&) = default;
+  // Uuids are 128bit chunks of data so must be indistinguishable if equivalent.
+  friend std::strong_ordering operator<=>(const Uuid&, const Uuid&) = default;
 
  private:
   static Uuid FormatRandomDataAsV4Impl(

@@ -15,6 +15,7 @@
 #include <wchar.h>
 
 #include <limits>
+#include <string_view>
 #include <type_traits>
 #include <vector>
 
@@ -233,8 +234,8 @@ bool IsStringASCII(StringPiece16 str) {
   return internal::DoIsStringASCII(str.data(), str.length());
 }
 
-#if defined(WCHAR_T_IS_UTF32)
-bool IsStringASCII(WStringPiece str) {
+#if defined(WCHAR_T_IS_32_BIT)
+bool IsStringASCII(std::wstring_view str) {
   return internal::DoIsStringASCII(str.data(), str.length());
 }
 #endif

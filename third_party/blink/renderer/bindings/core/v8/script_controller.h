@@ -120,7 +120,6 @@ class CORE_EXPORT ScriptController final
   v8::Isolate* GetIsolate() const {
     return window_proxy_manager_->GetIsolate();
   }
-  void EnableEval();
 
   // Sets whether eval is enabled for the context corresponding to the given
   // |world|. |error_message| is used only when |allow_eval| is false.

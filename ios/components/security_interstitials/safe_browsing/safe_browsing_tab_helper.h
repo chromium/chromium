@@ -7,6 +7,7 @@
 
 #include <list>
 #include <map>
+#include <optional>
 
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/memory/weak_ptr.h"
@@ -18,7 +19,6 @@
 #import "ios/web/public/navigation/web_state_policy_decider.h"
 #include "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace web {
@@ -92,7 +92,7 @@ class SafeBrowsingTabHelper
       ~MainFrameUrlQuery();
 
       GURL url;
-      absl::optional<web::WebStatePolicyDecider::PolicyDecision> decision;
+      std::optional<web::WebStatePolicyDecider::PolicyDecision> decision;
       web::WebStatePolicyDecider::PolicyDecisionCallback response_callback;
 
       // The time at which a navigation was delayed waiting for the result of
@@ -111,7 +111,7 @@ class SafeBrowsingTabHelper
       SubFrameUrlQuery(SubFrameUrlQuery&& decision);
       ~SubFrameUrlQuery();
 
-      absl::optional<web::WebStatePolicyDecider::PolicyDecision> decision;
+      std::optional<web::WebStatePolicyDecider::PolicyDecision> decision;
       std::list<web::WebStatePolicyDecider::PolicyDecisionCallback>
           response_callbacks;
 
@@ -168,8 +168,8 @@ class SafeBrowsingTabHelper
     // received a response. If all queries have received a decision to allow the
     // navigation, the overall decision is to allow the navigation. Otherwise,
     // the overall decision depends on query results that have not yet been
-    // received, so absl::nullopt is returned.
-    absl::optional<web::WebStatePolicyDecider::PolicyDecision>
+    // received, so std::nullopt is returned.
+    std::optional<web::WebStatePolicyDecider::PolicyDecision>
     MainFrameRedirectChainDecision();
 
     // The URL check query manager.
@@ -177,11 +177,11 @@ class SafeBrowsingTabHelper
     // The safe browsing client.
     SafeBrowsingClient* client_ = nullptr;
     // The pending query for the main frame navigation, if any.
-    absl::optional<MainFrameUrlQuery> pending_main_frame_query_;
+    std::optional<MainFrameUrlQuery> pending_main_frame_query_;
     // The previous query for main frame, navigation, if any. This is tracked
     // as a potential redirect source for the current
     // `pending_main_frame_query_`.
-    absl::optional<MainFrameUrlQuery> previous_main_frame_query_;
+    std::optional<MainFrameUrlQuery> previous_main_frame_query_;
     // A list of queries corresponding to the redirect chain leading to the
     // current `pending_main_frame_query_`. This does not include
     // `pending_main_frame_query_` itself.

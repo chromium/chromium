@@ -6,9 +6,6 @@
   {
     "namespace": "types",
     "description": "The <code>chrome.types</code> API contains type declarations for Chrome.",
-    "compiler_options": {
-      "modernised_enums": true
-    },
     "types": [
       {
         "id": "ChromeSettingScope",

@@ -23,6 +23,7 @@
 #include "base/process/process_handle.h"
 #include "base/synchronization/lock.h"
 #include "base/task/current_thread.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/thread_annotations.h"
 #include "base/trace_event/memory_dump_provider.h"
@@ -35,6 +36,10 @@ class WaitableEvent;
 }
 
 namespace discardable_memory {
+
+namespace {
+class TestDiscardableSharedMemoryManager;
+}  // namespace
 
 // Implementation of DiscardableMemoryAllocator that allocates and manages
 // discardable memory segments for the process which hosts this class, and
@@ -104,6 +109,8 @@ class DISCARDABLE_MEMORY_EXPORT DiscardableSharedMemoryManager
   }
 
  private:
+  friend TestDiscardableSharedMemoryManager;
+
   class MemorySegment : public base::RefCountedThreadSafe<MemorySegment> {
    public:
     MemorySegment(std::unique_ptr<base::DiscardableSharedMemory> memory);
@@ -136,7 +143,8 @@ class DISCARDABLE_MEMORY_EXPORT DiscardableSharedMemoryManager
       int32_t id,
       base::UnsafeSharedMemoryRegion* shared_memory_region);
   void DeletedDiscardableSharedMemory(int32_t id, int client_id);
-  void OnMemoryPressure(
+  // Virtual for tests.
+  virtual void OnMemoryPressure(
       base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level);
   void ReduceMemoryUsageUntilWithinMemoryLimit()
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
@@ -152,6 +160,10 @@ class DISCARDABLE_MEMORY_EXPORT DiscardableSharedMemoryManager
 
   // Invalidate weak pointers for the mojo thread.
   void InvalidateMojoThreadWeakPtrs(base::WaitableEvent* event);
+
+  // Create `memory_pressure_listener_` on a worker thread to receive memory
+  // pressure notifications there.
+  void CreateMemoryPressureListenerOnWorkerThread();
 
   int32_t next_client_id_;
 
@@ -182,6 +194,10 @@ class DISCARDABLE_MEMORY_EXPORT DiscardableSharedMemoryManager
   // of a sequence directly.
   base::CurrentThread mojo_thread_message_loop_;
   scoped_refptr<base::SingleThreadTaskRunner> mojo_thread_task_runner_;
+
+  // A task runner to create `memory_pressure_listener_` on worker threads so
+  // that `OnMemoryPressure` notification happens on the worker thread too.
+  scoped_refptr<base::SequencedTaskRunner> memory_pressure_task_runner_;
 
   base::WeakPtrFactory<DiscardableSharedMemoryManager> weak_ptr_factory_{this};
 

@@ -4,9 +4,9 @@
 
 #include "extensions/browser/api/virtual_keyboard_private/virtual_keyboard_private_api.h"
 
+#include <optional>
 #include <string>
 #include <utility>
-
 #include "base/functional/bind.h"
 #include "base/lazy_instance.h"
 #include "base/notreached.h"
@@ -15,7 +15,6 @@
 #include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/browser/api/virtual_keyboard_private/virtual_keyboard_delegate.h"
 #include "extensions/common/api/virtual_keyboard_private.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/clipboard/clipboard_history_item.h"
@@ -155,7 +154,7 @@ VirtualKeyboardPrivateInsertTextFunction::Run() {
 
 ExtensionFunction::ResponseAction
 VirtualKeyboardPrivateSendKeyEventFunction::Run() {
-  absl::optional<keyboard::SendKeyEvent::Params> params =
+  std::optional<keyboard::SendKeyEvent::Params> params =
       keyboard::SendKeyEvent::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
   EXTENSION_FUNCTION_VALIDATE(params->key_event.modifiers);
@@ -210,7 +209,7 @@ VirtualKeyboardPrivateGetKeyboardConfigFunction::Run() {
 }
 
 void VirtualKeyboardPrivateGetKeyboardConfigFunction::OnKeyboardConfig(
-    absl::optional<base::Value::Dict> results) {
+    std::optional<base::Value::Dict> results) {
   Respond(results ? WithArguments(std::move(*results)) : Error(kUnknownError));
 }
 
@@ -233,7 +232,7 @@ VirtualKeyboardPrivateOpenSuggestionSettingsFunction::Run() {
 
 ExtensionFunction::ResponseAction
 VirtualKeyboardPrivateSetContainerBehaviorFunction::Run() {
-  absl::optional<keyboard::SetContainerBehavior::Params> params =
+  std::optional<keyboard::SetContainerBehavior::Params> params =
       keyboard::SetContainerBehavior::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -254,7 +253,7 @@ void VirtualKeyboardPrivateSetContainerBehaviorFunction::OnSetContainerBehavior(
 
 ExtensionFunction::ResponseAction
 VirtualKeyboardPrivateSetDraggableAreaFunction::Run() {
-  absl::optional<keyboard::SetDraggableArea::Params> params =
+  std::optional<keyboard::SetDraggableArea::Params> params =
       keyboard::SetDraggableArea::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
   if (!delegate()->SetDraggableArea(params->bounds))
@@ -264,7 +263,7 @@ VirtualKeyboardPrivateSetDraggableAreaFunction::Run() {
 
 ExtensionFunction::ResponseAction
 VirtualKeyboardPrivateSetKeyboardStateFunction::Run() {
-  absl::optional<keyboard::SetKeyboardState::Params> params =
+  std::optional<keyboard::SetKeyboardState::Params> params =
       keyboard::SetKeyboardState::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
   if (!delegate()->SetRequestedKeyboardState(params->state))
@@ -274,7 +273,7 @@ VirtualKeyboardPrivateSetKeyboardStateFunction::Run() {
 
 ExtensionFunction::ResponseAction
 VirtualKeyboardPrivateSetOccludedBoundsFunction::Run() {
-  absl::optional<keyboard::SetOccludedBounds::Params> params =
+  std::optional<keyboard::SetOccludedBounds::Params> params =
       keyboard::SetOccludedBounds::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -291,7 +290,7 @@ VirtualKeyboardPrivateSetOccludedBoundsFunction::Run() {
 
 ExtensionFunction::ResponseAction
 VirtualKeyboardPrivateSetHitTestBoundsFunction::Run() {
-  absl::optional<keyboard::SetHitTestBounds::Params> params =
+  std::optional<keyboard::SetHitTestBounds::Params> params =
       keyboard::SetHitTestBounds::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -308,7 +307,7 @@ VirtualKeyboardPrivateSetHitTestBoundsFunction::Run() {
 
 ExtensionFunction::ResponseAction
 VirtualKeyboardPrivateSetAreaToRemainOnScreenFunction::Run() {
-  absl::optional<keyboard::SetAreaToRemainOnScreen::Params> params =
+  std::optional<keyboard::SetAreaToRemainOnScreen::Params> params =
       keyboard::SetAreaToRemainOnScreen::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -320,7 +319,7 @@ VirtualKeyboardPrivateSetAreaToRemainOnScreenFunction::Run() {
 
 ExtensionFunction::ResponseAction
 VirtualKeyboardPrivateSetWindowBoundsInScreenFunction::Run() {
-  absl::optional<keyboard::SetWindowBoundsInScreen::Params> params =
+  std::optional<keyboard::SetWindowBoundsInScreen::Params> params =
       keyboard::SetWindowBoundsInScreen::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -336,7 +335,7 @@ VirtualKeyboardPrivateSetWindowBoundsInScreenFunction ::
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 ExtensionFunction::ResponseAction
 VirtualKeyboardPrivateGetClipboardHistoryFunction::Run() {
-  absl::optional<keyboard::GetClipboardHistory::Params> params =
+  std::optional<keyboard::GetClipboardHistory::Params> params =
       keyboard::GetClipboardHistory::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -391,7 +390,7 @@ VirtualKeyboardPrivateGetClipboardHistoryFunction ::
 
 ExtensionFunction::ResponseAction
 VirtualKeyboardPrivatePasteClipboardItemFunction::Run() {
-  absl::optional<keyboard::PasteClipboardItem::Params> params =
+  std::optional<keyboard::PasteClipboardItem::Params> params =
       keyboard::PasteClipboardItem::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -405,7 +404,7 @@ VirtualKeyboardPrivatePasteClipboardItemFunction ::
 
 ExtensionFunction::ResponseAction
 VirtualKeyboardPrivateDeleteClipboardItemFunction::Run() {
-  absl::optional<keyboard::DeleteClipboardItem::Params> params =
+  std::optional<keyboard::DeleteClipboardItem::Params> params =
       keyboard::DeleteClipboardItem::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 

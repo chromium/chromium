@@ -26,9 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-/**
- * Mediator for the note creation component.
- */
+/** Mediator for the note creation component. */
 public class NoteCreationMediator {
     private final ModelList mListModel;
     private final NoteService mNoteService;
@@ -39,8 +37,11 @@ public class NoteCreationMediator {
      * Constructor which will also kick-off the asynchronous retrieval of Note
      * templates.
      */
-    public NoteCreationMediator(ModelList listModel, GoogleFontService fontService,
-            NoteService noteService, ImageService imageService) {
+    public NoteCreationMediator(
+            ModelList listModel,
+            GoogleFontService fontService,
+            NoteService noteService,
+            ImageService imageService) {
         mListModel = listModel;
         mNoteService = noteService;
         mFontService = fontService;
@@ -62,12 +63,16 @@ public class NoteCreationMediator {
             }
         }
 
-        mImageService.resolveBackgrounds(backgrounds, () -> { onBackgroundsResolved(templates); });
+        mImageService.resolveBackgrounds(
+                backgrounds,
+                () -> {
+                    onBackgroundsResolved(templates);
+                });
     }
 
     private void onBackgroundsResolved(List<NoteTemplate> templates) {
         // Templates with image backgrounds for which fetch failed should be skipped.
-        for (Iterator<NoteTemplate> iter = templates.iterator(); iter.hasNext();) {
+        for (Iterator<NoteTemplate> iter = templates.iterator(); iter.hasNext(); ) {
             NoteTemplate template = iter.next();
 
             if (template.mainBackground instanceof ImageBackground
@@ -99,12 +104,15 @@ public class NoteCreationMediator {
             requests.add(tuple.typefaceRequest);
         }
 
-        mFontService.fetchFonts(requests, new GoogleFontService.GoogleFontRequestCallback() {
-            @Override
-            public void onResponsesReceived(Map<TypefaceRequest, TypefaceResponse> resultsMap) {
-                populateList(requestTuples, resultsMap);
-            }
-        });
+        mFontService.fetchFonts(
+                requests,
+                new GoogleFontService.GoogleFontRequestCallback() {
+                    @Override
+                    public void onResponsesReceived(
+                            Map<TypefaceRequest, TypefaceResponse> resultsMap) {
+                        populateList(requestTuples, resultsMap);
+                    }
+                });
     }
 
     private void populateList(
@@ -132,9 +140,14 @@ public class NoteCreationMediator {
                 continue;
             }
 
-            ListItem listItem = new ListItem(NoteProperties.NOTE_VIEW_TYPE,
-                    buildModel(index == 0, index == (requestTuples.size() - 1), tuple.template,
-                            response.typeface));
+            ListItem listItem =
+                    new ListItem(
+                            NoteProperties.NOTE_VIEW_TYPE,
+                            buildModel(
+                                    index == 0,
+                                    index == (requestTuples.size() - 1),
+                                    tuple.template,
+                                    response.typeface));
             mListModel.add(listItem);
             ++index;
         }
@@ -142,11 +155,12 @@ public class NoteCreationMediator {
 
     private PropertyModel buildModel(
             boolean isFirst, boolean isLast, NoteTemplate template, Typeface typeface) {
-        PropertyModel.Builder builder = new PropertyModel.Builder(NoteProperties.ALL_KEYS)
-                                                .with(NoteProperties.IS_FIRST, isFirst)
-                                                .with(NoteProperties.IS_LAST, isLast)
-                                                .with(NoteProperties.TEMPLATE, template)
-                                                .with(NoteProperties.TYPEFACE, typeface);
+        PropertyModel.Builder builder =
+                new PropertyModel.Builder(NoteProperties.ALL_KEYS)
+                        .with(NoteProperties.IS_FIRST, isFirst)
+                        .with(NoteProperties.IS_LAST, isLast)
+                        .with(NoteProperties.TEMPLATE, template)
+                        .with(NoteProperties.TYPEFACE, typeface);
 
         return builder.build();
     }
@@ -160,9 +174,7 @@ public class NoteCreationMediator {
         return value == null ? defaultValue : value;
     }
 
-    /**
-     * Tuple object holding a NoteTemplate along with its TypefaceRequest.
-     */
+    /** Tuple object holding a NoteTemplate along with its TypefaceRequest. */
     private class RequestTuple {
         public final NoteTemplate template;
         public final TypefaceRequest typefaceRequest;

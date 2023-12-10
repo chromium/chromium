@@ -6,9 +6,7 @@ package org.chromium.chrome.browser.util;
 
 import org.jni_zero.NativeMethods;
 
-/**
- * JNI call glue for AfterStartupTaskUtils in C++.
- */
+/** JNI call glue for AfterStartupTaskUtils in C++. */
 public final class AfterStartupTaskUtils {
     private AfterStartupTaskUtils() {}
 

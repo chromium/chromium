@@ -124,9 +124,8 @@
 #include "url/origin.h"
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-#include "chrome/browser/supervised_user/supervised_user_service_factory.h"
-#include "components/supervised_user/core/browser/supervised_user_service.h"
-#endif
+#include "components/supervised_user/core/browser/supervised_user_preferences.h"
+#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
 namespace extensions {
 
@@ -502,10 +501,8 @@ std::unique_ptr<developer::ProfileInfo> DeveloperPrivateAPI::CreateProfileInfo(
     Profile* profile) {
   std::unique_ptr<developer::ProfileInfo> info(new developer::ProfileInfo());
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-  supervised_user::SupervisedUserService* service =
-      SupervisedUserServiceFactory::GetForProfile(profile);
   info->is_child_account =
-      service && service->AreExtensionsPermissionsEnabled();
+      supervised_user::AreExtensionsPermissionsEnabled(*profile->GetPrefs());
 #else
   info->is_child_account = false;
 #endif
@@ -1093,15 +1090,13 @@ DeveloperPrivateUpdateProfileConfigurationFunction::Run() {
 
   if (update.in_developer_mode) {
     Profile* profile = Profile::FromBrowserContext(browser_context());
-
+    CHECK(profile);
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-    supervised_user::SupervisedUserService* service =
-        SupervisedUserServiceFactory::GetForProfile(profile);
-    if (service->AreExtensionsPermissionsEnabled()) {
+    if (supervised_user::AreExtensionsPermissionsEnabled(
+            *profile->GetPrefs())) {
       return RespondNow(Error(kCannotUpdateChildAccountProfileSettingsError));
     }
 #endif
-
     util::SetDeveloperModeForProfile(profile, *update.in_developer_mode);
   }
 
@@ -1313,9 +1308,8 @@ ExtensionFunction::ResponseAction DeveloperPrivateLoadUnpackedFunction::Run() {
 
   Profile* profile = Profile::FromBrowserContext(browser_context());
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-  supervised_user::SupervisedUserService* service =
-      SupervisedUserServiceFactory::GetForProfile(profile);
-  if (service->AreExtensionsPermissionsEnabled()) {
+  if (profile &&
+      supervised_user::AreExtensionsPermissionsEnabled(*profile->GetPrefs())) {
     return RespondNow(
         Error("Child account users cannot load unpacked extensions."));
   }
@@ -1908,9 +1902,9 @@ ExtensionFunction::ResponseAction
 DeveloperPrivateIsProfileManagedFunction::Run() {
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   Profile* profile = Profile::FromBrowserContext(browser_context());
-  supervised_user::SupervisedUserService* service =
-      SupervisedUserServiceFactory::GetForProfile(profile);
-  return RespondNow(WithArguments(service->AreExtensionsPermissionsEnabled()));
+  return RespondNow(WithArguments(
+      profile &&
+      supervised_user::AreExtensionsPermissionsEnabled(*profile->GetPrefs())));
 #else
   return RespondNow(WithArguments(false));
 #endif
@@ -2020,10 +2014,12 @@ DeveloperPrivateOpenDevToolsFunction::Run() {
       return RespondNow(Error(kInvalidLazyBackgroundPageParameter));
     if (properties.render_process_id == -1) {
       // Start the service worker and open the inspect window.
-      devtools_util::InspectInactiveServiceWorkerBackground(extension, profile);
+      devtools_util::InspectInactiveServiceWorkerBackground(
+          extension, profile, DevToolsOpenedByAction::kInspectLink);
       return RespondNow(NoArguments());
     }
-    devtools_util::InspectServiceWorkerBackground(extension, profile);
+    devtools_util::InspectServiceWorkerBackground(
+        extension, profile, DevToolsOpenedByAction::kInspectLink);
     return RespondNow(NoArguments());
   }
 
@@ -2034,7 +2030,8 @@ DeveloperPrivateOpenDevToolsFunction::Run() {
     if (!BackgroundInfo::HasLazyBackgroundPage(extension))
       return RespondNow(Error(kInvalidRenderProcessId));
     // Wakes up the background page and opens the inspect window.
-    devtools_util::InspectBackgroundPage(extension, profile);
+    devtools_util::InspectBackgroundPage(extension, profile,
+                                         DevToolsOpenedByAction::kInspectLink);
     return RespondNow(NoArguments());
   }
 
@@ -2064,9 +2061,11 @@ DeveloperPrivateOpenDevToolsFunction::Run() {
         DevToolsToggleAction::Reveal(
             base::UTF8ToUTF16(*properties.url),
             properties.line_number ? *properties.line_number - 1 : 0,
-            properties.column_number ? *properties.column_number - 1 : 0));
+            properties.column_number ? *properties.column_number - 1 : 0),
+        DevToolsOpenedByAction::kInspectLink);
   } else {
-    DevToolsWindow::OpenDevToolsWindow(web_contents);
+    DevToolsWindow::OpenDevToolsWindow(web_contents,
+                                       DevToolsOpenedByAction::kInspectLink);
   }
 
   // Once we open the inspector, we focus on the appropriate tab...

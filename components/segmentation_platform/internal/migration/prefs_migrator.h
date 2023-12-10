@@ -46,7 +46,7 @@ class PrefsMigrator {
   bool IsPrefMigrationRequired(Config* config);
   void UpdateNewPrefs(Config* config,
                       absl::optional<SelectedSegment> old_result,
-                      absl::optional<proto::ClientResult> new_result);
+                      const proto::ClientResult* new_result);
   void DeleteOldPrefsEntryIfFullyMigrated(
       Config* config,
       absl::optional<SelectedSegment> old_result);

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_ASH_USER_EDUCATION_CHROME_USER_EDUCATION_DELEGATE_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "ash/user_education/user_education_delegate.h"
@@ -13,7 +14,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class ProfileManager;
 
@@ -36,9 +36,9 @@ class ChromeUserEducationDelegate : public ash::UserEducationDelegate,
       user_education::HelpBubbleParams help_bubble_params,
       ui::ElementIdentifier element_id,
       ui::ElementContext element_context) override;
-  absl::optional<ui::ElementIdentifier> GetElementIdentifierForAppId(
+  std::optional<ui::ElementIdentifier> GetElementIdentifierForAppId(
       const std::string& app_id) const override;
-  const absl::optional<bool>& IsNewUser(
+  const std::optional<bool>& IsNewUser(
       const AccountId& account_id) const override;
   bool IsTutorialRegistered(const AccountId& account_id,
                             ash::TutorialId tutorial_id) const override;
@@ -53,13 +53,13 @@ class ChromeUserEducationDelegate : public ash::UserEducationDelegate,
                      base::OnceClosure aborted_callback) override;
   void AbortTutorial(
       const AccountId& account_id,
-      absl::optional<ash::TutorialId> tutorial_id = absl::nullopt) override;
+      std::optional<ash::TutorialId> tutorial_id = std::nullopt) override;
   void LaunchSystemWebAppAsync(const AccountId& account_id,
                                ash::SystemWebAppType system_web_app_type,
                                int64_t display_id) override;
-  bool IsRunningTutorial(const AccountId& account_id,
-                         absl::optional<ash::TutorialId> tutorial_id =
-                             absl::nullopt) const override;
+  bool IsRunningTutorial(
+      const AccountId& account_id,
+      std::optional<ash::TutorialId> tutorial_id = std::nullopt) const override;
 
   // ProfileManagerObserver:
   void OnProfileAdded(Profile* profile) override;
@@ -70,7 +70,7 @@ class ChromeUserEducationDelegate : public ash::UserEducationDelegate,
   // the session was the first sync ever across all ChromeOS devices and
   // sessions for the given user. As such, this value is absent until the first
   // app list sync of the session is completed.
-  absl::optional<bool> is_primary_profile_new_user_;
+  std::optional<bool> is_primary_profile_new_user_;
 
   // The profile manager is observed in order to ensure that all necessary
   // tutorial dependencies are registered for the primary user profile.

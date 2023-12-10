@@ -8,6 +8,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/types/optional_ref.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
+#include "content/browser/file_system_access/features.h"
 #include "content/public/browser/disallow_activation_reason.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_host.h"
@@ -24,6 +25,38 @@ using LockType = FileSystemAccessLockManager::LockType;
 // This class represents an active lock on the `path_component`. The lock is
 // kept alive when there is some `LockHandle` to it. The lock is released when
 // all its `LockHandle`s have been destroyed.
+//
+// Terminology:
+//  - A "caller" is the caller of `FileSystemAccessLockManager` `TakeLock`
+//    function that requested the `Lock`. A `Lock` can have multiple callers.
+//  - A "subtree" is subtree of the whole `Lock` tree. The `Lock` tree can
+//    contain zero or more subtrees. Subtrees have a root called a subroot. A
+//    `Lock` is considered to be in some subtree if the it is the subroot of the
+//    subtree or a descendant of the subroot. A subtree can be one of two types:
+//    Evicting or Pending.
+//
+// A `Lock` can be in one of two states: Taken or Pending.
+//  - A `Lock` is Taken if any of its `LockHandle`s have been given out to the
+//    callers. A `Lock` becomes Taken when it has either been created without
+//    contention or it was a Pending `Lock` that was promoted to Taken.
+//  - A `Lock` is Pending if none of its `LockHandle`s have not been given out
+//    to its callers. Before it is promoted to a Taken `Lock`, a Pending `Lock`
+//    can only be destroyed if it is evicted. A Pending `Lock` is in a Pending
+//    subtree. A `Lock` is a Pending subroot when it has been created through
+//    the eviction of a Taken `Lock` that has yet to be evicted. A Pending
+//    `Lock` is promoted to a Taken when that evicting Taken `Lock` has finished
+//    eviction.
+//
+// A `Lock` may be evicted to allow for the creation of a new `Lock`. This can
+// only happen when the original `Lock` is held only by pages in the BFCache and
+// it is in contention with the new `Lock`. The new `Lock` is created as a
+// Pending `Lock` and takes the place of the original `Lock`. What happens to
+// the original `Lock` depends on its state.
+//  - When a Taken `Lock` is evicted, it becomes an Evicting subroot, so it and
+//    its descendants are an Evicting subtree.
+//  - When a Pending `Lock` is evicted, it is immediately destroyed by
+//    destroying all LockHandles to it. An evicted Pending `Lock` will never
+//    have its `LockHandle`s given to the caller.
 class Lock {
  public:
   Lock(const base::FilePath::StringType& path_component,
@@ -33,9 +66,13 @@ class Lock {
       : path_component_(path_component),
         type_(type),
         exclusive_lock_type_(exclusive_lock_type),
-        parent_lock_(std::move(parent_lock)) {}
+        parent_lock_(std::move(parent_lock)),
+        is_pending_(parent_lock_.has_value() &&
+                    parent_lock_->InPendingSubtree()) {}
 
-  virtual ~Lock() = default;
+  virtual ~Lock() {
+    CHECK(pending_callbacks_.empty() && frame_id_lock_handles_.empty());
+  }
 
   Lock(Lock const&) = delete;
   Lock& operator=(Lock const&) = delete;
@@ -74,15 +111,26 @@ class Lock {
       return child;
     }
 
-    // Evict on contention is only enabled when FSA Locking Scheme is enabled.
-    bool evict_on_contention = base::FeatureList::IsEnabled(
-        blink::features::kFileSystemAccessLockingScheme);
+    // Evict on contention is only enabled when both FSA Locking Scheme and
+    // BFCache are enabled.
+    bool evict_on_contention =
+        base::FeatureList::IsEnabled(
+            blink::features::kFileSystemAccessLockingScheme) &&
+        base::FeatureList::IsEnabled(features::kFileSystemAccessBFCache);
 
-    // Start eviction if we can.
-    if (evict_on_contention) {
-      child->IsEvictableAndStartEviction();
+    // Start eviction if we can. Otherwise, we can not take this lock since it
+    // is in contention with a lock held by an active page.
+    if (!evict_on_contention || !child->IsEvictableAndStartEviction()) {
+      return nullptr;
     }
-    return nullptr;
+
+    // Create a child that is pending on the eviction of the current child.
+    std::unique_ptr<Lock> evicting_subroot_lock = TakeChild(path_component);
+    CHECK(evicting_subroot_lock);
+    child = CreateChild(path_component, lock_type);
+    child->SetEvictingSubrootLock(std::move(evicting_subroot_lock));
+
+    return child;
   }
 
   scoped_refptr<LockHandle> CreateLockHandle(
@@ -111,6 +159,21 @@ class Lock {
     return base::WrapRefCounted<LockHandle>(
         &frame_id_lock_handles_.at(frame_id).get());
   }
+
+  // Stores the `TakeLockCallback` bound with a `LockHandle` to `this` for
+  // `frame_id`. Unless `this` is evicted, the callback will be run once our
+  // `evicting_subroot_lock_` has been evicted.
+  void StorePendingCallback(
+      FileSystemAccessLockManager::TakeLockCallback pending_callback,
+      const GlobalRenderFrameHostId& frame_id) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    pending_callbacks_.push_back(base::BindOnce(std::move(pending_callback),
+                                                CreateLockHandle(frame_id)));
+  }
+
+  // `Lock`s in a Pending subtree are pending on becoming Taken. See class
+  // comment.
+  bool InPendingSubtree() { return is_pending_; }
 
  protected:
   virtual void DestroySelf() { parent_lock_->ReleaseChild(path_component_); }
@@ -188,9 +251,124 @@ class Lock {
 
     // If nothing is holding this lock, release it.
     if (frame_id_lock_handles_.empty()) {
-      // `DestroySelf` will destroy `this`.
-      DestroySelf();
+      // If we're not an Evicting subroot, then our parent owns us, and we can
+      // destroy ourselves through our parent.
+      if (!IsEvictingSubroot()) {
+        // `DestroySelf` will destroy `this`.
+        DestroySelf();
+        return;
+      }
+
+      // The root cannot be an Evicting subroot.
+      CHECK(parent_lock_.has_value());
+
+      // If we are an Evicting subroot, then we must destroy ourselves through
+      // the `pending_lock` that owns us.
+      Lock* pending_lock = parent_lock_->GetChild(path_component_);
+
+      if (InPendingSubtree()) {
+        CHECK(IsPendingSubroot());
+
+        // When we are in a Pending Subtree, then we've been evicted before our
+        // `evicting_subroot_lock_` has been evicted. The `pending_lock_` still
+        // has to wait on our `evicting_subroot_lock_` to be evicted before it
+        // can be promoted. So replace ourselves in `pending_lock` with our
+        // `evicting_subroot_lock_`.
+
+        // `SetEvictingSubrootLock` will destroy `this`. `pending_lock` uniquely
+        // owns `this` as its evicting subroot `Lock`, so setting a new one will
+        // destroy `this`.
+        pending_lock->SetEvictingSubrootLock(std::move(evicting_subroot_lock_));
+      } else if (pending_lock->InEvictingSubtree()) {
+        // If the pending lock is in an Evicting subtree, then it should be
+        // evicted.
+
+        // `EvictPendingSubtree` will destroy `this`.
+        pending_lock->EvictPendingSubtree();
+      } else {
+        // `PromotePendingToTaken` will destroy `this`.
+        pending_lock->PromotePendingToTaken();
+      }
     }
+  }
+
+  void EvictPendingSubtree() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    CHECK(InPendingSubtree());
+
+    auto pending_callbacks = std::move(pending_callbacks_);
+
+    // Will destroy `this` if this its an ancestor Lock since ancestors are
+    // owned by their children, and we're destroying all the children.
+    for (auto& [_path_component, child] : child_locks_) {
+      // Destroys `child`.
+      child->EvictPendingSubtree();
+    }
+
+    // Will destroy `this` if this is a leaf of an Pending subtree since a
+    // Pending leaf owns all its LockHandles through its `pending_callbacks_`.
+    pending_callbacks.clear();
+  }
+
+  // Promotes a Pending lock to a Taken lock by handing out the `LockHandle`s to
+  // the leafs of the pending subtree. See class comment.
+  void PromotePendingToTaken() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    CHECK(InPendingSubtree());
+
+    is_pending_ = false;
+    evicting_subroot_lock_ = nullptr;
+    for (auto& [_path_component, child] : child_locks_) {
+      child->PromotePendingToTaken();
+    }
+    for (auto& pending_callback : pending_callbacks_) {
+      std::move(pending_callback).Run();
+    }
+    pending_callbacks_.clear();
+  }
+
+  // Returns if its the subroot of a Pending subtree. See class comment.
+  bool IsPendingSubroot() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    // At the subroot of a Pending subtree is an Evicting subroot lock. This is
+    // the lock that we're Pending on being evicted before we promote this
+    // Pending subtree to an existing subtree.
+    return static_cast<bool>(evicting_subroot_lock_);
+  }
+
+  // `Lock`s in an Evicting subtree are held by pages that are being evicted
+  // from the BFCache. See class comment.
+  bool InEvictingSubtree() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return parent_lock_.has_value() &&
+           (IsEvictingSubroot() || parent_lock_->InEvictingSubtree());
+  }
+
+  // Returns if we're the subroot of an Evicting subtree. See class comment.
+  bool IsEvictingSubroot() {
+    return parent_lock_.has_value() &&
+           parent_lock_->GetChild(path_component_)
+                   ->evicting_subroot_lock_.get() == this;
+  }
+
+  // Makes `this` a Pending subtree that is waiting on the destruction of the
+  // Evicting subtree whose subroot is `evicting_subroot_lock`. See class
+  // comment.
+  void SetEvictingSubrootLock(std::unique_ptr<Lock> evicting_subroot_lock) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    is_pending_ = true;
+    evicting_subroot_lock_ = std::move(evicting_subroot_lock);
+
+    // If our `evicting_subroot_lock_` is Pending, then evict it. It will
+    // replace itself with its own `evicting_subroot_lock_`.
+    if (evicting_subroot_lock_->InPendingSubtree()) {
+      evicting_subroot_lock_->EvictPendingSubtree();
+    }
+  }
+
+  std::unique_ptr<Lock> TakeEvictingSubrootLock() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return std::move(evicting_subroot_lock_);
   }
 
   SEQUENCE_CHECKER(sequence_checker_);
@@ -207,12 +385,29 @@ class Lock {
   const LockType exclusive_lock_type_;
 
   // The parent `Lock` which created `this`. May not hold a value if this
-  // instance represents the root of its file system. When it is not null, it is
-  // safe to dereference since `parent_lock_` owns `this`.
+  // instance represents the subroot of its file system. When it is not null, it
+  // is safe to dereference since `parent_lock_` owns `this`.
   base::optional_ref<Lock> parent_lock_;
 
   // The map of path components to the respective children.
   std::map<base::FilePath::StringType, std::unique_ptr<Lock>> child_locks_;
+
+  bool is_pending_;
+
+  // When `this` is created as a Pending `Lock`, the `Lock` it evicted is
+  // transferred from the parent to `this`'s `evicting_subroot_lock_`. Once
+  // `evicting_subroot_lock_` is destroyed, `this` is promoted to Taken unless
+  // it too has been evicted. See class comment.
+  std::unique_ptr<Lock> evicting_subroot_lock_;
+
+  // When a Pending `Lock` is created, the original callbacks passed to
+  // `FileSystemAccessLockManager`'s `TakeLock` are bound with `LockHandle`s to
+  // the Pending `Lock` and stored in the Pending `Lock`.
+  //
+  // Once the contentious Evicting `Lock` has been destroyed and if the Pending
+  // `Lock` hasn't itself been evicted, they are all run. If the Pending `Lock`
+  // is evicted, then the callbacks are never run.
+  std::vector<base::OnceClosure> pending_callbacks_;
 
   base::WeakPtrFactory<Lock> weak_factory_
       GUARDED_BY_CONTEXT(sequence_checker_){this};
@@ -363,7 +558,13 @@ void FileSystemAccessLockManager::TakeLock(
     }
   }
 
-  // Successfully created the lock and passing a lock handle to the callback.
+  // If the lock is pending, store the callback so we can run it after eviction.
+  if (lock->InPendingSubtree()) {
+    lock->StorePendingCallback(std::move(callback), frame_id);
+    return;
+  }
+
+  // If its not pending, then run the callback immediately.
   std::move(callback).Run(lock->CreateLockHandle(frame_id));
 }
 

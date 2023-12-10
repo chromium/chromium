@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <string_view>
 #include <vector>
 
 #include "base/barrier_closure.h"
@@ -19,7 +20,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
-#include "base/strings/string_piece.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/test_message_loop.h"
@@ -83,7 +83,7 @@ class MockOutputControllerEventHandler : public OutputController::EventHandler {
   MOCK_METHOD0(OnControllerPlaying, void());
   MOCK_METHOD0(OnControllerPaused, void());
   MOCK_METHOD0(OnControllerError, void());
-  void OnLog(base::StringPiece) override {}
+  void OnLog(std::string_view) override {}
 };
 
 class MockOutputControllerSyncReader : public OutputController::SyncReader {

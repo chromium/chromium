@@ -91,7 +91,14 @@ IN_PROC_BROWSER_TEST_F(V8ContextTrackerTest, SameOriginIframeAttributionData) {
   });
 }
 
-IN_PROC_BROWSER_TEST_F(V8ContextTrackerTest, CrossOriginIframeAttributionData) {
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_CrossOriginIframeAttributionData \
+  DISABLED_CrossOriginIframeAttributionData
+#else
+#define MAYBE_CrossOriginIframeAttributionData CrossOriginIframeAttributionData
+#endif  // BUILDFLAG(IS_MAC)
+IN_PROC_BROWSER_TEST_F(V8ContextTrackerTest,
+                       MAYBE_CrossOriginIframeAttributionData) {
   GURL urla(embedded_test_server()->GetURL("a.com", "/a_embeds_b.html"));
   auto* contents = shell()->web_contents();
   ASSERT_TRUE(

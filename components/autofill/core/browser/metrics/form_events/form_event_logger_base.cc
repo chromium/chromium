@@ -186,6 +186,7 @@ void FormEventLoggerBase::OnWillSubmitForm(
     Log(FORM_EVENT_SUGGESTION_SHOWN_WILL_SUBMIT_ONCE, form);
   }
 
+  RecordUndoMetrics();
   base::RecordAction(base::UserMetricsAction("Autofill_OnWillSubmitForm"));
 }
 
@@ -259,21 +260,6 @@ void FormEventLoggerBase::Log(FormEvent event, const FormStructure& form) {
 
   // Allow specialized types of logging, e.g. splitting metrics in useful ways.
   OnLog(name, event, form);
-
-  // Logging again in a different histogram for segmentation purposes.
-  if (server_record_type_count_ == 0 && local_record_type_count_ == 0)
-    name += ".WithNoData";
-  else if (server_record_type_count_ > 0 && local_record_type_count_ == 0)
-    name += ".WithOnlyServerData";
-  else if (server_record_type_count_ == 0 && local_record_type_count_ > 0)
-    name += ".WithOnlyLocalData";
-  else
-    name += ".WithBothServerAndLocalData";
-  base::UmaHistogramEnumeration(name, event, NUM_FORM_EVENTS);
-  base::UmaHistogramEnumeration(
-      name +
-          AutofillMetrics::GetMetricsSyncStateSuffix(signin_state_for_metrics_),
-      event, NUM_FORM_EVENTS);
 }
 
 void FormEventLoggerBase::LogWillSubmitForm(const FormStructure& form) {
@@ -294,13 +280,6 @@ void FormEventLoggerBase::LogFormSubmitted(const FormStructure& form) {
   } else {
     Log(FORM_EVENT_LOCAL_SUGGESTION_SUBMITTED_ONCE, form);
   }
-}
-
-void FormEventLoggerBase::LogUkmInteractedWithForm(
-    FormSignature form_signature) {
-  form_interactions_ukm_logger_->LogInteractedWithForm(
-      /*is_for_credit_card=*/false, local_record_type_count_,
-      server_record_type_count_, form_signature);
 }
 
 void FormEventLoggerBase::RecordFunnelMetrics() const {
@@ -381,10 +360,8 @@ void FormEventLoggerBase::RecordKeyMetrics() const {
     }
     RecordFillingAssistance(logs);
     if (form_interactions_ukm_logger_) {
-      bool has_logged_data_to_fill_available =
-          server_record_type_count_ + local_record_type_count_ > 0;
       form_interactions_ukm_logger_->LogKeyMetrics(
-          submitted_form_types_, has_logged_data_to_fill_available,
+          submitted_form_types_, HasLoggedDataToFillAvailable(),
           has_logged_suggestions_shown_, has_logged_edited_autofilled_field_,
           has_logged_suggestion_filled_, form_interaction_counts_, flow_id_,
           fast_checkout_run_id_);
@@ -401,8 +378,7 @@ void FormEventLoggerBase::RecordKeyMetrics() const {
 }
 
 void FormEventLoggerBase::RecordFillingReadiness(LogBuffer& logs) const {
-  bool has_logged_data_to_fill_available =
-      server_record_type_count_ + local_record_type_count_ > 0;
+  bool has_logged_data_to_fill_available = HasLoggedDataToFillAvailable();
   UmaHistogramBoolean("Autofill.KeyMetrics.FillingReadiness." + form_type_name_,
                       has_logged_data_to_fill_available);
   LOG_AF(logs) << Tr{} << "FillingReadiness"
@@ -502,6 +478,17 @@ void FormEventLoggerBase::RecordAblationMetrics() const {
           *time_from_interaction_to_submission_, base::Milliseconds(100),
           base::Minutes(10), 50);
     }
+  }
+}
+
+void FormEventLoggerBase::RecordUndoMetrics() const {
+  if (has_logged_suggestion_filled_) {
+    base::UmaHistogramBoolean("Autofill.UndoAfterFill." + form_type_name_,
+                              has_logged_undo_after_fill_);
+  }
+  if (has_logged_undo_after_fill_) {
+    base::UmaHistogramBoolean("Autofill.FillAfterUndo." + form_type_name_,
+                              has_logged_fill_after_undo_);
   }
 }
 

@@ -2,7 +2,7 @@
 <html>
   <head>
   </head>
-  <body onload="window.parent.onIframeLoaded()", onunload="window.parent.onIframeUnloaded();">
+  <body onload="window.parent.onIframeLoaded()", onpagehide="window.parent.onIframePageHidden();">
     <p>This frame should be replaced before the test ends</p>
   </body>
 </html>

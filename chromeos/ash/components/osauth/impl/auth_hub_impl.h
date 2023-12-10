@@ -91,17 +91,17 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) AuthHubImpl
 
   AuthEnginesMap engines_;
 
-  absl::optional<AuthAttemptVector> current_attempt_;
+  std::optional<AuthAttemptVector> current_attempt_;
   raw_ptr<AuthAttemptConsumer> attempt_consumer_ = nullptr;
 
-  absl::optional<AuthAttemptVector> pending_attempt_;
+  std::optional<AuthAttemptVector> pending_attempt_;
   raw_ptr<AuthAttemptConsumer> pending_consumer_ = nullptr;
 
   // Target mode for initialization, used to store last request when
   // some extra actions are required before mode can be switched.
   // If another mode change is requested during such actions, it
   // is safe to just replace target_mode_.
-  absl::optional<AuthHubMode> target_mode_;
+  std::optional<AuthHubMode> target_mode_;
 
   base::OnceCallbackList<void()> on_initialized_listeners_;
 

@@ -91,6 +91,10 @@ class VIZ_SERVICE_EXPORT CompositorGpuThread
 
   scoped_refptr<VulkanContextProvider> vulkan_context_provider_;
 
+#if BUILDFLAG(SKIA_USE_DAWN)
+  std::unique_ptr<gpu::DawnContextProvider> dawn_context_provider_;
+#endif
+
   // The GLDisplay lives in GLDisplayManager, which never deletes displays once
   // they are lazily created.
   raw_ptr<gl::GLDisplay> display_ = nullptr;

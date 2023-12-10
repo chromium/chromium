@@ -54,8 +54,7 @@ public class MediaImageManager implements ImageDownloadCallback {
     private static final double TYPE_SCORE_XICON = 0.4;
     private static final double TYPE_SCORE_GIF = 0.3;
 
-    @VisibleForTesting
-    static final int MAX_BITMAP_SIZE_FOR_DOWNLOAD = 2048;
+    @VisibleForTesting static final int MAX_BITMAP_SIZE_FOR_DOWNLOAD = 2048;
 
     private WebContents mWebContents;
     // The minimum image size. Images that are smaller than |mMinimumSize| will be ignored.
@@ -120,11 +119,13 @@ public class MediaImageManager implements ImageDownloadCallback {
         // through JNI. |maxBitmapSize| does not prevent huge images to be downloaded. It is used to
         // filter/rescale the download images. See documentation of
         // {@link WebContents#downloadImage()} for details.
-        mRequestId = mWebContents.downloadImage(image.getSrc(), // url
-                false, // isFavicon
-                MAX_BITMAP_SIZE_FOR_DOWNLOAD, // maxBitmapSize
-                false, // bypassCache
-                this); // callback
+        mRequestId =
+                mWebContents.downloadImage(
+                        image.getSrc(), // url
+                        false, // isFavicon
+                        MAX_BITMAP_SIZE_FOR_DOWNLOAD, // maxBitmapSize
+                        false, // bypassCache
+                        this); // callback
     }
 
     /**
@@ -133,8 +134,12 @@ public class MediaImageManager implements ImageDownloadCallback {
      * corresponding to a previous request, it will be ignored.
      */
     @Override
-    public void onFinishDownloadImage(int id, int httpStatusCode, GURL imageUrl,
-            List<Bitmap> bitmaps, List<Rect> originalImageSizes) {
+    public void onFinishDownloadImage(
+            int id,
+            int httpStatusCode,
+            GURL imageUrl,
+            List<Bitmap> bitmaps,
+            List<Rect> originalImageSizes) {
         if (id != mRequestId) return;
 
         Iterator<Bitmap> iterBitmap = bitmaps.iterator();
@@ -226,7 +231,8 @@ public class MediaImageManager implements ImageDownloadCallback {
             return TYPE_SCORE_XICON;
         } else if ("png".equals(extension) || "image/png".equals(type)) {
             return TYPE_SCORE_PNG;
-        } else if ("jpeg".equals(extension) || "jpg".equals(extension)
+        } else if ("jpeg".equals(extension)
+                || "jpg".equals(extension)
                 || "image/jpeg".equals(type)) {
             return TYPE_SCORE_JPEG;
         }

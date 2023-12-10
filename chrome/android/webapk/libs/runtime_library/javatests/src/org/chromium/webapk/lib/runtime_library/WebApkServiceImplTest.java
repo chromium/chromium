@@ -110,9 +110,10 @@ public class WebApkServiceImplTest {
 
     /**
      * Binds to the WebAPK service and blocks till the service is connected.
+     *
      * @param context The context for the application containing the WebAPK service to bind to.
      * @param authorizedUid The uid of the only application allowed to use the WebAPK service's
-     *        methods.
+     *     methods.
      * @param smallIconId The real small icon id.
      * @return IWebApkApi to use to communicate with the service.
      */

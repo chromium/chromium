@@ -124,7 +124,7 @@ class OsInstallScreenTest : public OobeBaseTest, OsInstallClient::Observer {
     test::OobeJS().ExpectVisiblePath(kOsInstallDialogInProgress);
   }
 
-  absl::optional<OsInstallClient::Status> GetStatus() const { return status_; }
+  std::optional<OsInstallClient::Status> GetStatus() const { return status_; }
 
   void SetTickClockForTesting(const base::TickClock* tick_clock) {
     WizardController::default_controller()
@@ -139,7 +139,7 @@ class OsInstallScreenTest : public OobeBaseTest, OsInstallClient::Observer {
     status_ = status;
   }
 
-  absl::optional<OsInstallClient::Status> status_ = absl::nullopt;
+  std::optional<OsInstallClient::Status> status_ = std::nullopt;
 };
 
 // If the kAllowOsInstall switch is not set, clicking `Get Started` button
@@ -167,7 +167,7 @@ IN_PROC_BROWSER_TEST_F(OsInstallScreenTest, StartOsInstall) {
   AdvanceToOsInstallScreen();
   AdvanceThroughIntroStep();
 
-  EXPECT_EQ(GetStatus(), absl::nullopt);
+  EXPECT_EQ(GetStatus(), std::nullopt);
 
   ConfirmInstallation();
 

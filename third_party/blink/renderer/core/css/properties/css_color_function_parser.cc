@@ -80,14 +80,18 @@ static bool ConsumeRelativeOriginColor(CSSParserTokenRange& args,
   if (!RuntimeEnabledFeatures::CSSRelativeColorEnabled()) {
     return false;
   }
-  // TODO(crbug.com/1447327): Just like with css_parsing_utils::ResolveColor(),
-  // currentcolor is not currently handled well.
   if (CSSValue* css_color = css_parsing_utils::ConsumeColor(args, context)) {
     if (auto* color_value = DynamicTo<cssvalue::CSSColor>(css_color)) {
       result = color_value->Value();
       return true;
     } else {
       CSSValueID value_id = To<CSSIdentifierValue>(css_color)->GetValueID();
+      // TODO(crbug.com/1447327): Just like with
+      // css_parsing_utils::ResolveColor(), currentcolor is not currently
+      // handled.
+      if (value_id == CSSValueID::kCurrentcolor) {
+        return false;
+      }
       // TODO(crbug.com/1447327): Handle color scheme.
       result = StyleColor::ColorFromKeyword(value_id,
                                             mojom::blink::ColorScheme::kLight);
@@ -405,12 +409,12 @@ bool ColorFunctionParser::MakePerColorSpaceAdjustments() {
         continue;
       }
       if (channel_types_[i] == ChannelType::kPercentage) {
-        if (uses_bare_numbers && !is_relative_color_) {
+        if (uses_bare_numbers && is_legacy_syntax_) {
           return false;
         }
         uses_percentage = true;
       } else if (channel_types_[i] == ChannelType::kNumber) {
-        if (uses_percentage && !is_relative_color_) {
+        if (uses_percentage && is_legacy_syntax_) {
           return false;
         }
         uses_bare_numbers = true;
@@ -435,40 +439,37 @@ bool ColorFunctionParser::MakePerColorSpaceAdjustments() {
     }
   }
 
-  if (color_space_ == Color::ColorSpace::kHWB) {
     // Legacy syntax is not allowed for hwb().
-    if (is_legacy_syntax_) {
-      return false;
-    }
-    // w and b must be percentages or relative color channels.
-    if (channel_types_[1] == ChannelType::kNumber ||
-        channel_types_[2] == ChannelType::kNumber) {
-      return false;
-    }
+  if (color_space_ == Color::ColorSpace::kHWB && is_legacy_syntax_) {
+    return false;
   }
 
-  if (color_space_ == Color::ColorSpace::kHSL) {
-    // 2nd and 3rd parameters of hsl() must be percentages or "none" and clamped
-    // to the range [0, 1].
+  if (color_space_ == Color::ColorSpace::kHSL ||
+      color_space_ == Color::ColorSpace::kHWB) {
     for (int i : {1, 2}) {
       if (channel_types_[i] == ChannelType::kNumber) {
-        return false;
+        // Legacy color syntax needs percentages.
+        if (is_legacy_syntax_) {
+          return false;
+        }
+        // Raw numbers are interpreted as percentages in these color spaces.
+        channels_[i] = channels_[i].value() / 100.0;
       }
-      if (channel_types_[i] == ChannelType::kPercentage) {
+      if (channels_[i].has_value() && is_legacy_syntax_) {
         channels_[i] = ClampTo<double>(channels_[i].value(), 0.0, 1.0);
       }
     }
   }
 
-  // Lightness is stored in the range [0, 100] for lab(), oklab(), lch() and
-  // oklch(). For oklab() and oklch() input for lightness is in the range [0,
-  // 1].
   if (Color::IsLightnessFirstComponent(color_space_)) {
-    if (channel_types_[0] == ChannelType::kPercentage) {
-      channels_[0].value() *= 100.0;
-    } else if ((color_space_ == Color::ColorSpace::kOklab ||
-                color_space_ == Color::ColorSpace::kOklch) &&
-               channel_types_[0] == ChannelType::kNumber) {
+    // "Lightness" (param0) for lab/lch is in the range [0, 100], with 100%
+    // corresponding to 100. "Lightness" (param0) for oklab/oklch is in the
+    // range [0, 1], with 100% corresponding to 1. This means that we can just
+    // take the numbers as input, with the exception that percentages for
+    // lab/lch must be multiplied by 100.
+    if (channel_types_[0] == ChannelType::kPercentage &&
+        (color_space_ == Color::ColorSpace::kLab ||
+         color_space_ == Color::ColorSpace::kLch)) {
       channels_[0].value() *= 100.0;
     }
 

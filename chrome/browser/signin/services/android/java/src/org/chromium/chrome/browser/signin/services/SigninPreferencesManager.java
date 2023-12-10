@@ -16,17 +16,19 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.Set;
 
-/**
- * SigninPreferencesManager stores the state of SharedPreferences related to account sign-in.
- */
+/** SigninPreferencesManager stores the state of SharedPreferences related to account sign-in. */
 public class SigninPreferencesManager {
     private static final SigninPreferencesManager INSTANCE = new SigninPreferencesManager();
 
     private final SharedPreferencesManager mManager;
 
     /** Suffix strings for promo shown count preference and histograms. */
-    @StringDef({SyncPromoAccessPointId.BOOKMARKS, SyncPromoAccessPointId.NTP,
-            SyncPromoAccessPointId.RECENT_TABS, SyncPromoAccessPointId.SETTINGS})
+    @StringDef({
+        SyncPromoAccessPointId.BOOKMARKS,
+        SyncPromoAccessPointId.NTP,
+        SyncPromoAccessPointId.RECENT_TABS,
+        SyncPromoAccessPointId.SETTINGS
+    })
     @Retention(RetentionPolicy.SOURCE)
     public @interface SyncPromoAccessPointId {
         String BOOKMARKS = "Bookmarks";
@@ -51,13 +53,11 @@ public class SigninPreferencesManager {
      * will not affect promos that were created before this call.
      */
     public void temporarilySuppressNewTabPagePromos() {
-        SigninPreferencesManager.getInstance().setNewTabPageSigninPromoSuppressionPeriodStart(
-                System.currentTimeMillis());
+        SigninPreferencesManager.getInstance()
+                .setNewTabPageSigninPromoSuppressionPeriodStart(System.currentTimeMillis());
     }
 
-    /**
-     * Clears the accounts state-related shared prefs.
-     */
+    /** Clears the accounts state-related shared prefs. */
     public void clearSigninPromoLastShownPrefsForTesting() {
         mManager.removeKey(ChromePreferenceKeys.SIGNIN_PROMO_LAST_SHOWN_MAJOR_VERSION);
         mManager.removeKey(ChromePreferenceKeys.SIGNIN_PROMO_LAST_SHOWN_ACCOUNT_NAMES);
@@ -71,9 +71,7 @@ public class SigninPreferencesManager {
         return mManager.readInt(ChromePreferenceKeys.SIGNIN_PROMO_LAST_SHOWN_MAJOR_VERSION);
     }
 
-    /**
-     * Sets Chrome major version number when signin promo was last shown.
-     */
+    /** Sets Chrome major version number when signin promo was last shown. */
     public void setSigninPromoLastShownVersion(int majorVersion) {
         mManager.writeInt(ChromePreferenceKeys.SIGNIN_PROMO_LAST_SHOWN_MAJOR_VERSION, majorVersion);
     }
@@ -88,9 +86,7 @@ public class SigninPreferencesManager {
                 ChromePreferenceKeys.SIGNIN_PROMO_LAST_SHOWN_ACCOUNT_NAMES, null);
     }
 
-    /**
-     * Stores a set of account emails on the device when signin promo is shown.
-     */
+    /** Stores a set of account emails on the device when signin promo is shown. */
     public void setSigninPromoLastAccountEmails(Set<String> accountEmails) {
         mManager.writeStringSet(
                 ChromePreferenceKeys.SIGNIN_PROMO_LAST_SHOWN_ACCOUNT_NAMES, accountEmails);
@@ -138,34 +134,26 @@ public class SigninPreferencesManager {
         mManager.writeString(ChromePreferenceKeys.SIGNIN_LEGACY_SYNC_ACCOUNT_EMAIL, accountEmail);
     }
 
-    /**
-     * The email of the account for which sync was enabled.
-     */
+    /** The email of the account for which sync was enabled. */
     // TODO(https://crbug.com/1091858): Remove this after migrating the legacy code that uses
     //                                  the sync account before the native is loaded.
     public String getLegacySyncAccountEmail() {
         return mManager.readString(ChromePreferenceKeys.SIGNIN_LEGACY_SYNC_ACCOUNT_EMAIL, null);
     }
 
-    /**
-     * Increments the active dismissal count for the account picker bottom sheet.
-     */
+    /** Increments the active dismissal count for the account picker bottom sheet. */
     public void incrementWebSigninAccountPickerActiveDismissalCount() {
         mManager.incrementInt(
                 ChromePreferenceKeys.WEB_SIGNIN_ACCOUNT_PICKER_ACTIVE_DISMISSAL_COUNT);
     }
 
-    /**
-     * Returns the number of times account picker bottom sheet has been actively dismissed.
-     */
+    /** Returns the number of times account picker bottom sheet has been actively dismissed. */
     public int getWebSigninAccountPickerActiveDismissalCount() {
         return mManager.readInt(
                 ChromePreferenceKeys.WEB_SIGNIN_ACCOUNT_PICKER_ACTIVE_DISMISSAL_COUNT);
     }
 
-    /**
-     * Clears the active dismissal count for the account picker bottom sheet.
-     */
+    /** Clears the active dismissal count for the account picker bottom sheet. */
     public void clearWebSigninAccountPickerActiveDismissalCount() {
         mManager.removeKey(ChromePreferenceKeys.WEB_SIGNIN_ACCOUNT_PICKER_ACTIVE_DISMISSAL_COUNT);
     }

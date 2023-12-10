@@ -4,7 +4,8 @@
 
 #include "chrome/installer/util/additional_parameters.h"
 
-#include "base/strings/string_piece.h"
+#include <string_view>
+
 #include "base/test/test_reg_util_win.h"
 #include "base/win/registry.h"
 #include "build/build_config.h"
@@ -232,7 +233,7 @@ TEST_F(AdditionalParametersTest, SetChannel) {
     static constexpr struct {
       version_info::Channel channel;
       bool is_extended_stable_channel;
-      base::WStringPiece prefix;
+      std::wstring_view prefix;
     } kChannels[] = {
         {version_info::Channel::DEV, /*is_extended_stable_channel=*/false,
          L"2.0-dev"},

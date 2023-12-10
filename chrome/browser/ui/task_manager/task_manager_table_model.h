@@ -8,11 +8,11 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/task_manager/task_manager_observer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/models/table_model.h"
 
 namespace content {
@@ -111,7 +111,7 @@ class TaskManagerTableModel : public TaskManagerObserver,
   // Returns the row index corresponding to a particular WebContents. Returns
   // nullopt if |web_contents| is nullptr, or is not currently found in the
   // model (for example, if the tab is currently crashed).
-  absl::optional<size_t> GetRowForWebContents(
+  std::optional<size_t> GetRowForWebContents(
       content::WebContents* web_contents);
 
  private:

@@ -49,13 +49,16 @@ public class OfflineItemSource implements OfflineItemFilterSource, OfflineConten
         mProvider = provider;
         mProvider.addObserver(this);
 
-        mProvider.getAllItems(items -> {
-            if (mDestroyed) return;
+        mProvider.getAllItems(
+                items -> {
+                    if (mDestroyed) return;
 
-            mItemsAvailable = true;
-            for (OfflineItemFilterObserver observer : mObservers) observer.onItemsAvailable();
-            onItemsAdded(items);
-        });
+                    mItemsAvailable = true;
+                    for (OfflineItemFilterObserver observer : mObservers) {
+                        observer.onItemsAvailable();
+                    }
+                    onItemsAdded(items);
+                });
     }
 
     /**

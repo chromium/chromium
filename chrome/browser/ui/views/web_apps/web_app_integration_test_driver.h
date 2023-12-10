@@ -7,6 +7,7 @@
 
 #include <iosfwd>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -31,7 +32,6 @@
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/common/web_app_id.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/views/widget/any_widget_observer.h"
 #include "url/gurl.h"
 
@@ -188,7 +188,7 @@ struct AppState {
            GURL app_scope,
            apps::RunOnOsLoginMode run_on_os_login_mode,
            blink::mojom::DisplayMode effective_display_mode,
-           absl::optional<mojom::UserDisplayMode> user_display_mode,
+           std::optional<mojom::UserDisplayMode> user_display_mode,
            std::string manifest_launcher_icon_filename,
            bool is_installed_locally,
            bool is_shortcut_created);
@@ -201,7 +201,7 @@ struct AppState {
   GURL scope;
   apps::RunOnOsLoginMode run_on_os_login_mode;
   blink::mojom::DisplayMode effective_display_mode;
-  absl::optional<mojom::UserDisplayMode> user_display_mode;
+  std::optional<mojom::UserDisplayMode> user_display_mode;
   std::string manifest_launcher_icon_filename;
   bool is_installed_locally;
   bool is_shortcut_created;
@@ -424,9 +424,9 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
 
   webapps::AppId GetAppIdBySiteMode(Site site);
   GURL GetUrlForSite(Site site);
-  absl::optional<AppState> GetAppBySiteMode(StateSnapshot* state_snapshot,
-                                            Profile* profile,
-                                            Site site);
+  std::optional<AppState> GetAppBySiteMode(StateSnapshot* state_snapshot,
+                                           Profile* profile,
+                                           Site site);
 
   WebAppProvider* GetProviderForProfile(Profile* profile);
 
@@ -510,7 +510,7 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   // |waiting_for_update_*| variables are either all populated or all not
   // populated. These signify that the test is currently waiting for the
   // given |waiting_for_update_id_| to receive an update before continuing.
-  absl::optional<webapps::AppId> waiting_for_update_id_;
+  std::optional<webapps::AppId> waiting_for_update_id_;
   std::unique_ptr<base::RunLoop> waiting_for_update_run_loop_;
 
   raw_ptr<TestDelegate> delegate_;
@@ -549,7 +549,7 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
       nullptr;
 
   base::flat_set<Site> site_remember_deny_open_file_;
-  base::AutoReset<absl::optional<web_app::AppIdentityUpdate>>
+  base::AutoReset<std::optional<web_app::AppIdentityUpdate>>
       update_dialog_scope_;
 
   base::TimeTicks start_time_ = base::TimeTicks::Now();

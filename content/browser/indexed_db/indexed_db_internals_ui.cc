@@ -86,11 +86,8 @@ void IndexedDBInternalsUI::GetAllBucketsAcrossAllStorageKeys(
           },
           std::move(callback)));
 
-  browser_context->ForEachLoadedStoragePartition(base::BindRepeating(
-      [](base::WeakPtr<IndexedDBInternalsUI> handler,
-         base::RepeatingCallback<void(IdbPartitionMetadataPtr)>
-             collect_partitions,
-         StoragePartition* partition) {
+  browser_context->ForEachLoadedStoragePartition(
+      [&](StoragePartition* partition) {
         storage::mojom::IndexedDBControl& control =
             partition->GetIndexedDBControl();
         control.GetAllBucketsDetails(base::BindOnce(
@@ -122,9 +119,9 @@ void IndexedDBInternalsUI::GetAllBucketsAcrossAllStorageKeys(
 
               collect_partitions.Run(std::move(partition));
             },
-            handler, collect_partitions, partition->GetPath()));
-      },
-      weak_factory_.GetWeakPtr(), collect_partitions));
+            weak_factory_.GetWeakPtr(), collect_partitions,
+            partition->GetPath()));
+      });
 }
 
 storage::mojom::IndexedDBControl* IndexedDBInternalsUI::GetBucketControl(
@@ -140,16 +137,13 @@ storage::mojom::IndexedDBControl* IndexedDBInternalsUI::GetBucketControl(
       web_ui()->GetWebContents()->GetBrowserContext();
 
   storage::mojom::IndexedDBControl* control = nullptr;
-  browser_context->ForEachLoadedStoragePartition(base::BindRepeating(
-      [](const base::FilePath& partition_path,
-         storage::mojom::IndexedDBControl** control,
-         StoragePartition* storage_partition) {
+  browser_context->ForEachLoadedStoragePartition(
+      [&](StoragePartition* storage_partition) {
         if (storage_partition->GetPath() == partition_path) {
-          DCHECK_EQ(*control, nullptr);
-          *control = &storage_partition->GetIndexedDBControl();
+          DCHECK_EQ(control, nullptr);
+          control = &storage_partition->GetIndexedDBControl();
         }
-      },
-      partition_path, &control));
+      });
 
   return control;
 }

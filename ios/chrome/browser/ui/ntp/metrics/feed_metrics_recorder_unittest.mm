@@ -11,7 +11,7 @@
 #import "base/test/metrics/user_action_tester.h"
 #import "components/feed/core/v2/public/common_enums.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
-#import "ios/chrome/browser/metrics/constants.h"
+#import "ios/chrome/browser/metrics/model/constants.h"
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
 #import "ios/chrome/browser/ui/ntp/feed_control_delegate.h"
 #import "ios/chrome/browser/ui/ntp/metrics/feed_metrics_constants.h"

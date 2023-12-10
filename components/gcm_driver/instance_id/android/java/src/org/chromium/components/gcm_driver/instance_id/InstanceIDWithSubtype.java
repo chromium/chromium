@@ -28,16 +28,14 @@ public class InstanceIDWithSubtype {
 
     private final InstanceID mInstanceID;
 
-    /**
-     * Cached instances. May be accessed from multiple threads; synchronize on sSubtypeInstancesLock
-     */
+    /** Cached instances. May be accessed from multiple threads; synchronize on sSubtypeInstancesLock */
     @VisibleForTesting
     protected static final Map<String, InstanceIDWithSubtype> sSubtypeInstances = new HashMap<>();
+
     protected static final Object sSubtypeInstancesLock = new Object();
 
     /** Fake subclasses can set this so getInstance creates instances of them. */
-    @VisibleForTesting
-    protected static FakeFactory sFakeFactoryForTesting;
+    @VisibleForTesting protected static FakeFactory sFakeFactoryForTesting;
 
     protected InstanceIDWithSubtype(InstanceID instanceID) {
         mInstanceID = instanceID;

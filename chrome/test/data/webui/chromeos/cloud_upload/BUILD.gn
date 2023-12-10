@@ -2,44 +2,23 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//tools/typescript/ts_library.gni")
-import("//ui/webui/resources/tools/generate_grd.gni")
+import("../../build_webui_tests.gni")
 
-ts_library("build_ts") {
-  root_dir = "."
-  out_dir = "$target_gen_dir/tsc"
-  tsconfig_base = "../../tsconfig_base.json"
-  in_files = [
+build_webui_tests("build_webui_tests") {
+  files = [
     "cloud_upload_dialog_test.ts",
     "connect_onedrive_test.ts",
     "file_handler_page_test.ts",
     "move_confirmation_page_test.ts",
     "cloud_upload_test_browser_proxy.ts",
   ]
-  path_mappings = [
-    "chrome://cloud-upload/*|" + rebase_path(
-            "$root_gen_dir/chrome/browser/resources/chromeos/cloud_upload/tsc/*",
-            target_gen_dir),
-    "chrome://webui-test/*|" +
-        rebase_path("$root_gen_dir/chrome/test/data/webui/tsc/*",
-                    target_gen_dir),
-  ]
-  composite = true
-  deps = [
-    "../..:build_ts",
+  ts_path_mappings = [ "chrome://cloud-upload/*|" + rebase_path(
+                           "$root_gen_dir/chrome/browser/resources/chromeos/cloud_upload/tsc/*",
+                           target_gen_dir) ]
+  ts_deps = [
     "//chrome/browser/resources/chromeos/cloud_upload:build_ts",
     "//third_party/cros-components:cros_components_ts",
     "//ui/webui/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
   ]
-}
-
-generate_grd("build_grdp") {
-  grd_prefix = "webui_chromeos_cloud_upload"
-  out_grd = "$target_gen_dir/resources.grdp"
-
-  deps = [ ":build_ts" ]
-  manifest_files =
-      filter_include(get_target_outputs(":build_ts"), [ "*_manifest.json" ])
-  resource_path_prefix = "chromeos/cloud_upload"
 }

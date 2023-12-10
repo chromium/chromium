@@ -42,7 +42,8 @@ class FedCmHandler : public DevToolsDomainHandler, public FedCm::Backend {
       *intercept = true;
     }
   }
-  void OnDialogShown();
+  void DidShowDialog();
+  void DidCloseDialog();
 
  private:
   // DevToolsDomainHandler:
@@ -55,7 +56,9 @@ class FedCmHandler : public DevToolsDomainHandler, public FedCm::Backend {
   DispatchResponse Disable() override;
   DispatchResponse SelectAccount(const String& in_dialogId,
                                  int in_accountIndex) override;
-  DispatchResponse ConfirmIdpLogin(const String& in_dialogId) override;
+  DispatchResponse ClickDialogButton(
+      const String& in_dialogId,
+      const FedCm::DialogButton& in_dialogButton) override;
   DispatchResponse DismissDialog(const String& in_dialogId,
                                  Maybe<bool> in_triggerCooldown) override;
   DispatchResponse ResetCooldown() override;

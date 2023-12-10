@@ -31,7 +31,7 @@ class FileSessionStorage : public SessionStorage {
                     base::OnceClosure on_done) override;
   void DeleteSession(base::OnceClosure on_done) override;
   void RetrieveSession(
-      base::OnceCallback<void(absl::optional<base::Value::Dict>)> on_done)
+      base::OnceCallback<void(std::optional<base::Value::Dict>)> on_done)
       override;
   void HasSession(base::OnceCallback<void(bool)> on_done) const override;
 

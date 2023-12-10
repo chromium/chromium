@@ -145,6 +145,9 @@ class InterestGroupStorageTest : public testing::Test {
                 GURL("https://full.example.com/signals"))
             .SetTrustedBiddingSignalsKeys(
                 std::vector<std::string>{"a", "b", "c", "d"})
+            .SetTrustedBiddingSignalsSlotSizeMode(
+                blink::InterestGroup::TrustedBiddingSignalsSlotSizeMode::
+                    kAllSlotsRequestedSizes)
             .SetUserBiddingSignals("foo")
             .SetAds(std::vector<InterestGroup::Ad>{
                 blink::InterestGroup::Ad(
@@ -280,8 +283,9 @@ TEST_F(InterestGroupStorageTest, DatabaseInitialized_CreateDatabase) {
     EXPECT_TRUE(raw_db.Open(db_path()));
 
     // [interest_groups], [join_history], [bid_history], [win_history],
-    // [k_anon], [meta].
-    EXPECT_EQ(6u, sql::test::CountSQLTables(&raw_db)) << raw_db.GetSchema();
+    // [k_anon], [meta], [lockout_debugging_only_report],
+    // [cooldown_debugging_only_report].
+    EXPECT_EQ(8u, sql::test::CountSQLTables(&raw_db)) << raw_db.GetSchema();
   }
 }
 
@@ -316,8 +320,9 @@ TEST_F(InterestGroupStorageTest, DatabaseRazesOldVersion) {
     EXPECT_TRUE(raw_db.Open(db_path()));
 
     // [interest_groups], [join_history], [bid_history], [win_history],
-    // [k_anon], [meta].
-    EXPECT_EQ(6u, sql::test::CountSQLTables(&raw_db)) << raw_db.GetSchema();
+    // [k_anon], [meta], [lockout_debugging_only_report],
+    // [cooldown_debugging_only_report].
+    EXPECT_EQ(8u, sql::test::CountSQLTables(&raw_db)) << raw_db.GetSchema();
   }
 }
 
@@ -352,8 +357,9 @@ TEST_F(InterestGroupStorageTest, DatabaseRazesNewVersion) {
     EXPECT_TRUE(raw_db.Open(db_path()));
 
     // [interest_groups], [join_history], [bid_history], [win_history],
-    // [k_anon], [meta].
-    EXPECT_EQ(6u, sql::test::CountSQLTables(&raw_db)) << raw_db.GetSchema();
+    // [k_anon], [meta], [lockout_debugging_only_report],
+    // [cooldown_debugging_only_report].
+    EXPECT_EQ(8u, sql::test::CountSQLTables(&raw_db)) << raw_db.GetSchema();
   }
 }
 
@@ -1838,6 +1844,10 @@ TEST_F(InterestGroupStorageTest, UpgradeFromV6) {
                       "trusted_bidding_signals_keys",
                       &InterestGroup::trusted_bidding_signals_keys,
                       std::vector<std::string>{"groupNullUserBiddingSignals"}),
+                  Field(
+                      "trusted_bidding_signals_slot_size_mode",
+                      &InterestGroup::trusted_bidding_signals_slot_size_mode,
+                      InterestGroup::TrustedBiddingSignalsSlotSizeMode::kNone),
                   Field("user_bidding_signals",
                         &InterestGroup::user_bidding_signals, absl::nullopt),
                   Field("ads", &InterestGroup::ads,
@@ -1917,6 +1927,10 @@ TEST_F(InterestGroupStorageTest, UpgradeFromV6) {
                   Field("trusted_bidding_signals_keys",
                         &InterestGroup::trusted_bidding_signals_keys,
                         std::vector<std::string>{"group1"}),
+                  Field(
+                      "trusted_bidding_signals_slot_size_mode",
+                      &InterestGroup::trusted_bidding_signals_slot_size_mode,
+                      InterestGroup::TrustedBiddingSignalsSlotSizeMode::kNone),
                   Field("user_bidding_signals",
                         &InterestGroup::user_bidding_signals,
                         "[[\"1\",\"2\"]]"),
@@ -1997,6 +2011,10 @@ TEST_F(InterestGroupStorageTest, UpgradeFromV6) {
                   Field("trusted_bidding_signals_keys",
                         &InterestGroup::trusted_bidding_signals_keys,
                         std::vector<std::string>{"group2"}),
+                  Field(
+                      "trusted_bidding_signals_slot_size_mode",
+                      &InterestGroup::trusted_bidding_signals_slot_size_mode,
+                      InterestGroup::TrustedBiddingSignalsSlotSizeMode::kNone),
                   Field("user_bidding_signals",
                         &InterestGroup::user_bidding_signals,
                         "[[\"1\",\"3\"]]"),
@@ -2077,6 +2095,10 @@ TEST_F(InterestGroupStorageTest, UpgradeFromV6) {
                   Field("trusted_bidding_signals_keys",
                         &InterestGroup::trusted_bidding_signals_keys,
                         std::vector<std::string>{"group3"}),
+                  Field(
+                      "trusted_bidding_signals_slot_size_mode",
+                      &InterestGroup::trusted_bidding_signals_slot_size_mode,
+                      InterestGroup::TrustedBiddingSignalsSlotSizeMode::kNone),
                   Field("user_bidding_signals",
                         &InterestGroup::user_bidding_signals,
                         "[[\"3\",\"2\"]]"),

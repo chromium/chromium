@@ -1,4 +1,4 @@
-CONSOLE MESSAGE: A <ruby> with `display: block` won't render its ruby annotation correctly with future versions of the browser. A workaround is to specify `display: block; display: block ruby;`.
+CONSOLE MESSAGE: A <ruby> with `display: block` doesn't render its ruby annotation correctly. A workaround compatible with older browsers and newer browsers is to specify `display: block; display: block ruby;`.
 Test calling getPropertyValue on computed styles that return "resolved" values.
 See http://dev.w3.org/csswg/cssom/#resolved-values for more information.
 

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/signin/signin_reauth_ui.h"
 
+#include <optional>
 #include <string>
 
 #include "base/check.h"
@@ -30,7 +31,6 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
@@ -67,7 +67,6 @@ bool WasPasswordSavedLocally(signin_metrics::ReauthAccessPoint access_point) {
     case signin_metrics::ReauthAccessPoint::kPasswordSettings:
     case signin_metrics::ReauthAccessPoint::kGeneratePasswordDropdown:
     case signin_metrics::ReauthAccessPoint::kGeneratePasswordContextMenu:
-    case signin_metrics::ReauthAccessPoint::kPasswordMoveBubble:
       return false;
     case signin_metrics::ReauthAccessPoint::kPasswordSaveLocallyBubble:
       return true;

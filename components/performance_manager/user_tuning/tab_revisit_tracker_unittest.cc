@@ -285,10 +285,10 @@ TEST_F(TabRevisitTrackerTest, TestSwitchToDiscardedTab) {
   // invalid
   // 4. The tab navigates to its URL, its UKM source ID is set.
 
-  EXPECT_EQ(mock_graph.other_pages[0]->ukm_source_id(), ukm::kInvalidSourceId);
+  EXPECT_EQ(mock_graph.other_pages[0]->GetUkmSourceID(), ukm::kInvalidSourceId);
   // Set the page's source ID as if it had navigated before
   mock_graph.other_pages[0]->SetUkmSourceId(kValidSourceId);
-  EXPECT_EQ(mock_graph.other_pages[0]->ukm_source_id(), kValidSourceId);
+  EXPECT_EQ(mock_graph.other_pages[0]->GetUkmSourceID(), kValidSourceId);
 
   SimulateDiscard(mock_graph.other_pages[0].get());
   SwitchTab(mock_graph.page.get(), mock_graph.other_pages[0].get());

@@ -1,6 +1,5 @@
 This is a testharness.js-based test.
-Found 222 tests; 141 PASS, 81 FAIL, 0 TIMEOUT, 0 NOTRUN.
-[PASS] Loading data…
+Found 81 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] URL: Setting <a://example.net>.protocol = '' The empty string is not a valid scheme. Setter leaves the URL unchanged.
   assert_equals: expected "a://example.net" but got "file:///A://example.net"
 [FAIL] URL: Setting <a://example.net>.protocol = 'b'
@@ -19,12 +18,6 @@ Found 222 tests; 141 PASS, 81 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: expected "a://example.net" but got "file:///A://example.net"
 [FAIL] URL: Setting <a://example.net>.protocol = 'bé' Non-ASCII is rejected
   assert_equals: expected "a://example.net" but got "file:///A://example.net"
-[PASS] URL: Setting <http://test@example.net>.protocol = 'file' Can’t switch from URL containing username/password/port to file
-[PASS] URL: Setting <https://example.net:1234>.protocol = 'file'
-[PASS] URL: Setting <wss://x:x@example.net:1234>.protocol = 'file'
-[PASS] URL: Setting <http://example.net>.protocol = 'b' Can’t switch from special scheme to non-special
-[PASS] URL: Setting <https://example.net>.protocol = 's'
-[PASS] URL: Setting <ftp://example.net>.protocol = 'test'
 [FAIL] URL: Setting <ssh://me@example.net>.protocol = 'http' Can’t switch from non-special scheme to special
   assert_equals: expected "ssh://me@example.net" but got "http://me@example.net/"
 [FAIL] URL: Setting <ssh://me@example.net>.protocol = 'https'
@@ -35,35 +28,14 @@ Found 222 tests; 141 PASS, 81 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: expected "ssh://example.net" but got "file://example.net/"
 [FAIL] URL: Setting <nonsense:///test>.protocol = 'https'
   assert_equals: expected "nonsense:///test" but got "https://test/"
-[PASS] URL: Setting <http://example.net>.protocol = 'https:foo : bar' Stuff after the first ':' is ignored
-[PASS] URL: Setting <data:text/html,<p>Test>.protocol = 'view-source+data:foo : bar' Stuff after the first ':' is ignored
-[PASS] URL: Setting <http://foo.com:443/>.protocol = 'https' Port is set to null if it is the default for new scheme.
 [FAIL] URL: Setting <http://test/>.protocol = 'h\r\ntt	ps' Tab and newline are stripped
   assert_equals: expected "https://test/" but got "http://test/"
 [FAIL] URL: Setting <http://test/>.protocol = 'https\r'
   assert_equals: expected "https://test/" but got "http://test/"
-[PASS] URL: Setting <http://test/>.protocol = 'https\0' Non-tab/newline C0 controls result in no-op
-[PASS] URL: Setting <http://test/>.protocol = 'https'
-[PASS] URL: Setting <http://test/>.protocol = 'https'
-[PASS] URL: Setting <http://test/>.protocol = 'https '
-[PASS] URL: Setting <unix:/run/foo.socket>.username = 'me' No host means no username
-[PASS] URL: Setting <http://example.net>.username = 'me'
-[PASS] URL: Setting <http://:secret@example.net>.username = 'me'
-[PASS] URL: Setting <http://me@example.net>.username = ''
-[PASS] URL: Setting <http://me:secret@example.net>.username = ''
-[FAIL] URL: Setting <http://example.net>.username = '\0	\n\r !"#$%&'()*+,-./09:;<=>?@AZ[\]^_`az{|}~Éé' UTF-8 percent encoding with the userinfo encode set.
+[FAIL] URL: Setting <http://example.net>.username = '\0	\n\r !"#$%&'()*+,-./09:;<=>?@AZ[\\]^_`az{|}~Éé' UTF-8 percent encoding with the userinfo encode set.
   assert_equals: expected "http://%00%01%09%0A%0D%1F%20!%22%23$%&'()*+,-.%2F09%3A%3B%3C%3D%3E%3F%40AZ%5B%5C%5D%5E_%60az%7B%7C%7D~%7F%C2%80%C2%81%C3%89%C3%A9@example.net/" but got "http://%00%01%09%0A%0D%1F%20!%22%23$%&%27()*+,-.%2F09%3A%3B%3C%3D%3E%3F%40AZ%5B%5C%5D%5E_%60az%7B%7C%7D~%7F%C2%80%C2%81%C3%89%C3%A9@example.net/"
-[PASS] URL: Setting <http://example.net>.username = '%c3%89té' Bytes already percent-encoded are left as-is.
-[PASS] URL: Setting <sc:///>.username = 'x'
-[PASS] URL: Setting <unix:/run/foo.socket>.password = 'secret' No host means no password
-[PASS] URL: Setting <http://example.net>.password = 'secret'
-[PASS] URL: Setting <http://me@example.net>.password = 'secret'
-[PASS] URL: Setting <http://:secret@example.net>.password = ''
-[PASS] URL: Setting <http://me:secret@example.net>.password = ''
-[FAIL] URL: Setting <http://example.net>.password = '\0	\n\r !"#$%&'()*+,-./09:;<=>?@AZ[\]^_`az{|}~Éé' UTF-8 percent encoding with the userinfo encode set.
+[FAIL] URL: Setting <http://example.net>.password = '\0	\n\r !"#$%&'()*+,-./09:;<=>?@AZ[\\]^_`az{|}~Éé' UTF-8 percent encoding with the userinfo encode set.
   assert_equals: expected "http://:%00%01%09%0A%0D%1F%20!%22%23$%&'()*+,-.%2F09%3A%3B%3C%3D%3E%3F%40AZ%5B%5C%5D%5E_%60az%7B%7C%7D~%7F%C2%80%C2%81%C3%89%C3%A9@example.net/" but got "http://:%00%01%09%0A%0D%1F%20!%22%23$%&%27()*+,-.%2F09%3A%3B%3C%3D%3E%3F%40AZ%5B%5C%5D%5E_%60az%7B%7C%7D~%7F%C2%80%C2%81%C3%89%C3%A9@example.net/"
-[PASS] URL: Setting <http://example.net>.password = '%c3%89té' Bytes already percent-encoded are left as-is.
-[PASS] URL: Setting <sc:///>.password = 'x'
 [FAIL] URL: Setting <sc://x/>.host = '\0' Non-special scheme
   assert_equals: expected "x" but got ""
 [FAIL] URL: Setting <sc://x/>.host = '	'
@@ -84,54 +56,20 @@ Found 222 tests; 141 PASS, 81 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: expected "x" but got ""
 [FAIL] URL: Setting <sc://x/>.host = 'ß'
   assert_equals: expected "sc://%C3%9F/" but got "sc://x/"
-[PASS] URL: Setting <https://x/>.host = 'ß' IDNA Nontransitional_Processing
-[PASS] URL: Setting <data:text/plain,Stuff>.host = 'example.net' Cannot-be-a-base means no host
-[PASS] URL: Setting <http://example.net>.host = 'example.com:8080'
-[PASS] URL: Setting <http://example.net:8080>.host = 'example.com' Port number is unchanged if not specified in the new value
-[PASS] URL: Setting <http://example.net:8080>.host = 'example.com:' Port number is unchanged if not specified
-[PASS] URL: Setting <http://example.net>.host = '' The empty host is not valid for special schemes
 [FAIL] URL: Setting <view-source+http://example.net/foo>.host = '' The empty host is OK for non-special schemes
   assert_equals: expected "view-source+http:///foo" but got "view-source+http://example.net/foo"
 [FAIL] URL: Setting <a:/foo>.host = 'example.net' Path-only URLs can gain a host
   assert_equals: expected "a://example.net/foo" but got "file://example.net/A:/foo"
-[PASS] URL: Setting <http://example.net>.host = '0x7F000001:8080' IPv4 address syntax is normalized
-[PASS] URL: Setting <http://example.net>.host = '[::0:01]:2' IPv6 address syntax is normalized
-[PASS] URL: Setting <http://example.net>.host = '[2001:db8::2]:4002' IPv6 literal address with port, crbug.com/1012416
-[PASS] URL: Setting <http://example.net>.host = 'example.com:80' Default port number is removed
-[PASS] URL: Setting <https://example.net>.host = 'example.com:443' Default port number is removed
-[PASS] URL: Setting <https://example.net>.host = 'example.com:80' Default port number is only removed for the relevant scheme
-[PASS] URL: Setting <http://example.net:8080>.host = 'example.com:80' Port number is removed if new port is scheme default and existing URL has a non-default port
-[PASS] URL: Setting <http://example.net/path>.host = 'example.com/stuff' Stuff after a / delimiter is ignored
-[PASS] URL: Setting <http://example.net/path>.host = 'example.com:8080/stuff' Stuff after a / delimiter is ignored
-[PASS] URL: Setting <http://example.net/path>.host = 'example.com?stuff' Stuff after a ? delimiter is ignored
-[PASS] URL: Setting <http://example.net/path>.host = 'example.com:8080?stuff' Stuff after a ? delimiter is ignored
-[PASS] URL: Setting <http://example.net/path>.host = 'example.com#stuff' Stuff after a # delimiter is ignored
-[PASS] URL: Setting <http://example.net/path>.host = 'example.com:8080#stuff' Stuff after a # delimiter is ignored
-[PASS] URL: Setting <http://example.net/path>.host = 'example.com\stuff' Stuff after a \ delimiter is ignored for special schemes
-[PASS] URL: Setting <http://example.net/path>.host = 'example.com:8080\stuff' Stuff after a \ delimiter is ignored for special schemes
-[FAIL] URL: Setting <view-source+http://example.net/path>.host = 'example.com\stuff' \ is not a delimiter for non-special schemes, but still forbidden in hosts
+[FAIL] URL: Setting <view-source+http://example.net/path>.host = 'example.com\\stuff' \\ is not a delimiter for non-special schemes, but still forbidden in hosts
   assert_equals: expected "example.net" but got ""
 [FAIL] URL: Setting <view-source+http://example.net/path>.host = 'example.com:8080stuff2' Anything other than ASCII digit stops the port parser in a setter but is not an error
   assert_equals: expected "view-source+http://example.com:8080/path" but got "view-source+http://example.net/path"
-[PASS] URL: Setting <http://example.net/path>.host = 'example.com:8080stuff2' Anything other than ASCII digit stops the port parser in a setter but is not an error
-[PASS] URL: Setting <http://example.net/path>.host = 'example.com:8080+2' Anything other than ASCII digit stops the port parser in a setter but is not an error
-[PASS] URL: Setting <http://example.net/path>.host = 'example.com:65535' Port numbers are 16 bit integers
-[PASS] URL: Setting <http://example.net/path>.host = 'example.com:65536' Port numbers are 16 bit integers, overflowing is an error. Hostname is still set, though.
-[PASS] URL: Setting <http://example.net/>.host = '[google.com]' Broken IPv6
-[PASS] URL: Setting <http://example.net/>.host = '[::1.2.3.4x]'
-[PASS] URL: Setting <http://example.net/>.host = '[::1.2.3.]'
-[PASS] URL: Setting <http://example.net/>.host = '[::1.2.]'
-[PASS] URL: Setting <http://example.net/>.host = '[::1.]'
 [FAIL] URL: Setting <sc://test@test/>.host = ''
   assert_equals: expected "test" but got ""
 [FAIL] URL: Setting <sc://test:12/>.host = ''
   assert_equals: expected "test:12" but got ""
-[PASS] URL: Setting <http://example.com/>.host = '///bad.com' Leading / is not stripped
 [FAIL] URL: Setting <sc://example.com/>.host = '///bad.com' Leading / is not stripped
   assert_equals: expected "sc:///" but got "sc://example.com/"
-[PASS] URL: Setting <https://example.com/>.host = 'a%C2%ADb'
-[PASS] URL: Setting <https://example.com/>.host = '­'
-[PASS] URL: Setting <https://example.com/>.host = '%C2%AD'
 [FAIL] URL: Setting <https://example.com/>.host = 'xn--'
   assert_equals: expected "https://example.com/" but got "https://xn--/"
 [FAIL] URL: Setting <sc://x/>.hostname = '\0' Non-special scheme
@@ -152,28 +90,12 @@ Found 222 tests; 141 PASS, 81 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: expected "sc:///" but got "sc://x/"
 [FAIL] URL: Setting <sc://x/>.hostname = '@'
   assert_equals: expected "x" but got ""
-[PASS] URL: Setting <data:text/plain,Stuff>.hostname = 'example.net' Cannot-be-a-base means no host
-[PASS] URL: Setting <http://example.net:8080>.hostname = 'example.com'
-[PASS] URL: Setting <http://example.net>.hostname = '' The empty host is not valid for special schemes
 [FAIL] URL: Setting <view-source+http://example.net/foo>.hostname = '' The empty host is OK for non-special schemes
   assert_equals: expected "view-source+http:///foo" but got "view-source+http://example.net/foo"
 [FAIL] URL: Setting <a:/foo>.hostname = 'example.net' Path-only URLs can gain a host
   assert_equals: expected "a://example.net/foo" but got "file://example.net/A:/foo"
-[PASS] URL: Setting <http://example.net:8080>.hostname = '0x7F000001' IPv4 address syntax is normalized
-[PASS] URL: Setting <http://example.net>.hostname = '[::0:01]' IPv6 address syntax is normalized
-[PASS] URL: Setting <http://example.net/path>.hostname = 'example.com:8080' : delimiter invalidates entire value
-[PASS] URL: Setting <http://example.net:8080/path>.hostname = 'example.com:' : delimiter invalidates entire value
-[PASS] URL: Setting <http://example.net/path>.hostname = 'example.com/stuff' Stuff after a / delimiter is ignored
-[PASS] URL: Setting <http://example.net/path>.hostname = 'example.com?stuff' Stuff after a ? delimiter is ignored
-[PASS] URL: Setting <http://example.net/path>.hostname = 'example.com#stuff' Stuff after a # delimiter is ignored
-[PASS] URL: Setting <http://example.net/path>.hostname = 'example.com\stuff' Stuff after a \ delimiter is ignored for special schemes
-[FAIL] URL: Setting <view-source+http://example.net/path>.hostname = 'example.com\stuff' \ is not a delimiter for non-special schemes, but still forbidden in hosts
+[FAIL] URL: Setting <view-source+http://example.net/path>.hostname = 'example.com\\stuff' \\ is not a delimiter for non-special schemes, but still forbidden in hosts
   assert_equals: expected "example.net" but got ""
-[PASS] URL: Setting <http://example.net/>.hostname = '[google.com]' Broken IPv6
-[PASS] URL: Setting <http://example.net/>.hostname = '[::1.2.3.4x]'
-[PASS] URL: Setting <http://example.net/>.hostname = '[::1.2.3.]'
-[PASS] URL: Setting <http://example.net/>.hostname = '[::1.2.]'
-[PASS] URL: Setting <http://example.net/>.hostname = '[::1.]'
 [FAIL] URL: Setting <sc://test@test/>.hostname = ''
   assert_equals: expected "test" but got ""
 [FAIL] URL: Setting <sc://test:12/>.hostname = ''
@@ -182,42 +104,18 @@ Found 222 tests; 141 PASS, 81 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: expected "non-spec://h//p" but got "non-spec:/.//p"
 [FAIL] URL: Setting <non-spec:/.//p>.hostname = ''
   assert_equals: expected "non-spec:////p" but got "non-spec:/.//p"
-[PASS] URL: Setting <http://example.com/>.hostname = '///bad.com' Leading / is not stripped
 [FAIL] URL: Setting <sc://example.com/>.hostname = '///bad.com' Leading / is not stripped
   assert_equals: expected "sc:///" but got "sc://example.com/"
-[PASS] URL: Setting <https://example.com/>.hostname = 'a%C2%ADb'
-[PASS] URL: Setting <https://example.com/>.hostname = '­'
-[PASS] URL: Setting <https://example.com/>.hostname = '%C2%AD'
 [FAIL] URL: Setting <https://example.com/>.hostname = 'xn--'
   assert_equals: expected "https://example.com/" but got "https://xn--/"
-[PASS] URL: Setting <http://example.net>.port = '8080'
-[PASS] URL: Setting <http://example.net:8080>.port = '' Port number is removed if empty is the new value
-[PASS] URL: Setting <http://example.net:8080>.port = '80' Default port number is removed
-[PASS] URL: Setting <https://example.net:4433>.port = '443' Default port number is removed
-[PASS] URL: Setting <https://example.net>.port = '80' Default port number is only removed for the relevant scheme
-[PASS] URL: Setting <http://example.net/path>.port = '8080/stuff' Stuff after a / delimiter is ignored
-[PASS] URL: Setting <http://example.net/path>.port = '8080?stuff' Stuff after a ? delimiter is ignored
-[PASS] URL: Setting <http://example.net/path>.port = '8080#stuff' Stuff after a # delimiter is ignored
-[PASS] URL: Setting <http://example.net/path>.port = '8080\stuff' Stuff after a \ delimiter is ignored for special schemes
 [FAIL] URL: Setting <view-source+http://example.net/path>.port = '8080stuff2' Anything other than ASCII digit stops the port parser in a setter but is not an error
   assert_equals: expected "view-source+http://example.net:8080/path" but got "view-source+http://example.net/path"
-[PASS] URL: Setting <http://example.net/path>.port = '8080stuff2' Anything other than ASCII digit stops the port parser in a setter but is not an error
-[PASS] URL: Setting <http://example.net/path>.port = '8080+2' Anything other than ASCII digit stops the port parser in a setter but is not an error
-[PASS] URL: Setting <http://example.net/path>.port = '65535' Port numbers are 16 bit integers
-[PASS] URL: Setting <http://example.net:8080/path>.port = '65536' Port numbers are 16 bit integers, overflowing is an error
-[PASS] URL: Setting <http://example.net:8080/path>.port = 'randomstring' Setting port to a string that doesn't parse as a number
 [FAIL] URL: Setting <non-special://example.net:8080/path>.port = '65536' Port numbers are 16 bit integers, overflowing is an error
   assert_equals: expected "example.net:8080" but got ""
-[PASS] URL: Setting <non-base:value>.port = '12'
-[PASS] URL: Setting <sc:///>.port = '12'
 [FAIL] URL: Setting <sc://x/>.port = '12'
   assert_equals: expected "sc://x:12/" but got "sc://x/"
-[PASS] URL: Setting <https://domain.com:443>.port = '	8080' Leading u0009 on special scheme
 [FAIL] URL: Setting <wpt++://domain.com:443>.port = '	8080' Leading u0009 on non-special scheme
   assert_equals: expected "8080" but got ""
-[PASS] URL: Setting <https://www.google.com:4343>.port = '4wpt' Should use all ascii prefixed characters as port
-[PASS] URL: Setting <data:original>.pathname = 'new value'
-[PASS] URL: Setting <sc:original>.pathname = 'new value'
 [FAIL] URL: Setting <foo://somehost/some/path>.pathname = '' Non-special URLs can have their paths erased
   assert_equals: expected "foo://somehost" but got "foo://somehost/some/path"
 [FAIL] URL: Setting <foo:///some/path>.pathname = '' Non-special URLs with an empty host can have their paths erased
@@ -228,23 +126,16 @@ Found 222 tests; 141 PASS, 81 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: expected "foo:/test" but got "foo:/some/path"
 [FAIL] URL: Setting <unix:/run/foo.socket?timeout=10>.pathname = '/var/log/../run/bar.socket'
   assert_equals: expected "unix:/var/run/bar.socket?timeout=10" but got "unix:/run/foo.socket?timeout=10"
-[PASS] URL: Setting <https://example.net#nav>.pathname = 'home'
-[PASS] URL: Setting <https://example.net#nav>.pathname = '../home'
-[PASS] URL: Setting <http://example.net/home?lang=fr#nav>.pathname = '\a\%2E\b\%2e.\c' \ is a segment delimiter for 'special' URLs
-[FAIL] URL: Setting <view-source+http://example.net/home?lang=fr#nav>.pathname = '\a\%2E\b\%2e.\c' \ is *not* a segment delimiter for non-'special' URLs
-  assert_equals: expected "view-source+http://example.net/\\a\\%2E\\b\\%2e.\\c?lang=fr#nav" but got "view-source+http://example.net/home?lang=fr#nav"
-[FAIL] URL: Setting <a:/>.pathname = '\0	\n\r !"#$%&'()*+,-./09:;<=>?@AZ[\]^_`az{|}~Éé' UTF-8 percent encoding with the default encode set. Tabs and newlines are removed.
-  assert_equals: expected "a:/%00%01%1F%20!%22%23$%&'()*+,-./09:;%3C=%3E%3F@AZ[\\]^_%60az%7B|%7D~%7F%C2%80%C2%81%C3%89%C3%A9" but got "file:///%00%01%1F%20!%22%23$%&'()*+,-./09:;%3C=%3E%3F@AZ[/]%5E_%60az%7B%7C%7D~%7F%C2%80%C2%81%C3%89%C3%A9"
+[FAIL] URL: Setting <view-source+http://example.net/home?lang=fr#nav>.pathname = '\\a\\%2E\\b\\%2e.\\c' \\ is *not* a segment delimiter for non-'special' URLs
+  assert_equals: expected "view-source+http://example.net/\\\\a\\\\%2E\\\\b\\\\%2e.\\\\c?lang=fr#nav" but got "view-source+http://example.net/home?lang=fr#nav"
+[FAIL] URL: Setting <a:/>.pathname = '\0	\n\r !"#$%&'()*+,-./09:;<=>?@AZ[\\]^_`az{|}~Éé' UTF-8 percent encoding with the default encode set. Tabs and newlines are removed.
+  assert_equals: expected "a:/%00%01%1F%20!%22%23$%&'()*+,-./09:;%3C=%3E%3F@AZ[\\\\]^_%60az%7B|%7D~%7F%C2%80%C2%81%C3%89%C3%A9" but got "file:///%00%01%1F%20!%22%23$%&'()*+,-./09:;%3C=%3E%3F@AZ[/]%5E_%60az%7B%7C%7D~%7F%C2%80%C2%81%C3%89%C3%A9"
 [FAIL] URL: Setting <http://example.net>.pathname = '%2e%2E%c3%89té' Bytes already percent-encoded are left as-is, including %2E outside dotted segments.
   assert_equals: expected "http://example.net/%2e%2E%c3%89t%C3%A9" but got "http://example.net/..%c3%89t%C3%A9"
-[PASS] URL: Setting <http://example.net>.pathname = '?' ? needs to be encoded
-[PASS] URL: Setting <http://example.net>.pathname = '#' # needs to be encoded
 [FAIL] URL: Setting <sc://example.net>.pathname = '?' ? needs to be encoded, non-special scheme
   assert_equals: expected "sc://example.net/%3F" but got "sc://example.net"
 [FAIL] URL: Setting <sc://example.net>.pathname = '#' # needs to be encoded, non-special scheme
   assert_equals: expected "sc://example.net/%23" but got "sc://example.net"
-[PASS] URL: Setting <http://example.net>.pathname = '/?é' ? doesn't mess up encoding
-[PASS] URL: Setting <http://example.net>.pathname = '/#é' # doesn't mess up encoding
 [FAIL] URL: Setting <non-spec:/>.pathname = '/.//p' Serialize /. in path
   assert_equals: expected "non-spec:/.//p" but got "non-spec:/"
 [FAIL] URL: Setting <non-spec:/>.pathname = '/..//p'
@@ -257,51 +148,19 @@ Found 222 tests; 141 PASS, 81 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: expected "data:/space%20" but got "data:/nospace"
 [FAIL] URL: Setting <sc:/nospace>.pathname = 'space '
   assert_equals: expected "sc:/space%20" but got "sc:/nospace"
-[PASS] URL: Setting <http://example.net>.pathname = ' ' Trailing space should be encoded
-[PASS] URL: Setting <http://example.net>.pathname = '\0' Trailing C0 control should be encoded
-[PASS] URL: Setting <https://example.net#nav>.search = 'lang=fr'
-[PASS] URL: Setting <https://example.net?lang=en-US#nav>.search = 'lang=fr'
-[PASS] URL: Setting <https://example.net?lang=en-US#nav>.search = '?lang=fr'
-[PASS] URL: Setting <https://example.net?lang=en-US#nav>.search = '??lang=fr'
 [FAIL] URL: Setting <https://example.net?lang=en-US#nav>.search = '?'
   assert_equals: expected "https://example.net/?#nav" but got "https://example.net/#nav"
-[PASS] URL: Setting <https://example.net?lang=en-US#nav>.search = ''
-[PASS] URL: Setting <https://example.net?lang=en-US>.search = ''
-[PASS] URL: Setting <https://example.net>.search = ''
-[FAIL] URL: Setting <a:/>.search = '\0	\n\r !"#$%&'()*+,-./09:;<=>?@AZ[\]^_`az{|}~Éé' UTF-8 percent encoding with the query encode set. Tabs and newlines are removed.
-  assert_equals: expected "a:/?%00%01%1F%20!%22%23$%&'()*+,-./09:;%3C=%3E?@AZ[\\]^_`az{|}~%7F%C2%80%C2%81%C3%89%C3%A9" but got "file:///A:/?%00%01%1F%20!%22%23$%&%27()*+,-./09:;%3C=%3E?@AZ[\\]^_`az{|}~%7F%C2%80%C2%81%C3%89%C3%A9"
-[PASS] URL: Setting <http://example.net>.search = '%c3%89té' Bytes already percent-encoded are left as-is
+[FAIL] URL: Setting <a:/>.search = '\0	\n\r !"#$%&'()*+,-./09:;<=>?@AZ[\\]^_`az{|}~Éé' UTF-8 percent encoding with the query encode set. Tabs and newlines are removed.
+  assert_equals: expected "a:/?%00%01%1F%20!%22%23$%&'()*+,-./09:;%3C=%3E?@AZ[\\\\]^_`az{|}~%7F%C2%80%C2%81%C3%89%C3%A9" but got "file:///A:/?%00%01%1F%20!%22%23$%&%27()*+,-./09:;%3C=%3E?@AZ[\\\\]^_`az{|}~%7F%C2%80%C2%81%C3%89%C3%A9"
 [FAIL] URL: Setting <data:space ?query>.search = '' Drop trailing spaces from trailing opaque paths
   assert_equals: expected "data:space" but got "data:space "
 [FAIL] URL: Setting <sc:space ?query>.search = ''
   assert_equals: expected "sc:space" but got "sc:space "
-[PASS] URL: Setting <data:space  ?query#fragment>.search = '' Do not drop trailing spaces from non-trailing opaque paths
-[PASS] URL: Setting <sc:space  ?query#fragment>.search = ''
-[PASS] URL: Setting <http://example.net>.search = ' ' Trailing space should be encoded
-[PASS] URL: Setting <http://example.net>.search = '\0' Trailing C0 control should be encoded
-[PASS] URL: Setting <https://example.net>.hash = 'main'
-[PASS] URL: Setting <https://example.net#nav>.hash = 'main'
-[PASS] URL: Setting <https://example.net?lang=en-US>.hash = '##nav'
-[PASS] URL: Setting <https://example.net?lang=en-US#nav>.hash = '#main'
-[PASS] URL: Setting <https://example.net?lang=en-US#nav>.hash = '#'
-[PASS] URL: Setting <https://example.net?lang=en-US#nav>.hash = ''
-[PASS] URL: Setting <http://example.net>.hash = '#foo bar'
-[PASS] URL: Setting <http://example.net>.hash = '#foo"bar'
-[PASS] URL: Setting <http://example.net>.hash = '#foo<bar'
-[PASS] URL: Setting <http://example.net>.hash = '#foo>bar'
-[PASS] URL: Setting <http://example.net>.hash = '#foo`bar'
-[FAIL] URL: Setting <a:/>.hash = '\0	\n\r !"#$%&'()*+,-./09:;<=>?@AZ[\]^_`az{|}~Éé' Simple percent-encoding; tabs and newlines are removed
-  assert_equals: expected "a:/#%00%01%1F%20!%22#$%&'()*+,-./09:;%3C=%3E?@AZ[\\]^_%60az{|}~%7F%C2%80%C2%81%C3%89%C3%A9" but got "file:///A:/#%00%01%1F%20!%22#$%&'()*+,-./09:;%3C=%3E?@AZ[\\]^_%60az{|}~%7F%C2%80%C2%81%C3%89%C3%A9"
-[PASS] URL: Setting <http://example.net>.hash = 'a\0b' Percent-encode NULLs in fragment
-[PASS] URL: Setting <non-spec:/>.hash = 'a\0b' Percent-encode NULLs in fragment
-[PASS] URL: Setting <http://example.net>.hash = '%c3%89té' Bytes already percent-encoded are left as-is
+[FAIL] URL: Setting <a:/>.hash = '\0	\n\r !"#$%&'()*+,-./09:;<=>?@AZ[\\]^_`az{|}~Éé' Simple percent-encoding; tabs and newlines are removed
+  assert_equals: expected "a:/#%00%01%1F%20!%22#$%&'()*+,-./09:;%3C=%3E?@AZ[\\\\]^_%60az{|}~%7F%C2%80%C2%81%C3%89%C3%A9" but got "file:///A:/#%00%01%1F%20!%22#$%&'()*+,-./09:;%3C=%3E?@AZ[\\\\]^_%60az{|}~%7F%C2%80%C2%81%C3%89%C3%A9"
 [FAIL] URL: Setting <data:space                                                                                                                                  #fragment>.hash = '' Drop trailing spaces from trailing opaque paths
   assert_equals: expected "data:space" but got "data:space                                                                                                                                  "
 [FAIL] URL: Setting <sc:space    #fragment>.hash = ''
   assert_equals: expected "sc:space" but got "sc:space    "
-[PASS] URL: Setting <data:space  ?query#fragment>.hash = '' Do not drop trailing spaces from non-trailing opaque paths
-[PASS] URL: Setting <sc:space  ?query#fragment>.hash = ''
-[PASS] URL: Setting <http://example.net>.hash = ' ' Trailing space should be encoded
-[PASS] URL: Setting <http://example.net>.hash = '\0' Trailing C0 control should be encoded
 Harness: the test ran to completion.
 

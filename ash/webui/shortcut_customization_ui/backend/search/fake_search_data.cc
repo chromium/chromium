@@ -22,7 +22,7 @@ ash::mojom::AcceleratorInfoPtr CreateFakeStandardAcceleratorInfo(
       /*layout_properties=*/
       ash::mojom::LayoutStyleProperties::NewStandardAccelerator(
           ash::mojom::StandardAcceleratorProperties::New(
-              ui::Accelerator(), u"FakeKey", absl::nullopt)));
+              ui::Accelerator(), u"FakeKey", std::nullopt)));
 }
 
 std::vector<ash::mojom::AcceleratorInfoPtr> CreateFakeAcceleratorInfoList(

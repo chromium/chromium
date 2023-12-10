@@ -3,6 +3,7 @@ include_rules = [
   "+components/live_caption",
   "+services/device/public",
   "+components/device_reauth",
+  "+pdf/pdf_features.h",
    # Enable remote assistance on Chrome OS
   "+remoting/host",
 ]

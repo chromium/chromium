@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/values.h"
 
 namespace cloud_devices {

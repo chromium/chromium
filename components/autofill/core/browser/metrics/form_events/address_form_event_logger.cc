@@ -38,25 +38,19 @@ void AddressFormEventLogger::OnDidFillSuggestion(
     const AutofillField& field,
     AutofillMetrics::PaymentsSigninState signin_state_for_metrics,
     const AutofillTriggerSource trigger_source) {
-  AutofillProfile::RecordType record_type = profile.record_type();
   signin_state_for_metrics_ = signin_state_for_metrics;
 
-  form_interactions_ukm_logger_->LogDidFillSuggestion(record_type, form, field);
+  form_interactions_ukm_logger_->LogDidFillSuggestion(form, field);
 
-  if (record_type == AutofillProfile::SERVER_PROFILE) {
-    Log(FORM_EVENT_SERVER_SUGGESTION_FILLED, form);
-  } else {
-    Log(FORM_EVENT_LOCAL_SUGGESTION_FILLED, form);
-  }
+  Log(FORM_EVENT_LOCAL_SUGGESTION_FILLED, form);
 
   if (!has_logged_suggestion_filled_) {
     has_logged_suggestion_filled_ = true;
-    logged_suggestion_filled_was_server_data_ =
-        record_type == AutofillProfile::SERVER_PROFILE;
-    Log(record_type == AutofillProfile::SERVER_PROFILE
-            ? FORM_EVENT_SERVER_SUGGESTION_FILLED_ONCE
-            : FORM_EVENT_LOCAL_SUGGESTION_FILLED_ONCE,
-        form);
+    Log(FORM_EVENT_LOCAL_SUGGESTION_FILLED_ONCE, form);
+  }
+
+  if (has_logged_undo_after_fill_) {
+    has_logged_fill_after_undo_ = true;
   }
 
   base::RecordAction(
@@ -68,6 +62,11 @@ void AddressFormEventLogger::OnDidFillSuggestion(
   UpdateFlowId();
 
   profile_categories_filled_.insert(GetCategoryOfProfile(profile));
+}
+
+void AddressFormEventLogger::OnDidUndoAutofill() {
+  has_logged_undo_after_fill_ = true;
+  base::RecordAction(base::UserMetricsAction("Autofill_UndoAddressAutofill"));
 }
 
 void AddressFormEventLogger::OnDidSeeFillableDynamicForm(
@@ -154,6 +153,18 @@ void AddressFormEventLogger::RecordFillingCorrectness(LogBuffer& logs) const {
           : "Mixed";
   base::UmaHistogramBoolean("Autofill.Leipzig.FillingCorrectness." + kBucket,
                             !has_logged_edited_autofilled_field_);
+}
+
+void AddressFormEventLogger::LogUkmInteractedWithForm(
+    FormSignature form_signature) {
+  // Address Autofill has deprecated the concept of server addresses.
+  form_interactions_ukm_logger_->LogInteractedWithForm(
+      /*is_for_credit_card=*/false, record_type_count_,
+      /*server_record_type_count=*/0, form_signature);
+}
+
+bool AddressFormEventLogger::HasLoggedDataToFillAvailable() const {
+  return record_type_count_ > 0;
 }
 
 }  // namespace autofill::autofill_metrics

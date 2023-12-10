@@ -32,13 +32,15 @@ public final class KnownViolations {
         String model = Build.MODEL.toLowerCase(Locale.US);
         switch (manufacturer) {
             case "samsung":
-                exemptions.ignoreExternalMethod(DETECT_DISK_READ | DETECT_DISK_WRITE,
+                exemptions.ignoreExternalMethod(
+                        DETECT_DISK_READ | DETECT_DISK_WRITE,
                         "android.util.GeneralUtil#isSupportedGloveModeInternal");
                 exemptions.ignoreExternalMethod(
                         DETECT_DISK_READ, "android.graphics.Typeface#SetAppTypeFace");
                 exemptions.ignoreExternalMethod(
                         DETECT_DISK_READ, "android.graphics.Typeface#setAppTypeFace");
-                exemptions.ignoreExternalMethod(DETECT_DISK_READ,
+                exemptions.ignoreExternalMethod(
+                        DETECT_DISK_READ,
                         "android.app.ApplicationPackageManager#queryIntentActivities");
                 exemptions.ignoreExternalMethod(
                         DETECT_DISK_READ, "android.app.ActivityThread#parseCSCAppResource");
@@ -46,7 +48,8 @@ public final class KnownViolations {
                         DETECT_DISK_READ, "android.app.ActivityThread#performLaunchActivity");
                 exemptions.ignoreExternalMethod(DETECT_DISK_READ, "android.widget.Toast#makeText");
                 exemptions.ignoreExternalMethod(DETECT_DISK_READ, "android.widget.Toast#show");
-                exemptions.ignoreExternalMethod(DETECT_DISK_READ,
+                exemptions.ignoreExternalMethod(
+                        DETECT_DISK_READ,
                         "com.samsung.android.knox.custom.ProKioskManager#getProKioskState");
                 if (model.equals("sm-g9350")) {
                     exemptions.ignoreExternalMethod(
@@ -59,12 +62,14 @@ public final class KnownViolations {
                             DETECT_DISK_WRITE, "android.app.ActivityThread#performLaunchActivity");
                 }
                 if (Build.VERSION.SDK_INT <= 27) {
-                    exemptions.ignoreExternalMethod(DETECT_DISK_READ,
+                    exemptions.ignoreExternalMethod(
+                            DETECT_DISK_READ,
                             "com.android.server.am.ActivityManagerService#startActivity");
                 }
                 break;
             case "oneplus":
-                exemptions.ignoreExternalMethod(DETECT_DISK_READ | DETECT_DISK_WRITE,
+                exemptions.ignoreExternalMethod(
+                        DETECT_DISK_READ | DETECT_DISK_WRITE,
                         "com.android.server.am.ActivityManagerService#checkProcessExist");
                 break;
             case "vivo":
@@ -95,10 +100,12 @@ public final class KnownViolations {
                 DETECT_RESOURCE_MISMATCH, "com.android.internal.widget.SwipeDismissLayout#init");
         exemptions.ignoreExternalMethod(DETECT_DISK_IO, "java.lang.ThreadGroup#uncaughtException");
         exemptions.ignoreExternalMethod(DETECT_DISK_IO, "android.widget.VideoView#openVideo");
-        exemptions.ignoreExternalMethod(DETECT_DISK_IO,
+        exemptions.ignoreExternalMethod(
+                DETECT_DISK_IO,
                 "com.android.server.inputmethod.InputMethodManagerService#startInputOrWindowGainedFocus");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            exemptions.ignoreExternalMethod(DETECT_DISK_WRITE,
+            exemptions.ignoreExternalMethod(
+                    DETECT_DISK_WRITE,
                     "com.android.server.clipboard.HostClipboardMonitor#setHostClipboard");
         } else {
             exemptions.ignoreExternalMethod(

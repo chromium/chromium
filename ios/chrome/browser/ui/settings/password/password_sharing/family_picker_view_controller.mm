@@ -36,33 +36,25 @@ const CGFloat kAccessorySymbolSize = 22;
 }  // namespace
 
 @interface FamilyPickerViewController () <PopoverLabelViewControllerDelegate>
-
-@property(nonatomic, strong) NSArray<RecipientInfoForIOSDisplay*>* recipients;
-
 @end
 
 @implementation FamilyPickerViewController
+
+// Contains information about the potential recipients of the user.
+NSArray<RecipientInfoForIOSDisplay*>* _recipients;
 
 #pragma mark - UIViewController
 
 - (void)viewDidLoad {
   [super viewDidLoad];
 
-  self.navigationItem.title =
-      l10n_util::GetNSString(IDS_IOS_PASSWORD_SHARING_TITLE);
-  UIBarButtonItem* shareButton = [[UIBarButtonItem alloc]
-      initWithTitle:l10n_util::GetNSString(
-                        IDS_IOS_PASSWORD_SHARING_SHARE_BUTTON)
-              style:UIBarButtonItemStylePlain
-             target:self
-             action:@selector(shareButtonTapped)];
-  shareButton.enabled = NO;
-  self.navigationItem.rightBarButtonItem = shareButton;
-  self.navigationItem.rightBarButtonItem.accessibilityIdentifier =
-      kFamilyPickerShareButtonId;
+  UINavigationItem* navigationItem = self.navigationItem;
+  navigationItem.title = l10n_util::GetNSString(IDS_IOS_PASSWORD_SHARING_TITLE);
+  navigationItem.rightBarButtonItem = [self createShareButton];
 
-  self.tableView.allowsMultipleSelection = YES;
-  self.tableView.accessibilityIdentifier = kFamilyPickerTableViewId;
+  UITableView* tableView = self.tableView;
+  tableView.allowsMultipleSelection = YES;
+  tableView.accessibilityIdentifier = kFamilyPickerTableViewId;
 
   [self loadModel];
 }
@@ -131,9 +123,11 @@ const CGFloat kAccessorySymbolSize = 22;
   cell.detailTextLabel.numberOfLines = 1;
   cell.accessibilityIdentifier = _recipients[indexPath.row].email;
   if (_recipients[indexPath.row].isEligible) {
-    cell.accessoryView = [[UIImageView alloc]
-        initWithImage:cell.isSelected ? [self checkmarkCircleIcon]
-                                      : [self circleIcon]];
+    cell.accessoryView =
+        [[UIImageView alloc] initWithImage:[tableView.indexPathsForSelectedRows
+                                               containsObject:indexPath]
+                                               ? [self checkmarkCircleIcon]
+                                               : [self circleIcon]];
   } else {
     UIButton* infoButton = [UIButton buttonWithType:UIButtonTypeInfoLight];
     [infoButton setImage:[self infoCircleIcon] forState:UIControlStateNormal];
@@ -161,6 +155,9 @@ const CGFloat kAccessorySymbolSize = 22;
 
   [self loadModel];
   [self.tableView reloadData];
+  if (_recipients.count == 1 && _recipients[0].isEligible) {
+    [self selectFirstRow];
+  }
 }
 
 #pragma mark - Items
@@ -181,29 +178,35 @@ const CGFloat kAccessorySymbolSize = 22;
   item.detailText = recipient.email;
   item.image = CircularImageFromImage(recipient.profileImage,
                                       kAccountProfilePhotoDimension);
+  if (!recipient.isEligible) {
+    item.textColor = [UIColor colorNamed:kTextTertiaryColor];
+    item.detailTextColor = [UIColor colorNamed:kTextTertiaryColor];
+    item.imageViewAlpha = 0.4f;
+  }
   return item;
 }
 
 #pragma mark - Public
 
 - (void)setupLeftBackButton {
-  UIBarButtonItem* backButton = [[UIBarButtonItem alloc]
+  UINavigationItem* navigationItem = self.navigationItem;
+  navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc]
       initWithTitle:l10n_util::GetNSString(
                         IDS_IOS_PASSWORD_SHARING_FAMILY_PICKER_BACK_BUTTON)
               style:UIBarButtonItemStylePlain
              target:self
              action:@selector(backButtonTapped)];
-  self.navigationItem.leftBarButtonItem = backButton;
-  self.navigationItem.leftBarButtonItem.accessibilityIdentifier =
+  navigationItem.leftBarButtonItem.accessibilityIdentifier =
       kFamilyPickerBackButtonId;
 }
 
 - (void)setupLeftCancelButton {
-  self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc]
+  UINavigationItem* navigationItem = self.navigationItem;
+  navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc]
       initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
                            target:self
                            action:@selector(cancelButtonTapped)];
-  self.navigationItem.leftBarButtonItem.accessibilityIdentifier =
+  navigationItem.leftBarButtonItem.accessibilityIdentifier =
       kFamilyPickerCancelButtonId;
 }
 
@@ -215,19 +218,23 @@ const CGFloat kAccessorySymbolSize = 22;
 
 #pragma mark - Private
 
+// Creates accessory view for a cell with selected sharing recipient.
 - (UIImage*)checkmarkCircleIcon {
   return DefaultSymbolWithPointSize(kCheckmarkCircleFillSymbol,
                                     kAccessorySymbolSize);
 }
 
+// Creates accessory view for a cell with unselected sharing recipient.
 - (UIImage*)circleIcon {
   return DefaultSymbolWithPointSize(kCircleSymbol, kAccessorySymbolSize);
 }
 
+// Creates accessory view for a cell with ineligible sharing recipient.
 - (UIImage*)infoCircleIcon {
   return DefaultSymbolWithPointSize(kInfoCircleSymbol, kAccessorySymbolSize);
 }
 
+// Displays popup with information about password sharing ineligibility.
 - (void)infoButtonTapped:(UIButton*)button {
   NSString* text =
       l10n_util::GetNSString(IDS_IOS_PASSWORD_SHARING_FAMILY_MEMBER_INELIGIBLE);
@@ -264,20 +271,24 @@ const CGFloat kAccessorySymbolSize = 22;
                    completion:nil];
 }
 
+// Notifies the delegate that the previous view should be displayed.
 - (void)backButtonTapped {
   [self.delegate familyPickerNavigatedBack:self];
 }
 
+// Notifies the delegate that the view should be dismissed.
 - (void)cancelButtonTapped {
   [self.delegate familyPickerWasDismissed:self];
 }
 
+// Notifies the delegate that the user has confirmed the recipient selection.
 - (void)shareButtonTapped {
-  CHECK(self.tableView.indexPathsForSelectedRows.count > 0u);
+  UITableView* tableView = self.tableView;
+  CHECK(tableView.indexPathsForSelectedRows.count > 0u);
 
   NSMutableArray<RecipientInfoForIOSDisplay*>* selectedRecipients =
       [NSMutableArray array];
-  for (NSIndexPath* indexPath in self.tableView.indexPathsForSelectedRows) {
+  for (NSIndexPath* indexPath in tableView.indexPathsForSelectedRows) {
     [selectedRecipients addObject:_recipients[indexPath.row]];
   }
   [self.delegate familyPickerClosed:self
@@ -288,6 +299,29 @@ const CGFloat kAccessorySymbolSize = 22;
 - (void)setShareButtonStatus {
   self.navigationItem.rightBarButtonItem.enabled =
       self.tableView.indexPathsForSelectedRows.count > 0;
+}
+
+// Selects first row of the table view.
+- (void)selectFirstRow {
+  NSIndexPath* indexPath = [NSIndexPath indexPathForRow:0 inSection:0];
+  UITableView* tableView = self.tableView;
+  [tableView selectRowAtIndexPath:indexPath
+                         animated:NO
+                   scrollPosition:UITableViewScrollPositionNone];
+  [self tableView:tableView didSelectRowAtIndexPath:indexPath];
+}
+
+// Creates right share button.
+- (UIBarButtonItem*)createShareButton {
+  UIBarButtonItem* shareButton = [[UIBarButtonItem alloc]
+      initWithTitle:l10n_util::GetNSString(
+                        IDS_IOS_PASSWORD_SHARING_SHARE_BUTTON)
+              style:UIBarButtonItemStylePlain
+             target:self
+             action:@selector(shareButtonTapped)];
+  shareButton.enabled = NO;
+  shareButton.accessibilityIdentifier = kFamilyPickerShareButtonId;
+  return shareButton;
 }
 
 @end

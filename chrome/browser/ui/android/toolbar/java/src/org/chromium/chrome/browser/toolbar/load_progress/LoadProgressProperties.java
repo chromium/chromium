@@ -15,9 +15,9 @@ import java.lang.annotation.RetentionPolicy;
 /** List of load progress bar properties. */
 class LoadProgressProperties {
     @IntDef({
-            CompletionState.UNFINISHED,
-            CompletionState.FINISHED_DO_ANIMATE,
-            CompletionState.FINISHED_DONT_ANIMATE,
+        CompletionState.UNFINISHED,
+        CompletionState.FINISHED_DO_ANIMATE,
+        CompletionState.FINISHED_DONT_ANIMATE,
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface CompletionState {
@@ -25,6 +25,7 @@ class LoadProgressProperties {
         int FINISHED_DO_ANIMATE = 1;
         int FINISHED_DONT_ANIMATE = 2;
     }
+
     public static final PropertyModel.WritableIntPropertyKey COMPLETION_STATE =
             new PropertyModel.WritableIntPropertyKey();
     public static final PropertyModel.WritableFloatPropertyKey PROGRESS =

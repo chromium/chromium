@@ -740,4 +740,14 @@ void ViewAndroid::SetLayoutForTesting(int x, int y, int width, int height) {
   bounds_.SetRect(x, y, width, height);
 }
 
+size_t ViewAndroid::GetChildrenCountForTesting() const {
+  return children_.size();
+}
+
+const ViewAndroid* ViewAndroid::GetTopMostChildForTesting() const {
+  // The top-most refers to the back element of the children. This is mirroring
+  // the children ordering of the cc Layer tree.
+  return children_.back();
+}
+
 }  // namespace ui

@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+[FAIL] Open a fullscreen popup on '0'
+  assert_equals: popup: (250,250 300x100), 'undefined': (undefined,undefined 800x600) expected 0 but got 250
+Harness: the test ran to completion.

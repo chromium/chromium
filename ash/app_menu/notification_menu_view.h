@@ -10,6 +10,7 @@
 
 #include "ash/app_menu/app_menu_export.h"
 #include "base/memory/raw_ptr.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 namespace message_center {
@@ -30,6 +31,8 @@ class NotificationItemView;
 // A view inserted into a container MenuItemView which shows a
 // NotificationItemView and a NotificationMenuHeaderView.
 class APP_MENU_EXPORT NotificationMenuView : public views::View {
+  METADATA_HEADER(NotificationMenuView, views::View)
+
  public:
   // API for child views to interact with the NotificationMenuController.
   class Delegate {

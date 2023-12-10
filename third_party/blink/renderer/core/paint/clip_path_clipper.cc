@@ -94,7 +94,7 @@ PhysicalRect BorderBoxRect(const LayoutBoxModelObject& object) {
   return PhysicalRect();
 }
 
-// TODO(crbug.com/1473440): Convert this to take a NGPhysicalBoxFragment
+// TODO(crbug.com/1473440): Convert this to take a PhysicalBoxFragment
 // instead of a LayoutBoxModelObject.
 PhysicalBoxStrut ReferenceBoxBorderBoxOutsets(
     GeometryBox geometry_box,

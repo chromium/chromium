@@ -17,19 +17,36 @@
 #include "ui/base/accelerators/media_keys_listener.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 
+namespace base {
+class UnguessableToken;
+}
 namespace content {
 
 // Intakes media events (such as media key presses) and controls the active
 // media session.
+// TODO(crbug.com/1502989) Consider renaming this class in the world of
+// instanced system media controls.
 class CONTENT_EXPORT ActiveMediaSessionController
     : public media_session::mojom::MediaControllerObserver,
       public ui::MediaKeysListener::Delegate {
  public:
-  ActiveMediaSessionController();
+  explicit ActiveMediaSessionController(base::UnguessableToken request_id);
   ActiveMediaSessionController(const ActiveMediaSessionController&) = delete;
   ActiveMediaSessionController& operator=(const ActiveMediaSessionController&) =
       delete;
   ~ActiveMediaSessionController() override;
+
+  // This mechanism allows this AMSC to be rebound to track a different
+  // request_id. This is used by the browser singleton active media session
+  // controller which is created to track a specific request_id but conceptually
+  // needs to follow around whatever the most recent active playing media is.
+  // This has the added benefit that things like |actions_| will persist across
+  // multiple tabs. If we simply recreate for each browser-associated media,
+  // |actions_| may not get switched off causing a previously available button
+  // to stay available when it is not available in the current media context.
+  // Currently used only by browser system media controls when
+  // kWebAppSystemMediaControlsWin is enabled.
+  void RebindMojoForNewID(base::UnguessableToken request_id);
 
   // media_session::mojom::MediaControllerObserver:
   void MediaSessionInfoChanged(
@@ -77,6 +94,9 @@ class CONTENT_EXPORT ActiveMediaSessionController
   bool SupportsAction(media_session::mojom::MediaSessionAction action) const;
   void PerformAction(media_session::mojom::MediaSessionAction action);
 
+  mojo::Remote<media_session::mojom::MediaControllerManager>
+      controller_manager_remote_;
+
   // Used to control the active session.
   mojo::Remote<media_session::mojom::MediaController> media_controller_remote_;
 
@@ -93,6 +113,12 @@ class CONTENT_EXPORT ActiveMediaSessionController
 
   // Stores the current playback position.
   absl::optional<media_session::MediaPosition> position_;
+
+  // Stores the media session (if any specific one) this active media session
+  // controller is associated with. If this is null, this AMSC follows
+  // around the active media session automatically and will receive events for
+  // it.
+  base::UnguessableToken request_id_;
 };
 
 }  // namespace content

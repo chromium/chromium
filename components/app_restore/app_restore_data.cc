@@ -43,6 +43,7 @@ constexpr char kTitleKey[] = "title";
 constexpr char kBoundsInRoot[] = "bounds_in_root";
 constexpr char kPrimaryColorKey[] = "primary_color";
 constexpr char kStatusBarColorKey[] = "status_bar_color";
+constexpr char kLacrosProfileIdKey[] = "lacros_profile_id";
 
 // Converts |size| to base::Value::List, e.g. { 100, 300 }.
 base::Value::List ConvertSizeToList(const gfx::Size& size) {
@@ -67,6 +68,11 @@ base::Value ConvertUintToValue(uint32_t number) {
   return base::Value(base::NumberToString(number));
 }
 
+// Converts `number` to base::Value in string, e.g. 123 to "123".
+base::Value ConvertUint64ToValue(uint64_t number) {
+  return base::Value(base::NumberToString(number));
+}
+
 // Gets bool value from base::Value::Dict, e.g. { "key": true } returns
 // true.
 absl::optional<bool> GetBoolValueFromDict(const base::Value::Dict& dict,
@@ -87,6 +93,18 @@ absl::optional<uint32_t> GetUIntValueFromDict(const base::Value::Dict& dict,
   uint32_t result = 0;
   const std::string* value = dict.FindString(key_name);
   if (!value || !base::StringToUint(*value, &result)) {
+    return absl::nullopt;
+  }
+  return result;
+}
+
+// Gets uint64_t value from a base::Value::Dict where it is stored as a string,
+// e.g. { "key": "123" } returns 123.
+absl::optional<uint64_t> GetUInt64ValueFromDict(const base::Value::Dict& dict,
+                                                base::StringPiece key_name) {
+  uint64_t result = 0;
+  const std::string* value = dict.FindString(key_name);
+  if (!value || !base::StringToUint64(*value, &result)) {
     return absl::nullopt;
   }
   return result;
@@ -258,6 +276,7 @@ AppRestoreData::AppRestoreData(base::Value::Dict&& data) {
   bounds_in_root = GetBoundsRectFromDict(data, kBoundsInRoot);
   primary_color = GetUIntValueFromDict(data, kPrimaryColorKey);
   status_bar_color = GetUIntValueFromDict(data, kStatusBarColorKey);
+  lacros_profile_id = GetUInt64ValueFromDict(data, kLacrosProfileIdKey);
 
   const base::Value::Dict* intent_value = data.FindDict(kIntentKey);
   if (intent_value) {
@@ -284,6 +303,7 @@ AppRestoreData::AppRestoreData(std::unique_ptr<AppLaunchInfo> app_launch_info) {
   app_type_browser = std::move(app_launch_info->app_type_browser);
   app_name = std::move(app_launch_info->app_name);
   tab_group_infos = std::move(app_launch_info->tab_group_infos);
+  lacros_profile_id = app_launch_info->lacros_profile_id;
 }
 
 AppRestoreData::~AppRestoreData() = default;
@@ -372,6 +392,8 @@ std::unique_ptr<AppRestoreData> AppRestoreData::Clone() const {
 
   if (!tab_group_infos.empty())
     data->tab_group_infos = tab_group_infos;
+
+  data->lacros_profile_id = lacros_profile_id;
 
   return data;
 }
@@ -492,6 +514,11 @@ base::Value AppRestoreData::ConvertToValue() const {
                          ConvertUintToValue(status_bar_color.value()));
   }
 
+  if (lacros_profile_id.has_value()) {
+    launch_info_dict.Set(kLacrosProfileIdKey,
+                         ConvertUint64ToValue(lacros_profile_id.value()));
+  }
+
   return base::Value(std::move(launch_info_dict));
 }
 
@@ -575,6 +602,7 @@ std::unique_ptr<AppLaunchInfo> AppRestoreData::GetAppLaunchInfo(
   app_launch_info->app_name = app_name;
   app_launch_info->tab_group_infos = tab_group_infos;
   app_launch_info->override_url = override_url;
+  app_launch_info->lacros_profile_id = lacros_profile_id;
   return app_launch_info;
 }
 
@@ -674,7 +702,8 @@ bool AppRestoreData::operator==(const AppRestoreData& other) const {
          maximum_size == other.maximum_size &&
          bounds_in_root == other.bounds_in_root &&
          primary_color == other.primary_color &&
-         status_bar_color == other.status_bar_color;
+         status_bar_color == other.status_bar_color &&
+         lacros_profile_id == other.lacros_profile_id;
 }
 
 bool AppRestoreData::operator!=(const AppRestoreData& other) const {

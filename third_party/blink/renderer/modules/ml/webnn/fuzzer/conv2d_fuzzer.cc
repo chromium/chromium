@@ -4,6 +4,7 @@
 
 #include "testing/libfuzzer/proto/lpm_interface.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_conv_2d_options.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
@@ -34,15 +35,15 @@ V8MLConv2dFilterOperandLayout::Enum ToV8MLFilterOperandLayout(
 void ProtobufToConv2dOptions(const webnn_proto::conv2dOptions& data,
                              MLConv2dOptions* options) {
   if (data.padding_size() > 0) {
-    options->setPadding(Vector<uint32_t>(data.padding()));
+    options->setPadding(RepeatedFieldToVector<uint32_t>(data.padding()));
   }
 
   if (data.strides_size() > 0) {
-    options->setStrides(Vector<uint32_t>(data.strides()));
+    options->setStrides(RepeatedFieldToVector<uint32_t>(data.strides()));
   }
 
   if (data.dilations_size() > 0) {
-    options->setDilations(Vector<uint32_t>(data.dilations()));
+    options->setDilations(RepeatedFieldToVector<uint32_t>(data.dilations()));
   }
 
   if (data.has_auto_pad()) {
@@ -71,6 +72,10 @@ DEFINE_PROTO_FUZZER(const webnn_proto::conv2d& conv2d) {
     return page_holder.release();
   }();
 
+  // Request a full GC upon returning.
+  auto scoped_gc =
+      MakeScopedGarbageCollectionRequest(test_support.GetIsolate());
+
   ScriptState* script_state =
       ToScriptStateForMainWorld(&page_holder->GetFrame());
 
@@ -80,12 +85,13 @@ DEFINE_PROTO_FUZZER(const webnn_proto::conv2d& conv2d) {
       exception_state);
   CHECK(builder);
 
-  auto* input =
-      BuildInput(builder, "input", Vector<uint32_t>(conv2d.input_dimensions()),
-                 ToV8MLOperandType(conv2d.input_type()), exception_state);
-  auto* filter =
-      BuildConstant(builder, Vector<uint32_t>(conv2d.filter_dimensions()),
-                    ToV8MLOperandType(conv2d.filter_type()), exception_state);
+  auto* input = BuildInput(
+      builder, "input",
+      RepeatedFieldToVector<uint32_t>(conv2d.input_dimensions()),
+      ToV8MLOperandDataType(conv2d.input_data_type()), exception_state);
+  auto* filter = BuildConstant(
+      builder, RepeatedFieldToVector<uint32_t>(conv2d.filter_dimensions()),
+      ToV8MLOperandDataType(conv2d.filter_data_type()), exception_state);
   auto* conv2d_options = blink::MLConv2dOptions::Create();
   if (conv2d.has_conv2d_options()) {
     ProtobufToConv2dOptions(conv2d.conv2d_options(), conv2d_options);
@@ -95,11 +101,6 @@ DEFINE_PROTO_FUZZER(const webnn_proto::conv2d& conv2d) {
     return;
   }
   builder->conv2d(input, filter, conv2d_options, exception_state);
-
-  page_holder->GetPage()
-      ->GetAgentGroupScheduler()
-      ->Isolate()
-      ->RequestGarbageCollectionForTesting(v8::Isolate::kFullGarbageCollection);
 }
 
 }  // namespace blink

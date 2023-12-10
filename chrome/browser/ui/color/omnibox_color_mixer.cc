@@ -266,7 +266,7 @@ void AddOmniboxColorMixer(ui::ColorProvider* provider,
     const auto results_icon = [contrast_ratio](ui::ColorId text_id,
                                                ui::ColorId background_id) {
       return ui::BlendForMinContrast(ui::DeriveDefaultIconColor(text_id),
-                                     background_id, absl::nullopt,
+                                     background_id, std::nullopt,
                                      contrast_ratio);
     };
     mixer[kColorOmniboxResultsIcon] =
@@ -275,7 +275,7 @@ void AddOmniboxColorMixer(ui::ColorProvider* provider,
         results_icon(kColorOmniboxResultsTextSelected,
                      kColorOmniboxResultsBackgroundSelected);
     mixer[kColorOmniboxResultsStarterPackIcon] = ui::BlendForMinContrast(
-        gfx::kGoogleBlue600, kColorOmniboxResultsBackground, absl::nullopt,
+        gfx::kGoogleBlue600, kColorOmniboxResultsBackground, std::nullopt,
         color_utils::kMinimumVisibleContrastRatio);
   }
 
@@ -286,7 +286,7 @@ void AddOmniboxColorMixer(ui::ColorProvider* provider,
           return ui::BlendForMinContrast(
               foreground_id, foreground_id,
               ui::BlendForMinContrast(background_id, background_id,
-                                      absl::nullopt, contrast_ratio),
+                                      std::nullopt, contrast_ratio),
               contrast_ratio);
         };
     mixer[kColorOmniboxResultsTextDimmed] = blend_with_clamped_contrast(
@@ -307,7 +307,7 @@ void AddOmniboxColorMixer(ui::ColorProvider* provider,
           // Like kColorAlertHighSeverity, but toggled on `dark_selector`.
           ui::SelectBasedOnDarkInput(dark_selector, gfx::kGoogleRed300,
                                      gfx::kGoogleRed600),
-          background, absl::nullopt, contrast_ratio);
+          background, std::nullopt, contrast_ratio);
     };
     const auto positive_color = [contrast_ratio](
                                     ui::ColorId background,
@@ -316,7 +316,7 @@ void AddOmniboxColorMixer(ui::ColorProvider* provider,
           // Like kColorAlertLowSeverity, but toggled on `dark_selector`.
           ui::SelectBasedOnDarkInput(dark_selector, gfx::kGoogleGreen300,
                                      gfx::kGoogleGreen700),
-          background, absl::nullopt, contrast_ratio);
+          background, std::nullopt, contrast_ratio);
     };
     const auto secondary_color = [contrast_ratio](
                                      ui::ColorId background,
@@ -330,7 +330,7 @@ void AddOmniboxColorMixer(ui::ColorProvider* provider,
                                          SK_ColorWHITE),
               ui::SelectBasedOnDarkInput(dark_selector, gfx::kGoogleGrey200,
                                          gfx::kGoogleGrey900)),
-          background, absl::nullopt, contrast_ratio);
+          background, std::nullopt, contrast_ratio);
     };
     const auto url_color = [contrast_ratio](ui::ColorId background,
                                             ui::ColorTransform dark_selector) {
@@ -370,7 +370,7 @@ void AddOmniboxColorMixer(ui::ColorProvider* provider,
       return ui::BlendForMinContrast(
           ui::SelectBasedOnDarkInput(kColorToolbarBackgroundSubtleEmphasis,
                                      dark_input, light_input),
-          kColorToolbarBackgroundSubtleEmphasisHovered, absl::nullopt,
+          kColorToolbarBackgroundSubtleEmphasisHovered, std::nullopt,
           contrast_ratio);
     };
 

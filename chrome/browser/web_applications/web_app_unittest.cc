@@ -16,7 +16,6 @@
 #include "base/json/json_writer.h"
 #include "base/path_service.h"
 #include "base/strings/string_piece.h"
-#include "base/strings/string_piece_forward.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"

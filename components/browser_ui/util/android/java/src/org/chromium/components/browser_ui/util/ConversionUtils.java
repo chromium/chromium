@@ -4,9 +4,7 @@
 
 package org.chromium.components.browser_ui.util;
 
-/**
- * A class containing some utility static methods for common conversions.
- */
+/** A class containing some utility static methods for common conversions. */
 public class ConversionUtils {
     public static final int BYTES_PER_KILOBYTE = 1024;
     public static final int BYTES_PER_MEGABYTE = 1024 * 1024;

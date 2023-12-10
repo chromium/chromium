@@ -8,9 +8,9 @@
 #include <cstddef>
 #include <cstdint>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_address_space.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc-inl.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/compiler_specific.h"
+#include "partition_alloc/partition_address_space.h"
+#include "partition_alloc/partition_alloc-inl.h"
+#include "partition_alloc/partition_alloc_base/compiler_specific.h"
 
 namespace partition_alloc::internal {
 

@@ -16,9 +16,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
 import org.chromium.components.browser_ui.widget.tile.TileView;
 
-/**
- * The most visited tiles carousel layout.
- */
+/** The most visited tiles carousel layout. */
 public class MostVisitedTilesCarouselLayout extends LinearLayout implements MostVisitedTilesLayout {
     // There's a minimum limit of 4.
 
@@ -33,22 +31,31 @@ public class MostVisitedTilesCarouselLayout extends LinearLayout implements Most
     private Integer mIntervalPaddingsTabletForPolish;
     private Integer mEdgePaddingsTabletForPolish;
 
-    /**
-     * Constructor for inflating from XML.
-     */
+    /** Constructor for inflating from XML. */
     public MostVisitedTilesCarouselLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
 
         mTileViewWidth =
                 getResources().getDimensionPixelOffset(org.chromium.chrome.R.dimen.tile_view_width);
-        mTileViewMinIntervalPaddingTablet = getResources().getDimensionPixelOffset(
-                org.chromium.chrome.R.dimen.tile_carousel_layout_min_interval_margin_tablet);
-        mTileViewMaxIntervalPaddingTablet = getResources().getDimensionPixelOffset(
-                org.chromium.chrome.R.dimen.tile_carousel_layout_max_interval_margin_tablet);
-        mIntervalPaddingsTabletForPolish = getResources().getDimensionPixelSize(
-                org.chromium.chrome.R.dimen.tile_view_padding_interval_tablet_polish);
-        mEdgePaddingsTabletForPolish = getResources().getDimensionPixelSize(
-                org.chromium.chrome.R.dimen.tile_view_padding_edge_tablet_polish);
+        mTileViewMinIntervalPaddingTablet =
+                getResources()
+                        .getDimensionPixelOffset(
+                                org.chromium.chrome.R.dimen
+                                        .tile_carousel_layout_min_interval_margin_tablet);
+        mTileViewMaxIntervalPaddingTablet =
+                getResources()
+                        .getDimensionPixelOffset(
+                                org.chromium.chrome.R.dimen
+                                        .tile_carousel_layout_max_interval_margin_tablet);
+        mIntervalPaddingsTabletForPolish =
+                getResources()
+                        .getDimensionPixelSize(
+                                org.chromium.chrome.R.dimen
+                                        .tile_view_padding_interval_tablet_polish);
+        mEdgePaddingsTabletForPolish =
+                getResources()
+                        .getDimensionPixelSize(
+                                org.chromium.chrome.R.dimen.tile_view_padding_edge_tablet_polish);
     }
 
     void setIntervalPaddings(int padding) {
@@ -122,10 +129,12 @@ public class MostVisitedTilesCarouselLayout extends LinearLayout implements Most
      * @param totalWidth The width of the mv tiles container.
      */
     void updateEdgeMarginTablet(int totalWidth) {
-        boolean isFullFilled = totalWidth - mTileViewWidth * mInitialTileNum
-                        - mIntervalPaddingsTabletForPolish * (mInitialTileNum - 1)
-                        - 2 * mEdgePaddingsTabletForPolish
-                >= 0;
+        boolean isFullFilled =
+                totalWidth
+                                - mTileViewWidth * mInitialTileNum
+                                - mIntervalPaddingsTabletForPolish * (mInitialTileNum - 1)
+                                - 2 * mEdgePaddingsTabletForPolish
+                        >= 0;
         if (!isFullFilled) {
             // When splitting the window, this function is invoked with a different totalWidth value
             // during the process. Therefore, we must update the edge padding with the appropriate
@@ -135,9 +144,11 @@ public class MostVisitedTilesCarouselLayout extends LinearLayout implements Most
         }
 
         int currentNum = getChildCount();
-        int edgeMargin = (totalWidth - mTileViewWidth * currentNum
-                                 - mIntervalPaddingsTabletForPolish * (currentNum - 1))
-                / 2;
+        int edgeMargin =
+                (totalWidth
+                                - mTileViewWidth * currentNum
+                                - mIntervalPaddingsTabletForPolish * (currentNum - 1))
+                        / 2;
         setEdgePaddings(edgeMargin);
     }
 
@@ -151,12 +162,14 @@ public class MostVisitedTilesCarouselLayout extends LinearLayout implements Most
     @VisibleForTesting
     public int calculateTabletIntervalPadding(int totalWidth, boolean isHalfMvt) {
         if (isHalfMvt) {
-            int preferElements = (totalWidth - mTileViewWidth / 2)
-                    / (mTileViewWidth + mTileViewMinIntervalPaddingTablet);
+            int preferElements =
+                    (totalWidth - mTileViewWidth / 2)
+                            / (mTileViewWidth + mTileViewMinIntervalPaddingTablet);
             return (totalWidth - mTileViewWidth / 2 - preferElements * mTileViewWidth)
                     / Math.max(1, preferElements);
         }
-        return Math.min((totalWidth - mInitialTileNum * mTileViewWidth)
+        return Math.min(
+                (totalWidth - mInitialTileNum * mTileViewWidth)
                         / Math.max(1, (mInitialTileNum - 1)),
                 mTileViewMaxIntervalPaddingTablet);
     }
@@ -169,12 +182,14 @@ public class MostVisitedTilesCarouselLayout extends LinearLayout implements Most
         if (mIsNtpAsHomeSurfaceOnTablet && !mIsSurfacePolishEnabled) {
             int currentOrientation = getResources().getConfiguration().orientation;
             if ((currentOrientation == Configuration.ORIENTATION_LANDSCAPE
-                        && mIntervalPaddingsLandscapeTablet == null)
+                            && mIntervalPaddingsLandscapeTablet == null)
                     || (currentOrientation == Configuration.ORIENTATION_PORTRAIT
                             && mIntervalPaddingsPortraitTablet == null)) {
                 int totalWidth = Math.min(MeasureSpec.getSize(widthMeasureSpec), Integer.MAX_VALUE);
-                boolean isHalfMvt = totalWidth < mInitialTileNum * mTileViewWidth
-                                + (mInitialTileNum - 1) * mTileViewMinIntervalPaddingTablet;
+                boolean isHalfMvt =
+                        totalWidth
+                                < mInitialTileNum * mTileViewWidth
+                                        + (mInitialTileNum - 1) * mTileViewMinIntervalPaddingTablet;
                 int tileViewIntervalPadding = calculateTabletIntervalPadding(totalWidth, isHalfMvt);
                 if (currentOrientation == Configuration.ORIENTATION_LANDSCAPE) {
                     mIntervalPaddingsLandscapeTablet = tileViewIntervalPadding;

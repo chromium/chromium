@@ -39,7 +39,7 @@
 #include "third_party/blink/renderer/core/input_type_names.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/keywords.h"
-#include "third_party/blink/renderer/core/layout/ng/layout_ng_block_flow.h"
+#include "third_party/blink/renderer/core/layout/layout_ng_block_flow.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/drag_data.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"

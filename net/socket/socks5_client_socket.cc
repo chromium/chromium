@@ -96,13 +96,6 @@ bool SOCKS5ClientSocket::WasEverUsed() const {
   return was_ever_used_;
 }
 
-bool SOCKS5ClientSocket::WasAlpnNegotiated() const {
-  if (transport_socket_)
-    return transport_socket_->WasAlpnNegotiated();
-  NOTREACHED();
-  return false;
-}
-
 NextProto SOCKS5ClientSocket::GetNegotiatedProtocol() const {
   if (transport_socket_)
     return transport_socket_->GetNegotiatedProtocol();
@@ -276,7 +269,7 @@ int SOCKS5ClientSocket::DoGreetWrite() {
 
   next_state_ = STATE_GREET_WRITE_COMPLETE;
   size_t handshake_buf_len = buffer_.size() - bytes_sent_;
-  handshake_buf_ = base::MakeRefCounted<IOBuffer>(handshake_buf_len);
+  handshake_buf_ = base::MakeRefCounted<IOBufferWithSize>(handshake_buf_len);
   memcpy(handshake_buf_->data(), &buffer_.data()[bytes_sent_],
          handshake_buf_len);
   return transport_socket_->Write(handshake_buf_.get(), handshake_buf_len,
@@ -301,7 +294,7 @@ int SOCKS5ClientSocket::DoGreetWriteComplete(int result) {
 int SOCKS5ClientSocket::DoGreetRead() {
   next_state_ = STATE_GREET_READ_COMPLETE;
   size_t handshake_buf_len = kGreetReadHeaderSize - bytes_received_;
-  handshake_buf_ = base::MakeRefCounted<IOBuffer>(handshake_buf_len);
+  handshake_buf_ = base::MakeRefCounted<IOBufferWithSize>(handshake_buf_len);
   return transport_socket_->Read(handshake_buf_.get(), handshake_buf_len,
                                  io_callback_);
 }
@@ -374,7 +367,7 @@ int SOCKS5ClientSocket::DoHandshakeWrite() {
 
   int handshake_buf_len = buffer_.size() - bytes_sent_;
   DCHECK_LT(0, handshake_buf_len);
-  handshake_buf_ = base::MakeRefCounted<IOBuffer>(handshake_buf_len);
+  handshake_buf_ = base::MakeRefCounted<IOBufferWithSize>(handshake_buf_len);
   memcpy(handshake_buf_->data(), &buffer_[bytes_sent_],
          handshake_buf_len);
   return transport_socket_->Write(handshake_buf_.get(), handshake_buf_len,
@@ -410,7 +403,7 @@ int SOCKS5ClientSocket::DoHandshakeRead() {
   }
 
   int handshake_buf_len = read_header_size - bytes_received_;
-  handshake_buf_ = base::MakeRefCounted<IOBuffer>(handshake_buf_len);
+  handshake_buf_ = base::MakeRefCounted<IOBufferWithSize>(handshake_buf_len);
   return transport_socket_->Read(handshake_buf_.get(), handshake_buf_len,
                                  io_callback_);
 }

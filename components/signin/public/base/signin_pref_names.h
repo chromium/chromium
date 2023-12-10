@@ -26,6 +26,8 @@ extern const char kGoogleServicesLastSyncingAccountIdDeprecated[];
 extern const char kGoogleServicesLastSyncingGaiaId[];
 extern const char kGoogleServicesLastSyncingUsername[];
 extern const char kGoogleServicesSigninScopedDeviceId[];
+extern const char kGoogleServicesSyncingGaiaIdMigratedToSignedIn[];
+extern const char kGoogleServicesSyncingUsernameMigratedToSignedIn[];
 extern const char kGoogleServicesUsernamePattern[];
 extern const char kRestrictAccountsToPatterns[];
 extern const char kReverseAutologinRejectedEmailList[];

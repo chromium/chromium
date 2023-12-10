@@ -5,10 +5,10 @@
 #ifndef SERVICES_NETWORK_PUBLIC_CPP_TRUST_TOKEN_HTTP_HEADERS_H_
 #define SERVICES_NETWORK_PUBLIC_CPP_TRUST_TOKEN_HTTP_HEADERS_H_
 
+#include <string_view>
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/strings/string_piece_forward.h"
 
 namespace network {
 
@@ -77,7 +77,7 @@ constexpr char kTrustTokensResponseHeaderSecTrustTokenLifetime[] =
 // In particular, this does *not* contain Signed-Headers because this header's
 // value is provided by the Trust Token API's client.
 COMPONENT_EXPORT(NETWORK_CPP)
-const std::vector<base::StringPiece>& TrustTokensRequestHeaders();
+const std::vector<std::string_view>& TrustTokensRequestHeaders();
 
 }  // namespace network
 

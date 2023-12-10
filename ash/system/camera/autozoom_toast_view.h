@@ -7,6 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "base/memory/raw_ptr.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/view.h"
 #include "ui/views/view_observer.h"
@@ -19,6 +20,8 @@ class AutozoomToastController;
 // The view shown inside the autozoom toast bubble.
 class ASH_EXPORT AutozoomToastView : public views::View,
                                      public views::ViewObserver {
+  METADATA_HEADER(AutozoomToastView, views::View)
+
  public:
   explicit AutozoomToastView(AutozoomToastController* controller);
   AutozoomToastView(AutozoomToastView&) = delete;

@@ -71,7 +71,8 @@ public class MimeTypeFilter implements FileFilter {
         }
 
         if (mimeType != null) {
-            if (mAcceptAllMimeTypes || mMimeTypes.contains(mimeType)
+            if (mAcceptAllMimeTypes
+                    || mMimeTypes.contains(mimeType)
                     || mMimeSupertypes.contains(getMimeSupertype(mimeType))) {
                 return true;
             }

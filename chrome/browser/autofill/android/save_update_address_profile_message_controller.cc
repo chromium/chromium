@@ -87,7 +87,7 @@ bool SaveUpdateAddressProfileMessageController::IsMessageDisplayed() {
 
 void SaveUpdateAddressProfileMessageController::OnPrimaryAction() {
   std::move(primary_action_callback_)
-      .Run(web_contents_.get(), profile_, original_profile_.get(),
+      .Run(web_contents_.get(), *profile_, original_profile_.get(),
            is_migration_to_account_, std::move(save_address_profile_callback_));
 }
 
@@ -164,13 +164,13 @@ std::u16string SaveUpdateAddressProfileMessageController::GetDescription() {
   }
 
   if (is_migration_to_account_ ||
-      profile_.source() == AutofillProfile::Source::kAccount) {
+      profile_->source() == AutofillProfile::Source::kAccount) {
     return GetSourceNotice();
   }
 
   // Address profile won't be saved to Google Account when user is not logged
   // in.
-  return GetProfileDescription(profile_,
+  return GetProfileDescription(*profile_,
                                g_browser_process->GetApplicationLocale(),
                                /*include_address_and_contacts=*/true);
 }

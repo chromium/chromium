@@ -162,7 +162,7 @@ class ExtensionHost : public DeferredStartRenderHost,
       const content::MediaStreamRequest& request,
       content::MediaResponseCallback callback) override;
   bool CheckMediaAccessPermission(content::RenderFrameHost* render_frame_host,
-                                  const GURL& security_origin,
+                                  const url::Origin& security_origin,
                                   blink::mojom::MediaStreamType type) override;
   bool IsNeverComposited(content::WebContents* web_contents) override;
   content::PictureInPictureResult EnterPictureInPicture(
@@ -178,7 +178,10 @@ class ExtensionHost : public DeferredStartRenderHost,
                            const Extension* extension,
                            UnloadedExtensionReason reason) override;
 
-  void OnEventAck(int event_id);
+  // Notifies observers when an event has been acknowledged from the renderer to
+  // the browser. `event_ran_in_lazy_background_page_context` being set to true
+  // emits histograms for some events that ran in lazy background pages.
+  void OnEventAck(int event_id, bool event_ran_in_lazy_background_page_context);
 
  protected:
   // Called each time this ExtensionHost completes a load finishes loading,
@@ -203,6 +206,11 @@ class ExtensionHost : public DeferredStartRenderHost,
     // The event dispatching processing flow that was followed for this event.
     EventDispatchSource dispatch_source;
   };
+
+  // Emits a stale event ack metric if an event with `event_id` is not present
+  // in `unacked_messages_`. Meaning that the event was not yet acked by the
+  // renderer to the browser.
+  void EmitLateAckedEventTask(int event_id);
 
   // DeferredStartRenderHost:
   void CreateRendererNow() override;

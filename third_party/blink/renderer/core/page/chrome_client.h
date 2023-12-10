@@ -493,7 +493,10 @@ class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
 
   virtual bool IsChromeClientImpl() const { return false; }
 
-  virtual void DidAddOrRemoveFormRelatedElementsAfterLoad(LocalFrame*) {}
+  virtual void DidChangeFormRelatedElementDynamically(
+      LocalFrame*,
+      HTMLElement*,
+      WebFormRelatedChangeType) {}
   virtual void DidChangeValueInTextField(HTMLFormControlElement&) {}
   virtual void DidEndEditingOnTextField(HTMLInputElement&) {}
   virtual void HandleKeyboardEventOnTextField(HTMLInputElement&,

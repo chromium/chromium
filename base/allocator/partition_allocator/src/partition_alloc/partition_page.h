@@ -7,37 +7,37 @@
 
 #include <cstdint>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/address_pool_manager.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/address_pool_manager_types.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/freeslot_bitmap_constants.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_address_space.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/bits.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/compiler_specific.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/component_export.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/debug/debugging_buildflags.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/thread_annotations.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_check.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_constants.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_forward.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_bucket.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_dcheck_helper.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_freelist_entry.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_page_constants.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_superpage_extent_entry.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/reservation_offset_table.h"
 #include "build/build_config.h"
+#include "partition_alloc/address_pool_manager.h"
+#include "partition_alloc/address_pool_manager_types.h"
+#include "partition_alloc/freeslot_bitmap_constants.h"
+#include "partition_alloc/partition_address_space.h"
+#include "partition_alloc/partition_alloc_base/bits.h"
+#include "partition_alloc/partition_alloc_base/compiler_specific.h"
+#include "partition_alloc/partition_alloc_base/component_export.h"
+#include "partition_alloc/partition_alloc_base/debug/debugging_buildflags.h"
+#include "partition_alloc/partition_alloc_base/thread_annotations.h"
+#include "partition_alloc/partition_alloc_buildflags.h"
+#include "partition_alloc/partition_alloc_check.h"
+#include "partition_alloc/partition_alloc_constants.h"
+#include "partition_alloc/partition_alloc_forward.h"
+#include "partition_alloc/partition_bucket.h"
+#include "partition_alloc/partition_dcheck_helper.h"
+#include "partition_alloc/partition_freelist_entry.h"
+#include "partition_alloc/partition_page_constants.h"
+#include "partition_alloc/partition_superpage_extent_entry.h"
+#include "partition_alloc/reservation_offset_table.h"
 
 #if BUILDFLAG(USE_STARSCAN)
-#include "base/allocator/partition_allocator/src/partition_alloc/starscan/state_bitmap.h"
+#include "partition_alloc/starscan/state_bitmap.h"
 #endif
 
 #if BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_ref_count.h"
+#include "partition_alloc/partition_ref_count.h"
 #endif
 
 #if BUILDFLAG(PA_DCHECK_IS_ON)
-#include "base/allocator/partition_allocator/src/partition_alloc/tagging.h"
+#include "partition_alloc/tagging.h"
 #endif
 
 namespace partition_alloc::internal {
@@ -80,7 +80,7 @@ using AllocationStateMap =
 #pragma pack(push, 1)
 struct SlotSpanMetadata {
  private:
-  EncodedNextFreelistEntry* freelist_head = nullptr;
+  PartitionFreelistEntry* freelist_head = nullptr;
 
  public:
   // TODO(lizeb): Make as many fields as possible private or const, to
@@ -123,15 +123,17 @@ struct SlotSpanMetadata {
   // Note the matching Alloc() functions are in PartitionPage.
   PA_NOINLINE PA_COMPONENT_EXPORT(PARTITION_ALLOC) void FreeSlowPath(
       size_t number_of_freed);
-  PA_ALWAYS_INLINE EncodedNextFreelistEntry* PopForAlloc(size_t size);
-  PA_ALWAYS_INLINE void Free(uintptr_t ptr, PartitionRoot* root);
+  PA_ALWAYS_INLINE PartitionFreelistEntry* PopForAlloc(size_t size);
+  PA_ALWAYS_INLINE void Free(uintptr_t ptr, PartitionRoot* root)
+      PA_EXCLUSIVE_LOCKS_REQUIRED(PartitionRootLock(root));
   // Appends the passed freelist to the slot-span's freelist. Please note that
   // the function doesn't increment the tags of the passed freelist entries,
   // since FreeInline() did it already.
-  PA_ALWAYS_INLINE void AppendFreeList(EncodedNextFreelistEntry* head,
-                                       EncodedNextFreelistEntry* tail,
+  PA_ALWAYS_INLINE void AppendFreeList(PartitionFreelistEntry* head,
+                                       PartitionFreelistEntry* tail,
                                        size_t number_of_freed,
-                                       PartitionRoot* root);
+                                       PartitionRoot* root)
+      PA_EXCLUSIVE_LOCKS_REQUIRED(PartitionRootLock(root));
 
   void Decommit(PartitionRoot* root);
   void DecommitIfPossible(PartitionRoot* root);
@@ -164,10 +166,10 @@ struct SlotSpanMetadata {
   PA_ALWAYS_INLINE void SetRawSize(size_t raw_size);
   PA_ALWAYS_INLINE size_t GetRawSize() const;
 
-  PA_ALWAYS_INLINE EncodedNextFreelistEntry* get_freelist_head() const {
+  PA_ALWAYS_INLINE PartitionFreelistEntry* get_freelist_head() const {
     return freelist_head;
   }
-  PA_ALWAYS_INLINE void SetFreelistHead(EncodedNextFreelistEntry* new_head);
+  PA_ALWAYS_INLINE void SetFreelistHead(PartitionFreelistEntry* new_head);
 
   // Returns size of the region used within a slot. The used region comprises
   // of actual allocated data, extras and possibly empty space in the middle.
@@ -329,8 +331,16 @@ static_assert(sizeof(PartitionPage) == kPageMetadataSize,
 
 // Certain functions rely on PartitionPage being either SlotSpanMetadata or
 // SubsequentPageMetadata, and therefore freely casting between each other.
+// TODO(https://crbug.com/1500662) Stop ignoring the -Winvalid-offsetof warning.
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Winvalid-offsetof"
+#endif
 static_assert(offsetof(PartitionPage, slot_span_metadata) == 0, "");
 static_assert(offsetof(PartitionPage, subsequent_page_metadata) == 0, "");
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif
 
 PA_ALWAYS_INLINE PartitionPage* PartitionSuperPageToMetadataArea(
     uintptr_t super_page) {
@@ -596,7 +606,7 @@ PA_ALWAYS_INLINE size_t SlotSpanMetadata::GetRawSize() const {
 }
 
 PA_ALWAYS_INLINE void SlotSpanMetadata::SetFreelistHead(
-    EncodedNextFreelistEntry* new_head) {
+    PartitionFreelistEntry* new_head) {
 #if BUILDFLAG(PA_DCHECK_IS_ON)
   // |this| is in the metadata region, hence isn't MTE-tagged. Untag |new_head|
   // as well.
@@ -611,12 +621,12 @@ PA_ALWAYS_INLINE void SlotSpanMetadata::SetFreelistHead(
   freelist_is_sorted_ = false;
 }
 
-PA_ALWAYS_INLINE EncodedNextFreelistEntry* SlotSpanMetadata::PopForAlloc(
+PA_ALWAYS_INLINE PartitionFreelistEntry* SlotSpanMetadata::PopForAlloc(
     size_t size) {
   // Not using bucket->slot_size directly as the compiler doesn't know that
   // |bucket->slot_size| is the same as |size|.
   PA_DCHECK(size == bucket->slot_size);
-  EncodedNextFreelistEntry* result = freelist_head;
+  PartitionFreelistEntry* result = freelist_head;
   // Not setting freelist_is_sorted_ to false since this doesn't destroy
   // ordering.
   freelist_head = freelist_head->GetNext(size);
@@ -630,7 +640,7 @@ PA_ALWAYS_INLINE void SlotSpanMetadata::Free(uintptr_t slot_start,
     // static analysis doesn't require the implementation.
     PA_EXCLUSIVE_LOCKS_REQUIRED(PartitionRootLock(root)) {
   DCheckRootLockIsAcquired(root);
-  auto* entry = static_cast<internal::EncodedNextFreelistEntry*>(
+  auto* entry = static_cast<internal::PartitionFreelistEntry*>(
       SlotStartAddr2Ptr(slot_start));
   // Catches an immediate double free.
   PA_CHECK(entry != freelist_head);
@@ -654,8 +664,8 @@ PA_ALWAYS_INLINE void SlotSpanMetadata::Free(uintptr_t slot_start,
 }
 
 PA_ALWAYS_INLINE void SlotSpanMetadata::AppendFreeList(
-    EncodedNextFreelistEntry* head,
-    EncodedNextFreelistEntry* tail,
+    PartitionFreelistEntry* head,
+    PartitionFreelistEntry* tail,
     size_t number_of_freed,
     PartitionRoot* root) PA_EXCLUSIVE_LOCKS_REQUIRED(PartitionRootLock(root)) {
 #if BUILDFLAG(PA_DCHECK_IS_ON)
@@ -778,8 +788,8 @@ void IterateSlotSpans(uintptr_t super_page,
       Page::FromAddr(SuperPagePayloadBegin(super_page, with_quarantine));
   auto* const last_page =
       Page::FromAddr(SuperPagePayloadEnd(super_page) - PartitionPageSize());
-  Page* page;
-  SlotSpan* slot_span;
+  Page* page = nullptr;
+  SlotSpan* slot_span = nullptr;
   for (page = first_page; page <= last_page;) {
     PA_DCHECK(!page->slot_span_metadata_offset);  // Ensure slot span beginning.
     if (!page->is_valid) {

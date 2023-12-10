@@ -20,7 +20,8 @@ namespace autofill::payments {
 
 // TODO(crbug/1372613): Extend tests in this file to all of the possible card
 // unmasking test cases. The cases that are not in this file are currently
-// tested in Payments Client tests, but they should be tested here as well.
+// tested in PaymentsNetworkInterface tests, but they should be tested here as
+// well.
 class UnmaskCardRequestTest : public testing::Test {
  public:
   UnmaskCardRequestTest() { SetUpUnmaskCardRequest(); }
@@ -55,7 +56,8 @@ class UnmaskCardRequestTest : public testing::Test {
 
   // Returns the response details that was created for the current test
   // instance.
-  const PaymentsClient::UnmaskResponseDetails& GetParsedResponse() const {
+  const PaymentsNetworkInterface::UnmaskResponseDetails& GetParsedResponse()
+      const {
     return request_->GetResponseDetailsForTesting();
   }
 
@@ -65,8 +67,9 @@ class UnmaskCardRequestTest : public testing::Test {
   // initial test set up.
   std::unique_ptr<UnmaskCardRequest> request_;
 
-  PaymentsClient::UnmaskRequestDetails GetDefaultUnmaskRequestDetails() {
-    PaymentsClient::UnmaskRequestDetails request_details;
+  PaymentsNetworkInterface::UnmaskRequestDetails
+  GetDefaultUnmaskRequestDetails() {
+    PaymentsNetworkInterface::UnmaskRequestDetails request_details;
     request_details.billing_customer_number = 111222333444;
     request_details.card = test::GetMaskedServerCard();
     request_details.card.set_server_id("test server id");
@@ -128,13 +131,56 @@ TEST_F(UnmaskCardRequestTest, DoesNotIncludeMerchantDomainWhenFlagDisabled) {
 TEST_F(UnmaskCardRequestTest, DoesNotIncludeMerchantDomainWhenMissingField) {
   feature_list_.InitAndEnableFeature(
       features::kAutofillEnableMerchantDomainInUnmaskCardRequest);
-  PaymentsClient::UnmaskRequestDetails request_details =
+  PaymentsNetworkInterface::UnmaskRequestDetails request_details =
       GetDefaultUnmaskRequestDetails();
   request_details.merchant_domain_for_footprints = absl::nullopt;
   request_ = std::make_unique<UnmaskCardRequest>(
       request_details, /*full_sync_enabled=*/true,
       /*callback=*/base::DoNothing());
   EXPECT_FALSE(IsIncludedInRequestContent("merchant_domain"));
+}
+
+// Test to ensure response is correctly parsed when the FIDO challenge is
+// returned with context token.
+TEST_F(UnmaskCardRequestTest, FidoChallengeReturned_ParseResponse) {
+  absl::optional<base::Value> response = base::JSONReader::Read(
+      "{\"fido_request_options\":{\"challenge\":\"fake_fido_challenge\"},"
+      "\"context_token\":\"fake_context_token\"}");
+  ASSERT_TRUE(response.has_value());
+  GetRequest()->ParseResponse(response->GetDict());
+
+  const PaymentsNetworkInterface::UnmaskResponseDetails& response_details =
+      GetParsedResponse();
+  EXPECT_EQ("fake_context_token", response_details.context_token);
+  // Verify the FIDO request challenge is correctly parsed.
+  EXPECT_EQ("fake_fido_challenge",
+            *response_details.fido_request_options->FindString("challenge"));
+
+  // Verify that the response is considered complete.
+  EXPECT_TRUE(GetRequest()->IsResponseComplete());
+}
+
+// Test to ensure the response is complete when context token is returned but
+// PAN is not.
+TEST_F(UnmaskCardRequestTest, ContextTokenReturned) {
+  absl::optional<base::Value> response =
+      base::JSONReader::Read("{\"context_token\":\"fake_context_token\"}");
+  ASSERT_TRUE(response.has_value());
+  GetRequest()->ParseResponse(response->GetDict());
+
+  // Verify that the response is considered complete.
+  EXPECT_TRUE(GetRequest()->IsResponseComplete());
+}
+
+// Test that the response is not complete when both context token and real PAN
+// are not returned.
+TEST_F(UnmaskCardRequestTest, ContextTokenAndPanNotReturned) {
+  absl::optional<base::Value> response = base::JSONReader::Read("{}");
+  ASSERT_TRUE(response.has_value());
+  GetRequest()->ParseResponse(response->GetDict());
+
+  // Verify that the response is considered incomplete.
+  EXPECT_FALSE(GetRequest()->IsResponseComplete());
 }
 
 // Params of the VirtualCardUnmaskCardRequestTest:
@@ -171,7 +217,7 @@ class VirtualCardUnmaskCardRequestTest
   // Sets up `request_` specifically for the Virtual Card CVC Unmask Card
   // Request test case.
   void SetUpVirtualCardCvcUnmaskCardRequestTest() {
-    PaymentsClient::UnmaskRequestDetails request_details;
+    PaymentsNetworkInterface::UnmaskRequestDetails request_details;
     request_details.billing_customer_number = 111222333444;
     request_details.card = test::GetVirtualCard();
     request_details.card.set_server_id("test server id");
@@ -256,7 +302,7 @@ TEST_P(VirtualCardUnmaskCardRequestTest,
   ASSERT_TRUE(response.has_value());
   GetRequest()->ParseResponse(response->GetDict());
 
-  const PaymentsClient::UnmaskResponseDetails& response_details =
+  const PaymentsNetworkInterface::UnmaskResponseDetails& response_details =
       GetParsedResponse();
   EXPECT_EQ("fake_context_token", response_details.context_token);
   // Verify the FIDO request challenge is correctly parsed.

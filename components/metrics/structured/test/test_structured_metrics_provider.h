@@ -28,7 +28,7 @@ class TestStructuredMetricsProvider : public Recorder::RecorderImpl {
   TestStructuredMetricsProvider& operator=(
       const TestStructuredMetricsProvider&) = delete;
 
-  const EventsProto& ReadEvents();
+  const EventsProto& ReadEvents() const;
 
   // Returns pointer to the first event with the hash |project_name_hash| and
   // |event_name_hash|. If no event is found, returns absl::nullopt.
@@ -60,8 +60,6 @@ class TestStructuredMetricsProvider : public Recorder::RecorderImpl {
   void OnProfileAdded(const base::FilePath& profile_path) override;
   void OnEventRecord(const Event& event) override;
   void OnReportingStateChanged(bool enabled) override;
-
-  std::unique_ptr<MetricsProvider> system_profile_provider_;
 
   std::unique_ptr<StructuredMetricsRecorder> structured_metrics_recorder_;
 

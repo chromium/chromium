@@ -15,11 +15,11 @@
 
 namespace blink {
 
+class ConstraintSpace;
 class InlineBreakToken;
 class InlineNode;
 class LineInfoList;
 class LineWidths;
-class NGConstraintSpace;
 struct LeadingFloats;
 
 //
@@ -44,7 +44,7 @@ class CORE_EXPORT ScoreLineBreaker {
 
  public:
   ScoreLineBreaker(const InlineNode& node,
-                   const NGConstraintSpace& space,
+                   const ConstraintSpace& space,
                    const LineWidths& line_widths,
                    const InlineBreakToken* break_token,
                    ExclusionSpace* exclusion_space)
@@ -60,7 +60,7 @@ class CORE_EXPORT ScoreLineBreaker {
     return is_balanced_ ? kMaxLinesForBalance : kMaxLinesForOptimal;
   }
 
-  const NGConstraintSpace& ConstraintSpace() const { return space_; }
+  const ConstraintSpace& GetConstraintSpace() const { return space_; }
   const InlineBreakToken* BreakToken() const { return break_token_; }
 
   // The primary entry point of doing all the work described in the class
@@ -109,7 +109,7 @@ class CORE_EXPORT ScoreLineBreaker {
   static constexpr float kLastLinePenaltyMultiplier = 4.0f;
 
   const InlineNode node_;
-  const NGConstraintSpace& space_;
+  const ConstraintSpace& space_;
   const LineWidths& line_widths_;
   ExclusionSpace* exclusion_space_;
   const InlineBreakToken* break_token_;

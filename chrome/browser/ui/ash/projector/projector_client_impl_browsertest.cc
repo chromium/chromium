@@ -64,13 +64,13 @@ apps::AppServiceProxy* GetAppServiceProxy(Profile* profile) {
 }
 
 // Returns the account id for logging in.
-absl::optional<AccountId> GetPrimaryAccountId(bool is_managed) {
+std::optional<AccountId> GetPrimaryAccountId(bool is_managed) {
   if (is_managed) {
     return AccountId::FromUserEmailGaiaId(
         FakeGaiaMixin::kEnterpriseUser1, FakeGaiaMixin::kEnterpriseUser1GaiaId);
   }
   // Use the default FakeGaiaMixin::kFakeUserEmail consumer test account id.
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 }  // namespace
@@ -364,8 +364,8 @@ class ProjectorClientManagedTest
     return readiness;
   }
 
-  absl::optional<apps::IconKey> GetAppIconKey(const webapps::AppId& app_id) {
-    absl::optional<apps::IconKey> icon_key;
+  std::optional<apps::IconKey> GetAppIconKey(const webapps::AppId& app_id) {
+    std::optional<apps::IconKey> icon_key;
     bool app_found =
         GetAppServiceProxy(browser()->profile())
             ->AppRegistryCache()

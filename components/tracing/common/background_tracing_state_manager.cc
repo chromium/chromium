@@ -133,7 +133,7 @@ void BackgroundTracingStateManager::SetState(BackgroundTracingState new_state) {
   SaveState();
 }
 
-void BackgroundTracingStateManager::Reset() {
+void BackgroundTracingStateManager::ResetForTesting() {
   initialized_ = false;
   local_state_ = nullptr;
   state_ = BackgroundTracingState::NOT_ACTIVATED;

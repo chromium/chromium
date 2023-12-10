@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 import("//ash/webui/media_app_ui/media_app_ui.gni")
-import("//build/config/chromecast_build.gni")
+import("//build/config/cast.gni")
 
 # Most build code won't need to include this file. Instead you can
 # unconditionally depend on "//pdf" which will be a no-op when PDF support is

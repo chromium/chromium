@@ -18,28 +18,24 @@ import org.chromium.ui.text.SpanApplier;
 
 import java.text.NumberFormat;
 
-/**
- * A container class for the Disclaimer and Select All functionality (and both associated labels).
- */
+/** A container class for the Disclaimer and Select All functionality (and both associated labels). */
 public class TopView extends RelativeLayout
         implements CompoundButton.OnCheckedChangeListener, View.OnClickListener {
-    /**
-     * An interface for communicating when the Select All checkbox is toggled.
-     */
+    /** An interface for communicating when the Select All checkbox is toggled. */
     public interface SelectAllToggleCallback {
         /**
          * Called when the Select All checkbox is toggled.
+         *
          * @param allSelected Whether the Select All checkbox is checked.
          */
         void onSelectAllToggled(boolean allSelected);
     }
 
-    /**
-     * An interface for communicating when one of the chips has been toggled.
-     */
+    /** An interface for communicating when one of the chips has been toggled. */
     public interface ChipToggledCallback {
         /**
          * Called when a Chip is toggled.
+         *
          * @param chip The chip type that was toggled.
          */
         void onChipToggled(@PickerAdapter.FilterType int chip);
@@ -91,7 +87,7 @@ public class TopView extends RelativeLayout
 
         mCheckboxContainer = findViewById(R.id.content);
         if (ContactsPickerFeatureMap.isEnabled(
-                    ContactsPickerFeatureList.CONTACTS_PICKER_SELECT_ALL)) {
+                ContactsPickerFeatureList.CONTACTS_PICKER_SELECT_ALL)) {
             mCheckboxContainer.setVisibility(View.VISIBLE);
         }
         mSelectAllBox = findViewById(R.id.checkbox);
@@ -154,6 +150,7 @@ public class TopView extends RelativeLayout
 
     /**
      * Sends a notification that a chip has been toggled and updates the selection state for it.
+     *
      * @param chip The id of the chip that was toggled.
      */
     public void notifyChipToggled(@PickerAdapter.FilterType int chip) {
@@ -194,33 +191,35 @@ public class TopView extends RelativeLayout
 
     /**
      * Set the string explaining which site the dialog will be sharing the data with.
+     *
      * @param origin The origin string to display.
      */
     public void setSiteString(String origin) {
         TextView explanation = findViewById(R.id.explanation);
         StyleSpan boldSpan = new StyleSpan(android.graphics.Typeface.BOLD);
-        explanation.setText(SpanApplier.applySpans(
-                mContext.getString(R.string.disclaimer_sharing_contact_details, origin),
-                new SpanApplier.SpanInfo("<b>", "</b>", boldSpan)));
+        explanation.setText(
+                SpanApplier.applySpans(
+                        mContext.getString(R.string.disclaimer_sharing_contact_details, origin),
+                        new SpanApplier.SpanInfo("<b>", "</b>", boldSpan)));
     }
 
     /**
      * Register a callback to use to notify that Select All was toggled.
+     *
      * @param callback The callback to use.
      */
     public void registerSelectAllCallback(SelectAllToggleCallback callback) {
         mSelectAllCallback = callback;
     }
 
-    /**
-     * Register a callback to use to notify when the filter chips are toggled.
-     */
+    /** Register a callback to use to notify when the filter chips are toggled. */
     public void registerChipToggledCallback(ChipToggledCallback callback) {
         mChipToggledCallback = callback;
     }
 
     /**
      * Updates the visibility of the Select All checkbox.
+     *
      * @param visible Whether the checkbox should be visible.
      */
     public void updateCheckboxVisibility(boolean visible) {
@@ -233,13 +232,18 @@ public class TopView extends RelativeLayout
 
     /**
      * Updates which chips should be displayed as part of the top view.
+     *
      * @param shouldDisplayNames Whether the names chip should be displayed.
      * @param shouldDisplayAddresses Whether the addresses chip should be displayed.
      * @param shouldDisplayEmails Whether the emails chip should be displayed.
      * @param shouldDisplayTel Whether the telephone chip should be displayed.
      */
-    public void updateChipVisibility(boolean shouldDisplayNames, boolean shouldDisplayAddresses,
-            boolean shouldDisplayEmails, boolean shouldDisplayTel, boolean shouldDisplayIcons) {
+    public void updateChipVisibility(
+            boolean shouldDisplayNames,
+            boolean shouldDisplayAddresses,
+            boolean shouldDisplayEmails,
+            boolean shouldDisplayTel,
+            boolean shouldDisplayIcons) {
         mNamesFilterChip.setVisibility(shouldDisplayNames ? View.VISIBLE : View.GONE);
         mAddressFilterChip.setVisibility(shouldDisplayAddresses ? View.VISIBLE : View.GONE);
         mEmailFilterChip.setVisibility(shouldDisplayEmails ? View.VISIBLE : View.GONE);
@@ -249,25 +253,22 @@ public class TopView extends RelativeLayout
 
     /**
      * Updates the total number of contacts found in the dialog.
+     *
      * @param count The number of contacts found.
      */
     public void updateContactCount(int count) {
         mContactCount.setText(NumberFormat.getInstance().format(count));
     }
 
-    /**
-     * Toggles the Select All checkbox.
-     */
+    /** Toggles the Select All checkbox. */
     public void toggle() {
         if (ContactsPickerFeatureMap.isEnabled(
-                    ContactsPickerFeatureList.CONTACTS_PICKER_SELECT_ALL)) {
+                ContactsPickerFeatureList.CONTACTS_PICKER_SELECT_ALL)) {
             mSelectAllBox.setChecked(!mSelectAllBox.isChecked());
         }
     }
 
-    /**
-     * Returns how many filter chips are checked.
-     */
+    /** Returns how many filter chips are checked. */
     public int filterChipsChecked() {
         int checked = 0;
         if (mNamesFilterChip.getVisibility() == View.VISIBLE && mNamesFilterChip.isSelected()) {
@@ -291,6 +292,7 @@ public class TopView extends RelativeLayout
 
     /**
      * Updates the state of the checkbox to reflect whether everything is selected.
+     *
      * @param allSelected
      */
     public void updateSelectAllCheckbox(boolean allSelected) {

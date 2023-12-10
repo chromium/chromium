@@ -17,7 +17,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.doReturn;
 
 import static org.chromium.content_public.browser.test.util.TestThreadUtils.runOnUiThreadBlocking;
 
@@ -33,7 +32,6 @@ import androidx.test.filters.MediumTest;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.test.util.Batch;
@@ -41,7 +39,6 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.omnibox.R;
-import org.chromium.chrome.browser.omnibox.SearchEngineLogoUtils;
 import org.chromium.chrome.browser.omnibox.status.StatusProperties.StatusIconResource;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.widget.ChromeTransitionDrawable;
@@ -60,8 +57,6 @@ import java.util.concurrent.ExecutionException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 public class StatusViewTest extends BlankUiTestActivityTestCase {
-    @Mock private SearchEngineLogoUtils mSearchEngineLogoUtils;
-
     private StatusView mStatusView;
     private PropertyModel mStatusModel;
     private PropertyModelChangeProcessor mStatusMCP;
@@ -263,7 +258,6 @@ public class StatusViewTest extends BlankUiTestActivityTestCase {
                 new StatusIconResource(R.drawable.ic_logo_googleg_24dp, 0);
         runOnUiThreadBlocking(
                 () -> {
-                    doReturn(true).when(mSearchEngineLogoUtils).shouldShowSearchEngineLogo(false);
                     mStatusModel.set(StatusProperties.SHOW_STATUS_ICON, true);
                     mStatusModel.set(StatusProperties.STATUS_ICON_RESOURCE, statusIconResource);
                 });

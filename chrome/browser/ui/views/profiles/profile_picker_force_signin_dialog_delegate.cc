@@ -126,6 +126,11 @@ void ProfilePickerForceSigninDialogDelegate::OnDialogDestroyed() {
   }
 }
 
+content::WebContents*
+ProfilePickerForceSigninDialogDelegate::GetWebContentsForTesting() const {
+  return web_view_->web_contents();
+}
+
 BEGIN_METADATA(ProfilePickerForceSigninDialogDelegate,
                views::DialogDelegateView)
 END_METADATA

@@ -41,7 +41,6 @@ found in the LICENSE file.
     <dimen name="selection_tab_grid_toggle_button_inset">14dp</dimen>
     <dimen name="selection_tab_list_toggle_button_lateral_inset">18dp</dimen>
     <dimen name="selection_tab_list_toggle_button_vertical_inset">22dp</dimen>
-    <dimen name="tab_carousel_card_width">168dp</dimen>
     <dimen name="tasks_view_items_vertical_spacing">8dp</dimen>
     <dimen name="tab_thumbnail_placeholder_vertical_offset">2dp</dimen>
 
@@ -80,10 +79,10 @@ found in the LICENSE file.
     <dimen name="tasks_surface_location_bar_url_button_size"> 20dp</dimen>
     <dimen name="tasks_surface_location_bar_url_button_start_margin"> 16dp</dimen>
 
-    <!-- Dimens for TabSelectionEditor -->
-    <dimen name="tab_selection_editor_action_view_padding">14dp</dimen>
-    <dimen name="tab_selection_editor_longpress_entry_threshold">20dp</dimen>
-    <dimen name="tab_selection_editor_share_sheet_preview_thumbnail_padding">10dp</dimen>
+    <!-- Dimens for TabListEditor -->
+    <dimen name="tab_list_editor_action_view_padding">14dp</dimen>
+    <dimen name="tab_list_editor_longpress_entry_threshold">20dp</dimen>
+    <dimen name="tab_list_editor_share_sheet_preview_thumbnail_padding">10dp</dimen>
 
     <!-- Large form factor device strip tab hover card dimensions -->
     <dimen name="tab_hover_card_width">264dp</dimen>
@@ -94,7 +93,7 @@ found in the LICENSE file.
     <dimen name="tab_hover_card_bg_color_elev">@dimen/default_elevation_0</dimen>
     <dimen name="tab_hover_card_corner_radius">8dp</dimen>
     <dimen name="tab_hover_card_elevation">6dp</dimen>
-    <dimen name="tsr_no_feet_tab_hover_card_x_offset">16dp</dimen>
+    <dimen name="inactive_tab_hover_card_x_offset">16dp</dimen>
 
     <!-- Dimens for tab cleanup promo message icon -->
     <dimen name="tab_cleanup_promo_card_favicon_inset">8dp</dimen>

@@ -150,8 +150,9 @@ public class HostBrowserClassLoaderTest {
 
     /**
      * Verifies {@link DexLoader#load()} call.
-     * @param expectedDexName The name of the dex in the remote host browser's assets that
-     *                        {@link DexLoader#load()} should have been called with.
+     *
+     * @param expectedDexName The name of the dex in the remote host browser's assets that {@link
+     *     DexLoader#load()} should have been called with.
      */
     public void verifyDexLoaderLoadCall(String expectedDexName) {
         Mockito.verify(mMockDexLoader)

@@ -32,7 +32,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using ::testing::Eq;
+using testing::Eq;
+using testing::StrEq;
 
 namespace reporting {
 namespace {
@@ -153,12 +154,14 @@ class UsbEventsBrowserTest : public ::policy::DevicePolicyCrosBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(UsbEventsBrowserTest,
                        UsbEventDrivenTelemetryCollectedOnUsbEvent) {
-  EnableUsbPolicy();
-  LoginAffiliatedUser();
-
-  chromeos::MissiveClientTestObserver missive_observer_(
+  chromeos::MissiveClientTestObserver missive_observer(
       Destination::PERIPHERAL_EVENTS);
 
+  EnableUsbPolicy();
+
+  LoginAffiliatedUser();
+
+  // Setup fake telemetry to be collected
   auto usb_telemetry = CreateUsbTelemetry();
   cros_healthd::FakeCrosHealthd::Get()->SetProbeTelemetryInfoResponseForTesting(
       usb_telemetry);
@@ -166,39 +169,47 @@ IN_PROC_BROWSER_TEST_F(UsbEventsBrowserTest,
   // Any USB event should trigger event driven telemetry collection
   EmitUsbAddEventForTesting();
 
-  Record record = std::get<1>(missive_observer_.GetNextEnqueuedRecord());
+  ::content::RunAllTasksUntilIdle();
+
+  Record record = std::get<1>(missive_observer.GetNextEnqueuedRecord());
   ASSERT_TRUE(record.has_source_info());
   EXPECT_THAT(record.source_info().source(), Eq(SourceInfo::ASH));
   MetricData record_data;
 
   // First record should be the USB added event
   ASSERT_TRUE(record_data.ParseFromString(record.data()));
-  EXPECT_THAT(record_data.event_data().type(),
-              ::testing::Eq(MetricEventType::USB_ADDED));
+  EXPECT_THAT(record_data.event_data().type(), Eq(MetricEventType::USB_ADDED));
 
+  // Telemetry should collected be collected with a delay after a USB event
+  // occurs.
   test::MockClock::Get().Advance(metrics::kPeripheralCollectionDelay);
+
   // Second record should be the USB telemetry
-  record = std::get<1>(missive_observer_.GetNextEnqueuedRecord());
+  record = std::get<1>(missive_observer.GetNextEnqueuedRecord());
   ASSERT_TRUE(record_data.ParseFromString(record.data()));
   EXPECT_TRUE(record_data.has_telemetry_data());
   EXPECT_TRUE(record_data.telemetry_data().has_peripherals_telemetry());
   // Since telemetry is not an event, it shouldn't have event data or event type
   EXPECT_FALSE(record_data.has_event_data());
+
+  EXPECT_FALSE(missive_observer.HasNewEnqueuedRecord());
 }
 
 IN_PROC_BROWSER_TEST_F(
     UsbEventsBrowserTest,
     UsbAddedEventCollectedWhenPolicyEnabledWithAffiliatedUser) {
+  chromeos::MissiveClientTestObserver missive_observer(
+      Destination::PERIPHERAL_EVENTS);
+
   EnableUsbPolicy();
 
   LoginAffiliatedUser();
 
-  chromeos::MissiveClientTestObserver missive_observer_(
-      Destination::PERIPHERAL_EVENTS);
-
   EmitUsbAddEventForTesting();
-  std::tuple<Priority, Record> entry =
-      missive_observer_.GetNextEnqueuedRecord();
+
+  ::content::RunAllTasksUntilIdle();
+
+  std::tuple<Priority, Record> entry = missive_observer.GetNextEnqueuedRecord();
   Record record = std::get<1>(entry);
   ASSERT_TRUE(record.has_source_info());
   EXPECT_THAT(record.source_info().source(), Eq(SourceInfo::ASH));
@@ -208,22 +219,23 @@ IN_PROC_BROWSER_TEST_F(
 
   EXPECT_TRUE(record_data.has_telemetry_data());
   EXPECT_TRUE(record_data.telemetry_data().has_peripherals_telemetry());
-  EXPECT_THAT(record_data.event_data().type(),
-              ::testing::Eq(MetricEventType::USB_ADDED));
-  EXPECT_THAT(record.destination(),
-              ::testing::Eq(Destination::PERIPHERAL_EVENTS));
+  EXPECT_THAT(record_data.event_data().type(), Eq(MetricEventType::USB_ADDED));
+  EXPECT_THAT(record.destination(), Eq(Destination::PERIPHERAL_EVENTS));
   ASSERT_TRUE(record.has_dm_token());
-  EXPECT_THAT(record.dm_token(), ::testing::StrEq(kDMToken));
+  EXPECT_THAT(record.dm_token(), StrEq(kDMToken));
+
+  EXPECT_FALSE(missive_observer.HasNewEnqueuedRecord());
 }
 
 IN_PROC_BROWSER_TEST_F(
     UsbEventsBrowserTest,
     UsbTelemetryCollectedWhenPolicyEnabledWithAffiliatedUser) {
-  EnableUsbPolicy();
-
-  chromeos::MissiveClientTestObserver missive_observer_(
+  chromeos::MissiveClientTestObserver missive_observer(
       Destination::PERIPHERAL_EVENTS);
 
+  EnableUsbPolicy();
+
+  // Setup fake telemetry.
   auto usb_telemetry = CreateUsbTelemetry();
   cros_healthd::FakeCrosHealthd::Get()->SetProbeTelemetryInfoResponseForTesting(
       usb_telemetry);
@@ -231,8 +243,9 @@ IN_PROC_BROWSER_TEST_F(
   // This triggers USB telemetry collection, a.k.a USB status updates
   LoginAffiliatedUser();
 
-  std::tuple<Priority, Record> entry =
-      missive_observer_.GetNextEnqueuedRecord();
+  ::content::RunAllTasksUntilIdle();
+
+  std::tuple<Priority, Record> entry = missive_observer.GetNextEnqueuedRecord();
   Record record = std::get<1>(entry);
   ASSERT_TRUE(record.has_source_info());
   EXPECT_THAT(record.source_info().source(), Eq(SourceInfo::ASH));
@@ -246,57 +259,73 @@ IN_PROC_BROWSER_TEST_F(
   // technically telemetry, not events, so their event type is
   // EVENT_TYPE_UNSPECIFIED
   EXPECT_THAT(record_data.event_data().type(),
-              ::testing::Eq(MetricEventType::EVENT_TYPE_UNSPECIFIED));
-  EXPECT_THAT(record.destination(),
-              ::testing::Eq(Destination::PERIPHERAL_EVENTS));
+              Eq(MetricEventType::EVENT_TYPE_UNSPECIFIED));
+  EXPECT_THAT(record.destination(), Eq(Destination::PERIPHERAL_EVENTS));
   ASSERT_TRUE(record.has_dm_token());
-  EXPECT_THAT(record.dm_token(), ::testing::StrEq(kDMToken));
+  EXPECT_THAT(record.dm_token(), StrEq(kDMToken));
+
+  EXPECT_FALSE(missive_observer.HasNewEnqueuedRecord());
 }
 
 IN_PROC_BROWSER_TEST_F(
     UsbEventsBrowserTest,
     NoUsbEventsOrTelemetryWhenPolicyEnabledWithUnaffiliatedUser) {
-  EnableUsbPolicy();
-
-  chromeos::MissiveClientTestObserver missive_observer_(
+  chromeos::MissiveClientTestObserver missive_observer(
       Destination::PERIPHERAL_EVENTS);
+
+  EnableUsbPolicy();
 
   LoginUnaffiliatedUser();
 
   EmitUsbAddEventForTesting();
-  EXPECT_TRUE(NoUsbEventsEnqueued(
-      chromeos::MissiveClient::Get()->GetTestInterface()->GetEnqueuedRecords(
-          Priority::SECURITY)));
+
+  ::content::RunAllTasksUntilIdle();
+
+  EXPECT_FALSE(missive_observer.HasNewEnqueuedRecord());
 }
 
 IN_PROC_BROWSER_TEST_F(
     UsbEventsBrowserTest,
     NoUsbEventsOrTelemetryWhenPolicyDisabledWithAffiliatedUser) {
+  chromeos::MissiveClientTestObserver missive_observer(
+      Destination::PERIPHERAL_EVENTS);
+
+  // Setup fake telemetry.
+  auto usb_telemetry = CreateUsbTelemetry();
+  cros_healthd::FakeCrosHealthd::Get()->SetProbeTelemetryInfoResponseForTesting(
+      usb_telemetry);
+
   DisableUsbPolicy();
 
   LoginAffiliatedUser();
 
   EmitUsbAddEventForTesting();
 
-  // Shouldn't be any USB event related records in the MissiveClient queue
-  EXPECT_TRUE(NoUsbEventsEnqueued(
-      chromeos::MissiveClient::Get()->GetTestInterface()->GetEnqueuedRecords(
-          Priority::SECURITY)));
+  ::content::RunAllTasksUntilIdle();
+
+  EXPECT_FALSE(missive_observer.HasNewEnqueuedRecord());
 }
 
 IN_PROC_BROWSER_TEST_F(
     UsbEventsBrowserTest,
     NoUsbEventsOrTelemetryWhenPolicyDisabledWithUnaffiliatedUser) {
+  chromeos::MissiveClientTestObserver missive_observer(
+      Destination::PERIPHERAL_EVENTS);
+
+  // Setup fake telemetry.
+  auto usb_telemetry = CreateUsbTelemetry();
+  cros_healthd::FakeCrosHealthd::Get()->SetProbeTelemetryInfoResponseForTesting(
+      usb_telemetry);
+
   DisableUsbPolicy();
 
   LoginUnaffiliatedUser();
 
   EmitUsbAddEventForTesting();
 
-  // Shouldn't be any USB event related records in the MissiveClient queue
-  EXPECT_TRUE(NoUsbEventsEnqueued(
-      chromeos::MissiveClient::Get()->GetTestInterface()->GetEnqueuedRecords(
-          Priority::SECURITY)));
+  ::content::RunAllTasksUntilIdle();
+
+  EXPECT_FALSE(missive_observer.HasNewEnqueuedRecord());
 }
 
 }  // namespace

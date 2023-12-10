@@ -5,8 +5,8 @@
 #ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_ALLOC_BASE_STRINGS_CSTRING_BUILDER_H_
 #define BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_ALLOC_BASE_STRINGS_CSTRING_BUILDER_H_
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/component_export.h"
 #include "build/build_config.h"
+#include "partition_alloc/partition_alloc_base/component_export.h"
 
 #include <cstddef>
 

@@ -18,24 +18,24 @@
 //     result of having evaluated a PAC script, such as:
 //         return "PROXY foobar1:8080; HTTPS foobar2:8080; DIRECT";
 //
-//   * Re-ordering the proxy list such that proxies that have recently failed
-//     are given lower priority (ProxyInfo::DeprioritizeBadProxyChains)
+//   * Re-ordering the proxy list such that proxy chains that have recently
+//     failed are given lower priority (ProxyInfo::DeprioritizeBadProxyChains)
 //
-//   * Maintaining the expiring cache of proxies that have recently failed.
+//   * Maintaining the expiring cache of proxy chains that have recently failed.
 //
 //
 // The HTTP layer is responsible for:
 //   * Attempting to issue the URLRequest through each of the
-//     proxies, in the order specified by the list.
+//     proxy chains, in the order specified by the list.
 //
 //   * Deciding whether this attempt was successful, whether it was a failure
-//     but should keep trying other proxies, or whether it was a failure and
-//     should stop trying other proxies.
+//     but should keep trying other proxy chains, or whether it was a failure
+//     and should stop trying other proxy chains.
 //
-//   * Upon successful completion of an attempt though a proxy, calling
+//   * Upon successful completion of an attempt though a proxy chain, calling
 //     ProxyResolutionService::ReportSuccess to inform it of all the failed
-//     attempts that were made. (A proxy is only considered to be "bad"
-//     if the request was able to be completed through some other proxy).
+//     attempts that were made. (A proxy chain is only considered to be "bad"
+//     if the request was able to be completed through some other proxy chain).
 //
 //
 // Exactly how to interpret the proxy lists returned by PAC is not specified by
@@ -46,23 +46,24 @@
 
 namespace net {
 
-class ProxyServer;
+class ProxyChain;
 
-// Returns true if a failed request issued through a proxy server should be
-// re-tried using the next proxy in the fallback list.
+// Returns true if a failed request issued through a proxy chain should be
+// re-tried using the next proxy chain in the fallback list.
 //
 // The proxy fallback logic is a compromise between compatibility and
 // increasing odds of success, and may choose not to retry a request on the
 // next proxy option, even though that could work.
 //
-//  - |proxy| is the proxy server that failed the request.
-//  - |error| is the error for the request when it was sent through |proxy|.
-//  - |final_error| is an out parameter that is set with the "final" error to
+//  - `proxy_chain` is the proxy chain that failed the request.
+//  - `error` is the error for the request when it was sent through
+//    `proxy_chain`.
+//  - `final_error` is an out parameter that is set with the "final" error to
 //    report to the caller. The error is only re-written in cases where
 //    CanFalloverToNextProxy() returns false.
-//  - |is_for_ip_protection| is true if this request is to an IP Protection
+//  - `is_for_ip_protection` is true if this request is to an IP Protection
 //    proxy.
-NET_EXPORT bool CanFalloverToNextProxy(const ProxyServer& proxy,
+NET_EXPORT bool CanFalloverToNextProxy(const ProxyChain& proxy_chain,
                                        int error,
                                        int* final_error,
                                        bool is_for_ip_protection = false);

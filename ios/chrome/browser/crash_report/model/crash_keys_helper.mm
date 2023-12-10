@@ -37,10 +37,12 @@ char const kIsShowingPDF[] = "pdf";
 char const kVideoPlaying[] = "avplay";
 char const kIncognitoTabCount[] = "OTRTabs";
 char const kRegularTabCount[] = "regTabs";
+char const kInactiveTabCount[] = "inactiveTabs";
 char const kConnectedScenes[] = "scenes";
 char const kForegroundScenes[] = "fgScenes";
 char const kDestroyingAndRebuildingIncognitoBrowserState[] =
     "destroyingAndRebuildingOTR";
+char const kVoiceOverRunning[] = "voiceOver";
 
 }  // namespace
 
@@ -187,6 +189,13 @@ void SetRegularTabCount(int tabCount) {
   [[PreviousSessionInfo sharedInstance] updateCurrentSessionTabCount:tabCount];
 }
 
+void SetInactiveTabCount(int tabCount) {
+  [[CrashReportUserApplicationState sharedInstance] setValue:kInactiveTabCount
+                                                   withValue:tabCount];
+  [[PreviousSessionInfo sharedInstance]
+      updateCurrentSessionInactiveTabCount:tabCount];
+}
+
 void SetIncognitoTabCount(int tabCount) {
   [[CrashReportUserApplicationState sharedInstance] setValue:kIncognitoTabCount
                                                    withValue:tabCount];
@@ -230,6 +239,16 @@ void MediaStreamPlaybackDidStart() {
 void MediaStreamPlaybackDidStop() {
   [[CrashReportUserApplicationState sharedInstance]
       decrementValue:kVideoPlaying];
+}
+
+void SetVoiceOverRunning(bool running) {
+  if (running) {
+    [[CrashReportUserApplicationState sharedInstance] setValue:kVoiceOverRunning
+                                                     withValue:1];
+  } else {
+    [[CrashReportUserApplicationState sharedInstance]
+        removeValue:kVoiceOverRunning];
+  }
 }
 
 }  // namespace crash_keys

@@ -100,6 +100,21 @@ class ChromeFileSystemAccessPermissionContext
 
   enum class GrantType { kRead, kWrite };
 
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  // TODO(crbug.com/1011533): Currently, the `kIgnored` outcome is not user-
+  // detectable, and no metrics are expected to be recorded for this case.
+  // Consider removing this value from the `RestorePermissionPromptOutcome`
+  // enum when updating the corresponding logic in the permission context code.
+  enum class RestorePermissionPromptOutcome {
+    kAllowed = 0,
+    kAllowedOnce = 1,
+    kIgnored = 2,
+    kRejected = 3,
+    kDismissed = 4,
+    kMaxValue = kDismissed
+  };
+
   explicit ChromeFileSystemAccessPermissionContext(
       content::BrowserContext* context,
       const base::Clock* clock = base::DefaultClock::GetInstance());
@@ -185,6 +200,8 @@ class ChromeFileSystemAccessPermissionContext
 
   // This method may only be called when the Persistent Permissions feature
   // flag is enabled.
+  // TODO(crbug.com/1467574): Remove `kFileSystemAccessPersistentPermissions`
+  // flag after FSA Persistent Permissions feature launch.
   PersistedGrantStatus GetPersistedGrantStatusForTesting(
       const url::Origin& origin) {
     CHECK(base::FeatureList::IsEnabled(

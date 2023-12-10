@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -89,7 +90,6 @@
 #include "net/test/embedded_test_server/request_handler_util.h"
 #include "testing/gtest/include/gtest/gtest-param-test.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/common/switches.h"
@@ -553,7 +553,7 @@ IN_PROC_BROWSER_TEST_P(HostedAppTestWithPrerendering, EffectiveUrlOnTrigger) {
   // context has the effective URL.
   std::unique_ptr<content::PrerenderHandle> prerender_handle =
       GetAppWebContents()->StartPrerendering(
-          prerendering_url, content::PrerenderTriggerType::kEmbedder,
+          prerendering_url, content::PreloadingTriggerType::kEmbedder,
           prerender_utils::kDirectUrlInputMetricSuffix,
           ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
                                     ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
@@ -576,7 +576,7 @@ IN_PROC_BROWSER_TEST_P(HostedAppTestWithPrerendering,
   // fail as the app URL has the effective URL.
   std::unique_ptr<content::PrerenderHandle> prerender_handle =
       GetNonAppWebContents()->StartPrerendering(
-          app_url, content::PrerenderTriggerType::kEmbedder,
+          app_url, content::PreloadingTriggerType::kEmbedder,
           prerender_utils::kDirectUrlInputMetricSuffix,
           ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
                                     ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
@@ -601,7 +601,7 @@ IN_PROC_BROWSER_TEST_P(HostedAppTestWithPrerendering,
   // non-app's context. This should fail as the final URL has the effective URL.
   std::unique_ptr<content::PrerenderHandle> prerender_handle =
       GetNonAppWebContents()->StartPrerendering(
-          prerendering_url, content::PrerenderTriggerType::kEmbedder,
+          prerendering_url, content::PreloadingTriggerType::kEmbedder,
           prerender_utils::kDirectUrlInputMetricSuffix,
           ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
                                     ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
@@ -624,7 +624,7 @@ IN_PROC_BROWSER_TEST_P(HostedAppTestWithPrerendering,
   // Start prerendering for the app URL on the non-app's context.
   std::unique_ptr<content::PrerenderHandle> prerender_handle =
       GetNonAppWebContents()->StartPrerendering(
-          app_url, content::PrerenderTriggerType::kEmbedder,
+          app_url, content::PreloadingTriggerType::kEmbedder,
           prerender_utils::kDirectUrlInputMetricSuffix,
           ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
                                     ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
@@ -2262,7 +2262,7 @@ class HostedAppOriginIsolationTest : public HostedOrWebAppTest {
                 nested_origin_url.spec().c_str());
             content::URLLoaderInterceptor::WriteResponse(
                 headers, body, params->client.get(),
-                absl::optional<net::SSLInfo>());
+                std::optional<net::SSLInfo>());
             return true;
           } else if (params->url_request.url.host() ==
                      nested_origin_url.host()) {
@@ -2273,7 +2273,7 @@ class HostedAppOriginIsolationTest : public HostedOrWebAppTest {
                 nested_origin_url.spec().c_str());
             content::URLLoaderInterceptor::WriteResponse(
                 headers, body, params->client.get(),
-                absl::optional<net::SSLInfo>());
+                std::optional<net::SSLInfo>());
             return true;
           }
           // Not handled by us.

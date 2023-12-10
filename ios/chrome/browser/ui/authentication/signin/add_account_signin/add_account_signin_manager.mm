@@ -5,8 +5,8 @@
 #import "ios/chrome/browser/ui/authentication/signin/add_account_signin/add_account_signin_manager.h"
 
 #import "base/strings/sys_string_conversions.h"
-#import "ios/chrome/browser/signin/signin_util.h"
-#import "ios/chrome/browser/signin/system_identity_interaction_manager.h"
+#import "ios/chrome/browser/signin/model/signin_util.h"
+#import "ios/chrome/browser/signin/model/system_identity_interaction_manager.h"
 
 @interface AddAccountSigninManager ()
 

@@ -9,7 +9,7 @@
 #import "components/bookmarks/common/bookmark_features.h"
 #import "components/signin/public/base/consent_level.h"
 #import "components/sync/base/features.h"
-#import "ios/chrome/browser/signin/fake_system_identity.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
@@ -32,18 +32,11 @@ using chrome_test_util::OmniboxText;
 using chrome_test_util::PrimarySignInButton;
 using chrome_test_util::SecondarySignInButton;
 
-// Bookmark promo integration tests for Chrome with
-// kEnableBookmarksAccountStorage enabled.
+// Bookmark promo integration tests.
 @interface BookmarksAccountStorageTestCase : WebHttpServerChromeTestCase
 @end
 
 @implementation BookmarksAccountStorageTestCase
-
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config;
-  config.features_enabled.push_back(syncer::kEnableBookmarksAccountStorage);
-  return config;
-}
 
 - (void)setUp {
   [super setUp];

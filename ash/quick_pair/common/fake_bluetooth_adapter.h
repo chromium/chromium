@@ -69,7 +69,7 @@ class FakeBluetoothAdapter
 
   void ConnectDevice(
       const std::string& address,
-      const absl::optional<device::BluetoothDevice::AddressType>& address_type,
+      const std::optional<device::BluetoothDevice::AddressType>& address_type,
       base::OnceCallback<void(device::BluetoothDevice*)> callback,
       base::OnceCallback<void(const std::string&)> error_callback) override;
 

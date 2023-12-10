@@ -557,9 +557,9 @@ field **WiFi** must be set to an object of type [WiFi](#WiFi-type).
       follow the value in **BSSIDRequested**
 
 * **EAP**
-    * (required if **Security** is
-        *WEP-8021X* or *WPA-EAP*, otherwise ignored) - [EAP](#EAP-type)
-    * EAP settings.
+    * (required if [**Security**](#wifi-security) is: *WEP-8021X*, *WPA-EAP* or
+      any value with *-Enterprise* suffix; otherwise ignored)
+    * EAP settings - [EAP](#EAP-type).
 
 * **HexSSID**
     * (optional if **SSID** is set, if so defaults to a hex representation of
@@ -571,21 +571,60 @@ field **WiFi** must be set to an object of type [WiFi](#WiFi-type).
     * Indicating if the SSID will be broadcast.
 
 * **Passphrase**
-    * (required if **Security** is
-        *WEP-PSK* or *WPA-PSK*, otherwise ignored) - **string**
-    * Describes the passphrase for WEP/WPA/WPA2
+    * (required if [**Security**](#wifi-security) is neither *None* nor any
+      value indicating that EAP is used for key derivation: *WEP-8021X*,
+      *WPA-EAP*, or any value with *-Enterprise* suffix; otherwise ignored)
+      - **string**
+    * Describes the passphrase for WEP/WPA/WPA2/WPA3
       connections. If *WEP-PSK* is used, the passphrase
       must be of the format 0x&lt;hex-number&gt;, where &lt;hex-number&gt; is
       40, 104, 128, or 232 bits.
 
-* **Security**
+* **Security** <a name="wifi-security"></a>
     * (required) - **string**
+    * Type of security that should be used for the WiFi network:
+        * *None*: Class of networks where no preconfigured security data is
+          needed (e.g. *Passphrase*).  This includes both open networks and
+          networks using OWE to configure encryption (either pure or
+          transitional).
+        * *WEP-PSK*: (deprecated, use WPA based security) Wired Equivalent
+          Privacy.
+        * *WEP-8021X*: (deprecated, use WPA based security) Dynamic WEP - WEP
+          using EAP to dynamically change keys.
+        * *WPA-PSK*: Class of networks using WPA (in any version) for security
+          and using key derivation based on a pre-shared key (*Passphrase*).
+          This class includes both WPA, WPA2 and WPA3 as well as all possible
+          transitional modes (e.g. WPA-WPA2).
+        * *WPA-EAP*: Similar to WPA-PSK but instead of having a pre-shared key
+          it uses EAP to derive the master session key (key <!-- nocheck -->
+          hierarchy used for encryption/integrity checks is derived from it
+          instead of the **Passphrase** as is in the case of *WPA-PSK*).
+        * *WPA2*: WPA-PSK network allowing only WPA2.
+        * *WPA2-WPA3*: WPA-PSK network allowing either WPA2 or WPA3.
+        * *WPA3*: WPA-PSK network allowing only WPA3.
+        * *WPA2-Enterprise*: WPA-EAP network allowing only WPA2.
+        * *WPA2-WPA3-Enterprise*: WPA-EAP network allowing either WPA2 or WPA3.
+        * *WPA3-Enterprise*: WPA-EAP network allowing only WPA3.
+        * *WPA3-Enterprise_192*: WPA-EAP network allowing only WPA3 192-bit
+          mode.  Currently not supported by ChromeOS.
+      Note: The transitional modes (e.g. WPA2-WPA3) are applicable either for
+      the case when given BSS is configured in transitional mode or when the ESS
+      is comprised of BSSes that have mixed configuration (some using WPA2
+      and some using WPA3).
+
     * Allowed values are:
         * *None*
         * *WEP-PSK*
         * *WEP-8021X*
         * *WPA-PSK*
         * *WPA-EAP*
+        * *WPA2*
+        * *WPA2-WPA3*
+        * *WPA3*
+        * *WPA2-Enterprise*
+        * *WPA2-WPA3-Enterprise*
+        * *WPA3-Enterprise*
+        * *WPA3-Enterprise_192*
 
 * **SSID**
     * (optional if **HexSSID** is set, otherwise ignored) - **string**
@@ -1325,6 +1364,12 @@ type exists to configure the authentication.
       presented to the outer protocol. This value is subject to string
       expansions. If not specified, use empty string.
 
+* **ClientCertKeyPairAlias**
+    * (required if **ClientCertType** is *KeyPairAlias*, otherwise ignored) -
+      **string**
+    * Key pair alias specifies the client certificate stored in Android keychain
+      and allowed for Wi-Fi authentication.
+
 * **ClientCertPKCS11Id**
     * (required if **ClientCertType** is *PKCS11Id*, otherwise ignored) -
     * PKCS#11 identifier in the format slot:key_id.
@@ -1341,12 +1386,13 @@ type exists to configure the authentication.
 * **ClientCertType**
     * (optional) - **string**
     * Allowed values are:
+        * *KeyPairAlias* (Android only)
         * *PKCS11Id*
         * *Pattern*
         * *Ref*
         * *None*
-    * *Ref* and *Pattern* indicate that the associated property should be used
-      to identify the client certificate.
+    * *KeyPairAlias*, *Ref* and *Pattern* indicate that the associated property
+      should be used to identify the client certificate.
     * *PKCS11Id* is used when representing a certificate in a local store and is
       only valid when describing a local configuration.
     * *None* indicates that the server is configured to not require client
@@ -1428,8 +1474,8 @@ type exists to configure the authentication.
       contain in order to connect.
 
 * **SubjectAlternativeNameMatch**
-	* (optional) - [array of AlternativeSubjectName](#AlternativeSubjectName-type)
-	* A list of alternative subject names to be matched against the alternative
+    * (optional) - [array of AlternativeSubjectName](#AlternativeSubjectName-type)
+    * A list of alternative subject names to be matched against the alternative
       subject name of an authentication server certificate.
 
 * **DomainSuffixMatch**
@@ -1473,15 +1519,15 @@ type exists to configure the authentication.
 ### AlternativeSubjectName type
 
 * **Type**
-	* (required) - **string**
-	* Type of the alternative subject name.
-	* Allowed values are:
-		* *EMAIL*
-		* *DNS*
-		* *URI*
+    * (required) - **string**
+    * Type of the alternative subject name.
+    * Allowed values are:
+        * *EMAIL*
+        * *DNS*
+        * *URI*
 * **Value**
-	 * (required) - **string**
-	 * Value of the alternative subject name.
+    * (required) - **string**
+    * Value of the alternative subject name.
 
 ## Cellular Networks
 
@@ -2302,7 +2348,7 @@ If a policy configuration exists, the following rules apply:
     it is considered 'Recommended'. If a UserSetting or SharedSetting value
     exists, it can be selected as the Effective value.
 
-### Dictionary format
+### Managed ONC Dictionary format ("augmented")
 
 Managed ONC dictionaries contain the keys described under
 [Network Configuration](#Network-Configuration), however the values are

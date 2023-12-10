@@ -38,6 +38,7 @@ extern const char kConnectMessage[];
 // Connect message parameters.
 extern const char kUserName[];
 extern const char kAuthServiceWithToken[];
+extern const char kAccessToken[];
 extern const char kLocalJid[];
 extern const char kDirectoryBotJidValue[];
 extern const char kIsEnterpriseAdminUser[];
@@ -109,6 +110,16 @@ extern const char kNatPolicyChangedMessageRelayEnabled[];
 
 // Sent from the host when there is a problem reading the local policy.
 extern const char kPolicyErrorMessage[];
+
+// Keys used for storing and retrieving params used for reconnectable sessions.
+extern const char kSessionParamsDict[];
+extern const char kEnterpriseParamsDict[];
+extern const char kReconnectParamsDict[];
+extern const char kReconnectSupportId[];
+extern const char kReconnectHostSecret[];
+extern const char kReconnectPrivateKey[];
+extern const char kReconnectFtlDeviceId[];
+extern const char kReconnectClientFtlAddress[];
 
 }  // namespace remoting
 

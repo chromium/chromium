@@ -26,17 +26,16 @@ BASE_FEATURE(kOverlayScrollbar,
              "OverlayScrollbar",
              kOverlayScrollbarFeatureState);
 
-// Fluent scrollbars aim to modernize the Chromium scrollbars (both overlay
-// and non-overlay) to fit the Windows 11 Fluent design language. For now,
-// the feature will only support Windows platform and can be later available
-// on Linux as well. The feature is currently in development and disabled
-// by default.
+// Fluent scrollbars aim to modernize the Chromium scrollbars (both overlay and
+// non-overlay) to fit the Fluent design language. For now, the feature will
+// only support the Windows and Linux platforms. The feature is currently in
+// development and disabled by default.
 BASE_FEATURE(kFluentScrollbar,
              "FluentScrollbar",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Makes all native scrollbars behave as overlay scrollbars styled to fit the
-// Windows 11 Fluent design language.
+// Fluent design language.
 // TODO(crbug.com/1479156): Right now this feature flag will force Fluent
 // overlay scrollbars on. We have yet to decide how we will expose this feature
 // once it is complete.
@@ -54,9 +53,8 @@ bool IsOverlayScrollbarEnabled() {
 }
 
 bool IsFluentScrollbarEnabled() {
-// Currently, the feature is only supported on Windows. Please see more details
-// here: https://crbug.com/1353432.
-#if BUILDFLAG(IS_WIN)
+// Fluent scrollbars are only used for some OSes due to UI design guidelines.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
   return base::FeatureList::IsEnabled(features::kFluentScrollbar) ||
          IsFluentOverlayScrollbarEnabled();
 #else
@@ -64,9 +62,8 @@ bool IsFluentScrollbarEnabled() {
 #endif
 }
 bool IsFluentOverlayScrollbarEnabled() {
-// Currently, the feature is only supported on Windows. Please see more details
-// here: https://crbug.com/1353432.
-#if BUILDFLAG(IS_WIN)
+// Fluent scrollbars are only used for some OSes due to UI design guidelines.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
   return base::FeatureList::IsEnabled(features::kFluentOverlayScrollbar);
 #else
   return false;

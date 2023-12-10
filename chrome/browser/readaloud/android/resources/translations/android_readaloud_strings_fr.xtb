@@ -2,11 +2,14 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="fr">
 <translation id="1178581264944972037">Suspendre</translation>
-<translation id="2558806128245168542">Revenir en arrière</translation>
-<translation id="3523426587027570423">Appuyer pour fermer "Écouter cette page".</translation>
+<translation id="1921351128855867012">Avancer de <ph name="NUMBER_OF_SECONDS" /> secondes</translation>
+<translation id="1984328900355667246">Lecture indisponible</translation>
+<translation id="3023502830214299618">Malheureusement, cette page ne peut pas être lue pour le moment. Veuillez réessayer plus tard.</translation>
+<translation id="3807208219231826020">Utiliser la barre de lecture</translation>
+<translation id="385051799172605136">Retour</translation>
 <translation id="4431240646217225907">Mettre le texte en surbrillance et faire défiler automatiquement</translation>
 <translation id="4654641641922242357">Lecteur "Écouter cette page".</translation>
-<translation id="4731877163452936634">Vitesse de lecture : <ph name="PLAYBACK_SPEED" />. Cliquez pour la modifier.</translation>
+<translation id="4872475766448853257">Revenir en arrière de <ph name="NUMBER_OF_SECONDS" /> secondes</translation>
 <translation id="5234971936051226002">Lecteur "Écouter cette page" réduit.</translation>
 <translation id="5596627076506792578">Plus d'options</translation>
 <translation id="6315170314923504164">Voix</translation>
@@ -15,8 +18,8 @@
 <translation id="6831043979455480757">Traduire</translation>
 <translation id="6846298663435243399">Chargement…</translation>
 <translation id="7587250070160020374">Chrome lit actuellement</translation>
-<translation id="7945822420239537236">Avancer de <ph name="NUMBER_OF_SECONDS" /> secondes</translation>
-<translation id="7972866381678406344">Revenir en arrière de <ph name="NUMBER_OF_SECONDS" /> secondes</translation>
 <translation id="8136852699834914183">La lecture n'est pas disponible pour cette page.</translation>
+<translation id="8264989794233974275">Augmenter/Diminuer la vitesse de <ph name="PLAYBACK_SPEED" />.</translation>
+<translation id="8407011429883244666">Fermer le lecteur.</translation>
 <translation id="8953618380150219653">Lecteur "Écouter cette page" ouvert à pleine hauteur.</translation>
 </translationbundle>

@@ -58,8 +58,13 @@ public interface TracingControllerAndroid {
      * the legacy JSON format.
      * @return Whether tracing was started successfully.
      */
-    boolean startTracing(String filename, boolean showToasts, String categories,
-            String traceOptions, boolean compressFile, boolean useProtobuf);
+    boolean startTracing(
+            String filename,
+            boolean showToasts,
+            String categories,
+            String traceOptions,
+            boolean compressFile,
+            boolean useProtobuf);
 
     /**
      * Stop recording and run |callback| when stopped.

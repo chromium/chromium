@@ -12,6 +12,7 @@
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/service_worker_version_base_info.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"

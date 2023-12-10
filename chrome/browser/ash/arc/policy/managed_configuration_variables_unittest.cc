@@ -5,11 +5,12 @@
 #include "chrome/browser/ash/arc/policy/managed_configuration_variables.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
@@ -26,7 +27,6 @@
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace arc {
 
@@ -286,7 +286,7 @@ class ManagedConfigurationVariablesAffiliatedTest
     return parameter_.value();
   }
 
-  absl::optional<Parameter> parameter_;
+  std::optional<Parameter> parameter_;
 };
 
 TEST_F(ManagedConfigurationVariablesTest, VariableChains) {

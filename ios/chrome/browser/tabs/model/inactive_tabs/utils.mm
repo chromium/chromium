@@ -5,9 +5,13 @@
 #import "ios/chrome/browser/tabs/model/inactive_tabs/utils.h"
 
 #import "base/metrics/histogram_functions.h"
-#import "ios/chrome/browser/main/browser_util.h"
-#import "ios/chrome/browser/ntp/new_tab_page_util.h"
+#import "base/ranges/algorithm.h"
+#import "ios/chrome/browser/main/model/browser_util.h"
+#import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/web_state_list/order_controller.h"
+#import "ios/chrome/browser/shared/model/web_state_list/order_controller_source_from_web_state_list.h"
+#import "ios/chrome/browser/shared/model/web_state_list/removing_indexes.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/tabs/model/inactive_tabs/features.h"
@@ -17,7 +21,7 @@ namespace {
 
 // Returns true if the given web state last is inactive determined by the given
 // threshold.
-bool IsInactive(const base::TimeDelta& threshold, web::WebState* web_state) {
+bool IsInactive(base::TimeDelta threshold, web::WebState* web_state) {
   const base::TimeDelta time_since_last_activation =
       base::Time::Now() - web_state->GetLastActiveTime();
   if (threshold > base::Days(1)) {
@@ -39,53 +43,157 @@ bool IsInactive(const base::TimeDelta& threshold, web::WebState* web_state) {
   }
 }
 
-// Returns the set of unique identifiers from the web state list.
-std::set<web::WebStateID> UniqueIdentifiers(WebStateList* web_state_list) {
-  std::set<web::WebStateID> identifiers;
-  for (int index = 0; index < web_state_list->count(); index++) {
-    web::WebState* web_state = web_state_list->GetWebStateAt(index);
-    identifiers.insert(web_state->GetUniqueIdentifier());
-  }
-  return identifiers;
-}
+// Policy used by `MoveTabsAccordingToPolicy(...)`.
+struct MovePolicy {
+  enum Policy {
+    kAll,
+    kActiveOnly,
+    kInactiveOnly,
+  };
 
-// Closes any tab from `losers_web_state_list` that is the duplicate of a tab
-// in `keepers_web_state_list`.
-// Returns the number of dropped duplicates.
-int FilterCrossDuplicates(WebStateList* keepers_web_state_list,
-                          WebStateList* losers_web_state_list) {
-  std::set<web::WebStateID> keepers_identifiers =
-      UniqueIdentifiers(keepers_web_state_list);
-  // Count the number of dropped tabs because they are duplicates, for
-  // reporting.
-  int duplicate_count = 0;
-  for (int index = losers_web_state_list->count() - 1; index >= 0; --index) {
-    web::WebState* web_state = losers_web_state_list->GetWebStateAt(index);
-    if (keepers_identifiers.contains(web_state->GetUniqueIdentifier())) {
-      losers_web_state_list->CloseWebStateAt(index,
-                                             WebStateList::CLOSE_NO_FLAGS);
-      duplicate_count++;
+  // Returns a policy requesting to moving all tabs.
+  static MovePolicy All() { return MovePolicy{.policy = kAll}; }
+
+  // Returns a policy requesting to move all active tabs with `threshold`.
+  static MovePolicy ActiveOnly(base::TimeDelta threshold) {
+    return MovePolicy{.policy = kActiveOnly, .threshold = threshold};
+  }
+
+  // Returns a policy requesting to move all inactive tabs with `threshold`.
+  static MovePolicy InactiveOnly(base::TimeDelta threshold) {
+    return MovePolicy{.policy = kInactiveOnly, .threshold = threshold};
+  }
+
+  // The policy controlling which tabs to move.
+  const Policy policy;
+
+  // The threshold used to decide whether a tab is inactive or not.
+  const base::TimeDelta threshold;
+};
+
+// Moves tabs from `source_browser` to `target_browser` after removing the
+// duplicates (if any, as determined by their unique identifiers) following
+// `move_policy`. The histogram `histogram` is used to record the number of
+// duplicates found.
+void MoveTabsAccordingToPolicy(Browser* source_browser,
+                               Browser* target_browser,
+                               MovePolicy move_policy,
+                               const char* histogram) {
+  WebStateList* const source_list = source_browser->GetWebStateList();
+  WebStateList* const target_list = target_browser->GetWebStateList();
+
+  const int source_count = source_list->count();
+  const int target_count = target_list->count();
+
+  std::vector<web::WebStateID> target_ids;
+  for (int index = 0; index < target_count; ++index) {
+    web::WebState* web_state = target_list->GetWebStateAt(index);
+    target_ids.push_back(web_state->GetUniqueIdentifier());
+  }
+
+  // Sort the vector of identifiers in order to use binary_search(...).
+  std::sort(target_ids.begin(), target_ids.end());
+
+  std::vector<int> indexes_closing;
+  std::vector<int> indexes_moving;
+  std::vector<int> indexes_moving_or_closing;
+  for (int index = 0; index < source_count; ++index) {
+    web::WebState* web_state = source_list->GetWebStateAt(index);
+    const web::WebStateID web_state_id = web_state->GetUniqueIdentifier();
+    if (base::ranges::binary_search(target_ids, web_state_id)) {
+      indexes_closing.push_back(index);
+      indexes_moving_or_closing.push_back(index);
+      continue;
+    }
+
+    if (move_policy.policy == MovePolicy::kAll) {
+      indexes_moving.push_back(index);
+      indexes_moving_or_closing.push_back(index);
+      continue;
+    }
+
+    // Don't consider tabs presenting the NTP nor pinned tabs as inactive.
+    if (move_policy.policy == MovePolicy::kInactiveOnly) {
+      if (IsVisibleURLNewTabPage(web_state)) {
+        continue;
+      }
+
+      if (index < source_list->pinned_tabs_count()) {
+        continue;
+      }
+    }
+
+    const bool is_inactive = IsInactive(move_policy.threshold, web_state);
+    if (is_inactive == (move_policy.policy == MovePolicy::kInactiveOnly)) {
+      indexes_moving.push_back(index);
+      indexes_moving_or_closing.push_back(index);
+      continue;
     }
   }
-  return duplicate_count;
-}
 
-// Manages batch migration for the active and inactive browser.
-void PerformBatchMigration(
-    Browser* active_browser,
-    Browser* inactive_browser,
-    base::OnceCallback<void(WebStateList*, WebStateList*)> migration) {
-  __block base::OnceCallback<void(WebStateList*, WebStateList*)>
-      web_state_lists_migrations = std::move(migration);
-  active_browser->GetWebStateList()->PerformBatchOperation(
-      base::BindOnce(^(WebStateList* active_web_state_list) {
-        inactive_browser->GetWebStateList()->PerformBatchOperation(
-            base::BindOnce(^(WebStateList* inactive_web_state_list) {
-              // Perform the migration.
-              std::move(web_state_lists_migrations)
-                  .Run(active_web_state_list, inactive_web_state_list);
-            }));
-      }));
+  // Record the number of duplicates found.
+  base::UmaHistogramCounts100(histogram, indexes_closing.size());
+
+  // If there are no WebState to move or close, then there is nothing to do.
+  if (indexes_moving_or_closing.empty()) {
+    return;
+  }
+
+  // Start a batch operation on the two WebStateList at the same time.
+  const auto source_lock = source_list->StartBatchOperation();
+  const auto target_lock = target_list->StartBatchOperation();
+
+  // Determine and activate the new active WebState before performing the
+  // close and move operations. This will prevents over-realisation.
+  OrderControllerSourceFromWebStateList order_controller_source(*source_list);
+  OrderController order_controller(order_controller_source);
+
+  const int new_active_index = order_controller.DetermineNewActiveIndex(
+      source_list->active_index(),
+      RemovingIndexes(std::move(indexes_moving_or_closing)));
+  source_list->ActivateWebStateAt(new_active_index);
+
+  // Determine the index at which tabs are inserted in `target_list`. When
+  // moving inactive tabs, they are inserted at the end of the destination
+  // but when moving active ones, they are moved after the pinned tabs.
+  const int insertion_index = move_policy.policy == MovePolicy::kInactiveOnly
+                                  ? target_count
+                                  : target_list->pinned_tabs_count();
+
+  // If the target list has no active WebState, mark the first tab moved out
+  // of the source list as the active one during the insertion.
+  int index_to_activate = WebStateList::kInvalidIndex;
+  if (!target_list->GetActiveWebState()) {
+    if (!indexes_moving.empty()) {
+      index_to_activate = indexes_moving.front();
+    }
+  }
+
+  // Perform the close and move operations by iterating backwards in the
+  // WebStateList (this avoid having to update the indexes).
+  for (int iter = 0; iter < source_count; ++iter) {
+    const int index = source_count - iter - 1;
+    if (base::ranges::binary_search(indexes_closing, index)) {
+      source_list->CloseWebStateAt(index, WebStateList::CLOSE_NO_FLAGS);
+      continue;
+    }
+
+    if (base::ranges::binary_search(indexes_moving, index)) {
+      // Using INSERT_FORCE_INDEX allow to insert all the moved tabs at the
+      // expected location and INSERT_ACTIVATE allow to activate the tab if
+      // needed (e.g. the first moved tab from source when target has no
+      // active WebState).
+      const int insertion_flags =
+          WebStateList::INSERT_FORCE_INDEX |
+          (index == index_to_activate ? WebStateList::INSERT_ACTIVATE
+                                      : WebStateList::INSERT_NO_FLAGS);
+
+      MoveTabFromBrowserToBrowser(
+          source_browser, index, target_browser, insertion_index,
+          static_cast<WebStateList::InsertionFlags>(insertion_flags));
+      continue;
+    }
+  }
 }
 
 }  // namespace
@@ -94,93 +202,34 @@ void MoveTabsFromActiveToInactive(Browser* active_browser,
                                   Browser* inactive_browser) {
   CHECK(IsInactiveTabsEnabled());
   CHECK_NE(active_browser, inactive_browser);
-  PerformBatchMigration(
-      active_browser, inactive_browser,
-      base::BindOnce(^(WebStateList* active_web_state_list,
-                       WebStateList* inactive_web_state_list) {
-        // Remove cross-duplicates in the active web state list.
-        int duplicate_count = FilterCrossDuplicates(inactive_web_state_list,
-                                                    active_web_state_list);
-        base::UmaHistogramCounts100(
-            "Tabs.DroppedDuplicatesCountOnMigrateActiveToInactive",
-            duplicate_count);
 
-        // Move all now-considered inactive tabs to the inactive web state list.
-        const base::TimeDelta inactivity_threshold =
-            InactiveTabsTimeThreshold();
-        for (int index = active_web_state_list->pinned_tabs_count();
-             index < active_web_state_list->count();) {
-          web::WebState* current_web_state =
-              active_web_state_list->GetWebStateAt(index);
-          if (!IsVisibleURLNewTabPage(current_web_state) &&
-              IsInactive(inactivity_threshold, current_web_state)) {
-            MoveTabFromBrowserToBrowser(active_browser, index, inactive_browser,
-                                        inactive_web_state_list->count());
-          } else {
-            ++index;
-          }
-        }
-      }));
+  MoveTabsAccordingToPolicy(
+      active_browser, inactive_browser,
+      MovePolicy::InactiveOnly(InactiveTabsTimeThreshold()),
+      "Tabs.DroppedDuplicatesCountOnMigrateActiveToInactive");
 }
 
 void MoveTabsFromInactiveToActive(Browser* inactive_browser,
                                   Browser* active_browser) {
   CHECK(IsInactiveTabsEnabled());
   CHECK_NE(active_browser, inactive_browser);
-  PerformBatchMigration(
-      active_browser, inactive_browser,
-      base::BindOnce(^(WebStateList* active_web_state_list,
-                       WebStateList* inactive_web_state_list) {
-        // Remove cross-duplicates in the inactive web state list.
-        int duplicate_count = FilterCrossDuplicates(active_web_state_list,
-                                                    inactive_web_state_list);
-        base::UmaHistogramCounts100(
-            "Tabs.DroppedDuplicatesCountOnMigrateInactiveToActive",
-            duplicate_count);
 
-        // Move all now-considered active tabs to the active web state list.
-        const base::TimeDelta inactivity_threshold =
-            InactiveTabsTimeThreshold();
-        int removed_web_state_number = 0;
-        for (int index = 0; index < inactive_web_state_list->count();) {
-          if (!IsInactive(inactivity_threshold,
-                          inactive_web_state_list->GetWebStateAt(index))) {
-            int insertion_index = active_web_state_list->pinned_tabs_count() +
-                                  removed_web_state_number++;
-            MoveTabFromBrowserToBrowser(inactive_browser, index, active_browser,
-                                        insertion_index);
-          } else {
-            ++index;
-          }
-        }
-      }));
+  MoveTabsAccordingToPolicy(
+      inactive_browser, active_browser,
+      MovePolicy::ActiveOnly(InactiveTabsTimeThreshold()),
+      "Tabs.DroppedDuplicatesCountOnMigrateInactiveToActive");
 }
 
 void RestoreAllInactiveTabs(Browser* inactive_browser,
                             Browser* active_browser) {
   CHECK(!IsInactiveTabsEnabled());
   CHECK_NE(active_browser, inactive_browser);
+
   // Record the number of tabs restored from the inactive browser after Inactive
   // Tabs has been disabled.
   base::UmaHistogramCounts100("Tabs.RestoredFromInactiveCount",
                               inactive_browser->GetWebStateList()->count());
 
-  PerformBatchMigration(
-      active_browser, inactive_browser,
-      base::BindOnce(^(WebStateList* active_web_state_list,
-                       WebStateList* inactive_web_state_list) {
-        // Remove cross-duplicates in the inactive web state list.
-        int duplicate_count = FilterCrossDuplicates(active_web_state_list,
-                                                    inactive_web_state_list);
-        base::UmaHistogramCounts100(
-            "Tabs.DroppedDuplicatesCountOnRestoreAllInactive", duplicate_count);
-
-        // Move all tabs to the active web state list.
-        for (int index = inactive_web_state_list->count() - 1; index >= 0;
-             index--) {
-          MoveTabFromBrowserToBrowser(
-              inactive_browser, index, active_browser,
-              active_web_state_list->pinned_tabs_count());
-        }
-      }));
+  MoveTabsAccordingToPolicy(inactive_browser, active_browser, MovePolicy::All(),
+                            "Tabs.DroppedDuplicatesCountOnRestoreAllInactive");
 }

@@ -11,6 +11,8 @@
 #include "base/metrics/user_metrics.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/theme_properties.h"
@@ -35,12 +37,12 @@
 #include "chromeos/components/kiosk/kiosk_utils.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/base/chromeos_ui_constants.h"
-#include "chromeos/ui/base/tablet_state.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
 #include "chromeos/ui/frame/default_frame_header.h"
 #include "chromeos/ui/frame/frame_utils.h"
+#include "components/services/app_service/public/cpp/app_update.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents.h"
@@ -53,6 +55,7 @@
 #include "ui/base/models/image_model.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/chromeos/styles/cros_styles.h"
+#include "ui/display/screen.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
@@ -181,6 +184,13 @@ void BrowserNonClientFrameViewChromeOS::Init() {
 
   window_observation_.Observe(GetFrameWindow());
 
+  if (apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(
+          browser->profile())) {
+    app_registry_cache_observation_.Observe(
+        &apps::AppServiceProxyFactory::GetForProfile(browser->profile())
+             ->AppRegistryCache());
+  }
+
   // To preserve privacy, tag incognito windows so that they won't be included
   // in screenshot sent to assistant server.
   if (browser->profile()->IsOffTheRecord()) {
@@ -291,7 +301,7 @@ bool BrowserNonClientFrameViewChromeOS::CanUserExitFullscreen() const {
 SkColor BrowserNonClientFrameViewChromeOS::GetCaptionColor(
     BrowserFrameActiveState active_state) const {
   // Web apps apply a theme color if specified by the extension/manifest.
-  absl::optional<SkColor> frame_theme_color =
+  std::optional<SkColor> frame_theme_color =
       browser_view()->browser()->app_controller()->GetThemeColor();
   const SkColor frame_color =
       frame_theme_color.value_or(GetFrameColor(active_state));
@@ -312,7 +322,7 @@ SkColor BrowserNonClientFrameViewChromeOS::GetFrameColor(
   if (!UsePackagedAppHeaderStyle(browser_view()->browser()))
     return BrowserNonClientFrameView::GetFrameColor(active_state);
 
-  absl::optional<SkColor> color;
+  std::optional<SkColor> color;
   if (browser_view()->GetIsWebAppType())
     color = browser_view()->browser()->app_controller()->GetThemeColor();
 
@@ -376,7 +386,7 @@ int BrowserNonClientFrameViewChromeOS::NonClientHitTest(
   // the tab's shadow to caption.
   if (hit_test == HTCLIENT && !frame()->IsMaximized() &&
       !frame()->IsFullscreen() &&
-      !chromeos::TabletState::Get()->InTabletMode()) {
+      !display::Screen::GetScreen()->InTabletMode()) {
     // TODO(crbug.com/1213133): Tab Strip hit calculation and bounds logic
     // should reside in the TabStrip class.
     gfx::Point client_point(point);
@@ -752,8 +762,9 @@ void BrowserNonClientFrameViewChromeOS::OnWindowPropertyChanged(
     if (frame_header_)
       frame_header_->OnFloatStateChanged();
 
-    if (!chromeos::TabletState::Get()->InTabletMode())
+    if (!display::Screen::GetScreen()->InTabletMode()) {
       return;
+    }
 
     // Additionally updates immersive mode for PWA/SWA so that we show the title
     // bar when floated, and hide the title bar otherwise.
@@ -821,6 +832,25 @@ void BrowserNonClientFrameViewChromeOS::OnImmersiveFullscreenExited() {
   OnImmersiveRevealEnded();
 }
 
+void BrowserNonClientFrameViewChromeOS::OnAppUpdate(
+    const apps::AppUpdate& update) {
+  Browser* browser = browser_view()->browser();
+
+  if (!browser->app_controller() ||
+      browser->app_controller()->app_id() != update.AppId() ||
+      !caption_button_container_) {
+    return;
+  }
+
+  caption_button_container_->SetCloseButtonEnabled(
+      update.AllowClose().value_or(true));
+}
+
+void BrowserNonClientFrameViewChromeOS::OnAppRegistryCacheWillBeDestroyed(
+    apps::AppRegistryCache* cache) {
+  app_registry_cache_observation_.Reset();
+}
+
 void BrowserNonClientFrameViewChromeOS::PaintAsActiveChanged() {
   BrowserNonClientFrameView::PaintAsActiveChanged();
 
@@ -868,7 +898,7 @@ bool BrowserNonClientFrameViewChromeOS::GetShowCaptionButtonsWhenNotInOverview()
 
   // Browsers in tablet mode still show their caption buttons in float state,
   // even with the webUI tab strip.
-  if (chromeos::TabletState::Get()->InTabletMode()) {
+  if (display::Screen::GetScreen()->InTabletMode()) {
     return IsFloated();
   }
 
@@ -1238,7 +1268,7 @@ bool BrowserNonClientFrameViewChromeOS::ShouldEnableImmersiveModeController(
     return false;
   }
 
-  if (chromeos::TabletState::Get()->InTabletMode()) {
+  if (display::Screen::GetScreen()->InTabletMode()) {
     // No immersive mode for minimized windows as they aren't visible, and
     // floated windows need a permanent header to drag.
     if (frame()->IsMinimized() || IsFloated()) {

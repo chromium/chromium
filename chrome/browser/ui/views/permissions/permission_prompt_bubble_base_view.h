@@ -49,7 +49,7 @@ class PermissionPromptBubbleBaseView : public PermissionPromptBaseView {
       PermissionPromptStyle prompt_style,
       std::u16string window_title,
       std::u16string accessible_window_title_,
-      absl::optional<std::u16string> extra_text);
+      std::optional<std::u16string> extra_text);
   PermissionPromptBubbleBaseView(const PermissionPromptBubbleBaseView&) =
       delete;
   PermissionPromptBubbleBaseView& operator=(

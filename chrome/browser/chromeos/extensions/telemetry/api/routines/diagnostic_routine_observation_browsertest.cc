@@ -315,4 +315,54 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(info.uuid, uuid_);
 }
 
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticRoutineObserverBrowserTest,
+                       CanObserveOnFanRoutineFinished) {
+  RegisterEventObserver(
+      api::os_diagnostics::OnFanRoutineFinished::kEventName,
+      base::BindLambdaForTesting([this] {
+        auto fan_detail = crosapi::TelemetryDiagnosticFanRoutineDetail::New();
+        fan_detail->passed_fan_ids = {0};
+        fan_detail->failed_fan_ids = {1};
+        fan_detail->fan_count_status =
+            crosapi::TelemetryDiagnosticHardwarePresenceStatus::kMatched;
+
+        auto finished_detail =
+            crosapi::TelemetryDiagnosticRoutineDetail::NewFan(
+                std::move(fan_detail));
+
+        auto finished_state = crosapi::TelemetryDiagnosticRoutineState::New();
+        finished_state->state_union =
+            crosapi::TelemetryDiagnosticRoutineStateUnion::NewFinished(
+                crosapi::TelemetryDiagnosticRoutineStateFinished::New(
+                    /*has_passed=*/true, std::move(finished_detail)));
+        finished_state->percentage = 100;
+
+        remote_->OnRoutineStateChange(std::move(finished_state));
+      }));
+
+  CreateExtensionAndRunServiceWorker(
+      base::StringPrintf(R"(
+    chrome.test.runTests([
+      async function canObserveOnFanRoutineFinished() {
+        chrome.os.diagnostics.onFanRoutineFinished.addListener((event) => {
+          chrome.test.assertEq(event, {
+            "passed_fan_ids": [0],
+            "failed_fan_ids": [1],
+            "fan_count_status": "matched",
+            "has_passed": true,
+            "uuid":"%s"
+          });
+
+          chrome.test.succeed();
+        });
+      }
+    ]);
+  )",
+                         uuid_.AsLowercaseString().c_str()));
+
+  auto info = WaitForFinishedReport();
+  EXPECT_EQ(info.extension_id, extension_id());
+  EXPECT_EQ(info.uuid, uuid_);
+}
+
 }  // namespace chromeos

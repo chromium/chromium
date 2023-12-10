@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ca">
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> de les teves pestanyes no s'han utilitzat últimament. Vols tancar-les?</translation>
+<translation id="1155815720264022949">Vols tancar les pestanyes antigues?</translation>
 <translation id="1215127405478249895">Revisa les pestanyes</translation>
 <translation id="125153950246128346">Toca per veure una altra pestanya</translation>
 <translation id="1499635324672558517">Vols tancar totes les pestanyes d'incògnit?</translation>
@@ -46,9 +47,11 @@
 <translation id="5073204694187207510">Amaga la quadrícula en pantalla completa</translation>
 <translation id="5076161749301278626">Vols veure les ressenyes de la botiga?</translation>
 <translation id="5082793167783849073">Crea un grup per comparar pàgines ràpidament. Per començar, mantén premut un enllaç.</translation>
+<translation id="5303274951032363933">{TABS_COUNT,plural, =1{Tens <ph name="TABS_COUNT_ONE" /> pestanya que no has utilitzat recentment}other{Tens <ph name="TABS_COUNT_MANY" /> pestanyes que no has utilitzat recentment}}</translation>
 <translation id="5339733443032484186">La teva darrera pestanya</translation>
 <translation id="5490235265819901748">El grup de pestanyes s'ha desplegat</translation>
 <translation id="5494920125229734069">Selecciona-ho tot</translation>
+<translation id="5545379293264651575">Tanca sense revisar</translation>
 <translation id="5556417849629758491">Consulta la informació de la botiga, opció disponible a prop de la part superior de la pantalla</translation>
 <translation id="5558362125926932819">Tanca el grup format per <ph name="NUMBER_OF_TABS" /> pestanyes</translation>
 <translation id="5580090775658607195">S'han agrupat <ph name="TAB_COUNT" /> pestanyes</translation>
@@ -85,7 +88,6 @@
 <translation id="7885132941432959125">Mou la pestanya cap a la dreta</translation>
 <translation id="7966321538264951561">Ignora els suggeriments.</translation>
 <translation id="8029301326595421733">S'ha obert a alçada completa la informació sobre aquesta botiga</translation>
-<translation id="814503310257431685">Mostra-ho tot</translation>
 <translation id="8205266828577616993">Mou la pestanya cap amunt</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Tanca <ph name="TABS_COUNT_ONE" /> pestanya seleccionada}other{Tanca les <ph name="TABS_COUNT_MANY" /> pestanyes seleccionades}}</translation>
 <translation id="8398929769197326728">Carpeta nova : <ph name="CURRENT_TIMESTAMP_MS" /></translation>

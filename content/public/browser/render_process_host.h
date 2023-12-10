@@ -14,6 +14,8 @@
 #include "base/callback_list.h"
 #include "base/clang_profiling_buildflags.h"
 #include "base/containers/id_map.h"
+#include "base/functional/function_ref.h"
+#include "base/memory/safety_checks.h"
 #include "base/process/kill.h"
 #include "base/process/process.h"
 #include "base/supports_user_data.h"
@@ -120,6 +122,10 @@ class Renderer;
 class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
                                          public IPC::Listener,
                                          public base::SupportsUserData {
+  // Do not remove this macro!
+  // The macro is maintained by the memory safety team.
+  ADVANCED_MEMORY_SAFETY_CHECKS();
+
  public:
   using iterator = base::IDMap<RenderProcessHost*>::iterator;
 
@@ -466,7 +472,7 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
   // Calls |on_frame| for every RenderFrameHost whose frames live in this
   // process. Note that speculative RenderFrameHosts will be skipped.
   virtual void ForEachRenderFrameHost(
-      base::RepeatingCallback<void(RenderFrameHost*)> on_frame) = 0;
+      base::FunctionRef<void(RenderFrameHost*)> on_frame) = 0;
 
   // Register/unregister a RenderFrameHost instance whose frame lives in this
   // process. RegisterRenderFrameHost and UnregisterRenderFrameHost are the

@@ -5,7 +5,8 @@
   "description": "Checks that activeTab permission plays nice with back forward cache.",
   "permissions": ["activeTab"],
   "background": {
-    "scripts": ["background.js"]
+    "scripts": ["background.js"],
+    "persistent": false
   },
   "browser_action": {
     "default_title": "activeTab test"

@@ -1881,7 +1881,6 @@ def generate_performance_test(tester_config, test, builder_name):
       'args': test_args,
       'test': isolate_name,
       'name': test_name,
-      'override_compile_targets': [isolate_name]
   }
 
   if test.get('resultdb'):

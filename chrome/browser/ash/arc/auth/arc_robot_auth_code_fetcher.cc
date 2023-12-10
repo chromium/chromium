@@ -66,7 +66,7 @@ void ArcRobotAuthCodeFetcher::Fetch(FetchCallback callback) {
               TYPE_API_AUTH_CODE_FETCH,
           client->client_id(), /*critical=*/false,
           policy::DMAuth::FromDMToken(client->dm_token()),
-          /*oauth_token=*/absl::nullopt,
+          /*oauth_token=*/std::nullopt,
           url_loader_factory_for_testing()
               ? url_loader_factory_for_testing()
               : g_browser_process->system_network_context_manager()

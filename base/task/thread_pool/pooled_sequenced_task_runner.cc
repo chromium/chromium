@@ -4,9 +4,9 @@
 
 #include "base/task/thread_pool/pooled_sequenced_task_runner.h"
 
+#include "base/message_loop/message_pump.h"
 #include "base/sequence_token.h"
 #include "base/task/default_delayed_task_handle_delegate.h"
-#include "base/task/task_features.h"
 
 namespace base {
 namespace internal {
@@ -31,7 +31,7 @@ bool PooledSequencedTaskRunner::PostDelayedTask(const Location& from_here,
   }
 
   Task task(from_here, std::move(closure), TimeTicks::Now(), delay,
-            GetDefaultTaskLeeway());
+            MessagePump::GetLeewayIgnoringThreadOverride());
 
   // Post the task as part of |sequence_|.
   return pooled_task_runner_delegate_->PostTaskWithSequence(std::move(task),
@@ -50,7 +50,7 @@ bool PooledSequencedTaskRunner::PostDelayedTaskAt(
   }
 
   Task task(from_here, std::move(closure), TimeTicks::Now(), delayed_run_time,
-            GetDefaultTaskLeeway(), delay_policy);
+            MessagePump::GetLeewayIgnoringThreadOverride(), delay_policy);
 
   // Post the task as part of |sequence_|.
   return pooled_task_runner_delegate_->PostTaskWithSequence(std::move(task),

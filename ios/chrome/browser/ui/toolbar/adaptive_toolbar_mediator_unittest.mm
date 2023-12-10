@@ -29,7 +29,7 @@
 #import "ios/chrome/browser/ui/menu/browser_action_factory.h"
 #import "ios/chrome/browser/ui/toolbar/test/toolbar_test_navigation_manager.h"
 #import "ios/chrome/browser/ui/toolbar/toolbar_consumer.h"
-#import "ios/chrome/browser/web/web_navigation_browser_agent.h"
+#import "ios/chrome/browser/web/model/web_navigation_browser_agent.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/providers/voice_search/test_voice_search.h"
 #import "ios/public/provider/chrome/browser/voice_search/voice_search_api.h"
@@ -53,7 +53,7 @@
 
 namespace {
 
-MenuScenarioHistogram kTestMenuScenario = MenuScenarioHistogram::kHistoryEntry;
+MenuScenarioHistogram kTestMenuScenario = kMenuScenarioHistogramHistoryEntry;
 
 static const int kNumberOfWebStates = 3;
 static const char kTestUrl[] = "http://www.chromium.org";

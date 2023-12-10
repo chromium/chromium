@@ -50,7 +50,7 @@ ConflictResolutionPolicyToExtensionEnum(
 // in the renderer's customer binding to create a FileEntry object.
 // This returns NULL if the given |url| is not valid or |file_type| is
 // SYNC_FILE_TYPE_UNKNOWN.
-absl::optional<base::Value::Dict> CreateDictionaryValueForFileSystemEntry(
+std::optional<base::Value::Dict> CreateDictionaryValueForFileSystemEntry(
     const storage::FileSystemURL& url,
     ::sync_file_system::SyncFileType file_type);
 

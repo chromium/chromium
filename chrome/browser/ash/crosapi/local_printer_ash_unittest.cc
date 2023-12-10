@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <functional>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -30,6 +31,7 @@
 #include "chrome/browser/ash/printing/oauth2/authorization_zones_manager_factory.h"
 #include "chrome/browser/ash/printing/oauth2/mock_authorization_zones_manager.h"
 #include "chrome/browser/ash/printing/oauth2/status_code.h"
+#include "chrome/browser/printing/local_printer_utils_chromeos.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
@@ -56,7 +58,6 @@
 #include "printing/printing_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
@@ -1052,11 +1053,10 @@ TEST_F(LocalPrinterAshTest, GetPolicies_Pin) {
 TEST_F(LocalPrinterAshTest, GetUsernamePerPolicy_Allowed) {
   SetUsername("user@email.com");
   GetPrefs()->SetBoolean(prefs::kPrintingSendUsernameAndFilenameEnabled, true);
-  absl::optional<std::string> username;
-  local_printer_ash()->GetUsernamePerPolicy(base::BindOnce(
-      base::BindLambdaForTesting([&](const absl::optional<std::string>& uname) {
-        username = uname;
-      })));
+  std::optional<std::string> username;
+  local_printer_ash()->GetUsernamePerPolicy(
+      base::BindOnce(base::BindLambdaForTesting(
+          [&](const std::optional<std::string>& uname) { username = uname; })));
   ASSERT_TRUE(username);
   EXPECT_EQ("user@email.com", *username);
 }
@@ -1064,12 +1064,11 @@ TEST_F(LocalPrinterAshTest, GetUsernamePerPolicy_Allowed) {
 TEST_F(LocalPrinterAshTest, GetUsernamePerPolicy_Denied) {
   SetUsername("user@email.com");
   GetPrefs()->SetBoolean(prefs::kPrintingSendUsernameAndFilenameEnabled, false);
-  absl::optional<std::string> username;
-  local_printer_ash()->GetUsernamePerPolicy(base::BindOnce(
-      base::BindLambdaForTesting([&](const absl::optional<std::string>& uname) {
-        username = uname;
-      })));
-  EXPECT_EQ(absl::nullopt, username);
+  std::optional<std::string> username;
+  local_printer_ash()->GetUsernamePerPolicy(
+      base::BindOnce(base::BindLambdaForTesting(
+          [&](const std::optional<std::string>& uname) { username = uname; })));
+  EXPECT_EQ(std::nullopt, username);
 }
 
 // Verify the LocalPrintersObserver receives the full set of local printers
@@ -1128,21 +1127,21 @@ TEST(LocalPrinterAsh, PrinterToMojom) {
                          crosapi::mojom::StatusReason::Severity::kWarning);
   printer.set_printer_status(status);
   crosapi::mojom::LocalDestinationInfoPtr mojom =
-      crosapi::LocalPrinterAsh::PrinterToMojom(printer);
+      printing::PrinterToMojom(printer);
   ASSERT_TRUE(mojom);
   EXPECT_EQ("id", mojom->id);
   EXPECT_EQ("name", mojom->name);
   EXPECT_EQ("description", mojom->description);
   EXPECT_FALSE(mojom->configured_via_policy);
-  EXPECT_EQ(crosapi::LocalPrinterAsh::StatusToMojom(status),
-            mojom->printer_status);
+
+  EXPECT_EQ(printing::StatusToMojom(status), mojom->printer_status);
 }
 
 TEST(LocalPrinterAsh, PrinterToMojom_ConfiguredViaPolicy) {
   Printer printer("id");
   printer.set_source(Printer::SRC_POLICY);
   crosapi::mojom::LocalDestinationInfoPtr mojom =
-      crosapi::LocalPrinterAsh::PrinterToMojom(printer);
+      printing::PrinterToMojom(printer);
   ASSERT_TRUE(mojom);
   EXPECT_EQ("id", mojom->id);
   EXPECT_TRUE(mojom->configured_via_policy);
@@ -1152,8 +1151,7 @@ TEST(LocalPrinterAsh, StatusToMojom) {
   chromeos::CupsPrinterStatus status("id");
   status.AddStatusReason(crosapi::mojom::StatusReason::Reason::kOutOfInk,
                          crosapi::mojom::StatusReason::Severity::kWarning);
-  crosapi::mojom::PrinterStatusPtr mojom =
-      crosapi::LocalPrinterAsh::StatusToMojom(status);
+  crosapi::mojom::PrinterStatusPtr mojom = printing::StatusToMojom(status);
   ASSERT_TRUE(mojom);
   EXPECT_EQ("id", mojom->printer_id);
   EXPECT_EQ(status.GetTimestamp(), mojom->timestamp);
@@ -1447,7 +1445,7 @@ TEST_F(LocalPrinterAshWithIppClientInfoTest, GetIppClientInfoInsecurePrinter) {
   base::RunLoop loop;
   const mojom::IppClientInfoPtr expected = mojom::IppClientInfo::New(
       mojom::IppClientInfo::ClientType::kOperatingSystem, "ChromeOS",
-      absl::nullopt, "1.2.3", absl::nullopt);
+      std::nullopt, "1.2.3", std::nullopt);
   EXPECT_CALL(client_info_calculator(), GetOsInfo)
       .WillOnce(Return(ByMove(expected.Clone())));
   local_printer_ash()->GetIppClientInfo(
@@ -1472,7 +1470,7 @@ TEST_F(LocalPrinterAshWithIppClientInfoTest, GetIppClientInfoUnaffiliatedUser) {
   base::RunLoop loop;
   const mojom::IppClientInfoPtr expected = mojom::IppClientInfo::New(
       mojom::IppClientInfo::ClientType::kOperatingSystem, "ChromeOS",
-      absl::nullopt, "1.2.3", absl::nullopt);
+      std::nullopt, "1.2.3", std::nullopt);
   EXPECT_CALL(client_info_calculator(), GetOsInfo)
       .WillOnce(Return(ByMove(expected.Clone())));
   local_printer_ash()->GetIppClientInfo(
@@ -1497,7 +1495,7 @@ TEST_F(LocalPrinterAshWithIppClientInfoTest, GetIppClientInfoUnmanagedPrinter) {
   base::RunLoop loop;
   const mojom::IppClientInfoPtr expected = mojom::IppClientInfo::New(
       mojom::IppClientInfo::ClientType::kOperatingSystem, "ChromeOS",
-      absl::nullopt, "1.2.3", absl::nullopt);
+      std::nullopt, "1.2.3", std::nullopt);
   EXPECT_CALL(client_info_calculator(), GetOsInfo)
       .WillOnce(Return(ByMove(expected.Clone())));
   local_printer_ash()->GetIppClientInfo(
@@ -1524,10 +1522,10 @@ TEST_F(LocalPrinterAshWithIppClientInfoTest,
   base::RunLoop loop;
   const mojom::IppClientInfo expected_os_info =
       mojom::IppClientInfo(mojom::IppClientInfo::ClientType::kOperatingSystem,
-                           "ChromeOS", absl::nullopt, "1.2.3", absl::nullopt);
+                           "ChromeOS", std::nullopt, "1.2.3", std::nullopt);
   const mojom::IppClientInfo expected_device_info =
       mojom::IppClientInfo(mojom::IppClientInfo::ClientType::kOther, "abc",
-                           absl::nullopt, "", absl::nullopt);
+                           std::nullopt, "", std::nullopt);
   EXPECT_CALL(client_info_calculator(), GetOsInfo)
       .WillOnce(Return(ByMove(expected_os_info.Clone())));
   EXPECT_CALL(client_info_calculator(), GetDeviceInfo)

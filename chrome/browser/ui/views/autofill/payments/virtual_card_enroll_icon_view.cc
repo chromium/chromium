@@ -32,7 +32,7 @@ VirtualCardEnrollIconView::VirtualCardEnrollIconView(
                          delegate,
                          "VirtualCardEnroll") {
   SetAccessibilityProperties(
-      /*role*/ absl::nullopt,
+      /*role*/ std::nullopt,
       l10n_util::GetStringUTF16(
           IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_FALLBACK_ICON_TOOLTIP));
 }

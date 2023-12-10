@@ -394,7 +394,7 @@ void NetworkPortalDetectorImplBrowserTestIgnoreProxy::TestImpl(
 
   display_service_->GetNotification(kNotificationId)
       ->delegate()
-      ->Click(absl::nullopt, absl::nullopt);
+      ->Click(std::nullopt, std::nullopt);
 
   base::RunLoop().RunUntilIdle();
 }

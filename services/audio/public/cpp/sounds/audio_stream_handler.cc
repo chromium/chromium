@@ -170,7 +170,7 @@ class AudioStreamHandler::AudioStreamContainer
 
 AudioStreamHandler::AudioStreamHandler(
     SoundsManager::StreamFactoryBinder stream_factory_binder,
-    const base::StringPiece& audio_data,
+    const std::string_view& audio_data,
     media::AudioCodec codec) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 

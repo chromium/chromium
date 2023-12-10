@@ -6,6 +6,7 @@
 #define ASH_APP_LIST_VIEWS_APP_LIST_VIEW_H_
 
 #include <memory>
+#include <optional>
 
 #include "ash/app_list/app_list_metrics.h"
 #include "ash/app_list/app_list_view_delegate.h"
@@ -18,7 +19,6 @@
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window_observer.h"
 #include "ui/events/event.h"
 #include "ui/views/widget/widget.h"
@@ -322,7 +322,7 @@ class ASH_EXPORT AppListView : public views::WidgetDelegateView,
       nullptr;  // Owned by views hierarchy.
 
   // The time the AppListView was requested to be shown. Used for metrics.
-  absl::optional<base::Time> time_shown_;
+  std::optional<base::Time> time_shown_;
 
   // Whether the view is being built.
   bool is_building_ = false;

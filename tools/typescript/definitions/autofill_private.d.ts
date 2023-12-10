@@ -116,6 +116,7 @@ declare global {
         SINGLE_USERNAME_FORGOT_PASSWORD,
         ADDRESS_HOME_APT,
         ADDRESS_HOME_APT_TYPE,
+        SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES,
       }
 
       export enum AddressSource {
@@ -214,12 +215,14 @@ declare global {
       export function maskCreditCard(guid: string): void;
       export function migrateCreditCards(): void;
       export function logServerCardLinkClicked(): void;
+      export function logServerIbanLinkClicked(): void;
       export function setCreditCardFIDOAuthEnabledState(enabled: boolean): void;
       export function addVirtualCard(cardId: string): void;
       export function removeVirtualCard(cardId: string): void;
       export function authenticateUserAndFlipMandatoryAuthToggle(): void;
       export function getLocalCard(guid: string): Promise<CreditCardEntry|null>;
       export function checkIfDeviceAuthAvailable(): Promise<boolean>;
+      export function bulkDeleteAllCvcs(): void;
 
       export const onPersonalDataChanged: ChromeEvent<
           (addresses: AddressEntry[], creditCards: CreditCardEntry[],

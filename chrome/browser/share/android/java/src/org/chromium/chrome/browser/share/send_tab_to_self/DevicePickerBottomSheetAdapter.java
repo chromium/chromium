@@ -50,8 +50,9 @@ class DevicePickerBottomSheetAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
         if (convertView == null) {
             final Context context = parent.getContext();
-            convertView = LayoutInflater.from(context).inflate(
-                    R.layout.send_tab_to_self_device_picker_item, parent, false);
+            convertView =
+                    LayoutInflater.from(context)
+                            .inflate(R.layout.send_tab_to_self_device_picker_item, parent, false);
 
             TargetDeviceInfo deviceInfo = getItem(position);
             ChromeImageView deviceIcon = convertView.findViewById(R.id.device_icon);
@@ -63,8 +64,10 @@ class DevicePickerBottomSheetAdapter extends BaseAdapter {
 
             TextView lastActive = convertView.findViewById(R.id.last_active);
 
-            long numDaysDeviceActive = TimeUnit.MILLISECONDS.toDays(
-                    Calendar.getInstance().getTimeInMillis() - deviceInfo.lastUpdatedTimestamp);
+            long numDaysDeviceActive =
+                    TimeUnit.MILLISECONDS.toDays(
+                            Calendar.getInstance().getTimeInMillis()
+                                    - deviceInfo.lastUpdatedTimestamp);
             lastActive.setText(getLastActiveMessage(context.getResources(), numDaysDeviceActive));
         }
         return convertView;
@@ -85,12 +88,15 @@ class DevicePickerBottomSheetAdapter extends BaseAdapter {
             Context context, TargetDeviceInfo targetDevice) {
         // TODO(crbug.com/1368080): Update cases to handle a tablet device case.
         switch (targetDevice.formFactor) {
-            case FormFactor.DESKTOP: {
-                return AppCompatResources.getDrawable(context, R.drawable.computer_black_24dp);
-            }
-            case FormFactor.PHONE: {
-                return AppCompatResources.getDrawable(context, R.drawable.smartphone_black_24dp);
-            }
+            case FormFactor.DESKTOP:
+                {
+                    return AppCompatResources.getDrawable(context, R.drawable.computer_black_24dp);
+                }
+            case FormFactor.PHONE:
+                {
+                    return AppCompatResources.getDrawable(
+                            context, R.drawable.smartphone_black_24dp);
+                }
         }
         return AppCompatResources.getDrawable(context, R.drawable.devices_black_24dp);
     }

@@ -8,7 +8,8 @@
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/preloading.h"
 #include "content/public/browser/prerender_handle.h"
-#include "url/gurl.h"
+
+class GURL;
 
 namespace content {
 
@@ -23,7 +24,7 @@ class PrerenderHandleImpl final : public PrerenderHandle {
   ~PrerenderHandleImpl() override;
 
   // PrerenderHandle:
-  GURL GetInitialPrerenderingUrl() override;
+  const GURL& GetInitialPrerenderingUrl() const override;
   base::WeakPtr<PrerenderHandle> GetWeakPtr() override;
   void SetPreloadingAttemptFailureReason(
       PreloadingFailureReason reason) override;

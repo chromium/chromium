@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include <optional>
 #include "android_webview/browser/gfx/compositor_frame_producer.h"
 #include "android_webview/browser/gfx/gpu_service_webview.h"
 #include "android_webview/browser/gfx/hardware_renderer.h"
@@ -23,7 +24,6 @@
 #include "base/trace_event/traced_value.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/quads/compositor_frame.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace android_webview {
 
@@ -194,7 +194,7 @@ void RenderThreadManager::DrawOnRT(bool save_restore,
   // Force GL binding init if it's not yet initialized.
   GpuServiceWebView::GetInstance();
 
-  absl::optional<ScopedAppGLStateRestore> state_restore;
+  std::optional<ScopedAppGLStateRestore> state_restore;
   if (!vulkan_context_provider_) {
     state_restore.emplace(ScopedAppGLStateRestore::MODE_DRAW, save_restore);
     if (state_restore->skip_draw()) {
@@ -229,7 +229,7 @@ void RenderThreadManager::DestroyHardwareRendererOnRT(bool save_restore,
                                                       bool abandon_context) {
   GpuServiceWebView::GetInstance();
 
-  absl::optional<ScopedAppGLStateRestore> state_restore;
+  std::optional<ScopedAppGLStateRestore> state_restore;
   if (!vulkan_context_provider_ && !abandon_context) {
     state_restore.emplace(ScopedAppGLStateRestore::MODE_RESOURCE_MANAGEMENT,
                           save_restore);

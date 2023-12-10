@@ -11,9 +11,9 @@ import {RateLimiter} from '../../../common/js/async_util.js';
 import {decorate} from '../../../common/js/cr_ui.js';
 import {maybeShowTooltip} from '../../../common/js/dom_utils.js';
 import {entriesToURLs} from '../../../common/js/entry_utils.js';
-import {FileType} from '../../../common/js/file_type.js';
-import {isJellyEnabled} from '../../../common/js/flags.js';
+import {getIcon, getType, isEncrypted} from '../../../common/js/file_type.js';
 import {getEntryLabel, str} from '../../../common/js/translations.js';
+import type {FilesAppEntry} from '../../../externs/files_app_entry_interfaces.js';
 import type {VolumeManager} from '../../../externs/volume_manager.js';
 import type {FilesTooltip} from '../../elements/files_tooltip.js';
 import {type FileListModel, GROUP_BY_FIELD_DIRECTORY, GROUP_BY_FIELD_MODIFICATION_TIME, GroupValue} from '../file_list_model.js';
@@ -51,14 +51,14 @@ export class FileGrid extends Grid {
   private listThumbnailLoader_: ListThumbnailLoader|null = null;
   private volumeManager_: VolumeManager|null = null;
   private relayoutRateLimiter_: RateLimiter|null = null;
-  private onThumbnailLoadedBound_: null|((_: Event) => void) = null;
+  private onThumbnailLoadedBound_: null|EventListener = null;
   a11y: A11yAnnounce|null = null;
 
   override get dataModel() {
     return super.dataModel as FileListModel;
   }
 
-  override set dataModel(model: FileListModel) {
+  override set dataModel(model: FileListModel|null) {
     // The setter for dataModel is overridden to remove/add the 'splice'
     // listener for the current data model.
     if (this.dataModel) {
@@ -95,7 +95,8 @@ export class FileGrid extends Grid {
     self.listThumbnailLoader_ = null;
     self.beginIndex_ = 0;
     self.endIndex_ = 0;
-    self.onThumbnailLoadedBound_ = self.onThumbnailLoaded_.bind(self);
+    self.onThumbnailLoadedBound_ =
+        self.onThumbnailLoaded_.bind(self) as EventListener;
 
     self.itemConstructor = function(entry: Entry) {
       const item = self.ownerDocument.createElement('li') as FileGridItem;
@@ -166,7 +167,7 @@ export class FileGrid extends Grid {
   /**
    * Sets list thumbnail loader.
    */
-  setListThumbnailLoader(listThumbnailLoader: ListThumbnailLoader) {
+  setListThumbnailLoader(listThumbnailLoader: ListThumbnailLoader|null) {
     if (this.listThumbnailLoader_) {
       this.listThumbnailLoader_.removeEventListener(
           'thumbnailLoaded', this.onThumbnailLoadedBound_);
@@ -196,11 +197,10 @@ export class FileGrid extends Grid {
         null;
   }
 
-  private onThumbnailLoaded_(e: Event) {
-    const event = e as ThumbnailLoadedEvent;
+  private onThumbnailLoaded_(event: ThumbnailLoadedEvent) {
     assert(this.dataModel);
     assert(this.metadataModel_);
-    const listItem = this.getListItemByIndex(event.index);
+    const listItem = this.getListItemByIndex(event.detail.index);
     const entry = listItem && this.dataModel.item(listItem.listIndex);
     if (!entry) {
       return;
@@ -211,19 +211,19 @@ export class FileGrid extends Grid {
           this.metadataModel_.getCache(
                                  [entry],
                                  ['contentMimeType'])[0]!.contentMimeType;
-      if (!event.dataUrl) {
+      if (!event.detail.dataUrl) {
         FileGrid.clearThumbnailImage_(assertInstanceof(box, HTMLDivElement));
         this.setGenericThumbnail_(
             assertInstanceof(box, HTMLDivElement), entry, mimeType);
       } else {
-        assert(event.width);
-        assert(event.height);
+        assert(event.detail.width);
+        assert(event.detail.height);
         FileGrid.setThumbnailImage_(
-            assertInstanceof(box, HTMLDivElement), entry, event.dataUrl,
-            event.width, event.height, mimeType);
+            assertInstanceof(box, HTMLDivElement), entry, event.detail.dataUrl,
+            event.detail.width, event.detail.height, mimeType);
       }
     }
-    listItem.classList.toggle('thumbnail-loaded', !!event.dataUrl);
+    listItem.classList.toggle('thumbnail-loaded', !!event.detail.dataUrl);
   }
 
   override mergeItems(beginIndex: number, endIndex: number) {
@@ -254,7 +254,7 @@ export class FileGrid extends Grid {
         title.setAttribute('role', 'heading');
         title.innerText = startIndexToGroupLabel.get(i)!.label;
         title.classList.add(
-            'grid-title', `group-by-${fileListModel.groupByField}`);
+            'grid-title', `group-by-${fileListModel!.groupByField}`);
         this.insertBefore(title, item);
       }
     }
@@ -268,6 +268,7 @@ export class FileGrid extends Grid {
   }
 
   override getItemTop(index: number) {
+    assert(this.dataModel);
     const fileListModel = this.dataModel;
     const groupBySnapshot = fileListModel.getGroupBySnapshot();
 
@@ -299,6 +300,7 @@ export class FileGrid extends Grid {
   }
 
   override getItemRow(index: number) {
+    assert(this.dataModel);
     const fileListModel = this.dataModel;
     const groupBySnapshot = fileListModel.getGroupBySnapshot();
 
@@ -327,6 +329,7 @@ export class FileGrid extends Grid {
    * @param index The item index.
    */
   getItemColumn(index: number) {
+    assert(this.dataModel);
     const fileListModel = this.dataModel;
     const groupBySnapshot = fileListModel.getGroupBySnapshot();
 
@@ -354,6 +357,7 @@ export class FileGrid extends Grid {
     if (row < 0 || column < 0 || column >= this.columns) {
       return -1;
     }
+    assert(this.dataModel);
     const fileListModel = this.dataModel;
     const groupBySnapshot = fileListModel.getGroupBySnapshot();
 
@@ -463,6 +467,7 @@ export class FileGrid extends Grid {
   }
 
   override getAfterFillerHeight(lastIndex: number) {
+    assert(this.dataModel);
     const fileListModel = this.dataModel;
     const groupBySnapshot = fileListModel.getGroupBySnapshot();
     // Excluding the current index, because [firstIndex, lastIndex) is used
@@ -504,7 +509,7 @@ export class FileGrid extends Grid {
   private getFolderItemHeight_(): number {
     // Align with CSS value for .thumbnail-item.directory: height + margin +
     // border.
-    const height = isJellyEnabled() ? 48 : 40;
+    const height = 48;
     return height + this.getItemMarginTop_() + 2;
   }
 
@@ -521,12 +526,12 @@ export class FileGrid extends Grid {
    * Returns the height of group heading.
    */
   private getGroupHeadingHeight_(groupIndex: number): number {
+    assert(this.dataModel);
     const fileListModel = this.dataModel;
-    // For FilesRefresh, we have an additional margin for non-first group, check
+    // We have an additional margin for non-first group, check
     // the CSS rule ".grid-title ~ .grid-title" for more information in the CSS
     // file.
-    const groupMarginTop =
-        isJellyEnabled() && groupIndex > 0 ? GROUP_MARGIN_TOP : 0;
+    const groupMarginTop = groupIndex > 0 ? GROUP_MARGIN_TOP : 0;
     switch (fileListModel.groupByField) {
       case GROUP_BY_FIELD_DIRECTORY:
         return DIRECTORY_GROUP_HEADING_HEIGHT + groupMarginTop;
@@ -541,6 +546,7 @@ export class FileGrid extends Grid {
    * Returns the height of the item in the group based on the group value.
    */
   private getGroupItemHeight_(groupValue?: GroupValue): number {
+    assert(this.dataModel);
     const fileListModel = this.dataModel;
     switch (fileListModel.groupByField) {
       case GROUP_BY_FIELD_DIRECTORY:
@@ -557,6 +563,7 @@ export class FileGrid extends Grid {
    * Returns the height of the item specified by the index.
    */
   protected override getItemHeightByIndex_(index: number): number {
+    assert(this.dataModel);
     const fileListModel = this.dataModel;
     if (fileListModel.groupByField === GROUP_BY_FIELD_MODIFICATION_TIME) {
       return this.getFileItemHeight_();
@@ -578,7 +585,7 @@ export class FileGrid extends Grid {
    */
   private getItemWidth_(): number {
     // Align with CSS value for .thumbnail-item: width + margin + border.
-    const width = isJellyEnabled() ? 160 : 180;
+    const width = 160;
     return width + this.getItemMarginLeft_() + 2;
   }
 
@@ -604,6 +611,7 @@ export class FileGrid extends Grid {
    * @return Row index corresponding to the given offset.
    */
   private getRowForListOffset_(offset: number): number {
+    assert(this.dataModel);
     const fileListModel = this.dataModel;
     const innerOffset = Math.max(0, offset - this.paddingTop_);
     const groupBySnapshot = fileListModel.getGroupBySnapshot();
@@ -660,7 +668,7 @@ export class FileGrid extends Grid {
    * @param _type Type of metadata changed.
    * @param entries Entries whose metadata changed.
    */
-  updateListItemsMetadata(_type: string, entries: Entry[]) {
+  updateListItemsMetadata(_type: string, entries: Array<Entry|FilesAppEntry>) {
     const urls = entriesToURLs(entries);
     const boxes =
         Array.from(this.querySelectorAll<HTMLElement>('.img-container'));
@@ -781,7 +789,7 @@ export class FileGrid extends Grid {
    * @param li List item which contains the box to be decorated.
    * @param entry Entry which thumbnail is generating for.
    */
-  private decorateThumbnailBox_(li: HTMLLIElement, entry: Entry) {
+  private decorateThumbnailBox_(li: HTMLLIElement, entry: Entry|FilesAppEntry) {
     const box =
         assertInstanceof(li.querySelector('.img-container'), HTMLDivElement);
 
@@ -815,7 +823,7 @@ export class FileGrid extends Grid {
    * @param  li The grid item.
    * @param  entry File entry for the grid item.
    */
-  private updateSharedStatus_(li: ListItem, entry: Entry) {
+  private updateSharedStatus_(li: ListItem, entry: Entry|FilesAppEntry) {
     if (!entry.isDirectory) {
       return;
     }
@@ -850,6 +858,7 @@ export class FileGrid extends Grid {
   }
 
   private onSorted_() {
+    assert(this.dataModel);
     const fileListModel = this.dataModel;
     const hasGroupHeadingAfterSort = fileListModel.shouldShowGroupHeading();
     // Sort doesn't trigger redraw sometimes, e.g. if we sort by Name for now,
@@ -871,15 +880,15 @@ export class FileGrid extends Grid {
    * @param mimeType Optional mime type for the image.
    */
   private static setThumbnailImage_(
-      box: HTMLDivElement, entry: Entry, dataUrl: string, width: number,
-      height: number, mimeType?: string) {
+      box: HTMLDivElement, entry: Entry|FilesAppEntry, dataUrl: string,
+      width: number, height: number, mimeType?: string) {
     const thumbnail = box.ownerDocument.createElement('div');
     thumbnail.classList.add('thumbnail');
     box.classList.toggle('no-thumbnail', false);
 
     // If the image is JPEG or the thumbnail is larger than the grid size,
     // resize it to cover the thumbnail box.
-    const type = FileType.getType(entry, mimeType);
+    const type = getType(entry, mimeType);
     if ((type.type === 'image' && type.subtype === 'JPEG') ||
         width > gridSize() || height > gridSize()) {
       thumbnail.style.backgroundSize = 'cover';
@@ -914,13 +923,8 @@ export class FileGrid extends Grid {
    * @param mimeType Optional mime type for the file.
    */
   private setGenericThumbnail_(
-      box: HTMLDivElement, entry: Entry, mimeType?: string) {
-    if (entry.isDirectory) {
-      // There is no space to show the thumbnail so don't add one for Jelly.
-      if (!isJellyEnabled()) {
-        box.setAttribute('generic-thumbnail', 'folder');
-      }
-    } else if (FileType.isEncrypted(entry, mimeType)) {
+      box: HTMLDivElement, entry: Entry|FilesAppEntry, mimeType?: string) {
+    if (isEncrypted(entry, mimeType)) {
       box.setAttribute('generic-thumbnail', 'encrypted');
       box.setAttribute('aria-label', str('ENCRYPTED_ICON_TOOLTIP'));
       document.querySelector<FilesTooltip>('files-tooltip')!.addTarget(box);
@@ -928,7 +932,7 @@ export class FileGrid extends Grid {
       box.classList.toggle('no-thumbnail', true);
       const locationInfo = this.volumeManager_!.getLocationInfo(entry);
       const rootType = locationInfo && locationInfo.rootType || undefined;
-      const icon = FileType.getIcon(entry, mimeType, rootType);
+      const icon = getIcon(entry, mimeType, rootType);
       box.setAttribute('generic-thumbnail', icon);
     }
   }
@@ -969,6 +973,7 @@ export class FileGrid extends Grid {
    * y.
    */
   private getHitRowIndex_(y: number, isStart: boolean): number {
+    assert(this.dataModel);
     const fileListModel = this.dataModel;
     const groupBySnapshot = fileListModel.getGroupBySnapshot();
 
@@ -1061,7 +1066,7 @@ export class FileGrid extends Grid {
  * Grid size, in "px".
  */
 function gridSize(): number {
-  return isJellyEnabled() ? 160 : 180;
+  return 160;
 }
 
 class FileGridItem extends ListItem {
@@ -1138,6 +1143,7 @@ export class FileGridSelectionController extends GridSelectionController {
       // columns to get the column (index `col`), and `row + 1` must be the
       // last row of the group. We just need to return the last index of that
       // group.
+      assert(grid.dataModel);
       const groupBySnapshot = grid.dataModel.getGroupBySnapshot();
       let curRow = 0;
       for (const group of groupBySnapshot) {

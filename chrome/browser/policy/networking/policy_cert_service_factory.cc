@@ -15,7 +15,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/scoped_user_pref_update.h"
-#include "services/network/cert_verifier_with_trust_anchors.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"

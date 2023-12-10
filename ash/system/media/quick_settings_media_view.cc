@@ -11,6 +11,8 @@
 #include "ash/system/media/quick_settings_media_view_controller.h"
 #include "components/global_media_controls/public/views/media_item_ui_view.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/layout/box_layout_view.h"
@@ -35,6 +37,8 @@ constexpr int kPaginationViewHeight = 140;
 // is shown on the screen by setting the x position of the scroll content.
 class MediaScrollView : public views::ScrollView,
                         public PaginationModelObserver {
+  METADATA_HEADER(MediaScrollView, views::ScrollView)
+
  public:
   MediaScrollView(QuickSettingsMediaView* media_view, PaginationModel* model)
       : views::ScrollView(ScrollView::ScrollWithLayers::kEnabled),
@@ -44,7 +48,7 @@ class MediaScrollView : public views::ScrollView,
     SetContents(std::make_unique<views::BoxLayoutView>());
 
     // Remove the default background color.
-    SetBackgroundColor(absl::nullopt);
+    SetBackgroundColor(std::nullopt);
 
     // The scroll view does not accept any scroll event.
     SetHorizontalScrollBarMode(views::ScrollView::ScrollBarMode::kDisabled);
@@ -98,6 +102,9 @@ class MediaScrollView : public views::ScrollView,
   base::ScopedObservation<PaginationModel, PaginationModelObserver> observer_{
       this};
 };
+
+BEGIN_METADATA(MediaScrollView)
+END_METADATA
 
 }  // namespace
 
@@ -216,5 +223,8 @@ int QuickSettingsMediaView::GetMediaViewHeight() const {
              ? kMultipleMediaViewHeight
              : global_media_controls::kCrOSMediaItemUpdatedUISize.height();
 }
+
+BEGIN_METADATA(QuickSettingsMediaView)
+END_METADATA
 
 }  // namespace ash

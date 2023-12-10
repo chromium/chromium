@@ -28,6 +28,7 @@
 
 #include "third_party/blink/renderer/core/layout/layout_image_resource_style_image.h"
 
+#include "third_party/blink/renderer/core/layout/intrinsic_sizing_info.h"
 #include "third_party/blink/renderer/core/layout/layout_replaced.h"
 #include "third_party/blink/renderer/core/layout/list/layout_list_marker_image.h"
 #include "third_party/blink/renderer/core/style/style_fetched_image.h"
@@ -76,15 +77,21 @@ gfx::SizeF LayoutImageResourceStyleImage::ImageSize(float multiplier) const {
                                 ? list_marker->DefaultSize()
                                 : gfx::SizeF(LayoutReplaced::kDefaultWidth,
                                              LayoutReplaced::kDefaultHeight);
-  return ImageSizeWithDefaultSize(multiplier, default_size);
+  return ConcreteObjectSize(multiplier, default_size);
 }
 
-gfx::SizeF LayoutImageResourceStyleImage::ImageSizeWithDefaultSize(
+gfx::SizeF LayoutImageResourceStyleImage::ConcreteObjectSize(
     float multiplier,
-    const gfx::SizeF& default_size) const {
-  return style_image_->ImageSize(
-      multiplier, default_size,
-      LayoutObject::ShouldRespectImageOrientation(layout_object_));
+    const gfx::SizeF& default_object_size) const {
+  return style_image_->ImageSize(multiplier, default_object_size,
+                                 ImageOrientation());
+}
+
+IntrinsicSizingInfo LayoutImageResourceStyleImage::GetNaturalDimensions(
+    float multiplier) const {
+  // Always respect the orientation of opaque origin images to avoid leaking
+  // image data. Otherwise pull orientation from the layout object's style.
+  return style_image_->GetNaturalSizingInfo(multiplier, ImageOrientation());
 }
 
 RespectImageOrientationEnum LayoutImageResourceStyleImage::ImageOrientation()
@@ -92,7 +99,7 @@ RespectImageOrientationEnum LayoutImageResourceStyleImage::ImageOrientation()
   // Always respect the orientation of opaque origin images to avoid leaking
   // image data. Otherwise pull orientation from the layout object's style.
   RespectImageOrientationEnum respect_orientation =
-      LayoutObject::ShouldRespectImageOrientation(layout_object_);
+      layout_object_->StyleRef().ImageOrientation();
   return style_image_->ForceOrientationIfNecessary(respect_orientation);
 }
 

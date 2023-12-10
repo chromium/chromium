@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_LOGIN_UI_LOGIN_DISPLAY_HOST_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "ash/public/cpp/login_accelerators.h"
@@ -17,7 +18,6 @@
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/ui/signin_ui.h"
 #include "components/user_manager/user_type.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/widget/widget.h"
 
@@ -153,6 +153,14 @@ class LoginDisplayHost {
   // dialog.
   virtual void ShowGaiaDialog(const AccountId& prefilled_account) = 0;
 
+  // Starts user cryptohome recovery flow (once user indicates that they've
+  // forgot their knowledge key).
+  virtual void StartUserRecovery(const AccountId& account_to_recovery) = 0;
+
+  // Show a notification screen informing the user that an admin user privately
+  // accessed the device using Chrome Remote Desktop.
+  virtual void ShowRemoteActivityNotificationScreen() = 0;
+
   // Show allowlist check failed error. Happens after user completes online
   // signin but allowlist check fails.
   virtual void ShowAllowlistCheckFailedError() = 0;
@@ -190,7 +198,7 @@ class LoginDisplayHost {
   // Returns true if user is allowed to log in by domain policy.
   virtual bool IsUserAllowlisted(
       const AccountId& account_id,
-      const absl::optional<user_manager::UserType>& user_type) = 0;
+      const std::optional<user_manager::UserType>& user_type) = 0;
 
   // ----- Password change flow methods -----
   // Cancels current password changed flow.
@@ -221,8 +229,6 @@ class LoginDisplayHost {
 
   // Returns if the device has any user after filtering based on policy.
   virtual bool HasUserPods() = 0;
-
-  virtual void VerifyOwnerForKiosk(base::OnceClosure on_success) = 0;
 
   // Used to add an observer for the changes in the web dilaog login view.
   virtual void AddObserver(Observer* observer) = 0;

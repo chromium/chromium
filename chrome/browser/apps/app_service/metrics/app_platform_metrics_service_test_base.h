@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_test.h"
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics_service.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/test/base/testing_profile.h"
@@ -25,35 +26,46 @@
 
 namespace apps {
 
+// Helper structure for creating apps in unit tests.
+struct TestApp {
+  std::string app_id;
+  AppType app_type;
+  std::string publisher_id;
+  Readiness readiness;
+  InstallReason install_reason;
+  InstallSource install_source;
+  bool should_notify_initialized;
+  bool is_platform_app;
+  WindowMode window_mode = WindowMode::kUnknown;
+
+  TestApp(std::string app_id,
+          AppType app_type,
+          std::string publisher_id,
+          Readiness readiness,
+          InstallReason install_reason,
+          InstallSource install_source,
+          bool should_notify_initialized = true,
+          bool is_platform_app = false,
+          WindowMode window_mode = WindowMode::kUnknown);
+
+  TestApp();
+  TestApp(const TestApp& other);
+  TestApp(TestApp&& other);
+};
+
 // Helper method that creates an app object so it can be used with the
 // `AppRegistryCache`.
-AppPtr MakeApp(const std::string& app_id,
-               AppType app_type,
-               const std::string& publisher_id,
-               Readiness readiness,
-               InstallReason install_reason,
-               InstallSource install_source,
-               bool is_platform_app = false,
-               WindowMode window_mode = WindowMode::kUnknown);
+AppPtr MakeApp(TestApp app);
 
 // Helper method that adds a new app using the provided app metadata with the
 // `AppRegistryCache`.
-void AddApp(AppServiceProxy* proxy,
-            const std::string& app_id,
-            AppType app_type,
-            const std::string& publisher_id,
-            Readiness readiness,
-            InstallReason install_reason,
-            InstallSource install_source,
-            bool should_notify_initialized,
-            bool is_platform_app = false,
-            WindowMode window_mode = WindowMode::kUnknown);
+void AddApp(AppServiceProxy* proxy, TestApp app);
 
 // Base class that performs appropriate test setup for tests that involve app
 // platform metric collection. Also facilitates tests to simulate app
 // installation and usage.
 class AppPlatformMetricsServiceTestBase : public ::testing::Test {
- protected:
+ public:
   AppPlatformMetricsServiceTestBase();
   ~AppPlatformMetricsServiceTestBase() override;
 
@@ -70,7 +82,9 @@ class AppPlatformMetricsServiceTestBase : public ::testing::Test {
                      Readiness readiness,
                      InstallSource install_source,
                      bool is_platform_app = false,
-                     WindowMode window_mode = WindowMode::kUnknown);
+                     WindowMode window_mode = WindowMode::kUnknown,
+                     InstallReason install_reason = InstallReason::kUser);
+  void InstallOneApp(TestApp app);
 
   // Clears and restarts the `AppPlatformMetricsService` for the test profile.
   void ResetAppPlatformMetricsService();
@@ -136,6 +150,7 @@ class AppPlatformMetricsServiceTestBase : public ::testing::Test {
   raw_ptr<ash::FakeChromeUserManager, DanglingUntriaged> fake_user_manager_;
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder_;
+  apps::AppServiceTest app_service_test_;
 };
 
 }  // namespace apps

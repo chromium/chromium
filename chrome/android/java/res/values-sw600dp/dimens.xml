@@ -20,27 +20,9 @@ found in the LICENSE file.
     <!-- The combined height of the tab strip and toolbar. -->
     <dimen name="tab_strip_and_toolbar_height">96dp</dimen>
 
-    <dimen name="location_bar_icon_width">48dp</dimen>
-    <dimen name="location_bar_icon_margin_end">0dp</dimen>
-    <dimen name="location_bar_status_icon_width">48dp</dimen>
-    <dimen name="location_bar_action_icon_width">48dp</dimen>
-    <dimen name="location_bar_status_view_left_space_width_bigger">4dp</dimen>
-    <dimen name="location_bar_icon_end_padding_focused">4dp</dimen>
-
-    <dimen name="omnibox_suggestion_icon_area_size">40dp</dimen>
-    <dimen name="omnibox_suggestion_icon_area_size_modern">56dp</dimen>
-    <dimen name="omnibox_suggestion_start_padding">4dp</dimen>
-    <dimen name="omnibox_suggestion_end_padding">8dp</dimen>
-    <dimen name="omnibox_suggestion_side_spacing_smallest">12dp</dimen>
-    <dimen name="omnibox_suggestion_list_padding_top">12dp</dimen>
-    <dimen name="omnibox_suggestion_list_padding_bottom">12dp</dimen>
-    <dimen name="omnibox_suggestion_list_toolbar_overlap">2dp</dimen>
-    <dimen name="omnibox_min_space_above_window_bottom">84dp</dimen>
-
     <!-- NTP dimensions -->
     <dimen name="ntp_search_box_transition_length">60dp</dimen>
     <dimen name="ntp_wide_card_lateral_margins">48dp</dimen>
-    <dimen name="mvt_container_lateral_margin_polish">0dp</dimen>
     <dimen name="ntp_single_tab_card_top_margin">48dp</dimen>
     <dimen name="ntp_single_tab_card_bottom_margin">40dp</dimen>
 

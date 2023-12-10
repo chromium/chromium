@@ -79,7 +79,7 @@ SetPrefResult GeneratedResolveTimezoneByGeolocationMethodShort::SetPref(
   // (kResolveTimezoneByGeolocationOnOff must be modified first.)
   if (!g_browser_process->platform_part()
            ->GetTimezoneResolverManager()
-           ->TimeZoneResolverShouldBeRunning()) {
+           ->TimeZoneResolverAllowedByTimeZoneConfigData()) {
     return SetPrefResult::PREF_NOT_MODIFIABLE;
   }
 

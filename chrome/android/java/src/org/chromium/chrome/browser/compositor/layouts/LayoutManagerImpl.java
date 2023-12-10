@@ -198,7 +198,8 @@ public class LayoutManagerImpl
         @Override
         public void willAddTab(Tab tab, @TabLaunchType int type) {
             // Open the new tab
-            if (type == TabLaunchType.FROM_RESTORE || type == TabLaunchType.FROM_REPARENTING
+            if (type == TabLaunchType.FROM_RESTORE
+                    || type == TabLaunchType.FROM_REPARENTING
                     || type == TabLaunchType.FROM_EXTERNAL_APP
                     || type == TabLaunchType.FROM_LAUNCHER_SHORTCUT
                     || type == TabLaunchType.FROM_STARTUP
@@ -210,18 +211,23 @@ public class LayoutManagerImpl
         }
 
         @Override
-        public void didAddTab(Tab tab, @TabLaunchType int launchType,
-                @TabCreationState int creationState, boolean markedForSelection) {
+        public void didAddTab(
+                Tab tab,
+                @TabLaunchType int launchType,
+                @TabCreationState int creationState,
+                boolean markedForSelection) {
             int tabId = tab.getId();
             if (launchType == TabLaunchType.FROM_RESTORE) {
                 getActiveLayout().onTabRestored(time(), tabId);
             } else {
                 boolean incognito = tab.isIncognito();
-                boolean willBeSelected = launchType != TabLaunchType.FROM_LONGPRESS_BACKGROUND
-                                && launchType != TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP
-                                && launchType != TabLaunchType.FROM_RECENT_TABS
-                                && launchType != TabLaunchType.FROM_RESTORE_TABS_UI
-                        || (!getTabModelSelector().isIncognitoSelected() && incognito);
+                boolean willBeSelected =
+                        launchType != TabLaunchType.FROM_LONGPRESS_BACKGROUND
+                                        && launchType
+                                                != TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP
+                                        && launchType != TabLaunchType.FROM_RECENT_TABS
+                                        && launchType != TabLaunchType.FROM_RESTORE_TABS_UI
+                                || (!getTabModelSelector().isIncognitoSelected() && incognito);
                 float lastTapX = LocalizationUtils.isLayoutRtl() ? mHost.getWidth() * mPxToDp : 0.f;
                 float lastTapY = 0.f;
                 if (launchType != TabLaunchType.FROM_CHROME_UI) {
@@ -229,8 +235,14 @@ public class LayoutManagerImpl
                     lastTapY = mPxToDp * mLastTapY;
                 }
 
-                tabCreated(tabId, getTabModelSelector().getCurrentTabId(), launchType, incognito,
-                        willBeSelected, lastTapX, lastTapY);
+                tabCreated(
+                        tabId,
+                        getTabModelSelector().getCurrentTabId(),
+                        launchType,
+                        incognito,
+                        willBeSelected,
+                        lastTapX,
+                        lastTapY);
             }
         }
 
@@ -306,7 +318,9 @@ public class LayoutManagerImpl
      * @param tabContentManagerSupplier Supplier of the {@link TabContentManager} instance.
      * @param topUiThemeColorProvider {@link ThemeColorProvider} for top UI.
      */
-    public LayoutManagerImpl(LayoutManagerHost host, ViewGroup contentContainer,
+    public LayoutManagerImpl(
+            LayoutManagerHost host,
+            ViewGroup contentContainer,
             ObservableSupplier<TabContentManager> tabContentManagerSupplier,
             Supplier<TopUiThemeColorProvider> topUiThemeColorProvider) {
         mHost = host;
@@ -321,9 +335,8 @@ public class LayoutManagerImpl
                     HistoryNavigationCoordinator.getSceneOverlayClass(),
                     TopToolbarOverlayCoordinator.class,
                     // StripLayoutHelperManager should be updated before
-                    // ScrollingBottomViewSceneLayer
-                    // Since ScrollingBottomViewSceneLayer change the container size,
-                    // it causes relocation tab strip scene layer.
+                    // ScrollingBottomViewSceneLayer Since ScrollingBottomViewSceneLayer change
+                    // the container size, it causes relocation tab strip scene layer.
                     StripLayoutHelperManager.class,
                     ScrollingBottomViewSceneLayer.class,
                     StatusIndicatorCoordinator.getSceneOverlayClass(),
@@ -410,8 +423,11 @@ public class LayoutManagerImpl
         return mActiveEventFilter != null;
     }
 
-    private boolean isEventInterceptedByEventFilter(MotionEvent event, EventFilter eventFilter,
-            @EventType int eventType, boolean isKeyboardShowing) {
+    private boolean isEventInterceptedByEventFilter(
+            MotionEvent event,
+            EventFilter eventFilter,
+            @EventType int eventType,
+            boolean isKeyboardShowing) {
         switch (eventType) {
             case EventType.TOUCH:
                 return eventFilter.onInterceptTouchEvent(event, isKeyboardShowing);
@@ -558,7 +574,9 @@ public class LayoutManagerImpl
      * @param dynamicResourceLoader    A {@link DynamicResourceLoader} instance.
      * @param topUiColorProvider       A theme color provider for the top browser controls.
      */
-    public void init(TabModelSelector selector, TabCreatorManager creator,
+    public void init(
+            TabModelSelector selector,
+            TabCreatorManager creator,
             @Nullable ControlContainer controlContainer,
             DynamicResourceLoader dynamicResourceLoader,
             TopUiThemeColorProvider topUiColorProvider) {
@@ -567,9 +585,17 @@ public class LayoutManagerImpl
         mBrowserControlsStateProvider = mHost.getBrowserControlsManager();
 
         // Build Layouts
-        mStaticLayout = new StaticLayout(mContext, this, renderHost, mHost, mFrameRequestSupplier,
-                selector, mTabContentManagerSupplier.get(), mBrowserControlsStateProvider,
-                mTopUiThemeColorProvider);
+        mStaticLayout =
+                new StaticLayout(
+                        mContext,
+                        this,
+                        renderHost,
+                        mHost,
+                        mFrameRequestSupplier,
+                        selector,
+                        mTabContentManagerSupplier.get(),
+                        mBrowserControlsStateProvider,
+                        mTopUiThemeColorProvider);
 
         setNextLayout(null, true);
 
@@ -589,46 +615,49 @@ public class LayoutManagerImpl
     public void setTabModelSelector(TabModelSelector selector) {
         mTabModelSelector = selector;
         mTabModelSelectorSupplier.set(selector);
-        mTabModelSelectorTabObserver = new TabModelSelectorTabObserver(mTabModelSelector) {
-            @Override
-            public void onShown(Tab tab, @TabSelectionType int type) {
-                initLayoutTabFromHost(tab.getId());
-            }
+        mTabModelSelectorTabObserver =
+                new TabModelSelectorTabObserver(mTabModelSelector) {
+                    @Override
+                    public void onShown(Tab tab, @TabSelectionType int type) {
+                        initLayoutTabFromHost(tab.getId());
+                    }
 
-            @Override
-            public void onHidden(Tab tab, @TabHidingType int type) {
-                initLayoutTabFromHost(tab.getId());
-            }
+                    @Override
+                    public void onHidden(Tab tab, @TabHidingType int type) {
+                        initLayoutTabFromHost(tab.getId());
+                    }
 
-            @Override
-            public void onContentChanged(Tab tab) {
-                initLayoutTabFromHost(tab.getId());
-            }
+                    @Override
+                    public void onContentChanged(Tab tab) {
+                        initLayoutTabFromHost(tab.getId());
+                    }
 
-            @Override
-            public void onBackgroundColorChanged(Tab tab, int color) {
-                initLayoutTabFromHost(tab.getId());
-            }
+                    @Override
+                    public void onBackgroundColorChanged(Tab tab, int color) {
+                        initLayoutTabFromHost(tab.getId());
+                    }
 
-            @Override
-            public void onDidChangeThemeColor(Tab tab, int color) {
-                initLayoutTabFromHost(tab.getId());
-            }
-        };
+                    @Override
+                    public void onDidChangeThemeColor(Tab tab, int color) {
+                        initLayoutTabFromHost(tab.getId());
+                    }
+                };
 
         if (mNextActiveLayout != null) startShowing(mNextActiveLayout, true);
 
-        mTabModelSelectorObserver = new TabModelSelectorObserver() {
-            @Override
-            public void onTabModelSelected(TabModel newModel, TabModel oldModel) {
-                tabModelSwitched(newModel.isIncognito());
-            }
-        };
+        mTabModelSelectorObserver =
+                new TabModelSelectorObserver() {
+                    @Override
+                    public void onTabModelSelected(TabModel newModel, TabModel oldModel) {
+                        tabModelSwitched(newModel.isIncognito());
+                    }
+                };
         selector.addObserver(mTabModelSelectorObserver);
 
         mTabModelFilterObserver = createTabModelObserver();
-        getTabModelSelector().getTabModelFilterProvider().addTabModelFilterObserver(
-                mTabModelFilterObserver);
+        getTabModelSelector()
+                .getTabModelFilterProvider()
+                .addTabModelFilterObserver(mTabModelFilterObserver);
     }
 
     @Override
@@ -642,8 +671,9 @@ public class LayoutManagerImpl
             getTabModelSelector().removeObserver(mTabModelSelectorObserver);
         }
         if (mTabModelFilterObserver != null) {
-            getTabModelSelector().getTabModelFilterProvider().removeTabModelFilterObserver(
-                    mTabModelFilterObserver);
+            getTabModelSelector()
+                    .getTabModelFilterProvider()
+                    .removeTabModelFilterObserver(mTabModelFilterObserver);
         }
     }
 
@@ -655,7 +685,8 @@ public class LayoutManagerImpl
 
     @Override
     public <V extends SceneLayer> CompositorModelChangeProcessor<V> createCompositorMCP(
-            PropertyModel model, V view,
+            PropertyModel model,
+            V view,
             PropertyModelChangeProcessor.ViewBinder<PropertyModel, V, PropertyKey> viewBinder) {
         return CompositorModelChangeProcessor.create(
                 model, view, viewBinder, mFrameRequestSupplier, true);
@@ -676,25 +707,38 @@ public class LayoutManagerImpl
     }
 
     @Override
-    public SceneLayer getUpdatedActiveSceneLayer(TabContentManager tabContentManager,
-            ResourceManager resourceManager, BrowserControlsManager browserControlsManager) {
+    public SceneLayer getUpdatedActiveSceneLayer(
+            TabContentManager tabContentManager,
+            ResourceManager resourceManager,
+            BrowserControlsManager browserControlsManager) {
         updateControlsHidingState(browserControlsManager);
         getViewportPixel(mCachedVisibleViewport);
         mHost.getWindowViewport(mCachedWindowViewport);
-        SceneLayer layer = mActiveLayout.getUpdatedSceneLayer(mCachedWindowViewport,
-                mCachedVisibleViewport, tabContentManager, resourceManager, browserControlsManager);
+        SceneLayer layer =
+                mActiveLayout.getUpdatedSceneLayer(
+                        mCachedWindowViewport,
+                        mCachedVisibleViewport,
+                        tabContentManager,
+                        resourceManager,
+                        browserControlsManager);
 
-        float offsetPx = mBrowserControlsStateProvider == null
-                ? 0
-                : mBrowserControlsStateProvider.getTopControlOffset();
+        float offsetPx =
+                mBrowserControlsStateProvider == null
+                        ? 0
+                        : mBrowserControlsStateProvider.getTopControlOffset();
 
         for (int i = 0; i < mSceneOverlays.size(); i++) {
             // If the SceneOverlay is not showing, don't bother adding it to the tree.
             if (!mSceneOverlays.get(i).isSceneOverlayTreeShowing()) continue;
 
             SceneOverlayLayer overlayLayer =
-                    mSceneOverlays.get(i).getUpdatedSceneOverlayTree(mCachedWindowViewport,
-                            mCachedVisibleViewport, resourceManager, offsetPx * mPxToDp);
+                    mSceneOverlays
+                            .get(i)
+                            .getUpdatedSceneOverlayTree(
+                                    mCachedWindowViewport,
+                                    mCachedVisibleViewport,
+                                    resourceManager,
+                                    offsetPx * mPxToDp);
 
             overlayLayer.setContentTree(layer);
             layer = overlayLayer;
@@ -719,16 +763,15 @@ public class LayoutManagerImpl
         }
 
         if (overlayHidesControls || mActiveLayout.forceHideBrowserControlsAndroidView()) {
-            mControlsHidingToken = controlsVisibilityManager.hideAndroidControlsAndClearOldToken(
-                    mControlsHidingToken);
+            mControlsHidingToken =
+                    controlsVisibilityManager.hideAndroidControlsAndClearOldToken(
+                            mControlsHidingToken);
         } else {
             controlsVisibilityManager.releaseAndroidControlsHidingToken(mControlsHidingToken);
         }
     }
 
-    /**
-     * Called when the viewport has been changed.
-     */
+    /** Called when the viewport has been changed. */
     public void onViewportChanged() {
         if (getActiveLayout() != null) {
             float previousWidth = getActiveLayout().getWidth();
@@ -737,17 +780,24 @@ public class LayoutManagerImpl
             float oldViewportTop = mCachedWindowViewport.top;
             mHost.getWindowViewport(mCachedWindowViewport);
             mHost.getVisibleViewport(mCachedVisibleViewport);
-            getActiveLayout().sizeChanged(mCachedVisibleViewport, mCachedWindowViewport,
-                    mHost.getTopControlsHeightPixels(), mHost.getBottomControlsHeightPixels(),
-                    getOrientation());
+            getActiveLayout()
+                    .sizeChanged(
+                            mCachedVisibleViewport,
+                            mCachedWindowViewport,
+                            mHost.getTopControlsHeightPixels(),
+                            mHost.getBottomControlsHeightPixels(),
+                            getOrientation());
 
             float width = mCachedWindowViewport.width() * mPxToDp;
             float height = mCachedWindowViewport.height() * mPxToDp;
-            if (width != previousWidth || height != previousHeight
+            if (width != previousWidth
+                    || height != previousHeight
                     || oldViewportTop != mCachedVisibleViewport.top) {
                 for (int i = 0; i < mSceneOverlays.size(); i++) {
-                    mSceneOverlays.get(i).onSizeChanged(
-                            width, height, mCachedVisibleViewport.top, getOrientation());
+                    mSceneOverlays
+                            .get(i)
+                            .onSizeChanged(
+                                    width, height, mCachedVisibleViewport.top, getOrientation());
                 }
             }
         }
@@ -802,11 +852,25 @@ public class LayoutManagerImpl
      * @param originX        The x coordinate of the action that created this tab in dp.
      * @param originY        The y coordinate of the action that created this tab in dp.
      */
-    protected void tabCreated(int id, int sourceId, @TabLaunchType int launchType,
-            boolean incognito, boolean willBeSelected, float originX, float originY) {
+    protected void tabCreated(
+            int id,
+            int sourceId,
+            @TabLaunchType int launchType,
+            boolean incognito,
+            boolean willBeSelected,
+            float originX,
+            float originY) {
         int newIndex = TabModelUtils.getTabIndexById(getTabModelSelector().getModel(incognito), id);
-        getActiveLayout().onTabCreated(
-                time(), id, newIndex, sourceId, incognito, !willBeSelected, originX, originY);
+        getActiveLayout()
+                .onTabCreated(
+                        time(),
+                        id,
+                        newIndex,
+                        sourceId,
+                        incognito,
+                        !willBeSelected,
+                        originX,
+                        originY);
     }
 
     /**
@@ -872,12 +936,18 @@ public class LayoutManagerImpl
         boolean isNativePage =
                 tab.isNativePage() || url.getScheme().equals(UrlConstants.CHROME_NATIVE_SCHEME);
 
-        boolean canUseLiveTexture = tab.getWebContents() != null && !SadTab.isShowing(tab)
-                && !isNativePage && !tab.isHidden();
+        boolean canUseLiveTexture =
+                tab.getWebContents() != null
+                        && !SadTab.isShowing(tab)
+                        && !isNativePage
+                        && !tab.isHidden();
 
         TopUiThemeColorProvider topUiTheme = mTopUiThemeColorProvider.get();
-        layoutTab.initFromHost(topUiTheme.getBackgroundColor(tab), shouldStall(tab),
-                canUseLiveTexture, topUiTheme.getSceneLayerBackground(tab),
+        layoutTab.initFromHost(
+                topUiTheme.getBackgroundColor(tab),
+                shouldStall(tab),
+                canUseLiveTexture,
+                topUiTheme.getSceneLayerBackground(tab),
                 ThemeUtils.getTextBoxColorForToolbarBackground(
                         mContext, tab, topUiTheme.calculateColor(tab, tab.getThemeColor())));
 
@@ -1026,7 +1096,7 @@ public class LayoutManagerImpl
         Layout activeLayout = getActiveLayout();
         if (activeLayout != null && !activeLayout.isStartingToHide()) {
             setNextLayout(getLayoutForType(layoutType), animate);
-            activeLayout.startHiding(Tab.INVALID_TAB_ID);
+            activeLayout.startHiding();
         } else {
             startShowing(getLayoutForType(layoutType), animate);
         }
@@ -1085,13 +1155,16 @@ public class LayoutManagerImpl
                     !BrowserControlsUtils.areBrowserControlsOffScreen(controlsVisibilityManager);
 
             // Release any old fullscreen token we were holding.
-            controlsVisibilityManager.getBrowserVisibilityDelegate().releasePersistentShowingToken(
-                    mControlsShowingToken);
+            controlsVisibilityManager
+                    .getBrowserVisibilityDelegate()
+                    .releasePersistentShowingToken(mControlsShowingToken);
 
             // Grab a new fullscreen token if this layout can't be in fullscreen.
             if (getActiveLayout().forceShowBrowserControlsAndroidView()) {
-                mControlsShowingToken = controlsVisibilityManager.getBrowserVisibilityDelegate()
-                                                .showControlsPersistent();
+                mControlsShowingToken =
+                        controlsVisibilityManager
+                                .getBrowserVisibilityDelegate()
+                                .showControlsPersistent();
             }
         }
 
@@ -1102,7 +1175,8 @@ public class LayoutManagerImpl
         // its scope is closed.
         try (ShowingEventSequencer scopedSequencer = new ShowingEventSequencer()) {
             getActiveLayout().show(time(), animate);
-            mHost.setContentOverlayVisibility(getActiveLayout().shouldDisplayContentOverlay(),
+            mHost.setContentOverlayVisibility(
+                    getActiveLayout().shouldDisplayContentOverlay(),
                     getActiveLayout().canHostBeFocusable());
             requestUpdate();
 

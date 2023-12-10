@@ -32,6 +32,7 @@ class MultitaskButton : public views::Button {
   ~MultitaskButton() override = default;
 
   // views::Button:
+  void StateChanged(views::Button::ButtonState old_state) override;
   void PaintButtonContents(gfx::Canvas* canvas) override;
 
  private:

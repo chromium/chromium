@@ -1,5 +1,4 @@
 This is a testharness.js-based test.
-[PASS] getComputedStyle returns no style for detached element
 [FAIL] getComputedStyle returns no style for element in non-rendered iframe (display: none)
   assert_true: expected true got false
 [FAIL] getComputedStyle returns no style for element in non-rendered iframe (display: none) from iframe's window
@@ -8,6 +7,5 @@ This is a testharness.js-based test.
   assert_true: expected true got false
 [FAIL] getComputedStyle returns no style for descendant outside the flat tree
   assert_true: expected true got false
-[PASS] getComputedStyle returns no style for shadow tree outside of flattened tree
 Harness: the test ran to completion.
 

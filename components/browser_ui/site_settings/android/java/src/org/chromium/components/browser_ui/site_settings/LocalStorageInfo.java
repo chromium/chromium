@@ -11,9 +11,7 @@ import org.chromium.content_public.browser.BrowserContextHandle;
 
 import java.io.Serializable;
 
-/**
- * Local Storage information for a given origin.
- */
+/** Local Storage information for a given origin. */
 public class LocalStorageInfo implements Serializable {
     private final String mOrigin;
     private final long mSize;
@@ -34,8 +32,8 @@ public class LocalStorageInfo implements Serializable {
             BrowserContextHandle browserContextHandle, StorageInfoClearedCallback callback) {
         // TODO(dullweber): Cookies should call a callback when cleared as well.
         WebsitePreferenceBridgeJni.get().clearCookieData(browserContextHandle, mOrigin);
-        WebsitePreferenceBridgeJni.get().clearLocalStorageData(
-                browserContextHandle, mOrigin, callback);
+        WebsitePreferenceBridgeJni.get()
+                .clearLocalStorageData(browserContextHandle, mOrigin, callback);
     }
 
     public long getSize() {

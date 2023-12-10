@@ -1,3 +1,0 @@
-Test:	http://www.w3.org/2001/DOM-Test-Suite/level2/events/dispatchEvent05	
-Status:	failure
-Detail:	throw_UNSPECIFIED_EVENT_TYPE_ERR: assertTrue failed

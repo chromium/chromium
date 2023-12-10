@@ -87,19 +87,29 @@ public class SharedTracingControllerAdapter {
         return predefinedIndices;
     }
 
-    private int startOnUI(int predefinedCategories, Collection<String> customIncludedCategories,
-                          int tracingMode) {
+    private int startOnUI(
+            int predefinedCategories,
+            Collection<String> customIncludedCategories,
+            int tracingMode) {
         return mAwTracingController.start(
                 collectPredefinedCategories(predefinedCategories),
-                customIncludedCategories, convertAndroidTracingMode(tracingMode));
+                customIncludedCategories,
+                convertAndroidTracingMode(tracingMode));
     }
 
-    public void start(int predefinedCategories, Collection<String> customIncludedCategories,
-                      int tracingMode) {
-        int result = checkNeedsPost() ?
-            mRunQueue.runOnUiThreadBlocking(
-                    () -> startOnUI(predefinedCategories, customIncludedCategories, tracingMode)) :
-            startOnUI(predefinedCategories, customIncludedCategories, tracingMode);
+    public void start(
+            int predefinedCategories,
+            Collection<String> customIncludedCategories,
+            int tracingMode) {
+        int result =
+                checkNeedsPost()
+                        ? mRunQueue.runOnUiThreadBlocking(
+                                () ->
+                                        startOnUI(
+                                                predefinedCategories,
+                                                customIncludedCategories,
+                                                tracingMode))
+                        : startOnUI(predefinedCategories, customIncludedCategories, tracingMode);
 
         if (result != AwTracingController.RESULT_SUCCESS) {
             // make sure to throw on the original calling thread.
@@ -118,10 +128,9 @@ public class SharedTracingControllerAdapter {
     }
 
     public boolean stop(@Nullable OutputStream outputStream, @NonNull Executor executor) {
-        return checkNeedsPost() ?
-            mRunQueue.runOnUiThreadBlocking(
-                    () -> stopOnUI(outputStream, executor)):
-            stopOnUI(outputStream, executor);
+        return checkNeedsPost()
+                ? mRunQueue.runOnUiThreadBlocking(() -> stopOnUI(outputStream, executor))
+                : stopOnUI(outputStream, executor);
     }
 
     private boolean stopOnUI(@Nullable OutputStream outputStream, @NonNull Executor executor) {
@@ -130,37 +139,47 @@ public class SharedTracingControllerAdapter {
         }
 
         final OutputStream localOutputStream = outputStream;
-        return mAwTracingController.stopAndFlush(new OutputStream() {
-            @Override
-            public void write(byte[] chunk) {
-                executor.execute(() -> {
-                    try {
-                        localOutputStream.write(chunk);
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
+        return mAwTracingController.stopAndFlush(
+                new OutputStream() {
+                    @Override
+                    public void write(byte[] chunk) {
+                        executor.execute(
+                                () -> {
+                                    try {
+                                        localOutputStream.write(chunk);
+                                    } catch (IOException e) {
+                                        throw new RuntimeException(e);
+                                    }
+                                });
+                    }
+
+                    @Override
+                    public void close() {
+                        executor.execute(
+                                () -> {
+                                    try {
+                                        localOutputStream.close();
+                                    } catch (IOException e) {
+                                        throw new RuntimeException(e);
+                                    }
+                                });
+                    }
+
+                    @Override
+                    public void write(int b) {
+                        /* should not be called */
+                    }
+
+                    @Override
+                    public void flush() {
+                        /* should not be called */
+                    }
+
+                    @Override
+                    public void write(byte[] b, int off, int len) {
+                        /* should not be called */
                     }
                 });
-            }
-            @Override
-            public void close() {
-                executor.execute(() -> {
-                    try {
-                        localOutputStream.close();
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-                });
-            }
-            @Override
-            public void write(int b) { /* should not be called */
-            }
-            @Override
-            public void flush() { /* should not be called */
-            }
-            @Override
-            public void write(byte[] b, int off, int len) { /* should not be called */
-            }
-        });
     }
 
     private static boolean checkNeedsPost() {

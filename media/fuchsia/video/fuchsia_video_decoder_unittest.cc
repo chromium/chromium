@@ -138,13 +138,28 @@ class TestSharedImageInterface : public gpu::SharedImageInterface {
       SkAlphaType alpha_type,
       uint32_t usage,
       base::StringPiece debug_label,
+      gpu::SurfaceHandle surface_handle,
+      gfx::BufferUsage buffer_usage,
+      gfx::GpuMemoryBufferHandle buffer_handle) override {
+    ADD_FAILURE();
+    return base::MakeRefCounted<gpu::ClientSharedImage>(gpu::Mailbox());
+  }
+
+  scoped_refptr<gpu::ClientSharedImage> CreateSharedImage(
+      viz::SharedImageFormat format,
+      const gfx::Size& size,
+      const gfx::ColorSpace& color_space,
+      GrSurfaceOrigin surface_origin,
+      SkAlphaType alpha_type,
+      uint32_t usage,
+      base::StringPiece debug_label,
       gfx::GpuMemoryBufferHandle buffer_handle) override {
     auto result = GenerateMailboxForGMBHandle(std::move(buffer_handle));
     mailboxes_.insert(result);
     return base::MakeRefCounted<gpu::ClientSharedImage>(result);
   }
 
-  gpu::Mailbox CreateSharedImage(
+  scoped_refptr<gpu::ClientSharedImage> CreateSharedImage(
       gfx::GpuMemoryBuffer* gpu_memory_buffer,
       gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
       gfx::BufferPlane plane,
@@ -155,7 +170,7 @@ class TestSharedImageInterface : public gpu::SharedImageInterface {
       base::StringPiece debug_label) override {
     auto result = GenerateMailboxForGMBHandle(gpu_memory_buffer->CloneHandle());
     mailboxes_.insert(result);
-    return result;
+    return base::MakeRefCounted<gpu::ClientSharedImage>(result);
   }
 
   void UpdateSharedImage(const gpu::SyncToken& sync_token,

@@ -4,48 +4,51 @@
 
 #include "content/browser/attribution_reporting/store_source_result.h"
 
-#include "base/check.h"
-#include "base/time/time.h"
+#include "base/functional/overloaded.h"
 #include "content/browser/attribution_reporting/store_source_result.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace content {
 
-StoreSourceResult::StoreSourceResult(
-    attribution_reporting::mojom::StoreSourceResult status,
-    absl::optional<base::Time> min_fake_report_time,
-    absl::optional<int> max_destinations_per_source_site_reporting_site,
-    absl::optional<int> max_sources_per_origin,
-    absl::optional<int> max_destinations_per_rate_limit_window_reporting_origin)
-    : status(status),
-      min_fake_report_time(min_fake_report_time),
-      max_destinations_per_source_site_reporting_site(
-          max_destinations_per_source_site_reporting_site),
-      max_sources_per_origin(max_sources_per_origin),
-      max_destinations_per_rate_limit_window_reporting_origin(
-          max_destinations_per_rate_limit_window_reporting_origin) {
-  DCHECK(!max_destinations_per_source_site_reporting_site.has_value() ||
-         status == attribution_reporting::mojom::StoreSourceResult::
-                       kInsufficientUniqueDestinationCapacity);
-  DCHECK(!max_sources_per_origin.has_value() ||
-         status == attribution_reporting::mojom::StoreSourceResult::
-                       kInsufficientSourceCapacity);
-  DCHECK(!max_destinations_per_rate_limit_window_reporting_origin.has_value() ||
-         status == attribution_reporting::mojom::StoreSourceResult::
-                       kDestinationReportingLimitReached ||
-         status == attribution_reporting::mojom::StoreSourceResult::
-                       kDestinationBothLimitsReached);
+namespace {
+using Status = ::attribution_reporting::mojom::StoreSourceResult;
+}  // namespace
+
+Status StoreSourceResult::status() const {
+  return absl::visit(
+      base::Overloaded{
+          [](Success) { return Status::kSuccess; },
+          [](InternalError) { return Status::kInternalError; },
+          [](InsufficientSourceCapacity) {
+            return Status::kInsufficientSourceCapacity;
+          },
+          [](InsufficientUniqueDestinationCapacity) {
+            return Status::kInsufficientUniqueDestinationCapacity;
+          },
+          [](ExcessiveReportingOrigins) {
+            return Status::kExcessiveReportingOrigins;
+          },
+          [](ProhibitedByBrowserPolicy) {
+            return Status::kProhibitedByBrowserPolicy;
+          },
+          [](SuccessNoised) { return Status::kSuccessNoised; },
+          [](DestinationReportingLimitReached) {
+            return Status::kDestinationReportingLimitReached;
+          },
+          [](DestinationGlobalLimitReached) {
+            return Status::kDestinationGlobalLimitReached;
+          },
+          [](DestinationBothLimitsReached) {
+            return Status::kDestinationBothLimitsReached;
+          },
+          [](ReportingOriginsPerSiteLimitReached) {
+            return Status::kReportingOriginsPerSiteLimitReached;
+          },
+          [](ExceedsMaxChannelCapacity) {
+            return Status::kExceedsMaxChannelCapacity;
+          },
+      },
+      result_);
 }
-
-StoreSourceResult::~StoreSourceResult() = default;
-
-StoreSourceResult::StoreSourceResult(const StoreSourceResult&) = default;
-
-StoreSourceResult::StoreSourceResult(StoreSourceResult&&) = default;
-
-StoreSourceResult& StoreSourceResult::operator=(const StoreSourceResult&) =
-    default;
-
-StoreSourceResult& StoreSourceResult::operator=(StoreSourceResult&&) = default;
 
 }  // namespace content

@@ -160,9 +160,10 @@ void FileSystemAccessFileHandleImpl::AsBlob(AsBlobCallback callback) {
       base::BindOnce(&FileSystemAccessFileHandleImpl::DidGetMetaDataForBlob,
                      weak_factory_.GetWeakPtr(), std::move(callback)),
       url(),
-      FileSystemOperation::GET_METADATA_FIELD_IS_DIRECTORY |
-          FileSystemOperation::GET_METADATA_FIELD_SIZE |
-          FileSystemOperation::GET_METADATA_FIELD_LAST_MODIFIED);
+      FileSystemOperation::GetMetadataFieldSet(
+          {FileSystemOperation::GetMetadataField::kIsDirectory,
+           FileSystemOperation::GetMetadataField::kSize,
+           FileSystemOperation::GetMetadataField::kLastModified}));
 }
 
 void FileSystemAccessFileHandleImpl::CreateFileWriter(

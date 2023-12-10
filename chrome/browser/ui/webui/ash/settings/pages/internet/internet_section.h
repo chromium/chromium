@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_ASH_SETTINGS_PAGES_INTERNET_INTERNET_SECTION_H_
 #define CHROME_BROWSER_UI_WEBUI_ASH_SETTINGS_PAGES_INTERNET_INTERNET_SECTION_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -14,7 +15,6 @@
 #include "chromeos/services/network_config/public/cpp/cros_network_config_observer.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 
@@ -79,14 +79,14 @@ class InternetSection
   // corresponds to the currently active SIM slot, and may not be
   // currently connected. A connected cellular network will always be the
   // active cellular network.
-  absl::optional<std::string> active_cellular_iccid_;
-  absl::optional<std::string> active_cellular_guid_;
+  std::optional<std::string> active_cellular_iccid_;
+  std::optional<std::string> active_cellular_guid_;
 
   // Note: If not connected, the below fields are null.
-  absl::optional<std::string> connected_ethernet_guid_;
-  absl::optional<std::string> connected_wifi_guid_;
-  absl::optional<std::string> connected_tether_guid_;
-  absl::optional<std::string> connected_vpn_guid_;
+  std::optional<std::string> connected_ethernet_guid_;
+  std::optional<std::string> connected_wifi_guid_;
+  std::optional<std::string> connected_tether_guid_;
+  std::optional<std::string> connected_vpn_guid_;
 
   bool does_ethernet_device_exist_ = false;
 

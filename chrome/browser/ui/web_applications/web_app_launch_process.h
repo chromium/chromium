@@ -71,6 +71,7 @@ class WebAppLaunchProcess {
   LaunchHandler GetLaunchHandler() const;
   LaunchHandler::ClientMode GetLaunchClientMode() const;
 
+  // Returns nullptr if these is no existing browser to be used for the launch.
   Browser* MaybeFindBrowserForLaunch() const;
   Browser* CreateBrowserForLaunch();
 

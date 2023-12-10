@@ -57,7 +57,7 @@ import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.chrome.browser.util.BrowserUiUtils.HostSurface;
-import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNTP;
+import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
 import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.displaystyle.DisplayStyleObserver;
@@ -130,6 +130,7 @@ public class NewTabPageLayout extends LinearLayout {
 
     /** Flag used to request some layout changes after the next layout pass is completed. */
     private boolean mTileCountChanged;
+
     private boolean mSnapshotTileGridChanged;
     private boolean mIsIncognito;
     private WindowAndroid mWindowAndroid;
@@ -161,9 +162,7 @@ public class NewTabPageLayout extends LinearLayout {
     private float mTransitionLengthOffset;
     private boolean mIsTablet;
 
-    /**
-     * Constructor for inflating from XML.
-     */
+    /** Constructor for inflating from XML. */
     public NewTabPageLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
         mContext = context;
@@ -171,16 +170,25 @@ public class NewTabPageLayout extends LinearLayout {
         mTileGridLayoutBleed = res.getDimensionPixelSize(R.dimen.tile_grid_layout_bleed);
         mMvtLandscapeLateralMarginTablet =
                 res.getDimensionPixelSize(R.dimen.ntp_search_box_start_margin);
-        mMvtExtraRightMarginTablet = res.getDimensionPixelSize(
-                R.dimen.mvt_container_to_ntp_right_extra_margin_two_feed_tablet);
+        mMvtExtraRightMarginTablet =
+                res.getDimensionPixelSize(
+                        R.dimen.mvt_container_to_ntp_right_extra_margin_two_feed_tablet);
         mTileViewWidth =
                 getResources().getDimensionPixelOffset(org.chromium.chrome.R.dimen.tile_view_width);
-        mTileViewMinIntervalPaddingTablet = getResources().getDimensionPixelOffset(
-                org.chromium.chrome.R.dimen.tile_carousel_layout_min_interval_margin_tablet);
-        mTileViewIntervalPaddingTabletForPolish = getResources().getDimensionPixelOffset(
-                org.chromium.chrome.R.dimen.tile_view_padding_interval_tablet_polish);
-        mTileViewEdgePaddingTabletForPolish = getResources().getDimensionPixelOffset(
-                org.chromium.chrome.R.dimen.tile_view_padding_edge_tablet_polish);
+        mTileViewMinIntervalPaddingTablet =
+                getResources()
+                        .getDimensionPixelOffset(
+                                org.chromium.chrome.R.dimen
+                                        .tile_carousel_layout_min_interval_margin_tablet);
+        mTileViewIntervalPaddingTabletForPolish =
+                getResources()
+                        .getDimensionPixelOffset(
+                                org.chromium.chrome.R.dimen
+                                        .tile_view_padding_interval_tablet_polish);
+        mTileViewEdgePaddingTabletForPolish =
+                getResources()
+                        .getDimensionPixelOffset(
+                                org.chromium.chrome.R.dimen.tile_view_padding_edge_tablet_polish);
     }
 
     @Override
@@ -211,12 +219,22 @@ public class NewTabPageLayout extends LinearLayout {
      *         tablets.
      * @param isSurfacePolishEnabled {@code true} if the NTP surface is polished.
      */
-    public void initialize(NewTabPageManager manager, Activity activity, Delegate tileGroupDelegate,
-            boolean searchProviderHasLogo, boolean searchProviderIsGoogle,
-            FeedSurfaceScrollDelegate scrollDelegate, TouchEnabledDelegate touchEnabledDelegate,
-            UiConfig uiConfig, ActivityLifecycleDispatcher lifecycleDispatcher, NewTabPageUma uma,
-            boolean isIncognito, WindowAndroid windowAndroid, boolean isNtpAsHomeSurfaceOnTablet,
-            boolean isSurfacePolishEnabled, boolean isSurfacePolishOmniboxColorEnabled,
+    public void initialize(
+            NewTabPageManager manager,
+            Activity activity,
+            Delegate tileGroupDelegate,
+            boolean searchProviderHasLogo,
+            boolean searchProviderIsGoogle,
+            FeedSurfaceScrollDelegate scrollDelegate,
+            TouchEnabledDelegate touchEnabledDelegate,
+            UiConfig uiConfig,
+            ActivityLifecycleDispatcher lifecycleDispatcher,
+            NewTabPageUma uma,
+            boolean isIncognito,
+            WindowAndroid windowAndroid,
+            boolean isNtpAsHomeSurfaceOnTablet,
+            boolean isSurfacePolishEnabled,
+            boolean isSurfacePolishOmniboxColorEnabled,
             boolean isTablet) {
         TraceEvent.begin(TAG + ".initialize()");
         mScrollDelegate = scrollDelegate;
@@ -251,19 +269,25 @@ public class NewTabPageLayout extends LinearLayout {
             int searchBoxHeightPolish =
                     getResources().getDimensionPixelSize(R.dimen.ntp_search_box_height_polish);
             mSearchBoxCoordinator.getView().getLayoutParams().height = searchBoxHeightPolish;
-            mSearchBoxBoundsVerticalInset = (searchBoxHeightPolish
-                                                    - getResources().getDimensionPixelSize(
-                                                            R.dimen.toolbar_height_no_shadow))
-                    / 2;
+            mSearchBoxBoundsVerticalInset =
+                    (searchBoxHeightPolish
+                                    - getResources()
+                                            .getDimensionPixelSize(
+                                                    R.dimen.toolbar_height_no_shadow))
+                            / 2;
         } else if (!DeviceFormFactor.isNonMultiDisplayContextOnTablet(activity)) {
-            mSearchBoxBoundsVerticalInset = getResources().getDimensionPixelSize(
-                    R.dimen.ntp_search_box_bounds_vertical_inset_modern);
+            mSearchBoxBoundsVerticalInset =
+                    getResources()
+                            .getDimensionPixelSize(
+                                    R.dimen.ntp_search_box_bounds_vertical_inset_modern);
         }
-        mTransitionLengthOffset = mIsSurfacePolishEnabled
-                        && !DeviceFormFactor.isNonMultiDisplayContextOnTablet(activity)
-                ? getResources().getDimensionPixelSize(
-                        R.dimen.ntp_search_box_transition_length_polish_offset)
-                : 0;
+        mTransitionLengthOffset =
+                mIsSurfacePolishEnabled
+                                && !DeviceFormFactor.isNonMultiDisplayContextOnTablet(activity)
+                        ? getResources()
+                                .getDimensionPixelSize(
+                                        R.dimen.ntp_search_box_transition_length_polish_offset)
+                        : 0;
 
         if (mIsNtpAsHomeSurfaceOnTablet && !mIsSurfacePolishEnabled) {
             // We add extra side margins to the fake search box when multiple column Feeds are
@@ -275,17 +299,23 @@ public class NewTabPageLayout extends LinearLayout {
             updateSearchBoxWidthForPolish();
         }
         initializeLogoCoordinator(searchProviderHasLogo, searchProviderIsGoogle);
-        initializeMostVisitedTilesCoordinator(profile, lifecycleDispatcher, tileGroupDelegate,
-                touchEnabledDelegate, isScrollableMvtEnabled(), searchProviderIsGoogle);
+        initializeMostVisitedTilesCoordinator(
+                profile,
+                lifecycleDispatcher,
+                tileGroupDelegate,
+                touchEnabledDelegate,
+                isScrollableMvtEnabled(),
+                searchProviderIsGoogle);
         initializeSearchBoxBackground();
         initializeSearchBoxTextView();
         initializeVoiceSearchButton();
         initializeLensButton();
         initializeLayoutChangeListener();
 
-        if (searchProviderIsGoogle && QueryTileUtils.isQueryTilesEnabledOnNTP()) {
-            mQueryTileSection = new QueryTileSection(
-                    findViewById(R.id.query_tiles), profile, mManager::performSearchQuery);
+        if (searchProviderIsGoogle && QueryTileUtils.isQueryTilesEnabledOnNtp()) {
+            mQueryTileSection =
+                    new QueryTileSection(
+                            findViewById(R.id.query_tiles), profile, mManager::performSearchQuery);
         }
 
         manager.addDestructionObserver(NewTabPageLayout.this::onDestroy);
@@ -306,47 +336,49 @@ public class NewTabPageLayout extends LinearLayout {
         return mScrollDelegate;
     }
 
-    /**
-     * Sets up the search box background or background tint.
-     */
+    /** Sets up the search box background or background tint. */
     private void initializeSearchBoxBackground() {
         if (mIsSurfacePolishOmniboxColorEnabled) {
             findViewById(R.id.search_box)
-                    .setBackground(AppCompatResources.getDrawable(
-                            mContext, R.drawable.home_surface_search_box_background_colorful));
+                    .setBackground(
+                            AppCompatResources.getDrawable(
+                                    mContext,
+                                    R.drawable.home_surface_search_box_background_colorful));
             return;
         }
 
         if (mIsSurfacePolishEnabled) {
             findViewById(R.id.search_box)
-                    .setBackground(AppCompatResources.getDrawable(
-                            mContext, R.drawable.home_surface_search_box_background_neutral));
+                    .setBackground(
+                            AppCompatResources.getDrawable(
+                                    mContext,
+                                    R.drawable.home_surface_search_box_background_neutral));
             return;
         }
 
-        final int elevationDimenId = ChromeFeatureList.sBaselineGm3SurfaceColors.isEnabled()
-                ? R.dimen.default_elevation_4
-                : R.dimen.toolbar_text_box_elevation;
+        final int elevationDimenId =
+                ChromeFeatureList.sBaselineGm3SurfaceColors.isEnabled()
+                        ? R.dimen.default_elevation_4
+                        : R.dimen.toolbar_text_box_elevation;
         final int searchBoxColor = ChromeColors.getSurfaceColor(getContext(), elevationDimenId);
         final ColorStateList colorStateList = ColorStateList.valueOf(searchBoxColor);
         findViewById(R.id.search_box).setBackgroundTintList(colorStateList);
     }
 
-    /**
-     * Sets up the hint text and event handlers for the search box text view.
-     */
+    /** Sets up the hint text and event handlers for the search box text view. */
     private void initializeSearchBoxTextView() {
         TraceEvent.begin(TAG + ".initializeSearchBoxTextView()");
 
         mSearchBoxCoordinator.setSearchBoxClickListener(v -> mManager.focusSearchBox(false, null));
-        mSearchBoxCoordinator.setSearchBoxTextWatcher(new EmptyTextWatcher() {
-            @Override
-            public void afterTextChanged(Editable s) {
-                if (s.length() == 0) return;
-                mManager.focusSearchBox(false, s.toString());
-                mSearchBoxCoordinator.setSearchText("");
-            }
-        });
+        mSearchBoxCoordinator.setSearchBoxTextWatcher(
+                new EmptyTextWatcher() {
+                    @Override
+                    public void afterTextChanged(Editable s) {
+                        if (s.length() == 0) return;
+                        mManager.focusSearchBox(false, s.toString());
+                        mSearchBoxCoordinator.setSearchText("");
+                    }
+                });
         TraceEvent.end(TAG + ".initializeSearchBoxTextView()");
     }
 
@@ -361,10 +393,11 @@ public class NewTabPageLayout extends LinearLayout {
     private void initializeLensButton() {
         TraceEvent.begin(TAG + ".initializeLensButton()");
         // TODO(b/181067692): Report user action for this click.
-        mSearchBoxCoordinator.addLensButtonClickListener(v -> {
-            LensMetrics.recordClicked(LensEntryPoint.NEW_TAB_PAGE);
-            mSearchBoxCoordinator.startLens(LensEntryPoint.NEW_TAB_PAGE);
-        });
+        mSearchBoxCoordinator.addLensButtonClickListener(
+                v -> {
+                    LensMetrics.recordClicked(LensEntryPoint.NEW_TAB_PAGE);
+                    mSearchBoxCoordinator.startLens(LensEntryPoint.NEW_TAB_PAGE);
+                });
         updateActionButtonVisibility();
         TraceEvent.end(TAG + ".initializeLensButton()");
     }
@@ -394,16 +427,20 @@ public class NewTabPageLayout extends LinearLayout {
     private void initializeLogoCoordinator(
             boolean searchProviderHasLogo, boolean searchProviderIsGoogle) {
         Callback<LoadUrlParams> logoClickedCallback =
-                mCallbackController.makeCancelable((urlParams) -> {
-                    mManager.getNativePageHost().loadUrl(urlParams, /*isIncognito=*/false);
-                    BrowserUiUtils.recordModuleClickHistogram(
-                            HostSurface.NEW_TAB_PAGE, ModuleTypeOnStartAndNTP.DOODLE);
-                });
-        Callback<Logo> onLogoAvailableCallback = mCallbackController.makeCancelable((logo) -> {
-            mSnapshotTileGridChanged = true;
-            mShowingNonStandardLogo = logo != null;
-            maybeKickOffCryptidRendering();
-        });
+                mCallbackController.makeCancelable(
+                        (urlParams) -> {
+                            mManager.getNativePageHost()
+                                    .loadUrl(urlParams, /* isIncognito= */ false);
+                            BrowserUiUtils.recordModuleClickHistogram(
+                                    HostSurface.NEW_TAB_PAGE, ModuleTypeOnStartAndNtp.DOODLE);
+                        });
+        Callback<Logo> onLogoAvailableCallback =
+                mCallbackController.makeCancelable(
+                        (logo) -> {
+                            mSnapshotTileGridChanged = true;
+                            mShowingNonStandardLogo = logo != null;
+                            maybeKickOffCryptidRendering();
+                        });
         Runnable onCachedLogoRevalidatedRunnable =
                 mCallbackController.makeCancelable(this::maybeKickOffCryptidRendering);
 
@@ -412,7 +449,9 @@ public class NewTabPageLayout extends LinearLayout {
         boolean shouldFetchDoodle = !FeedPositionUtils.isFeedPullUpEnabled();
         LogoView logoView = findViewById(R.id.search_provider_logo);
         if (mIsSurfacePolishEnabled) {
-            LogoUtils.setLogoViewLayoutParams(logoView, getResources(),
+            LogoUtils.setLogoViewLayoutParams(
+                    logoView,
+                    getResources(),
                     DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext()),
                     StartSurfaceConfiguration.SURFACE_POLISH_LESS_BRAND_SPACE.getValue());
         } else if (mIsNtpAsHomeSurfaceOnTablet) {
@@ -420,39 +459,53 @@ public class NewTabPageLayout extends LinearLayout {
                     mContext.getResources().getDimensionPixelSize(R.dimen.ntp_logo_height_shrink);
         }
 
-        mLogoCoordinator = new LogoCoordinator(mContext, logoClickedCallback, logoView,
-                shouldFetchDoodle, onLogoAvailableCallback, onCachedLogoRevalidatedRunnable,
-                /*isParentSurfaceShown=*/true,
-                /*visibilityObserver=*/null);
+        mLogoCoordinator =
+                new LogoCoordinator(
+                        mContext,
+                        logoClickedCallback,
+                        logoView,
+                        shouldFetchDoodle,
+                        onLogoAvailableCallback,
+                        onCachedLogoRevalidatedRunnable,
+                        /* isParentSurfaceShown= */ true,
+                        /* visibilityObserver= */ null);
         mLogoCoordinator.initWithNative();
         setSearchProviderInfo(searchProviderHasLogo, searchProviderIsGoogle);
     }
 
-    private void initializeMostVisitedTilesCoordinator(Profile profile,
+    private void initializeMostVisitedTilesCoordinator(
+            Profile profile,
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
-            TileGroup.Delegate tileGroupDelegate, TouchEnabledDelegate touchEnabledDelegate,
-            boolean isScrollableMvtEnabled, boolean searchProviderIsGoogle) {
+            TileGroup.Delegate tileGroupDelegate,
+            TouchEnabledDelegate touchEnabledDelegate,
+            boolean isScrollableMvtEnabled,
+            boolean searchProviderIsGoogle) {
         assert mMvTilesContainerLayout != null;
 
         int maxRows = 2;
-        if (searchProviderIsGoogle && QueryTileUtils.isQueryTilesEnabledOnNTP()) {
+        if (searchProviderIsGoogle && QueryTileUtils.isQueryTilesEnabledOnNtp()) {
             maxRows = QueryTileSection.getMaxRowsForMostVisitedTiles(getContext());
         }
 
-        mMostVisitedTilesCoordinator = new MostVisitedTilesCoordinator(mActivity,
-                activityLifecycleDispatcher, mMvTilesContainerLayout, mWindowAndroid,
-                /*shouldShowSkeletonUIPreNative=*/false, isScrollableMvtEnabled, maxRows,
-                () -> mSnapshotTileGridChanged = true, () -> {
-                    if (mUrlFocusChangePercent == 1f) mTileCountChanged = true;
-                });
+        mMostVisitedTilesCoordinator =
+                new MostVisitedTilesCoordinator(
+                        mActivity,
+                        activityLifecycleDispatcher,
+                        mMvTilesContainerLayout,
+                        mWindowAndroid,
+                        /* shouldShowSkeletonUIPreNative= */ false,
+                        isScrollableMvtEnabled,
+                        maxRows,
+                        () -> mSnapshotTileGridChanged = true,
+                        () -> {
+                            if (mUrlFocusChangePercent == 1f) mTileCountChanged = true;
+                        });
 
         mMostVisitedTilesCoordinator.initWithNative(
                 mManager, tileGroupDelegate, touchEnabledDelegate);
     }
 
-    /**
-     * Updates the search box when the parent view's scroll position is changed.
-     */
+    /** Updates the search box when the parent view's scroll position is changed. */
     void updateSearchBoxOnScroll() {
         if (mDisableUrlFocusChangeAnimations || mIsViewMoving) return;
 
@@ -499,16 +552,20 @@ public class NewTabPageLayout extends LinearLayout {
         // Use int pixel size instead of float dimension to avoid precision error on the percentage.
         final float transitionLength =
                 getResources().getDimensionPixelSize(R.dimen.ntp_search_box_transition_length)
-                + mTransitionLengthOffset;
+                        + mTransitionLengthOffset;
         // Tab strip height is zero on phones, nonzero on tablets.
         int tabStripHeight = getResources().getDimensionPixelSize(R.dimen.tab_strip_height);
 
         // |scrollY - searchBoxTop + tabStripHeight| gives the distance the search bar is from the
         // top of the tab.
-        return MathUtils.clamp((scrollY - (searchBoxTop + mTransitionLengthOffset) + tabStripHeight
-                                       + transitionLength)
+        return MathUtils.clamp(
+                (scrollY
+                                - (searchBoxTop + mTransitionLengthOffset)
+                                + tabStripHeight
+                                + transitionLength)
                         / transitionLength,
-                0f, 1f);
+                0f,
+                1f);
     }
 
     private void insertSiteSectionView() {
@@ -516,11 +573,14 @@ public class NewTabPageLayout extends LinearLayout {
 
         if (ChromeFeatureList.sSurfacePolish.isEnabled()) {
             mMvTilesContainerLayout =
-                    (ViewGroup) LayoutInflater.from(getContext())
-                            .inflate(R.layout.mv_tiles_container_polish, this, false);
+                    (ViewGroup)
+                            LayoutInflater.from(getContext())
+                                    .inflate(R.layout.mv_tiles_container_polish, this, false);
         } else {
-            mMvTilesContainerLayout = (ViewGroup) LayoutInflater.from(getContext())
-                                              .inflate(R.layout.mv_tiles_container, this, false);
+            mMvTilesContainerLayout =
+                    (ViewGroup)
+                            LayoutInflater.from(getContext())
+                                    .inflate(R.layout.mv_tiles_container, this, false);
         }
         mMvTilesContainerLayout.setVisibility(View.VISIBLE);
         addView(mMvTilesContainerLayout, insertionPoint);
@@ -551,9 +611,7 @@ public class NewTabPageLayout extends LinearLayout {
         unifyElementWidths();
     }
 
-    /**
-     * Updates the width of the MV tiles container when used in NTP on the tablet.
-     */
+    /** Updates the width of the MV tiles container when used in NTP on the tablet. */
     private void calculateTabletMvtWidth(int widthMeasureSpec) {
         if (mMvTilesContainerLayout.getVisibility() == GONE) return;
 
@@ -563,13 +621,15 @@ public class NewTabPageLayout extends LinearLayout {
 
         int currentOrientation = getResources().getConfiguration().orientation;
         if ((currentOrientation == Configuration.ORIENTATION_LANDSCAPE
-                    && mIsMvtAllFilledLandscape == null)
+                        && mIsMvtAllFilledLandscape == null)
                 || (currentOrientation == Configuration.ORIENTATION_PORTRAIT
                         && mIsMvtAllFilledPortrait == null)) {
-            boolean isAllFilled = mInitialTileNum * mTileViewWidth
-                            + (mInitialTileNum - 1) * mTileViewIntervalPaddingTabletForPolish
-                            + 2 * mTileViewEdgePaddingTabletForPolish
-                    <= widthMeasureSpec;
+            boolean isAllFilled =
+                    mInitialTileNum * mTileViewWidth
+                                    + (mInitialTileNum - 1)
+                                            * mTileViewIntervalPaddingTabletForPolish
+                                    + 2 * mTileViewEdgePaddingTabletForPolish
+                            <= widthMeasureSpec;
             if (currentOrientation == Configuration.ORIENTATION_LANDSCAPE) {
                 mIsMvtAllFilledLandscape = isAllFilled;
             } else {
@@ -592,16 +652,19 @@ public class NewTabPageLayout extends LinearLayout {
 
         int currentOrientation = getResources().getConfiguration().orientation;
         if ((currentOrientation == Configuration.ORIENTATION_LANDSCAPE
-                    && mIsHalfMvtLandscape == null)
+                        && mIsHalfMvtLandscape == null)
                 || (currentOrientation == Configuration.ORIENTATION_PORTRAIT
                         && mIsHalfMvtPortrait == null)) {
             MarginLayoutParams marginLayoutParams =
                     (MarginLayoutParams) mMvTilesContainerLayout.getLayoutParams();
-            int mvtContainerWidth = widthMeasureSpec - marginLayoutParams.leftMargin
-                    - marginLayoutParams.rightMargin;
-            boolean isHalfMvt = mInitialTileNum * mTileViewWidth
-                            + (mInitialTileNum - 1) * mTileViewMinIntervalPaddingTablet
-                    > mvtContainerWidth;
+            int mvtContainerWidth =
+                    widthMeasureSpec
+                            - marginLayoutParams.leftMargin
+                            - marginLayoutParams.rightMargin;
+            boolean isHalfMvt =
+                    mInitialTileNum * mTileViewWidth
+                                    + (mInitialTileNum - 1) * mTileViewMinIntervalPaddingTablet
+                            > mvtContainerWidth;
             if (currentOrientation == Configuration.ORIENTATION_LANDSCAPE) {
                 mIsHalfMvtLandscape = isHalfMvt;
             } else {
@@ -651,7 +714,8 @@ public class NewTabPageLayout extends LinearLayout {
      * @param isGoogle Whether the search provider is Google.
      */
     public void setSearchProviderInfo(boolean hasLogo, boolean isGoogle) {
-        if (hasLogo == mSearchProviderHasLogo && isGoogle == mSearchProviderIsGoogle
+        if (hasLogo == mSearchProviderHasLogo
+                && isGoogle == mSearchProviderIsGoogle
                 && mInitialized) {
             return;
         }
@@ -669,9 +733,7 @@ public class NewTabPageLayout extends LinearLayout {
         mSnapshotTileGridChanged = true;
     }
 
-    /**
-     * Updates the margins for the tile grid based on what is shown above it.
-     */
+    /** Updates the margins for the tile grid based on what is shown above it. */
     private void updateTilesLayoutMargins() {
         MarginLayoutParams marginLayoutParams =
                 (MarginLayoutParams) mMvTilesContainerLayout.getLayoutParams();
@@ -679,9 +741,12 @@ public class NewTabPageLayout extends LinearLayout {
         if (mIsSurfacePolishEnabled) {
             if (mIsNtpAsHomeSurfaceOnTablet) {
                 if (isScrollableMvtEnabled()) {
-                    marginLayoutParams.topMargin = getResources().getDimensionPixelSize(
-                            shouldShowLogo() ? R.dimen.mvt_container_top_margin_polish
-                                             : R.dimen.tile_grid_layout_no_logo_top_margin);
+                    marginLayoutParams.topMargin =
+                            getResources()
+                                    .getDimensionPixelSize(
+                                            shouldShowLogo()
+                                                    ? R.dimen.mvt_container_top_margin_polish
+                                                    : R.dimen.tile_grid_layout_no_logo_top_margin);
                 } else {
                     // Set a bit more top padding on the tile grid if there is no logo.
                     ViewGroup.LayoutParams layoutParams = mMvTilesContainerLayout.getLayoutParams();
@@ -698,16 +763,21 @@ public class NewTabPageLayout extends LinearLayout {
             if (mIsNtpAsHomeSurfaceOnTablet) {
                 updateTilesLayoutLeftAndRightMarginsOnTablet(marginLayoutParams);
             } else {
-                int lateralPaddingsForNTP = -getResources().getDimensionPixelSize(
-                        R.dimen.ntp_header_lateral_paddings_v2);
-                marginLayoutParams.leftMargin = lateralPaddingsForNTP;
-                marginLayoutParams.rightMargin = lateralPaddingsForNTP;
+                int lateralPaddingsForNtp =
+                        -getResources()
+                                .getDimensionPixelSize(R.dimen.ntp_header_lateral_paddings_v2);
+                marginLayoutParams.leftMargin = lateralPaddingsForNtp;
+                marginLayoutParams.rightMargin = lateralPaddingsForNtp;
             }
-            marginLayoutParams.topMargin = getResources().getDimensionPixelSize(shouldShowLogo()
-                            ? R.dimen.tile_grid_layout_top_margin
-                            : R.dimen.tile_grid_layout_no_logo_top_margin);
-            marginLayoutParams.bottomMargin = getResources().getDimensionPixelSize(
-                    R.dimen.tile_carousel_layout_bottom_margin);
+            marginLayoutParams.topMargin =
+                    getResources()
+                            .getDimensionPixelSize(
+                                    shouldShowLogo()
+                                            ? R.dimen.tile_grid_layout_top_margin
+                                            : R.dimen.tile_grid_layout_no_logo_top_margin);
+            marginLayoutParams.bottomMargin =
+                    getResources()
+                            .getDimensionPixelSize(R.dimen.tile_carousel_layout_bottom_margin);
         } else {
             // Set a bit more top padding on the tile grid if there is no logo.
             ViewGroup.LayoutParams layoutParams = mMvTilesContainerLayout.getLayoutParams();
@@ -717,8 +787,9 @@ public class NewTabPageLayout extends LinearLayout {
         }
 
         if (mIsNtpAsHomeSurfaceOnTablet) {
-            marginLayoutParams.bottomMargin = getResources().getDimensionPixelSize(
-                    R.dimen.mvt_container_bottom_margin_tablet);
+            marginLayoutParams.bottomMargin =
+                    getResources()
+                            .getDimensionPixelSize(R.dimen.mvt_container_bottom_margin_tablet);
         }
     }
 
@@ -765,9 +836,12 @@ public class NewTabPageLayout extends LinearLayout {
         // Translate so that the search box is at the top, but only upwards.
         float percent = mSearchProviderHasLogo ? mUrlFocusChangePercent : 0;
         int basePosition = mScrollDelegate.getVerticalScrollOffset() + getPaddingTop();
-        int target = Math.max(basePosition,
-                getSearchBoxView().getBottom() - getSearchBoxView().getPaddingBottom()
-                        - mSearchBoxBoundsVerticalInset);
+        int target =
+                Math.max(
+                        basePosition,
+                        getSearchBoxView().getBottom()
+                                - getSearchBoxView().getPaddingBottom()
+                                - mSearchBoxBoundsVerticalInset);
 
         setTranslationY(percent * (basePosition - target));
         if (mQueryTileSection != null) mQueryTileSection.onUrlFocusAnimationChanged(percent);
@@ -824,7 +898,10 @@ public class NewTabPageLayout extends LinearLayout {
     void getSearchBoxBounds(Rect bounds, Point translation, View parentView) {
         int searchBoxX = (int) getSearchBoxView().getX();
         int searchBoxY = (int) getSearchBoxView().getY();
-        bounds.set(searchBoxX, searchBoxY, searchBoxX + getSearchBoxView().getWidth(),
+        bounds.set(
+                searchBoxX,
+                searchBoxY,
+                searchBoxX + getSearchBoxView().getWidth(),
                 searchBoxY + getSearchBoxView().getHeight());
 
         translation.set(0, 0);
@@ -868,7 +945,7 @@ public class NewTabPageLayout extends LinearLayout {
     private boolean isSearchBoxOffscreen() {
         return !mScrollDelegate.isChildVisibleAtPosition(0)
                 || mScrollDelegate.getVerticalScrollOffset()
-                > getSearchBoxView().getTop() + mTransitionLengthOffset;
+                        > getSearchBoxView().getTop() + mTransitionLengthOffset;
     }
 
     /**
@@ -941,18 +1018,21 @@ public class NewTabPageLayout extends LinearLayout {
         }
 
         ProbabilisticCryptidRenderer renderer = ProbabilisticCryptidRenderer.getInstance();
-        renderer.getCryptidForLogo(Profile.getLastUsedRegularProfile(),
-                mCallbackController.makeCancelable((drawable) -> {
-                    if (drawable == null || mCryptidHolder != null) {
-                        return;
-                    }
-                    ViewStub stub =
-                            findViewById(R.id.logo_holder).findViewById(R.id.cryptid_holder);
-                    ImageView view = (ImageView) stub.inflate();
-                    view.setImageDrawable(drawable);
-                    mCryptidHolder = view;
-                    renderer.recordRenderEvent();
-                }));
+        renderer.getCryptidForLogo(
+                Profile.getLastUsedRegularProfile(),
+                mCallbackController.makeCancelable(
+                        (drawable) -> {
+                            if (drawable == null || mCryptidHolder != null) {
+                                return;
+                            }
+                            ViewStub stub =
+                                    findViewById(R.id.logo_holder)
+                                            .findViewById(R.id.cryptid_holder);
+                            ImageView view = (ImageView) stub.inflate();
+                            view.setImageDrawable(drawable);
+                            mCryptidHolder = view;
+                            renderer.recordRenderEvent();
+                        }));
     }
 
     private void onDestroy() {
@@ -984,46 +1064,61 @@ public class NewTabPageLayout extends LinearLayout {
     }
 
     void maybeShowFeatureNotificationVoiceSearchIPH() {
-        IPHCommandBuilder iphCommandBuilder = createIPHCommandBuilder(mActivity.getResources(),
-                R.string.feature_notification_guide_tooltip_message_voice_search,
-                R.string.feature_notification_guide_tooltip_message_voice_search,
-                mSearchBoxCoordinator.getVoiceSearchButton(), true);
+        IPHCommandBuilder iphCommandBuilder =
+                createIPHCommandBuilder(
+                        mActivity.getResources(),
+                        R.string.feature_notification_guide_tooltip_message_voice_search,
+                        R.string.feature_notification_guide_tooltip_message_voice_search,
+                        mSearchBoxCoordinator.getVoiceSearchButton(),
+                        true);
         UserEducationHelper userEducationHelper = new UserEducationHelper(mActivity, new Handler());
         userEducationHelper.requestShowIPH(iphCommandBuilder.build());
     }
 
-    private static IPHCommandBuilder createIPHCommandBuilder(Resources resources,
-            @StringRes int stringId, @StringRes int accessibilityStringId, View anchorView,
+    private static IPHCommandBuilder createIPHCommandBuilder(
+            Resources resources,
+            @StringRes int stringId,
+            @StringRes int accessibilityStringId,
+            View anchorView,
             boolean showHighlight) {
-        IPHCommandBuilder iphCommandBuilder = new IPHCommandBuilder(resources,
-                FeatureConstants.FEATURE_NOTIFICATION_GUIDE_VOICE_SEARCH_HELP_BUBBLE_FEATURE,
-                stringId, accessibilityStringId);
+        IPHCommandBuilder iphCommandBuilder =
+                new IPHCommandBuilder(
+                        resources,
+                        FeatureConstants
+                                .FEATURE_NOTIFICATION_GUIDE_VOICE_SEARCH_HELP_BUBBLE_FEATURE,
+                        stringId,
+                        accessibilityStringId);
         iphCommandBuilder.setAnchorView(anchorView);
         int yInsetPx = resources.getDimensionPixelOffset(R.dimen.ntp_iph_searchbox_y_inset);
         iphCommandBuilder.setInsetRect(new Rect(0, 0, 0, -yInsetPx));
         if (showHighlight) {
             iphCommandBuilder.setOnShowCallback(
-                    ()
-                            -> ViewHighlighter.turnOnHighlight(
+                    () ->
+                            ViewHighlighter.turnOnHighlight(
                                     anchorView, new HighlightParams(HighlightShape.CIRCLE)));
-            iphCommandBuilder.setOnDismissCallback(() -> new Handler().postDelayed(() -> {
-                ViewHighlighter.turnOffHighlight(anchorView);
-            }, ViewHighlighter.IPH_MIN_DELAY_BETWEEN_TWO_HIGHLIGHTS));
+            iphCommandBuilder.setOnDismissCallback(
+                    () ->
+                            new Handler()
+                                    .postDelayed(
+                                            () -> {
+                                                ViewHighlighter.turnOffHighlight(anchorView);
+                                            },
+                                            ViewHighlighter.IPH_MIN_DELAY_BETWEEN_TWO_HIGHLIGHTS));
         }
 
         return iphCommandBuilder;
     }
 
-    /**
-     * Makes the Search Box and Logo as wide as Most Visited.
-     */
+    /** Makes the Search Box and Logo as wide as Most Visited. */
     private void unifyElementWidths() {
         View searchBoxView = getSearchBoxView();
         if (mMvTilesContainerLayout.getVisibility() != GONE) {
             final int width =
                     getMeasuredWidth() - (mIsSurfacePolishEnabled ? 0 : mTileGridLayoutBleed);
             if (!isScrollableMvtEnabled()) {
-                measureExactly(searchBoxView, width - mSearchBoxTwoSideMargin,
+                measureExactly(
+                        searchBoxView,
+                        width - mSearchBoxTwoSideMargin,
                         searchBoxView.getMeasuredHeight());
                 mLogoCoordinator.measureExactlyLogoView(width);
             } else {
@@ -1037,7 +1132,9 @@ public class NewTabPageLayout extends LinearLayout {
                     searchBoxTwoSideMargin = 0;
                 }
 
-                measureExactly(searchBoxView, width - searchBoxTwoSideMargin,
+                measureExactly(
+                        searchBoxView,
+                        width - searchBoxTwoSideMargin,
                         searchBoxView.getMeasuredHeight());
                 mLogoCoordinator.measureExactlyLogoView(width);
             }
@@ -1051,12 +1148,14 @@ public class NewTabPageLayout extends LinearLayout {
     // TODO(crbug.com/1329288): Remove this method when the Feed position experiment is cleaned up.
     private int getGridMvtTopMargin() {
         if (!shouldShowLogo()) {
-            return getResources().getDimensionPixelSize(
-                    R.dimen.tile_grid_layout_no_logo_top_margin);
+            return getResources()
+                    .getDimensionPixelSize(R.dimen.tile_grid_layout_no_logo_top_margin);
         }
 
-        int resourcesId = mIsSurfacePolishEnabled ? R.dimen.mvt_container_top_margin_polish
-                                                  : R.dimen.tile_grid_layout_top_margin;
+        int resourcesId =
+                mIsSurfacePolishEnabled
+                        ? R.dimen.mvt_container_top_margin_polish
+                        : R.dimen.tile_grid_layout_top_margin;
 
         if (FeedPositionUtils.isFeedPushDownLargeEnabled()) {
             resourcesId = R.dimen.tile_grid_layout_top_margin_push_down_large;
@@ -1091,7 +1190,8 @@ public class NewTabPageLayout extends LinearLayout {
      * given dimensions (in pixels) with MeasureSpec.EXACTLY.
      */
     private static void measureExactly(View view, int widthPx, int heightPx) {
-        view.measure(MeasureSpec.makeMeasureSpec(widthPx, MeasureSpec.EXACTLY),
+        view.measure(
+                MeasureSpec.makeMeasureSpec(widthPx, MeasureSpec.EXACTLY),
                 MeasureSpec.makeMeasureSpec(heightPx, MeasureSpec.EXACTLY));
     }
 
@@ -1156,9 +1256,9 @@ public class NewTabPageLayout extends LinearLayout {
                 isInNarrowWindowOnTablet(mIsTablet, mUiConfig)
                         ? R.dimen.search_box_lateral_margin_polish
                         : R.dimen.mvt_container_lateral_margin_polish;
-        int lateralPaddingsForNTP = getResources().getDimensionPixelSize(lateralPaddingId);
-        marginLayoutParams.leftMargin = lateralPaddingsForNTP;
-        marginLayoutParams.rightMargin = lateralPaddingsForNTP;
+        int lateralPaddingsForNtp = getResources().getDimensionPixelSize(lateralPaddingId);
+        marginLayoutParams.leftMargin = lateralPaddingsForNtp;
+        marginLayoutParams.rightMargin = lateralPaddingsForNtp;
     }
 
     private void updateSearchBoxWidthForPolish() {

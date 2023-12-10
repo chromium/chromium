@@ -129,48 +129,11 @@ class PageNodeImpl
                                       const GURL& url,
                                       const std::string& contents_mime_type);
 
-  // Returns 0 if no navigation has happened, otherwise returns the time since
-  // the last navigation commit.
-  base::TimeDelta TimeSinceLastNavigation() const;
-
-  // Returns the time since the last visibility change, it should always have a
-  // value since we set the visibility property when we create a
-  // page node.
-  base::TimeDelta TimeSinceLastVisibilityChange() const;
-
-  // Returns the time since the last audible change, or nullopt if the node has
-  // never been audible. If the node was audible on creation, returns the
-  // creation time.
-  absl::optional<base::TimeDelta> TimeSinceLastAudibleChange() const;
-
-  // Returns the current main frame node (if there is one), otherwise returns
-  // any of the potentially multiple main frames that currently exist. If there
-  // are no main frames at the moment, returns nullptr.
-  FrameNodeImpl* GetMainFrameNodeImpl() const;
-
   // Accessors.
-  const std::string& browser_context_id() const;
   FrameNodeImpl* opener_frame_node() const;
   FrameNodeImpl* embedder_frame_node() const;
-  EmbeddingType embedding_type() const;
-  PageType type() const;
-  bool is_focused() const;
-  bool is_visible() const;
-  bool is_audible() const;
-  bool has_picture_in_picture() const;
-  LoadingState loading_state() const;
-  ukm::SourceId ukm_source_id() const;
-  LifecycleState lifecycle_state() const;
-  bool is_holding_weblock() const;
-  bool is_holding_indexeddb_lock() const;
+  FrameNodeImpl* main_frame_node() const;
   const base::flat_set<FrameNodeImpl*>& main_frame_nodes() const;
-  const GURL& main_frame_url() const;
-  int64_t navigation_id() const;
-  const std::string& contents_mime_type() const;
-  bool had_form_interaction() const;
-  bool had_user_edits() const;
-  const absl::optional<freezing::FreezingVote>& freezing_vote() const;
-  PageState page_state() const;
 
   // Invoked to set/clear the opener of this page.
   void SetOpenerFrameNode(FrameNodeImpl* opener);

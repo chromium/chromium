@@ -384,8 +384,9 @@ AX_TEST_F(
       }
     });
 
+// TODO(crbug.com/1506001): Test is flaky.
 AX_TEST_F(
-    'SwitchAccessItemScanManagerTest', 'DismissVirtualKeyboard',
+    'SwitchAccessItemScanManagerTest', 'DISABLED_DismissVirtualKeyboard',
     async function() {
       const website =
           `<input type="text" id="testinput"></input><button>ok</button>`;

@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+[FAIL] successful share with a URL relative to document base URL
+  promise_test: Unhandled rejection with value: object "ReferenceError: eventSender is not defined"
+Harness: the test ran to completion.

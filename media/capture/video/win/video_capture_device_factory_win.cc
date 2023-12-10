@@ -21,6 +21,7 @@
 
 #include "base/command_line.h"
 #include "base/containers/contains.h"
+#include "base/containers/cxx20_erase_map.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
@@ -29,6 +30,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/system/system_monitor.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/scoped_thread_priority.h"
 #include "base/win/core_winrt_util.h"
@@ -36,6 +38,7 @@
 #include "base/win/scoped_variant.h"
 #include "base/win/windows_version.h"
 #include "media/base/media_switches.h"
+#include "media/base/win/mf_helpers.h"
 #include "media/base/win/mf_initializer.h"
 #include "media/capture/capture_switches.h"
 #include "media/capture/video/video_capture_metrics.h"
@@ -266,8 +269,6 @@ bool IsDeviceBlocked(const std::string& name) {
     if (base::StartsWith(name, kBlockedCameraNames[i],
                          base::CompareCase::INSENSITIVE_ASCII)) {
       DVLOG(1) << "Enumerated blocked device: " << name;
-      UMA_HISTOGRAM_ENUMERATION("Media.VideoCapture.BlacklistedDevice", i,
-                                BLOCKED_CAMERA_MAX + 1);
       return true;
     }
   }
@@ -365,6 +366,121 @@ class VideoCaptureDeviceFactoryWin::ComThreadData
   scoped_refptr<base::SingleThreadTaskRunner> origin_task_runner_;
 };
 
+class VideoCaptureDeviceFactoryWin::UsageReportHandler
+    : public base::RefCountedThreadSafe<UsageReportHandler>,
+      public IMFSensorActivitiesReportCallback {
+ public:
+  UsageReportHandler() : my_pid_(base::GetCurrentProcId()) {}
+
+  // IUnknown
+  IFACEMETHODIMP QueryInterface(REFIID riid, void** object) override {
+    HRESULT hr = E_NOINTERFACE;
+    if (riid == IID_IUnknown) {
+      *object = this;
+      hr = S_OK;
+    } else if (riid == IID_IMFSensorActivitiesReportCallback) {
+      *object = static_cast<IMFSensorActivitiesReportCallback*>(this);
+      hr = S_OK;
+    }
+    if (SUCCEEDED(hr)) {
+      AddRef();
+    }
+
+    return hr;
+  }
+
+  IFACEMETHODIMP_(ULONG) AddRef() override {
+    base::RefCountedThreadSafe<UsageReportHandler>::AddRef();
+    return 1U;
+  }
+
+  IFACEMETHODIMP_(ULONG) Release() override {
+    base::RefCountedThreadSafe<UsageReportHandler>::Release();
+    return 1U;
+  }
+
+  // IMFSensorActivitiesReportCallback
+  IFACEMETHODIMP_(HRESULT)
+  OnActivitiesReport(IMFSensorActivitiesReport* report) override {
+    ULONG num_reports;
+    RETURN_IF_FAILED(report->GetCount(&num_reports));
+    for (ULONG i = 0; i < num_reports; i++) {
+      ComPtr<IMFSensorActivityReport> activity_report;
+      WCHAR symbolic_name[1000] = L"";
+      ULONG num_written;
+      ULONG process_count;
+      if (SUCCEEDED(report->GetActivityReport(i, &activity_report)) &&
+          SUCCEEDED(activity_report->GetSymbolicLink(symbolic_name, 1000,
+                                                     &num_written)) &&
+          SUCCEEDED(activity_report->GetProcessCount(&process_count))) {
+        CameraAvailability availability = CameraAvailability::kAvailable;
+        for (ULONG j = 0; j < process_count; j++) {
+          ComPtr<IMFSensorProcessActivity> process_activity;
+          ULONG pid;
+          BOOL is_streaming;
+          if (SUCCEEDED(
+                  activity_report->GetProcessActivity(j, &process_activity)) &&
+              SUCCEEDED(process_activity->GetProcessId(&pid)) &&
+              SUCCEEDED(process_activity->GetStreamingState(&is_streaming)) &&
+              is_streaming && pid != my_pid_) {
+            availability = CameraAvailability::
+                kUnavailableExclusivelyUsedByOtherApplication;
+            break;
+          }
+        }
+        std::string device_id = base::SysWideToUTF8(symbolic_name);
+        std::transform(device_id.begin(), device_id.end(), device_id.begin(),
+                       ::tolower);
+        bool should_invoke_system_monitor = false;
+        {
+          base::AutoLock lock(cache_lock_);
+          auto it = availability_cache_.find(device_id);
+          if (it == availability_cache_.end()) {
+            availability_cache_[device_id] = availability;
+            should_invoke_system_monitor = true;
+          } else if (it->second != availability) {
+            it->second = availability;
+            should_invoke_system_monitor = true;
+          }
+        }
+        if (should_invoke_system_monitor) {
+          if (auto* system_monitor = base::SystemMonitor::Get()) {
+            system_monitor->ProcessDevicesChanged(
+                base::SystemMonitor::DEVTYPE_VIDEO_CAPTURE);
+          }
+        }
+      }
+    }
+    return S_OK;
+  }
+
+  void UpdateDevicesInfoAvailability(
+      std::vector<VideoCaptureDeviceInfo>* devices_info) {
+    base::AutoLock lock(cache_lock_);
+    std::set<std::string> device_ids;
+    for (auto& info : *devices_info) {
+      device_ids.insert(info.descriptor.device_id);
+      auto it = availability_cache_.find(info.descriptor.device_id);
+      if (it != availability_cache_.end()) {
+        info.descriptor.availability = it->second;
+      }
+    }
+    base::EraseIf(availability_cache_, [&device_ids](const auto& entry) {
+      return !base::Contains(device_ids, entry.first);
+    });
+  }
+
+ protected:
+  friend class base::RefCountedThreadSafe<UsageReportHandler>;
+  virtual ~UsageReportHandler() = default;
+
+ private:
+  const base::ProcessId my_pid_;
+  base::Lock cache_lock_;
+  std::map<std::string, media::CameraAvailability> availability_cache_
+      GUARDED_BY(cache_lock_);
+};
+
 // Returns true if the current platform supports the Media Foundation API
 // and that the DLLs are available.  On Vista this API is an optional download
 // but the API is advertised as a part of Windows 7 and onwards.  However,
@@ -387,9 +503,16 @@ VideoCaptureDeviceFactoryWin::VideoCaptureDeviceFactoryWin()
   if (use_media_foundation_ && !PlatformSupportsMediaFoundation()) {
     use_media_foundation_ = false;
   }
+  if (use_media_foundation_ &&
+      switches::IsMediaFoundationCameraUsageMonitoringEnabled()) {
+    CreateUsageMonitorAndReportHandler();
+  }
 }
 
 VideoCaptureDeviceFactoryWin::~VideoCaptureDeviceFactoryWin() {
+  if (monitor_) {
+    monitor_->Stop();
+  }
   if (com_thread_.IsRunning()) {
     com_thread_.Stop();
   }
@@ -783,6 +906,13 @@ void VideoCaptureDeviceFactoryWin::ComThreadData::FoundAllDevicesUWP(
   async_ops_.erase(it);
 }
 
+void VideoCaptureDeviceFactoryWin::UpdateDevicesInfoAvailability(
+    std::vector<VideoCaptureDeviceInfo>* devices_info) {
+  if (report_handler_) {
+    report_handler_->UpdateDevicesInfoAvailability(devices_info);
+  }
+}
+
 void VideoCaptureDeviceFactoryWin::DeviceInfoReady(
     std::vector<VideoCaptureDeviceInfo> devices_info,
     GetDevicesInfoCallback result_callback) {
@@ -790,6 +920,7 @@ void VideoCaptureDeviceFactoryWin::DeviceInfoReady(
     com_thread_.Stop();
     com_thread_data_.reset();
   }
+  UpdateDevicesInfoAvailability(&devices_info);
 
   std::move(result_callback).Run(std::move(devices_info));
 }
@@ -1100,6 +1231,20 @@ void VideoCaptureDeviceFactoryWin::OnGpuInfoUpdate(const CHROME_LUID& luid) {
   luid_ = luid;
   if (dxgi_device_manager_) {
     dxgi_device_manager_->OnGpuInfoUpdate(luid_);
+  }
+}
+
+void VideoCaptureDeviceFactoryWin::CreateUsageMonitorAndReportHandler() {
+  scoped_refptr<UsageReportHandler> report_handler =
+      base::MakeRefCounted<UsageReportHandler>();
+  if (CreateMFSensorActivityMonitor(report_handler.get(), &monitor_)) {
+    report_handler_ = std::move(report_handler);
+    HRESULT hr = monitor_->Start();
+    if (FAILED(hr)) {
+      DLOG(ERROR) << "Failed to start usage monitor";
+    }
+  } else {
+    DLOG(ERROR) << "Failed to create usage monitor";
   }
 }
 

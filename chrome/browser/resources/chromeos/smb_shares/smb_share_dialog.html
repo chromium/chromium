@@ -9,17 +9,9 @@
     width: 100%;
   }
 
-  :host-context([theme='legacy']) add-smb-share-dialog::part(title) {
-    padding-top: 4px;
-  }
-
   /* SMB dialog inside Files app is rendered inside a native dialog with fixed
     height, so we need to hard-code the body height. */
-  :host-context([theme='legacy']) add-smb-share-dialog::part(body) {
-    height: 390px;
-  }
-
-  :host-context([theme='refresh23']) add-smb-share-dialog::part(body) {
+  add-smb-share-dialog::part(body) {
     height: 425px;
   }
 </style>

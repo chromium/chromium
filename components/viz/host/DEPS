@@ -21,7 +21,7 @@ include_rules = [
   "+skia",
   "+third_party/skia",
   "+ui/accelerated_widget_mac",
-  "+ui/ozone/buildflags.h",
+  "+ui/base/ozone_buildflags.h",
   "+ui/ozone/public",
 ]
 

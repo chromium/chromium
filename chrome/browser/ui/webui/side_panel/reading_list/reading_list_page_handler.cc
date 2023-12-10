@@ -304,7 +304,7 @@ void ReadingListPageHandler::ReadingListDidApplyChanges(
   reading_list_model_->MarkAllSeen();
 }
 
-const absl::optional<GURL> ReadingListPageHandler::GetActiveTabURL() {
+const std::optional<GURL> ReadingListPageHandler::GetActiveTabURL() {
   if (active_tab_url_)
     return active_tab_url_.value();
   Browser* browser = chrome::FindLastActive();
@@ -312,7 +312,7 @@ const absl::optional<GURL> ReadingListPageHandler::GetActiveTabURL() {
     return chrome::GetURLToBookmark(
         browser->tab_strip_model()->GetActiveWebContents());
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void ReadingListPageHandler::SetActiveTabURL(const GURL& url) {
@@ -384,7 +384,7 @@ void ReadingListPageHandler::UpdateCurrentPageActionButton() {
       Profile::FromWebUI(web_ui_)->IsGuestSession())
     return;
 
-  const absl::optional<GURL> url = GetActiveTabURL();
+  const std::optional<GURL> url = GetActiveTabURL();
   if (!url.has_value())
     return;
 

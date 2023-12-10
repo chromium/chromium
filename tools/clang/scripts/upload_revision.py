@@ -65,9 +65,8 @@ Cq-Include-Trybots: chromium/try:linux_chromium_cfi_rel_ng
 Cq-Include-Trybots: chromium/try:linux_chromium_chromeos_msan_rel_ng
 Cq-Include-Trybots: chromium/try:linux_chromium_msan_rel_ng
 Cq-Include-Trybots: chromium/try:mac11-arm64-rel,mac_chromium_asan_rel_ng
-Cq-Include-Trybots: chromium/try:ios-catalyst
-Cq-Include-Trybots: chromium/try:win-asan
-Cq-Include-Trybots: chromium/try:android-official,fuchsia-official
+Cq-Include-Trybots: chromium/try:ios-catalyst,win-asan,android-official
+Cq-Include-Trybots: chromium/try:fuchsia-arm64-cast-receiver-rel
 Cq-Include-Trybots: chromium/try:mac-official,linux-official
 Cq-Include-Trybots: chromium/try:win-official,win32-official
 Cq-Include-Trybots: chromium/try:linux-swangle-try-x64,win-swangle-try-x86
@@ -374,7 +373,7 @@ def main():
       RUST_UPDATE_PY_PATH,
       no_run=args.no_git)
   Git('commit', '-m', commit_message, no_run=args.no_git)
-  Git('cl', 'upload', '-f', '--bypass-hooks', no_run=args.no_git)
+  Git('cl', 'upload', '-f', '--bypass-hooks', '--squash', no_run=args.no_git)
   if not args.skip_clang:
     Git('cl',
         'try',

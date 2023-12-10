@@ -32,7 +32,7 @@ void ThemedLabel::OnThemeChanged() {
     SetEnabledColor(GetColorProvider()->GetColor(enabled_color_id_.value()));
 }
 
-BEGIN_METADATA(ThemedLabel, Label)
+BEGIN_METADATA(ThemedLabel)
 ADD_PROPERTY_METADATA(absl::optional<ui::ColorId>, EnabledColorId)
 END_METADATA
 

@@ -13,6 +13,7 @@
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/services/storage/public/mojom/storage_service.mojom.h"
 #include "components/services/storage/storage_service_impl.h"
 #include "content/child/child_process.h"
@@ -31,7 +32,6 @@
 #include "services/data_decoder/data_decoder_service.h"
 #include "services/network/network_service.h"
 #include "services/on_device_model/on_device_model_service.h"
-#include "services/on_device_model/public/cpp/features.h"
 #include "services/tracing/public/mojom/tracing_service.mojom.h"
 #include "services/tracing/tracing_service.h"
 #include "services/video_capture/public/mojom/video_capture_service.mojom.h"
@@ -166,7 +166,8 @@ class UtilityThreadVideoCaptureServiceImpl final
       mojo::PendingReceiver<video_capture::mojom::VideoCaptureService> receiver,
       scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner)
       : VideoCaptureServiceImpl(std::move(receiver),
-                                std::move(ui_task_runner)) {}
+                                std::move(ui_task_runner),
+                                /*create_system_monitor=*/true) {}
 
  private:
 #if BUILDFLAG(IS_WIN)
@@ -401,8 +402,7 @@ void RegisterMainThreadServices(mojo::ServiceFactory& services) {
   services.Add(RunTracing);
   services.Add(RunVideoCapture);
 
-  if (base::FeatureList::IsEnabled(
-          on_device_model::features::kOnDeviceModelService)) {
+  if (optimization_guide::features::CanLaunchOnDeviceModelService()) {
     services.Add(RunOnDeviceModel);
   }
 

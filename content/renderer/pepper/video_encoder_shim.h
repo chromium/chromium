@@ -48,8 +48,10 @@ class VideoEncoderShim : public media::VideoEncodeAccelerator {
   void Encode(scoped_refptr<media::VideoFrame> frame,
               bool force_keyframe) override;
   void UseOutputBitstreamBuffer(media::BitstreamBuffer buffer) override;
-  void RequestEncodingParametersChange(const media::Bitrate& bitrate,
-                                       uint32_t framerate) override;
+  void RequestEncodingParametersChange(
+      const media::Bitrate& bitrate,
+      uint32_t framerate,
+      const absl::optional<gfx::Size>& size) override;
   void Destroy() override;
 
  private:

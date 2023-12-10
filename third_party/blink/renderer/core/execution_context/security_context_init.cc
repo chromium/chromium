@@ -60,9 +60,6 @@ SecurityContextInit::SecurityContextInit(ExecutionContext* context)
 void SecurityContextInit::ApplyDocumentPolicy(
     DocumentPolicy::ParsedDocumentPolicy& document_policy,
     const String& report_only_document_policy_header) {
-  if (!RuntimeEnabledFeatures::DocumentPolicyEnabled())
-    return;
-
   // Because Document-Policy http header is parsed in DocumentLoader,
   // when origin trial context is not initialized yet.
   // Needs to filter out features that are not in origin trial after

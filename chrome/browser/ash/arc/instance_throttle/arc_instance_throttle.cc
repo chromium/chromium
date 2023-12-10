@@ -90,7 +90,7 @@ UnthrottlingReason GetUnthrottlingReason(
 }
 
 void OnSetArcVmCpuRestriction(
-    absl::optional<vm_tools::concierge::SetVmCpuRestrictionResponse> response) {
+    std::optional<vm_tools::concierge::SetVmCpuRestrictionResponse> response) {
   if (!response) {
     LOG(ERROR) << "Failed to call SetVmCpuRestriction";
     RecordCpuRestrictionVMResult(
@@ -387,7 +387,7 @@ void ArcInstanceThrottle::ThrottleInstance(bool should_throttle) {
     //   happen.
   }
 
-  const absl::optional<bool>& arc_is_booting =
+  const std::optional<bool>& arc_is_booting =
       GetBootObserver()->arc_is_booting();
   const bool arc_has_booted = (arc_is_booting && !*arc_is_booting);
   const bool is_throttling = (cpu_restriction_state ==

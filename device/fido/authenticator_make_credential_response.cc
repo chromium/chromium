@@ -11,7 +11,6 @@
 #include "device/fido/attestation_statement_formats.h"
 #include "device/fido/attested_credential_data.h"
 #include "device/fido/authenticator_data.h"
-#include "device/fido/device_public_key_extension.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_parsing_utils.h"
 #include "device/fido/large_blob.h"
@@ -86,26 +85,6 @@ AuthenticatorMakeCredentialResponse::GetCBOREncodedAttestationObject() const {
       .value_or(std::vector<uint8_t>());
 }
 
-absl::optional<device::DevicePublicKeyOutput>
-AuthenticatorMakeCredentialResponse::GetDevicePublicKeyResponse() const {
-  const absl::optional<cbor::Value>& maybe_extensions =
-      attestation_object.authenticator_data().extensions();
-  if (!maybe_extensions) {
-    return absl::nullopt;
-  }
-
-  DCHECK(maybe_extensions->is_map());
-  const cbor::Value::MapValue& extensions = maybe_extensions->GetMap();
-  const auto device_public_key_it =
-      extensions.find(cbor::Value(device::kExtensionDevicePublicKey));
-  if (device_public_key_it == extensions.end()) {
-    return absl::nullopt;
-  }
-
-  return device::DevicePublicKeyOutput::FromExtension(
-      device_public_key_it->second);
-}
-
 const std::array<uint8_t, kRpIdHashLength>&
 AuthenticatorMakeCredentialResponse::GetRpIdHash() const {
   return attestation_object.rp_id_hash();
@@ -127,10 +106,6 @@ std::vector<uint8_t> AsCTAPStyleCBORBytes(
     map.emplace(5, cbor::Value(std::array<uint8_t, kLargeBlobKeyLength>()));
   }
   cbor::Value::MapValue unsigned_extension_outputs;
-  if (response.device_public_key_signature.has_value()) {
-    unsigned_extension_outputs.emplace(kExtensionDevicePublicKey,
-                                       *response.device_public_key_signature);
-  }
   if (response.prf_enabled) {
     cbor::Value::MapValue prf;
     prf.emplace(kExtensionPRFEnabled, true);

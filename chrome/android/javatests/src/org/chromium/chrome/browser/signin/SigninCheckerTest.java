@@ -159,7 +159,9 @@ public class SigninCheckerTest {
                 });
         Assert.assertNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SYNC));
         Assert.assertEquals(
-                3, SigninCheckerProvider.get().getNumOfChildAccountChecksDoneForTests());
+                3,
+                SigninCheckerProvider.get(mActivityTestRule.getProfile(false))
+                        .getNumOfChildAccountChecksDoneForTests());
         Assert.assertTrue(
                 actionTester.getActions().contains("Signin_Signin_WipeDataOnChildAccountSignin2"));
         Assert.assertFalse(SyncTestUtil.isSyncFeatureEnabled());
@@ -179,7 +181,8 @@ public class SigninCheckerTest {
         // is added.
         CriteriaHelper.pollUiThread(
                 () -> {
-                    return SigninCheckerProvider.get().getNumOfChildAccountChecksDoneForTests()
+                    return SigninCheckerProvider.get(mActivityTestRule.getProfile(false))
+                                    .getNumOfChildAccountChecksDoneForTests()
                             == 2;
                 });
         Assert.assertNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SYNC));
@@ -203,7 +206,8 @@ public class SigninCheckerTest {
         // The check should be done once at activity start-up
         CriteriaHelper.pollUiThread(
                 () -> {
-                    return SigninCheckerProvider.get().getNumOfChildAccountChecksDoneForTests()
+                    return SigninCheckerProvider.get(mActivityTestRule.getProfile(false))
+                                    .getNumOfChildAccountChecksDoneForTests()
                             == 1;
                 });
         Assert.assertNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SYNC));
@@ -229,7 +233,9 @@ public class SigninCheckerTest {
 
         // The check should be done once at account addition and once at activity start-up.
         Assert.assertEquals(
-                2, SigninCheckerProvider.get().getNumOfChildAccountChecksDoneForTests());
+                2,
+                SigninCheckerProvider.get(mActivityTestRule.getProfile(false))
+                        .getNumOfChildAccountChecksDoneForTests());
         Assert.assertTrue(
                 actionTester.getActions().contains("Signin_Signin_WipeDataOnChildAccountSignin2"));
     }

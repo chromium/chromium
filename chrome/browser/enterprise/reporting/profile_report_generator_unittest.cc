@@ -135,7 +135,7 @@ class ProfileReportGeneratorTest : public ::testing::Test {
     return report;
   }
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   void SetExtensionToPendingList(const std::vector<std::string>& ids) {
     base::Value::Dict id_values;
     for (const auto& id : ids) {
@@ -160,7 +160,7 @@ class ProfileReportGeneratorTest : public ::testing::Test {
         extensions::pref_names::kExtensionManagement,
         base::Value::ToUniquePtrValue(std::move(*settings)));
   }
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
   TestingProfile* profile() { return profile_; }
   TestingProfileManager* profile_manager() { return &profile_manager_; }
@@ -232,7 +232,7 @@ TEST_F(ProfileReportGeneratorTest, ProfileIdObfuscate) {
   EXPECT_NE(report->id(), report3->id());
 }
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 TEST_F(ProfileReportGeneratorTest, PoliciesDisabled) {
   // Users' profile info is collected by default.
   std::unique_ptr<em::ChromeUserProfileInfo> report = GenerateReport();
@@ -324,6 +324,6 @@ TEST_F(ProfileReportGeneratorTest, TooManyRequests) {
               report2->extension_requests(id).id());
 }
 
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 }  // namespace enterprise_reporting

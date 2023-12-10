@@ -9,8 +9,7 @@
         display: none;
       }
     </style>
-    <template is="dom-if" if="[[showBasicPage_(
-        currentRoute_, inSearchMode, hasExpandedSection_)]]">
+    <template is="dom-if" if="[[showBasicPage_(currentRoute_, inSearchMode)]]">
       <div id="basicPage">
         <template is="dom-if" if="[[showResetProfileBanner_]]" restamp>
           <settings-reset-profile-banner on-close="onResetProfileBannerClosed_">
@@ -22,6 +21,14 @@
             <settings-people-page prefs="{{prefs}}"
                 page-visibility="[[pageVisibility]]">
             </settings-people-page>
+          </settings-section>
+        </template>
+        <template is="dom-if"
+            if="[[showExperimentalAdvancedPage_(pageVisibility.ai)]]"
+            restamp>
+          <settings-section page-title="$i18n{experimentalAdvancedPageTitle}"
+              section="ai">
+            <settings-ai-page prefs="{{prefs}}"></settings-ai-page>
           </settings-section>
         </template>
         <template is="dom-if" if="[[showPage_(pageVisibility.autofill)]]"
@@ -151,9 +158,7 @@
         if="[[showAdvancedSettings_(pageVisibility.advancedSettings)]]">
       <settings-idle-load id="advancedPageTemplate">
         <template>
-          <div id="advancedPage" hidden$="[[!showAdvancedPage_(
-              currentRoute_, inSearchMode, hasExpandedSection_,
-              advancedToggleExpanded)]]">
+          <div id="advancedPage">
             <template is="dom-if" if="[[showPage_(pageVisibility.languages)]]"
                 restamp>
 <if expr="not chromeos_ash">

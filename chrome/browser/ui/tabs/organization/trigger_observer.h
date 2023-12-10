@@ -25,7 +25,7 @@ class TabOrganizationTriggerObserver : public BrowserListObserver,
   explicit TabOrganizationTriggerObserver(
       base::RepeatingCallback<void(const Browser*)> on_trigger,
       content::BrowserContext* browser_context,
-      std::unique_ptr<TabOrganizationTrigger> trigger_logic = MakeMVPTrigger());
+      std::unique_ptr<TabOrganizationTrigger> trigger_logic);
   ~TabOrganizationTriggerObserver() override;
 
   // BrowserListObserver:

@@ -55,6 +55,7 @@
 #include "ui/compositor/presentation_time_recorder.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
+#include "ui/display/screen.h"
 #include "ui/events/gesture_detection/gesture_configuration.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/test/widget_animation_waiter.h"
@@ -135,7 +136,7 @@ class HotseatWidgetTest
     // If the launcher button is not expected to be shown, show the assistant UI
     // directly; otherwise, simulate the long press on the home button,
     if (!navigation_buttons_shown_in_tablet_mode_ &&
-        Shell::Get()->tablet_mode_controller()->InTabletMode()) {
+        display::Screen::GetScreen()->InTabletMode()) {
       AssistantUiController::Get()->ShowUi(
           assistant::AssistantEntryPoint::kLongPressLauncher);
       return;
@@ -161,7 +162,7 @@ class HotseatWidgetTest
     // If the launcher button is not expected to be shown, go home directly;
     // otherwise, simulate tap on the home button,
     if (!navigation_buttons_shown_in_tablet_mode_ &&
-        Shell::Get()->tablet_mode_controller()->InTabletMode()) {
+        display::Screen::GetScreen()->InTabletMode()) {
       Shell::Get()->app_list_controller()->GoHome(GetPrimaryDisplay().id());
       return;
     }
@@ -182,7 +183,7 @@ class HotseatWidgetTest
     // directly; otherwise, simulate tap on the overview button, which should
     // toggle overview.
     if (!navigation_buttons_shown_in_tablet_mode_ &&
-        Shell::Get()->tablet_mode_controller()->InTabletMode()) {
+        display::Screen::GetScreen()->InTabletMode()) {
       EnterOverview();
       return;
     }
@@ -202,7 +203,7 @@ class HotseatWidgetTest
     // directly; otherwise, simulate tap on the overview button, which should
     // toggle overview.
     if (!navigation_buttons_shown_in_tablet_mode_ &&
-        Shell::Get()->tablet_mode_controller()->InTabletMode()) {
+        display::Screen::GetScreen()->InTabletMode()) {
       ExitOverview();
       return;
     }
@@ -896,11 +897,10 @@ TEST_P(HotseatWidgetTest, SwipeUpOnShelfShowsHotseatInSplitView) {
   EnterOverview();
   SplitViewController* split_view_controller =
       SplitViewController::Get(Shell::GetPrimaryRootWindow());
-  split_view_controller->SnapWindow(
-      window.get(), SplitViewController::SnapPosition::kPrimary);
-  split_view_controller->SnapWindow(
-      window2.get(), SplitViewController::SnapPosition::kSecondary);
-  EXPECT_TRUE(split_view_controller->BothSnapped());
+  split_view_controller->SnapWindow(window.get(), SnapPosition::kPrimary);
+  split_view_controller->SnapWindow(window2.get(), SnapPosition::kSecondary);
+  EXPECT_EQ(split_view_controller->state(),
+            SplitViewController::State::kBothSnapped);
 
   // We should still be able to drag up the hotseat.
   SwipeUpOnShelf();
@@ -2009,8 +2009,7 @@ TEST_P(HotseatWidgetTest, SwipeOnHotseatInSplitViewWithOverview) {
 
   SplitViewController* split_view_controller =
       SplitViewController::Get(Shell::GetPrimaryRootWindow());
-  split_view_controller->SnapWindow(
-      window.get(), SplitViewController::SnapPosition::kPrimary);
+  split_view_controller->SnapWindow(window.get(), SnapPosition::kPrimary);
 
   SwipeUpOnShelf();
 
@@ -2062,10 +2061,8 @@ TEST_P(HotseatWidgetTest, SwipeOnHotseatInSplitView) {
 
   SplitViewController* split_view_controller =
       SplitViewController::Get(Shell::GetPrimaryRootWindow());
-  split_view_controller->SnapWindow(
-      window1.get(), SplitViewController::SnapPosition::kPrimary);
-  split_view_controller->SnapWindow(
-      window2.get(), SplitViewController::SnapPosition::kSecondary);
+  split_view_controller->SnapWindow(window1.get(), SnapPosition::kPrimary);
+  split_view_controller->SnapWindow(window2.get(), SnapPosition::kSecondary);
   EXPECT_TRUE(split_view_controller->InSplitViewMode());
 
   SwipeUpOnShelf();

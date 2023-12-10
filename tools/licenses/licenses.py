@@ -56,10 +56,15 @@ PRUNE_PATHS = set([
     # Only binaries, used during development.
     os.path.join('third_party', 'valgrind'),
 
+    # Not actually a third party dependency. Supplies configuration for
+    # enabling or disabling field trials and features in Chromium projects.
+    os.path.join('third_party', 'chromium-variations'),
+
     # Used for development and test, not in the shipping product.
     os.path.join('build', 'secondary'),
     os.path.join('third_party', 'bison'),
     os.path.join('third_party', 'chromite'),
+    os.path.join('third_party', 'clang-format'),
     os.path.join('third_party', 'cygwin'),
     os.path.join('third_party', 'gles2_conform'),
     os.path.join('third_party', 'gnu_binutils'),
@@ -1241,6 +1246,14 @@ def GenerateLicenseFileCsv(
   """Generates a CSV formatted file which contains license data to be used as
     part of the submission to the Open Source Licensing Review process.
   """
+  third_party_data = []
+
+  # Collect all the metadata we want to write out and sort it so that the
+  # resulting CSV is ordered by dependency name
+  for data in metadata.values():
+    third_party_data.extend(data)
+  third_party_data.sort(key=lambda item: item['Name'])
+
   csv_content = io.StringIO()
   csv_writer = csv.writer(csv_content, quoting=csv.QUOTE_NONNUMERIC)
 
@@ -1262,42 +1275,39 @@ def GenerateLicenseFileCsv(
       "Authorization date"
   ])
 
-  # Start with Chromium's LICENSE file
+  # Include Chromium at the top of the file as it's the main artifact.
   csv_writer.writerow([
       "Chromium",
       "https://source.chromium.org/chromium/chromium/src/+/main:LICENSE",
       "BSD 3-Clause"
   ] + static_data)
 
-  # Add necessary third_party.
-  for directory in sorted(metadata):
-    dir_metadata = metadata[directory]
-    for dep_metadata in dir_metadata:
-      # Only third party libraries which are shipped as part of a final
-      # product are in scope for license review.
-      if dep_metadata['Shipped'] == NO:
-        continue
+  for dep_metadata in third_party_data:
+    # Only third party libraries which are shipped as part of a final
+    # product are in scope for license review.
+    if dep_metadata['Shipped'] == NO:
+      continue
 
-      data_row = [dep_metadata['Name'] or "UNKNOWN"]
+    data_row = [dep_metadata['Name'] or "UNKNOWN"]
 
-      urls = []
-      for lic in dep_metadata['License File']:
-        # The review process requires that a link is provided to each license
-        # which is included. We can achieve this by combining a static
-        # Chromium googlesource URL with the relative path to the license
-        # file from the top level Chromium src directory.
-        lic_url = ("https://source.chromium.org/chromium/chromium/src/+/main:" +
-                   os.path.relpath(lic, repo_root))
+    urls = []
+    for lic in dep_metadata['License File']:
+      # The review process requires that a link is provided to each license
+      # which is included. We can achieve this by combining a static
+      # Chromium googlesource URL with the relative path to the license
+      # file from the top level Chromium src directory.
+      lic_url = ("https://source.chromium.org/chromium/chromium/src/+/main:" +
+                 os.path.relpath(lic, repo_root))
 
-        # Since these are URLs and not paths, replace any Windows path `\`
-        # separators with a `/`
-        urls.append(lic_url.replace("\\", "/"))
+      # Since these are URLs and not paths, replace any Windows path `\`
+      # separators with a `/`
+      urls.append(lic_url.replace("\\", "/"))
 
-      data_row.append(", ".join(urls) or "UNKNOWN")
-      data_row.append(dep_metadata["License"] or "UNKNOWN")
+    data_row.append(", ".join(urls) or "UNKNOWN")
+    data_row.append(dep_metadata["License"] or "UNKNOWN")
 
-      # Join the default data which applies to each row
-      csv_writer.writerow(data_row + static_data)
+    # Join the default data which applies to each row
+    csv_writer.writerow(data_row + static_data)
 
   return csv_content.getvalue()
 

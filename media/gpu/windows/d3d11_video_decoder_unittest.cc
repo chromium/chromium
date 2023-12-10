@@ -197,7 +197,8 @@ class D3D11VideoDecoderTest : public ::testing::Test {
             gpu_preferences_, gpu_workarounds_,
             base::BindRepeating(&D3D11VideoDecoderTest::GetCommandBufferHelper,
                                 base::Unretained(this)),
-            get_device_cb, *supported_configs, system_hdr_enabled_));
+            get_device_cb, *supported_configs, system_hdr_enabled_,
+            CHROME_LUID{0, 0}));
   }
 
   void InitializeDecoder(const VideoDecoderConfig& config,

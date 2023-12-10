@@ -120,7 +120,7 @@ class InputDataProvider : public mojom::InputDataProvider,
   void LidEventReceived(chromeos::PowerManagerClient::LidState state,
                         base::TimeTicks time) override;
   void OnReceiveSwitchStates(
-      absl::optional<chromeos::PowerManagerClient::SwitchStates> switch_states);
+      std::optional<chromeos::PowerManagerClient::SwitchStates> switch_states);
 
   // display::DisplayConfigurator::Observer
   void OnPowerStateChanged(chromeos::DisplayPowerState power_state) override;

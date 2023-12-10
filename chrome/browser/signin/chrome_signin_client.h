@@ -14,6 +14,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/signin/public/base/signin_client.h"
+#include "extensions/buildflags/buildflags.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 class WaitForNetworkCallbackHelper;
@@ -76,6 +77,10 @@ class ChromeSigninClient : public SigninClient {
       GaiaAuthConsumer* consumer,
       gaia::GaiaSource source) override;
   version_info::Channel GetClientChannel() override;
+  void OnPrimaryAccountChangedWithEventSource(
+      signin::PrimaryAccountChangeEvent event_details,
+      absl::variant<signin_metrics::AccessPoint, signin_metrics::ProfileSignout>
+          event_source) override;
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   absl::optional<account_manager::Account> GetInitialPrimaryAccount() override;
@@ -114,6 +119,16 @@ class ChromeSigninClient : public SigninClient {
   // Used as the `on_token_fetch_complete` callback in the
   // `ForceSigninVerifier`.
   void OnTokenFetchComplete(bool token_is_valid);
+#endif
+
+  // virtual for unit testing: cut down dependency on `BookmarkModel`.
+  // The following two functions will return `absl::nullopt` if the
+  // `BookmarkModel` is nullptr.
+  virtual absl::optional<size_t> GetAllBookmarksCount();
+  virtual absl::optional<size_t> GetBookmarkBarBookmarksCount();
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  // Returns `absl::nullopt` if the `ExtensionRegistry` is nullptr.
+  virtual absl::optional<size_t> GetExtensionsCount();
 #endif
 
   const std::unique_ptr<WaitForNetworkCallbackHelper>

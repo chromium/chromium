@@ -16,6 +16,7 @@
 #import "ios/chrome/app/startup/app_launch_metrics.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
 #import "ios/chrome/common/x_callback_url.h"
 #import "ios/components/webui/web_ui_url_constants.h"
@@ -33,6 +34,20 @@ const char kUMAMobileSessionStartActionHistogram[] =
 
 const char kApplicationGroupCommandDelay[] =
     "Startup.ApplicationGroupCommandDelay";
+
+// UMA histogram key for IOS.ExternalAction.
+const char kExternalActionHistogram[] = "IOS.ExternalAction";
+
+// Host string used to detect an "external action" scheme URL.
+NSString* const kExternalActionURLHost = @"ChromeExternalAction";
+
+// Action path string for launching the default browser settings using external
+// actions.
+NSString* const kExternalActionDefaultBrowserSettings =
+    @"DefaultBrowserSettings";
+
+// Action path string for Opening an NTP using external actions.
+NSString* const kExternalActionOpenNTP = @"OpenNTP";
 
 // URL Query String parameter to indicate that this openURL: request arrived
 // here due to a Smart App Banner presentation on a Google.com page.
@@ -82,6 +97,7 @@ const CGFloat kAppGroupTriggersVoiceSearchTimeout = 15.0;
 // Values of the UMA Startup.MobileSessionStartAction histogram.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+// LINT.IfChange
 enum MobileSessionStartAction {
   // Logged when an application passes an http URL to Chrome using the custom
   // registered scheme (f.e. googlechrome).
@@ -105,10 +121,14 @@ enum MobileSessionStartAction {
   // system from all other apps.
   START_ACTION_OPEN_HTTPS_FROM_OS = 8,
   START_ACTION_WIDGET_KIT_COMMAND = 9,
+  // Logged when Chrome is opened via the external action scheme.
+  START_EXTERNAL_ACTION = 10,
   MOBILE_SESSION_START_ACTION_COUNT
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/ios/enums.xml)
 
 // Values of the UMA iOS.SearchExtension.Action histogram.
+// LINT.IfChange
 enum SearchExtensionAction {
   ACTION_NO_ACTION,
   ACTION_NEW_SEARCH,
@@ -121,10 +141,12 @@ enum SearchExtensionAction {
   ACTION_LENS,
   SEARCH_EXTENSION_ACTION_COUNT,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/ios/enums.xml)
 
 // Values of the UMA IOS.WidgetKit.Action histogram.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+// LINT.IfChange
 enum class WidgetKitExtensionAction {
   ACTION_DINO_WIDGET_GAME = 0,
   ACTION_SEARCH_WIDGET_SEARCH = 1,
@@ -142,6 +164,22 @@ enum class WidgetKitExtensionAction {
   ACTION_SEARCH_PASSWORDS_WIDGET_SEARCH_PASSWORDS = 13,
   kMaxValue = ACTION_SEARCH_PASSWORDS_WIDGET_SEARCH_PASSWORDS,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/ios/enums.xml)
+
+// Values of the UMA IOS.ExternalAction histogram.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange
+enum class IOSExternalAction {
+  // Logged when Chrome is passed an invalid action.
+  ACTION_INVALID = 0,
+  // Logged when Chrome is passed a "OpenNTP" action.
+  ACTION_OPEN_NTP = 1,
+  // Logged when Chrome is passed a "DefaultBrowserSettings" action.
+  ACTION_DEFAULT_BROWSER_SETTINGS = 2,
+  kMaxValue = ACTION_DEFAULT_BROWSER_SETTINGS,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/ios/enums.xml)
 
 // Histogram helper to log the UMA IOS.WidgetKit.Action histogram.
 void LogWidgetKitAction(WidgetKitExtensionAction action) {
@@ -331,6 +369,18 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
     // so this assignment should not DCHECK, no matter what the URL is.
     startupParameters.postOpeningAction = postOpeningAction;
     return startupParameters;
+  } else if (IsExternalActionSchemeHandlingEnabled() &&
+             [self isChromeExternalActionURL:completeURL]) {
+    base::RecordAction(
+        base::UserMetricsAction("MobileExternalActionURLOpened"));
+    UMA_HISTOGRAM_ENUMERATION(kUMAMobileSessionStartActionHistogram,
+                              START_EXTERNAL_ACTION,
+                              MOBILE_SESSION_START_ACTION_COUNT);
+    base::UmaHistogramEnumeration(kAppLaunchSource,
+                                  AppLaunchSource::EXTERNAL_ACTION);
+
+    return [self getExternalActionStartupParameterWithAppId:appId
+                                                completeURL:completeURL];
   } else if (gurl.SchemeIsFile()) {
     UMA_HISTOGRAM_ENUMERATION(kUMAMobileSessionStartActionHistogram,
                               START_ACTION_OPEN_FILE,
@@ -383,7 +433,7 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
     UMA_HISTOGRAM_ENUMERATION(kUMAMobileSessionStartActionHistogram, action,
                               MOBILE_SESSION_START_ACTION_COUNT);
     // An HTTP(S) URL open that opened Chrome (e.g. default browser open) should
-    // be logged as siginficnat activity for a potential user that would want
+    // be logged as significant activity for a potential user that would want
     // Chrome as their default browser in case the user changes away from
     // Chrome. This will leave a trace of this activity for re-prompting.
     LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeGeneral);
@@ -407,6 +457,68 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
         openedViaSpecificScheme && CallerAppIsFirstParty(params.callerApp);
     return params;
   }
+}
+
+// Returns true if the URL passed is an external action URL, defined by having
+// the `kExternalActionURLHost` as host.
++ (BOOL)isChromeExternalActionURL:(NSURL*)URL {
+  return [URL.host isEqualToString:kExternalActionURLHost];
+}
+
+// Returns a new `ChromeAppStartupParameters` for a given `appId`, `completeURL`
+// and `externalURL`.
++ (ChromeAppStartupParameters*)
+    newExternalActionAppStartupParameters:(NSString*)appId
+                              completeURL:(NSURL*)completeURL
+                              externalURL:(const GURL&)externalURL {
+  return [[ChromeAppStartupParameters alloc]
+      initWithExternalURL:externalURL
+        declaredSourceApp:appId
+          secureSourceApp:nil
+              completeURL:completeURL
+          applicationMode:ApplicationModeForTabOpening::UNDETERMINED];
+}
+
+// Returns the correct startup parameters for a given external action passed as
+// path to the external action "scheme". Returns nil (no-op) if the action is
+// not recognized.
++ (instancetype)getExternalActionStartupParameterWithAppId:(NSString*)appId
+                                               completeURL:(NSURL*)completeURL {
+  ChromeAppStartupParameters* params;
+  IOSExternalAction action;
+  NSString* path;
+
+  // Separate the path into its components and ensure there is only one
+  // component after the first "/".
+  NSArray<NSString*>* pathComponents = completeURL.pathComponents;
+  if ([pathComponents count] == 2 && [pathComponents[0] isEqualToString:@"/"]) {
+    path = pathComponents[1];
+  }
+
+  if ([path isEqualToString:kExternalActionOpenNTP]) {
+    base::RecordAction(
+        base::UserMetricsAction("MobileExternalActionURLOpenedWithOpenNTP"));
+    action = IOSExternalAction::ACTION_OPEN_NTP;
+    params =
+        [self newExternalActionAppStartupParameters:appId
+                                        completeURL:completeURL
+                                        externalURL:GURL(kChromeUINewTabURL)];
+  } else if ([path isEqualToString:kExternalActionDefaultBrowserSettings]) {
+    base::RecordAction(base::UserMetricsAction(
+        "MobileExternalActionURLOpenedWithDefaultBrowserSettings"));
+    action = IOSExternalAction::ACTION_DEFAULT_BROWSER_SETTINGS;
+    params = [self newExternalActionAppStartupParameters:appId
+                                             completeURL:completeURL
+                                             externalURL:GURL()];
+    params.postOpeningAction = EXTERNAL_ACTION_SHOW_BROWSER_SETTINGS;
+  } else {
+    action = IOSExternalAction::ACTION_INVALID;
+    params = nil;
+  }
+
+  base::UmaHistogramEnumeration(kExternalActionHistogram, action);
+  params.openedViaFirstPartyScheme = CallerAppIsFirstParty(params.callerApp);
+  return params;
 }
 
 + (instancetype)newExtensionCommandAppStartupParametersFromWithURL:(NSURL*)url

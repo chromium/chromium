@@ -61,7 +61,6 @@ ToolbarActionsBarBubbleViews::ToolbarActionsBarBubbleViews(
       ToolbarActionsBarBubbleDelegate::CLOSE_DISMISS_DEACTIVATION));
 
   DCHECK(anchor_view);
-  set_close_on_deactivate(delegate_->ShouldCloseOnDeactivate());
 }
 
 ToolbarActionsBarBubbleViews::~ToolbarActionsBarBubbleViews() {}
@@ -156,9 +155,9 @@ void ToolbarActionsBarBubbleViews::RemovedFromWidget() {
 
 void ToolbarActionsBarBubbleViews::Init() {
   std::u16string body_text_string = delegate_->GetBodyText(anchored_to_action_);
-  std::u16string item_list = delegate_->GetItemListText();
-  if (body_text_string.empty() && item_list.empty())
+  if (body_text_string.empty()) {
     return;
+  }
 
   ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
   SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -176,18 +175,6 @@ void ToolbarActionsBarBubbleViews::Init() {
     body_text_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
     AddChildView(body_text_.get());
   }
-
-  if (!item_list.empty()) {
-    item_list_ = new views::Label(item_list);
-    item_list_->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
-        0,
-        provider->GetDistanceMetric(views::DISTANCE_RELATED_CONTROL_HORIZONTAL),
-        0, 0)));
-    item_list_->SetMultiLine(true);
-    item_list_->SizeToFit(width);
-    item_list_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-    AddChildView(item_list_.get());
-  }
 }
 
 void ToolbarActionsBarBubbleViews::OnWidgetVisibilityChanged(
@@ -202,12 +189,8 @@ void ToolbarActionsBarBubbleViews::OnWidgetVisibilityChanged(
     return;
 
   observer_notified_of_show_ = true;
-  // Using Unretained is safe here because the controller, which eventually
-  // invokes the callback passed to OnBubbleShown, will never outlive the
-  // bubble view. This is because the ToolbarActionsBarBubbleView owns the
-  // ToolbarActionsBarBubbleDelegate. The ToolbarActionsBarBubbleDelegate is
-  // an ExtensionMessageBubbleBridge, which owns the
-  // ExtensionMessageBubbleController.
+  // Using Unretained is safe here because the delegate (which might invoke the
+  // callback) is owned by this object.
   delegate_->OnBubbleShown(
       base::BindOnce(&views::Widget::Close, base::Unretained(GetWidget())));
 }

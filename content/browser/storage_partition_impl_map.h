@@ -60,7 +60,7 @@ class CONTENT_EXPORT StoragePartitionImplMap
   void GarbageCollect(std::unordered_set<base::FilePath> active_paths,
                       base::OnceClosure done);
 
-  void ForEach(BrowserContext::StoragePartitionCallback callback);
+  void ForEach(base::FunctionRef<void(StoragePartition*)> fn);
 
   size_t size() const { return partitions_.size(); }
 

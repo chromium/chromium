@@ -123,7 +123,7 @@ class BorealisInstallerView : public views::DialogDelegateView,
   base::Time install_start_time_;
   State state_ = State::kConfirmInstall;
   InstallingState installing_state_ = InstallingState::kInactive;
-  absl::optional<borealis::mojom::InstallResult> result_;
+  std::optional<borealis::mojom::InstallResult> result_;
 
   base::ScopedObservation<borealis::BorealisInstaller,
                           borealis::BorealisInstaller::Observer>

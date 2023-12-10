@@ -49,4 +49,23 @@ suite('OptimizationGuideInternalsTest', function() {
 
     return Promise.all([containerHasChildren, tableRowExists]);
   });
+
+
+  test('InternalsClientIdsPageOpen', function() {
+    window.history.replaceState({}, '', '#client-ids');
+    window.dispatchEvent(new CustomEvent('hashchange'));
+
+    const containerHasChildren = new Promise(resolve => {
+      setTimeout(() => {
+        const container =
+            document.getElementById('logged-client-ids-container');
+        assertTrue(!!container);
+        if (container.children[0]!.childElementCount > 0) {
+          resolve(true);
+        }
+      }, 500);
+    });
+
+    return Promise.all([containerHasChildren]);
+  });
 });

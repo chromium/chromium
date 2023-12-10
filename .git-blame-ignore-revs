@@ -637,7 +637,7 @@ bed62bd9e242e3e4742fbd3fd09c96d2ce009113
 # Move android_affiliation and site_affiliation into the same folder.
 5910c68207058a5eebd3cac9e107777d01d50bf3
 
-# Reformat .java code with google-java-format. Tagged with Bug: 1491626
+# Reformat .java code with google-java-format. Tagged with Bug: 1491626 (part 1)
 e0260713f2172adb5e15adf4eba6a9e12eb34d3b
 d9fcc1f503517a01adb9defd5d533c978a626aca
 aa618470bafde071d7d729160fcd34cd7d33c5a7
@@ -657,3 +657,36 @@ e54a2819a1ffa1ee12f293684e0e0cab4b37cf85
 54e115d50c6a0e1ab081225d18ebf818c22545d4
 ac1325bf4f1dac784b2b83c2a20d264bad406adc
 8a0bb051183c9a410b3126112dd3b0bd214c5fe9
+
+# Move partition_alloc into a "partition_alloc" dir
+0bcc023b8cdbc073aa5c48db373810db3f765c87
+
+# Rename {absl => std}::optional
+59ac8227c5dd59754331b3f7f9f85e1a947f1242
+ca067f2604f9bf0ff2fa070eafeed664698d819a
+0b20ccad48bc63b0e6bf07b8511b32b8e3d963b1
+
+# Reformat .java code with google-java-format. Tagged with Bug: 1491626 (part 2)
+fd85d4fb7579adf095a94232268201342f89d836
+c89f6078b3d03a07e8859e4e2be5dc9baaf1d5f0
+a46fbc6634d0ac2fcdf88f35fa743fa5fd072575
+54443fc172332d6c7053d0d028405e396aa283e2
+71407b649204c49a6f6f73ce9eba4a1d269d2ecd
+2d27957fccc6f90cdae9429cc1db9444828ce96b
+cf573f2ef2ac45673c7033d559c8953282e94781
+692118410481affde547c276fdcdc4313688a7c4
+d50d7d806a7673395af57a1610bd76e019f2db39
+feff2176e905c3a859893fd7922f1cca496f1baa
+f96971d6a2869bd124d87baa06c1aa2b0a0cc20c
+93b668928055e7793e86697b0e6a08be849ee04d
+e9d875d2a48171575671a969462d7e0be03bc6b9
+a84b517c2f386039805c199c7121a101bd9a002f
+4d8cc895f86b96f958d5d84fb9004df48579c68e
+# Additional reformatting of .java code with google-java-format.
+8d0ce88014a84664b91bb4a0f62aa766f6e033b7
+f70362cf57dfdc99e2696ffd7c98a36792af6e27
+54f78eafc8259c10b394c9b6b05c098fb4d85ddb
+8ec2c27cc79c7de24665c2fa8ab0421e49caf88d
+9a8b38dfe178fbac3ba72ba1e112cea3be0f3dce
+9bcbb5dfac26b322b7a24e9fd947420a66c5ade2
+fcf47db6b8caaff2877f4d81af29eaab7cdc65e4

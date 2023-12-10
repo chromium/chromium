@@ -4,7 +4,6 @@ include_rules = [
   "+ui/android/ui_javatest_jni_headers/ClipboardAndroidTestSupport_jni.h",
   "+ui/base/ui_base_jni_headers",
   "-ui/ozone/*",
-  "+ui/ozone/buildflags.h",
   "+ui/ozone/public/ozone_platform.h",
   "+ui/ozone/public/ozone_switches.h",
   "+ui/ozone/public/platform_clipboard.h",

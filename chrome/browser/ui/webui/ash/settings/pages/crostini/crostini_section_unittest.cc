@@ -35,14 +35,6 @@ class CrostiniSectionTest : public testing::Test {
     profile_manager_->DeleteTestingProfile("test profile");
   }
 
-  void EnableBruschetta() {
-    feature_list_.InitAndEnableFeature(ash::features::kBruschetta);
-  }
-
-  void DisableBruschetta() {
-    feature_list_.InitAndDisableFeature(ash::features::kBruschetta);
-  }
-
   void AddInstallableConfig() {
     base::Value::Dict pref;
     base::Value::Dict config;
@@ -65,27 +57,14 @@ class CrostiniSectionTest : public testing::Test {
     return CrostiniSection::ShouldShowBruschetta(profile_);
   }
 
-  base::test::ScopedFeatureList feature_list_;
-
  private:
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
   raw_ptr<TestingProfile, DanglingUntriaged> profile_;
 };
 
-// Test that Bruschetta doesn't show up when it's disabled by flags.
-TEST_F(CrostiniSectionTest, BruschettaDisabled) {
-  DisableBruschetta();
-  EXPECT_FALSE(ShouldShowBruschetta());
-  AddInstallableConfig();
-  EXPECT_FALSE(ShouldShowBruschetta());
-  AddInstall();
-  EXPECT_FALSE(ShouldShowBruschetta());
-}
-
 // Test that Bruschetta shows up when it has an installable config.
 TEST_F(CrostiniSectionTest, BruschettaEnabled) {
-  EnableBruschetta();
   EXPECT_FALSE(ShouldShowBruschetta());
   AddInstallableConfig();
   EXPECT_TRUE(ShouldShowBruschetta());
@@ -94,7 +73,6 @@ TEST_F(CrostiniSectionTest, BruschettaEnabled) {
 // Test that Bruschetta does show up when it's installed, despite not having an
 // installable config.
 TEST_F(CrostiniSectionTest, BruschettaInstalled) {
-  EnableBruschetta();
   AddInstall();
   EXPECT_TRUE(ShouldShowBruschetta());
 }

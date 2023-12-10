@@ -1,19 +1,4 @@
 This is a testharness.js-based test.
-[PASS] valid: @keyframes  foo  { }
-[PASS] valid: @keyframes   foo { }
-[PASS] valid: @keyframes -foo { }
-[PASS] valid: @keyframes _bar { }
-[PASS] valid: @keyframes __bar { }
-[PASS] valid: @keyframes __bar__ { }
-[PASS] valid: @keyframes ease-out { }
-[PASS] valid: @keyframes example { }
-[PASS] valid: @keyframes EXAMPLE { }
-[PASS] valid: @keyframes not { }
-[PASS] valid: @keyframes and { }
-[PASS] valid: @keyframes all { }
-[PASS] valid: @keyframes or { }
-[PASS] valid: @keyframes auto { }
-[PASS] valid: @keyframes normal { }
 [FAIL] valid: @keyframes " foo " { }
   assert_equals: expected 1 but got 0
 [FAIL] valid: @keyframes "  foo" { }

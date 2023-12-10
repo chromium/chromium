@@ -6,18 +6,27 @@
 
 #include <memory>
 
+#include "base/android/build_info.h"
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/feature_list.h"
+#include "base/metrics/histogram_functions.h"
 #include "components/android_autofill/browser/android_autofill_bridge_factory.h"
 #include "components/android_autofill/browser/android_autofill_features.h"
 #include "components/android_autofill/browser/android_autofill_manager.h"
 #include "components/android_autofill/browser/autofill_provider_android_bridge.h"
 #include "components/android_autofill/browser/form_data_android.h"
+#include "components/autofill/android/touch_to_fill_keyboard_suppressor.h"
+#include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/form_field_data.h"
+#include "components/autofill/core/common/unique_ids.h"
+#include "components/password_manager/core/browser/form_parsing/form_data_parser.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
@@ -26,10 +35,50 @@
 
 namespace autofill {
 
-using base::android::JavaRef;
-using content::BrowserThread;
-using mojom::SubmissionSource;
-using FieldInfo = AutofillProviderAndroidBridge::FieldInfo;
+namespace {
+
+using ::autofill::mojom::SubmissionSource;
+using ::base::android::JavaRef;
+using ::content::BrowserThread;
+using FieldInfo = ::autofill::AutofillProviderAndroidBridge::FieldInfo;
+
+constexpr int kMinimumSdkVersionForPrefillRequests =
+    base::android::SdkVersion::SDK_VERSION_U;
+
+constexpr base::TimeDelta kKeyboardSuppressionTimeout = base::Seconds(1);
+
+// Returns whether we should attempt to cache provider responses for this form.
+// Currently, that is the case iff we diagnose it to be a login form.
+bool ShouldCacheForm(const FormStructure& form_structure) {
+  // Transform the predictions data to a format the `FormDataParser` can handle
+  // and parse the form.
+  FormData form_data = form_structure.ToFormData();
+  auto autofill_predictions =
+      base::MakeFlatMap<FieldGlobalId, AutofillType::ServerPrediction>(
+          form_structure, /*comp=*/{},
+          /*proj=*/[](const std::unique_ptr<AutofillField>& field) {
+            return std::make_pair(field->global_id(),
+                                  AutofillType::ServerPrediction(*field));
+          });
+  password_manager::FormDataParser parser;
+  // The driver id is irrelevant here because it would only be used by password
+  // manager logic that handles the `PasswordForm` returned by the parser.
+  // Therefore we pass a dummy a value.
+  parser.set_predictions(password_manager::ConvertToFormPredictions(
+      /*driver_id=*/0, form_data, autofill_predictions));
+  // On Chrome, the parser can use stored usernames to identify a filled
+  // username field by the value it contains. Since we do not have access to
+  // credentials, we leave it empty.
+  std::unique_ptr<password_manager::PasswordForm> pw_form =
+      parser.Parse(form_data, password_manager::FormDataParser::Mode::kFilling,
+                   /*stored_usernames=*/{});
+  return pw_form && pw_form->IsLikelyLoginForm();
+}
+
+constexpr base::TimeDelta kWasBottomSheetShownFlipTimeout =
+    base::Milliseconds(50);
+
+}  // namespace
 
 // static
 void AutofillProviderAndroid::CreateForWebContents(
@@ -115,7 +164,7 @@ void AutofillProviderAndroid::OnAskForValuesToFill(
 
   // Focus or field value change will also trigger the query, so it should be
   // ignored if the form is same.
-  if (!IsCurrentlyLinkedForm(form)) {
+  if (!IsLinkedForm(form)) {
     StartNewSession(manager, form, field, bounding_box);
   }
 
@@ -130,7 +179,21 @@ void AutofillProviderAndroid::StartNewSession(AndroidAutofillManager* manager,
                                               const FormData& form,
                                               const FormFieldData& field,
                                               const gfx::RectF& bounding_box) {
-  form_ = std::make_unique<FormDataAndroid>(form);
+  // The form is assigned the same session id form sent to the Android framework
+  // in the prefill request iff all of the following conditions are met:
+  // - There is a cached form.
+  // - This is the first time we try to show the bottom sheet for the cached
+  //   form (on their second interaction, the user should see the keyboard).
+  // - The cached form is similar to the current form - i.e. it consists of the
+  //   same DOM elements as the cached form and their attributes have not
+  //   changed substantially enough - see `FormDataAndroid::SimilarFormAs`.
+  const bool is_similar_to_cached_form =
+      cached_form_ && cached_form_->SimilarFormAs(form);
+  const bool use_id_of_cached_form =
+      is_similar_to_cached_form && !has_used_cached_form_;
+  form_ = std::make_unique<FormDataAndroid>(
+      form,
+      use_id_of_cached_form ? cached_form_->session_id() : CreateSessionId());
   FieldInfo field_info;
   if (!form_->GetFieldIndex(field, &field_info.index)) {
     Reset();
@@ -144,17 +207,57 @@ void AutofillProviderAndroid::StartNewSession(AndroidAutofillManager* manager,
   manager_ = manager->GetWeakPtrToLeafClass();
 
   // Set the field type predictions in `form_`.
-  if (FormStructure* form_structure =
-          manager->FindCachedFormById(form.global_id())) {
+  FormStructure* form_structure = manager->FindCachedFormById(form.global_id());
+  if (form_structure) {
     form_->UpdateFieldTypes(*form_structure);
   }
   field_info.bounds = ToClientAreaBound(bounding_box);
+
+  [&] {
+    // Metrics for prefill requests are only emitted if this is the first time
+    // a cached form is focused - hence the use of `is_similar_to_cached_form`.
+    if (!ArePrefillRequestsSupported() || is_similar_to_cached_form) {
+      return;
+    }
+
+    // We sent a cache request for this form element, but the form (or its
+    // members) have changed since then.
+    if (cached_form_ && cached_form_->form().global_id() == form.global_id()) {
+      base::UmaHistogramEnumeration(
+          kPrefillRequestStateUma,
+          PrefillRequestState::kRequestSentFormChanged);
+      return;
+    }
+
+    // Prefill request state metrics are for forms that we would have cached.
+    if (!form_structure || !ShouldCacheForm(*form_structure)) {
+      return;
+    }
+
+    if (cached_form_) {
+      // We would have cached the form, but another cache request had already
+      // been sent.
+      base::UmaHistogramEnumeration(
+          kPrefillRequestStateUma,
+          PrefillRequestState::kRequestNotSentMaxNumberReached);
+      return;
+    }
+
+    // If we reach this point, we know that a) we would have cached the form and
+    // b) no other cache request has been sent. That means that we did not
+    // receive the predictions for this form in time.
+    base::UmaHistogramEnumeration(kPrefillRequestStateUma,
+                                  PrefillRequestState::kRequestNotSentNoTime);
+  }();
+
+  has_used_cached_form_ = true;
   bridge_->StartAutofillSession(
       *form_, field_info, manager->has_server_prediction(form.global_id()));
 }
 
 void AutofillProviderAndroid::OnAutofillAvailable() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  was_bottom_sheet_just_shown_ = false;
   if (manager_ && form_) {
     form_->UpdateFromJava();
     FillOrPreviewForm(manager_.get(), form_->form(), field_type_group_,
@@ -178,6 +281,34 @@ void AutofillProviderAndroid::SetAnchorViewRect(
   }
 }
 
+void AutofillProviderAndroid::OnShowBottomSheetResult(
+    bool is_shown,
+    bool provided_autofill_structure) {
+  was_bottom_sheet_just_shown_ = is_shown;
+
+  if (is_shown) {
+    base::UmaHistogramEnumeration(
+        kPrefillRequestStateUma,
+        PrefillRequestState::kRequestSentStructureProvidedBottomSheetShown);
+    return;
+  }
+
+  if (keyboard_suppressor_) {
+    keyboard_suppressor_->Unsuppress();
+  }
+
+  // Note that in some cases this metric is not accurate: If, for example,
+  // the bottom sheet is not shown because keyboard suppression did not work, it
+  // might be that a later interaction triggers the bottom sheet. See
+  // b/310634445.
+  base::UmaHistogramEnumeration(
+      kPrefillRequestStateUma,
+      provided_autofill_structure
+          ? PrefillRequestState::
+                kRequestSentStructureProvidedBottomSheetNotShown
+          : PrefillRequestState::kRequestSentStructureNotProvided);
+}
+
 void AutofillProviderAndroid::OnTextFieldDidChange(
     AndroidAutofillManager* manager,
     const FormData& form,
@@ -194,7 +325,7 @@ void AutofillProviderAndroid::OnTextFieldDidScroll(
     const gfx::RectF& bounding_box) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   FieldInfo field_info;
-  if (!IsCurrentlyLinkedForm(form) ||
+  if (!IsLinkedForm(form) ||
       !form_->GetSimilarFieldIndex(field, &field_info.index)) {
     return;
   }
@@ -212,7 +343,7 @@ void AutofillProviderAndroid::OnSelectControlDidChange(
     const FormData& form,
     const FormFieldData& field,
     const gfx::RectF& bounding_box) {
-  if (!IsCurrentlyLinkedForm(form)) {
+  if (!IsLinkedForm(form)) {
     StartNewSession(manager, form, field, bounding_box);
     // TODO(crbug.com/1478934): Return early at this point?
   }
@@ -230,7 +361,9 @@ void AutofillProviderAndroid::OnFormSubmitted(AndroidAutofillManager* manager,
                                               bool known_success,
                                               SubmissionSource source) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (!IsCurrentlyLinkedManager(manager) || !form_) {
+  // TODO(b/297228856): Remove `!form_` check when
+  // `kAndroidAutofillFormSubmissionCheckById` launches.
+  if (!IsLinkedManager(manager) || !form_) {
     return;
   }
 
@@ -240,14 +373,10 @@ void AutofillProviderAndroid::OnFormSubmitted(AndroidAutofillManager* manager,
   // form submission, we want to inform `AutofillManager` about the submission.
   // Otherwise no saving prompt can be offered.
   if (base::FeatureList::IsEnabled(
-          features::kAndroidAutofillFormSubmissionCheckById)) {
-    if (form_->form().global_id() != form.global_id()) {
-      return;
-    }
-  } else {
-    if (!form_->SimilarFormAs(form)) {
-      return;
-    }
+          features::kAndroidAutofillFormSubmissionCheckById)
+          ? !IsIdOfLinkedForm(form.global_id())
+          : !form_->SimilarFormAs(form)) {
+    return;
   }
 
   if (known_success || source == SubmissionSource::FORM_SUBMISSION) {
@@ -263,7 +392,7 @@ void AutofillProviderAndroid::OnFocusNoLongerOnForm(
     AndroidAutofillManager* manager,
     bool had_interacted_form) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (!IsCurrentlyLinkedManager(manager)) {
+  if (!IsLinkedManager(manager)) {
     return;
   }
 
@@ -278,7 +407,7 @@ void AutofillProviderAndroid::OnFocusOnFormField(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   FieldInfo field_info;
-  if (!IsCurrentlyLinkedForm(form) ||
+  if (!IsLinkedForm(form) ||
       !form_->GetSimilarFieldIndex(field, &field_info.index)) {
     return;
   }
@@ -295,7 +424,7 @@ void AutofillProviderAndroid::MaybeFireFormFieldDidChange(
     const gfx::RectF& bounding_box) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   FieldInfo field_info;
-  if (!IsCurrentlyLinkedForm(form) ||
+  if (!IsLinkedForm(form) ||
       !form_->GetSimilarFieldIndex(field, &field_info.index)) {
     return;
   }
@@ -308,7 +437,7 @@ void AutofillProviderAndroid::MaybeFireFormFieldDidChange(
 void AutofillProviderAndroid::MaybeFireFormFieldVisibilitiesDidChange(
     AndroidAutofillManager* manager,
     const FormData& form) {
-  if (!IsCurrentlyLinkedForm(form) ||
+  if (!IsLinkedForm(form) ||
       !base::FeatureList::IsEnabled(
           features::kAndroidAutofillSupportVisibilityChanges)) {
     return;
@@ -327,9 +456,15 @@ void AutofillProviderAndroid::OnDidFillAutofillFormData(
     const FormData& form,
     base::TimeTicks timestamp) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (manager != manager_.get() || !IsCurrentlyLinkedForm(form)) {
+  if (manager != manager_.get() || !IsIdOfLinkedForm(form.global_id())) {
+    base::UmaHistogramBoolean(
+        "Autofill.WebView.OnDidFillAutofillFormDataEarlyReturnReason",
+        manager == manager_.get());
     return;
   }
+  // TODO(crbug.com/1198811): Investigate passing the actually filled fields, in
+  // case the passed fields to be filled are different from the fields that were
+  // actually filled.
   bridge_->OnDidFillAutofillFormData();
 }
 
@@ -341,14 +476,17 @@ void AutofillProviderAndroid::OnHidePopup(AndroidAutofillManager* manager) {
 }
 
 void AutofillProviderAndroid::OnServerPredictionsAvailable(
-    FormGlobalId form) {
+    AndroidAutofillManager& manager,
+    FormGlobalId form_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (!form_ || form_->form().global_id() != form) {
+  MaybeSendPrefillRequest(manager, form_id);
+
+  if (!IsIdOfLinkedForm(form_id)) {
     return;
   }
 
   CHECK(manager_);
-  const FormStructure* form_structure = manager_->FindCachedFormById(form);
+  const FormStructure* form_structure = manager_->FindCachedFormById(form_id);
   if (!form_structure) {
     return;
   }
@@ -359,8 +497,9 @@ void AutofillProviderAndroid::OnServerPredictionsAvailable(
 void AutofillProviderAndroid::OnServerQueryRequestError(
     AndroidAutofillManager* manager,
     FormSignature form_signature) {
-  if (!IsCurrentlyLinkedManager(manager) || !form_.get())
+  if (!IsLinkedManager(manager) || !form_.get()) {
     return;
+  }
 
   if (auto* form_structure =
           manager_->FindCachedFormById(form_->form().global_id())) {
@@ -375,7 +514,7 @@ void AutofillProviderAndroid::OnServerQueryRequestError(
 void AutofillProviderAndroid::OnManagerResetOrDestroyed(
     AndroidAutofillManager* manager) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (!IsCurrentlyLinkedManager(manager)) {
+  if (!IsLinkedManager(manager)) {
     return;
   }
 
@@ -396,12 +535,53 @@ bool AutofillProviderAndroid::GetCachedIsAutofilled(
          form_->form().fields[field_index].is_autofilled;
 }
 
-bool AutofillProviderAndroid::IsCurrentlyLinkedManager(
-    AndroidAutofillManager* manager) {
+bool AutofillProviderAndroid::IntendsToShowBottomSheet(
+    AutofillManager& manager,
+    FormGlobalId form,
+    FieldGlobalId field,
+    const FormData& form_data) const {
+  return !has_used_cached_form_ && cached_form_ &&
+         form == cached_form_->form().global_id();
+}
+
+bool AutofillProviderAndroid::WasBottomSheetJustShown(
+    AutofillManager& manager) {
+  // TODO(crbug.com/1490581) Remove the timer once a fix is landed on the
+  // renderer side.
+  was_shown_bottom_sheet_timer_.Start(
+      FROM_HERE, kWasBottomSheetShownFlipTimeout, this,
+      &AutofillProviderAndroid::SetBottomSheetShownOff);
+  return was_bottom_sheet_just_shown_;
+}
+
+void AutofillProviderAndroid::SetBottomSheetShownOff() {
+  was_bottom_sheet_just_shown_ = false;
+}
+
+void AutofillProviderAndroid::MaybeInitKeyboardSuppressor() {
+  // Return early if prefill requests are not supported.
+  if (!ArePrefillRequestsSupported()) {
+    return;
+  }
+  keyboard_suppressor_ = std::make_unique<TouchToFillKeyboardSuppressor>(
+      ContentAutofillClient::FromWebContents(web_contents()),
+      base::BindRepeating(&AutofillProviderAndroid::WasBottomSheetJustShown,
+                          base::Unretained(this)),
+      base::BindRepeating(&AutofillProviderAndroid::IntendsToShowBottomSheet,
+                          base::Unretained(this)),
+      kKeyboardSuppressionTimeout);
+}
+
+bool AutofillProviderAndroid::IsLinkedManager(
+    AndroidAutofillManager* manager) const {
   return manager == manager_.get();
 }
 
-bool AutofillProviderAndroid::IsCurrentlyLinkedForm(const FormData& form) {
+bool AutofillProviderAndroid::IsIdOfLinkedForm(FormGlobalId form_id) const {
+  return form_ && form_->form().global_id() == form_id;
+}
+
+bool AutofillProviderAndroid::IsLinkedForm(const FormData& form) const {
   return form_ && form_->SimilarFormAs(form);
 }
 
@@ -418,11 +598,52 @@ void AutofillProviderAndroid::Reset() {
   field_type_group_ = FieldTypeGroup::kNoGroup;
   triggered_origin_ = {};
   check_submission_ = false;
+  was_shown_bottom_sheet_timer_.Stop();
+  was_bottom_sheet_just_shown_ = false;
 
-  // This is a no-op if there is no datalist popup.
-  bridge_->HideDatalistPopup();
+  // Resets the Java instance and hides the datalist popup if there is one.
+  bridge_->Reset();
   // TODO(crbug.com/1488233): Also send an unfocus event to make sure that the
   // Autofill session is truly terminated.
+}
+
+SessionId AutofillProviderAndroid::CreateSessionId() {
+  last_session_id_ = last_session_id_ == kMaximumSessionId
+                         ? kMinimumSessionId
+                         : SessionId(last_session_id_.value() + 1);
+  return last_session_id_;
+}
+
+bool AutofillProviderAndroid::ArePrefillRequestsSupported() const {
+  return base::android::BuildInfo::GetInstance()->sdk_int() >=
+             kMinimumSdkVersionForPrefillRequests &&
+         base::FeatureList::IsEnabled(
+             features::kAndroidAutofillPrefillRequestsForLoginForms);
+}
+
+void AutofillProviderAndroid::MaybeSendPrefillRequest(
+    const AndroidAutofillManager& manager,
+    FormGlobalId form_id) {
+  if (!ArePrefillRequestsSupported()) {
+    return;
+  }
+
+  // Return if there has already been a cache request or if there is already an
+  // ongoing Autofill session.
+  if (cached_form_ || form_) {
+    return;
+  }
+
+  const FormStructure* const form_structure =
+      manager.FindCachedFormById(form_id);
+  if (!form_structure || !ShouldCacheForm(*form_structure)) {
+    return;
+  }
+
+  cached_form_ = std::make_unique<FormDataAndroid>(form_structure->ToFormData(),
+                                                   CreateSessionId());
+  cached_form_->UpdateFieldTypes(*form_structure);
+  bridge_->SendPrefillRequest(*cached_form_);
 }
 
 }  // namespace autofill

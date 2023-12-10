@@ -316,7 +316,8 @@ TEST_F(BridgeIceControllerTest, HandlesImmediateSwitchRequest) {
 
   // Set default native ICE controller behaviour.
   const std::vector<const Connection*> connection_set{conn, conn_two};
-  EXPECT_CALL(*wrapped, connections()).WillRepeatedly(Return(connection_set));
+  EXPECT_CALL(*wrapped, GetConnections())
+      .WillRepeatedly(Return(connection_set));
   EXPECT_CALL(*wrapped, HasPingableConnection).WillRepeatedly(Return(false));
 
   const IceSwitchReason reason = IceSwitchReason::NOMINATION_ON_CONTROLLED_SIDE;
@@ -395,7 +396,8 @@ TEST_P(BridgeIceControllerProposalTest, HandlesImmediateSortAndSwitchRequest) {
   // Set default native ICE controller behaviour.
   const std::vector<const Connection*> connection_set{conn, conn_two,
                                                       conn_three};
-  EXPECT_CALL(*wrapped, connections()).WillRepeatedly(Return(connection_set));
+  EXPECT_CALL(*wrapped, GetConnections())
+      .WillRepeatedly(Return(connection_set));
   EXPECT_CALL(*wrapped, HasPingableConnection).WillRepeatedly(Return(false));
 
   const IceSwitchReason reason =
@@ -501,7 +503,8 @@ TEST_P(BridgeIceControllerProposalTest, HandlesSortAndSwitchRequest) {
 
   // Set default native ICE controller behaviour.
   const std::vector<const Connection*> connection_set{conn, conn_two};
-  EXPECT_CALL(*wrapped, connections()).WillRepeatedly(Return(connection_set));
+  EXPECT_CALL(*wrapped, GetConnections())
+      .WillRepeatedly(Return(connection_set));
   EXPECT_CALL(*wrapped, HasPingableConnection).WillRepeatedly(Return(false));
 
   const IceSwitchReason reason = IceSwitchReason::NETWORK_PREFERENCE_CHANGE;
@@ -575,7 +578,8 @@ TEST_P(BridgeIceControllerProposalTest, StartPingingAfterSortAndSwitch) {
 
   // Set default native ICE controller behaviour.
   const std::vector<const Connection*> connection_set{conn};
-  EXPECT_CALL(*wrapped, connections()).WillRepeatedly(Return(connection_set));
+  EXPECT_CALL(*wrapped, GetConnections())
+      .WillRepeatedly(Return(connection_set));
 
   // Pinging does not start automatically, unless triggered through a sort.
   EXPECT_CALL(*wrapped, HasPingableConnection()).Times(0);
@@ -690,7 +694,7 @@ class BridgeIceControllerInvalidProposalTest : public BridgeIceControllerTest {
 
     // Exclude conn_two to be able to test for unknown connection in proposal.
     const std::vector<const Connection*> connection_set{conn};
-    EXPECT_CALL(*wrapped_controller, connections())
+    EXPECT_CALL(*wrapped_controller, GetConnections())
         .WillRepeatedly(Return(connection_set));
 
     // No expectations set on any mocks. Together with StrictMock, this ensures
@@ -841,7 +845,8 @@ TEST_F(BridgeIceControllerTest, HandlesPingRequest) {
 
   // Exclude conn_two to be able to test for unknown connection in request.
   const std::vector<const Connection*> connection_set{conn};
-  EXPECT_CALL(*wrapped, connections()).WillRepeatedly(Return(connection_set));
+  EXPECT_CALL(*wrapped, GetConnections())
+      .WillRepeatedly(Return(connection_set));
 
   EXPECT_CALL(agent, SendPingRequest(conn));
   EXPECT_EQ(interaction_agent->PingIceConnection(IceConnection(conn)).type(),
@@ -874,7 +879,8 @@ TEST_F(BridgeIceControllerTest, HandlesSwitchRequest) {
 
   // Exclude conn_two to be able to test for unknown connection in request.
   const std::vector<const Connection*> connection_set{conn};
-  EXPECT_CALL(*wrapped, connections()).WillRepeatedly(Return(connection_set));
+  EXPECT_CALL(*wrapped, GetConnections())
+      .WillRepeatedly(Return(connection_set));
 
   EXPECT_CALL(agent, SwitchSelectedConnection(
                          conn, IceSwitchReason::APPLICATION_REQUESTED));
@@ -911,7 +917,8 @@ TEST_F(BridgeIceControllerTest, HandlesPruneRequest) {
 
   // Exclude conn_three to be able to test for unknown connection in request.
   const std::vector<const Connection*> connection_set{conn, conn_two};
-  EXPECT_CALL(*wrapped, connections()).WillRepeatedly(Return(connection_set));
+  EXPECT_CALL(*wrapped, GetConnections())
+      .WillRepeatedly(Return(connection_set));
 
   const std::vector<const Connection*> conns_to_prune{conn};
   const std::vector<const IceConnection> valid_ice_conns_to_prune{

@@ -82,7 +82,7 @@ public abstract class AwContentsClient {
     // Alllow injection of the callback thread, for testing.
     public AwContentsClient(Looper looper) {
         try (ScopedSysTraceEvent e =
-                        ScopedSysTraceEvent.scoped("AwContentsClient.constructorOneArg")) {
+                ScopedSysTraceEvent.scoped("AwContentsClient.constructorOneArg")) {
             mCallbackHelper = new AwContentsClientCallbackHelper(looper, this);
         }
     }
@@ -106,19 +106,20 @@ public abstract class AwContentsClient {
         mCachedRendererBackgroundColor = color == INVALID_COLOR ? 1 : color;
     }
 
-    //--------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------------------
     //             WebView specific methods that map directly to WebViewClient / WebChromeClient
-    //--------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------------------
 
-    /**
-     * Parameters for the {@link AwContentsClient#shouldInterceptRequest} method.
-     */
+    /** Parameters for the {@link AwContentsClient#shouldInterceptRequest} method. */
     public static class AwWebResourceRequest {
         // Prefer using other constructors over this one.
         public AwWebResourceRequest() {}
 
-        public AwWebResourceRequest(String url, boolean isOutermostMainFrame,
-                boolean hasUserGesture, String method,
+        public AwWebResourceRequest(
+                String url,
+                boolean isOutermostMainFrame,
+                boolean hasUserGesture,
+                String method,
                 @Nullable HashMap<String, String> requestHeaders) {
             this.url = url;
             this.isOutermostMainFrame = isOutermostMainFrame;
@@ -129,10 +130,18 @@ public abstract class AwContentsClient {
             this.requestHeaders = requestHeaders;
         }
 
-        public AwWebResourceRequest(String url, boolean isOutermostMainFrame,
-                boolean hasUserGesture, String method, @NonNull String[] requestHeaderNames,
+        public AwWebResourceRequest(
+                String url,
+                boolean isOutermostMainFrame,
+                boolean hasUserGesture,
+                String method,
+                @NonNull String[] requestHeaderNames,
                 @NonNull String[] requestHeaderValues) {
-            this(url, isOutermostMainFrame, hasUserGesture, method,
+            this(
+                    url,
+                    isOutermostMainFrame,
+                    hasUserGesture,
+                    method,
                     new HashMap<String, String>(requestHeaderValues.length));
             for (int i = 0; i < requestHeaderNames.length; ++i) {
                 this.requestHeaders.put(requestHeaderNames[i], requestHeaderValues[i]);
@@ -153,17 +162,13 @@ public abstract class AwContentsClient {
         public HashMap<String, String> requestHeaders;
     }
 
-    /**
-     * Parameters for {@link AwContentsClient#onReceivedError} method.
-     */
+    /** Parameters for {@link AwContentsClient#onReceivedError} method. */
     public static class AwWebResourceError {
         public @WebviewErrorCode int errorCode = WebviewErrorCode.ERROR_UNKNOWN;
         public String description;
     }
 
-    /**
-     * Allow default implementations in chromium code.
-     */
+    /** Allow default implementations in chromium code. */
     public abstract boolean hasWebViewClient();
 
     public abstract void getVisitedHistory(Callback<String[]> callback);
@@ -184,33 +189,44 @@ public abstract class AwContentsClient {
 
     public abstract boolean onConsoleMessage(AwConsoleMessage consoleMessage);
 
-    public abstract void onReceivedHttpAuthRequest(AwHttpAuthHandler handler,
-            String host, String realm);
+    public abstract void onReceivedHttpAuthRequest(
+            AwHttpAuthHandler handler, String host, String realm);
 
     public abstract void onReceivedSslError(Callback<Boolean> callback, SslError error);
 
     public abstract void onReceivedClientCertRequest(
             final AwContentsClientBridge.ClientCertificateRequestCallback callback,
-            final String[] keyTypes, final Principal[] principals, final String host,
+            final String[] keyTypes,
+            final Principal[] principals,
+            final String host,
             final int port);
 
     public abstract void onReceivedLoginRequest(String realm, String account, String args);
 
     public abstract void onFormResubmission(Message dontResend, Message resend);
 
-    public abstract void onDownloadStart(String url, String userAgent, String contentDisposition,
-            String mimeType, long contentLength);
+    public abstract void onDownloadStart(
+            String url,
+            String userAgent,
+            String contentDisposition,
+            String mimeType,
+            long contentLength);
 
-    public final boolean shouldIgnoreNavigation(Context context, String url,
-            boolean isOutermostMainFrame, boolean hasUserGesture, boolean isRedirect) {
+    public final boolean shouldIgnoreNavigation(
+            Context context,
+            String url,
+            boolean isOutermostMainFrame,
+            boolean hasUserGesture,
+            boolean isRedirect) {
         AwContentsClientCallbackHelper.CancelCallbackPoller poller =
                 mCallbackHelper.getCancelCallbackPoller();
         if (poller != null && poller.shouldCancelAllCallbacks()) return false;
 
         if (hasWebViewClient()) {
             // Note: only GET requests can be overridden, so we hardcode the method.
-            AwWebResourceRequest request = new AwWebResourceRequest(
-                    url, isOutermostMainFrame, hasUserGesture, "GET", null);
+            AwWebResourceRequest request =
+                    new AwWebResourceRequest(
+                            url, isOutermostMainFrame, hasUserGesture, "GET", null);
             request.isRedirect = isRedirect;
             return shouldOverrideUrlLoading(request);
         } else {
@@ -218,8 +234,8 @@ public abstract class AwContentsClient {
         }
     }
 
-    private static boolean sendBrowsingIntent(Context context, String url, boolean hasUserGesture,
-            boolean isRedirect) {
+    private static boolean sendBrowsingIntent(
+            Context context, String url, boolean hasUserGesture, boolean isRedirect) {
         if (!hasUserGesture && !isRedirect) {
             Log.w(TAG, "Denied starting an intent without a user gesture, URI %s", url);
             return true;
@@ -283,8 +299,7 @@ public abstract class AwContentsClient {
         if (resultCode == Activity.RESULT_CANCELED) {
             return null;
         }
-        Uri result =
-                intent == null || resultCode != Activity.RESULT_OK ? null : intent.getData();
+        Uri result = intent == null || resultCode != Activity.RESULT_OK ? null : intent.getData();
 
         Uri[] uris = null;
         if (result != null) {
@@ -294,9 +309,7 @@ public abstract class AwContentsClient {
         return uris;
     }
 
-    /**
-     * Type adaptation class for {@link android.webkit.FileChooserParams}.
-     */
+    /** Type adaptation class for {@link android.webkit.FileChooserParams}. */
     public static class FileChooserParamsImpl {
         private int mMode;
         private String mAcceptTypes;
@@ -304,176 +317,178 @@ public abstract class AwContentsClient {
         private String mDefaultFilename;
         private boolean mCapture;
         private static final Map<String, String> sAcceptTypesMapping;
+
         static {
             // It takes less code to loop over an array than to call put() N times.
-            String[] tuples = new String[] {
-                    "application/*",
-                    "application/*",
-                    "audio/*",
-                    "audio/*",
-                    "font/*",
-                    "font/*",
-                    "image/*",
-                    "image/*",
-                    "text/*",
-                    "text/*",
-                    "video/*",
-                    "video/*",
-                    ".aac",
-                    "audio/aac",
-                    ".abw",
-                    "application/x-abiword",
-                    ".arc",
-                    "application/x-freearc",
-                    ".avif",
-                    "image/avif",
-                    ".avi",
-                    "video/x-msvideo",
-                    ".azw",
-                    "application/vnd.amazon.ebook",
-                    ".bin",
-                    "application/octet-stream",
-                    ".bmp",
-                    "image/bmp",
-                    ".bz",
-                    "application/x-bzip",
-                    ".bz2",
-                    "application/x-bzip2",
-                    ".cda",
-                    "application/x-cdf",
-                    ".csh",
-                    "application/x-csh",
-                    ".css",
-                    "text/css",
-                    ".csv",
-                    "text/csv",
-                    ".doc",
-                    "application/msword",
-                    ".docx",
-                    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-                    ".eot",
-                    "application/vnd.ms-fontobject",
-                    ".epub",
-                    "application/epub+zip",
-                    ".gz",
-                    "application/gzip",
-                    ".gif",
-                    "image/gif",
-                    ".htm",
-                    "text/html",
-                    ".html",
-                    "text/html",
-                    ".ico",
-                    "image/vnd.microsoft.icon",
-                    ".ics",
-                    "text/calendar",
-                    ".jar",
-                    "application/java-archive",
-                    ".jpeg",
-                    "image/jpeg",
-                    ".jpg",
-                    "image/jpeg",
-                    ".js",
-                    "text/javascript",
-                    ".json",
-                    "application/json",
-                    ".jsonld",
-                    "application/ld+json",
-                    ".mid",
-                    "audio/midi",
-                    ".midi",
-                    "audio/midi",
-                    ".mjs",
-                    "text/javascript",
-                    ".mp3",
-                    "audio/mpeg",
-                    ".mp4",
-                    "video/mp4",
-                    ".mpeg",
-                    "video/mpeg",
-                    ".mpkg",
-                    "application/vnd.apple.installer+xml",
-                    ".odp",
-                    "application/vnd.oasis.opendocument.presentation",
-                    ".ods",
-                    "application/vnd.oasis.opendocument.spreadsheet",
-                    ".odt",
-                    "application/vnd.oasis.opendocument.text",
-                    ".oga",
-                    "audio/ogg",
-                    ".ogv",
-                    "video/ogg",
-                    ".ogx",
-                    "application/ogg",
-                    ".opus",
-                    "audio/opus",
-                    ".otf",
-                    "font/otf",
-                    ".png",
-                    "image/png",
-                    ".pdf",
-                    "application/pdf",
-                    ".php",
-                    "application/x-httpd-php",
-                    ".ppt",
-                    "application/vnd.ms-powerpoint",
-                    ".pptx",
-                    "application/vnd.openxmlformats-officedocument.presentationml.presentation",
-                    ".rar",
-                    "application/vnd.rar",
-                    ".rtf",
-                    "application/rtf",
-                    ".sh",
-                    "application/x-sh",
-                    ".svg",
-                    "image/svg+xml",
-                    ".swf",
-                    "application/x-shockwave-flash",
-                    ".tar",
-                    "application/x-tar",
-                    ".tif",
-                    "image/tiff",
-                    ".tiff",
-                    "image/tiff",
-                    ".ts",
-                    "video/mp2t",
-                    ".ttf",
-                    "font/ttf",
-                    ".txt",
-                    "text/plain",
-                    ".vsd",
-                    "application/vnd.visio",
-                    ".wav",
-                    "audio/wav",
-                    ".weba",
-                    "audio/webm",
-                    ".webm",
-                    "video/webm",
-                    ".webp",
-                    "image/webp",
-                    ".woff",
-                    "font/woff",
-                    ".woff2",
-                    "font/woff2",
-                    ".xhtml",
-                    "application/xhtml+xml",
-                    ".xls",
-                    "application/vnd.ms-excel",
-                    ".xlsx",
-                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                    ".xml",
-                    "application/xml",
-                    ".xul",
-                    "application/vnd.mozilla.xul+xml",
-                    ".zip",
-                    "application/zip",
-                    ".3gp",
-                    "video/3gpp",
-                    ".3g2",
-                    "video/3gpp2",
-                    ".7z",
-                    "application/x-7z-compressed",
-            };
+            String[] tuples =
+                    new String[] {
+                        "application/*",
+                        "application/*",
+                        "audio/*",
+                        "audio/*",
+                        "font/*",
+                        "font/*",
+                        "image/*",
+                        "image/*",
+                        "text/*",
+                        "text/*",
+                        "video/*",
+                        "video/*",
+                        ".aac",
+                        "audio/aac",
+                        ".abw",
+                        "application/x-abiword",
+                        ".arc",
+                        "application/x-freearc",
+                        ".avif",
+                        "image/avif",
+                        ".avi",
+                        "video/x-msvideo",
+                        ".azw",
+                        "application/vnd.amazon.ebook",
+                        ".bin",
+                        "application/octet-stream",
+                        ".bmp",
+                        "image/bmp",
+                        ".bz",
+                        "application/x-bzip",
+                        ".bz2",
+                        "application/x-bzip2",
+                        ".cda",
+                        "application/x-cdf",
+                        ".csh",
+                        "application/x-csh",
+                        ".css",
+                        "text/css",
+                        ".csv",
+                        "text/csv",
+                        ".doc",
+                        "application/msword",
+                        ".docx",
+                        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                        ".eot",
+                        "application/vnd.ms-fontobject",
+                        ".epub",
+                        "application/epub+zip",
+                        ".gz",
+                        "application/gzip",
+                        ".gif",
+                        "image/gif",
+                        ".htm",
+                        "text/html",
+                        ".html",
+                        "text/html",
+                        ".ico",
+                        "image/vnd.microsoft.icon",
+                        ".ics",
+                        "text/calendar",
+                        ".jar",
+                        "application/java-archive",
+                        ".jpeg",
+                        "image/jpeg",
+                        ".jpg",
+                        "image/jpeg",
+                        ".js",
+                        "text/javascript",
+                        ".json",
+                        "application/json",
+                        ".jsonld",
+                        "application/ld+json",
+                        ".mid",
+                        "audio/midi",
+                        ".midi",
+                        "audio/midi",
+                        ".mjs",
+                        "text/javascript",
+                        ".mp3",
+                        "audio/mpeg",
+                        ".mp4",
+                        "video/mp4",
+                        ".mpeg",
+                        "video/mpeg",
+                        ".mpkg",
+                        "application/vnd.apple.installer+xml",
+                        ".odp",
+                        "application/vnd.oasis.opendocument.presentation",
+                        ".ods",
+                        "application/vnd.oasis.opendocument.spreadsheet",
+                        ".odt",
+                        "application/vnd.oasis.opendocument.text",
+                        ".oga",
+                        "audio/ogg",
+                        ".ogv",
+                        "video/ogg",
+                        ".ogx",
+                        "application/ogg",
+                        ".opus",
+                        "audio/opus",
+                        ".otf",
+                        "font/otf",
+                        ".png",
+                        "image/png",
+                        ".pdf",
+                        "application/pdf",
+                        ".php",
+                        "application/x-httpd-php",
+                        ".ppt",
+                        "application/vnd.ms-powerpoint",
+                        ".pptx",
+                        "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+                        ".rar",
+                        "application/vnd.rar",
+                        ".rtf",
+                        "application/rtf",
+                        ".sh",
+                        "application/x-sh",
+                        ".svg",
+                        "image/svg+xml",
+                        ".swf",
+                        "application/x-shockwave-flash",
+                        ".tar",
+                        "application/x-tar",
+                        ".tif",
+                        "image/tiff",
+                        ".tiff",
+                        "image/tiff",
+                        ".ts",
+                        "video/mp2t",
+                        ".ttf",
+                        "font/ttf",
+                        ".txt",
+                        "text/plain",
+                        ".vsd",
+                        "application/vnd.visio",
+                        ".wav",
+                        "audio/wav",
+                        ".weba",
+                        "audio/webm",
+                        ".webm",
+                        "video/webm",
+                        ".webp",
+                        "image/webp",
+                        ".woff",
+                        "font/woff",
+                        ".woff2",
+                        "font/woff2",
+                        ".xhtml",
+                        "application/xhtml+xml",
+                        ".xls",
+                        "application/vnd.ms-excel",
+                        ".xlsx",
+                        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                        ".xml",
+                        "application/xml",
+                        ".xul",
+                        "application/vnd.mozilla.xul+xml",
+                        ".zip",
+                        "application/zip",
+                        ".3gp",
+                        "video/3gpp",
+                        ".3g2",
+                        "video/3gpp2",
+                        ".7z",
+                        "application/x-7z-compressed",
+                    };
             Map<String, String> map = new HashMap<String, String>(tuples.length / 2);
             for (int i = 0; i < tuples.length; i += 2) {
                 map.put(tuples[i], tuples[i + 1]);
@@ -481,8 +496,12 @@ public abstract class AwContentsClient {
             sAcceptTypesMapping = map;
         }
 
-        public FileChooserParamsImpl(int mode, String acceptTypes, String title,
-                String defaultFilename, boolean capture) {
+        public FileChooserParamsImpl(
+                int mode,
+                String acceptTypes,
+                String title,
+                String defaultFilename,
+                boolean capture) {
             mMode = mode;
             mAcceptTypes = acceptTypes;
             mTitle = title;
@@ -577,13 +596,13 @@ public abstract class AwContentsClient {
 
     protected abstract void handleJsAlert(String url, String message, JsResultReceiver receiver);
 
-    protected abstract void handleJsBeforeUnload(String url, String message,
-            JsResultReceiver receiver);
+    protected abstract void handleJsBeforeUnload(
+            String url, String message, JsResultReceiver receiver);
 
     protected abstract void handleJsConfirm(String url, String message, JsResultReceiver receiver);
 
-    protected abstract void handleJsPrompt(String url, String message, String defaultValue,
-            JsPromptResultReceiver receiver);
+    protected abstract void handleJsPrompt(
+            String url, String message, String defaultValue, JsPromptResultReceiver receiver);
 
     protected abstract boolean onCreateWindow(boolean isDialog, boolean isUserGesture);
 
@@ -607,7 +626,9 @@ public abstract class AwContentsClient {
 
     public abstract void onReceivedError(AwWebResourceRequest request, AwWebResourceError error);
 
-    protected abstract void onSafeBrowsingHit(AwWebResourceRequest request, int threatType,
+    protected abstract void onSafeBrowsingHit(
+            AwWebResourceRequest request,
+            int threatType,
             Callback<AwSafeBrowsingResponse> callback);
 
     public abstract void onReceivedHttpError(
@@ -619,12 +640,12 @@ public abstract class AwContentsClient {
 
     public abstract Bitmap getDefaultVideoPoster();
 
-    //--------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------------------
     //                              Other WebView-specific methods
-    //--------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------------------
     //
-    public abstract void onFindResultReceived(int activeMatchOrdinal, int numberOfMatches,
-            boolean isDoneCounting);
+    public abstract void onFindResultReceived(
+            int activeMatchOrdinal, int numberOfMatches, boolean isDoneCounting);
 
     /**
      * Called whenever there is a new content picture available.
@@ -639,6 +660,7 @@ public abstract class AwContentsClient {
     }
 
     public abstract void onRendererUnresponsive(AwRenderProcess renderProcess);
+
     public abstract void onRendererResponsive(AwRenderProcess renderProcess);
 
     public abstract boolean onRenderProcessGone(AwRenderProcessGoneDetail detail);

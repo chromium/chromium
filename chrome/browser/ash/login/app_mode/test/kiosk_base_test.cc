@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/login/app_mode/test/kiosk_base_test.h"
 
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -15,11 +16,15 @@
 #include "base/functional/callback_forward.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
 #include "base/values.h"
-#include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
+#include "chrome/browser/ash/app_mode/kiosk_app.h"
+#include "chrome/browser/ash/app_mode/kiosk_app_types.h"
+#include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
+#include "chrome/browser/ash/app_mode/kiosk_controller.h"
 #include "chrome/browser/ash/login/app_mode/kiosk_launch_controller.h"
 #include "chrome/browser/ash/login/app_mode/network_ui_controller.h"
 #include "chrome/browser/ash/login/app_mode/test/kiosk_apps_mixin.h"
@@ -41,7 +46,6 @@
 #include "extensions/components/native_app_window/native_app_window_views.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -49,17 +53,13 @@ namespace {
 
 // Helper function for GetConsumerKioskAutoLaunchStatusCallback.
 void ConsumerKioskAutoLaunchStatusCheck(
-    KioskAppManager::ConsumerKioskAutoLaunchStatus* out_status,
+    KioskChromeAppManager::ConsumerKioskAutoLaunchStatus* out_status,
     base::OnceClosure runner_quit_task,
-    KioskAppManager::ConsumerKioskAutoLaunchStatus in_status) {
-  LOG(INFO) << "KioskAppManager::ConsumerKioskModeStatus = "
+    KioskChromeAppManager::ConsumerKioskAutoLaunchStatus in_status) {
+  LOG(INFO) << "KioskChromeAppManager::ConsumerKioskModeStatus = "
             << static_cast<int>(in_status);
   *out_status = in_status;
   std::move(runner_quit_task).Run();
-}
-
-void WaitForNetworkConfigureLink() {
-  test::OobeJS().CreateVisibilityWaiter(true, kConfigNetwork)->Wait();
 }
 
 }  // namespace
@@ -103,16 +103,17 @@ KioskBaseTest::KioskBaseTest()
 KioskBaseTest::~KioskBaseTest() = default;
 
 // static
-KioskAppManager::ConsumerKioskAutoLaunchStatus
+KioskChromeAppManager::ConsumerKioskAutoLaunchStatus
 KioskBaseTest::GetConsumerKioskModeStatus() {
-  KioskAppManager::ConsumerKioskAutoLaunchStatus status =
-      static_cast<KioskAppManager::ConsumerKioskAutoLaunchStatus>(-1);
+  KioskChromeAppManager::ConsumerKioskAutoLaunchStatus status =
+      static_cast<KioskChromeAppManager::ConsumerKioskAutoLaunchStatus>(-1);
   base::RunLoop loop;
-  KioskAppManager::Get()->GetConsumerKioskAutoLaunchStatus(base::BindOnce(
+  KioskChromeAppManager::Get()->GetConsumerKioskAutoLaunchStatus(base::BindOnce(
       &ConsumerKioskAutoLaunchStatusCheck, &status, loop.QuitClosure()));
   loop.Run();
-  EXPECT_NE(status,
-            static_cast<KioskAppManager::ConsumerKioskAutoLaunchStatus>(-1));
+  EXPECT_NE(
+      status,
+      static_cast<KioskChromeAppManager::ConsumerKioskAutoLaunchStatus>(-1));
   return status;
 }
 
@@ -121,7 +122,7 @@ int KioskBaseTest::WaitForWidthChange(content::DOMMessageQueue* message_queue,
                                       int current_width) {
   std::string message;
   while (message_queue->WaitForMessage(&message)) {
-    absl::optional<base::Value> message_value = base::JSONReader::Read(message);
+    std::optional<base::Value> message_value = base::JSONReader::Read(message);
     if (!message_value || !message_value->is_dict()) {
       continue;
     }
@@ -132,7 +133,7 @@ int KioskBaseTest::WaitForWidthChange(content::DOMMessageQueue* message_queue,
       continue;
     }
 
-    const absl::optional<int> data = message_dict.FindInt("data");
+    const std::optional<int> data = message_dict.FindInt("data");
     if (!data || data == current_width) {
       continue;
     }
@@ -200,9 +201,10 @@ void KioskBaseTest::ReloadKioskApps() {
   SetupTestAppUpdateCheck();
 
   // Remove then add to ensure UI update.
-  KioskAppManager::Get()->RemoveApp(test_app_id(),
-                                    owner_settings_service_.get());
-  KioskAppManager::Get()->AddApp(test_app_id(), owner_settings_service_.get());
+  KioskChromeAppManager::Get()->RemoveApp(test_app_id(),
+                                          owner_settings_service_.get());
+  KioskChromeAppManager::Get()->AddApp(test_app_id(),
+                                       owner_settings_service_.get());
 }
 
 void KioskBaseTest::SetupTestAppUpdateCheck() {
@@ -216,9 +218,10 @@ void KioskBaseTest::SetupTestAppUpdateCheck() {
 void KioskBaseTest::ReloadAutolaunchKioskApps() {
   SetupTestAppUpdateCheck();
 
-  KioskAppManager::Get()->AddApp(test_app_id(), owner_settings_service_.get());
-  KioskAppManager::Get()->SetAutoLaunchApp(test_app_id(),
-                                           owner_settings_service_.get());
+  KioskChromeAppManager::Get()->AddApp(test_app_id(),
+                                       owner_settings_service_.get());
+  KioskChromeAppManager::Get()->SetAutoLaunchApp(test_app_id(),
+                                                 owner_settings_service_.get());
 }
 
 void KioskBaseTest::PrepareAppLaunch() {
@@ -315,36 +318,6 @@ void KioskBaseTest::WaitForAppLaunchSuccess() {
                               /*terminate_app=*/true);
 }
 
-void KioskBaseTest::RunAppLaunchNetworkDownTest() {
-  auto auto_reset = NetworkUiController::SetCanConfigureNetworkForTesting(true);
-
-  // Start app launch and wait for network connectivity timeout.
-  StartAppLaunchFromLoginScreen(
-      NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_OFFLINE);
-  OobeScreenWaiter splash_waiter(AppLaunchSplashScreenView::kScreenId);
-  splash_waiter.Wait();
-
-  WaitForNetworkConfigureLink();
-
-  // Configure network should bring up lock screen for owner.
-  GetKioskLaunchController()
-      ->GetNetworkUiControllerForTesting()
-      ->OnConfigureNetwork();
-  EXPECT_FALSE(LoginScreenTestApi::IsOobeDialogVisible());
-  // There should be only one owner pod on this screen.
-  EXPECT_EQ(LoginScreenTestApi::GetUsersCount(), 1);
-
-  // A network error screen should be shown after authenticating.
-  OobeScreenWaiter error_screen_waiter(ErrorScreenView::kScreenId);
-  LoginScreenTestApi::SubmitPassword(test_owner_account_id_, "password",
-                                     /*check_if_submittable=*/true);
-  error_screen_waiter.Wait();
-  EXPECT_TRUE(LoginScreenTestApi::IsOobeDialogVisible());
-
-  SimulateNetworkOnline();
-  WaitForAppLaunchSuccess();
-}
-
 void KioskBaseTest::SimulateNetworkOnline() {
   network_portal_detector_.SimulateDefaultNetworkState(
       NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE);
@@ -370,6 +343,16 @@ void KioskBaseTest::SetTestApp(const std::string& app_id,
   test_app_id_ = app_id;
   test_crx_file_ = (crx_file == "") ? app_id + ".crx" : crx_file;
   test_app_version_ = version;
+}
+
+KioskApp KioskBaseTest::test_kiosk_app() const {
+  for (const KioskApp& app : KioskController::Get().GetApps()) {
+    if (app.id().type == KioskAppType::kChromeApp &&
+        app.id().app_id.value() == test_app_id()) {
+      return app;
+    }
+  }
+  NOTREACHED_NORETURN() << "App not in KioskController: " << test_app_id();
 }
 
 }  // namespace ash

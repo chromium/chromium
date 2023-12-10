@@ -16,6 +16,7 @@
 #include "base/test/values_test_util.h"
 #include "base/types/expected.h"
 #include "base/values.h"
+#include "components/attribution_reporting/event_level_epsilon.h"
 #include "components/attribution_reporting/features.h"
 #include "content/browser/attribution_reporting/attribution_config.h"
 #include "content/browser/attribution_reporting/attribution_interop_parser.h"
@@ -85,8 +86,9 @@ class AttributionInteropTest : public ::testing::TestWithParam<base::FilePath> {
  public:
   static void SetUpTestSuite() {
     ASSERT_OK_AND_ASSIGN(
-        g_config_, ParseAttributionConfig(base::test::ParseJsonDictFromFile(
-                       GetInputDir().AppendASCII(kDefaultConfigFileName))));
+        g_config_,
+        ParseAttributionInteropConfig(base::test::ParseJsonDictFromFile(
+            GetInputDir().AppendASCII(kDefaultConfigFileName))));
   }
 
   AttributionInteropTest() {
@@ -99,32 +101,43 @@ class AttributionInteropTest : public ::testing::TestWithParam<base::FilePath> {
   }
 
  protected:
-  static AttributionConfig GetConfig() { return g_config_; }
+  static AttributionInteropConfig GetConfig() { return g_config_; }
 
  private:
-  static AttributionConfig g_config_;
+  static AttributionInteropConfig g_config_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // static
-AttributionConfig AttributionInteropTest::g_config_;
+AttributionInteropConfig AttributionInteropTest::g_config_;
 
 // See //content/test/data/attribution_reporting/interop/README.md for the
 // JSON schema.
 TEST_P(AttributionInteropTest, HasExpectedOutput) {
-  AttributionConfig config = GetConfig();
+  AttributionInteropConfig config = GetConfig();
   base::Value::Dict dict = base::test::ParseJsonDictFromFile(GetParam());
 
-  base::test::ScopedFeatureList scoped_feature_list;
+  std::vector<base::test::FeatureRef> enabled_features;
   if (dict.FindBool("needs_trigger_config").value_or(false)) {
-    scoped_feature_list.InitAndEnableFeature(
+    enabled_features.emplace_back(
         attribution_reporting::features::kAttributionReportingTriggerConfig);
   }
+  if (dict.FindBool("needs_trigger_context_id").value_or(false)) {
+    enabled_features.emplace_back(
+        attribution_reporting::features::kAttributionReportingTriggerContextId);
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(enabled_features,
+                                       /*disabled_features=*/{});
 
   if (const base::Value* api_config = dict.Find("api_config")) {
     ASSERT_TRUE(api_config->is_dict());
-    ASSERT_EQ("", MergeAttributionConfig(api_config->GetDict(), config));
+    ASSERT_EQ("", MergeAttributionInteropConfig(api_config->GetDict(), config));
   }
+
+  attribution_reporting::ScopedMaxEventLevelEpsilonForTesting
+      scoped_max_event_level_epsilon(config.max_event_level_epsilon);
 
   absl::optional<base::Value> input = dict.Extract("input");
   ASSERT_TRUE(input && input->is_dict());
@@ -138,7 +151,8 @@ TEST_P(AttributionInteropTest, HasExpectedOutput) {
 
   ASSERT_OK_AND_ASSIGN(
       AttributionInteropOutput actual_output,
-      RunAttributionInteropSimulation(std::move(*input).TakeDict(), config));
+      RunAttributionInteropSimulation(std::move(*input).TakeDict(),
+                                      config.attribution_config));
 
   PreProcessOutput(expected_output);
   PreProcessOutput(actual_output);

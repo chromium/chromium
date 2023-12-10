@@ -23,7 +23,6 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.IncognitoToggleTabLayout;
 import org.chromium.chrome.browser.toolbar.NewTabButton;
 import org.chromium.chrome.browser.toolbar.R;
-import org.chromium.chrome.browser.toolbar.TabCountProvider;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightParams;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightShape;
@@ -35,10 +34,8 @@ class StartSurfaceToolbarView extends RelativeLayout {
     private boolean mShouldShowNewTabViewText;
     private View mTabSwitcherButtonView;
 
-    @Nullable
-    private IncognitoToggleTabLayout mIncognitoToggleTabLayout;
-    @Nullable
-    private ImageButton mIdentityDiscButton;
+    @Nullable private IncognitoToggleTabLayout mIncognitoToggleTabLayout;
+    @Nullable private ImageButton mIdentityDiscButton;
     private ColorStateList mLightIconTint;
     private ColorStateList mDarkIconTint;
 
@@ -90,9 +87,12 @@ class StartSurfaceToolbarView extends RelativeLayout {
      */
     void setMenuButtonVisibility(boolean isVisible) {
         final int buttonPaddingRight =
-                (isVisible ? 0
-                           : getContext().getResources().getDimensionPixelOffset(
-                                   R.dimen.start_surface_toolbar_button_padding_to_edge));
+                (isVisible
+                        ? 0
+                        : getContext()
+                                .getResources()
+                                .getDimensionPixelOffset(
+                                        R.dimen.start_surface_toolbar_button_padding_to_edge));
         mIdentityDiscButton.setPadding(0, 0, buttonPaddingRight, 0);
     }
 
@@ -218,16 +218,6 @@ class StartSurfaceToolbarView extends RelativeLayout {
     }
 
     /**
-     * Set TabCountProvider for incognito toggle view.
-     * @param tabCountProvider The {@link TabCountProvider} to update the incognito toggle view.
-     */
-    void setTabCountProvider(TabCountProvider tabCountProvider) {
-        if (mIncognitoToggleTabLayout != null) {
-            mIncognitoToggleTabLayout.setTabCountProvider(tabCountProvider);
-        }
-    }
-
-    /**
      * Set TabModelSelector for incognito toggle view.
      * @param selector  A {@link TabModelSelector} to provide information about open tabs.
      */
@@ -252,8 +242,9 @@ class StartSurfaceToolbarView extends RelativeLayout {
         // tab button (UrlBar is invisible to users). Check crbug.com/1081538 for more
         // details.
         if (mShouldShowNewTabViewText) {
-            mNewTabViewWithText.getParent().requestChildFocus(
-                    mNewTabViewWithText, mNewTabViewWithText);
+            mNewTabViewWithText
+                    .getParent()
+                    .requestChildFocus(mNewTabViewWithText, mNewTabViewWithText);
         } else {
             mNewTabViewWithText.getParent().requestChildFocus(mNewTabButton, mNewTabButton);
         }
@@ -261,10 +252,12 @@ class StartSurfaceToolbarView extends RelativeLayout {
 
     private void setIconTint() {
         if (mLightIconTint == null) {
-            mLightIconTint = AppCompatResources.getColorStateList(
-                    getContext(), R.color.default_icon_color_light_tint_list);
-            mDarkIconTint = AppCompatResources.getColorStateList(
-                    getContext(), R.color.default_icon_color_tint_list);
+            mLightIconTint =
+                    AppCompatResources.getColorStateList(
+                            getContext(), R.color.default_icon_color_light_tint_list);
+            mDarkIconTint =
+                    AppCompatResources.getColorStateList(
+                            getContext(), R.color.default_icon_color_tint_list);
         }
     }
 

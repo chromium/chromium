@@ -117,7 +117,10 @@ static_library("test_support") {
     "//base/test:test_support",
     "//url",
   ]
-  public_deps = [ ":common" ]
+  public_deps = [
+    ":common",
+    "//testing/gmock",
+  ]
 }
 
 source_set("unit_tests") {
@@ -150,6 +153,18 @@ source_set("unit_tests") {
     "//google_apis:google_apis",
     "//testing/gmock",
     "//testing/gtest",
+    "//url",
+  ]
+}
+
+static_library("fuzzer_support") {
+  sources = [
+    "form_data_fuzzed_producer.cc",
+    "form_data_fuzzed_producer.h",
+  ]
+
+  deps = [
+    ":common",
     "//url",
   ]
 }

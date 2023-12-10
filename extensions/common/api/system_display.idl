@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 // Use the <code>system.display</code> API to query display metadata.
-[modernised_enums]
 namespace system.display {
 
   dictionary Bounds {

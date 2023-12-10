@@ -5,6 +5,7 @@
 #include "chromeos/ash/components/dbus/lorgnette_manager/lorgnette_manager_client.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -30,14 +31,12 @@
 #include "dbus/message.h"
 #include "dbus/object_path.h"
 #include "dbus/object_proxy.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace ash {
 namespace {
 
 LorgnetteManagerClient* g_instance = nullptr;
-constexpr char kListScannersDiscoveryClientId[] = "ListScanners";
 
 // The LorgnetteManagerClient implementation used in production.
 class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
@@ -49,15 +48,24 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
   ~LorgnetteManagerClientImpl() override = default;
 
   void ListScanners(
+      const std::string& client_id,
       bool local_only,
       chromeos::DBusMethodCallback<lorgnette::ListScannersResponse> callback)
       override {
     if (features::IsAsynchronousScannerDiscoveryEnabled()) {
+      // The client ID is required for asynchronous discovery.  If none is
+      // provided, exit early with an error result.
+      if (client_id.empty()) {
+        lorgnette::ListScannersResponse response;
+        response.set_result(lorgnette::OPERATION_RESULT_INVALID);
+        base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE,
+            base::BindOnce(std::move(callback), std::move(response)));
+        return;
+      }
+
       lorgnette::StartScannerDiscoveryRequest request;
-      // ListScanners doesn't support concurrent calls and completes the session
-      // before it finishes, so hardcoding a single client id shouldn't cause
-      // cross-caller interference.
-      request.set_client_id(kListScannersDiscoveryClientId);
+      request.set_client_id(client_id);
       request.set_preferred_only(true);
       request.set_local_only(local_only);
 
@@ -105,7 +113,7 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
     if (!writer.AppendProtoAsArrayOfBytes(request)) {
       LOG(ERROR) << "Failed to encode OpenScannerRequest protobuf";
       base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
+          FROM_HERE, base::BindOnce(std::move(callback), std::nullopt));
       return;
     }
     lorgnette_daemon_proxy_->CallMethod(
@@ -124,12 +132,49 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
     if (!writer.AppendProtoAsArrayOfBytes(request)) {
       LOG(ERROR) << "Failed to encode CloseScannerRequest protobuf";
       base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
+          FROM_HERE, base::BindOnce(std::move(callback), std::nullopt));
       return;
     }
     lorgnette_daemon_proxy_->CallMethod(
         &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
         base::BindOnce(&LorgnetteManagerClientImpl::OnCloseScannerResponse,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  }
+
+  void SetOptions(const lorgnette::SetOptionsRequest& request,
+                  chromeos::DBusMethodCallback<lorgnette::SetOptionsResponse>
+                      callback) override {
+    dbus::MethodCall method_call(lorgnette::kManagerServiceInterface,
+                                 lorgnette::kSetOptionsMethod);
+    dbus::MessageWriter writer(&method_call);
+    if (!writer.AppendProtoAsArrayOfBytes(request)) {
+      LOG(ERROR) << "Failed to encode SetOptionsRequest protobuf";
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, base::BindOnce(std::move(callback), std::nullopt));
+      return;
+    }
+    lorgnette_daemon_proxy_->CallMethod(
+        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+        base::BindOnce(&LorgnetteManagerClientImpl::OnSetOptionsResponse,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  }
+
+  void GetCurrentConfig(
+      const lorgnette::GetCurrentConfigRequest& request,
+      chromeos::DBusMethodCallback<lorgnette::GetCurrentConfigResponse>
+          callback) override {
+    dbus::MethodCall method_call(lorgnette::kManagerServiceInterface,
+                                 lorgnette::kGetCurrentConfigMethod);
+    dbus::MessageWriter writer(&method_call);
+    if (!writer.AppendProtoAsArrayOfBytes(request)) {
+      LOG(ERROR) << "Failed to encode GetCurrentConfigRequest protobuf";
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, base::BindOnce(std::move(callback), std::nullopt));
+      return;
+    }
+    lorgnette_daemon_proxy_->CallMethod(
+        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+        base::BindOnce(&LorgnetteManagerClientImpl::OnGetCurrentConfigResponse,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 
@@ -143,7 +188,7 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
     if (!writer.AppendProtoAsArrayOfBytes(request)) {
       LOG(ERROR) << "Failed to encode StartPreparedScanRequest protobuf";
       base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
+          FROM_HERE, base::BindOnce(std::move(callback), std::nullopt));
       return;
     }
     lorgnette_daemon_proxy_->CallMethod(
@@ -195,7 +240,7 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
     if (!writer.AppendProtoAsArrayOfBytes(request)) {
       LOG(ERROR) << "Failed to encode ReadScanDataRequest protobuf";
       base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
+          FROM_HERE, base::BindOnce(std::move(callback), std::nullopt));
       return;
     }
     lorgnette_daemon_proxy_->CallMethod(
@@ -222,7 +267,7 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
     if (!writer.AppendProtoAsArrayOfBytes(request)) {
       LOG(ERROR) << "Failed to encode CancelScanRequest protobuf";
       base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
+          FROM_HERE, base::BindOnce(std::move(callback), std::nullopt));
       return;
     }
     lorgnette_daemon_proxy_->CallMethod(
@@ -322,7 +367,7 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
     // In case of success, std::string holds the read data. Otherwise,
     // nullopt.
     using CompletionCallback =
-        base::OnceCallback<void(absl::optional<std::string> data)>;
+        base::OnceCallback<void(std::optional<std::string> data)>;
 
     ScanDataReader() = default;
     ScanDataReader(const ScanDataReader&) = delete;
@@ -352,7 +397,7 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
 
    private:
     // Called when a |pipe_reader_| completes reading scan data to a string.
-    void OnDataRead(absl::optional<std::string> data) {
+    void OnDataRead(std::optional<std::string> data) {
       DCHECK(!data_read_);
       data_read_ = true;
       data_ = std::move(data);
@@ -375,7 +420,7 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
     bool data_read_ = false;
 
     // Available only when |data_read_| is true.
-    absl::optional<std::string> data_;
+    std::optional<std::string> data_;
 
     CompletionCallback callback_;
 
@@ -395,10 +440,9 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
   };
 
   struct DiscoverySessionState {
-    absl::optional<
-        chromeos::DBusMethodCallback<lorgnette::ListScannersResponse>>
+    std::optional<chromeos::DBusMethodCallback<lorgnette::ListScannersResponse>>
         session_end_callback;
-    absl::optional<
+    std::optional<
         base::RepeatingCallback<void(lorgnette::ScannerListChangedSignal)>>
         signal_callback;
     std::string session_id;
@@ -479,7 +523,7 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
       dbus::Response* response) {
     if (!response) {
       LOG(ERROR) << "Failed to obtain ListScannersResponse";
-      std::move(callback).Run(absl::nullopt);
+      std::move(callback).Run(std::nullopt);
       return;
     }
 
@@ -487,7 +531,7 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
     dbus::MessageReader reader(response);
     if (!reader.PopArrayOfBytesAsProto(&response_proto)) {
       LOG(ERROR) << "Failed to read ListScannersResponse";
-      std::move(callback).Run(absl::nullopt);
+      std::move(callback).Run(std::nullopt);
       return;
     }
 
@@ -500,7 +544,7 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
       dbus::Response* response) {
     if (!response) {
       LOG(ERROR) << "Failed to obtain ScannerCapabilities";
-      std::move(callback).Run(absl::nullopt);
+      std::move(callback).Run(std::nullopt);
       return;
     }
 
@@ -508,7 +552,7 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
     dbus::MessageReader reader(response);
     if (!reader.PopArrayOfBytesAsProto(&response_proto)) {
       LOG(ERROR) << "Failed to read ScannerCapabilities";
-      std::move(callback).Run(absl::nullopt);
+      std::move(callback).Run(std::nullopt);
       return;
     }
 
@@ -521,7 +565,7 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
       dbus::Response* response) {
     if (!response) {
       LOG(ERROR) << "Failed to obtain OpenScannerResponse";
-      std::move(callback).Run(absl::nullopt);
+      std::move(callback).Run(std::nullopt);
       return;
     }
 
@@ -529,7 +573,7 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
     dbus::MessageReader reader(response);
     if (!reader.PopArrayOfBytesAsProto(&response_proto)) {
       LOG(ERROR) << "Failed to decode OpenScannerResponse proto";
-      std::move(callback).Run(absl::nullopt);
+      std::move(callback).Run(std::nullopt);
       return;
     }
 
@@ -542,7 +586,7 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
       dbus::Response* response) {
     if (!response) {
       LOG(ERROR) << "Failed to obtain CloseScannerResponse";
-      std::move(callback).Run(absl::nullopt);
+      std::move(callback).Run(std::nullopt);
       return;
     }
 
@@ -550,7 +594,50 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
     dbus::MessageReader reader(response);
     if (!reader.PopArrayOfBytesAsProto(&response_proto)) {
       LOG(ERROR) << "Failed to decode CloseScannerResponse proto";
-      std::move(callback).Run(absl::nullopt);
+      std::move(callback).Run(std::nullopt);
+      return;
+    }
+
+    std::move(callback).Run(response_proto);
+  }
+
+  // Handles the response received after calling SetOptions().
+  void OnSetOptionsResponse(
+      chromeos::DBusMethodCallback<lorgnette::SetOptionsResponse> callback,
+      dbus::Response* response) {
+    if (!response) {
+      LOG(ERROR) << "Failed to obtain SetOptionsResponse";
+      std::move(callback).Run(std::nullopt);
+      return;
+    }
+
+    lorgnette::SetOptionsResponse response_proto;
+    dbus::MessageReader reader(response);
+    if (!reader.PopArrayOfBytesAsProto(&response_proto)) {
+      LOG(ERROR) << "Failed to decode SetOptionsResponse proto";
+      std::move(callback).Run(std::nullopt);
+      return;
+    }
+
+    std::move(callback).Run(response_proto);
+  }
+
+  // Handles the response received after calling GetCurrentConfig().
+  void OnGetCurrentConfigResponse(
+      chromeos::DBusMethodCallback<lorgnette::GetCurrentConfigResponse>
+          callback,
+      dbus::Response* response) {
+    if (!response) {
+      LOG(ERROR) << "Failed to obtain GetCurrentConfigResponse";
+      std::move(callback).Run(std::nullopt);
+      return;
+    }
+
+    lorgnette::GetCurrentConfigResponse response_proto;
+    dbus::MessageReader reader(response);
+    if (!reader.PopArrayOfBytesAsProto(&response_proto)) {
+      LOG(ERROR) << "Failed to decode GetCurrentConfigResponse proto";
+      std::move(callback).Run(std::nullopt);
       return;
     }
 
@@ -564,7 +651,7 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
       dbus::Response* response) {
     if (!response) {
       LOG(ERROR) << "Failed to obtain StartPreparedScanResponse";
-      std::move(callback).Run(absl::nullopt);
+      std::move(callback).Run(std::nullopt);
       return;
     }
 
@@ -572,7 +659,7 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
     dbus::MessageReader reader(response);
     if (!reader.PopArrayOfBytesAsProto(&response_proto)) {
       LOG(ERROR) << "Failed to decode StartPreparedScanResponse proto";
-      std::move(callback).Run(absl::nullopt);
+      std::move(callback).Run(std::nullopt);
       return;
     }
 
@@ -583,7 +670,7 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
   void OnScanDataCompleted(const std::string& uuid,
                            uint32_t page_number,
                            bool more_pages,
-                           absl::optional<std::string> data) {
+                           std::optional<std::string> data) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     if (!base::Contains(scan_job_state_, uuid)) {
       LOG(ERROR) << "Received ScanDataCompleted for unrecognized scan job: "
@@ -646,7 +733,7 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
       dbus::Response* response) {
     if (!response) {
       LOG(ERROR) << "Failed to obtain ReadScanDataResponse";
-      std::move(callback).Run(absl::nullopt);
+      std::move(callback).Run(std::nullopt);
       return;
     }
 
@@ -654,7 +741,7 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
     dbus::MessageReader reader(response);
     if (!reader.PopArrayOfBytesAsProto(&response_proto)) {
       LOG(ERROR) << "Failed to decode ReadScanDataResponse proto";
-      std::move(callback).Run(absl::nullopt);
+      std::move(callback).Run(std::nullopt);
       return;
     }
 
@@ -663,7 +750,7 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
 
   void OnCancelScanResponse(
       const std::string& scan_uuid,
-      absl::optional<lorgnette::CancelScanResponse> response) {
+      std::optional<lorgnette::CancelScanResponse> response) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     // If the cancel completed and the scan job has been erased, there's no work
     // to do.
@@ -698,7 +785,7 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
       dbus::Response* response) {
     if (!response) {
       LOG(ERROR) << "Failed to obtain CancelScanResponse";
-      std::move(callback).Run(absl::nullopt);
+      std::move(callback).Run(std::nullopt);
       return;
     }
 
@@ -706,7 +793,7 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
     dbus::MessageReader reader(response);
     if (!reader.PopArrayOfBytesAsProto(&response_proto)) {
       LOG(ERROR) << "Failed to decode CancelScanResponse proto";
-      std::move(callback).Run(absl::nullopt);
+      std::move(callback).Run(std::nullopt);
       return;
     }
 
@@ -761,7 +848,7 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     if (!dbus_response) {
       LOG(ERROR) << "Failed to obtain StartScannerDiscoveryResponse";
-      std::move(response_callback).Run(absl::nullopt);
+      std::move(response_callback).Run(std::nullopt);
       return;
     }
 
@@ -769,13 +856,13 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
     dbus::MessageReader reader(dbus_response);
     if (!reader.PopArrayOfBytesAsProto(&response)) {
       LOG(ERROR) << "Failed to decode StartScannerDiscoveryResponse proto";
-      std::move(response_callback).Run(absl::nullopt);
+      std::move(response_callback).Run(std::nullopt);
       return;
     }
 
     if (!response.started()) {
       LOG(ERROR) << "Scanner discovery session was not started";
-      std::move(response_callback).Run(absl::nullopt);
+      std::move(response_callback).Run(std::nullopt);
       return;
     }
 
@@ -789,11 +876,13 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
 
   void OnListScannersDiscoverySession(
       chromeos::DBusMethodCallback<lorgnette::ListScannersResponse> callback,
-      absl::optional<lorgnette::StartScannerDiscoveryResponse> response) {
+      std::optional<lorgnette::StartScannerDiscoveryResponse> response) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
     if (!response.has_value()) {
-      std::move(callback).Run(absl::nullopt);
+      // TODO(b/277049005): Set the proper result code once this is disentangled
+      // from the synchronous ListScanners response.
+      std::move(callback).Run(std::nullopt);
       return;
     }
 
@@ -812,7 +901,7 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     if (!dbus_response) {
       LOG(ERROR) << "Failed to obtain StopScannerDiscoveryResponse";
-      std::move(callback).Run(absl::nullopt);
+      std::move(callback).Run(std::nullopt);
       return;
     }
 
@@ -820,7 +909,7 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
     dbus::MessageReader reader(dbus_response);
     if (!reader.PopArrayOfBytesAsProto(&response)) {
       LOG(ERROR) << "Failed to decode StopScannerDiscoveryResponse proto";
-      std::move(callback).Run(absl::nullopt);
+      std::move(callback).Run(std::nullopt);
       return;
     }
 
@@ -917,6 +1006,7 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
         // needs to be updated to actually remove devices.
         break;
       case lorgnette::ScannerListChangedSignal::ENUM_COMPLETE: {
+        session.response.set_result(lorgnette::OPERATION_RESULT_SUCCESS);
         lorgnette::StopScannerDiscoveryRequest request;
         request.set_session_id(session.session_id);
         StopScannerDiscovery(request, base::DoNothing());

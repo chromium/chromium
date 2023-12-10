@@ -177,6 +177,39 @@ promise_test(async t => {
   }), 30));
   await Promise.all([first, second]);
 }, "Two unrelated setTimeout tasks (delivered as strings) properly track their ancestors");
+
+promise_test(async t => {
+
+  window.initialId = scheduler.taskId;
+  let times = 0;
+  const test_times = 15;
+  // This value is 8 because the script execution itself is one parent task,
+  // and then test running is another. That leaves us with 8 timeouts before
+  // exhausting the max dependency chain link.
+  const non_equal_times = 8;
+
+  await new Promise((resolve, reject) => setTimeout(t.step_func(() => {
+    const parent = scheduler.taskId;
+    let last_parent_id = parent;
+    const timeout = () => {
+      assert_not_equals(scheduler.taskId, parent);
+      if (times < non_equal_times) {
+        assert_not_equals(scheduler.taskId, last_parent_id);
+      } else {
+        assert_equals(scheduler.taskId, last_parent_id);
+      }
+      assert_equals(scheduler.isAncestor(parent), "ancestor");
+      assert_equals(scheduler.isAncestor(initialId), "ancestor");
+      if (++times < test_times) {
+        last_parent_id = scheduler.taskId;
+        setTimeout(t.step_func(timeout), 0);
+      } else {
+        resolve();
+      }
+    };
+    setTimeout(t.step_func(timeout), 0);
+  }), 0));
+}, "Recursive setTimeout");
 </script>
 </body>
 </html>

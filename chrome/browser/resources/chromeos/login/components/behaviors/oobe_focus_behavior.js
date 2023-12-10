@@ -52,14 +52,6 @@ export const OobeFocusBehavior = {
   },
 };
 
-/**
- * TODO: Replace with an interface. b/24294625
- * @typedef {{
- *   focusMarkedElement: function()
- * }}
- */
-OobeFocusBehavior.Proto;
-
 /** @interface */
 export class OobeFocusBehaviorInterface {
   focusMarkedElement(root) {}

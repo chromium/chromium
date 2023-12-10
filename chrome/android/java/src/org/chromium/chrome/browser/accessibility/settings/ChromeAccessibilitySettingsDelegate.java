@@ -104,7 +104,8 @@ public class ChromeAccessibilitySettingsDelegate implements AccessibilitySetting
     @Override
     public void launchSiteSettingsZoomActivity(Context context) {
         Bundle initialArguments = new Bundle();
-        initialArguments.putString(SingleCategorySettings.EXTRA_CATEGORY,
+        initialArguments.putString(
+                SingleCategorySettings.EXTRA_CATEGORY,
                 SiteSettingsCategory.preferenceKey(SiteSettingsCategory.Type.ZOOM));
         SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
         settingsLauncher.launchSettingsActivity(context, AllSiteSettings.class, initialArguments);

@@ -41,6 +41,9 @@ void ScreenMetricsEmulator::DisableAndApply() {
   frame_widget_->SetScreenInfoAndSize(original_screen_infos_,
                                       original_widget_size_,
                                       original_visible_viewport_size_);
+  // The posture service will restore the original device posture coming from
+  // the platform.
+  frame_widget_->DisableDevicePostureOverrideForEmulation();
 }
 
 void ScreenMetricsEmulator::ChangeEmulationParams(
@@ -151,6 +154,9 @@ void ScreenMetricsEmulator::Apply() {
         {0, 0, widget_size.width(), widget_size.height()}};
     frame_widget_->SetWindowSegments(emulated_segments);
   }
+
+  frame_widget_->OverrideDevicePostureForEmulation(
+      emulation_params_.device_posture);
 
   display::ScreenInfos emulated_screen_infos = original_screen_infos_;
   display::ScreenInfo& emulated_screen_info =

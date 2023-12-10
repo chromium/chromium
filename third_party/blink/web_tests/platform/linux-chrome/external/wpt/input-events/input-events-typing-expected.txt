@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+[FAIL] It triggers beforeinput and input events on typing DELETE with no pre-existing content
+  assert_equals: expected 2 but got 1
+[FAIL] It triggers beforeinput and input events on typing BACK_SPACE with no pre-existing content
+  assert_equals: expected 2 but got 1
+Harness: the test ran to completion.

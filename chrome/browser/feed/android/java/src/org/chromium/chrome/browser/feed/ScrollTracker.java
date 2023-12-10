@@ -8,15 +8,12 @@ import androidx.annotation.Nullable;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 
-/**
- * Helper which is able to track a Scroll and aggregate them before sending the scroll events.
- */
+/** Helper which is able to track a Scroll and aggregate them before sending the scroll events. */
 public abstract class ScrollTracker {
     // onScroll events are very noisy, so we collate them together to avoid over-reporting scrolls.
     private static final long SCROLL_EVENT_COLLATE_MILLIS = 200L;
 
-    @Nullable
-    private ReportFunction mPostedReportFunction;
+    @Nullable private ReportFunction mPostedReportFunction;
 
     // If |mScrollAmount| is non-zero and should be reported when ReportFunction runs.
     private boolean mReadyToReport;

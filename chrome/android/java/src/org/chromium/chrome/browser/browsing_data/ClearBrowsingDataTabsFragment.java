@@ -40,8 +40,9 @@ public class ClearBrowsingDataTabsFragment extends Fragment {
             mFetcher.fetchImportantSites();
             mFetcher.requestInfoAboutOtherFormsOfBrowsingHistory();
         } else {
-            mFetcher = savedInstanceState.getParcelable(
-                    ClearBrowsingDataFragment.CLEAR_BROWSING_DATA_FETCHER);
+            mFetcher =
+                    savedInstanceState.getParcelable(
+                            ClearBrowsingDataFragment.CLEAR_BROWSING_DATA_FETCHER);
         }
 
         RecordUserAction.record("ClearBrowsingData_DialogCreated");
@@ -55,14 +56,19 @@ public class ClearBrowsingDataTabsFragment extends Fragment {
 
         // Get the ViewPager and set its PagerAdapter so that it can display items.
         ViewPager2 viewPager = view.findViewById(R.id.clear_browsing_data_viewpager);
-        viewPager.setAdapter(new ClearBrowsingDataPagerAdapter(
-                mFetcher, getFragmentManager(), (FragmentActivity) getActivity()));
+        viewPager.setAdapter(
+                new ClearBrowsingDataPagerAdapter(
+                        mFetcher, getFragmentManager(), (FragmentActivity) getActivity()));
 
         // Give the TabLayout the ViewPager.
         TabLayout tabLayout = view.findViewById(R.id.clear_browsing_data_tabs);
-        new TabLayoutMediator(tabLayout, viewPager, (tab, position) -> {
-            tab.setText(getTabTitle(position));
-        }).attach();
+        new TabLayoutMediator(
+                        tabLayout,
+                        viewPager,
+                        (tab, position) -> {
+                            tab.setText(getTabTitle(position));
+                        })
+                .attach();
         int tabIndex = BrowsingDataBridge.getInstance().getLastSelectedClearBrowsingDataTab();
         TabLayout.Tab tab = tabLayout.getTabAt(tabIndex);
         if (tab != null) {
@@ -125,8 +131,9 @@ public class ClearBrowsingDataTabsFragment extends Fragment {
                     throw new RuntimeException("invalid position: " + position);
             }
             // We supply the fetcher in the next line.
-            fragment.setArguments(ClearBrowsingDataFragment.createFragmentArgs(
-                    /*isFetcherSuppliedFromOutside=*/true));
+            fragment.setArguments(
+                    ClearBrowsingDataFragment.createFragmentArgs(
+                            /* isFetcherSuppliedFromOutside= */ true));
             fragment.setClearBrowsingDataFetcher(mFetcher);
             return fragment;
         }

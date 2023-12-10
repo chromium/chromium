@@ -20,8 +20,8 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_restrictions.h"
 #include "components/dom_distiller/core/url_utils.h"
-#include "components/favicon/content/large_favicon_provider_getter.h"
-#include "components/favicon/core/large_favicon_provider.h"
+#include "components/favicon/content/large_icon_service_getter.h"
+#include "components/favicon/core/large_icon_service.h"
 #include "components/favicon_base/favicon_types.h"
 #include "components/webapps/browser/android/webapps_icon_utils.h"
 #include "components/webapps/browser/android/webapps_utils.h"
@@ -73,11 +73,14 @@ InstallableParams ParamsToFetchPrimaryIcon() {
 InstallableParams ParamsToPerformInstallableCheck() {
   InstallableParams params;
   params.check_eligibility = true;
-  if (base::FeatureList::IsEnabled(features::kUniversalInstallManifest)) {
+  params.installable_criteria = InstallableCriteria::kValidManifestWithIcons;
+  if (base::FeatureList::IsEnabled(
+          features::kUniversalInstallRootScopeNoManifest)) {
+    params.installable_criteria = InstallableCriteria::kNoManifestAtRootScope;
+  } else if (base::FeatureList::IsEnabled(
+                 features::kUniversalInstallManifest)) {
     params.installable_criteria =
         InstallableCriteria::kImplicitManifestFieldsHTML;
-  } else {
-    params.installable_criteria = InstallableCriteria::kValidManifestWithIcons;
   }
   return params;
 }
@@ -204,17 +207,10 @@ void AddToHomescreenDataFetcher::OnDidGetInstallableData(
   if (!web_contents_)
     return;
 
-  shortcut_info_.UpdateFromWebPageMetadata(*data.web_page_metadata);
-
   RecordMobileCapableUserActions(data.web_page_metadata->mobile_capable,
                                  !blink::IsEmptyManifest(*data.manifest));
 
-  if (blink::IsEmptyManifest(*data.manifest)) {
-    installable_status_code_ = data.GetFirstError();
-    PrepareToAddShortcut(true /* fetch_favicon */);
-    return;
-  }
-
+  shortcut_info_.UpdateFromWebPageMetadata(*data.web_page_metadata);
   shortcut_info_.UpdateFromManifest(*data.manifest);
   shortcut_info_.manifest_url = (*data.manifest_url);
   // Save the splash screen URL for the later download.
@@ -260,27 +256,26 @@ void AddToHomescreenDataFetcher::OnDidPerformInstallableCheck(
       (data.errors.empty() && data.installable_check_passed &&
        WebappsUtils::AreWebManifestUrlsWebApkCompatible(*data.manifest));
 
+  installable_status_code_ = data.GetFirstError();
+
+  if (!webapk_compatible) {
+    PrepareToAddShortcut(false /* fetch_favicon */);
+    return;
+  }
+
   observer_->OnUserTitleAvailable(
       webapk_compatible ? shortcut_info_.name : shortcut_info_.user_title,
       shortcut_info_.url, webapk_compatible);
 
   shortcut_info_.UpdateDisplayMode(webapk_compatible);
 
-  if (webapk_compatible) {
-    // WebAPKs should always use the raw icon for the launcher whether or not
-    // that icon is maskable.
-    primary_icon_ = raw_primary_icon_;
-    shortcut_info_.UpdateSource(ShortcutInfo::SOURCE_ADD_TO_HOMESCREEN_PWA);
-    // We can skip creating an icon for the view because the raw icon is
-    // sufficient when WebAPK-compatible.
-    OnIconCreated(raw_primary_icon_,
-                  /*is_icon_generated=*/false);
-    return;
-  }
-
-  installable_status_code_ = data.GetFirstError();
-
-  CreateIconForView(raw_primary_icon_);
+  // WebAPKs should always use the raw icon for the launcher whether or not
+  // that icon is maskable.
+  primary_icon_ = raw_primary_icon_;
+  shortcut_info_.UpdateSource(ShortcutInfo::SOURCE_ADD_TO_HOMESCREEN_PWA);
+  observer_->OnDataAvailable(shortcut_info_, primary_icon_,
+                             AddToHomescreenParams::AppType::WEBAPK,
+                             installable_status_code_);
 }
 
 void AddToHomescreenDataFetcher::PrepareToAddShortcut(bool fetch_favicon) {
@@ -302,7 +297,7 @@ void AddToHomescreenDataFetcher::FetchFavicon() {
   // otherwise using the largest icon among all available icons.
   int threshold_to_get_any_largest_icon =
       WebappsIconUtils::GetIdealHomescreenIconSizeInPx() - 1;
-  favicon::GetLargeFaviconProvider(web_contents_->GetBrowserContext())
+  favicon::GetLargeIconService(web_contents_->GetBrowserContext())
       ->GetLargeIconRawBitmapForPageUrl(
           shortcut_info_.url, threshold_to_get_any_largest_icon,
           base::BindOnce(&AddToHomescreenDataFetcher::OnFaviconFetched,
@@ -365,6 +360,7 @@ void AddToHomescreenDataFetcher::OnIconCreated(const SkBitmap& icon_for_view,
   }
 
   observer_->OnDataAvailable(shortcut_info_, icon_for_view,
+                             AddToHomescreenParams::AppType::SHORTCUT,
                              installable_status_code_);
 }
 

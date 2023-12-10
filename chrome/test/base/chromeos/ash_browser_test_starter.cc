@@ -12,11 +12,9 @@
 #include "base/environment.h"
 #include "base/files/file_util.h"
 #include "base/strings/stringprintf.h"
-#include "base/task/thread_pool.h"
 #include "base/test/bind.h"
+#include "base/test/test_future.h"
 #include "base/test/test_switches.h"
-#include "base/test/test_timeouts.h"
-#include "base/timer/timer.h"
 #include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/ash/crosapi/browser_manager_observer.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
@@ -26,10 +24,13 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/ash/components/standalone_browser/feature_refs.h"
+#include "components/exo/wm_helper.h"
 #include "components/network_session_configurator/common/network_switches.h"
+#include "content/public/common/content_switches.h"
 #include "google_apis/gaia/gaia_switches.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/aura/window.h"
 #include "ui/views/views_switches.h"
 
 namespace test {
@@ -45,9 +46,44 @@ std::unique_ptr<net::test_server::HttpResponse> HandleGaiaURL(
   return std::make_unique<HungResponse>();
 }
 
+class NewLacrosWindowWatcher : public exo::WMHelper::ExoWindowObserver {
+ public:
+  NewLacrosWindowWatcher() {
+    exo::WMHelper::GetInstance()->AddExoWindowObserver(this);
+  }
+
+  ~NewLacrosWindowWatcher() override {
+    exo::WMHelper::GetInstance()->RemoveExoWindowObserver(this);
+  }
+
+  NewLacrosWindowWatcher(const NewLacrosWindowWatcher&) = delete;
+  NewLacrosWindowWatcher& operator=(const NewLacrosWindowWatcher&) = delete;
+
+  // `exo::WMHelper::ExoWindowObserver`
+  void OnExoWindowCreated(aura::Window* window) override {
+    if (crosapi::browser_util::IsLacrosWindow(window) &&
+        // TODO(crbug.com/1502062): Remove the title check when the extra
+        // Lacros window is gone.
+        window->GetTitle() == u"New Tab") {
+      window_future_.SetValue(window);
+    }
+  }
+
+  // Waits until a new exo window is created.
+  // The watch period starts when this object was created, not when this method
+  // is called. In other words, this method may return immediately if an exo
+  // window was already created before.
+  aura::Window* Await() { return window_future_.Take(); }
+
+ private:
+  base::test::TestFuture<aura::Window*> window_future_;
+};
+
 }  // namespace
 
 AshBrowserTestStarter::~AshBrowserTestStarter() {
+  CHECK(!initial_lacros_window_);  // Exo has already shut down.
+
   // Clean up the directories that tests were passed. This is
   // to save bot collect results time and faster CQ runtime.
   if (!ash_user_data_dir_for_cleanup_.empty() &&
@@ -140,6 +176,9 @@ bool AshBrowserTestStarter::PrepareEnvironmentForLacros() {
   lacros_args.emplace_back(base::StringPrintf("--%s", switches::kNoFirstRun));
   lacros_args.emplace_back(
       base::StringPrintf("--%s", switches::kIgnoreCertificateErrors));
+  // For some StandaloneBrowserTestController features.
+  lacros_args.emplace_back(
+      base::StringPrintf("--%s", switches::kDomAutomationController));
   // Override Gaia url in Lacros so that the gaia requests will NOT be handled
   // with the real internet connection, but with the embedded test server. The
   // embedded test server will simulate failure of the Gaia url requests which
@@ -159,65 +198,26 @@ bool AshBrowserTestStarter::PrepareEnvironmentForLacros() {
   return true;
 }
 
-class LacrosStartedObserver : public crosapi::BrowserManagerObserver {
- public:
-  LacrosStartedObserver() = default;
-  LacrosStartedObserver(const LacrosStartedObserver&) = delete;
-  LacrosStartedObserver& operator=(const LacrosStartedObserver&) = delete;
-  ~LacrosStartedObserver() override = default;
-
-  void OnStateChanged() override {
-    if (crosapi::BrowserManager::Get()->IsRunning()) {
-      run_loop_.Quit();
-    }
-  }
-
-  void Wait(base::TimeDelta timeout) {
-    if (crosapi::BrowserManager::Get()->IsRunning()) {
-      return;
-    }
-    base::ThreadPool::PostDelayedTask(FROM_HERE, run_loop_.QuitClosure(),
-                                      timeout);
-    run_loop_.Run();
-  }
-
- private:
-  base::RunLoop run_loop_;
-};
-
-void WaitForExoStarted(const base::FilePath& xdg_path) {
-  base::RepeatingTimer timer;
-  base::RunLoop run_loop;
-  timer.Start(FROM_HERE, base::Seconds(1), base::BindLambdaForTesting([&]() {
-                if (base::PathExists(xdg_path.Append("wayland-0")) &&
-                    base::PathExists(xdg_path.Append("wayland-0.lock"))) {
-                  run_loop.Quit();
-                }
-              }));
-  base::ThreadPool::PostDelayedTask(FROM_HERE, run_loop.QuitClosure(),
-                                    TestTimeouts::action_max_timeout());
-  run_loop.Run();
-  CHECK(base::PathExists(xdg_path.Append("wayland-0")) &&
-        base::PathExists(xdg_path.Append("wayland-0.lock")));
-}
-
 void AshBrowserTestStarter::StartLacros(InProcessBrowserTest* test_class_obj) {
   DCHECK(HasLacrosArgument());
 
   crosapi::BrowserManager::Get()->set_device_ownership_waiter_for_testing(
       std::make_unique<crosapi::FakeDeviceOwnershipWaiter>());
 
-  WaitForExoStarted(scoped_temp_dir_xdg_.GetPath());
-
-  crosapi::BrowserManager::Get()->NewWindow(
-      /*incongnito=*/false, /*should_trigger_session_restore=*/false);
-
-  LacrosStartedObserver observer;
-  crosapi::BrowserManager::Get()->AddObserver(&observer);
-  observer.Wait(TestTimeouts::action_max_timeout());
-  crosapi::BrowserManager::Get()->RemoveObserver(&observer);
+  {
+    NewLacrosWindowWatcher watcher;
+    crosapi::BrowserManager::Get()->NewWindow(
+        /*incongnito=*/false, /*should_trigger_session_restore=*/false);
+    initial_lacros_window_ = watcher.Await();
+  }
+  initial_lacros_window_->AddObserver(this);  // For OnWindowDestroying.
 
   CHECK(crosapi::BrowserManager::Get()->IsRunning());
+}
+
+void AshBrowserTestStarter::OnWindowDestroying(aura::Window* window) {
+  DCHECK_EQ(window, initial_lacros_window_);
+  initial_lacros_window_ = nullptr;
 }
 
 }  // namespace test

@@ -44,7 +44,7 @@ if (enable_rust) {
       ":gtest_attribute",
 
       # This is re-exported for the gtest_attribute macros.
-      "//third_party/rust/small_ctor/v0_1:test_support",
+      "//third_party/rust/small_ctor/v0_1:lib",
     ]
   }
 

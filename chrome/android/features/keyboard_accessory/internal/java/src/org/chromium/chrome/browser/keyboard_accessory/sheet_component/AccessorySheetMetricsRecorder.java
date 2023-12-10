@@ -20,9 +20,7 @@ import org.chromium.ui.modelutil.PropertyModel;
  * metrics accordingly.
  */
 class AccessorySheetMetricsRecorder {
-    /**
-     * The Recorder itself should be stateless and have no need for an instance.
-     */
+    /** The Recorder itself should be stateless and have no need for an instance. */
     private AccessorySheetMetricsRecorder() {}
 
     /**
@@ -30,27 +28,34 @@ class AccessorySheetMetricsRecorder {
      * @param accessorySheetModel The observable {@link AccessorySheetProperties}.
      */
     static void registerAccessorySheetModelMetricsObserver(PropertyModel accessorySheetModel) {
-        accessorySheetModel.addObserver((source, propertyKey) -> {
-            if (propertyKey == VISIBLE) {
-                if (accessorySheetModel.get(VISIBLE)) {
-                    int activeTab = accessorySheetModel.get(ACTIVE_TAB_INDEX);
-                    if (activeTab >= 0 && activeTab < accessorySheetModel.get(TABS).size()) {
-                        recordSheetTrigger(
-                                accessorySheetModel.get(TABS).get(activeTab).getRecordingType(),
-                                MANUAL_OPEN);
+        accessorySheetModel.addObserver(
+                (source, propertyKey) -> {
+                    if (propertyKey == VISIBLE) {
+                        if (accessorySheetModel.get(VISIBLE)) {
+                            int activeTab = accessorySheetModel.get(ACTIVE_TAB_INDEX);
+                            if (activeTab >= 0
+                                    && activeTab < accessorySheetModel.get(TABS).size()) {
+                                recordSheetTrigger(
+                                        accessorySheetModel
+                                                .get(TABS)
+                                                .get(activeTab)
+                                                .getRecordingType(),
+                                        MANUAL_OPEN);
+                            }
+                        } else {
+                            recordSheetTrigger(
+                                    AccessoryTabType.ALL, AccessorySheetTrigger.ANY_CLOSE);
+                        }
+                        return;
                     }
-                } else {
-                    recordSheetTrigger(AccessoryTabType.ALL, AccessorySheetTrigger.ANY_CLOSE);
-                }
-                return;
-            }
-            if (propertyKey == ACTIVE_TAB_INDEX || propertyKey == AccessorySheetProperties.HEIGHT
-                    || propertyKey == AccessorySheetProperties.TOP_SHADOW_VISIBLE
-                    || propertyKey == AccessorySheetProperties.PAGE_CHANGE_LISTENER
-                    || propertyKey == AccessorySheetProperties.SHOW_KEYBOARD_CALLBACK) {
-                return;
-            }
-            assert false : "Every property update needs to be handled explicitly!";
-        });
+                    if (propertyKey == ACTIVE_TAB_INDEX
+                            || propertyKey == AccessorySheetProperties.HEIGHT
+                            || propertyKey == AccessorySheetProperties.TOP_SHADOW_VISIBLE
+                            || propertyKey == AccessorySheetProperties.PAGE_CHANGE_LISTENER
+                            || propertyKey == AccessorySheetProperties.SHOW_KEYBOARD_CALLBACK) {
+                        return;
+                    }
+                    assert false : "Every property update needs to be handled explicitly!";
+                });
     }
 }

@@ -20,11 +20,10 @@ source_set("model") {
     "//components/signin/public/identity_manager",
     "//components/sync",
     "//components/sync_device_info",
-    "//ios/chrome/browser/signin",
+    "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/sync/model",
     "//ios/chrome/browser/url_loading/model",
     "//ios/chrome/browser/url_loading/model:url_loading_params_header",
-    "//third_party/abseil-cpp:absl",
     "//ui/base",
   ]
   public_deps = [ "//components/sync_sessions" ]

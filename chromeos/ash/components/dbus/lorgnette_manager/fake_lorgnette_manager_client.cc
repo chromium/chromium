@@ -19,6 +19,7 @@ FakeLorgnetteManagerClient::~FakeLorgnetteManagerClient() = default;
 void FakeLorgnetteManagerClient::Init(dbus::Bus* bus) {}
 
 void FakeLorgnetteManagerClient::ListScanners(
+    const std::string& client_id,
     bool local_only,
     chromeos::DBusMethodCallback<lorgnette::ListScannersResponse> callback) {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
@@ -44,6 +45,22 @@ void FakeLorgnetteManagerClient::CloseScanner(
     chromeos::DBusMethodCallback<lorgnette::CloseScannerResponse> callback) {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), close_scanner_response_));
+}
+
+void FakeLorgnetteManagerClient::SetOptions(
+    const lorgnette::SetOptionsRequest& request,
+    chromeos::DBusMethodCallback<lorgnette::SetOptionsResponse> callback) {
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), set_options_response_));
+}
+
+void FakeLorgnetteManagerClient::GetCurrentConfig(
+    const lorgnette::GetCurrentConfigRequest& request,
+    chromeos::DBusMethodCallback<lorgnette::GetCurrentConfigResponse>
+        callback) {
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(std::move(callback), get_current_config_response_));
 }
 
 void FakeLorgnetteManagerClient::StartPreparedScan(
@@ -83,7 +100,7 @@ void FakeLorgnetteManagerClient::StartScan(
                                 scan_response_.has_value()
                                     ? lorgnette::SCAN_FAILURE_MODE_NO_FAILURE
                                     : lorgnette::SCAN_FAILURE_MODE_UNKNOWN));
-  scan_response_ = absl::nullopt;
+  scan_response_ = std::nullopt;
 }
 
 void FakeLorgnetteManagerClient::ReadScanData(
@@ -123,46 +140,56 @@ void FakeLorgnetteManagerClient::StopScannerDiscovery(
 }
 
 void FakeLorgnetteManagerClient::SetListScannersResponse(
-    const absl::optional<lorgnette::ListScannersResponse>&
+    const std::optional<lorgnette::ListScannersResponse>&
         list_scanners_response) {
   list_scanners_response_ = list_scanners_response;
 }
 
 void FakeLorgnetteManagerClient::SetScannerCapabilitiesResponse(
-    const absl::optional<lorgnette::ScannerCapabilities>&
+    const std::optional<lorgnette::ScannerCapabilities>&
         capabilities_response) {
   capabilities_response_ = capabilities_response;
 }
 
 void FakeLorgnetteManagerClient::SetOpenScannerResponse(
-    const absl::optional<lorgnette::OpenScannerResponse>&
+    const std::optional<lorgnette::OpenScannerResponse>&
         open_scanner_response) {
   open_scanner_response_ = open_scanner_response;
 }
 
 void FakeLorgnetteManagerClient::SetCloseScannerResponse(
-    const absl::optional<lorgnette::CloseScannerResponse>&
+    const std::optional<lorgnette::CloseScannerResponse>&
         close_scanner_response) {
   close_scanner_response_ = close_scanner_response;
 }
 
+void FakeLorgnetteManagerClient::SetSetOptionsResponse(
+    const std::optional<lorgnette::SetOptionsResponse>& response) {
+  set_options_response_ = response;
+}
+
+void FakeLorgnetteManagerClient::SetGetCurrentConfigResponse(
+    const std::optional<lorgnette::GetCurrentConfigResponse>& response) {
+  get_current_config_response_ = response;
+}
+
 void FakeLorgnetteManagerClient::SetStartPreparedScanResponse(
-    const absl::optional<lorgnette::StartPreparedScanResponse>& response) {
+    const std::optional<lorgnette::StartPreparedScanResponse>& response) {
   start_prepared_scan_response_ = response;
 }
 
 void FakeLorgnetteManagerClient::SetReadScanDataResponse(
-    const absl::optional<lorgnette::ReadScanDataResponse>& response) {
+    const std::optional<lorgnette::ReadScanDataResponse>& response) {
   read_scan_data_response_ = response;
 }
 
 void FakeLorgnetteManagerClient::SetScanResponse(
-    const absl::optional<std::vector<std::string>>& scan_response) {
+    const std::optional<std::vector<std::string>>& scan_response) {
   scan_response_ = scan_response;
 }
 
 void FakeLorgnetteManagerClient::SetCancelScanResponse(
-    const absl::optional<lorgnette::CancelScanResponse>& response) {
+    const std::optional<lorgnette::CancelScanResponse>& response) {
   cancel_scan_response_ = response;
 }
 

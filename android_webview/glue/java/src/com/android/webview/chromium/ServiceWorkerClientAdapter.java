@@ -32,8 +32,12 @@ public class ServiceWorkerClientAdapter extends AwServiceWorkerClient {
     public static WebResourceResponseInfo fromWebResourceResponse(WebResourceResponse response) {
         if (response == null) return null;
 
-        return new WebResourceResponseInfo(response.getMimeType(), response.getEncoding(),
-                response.getData(), response.getStatusCode(), response.getReasonPhrase(),
+        return new WebResourceResponseInfo(
+                response.getMimeType(),
+                response.getEncoding(),
+                response.getData(),
+                response.getStatusCode(),
+                response.getReasonPhrase(),
                 response.getResponseHeaders());
     }
 }

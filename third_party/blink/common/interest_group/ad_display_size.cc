@@ -37,6 +37,12 @@ bool AdSize::operator!=(const AdSize& other) const {
   return !(*this == other);
 }
 
+bool AdSize::operator<(const AdSize& other) const {
+  return std::tie(width, width_units, height, height_units) <
+         std::tie(other.width, other.width_units, other.height,
+                  other.height_units);
+}
+
 AdSize::~AdSize() = default;
 
 AdDescriptor::AdDescriptor() = default;

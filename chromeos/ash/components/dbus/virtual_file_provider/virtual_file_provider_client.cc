@@ -72,14 +72,14 @@ class VirtualFileProviderClientImpl : public VirtualFileProviderClient {
   void OnGenerateVirtualFileId(GenerateVirtualFileIdCallback callback,
                                dbus::Response* response) {
     if (!response) {
-      std::move(callback).Run(absl::nullopt);
+      std::move(callback).Run(std::nullopt);
       return;
     }
     dbus::MessageReader reader(response);
     std::string id;
     if (!reader.PopString(&id)) {
       LOG(ERROR) << "Invalid method call result.";
-      std::move(callback).Run(absl::nullopt);
+      std::move(callback).Run(std::nullopt);
       return;
     }
     std::move(callback).Run(std::move(id));

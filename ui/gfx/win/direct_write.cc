@@ -12,7 +12,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
-#include "skia/ext/fontmgr_default.h"
+#include "skia/ext/font_utils.h"
 #include "third_party/skia/include/core/SkFontMgr.h"
 #include "third_party/skia/include/ports/SkTypeface_win.h"
 
@@ -65,7 +65,7 @@ void InitializeDirectWrite() {
 
   // Override the default skia font manager. This must be called before any
   // use of the skia font manager is done (e.g. before any call to
-  // SkFontMgr::RefDefault()).
+  // skia::DefaultFontMgr()).
   skia::OverrideDefaultSkFontMgr(std::move(direct_write_font_mgr));
 }
 

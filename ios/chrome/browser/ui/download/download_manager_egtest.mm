@@ -5,6 +5,7 @@
 #import "base/functional/bind.h"
 #import "base/test/ios/wait_util.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -81,8 +82,8 @@ std::unique_ptr<net::test_server::HttpResponse> GetContentDispositionResponse(
 
 }  // namespace
 
-// Tests critical user journeys for Download Manager using old download code
-// paths.
+// Tests critical user journeys for Download Manager with Save to Drive
+// disabled.
 @interface DownloadManagerTestCase : ChromeTestCase
 @end
 
@@ -106,6 +107,12 @@ std::unique_ptr<net::test_server::HttpResponse> GetContentDispositionResponse(
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
 }
 
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration configuration;
+  configuration.features_disabled.push_back(kIOSSaveToDrive);
+  return configuration;
+}
+
 // Tests successful download up to the point where "Open in..." button is
 // presented. EarlGrey does not allow testing "Open in..." dialog, because it
 // is run in a separate process.
@@ -126,13 +133,13 @@ std::unique_ptr<net::test_server::HttpResponse> GetContentDispositionResponse(
 // is run in a separate process. Performs download in Incognito.
 #if !TARGET_IPHONE_SIMULATOR
 // TODO(crbug.com/1059320): Test consistently failing on device.
-#define MAYBE_testSucessfullDownloadInIncognito \
-  DISABLED_testSucessfullDownloadInIncognito
+#define MAYBE_testSuccessfulDownloadInIncognito \
+  DISABLED_testSuccessfulDownloadInIncognito
 #else
-#define MAYBE_testSucessfullDownloadInIncognito \
-  testSucessfullDownloadInIncognito
+#define MAYBE_testSuccessfulDownloadInIncognito \
+  testSuccessfulDownloadInIncognito
 #endif
-- (void)MAYBE_testSucessfullDownloadInIncognito {
+- (void)MAYBE_testSuccessfulDownloadInIncognito {
   [ChromeEarlGrey openNewIncognitoTab];
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
   [ChromeEarlGrey waitForWebStateContainingText:"Download"];
@@ -162,7 +169,7 @@ std::unique_ptr<net::test_server::HttpResponse> GetContentDispositionResponse(
       assertWithMatcher:grey_nil()];
 }
 
-// Tests sucessfull download up to the point where "Open in..." button is
+// Tests successful download up to the point where "Open in..." button is
 // presented. EarlGrey does not allow testing "Open in..." dialog, because it
 // is run in a separate process. After tapping Download this test opens a
 // separate tabs and loads the URL there. Then closes the tab and waits for
@@ -278,131 +285,46 @@ std::unique_ptr<net::test_server::HttpResponse> GetContentDispositionResponse(
       assertWithMatcher:grey_notNil()];
 }
 
-@end
-
-// Tests critical user journeys for Download Manager using new download code
-// paths. Once support for old download API is removed (i.e. once the new
-// API is launched and iOS 14 support is dropped) this class needs
-// to be merged with DownloadManagerTestCase.
-@interface DownloadManagerNewAPITestCase : DownloadManagerTestCase
-@end
-
-@implementation DownloadManagerNewAPITestCase
-
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config;
-  return config;
-}
-
-- (void)setUp {
-  [super setUp];
-}
-
-// Tests successful download up to the point where "Open in..." button is
-// presented. EarlGrey does not allow testing "Open in..." dialog, because it
-// is run in a separate process.
-- (void)testSuccessfulDownload {
-  [super testSuccessfulDownload];
-}
-
 // Tests successful blob download. This also checks that a file can be
 // downloaded and saved locally while an anchor tag has the download attribute.
-- (void)testSucessfulBlobDownload {
-  if (@available(iOS 15.0, *)) {
-    [ChromeEarlGrey
-        loadURL:self.testServer->GetURL("/download_test_page.html")];
-    [ChromeEarlGrey waitForWebStateContainingText:"BlobURL"];
-    [ChromeEarlGrey tapWebStateElementWithID:@"blob"];
+- (void)testSuccessfulBlobDownload {
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/download_test_page.html")];
+  [ChromeEarlGrey waitForWebStateContainingText:"BlobURL"];
+  [ChromeEarlGrey tapWebStateElementWithID:@"blob"];
 
-    GREYAssert(WaitForDownloadButton(), @"Download button did not show up");
-    [[EarlGrey selectElementWithMatcher:DownloadButton()]
-        performAction:grey_tap()];
+  GREYAssert(WaitForDownloadButton(), @"Download button did not show up");
+  [[EarlGrey selectElementWithMatcher:DownloadButton()]
+      performAction:grey_tap()];
 
-    GREYAssert(WaitForOpenInButton(), @"Open in... button did not show up");
-  }
+  GREYAssert(WaitForOpenInButton(), @"Open in... button did not show up");
 }
 
 // Tests that a pdf can be downloaded. This also checks that a file can be
 // downloaded and saved locally while an anchor tag has the download attribute.
-- (void)testSucessfulPDFDownload {
-  if (@available(iOS 15.0, *)) {
-    [ChromeEarlGrey
-        loadURL:self.testServer->GetURL("/download_test_page.html")];
-    [ChromeEarlGrey waitForWebStateContainingText:"PDF"];
-    [ChromeEarlGrey tapWebStateElementWithID:@"pdf"];
+- (void)testSuccessfulPDFDownload {
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/download_test_page.html")];
+  [ChromeEarlGrey waitForWebStateContainingText:"PDF"];
+  [ChromeEarlGrey tapWebStateElementWithID:@"pdf"];
 
-    GREYAssert(WaitForDownloadButton(), @"Download button did not show up");
-    [[EarlGrey selectElementWithMatcher:DownloadButton()]
-        performAction:grey_tap()];
+  GREYAssert(WaitForDownloadButton(), @"Download button did not show up");
+  [[EarlGrey selectElementWithMatcher:DownloadButton()]
+      performAction:grey_tap()];
 
-    GREYAssert(WaitForOpenInButton(), @"Open in... button did not show up");
-  }
+  GREYAssert(WaitForOpenInButton(), @"Open in... button did not show up");
 }
 
 // Tests that a file is downloaded successfully even if it is renderable by the
 // browser.
-- (void)testSucessfulDownloadWithContentDisposition {
-  if (@available(iOS 15.0, *)) {
-    [ChromeEarlGrey loadURL:self.testServer->GetURL("/content-disposition")];
-    [ChromeEarlGrey waitForWebStateContainingText:"PDF"];
-    [ChromeEarlGrey tapWebStateElementWithID:@"pdf"];
+- (void)testSuccessfulDownloadWithContentDisposition {
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/content-disposition")];
+  [ChromeEarlGrey waitForWebStateContainingText:"PDF"];
+  [ChromeEarlGrey tapWebStateElementWithID:@"pdf"];
 
-    GREYAssert(WaitForDownloadButton(), @"Download button did not show up");
-    [[EarlGrey selectElementWithMatcher:DownloadButton()]
-        performAction:grey_tap()];
+  GREYAssert(WaitForDownloadButton(), @"Download button did not show up");
+  [[EarlGrey selectElementWithMatcher:DownloadButton()]
+      performAction:grey_tap()];
 
-    GREYAssert(WaitForOpenInButton(), @"Open in... button did not show up");
-  }
-}
-
-// Tests successful download up to the point where "Open in..." button is
-// presented. EarlGrey does not allow testing "Open in..." dialog, because it
-// is run in a separate process. Performs download in Incognito.
-#if !TARGET_IPHONE_SIMULATOR
-// TODO(crbug.com/1059320): Test consistently failing on device.
-#define MAYBE_testSucessfullDownloadInIncognito \
-  DISABLED_testSucessfullDownloadInIncognito
-#else
-#define MAYBE_testSucessfullDownloadInIncognito \
-  testSucessfullDownloadInIncognito
-#endif
-- (void)MAYBE_testSucessfullDownloadInIncognito {
-  [super MAYBE_testSucessfullDownloadInIncognito];
-}
-
-// Tests cancelling download UI.
-- (void)testCancellingDownload {
-  [super testCancellingDownload];
-}
-
-// Tests sucessfull download up to the point where "Open in..." button is
-// presented. EarlGrey does not allow testing "Open in..." dialog, because it
-// is run in a separate process. After tapping Download this test opens a
-// separate tabs and loads the URL there. Then closes the tab and waits for
-// the download completion.
-- (void)testDownloadWhileBrowsing {
-  [super testDownloadWhileBrowsing];
-}
-
-// Tests "Open in New Tab" on download link.
-- (void)testDownloadInNewTab {
-  [super testDownloadInNewTab];
-}
-
-// Tests accessibility on Download Manager UI when download is not started.
-- (void)testAccessibilityOnNotStartedDownloadToolbar {
-  [super testAccessibilityOnNotStartedDownloadToolbar];
-}
-
-// Tests accessibility on Download Manager UI when download is complete.
-// TODO(crbug.com/1352113): Re-enable
-- (void)DISABLED_testAccessibilityOnCompletedDownloadToolbar {
-  [super testAccessibilityOnCompletedDownloadToolbar];
-}
-
-// Tests that filename label and "Open in Downloads" button are showing.
-- (void)testVisibleFileNameAndOpenInDownloads {
-  [super testVisibleFileNameAndOpenInDownloads];
+  GREYAssert(WaitForOpenInButton(), @"Open in... button did not show up");
 }
 
 @end

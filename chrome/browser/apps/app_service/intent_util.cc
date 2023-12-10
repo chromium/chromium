@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <functional>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <utility>
@@ -35,7 +36,6 @@
 #include "extensions/common/url_pattern.h"
 #include "extensions/common/url_pattern_set.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/re2/src/re2/re2.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"

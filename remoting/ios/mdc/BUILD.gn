@@ -12,9 +12,10 @@ source_set("mdc") {
     "MDCActionImageView.m",
   ]
 
-  frameworks = [ "UIKit.framework" ]
-
-  deps = [ "//ios/third_party/material_components_ios" ]
+  frameworks = [
+    "Foundation.framework",
+    "UIKit.framework",
+  ]
 
   configs += [ ":disable_deprecated_declarations" ]
 }

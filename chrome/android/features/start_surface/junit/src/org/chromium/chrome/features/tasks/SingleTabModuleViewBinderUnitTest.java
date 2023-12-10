@@ -49,7 +49,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_management.TabListFaviconProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher;
-import org.chromium.chrome.browser.util.BrowserUiUtils;
+import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -154,7 +154,6 @@ public class SingleTabModuleViewBinderUnitTest {
         mSingleTabModuleView.layout(0, 0, 100, 100);
 
         ImageView thumbnail = mSingleTabModuleView.findViewById(R.id.tab_thumbnail);
-        assertNull(thumbnail.getDrawable());
 
         Bitmap bitmap = Bitmap.createBitmap(300, 400, Bitmap.Config.ALPHA_8);
         mPropertyModel.set(TAB_THUMBNAIL, bitmap);
@@ -167,7 +166,6 @@ public class SingleTabModuleViewBinderUnitTest {
     @SmallTest
     public void testSetTabThumbnailUpdateMatrixOnResize() {
         ImageView thumbnail = mSingleTabModuleView.findViewById(R.id.tab_thumbnail);
-        assertNull(thumbnail.getDrawable());
 
         Bitmap bitmap = Bitmap.createBitmap(300, 400, Bitmap.Config.ALPHA_8);
         mPropertyModel.set(TAB_THUMBNAIL, bitmap);
@@ -212,7 +210,7 @@ public class SingleTabModuleViewBinderUnitTest {
                 1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         HISTOGRAM_START_SURFACE_MODULE_CLICK,
-                        BrowserUiUtils.ModuleTypeOnStartAndNTP.SINGLE_TAB_CARD));
+                        ModuleTypeOnStartAndNtp.SINGLE_TAB_CARD));
     }
 
     @Test

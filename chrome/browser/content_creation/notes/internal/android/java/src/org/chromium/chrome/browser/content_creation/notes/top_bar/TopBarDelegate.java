@@ -4,13 +4,9 @@
 
 package org.chromium.chrome.browser.content_creation.notes.top_bar;
 
-/**
- * Interface used by the top bar to delegate actions back to another instance.
- */
+/** Interface used by the top bar to delegate actions back to another instance. */
 public interface TopBarDelegate {
-    /**
-     * Invoked when the user signals a request for dismissal via the top bar.
-     */
+    /** Invoked when the user signals a request for dismissal via the top bar. */
     public void dismiss();
 
     /**

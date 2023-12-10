@@ -103,8 +103,10 @@ class MockTtsPlatformImpl : public TtsPlatform {
     utterance_id_ = -1;
   }
 
+  void ClearController() { controller_ = nullptr; }
+
  private:
-  const raw_ptr<TtsController, DanglingUntriaged> controller_;
+  raw_ptr<TtsController> controller_;
   bool platform_supported_ = true;
   bool platform_initialized_ = true;
   std::vector<VoiceData> voices_;
@@ -257,7 +259,12 @@ class TtsControllerTest : public testing::Test {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   MockTtsControllerDelegate* delegate() { return &delegate_; }
 #endif
-  void ReleaseTtsController() { controller_.reset(); }
+  void ReleaseTtsController() {
+    // Need to clear the controller on MockTtsPlatformImpl to avoid a dangling
+    // pointer.
+    platform_impl_->ClearController();
+    controller_.reset();
+  }
   void ReleaseBrowserContext() {
     // BrowserContext::~BrowserContext(...) is calling OnBrowserContextDestroyed
     // on the tts controller singleton. That call is simulated here to ensures

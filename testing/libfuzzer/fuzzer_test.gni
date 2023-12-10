@@ -173,6 +173,7 @@ template("fuzzer_test") {
 
         outputs = [ "$root_build_dir/$config_file_name" ]
       }
+      test_data_deps += [ ":" + config_file_name ]
       supporting_file_test_deps += [ ":" + config_file_name ]
     }
 

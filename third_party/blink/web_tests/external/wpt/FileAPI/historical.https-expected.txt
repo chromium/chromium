@@ -1,17 +1,5 @@
 This is a testharness.js-based test.
-[PASS] "toNativeLineEndings" should not be supported
-[PASS] "FileError" should not be supported
-[PASS] "FileException" should not be supported
-[PASS] "FileHandle" should not be supported
-[PASS] "FileRequest" should not be supported
-[PASS] "MutableFile" should not be supported
-[PASS] Blob should not support slice prefixed
-[PASS] BlobBuilder should not be supported.
-[PASS] createFor method should not be supported
-[PASS] Blob.close() should not be supported
 [FAIL] File's lastModifiedDate should not be supported
   assert_false: expected false got true
-[PASS] Service worker test setup
-[PASS] "FileReaderSync" should not be supported in service workers
 Harness: the test ran to completion.
 

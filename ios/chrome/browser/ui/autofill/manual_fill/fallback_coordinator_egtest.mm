@@ -194,9 +194,9 @@ id<GREYMatcher> ProfileTableViewButtonMatcher() {
   [[EarlGrey selectElementWithMatcher:ManualFallbackProfilesTableViewMatcher()]
       assertWithMatcher:grey_notVisible()];
 
-  // On iPad and iOS 15 the picker is a table view in a popover, we need to
+  // On iPad the picker is a table view in a popover, we need to
   // dismiss that first.
-  if ([ChromeEarlGrey isIPadIdiom] || base::ios::IsRunningOnIOS15OrLater()) {
+  if ([ChromeEarlGrey isIPadIdiom]) {
     // Tap in the web view so the popover dismisses.
     [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
         performAction:grey_tapAtPoint(CGPointMake(0, 0))];
@@ -210,11 +210,9 @@ id<GREYMatcher> ProfileTableViewButtonMatcher() {
 
     // Dismissing the popover by tapping on the webView, then tapping on the
     // form element below in quick succession seems to end up dismissing the
-    // keyboard on iOS15. This may be because the state element is still
+    // keyboard on iOS15+. This may be because the state element is still
     // focused. Instead, wait a moment for the focus to be dismissed.
-    if (base::ios::IsRunningOnIOS15OrLater()) {
-      base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(1));
-    }
+    base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(1));
   }
 
   // Bring up the regular keyboard again.

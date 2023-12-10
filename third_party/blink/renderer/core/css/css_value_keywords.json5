@@ -520,7 +520,6 @@
     "table-column",
     "table-cell",
     "table-caption",
-    "ruby-base",
     "ruby-text",
     // The order must match the order found in IsDisplayLegacy().
     "inline-block",
@@ -1529,7 +1528,7 @@
     // @container
     // size
     // style
-    "state",
+    "scroll-state",
     // top
     // left
     // right
@@ -1671,6 +1670,9 @@
     // Layered @import rule
     "layer",
 
+    // supports in import rule: @import supports()
+    "supports",
+
     // color-contrast()
     "color-contrast",
     "vs",
@@ -1734,20 +1736,40 @@
     "inverted",
     // none
 
-    // navigation-trigger
-    "cross-document-same-origin",
+    // @view-transition navigation
+    // auto
     // none
 
     // container-type
     // inline-size,
     // normal,
     // size,
-    "snap",
-    // sticky,
+    // scroll-state,
 
     // (scripting:) media feature
     "enabled",
     "initial-only",
     // none
+
+    // inset-area
+    // none,
+    // all,
+    // center,
+    // start,
+    // end,
+    // self-start,
+    // self-end,
+    // top,
+    // bottom,
+    // left,
+    // right,
+    "x-start",
+    "x-end",
+    "y-start",
+    "y-end",
+    "x-self-start",
+    "x-self-end",
+    "y-self-start",
+    "y-self-end",
   ],
 }

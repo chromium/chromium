@@ -5,6 +5,7 @@
 #ifndef ASH_WEBUI_SHIMLESS_RMA_BACKEND_SHIMLESS_RMA_DELEGATE_H_
 #define ASH_WEBUI_SHIMLESS_RMA_BACKEND_SHIMLESS_RMA_DELEGATE_H_
 
+#include <optional>
 #include <string>
 
 #include "base/files/file_path.h"
@@ -12,7 +13,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/types/expected.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class BrowserContext;
@@ -54,7 +54,7 @@ class ShimlessRmaDelegate {
         const std::string& extension_id,
         const web_package::SignedWebBundleId& iwa_id,
         const std::string& name,
-        const absl::optional<std::string>& permission_message);
+        const std::optional<std::string>& permission_message);
     PrepareDiagnosticsAppBrowserContextResult(
         const PrepareDiagnosticsAppBrowserContextResult&);
     PrepareDiagnosticsAppBrowserContextResult& operator=(
@@ -67,7 +67,7 @@ class ShimlessRmaDelegate {
     std::string name;
     // Permission message to show. This is a multi-line string. Is omitted if no
     // permission is required.
-    absl::optional<std::string> permission_message;
+    std::optional<std::string> permission_message;
   };
   using PrepareDiagnosticsAppBrowserContextCallback = base::OnceCallback<void(
       base::expected<PrepareDiagnosticsAppBrowserContextResult, std::string>)>;

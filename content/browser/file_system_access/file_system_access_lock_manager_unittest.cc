@@ -10,6 +10,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
+#include "content/browser/file_system_access/features.h"
 #include "content/browser/file_system_access/file_system_access_manager_impl.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/test/browser_task_environment.h"
@@ -32,8 +33,10 @@ static constexpr char kTestMountPoint[] = "testfs";
 class FileSystemAccessLockManagerTest : public RenderViewHostTestHarness {
  public:
   FileSystemAccessLockManagerTest() {
-    scoped_feature_list.InitAndEnableFeature(
-        blink::features::kFileSystemAccessLockingScheme);
+    scoped_feature_list_.InitWithFeatures(
+        {features::kFileSystemAccessBFCache,
+         blink::features::kFileSystemAccessLockingScheme},
+        {});
   }
 
   void SetUp() override {
@@ -180,7 +183,7 @@ class FileSystemAccessLockManagerTest : public RenderViewHostTestHarness {
   scoped_refptr<ChromeBlobStorageContext> chrome_blob_context_;
   scoped_refptr<FileSystemAccessManagerImpl> manager_;
 
-  base::test::ScopedFeatureList scoped_feature_list;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(FileSystemAccessLockManagerTest, ExclusiveLock) {
@@ -428,6 +431,10 @@ TEST_F(FileSystemAccessLockManagerTest, BFCacheExclusive) {
   LockType exclusive_lock_type = manager_->GetExclusiveLockType();
   LockType shared_lock_type = manager_->CreateSharedLockTypeForTesting();
 
+  base::test::TestFuture<scoped_refptr<FileSystemAccessLockManager::LockHandle>>
+      pending_future_1;
+  base::test::TestFuture<scoped_refptr<FileSystemAccessLockManager::LockHandle>>
+      pending_future_2;
   {
     auto exclusive_lock =
         TakeLockSync(bf_cache_context, url, exclusive_lock_type);
@@ -442,12 +449,29 @@ TEST_F(FileSystemAccessLockManagerTest, BFCacheExclusive) {
         RenderFrameHostImpl::LifecycleStateImpl::kInBackForwardCache);
     EXPECT_FALSE(rfh->is_evicted_from_back_forward_cache());
 
-    // Taking a lock of a contentious type won't succeed but will evict the page
-    // from BFCache.
-    ASSERT_FALSE(TakeLockSync(active_context, url, exclusive_lock_type));
-    ASSERT_FALSE(TakeLockSync(active_context, url, shared_lock_type));
+    // Taking a lock of a contentious type will not return synchronously, but
+    // will start eviction and create a pending lock.
+    manager_->TakeLock(active_context, url, shared_lock_type,
+                       pending_future_1.GetCallback());
+    ASSERT_FALSE(pending_future_1.IsReady());
     EXPECT_TRUE(rfh->is_evicted_from_back_forward_cache());
+
+    // Taking a lock that's not contentious with the pending lock will also
+    // create a pending lock.
+    manager_->TakeLock(active_context, url, shared_lock_type,
+                       pending_future_2.GetCallback());
+    ASSERT_FALSE(pending_future_2.IsReady());
+
+    // Taking a lock that's contentious with the pending lock will fail if the
+    // pending lock is still held by an active page.
+    ASSERT_FALSE(TakeLockSync(active_context, url, exclusive_lock_type));
   }
+  // Once the lock we're evicting has been destroyed, the callbacks for the
+  // pending locks will run with a handle for the new lock.
+  ASSERT_TRUE(pending_future_1.IsReady());
+  ASSERT_TRUE(pending_future_1.Take());
+  ASSERT_TRUE(pending_future_2.IsReady());
+  ASSERT_TRUE(pending_future_2.Take());
 }
 
 TEST_F(FileSystemAccessLockManagerTest, BFCacheShared) {
@@ -468,6 +492,10 @@ TEST_F(FileSystemAccessLockManagerTest, BFCacheShared) {
   LockType shared_lock_type_1 = manager_->CreateSharedLockTypeForTesting();
   LockType shared_lock_type_2 = manager_->CreateSharedLockTypeForTesting();
 
+  base::test::TestFuture<scoped_refptr<FileSystemAccessLockManager::LockHandle>>
+      pending_future_1;
+  base::test::TestFuture<scoped_refptr<FileSystemAccessLockManager::LockHandle>>
+      pending_future_2;
   {
     auto shared_lock = TakeLockSync(bf_cache_context, url, shared_lock_type_1);
     ASSERT_TRUE(shared_lock);
@@ -495,15 +523,32 @@ TEST_F(FileSystemAccessLockManagerTest, BFCacheShared) {
       // contentious type will still fail.
       ASSERT_FALSE(TakeLockSync(active_context, url, exclusive_lock_type));
       ASSERT_FALSE(TakeLockSync(active_context, url, shared_lock_type_2));
-      EXPECT_FALSE(rfh->is_evicted_from_back_forward_cache());
     }
 
-    // Taking a lock of a contentious type won't succeed but will evict the page
-    // from BFCache.
+    // When only inactive pages hold the lock, taking a lock of a contentious
+    // type will evict the page and create the lock asynchronously. The new lock
+    // is pending in the lock manager until the evicting locks are destroyed.
+    manager_->TakeLock(active_context, url, shared_lock_type_2,
+                       pending_future_1.GetCallback());
+    ASSERT_FALSE(pending_future_1.IsReady());
+
+    // Taking a lock that's not contentious with the pending lock will also
+    // create a pending lock.
+    manager_->TakeLock(active_context, url, shared_lock_type_2,
+                       pending_future_2.GetCallback());
+    ASSERT_FALSE(pending_future_2.IsReady());
+
+    // Taking a lock that's contentious with the pending lock will fail if the
+    // pending lock is still held by an active page.
     ASSERT_FALSE(TakeLockSync(active_context, url, exclusive_lock_type));
-    ASSERT_FALSE(TakeLockSync(active_context, url, shared_lock_type_2));
-    EXPECT_TRUE(rfh->is_evicted_from_back_forward_cache());
+    ASSERT_FALSE(TakeLockSync(active_context, url, shared_lock_type_1));
   }
+  // Once the lock we're evicting has been destroyed, the callbacks for the
+  // pending locks will run with a handle for the new lock.
+  ASSERT_TRUE(pending_future_1.IsReady());
+  ASSERT_TRUE(pending_future_1.Take());
+  ASSERT_TRUE(pending_future_2.IsReady());
+  ASSERT_TRUE(pending_future_2.Take());
 }
 
 TEST_F(FileSystemAccessLockManagerTest, BFCacheTakeChildThenParent) {
@@ -526,6 +571,10 @@ TEST_F(FileSystemAccessLockManagerTest, BFCacheTakeChildThenParent) {
   LockType exclusive_lock_type = manager_->GetExclusiveLockType();
   LockType shared_lock_type = manager_->CreateSharedLockTypeForTesting();
 
+  base::test::TestFuture<scoped_refptr<FileSystemAccessLockManager::LockHandle>>
+      pending_future_1;
+  base::test::TestFuture<scoped_refptr<FileSystemAccessLockManager::LockHandle>>
+      pending_future_2;
   {
     auto child_lock =
         TakeLockSync(bf_cache_context, child_url, shared_lock_type);
@@ -537,11 +586,31 @@ TEST_F(FileSystemAccessLockManagerTest, BFCacheTakeChildThenParent) {
         RenderFrameHostImpl::LifecycleStateImpl::kInBackForwardCache);
     EXPECT_FALSE(rfh->is_evicted_from_back_forward_cache());
 
-    // Taking a lock on a parent won't succeed but will evict the page from
-    // BFCache.
+    // When only inactive pages hold the child lock, taking a lock on an
+    // ancestor will evict the lock and create the new lock asynchronously.
+    // The new lock is pending in the lock manager until the evicting locks
+    // are destroyed.
+    manager_->TakeLock(active_context, parent_url, shared_lock_type,
+                       pending_future_1.GetCallback());
+    ASSERT_FALSE(pending_future_1.IsReady());
+
+    // Taking a lock that's not contentious with the pending lock will also
+    // create a pending lock.
+    manager_->TakeLock(active_context, parent_url, shared_lock_type,
+                       pending_future_2.GetCallback());
+    ASSERT_FALSE(pending_future_2.IsReady());
+
+    // Taking a lock that's contentious with the pending lock will fail if the
+    // pending lock is still held by an active page.
     ASSERT_FALSE(TakeLockSync(active_context, parent_url, exclusive_lock_type));
-    EXPECT_TRUE(rfh->is_evicted_from_back_forward_cache());
+    ASSERT_FALSE(TakeLockSync(active_context, child_url, shared_lock_type));
   }
+  // Once the lock we're evicting has been destroyed, the callbacks for the
+  // pending locks will run with a handle for the new lock.
+  ASSERT_TRUE(pending_future_1.IsReady());
+  ASSERT_TRUE(pending_future_1.Take());
+  ASSERT_TRUE(pending_future_2.IsReady());
+  ASSERT_TRUE(pending_future_2.Take());
 }
 
 TEST_F(FileSystemAccessLockManagerTest, BFCacheTakeParentThenChild) {
@@ -567,6 +636,12 @@ TEST_F(FileSystemAccessLockManagerTest, BFCacheTakeParentThenChild) {
   LockType exclusive_lock_type = manager_->GetExclusiveLockType();
   LockType shared_lock_type = manager_->CreateSharedLockTypeForTesting();
 
+  base::test::TestFuture<scoped_refptr<FileSystemAccessLockManager::LockHandle>>
+      pending_future_1;
+  base::test::TestFuture<scoped_refptr<FileSystemAccessLockManager::LockHandle>>
+      pending_future_2;
+  base::test::TestFuture<scoped_refptr<FileSystemAccessLockManager::LockHandle>>
+      pending_future_3;
   {
     auto parent_lock =
         TakeLockSync(bf_cache_context, parent_url, shared_lock_type);
@@ -578,13 +653,327 @@ TEST_F(FileSystemAccessLockManagerTest, BFCacheTakeParentThenChild) {
         RenderFrameHostImpl::LifecycleStateImpl::kInBackForwardCache);
     EXPECT_FALSE(rfh->is_evicted_from_back_forward_cache());
 
-    // Taking a lock on a child won't succeed but will evict the page from
-    // BFCache.
+    // When only inactive pages hold the parent lock, taking a lock on a
+    // descendant will evict the lock and create the new lock asynchronously.
+    // The new lock is pending in the lock manager until the evicting locks are
+    // destroyed.
+    manager_->TakeLock(active_context, child_url_1, shared_lock_type,
+                       pending_future_1.GetCallback());
+    ASSERT_FALSE(pending_future_1.IsReady());
+
+    // Taking a lock that's not contentious with the pending lock will also
+    // create a pending lock.
+    manager_->TakeLock(active_context, child_url_1, shared_lock_type,
+                       pending_future_2.GetCallback());
+    ASSERT_FALSE(pending_future_2.IsReady());
+
+    // Taking a lock where there isn't an existing lock but its a child of a
+    // pending lock will create the lock asynchronously.
+    manager_->TakeLock(active_context, child_url_2, exclusive_lock_type,
+                       pending_future_3.GetCallback());
+    ASSERT_FALSE(pending_future_1.IsReady());
+
+    // Taking a lock that's contentious with a pending lock will fail if the
+    // pending lock is still held by an active page.
     ASSERT_FALSE(
         TakeLockSync(active_context, child_url_1, exclusive_lock_type));
     ASSERT_FALSE(TakeLockSync(active_context, child_url_2, shared_lock_type));
-    EXPECT_TRUE(rfh->is_evicted_from_back_forward_cache());
+    ASSERT_FALSE(TakeLockSync(active_context, parent_url, shared_lock_type));
   }
+  // Once the lock we're evicting has been destroyed, the callbacks for the
+  // pending locks will run with a handle for the new lock.
+  ASSERT_TRUE(pending_future_1.IsReady());
+  ASSERT_TRUE(pending_future_1.Take());
+  ASSERT_TRUE(pending_future_2.IsReady());
+  ASSERT_TRUE(pending_future_2.Take());
+  ASSERT_TRUE(pending_future_3.IsReady());
+  ASSERT_TRUE(pending_future_3.Take());
+}
+
+TEST_F(FileSystemAccessLockManagerTest, BFCacheEvictPendingLockRoot) {
+  RenderFrameHostImpl* rfh = static_cast<RenderFrameHostImpl*>(main_rfh());
+
+  // The document is initially in active state.
+  EXPECT_EQ(rfh->GetLifecycleState(), RenderFrameHost::LifecycleState::kActive);
+
+  auto bf_cache_context = FileSystemAccessManagerImpl::BindingContext(
+      kTestStorageKey, kTestURL, rfh->GetAssociatedRenderFrameHostId());
+  auto active_context = kBindingContext;
+
+  base::FilePath path = dir_.GetPath().AppendASCII("foo");
+  auto url = manager_->CreateFileSystemURLFromPath(
+      FileSystemAccessEntryFactory::PathType::kLocal, path);
+
+  LockType exclusive_lock_type = manager_->GetExclusiveLockType();
+  LockType shared_lock_type = manager_->CreateSharedLockTypeForTesting();
+
+  base::test::TestFuture<scoped_refptr<FileSystemAccessLockManager::LockHandle>>
+      pending_and_evicting_future;
+  base::test::TestFuture<scoped_refptr<FileSystemAccessLockManager::LockHandle>>
+      pending_future;
+  {
+    auto shared_lock = TakeLockSync(bf_cache_context, url, exclusive_lock_type);
+    ASSERT_TRUE(shared_lock);
+
+    // Entering into the BFCache should not evict the page. The lock should not
+    // have been released.
+    rfh->SetLifecycleState(
+        RenderFrameHostImpl::LifecycleStateImpl::kInBackForwardCache);
+    EXPECT_FALSE(rfh->is_evicted_from_back_forward_cache());
+
+    // Reuse the bf_cache_context as if it were another page.
+    //
+    // This works because `FileSystemAccessManagerImpl` doesn't check if the
+    // context is inactive when `TakeLock` is called. But now any `Lock` taken
+    // with `bf_cache_context_2` will be held only by an inactive pages.
+    auto& bf_cache_context_2 = bf_cache_context;
+
+    // When only inactive pages hold the lock, taking a lock of a contentious
+    // type will evict the page and create the lock asynchronously. The new lock
+    // is pending in the lock manager until the evicting locks are destroyed.
+    manager_->TakeLock(bf_cache_context_2, url, exclusive_lock_type,
+                       pending_and_evicting_future.GetCallback());
+    ASSERT_FALSE(pending_and_evicting_future.IsReady());
+    EXPECT_TRUE(rfh->is_evicted_from_back_forward_cache());
+
+    // If only inactive pages hold the pending lock, then taking a lock of a
+    // contentious type will also evict the pending lock and create the new lock
+    // asynchronously.
+    manager_->TakeLock(active_context, url, shared_lock_type,
+                       pending_future.GetCallback());
+    ASSERT_FALSE(pending_future.IsReady());
+  }
+  // Once the lock we're evicting has been destroyed, the callbacks for the
+  // pending locks will run with a handle for the new lock.
+  ASSERT_TRUE(pending_future.IsReady());
+  ASSERT_TRUE(pending_future.Take());
+
+  // The pending lock that got evicted will not have its callback run.
+  ASSERT_FALSE(pending_and_evicting_future.IsReady());
+}
+
+TEST_F(FileSystemAccessLockManagerTest, BFCacheEvictDescendantPendingLockRoot) {
+  RenderFrameHostImpl* rfh = static_cast<RenderFrameHostImpl*>(main_rfh());
+
+  // The document is initially in active state.
+  EXPECT_EQ(rfh->GetLifecycleState(), RenderFrameHost::LifecycleState::kActive);
+
+  auto bf_cache_context = FileSystemAccessManagerImpl::BindingContext(
+      kTestStorageKey, kTestURL, rfh->GetAssociatedRenderFrameHostId());
+  auto active_context = kBindingContext;
+
+  base::FilePath parent_path = dir_.GetPath().AppendASCII("foo");
+  auto parent_url = manager_->CreateFileSystemURLFromPath(
+      FileSystemAccessEntryFactory::PathType::kLocal, parent_path);
+  auto child_url = manager_->CreateFileSystemURLFromPath(
+      FileSystemAccessEntryFactory::PathType::kLocal,
+      parent_path.Append(FILE_PATH_LITERAL("child")));
+
+  LockType exclusive_lock_type = manager_->GetExclusiveLockType();
+
+  base::test::TestFuture<scoped_refptr<FileSystemAccessLockManager::LockHandle>>
+      pending_and_evicting_future;
+  base::test::TestFuture<scoped_refptr<FileSystemAccessLockManager::LockHandle>>
+      pending_future;
+  {
+    auto child_lock =
+        TakeLockSync(bf_cache_context, child_url, exclusive_lock_type);
+    ASSERT_TRUE(child_lock);
+
+    // Entering into the BFCache should not evict the page. The lock should not
+    // have been released.
+    rfh->SetLifecycleState(
+        RenderFrameHostImpl::LifecycleStateImpl::kInBackForwardCache);
+    EXPECT_FALSE(rfh->is_evicted_from_back_forward_cache());
+
+    // Reuse the bf_cache_context as if it were another page.
+    //
+    // This works because `FileSystemAccessManagerImpl` doesn't check if the
+    // context is inactive when `TakeLock` is called. But now any `Lock` taken
+    // with `bf_cache_context_2` will be held only by an inactive pages.
+    auto& bf_cache_context_2 = bf_cache_context;
+
+    // When only inactive pages hold the child lock, taking a contentious lock
+    // on the child will evict the page and create the new lock asynchronously.
+    // The new child lock is pending in the lock manager until the old child
+    // lock is evicted.
+    manager_->TakeLock(bf_cache_context_2, child_url, exclusive_lock_type,
+                       pending_and_evicting_future.GetCallback());
+    ASSERT_FALSE(pending_and_evicting_future.IsReady());
+    EXPECT_TRUE(rfh->is_evicted_from_back_forward_cache());
+
+    // If only inactive pages hold the pending child lock, then taking a lock on
+    // an ancestor will also evict the pending lock and create the ancestor lock
+    // asynchronously.
+    manager_->TakeLock(bf_cache_context_2, parent_url, exclusive_lock_type,
+                       pending_future.GetCallback());
+    ASSERT_FALSE(pending_future.IsReady());
+  }
+  // Once the lock we're evicting has been destroyed, the callbacks for the
+  // pending locks will run with a handle for the new lock.
+  ASSERT_TRUE(pending_future.IsReady());
+  ASSERT_TRUE(pending_future.Take());
+
+  // The pending lock that got evicted will not have its callback run.
+  ASSERT_FALSE(pending_and_evicting_future.IsReady());
+}
+
+TEST_F(FileSystemAccessLockManagerTest, BFCacheEvictAncestorPendingLockRoot) {
+  RenderFrameHostImpl* rfh = static_cast<RenderFrameHostImpl*>(main_rfh());
+
+  // The document is initially in active state.
+  EXPECT_EQ(rfh->GetLifecycleState(), RenderFrameHost::LifecycleState::kActive);
+
+  auto bf_cache_context = FileSystemAccessManagerImpl::BindingContext(
+      kTestStorageKey, kTestURL, rfh->GetAssociatedRenderFrameHostId());
+  auto active_context = kBindingContext;
+
+  base::FilePath parent_path = dir_.GetPath().AppendASCII("foo");
+  auto parent_url = manager_->CreateFileSystemURLFromPath(
+      FileSystemAccessEntryFactory::PathType::kLocal, parent_path);
+  auto child_url = manager_->CreateFileSystemURLFromPath(
+      FileSystemAccessEntryFactory::PathType::kLocal,
+      parent_path.Append(FILE_PATH_LITERAL("child")));
+
+  LockType exclusive_lock_type = manager_->GetExclusiveLockType();
+  LockType shared_lock_type = manager_->CreateSharedLockTypeForTesting();
+
+  base::test::TestFuture<scoped_refptr<FileSystemAccessLockManager::LockHandle>>
+      pending_and_evicting_future;
+  base::test::TestFuture<scoped_refptr<FileSystemAccessLockManager::LockHandle>>
+      pending_future;
+  {
+    auto child_lock =
+        TakeLockSync(bf_cache_context, child_url, exclusive_lock_type);
+    ASSERT_TRUE(child_lock);
+
+    // Entering into the BFCache should not evict the page. The lock should not
+    // have been released.
+    rfh->SetLifecycleState(
+        RenderFrameHostImpl::LifecycleStateImpl::kInBackForwardCache);
+    EXPECT_FALSE(rfh->is_evicted_from_back_forward_cache());
+
+    // Reuse the bf_cache_context as if it were another page.
+    //
+    // This works because `FileSystemAccessManagerImpl` doesn't check if the
+    // context is inactive when `TakeLock` is called. But now any `Lock` taken
+    // with `bf_cache_context_2` will be held only by an inactive pages.
+    auto& bf_cache_context_2 = bf_cache_context;
+
+    // When only inactive pages hold the child lock, taking a lock on an
+    // ancestor will evict the page and create the lock asynchronously. The
+    // ancestor lock is pending in the lock manager until the child lock is
+    // evicted.
+    manager_->TakeLock(bf_cache_context_2, parent_url, shared_lock_type,
+                       pending_and_evicting_future.GetCallback());
+    ASSERT_FALSE(pending_and_evicting_future.IsReady());
+    EXPECT_TRUE(rfh->is_evicted_from_back_forward_cache());
+
+    // If only inactive pages hold the pending ancestor lock, then taking a lock
+    // on a descendant of it will evict the pending ancestor lock and create the
+    // descendant lock asynchronously.
+    manager_->TakeLock(active_context, child_url, exclusive_lock_type,
+                       pending_future.GetCallback());
+    ASSERT_FALSE(pending_future.IsReady());
+
+    // Taking a lock that's contentious with a pending lock will fail if the
+    // pending lock is still held by an active page.
+    ASSERT_FALSE(TakeLockSync(active_context, parent_url, shared_lock_type));
+  }
+  // Once the lock we're evicting has been destroyed, the callbacks for the
+  // pending locks will run with a handle for the new lock.
+  ASSERT_TRUE(pending_future.IsReady());
+  ASSERT_TRUE(pending_future.Take());
+
+  // The pending locks that got evicted will not have its callback run.
+  ASSERT_FALSE(pending_and_evicting_future.IsReady());
+}
+
+TEST_F(FileSystemAccessLockManagerTest,
+       BFCacheEvictMultipleDescendantPendingLockRoot) {
+  RenderFrameHostImpl* rfh = static_cast<RenderFrameHostImpl*>(main_rfh());
+
+  // The document is initially in active state.
+  EXPECT_EQ(rfh->GetLifecycleState(), RenderFrameHost::LifecycleState::kActive);
+
+  auto bf_cache_context = FileSystemAccessManagerImpl::BindingContext(
+      kTestStorageKey, kTestURL, rfh->GetAssociatedRenderFrameHostId());
+  auto active_context = kBindingContext;
+
+  base::FilePath parent_path = dir_.GetPath().AppendASCII("foo");
+  auto parent_url = manager_->CreateFileSystemURLFromPath(
+      FileSystemAccessEntryFactory::PathType::kLocal, parent_path);
+  auto child_url_1 = manager_->CreateFileSystemURLFromPath(
+      FileSystemAccessEntryFactory::PathType::kLocal,
+      parent_path.Append(FILE_PATH_LITERAL("child1")));
+  auto child_url_2 = manager_->CreateFileSystemURLFromPath(
+      FileSystemAccessEntryFactory::PathType::kLocal,
+      parent_path.Append(FILE_PATH_LITERAL("child2")));
+
+  LockType exclusive_lock_type = manager_->GetExclusiveLockType();
+
+  base::test::TestFuture<scoped_refptr<FileSystemAccessLockManager::LockHandle>>
+      pending_and_evicting_future_1;
+  base::test::TestFuture<scoped_refptr<FileSystemAccessLockManager::LockHandle>>
+      pending_and_evicting_future_2;
+  base::test::TestFuture<scoped_refptr<FileSystemAccessLockManager::LockHandle>>
+      pending_future;
+  {
+    auto child_lock_1 =
+        TakeLockSync(bf_cache_context, child_url_1, exclusive_lock_type);
+    ASSERT_TRUE(child_lock_1);
+
+    {
+      auto child_lock_2 =
+          TakeLockSync(bf_cache_context, child_url_2, exclusive_lock_type);
+      ASSERT_TRUE(child_lock_2);
+
+      // Entering into the BFCache should not evict the page. The lock should
+      // not have been released.
+      rfh->SetLifecycleState(
+          RenderFrameHostImpl::LifecycleStateImpl::kInBackForwardCache);
+      EXPECT_FALSE(rfh->is_evicted_from_back_forward_cache());
+
+      // Reuse the bf_cache_context as if it were another page.
+      //
+      // This works because `FileSystemAccessManagerImpl` doesn't check if the
+      // context is inactive when `TakeLock` is called. But now any `Lock` taken
+      // with `bf_cache_context_2` will be held only by an inactive pages.
+      auto& bf_cache_context_2 = bf_cache_context;
+
+      // When only inactive pages hold the child locks, taking a contentious
+      // locks on them will evict the page and create the new locks
+      // asynchronously. The new child locks are pending in the lock manager
+      // until the old child locks are evicted.
+      manager_->TakeLock(bf_cache_context_2, child_url_1, exclusive_lock_type,
+                         pending_and_evicting_future_1.GetCallback());
+      ASSERT_FALSE(pending_and_evicting_future_1.IsReady());
+      manager_->TakeLock(bf_cache_context_2, child_url_2, exclusive_lock_type,
+                         pending_and_evicting_future_2.GetCallback());
+      ASSERT_FALSE(pending_and_evicting_future_2.IsReady());
+      EXPECT_TRUE(rfh->is_evicted_from_back_forward_cache());
+
+      // If only inactive pages hold the pending child locks, then taking a lock
+      // on an ancestor will also evict the pending locks and create the
+      // ancestor lock asynchronously.
+      manager_->TakeLock(bf_cache_context_2, parent_url, exclusive_lock_type,
+                         pending_future.GetCallback());
+      ASSERT_FALSE(pending_future.IsReady());
+    }
+    // Both child locks must be evicted before the parent lock can be created.
+    ASSERT_FALSE(pending_future.IsReady());
+
+    // The pending lock that got evicted will not have its callback run.
+    ASSERT_FALSE(pending_and_evicting_future_2.IsReady());
+  }
+  // Once the lock we're evicting has been destroyed, the callbacks for the
+  // pending locks will run with a handle for the new lock.
+  ASSERT_TRUE(pending_future.IsReady());
+  ASSERT_TRUE(pending_future.Take());
+
+  // The pending locks that got evicted will not have their callbacks run.
+  ASSERT_FALSE(pending_and_evicting_future_1.IsReady());
+  ASSERT_FALSE(pending_and_evicting_future_2.IsReady());
 }
 
 }  // namespace content

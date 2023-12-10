@@ -5,7 +5,7 @@
 # Common modules that do not have any //media dependencies.
 
 import("//build/buildflag_header.gni")
-import("//build/config/chromecast_build.gni")
+import("//build/config/cast.gni")
 import("//chromecast/chromecast.gni")
 
 group("all") {

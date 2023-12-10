@@ -55,9 +55,7 @@ public class SystemWideCrashDirectories {
         return getOrCreateDir(getWebViewCrashDir());
     }
 
-    /**
-     * Directory where we store files temporarily when copying from an app process.
-     */
+    /** Directory where we store files temporarily when copying from an app process. */
     public static File getWebViewTmpCrashDir() {
         return new File(ContextUtils.getApplicationContext().getCacheDir(), WEBVIEW_TMP_CRASH_DIR);
     }

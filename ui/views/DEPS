@@ -23,7 +23,6 @@ include_rules = [
   "+ui/linux",
   "+ui/lottie",
   "+ui/native_theme",
-  "+ui/ozone/buildflags.h",
   "+ui/ozone/public",
   "+ui/platform_window",
   "+ui/resources/grit/ui_resources.h",

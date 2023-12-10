@@ -101,6 +101,7 @@ TEST_F(NetworkSessionConfiguratorTest, Defaults) {
       quic_params_.initial_delay_for_broken_alternative_service.has_value());
   EXPECT_FALSE(quic_params_.exponential_backoff_on_initial_delay.has_value());
   EXPECT_FALSE(quic_params_.delay_main_job_with_available_spdy_session);
+  EXPECT_FALSE(quic_params_.use_new_alps_codepoint);
 }
 
 TEST_F(NetworkSessionConfiguratorTest, Http2FieldTrialGroupNameDoesNotMatter) {
@@ -1019,6 +1020,69 @@ TEST_P(NetworkSessionConfiguratorWithQuicVersionTest,
   ParseFieldTrials();
   quic::ParsedQuicVersionVector expected_versions = {good_version};
   EXPECT_EQ(expected_versions, quic_params_.supported_versions);
+}
+
+class NetworkSessionConfiguratorWithNewAlpsCodepointTest
+    : public NetworkSessionConfiguratorTest,
+      public ::testing::WithParamInterface<std::tuple<bool, bool>> {
+ public:
+  NetworkSessionConfiguratorWithNewAlpsCodepointTest()
+      : use_new_alps_codepoint_feature_setting_(std::get<0>(GetParam())),
+        use_new_alps_codepoint_field_trial_setting_(std::get<1>(GetParam())) {
+    if (use_new_alps_codepoint_feature_setting_) {
+      feature_list_.InitAndEnableFeature(
+          net::features::kUseNewAlpsCodepointQUIC);
+    } else {
+      feature_list_.InitAndDisableFeature(
+          net::features::kUseNewAlpsCodepointQUIC);
+    }
+  }
+  ~NetworkSessionConfiguratorWithNewAlpsCodepointTest() override = default;
+
+  bool use_new_alps_codepoint_feature_setting() {
+    return use_new_alps_codepoint_feature_setting_;
+  }
+
+  bool use_new_alps_codepoint_field_trial_setting() {
+    return use_new_alps_codepoint_field_trial_setting_;
+  }
+
+ private:
+  const bool use_new_alps_codepoint_feature_setting_;
+  const bool use_new_alps_codepoint_field_trial_setting_;
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(NewAlpsCodepoint,
+                         NetworkSessionConfiguratorWithNewAlpsCodepointTest,
+                         ::testing::Combine(::testing::Bool(),
+                                            ::testing::Bool()));
+
+TEST_P(NetworkSessionConfiguratorWithNewAlpsCodepointTest, NoFieldTrialParams) {
+  std::map<std::string, std::string> field_trial_params;
+  base::AssociateFieldTrialParams("QUIC", "Enabled", field_trial_params);
+  base::FieldTrialList::CreateFieldTrial("QUIC", "Enabled");
+
+  ParseFieldTrials();
+
+  // If no field trail params overrides, use feature setting.
+  EXPECT_EQ(use_new_alps_codepoint_feature_setting(),
+            quic_params_.use_new_alps_codepoint);
+}
+
+TEST_P(NetworkSessionConfiguratorWithNewAlpsCodepointTest,
+       FromFieldTrialParams) {
+  std::map<std::string, std::string> field_trial_params;
+  field_trial_params["use_new_alps_codepoint"] =
+      use_new_alps_codepoint_field_trial_setting() ? "true" : "false";
+  base::AssociateFieldTrialParams("QUIC", "Enabled", field_trial_params);
+  base::FieldTrialList::CreateFieldTrial("QUIC", "Enabled");
+
+  ParseFieldTrials();
+
+  // If field trail params have value, it should override the feature setting.
+  EXPECT_EQ(use_new_alps_codepoint_field_trial_setting(),
+            quic_params_.use_new_alps_codepoint);
 }
 
 }  // namespace network_session_configurator

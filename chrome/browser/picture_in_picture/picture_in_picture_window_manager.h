@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_PICTURE_IN_PICTURE_PICTURE_IN_PICTURE_WINDOW_MANAGER_H_
 #define CHROME_BROWSER_PICTURE_IN_PICTURE_PICTURE_IN_PICTURE_WINDOW_MANAGER_H_
 
+#include <functional>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -12,12 +13,15 @@
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "build/build_config.h"
-#include "chrome/browser/picture_in_picture/auto_pip_setting_overlay_view.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/picture_in_picture_window_options/picture_in_picture_window_options.mojom.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "url/origin.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/picture_in_picture/auto_pip_setting_overlay_view.h"
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 namespace content {
 enum class PictureInPictureResult;
@@ -31,6 +35,7 @@ class Display;
 
 #if !BUILDFLAG(IS_ANDROID)
 class AutoPipSettingHelper;
+class PictureInPictureOcclusionTracker;
 
 namespace views {
 class View;
@@ -180,6 +185,11 @@ class PictureInPictureWindowManager {
   AutoPipSettingHelper* get_setting_helper_for_testing() {
     return auto_pip_setting_helper_.get();
   }
+
+  // Returns the PictureInPictureOcclusionTracker, which can inform observers
+  // when a widget has been occluded by a video or document picture-in-picture
+  // window.
+  PictureInPictureOcclusionTracker* GetOcclusionTracker();
 #endif
 
   // Get the origins for initiators of active Picture-in-Picture sessions.
@@ -223,7 +233,7 @@ class PictureInPictureWindowManager {
   template <typename Functor>
   void NotifyObservers(const Functor& functor) {
     for (Observer& observer : observers_) {
-      base::invoke(functor, observer);
+      std::invoke(functor, observer);
     }
   }
 
@@ -240,6 +250,10 @@ class PictureInPictureWindowManager {
 #if !BUILDFLAG(IS_ANDROID)
   // Create the settings helper if this is auto-pip and we don't have one.
   void CreateAutoPipSettingHelperIfNeeded();
+
+  // Creates the `occlusion_tracker_` if it does not already exist and should
+  // exist.
+  void CreateOcclusionTrackerIfNecessary();
 #endif  // !BUILDFLAG(IS_ANDROID)
 
   PictureInPictureWindowManager();
@@ -253,6 +267,8 @@ class PictureInPictureWindowManager {
   std::unique_ptr<DocumentWebContentsObserver> document_web_contents_observer_;
 
   std::unique_ptr<AutoPipSettingHelper> auto_pip_setting_helper_;
+
+  std::unique_ptr<PictureInPictureOcclusionTracker> occlusion_tracker_;
 #endif  //! BUILDFLAG(IS_ANDROID)
 
   raw_ptr<content::PictureInPictureWindowController, DanglingUntriaged>

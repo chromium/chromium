@@ -31,6 +31,8 @@
 // TODO(joel@microsoft.com) Update headers and use defined constants instead
 // of magic numbers after crbug.com/1089996 is resolved.
 
+#include "base/functional/callback.h"
+
 /*
  * An instance of TlmProvider represents a logger through which data can be
  *  sent to Event Tracing for Windows (ETW). This logger generates
@@ -108,10 +110,11 @@
  *     my_provider.Unregister();
  */
 
+#include "base/base_export.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 
-class TlmProvider {
+class BASE_EXPORT TlmProvider {
  public:
   enum class EventControlCode {
     kDisableProvider = 0,
@@ -184,7 +187,7 @@ class TlmProvider {
   // with the specified level and keyword, packs the data into an event and
   // sends it to ETW. Returns Win32 error code or 0 for success.
   template <class... FieldTys>
-  ULONG WriteEvent(const char* event_name,
+  ULONG WriteEvent(std::string_view event_name,
                    const EVENT_DESCRIPTOR& event_descriptor,
                    const FieldTys&... event_fields) const noexcept {
     if (!IsEnabled(event_descriptor)) {
@@ -266,7 +269,8 @@ class TlmProvider {
       PVOID callback_context);
 
   // Returns initial value of metadata_index.
-  uint16_t EventBegin(char* metadata, const char* event_name) const noexcept;
+  uint16_t EventBegin(char* metadata,
+                      std::string_view event_name) const noexcept;
 
   char EventAddField(char* metadata,
                      uint16_t* metadata_index,
@@ -286,7 +290,7 @@ class TlmProvider {
   uint16_t AppendNameToMetadata(char* metadata,
                                 uint16_t metadata_size,
                                 uint16_t metadata_index,
-                                const char* name) const noexcept;
+                                std::string_view name) const noexcept;
 
   uint32_t level_plus1_ = 0;
   uint16_t provider_metadata_size_ = 0;
@@ -366,6 +370,20 @@ class TlmInt64Field
 
  private:
   const int64_t value_;
+};
+
+class TlmUInt64Field
+    : public TlmFieldBase<1, 10>  // 1 data descriptor, Type = _TlgInUINT64
+{
+ public:
+  // name is a utf-8 nul-terminated string.
+  // value is 64 bit signed integer
+  TlmUInt64Field(const char* name, const uint64_t value) noexcept;
+  uint64_t Value() const noexcept;
+  void FillEventDescriptor(EVENT_DATA_DESCRIPTOR* descriptors) const noexcept;
+
+ private:
+  const uint64_t value_;
 };
 
 // Helper for creating event descriptors for use with WriteEvent.

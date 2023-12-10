@@ -13,7 +13,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
-#include "components/bookmarks/browser/bookmark_load_details.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/bookmark_storage.h"
@@ -33,16 +32,14 @@ std::unique_ptr<BookmarkModel> TestBookmarkClient::CreateModel() {
 
 // static
 std::unique_ptr<BookmarkModel> TestBookmarkClient::CreateModelWithClient(
-    std::unique_ptr<BookmarkClient> client) {
-  BookmarkClient* client_ptr = client.get();
-  std::unique_ptr<BookmarkModel> bookmark_model(
-      new BookmarkModel(std::move(client)));
-  std::unique_ptr<BookmarkLoadDetails> details =
-      std::make_unique<BookmarkLoadDetails>(client_ptr);
-  details->LoadManagedNode();
-  details->CreateIndices();
-  bookmark_model->DoneLoading(std::move(details));
+    std::unique_ptr<TestBookmarkClient> client) {
+  auto bookmark_model = std::make_unique<BookmarkModel>(std::move(client));
+  bookmark_model->LoadEmptyForTest();
   return bookmark_model;
+}
+
+void TestBookmarkClient::AllowFoldersForAccountStorage() {
+  are_folders_for_account_storage_allowed_ = true;
 }
 
 BookmarkPermanentNode* TestBookmarkClient::EnableManagedNode() {
@@ -95,6 +92,10 @@ bool TestBookmarkClient::HasFaviconLoadTasks() const {
 void TestBookmarkClient::SetStorageStateForUma(
     metrics::StorageStateForUma storage_state) {
   storage_state_for_uma_ = storage_state;
+}
+
+bool TestBookmarkClient::AreFoldersForAccountStorageAllowed() {
+  return are_folders_for_account_storage_allowed_;
 }
 
 LoadManagedNodeCallback TestBookmarkClient::GetLoadManagedNodeCallback() {

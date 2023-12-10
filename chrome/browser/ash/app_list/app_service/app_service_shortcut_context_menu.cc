@@ -55,7 +55,7 @@ void AppServiceShortcutContextMenu::GetMenuModel(
   std::u16string host_app_name;
   proxy_->AppRegistryCache().ForOneApp(
       shortcut->host_app_id, [&host_app_name](const apps::AppUpdate& update) {
-        host_app_name = base::UTF8ToUTF16(update.Name());
+        host_app_name = base::UTF8ToUTF16(update.ShortName());
       });
 
   std::u16string open_label = l10n_util::GetStringFUTF16(
@@ -70,9 +70,11 @@ void AppServiceShortcutContextMenu::GetMenuModel(
                        static_cast<ash::CommandId>(ash::CommandId::TOGGLE_PIN),
                        IDS_APP_LIST_CONTEXT_MENU_PIN);
 
-  AddContextMenuOption(menu_model.get(),
-                       static_cast<ash::CommandId>(ash::UNINSTALL),
-                       IDS_APP_LIST_REMOVE_SHORTCUT);
+  if (shortcut->allow_removal.value_or(true)) {
+    AddContextMenuOption(menu_model.get(),
+                         static_cast<ash::CommandId>(ash::UNINSTALL),
+                         IDS_APP_LIST_REMOVE_SHORTCUT);
+  }
 
   AddReorderMenuOption(menu_model.get());
 

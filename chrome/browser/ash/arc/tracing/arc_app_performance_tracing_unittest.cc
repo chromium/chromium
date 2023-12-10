@@ -12,12 +12,13 @@
 #include "base/metrics/histogram_samples.h"
 #include "base/metrics/statistics_recorder.h"
 #include "base/strings/stringprintf.h"
+#include "base/time/time.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_test.h"
 #include "chrome/browser/ash/app_restore/arc_ghost_window_handler.h"
 #include "chrome/browser/ash/app_restore/arc_ghost_window_shell_surface.h"
 #include "chrome/browser/ash/arc/tracing/arc_app_performance_tracing_session.h"
-#include "chrome/browser/ash/arc/tracing/arc_app_performance_tracing_uma_session.h"
 #include "chrome/browser/ash/arc/tracing/test/arc_app_performance_tracing_test_helper.h"
+#include "chrome/browser/ash/arc/tracing/uma_perf_reporting.h"
 #include "chrome/browser/ash/arc/window_predictor/window_predictor_utils.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
@@ -84,7 +85,9 @@ int64_t ReadFocusStatistics(const std::string& name) {
 // be possible to use directly.
 class ArcAppPerformanceTracingTest : public BrowserWithTestWindowTest {
  public:
-  ArcAppPerformanceTracingTest() = default;
+  ArcAppPerformanceTracingTest()
+      : BrowserWithTestWindowTest(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
   ArcAppPerformanceTracingTest(const ArcAppPerformanceTracingTest&) = delete;
   ArcAppPerformanceTracingTest& operator=(const ArcAppPerformanceTracingTest&) =
@@ -102,21 +105,26 @@ class ArcAppPerformanceTracingTest : public BrowserWithTestWindowTest {
     ArcAppPerformanceTracing::SetFocusAppForTesting(
         kFocusAppPackage, kFocusAppActivity, kFocusCategory);
 
-    ArcAppPerformanceTracingUmaSession::SetTracingPeriodForTesting(kTestPeriod);
+    UmaPerfReporting::SetTracingPeriodForTesting(kTestPeriod);
   }
 
   void TearDown() override {
-    ResetRootSurface();
+    shell_root_surface_.reset();
+
     tracing_helper_.TearDown();
     arc_test_.TearDown();
+
     BrowserWithTestWindowTest::TearDown();
   }
 
  protected:
   int64_t task_id = 1;
-  // Ensures that tracing is active.
-  views::Widget* StartArcAppTracing(const std::string& package_name,
-                                    const std::string& activity_name) {
+  std::unique_ptr<exo::Surface> shell_root_surface_;
+
+  // Ensures that tracing is ready to begin, which means up to the point that
+  // waiting for the delayed start has just begun.
+  views::Widget* PrepareArcAppTracing(const std::string& package_name,
+                                      const std::string& activity_name) {
     shell_root_surface_ = std::make_unique<exo::Surface>();
     views::Widget* arc_widget =
         ArcTaskWindowBuilder()
@@ -134,17 +142,22 @@ class ArcAppPerformanceTracingTest : public BrowserWithTestWindowTest {
         std::string() /* intent */, 0 /* session_id */);
     task_id++;
     DCHECK(tracing_helper().GetTracingSession());
-    tracing_helper().GetTracingSession()->FireTimerForTesting();
-    DCHECK(tracing_helper().GetTracingSession());
-    DCHECK(tracing_helper().GetTracingSession()->tracing_active());
     return arc_widget;
   }
 
-  views::Widget* StartArcFocusAppTracing() {
-    return StartArcAppTracing(kFocusAppPackage, kFocusAppActivity);
+  // Ensures that tracing is active.
+  views::Widget* StartArcAppTracing(const std::string& package_name,
+                                    const std::string& activity_name) {
+    auto* arc_widget = PrepareArcAppTracing(package_name, activity_name);
+    tracing_helper().GetTracingSession()->FireTimerForTesting();
+    DCHECK(tracing_helper().GetTracingSession());
+    DCHECK(tracing_helper().GetTracingSession()->TracingActive());
+    return arc_widget;
   }
 
-  void ResetRootSurface() { shell_root_surface_.reset(); }
+  views::Widget* PrepareArcFocusAppTracing() {
+    return PrepareArcAppTracing(kFocusAppPackage, kFocusAppActivity);
+  }
 
   ArcAppPerformanceTracingTestHelper& tracing_helper() {
     return tracing_helper_;
@@ -159,7 +172,6 @@ class ArcAppPerformanceTracingTest : public BrowserWithTestWindowTest {
   }
 
  private:
-  std::unique_ptr<exo::Surface> shell_root_surface_;
   ArcAppPerformanceTracingTestHelper tracing_helper_;
   ArcAppTest arc_test_;
 };
@@ -194,7 +206,7 @@ TEST_F(ArcAppPerformanceTracingTest, TracingScheduled) {
       arc_widget1->GetNativeWindow(), nullptr /* lost_active */);
   ASSERT_TRUE(tracing_helper().GetTracingSession());
   // Scheduled but not started.
-  EXPECT_FALSE(tracing_helper().GetTracingSession()->tracing_active());
+  EXPECT_FALSE(tracing_helper().GetTracingSession()->TracingActive());
 
   // Test reverse order, create window first.
   exo::Surface shell_root_surface2;
@@ -217,7 +229,7 @@ TEST_F(ArcAppPerformanceTracingTest, TracingScheduled) {
       0 /* session_id */);
   ASSERT_TRUE(tracing_helper().GetTracingSession());
   // Scheduled but not started.
-  EXPECT_FALSE(tracing_helper().GetTracingSession()->tracing_active());
+  EXPECT_FALSE(tracing_helper().GetTracingSession()->TracingActive());
   arc_widget1->Close();
   arc_widget2->Close();
 }
@@ -242,40 +254,81 @@ TEST_F(ArcAppPerformanceTracingTest, TracingNotScheduledForNonFocusApp) {
   arc_widget->Close();
 }
 
+constexpr base::TimeDelta kNormalInterval = base::Seconds(1) / 60;
+
 TEST_F(ArcAppPerformanceTracingTest, TracingStoppedOnIdle) {
-  views::Widget* const arc_widget = StartArcFocusAppTracing();
-  const base::TimeDelta normal_interval = base::Seconds(1) / 60;
-  base::Time timestamp = base::Time::Now();
-  tracing_helper().GetTracingSession()->OnCommitForTesting(timestamp);
+  views::Widget* const arc_widget = PrepareArcFocusAppTracing();
+  tracing_helper().GetTracingSession()->FireTimerForTesting();
+
+  tracing_helper().Commit(shell_root_surface_.get(), PresentType::kSuccessful);
+
   // Expected updates;
-  timestamp += normal_interval;
-  tracing_helper().GetTracingSession()->OnCommitForTesting(timestamp);
+  tracing_helper().AdvanceTickCount(kNormalInterval);
+  tracing_helper().Commit(shell_root_surface_.get(), PresentType::kSuccessful);
   ASSERT_TRUE(tracing_helper().GetTracingSession());
-  EXPECT_TRUE(tracing_helper().GetTracingSession()->tracing_active());
+  EXPECT_TRUE(tracing_helper().GetTracingSession()->TracingActive());
 
-  timestamp += normal_interval * 5;
-  tracing_helper().GetTracingSession()->OnCommitForTesting(timestamp);
+  tracing_helper().AdvanceTickCount(kNormalInterval * 5);
+  tracing_helper().Commit(shell_root_surface_.get(), PresentType::kSuccessful);
   ASSERT_TRUE(tracing_helper().GetTracingSession());
-  EXPECT_TRUE(tracing_helper().GetTracingSession()->tracing_active());
+  EXPECT_TRUE(tracing_helper().GetTracingSession()->TracingActive());
 
-  // Too long update.
-  timestamp += normal_interval * 10;
-  tracing_helper().GetTracingSession()->OnCommitForTesting(timestamp);
+  // Ten or more missed frames is considered a timeout.
+  tracing_helper().AdvanceTickCount(kNormalInterval * 10);
+  tracing_helper().Commit(shell_root_surface_.get(), PresentType::kSuccessful);
   // Tracing is rescheduled and no longer active.
   ASSERT_TRUE(tracing_helper().GetTracingSession());
-  EXPECT_FALSE(tracing_helper().GetTracingSession()->tracing_active());
+  EXPECT_FALSE(tracing_helper().GetTracingSession()->TracingActive());
+  arc_widget->Close();
+}
+
+TEST_F(ArcAppPerformanceTracingTest, TracingStoppedOnIdleBeforeFirstFrame) {
+  views::Widget* const arc_widget = PrepareArcFocusAppTracing();
+  tracing_helper().GetTracingSession()->FireTimerForTesting();
+
+  ASSERT_TRUE(tracing_helper().GetTracingSession());
+  EXPECT_TRUE(tracing_helper().GetTracingSession()->TracingActive());
+
+  // Ten or more missed frames is considered a timeout.
+  tracing_helper().AdvanceTickCount(kNormalInterval * 10);
+  tracing_helper().Commit(shell_root_surface_.get(), PresentType::kSuccessful);
+
+  // Tracing is rescheduled and no longer active.
+  ASSERT_TRUE(tracing_helper().GetTracingSession());
+  EXPECT_FALSE(tracing_helper().GetTracingSession()->TracingActive());
+
+  // Later commits (at normal intervals) will be ignored and not cause problems.
+  // We do more than one commit just to be reasonably sure we have given a buggy
+  // implementation enough chances to mess up.
+  for (int i = 0; i < 3; i++) {
+    tracing_helper().AdvanceTickCount(kNormalInterval);
+    tracing_helper().Commit(shell_root_surface_.get(),
+                            PresentType::kSuccessful);
+  }
+
+  // Tracing still not active.
+  ASSERT_TRUE(tracing_helper().GetTracingSession());
+  EXPECT_FALSE(tracing_helper().GetTracingSession()->TracingActive());
+
   arc_widget->Close();
 }
 
 TEST_F(ArcAppPerformanceTracingTest, StatisticsReported) {
-  views::Widget* const arc_widget = StartArcFocusAppTracing();
-  EXPECT_FALSE(tracing_helper().GetTracing()->WasReported(kFocusCategory));
-  tracing_helper().PlayDefaultSequence();
+  views::Widget* arc_widget = PrepareArcFocusAppTracing();
+  EXPECT_EQ(tracing_helper().GetTracingSession()->timer_delay_for_testing(),
+            kInitTracingDelay);
+  tracing_helper().GetTracingSession()->FireTimerForTesting();
+
+  tracing_helper().PlayDefaultSequence(shell_root_surface_.get());
   tracing_helper().FireTimerForTesting();
-  EXPECT_TRUE(tracing_helper().GetTracing()->WasReported(kFocusCategory));
   EXPECT_EQ(45L, ReadFocusStatistics("FPS2"));
   EXPECT_EQ(216L, ReadFocusStatistics("CommitDeviation2"));
   EXPECT_EQ(48L, ReadFocusStatistics("RenderQuality2"));
+  arc_widget->Close();
+
+  arc_widget = PrepareArcFocusAppTracing();
+  EXPECT_EQ(tracing_helper().GetTracingSession()->timer_delay_for_testing(),
+            kNextTracingDelay);
   arc_widget->Close();
 }
 
@@ -331,7 +384,7 @@ TEST_F(ArcAppPerformanceTracingTest, ApplicationStatisticsReported) {
     views::Widget* const arc_widget =
         StartArcAppTracing(application.package, application.activity);
 
-    tracing_helper().PlayDefaultSequence();
+    tracing_helper().PlayDefaultSequence(shell_root_surface_.get());
     tracing_helper().FireTimerForTesting();
     EXPECT_EQ(45L, ReadStatistics("FPS2", application.name));
     EXPECT_EQ(216L, ReadStatistics("CommitDeviation2", application.name));
@@ -412,13 +465,15 @@ TEST_F(ArcAppPerformanceTracingTest, TimeToFirstFrameRendered) {
 
 // This test verifies the case when surface is destroyed before window close.
 TEST_F(ArcAppPerformanceTracingTest, DestroySurface) {
-  views::Widget* const arc_widget = StartArcFocusAppTracing();
+  views::Widget* const arc_widget = PrepareArcFocusAppTracing();
+  tracing_helper().GetTracingSession()->FireTimerForTesting();
+
   ASSERT_TRUE(tracing_helper().GetTracingSession());
-  EXPECT_TRUE(tracing_helper().GetTracingSession()->tracing_active());
+  EXPECT_TRUE(tracing_helper().GetTracingSession()->TracingActive());
   exo::SetShellRootSurface(arc_widget->GetNativeWindow(), nullptr);
-  ResetRootSurface();
+  shell_root_surface_.reset();
   ASSERT_TRUE(tracing_helper().GetTracingSession());
-  EXPECT_FALSE(tracing_helper().GetTracingSession()->tracing_active());
+  EXPECT_FALSE(tracing_helper().GetTracingSession()->TracingActive());
 
   // Try to re-active window without surface
   tracing_helper().GetTracing()->OnWindowActivated(
@@ -447,7 +502,7 @@ TEST_F(ArcAppPerformanceTracingTest, NoTracingForArcGhostWindow) {
   ASSERT_TRUE(ghost_window);
 
   // Associate ghost window with real app.
-  ghost_window->SetApplicationId("org.chromium.arc.1");
+  ghost_window->SetApplicationId("org.chromium.arc.session.1");
 
   // This creates window.
   ghost_window->SetSystemUiVisibility(false /* autohide */);
@@ -466,6 +521,39 @@ TEST_F(ArcAppPerformanceTracingTest, NoTracingForArcGhostWindow) {
 
   // Ghost window should not trigger tracing sessions.
   DCHECK(!tracing_helper().GetTracingSession());
+}
+
+TEST_F(ArcAppPerformanceTracingTest, GhostWindowTurnsIntoTaskWindow) {
+  // TODO(b/312215591): Use ghost window utilities to simulate the
+  // transformation of a ghost window into a task window?
+  constexpr int kTaskId = 9486;
+  constexpr char kAppId[] = "org.chromium.arc.9486";
+
+  // By default it is inactive.
+  EXPECT_FALSE(tracing_helper().GetTracingSession());
+
+  auto ghost_surface = std::make_unique<exo::Surface>();
+
+  views::Widget* const widget = ArcTaskWindowBuilder()
+                                    .SetTaskId(kTaskId)
+                                    .SetShellRootSurface(ghost_surface.get())
+                                    .BuildOwnedByNativeWidget();
+  exo::SetShellApplicationId(widget->GetNativeWindow(),
+                             "org.chromium.arc.session.1");
+  tracing_helper().GetTracing()->OnTaskCreated(
+      kTaskId, kFocusAppPackage, kFocusAppActivity, std::string() /* intent */,
+      0 /* session_id */);
+
+  exo::SetShellRootSurface(widget->GetNativeWindow(), ghost_surface.get());
+  widget->Show();
+
+  ASSERT_FALSE(tracing_helper().GetTracingSession());
+
+  auto task_surface = std::make_unique<exo::Surface>();
+  exo::SetShellRootSurface(widget->GetNativeWindow(), ghost_surface.get());
+  exo::SetShellApplicationId(widget->GetNativeWindow(), kAppId);
+
+  ASSERT_TRUE(tracing_helper().GetTracingSession());
 }
 
 }  // namespace arc

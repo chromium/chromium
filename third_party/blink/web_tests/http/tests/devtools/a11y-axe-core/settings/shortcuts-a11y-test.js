@@ -16,7 +16,7 @@ import * as UI from 'devtools/ui/legacy/legacy.js';
     await UI.ViewManager.ViewManager.instance().showView('sources');
 
     // Open Shortcuts pane using context menu action
-    await UI.ActionRegistry.ActionRegistry.instance().action('settings.shortcuts').execute();
+    await UI.ActionRegistry.ActionRegistry.instance().getAction('settings.shortcuts').execute();
 
     const settingsPaneElement = Settings.SettingsScreen.SettingsScreen.instance().tabbedLocation.tabbedPane().contentElement;
     await AxeCoreTestRunner.runValidation(settingsPaneElement);

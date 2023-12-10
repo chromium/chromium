@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+[FAIL] Trying to focus on an element in a locked subtree that's not visible will skip that element
+  eventSender is not defined
+Harness: the test ran to completion.

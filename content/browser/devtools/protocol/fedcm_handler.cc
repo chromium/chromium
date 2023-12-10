@@ -27,6 +27,8 @@ FedCm::DialogType ConvertDialogType(
       return FedCm::DialogTypeEnum::AutoReauthn;
     case content::FederatedAuthRequestImpl::kConfirmIdpLogin:
       return FedCm::DialogTypeEnum::ConfirmIdpLogin;
+    case content::FederatedAuthRequestImpl::kError:
+      return FedCm::DialogTypeEnum::Error;
   }
 }
 }  // namespace
@@ -65,7 +67,7 @@ DispatchResponse FedCmHandler::Enable(Maybe<bool> in_disableRejectionDelay) {
   // rejection delay.
   if (!was_enabled && auth_request &&
       auth_request->GetDialogType() != FederatedAuthRequestImpl::kNone) {
-    OnDialogShown();
+    DidShowDialog();
   }
 
   return DispatchResponse::Success();
@@ -76,7 +78,7 @@ DispatchResponse FedCmHandler::Disable() {
   return DispatchResponse::Success();
 }
 
-void FedCmHandler::OnDialogShown() {
+void FedCmHandler::DidShowDialog() {
   DCHECK(frontend_);
   if (!enabled_) {
     return;
@@ -155,6 +157,14 @@ void FedCmHandler::OnDialogShown() {
                          dialog->GetTitle(), std::move(maybe_subtitle));
 }
 
+void FedCmHandler::DidCloseDialog() {
+  CHECK(frontend_);
+  if (!enabled_) {
+    return;
+  }
+  frontend_->DialogClosed(dialog_id_);
+}
+
 DispatchResponse FedCmHandler::SelectAccount(const String& in_dialogId,
                                              int in_accountIndex) {
   if (in_dialogId != dialog_id_) {
@@ -182,7 +192,9 @@ DispatchResponse FedCmHandler::SelectAccount(const String& in_dialogId,
   return DispatchResponse::InvalidParams("Invalid account index");
 }
 
-DispatchResponse FedCmHandler::ConfirmIdpLogin(const String& in_dialogId) {
+DispatchResponse FedCmHandler::ClickDialogButton(
+    const String& in_dialogId,
+    const FedCm::DialogButton& in_dialogButton) {
   if (in_dialogId != dialog_id_) {
     return DispatchResponse::InvalidParams(
         "Dialog ID does not match current dialog");
@@ -191,16 +203,40 @@ DispatchResponse FedCmHandler::ConfirmIdpLogin(const String& in_dialogId) {
   auto* auth_request = GetFederatedAuthRequest();
   if (!auth_request) {
     return DispatchResponse::ServerError(
-        "dismissDialog called while no FedCm dialog is shown");
+        "clickDialogButton called while no FedCm dialog is shown");
   }
 
   FederatedAuthRequestImpl::DialogType type = auth_request->GetDialogType();
-  if (type != FederatedAuthRequestImpl::kConfirmIdpLogin) {
-    return DispatchResponse::ServerError(
-        "dismissDialog called while no confirm IDP login dialog is shown");
+  if (in_dialogButton == FedCm::DialogButtonEnum::ConfirmIdpLoginContinue) {
+    if (type != FederatedAuthRequestImpl::kConfirmIdpLogin) {
+      return DispatchResponse::ServerError(
+          "clickDialogButton called with ConfirmIdpLoginContinue while no "
+          "confirm IDP login dialog is shown");
+    }
+    auth_request->AcceptConfirmIdpLoginDialogForDevtools();
+    return DispatchResponse::Success();
+  } else if (in_dialogButton == FedCm::DialogButtonEnum::ErrorGotIt) {
+    if (type != FederatedAuthRequestImpl::kError) {
+      return DispatchResponse::ServerError(
+          "clickDialogButton called with ErrorGotIt while no error dialog is "
+          "shown");
+    }
+    auth_request->ClickErrorDialogGotItForDevtools();
+    return DispatchResponse::Success();
+  } else if (in_dialogButton == FedCm::DialogButtonEnum::ErrorMoreDetails) {
+    if (type != FederatedAuthRequestImpl::kError) {
+      return DispatchResponse::ServerError(
+          "clickDialogButton called with ErrorMoreDetails while no error "
+          "dialog is shown");
+    } else if (!auth_request->HasMoreDetailsButtonForDevtools()) {
+      return DispatchResponse::ServerError(
+          "clickDialogButton called with ErrorMoreDetails but more details "
+          "button is not shown");
+    }
+    auth_request->ClickErrorDialogMoreDetailsForDevtools();
+    return DispatchResponse::Success();
   }
-  auth_request->AcceptConfirmIdpLoginDialogForDevtools();
-  return DispatchResponse::Success();
+  return DispatchResponse::InvalidParams("Invalid dialog button");
 }
 
 DispatchResponse FedCmHandler::DismissDialog(const String& in_dialogId,
@@ -219,6 +255,10 @@ DispatchResponse FedCmHandler::DismissDialog(const String& in_dialogId,
   FederatedAuthRequestImpl::DialogType type = auth_request->GetDialogType();
   if (type == FederatedAuthRequestImpl::kConfirmIdpLogin) {
     auth_request->DismissConfirmIdpLoginDialogForDevtools();
+    return DispatchResponse::Success();
+  }
+  if (type == FederatedAuthRequestImpl::kError) {
+    auth_request->DismissErrorDialogForDevtools();
     return DispatchResponse::Success();
   }
   const auto* idp_data = GetIdentityProviderData(auth_request);

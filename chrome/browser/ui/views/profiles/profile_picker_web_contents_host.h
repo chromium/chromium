@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_WEB_CONTENTS_HOST_H_
 
 #include "base/functional/callback.h"
+#include "base/types/strong_alias.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/web_modal/web_contents_modal_dialog_host.h"
 

@@ -105,6 +105,13 @@ export {getToastManager} from 'chrome://resources/cr_elements/cr_toast/cr_toast_
 export {IronCollapseElement} from 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 export {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 export {PaperTooltipElement} from 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
+export {AccessibilityBrowserProxy, AccessibilityBrowserProxyImpl} from './a11y_page/a11y_browser_proxy.js';
+// clang-format off
+// <if expr="is_win or is_linux or is_macosx">
+export {ScreenAiInstallStatus} from './a11y_page/a11y_page.js';
+// </if>
+// clang-format on
+export {SettingsA11yPageElement} from './a11y_page/a11y_page.js';
 // <if expr="not is_chromeos">
 export {SettingsLiveCaptionElement} from './a11y_page/live_caption_section.js';
 export {SettingsLiveTranslateElement} from './a11y_page/live_translate_section.js';
@@ -127,7 +134,7 @@ export {PaymentsManagerImpl, PaymentsManagerProxy} from './autofill_page/payment
 export {SettingsPaymentsSectionElement} from './autofill_page/payments_section.js';
 export {SettingsVirtualCardUnenrollDialogElement} from './autofill_page/virtual_card_unenroll_dialog.js';
 export {ClearBrowsingDataBrowserProxy, ClearBrowsingDataBrowserProxyImpl, ClearBrowsingDataResult, UpdateSyncStateEvent} from './clear_browsing_data_dialog/clear_browsing_data_browser_proxy.js';
-export {SettingsClearBrowsingDataDialogElement, TimePeriodExperiment} from './clear_browsing_data_dialog/clear_browsing_data_dialog.js';
+export {SettingsClearBrowsingDataDialogElement, TimePeriod, TimePeriodExperiment} from './clear_browsing_data_dialog/clear_browsing_data_dialog.js';
 export {SettingsHistoryDeletionDialogElement} from './clear_browsing_data_dialog/history_deletion_dialog.js';
 export {SettingsPasswordsDeletionDialogElement} from './clear_browsing_data_dialog/passwords_deletion_dialog.js';
 export {SettingsCheckboxElement} from './controls/settings_checkbox.js';
@@ -190,7 +197,7 @@ export {CredentialManagementDialogPage, SettingsSecurityKeysCredentialManagement
 export {SecurityKeysPhonesSubpageElement} from './privacy_page/security_keys_phones_subpage.js';
 export {ResetDialogPage, SettingsSecurityKeysResetDialogElement} from './privacy_page/security_keys_reset_dialog.js';
 export {SetPinDialogPage, SettingsSecurityKeysSetPinDialogElement} from './privacy_page/security_keys_set_pin_dialog.js';
-export {SafeBrowsingSetting, SettingsSecurityPageElement} from './privacy_page/security_page.js';
+export {HttpsFirstModeSetting, SafeBrowsingSetting, SettingsSecurityPageElement} from './privacy_page/security_page.js';
 export {SettingsPrivacySandboxAdMeasurementSubpageElement} from './privacy_sandbox/privacy_sandbox_ad_measurement_subpage.js';
 export {SettingsPrivacySandboxFledgeSubpageElement} from './privacy_sandbox/privacy_sandbox_fledge_subpage.js';
 export {PrivacySandboxInterestItemElement} from './privacy_sandbox/privacy_sandbox_interest_item.js';

@@ -44,7 +44,8 @@ public final class NonEmbeddedSafeModeActionsSetupCleanup {
         final SafeModeAction[] registeredActions =
                 SafeModeController.getInstance().getRegisteredActions();
         if (registeredActions == null) {
-            Log.w(TAG,
+            Log.w(
+                    TAG,
                     "Must registerActions() before calling executeNonEmbeddedActionsOnStateChange()");
             return false;
         }

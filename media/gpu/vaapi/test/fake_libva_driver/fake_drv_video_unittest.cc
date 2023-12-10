@@ -8,6 +8,7 @@
 
 #include <algorithm>
 
+#include "base/environment.h"
 #include "base/files/file.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
@@ -684,6 +685,13 @@ TEST_F(FakeDriverTest, DestroyContextCrashesForInvalidContextID) {
 
 int main(int argc, char** argv) {
   base::TestSuite test_suite(argc, argv);
+
+  // We stub out the ContextDelegate so that the driver doesn't fail assertions
+  // in places that we don't care about unit testing: those places require
+  // something closer to integration testing due to the number of moving parts.
+  std::unique_ptr<base::Environment> env = base::Environment::Create();
+  CHECK(env);
+  env->SetVar("USE_NO_OP_CONTEXT_DELEGATE", "1");
 
   const std::string va_suffix(base::NumberToString(VA_MAJOR_VERSION + 1));
   StubPathMap paths;

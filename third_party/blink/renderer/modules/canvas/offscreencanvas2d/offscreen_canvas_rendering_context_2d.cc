@@ -457,10 +457,13 @@ void OffscreenCanvasRenderingContext2D::TryRestoreContextEvent(
   }
 }
 
-void OffscreenCanvasRenderingContext2D::FlushCanvas(FlushReason reason) {
-  if (GetCanvasResourceProvider()) {
-    GetCanvasResourceProvider()->FlushCanvas(reason);
+absl::optional<cc::PaintRecord> OffscreenCanvasRenderingContext2D::FlushCanvas(
+    FlushReason reason) {
+  if (CanvasResourceProvider* provider = GetCanvasResourceProvider();
+      provider != nullptr) {
+    return provider->FlushCanvas(reason);
   }
+  return absl::nullopt;
 }
 
 OffscreenCanvas* OffscreenCanvasRenderingContext2D::HostAsOffscreenCanvas()

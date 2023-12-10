@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <limits>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -28,9 +29,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/private_aggregation/aggregatable_report.mojom.h"
-#include "third_party/boringssl/src/include/openssl/hpke.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -74,11 +73,11 @@ PadContributions(
 // `expected_payload_contents` is not expected to have its contributions already
 // padded.
 void VerifyReport(
-    const absl::optional<AggregatableReport>& report,
+    const std::optional<AggregatableReport>& report,
     const AggregationServicePayloadContents& expected_payload_contents,
     const AggregatableReportSharedInfo& expected_shared_info,
     size_t expected_num_processing_urls,
-    const absl::optional<uint64_t>& expected_debug_key,
+    const std::optional<uint64_t>& expected_debug_key,
     const base::flat_map<std::string, std::string>& expected_additional_fields,
     const std::vector<aggregation_service::TestHpkeKey>& encryption_keys,
     bool should_pad_contributions) {
@@ -123,7 +122,7 @@ void VerifyReport(
       EXPECT_FALSE(payloads[i].debug_cleartext_payload.has_value());
     }
 
-    absl::optional<cbor::Value> deserialized_payload =
+    std::optional<cbor::Value> deserialized_payload =
         cbor::Reader::Read(decrypted_payload);
     ASSERT_TRUE(deserialized_payload.has_value());
     ASSERT_TRUE(deserialized_payload->is_map());
@@ -234,7 +233,7 @@ TEST_P(AggregatableReportTest,
   hpke_keys.emplace_back("id123");
   hpke_keys.emplace_back("456abc");
 
-  absl::optional<AggregatableReport> report =
+  std::optional<AggregatableReport> report =
       AggregatableReport::Provider().CreateFromRequestAndPublicKeys(
           std::move(request),
           {hpke_keys[0].GetPublicKey(), hpke_keys[1].GetPublicKey()});
@@ -242,7 +241,7 @@ TEST_P(AggregatableReportTest,
   ASSERT_NO_FATAL_FAILURE(
       VerifyReport(report, expected_payload_contents, expected_shared_info,
                    expected_num_processing_urls,
-                   /*expected_debug_key=*/absl::nullopt,
+                   /*expected_debug_key=*/std::nullopt,
                    /*expected_additional_fields=*/{}, std::move(hpke_keys),
                    /*should_pad_contributions=*/GetParam()));
 }
@@ -260,14 +259,14 @@ TEST_P(AggregatableReportTest, ValidTeeBasedRequest_ValidReportReturned) {
   std::vector<aggregation_service::TestHpkeKey> hpke_keys;
   hpke_keys.emplace_back("id123");
 
-  absl::optional<AggregatableReport> report =
+  std::optional<AggregatableReport> report =
       AggregatableReport::Provider().CreateFromRequestAndPublicKeys(
           std::move(request), {hpke_keys[0].GetPublicKey()});
 
   ASSERT_NO_FATAL_FAILURE(
       VerifyReport(report, expected_payload_contents, expected_shared_info,
                    expected_num_processing_urls,
-                   /*expected_debug_key=*/absl::nullopt,
+                   /*expected_debug_key=*/std::nullopt,
                    /*expected_additional_fields=*/{}, std::move(hpke_keys),
                    /*should_pad_contributions=*/GetParam()));
 }
@@ -288,7 +287,7 @@ TEST_P(AggregatableReportTest,
           /*bucket=*/7890,
           /*value=*/1234)};
 
-  absl::optional<AggregatableReportRequest> request =
+  std::optional<AggregatableReportRequest> request =
       AggregatableReportRequest::Create(expected_payload_contents,
                                         example_request.shared_info().Clone());
   ASSERT_TRUE(request.has_value());
@@ -300,14 +299,14 @@ TEST_P(AggregatableReportTest,
   std::vector<aggregation_service::TestHpkeKey> hpke_keys;
   hpke_keys.emplace_back("id123");
 
-  absl::optional<AggregatableReport> report =
+  std::optional<AggregatableReport> report =
       AggregatableReport::Provider().CreateFromRequestAndPublicKeys(
           std::move(*request), {hpke_keys[0].GetPublicKey()});
 
   ASSERT_NO_FATAL_FAILURE(
       VerifyReport(report, expected_payload_contents, expected_shared_info,
                    expected_num_processing_urls,
-                   /*expected_debug_key=*/absl::nullopt,
+                   /*expected_debug_key=*/std::nullopt,
                    /*expected_additional_fields=*/{}, std::move(hpke_keys),
                    /*should_pad_contributions=*/GetParam()));
 }
@@ -332,7 +331,7 @@ TEST_P(AggregatableReportTest,
             /*value=*/0)};
   }
 
-  absl::optional<AggregatableReportRequest> request =
+  std::optional<AggregatableReportRequest> request =
       AggregatableReportRequest::Create(payload_contents,
                                         example_request.shared_info().Clone());
   ASSERT_TRUE(request.has_value());
@@ -344,14 +343,14 @@ TEST_P(AggregatableReportTest,
   std::vector<aggregation_service::TestHpkeKey> hpke_keys;
   hpke_keys.emplace_back("id123");
 
-  absl::optional<AggregatableReport> report =
+  std::optional<AggregatableReport> report =
       AggregatableReport::Provider().CreateFromRequestAndPublicKeys(
           std::move(*request), {hpke_keys[0].GetPublicKey()});
 
   ASSERT_NO_FATAL_FAILURE(
       VerifyReport(report, expected_payload_contents, expected_shared_info,
                    expected_num_processing_urls,
-                   /*expected_debug_key=*/absl::nullopt,
+                   /*expected_debug_key=*/std::nullopt,
                    /*expected_additional_fields=*/{}, std::move(hpke_keys),
                    /*should_pad_contributions=*/GetParam()));
 }
@@ -364,7 +363,7 @@ TEST_P(AggregatableReportTest,
       example_request.shared_info().Clone();
   expected_shared_info.debug_mode =
       AggregatableReportSharedInfo::DebugMode::kEnabled;
-  absl::optional<AggregatableReportRequest> request =
+  std::optional<AggregatableReportRequest> request =
       AggregatableReportRequest::Create(example_request.payload_contents(),
                                         expected_shared_info.Clone());
   ASSERT_TRUE(request.has_value());
@@ -376,14 +375,14 @@ TEST_P(AggregatableReportTest,
   std::vector<aggregation_service::TestHpkeKey> hpke_keys;
   hpke_keys.emplace_back("id123");
 
-  absl::optional<AggregatableReport> report =
+  std::optional<AggregatableReport> report =
       AggregatableReport::Provider().CreateFromRequestAndPublicKeys(
           std::move(request.value()), {hpke_keys[0].GetPublicKey()});
 
   ASSERT_NO_FATAL_FAILURE(
       VerifyReport(report, expected_payload_contents, expected_shared_info,
                    expected_num_processing_urls,
-                   /*expected_debug_key=*/absl::nullopt,
+                   /*expected_debug_key=*/std::nullopt,
                    /*expected_additional_fields=*/{}, std::move(hpke_keys),
                    /*should_pad_contributions=*/GetParam()));
 }
@@ -399,7 +398,7 @@ TEST_P(AggregatableReportTest,
 
   // Use a large value to check that higher order bits are serialized too.
   uint64_t expected_debug_key = std::numeric_limits<uint64_t>::max() - 1;
-  absl::optional<AggregatableReportRequest> request =
+  std::optional<AggregatableReportRequest> request =
       AggregatableReportRequest::Create(
           example_request.payload_contents(), expected_shared_info.Clone(),
           /*reporting_path=*/std::string(), expected_debug_key);
@@ -412,7 +411,7 @@ TEST_P(AggregatableReportTest,
   std::vector<aggregation_service::TestHpkeKey> hpke_keys;
   hpke_keys.emplace_back("id123");
 
-  absl::optional<AggregatableReport> report =
+  std::optional<AggregatableReport> report =
       AggregatableReport::Provider().CreateFromRequestAndPublicKeys(
           std::move(request.value()), {hpke_keys[0].GetPublicKey()});
 
@@ -429,11 +428,11 @@ TEST_P(AggregatableReportTest, AdditionalFieldsPresent_ValidReportReturned) {
 
   base::flat_map<std::string, std::string> expected_additional_fields = {
       {"additional_key", "example_value"}, {"second", "field"}, {"", ""}};
-  absl::optional<AggregatableReportRequest> request =
+  std::optional<AggregatableReportRequest> request =
       AggregatableReportRequest::Create(example_request.payload_contents(),
                                         example_request.shared_info().Clone(),
                                         /*reporting_path=*/std::string(),
-                                        /*debug_key=*/absl::nullopt,
+                                        /*debug_key=*/std::nullopt,
                                         expected_additional_fields);
   ASSERT_TRUE(request.has_value());
 
@@ -444,13 +443,13 @@ TEST_P(AggregatableReportTest, AdditionalFieldsPresent_ValidReportReturned) {
   std::vector<aggregation_service::TestHpkeKey> hpke_keys;
   hpke_keys.emplace_back("id123");
 
-  absl::optional<AggregatableReport> report =
+  std::optional<AggregatableReport> report =
       AggregatableReport::Provider().CreateFromRequestAndPublicKeys(
           std::move(request.value()), {hpke_keys[0].GetPublicKey()});
 
   ASSERT_NO_FATAL_FAILURE(VerifyReport(
       report, expected_payload_contents, example_request.shared_info(),
-      expected_num_processing_urls, /*expected_debug_key=*/absl::nullopt,
+      expected_num_processing_urls, /*expected_debug_key=*/std::nullopt,
       expected_additional_fields, std::move(hpke_keys),
       /*should_pad_contributions=*/GetParam()));
 }
@@ -467,7 +466,7 @@ TEST_P(AggregatableReportTest,
   AggregationServicePayloadContents zero_value_payload_contents =
       payload_contents;
   zero_value_payload_contents.contributions[0].value = 0;
-  absl::optional<AggregatableReportRequest> zero_value_request =
+  std::optional<AggregatableReportRequest> zero_value_request =
       AggregatableReportRequest::Create(zero_value_payload_contents,
                                         shared_info.Clone());
   EXPECT_TRUE(zero_value_request.has_value());
@@ -475,7 +474,7 @@ TEST_P(AggregatableReportTest,
   AggregationServicePayloadContents negative_value_payload_contents =
       payload_contents;
   negative_value_payload_contents.contributions[0].value = -1;
-  absl::optional<AggregatableReportRequest> negative_value_request =
+  std::optional<AggregatableReportRequest> negative_value_request =
       AggregatableReportRequest::Create(negative_value_payload_contents,
                                         shared_info.Clone());
   EXPECT_FALSE(negative_value_request.has_value());
@@ -488,7 +487,7 @@ TEST_P(AggregatableReportTest, RequestCreatedWithInvalidReportId_Failed) {
       example_request.shared_info().Clone();
   shared_info.report_id = base::Uuid();
 
-  absl::optional<AggregatableReportRequest> request =
+  std::optional<AggregatableReportRequest> request =
       AggregatableReportRequest::Create(example_request.payload_contents(),
                                         std::move(shared_info));
 
@@ -504,7 +503,7 @@ TEST_P(AggregatableReportTest, TeeBasedRequestCreatedWithZeroContributions) {
       example_request.payload_contents();
 
   payload_contents.contributions.clear();
-  absl::optional<AggregatableReportRequest> request =
+  std::optional<AggregatableReportRequest> request =
       AggregatableReportRequest::Create(payload_contents,
                                         example_request.shared_info().Clone());
   EXPECT_TRUE(request.has_value());
@@ -520,7 +519,7 @@ TEST_P(AggregatableReportTest,
       example_request.payload_contents();
 
   payload_contents.contributions.clear();
-  absl::optional<AggregatableReportRequest> request =
+  std::optional<AggregatableReportRequest> request =
       AggregatableReportRequest::Create(payload_contents,
                                         example_request.shared_info().Clone());
   EXPECT_FALSE(request.has_value());
@@ -541,7 +540,7 @@ TEST_P(AggregatableReportTest, RequestCreatedWithTooManyContributions) {
           /*bucket=*/7890,
           /*value=*/1234)};
 
-  absl::optional<AggregatableReportRequest> request =
+  std::optional<AggregatableReportRequest> request =
       AggregatableReportRequest::Create(payload_contents,
                                         example_request.shared_info().Clone());
   ASSERT_FALSE(request.has_value());
@@ -552,7 +551,7 @@ TEST_P(AggregatableReportTest,
   AggregatableReportRequest example_request =
       aggregation_service::CreateExampleRequest();
 
-  absl::optional<AggregatableReportRequest> request =
+  std::optional<AggregatableReportRequest> request =
       AggregatableReportRequest::Create(example_request.payload_contents(),
                                         example_request.shared_info().Clone(),
                                         /*reporting_path=*/std::string(),
@@ -565,12 +564,12 @@ TEST_P(AggregatableReportTest, GetAsJsonOnePayload_ValidJsonReturned) {
   std::vector<AggregatableReport::AggregationServicePayload> payloads;
   payloads.emplace_back(/*payload=*/kABCD1234AsBytes,
                         /*key_id=*/"key_1",
-                        /*debug_cleartext_payload=*/absl::nullopt);
+                        /*debug_cleartext_payload=*/std::nullopt);
 
   AggregatableReport report(std::move(payloads), "example_shared_info",
-                            /*debug_key=*/absl::nullopt,
+                            /*debug_key=*/std::nullopt,
                             /*additional_fields=*/{},
-                            /*aggregation_coordinator_origin=*/absl::nullopt);
+                            /*aggregation_coordinator_origin=*/std::nullopt);
 
   std::string report_json_string;
   base::JSONWriter::Write(base::Value(report.GetAsJson()), &report_json_string);
@@ -590,15 +589,15 @@ TEST_P(AggregatableReportTest, GetAsJsonTwoPayloads_ValidJsonReturned) {
   std::vector<AggregatableReport::AggregationServicePayload> payloads;
   payloads.emplace_back(/*payload=*/kABCD1234AsBytes,
                         /*key_id=*/"key_1",
-                        /*debug_cleartext_payload=*/absl::nullopt);
+                        /*debug_cleartext_payload=*/std::nullopt);
   payloads.emplace_back(/*payload=*/kEFGH5678AsBytes,
                         /*key_id=*/"key_2",
-                        /*debug_cleartext_payload=*/absl::nullopt);
+                        /*debug_cleartext_payload=*/std::nullopt);
 
   AggregatableReport report(std::move(payloads), "example_shared_info",
-                            /*debug_key=*/absl::nullopt,
+                            /*debug_key=*/std::nullopt,
                             /*additional_fields=*/{},
-                            /*aggregation_coordinator_origin=*/absl::nullopt);
+                            /*aggregation_coordinator_origin=*/std::nullopt);
 
   std::string report_json_string;
   base::JSONWriter::Write(base::Value(report.GetAsJson()), &report_json_string);
@@ -623,9 +622,9 @@ TEST_P(AggregatableReportTest,
                         /*debug_cleartext_payload=*/kEFGH5678AsBytes);
 
   AggregatableReport report(std::move(payloads), "example_shared_info",
-                            /*debug_key=*/absl::nullopt,
+                            /*debug_key=*/std::nullopt,
                             /*additional_fields=*/{},
-                            /*aggregation_coordinator_origin=*/absl::nullopt);
+                            /*aggregation_coordinator_origin=*/std::nullopt);
 
   std::string report_json_string;
   base::JSONWriter::Write(base::Value(report.GetAsJson()), &report_json_string);
@@ -651,7 +650,7 @@ TEST_P(AggregatableReportTest, GetAsJsonDebugKey_ValidJsonReturned) {
 
   AggregatableReport report(std::move(payloads), "example_shared_info",
                             /*debug_key=*/1234, /*additional_fields=*/{},
-                            /*aggregation_coordinator_origin=*/absl::nullopt);
+                            /*aggregation_coordinator_origin=*/std::nullopt);
 
   std::string report_json_string;
   base::JSONWriter::Write(base::Value(report.GetAsJson()), &report_json_string);
@@ -674,13 +673,13 @@ TEST_P(AggregatableReportTest, GetAsJsonAdditionalFields_ValidJsonReturned) {
   std::vector<AggregatableReport::AggregationServicePayload> payloads;
   payloads.emplace_back(/*payload=*/kABCD1234AsBytes,
                         /*key_id=*/"key_1",
-                        /*debug_cleartext_payload=*/absl::nullopt);
+                        /*debug_cleartext_payload=*/std::nullopt);
 
   AggregatableReport report(
       std::move(payloads), "example_shared_info",
-      /*debug_key=*/absl::nullopt, /*additional_fields=*/
+      /*debug_key=*/std::nullopt, /*additional_fields=*/
       {{"additional_key", "example_value"}, {"second", "field"}, {"", ""}},
-      /*aggregation_coordinator_origin=*/absl::nullopt);
+      /*aggregation_coordinator_origin=*/std::nullopt);
 
   std::string report_json_string;
   base::JSONWriter::Write(base::Value(report.GetAsJson()), &report_json_string);
@@ -785,7 +784,7 @@ TEST_P(AggregatableReportTest, ReportingPathSet_SetInRequest) {
 
   std::string reporting_path = "/example-path";
 
-  absl::optional<AggregatableReportRequest> request =
+  std::optional<AggregatableReportRequest> request =
       AggregatableReportRequest::Create(example_request.payload_contents(),
                                         example_request.shared_info().Clone(),
                                         reporting_path);
@@ -802,10 +801,10 @@ TEST_P(AggregatableReportTest, RequestCreatedWithInvalidFailedAttempt_Failed) {
   AggregatableReportSharedInfo shared_info =
       example_request.shared_info().Clone();
 
-  absl::optional<AggregatableReportRequest> request =
+  std::optional<AggregatableReportRequest> request =
       AggregatableReportRequest::Create(
           example_request.payload_contents(), std::move(shared_info),
-          /*reporting_path=*/"", /*debug_key=*/absl::nullopt,
+          /*reporting_path=*/"", /*debug_key=*/std::nullopt,
           /*additional_fields=*/{},
           /*failed_send_attempts=*/-1);
 
@@ -822,7 +821,7 @@ TEST_P(AggregatableReportTest,
 
   payload_contents.max_contributions_allowed = -1;
 
-  absl::optional<AggregatableReportRequest> negative_request =
+  std::optional<AggregatableReportRequest> negative_request =
       AggregatableReportRequest::Create(payload_contents,
                                         example_request.shared_info().Clone());
   EXPECT_FALSE(negative_request.has_value());
@@ -831,7 +830,7 @@ TEST_P(AggregatableReportTest,
                                               /*value=*/78);
   payload_contents.max_contributions_allowed = 1;
 
-  absl::optional<AggregatableReportRequest> too_small_max_request =
+  std::optional<AggregatableReportRequest> too_small_max_request =
       AggregatableReportRequest::Create(payload_contents,
                                         example_request.shared_info().Clone());
   EXPECT_FALSE(too_small_max_request.has_value());
@@ -839,7 +838,7 @@ TEST_P(AggregatableReportTest,
   payload_contents.contributions = {};
   payload_contents.max_contributions_allowed = 0;
 
-  absl::optional<AggregatableReportRequest> empty_zero_request =
+  std::optional<AggregatableReportRequest> empty_zero_request =
       AggregatableReportRequest::Create(payload_contents,
                                         example_request.shared_info().Clone());
   EXPECT_TRUE(empty_zero_request.has_value());
@@ -859,7 +858,7 @@ TEST_P(AggregatableReportTest, FailedSendAttempts) {
 
   // The failed attempts are correctly serialized & deserialized
   std::vector<uint8_t> proto = example_request_with_failed_attempts.Serialize();
-  absl::optional<AggregatableReportRequest> parsed_request =
+  std::optional<AggregatableReportRequest> parsed_request =
       AggregatableReportRequest::Deserialize(proto);
   EXPECT_EQ(parsed_request.value().failed_send_attempts(), 2);
 }
@@ -879,7 +878,7 @@ TEST_P(AggregatableReportTest, MaxContributionsAllowed) {
 
   // The max contributions allowed is correctly serialized and deserialized
   std::vector<uint8_t> proto = request.Serialize();
-  absl::optional<AggregatableReportRequest> parsed_request =
+  std::optional<AggregatableReportRequest> parsed_request =
       AggregatableReportRequest::Deserialize(proto);
   EXPECT_EQ(parsed_request.value().payload_contents().max_contributions_allowed,
             20);
@@ -887,11 +886,11 @@ TEST_P(AggregatableReportTest, MaxContributionsAllowed) {
 
 TEST_P(AggregatableReportTest, AggregationCoordinatorOrigin) {
   const struct {
-    absl::optional<url::Origin> aggregation_coordinator_origin;
+    std::optional<url::Origin> aggregation_coordinator_origin;
     bool creation_should_succeed;
     const char* description;
   } kTestCases[] = {
-      {absl::nullopt, true, "default coordinator"},
+      {std::nullopt, true, "default coordinator"},
       {url::Origin::Create(GURL("https://aws.example.test")), true,
        "valid coordinator"},
       {url::Origin::Create(GURL("https://a.test")), false,
@@ -908,7 +907,7 @@ TEST_P(AggregatableReportTest, AggregationCoordinatorOrigin) {
     payload_contents.aggregation_coordinator_origin =
         test_case.aggregation_coordinator_origin;
 
-    absl::optional<AggregatableReportRequest> request =
+    std::optional<AggregatableReportRequest> request =
         AggregatableReportRequest::Create(
             payload_contents, example_request.shared_info().Clone());
 
@@ -920,7 +919,7 @@ TEST_P(AggregatableReportTest, AggregationCoordinatorOrigin) {
 
     // The coordinator origin is correctly serialized and deserialized
     std::vector<uint8_t> proto = request->Serialize();
-    absl::optional<AggregatableReportRequest> parsed_request =
+    std::optional<AggregatableReportRequest> parsed_request =
         AggregatableReportRequest::Deserialize(proto);
     EXPECT_EQ(parsed_request.value()
                   .payload_contents()
@@ -959,7 +958,7 @@ TEST_P(AggregatableReportTest, AggregationCoordinatorOriginAllowlistChanged) {
        {"gcp_cloud", "https://gcp2.example.test"}});
 
   // Expect the report to fail to be recreated.
-  absl::optional<AggregatableReportRequest> parsed_request =
+  std::optional<AggregatableReportRequest> parsed_request =
       AggregatableReportRequest::Deserialize(proto);
   EXPECT_FALSE(parsed_request.has_value());
 }
@@ -969,7 +968,7 @@ TEST_P(AggregatableReportTest, ReportingPathEmpty_NotSetInRequest) {
       aggregation_service::CreateExampleRequest(
           blink::mojom::AggregationServiceMode::kExperimentalPoplar);
 
-  absl::optional<AggregatableReportRequest> request =
+  std::optional<AggregatableReportRequest> request =
       AggregatableReportRequest::Create(example_request.payload_contents(),
                                         example_request.shared_info().Clone());
   ASSERT_TRUE(request.has_value());
@@ -981,9 +980,9 @@ TEST_P(AggregatableReportTest, ReportingPathEmpty_NotSetInRequest) {
 
 TEST_P(AggregatableReportTest, EmptyPayloads) {
   AggregatableReport report(/*payloads=*/{}, "example_shared_info",
-                            /*debug_key=*/absl::nullopt,
+                            /*debug_key=*/std::nullopt,
                             /*additional_fields=*/{},
-                            /*aggregation_coordinator_origin=*/absl::nullopt);
+                            /*aggregation_coordinator_origin=*/std::nullopt);
 
   std::string report_json_string;
   base::JSONWriter::Write(base::Value(report.GetAsJson()), &report_json_string);
@@ -1009,7 +1008,7 @@ TEST(AggregatableReportProtoMigrationTest,
   std::vector<uint8_t> old_proto;
   EXPECT_TRUE(base::HexStringToBytes(kHexEncodedOldProto, &old_proto));
 
-  absl::optional<AggregatableReportRequest> deserialized_request =
+  std::optional<AggregatableReportRequest> deserialized_request =
       AggregatableReportRequest::Deserialize(old_proto);
   ASSERT_TRUE(deserialized_request.has_value());
 
@@ -1020,7 +1019,7 @@ TEST(AggregatableReportProtoMigrationTest,
               {blink::mojom::AggregatableReportHistogramContribution(
                   /*bucket=*/123, /*value=*/456)},
               blink::mojom::AggregationServiceMode::kDefault,
-              /*aggregation_coordinator_origin=*/absl::nullopt,
+              /*aggregation_coordinator_origin=*/std::nullopt,
               /*max_contributions_allowed=*/1),
           AggregatableReportSharedInfo(
               base::Time::FromMillisecondsSinceUnixEpoch(1652984901234),
@@ -1032,7 +1031,7 @@ TEST(AggregatableReportProtoMigrationTest,
               /*additional_fields=*/base::Value::Dict(),
               /*api_version=*/"example-version",
               /*api_identifier=*/"example-api"),
-          /*reporting_path=*/"example-path", /*debug_key=*/absl::nullopt,
+          /*reporting_path=*/"example-path", /*debug_key=*/std::nullopt,
           /*additional_fields=*/{},
           /*failed_send_attempts=*/0)
           .value();
@@ -1054,7 +1053,7 @@ TEST(AggregatableReportProtoMigrationTest, NegativeDebugKey_ParsesCorrectly) {
   std::vector<uint8_t> old_proto;
   EXPECT_TRUE(base::HexStringToBytes(kHexEncodedOldProto, &old_proto));
 
-  absl::optional<AggregatableReportRequest> deserialized_request =
+  std::optional<AggregatableReportRequest> deserialized_request =
       AggregatableReportRequest::Deserialize(old_proto);
   ASSERT_TRUE(deserialized_request.has_value());
 
@@ -1065,7 +1064,7 @@ TEST(AggregatableReportProtoMigrationTest, NegativeDebugKey_ParsesCorrectly) {
               {blink::mojom::AggregatableReportHistogramContribution(
                   /*bucket=*/123, /*value=*/456)},
               blink::mojom::AggregationServiceMode::kDefault,
-              /*aggregation_coordinator_origin=*/absl::nullopt,
+              /*aggregation_coordinator_origin=*/std::nullopt,
               /*max_contributions_allowed=*/1),
           AggregatableReportSharedInfo(
               base::Time::FromMillisecondsSinceUnixEpoch(1652984901234),
@@ -1098,7 +1097,7 @@ TEST(AggregatableReportProtoMigrationTest,
   std::vector<uint8_t> old_proto;
   EXPECT_TRUE(base::HexStringToBytes(kHexEncodedOldProto, &old_proto));
 
-  absl::optional<AggregatableReportRequest> deserialized_request =
+  std::optional<AggregatableReportRequest> deserialized_request =
       AggregatableReportRequest::Deserialize(old_proto);
   ASSERT_TRUE(deserialized_request.has_value());
 
@@ -1109,7 +1108,7 @@ TEST(AggregatableReportProtoMigrationTest,
               {blink::mojom::AggregatableReportHistogramContribution(
                   /*bucket=*/123, /*value=*/456)},
               blink::mojom::AggregationServiceMode::kDefault,
-              /*aggregation_coordinator_origin=*/absl::nullopt,
+              /*aggregation_coordinator_origin=*/std::nullopt,
               /*max_contributions_allowed=*/1),
           AggregatableReportSharedInfo(
               base::Time::FromMillisecondsSinceUnixEpoch(1652984901234),
@@ -1121,7 +1120,7 @@ TEST(AggregatableReportProtoMigrationTest,
               /*additional_fields=*/base::Value::Dict(),
               /*api_version=*/"example-version",
               /*api_identifier=*/"example-api"),
-          /*reporting_path=*/"example-path", /*debug_key=*/absl::nullopt,
+          /*reporting_path=*/"example-path", /*debug_key=*/std::nullopt,
           /*additional_fields=*/{},
           /*failed_send_attempts=*/0)
           .value();
@@ -1143,11 +1142,11 @@ TEST_P(AggregatableReportTest, ProcessingUrlSet) {
 
 TEST_P(AggregatableReportTest, AggregationCoordinator_ProcessingUrlSet) {
   const struct {
-    absl::optional<url::Origin> aggregation_coordinator_origin;
+    std::optional<url::Origin> aggregation_coordinator_origin;
     std::vector<GURL> expected_urls;
   } kTestCases[] = {
       {
-          absl::nullopt,
+          std::nullopt,
           {GURL("https://aws.example.test/.well-known/aggregation-service/v1/"
                 "public-keys")},
       },
@@ -1168,7 +1167,7 @@ TEST_P(AggregatableReportTest, AggregationCoordinator_ProcessingUrlSet) {
   };
 
   for (const auto& test_case : kTestCases) {
-    absl::optional<AggregatableReportRequest> request =
+    std::optional<AggregatableReportRequest> request =
         AggregatableReportRequest::Create(
             AggregationServicePayloadContents(
                 AggregationServicePayloadContents::Operation::kHistogram,
@@ -1188,7 +1187,7 @@ TEST_P(AggregatableReportTest, AggregationCoordinator_ProcessingUrlSet) {
                 /*api_version=*/"",
                 /*api_identifier=*/"example-api"),
             /*reporting_path=*/"example-path",
-            /*debug_key=*/absl::nullopt, /*additional_fields=*/{},
+            /*debug_key=*/std::nullopt, /*additional_fields=*/{},
             /*failed_send_attempts=*/0);
 
     if (test_case.expected_urls.empty()) {
@@ -1208,12 +1207,12 @@ TEST_P(AggregatableReportTest, AggregationCoordinator_SetInReport) {
   std::vector<AggregatableReport::AggregationServicePayload> payloads;
   payloads.emplace_back(/*payload=*/kABCD1234AsBytes,
                         /*key_id=*/"key_1",
-                        /*debug_cleartext_payload=*/absl::nullopt);
+                        /*debug_cleartext_payload=*/std::nullopt);
 
   AggregatableReport report(std::move(payloads), "example_shared_info",
-                            /*debug_key=*/absl::nullopt,
+                            /*debug_key=*/std::nullopt,
                             /*additional_fields=*/{},
-                            /*aggregation_coordinator_origin=*/absl::nullopt);
+                            /*aggregation_coordinator_origin=*/std::nullopt);
 
   std::string report_json_string;
   base::JSONWriter::Write(base::Value(report.GetAsJson()), &report_json_string);

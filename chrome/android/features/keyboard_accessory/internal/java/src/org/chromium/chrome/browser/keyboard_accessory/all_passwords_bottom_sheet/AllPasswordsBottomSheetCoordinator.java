@@ -43,10 +43,14 @@ class AllPasswordsBottomSheetCoordinator {
      * @param delegate A {@link Delegate} that handles select and dismiss events.
      * @param origin The origin for the current focused frame.
      */
-    public void initialize(Context context, BottomSheetController sheetController,
-            AllPasswordsBottomSheetCoordinator.Delegate delegate, String origin) {
-        PropertyModel model = AllPasswordsBottomSheetProperties.createDefaultModel(
-                origin, mMediator::onDismissed, mMediator::onQueryTextChange);
+    public void initialize(
+            Context context,
+            BottomSheetController sheetController,
+            AllPasswordsBottomSheetCoordinator.Delegate delegate,
+            String origin) {
+        PropertyModel model =
+                AllPasswordsBottomSheetProperties.createDefaultModel(
+                        origin, mMediator::onDismissed, mMediator::onQueryTextChange);
         mMediator.initialize(delegate, model);
         setUpModelChangeProcessor(model, new AllPasswordsBottomSheetView(context, sheetController));
     }

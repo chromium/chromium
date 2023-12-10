@@ -23,9 +23,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ntp.FeedPositionUtils;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
 
-/**
- * A layout that arranges tiles in a grid.
- */
+/** A layout that arranges tiles in a grid. */
 public class MostVisitedTilesGridLayout extends FrameLayout implements MostVisitedTilesLayout {
     private final int mMinHorizontalSpacing;
     private final int mMaxHorizontalSpacing;
@@ -56,32 +54,34 @@ public class MostVisitedTilesGridLayout extends FrameLayout implements MostVisit
                 getResources().getDimensionPixelOffset(getGridMVTVerticalSpacingResourcesId());
         TypedArray styledAttrs =
                 context.obtainStyledAttributes(attrs, R.styleable.MostVisitedTilesGridLayout);
-        mMinHorizontalSpacing = styledAttrs.getDimensionPixelOffset(
-                R.styleable.MostVisitedTilesGridLayout_minHorizontalSpacing,
-                res.getDimensionPixelOffset(R.dimen.tile_grid_layout_min_horizontal_spacing));
+        mMinHorizontalSpacing =
+                styledAttrs.getDimensionPixelOffset(
+                        R.styleable.MostVisitedTilesGridLayout_minHorizontalSpacing,
+                        res.getDimensionPixelOffset(
+                                R.dimen.tile_grid_layout_min_horizontal_spacing));
         styledAttrs.recycle();
         mMaxHorizontalSpacing = Integer.MAX_VALUE;
         mMaxWidth = Integer.MAX_VALUE;
 
         mMvtContainer2SidesMarginTablet =
                 getResources().getDimensionPixelOffset(R.dimen.ntp_search_box_start_margin) * 2
-                + getResources().getDimensionPixelOffset(R.dimen.tile_grid_layout_bleed);
-        mTileViewLandscapeEdgePaddingTablet = getResources().getDimensionPixelOffset(
-                R.dimen.tile_grid_layout_landscape_edge_margin_tablet);
-        mTileViewPortraitEdgePaddingTablet = getResources().getDimensionPixelOffset(
-                R.dimen.tile_grid_layout_portrait_edge_margin_tablet);
+                        + getResources().getDimensionPixelOffset(R.dimen.tile_grid_layout_bleed);
+        mTileViewLandscapeEdgePaddingTablet =
+                getResources()
+                        .getDimensionPixelOffset(
+                                R.dimen.tile_grid_layout_landscape_edge_margin_tablet);
+        mTileViewPortraitEdgePaddingTablet =
+                getResources()
+                        .getDimensionPixelOffset(
+                                R.dimen.tile_grid_layout_portrait_edge_margin_tablet);
     }
 
-    /**
-     * Sets the maximum number of rows to display. Any items that don't fit will be hidden.
-     */
+    /** Sets the maximum number of rows to display. Any items that don't fit will be hidden. */
     public void setMaxRows(int rows) {
         mMaxRows = rows;
     }
 
-    /**
-     * Sets the maximum number of columns to display. Any items that don't fit will be hidden.
-     */
+    /** Sets the maximum number of columns to display. Any items that don't fit will be hidden. */
     public void setMaxColumns(int columns) {
         mMaxColumns = columns;
     }
@@ -109,9 +109,11 @@ public class MostVisitedTilesGridLayout extends FrameLayout implements MostVisit
         // Determine the number of columns that will fit.
         int childHeight = getChildAt(0).getMeasuredHeight();
         int childWidth = getChildAt(0).getMeasuredWidth();
-        int numColumns = MathUtils.clamp(
-                (totalWidth + mMinHorizontalSpacing) / (childWidth + mMinHorizontalSpacing), 1,
-                mMaxColumns);
+        int numColumns =
+                MathUtils.clamp(
+                        (totalWidth + mMinHorizontalSpacing) / (childWidth + mMinHorizontalSpacing),
+                        1,
+                        mMaxColumns);
 
         // Determine how much padding to use between and around the tiles.
         int gridWidthMinusColumns = Math.max(0, totalWidth - numColumns * childWidth);
@@ -146,8 +148,11 @@ public class MostVisitedTilesGridLayout extends FrameLayout implements MostVisit
             getChildAt(i).setVisibility(View.GONE);
         }
 
-        int totalHeight = paddingTop + getPaddingBottom() + numRows * childHeight
-                + (numRows - 1) * mVerticalSpacing;
+        int totalHeight =
+                paddingTop
+                        + getPaddingBottom()
+                        + numRows * childHeight
+                        + (numRows - 1) * mVerticalSpacing;
 
         setMeasuredDimension(totalWidth, resolveSize(totalHeight, heightMeasureSpec));
     }
@@ -162,10 +167,11 @@ public class MostVisitedTilesGridLayout extends FrameLayout implements MostVisit
         int gridStart;
         float horizontalSpacing;
         if (mIsNtpAsHomeSurfaceOnTablet) {
-            gridStart = getResources().getConfiguration().orientation
-                            == Configuration.ORIENTATION_LANDSCAPE
-                    ? mTileViewLandscapeEdgePaddingTablet
-                    : mTileViewPortraitEdgePaddingTablet;
+            gridStart =
+                    getResources().getConfiguration().orientation
+                                    == Configuration.ORIENTATION_LANDSCAPE
+                            ? mTileViewLandscapeEdgePaddingTablet
+                            : mTileViewPortraitEdgePaddingTablet;
             horizontalSpacing =
                     (float) (availableWidth - gridStart * 2) / Math.max(1, numColumns - 1);
         } else {
@@ -189,15 +195,24 @@ public class MostVisitedTilesGridLayout extends FrameLayout implements MostVisit
         }
         int screenWidth = getResources().getDisplayMetrics().widthPixels;
         int screenHeight = getResources().getDisplayMetrics().heightPixels;
-        String logMessage = "|horizontalSpacing| = " + horizontalSpacing
-                + " |numColumns| = " + numColumns + " |availableWidth| = " + availableWidth
-                + " |screenWidth| = " + screenWidth + " |screenHeight| = " + screenHeight + ".";
+        String logMessage =
+                "|horizontalSpacing| = "
+                        + horizontalSpacing
+                        + " |numColumns| = "
+                        + numColumns
+                        + " |availableWidth| = "
+                        + availableWidth
+                        + " |screenWidth| = "
+                        + screenWidth
+                        + " |screenHeight| = "
+                        + screenHeight
+                        + ".";
         assert horizontalSpacing >= mMinHorizontalSpacing
-            : "Horizontal spacing shouldn't be smaller than minimal horizontal spacing: "
-              + logMessage;
+                : "Horizontal spacing shouldn't be smaller than minimal horizontal spacing: "
+                        + logMessage;
         assert horizontalSpacing <= mMaxHorizontalSpacing
-            : "Horizontal spacing shouldn't be larger than maximal horizontal spacing: "
-              + logMessage;
+                : "Horizontal spacing shouldn't be larger than maximal horizontal spacing: "
+                        + logMessage;
 
         return Pair.create(gridStart, Math.round(horizontalSpacing));
     }
@@ -236,8 +251,9 @@ public class MostVisitedTilesGridLayout extends FrameLayout implements MostVisit
     // TODO(crbug.com/1329288): Remove this method when the Feed position experiment is cleaned up.
     private int getGridMVTVerticalSpacingResourcesId() {
         if (!LibraryLoader.getInstance().isInitialized() || !mSearchProviderHasLogo) {
-            return mIsSurfacePolishEnabled ? R.dimen.tile_grid_layout_vertical_spacing_polish
-                                           : R.dimen.tile_grid_layout_vertical_spacing;
+            return mIsSurfacePolishEnabled
+                    ? R.dimen.tile_grid_layout_vertical_spacing_polish
+                    : R.dimen.tile_grid_layout_vertical_spacing;
         }
 
         if (FeedPositionUtils.isFeedPushDownLargeEnabled()) {
@@ -248,7 +264,8 @@ public class MostVisitedTilesGridLayout extends FrameLayout implements MostVisit
             return R.dimen.tile_grid_layout_vertical_spacing_push_down_small;
         }
 
-        return mIsSurfacePolishEnabled ? R.dimen.tile_grid_layout_vertical_spacing_polish
-                                       : R.dimen.tile_grid_layout_vertical_spacing;
+        return mIsSurfacePolishEnabled
+                ? R.dimen.tile_grid_layout_vertical_spacing_polish
+                : R.dimen.tile_grid_layout_vertical_spacing;
     }
 }

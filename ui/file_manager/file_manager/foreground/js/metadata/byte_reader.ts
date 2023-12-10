@@ -399,7 +399,7 @@ export class ByteReader {
    * @param end Maximum position to read from.
    * @return Image as a data url.
    */
-  readImage(size: number, end: number|undefined): string {
+  readImage(size: number, end?: number): string {
     const rv = ByteReader.readImage(this.view_, this.pos_, size, end);
     this.pos_ += size;
     return rv;

@@ -17,7 +17,6 @@
 #include "base/memory/writable_shared_memory_region.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/trace_event/memory_dump_manager.h"
@@ -59,7 +58,7 @@ const uint64_t kUnknownPipeIdForDebug = 0x7f7f7f7f7f7f7f7fUL;
 
 // The pipe name which must be used for the sole pipe attachment on any isolated
 // invitation.
-constexpr base::StringPiece kIsolatedInvitationPipeName = {"\0\0\0\0", 4};
+constexpr std::string_view kIsolatedInvitationPipeName = {"\0\0\0\0", 4};
 
 void InvokeProcessErrorCallback(MojoProcessErrorHandler handler,
                                 uintptr_t context,
@@ -192,7 +191,7 @@ void Core::SendBrokerClientInvitation(
 
 void Core::ConnectIsolated(ConnectionParams connection_params,
                            const ports::PortRef& port,
-                           base::StringPiece connection_name) {
+                           std::string_view connection_name) {
   RequestContext request_context;
   GetNodeController()->ConnectIsolated(std::move(connection_params), port,
                                        connection_name);
@@ -1047,7 +1046,7 @@ MojoResult Core::WrapPlatformSharedMemoryRegion(
   if (!handles_ok)
     return MOJO_RESULT_INVALID_ARGUMENT;
 
-  absl::optional<base::UnguessableToken> token =
+  std::optional<base::UnguessableToken> token =
       mojo::internal::PlatformHandleInternal::UnmarshalUnguessableToken(guid);
   if (!token.has_value()) {
     return MOJO_RESULT_INVALID_ARGUMENT;
@@ -1212,7 +1211,7 @@ MojoResult Core::AttachMessagePipeToInvitation(
     return MOJO_RESULT_RESOURCE_EXHAUSTED;
 
   MojoResult result = invitation_dispatcher->AttachMessagePipe(
-      base::StringPiece(static_cast<const char*>(name), name_num_bytes),
+      std::string_view(static_cast<const char*>(name), name_num_bytes),
       std::move(remote_peer_port));
   if (result != MOJO_RESULT_OK) {
     Close(local_handle);
@@ -1238,7 +1237,7 @@ MojoResult Core::ExtractMessagePipeFromInvitation(
 
   RequestContext request_context;
 
-  base::StringPiece name_string(static_cast<const char*>(name), name_num_bytes);
+  std::string_view name_string(static_cast<const char*>(name), name_num_bytes);
   scoped_refptr<Dispatcher> dispatcher = GetDispatcher(invitation_handle);
   if (!dispatcher || dispatcher->GetType() != Dispatcher::Type::INVITATION)
     return MOJO_RESULT_INVALID_ARGUMENT;
@@ -1351,8 +1350,8 @@ MojoResult Core::SendInvitation(
   if (is_isolated) {
     DCHECK_EQ(attached_ports.size(), 1u);
     DCHECK_EQ(attached_ports[0].first, kIsolatedInvitationPipeName);
-    base::StringPiece connection_name(options->isolated_connection_name,
-                                      options->isolated_connection_name_length);
+    std::string_view connection_name(options->isolated_connection_name,
+                                     options->isolated_connection_name_length);
     GetNodeController()->ConnectIsolated(std::move(connection_params),
                                          attached_ports[0].second,
                                          connection_name);
@@ -1424,7 +1423,7 @@ MojoResult Core::AcceptInvitation(
     ports::PortRef remote_port;
     node_controller->node()->CreatePortPair(&local_port, &remote_port);
     node_controller->ConnectIsolated(std::move(connection_params), remote_port,
-                                     base::StringPiece());
+                                     std::string_view());
     MojoResult result =
         dispatcher->AttachMessagePipe(kIsolatedInvitationPipeName, local_port);
     DCHECK_EQ(MOJO_RESULT_OK, result);

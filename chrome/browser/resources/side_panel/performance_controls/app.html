@@ -8,5 +8,23 @@
   }
 </style>
 <div class="cards">
-  <!-- Insert side panel cards here. -->
+  <dom-repeat items="{{cards_}}">
+    <template>
+      <template is="dom-if"
+          if="[[isEqualTo(item, cardTypeEnum_.BROWSER_HEALTH)]]">
+        <browser-health-card id="browserHealthCard" class="card">
+        </browser-health-card>
+      </template>
+      <template is="dom-if"
+          if="[[isEqualTo(item, cardTypeEnum_.MEMORY_SAVER)]]">
+        <memory-saver-card id="memorySaverCard" class="card">
+        </memory-saver-card>
+      </template>
+      <template is="dom-if"
+          if="[[isEqualTo(item, cardTypeEnum_.BATTERY_SAVER)]]">
+        <battery-saver-card id="batterySaverCard" class="card">
+        </battery-saver-card>
+      </template>
+    </template>
+  </dom-repeat>
 </div>

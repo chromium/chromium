@@ -9,6 +9,7 @@
 
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/task/sequenced_task_runner.h"
@@ -18,6 +19,7 @@
 #include "build/chromeos_buildflags.h"
 #include "cc/base/switches.h"
 #include "components/viz/common/display/renderer_settings.h"
+#include "components/viz/common/features.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
 #include "components/viz/service/display/display_compositor_memory_and_task_controller.h"
 #include "components/viz/service/display_embedder/server_shared_bitmap_manager.h"
@@ -167,6 +169,18 @@ OutputSurfaceProviderImpl::CreateSoftwareOutputDeviceForPlatform(
   NOTREACHED();
   return nullptr;
 #endif
+}
+
+gpu::SharedImageManager* OutputSurfaceProviderImpl::GetSharedImageManager() {
+  static const bool use_shared_image =
+      base::FeatureList::IsEnabled(features::kSharedBitmapToSharedImage);
+  return use_shared_image ? gpu_service_impl_->shared_image_manager() : nullptr;
+}
+
+gpu::SyncPointManager* OutputSurfaceProviderImpl::GetSyncPointManager() {
+  static const bool use_shared_image =
+      base::FeatureList::IsEnabled(features::kSharedBitmapToSharedImage);
+  return use_shared_image ? gpu_service_impl_->sync_point_manager() : nullptr;
 }
 
 }  // namespace viz

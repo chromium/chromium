@@ -75,11 +75,19 @@ public class MostVisitedTilesMediator implements TileGroup.Observer, TemplateUrl
     private final int mTileViewEdgePaddingForTabletPolish;
     private int mTileViewIntervalPaddingForTabletPolish;
 
-    public MostVisitedTilesMediator(Resources resources, UiConfig uiConfig, ViewGroup mvTilesLayout,
-            ViewStub noMvPlaceholderStub, TileRenderer renderer, PropertyModel propertyModel,
-            boolean shouldShowSkeletonUIPreNative, boolean isScrollableMVTEnabled, boolean isTablet,
+    public MostVisitedTilesMediator(
+            Resources resources,
+            UiConfig uiConfig,
+            ViewGroup mvTilesLayout,
+            ViewStub noMvPlaceholderStub,
+            TileRenderer renderer,
+            PropertyModel propertyModel,
+            boolean shouldShowSkeletonUIPreNative,
+            boolean isScrollableMVTEnabled,
+            boolean isTablet,
             @Nullable Runnable snapshotTileGridChangedRunnable,
-            @Nullable Runnable tileCountChangedRunnable, boolean isNtpAsHomeSurfaceEnabled) {
+            @Nullable Runnable tileCountChangedRunnable,
+            boolean isNtpAsHomeSurfaceEnabled) {
         mResources = resources;
         mUiConfig = uiConfig;
         mRenderer = renderer;
@@ -115,15 +123,22 @@ public class MostVisitedTilesMediator implements TileGroup.Observer, TemplateUrl
         }
     }
 
-    /**
-     * Called to initialize this mediator when native is ready.
-     */
-    public void initWithNative(SuggestionsUiDelegate suggestionsUiDelegate,
-            ContextMenuManager contextMenuManager, TileGroup.Delegate tileGroupDelegate,
-            OfflinePageBridge offlinePageBridge, TileRenderer renderer) {
+    /** Called to initialize this mediator when native is ready. */
+    public void initWithNative(
+            SuggestionsUiDelegate suggestionsUiDelegate,
+            ContextMenuManager contextMenuManager,
+            TileGroup.Delegate tileGroupDelegate,
+            OfflinePageBridge offlinePageBridge,
+            TileRenderer renderer) {
         mRenderer = renderer;
-        mTileGroup = new TileGroup(renderer, suggestionsUiDelegate, contextMenuManager,
-                tileGroupDelegate, /*observer=*/this, offlinePageBridge);
+        mTileGroup =
+                new TileGroup(
+                        renderer,
+                        suggestionsUiDelegate,
+                        contextMenuManager,
+                        tileGroupDelegate,
+                        /* observer= */ this,
+                        offlinePageBridge);
         mTileGroup.startObserving(MAX_RESULTS);
 
         mTemplateUrlService =
@@ -146,14 +161,17 @@ public class MostVisitedTilesMediator implements TileGroup.Observer, TemplateUrl
     public void onTileDataChanged() {
         if (mTileGroup.getTileSections().size() < 1) return;
 
-        mRenderer.renderTileSection(mTileGroup.getTileSections().get(TileSectionType.PERSONALIZED),
-                mMvTilesLayout, mTileGroup.getTileSetupDelegate());
+        mRenderer.renderTileSection(
+                mTileGroup.getTileSections().get(TileSectionType.PERSONALIZED),
+                mMvTilesLayout,
+                mTileGroup.getTileSetupDelegate());
         mTileGroup.notifyTilesRendered();
         updateTilesViewForCarouselLayout();
 
         if (mSnapshotTileGridChangedRunnable != null) mSnapshotTileGridChangedRunnable.run();
-        MostVisitedSitesMetadataUtils.getInstance().saveSuggestionListsToFile(
-                mTileGroup.getTileSections().get(TileSectionType.PERSONALIZED));
+        MostVisitedSitesMetadataUtils.getInstance()
+                .saveSuggestionListsToFile(
+                        mTileGroup.getTileSections().get(TileSectionType.PERSONALIZED));
     }
 
     @Override
@@ -200,12 +218,10 @@ public class MostVisitedTilesMediator implements TileGroup.Observer, TemplateUrl
     }
 
     public void onSwitchToForeground() {
-        mTileGroup.onSwitchToForeground(/* trackLoadTask = */ false);
+        mTileGroup.onSwitchToForeground(/* trackLoadTask= */ false);
     }
 
-    /**
-     * Maybe render MV tiles skeleton icon pre-native.
-     */
+    /** Maybe render MV tiles skeleton icon pre-native. */
     private void maybeShowMvTilesPreNative() {
         if (mInitializationComplete) return;
         try {
@@ -256,14 +272,22 @@ public class MostVisitedTilesMediator implements TileGroup.Observer, TemplateUrl
             if (mIsSurfacePolishEnabled) {
                 screenWidth -= mTileCarouselLayoutLateralMarginSumForPolish;
             }
-            int tileViewWidth = mResources.getDimensionPixelOffset(
-                    isSmallDevice ? R.dimen.tile_view_width_condensed : R.dimen.tile_view_width);
+            int tileViewWidth =
+                    mResources.getDimensionPixelOffset(
+                            isSmallDevice
+                                    ? R.dimen.tile_view_width_condensed
+                                    : R.dimen.tile_view_width);
             // We want to show four and a half tile view to make users know the MV tiles are
             // scrollable. But the padding should be equal to or larger than tile_view_padding,
             // otherwise the titles among tiles would be overlapped.
-            mTileViewPortraitIntervalPadding = Integer.max(
-                    -mResources.getDimensionPixelOffset(R.dimen.tile_view_padding),
-                    (int) ((screenWidth - mTileViewPortraitEdgePadding - tileViewWidth * 4.5) / 4));
+            mTileViewPortraitIntervalPadding =
+                    Integer.max(
+                            -mResources.getDimensionPixelOffset(R.dimen.tile_view_padding),
+                            (int)
+                                    ((screenWidth
+                                                    - mTileViewPortraitEdgePadding
+                                                    - tileViewWidth * 4.5)
+                                            / 4));
         }
     }
 
@@ -274,7 +298,8 @@ public class MostVisitedTilesMediator implements TileGroup.Observer, TemplateUrl
 
         if (mIsNtpAsHomeSurfaceOnTablet && !mIsSurfacePolishEnabled) {
             mModel.set(HORIZONTAL_EDGE_PADDINGS, 0);
-            mModel.set(UPDATE_INTERVAL_PADDINGS_TABLET,
+            mModel.set(
+                    UPDATE_INTERVAL_PADDINGS_TABLET,
                     mResources.getConfiguration().orientation
                             == Configuration.ORIENTATION_LANDSCAPE);
             return;

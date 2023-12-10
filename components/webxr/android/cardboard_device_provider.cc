@@ -9,8 +9,17 @@
 #include "components/webxr/mailbox_to_surface_bridge_impl.h"
 #include "device/vr/android/cardboard/cardboard_device.h"
 #include "device/vr/android/cardboard/cardboard_sdk_impl.h"
+#include "device/vr/android/cardboard/mock_cardboard_sdk.h"
 
 namespace webxr {
+
+// static
+bool CardboardDeviceProvider::use_cardboard_mock_for_testing_ = false;
+
+// static
+void CardboardDeviceProvider::set_use_cardboard_mock_for_testing(bool value) {
+  use_cardboard_mock_for_testing_ = value;
+}
 
 CardboardDeviceProvider::CardboardDeviceProvider(
     std::unique_ptr<webxr::VrCompositorDelegateProvider>
@@ -24,8 +33,16 @@ void CardboardDeviceProvider::Initialize(
   CHECK(!initialized_);
   DVLOG(2) << __func__ << ": Cardboard is supported, creating device";
 
+  std::unique_ptr<device::CardboardSdk> sdk;
+  if (use_cardboard_mock_for_testing_) {
+    sdk = std::make_unique<device::MockCardboardSdk>();
+  } else {
+    sdk = std::make_unique<device::CardboardSdkImpl>();
+  }
+  CHECK(sdk);
+
   cardboard_device_ = std::make_unique<device::CardboardDevice>(
-      std::make_unique<device::CardboardSdkImpl>(),
+      std::move(sdk),
       std::make_unique<webxr::MailboxToSurfaceBridgeFactoryImpl>(),
       std::make_unique<webxr::XrSessionCoordinator>(),
       std::move(compositor_delegate_provider_),

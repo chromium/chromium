@@ -23,6 +23,7 @@
 #include "third_party/blink/renderer/core/timing/performance_event_timing.h"
 #include "third_party/blink/renderer/core/timing/window_performance.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/traced_value.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace blink {
 
@@ -146,6 +147,10 @@ ResponsivenessMetrics::ResponsivenessMetrics(
       pointer_flush_timer_(window_performance_->task_runner_,
                            this,
                            &ResponsivenessMetrics::FlushPointerTimerFired),
+      contextmenu_flush_timer_(
+          window_performance_->task_runner_,
+          this,
+          &ResponsivenessMetrics::ContextmenuFlushTimerFired),
       current_interaction_id_for_event_timing_(
           // Follow the spec by choosing a random integer as the initial value
           // to discourage developers from using interactionId to count the
@@ -158,7 +163,8 @@ ResponsivenessMetrics::~ResponsivenessMetrics() = default;
 void ResponsivenessMetrics::RecordUserInteractionUKM(
     LocalDOMWindow* window,
     UserInteractionType interaction_type,
-    const WTF::Vector<EventTimestamps>& timestamps) {
+    const WTF::Vector<EventTimestamps>& timestamps,
+    uint32_t interaction_offset) {
   if (!window)
     return;
 
@@ -177,7 +183,7 @@ void ResponsivenessMetrics::RecordUserInteractionUKM(
   // cause, we need this check to avoid sending nonsensical data.
   if (max_event_duration.InMilliseconds() >= 0) {
     window->GetFrame()->Client()->DidObserveUserInteraction(
-        max_event_start, max_event_end, interaction_type);
+        max_event_start, max_event_end, interaction_type, interaction_offset);
   }
   TRACE_EVENT2("devtools.timeline", "Responsiveness.Renderer.UserInteraction",
                "data",
@@ -185,6 +191,8 @@ void ResponsivenessMetrics::RecordUserInteractionUKM(
                                         total_event_duration, interaction_type),
                "frame", GetFrameIdForTracing(window->GetFrame()));
 
+  EmitInteractionToNextPaintTraceEvent(longest_event, interaction_type,
+                                       total_event_duration);
   // Emit a trace event when "interaction to next paint" is considered "slow"
   // according to RAIL guidelines (web.dev/rail).
   constexpr base::TimeDelta kSlowInteractionToNextPaintThreshold =
@@ -237,7 +245,8 @@ void ResponsivenessMetrics::RecordDragTapOrClickUKM(
                            pointer_info.IsDrag()
                                ? UserInteractionType::kDrag
                                : UserInteractionType::kTapOrClick,
-                           pointer_info.GetTimeStamps());
+                           pointer_info.GetTimeStamps(),
+                           pointer_info.GetEntry()->interactionOffset());
 }
 
 // Event timing pointer events processing
@@ -260,15 +269,28 @@ bool ResponsivenessMetrics::SetPointerIdAndRecordLatency(
     // The pointer id of the pointerdown is no longer needed.
     pointer_id_entry_map_.erase(pointer_id);
     last_pointer_id_ = absl::nullopt;
+  } else if (event_type == event_type_names::kContextmenu) {
+    // Start a timer to flush event timing entries when times up. On receiving a
+    // new pointerup or pointerdown, the timer will be canceled and entries will
+    // be flushed immediately.
+    contextmenu_flush_timer_.StartOneShot(kFlushTimerLength, FROM_HERE);
   } else if (event_type == event_type_names::kPointerdown) {
-    if (pointer_info) {
-      // Flush the existing entry. We are starting a new interaction.
-      RecordDragTapOrClickUKM(window, *pointer_info);
-      NotifyPointerdown(pointer_info->GetEntry());
-      pointer_id_entry_map_.erase(pointer_id);
+    // If we were waiting for matching pointerup/keyup after a contextmenu, they
+    // won't show up at this point.
+    if (contextmenu_flush_timer_.IsActive()) {
+      contextmenu_flush_timer_.Stop();
+      FlushPointerdownAndPointerup();
+      FlushKeydown();
+    } else {
+      if (pointer_info) {
+        // Flush the existing entry. We are starting a new interaction.
+        RecordDragTapOrClickUKM(window, *pointer_info);
+        NotifyPointerdown(pointer_info->GetEntry());
+        pointer_id_entry_map_.erase(pointer_id);
+      }
+      // Any existing pointerup in the map cannot fire a click.
+      FlushPointerup();
     }
-    // Any existing pointerup in the map cannot fire a click.
-    StopTimerAndFlush();
     pointer_id_entry_map_.Set(
         pointer_id, PointerEntryAndInfo::Create(entry, event_timestamps));
 
@@ -276,12 +298,16 @@ bool ResponsivenessMetrics::SetPointerIdAndRecordLatency(
     last_pointer_id_ = pointer_id;
     return false;
   } else if (event_type == event_type_names::kPointerup) {
+    if (contextmenu_flush_timer_.IsActive()) {
+      contextmenu_flush_timer_.Stop();
+    }
     // Generate a new interaction id.
     UpdateInteractionId();
-    entry->SetInteractionId(GetCurrentInteractionId());
+    entry->SetInteractionIdAndOffset(GetCurrentInteractionId(),
+                                     GetInteractionCount());
 
     // Any existing pointerup in the map cannot fire a click.
-    StopTimerAndFlush();
+    FlushPointerup();
     // Platforms like Android would create ever-increasing pointer_id for
     // interactions, whereas platforms like linux could reuse the same id for
     // different interactions. So resetting pointer_info here if it's flushed.
@@ -294,7 +320,8 @@ bool ResponsivenessMetrics::SetPointerIdAndRecordLatency(
         pointer_info->GetEntry()->name() == event_type_names::kPointerdown) {
       // Set interaction id and notify the pointer down entry.
       PerformanceEventTiming* pointer_down_entry = pointer_info->GetEntry();
-      pointer_down_entry->SetInteractionId(GetCurrentInteractionId());
+      pointer_down_entry->SetInteractionIdAndOffset(entry->interactionId(),
+                                                    entry->interactionOffset());
       NotifyPointerdown(pointer_down_entry);
       pointer_info->GetTimeStamps().push_back(event_timestamps);
     } else {
@@ -322,9 +349,11 @@ bool ResponsivenessMetrics::SetPointerIdAndRecordLatency(
       // with contextmenu.
       if (previous_entry->interactionId() == 0u) {
         UpdateInteractionId();
-        previous_entry->SetInteractionId(GetCurrentInteractionId());
+        previous_entry->SetInteractionIdAndOffset(GetCurrentInteractionId(),
+                                                  GetInteractionCount());
       }
-      entry->SetInteractionId(previous_entry->interactionId());
+      entry->SetInteractionIdAndOffset(previous_entry->interactionId(),
+                                       previous_entry->interactionOffset());
       pointer_info->GetTimeStamps().push_back(event_timestamps);
       RecordDragTapOrClickUKM(window, *pointer_info);
       // The pointer id of the pointerdown is no longer needed.
@@ -335,12 +364,13 @@ bool ResponsivenessMetrics::SetPointerIdAndRecordLatency(
       // interactionId. No need to add to the map since this is the last event
       // in the interaction.
       UpdateInteractionId();
-      entry->SetInteractionId(GetCurrentInteractionId());
+      entry->SetInteractionIdAndOffset(GetCurrentInteractionId(),
+                                       GetInteractionCount());
       RecordDragTapOrClickUKM(
           window, *PointerEntryAndInfo::Create(entry, event_timestamps));
     }
     // Any existing pointerup in the map cannot fire a click.
-    StopTimerAndFlush();
+    FlushPointerup();
     last_pointer_id_ = absl::nullopt;
   }
   return true;
@@ -348,9 +378,10 @@ bool ResponsivenessMetrics::SetPointerIdAndRecordLatency(
 
 void ResponsivenessMetrics::RecordKeyboardUKM(
     LocalDOMWindow* window,
-    const WTF::Vector<EventTimestamps>& event_timestamps) {
+    const WTF::Vector<EventTimestamps>& event_timestamps,
+    uint32_t interaction_offset) {
   RecordUserInteractionUKM(window, UserInteractionType::kKeyboard,
-                           event_timestamps);
+                           event_timestamps, interaction_offset);
 }
 
 // Event timing keyboard events processing
@@ -366,11 +397,18 @@ bool ResponsivenessMetrics::SetKeyIdAndRecordLatency(
   last_pointer_id_ = absl::nullopt;
   auto event_type = entry->name();
   if (event_type == event_type_names::kKeydown) {
-    DCHECK(key_code.has_value());
+    // If we were waiting for matching pointerup/keyup after a contextmenu, they
+    // won't show up at this point.
+    if (contextmenu_flush_timer_.IsActive()) {
+      contextmenu_flush_timer_.Stop();
+      FlushPointerdownAndPointerup();
+      FlushKeydown();
+    }
     // During compositions, we ignore keydowns/keyups and look at input events.
     if (composition_started_)
       return true;
 
+    DCHECK(key_code.has_value());
     if (key_code_entry_map_.Contains(*key_code)) {
       auto* previous_entry = key_code_entry_map_.at(*key_code);
       // Ignore repeat IME keydowns. See
@@ -386,9 +424,11 @@ bool ResponsivenessMetrics::SetKeyIdAndRecordLatency(
         // Generate a new interaction id for |previous_entry|. This case could
         // be caused by keeping a key pressed for a while.
         UpdateInteractionId();
-        previous_entry->GetEntry()->SetInteractionId(GetCurrentInteractionId());
+        previous_entry->GetEntry()->SetInteractionIdAndOffset(
+            GetCurrentInteractionId(), GetInteractionCount());
         RecordKeyboardUKM(window_performance_->DomWindow(),
-                          {previous_entry->GetTimeStamps()});
+                          {previous_entry->GetTimeStamps()},
+                          previous_entry->GetEntry()->interactionOffset());
       }
       window_performance_->NotifyAndAddEventTimingBuffer(
           previous_entry->GetEntry());
@@ -399,6 +439,9 @@ bool ResponsivenessMetrics::SetKeyIdAndRecordLatency(
     // interactionId of keydowns.
     return false;
   } else if (event_type == event_type_names::kKeyup) {
+    if (contextmenu_flush_timer_.IsActive()) {
+      contextmenu_flush_timer_.Stop();
+    }
     DCHECK(key_code.has_value());
     if (composition_started_ || !key_code_entry_map_.Contains(*key_code))
       return true;
@@ -406,12 +449,16 @@ bool ResponsivenessMetrics::SetKeyIdAndRecordLatency(
     auto* previous_entry = key_code_entry_map_.at(*key_code);
     // Generate a new interaction id for the keydown-keyup pair.
     UpdateInteractionId();
-    previous_entry->GetEntry()->SetInteractionId(GetCurrentInteractionId());
+    previous_entry->GetEntry()->SetInteractionIdAndOffset(
+        GetCurrentInteractionId(), GetInteractionCount());
     window_performance_->NotifyAndAddEventTimingBuffer(
         previous_entry->GetEntry());
-    entry->SetInteractionId(GetCurrentInteractionId());
+    entry->SetInteractionIdAndOffset(
+        previous_entry->GetEntry()->interactionId(),
+        previous_entry->GetEntry()->interactionOffset());
     RecordKeyboardUKM(window_performance_->DomWindow(),
-                      {previous_entry->GetTimeStamps(), event_timestamps});
+                      {previous_entry->GetTimeStamps(), event_timestamps},
+                      entry->interactionOffset());
     key_code_entry_map_.erase(*key_code);
   } else if (event_type == event_type_names::kCompositionstart) {
     composition_started_ = true;
@@ -429,19 +476,20 @@ bool ResponsivenessMetrics::SetKeyIdAndRecordLatency(
     // non-trivial data, so we want to increase interactionId.
     // TODO(crbug.com/1252856): fix counts in ChromeOS due to duplicate events.
     UpdateInteractionId();
-    entry->SetInteractionId(GetCurrentInteractionId());
-    RecordKeyboardUKM(window_performance_->DomWindow(), {event_timestamps});
+    entry->SetInteractionIdAndOffset(GetCurrentInteractionId(),
+                                     GetInteractionCount());
+    RecordKeyboardUKM(window_performance_->DomWindow(), {event_timestamps},
+                      entry->interactionOffset());
   }
   return true;
 }
 
-void ResponsivenessMetrics::MaybeFlushKeyboardEntries(
-    DOMHighResTimeStamp current_time) {
+void ResponsivenessMetrics::FlushExpiredKeydown(DOMHighResTimeStamp end_time) {
   // We cannot delete from a HashMap while iterating.
   Vector<int> key_codes_to_remove;
   for (const auto& entry : key_code_entry_map_) {
     PerformanceEventTiming* key_down = entry.value->GetEntry();
-    if (current_time - key_down->processingEnd() > kMaxDelayForEntries) {
+    if (end_time - key_down->processingEnd() > kMaxDelayForEntries) {
       window_performance_->NotifyAndAddEventTimingBuffer(key_down);
       key_codes_to_remove.push_back(entry.key);
     }
@@ -449,7 +497,24 @@ void ResponsivenessMetrics::MaybeFlushKeyboardEntries(
   key_code_entry_map_.RemoveAll(key_codes_to_remove);
 }
 
-uint64_t ResponsivenessMetrics::GetInteractionCount() const {
+void ResponsivenessMetrics::FlushKeydown() {
+  for (const auto& entry : key_code_entry_map_) {
+    PerformanceEventTiming* key_down = entry.value->GetEntry();
+    // Keydowns triggered contextmenu, though missing pairing keyups due to a
+    // known issue - https://github.com/w3c/pointerevents/issues/408, should
+    // still be counted as a valid interaction and get a valid id assigned.
+    UpdateInteractionId();
+    key_down->SetInteractionIdAndOffset(GetCurrentInteractionId(),
+                                        GetInteractionCount());
+    window_performance_->NotifyAndAddEventTimingBuffer(key_down);
+    RecordKeyboardUKM(window_performance_->DomWindow(),
+                      {entry.value->GetTimeStamps()},
+                      key_down->interactionOffset());
+  }
+  key_code_entry_map_.clear();
+}
+
+uint32_t ResponsivenessMetrics::GetInteractionCount() const {
   return interaction_count_;
 }
 
@@ -463,33 +528,70 @@ uint32_t ResponsivenessMetrics::GetCurrentInteractionId() const {
 }
 
 void ResponsivenessMetrics::FlushPointerTimerFired(TimerBase*) {
-  FlushPointerMap();
+  FlushPointerup();
 }
 
-void ResponsivenessMetrics::FlushPointerMap() {
+void ResponsivenessMetrics::FlushPointerup() {
   LocalDOMWindow* window = window_performance_->DomWindow();
-  if (!window)
+  if (!window) {
     return;
+  }
+  if (pointer_flush_timer_.IsActive()) {
+    pointer_flush_timer_.Stop();
+  }
+
   Vector<PointerId> pointer_ids_to_remove;
   for (const auto& item : pointer_id_entry_map_) {
     PerformanceEventTiming* entry = item.value->GetEntry();
-    // Report entries that are currently waiting for a click. This could be the
-    // case when the entry's name() is pointerup or when we have more than one
-    // event for this |item|, which means we have pointerdown and pointerup.
+    // Report pointerups that are currently waiting for a click. This could be
+    // the case when the entry's name() is pointerup or when we have more than
+    // one event for this |item|, which means we have pointerdown and pointerup.
     if (entry->name() == event_type_names::kPointerup ||
         item.value->GetTimeStamps().size() > 1u) {
       RecordDragTapOrClickUKM(window, *item.value);
       pointer_ids_to_remove.push_back(item.key);
     }
   }
+
+  // map clean up
   pointer_id_entry_map_.RemoveAll(pointer_ids_to_remove);
 }
 
-void ResponsivenessMetrics::StopTimerAndFlush() {
+void ResponsivenessMetrics::ContextmenuFlushTimerFired(TimerBase*) {
+  // Pointerdown could be followed by a contextmenu without pointerup, in this
+  // case we need to treat contextmenu as if pointerup and flush the previous
+  // pointerdown with a valid interactionId. (crbug.com/1413096)
+  FlushPointerdownAndPointerup();
+  // Windows keyboard could have a contextmenu key and trigger keydown
+  // followed by contextmenu when pressed. (crbug.com/1428603)
+  FlushKeydown();
+}
+
+void ResponsivenessMetrics::FlushPointerdownAndPointerup() {
+  LocalDOMWindow* window = window_performance_->DomWindow();
+  if (!window) {
+    return;
+  }
   if (pointer_flush_timer_.IsActive()) {
     pointer_flush_timer_.Stop();
   }
-  FlushPointerMap();
+
+  for (const auto& item : pointer_id_entry_map_) {
+    PerformanceEventTiming* entry = item.value->GetEntry();
+    if (entry->name() == event_type_names::kPointerdown &&
+        item.value->GetTimeStamps().size() == 1u) {
+      UpdateInteractionId();
+      entry->SetInteractionIdAndOffset(GetCurrentInteractionId(),
+                                       GetInteractionCount());
+      // Pointerdown without pointerup nor click need to notify performance
+      // observer since they haven't.
+      NotifyPointerdown(entry);
+    }
+    RecordDragTapOrClickUKM(window, *item.value);
+  }
+
+  // map clean up
+  pointer_id_entry_map_.clear();
 }
 
 void ResponsivenessMetrics::NotifyPointerdown(
@@ -514,6 +616,44 @@ void ResponsivenessMetrics::Trace(Visitor* visitor) const {
   visitor->Trace(pointer_id_entry_map_);
   visitor->Trace(key_code_entry_map_);
   visitor->Trace(pointer_flush_timer_);
+  visitor->Trace(contextmenu_flush_timer_);
+}
+
+perfetto::protos::pbzero::WebContentInteraction::Type
+ResponsivenessMetrics::UserInteractionTypeToProto(
+    UserInteractionType interaction_type) const {
+  using Interaction = perfetto::protos::pbzero::WebContentInteraction;
+  switch (interaction_type) {
+    case UserInteractionType::kDrag:
+      return Interaction::INTERACTION_DRAG;
+    case UserInteractionType::kKeyboard:
+      return Interaction::INTERACTION_KEYBOARD;
+    case UserInteractionType::kTapOrClick:
+      return Interaction::INTERACTION_CLICK_TAP;
+  }
+
+  return Interaction::INTERACTION_UNSPECIFIED;
+}
+
+void ResponsivenessMetrics::EmitInteractionToNextPaintTraceEvent(
+    const ResponsivenessMetrics::EventTimestamps& event,
+    UserInteractionType interaction_type,
+    base::TimeDelta total_event_duration) {
+  const perfetto::Track track(base::trace_event::GetNextGlobalTraceId(),
+                              perfetto::ProcessTrack::Current());
+  TRACE_EVENT_BEGIN(
+      "interactions", "Web Interaction", track, event.start_time,
+      [&](perfetto::EventContext& ctx) {
+        auto* web_content_interaction =
+            ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>()
+                ->set_web_content_interaction();
+        web_content_interaction->set_type(
+            UserInteractionTypeToProto(interaction_type));
+        web_content_interaction->set_total_duration_ms(
+            total_event_duration.InMilliseconds());
+      });
+
+  TRACE_EVENT_END("interactions", track, event.end_time);
 }
 
 }  // namespace blink

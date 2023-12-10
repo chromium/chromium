@@ -57,8 +57,8 @@ class NET_EXPORT_PRIVATE ProxyClientSocket : public StreamSocket {
 
  protected:
   // The HTTP CONNECT method for establishing a tunnel connection is documented
-  // in draft-luotonen-web-proxy-tunneling-01.txt and RFC 2817, Sections 5.2
-  // and 5.3.
+  // in Section 9.3.6 of RFC 9110.
+  // https://www.rfc-editor.org/rfc/rfc9110#name-connect
   static void BuildTunnelRequest(const HostPortPair& endpoint,
                                  const HttpRequestHeaders& extra_headers,
                                  const std::string& user_agent,

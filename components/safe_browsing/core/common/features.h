@@ -47,6 +47,9 @@ const char kClientSideDetectionTagParamName[] = "reporter_omaha_tag";
 // the client_side_detection_type field
 BASE_DECLARE_FEATURE(kClientSideDetectionTypeForceRequest);
 
+// Creates and sends CSBRRs when warnings are first shown to users.
+BASE_DECLARE_FEATURE(kCreateWarningShownClientSafeBrowsingReports);
+
 // Controls whether we prompt encrypted archive deep scans to provide a
 // password.
 BASE_DECLARE_FEATURE(kDeepScanningEncryptedArchives);
@@ -56,14 +59,6 @@ BASE_DECLARE_FEATURE(kDelayedWarnings);
 // True if mouse clicks should undelay the warnings immediately when delayed
 // warnings feature is enabled.
 extern const base::FeatureParam<bool> kDelayedWarningsEnableMouseClicks;
-
-// Whether to use download bubble instead of download shelf.
-BASE_DECLARE_FEATURE(kDownloadBubble);
-
-// The V2 of the download bubble, consisting of features that were not available
-// on the download shelf. This is only eligible to be enabled when
-// kDownloadBubble is already enabled.
-BASE_DECLARE_FEATURE(kDownloadBubbleV2);
 
 // The kill switch for download tailored warnings. The main control is on the
 // server-side.
@@ -207,6 +202,11 @@ extern const base::FeatureParam<int> kReferrerChainEventMaximumCount;
 // new triggers
 BASE_DECLARE_FEATURE(kSafeBrowsingCsbrrNewDownloadTrigger);
 
+// Controls whether asynchronous real-time check is enabled. When enabled, the
+// navigation can be committed before real-time Safe Browsing check is
+// completed.
+BASE_DECLARE_FEATURE(kSafeBrowsingAsyncRealTimeCheck);
+
 // Controls whether the lookup mechanism experiment is enabled, which runs all
 // three lookup mechanisms instead of just real-time URL lookups for ESB users.
 // The other two lookup mechanisms are run in the background, and the results
@@ -224,6 +224,9 @@ extern const base::FeatureParam<bool>
 #if BUILDFLAG(IS_ANDROID)
 // Use new GMSCore API for hash database check on browser URLs.
 BASE_DECLARE_FEATURE(kSafeBrowsingNewGmsApiForBrowseUrlDatabaseCheck);
+
+// Use new GMSCore API for subresource filter checks.
+BASE_DECLARE_FEATURE(kSafeBrowsingNewGmsApiForSubresourceFilterCheck);
 #endif
 
 // Run Safe Browsing code on UI thread.
@@ -262,6 +265,9 @@ BASE_DECLARE_FEATURE(kStrictDownloadTimeout);
 
 // Specifies the duration of the timeout, in milliseconds.
 extern const base::FeatureParam<int> kStrictDownloadTimeoutMilliseconds;
+
+// Enables suspicious site detection for real time URL lookups.
+BASE_DECLARE_FEATURE(kSuspiciousSiteDetectionRTLookups);
 
 // Controls the daily quota for the suspicious site trigger.
 BASE_DECLARE_FEATURE(kSuspiciousSiteTriggerQuotaFeature);

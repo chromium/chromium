@@ -105,8 +105,7 @@ void UpdateSpecificsFromKeyDerivationParams(
       EnumKeyDerivationMethodToProto(params.method()));
   if (params.method() == KeyDerivationMethod::SCRYPT_8192_8_11) {
     // Persist the salt used for key derivation in Nigori if we're using scrypt.
-    std::string encoded_salt;
-    base::Base64Encode(params.scrypt_salt(), &encoded_salt);
+    std::string encoded_salt = base::Base64Encode(params.scrypt_salt());
     specifics->set_custom_passphrase_key_derivation_salt(encoded_salt);
   }
 }

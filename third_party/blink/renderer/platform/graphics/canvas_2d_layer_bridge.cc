@@ -60,14 +60,6 @@ Canvas2DLayerBridge::Canvas2DLayerBridge()
 Canvas2DLayerBridge::~Canvas2DLayerBridge() {
   if (IsHibernating())
     logger_->ReportHibernationEvent(kHibernationEndedWithTeardown);
-  ResetResourceProvider();
-  if (resource_host_) {
-    // Resetting the layer is required to trigger the recreation of a new layer
-    // in the case where destruction is caused by a canvas resize. Test:
-    // virtual/gpu/fast/canvas/canvas-resize-after-paint-without-layout.html
-    // TODO(junov): Resize without destroying Canvas2DLayerBridge.
-    resource_host_->ResetLayer();
-  }
 }
 
 void Canvas2DLayerBridge::SetCanvasResourceHost(CanvasResourceHost* host) {

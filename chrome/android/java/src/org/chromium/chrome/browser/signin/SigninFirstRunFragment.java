@@ -44,14 +44,12 @@ import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
 
-/**
- * This fragment handles the sign-in without sync consent during the FRE.
- */
-public class SigninFirstRunFragment extends Fragment implements FirstRunFragment,
-                                                                SigninFirstRunCoordinator.Delegate,
-                                                                DeviceLockCoordinator.Delegate {
-    @VisibleForTesting
-    static final int ADD_ACCOUNT_REQUEST_CODE = 1;
+/** This fragment handles the sign-in without sync consent during the FRE. */
+public class SigninFirstRunFragment extends Fragment
+        implements FirstRunFragment,
+                SigninFirstRunCoordinator.Delegate,
+                DeviceLockCoordinator.Delegate {
+    @VisibleForTesting static final int ADD_ACCOUNT_REQUEST_CODE = 1;
 
     // Used as a view holder for the current orientation of the device.
     private FrameLayout mFragmentView;
@@ -69,15 +67,23 @@ public class SigninFirstRunFragment extends Fragment implements FirstRunFragment
     public void onAttach(Context context) {
         super.onAttach(context);
         mModalDialogManager = ((ModalDialogManagerHolder) getActivity()).getModalDialogManager();
-        mSigninFirstRunCoordinator = new SigninFirstRunCoordinator(requireContext(),
-                mModalDialogManager, this, PrivacyPreferencesManagerImpl.getInstance());
+        mSigninFirstRunCoordinator =
+                new SigninFirstRunCoordinator(
+                        requireContext(),
+                        mModalDialogManager,
+                        this,
+                        PrivacyPreferencesManagerImpl.getInstance());
 
         if (getPageDelegate().isLaunchedFromCct()) {
-            mSkipTosDialogPolicyListener = new SkipTosDialogPolicyListener(
-                    getPageDelegate().getPolicyLoadListener(), EnterpriseInfo.getInstance(), null);
-            mSkipTosDialogPolicyListener.onAvailable((Boolean skipTos) -> {
-                if (skipTos) exitFirstRun();
-            });
+            mSkipTosDialogPolicyListener =
+                    new SkipTosDialogPolicyListener(
+                            getPageDelegate().getPolicyLoadListener(),
+                            EnterpriseInfo.getInstance(),
+                            null);
+            mSkipTosDialogPolicyListener.onAvailable(
+                    (Boolean skipTos) -> {
+                        if (skipTos) exitFirstRun();
+                    });
         }
     }
 
@@ -101,9 +107,11 @@ public class SigninFirstRunFragment extends Fragment implements FirstRunFragment
         }
         // Inflate the view required for the current configuration and set it as the fragment view.
         mFragmentView.removeAllViews();
-        mMainView = inflateFragmentView(
-                (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE),
-                newConfig);
+        mMainView =
+                inflateFragmentView(
+                        (LayoutInflater)
+                                getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE),
+                        newConfig);
         mFragmentView.addView(mMainView);
     }
 
@@ -119,7 +127,8 @@ public class SigninFirstRunFragment extends Fragment implements FirstRunFragment
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == ADD_ACCOUNT_REQUEST_CODE && resultCode == Activity.RESULT_OK
+        if (requestCode == ADD_ACCOUNT_REQUEST_CODE
+                && resultCode == Activity.RESULT_OK
                 && data != null) {
             String addedAccountName = data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
             if (addedAccountName != null) {
@@ -148,17 +157,18 @@ public class SigninFirstRunFragment extends Fragment implements FirstRunFragment
     @Override
     public void addAccount() {
         recordFreProgressHistogram(MobileFreProgress.WELCOME_ADD_ACCOUNT);
-        AccountManagerFacadeProvider.getInstance().createAddAccountIntent(
-                (@Nullable Intent intent) -> {
-                    if (intent != null) {
-                        startActivityForResult(intent, ADD_ACCOUNT_REQUEST_CODE);
-                        return;
-                    }
+        AccountManagerFacadeProvider.getInstance()
+                .createAddAccountIntent(
+                        (@Nullable Intent intent) -> {
+                            if (intent != null) {
+                                startActivityForResult(intent, ADD_ACCOUNT_REQUEST_CODE);
+                                return;
+                            }
 
-                    // AccountManagerFacade couldn't create intent, use SigninUtils to open settings
-                    // instead.
-                    SigninUtils.openSettingsForAllAccounts(getActivity());
-                });
+                            // AccountManagerFacade couldn't create intent, use SigninUtils to open
+                            // settings instead.
+                            SigninUtils.openSettingsForAllAccounts(getActivity());
+                        });
     }
 
     /** Implements {@link SigninFirstRunCoordinator.Delegate}. */
@@ -225,30 +235,39 @@ public class SigninFirstRunFragment extends Fragment implements FirstRunFragment
         // Make sure this function is called at most once.
         if (!mExitFirstRunCalled) {
             mExitFirstRunCalled = true;
-            PostTask.postDelayedTask(TaskTraits.UI_DEFAULT, () -> {
-                mDelayedExitFirstRunCalledForTesting = true;
+            PostTask.postDelayedTask(
+                    TaskTraits.UI_DEFAULT,
+                    () -> {
+                        mDelayedExitFirstRunCalledForTesting = true;
 
-                // If we've been detached, someone else has handled something, and it's no longer
-                // clear that we should still be accepting the ToS and exiting the FRE.
-                if (isDetached()) return;
+                        // If we've been detached, someone else has handled something, and it's no
+                        // longer clear that we should still be accepting the ToS and exiting the
+                        // FRE.
+                        if (isDetached()) return;
 
-                getPageDelegate().acceptTermsOfService(false);
-                getPageDelegate().exitFirstRun();
-            }, FirstRunUtils.getSkipTosExitDelayMs());
+                        getPageDelegate().acceptTermsOfService(false);
+                        getPageDelegate().exitFirstRun();
+                    },
+                    FirstRunUtils.getSkipTosExitDelayMs());
         }
     }
 
     private View inflateFragmentView(LayoutInflater inflater, Configuration configuration) {
         // Since the landscape view has two panes the minimum screenWidth to show it is set to
         // 600dp for phones.
-        boolean useLandscapeLayout = getPageDelegate().canUseLandscapeLayout()
-                && configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
-                && configuration.screenWidthDp >= 600;
+        boolean useLandscapeLayout =
+                getPageDelegate().canUseLandscapeLayout()
+                        && configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+                        && configuration.screenWidthDp >= 600;
 
-        final SigninFirstRunView view = (SigninFirstRunView) inflater.inflate(useLandscapeLayout
-                        ? R.layout.signin_first_run_landscape_view
-                        : R.layout.signin_first_run_portrait_view,
-                null, false);
+        final SigninFirstRunView view =
+                (SigninFirstRunView)
+                        inflater.inflate(
+                                useLandscapeLayout
+                                        ? R.layout.signin_first_run_landscape_view
+                                        : R.layout.signin_first_run_portrait_view,
+                                null,
+                                false);
         mSigninFirstRunCoordinator.setView(view);
         return view;
     }
@@ -256,8 +275,9 @@ public class SigninFirstRunFragment extends Fragment implements FirstRunFragment
     /** Implements {@link SigninFirstRunCoordinator.Delegate}. */
     @Override
     public void displayDeviceLockPage(Account selectedAccount) {
-        mDeviceLockCoordinator = new DeviceLockCoordinator(
-                this, getPageDelegate().getWindowAndroid(), getActivity(), selectedAccount);
+        mDeviceLockCoordinator =
+                new DeviceLockCoordinator(
+                        this, getPageDelegate().getWindowAndroid(), getActivity(), selectedAccount);
     }
 
     /** Implements {@link DeviceLockCoordinator.Delegate}. */

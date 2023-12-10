@@ -11,7 +11,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/infobars/infobar_metrics_recorder.h"
+#import "ios/chrome/browser/infobars/model/infobar_metrics_recorder.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_button_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
@@ -389,7 +389,7 @@ const CGFloat kInfobarSaveAddressProfileSeparatorInset = 54;
       [self detailItemWithType:ItemTypeMigrateInAccountAddress
                           text:self.profileDescriptionForMigrationPrompt
                         symbol:CustomSymbolTemplateWithPointSize(
-                                   kLocationFillSymbol, kSymbolSize)
+                                   kLocationSymbol, kSymbolSize)
           imageTintColorIsGrey:YES];
   [model addItem:addressItem toSectionWithIdentifier:SectionIdentifierFields];
 
@@ -459,8 +459,7 @@ const CGFloat kInfobarSaveAddressProfileSeparatorInset = 54;
       return DefaultSymbolTemplateWithPointSize(kPersonFillSymbol, kSymbolSize);
     case AutofillUITypeAddressHomeAddress:
     case AutofillUITypeProfileHomeAddressStreet:
-      return CustomSymbolTemplateWithPointSize(kLocationFillSymbol,
-                                               kSymbolSize);
+      return CustomSymbolTemplateWithPointSize(kLocationSymbol, kSymbolSize);
     case AutofillUITypeProfileEmailAddress:
       return DefaultSymbolTemplateWithPointSize(kMailFillSymbol, kSymbolSize);
     case AutofillUITypeProfileHomePhoneWholeNumber:

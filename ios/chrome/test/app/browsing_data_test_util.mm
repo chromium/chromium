@@ -14,7 +14,7 @@
 #import "components/keyed_service/core/service_access_type.h"
 #import "ios/chrome/app/main_controller.h"
 #import "ios/chrome/browser/browsing_data/model/browsing_data_remove_mask.h"
-#import "ios/chrome/browser/history/history_service_factory.h"
+#import "ios/chrome/browser/history/model/history_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/commands/browsing_data_commands.h"
 #import "ios/chrome/test/app/chrome_test_util.h"

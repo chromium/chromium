@@ -21,9 +21,7 @@ import androidx.appcompat.app.AlertDialog;
 import org.chromium.chrome.browser.password_manager.settings.ReauthenticationManager;
 import org.chromium.chrome.browser.password_manager.settings.ReauthenticationManager.ReauthScope;
 
-/**
- * Shows the dialog that allows the user to see the compromised credential.
- */
+/** Shows the dialog that allows the user to see the compromised credential. */
 public class PasswordCheckViewDialogFragment extends PasswordCheckDialogFragment {
     private CompromisedCredential mCredential;
 
@@ -32,35 +30,40 @@ public class PasswordCheckViewDialogFragment extends PasswordCheckDialogFragment
         mCredential = credential;
     }
 
-    /**
-     * Opens the dialog with the compromised credential
-     */
+    /** Opens the dialog with the compromised credential */
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         getActivity().getWindow().setFlags(LayoutParams.FLAG_SECURE, LayoutParams.FLAG_SECURE);
-        View dialogContent = getActivity().getLayoutInflater().inflate(
-                R.layout.password_check_view_credential_dialog, null);
+        View dialogContent =
+                getActivity()
+                        .getLayoutInflater()
+                        .inflate(R.layout.password_check_view_credential_dialog, null);
         TextView passwordView = dialogContent.findViewById(R.id.view_dialog_compromised_password);
         passwordView.setText(mCredential.getPassword());
-        passwordView.setInputType(InputType.TYPE_CLASS_TEXT
-                | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
-                | InputType.TYPE_TEXT_FLAG_MULTI_LINE);
+        passwordView.setInputType(
+                InputType.TYPE_CLASS_TEXT
+                        | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
+                        | InputType.TYPE_TEXT_FLAG_MULTI_LINE);
 
         ClipboardManager clipboard =
-                (ClipboardManager) getActivity().getApplicationContext().getSystemService(
-                        Context.CLIPBOARD_SERVICE);
+                (ClipboardManager)
+                        getActivity()
+                                .getApplicationContext()
+                                .getSystemService(Context.CLIPBOARD_SERVICE);
         ImageButton copyButton = dialogContent.findViewById(R.id.view_dialog_copy_button);
         copyButton.setClickable(true);
-        copyButton.setOnClickListener(unusedView -> {
-            ClipData clip = ClipData.newPlainText("password", mCredential.getPassword());
-            clipboard.setPrimaryClip(clip);
-        });
+        copyButton.setOnClickListener(
+                unusedView -> {
+                    ClipData clip = ClipData.newPlainText("password", mCredential.getPassword());
+                    clipboard.setPrimaryClip(clip);
+                });
 
-        AlertDialog viewDialog = new AlertDialog.Builder(getActivity())
-                                         .setTitle(mCredential.getDisplayOrigin())
-                                         .setNegativeButton(R.string.close, mHandler)
-                                         .setView(dialogContent)
-                                         .create();
+        AlertDialog viewDialog =
+                new AlertDialog.Builder(getActivity())
+                        .setTitle(mCredential.getDisplayOrigin())
+                        .setNegativeButton(R.string.close, mHandler)
+                        .setView(dialogContent)
+                        .create();
         return viewDialog;
     }
 

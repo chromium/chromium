@@ -38,8 +38,7 @@ public class MediaNotificationUma {
      */
     public static void recordClickSource(Intent intent) {
         if (intent == null) return;
-        @Source
-        int source = intent.getIntExtra(INTENT_EXTRA_NAME, Source.INVALID);
+        @Source int source = intent.getIntExtra(INTENT_EXTRA_NAME, Source.INVALID);
         if (source == Source.INVALID || source >= Source.NUM_ENTRIES) return;
         RecordHistogram.recordEnumeratedHistogram(
                 "Media.Notification.Click", source, Source.NUM_ENTRIES);

@@ -5,10 +5,10 @@
 #ifndef EXTENSIONS_BROWSER_EVENT_ROUTER_H_
 #define EXTENSIONS_BROWSER_EVENT_ROUTER_H_
 
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
-
 #include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
@@ -37,7 +37,6 @@
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 class GURL;
@@ -68,6 +67,11 @@ enum class EventDispatchSource : int {
   // Event went through EventRouter::DispatchEventToSender() dispatch flow.
   kDispatchEventToSender,
 };
+
+// The upper bound of time allowed for event dispatch histograms. Also used in
+// histograms for determining when an event is "stale" (it has not been acked by
+// the renderer to the browser by this time).
+inline constexpr base::TimeDelta kEventAckMetricTimeLimit = base::Minutes(5);
 
 // TODO(lazyboy): Document how extension events work, including how listeners
 // are registered and how listeners are tracked in renderer and browser process.
@@ -480,12 +484,16 @@ class EventRouter : public KeyedService,
                                base::TimeTicks dispatch_start_time,
                                int64_t service_worker_version_id,
                                EventDispatchSource dispatch_source);
-  void DecrementInFlightEventsForServiceWorker(const WorkerId& worker_id,
-                                               int event_id);
+  void DecrementInFlightEventsForServiceWorker(
+      const WorkerId& worker_id,
+      int event_id,
+      // Always false since this is only possibly true for lazy background page.
+      bool event_will_run_in_lazy_background_page_script);
   void DecrementInFlightEventsForRenderFrameHost(
       int render_process_host,
       const ExtensionId& extension_id,
-      int event_id);
+      int event_id,
+      bool event_will_run_in_lazy_background_page_script);
 
   void RouteDispatchEvent(
       content::RenderProcessHost* rph,
@@ -563,7 +571,7 @@ struct Event {
       Feature::Context,
       const Extension*,
       const base::Value::Dict*,
-      absl::optional<base::Value::List>& event_args_out,
+      std::optional<base::Value::List>& event_args_out,
       mojom::EventFilteringInfoPtr& event_filtering_info_out)>;
 
   using DidDispatchCallback = base::RepeatingCallback<void(const EventTarget&)>;
@@ -585,6 +593,9 @@ struct Event {
   // unless the extension has permission (e.g. incognito tab update -> normal
   // tab only works if extension is allowed incognito access).
   const raw_ptr<content::BrowserContext> restrict_to_browser_context;
+
+  // If present, then the event will only be sent to this context type.
+  const absl::optional<Feature::Context> restrict_to_context_type;
 
   // If not empty, the event is only sent to extensions with host permissions
   // for this url.
@@ -632,12 +643,15 @@ struct Event {
   Event(events::HistogramValue histogram_value,
         base::StringPiece event_name,
         base::Value::List event_args,
-        content::BrowserContext* restrict_to_browser_context);
+        content::BrowserContext* restrict_to_browser_context,
+        absl::optional<Feature::Context> restrict_to_context_type =
+            absl::nullopt);
 
   Event(events::HistogramValue histogram_value,
         base::StringPiece event_name,
         base::Value::List event_args,
         content::BrowserContext* restrict_to_browser_context,
+        absl::optional<Feature::Context> restrict_to_context_type,
         const GURL& event_url,
         EventRouter::UserGestureState user_gesture,
         mojom::EventFilteringInfoPtr info,

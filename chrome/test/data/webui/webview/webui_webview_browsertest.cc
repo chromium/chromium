@@ -20,6 +20,7 @@
 #include "chrome/test/base/test_switches.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
+#include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host.h"
@@ -193,6 +194,12 @@ class WebUIWebViewCoverageDisabledBrowserTest : public WebUIWebViewBrowserTest {
 #endif
 IN_PROC_BROWSER_TEST_F(WebUIWebViewCoverageDisabledBrowserTest,
                        MAYBE_AddContentScriptsWithNewWindowAPI) {
+  if (!content::BackForwardCache::IsBackForwardCacheFeatureEnabled()) {
+    // The case below currently is flaky on the linux-bfcache-rel bot with
+    // back/forward cache disabled, so return early.
+    // TODO(https://crbug.com/1506989): re-enable this test.
+    return;
+  }
   ASSERT_TRUE(RunTestCase("AddContentScriptsWithNewWindowAPI",
                           GetTestUrl("guest_from_opener.html").spec()));
 }

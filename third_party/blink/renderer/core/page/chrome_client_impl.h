@@ -253,7 +253,10 @@ class CORE_EXPORT ChromeClientImpl final : public ChromeClient {
       Document::PageDismissalType) const override;
 
   // AutofillClient pass throughs:
-  void DidAddOrRemoveFormRelatedElementsAfterLoad(LocalFrame*) override;
+  void DidChangeFormRelatedElementDynamically(
+      LocalFrame*,
+      HTMLElement*,
+      WebFormRelatedChangeType) override;
   void HandleKeyboardEventOnTextField(HTMLInputElement&,
                                       KeyboardEvent&) override;
   void DidChangeValueInTextField(HTMLFormControlElement&) override;

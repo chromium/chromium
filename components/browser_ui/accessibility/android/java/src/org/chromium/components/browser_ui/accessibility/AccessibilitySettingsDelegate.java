@@ -18,22 +18,16 @@ import org.chromium.content_public.browser.BrowserContextHandle;
 public interface AccessibilitySettingsDelegate {
     /** An interface to control a single boolean preference. */
     interface BooleanPreferenceDelegate {
-        /**
-         * @return whether the preference is enabled.
-         */
+        /** @return whether the preference is enabled. */
         boolean isEnabled();
 
-        /**
-         * Called when the preference value is changed.
-         */
+        /** Called when the preference value is changed. */
         void setEnabled(boolean value);
     }
 
     /** An interface to control a single integer preference. */
     interface IntegerPreferenceDelegate {
-        /**
-         * @return int - Current value of the preference of this instance.
-         */
+        /** @return int - Current value of the preference of this instance. */
         int getValue();
 
         /**
@@ -43,9 +37,7 @@ public interface AccessibilitySettingsDelegate {
         void setValue(int value);
     }
 
-    /**
-     * @return The BrowserContextHandle that should be used to read and update settings.
-     */
+    /** @return The BrowserContextHandle that should be used to read and update settings. */
     BrowserContextHandle getBrowserContextHandle();
 
     /**
@@ -67,9 +59,7 @@ public interface AccessibilitySettingsDelegate {
      */
     void addExtraPreferences(@NonNull PreferenceFragmentCompat fragment);
 
-    /**
-     * Returns whether or not the 'Zoom' feature specific UI should be shown in Settings.
-     */
+    /** Returns whether or not the 'Zoom' feature specific UI should be shown in Settings. */
     boolean showPageZoomSettingsUI();
 
     /**

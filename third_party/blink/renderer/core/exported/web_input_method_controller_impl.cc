@@ -237,7 +237,7 @@ bool WebInputMethodControllerImpl::GetCompositionCharacterBounds(
     result[i] = rect;
   }
 
-  bounds.Swap(result);
+  bounds.swap(result);
   return true;
 }
 

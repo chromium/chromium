@@ -22,9 +22,11 @@ namespace remoting {
 class HostStarter {
  public:
   enum Result {
-    START_COMPLETE,
     NETWORK_ERROR,
     OAUTH_ERROR,
+    PERMISSION_DENIED,
+    REGISTRATION_ERROR,
+    START_COMPLETE,
     START_ERROR,
   };
   struct Params {

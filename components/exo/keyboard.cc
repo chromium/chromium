@@ -311,7 +311,7 @@ void Keyboard::OnKeyEvent(ui::KeyEvent* event) {
   // needed.
   const bool consumed_by_ime =
       !focus_->window()->GetProperty(aura::client::kSkipImeProcessing) &&
-      ConsumedByIme(focus_->window(), *event);
+      ConsumedByIme(*event);
 
   // Currently, physical keycode is tracked in Seat, assuming that the
   // Keyboard::OnKeyEvent is called between Seat::WillProcessEvent and

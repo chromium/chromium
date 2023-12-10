@@ -40,13 +40,15 @@ public class ProcessExitReasonFromSystem {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
             return -1;
         }
-        ActivityManager am = sActivityManager != null
-                ? sActivityManager
-                : (ActivityManager) ContextUtils.getApplicationContext().getSystemService(
-                        Context.ACTIVITY_SERVICE);
+        ActivityManager am =
+                sActivityManager != null
+                        ? sActivityManager
+                        : (ActivityManager)
+                                ContextUtils.getApplicationContext()
+                                        .getSystemService(Context.ACTIVITY_SERVICE);
         // Set maxNum to 1 since we want the latest reason with the pid.
         List<ApplicationExitInfo> reasons =
-                am.getHistoricalProcessExitReasons(/*package_name=*/null, pid, /*maxNum=*/1);
+                am.getHistoricalProcessExitReasons(/* package_name= */ null, pid, /* maxNum= */ 1);
         if (reasons.isEmpty() || reasons.get(0) == null || reasons.get(0).getPid() != pid) {
             return -1;
         }
@@ -55,13 +57,22 @@ public class ProcessExitReasonFromSystem {
 
     // These values are persisted to logs. Entries should not be renumbered and
     // numeric values should never be reused.
-    @IntDef({ExitReason.REASON_ANR, ExitReason.REASON_CRASH, ExitReason.REASON_CRASH_NATIVE,
-            ExitReason.REASON_DEPENDENCY_DIED, ExitReason.REASON_EXCESSIVE_RESOURCE_USAGE,
-            ExitReason.REASON_EXIT_SELF, ExitReason.REASON_INITIALIZATION_FAILURE,
-            ExitReason.REASON_LOW_MEMORY, ExitReason.REASON_OTHER,
-            ExitReason.REASON_PERMISSION_CHANGE, ExitReason.REASON_SIGNALED,
-            ExitReason.REASON_UNKNOWN, ExitReason.REASON_USER_REQUESTED,
-            ExitReason.REASON_USER_STOPPED})
+    @IntDef({
+        ExitReason.REASON_ANR,
+        ExitReason.REASON_CRASH,
+        ExitReason.REASON_CRASH_NATIVE,
+        ExitReason.REASON_DEPENDENCY_DIED,
+        ExitReason.REASON_EXCESSIVE_RESOURCE_USAGE,
+        ExitReason.REASON_EXIT_SELF,
+        ExitReason.REASON_INITIALIZATION_FAILURE,
+        ExitReason.REASON_LOW_MEMORY,
+        ExitReason.REASON_OTHER,
+        ExitReason.REASON_PERMISSION_CHANGE,
+        ExitReason.REASON_SIGNALED,
+        ExitReason.REASON_UNKNOWN,
+        ExitReason.REASON_USER_REQUESTED,
+        ExitReason.REASON_USER_STOPPED
+    })
     @Retention(RetentionPolicy.SOURCE)
     public @interface ExitReason {
         int REASON_ANR = 0;
@@ -98,8 +109,7 @@ public class ProcessExitReasonFromSystem {
     }
 
     public static @Nullable Integer convertApplicationExitInfoToExitReason(int systemReason) {
-        @ExitReason
-        Integer reason = null;
+        @ExitReason Integer reason = null;
         switch (systemReason) {
             case ApplicationExitInfo.REASON_ANR:
                 reason = ExitReason.REASON_ANR;
@@ -154,4 +164,5 @@ public class ProcessExitReasonFromSystem {
     public static void setActivityManagerForTest(ActivityManager am) {
         sActivityManager = am;
     }
-};
+}
+;

@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include <optional>
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/time/time.h"
@@ -18,7 +19,6 @@
 #include "build/build_config.h"
 #include "pdf/document_layout.h"
 #include "printing/mojom/print.mojom-forward.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-forward.h"
 #include "ui/base/window_open_disposition.h"
@@ -366,7 +366,7 @@ class PDFEngine {
   // Gets the number of pages in the document.
   virtual int GetNumberOfPages() const = 0;
   // Gets the named destination by name.
-  virtual absl::optional<PDFEngine::NamedDestination> GetNamedDestination(
+  virtual std::optional<PDFEngine::NamedDestination> GetNamedDestination(
       const std::string& destination) = 0;
   // Gets the index of the most visible page, or -1 if none are visible.
   virtual int GetMostVisiblePage() = 0;
@@ -390,9 +390,9 @@ class PDFEngine {
   virtual uint32_t GetCharUnicode(int page_index, int char_index) = 0;
   // Given a start char index, find the longest continuous run of text that's
   // in a single direction and with the same text style. Return a filled out
-  // AccessibilityTextRunInfo on success or absl::nullopt on failure. e.g. When
+  // AccessibilityTextRunInfo on success or std::nullopt on failure. e.g. When
   // `start_char_index` is out of bounds.
-  virtual absl::optional<AccessibilityTextRunInfo> GetTextRunInfo(
+  virtual std::optional<AccessibilityTextRunInfo> GetTextRunInfo(
       int page_index,
       int start_char_index) = 0;
   // For all the links on page `page_index`, get their urls, underlying text
@@ -429,8 +429,8 @@ class PDFEngine {
   // Returns the duplex setting.
   virtual printing::mojom::DuplexMode GetDuplexMode() = 0;
   // Returns the uniform page size of the document in points. Returns
-  // `absl::nullopt` if the document has more than one page size.
-  virtual absl::optional<gfx::Size> GetUniformPageSizePoints() = 0;
+  // `std::nullopt` if the document has more than one page size.
+  virtual std::optional<gfx::Size> GetUniformPageSizePoints() = 0;
 
   // Returns a list of Values of Bookmarks. Each Bookmark is a dictionary Value
   // which contains the following key/values:
@@ -548,10 +548,10 @@ class PDFEngineExports {
                              int* page_count,
                              float* max_page_width) = 0;
 
-  // Whether the PDF is Tagged (see 10.7 "Tagged PDF" in PDF Reference 1.7).
+  // Whether the PDF is Tagged (see ISO 32000-1:2008 14.8 "Tagged PDF").
   // Returns true if it's a tagged (accessible) PDF, false if it's a valid
   // PDF but untagged, and nullopt if the PDF can't be parsed.
-  virtual absl::optional<bool> IsPDFDocTagged(
+  virtual std::optional<bool> IsPDFDocTagged(
       base::span<const uint8_t> pdf_buffer) = 0;
 
   // Given a tagged PDF (see IsPDFDocTagged, above), return the portion of
@@ -559,9 +559,14 @@ class PDFEngineExports {
   virtual base::Value GetPDFStructTreeForPage(
       base::span<const uint8_t> pdf_buffer,
       int page_index) = 0;
+  // Whether the PDF has a Document Outline (see ISO 32000-1:2008 12.3.3
+  // "Document Outline"). Returns true if the PDF has an outline, false if it's
+  // a valid PDF without an outline, and nullopt if the PDF can't be parsed.
+  virtual std::optional<bool> PDFDocHasOutline(
+      base::span<const uint8_t> pdf_buffer) = 0;
 
   // See the definition of GetPDFPageSizeByIndex in pdf.cc for details.
-  virtual absl::optional<gfx::SizeF> GetPDFPageSizeByIndex(
+  virtual std::optional<gfx::SizeF> GetPDFPageSizeByIndex(
       base::span<const uint8_t> pdf_buffer,
       int page_index) = 0;
 };

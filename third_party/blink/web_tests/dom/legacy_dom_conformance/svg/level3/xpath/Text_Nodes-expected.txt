@@ -1,2 +1,0 @@
-Text_Nodes
-S1.2.4-Text-Nodes-Adjacent-Next: assertTrue failed

@@ -211,10 +211,10 @@ class ASH_EXPORT WorkspaceWindowResizer : public WindowResizer {
   // Timer for dwell time countdown.
   base::OneShotTimer dwell_countdown_timer_;
   // The location for drag maximize in screen.
-  absl::optional<gfx::PointF> dwell_location_in_screen_;
+  std::optional<gfx::PointF> dwell_location_in_screen_;
 
-  // The location in parent passed to `Drag()`.
-  gfx::PointF last_location_in_parent_;
+  // The latest location passed to `Drag()` in screen coordinates.
+  gfx::PointF last_location_in_screen_;
 
   // Window the drag has magnetically attached to.
   raw_ptr<aura::Window, ExperimentalAsh> magnetism_window_ = nullptr;

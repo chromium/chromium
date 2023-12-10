@@ -9,7 +9,6 @@
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/shared/coordinator/default_browser_promo/non_modal_default_browser_promo_scheduler_scene_agent.h"
-#import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_promo_non_modal_commands.h"
@@ -111,16 +110,14 @@
 
 - (void)performInfobarAction {
   self.infobarAccepted = YES;
-  SceneState* sceneState =
-      SceneStateBrowserAgent::FromBrowser(self.browser)->GetSceneState();
+  SceneState* sceneState = self.browser->GetSceneState();
   [[NonModalDefaultBrowserPromoSchedulerSceneAgent agentFromScene:sceneState]
       logUserPerformedPromoAction];
 }
 
 - (void)infobarBannerWillBeDismissed:(BOOL)userInitiated {
   if (userInitiated) {
-    SceneState* sceneState =
-        SceneStateBrowserAgent::FromBrowser(self.browser)->GetSceneState();
+    SceneState* sceneState = self.browser->GetSceneState();
     [[NonModalDefaultBrowserPromoSchedulerSceneAgent agentFromScene:sceneState]
         logUserDismissedPromo];
   }

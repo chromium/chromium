@@ -26,9 +26,7 @@ import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
 import org.chromium.support_lib_boundary.util.Features;
 import org.chromium.support_lib_callback_glue.SupportLibWebViewContentsClientAdapter;
 
-/**
- * Partial adapter for AwContentsClient methods that may be handled by either glue layer.
- */
+/** Partial adapter for AwContentsClient methods that may be handled by either glue layer. */
 abstract class SharedWebViewContentsClientAdapter extends AwContentsClient {
     // TAG is chosen for consistency with classic webview tracing.
     protected static final String TAG = "WebViewCallback";
@@ -75,29 +73,27 @@ abstract class SharedWebViewContentsClientAdapter extends AwContentsClient {
         mSupportLibClient.setWebViewClient(client);
     }
 
-    /**
-     * @see AwContentsClient#hasWebViewClient.
-     */
+    /** @see AwContentsClient#hasWebViewClient. */
     @Override
     public final boolean hasWebViewClient() {
         return mWebViewClient != SharedWebViewChromium.sNullWebViewClient;
     }
 
-    /**
-     * @see AwContentsClient#shouldOverrideUrlLoading(AwContentsClient.AwWebResourceRequest)
-     */
+    /** @see AwContentsClient#shouldOverrideUrlLoading(AwContentsClient.AwWebResourceRequest) */
     @Override
     public final boolean shouldOverrideUrlLoading(AwContentsClient.AwWebResourceRequest request) {
-        try (TraceEvent event = TraceEvent.scoped(
-                     "WebView.APICallback.WebViewClient.shouldOverrideUrlLoading")) {
+        try (TraceEvent event =
+                TraceEvent.scoped("WebView.APICallback.WebViewClient.shouldOverrideUrlLoading")) {
             if (TRACE) Log.i(TAG, "shouldOverrideUrlLoading=" + request.url);
             boolean result;
             if (mSupportLibClient.isFeatureAvailable(Features.SHOULD_OVERRIDE_WITH_REDIRECTS)) {
-                result = mSupportLibClient.shouldOverrideUrlLoading(
-                        mWebView, new WebResourceRequestAdapter(request));
+                result =
+                        mSupportLibClient.shouldOverrideUrlLoading(
+                                mWebView, new WebResourceRequestAdapter(request));
             } else {
-                result = mWebViewClient.shouldOverrideUrlLoading(
-                        mWebView, new WebResourceRequestAdapter(request));
+                result =
+                        mWebViewClient.shouldOverrideUrlLoading(
+                                mWebView, new WebResourceRequestAdapter(request));
             }
             if (TRACE) Log.i(TAG, "shouldOverrideUrlLoading result=" + result);
 
@@ -109,13 +105,11 @@ abstract class SharedWebViewContentsClientAdapter extends AwContentsClient {
         }
     }
 
-    /**
-     * @see ContentViewClient#onPageCommitVisible(String)
-     */
+    /** @see ContentViewClient#onPageCommitVisible(String) */
     @Override
     public final void onPageCommitVisible(String url) {
-        try (TraceEvent event = TraceEvent.scoped(
-                     "WebView.APICallback.WebViewClient.onPageCommitVisible")) {
+        try (TraceEvent event =
+                TraceEvent.scoped("WebView.APICallback.WebViewClient.onPageCommitVisible")) {
             if (TRACE) Log.i(TAG, "onPageCommitVisible=" + url);
             if (mSupportLibClient.isFeatureAvailable(Features.VISUAL_STATE_CALLBACK)) {
                 mSupportLibClient.onPageCommitVisible(mWebView, url);
@@ -131,9 +125,7 @@ abstract class SharedWebViewContentsClientAdapter extends AwContentsClient {
         }
     }
 
-    /**
-     * @see ContentViewClient#onReceivedError(AwWebResourceRequest,AwWebResourceError)
-     */
+    /** @see ContentViewClient#onReceivedError(AwWebResourceRequest,AwWebResourceError) */
     @Override
     public void onReceivedError(AwWebResourceRequest request, AwWebResourceError error) {
         try (TraceEvent event = TraceEvent.scoped("WebViewContentsClientAdapter.onReceivedError")) {
@@ -150,17 +142,21 @@ abstract class SharedWebViewContentsClientAdapter extends AwContentsClient {
                 mSupportLibClient.onReceivedError(
                         mWebView, new WebResourceRequestAdapter(request), error);
             } else {
-                mWebViewClient.onReceivedError(mWebView, new WebResourceRequestAdapter(request),
+                mWebViewClient.onReceivedError(
+                        mWebView,
+                        new WebResourceRequestAdapter(request),
                         new WebResourceErrorAdapter(error));
             }
         }
     }
 
     @Override
-    public void onSafeBrowsingHit(AwWebResourceRequest request, int threatType,
+    public void onSafeBrowsingHit(
+            AwWebResourceRequest request,
+            int threatType,
             final Callback<AwSafeBrowsingResponse> callback) {
         try (TraceEvent event =
-                        TraceEvent.scoped("WebViewContentsClientAdapter.onSafeBrowsingHit")) {
+                TraceEvent.scoped("WebViewContentsClientAdapter.onSafeBrowsingHit")) {
             AwHistogramRecorder.recordCallbackInvocation(
                     AwHistogramRecorder.WebViewCallbackType.ON_SAFE_BROWSING_HIT);
             if (mSupportLibClient.isFeatureAvailable(Features.SAFE_BROWSING_HIT)) {
@@ -171,8 +167,9 @@ abstract class SharedWebViewContentsClientAdapter extends AwContentsClient {
                         mWebViewClient, mWebView, request, threatType, callback);
 
             } else {
-                callback.onResult(new AwSafeBrowsingResponse(SafeBrowsingAction.SHOW_INTERSTITIAL,
-                        /* reporting */ true));
+                callback.onResult(
+                        new AwSafeBrowsingResponse(
+                                SafeBrowsingAction.SHOW_INTERSTITIAL, /* reporting= */ true));
             }
         }
     }
@@ -181,7 +178,7 @@ abstract class SharedWebViewContentsClientAdapter extends AwContentsClient {
     public void onReceivedHttpError(
             AwWebResourceRequest request, WebResourceResponseInfo response) {
         try (TraceEvent event =
-                        TraceEvent.scoped("WebViewContentsClientAdapter.onReceivedHttpError")) {
+                TraceEvent.scoped("WebViewContentsClientAdapter.onReceivedHttpError")) {
             AwHistogramRecorder.recordCallbackInvocation(
                     AwHistogramRecorder.WebViewCallbackType.ON_RECEIVED_HTTP_ERROR);
             if (TRACE) Log.i(TAG, "onReceivedHttpError=" + request.url);
@@ -196,17 +193,28 @@ abstract class SharedWebViewContentsClientAdapter extends AwContentsClient {
                 // Immutability is not strictly necessary, but apps should not not need to modify
                 // the WebResourceResponse received in this callback (they can always construct
                 // their own instance).
-                mSupportLibClient.onReceivedHttpError(mWebView,
+                mSupportLibClient.onReceivedHttpError(
+                        mWebView,
                         new WebResourceRequestAdapter(request),
-                        new WebResourceResponse(/* immutable= */ true, response.getMimeType(),
-                                response.getCharset(), response.getStatusCode(),
-                                response.getReasonPhrase(), response.getResponseHeaders(),
+                        new WebResourceResponse(
+                                /* immutable= */ true,
+                                response.getMimeType(),
+                                response.getCharset(),
+                                response.getStatusCode(),
+                                response.getReasonPhrase(),
+                                response.getResponseHeaders(),
                                 response.getData()));
             } else {
-                mWebViewClient.onReceivedHttpError(mWebView, new WebResourceRequestAdapter(request),
-                        new WebResourceResponse(/* immutable= */ true, response.getMimeType(),
-                                response.getCharset(), response.getStatusCode(),
-                                response.getReasonPhrase(), response.getResponseHeaders(),
+                mWebViewClient.onReceivedHttpError(
+                        mWebView,
+                        new WebResourceRequestAdapter(request),
+                        new WebResourceResponse(
+                                /* immutable= */ true,
+                                response.getMimeType(),
+                                response.getCharset(),
+                                response.getStatusCode(),
+                                response.getReasonPhrase(),
+                                response.getResponseHeaders(),
                                 response.getData()));
             }
             // Otherwise, the API does not exist, so do nothing.

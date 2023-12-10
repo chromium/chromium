@@ -8,8 +8,9 @@
 
 #import "base/apple/foundation_util.h"
 #import "ios/chrome/app/main_controller.h"
-#import "ios/chrome/browser/metrics/tab_usage_recorder_browser_agent.h"
-#import "ios/chrome/browser/sessions/session_restoration_util.h"
+#import "ios/chrome/browser/metrics/model/tab_usage_recorder_browser_agent.h"
+#import "ios/chrome/browser/sessions/session_restoration_service.h"
+#import "ios/chrome/browser/sessions/session_restoration_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_controller.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_controller_testing.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -28,10 +29,6 @@
 #import "ios/chrome/browser/web_state_list/model/web_usage_enabler/web_usage_enabler_browser_agent.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 #import "ios/testing/open_url_context.h"
-
-// To get access to UseSessionSerializationOptimizations().
-// TODO(crbug.com/1383087): remove once the feature is fully launched.
-#import "ios/web/common/features.h"
 
 namespace chrome_test_util {
 
@@ -55,7 +52,9 @@ void CloseAllTabsForBrowser(Browser* browser) {
   DCHECK(browser);
   const int close_flags = WebStateList::CLOSE_USER_ACTION;
   browser->GetWebStateList()->CloseAllWebStates(close_flags);
-  SaveSessionForBrowser(browser);
+  ChromeBrowserState* browser_state = browser->GetBrowserState();
+  SessionRestorationServiceFactory::GetForBrowserState(browser_state)
+      ->SaveSessions();
 }
 
 }  // namespace

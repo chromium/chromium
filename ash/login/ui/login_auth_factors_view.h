@@ -12,6 +12,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 namespace views {
@@ -28,6 +29,8 @@ class ArrowButtonView;
 // A view that displays a collection of auth factors to be shown on the lock and
 // login screens.
 class ASH_EXPORT LoginAuthFactorsView : public views::View {
+  METADATA_HEADER(LoginAuthFactorsView, views::View)
+
  public:
   using AuthFactorState = AuthFactorModel::AuthFactorState;
 

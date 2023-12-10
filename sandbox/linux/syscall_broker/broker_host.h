@@ -5,12 +5,12 @@
 #ifndef SANDBOX_LINUX_SYSCALL_BROKER_BROKER_HOST_H_
 #define SANDBOX_LINUX_SYSCALL_BROKER_BROKER_HOST_H_
 
+#include <optional>
 #include "base/containers/span.h"
 #include "base/memory/raw_ref.h"
 #include "sandbox/linux/syscall_broker/broker_channel.h"
 #include "sandbox/linux/syscall_broker/broker_command.h"
 #include "sandbox/linux/syscall_broker/broker_sandbox_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace sandbox {
 
@@ -36,9 +36,9 @@ class BrokerHost {
   void LoopAndHandleRequests();
 
  private:
-  [[nodiscard]] absl::optional<std::string> RewritePathname(
+  [[nodiscard]] std::optional<std::string> RewritePathname(
       const char* pathname);
-  [[nodiscard]] absl::optional<std::pair<const char*, int>> GetPathAndFlags(
+  [[nodiscard]] std::optional<std::pair<const char*, int>> GetPathAndFlags(
       BrokerSimpleMessage* message);
 
   void AccessFileForIPC(const char* requested_filename,

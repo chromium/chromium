@@ -141,6 +141,10 @@ bool GetCommandDictAndOutputPaths(base::Value::Dict* commands,
       params.Set("disablePDFTagging", true);
     }
 
+    if (command_line->HasSwitch(switches::kGeneratePDFDocumentOutline)) {
+      params.Set("generateDocumentOutline", true);
+    }
+
     commands->Set("printToPDF", std::move(params));
   }
 
@@ -157,8 +161,7 @@ bool GetCommandDictAndOutputPaths(base::Value::Dict* commands,
         base::ToLowerASCII(path.FinalExtension());
 
     static constexpr auto kImageFileTypes =
-        base::MakeFixedFlatMapSorted<base::FilePath::StringPieceType,
-                                     const char*>({
+        base::MakeFixedFlatMap<base::FilePath::StringPieceType, const char*>({
             {FILE_PATH_LITERAL(".jpeg"), "jpeg"},
             {FILE_PATH_LITERAL(".jpg"), "jpeg"},
             {FILE_PATH_LITERAL(".png"), "png"},

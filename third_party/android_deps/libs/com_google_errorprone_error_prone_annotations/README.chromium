@@ -1,6 +1,6 @@
 Name: error-prone annotations
 Short Name: error_prone_annotations
-URL: https://errorprone.info/
+URL: https://github.com/google/error-prone/tree/master/annotation
 Version: 2.23.0
 License: Apache 2.0
 License File: LICENSE

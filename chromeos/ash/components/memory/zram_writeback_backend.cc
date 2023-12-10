@@ -6,6 +6,7 @@
 
 #include <cstdint>
 #include <limits>
+#include <optional>
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -19,7 +20,6 @@
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/dbus/swap_management/swap_management_client.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/re2/src/re2/re2.h"
 
 namespace ash::memory {

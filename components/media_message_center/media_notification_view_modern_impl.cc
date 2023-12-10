@@ -4,6 +4,8 @@
 
 #include "components/media_message_center/media_notification_view_modern_impl.h"
 
+#include <utility>
+
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"
@@ -85,7 +87,7 @@ class MediaButton : public views::ImageButton {
  public:
   METADATA_HEADER(MediaButton);
   MediaButton(PressedCallback callback, int icon_size, gfx::Size button_size)
-      : ImageButton(callback), icon_size_(icon_size) {
+      : ImageButton(std::move(callback)), icon_size_(icon_size) {
     SetHasInkDropActionOnClick(true);
     views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(),
                                                   button_size.height() / 2);

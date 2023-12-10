@@ -1,6 +1,0 @@
-
-"dur","ts","event_type","next_jank","prev_jank","next_delta_dur_ns","prev_delta_dur_ns","cause_of_jank","max_delta_dur_ns","sub_cause_of_jank"
-39440000,3107578535792897,"GESTURE_SCROLL_UPDATE",1,0,9233000,"[NULL]","SubmitCompositorFrameToPresentationCompositorFrame",9233000,"BufferReadyToLatch"
-35485000,3107579191373897,"INERTIAL_GESTURE_SCROLL_UPDATE",0,1,"[NULL]",7445000,"SubmitCompositorFrameToPresentationCompositorFrame",7445000,"BufferReadyToLatch"
-43838000,3107579600751897,"INERTIAL_GESTURE_SCROLL_UPDATE",0,1,"[NULL]",8059000,"SubmitCompositorFrameToPresentationCompositorFrame",8059000,"BufferReadyToLatch"
-35454000,3107580143766897,"INERTIAL_GESTURE_SCROLL_UPDATE",0,1,"[NULL]",7219000,"SubmitCompositorFrameToPresentationCompositorFrame",7219000,"StartDrawToSwapStart"

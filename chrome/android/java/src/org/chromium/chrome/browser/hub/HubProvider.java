@@ -9,6 +9,11 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 
 import org.chromium.base.supplier.LazyOneshotSupplier;
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.back_press.BackPressManager;
+import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 
 /**
  * Main entrypoint for providing core Hub objects to Chrome.
@@ -16,18 +21,35 @@ import org.chromium.base.supplier.LazyOneshotSupplier;
  * <p>Part of chrome/android/ to use {@link HubManagerFactory} and to use as glue code.
  */
 public class HubProvider {
-    private final LazyOneshotSupplier<HubManager> mHubManagerSupplier;
-    private final PaneListBuilder mPaneListBuilder;
+    private final @NonNull LazyOneshotSupplier<HubManager> mHubManagerSupplier;
+    private final @NonNull PaneListBuilder mPaneListBuilder;
 
     /**
      * @param context The Android {@link Context} for the Hub.
      * @param orderController The {@link PaneOrderController} for the Hub.
+     * @param backPressManager The {@link BackPressManager} for the activity.
+     * @param tabModelSelectorSupplier The supplier of the {@link TabModelSelector}.
      */
-    public HubProvider(@NonNull Context context, @NonNull PaneOrderController orderController) {
+    public HubProvider(
+            @NonNull Context context,
+            @NonNull PaneOrderController orderController,
+            @NonNull BackPressManager backPressManager,
+            @NonNull Supplier<TabModelSelector> tabModelSelectorSupplier) {
         mPaneListBuilder = new PaneListBuilder(orderController);
         mHubManagerSupplier =
                 LazyOneshotSupplier.fromSupplier(
-                        () -> HubManagerFactory.createHubManager(context, mPaneListBuilder));
+                        () -> {
+                            assert tabModelSelectorSupplier.hasValue();
+                            ObservableSupplier<Tab> tabSupplier =
+                                    tabModelSelectorSupplier.get().getCurrentTabSupplier();
+                            return HubManagerFactory.createHubManager(
+                                    context, mPaneListBuilder, backPressManager, tabSupplier);
+                        });
+    }
+
+    /** Destroys the {@link HubManager} it cannot be used again. */
+    public void destroy() {
+        mHubManagerSupplier.get().destroy();
     }
 
     /** Returns the lazy supplier for {@link HubManager}. */

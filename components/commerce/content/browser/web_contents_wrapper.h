@@ -18,6 +18,10 @@ namespace base {
 class Value;
 }  // namespace base
 
+namespace content {
+class RenderFrameHost;
+}  // namespace content
+
 namespace commerce {
 
 // A WebWrapper backed by content::WebContents.
@@ -41,7 +45,11 @@ class WebContentsWrapper : public WebWrapper {
       const std::u16string& script,
       base::OnceCallback<void(const base::Value)> callback) override;
 
+  ukm::SourceId GetPageUkmSourceId() override;
+
   void ClearWebContentsPointer();
+
+  content::RenderFrameHost* GetPrimaryMainFrame();
 
  private:
   raw_ptr<content::WebContents> web_contents_;

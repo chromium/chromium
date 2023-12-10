@@ -8,24 +8,19 @@
 
 namespace blink {
 
-const GridPlacementData& GridNode::CachedPlacementData() const {
-  auto* layout_grid = To<LayoutGrid>(box_.Get());
-  return layout_grid->CachedPlacementData();
-}
-
 GridItems GridNode::ConstructGridItems(
-    const GridPlacementData& placement_data,
+    const GridLineResolver& line_resolver,
     HeapVector<Member<LayoutBox>>* oof_children,
     bool* has_nested_subgrid) const {
-  return ConstructGridItems(placement_data, /* root_grid_style */ Style(),
+  return ConstructGridItems(line_resolver, /* root_grid_style */ Style(),
                             /* parent_grid_style */ Style(),
-                            placement_data.HasStandaloneAxis(kForColumns),
-                            placement_data.HasStandaloneAxis(kForRows),
+                            line_resolver.HasStandaloneAxis(kForColumns),
+                            line_resolver.HasStandaloneAxis(kForRows),
                             oof_children, has_nested_subgrid);
 }
 
 GridItems GridNode::ConstructGridItems(
-    const GridPlacementData& placement_data,
+    const GridLineResolver& line_resolver,
     const ComputedStyle& root_grid_style,
     const ComputedStyle& parent_grid_style,
     bool must_consider_grid_items_for_column_sizing,
@@ -47,7 +42,7 @@ GridItems GridNode::ConstructGridItems(
     grid_items.ReserveInitialCapacity(
         cached_placement_data->grid_item_positions.size());
 
-    if (placement_data != *cached_placement_data) {
+    if (line_resolver != cached_placement_data->line_resolver) {
       // We need to recompute grid item placement if the automatic column/row
       // repetitions changed due to updates in the container's style.
       cached_placement_data = nullptr;
@@ -66,7 +61,7 @@ GridItems GridNode::ConstructGridItems(
       }
 
       auto grid_item = std::make_unique<GridItemData>(
-          To<NGBlockNode>(child), root_grid_style,
+          To<BlockNode>(child), root_grid_style,
           parent_grid_style.GetFontBaseline(),
           must_consider_grid_items_for_column_sizing,
           must_consider_grid_items_for_row_sizing);
@@ -88,14 +83,14 @@ GridItems GridNode::ConstructGridItems(
 
 #if DCHECK_IS_ON()
   if (cached_placement_data) {
-    GridPlacement grid_placement(Style(), placement_data);
+    GridPlacement grid_placement(Style(), line_resolver);
     DCHECK(*cached_placement_data ==
            grid_placement.RunAutoPlacementAlgorithm(grid_items));
   }
 #endif
 
   if (!cached_placement_data) {
-    GridPlacement grid_placement(Style(), placement_data);
+    GridPlacement grid_placement(Style(), line_resolver);
     layout_grid->SetCachedPlacementData(
         grid_placement.RunAutoPlacementAlgorithm(grid_items));
     cached_placement_data = &layout_grid->CachedPlacementData();
@@ -124,7 +119,7 @@ void GridNode::AppendSubgriddedItems(GridItems* grid_items) const {
     const auto subgrid = To<GridNode>(current_item.node);
 
     auto subgridded_items = subgrid.ConstructGridItems(
-        subgrid.CachedPlacementData(), root_grid_style, subgrid.Style(),
+        subgrid.CachedLineResolver(), root_grid_style, subgrid.Style(),
         current_item.must_consider_grid_items_for_column_sizing,
         current_item.must_consider_grid_items_for_row_sizing);
 

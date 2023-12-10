@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/modules/notifications/notification.h"
 #include "third_party/blink/renderer/modules/notifications/timestamp_trigger.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -50,6 +51,8 @@ const unsigned kNotificationVibrationUnnormalized[] = {10, 1000000, 50, 42};
 const int kNotificationVibrationNormalized[] = {10, 10000, 50};
 
 TEST(NotificationDataTest, ReflectProperties) {
+  test::TaskEnvironment task_environment{
+      test::TaskEnvironment::RealMainThreadScheduler()};
   const KURL base_url(kNotificationBaseUrl);
   V8TestingScope scope(base_url);
 
@@ -141,6 +144,8 @@ TEST(NotificationDataTest, ReflectProperties) {
 }
 
 TEST(NotificationDataTest, SilentNotificationWithVibration) {
+  test::TaskEnvironment task_environment{
+      test::TaskEnvironment::RealMainThreadScheduler()};
   V8TestingScope scope;
 
   Vector<unsigned> vibration_pattern;
@@ -167,6 +172,8 @@ TEST(NotificationDataTest, SilentNotificationWithVibration) {
 }
 
 TEST(NotificationDataTest, ActionTypeButtonWithPlaceholder) {
+  test::TaskEnvironment task_environment{
+      test::TaskEnvironment::RealMainThreadScheduler()};
   V8TestingScope scope;
 
   HeapVector<Member<NotificationAction>> actions;
@@ -190,6 +197,8 @@ TEST(NotificationDataTest, ActionTypeButtonWithPlaceholder) {
 }
 
 TEST(NotificationDataTest, RenotifyWithEmptyTag) {
+  test::TaskEnvironment task_environment{
+      test::TaskEnvironment::RealMainThreadScheduler()};
   V8TestingScope scope;
 
   NotificationOptions* options =
@@ -209,6 +218,8 @@ TEST(NotificationDataTest, RenotifyWithEmptyTag) {
 }
 
 TEST(NotificationDataTest, InvalidIconUrls) {
+  test::TaskEnvironment task_environment{
+      test::TaskEnvironment::RealMainThreadScheduler()};
   V8TestingScope scope;
 
   HeapVector<Member<NotificationAction>> actions;
@@ -241,6 +252,8 @@ TEST(NotificationDataTest, InvalidIconUrls) {
 }
 
 TEST(NotificationDataTest, VibrationNormalization) {
+  test::TaskEnvironment task_environment{
+      test::TaskEnvironment::RealMainThreadScheduler()};
   V8TestingScope scope;
 
   Vector<unsigned> unnormalized_pattern;
@@ -274,6 +287,8 @@ TEST(NotificationDataTest, VibrationNormalization) {
 }
 
 TEST(NotificationDataTest, DefaultTimestampValue) {
+  test::TaskEnvironment task_environment{
+      test::TaskEnvironment::RealMainThreadScheduler()};
   V8TestingScope scope;
 
   NotificationOptions* options =
@@ -293,6 +308,8 @@ TEST(NotificationDataTest, DefaultTimestampValue) {
 }
 
 TEST(NotificationDataTest, DirectionValues) {
+  test::TaskEnvironment task_environment{
+      test::TaskEnvironment::RealMainThreadScheduler()};
   V8TestingScope scope;
 
   WTF::HashMap<String, mojom::blink::NotificationDirection> mappings;
@@ -316,6 +333,8 @@ TEST(NotificationDataTest, DirectionValues) {
 }
 
 TEST(NotificationDataTest, MaximumActionCount) {
+  test::TaskEnvironment task_environment{
+      test::TaskEnvironment::RealMainThreadScheduler()};
   V8TestingScope scope;
 
   HeapVector<Member<NotificationAction>> actions;
@@ -347,6 +366,8 @@ TEST(NotificationDataTest, MaximumActionCount) {
 }
 
 TEST(NotificationDataTest, RejectsTriggerTimestampOverAYear) {
+  test::TaskEnvironment task_environment{
+      test::TaskEnvironment::RealMainThreadScheduler()};
   V8TestingScope scope;
 
   base::Time show_timestamp =

@@ -5,11 +5,11 @@
 #ifndef CHROME_BROWSER_UI_SIDE_PANEL_SIDE_PANEL_ENTRY_ID_H_
 #define CHROME_BROWSER_UI_SIDE_PANEL_SIDE_PANEL_ENTRY_ID_H_
 
+#include <optional>
 #include <string>
 
 #include "base/notreached.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/actions/action_id.h"
 
 // Note: this order matches that of the combobox options in the side panel.
@@ -27,7 +27,7 @@
   V(kReadAnything, kActionSidePanelShowReadAnything, "ReadAnything")          \
   V(kUserNote, kActionSidePanelShowUserNote, "UserNotes")                     \
   V(kFeed, kActionSidePanelShowFeed, "Feed")                                  \
-  V(kWebView, absl::nullopt, "WebView")                                       \
+  V(kWebView, std::nullopt, "WebView")                                        \
   V(kPerformance, kActionSidePanelShowPerformance, "Performance")             \
   /* Contextual Entries */                                                    \
   V(kSideSearch, kActionSidePanelShowSideSearch, "SideSearch")                \
@@ -39,7 +39,7 @@
   V(kShoppingInsights, kActionSidePanelShowShoppingInsights,                  \
     "ShoppingInsights")                                                       \
   /* Extensions (nothing more should be added below here) */                  \
-  V(kExtension, absl::nullopt, "Extension")
+  V(kExtension, std::nullopt, "Extension")
 
 #define SIDE_PANEL_ENTRY_ID_ENUM(entry_id, action_id, histogram_name) entry_id,
 enum class SidePanelEntryId { SIDE_PANEL_ENTRY_IDS(SIDE_PANEL_ENTRY_ID_ENUM) };
@@ -49,7 +49,7 @@ std::string SidePanelEntryIdToString(SidePanelEntryId id);
 
 std::string SidePanelEntryIdToHistogramName(SidePanelEntryId id);
 
-absl::optional<actions::ActionId> SidePanelEntryIdToActionId(
+std::optional<actions::ActionId> SidePanelEntryIdToActionId(
     SidePanelEntryId id);
 
 #endif  // CHROME_BROWSER_UI_SIDE_PANEL_SIDE_PANEL_ENTRY_ID_H_

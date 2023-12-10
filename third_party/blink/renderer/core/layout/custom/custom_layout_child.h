@@ -7,7 +7,7 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/core/css/cssom/prepopulated_computed_style_property_map.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_layout_input_node.h"
+#include "third_party/blink/renderer/core/layout/layout_input_node.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
@@ -28,7 +28,7 @@ class CustomLayoutChild : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  CustomLayoutChild(const CSSLayoutDefinition&, NGLayoutInputNode);
+  CustomLayoutChild(const CSSLayoutDefinition&, LayoutInputNode);
   CustomLayoutChild(const CustomLayoutChild&) = delete;
   CustomLayoutChild& operator=(const CustomLayoutChild&) = delete;
   ~CustomLayoutChild() override = default;
@@ -42,7 +42,7 @@ class CustomLayoutChild : public ScriptWrappable {
                                    const CustomLayoutConstraintsOptions*,
                                    ExceptionState&);
 
-  const NGLayoutInputNode& GetLayoutNode() const {
+  const LayoutInputNode& GetLayoutNode() const {
     DCHECK(node_);
     return node_;
   }
@@ -53,7 +53,7 @@ class CustomLayoutChild : public ScriptWrappable {
   void Trace(Visitor*) const override;
 
  private:
-  NGLayoutInputNode node_;
+  LayoutInputNode node_;
   Member<PrepopulatedComputedStylePropertyMap> style_map_;
   Member<CustomLayoutToken> token_;
 };

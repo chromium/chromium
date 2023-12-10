@@ -7,7 +7,6 @@
 #include "ash/controls/rounded_scroll_bar.h"
 #include "ash/controls/scroll_view_gradient_helper.h"
 #include "ash/public/cpp/desk_template.h"
-#include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -25,11 +24,9 @@
 #include "ash/wm/overview/overview_grid_event_handler.h"
 #include "ash/wm/window_properties.h"
 #include "base/functional/callback_helpers.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "ui/aura/window_targeter.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
 #include "ui/events/event_handler.h"
 #include "ui/gfx/geometry/insets.h"
@@ -47,10 +44,6 @@ namespace {
 // Grids use landscape mode if the available width is greater or equal to this.
 constexpr int kLandscapeMinWidth = 756;
 
-// Section label dimensions.
-constexpr gfx::Size kLabelSizeLandscape = {708, 24};
-constexpr gfx::Size kLabelSizePortrait = {464, 24};
-
 // "No items" label dimensions.
 constexpr gfx::Size kNoItemsLabelPadding = {16, 8};
 constexpr int kNoItemsLabelHeight = 32;
@@ -63,9 +56,6 @@ constexpr int kGroupContentsBetweenChildSpacingDp = 20;
 
 // The size of the gradient applied to the top and bottom of the scroll view.
 constexpr int kScrollViewGradientSize = 32;
-
-// Elevation for the grid label text's shadow.
-constexpr int kLabelTextShadowElevation = 4;
 
 // Insets of Library page scroll content view. Note: the bottom inset is there
 // to slightly adjust the otherwise vertically centered scroll content up a tad.
@@ -128,19 +118,6 @@ std::unique_ptr<views::View> GetLabelAndGridGroupContents() {
       views::BoxLayout::CrossAxisAlignment::kCenter);
 
   return group_contents;
-}
-
-std::unique_ptr<views::Label> MakeGridLabel(int label_string_id) {
-  auto label = std::make_unique<views::Label>(
-      l10n_util::GetStringUTF16(label_string_id));
-  gfx::ShadowValues shadows =
-      gfx::ShadowValue::MakeChromeOSSystemUIShadowValues(
-          kLabelTextShadowElevation);
-  label->SetShadows(shadows);
-  TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosTitle1, *label);
-  label->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
-  label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  return label;
 }
 
 }  // namespace
@@ -272,7 +249,7 @@ SavedDeskLibraryView::SavedDeskLibraryView() {
   scroll_view_->ClipHeightTo(0, std::numeric_limits<int>::max());
   scroll_view_->SetDrawOverflowIndicator(false);
   // Don't paint a background. The overview grid already has one.
-  scroll_view_->SetBackgroundColor(absl::nullopt);
+  scroll_view_->SetBackgroundColor(std::nullopt);
   scroll_view_->SetAllowKeyboardScrolling(true);
 
   // Scroll view will have a gradient mask layer.
@@ -305,8 +282,6 @@ SavedDeskLibraryView::SavedDeskLibraryView() {
   // Create grids depending on which features are enabled.
   if (saved_desk_util::AreDesksTemplatesEnabled()) {
     auto group_contents = GetLabelAndGridGroupContents();
-    grid_labels_.push_back(group_contents->AddChildView(
-        MakeGridLabel(IDS_ASH_DESKS_TEMPLATES_LIBRARY_TEMPLATES_GRID_LABEL)));
     desk_template_grid_view_ =
         group_contents->AddChildView(std::make_unique<SavedDeskGridView>());
     grid_views_.push_back(desk_template_grid_view_);
@@ -315,8 +290,6 @@ SavedDeskLibraryView::SavedDeskLibraryView() {
   }
   if (saved_desk_util::IsSavedDesksEnabled()) {
     auto group_contents = GetLabelAndGridGroupContents();
-    grid_labels_.push_back(group_contents->AddChildView(MakeGridLabel(
-        IDS_ASH_DESKS_TEMPLATES_LIBRARY_SAVE_AND_RECALL_GRID_LABEL)));
     save_and_recall_grid_view_ =
         group_contents->AddChildView(std::make_unique<SavedDeskGridView>());
     grid_views_.push_back(save_and_recall_grid_view_);
@@ -392,7 +365,7 @@ void SavedDeskLibraryView::AnimateDeskLaunch(const base::Uuid& uuid,
 
   // If we can't the get bounds, then we just bail. The item will be deleted
   // automatically later through desk model observation.
-  absl::optional<gfx::Rect> target_screen_bounds =
+  std::optional<gfx::Rect> target_screen_bounds =
       GetDeskPreviewBoundsForLaunch(mini_view);
   if (!target_screen_bounds)
     return;
@@ -433,7 +406,7 @@ void SavedDeskLibraryView::AnimateDeskLaunch(const base::Uuid& uuid,
   DeleteEntries({uuid}, /*delete_animation=*/false);
 }
 
-bool SavedDeskLibraryView::IsAnimating() {
+bool SavedDeskLibraryView::IsAnimating() const {
   for (auto* grid_view : grid_views()) {
     if (grid_view->IsAnimating())
       return true;
@@ -442,7 +415,8 @@ bool SavedDeskLibraryView::IsAnimating() {
   return false;
 }
 
-bool SavedDeskLibraryView::IntersectsWithUi(const gfx::Point& screen_location) {
+bool SavedDeskLibraryView::IntersectsWithUi(
+    const gfx::Point& screen_location) const {
   // Check saved desk items.
   for (auto* grid : grid_views()) {
     for (auto* item : grid->grid_items()) {
@@ -527,16 +501,16 @@ void SavedDeskLibraryView::OnLocatedEvent(ui::LocatedEvent* event,
   }
 }
 
-absl::optional<gfx::Rect> SavedDeskLibraryView::GetDeskPreviewBoundsForLaunch(
+std::optional<gfx::Rect> SavedDeskLibraryView::GetDeskPreviewBoundsForLaunch(
     const DeskMiniView* mini_view) {
   gfx::Rect desk_preview_bounds =
       mini_view->desk_preview()->GetBoundsInScreen();
-  if (absl::optional<gfx::Point> desk_preview_origin =
+  if (std::optional<gfx::Point> desk_preview_origin =
           mini_view->layer()->transform().InverseMapPoint(
               desk_preview_bounds.origin())) {
     return gfx::Rect(*desk_preview_origin, desk_preview_bounds.size());
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void SavedDeskLibraryView::AddedToWidget() {
@@ -555,27 +529,12 @@ void SavedDeskLibraryView::Layout() {
     return;
 
   const bool landscape = width() >= kLandscapeMinWidth;
+  size_t total_saved_desks = 0;
   for (auto* grid_view : grid_views()) {
     grid_view->set_layout_mode(landscape
                                    ? SavedDeskGridView::LayoutMode::LANDSCAPE
                                    : SavedDeskGridView::LayoutMode::PORTRAIT);
-  }
-
-  size_t total_saved_desks = 0;
-
-  DCHECK_EQ(grid_views_.size(), grid_labels_.size());
-  for (size_t i = 0; i != grid_views_.size(); ++i) {
-    if (chromeos::features::IsJellyEnabled()) {
-      // Set label to be invisible to improve Jelly appearance(b/284210964).
-      grid_labels_[i]->SetVisible(false);
-    } else {
-      // Make the grid label invisible if the corresponding grid view is
-      // empty. This will exclude it from the box layout.
-      grid_labels_[i]->SetVisible(!grid_views_[i]->grid_items().empty());
-    }
-    grid_labels_[i]->SetPreferredSize(landscape ? kLabelSizeLandscape
-                                                : kLabelSizePortrait);
-    total_saved_desks += grid_views_[i]->grid_items().size();
+    total_saved_desks += grid_view->grid_items().size();
   }
 
   no_items_label_->SetVisible(total_saved_desks == 0);

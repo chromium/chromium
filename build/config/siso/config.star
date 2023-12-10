@@ -9,6 +9,12 @@ load("@builtin//struct.star", "module")
 __KNOWN_CONFIG_OPTIONS = [
     # Indicates that the build runs on a builder.
     "builder",
+
+    # TODO: b/308405411 - Enable this config for all builders.
+    "remote-devtools-frontend-typescript",
+
+    # TODO: b/314693395 - Enable reproxy mode for cros by default.
+    "reproxy-cros",
 ]
 
 def __check(ctx):

@@ -309,8 +309,8 @@ void InstalledLoader::Load(const ExtensionInfo& info, bool write_to_prefs) {
     return;
   }
 
-  const ManagementPolicy* policy = extensions::ExtensionSystem::Get(
-      extension_service_->profile())->management_policy();
+  const ManagementPolicy* policy =
+      ExtensionSystem::Get(extension_service_->profile())->management_policy();
 
   if (extension_prefs_->IsExtensionDisabled(extension->id())) {
     int disable_reasons = extension_prefs_->GetDisableReasons(extension->id());

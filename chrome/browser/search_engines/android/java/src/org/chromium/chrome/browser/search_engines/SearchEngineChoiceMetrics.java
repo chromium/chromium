@@ -38,10 +38,16 @@ public class SearchEngineChoiceMetrics {
      * are persisted to logs. Entries should not be renumbered and numeric values should never be
      * reused.
      */
-    @IntDef({EventsV2.CHOICE_REQUEST_RECEIVED, EventsV2.CHOICE_SKIPPED,
-            EventsV2.CHOICE_REQUEST_NO_DATA, EventsV2.CHOICE_REQUEST_VALID,
-            EventsV2.CHOICE_REQUEST_METADATA_NULL, EventsV2.CHOICE_REQUEST_PARSE_FAILED,
-            EventsV2.PREVIOUS_CHOICE_REQUEST_FAILED, EventsV2.CHOICE_REQUEST_SUCCESS})
+    @IntDef({
+        EventsV2.CHOICE_REQUEST_RECEIVED,
+        EventsV2.CHOICE_SKIPPED,
+        EventsV2.CHOICE_REQUEST_NO_DATA,
+        EventsV2.CHOICE_REQUEST_VALID,
+        EventsV2.CHOICE_REQUEST_METADATA_NULL,
+        EventsV2.CHOICE_REQUEST_PARSE_FAILED,
+        EventsV2.PREVIOUS_CHOICE_REQUEST_FAILED,
+        EventsV2.CHOICE_REQUEST_SUCCESS
+    })
     @Retention(RetentionPolicy.SOURCE)
     public @interface EventsV2 {
         int CHOICE_REQUEST_RECEIVED = 0;
@@ -77,11 +83,11 @@ public class SearchEngineChoiceMetrics {
 
     /** Records the search engine type before the user made a choice about which engine to use. */
     public static void recordSearchEngineTypeBeforeChoice() {
-        @SearchEngineType
-        int currentSearchEngineType = getDefaultSearchEngineType();
+        @SearchEngineType int currentSearchEngineType = getDefaultSearchEngineType();
         RecordHistogram.recordEnumeratedHistogram(
                 "Android.SearchEngineChoice.SearchEngineBeforeChoicePrompt",
-                currentSearchEngineType, SearchEngineType.SEARCH_ENGINE_MAX);
+                currentSearchEngineType,
+                SearchEngineType.SEARCH_ENGINE_MAX);
         setPreviousSearchEngineType(currentSearchEngineType);
     }
 
@@ -92,14 +98,13 @@ public class SearchEngineChoiceMetrics {
     public static boolean recordSearchEngineTypeAfterChoice() {
         if (!isSearchEnginePossiblyDifferent()) return false;
 
-        @SearchEngineType
-        int previousSearchEngineType = getPreviousSearchEngineType();
-        @SearchEngineType
-        int currentSearchEngineType = getDefaultSearchEngineType();
+        @SearchEngineType int previousSearchEngineType = getPreviousSearchEngineType();
+        @SearchEngineType int currentSearchEngineType = getDefaultSearchEngineType();
         boolean didChangeEngine = previousSearchEngineType != currentSearchEngineType;
         if (didChangeEngine) {
             RecordHistogram.recordEnumeratedHistogram(
-                    "Android.SearchEngineChoice.ChosenSearchEngine", currentSearchEngineType,
+                    "Android.SearchEngineChoice.ChosenSearchEngine",
+                    currentSearchEngineType,
                     SearchEngineType.SEARCH_ENGINE_MAX);
         }
         removePreviousSearchEngineType();
@@ -108,23 +113,24 @@ public class SearchEngineChoiceMetrics {
 
     /** @return True if the current search engine is possibly different from the previous one. */
     static boolean isSearchEnginePossiblyDifferent() {
-        return ChromeSharedPreferences.getInstance().contains(
-                ChromePreferenceKeys.SEARCH_ENGINE_CHOICE_DEFAULT_TYPE_BEFORE);
+        return ChromeSharedPreferences.getInstance()
+                .contains(ChromePreferenceKeys.SEARCH_ENGINE_CHOICE_DEFAULT_TYPE_BEFORE);
     }
 
     /** Remove the stored choice from prefs. */
     @VisibleForTesting
     static void removePreviousSearchEngineType() {
-        ChromeSharedPreferences.getInstance().removeKey(
-                ChromePreferenceKeys.SEARCH_ENGINE_CHOICE_DEFAULT_TYPE_BEFORE);
+        ChromeSharedPreferences.getInstance()
+                .removeKey(ChromePreferenceKeys.SEARCH_ENGINE_CHOICE_DEFAULT_TYPE_BEFORE);
     }
 
     /** Retrieves the previously set search engine from Android prefs. */
     @VisibleForTesting
     static @SearchEngineType int getPreviousSearchEngineType() {
-        return ChromeSharedPreferences.getInstance().readInt(
-                ChromePreferenceKeys.SEARCH_ENGINE_CHOICE_DEFAULT_TYPE_BEFORE,
-                SearchEngineType.SEARCH_ENGINE_UNKNOWN);
+        return ChromeSharedPreferences.getInstance()
+                .readInt(
+                        ChromePreferenceKeys.SEARCH_ENGINE_CHOICE_DEFAULT_TYPE_BEFORE,
+                        SearchEngineType.SEARCH_ENGINE_UNKNOWN);
     }
 
     /**
@@ -132,8 +138,8 @@ public class SearchEngineChoiceMetrics {
      */
     @VisibleForTesting
     static void setPreviousSearchEngineType(@SearchEngineType int engine) {
-        ChromeSharedPreferences.getInstance().writeInt(
-                ChromePreferenceKeys.SEARCH_ENGINE_CHOICE_DEFAULT_TYPE_BEFORE, engine);
+        ChromeSharedPreferences.getInstance()
+                .writeInt(ChromePreferenceKeys.SEARCH_ENGINE_CHOICE_DEFAULT_TYPE_BEFORE, engine);
     }
 
     /** Translates from the default search engine url to the {@link SearchEngineType} int. */

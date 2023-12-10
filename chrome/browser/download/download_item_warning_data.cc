@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <functional>
+
 #include "chrome/browser/download/download_item_warning_data.h"
 
 #include "base/metrics/histogram_functions.h"
@@ -69,7 +71,7 @@ V DownloadItemWarningData::GetWithDefault(const DownloadItem* download,
   if (!data) {
     return default_value;
   }
-  return base::invoke(std::forward<F>(f), *data);
+  return std::invoke(std::forward<F>(f), *data);
 }
 
 // static
@@ -230,12 +232,16 @@ DownloadItemWarningData::ConstructCsbrrDownloadWarningAction(
       action.set_action(
           ClientSafeBrowsingReportRequest::DownloadWarningAction::OPEN_SUBPAGE);
       break;
-    case DownloadItemWarningData::WarningAction::SHOWN:
-      NOTREACHED();
-      break;
     case DownloadItemWarningData::WarningAction::PROCEED_DEEP_SCAN:
       action.set_action(ClientSafeBrowsingReportRequest::DownloadWarningAction::
                             PROCEED_DEEP_SCAN);
+      break;
+    case DownloadItemWarningData::WarningAction::OPEN_LEARN_MORE_LINK:
+      action.set_action(ClientSafeBrowsingReportRequest::DownloadWarningAction::
+                            OPEN_LEARN_MORE_LINK);
+      break;
+    case DownloadItemWarningData::WarningAction::SHOWN:
+      NOTREACHED();
       break;
   }
   action.set_is_terminal_action(event.is_terminal_action);

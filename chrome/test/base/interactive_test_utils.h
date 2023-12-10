@@ -7,7 +7,7 @@
 
 #include <utility>
 
-#include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser_list_observer.h"
@@ -36,7 +36,7 @@ class BrowserActivationWaiter : public BrowserListObserver {
   explicit BrowserActivationWaiter(const Browser* browser);
   BrowserActivationWaiter(const BrowserActivationWaiter&) = delete;
   BrowserActivationWaiter& operator=(const BrowserActivationWaiter&) = delete;
-  ~BrowserActivationWaiter() override = default;
+  ~BrowserActivationWaiter() override;
 
   // Runs a message loop until the |browser_| supplied to the constructor is
   // activated, or returns immediately if |browser_| has already become active.
@@ -47,7 +47,7 @@ class BrowserActivationWaiter : public BrowserListObserver {
   // BrowserListObserver:
   void OnBrowserSetLastActive(Browser* browser) override;
 
-  const raw_ptr<const Browser> browser_;
+  const base::WeakPtr<const Browser> browser_;
   bool observed_ = false;
   base::RunLoop run_loop_;
 };
@@ -72,7 +72,7 @@ class BrowserDeactivationWaiter : public BrowserListObserver {
   // BrowserListObserver:
   void OnBrowserNoLongerActive(Browser* browser) override;
 
-  const raw_ptr<const Browser> browser_;
+  const base::WeakPtr<const Browser> browser_;
   bool observed_ = false;
   base::RunLoop run_loop_;
 };

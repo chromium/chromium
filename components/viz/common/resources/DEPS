@@ -4,6 +4,7 @@ include_rules = [
   # TODO(staraz): cc/base was added because ResourceSizes includes
   # cc::MathUtil. Remove it once cc/base/math_util* are moved to viz.
   "+cc/base",
+  "+gpu/command_buffer/client/client_shared_image.h",
   "+gpu/command_buffer/common",
   "+gpu/ipc/common",
   "+gpu/vulkan/buildflags.h",

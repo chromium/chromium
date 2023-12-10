@@ -22,13 +22,12 @@ std::string EncodeAsString(const std::string& unencoded_string) {
   return encoded_string;
 }
 
-absl::optional<std::string> DecodeFromString(
-    const std::string& encoded_string) {
+std::optional<std::string> DecodeFromString(const std::string& encoded_string) {
   std::string decoded_string;
   if (!base::Base64UrlDecode(encoded_string,
                              base::Base64UrlDecodePolicy::REQUIRE_PADDING,
                              &decoded_string)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return decoded_string;
@@ -38,10 +37,10 @@ base::Value EncodeAsValueString(const std::string& unencoded_string) {
   return base::Value(EncodeAsString(unencoded_string));
 }
 
-absl::optional<std::string> DecodeFromValueString(
+std::optional<std::string> DecodeFromValueString(
     const base::Value* encoded_value_string) {
   if (!encoded_value_string || !encoded_value_string->is_string())
-    return absl::nullopt;
+    return std::nullopt;
 
   return DecodeFromString(encoded_value_string->GetString());
 }

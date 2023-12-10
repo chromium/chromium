@@ -10,9 +10,7 @@ import androidx.annotation.Nullable;
 
 import java.util.Map;
 
-/**
- * Interface for launching a help and feedback page.
- */
+/** Interface for launching a help and feedback page. */
 public interface HelpAndFeedbackLauncher {
     /**
      * Starts an activity showing a help page for the specified context ID.
@@ -35,8 +33,11 @@ public interface HelpAndFeedbackLauncher {
      * @param screenshotMode The kind of screenshot to include with the feedback.
      * @param feedbackContext The context that describes the current feature being used.
      */
-    void showFeedback(final Activity activity, @Nullable String url,
-            @Nullable final String categoryTag, int screenshotMode,
+    void showFeedback(
+            final Activity activity,
+            @Nullable String url,
+            @Nullable final String categoryTag,
+            int screenshotMode,
             @Nullable final String feedbackContext);
 
     /**
@@ -58,6 +59,9 @@ public interface HelpAndFeedbackLauncher {
      * @param categoryTag The category that this feedback report falls under.
      * @param feedContext Feed specific parameters (url, title, etc) to include with feedback.
      */
-    void showFeedback(final Activity activity, @Nullable String url,
-            @Nullable final String categoryTag, @Nullable final Map<String, String> feedContext);
+    void showFeedback(
+            final Activity activity,
+            @Nullable String url,
+            @Nullable final String categoryTag,
+            @Nullable final Map<String, String> feedContext);
 }

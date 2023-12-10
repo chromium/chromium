@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html/html_image_loader.h"
 #include "third_party/blink/renderer/core/html/lazy_load_image_observer.h"
+#include "third_party/blink/renderer/core/resize_observer/resize_observer.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/graphics/image_orientation.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
@@ -79,6 +80,9 @@ class CORE_EXPORT HTMLImageElement final
   unsigned LayoutBoxWidth() const;
   unsigned LayoutBoxHeight() const;
 
+  bool IsBeingRendered() const;
+  bool AllowAutoSizes() const;
+
   const String& currentSrc() const;
 
   bool IsServerMap() const;
@@ -88,13 +92,16 @@ class CORE_EXPORT HTMLImageElement final
   ImageResourceContent* CachedImage() const {
     return GetImageLoader().GetContent();
   }
+
   void LoadDeferredImageFromMicrotask() {
     GetImageLoader().LoadDeferredImage(/*force_blocking*/ false,
                                        /*update_from_microtask*/ true);
   }
+
   void LoadDeferredImageBlockingLoad() {
     GetImageLoader().LoadDeferredImage(/*force_blocking*/ true);
   }
+
   void SetImageForTest(ImageResourceContent* content) {
     GetImageLoader().SetImageForTest(content);
   }
@@ -114,6 +121,8 @@ class CORE_EXPORT HTMLImageElement final
   ScriptPromise decode(ScriptState*, ExceptionState&);
 
   bool complete() const;
+
+  void OnResize();
 
   bool HasPendingActivity() const final {
     return GetImageLoader().HasPendingActivity();
@@ -175,8 +184,12 @@ class CORE_EXPORT HTMLImageElement final
   bool IsAdRelated() const override { return is_ad_related_; }
 
   // Keeps track whether this image is an LCP element.
+  // If the element is reused for loading another image, this flag might be
+  // retained so use with caution.
   void SetIsLCPElement() { is_lcp_element_ = true; }
   bool IsLCPElement() const { return is_lcp_element_; }
+  void SetPredictedLcpElement() { is_predicted_lcp_element_ = true; }
+  bool IsPredictedLcpElement() const { return is_predicted_lcp_element_; }
 
   bool IsChangedShortlyAfterMouseover() const {
     return is_changed_shortly_after_mouseover_;
@@ -193,6 +206,9 @@ class CORE_EXPORT HTMLImageElement final
   // additional conditions can prevent lazy loading even when this is true, such
   // as script being disabled (see: `LazyImageHelper::ShouldDeferImageLoad`).
   bool HasLazyLoadingAttribute() const;
+
+  // True if the `sizes` attribute is present.
+  bool HasSizesAttribute() const;
 
   // Returns script urls that were in execution while this element was being
   // created, if LCPScriptObserver was active.
@@ -284,7 +300,9 @@ class CORE_EXPORT HTMLImageElement final
   bool is_ad_related_ : 1;
   bool is_lcp_element_ : 1;
   bool is_changed_shortly_after_mouseover_ : 1;
-  bool has_sizes_attribute_in_img_or_sibling_ : 1;
+  bool is_auto_sized_ : 1;
+  bool is_predicted_lcp_element_ : 1;
+
   HashSet<String> creator_scripts_;
 
   std::unique_ptr<LazyLoadImageObserver::VisibleLoadTimeMetrics>
@@ -292,7 +310,7 @@ class CORE_EXPORT HTMLImageElement final
 
   bool image_ad_use_counter_recorded_ = false;
 
-  // The last rectangle reported to the the `PageTimingMetricsSender`.
+  // The last rectangle reported to the `PageTimingMetricsSender`.
   // `last_reported_ad_rect_` is empty if there's no report before, or if the
   // last report was used to signal the removal of this element (i.e. both cases
   // will be handled the same way).

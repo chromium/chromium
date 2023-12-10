@@ -16,9 +16,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 
-/**
- * Stubs out the backends used by the native Android browsing history manager.
- */
+/** Stubs out the backends used by the native Android browsing history manager. */
 public class StubbedHistoryProvider implements HistoryProvider {
     public final CallbackHelper markItemForRemovalCallback = new CallbackHelper();
     public final CallbackHelper removeItemsCallback = new CallbackHelper();
@@ -30,6 +28,7 @@ public class StubbedHistoryProvider implements HistoryProvider {
 
     /** The exclusive end position for the last query. **/
     private int mLastQueryEndPosition;
+
     private String mLastQuery;
     private int mPaging = 5;
     private boolean mHostOnly;
@@ -71,15 +70,15 @@ public class StubbedHistoryProvider implements HistoryProvider {
             for (HistoryItem item : mItems) {
                 if (mHostOnly) {
                     if (item.getUrl()
-                                    .getHost()
-                                    .toLowerCase(Locale.getDefault())
-                                    .equals(mLastQuery)) {
+                            .getHost()
+                            .toLowerCase(Locale.getDefault())
+                            .equals(mLastQuery)) {
                         mSearchItems.add(item);
                     }
                 } else if (item.getUrl()
-                                   .getSpec()
-                                   .toLowerCase(Locale.getDefault())
-                                   .contains(mLastQuery)
+                                .getSpec()
+                                .toLowerCase(Locale.getDefault())
+                                .contains(mLastQuery)
                         || item.getTitle().toLowerCase(Locale.getDefault()).contains(mLastQuery)) {
                     mSearchItems.add(item);
                 }
@@ -104,19 +103,21 @@ public class StubbedHistoryProvider implements HistoryProvider {
             String hostName, Callback<Long> callback) {
         long timestamp = 0;
         if (mItems.size() > 0) {
-            Collections.sort(mItems, new Comparator<HistoryItem>() {
-                @Override
-                public int compare(HistoryItem lhs, HistoryItem rhs) {
-                    long timeDelta = lhs.getTimestamp() - rhs.getTimestamp();
-                    if (timeDelta > 0) {
-                        return -1;
-                    } else if (timeDelta == 0) {
-                        return 0;
-                    } else {
-                        return 1;
-                    }
-                }
-            });
+            Collections.sort(
+                    mItems,
+                    new Comparator<HistoryItem>() {
+                        @Override
+                        public int compare(HistoryItem lhs, HistoryItem rhs) {
+                            long timeDelta = lhs.getTimestamp() - rhs.getTimestamp();
+                            if (timeDelta > 0) {
+                                return -1;
+                            } else if (timeDelta == 0) {
+                                return 0;
+                            } else {
+                                return 1;
+                            }
+                        }
+                    });
             timestamp = mItems.get(0).getTimestamp();
         }
         callback.onResult(Long.valueOf(timestamp));
@@ -160,23 +161,48 @@ public class StubbedHistoryProvider implements HistoryProvider {
     public static HistoryItem createHistoryItem(int which, long timestamp) {
         long[] nativeTimestamps = {timestamp * 1000};
         if (which == 0) {
-            return new HistoryItem(JUnitTestGURLs.SEARCH_URL, "www.google.com", "Google", timestamp,
-                    nativeTimestamps, false);
+            return new HistoryItem(
+                    JUnitTestGURLs.SEARCH_URL,
+                    "www.google.com",
+                    "Google",
+                    timestamp,
+                    nativeTimestamps,
+                    false);
         } else if (which == 1) {
-            return new HistoryItem(JUnitTestGURLs.EXAMPLE_URL, "www.example.com", "Foo", timestamp,
-                    nativeTimestamps, false);
+            return new HistoryItem(
+                    JUnitTestGURLs.EXAMPLE_URL,
+                    "www.example.com",
+                    "Foo",
+                    timestamp,
+                    nativeTimestamps,
+                    false);
         } else if (which == 2) {
             return new HistoryItem(
                     JUnitTestGURLs.URL_1, "www.one.com", "Bar", timestamp, nativeTimestamps, false);
         } else if (which == 3) {
-            return new HistoryItem(JUnitTestGURLs.URL_2, "www.two.com", "News", timestamp,
-                    nativeTimestamps, false);
+            return new HistoryItem(
+                    JUnitTestGURLs.URL_2,
+                    "www.two.com",
+                    "News",
+                    timestamp,
+                    nativeTimestamps,
+                    false);
         } else if (which == 4) {
-            return new HistoryItem(JUnitTestGURLs.URL_3, "www.three.com", "Engineering", timestamp,
-                    nativeTimestamps, false);
+            return new HistoryItem(
+                    JUnitTestGURLs.URL_3,
+                    "www.three.com",
+                    "Engineering",
+                    timestamp,
+                    nativeTimestamps,
+                    false);
         } else if (which == 5) {
-            return new HistoryItem(JUnitTestGURLs.INITIAL_URL, "initial.com", "Cannot Visit",
-                    timestamp, nativeTimestamps, true);
+            return new HistoryItem(
+                    JUnitTestGURLs.INITIAL_URL,
+                    "initial.com",
+                    "Cannot Visit",
+                    timestamp,
+                    nativeTimestamps,
+                    true);
         } else {
             return null;
         }

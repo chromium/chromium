@@ -7,8 +7,6 @@ package org.chromium.chrome.browser.bookmarks;
 import android.content.Context;
 
 import org.chromium.base.lifetime.DestroyChecker;
-import org.chromium.base.task.PostTask;
-import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel.BookmarkDeleteObserver;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
@@ -22,29 +20,6 @@ import java.util.Locale;
 public class BookmarkUndoController extends BookmarkModelObserver
         implements SnackbarManager.SnackbarController, BookmarkDeleteObserver {
     private static final int SNACKBAR_DURATION_MS = 3000;
-
-    /**
-     * Creates an instance of {@link BookmarkUndoController} which self-destructs after the first
-     * action. As a result, this should only be called directly before making an add/delete action
-     * to bookmarks.
-     *
-     * @param context The {@link Context} in which snackbar is shown.
-     * @param model The bookmark model.
-     * @param snackbarManager SnackManager passed from activity.
-     * @param destroyAfterFirstAction Destroy the controller after the first action.
-     */
-    public static void createOneshotBookmarkUndoController(
-            Context context, BookmarkModel model, SnackbarManager snackbarManager) {
-        BookmarkUndoController controller =
-                new BookmarkUndoController(
-                        context, model, snackbarManager, /* destroyAfterFirstAction= */ true);
-        PostTask.postDelayedTask(
-                TaskTraits.UI_BEST_EFFORT,
-                () -> {
-                    controller.destroyIfNecessary();
-                },
-                SNACKBAR_DURATION_MS + 1000);
-    }
 
     private final BookmarkModel mBookmarkModel;
     private final SnackbarManager mSnackbarManager;
@@ -92,8 +67,6 @@ public class BookmarkUndoController extends BookmarkModelObserver
 
     /** Cleans up this class, unregistering for application notifications from bookmark model. */
     public void destroy() {
-        mDestroyChecker.checkNotDestroyed();
-
         mBookmarkModel.removeDeleteObserver(this);
         mSnackbarManager.dismissSnackbars(this);
 

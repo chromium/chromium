@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<script>
+  function noop(x) {
+  }
+
+  function doGC() {
+    if (window.GCController) {
+      window.GCController.collectAll();
+    }
+  }
+  var countOrig;
+  var countAfterCreate;
+  var countAfterGC;
+
+  function finishTest() {
+    doGC();
+    var countAfterGC2 = plug.testObjectCount;
+
+    output.innerHTML += "--- num test objects:<br>";
+    output.innerHTML += "countAfterCreate == countOrig + 3? "
+        + ((countAfterCreate == countOrig + 3) ? "PASS" : "FAIL")
+        + "<br>";
+    output.innerHTML += "countOrig == countAfterGC? "
+        + ((countOrig == countAfterGC) ? "PASS" : "FAIL")
+        + "<br>";
+    output.innerHTML += "countOrig == countAfterGC2? "
+        + ((countOrig == countAfterGC2) ? "PASS" : "FAIL")
+        + "<br>";
+    output.innerHTML += "<br>";
+
+    var success = (countAfterGC == countOrig) && (countAfterGC2 == countOrig);
+    output.innerHTML += (success ? "SUCCESS" : "FAILURE");
+
+    if (window.testRunner)
+      testRunner.notifyDone();
+  }
+
+  function step2() {
+    doGC();
+    countAfterGC = plug.testObjectCount;
+
+    var testObj = plug.testCreateTestObject();
+    // The following will refcount testObj by passing it to the plugin and again
+    // by the plugin calling noop, and we will verify in finishTest that the
+    // refcounts are properly released, by verifying the plugin object was
+    // properly deleted.
+    plug.testPassTestObject("noop", testObj);
+    plug.testPassTestObject("noop", testObj);
+    plug.testPassTestObject("noop", testObj);
+
+    doGC();
+    // PPAPI requires the main loop to run to fully release references. See
+    // PPB_Var_Deprecated_Proxy::OnMsgReleaseObject.
+    setTimeout(finishTest, 0);
+  }
+
+  function runtest() {
+    if (window.testRunner) {
+      testRunner.dumpAsText();
+      testRunner.waitUntilDone();
+    }
+
+    var output = document.getElementById("output");
+    output.innerHTML = "";
+
+    // Test that objects are deleted after their JS references are released.
+    countOrig = plug.testObjectCount;
+    o1 = plug.testCreateTestObject();
+    o2 = plug.testCreateTestObject();
+    o3 = plug.testCreateTestObject();
+    countAfterCreate = plug.testObjectCount;
+    o1 = o2 = o3 = null;
+    doGC();
+    // PPAPI requires the main loop to run to fully release references. See
+    // PPB_Var_Deprecated_Proxy::OnMsgReleaseObject.
+    setTimeout(step2, 0);
+  }
+</script>
+
+<body onload="runtest()">
+
+Test that we can get an NPObject returned through a method on
+an NPAPI Object.<P>
+
+Prints "SUCCESS" on success, "FAILURE" on failure.
+
+<embed name="plug" type="application/x-blink-deprecated-test-plugin">
+
+<div id=output>FAILURE</div>
+
+</body>
+

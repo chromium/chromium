@@ -38,6 +38,7 @@
 //      equally valid here.
 
 namespace url {
+
 namespace {
 
 // Used for regular URL parse cases.
@@ -111,6 +112,21 @@ bool ComponentMatches(const char* input,
 void ExpectInvalidComponent(const Component& component) {
   EXPECT_EQ(0, component.begin);
   EXPECT_EQ(-1, component.len);
+}
+
+void URLParseCaseMatches(const URLParseCase& expected, const Parsed& parsed) {
+  const char* url = expected.input;
+  SCOPED_TRACE(testing::Message()
+               << "url: \"" << url << "\", parsed: " << parsed);
+  int port = ParsePort(url, parsed.port);
+  EXPECT_TRUE(ComponentMatches(url, expected.scheme, parsed.scheme));
+  EXPECT_TRUE(ComponentMatches(url, expected.username, parsed.username));
+  EXPECT_TRUE(ComponentMatches(url, expected.password, parsed.password));
+  EXPECT_TRUE(ComponentMatches(url, expected.host, parsed.host));
+  EXPECT_EQ(expected.port, port);
+  EXPECT_TRUE(ComponentMatches(url, expected.path, parsed.path));
+  EXPECT_TRUE(ComponentMatches(url, expected.query, parsed.query));
+  EXPECT_TRUE(ComponentMatches(url, expected.ref, parsed.ref));
 }
 
 // Parsed ----------------------------------------------------------------------
@@ -317,16 +333,7 @@ TEST(URLParser, Standard) {
   for (const auto& i : cases) {
     const char* url = i.input;
     ParseStandardURL(url, static_cast<int>(strlen(url)), &parsed);
-    int port = ParsePort(url, parsed.port);
-
-    EXPECT_TRUE(ComponentMatches(url, i.scheme, parsed.scheme));
-    EXPECT_TRUE(ComponentMatches(url, i.username, parsed.username));
-    EXPECT_TRUE(ComponentMatches(url, i.password, parsed.password));
-    EXPECT_TRUE(ComponentMatches(url, i.host, parsed.host));
-    EXPECT_EQ(i.port, port);
-    EXPECT_TRUE(ComponentMatches(url, i.path, parsed.path));
-    EXPECT_TRUE(ComponentMatches(url, i.query, parsed.query));
-    EXPECT_TRUE(ComponentMatches(url, i.ref, parsed.ref));
+    URLParseCaseMatches(i, parsed);
   }
 }
 
@@ -452,44 +459,13 @@ TEST(URLParser, ParseFileURL) {
   // Declared outside for loop to try to catch cases in init() where we forget
   // to reset something that is reset by the construtor.
   Parsed parsed;
-  for (size_t i = 0; i < std::size(file_cases); i++) {
-    const char* url = file_cases[i].input;
-    ParseFileURL(url, static_cast<int>(strlen(url)), &parsed);
-    int port = ParsePort(url, parsed.port);
-
-    EXPECT_TRUE(ComponentMatches(url, file_cases[i].scheme, parsed.scheme))
-        << " for case #" << i << " [" << url << "] "
-        << parsed.scheme.begin << ", " << parsed.scheme.len;
-
-    EXPECT_TRUE(ComponentMatches(url, file_cases[i].username, parsed.username))
-        << " for case #" << i << " [" << url << "] "
-        << parsed.username.begin << ", " << parsed.username.len;
-
-    EXPECT_TRUE(ComponentMatches(url, file_cases[i].password, parsed.password))
-        << " for case #" << i << " [" << url << "] "
-        << parsed.password.begin << ", " << parsed.password.len;
-
-    EXPECT_TRUE(ComponentMatches(url, file_cases[i].host, parsed.host))
-        << " for case #" << i << " [" << url << "] "
-        << parsed.host.begin << ", " << parsed.host.len;
-
-    EXPECT_EQ(file_cases[i].port, port)
-        << " for case #" << i << " [ " << url << "] " << port;
-
-    EXPECT_TRUE(ComponentMatches(url, file_cases[i].path, parsed.path))
-        << " for case #" << i << " [" << url << "] "
-        << parsed.path.begin << ", " << parsed.path.len;
-
-    EXPECT_TRUE(ComponentMatches(url, file_cases[i].query, parsed.query))
-        << " for case #" << i << " [" << url << "] "
-        << parsed.query.begin << ", " << parsed.query.len;
-
-    EXPECT_TRUE(ComponentMatches(url, file_cases[i].ref, parsed.ref))
-        << " for case #" << i << " [ "<< url << "] "
-        << parsed.query.begin << ", " << parsed.scheme.len;
+  for (const auto& file_case : file_cases) {
+    ParseFileURL(file_case.input, static_cast<int>(strlen(file_case.input)),
+                 &parsed);
+    URLParseCaseMatches(file_case, parsed);
+    EXPECT_FALSE(parsed.has_opaque_path);
   }
 }
-
 
 TEST(URLParser, ExtractFileName) {
   struct FileCase {
@@ -632,6 +608,7 @@ TEST(URLParser, MailtoUrl) {
     EXPECT_TRUE(ComponentMatches(url, mailto_case.path, parsed.path));
     EXPECT_TRUE(ComponentMatches(url, mailto_case.query, parsed.query));
     EXPECT_EQ(PORT_UNSPECIFIED, port);
+    EXPECT_FALSE(parsed.has_opaque_path);
 
     // The remaining components are never used for mailto URLs.
     ExpectInvalidComponent(parsed.username);
@@ -687,12 +664,72 @@ TEST(URLParser, FileSystemURL) {
     EXPECT_TRUE(ComponentMatches(url, filesystem_case.path, parsed.path));
     EXPECT_TRUE(ComponentMatches(url, filesystem_case.query, parsed.query));
     EXPECT_TRUE(ComponentMatches(url, filesystem_case.ref, parsed.ref));
+    EXPECT_FALSE(parsed.has_opaque_path);
 
     // The remaining components are never used for filesystem URLs.
     ExpectInvalidComponent(parsed.username);
     ExpectInvalidComponent(parsed.password);
     ExpectInvalidComponent(parsed.host);
     ExpectInvalidComponent(parsed.port);
+  }
+}
+
+// Non-special URLs which don't have an opaque path.
+static URLParseCase non_special_cases[] = {
+    {"git://user:pass@foo:21/bar;par?b#c", "git", "user", "pass", "foo", 21,
+     "/bar;par", "b", "c"},
+    {"git://host", "git", nullptr, nullptr, "host", -1, nullptr, nullptr,
+     nullptr},
+    {"git://host/a/../b", "git", nullptr, nullptr, "host", -1, "/a/../b",
+     nullptr, nullptr},
+    {"git://host/a b", "git", nullptr, nullptr, "host", -1, "/a b", nullptr,
+     nullptr},
+    {"git://ho\\st/", "git", nullptr, nullptr, "ho\\st", -1, "/", nullptr,
+     nullptr},
+    // Empty host cases
+    {"git://", "git", nullptr, nullptr, "", -1, nullptr, nullptr, nullptr},
+    {"git:///", "git", nullptr, nullptr, "", -1, "/", nullptr, nullptr},
+    {"git:////", "git", nullptr, nullptr, "", -1, "//", nullptr, nullptr},
+    // Null host cases
+    {"git:/", "git", nullptr, nullptr, nullptr, -1, "/", nullptr, nullptr},
+    {"git:/trailing-space ", "git", nullptr, nullptr, nullptr, -1,
+     "/trailing-space", nullptr, nullptr},
+};
+
+TEST(URLParser, NonSpecial) {
+  // Declared outside for loop to try to catch cases in init() where we forget
+  // to reset something that is reset by the constructor.
+  Parsed parsed;
+  for (const auto& i : non_special_cases) {
+    const char* url = i.input;
+    ParseNonSpecialURL(url, static_cast<int>(strlen(url)), &parsed);
+    URLParseCaseMatches(i, parsed);
+    EXPECT_FALSE(parsed.has_opaque_path) << "url: " << url;
+  }
+}
+
+// Non-special URLs which have an opaque path.
+static URLParseCase non_special_opaque_path_cases[] = {
+    {"git:", "git", nullptr, nullptr, nullptr, -1, nullptr, nullptr, nullptr},
+    {"git:opaque", "git", nullptr, nullptr, nullptr, -1, "opaque", nullptr,
+     nullptr},
+    {"git:opaque?a=b#c", "git", nullptr, nullptr, nullptr, -1, "opaque", "a=b",
+     "c"},
+    {"git: o p a q u e ", "git", nullptr, nullptr, nullptr, -1, " o p a q u e",
+     nullptr, nullptr},
+    {"git:opa\\que", "git", nullptr, nullptr, nullptr, -1, "opa\\que", nullptr,
+     nullptr},
+};
+
+TEST(URLParser, NonSpecialOpaquePath) {
+  // Declared outside for loop to try to catch cases in init() where we forget
+  // to reset something that is reset by the constructor.
+  Parsed parsed;
+  for (const auto& i : non_special_opaque_path_cases) {
+    const char* url = i.input;
+    ParseNonSpecialURL(url, static_cast<int>(strlen(url)), &parsed);
+    URLParseCaseMatches(i, parsed);
+    EXPECT_TRUE(parsed.has_opaque_path) << "url: " << url;
   }
 }
 

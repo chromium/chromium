@@ -8,7 +8,7 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
-#import "ios/chrome/browser/signin/constants.h"
+#import "ios/chrome/browser/signin/model/constants.h"
 
 namespace signin_metrics {
 enum class ProfileSignout;

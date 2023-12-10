@@ -15,7 +15,6 @@
 #import "components/reading_list/core/dual_reading_list_model.h"
 #import "components/reading_list/core/reading_list_model_impl.h"
 #import "components/reading_list/core/reading_list_model_storage_impl.h"
-#import "components/reading_list/features/reading_list_switches.h"
 #import "components/signin/public/identity_manager/tribool.h"
 #import "components/sync/base/features.h"
 #import "components/sync/base/storage_type.h"
@@ -24,7 +23,7 @@
 #import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
-#import "ios/chrome/browser/signin/signin_util.h"
+#import "ios/chrome/browser/signin/model/signin_util.h"
 #import "ios/chrome/browser/sync/model/model_type_store_service_factory.h"
 #import "ios/web/public/thread/web_thread.h"
 
@@ -66,10 +65,6 @@ ReadingListModel* ReadingListModelFactory::GetForBrowserState(
 reading_list::DualReadingListModel*
 ReadingListModelFactory::GetAsDualReadingListModelForBrowserState(
     ChromeBrowserState* browser_state) {
-  if (!base::FeatureList::IsEnabled(
-          syncer::kReadingListEnableDualReadingListModel)) {
-    return nullptr;
-  }
   return static_cast<reading_list::DualReadingListModel*>(
       GetForBrowserState(browser_state));
 }
@@ -97,16 +92,13 @@ std::unique_ptr<KeyedService> ReadingListModelFactory::BuildServiceInstanceFor(
   syncer::OnceModelTypeStoreFactory store_factory =
       ModelTypeStoreServiceFactory::GetForBrowserState(chrome_browser_state)
           ->GetStoreFactory();
-  auto storage =
+  auto local_storage =
       std::make_unique<ReadingListModelStorageImpl>(std::move(store_factory));
-  auto reading_list_model = std::make_unique<ReadingListModelImpl>(
-      std::move(storage), syncer::StorageType::kUnspecified,
-      GetWipeModelUponSyncDisabledBehaviorForSyncableModel(),
-      base::DefaultClock::GetInstance());
-  if (!base::FeatureList::IsEnabled(
-          syncer::kReadingListEnableDualReadingListModel)) {
-    return reading_list_model;
-  }
+  auto reading_list_model_for_local_storage =
+      std::make_unique<ReadingListModelImpl>(
+          std::move(local_storage), syncer::StorageType::kUnspecified,
+          GetWipeModelUponSyncDisabledBehaviorForSyncableModel(),
+          base::DefaultClock::GetInstance());
 
   syncer::OnceModelTypeStoreFactory store_factory_for_account_storage =
       ModelTypeStoreServiceFactory::GetForBrowserState(chrome_browser_state)
@@ -119,7 +111,8 @@ std::unique_ptr<KeyedService> ReadingListModelFactory::BuildServiceInstanceFor(
           syncer::WipeModelUponSyncDisabledBehavior::kAlways,
           base::DefaultClock::GetInstance());
   return std::make_unique<reading_list::DualReadingListModel>(
-      /*local_or_syncable_model=*/std::move(reading_list_model),
+      /*local_or_syncable_model=*/std::move(
+          reading_list_model_for_local_storage),
       /*account_model=*/std::move(reading_list_model_for_account_storage));
 }
 

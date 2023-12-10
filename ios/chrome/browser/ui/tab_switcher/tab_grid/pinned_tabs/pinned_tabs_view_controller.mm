@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/pinned_tabs/pinned_tabs_layout.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_context_menu/tab_context_menu_provider.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/legacy_grid_transition_layout.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/tab_grid_transition_item.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_switcher_item.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_utils.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -217,6 +218,9 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
       self.collectionView.indexPathsForSelectedItems.firstObject;
   PinnedCell* selectedCell = base::apple::ObjCCastStrict<PinnedCell>(
       [self.collectionView cellForItemAtIndexPath:selectedItemIndexPath]);
+  if (!selectedCell) {
+    return nil;
+  }
 
   if (selectedCell.itemIdentifier == _selectedItemID) {
     UICollectionViewLayoutAttributes* attributes = [self.collectionView
@@ -245,6 +249,32 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   return [LegacyGridTransitionLayout layoutWithInactiveItems:@[]
                                                   activeItem:activeItem
                                                selectionItem:selectionItem];
+}
+
+- (TabGridTransitionItem*)transitionItemForActiveCell {
+  [self.collectionView layoutIfNeeded];
+
+  NSIndexPath* selectedItemIndexPath =
+      self.collectionView.indexPathsForSelectedItems.firstObject;
+
+  if (![self.collectionView.indexPathsForVisibleItems
+          containsObject:selectedItemIndexPath]) {
+    return nil;
+  }
+
+  PinnedCell* cell = base::apple::ObjCCastStrict<PinnedCell>(
+      [self.collectionView cellForItemAtIndexPath:selectedItemIndexPath]);
+
+  UICollectionViewLayoutAttributes* attributes = [self.collectionView
+      layoutAttributesForItemAtIndexPath:selectedItemIndexPath];
+
+  // Normalize frame to window coordinates. The attributes class applies this
+  // change to the other properties such as center, bounds, etc.
+  attributes.frame = [self.collectionView convertRect:attributes.frame
+                                               toView:nil];
+
+  return [TabGridTransitionItem itemWithView:cell
+                               originalFrame:attributes.frame];
 }
 
 - (BOOL)isCollectionEmpty {
@@ -448,8 +478,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
       [self.collectionView cellForItemAtIndexPath:indexPath]);
   return [self.menuProvider
       contextMenuConfigurationForTabCell:cell
-                            menuScenario:MenuScenarioHistogram::
-                                             kPinnedTabsEntry];
+                            menuScenario:kMenuScenarioHistogramPinnedTabsEntry];
 }
 
 - (void)collectionView:(UICollectionView*)collectionView
@@ -473,7 +502,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   _localDragActionInProgress = YES;
   base::UmaHistogramEnumeration(kUmaPinnedViewDragDropTabs,
                                 DragDropTabs::kDragBegin);
-
+  [self.delegate pinnedViewControllerDragSessionWillBegin:self];
   [self dragSessionEnabled:YES];
 }
 
@@ -826,6 +855,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 // Configures `cell`'s identifier and title synchronously, and favicon and
 // snapshot asynchronously from `item`.
 - (void)configureCell:(PinnedCell*)cell withItem:(TabSwitcherItem*)item {
+  CHECK(cell);
   if (item) {
     cell.itemIdentifier = item.identifier;
     cell.title = item.title;

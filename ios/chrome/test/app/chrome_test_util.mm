@@ -19,7 +19,7 @@
 #import "ios/chrome/app/chrome_overlay_window.h"
 #import "ios/chrome/app/main_application_delegate_testing.h"
 #import "ios/chrome/app/main_controller.h"
-#import "ios/chrome/browser/infobars/infobar_manager_impl.h"
+#import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_controller.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_controller_testing.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"

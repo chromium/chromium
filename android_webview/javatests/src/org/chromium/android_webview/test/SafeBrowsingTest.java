@@ -75,20 +75,20 @@ import java.util.Arrays;
 @RunWith(Parameterized.class)
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
 public class SafeBrowsingTest extends AwParameterizedTest {
-    @Rule
-    public AwActivityTestRule mActivityTestRule;
+    @Rule public AwActivityTestRule mActivityTestRule;
 
     public SafeBrowsingTest(AwSettingsMutation param) {
-        mActivityTestRule = new AwActivityTestRule(param.getMutation()) {
-            /**
-             * Creates a special BrowserContext that has a safebrowsing api handler which always says
-             * sites are malicious
-             */
-            @Override
-            public AwBrowserContext createAwBrowserContextOnUiThread() {
-                return new MockAwBrowserContext();
-            }
-        };
+        mActivityTestRule =
+                new AwActivityTestRule(param.getMutation()) {
+                    /**
+                     * Creates a special BrowserContext that has a safebrowsing api handler which always says
+                     * sites are malicious
+                     */
+                    @Override
+                    public AwBrowserContext createAwBrowserContextOnUiThread() {
+                        return new MockAwBrowserContext();
+                    }
+                };
     }
 
     @Rule public TestRule mProcessor = new Features.InstrumentationProcessor();
@@ -204,9 +204,7 @@ public class SafeBrowsingTest extends AwParameterizedTest {
         }
     }
 
-    /**
-     * A fake PlatformServiceBridge that allows tests to make safe browsing requests without GMS.
-     */
+    /** A fake PlatformServiceBridge that allows tests to make safe browsing requests without GMS. */
     private static class MockPlatformServiceBridge extends PlatformServiceBridge {
         @Override
         public boolean canUseGms() {

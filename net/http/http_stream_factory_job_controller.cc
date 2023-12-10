@@ -19,7 +19,7 @@
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
 #include "net/base/privacy_mode.h"
-#include "net/base/proxy_server.h"
+#include "net/base/proxy_chain.h"
 #include "net/base/proxy_string_util.h"
 #include "net/base/url_util.h"
 #include "net/http/bidirectional_stream_impl.h"
@@ -39,13 +39,12 @@ namespace net {
 namespace {
 
 // Returns parameters associated with the proxy resolution.
-base::Value::Dict NetLogHttpStreamJobProxyServerResolved(
-    const ProxyServer& proxy_server) {
+base::Value::Dict NetLogHttpStreamJobProxyChainResolved(
+    const ProxyChain& proxy_chain) {
   base::Value::Dict dict;
 
-  dict.Set("proxy_server", proxy_server.is_valid()
-                               ? ProxyServerToPacResultElement(proxy_server)
-                               : std::string());
+  dict.Set("proxy_chain",
+           proxy_chain.IsValid() ? proxy_chain.ToDebugString() : std::string());
   return dict;
 }
 
@@ -80,8 +79,17 @@ void ConvertWsToHttp(url::SchemeHostPort& input) {
 void HistogramProxyUsed(const ProxyInfo& proxy_info, bool success) {
   const ProxyServer::Scheme max_scheme = ProxyServer::Scheme::SCHEME_QUIC;
   ProxyServer::Scheme proxy_scheme = ProxyServer::Scheme::SCHEME_DIRECT;
-  if (!proxy_info.is_empty())
-    proxy_scheme = proxy_info.proxy_server().scheme();
+  if (!proxy_info.is_empty() && !proxy_info.is_direct()) {
+    if (proxy_info.proxy_chain().is_multi_proxy()) {
+      // TODO(https://crbug.com/1491092): Update this histogram to have a new
+      // bucket for multi-chain proxies. Until then, don't influence the
+      // existing metric counts which have historically been only for single-hop
+      // proxies.
+      return;
+    }
+    proxy_scheme =
+        proxy_info.proxy_chain().GetProxyServer(/*chain_index=*/0).scheme();
+  }
   if (success) {
     UMA_HISTOGRAM_ENUMERATION("Net.HttpJob.ProxyTypeSuccess", proxy_scheme,
                               max_scheme);
@@ -132,8 +140,7 @@ HttpStreamFactory::JobController::JobController(
     bool enable_ip_based_pooling,
     bool enable_alternative_services,
     bool delay_main_job_with_available_spdy_session,
-    const SSLConfig& server_ssl_config,
-    const SSLConfig& base_proxy_ssl_config)
+    const SSLConfig& server_ssl_config)
     : factory_(factory),
       session_(session),
       job_factory_(job_factory),
@@ -146,7 +153,6 @@ HttpStreamFactory::JobController::JobController(
           delay_main_job_with_available_spdy_session),
       request_info_(request_info),
       server_ssl_config_(server_ssl_config),
-      base_proxy_ssl_config_(base_proxy_ssl_config),
       net_log_(NetLogWithSource::Make(
           session->net_log(),
           NetLogSourceType::HTTP_STREAM_JOB_CONTROLLER)) {
@@ -761,9 +767,8 @@ int HttpStreamFactory::JobController::DoResolveProxyComplete(int rv) {
   proxy_resolve_request_ = nullptr;
   net_log_.AddEvent(
       NetLogEventType::HTTP_STREAM_JOB_CONTROLLER_PROXY_SERVER_RESOLVED, [&] {
-        return NetLogHttpStreamJobProxyServerResolved(
-            proxy_info_.is_empty() ? ProxyServer()
-                                   : proxy_info_.proxy_server());
+        return NetLogHttpStreamJobProxyChainResolved(
+            proxy_info_.is_empty() ? ProxyChain() : proxy_info_.proxy_chain());
       });
 
   if (rv != OK)
@@ -838,8 +843,8 @@ int HttpStreamFactory::JobController::DoCreateJobs() {
     std::unique_ptr<Job> preconnect_job = job_factory_->CreateJob(
         this, dns_alpn_h3_job_enabled ? PRECONNECT_DNS_ALPN_H3 : PRECONNECT,
         session_, request_info_, IDLE, proxy_info_, server_ssl_config_,
-        base_proxy_ssl_config_, destination, origin_url, is_websocket_,
-        enable_ip_based_pooling_, net_log_.net_log());
+        destination, origin_url, is_websocket_, enable_ip_based_pooling_,
+        net_log_.net_log());
     // When there is an valid alternative service info, and `preconnect_job`
     // has no existing QUIC session, create a job for the alternative service.
     if (alternative_service_info_.protocol() != kProtoUnknown &&
@@ -854,9 +859,8 @@ int HttpStreamFactory::JobController::DoCreateJobs() {
 
       main_job_ = job_factory_->CreateJob(
           this, PRECONNECT, session_, request_info_, IDLE, proxy_info_,
-          server_ssl_config_, base_proxy_ssl_config_,
-          std::move(alternative_destination), origin_url, is_websocket_,
-          enable_ip_based_pooling_, session_->net_log(),
+          server_ssl_config_, std::move(alternative_destination), origin_url,
+          is_websocket_, enable_ip_based_pooling_, session_->net_log(),
           alternative_service_info_.protocol(), quic_version);
     } else {
       main_job_ = std::move(preconnect_job);
@@ -864,9 +868,8 @@ int HttpStreamFactory::JobController::DoCreateJobs() {
       if (dns_alpn_h3_job_enabled) {
         preconnect_backup_job_ = job_factory_->CreateJob(
             this, PRECONNECT, session_, request_info_, IDLE, proxy_info_,
-            server_ssl_config_, base_proxy_ssl_config_, std::move(destination),
-            origin_url, is_websocket_, enable_ip_based_pooling_,
-            net_log_.net_log());
+            server_ssl_config_, std::move(destination), origin_url,
+            is_websocket_, enable_ip_based_pooling_, net_log_.net_log());
       }
     }
     main_job_->Preconnect(num_streams_);
@@ -874,8 +877,8 @@ int HttpStreamFactory::JobController::DoCreateJobs() {
   }
   main_job_ = job_factory_->CreateJob(
       this, MAIN, session_, request_info_, priority_, proxy_info_,
-      server_ssl_config_, base_proxy_ssl_config_, std::move(destination),
-      origin_url, is_websocket_, enable_ip_based_pooling_, net_log_.net_log());
+      server_ssl_config_, std::move(destination), origin_url, is_websocket_,
+      enable_ip_based_pooling_, net_log_.net_log());
 
   // Alternative Service can only be set for HTTPS requests while Alternative
   // Proxy is set for HTTP requests.
@@ -901,9 +904,8 @@ int HttpStreamFactory::JobController::DoCreateJobs() {
 
     alternative_job_ = job_factory_->CreateJob(
         this, ALTERNATIVE, session_, request_info_, priority_, proxy_info_,
-        server_ssl_config_, base_proxy_ssl_config_,
-        std::move(alternative_destination), origin_url, is_websocket_,
-        enable_ip_based_pooling_, net_log_.net_log(),
+        server_ssl_config_, std::move(alternative_destination), origin_url,
+        is_websocket_, enable_ip_based_pooling_, net_log_.net_log(),
         alternative_service_info_.protocol(), quic_version);
   }
 
@@ -913,9 +915,8 @@ int HttpStreamFactory::JobController::DoCreateJobs() {
         url::SchemeHostPort(origin_url);
     dns_alpn_h3_job_ = job_factory_->CreateJob(
         this, DNS_ALPN_H3, session_, request_info_, priority_, proxy_info_,
-        server_ssl_config_, base_proxy_ssl_config_,
-        std::move(dns_alpn_h3_destination), origin_url, is_websocket_,
-        enable_ip_based_pooling_, net_log_.net_log());
+        server_ssl_config_, std::move(dns_alpn_h3_destination), origin_url,
+        is_websocket_, enable_ip_based_pooling_, net_log_.net_log());
   }
 
   ClearInappropriateJobs();
@@ -1055,8 +1056,7 @@ void HttpStreamFactory::JobController::MarkRequestComplete(Job* job) {
   if (request_) {
     AlternateProtocolUsage alternate_protocol_usage =
         CalculateAlternateProtocolUsage(job);
-    request_->Complete(job->was_alpn_negotiated(), job->negotiated_protocol(),
-                       alternate_protocol_usage, job->using_spdy());
+    request_->Complete(job->negotiated_protocol(), alternate_protocol_usage);
     ReportAlternateProtocolUsage(alternate_protocol_usage,
                                  HasGoogleHost(job->origin_url()));
   }
@@ -1367,8 +1367,12 @@ int HttpStreamFactory::JobController::ReconsiderProxyAfterError(Job* job,
     return error;
 
   if (proxy_info_.is_secure_http_like()) {
+    // TODO(https://crbug.com/1491092): Should do this for every proxy in the
+    // chain as part of adding support for client certificates.
     session_->ssl_client_context()->ClearClientCertificate(
-        proxy_info_.proxy_server().host_port_pair());
+        proxy_info_.proxy_chain()
+            .GetProxyServer(/*chain_index=*/0)
+            .host_port_pair());
   }
 
   if (!proxy_info_.Fallback(error, net_log_)) {

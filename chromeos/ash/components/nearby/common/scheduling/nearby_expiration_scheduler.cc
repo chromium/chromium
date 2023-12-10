@@ -26,11 +26,11 @@ NearbyExpirationScheduler::NearbyExpirationScheduler(
 
 NearbyExpirationScheduler::~NearbyExpirationScheduler() = default;
 
-absl::optional<base::TimeDelta>
+std::optional<base::TimeDelta>
 NearbyExpirationScheduler::TimeUntilRecurringRequest(base::Time now) const {
-  absl::optional<base::Time> expiration_time = expiration_time_functor_.Run();
+  std::optional<base::Time> expiration_time = expiration_time_functor_.Run();
   if (!expiration_time) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (*expiration_time <= now) {

@@ -28,7 +28,7 @@ window.onIframeLoaded = function() {
     });
 }
 
-window.onIframeUnloaded = function() {
+window.onIframePageHidden = function() {
     // Make another request, with permission already denied.
     iframeGeolocation.getCurrentPosition(function () {
         testFailed('Success callback invoked unexpectedly');

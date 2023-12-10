@@ -228,7 +228,10 @@ std::vector<RasterTestConfig> const kTestCases = {
     {viz::RendererType::kSkiaVk, TestRasterType::kGpu},
 #endif  // BUILDFLAG(ENABLE_VULKAN_BACKEND_TESTS)
 #if BUILDFLAG(ENABLE_SKIA_GRAPHITE_TESTS)
-    {viz::RendererType::kSkiaGraphite, TestRasterType::kGpu},
+    {viz::RendererType::kSkiaGraphiteDawn, TestRasterType::kGpu},
+#if BUILDFLAG(IS_IOS)
+    {viz::RendererType::kSkiaGraphiteMetal, TestRasterType::kGpu},
+#endif  // BUILDFLAG(IS_IOS)
 #endif  // BUILDFLAG(ENABLE_SKIA_GRAPHITE_TESTS)
 };
 
@@ -274,7 +277,10 @@ std::vector<RasterTestConfig> const kTestCasesMultiThread = {
     {viz::RendererType::kSkiaVk, TestRasterType::kGpu},
 #endif  // BUILDFLAG(ENABLE_VULKAN_BACKEND_TESTS)
 #if BUILDFLAG(ENABLE_SKIA_GRAPHITE_TESTS)
-    {viz::RendererType::kSkiaGraphite, TestRasterType::kGpu},
+    {viz::RendererType::kSkiaGraphiteDawn, TestRasterType::kGpu},
+#if BUILDFLAG(IS_IOS)
+    {viz::RendererType::kSkiaGraphiteMetal, TestRasterType::kGpu},
+#endif  // BUILDFLAG(IS_IOS)
 #endif  // BUILDFLAG(ENABLE_SKIA_GRAPHITE_TESTS)
 };
 
@@ -337,6 +343,9 @@ TEST_P(LayerTreeHostTilesTestRasterColorSpace, sRGB) {
 }
 
 TEST_P(LayerTreeHostTilesTestRasterColorSpace, GenericRGB) {
+#if BUILDFLAG(IS_IOS)
+  pixel_comparator_ = std::make_unique<FuzzyPixelOffByOneComparator>();
+#endif
   SetColorSpace(gfx::ColorSpace(gfx::ColorSpace::PrimaryID::APPLE_GENERIC_RGB,
                                 gfx::ColorSpace::TransferID::GAMMA18));
 

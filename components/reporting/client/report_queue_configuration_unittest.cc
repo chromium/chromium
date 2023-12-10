@@ -12,6 +12,7 @@
 #include "components/reporting/proto/synced/record_constants.pb.h"
 #include "components/reporting/util/rate_limiter_interface.h"
 #include "components/reporting/util/status.h"
+#include "components/reporting/util/status_macros.h"
 #include "components/reporting/util/statusor.h"
 #include "components/reporting/util/test_support_callbacks.h"
 #include "components/reporting/util/wrapped_rate_limiter.h"
@@ -83,7 +84,7 @@ TEST_F(ReportQueueConfigurationTest, ValidateConfigurationWithValidParams) {
           .SetDMToken(kDmToken)
           .SetPolicyCheckCallback(kValidCallback)
           .Build();
-  EXPECT_TRUE(config_result.has_value()) << config_result.error();
+  EXPECT_OK(config_result) << config_result.error();
 }
 
 TEST_F(ReportQueueConfigurationTest, ValidateConfigurationWithNoDMToken) {
@@ -91,7 +92,7 @@ TEST_F(ReportQueueConfigurationTest, ValidateConfigurationWithNoDMToken) {
       ReportQueueConfiguration::Create({.destination = kValidDestination})
           .SetPolicyCheckCallback(kValidCallback)
           .Build();
-  EXPECT_TRUE(config_result.has_value()) << config_result.error();
+  EXPECT_OK(config_result) << config_result.error();
 }
 
 TEST_F(ReportQueueConfigurationTest,
@@ -127,7 +128,7 @@ TEST_F(ReportQueueConfigurationTest, ValidateConfigurationWithDeviceEventType) {
           {.event_type = EventType::kDevice, .destination = kValidDestination})
           .SetPolicyCheckCallback(kValidCallback)
           .Build();
-  EXPECT_TRUE(config_result.has_value()) << config_result.error();
+  EXPECT_OK(config_result) << config_result.error();
 }
 
 TEST_F(ReportQueueConfigurationTest, ValidateConfigurationWithUserEventType) {
@@ -136,7 +137,7 @@ TEST_F(ReportQueueConfigurationTest, ValidateConfigurationWithUserEventType) {
           {.event_type = EventType::kUser, .destination = kValidDestination})
           .SetPolicyCheckCallback(kValidCallback)
           .Build();
-  EXPECT_TRUE(config_result.has_value()) << config_result.error();
+  EXPECT_OK(config_result) << config_result.error();
 }
 
 TEST_F(ReportQueueConfigurationTest,
@@ -183,7 +184,7 @@ TEST_F(ReportQueueConfigurationTest, UsesProvidedPolicyCheckCallback) {
               base::BindRepeating(&::testing::MockFunction<Status(void)>::Call,
                                   base::Unretained(&mock_handler)))
           .Build();
-  ASSERT_TRUE(config_result.has_value()) << config_result.error();
+  ASSERT_OK(config_result) << config_result.error();
 
   const auto config = std::move(config_result.value());
   EXPECT_OK(config->CheckPolicy());

@@ -97,6 +97,7 @@ class ScalableIph : public KeyedService,
     kAppListItemActivationGooglePlayStore,
     kAppListItemActivationGooglePhotosAndroid,
     kPrintJobCreated,
+    kGameWindowOpened,
   };
 
   ScalableIph(feature_engagement::Tracker* tracker,

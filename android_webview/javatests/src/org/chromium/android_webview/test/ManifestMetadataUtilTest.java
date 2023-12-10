@@ -182,9 +182,7 @@ public class ManifestMetadataUtilTest {
                 ManifestMetadataUtil.getXRequestedWithAllowList(mContext, holderServiceMetadata));
     }
 
-    /**
-     * @noinspection ResultOfMethodCallIgnored
-     */
+    /** @noinspection ResultOfMethodCallIgnored */
     @Test(expected = IllegalArgumentException.class)
     @SmallTest
     @Feature({"AndroidWebView", "Manifest"})
@@ -202,9 +200,7 @@ public class ManifestMetadataUtilTest {
         Assert.fail("An IllegalArgumentException should have been thrown");
     }
 
-    /**
-     * @noinspection ResultOfMethodCallIgnored
-     */
+    /** @noinspection ResultOfMethodCallIgnored */
     @Test(expected = IllegalArgumentException.class)
     @SmallTest
     @Feature({"AndroidWebView", "Manifest"})

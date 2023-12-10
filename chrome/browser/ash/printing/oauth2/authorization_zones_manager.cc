@@ -6,6 +6,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <utility>
@@ -29,7 +30,6 @@
 #include "components/sync/model/model_type_store.h"
 #include "components/sync/model/model_type_store_service.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace ash::printing::oauth2 {
@@ -162,7 +162,7 @@ class AuthorizationZonesManagerImpl
                               const std::string& scope,
                               StatusCallback callback) override {
     PRINTER_LOG(USER) << LogEntry("scope=" + scope, __func__, auth_server,
-                                  absl::nullopt, ipp_endpoint);
+                                  std::nullopt, ipp_endpoint);
     AddLoggingToCallback(callback, __func__, auth_server, ipp_endpoint);
 
     AuthorizationZone* zone = GetAuthorizationZone(auth_server);

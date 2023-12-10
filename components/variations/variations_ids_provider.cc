@@ -276,11 +276,11 @@ void VariationsIdsProvider::DestroyInstanceForTesting() {
 }
 
 void VariationsIdsProvider::OnFieldTrialGroupFinalized(
-    const std::string& trial_name,
+    const base::FieldTrial& trial,
     const std::string& group_name) {
   base::AutoLock scoped_lock(lock_);
   const size_t old_size = variation_ids_set_.size();
-  CacheVariationsId(trial_name, group_name);
+  CacheVariationsId(trial.trial_name(), group_name);
   if (variation_ids_set_.size() != old_size)
     UpdateVariationIDsHeaderValue();
 }

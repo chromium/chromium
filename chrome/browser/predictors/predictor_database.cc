@@ -76,7 +76,6 @@ PredictorDatabaseInternal::PredictorDatabaseInternal(
     scoped_refptr<base::SequencedTaskRunner> db_task_runner)
     : db_path_(profile->GetPath().Append(kPredictorDatabaseName)),
       db_(std::make_unique<sql::Database>(sql::DatabaseOptions{
-          .exclusive_locking = true,
           .page_size = 4096,
           .cache_size = 500,
           // TODO(pwnall): Add a meta table and remove this option.

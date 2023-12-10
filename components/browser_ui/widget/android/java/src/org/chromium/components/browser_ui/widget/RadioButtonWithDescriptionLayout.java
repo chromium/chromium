@@ -48,8 +48,8 @@ import java.util.List;
  * }</pre>
  * </p>
  */
-public final class RadioButtonWithDescriptionLayout
-        extends RadioGroup implements RadioButtonWithDescription.ButtonCheckedStateChangedListener {
+public final class RadioButtonWithDescriptionLayout extends RadioGroup
+        implements RadioButtonWithDescription.ButtonCheckedStateChangedListener {
     private final List<RadioButtonWithDescription> mRadioButtonsWithDescriptions;
     private OnCheckedChangeListener mOnCheckedChangeListener;
 

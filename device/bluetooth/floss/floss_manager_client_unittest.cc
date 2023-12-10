@@ -140,6 +140,8 @@ class FlossManagerClientTest : public testing::Test {
                            ::dbus::ObjectProxy::ResponseOrErrorCallback* cb) {
           if (method_call->GetMember() == manager::kGetAvailableAdapters) {
             HandleGetAvailableAdapters(method_call, timeout_ms, cb);
+          } else if (method_call->GetMember() == manager::kGetAdapterEnabled) {
+            HandleGetAdapterEnabled(method_call, timeout_ms, cb);
           } else if (method_call->GetMember() == manager::kSetFlossEnabled) {
             HandleSetFlossEnabled(method_call, timeout_ms, cb);
           } else if (method_call->GetMember() == manager::kGetFlossEnabled) {
@@ -237,6 +239,16 @@ class FlossManagerClientTest : public testing::Test {
     }
     msg.CloseContainer(&outer);
 
+    std::move(*cb).Run(response.get(), nullptr);
+  }
+
+  void HandleGetAdapterEnabled(
+      ::dbus::MethodCall* method_call,
+      int timeout_ms,
+      ::dbus::ObjectProxy::ResponseOrErrorCallback* cb) {
+    auto response = ::dbus::Response::CreateEmpty();
+    ::dbus::MessageWriter writer(response.get());
+    writer.AppendBool(get_adapter_enabled_return_);
     std::move(*cb).Run(response.get(), nullptr);
   }
 
@@ -351,6 +363,8 @@ class FlossManagerClientTest : public testing::Test {
   bool floss_enabled_target_ = true;
   uint32_t floss_api_version_ = 0x1234abcd;
 
+  bool get_adapter_enabled_return_ = false;
+
   dbus::ExportedObject::MethodCallCallback on_hci_device_changed_;
   dbus::ExportedObject::MethodCallCallback on_hci_enabled_changed_;
 
@@ -406,6 +420,47 @@ TEST_F(FlossManagerClientTest, VerifyAdapterPresent) {
   // On present = false, the client may not be sent an additional enabled
   // = false. It is implied and the client must act accordingly.
   EXPECT_EQ(observer.adapter_enabled_changed_count_, 2);
+}
+
+// Make sure we query the enabled state when adapter presents
+TEST_F(FlossManagerClientTest, VerifyAdapterPresentEnabled) {
+  TestManagerObserver observer(client_.get());
+  client_->Init(bus_.get(), kManagerInterface, /*adapter_index=*/-1,
+                GetCurrVersion(), base::DoNothing());
+
+  EXPECT_EQ(method_called_[manager::kGetAdapterEnabled], 0);
+  EXPECT_EQ(observer.adapter_present_count_, 2);
+
+  // A disabled adapter presents
+  SendHciDeviceCallback(
+      1, true,
+      base::BindOnce(&FlossManagerClientTest::ExpectNormalResponse,
+                     weak_ptr_factory_.GetWeakPtr()));
+
+  EXPECT_EQ(method_called_[manager::kGetAdapterEnabled], 1);
+  EXPECT_EQ(observer.adapter_present_count_, 3);
+  EXPECT_FALSE(client_->GetAdapterEnabled(1));
+
+  // An enabled adapter presents
+  get_adapter_enabled_return_ = true;
+  SendHciDeviceCallback(
+      2, true,
+      base::BindOnce(&FlossManagerClientTest::ExpectNormalResponse,
+                     weak_ptr_factory_.GetWeakPtr()));
+
+  EXPECT_EQ(method_called_[manager::kGetAdapterEnabled], 2);
+  EXPECT_EQ(observer.adapter_present_count_, 4);
+  EXPECT_TRUE(client_->GetAdapterEnabled(2));
+
+  // Presenting twice should be no-op
+  SendHciDeviceCallback(
+      2, true,
+      base::BindOnce(&FlossManagerClientTest::ExpectNormalResponse,
+                     weak_ptr_factory_.GetWeakPtr()));
+
+  EXPECT_EQ(method_called_[manager::kGetAdapterEnabled], 2);
+  EXPECT_EQ(observer.adapter_present_count_, 4);
+  EXPECT_TRUE(client_->GetAdapterEnabled(2));
 }
 
 // Make sure adapter powered is plumbed through callbacks
@@ -493,6 +548,7 @@ TEST_F(FlossManagerClientTest, HandleManagerPresence) {
       1, true,
       base::BindOnce(&FlossManagerClientTest::ExpectNormalResponse,
                      weak_ptr_factory_.GetWeakPtr()));
+  EXPECT_TRUE(method_called_[manager::kGetAdapterEnabled] > 0);
   EXPECT_TRUE(client_->GetAdapterPresent(1));
   TriggerObjectAdded(opath, kManagerInterface);
   EXPECT_EQ(observer.manager_present_count_, 0);

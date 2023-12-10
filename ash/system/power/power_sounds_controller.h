@@ -62,7 +62,7 @@ class ASH_EXPORT PowerSoundsController
 
   // Updates the lid state from received switch states.
   void OnReceiveSwitchStates(
-      absl::optional<chromeos::PowerManagerClient::SwitchStates> switch_states);
+      std::optional<chromeos::PowerManagerClient::SwitchStates> switch_states);
 
   // Returns true if the device can play sounds.
   bool CanPlaySounds() const;
@@ -70,7 +70,7 @@ class ASH_EXPORT PowerSoundsController
   void SetPowerStatus(int battery_level,
                       bool is_calculating_battery_time,
                       ExternalPower external_power,
-                      absl::optional<base::TimeDelta> remaining_time);
+                      std::optional<base::TimeDelta> remaining_time);
 
   // Plays a sound when any power resource is connected.
   // `old_ac_charger_connected` records whether line power was connected last
@@ -82,15 +82,15 @@ class ASH_EXPORT PowerSoundsController
   // Returns true if the `current_state_` will be updated to a new state.
   bool UpdateBatteryState(bool is_calculating_battery_time,
                           ExternalPower external_power,
-                          absl::optional<base::TimeDelta> remaining_time);
+                          std::optional<base::TimeDelta> remaining_time);
 
   BatteryState CalculateBatteryState(
       bool is_calculating_battery_time,
       ExternalPower external_power,
-      absl::optional<base::TimeDelta> remaining_time) const;
+      std::optional<base::TimeDelta> remaining_time) const;
   BatteryState GetBatteryStateFromBatteryLevel() const;
   BatteryState GetBatteryStateFromRemainingTime(
-      absl::optional<base::TimeDelta> remaining_time) const;
+      std::optional<base::TimeDelta> remaining_time) const;
 
   // Records the battery level when the `OnPowerStatusChanged()` was called.
   int battery_level_;

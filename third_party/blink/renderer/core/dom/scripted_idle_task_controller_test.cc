@@ -63,7 +63,7 @@ class MockScriptedIdleTaskControllerScheduler final : public ThreadScheduler {
 
   void RemoveTaskObserver(Thread::TaskObserver* task_observer) override {}
 
-  void SetV8Isolate(v8::Isolate* isolate) override {}
+  void SetV8Isolate(v8::Isolate* isolate) override { isolate_ = isolate; }
 
   void RunIdleTask() { std::move(idle_task_).Run(base::TimeTicks()); }
   bool HasIdleTask() const { return !!idle_task_; }
@@ -75,7 +75,10 @@ class MockScriptedIdleTaskControllerScheduler final : public ThreadScheduler {
     task_runner_->AdvanceTimeAndRun(delta);
   }
 
+  v8::Isolate* GetIsolate() { return isolate_; }
+
  private:
+  v8::Isolate* isolate_;
   bool should_yield_;
   Thread::IdleTask idle_task_;
   scoped_refptr<scheduler::FakeTaskRunner> task_runner_ =
@@ -87,7 +90,8 @@ class IdleTaskControllerFrameScheduler : public FrameScheduler {
   explicit IdleTaskControllerFrameScheduler(
       MockScriptedIdleTaskControllerScheduler* scripted_idle_scheduler)
       : scripted_idle_scheduler_(scripted_idle_scheduler),
-        page_scheduler_(scheduler::CreateDummyPageScheduler()) {}
+        page_scheduler_(scheduler::CreateDummyPageScheduler(
+            scripted_idle_scheduler->GetIsolate())) {}
   ~IdleTaskControllerFrameScheduler() override = default;
 
   scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner(TaskType) override {

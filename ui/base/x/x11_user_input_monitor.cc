@@ -76,9 +76,6 @@ void XUserInputMonitor::StartMonitor(WriteKeyPressCallback& callback) {
     StopMonitor();
     return;
   }
-  // Let the server know the client XInput version.
-  connection_->xinput().XIQueryVersion(
-      {x11::Input::major_version, x11::Input::minor_version});
 
   x11::Input::XIEventMask mask{};
   SetXinputMask(&mask, x11::Input::RawDeviceEvent::RawKeyPress);

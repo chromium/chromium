@@ -34,11 +34,22 @@
 #include "components/prefs/pref_service.h"
 #include "components/user_notes/user_notes_features.h"
 #include "ui/accessibility/accessibility_features.h"
+#include "ui/actions/actions.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/ui/views/side_panel/extensions/extension_side_panel_manager.h"
 #include "extensions/common/extension_features.h"
 #endif
+
+namespace {
+constexpr std::underlying_type_t<SidePanelOpenTrigger>
+    kInvalidSidePanelOpenTrigger = -1;
+}
+
+DEFINE_UI_CLASS_PROPERTY_TYPE(SidePanelOpenTrigger)
+DEFINE_UI_CLASS_PROPERTY_KEY(std::underlying_type_t<SidePanelOpenTrigger>,
+                             kSidePanelOpenTriggerKey,
+                             kInvalidSidePanelOpenTrigger)
 
 // static
 void SidePanelUtil::PopulateGlobalEntries(Browser* browser,
@@ -66,7 +77,13 @@ void SidePanelUtil::PopulateGlobalEntries(Browser* browser,
 
   // Add read anything.
   if (features::IsReadAnythingEnabled()) {
-    ReadAnythingCoordinator::GetOrCreateForBrowser(browser);
+    auto* read_anything_coordinator =
+        ReadAnythingCoordinator::GetOrCreateForBrowser(browser);
+    // If the local side panel is not enabled, create and register a global side
+    // panel entry for Reading Anything.
+    if (!features::IsReadAnythingLocalSidePanelEnabled()) {
+      read_anything_coordinator->CreateAndRegisterEntry(global_registry);
+    }
   }
 
   // Create Search Companion coordinator.
@@ -126,7 +143,7 @@ SidePanelCoordinator* SidePanelUtil::GetSidePanelCoordinatorForBrowser(
 }
 
 void SidePanelUtil::RecordSidePanelOpen(
-    absl::optional<SidePanelUtil::SidePanelOpenTrigger> trigger) {
+    std::optional<SidePanelUtil::SidePanelOpenTrigger> trigger) {
   base::RecordAction(base::UserMetricsAction("SidePanel.Show"));
 
   if (trigger.has_value()) {
@@ -135,7 +152,7 @@ void SidePanelUtil::RecordSidePanelOpen(
 }
 
 void SidePanelUtil::RecordSidePanelShowOrChangeEntryTrigger(
-    absl::optional<SidePanelUtil::SidePanelOpenTrigger> trigger) {
+    std::optional<SidePanelUtil::SidePanelOpenTrigger> trigger) {
   if (trigger.has_value()) {
     base::UmaHistogramEnumeration("SidePanel.OpenOrChangeEntryTrigger",
                                   trigger.value());
@@ -201,7 +218,7 @@ void SidePanelUtil::RecordEntryHiddenMetrics(SidePanelEntry::Id id,
 void SidePanelUtil::RecordEntryShowTriggeredMetrics(
     Browser* browser,
     SidePanelEntry::Id id,
-    absl::optional<SidePanelUtil::SidePanelOpenTrigger> trigger) {
+    std::optional<SidePanelUtil::SidePanelOpenTrigger> trigger) {
   if (trigger.has_value()) {
     base::UmaHistogramEnumeration(
         base::StrCat({"SidePanel.", SidePanelEntryIdToHistogramName(id),
@@ -219,4 +236,28 @@ void SidePanelUtil::RecordEntryShowTriggeredMetrics(
 
 void SidePanelUtil::RecordComboboxShown() {
   base::UmaHistogramBoolean("SidePanel.ComboboxMenuShown", true);
+}
+
+void SidePanelUtil::RecordPinnedButtonClicked(SidePanelEntry::Id id,
+                                              bool is_pinned) {
+  base::RecordComputedAction(base::StrCat(
+      {"SidePanel.", SidePanelEntryIdToHistogramName(id), ".",
+       is_pinned ? "Pinned" : "Unpinned", ".BySidePanelHeaderButton"}));
+}
+
+actions::ActionItem::InvokeActionCallback
+SidePanelUtil::CreateToggleSidePanelActionCallback(SidePanelEntryKey key,
+                                                   Browser* browser) {
+  return base::BindRepeating(
+      [](SidePanelEntryKey key, Browser* browser, actions::ActionItem* item,
+         actions::ActionInvocationContext context) {
+        const SidePanelOpenTrigger open_trigger =
+            static_cast<SidePanelOpenTrigger>(
+                context.GetProperty(kSidePanelOpenTriggerKey));
+        CHECK_GE(open_trigger, SidePanelOpenTrigger::kMinValue);
+        CHECK_LE(open_trigger, SidePanelOpenTrigger::kMaxValue);
+        SidePanelUI::GetSidePanelUIForBrowser(browser)->Toggle(key,
+                                                               open_trigger);
+      },
+      key, browser);
 }

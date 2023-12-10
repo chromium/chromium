@@ -19,9 +19,7 @@ import androidx.mediarouter.media.MediaSessionStatus;
  * from the RemoteSessionManager.
  */
 public class LocalSessionManager {
-    /**
-     * Callbacks for MediaRouteProvider object.
-     */
+    /** Callbacks for MediaRouteProvider object. */
     public interface Callback {
         void onItemChanged(MediaItem item);
     }
@@ -31,9 +29,7 @@ public class LocalSessionManager {
 
     private final Context mContext;
 
-    /**
-     * @param context
-     */
+    /** @param context */
     public LocalSessionManager(Context context) {
         mContext = context;
     }
@@ -117,16 +113,12 @@ public class LocalSessionManager {
         return mRemoteManager.getStatus(iid);
     }
 
-    /**
-     * @return whether there is a current session
-     */
+    /** @return whether there is a current session */
     public boolean hasSession() {
         return mRemoteManager != null;
     }
 
-    /**
-     * @return whether the current video is paused
-     */
+    /** @return whether the current video is paused */
     public boolean isPaused() {
         return hasSession() && mRemoteManager.isPaused();
     }
@@ -139,16 +131,12 @@ public class LocalSessionManager {
         if (mCallback != null) mCallback.onItemChanged(item);
     }
 
-    /**
-     * Pause the current video
-     */
+    /** Pause the current video */
     public void pause() {
         if (hasSession()) mRemoteManager.pause();
     }
 
-    /**
-     * Resume the current video
-     */
+    /** Resume the current video */
     public void resume() {
         if (hasSession()) mRemoteManager.resume();
     }
@@ -183,17 +171,13 @@ public class LocalSessionManager {
         return mRemoteManager.startSession(relaunch);
     }
 
-    /**
-     * Stop the current video
-     */
+    /** Stop the current video */
     public void stop() {
         if (hasSession()) mRemoteManager.stop();
         endSession();
     }
 
-    /**
-     * Updates the session status.
-     */
+    /** Updates the session status. */
     public void updateStatus() {
         if (hasSession()) mRemoteManager.updateStatus();
     }

@@ -30,7 +30,7 @@ import org.chromium.base.UserDataHost;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.blink.mojom.ViewportFit;
 import org.chromium.chrome.browser.app.ChromeActivity;
-import org.chromium.chrome.browser.tab.TabImpl;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.components.browser_ui.display_cutout.DisplayCutoutController;
@@ -45,7 +45,7 @@ import java.lang.ref.WeakReference;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class DisplayCutoutControllerTest {
-    @Mock private TabImpl mTab;
+    @Mock private Tab mTab;
 
     @Mock private WebContents mWebContents;
 

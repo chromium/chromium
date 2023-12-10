@@ -15,6 +15,7 @@
 #include "base/scoped_multi_source_observation.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
@@ -38,6 +39,8 @@ class ResizeToggleMenu : public views::WidgetObserver,
                          public aura::WindowObserver {
  public:
   class MenuButtonView : public views::Button {
+    METADATA_HEADER(MenuButtonView, views::Button)
+
    public:
     MenuButtonView(PressedCallback callback,
                    const gfx::VectorIcon& icon,

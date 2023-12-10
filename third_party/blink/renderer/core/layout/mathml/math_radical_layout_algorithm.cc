@@ -4,12 +4,12 @@
 
 #include "third_party/blink/renderer/core/layout/mathml/math_radical_layout_algorithm.h"
 
+#include "third_party/blink/renderer/core/layout/block_break_token.h"
+#include "third_party/blink/renderer/core/layout/length_utils.h"
+#include "third_party/blink/renderer/core/layout/logical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/mathml/math_layout_utils.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_block_break_token.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_box_fragment.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_length_utils.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_out_of_flow_layout_part.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
+#include "third_party/blink/renderer/core/layout/out_of_flow_layout_part.h"
+#include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/stretchy_operator_shaper.h"
 
 namespace blink {
@@ -24,18 +24,18 @@ bool HasBaseGlyphForRadical(const ComputedStyle& style) {
 }  // namespace
 
 MathRadicalLayoutAlgorithm::MathRadicalLayoutAlgorithm(
-    const NGLayoutAlgorithmParams& params)
-    : NGLayoutAlgorithm(params) {
+    const LayoutAlgorithmParams& params)
+    : LayoutAlgorithm(params) {
   DCHECK(params.space.IsNewFormattingContext());
 }
 
 void MathRadicalLayoutAlgorithm::GatherChildren(
-    NGBlockNode* base,
-    NGBlockNode* index,
-    NGBoxFragmentBuilder* container_builder) const {
-  for (NGLayoutInputNode child = Node().FirstChild(); child;
+    BlockNode* base,
+    BlockNode* index,
+    BoxFragmentBuilder* container_builder) const {
+  for (LayoutInputNode child = Node().FirstChild(); child;
        child = child.NextSibling()) {
-    NGBlockNode block_child = To<NGBlockNode>(child);
+    BlockNode block_child = To<BlockNode>(child);
     if (child.IsOutOfFlowPositioned()) {
       if (container_builder) {
         container_builder->AddOutOfFlowChildCandidate(
@@ -61,8 +61,8 @@ void MathRadicalLayoutAlgorithm::GatherChildren(
   }
 }
 
-const NGLayoutResult* MathRadicalLayoutAlgorithm::Layout() {
-  DCHECK(!BreakToken());
+const LayoutResult* MathRadicalLayoutAlgorithm::Layout() {
+  DCHECK(!GetBreakToken());
   DCHECK(IsValidMathMLRadical(Node()));
 
   const auto baseline_type = Style().GetFontBaseline();
@@ -73,24 +73,24 @@ const NGLayoutResult* MathRadicalLayoutAlgorithm::Layout() {
       base_descent;
   RadicalHorizontalParameters horizontal;
   BoxStrut index_margins, base_margins;
-  NGBlockNode base = nullptr;
-  NGBlockNode index = nullptr;
+  BlockNode base = nullptr;
+  BlockNode index = nullptr;
   GatherChildren(&base, &index, &container_builder_);
 
-  const NGLayoutResult* base_layout_result = nullptr;
-  const NGLayoutResult* index_layout_result = nullptr;
+  const LayoutResult* base_layout_result = nullptr;
+  const LayoutResult* index_layout_result = nullptr;
   if (base) {
     // Handle layout of base child. For <msqrt> the base is anonymous and uses
     // the row layout algorithm.
-    NGConstraintSpace constraint_space = CreateConstraintSpaceForMathChild(
-        Node(), ChildAvailableSize(), ConstraintSpace(), base);
+    ConstraintSpace constraint_space = CreateConstraintSpaceForMathChild(
+        Node(), ChildAvailableSize(), GetConstraintSpace(), base);
     base_layout_result = base.Layout(constraint_space);
     const auto& base_fragment =
-        To<NGPhysicalBoxFragment>(base_layout_result->PhysicalFragment());
+        To<PhysicalBoxFragment>(base_layout_result->GetPhysicalFragment());
     base_margins =
-        ComputeMarginsFor(constraint_space, base.Style(), ConstraintSpace());
-    NGBoxFragment fragment(ConstraintSpace().GetWritingDirection(),
-                           base_fragment);
+        ComputeMarginsFor(constraint_space, base.Style(), GetConstraintSpace());
+    LogicalBoxFragment fragment(GetConstraintSpace().GetWritingDirection(),
+                                base_fragment);
     base_ascent = base_margins.block_start +
                   fragment.FirstBaselineOrSynthesize(baseline_type);
     base_descent = fragment.BlockSize() + base_margins.BlockSum() - base_ascent;
@@ -98,15 +98,15 @@ const NGLayoutResult* MathRadicalLayoutAlgorithm::Layout() {
   if (index) {
     // Handle layout of index child.
     // (https://w3c.github.io/mathml-core/#root-with-index).
-    NGConstraintSpace constraint_space = CreateConstraintSpaceForMathChild(
-        Node(), ChildAvailableSize(), ConstraintSpace(), index);
+    ConstraintSpace constraint_space = CreateConstraintSpaceForMathChild(
+        Node(), ChildAvailableSize(), GetConstraintSpace(), index);
     index_layout_result = index.Layout(constraint_space);
     const auto& index_fragment =
-        To<NGPhysicalBoxFragment>(index_layout_result->PhysicalFragment());
-    index_margins =
-        ComputeMarginsFor(constraint_space, index.Style(), ConstraintSpace());
-    NGBoxFragment fragment(ConstraintSpace().GetWritingDirection(),
-                           index_fragment);
+        To<PhysicalBoxFragment>(index_layout_result->GetPhysicalFragment());
+    index_margins = ComputeMarginsFor(constraint_space, index.Style(),
+                                      GetConstraintSpace());
+    LogicalBoxFragment fragment(GetConstraintSpace().GetWritingDirection(),
+                                index_fragment);
     index_inline_size = fragment.InlineSize() + index_margins.InlineSum();
     index_ascent = index_margins.block_start +
                    fragment.FirstBaselineOrSynthesize(baseline_type);
@@ -184,13 +184,13 @@ const NGLayoutResult* MathRadicalLayoutAlgorithm::Layout() {
 
   auto total_block_size = ascent + descent + BorderScrollbarPadding().block_end;
   LayoutUnit block_size = ComputeBlockSizeForFragment(
-      ConstraintSpace(), Style(), BorderPadding(), total_block_size,
+      GetConstraintSpace(), Style(), BorderPadding(), total_block_size,
       container_builder_.InitialBorderBoxSize().inline_size);
 
   container_builder_.SetIntrinsicBlockSize(total_block_size);
   container_builder_.SetFragmentsTotalBlockSize(block_size);
 
-  NGOutOfFlowLayoutPart(Node(), ConstraintSpace(), &container_builder_).Run();
+  OutOfFlowLayoutPart(Node(), GetConstraintSpace(), &container_builder_).Run();
 
   return container_builder_.ToBoxFragment();
 }
@@ -199,8 +199,8 @@ MinMaxSizesResult MathRadicalLayoutAlgorithm::ComputeMinMaxSizes(
     const MinMaxSizesFloatInput&) {
   DCHECK(IsValidMathMLRadical(Node()));
 
-  NGBlockNode base = nullptr;
-  NGBlockNode index = nullptr;
+  BlockNode base = nullptr;
+  BlockNode index = nullptr;
   GatherChildren(&base, &index);
 
   MinMaxSizes sizes;
@@ -210,7 +210,7 @@ MinMaxSizesResult MathRadicalLayoutAlgorithm::ComputeMinMaxSizes(
     sizes += horizontal.kern_before_degree.ClampNegativeToZero();
 
     const auto index_result = ComputeMinAndMaxContentContributionForMathChild(
-        Style(), ConstraintSpace(), index, ChildAvailableSize().block_size);
+        Style(), GetConstraintSpace(), index, ChildAvailableSize().block_size);
     depends_on_block_constraints |= index_result.depends_on_block_constraints;
     sizes += index_result.sizes;
 
@@ -227,7 +227,7 @@ MinMaxSizesResult MathRadicalLayoutAlgorithm::ComputeMinMaxSizes(
   }
   if (base) {
     const auto base_result = ComputeMinAndMaxContentContributionForMathChild(
-        Style(), ConstraintSpace(), base, ChildAvailableSize().block_size);
+        Style(), GetConstraintSpace(), base, ChildAvailableSize().block_size);
     depends_on_block_constraints |= base_result.depends_on_block_constraints;
     sizes += base_result.sizes;
   }

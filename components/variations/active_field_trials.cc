@@ -14,6 +14,7 @@
 #include "base/no_destructor.h"
 #include "base/process/launch.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -40,13 +41,52 @@ void AppendActiveGroupIdsAsStrings(
   }
 }
 
+uint32_t HashNameAndSuffix(base::StringPiece base_name,
+                           base::StringPiece optional_suffix) {
+  // Note that most of the time, suffixes are empty, so this avoids creating new
+  // strings if not necessary.
+  if (optional_suffix.empty()) {
+    return HashName(base_name);
+  }
+  return HashName(base::StrCat({base_name, optional_suffix}));
+}
+
+uint32_t HashNameAndSuffix(base::StringPiece base_name,
+                           base::StringPiece optional_suffix,
+                           base::StringPiece optional_suffix2) {
+  if (optional_suffix.empty() && optional_suffix2.empty()) {
+    return HashName(base_name);
+  }
+  return HashName(base::StrCat({base_name, optional_suffix, optional_suffix2}));
+}
+
+ActiveGroupId MakeActiveGroupIdWithSuffix(base::StringPiece trial_name,
+                                          base::StringPiece group_name,
+                                          base::StringPiece optional_suffix,
+                                          bool is_overridden) {
+  ActiveGroupId id;
+  id.name = HashNameAndSuffix(trial_name, optional_suffix);
+  id.group =
+      HashNameAndSuffix(group_name, optional_suffix,
+                        is_overridden ? kOverrideSuffix : base::StringPiece());
+  return id;
+}
+
 }  // namespace
 
 ActiveGroupId MakeActiveGroupId(base::StringPiece trial_name,
                                 base::StringPiece group_name) {
+  return MakeActiveGroupId(trial_name, group_name, /*is_overridden=*/false);
+}
+
+ActiveGroupId MakeActiveGroupId(base::StringPiece trial_name,
+                                base::StringPiece group_name,
+                                bool is_overridden) {
   ActiveGroupId id;
   id.name = HashName(trial_name);
-  id.group = HashName(group_name);
+  id.group = !is_overridden ? HashName(group_name)
+                            : HashNameAndSuffix(group_name, kOverrideSuffix);
+
   return id;
 }
 
@@ -56,9 +96,10 @@ void GetFieldTrialActiveGroupIdsForActiveGroups(
     std::vector<ActiveGroupId>* name_group_ids) {
   DCHECK(name_group_ids->empty());
   for (const auto& active_group : active_groups) {
-    name_group_ids->push_back(
-        MakeActiveGroupId(active_group.trial_name + std::string(suffix),
-                          active_group.group_name + std::string(suffix)));
+    ActiveGroupId group_id = MakeActiveGroupIdWithSuffix(
+        active_group.trial_name, active_group.group_name, suffix,
+        active_group.is_overridden);
+    name_group_ids->push_back(std::move(group_id));
   }
 }
 
@@ -111,9 +152,8 @@ void GetSyntheticTrialGroupIdsAsString(std::vector<std::string>* output) {
 bool HasSyntheticTrial(const std::string& trial_name) {
   std::vector<std::string> synthetic_trials;
   variations::GetSyntheticTrialGroupIdsAsString(&synthetic_trials);
-  std::string trial_hash =
-      base::StringPrintf("%x", variations::HashName(trial_name));
-  return base::ranges::any_of(synthetic_trials, [trial_hash](
+  std::string trial_hash = variations::HashNameAsHexString(trial_name);
+  return base::ranges::any_of(synthetic_trials, [&trial_hash](
                                                     const auto& trial) {
     return base::StartsWith(trial, trial_hash, base::CompareCase::SENSITIVE);
   });

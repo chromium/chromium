@@ -5,23 +5,30 @@
 #ifndef COMPONENTS_PERFORMANCE_MANAGER_RESOURCE_ATTRIBUTION_QUERY_SCHEDULER_H_
 #define COMPONENTS_PERFORMANCE_MANAGER_RESOURCE_ATTRIBUTION_QUERY_SCHEDULER_H_
 
+#include <map>
+#include <memory>
+#include <optional>
+#include <vector>
+
 #include "base/functional/callback_forward.h"
+#include "base/location.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/graph_registered.h"
 #include "components/performance_manager/public/resource_attribution/query_results.h"
+#include "components/performance_manager/public/resource_attribution/resource_contexts.h"
+#include "components/performance_manager/public/resource_attribution/resource_types.h"
 #include "components/performance_manager/resource_attribution/cpu_measurement_monitor.h"
-
-namespace base {
-class TaskRunner;
-}
+#include "components/performance_manager/resource_attribution/memory_measurement_provider.h"
 
 namespace performance_manager::resource_attribution {
 
-class CPUMeasurementMonitor;
+namespace internal {
+class ContextCollection;
+struct QueryParams;
+}
 
 // QueryScheduler keeps track of all queries for a particular resource type and
 // owns the machinery that performs measurements.
@@ -36,7 +43,43 @@ class QueryScheduler : public GraphRegisteredImpl<QueryScheduler>,
 
   base::WeakPtr<QueryScheduler> GetWeakPtr();
 
-  // CPU measurement accessors.
+  // Invokes `callback` on the PM sequence with a pointer to the registered
+  // QueryScheduler.
+  static void CallWithScheduler(
+      base::OnceCallback<void(QueryScheduler*)> callback,
+      const base::Location& location = base::Location::Current());
+
+  // Adds a scoped query for `query_params`. Increases the query count for all
+  // resource types and contexts referenced in `query_params`.
+  void AddScopedQuery(internal::QueryParams* query_params);
+
+  // Decreases the query count for all resource types and contexts referenced in
+  // `query_params` and deletes `query_params`.
+  void RemoveScopedQuery(std::unique_ptr<internal::QueryParams> query_params);
+
+  // Requests the latest results for the given `query_params`, and passes them
+  // to `callback`.
+  void RequestResults(const internal::QueryParams& query_params,
+                      base::OnceCallback<void(const QueryResultMap&)> callback);
+
+  // GraphOwned:
+  void OnPassedToGraph(Graph* graph) final;
+  void OnTakenFromGraph(Graph* graph) final;
+
+  // Gives tests direct access to `cpu_monitor_`.
+  CPUMeasurementMonitor& GetCPUMonitorForTesting();
+
+  // Gives tests direct access to `memory_provider_`.
+  MemoryMeasurementProvider& GetMemoryProviderForTesting();
+
+  // Gives tests access to the query count for `resource_type`.
+  uint32_t GetQueryCountForTesting(ResourceType resource_type) const;
+
+ private:
+  // A map from a ResourceContext to a query result for a single ResourceType.
+  // The public interface uses QueryResultMap, from ResourceContext to a list of
+  // results for several ResourceTypes.
+  using SingleQueryResultMap = std::map<ResourceContext, QueryResult>;
 
   // Increases the CPU query count. `cpu_monitor_` will start monitoring CPU
   // usage when the count > 0.
@@ -46,20 +89,19 @@ class QueryScheduler : public GraphRegisteredImpl<QueryScheduler>,
   // usage when the count == 0.
   void RemoveCPUQuery();
 
-  // Requests the latest CPU measurements from `cpu_monitor_`, and posts them
-  // to `callback` on `task_runner`. Asserts that the CPU query count > 0.
-  void RequestCPUResults(
+  // Increases the memory query count.
+  void AddMemoryQuery();
+
+  // Decreases the memory query count.
+  void RemoveMemoryQuery();
+
+  // Invoked from RequestResults when all results are received. `results` will
+  // contain a separate result map for each ResourceType that was requested.
+  void OnResultsReceived(
+      const internal::ContextCollection& contexts,
       base::OnceCallback<void(const QueryResultMap&)> callback,
-      scoped_refptr<base::TaskRunner> task_runner);
+      const std::vector<SingleQueryResultMap>& results);
 
-  // Gives tests direct access to `cpu_monitor_`.
-  CPUMeasurementMonitor& GetCPUMonitorForTesting();
-
-  // GraphOwned overrides:
-  void OnPassedToGraph(Graph* graph) final;
-  void OnTakenFromGraph(Graph* graph) final;
-
- private:
   SEQUENCE_CHECKER(sequence_checker_);
 
   raw_ptr<Graph> graph_ GUARDED_BY_CONTEXT(sequence_checker_);
@@ -67,6 +109,11 @@ class QueryScheduler : public GraphRegisteredImpl<QueryScheduler>,
   // CPU measurement machinery.
   CPUMeasurementMonitor cpu_monitor_ GUARDED_BY_CONTEXT(sequence_checker_);
   uint32_t cpu_query_count_ GUARDED_BY_CONTEXT(sequence_checker_) = 0;
+
+  // Memory measurement machinery.
+  std::optional<MemoryMeasurementProvider> memory_provider_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+  uint32_t memory_query_count_ GUARDED_BY_CONTEXT(sequence_checker_) = 0;
 
   base::WeakPtrFactory<QueryScheduler> weak_factory_{this};
 };

@@ -4,6 +4,8 @@
 
 #include "net/base/network_anonymization_key.h"
 
+#include <optional>
+
 #include "base/test/gtest_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/unguessable_token.h"
@@ -12,7 +14,6 @@
 #include "net/base/schemeful_site.h"
 #include "network_anonymization_key.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/url_util.h"
 
@@ -194,7 +195,7 @@ TEST_F(NetworkAnonymizationKeyTest, IsEmpty) {
   NetworkAnonymizationKey populated_key =
       NetworkAnonymizationKey::CreateFromParts(/*top_frame_site=*/kTestSiteA,
                                                /*is_cross_site=*/false,
-                                               /*nonce=*/absl::nullopt);
+                                               /*nonce=*/std::nullopt);
 
   EXPECT_TRUE(empty_key.IsEmpty());
   EXPECT_FALSE(populated_key.IsEmpty());
@@ -216,11 +217,11 @@ TEST_F(NetworkAnonymizationKeyTest, IsTransient) {
   NetworkAnonymizationKey populated_key =
       NetworkAnonymizationKey::CreateFromParts(/*top_frame_site=*/kTestSiteA,
                                                /*is_cross_site=*/false,
-                                               /*nonce=*/absl::nullopt);
+                                               /*nonce=*/std::nullopt);
   NetworkAnonymizationKey data_top_frame_key =
       NetworkAnonymizationKey::CreateFromParts(/*top_frame_site=*/kDataSite,
                                                /*is_cross_site=*/false,
-                                               /*nonce=*/absl::nullopt);
+                                               /*nonce=*/std::nullopt);
   NetworkAnonymizationKey populated_key_with_nonce =
       NetworkAnonymizationKey::CreateFromParts(
           /*top_frame_site=*/kTestSiteA,
@@ -228,7 +229,7 @@ TEST_F(NetworkAnonymizationKeyTest, IsTransient) {
   NetworkAnonymizationKey data_frame_key =
       NetworkAnonymizationKey::CreateFromParts(/*top_frame_site=*/kTestSiteA,
                                                /*is_cross_site=*/false,
-                                               /*nonce=*/absl::nullopt);
+                                               /*nonce=*/std::nullopt);
 
   NetworkAnonymizationKey from_create_transient =
       NetworkAnonymizationKey::CreateTransient();
@@ -242,7 +243,7 @@ TEST_F(NetworkAnonymizationKeyTest, IsTransient) {
   NetworkAnonymizationKey populated_double_key =
       NetworkAnonymizationKey::CreateFromParts(/*top_frame_site=*/kTestSiteA,
                                                /*is_cross_site=*/false,
-                                               /*nonce=*/absl::nullopt);
+                                               /*nonce=*/std::nullopt);
   EXPECT_FALSE(data_frame_key.IsTransient());
   EXPECT_FALSE(populated_double_key.IsTransient());
 }
@@ -252,13 +253,13 @@ TEST_F(NetworkAnonymizationKeyTest, IsFullyPopulated) {
   NetworkAnonymizationKey populated_key =
       NetworkAnonymizationKey::CreateFromParts(/*top_frame_site=*/kTestSiteA,
                                                /*is_cross_site=*/false,
-                                               /*nonce=*/absl::nullopt);
+                                               /*nonce=*/std::nullopt);
   EXPECT_TRUE(populated_key.IsFullyPopulated());
   EXPECT_FALSE(empty_key.IsFullyPopulated());
   NetworkAnonymizationKey empty_frame_site_key =
       NetworkAnonymizationKey::CreateFromParts(/*top_frame_site=*/kTestSiteA,
                                                /*is_cross_site=*/false,
-                                               /*nonce=*/absl::nullopt);
+                                               /*nonce=*/std::nullopt);
   EXPECT_TRUE(empty_frame_site_key.IsFullyPopulated());
 }
 
@@ -311,7 +312,7 @@ TEST_F(NetworkAnonymizationKeyTest, Equality) {
   NetworkAnonymizationKey key_no_nonce =
       NetworkAnonymizationKey::CreateFromParts(/*top_frame_site=*/kTestSiteA,
                                                /*is_cross_site=*/false,
-                                               /*nonce=*/absl::nullopt);
+                                               /*nonce=*/std::nullopt);
   EXPECT_FALSE(key == key_no_nonce);
   EXPECT_TRUE(key != key_no_nonce);
   EXPECT_FALSE(key < key_no_nonce);

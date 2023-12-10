@@ -35,7 +35,7 @@ namespace ash::nearby {
 class NearbySchedulerBaseForTest : public NearbySchedulerBase {
  public:
   NearbySchedulerBaseForTest(
-      absl::optional<base::TimeDelta> time_until_recurring_request,
+      std::optional<base::TimeDelta> time_until_recurring_request,
       bool retry_failures,
       bool require_connectivity,
       const std::string& pref_name,
@@ -53,12 +53,12 @@ class NearbySchedulerBaseForTest : public NearbySchedulerBase {
   ~NearbySchedulerBaseForTest() override = default;
 
  private:
-  absl::optional<base::TimeDelta> TimeUntilRecurringRequest(
+  std::optional<base::TimeDelta> TimeUntilRecurringRequest(
       base::Time now) const override {
     return time_until_recurring_request_;
   }
 
-  absl::optional<base::TimeDelta> time_until_recurring_request_;
+  std::optional<base::TimeDelta> time_until_recurring_request_;
 };
 
 class NearbySchedulerBaseTest : public ::testing::Test {
@@ -81,7 +81,7 @@ class NearbySchedulerBaseTest : public ::testing::Test {
   void CreateScheduler(
       bool retry_failures,
       bool require_connectivity,
-      absl::optional<base::TimeDelta> time_until_recurring_request =
+      std::optional<base::TimeDelta> time_until_recurring_request =
           kTestTimeUntilRecurringRequest) {
     scheduler_ = std::make_unique<NearbySchedulerBaseForTest>(
         time_until_recurring_request, retry_failures, require_connectivity,
@@ -112,7 +112,7 @@ class NearbySchedulerBaseTest : public ::testing::Test {
 
   void RunPendingRequest() {
     EXPECT_FALSE(scheduler_->IsWaitingForResult());
-    absl::optional<base::TimeDelta> time_until_next_request =
+    std::optional<base::TimeDelta> time_until_next_request =
         scheduler_->GetTimeUntilNextRequest();
     ASSERT_TRUE(time_until_next_request);
     FastForward(*time_until_next_request);
@@ -122,14 +122,14 @@ class NearbySchedulerBaseTest : public ::testing::Test {
     EXPECT_TRUE(scheduler_->IsWaitingForResult());
     EXPECT_FALSE(scheduler_->GetTimeUntilNextRequest());
     size_t num_failures = scheduler_->GetNumConsecutiveFailures();
-    absl::optional<base::Time> last_success_time =
+    std::optional<base::Time> last_success_time =
         scheduler_->GetLastSuccessTime();
     scheduler_->HandleResult(success);
     EXPECT_FALSE(scheduler_->IsWaitingForResult());
     EXPECT_EQ(success ? 0 : num_failures + 1,
               scheduler_->GetNumConsecutiveFailures());
     EXPECT_EQ(
-        success ? absl::make_optional<base::Time>(Now()) : last_success_time,
+        success ? std::make_optional<base::Time>(Now()) : last_success_time,
         scheduler_->GetLastSuccessTime());
   }
 
@@ -177,7 +177,7 @@ TEST_F(NearbySchedulerBaseTest, RecurringRequest) {
 TEST_F(NearbySchedulerBaseTest, NoRecurringRequest) {
   // The flavor of the schedule does not schedule recurring requests.
   CreateScheduler(/*retry_failures=*/true, /*require_connectivity=*/true,
-                  /*time_until_recurring_request=*/absl::nullopt);
+                  /*time_until_recurring_request=*/std::nullopt);
   StartScheduling();
   EXPECT_FALSE(scheduler()->GetTimeUntilNextRequest());
 

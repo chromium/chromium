@@ -18,7 +18,7 @@
 #include "base/dcheck_is_on.h"
 #include "base/functional/callback_forward.h"
 #include "base/scoped_clear_last_error.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/utf_ostream_operators.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"

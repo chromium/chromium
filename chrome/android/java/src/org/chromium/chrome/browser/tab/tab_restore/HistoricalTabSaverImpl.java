@@ -26,21 +26,26 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-/**
- * Creates historical entries in TabRestoreService.
- */
+/** Creates historical entries in TabRestoreService. */
 @JNINamespace("historical_tab_saver")
 public class HistoricalTabSaverImpl implements HistoricalTabSaver {
     private static final List<String> UNSUPPORTED_SCHEMES =
-            new ArrayList<>(Arrays.asList(UrlConstants.CHROME_SCHEME,
-                    UrlConstants.CHROME_NATIVE_SCHEME, ContentUrlConstants.ABOUT_SCHEME));
+            new ArrayList<>(
+                    Arrays.asList(
+                            UrlConstants.CHROME_SCHEME,
+                            UrlConstants.CHROME_NATIVE_SCHEME,
+                            ContentUrlConstants.ABOUT_SCHEME));
     private final TabModel mTabModel;
     private boolean mIgnoreUrlSchemesForTesting;
 
     // These values are persisted to logs. Entries should not be renumbered and numeric values
     // should never be reused.
-    @IntDef({HistoricalSaverCloseType.TAB, HistoricalSaverCloseType.GROUP,
-            HistoricalSaverCloseType.BULK, HistoricalSaverCloseType.COUNT})
+    @IntDef({
+        HistoricalSaverCloseType.TAB,
+        HistoricalSaverCloseType.GROUP,
+        HistoricalSaverCloseType.BULK,
+        HistoricalSaverCloseType.COUNT
+    })
     @Retention(RetentionPolicy.SOURCE)
     private @interface HistoricalSaverCloseType {
         int TAB = 0;
@@ -121,30 +126,43 @@ public class HistoricalTabSaverImpl implements HistoricalTabSaver {
         // If there is only a single entry and more than one tab remaining so this is a group.
         if (validEntries.size() == 1 && !validEntries.get(0).isSingleTab()) {
             RecordHistogram.recordEnumeratedHistogram(
-                    "Tabs.RecentlyClosed.HistoricalSaverCloseType", HistoricalSaverCloseType.GROUP,
+                    "Tabs.RecentlyClosed.HistoricalSaverCloseType",
+                    HistoricalSaverCloseType.GROUP,
                     HistoricalSaverCloseType.COUNT);
-            HistoricalTabSaverImplJni.get().createHistoricalGroup(mTabModel, groupTitles.get(0),
-                    allTabs.toArray(new Tab[0]), byteBuffers.toArray(new ByteBuffer[0]),
-                    CollectionUtil.integerCollectionToIntArray(savedStateVersions));
+            HistoricalTabSaverImplJni.get()
+                    .createHistoricalGroup(
+                            mTabModel,
+                            groupTitles.get(0),
+                            allTabs.toArray(new Tab[0]),
+                            byteBuffers.toArray(new ByteBuffer[0]),
+                            CollectionUtil.integerCollectionToIntArray(savedStateVersions));
             return;
         }
 
         // IDs are passed only to group tabs. New IDs are generated when saving.
-        RecordHistogram.recordEnumeratedHistogram("Tabs.RecentlyClosed.HistoricalSaverCloseType",
-                HistoricalSaverCloseType.BULK, HistoricalSaverCloseType.COUNT);
-        HistoricalTabSaverImplJni.get().createHistoricalBulkClosure(mTabModel,
-                CollectionUtil.integerCollectionToIntArray(groupIds),
-                groupTitles.toArray(new String[0]),
-                CollectionUtil.integerCollectionToIntArray(perTabGroupId),
-                allTabs.toArray(new Tab[0]), byteBuffers.toArray(new ByteBuffer[0]),
-                CollectionUtil.integerCollectionToIntArray(savedStateVersions));
+        RecordHistogram.recordEnumeratedHistogram(
+                "Tabs.RecentlyClosed.HistoricalSaverCloseType",
+                HistoricalSaverCloseType.BULK,
+                HistoricalSaverCloseType.COUNT);
+        HistoricalTabSaverImplJni.get()
+                .createHistoricalBulkClosure(
+                        mTabModel,
+                        CollectionUtil.integerCollectionToIntArray(groupIds),
+                        groupTitles.toArray(new String[0]),
+                        CollectionUtil.integerCollectionToIntArray(perTabGroupId),
+                        allTabs.toArray(new Tab[0]),
+                        byteBuffers.toArray(new ByteBuffer[0]),
+                        CollectionUtil.integerCollectionToIntArray(savedStateVersions));
     }
 
     private void createHistoricalTabInternal(Tab tab) {
-        RecordHistogram.recordEnumeratedHistogram("Tabs.RecentlyClosed.HistoricalSaverCloseType",
-                HistoricalSaverCloseType.TAB, HistoricalSaverCloseType.COUNT);
-        HistoricalTabSaverImplJni.get().createHistoricalTab(
-                tab, getWebContentsState(tab).buffer(), getWebContentsState(tab).version());
+        RecordHistogram.recordEnumeratedHistogram(
+                "Tabs.RecentlyClosed.HistoricalSaverCloseType",
+                HistoricalSaverCloseType.TAB,
+                HistoricalSaverCloseType.COUNT);
+        HistoricalTabSaverImplJni.get()
+                .createHistoricalTab(
+                        tab, getWebContentsState(tab).buffer(), getWebContentsState(tab).version());
     }
 
     /**
@@ -166,7 +184,8 @@ public class HistoricalTabSaverImpl implements HistoricalTabSaver {
             committedUrlOrFrozenUrl = tab.getUrl();
         }
 
-        return committedUrlOrFrozenUrl != null && committedUrlOrFrozenUrl.isValid()
+        return committedUrlOrFrozenUrl != null
+                && committedUrlOrFrozenUrl.isValid()
                 && !committedUrlOrFrozenUrl.isEmpty()
                 && !UNSUPPORTED_SCHEMES.contains(committedUrlOrFrozenUrl.getScheme());
     }
@@ -225,10 +244,21 @@ public class HistoricalTabSaverImpl implements HistoricalTabSaver {
     @NativeMethods
     interface Natives {
         void createHistoricalTab(Tab tab, ByteBuffer state, int savedStateVersion);
-        void createHistoricalGroup(TabModel model, String title, Tab[] tabs,
-                ByteBuffer[] byteBuffers, int[] savedStationsVersions);
-        void createHistoricalBulkClosure(TabModel model, int[] groupIds, String[] titles,
-                int[] perTabGroupId, Tab[] tabs, ByteBuffer[] byteBuffers,
+
+        void createHistoricalGroup(
+                TabModel model,
+                String title,
+                Tab[] tabs,
+                ByteBuffer[] byteBuffers,
+                int[] savedStationsVersions);
+
+        void createHistoricalBulkClosure(
+                TabModel model,
+                int[] groupIds,
+                String[] titles,
+                int[] perTabGroupId,
+                Tab[] tabs,
+                ByteBuffer[] byteBuffers,
                 int[] savedStateVersions);
     }
 }

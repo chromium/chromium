@@ -35,6 +35,12 @@
 //media/test/data/aac-44100-packet-1
 //media/test/data/aac-44100-packet-2
 //media/test/data/aac-44100-packet-3
+//media/test/data/ac4-ajoc.ac4
+//media/test/data/ac4-channel-based-coding.ac4
+//media/test/data/ac4-ims.ac4
+//media/test/data/ac4-only-ajoc-frag.mp4
+//media/test/data/ac4-only-channel-based-coding-frag.mp4
+//media/test/data/ac4-only-ims-frag.mp4
 //media/test/data/audio-start-time-only.webm
 //media/test/data/av1-I-frame-1280x720
 //media/test/data/av1-I-frame-320x240
@@ -43,6 +49,7 @@
 //media/test/data/av1-monochrome-I-frame-320x240-12bpp
 //media/test/data/av1-monochrome-I-frame-320x240-8bpp
 //media/test/data/av1-show_existing_frame.ivf
+//media/test/data/av1-svc-L1T2.ivf
 //media/test/data/av1-svc-L2T2.ivf
 //media/test/data/avc-bitstream-format-0.h264
 //media/test/data/avc-bitstream-format-1.h264
@@ -367,6 +374,8 @@
 //media/test/data/four-colors.png
 //media/test/data/four-colors.y4m
 //media/test/data/frame_size_change-av_enc-v.webm
+//media/test/data/glass-blowing2-dolby-vision-profile-5-frag.mp4
+//media/test/data/glass-blowing2-dolby-vision-profile-8-1-frag.mp4
 //media/test/data/green-a300hz.webm
 //media/test/data/h264-320x180-frame-0
 //media/test/data/h264-320x180-frame-1
@@ -471,6 +480,7 @@
 //media/test/data/test-25fps.vp9_2.json
 //media/test/data/test_key_system_instantiation.html
 //media/test/data/tos-h264-opus.mp4
+//media/test/data/track-disabled.mp4
 //media/test/data/trailing-garbage.mp3
 //media/test/data/tulip2.webm
 //media/test/data/vorbis-extradata

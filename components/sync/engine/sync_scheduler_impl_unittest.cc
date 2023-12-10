@@ -17,12 +17,10 @@
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/mock_callback.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
 #include "base/time/time.h"
 #include "components/sync/base/extensions_activity.h"
-#include "components/sync/base/features.h"
 #include "components/sync/engine/backoff_delay_provider.h"
 #include "components/sync/engine/cancelation_signal.h"
 #include "components/sync/engine/data_type_activation_response.h"
@@ -42,13 +40,9 @@ using testing::_;
 using testing::AtLeast;
 using testing::DoAll;
 using testing::Eq;
-using testing::Ge;
-using testing::Gt;
 using testing::Invoke;
-using testing::Lt;
 using testing::Mock;
 using testing::Return;
-using testing::SaveArg;
 using testing::WithArg;
 using testing::WithArgs;
 using testing::WithoutArgs;
@@ -575,8 +569,8 @@ TEST_F(SyncSchedulerImplTest, ConfigWithBackingOff) {
                                      {THEMES}, ready_task.Get());
   RunLoop();
 
-  // RunLoop() will trigger TryCanaryJob which will retry configuration.
-  // Since retry_task was already called it shouldn't be called again.
+  // RunLoop() will trigger a sync cycle job which will retry configuration.
+  // Since ready_task was already called it shouldn't be called again.
   RunLoop();
 
   Mock::VerifyAndClearExpectations(syncer());
@@ -796,10 +790,6 @@ TEST_F(SyncSchedulerImplTest, Polling) {
 }
 
 TEST_F(SyncSchedulerImplTest, ShouldPollOnBrowserStartup) {
-  base::test::ScopedFeatureList override_features;
-  override_features.InitAndEnableFeature(
-      syncer::kSyncPollWithoutDelayOnStartup);
-
   EXPECT_CALL(*syncer(), PollSyncShare)
       .WillOnce(DoAll(Invoke(SimulatePollSuccess), Return(true)));
 
@@ -1630,7 +1620,7 @@ TEST_F(SyncSchedulerImplTest, ServerConnectionChangeDuringBackoff) {
   PumpLoop();  // Run the nudge, that will fail and schedule a quick retry.
   ASSERT_TRUE(scheduler()->IsGlobalBackoff());
 
-  // Before we run the scheduled canary, trigger a server connection change.
+  // Before we run the scheduled retry, trigger a server connection change.
   scheduler()->OnConnectionStatusChange(
       network::mojom::ConnectionType::CONNECTION_WIFI);
   connection()->SetServerReachable();
@@ -1638,41 +1628,9 @@ TEST_F(SyncSchedulerImplTest, ServerConnectionChangeDuringBackoff) {
   base::RunLoop().RunUntilIdle();
 }
 
-// This was supposed to test the scenario where we receive a nudge while a
-// connection change canary is scheduled, but has not run yet.  Since we've made
-// the connection change canary synchronous, this is no longer possible.
-TEST_F(SyncSchedulerImplTest, ConnectionChangeCanaryPreemptedByNudge) {
-  UseMockDelayProvider();
-  EXPECT_CALL(*delay(), GetDelay).WillRepeatedly(Return(base::Milliseconds(0)));
-
-  StartSyncScheduler(base::Time());
-  connection()->SetServerNotReachable();
-  connection()->UpdateConnectionStatus();
-
-  EXPECT_CALL(*syncer(), NormalSyncShare)
-      .WillOnce(DoAll(Invoke(SimulateConnectionFailure), Return(false)))
-      .WillOnce(DoAll(Invoke(SimulateNormalSuccess), Return(true)))
-      .WillOnce(DoAll(Invoke(SimulateNormalSuccess), QuitLoopNowAction(true)));
-
-  scheduler()->ScheduleLocalNudge(THEMES);
-
-  PumpLoop();  // To get PerformDelayedNudge called.
-  PumpLoop();  // Run the nudge, that will fail and schedule a quick retry.
-  ASSERT_TRUE(scheduler()->IsGlobalBackoff());
-
-  // Before we run the scheduled canary, trigger a server connection change.
-  scheduler()->OnConnectionStatusChange(
-      network::mojom::ConnectionType::CONNECTION_WIFI);
-  PumpLoop();
-  connection()->SetServerReachable();
-  connection()->UpdateConnectionStatus();
-  scheduler()->ScheduleLocalNudge(THEMES);
-  base::RunLoop().RunUntilIdle();
-}
-
-// Tests that we don't crash trying to run two canaries at once if we receive
-// extra connection status change notifications.  See crbug.com/190085.
-TEST_F(SyncSchedulerImplTest, DoubleCanaryInConfigure) {
+// Tests that there's no crash trying to run two jobs at once if the scheduler
+// received extra connection status change notifications.  See crbug.com/190085.
+TEST_F(SyncSchedulerImplTest, DoubleConnectionChangeDuringConfigure) {
   EXPECT_CALL(*syncer(), ConfigureSyncShare)
       .WillRepeatedly(
           DoAll(Invoke(SimulateConfigureConnectionFailure), Return(true)));
@@ -1691,7 +1649,7 @@ TEST_F(SyncSchedulerImplTest, DoubleCanaryInConfigure) {
   PumpLoop();  // Run the nudge, that will fail and schedule a quick retry.
 }
 
-TEST_F(SyncSchedulerImplTest, PollFromCanaryAfterAuthError) {
+TEST_F(SyncSchedulerImplTest, PollAfterAuthError) {
   scheduler()->OnReceivedPollIntervalUpdate(base::Milliseconds(15));
 
   SyncShareTimes times;
@@ -1708,9 +1666,8 @@ TEST_F(SyncSchedulerImplTest, PollFromCanaryAfterAuthError) {
   // Run to wait for polling.
   RunLoop();
 
-  // Normally OnCredentialsUpdated calls TryCanaryJob that doesn't run Poll,
-  // but after poll finished with auth error from poll timer it should retry
-  // poll once more
+  // Normally OnCredentialsUpdated runs a non-poll job, but after a poll
+  // finished with an auth error, it should retry polling once more.
   EXPECT_CALL(*syncer(), PollSyncShare)
       .WillOnce(
           DoAll(Invoke(SimulatePollSuccess), RecordSyncShare(&times, true)));
@@ -1986,31 +1943,14 @@ TEST_F(SyncSchedulerImplTest, InterleavedNudgesStillRestart) {
   EXPECT_EQ(base::TimeDelta(), GetPendingWakeupTimerDelay());
   EXPECT_TRUE(scheduler()->IsGlobalBackoff());
 
-  // Triggers HISTORY PerformDelayedNudge(), which should no-op, because
-  // we're no long healthy, and normal priorities shouldn't go through, but it
-  // does need to setup the |pending_wakeup_timer_|. The delay should be ~60
-  // seconds, so verifying it's greater than 50 should be safe.
+  // Triggers HISTORY PerformDelayedNudge(), which should no-op, because the
+  // scheduler is in global backoff. However, it does need to setup the
+  // `pending_wakeup_timer_`. The delay should be ~60 seconds, so verifying it's
+  // greater than 50 should be safe.
   PumpLoop();
   EXPECT_TRUE(BlockTimerIsRunning());
   EXPECT_LT(base::Seconds(50), GetPendingWakeupTimerDelay());
   EXPECT_TRUE(scheduler()->IsGlobalBackoff());
-}
-
-TEST_F(SyncSchedulerImplTest, PollOnStartUpAfterLongPause) {
-  // TODO(crbug.com/1440624): last poll request could happen more time ago than
-  // periodic interval. This test will not be necessary once delay before a poll
-  // request is removed.
-  base::test::ScopedFeatureList override_features;
-  override_features.InitAndDisableFeature(
-      syncer::kSyncPollWithoutDelayOnStartup);
-
-  base::Time now = base::Time::Now();
-  base::TimeDelta poll_interval = base::Hours(4);
-  base::Time last_reset = ComputeLastPollOnStart(
-      /*last_poll=*/now - base::Days(1), poll_interval, now);
-  EXPECT_THAT(last_reset, Gt(now - poll_interval));
-  // The max poll delay is 1% of the poll_interval.
-  EXPECT_THAT(last_reset, Lt(now - 0.99 * poll_interval));
 }
 
 TEST_F(SyncSchedulerImplTest, PollOnStartUpAfterShortPause) {
@@ -2019,38 +1959,6 @@ TEST_F(SyncSchedulerImplTest, PollOnStartUpAfterShortPause) {
   base::Time last_poll = now - base::Hours(2);
   EXPECT_THAT(ComputeLastPollOnStart(last_poll, poll_interval, now),
               Eq(last_poll));
-}
-
-// Verifies that the delay is in [0, 0.01*poll_interval) and spot checks the
-// random number generation.
-TEST_F(SyncSchedulerImplTest, PollOnStartUpWithinBoundsAfterLongPause) {
-  // TODO(crbug.com/1440624): last poll request could happen more time ago than
-  // periodic interval. This test will not be necessary once delay before a poll
-  // request is removed.
-  base::test::ScopedFeatureList override_features;
-  override_features.InitAndDisableFeature(
-      syncer::kSyncPollWithoutDelayOnStartup);
-
-  base::Time now = base::Time::Now();
-  base::TimeDelta poll_interval = base::Hours(4);
-  base::Time last_poll = now - base::Days(2);
-  bool found_delay_greater_than_5_permille = false;
-  bool found_delay_less_or_equal_5_permille = false;
-  for (int i = 0; i < 10000; ++i) {
-    const base::Time result =
-        ComputeLastPollOnStart(last_poll, poll_interval, now);
-    const base::TimeDelta delay = result + poll_interval - now;
-    const double fraction = delay / poll_interval;
-    if (fraction > 0.005) {
-      found_delay_greater_than_5_permille = true;
-    } else {
-      found_delay_less_or_equal_5_permille = true;
-    }
-    EXPECT_THAT(fraction, Ge(0));
-    EXPECT_THAT(fraction, Lt(0.01));
-  }
-  EXPECT_TRUE(found_delay_greater_than_5_permille);
-  EXPECT_TRUE(found_delay_less_or_equal_5_permille);
 }
 
 }  // namespace syncer

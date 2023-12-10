@@ -19,6 +19,7 @@
 #include "third_party/skia/include/core/SkM44.h"
 #include "ui/display/display_observer.h"
 #include "ui/display/manager/display_configurator.h"
+#include "ui/display/types/display_color_management.h"
 #include "ui/display/types/display_constants.h"
 
 namespace base {
@@ -27,7 +28,6 @@ class SequencedTaskRunner;
 
 namespace display {
 class DisplaySnapshot;
-struct GammaRampRGBEntry;
 }  // namespace display
 
 namespace ash {
@@ -63,17 +63,11 @@ class ASH_EXPORT DisplayColorManager
     return displays_ctm_support_;
   }
 
-  // Sets the given |color_matrix| on the display hardware of |display_id|,
-  // combining the given matrix with any available color calibration matrix for
-  // this display. This doesn't affect gamma or degamma values.
-  // Returns true if the hardware supports this operation and the matrix was
-  // successfully sent to the GPU.
-  bool SetDisplayColorMatrix(int64_t display_id, const SkM44& color_matrix);
-
-  // Similar to the above but can be used when a display snapshot is known to
-  // the caller.
-  bool SetDisplayColorMatrix(const display::DisplaySnapshot* display_snapshot,
-                             const SkM44& color_matrix);
+  // Sets the color temperature adjustment for |display_id|. Returns true if the
+  // hardware supports this operation.
+  bool SetDisplayColorTemperatureAdjustment(
+      int64_t display_id,
+      const display::ColorTemperatureAdjustment& cta);
 
   // display::DisplayConfigurator::Observer
   void OnDisplayModeChanged(
@@ -84,16 +78,6 @@ class ASH_EXPORT DisplayColorManager
 
   // display::DisplayObserver:
   void OnDisplayRemoved(const display::Display& old_display) override;
-
-  struct ColorCalibrationData {
-    ColorCalibrationData();
-    ~ColorCalibrationData();
-
-    std::vector<display::GammaRampRGBEntry> degamma_lut;
-    std::vector<display::GammaRampRGBEntry> gamma_lut;
-    // Initialized to identity to reset color correction.
-    std::vector<float> correction_matrix;
-  };
 
  protected:
   virtual void FinishLoadCalibrationForDisplay(
@@ -106,14 +90,14 @@ class ASH_EXPORT DisplayColorManager
   virtual void UpdateCalibrationData(
       int64_t display_id,
       int64_t product_code,
-      std::unique_ptr<ColorCalibrationData> data);
+      std::unique_ptr<display::ColorCalibration> data);
 
  private:
   friend class DisplayColorManagerTest;
 
   void ApplyDisplayColorCalibration(
       int64_t display_id,
-      const ColorCalibrationData& calibration_data);
+      const display::ColorCalibration& calibration_data);
 
   // Attempts to start requesting the ICC profile for |display|. Returns true if
   // it was successful at initiating the request, false otherwise.
@@ -163,7 +147,7 @@ class ASH_EXPORT DisplayColorManager
 
   // Maps a display's color calibration data by the display's product code as
   // the key.
-  base::flat_map<int64_t, std::unique_ptr<ColorCalibrationData>>
+  base::flat_map<int64_t, std::unique_ptr<display::ColorCalibration>>
       calibration_map_;
 
   SEQUENCE_CHECKER(sequence_checker_);

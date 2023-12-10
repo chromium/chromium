@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/media_router/cast_dialog_sink_view.h"
 
+#include <utility>
+
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_feature.h"
 #include "chrome/browser/media/router/media_router_feature.h"
@@ -47,10 +49,17 @@ std::unique_ptr<views::StyledLabel> CreateTitle(
   return title;
 }
 
-std::unique_ptr<views::Label> CreateSubtitle(
-    const media_router::UIMediaSink& sink) {
-  // TODO(crbug.com/1486989): Error messages in Harmony dialog are not
-  // dismissible.
+std::unique_ptr<views::View> CreateSubtitle(
+    const media_router::UIMediaSink& sink,
+    views::Button::PressedCallback issue_pressed_callback) {
+  if (sink.issue) {
+    auto subtitle_button = std::make_unique<views::LabelButton>(
+        std::move(issue_pressed_callback), sink.GetStatusTextForDisplay());
+    subtitle_button->SetLabelStyle(views::style::STYLE_SECONDARY);
+    subtitle_button->SetAccessibleName(sink.GetStatusTextForDisplay());
+    return subtitle_button;
+  }
+
   auto subtitle = std::make_unique<views::Label>(sink.GetStatusTextForDisplay(),
                                                  views::style::CONTEXT_BUTTON,
                                                  views::style::STYLE_SECONDARY);
@@ -67,6 +76,7 @@ CastDialogSinkView::CastDialogSinkView(
     Profile* profile,
     const UIMediaSink& sink,
     views::Button::PressedCallback sink_pressed_callback,
+    views::Button::PressedCallback issue_pressed_callback,
     views::Button::PressedCallback stop_pressed_callback,
     views::Button::PressedCallback freeze_pressed_callback)
     : profile_(profile), sink_(sink) {
@@ -85,17 +95,18 @@ CastDialogSinkView::CastDialogSinkView(
     // |----------------------------------|
     // |            | Button 1 | Button 2 | Buttons View
     // *----------------------------------*
-    AddChildView(CreateLabelView(sink));
-    AddChildView(
-        CreateButtonsView(stop_pressed_callback, freeze_pressed_callback));
+    AddChildView(CreateLabelView(sink, std::move(issue_pressed_callback)));
+    AddChildView(CreateButtonsView(std::move(stop_pressed_callback),
+                                   std::move(freeze_pressed_callback)));
   } else {
-    cast_sink_button_ = AddChildView(
-        std::make_unique<CastDialogSinkButton>(sink_pressed_callback, sink));
+    cast_sink_button_ = AddChildView(std::make_unique<CastDialogSinkButton>(
+        std::move(sink_pressed_callback), sink));
   }
 }
 
 std::unique_ptr<views::View> CastDialogSinkView::CreateLabelView(
-    const UIMediaSink& sink) {
+    const UIMediaSink& sink,
+    views::Button::PressedCallback issue_pressed_callback) {
   // The spacing and padding needed to mimic the layout of the icon and labels
   // from the CastDialogSinkButton, which is implemented as a HoverButton.
   const int horizontal_padding = ChromeLayoutProvider::Get()->GetDistanceMetric(
@@ -120,7 +131,8 @@ std::unique_ptr<views::View> CastDialogSinkView::CreateLabelView(
   // Create the wrapper so labels can stack.
   auto label_wrapper = std::make_unique<views::View>();
   title_ = label_wrapper->AddChildView(CreateTitle(sink));
-  subtitle_ = label_wrapper->AddChildView(CreateSubtitle(sink));
+  subtitle_ = label_wrapper->AddChildView(
+      CreateSubtitle(sink, std::move(issue_pressed_callback)));
 
   // Set wrapper properties.
   label_wrapper->SetLayoutManager(std::make_unique<views::FlexLayout>())
@@ -170,7 +182,7 @@ std::unique_ptr<views::View> CastDialogSinkView::CreateButtonsView(
   if (IsAccessCodeCastFreezeUiEnabled(profile_) &&
       sink_.freeze_info.can_freeze) {
     auto freeze_button = std::make_unique<views::MdTextButton>(
-        freeze_pressed_callback,
+        std::move(freeze_pressed_callback),
         l10n_util::GetStringUTF16(sink_.freeze_info.is_frozen
                                       ? IDS_MEDIA_ROUTER_SINK_VIEW_RESUME
                                       : IDS_MEDIA_ROUTER_SINK_VIEW_PAUSE));
@@ -182,7 +194,7 @@ std::unique_ptr<views::View> CastDialogSinkView::CreateButtonsView(
   // Always create the stop button, since at this point we know the sink is
   // connected.
   auto stop_button = std::make_unique<views::MdTextButton>(
-      stop_pressed_callback,
+      std::move(stop_pressed_callback),
       l10n_util::GetStringUTF16(IDS_MEDIA_ROUTER_SINK_VIEW_STOP));
   stop_button->SetStyle(ui::ButtonStyle::kText);
   stop_button->SetAccessibleName(GetStopButtonAccessibleName());

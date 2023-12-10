@@ -67,7 +67,7 @@ void WmFlingHandler::OnAnimationStep(base::TimeTicks timestamp) {
   if (!weak_ptr)
     return;
 
-  fling_last_offset_ = absl::make_optional(offset);
+  fling_last_offset_ = std::make_optional(offset);
 
   if (!continue_fling)
     EndFling();
@@ -85,7 +85,7 @@ void WmFlingHandler::EndFling() {
   observed_compositor_->RemoveAnimationObserver(this);
   observed_compositor_ = nullptr;
   fling_curve_.reset();
-  fling_last_offset_ = absl::nullopt;
+  fling_last_offset_ = std::nullopt;
 
   on_end_callback_.Run();
 }

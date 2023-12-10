@@ -25,41 +25,31 @@ public class AdaptiveToolbarStatePredictor {
      * Key used to lookup segmentation results for adaptive toolbar. Must be kept in sync with
      * components/segmentation_platform/internal/constants.cc.
      */
-
     private static Pair<Boolean, Integer> sSegmentationResultsForTesting;
+
     private static Integer sToolbarStateForTesting;
 
-    @Nullable
-    private final AndroidPermissionDelegate mAndroidPermissionDelegate;
+    @Nullable private final AndroidPermissionDelegate mAndroidPermissionDelegate;
 
-    /**
-     * The result of the predictor. Contains the UI states specific to the toolbar button.
-     */
+    /** The result of the predictor. Contains the UI states specific to the toolbar button. */
     public static class UiState {
-        /**
-         * Used to determine whether we can show any toolbar shortcut specific UI.
-         */
+        /** Used to determine whether we can show any toolbar shortcut specific UI. */
         public final boolean canShowUi;
 
-        /**
-         * Used for showing the toolbar shortcut action in the toolbar UI.
-         */
+        /** Used for showing the toolbar shortcut action in the toolbar UI. */
         public final @AdaptiveToolbarButtonVariant int toolbarButtonState;
 
-        /**
-         * Used for the selected radio button in the toolbar shortcut settings page.
-         */
+        /** Used for the selected radio button in the toolbar shortcut settings page. */
         public final @AdaptiveToolbarButtonVariant int preferenceSelection;
 
-        /**
-         * Used for the substring used in the auto option.
-         */
+        /** Used for the substring used in the auto option. */
         public final @AdaptiveToolbarButtonVariant int autoButtonCaption;
 
-        /**
-         * Constructor.
-         */
-        public UiState(boolean canShowUi, int toolbarButtonState, int preferenceSelection,
+        /** Constructor. */
+        public UiState(
+                boolean canShowUi,
+                int toolbarButtonState,
+                int preferenceSelection,
                 int autoButtonCaption) {
             this.canShowUi = canShowUi;
             this.toolbarButtonState = toolbarButtonState;
@@ -85,16 +75,24 @@ public class AdaptiveToolbarStatePredictor {
      */
     public void recomputeUiState(Callback<UiState> callback) {
         if (sToolbarStateForTesting != null) {
-            UiState uiState = new UiState(isValidSegment(sToolbarStateForTesting),
-                    sToolbarStateForTesting, sToolbarStateForTesting, sToolbarStateForTesting);
+            UiState uiState =
+                    new UiState(
+                            isValidSegment(sToolbarStateForTesting),
+                            sToolbarStateForTesting,
+                            sToolbarStateForTesting,
+                            sToolbarStateForTesting);
             callback.onResult(uiState);
             return;
         }
 
         // Early return if the feature isn't enabled.
         if (!AdaptiveToolbarFeatures.isCustomizationEnabled()) {
-            callback.onResult(new UiState(false, AdaptiveToolbarButtonVariant.UNKNOWN,
-                    AdaptiveToolbarButtonVariant.UNKNOWN, AdaptiveToolbarButtonVariant.UNKNOWN));
+            callback.onResult(
+                    new UiState(
+                            false,
+                            AdaptiveToolbarButtonVariant.UNKNOWN,
+                            AdaptiveToolbarButtonVariant.UNKNOWN,
+                            AdaptiveToolbarButtonVariant.UNKNOWN));
             return;
         }
 
@@ -102,20 +100,32 @@ public class AdaptiveToolbarStatePredictor {
         int finchDefault = AdaptiveToolbarFeatures.getSegmentationDefault();
         boolean toolbarToggle = readToolbarToggleStateFromPrefs();
         boolean ignoreSegmentationResults = AdaptiveToolbarFeatures.ignoreSegmentationResults();
-        readFromSegmentationPlatform(segmentationResult -> {
-            boolean isReady = segmentationResult.first;
-            int segmentSelectionResult = segmentationResult.second;
-            UiState uiState = new UiState(canShowUi(isReady),
-                    replaceVariantIfDisabled(getToolbarButtonState(toolbarToggle, manualOverride,
-                            finchDefault, segmentSelectionResult, ignoreSegmentationResults)),
-                    getToolbarPreferenceSelection(manualOverride),
-                    replaceVariantIfDisabled(getToolbarPreferenceAutoOptionSubtitleSegment(
-                            finchDefault, segmentSelectionResult, ignoreSegmentationResults)));
-            callback.onResult(uiState);
-        });
+        readFromSegmentationPlatform(
+                segmentationResult -> {
+                    boolean isReady = segmentationResult.first;
+                    int segmentSelectionResult = segmentationResult.second;
+                    UiState uiState =
+                            new UiState(
+                                    canShowUi(isReady),
+                                    replaceVariantIfDisabled(
+                                            getToolbarButtonState(
+                                                    toolbarToggle,
+                                                    manualOverride,
+                                                    finchDefault,
+                                                    segmentSelectionResult,
+                                                    ignoreSegmentationResults)),
+                                    getToolbarPreferenceSelection(manualOverride),
+                                    replaceVariantIfDisabled(
+                                            getToolbarPreferenceAutoOptionSubtitleSegment(
+                                                    finchDefault,
+                                                    segmentSelectionResult,
+                                                    ignoreSegmentationResults)));
+                    callback.onResult(uiState);
+                });
     }
 
-    private @AdaptiveToolbarButtonVariant int getToolbarButtonState(boolean toolbarToggle,
+    private @AdaptiveToolbarButtonVariant int getToolbarButtonState(
+            boolean toolbarToggle,
             @AdaptiveToolbarButtonVariant int manualOverride,
             @AdaptiveToolbarButtonVariant int finchDefault,
             @AdaptiveToolbarButtonVariant int segmentationResult,

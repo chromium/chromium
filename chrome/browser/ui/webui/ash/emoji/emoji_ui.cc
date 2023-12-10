@@ -7,7 +7,6 @@
 #include <iostream>
 
 #include "ash/constants/ash_features.h"
-#include "ash/public/cpp/tablet_mode.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/views/bubble/bubble_contents_wrapper.h"
@@ -27,6 +26,7 @@
 #include "ui/base/ime/ash/ime_bridge.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/display/screen.h"
 #include "ui/resources/grit/webui_resources.h"
 #include "ui/webui/color_change_listener/color_change_handler.h"
 
@@ -39,7 +39,7 @@ class EmojiBubbleDialogView : public WebUIBubbleDialogView {
   METADATA_HEADER(EmojiBubbleDialogView);
   explicit EmojiBubbleDialogView(
       std::unique_ptr<BubbleContentsWrapper> contents_wrapper)
-      : WebUIBubbleDialogView(nullptr, contents_wrapper.get()),
+      : WebUIBubbleDialogView(nullptr, contents_wrapper->GetWeakPtr()),
         contents_wrapper_(std::move(contents_wrapper)) {
     set_has_parent(false);
 
@@ -87,7 +87,7 @@ bool EmojiUI::ShouldShow(const ui::TextInputClient* input_client) {
 }
 
 void EmojiUI::Show() {
-  if (TabletMode::Get()->InTabletMode()) {
+  if (display::Screen::GetScreen()->InTabletMode()) {
     ui::ShowTabletModeEmojiPanel();
     return;
   }

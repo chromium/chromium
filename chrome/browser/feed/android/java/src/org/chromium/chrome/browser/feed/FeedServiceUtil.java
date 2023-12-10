@@ -4,9 +4,7 @@
 
 package org.chromium.chrome.browser.feed;
 
-/**
- * Provides access to utilities used for feed service.
- */
+/** Provides access to utilities used for feed service. */
 public interface FeedServiceUtil {
     /** Returns the enabled state of tab group feature. */
     @TabGroupEnabledState

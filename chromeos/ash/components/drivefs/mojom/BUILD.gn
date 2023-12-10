@@ -48,5 +48,4 @@ mojom_component("pinning_manager_types") {
   macro_prefix = "PINNING_MANAGER_TYPES_MOJOM"
 
   webui_module_path = "/"
-  use_typescript_sources = true
 }

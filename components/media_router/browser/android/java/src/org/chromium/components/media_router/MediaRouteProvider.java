@@ -14,9 +14,7 @@ import androidx.annotation.Nullable;
  * "unique origins" from url::Origin for the purposes of comparison.
  */
 public interface MediaRouteProvider {
-    /**
-     * Factory for {@link MediaRouteProvider}s.
-     */
+    /** Factory for {@link MediaRouteProvider}s. */
     interface Factory {
         void addProviders(MediaRouteManager manager);
     }
@@ -51,8 +49,14 @@ public interface MediaRouteProvider {
      * @param isOffTheRecord Whether the route is being requested from an OffTheRecord profile.
      * @param nativeRequestId The id of the request tracked by the native side.
      */
-    void createRoute(String sourceId, String sinkId, String presentationId, String origin,
-            int tabId, boolean isOffTheRecord, int nativeRequestId);
+    void createRoute(
+            String sourceId,
+            String sinkId,
+            String presentationId,
+            String origin,
+            int tabId,
+            boolean isOffTheRecord,
+            int nativeRequestId);
 
     /**
      * Tries to join an existing media route for the given media source and presentation id.

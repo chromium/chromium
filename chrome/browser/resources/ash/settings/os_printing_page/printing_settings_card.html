@@ -1,7 +1,9 @@
 <style include="settings-shared"></style>
 
 <settings-card header-text="$i18n{printingPageTitle}">
-  <cr-link-row id="cupsPrintersRow" label="$i18n{cupsPrintTitle}"
+  <cr-link-row id="cupsPrintersRow"
+      start-icon="[[rowIcons_.print]]"
+      label="$i18n{cupsPrintTitle}"
       sub-label="[[getCupsPrintDescription_()]]"
       on-click="onClickCupsPrint_"
       role-description="$i18n{subpageArrowRoleDescription}">
@@ -16,6 +18,7 @@
     </cr-link-row>
   </template>
   <cr-link-row id="scanningApp" class="hr"
+      start-icon="[[rowIcons_.scan]]"
       on-click="onClickScanningApp_"
       label="$i18n{scanAppTitle}"
       sub-label="$i18n{scanAppSublabel}"

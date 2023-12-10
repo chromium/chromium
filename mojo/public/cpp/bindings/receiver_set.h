@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -23,9 +24,14 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/bindings/runtime_features.h"
 #include "mojo/public/cpp/bindings/unique_ptr_impl_ref_traits.h"
 
 namespace mojo {
+
+namespace test {
+class ReceiverSetStaticAssertTests;
+}
 
 using ReceiverId = uint64_t;
 
@@ -48,10 +54,9 @@ struct ReceiverSetContextTraits {
 
 template <>
 struct ReceiverSetContextTraits<void> {
-  // NOTE: This choice of Type only matters insofar as it affects the size of
-  // the |context_| field of a ReceiverSetBase::Entry with void context. The
-  // context value is never used in this case.
-  using Type = bool;
+  struct Empty {};
+
+  using Type = Empty;
 
   static constexpr bool SupportsContext() { return false; }
 };
@@ -179,6 +184,10 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) ReceiverSetState {
 // while executing the call from |foo1| and a value of 43 while executing the
 // call from |foo2|.
 //
+// RuntimeFeature guarded receivers should only be added to a set if they are
+// enabled - if an interface is feature guarded validate the enabled state of
+// the corresponding feature before calling Add().
+//
 // Finally, note that ContextType can be any type of thing, including move-only
 // objects like std::unique_ptrs.
 template <typename ReceiverType, typename ContextType>
@@ -218,23 +227,54 @@ class ReceiverSetBase {
   // |task_runner| is null, the value of
   // |base::SequencedTaskRunner::GetCurrentDefault()| at the time of the |Add()|
   // call will be used to run scheduled tasks for the receiver.
-  ReceiverId Add(
+  ReceiverId Add(ImplPointerType impl,
+                 PendingType receiver,
+                 scoped_refptr<base::SequencedTaskRunner> task_runner = nullptr)
+    requires(!internal::kIsRuntimeFeatureGuarded<Interface>)
+  {
+    return AddImpl(std::move(impl), std::move(receiver), {},
+                   std::move(task_runner), /*filter=*/nullptr)
+        .value();
+  }
+
+  // Like Add() but allows an interface with a runtime enabled feature to be
+  // provided - if the feature is enabled or the interface does not have a
+  // RuntimeFeature attribute this behaves exactly like Add() and always returns
+  // a .value(). If the feature is disabled this will DCHECK in developer builds
+  // and return nullopt in production - `impl` will be immediately destroyed.
+  std::optional<ReceiverId> Add(
       ImplPointerType impl,
       PendingType receiver,
-      scoped_refptr<base::SequencedTaskRunner> task_runner = nullptr) {
-    static_assert(!ContextTraits::SupportsContext(),
-                  "Context value required for non-void context type.");
-    return AddImpl(std::move(impl), std::move(receiver), false,
+      scoped_refptr<base::SequencedTaskRunner> task_runner = nullptr)
+    requires(internal::kIsRuntimeFeatureGuarded<Interface>)
+  {
+    return AddImpl(std::move(impl), std::move(receiver), {},
                    std::move(task_runner), /*filter=*/nullptr);
   }
 
   // Adds a new receiver associated with |context|. See above method for all
   // other (identical) details.
-  ReceiverId Add(
+  ReceiverId Add(ImplPointerType impl,
+                 PendingType receiver,
+                 Context context,
+                 scoped_refptr<base::SequencedTaskRunner> task_runner = nullptr)
+    requires(!internal::kIsRuntimeFeatureGuarded<Interface>)
+  {
+    static_assert(ContextTraits::SupportsContext(),
+                  "Context value unsupported for void context type.");
+    return AddImpl(std::move(impl), std::move(receiver), std::move(context),
+                   std::move(task_runner), /*filter=*/nullptr)
+        .value();
+  }
+
+  // See above.
+  std::optional<ReceiverId> Add(
       ImplPointerType impl,
       PendingType receiver,
       Context context,
-      scoped_refptr<base::SequencedTaskRunner> task_runner = nullptr) {
+      scoped_refptr<base::SequencedTaskRunner> task_runner = nullptr)
+    requires(internal::kIsRuntimeFeatureGuarded<Interface>)
+  {
     static_assert(ContextTraits::SupportsContext(),
                   "Context value unsupported for void context type.");
     return AddImpl(std::move(impl), std::move(receiver), std::move(context),
@@ -243,12 +283,29 @@ class ReceiverSetBase {
 
   // Adds a new receiver associated with |context| and which uses the
   // MessageFilter |filter|. See above for all other details.
-  ReceiverId Add(
+  ReceiverId Add(ImplPointerType impl,
+                 PendingType receiver,
+                 Context context,
+                 std::unique_ptr<MessageFilter> filter,
+                 scoped_refptr<base::SequencedTaskRunner> task_runner = nullptr)
+    requires(!internal::kIsRuntimeFeatureGuarded<Interface>)
+  {
+    static_assert(ContextTraits::SupportsContext(),
+                  "Context value unsupported for void context type.");
+    return AddImpl(std::move(impl), std::move(receiver), std::move(context),
+                   std::move(task_runner), std::move(filter))
+        .value();
+  }
+
+  // See above.
+  std::optional<ReceiverId> Add(
       ImplPointerType impl,
       PendingType receiver,
       Context context,
       std::unique_ptr<MessageFilter> filter,
-      scoped_refptr<base::SequencedTaskRunner> task_runner = nullptr) {
+      scoped_refptr<base::SequencedTaskRunner> task_runner = nullptr)
+    requires(internal::kIsRuntimeFeatureGuarded<Interface>)
+  {
     static_assert(ContextTraits::SupportsContext(),
                   "Context value unsupported for void context type.");
     return AddImpl(std::move(impl), std::move(receiver), std::move(context),
@@ -387,7 +444,7 @@ class ReceiverSetBase {
   }
 
  private:
-  friend class ReceiverEntry;
+  friend test::ReceiverSetStaticAssertTests;
 
   class ReceiverEntry : public ReceiverSetState::ReceiverState {
    public:
@@ -430,15 +487,19 @@ class ReceiverSetBase {
 
    private:
     ReceiverType receiver_;
-    Context context_;
+    NO_UNIQUE_ADDRESS Context context_;
   };
 
-  ReceiverId AddImpl(ImplPointerType impl,
-                     PendingType receiver,
-                     Context context,
-                     scoped_refptr<base::SequencedTaskRunner> task_runner,
-                     std::unique_ptr<MessageFilter> filter) {
+  std::optional<ReceiverId> AddImpl(
+      ImplPointerType impl,
+      PendingType receiver,
+      Context context,
+      scoped_refptr<base::SequencedTaskRunner> task_runner,
+      std::unique_ptr<MessageFilter> filter) {
     DCHECK(receiver.is_valid());
+    if (!internal::GetRuntimeFeature_ExpectEnabled<Interface>()) {
+      return std::nullopt;
+    }
     return state_.Add(std::make_unique<ReceiverEntry>(
                           std::move(impl), std::move(receiver),
                           std::move(context), std::move(task_runner)),

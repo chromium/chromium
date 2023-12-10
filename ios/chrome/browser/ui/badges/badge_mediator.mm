@@ -8,19 +8,19 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/metrics/user_metrics.h"
-#import "ios/chrome/browser/infobars/badge_state.h"
-#import "ios/chrome/browser/infobars/infobar_badge_tab_helper.h"
-#import "ios/chrome/browser/infobars/infobar_badge_tab_helper_delegate.h"
-#import "ios/chrome/browser/infobars/infobar_ios.h"
-#import "ios/chrome/browser/infobars/infobar_manager_impl.h"
-#import "ios/chrome/browser/infobars/infobar_metrics_recorder.h"
-#import "ios/chrome/browser/infobars/infobar_type.h"
-#import "ios/chrome/browser/infobars/overlays/default_infobar_overlay_request_factory.h"
-#import "ios/chrome/browser/infobars/overlays/infobar_overlay_request_inserter.h"
-#import "ios/chrome/browser/infobars/overlays/infobar_overlay_util.h"
-#import "ios/chrome/browser/overlays/public/overlay_presenter.h"
-#import "ios/chrome/browser/overlays/public/overlay_presenter_observer_bridge.h"
-#import "ios/chrome/browser/overlays/public/overlay_request_queue.h"
+#import "ios/chrome/browser/infobars/model/badge_state.h"
+#import "ios/chrome/browser/infobars/model/infobar_badge_tab_helper.h"
+#import "ios/chrome/browser/infobars/model/infobar_badge_tab_helper_delegate.h"
+#import "ios/chrome/browser/infobars/model/infobar_ios.h"
+#import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
+#import "ios/chrome/browser/infobars/model/infobar_metrics_recorder.h"
+#import "ios/chrome/browser/infobars/model/infobar_type.h"
+#import "ios/chrome/browser/infobars/model/overlays/default_infobar_overlay_request_factory.h"
+#import "ios/chrome/browser/infobars/model/overlays/infobar_overlay_request_inserter.h"
+#import "ios/chrome/browser/infobars/model/overlays/infobar_overlay_util.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_presenter.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_presenter_observer_bridge.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_request_queue.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
@@ -74,8 +74,7 @@ const char kInfobarOverflowBadgeShownUserAction[] =
 @property(nonatomic, strong, readonly) NSArray<id<BadgeItem>>* badges;
 
 // The correct badge type for permissions infobar.
-@property(nonatomic, assign, readonly)
-    BadgeType permissionsBadgeType API_AVAILABLE(ios(15.0));
+@property(nonatomic, assign, readonly) BadgeType permissionsBadgeType;
 
 @end
 
@@ -162,11 +161,9 @@ const char kInfobarOverflowBadgeShownUserAction[] =
         BadgeTypeForInfobarType(infobarTypeBadgeStatePair.first);
     // Update BadgeType for permissions to align with current permission states
     // of the web state.
-    if (@available(iOS 15.0, *)) {
-      if (infobarTypeBadgeStatePair.first ==
-          InfobarType::kInfobarTypePermissions) {
-        badgeType = self.permissionsBadgeType;
-      }
+    if (infobarTypeBadgeStatePair.first ==
+        InfobarType::kInfobarTypePermissions) {
+      badgeType = self.permissionsBadgeType;
     }
     BadgeTappableItem* item =
         [[BadgeTappableItem alloc] initWithBadgeType:badgeType];

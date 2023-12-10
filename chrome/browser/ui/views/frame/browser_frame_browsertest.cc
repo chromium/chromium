@@ -190,7 +190,7 @@ class BrowserFrameColorProviderTest : public BrowserFrameTest,
   }
 
   // Sets the `kUserColor` pref for the `profile`.
-  void SetUserColor(Profile* profile, absl::optional<SkColor> user_color) {
+  void SetUserColor(Profile* profile, std::optional<SkColor> user_color) {
     GetThemeService(profile)->SetUserColor(user_color);
   }
 
@@ -443,7 +443,7 @@ IN_PROC_BROWSER_TEST_P(BrowserFrameColorProviderTest,
   // Set the scheme_variant pref to kSystem. The browser should honor this pref.
   views::Widget* browser_frame = GetBrowserFrame(browser());
   SetBrowserColorVariant(profile(), BCV::kSystem);
-  browser_frame->GetNativeTheme()->set_scheme_variant(absl::nullopt);
+  browser_frame->GetNativeTheme()->set_scheme_variant(std::nullopt);
   EXPECT_FALSE(GetColorProviderKey(browser()).scheme_variant.has_value());
 
   // The browser should honor the browser overrides of the scheme variant pref
@@ -546,7 +546,7 @@ IN_PROC_BROWSER_TEST_P(BrowserFrameColorProviderTest,
       ui::ColorProviderKey::SchemeVariant::kVibrant);
 
   // Set the color in `ThemeService` to nullopt to indicate the Baseline theme.
-  SetUserColor(profile(), absl::nullopt);
+  SetUserColor(profile(), std::nullopt);
   // Prevent follow pref from overriding theme.
   SetFollowDevice(profile(), false);
 

@@ -30,6 +30,8 @@ import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/be
 import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.js';
 import {OOBE_UI_STATE, SCREEN_GAIA_SIGNIN} from '../../components/display_manager_types.js';
 
+import {getTemplate} from './sync_consent.html.js';
+
 
 /**
  * UI mode for the dialog.
@@ -100,7 +102,7 @@ class SyncConsentScreen extends SyncConsentScreenElementBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

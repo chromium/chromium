@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_GLOBAL_MEDIA_CONTROLS_PUBLIC_VIEWS_MEDIA_ITEM_UI_FOOTER_H_
 #define COMPONENTS_GLOBAL_MEDIA_CONTROLS_PUBLIC_VIEWS_MEDIA_ITEM_UI_FOOTER_H_
 
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 namespace global_media_controls {
@@ -13,7 +14,10 @@ namespace global_media_controls {
 // bottom of a MediaItemUI. Users of global media controls can create views that
 // extend this class that will be inserted into the MediaItemUI and receive
 // color updates.
-class MediaItemUIFooter : public views::View {
+class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIFooter
+    : public views::View {
+  METADATA_HEADER(MediaItemUIFooter, views::View)
+
  public:
   virtual void OnColorsChanged(SkColor foreground, SkColor background) = 0;
 };

@@ -9,12 +9,12 @@
 #include <utility>
 #include <vector>
 
+#include <optional>
 #include "base/containers/flat_map.h"
 #include "base/memory/ref_counted.h"
 #include "cc/paint/element_id.h"
 #include "cc/paint/paint_export.h"
 #include "cc/paint/paint_image.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "ui/gfx/geometry/size_f.h"
@@ -55,8 +55,8 @@ class CC_PAINT_EXPORT PaintWorkletInput
     bool operator!=(const PropertyKey& other) const;
     bool operator<(const PropertyKey&) const;
 
-    absl::optional<std::string> custom_property_name;
-    absl::optional<NativePropertyType> native_property_type;
+    std::optional<std::string> custom_property_name;
+    std::optional<NativePropertyType> native_property_type;
     ElementId element_id;
   };
 
@@ -74,8 +74,8 @@ class CC_PAINT_EXPORT PaintWorkletInput
     ~PropertyValue();
     bool has_value() const;
     void reset();
-    absl::optional<float> float_value;
-    absl::optional<SkColor4f> color_value;
+    std::optional<float> float_value;
+    std::optional<SkColor4f> color_value;
   };
 
   virtual gfx::SizeF GetSize() const = 0;
@@ -94,6 +94,9 @@ class CC_PAINT_EXPORT PaintWorkletInput
   // frames are colors.
   virtual bool KnownToBeOpaque() const;
 
+  virtual bool ValueChangeShouldCauseRepaint(const PropertyValue& val1,
+                                             const PropertyValue& val2) const;
+
  protected:
   friend class base::RefCountedThreadSafe<PaintWorkletInput>;
   virtual ~PaintWorkletInput() = default;
@@ -104,7 +107,7 @@ class CC_PAINT_EXPORT PaintWorkletInput
 // the PaintWorklet to enable efficient invalidation of dirty PaintWorklets.
 using PaintWorkletRecordMap =
     base::flat_map<scoped_refptr<const PaintWorkletInput>,
-                   std::pair<PaintImage::Id, absl::optional<PaintRecord>>>;
+                   std::pair<PaintImage::Id, std::optional<PaintRecord>>>;
 
 }  // namespace cc
 

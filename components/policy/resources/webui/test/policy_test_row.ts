@@ -79,8 +79,16 @@ export class PolicyTestRowElement extends CustomElement {
         break;
       case 'integer':
         this.inputType_ = Number;
+        const intInput = document.createElement('input');
+        intInput.type = 'number';
+        intInput.classList.add('value');
+        inputElementCell.appendChild(intInput);
+        break;
+      case 'number':
+        this.inputType_ = Number;
         const numInput = document.createElement('input');
         numInput.type = 'number';
+        numInput.step = 'any';
         numInput.classList.add('value');
         inputElementCell.appendChild(numInput);
         break;

@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_COOKIE_UTILS_H_
 #define CONTENT_BROWSER_RENDERER_HOST_COOKIE_UTILS_H_
 
+#include "content/browser/renderer_host/navigation_request.h"
 #include "services/network/public/mojom/cookie_access_observer.mojom.h"
 
 namespace content {
@@ -27,6 +28,7 @@ void SplitCookiesIntoAllowedAndBlocked(
 // TODO(crbug.com/977040): Remove when no longer needed.
 void EmitCookieWarningsAndMetrics(
     RenderFrameHostImpl* rfh,
+    NavigationRequest* navigation_request,
     const network::mojom::CookieAccessDetailsPtr& cookie_details);
 
 }  // namespace content

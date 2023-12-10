@@ -324,7 +324,7 @@ void InotifyReaderThreadDelegate::ThreadMain() {
     for (size_t i = 0; i < static_cast<size_t>(bytes_read);) {
       inotify_event* event = reinterpret_cast<inotify_event*>(&buffer[i]);
       size_t event_size = sizeof(inotify_event) + event->len;
-      DCHECK(i + event_size <= static_cast<size_t>(bytes_read));
+      DUMP_WILL_BE_CHECK_LE(i + event_size, static_cast<size_t>(bytes_read));
       g_inotify_reader.Get().OnInotifyEvent(event);
       i += event_size;
     }
@@ -440,7 +440,8 @@ bool InotifyReader::HasWatches() {
 FilePathWatcherImpl::FilePathWatcherImpl() = default;
 
 FilePathWatcherImpl::~FilePathWatcherImpl() {
-  DCHECK(!task_runner() || task_runner()->RunsTasksInCurrentSequence());
+  DUMP_WILL_BE_CHECK(!task_runner() ||
+                     task_runner()->RunsTasksInCurrentSequence());
 }
 
 void FilePathWatcherImpl::OnFilePathChanged(
@@ -449,9 +450,9 @@ void FilePathWatcherImpl::OnFilePathChanged(
     FilePathWatcher::ChangeInfo change_info,
     bool created,
     bool deleted) {
-  DCHECK(task_runner()->RunsTasksInCurrentSequence());
-  DCHECK(!watches_.empty());
-  DCHECK(HasValidWatchVector());
+  DUMP_WILL_BE_CHECK(task_runner()->RunsTasksInCurrentSequence());
+  DUMP_WILL_BE_CHECK(!watches_.empty());
+  DUMP_WILL_BE_CHECK(HasValidWatchVector());
 
   // Used below to avoid multiple recursive updates.
   bool did_update = false;
@@ -570,7 +571,7 @@ void FilePathWatcherImpl::OnFilePathChanged(
 }
 
 bool FilePathWatcherImpl::WouldExceedWatchLimit() const {
-  DCHECK(task_runner()->RunsTasksInCurrentSequence());
+  DUMP_WILL_BE_CHECK(task_runner()->RunsTasksInCurrentSequence());
 
   // `watches_` contains inotify watches of all dir components of `target_`.
   // `recursive_paths_by_watch_` contains inotify watches for sub dirs under
@@ -585,7 +586,7 @@ bool FilePathWatcherImpl::WouldExceedWatchLimit() const {
 }
 
 InotifyReader::WatcherEntry FilePathWatcherImpl::GetWatcherEntry() {
-  DCHECK(task_runner()->RunsTasksInCurrentSequence());
+  DUMP_WILL_BE_CHECK(task_runner()->RunsTasksInCurrentSequence());
   return {task_runner(), weak_factory_.GetWeakPtr()};
 }
 
@@ -612,7 +613,7 @@ bool FilePathWatcherImpl::WatchWithChangeInfo(
     const FilePath& path,
     const WatchOptions& options,
     const FilePathWatcher::CallbackWithChangeInfo& callback) {
-  DCHECK(target_.empty());
+  DUMP_WILL_BE_CHECK(target_.empty());
 
   set_task_runner(SequencedTaskRunner::GetCurrentDefault());
   callback_ = callback;
@@ -621,7 +622,7 @@ bool FilePathWatcherImpl::WatchWithChangeInfo(
   report_modified_path_ = options.report_modified_path;
 
   std::vector<FilePath::StringType> comps = target_.GetComponents();
-  DCHECK(!comps.empty());
+  DUMP_WILL_BE_CHECK(!comps.empty());
   for (size_t i = 1; i < comps.size(); ++i) {
     watches_.emplace_back(comps[i]);
   }
@@ -643,8 +644,8 @@ void FilePathWatcherImpl::Cancel() {
     return;
   }
 
-  DCHECK(task_runner()->RunsTasksInCurrentSequence());
-  DCHECK(!is_cancelled());
+  DUMP_WILL_BE_CHECK(task_runner()->RunsTasksInCurrentSequence());
+  DUMP_WILL_BE_CHECK(!is_cancelled());
 
   set_cancelled();
   callback_.Reset();
@@ -659,8 +660,8 @@ void FilePathWatcherImpl::Cancel() {
 bool FilePathWatcherImpl::UpdateWatches() {
   // Ensure this runs on the task_runner() exclusively in order to avoid
   // concurrency issues.
-  DCHECK(task_runner()->RunsTasksInCurrentSequence());
-  DCHECK(HasValidWatchVector());
+  DUMP_WILL_BE_CHECK(task_runner()->RunsTasksInCurrentSequence());
+  DUMP_WILL_BE_CHECK(HasValidWatchVector());
 
   // Walk the list of watches and update them as we go.
   FilePath path(FILE_PATH_LITERAL("/"));
@@ -692,7 +693,7 @@ bool FilePathWatcherImpl::UpdateWatches() {
 bool FilePathWatcherImpl::UpdateRecursiveWatches(
     InotifyReader::Watch fired_watch,
     bool is_dir) {
-  DCHECK(HasValidWatchVector());
+  DUMP_WILL_BE_CHECK(HasValidWatchVector());
 
   if (type_ != Type::kRecursive)
     return true;
@@ -743,13 +744,20 @@ bool FilePathWatcherImpl::UpdateRecursiveWatches(
     recursive_paths_by_watch_.erase(end_it->second);
   }
   recursive_watches_by_path_.erase(start_it, end_it);
+
+  // If `changed_dir` does not exist anymore, then there is no need to call
+  // UpdateRecursiveWatchesForPath().
+  if (!DirectoryExists(changed_dir)) {
+    return true;
+  }
+
   return UpdateRecursiveWatchesForPath(changed_dir);
 }
 
 bool FilePathWatcherImpl::UpdateRecursiveWatchesForPath(const FilePath& path) {
-  DCHECK_EQ(type_, Type::kRecursive);
-  DCHECK(!path.empty());
-  DCHECK(DirectoryExists(path));
+  DUMP_WILL_BE_CHECK_EQ(type_, Type::kRecursive);
+  DUMP_WILL_BE_CHECK(!path.empty());
+  DUMP_WILL_BE_CHECK(DirectoryExists(path));
 
   // Note: SHOW_SYM_LINKS exposes symlinks as symlinks, so they are ignored
   // rather than followed. Following symlinks can easily lead to the undesirable
@@ -759,19 +767,29 @@ bool FilePathWatcherImpl::UpdateRecursiveWatchesForPath(const FilePath& path) {
       FileEnumerator::DIRECTORIES | FileEnumerator::SHOW_SYM_LINKS);
   for (FilePath current = enumerator.Next(); !current.empty();
        current = enumerator.Next()) {
-    DCHECK(enumerator.GetInfo().IsDirectory());
+    DUMP_WILL_BE_CHECK(enumerator.GetInfo().IsDirectory());
 
+    // Check `recursive_watches_by_path_` as a heuristic to determine if this
+    // needs to be an add or update operation.
     if (!Contains(recursive_watches_by_path_, current)) {
-      // Add new watches.
+      // Try to add new watches.
       InotifyReader::Watch watch =
           g_inotify_reader.Get().AddWatch(current, this);
       if (watch == InotifyReader::kWatchLimitExceeded)
         return false;
+
+      // The `watch` returned by inotify already exists. This is actually an
+      // update operation.
+      auto it = recursive_paths_by_watch_.find(watch);
+      if (it != recursive_paths_by_watch_.end()) {
+        recursive_watches_by_path_.erase(it->second);
+        recursive_paths_by_watch_.erase(it);
+      }
       TrackWatchForRecursion(watch, current);
     } else {
       // Update existing watches.
       InotifyReader::Watch old_watch = recursive_watches_by_path_[current];
-      DCHECK_NE(InotifyReader::kInvalidWatch, old_watch);
+      DUMP_WILL_BE_CHECK_NE(InotifyReader::kInvalidWatch, old_watch);
       InotifyReader::Watch watch =
           g_inotify_reader.Get().AddWatch(current, this);
       if (watch == InotifyReader::kWatchLimitExceeded)
@@ -789,15 +807,15 @@ bool FilePathWatcherImpl::UpdateRecursiveWatchesForPath(const FilePath& path) {
 
 void FilePathWatcherImpl::TrackWatchForRecursion(InotifyReader::Watch watch,
                                                  const FilePath& path) {
-  DCHECK_EQ(type_, Type::kRecursive);
-  DCHECK(!path.empty());
-  DCHECK(target_.IsParent(path));
+  DUMP_WILL_BE_CHECK_EQ(type_, Type::kRecursive);
+  DUMP_WILL_BE_CHECK(!path.empty());
+  DUMP_WILL_BE_CHECK(target_.IsParent(path));
 
   if (watch == InotifyReader::kInvalidWatch)
     return;
 
-  DCHECK(!Contains(recursive_paths_by_watch_, watch));
-  DCHECK(!Contains(recursive_watches_by_path_, path));
+  DUMP_WILL_BE_CHECK(!Contains(recursive_paths_by_watch_, watch));
+  DUMP_WILL_BE_CHECK(!Contains(recursive_watches_by_path_, path));
   recursive_paths_by_watch_[watch] = path;
   recursive_watches_by_path_[path] = watch;
 }
@@ -819,12 +837,12 @@ bool FilePathWatcherImpl::AddWatchForBrokenSymlink(const FilePath& path,
   // Fuchsia does not support symbolic links.
   return false;
 #else   // BUILDFLAG(IS_FUCHSIA)
-  DCHECK_EQ(InotifyReader::kInvalidWatch, watch_entry->watch);
+  DUMP_WILL_BE_CHECK_EQ(InotifyReader::kInvalidWatch, watch_entry->watch);
   absl::optional<FilePath> link = ReadSymbolicLinkAbsolute(path);
   if (!link) {
     return true;
   }
-  DCHECK(link->IsAbsolute());
+  DUMP_WILL_BE_CHECK(link->IsAbsolute());
 
   // Try watching symlink target directory. If the link target is "/", then we
   // shouldn't get here in normal situations and if we do, we'd watch "/" for
@@ -881,7 +899,7 @@ size_t GetMaxNumberOfInotifyWatches() {
 
 ScopedMaxNumberOfInotifyWatchesOverrideForTest::
     ScopedMaxNumberOfInotifyWatchesOverrideForTest(size_t override_max) {
-  DCHECK_EQ(g_override_max_inotify_watches, 0u);
+  DUMP_WILL_BE_CHECK_EQ(g_override_max_inotify_watches, 0u);
   g_override_max_inotify_watches = override_max;
 }
 

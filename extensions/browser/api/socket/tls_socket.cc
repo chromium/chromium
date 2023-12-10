@@ -52,8 +52,8 @@ void TLSSocket::Connect(const net::AddressList& address,
 void TLSSocket::Disconnect(bool socket_destroying) {
   is_connected_ = false;
   tls_socket_.reset();
-  local_addr_ = absl::nullopt;
-  peer_addr_ = absl::nullopt;
+  local_addr_ = std::nullopt;
+  peer_addr_ = std::nullopt;
   mojo_data_pump_ = nullptr;
   // TODO(devlin): Should we do this for all callbacks?
   if (read_callback_) {

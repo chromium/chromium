@@ -22,9 +22,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
 
-/**
- * A fragment to show WebView SafeMode status.
- */
+/** A fragment to show WebView SafeMode status. */
 public class SafeModeFragment extends DevUiBaseFragment {
     private Context mContext;
     private TextView mSafeModeState;
@@ -63,15 +61,17 @@ public class SafeModeFragment extends DevUiBaseFragment {
         mActionsContainer.setVisibility(safeModeEnabled ? View.VISIBLE : View.INVISIBLE);
 
         if (safeModeEnabled) {
-            safeModeInfo.getActivationTimeForUI(activationTime -> {
-                mSafeModeState.setText(
-                        String.format(Locale.US, "Enabled on %s", new Date(activationTime)));
-            });
+            safeModeInfo.getActivationTimeForUI(
+                    activationTime -> {
+                        mSafeModeState.setText(
+                                String.format(
+                                        Locale.US, "Enabled on %s", new Date(activationTime)));
+                    });
 
-            List<SafeModeActionInfo> actions = safeModeInfo.getActionsForUI()
-                                                       .stream()
-                                                       .map(SafeModeActionInfo::new)
-                                                       .collect(Collectors.toList());
+            List<SafeModeActionInfo> actions =
+                    safeModeInfo.getActionsForUI().stream()
+                            .map(SafeModeActionInfo::new)
+                            .collect(Collectors.toList());
             mActionsListView.setAdapter(new ActionsListAdapter(actions));
         }
     }
@@ -86,8 +86,9 @@ public class SafeModeFragment extends DevUiBaseFragment {
             // If the the old view is already created then reuse it, else create a new one by layout
             // inflation.
             if (view == null) {
-                view = getLayoutInflater().inflate(
-                        R.layout.safe_mode_actions_list_item, null, true);
+                view =
+                        getLayoutInflater()
+                                .inflate(R.layout.safe_mode_actions_list_item, null, true);
             }
             SafeModeActionInfo item = getItem(position);
             TextView actionId = view.findViewById(R.id.action_id_textview);

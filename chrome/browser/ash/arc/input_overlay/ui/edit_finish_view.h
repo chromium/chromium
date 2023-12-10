@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/reposition_controller.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/events/event.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/views/view.h"
@@ -36,6 +37,8 @@ class DisplayOverlayController;
 // |        Cancel        |
 // +----------------------+
 class EditFinishView : public views::View {
+  METADATA_HEADER(EditFinishView, views::View)
+
  public:
   static EditFinishView* BuildView(
       DisplayOverlayController* display_overlay_controller,

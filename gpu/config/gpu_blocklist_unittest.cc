@@ -58,8 +58,8 @@ class GpuBlocklistTest : public testing::Test {
         0,        // exceptions count
         nullptr,  // exceptions
     }};
-    GpuControlListData data(1, kTestEntries);
-    std::unique_ptr<GpuBlocklist> blocklist = GpuBlocklist::Create(data);
+    std::unique_ptr<GpuBlocklist> blocklist =
+        GpuBlocklist::Create(kTestEntries);
     std::set<int> type =
         blocklist->MakeDecision(GpuBlocklist::kOsMacosx, "10.12.3", gpu_info());
     EXPECT_EQ(1u, type.size());
@@ -96,7 +96,8 @@ GPU_BLOCKLIST_FEATURE_TEST(AcceleratedVideoDecode,
 GPU_BLOCKLIST_FEATURE_TEST(AcceleratedVideoEncode,
                            GPU_FEATURE_TYPE_ACCELERATED_VIDEO_ENCODE)
 
-GPU_BLOCKLIST_FEATURE_TEST(GpuRasterization, GPU_FEATURE_TYPE_GPU_RASTERIZATION)
+GPU_BLOCKLIST_FEATURE_TEST(GpuRasterization,
+                           GPU_FEATURE_TYPE_GPU_TILE_RASTERIZATION)
 
 GPU_BLOCKLIST_FEATURE_TEST(WebGL2, GPU_FEATURE_TYPE_ACCELERATED_WEBGL2)
 

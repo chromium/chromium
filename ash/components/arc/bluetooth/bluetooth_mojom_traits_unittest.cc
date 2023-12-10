@@ -105,21 +105,21 @@ TEST(BluetoothStructTraitsTest, DeserializeBluetoothAdvertisement) {
   EXPECT_EQ(advertisement->type(),
             device::BluetoothAdvertisement::ADVERTISEMENT_TYPE_PERIPHERAL);
 
-  absl::optional<device::BluetoothAdvertisement::UUIDList> converted_uuids =
+  std::optional<device::BluetoothAdvertisement::UUIDList> converted_uuids =
       advertisement->service_uuids();
   EXPECT_EQ(converted_uuids->size(), 2U);
   EXPECT_EQ(converted_uuids->at(0), kUuid16Str);
   EXPECT_EQ(converted_uuids->at(1), kUuidStr);
 
-  absl::optional<device::BluetoothAdvertisement::ServiceData>
-      converted_service = advertisement->service_data();
+  std::optional<device::BluetoothAdvertisement::ServiceData> converted_service =
+      advertisement->service_data();
   EXPECT_EQ(converted_service->size(), 1U);
   EXPECT_EQ(converted_service->begin()->first, kUuid16Str);
   for (size_t i = 0; i < std::size(kServiceData); i++) {
     EXPECT_EQ(kServiceData[i], converted_service->begin()->second[i]);
   }
 
-  absl::optional<device::BluetoothAdvertisement::ManufacturerData>
+  std::optional<device::BluetoothAdvertisement::ManufacturerData>
       converted_manufacturer = advertisement->manufacturer_data();
   EXPECT_EQ(converted_manufacturer->size(), 1U);
   uint16_t cic = converted_manufacturer->begin()->first;

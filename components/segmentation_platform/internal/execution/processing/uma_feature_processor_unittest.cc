@@ -10,6 +10,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/run_loop.h"
 #include "base/test/simple_test_clock.h"
@@ -87,7 +88,7 @@ class UmaFeatureProcessorTest : public testing::Test {
             leveldb_proto::ProtoDbType::SIGNAL_DATABASE,
             temp_dir_.GetPath().Append(FILE_PATH_LITERAL("signaldb")),
             task_env_.GetMainThreadTaskRunner()),
-        &clock_);
+        &clock_, task_env_.GetMainThreadTaskRunner());
 
     base::RunLoop wait_for_init;
     signal_database_->Initialize(base::BindOnce(
@@ -169,26 +170,25 @@ class UmaFeatureProcessorTest : public testing::Test {
 
     base::RunLoop wait_to_process;
     auto feature_state = std::make_unique<FeatureProcessorState>(
-        clock_.Now(), base::Time(), base::Days(1),
-        proto::SegmentId::CROSS_DEVICE_USER_SEGMENT, nullptr,
+        FeatureProcessorStateId::FromUnsafeValue(1), clock_.Now(), base::Time(),
+        base::Days(1), proto::SegmentId::CROSS_DEVICE_USER_SEGMENT, nullptr,
         base::DoNothing());
     uma_processor->Process(
-        std::move(feature_state),
-        base::BindOnce(
-            [](const std::vector<float>& expected,
-               base::OnceClosure quit_closure,
-               std::unique_ptr<FeatureProcessorState> feature_processor_state,
-               QueryProcessor::IndexedTensors result) {
-              EXPECT_FALSE(feature_processor_state->error());
-              ASSERT_EQ(expected.size(), result.size());
-              for (unsigned i = 0; i < expected.size(); ++i) {
-                ASSERT_EQ(result[i].size(), 1u);
-                EXPECT_NEAR(result[i][0].float_val, expected[i], 0.001);
-              }
-              std::move(quit_closure).Run();
-            },
-            expected, wait_to_process.QuitClosure()));
+        *feature_state, base::BindOnce(
+                            [](const std::vector<float>& expected,
+                               base::OnceClosure quit_closure,
+                               QueryProcessor::IndexedTensors result) {
+                              ASSERT_EQ(expected.size(), result.size());
+                              for (unsigned i = 0; i < expected.size(); ++i) {
+                                ASSERT_EQ(result[i].size(), 1u);
+                                EXPECT_NEAR(result[i][0].float_val, expected[i],
+                                            0.001);
+                              }
+                              std::move(quit_closure).Run();
+                            },
+                            expected, wait_to_process.QuitClosure()));
     wait_to_process.Run();
+    EXPECT_FALSE(feature_state->error());
   }
 
  protected:

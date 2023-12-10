@@ -43,8 +43,7 @@ public class ConnectivityTask {
      * The key for the data describing the current connection type.
      * This string is user visible.
      */
-    @VisibleForTesting
-    static final String CONNECTION_TYPE_KEY = "Connection type";
+    @VisibleForTesting static final String CONNECTION_TYPE_KEY = "Connection type";
 
     /**
      * The key for the data describing whether Chrome was able to successfully connect to the
@@ -135,26 +134,23 @@ public class ConnectivityTask {
         }
     }
 
-    /**
-     * ConnectivityResult is the callback for when the result of a connectivity check is ready.
-     */
+    /** ConnectivityResult is the callback for when the result of a connectivity check is ready. */
     interface ConnectivityResult {
-        /**
-         * Called when the FeedbackData is ready.
-         */
+        /** Called when the FeedbackData is ready. */
         void onResult(FeedbackData feedbackData);
     }
 
-    /**
-     * FeedbackData contains the set of information that is to be included in a feedback report.
-     */
+    /** FeedbackData contains the set of information that is to be included in a feedback report. */
     static final class FeedbackData {
         private final Map<Integer, Integer> mConnections;
         private final int mTimeoutMs;
         private final long mElapsedTimeMs;
         private final int mConnectionType;
 
-        FeedbackData(Map<Integer, Integer> connections, int timeoutMs, long elapsedTimeMs,
+        FeedbackData(
+                Map<Integer, Integer> connections,
+                int timeoutMs,
+                long elapsedTimeMs,
                 int connectionType) {
             mConnections = connections;
             mTimeoutMs = timeoutMs;
@@ -193,7 +189,8 @@ public class ConnectivityTask {
         Map<String, String> toMap() {
             Map<String, String> map = new HashMap<>();
             for (Map.Entry<Integer, Integer> entry : mConnections.entrySet()) {
-                map.put(getHumanReadableType(entry.getKey()),
+                map.put(
+                        getHumanReadableType(entry.getKey()),
                         getHumanReadableResult(entry.getValue()));
             }
             map.put(CONNECTION_CHECK_ELAPSED_KEY, String.valueOf(mElapsedTimeMs));
@@ -202,9 +199,7 @@ public class ConnectivityTask {
         }
     }
 
-    /**
-     * The type of network stack and connectivity check this result is about.
-     */
+    /** The type of network stack and connectivity check this result is about. */
     @IntDef({Type.CHROME_HTTP, Type.CHROME_HTTPS, Type.SYSTEM_HTTP, Type.SYSTEM_HTTPS})
     @Retention(RetentionPolicy.SOURCE)
     public @interface Type {
@@ -252,7 +247,11 @@ public class ConnectivityTask {
         @Override
         public void onResult(int result) {
             ThreadUtils.assertOnUiThread();
-            Log.v(TAG, "Got result for " + getHumanReadableType(mType) + ": result = "
+            Log.v(
+                    TAG,
+                    "Got result for "
+                            + getHumanReadableType(mType)
+                            + ": result = "
                             + getHumanReadableResult(result));
             mResult.put(mType, result);
             if (isDone()) postCallbackResult();
@@ -260,12 +259,14 @@ public class ConnectivityTask {
 
         private void postCallbackResult() {
             if (mCallback == null) return;
-            PostTask.postTask(TaskTraits.UI_DEFAULT, new Runnable() {
-                @Override
-                public void run() {
-                    mCallback.onResult(get());
-                }
-            });
+            PostTask.postTask(
+                    TaskTraits.UI_DEFAULT,
+                    new Runnable() {
+                        @Override
+                        public void run() {
+                            mCallback.onResult(get());
+                        }
+                    });
         }
     }
 

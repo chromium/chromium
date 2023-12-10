@@ -95,7 +95,8 @@ class NATIVE_THEME_EXPORT NativeThemeMac : public NativeThemeBase {
   friend class base::NoDestructor<NativeThemeMac>;
   static NativeThemeMac* instance();
 
-  NativeThemeMac(bool configure_web_instance, bool should_only_use_dark_colors);
+  NativeThemeMac(bool should_only_use_dark_colors,
+                 NativeTheme* theme_to_update = nullptr);
   ~NativeThemeMac() override;
 
  private:
@@ -124,8 +125,6 @@ class NATIVE_THEME_EXPORT NativeThemeMac : public NativeThemeBase {
 
   void InitializeDarkModeStateAndObserver();
 
-  void ConfigureWebInstance() override;
-
   enum ScrollbarPart {
     kThumb,
     kTrack,
@@ -151,11 +150,6 @@ class NATIVE_THEME_EXPORT NativeThemeMac : public NativeThemeBase {
 
   NativeThemeEffectiveAppearanceObserver* __strong appearance_observer_;
   id __strong display_accessibility_notification_token_;
-
-  // Used to notify the web native theme of changes to dark mode and high
-  // contrast.
-  std::unique_ptr<NativeTheme::ColorSchemeNativeThemeObserver>
-      color_scheme_observer_;
 };
 
 // Mac implementation of native theme support for web controls.

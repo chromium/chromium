@@ -7,6 +7,7 @@
 #include <sys/stat.h>
 
 #include <map>
+#include <optional>
 
 #include "base/containers/contains.h"
 #include "base/files/file_path.h"
@@ -25,7 +26,6 @@
 #include "components/sync/base/storage_type.h"
 #include "components/sync/model/blocking_model_type_store_impl.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/leveldatabase/env_chromium.h"
 #include "third_party/leveldatabase/src/include/leveldb/write_batch.h"
 
@@ -882,7 +882,7 @@ TEST(BrowserDataMigratorUtilTest, MigratePreferencesContents) {
   auto contents = MigratePreferencesContents(original_contents);
   EXPECT_TRUE(contents.has_value());
 
-  absl::optional<base::Value> ash_root = base::JSONReader::Read(contents->ash);
+  std::optional<base::Value> ash_root = base::JSONReader::Read(contents->ash);
   EXPECT_TRUE(ash_root.has_value());
   base::Value::Dict* ash_root_dict = ash_root->GetIfDict();
   EXPECT_NE(nullptr, ash_root_dict);
@@ -902,7 +902,7 @@ TEST(BrowserDataMigratorUtilTest, MigratePreferencesContents) {
   EXPECT_EQ(kExtensionsAshOnly[0], (*ash_extension_list)[0].GetString());
   EXPECT_EQ(GetBothChromesExtensionId(), (*ash_extension_list)[1].GetString());
 
-  absl::optional<base::Value> lacros_root =
+  std::optional<base::Value> lacros_root =
       base::JSONReader::Read(contents->lacros);
   EXPECT_TRUE(lacros_root.has_value());
   base::Value::Dict* lacros_root_dict = lacros_root->GetIfDict();
@@ -955,7 +955,7 @@ TEST(BrowserDataMigratorUtilTest, MigratePreferences) {
   EXPECT_TRUE(
       base::ReadFileToString(lacros_preferences_path, &lacros_contents));
 
-  absl::optional<base::Value> ash_root = base::JSONReader::Read(ash_contents);
+  std::optional<base::Value> ash_root = base::JSONReader::Read(ash_contents);
   EXPECT_TRUE(ash_root.has_value());
   base::Value::Dict* ash_root_dict = ash_root->GetIfDict();
   EXPECT_NE(nullptr, ash_root_dict);
@@ -965,7 +965,7 @@ TEST(BrowserDataMigratorUtilTest, MigratePreferences) {
             *ash_root_dict->FindStringByDottedPath(kAshOnlyPreferencesKeys[0]));
   EXPECT_EQ("test3", *ash_root_dict->FindStringByDottedPath("unrelated.key"));
 
-  absl::optional<base::Value> lacros_root =
+  std::optional<base::Value> lacros_root =
       base::JSONReader::Read(lacros_contents);
   EXPECT_TRUE(lacros_root.has_value());
   base::Value::Dict* lacros_root_dict = lacros_root->GetIfDict();
@@ -977,10 +977,10 @@ TEST(BrowserDataMigratorUtilTest, MigratePreferences) {
   EXPECT_EQ("test3",
             *lacros_root_dict->FindStringByDottedPath("unrelated.key"));
 
-  absl::optional<bool> sync_feature_setup_completed =
+  std::optional<bool> sync_feature_setup_completed =
       lacros_root_dict->FindBoolByDottedPath(
           kSyncInitialSyncFeatureSetupCompletePrefName);
-  ASSERT_NE(absl::nullopt, sync_feature_setup_completed);
+  ASSERT_NE(std::nullopt, sync_feature_setup_completed);
   EXPECT_TRUE(*sync_feature_setup_completed);
 }
 

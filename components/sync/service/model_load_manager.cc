@@ -159,18 +159,13 @@ void ModelLoadManager::LoadDesiredTypes() {
     auto model_load_callback = base::BindRepeating(
         &ModelLoadManager::ModelLoadCallback, weak_ptr_factory_.GetWeakPtr());
     if (dtc->state() == DataTypeController::NOT_RUNNING) {
-      DCHECK(!loaded_types_.Has(dtc->type()));
-      dtc->LoadModels(*configure_context_, std::move(model_load_callback));
+      LoadModelsForType(dtc);
     } else if (dtc->state() == DataTypeController::STOPPING) {
       // If the datatype is already STOPPING, we wait for it to stop before
       // starting it up again.
       auto stop_callback =
-          base::BindRepeating(&DataTypeController::LoadModels,
-                              // This should be safe since the stop callback is
-                              // called from the DataTypeController.
-                              base::Unretained(dtc), *configure_context_,
-                              std::move(model_load_callback));
-      DCHECK(!loaded_types_.Has(dtc->type()));
+          base::BindRepeating(&ModelLoadManager::LoadModelsForType,
+                              weak_ptr_factory_.GetWeakPtr(), dtc);
       dtc->Stop(SyncStopMetadataFate::KEEP_METADATA, std::move(stop_callback));
     }
   }
@@ -276,6 +271,23 @@ void ModelLoadManager::OnLoadModelsTimeout() {
   // Stop waiting for the data types to load and go ahead with connecting the
   // loaded types.
   NotifyDelegateIfReadyForConfigure();
+}
+
+void ModelLoadManager::LoadModelsForType(DataTypeController* dtc) {
+  // FAILED is possible if the type was STOPPING but then encountered an error
+  // before the type actually stopped.
+  if (dtc->state() == DataTypeController::FAILED) {
+    ModelLoadCallback(dtc->type(),
+                      SyncError(FROM_HERE, SyncError::DATATYPE_ERROR,
+                                "Data type in FAILED state.", dtc->type()));
+    return;
+  }
+
+  CHECK_EQ(dtc->state(), DataTypeController::NOT_RUNNING);
+  CHECK(!loaded_types_.Has(dtc->type()));
+  dtc->LoadModels(*configure_context_,
+                  base::BindRepeating(&ModelLoadManager::ModelLoadCallback,
+                                      weak_ptr_factory_.GetWeakPtr()));
 }
 
 }  // namespace syncer

@@ -111,6 +111,17 @@ class ComponentInstallerPolicy {
   // ^[-_a-zA-Z0-9]{1,256}$ and valid values the value part of an attribute
   // match ^[-.,;+_=$a-zA-Z0-9]{0,256}$ .
   virtual update_client::InstallerAttributes GetInstallerAttributes() const = 0;
+
+  // Returns true if the component allows cached copies for differential
+  // updates. Defaults to |true|.
+  // Differential updates are provided as patches to CRX files. Thus, an
+  // unextracted CRX file is maintained by default in a cache in addition to the
+  // installation of the component.
+  // Existing cache entries will be removed once the component updates.
+  // If the content of the component is never expected to diff well, or the
+  // storage overhead is valued higher than the cost of performing a full update
+  // at the expected cadence, disabling cached copies is a reasonable choice.
+  virtual bool AllowCachedCopies() const;
 };
 
 // Defines the installer for Chrome components. The behavior of this class is
@@ -159,7 +170,7 @@ class ComponentInstaller final : public update_client::CrxInstaller {
 
   bool GetInstalledFile(const std::string& file,
                         base::FilePath* installed_file) override;
-  // Only user-level component installations can be uninstalled.
+  // Components bundled with installations of Chrome cannot be uninstalled.
   bool Uninstall() override;
 
  private:

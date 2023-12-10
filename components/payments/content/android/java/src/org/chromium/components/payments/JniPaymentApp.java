@@ -42,8 +42,13 @@ public class JniPaymentApp extends PaymentApp {
     private InstrumentDetailsCallback mInvokeCallback;
 
     @CalledByNative
-    private JniPaymentApp(String id, String label, String sublabel, Bitmap icon,
-            @PaymentAppType int paymentAppType, long nativeObject) {
+    private JniPaymentApp(
+            String id,
+            String label,
+            String sublabel,
+            Bitmap icon,
+            @PaymentAppType int paymentAppType,
+            long nativeObject) {
         super(id, label, sublabel, new BitmapDrawable(icon));
         mPaymentAppType = paymentAppType;
         mNativeObject = nativeObject;
@@ -51,44 +56,69 @@ public class JniPaymentApp extends PaymentApp {
 
     @CalledByNative
     public void onAbortResult(boolean aborted) {
-        mHandler.post(() -> {
-            if (mAbortCallback == null) return;
-            mAbortCallback.onInstrumentAbortResult(aborted);
-            mAbortCallback = null;
-        });
+        mHandler.post(
+                () -> {
+                    if (mAbortCallback == null) return;
+                    mAbortCallback.onInstrumentAbortResult(aborted);
+                    mAbortCallback = null;
+                });
     }
 
     @CalledByNative
     public void onInvokeResult(String methodName, String stringifiedDetails, PayerData payerData) {
-        mHandler.post(() -> {
-            if (mInvokeCallback == null) return;
-            mInvokeCallback.onInstrumentDetailsReady(methodName, stringifiedDetails, payerData);
-            mInvokeCallback = null;
-        });
+        mHandler.post(
+                () -> {
+                    if (mInvokeCallback == null) return;
+                    mInvokeCallback.onInstrumentDetailsReady(
+                            methodName, stringifiedDetails, payerData);
+                    mInvokeCallback = null;
+                });
     }
 
     @CalledByNative
     public void onInvokeError(String errorMessage) {
-        mHandler.post(() -> {
-            if (mInvokeCallback == null) return;
-            mInvokeCallback.onInstrumentDetailsError(errorMessage);
-            mInvokeCallback = null;
-        });
+        mHandler.post(
+                () -> {
+                    if (mInvokeCallback == null) return;
+                    mInvokeCallback.onInstrumentDetailsError(errorMessage);
+                    mInvokeCallback = null;
+                });
     }
 
     @CalledByNative
-    private static PayerData createPayerData(String payerName, String payerPhone, String payerEmail,
-            Address shippingAddress, String selectedShippingOptionId) {
+    private static PayerData createPayerData(
+            String payerName,
+            String payerPhone,
+            String payerEmail,
+            Address shippingAddress,
+            String selectedShippingOptionId) {
         return new PayerData(
                 payerName, payerPhone, payerEmail, shippingAddress, selectedShippingOptionId);
     }
 
     @CalledByNative
-    private static Address createShippingAddress(String country, String[] addressLine,
-            String region, String city, String dependentLocality, String postalCode,
-            String sortingCode, String organization, String recipient, String phone) {
-        return new Address(country, addressLine, region, city, dependentLocality, postalCode,
-                sortingCode, organization, recipient, phone);
+    private static Address createShippingAddress(
+            String country,
+            String[] addressLine,
+            String region,
+            String city,
+            String dependentLocality,
+            String postalCode,
+            String sortingCode,
+            String organization,
+            String recipient,
+            String phone) {
+        return new Address(
+                country,
+                addressLine,
+                region,
+                city,
+                dependentLocality,
+                postalCode,
+                sortingCode,
+                organization,
+                recipient,
+                phone);
     }
 
     @Override
@@ -99,8 +129,9 @@ public class JniPaymentApp extends PaymentApp {
 
     @Override
     public boolean isValidForPaymentMethodData(String method, @Nullable PaymentMethodData data) {
-        return JniPaymentAppJni.get().isValidForPaymentMethodData(
-                mNativeObject, method, data != null ? data.serialize() : null);
+        return JniPaymentAppJni.get()
+                .isValidForPaymentMethodData(
+                        mNativeObject, method, data != null ? data.serialize() : null);
     }
 
     @Override
@@ -134,13 +165,21 @@ public class JniPaymentApp extends PaymentApp {
     }
 
     @Override
-    public void invokePaymentApp(String id, String merchantName, String origin, String iframeOrigin,
-            @Nullable byte[][] certificateChain, Map<String, PaymentMethodData> methodDataMap,
-            PaymentItem total, List<PaymentItem> displayItems,
-            Map<String, PaymentDetailsModifier> modifiers, PaymentOptions paymentOptions,
-            List<PaymentShippingOption> shippingOptions, InstrumentDetailsCallback callback) {
+    public void invokePaymentApp(
+            String id,
+            String merchantName,
+            String origin,
+            String iframeOrigin,
+            @Nullable byte[][] certificateChain,
+            Map<String, PaymentMethodData> methodDataMap,
+            PaymentItem total,
+            List<PaymentItem> displayItems,
+            Map<String, PaymentDetailsModifier> modifiers,
+            PaymentOptions paymentOptions,
+            List<PaymentShippingOption> shippingOptions,
+            InstrumentDetailsCallback callback) {
         mInvokeCallback = callback;
-        JniPaymentAppJni.get().invokePaymentApp(mNativeObject, /*callback=*/this);
+        JniPaymentAppJni.get().invokePaymentApp(mNativeObject, /* callback= */ this);
     }
 
     @Override
@@ -173,8 +212,10 @@ public class JniPaymentApp extends PaymentApp {
     @Override
     @Nullable
     public Set<String> getApplicationIdentifiersThatHideThisApp() {
-        return new HashSet<>(Arrays.asList(
-                JniPaymentAppJni.get().getApplicationIdentifiersThatHideThisApp(mNativeObject)));
+        return new HashSet<>(
+                Arrays.asList(
+                        JniPaymentAppJni.get()
+                                .getApplicationIdentifiersThatHideThisApp(mNativeObject)));
     }
 
     @Override
@@ -207,32 +248,51 @@ public class JniPaymentApp extends PaymentApp {
 
     @Override
     public PaymentResponse setAppSpecificResponseFields(PaymentResponse response) {
-        byte[] byteResult = JniPaymentAppJni.get().setAppSpecificResponseFields(
-                mNativeObject, response.serialize());
+        byte[] byteResult =
+                JniPaymentAppJni.get()
+                        .setAppSpecificResponseFields(mNativeObject, response.serialize());
         return PaymentResponse.deserialize(ByteBuffer.wrap(byteResult));
     }
 
     @NativeMethods
     interface Natives {
         String[] getInstrumentMethodNames(long nativeJniPaymentApp);
+
         boolean isValidForPaymentMethodData(
                 long nativeJniPaymentApp, String method, ByteBuffer dataByteBuffer);
+
         boolean handlesShippingAddress(long nativeJniPaymentApp);
+
         boolean handlesPayerName(long nativeJniPaymentApp);
+
         boolean handlesPayerEmail(long nativeJniPaymentApp);
+
         boolean handlesPayerPhone(long nativeJniPaymentApp);
+
         boolean hasEnrolledInstrument(long nativeJniPaymentApp);
+
         boolean canPreselect(long nativeJniPaymentApp);
+
         void invokePaymentApp(long nativeJniPaymentApp, JniPaymentApp callback);
+
         void updateWith(long nativeJniPaymentApp, ByteBuffer responseByteBuffer);
+
         void onPaymentDetailsNotUpdated(long nativeJniPaymentApp);
+
         boolean isWaitingForPaymentDetailsUpdate(long nativeJniPaymentApp);
+
         void abortPaymentApp(long nativeJniPaymentApp, JniPaymentApp callback);
+
         String getApplicationIdentifierToHide(long nativeJniPaymentApp);
+
         String[] getApplicationIdentifiersThatHideThisApp(long nativeJniPaymentApp);
+
         long getUkmSourceId(long nativeJniPaymentApp);
+
         void setPaymentHandlerHost(long nativeJniPaymentApp, PaymentHandlerHost paymentHandlerHost);
+
         void freeNativeObject(long nativeJniPaymentApp);
+
         byte[] setAppSpecificResponseFields(long nativeJniPaymentApp, ByteBuffer paymentResponse);
     }
 }

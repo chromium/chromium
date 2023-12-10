@@ -132,7 +132,8 @@ class CONTENT_EXPORT RenderWidgetHostViewMac
   void UpdateCursor(const ui::Cursor& cursor) override;
   void DisplayCursor(const ui::Cursor& cursor) override;
   CursorManager* GetCursorManager() override;
-  void DidNavigateMainFramePreCommit() override;
+  void OnOldViewDidNavigatePreCommit() override;
+  void OnNewViewDidNavigatePostCommit() override;
   void DidEnterBackForwardCache() override;
   void SetIsLoading(bool is_loading) override;
   void RenderProcessGone() override;
@@ -194,6 +195,7 @@ class CONTENT_EXPORT RenderWidgetHostViewMac
   std::unique_ptr<SyntheticGestureTarget> CreateSyntheticGestureTarget()
       override;
 
+  void UpdateFrameSinkIdRegistration() override;
   const viz::FrameSinkId& GetFrameSinkId() const override;
   const viz::LocalSurfaceId& GetLocalSurfaceId() const override;
   // Returns true when we can hit test input events with location data to be

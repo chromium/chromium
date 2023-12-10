@@ -41,8 +41,7 @@ public class FeedSwipeRefreshLayout extends SwipeRefreshLayout implements Scroll
     private static final int SPINNER_OFFSET_FROM_BOTTOM = 100;
 
     private final Activity mActivity;
-    @IdRes
-    private final int mAnchorViewId;
+    @IdRes private final int mAnchorViewId;
     private View mTarget; // the target of the gesture.
     private final int mTouchSlop;
     private final ObserverList<SwipeRefreshLayout.OnRefreshListener> mRefreshListeners =
@@ -67,17 +66,21 @@ public class FeedSwipeRefreshLayout extends SwipeRefreshLayout implements Scroll
         instance.setColorSchemeColors(SemanticColorUtils.getDefaultControlColorActive(activity));
         instance.setEnabled(false);
         final DisplayMetrics metrics = activity.getResources().getDisplayMetrics();
-        instance.setProgressViewOffset(false, (int) (SPINNER_START_OFFSET * metrics.density),
+        instance.setProgressViewOffset(
+                false,
+                (int) (SPINNER_START_OFFSET * metrics.density),
                 (int) (SPINNER_END_OFFSET * metrics.density));
-        instance.addOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                instance.setAccessibilityLiveRegion(ACCESSIBILITY_LIVE_REGION_ASSERTIVE);
-                instance.setContentDescription(
-                        activity.getResources().getString(R.string.accessibility_swipe_refresh));
-                RecordUserAction.record("MobilePullGestureReloadNTP");
-            }
-        });
+        instance.addOnRefreshListener(
+                new SwipeRefreshLayout.OnRefreshListener() {
+                    @Override
+                    public void onRefresh() {
+                        instance.setAccessibilityLiveRegion(ACCESSIBILITY_LIVE_REGION_ASSERTIVE);
+                        instance.setContentDescription(
+                                activity.getResources()
+                                        .getString(R.string.accessibility_swipe_refresh));
+                        RecordUserAction.record("MobilePullGestureReloadNTP");
+                    }
+                });
         return instance;
     }
 
@@ -87,14 +90,15 @@ public class FeedSwipeRefreshLayout extends SwipeRefreshLayout implements Scroll
         mAnchorViewId = anchorViewId;
         mTouchSlop = ViewConfiguration.get(activity).getScaledTouchSlop();
 
-        setOnRefreshListener(new OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                for (OnRefreshListener listener : mRefreshListeners) {
-                    listener.onRefresh();
-                }
-            }
-        });
+        setOnRefreshListener(
+                new OnRefreshListener() {
+                    @Override
+                    public void onRefresh() {
+                        for (OnRefreshListener listener : mRefreshListeners) {
+                            listener.onRefresh();
+                        }
+                    }
+                });
     }
 
     /** Shows an IPH. */
@@ -104,13 +108,16 @@ public class FeedSwipeRefreshLayout extends SwipeRefreshLayout implements Scroll
         // Only toolbar_container view appears in both NTP and start surface.
         View toolbarView = contentContainer.findViewById(mAnchorViewId);
         if (toolbarView == null) return;
-        helper.requestShowIPH(new IPHCommandBuilder(getContext().getResources(),
-                FeatureConstants.FEED_SWIPE_REFRESH_FEATURE, R.string.feed_swipe_refresh_iph,
-                R.string.accessibility_feed_swipe_refresh_iph)
-                                      .setAnchorView(toolbarView)
-                                      .setDismissOnTouch(true)
-                                      .setAutoDismissTimeout(IPH_WAIT_TIME_MS)
-                                      .build());
+        helper.requestShowIPH(
+                new IPHCommandBuilder(
+                                getContext().getResources(),
+                                FeatureConstants.FEED_SWIPE_REFRESH_FEATURE,
+                                R.string.feed_swipe_refresh_iph,
+                                R.string.accessibility_feed_swipe_refresh_iph)
+                        .setAnchorView(toolbarView)
+                        .setDismissOnTouch(true)
+                        .setAutoDismissTimeout(IPH_WAIT_TIME_MS)
+                        .build());
     }
 
     /**
@@ -127,9 +134,7 @@ public class FeedSwipeRefreshLayout extends SwipeRefreshLayout implements Scroll
         }
     }
 
-    /**
-     * Disables the swipe gesture.
-     */
+    /** Disables the swipe gesture. */
     public void disableSwipe() {
         if (!isEnabled()) return;
         setEnabled(false);
@@ -163,8 +168,11 @@ public class FeedSwipeRefreshLayout extends SwipeRefreshLayout implements Scroll
     public void startRefreshingAtTheBottom() {
         final DisplayMetrics metrics = mActivity.getResources().getDisplayMetrics();
         // The offset will limited to show the spiiner as high as the vertical middle of the view.
-        int offset = Math.max(metrics.heightPixels / 2,
-                metrics.heightPixels - ((int) (SPINNER_OFFSET_FROM_BOTTOM * metrics.density)));
+        int offset =
+                Math.max(
+                        metrics.heightPixels / 2,
+                        metrics.heightPixels
+                                - ((int) (SPINNER_OFFSET_FROM_BOTTOM * metrics.density)));
         setProgressViewEndTarget(false, offset);
         setRefreshing(true);
         setProgressViewEndTarget(false, (int) (SPINNER_END_OFFSET * metrics.density));
@@ -216,9 +224,10 @@ public class FeedSwipeRefreshLayout extends SwipeRefreshLayout implements Scroll
         if (mTarget == null) {
             return;
         }
-        mTarget.measure(MeasureSpec.makeMeasureSpec(
-                                getMeasuredWidth() - getPaddingLeft() - getPaddingRight(),
-                                MeasureSpec.EXACTLY),
+        mTarget.measure(
+                MeasureSpec.makeMeasureSpec(
+                        getMeasuredWidth() - getPaddingLeft() - getPaddingRight(),
+                        MeasureSpec.EXACTLY),
                 MeasureSpec.makeMeasureSpec(
                         getMeasuredHeight() - getPaddingTop() - getPaddingBottom(),
                         MeasureSpec.EXACTLY));
@@ -240,28 +249,30 @@ public class FeedSwipeRefreshLayout extends SwipeRefreshLayout implements Scroll
 
         final int action = event.getAction();
         switch (action) {
-            case MotionEvent.ACTION_DOWN: {
-                mIsBeingDragged = false;
-                final float y = event.getY();
-                if (y == -1) {
-                    return false;
+            case MotionEvent.ACTION_DOWN:
+                {
+                    mIsBeingDragged = false;
+                    final float y = event.getY();
+                    if (y == -1) {
+                        return false;
+                    }
+                    mLastMotionY = y;
+                    break;
                 }
-                mLastMotionY = y;
-                break;
-            }
 
-            case MotionEvent.ACTION_MOVE: {
-                final float y = event.getY();
-                if (y == -1) {
-                    return false;
+            case MotionEvent.ACTION_MOVE:
+                {
+                    final float y = event.getY();
+                    if (y == -1) {
+                        return false;
+                    }
+                    final float yDiff = y - mLastMotionY;
+                    if (yDiff > mTouchSlop && !mIsBeingDragged) {
+                        mIsBeingDragged = true;
+                        start();
+                    }
+                    break;
                 }
-                final float yDiff = y - mLastMotionY;
-                if (yDiff > mTouchSlop && !mIsBeingDragged) {
-                    mIsBeingDragged = true;
-                    start();
-                }
-                break;
-            }
 
             case MotionEvent.ACTION_UP:
             case MotionEvent.ACTION_CANCEL:

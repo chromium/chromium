@@ -87,6 +87,7 @@
 <translation id="4195557071150719219">Chromium ਹਾਲੀਆ ਟੈਬਾਂ ਦੇਖੋ</translation>
 <translation id="4408912345039114853">Chromium ਸੁਰੱਖਿਆ ਜਾਂਚ ਚਲਾਓ</translation>
 <translation id="4432744876818348753">Chromium ਦਾ ਵੱਧ ਤੋਂ ਵੱਧ ਲਾਹਾ ਲੈਣ ਲਈ ਸਾਈਨ-ਇਨ ਕਰੋ।</translation>
+<translation id="4498832288620833153">ਤੁਹਾਡੇ Chromium ਦੀ ਪੜ੍ਹਨ-ਸੂਚੀ ਵਿੱਚ ਇਨਪੁੱਟ ਕੀਤੇ URL ਸ਼ਾਮਲ ਕਰਦਾ ਹੈ।</translation>
 <translation id="452436063477828504">ਪੱਕਾ ਕਰੋ ਕਿ ਤੁਸੀਂ ਆਪਣੇ Google ਖਾਤੇ ਵਿੱਚ ਕਦੇ ਵੀ Chromium ਡਾਟਾ ਵਰਤ ਸਕਦੇ ਹੋ</translation>
 <translation id="4555020257205549924">ਜਦੋਂ ਇਹ ਵਿਸ਼ੇਸ਼ਤਾ ਚਾਲੂ ਹੁੰਦੀ ਹੈ, ਤਾਂ Chromium ਹੋਰਾਂ ਭਾਸ਼ਾਵਾਂ ਵਿੱਚ ਲਿਖੇ ਪੰਨਿਆਂ ਨੂੰ Google Translate ਵਰਤਦੇ ਹੋਏ ਅਨੁਵਾਦ ਕਰਨ ਦੀ ਪੇਸ਼ਕਸ਼ ਕਰੇਗਾ। <ph name="BEGIN_LINK" />ਹੋਰ ਜਾਣੋ<ph name="END_LINK" /></translation>
 <translation id="4576283463017113841">ਇਸ ਨਾਲ Chromium ਵਿੱਚ ਭੁਗਤਾਨ ਵਿਧੀ ਸੈਟਿੰਗ ਪੰਨਾ ਖੁੱਲ੍ਹਦਾ ਹੈ।</translation>
@@ -107,6 +108,7 @@
 <translation id="5048795749726991615">ਆਪਣੇ ਰੱਖਿਅਤ ਕੀਤੇ ਪਾਸਵਰਡ ਆਪਣੀਆਂ ਹੋਰ ਐਪਾਂ ਵਿੱਚ ਆਸਾਨੀ ਨਾਲ ਪ੍ਰਾਪਤ ਕਰਨ ਵਾਸਤੇ, ਆਟੋਫਿਲ ਲਈ Chromium ਵਰਤੋ</translation>
 <translation id="5076601183701536878">Chromium ਵਿੱਚ ਬ੍ਰਾਊਜ਼ਿੰਗ ਡਾਟਾ ਕਲੀਅਰ ਕਰੋ</translation>
 <translation id="5131565040785979529">ਤੁਹਾਡੀ ਸੰਸਥਾ, <ph name="DOMAIN" />, ਤੁਹਾਡੇ ਵੱਲੋਂ ਸਾਈਨ-ਇਨ ਕੀਤੇ ਖਾਤੇ ਅਤੇ Chromium ਦੇ ਵਰਤੇ ਜਾਣ ਦੇ ਤਰੀਕੇ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰਦੀ ਹੈ।</translation>
+<translation id="5146749061471423558">Chromium ਵਿੱਚ ਬੁੱਕਮਾਰਕ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="5171868502429358653">Chromium ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
 <translation id="5213683223491576284">Chromium ਵਿੱਚ Password Manager ਨੂੰ ਖੋਲ੍ਹਦਾ ਹੈ।</translation>
 <translation id="5224391634244552924">ਕੋਈ ਰੱਖਿਅਤ ਕੀਤਾ ਪਾਸਵਰਡ ਨਹੀਂ। ਤੁਹਾਡੇ ਵੱਲੋਂ ਆਪਣੇ ਪਾਸਵਰਡ ਰੱਖਿਅਤ ਕਰਨ 'ਤੇ Chromium ਉਹਨਾਂ ਦੀ ਜਾਂਚ ਕਰ ਸਕਦਾ ਹੈ।</translation>
@@ -114,6 +116,7 @@
 
         ਸਾਈਨ-ਆਊਟ ਕਰਨ ਤੋਂ ਪਹਿਲਾਂ ਕੁਝ ਮਿੰਟਾਂ ਦੀ ਉਡੀਕ ਕਰ ਕੇ ਦੇਖੋ। ਜੇ ਤੁਸੀਂ ਹੁਣੇ ਸਾਈਨ-ਆਊਟ ਕਰਦੇ ਹੋ, ਤਾਂ ਇਸ ਡਾਟੇ ਨੂੰ ਮਿਟਾਇਆ ਜਾਵੇਗਾ।</translation>
 <translation id="5308226104666789935">Chromium ਅੱਪਡੇਟਾਂ ਲਈ ਜਾਂਚ ਨਹੀਂ ਕਰ ਸਕਦਾ</translation>
+<translation id="5311557153294205270">ਤੁਹਾਡੇ Chromium ਬੁੱਕਮਾਰਕਾਂ ਵਿੱਚ ਇਨਪੁੱਟ ਕੀਤੇ URL ਸ਼ਾਮਲ ਕਰਦਾ ਹੈ।</translation>
 <translation id="5396916991083608703">ਕੀ Chromium ਨੂੰ ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਵਜੋਂ ਸੈੱਟ ਕਰਨਾ ਹੈ?</translation>
 <translation id="5453478652154926037">Chromium ਤੁਹਾਡੇ ਪਾਸਵਰਡਾਂ ਦੀ ਜਾਂਚ ਨਹੀਂ ਕਰ ਸਕਦਾ।</translation>
 <translation id="5521125884468363740">ਜਿਸ ਡੀਵਾਈਸ 'ਤੇ ਵੀ ਤੁਸੀਂ Chromium ਵਰਤਦੇ ਹੋ, ਉੱਥੇ ਆਪਣੀਆਂ ਟੈਬਾਂ ਦੇਖਣ ਲਈ ਸਾਈਨ-ਇਨ ਕਰਕੇ ਸਮਾਲੀਕਰਨ ਕਰੋ</translation>
@@ -165,7 +168,6 @@
 <translation id="6911341667534646387">ਆਪਣੇ Google ਖਾਤੇ ਵਿੱਚ Chromium ਡਾਟਾ ਵਰਤਣਾ ਜਾਰੀ ਰੱਖੋ</translation>
 <translation id="7006920032187763988">ਤੁਸੀਂ ਤੁਹਾਡੇ ਵੱਲੋਂ ਆਪਣੇ iPad 'ਤੇ ਹੋਰ ਐਪਾਂ ਵਿੱਚ ਪਾਸਵਰਡ ਪ੍ਰਬੰਧਕ 'ਤੇ ਰੱਖਿਅਤ ਕੀਤੇ ਪਾਸਵਰਡਾਂ ਦੀ ਵਰਤੋਂ ਕਰ ਸਕਦੇ ਹੋ।</translation>
 <translation id="7018284295775193585">Chromium ਨੂੰ ਅੱਪਡੇਟ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ</translation>
-<translation id="7025471822960602362">Chromium 'ਤੇ ਖੋਜੇ ਗਏ ਪੈਕੇਜਾਂ ਨੂੰ ਟਰੈਕ ਕਰੋ</translation>
 <translation id="7045244423563602563">ਸਾਈਨ-ਇਨ ਕਰਕੇ Chromium ਨੂੰ ਆਪਣੇ ਮੁਤਾਬਕ ਵਿਉਂਤਬੱਧ ਕਰੋ</translation>
 <translation id="7055269218854630176">ਤੁਹਾਡੀ ਸੰਸਥਾ, <ph name="DOMAIN" />, ਤੁਹਾਡੇ ਵੱਲੋਂ ਸਾਈਨ-ਇਨ ਕੀਤੇ ਜਾਣ ਵਾਲੇ ਖਾਤੇ ਅਤੇ Chromium ਦੇ ਵਰਤੇ ਜਾਣ ਦੇ ਤਰੀਕੇ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰਦੀ ਹੈ। ਤੁਹਾਡਾ ਪ੍ਰਸ਼ਾਸਕ ਕੁਝ ਖਾਸ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਦਾ ਸੈੱਟਅੱਪ ਜਾਂ ਉਨ੍ਹਾਂ ਨੂੰ ਪ੍ਰਤਿਬੰਧਿਤ ਕਰ ਸਕਦਾ ਹੈ।</translation>
 <translation id="7099326575020694068">Chromium ਸਪਲਿਟ ਦ੍ਰਿਸ਼ ਮੋਡ ਤੁਹਾਡੇ ਕੈਮਰੇ ਦੀ ਵਰਤੋਂ ਨਹੀਂ ਕਰ ਸਕਦਾ ਹੈ</translation>
@@ -195,6 +197,7 @@
 <translation id="7928628054454574139">ਜਦੋਂ ਵੀ ਤੁਸੀਂ ਹੋਰ ਐਪਾਂ ਵਿਚਲੇ ਲਿੰਕਾਂ 'ਤੇ ਟੈਪ ਕਰਦੇ ਹੋ, ਤਾਂ Chromium ਖੋਲ੍ਹੋ</translation>
 <translation id="7931842119211730154">ਤੁਹਾਡੇ ਵੱਲੋਂ Chromium ਨੂੰ ਬੰਦ ਕੀਤੇ ਜਾਣ 'ਤੇ ਇਨਕੋਗਨਿਟੋ ਟੈਬਾਂ ਨੂੰ ਲਾਕ ਕਰੋ</translation>
 <translation id="7934404985878918282">Chromium ਦੀ ਪੜ੍ਹਨ-ਸੂਚੀ ਦੇਖੋ</translation>
+<translation id="7971753607796745700">Chromium ਦੀ ਪੜ੍ਹਨ-ਸੂਚੀ ਵਿੱਚ ਆਈਟਮ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="7980860476903281594">Chromium ਤੁਹਾਡੇ ਵੱਲੋਂ ਆਗਿਆ ਦਿੱਤੀਆਂ ਸਾਈਟਾਂ ਨਾਲ ਤੁਹਾਡਾ ਟਿਕਾਣਾ ਸਾਂਝਾ ਕਰਦਾ ਹੈ।</translation>
 <translation id="7995166854192397899">ਸੁਝਾਅ ਤੁਹਾਡੇ ਹੋਰ ਡੀਵਾਈਸਾਂ 'ਤੇ ਤੁਹਾਡੀ ਬ੍ਰਾਊਜ਼ਿੰਗ ਸਰਗਰਮੀ 'ਤੇ ਆਧਾਰਿਤ ਹਨ। ਸੁਝਾਅ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ, ਆਪਣੇ ਸਾਰੇ ਡੀਵਾਈਸਾਂ 'ਤੇ Chromium ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕਰੋ।</translation>
 <translation id="800195749539500647">Chromium ਦਾ ਵੱਧ ਤੋਂ ਵੱਧ ਲਾਹਾ ਲਓ</translation>

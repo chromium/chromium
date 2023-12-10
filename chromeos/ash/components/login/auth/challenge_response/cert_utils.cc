@@ -31,7 +31,7 @@ bool GetSubjectPublicKeyInfo(const net::X509Certificate& certificate,
 
 }  // namespace
 
-absl::optional<ChallengeResponseKey::SignatureAlgorithm>
+std::optional<ChallengeResponseKey::SignatureAlgorithm>
 GetChallengeResponseKeyAlgorithmFromSsl(uint16_t ssl_algorithm) {
   switch (ssl_algorithm) {
     case SSL_SIGN_RSA_PKCS1_SHA1:

@@ -11,9 +11,7 @@ import org.junit.runners.model.Statement;
 
 import java.util.concurrent.atomic.AtomicReference;
 
-/**
- * junit {@link Statement} that runs a test method on the UI thread.
- */
+/** junit {@link Statement} that runs a test method on the UI thread. */
 /* package */ class UiThreadStatement extends Statement {
     private final Statement mBase;
 
@@ -24,13 +22,15 @@ import java.util.concurrent.atomic.AtomicReference;
     @Override
     public void evaluate() throws Throwable {
         final AtomicReference<Throwable> exceptionRef = new AtomicReference<>();
-        InstrumentationRegistry.getInstrumentation().runOnMainSync(() -> {
-            try {
-                mBase.evaluate();
-            } catch (Throwable throwable) {
-                exceptionRef.set(throwable);
-            }
-        });
+        InstrumentationRegistry.getInstrumentation()
+                .runOnMainSync(
+                        () -> {
+                            try {
+                                mBase.evaluate();
+                            } catch (Throwable throwable) {
+                                exceptionRef.set(throwable);
+                            }
+                        });
         Throwable throwable = exceptionRef.get();
         if (throwable != null) throw throwable;
     }

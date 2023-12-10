@@ -18,8 +18,6 @@ component("certificate_transparency") {
     "chrome_ct_policy_enforcer.h",
     "chrome_require_ct_delegate.cc",
     "chrome_require_ct_delegate.h",
-    "ct_features.cc",
-    "ct_features.h",
     "ct_known_logs.cc",
     "ct_known_logs.h",
     "pref_names.cc",

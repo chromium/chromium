@@ -22,8 +22,8 @@ import org.chromium.ui.text.EmptyTextWatcher;
  * TODO(crbug.com/848955)
  * - Confirm if the month and year needs to be pre-populated in case partial data is available.
  */
-public class AutofillExpirationDateFixFlowPrompt
-        extends AutofillSaveCardPromptBase implements EmptyTextWatcher {
+public class AutofillExpirationDateFixFlowPrompt extends AutofillSaveCardPromptBase
+        implements EmptyTextWatcher {
     /**
      * An interface to handle the interaction with an AutofillExpirationDateFixFlowPrompt object.
      */
@@ -49,9 +49,13 @@ public class AutofillExpirationDateFixFlowPrompt
      * @param confirmButtonLabel Label for the confirm button.
      * @return The prompt to confirm expiration data.
      */
-    public static AutofillExpirationDateFixFlowPrompt createAsInfobarFixFlowPrompt(Context context,
-            AutofillExpirationDateFixFlowPromptDelegate delegate, String title, int drawableId,
-            String cardLabel, String confirmButtonLabel) {
+    public static AutofillExpirationDateFixFlowPrompt createAsInfobarFixFlowPrompt(
+            Context context,
+            AutofillExpirationDateFixFlowPromptDelegate delegate,
+            String title,
+            int drawableId,
+            String cardLabel,
+            String confirmButtonLabel) {
         return new AutofillExpirationDateFixFlowPrompt(
                 context, delegate, title, drawableId, cardLabel, confirmButtonLabel, false);
     }
@@ -65,14 +69,23 @@ public class AutofillExpirationDateFixFlowPrompt
     private boolean mDidFocusOnMonth;
     private boolean mDidFocusOnYear;
 
-    /**
-     * Fix flow prompt to confirm expiration date before saving the card to Google.
-     */
-    private AutofillExpirationDateFixFlowPrompt(Context context,
-            AutofillExpirationDateFixFlowPromptDelegate delegate, String title, int drawableId,
-            String cardLabel, String confirmButtonLabel, boolean filledConfirmButton) {
-        super(context, delegate, R.layout.autofill_expiration_date_fix_flow,
-                R.layout.icon_after_title_view, title, drawableId, confirmButtonLabel,
+    /** Fix flow prompt to confirm expiration date before saving the card to Google. */
+    private AutofillExpirationDateFixFlowPrompt(
+            Context context,
+            AutofillExpirationDateFixFlowPromptDelegate delegate,
+            String title,
+            int drawableId,
+            String cardLabel,
+            String confirmButtonLabel,
+            boolean filledConfirmButton) {
+        super(
+                context,
+                delegate,
+                R.layout.autofill_expiration_date_fix_flow,
+                R.layout.icon_after_title_view,
+                title,
+                drawableId,
+                confirmButtonLabel,
                 filledConfirmButton);
         mDelegate = delegate;
         mErrorMessage = (TextView) mDialogView.findViewById(R.id.error_message);
@@ -84,15 +97,17 @@ public class AutofillExpirationDateFixFlowPrompt
 
         mMonthInput = (EditText) mDialogView.findViewById(R.id.cc_month_edit);
         mMonthInput.addTextChangedListener(this);
-        mMonthInput.setOnFocusChangeListener((view, hasFocus) -> {
-            mDidFocusOnMonth |= hasFocus;
-        });
+        mMonthInput.setOnFocusChangeListener(
+                (view, hasFocus) -> {
+                    mDidFocusOnMonth |= hasFocus;
+                });
 
         mYearInput = (EditText) mDialogView.findViewById(R.id.cc_year_edit);
         mYearInput.addTextChangedListener(this);
-        mYearInput.setOnFocusChangeListener((view, hasFocus) -> {
-            mDidFocusOnYear |= hasFocus;
-        });
+        mYearInput.setOnFocusChangeListener(
+                (view, hasFocus) -> {
+                    mDidFocusOnYear |= hasFocus;
+                });
     }
 
     @Override
@@ -130,13 +145,14 @@ public class AutofillExpirationDateFixFlowPrompt
      */
     private void validate() {
         @ErrorType
-        int errorType = AutofillUiUtils.getExpirationDateErrorType(
-                mMonthInput, mYearInput, mDidFocusOnMonth, mDidFocusOnYear);
+        int errorType =
+                AutofillUiUtils.getExpirationDateErrorType(
+                        mMonthInput, mYearInput, mDidFocusOnMonth, mDidFocusOnYear);
         mDialogModel.set(
                 ModalDialogProperties.POSITIVE_BUTTON_DISABLED, errorType != ErrorType.NONE);
         AutofillUiUtils.showDetailedErrorMessage(errorType, mContext, mErrorMessage);
         AutofillUiUtils.updateColorForInputs(
-                errorType, mContext, mMonthInput, mYearInput, /*cvcInput=*/null);
+                errorType, mContext, mMonthInput, mYearInput, /* cvcInput= */ null);
         moveFocus(errorType);
     }
 

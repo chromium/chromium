@@ -74,8 +74,7 @@ content::BrowserContext* SystemWebAppManagerFactory::GetBrowserContextToUse(
   }
 
   // SWAM is guarded by the feature flag in kiosk mode, disabled by default.
-  if (base::FeatureList::IsEnabled(::features::kKioskEnableAppService) &&
-      !base::FeatureList::IsEnabled(ash::features::kKioskEnableSystemWebApps) &&
+  if (!base::FeatureList::IsEnabled(ash::features::kKioskEnableSystemWebApps) &&
       chromeos::IsKioskSession()) {
     return nullptr;
   }

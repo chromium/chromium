@@ -6,7 +6,7 @@
 
 #include "third_party/blink/renderer/core/layout/inline/fragment_item.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
+#include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/paint/fragment_data.h"
 
 namespace blink {
@@ -26,8 +26,8 @@ AccompaniedFragmentIterator::AccompaniedFragmentIterator(
   }
 }
 
-const NGPhysicalBoxFragment*
-AccompaniedFragmentIterator::GetPhysicalBoxFragment() const {
+const PhysicalBoxFragment* AccompaniedFragmentIterator::GetPhysicalBoxFragment()
+    const {
   if (ng_layout_box_) {
     return ng_layout_box_->GetPhysicalFragment(idx_);
   }

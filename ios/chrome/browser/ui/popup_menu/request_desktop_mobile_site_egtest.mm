@@ -193,8 +193,8 @@ class UserAgentResponseProvider : public web::DataResponseProvider {
   [ChromeEarlGrey waitForWebStateContainingText:kDesktopSiteLabel
                                         timeout:kWaitForUserAgentChangeTimeout];
 
-  // Close all tabs and undo, trigerring a restoration.
-  [ChromeEarlGrey triggerRestoreViaTabGridRemoveAllUndo];
+  // Restart the app to trigger a reload.
+  [self triggerRestoreByRestartingApplication];
 
   // Verify that desktop user agent propagates.
   [ChromeEarlGreyUI openToolsMenu];
@@ -278,8 +278,8 @@ class UserAgentResponseProvider : public web::DataResponseProvider {
   [[EarlGrey selectElementWithMatcher:chrome_test_util::FakeOmnibox()]
       assertWithMatcher:grey_sufficientlyVisible()];
 
-  // Go back to NTP to restore the session from there.
-  [ChromeEarlGrey triggerRestoreViaTabGridRemoveAllUndo];
+  // Restart the app to trigger a reload.
+  [self triggerRestoreByRestartingApplication];
 
   // Make sure that the NTP is displayed.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::FakeOmnibox()]

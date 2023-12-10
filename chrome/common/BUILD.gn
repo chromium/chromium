@@ -28,6 +28,9 @@ fuzzer_test("ini_parser_fuzzer") {
     "//base",
     "//chrome/common:ini_parser",
   ]
+
+  # Large ini files can cause test cases to timeout
+  libfuzzer_options = [ "max_len=100000" ]
 }
 grit("resources") {
   source = "common_resources.grd"
@@ -44,7 +47,6 @@ buildflag_header("buildflags") {
   header = "buildflags.h"
   flags = [
     "CHROME_ENABLE_LOGGING_BY_DEFAULT=$chrome_enable_logging_by_default",
-    "CHROME_ROOT_STORE_POLICY_SUPPORTED=$chrome_root_store_policy_supported",
     "ENABLE_BACKGROUND_MODE=$enable_background_mode",
     "ENABLE_BACKGROUND_CONTENTS=$enable_background_contents",
     "ENABLE_CHROME_NOTIFICATIONS=$enable_chrome_notifications",
@@ -625,6 +627,7 @@ static_library("constants") {
     ":buildflags",
     ":chrome_features",
     ":non_code_constants",
+    "//components/compose:buildflags",
     "//components/signin/public/base:signin_buildflags",
     "//content/public/common:result_codes",
     "//rlz/buildflags",
@@ -773,6 +776,20 @@ mojom("mojo_bindings") {
 
   if (is_mac) {
     sources += [ "mac/app_shim.mojom" ]
+    cpp_typemaps = [
+      {
+        types = [
+          {
+            mojom = "chrome.mojom.FeatureState"
+            cpp = "::variations::VariationsCommandLine"
+            move_only = true
+          },
+        ]
+        traits_headers = [ "mac/app_shim_mojom_traits.h" ]
+        traits_sources = [ "mac/app_shim_mojom_traits.cc" ]
+        traits_public_deps = [ "//components/variations/net" ]
+      },
+    ]
   }
 
   if (is_win) {

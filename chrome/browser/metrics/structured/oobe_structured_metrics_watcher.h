@@ -34,6 +34,8 @@ class OobeStructuredMetricsWatcher : public EventsProcessorInterface {
   void AttemptUpload();
 
  private:
+  // The number of times this watcher has manually uploaded.
+  int upload_count_ = 0;
   int event_count_ = 0;
   int max_events_ = 0;
   // Pointer may dangle but will never be used once it is dangling.

@@ -3,8 +3,10 @@
 // found in the LICENSE file.
 
 import 'chrome://shortcut-customization/js/text_accelerator.js';
-import 'chrome://webui-test/mojo_webui_test_support.js';
+import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
+import {ShortcutInputKeyElement} from 'chrome://resources/ash/common/shortcut_input_ui/shortcut_input_key.js';
+import {KeyInputState} from 'chrome://resources/ash/common/shortcut_input_ui/shortcut_utils.js';
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {mojoString16ToString, stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
@@ -12,7 +14,6 @@ import {IronIconElement} from 'chrome://resources/polymer/v3_0/iron-icon/iron-ic
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {AcceleratorLookupManager} from 'chrome://shortcut-customization/js/accelerator_lookup_manager.js';
 import {fakeAcceleratorConfig, fakeLayoutInfo} from 'chrome://shortcut-customization/js/fake_data.js';
-import {InputKeyElement, KeyInputState} from 'chrome://shortcut-customization/js/input_key.js';
 import {AcceleratorSource, LayoutStyle, TextAcceleratorPart, TextAcceleratorPartType} from 'chrome://shortcut-customization/js/shortcut_types.js';
 import {TextAcceleratorElement} from 'chrome://shortcut-customization/js/text_accelerator.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
@@ -47,8 +48,8 @@ suite('textAcceleratorTest', function() {
         HTMLElement;
   }
 
-  function getAllInputKeys(): NodeListOf<InputKeyElement> {
-    return getTextPartsContainer().querySelectorAll('input-key');
+  function getAllInputKeys(): NodeListOf<ShortcutInputKeyElement> {
+    return getTextPartsContainer().querySelectorAll('shortcut-input-key');
   }
 
   function getAllPlainTextParts(): NodeListOf<HTMLSpanElement> {

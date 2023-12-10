@@ -4,6 +4,8 @@
 
 #include "chromeos/ash/components/dbus/hermes/hermes_euicc_client.h"
 
+#include <optional>
+
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -19,7 +21,6 @@
 #include "dbus/object_path.h"
 #include "dbus/object_proxy.h"
 #include "dbus/property.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/hermes/dbus-constants.h"
 
 namespace ash {
@@ -34,10 +35,6 @@ HermesEuiccClient::Properties::Properties(
     : dbus::PropertySet(object_proxy, hermes::kHermesEuiccInterface, callback) {
   RegisterProperty(hermes::euicc::kEidProperty, &eid_);
   RegisterProperty(hermes::euicc::kIsActiveProperty, &is_active_);
-  RegisterProperty(hermes::euicc::kInstalledProfilesProperty,
-                   &installed_carrier_profiles_);
-  RegisterProperty(hermes::euicc::kPendingProfilesProperty,
-                   &pending_carrier_profiles_);
   RegisterProperty(hermes::euicc::kProfilesProperty, &profiles_);
   RegisterProperty(hermes::euicc::kPhysicalSlotProperty, &physical_slot_);
 }

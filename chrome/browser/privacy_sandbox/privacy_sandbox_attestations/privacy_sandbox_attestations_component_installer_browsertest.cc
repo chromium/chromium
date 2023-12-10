@@ -8,7 +8,6 @@
 #include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/version.h"
 #include "chrome/browser/browser_process.h"
@@ -43,7 +42,6 @@ class PrivacySandboxAttestationsBrowserTest
       component_updater::PrivacySandboxAttestationsComponentInstallerPolicy;
 
  private:
-  base::test::ScopedFeatureList attestations_feature_;
   PrivacySandboxAttestationsMixin privacy_sandbox_attestations_mixin_{
       &mixin_host_};
 };
@@ -61,37 +59,11 @@ IN_PROC_BROWSER_TEST_F(
   site_attestation.add_attested_apis(TOPICS);
   (*proto.mutable_site_attestations())[site] = site_attestation;
 
-  // Serialize to string.
-  std::string serialized_proto;
-  proto.SerializeToString(&serialized_proto);
+  base::Version version("0.0.0.1");
 
-  // Allow blocking for file IO.
-  base::ScopedAllowBlockingForTesting allow_blocking;
-
-  // Get component updater directory that contains user-wide components.
-  base::FilePath component_updater_dir;
-  base::PathService::Get(component_updater::DIR_COMPONENT_USER,
-                         &component_updater_dir);
-
-  ASSERT_TRUE(!component_updater_dir.empty());
-
-  // Write the serialized proto to the attestation list file.
-  base::FilePath install_dir =
-      Installer::GetInstalledDirectory(component_updater_dir)
-          .Append(FILE_PATH_LITERAL("0.0.0.1"));
-  ASSERT_TRUE(base::CreateDirectory(install_dir));
-  ASSERT_TRUE(component_updater::WritePrivacySandboxAttestationsFileForTesting(
-      install_dir, serialized_proto));
-
-  // Write a manifest file. This is needed for component updater to detect any
-  // existing component on disk.
   ASSERT_TRUE(
-      base::WriteFile(install_dir.Append(FILE_PATH_LITERAL("manifest.json")),
-                      R"({
-                          "manifest_version": 1,
-                          "name": "Privacy Sandbox Attestations",
-                          "version": "0.0.0.1"
-                        })"));
+      component_updater::InstallPrivacySandboxAttestationsComponentForTesting(
+          proto, version));
 
   base::RunLoop run_loop;
   PrivacySandboxAttestations::GetInstance()
@@ -109,7 +81,7 @@ IN_PROC_BROWSER_TEST_F(
                   ->GetVersionForTesting()
                   .IsValid());
   EXPECT_EQ(PrivacySandboxAttestations::GetInstance()->GetVersionForTesting(),
-            base::Version("0.0.0.1"));
+            version);
   EXPECT_TRUE(PrivacySandboxSettingsImpl::IsAllowed(
       PrivacySandboxAttestations::GetInstance()->IsSiteAttested(
           net::SchemefulSite(GURL(site)),
@@ -125,29 +97,15 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxAttestationsBrowserTest,
   // Allow blocking for file IO.
   base::ScopedAllowBlockingForTesting allow_blocking;
 
-  // Get component updater directory that contains user-wide components.
-  base::FilePath component_updater_dir;
-  base::PathService::Get(component_updater::DIR_COMPONENT_USER,
-                         &component_updater_dir);
-  ASSERT_TRUE(!component_updater_dir.empty());
+  base::Version version("0.0.0.1");
 
-  // Write the attestations list file with an invalid proto.
-  base::FilePath install_dir =
-      Installer::GetInstalledDirectory(component_updater_dir)
-          .Append(FILE_PATH_LITERAL("0.0.0.1"));
-  ASSERT_TRUE(base::CreateDirectory(install_dir));
-  ASSERT_TRUE(component_updater::WritePrivacySandboxAttestationsFileForTesting(
-      install_dir, "invalid proto"));
-
-  // Write a manifest file. This is needed for component updater to detect any
-  // existing component on disk.
   ASSERT_TRUE(
-      base::WriteFile(install_dir.Append(FILE_PATH_LITERAL("manifest.json")),
-                      R"({
-                          "manifest_version": 1,
-                          "name": "Privacy Sandbox Attestations",
-                          "version": "0.0.0.1"
-                        })"));
+      component_updater::InstallPrivacySandboxAttestationsComponentForTesting(
+          "invalid proto", version));
+
+  base::FilePath install_dir =
+      component_updater::GetPrivacySandboxAtteststionsComponentInstallDir(
+          version);
   ASSERT_FALSE(base::PathExists(install_dir.Append(kSentinelFileName)));
 
   base::RunLoop parsing_invalid_attestations;
@@ -213,21 +171,12 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxAttestationsBrowserTest,
                 PrivacySandboxAttestationsGatedAPI::kTopics));
   EXPECT_TRUE(base::PathExists(install_dir.Append(kSentinelFileName)));
 
-  // Install newer version attestations.
-  base::FilePath new_version_install_dir =
-      Installer::GetInstalledDirectory(component_updater_dir)
-          .Append(FILE_PATH_LITERAL("0.0.0.2"));
-  ASSERT_TRUE(base::CreateDirectory(new_version_install_dir));
+  base::Version newer_version("0.0.0.2");
 
-  ASSERT_TRUE(component_updater::WritePrivacySandboxAttestationsFileForTesting(
-      new_version_install_dir, serialized_proto));
-  ASSERT_TRUE(base::WriteFile(
-      new_version_install_dir.Append(FILE_PATH_LITERAL("manifest.json")),
-      R"({
-          "manifest_version": 2,
-          "name": "Privacy Sandbox Attestations",
-          "version": "0.0.0.2"
-        })"));
+  // Install newer version attestations.
+  ASSERT_TRUE(
+      component_updater::InstallPrivacySandboxAttestationsComponentForTesting(
+          proto, newer_version));
 
   // The sentinel file still exists in the old version installation directory.
   EXPECT_TRUE(base::PathExists(install_dir.Append(kSentinelFileName)));

@@ -431,7 +431,7 @@ void TouchInjector::SaveMenuEntryLocation(
   float height = content_bounds_f_.height();
   DCHECK_GT(width, 1);
   DCHECK_GT(height, 1);
-  menu_entry_location_ = absl::make_optional<gfx::Vector2dF>(
+  menu_entry_location_ = std::make_optional<gfx::Vector2dF>(
       menu_entry_location_point.x() / width,
       menu_entry_location_point.y() / height);
 }
@@ -713,7 +713,10 @@ ui::EventDispatchDetails TouchInjector::RewriteEvent(
   }
 
   std::list<ui::TouchEvent> touch_events;
+  bool is_play_mode_active = false;
   for (auto& action : actions_) {
+    is_play_mode_active |= action->IsActive();
+
     bool keep_original_event = false;
     bool rewritten =
         action->RewriteEvent(event, is_mouse_locked_, rotation_transform_.get(),
@@ -752,17 +755,10 @@ ui::EventDispatchDetails TouchInjector::RewriteEvent(
     }
   }
 
-  // Discard other mouse events if the mouse is locked.
-  if (is_mouse_locked_ && event.IsMouseEvent()) {
+  // Discard other mouse events if the mouse is locked or it is in active play
+  // mode.
+  if (event.IsMouseEvent() && (is_mouse_locked_ || is_play_mode_active)) {
     return DiscardEvent(continuation);
-  }
-
-  // When the mouse is unlocked and the mouse event interrupts here, release
-  // active actions first and then send the mouse event. Otherwise, Android
-  // generates touch cancel event automatically, which puts some games into a
-  // weird state.
-  if (event.IsMouseEvent()) {
-    CleanupTouchEvents();
   }
 
   return SendEvent(continuation, &event);
@@ -792,7 +788,7 @@ std::unique_ptr<ui::TouchEvent> TouchInjector::RewriteOriginalTouch(
 
   if (touch_event->type() == ui::ET_TOUCH_PRESSED) {
     // Generate new touch id that we can manage and add to map.
-    absl::optional<int> managed_touch_id =
+    std::optional<int> managed_touch_id =
         TouchIdManager::GetInstance()->ObtainTouchID();
     DCHECK(managed_touch_id);
     TouchPointInfo touch_point = {
@@ -803,7 +799,7 @@ std::unique_ptr<ui::TouchEvent> TouchInjector::RewriteOriginalTouch(
     return CreateTouchEvent(touch_event, original_id, *managed_touch_id,
                             root_location_f);
   } else if (touch_event->type() == ui::ET_TOUCH_RELEASED) {
-    absl::optional<int> managed_touch_id = it->second.rewritten_touch_id;
+    std::optional<int> managed_touch_id = it->second.rewritten_touch_id;
     DCHECK(managed_touch_id);
     rewritten_touch_infos_.erase(original_id);
     TouchIdManager::GetInstance()->ReleaseTouchID(*managed_touch_id);
@@ -813,7 +809,7 @@ std::unique_ptr<ui::TouchEvent> TouchInjector::RewriteOriginalTouch(
 
   // Update this id's stored location to this newest location.
   it->second.touch_root_location = root_location_f;
-  absl::optional<int> managed_touch_id = it->second.rewritten_touch_id;
+  std::optional<int> managed_touch_id = it->second.rewritten_touch_id;
   DCHECK(managed_touch_id);
   return CreateTouchEvent(touch_event, original_id, *managed_touch_id,
                           root_location_f);
@@ -892,7 +888,7 @@ void TouchInjector::LoadMenuEntryFromProto(AppDataProto& proto) {
   }
   auto menu_entry_position = proto.menu_entry_position().anchor_to_target();
   DCHECK_EQ(menu_entry_position.size(), 2);
-  menu_entry_location_ = absl::make_optional<gfx::Vector2dF>(
+  menu_entry_location_ = std::make_optional<gfx::Vector2dF>(
       menu_entry_position[0], menu_entry_position[1]);
 }
 
@@ -942,12 +938,13 @@ size_t TouchInjector::GetActiveActionsSize() {
   return active_size;
 }
 
-void TouchInjector::AddNewAction(ActionType action_type) {
+void TouchInjector::AddNewAction(ActionType action_type,
+                                 const gfx::Point& target_pos) {
   DCHECK(IsBeta());
   auto action = CreateRawAction(action_type, this);
 
   // Check whether the action size extends the maximum.
-  if (!action->InitByAddingNewAction()) {
+  if (!action->InitByAddingNewAction(target_pos)) {
     return;
   }
 

@@ -49,11 +49,11 @@ class TestColorPaletteController : public ash::ColorPaletteController {
   SkColor GetUserWallpaperColorOrDefault(SkColor default_color) const override {
     return SK_ColorGREEN;
   }
-  absl::optional<ash::ColorPaletteSeed> GetColorPaletteSeed(
+  std::optional<ash::ColorPaletteSeed> GetColorPaletteSeed(
       const AccountId& account_id) const override {
     return seed_;
   }
-  absl::optional<ash::ColorPaletteSeed> GetCurrentSeed() const override {
+  std::optional<ash::ColorPaletteSeed> GetCurrentSeed() const override {
     return seed_;
   }
   bool UsesWallpaperSeedColor(const AccountId& account_id) const override {
@@ -63,7 +63,7 @@ class TestColorPaletteController : public ash::ColorPaletteController {
       const AccountId& account_id) const override {
     return seed_.scheme;
   }
-  absl::optional<SkColor> GetStaticColor(
+  std::optional<SkColor> GetStaticColor(
       const AccountId& account_id) const override {
     return seed_.seed_color;
   }

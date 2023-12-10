@@ -1,0 +1,276 @@
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+
+This file describes the enumerations referenced by entries in histograms.xml for
+this directory. Some enums may instead be listed in the central enums.xml file
+at src/tools/metrics/histograms/enums.xml when multiple files use them.
+
+For best practices on writing enumerations descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md#Enum-Histograms
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<!-- Enum types -->
+
+<enums>
+
+<enum name="ContextRedirectTypeBug1221316">
+  <int value="0" label="Unset"/>
+  <int value="1" label="No Redirect"/>
+  <int value="2" label="Cross-Site Redirect"/>
+  <int value="3" label="Partially Same-Site Redirect"/>
+  <int value="4" label="Fully Same-Site Redirect"/>
+</enum>
+
+<enum name="CookieCommitProblem">
+  <int value="0" label="Entry encryption failed"/>
+  <int value="1" label="Adding cookie to DB failed."/>
+  <int value="2" label="Updating access time of cookie failed."/>
+  <int value="3" label="Deleting cookie failed."/>
+  <int value="4" label="Committing the transaction failed"/>
+</enum>
+
+<enum name="CookieEffectiveSameSite">
+  <int value="0" label="No restriction"/>
+  <int value="1" label="Lax mode"/>
+  <int value="2" label="Strict mode"/>
+  <int value="3" label="Lax mode allow unsafe"/>
+  <int value="4" label="Undefined"/>
+</enum>
+
+<enum name="CookieLoadProblem">
+  <int value="0" label="Entry decryption failed"/>
+  <int value="1"
+      label="(Obsolete) Entry decryption taking over a minute. Removed
+             03/2021. The problem rarely happens and can be reported through
+             other mechanisms."/>
+  <int value="2" label="Cookie canonical form check failed"/>
+  <int value="3" label="Could not open or initialize database"/>
+  <int value="4" label="Attempt to delete broken (and related) rows failed"/>
+</enum>
+
+<enum name="CookiePrefix">
+  <int value="0" label="No special prefix"/>
+  <int value="1" label="Secure prefix"/>
+  <int value="2" label="Host prefix"/>
+</enum>
+
+<enum name="CookieRequestScheme">
+  <int value="0" label="Unset Cookie Scheme"/>
+  <int value="1" label="Nonsecurely Set Cookie Nonsecure Request"/>
+  <int value="2" label="Securely Set Cookie Secure Request"/>
+  <int value="3" label="Nonsecurely Set Cookie Secure Request"/>
+  <int value="4" label="Securely Set Cookie Nonsecure Request"/>
+</enum>
+
+<enum name="CookiesAllowedForUrlsUsage">
+  <int value="0" label="Explicit Content Settings Only"/>
+  <int value="1" label="Wildcard Primary Content Settings Only"/>
+  <int value="2" label="Wildcard Secondary Content Settings Only"/>
+  <int value="3" label="Wildcard Primary and Explicit Content Settings"/>
+  <int value="4" label="Wildcard Secondary and Explicit Content Settings"/>
+  <int value="5" label="Only Wildcard Content Settings"/>
+  <int value="6" label="All Types of Content Settings Present"/>
+</enum>
+
+<enum name="CookieSameSite2">
+  <int value="0" label="No SameSite attribute is specified."/>
+  <int value="1" label="SameSite=None"/>
+  <int value="2" label="SameSite=Lax"/>
+  <int value="3" label="SameSite=Strict"/>
+</enum>
+
+<enum name="CookieSameSiteString">
+  <int value="0" label="No SameSite attribute is present."/>
+  <int value="1" label="SameSite attribute is specified but has no value."/>
+  <int value="2" label="SameSite attribute value is unrecognized."/>
+  <int value="3" label="Lax"/>
+  <int value="4" label="Strict"/>
+  <int value="5" label="None"/>
+  <int value="6" label="Extended"/>
+</enum>
+
+<enum name="CookieSentToSamePort">
+  <int value="0" label="Cookie source port was unspecified."/>
+  <int value="1" label="Cookie source port was invalid."/>
+  <int value="2" label="Source and destination ports do not match."/>
+  <int value="3"
+      label="Source and destination ports do not match but are the defaults
+             for their scheme."/>
+  <int value="4" label="Source and destination ports match."/>
+</enum>
+
+<enum name="CookieSourceScheme">
+  <int value="0" label="Secure cookie, source scheme is cryptographic"/>
+  <int value="1" label="Secure cookie, source scheme is not cryptographic"/>
+  <int value="2" label="Not Secure cookie, source scheme is cryptographic"/>
+  <int value="3" label="Not Secure cookie, source scheme is not cryptographic"/>
+</enum>
+
+<enum name="CookieSourceSchemeName">
+  <int value="0" label="Other Scheme"/>
+  <int value="1" label="About Blank URL"/>
+  <int value="2" label="About Srcdoc URL"/>
+  <int value="3" label="About Blank Path"/>
+  <int value="4" label="About Srcdoc Path"/>
+  <int value="5" label="About Scheme"/>
+  <int value="6" label="Blob Scheme"/>
+  <int value="7" label="Content Scheme"/>
+  <int value="8" label="Content ID Scheme"/>
+  <int value="9" label="Data Scheme"/>
+  <int value="10" label="File Scheme"/>
+  <int value="11" label="File System Scheme"/>
+  <int value="12" label="Ftp Scheme"/>
+  <int value="13" label="Http Scheme"/>
+  <int value="14" label="Https Scheme"/>
+  <int value="15" label="JavaScript Scheme"/>
+  <int value="16" label="MailTo Scheme"/>
+  <int value="17" label="Quic Transport Scheme"/>
+  <int value="18" label="Tel Scheme"/>
+  <int value="19" label="Urn Scheme"/>
+  <int value="20" label="Ws Scheme"/>
+  <int value="21" label="Wss Scheme"/>
+  <int value="22" label="Chrome Extension Scheme"/>
+</enum>
+
+<enum name="CookieType">
+  <summary>The type of a cookie when its added to the cookie store.</summary>
+  <int value="0" label="Default"/>
+  <int value="1" label="First-Party-Only"/>
+  <int value="2" label="HttpOnly"/>
+  <int value="3" label="First-Party-Only, HttpOnly"/>
+  <int value="4" label="Secure"/>
+  <int value="5" label="First-Party-Only, Secure"/>
+  <int value="6" label="HttpOnly, Secure"/>
+  <int value="7" label="First-Party-Only, HttpOnly, Secure"/>
+</enum>
+
+<enum name="HttpMethods">
+  <int value="0" label="UNKNOWN"/>
+  <int value="1" label="GET"/>
+  <int value="2" label="HEAD"/>
+  <int value="3" label="POST"/>
+  <int value="4" label="PUT"/>
+  <int value="5" label="DELETE"/>
+  <int value="6" label="CONNECT"/>
+  <int value="7" label="OPTIONS"/>
+  <int value="8" label="TRACE"/>
+  <int value="9" label="PATCH"/>
+</enum>
+
+<enum name="InterestingCookiePorts">
+  <int value="0" label="Other Port"/>
+  <int value="1" label="Port 80"/>
+  <int value="2" label="Port 81"/>
+  <int value="3" label="Port 82"/>
+  <int value="4" label="Port 83"/>
+  <int value="5" label="Port 84"/>
+  <int value="6" label="Port 85"/>
+  <int value="7" label="Port 443"/>
+  <int value="8" label="Port 444"/>
+  <int value="9" label="Port 445"/>
+  <int value="10" label="Port 446"/>
+  <int value="11" label="Port 447"/>
+  <int value="12" label="Port 448"/>
+  <int value="13" label="Port 3000"/>
+  <int value="14" label="Port 3001"/>
+  <int value="15" label="Port 3002"/>
+  <int value="16" label="Port 3003"/>
+  <int value="17" label="Port 3004"/>
+  <int value="18" label="Port 3005"/>
+  <int value="19" label="Port 4200"/>
+  <int value="20" label="Port 4201"/>
+  <int value="21" label="Port 4202"/>
+  <int value="22" label="Port 4203"/>
+  <int value="23" label="Port 4204"/>
+  <int value="24" label="Port 4205"/>
+  <int value="25" label="Port 5000"/>
+  <int value="26" label="Port 5001"/>
+  <int value="27" label="Port 5002"/>
+  <int value="28" label="Port 5003"/>
+  <int value="29" label="Port 5004"/>
+  <int value="30" label="Port 5005"/>
+  <int value="31" label="Port 7000"/>
+  <int value="32" label="Port 7001"/>
+  <int value="33" label="Port 7002"/>
+  <int value="34" label="Port 7003"/>
+  <int value="35" label="Port 7004"/>
+  <int value="36" label="Port 7005"/>
+  <int value="37" label="Port 8000"/>
+  <int value="38" label="Port 8001"/>
+  <int value="39" label="Port 8002"/>
+  <int value="40" label="Port 8003"/>
+  <int value="41" label="Port 8004"/>
+  <int value="42" label="Port 8005"/>
+  <int value="43" label="Port 8080"/>
+  <int value="44" label="Port 8081"/>
+  <int value="45" label="Port 8082"/>
+  <int value="46" label="Port 8083"/>
+  <int value="47" label="Port 8084"/>
+  <int value="48" label="Port 8085"/>
+  <int value="49" label="Port 8090"/>
+  <int value="50" label="Port 8091"/>
+  <int value="51" label="Port 8092"/>
+  <int value="52" label="Port 8093"/>
+  <int value="53" label="Port 8094"/>
+  <int value="54" label="Port 8095"/>
+  <int value="55" label="Port 8100"/>
+  <int value="56" label="Port 8101"/>
+  <int value="57" label="Port 8102"/>
+  <int value="58" label="Port 8103"/>
+  <int value="59" label="Port 8104"/>
+  <int value="60" label="Port 8105"/>
+  <int value="61" label="Port 8200"/>
+  <int value="62" label="Port 8201"/>
+  <int value="63" label="Port 8202"/>
+  <int value="64" label="Port 8203"/>
+  <int value="65" label="Port 8204"/>
+  <int value="66" label="Port 8205"/>
+  <int value="67" label="Port 8443"/>
+  <int value="68" label="Port 8444"/>
+  <int value="69" label="Port 8445"/>
+  <int value="70" label="Port 8446"/>
+  <int value="71" label="Port 8447"/>
+  <int value="72" label="Port 8448"/>
+  <int value="73" label="Port 8888"/>
+  <int value="74" label="Port 8889"/>
+  <int value="75" label="Port 8890"/>
+  <int value="76" label="Port 8891"/>
+  <int value="77" label="Port 8892"/>
+  <int value="78" label="Port 8893"/>
+  <int value="79" label="Port 9000"/>
+  <int value="80" label="Port 9001"/>
+  <int value="81" label="Port 9002"/>
+  <int value="82" label="Port 9003"/>
+  <int value="83" label="Port 9004"/>
+  <int value="84" label="Port 9005"/>
+  <int value="85" label="Port 9090"/>
+  <int value="86" label="Port 9091"/>
+  <int value="87" label="Port 9092"/>
+  <int value="88" label="Port 9093"/>
+  <int value="89" label="Port 9094"/>
+  <int value="90" label="Port 9095"/>
+</enum>
+
+<enum name="TruncatingCharacterInCookieStringType">
+  <int value="0" label="No truncating character"/>
+  <int value="1" label="NULL (\x0)"/>
+  <int value="2" label="New Line (\xD)"/>
+  <int value="3" label="Line Feed (\xA)"/>
+</enum>
+
+</enums>
+
+</histogram-configuration>

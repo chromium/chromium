@@ -44,10 +44,6 @@ AccountBookmarkSyncServiceFactory::~AccountBookmarkSyncServiceFactory() =
 std::unique_ptr<KeyedService>
 AccountBookmarkSyncServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  if (!base::FeatureList::IsEnabled(syncer::kEnableBookmarksAccountStorage)) {
-    return nullptr;
-  }
-
   ChromeBrowserState* browser_state =
       ChromeBrowserState::FromBrowserState(context);
   std::unique_ptr<sync_bookmarks::BookmarkSyncService> bookmark_sync_service(

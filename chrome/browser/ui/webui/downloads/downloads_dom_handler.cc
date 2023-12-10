@@ -34,6 +34,7 @@
 #include "chrome/browser/download/offline_item_utils.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -254,7 +255,7 @@ void DownloadsDOMHandler::DiscardDangerous(const std::string& id) {
             download,
             safe_browsing::ClientSafeBrowsingReportRequest::
                 DANGEROUS_DOWNLOAD_RECOVERY,
-            /*did_proceed=*/false, /*show_download_in_folder=*/absl::nullopt);
+            /*did_proceed=*/false, /*show_download_in_folder=*/std::nullopt);
       }
     }
   }
@@ -475,6 +476,8 @@ void DownloadsDOMHandler::DeepScan(const std::string& id) {
     return;
   }
 
+  LogDeepScanEvent(download,
+                   safe_browsing::DeepScanEvent::kPromptAcceptedFromWebUI);
   DownloadItemModel model(download);
   DownloadCommands commands(model.GetWeakPtr());
   commands.ExecuteCommand(DownloadCommands::DEEP_SCAN);
@@ -493,7 +496,14 @@ void DownloadsDOMHandler::BypassDeepScanRequiringGesture(
   if (download) {
     DownloadItemModel model(download);
     DownloadCommands commands(model.GetWeakPtr());
-    commands.ExecuteCommand(DownloadCommands::BYPASS_DEEP_SCANNING_AND_OPEN);
+    // Under ImprovedDownloadPageWarnings, the button says "Download suspicious
+    // file" which does not imply opening the file. In the old behavior, the
+    // button says "Open anyway" so we should open the file.
+    commands.ExecuteCommand(
+        base::FeatureList::IsEnabled(
+            safe_browsing::kImprovedDownloadPageWarnings)
+            ? DownloadCommands::BYPASS_DEEP_SCANNING
+            : DownloadCommands::BYPASS_DEEP_SCANNING_AND_OPEN);
   }
 }
 

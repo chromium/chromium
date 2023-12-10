@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.vr;
+
 import android.view.MotionEvent;
 import android.view.ViewGroup;
 
@@ -16,9 +17,7 @@ import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.components.webxr.ArCompositorDelegate;
 import org.chromium.content_public.browser.WebContents;
 
-/**
- * Concrete, Chrome-specific implementation of ArCompositorDelegate interface.
- */
+/** Concrete, Chrome-specific implementation of ArCompositorDelegate interface. */
 public class ArCompositorDelegateImpl implements ArCompositorDelegate {
     private ChromeActivity mActivity;
     private CompositorViewHolder mCompositorViewHolder;

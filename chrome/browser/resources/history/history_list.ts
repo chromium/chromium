@@ -10,22 +10,23 @@ import './shared_style.css.js';
 import './history_item.js';
 
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
-import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
-import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
-import {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
+import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import type {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
-import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
-import {IronScrollThresholdElement} from 'chrome://resources/polymer/v3_0/iron-scroll-threshold/iron-scroll-threshold.js';
+import type {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
+import type {IronScrollThresholdElement} from 'chrome://resources/polymer/v3_0/iron-scroll-threshold/iron-scroll-threshold.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserServiceImpl} from './browser_service.js';
 import {BROWSING_GAP_TIME} from './constants.js';
-import {HistoryEntry, HistoryQuery, QueryState} from './externs.js';
-import {HistoryItemElement, searchResultsTitle} from './history_item.js';
+import type {HistoryEntry, HistoryQuery, QueryState} from './externs.js';
+import type {HistoryItemElement} from './history_item.js';
+import {searchResultsTitle} from './history_item.js';
 import {getTemplate} from './history_list.html.js';
 
 export interface ActionMenuModel {

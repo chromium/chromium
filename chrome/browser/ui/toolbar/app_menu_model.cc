@@ -15,7 +15,6 @@
 #include "base/i18n/number_formatting.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -54,7 +53,10 @@
 #include "chrome/browser/ui/managed_ui.h"
 #include "chrome/browser/ui/profiles/profile_view_utils.h"
 #include "chrome/browser/ui/safety_hub/menu_notification_service_factory.h"
+#include "chrome/browser/ui/safety_hub/safety_hub_constants.h"
 #include "chrome/browser/ui/side_panel/companion/companion_utils.h"
+#include "chrome/browser/ui/tabs/organization/tab_organization_service_factory.h"
+#include "chrome/browser/ui/tabs/organization/tab_organization_utils.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/app_menu_icon_controller.h"
 #include "chrome/browser/ui/toolbar/bookmark_sub_menu_model.h"
@@ -119,8 +121,8 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/policy/system_features_disable_list_policy_handler.h"
-#include "chromeos/ui/base/tablet_state.h"
 #include "components/policy/core/common/policy_pref_names.h"
+#include "ui/display/screen.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -142,6 +144,7 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel,
                                       kPasswordAndAutofillMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kPasswordManagerMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kShowSearchCompanion);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kPerformanceMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ToolsMenuModel, kPerformanceMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ToolsMenuModel, kChromeLabsMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ToolsMenuModel, kReadingModeMenuItem);
@@ -198,7 +201,7 @@ std::u16string GetInstallPWALabel(const Browser* browser) {
 // Returns the appropriate menu label for the IDC_OPEN_IN_PWA_WINDOW command if
 // available.
 std::u16string GetOpenPWALabel(const Browser* browser) {
-  absl::optional<webapps::AppId> app_id =
+  std::optional<webapps::AppId> app_id =
       web_app::GetWebAppForActiveTab(browser);
   if (!app_id.has_value()) {
     return std::u16string();
@@ -436,7 +439,7 @@ bool ProfileSubMenuModel::BuildSyncSection() {
       identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync);
   // First, check for sync errors. They may exist even if sync-the-feature is
   // disabled and only sync-the-transport is running.
-  const absl::optional<AvatarSyncErrorType> error =
+  const std::optional<AvatarSyncErrorType> error =
       GetAvatarSyncErrorType(profile_);
   if (error.has_value()) {
     if (error == AvatarSyncErrorType::kSyncPaused) {
@@ -611,8 +614,8 @@ void SetCommandIcon(ui::SimpleMenuModel* model,
 ////////////////////////////////////////////////////////////////////////////////
 // LogWrenchMenuAction
 void LogWrenchMenuAction(AppMenuAction action_id) {
-  UMA_HISTOGRAM_ENUMERATION("WrenchMenu.MenuAction", action_id,
-                            LIMIT_MENU_ACTION);
+  base::UmaHistogramEnumeration("WrenchMenu.MenuAction", action_id,
+                                LIMIT_MENU_ACTION);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -708,9 +711,12 @@ void ToolsMenuModel::Build(Browser* browser) {
   if (!features::IsExtensionMenuInRootAppMenu()) {
     AddItemWithStringId(IDC_MANAGE_EXTENSIONS, IDS_SHOW_EXTENSIONS);
   }
-  AddItemWithStringId(IDC_PERFORMANCE, IDS_SHOW_PERFORMANCE);
-  SetElementIdentifierAt(GetIndexOfCommandId(IDC_PERFORMANCE).value(),
-                         kPerformanceMenuItem);
+  if (!base::FeatureList::IsEnabled(
+          performance_manager::features::kPerformanceControlsSidePanel)) {
+    AddItemWithStringId(IDC_PERFORMANCE, IDS_SHOW_PERFORMANCE);
+    SetElementIdentifierAt(GetIndexOfCommandId(IDC_PERFORMANCE).value(),
+                           kPerformanceMenuItem);
+  }
   if (chrome::CanOpenTaskManager())
     AddItemWithStringId(IDC_TASK_MANAGER, IDS_TASK_MANAGER);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -854,12 +860,45 @@ void AppMenuModel::ExecuteCommand(int command_id, int event_flags) {
   chrome::ExecuteCommand(browser_, command_id);
 }
 
+void AppMenuModel::LogSafetyHubInteractionMetrics(
+    std::optional<safety_hub::SafetyHubModuleType> expected_module) {
+  auto const* safety_hub_menu_notification_service =
+      SafetyHubMenuNotificationServiceFactory::GetForProfile(
+          browser_->profile());
+  std::optional<safety_hub::SafetyHubModuleType> sh_module =
+      safety_hub_menu_notification_service->GetModuleOfActiveNotification();
+  if (sh_module.has_value() && (!expected_module.has_value() ||
+                                expected_module.value() == sh_module.value())) {
+    base::UmaHistogramEnumeration("Settings.SafetyHub.Interaction",
+                                  safety_hub::SafetyHubSurfaces::kThreeDotMenu);
+    base::UmaHistogramEnumeration(
+        "Settings.SafetyHub.EntryPointInteraction",
+        safety_hub::SafetyHubEntryPoint::kMenuNotifications);
+    base::UmaHistogramEnumeration("Settings.SafetyHub.MenuNotificationClicked",
+                                  sh_module.value());
+  }
+}
+
 void AppMenuModel::LogMenuMetrics(int command_id) {
   base::TimeDelta delta = timer_.Elapsed();
 
   switch (command_id) {
     case IDC_UPGRADE_DIALOG:
       LogMenuAction(MENU_ACTION_UPGRADE_DIALOG);
+      break;
+    case IDC_SHOW_PASSWORD_CHECKUP:
+      if (!uma_action_recorded_) {
+        LogSafetyHubInteractionMetrics(
+            safety_hub::SafetyHubModuleType::PASSWORDS);
+      }
+      LogMenuAction(MENU_ACTION_SHOW_PASSWORD_CHECKUP);
+      break;
+    case IDC_OPEN_SAFETY_HUB:
+      if (!uma_action_recorded_) {
+        // Multiple Safety Hub module types can result in opening Safety Hub UI.
+        LogSafetyHubInteractionMetrics();
+      }
+      LogMenuAction(MENU_ACTION_SHOW_SAFETY_HUB);
       break;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     case IDC_LACROS_DATA_MIGRATION:
@@ -868,18 +907,19 @@ void AppMenuModel::LogMenuMetrics(int command_id) {
 #endif
     case IDC_NEW_TAB:
       if (!uma_action_recorded_)
-        UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.NewTab", delta);
+        base::UmaHistogramMediumTimes("WrenchMenu.TimeToAction.NewTab", delta);
       LogMenuAction(MENU_ACTION_NEW_TAB);
       break;
     case IDC_NEW_WINDOW:
       if (!uma_action_recorded_)
-        UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.NewWindow", delta);
+        base::UmaHistogramMediumTimes("WrenchMenu.TimeToAction.NewWindow",
+                                      delta);
       LogMenuAction(MENU_ACTION_NEW_WINDOW);
       break;
     case IDC_NEW_INCOGNITO_WINDOW:
       if (!uma_action_recorded_) {
-        UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.NewIncognitoWindow",
-                                   delta);
+        base::UmaHistogramMediumTimes(
+            "WrenchMenu.TimeToAction.NewIncognitoWindow", delta);
       }
       LogMenuAction(MENU_ACTION_NEW_INCOGNITO_WINDOW);
       break;
@@ -887,50 +927,50 @@ void AppMenuModel::LogMenuMetrics(int command_id) {
     // Bookmarks sub menu.
     case IDC_SHOW_BOOKMARK_BAR:
       if (!uma_action_recorded_) {
-        UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.ShowBookmarkBar",
-                                   delta);
+        base::UmaHistogramMediumTimes("WrenchMenu.TimeToAction.ShowBookmarkBar",
+                                      delta);
       }
       LogMenuAction(MENU_ACTION_SHOW_BOOKMARK_BAR);
       break;
     case IDC_SHOW_BOOKMARK_SIDE_PANEL:
       if (!uma_action_recorded_) {
-        UMA_HISTOGRAM_MEDIUM_TIMES(
+        base::UmaHistogramMediumTimes(
             "WrenchMenu.TimeToAction.ShowBookmarkSidePanel", delta);
       }
       LogMenuAction(MENU_ACTION_SHOW_BOOKMARK_SIDE_PANEL);
       break;
     case IDC_SHOW_BOOKMARK_MANAGER:
       if (!uma_action_recorded_) {
-        UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.ShowBookmarkMgr",
-                                   delta);
+        base::UmaHistogramMediumTimes("WrenchMenu.TimeToAction.ShowBookmarkMgr",
+                                      delta);
       }
       LogMenuAction(MENU_ACTION_SHOW_BOOKMARK_MANAGER);
       break;
     case IDC_IMPORT_SETTINGS:
       if (!uma_action_recorded_) {
-        UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.ImportSettings",
-                                   delta);
+        base::UmaHistogramMediumTimes("WrenchMenu.TimeToAction.ImportSettings",
+                                      delta);
       }
       LogMenuAction(MENU_ACTION_IMPORT_SETTINGS);
       break;
     case IDC_BOOKMARK_THIS_TAB:
       if (!uma_action_recorded_) {
-        UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.BookmarkPage",
-                                   delta);
+        base::UmaHistogramMediumTimes("WrenchMenu.TimeToAction.BookmarkPage",
+                                      delta);
       }
       LogMenuAction(MENU_ACTION_BOOKMARK_THIS_TAB);
       break;
     case IDC_BOOKMARK_ALL_TABS:
       if (!uma_action_recorded_) {
-        UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.BookmarkAllTabs",
-                                   delta);
+        base::UmaHistogramMediumTimes("WrenchMenu.TimeToAction.BookmarkAllTabs",
+                                      delta);
       }
       LogMenuAction(MENU_ACTION_BOOKMARK_ALL_TABS);
       break;
       // Search companion.
     case IDC_SHOW_SEARCH_COMPANION:
       if (!uma_action_recorded_) {
-        UMA_HISTOGRAM_MEDIUM_TIMES(
+        base::UmaHistogramMediumTimes(
             "WrenchMenu.TimeToAction.ShowSearchCompanion", delta);
       }
       LogMenuAction(MENU_ACTION_SHOW_SEARCH_COMPANION);
@@ -940,15 +980,15 @@ void AppMenuModel::LogMenuMetrics(int command_id) {
       CHECK(features::IsExtensionMenuInRootAppMenu());
       // Logging the original histograms for experiment comparison purposes.
       if (!uma_action_recorded_) {
-        UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.ManageExtensions",
-                                   delta);
+        base::UmaHistogramMediumTimes(
+            "WrenchMenu.TimeToAction.ManageExtensions", delta);
       }
       LogMenuAction(MENU_ACTION_MANAGE_EXTENSIONS);
       break;
     case IDC_EXTENSIONS_SUBMENU_VISIT_CHROME_WEB_STORE:
       CHECK(features::IsExtensionMenuInRootAppMenu());
       if (!uma_action_recorded_) {
-        UMA_HISTOGRAM_MEDIUM_TIMES(
+        base::UmaHistogramMediumTimes(
             "WrenchMenu.TimeToAction.VisitChromeWebStore", delta);
       }
       LogMenuAction(MENU_ACTION_VISIT_CHROME_WEB_STORE);
@@ -956,27 +996,28 @@ void AppMenuModel::LogMenuMetrics(int command_id) {
     // Recent tabs menu.
     case IDC_RESTORE_TAB:
       if (!uma_action_recorded_)
-        UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.RestoreTab", delta);
+        base::UmaHistogramMediumTimes("WrenchMenu.TimeToAction.RestoreTab",
+                                      delta);
       LogMenuAction(MENU_ACTION_RESTORE_TAB);
       break;
     case IDC_OPEN_RECENT_TAB:
       if (!uma_action_recorded_) {
-        UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.OpenRecentTab",
-                                   delta);
+        base::UmaHistogramMediumTimes("WrenchMenu.TimeToAction.OpenRecentTab",
+                                      delta);
       }
       LogMenuAction(MENU_ACTION_RECENT_TAB);
       break;
     case IDC_RECENT_TABS_LOGIN_FOR_DEVICE_TABS:
       if (!uma_action_recorded_) {
-        UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.LoginForDeviceTabs",
-                                   delta);
+        base::UmaHistogramMediumTimes(
+            "WrenchMenu.TimeToAction.LoginForDeviceTabs", delta);
       }
       LogMenuAction(MENU_ACTION_RECENT_TABS_LOGIN_FOR_DEVICE_TABS);
       break;
     case IDC_DISTILL_PAGE:
       if (!uma_action_recorded_) {
-        UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.DistillPage",
-                                   delta);
+        base::UmaHistogramMediumTimes("WrenchMenu.TimeToAction.DistillPage",
+                                      delta);
       }
       LogMenuAction(MENU_ACTION_DISTILL_PAGE);
       if (dom_distiller::url_utils::IsDistilledPage(
@@ -993,19 +1034,19 @@ void AppMenuModel::LogMenuMetrics(int command_id) {
       break;
     case IDC_FIND:
       if (!uma_action_recorded_)
-        UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.Find", delta);
+        base::UmaHistogramMediumTimes("WrenchMenu.TimeToAction.Find", delta);
       LogMenuAction(MENU_ACTION_FIND);
       break;
     case IDC_PRINT:
       if (!uma_action_recorded_)
-        UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.Print", delta);
+        base::UmaHistogramMediumTimes("WrenchMenu.TimeToAction.Print", delta);
       LogMenuAction(MENU_ACTION_PRINT);
       break;
 
     case IDC_SHOW_TRANSLATE:
       if (!uma_action_recorded_) {
-        UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.ShowTranslate",
-                                   delta);
+        base::UmaHistogramMediumTimes("WrenchMenu.TimeToAction.ShowTranslate",
+                                      delta);
       }
       LogMenuAction(MENU_ACTION_SHOW_TRANSLATE);
       break;
@@ -1013,70 +1054,72 @@ void AppMenuModel::LogMenuMetrics(int command_id) {
     // Edit menu.
     case IDC_CUT:
       if (!uma_action_recorded_)
-        UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.Cut", delta);
+        base::UmaHistogramMediumTimes("WrenchMenu.TimeToAction.Cut", delta);
       LogMenuAction(MENU_ACTION_CUT);
       break;
     case IDC_COPY:
       if (!uma_action_recorded_)
-        UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.Copy", delta);
+        base::UmaHistogramMediumTimes("WrenchMenu.TimeToAction.Copy", delta);
       LogMenuAction(MENU_ACTION_COPY);
       break;
     case IDC_PASTE:
       if (!uma_action_recorded_)
-        UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.Paste", delta);
+        base::UmaHistogramMediumTimes("WrenchMenu.TimeToAction.Paste", delta);
       LogMenuAction(MENU_ACTION_PASTE);
       break;
 
     // Save and share menu.
     case IDC_SAVE_PAGE:
       if (!uma_action_recorded_) {
-        UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.SavePage", delta);
+        base::UmaHistogramMediumTimes("WrenchMenu.TimeToAction.SavePage",
+                                      delta);
       }
       LogMenuAction(MENU_ACTION_SAVE_PAGE);
       break;
     case IDC_INSTALL_PWA:
       if (!uma_action_recorded_) {
-        UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.InstallPwa", delta);
+        base::UmaHistogramMediumTimes("WrenchMenu.TimeToAction.InstallPwa",
+                                      delta);
       }
       LogMenuAction(MENU_ACTION_INSTALL_PWA);
       break;
     case IDC_OPEN_IN_PWA_WINDOW:
       if (!uma_action_recorded_) {
-        UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.OpenInPwaWindow",
-                                   delta);
+        base::UmaHistogramMediumTimes("WrenchMenu.TimeToAction.OpenInPwaWindow",
+                                      delta);
       }
       LogMenuAction(MENU_ACTION_OPEN_IN_PWA_WINDOW);
       break;
     case IDC_CREATE_SHORTCUT:
       if (!uma_action_recorded_) {
-        UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.CreateHostedApp",
-                                   delta);
+        base::UmaHistogramMediumTimes("WrenchMenu.TimeToAction.CreateHostedApp",
+                                      delta);
       }
       LogMenuAction(MENU_ACTION_CREATE_HOSTED_APP);
       break;
     case IDC_COPY_URL:
       if (!uma_action_recorded_) {
-        UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.CopyUrl", delta);
+        base::UmaHistogramMediumTimes("WrenchMenu.TimeToAction.CopyUrl", delta);
       }
       LogMenuAction(MENU_ACTION_COPY_URL);
       break;
     case IDC_SEND_TAB_TO_SELF:
       if (!uma_action_recorded_) {
-        UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.SendToDevices",
-                                   delta);
+        base::UmaHistogramMediumTimes("WrenchMenu.TimeToAction.SendToDevices",
+                                      delta);
       }
       LogMenuAction(MENU_ACTION_SEND_TO_DEVICES);
       break;
     case IDC_QRCODE_GENERATOR:
       if (!uma_action_recorded_) {
-        UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.CreateQrCode",
-                                   delta);
+        base::UmaHistogramMediumTimes("WrenchMenu.TimeToAction.CreateQrCode",
+                                      delta);
       }
       LogMenuAction(MENU_ACTION_CREATE_QR_CODE);
       break;
     case IDC_ROUTE_MEDIA:
       if (!uma_action_recorded_) {
-        UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.Cast", delta);
+        base::UmaHistogramMediumTimes("WrenchMenu.TimeToAction.Cast", delta);
       }
       LogMenuAction(MENU_ACTION_CAST);
       break;
@@ -1084,74 +1127,103 @@ void AppMenuModel::LogMenuMetrics(int command_id) {
     // Tools menu.
     case IDC_MANAGE_EXTENSIONS:
       if (!uma_action_recorded_) {
-        UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.ManageExtensions",
-                                   delta);
+        // TODO(crbug.com/1443466): Use a callback instead to log the metrics to
+        // reduce coupling with Safety Hub notification service.
+        // See crrev.com/c/5012653/comments/4f038126_bb7cb0fe for more details.
+        if (features::IsExtensionMenuInRootAppMenu()) {
+          LogSafetyHubInteractionMetrics();
+        } else {
+          // The command can originate from either Safety Hub notification or
+          // extension menu.
+          LogSafetyHubInteractionMetrics(
+              safety_hub::SafetyHubModuleType::EXTENSIONS);
+        }
+        base::UmaHistogramMediumTimes(
+            "WrenchMenu.TimeToAction.ManageExtensions", delta);
       }
       LogMenuAction(MENU_ACTION_MANAGE_EXTENSIONS);
       break;
     case IDC_TASK_MANAGER:
       if (!uma_action_recorded_) {
-        UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.TaskManager",
-                                   delta);
+        base::UmaHistogramMediumTimes("WrenchMenu.TimeToAction.TaskManager",
+                                      delta);
       }
       LogMenuAction(MENU_ACTION_TASK_MANAGER);
       break;
     case IDC_CLEAR_BROWSING_DATA:
       if (!uma_action_recorded_) {
-        UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.ClearBrowsingData",
-                                   delta);
+        base::UmaHistogramMediumTimes(
+            "WrenchMenu.TimeToAction.ClearBrowsingData", delta);
       }
       LogMenuAction(MENU_ACTION_CLEAR_BROWSING_DATA);
       break;
     case IDC_VIEW_SOURCE:
       if (!uma_action_recorded_)
-        UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.ViewSource", delta);
+        base::UmaHistogramMediumTimes("WrenchMenu.TimeToAction.ViewSource",
+                                      delta);
       LogMenuAction(MENU_ACTION_VIEW_SOURCE);
       break;
     case IDC_DEV_TOOLS:
       if (!uma_action_recorded_)
-        UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.DevTools", delta);
+        base::UmaHistogramMediumTimes("WrenchMenu.TimeToAction.DevTools",
+                                      delta);
       LogMenuAction(MENU_ACTION_DEV_TOOLS);
       break;
     case IDC_DEV_TOOLS_CONSOLE:
       if (!uma_action_recorded_) {
-        UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.DevToolsConsole",
-                                   delta);
+        base::UmaHistogramMediumTimes("WrenchMenu.TimeToAction.DevToolsConsole",
+                                      delta);
       }
       LogMenuAction(MENU_ACTION_DEV_TOOLS_CONSOLE);
       break;
     case IDC_DEV_TOOLS_DEVICES:
       if (!uma_action_recorded_) {
-        UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.DevToolsDevices",
-                                   delta);
+        base::UmaHistogramMediumTimes("WrenchMenu.TimeToAction.DevToolsDevices",
+                                      delta);
       }
       LogMenuAction(MENU_ACTION_DEV_TOOLS_DEVICES);
       break;
     case IDC_PROFILING_ENABLED:
       if (!uma_action_recorded_) {
-        UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.ProfilingEnabled",
-                                   delta);
+        base::UmaHistogramMediumTimes(
+            "WrenchMenu.TimeToAction.ProfilingEnabled", delta);
       }
       LogMenuAction(MENU_ACTION_PROFILING_ENABLED);
       break;
     case IDC_SHOW_CHROME_LABS:
       if (!uma_action_recorded_) {
-        UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.ShowChromeLabs",
-                                   delta);
+        base::UmaHistogramMediumTimes("WrenchMenu.TimeToAction.ShowChromeLabs",
+                                      delta);
       }
       LogMenuAction(MENU_ACTION_SHOW_CHROME_LABS);
+      break;
+    case IDC_SHOW_HISTORY_CLUSTERS_SIDE_PANEL:
+      if (!uma_action_recorded_) {
+        base::UmaHistogramMediumTimes(
+            "WrenchMenu.TimeToAction.ShowHistoryClustersSidePanel", delta);
+      }
+      LogMenuAction(MENU_ACTION_SHOW_HISTORY_CLUSTER_SIDE_PANEL);
+      break;
+    case IDC_SHOW_READING_MODE_SIDE_PANEL:
+      if (!uma_action_recorded_) {
+        base::UmaHistogramMediumTimes(
+            "WrenchMenu.TimeToAction.ShowReadingModeSidePanel", delta);
+      }
+      LogMenuAction(MENU_ACTION_SHOW_READING_MODE_SIDE_PANEL);
       break;
 
     // Zoom menu
     case IDC_ZOOM_MINUS:
       if (!uma_action_recorded_) {
-        UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.ZoomMinus", delta);
+        base::UmaHistogramMediumTimes("WrenchMenu.TimeToAction.ZoomMinus",
+                                      delta);
         LogMenuAction(MENU_ACTION_ZOOM_MINUS);
       }
       break;
     case IDC_ZOOM_PLUS:
       if (!uma_action_recorded_) {
-        UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.ZoomPlus", delta);
+        base::UmaHistogramMediumTimes("WrenchMenu.TimeToAction.ZoomPlus",
+                                      delta);
         LogMenuAction(MENU_ACTION_ZOOM_PLUS);
       }
       break;
@@ -1159,22 +1231,22 @@ void AppMenuModel::LogMenuMetrics(int command_id) {
       base::RecordAction(UserMetricsAction("EnterFullScreenWithWrenchMenu"));
 
       if (!uma_action_recorded_) {
-        UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.EnterFullScreen",
-                                   delta);
+        base::UmaHistogramMediumTimes("WrenchMenu.TimeToAction.EnterFullScreen",
+                                      delta);
       }
       LogMenuAction(MENU_ACTION_FULLSCREEN);
       break;
     case IDC_SHOW_HISTORY:
       if (!uma_action_recorded_) {
-        UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.ShowHistory",
-                                   delta);
+        base::UmaHistogramMediumTimes("WrenchMenu.TimeToAction.ShowHistory",
+                                      delta);
       }
       LogMenuAction(MENU_ACTION_SHOW_HISTORY);
       break;
     case IDC_SHOW_DOWNLOADS:
       if (!uma_action_recorded_) {
-        UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.ShowDownloads",
-                                   delta);
+        base::UmaHistogramMediumTimes("WrenchMenu.TimeToAction.ShowDownloads",
+                                      delta);
       }
       LogMenuAction(MENU_ACTION_SHOW_DOWNLOADS);
       base::UmaHistogramEnumeration(
@@ -1183,7 +1255,8 @@ void AppMenuModel::LogMenuMetrics(int command_id) {
       break;
     case IDC_OPTIONS:
       if (!uma_action_recorded_)
-        UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.Settings", delta);
+        base::UmaHistogramMediumTimes("WrenchMenu.TimeToAction.Settings",
+                                      delta);
       LogMenuAction(MENU_ACTION_OPTIONS);
       base::UmaHistogramEnumeration(
           "Settings.OpenSettingsFromMenu.PerProfileType",
@@ -1191,7 +1264,7 @@ void AppMenuModel::LogMenuMetrics(int command_id) {
       break;
     case IDC_ABOUT:
       if (!uma_action_recorded_)
-        UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.About", delta);
+        base::UmaHistogramMediumTimes("WrenchMenu.TimeToAction.About", delta);
       LogMenuAction(MENU_ACTION_ABOUT);
       break;
     // Help menu.
@@ -1199,29 +1272,33 @@ void AppMenuModel::LogMenuMetrics(int command_id) {
       base::RecordAction(UserMetricsAction("ShowHelpTabViaWrenchMenu"));
 
       if (!uma_action_recorded_)
-        UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.HelpPage", delta);
+        base::UmaHistogramMediumTimes("WrenchMenu.TimeToAction.HelpPage",
+                                      delta);
       LogMenuAction(MENU_ACTION_HELP_PAGE_VIA_MENU);
       break;
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
     case IDC_SHOW_BETA_FORUM:
       if (!uma_action_recorded_)
-        UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.BetaForum", delta);
+        base::UmaHistogramMediumTimes("WrenchMenu.TimeToAction.BetaForum",
+                                      delta);
       LogMenuAction(MENU_ACTION_BETA_FORUM);
       break;
     case IDC_FEEDBACK:
       if (!uma_action_recorded_)
-        UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.Feedback", delta);
+        base::UmaHistogramMediumTimes("WrenchMenu.TimeToAction.Feedback",
+                                      delta);
       LogMenuAction(MENU_ACTION_FEEDBACK);
       break;
     case IDC_CHROME_TIPS:
       if (!uma_action_recorded_)
-        UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.ChromeTips", delta);
+        base::UmaHistogramMediumTimes("WrenchMenu.TimeToAction.ChromeTips",
+                                      delta);
       LogMenuAction(MENU_ACTION_CHROME_TIPS);
       break;
     case IDC_CHROME_WHATS_NEW:
       if (!uma_action_recorded_) {
-        UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.ChromeWhatsNew",
-                                   delta);
+        base::UmaHistogramMediumTimes("WrenchMenu.TimeToAction.ChromeWhatsNew",
+                                      delta);
       }
       LogMenuAction(MENU_ACTION_CHROME_WHATS_NEW);
       break;
@@ -1229,34 +1306,34 @@ void AppMenuModel::LogMenuMetrics(int command_id) {
 
     case IDC_TOGGLE_REQUEST_TABLET_SITE:
       if (!uma_action_recorded_) {
-        UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.RequestTabletSite",
-                                   delta);
+        base::UmaHistogramMediumTimes(
+            "WrenchMenu.TimeToAction.RequestTabletSite", delta);
       }
       LogMenuAction(MENU_ACTION_TOGGLE_REQUEST_TABLET_SITE);
       break;
     case IDC_EXIT:
       if (!uma_action_recorded_)
-        UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.Exit", delta);
+        base::UmaHistogramMediumTimes("WrenchMenu.TimeToAction.Exit", delta);
       LogMenuAction(MENU_ACTION_EXIT);
       break;
 
     // Hosted App menu.
     case IDC_OPEN_IN_CHROME:
       if (!uma_action_recorded_) {
-        UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.OpenInChrome",
-                                   delta);
+        base::UmaHistogramMediumTimes("WrenchMenu.TimeToAction.OpenInChrome",
+                                      delta);
       }
       LogMenuAction(MENU_ACTION_OPEN_IN_CHROME);
       break;
     case IDC_WEB_APP_MENU_APP_INFO:
       if (!uma_action_recorded_)
-        UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.AppInfo", delta);
+        base::UmaHistogramMediumTimes("WrenchMenu.TimeToAction.AppInfo", delta);
       LogMenuAction(MENU_ACTION_APP_INFO);
       break;
     case IDC_VIEW_PASSWORDS:
       if (!uma_action_recorded_) {
-        UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.PasswordManager",
-                                   delta);
+        base::UmaHistogramMediumTimes("WrenchMenu.TimeToAction.PasswordManager",
+                                      delta);
       }
       LogMenuAction(MENU_ACTION_PASSWORD_MANAGER);
       break;
@@ -1265,63 +1342,63 @@ void AppMenuModel::LogMenuMetrics(int command_id) {
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
     case IDC_CUSTOMIZE_CHROME:
       if (!uma_action_recorded_) {
-        UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.CustomizeChrome",
-                                   delta);
+        base::UmaHistogramMediumTimes("WrenchMenu.TimeToAction.CustomizeChrome",
+                                      delta);
       }
       LogMenuAction(MENU_ACTION_CUSTOMIZE_CHROME);
       break;
     case IDC_CLOSE_PROFILE:
       if (!uma_action_recorded_) {
-        UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.CloseProfile",
-                                   delta);
+        base::UmaHistogramMediumTimes("WrenchMenu.TimeToAction.CloseProfile",
+                                      delta);
       }
       LogMenuAction(MENU_ACTION_CLOSE_PROFILE);
       break;
     case IDC_MANAGE_GOOGLE_ACCOUNT:
       if (!uma_action_recorded_) {
-        UMA_HISTOGRAM_MEDIUM_TIMES(
+        base::UmaHistogramMediumTimes(
             "WrenchMenu.TimeToAction.ManageGoogleAccount", delta);
       }
       LogMenuAction(MENU_ACTION_MANAGE_GOOGLE_ACCOUNT);
       break;
     case IDC_SHOW_SYNC_SETTINGS:
       if (!uma_action_recorded_) {
-        UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.ShowSyncSettings",
-                                   delta);
+        base::UmaHistogramMediumTimes(
+            "WrenchMenu.TimeToAction.ShowSyncSettings", delta);
       }
       LogMenuAction(MENU_SHOW_SYNC_SETTINGS);
       break;
     case IDC_TURN_ON_SYNC:
       if (!uma_action_recorded_) {
-        UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.ShowTurnOnSync",
-                                   delta);
+        base::UmaHistogramMediumTimes("WrenchMenu.TimeToAction.ShowTurnOnSync",
+                                      delta);
       }
       LogMenuAction(MENU_TURN_ON_SYNC);
       break;
     case IDC_SHOW_SIGNIN_WHEN_PAUSED:
       if (!uma_action_recorded_) {
-        UMA_HISTOGRAM_MEDIUM_TIMES(
+        base::UmaHistogramMediumTimes(
             "WrenchMenu.TimeToAction.ShowSigninWhenPaused", delta);
       }
       LogMenuAction(MENU_SHOW_SIGNIN_WHEN_PAUSED);
       break;
     case IDC_OPEN_GUEST_PROFILE:
       if (!uma_action_recorded_) {
-        UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.OpenGuestProfile",
-                                   delta);
+        base::UmaHistogramMediumTimes(
+            "WrenchMenu.TimeToAction.OpenGuestProfile", delta);
       }
       LogMenuAction(MENU_ACTION_OPEN_GUEST_PROFILE);
       break;
     case IDC_ADD_NEW_PROFILE:
       if (!uma_action_recorded_) {
-        UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.AddNewProfile",
-                                   delta);
+        base::UmaHistogramMediumTimes("WrenchMenu.TimeToAction.AddNewProfile",
+                                      delta);
       }
       LogMenuAction(MENU_ACTION_ADD_NEW_PROFILE);
       break;
     case IDC_MANAGE_CHROME_PROFILES:
       if (!uma_action_recorded_) {
-        UMA_HISTOGRAM_MEDIUM_TIMES(
+        base::UmaHistogramMediumTimes(
             "WrenchMenu.TimeToAction.ManageChromeProfiles", delta);
       }
       LogMenuAction(MENU_ACTION_MANAGE_CHROME_PROFILES);
@@ -1331,15 +1408,15 @@ void AppMenuModel::LogMenuMetrics(int command_id) {
     // Reading list submenu.
     case IDC_READING_LIST_MENU_ADD_TAB:
       if (!uma_action_recorded_) {
-        UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.ReadingListAddTab",
-                                   delta);
+        base::UmaHistogramMediumTimes(
+            "WrenchMenu.TimeToAction.ReadingListAddTab", delta);
       }
       LogMenuAction(MENU_ACTION_READING_LIST_ADD_TAB);
       break;
     case IDC_READING_LIST_MENU_SHOW_UI:
       if (!uma_action_recorded_) {
-        UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.ReadingListShowUi",
-                                   delta);
+        base::UmaHistogramMediumTimes(
+            "WrenchMenu.TimeToAction.ReadingListShowUi", delta);
       }
       LogMenuAction(MENU_ACTION_READING_LIST_SHOW_UI);
       break;
@@ -1347,28 +1424,28 @@ void AppMenuModel::LogMenuMetrics(int command_id) {
     // Password autofill submenu.
     case IDC_SHOW_PASSWORD_MANAGER:
       if (!uma_action_recorded_) {
-        UMA_HISTOGRAM_MEDIUM_TIMES(
+        base::UmaHistogramMediumTimes(
             "WrenchMenu.TimeToAction.ShowPasswordManager", delta);
       }
       LogMenuAction(MENU_ACTION_SHOW_PASSWORD_MANAGER);
       break;
     case IDC_SHOW_PAYMENT_METHODS:
       if (!uma_action_recorded_) {
-        UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.ShowPaymentMethods",
-                                   delta);
+        base::UmaHistogramMediumTimes(
+            "WrenchMenu.TimeToAction.ShowPaymentMethods", delta);
       }
       LogMenuAction(MENU_ACTION_SHOW_PAYMENT_METHODS);
       break;
     case IDC_SHOW_ADDRESSES:
       if (!uma_action_recorded_) {
-        UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.ShowAddresses",
-                                   delta);
+        base::UmaHistogramMediumTimes("WrenchMenu.TimeToAction.ShowAddresses",
+                                      delta);
       }
       LogMenuAction(MENU_ACTION_SHOW_ADDRESSES);
       break;
     case IDC_PERFORMANCE:
       if (!uma_action_recorded_) {
-        UMA_HISTOGRAM_MEDIUM_TIMES(
+        base::UmaHistogramMediumTimes(
             "WrenchMenu.TimeToAction.ShowPerformanceSettings", delta);
       }
       LogMenuAction(MENU_ACTION_SHOW_PERFORMANCE_SETTINGS);
@@ -1376,7 +1453,7 @@ void AppMenuModel::LogMenuMetrics(int command_id) {
     default: {
       if (IsOtherProfileCommand(command_id)) {
         if (!uma_action_recorded_) {
-          UMA_HISTOGRAM_MEDIUM_TIMES(
+          base::UmaHistogramMediumTimes(
               "WrenchMenu.TimeToAction.SwitchToAnotherProfile", delta);
         }
         LogMenuAction(MENU_ACTION_SWITCH_TO_ANOTHER_PROFILE);
@@ -1386,7 +1463,7 @@ void AppMenuModel::LogMenuMetrics(int command_id) {
   }
 
   if (!uma_action_recorded_) {
-    UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction", delta);
+    base::UmaHistogramMediumTimes("WrenchMenu.TimeToAction", delta);
     uma_action_recorded_ = true;
   }
 }
@@ -1466,7 +1543,7 @@ void AppMenuModel::Build() {
                   kDefaultIconSize)
             : ui::ImageModel::FromVectorIcon(
                   kBrowserToolsUpdateIcon,
-                  app_menu_icon_controller_->GetIconColor(absl::nullopt));
+                  app_menu_icon_controller_->GetIconColor(std::nullopt));
     if (browser_defaults::kShowUpgradeMenuItem) {
       AddItemWithIcon(IDC_UPGRADE_DIALOG, GetUpgradeDialogMenuItemName(),
                       update_icon);
@@ -1485,9 +1562,21 @@ void AppMenuModel::Build() {
     auto* safety_hub_menu_notification_service =
         SafetyHubMenuNotificationServiceFactory::GetForProfile(
             browser_->profile());
-    absl::optional<MenuNotificationEntry> notification =
+    std::optional<MenuNotificationEntry> notification =
         safety_hub_menu_notification_service->GetNotificationToShow();
     if (notification.has_value()) {
+      base::UmaHistogramEnumeration(
+          "Settings.SafetyHub.Impression",
+          safety_hub::SafetyHubSurfaces::kThreeDotMenu);
+      base::UmaHistogramEnumeration(
+          "Settings.SafetyHub.EntryPointImpression",
+          safety_hub::SafetyHubEntryPoint::kMenuNotifications);
+      std::optional<safety_hub::SafetyHubModuleType> sh_module =
+          safety_hub_menu_notification_service->GetModuleOfActiveNotification();
+      if (sh_module.has_value()) {
+        base::UmaHistogramEnumeration(
+            "Settings.SafetyHub.MenuNotificationImpression", sh_module.value());
+      }
       const auto safety_hub_icon = ui::ImageModel::FromVectorIcon(
           kSecurityIcon, ui::kColorMenuIcon, kDefaultIconSize);
       AddItemWithIcon(notification->command, notification->label,
@@ -1617,9 +1706,20 @@ void AppMenuModel::Build() {
           kShowSearchCompanion);
     }
 #endif
-    if (features::IsTabOrganization()) {
-      AddItemWithStringId(IDC_ORGANIZE_TABS, IDS_TAB_ORGANIZE_MENU);
-      SetIsNewFeatureAt(GetIndexOfCommandId(IDC_ORGANIZE_TABS).value(), true);
+    if (TabOrganizationUtils::GetInstance()->IsEnabled(browser_->profile())) {
+      auto* const tab_organization_service =
+          TabOrganizationServiceFactory::GetForProfile(browser_->profile());
+      if (tab_organization_service) {
+        AddItemWithStringId(IDC_ORGANIZE_TABS, IDS_TAB_ORGANIZE_MENU);
+        SetIsNewFeatureAt(GetIndexOfCommandId(IDC_ORGANIZE_TABS).value(), true);
+      }
+    }
+
+    if (base::FeatureList::IsEnabled(
+            performance_manager::features::kPerformanceControlsSidePanel)) {
+      AddItemWithStringId(IDC_PERFORMANCE, IDS_SHOW_PERFORMANCE);
+      SetElementIdentifierAt(GetIndexOfCommandId(IDC_PERFORMANCE).value(),
+                             kPerformanceMenuItem);
     }
 
     AddItemWithStringId(IDC_SHOW_TRANSLATE, IDS_SHOW_TRANSLATE);
@@ -1631,6 +1731,13 @@ void AppMenuModel::Build() {
     AddSubMenuWithStringId(IDC_SAVE_AND_SHARE_MENU, IDS_SAVE_AND_SHARE_MENU,
                            sub_menus_.back().get());
   } else {
+    if (base::FeatureList::IsEnabled(
+            performance_manager::features::kPerformanceControlsSidePanel)) {
+      AddItemWithStringId(IDC_PERFORMANCE, IDS_SHOW_PERFORMANCE);
+      SetElementIdentifierAt(GetIndexOfCommandId(IDC_PERFORMANCE).value(),
+                             kPerformanceMenuItem);
+    }
+
     if (media_router::MediaRouterEnabled(browser()->profile())) {
       AddItemWithStringId(IDC_ROUTE_MEDIA, IDS_MEDIA_ROUTER_MENU_ITEM_TITLE);
     }
@@ -1659,7 +1766,7 @@ void AppMenuModel::Build() {
     } else if (dom_distiller::ShowReaderModeOption(
                    browser_->profile()->GetPrefs())) {
       // Show the menu option if the page is distillable.
-      absl::optional<dom_distiller::DistillabilityResult> distillability =
+      std::optional<dom_distiller::DistillabilityResult> distillability =
           dom_distiller::GetLatestResult(
               browser()->tab_strip_model()->GetActiveWebContents());
       if (distillability && distillability.value().is_distillable)
@@ -1669,8 +1776,7 @@ void AppMenuModel::Build() {
 
 #if BUILDFLAG(IS_CHROMEOS)
   // Always show this option if we're in tablet mode on Chrome OS.
-  if (chromeos::TabletState::Get() &&
-      chromeos::TabletState::Get()->InTabletMode()) {
+  if (display::Screen::GetScreen()->InTabletMode()) {
     if (features::IsChromeRefresh2023()) {
       AddItemWithStringIdAndIcon(
           IDC_TOGGLE_REQUEST_TABLET_SITE, IDS_TOGGLE_REQUEST_TABLET_SITE,
@@ -1766,7 +1872,7 @@ void AppMenuModel::Build() {
     SetCommandIcon(this, IDC_VIEW_PASSWORDS, kKeyOpenChromeRefreshIcon);
     SetCommandIcon(this, IDC_ZOOM_MENU, kZoomInIcon);
     SetCommandIcon(this, IDC_PRINT, kPrintMenuIcon);
-    SetCommandIcon(this, IDC_ORGANIZE_TABS, kPaintbrushIcon);
+    SetCommandIcon(this, IDC_ORGANIZE_TABS, kAutoTabGroupsIcon);
     SetCommandIcon(this, IDC_SHOW_TRANSLATE, kTranslateIcon);
     SetCommandIcon(this, IDC_FIND_AND_EDIT_MENU, kSearchMenuIcon);
     SetCommandIcon(this, IDC_SAVE_AND_SHARE_MENU, kFileSaveChromeRefreshIcon);
@@ -1774,6 +1880,7 @@ void AppMenuModel::Build() {
                    kKeyOpenChromeRefreshIcon);
     SetCommandIcon(this, IDC_MORE_TOOLS_MENU, kMoreToolsMenuIcon);
     SetCommandIcon(this, IDC_OPTIONS, kSettingsMenuIcon);
+    SetCommandIcon(this, IDC_PERFORMANCE, kPerformanceIcon);
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
     SetCommandIcon(this, IDC_HELP_MENU, kHelpMenuIcon);
     SetCommandIcon(this, IDC_SHOW_SEARCH_COMPANION,
@@ -1838,7 +1945,7 @@ void AppMenuModel::UpdateSettingsItemState() {
           policy::SystemFeature::kBrowserSettings,
           g_browser_process->local_state());
 
-  absl::optional<size_t> index = GetIndexOfCommandId(IDC_OPTIONS);
+  std::optional<size_t> index = GetIndexOfCommandId(IDC_OPTIONS);
   if (index.has_value())
     SetEnabledAt(index.value(), !is_disabled);
 

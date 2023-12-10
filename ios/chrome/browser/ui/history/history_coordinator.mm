@@ -9,8 +9,9 @@
 #import "components/history/core/browser/browsing_history_service.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/sync/service/sync_service.h"
-#import "ios/chrome/browser/history/history_service_factory.h"
-#import "ios/chrome/browser/history/web_history_service_factory.h"
+#import "ios/chrome/browser/history/model/history_service_factory.h"
+#import "ios/chrome/browser/history/model/web_history_service_factory.h"
+#import "ios/chrome/browser/net/crurl.h"
 #import "ios/chrome/browser/policy/policy_util.h"
 #import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -246,11 +247,11 @@ history::WebHistoryService* WebHistoryServiceGetter(
     HistoryCoordinator* strongSelf = weakSelf;
 
     // Record that this context menu was shown to the user.
-    RecordMenuShown(MenuScenarioHistogram::kHistoryEntry);
+    RecordMenuShown(kMenuScenarioHistogramHistoryEntry);
 
     BrowserActionFactory* actionFactory = [[BrowserActionFactory alloc]
         initWithBrowser:strongSelf.browser
-               scenario:MenuScenarioHistogram::kHistoryEntry];
+               scenario:kMenuScenarioHistogramHistoryEntry];
 
     NSMutableArray<UIMenuElement*>* menuElements =
         [[NSMutableArray alloc] init];
@@ -282,7 +283,8 @@ history::WebHistoryService* WebHistoryServiceGetter(
                                   activityOrigin:WindowActivityHistoryOrigin]];
     }
 
-    [menuElements addObject:[actionFactory actionToCopyURL:item.URL]];
+    CrURL* URL = [[CrURL alloc] initWithGURL:item.URL];
+    [menuElements addObject:[actionFactory actionToCopyURL:URL]];
 
     [menuElements addObject:[actionFactory actionToShareWithBlock:^{
                     [weakSelf shareURL:item.URL title:item.text fromView:view];

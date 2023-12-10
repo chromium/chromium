@@ -592,5 +592,12 @@ TEST_F(BookmarkUtilsTest, RemoveAllBookmarks) {
   EXPECT_EQ(1u, managed_node->children().size());
 }
 
+TEST_F(BookmarkUtilsTest, CleanUpUrlForMatching) {
+  EXPECT_EQ(u"http://foo.com/", CleanUpUrlForMatching(GURL("http://foo.com"),
+                                                      /*adjustments=*/nullptr));
+  EXPECT_EQ(u"http://foo.com/", CleanUpUrlForMatching(GURL("http://Foo.com"),
+                                                      /*adjustments=*/nullptr));
+}
+
 }  // namespace
 }  // namespace bookmarks

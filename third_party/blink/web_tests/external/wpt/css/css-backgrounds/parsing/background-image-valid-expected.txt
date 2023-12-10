@@ -1,7 +1,4 @@
 This is a testharness.js-based test.
-[PASS] e.style['background-image'] = "none" should set the property value
-[PASS] e.style['background-image'] = "url(\"http://www.example.com/\")" should set the property value
-[PASS] e.style['background-image'] = "none, url(\"http://www.example.com/\")" should set the property value
 [FAIL] e.style['background-image'] = "cross-fade(50% url(http://www.example.com), 50% url(http://www.example.com))" should set the property value
   assert_not_equals: property should be set got disallowed value ""
 [FAIL] e.style['background-image'] = "cross-fade(33% red, 33% white, blue)" should set the property value

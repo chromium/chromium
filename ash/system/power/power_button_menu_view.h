@@ -9,6 +9,7 @@
 #include "ash/shutdown_reason.h"
 #include "ash/system/power/power_button_controller.h"
 #include "base/memory/raw_ptr_exclusion.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/views/view.h"
 
@@ -21,6 +22,8 @@ class SystemShadow;
 // includes power off and sign out items currently.
 class ASH_EXPORT PowerButtonMenuView : public views::View,
                                        public ui::ImplicitAnimationObserver {
+  METADATA_HEADER(PowerButtonMenuView, views::View)
+
  public:
   // Direction of the animation transform. X means to translate from
   // x-coordinate. Y means to translate from y-coordinate.

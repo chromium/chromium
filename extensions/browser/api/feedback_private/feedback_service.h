@@ -5,6 +5,7 @@
 #ifndef EXTENSIONS_BROWSER_API_FEEDBACK_PRIVATE_FEEDBACK_SERVICE_H_
 #define EXTENSIONS_BROWSER_API_FEEDBACK_PRIVATE_FEEDBACK_SERVICE_H_
 
+#include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
@@ -64,6 +65,9 @@ class FeedbackService : public base::RefCountedThreadSafe<FeedbackService> {
       SendFeedbackCallback callback);
 
   FeedbackPrivateDelegate* GetFeedbackPrivateDelegate() { return delegate_; }
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  void SetLogFilesRootPathForTesting(const base::FilePath& log_file_root);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
  protected:
   virtual ~FeedbackService();
@@ -102,6 +106,8 @@ class FeedbackService : public base::RefCountedThreadSafe<FeedbackService> {
       const FeedbackParams& params,
       scoped_refptr<feedback::FeedbackData> feedback_data,
       const std::string& compressed_histograms);
+  // Root file path for log files. It can be overwritten for testing purpose.
+  base::FilePath log_file_root_{FILE_PATH_LITERAL("/var/log/")};
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   void OnAllLogsFetched(const FeedbackParams& params,
                         scoped_refptr<feedback::FeedbackData> feedback_data);

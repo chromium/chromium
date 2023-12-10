@@ -14,7 +14,7 @@
 #include "ios/web/public/web_state_user_data.h"
 
 @class SnapshotStorage;
-@class SnapshotGenerator;
+@class SnapshotManager;
 @protocol SnapshotGeneratorDelegate;
 
 namespace web {
@@ -92,7 +92,7 @@ class SnapshotTabHelper : public web::WebStateObserver,
   void WebStateDestroyed(web::WebState* web_state) override;
 
   web::WebState* web_state_ = nullptr;
-  SnapshotGenerator* snapshot_generator_ = nil;
+  SnapshotManager* snapshot_manager_ = nil;
 
   // Manages this object as an observer of `web_state_`.
   base::ScopedObservation<web::WebState, web::WebStateObserver>

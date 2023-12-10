@@ -180,8 +180,8 @@ class PageInfoBubbleViewBrowserTest : public InProcessBrowserTest {
     // launched. Disable features for the new version of "Cookies in use"
     // dialog. The new UI is covered by
     // PageInfoBubbleViewBrowserTestCookiesSubpage.
-    feature_list_.InitWithFeatures({},
-                                   {safe_browsing::kRedInterstitialFacelift});
+    feature_list_.InitWithFeatures({safe_browsing::kRedInterstitialFacelift},
+                                   {});
   }
 
   PageInfoBubbleViewBrowserTest(const PageInfoBubbleViewBrowserTest& test) =
@@ -366,8 +366,10 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewBrowserTest, ViewSourceURL) {
 IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewBrowserTest, SiteSettingsLink) {
   SetupSentimentServiceExpectations(/*interacted=*/true);
   GURL url = GURL("https://www.google.com/");
-  std::string expected_origin = "https%3A%2F%2Fwww.google.com";
-  EXPECT_EQ(GURL(chrome::kChromeUISiteDetailsPrefixURL + expected_origin),
+  std::string expected_url =
+      base::StrCat({chrome::kChromeUISettingsURL, chrome::kSiteDetailsSubpage});
+  std::string expected_query = "?site=https%3A%2F%2Fwww.google.com";
+  EXPECT_EQ(GURL(expected_url + expected_query),
             OpenSiteSettingsForUrl(browser(), url));
 }
 
@@ -376,8 +378,10 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewBrowserTest, SiteSettingsLink) {
 IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewBrowserTest,
                        SiteSettingsLinkWithNonAsciiUrl) {
   GURL url = GURL("http://🥄.ws/other/stuff.htm");
-  std::string expected_origin = "http%3A%2F%2Fxn--9q9h.ws";
-  EXPECT_EQ(GURL(chrome::kChromeUISiteDetailsPrefixURL + expected_origin),
+  std::string expected_url =
+      base::StrCat({chrome::kChromeUISettingsURL, chrome::kSiteDetailsSubpage});
+  std::string expected_query = "?site=http%3A%2F%2Fxn--9q9h.ws";
+  EXPECT_EQ(GURL(expected_url + expected_query),
             OpenSiteSettingsForUrl(browser(), url));
 }
 
@@ -386,8 +390,10 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewBrowserTest,
 IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewBrowserTest,
                        SiteSettingsLinkWithNonDefaultPort) {
   GURL url = GURL("https://www.example.com:8372");
-  std::string expected_origin = "https%3A%2F%2Fwww.example.com%3A8372";
-  EXPECT_EQ(GURL(chrome::kChromeUISiteDetailsPrefixURL + expected_origin),
+  std::string expected_url =
+      base::StrCat({chrome::kChromeUISettingsURL, chrome::kSiteDetailsSubpage});
+  std::string expected_query = "?site=https%3A%2F%2Fwww.example.com%3A8372";
+  EXPECT_EQ(GURL(expected_url + expected_query),
             OpenSiteSettingsForUrl(browser(), url));
 }
 
@@ -395,7 +401,7 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewBrowserTest,
 // Settings" (the alternative is a blank origin being sent to "Site Details").
 IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewBrowserTest,
                        SiteSettingsLinkWithAboutBlankURL) {
-  EXPECT_EQ(GURL(chrome::kChromeUIContentSettingsURL),
+  EXPECT_EQ(chrome::GetSettingsUrl(chrome::kContentSettingsSubPage),
             OpenSiteSettingsForUrl(browser(), GURL(url::kAboutBlankURL)));
 }
 
@@ -668,7 +674,7 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewBrowserTest, BlockedAndInvalidCert) {
 
   // Verify bubble complains of malware...
   EXPECT_EQ(GetPageInfoBubbleViewSummaryText(),
-            l10n_util::GetStringUTF16(IDS_PAGE_INFO_MALWARE_SUMMARY));
+            l10n_util::GetStringUTF16(IDS_PAGE_INFO_MALWARE_SUMMARY_NEW));
 
   // ...and has a "Certificate (Invalid)" button.
   std::u16string invalid_text;
@@ -713,7 +719,7 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewBrowserTest, MalwareAndEvCert) {
 
   // Verify bubble complains of malware...
   EXPECT_EQ(GetPageInfoBubbleViewSummaryText(),
-            l10n_util::GetStringUTF16(IDS_PAGE_INFO_MALWARE_SUMMARY));
+            l10n_util::GetStringUTF16(IDS_PAGE_INFO_MALWARE_SUMMARY_NEW));
 
   // ...and has the correct organization details in the Certificate button.
   EXPECT_EQ(GetCertificateButtonSubtitle(),
@@ -1166,14 +1172,21 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewSiteSettingsBrowserTest,
 }
 
 class PageInfoBubbleViewBrowserTestCookiesSubpage
-    : public base::test::WithFeatureOverride,
-      public PageInfoBubbleViewBrowserTest {
+    : public PageInfoBubbleViewBrowserTest,
+      public testing::WithParamInterface</*is_3pcd_enabled*/ bool> {
  public:
-  PageInfoBubbleViewBrowserTestCookiesSubpage()
-      : base::test::WithFeatureOverride(
-            content_settings::features::kUserBypassUI) {
-    feature_list_.InitWithFeatures(
-        {privacy_sandbox::kPrivacySandboxFirstPartySetsUI}, {});
+  PageInfoBubbleViewBrowserTestCookiesSubpage() {
+    std::vector<base::test::FeatureRef>
+        enabled_features = {privacy_sandbox::kPrivacySandboxFirstPartySetsUI},
+        disabled_features = {};
+    if (GetParam()) {
+      enabled_features.push_back(
+          content_settings::features::kTrackingProtection3pcd);
+    } else {
+      disabled_features.push_back(
+          content_settings::features::kTrackingProtection3pcd);
+    }
+    feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 
   void SetUpOnMainThread() override {
@@ -1194,7 +1207,7 @@ class PageInfoBubbleViewBrowserTestCookiesSubpage
   }
 
   void OpenPageInfoAndGoToCookiesSubpage(
-      absl::optional<std::u16string> fps_owner) {
+      std::optional<std::u16string> fps_owner) {
     EXPECT_FALSE(prefs_->GetBoolean(prefs::kInContextCookieControlsOpened));
     EXPECT_CALL(*mock_service(), GetFirstPartySetOwnerForDisplay(testing::_))
         .WillRepeatedly(testing::Return(fps_owner));
@@ -1221,9 +1234,11 @@ class PageInfoBubbleViewBrowserTestCookiesSubpage
 
     // The preference should only be recorded when blocking 3P cookies.
     const bool block_third_party =
+        base::FeatureList::IsEnabled(
+            content_settings::features::kTrackingProtection3pcd) ||
         prefs_->GetInteger(prefs::kCookieControlsMode) ==
-        static_cast<int>(
-            content_settings::CookieControlsMode::kBlockThirdParty);
+            static_cast<int>(
+                content_settings::CookieControlsMode::kBlockThirdParty);
     EXPECT_EQ(prefs_->GetBoolean(prefs::kInContextCookieControlsOpened),
               block_third_party);
   }
@@ -1235,17 +1250,20 @@ class PageInfoBubbleViewBrowserTestCookiesSubpage
       mock_privacy_sandbox_service_;
 };
 
+INSTANTIATE_TEST_SUITE_P(All,
+                         PageInfoBubbleViewBrowserTestCookiesSubpage,
+                         testing::Bool());
+
 // Checks if there is correct number of buttons in cookies subpage when fps are
-// blocked and third party cookies are allowed(in settings) and checks if the
-// metrics for opening cookies dialog work properly.
+// blocked and based on the third party cookies state (dependent on 3PCD) and
+// checks if the metrics for opening cookies dialog work properly.
 IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewBrowserTestCookiesSubpage,
                        ClickingCookieDialogButton) {
-  SetCookieControlsMode(content_settings::CookieControlsMode::kIncognitoOnly);
   OpenPageInfoAndGoToCookiesSubpage(/*fps_owner =*/{});
 
   // FPS blocked and 3pc allowed -> button for opening cookie dialog +
   // separator.
-  size_t kExpectedChildren = IsParamFeatureEnabled() ? 2 : 1;
+  size_t kExpectedChildren = 2;
   auto* cookies_buttons_container =
       GetView(PageInfoViewFactory::VIEW_ID_PAGE_INFO_COOKIES_BUTTONS_CONTAINER);
   EXPECT_EQ(kExpectedChildren, cookies_buttons_container->children().size());
@@ -1272,18 +1290,10 @@ IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewBrowserTestCookiesSubpage,
 
   OpenPageInfoAndGoToCookiesSubpage({fps_owner});
 
-  if (IsParamFeatureEnabled()) {
-    size_t kExpectedChildren = 3;
-    auto* cookies_buttons_container = GetView(
-        PageInfoViewFactory::VIEW_ID_PAGE_INFO_COOKIES_BUTTONS_CONTAINER);
-    EXPECT_EQ(kExpectedChildren, cookies_buttons_container->children().size());
-  } else {
-    // FPS allowed and 3pc blocked -> buttons for cookie dialog and 3pc and fps.
-    size_t kExpectedChildren = 3;
-    auto* cookies_buttons_container = GetView(
-        PageInfoViewFactory::VIEW_ID_PAGE_INFO_COOKIES_BUTTONS_CONTAINER);
-    EXPECT_EQ(kExpectedChildren, cookies_buttons_container->children().size());
-  }
+  size_t kExpectedChildren = 3;
+  auto* cookies_buttons_container =
+      GetView(PageInfoViewFactory::VIEW_ID_PAGE_INFO_COOKIES_BUTTONS_CONTAINER);
+  EXPECT_EQ(kExpectedChildren, cookies_buttons_container->children().size());
   EXPECT_TRUE(GetView(
       PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_COOKIE_DIALOG));
   auto* fps_button = GetView(
@@ -1324,7 +1334,6 @@ IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewBrowserTestCookiesSubpage,
 
   // FPS blocked and 3pc blocked -> buttons for cookie dialog and third party
   // cookies.
-  if (IsParamFeatureEnabled()) {
     size_t kExpectedChildren = 2;
     auto* cookies_buttons_container = GetView(
         PageInfoViewFactory::VIEW_ID_PAGE_INFO_COOKIES_BUTTONS_CONTAINER);
@@ -1349,48 +1358,23 @@ IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewBrowserTestCookiesSubpage,
     PerformMouseClickOnView(third_party_cookies_toggle);
     EXPECT_THAT(third_party_cookies_toggle->GetIsOn(), IsFalse());
     EXPECT_EQ(user_actions_stats.GetActionCount("PageInfo.Cookies.Blocked"), 1);
-  } else {
-    size_t kExpectedChildren = 2;
-    auto* cookies_buttons_container = GetView(
-        PageInfoViewFactory::VIEW_ID_PAGE_INFO_COOKIES_BUTTONS_CONTAINER);
-    EXPECT_EQ(kExpectedChildren, cookies_buttons_container->children().size());
-    EXPECT_TRUE(GetView(
-        PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_COOKIE_DIALOG));
-    EXPECT_TRUE(GetView(
-        PageInfoViewFactory::VIEW_ID_PAGE_INFO_BLOCK_THIRD_PARTY_COOKIES_ROW));
-    auto* third_party_cookies_toggle = static_cast<views::ToggleButton*>(
-        GetView(PageInfoViewFactory::
-                    VIEW_ID_PAGE_INFO_BLOCK_THIRD_PARTY_COOKIES_TOGGLE));
-    EXPECT_THAT(third_party_cookies_toggle->GetIsOn(), IsTrue());
-
-    base::UserActionTester user_actions_stats;
-
-    PerformMouseClickOnView(third_party_cookies_toggle);
-    EXPECT_THAT(third_party_cookies_toggle->GetIsOn(), IsFalse());
-    EXPECT_EQ(user_actions_stats.GetActionCount("PageInfo.Cookies.Allowed"), 1);
-
-    PerformMouseClickOnView(third_party_cookies_toggle);
-    EXPECT_THAT(third_party_cookies_toggle->GetIsOn(), IsTrue());
-    EXPECT_EQ(user_actions_stats.GetActionCount("PageInfo.Cookies.Blocked"), 1);
-  }
 }
 
 // Checks if there is a correct number of buttons in cookies subpage when fps
-// are allowed and third party cookies are allowed(in settings) and click on
-// link in description of cookies subapge.
+// are allowed and based on third party cookies state (dependent on 3PCD) and
+// click on link in description of cookies subapge.
 IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewBrowserTestCookiesSubpage,
                        LinkInDescriptionForCookiesSettings) {
   GURL url_example = GURL("http://example/other/stuff.htm");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_example));
 
   std::u16string fps_owner = u"example";
-  SetCookieControlsMode(content_settings::CookieControlsMode::kIncognitoOnly);
 
   OpenPageInfoAndGoToCookiesSubpage({fps_owner});
 
   // FPS allowed and 3pc allowed -> buttons for cookie dialog and fps button and
   // separator.
-  size_t kExpectedChildren = IsParamFeatureEnabled() ? 3 : 2;
+  size_t kExpectedChildren = 3;
   auto* cookies_buttons_container =
       GetView(PageInfoViewFactory::VIEW_ID_PAGE_INFO_COOKIES_BUTTONS_CONTAINER);
   EXPECT_EQ(kExpectedChildren, cookies_buttons_container->children().size());
@@ -1509,6 +1493,3 @@ IN_PROC_BROWSER_TEST_F(
       l10n_util::GetStringUTF16(IDS_PAGE_INFO_UNWANTED_SOFTWARE_DETAILS_NEW) +
           u" " + l10n_util::GetStringUTF16(IDS_LEARN_MORE));
 }
-
-INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
-    PageInfoBubbleViewBrowserTestCookiesSubpage);

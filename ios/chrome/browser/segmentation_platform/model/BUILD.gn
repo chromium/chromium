@@ -1,0 +1,72 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//components/optimization_guide/features.gni")
+
+source_set("model") {
+  sources = [
+    "otr_web_state_observer.h",
+    "otr_web_state_observer.mm",
+    "segmentation_platform_config.h",
+    "segmentation_platform_config.mm",
+    "segmentation_platform_service_factory.h",
+    "segmentation_platform_service_factory.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/keyed_service/core",
+    "//components/keyed_service/ios",
+    "//components/leveldb_proto",
+    "//components/optimization_guide/core",
+    "//components/optimization_guide/core:features",
+    "//components/prefs",
+    "//components/segmentation_platform/embedder",
+    "//components/segmentation_platform/embedder/default_model",
+    "//components/segmentation_platform/internal",
+    "//components/segmentation_platform/internal/proto",
+    "//components/segmentation_platform/public",
+    "//components/segmentation_platform/public/proto",
+    "//components/sync_device_info",
+    "//components/variations",
+    "//ios/chrome/browser/history/model",
+    "//ios/chrome/browser/metrics/model:accessor",
+    "//ios/chrome/browser/optimization_guide/model",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/paths",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/sync/model",
+  ]
+  if (build_with_tflite_lib) {
+    deps += [ "//components/segmentation_platform/internal:optimization_guide_segmentation_handler" ]
+  }
+  frameworks = [ "Foundation.framework" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "otr_web_state_observer_unittest.mm",
+    "segmentation_platform_service_factory_unittest.mm",
+  ]
+  deps = [
+    ":model",
+    "//base/test:test_support",
+    "//components/optimization_guide/core",
+    "//components/optimization_guide/core:features",
+    "//components/segmentation_platform/internal/proto",
+    "//components/segmentation_platform/public",
+    "//components/segmentation_platform/public/proto",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/shared/model/prefs:browser_prefs",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/test:test_support",
+    "//ios/web/public/test",
+    "//ios/web/public/test/fakes",
+    "//testing/gtest",
+  ]
+}

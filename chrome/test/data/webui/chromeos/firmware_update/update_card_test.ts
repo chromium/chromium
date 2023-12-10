@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://accessory-update/update_card.js';
+
 import {fakeCriticalFirmwareUpdate, fakeFirmwareUpdate} from 'chrome://accessory-update/fake_data.js';
 import {FirmwareUpdate} from 'chrome://accessory-update/firmware_update.mojom-webui.js';
 import {UpdateCardElement} from 'chrome://accessory-update/update_card.js';
@@ -12,7 +14,7 @@ import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeo
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
-export function updateCardTest() {
+suite('UpdateCardTest', () => {
   let updateCardElement: UpdateCardElement|null = null;
 
   setup(() => {
@@ -77,4 +79,4 @@ export function updateCardTest() {
           'Critical update', getPriorityTextElement().innerText.trim());
     });
   });
-}
+});

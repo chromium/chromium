@@ -1,0 +1,4 @@
+WebView textSize:16.00 style:0 bundle:[display="", htmlTag="#document"]
+++View textSize:16.00 style:0 bundle:[display="block", htmlTag="body"]
+++++Image text:"pipe" textSize:16.00 style:0 bundle:[alt="pipe", display="inline", height="126", htmlTag="img", src="pipe.jpg", usemap="#pipe", width="145"]
+++++++View text:"pipe1" textSize:0.00 style:0 fgColor:0 bundle:[alt="pipe1", coords="0,0,145,126", display="inline", href="fake.htm", htmlTag="area", shape="rect"]

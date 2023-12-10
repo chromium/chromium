@@ -7,9 +7,9 @@
 
 #include <memory>
 #include <set>
+#include <string_view>
 
 #include "base/component_export.h"
-#include "base/strings/string_piece_forward.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -77,7 +77,7 @@ class COMPONENT_EXPORT(NETWORK_CPP) ResponseAnalyzer {
   // The Sniff method should be called if an earlier call to Init (or Sniff)
   // returned Decision::kSniffMore.  This method will attempt to calculate the
   // `Decision` based on the (prefix of the) HTTP response body.
-  virtual Decision Sniff(base::StringPiece response_body) = 0;
+  virtual Decision Sniff(std::string_view response_body) = 0;
 
   // The HandleEndOfSniffableResponseBody should be called if earlier calls to
   // Init/Sniff returned kSniffMore, but there is nothing more to sniff (because

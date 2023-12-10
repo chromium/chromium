@@ -1,0 +1,1416 @@
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+
+This file describes the enumerations referenced by entries in histograms.xml for
+this directory. Some enums may instead be listed in the central enums.xml file
+at src/tools/metrics/histograms/enums.xml when multiple files use them.
+
+For best practices on writing enumerations descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md#Enum-Histograms
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<!-- Enum types -->
+
+<enums>
+
+<enum name="BluetoothAdapterConnectToServiceInsecurelyResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Error: Invalid arguments"/>
+  <int value="2" label="Error: Operation already in progress"/>
+  <int value="3" label="Error: Already exists"/>
+  <int value="4" label="Error: Operation is not supported"/>
+  <int value="5" label="Error: Not connected"/>
+  <int value="6" label="Error: Already connected"/>
+  <int value="7" label="Error: Operation currently not available"/>
+  <int value="8" label="Error: Does not exist"/>
+  <int value="9" label="Error: Operation not authorized"/>
+  <int value="10" label="Error: Not permitted"/>
+  <int value="11" label="Error: No such adapter"/>
+  <int value="12" label="Error: Agent not available"/>
+  <int value="13" label="Error: Resource not ready"/>
+  <int value="14" label="Error: Failed"/>
+  <int value="15" label="Error: Failed to create receiving Mojo pipe"/>
+  <int value="16" label="Error: Failed to create sending Mojo pipe"/>
+  <int value="17" label="Error: Could not connect to device"/>
+  <int value="18" label="Error: Unknown"/>
+</enum>
+
+<enum name="BluetoothConnectionFailureReason">
+  <int value="0" label="Unknown error"/>
+  <int value="1" label="System or Chrome runtime error"/>
+  <int value="2" label="Authentication failed"/>
+  <int value="3" label="Authentication timed out"/>
+  <int value="4" label="Connection failed"/>
+  <int value="5" label="Unknown connection error"/>
+  <int value="6" label="Unsupported device"/>
+  <int value="7" label="Not connectable"/>
+  <int value="8" label="Authentication canceled"/>
+  <int value="9" label="Authentication rejected"/>
+  <int value="10" label="Connection in progress"/>
+</enum>
+
+<enum name="BluetoothConnectToServiceError">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Failed to accept connection"/>
+  <int value="2" label="Invalid UUID"/>
+  <int value="3" label="Socket is not listening"/>
+</enum>
+
+<enum name="BluetoothDeviceConnectErrorCode">
+  <int value="0" label="Authorization Cancelled"/>
+  <int value="1" label="Authorization Failed"/>
+  <int value="2" label="Authorization Rejected"/>
+  <int value="3" label="Authorization Timeout"/>
+  <int value="4" label="Failed"/>
+  <int value="5" label="In Progress"/>
+  <int value="6" label="Unknown"/>
+  <int value="7" label="Unsupported Device"/>
+  <int value="8" label="Not Ready"/>
+  <int value="9" label="Already Connected"/>
+  <int value="10" label="Already Exists"/>
+  <int value="11" label="Not Connected"/>
+  <int value="12" label="Does Not Exist"/>
+  <int value="13" label="Invalid Arguments"/>
+</enum>
+
+<enum name="BluetoothDeviceConnectToServiceFailureReason">
+  <int value="0" label="Connection already connected"/>
+  <int value="1" label="Page timeout"/>
+  <int value="2" label="Profile unavailable"/>
+  <int value="3" label="SDP search"/>
+  <int value="4" label="Create socket"/>
+  <int value="5" label="Invalid argument"/>
+  <int value="6" label="Adapter not powered"/>
+  <int value="7" label="Not supported"/>
+  <int value="8" label="Bad socket"/>
+  <int value="9" label="Memory allocation"/>
+  <int value="10" label="Busy"/>
+  <int value="11" label="Concurrent connection limit"/>
+  <int value="12" label="Timeout"/>
+  <int value="13" label="Refused"/>
+  <int value="14" label="Aborted by remote"/>
+  <int value="15" label="Aborted by local"/>
+  <int value="16" label="LMP protocol error"/>
+  <int value="17" label="Canceled"/>
+  <int value="18" label="Unknown"/>
+</enum>
+
+<enum name="BluetoothDeviceType">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Computer"/>
+  <int value="2" label="Phone"/>
+  <int value="3" label="Modem"/>
+  <int value="4" label="Audio"/>
+  <int value="5" label="Car Audio"/>
+  <int value="6" label="Video"/>
+  <int value="7" label="Peripheral"/>
+  <int value="8" label="Joystick"/>
+  <int value="9" label="Gamepad"/>
+  <int value="10" label="Keyboard"/>
+  <int value="11" label="Mouse"/>
+  <int value="12" label="Tablet"/>
+  <int value="13" label="Keyboard Mouse Combo"/>
+</enum>
+
+<enum name="BluetoothDiscoveryOutcomes">
+  <int value="0" label="Success"/>
+  <int value="1"
+      label="Unknown error; used when we could add code to get more detail"/>
+  <int value="2" label="Function not implemented on this platform"/>
+  <int value="3" label="Adapter not present"/>
+  <int value="4" label="Adapter removed since call chain started"/>
+  <int value="5" label="Discovery session not active"/>
+  <int value="6"
+      label="Attempted to remove a discovery session with another pending
+             request"/>
+  <int value="7"
+      label="Active BluetoothDiscoverySession wasn't found in
+             BluetoothAdapter"/>
+  <int value="8" label="Failed without a more specific reason"/>
+  <int value="9" label="(BlueZ) DBus failed to find the adapter"/>
+  <int value="10" label="(BlueZ) DBus didn't return an error code"/>
+  <int value="11" label="(BlueZ) org.bluez.Error.InProgress"/>
+  <int value="12" label="(BlueZ) org.bluez.Error.NotReady"/>
+  <int value="13"
+      label="(BlueZ) org.bluez.Error.Failed inside SetDiscoveryFilter, maybe
+             indicating an unsupported transport"/>
+  <int value="14"
+      label="(BlueZ) org.bluez.Error.NotSupported inside SetDiscoverFilter,
+             indicating a kernel that does not support Start Service
+             Discovery."/>
+</enum>
+
+<enum name="BluetoothGattServiceGattErrorCode">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Failed"/>
+  <int value="2" label="In Progress"/>
+  <int value="3" label="Invalid Length"/>
+  <int value="4" label="Not Permitted"/>
+  <int value="5" label="Not Authorized"/>
+  <int value="6" label="Not Paired"/>
+  <int value="7" label="Not Supported"/>
+</enum>
+
+<enum name="BluetoothSocketErrorReason">
+  <int value="0" label="System Error"/>
+  <int value="1" label="IO Pending"/>
+  <int value="2" label="Disconnected"/>
+</enum>
+
+<enum name="BluetoothStackName">
+  <int value="0" label="BlueZ"/>
+  <int value="1" label="Floss"/>
+  <int value="2" label="Unknown"/>
+</enum>
+
+<enum name="BluetoothTransportType">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Classic"/>
+  <int value="2" label="Low Energy"/>
+  <int value="3" label="Dual"/>
+  <int value="4" label="Invalid"/>
+</enum>
+
+<enum name="BluetoothUiSurface">
+  <int value="0" label="Settings - device list subpage"/>
+  <int value="1" label="Settings - device detail subpage"/>
+  <int value="2" label="Settings - pairing dialog"/>
+  <int value="3" label="Bluetooth Quick Settings"/>
+  <int value="4" label="Standalone Pairing dialog"/>
+  <int value="5" label="Paired notification (obsolete)"/>
+  <int value="6" label="Connected toast"/>
+  <int value="7" label="Disconnected toast"/>
+  <int value="8" label="OOBE HID Detection"/>
+  <int value="9" label="Paired toast"/>
+</enum>
+
+<enum name="DisconnectResult">
+  <int value="0" label="Failure"/>
+  <int value="1" label="Success"/>
+</enum>
+
+<enum name="FastPairAccountKeyFailure">
+  <int value="0" label="Failed to find the Account Key GATT characteristic"/>
+  <int value="1"
+      label="[Deprecated] Failed to write to the Account Key GATT
+             characteristic"/>
+  <int value="2"
+      label="Timed out while writing to Account Key GATT characteristic"/>
+  <int value="3" label="GATT Error: Unknown"/>
+  <int value="4" label="GATT Error: Failed"/>
+  <int value="5" label="GATT Error: In Progress"/>
+  <int value="6" label="GATT Error: Invalid Length"/>
+  <int value="7" label="GATT Error: Not Permitted"/>
+  <int value="8" label="GATT Error: Not Authorized"/>
+  <int value="9" label="GATT Error: Not Paired"/>
+  <int value="10" label="GATT Error: Not Supported"/>
+</enum>
+
+<enum name="FastPairEngagementFlowEvent">
+  <int value="1" label="Discovery UI Shown"/>
+  <int value="11" label="Discovery UI Dismissed By OS"/>
+  <int value="12" label="Discovery UI: Connect Button Pressed"/>
+  <int value="13" label="Discovery UI Dismissed By User"/>
+  <int value="14" label="Discovery UI: Learn More Pressed"/>
+  <int value="15" label="Discovery UI Dismissed By Timeout"/>
+  <int value="121" label="Pairing Failed"/>
+  <int value="122" label="Pairing Succeeded"/>
+  <int value="141"
+      label="Discovery UI: Connect Button Pressed After Learn More Pressed"/>
+  <int value="142"
+      label="Discovery UI: Dismissed By User After Learn More Pressed"/>
+  <int value="143"
+      label="Discovery UI: Dismissed By OS After Learn More Pressed"/>
+  <int value="144"
+      label="Discovery UI: Dismissed By Timeout After Learn More Pressed"/>
+  <int value="1211" label="Pairing Failed: Error UI Dismissed By OS"/>
+  <int value="1212" label="Pairing Failed: Error UI Settings Button Pressed"/>
+  <int value="1213" label="Pairing Failed: Error UI Dismissed By User"/>
+  <int value="1221" label="Pairing Succeeded: Already Paired"/>
+</enum>
+
+<enum name="FastPairHandshakeFailureReason">
+  <int value="0" label="Failed to initialize GATT connection"/>
+  <int value="1" label="Failed to create FastPairDataEncryptor"/>
+  <int value="2"
+      label="Failed to write to the Key-based Pairing Characteristic"/>
+  <int value="3"
+      label="Failed to decrypt the the Key-based Pairing Characteristic
+             response"/>
+  <int value="4"
+      label="Incorrect Key-based Pairing Characteristic response type"/>
+</enum>
+
+<enum name="FastPairHandshakeSteps">
+  <int value="0" label="Handshake started"/>
+  <int value="1" label="GATT initialized successfully"/>
+  <int value="2"
+      label="Recieved response bytes from Key-based pairing characteristic"/>
+  <int value="3" label="Handshake completed successfully"/>
+</enum>
+
+<enum name="FastPairPairingMethod">
+  <int value="0" label="Fast Pair Pairing"/>
+  <int value="1" label="System UI Pairing"/>
+</enum>
+
+<enum name="FastPairRetroactiveEngagementFlowEvent">
+  <int value="1" label="Associate Account UI Shown"/>
+  <int value="11" label="Associate Account Dismissed By User"/>
+  <int value="12" label="Associate Account Dismissed By OS"/>
+  <int value="13" label="Associate Account: Learn More Button Pressed"/>
+  <int value="14" label="Associate Account: Save Button Pressed"/>
+  <int value="15" label="Associate Account Dismissed By Timeout"/>
+  <int value="131"
+      label="Associate Account: Save Button Pressed After Learn More Pressed"/>
+  <int value="132"
+      label="Associate Account Dismissed By User After Learn More Pressed"/>
+  <int value="133"
+      label="Associate Account Dismissed By OS After Learn More Pressed"/>
+  <int value="134"
+      label="Associate Account Dismissed By Timeout After Learn More Pressed"/>
+</enum>
+
+<enum name="FastPairSavedDevicesUiEvent">
+  <int value="0" label="Settings - saved device list subpage shown"/>
+  <int value="1" label="Settings - user has devices saved to their account"/>
+  <int value="2" label="Settings - remove saved device dialog"/>
+  <int value="3"
+      label="Settings - remove confirmed on remove saved device dialog"/>
+</enum>
+
+<enum name="FastPairVersion">
+  <int value="0" label="v1"/>
+  <int value="1" label="v2"/>
+</enum>
+
+<enum name="ForgetResult">
+  <int value="0" label="Failure"/>
+  <int value="1" label="Success"/>
+</enum>
+
+<enum name="GATTCharacteristicHash">
+<!-- Hash values can be produced using tool: bluetooth_metrics_hash -->
+
+  <int value="1615384" label="alert_notification_control_point"/>
+  <int value="4531384" label="date_of_birth"/>
+  <int value="14295641"
+      label="PocketLab; f000aa1e-0452-4000-b000-000000000000"/>
+  <int value="22829753" label="barometric_pressure_trend"/>
+  <int value="25010789"
+      label="PocketLab (from service 11);
+             f000aa17-0452-4000-b000-000000000000"/>
+  <int value="33030714" label="scan_refresh"/>
+  <int value="36624371"
+      label="Anki OVERDRIVE cars; be15bee0-6186-407e-8381-0bd89c4d8df4"/>
+  <int value="40437408" label="gender"/>
+  <int value="42833873" label="42833873 (Unknown; not a 16bit UUID)"/>
+  <int value="46607535"
+      label="PocketLab 1; f000aa14-0451-4000-b000-000000000000"/>
+  <int value="61502349"
+      label="PocketLab; f000aa2c-0452-4000-b000-000000000000"/>
+  <int value="64893984" label="local_east_coordinate.xml"/>
+  <int value="67768539" label="alert_category_id_bit_mask"/>
+  <int value="79560451" label="sc_control_point"/>
+  <int value="81699382"
+      label="PocketLab; f000aa1d-0452-4000-b000-000000000000"/>
+  <int value="84948752"
+      label="Eddystone Config ADV Slot Data;
+             a3c8750a-8ed3-4bdf-8a39-a01bebede295"/>
+  <int value="87432554"
+      label="Parrot Drone; 9a66fd54-0800-9191-11e4-012d1540cb8e"/>
+  <int value="87889094"
+      label="PocketLab 1; f000aa21-0451-4000-b000-000000000000"/>
+  <int value="89070880" label="blood_pressure_measurement"/>
+  <int value="102699400" label="cycling_power_feature"/>
+  <int value="107355463"
+      label="konashi analogRead2; 229b300a-03fb-40da-98a7-b0def65c2d4b"/>
+  <int value="107684477"
+      label="PocketLab; f000aa2d-0452-4000-b000-000000000000"/>
+  <int value="111826224"
+      label="micro:bit client requirements;
+             e95d23c4-251d-470a-a062-fa1922dfa9a8"/>
+  <int value="121100653"
+      label="Parrot Drone; 9a66fd22-0800-9191-11e4-012d1540cb8e"/>
+  <int value="129263762"
+      label="PocketLab; f000aa04-0452-4000-b000-000000000000"/>
+  <int value="145478270" label="glucose_feature"/>
+  <int value="162705488" label="manufacturer_name_string"/>
+  <int value="164418508" label="weight_measurement"/>
+  <int value="177223896" label="report_map"/>
+  <int value="193202136"
+      label="Anki OVERDRIVE cars; be15bee1-6186-407e-8381-0bd89c4d8df4"/>
+  <int value="197745578"
+      label="PocketLab 1; f000aa13-0451-4000-b000-000000000000"/>
+  <int value="203698195"
+      label="micro:bit event; e95d9775-251d-470a-a062-fa1922dfa9a8"/>
+  <int value="203846063" label="ff0c"/>
+  <int value="205016416" label="body_composition_measurement"/>
+  <int value="235785246" label="irradiance"/>
+  <int value="241152428"
+      label="PocketLab; f000aa25-0452-4000-b000-000000000000"/>
+  <int value="244169154"
+      label="PocketLab (from service 31);
+             f000aa32-0452-4000-b000-000000000000"/>
+  <int value="248349383" label="csc_measurement"/>
+  <int value="254703207" label="true_wind_speed"/>
+  <int value="257107525" label="intermediate_temperature"/>
+  <int value="259169368" label="cgm_measurement"/>
+  <int value="261747886" label="battery_level"/>
+  <int value="282925453" label="time_with_dst"/>
+  <int value="289588334" label="supported_unread_alert_category"/>
+  <int value="294481931"
+      label="Wahoo Kickr trainer; a026e005-0a7d-4ab3-97fa-f1500f9feb8b"/>
+  <int value="296670902" label="heart_rate_control_point"/>
+  <int value="298186521" label="alert_category_id"/>
+  <int value="305375377"
+      label="PocketLab 1; f000aa62-0451-4000-b000-000000000000"/>
+  <int value="307449363" label="plx_features"/>
+  <int value="310983691" label="cycling_power_measurement"/>
+  <int value="312578485" label="navigation"/>
+  <int value="314022771"
+      label="Remote Lego; 8d8ba32b-96be-4590-910b-c756c5222c9f"/>
+  <int value="318124766"
+      label="Remote Lego; fa10e4de-259e-4d23-9f59-45a9c66802ca"/>
+  <int value="333947401" label="temperature_measurement"/>
+  <int value="338768495" label="ringer_setting"/>
+  <int value="339742946" label="hid_information"/>
+  <int value="358854697" label="bond_management_feature"/>
+  <int value="359765018"
+      label="micro:bit client event; e95d5404-251d-470a-a062-fa1922dfa9a8"/>
+  <int value="361317539" label="language"/>
+  <int value="363167947" label="blood_pressure_feature"/>
+  <int value="364021976"
+      label="nRF candy machine; b6c31338-6c07-453e-961a-d8a8a41bf368"/>
+  <int value="368068304"
+      label="MiP Robot; Magic Blue Bulb; 0000ffe9-0000-1000-8000-00805f9b34fb"/>
+  <int value="371778276"
+      label="micro:bit requirements; e95db84c-251d-470a-a062-fa1922dfa9a8"/>
+  <int value="372306057"
+      label="Bleno Pizza Example; 13333333-3333-3333-3333-333333330001"/>
+  <int value="384581502"
+      label="PocketLab; f000aa07-0452-4000-b000-000000000000"/>
+  <int value="404638811"
+      label="konashi pwmParameter; 229b3005-03fb-40da-98a7-b0def65c2d4b"/>
+  <int value="405569435" label="boot_keyboard_output_report"/>
+  <int value="409618715" label="cycling_power_vector"/>
+  <int value="416059854"
+      label="konashi uartRxNotification; 229b3013-03fb-40da-98a7-b0def65c2d4b"/>
+  <int value="416715482"
+      label="PocketLab (from service 11);
+             f000aa19-0452-4000-b000-000000000000"/>
+  <int value="419477741" label="body_composition_feature"/>
+  <int value="426120542"
+      label="PocketLab; f000aa3b-0452-4000-b000-000000000000"/>
+  <int value="440009071"
+      label="konashi pwmDuty; 229b3006-03fb-40da-98a7-b0def65c2d4b"/>
+  <int value="448606809" label="448606809 (Unknown; not a 16bit UUID)"/>
+  <int value="449334956"
+      label="PocketLab; f000aa3d-0452-4000-b000-000000000000"/>
+  <int value="450021248"
+      label="PocketLab 1; f000aa34-0451-4000-b000-000000000000"/>
+  <int value="469191968" label="Playbulb Candle Color; fffc"/>
+  <int value="473092981"
+      label="Eddystone Config Advertising Interval;
+             a3c87503-8ed3-4bdf-8a39-a01bebede295"/>
+  <int value="486368335" label="location_name"/>
+  <int value="501361244"
+      label="PocketLab; f000aa21-0452-4000-b000-000000000000"/>
+  <int value="508191605"
+      label="Parrot Drone; 9a66fb1b-0800-9191-11e4-012d1540cb8e"/>
+  <int value="511033835"
+      label="konashi hardwareLowBatteryNotification;
+             229b3015-03fb-40da-98a7-b0def65c2d4b"/>
+  <int value="512543326" label="date_of_threshold_assessment"/>
+  <int value="517791580"
+      label="Sphero Robot; 22bb746f-2bbf-7554-2d6f-726568705327"/>
+  <int value="531135021" label="cgm_specific_ops_control_point"/>
+  <int value="540054581" label="magnetic_declination"/>
+  <int value="546162499"
+      label="Eddystone Config EID Identity Key;
+             a3c87509-8ed3-4bdf-8a39-a01bebede295"/>
+  <int value="546355367" label="firmware_revision_string"/>
+  <int value="549702960" label="humidity"/>
+  <int value="557034058" label="cycling_power_control_point"/>
+  <int value="557040382" label="hardware_revision_string"/>
+  <int value="561260257" label="analog"/>
+  <int value="580555542"
+      label="Remote Lego; 2ac1fdb2-d971-4595-8e32-e8c5d80edf5f"/>
+  <int value="589575132"
+      label="Sphero Robot; 22bb746f-2bbd-7554-2d6f-726568705327"/>
+  <int value="589741087" label="model_number_string"/>
+  <int value="599786587"
+      label="PocketLab (from service 11);
+             f000aa1a-0452-4000-b000-000000000000"/>
+  <int value="602410094"
+      label="PocketLab; f000aa28-0452-4000-b000-000000000000"/>
+  <int value="625191771"
+      label="Parrot Drone; 9a66fa0a-0800-9191-11e4-012d1540cb8e"/>
+  <int value="628511213"
+      label="PocketLab; f000aa3a-0452-4000-b000-000000000000"/>
+  <int value="638602429" label="new_alert"/>
+  <int value="640013977"
+      label="konashi uartBaudRate; 229b3011-03fb-40da-98a7-b0def65c2d4b"/>
+  <int value="640611109"
+      label="PocketLab (from service 11);
+             f000aa14-0452-4000-b000-000000000000"/>
+  <int value="642925692" label="anaerobic_heart_rate_lower_limit"/>
+  <int value="645640295"
+      label="PocketLab (from service 11);
+             f000aa16-0452-4000-b000-000000000000"/>
+  <int value="650507215" label="aerobic_heart_rate_lower_limit"/>
+  <int value="653904148" label="cgm_session_run_time"/>
+  <int value="659248322"
+      label="PocketLab; f000aa29-0452-4000-b000-000000000000"/>
+  <int value="675543714" label="aerobic_threshold"/>
+  <int value="682327952"
+      label="Parrot Drone; 9a66fa0b-0800-9191-11e4-012d1540cb8e"/>
+  <int value="685669143"
+      label="Parrot Drone; 9a66fa0c-0800-9191-11e4-012d1540cb8e"/>
+  <int value="689682673" label="unread_alert_status"/>
+  <int value="710863194" label="dew_point"/>
+  <int value="713208266" label="apparent_wind_direction"/>
+  <int value="724409151"
+      label="PocketLab; f000aa1f-0452-4000-b000-000000000000"/>
+  <int value="724796397" label="weight"/>
+  <int value="725361228"
+      label="PocketLab; f000aa10-0452-4000-b000-000000000000"/>
+  <int value="735462059"
+      label="konashi uartConfig; 229b3010-03fb-40da-98a7-b0def65c2d4b"/>
+  <int value="747671909" label="reference_time_information"/>
+  <int value="747737913"
+      label="konashi pioOutput; 229b3002-03fb-40da-98a7-b0def65c2d4b"/>
+  <int value="752820597" label="boot_mouse_input_report"/>
+  <int value="753456499"
+      label="PocketLab; f000aa27-0452-4000-b000-000000000000"/>
+  <int value="762835818" label="tx_power_level"/>
+  <int value="765862810" label="cgm_session_start_time"/>
+  <int value="777276843"
+      label="Bleno Pizza Example; 13333333-3333-3333-3333-333333330003"/>
+  <int value="784175223"
+      label="PocketLab; f000aa39-0452-4000-b000-000000000000"/>
+  <int value="786588903"
+      label="Parrot Drone; 9a66fd53-0800-9191-11e4-012d1540cb8e"/>
+  <int value="788890283"
+      label="Eddystone Config Factory reset;
+             a3c8750b-8ed3-4bdf-8a39-a01bebede295"/>
+  <int value="797118889" label="time_source"/>
+  <int value="806223105"
+      label="PocketLab; f000aa1c-0452-4000-b000-000000000000"/>
+  <int value="827298832"
+      label="PocketLab 1; f000aa41-0451-4000-b000-000000000000"/>
+  <int value="827651216"
+      label="PocketLab; f000aa20-0452-4000-b000-000000000000"/>
+  <int value="837013645"
+      label="PocketLab 1; f000aa64-0451-4000-b000-000000000000"/>
+  <int value="839366223" label="user_index"/>
+  <int value="842908520" label="rsc_measurement"/>
+  <int value="845003775"
+      label="Remote Lego; aad03b81-f2ea-47db-ae1e-7c2f9e86e93e"/>
+  <int value="845212855"
+      label="Elite trainer; 347b0011-7635-408b-8918-8ff3949ce592"/>
+  <int value="851655329"
+      label="konashi analogRead0; 229b3008-03fb-40da-98a7-b0def65c2d4b"/>
+  <int value="853857776"
+      label="PocketLab; f000aa2a-0452-4000-b000-000000000000"/>
+  <int value="859809200" label="resting_heart_rate"/>
+  <int value="867296114" label="gust_factor"/>
+  <int value="868427891" label="local_north_coordinate"/>
+  <int value="868892960" label="heat_index"/>
+  <int value="873660243" label="body_sensor_location"/>
+  <int value="893588698" label="scan_interval_window"/>
+  <int value="893850387"
+      label="Parrot Drone; 9a66fd23-0800-9191-11e4-012d1540cb8e"/>
+  <int value="910416910"
+      label="nRF UART RX; nrf52-Quadcopter;
+             6e400003-b5a3-f393-e0a9-e50e24dcca9e"/>
+  <int value="912333311" label="912333311 (Unknown; not a 16bit UUID)"/>
+  <int value="917477908" label="software_revision_string"/>
+  <int value="918961501" label="plx_spot_check_measurement"/>
+  <int value="922434244" label="ln_feature"/>
+  <int value="928099812" label="system_id"/>
+  <int value="928491064" label="last_name"/>
+  <int value="936278868"
+      label="PocketLab 1; f000aa53-0451-4000-b000-000000000000"/>
+  <int value="941113050"
+      label="konashi i2cReadParameter; 229b300e-03fb-40da-98a7-b0def65c2d4b"/>
+  <int value="947971228" label="temperature_type"/>
+  <int value="951656105"
+      label="Eddystone Config Remain Connectable;
+             a3c8750c-8ed3-4bdf-8a39-a01bebede295"/>
+  <int value="962656991"
+      label="Eddystone Config Public ECDH Key;
+             a3c87508-8ed3-4bdf-8a39-a01bebede295"/>
+  <int value="976761505" label="local_time_information"/>
+  <int value="981442423"
+      label="PocketLab 1; f000aa63-0451-4000-b000-000000000000"/>
+  <int value="987658962" label="glucose_measurement"/>
+  <int value="1002619180" label="exact_time_256"/>
+  <int value="1005198408"
+      label="PocketLab 1; f000aa51-0451-4000-b000-000000000000"/>
+  <int value="1018346218"
+      label="PocketLab; f000aa03-0452-4000-b000-000000000000"/>
+  <int value="1025676359" label="dst_offset"/>
+  <int value="1049176129"
+      label="PocketLab (from service 11);
+             f000aa15-0452-4000-b000-000000000000"/>
+  <int value="1050948662"
+      label="nRF UART TX; nrf52-Quadcopter;
+             6e400002-b5a3-f393-e0a9-e50e24dcca9e"/>
+  <int value="1061486494" label="anaerobic_heart_rate_upper_limit"/>
+  <int value="1070539317"
+      label="konashi pioSetting; 229b3000-03fb-40da-98a7-b0def65c2d4b"/>
+  <int value="1072163984" label="gap.reconnection_address"/>
+  <int value="1077684177"
+      label="Parrot Drone; 9a66fd52-0800-9191-11e4-012d1540cb8e"/>
+  <int value="1097514018"
+      label="PocketLab; f000aa06-0452-4000-b000-000000000000"/>
+  <int value="1100640868" label="day_of_week"/>
+  <int value="1102386988"
+      label="PocketLab 1; f000aa42-0451-4000-b000-000000000000"/>
+  <int value="1108268178"
+      label="PocketLab 1; f000aa23-0451-4000-b000-000000000000"/>
+  <int value="1115558005"
+      label="konashi hardwareReset; 229b3014-03fb-40da-98a7-b0def65c2d4b"/>
+  <int value="1117053056"
+      label="Remote Lego; 7baf8dca-2bfc-47fb-af29-042fccc180eb"/>
+  <int value="1125104414" label="gap.central_address_resolution_support"/>
+  <int value="1125757823"
+      label="PocketLab (from service 31);
+             f000aa33-0452-4000-b000-000000000000"/>
+  <int value="1134538374" label="hip_circumference"/>
+  <int value="1136624215" label="maximum_recommended_heart_rate"/>
+  <int value="1136682523" label="date_time"/>
+  <int value="1142216738"
+      label="PocketLab 1; f000aa22-0451-4000-b000-000000000000"/>
+  <int value="1154699367"
+      label="konashi uartTx; 229b3012-03fb-40da-98a7-b0def65c2d4b"/>
+  <int value="1161713439" label="Playbulb Candle Effect; fffb"/>
+  <int value="1167525145" label="alert_status"/>
+  <int value="1167648736"
+      label="PocketLab (from service 11);
+             f000aa18-0452-4000-b000-000000000000"/>
+  <int value="1169219288" label="1169219288 (Unknown; not a 16bit UUID)"/>
+  <int value="1183399370" label="magnetic_flux_density_3D"/>
+  <int value="1186677690"
+      label="Eddystone Config Advertised Tx Power;
+             a3c87505-8ed3-4bdf-8a39-a01bebede295"/>
+  <int value="1193066711" label="uv_index"/>
+  <int value="1211834643"
+      label="PocketLab; f000aa02-0452-4000-b000-000000000000"/>
+  <int value="1212625023"
+      label="PocketLab 1; f000aa52-0451-4000-b000-000000000000"/>
+  <int value="1214133688" label="vo2_max"/>
+  <int value="1217613737" label="three_zone_heart_rate_limits"/>
+  <int value="1225369773"
+      label="DOTTI; Makeblock mBot; 0000fff3-0000-1000-8000-00805f9b34fb"/>
+  <int value="1227844535" label="floor_number"/>
+  <int value="1237083013" label="first_name"/>
+  <int value="1243630465"
+      label="Sphero Robot; 22bb746f-2ba1-7554-2d6f-726568705327"/>
+  <int value="1245615057" label="pnp_id"/>
+  <int value="1254514264"
+      label="PocketLab; f000aa05-0452-4000-b000-000000000000"/>
+  <int value="1254532025" label="user_control_point"/>
+  <int value="1266038031" label="1266038031 (Unknown; not a 16bit UUID)"/>
+  <int value="1288236137" label="hid_control_point"/>
+  <int value="1293962119"
+      label="PocketLab 1; f000aa61-0451-4000-b000-000000000000"/>
+  <int value="1307935876"
+      label="Tacx trainer; 6e40fec3-b5a3-f393-e0a9-e50e24dcca9e"/>
+  <int value="1320278204"
+      label="Eddystone Config Radio Tx Power;
+             a3c87504-8ed3-4bdf-8a39-a01bebede295"/>
+  <int value="1324040850"
+      label="PocketLab 1; f000aa11-0451-4000-b000-000000000000"/>
+  <int value="1329901812"
+      label="Eddystone Config Lock State;
+             a3c87506-8ed3-4bdf-8a39-a01bebede295"/>
+  <int value="1333242790" label="longitude"/>
+  <int value="1334750659"
+      label="konashi i2cWrite; 229b300d-03fb-40da-98a7-b0def65c2d4b"/>
+  <int value="1345855767"
+      label="PocketLab 1; f000aa24-0451-4000-b000-000000000000"/>
+  <int value="1352512695" label="1352512695 (Unknown; not a 16bit UUID)"/>
+  <int value="1358488787"
+      label="sport_type_for_aerobic_and_anaerobic_thresholds"/>
+  <int value="1359562687"
+      label="PowerUp RC plane; 75b64e51-f184-4ed1-921a-476090d80ba7"/>
+  <int value="1366194038"
+      label="PocketLab; f000aa22-0452-4000-b000-000000000000"/>
+  <int value="1370497910" label="position_quality"/>
+  <int value="1370779343" label="apparent_wind_speed"/>
+  <int value="1378697826"
+      label="PocketLab; f000aa2f-0452-4000-b000-000000000000"/>
+  <int value="1399905251" label="elevation"/>
+  <int value="1403230035"
+      label="konashi analogDrive; 229b3007-03fb-40da-98a7-b0def65c2d4b"/>
+  <int value="1403795440" label="time_update_control_point"/>
+  <int value="1407679683" label="location_and_speed"/>
+  <int value="1409077916"
+      label="ieee_11073-20601_regulatory_certification_data_list"/>
+  <int value="1418868404"
+      label="gap.peripheral_preferred_connection_parameters"/>
+  <int value="1419696114" label="record_access_control_point"/>
+  <int value="1423142122"
+      label="PocketLab; f000aa01-0452-4000-b000-000000000000"/>
+  <int value="1426243900" label="time_update_state"/>
+  <int value="1443769073"
+      label="Parrot Drone; 9a66fb0e-0800-9191-11e4-012d1540cb8e"/>
+  <int value="1445812935" label="current_time"/>
+  <int value="1448457670" label="cgm_feature"/>
+  <int value="1451886110"
+      label="PocketLab; f000aa38-0452-4000-b000-000000000000"/>
+  <int value="1463907405"
+      label="PocketLab; f000aa2b-0452-4000-b000-000000000000"/>
+  <int value="1477417345"
+      label="PocketLab; f000aa23-0452-4000-b000-000000000000"/>
+  <int value="1479031407" label="five_zone_heart_rate_limits"/>
+  <int value="1480262218" label="height"/>
+  <int value="1482584061"
+      label="konashi pioPullUp; 229b3001-03fb-40da-98a7-b0def65c2d4b"/>
+  <int value="1485392010" label="1485392010 (Unknown; not a 16bit UUID)"/>
+  <int value="1501299347"
+      label="nRF candy machine; a6c31338-6c07-453e-961a-d8a8a41bf368"/>
+  <int value="1502604093" label="serial_number_string"/>
+  <int value="1511396316" label="ln_control_point"/>
+  <int value="1511953014"
+      label="Eddystone Config Capabilities;
+             a3c87501-8ed3-4bdf-8a39-a01bebede295"/>
+  <int value="1521362289" label="indoor_positioning_configuration"/>
+  <int value="1536163565"
+      label="Remote Lego; e0af3340-022e-47e1-a263-d68887dc41d4"/>
+  <int value="1537284424"
+      label="Bleno Pizza Example; 13333333-3333-3333-3333-333333330002"/>
+  <int value="1541435682" label="fat_burn_heart_rate_upper_limit"/>
+  <int value="1542101224" label="plx_continuous_measurent"/>
+  <int value="1547112406"
+      label="Eddystone Config Active Slot;
+             a3c87502-8ed3-4bdf-8a39-a01bebede295"/>
+  <int value="1547439596"
+      label="PocketLab 1; f000aa31-0451-4000-b000-000000000000"/>
+  <int value="1548291582"
+      label="konashi analogRead1; 229b3009-03fb-40da-98a7-b0def65c2d4b"/>
+  <int value="1551090056"
+      label="PocketLab; f000aa35-0452-4000-b000-000000000000"/>
+  <int value="1556918420" label="supported_new_alert_category"/>
+  <int value="1562359952" label="bond_management_control_point"/>
+  <int value="1581120657"
+      label="Parrot Drone; 9a66fb1c-0800-9191-11e4-012d1540cb8e"/>
+  <int value="1588237112"
+      label="PocketLab; f000aa3f-0452-4000-b000-000000000000"/>
+  <int value="1594190447" label="anaerobic_threshold"/>
+  <int value="1594284383" label="time_accuracy"/>
+  <int value="1599786113" label="sensor_location"/>
+  <int value="1611458228"
+      label="PocketLab; f000aa34-0452-4000-b000-000000000000"/>
+  <int value="1620145835"
+      label="PocketLab 1; f000aa54-0451-4000-b000-000000000000"/>
+  <int value="1650767660" label="protocol_mode"/>
+  <int value="1655824245" label="pressure"/>
+  <int value="1658559118" label="digital"/>
+  <int value="1667674937"
+      label="PocketLab 1; f000aa33-0451-4000-b000-000000000000"/>
+  <int value="1669829174"
+      label="Purple Eye; 00005200-0000-1000-8000-00805f9b34fb"/>
+  <int value="1676607014"
+      label="konashi i2cConfig; 229b300b-03fb-40da-98a7-b0def65c2d4b"/>
+  <int value="1704141710" label="true_wind_direction"/>
+  <int value="1717192545"
+      label="PocketLab 1; f000aa12-0451-4000-b000-000000000000"/>
+  <int value="1719495127"
+      label="PocketLab; f000aa00-0452-4000-b000-000000000000"/>
+  <int value="1732815395" label="alert_level"/>
+  <int value="1735563923" label="rsc_feature"/>
+  <int value="1748731133" label="intermediate_blood_pressure"/>
+  <int value="1774994865" label="day_date_time"/>
+  <int value="1777827929" label="heart_rate_measurement"/>
+  <int value="1778752264" label="magnetic_flux_density_2D"/>
+  <int value="1786548534"
+      label="Parrot Flypad; 9e35fa00-4344-44d4-a2e2-0c7f6046878b"/>
+  <int value="1794935269"
+      label="Sphero Robot; 22bb746f-2bb2-7554-2d6f-726568705327"/>
+  <int value="1807818076" label="rainfall"/>
+  <int value="1811011331" label="report"/>
+  <int value="1813165113" label="fat_burn_heart_rate_lower_limit"/>
+  <int value="1814120610"
+      label="Elgato Avea Bulb; f815e811-456c-6761-746f-4d756e696368"/>
+  <int value="1822663159" label="altitude"/>
+  <int value="1826219951" label="measurement_interval"/>
+  <int value="1834634616"
+      label="konashi i2cStartStop; 229b300c-03fb-40da-98a7-b0def65c2d4b"/>
+  <int value="1844236489"
+      label="Elite trainer; 347b0010-7635-408b-8918-8ff3949ce592"/>
+  <int value="1847017753"
+      label="konashi pwmConfig; 229b3004-03fb-40da-98a7-b0def65c2d4b"/>
+  <int value="1853459100" label="1853459100 (Unknown; not a 16bit UUID)"/>
+  <int value="1855704654" label="latitude"/>
+  <int value="1863022784"
+      label="Parrot Drone; 9a66fd24-0800-9191-11e4-012d1540cb8e"/>
+  <int value="1865494132"
+      label="konashi i2cRead; 229b300f-03fb-40da-98a7-b0def65c2d4b"/>
+  <int value="1866335371"
+      label="PocketLab; f000aa36-0452-4000-b000-000000000000"/>
+  <int value="1873367042"
+      label="PocketLab; f000aa3c-0452-4000-b000-000000000000"/>
+  <int value="1875571028"
+      label="PowerUp RC plane; 75b64e51-f185-4ed1-921a-476090d80ba7"/>
+  <int value="1881531610" label="descriptor_value_changed"/>
+  <int value="1899652799" label="pollen_concentration"/>
+  <int value="1904364134" label="aerobic_heart_rate_upper_limit"/>
+  <int value="1934342765"
+      label="PocketLab; f000aa30-0452-4000-b000-000000000000"/>
+  <int value="1936155204" label="gap.device_name"/>
+  <int value="1940300093"
+      label="Tacx trainer; 6e40fec2-b5a3-f393-e0a9-e50e24dcca9e"/>
+  <int value="1941001682"
+      label="LEGO Hub Boot Loader Characteristic;
+             00001626-1212-efde-1623-785feabcd123"/>
+  <int value="1945497075"
+      label="PocketLab; f000aa24-0452-4000-b000-000000000000"/>
+  <int value="1954594648" label="temperature"/>
+  <int value="1970019437" label="gap.peripheral_privacy_flag"/>
+  <int value="1974805193"
+      label="PocketLab; f000aa26-0452-4000-b000-000000000000"/>
+  <int value="1981651466" label="wind_chill"/>
+  <int value="1984759904" label="1984759904 (Unknown; not a 16bit UUID)"/>
+  <int value="1995515788"
+      label="PocketLab (from service 11);
+             f000aa1b-0452-4000-b000-000000000000"/>
+  <int value="1995890588"
+      label="PocketLab 1; f000aa43-0451-4000-b000-000000000000"/>
+  <int value="1999174392" label="glucose_measurement_context"/>
+  <int value="2000824522" label="waist_circumference"/>
+  <int value="2010182602" label="csc_feature"/>
+  <int value="2010559917"
+      label="PocketLab; f000aa2e-0452-4000-b000-000000000000"/>
+  <int value="2020665772"
+      label="PocketLab; f000aa3e-0452-4000-b000-000000000000"/>
+  <int value="2022949018" label="cgm_status"/>
+  <int value="2025615830" label="aggregate"/>
+  <int value="2025816471"
+      label="Eddystone Config Unlock; a3c87507-8ed3-4bdf-8a39-a01bebede295"/>
+  <int value="2031294873" label="uncertainty"/>
+  <int value="2040106786"
+      label="PocketLab 1; f000aa44-0451-4000-b000-000000000000"/>
+  <int value="2041423305" label="email_address"/>
+  <int value="2042267197" label="age"/>
+  <int value="2047173546" label="boot_keyboard_input_report"/>
+  <int value="2049531548"
+      label="nrf52-Quadcopter; 6e400004-b5a3-f393-e0a9-e50e24dcca9e"/>
+  <int value="2055293976"
+      label="Remote Lego; b394673e-dea0-4044-a189-86f1c85ce22e"/>
+  <int value="2066621778"
+      label="PocketLab; f000aa37-0452-4000-b000-000000000000"/>
+  <int value="2083994430" label="two_zone_heart_rate_limit"/>
+  <int value="2084445069" label="ringer_control_point"/>
+  <int value="2088370773"
+      label="PocketLab (from service 11);
+             f000aa13-0452-4000-b000-000000000000"/>
+  <int value="2091220203"
+      label="konashi pioInputNotification;
+             229b3003-03fb-40da-98a7-b0def65c2d4b"/>
+  <int value="2091531878" label="weight_scale_feature"/>
+  <int value="2093050338"
+      label="PocketLab; f000aa08-0452-4000-b000-000000000000"/>
+  <int value="2100140560" label="2100140560 (Unknown; not a 16bit UUID)"/>
+  <int value="2101185135" label="time_zone"/>
+  <int value="2103247472"
+      label="PocketLab; f000aa09-0452-4000-b000-000000000000"/>
+  <int value="2105952193" label="heart_rate_max"/>
+  <int value="2110830087"
+      label="Printer; 00002af1-0000-1000-8000-00805f9b34fb"/>
+  <int value="2118241351"
+      label="PocketLab 1; f000aa32-0451-4000-b000-000000000000"/>
+  <int value="2118566262" label="database_change_increment"/>
+  <int value="2122016879"
+      label="PocketLab (from service 11);
+             f000aa12-0452-4000-b000-000000000000"/>
+  <int value="2125906618" label="gap.appearance"/>
+  <int value="2129421706"
+      label="LEGO Hub Characteristic; 00001624-1212-efde-1623-785feabcd123"/>
+  <int value="2140490935" label="gatt.service_changed"/>
+</enum>
+
+<enum name="GattErrorCode">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Failed"/>
+  <int value="2" label="In Progress"/>
+  <int value="3" label="Invalid Length"/>
+  <int value="4" label="Not Permitted"/>
+  <int value="5" label="Not Authorized"/>
+  <int value="6" label="Not Paired"/>
+  <int value="7" label="Not Supported"/>
+</enum>
+
+<enum name="GATTServiceHash">
+<!-- Hash values can be produced using tool: bluetooth_metrics_hash -->
+
+  <int value="7464675" label="pulse_oximeter"/>
+  <int value="13977722"
+      label="Vernier Sensors; d91714ef-28b9-4f91-ba16-f0d9a604f112"/>
+  <int value="14295641"
+      label="PocketLab; f000aa1e-0452-4000-b000-000000000000"/>
+  <int value="26695985" label="fe20"/>
+  <int value="35226455" label="fe44"/>
+  <int value="35347197" label="fe26"/>
+  <int value="41430862" label="fea8"/>
+  <int value="44208286" label="fe29"/>
+  <int value="46512116" label="fe03"/>
+  <int value="47251880" label="fe8c"/>
+  <int value="48328546" label="febf"/>
+  <int value="48912332"
+      label="micro:bit Events; e95d93af-251d-470a-a062-fa1922dfa9a8"/>
+  <int value="56938056" label="feb9"/>
+  <int value="61502349"
+      label="PocketLab; f000aa2c-0452-4000-b000-000000000000"/>
+  <int value="62669585" label="feff"/>
+  <int value="70653353" label="fe37"/>
+  <int value="81094401" label="link_loss"/>
+  <int value="81699382"
+      label="PocketLab; f000aa1d-0452-4000-b000-000000000000"/>
+  <int value="85709298" label="fe38"/>
+  <int value="87242598"
+      label="PocketLab 1; f000aa40-0451-4000-b000-000000000000"/>
+  <int value="91953454" label="fe7b"/>
+  <int value="107684477"
+      label="PocketLab; f000aa2d-0452-4000-b000-000000000000"/>
+  <int value="108999394"
+      label="LEGO Hub Boot Loader Service;
+             00001625-1212-efde-1623-785feabcd123"/>
+  <int value="109066436" label="Printer; 18f0"/>
+  <int value="117033282" label="fe1e"/>
+  <int value="119232939" label="fe16"/>
+  <int value="124193922"
+      label="nrf52-Quadcopter; 6e400020-b5a3-f393-e0a9-e50e24dcca9e"/>
+  <int value="126220948" label="fec4"/>
+  <int value="129263762"
+      label="PocketLab; f000aa04-0452-4000-b000-000000000000"/>
+  <int value="129862977"
+      label="micro:bit LEDs; e95dd91d-251d-470a-a062-fa1922dfa9a8"/>
+  <int value="130754956" label="fe0d"/>
+  <int value="134110769" label="fecf"/>
+  <int value="141942246" label="fe1d"/>
+  <int value="150370668" label="150370668 (Unknown; not a 16bit UUID)"/>
+  <int value="152492105" label="fe5f"/>
+  <int value="169501939" label="fe4d"/>
+  <int value="199936534" label="fe3c"/>
+  <int value="214038522" label="fed3"/>
+  <int value="217781951" label="human_interface_device"/>
+  <int value="219286671" label="fe04"/>
+  <int value="221983129" label="fe66"/>
+  <int value="228594985" label="fe21"/>
+  <int value="229725863"
+      label="Juggglow; 624e957f-cb42-4cd6-bacc-84aeb898f69b"/>
+  <int value="239513635"
+      label="micro:bit Buttons; e95d9882-251d-470a-a062-fa1922dfa9a8"/>
+  <int value="239745754" label="fe22"/>
+  <int value="241152428"
+      label="PocketLab; f000aa25-0452-4000-b000-000000000000"/>
+  <int value="244169154"
+      label="PocketLab; f000aa32-0452-4000-b000-000000000000"/>
+  <int value="252638028" label="fe9c"/>
+  <int value="253001319" label="fe84"/>
+  <int value="265147461"
+      label="Root Robot; 48c5d828-ac2a-442d-97a3-0c9822b04979"/>
+  <int value="267848299" label="fe3e"/>
+  <int value="270670950" label="fe62"/>
+  <int value="272049750"
+      label="PocketLab 1; f000aa30-0451-4000-b000-000000000000"/>
+  <int value="272218751" label="automation_io"/>
+  <int value="273356483" label="fe68"/>
+  <int value="278860884" label="fe5c"/>
+  <int value="289754407" label="fe01"/>
+  <int value="291870040" label="fe6d"/>
+  <int value="295205583" label="fe27"/>
+  <int value="298938019"
+      label="PocketLab 1; f000aa20-0451-4000-b000-000000000000"/>
+  <int value="310654399" label="fe54"/>
+  <int value="314884784" label="fe65"/>
+  <int value="315044617" label="fea9"/>
+  <int value="321399472" label="fe86"/>
+  <int value="335078161"
+      label="Dotti; MiP Robot; 0000fff0-0000-1000-8000-00805f9b34fb"/>
+  <int value="336095190" label="fe1c"/>
+  <int value="337129282" label="fe73"/>
+  <int value="347254994" label="feb6"/>
+  <int value="350589357" label="fe8e"/>
+  <int value="353919198" label="fe41"/>
+  <int value="367801999" label="fe19"/>
+  <int value="381944619" label="continuous_glucose_monitoring"/>
+  <int value="384581502"
+      label="PocketLab; f000aa07-0452-4000-b000-000000000000"/>
+  <int value="393442080" label="fe47"/>
+  <int value="404751265" label="fe34"/>
+  <int value="406443827" label="fe08"/>
+  <int value="406667138" label="fe1b"/>
+  <int value="408422717" label="fe12"/>
+  <int value="411422080" label="feaf"/>
+  <int value="426120542"
+      label="PocketLab; f000aa3b-0452-4000-b000-000000000000"/>
+  <int value="428955508" label="fed8"/>
+  <int value="436040838" label="fe49"/>
+  <int value="442258066" label="fec6"/>
+  <int value="448479874" label="fe13"/>
+  <int value="449334956"
+      label="PocketLab; f000aa3d-0452-4000-b000-000000000000"/>
+  <int value="452749537" label="fe6f"/>
+  <int value="482634289"
+      label="SAM Labs Blocks; 3b989460-975f-11e4-a9fb-0002a5d5c51b"/>
+  <int value="486403409" label="fe7e"/>
+  <int value="493187195"
+      label="Insight cards; 13630000-aeb9-10cf-ef69-81e145a91113"/>
+  <int value="499379297" label="fe0c"/>
+  <int value="501361244"
+      label="PocketLab; f000aa21-0452-4000-b000-000000000000"/>
+  <int value="517314925" label="fe0e"/>
+  <int value="525609715"
+      label="PocketLab 1; f000aa10-0451-4000-b000-000000000000"/>
+  <int value="534472233" label="feea"/>
+  <int value="535574137" label="feb1"/>
+  <int value="539310529"
+      label="micro:bit DFU Control; e95d93b0-251d-470a-a062-fa1922dfa9a8"/>
+  <int value="540487861"
+      label="Parrot Drone; 9a66fd21-0800-9191-11e4-012d1540cb8e"/>
+  <int value="547028880" label="fed0"/>
+  <int value="547268186"
+      label="Parrot Drone; 9a66fb00-0800-9191-11e4-012d1540cb8e"/>
+  <int value="547391938" label="feee"/>
+  <int value="563178896" label="fec8"/>
+  <int value="572734315"
+      label="Sphero Robot; 22bb746f-2bb0-7554-2d6f-726568705327"/>
+  <int value="587509991" label="feba"/>
+  <int value="593291030" label="fe80"/>
+  <int value="593725623" label="fef8"/>
+  <int value="594122172" label="health_thermometer"/>
+  <int value="598801180" label="fe64"/>
+  <int value="599398840" label="feb4"/>
+  <int value="601952480"
+      label="PowerUp RC plane; 75b64e51-f181-4ed1-921a-476090d80ba7"/>
+  <int value="602410094"
+      label="PocketLab; f000aa28-0452-4000-b000-000000000000"/>
+  <int value="603143198" label="fef5"/>
+  <int value="604112254" label="fee4"/>
+  <int value="612248808" label="612248808 (Unknown; not a 16bit UUID)"/>
+  <int value="617434027" label="fe59"/>
+  <int value="621358948" label="fec7"/>
+  <int value="626013607" label="FIDO authentication service (fffd)"/>
+  <int value="628511213"
+      label="PocketLab; f000aa3a-0452-4000-b000-000000000000"/>
+  <int value="633977000" label="fedf"/>
+  <int value="634740644"
+      label="Purple Eye; 00005100-0000-1000-8000-00805f9b34fb"/>
+  <int value="642914459" label="fe3d"/>
+  <int value="643543662" label="fefe"/>
+  <int value="659248322"
+      label="PocketLab; f000aa29-0452-4000-b000-000000000000"/>
+  <int value="661885353"
+      label="Remote Lego; 40480f29-7bad-4ea5-8bf8-499405c9b324"/>
+  <int value="675211143" label="fe4a"/>
+  <int value="677930586" label="fe11"/>
+  <int value="683753134" label="fe82"/>
+  <int value="684646659" label="febb"/>
+  <int value="687580695" label="fe7a"/>
+  <int value="687720133" label="fe91"/>
+  <int value="688383299" label="fe1f"/>
+  <int value="690691504" label="bond_management"/>
+  <int value="695100933" label="fed4"/>
+  <int value="702341883" label="fed5"/>
+  <int value="703883979" label="fe87"/>
+  <int value="706159123" label="fe32"/>
+  <int value="712814660"
+      label="Eddystone-URL Beacon Configuration;
+             ee0c2080-8786-40ba-ab96-99b91ac981d8"/>
+  <int value="724409151"
+      label="PocketLab; f000aa1f-0452-4000-b000-000000000000"/>
+  <int value="725361228"
+      label="PocketLab; f000aa10-0452-4000-b000-000000000000"/>
+  <int value="739317418" label="fe05"/>
+  <int value="741183887" label="fe78"/>
+  <int value="749323131" label="fece"/>
+  <int value="753456499"
+      label="PocketLab; f000aa27-0452-4000-b000-000000000000"/>
+  <int value="762562796" label="fe5e"/>
+  <int value="775377708" label="fe2b"/>
+  <int value="780195705" label="fead"/>
+  <int value="784175223"
+      label="PocketLab; f000aa39-0452-4000-b000-000000000000"/>
+  <int value="786171562" label="fe0a"/>
+  <int value="803680658" label="fea3"/>
+  <int value="805645044" label="glucose"/>
+  <int value="806223105"
+      label="PocketLab; f000aa1c-0452-4000-b000-000000000000"/>
+  <int value="807272540" label="fe1a"/>
+  <int value="817497010" label="fe18"/>
+  <int value="827651216"
+      label="PocketLab; f000aa20-0452-4000-b000-000000000000"/>
+  <int value="836214784" label="cycling_power"/>
+  <int value="841972234" label="feeb"/>
+  <int value="853857776"
+      label="PocketLab; f000aa2a-0452-4000-b000-000000000000"/>
+  <int value="869059214" label="next_dst_change"/>
+  <int value="869682406" label="fe60"/>
+  <int value="873412183"
+      label="LEGO Hub Service; 00001623-1212-efde-1623-785feabcd123"/>
+  <int value="876407493" label="location_and_navigation"/>
+  <int value="878416856" label="fe85"/>
+  <int value="879242624"
+      label="nRF candy machine; a6c31337-6c07-453e-961a-d8a8a41bf368"/>
+  <int value="882315332" label="fe55"/>
+  <int value="889111031" label="fecd"/>
+  <int value="890629650" label="running_speed_and_cadence"/>
+  <int value="901700952" label="fedd"/>
+  <int value="902817086" label="fea2"/>
+  <int value="918911989" label="fed1"/>
+  <int value="931929648" label="Mi Band; fee0"/>
+  <int value="935427983" label="fed7"/>
+  <int value="936179325" label="feb5"/>
+  <int value="939739701" label="fe8f"/>
+  <int value="939958322" label="febc"/>
+  <int value="940942235" label="feef"/>
+  <int value="953202155" label="fe8d"/>
+  <int value="959163825"
+      label="Elgato Avea Bulb; f815e810-456c-6761-746f-4d756e696368"/>
+  <int value="960854785" label="fe53"/>
+  <int value="961193127" label="feb8"/>
+  <int value="963656436" label="fe77"/>
+  <int value="978815669"
+      label="CoolBeans Serial; a495ff10-c5b1-4b44-b512-1370f02d74de"/>
+  <int value="988476177"
+      label="PocketLab 1; f000aa50-0451-4000-b000-000000000000"/>
+  <int value="993332700"
+      label="micro:bit Temperature; e95d6100-251d-470a-a062-fa1922dfa9a8"/>
+  <int value="1001310815" label="fe75"/>
+  <int value="1018346218"
+      label="PocketLab; f000aa03-0452-4000-b000-000000000000"/>
+  <int value="1024550252" label="feda"/>
+  <int value="1029767622" label="internet_protocol_support"/>
+  <int value="1035129135" label="fe74"/>
+  <int value="1044298649" label="fe99"/>
+  <int value="1045265631"
+      label="Elite trainer; 347b0001-7635-408b-8918-8ff3949ce592"/>
+  <int value="1047979067" label="fe17"/>
+  <int value="1054370387" label="fef9"/>
+  <int value="1061554458" label="feaa"/>
+  <int value="1067649821" label="fe3f"/>
+  <int value="1079263879" label="fe06"/>
+  <int value="1085187782" label="feae"/>
+  <int value="1088150526" label="feb2"/>
+  <int value="1091337779" label="fefb"/>
+  <int value="1096286291" label="fed6"/>
+  <int value="1097514018"
+      label="PocketLab; f000aa06-0452-4000-b000-000000000000"/>
+  <int value="1102290958" label="fe56"/>
+  <int value="1103440256" label="fee9"/>
+  <int value="1107293675" label="cycling_speed_and_cadence"/>
+  <int value="1107743017" label="fe00"/>
+  <int value="1108163795" label="fec0"/>
+  <int value="1108885324" label="fe48"/>
+  <int value="1122138707" label="fed2"/>
+  <int value="1122276223" label="fe67"/>
+  <int value="1122861451" label="Playbulb Candle; ff02"/>
+  <int value="1125757823"
+      label="PocketLab; f000aa33-0452-4000-b000-000000000000"/>
+  <int value="1132318862" label="fe6a"/>
+  <int value="1133574029" label="fede"/>
+  <int value="1134418737" label="fed9"/>
+  <int value="1146291045" label="fe2e"/>
+  <int value="1155522736" label="fea0"/>
+  <int value="1181418959" label="feca"/>
+  <int value="1185484517" label="fe02"/>
+  <int value="1188875912" label="phone_alert_status"/>
+  <int value="1204532270" label="fea1"/>
+  <int value="1205730714" label="fe81"/>
+  <int value="1211834643"
+      label="PocketLab; f000aa02-0452-4000-b000-000000000000"/>
+  <int value="1213218283" label="feb7"/>
+  <int value="1219993345" label="device_information"/>
+  <int value="1225001939" label="fe6c"/>
+  <int value="1235220658" label="fe6e"/>
+  <int value="1236903028" label="fe9d"/>
+  <int value="1239202871" label="generic_attribute"/>
+  <int value="1244946418" label="fe61"/>
+  <int value="1250531601" label="fe15"/>
+  <int value="1254514264"
+      label="PocketLab; f000aa05-0452-4000-b000-000000000000"/>
+  <int value="1257014053" label="fe33"/>
+  <int value="1262008705" label="fef2"/>
+  <int value="1265172773" label="indoor_positioning"/>
+  <int value="1265779630" label="fe7d"/>
+  <int value="1275725183" label="febe"/>
+  <int value="1276692887" label="fe09"/>
+  <int value="1280998251" label="blood_pressure"/>
+  <int value="1289827687" label="fe7c"/>
+  <int value="1291799273"
+      label="littleBits; ded1c5a0-536c-11e6-beb8-9e71128cae77"/>
+  <int value="1293391247" label="fea4"/>
+  <int value="1295501517" label="fef3"/>
+  <int value="1300474367" label="fe70"/>
+  <int value="1300496660" label="fe23"/>
+  <int value="1324131957" label="ff08; 0000ff08-0000-1000-8000-00805f9b34fb"/>
+  <int value="1327498374"
+      label="nRF UART; 6e400001-b5a3-f393-e0a9-e50e24dcca9e"/>
+  <int value="1328850331"
+      label="micro:bit Accelerometer; e95d0753-251d-470a-a062-fa1922dfa9a8"/>
+  <int value="1344502489" label="fe92"/>
+  <int value="1352591424" label="fe2d"/>
+  <int value="1357782294" label="fe90"/>
+  <int value="1357850359" label="fefc"/>
+  <int value="1359442507"
+      label="Physical Web Light Switch; ba42561b-b1d2-440a-8d04-0cefb43faece"/>
+  <int value="1362860533" label="fe9a"/>
+  <int value="1366014117" label="fe2c"/>
+  <int value="1366194038"
+      label="PocketLab; f000aa22-0452-4000-b000-000000000000"/>
+  <int value="1369789354" label="current_time"/>
+  <int value="1376579922" label="fef0"/>
+  <int value="1377872916" label="fe51"/>
+  <int value="1378697826"
+      label="PocketLab; f000aa2f-0452-4000-b000-000000000000"/>
+  <int value="1380007534" label="fe96"/>
+  <int value="1382767841" label="fe93"/>
+  <int value="1394327958" label="fe24"/>
+  <int value="1398099241" label="user_data"/>
+  <int value="1402127045" label="fef4"/>
+  <int value="1415105941" label="scan_parameters"/>
+  <int value="1416866355" label="fe3b"/>
+  <int value="1422100109"
+      label="Sphero Robot; 22bb746f-2ba0-7554-2d6f-726568705327"/>
+  <int value="1423142122"
+      label="PocketLab; f000aa01-0452-4000-b000-000000000000"/>
+  <int value="1424865940" label="alert_notification"/>
+  <int value="1432421356" label="fe14"/>
+  <int value="1433847022" label="fefa"/>
+  <int value="1451886110"
+      label="PocketLab; f000aa38-0452-4000-b000-000000000000"/>
+  <int value="1463907405"
+      label="PocketLab; f000aa2b-0452-4000-b000-000000000000"/>
+  <int value="1465794357" label="feb0"/>
+  <int value="1477417345"
+      label="PocketLab; f000aa23-0452-4000-b000-000000000000"/>
+  <int value="1482395712"
+      label="Bleno Pizza Example; 13333333-3333-3333-3333-333333333337"/>
+  <int value="1484296385" label="fe30"/>
+  <int value="1486406094" label="1486406094 (Unknown; not a 16bit UUID)"/>
+  <int value="1513113754" label="fe39"/>
+  <int value="1515793787" label="fef1"/>
+  <int value="1545945606"
+      label="Parrot Drone; 9a66fa00-0800-9191-11e4-012d1540cb8e"/>
+  <int value="1548928839" label="fec5"/>
+  <int value="1549672811"
+      label="nRF candy machine; b6c31337-6c07-453e-961a-d8a8a41bf368"/>
+  <int value="1551090056"
+      label="PocketLab; f000aa35-0452-4000-b000-000000000000"/>
+  <int value="1553614739" label="fe6b"/>
+  <int value="1563543855" label="fe72"/>
+  <int value="1569655226" label="generic_access"/>
+  <int value="1573199922" label="fe71"/>
+  <int value="1578535968"
+      label="Makeblock mBot; 0000ffe1-0000-1000-8000-00805f9b34fb"/>
+  <int value="1588237112"
+      label="PocketLab; f000aa3f-0452-4000-b000-000000000000"/>
+  <int value="1594426590" label="fe4e"/>
+  <int value="1600490722" label="fe46"/>
+  <int value="1604724337" label="fe88"/>
+  <int value="1606985074" label="feed"/>
+  <int value="1607594729" label="fe0f"/>
+  <int value="1611458228"
+      label="PocketLab; f000aa34-0452-4000-b000-000000000000"/>
+  <int value="1618872680" label="fe9b"/>
+  <int value="1631386264" label="fefd"/>
+  <int value="1635890706" label="fe9e"/>
+  <int value="1637021391" label="fe95"/>
+  <int value="1638012344" label="fe97"/>
+  <int value="1648320092" label="fe7f"/>
+  <int value="1651126525" label="fe25"/>
+  <int value="1651610232" label="fe52"/>
+  <int value="1655806770"
+      label="PocketLab Voyager; f000aa11-0452-4000-b000-000000000000"/>
+  <int value="1660904097" label="immediate_alert"/>
+  <int value="1663141542" label="battery_service"/>
+  <int value="1671670551" label="fe5a"/>
+  <int value="1673238799" label="fee3"/>
+  <int value="1680929515" label="fe79"/>
+  <int value="1681595304" label="fe4b"/>
+  <int value="1682716946" label="fe45"/>
+  <int value="1694516494" label="fe31"/>
+  <int value="1696287138" label="weight_scale"/>
+  <int value="1697181639" label="1697181639 (Unknown; not a 16bit UUID)"/>
+  <int value="1701893879" label="feac"/>
+  <int value="1704852137" label="1704852137 (Unknown; not a 16bit UUID)"/>
+  <int value="1706666451" label="fea7"/>
+  <int value="1708135819" label="1708135819 (Unknown; not a 16bit UUID)"/>
+  <int value="1712085581"
+      label="MiP Robot; Magic Blue Bulb; 0000ffe5-0000-1000-8000-00805f9b34fb"/>
+  <int value="1714031075" label="fe10"/>
+  <int value="1719495127"
+      label="PocketLab; f000aa00-0452-4000-b000-000000000000"/>
+  <int value="1724509641" label="fe8b"/>
+  <int value="1729966097"
+      label="Anki OVERDRIVE cars; be15beef-6186-407e-8381-0bd89c4d8df4"/>
+  <int value="1753170093" label="environmental_sensing"/>
+  <int value="1763555668" label="fe76"/>
+  <int value="1779377938" label="fe5d"/>
+  <int value="1784351685" label="feab"/>
+  <int value="1788143374" label="feb3"/>
+  <int value="1788905945" label="fedb"/>
+  <int value="1789684919" label="fe36"/>
+  <int value="1801426861"
+      label="micro:bit Magnetometer; e95df2d8-251d-470a-a062-fa1922dfa9a8"/>
+  <int value="1805849785" label="fe98"/>
+  <int value="1808789304" label="fe3a"/>
+  <int value="1821803686" label="TI SensorTag Simple Keys; ffe0"/>
+  <int value="1823176820" label="body_composition"/>
+  <int value="1826466999" label="fee1"/>
+  <int value="1829698279" label="fe0b"/>
+  <int value="1833458622" label="fe42"/>
+  <int value="1844072312" label="fe40"/>
+  <int value="1849709266" label="fec3"/>
+  <int value="1852765173" label="1852765173 (Unknown; not a 16bit UUID)"/>
+  <int value="1855849484"
+      label="iHealth Edge; 636f6d2e-6a69-7561-6e2e-414d56313100"/>
+  <int value="1866335371"
+      label="PocketLab; f000aa36-0452-4000-b000-000000000000"/>
+  <int value="1873367042"
+      label="PocketLab; f000aa3c-0452-4000-b000-000000000000"/>
+  <int value="1891274929" label="fee2"/>
+  <int value="1891804450" label="fe58"/>
+  <int value="1905398969" label="fee6"/>
+  <int value="1915568448" label="fe89"/>
+  <int value="1922068523" label="fef6"/>
+  <int value="1922152740" label="fe8a"/>
+  <int value="1922853101" label="fe28"/>
+  <int value="1925022679" label="fe57"/>
+  <int value="1934342765"
+      label="PocketLab; f000aa30-0452-4000-b000-000000000000"/>
+  <int value="1940012814" label="fe2a"/>
+  <int value="1942373991"
+      label="Eddystone-URL Beacon Configuration v2;
+             a3c87500-8ed3-4bdf-8a39-a01bebede295"/>
+  <int value="1945497075"
+      label="PocketLab; f000aa24-0452-4000-b000-000000000000"/>
+  <int value="1946977319" label="fec1"/>
+  <int value="1953707948" label="fe9f"/>
+  <int value="1960388103" label="fecb"/>
+  <int value="1969478137" label="fe63"/>
+  <int value="1970234661" label="reference_time_update"/>
+  <int value="1971997463" label="fe07"/>
+  <int value="1974805193"
+      label="PocketLab; f000aa26-0452-4000-b000-000000000000"/>
+  <int value="1976176123" label="fe4c"/>
+  <int value="1983035069" label="fec9"/>
+  <int value="1984351068" label="fea6"/>
+  <int value="2010559917"
+      label="PocketLab; f000aa2e-0452-4000-b000-000000000000"/>
+  <int value="2016025023" label="febd"/>
+  <int value="2017827114" label="fe4f"/>
+  <int value="2018026941"
+      label="konashi; 229bff00-03fb-40da-98a7-b0def65c2d4b"/>
+  <int value="2020665772"
+      label="PocketLab; f000aa3e-0452-4000-b000-000000000000"/>
+  <int value="2021054861"
+      label="Tacx trainer; 6e40fec1-b5a3-f393-e0a9-e50e24dcca9e"/>
+  <int value="2022676622" label="fe35"/>
+  <int value="2051635436" label="fe50"/>
+  <int value="2055825405" label="fedc"/>
+  <int value="2058080782" label="fecc"/>
+  <int value="2061595680" label="fea5"/>
+  <int value="2066621778"
+      label="PocketLab; f000aa37-0452-4000-b000-000000000000"/>
+  <int value="2069612985" label="fee5"/>
+  <int value="2070392722" label="fec2"/>
+  <int value="2075745564" label="heart_rate"/>
+  <int value="2081202638"
+      label="PocketLab 1; f000aa60-0451-4000-b000-000000000000"/>
+  <int value="2081534039" label="fe83"/>
+  <int value="2083938968"
+      label="micro:bit IO PINs; e95d127b-251d-470a-a062-fa1922dfa9a8"/>
+  <int value="2086529225" label="tx_power"/>
+  <int value="2093050338"
+      label="PocketLab; f000aa08-0452-4000-b000-000000000000"/>
+  <int value="2095670709"
+      label="PocketLab Voyager; f000aa31-0452-4000-b000-000000000000"/>
+  <int value="2097896377" label="fee8"/>
+  <int value="2100033855" label="fef7"/>
+  <int value="2103247472"
+      label="PocketLab; f000aa09-0452-4000-b000-000000000000"/>
+  <int value="2107223399" label="fee7"/>
+  <int value="2108894990" label="fe2f"/>
+  <int value="2110412550" label="fe43"/>
+  <int value="2113887919" label="fe5b"/>
+  <int value="2115271248" label="fe94"/>
+  <int value="2124678180"
+      label="Parrot Drone; 9a66fd51-0800-9191-11e4-012d1540cb8e"/>
+  <int value="2132514937" label="feec"/>
+  <int value="2136716957" label="fe69"/>
+</enum>
+
+<enum name="SetNicknameResult">
+  <int value="0" label="Invalid nickname format"/>
+  <int value="1" label="Device not found"/>
+  <int value="2" label="Prefs unavailable"/>
+  <int value="3" label="Success"/>
+</enum>
+
+<enum name="WebBluetoothConnectGATTOutcome">
+  <int value="0" label="Success"/>
+  <int value="1" label="Device no longer in range"/>
+  <int value="2" label="Unknown Error"/>
+  <int value="3" label="In Progress"/>
+  <int value="4" label="Failed"/>
+  <int value="5" label="Auth Failed"/>
+  <int value="6" label="Auth Canceled"/>
+  <int value="7" label="Auth Rejected"/>
+  <int value="8" label="Auth Timeout"/>
+  <int value="9" label="Unsupported Device"/>
+  <int value="10" label="Not Ready"/>
+  <int value="11" label="Already Connected"/>
+  <int value="12" label="Already Exists"/>
+  <int value="13" label="Not Connected"/>
+  <int value="14" label="Does Not Exist"/>
+  <int value="15" label="Invalid Arguments"/>
+</enum>
+
+<enum name="WebBluetoothGATTOperationOutcome">
+  <int value="0" label="Success"/>
+  <int value="1" label="No Device"/>
+  <int value="2" label="No Service"/>
+  <int value="3" label="No Characteristic"/>
+  <int value="4" label="No Descriptor"/>
+  <int value="5" label="Unknown"/>
+  <int value="6" label="Failed"/>
+  <int value="7" label="In Progress"/>
+  <int value="8" label="Invalid Length"/>
+  <int value="9" label="Not Permitted"/>
+  <int value="10" label="Not Authorized"/>
+  <int value="11" label="Not Paired"/>
+  <int value="12" label="Not Supported"/>
+  <int value="13" label="Blocklisted"/>
+</enum>
+
+<enum name="WebBluetoothRSSISignalStrengthLevel">
+  <int value="0" label="&lt;= minimum RSSI; displayed as level 0"/>
+  <int value="1" label="RSSI displayed as level 0"/>
+  <int value="2" label="RSSI displayed as level 1"/>
+  <int value="3" label="RSSI displayed as level 2"/>
+  <int value="4" label="RSSI displayed as level 3"/>
+  <int value="5" label="RSSI displayed as level 4"/>
+  <int value="6" label="&gt;= maximium RSSI; displayed as level 4"/>
+</enum>
+
+</enums>
+
+</histogram-configuration>

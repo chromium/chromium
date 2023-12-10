@@ -44,13 +44,12 @@ import org.chromium.chrome.browser.customtabs.CustomTabTabPersistencePolicy;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.customtabs.DefaultBrowserProviderImpl;
 import org.chromium.chrome.browser.customtabs.ReparentingTaskProvider;
+import org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.CustomTabMinimizationManagerHolder;
 import org.chromium.chrome.browser.customtabs.shadows.ShadowExternalNavigationDelegateImpl;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
-import org.chromium.chrome.browser.password_manager.PasswordChangeSuccessTrackerBridge;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabImpl;
 import org.chromium.chrome.browser.tabmodel.AsyncTabCreationParams;
 import org.chromium.chrome.browser.tabmodel.AsyncTabParamsManager;
 import org.chromium.chrome.browser.tabmodel.AsyncTabParamsManagerFactory;
@@ -102,6 +101,7 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
     @Mock public CustomTabIncognitoManager customTabIncognitoManager;
     @Mock public TabModelInitializer tabModelInitializer;
     @Mock public WebContents webContents;
+    @Mock public CustomTabMinimizationManagerHolder mMinimizationManagerHolder;
     public AsyncTabParamsManager realAsyncTabParamsManager =
             AsyncTabParamsManagerFactory.createAsyncTabParamsManager();
 
@@ -151,16 +151,6 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
     protected void finished(Description description) {
         realAsyncTabParamsManager.getAsyncTabParams().clear();
         ShadowExternalNavigationDelegateImpl.setWillChromeHandleIntent(false);
-    }
-
-    /**
-     * Set an extra that triggers notifying the PasswordChangeSuccessTracker during initial intent
-     * handling.
-     * @param username The username to set as the extra parameter.
-     */
-    public void setPasswordChangeUsername(String username) {
-        mIntent.putExtra(
-                PasswordChangeSuccessTrackerBridge.EXTRA_MANUAL_CHANGE_USERNAME_KEY, username);
     }
 
     public CustomTabActivityTabController createTabController() {
@@ -220,7 +210,12 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
                     }
                 };
         return new CustomTabIntentHandler(
-                tabProvider, intentDataProvider, strategy, (intent) -> false, activity);
+                tabProvider,
+                intentDataProvider,
+                strategy,
+                (intent) -> false,
+                activity,
+                mMinimizationManagerHolder);
     }
 
     public void warmUp() {
@@ -264,15 +259,15 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
         return webContents;
     }
 
-    public TabImpl prepareHiddenTab() {
+    public Tab prepareHiddenTab() {
         warmUp();
-        TabImpl hiddenTab = prepareTab();
+        Tab hiddenTab = prepareTab();
         when(connection.takeHiddenTab(any(), any(), any())).thenReturn(hiddenTab);
         return hiddenTab;
     }
 
-    public TabImpl prepareTab() {
-        TabImpl tab = mock(TabImpl.class);
+    public Tab prepareTab() {
+        Tab tab = mock(Tab.class);
         when(tab.getView()).thenReturn(mock(View.class));
         when(tab.getUserDataHost()).thenReturn(new UserDataHost());
         when(tab.getWebContents()).thenReturn(webContents);

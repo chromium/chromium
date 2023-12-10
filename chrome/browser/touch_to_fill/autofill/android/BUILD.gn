@@ -1,0 +1,51 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+
+source_set("public") {
+  sources = [
+    "touch_to_fill_credit_card_view.h",
+    "touch_to_fill_credit_card_view_controller.h",
+  ]
+
+  deps = [ "//base" ]
+}
+
+source_set("android") {
+  sources = [
+    "touch_to_fill_credit_card_view_impl.cc",
+    "touch_to_fill_credit_card_view_impl.h",
+  ]
+
+  public_deps = [ "//base" ]
+
+  deps = [
+    ":jni_headers",
+    ":public",
+    "//chrome/browser/autofill",
+    "//components/autofill/core/common:features",
+    "//content/public/browser:browser",
+    "//third_party/libaddressinput:util",
+    "//ui/android",
+  ]
+}
+
+group("jni_headers") {
+  public_deps =
+      [ "//chrome/browser/touch_to_fill/autofill/android/internal:jni" ]
+}
+
+android_library("public_java") {
+  deps = [
+    "//chrome/browser/autofill/android:java",
+    "//chrome/browser/touch_to_fill/common/android:java",
+    "//components/browser_ui/bottomsheet/android:java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/jni_zero:jni_zero_java",
+    "//ui/android:ui_java",
+  ]
+
+  sources = [ "java/src/org/chromium/chrome/browser/touch_to_fill/payments/TouchToFillCreditCardComponent.java" ]
+}

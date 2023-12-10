@@ -57,14 +57,14 @@ size_t GetRegistryLengthFromURLIncludingPrivate(
                            INCLUDE_PRIVATE_REGISTRIES);
 }
 
-size_t PermissiveGetHostRegistryLength(base::StringPiece host) {
+size_t PermissiveGetHostRegistryLength(std::string_view host) {
   return PermissiveGetHostRegistryLength(host, EXCLUDE_UNKNOWN_REGISTRIES,
                                          EXCLUDE_PRIVATE_REGISTRIES);
 }
 
 // Only called when using ICU (avoids unused static function error).
 #if !BUILDFLAG(USE_PLATFORM_ICU_ALTERNATIVES)
-size_t PermissiveGetHostRegistryLength(base::StringPiece16 host) {
+size_t PermissiveGetHostRegistryLength(std::u16string_view host) {
   return PermissiveGetHostRegistryLength(host, EXCLUDE_UNKNOWN_REGISTRIES,
                                          EXCLUDE_PRIVATE_REGISTRIES);
 }

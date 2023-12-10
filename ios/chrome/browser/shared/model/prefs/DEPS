@@ -1,16 +1,16 @@
 include_rules = [
-  "+ios/chrome/browser/first_run/first_run.h",
+  "+ios/chrome/browser/first_run/model/first_run.h",
   "+ios/chrome/browser/memory/model/memory_debugger_manager.h",
-  "+ios/chrome/browser/metrics/ios_chrome_metrics_service_client.h",
-  "+ios/chrome/browser/ntp/set_up_list_prefs.h",
+  "+ios/chrome/browser/metrics/model/ios_chrome_metrics_service_client.h",
+  "+ios/chrome/browser/ntp/model/set_up_list_prefs.h",
   "+ios/chrome/browser/ntp_tiles/model/tab_resumption/tab_resumption_prefs.h",
   "+ios/chrome/browser/parcel_tracking/parcel_tracking_prefs.h",
   "+ios/chrome/browser/policy/policy_util.h",
   "+ios/chrome/browser/prerender/model/prerender_pref.h",
-  "+ios/chrome/browser/push_notification/push_notification_service.h",
+  "+ios/chrome/browser/push_notification/model/push_notification_service.h",
   "+ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_constants.h",
   "+ios/chrome/browser/voice/model/voice_search_prefs_registration.h",
-  "+ios/chrome/browser/web/font_size/font_size_tab_helper.h",
+  "+ios/chrome/browser/web/model/font_size/font_size_tab_helper.h",
   "+ios/chrome/browser/photos/model/photos_policy.h",
 ]
 
@@ -19,7 +19,7 @@ specific_include_rules = {
   "^browser_prefs.mm": [
     "+ios/chrome/browser/ui",
     "+components/ntp_snippets",
-    "+ios/chrome/browser/metrics/constants.h",
+    "+ios/chrome/browser/metrics/model/constants.h",
   ],
 }
 

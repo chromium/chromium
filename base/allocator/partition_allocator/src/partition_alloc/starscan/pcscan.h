@@ -7,15 +7,15 @@
 
 #include <atomic>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/page_allocator.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/compiler_specific.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/component_export.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_config.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_forward.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_direct_map_extent.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_page.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/starscan/pcscan_scheduling.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/tagging.h"
+#include "partition_alloc/page_allocator.h"
+#include "partition_alloc/partition_alloc_base/compiler_specific.h"
+#include "partition_alloc/partition_alloc_base/component_export.h"
+#include "partition_alloc/partition_alloc_config.h"
+#include "partition_alloc/partition_alloc_forward.h"
+#include "partition_alloc/partition_direct_map_extent.h"
+#include "partition_alloc/partition_page.h"
+#include "partition_alloc/starscan/pcscan_scheduling.h"
+#include "partition_alloc/tagging.h"
 
 namespace partition_alloc {
 

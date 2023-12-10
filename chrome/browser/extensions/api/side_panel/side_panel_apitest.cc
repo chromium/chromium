@@ -21,10 +21,8 @@ namespace extensions {
 class SidePanelApiTest : public ExtensionApiTest {
  public:
   SidePanelApiTest() {
-    feature_list_.InitWithFeatures(
-        {extensions_features::kExtensionSidePanelIntegration,
-         extensions_features::kApiSidePanelOpen},
-        {});
+    feature_list_.InitAndEnableFeature(
+        extensions_features::kExtensionSidePanelIntegration);
   }
 
  private:

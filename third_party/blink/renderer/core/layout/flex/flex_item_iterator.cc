@@ -4,13 +4,13 @@
 
 #include "third_party/blink/renderer/core/layout/flex/flex_item_iterator.h"
 
+#include "third_party/blink/renderer/core/layout/block_break_token.h"
 #include "third_party/blink/renderer/core/layout/flex/ng_flex_line.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_block_break_token.h"
 
 namespace blink {
 
 FlexItemIterator::FlexItemIterator(const HeapVector<NGFlexLine>& flex_lines,
-                                   const NGBlockBreakToken* break_token,
+                                   const BlockBreakToken* break_token,
                                    bool is_column)
     : flex_lines_(flex_lines),
       break_token_(break_token),
@@ -40,7 +40,7 @@ FlexItemIterator::FlexItemIterator(const HeapVector<NGFlexLine>& flex_lines,
 FlexItemIterator::Entry FlexItemIterator::NextItem(bool broke_before_row) {
   DCHECK(!is_column_ || !broke_before_row);
 
-  const NGBlockBreakToken* current_child_break_token = nullptr;
+  const BlockBreakToken* current_child_break_token = nullptr;
   NGFlexItem* current_item = next_unstarted_item_;
   wtf_size_t current_item_idx = 0;
   wtf_size_t current_line_idx = 0;
@@ -54,7 +54,7 @@ FlexItemIterator::Entry FlexItemIterator::NextItem(bool broke_before_row) {
 
     if (child_token_idx_ < child_break_tokens.size()) {
       current_child_break_token =
-          To<NGBlockBreakToken>(child_break_tokens[child_token_idx_++].Get());
+          To<BlockBreakToken>(child_break_tokens[child_token_idx_++].Get());
       DCHECK(current_child_break_token);
       current_item = FindNextItem(current_child_break_token);
 
@@ -109,7 +109,7 @@ FlexItemIterator::Entry FlexItemIterator::NextItem(bool broke_before_row) {
 }
 
 NGFlexItem* FlexItemIterator::FindNextItem(
-    const NGBlockBreakToken* item_break_token) {
+    const BlockBreakToken* item_break_token) {
   while (flex_line_idx_ < flex_lines_.size()) {
     const auto& flex_line = flex_lines_[flex_line_idx_];
     if (!flex_line.has_seen_all_children || item_break_token) {

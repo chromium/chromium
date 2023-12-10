@@ -681,7 +681,7 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
             'This is generally not suggested unless the results are '
             'platform agnostic.\n',
             'INFO: For one/flaky-fail.html:\n',
-            'INFO: Using "MOCK Try Linux" build 6000 for test-win-win7.\n',
+            'INFO:   Using "MOCK Try Linux" build 6000 for test-win-win7.\n',
             'INFO: Rebaselining one/flaky-fail.html\n',
         ])
 
@@ -851,38 +851,62 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
             ])
         self.assertLog([
             'INFO: For one/flaky-fail.html:\n',
-            'INFO: Using "MOCK Try Linux" build 100 for test-mac-mac10.11.\n',
+            'INFO:   Using "MOCK Try Linux" build 100 for test-mac-mac10.11.\n',
+        ])
+
+    def test_fill_in_missing_results_with_skipped_test(self):
+        test_baseline_set = TestBaselineSet(self.tool.builders)
+        test_baseline_set.add('one/flaky-fail.html',
+                              Build('MOCK Try Linux', 100),
+                              'blink_web_tests (with patch)')
+        self.tool.filesystem.write_text_file(
+            self.mac_port.path_to_never_fix_tests_file(),
+            textwrap.dedent("""\
+                # tags: [ Linux Mac Win ]
+                # results: [ Skip ]
+                [ Win ] one/flaky-fail.html [ Skip ]
+                """))
+        self.command.fill_in_missing_results(test_baseline_set)
+
+        self.assertEqual(
+            test_baseline_set.build_port_pairs('one/flaky-fail.html'), [
+                (Build('MOCK Try Linux', 100), 'test-linux-trusty'),
+                (Build('MOCK Try Linux', 100), 'test-mac-mac10.11'),
+            ])
+        self.assertLog([
+            'INFO: For one/flaky-fail.html:\n',
+            'INFO:   Using "MOCK Try Linux" build 100 for test-mac-mac10.11.\n',
         ])
 
     def test_fill_in_missing_results_prefers_build_with_same_os_type(self):
         self.tool.builders = BuilderList({
-            'MOCK Foo12': {
-                'port_name': 'foo-foo12',
-                'specifiers': ['Foo12', 'Release'],
+            'MOCK Linux Trusty': {
+                'port_name': 'test-linux-trusty',
+                'specifiers': ['Trusty', 'Release'],
                 'is_try_builder': True,
                 'steps': {
                     'blink_web_tests (with patch)': {},
                 },
             },
-            'MOCK Foo45': {
-                'port_name': 'foo-foo45',
-                'specifiers': ['Foo45', 'Release'],
+            'MOCK Linux Precise': {
+                'port_name': 'test-linux-precise',
+                'specifiers': ['Precise', 'Release'],
                 'is_try_builder': True,
                 'steps': {
                     'blink_web_tests (with patch)': {},
                 },
             },
-            'MOCK Bar3': {
-                'port_name': 'bar-bar3',
-                'specifiers': ['Bar3', 'Release'],
+            'MOCK Mac10.11': {
+                'port_name': 'test-mac-mac10.11',
+                'specifiers': ['Mac10.11', 'Release'],
                 'is_try_builder': True,
                 'steps': {
                     'blink_web_tests (with patch)': {},
                 },
             },
-            'MOCK Bar4': {
-                'port_name': 'bar-bar4',
-                'specifiers': ['Bar4', 'Release'],
+            'MOCK Mac10.10': {
+                'port_name': 'test-mac-mac10.10',
+                'specifiers': ['Mac10.10', 'Release'],
                 'is_try_builder': True,
                 'steps': {
                     'blink_web_tests (with patch)': {},
@@ -890,39 +914,41 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
             },
         })
         test_baseline_set = TestBaselineSet(self.tool.builders)
-        test_baseline_set.add('one/flaky-fail.html', Build('MOCK Foo12', 100),
+        test_baseline_set.add('one/flaky-fail.html',
+                              Build('MOCK Linux Trusty', 100),
                               'blink_web_tests (with patch)')
-        test_baseline_set.add('one/flaky-fail.html', Build('MOCK Bar4', 200),
-                              'blink_web_tests (with patch)')
+        test_baseline_set.add('one/flaky-fail.html',
+                              Build('MOCK Mac10.10',
+                                    200), 'blink_web_tests (with patch)')
         self.command.fill_in_missing_results(test_baseline_set)
         self.assertEqual(
             sorted(test_baseline_set.build_port_pairs('one/flaky-fail.html')),
             [
-                (Build('MOCK Bar4', 200), 'bar-bar3'),
-                (Build('MOCK Bar4', 200), 'bar-bar4'),
-                (Build('MOCK Foo12', 100), 'foo-foo12'),
-                (Build('MOCK Foo12', 100), 'foo-foo45'),
+                (Build('MOCK Linux Trusty', 100), 'test-linux-precise'),
+                (Build('MOCK Linux Trusty', 100), 'test-linux-trusty'),
+                (Build('MOCK Mac10.10', 200), 'test-mac-mac10.10'),
+                (Build('MOCK Mac10.10', 200), 'test-mac-mac10.11'),
             ])
         self.assertLog([
             'INFO: For one/flaky-fail.html:\n',
-            'INFO: Using "MOCK Bar4" build 200 for bar-bar3.\n',
-            'INFO: Using "MOCK Foo12" build 100 for foo-foo45.\n',
+            'INFO:   Using "MOCK Linux Trusty" build 100 for test-linux-precise.\n',
+            'INFO:   Using "MOCK Mac10.10" build 200 for test-mac-mac10.11.\n',
         ])
 
     def test_fill_in_missing_results_partition_by_steps(self):
         self.tool.builders = BuilderList({
-            'MOCK Foo12': {
-                'port_name': 'foo-foo12',
-                'specifiers': ['Foo12', 'Release'],
+            'MOCK Linux Trusty': {
+                'port_name': 'test-linux-trusty',
+                'specifiers': ['Trusty', 'Release'],
                 'is_try_builder': True,
                 'steps': {
                     'blink_web_tests (with patch)': {},
                     'blink_wpt_tests (with patch)': {},
                 },
             },
-            'MOCK Foo45': {
-                'port_name': 'foo-foo45',
-                'specifiers': ['Foo45', 'Release'],
+            'MOCK Linux Precise': {
+                'port_name': 'test-linux-precise',
+                'specifiers': ['Precise', 'Release'],
                 'is_try_builder': True,
                 'steps': {
                     'blink_web_tests (with patch)': {},
@@ -931,34 +957,36 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
             },
         })
         test_baseline_set = TestBaselineSet(self.tool.builders)
-        test_baseline_set.add('one/flaky-fail.html', Build('MOCK Foo12', 100),
+        test_baseline_set.add('one/flaky-fail.html',
+                              Build('MOCK Linux Trusty', 100),
                               'blink_web_tests (with patch)')
-        test_baseline_set.add('two/image-fail.html', Build('MOCK Foo45', 200),
+        test_baseline_set.add('two/image-fail.html',
+                              Build('MOCK Linux Precise', 200),
                               'blink_wpt_tests (with patch)')
         self.command.fill_in_missing_results(test_baseline_set)
         self.assertEqual(
             sorted(test_baseline_set.runs_for_test('one/flaky-fail.html')),
             [
                 # Do not add this test to `blink_wpt_tests`.
-                (Build('MOCK Foo12',
-                       100), 'blink_web_tests (with patch)', 'foo-foo12'),
-                (Build('MOCK Foo12',
-                       100), 'blink_web_tests (with patch)', 'foo-foo45'),
+                (Build('MOCK Linux Trusty', 100),
+                 'blink_web_tests (with patch)', 'test-linux-precise'),
+                (Build('MOCK Linux Trusty', 100),
+                 'blink_web_tests (with patch)', 'test-linux-trusty'),
             ])
         self.assertEqual(
             sorted(test_baseline_set.runs_for_test('two/image-fail.html')),
             [
                 # Do not add this test to `blink_web_tests`.
-                (Build('MOCK Foo45',
-                       200), 'blink_wpt_tests (with patch)', 'foo-foo12'),
-                (Build('MOCK Foo45',
-                       200), 'blink_wpt_tests (with patch)', 'foo-foo45'),
+                (Build('MOCK Linux Precise', 200),
+                 'blink_wpt_tests (with patch)', 'test-linux-precise'),
+                (Build('MOCK Linux Precise', 200),
+                 'blink_wpt_tests (with patch)', 'test-linux-trusty'),
             ])
         self.assertLog([
             'INFO: For one/flaky-fail.html:\n',
-            'INFO: Using "MOCK Foo12" build 100 for foo-foo45.\n',
+            'INFO:   Using "MOCK Linux Trusty" build 100 for test-linux-precise.\n',
             'INFO: For two/image-fail.html:\n',
-            'INFO: Using "MOCK Foo45" build 200 for foo-foo12.\n',
+            'INFO:   Using "MOCK Linux Precise" build 200 for test-linux-trusty.\n',
         ])
 
     def test_explicit_builder_list(self):

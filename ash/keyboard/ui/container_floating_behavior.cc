@@ -5,11 +5,11 @@
 #include "ash/keyboard/ui/container_floating_behavior.h"
 
 #include <memory>
+#include <optional>
 
 #include "ash/keyboard/ui/display_util.h"
 #include "ash/keyboard/ui/drag_descriptor.h"
 #include "base/numerics/safe_conversions.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"

@@ -444,6 +444,10 @@ jboolean AwPacProcessor::SetProxyScript(JNIEnv* env,
 bool AwPacProcessor::MakeProxyRequest(std::string url, std::string* result) {
   MakeProxyRequestJob job(this, url);
   if (job.ExecSync()) {
+    if (job.proxy_info().ContainsMultiProxyChain()) {
+      // Multi-proxy chains cannot be represented as a PAC string.
+      return false;
+    }
     *result = job.proxy_info().ToPacString();
     return true;
   } else {

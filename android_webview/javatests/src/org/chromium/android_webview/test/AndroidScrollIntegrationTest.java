@@ -49,27 +49,30 @@ import java.util.concurrent.atomic.AtomicReference;
 public class AndroidScrollIntegrationTest extends AwParameterizedTest {
     private static final double EPSILON = 1e-5;
 
-    @Rule
-    public AwActivityTestRule mActivityTestRule;
+    @Rule public AwActivityTestRule mActivityTestRule;
 
     public AndroidScrollIntegrationTest(AwSettingsMutation param) {
-        mActivityTestRule = new AwActivityTestRule(param.getMutation()) {
-            @Override
-            public TestDependencyFactory createTestDependencyFactory() {
-                return new TestDependencyFactory() {
+        mActivityTestRule =
+                new AwActivityTestRule(param.getMutation()) {
                     @Override
-                    public AwScrollOffsetManager createScrollOffsetManager(
-                            AwScrollOffsetManager.Delegate delegate) {
-                        return new AwScrollOffsetManager(delegate);
-                    }
-                    @Override
-                    public AwTestContainerView createAwTestContainerView(
-                            AwTestRunnerActivity activity, boolean allowHardwareAcceleration) {
-                        return new ScrollTestContainerView(activity, allowHardwareAcceleration);
+                    public TestDependencyFactory createTestDependencyFactory() {
+                        return new TestDependencyFactory() {
+                            @Override
+                            public AwScrollOffsetManager createScrollOffsetManager(
+                                    AwScrollOffsetManager.Delegate delegate) {
+                                return new AwScrollOffsetManager(delegate);
+                            }
+
+                            @Override
+                            public AwTestContainerView createAwTestContainerView(
+                                    AwTestRunnerActivity activity,
+                                    boolean allowHardwareAcceleration) {
+                                return new ScrollTestContainerView(
+                                        activity, allowHardwareAcceleration);
+                            }
+                        };
                     }
                 };
-            }
-        };
     }
 
     private TestWebServer mWebServer;

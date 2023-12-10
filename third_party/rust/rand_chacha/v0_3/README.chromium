@@ -3,7 +3,8 @@ URL: https://crates.io/crates/rand_chacha
 Description: ChaCha random number generator
 
 Version: 0.3.1
-Security Critical: yes
-Shipped: yes
+Security Critical: no
+Shipped: no
 License: Apache 2.0
+License File: //third_party/rust/chromium_crates_io/vendor/rand_chacha-0.3.1/LICENSE-APACHE
 Revision: 98a0339f99ecfe0467b2829c329bd8b7525a1c21

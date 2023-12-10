@@ -5,11 +5,12 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_TEST_SESSION_MANAGER_STATE_WAITER_H_
 #define CHROME_BROWSER_ASH_LOGIN_TEST_SESSION_MANAGER_STATE_WAITER_H_
 
+#include <optional>
+
 #include "base/functional/callback.h"
 #include "base/scoped_observation.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/core/session_manager_observer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -26,8 +27,8 @@ class SessionStateWaiter : public session_manager::SessionManagerObserver {
  public:
   // If `target_state` is null, SessionStateWaiter will simply wait until a
   // session starts.
-  explicit SessionStateWaiter(absl::optional<session_manager::SessionState>
-                                  target_state = absl::nullopt);
+  explicit SessionStateWaiter(
+      std::optional<session_manager::SessionState> target_state = std::nullopt);
 
   SessionStateWaiter(const SessionStateWaiter&) = delete;
   SessionStateWaiter& operator=(const SessionStateWaiter&) = delete;
@@ -41,7 +42,7 @@ class SessionStateWaiter : public session_manager::SessionManagerObserver {
   void OnUserSessionStarted(bool is_primary_user) override;
 
  private:
-  absl::optional<session_manager::SessionState> target_state_;
+  std::optional<session_manager::SessionState> target_state_;
   base::OnceClosure session_state_callback_;
   base::ScopedObservation<session_manager::SessionManager,
                           session_manager::SessionManagerObserver>

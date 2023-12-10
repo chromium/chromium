@@ -14,6 +14,7 @@
 #include "base/i18n/rtl.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/events/event.h"
 #include "ui/message_center/views/message_view.h"
@@ -22,9 +23,6 @@
 #include "ui/views/layout/box_layout.h"
 
 namespace ash {
-
-const char NotificationSwipeControlView::kViewClassName[] =
-    "NotificationSwipeControlView";
 
 NotificationSwipeControlView::NotificationSwipeControlView(
     message_center::MessageView* message_view)
@@ -127,10 +125,6 @@ void NotificationSwipeControlView::ShowSettingsButton(bool show) {
   }
 }
 
-const char* NotificationSwipeControlView::GetClassName() const {
-  return kViewClassName;
-}
-
 void NotificationSwipeControlView::ButtonPressed(const ui::Event& event) {
   auto weak_this = weak_factory_.GetWeakPtr();
 
@@ -151,5 +145,8 @@ void NotificationSwipeControlView::ButtonPressed(const ui::Event& event) {
   // Otherwise, handlers might not work.
   message_view_->CloseSwipeControl();
 }
+
+BEGIN_METADATA(NotificationSwipeControlView)
+END_METADATA
 
 }  // namespace ash

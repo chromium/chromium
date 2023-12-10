@@ -54,12 +54,13 @@ void EnumerateFiles(const base::FilePath& path,
 // overlapse with |trash_paths|.
 std::vector<base::FilePath> EnumerateAllImages(
     const base::FilePath& search_path,
-    const std::vector<base::FilePath>& trash_paths) {
+    const std::vector<base::FilePath>& trash_paths,
+    const std::vector<std::string>& patterns) {
   std::vector<base::FilePath> image_paths;
 
-  EnumerateFiles(search_path, trash_paths, kPngFilePattern, &image_paths);
-  EnumerateFiles(search_path, trash_paths, kJpgFilePattern, &image_paths);
-  EnumerateFiles(search_path, trash_paths, kJpegFilePattern, &image_paths);
+  for (const auto& pattern : patterns) {
+    EnumerateFiles(search_path, trash_paths, pattern, &image_paths);
+  }
 
   return image_paths;
 }
@@ -73,6 +74,8 @@ void EnumerateLocalWallpaperFiles(
     base::OnceCallback<void(const std::vector<base::FilePath>&)> callback) {
   const base::FilePath search_path =
       file_manager::util::GetMyFilesFolderForProfile(profile);
+  const std::vector<std::string> search_patterns = {
+      kPngFilePattern, kJpgFilePattern, kJpegFilePattern};
 
   std::vector<base::FilePath> trash_paths;
   if (file_manager::trash::IsTrashEnabledForProfile(profile)) {
@@ -90,7 +93,25 @@ void EnumerateLocalWallpaperFiles(
       FROM_HERE,
       {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
        base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-      base::BindOnce(&EnumerateAllImages, search_path, trash_paths),
+      base::BindOnce(&EnumerateAllImages, search_path, trash_paths,
+                     search_patterns),
+      std::move(callback));
+}
+
+void EnumerateJpegFilesFromDir(
+    Profile* profile,
+    const base::FilePath& wallpaper_dir,
+    base::OnceCallback<void(const std::vector<base::FilePath>&)> callback) {
+  const std::vector<base::FilePath> trash_paths = {};
+  const std::vector<std::string> jpeg_patterns = {kJpgFilePattern,
+                                                  kJpegFilePattern};
+
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+      base::BindOnce(&EnumerateAllImages, wallpaper_dir, trash_paths,
+                     jpeg_patterns),
       std::move(callback));
 }
 

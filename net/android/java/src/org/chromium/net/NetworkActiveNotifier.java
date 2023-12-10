@@ -37,9 +37,7 @@ public class NetworkActiveNotifier implements ConnectivityManager.OnNetworkActiv
     // Used for testing, keeps track of when platform notification are enabled (or disabled).
     private boolean mAreNotificationsEnabled;
 
-    /**
-     * Used to build a Java object from native code.
-     */
+    /** Used to build a Java object from native code. */
     @CalledByNative
     public static NetworkActiveNotifier build(long nativeNetworkActiveNotifier) {
         return new NetworkActiveNotifier(nativeNetworkActiveNotifier);
@@ -67,9 +65,7 @@ public class NetworkActiveNotifier implements ConnectivityManager.OnNetworkActiv
         NetworkActiveNotifierJni.get().notifyOfDefaultNetworkActive(mNativeNetworkActiveObserver);
     }
 
-    /**
-     * For testing, called by native code to trigger a fake platform notification.
-     */
+    /** For testing, called by native code to trigger a fake platform notification. */
     @CalledByNative
     public void fakeDefaultNetworkActive() {
         if (mAreNotificationsEnabled) {

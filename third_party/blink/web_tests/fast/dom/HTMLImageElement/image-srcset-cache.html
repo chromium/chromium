@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<!--
+  This test provides coverage for the Chrome specific image download
+  optimization: AvoidDownloadIfHigherDensityResourceIsInCache
+  defined in: third_party/blink/renderer/core/html/parser/html_srcset_parser.cc
+-->
+<script src="../../../resources/js-test.js"></script>
+<img
+  id="testImg"
+  loading="lazy"
+  srcset="
+    resources/blue_rect.jpg 100w,
+    resources/black.png 150w,
+    resources/image-set-4x.png 200w
+  "
+  sizes="auto"
+  width="100px"
+>
+<script>
+jsTestIsAsync = true;
+
+function secondImageLoaded() {
+  // Check that the source was changed to the higher res image.
+  shouldBe('testImg.currentSrc.endsWith("image-set-4x.png")', "true");
+
+  testImg.style.width = '150px';
+  window.requestAnimationFrame(() => {
+    window.requestAnimationFrame(() => {
+      // Check that the source was not switched to a lower res one since a
+      // higher res image is already loaded and in the cache.
+      shouldBe('testImg.currentSrc.endsWith("image-set-4x.png")', "true");
+      finishJSTest();
+    });
+  });
+}
+
+function firstImageLoaded() {
+  // Check that the source was set to the lower res image initially.
+  shouldBe('testImg.currentSrc.endsWith("blue_rect.jpg")', "true");
+
+  testImg.addEventListener('load', secondImageLoaded);
+  testImg.style.width = '200px';
+}
+
+testImg.addEventListener('load', firstImageLoaded, {once: true});
+</script>

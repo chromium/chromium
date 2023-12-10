@@ -8,6 +8,9 @@
 #import "base/feature_list.h"
 #import "base/metrics/field_trial_params.h"
 
+// Feature flag to enable new snapshot system written in Swift.
+BASE_DECLARE_FEATURE(kSnapshotInSwift);
+
 // Feature flag to enable the grey snapshot optimization.
 BASE_DECLARE_FEATURE(kGreySnapshotOptimization);
 

@@ -16,6 +16,8 @@ class WebUI;
 
 namespace ash {
 
+class ScopedFakeSystemTrayModel;
+
 // WebUI message handler for chrome://status-area-internals from the Chrome page
 // to the System UI.
 class StatusAreaInternalsHandler
@@ -37,6 +39,7 @@ class StatusAreaInternalsHandler
   void ToggleDictationTray(bool visible) override;
   void ToggleVideoConferenceTray(bool visible) override;
   void ToggleProjectorTray(bool visible) override;
+  void SetActiveDirectoryManaged(bool managed) override;
 
   void TriggerPrivacyIndicators(const std::string& app_id,
                                 const std::string& app_name,
@@ -44,7 +47,10 @@ class StatusAreaInternalsHandler
                                 bool is_microphone_used) override;
 
  private:
+  friend class StatusAreaInternalsHandlerTest;
   mojo::Receiver<mojom::status_area_internals::PageHandler> receiver_;
+
+  std::unique_ptr<ScopedFakeSystemTrayModel> scoped_fake_model_;
 
   base::WeakPtrFactory<StatusAreaInternalsHandler> weak_pointer_factory_{this};
 };

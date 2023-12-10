@@ -4,10 +4,14 @@
 
 #include "chrome/browser/ash/crosapi/desk_profiles_ash.h"
 
+#include <cstddef>
 #include <utility>
 
+#include "ash/session/session_controller_impl.h"
+#include "ash/shell.h"
 #include "base/containers/cxx20_erase_vector.h"
 #include "base/ranges/algorithm.h"
+#include "google_apis/gaia/gaia_auth_util.h"
 
 namespace crosapi {
 namespace {
@@ -30,15 +34,31 @@ DeskProfilesAsh::~DeskProfilesAsh() = default;
 
 void DeskProfilesAsh::BindReceiver(
     mojo::PendingReceiver<mojom::DeskProfileObserver> pending_receiver) {
-  receiver_.Bind(std::move(pending_receiver));
-  receiver_.set_disconnect_handler(
-      base::BindOnce(&DeskProfilesAsh::OnDisconnect, base::Unretained(this)));
+  receivers_.Add(this, std::move(pending_receiver));
 }
 
 void DeskProfilesAsh::OnProfileUpsert(
     std::vector<mojom::LacrosProfileSummaryPtr> profiles) {
+  // Get the email of the primary user. This is done to figure out which summary
+  // that we receive from lacros represents the primary user. We only need to do
+  // this once.
+  std::string primary_user_email;
+  if (primary_user_profile_id_ == 0 && ash::Shell::HasInstance()) {
+    if (const auto* session =
+            ash::Shell::Get()->session_controller()->GetPrimaryUserSession()) {
+      primary_user_email = session->user_info.account_id.GetUserEmail();
+    }
+  }
+
   for (auto& prof : profiles) {
-    auto& entry = UpsertProfile(ConvertProfileSummary(std::move(prof)));
+    ash::LacrosProfileSummary summary = ConvertProfileSummary(std::move(prof));
+
+    if (!primary_user_email.empty() &&
+        gaia::AreEmailsSame(primary_user_email, summary.email)) {
+      primary_user_profile_id_ = summary.profile_id;
+    }
+
+    auto& entry = UpsertProfile(std::move(summary));
     for (auto& observer : observers_) {
       observer.OnProfileUpsert(entry);
     }
@@ -56,6 +76,21 @@ void DeskProfilesAsh::OnProfileRemoved(uint64_t profile_id) {
 std::vector<ash::LacrosProfileSummary> DeskProfilesAsh::GetProfilesSnapshot()
     const {
   return profiles_;
+}
+
+const ash::LacrosProfileSummary*
+DeskProfilesAsh::GetProfilesSnapshotByProfileId(uint64_t profile_id) const {
+  for (auto& profile : profiles_) {
+    if (profile.profile_id == profile_id) {
+      return &profile;
+    }
+  }
+  // If profile_id can't be found, return nullptr.
+  return nullptr;
+}
+
+uint64_t DeskProfilesAsh::GetPrimaryProfileId() const {
+  return primary_user_profile_id_;
 }
 
 void DeskProfilesAsh::AddObserver(Observer* observer) {
@@ -85,10 +120,6 @@ bool DeskProfilesAsh::RemoveProfile(uint64_t profile_id) {
                        [profile_id](const ash::LacrosProfileSummary& summary) {
                          return summary.profile_id == profile_id;
                        }) != 0;
-}
-
-void DeskProfilesAsh::OnDisconnect() {
-  receiver_.reset();
 }
 
 }  // namespace crosapi

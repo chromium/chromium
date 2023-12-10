@@ -6,12 +6,14 @@
 #define CHROME_BROWSER_MEDIA_PREFS_CAPTURE_DEVICE_RANKING_H_
 
 #include "chrome/browser/media/prefs/pref_names.h"
+#include "chrome/common/pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "media/audio/audio_device_description.h"
 #include "media/capture/video/video_capture_device_info.h"
 #include "third_party/blink/public/common/mediastream/media_devices.h"
+#include "third_party/blink/public/common/mediastream/media_stream_request.h"
 
 #include <string>
 
@@ -24,6 +26,7 @@ std::string DeviceInfoToStableId(
 std::string DeviceInfoToStableId(
     const media::AudioDeviceDescription& device_info);
 std::string DeviceInfoToStableId(const blink::WebMediaDeviceInfo& device_info);
+std::string DeviceInfoToStableId(const blink::MediaStreamDevice& device_info);
 
 // Returns a unique id given `device_info`. This is unique for the current
 // session, but isn't guaranteed to be stable through reboots or device
@@ -33,6 +36,7 @@ std::string DeviceInfoToUniqueId(
 std::string DeviceInfoToUniqueId(
     const media::AudioDeviceDescription& device_info);
 std::string DeviceInfoToUniqueId(const blink::WebMediaDeviceInfo& device_info);
+std::string DeviceInfoToUniqueId(const blink::MediaStreamDevice& device_info);
 
 }  // namespace media_prefs::internal
 
@@ -67,21 +71,27 @@ base::flat_map<std::string, size_t> GetIdToRankMap(Iterator begin,
   return id_to_rank;
 }
 
+template <typename T>
+const base::Value::List& GetAndMaybeMigratePref(PrefService& prefs,
+                                                const std::string& pref_name,
+                                                std::vector<T>& device_infos);
+
 // Reorders the passed `device_infos`, so that ranked devices are ordered at the
 // beginning of the list. Devices don't have a ranking will retain their
 // ordering, but will be shifted below ranked devices.
 //
 // This must be run on the UI thread as it reads from the PrefService.
 template <typename T>
-void PreferenceRankDeviceInfos(const PrefService& prefs,
+void PreferenceRankDeviceInfos(PrefService& prefs,
                                const std::string& pref_name,
                                std::vector<T>& device_infos) {
-  if (!prefs.HasPrefPath(pref_name)) {
+  if (!prefs.FindPreference(pref_name)) {
     LOG(WARNING) << "Can't rank device infos because " << pref_name
                  << " isn't registered";
     return;
   }
-  const base::Value::List& ranking = prefs.GetList(pref_name);
+  const base::Value::List& ranking =
+      GetAndMaybeMigratePref(prefs, pref_name, device_infos);
   const auto id_to_rank = GetIdToRankMap(ranking.begin(), ranking.end());
 
   std::stable_sort(
@@ -132,6 +142,7 @@ void UpdateDevicePreferenceRanking(
     const std::string& pref_name,
     const typename std::vector<T>::const_iterator preferred_device_iter,
     const std::vector<T>& current_device_infos) {
+  CHECK(preferred_device_iter < current_device_infos.end());
   auto preferred_device_stable_id =
       DeviceInfoToStableId(*preferred_device_iter);
   ScopedListPrefUpdate ranking(&prefs, pref_name);
@@ -177,6 +188,86 @@ void UpdateDevicePreferenceRanking(
   }
 }
 
+// Get the value of the ranking pref.
+//
+// If the ranking pref is unset, it will be initialized from the default device
+// pref. If the default device pref is unset or the device isn't in
+// `device_infos`, then the ranking pref will remain uninitialized.
+// `pref_name` is required to be in {kAudioInputUserPreferenceRanking,
+// kVideoInputUserPreferenceRanking}.
+//
+// Example scenarios:
+// For all scenarios the user has set dev2 as the default and updated the
+// browser.
+//
+// Scenario A:
+//  1) User connects [dev1, dev2]
+//  2) User visits a website that calls enumerateDevices or getUserMedia
+//  3) Device ranking pref is updated to [dev2, dev1]
+//  4) All subsequent usages refer to the device ranking pref and ignore legacy
+//     default pref
+//
+// Scenario B:
+//  1) User connects [dev1]
+//  2) User visits a website that calls enumerateDevices or getUserMedia
+//  3) Device ranking pref remains uninitialized because the default device
+//     isn't present
+//  4) User connects [dev1, dev2]
+//  5) User visits a website that calls enumerateDevices or getUserMedia
+//  6) Device ranking pref is updated to [dev2, dev1]
+//  7) All subsequent usages refer to the device ranking pref and
+//     ignore legacy default pref.
+//
+// Scenario C:
+//  1) User connects [dev1]
+//  2) User visits a website that calls enumerateDevices or getUserMedia
+//  3) Device ranking pref remains uninitialized because the default device
+//     isn't present
+//  4) User expresses preference for dev1 in permission bubble or
+//     Chrome settings
+//  5) Device ranking pref is updated to [dev1]
+//  6) All subsequent usages refer to the device ranking pref and ignore legacy
+//     default pref.
+//
+// TODO(crbug.com/311205211): Remove this special initialization logic once the
+// default device pref is removed.
+template <typename T>
+const base::Value::List& GetAndMaybeMigratePref(PrefService& prefs,
+                                                const std::string& pref_name,
+                                                std::vector<T>& device_infos) {
+  const base::Value::List& ranking = prefs.GetList(pref_name);
+  if (!ranking.empty()) {
+    return ranking;
+  }
+
+  // Initialize the ranking pref with the legacy default device because it is
+  // unset.
+  std::string default_device_pref_name;
+  if (pref_name == kAudioInputUserPreferenceRanking) {
+    default_device_pref_name = prefs::kDefaultAudioCaptureDevice;
+  } else if (pref_name == kVideoInputUserPreferenceRanking) {
+    default_device_pref_name = prefs::kDefaultVideoCaptureDevice;
+  } else {
+    NOTREACHED();
+  }
+
+  if (!prefs.HasPrefPath(default_device_pref_name)) {
+    LOG(WARNING) << "Can't initialize the value of " << pref_name << " because "
+                 << default_device_pref_name << " isn't registered or is empty";
+    return ranking;
+  }
+
+  const auto& default_id = prefs.GetString(default_device_pref_name);
+  for (auto iter = device_infos.begin(); iter < device_infos.end(); ++iter) {
+    if (DeviceInfoToUniqueId(*iter) == default_id) {
+      UpdateDevicePreferenceRanking(prefs, pref_name, iter, device_infos);
+      return prefs.GetList(pref_name);
+    }
+  }
+
+  return ranking;
+}
+
 }  // namespace
 
 namespace media_prefs {
@@ -184,19 +275,21 @@ namespace media_prefs {
 void RegisterUserPrefs(PrefRegistrySimple* registry);
 
 template <typename T>
-void PreferenceRankAudioDeviceInfos(const PrefService& prefs,
+void PreferenceRankAudioDeviceInfos(PrefService& prefs,
                                     std::vector<T>& device_infos) {
   static_assert(std::is_same_v<media::AudioDeviceDescription, T> ||
-                std::is_same_v<blink::WebMediaDeviceInfo, T>);
+                std::is_same_v<blink::WebMediaDeviceInfo, T> ||
+                std::is_same_v<blink::MediaStreamDevice, T>);
   PreferenceRankDeviceInfos(prefs, kAudioInputUserPreferenceRanking,
                             device_infos);
 }
 
 template <typename T>
-void PreferenceRankVideoDeviceInfos(const PrefService& prefs,
+void PreferenceRankVideoDeviceInfos(PrefService& prefs,
                                     std::vector<T>& device_infos) {
   static_assert(std::is_same_v<media::VideoCaptureDeviceInfo, T> ||
-                std::is_same_v<blink::WebMediaDeviceInfo, T>);
+                std::is_same_v<blink::WebMediaDeviceInfo, T> ||
+                std::is_same_v<blink::MediaStreamDevice, T>);
   PreferenceRankDeviceInfos(prefs, kVideoInputUserPreferenceRanking,
                             device_infos);
 }
@@ -207,7 +300,8 @@ void UpdateAudioDevicePreferenceRanking(
     const typename std::vector<T>::const_iterator preferred_device_iter,
     const std::vector<T>& current_device_infos) {
   static_assert(std::is_same_v<media::AudioDeviceDescription, T> ||
-                std::is_same_v<blink::WebMediaDeviceInfo, T>);
+                std::is_same_v<blink::WebMediaDeviceInfo, T> ||
+                std::is_same_v<blink::MediaStreamDevice, T>);
   UpdateDevicePreferenceRanking(prefs, kAudioInputUserPreferenceRanking,
                                 preferred_device_iter, current_device_infos);
 }
@@ -218,7 +312,8 @@ void UpdateVideoDevicePreferenceRanking(
     const typename std::vector<T>::const_iterator preferred_device_iter,
     const std::vector<T>& current_device_infos) {
   static_assert(std::is_same_v<media::VideoCaptureDeviceInfo, T> ||
-                std::is_same_v<blink::WebMediaDeviceInfo, T>);
+                std::is_same_v<blink::WebMediaDeviceInfo, T> ||
+                std::is_same_v<blink::MediaStreamDevice, T>);
   UpdateDevicePreferenceRanking(prefs, kVideoInputUserPreferenceRanking,
                                 preferred_device_iter, current_device_infos);
 }

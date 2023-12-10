@@ -62,12 +62,26 @@ BLINK_EXPORT void Initialize(
 // The same as above, but this only supports simple single-threaded execution
 // environment. The main thread WebThread object is owned by Platform when this
 // version is used. This version is mainly for tests and other components
-// requiring only the simple environment.
+// requiring only the simple environment. This does not create the
+// `v8::Isolate`, callers should call `CreateMainThreadIsolate` after calling
+// this method.
 //
 // When this version is used, your Platform implementation needs to follow
 // a certain convention on CurrentThread(); see the comments at
 // Platform::CreateMainThreadAndInitialize().
 BLINK_EXPORT void CreateMainThreadAndInitialize(Platform*, mojo::BinderMap*);
+
+// Performs initialization required for Blink (wtf, core, modules and
+// web), but without initializing the main thread isolate. This allows
+// for CreateMainThreadIsolate() below to be called.
+BLINK_EXPORT void InitializeWithoutIsolateForTesting(
+    Platform*,
+    mojo::BinderMap*,
+    scheduler::WebThreadScheduler* main_thread_scheduler);
+
+// Initializes and returns the Main Thread Isolate. InitializeCommon()
+// must be called before this.
+BLINK_EXPORT v8::Isolate* CreateMainThreadIsolate();
 
 // Get the V8 Isolate for the main thread.
 // initialize must have been called first.
@@ -93,8 +107,8 @@ BLINK_EXPORT void ResetPluginCache(bool reload_pages = false);
 // performance and memory usage.
 BLINK_EXPORT void DecommitFreeableMemory();
 
-// Send memory pressure notification to worker thread isolate.
-BLINK_EXPORT void MemoryPressureNotificationToWorkerThreadIsolates(
+// Send memory pressure notification to isolates.
+BLINK_EXPORT void MemoryPressureNotificationToAllIsolates(
     v8::MemoryPressureLevel);
 
 // Send isolate background/foreground notification to worker thread isolates.

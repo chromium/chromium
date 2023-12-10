@@ -29,9 +29,7 @@ import org.chromium.content_public.common.ResourceRequestBody;
 import org.chromium.ui.widget.Toast;
 import org.chromium.url.GURL;
 
-/**
- * Mediator class for preview tab, responsible for communicating with other objects.
- */
+/** Mediator class for preview tab, responsible for communicating with other objects. */
 public class EphemeralTabMediator {
     /** The delay (four video frames) after which the hide progress will be hidden. */
     private static final long HIDE_PROGRESS_BAR_DELAY_MS = (1000 / 60) * 4;
@@ -47,22 +45,23 @@ public class EphemeralTabMediator {
     private WebContentsDelegateAndroid mWebContentsDelegate;
     private Profile mProfile;
 
-    /**
-     * Constructor.
-     */
-    public EphemeralTabMediator(BottomSheetController bottomSheetController,
-            EphemeralTabCoordinator.FaviconLoader faviconLoader, int topControlsHeightDp) {
+    /** Constructor. */
+    public EphemeralTabMediator(
+            BottomSheetController bottomSheetController,
+            EphemeralTabCoordinator.FaviconLoader faviconLoader,
+            int topControlsHeightDp) {
         mBottomSheetController = bottomSheetController;
         mFaviconLoader = faviconLoader;
         mTopControlsHeightDp = topControlsHeightDp;
         mObservers = new ObserverList<EphemeralTabObserver>();
     }
 
-    /**
-     * Initializes various objects for a new tab.
-     */
-    void init(WebContents webContents, ContentView contentView,
-            EphemeralTabSheetContent sheetContent, Profile profile) {
+    /** Initializes various objects for a new tab. */
+    void init(
+            WebContents webContents,
+            ContentView contentView,
+            EphemeralTabSheetContent sheetContent,
+            Profile profile) {
         // Ensures that initialization is performed only when a new tab is opened.
         assert mProfile == null && mWebContentsObserver == null && mWebContentsDelegate == null;
 
@@ -74,30 +73,22 @@ public class EphemeralTabMediator {
         mSheetContent.attachWebContents(mWebContents, contentView, mWebContentsDelegate);
     }
 
-    /**
-     * Add observer to be notified of ephemeral tab events.
-     */
+    /** Add observer to be notified of ephemeral tab events. */
     void addObserver(EphemeralTabObserver ephemeralTabObserver) {
         mObservers.addObserver(ephemeralTabObserver);
     }
 
-    /**
-     * Remove observer.
-     */
+    /** Remove observer. */
     void removeObserver(EphemeralTabObserver ephemeralTabObserver) {
         mObservers.removeObserver(ephemeralTabObserver);
     }
 
-    /**
-     * Clear observers.
-     */
+    /** Clear observers. */
     void clearObservers() {
         mObservers.clear();
     }
 
-    /**
-     * Notify observers on toolbar creation.
-     */
+    /** Notify observers on toolbar creation. */
     public void onToolbarCreated(ViewGroup toolbarView) {
         RewindableIterator<EphemeralTabObserver> observersIterator =
                 mObservers.rewindableIterator();
@@ -115,9 +106,7 @@ public class EphemeralTabMediator {
         }
     }
 
-    /**
-     * Notify observers on title set.
-     */
+    /** Notify observers on title set. */
     public void onTitleSet(EphemeralTabSheetContent sheetContent, String title) {
         RewindableIterator<EphemeralTabObserver> observersIterator =
                 mObservers.rewindableIterator();
@@ -126,9 +115,7 @@ public class EphemeralTabMediator {
         }
     }
 
-    /**
-     * Loads a new URL into the tab and makes it visible.
-     */
+    /** Loads a new URL into the tab and makes it visible. */
     void requestShowContent(GURL url, String title) {
         loadUrl(url);
         mSheetContent.updateTitle(title);
@@ -162,7 +149,7 @@ public class EphemeralTabMediator {
                             // The link Back to Safety on the interstitial page will go to the
                             // previous page. If there is no previous page, i.e. previous page is
                             // NTP, the preview tab will be closed.
-                            if (mIsOnErrorPage && UrlUtilities.isNTPUrl(url)) {
+                            if (mIsOnErrorPage && UrlUtilities.isNtpUrl(url)) {
                                 mBottomSheetController.hideContent(
                                         mSheetContent, /* animate= */ true);
                                 mCurrentUrl = null;
@@ -208,49 +195,61 @@ public class EphemeralTabMediator {
 
     private void createWebContentsDelegate() {
         assert mWebContentsDelegate == null;
-        mWebContentsDelegate = new WebContentsDelegateAndroid() {
-            @Override
-            public void visibleSSLStateChanged() {
-                if (mSheetContent == null) return;
-                int securityLevel = SecurityStateModel.getSecurityLevelForWebContents(mWebContents);
-                mSheetContent.setSecurityIcon(getSecurityIconResource(securityLevel));
-                mSheetContent.updateURL(mWebContents.getVisibleUrl());
-            }
+        mWebContentsDelegate =
+                new WebContentsDelegateAndroid() {
+                    @Override
+                    public void visibleSSLStateChanged() {
+                        if (mSheetContent == null) return;
+                        int securityLevel =
+                                SecurityStateModel.getSecurityLevelForWebContents(mWebContents);
+                        mSheetContent.setSecurityIcon(getSecurityIconResource(securityLevel));
+                        mSheetContent.updateURL(mWebContents.getVisibleUrl());
+                    }
 
-            @Override
-            public void openNewTab(GURL url, String extraHeaders, ResourceRequestBody postData,
-                    int disposition, boolean isRendererInitiated) {
-                // We never open a separate tab when navigating in a preview tab.
-                loadUrl(url);
-            }
+                    @Override
+                    public void openNewTab(
+                            GURL url,
+                            String extraHeaders,
+                            ResourceRequestBody postData,
+                            int disposition,
+                            boolean isRendererInitiated) {
+                        // We never open a separate tab when navigating in a preview tab.
+                        loadUrl(url);
+                    }
 
-            @Override
-            public boolean shouldCreateWebContents(GURL targetUrl) {
-                loadUrl(targetUrl);
-                return false;
-            }
+                    @Override
+                    public boolean shouldCreateWebContents(GURL targetUrl) {
+                        loadUrl(targetUrl);
+                        return false;
+                    }
 
-            @Override
-            public void loadingStateChanged(boolean shouldShowLoadingUI) {
-                boolean isLoading = mWebContents != null && mWebContents.isLoading();
-                if (isLoading) {
-                    if (mSheetContent == null) return;
-                    mSheetContent.setProgress(0);
-                    mSheetContent.setProgressVisible(true);
-                } else {
-                    // Hides the Progress Bar after a delay to make sure it is rendered for at least
-                    // a few frames, otherwise its completion won't be visually noticeable.
-                    new Handler().postDelayed(() -> {
-                        if (mSheetContent != null) mSheetContent.setProgressVisible(false);
-                    }, HIDE_PROGRESS_BAR_DELAY_MS);
-                }
-            }
+                    @Override
+                    public void loadingStateChanged(boolean shouldShowLoadingUI) {
+                        boolean isLoading = mWebContents != null && mWebContents.isLoading();
+                        if (isLoading) {
+                            if (mSheetContent == null) return;
+                            mSheetContent.setProgress(0);
+                            mSheetContent.setProgressVisible(true);
+                        } else {
+                            // Hides the Progress Bar after a delay to make sure it is rendered for
+                            // at least a few frames, otherwise its completion won't be visually
+                            // noticeable.
+                            new Handler()
+                                    .postDelayed(
+                                            () -> {
+                                                if (mSheetContent != null) {
+                                                    mSheetContent.setProgressVisible(false);
+                                                }
+                                            },
+                                            HIDE_PROGRESS_BAR_DELAY_MS);
+                        }
+                    }
 
-            @Override
-            public int getTopControlsHeight() {
-                return mTopControlsHeightDp;
-            }
-        };
+                    @Override
+                    public int getTopControlsHeight() {
+                        return mTopControlsHeightDp;
+                    }
+                };
     }
 
     private static @DrawableRes int getSecurityIconResource(
@@ -270,9 +269,7 @@ public class EphemeralTabMediator {
         return 0;
     }
 
-    /**
-     * Destroys the objects used for the current preview tab.
-     */
+    /** Destroys the objects used for the current preview tab. */
     void destroyContent() {
         if (mWebContentsObserver != null) {
             mWebContentsObserver.destroy();

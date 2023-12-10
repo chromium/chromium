@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/arc/input_overlay/constants.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/label_button.h"
 
 namespace ash {
@@ -21,6 +22,8 @@ class DisplayOverlayController;
 
 // MessageView shows info or error message on the top center of the window.
 class MessageView : public views::LabelButton {
+  METADATA_HEADER(MessageView, views::LabelButton)
+
  public:
   static MessageView* Show(DisplayOverlayController* controller,
                            views::View* parent,

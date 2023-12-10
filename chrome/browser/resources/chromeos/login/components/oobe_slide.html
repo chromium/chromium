@@ -6,31 +6,25 @@ found in the LICENSE file.
 
 <style include="oobe-dialog-host-styles">
   :host {
-    --oobe-slide-img-size: 200px;
-    --oobe-slide-vertical-margin: 24px;
-    --oobe-slide-horizontal-margin: 32px;
-  }
-
-  #slide-container {
-    display: flex;
+    --oobe-slide-horizontal-padding: 24px;
   }
 
   #slide-container {
     align-items: center;
+    display: flex;
     flex-direction: column;
     justify-content: start;
   }
 
   #illustration-container {
-    height: var(--oobe-slide-img-size);
-    width: var(--oobe-slide-img-size);
+    max-height: 200px;
+    max-width: calc(380px - 2 * var(--oobe-slide-horizontal-padding));
   }
 
   #context-container {
     align-items: center;
     flex-direction: column;
     justify-content: start;
-    margin-bottom: 32px; /* for navigation bar */
   }
 
   #slide-title {
@@ -48,19 +42,17 @@ found in the LICENSE file.
     font-weight: 500; /* medium */
     line-height: 28px;
   }
-
   :host-context(.jelly-enabled) #slide-title ::slotted(*) {
     color: var(--cros-sys-on_surface);
-    font-family: var(--cros-display-6-font-family);
-    font-size: var(--cros-display-6-font-size);
-    font-weight: var(--cros-display-6-font-weight);
-    line-height: var(--cros-display-6-line-height);
+    font-family: var(--cros-display-7-font-family);
+    font-size: var(--cros-display-7-font-size);
+    font-weight: var(--cros-display-7-font-weight);
+    line-height: var(--cros-display-7-line-height);
   }
 
   #slide-title[is-warning] ::slotted(*) {
     color: var(--cros-text-color-alert);
   }
-
   :host-context(.jelly-enabled) #slide-title[is-warning] ::slotted(*) {
     color: var(--cros-sys-error);
   }
@@ -68,7 +60,6 @@ found in the LICENSE file.
   #slide-text {
     padding-top: 8px;
   }
-
   :host-context(.jelly-enabled) #slide-text {
     padding-top: 16px;
   }
@@ -80,18 +71,17 @@ found in the LICENSE file.
     font-weight: 400; /* regular */
     line-height: 20px;
   }
-
   :host-context(.jelly-enabled) #slide-text ::slotted(*) {
     color: var(--cros-sys-on_surface_variant);
-    font-family: var(--cros-body-1-font-family);
-    font-size: var(--cros-body-1-font-size);
-    font-weight: var(--cros-body-1-font-weight);
-    line-height: var(--cros-body-1-line-height);
+    font-family: var(--cros-body-2-font-family);
+    font-size: var(--cros-body-2-font-size);
+    font-weight: var(--cros-body-2-font-weight);
+    line-height: var(--cros-body-2-line-height);
   }
 
   #context-container ::slotted(*) {
-    padding-inline-end: 20px;
-    padding-inline-start: 20px;
+    padding-inline-end: var(--oobe-slide-horizontal-padding);
+    padding-inline-start: var(--oobe-slide-horizontal-padding);
     text-align: center;
   }
 

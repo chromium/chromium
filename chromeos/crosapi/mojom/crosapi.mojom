@@ -4,6 +4,7 @@
 
 module crosapi.mojom;
 
+import "chromeos/components/in_session_auth/mojom/in_session_auth.mojom";
 import "chromeos/components/payments/mojom/payment_app.mojom";
 import "chromeos/components/remote_apps/mojom/remote_apps.mojom";
 import "chromeos/components/sensors/mojom/cros_sensor_service.mojom";
@@ -57,7 +58,6 @@ import "chromeos/crosapi/mojom/holding_space_service.mojom";
 import "chromeos/crosapi/mojom/identity_manager.mojom";
 import "chromeos/crosapi/mojom/idle_service.mojom";
 import "chromeos/crosapi/mojom/image_writer.mojom";
-import "chromeos/crosapi/mojom/in_session_auth.mojom";
 import "chromeos/crosapi/mojom/kerberos_in_browser.mojom";
 import "chromeos/crosapi/mojom/keystore_service.mojom";
 import "chromeos/crosapi/mojom/launcher_search.mojom";
@@ -78,6 +78,7 @@ import "chromeos/crosapi/mojom/networking_private.mojom";
 import "chromeos/crosapi/mojom/power.mojom";
 import "chromeos/crosapi/mojom/network_settings_service.mojom";
 import "chromeos/crosapi/mojom/parent_access.mojom";
+import "chromeos/crosapi/mojom/passkeys.mojom";
 import "chromeos/crosapi/mojom/prefs.mojom";
 import "chromeos/crosapi/mojom/printing_metrics.mojom";
 import "chromeos/crosapi/mojom/probe_service.mojom";
@@ -150,8 +151,8 @@ struct BrowserInfo {
 // please note the milestone when you added it, to help us reason about
 // compatibility between the client applications and older ash-chrome binaries.
 //
-// Next version: 124
-// Next method id: 125
+// Next version: 125
+// Next method id: 127
 [Stable, Uuid="8b79c34f-2bf8-4499-979a-b17cac522c1e",
  RenamedFrom="crosapi.mojom.AshChromeService"]
 interface Crosapi {
@@ -437,7 +438,8 @@ interface Crosapi {
   // on ChromeOS
   // Added in M106.
   [MinVersion=92]
-  BindInSessionAuth@96(pending_receiver<InSessionAuth> receiver);
+  BindInSessionAuth@96(
+      pending_receiver<chromeos.auth.mojom.InSessionAuth> receiver);
 
   // Binds the NetworkSettingsService interface for reading and observing
   // network changes.
@@ -523,6 +525,11 @@ interface Crosapi {
   // from Ash when needed.
   [MinVersion=97]
   BindParentAccess@101(pending_receiver<ParentAccess> receiver);
+
+  // Binds an interface for creating and asserting user passkeys.
+  [MinVersion=124]
+  BindPasskeyAuthenticator@126(
+      pending_receiver<PasskeyAuthenticator> receiver);
 
   // Binds the PaymentAppInstance to allow Playstore payment to be made for
   // web apps listing in Playstore.
@@ -1073,8 +1080,8 @@ enum OpenUrlFrom {
 // parameters here. If a new parameter is added and its value is only known
 // after the user has logged in, please update BrowserPostLoginParams as well.
 //
-// Next version: 74
-// Next id: 74
+// Next version: 75
+// Next id: 75
 [Stable, RenamedFrom="crosapi.mojom.LacrosInitParams"]
 struct BrowserInitParams {
   // This is ash-chrome's version of the Crosapi interface. This is used by
@@ -1382,7 +1389,7 @@ struct BrowserInitParams {
   // When this flag is set to true, Lacros float window support including the
   // multitask menu will be enabled.
   [MinVersion=51]
-  bool enable_window_layout_menu@51;
+  bool REMOVED_51@51;
 
   // True if this is a device with cloud gaming features enabled.
   [MinVersion=52]
@@ -1412,7 +1419,7 @@ struct BrowserInitParams {
   // will be enabled.
   // Added in M110.
   [MinVersion=55]
-  bool enable_partial_split_deprecated@55;
+  bool REMOVED_55@55;
 
   // Tells lacros-chrome if videoconference UI features are enabled. Used to
   // guard the creation of `VideoConferenceManagerClient`. This client
@@ -1509,6 +1516,11 @@ struct BrowserInitParams {
   // Lacros needs to use the same entropy values to be trustworthy for UMA data.
   [MinVersion=73]
   EntropySource? entropy_source@73;
+
+  // If true, the shortstand feature is enabled, which introduces different
+  // behaviour between web apps and browser created shortcuts to be displayed.
+  [MinVersion=74]
+  bool is_cros_shortstand_enabled@74;
 };
 
 // BrowserPostLoginParams is the subset of parameters in BrowserInitParams
@@ -1658,8 +1670,8 @@ struct OpenUrlParams {
 // has accidentally become a kitchen sink for different features. This was not
 // intentional.
 //
-// Next MinVersion: 74.
-// Next ID: 21
+// Next MinVersion: 76.
+// Next ID: 23
 //
 [Stable, Uuid="4e04dc16-b34c-40fd-9e3f-3c55c2c6cf91",
  RenamedFrom="crosapi.mojom.LacrosChromeService"]
@@ -1668,7 +1680,9 @@ interface BrowserService {
   REMOVED_0@0() => (pending_receiver<Crosapi> receiver);
   REMOVED_2@2(BrowserInitParams params);
 
-  // Opens a new window in the browser with, currently, the main profile.
+  // Opens a new window in the browser with the profile that matches
+  // `profile_id`. In case of no matching profile, the profile picker will be
+  // shown.
   // The callback is called on the command execution.
   // If `should_trigger_session_restore` is true, a new window opening should be
   // treated like the start of a new session (with potential session restore,
@@ -1677,7 +1691,8 @@ interface BrowserService {
   NewWindow@1(
     [MinVersion=10] bool incognito,
     [MinVersion=61] bool should_trigger_session_restore,
-    [MinVersion=72] int64 target_display_id)
+    [MinVersion=72] int64 target_display_id,
+    [MinVersion=75] uint64? profile_id)
         => ([MinVersion=73] CreationResult result);
 
   // Opens a new fullscreen window in the browser with, currently, the main
@@ -1809,13 +1824,19 @@ interface BrowserService {
   [MinVersion=67]
   UpdateComponentPolicy@18(map<crosapi.mojom.PolicyNamespace, mojo_base.mojom.Value> component_policy);
 
-  // Opens a new tab in the browser with, currently, the main profile.
+  // Opens a new tab in the browser with the profile that matches `profile_id`.
+  // In case of no matching profile, the profile picker will be shown.
   // If a new window needs to be created, it will open with the profile's
   // session startup pref and no new tab will be added.
   // Added in M108.
   [MinVersion=70]
-  Launch@19([MinVersion=72] int64 target_display_id)
+  Launch@19([MinVersion=72] int64 target_display_id,
+            [MinVersion=75] uint64? profile_id)
       => ([MinVersion=73] CreationResult result);
+
+  // Opens the Lacros profile manger window.
+  [MinVersion=74]
+  OpenProfileManager@21();
 };
 
 // TODO(crbug.com/1180712): move to its own file. Currently due to circular

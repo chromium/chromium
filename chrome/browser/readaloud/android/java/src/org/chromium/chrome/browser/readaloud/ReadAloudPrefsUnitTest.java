@@ -9,21 +9,18 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
+import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.readaloud.testing.MockPrefServiceHelper;
 import org.chromium.components.prefs.PrefService;
 
@@ -36,20 +33,15 @@ public class ReadAloudPrefsUnitTest {
     private MockPrefServiceHelper mMockPrefServiceHelper;
     private PrefService mPrefService;
 
-    @Captor private ArgumentCaptor<String> mPrefNameCaptor;
-    @Captor private ArgumentCaptor<String> mPrefStringValueCaptor;
-    @Captor private ArgumentCaptor<Boolean> mPrefBooleanValueCaptor;
+    @Rule public JniMocker mJniMocker = new JniMocker();
+    @Mock ReadAloudPrefs.Natives mNativeMock;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
+        mJniMocker.mock(ReadAloudPrefsJni.TEST_HOOKS, mNativeMock);
         mMockPrefServiceHelper = new MockPrefServiceHelper();
         mPrefService = mMockPrefServiceHelper.getPrefService();
-    }
-
-    @After
-    public void tearDown() {
-        ReadAloudPrefs.resetForTesting();
     }
 
     @Test
@@ -66,7 +58,7 @@ public class ReadAloudPrefsUnitTest {
 
     @Test
     public void testGetVoice() {
-        mPrefService.setString("readaloud.voices", "{\"en\":\"voice\"}");
+        MockPrefServiceHelper.setVoices(mNativeMock, Map.of("en", "voice"));
 
         Map<String, String> voices = ReadAloudPrefs.getVoices(mPrefService);
         assertEquals(1, voices.size());
@@ -74,33 +66,18 @@ public class ReadAloudPrefsUnitTest {
     }
 
     @Test
-    public void testSetVoice() throws JSONException {
+    public void testSetVoice() {
         ReadAloudPrefs.setVoice(mPrefService, "en", "voice");
-        verify(mPrefService).setString(eq("readaloud.voices"), mPrefStringValueCaptor.capture());
-
-        var jsonObject = new JSONObject(mPrefStringValueCaptor.getValue());
-        assertEquals("voice", jsonObject.get("en"));
+        verify(mNativeMock).setVoice(eq(mPrefService), eq("en"), eq("voice"));
     }
 
     @Test
-    public void testSetVoiceInvalid() throws JSONException {
+    public void testSetVoiceInvalid() {
         ReadAloudPrefs.setVoice(mPrefService, null, "voice");
         ReadAloudPrefs.setVoice(mPrefService, "en", null);
         ReadAloudPrefs.setVoice(mPrefService, "", "voice");
         ReadAloudPrefs.setVoice(mPrefService, "en", "");
-        verify(mPrefService, never()).setString(any(), any());
-    }
-
-    @Test
-    public void testSetMultipleVoices() throws JSONException {
-        ReadAloudPrefs.setVoice(mPrefService, "en", "voice");
-        reset(mPrefService);
-        ReadAloudPrefs.setVoice(mPrefService, "es", "voz");
-        verify(mPrefService).setString(eq("readaloud.voices"), mPrefStringValueCaptor.capture());
-
-        var jsonObject = new JSONObject(mPrefStringValueCaptor.getValue());
-        assertEquals("voice", jsonObject.get("en"));
-        assertEquals("voz", jsonObject.get("es"));
+        verify(mNativeMock, never()).setVoice(any(), any(), any());
     }
 
     @Test
@@ -110,14 +87,14 @@ public class ReadAloudPrefsUnitTest {
 
     @Test
     public void testGetSpeed() {
-        mPrefService.setString("readaloud.speed", "2.0");
+        mPrefService.setDouble("readaloud.speed", 2d);
         assertEquals(2f, ReadAloudPrefs.getSpeed(mPrefService), /* delta= */ 0f);
     }
 
     @Test
     public void testSetSpeed() {
         ReadAloudPrefs.setSpeed(mPrefService, 2f);
-        verify(mPrefService).setString(eq("readaloud.speed"), eq("2.0"));
+        verify(mPrefService).setDouble(eq("readaloud.speed"), eq(2d));
     }
 
     @Test

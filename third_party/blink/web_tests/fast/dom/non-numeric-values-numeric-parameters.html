@@ -196,7 +196,7 @@ shouldBe("nonNumericPolicy('document.createTextNode(\"a\").replaceData(0, x, \"b
 
 // CSSMediaRule
 
-shouldBe("nonNumericPolicy('createCSSMediaRule().insertRule(ruleText, x)')", "'any type allowed (but not omitted)'");
+shouldBe("nonNumericPolicy('createCSSMediaRule().insertRule(ruleText, x)')", "'any type allowed'");
 shouldBe("nonNumericPolicy('createCSSMediaRule().deleteRule(x)')", "'any type allowed (but not omitted)'");
 
 // CSSRuleList

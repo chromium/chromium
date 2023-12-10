@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/settings/bandwidth/dataplan_usage_table_view_controller.h"
+#import "ios/chrome/browser/ui/settings/bandwidth/dataplan_usage_table_view_controller+Testing.h"
 
 #import "base/apple/foundation_util.h"
 #import "base/check.h"
@@ -14,7 +15,6 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_styler.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
-#import "ios/chrome/browser/ui/settings/bandwidth/dataplan_usage_table_view_controller+private.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -128,8 +128,7 @@ NetworkPredictionSetting SettingWithItemType(ItemType item_type) {
 // Updates the checked state of the cells to match the preferences.
 - (void)updateCheckedState {
   NetworkPredictionSetting setting =
-      static_cast<prerender_prefs::NetworkPredictionSetting>(
-          _settingPreference.GetValue());
+      static_cast<NetworkPredictionSetting>(_settingPreference.GetValue());
 
   TableViewModel<TableViewItem*>* model = self.tableViewModel;
 
@@ -158,9 +157,8 @@ NetworkPredictionSetting SettingWithItemType(ItemType item_type) {
   if (!prefs)
     return nil;
 
-  NetworkPredictionSetting setting =
-      static_cast<prerender_prefs::NetworkPredictionSetting>(
-          prefs->GetInteger(settingPreference));
+  NetworkPredictionSetting setting = static_cast<NetworkPredictionSetting>(
+      prefs->GetInteger(settingPreference));
   switch (setting) {
     case NetworkPredictionSetting::kDisabled: {
       return l10n_util::GetNSString(IDS_IOS_OPTIONS_DATA_USAGE_NEVER);
@@ -175,7 +173,7 @@ NetworkPredictionSetting SettingWithItemType(ItemType item_type) {
   }
 }
 
-- (void)updateSetting:(prerender_prefs::NetworkPredictionSetting)newSetting {
+- (void)updateSetting:(NetworkPredictionSetting)newSetting {
   _settingPreference.SetValue(static_cast<int>(newSetting));
   [self updateCheckedState];
 }

@@ -5,10 +5,10 @@
 #include "services/network/public/cpp/parsed_headers.h"
 
 #include <string>
+#include <string_view>
 #include <tuple>
 
 #include "base/memory/scoped_refptr.h"
-#include "base/strings/string_piece.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/types/expected.h"
 #include "net/http/http_response_headers.h"
@@ -21,7 +21,7 @@
 namespace network {
 namespace {
 
-mojom::ParsedHeadersPtr ParseHeaders(const base::StringPiece headers) {
+mojom::ParsedHeadersPtr ParseHeaders(const std::string_view headers) {
   std::string raw_headers = net::HttpUtil::AssembleRawHeaders(headers);
   auto parsed = base::MakeRefCounted<net::HttpResponseHeaders>(raw_headers);
   return network::PopulateParsedHeaders(parsed.get(), GURL("https://a.com"));
@@ -29,7 +29,7 @@ mojom::ParsedHeadersPtr ParseHeaders(const base::StringPiece headers) {
 
 class NoVarySearchPrefetchDisabledTest
     : public ::testing::Test,
-      public ::testing::WithParamInterface<base::StringPiece> {
+      public ::testing::WithParamInterface<std::string_view> {
  public:
   NoVarySearchPrefetchDisabledTest() {
     scoped_feature_list_.InitAndDisableFeature(
@@ -47,7 +47,7 @@ TEST_P(NoVarySearchPrefetchDisabledTest, ParsingNVSReturnsDefaultURLVariance) {
   EXPECT_FALSE(parsed_headers->no_vary_search_with_parse_error);
 }
 
-constexpr base::StringPiece no_vary_search_prefetch_disabled_data[] = {
+constexpr std::string_view no_vary_search_prefetch_disabled_data[] = {
     // No No-Vary-Search header.
     "HTTP/1.1 200 OK\r\n"
     "Set-Cookie: a\r\n"
@@ -66,7 +66,7 @@ INSTANTIATE_TEST_SUITE_P(
 TEST(NoVarySearchPrefetchEnabledTest, ParsingNVSReturnsDefaultURLVariance) {
   base::test::ScopedFeatureList feature_list(
       network::features::kPrefetchNoVarySearch);
-  const base::StringPiece& headers =
+  const std::string_view& headers =
       "HTTP/1.1 200 OK\r\n"
       "Set-Cookie: a\r\n"
       "Set-Cookie: b\r\n\r\n";
@@ -83,7 +83,7 @@ TEST(NoVarySearchPrefetchEnabledTest, ParsingNVSReturnsDefaultURLVariance) {
 TEST(NoVarySearchPrefetchEnabledTest, ParsingNVSReturnsDefaultValue) {
   base::test::ScopedFeatureList feature_list(
       network::features::kPrefetchNoVarySearch);
-  const base::StringPiece& headers =
+  const std::string_view& headers =
       "HTTP/1.1 200 OK\r\n"
       "Set-Cookie: a\r\n"
       "Set-Cookie: b\r\n"
@@ -101,7 +101,7 @@ TEST(NoVarySearchPrefetchEnabledTest, ParsingNVSReturnsDefaultValue) {
 TEST(NoVarySearchPrefetchEnabledTest, ParsingNVSReturnsNotDictionary) {
   base::test::ScopedFeatureList feature_list(
       network::features::kPrefetchNoVarySearch);
-  const base::StringPiece& headers =
+  const std::string_view& headers =
       "HTTP/1.1 200 OK\r\n"
       "Set-Cookie: a\r\n"
       "Set-Cookie: b\r\n"
@@ -119,7 +119,7 @@ TEST(NoVarySearchPrefetchEnabledTest, ParsingNVSReturnsNotDictionary) {
 TEST(NoVarySearchPrefetchEnabledTest, ParsingNVSReturnsUnknownDictionaryKey) {
   base::test::ScopedFeatureList feature_list(
       network::features::kPrefetchNoVarySearch);
-  const base::StringPiece& headers =
+  const std::string_view& headers =
       "HTTP/1.1 200 OK\r\n"
       "Set-Cookie: a\r\n"
       "Set-Cookie: b\r\n"
@@ -137,7 +137,7 @@ TEST(NoVarySearchPrefetchEnabledTest, ParsingNVSReturnsUnknownDictionaryKey) {
 TEST(NoVarySearchPrefetchEnabledTest, ParsingNVSReturnsNonBooleanKeyOrder) {
   base::test::ScopedFeatureList feature_list(
       network::features::kPrefetchNoVarySearch);
-  const base::StringPiece& headers =
+  const std::string_view& headers =
       "HTTP/1.1 200 OK\r\n"
       "Set-Cookie: a\r\n"
       "Set-Cookie: b\r\n"
@@ -155,7 +155,7 @@ TEST(NoVarySearchPrefetchEnabledTest, ParsingNVSReturnsNonBooleanKeyOrder) {
 TEST(NoVarySearchPrefetchEnabledTest, ParsingNVSReturnsParamsNotStringList) {
   base::test::ScopedFeatureList feature_list(
       network::features::kPrefetchNoVarySearch);
-  const base::StringPiece& headers =
+  const std::string_view& headers =
       "HTTP/1.1 200 OK\r\n"
       "Set-Cookie: a\r\n"
       "Set-Cookie: b\r\n"
@@ -173,7 +173,7 @@ TEST(NoVarySearchPrefetchEnabledTest, ParsingNVSReturnsParamsNotStringList) {
 TEST(NoVarySearchPrefetchEnabledTest, ParsingNVSReturnsExceptNotStringList) {
   base::test::ScopedFeatureList feature_list(
       network::features::kPrefetchNoVarySearch);
-  const base::StringPiece& headers =
+  const std::string_view& headers =
       "HTTP/1.1 200 OK\r\n"
       "Set-Cookie: a\r\n"
       "Set-Cookie: b\r\n"
@@ -192,7 +192,7 @@ TEST(NoVarySearchPrefetchEnabledTest,
      ParsingNVSReturnsExceptWithoutTrueParams) {
   base::test::ScopedFeatureList feature_list(
       network::features::kPrefetchNoVarySearch);
-  const base::StringPiece& headers =
+  const std::string_view& headers =
       "HTTP/1.1 200 OK\r\n"
       "Set-Cookie: a\r\n"
       "Set-Cookie: b\r\n"
@@ -302,7 +302,7 @@ INSTANTIATE_TEST_SUITE_P(NoVarySearchPrefetchEnabledTest,
                          testing::ValuesIn(response_headers_tests));
 
 TEST(ParseHeadersClientHintsTest, AcceptCHAndClearCHWithoutClearSiteDataTest) {
-  const base::StringPiece& headers =
+  const std::string_view& headers =
       "HTTP/1.1 200 OK\r\n"
       "Accept-CH: sec-ch-dpr\r\n"
       "Critical-CH: sec-ch-dpr\r\n\r\n";
@@ -323,7 +323,7 @@ TEST(ParseHeadersClientHintsTest, AcceptCHAndClearCHWithoutClearSiteDataTest) {
 
 TEST(ParseHeadersClientHintsTest,
      AcceptCHAndClearCHWithClearSiteDataCacheTest) {
-  const base::StringPiece& headers =
+  const std::string_view& headers =
       "HTTP/1.1 200 OK\r\n"
       "Accept-CH: sec-ch-dpr\r\n"
       "Critical-CH: sec-ch-dpr\r\n"
@@ -339,7 +339,7 @@ TEST(ParseHeadersClientHintsTest,
 
 TEST(ParseHeadersClientHintsTest,
      AcceptCHAndClearCHWithClearSiteDataClientHintsTest) {
-  const base::StringPiece& headers =
+  const std::string_view& headers =
       "HTTP/1.1 200 OK\r\n"
       "Accept-CH: sec-ch-dpr\r\n"
       "Critical-CH: sec-ch-dpr\r\n"
@@ -355,7 +355,7 @@ TEST(ParseHeadersClientHintsTest,
 
 TEST(ParseHeadersClientHintsTest,
      AcceptCHAndClearCHWithClearSiteDataCookiesTest) {
-  const base::StringPiece& headers =
+  const std::string_view& headers =
       "HTTP/1.1 200 OK\r\n"
       "Accept-CH: sec-ch-dpr\r\n"
       "Critical-CH: sec-ch-dpr\r\n"
@@ -371,7 +371,7 @@ TEST(ParseHeadersClientHintsTest,
 
 TEST(ParseHeadersClientHintsTest,
      AcceptCHAndClearCHWithClearSiteDataStorageTest) {
-  const base::StringPiece& headers =
+  const std::string_view& headers =
       "HTTP/1.1 200 OK\r\n"
       "Accept-CH: sec-ch-dpr\r\n"
       "Critical-CH: sec-ch-dpr\r\n"
@@ -392,7 +392,7 @@ TEST(ParseHeadersClientHintsTest,
 }
 
 TEST(ParseHeadersClientHintsTest, AcceptCHAndClearCHWithClearSiteDataAllTest) {
-  const base::StringPiece& headers =
+  const std::string_view& headers =
       "HTTP/1.1 200 OK\r\n"
       "Accept-CH: sec-ch-dpr\r\n"
       "Critical-CH: sec-ch-dpr\r\n"

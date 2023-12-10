@@ -31,7 +31,6 @@
    "is_generated_icon": false,
    "is_locally_installed": false,
    "is_uninstalling": false,
-   "is_user_selected_app_for_capturing_links": false,
    "isolation_data": null,
    "last_badging_time": "1601-01-01 00:00:00.000000 UTC",
    "last_launch_time": "1601-01-01 00:00:00.000000 UTC",
@@ -71,6 +70,7 @@
    "url_handlers": [  ],
    "user_display_mode": null,
    "user_launch_ordinal": "INVALID[]",
+   "user_link_capturing_preference": "0",
    "user_page_ordinal": "INVALID[]",
    "window_controls_overlay_enabled": false
 }

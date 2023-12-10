@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include <optional>
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -25,14 +26,16 @@
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "components/viz/common/hit_test/hit_test_region_list.h"
 #include "components/viz/common/surfaces/local_surface_id.h"
-#include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/viz/public/mojom/compositing/compositor_frame_sink.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+
+namespace gpu {
+class ClientSharedImage;
+}
 
 namespace cc::slim {
 
@@ -84,6 +87,7 @@ class COMPONENT_EXPORT(CC_SLIM) FrameSinkImpl
   void ReclaimResources(std::vector<viz::ReturnedResource> resources) override;
   void OnCompositorFrameTransitionDirectiveProcessed(
       uint32_t sequence_id) override {}
+  void OnSurfaceEvicted(const viz::LocalSurfaceId& local_surface_id) override {}
   void OnBeginFrame(const viz::BeginFrameArgs& begin_frame_args,
                     const viz::FrameTimingDetailsMap& timing_details,
                     bool frame_ack,
@@ -104,7 +108,7 @@ class COMPONENT_EXPORT(CC_SLIM) FrameSinkImpl
     UploadedUIResource(const UploadedUIResource&);
     UploadedUIResource& operator=(const UploadedUIResource&);
 
-    gpu::Mailbox mailbox;
+    scoped_refptr<gpu::ClientSharedImage> shared_image;
     gfx::Size size;
     bool is_opaque = true;
     viz::ResourceId viz_resource_id;
@@ -145,7 +149,7 @@ class COMPONENT_EXPORT(CC_SLIM) FrameSinkImpl
   UploadedResourceMap uploaded_resources_;
   viz::ClientResourceProvider resource_provider_;
   // Last `HitTestRegionList` sent to viz.
-  absl::optional<viz::HitTestRegionList> hit_test_region_list_;
+  std::optional<viz::HitTestRegionList> hit_test_region_list_;
   base::PlatformThreadId io_thread_id_;
 
   viz::LocalSurfaceId last_submitted_local_surface_id_;

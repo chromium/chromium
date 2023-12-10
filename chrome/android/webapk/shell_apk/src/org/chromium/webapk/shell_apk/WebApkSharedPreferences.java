@@ -21,8 +21,7 @@ public final class WebApkSharedPreferences {
             "org.chromium.webapk.shell_apk.version_code";
 
     /**
-     * Shared preference for the version number of the dynamically loaded dex by the WebAPK
-     * service.
+     * Shared preference for the version number of the dynamically loaded dex by the WebAPK service.
      */
     public static final String PREF_RUNTIME_DEX_VERSION =
             "org.chromium.webapk.shell_apk.dex_version";

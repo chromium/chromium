@@ -18,6 +18,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -40,6 +41,8 @@ constexpr int kFooterVerticalSpacing = 7;
 constexpr int kSeeAllIconLabelSpacing = 6;
 
 class SeeAllButton : public views::LabelButton {
+  METADATA_HEADER(SeeAllButton, views::LabelButton)
+
  public:
   SeeAllButton(const std::u16string& see_all_accessible_name,
                base::RepeatingClosure on_see_all_pressed) {
@@ -64,6 +67,9 @@ class SeeAllButton : public views::LabelButton {
   SeeAllButton& operator=(const SeeAllButton&) = delete;
   ~SeeAllButton() override = default;
 };
+
+BEGIN_METADATA(SeeAllButton)
+END_METADATA
 
 }  // namespace
 
@@ -107,7 +113,7 @@ void GlanceablesListFooterView::UpdateItemsCount(size_t visible_items_count,
                                  base::NumberToString16(total_items_count)));
 }
 
-BEGIN_METADATA(GlanceablesListFooterView, views::View)
+BEGIN_METADATA(GlanceablesListFooterView)
 END_METADATA
 
 }  // namespace ash

@@ -11,6 +11,7 @@
 #include "media/capture/video_capture_types.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/mediastream/media_devices.mojom-blink.h"
+#include "third_party/blink/renderer/modules/mediastream/image_capture_device_settings.h"
 #include "third_party/blink/renderer/modules/mediastream/media_constraints.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_constraints_util_sets.h"
 #include "third_party/blink/renderer/modules/mediastream/video_track_adapter_settings.h"
@@ -68,14 +69,13 @@ class MODULES_EXPORT VideoCaptureSettings {
 
   // Creates an object with the given values.
   VideoCaptureSettings(std::string device_id,
-                       media::VideoCaptureParams capture_params_,
-                       absl::optional<bool> noise_reduction_,
+                       media::VideoCaptureParams capture_params,
+                       absl::optional<bool> noise_reduction,
                        const VideoTrackAdapterSettings& track_adapter_settings,
                        absl::optional<double> min_frame_rate,
                        absl::optional<double> max_frame_rate,
-                       absl::optional<double> pan = absl::nullopt,
-                       absl::optional<double> tilt = absl::nullopt,
-                       absl::optional<double> zoom = absl::nullopt);
+                       absl::optional<ImageCaptureDeviceSettings>
+                           image_capture_device_settings = absl::nullopt);
 
   VideoCaptureSettings(const VideoCaptureSettings& other);
   VideoCaptureSettings& operator=(const VideoCaptureSettings& other);
@@ -133,17 +133,10 @@ class MODULES_EXPORT VideoCaptureSettings {
     DCHECK(HasValue());
     return max_frame_rate_;
   }
-  const absl::optional<double>& pan() const {
+  const absl::optional<ImageCaptureDeviceSettings>&
+  image_capture_device_settings() const {
     DCHECK(HasValue());
-    return pan_;
-  }
-  const absl::optional<double>& tilt() const {
-    DCHECK(HasValue());
-    return tilt_;
-  }
-  const absl::optional<double>& zoom() const {
-    DCHECK(HasValue());
-    return zoom_;
+    return image_capture_device_settings_;
   }
 
  private:
@@ -154,9 +147,7 @@ class MODULES_EXPORT VideoCaptureSettings {
   VideoTrackAdapterSettings track_adapter_settings_;
   absl::optional<double> min_frame_rate_;
   absl::optional<double> max_frame_rate_;
-  absl::optional<double> pan_;
-  absl::optional<double> tilt_;
-  absl::optional<double> zoom_;
+  absl::optional<ImageCaptureDeviceSettings> image_capture_device_settings_;
 };
 
 // This class represents the output the SelectSettings algorithm for audio

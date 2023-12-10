@@ -9,7 +9,9 @@
 #include <algorithm>
 #include <cmath>
 #include <memory>
+#include <optional>
 #include <set>
+#include <utility>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -55,7 +57,6 @@
 #include "content/public/browser/host_zoom_map.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/common/feature_switch.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkPaint.h"
@@ -844,7 +845,7 @@ class AppMenu::ZoomView : public AppMenuView {
   // 100%. This should not be accessed directly, use GetZoomLabelMaxWidth()
   // instead. This value is cached because is depends on multiple calls to
   // gfx::GetStringWidth(...) which are expensive.
-  mutable absl::optional<int> zoom_label_max_width_;
+  mutable std::optional<int> zoom_label_max_width_;
 };
 
 BEGIN_METADATA(AppMenu, ZoomView, AppMenuView)
@@ -955,7 +956,8 @@ AppMenu::AppMenu(Browser* browser, ui::MenuModel* model, int run_types)
       GlobalErrorServiceFactory::GetForProfile(browser->profile()));
 
   DCHECK(!root_);
-  root_ = new MenuItemView(this);
+  auto root = std::make_unique<MenuItemView>(/*delegate=*/this);
+  root_ = root.get();
   PopulateMenu(root_, model);
 
   int32_t types = views::MenuRunner::HAS_MNEMONICS;
@@ -969,7 +971,7 @@ AppMenu::AppMenu(Browser* browser, ui::MenuModel* model, int run_types)
     types |= views::MenuRunner::SHOULD_SHOW_MNEMONICS;
   }
 
-  menu_runner_ = std::make_unique<views::MenuRunner>(root_, types);
+  menu_runner_ = std::make_unique<views::MenuRunner>(std::move(root), types);
 }
 
 AppMenu::~AppMenu() {
@@ -987,10 +989,12 @@ void AppMenu::RunMenu(views::MenuButtonController* host) {
   UMA_HISTOGRAM_ENUMERATION("WrenchMenu.MenuAction", MENU_ACTION_MENU_OPENED,
                             LIMIT_MENU_ACTION);
 
-  menu_runner_->RunMenuAt(host->button()->GetWidget(), host,
-                          host->button()->GetAnchorBoundsInScreen(),
-                          views::MenuAnchorPosition::kTopRight,
-                          ui::MENU_SOURCE_NONE);
+  menu_runner_->RunMenuAt(
+      host->button()->GetWidget(), host,
+      host->button()->GetAnchorBoundsInScreen(),
+      views::MenuAnchorPosition::kTopRight, ui::MENU_SOURCE_NONE,
+      /*native_view_for_gestures=*/gfx::NativeView(), /*corners=*/std::nullopt,
+      "Chrome.AppMenu.MenuHostInitToNextFramePresented");
 }
 
 void AppMenu::CloseMenu() {
@@ -1009,7 +1013,7 @@ const gfx::FontList* AppMenu::GetLabelFontList(int command_id) const {
   return model->GetLabelFontListAt(index);
 }
 
-absl::optional<SkColor> AppMenu::GetLabelColor(int command_id) const {
+std::optional<SkColor> AppMenu::GetLabelColor(int command_id) const {
   // Only return a color if there's a font list - otherwise this method will
   // return a color for every recent tab item, not just the header.
   // Ensure that we call GetColor() using the `root_`'s SubmenuView as this is
@@ -1018,12 +1022,12 @@ absl::optional<SkColor> AppMenu::GetLabelColor(int command_id) const {
   // to correctly determine the label color as this requires querying the View's
   // hosting widget (crbug.com/1233392).
   return GetLabelFontList(command_id)
-             ? absl::make_optional(
+             ? std::make_optional(
                    root_->GetSubmenu()->GetColorProvider()->GetColor(
                        views::TypographyProvider::Get().GetColorId(
                            views::style::CONTEXT_MENU,
                            views::style::STYLE_PRIMARY)))
-             : absl::nullopt;
+             : std::nullopt;
 }
 
 std::u16string AppMenu::GetTooltipText(int command_id,

@@ -15,6 +15,7 @@
 #include "ash/system/input_device_settings/input_device_tracker.h"
 #include "ash/system/input_device_settings/settings_updated_metrics_info.h"
 #include "base/check.h"
+#include "base/json/values_util.h"
 #include "base/values.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
@@ -167,6 +168,8 @@ void UpdatePointingStickSettingsImpl(
 
   base::Value::Dict settings_dict = ConvertSettingsToDict(
       pointing_stick, force_persistence, existing_settings_dict);
+  const base::Time time_stamp = base::Time::Now();
+  settings_dict.Set(prefs::kLastUpdatedKey, base::TimeToValue(time_stamp));
 
   // If an old settings dict already exists for the device, merge the updated
   // settings into the old settings. Otherwise, insert the dict at
@@ -315,7 +318,7 @@ void PointingStickPrefHandlerImpl::UpdateLoginScreenPointingStickSettings(
 
   user_manager::KnownUser(local_state)
       .SetPath(account_id, pref_name,
-               absl::make_optional<base::Value>(ConvertSettingsToDict(
+               std::make_optional<base::Value>(ConvertSettingsToDict(
                    pointing_stick, /*force_persistence=*/{}, settings_dict)));
 }
 

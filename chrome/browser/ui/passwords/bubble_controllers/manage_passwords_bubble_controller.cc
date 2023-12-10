@@ -19,7 +19,7 @@
 #include "components/favicon/core/favicon_util.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_metrics_recorder.h"
-#include "components/password_manager/core/browser/password_store_interface.h"
+#include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/browser/password_sync_util.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -32,8 +32,8 @@ namespace {
 // Reports a metric based on the change between the `current_note` and the
 // `updated_note`.
 void LogNoteChangesInPasswordManagementBubble(
-    const absl::optional<std::u16string>& current_note,
-    const absl::optional<std::u16string>& updated_note) {
+    const std::optional<std::u16string>& current_note,
+    const std::optional<std::u16string>& updated_note) {
   std::u16string current_note_value = current_note.value_or(std::u16string());
   std::u16string updated_note_value = updated_note.value_or(std::u16string());
   if (current_note_value == updated_note_value) {

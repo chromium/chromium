@@ -76,23 +76,39 @@ struct AuctionServerRequestFlags {
 // https://github.com/WICG/turtledove/blob/main/FLEDGE.md#11-joining-interest-groups
 struct InterestGroup {
   [Stable, Extensible]
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
   enum ExecutionMode {
     // kCompatibilityMode creates a new context for every execution. This is
     // potentially slow as it is only able to reuse the compilation cache from
     // other interest groups with the same bidding script.
-    [Default] kCompatibilityMode,
+    [Default] kCompatibilityMode = 0,
     // kGroupedByOriginMode, mode uses the same JavaScript context for groups
     // with the same joining origin. This can be much faster, but to mitigate
     // any privacy leaks FLEDGE will clear all of the interest groups for a
     // joining origin if another origin joins or leaves one of the interest
     // groups.
-    kGroupedByOriginMode,
+    kGroupedByOriginMode = 1,
     // kFrozenContext mode uses a "frozen" JavaScript context to execute the
     // bidding scripts for all interest groups that share a common biddnig
     // script. After the script is loaded, the script context is frozen and
     // checked for any state that may persist between function execution. If any
     // potentially persistent state is identified, execution is abandoned.
-    kFrozenContext,
+    kFrozenContext = 2
+  };
+
+  [Stable, Extensible]
+  enum TrustedBiddingSignalsSlotSizeMode {
+    // No information about ad slot sizes is added as a query param of
+    // trustedBiddingSignalsURL fetches.
+    [Default] kNone,
+    // Only the ad slot size of the current ad slot is added to the query param
+    // of trustedBiddingSignalsURL fetches. It is called "slotSize".
+    kSlotSize,
+    // All add slot sizes specified in the top-level AuctionConfig is added to
+    // the query param of trustedBiddingSignalsURL fetches. They are provided as
+    // a single parameter called "slotSizes".
+    kAllSlotsRequestedSizes,
   };
 
   mojo_base.mojom.Time expiry;
@@ -122,6 +138,9 @@ struct InterestGroup {
   SellerCapabilities all_sellers_capabilities;
   // `execution_mode` of the interest group.
   ExecutionMode execution_mode = kCompatibilityMode;
+  // `trusted_bidding_signals_slot_size_mode` of the interest group.
+  TrustedBiddingSignalsSlotSizeMode trusted_bidding_signals_slot_size_mode =
+      kNone;
   // `bidding_url` must match the current frame URL's origin.
   url.mojom.Url? bidding_url;
   // `bidding_wasm_helper_url` must match the current frame URL's origin.
@@ -421,6 +440,10 @@ struct AuctionAdConfigNonSharedParams {
   // through browser signals and stored after the auction in the winning
   // fenced frame config as its container size.
   AdSize? requested_size;
+
+  // All ad slot sizes on a page. Each AdSize must be unique. Interest
+  // groups can request this be included in trusted seller signals fetches.
+  array<AdSize>? all_slots_requested_sizes;
 
   // A unique identifier associated with this and only this invocation of
   // runAdAuction. This must come from a prior call to createAuctionNonce.

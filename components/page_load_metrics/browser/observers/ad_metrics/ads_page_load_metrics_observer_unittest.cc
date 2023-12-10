@@ -2713,11 +2713,11 @@ TEST_P(AdsPageLoadMetricsObserverTest, HeavyAdPageReload_InterventionIgnored) {
   feature_list.InitAndEnableFeature(
       heavy_ad_intervention::features::kHeavyAdIntervention);
 
-  RenderFrameHost* main_frame = NavigateMainFrame(kNonAdUrl);
-
+  NavigateMainFrame(kNonAdUrl);
   // Reload the page.
   NavigationSimulator::Reload(web_contents());
 
+  RenderFrameHost* main_frame = web_contents()->GetPrimaryMainFrame();
   RenderFrameHost* ad_frame = CreateAndNavigateSubFrame(kAdUrl, main_frame);
 
   // Add enough data to trigger the intervention.
@@ -2735,11 +2735,11 @@ TEST_P(AdsPageLoadMetricsObserverTest,
       {heavy_ad_intervention::features::kHeavyAdIntervention},
       {heavy_ad_intervention::features::kHeavyAdPrivacyMitigations});
 
-  RenderFrameHost* main_frame = NavigateMainFrame(kNonAdUrl);
-
+  NavigateMainFrame(kNonAdUrl);
   // Reload the page.
   NavigationSimulator::Reload(web_contents());
 
+  RenderFrameHost* main_frame = web_contents()->GetPrimaryMainFrame();
   RenderFrameHost* ad_frame = CreateAndNavigateSubFrame(kAdUrl, main_frame);
 
   // Add enough data to trigger the intervention.

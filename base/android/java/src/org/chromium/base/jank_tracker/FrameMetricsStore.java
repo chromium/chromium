@@ -5,6 +5,7 @@
 package org.chromium.base.jank_tracker;
 
 import org.chromium.base.ThreadUtils.ThreadChecker;
+import org.chromium.base.TimeUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.build.BuildConfig;
 
@@ -33,12 +34,25 @@ public class FrameMetricsStore {
     // Array of total durations stored in nanoseconds, they represent how long each frame took to
     // draw.
     private final ArrayList<Long> mTotalDurationsNs = new ArrayList<>();
-    // Array of boolean values denoting whether a given frame is janky or not. Must always be the
-    // same size as mTotalDurationsNs.
-    private final ArrayList<Boolean> mIsJanky = new ArrayList<>();
+    // Array of integers denoting number of vsyncs we missed for given frame. 0 missed vsyncs mean
+    // no jank, while >0 missed vsyncs mean the frame was janky. Must always be the same size as
+    // mTotalDurationsNs.
+    private final ArrayList<Integer> mNumMissedVsyncs = new ArrayList<>();
     // Stores the timestamp (nanoseconds) of the most recent frame metric as a scenario started.
     // Zero if no FrameMetrics have been received.
     private final HashMap<Integer, Long> mScenarioPreviousFrameTimestampNs = new HashMap<>();
+    private final HashMap<Integer, Long> mPendingStartTimestampNs = new HashMap<>();
+
+    public FrameMetricsStore() {
+        // Add 0 to mTimestampNS array. This simplifies handling edge case when starting a scenario
+        // and we don't have any frame metrics stored. Adding 0 also makes sure the array stays in
+        // sorted order since the actual metrics received will have larger vsync start timestamps.
+        mTimestampsNs.add(0L);
+        // Add arbitrary values to related arrays as well since we always want them to be of same
+        // size.
+        mTotalDurationsNs.add(0L);
+        mNumMissedVsyncs.add(0);
+    }
 
     // Convert an enum value to string to use as an UMA histogram name, changes to strings should be
     // reflected in android/histograms.xml and base/android/jank_
@@ -77,13 +91,11 @@ public class FrameMetricsStore {
         mThreadChecker = new ThreadChecker();
     }
 
-    /**
-     * Records the total draw duration and jankiness for a single frame.
-     */
-    void addFrameMeasurement(long totalDurationNs, boolean isJanky, long frameStartVsyncTs) {
+    /** Records the total draw duration and jankiness for a single frame. */
+    void addFrameMeasurement(long totalDurationNs, int numMissedVsyncs, long frameStartVsyncTs) {
         mThreadChecker.assertOnValidThread();
         mTotalDurationsNs.add(totalDurationNs);
-        mIsJanky.add(isJanky);
+        mNumMissedVsyncs.add(numMissedVsyncs);
         mTimestampsNs.add(frameStartVsyncTs);
         mMaxTimestamp = frameStartVsyncTs;
     }
@@ -91,27 +103,21 @@ public class FrameMetricsStore {
     @SuppressWarnings("NoDynamicStringsInTraceEventCheck")
     void startTrackingScenario(@JankScenario int scenario) {
         try (TraceEvent e =
-                        TraceEvent.scoped("startTrackingScenario: " + scenarioToString(scenario))) {
+                TraceEvent.scoped("startTrackingScenario: " + scenarioToString(scenario))) {
             mThreadChecker.assertOnValidThread();
             // Ignore multiple calls to startTrackingScenario without corresponding
             // stopTrackingScenario calls.
             if (mScenarioPreviousFrameTimestampNs.containsKey(scenario)) {
+                mPendingStartTimestampNs.put(
+                        scenario, TimeUtils.uptimeMillis() * TimeUtils.NANOSECONDS_PER_MILLISECOND);
                 return;
             }
             // Make a unique ID for each scenario for tracing.
             TraceEvent.startAsync(
                     "JankCUJ:" + scenarioToString(scenario), TRACE_EVENT_TRACK_ID + scenario);
-
             // Scenarios are tracked based on the latest stored timestamp to allow fast lookups
-            // (find index of [timestamp] vs find first index that's >= [timestamp]). In case there
-            // are no stored timestamps then we hardcode the scenario's starting timestamp to 0L,
-            // this is handled as a special case in stopTrackingScenario by returning all stored
-            // frames.
-            Long startingTimestamp = 0L;
-            if (!mTimestampsNs.isEmpty()) {
-                startingTimestamp = mTimestampsNs.get(mTimestampsNs.size() - 1);
-            }
-
+            // (find index of [timestamp] vs find first index that's >= [timestamp]).
+            Long startingTimestamp = mTimestampsNs.get(mTimestampsNs.size() - 1);
             mScenarioPreviousFrameTimestampNs.put(scenario, startingTimestamp);
         }
     }
@@ -129,8 +135,9 @@ public class FrameMetricsStore {
     @SuppressWarnings("NoDynamicStringsInTraceEventCheck")
     JankMetrics stopTrackingScenario(@JankScenario int scenario, long endScenarioTimeNs) {
         try (TraceEvent e =
-                        TraceEvent.scoped("finishTrackingScenario: " + scenarioToString(scenario),
-                                Long.toString(endScenarioTimeNs))) {
+                TraceEvent.scoped(
+                        "finishTrackingScenario: " + scenarioToString(scenario),
+                        Long.toString(endScenarioTimeNs))) {
             mThreadChecker.assertOnValidThread();
             TraceEvent.finishAsync(
                     "JankCUJ:" + scenarioToString(scenario), TRACE_EVENT_TRACK_ID + scenario);
@@ -146,28 +153,21 @@ public class FrameMetricsStore {
                 return new JankMetrics();
             }
 
-            int startingIndex;
-            // Starting timestamp may be 0 if a scenario starts without any frames stored, in this
-            // case return all frames.
-            if (previousFrameTimestamp == 0) {
-                startingIndex = 0;
-            } else {
-                startingIndex = mTimestampsNs.indexOf(previousFrameTimestamp);
-                // The scenario starts with the frame after the tracking timestamp.
-                startingIndex++;
+            int startingIndex = mTimestampsNs.indexOf(previousFrameTimestamp);
+            // The scenario starts with the frame after the tracking timestamp.
+            startingIndex++;
 
-                // If startingIndex is out of bounds then we haven't recorded any frames since
-                // tracking started, return an empty FrameMetrics object.
-                if (startingIndex >= mTimestampsNs.size()) {
-                    return new JankMetrics();
-                }
+            // If startingIndex is out of bounds then we haven't recorded any frames since
+            // tracking started, return an empty FrameMetrics object.
+            if (startingIndex >= mTimestampsNs.size()) {
+                return new JankMetrics();
             }
 
             // Ending index is exclusive, so this is not out of bounds.
             int endingIndex = mTimestampsNs.size();
             if (endScenarioTimeNs > 0) {
-                // binarySearch returns
-                // index of the search key (non-negative value) or (-(insertion point) - 1).
+                // binarySearch returns index of the search key (non-negative value) or (-(insertion
+                // point) - 1).
                 // The insertion point is defined as the index of the first element greater than the
                 // key, or a.length if all elements in the array are less than the specified key.
                 endingIndex = Collections.binarySearch(mTimestampsNs, endScenarioTimeNs);
@@ -184,11 +184,16 @@ public class FrameMetricsStore {
             }
 
             JankMetrics jankMetrics =
-                    convertArraysToJankMetrics(mTimestampsNs.subList(startingIndex, endingIndex),
+                    convertArraysToJankMetrics(
+                            mTimestampsNs.subList(startingIndex, endingIndex),
                             mTotalDurationsNs.subList(startingIndex, endingIndex),
-                            mIsJanky.subList(startingIndex, endingIndex));
+                            mNumMissedVsyncs.subList(startingIndex, endingIndex));
             removeUnusedFrames();
 
+            Long pendingStartTimestampNs = mPendingStartTimestampNs.remove(scenario);
+            if (pendingStartTimestampNs != null && pendingStartTimestampNs > endScenarioTimeNs) {
+                startTrackingScenario(scenario);
+            }
             return jankMetrics;
         }
     }
@@ -196,9 +201,9 @@ public class FrameMetricsStore {
     private void removeUnusedFrames() {
         if (mScenarioPreviousFrameTimestampNs.isEmpty()) {
             TraceEvent.instant("removeUnusedFrames", Long.toString(mTimestampsNs.size()));
-            mTimestampsNs.clear();
-            mTotalDurationsNs.clear();
-            mIsJanky.clear();
+            mTimestampsNs.subList(1, mTimestampsNs.size()).clear();
+            mTotalDurationsNs.subList(1, mTotalDurationsNs.size()).clear();
+            mNumMissedVsyncs.subList(1, mNumMissedVsyncs.size()).clear();
             return;
         }
 
@@ -219,9 +224,9 @@ public class FrameMetricsStore {
         }
         TraceEvent.instant("removeUnusedFrames", Long.toString(firstUsedIndex));
 
-        mTimestampsNs.subList(0, firstUsedIndex).clear();
-        mTotalDurationsNs.subList(0, firstUsedIndex).clear();
-        mIsJanky.subList(0, firstUsedIndex).clear();
+        mTimestampsNs.subList(1, firstUsedIndex).clear();
+        mTotalDurationsNs.subList(1, firstUsedIndex).clear();
+        mNumMissedVsyncs.subList(1, firstUsedIndex).clear();
     }
 
     private long findFirstUsedTimestamp() {
@@ -236,7 +241,9 @@ public class FrameMetricsStore {
     }
 
     private JankMetrics convertArraysToJankMetrics(
-            List<Long> longTimestampsNs, List<Long> longDurations, List<Boolean> booleanIsJanky) {
+            List<Long> longTimestampsNs,
+            List<Long> longDurations,
+            List<Integer> intNumMissedVsyncs) {
         long[] timestamps = new long[longTimestampsNs.size()];
         for (int i = 0; i < longTimestampsNs.size(); i++) {
             timestamps[i] = longTimestampsNs.get(i).longValue();
@@ -247,12 +254,12 @@ public class FrameMetricsStore {
             durations[i] = longDurations.get(i).longValue();
         }
 
-        boolean[] isJanky = new boolean[booleanIsJanky.size()];
-        for (int i = 0; i < booleanIsJanky.size(); i++) {
-            isJanky[i] = booleanIsJanky.get(i).booleanValue();
+        int[] numMissedVsyncs = new int[intNumMissedVsyncs.size()];
+        for (int i = 0; i < intNumMissedVsyncs.size(); i++) {
+            numMissedVsyncs[i] = intNumMissedVsyncs.get(i).intValue();
         }
 
-        JankMetrics jankMetrics = new JankMetrics(timestamps, durations, isJanky);
+        JankMetrics jankMetrics = new JankMetrics(timestamps, durations, numMissedVsyncs);
         return jankMetrics;
     }
 }

@@ -2,41 +2,42 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_bucket.h"
+#include "partition_alloc/partition_bucket.h"
 
 #include <algorithm>
+#include <bit>
 #include <cstdint>
 #include <tuple>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/address_pool_manager.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/freeslot_bitmap.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/freeslot_bitmap_constants.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/oom.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/page_allocator.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/page_allocator_constants.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_address_space.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/bits.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/compiler_specific.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/component_export.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/debug/alias.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/debug/debugging_buildflags.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/immediate_crash.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/thread_annotations.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_check.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_config.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_constants.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_forward.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_direct_map_extent.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_oom.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_page.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/reservation_offset_table.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/tagging.h"
 #include "build/build_config.h"
+#include "partition_alloc/address_pool_manager.h"
+#include "partition_alloc/freeslot_bitmap.h"
+#include "partition_alloc/freeslot_bitmap_constants.h"
+#include "partition_alloc/oom.h"
+#include "partition_alloc/page_allocator.h"
+#include "partition_alloc/page_allocator_constants.h"
+#include "partition_alloc/partition_address_space.h"
+#include "partition_alloc/partition_alloc.h"
+#include "partition_alloc/partition_alloc_base/bits.h"
+#include "partition_alloc/partition_alloc_base/compiler_specific.h"
+#include "partition_alloc/partition_alloc_base/component_export.h"
+#include "partition_alloc/partition_alloc_base/debug/alias.h"
+#include "partition_alloc/partition_alloc_base/debug/debugging_buildflags.h"
+#include "partition_alloc/partition_alloc_base/immediate_crash.h"
+#include "partition_alloc/partition_alloc_base/thread_annotations.h"
+#include "partition_alloc/partition_alloc_buildflags.h"
+#include "partition_alloc/partition_alloc_check.h"
+#include "partition_alloc/partition_alloc_config.h"
+#include "partition_alloc/partition_alloc_constants.h"
+#include "partition_alloc/partition_alloc_forward.h"
+#include "partition_alloc/partition_direct_map_extent.h"
+#include "partition_alloc/partition_oom.h"
+#include "partition_alloc/partition_page.h"
+#include "partition_alloc/reservation_offset_table.h"
+#include "partition_alloc/tagging.h"
 
 #if BUILDFLAG(USE_STARSCAN)
-#include "base/allocator/partition_allocator/src/partition_alloc/starscan/pcscan.h"
+#include "partition_alloc/starscan/pcscan.h"
 #endif
 
 namespace partition_alloc::internal {
@@ -192,7 +193,7 @@ SlotSpanMetadata* PartitionDirectMap(PartitionRoot* root,
                                      size_t raw_size,
                                      size_t slot_span_alignment) {
   PA_DCHECK((slot_span_alignment >= PartitionPageSize()) &&
-            base::bits::IsPowerOfTwo(slot_span_alignment));
+            std::has_single_bit(slot_span_alignment));
 
   // No static EXCLUSIVE_LOCKS_REQUIRED(), as the checker doesn't understand
   // scoped unlocking.
@@ -414,7 +415,7 @@ SlotSpanMetadata* PartitionDirectMap(PartitionRoot* root,
     //
     // Direct map never uses tagging, as size is always >kMaxMemoryTaggingSize.
     PA_DCHECK(raw_size > kMaxMemoryTaggingSize);
-    const bool ok = root->TryRecommitSystemPagesForData(
+    const bool ok = root->TryRecommitSystemPagesForDataWithAcquiringLock(
         slot_start, slot_size, PageAccessibilityDisposition::kRequireUpdate,
         false);
     if (!ok) {
@@ -438,7 +439,7 @@ SlotSpanMetadata* PartitionDirectMap(PartitionRoot* root,
       return nullptr;
     }
 
-    auto* next_entry = EncodedNextFreelistEntry::EmplaceAndInitNull(slot_start);
+    auto* next_entry = PartitionFreelistEntry::EmplaceAndInitNull(slot_start);
     page->slot_span_metadata.SetFreelistHead(next_entry);
 
     map_extent = &metadata->direct_map_extent;
@@ -910,6 +911,7 @@ PA_ALWAYS_INLINE void PartitionBucket::InitializeSlotSpan(
 
 PA_ALWAYS_INLINE uintptr_t
 PartitionBucket::ProvisionMoreSlotsAndAllocOne(PartitionRoot* root,
+                                               AllocFlags flags,
                                                SlotSpanMetadata* slot_span) {
   PA_DCHECK(slot_span != SlotSpanMetadata::get_sentinel_slot_span());
   size_t num_slots = slot_span->num_unprovisioned_slots;
@@ -938,6 +940,25 @@ PartitionBucket::ProvisionMoreSlotsAndAllocOne(PartitionRoot* root,
   // rounded up.
   PA_DCHECK(commit_end > commit_start);
 
+  // If lazy commit is enabled, meaning system pages in the slot span come
+  // in an initially decommitted state, commit them here.
+  // Note, we can't use PageAccessibilityDisposition::kAllowKeepForPerf, because
+  // we have no knowledge which pages have been committed before (it doesn't
+  // matter on Windows anyway).
+  if (kUseLazyCommit) {
+    const bool ok = root->TryRecommitSystemPagesForDataLocked(
+        commit_start, commit_end - commit_start,
+        PageAccessibilityDisposition::kRequireUpdate,
+        slot_size <= kMaxMemoryTaggingSize);
+    if (!ok) {
+      if (!ContainsFlags(flags, AllocFlags::kReturnNull)) {
+        ScopedUnlockGuard unlock{PartitionRootLock(root)};
+        PartitionOutOfMemoryCommitFailure(root, slot_size);
+      }
+      return 0;
+    }
+  }
+
   // The slot being returned is considered allocated.
   slot_span->num_allocated_slots++;
   // Round down, because a slot that doesn't fully fit in the new page(s) isn't
@@ -948,19 +969,6 @@ PartitionBucket::ProvisionMoreSlotsAndAllocOne(PartitionRoot* root,
                 slot_span->num_unprovisioned_slots <=
             get_slots_per_span());
 
-  // If lazy commit is enabled, meaning system pages in the slot span come
-  // in an initially decommitted state, commit them here.
-  // Note, we can't use PageAccessibilityDisposition::kAllowKeepForPerf, because
-  // we have no knowledge which pages have been committed before (it doesn't
-  // matter on Windows anyway).
-  if (kUseLazyCommit) {
-    // TODO(lizeb): Handle commit failure.
-    root->RecommitSystemPagesForData(
-        commit_start, commit_end - commit_start,
-        PageAccessibilityDisposition::kRequireUpdate,
-        slot_size <= kMaxMemoryTaggingSize);
-  }
-
 #if PA_CONFIG(HAS_MEMORY_TAGGING)
   const bool use_tagging =
       root->IsMemoryTaggingEnabled() && slot_size <= kMaxMemoryTaggingSize;
@@ -970,7 +978,7 @@ PartitionBucket::ProvisionMoreSlotsAndAllocOne(PartitionRoot* root,
   }
 #endif  // PA_CONFIG(HAS_MEMORY_TAGGING)
   // Add all slots that fit within so far committed pages to the free list.
-  EncodedNextFreelistEntry* prev_entry = nullptr;
+  PartitionFreelistEntry* prev_entry = nullptr;
   uintptr_t next_slot_end = next_slot + slot_size;
   size_t free_list_entries_added = 0;
   while (next_slot_end <= commit_end) {
@@ -989,7 +997,7 @@ PartitionBucket::ProvisionMoreSlotsAndAllocOne(PartitionRoot* root,
 #else  // PA_CONFIG(HAS_MEMORY_TAGGING)
     next_slot_ptr = reinterpret_cast<void*>(next_slot);
 #endif
-    auto* entry = EncodedNextFreelistEntry::EmplaceAndInitNull(next_slot_ptr);
+    auto* entry = PartitionFreelistEntry::EmplaceAndInitNull(next_slot_ptr);
     if (!slot_span->get_freelist_head()) {
       PA_DCHECK(!prev_entry);
       PA_DCHECK(!free_list_entries_added);
@@ -1299,7 +1307,7 @@ uintptr_t PartitionBucket::SlowPathAlloc(PartitionRoot* root,
                                          size_t slot_span_alignment,
                                          bool* is_already_zeroed) {
   PA_DCHECK((slot_span_alignment >= PartitionPageSize()) &&
-            base::bits::IsPowerOfTwo(slot_span_alignment));
+            std::has_single_bit(slot_span_alignment));
 
   // The slow path is called when the freelist is empty. The only exception is
   // when a higher-order alignment is requested, in which case the freelist
@@ -1385,7 +1393,6 @@ uintptr_t PartitionBucket::SlowPathAlloc(PartitionRoot* root,
       new_slot_span = decommitted_slot_spans_head;
       PA_DCHECK(new_slot_span->bucket == this);
       PA_DCHECK(new_slot_span->is_decommitted());
-      decommitted_slot_spans_head = new_slot_span->next_slot_span;
 
       // If lazy commit is enabled, pages will be recommitted when provisioning
       // slots, in ProvisionMoreSlotsAndAllocOne(), not here.
@@ -1396,13 +1403,21 @@ uintptr_t PartitionBucket::SlowPathAlloc(PartitionRoot* root,
         // pages have been previously committed, and then decommitted using
         // PageAccessibilityDisposition::kAllowKeepForPerf, so use the
         // same option as an optimization.
-        // TODO(lizeb): Handle commit failure.
-        root->RecommitSystemPagesForData(
+        const bool ok = root->TryRecommitSystemPagesForDataLocked(
             slot_span_start, new_slot_span->bucket->get_bytes_per_span(),
             PageAccessibilityDisposition::kAllowKeepForPerf,
             slot_size <= kMaxMemoryTaggingSize);
+        if (!ok) {
+          if (!ContainsFlags(flags, AllocFlags::kReturnNull)) {
+            ScopedUnlockGuard unlock{PartitionRootLock(root)};
+            PartitionOutOfMemoryCommitFailure(
+                root, new_slot_span->bucket->get_bytes_per_span());
+          }
+          return 0;
+        }
       }
 
+      decommitted_slot_spans_head = new_slot_span->next_slot_span;
       new_slot_span->Reset();
       *is_already_zeroed = DecommittedMemoryIsAlwaysZeroed();
     }
@@ -1443,7 +1458,7 @@ uintptr_t PartitionBucket::SlowPathAlloc(PartitionRoot* root,
   // If we found an active slot span with free slots, or an empty slot span, we
   // have a usable freelist head.
   if (PA_LIKELY(new_slot_span->get_freelist_head() != nullptr)) {
-    EncodedNextFreelistEntry* entry =
+    PartitionFreelistEntry* entry =
         new_slot_span->PopForAlloc(new_bucket->slot_size);
 
     // We may have set *is_already_zeroed to true above, make sure that the
@@ -1456,7 +1471,7 @@ uintptr_t PartitionBucket::SlowPathAlloc(PartitionRoot* root,
   // Otherwise, we need to provision more slots by committing more pages. Build
   // the free list for the newly provisioned slots.
   PA_DCHECK(new_slot_span->num_unprovisioned_slots);
-  return ProvisionMoreSlotsAndAllocOne(root, new_slot_span);
+  return ProvisionMoreSlotsAndAllocOne(root, flags, new_slot_span);
 }
 
 uintptr_t PartitionBucket::AllocNewSuperPageSpanForGwpAsan(

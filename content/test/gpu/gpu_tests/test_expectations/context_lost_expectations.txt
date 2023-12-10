@@ -12,7 +12,7 @@
 #             android-pixel-6 android-shield-android-tv android-sm-a135m
 #             android-sm-a235m
 #         chromeos-board-amd64-generic chromeos-board-eve chromeos-board-jacuzzi
-#             chromeos-board-octopus
+#             chromeos-board-octopus chromeos-board-volteer
 #         fuchsia-board-astro fuchsia-board-nelson fuchsia-board-sherlock
 #             fuchsia-board-qemu-x64 ]
 # Platform
@@ -197,9 +197,11 @@ crbug.com/1418987 [ linux amd-0x7340 angle-vulkan ] GpuNormalTermination_Origina
 
 crbug.com/1419583 [ linux amd-0x7340 angle-vulkan ] ContextLost_WebGLContextRestoredInHiddenTab [ Failure ]
 
-
 crbug.com/1419558 [ angle-swiftshader clang-coverage fuchsia fuchsia-board-qemu-x64 google-0xc0de ] ContextLost_WebGLContextLostFromQuantity [ Failure ]
 
+crbug.com/1505662 [ angle-swiftshader fuchsia fuchsia-board-qemu-x64 google-0xc0de ] ContextLost_WebGLContextLostFromSelectElement [ Failure ]
+crbug.com/1505662 [ angle-vulkan arm fuchsia fuchsia-board-astro no-clang-coverage ] ContextLost_WebGLContextLostFromSelectElement [ Failure ]
+crbug.com/1505662 [ angle-vulkan arm fuchsia fuchsia-board-nelson no-clang-coverage ] ContextLost_WebGLContextLostFromSelectElement [ Failure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #

@@ -21,8 +21,17 @@ namespace content {
 // process from all child processes (including renderers, GPU, service
 // processes, etc.). Interfaces exposed here can be acquired in the browser via
 // |RenderProcessHost::BindReceiver()| or |ChildProcessHost::BindReceiver()|.
+//
+// |in_browser_process| is true if the child process is running in the browser
+// process. For example, single-process mode, or in-process gpu mode (forced
+// by low-end device mode) makes all child processes or gpu process run in
+// the browser process. If the services depend on whether the child process
+// is running in the browser process or not (e.g. if using a process-wide
+// global variables and |in_browser_process| is true, the browser process and
+// the child process will use the same global variables.
 void ExposeChildInterfacesToBrowser(
     scoped_refptr<base::SequencedTaskRunner> io_task_runner,
+    bool in_browser_process,
     mojo::BinderMap* binders);
 
 }  // namespace content

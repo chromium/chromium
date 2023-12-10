@@ -35,11 +35,10 @@ build_webui("build") {
     "promise_resolver.ts",
     "search_highlight_utils.ts",
     "static_types.ts",
-    "store_ts.ts",
+    "store.ts",
     "test_loader.ts",
     "test_loader_util.ts",
     "util.ts",
-    "util_ts.ts",
   ]
 
   if (is_chromeos) {

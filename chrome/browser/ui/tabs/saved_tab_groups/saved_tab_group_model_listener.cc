@@ -74,7 +74,7 @@ void SavedTabGroupModelListener::OnTabGroupChanged(
 }
 
 void SavedTabGroupModelListener::TabGroupedStateChanged(
-    absl::optional<tab_groups::TabGroupId> new_local_group_id,
+    std::optional<tab_groups::TabGroupId> new_local_group_id,
     content::WebContents* contents,
     int index) {
   // Remove `contents` from its current saved group, if it's in one.
@@ -111,7 +111,7 @@ void SavedTabGroupModelListener::OnTabStripModelChanged(
     const TabStripSelectionChange& selection) {
   switch (change.type()) {
     case TabStripModelChange::kReplaced: {
-      absl::optional<tab_groups::TabGroupId> local_id =
+      std::optional<tab_groups::TabGroupId> local_id =
           tab_strip_model->GetTabGroupForTab(change.GetReplace()->index);
 
       // Do nothing if the tab is no longer in a group.
@@ -132,7 +132,7 @@ void SavedTabGroupModelListener::OnTabStripModelChanged(
       return;
     }
     case TabStripModelChange::kMoved: {
-      absl::optional<tab_groups::TabGroupId> local_id =
+      std::optional<tab_groups::TabGroupId> local_id =
           tab_strip_model->GetTabGroupForTab(change.GetMove()->to_index);
 
       // Do nothing if the tab is no longer in a group.

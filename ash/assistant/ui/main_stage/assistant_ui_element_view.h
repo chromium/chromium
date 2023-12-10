@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/component_export.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 namespace ash {
@@ -19,13 +20,12 @@ class ElementAnimator;
 // child view of UiElementContainerView.
 class COMPONENT_EXPORT(ASSISTANT_UI) AssistantUiElementView
     : public views::View {
+  METADATA_HEADER(AssistantUiElementView, views::View)
+
  public:
   explicit AssistantUiElementView(AssistantUiElementView& copy) = delete;
   AssistantUiElementView& operator=(AssistantUiElementView& assign) = delete;
   ~AssistantUiElementView() override;
-
-  // views::View:
-  const char* GetClassName() const override;
 
   // Returns the layer that should be used when animating this view.
   virtual ui::Layer* GetLayerForAnimating() = 0;

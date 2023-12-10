@@ -68,7 +68,6 @@ import java.util.concurrent.TimeoutException;
 @DisableFeatures(ChromeFeatureList.INCOGNITO_DOWNLOADS_WARNING)
 @CommandLineFlags.Add({
     ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
-    "enable-features=UseDownloadOfflineContentProvider"
 })
 public class IncognitoDownloadLeakageTest {
     private String mDownloadTestPage;
@@ -232,9 +231,7 @@ public class IncognitoDownloadLeakageTest {
         // Retrieve downloads from the incognito DownloadService.
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    Profile profile =
-                            IncognitoUtils.getIncognitoProfileFromWindowAndroid(
-                                    incognitoTab.getWindowAndroid());
+                    Profile profile = incognitoTab.getProfile();
                     DownloadManagerService.getDownloadManagerService()
                             .getAllDownloads(profile.getOTRProfileID());
                 });
@@ -280,9 +277,7 @@ public class IncognitoDownloadLeakageTest {
         // Retrieve downloads from the incognito DownloadService.
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    Profile profile =
-                            IncognitoUtils.getIncognitoProfileFromWindowAndroid(
-                                    incognitoTab1.getWindowAndroid());
+                    Profile profile = incognitoTab1.getProfile();
                     DownloadManagerService.getDownloadManagerService()
                             .getAllDownloads(profile.getOTRProfileID());
                 });
@@ -299,9 +294,7 @@ public class IncognitoDownloadLeakageTest {
         // Retrieve downloads for the second incognito profile.
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    Profile profile =
-                            IncognitoUtils.getIncognitoProfileFromWindowAndroid(
-                                    incognitoTab2.getWindowAndroid());
+                    Profile profile = incognitoTab2.getProfile();
                     DownloadManagerService.getDownloadManagerService()
                             .getAllDownloads(profile.getOTRProfileID());
                 });

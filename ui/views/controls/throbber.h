@@ -14,8 +14,9 @@ namespace views {
 // Throbbers display an animation, usually used as a status indicator.
 
 class VIEWS_EXPORT Throbber : public View {
+  METADATA_HEADER(Throbber, View)
+
  public:
-  METADATA_HEADER(Throbber);
   Throbber();
 
   Throbber(const Throbber&) = delete;
@@ -57,8 +58,9 @@ END_VIEW_BUILDER
 // pauses in the work stops and starts, and only starts its throbber after
 // a small amount of work time has passed.
 class VIEWS_EXPORT SmoothedThrobber : public Throbber {
+  METADATA_HEADER(SmoothedThrobber, Throbber)
+
  public:
-  METADATA_HEADER(SmoothedThrobber);
   SmoothedThrobber();
 
   SmoothedThrobber(const SmoothedThrobber&) = delete;

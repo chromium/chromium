@@ -59,6 +59,11 @@ struct DistantSession;
 // Multi-window session for this vc's recent tabs.
 @property(nonatomic, weak) UISceneSession* session;
 
+// Whether the grid is scrolled to the top.
+@property(nonatomic, readonly, getter=isScrolledToTop) BOOL scrolledToTop;
+// Whether the grid is scrolled to the bottom.
+@property(nonatomic, readonly, getter=isScrolledToBottom) BOOL scrolledToBottom;
+
 // Initializers.
 - (instancetype)init NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithStyle:(UITableViewStyle)style NS_UNAVAILABLE;

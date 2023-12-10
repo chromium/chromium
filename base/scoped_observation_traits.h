@@ -5,8 +5,6 @@
 #ifndef BASE_SCOPED_OBSERVATION_TRAITS_H_
 #define BASE_SCOPED_OBSERVATION_TRAITS_H_
 
-#include "base/scoped_observation_traits_internal.h"
-
 namespace base {
 
 // `ScopedObservationTraits` is used to control the behavior of
@@ -59,11 +57,15 @@ namespace base {
 
 template <class Source, class Observer>
 struct ScopedObservationTraits {
-  static_assert(internal::HasAddAndRemoveObserverMethods<Source, Observer>,
-                "The given Source is missing "
-                "AddObserver(Observer*) and/or RemoveObserver(Observer*) "
-                "methods. Please provide a custom specialization of "
-                "ScopedObservationTraits<> for this Source/Observer pair.");
+  static_assert(
+      requires(Source& source, Observer* observer) {
+        source.AddObserver(observer);
+        source.RemoveObserver(observer);
+      },
+      "The given Source is missing "
+      "AddObserver(Observer*) and/or RemoveObserver(Observer*) "
+      "methods. Please provide a custom specialization of "
+      "ScopedObservationTraits<> for this Source/Observer pair.");
 
   static void AddObserver(Source* source, Observer* observer) {
     source->AddObserver(observer);

@@ -93,14 +93,14 @@ void EchoPrivateAsh::GetRegistrationCode(mojom::RegistrationCodeType type,
   std::string result;
   switch (type) {
     case mojom::RegistrationCodeType::kCoupon:
-      if (const absl::optional<base::StringPiece> offers_code =
+      if (const std::optional<base::StringPiece> offers_code =
               provider->GetMachineStatistic(
                   ash::system::kOffersCouponCodeKey)) {
         result = std::string(offers_code.value());
       }
       break;
     case mojom::RegistrationCodeType::kGroup:
-      if (const absl::optional<base::StringPiece> offers_code =
+      if (const std::optional<base::StringPiece> offers_code =
               provider->GetMachineStatistic(ash::system::kOffersGroupCodeKey)) {
         result = std::string(offers_code.value());
       }

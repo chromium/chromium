@@ -6,6 +6,7 @@ include_rules = [
   "+ios/chrome/browser/ui/start_surface/start_surface_features.h",
   "+ios/chrome/browser/ui/authentication/history_sync/history_sync_coordinator.h",
   "+ios/chrome/browser/ui/authentication/signin/signin_constants.h",
+  "+ios/chrome/browser/ui/search_engine_choice/search_engine_choice_coordinator.h",
   "+ios/chrome/browser/ui/settings/sync/utils/sync_util.h",
 ]
 

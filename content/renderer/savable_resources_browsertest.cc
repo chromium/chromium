@@ -54,16 +54,16 @@ class SavableResourcesTest : public ContentBrowserTest {
         &SavableResourcesTest::CheckResources, base::Unretained(this),
         page_file_path, expected_resources_matcher,
         expected_subframe_urls_matcher, file_url,
-        shell()->web_contents()->GetPrimaryMainFrame()->GetRoutingID()));
+        shell()->web_contents()->GetPrimaryMainFrame()->GetFrameToken()));
   }
 
   void CheckResources(const base::FilePath& page_file_path,
                       const UrlVectorMatcher& expected_resources_matcher,
                       const UrlVectorMatcher& expected_subframe_urls_matcher,
                       const GURL& file_url,
-                      int render_frame_routing_id) {
-    RenderFrame* render_frame =
-        RenderFrame::FromRoutingID(render_frame_routing_id);
+                      const blink::LocalFrameToken& frame_token) {
+    RenderFrame* render_frame = RenderFrame::FromWebFrame(
+        blink::WebLocalFrame::FromFrameToken(frame_token));
 
     mojo::AssociatedRemote<blink::mojom::LocalFrame> local_frame;
     render_frame->GetRemoteAssociatedInterfaces()->GetInterface(

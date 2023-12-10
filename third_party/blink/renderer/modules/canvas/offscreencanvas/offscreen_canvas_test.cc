@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/offscreencanvas/offscreen_canvas.h"
-
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/viz/public/mojom/hit_test/hit_test_region_list.mojom-blink.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -24,6 +23,7 @@
 #include "third_party/blink/renderer/platform/graphics/test/fake_web_graphics_context_3d_provider.h"
 #include "third_party/blink/renderer/platform/graphics/test/mock_compositor_frame_sink.h"
 #include "third_party/blink/renderer/platform/graphics/test/mock_embedded_frame_sink_provider.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 
 using ::testing::_;
@@ -74,6 +74,7 @@ class OffscreenCanvasTest : public ::testing::Test,
   Document& GetDocument() const { return *GetWindow()->document(); }
 
  private:
+  test::TaskEnvironment task_environment_;
   std::unique_ptr<frame_test_helpers::WebViewHelper> web_view_helper_;
   Persistent<OffscreenCanvas> offscreen_canvas_;
   Persistent<OffscreenCanvasRenderingContext2D> context_;

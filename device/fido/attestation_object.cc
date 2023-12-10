@@ -93,9 +93,6 @@ AttestationObject::ParseForResponseFields(
     const bool did_modify = attestation_object->EraseAttestationStatement(
         device::AttestationObject::AAGUID::kInclude);
     if (did_modify) {
-      // The devicePubKey extension signs over the authenticator data so its
-      // signature is now invalid and we have to remove the extension.
-      attestation_object->EraseExtension(device::kExtensionDevicePublicKey);
       ret.attestation_object_bytes =
           *cbor::Writer::Write(AsCBOR(*attestation_object));
     } else {
@@ -151,7 +148,7 @@ bool AttestationObject::EraseAttestationStatement(
   return did_make_change;
 }
 
-bool AttestationObject::EraseExtension(base::StringPiece name) {
+bool AttestationObject::EraseExtension(std::string_view name) {
   return authenticator_data_.EraseExtension(name);
 }
 

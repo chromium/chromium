@@ -6,6 +6,7 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MODEL_AUTOFILL_STRUCTURED_ADDRESS_COMPONENT_H_
 
 #include <map>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -264,6 +265,17 @@ class AddressComponent {
   // |GetAdditionalSupportedFieldTypes()| to add field types.
   void GetSupportedTypes(ServerFieldTypeSet* supported_types) const;
 
+  // Recursively adds only the storable types to the set. No computed type is
+  // ever added (e.g. GetAdditionalSupportedFieldTypes).
+  void GetStorableTypes(ServerFieldTypeSet* supported_types) const;
+
+  // Recursively finds the storable type of `type`:
+  // - If `type` is a `storable_type_` of any node, this is simply `type`.
+  // - If `type` is an additional supported type of any node, this is the
+  //   storable type of that node.
+  // - Otherwise, if `type` is not a supported type of any node, return nullopt.
+  std::optional<ServerFieldType> GetStorableTypeOf(ServerFieldType type) const;
+
   // Adds the additional supported field types to |supported_types|.
   // The method should DCHECK that the added types are not part of the set yet.
   virtual const ServerFieldTypeSet GetAdditionalSupportedFieldTypes() const;
@@ -489,6 +501,11 @@ class AddressComponent {
 
   // const version of GetNodeForType.
   const AddressComponent* GetNodeForType(ServerFieldType field_type) const;
+
+  // Recursively adds the supported types to the set. If `!storable_only`, calls
+  // |GetAdditionalSupportedFieldTypes()| to add computed field types.
+  virtual void GetTypes(bool storable_only,
+                        ServerFieldTypeSet* supported_types) const;
 
  private:
   // Unsets the node and all of its children.

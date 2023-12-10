@@ -72,7 +72,7 @@ CastMainDelegate::CastMainDelegate() {}
 
 CastMainDelegate::~CastMainDelegate() {}
 
-absl::optional<int> CastMainDelegate::BasicStartupComplete() {
+std::optional<int> CastMainDelegate::BasicStartupComplete() {
   RegisterPathProvider();
 
   logging::LoggingSettings settings;
@@ -160,7 +160,7 @@ absl::optional<int> CastMainDelegate::BasicStartupComplete() {
   if (settings.logging_dest & logging::LOG_TO_FILE) {
     LOG(INFO) << "Logging to file: " << settings.log_file_path;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void CastMainDelegate::PreSandboxStartup() {
@@ -236,11 +236,11 @@ bool CastMainDelegate::ShouldInitializeMojo(InvokedIn invoked_in) {
   return ShouldCreateFeatureList(invoked_in);
 }
 
-absl::optional<int> CastMainDelegate::PostEarlyInitialization(
+std::optional<int> CastMainDelegate::PostEarlyInitialization(
     InvokedIn invoked_in) {
   if (ShouldCreateFeatureList(invoked_in)) {
     // content is handling the feature list.
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   DCHECK(cast_feature_list_creator_);
@@ -284,7 +284,7 @@ absl::optional<int> CastMainDelegate::PostEarlyInitialization(
 
   content::InitializeMojoCore();
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void CastMainDelegate::InitializeResourceBundle() {

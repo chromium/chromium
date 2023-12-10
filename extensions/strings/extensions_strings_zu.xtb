@@ -8,6 +8,7 @@
 <translation id="1420684932347524586">Eshu! Yehlulekile ukukhiqiza ukhiye oyimfihlo wase-RSA ongahleliwe.</translation>
 <translation id="1445572445564823378">Lesi sandiso senza i-<ph name="PRODUCT_NAME" /> ihambe kancane. Kuzomele uyikhubaze ukuze ubuyisele ukusebenza kwe-<ph name="PRODUCT_NAME" />.</translation>
 <translation id="1468038450257740950">I-WebGL ayisekelwe</translation>
+<translation id="1610570795592207282">Ayikwazanga ukulayisha 'i-<ph name="RELATIVE_PATH" />' ye-css yesikripthi.</translation>
 <translation id="1803557475693955505">Ayikwazanga ukulayisha ikhasi elingemuva le-'<ph name="BACKGROUND_PAGE" />'.</translation>
 <translation id="2159915644201199628">Ayikwazanga ukukhipha ikhodi kusithombe: '<ph name="IMAGE_NAME" />'</translation>
 <translation id="2350172092385603347">Kusetshenziswe ukwenza okwasendaweni, kodwa okwasendaweni_okuzenzakalelayo azange kucaciswe ekuvezweni.</translation>
@@ -18,14 +19,12 @@
 <translation id="3115238746683532089">Umkhiqizo ongaziwa ongu-<ph name="PRODUCT_ID" /> kusukela kumthengisi ongu-<ph name="VENDOR_ID" /> (inombolo yomkhiqizo engu-<ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">Yehlulekile ukufaka esikhundleni sefayela le-crx. Hlola ukuze ubone uma ngabe ifayela lisetshenziswa.</translation>
 <translation id="3163201441334626963">Umkhiqizo ongaziwa ongu-<ph name="PRODUCT_ID" /> kusukela kumthengisi ongu-<ph name="VENDOR_ID" /></translation>
-<translation id="3302709122321372472">Ayikwazanga ukulayisha i-css ye'<ph name="RELATIVE_PATH" />' yesikripthi sokuqukethwe.</translation>
 <translation id="3369521687965833290">Ayikwazi ukukhipha isandiso. Ukuze ukhiphe ngokuvikelekile isandiso, kumele kube nendlela eya kumkhombandlela wephrofayela yakho oqala ngohlamvu lwedrayivu futhi ingafaki indawo, iphoyinti lokukhweza, noma i-symlink. Ayikho indlela enjalo ekhona kuphrofayela yakho.</translation>
 <translation id="3393440416772303020">I-<ph name="PRODUCT_NAME" /> (inombolo yomkhiqizo engu-<ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397">I-<ph name="PRODUCT_NAME" /> kusukela kumthengisi ongu-<ph name="VENDOR_ID" /> (inombolo yomkhiqizo engu-<ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Inani elingavumelekile lokhiye oyimfihlo kumele kube yindlela evumelekile.</translation>
 <translation id="388442998277590542">Ayikwazanga ukulayisha ikhasi lezinketho i-'<ph name="OPTIONS_PAGE" />'.</translation>
 <translation id="3984413272403535372">Iphutha ngenkathi isayina isandiso.</translation>
-<translation id="39964277676607559">Ayikwazanga ukulayisha i-javascript '<ph name="RELATIVE_PATH" />' yesikripthi sokuqukethwe.</translation>
 <translation id="4115165561519362854">Umlawuli walo mshini udinga i-<ph name="EXTENSION_NAME" /> ibe nenguqulo yobuncane obungu-<ph name="EXTENSION_VERSION" />. Ayikwazi ukunikwa amandla ize ibuyekezelwe kuleyo nguqulo (noma ngaphezulu).</translation>
 <translation id="4233778200880751280">Ayikwazanga ukulayisha ikhasi elimayelana ne-'<ph name="ABOUT_PAGE" />'.</translation>
 <translation id="471800408830181311">Yehlulekile ukukhipha ukhiye oyimfihlo.</translation>
@@ -33,6 +32,7 @@
 <translation id="4988792151665380515">Yehlulekile ukuthumela ukhiye osesidlangalaleni.</translation>
 <translation id="5026754133087629784">Ukubuka iwebhu: <ph name="WEBVIEW_TAG_NAME" /></translation>
 <translation id="5098647635849512368">Ayikwazi ukuthola indlela okuyiyo eya kumkhombandlela wokupakisha.</translation>
+<translation id="5160071981665899014">Ayikwazanga ukulayisha 'i-<ph name="RELATIVE_PATH" />' ye-javascript yesikripthi.</translation>
 <translation id="5356315618422219272">Ukubuka kohlelo lokusebenza: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5436430103864390185">Amawindi anomumo awasekelwe.</translation>
 <translation id="5456409301717116725">Lesi sandiso sifaka ifayela lokhiye i-'<ph name="KEY_PATH" />'. Awufuni ukwenza lokho.</translation>

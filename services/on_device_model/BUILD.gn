@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//services/on_device_model/on_device_model.gni")
+import("//third_party/dawn/scripts/dawn_features.gni")
 
 template("model_service") {
   component(target_name) {
@@ -15,22 +16,31 @@ template("model_service") {
     public_deps = [
       "//base",
       "//mojo/public/cpp/bindings",
+      "//sandbox/policy",
       "//services/on_device_model/public/cpp",
       "//services/on_device_model/public/mojom",
     ]
     defines = [ "IS_ON_DEVICE_MODEL_IMPL" ]
+    if (dawn_use_built_dxc) {
+      defines += [ "DAWN_USE_BUILT_DXC" ]
+    }
     if (invoker.enable_internal) {
-      sources += [
-        "chrome_ml_instance.cc",
-        "chrome_ml_instance.h",
-        "on_device_model_internal.cc",
-      ]
-      deps += [ "//third_party/ml/public" ]
+      sources += [ "on_device_model_internal.cc" ]
+      deps += [ "//services/on_device_model/ml" ]
 
       # NOTE: Not a buildflag since it's controllable per target.
       defines += [ "ENABLE_ML_INTERNAL" ]
     } else {
       sources += [ "on_device_model.cc" ]
+    }
+
+    if (is_linux || is_chromeos) {
+      deps += [
+        "//gpu/config",
+        "//third_party/dawn/src/dawn:cpp",
+        "//third_party/dawn/src/dawn:proc",
+        "//third_party/dawn/src/dawn/native",
+      ]
     }
   }
 }

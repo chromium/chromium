@@ -8,14 +8,14 @@
 #include "base/files/file_path.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/ui/webui/signin/enterprise_profile_welcome_ui.h"
+#include "chrome/browser/ui/webui/signin/managed_user_profile_notice_ui.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
 #endif
 
-class EnterpriseProfileWelcomeHandler;
+class ManagedUserProfileNoticeHandler;
 
 // This file contains helper functions for testing profile UIs, in particular,
 // the profile picker.
@@ -45,16 +45,17 @@ void WaitForPickerUrl(const GURL& url);
 // Waits until the picker gets closed.
 void WaitForPickerClosed();
 
-// Checks that the profile picker is currently displaying a welcome screen of
-// type `expected_type` and returns the handler associated with it.
-EnterpriseProfileWelcomeHandler* ExpectPickerWelcomeScreenType(
-    EnterpriseProfileWelcomeUI::ScreenType expected_type);
+// Checks that the profile picker is currently displaying a managed user
+// notice screen of type `expected_type` and returns the handler
+// associated with it.
+ManagedUserProfileNoticeHandler* ExpectPickerManagedUserNoticeScreenType(
+    ManagedUserProfileNoticeUI::ScreenType expected_type);
 
-// Checks that the profile picker is currently displaying a welcome screen of
+// Checks that the profile picker is currently displaying a notice screen of
 // type `expected_type` and performs the user action represented by `choice` on
 // that screen.
-void ExpectPickerWelcomeScreenTypeAndProceed(
-    EnterpriseProfileWelcomeUI::ScreenType expected_type,
+void ExpectPickerManagedUserNoticeScreenTypeAndProceed(
+    ManagedUserProfileNoticeUI::ScreenType expected_type,
     signin::SigninChoice choice);
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)

@@ -84,7 +84,7 @@ void DownloadControllerImpl::CreateNativeDownloadTask(
     const std::string& content_disposition,
     int64_t total_bytes,
     const std::string& mime_type,
-    DownloadNativeTaskBridge* download) API_AVAILABLE(ios(15)) {
+    DownloadNativeTaskBridge* download) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!delegate_) {
     [download cancel];

@@ -25,6 +25,8 @@ mojom("mojom") {
     "//url/mojom:url_mojom_gurl",
   ]
 
+  enabled_features = []
+
   if (is_chromeos) {
     sources += [ "pdf_flattener.mojom" ]
   }
@@ -36,6 +38,10 @@ mojom("mojom") {
 
   if (is_win) {
     sources += [ "pdf_to_emf_converter.mojom" ]
+  }
+
+  if (enable_print_preview) {
+    enabled_features += [ "enable_print_preview" ]
   }
 
   if (enable_oop_printing) {
@@ -50,7 +56,7 @@ mojom("mojom") {
       sources += [ "printer_xml_parser.mojom" ]
     }
     if (enable_oop_basic_print_dialog) {
-      enabled_features = [ "enable_oop_basic_print_dialog" ]
+      enabled_features += [ "enable_oop_basic_print_dialog" ]
     }
   }
 

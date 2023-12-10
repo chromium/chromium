@@ -34,7 +34,7 @@ RequestDispatcherImpl::~RequestDispatcherImpl() = default;
 
 bool RequestDispatcherImpl::DispatchRequest(
     int request_id,
-    absl::optional<std::string> file_system_id,
+    std::optional<std::string> file_system_id,
     std::unique_ptr<extensions::Event> event) {
   if (chromeos::features::IsUploadOfficeToCloudEnabled()) {
     DCHECK(!event->did_dispatch_callback);
@@ -105,7 +105,7 @@ bool RequestDispatcherImpl::DispatchRequest(
 
 void RequestDispatcherImpl::CancelRequest(
     int request_id,
-    absl::optional<std::string> file_system_id) {
+    std::optional<std::string> file_system_id) {
   if (!chromeos::features::IsUploadOfficeToCloudEnabled()) {
     return;
   }

@@ -97,7 +97,11 @@ SmartCardContext::SmartCardContext(
     mojo::PendingRemote<device::mojom::blink::SmartCardContext> pending_context,
     ExecutionContext* execution_context)
     : ExecutionContextClient(execution_context),
-      scard_context_(execution_context) {
+      scard_context_(execution_context),
+      feature_handle_for_scheduler_(
+          execution_context->GetScheduler()->RegisterFeature(
+              SchedulingPolicy::Feature::kSmartCard,
+              SchedulingPolicy{SchedulingPolicy::DisableBackForwardCache()})) {
   scard_context_.Bind(
       std::move(pending_context),
       execution_context->GetTaskRunner(TaskType::kMiscPlatformAPI));

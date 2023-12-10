@@ -17,8 +17,6 @@
 #include "components/password_manager/core/browser/ui/insecure_credentials_manager.h"
 #include "url/android/gurl_android.h"
 
-using password_manager::PasswordChangeSuccessTracker;
-
 namespace {
 
 password_manager::CredentialUIEntry ConvertJavaObjectToCredential(
@@ -132,7 +130,7 @@ void PasswordCheckBridge::LaunchCheckupInAccount(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& activity) {
   PasswordCheckupLauncherHelperImpl checkup_launcher;
-  checkup_launcher.LaunchCheckupInAccountWithActivity(
+  checkup_launcher.LaunchCheckupOnlineWithActivity(
       env,
       base::android::ConvertUTF8ToJavaString(
           env, password_manager::GetPasswordCheckupURL().spec()),

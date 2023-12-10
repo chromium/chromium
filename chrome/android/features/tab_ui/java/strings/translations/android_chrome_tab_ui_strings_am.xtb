@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="am">
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> ትሮችዎ በቅርቡ ሥራ ላይ አልዋሉም። ይዘጉ?</translation>
+<translation id="1155815720264022949">የድሮ ትሮችን መዝጋት ይፈልጋሉ?</translation>
 <translation id="1215127405478249895">ትሮችን ይገምግሙ</translation>
 <translation id="125153950246128346">ሌላ ትር ለመመልከት መታ ያድርጉ</translation>
 <translation id="1499635324672558517">ሁሉም ማንነት የማያሳውቁ ትሮች ይዘጉ?</translation>
@@ -46,9 +47,11 @@
 <translation id="5073204694187207510">የሙሉ ማያ ፍርግርግን ደብቅ</translation>
 <translation id="5076161749301278626">የመደብር ግምገማዎችን ይመለከታሉ?</translation>
 <translation id="5082793167783849073">ስብስብ በመፍጠር በፍጥነት ገጾችን ያነጻጽሩ። ለመጀመር አንድ አገናኝን ነክተው ይያዙ።</translation>
+<translation id="5303274951032363933">{TABS_COUNT,plural, =1{በቅርቡ ጥቅም ላይ ያላዋሉት <ph name="TABS_COUNT_ONE" /> ትር አለዎት}one{በቅርቡ ጥቅም ላይ ያላዋሉት <ph name="TABS_COUNT_MANY" /> ትር አለዎት}other{በቅርቡ ጥቅም ላይ ያላዋሏቸው <ph name="TABS_COUNT_MANY" /> ትሮች አሉዎት}}</translation>
 <translation id="5339733443032484186">የእርስዎ የመጨረሻ ትር</translation>
 <translation id="5490235265819901748">የትር ቡድን ተዘርግቷል</translation>
 <translation id="5494920125229734069">ሁሉንም ይመርጣል</translation>
+<translation id="5545379293264651575">ሳይገመገሙ ዝጋ</translation>
 <translation id="5556417849629758491">የመደብር መረጃን ይመልከቱ፣ አማራጩ ከማያ ገጹ አናት አጠገብ ይገኛል</translation>
 <translation id="5558362125926932819">የትር ቡድንን ከ<ph name="NUMBER_OF_TABS" /> ትሮች ጋር ይዝጉ</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" /> ትሮች ተሰብስበዋል</translation>
@@ -85,7 +88,6 @@
 <translation id="7885132941432959125">ቅርን ወደ ቀኝ አንቀሳቅስ</translation>
 <translation id="7966321538264951561">ጥቆማ ሐሳቦችን ያሰናብቱ።</translation>
 <translation id="8029301326595421733">ስለዚህ መደብር መረጃ በሙሉ ቁመት ተከፍቷል</translation>
-<translation id="814503310257431685">ሁሉንም አሳይ</translation>
 <translation id="8205266828577616993">ትርን ወደ ላይ አንቀሳቅስ</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{የተመረጠ <ph name="TABS_COUNT_ONE" /> ትር ዝጋ}one{የተመረጡ <ph name="TABS_COUNT_MANY" /> ትሮችን ዝጋ}other{የተመረጡ <ph name="TABS_COUNT_MANY" /> ትሮችን ዝጋ}}</translation>
 <translation id="8398929769197326728">አዲስ አቃፊ - <ph name="CURRENT_TIMESTAMP_MS" /></translation>

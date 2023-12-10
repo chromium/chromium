@@ -10,17 +10,17 @@ import android.webkit.WebSettings;
 
 import org.chromium.android_webview.AwDarkMode;
 import org.chromium.android_webview.AwSettings;
+import org.chromium.android_webview.common.MediaIntegrityApiStatus;
 import org.chromium.base.Log;
 import org.chromium.base.TraceEvent;
 import org.chromium.support_lib_boundary.WebSettingsBoundaryInterface;
 import org.chromium.support_lib_glue.SupportLibWebViewChromiumFactory.ApiCall;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-/**
- * Adapter between WebSettingsBoundaryInterface and AwSettings.
- */
+/** Adapter between WebSettingsBoundaryInterface and AwSettings. */
 class SupportLibWebSettingsAdapter implements WebSettingsBoundaryInterface {
     private static final String TAG = "SupportWebSettings";
     private final AwSettings mAwSettings;
@@ -31,8 +31,9 @@ class SupportLibWebSettingsAdapter implements WebSettingsBoundaryInterface {
 
     @Override
     public void setOffscreenPreRaster(boolean enabled) {
-        try (TraceEvent event = TraceEvent.scoped(
-                     "WebView.APICall.AndroidX.WEB_SETTINGS_SET_OFFSCREEN_PRE_RASTER")) {
+        try (TraceEvent event =
+                TraceEvent.scoped(
+                        "WebView.APICall.AndroidX.WEB_SETTINGS_SET_OFFSCREEN_PRE_RASTER")) {
             recordApiCall(ApiCall.WEB_SETTINGS_SET_OFFSCREEN_PRE_RASTER);
             mAwSettings.setOffscreenPreRaster(enabled);
         }
@@ -40,8 +41,9 @@ class SupportLibWebSettingsAdapter implements WebSettingsBoundaryInterface {
 
     @Override
     public boolean getOffscreenPreRaster() {
-        try (TraceEvent event = TraceEvent.scoped(
-                     "WebView.APICall.AndroidX.WEB_SETTINGS_GET_OFFSCREEN_PRE_RASTER")) {
+        try (TraceEvent event =
+                TraceEvent.scoped(
+                        "WebView.APICall.AndroidX.WEB_SETTINGS_GET_OFFSCREEN_PRE_RASTER")) {
             recordApiCall(ApiCall.WEB_SETTINGS_GET_OFFSCREEN_PRE_RASTER);
             return mAwSettings.getOffscreenPreRaster();
         }
@@ -49,8 +51,9 @@ class SupportLibWebSettingsAdapter implements WebSettingsBoundaryInterface {
 
     @Override
     public void setSafeBrowsingEnabled(boolean enabled) {
-        try (TraceEvent event = TraceEvent.scoped(
-                     "WebView.APICall.AndroidX.WEB_SETTINGS_SET_SAFE_BROWSING_ENABLED")) {
+        try (TraceEvent event =
+                TraceEvent.scoped(
+                        "WebView.APICall.AndroidX.WEB_SETTINGS_SET_SAFE_BROWSING_ENABLED")) {
             recordApiCall(ApiCall.WEB_SETTINGS_SET_SAFE_BROWSING_ENABLED);
             mAwSettings.setSafeBrowsingEnabled(enabled);
         }
@@ -58,8 +61,9 @@ class SupportLibWebSettingsAdapter implements WebSettingsBoundaryInterface {
 
     @Override
     public boolean getSafeBrowsingEnabled() {
-        try (TraceEvent event = TraceEvent.scoped(
-                     "WebView.APICall.AndroidX.WEB_SETTINGS_GET_SAFE_BROWSING_ENABLED")) {
+        try (TraceEvent event =
+                TraceEvent.scoped(
+                        "WebView.APICall.AndroidX.WEB_SETTINGS_GET_SAFE_BROWSING_ENABLED")) {
             recordApiCall(ApiCall.WEB_SETTINGS_GET_SAFE_BROWSING_ENABLED);
             return mAwSettings.getSafeBrowsingEnabled();
         }
@@ -67,8 +71,9 @@ class SupportLibWebSettingsAdapter implements WebSettingsBoundaryInterface {
 
     @Override
     public void setDisabledActionModeMenuItems(int menuItems) {
-        try (TraceEvent event = TraceEvent.scoped(
-                     "WebView.APICall.AndroidX.WEB_SETTINGS_SET_DISABLED_ACTION_MODE_MENU_ITEMS")) {
+        try (TraceEvent event =
+                TraceEvent.scoped(
+                        "WebView.APICall.AndroidX.WEB_SETTINGS_SET_DISABLED_ACTION_MODE_MENU_ITEMS")) {
             recordApiCall(ApiCall.WEB_SETTINGS_SET_DISABLED_ACTION_MODE_MENU_ITEMS);
             mAwSettings.setDisabledActionModeMenuItems(menuItems);
         }
@@ -76,8 +81,9 @@ class SupportLibWebSettingsAdapter implements WebSettingsBoundaryInterface {
 
     @Override
     public int getDisabledActionModeMenuItems() {
-        try (TraceEvent event = TraceEvent.scoped(
-                     "WebView.APICall.AndroidX.WEB_SETTINGS_GET_DISABLED_ACTION_MODE_MENU_ITEMS")) {
+        try (TraceEvent event =
+                TraceEvent.scoped(
+                        "WebView.APICall.AndroidX.WEB_SETTINGS_GET_DISABLED_ACTION_MODE_MENU_ITEMS")) {
             recordApiCall(ApiCall.WEB_SETTINGS_GET_DISABLED_ACTION_MODE_MENU_ITEMS);
             return mAwSettings.getDisabledActionModeMenuItems();
         }
@@ -85,8 +91,9 @@ class SupportLibWebSettingsAdapter implements WebSettingsBoundaryInterface {
 
     @Override
     public boolean getWillSuppressErrorPage() {
-        try (TraceEvent event = TraceEvent.scoped(
-                     "WebView.APICall.AndroidX.WEB_SETTINGS_GET_WILL_SUPPRESS_ERROR_PAGE")) {
+        try (TraceEvent event =
+                TraceEvent.scoped(
+                        "WebView.APICall.AndroidX.WEB_SETTINGS_GET_WILL_SUPPRESS_ERROR_PAGE")) {
             recordApiCall(ApiCall.WEB_SETTINGS_GET_WILL_SUPPRESS_ERROR_PAGE);
             return mAwSettings.getWillSuppressErrorPage();
         }
@@ -94,8 +101,9 @@ class SupportLibWebSettingsAdapter implements WebSettingsBoundaryInterface {
 
     @Override
     public void setWillSuppressErrorPage(boolean suppressed) {
-        try (TraceEvent event = TraceEvent.scoped(
-                     "WebView.APICall.AndroidX.WEB_SETTINGS_SET_WILL_SUPPRESS_ERROR_PAGE")) {
+        try (TraceEvent event =
+                TraceEvent.scoped(
+                        "WebView.APICall.AndroidX.WEB_SETTINGS_SET_WILL_SUPPRESS_ERROR_PAGE")) {
             recordApiCall(ApiCall.WEB_SETTINGS_SET_WILL_SUPPRESS_ERROR_PAGE);
             mAwSettings.setWillSuppressErrorPage(suppressed);
         }
@@ -108,7 +116,7 @@ class SupportLibWebSettingsAdapter implements WebSettingsBoundaryInterface {
             return;
         }
         try (TraceEvent event =
-                        TraceEvent.scoped("WebView.APICall.AndroidX.WEB_SETTINGS_SET_FORCE_DARK")) {
+                TraceEvent.scoped("WebView.APICall.AndroidX.WEB_SETTINGS_SET_FORCE_DARK")) {
             recordApiCall(ApiCall.WEB_SETTINGS_SET_FORCE_DARK);
             mAwSettings.setForceDarkMode(forceDarkMode);
         }
@@ -117,7 +125,7 @@ class SupportLibWebSettingsAdapter implements WebSettingsBoundaryInterface {
     @Override
     public int getForceDark() {
         try (TraceEvent event =
-                        TraceEvent.scoped("WebView.APICall.AndroidX.WEB_SETTINGS_GET_FORCE_DARK")) {
+                TraceEvent.scoped("WebView.APICall.AndroidX.WEB_SETTINGS_GET_FORCE_DARK")) {
             recordApiCall(ApiCall.WEB_SETTINGS_GET_FORCE_DARK);
             if (AwDarkMode.isSimplifiedDarkModeEnabled()) {
                 Log.w(TAG, "getForceDark() is a no-op in an app with targetSdkVersion>=T");
@@ -129,8 +137,9 @@ class SupportLibWebSettingsAdapter implements WebSettingsBoundaryInterface {
 
     @Override
     public void setForceDarkBehavior(int forceDarkBehavior) {
-        try (TraceEvent event = TraceEvent.scoped(
-                     "WebView.APICall.AndroidX.WEB_SETTINGS_SET_FORCE_DARK_BEHAVIOR")) {
+        try (TraceEvent event =
+                TraceEvent.scoped(
+                        "WebView.APICall.AndroidX.WEB_SETTINGS_SET_FORCE_DARK_BEHAVIOR")) {
             recordApiCall(ApiCall.WEB_SETTINGS_SET_FORCE_DARK_BEHAVIOR);
             if (AwDarkMode.isSimplifiedDarkModeEnabled()) {
                 Log.w(TAG, "setForceDarkBehavior() is a no-op in an app with targetSdkVersion>=T");
@@ -152,8 +161,9 @@ class SupportLibWebSettingsAdapter implements WebSettingsBoundaryInterface {
 
     @Override
     public int getForceDarkBehavior() {
-        try (TraceEvent event = TraceEvent.scoped(
-                     "WebView.APICall.AndroidX.WEB_SETTINGS_GET_FORCE_DARK_BEHAVIOR")) {
+        try (TraceEvent event =
+                TraceEvent.scoped(
+                        "WebView.APICall.AndroidX.WEB_SETTINGS_GET_FORCE_DARK_BEHAVIOR")) {
             recordApiCall(ApiCall.WEB_SETTINGS_GET_FORCE_DARK_BEHAVIOR);
             if (AwDarkMode.isSimplifiedDarkModeEnabled()) {
                 Log.w(TAG, "getForceDarkBehavior() is a no-op in an app with targetSdkVersion>=T");
@@ -173,11 +183,13 @@ class SupportLibWebSettingsAdapter implements WebSettingsBoundaryInterface {
 
     @Override
     public void setAlgorithmicDarkeningAllowed(boolean allow) {
-        try (TraceEvent event = TraceEvent.scoped(
-                     "WebView.APICall.AndroidX.WEB_SETTINGS_SET_ALGORITHMIC_DARKENING_ALLOWED")) {
+        try (TraceEvent event =
+                TraceEvent.scoped(
+                        "WebView.APICall.AndroidX.WEB_SETTINGS_SET_ALGORITHMIC_DARKENING_ALLOWED")) {
             recordApiCall(ApiCall.WEB_SETTINGS_SET_ALGORITHMIC_DARKENING_ALLOWED);
             if (!AwDarkMode.isSimplifiedDarkModeEnabled()) {
-                Log.w(TAG,
+                Log.w(
+                        TAG,
                         "setAlgorithmicDarkeningAllowed() is a no-op in an app with"
                                 + "targetSdkVersion<T");
                 return;
@@ -188,11 +200,13 @@ class SupportLibWebSettingsAdapter implements WebSettingsBoundaryInterface {
 
     @Override
     public boolean isAlgorithmicDarkeningAllowed() {
-        try (TraceEvent event = TraceEvent.scoped(
-                     "WebView.APICall.AndroidX.WEB_SETTINGS_IS_ALGORITHMIC_DARKENING_ALLOWED")) {
+        try (TraceEvent event =
+                TraceEvent.scoped(
+                        "WebView.APICall.AndroidX.WEB_SETTINGS_IS_ALGORITHMIC_DARKENING_ALLOWED")) {
             recordApiCall(ApiCall.WEB_SETTINGS_IS_ALGORITHMIC_DARKENING_ALLOWED);
             if (!AwDarkMode.isSimplifiedDarkModeEnabled()) {
-                Log.w(TAG,
+                Log.w(
+                        TAG,
                         "isAlgorithmicDarkeningAllowed() is a no-op in an app with "
                                 + "targetSdkVersion<T");
                 return false;
@@ -214,8 +228,9 @@ class SupportLibWebSettingsAdapter implements WebSettingsBoundaryInterface {
 
     @Override
     public void setRequestedWithHeaderOriginAllowList(Set<String> allowedOriginRules) {
-        try (TraceEvent event = TraceEvent.scoped(
-                     "WebView.APICall.AndroidX.WEB_SETTINGS_SET_REQUESTED_WITH_HEADER_ORIGIN_ALLOWLIST")) {
+        try (TraceEvent event =
+                TraceEvent.scoped(
+                        "WebView.APICall.AndroidX.WEB_SETTINGS_SET_REQUESTED_WITH_HEADER_ORIGIN_ALLOWLIST")) {
             recordApiCall(ApiCall.WEB_SETTINGS_SET_REQUESTED_WITH_HEADER_ORIGIN_ALLOWLIST);
             mAwSettings.setRequestedWithHeaderOriginAllowList(allowedOriginRules);
         }
@@ -223,8 +238,9 @@ class SupportLibWebSettingsAdapter implements WebSettingsBoundaryInterface {
 
     @Override
     public Set<String> getRequestedWithHeaderOriginAllowList() {
-        try (TraceEvent event = TraceEvent.scoped(
-                     "WebView.APICall.AndroidX.WEB_SETTINGS_GET_REQUESTED_WITH_HEADER_ORIGIN_ALLOWLIST")) {
+        try (TraceEvent event =
+                TraceEvent.scoped(
+                        "WebView.APICall.AndroidX.WEB_SETTINGS_GET_REQUESTED_WITH_HEADER_ORIGIN_ALLOWLIST")) {
             recordApiCall(ApiCall.WEB_SETTINGS_GET_REQUESTED_WITH_HEADER_ORIGIN_ALLOWLIST);
             return mAwSettings.getRequestedWithHeaderOriginAllowList();
         }
@@ -232,17 +248,20 @@ class SupportLibWebSettingsAdapter implements WebSettingsBoundaryInterface {
 
     @Override
     public void setEnterpriseAuthenticationAppLinkPolicyEnabled(boolean enabled) {
-        try (TraceEvent event = TraceEvent.scoped(
-                     "WebView.APICall.AndroidX.WEB_SETTINGS_SET_ENTERPRISE_AUTHENTICATION_APP_LINK_POLICY_ENABLED")) {
+        try (TraceEvent event =
+                TraceEvent.scoped(
+                        "WebView.APICall.AndroidX.WEB_SETTINGS_SET_ENTERPRISE_AUTHENTICATION_APP_LINK_POLICY_ENABLED")) {
             recordApiCall(
                     ApiCall.WEB_SETTINGS_SET_ENTERPRISE_AUTHENTICATION_APP_LINK_POLICY_ENABLED);
             mAwSettings.setEnterpriseAuthenticationAppLinkPolicyEnabled(enabled);
         }
     }
+
     @Override
     public boolean getEnterpriseAuthenticationAppLinkPolicyEnabled() {
-        try (TraceEvent event = TraceEvent.scoped(
-                     "WebView.APICall.AndroidX.WEB_SETTINGS_GET_ENTERPRISE_AUTHENTICATION_APP_LINK_POLICY_ENABLED")) {
+        try (TraceEvent event =
+                TraceEvent.scoped(
+                        "WebView.APICall.AndroidX.WEB_SETTINGS_GET_ENTERPRISE_AUTHENTICATION_APP_LINK_POLICY_ENABLED")) {
             recordApiCall(
                     ApiCall.WEB_SETTINGS_GET_ENTERPRISE_AUTHENTICATION_APP_LINK_POLICY_ENABLED);
             return mAwSettings.getEnterpriseAuthenticationAppLinkPolicyEnabled();
@@ -251,16 +270,19 @@ class SupportLibWebSettingsAdapter implements WebSettingsBoundaryInterface {
 
     @Override
     public void setUserAgentMetadataFromMap(Map<String, Object> uaMetadata) {
-        try (TraceEvent event = TraceEvent.scoped(
-                     "WebView.APICall.AndroidX.WEB_SETTINGS_SET_USER_AGENT_METADATA")) {
+        try (TraceEvent event =
+                TraceEvent.scoped(
+                        "WebView.APICall.AndroidX.WEB_SETTINGS_SET_USER_AGENT_METADATA")) {
             recordApiCall(ApiCall.WEB_SETTINGS_SET_USER_AGENT_METADATA);
             mAwSettings.setUserAgentMetadataFromMap(uaMetadata);
         }
     }
+
     @Override
     public Map<String, Object> getUserAgentMetadataMap() {
-        try (TraceEvent event = TraceEvent.scoped(
-                     "WebView.APICall.AndroidX.WEB_SETTINGS_GET_USER_AGENT_METADATA")) {
+        try (TraceEvent event =
+                TraceEvent.scoped(
+                        "WebView.APICall.AndroidX.WEB_SETTINGS_GET_USER_AGENT_METADATA")) {
             recordApiCall(ApiCall.WEB_SETTINGS_GET_USER_AGENT_METADATA);
             return mAwSettings.getUserAgentMetadataMap();
         }
@@ -269,7 +291,7 @@ class SupportLibWebSettingsAdapter implements WebSettingsBoundaryInterface {
     @Override
     public void setAttributionBehavior(@AttributionBehavior int behavior) {
         try (TraceEvent event =
-                        TraceEvent.scoped("WebView.APICall.AndroidX.SET_ATTRIBUTION_BEHAVIOR")) {
+                TraceEvent.scoped("WebView.APICall.AndroidX.SET_ATTRIBUTION_BEHAVIOR")) {
             recordApiCall(ApiCall.SET_ATTRIBUTION_BEHAVIOR);
             switch (behavior) {
                 case AttributionBehavior.DISABLED:
@@ -294,7 +316,7 @@ class SupportLibWebSettingsAdapter implements WebSettingsBoundaryInterface {
     @Override
     public int getAttributionBehavior() {
         try (TraceEvent event =
-                        TraceEvent.scoped("WebView.APICall.AndroidX.GET_ATTRIBUTION_BEHAVIOR")) {
+                TraceEvent.scoped("WebView.APICall.AndroidX.GET_ATTRIBUTION_BEHAVIOR")) {
             recordApiCall(ApiCall.GET_ATTRIBUTION_BEHAVIOR);
             switch (mAwSettings.getAttributionBehavior()) {
                 case AwSettings.ATTRIBUTION_DISABLED:
@@ -308,5 +330,77 @@ class SupportLibWebSettingsAdapter implements WebSettingsBoundaryInterface {
             }
             return AttributionBehavior.APP_SOURCE_AND_WEB_TRIGGER;
         }
+    }
+
+    @Override
+    public void setWebViewMediaIntegrityApiStatus(
+            @WebViewMediaIntegrityApiStatus int defaultStatus,
+            Map<String, @WebViewMediaIntegrityApiStatus Integer> permissionConfig) {
+        try (TraceEvent event =
+                TraceEvent.scoped(
+                        "WebView.APICall.AndroidX.SET_WEBVIEW_MEDIA_INTEGRITY_API_STATUS")) {
+            recordApiCall(ApiCall.SET_WEBVIEW_MEDIA_INTEGRITY_API_STATUS);
+
+            Map<String, @MediaIntegrityApiStatus Integer> permissionToApiStatus = new HashMap<>();
+            for (Map.Entry<String, @WebViewMediaIntegrityApiStatus Integer> entry :
+                    permissionConfig.entrySet()) {
+                permissionToApiStatus.put(entry.getKey(), convertToApiStatus(entry.getValue()));
+            }
+            @MediaIntegrityApiStatus int defaultApiStatus = convertToApiStatus(defaultStatus);
+            mAwSettings.setWebViewIntegrityApiStatus(defaultApiStatus, permissionToApiStatus);
+        }
+    }
+
+    @Override
+    public @WebViewMediaIntegrityApiStatus int getWebViewMediaIntegrityApiDefaultStatus() {
+        try (TraceEvent event =
+                TraceEvent.scoped(
+                        "WebView.APICall.AndroidX.GET_WEBVIEW_MEDIA_INTEGRITY_API_DEFAULT_STATUS")) {
+            recordApiCall(ApiCall.GET_WEBVIEW_MEDIA_INTEGRITY_API_DEFAULT_STATUS);
+            return convertFromApiStatus(mAwSettings.getWebViewIntegrityApiDefaultStatus());
+        }
+    }
+
+    @Override
+    public Map<String, @WebViewMediaIntegrityApiStatus Integer>
+            getWebViewMediaIntegrityApiOverrideRules() {
+        try (TraceEvent event =
+                TraceEvent.scoped(
+                        "WebView.APICall.AndroidX.GET_WEBVIEW_MEDIA_INTEGRITY_API_OVERRIDE_RULES")) {
+            recordApiCall(ApiCall.GET_WEBVIEW_MEDIA_INTEGRITY_API_OVERRIDE_RULES);
+            Map<String, @MediaIntegrityApiStatus Integer> overrideRules = new HashMap<>();
+            for (Map.Entry<String, @MediaIntegrityApiStatus Integer> entry :
+                    mAwSettings.getWebViewIntegrityApiOverrideRules().entrySet()) {
+                overrideRules.put(entry.getKey(), convertFromApiStatus(entry.getValue()));
+            }
+            return overrideRules;
+        }
+    }
+
+    private @MediaIntegrityApiStatus Integer convertToApiStatus(
+            @WebViewMediaIntegrityApiStatus int status) {
+        switch (status) {
+            case WebViewMediaIntegrityApiStatus.DISABLED:
+                return MediaIntegrityApiStatus.DISABLED;
+            case WebViewMediaIntegrityApiStatus.ENABLED_WITHOUT_APP_IDENTITY:
+                return MediaIntegrityApiStatus.ENABLED_WITHOUT_APP_IDENTITY;
+            case WebViewMediaIntegrityApiStatus.ENABLED:
+                return MediaIntegrityApiStatus.ENABLED;
+        }
+        throw new IllegalArgumentException("Invalid WebView Media Integrity API status: " + status);
+    }
+
+    private @WebViewMediaIntegrityApiStatus Integer convertFromApiStatus(
+            @MediaIntegrityApiStatus int status) {
+        switch (status) {
+            case MediaIntegrityApiStatus.DISABLED:
+                return WebViewMediaIntegrityApiStatus.DISABLED;
+            case MediaIntegrityApiStatus.ENABLED_WITHOUT_APP_IDENTITY:
+                return WebViewMediaIntegrityApiStatus.ENABLED_WITHOUT_APP_IDENTITY;
+            case MediaIntegrityApiStatus.ENABLED:
+                return WebViewMediaIntegrityApiStatus.ENABLED;
+        }
+        // unreached
+        throw new IllegalArgumentException("Invalid WebView Media Integrity API status: " + status);
     }
 }

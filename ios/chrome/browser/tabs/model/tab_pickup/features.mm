@@ -25,6 +25,7 @@ const char kTabPickupThresholdTenMinutesParam[] =
 const char kTabPickupThresholdOneHourParam[] = "tab-pickup-threshold-one-hour";
 const char kTabPickupThresholdTwoHoursParam[] =
     "tab-pickup-threshold-two-hours";
+const char kTabPickupNoFaviconParam[] = "tab-pickup-no-favicon";
 
 bool IsTabPickupEnabled() {
   return base::FeatureList::IsEnabled(kTabPickupThreshold);
@@ -52,4 +53,10 @@ bool IsTabPickupDisabledByUser() {
   CHECK(IsTabPickupEnabled());
   return !GetApplicationContext()->GetLocalState()->GetBoolean(
       prefs::kTabPickupEnabled);
+}
+
+bool IsTabPickupFaviconAvaible() {
+  std::string feature_param = base::GetFieldTrialParamValueByFeature(
+      kTabPickupThreshold, kTabPickupThresholdParameterName);
+  return feature_param != kTabPickupNoFaviconParam;
 }

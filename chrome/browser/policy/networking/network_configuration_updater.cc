@@ -176,7 +176,7 @@ void MarkFieldsAsRecommendedForBackwardsCompatibility(
 
 BASE_FEATURE(kDisablePolicyEthernetRecommendedWorkaround,
              "DisablePolicyEthernetRecommendedWorkaround",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 NetworkConfigurationUpdater::~NetworkConfigurationUpdater() {
   for (auto& observer : observer_list_) {

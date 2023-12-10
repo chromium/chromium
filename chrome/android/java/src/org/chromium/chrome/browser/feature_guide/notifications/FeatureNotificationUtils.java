@@ -32,9 +32,7 @@ import org.chromium.components.user_prefs.UserPrefs;
  * IPH.
  */
 public final class FeatureNotificationUtils {
-    /**
-     * The {@link FeatureType} of the feature being promoed through the notification.
-     */
+    /** The {@link FeatureType} of the feature being promoed through the notification. */
     public static final String EXTRA_FEATURE_TYPE = "feature_notification_guide_feature_type";
 
     private static final String NOTIFICATION_PARAM_GUID_DEFAULT_BROWSER = "guid_default_browser";
@@ -54,17 +52,19 @@ public final class FeatureNotificationUtils {
         if (featureType == FeatureType.INVALID) return;
 
         TextBubble.dismissBubbles();
-        new Handler().post(() -> {
-            Tracker tracker =
-                    TrackerFactory.getTrackerForProfile(Profile.getLastUsedRegularProfile());
-            tracker.setPriorityNotification(
-                    FeatureNotificationUtils.getIPHFeatureForNotificationFeatureType(featureType));
-        });
+        new Handler()
+                .post(
+                        () -> {
+                            Tracker tracker =
+                                    TrackerFactory.getTrackerForProfile(
+                                            Profile.getLastUsedRegularProfile());
+                            tracker.setPriorityNotification(
+                                    FeatureNotificationUtils
+                                            .getIPHFeatureForNotificationFeatureType(featureType));
+                        });
     }
 
-    /**
-     * Helper method to register an IPH show callback for the feature type to show the IPH.
-     */
+    /** Helper method to register an IPH show callback for the feature type to show the IPH. */
     public static void registerIPHCallback(@FeatureType int featureType, Runnable showIphCallback) {
         if (!ProfileManager.isInitialized()) return;
         Tracker tracker = TrackerFactory.getTrackerForProfile(Profile.getLastUsedRegularProfile());
@@ -72,9 +72,7 @@ public final class FeatureNotificationUtils {
                 getIPHFeatureForNotificationFeatureType(featureType), showIphCallback);
     }
 
-    /**
-     * Unregisters any IPH callbacks associated with the feature type.
-     */
+    /** Unregisters any IPH callbacks associated with the feature type. */
     public static void unregisterIPHCallback(@FeatureType int featureType) {
         if (!ProfileManager.isInitialized()) return;
         Tracker tracker = TrackerFactory.getTrackerForProfile(Profile.getLastUsedRegularProfile());
@@ -93,13 +91,13 @@ public final class FeatureNotificationUtils {
     }
 
     /* package */ static String getNotificationTitle(@FeatureType int featureType) {
-        return ContextUtils.getApplicationContext().getResources().getString(
-                R.string.feature_notification_guide_notification_title);
+        return ContextUtils.getApplicationContext()
+                .getResources()
+                .getString(R.string.feature_notification_guide_notification_title);
     }
 
     /* package */ static String getNotificationMessage(@FeatureType int featureType) {
-        @StringRes
-        int stringId = 0;
+        @StringRes int stringId = 0;
         switch (featureType) {
             case FeatureType.DEFAULT_BROWSER:
                 stringId = R.string.feature_notification_guide_notification_message_default_browser;
@@ -112,7 +110,8 @@ public final class FeatureNotificationUtils {
                 break;
             case FeatureType.NTP_SUGGESTION_CARD:
                 stringId =
-                        R.string.feature_notification_guide_notification_message_ntp_suggestion_card;
+                        R.string
+                                .feature_notification_guide_notification_message_ntp_suggestion_card;
                 break;
             case FeatureType.VOICE_SEARCH:
                 stringId = R.string.feature_notification_guide_notification_message_voice_search;
@@ -189,6 +188,6 @@ public final class FeatureNotificationUtils {
     private static boolean shouldShowDefaultBrowserPromo() {
         DefaultBrowserPromoDeps deps = DefaultBrowserPromoDeps.getInstance();
         return DefaultBrowserPromoUtils.shouldShowPromo(
-                deps, ContextUtils.getApplicationContext(), true /* ignoreMaxCount */);
+                deps, ContextUtils.getApplicationContext(), /* ignoreMaxCount= */ true);
     }
 }

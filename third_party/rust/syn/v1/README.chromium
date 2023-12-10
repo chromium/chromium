@@ -1,7 +1,9 @@
 Name: syn
 URL: https://crates.io/crates/syn
 Description: Parser for Rust source code
-Version: 1.0.99
+Version: 1.0.109
 Security Critical: no
-Shipped: yes
+Shipped: no
 License: Apache 2.0
+License File: //third_party/rust/chromium_crates_io/vendor/syn-1.0.109/LICENSE-APACHE
+Revision: bfa790b8e445dc67b7ab94d75adb1a92d6296c9a

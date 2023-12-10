@@ -63,11 +63,10 @@ export class MlCalculatorElement extends CustomElement {
 
   set mlBrowserProxy(mlBrowserProxy: MlBrowserProxy) {
     this.mlBrowserProxy_ = mlBrowserProxy;
-    mlBrowserProxy.modelVersion.then(
-        version =>
-            createEl(
-                'a', this.getRequiredElement('#version'), [], version.string)
-                .href = version.url);
+    mlBrowserProxy.modelVersion.then(version => {
+      createEl('a', this.getRequiredElement('#version'), [], version.string)
+          .href = version.url;
+    });
     this.update();
   }
 

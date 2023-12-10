@@ -89,7 +89,7 @@ void BlobURLStoreImpl::Register(
     const GURL& url,
     // TODO(https://crbug.com/1224926): Remove these once experiment is over.
     const base::UnguessableToken& unsafe_agent_cluster_id,
-    const absl::optional<net::SchemefulSite>& unsafe_top_level_site,
+    const std::optional<net::SchemefulSite>& unsafe_top_level_site,
     RegisterCallback callback) {
   // TODO(https://crbug.com/1376126): Generate blob URLs here, rather than
   // validating the URLs the renderer process generated.
@@ -116,7 +116,7 @@ void BlobURLStoreImpl::Revoke(const GURL& url) {
 
 void BlobURLStoreImpl::Resolve(const GURL& url, ResolveCallback callback) {
   if (!registry_) {
-    std::move(callback).Run(mojo::NullRemote(), absl::nullopt);
+    std::move(callback).Run(mojo::NullRemote(), std::nullopt);
     return;
   }
   mojo::PendingRemote<blink::mojom::Blob> blob = registry_->GetBlobFromUrl(url);
@@ -130,7 +130,7 @@ void BlobURLStoreImpl::ResolveAsURLLoaderFactory(
     ResolveAsURLLoaderFactoryCallback callback) {
   if (!registry_) {
     BlobURLLoaderFactory::Create(mojo::NullRemote(), url, std::move(receiver));
-    std::move(callback).Run(absl::nullopt, absl::nullopt);
+    std::move(callback).Run(std::nullopt, std::nullopt);
     return;
   }
 
@@ -145,12 +145,12 @@ void BlobURLStoreImpl::ResolveForNavigation(
     mojo::PendingReceiver<blink::mojom::BlobURLToken> token,
     ResolveForNavigationCallback callback) {
   if (!registry_) {
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
   mojo::PendingRemote<blink::mojom::Blob> blob = registry_->GetBlobFromUrl(url);
   if (!blob) {
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
   new BlobURLTokenImpl(registry_, url, std::move(blob), std::move(token));

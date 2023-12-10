@@ -8,15 +8,15 @@
 #include <algorithm>
 #include <array>
 #include <atomic>
+#include <bit>
 #include <cstdint>
 
 #include "base/allocator/dispatcher/subsystem.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/pointers/raw_ptr_exclusion.h"
 #include "base/base_export.h"
-#include "base/bits.h"
 #include "base/compiler_specific.h"
 #include "base/debug/debugging_buildflags.h"
 #include "base/debug/stack_trace.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "build/build_config.h"
 
 namespace base::debug::tracer {
@@ -272,7 +272,7 @@ ALWAYS_INLINE constexpr size_t AllocationTraceRecorder::WrapIdxIfNeeded(
   // optimized code we assert |kMaximumNumberOfMemoryOperationTraces| is a power
   // of two .
   static_assert(
-      base::bits::IsPowerOfTwo(kMaximumNumberOfMemoryOperationTraces),
+      std::has_single_bit(kMaximumNumberOfMemoryOperationTraces),
       "kMaximumNumberOfMemoryOperationTraces should be a power of 2 to "
       "allow for fast modulo operation.");
 

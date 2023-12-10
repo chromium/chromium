@@ -15,9 +15,9 @@ namespace views {
 // The Separator class is a view that shows a line used to visually separate
 // other views.
 class VIEWS_EXPORT Separator : public View {
- public:
-  METADATA_HEADER(Separator);
+  METADATA_HEADER(Separator, View)
 
+ public:
   // The separator's thickness in dip.
   static constexpr int kThickness = 1;
 

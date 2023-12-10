@@ -30,7 +30,7 @@ TEST(JsonSchemaCompilerObjectsTest, ObjectParamParamsCreate) {
 
     base::Value::List params_value;
     params_value.Append(std::move(info_value));
-    absl::optional<test::api::objects::ObjectParam::Params> params(
+    std::optional<test::api::objects::ObjectParam::Params> params(
         test::api::objects::ObjectParam::Params::Create(params_value));
     EXPECT_TRUE(params.has_value());
     EXPECT_EQ((size_t) 2, params->info.strings.size());
@@ -49,7 +49,7 @@ TEST(JsonSchemaCompilerObjectsTest, ObjectParamParamsCreate) {
 
     base::Value::List params_value;
     params_value.Append(std::move(info_value));
-    absl::optional<test::api::objects::ObjectParam::Params> params(
+    std::optional<test::api::objects::ObjectParam::Params> params(
         test::api::objects::ObjectParam::Params::Create(params_value));
     EXPECT_FALSE(params.has_value());
   }

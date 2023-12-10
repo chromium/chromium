@@ -19,12 +19,14 @@ import '../../components/dialogs/oobe_loading_dialog.js';
 import '../../components/oobe_carousel.js';
 import '../../components/oobe_slide.js';
 
-import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
 import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/behaviors/multi_step_behavior.js';
 import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.js';
+
+import {getTemplate} from './update.html.js';
 
 
 const USER_ACTION_ACCEPT_UPDATE_OVER_CELLUAR = 'update-accept-cellular';
@@ -102,7 +104,7 @@ class Update extends UpdateBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

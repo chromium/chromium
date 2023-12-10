@@ -17,7 +17,7 @@ namespace {
 
 // Helper for temporary storage related to |MojoInitialize()| calls.
 struct InitializationState {
-  InitializationState(const absl::optional<base::FilePath>& path,
+  InitializationState(const std::optional<base::FilePath>& path,
                       MojoInitializeFlags flags) {
     options.flags = flags;
 
@@ -44,18 +44,18 @@ struct InitializationState {
 
 }  // namespace
 
-MojoResult LoadCoreLibrary(absl::optional<base::FilePath> path) {
+MojoResult LoadCoreLibrary(std::optional<base::FilePath> path) {
   InitializationState state(path, MOJO_INITIALIZE_FLAG_LOAD_ONLY);
   return MojoInitialize(&state.options);
 }
 
 MojoResult InitializeCoreLibrary(MojoInitializeFlags flags) {
   DCHECK_EQ(flags & MOJO_INITIALIZE_FLAG_LOAD_ONLY, 0u);
-  InitializationState state(absl::nullopt, flags);
+  InitializationState state(std::nullopt, flags);
   return MojoInitialize(&state.options);
 }
 
-MojoResult LoadAndInitializeCoreLibrary(absl::optional<base::FilePath> path,
+MojoResult LoadAndInitializeCoreLibrary(std::optional<base::FilePath> path,
                                         MojoInitializeFlags flags) {
   DCHECK_EQ(flags & MOJO_INITIALIZE_FLAG_LOAD_ONLY, 0u);
   InitializationState state(path, flags);

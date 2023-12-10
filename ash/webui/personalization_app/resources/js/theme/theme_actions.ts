@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Action} from 'chrome://resources/js/store_ts.js';
+import {Action} from 'chrome://resources/js/store.js';
 import {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
 
 import {ColorScheme} from '../../color_scheme.mojom-webui.js';

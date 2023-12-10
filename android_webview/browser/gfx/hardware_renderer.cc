@@ -61,6 +61,9 @@ namespace {
 BASE_FEATURE(kWebViewUseOutputSurfaceClipRect,
              "WebViewUseOutputSurfaceClipRect",
              base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kDrawAndSwapInjectLatency,
+             "DrawAndSwapInjectLatency",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 class ScopedAcquireExternalContext {
  public:
@@ -338,7 +341,7 @@ void HardwareRenderer::OnViz::DrawAndSwapOnViz(
       render_pass->CreateAndAppendDrawQuad<viz::SurfaceDrawQuad>();
   surface_quad->SetNew(quad_state, gfx::Rect(quad_state->quad_layer_rect),
                        gfx::Rect(quad_state->quad_layer_rect),
-                       viz::SurfaceRange(absl::nullopt, child_id),
+                       viz::SurfaceRange(std::nullopt, child_id),
                        SkColors::kWhite,
                        /*stretch_content_to_fill_bounds=*/false);
 
@@ -633,6 +636,10 @@ void HardwareRenderer::DrawAndSwap(const HardwareRendererDrawParams& params,
 
   DCHECK_CALLED_ON_VALID_THREAD(render_thread_checker_);
 
+  if (base::FeatureList::IsEnabled(kDrawAndSwapInjectLatency)) {
+    usleep(1000);
+  }
+
   // Ensure that the context is synced from external and synced back before
   // returning. This is only necessary when using ANGLE to keep its internals
   // synced with the external context
@@ -697,7 +704,7 @@ void HardwareRenderer::DrawAndSwap(const HardwareRendererDrawParams& params,
         ->PessimisticallyResetGrContext();
   }
 
-  absl::optional<OverlayProcessorWebView::ScopedSurfaceControlAvailable>
+  std::optional<OverlayProcessorWebView::ScopedSurfaceControlAvailable>
       allow_surface_control;
 
   auto* overlay_processor = on_viz_->overlay_processor();

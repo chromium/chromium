@@ -5,6 +5,7 @@
 #ifndef CHROME_UPDATER_TEST_INTEGRATION_TESTS_IMPL_H_
 #define CHROME_UPDATER_TEST_INTEGRATION_TESTS_IMPL_H_
 
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
@@ -16,7 +17,6 @@
 #include "build/build_config.h"
 #include "chrome/updater/test/server.h"
 #include "chrome/updater/update_service.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 
@@ -218,7 +218,7 @@ void Run(UpdaterScope scope,
          int* exit_code = nullptr);
 
 // Returns the path of the Updater executable.
-absl::optional<base::FilePath> GetInstalledExecutablePath(UpdaterScope scope);
+std::optional<base::FilePath> GetInstalledExecutablePath(UpdaterScope scope);
 
 // Sets up a fake updater on the system at a version lower than the test.
 void SetupFakeUpdaterLowerVersion(UpdaterScope scope);
@@ -364,6 +364,7 @@ void CloseInstallCompleteDialog(const std::wstring& child_window_text_to_find);
 
 #if BUILDFLAG(IS_MAC)
 void PrivilegedHelperInstall(UpdaterScope scope);
+void DeleteLegacyUpdater(UpdaterScope scope);
 #endif  // BUILDFLAG(IS_WIN)
 
 void ExpectLegacyUpdaterMigrated(UpdaterScope scope);

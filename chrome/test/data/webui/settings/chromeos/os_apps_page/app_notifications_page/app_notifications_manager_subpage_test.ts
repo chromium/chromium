@@ -255,4 +255,63 @@ suite('<settings-app-notifications-manager-subpage>', () => {
     assertTrue(appToggle.disabled);
     assertTrue(!!filesRow.shadowRoot!.querySelector('cr-policy-indicator'));
   });
+
+  test('App list filters when searching', async () => {
+    createPage();
+    const appTitle1 = 'Files';
+    const appTitle2 = 'Google Chat';
+    const appTitle3 = 'Google Calendar';
+    const permission1 = createBoolPermission(
+        /**permissionType=*/ 1,
+        /**value=*/ false, /**is_managed=*/ false);
+    const permission2 = createBoolPermission(
+        /**permissionType=*/ 2,
+        /**value=*/ true, /**is_managed=*/ false);
+    const app1 = createApp('file', appTitle1, permission1);
+    const app2 = createApp('chat', appTitle2, permission2);
+    const app3 = createApp('calendar', appTitle3, permission1);
+
+    await initializeObserver();
+    simulateNotificationAppChanged(app1);
+    simulateNotificationAppChanged(app2);
+    simulateNotificationAppChanged(app3);
+    await flushTasks();
+
+    const appNotificationsList =
+        page.shadowRoot!.querySelector('#appNotificationsList');
+    assertTrue(isVisible(appNotificationsList));
+
+    let appsList =
+        appNotificationsList!.querySelectorAll('app-notification-row');
+    assertEquals(3, appsList.length);
+
+    page.searchTerm = 'Google';
+    await flushTasks();
+    appsList = appNotificationsList!.querySelectorAll('app-notification-row');
+    assertEquals(2, appsList.length);
+
+    // Uninstall the calender app. Now the app list should only have chat app
+    // with search term "Google";
+    app3.readiness = Readiness.kUninstalledByUser;
+    simulateNotificationAppChanged(app3);
+    await flushTasks();
+    appsList = appNotificationsList!.querySelectorAll('app-notification-row');
+    assertEquals(1, appsList.length);
+
+    page.searchTerm = 'sl';
+    await flushTasks();
+    appsList = appNotificationsList!.querySelectorAll('app-notification-row');
+    assertEquals(0, appsList.length);
+    // "No apps found" label shows when no apps could be found with search term
+    // "sl";
+    const noAppsLabel =
+        page.shadowRoot!.querySelector<HTMLElement>('#noAppsLabel');
+    assertTrue(!!noAppsLabel);
+    assertTrue(isVisible(noAppsLabel));
+
+    page.searchTerm = '';
+    await flushTasks();
+    appsList = appNotificationsList!.querySelectorAll('app-notification-row');
+    assertEquals(2, appsList.length);
+  });
 });

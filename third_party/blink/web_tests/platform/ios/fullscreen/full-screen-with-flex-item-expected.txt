@@ -1,6 +1,0 @@
-Enter Fullscreen
-EVENT(webkitfullscreenchange)
-EVENT(webkitfullscreenchange)
-EXPECTED (735 == '735') OK
-END OF TEST
-

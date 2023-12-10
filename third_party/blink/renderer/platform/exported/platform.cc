@@ -63,6 +63,7 @@
 #include "third_party/blink/renderer/platform/language.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/url_loader_factory.h"
 #include "third_party/blink/renderer/platform/scheduler/common/simple_main_thread_scheduler.h"
+#include "third_party/blink/renderer/platform/scheduler/public/dummy_schedulers.h"
 #include "third_party/blink/renderer/platform/scheduler/public/main_thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/non_main_thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
@@ -139,54 +140,6 @@ Platform::Platform() = default;
 
 Platform::~Platform() = default;
 
-namespace {
-
-class SimpleMainThread : public MainThread {
- public:
-  SimpleMainThread() = default;
-
-  // We rely on base::SingleThreadTaskRunner::CurrentDefaultHandle for tasks
-  // posted on the main thread. The task runner handle may not be available on
-  // Blink's startup (== on SimpleMainThread's construction), because some tests
-  // like blink_platform_unittests do not set up a global task environment.  In
-  // those cases, a task environment is set up on a test fixture's creation, and
-  // GetTaskRunner() returns the right task runner during a test.
-  //
-  // If GetTaskRunner() can be called from a non-main thread (including a worker
-  // thread running Mojo callbacks), we need to somehow get a task runner for
-  // the main thread. This is not possible with
-  // SingleThreadTaskRunner::CurrentDefaultHandle. We currently deal with this
-  // issue by setting the main thread task runner on the test startup and
-  // clearing it on the test tear-down. This is what
-  // SetMainThreadTaskRunnerForTesting() for.  This function is called from
-  // Platform::SetMainThreadTaskRunnerForTesting() and
-  // Platform::UnsetMainThreadTaskRunnerForTesting().
-
-  ThreadScheduler* Scheduler() override { return &scheduler_; }
-
-  scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner(
-      MainThreadTaskRunnerRestricted) const override {
-    if (main_thread_task_runner_for_testing_)
-      return main_thread_task_runner_for_testing_;
-    DCHECK(WTF::IsMainThread());
-    return base::SingleThreadTaskRunner::GetCurrentDefault();
-  }
-
-  void SetMainThreadTaskRunnerForTesting(
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
-    main_thread_task_runner_for_testing_ = std::move(task_runner);
-  }
-
- private:
-  bool IsSimpleMainThread() const override { return true; }
-
-  scheduler::SimpleMainThreadScheduler scheduler_;
-  scoped_refptr<base::SingleThreadTaskRunner>
-      main_thread_task_runner_for_testing_;
-};
-
-}  // namespace
-
 WebThemeEngine* Platform::ThemeEngine() {
   return WebThemeEngineHelper::GetNativeThemeEngine();
 }
@@ -216,7 +169,7 @@ void Platform::CreateMainThreadAndInitialize(Platform* platform) {
   DCHECK(platform);
   g_platform = platform;
   InitializeBlink();
-  InitializeMainThreadCommon(platform, std::make_unique<SimpleMainThread>());
+  InitializeMainThreadCommon(platform, scheduler::CreateSimpleMainThread());
 }
 
 void Platform::InitializeMainThreadCommon(
@@ -280,22 +233,19 @@ void Platform::SetCurrentPlatformForTesting(Platform* platform) {
 
 void Platform::CreateMainThreadForTesting() {
   DCHECK(!Thread::MainThread());
-  MainThread::SetMainThread(std::make_unique<SimpleMainThread>());
+  MainThread::SetMainThread(scheduler::CreateSimpleMainThread());
 }
 
 void Platform::SetMainThreadTaskRunnerForTesting() {
   DCHECK(WTF::IsMainThread());
   DCHECK(Thread::MainThread()->IsSimpleMainThread());
-  static_cast<SimpleMainThread*>(Thread::MainThread())
-      ->SetMainThreadTaskRunnerForTesting(
-          base::SingleThreadTaskRunner::GetCurrentDefault());
+  scheduler::SetMainThreadTaskRunnerForTesting();
 }
 
 void Platform::UnsetMainThreadTaskRunnerForTesting() {
   DCHECK(WTF::IsMainThread());
   DCHECK(Thread::MainThread()->IsSimpleMainThread());
-  static_cast<SimpleMainThread*>(Thread::MainThread())
-      ->SetMainThreadTaskRunnerForTesting(nullptr);
+  scheduler::UnsetMainThreadTaskRunnerForTesting();
 }
 
 Platform* Platform::Current() {
@@ -350,6 +300,11 @@ std::unique_ptr<WebGraphicsContext3DProvider>
 Platform::CreateWebGPUGraphicsContext3DProvider(const WebURL& document_url) {
   return nullptr;
 }
+
+void Platform::CreateWebGPUGraphicsContext3DProviderAsync(
+    const blink::WebURL& document_url,
+    base::OnceCallback<
+        void(std::unique_ptr<blink::WebGraphicsContext3DProvider>)> callback) {}
 
 scoped_refptr<viz::RasterContextProvider>
 Platform::SharedMainThreadContextProvider() {

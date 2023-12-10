@@ -57,7 +57,7 @@ void FakeConnection::WaitForUserVerification(
   await_user_verification_callback_ = std::move(callback);
 }
 
-void FakeConnection::RequestAccountInfo(base::OnceClosure callback) {
+void FakeConnection::RequestAccountInfo(RequestAccountInfoCallback callback) {
   request_account_info_callback_ = std::move(callback);
 }
 
@@ -69,23 +69,23 @@ void FakeConnection::RequestAccountTransferAssertion(
 }
 
 void FakeConnection::SendWifiCredentials(
-    absl::optional<mojom::WifiCredentials> credentials) {
+    std::optional<mojom::WifiCredentials> credentials) {
   CHECK(wifi_credentials_callback_);
   std::move(wifi_credentials_callback_).Run(credentials);
 }
 
 void FakeConnection::VerifyUser(
-    absl::optional<mojom::UserVerificationResponse> response) {
+    std::optional<mojom::UserVerificationResponse> response) {
   CHECK(await_user_verification_callback_);
   std::move(await_user_verification_callback_).Run(response);
 }
 
-void FakeConnection::SendAccountInfo() {
-  std::move(request_account_info_callback_).Run();
+void FakeConnection::SendAccountInfo(std::string email) {
+  std::move(request_account_info_callback_).Run(email);
 }
 
 void FakeConnection::SendAccountTransferAssertionInfo(
-    absl::optional<FidoAssertionInfo> assertion_info) {
+    std::optional<FidoAssertionInfo> assertion_info) {
   std::move(request_account_transfer_assertion_callback_).Run(assertion_info);
 }
 

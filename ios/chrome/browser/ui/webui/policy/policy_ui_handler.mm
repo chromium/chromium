@@ -23,7 +23,9 @@
 #import "components/policy/core/browser/webui/machine_level_user_cloud_policy_status_provider.h"
 #import "components/policy/core/browser/webui/policy_webui_constants.h"
 #import "components/policy/core/browser/webui/statistics_collector.h"
+#import "components/policy/core/common/cloud/cloud_policy_core.h"
 #import "components/policy/core/common/cloud/machine_level_user_cloud_policy_manager.h"
+#import "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #import "components/policy/core/common/local_test_policy_provider.h"
 #import "components/policy/core/common/policy_logger.h"
 #import "components/policy/core/common/policy_map.h"
@@ -33,6 +35,7 @@
 #import "components/policy/core/common/schema_map.h"
 #import "components/policy/policy_constants.h"
 #import "components/prefs/pref_service.h"
+#import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/version_info/version_info.h"
 #import "ios/chrome/browser/policy/browser_policy_connector_ios.h"
@@ -41,6 +44,7 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/ui/util/pasteboard_util.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/common/channel_info.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -105,17 +109,16 @@ void PolicyUIHandler::RegisterMessages() {
       GetApplicationContext()
           ->GetBrowserPolicyConnector()
           ->machine_level_user_cloud_policy_manager();
+  policy::BrowserDMTokenStorage* dm_token_storage =
+      policy::BrowserDMTokenStorage::Get();
 
   if (manager) {
-    policy::BrowserDMTokenStorage* dmTokenStorage =
-        policy::BrowserDMTokenStorage::Get();
-
     machine_status_provider_ =
         std::make_unique<policy::MachineLevelUserCloudPolicyStatusProvider>(
             manager->core(), GetApplicationContext()->GetLocalState(),
             new policy::MachineLevelUserCloudPolicyContext(
-                {dmTokenStorage->RetrieveEnrollmentToken(),
-                 dmTokenStorage->RetrieveClientId(),
+                {dm_token_storage->RetrieveEnrollmentToken(),
+                 dm_token_storage->RetrieveClientId(),
                  enterprise_reporting::kLastUploadSucceededTimestamp}));
     machine_status_provider_observation_.Observe(
         machine_status_provider_.get());
@@ -129,6 +132,19 @@ void PolicyUIHandler::RegisterMessages() {
   ChromeBrowserState* browser_state =
       ChromeBrowserState::FromWebUIIOS(web_ui());
   browser_state->GetPolicyConnector()->GetSchemaRegistry()->AddObserver(this);
+
+  policy::UserCloudPolicyManager* user_cloud_policy_manager =
+      browser_state->GetUserCloudPolicyManager();
+  if (user_cloud_policy_manager && user_cloud_policy_manager->core()) {
+    signin::IdentityManager* identity_manager =
+        IdentityManagerFactory::GetForBrowserState(browser_state);
+    user_policy_status_provider_ =
+        std::make_unique<UserCloudPolicyStatusProvider>(
+            this, user_cloud_policy_manager->core(), identity_manager);
+  } else {
+    user_policy_status_provider_ =
+        std::make_unique<policy::PolicyStatusProvider>();
+  }
 
   web_ui()->RegisterMessageCallback(
       "listenPoliciesUpdates",
@@ -281,6 +297,12 @@ void PolicyUIHandler::OnPolicyStatusChanged() {
   SendStatus();
 }
 
+base::flat_set<std::string> PolicyUIHandler::GetDeviceAffiliationIds() {
+  return GetApplicationContext()
+      ->GetBrowserPolicyConnector()
+      ->GetDeviceAffiliationIds();
+}
+
 void PolicyUIHandler::OnReportUploaded(const std::string& callback_id) {
   web_ui()->ResolveJavascriptCallback(base::Value(callback_id),
                                       /*response=*/base::Value());
@@ -350,7 +372,6 @@ void PolicyUIHandler::SendPolicies() {
 
 base::Value::Dict PolicyUIHandler::GetStatusValue() const {
   base::Value::Dict machine_status = machine_status_provider_->GetStatus();
-
   // Given that it's usual for users to bring their own devices and the fact
   // that device names could expose personal information. We do not show
   // this field in Device Policy Box
@@ -358,6 +379,8 @@ base::Value::Dict PolicyUIHandler::GetStatusValue() const {
 
   base::Value::Dict status;
   status.Set("machine", std::move(machine_status));
+  status.Set("user", user_policy_status_provider_->GetStatus());
+
   return status;
 }
 

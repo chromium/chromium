@@ -10,7 +10,10 @@ import("//chrome/updater/mac/signing/signing_sources.gni")
 import("//chrome/version.gni")
 
 group("signing") {
-  public_deps = [ ":copies" ]
+  public_deps = [
+    ":copies",
+    ":postinstall",
+  ]
 }
 
 _packaging_dir = "$root_out_dir/Updater Packaging"
@@ -38,12 +41,20 @@ process_version_rc_template("sign_config") {
     "KEYSTONE_APP_NAME=\"" + keystone_app_name + "\"",
     "-e",
     "MAC_TEAM_ID=\"" + mac_team_identifier + "\"",
-  ]
-
-  extra_args += [
     "-e",
     "$extra_args_is_chrome_branded",
   ]
+}
+
+process_version("postinstall") {
+  extra_args = [
+    "-e",
+    "PRODUCT_FULLNAME=\"$updater_product_full_name\"",
+  ]
+  executable = true
+  process_only = true
+  template_file = "postinstall.in"
+  output = "$_packaging_dir/signing/pkg/postinstall"
 }
 
 copy("copy_signing") {

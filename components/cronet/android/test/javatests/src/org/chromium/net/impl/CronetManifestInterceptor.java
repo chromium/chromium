@@ -40,8 +40,10 @@ public final class CronetManifestInterceptor implements ContextInterceptor {
                     @Override
                     public ServiceInfo getServiceInfo(ComponentName componentName, int flags)
                             throws NameNotFoundException {
-                        if (!componentName.equals(new ComponentName(getBaseContext(),
-                                    CronetManifest.META_DATA_HOLDER_SERVICE_NAME))) {
+                        if (!componentName.equals(
+                                new ComponentName(
+                                        getBaseContext(),
+                                        CronetManifest.META_DATA_HOLDER_SERVICE_NAME))) {
                             return super.getServiceInfo(componentName, flags);
                         }
 

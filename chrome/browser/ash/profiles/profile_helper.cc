@@ -11,11 +11,10 @@
 
 #include "ash/constants/ash_switches.h"
 #include "base/barrier_closure.h"
+#include "base/check_is_test.h"
 #include "base/command_line.h"
-#include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
@@ -272,19 +271,8 @@ const user_manager::User* ProfileHelperImpl::GetUserByProfile(
 
   // Many tests do not have their users registered with UserManager and
   // runs here. If |active_user_| matches |profile|, returns it.
-
-  // There's no guard that this is only for testing. Adding metrics here
-  // temporarily to make sure we can safely clean up the code.
-  // TODO(crbug.com/1325210): Remove the metrics together with the following
-  // code refactored.
-  if (base::SysInfo::IsRunningOnChromeOS()) {
-    base::UmaHistogramBoolean("Ash.BrowserContext.UnexpectedGetUserByProfile",
-                              true);
-    // Also taking the stack trace, so we can identify who's the caller on
-    // unexpected cases.
-    base::debug::DumpWithoutCrashing();
-  }
-
+  // This is expected happening only for testing.
+  CHECK_IS_TEST();
   const user_manager::User* active_user = user_manager->GetActiveUser();
   return active_user &&
                  browser_context_helper_->GetBrowserContextPathByUserIdHash(

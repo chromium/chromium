@@ -117,8 +117,8 @@ class ArcVolumeMounterBridge
       const std::string& job_name,
       SetUpExternalStorageMountPointsCallback callback,
       bool result,
-      absl::optional<std::string> error_name,
-      absl::optional<std::string> error_message);
+      std::optional<std::string> error_name,
+      std::optional<std::string> error_message);
 
   raw_ptr<Delegate, DanglingUntriaged | ExperimentalAsh> delegate_ = nullptr;
 

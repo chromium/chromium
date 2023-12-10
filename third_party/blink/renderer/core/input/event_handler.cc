@@ -66,7 +66,6 @@
 #include "third_party/blink/renderer/core/html/html_dialog_element.h"
 #include "third_party/blink/renderer/core/html/html_frame_element_base.h"
 #include "third_party/blink/renderer/core/html/html_frame_set_element.h"
-#include "third_party/blink/renderer/core/html/portal/html_portal_element.h"
 #include "third_party/blink/renderer/core/input/event_handling_util.h"
 #include "third_party/blink/renderer/core/input/input_device_capabilities.h"
 #include "third_party/blink/renderer/core/input_type_names.h"
@@ -93,6 +92,7 @@
 #include "third_party/blink/renderer/core/svg/svg_use_element.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/cursors.h"
+#include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/graphics/image_orientation.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -1112,8 +1112,6 @@ WebInputEventResult EventHandler::HandleMouseMoveOrLeaveEvent(
   }
 
   WebInputEventResult event_result = WebInputEventResult::kNotHandled;
-  bool is_portal =
-      mev.InnerElement() && IsA<HTMLPortalElement>(*mev.InnerElement());
   bool is_remote_frame = false;
   LocalFrame* current_subframe = event_handling_util::GetTargetSubframe(
       mev, capturing_mouse_events_element_, &is_remote_frame);
@@ -1160,7 +1158,7 @@ WebInputEventResult EventHandler::HandleMouseMoveOrLeaveEvent(
                                                             mev.InnerNode());
 
     LocalFrameView* view = frame_->View();
-    if ((!is_remote_frame || is_portal) && view) {
+    if (!is_remote_frame && view) {
       absl::optional<ui::Cursor> optional_cursor =
           SelectCursor(mev.GetHitTestLocation(), mev.GetHitTestResult());
       if (optional_cursor.has_value()) {
@@ -1171,20 +1169,33 @@ WebInputEventResult EventHandler::HandleMouseMoveOrLeaveEvent(
 
   last_mouse_move_event_subframe_ = current_subframe;
 
-  if (event_result != WebInputEventResult::kNotHandled)
+  if (event_result != WebInputEventResult::kNotHandled) {
     return event_result;
+  }
 
   event_result = DispatchMousePointerEvent(WebInputEvent::Type::kPointerMove,
                                            mev.InnerElement(), mev.Event(),
                                            coalesced_events, predicted_events);
   // TODO(crbug.com/346473): Since there is no default action for the mousemove
-  // event we should consider doing drag&drop even when js cancels the
-  // mouse move event.
+  // event, MouseEventManager should handle drag for text selection even when js
+  // cancels the mouse move event.
   // https://w3c.github.io/uievents/#event-type-mousemove
-  if (event_result != WebInputEventResult::kNotHandled)
-    return event_result;
+  if (event_result == WebInputEventResult::kNotHandled ||
+      (RuntimeEnabledFeatures::MouseDragOnCancelledMouseMoveEnabled() &&
+       event_result == WebInputEventResult::kHandledApplication)) {
+    bool mousemove_cancelled =
+        (event_result == WebInputEventResult::kHandledApplication);
 
-  return mouse_event_manager_->HandleMouseDraggedEvent(mev);
+    event_result = mouse_event_manager_->HandleMouseDraggedEvent(mev);
+
+    if (mousemove_cancelled &&
+        event_result == WebInputEventResult::kHandledSystem) {
+      UseCounter::Count(frame_->GetDocument(),
+                        WebFeature::kMouseDragOnCancelledMouseMove);
+    }
+  }
+
+  return event_result;
 }
 
 WebInputEventResult EventHandler::HandleMouseReleaseEvent(
@@ -1648,21 +1659,8 @@ WebInputEventResult EventHandler::HandleGestureEventInFrame(
   return gesture_manager_->HandleGestureEventInFrame(targeted_event);
 }
 
-WebInputEventResult EventHandler::HandleGestureScrollEvent(
-    const WebGestureEvent& gesture_event) {
-  TRACE_EVENT0("input", "EventHandler::handleGestureScrollEvent");
-  if (!frame_->GetPage())
-    return WebInputEventResult::kNotHandled;
-
-  return scroll_manager_->HandleGestureScrollEvent(gesture_event);
-}
-
 void EventHandler::SetMouseDownMayStartAutoscroll() {
   mouse_event_manager_->SetMouseDownMayStartAutoscroll();
-}
-
-bool EventHandler::IsScrollbarHandlingGestures() const {
-  return scroll_manager_->IsScrollbarHandlingGestures();
 }
 
 bool EventHandler::ShouldApplyTouchAdjustment(
@@ -1736,6 +1734,12 @@ bool EventHandler::BestNodeForHitTestResult(
   if (touch_rect.IsEmpty()) {
     return false;
   }
+
+  CHECK(location.BoundingBox().Contains(location.Point()) ||
+        (location.BoundingBox().Right() == LayoutUnit::Max() &&
+         location.Point().left == LayoutUnit::Max()) ||
+        (location.BoundingBox().Bottom() == LayoutUnit::Max() &&
+         location.Point().top == LayoutUnit::Max()));
 
   HeapVector<Member<Node>, 11> nodes(result.ListBasedTestResult());
 

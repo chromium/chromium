@@ -65,7 +65,7 @@ class LocalDataContainer {
       scoped_refptr<browsing_data::DatabaseHelper> database_helper,
       scoped_refptr<browsing_data::LocalStorageHelper> local_storage_helper,
       scoped_refptr<browsing_data::LocalStorageHelper> session_storage_helper,
-      scoped_refptr<browsing_data::IndexedDBHelper> indexed_db_helper,
+      scoped_refptr<browsing_data::CannedIndexedDBHelper> indexed_db_helper,
       scoped_refptr<browsing_data::FileSystemHelper> file_system_helper,
       scoped_refptr<BrowsingDataQuotaHelper> quota_helper,
       scoped_refptr<browsing_data::ServiceWorkerHelper> service_worker_helper,
@@ -118,7 +118,7 @@ class LocalDataContainer {
   scoped_refptr<browsing_data::DatabaseHelper> database_helper_;
   scoped_refptr<browsing_data::LocalStorageHelper> local_storage_helper_;
   scoped_refptr<browsing_data::LocalStorageHelper> session_storage_helper_;
-  scoped_refptr<browsing_data::IndexedDBHelper> indexed_db_helper_;
+  scoped_refptr<browsing_data::CannedIndexedDBHelper> indexed_db_helper_;
   scoped_refptr<browsing_data::FileSystemHelper> file_system_helper_;
   scoped_refptr<BrowsingDataQuotaHelper> quota_helper_;
   scoped_refptr<browsing_data::ServiceWorkerHelper> service_worker_helper_;

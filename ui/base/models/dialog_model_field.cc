@@ -94,14 +94,12 @@ DialogModelLabel::TextReplacement DialogModelLabel::CreateEmphasizedText(
   return TextReplacement(text, true);
 }
 
-DialogModelField::DialogModelField(base::PassKey<DialogModel>,
-                                   DialogModel* model,
+DialogModelField::DialogModelField(base::PassKey<DialogModelBase>,
                                    Type type,
                                    ElementIdentifier id,
                                    base::flat_set<Accelerator> accelerators,
                                    const DialogModelField::Params& params)
-    : model_(model),
-      type_(type),
+    : type_(type),
       id_(id),
       accelerators_(std::move(accelerators)),
       is_visible_(params.is_visible_) {}
@@ -221,12 +219,10 @@ DialogModelButton::Params& DialogModelButton::Params::AddAccelerator(
 }
 
 DialogModelButton::DialogModelButton(
-    base::PassKey<DialogModel> pass_key,
-    DialogModel* model,
+    base::PassKey<DialogModelBase> pass_key,
     base::RepeatingCallback<void(const Event&)> callback,
     const DialogModelButton::Params& params)
     : DialogModelField(pass_key,
-                       model,
                        kButton,
                        params.id_,
                        params.accelerators_,
@@ -245,13 +241,12 @@ void DialogModelButton::OnPressed(base::PassKey<DialogModelHost>,
   callback_.Run(event);
 }
 
-DialogModelParagraph::DialogModelParagraph(base::PassKey<DialogModel> pass_key,
-                                           DialogModel* model,
-                                           const DialogModelLabel& label,
-                                           std::u16string header,
-                                           ElementIdentifier id)
+DialogModelParagraph::DialogModelParagraph(
+    base::PassKey<DialogModelBase> pass_key,
+    const DialogModelLabel& label,
+    std::u16string header,
+    ElementIdentifier id)
     : DialogModelField(pass_key,
-                       model,
                        kParagraph,
                        id,
                        {},
@@ -262,12 +257,11 @@ DialogModelParagraph::DialogModelParagraph(base::PassKey<DialogModel> pass_key,
 DialogModelParagraph::~DialogModelParagraph() = default;
 
 DialogModelCheckbox::DialogModelCheckbox(
-    base::PassKey<DialogModel> pass_key,
-    DialogModel* model,
+    base::PassKey<DialogModelBase> pass_key,
     ElementIdentifier id,
     const DialogModelLabel& label,
     const DialogModelCheckbox::Params& params)
-    : DialogModelField(pass_key, model, kCheckbox, id, {}, params),
+    : DialogModelField(pass_key, kCheckbox, id, {}, params),
       label_(label),
       is_checked_(params.is_checked_) {}
 
@@ -294,18 +288,12 @@ DialogModelCombobox::Params& DialogModelCombobox::Params::AddAccelerator(
 }
 
 DialogModelCombobox::DialogModelCombobox(
-    base::PassKey<DialogModel> pass_key,
-    DialogModel* model,
+    base::PassKey<DialogModelBase> pass_key,
     ElementIdentifier id,
     std::u16string label,
     std::unique_ptr<ui::ComboboxModel> combobox_model,
     const DialogModelCombobox::Params& params)
-    : DialogModelField(pass_key,
-                       model,
-                       kCombobox,
-                       id,
-                       params.accelerators_,
-                       params),
+    : DialogModelField(pass_key, kCombobox, id, params.accelerators_, params),
       label_(std::move(label)),
       accessible_name_(params.accessible_name_),
       selected_index_(combobox_model->GetDefaultIndex().value()),
@@ -342,13 +330,12 @@ DialogModelMenuItem::Params& DialogModelMenuItem::Params::SetId(
 }
 
 DialogModelMenuItem::DialogModelMenuItem(
-    base::PassKey<DialogModel> pass_key,
-    DialogModel* model,
+    base::PassKey<DialogModelBase> pass_key,
     ImageModel icon,
     std::u16string label,
     base::RepeatingCallback<void(int)> callback,
     const DialogModelMenuItem::Params& params)
-    : DialogModelField(pass_key, model, kMenuItem, params.id_, {}, params),
+    : DialogModelField(pass_key, kMenuItem, params.id_, {}, params),
       icon_(std::move(icon)),
       label_(std::move(label)),
       is_enabled_(params.is_enabled_),
@@ -362,10 +349,24 @@ void DialogModelMenuItem::OnActivated(base::PassKey<DialogModelHost> pass_key,
   callback_.Run(event_flags);
 }
 
-DialogModelSeparator::DialogModelSeparator(base::PassKey<DialogModel> pass_key,
-                                           DialogModel* model)
+DialogModelSection::DialogModelSection(base::PassKey<DialogModelBase> pass_key)
     : DialogModelField(pass_key,
-                       model,
+                       kSection,
+                       ElementIdentifier(),
+                       {},
+                       DialogModelField::Params()) {}
+
+DialogModelSection::~DialogModelSection() = default;
+
+void DialogModelSection::AddField(base::PassKey<DialogModelBase>,
+                                  std::unique_ptr<DialogModelField> field) {
+  CHECK(field);
+  fields_.push_back(std::move(field));
+}
+
+DialogModelSeparator::DialogModelSeparator(
+    base::PassKey<DialogModelBase> pass_key)
+    : DialogModelField(pass_key,
                        kSeparator,
                        ElementIdentifier(),
                        {},
@@ -383,18 +384,12 @@ DialogModelTextfield::Params& DialogModelTextfield::Params::AddAccelerator(
 }
 
 DialogModelTextfield::DialogModelTextfield(
-    base::PassKey<DialogModel> pass_key,
-    DialogModel* model,
+    base::PassKey<DialogModelBase> pass_key,
     ElementIdentifier id,
     std::u16string label,
     std::u16string text,
     const ui::DialogModelTextfield::Params& params)
-    : DialogModelField(pass_key,
-                       model,
-                       kTextfield,
-                       id,
-                       params.accelerators_,
-                       params),
+    : DialogModelField(pass_key, kTextfield, id, params.accelerators_, params),
       label_(label),
       accessible_name_(params.accessible_name_),
       text_(std::move(text)) {
@@ -413,16 +408,10 @@ void DialogModelTextfield::OnTextChanged(base::PassKey<DialogModelHost>,
 DialogModelCustomField::Field::~Field() = default;
 
 DialogModelCustomField::DialogModelCustomField(
-    base::PassKey<DialogModel> pass_key,
-    DialogModel* model,
+    base::PassKey<DialogModelBase> pass_key,
     ElementIdentifier id,
     std::unique_ptr<DialogModelCustomField::Field> field)
-    : DialogModelField(pass_key,
-                       model,
-                       kCustom,
-                       id,
-                       {},
-                       DialogModelField::Params()),
+    : DialogModelField(pass_key, kCustom, id, {}, DialogModelField::Params()),
       field_(std::move(field)) {}
 
 DialogModelCustomField::~DialogModelCustomField() = default;

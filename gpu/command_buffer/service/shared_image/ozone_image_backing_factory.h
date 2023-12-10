@@ -5,6 +5,7 @@
 #ifndef GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_OZONE_IMAGE_BACKING_FACTORY_H_
 #define GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_OZONE_IMAGE_BACKING_FACTORY_H_
 
+#include <optional>
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
@@ -13,7 +14,6 @@
 #include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "gpu/config/gpu_preferences.h"
 #include "gpu/gpu_gles2_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace gpu {
 class SharedContextState;
@@ -119,7 +119,7 @@ class GPU_GLES2_EXPORT OzoneImageBackingFactory
       GrSurfaceOrigin surface_origin,
       SkAlphaType alpha_type,
       uint32_t usage,
-      absl::optional<gfx::BufferUsage> buffer_usage = absl::nullopt);
+      std::optional<gfx::BufferUsage> buffer_usage = std::nullopt);
 };
 
 }  // namespace gpu

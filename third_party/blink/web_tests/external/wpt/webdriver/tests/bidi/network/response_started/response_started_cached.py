@@ -3,31 +3,30 @@ import random
 
 from tests.support.sync import AsyncPoll
 
-from .. import assert_response_event
-
-PAGE_EMPTY_TEXT = "/webdriver/tests/bidi/network/support/empty.txt"
+from .. import assert_response_event, PAGE_EMPTY_TEXT, RESPONSE_STARTED_EVENT
 
 
 @pytest.mark.asyncio
 async def test_cached(
     wait_for_event,
+    wait_for_future_safe,
     url,
     fetch,
     setup_network_test,
 ):
     network_events = await setup_network_test(
         events=[
-            "network.responseStarted",
+            RESPONSE_STARTED_EVENT,
         ]
     )
-    events = network_events["network.responseStarted"]
+    events = network_events[RESPONSE_STARTED_EVENT]
 
     cached_url = url(
         f"/webdriver/tests/support/http_handlers/cached.py?status=200&nocache={random.random()}"
     )
-    on_response_started = wait_for_event("network.responseStarted")
+    on_response_started = wait_for_event(RESPONSE_STARTED_EVENT)
     await fetch(cached_url)
-    await on_response_started
+    await wait_for_future_safe(on_response_started)
 
     assert len(events) == 1
     expected_request = {"method": "GET", "url": cached_url}
@@ -45,9 +44,9 @@ async def test_cached(
         expected_response=expected_response,
     )
 
-    on_response_started = wait_for_event("network.responseStarted")
+    on_response_started = wait_for_event(RESPONSE_STARTED_EVENT)
     await fetch(cached_url)
-    await on_response_started
+    await wait_for_future_safe(on_response_started)
 
     assert len(events) == 2
 
@@ -73,10 +72,10 @@ async def test_cached_redirect(
 ):
     network_events = await setup_network_test(
         events=[
-            "network.responseStarted",
+            RESPONSE_STARTED_EVENT,
         ]
     )
-    events = network_events["network.responseStarted"]
+    events = network_events[RESPONSE_STARTED_EVENT]
 
     text_url = url(PAGE_EMPTY_TEXT)
     cached_url = url(
@@ -148,21 +147,21 @@ async def test_cached_redirect(
 )
 @pytest.mark.asyncio
 async def test_cached_revalidate(
-     wait_for_event, url, fetch, setup_network_test, method
+    wait_for_event, wait_for_future_safe, url, fetch, setup_network_test, method
 ):
     network_events = await setup_network_test(
         events=[
-            "network.responseStarted",
+            RESPONSE_STARTED_EVENT,
         ]
     )
-    events = network_events["network.responseStarted"]
+    events = network_events[RESPONSE_STARTED_EVENT]
 
     revalidate_url = url(
         f"/webdriver/tests/support/http_handlers/must-revalidate.py?nocache={random.random()}"
     )
-    on_response_started = wait_for_event("network.responseStarted")
+    on_response_started = wait_for_event(RESPONSE_STARTED_EVENT)
     await fetch(revalidate_url, method=method)
-    await on_response_started
+    await wait_for_future_safe(on_response_started)
 
     assert len(events) == 1
     expected_request = {"method": method, "url": revalidate_url}
@@ -177,12 +176,12 @@ async def test_cached_revalidate(
         expected_response=expected_response,
     )
 
-    on_response_started = wait_for_event("network.responseStarted")
+    on_response_started = wait_for_event(RESPONSE_STARTED_EVENT)
 
     # Note that we pass a specific header so that the must-revalidate.py handler
     # can decide to return a 304 without having to use another URL.
     await fetch(revalidate_url, method=method, headers={"return-304": "true"})
-    await on_response_started
+    await wait_for_future_safe(on_response_started)
 
     assert len(events) == 2
 

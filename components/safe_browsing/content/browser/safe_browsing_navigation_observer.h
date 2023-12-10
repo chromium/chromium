@@ -177,11 +177,6 @@ class SafeBrowsingNavigationObserver : public base::SupportsUserData::Data,
       const ContentSettingsPattern& secondary_pattern,
       ContentSettingsTypeSet content_type_set) override;
 
-  // If the navigation is created from portal contents, records the new contents
-  // to track the referrer chain across portal activations.
-  void MaybeRecordNewWebContentsForPortalContents(
-      content::NavigationHandle* navigation_handle);
-
   // Setter functions for fields in |nav_event|.
   void SetNavigationInitiationAndRecordUserGesture(
       content::NavigationHandle* navigation_handle,

@@ -5,6 +5,7 @@
 #include "ash/assistant/ui/main_stage/assistant_opt_in_view.h"
 
 #include <memory>
+#include <utility>
 #include <vector>
 
 #include "ash/assistant/ui/assistant_ui_constants.h"
@@ -53,7 +54,7 @@ class AssistantOptInContainer : public views::Button {
   METADATA_HEADER(AssistantOptInContainer);
 
   explicit AssistantOptInContainer(views::Button::PressedCallback callback)
-      : views::Button(callback) {
+      : views::Button(std::move(callback)) {
     constexpr float kHighlightOpacity = 0.06f;
     SetFocusPainter(views::Painter::CreateSolidRoundRectPainter(
         SkColorSetA(SK_ColorBLACK, 0xff * kHighlightOpacity),

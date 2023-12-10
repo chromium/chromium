@@ -9,6 +9,7 @@
 
 #include <memory>
 
+#include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
@@ -47,7 +48,7 @@ class BoundSessionCookieRefreshServiceImpl
     kMaxValue = kSessionOverride,
   };
 
-  explicit BoundSessionCookieRefreshServiceImpl(
+  BoundSessionCookieRefreshServiceImpl(
       unexportable_keys::UnexportableKeyService& key_service,
       std::unique_ptr<BoundSessionParamsStorage> session_params_storage,
       content::StoragePartition* storage_partition,
@@ -66,15 +67,17 @@ class BoundSessionCookieRefreshServiceImpl
   void AddBoundSessionRequestThrottledHandlerReceiver(
       mojo::PendingReceiver<chrome::mojom::BoundSessionRequestThrottledHandler>
           receiver) override;
+  void CreateRegistrationRequest(
+      BoundSessionRegistrationFetcherParam registration_params) override;
+  base::WeakPtr<BoundSessionCookieRefreshService> GetWeakPtr() override;
+  void AddObserver(
+      BoundSessionCookieRefreshService::Observer* observer) override;
+  void RemoveObserver(
+      BoundSessionCookieRefreshService::Observer* observer) override;
 
   // chrome::mojom::BoundSessionRequestThrottledHandler:
   void HandleRequestBlockedOnCookie(
       HandleRequestBlockedOnCookieCallback resume_blocked_request) override;
-
-  void CreateRegistrationRequest(
-      BoundSessionRegistrationFetcherParam registration_params) override;
-
-  base::WeakPtr<BoundSessionCookieRefreshService> GetWeakPtr() override;
 
  private:
   class BoundSessionStateTracker;
@@ -130,6 +133,9 @@ class BoundSessionCookieRefreshServiceImpl
   // storage and updates all renderers.
   void TerminateSession(SessionTerminationTrigger trigger);
   void RecordSessionTerminationTrigger(SessionTerminationTrigger trigger);
+  void NotifyBoundSessionTerminated(
+      const GURL& site,
+      const base::flat_set<std::string>& bound_cookie_names);
 
   const raw_ref<unexportable_keys::UnexportableKeyService> key_service_;
   // Never null. Stored as `std::unique_ptr` for polymorphism.
@@ -151,6 +157,8 @@ class BoundSessionCookieRefreshServiceImpl
 
   // There is only one active session registration at a time.
   std::unique_ptr<BoundSessionRegistrationFetcher> active_registration_request_;
+
+  base::ObserverList<BoundSessionCookieRefreshService::Observer> observers_;
 
   base::WeakPtrFactory<BoundSessionCookieRefreshService> weak_ptr_factory_{
       this};

@@ -15,9 +15,7 @@ import org.chromium.base.ContextUtils;
 
 import java.util.List;
 
-/**
- * Stores high-level state about a session for metrics logging.
- */
+/** Stores high-level state about a session for metrics logging. */
 public class ChromeSessionState {
     /**
      * Records whether the activity is in multi-window mode with native-side feature utilities.
@@ -43,8 +41,7 @@ public class ChromeSessionState {
     public static void setDarkModeState(boolean activityIsInDarkMode, boolean systemIsInDarkMode) {
         boolean activityMatchesSystem = activityIsInDarkMode == systemIsInDarkMode;
 
-        @DarkModeState
-        int darkModeState;
+        @DarkModeState int darkModeState;
         if (activityIsInDarkMode) {
             if (activityMatchesSystem) {
                 darkModeState = DarkModeState.DARK_MODE_SYSTEM;
@@ -61,24 +58,25 @@ public class ChromeSessionState {
         ChromeSessionStateJni.get().setDarkModeState(darkModeState);
     }
 
-    /**
-     * Returns whether Android has multiple user profiles.
-     */
+    /** Returns whether Android has multiple user profiles. */
     @CalledByNative
     public static @MultipleUserProfilesState int getMultipleUserProfilesState() {
         UserManager userManager =
-                (UserManager) ContextUtils.getApplicationContext().getSystemService(
-                        Context.USER_SERVICE);
+                (UserManager)
+                        ContextUtils.getApplicationContext().getSystemService(Context.USER_SERVICE);
         List<UserHandle> userHandles = userManager.getUserProfiles();
         assert !userHandles.isEmpty();
-        return userHandles.size() > 1 ? MultipleUserProfilesState.MULTIPLE_PROFILES
-                                      : MultipleUserProfilesState.SINGLE_PROFILE;
+        return userHandles.size() > 1
+                ? MultipleUserProfilesState.MULTIPLE_PROFILES
+                : MultipleUserProfilesState.SINGLE_PROFILE;
     }
 
     @NativeMethods
     interface Natives {
         void setActivityType(@ActivityType int type);
+
         void setIsInMultiWindowMode(boolean isInMultiWindowMode);
+
         void setDarkModeState(@DarkModeState int state);
     }
 }

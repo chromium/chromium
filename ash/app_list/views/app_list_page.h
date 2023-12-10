@@ -8,6 +8,7 @@
 #include "ash/ash_export.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "base/memory/raw_ptr.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 namespace ash {
@@ -15,6 +16,8 @@ namespace ash {
 class ContentsView;
 
 class ASH_EXPORT AppListPage : public views::View {
+  METADATA_HEADER(AppListPage, views::View)
+
  public:
   AppListPage();
 
@@ -95,9 +98,6 @@ class ASH_EXPORT AppListPage : public views::View {
   // contents view's coordinate space. This is the area of the contents view
   // below the search box.
   gfx::Rect GetDefaultContentsBounds() const;
-
-  // views::View:
-  const char* GetClassName() const override;
 
  private:
   raw_ptr<ContentsView, ExperimentalAsh> contents_view_;

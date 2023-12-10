@@ -21,50 +21,53 @@ import org.chromium.components.ip_protection_auth.common.proto.IpProtectionAuthP
 import org.chromium.components.ip_protection_auth.common.proto.IpProtectionAuthProtos.GetInitialDataRequest;
 import org.chromium.components.ip_protection_auth.common.proto.IpProtectionAuthProtos.GetInitialDataResponse;
 
-/**
- * Mock implementation of the IP Protection Auth Service
- */
+/** Mock implementation of the IP Protection Auth Service */
 public final class IpProtectionAuthServiceMock extends Service {
     private static final String TAG = "IpProtectionAuthServiceMock";
-    private final IIpProtectionAuthService.Stub mBinder = new IIpProtectionAuthService.Stub() {
-        // TODO(abhijithnair): Currently this method just passes the same request byte[] back as the
-        // result. Use a mock result instead.
-        @Override
-        public void getInitialData(byte[] bytes, IIpProtectionGetInitialDataCallback callback) {
-            try {
-                GetInitialDataRequest request = GetInitialDataRequest.parser().parseFrom(bytes);
-                GetInitialDataResponse response = GetInitialDataResponse.newBuilder()
-                                                          .setTestPayload(request.getTestPayload())
-                                                          .build();
-                callback.reportResult(response.toByteArray());
-            } catch (RemoteException ex) {
-                // TODO(abhijithnair): Handle this exception correctly.
-                throw new RuntimeException(ex);
-            } catch (InvalidProtocolBufferException ex) {
-                // TODO(abhijithnair): Handle this exception correctly.
-                throw new RuntimeException(ex);
-            }
-        }
+    private final IIpProtectionAuthService.Stub mBinder =
+            new IIpProtectionAuthService.Stub() {
+                // TODO(abhijithnair): Currently this method just passes the same request byte[]
+                // back as the result. Use a mock result instead.
+                @Override
+                public void getInitialData(
+                        byte[] bytes, IIpProtectionGetInitialDataCallback callback) {
+                    try {
+                        GetInitialDataRequest request =
+                                GetInitialDataRequest.parser().parseFrom(bytes);
+                        GetInitialDataResponse response =
+                                GetInitialDataResponse.newBuilder()
+                                        .setTestPayload(request.getTestPayload())
+                                        .build();
+                        callback.reportResult(response.toByteArray());
+                    } catch (RemoteException ex) {
+                        // TODO(abhijithnair): Handle this exception correctly.
+                        throw new RuntimeException(ex);
+                    } catch (InvalidProtocolBufferException ex) {
+                        // TODO(abhijithnair): Handle this exception correctly.
+                        throw new RuntimeException(ex);
+                    }
+                }
 
-        // TODO(abhijithnair): Currently this method just passes the same request byte[] back as the
-        // result. Use a mock result instead.
-        @Override
-        public void authAndSign(byte[] bytes, IIpProtectionAuthAndSignCallback callback) {
-            try {
-                AuthAndSignRequest request = AuthAndSignRequest.parser().parseFrom(bytes);
-                AuthAndSignResponse response = AuthAndSignResponse.newBuilder()
-                                                       .setTestPayload(request.getTestPayload())
-                                                       .build();
-                callback.reportResult(response.toByteArray());
-            } catch (RemoteException ex) {
-                // TODO(abhijithnair): Handle this exception correctly.
-                throw new RuntimeException(ex);
-            } catch (InvalidProtocolBufferException ex) {
-                // TODO(abhijithnair): Handle this exception correctly.
-                throw new RuntimeException(ex);
-            }
-        }
-    };
+                // TODO(abhijithnair): Currently this method just passes the same request byte[]
+                // back as the result. Use a mock result instead.
+                @Override
+                public void authAndSign(byte[] bytes, IIpProtectionAuthAndSignCallback callback) {
+                    try {
+                        AuthAndSignRequest request = AuthAndSignRequest.parser().parseFrom(bytes);
+                        AuthAndSignResponse response =
+                                AuthAndSignResponse.newBuilder()
+                                        .setTestPayload(request.getTestPayload())
+                                        .build();
+                        callback.reportResult(response.toByteArray());
+                    } catch (RemoteException ex) {
+                        // TODO(abhijithnair): Handle this exception correctly.
+                        throw new RuntimeException(ex);
+                    } catch (InvalidProtocolBufferException ex) {
+                        // TODO(abhijithnair): Handle this exception correctly.
+                        throw new RuntimeException(ex);
+                    }
+                }
+            };
 
     @Nullable
     @Override

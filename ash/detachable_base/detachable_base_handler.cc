@@ -179,7 +179,7 @@ void DetachableBaseHandler::TabletModeEventReceived(
 }
 
 void DetachableBaseHandler::OnGotPowerManagerSwitchStates(
-    absl::optional<chromeos::PowerManagerClient::SwitchStates> switch_states) {
+    std::optional<chromeos::PowerManagerClient::SwitchStates> switch_states) {
   if (!switch_states.has_value() || tablet_mode_.has_value())
     return;
 

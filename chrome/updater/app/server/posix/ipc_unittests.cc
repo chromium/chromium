@@ -235,7 +235,7 @@ class UpdaterIPCTestCase : public testing::Test {
     bool process_exited = false;
     base::RunLoop wait_for_process_exit_loop;
     wait_for_process_exit_thread_.task_runner()->PostTaskAndReply(
-        FROM_HERE, base::BindLambdaForTesting([&]() {
+        FROM_HERE, base::BindLambdaForTesting([&] {
           process_exited = base::WaitForMultiprocessTestChildExit(
               process, TestTimeouts::action_timeout(), &exit_code);
         }),

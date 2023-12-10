@@ -5,6 +5,7 @@
 #ifndef ASH_PUBLIC_CPP_APP_LIST_APP_LIST_TYPES_H_
 #define ASH_PUBLIC_CPP_APP_LIST_APP_LIST_TYPES_H_
 
+#include <optional>
 #include <ostream>
 #include <string>
 #include <vector>
@@ -17,7 +18,6 @@
 #include "base/task/thread_pool.h"
 #include "components/sync/model/string_ordinal.h"
 #include "components/sync/protocol/app_list_specifics.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/range/range.h"
@@ -391,8 +391,9 @@ enum class AppListSearchResultType {
   kImageSearch,            // Local image search result.
   kSystemInfo,             // System Info search result.
   kDesksAdminTemplate,     // Admin templates search results.
+  kAppShortcutV2,          // App shortcuts V2 search results.
   // Add new values here.
-  kMaxValue = kDesksAdminTemplate,
+  kMaxValue = kAppShortcutV2,
 };
 
 ASH_PUBLIC_EXPORT bool IsAppListSearchResultAnApp(
@@ -536,17 +537,17 @@ struct ASH_PUBLIC_EXPORT SystemInfoAnswerCardData {
   // Answer card results which are a bar chart type. This will be a value
   // between 0 and 100. This is only set if the answer card is of type bar
   // chart.
-  absl::optional<double> bar_chart_percentage;
+  std::optional<double> bar_chart_percentage;
 
   // For System Info Answer Cards of bar chart type and upper or lower limit can
   // be set. If the value of the bar chart goes above/ below this value then the
   // bar chart turns from blue to red.
-  absl::optional<double> lower_warning_limit_bar_chart;
-  absl::optional<double> upper_warning_limit_bar_chart;
+  std::optional<double> lower_warning_limit_bar_chart;
+  std::optional<double> upper_warning_limit_bar_chart;
 
   // This is only set if the description has 2 components to it. This
   // description will be places on the right hand side of the details container.
-  absl::optional<std::u16string> extra_details;
+  std::optional<std::u16string> extra_details;
 };
 
 // Data required for showing file info.
@@ -557,9 +558,10 @@ struct ASH_PUBLIC_EXPORT FileMetadata {
   ~FileMetadata();
 
   base::File::Info file_info;
-  std::string mime_type;
   base::FilePath file_path;
-  base::FilePath virtual_path;
+  base::FilePath file_name;
+  // The folder path that is formatted for display.
+  base::FilePath displayable_folder_path;
 };
 
 class ASH_PUBLIC_EXPORT FileMetadataLoader {
@@ -702,16 +704,16 @@ class ASH_PUBLIC_EXPORT SearchResultTextItem {
  private:
   SearchResultTextItemType item_type_;
   // Used for type SearchResultTextItemType::kString.
-  absl::optional<std::u16string> raw_text_;
-  absl::optional<SearchResultTags> text_tags_;
+  std::optional<std::u16string> raw_text_;
+  std::optional<SearchResultTags> text_tags_;
   // Used for type SearchResultTextItemType::kIconCode.
-  absl::optional<IconCode> icon_code_;
+  std::optional<IconCode> icon_code_;
   // Used for type SearchResultTextItemType::kIconCode and
   // SearchResultTextItemType::kString. Alternate styling is used to distinguish
   // regular keys such as 'c' and 'v' from 'ctrl' and 'alt'.
   bool alternate_icon_text_code_styling_ = false;
   // Used for type SearchResultTextItemType::kCustomIcon.
-  absl::optional<gfx::ImageSkia> raw_image_;
+  std::optional<gfx::ImageSkia> raw_image_;
   // Behavior of the text item when there is not enough space to show it in the
   // UI. only applicable to SearchResultTextItemType::kString.
   OverflowBehavior overflow_behavior_ = kElide;
@@ -820,7 +822,7 @@ struct ASH_PUBLIC_EXPORT SearchResultMetadata {
 
   // The details for an answer card result with System Information. This field
   // is only set for this specific result type.
-  absl::optional<SystemInfoAnswerCardData> system_info_answer_card_data;
+  std::optional<SystemInfoAnswerCardData> system_info_answer_card_data;
 
   // The file path for this search result. This is set only if the search result
   // is a file.

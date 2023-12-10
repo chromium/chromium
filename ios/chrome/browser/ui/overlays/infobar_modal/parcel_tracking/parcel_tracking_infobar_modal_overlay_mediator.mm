@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/ui/overlays/infobar_modal/parcel_tracking/parcel_tracking_infobar_modal_overlay_mediator.h"
 
 #import "base/notreached.h"
-#import "ios/chrome/browser/overlays/public/default/default_infobar_overlay_request_config.h"
+#import "ios/chrome/browser/overlays/model/public/default/default_infobar_overlay_request_config.h"
 #import "ios/chrome/browser/parcel_tracking/parcel_tracking_infobar_delegate.h"
 #import "ios/chrome/browser/parcel_tracking/parcel_tracking_step.h"
 #import "ios/chrome/browser/ui/infobars/modals/parcel_tracking/infobar_parcel_tracking_modal_consumer.h"
@@ -36,11 +36,15 @@
 - (void)parcelTrackingTableViewControllerDidTapTrackAllButton {
   self.parcelTrackingInfobarDelegate->TrackPackages(
       /*display_infobar=*/false);
+  self.parcelTrackingInfobarDelegate->SetStep(
+      ParcelTrackingStep::kNewPackageTracked);
 }
 
 - (void)parcelTrackingTableViewControllerDidTapUntrackAllButton {
   self.parcelTrackingInfobarDelegate->UntrackPackages(
       /*display_infobar=*/false);
+  self.parcelTrackingInfobarDelegate->SetStep(
+      ParcelTrackingStep::kPackageUntracked);
 }
 
 #pragma mark - Public

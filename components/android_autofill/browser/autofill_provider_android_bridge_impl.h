@@ -9,8 +9,6 @@
 
 #include <jni.h>
 
-#include <string>
-
 #include "base/android/jni_weak_ref.h"
 #include "base/containers/span.h"
 #include "base/memory/raw_ref.h"
@@ -28,6 +26,7 @@ class AutofillProviderAndroidBridgeImpl : public AutofillProviderAndroidBridge {
   void AttachToJavaAutofillProvider(
       JNIEnv* env,
       const base::android::JavaRef<jobject>& jcaller) override;
+  void SendPrefillRequest(FormDataAndroid& form) override;
   void StartAutofillSession(FormDataAndroid& form,
                             const FieldInfo& field,
                             bool has_server_predictions) override;
@@ -41,6 +40,7 @@ class AutofillProviderAndroidBridgeImpl : public AutofillProviderAndroidBridge {
   void OnTextFieldDidScroll(const FieldInfo& field) override;
   void OnFormSubmitted(mojom::SubmissionSource submission_source) override;
   void OnDidFillAutofillFormData() override;
+  void Reset() override;
 
   // Called by Java:
 
@@ -68,6 +68,14 @@ class AutofillProviderAndroidBridgeImpl : public AutofillProviderAndroidBridge {
                          jfloat y,
                          jfloat width,
                          jfloat height);
+
+  // Informs the `Delegate` of the outcome of an attempt to show a bottom sheet.
+  // `is_shown` indicates whether the bottom sheet was shown and
+  // `provided_autofill_structure` describes whether an Autofill ViewStructure
+  // was provided to the Autofill framework prior to showing the bottom sheet.
+  void OnShowBottomSheetResult(JNIEnv* env,
+                               jboolean is_shown,
+                               jboolean provided_autofill_structure);
 
  private:
   // The delegate of the bridge.

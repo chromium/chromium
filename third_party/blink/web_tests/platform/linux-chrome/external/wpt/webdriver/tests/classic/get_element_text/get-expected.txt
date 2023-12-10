@@ -3,7 +3,6 @@ This is a wdspec test.
   AssertionError: assert 'stale element reference' == 'no such element'
 [FAIL] test_no_browsing_context
   AssertionError: assert 'no such element' == 'no such window'
-[PASS] test_no_such_element_with_invalid_value
 [FAIL] test_no_such_element_with_shadow_root
   assert 500 == 404
 [FAIL] test_no_such_element_from_other_window_handle[open]
@@ -14,10 +13,12 @@ This is a wdspec test.
   AssertionError: assert 'stale element reference' == 'no such element'
 [FAIL] test_no_such_element_from_other_frame[closed]
   AssertionError: assert 'stale element reference' == 'no such element'
-[PASS] test_stale_element_reference[top_context]
-[PASS] test_stale_element_reference[child_context]
-[PASS] test_getting_text_of_a_non_existant_element_is_an_error
-[PASS] test_read_element_text
+[FAIL] test_shadow_root_slot[default visible]
+  AssertionError: assert '' == 'foobar'
+[FAIL] test_shadow_root_slot[default outside]
+  AssertionError: assert 'bar' == 'foobar'
+[FAIL] test_shadow_root_slot[default hidden]
+  AssertionError: assert '' == 'bar'
 [FAIL] test_pretty_print_xml
   AssertionError: assert '' == 'cheese'
 Harness: the test ran to completion.

@@ -103,6 +103,11 @@ struct COMPONENT_EXPORT(FIRST_PARTY_SETS_MOJOM_TRAITS)
     return sets.manual_config_;
   }
 
+  static const base::flat_map<net::SchemefulSite, net::SchemefulSite>&
+  manual_aliases(const net::GlobalFirstPartySets& sets) {
+    return sets.manual_aliases_;
+  }
+
   static bool Read(network::mojom::GlobalFirstPartySetsDataView sets,
                    net::GlobalFirstPartySets* out_sets);
 };

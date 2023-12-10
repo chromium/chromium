@@ -93,6 +93,7 @@ import org.chromium.url.JUnitTestGURLs;
         manifest = Config.NONE,
         shadows = {ShadowHomepageManager.class, ShadowHomepagePolicyManager.class})
 @CommandLineFlags.Add({BaseSwitches.DISABLE_LOW_END_DEVICE_MODE})
+@DisableFeatures({ChromeFeatureList.SHOW_NTP_AT_STARTUP_ANDROID})
 public class ReturnToChromeUtilUnitTest {
     /** Shadow for {@link HomepageManager}. */
     @Implements(HomepageManager.class)
@@ -175,7 +176,6 @@ public class ReturnToChromeUtilUnitTest {
         Assert.assertEquals(
                 START_SURFACE_RETURN_TIME_SECONDS.getDefaultValue(),
                 START_SURFACE_RETURN_TIME_SECONDS.getValue());
-        Assert.assertFalse(ChromeFeatureList.sStartSurfaceReturnTime.isEnabled());
 
         long returnTimeMs =
                 START_SURFACE_RETURN_TIME_SECONDS.getValue() * DateUtils.SECOND_IN_MILLIS;
@@ -199,7 +199,6 @@ public class ReturnToChromeUtilUnitTest {
         Assert.assertEquals(
                 START_SURFACE_RETURN_TIME_ON_TABLET_SECONDS.getDefaultValue(),
                 START_SURFACE_RETURN_TIME_ON_TABLET_SECONDS.getValue());
-        Assert.assertFalse(ChromeFeatureList.sStartSurfaceReturnTime.isEnabled());
 
         int updatedReturnTimeMs = 1;
         // Sets the return time on phones arrived.
@@ -233,11 +232,7 @@ public class ReturnToChromeUtilUnitTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({ChromeFeatureList.START_SURFACE_RETURN_TIME})
     public void testShouldShowTabSwitcherWithStartReturnTimeWithoutUseModel() {
-        Assert.assertTrue(ChromeFeatureList.sStartSurfaceReturnTime.isEnabled());
-        Assert.assertTrue(ChromeFeatureList.sStartSurfaceAndroid.isEnabled());
-        START_SURFACE_RETURN_TIME_USE_MODEL.setForTesting(false);
         Assert.assertFalse(START_SURFACE_RETURN_TIME_USE_MODEL.getValue());
 
         // Set to not shown.
@@ -272,10 +267,7 @@ public class ReturnToChromeUtilUnitTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({ChromeFeatureList.START_SURFACE_RETURN_TIME})
     public void testShouldShowTabSwitcherWithSegmentationReturnTime() {
-        Assert.assertTrue(ChromeFeatureList.sStartSurfaceReturnTime.isEnabled());
-
         // Verifies that when the preference key isn't stored, return
         // START_SURFACE_RETURN_TIME_SECONDS.getDefaultValue() as default value, i.e., 8 hours.
         Assert.assertEquals(

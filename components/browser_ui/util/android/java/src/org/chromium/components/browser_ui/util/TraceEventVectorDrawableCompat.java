@@ -18,9 +18,7 @@ import org.chromium.base.TraceEvent;
  * VectorDrawableCompat.create().
  */
 public class TraceEventVectorDrawableCompat {
-    /**
-     * Wrapper of VectorDrawableCompat.create() with trace event.
-     */
+    /** Wrapper of VectorDrawableCompat.create() with trace event. */
     public static VectorDrawableCompat create(
             @NonNull Resources res, @DrawableRes int resId, @Nullable Resources.Theme theme) {
         try (TraceEvent te = TraceEvent.scoped("VectorDrawableCompat.create")) {

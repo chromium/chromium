@@ -57,8 +57,9 @@ public class PassphraseActivity extends AppCompatActivity
     @Override
     protected void onResume() {
         super.onResume();
-        Account account = CoreAccountInfo.getAndroidAccountFrom(
-                mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SYNC));
+        Account account =
+                CoreAccountInfo.getAndroidAccountFrom(
+                        mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SYNC));
         if (account == null) {
             finish();
             return;
@@ -86,15 +87,16 @@ public class PassphraseActivity extends AppCompatActivity
         if (mSyncStateChangedListener != null) {
             return;
         }
-        mSyncStateChangedListener = new SyncService.SyncStateChangedListener() {
-            @Override
-            public void syncStateChanged() {
-                if (mSyncService.isEngineInitialized()) {
-                    removeSyncStateChangedListener();
-                    displayPassphraseDialog();
-                }
-            }
-        };
+        mSyncStateChangedListener =
+                new SyncService.SyncStateChangedListener() {
+                    @Override
+                    public void syncStateChanged() {
+                        if (mSyncService.isEngineInitialized()) {
+                            removeSyncStateChangedListener();
+                            displayPassphraseDialog();
+                        }
+                    }
+                };
         mSyncService.addSyncStateChangedListener(mSyncStateChangedListener);
     }
 
@@ -123,9 +125,7 @@ public class PassphraseActivity extends AppCompatActivity
         dialog.show(ft, FRAGMENT_SPINNER);
     }
 
-    /**
-     * Callback for PassphraseDialogFragment.Listener
-     */
+    /** Callback for PassphraseDialogFragment.Listener */
     @Override
     public boolean onPassphraseEntered(String passphrase) {
         if (!passphrase.isEmpty() && mSyncService.setDecryptionPassphrase(passphrase)) {
@@ -150,9 +150,7 @@ public class PassphraseActivity extends AppCompatActivity
         }
     }
 
-    /**
-     * Dialog shown while sync is loading.
-     */
+    /** Dialog shown while sync is loading. */
     public static class SpinnerDialogFragment extends DialogFragment {
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {

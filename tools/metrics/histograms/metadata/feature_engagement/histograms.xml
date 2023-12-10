@@ -132,6 +132,8 @@ chromium-metrics-reviews@google.com.
   <variant name="IPH_DesktopNewTabPageModulesCustomizeFeature"
       summary="customizing new tab page modules"/>
   <variant name="IPH_DesktopPwaInstall" summary="desktop PWA install icon"/>
+  <variant name="IPH_DesktopPWAsLinkCapturingLaunch"
+      summary="PWA launch due to link capturing being enabled"/>
   <variant name="IPH_DesktopTabGroupsNewGroup"
       summary="creating a new tab group"/>
   <variant name="IPH_DownloadHome" summary="download home"/>
@@ -196,6 +198,8 @@ chromium-metrics-reviews@google.com.
   <variant name="IPH_IncognitoWindow" summary="incognito window"/>
   <variant name="IPH_InstanceSwitcher" summary="instance switcher"/>
   <variant name="IPH_IntentChip" summary="opening a webpage in an app"/>
+  <variant name="IPH_iOSBlueDotPromoEnhancedSafeBrowsing"
+      summary="showing the Enhanced Safe Browsing Blue-dot Promo on iOS"/>
   <variant name="IPH_iOSChoiceScreenFeature"
       summary="showing the Choice screen on iOS"/>
   <variant name="IPH_iOSDefaultBrowserBadgeEligibility"
@@ -209,8 +213,12 @@ chromium-metrics-reviews@google.com.
                video promo have been met."/>
   <variant name="IPH_iOSHistoryOnOverflowMenuFeature"
       summary="history item on the overflow menu on iOS"/>
+  <variant name="IPH_iOSInlinePromoEnhancedSafeBrowsing"
+      summary="showing the Enhanced Safe Browsing Inline Promo on iOS"/>
   <variant name="IPH_iOSNewTabToolbarItemFeature"
       summary="the new tab tool bar item (bottom on iPhone, top on iPad)"/>
+  <variant name="IPH_iOSOmniboxPositionFeature"
+      summary="showing the omnibox position choice screen on iOS"/>
   <variant name="IPH_iOSParcelTrackingFeature"
       summary="showing the Parcel Tracking IPH on the Magic Stack"/>
   <variant name="IPH_iOSPasswordPromoDesktop"
@@ -231,6 +239,10 @@ chromium-metrics-reviews@google.com.
       summary="showing the Post Restore Default Browser Promo on iOS"/>
   <variant name="IPH_iOSPromoWhatsNew"
       summary="showing the Whats New Promo on iOS"/>
+  <variant name="IPH_iOSPullToRefreshFeature"
+      summary="the full screen IPH for pull to refresh"/>
+  <variant name="IPH_iOSReplaceSyncPromosWithSignInPromos"
+      summary="account row in settings page"/>
   <variant name="IPH_iOSShareToolbarItemFeature"
       summary="the share tool bar item (bottom on iPhone, top on iPad)"/>
   <variant name="IPH_iOSTabGridToolbarItemFeature"
@@ -414,6 +426,10 @@ chromium-metrics-reviews@google.com.
   <variant name="IPH_ShoppingListMenuItem"
       summary="A text bubble showing that a product can be tracked from the
                overflow menu"/>
+  <variant name="IPH_SidePanelGenericMenuFeature"
+      summary="side panel open from menu"/>
+  <variant name="IPH_SidePanelGenericPinnableFeature"
+      summary="side panel pinnable"/>
   <variant name="IPH_SideSearch" summary="side search discovery"/>
   <variant name="IPH_SideSearchAutoTriggering"
       summary="side search automatic triggering"/>
@@ -426,6 +442,8 @@ chromium-metrics-reviews@google.com.
   <variant name="IPH_TabGroupsTapToSeeAnotherTab" summary="tab strip"/>
   <variant name="IPH_TabGroupsYourTabsTogether"
       summary="tab switcher cards with multiple tab thumbnails"/>
+  <variant name="IPH_TabOrganizationSuccess"
+      summary="tab organization success"/>
   <variant name="IPH_TabSearch" summary="tab search discovery"/>
   <variant name="IPH_TabSwitcherButton" summary="tab switcher button"/>
   <variant name="IPH_TrackingProtectionOffboarding"
@@ -472,7 +490,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="InProductHelp.Config.ParsingEvent" enum="ConfigParsingEvent"
-    expires_after="2024-03-10">
+    expires_after="2024-05-12">
   <owner>nyquist@chromium.org</owner>
   <summary>
     Records if in-product help configuration is parsed correctly, and the
@@ -519,7 +537,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InProductHelp.DismissalReason.iOS"
-    enum="InProductHelpDismissalReason" expires_after="2024-03-31">
+    enum="InProductHelpDismissalReason" expires_after="2024-06-02">
   <owner>lpromero@google.com</owner>
   <owner>gambard@chromium.org</owner>
   <summary>
@@ -563,7 +581,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InProductHelp.SnoozeAction" enum="InProductHelpSnoozeAction"
-    expires_after="2024-03-31">
+    expires_after="2024-06-02">
   <owner>haileywang@chromium.org</owner>
   <owner>shaktisahu@chromium.org</owner>
   <summary>
@@ -602,7 +620,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Tutorial{TutorialID}.AbortStep" units="int"
-    expires_after="2024-03-17">
+    expires_after="2024-05-19">
   <owner>dpenning@chromium.org</owner>
   <owner>dfried@chromium.org</owner>
   <summary>
@@ -613,7 +631,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Tutorial{TutorialID}.Completion" enum="BooleanSuccess"
-    expires_after="2024-03-03">
+    expires_after="2024-05-05">
   <owner>dpenning@chromium.org</owner>
   <owner>dfried@chromium.org</owner>
   <summary>
@@ -624,7 +642,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Tutorial{TutorialID}.IPHLinkClicked" enum="BooleanSuccess"
-    expires_after="2024-03-03">
+    expires_after="2024-05-05">
   <owner>dpenning@chromium.org</owner>
   <owner>dfried@chromium.org</owner>
   <summary>

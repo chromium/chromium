@@ -12,6 +12,7 @@ DummyUkmDataManager::DummyUkmDataManager() = default;
 DummyUkmDataManager::~DummyUkmDataManager() = default;
 
 void DummyUkmDataManager::Initialize(const base::FilePath& database_path,
+                                     bool in_memory,
                                      UkmObserver* ukm_observer) {}
 
 bool DummyUkmDataManager::IsUkmEngineEnabled() {

@@ -80,11 +80,6 @@ class NET_EXPORT_PRIVATE SpdySessionKey {
 
   const ProxyChain& proxy_chain() const { return host_port_proxy_pair_.second; }
 
-  // TODO(crbug.com/1491092): Remove this method.
-  const ProxyServer& proxy_server() const {
-    return host_port_proxy_pair_.second.proxy_server();
-  }
-
   PrivacyMode privacy_mode() const {
     return privacy_mode_;
   }

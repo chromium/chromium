@@ -8,14 +8,17 @@
 #include <vector>
 
 #include "ash/ash_export.h"
-#include "ash/public/cpp/tablet_mode.h"
-#include "ash/public/cpp/tablet_mode_observer.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/sharesheet/sharesheet_types.h"
 #include "components/services/app_service/public/cpp/intent.h"
+#include "ui/display/display_observer.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/widget/widget.h"
+
+namespace display {
+enum class TabletState;
+}  // namespace display
 
 namespace views {
 class TableLayoutView;
@@ -33,7 +36,7 @@ class SharesheetHeaderView;
 class SharesheetExpandButton;
 
 class SharesheetBubbleView : public views::BubbleDialogDelegateView,
-                             public TabletModeObserver {
+                             public display::DisplayObserver {
  public:
   METADATA_HEADER(SharesheetBubbleView);
   using TargetInfo = ::sharesheet::TargetInfo;
@@ -78,10 +81,8 @@ class SharesheetBubbleView : public views::BubbleDialogDelegateView,
   gfx::Size CalculatePreferredSize() const override;
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
 
-  // TabletModeObserver:
-  void OnTabletModeStarted() override;
-  void OnTabletModeEnded() override;
-  void OnTabletControllerDestroyed() override;
+  // display::DisplayObserver:
+  void OnDisplayTabletStateChanged(display::TabletState state) override;
 
   // Initialises the base views in the bubble: main_view (for the sharesheet)
   // and share_action_view (for the Nearby Share UI). Also defines basic bubble
@@ -140,8 +141,6 @@ class SharesheetBubbleView : public views::BubbleDialogDelegateView,
   raw_ptr<SharesheetExpandButton, ExperimentalAsh> expand_button_ = nullptr;
 
   std::unique_ptr<SharesheetParentWidgetObserver> parent_widget_observer_;
-  base::ScopedObservation<TabletMode, TabletModeObserver>
-      tablet_mode_observation_{this};
 };
 
 }  // namespace sharesheet

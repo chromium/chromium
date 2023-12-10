@@ -38,6 +38,7 @@ class VideoConferenceTrayPixelTest : public AshTestBase {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{chromeos::features::kJellyroll,
                               features::kVideoConference,
+                              features::kVcStopAllScreenShare,
                               chromeos::features::kJelly,
                               features::kCameraEffectsSupportedByHardware},
         /*disabled_features=*/{});
@@ -55,7 +56,7 @@ class VideoConferenceTrayPixelTest : public AshTestBase {
     controller_.reset();
   }
 
-  absl::optional<pixel_test::InitParams> CreatePixelTestInitParams()
+  std::optional<pixel_test::InitParams> CreatePixelTestInitParams()
       const override {
     return pixel_test::InitParams();
   }

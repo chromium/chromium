@@ -65,6 +65,28 @@ namespace {
 // from the backend.
 const size_t kMaxQueryLength = 200;
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// Keep up to date with DocumentProviderAllowedReason in
+// //tools/metrics/histograms/enums.xml.
+enum class DocumentProviderAllowedReason : int {
+  kAllowed = 0,
+  kUnknown = 1,
+  kFeatureDisabled = 2,
+  kSuggestSettingDisabled = 3,
+  kDriveSettingDisabled = 4,
+  kOffTheRecord = 5,
+  kNotLoggedIn = 6,
+  kNotSyncing = 7,
+  kBackoff = 8,
+  kDSENotGoogle = 9,
+  kInputOnFocusOrEmpty = 10,
+  kInputTooShort = 11,
+  kInputLooksLikeUrl = 12,
+  kMaxValue = kInputLooksLikeUrl
+};
+
 void LogOmniboxDocumentRequest(RemoteRequestHistogramValue request_value) {
   base::UmaHistogramEnumeration("Omnibox.DocumentSuggest.Requests",
                                 request_value,
@@ -323,27 +345,40 @@ bool DocumentProvider::IsDocumentProviderAllowed(
     const AutocompleteInput& input) {
   // Feature must be on.
   if (!base::FeatureList::IsEnabled(omnibox::kDocumentProvider)) {
+    base::UmaHistogramEnumeration(
+        "Omnibox.DocumentSuggest.ProviderAllowed",
+        DocumentProviderAllowedReason::kFeatureDisabled);
     return false;
   }
 
   // These may seem like search suggestions, so gate on that setting too.
   if (!client_->SearchSuggestEnabled()) {
+    base::UmaHistogramEnumeration(
+        "Omnibox.DocumentSuggest.ProviderAllowed",
+        DocumentProviderAllowedReason::kSuggestSettingDisabled);
     return false;
   }
 
   // Client-side toggle must be enabled.
   if (!base::FeatureList::IsEnabled(omnibox::kDocumentProviderNoSetting) &&
       !client_->GetPrefs()->GetBoolean(omnibox::kDocumentSuggestEnabled)) {
+    base::UmaHistogramEnumeration(
+        "Omnibox.DocumentSuggest.ProviderAllowed",
+        DocumentProviderAllowedReason::kDriveSettingDisabled);
     return false;
   }
 
   // No incognito.
   if (client_->IsOffTheRecord()) {
+    base::UmaHistogramEnumeration("Omnibox.DocumentSuggest.ProviderAllowed",
+                                  DocumentProviderAllowedReason::kOffTheRecord);
     return false;
   }
 
   // Must be logged in.
   if (!client_->IsAuthenticated()) {
+    base::UmaHistogramEnumeration("Omnibox.DocumentSuggest.ProviderAllowed",
+                                  DocumentProviderAllowedReason::kNotLoggedIn);
     return false;
   }
 
@@ -351,17 +386,23 @@ bool DocumentProvider::IsDocumentProviderAllowed(
   if (!base::FeatureList::IsEnabled(
           omnibox::kDocumentProviderNoSyncRequirement) &&
       !client_->IsSyncActive()) {
+    base::UmaHistogramEnumeration("Omnibox.DocumentSuggest.ProviderAllowed",
+                                  DocumentProviderAllowedReason::kNotSyncing);
     return false;
   }
 
   // We haven't received a server backoff signal.
   if (backoff_for_session_) {
+    base::UmaHistogramEnumeration("Omnibox.DocumentSuggest.ProviderAllowed",
+                                  DocumentProviderAllowedReason::kBackoff);
     return false;
   }
 
   // Google must be set as default search provider.
   auto* template_url_service = client_->GetTemplateURLService();
   if (!search::DefaultSearchProviderIsGoogle(template_url_service)) {
+    base::UmaHistogramEnumeration("Omnibox.DocumentSuggest.ProviderAllowed",
+                                  DocumentProviderAllowedReason::kDSENotGoogle);
     return false;
   }
 
@@ -369,6 +410,9 @@ bool DocumentProvider::IsDocumentProviderAllowed(
   // requests, or if the input is empty.
   if (input.focus_type() != metrics::OmniboxFocusType::INTERACTION_DEFAULT ||
       input.type() == metrics::OmniboxInputType::EMPTY) {
+    base::UmaHistogramEnumeration(
+        "Omnibox.DocumentSuggest.ProviderAllowed",
+        DocumentProviderAllowedReason::kInputOnFocusOrEmpty);
     return false;
   }
 
@@ -376,14 +420,22 @@ bool DocumentProvider::IsDocumentProviderAllowed(
   if (input.text().length() <
           omnibox_feature_configs::DocumentProvider::Get().min_query_length ||
       input.text().length() > kMaxQueryLength) {
+    base::UmaHistogramEnumeration(
+        "Omnibox.DocumentSuggest.ProviderAllowed",
+        DocumentProviderAllowedReason::kInputTooShort);
     return false;
   }
 
   // Don't issue queries for input likely to be a URL.
   if (IsInputLikelyURL(input)) {
+    base::UmaHistogramEnumeration(
+        "Omnibox.DocumentSuggest.ProviderAllowed",
+        DocumentProviderAllowedReason::kInputLooksLikeUrl);
     return false;
   }
 
+  base::UmaHistogramEnumeration("Omnibox.DocumentSuggest.ProviderAllowed",
+                                DocumentProviderAllowedReason::kAllowed);
   return true;
 }
 
@@ -515,12 +567,16 @@ void DocumentProvider::OnURLLoadComplete(
   LogRequestTime(time_request_sent_, false);
   LogOmniboxDocumentRequest(
       RemoteRequestHistogramValue::kRemoteResponseReceived);
+  base::UmaHistogramSparse("Omnibox.DocumentSuggest.HttpResponseCode",
+                           response_code);
 
   // The following are codes that we believe indicate non-transient failures,
   // based on experience working with the owners of the API. Since they are
   // expected to be semi-persistent, it does not make sense to continue to issue
   // requests during the current session after receiving one.
-  if (response_code == 400 || response_code == 403 || response_code == 499) {
+  if (response_code == 400 || response_code == 403 || response_code == 499 ||
+      (omnibox_feature_configs::DocumentProvider::Get().backoff_on_401 &&
+       response_code == 401)) {
     backoff_for_session_ = true;
   }
 

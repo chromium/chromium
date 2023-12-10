@@ -9,7 +9,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
-#include "net/http/http_response_info.h"
+#include "net/http/http_connection_info.h"
 #include "services/network/public/mojom/fetch_api.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_response.mojom-blink-forward.h"
@@ -114,8 +114,7 @@ class CORE_EXPORT FetchResponseData final
   void SetCorsExposedHeaderNames(const HTTPHeaderSet& header_names) {
     cors_exposed_header_names_ = header_names;
   }
-  void SetConnectionInfo(
-      net::HttpResponseInfo::ConnectionInfo connection_info) {
+  void SetConnectionInfo(net::HttpConnectionInfo connection_info) {
     connection_info_ = connection_info;
   }
   void SetAlpnNegotiatedProtocol(AtomicString alpn_negotiated_protocol) {
@@ -168,7 +167,7 @@ class CORE_EXPORT FetchResponseData final
   base::Time response_time_;
   String cache_storage_cache_name_;
   HTTPHeaderSet cors_exposed_header_names_;
-  net::HttpResponseInfo::ConnectionInfo connection_info_;
+  net::HttpConnectionInfo connection_info_ = net::HttpConnectionInfo::kUNKNOWN;
   AtomicString alpn_negotiated_protocol_;
   // |auth_challenge_info_| is a std::unique_ptr instead of absl::optional
   // |because this member is empty in most cases.

@@ -5,7 +5,6 @@
 <translation id="1076394037877376434">Șterge pagina <ph name="PAGE_NUMBER" /></translation>
 <translation id="1113173431709655881">Modul cameră</translation>
 <translation id="1153190633558910465">Fără grilă</translation>
-<translation id="1175958423215084756">A fost detectat un link. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213">Pagina <ph name="PAGE_NUMBER" /> a fost ștearsă</translation>
 <translation id="1258009455399840361">Rotește spre dreapta cu 90 de grade</translation>
 <translation id="1417314334557041815">Editează pagina <ph name="INDEX" /></translation>
@@ -60,14 +59,12 @@
 <translation id="3642192109456033823">Se procesează videoclipul...</translation>
 <translation id="3789724198583203151">Rotește spre stânga cu 90 de grade</translation>
 <translation id="3810838688059735925">Video</translation>
-<translation id="3892148308691398805">Copiază textul</translation>
 <translation id="4060608699153044055">Nu poți înregistra din cauza spațiului de stocare redus de pe dispozitiv. Pentru a începe înregistrarea, trebuie să eliberezi spațiu pe dispozitiv.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
 <translation id="4118525110028899586">Întrerupe înregistrarea</translation>
 <translation id="4121305183798804752">S-a detectat un document</translation>
 <translation id="414641094616694804">Rezoluția acestei camere foto nu poate fi schimbată</translation>
 <translation id="4176463684765177261">Dezactivat</translation>
-<translation id="4269820728363426813">Copiază adresa linkului</translation>
 <translation id="428234092390943511">Miniatură pentru pagină</translation>
 <translation id="4349714250734879769">Adaptează cadrele pentru Chrome</translation>
 <translation id="4383571725254449280">Printează jurnalele de performanță</translation>
@@ -144,7 +141,6 @@ Dacă feedbackul tău se referă la calitatea video sau a imaginii, atașează u
 <translation id="7726641833034062494">Înregistrează un videoclip obișnuit</translation>
 <translation id="7748344063862150053">Colțul din dreapta sus al documentului</translation>
 <translation id="7933675232020478311">Se deplasează în jos, spre dreapta</translation>
-<translation id="7983668134180549431">A fost detectat text.</translation>
 <translation id="8079255378695216066">Înregistrarea nu poate începe</translation>
 <translation id="8120146556401698679">Deplasează Înclină Mărește / micșorează</translation>
 <translation id="8131740175452115882">Confirmați</translation>
@@ -163,6 +159,7 @@ Dacă feedbackul tău se referă la calitatea video sau a imaginii, atașează u
 <translation id="8870695351537079478">Nu se poate porni înregistrarea</translation>
 <translation id="8880167521484863515">4:3</translation>
 <translation id="8903921497873541725">Mărește</translation>
+<translation id="8926890870105777777">Conectează-te la rețeaua <ph name="WIFINAME" /></translation>
 <translation id="9045010116236796332">Încadrează toate marginile documentului în cadru</translation>
 <translation id="9045155556724273246">10 secunde</translation>
 <translation id="906331135292332864">Se procesează imaginea...</translation>

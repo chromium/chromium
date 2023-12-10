@@ -14,7 +14,8 @@
 #include <unordered_set>
 #include <vector>
 
-#include "base/functional/callback_forward.h"
+#include "base/functional/function_ref.h"
+#include "base/memory/safety_checks.h"
 #include "base/memory/weak_ptr.h"
 #include "base/supports_user_data.h"
 #include "content/common/content_export.h"
@@ -105,6 +106,10 @@ class StoragePartitionConfig;
 // It lives on the UI thread. All these methods must only be called on the UI
 // thread.
 class CONTENT_EXPORT BrowserContext : public base::SupportsUserData {
+  // Do not remove this macro!
+  // The macro is maintained by the memory safety team.
+  ADVANCED_MEMORY_SAFETY_CHECKS();
+
  public:
   //////////////////////////////////////////////////////////////////////////////
   // The BrowserContext methods below are provided/implemented by the //content
@@ -156,14 +161,13 @@ class CONTENT_EXPORT BrowserContext : public base::SupportsUserData {
   StoragePartition* GetStoragePartitionForUrl(const GURL& url,
                                               bool can_create = true);
 
-  // Synchronously invokes |callback| for each loaded StoragePartition.
+  // Synchronously invokes `fn` for each loaded StoragePartition.
   // Persisted StoragePartitions (not in-memory) are loaded lazily on first
   // use, at which point a StoragePartition object will be created that's
   // backed by the on-disk storage. StoragePartitions will not be unloaded for
   // the remainder of the BrowserContext's lifetime.
-  using StoragePartitionCallback =
-      base::RepeatingCallback<void(StoragePartition*)>;
-  void ForEachLoadedStoragePartition(StoragePartitionCallback callback);
+  void ForEachLoadedStoragePartition(
+      base::FunctionRef<void(StoragePartition*)> fn);
 
   // Returns the number of loaded StoragePartitions that exist for `this`
   // BrowserContext.

@@ -18,8 +18,8 @@ namespace blink {
 class FragmentData;
 class LayoutObject;
 class LocalFrameView;
-class NGPhysicalBoxFragment;
 class PaintLayer;
+class PhysicalBoxFragment;
 class VisualViewport;
 
 // The context for PaintPropertyTreeBuilder.
@@ -231,6 +231,11 @@ struct PaintPropertyTreeBuilderContext final {
 
   unsigned composited_scrolling_preference : 2;
 
+  // This propagates to descendants (but not through isolations) to capture
+  // the situation of added/removed transform/clip affecting property tree
+  // states.
+  unsigned transform_or_clip_added_or_removed : 1;
+
   // This is always recalculated in PaintPropertyTreeBuilder::UpdateForSelf()
   // which overrides the inherited value.
   CompositingReasons direct_compositing_reasons = CompositingReason::kNone;
@@ -247,17 +252,17 @@ class VisualViewportPaintPropertyTreeBuilder {
                      PaintPropertyTreeBuilderContext&);
 };
 
-struct NGPrePaintInfo {
+struct PrePaintInfo {
   STACK_ALLOCATED();
 
  public:
-  NGPrePaintInfo(const NGPhysicalBoxFragment* box_fragment,
-                 PhysicalOffset paint_offset,
-                 wtf_size_t fragmentainer_idx,
-                 bool is_first_for_node,
-                 bool is_last_for_node,
-                 bool is_inside_fragment_child,
-                 bool fragmentainer_is_oof_containing_block)
+  PrePaintInfo(const PhysicalBoxFragment* box_fragment,
+               PhysicalOffset paint_offset,
+               wtf_size_t fragmentainer_idx,
+               bool is_first_for_node,
+               bool is_last_for_node,
+               bool is_inside_fragment_child,
+               bool fragmentainer_is_oof_containing_block)
       : box_fragment(box_fragment),
         paint_offset(paint_offset),
         fragmentainer_idx(fragmentainer_idx),
@@ -270,7 +275,7 @@ struct NGPrePaintInfo {
   // The fragment for the LayoutObject currently being processed, or, in the
   // case of text and non-atomic inlines: the fragment of the containing block.
   // Is nullptr if we're rebuilding the property tree for a missed descendant.
-  const NGPhysicalBoxFragment* box_fragment;
+  const PhysicalBoxFragment* box_fragment;
 
   FragmentData* fragment_data = nullptr;
   PhysicalOffset paint_offset;
@@ -313,6 +318,11 @@ struct PaintPropertiesChangeInfo {
     return std::max(
         {transform_changed, clip_changed, effect_changed, scroll_changed});
   }
+
+  bool TransformOrClipAddedOrRemoved() const {
+    return transform_changed >= PaintPropertyChangeType::kNodeAddedOrRemoved ||
+           clip_changed >= PaintPropertyChangeType::kNodeAddedOrRemoved;
+  }
 };
 
 // Creates paint property tree nodes for non-local effects in the layout tree.
@@ -327,7 +337,7 @@ class PaintPropertyTreeBuilder {
                                    PaintPropertyTreeBuilderContext&);
 
   PaintPropertyTreeBuilder(const LayoutObject& object,
-                           NGPrePaintInfo* pre_paint_info,
+                           PrePaintInfo* pre_paint_info,
                            PaintPropertyTreeBuilderContext& context)
       : object_(object), pre_paint_info_(pre_paint_info), context_(context) {}
 
@@ -368,7 +378,7 @@ class PaintPropertyTreeBuilder {
   static bool CanDoDeferredOpacityNodeUpdate(const LayoutObject& object);
 
   const LayoutObject& object_;
-  NGPrePaintInfo* pre_paint_info_;
+  PrePaintInfo* pre_paint_info_;
   PaintPropertyTreeBuilderContext& context_;
   PaintPropertiesChangeInfo properties_changed_;
 };

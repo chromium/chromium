@@ -23,21 +23,21 @@ class UserDataAuthUtilTest : public ::testing::Test {
 };
 
 TEST_F(UserDataAuthUtilTest, ReplyToMountErrorNullOptional) {
-  const absl::optional<RemoveReply> reply = absl::nullopt;
+  const std::optional<RemoveReply> reply = std::nullopt;
   EXPECT_EQ(ReplyToMountError(reply), cryptohome::MOUNT_ERROR_FATAL);
 }
 
 TEST_F(UserDataAuthUtilTest, ReplyToMountErrorNoError) {
   RemoveReply result;
   result.set_error(CRYPTOHOME_ERROR_NOT_SET);
-  const absl::optional<RemoveReply> reply = std::move(result);
+  const std::optional<RemoveReply> reply = std::move(result);
   EXPECT_EQ(ReplyToMountError(reply), cryptohome::MOUNT_ERROR_NONE);
 }
 
 TEST_F(UserDataAuthUtilTest, BaseReplyToMountErrorAuthFailure) {
   RemoveReply result;
   result.set_error(CRYPTOHOME_ERROR_AUTHORIZATION_KEY_NOT_FOUND);
-  const absl::optional<RemoveReply> reply = std::move(result);
+  const std::optional<RemoveReply> reply = std::move(result);
   EXPECT_EQ(ReplyToMountError(reply), cryptohome::MOUNT_ERROR_KEY_FAILURE);
 }
 
@@ -54,7 +54,7 @@ TEST_F(UserDataAuthUtilTest, CryptohomeErrorToMountError) {
 }
 
 TEST_F(UserDataAuthUtilTest, AccountDiskUsageReplyToUsageSizeNullOptional) {
-  const absl::optional<GetAccountDiskUsageReply> reply = absl::nullopt;
+  const std::optional<GetAccountDiskUsageReply> reply = std::nullopt;
 
   ASSERT_EQ(AccountDiskUsageReplyToUsageSize(reply), -1);
 }
@@ -62,7 +62,7 @@ TEST_F(UserDataAuthUtilTest, AccountDiskUsageReplyToUsageSizeNullOptional) {
 TEST_F(UserDataAuthUtilTest, AccountDiskUsageReplyToUsageSizeErrorInReply) {
   GetAccountDiskUsageReply result;
   result.set_error(CryptohomeErrorCode::CRYPTOHOME_ERROR_NOT_IMPLEMENTED);
-  const absl::optional<GetAccountDiskUsageReply> reply = std::move(result);
+  const std::optional<GetAccountDiskUsageReply> reply = std::move(result);
 
   ASSERT_EQ(AccountDiskUsageReplyToUsageSize(reply), -1);
 }
@@ -71,7 +71,7 @@ TEST_F(UserDataAuthUtilTest, AccountDiskUsageReplyToUsageSizeValidity) {
   constexpr int64_t kSize = 0x123456789ABCLL;
   GetAccountDiskUsageReply result;
   result.set_size(kSize);
-  const absl::optional<GetAccountDiskUsageReply> reply = std::move(result);
+  const std::optional<GetAccountDiskUsageReply> reply = std::move(result);
 
   ASSERT_EQ(AccountDiskUsageReplyToUsageSize(reply), kSize);
 }

@@ -116,10 +116,11 @@ void ExtensionKeybindingRegistry::Init() {
   if (!registry)
     return;  // ExtensionRegistry can be null during testing.
 
-  for (const scoped_refptr<const extensions::Extension>& extension :
-       registry->enabled_extensions())
+  for (const scoped_refptr<const Extension>& extension :
+       registry->enabled_extensions()) {
     if (ExtensionMatchesFilter(extension.get()))
       AddExtensionKeybindings(extension.get(), std::string());
+  }
 }
 
 bool ExtensionKeybindingRegistry::ShouldIgnoreCommand(
@@ -152,7 +153,7 @@ void ExtensionKeybindingRegistry::CommandExecuted(
     // not set the delegate as it deals only with named commands (not
     // page/browser actions that are associated with the current page directly).
     ActiveTabPermissionGranter* granter =
-        web_contents ? extensions::TabHelper::FromWebContents(web_contents)
+        web_contents ? TabHelper::FromWebContents(web_contents)
                            ->active_tab_permission_granter()
                      : nullptr;
     if (granter) {
@@ -301,8 +302,7 @@ void ExtensionKeybindingRegistry::OnMediaKeysAccelerator(
 }
 
 bool ExtensionKeybindingRegistry::ExtensionMatchesFilter(
-    const extensions::Extension* extension)
-{
+    const Extension* extension) {
   switch (extension_filter_) {
     case ALL_EXTENSIONS:
       return true;
@@ -324,9 +324,10 @@ bool ExtensionKeybindingRegistry::ExecuteCommands(
   bool executed = false;
   for (TargetList::const_iterator it = targets->second.begin();
        it != targets->second.end(); it++) {
-    if (!extensions::EventRouter::Get(browser_context_)
-        ->ExtensionHasEventListener(it->first, kOnCommandEventName))
+    if (!EventRouter::Get(browser_context_)
+             ->ExtensionHasEventListener(it->first, kOnCommandEventName)) {
       continue;
+    }
 
     if (extension_id.empty() || it->first == extension_id) {
       CommandExecuted(it->first, it->second);

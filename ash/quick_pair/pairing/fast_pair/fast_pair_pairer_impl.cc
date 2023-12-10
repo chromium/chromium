@@ -17,6 +17,7 @@
 #include "ash/quick_pair/fast_pair_handshake/fast_pair_data_encryptor.h"
 #include "ash/quick_pair/fast_pair_handshake/fast_pair_data_encryptor_impl.h"
 #include "ash/quick_pair/fast_pair_handshake/fast_pair_gatt_service_client_impl.h"
+#include "ash/quick_pair/fast_pair_handshake/fast_pair_gatt_service_client_lookup_impl.h"
 #include "ash/quick_pair/fast_pair_handshake/fast_pair_handshake.h"
 #include "ash/quick_pair/fast_pair_handshake/fast_pair_handshake_lookup.h"
 #include "ash/quick_pair/repository/fast_pair_repository.h"
@@ -148,9 +149,6 @@ FastPairPairerImpl::FastPairPairerImpl(
   DCHECK(fast_pair_handshake_);
   DCHECK(fast_pair_handshake_->completed_successfully());
 
-  fast_pair_gatt_service_client_ =
-      fast_pair_handshake_->fast_pair_gatt_service_client();
-
   // If we have a valid handshake, we already have a GATT connection that we
   // maintain in order to prevent addresses changing for some devices when the
   // connection ends.
@@ -251,7 +249,7 @@ void FastPairPairerImpl::StartPairing() {
                       PAIRING_DELEGATE_PRIORITY_HIGH);
         adapter_->ConnectDevice(
             device_address,
-            /*address_type=*/absl::nullopt,
+            /*address_type=*/std::nullopt,
             base::BindOnce(&FastPairPairerImpl::OnConnectDevice,
                            weak_ptr_factory_.GetWeakPtr()),
             base::BindOnce(&FastPairPairerImpl::OnConnectError,
@@ -304,6 +302,8 @@ void FastPairPairerImpl::ConfirmPasskey(device::BluetoothDevice* device,
   RecordProtocolPairingStep(FastPairProtocolPairingSteps::kPasskeyNegotiated,
                             *device_);
 
+  auto* ble_device = adapter_->GetDevice(device_->ble_address());
+
   // TODO(b/251281330): Make handling this edge case more robust.
   //
   // We can get to this point where the BLE instance of the device is lost
@@ -311,7 +311,7 @@ void FastPairPairerImpl::ConfirmPasskey(device::BluetoothDevice* device,
   // and |fast_pair_handshake_| is garbage memory, but the classic Bluetooth
   // pairing continues. We stop the pairing in this case and show an error to
   // the user.
-  if (!FastPairHandshakeLookup::GetInstance()->Get(device_)) {
+  if (!FastPairHandshakeLookup::GetInstance()->Get(device_) || !ble_device) {
     CD_LOG(ERROR, Feature::FP)
         << __func__ << ": BLE device instance lost during passkey exchange";
 
@@ -326,16 +326,20 @@ void FastPairPairerImpl::ConfirmPasskey(device::BluetoothDevice* device,
 
   pairing_device_address_ = device->GetAddress();
   expected_passkey_ = passkey;
-  fast_pair_gatt_service_client_->WritePasskeyAsync(
+
+  auto* fast_pair_gatt_service_client =
+      FastPairGattServiceClientLookup::GetInstance()->Get(ble_device);
+  CHECK(fast_pair_gatt_service_client);
+
+  fast_pair_gatt_service_client->WritePasskeyAsync(
       /*message_type=*/0x02, /*passkey=*/expected_passkey_,
       fast_pair_handshake_->fast_pair_data_encryptor(),
       base::BindOnce(&FastPairPairerImpl::OnPasskeyResponse,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void FastPairPairerImpl::OnPasskeyResponse(
-    std::vector<uint8_t> response_bytes,
-    absl::optional<PairFailure> failure) {
+void FastPairPairerImpl::OnPasskeyResponse(std::vector<uint8_t> response_bytes,
+                                           std::optional<PairFailure> failure) {
   CD_LOG(VERBOSE, Feature::FP) << __func__;
   RecordWritePasskeyCharacteristicResult(/*success=*/!failure.has_value());
   RecordProtocolPairingStep(
@@ -362,7 +366,7 @@ void FastPairPairerImpl::OnPasskeyResponse(
 
 void FastPairPairerImpl::OnParseDecryptedPasskey(
     base::TimeTicks decrypt_start_time,
-    const absl::optional<DecryptedPasskey>& passkey) {
+    const std::optional<DecryptedPasskey>& passkey) {
   if (!passkey) {
     CD_LOG(WARNING, Feature::FP) << "Missing decrypted passkey from parse.";
 
@@ -589,7 +593,21 @@ void FastPairPairerImpl::WriteAccountKey() {
         FastPairInitialSuccessFunnelEvent::kPreparingToWriteAccountKey);
   }
 
-  fast_pair_gatt_service_client_->WriteAccountKey(
+  auto* device = adapter_->GetDevice(device_->ble_address());
+  if (!device) {
+    CD_LOG(WARNING, Feature::FP)
+        << __func__
+        << ": device lost when attempting to retrieve GATT service client.";
+    std::move(account_key_failure_callback_)
+        .Run(device_, AccountKeyFailure::kGattErrorFailed);
+    return;
+  }
+
+  auto* fast_pair_gatt_service_client =
+      FastPairGattServiceClientLookup::GetInstance()->Get(device);
+  CHECK(fast_pair_gatt_service_client);
+
+  fast_pair_gatt_service_client->WriteAccountKey(
       account_key, fast_pair_handshake_->fast_pair_data_encryptor(),
       base::BindOnce(&FastPairPairerImpl::OnWriteAccountKey,
                      weak_ptr_factory_.GetWeakPtr(), account_key));
@@ -597,7 +615,7 @@ void FastPairPairerImpl::WriteAccountKey() {
 
 void FastPairPairerImpl::OnWriteAccountKey(
     std::array<uint8_t, 16> account_key,
-    absl::optional<AccountKeyFailure> failure) {
+    std::optional<AccountKeyFailure> failure) {
   RecordWriteAccountKeyCharacteristicResult(/*success=*/!failure.has_value());
 
   if (failure) {
@@ -768,7 +786,7 @@ void FastPairPairerImpl::DevicePairedChanged(device::BluetoothAdapter* adapter,
 }
 
 void FastPairPairerImpl::OnPairConnected(
-    absl::optional<device::BluetoothDevice::ConnectErrorCode> error) {
+    std::optional<device::BluetoothDevice::ConnectErrorCode> error) {
   // Check that the timer is still running before continuing. If the timer has
   // expired, then we already have surface an error through
   // `OnCreateBondTimeout` and we should not continue here. This handles the
@@ -820,7 +838,7 @@ void FastPairPairerImpl::OnPairConnected(
     // On Floss, Pair is exactly the same as Connect. Therefore we skip calling
     // Connect().
     CD_LOG(VERBOSE, Feature::FP) << __func__ << ": Skipping Connect on Floss";
-    OnConnected(absl::nullopt);
+    OnConnected(std::nullopt);
     return;
   }
 
@@ -836,7 +854,7 @@ void FastPairPairerImpl::OnPairConnected(
 }
 
 void FastPairPairerImpl::OnConnected(
-    absl::optional<device::BluetoothDevice::ConnectErrorCode> error) {
+    std::optional<device::BluetoothDevice::ConnectErrorCode> error) {
   // Terminal state for `Pair` flow, so we stop the timer here for this path.
   // We don't need to check which flow we are in here, since we can only
   // reach this point with `Pair`.

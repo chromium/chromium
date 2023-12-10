@@ -33,6 +33,7 @@ class PasswordGenerationPopupViewViews : public autofill::PopupBaseView,
   void UpdateGeneratedPasswordValue() override;
   [[nodiscard]] bool UpdateBoundsAndRedrawPopup() override;
   void PasswordSelectionUpdated() override;
+  void EditPasswordSelectionUpdated() override;
 
  private:
   class GeneratedPasswordBox;
@@ -47,6 +48,9 @@ class PasswordGenerationPopupViewViews : public autofill::PopupBaseView,
 
   // Sub view that displays the actual generated password.
   raw_ptr<GeneratedPasswordBox> password_view_ = nullptr;
+
+  // Sub view that displays the edit password row.
+  raw_ptr<views::View> edit_password_view_ = nullptr;
 
   // Controller for this view. Weak reference.
   base::WeakPtr<PasswordGenerationPopupController> controller_;

@@ -6,6 +6,7 @@
 #define ASH_USER_EDUCATION_USER_EDUCATION_CONTROLLER_H_
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 
@@ -14,7 +15,6 @@
 #include "ash/user_education/user_education_ping_controller.h"
 #include "ash/user_education/user_education_private_api_key.h"
 #include "ash/user_education/user_education_tutorial_controller.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefRegistrySimple;
 
@@ -48,7 +48,7 @@ class ASH_EXPORT UserEducationController {
   // `app_id`, or an absent value if no such identifier exists. Note that
   // existence of an identifier does not imply the existence of an associated
   // element.
-  absl::optional<ui::ElementIdentifier> GetElementIdentifierForAppId(
+  std::optional<ui::ElementIdentifier> GetElementIdentifierForAppId(
       const std::string& app_id) const;
 
   // If present, indicates whether the currently active user is considered new.
@@ -57,7 +57,7 @@ class ASH_EXPORT UserEducationController {
   // user. As such, this value is absent until the first app list sync of the
   // session is completed.
   // NOTE: Currently only the primary user profile is supported.
-  const absl::optional<bool>& IsNewUser(UserEducationPrivateApiKey) const;
+  const std::optional<bool>& IsNewUser(UserEducationPrivateApiKey) const;
 
   // Attempts to launch the system web app associated with the given type on
   // the display associated with the given ID asynchronously.

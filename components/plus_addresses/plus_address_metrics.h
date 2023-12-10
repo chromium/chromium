@@ -43,14 +43,14 @@ class PlusAddressMetrics {
   static void RecordAutofillSuggestionEvent(
       PlusAddressAutofillSuggestionEvent
           plus_address_autofill_suggestion_event);
-  // Log latency of `request`.
+  // Log latency of a `type` of network request.
   static void RecordNetworkRequestLatency(PlusAddressNetworkRequestType type,
                                           base::TimeDelta request_latency);
-  // Log the status code of the response to `request`.
+  // Log the status code of the response to a `type` of network request.
   static void RecordNetworkRequestResponseCode(
       PlusAddressNetworkRequestType type,
       int response_code);
-  // Log the size of the response to `request`.
+  // Log the size of the response to a `type` of network request.
   static void RecordNetworkRequestResponseSize(
       PlusAddressNetworkRequestType type,
       int response_size);

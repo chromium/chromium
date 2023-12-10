@@ -94,6 +94,15 @@ struct COMPONENT_EXPORT(MEDIA_CAPTURE_MOJOM_TRAITS)
 
 template <>
 struct COMPONENT_EXPORT(MEDIA_CAPTURE_MOJOM_TRAITS)
+    EnumTraits<media::mojom::CameraAvailability, media::CameraAvailability> {
+  static media::mojom::CameraAvailability ToMojom(
+      media::CameraAvailability input);
+  static bool FromMojom(media::mojom::CameraAvailability input,
+                        media::CameraAvailability* output);
+};
+
+template <>
+struct COMPONENT_EXPORT(MEDIA_CAPTURE_MOJOM_TRAITS)
     EnumTraits<media::mojom::VideoCaptureTransportType,
                media::VideoCaptureTransportType> {
   static media::mojom::VideoCaptureTransportType ToMojom(
@@ -202,6 +211,11 @@ struct COMPONENT_EXPORT(MEDIA_CAPTURE_MOJOM_TRAITS)
   static media::VideoFacingMode facing_mode(
       const media::VideoCaptureDeviceDescriptor& input) {
     return input.facing;
+  }
+
+  static absl::optional<media::CameraAvailability> availability(
+      const media::VideoCaptureDeviceDescriptor& input) {
+    return input.availability;
   }
 
   static media::VideoCaptureApi capture_api(

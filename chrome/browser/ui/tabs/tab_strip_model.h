@@ -10,6 +10,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -28,7 +29,6 @@
 #include "components/sessions/core/session_id.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "ui/base/models/list_selection_model.h"
 #include "ui/base/page_transition_types.h"
@@ -65,7 +65,7 @@ struct DetachedWebContents {
                       std::unique_ptr<content::WebContents> owned_contents,
                       content::WebContents* contents,
                       TabStripModelChange::RemoveReason remove_reason,
-                      absl::optional<SessionID> id);
+                      std::optional<SessionID> id);
   DetachedWebContents(const DetachedWebContents&) = delete;
   DetachedWebContents& operator=(const DetachedWebContents&) = delete;
   ~DetachedWebContents();
@@ -94,7 +94,7 @@ struct DetachedWebContents {
 
   // The |contents| associated optional SessionID, used as key for
   // ClosedTabCache. We only cache |contents| if |remove_reason| is kCached.
-  absl::optional<SessionID> id;
+  std::optional<SessionID> id;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -130,8 +130,8 @@ struct DetachedWebContents {
 ////////////////////////////////////////////////////////////////////////////////
 class TabStripModel : public TabGroupController {
  public:
-  // TODO(1394210): Remove this, and use absl::optional<size_t> (or at least
-  // absl::optional<int>) in its place.
+  // TODO(1394210): Remove this, and use std::optional<size_t> (or at least
+  // std::optional<int>) in its place.
   static constexpr int kNoTab = -1;
 
   TabStripModel() = delete;
@@ -211,7 +211,7 @@ class TabStripModel : public TabGroupController {
       int index,
       std::unique_ptr<content::WebContents> contents,
       int add_types,
-      absl::optional<tab_groups::TabGroupId> group = absl::nullopt);
+      std::optional<tab_groups::TabGroupId> group = std::nullopt);
   // Closes the WebContents at the specified index. This causes the
   // WebContents to be destroyed, but it may not happen immediately.
   // |close_types| is a bitmask of CloseTypes.
@@ -278,7 +278,7 @@ class TabStripModel : public TabGroupController {
 
   // Returns the WebContents at the specified index, or NULL if there is
   // none.
-  content::WebContents* GetWebContentsAt(int index) const override;
+  content::WebContents* GetWebContentsAt(int index) const;
 
   // Returns the index of the specified WebContents, or TabStripModel::kNoTab
   // if the WebContents is not in this TabStripModel.
@@ -353,15 +353,14 @@ class TabStripModel : public TabGroupController {
 
   // Returns the group that contains the tab at |index|, or nullopt if the tab
   // index is invalid or not grouped.
-  absl::optional<tab_groups::TabGroupId> GetTabGroupForTab(
+  std::optional<tab_groups::TabGroupId> GetTabGroupForTab(
       int index) const override;
 
   // If a tab inserted at |index| would be within a tab group, return that
   // group's ID. Otherwise, return nullopt. If |index| points to the first tab
   // in a group, it will return nullopt since a new tab would be either between
   // two different groups or just after a non-grouped tab.
-  absl::optional<tab_groups::TabGroupId> GetSurroundingTabGroup(
-      int index) const;
+  std::optional<tab_groups::TabGroupId> GetSurroundingTabGroup(int index) const;
 
   // Returns the index of the first tab that is not a pinned tab. This returns
   // |count()| if all of the tabs are pinned tabs, and 0 if none of the tabs are
@@ -382,6 +381,9 @@ class TabStripModel : public TabGroupController {
   // Returns true if the tab at |index| is selected.
   bool IsTabSelected(int index) const;
 
+  // Returns the timestamp at which the tab was last accessed.
+  std::optional<base::Time> GetLastAccessed(int index) const;
+
   // Sets the selection to match that of |source|.
   void SetSelectionFromModel(ui::ListSelectionModel source);
 
@@ -399,7 +401,7 @@ class TabStripModel : public TabGroupController {
       int index,
       ui::PageTransition transition,
       int add_types,
-      absl::optional<tab_groups::TabGroupId> group = absl::nullopt);
+      std::optional<tab_groups::TabGroupId> group = std::nullopt);
 
   // Closes the selected tabs.
   void CloseSelectedTabs();
@@ -439,7 +441,7 @@ class TabStripModel : public TabGroupController {
   // being moved, and adds them to the tab group |group|.
   void MoveTabsAndSetGroup(const std::vector<int>& indices,
                            int destination_index,
-                           absl::optional<tab_groups::TabGroupId> group);
+                           std::optional<tab_groups::TabGroupId> group);
 
   // Similar to AddToExistingGroup(), but creates a group with id |group| if it
   // doesn't exist. This is only intended to be called from session restore
@@ -452,8 +454,8 @@ class TabStripModel : public TabGroupController {
   // create the group then add the tab to the group.
   void UpdateGroupForDragRevert(
       int index,
-      absl::optional<tab_groups::TabGroupId> group_id,
-      absl::optional<tab_groups::TabGroupVisualData> group_data);
+      std::optional<tab_groups::TabGroupId> group_id,
+      std::optional<tab_groups::TabGroupVisualData> group_data);
 
   // Removes the set of tabs pointed to by |indices| from the the groups they
   // are in, if any. The tabs are moved out of the group if necessary. |indices|
@@ -476,7 +478,6 @@ class TabStripModel : public TabGroupController {
   void UnfollowSites(const std::vector<int>& indices);
 
   // TabGroupController:
-  Profile* GetProfile() override;
   void CreateTabGroup(const tab_groups::TabGroupId& group) override;
   void OpenTabGroupEditor(const tab_groups::TabGroupId& group) override;
   void ChangeTabGroupContents(const tab_groups::TabGroupId& group) override;
@@ -485,6 +486,7 @@ class TabStripModel : public TabGroupController {
       const TabGroupChange::VisualsChange& visuals) override;
   void MoveTabGroup(const tab_groups::TabGroupId& group) override;
   void CloseTabGroup(const tab_groups::TabGroupId& group) override;
+  std::u16string GetTitleAt(int index) const override;
   // The same as count(), but overridden for TabGroup to access.
   int GetTabCount() const override;
 
@@ -565,11 +567,11 @@ class TabStripModel : public TabGroupController {
   // |index|. This method will check the indices to the right of |index| before
   // checking the indices to the left of |index|. |index| cannot be returned.
   // |collapsing_group| is optional and used in cases where the group is
-  // collapsing but not yet reflected in the model. Returns absl::nullopt if
+  // collapsing but not yet reflected in the model. Returns std::nullopt if
   // there are no valid tabs.
-  absl::optional<int> GetNextExpandedActiveTab(
+  std::optional<int> GetNextExpandedActiveTab(
       int index,
-      absl::optional<tab_groups::TabGroupId> collapsing_group) const;
+      std::optional<tab_groups::TabGroupId> collapsing_group) const;
 
   // Forget all opener relationships, to reduce unpredictable tab switching
   // behavior in complex session states.
@@ -665,7 +667,7 @@ class TabStripModel : public TabGroupController {
   int InsertWebContentsAtImpl(int index,
                               std::unique_ptr<content::WebContents> contents,
                               int add_types,
-                              absl::optional<tab_groups::TabGroupId> group);
+                              std::optional<tab_groups::TabGroupId> group);
 
   // Closes the WebContentses at the specified indices. This causes the
   // WebContentses to be destroyed, but it may not happen immediately. If
@@ -749,20 +751,20 @@ class TabStripModel : public TabGroupController {
   // appropriate |group|.
   void MoveTabsAndSetGroupImpl(const std::vector<int>& indices,
                                int destination_index,
-                               absl::optional<tab_groups::TabGroupId> group);
+                               std::optional<tab_groups::TabGroupId> group);
 
   // Moves the tab at |index| to |new_index| and sets its group to |new_group|.
   // Notifies any observers that group affiliation has changed for the tab.
   void MoveAndSetGroup(int index,
                        int new_index,
-                       absl::optional<tab_groups::TabGroupId> new_group);
+                       std::optional<tab_groups::TabGroupId> new_group);
 
   void AddToReadLaterImpl(const std::vector<int>& indices);
 
   // Helper function for MoveAndSetGroup. Removes the tab at |index| from the
   // group that contains it, if any. Also deletes that group, if it now contains
   // no tabs. Returns that group.
-  absl::optional<tab_groups::TabGroupId> UngroupTab(int index);
+  std::optional<tab_groups::TabGroupId> UngroupTab(int index);
 
   // Helper function for MoveAndSetGroup. Adds the tab at |index| to |group|,
   // updates the group model, and notifies the observers if the group at that
@@ -805,7 +807,7 @@ class TabStripModel : public TabGroupController {
   bool PolicyAllowsTabClosing(content::WebContents* contents) const;
 
   // Determine where to shift selection after a tab is closed.
-  absl::optional<int> DetermineNewSelectedIndex(int removed_index) const;
+  std::optional<int> DetermineNewSelectedIndex(int removed_index) const;
 
   // The WebContents data currently hosted within this TabStripModel. This must
   // be kept in sync with |selection_model_|.

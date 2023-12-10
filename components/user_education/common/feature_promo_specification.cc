@@ -34,17 +34,66 @@ bool IsAllowedLegalNotice(const base::Feature& promo_feature) {
   return false;
 }
 
+bool IsAllowedLegacyPromo(const base::Feature& promo_feature) {
+  // NOTE: LEGACY PROMOS ARE DEPRECATED.
+  // NO NEW ITEMS SHOULD BE ADDED TO THIS LIST, EVER.
+  static const char* const kAllowedPromoNames[] = {
+      "IPH_AutofillExternalAccountProfileSuggestion",
+      "IPH_AutofillVirtualCardSuggestion",
+      "IPH_DesktopPwaInstall",
+      "IPH_DesktopSharedHighlighting",
+      "IPH_GMCCastStartStop",
+      "IPH_PasswordsAccountStorage",
+      "IPH_PriceTrackingInSidePanel",
+      "IPH_ReadingListDiscovery",
+      "IPH_ReadingListInSidePanel",
+      "IPH_TabSearch",
+      "IPH_WebUITabStrip",
+  };
+
+  const std::string name = promo_feature.name;
+  for (const auto* promo_name : kAllowedPromoNames) {
+    if (name == promo_name) {
+      return true;
+    }
+  }
+
+  // Features used for tests have this prefix and are excluded.
+  if (name.starts_with("TEST_")) {
+    return true;
+  }
+
+  return false;
+}
+
 }  // namespace
+
+FeaturePromoSpecification::Metadata::Metadata(
+    int launch_milestone_,
+    std::string owners_,
+    std::string triggering_condition_description_,
+    base::flat_set<Platforms> platforms_)
+    : launch_milestone(launch_milestone_),
+      owners(std::move(owners_)),
+      triggering_condition_description(
+          std::move(triggering_condition_description_)),
+      platforms(std::move(platforms_)) {}
+
+FeaturePromoSpecification::Metadata::Metadata() = default;
+FeaturePromoSpecification::Metadata::Metadata(Metadata&&) noexcept = default;
+FeaturePromoSpecification::Metadata&
+FeaturePromoSpecification::Metadata::operator=(Metadata&&) noexcept = default;
+FeaturePromoSpecification::Metadata::~Metadata() = default;
 
 FeaturePromoSpecification::AcceleratorInfo::AcceleratorInfo() = default;
 FeaturePromoSpecification::AcceleratorInfo::AcceleratorInfo(
     const AcceleratorInfo& other) = default;
-FeaturePromoSpecification::AcceleratorInfo::~AcceleratorInfo() = default;
 FeaturePromoSpecification::AcceleratorInfo::AcceleratorInfo(ValueType value)
     : value_(value) {}
 FeaturePromoSpecification::AcceleratorInfo&
 FeaturePromoSpecification::AcceleratorInfo::operator=(
     const AcceleratorInfo& other) = default;
+FeaturePromoSpecification::AcceleratorInfo::~AcceleratorInfo() = default;
 
 FeaturePromoSpecification::AcceleratorInfo&
 FeaturePromoSpecification::AcceleratorInfo::operator=(ValueType value) {
@@ -70,30 +119,13 @@ ui::Accelerator FeaturePromoSpecification::AcceleratorInfo::GetAccelerator(
   return result;
 }
 
-FeaturePromoSpecification::DemoPageInfo::DemoPageInfo(
-    std::string display_title_,
-    std::string display_description_,
-    base::RepeatingClosure setup_for_feature_promo_callback_)
-    : display_title(display_title_),
-      display_description(display_description_),
-      setup_for_feature_promo_callback(setup_for_feature_promo_callback_) {}
-
-FeaturePromoSpecification::DemoPageInfo::DemoPageInfo(
-    const DemoPageInfo& other) = default;
-
-FeaturePromoSpecification::DemoPageInfo::~DemoPageInfo() = default;
-
-FeaturePromoSpecification::DemoPageInfo&
-FeaturePromoSpecification::DemoPageInfo::operator=(const DemoPageInfo& other) =
-    default;
-
 // static
 constexpr HelpBubbleArrow FeaturePromoSpecification::kDefaultBubbleArrow;
 
 FeaturePromoSpecification::FeaturePromoSpecification() = default;
 
 FeaturePromoSpecification::FeaturePromoSpecification(
-    FeaturePromoSpecification&& other) = default;
+    FeaturePromoSpecification&& other) noexcept = default;
 
 FeaturePromoSpecification::FeaturePromoSpecification(
     const base::Feature* feature,
@@ -104,16 +136,16 @@ FeaturePromoSpecification::FeaturePromoSpecification(
       promo_type_(promo_type),
       anchor_element_id_(anchor_element_id),
       bubble_body_string_id_(bubble_body_string_id),
-      demo_page_info_(DemoPageInfo(feature ? feature->name : std::string())),
       custom_action_dismiss_string_id_(IDS_PROMO_DISMISS_BUTTON) {
   DCHECK_NE(promo_type, PromoType::kUnspecified);
   DCHECK(bubble_body_string_id_);
 }
 
+FeaturePromoSpecification& FeaturePromoSpecification::operator=(
+    FeaturePromoSpecification&& other) noexcept = default;
+
 FeaturePromoSpecification::~FeaturePromoSpecification() = default;
 
-FeaturePromoSpecification& FeaturePromoSpecification::operator=(
-    FeaturePromoSpecification&& other) = default;
 
 std::u16string FeaturePromoSpecification::FormatString(
     int string_id,
@@ -216,6 +248,10 @@ FeaturePromoSpecification FeaturePromoSpecification::CreateForLegacyPromo(
     const base::Feature* feature,
     ui::ElementIdentifier anchor_element_id,
     int body_text_string_id) {
+  CHECK(!feature || IsAllowedLegacyPromo(*feature))
+      << "Cannot create promo: " << feature->name
+      << "\nNo new legacy promos may be created; use CreateForToastPromo() "
+         "instead.";
   return FeaturePromoSpecification(feature, PromoType::kLegacy,
                                    anchor_element_id, body_text_string_id);
 }
@@ -237,6 +273,12 @@ FeaturePromoSpecification& FeaturePromoSpecification::SetBubbleIcon(
 FeaturePromoSpecification& FeaturePromoSpecification::SetBubbleArrow(
     HelpBubbleArrow bubble_arrow) {
   bubble_arrow_ = bubble_arrow;
+  return *this;
+}
+
+FeaturePromoSpecification& FeaturePromoSpecification::OverrideFocusOnShow(
+    bool focus_on_show) {
+  focus_on_show_override_ = focus_on_show;
   return *this;
 }
 
@@ -265,9 +307,9 @@ FeaturePromoSpecification& FeaturePromoSpecification::SetInAnyContext(
   return *this;
 }
 
-FeaturePromoSpecification& FeaturePromoSpecification::SetDemoPageInfo(
-    DemoPageInfo demo_page_info) {
-  demo_page_info_ = std::move(demo_page_info);
+FeaturePromoSpecification& FeaturePromoSpecification::SetMetadata(
+    Metadata metadata) {
+  metadata_ = std::move(metadata);
   return *this;
 }
 

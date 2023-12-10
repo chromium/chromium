@@ -247,10 +247,6 @@ void ToolbarActionView::RemovedFromWidget() {
   MenuButton::RemovedFromWidget();
 }
 
-views::View* ToolbarActionView::GetAsView() {
-  return this;
-}
-
 views::FocusManager* ToolbarActionView::GetFocusManagerForAccelerator() {
   return GetFocusManager();
 }

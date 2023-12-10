@@ -70,8 +70,6 @@ GURL GetSimplifiedURL(const GURL& url) {
 namespace prefs {
 const char kSafeBrowsingCsdPingTimestamps[] =
     "safebrowsing.csd_ping_timestamps";
-const char kSafeBrowsingCsdPhishingProtectionAllowedByPolicy[] =
-    "safebrowsing.csd_phishing_protection_allowed_by_policy";
 const char kSafeBrowsingDeepScanningEnabled[] =
     "safebrowsing.deep_scanning_enabled";
 const char kSafeBrowsingEnabled[] = "safebrowsing.enabled";
@@ -141,8 +139,6 @@ const char kExtensionTelemetryConfig[] =
     "safebrowsing.extension_telemetry_configuration";
 const char kExtensionTelemetryFileData[] =
     "safebrowsing.extension_telemetry_file_data";
-const char kRealTimeDownloadProtectionRequestAllowedByPolicy[] =
-    "safebrowsing.real_time_download_protection_request_allowed_by_policy";
 const char kSafeBrowsingExtensionProtectionAllowedByPolicy[] =
     "safebrowsing.extension_protection_allowed_by_policy";
 const char kHashPrefixRealTimeChecksAllowedByPolicy[] =
@@ -223,16 +219,6 @@ bool IsSafeBrowsingExtensionControlled(const PrefService& prefs) {
              ->IsExtensionControlled();
 }
 
-bool IsRealTimeDownloadProtectionRequestAllowed(const PrefService& prefs) {
-  return prefs.GetBoolean(
-      prefs::kRealTimeDownloadProtectionRequestAllowedByPolicy);
-}
-
-bool IsCsdPhishingProtectionAllowed(const PrefService& prefs) {
-  return prefs.GetBoolean(
-      prefs::kSafeBrowsingCsdPhishingProtectionAllowedByPolicy);
-}
-
 bool IsSafeBrowsingExtensionProtectionAllowed(const PrefService& prefs) {
   return prefs.GetBoolean(
       prefs::kSafeBrowsingExtensionProtectionAllowedByPolicy);
@@ -264,8 +250,6 @@ void RecordExtendedReportingMetrics(const PrefService& prefs) {
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterListPref(prefs::kSafeBrowsingCsdPingTimestamps);
-  registry->RegisterBooleanPref(
-      prefs::kSafeBrowsingCsdPhishingProtectionAllowedByPolicy, true);
   registry->RegisterBooleanPref(prefs::kSafeBrowsingScoutReportingEnabled,
                                 false);
   registry->RegisterBooleanPref(
@@ -330,8 +314,6 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
                              base::Time::Now());
   registry->RegisterDictionaryPref(prefs::kExtensionTelemetryConfig);
   registry->RegisterDictionaryPref(prefs::kExtensionTelemetryFileData);
-  registry->RegisterBooleanPref(
-      prefs::kRealTimeDownloadProtectionRequestAllowedByPolicy, true);
   registry->RegisterBooleanPref(
       prefs::kSafeBrowsingExtensionProtectionAllowedByPolicy, true);
   registry->RegisterBooleanPref(prefs::kHashPrefixRealTimeChecksAllowedByPolicy,
@@ -445,14 +427,6 @@ base::Value::List GetSafeBrowsingPoliciesList(PrefService* prefs) {
   preferences_list.Append(login_urls);
   preferences_list.Append(prefs::kPasswordProtectionLoginURLs);
 
-  preferences_list.Append(prefs->GetBoolean(
-      prefs::kRealTimeDownloadProtectionRequestAllowedByPolicy));
-  preferences_list.Append(
-      prefs::kRealTimeDownloadProtectionRequestAllowedByPolicy);
-  preferences_list.Append(prefs->GetBoolean(
-      prefs::kSafeBrowsingCsdPhishingProtectionAllowedByPolicy));
-  preferences_list.Append(
-      prefs::kSafeBrowsingCsdPhishingProtectionAllowedByPolicy);
   preferences_list.Append(prefs->GetBoolean(
       prefs::kSafeBrowsingExtensionProtectionAllowedByPolicy));
   preferences_list.Append(

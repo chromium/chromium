@@ -4,7 +4,7 @@
 
 #include "components/sync/model/model_type_store_backend.h"
 
-#include <utility>
+#include <memory>
 
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
@@ -73,7 +73,7 @@ ModelTypeStoreBackend::CreateInMemoryForTest() {
   scoped_refptr<ModelTypeStoreBackend> backend =
       new ModelTypeStoreBackend(std::move(env));
 
-  absl::optional<ModelError> error = backend->Init(path);
+  absl::optional<ModelError> error = backend->Init(path, {});
   DCHECK(!error);
   return backend;
 }
@@ -91,7 +91,9 @@ ModelTypeStoreBackend::CreateUninitialized() {
 ModelTypeStoreBackend::~ModelTypeStoreBackend() = default;
 
 absl::optional<ModelError> ModelTypeStoreBackend::Init(
-    const base::FilePath& path) {
+    const base::FilePath& path,
+    const std::vector<std::pair<std::string, std::string>>&
+        prefixes_to_update) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!IsInitialized());
   const std::string path_str = path.AsUTF8Unsafe();
@@ -121,6 +123,16 @@ absl::optional<ModelError> ModelTypeStoreBackend::Init(
       return error;
     }
   }
+
+  // Note: It's the caller's responsibility to ensure that the prefix migration
+  // is only triggered once.
+  for (const auto& [from, to] : prefixes_to_update) {
+    absl::optional<ModelError> error = UpdateDataPrefix(from, to);
+    if (error) {
+      return error;
+    }
+  }
+
   return absl::nullopt;
 }
 
@@ -302,6 +314,27 @@ bool ModelTypeStoreBackend::Migrate0To1() {
       db_->Put(leveldb::WriteOptions(), kDBSchemaDescriptorRecordId,
                schema_descriptor.SerializeAsString());
   return status.ok();
+}
+
+absl::optional<ModelError> ModelTypeStoreBackend::UpdateDataPrefix(
+    const std::string& old_prefix,
+    const std::string& new_prefix) {
+  ModelTypeStore::RecordList records;
+
+  if (absl::optional<ModelError> error =
+          ReadAllRecordsWithPrefix(old_prefix, &records)) {
+    return error;
+  }
+
+  auto write_batch = std::make_unique<leveldb::WriteBatch>();
+  for (const ModelTypeStore::Record& record : records) {
+    // Note that `ReadAllRecordsWithPrefix` strips the prefix, so `record.id`
+    // is now the prefix-less ID.
+    write_batch->Delete(old_prefix + record.id);
+    write_batch->Put(new_prefix + record.id, record.value);
+  }
+
+  return WriteModifications(std::move(write_batch));
 }
 
 }  // namespace syncer

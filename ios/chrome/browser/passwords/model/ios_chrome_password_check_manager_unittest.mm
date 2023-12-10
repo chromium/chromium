@@ -338,10 +338,6 @@ TEST_F(IOSChromePasswordCheckManagerTest, NotifyObserversAboutStateChanges) {
 
 // Tests expected delay is being added.
 TEST_F(IOSChromePasswordCheckManagerTest, CheckFinishedWithDelay) {
-  // Enable weak and reuse checks.
-  base::test::ScopedFeatureList feature_list(
-      password_manager::features::kIOSPasswordCheckup);
-
   store().AddLogin(MakeSavedPassword(kExampleCom1, kUsername116));
 
   RunUntilIdle();
@@ -372,10 +368,6 @@ TEST_F(IOSChromePasswordCheckManagerTest, CheckFinishedWithDelay) {
 
 // Verify that GetInsecureCredentials returns weak credentials.
 TEST_F(IOSChromePasswordCheckManagerTest, WeakCredentialsAreReturned) {
-  // Enable weak and reuse checks.
-  base::test::ScopedFeatureList feature_list(
-      password_manager::features::kIOSPasswordCheckup);
-
   PasswordForm weak_form =
       MakeSavedPassword(kExampleCom1, kUsername116, kWeakPassword);
   store().AddLogin(weak_form);
@@ -390,10 +382,6 @@ TEST_F(IOSChromePasswordCheckManagerTest, WeakCredentialsAreReturned) {
 
 // Verify that GetInsecureCredentials returns reused credentials.
 TEST_F(IOSChromePasswordCheckManagerTest, ReusedCredentialsAreReturned) {
-  // Enable weak and reuse checks.
-  base::test::ScopedFeatureList feature_list(
-      password_manager::features::kIOSPasswordCheckup);
-
   PasswordForm form_with_same_password_1 =
       MakeSavedPassword(kExampleCom1, kUsername116, kPassword116);
   store().AddLogin(form_with_same_password_1);

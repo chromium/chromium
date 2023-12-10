@@ -19,15 +19,16 @@
 // on a delay or immediately. Saving is always performed on a separate thread.
 @interface SessionServiceIOS : NSObject
 
-// Lazily creates a singleton instance with a default task runner.
-+ (SessionServiceIOS*)sharedService;
-
 // Initializes a SessionServiceIOS with a given task runner and save delay.
-// Prefer to use the `sharedService` method.
 - (instancetype)initWithSaveDelay:(base::TimeDelta)saveDelay
                        taskRunner:
                            (const scoped_refptr<base::SequencedTaskRunner>&)
                                taskRunner NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)init NS_UNAVAILABLE;
+
+// Called before destroying the task runner.
+- (void)shutdown;
 
 // Requests that `closure` is invoked when all pending background tasks
 // are complete. The `closure` may be invoked on a background sequence,
@@ -56,10 +57,6 @@
 // Loads the session from `sessionPath` on the main thread. Returns nil in case
 // of errors.
 - (SessionWindowIOS*)loadSessionFromPath:(NSString*)sessionPath;
-
-// Schedules deletion of the all session files from a specific `directory`.
-- (void)deleteAllSessionFilesInDirectory:(const base::FilePath&)directory
-                              completion:(base::OnceClosure)callback;
 
 // Schedule deletion of session directories with `sessionIDs` which resides in
 // a specific browser state `directory`.

@@ -6,9 +6,7 @@ package org.chromium.android_webview.services;
 
 import org.chromium.android_webview.common.SafeModeAction;
 
-/**
- * Exposes the SafeModeActions supported by nonembedded Component Updater services.
- */
+/** Exposes the SafeModeActions supported by nonembedded Component Updater services. */
 public final class NonembeddedSafeModeActionsList {
     // Do not instantiate this class.
     private NonembeddedSafeModeActionsList() {}
@@ -19,7 +17,7 @@ public final class NonembeddedSafeModeActionsList {
      * specified by the service) will be executed in the order listed below.
      */
     public static final SafeModeAction[] sList = {
-            new ComponentUpdaterResetSafeModeAction(),
-            new NonEmbeddedFastVariationsSeedSafeModeAction(),
+        new ComponentUpdaterResetSafeModeAction(),
+        new NonEmbeddedFastVariationsSeedSafeModeAction(),
     };
 }

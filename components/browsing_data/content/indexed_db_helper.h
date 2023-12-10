@@ -27,49 +27,18 @@ struct StorageUsageInfo;
 
 namespace browsing_data {
 
-// IndexedDBHelper is an interface for classes dealing with
+// CannedIndexedDBHelper is an interface for classes dealing with
 // aggregating and deleting browsing data stored in indexed databases.  A
 // client of this class need to call StartFetching from the UI thread to
 // initiate the flow, and it'll be notified by the callback in its UI thread at
-// some later point.
-class IndexedDBHelper : public base::RefCountedThreadSafe<IndexedDBHelper> {
+// some later point. The implementation does not actually fetch its information
+// from the Indexed DB context, but gets them passed by a call when accessed.
+class CannedIndexedDBHelper
+    : public base::RefCountedThreadSafe<CannedIndexedDBHelper> {
  public:
   using FetchCallback =
       base::OnceCallback<void(const std::list<content::StorageUsageInfo>&)>;
 
-  // Create a IndexedDBHelper instance for the indexed databases
-  // stored in |context|'s associated profile's user data directory.
-  explicit IndexedDBHelper(content::StoragePartition* storage_partition);
-
-  IndexedDBHelper(const IndexedDBHelper&) = delete;
-  IndexedDBHelper& operator=(const IndexedDBHelper&) = delete;
-
-  // Starts the fetching process, which will notify its completion via
-  // |callback|. This must be called only on the UI thread.
-  virtual void StartFetching(FetchCallback callback);
-  // Requests a single indexed database to be deleted in the IndexedDB thread.
-  virtual void DeleteIndexedDB(const blink::StorageKey& storage_key,
-                               base::OnceCallback<void(bool)> callback);
-
- protected:
-  virtual ~IndexedDBHelper();
-
-  raw_ptr<content::StoragePartition> storage_partition_;
-
- private:
-  friend class base::RefCountedThreadSafe<IndexedDBHelper>;
-
-  // Enumerates all indexed database files in the IndexedDB thread.
-  void IndexedDBUsageInfoReceived(
-      FetchCallback callback,
-      std::vector<storage::mojom::StorageUsageInfoPtr> usages);
-};
-
-// This class is an implementation of IndexedDBHelper that does
-// not fetch its information from the Indexed DB context, but gets them
-// passed by a call when accessed.
-class CannedIndexedDBHelper : public IndexedDBHelper {
- public:
   explicit CannedIndexedDBHelper(content::StoragePartition* storage_partition);
 
   CannedIndexedDBHelper(const CannedIndexedDBHelper&) = delete;
@@ -91,13 +60,18 @@ class CannedIndexedDBHelper : public IndexedDBHelper {
   // Returns the current list of indexed data bases.
   const std::set<blink::StorageKey>& GetStorageKeys() const;
 
-  // IndexedDBHelper methods.
-  void StartFetching(FetchCallback callback) override;
-  void DeleteIndexedDB(const blink::StorageKey& storage_key,
-                       base::OnceCallback<void(bool)> callback) override;
+  // Virtual for testing.
+  virtual void StartFetching(FetchCallback callback);
+  virtual void DeleteIndexedDB(const blink::StorageKey& storage_key,
+                               base::OnceCallback<void(bool)> callback);
+
+ protected:
+  virtual ~CannedIndexedDBHelper();
 
  private:
-  ~CannedIndexedDBHelper() override;
+  friend class base::RefCountedThreadSafe<CannedIndexedDBHelper>;
+
+  raw_ptr<content::StoragePartition> storage_partition_;
 
   std::set<blink::StorageKey> pending_storage_keys_;
 };

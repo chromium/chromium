@@ -5,12 +5,15 @@
 #ifndef IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_DETAILS_ADD_PASSWORD_COORDINATOR_DELEGATE_H_
 #define IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_DETAILS_ADD_PASSWORD_COORDINATOR_DELEGATE_H_
 
+#import "ios/chrome/browser/ui/settings/password/reauthentication/password_manager_reauthentication_delegate.h"
+
 namespace password_manager {
 struct CredentialUIEntry;
 }  // namespace password_manager
 
 // Delegate for AddPasswordCoordinator.
-@protocol AddPasswordCoordinatorDelegate
+@protocol
+    AddPasswordCoordinatorDelegate <PasswordManagerReauthenticationDelegate>
 
 // Called when the add view controller is to removed.
 - (void)passwordDetailsTableViewControllerDidFinish:

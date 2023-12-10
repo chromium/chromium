@@ -50,7 +50,7 @@ WebFrameImpl::WebFrameImpl(WKFrameInfo* frame_info,
                            GURL security_origin,
                            web::WebState* web_state)
     : frame_info_(frame_info),
-      frame_id_(frame_id),
+      frame_id_(base::ToLowerASCII(frame_id)),
       is_main_frame_(is_main_frame),
       security_origin_(security_origin),
       web_state_(web_state) {

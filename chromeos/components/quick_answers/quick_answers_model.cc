@@ -40,10 +40,23 @@ Sense::Sense() = default;
 Sense::~Sense() = default;
 
 DefinitionResult::DefinitionResult() = default;
+DefinitionResult::DefinitionResult(const DefinitionResult& other) = default;
+DefinitionResult& DefinitionResult::DefinitionResult::operator=(
+    const DefinitionResult& other) = default;
 DefinitionResult::~DefinitionResult() = default;
 
 TranslationResult::TranslationResult() = default;
+TranslationResult::TranslationResult(const TranslationResult& other) = default;
+TranslationResult& TranslationResult::TranslationResult::operator=(
+    const TranslationResult& other) = default;
 TranslationResult::~TranslationResult() = default;
+
+UnitConversionResult::UnitConversionResult() = default;
+UnitConversionResult::UnitConversionResult(const UnitConversionResult& other) =
+    default;
+UnitConversionResult& UnitConversionResult::UnitConversionResult::operator=(
+    const UnitConversionResult& other) = default;
+UnitConversionResult::~UnitConversionResult() = default;
 
 StructuredResult::StructuredResult() = default;
 StructuredResult::~StructuredResult() = default;

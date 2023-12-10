@@ -12,14 +12,12 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
+#include "ui/base/models/image_model.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/gfx/shadow_value.h"
 #include "ui/views/animation/ink_drop_observer.h"
 #include "ui/views/animation/ink_drop_state.h"
-
-namespace views {
-class ImageView;
-}  // namespace views
+#include "ui/views/controls/image_view.h"
 
 namespace ash {
 struct ShelfItem;
@@ -70,14 +68,34 @@ class ASH_EXPORT ShelfAppButton : public ShelfButton,
 
   ~ShelfAppButton() override;
 
-  // Sets the image to display for this entry.
-  void SetImage(const gfx::ImageSkia& image);
+  // Updates the icon image to display for this entry.
+  void UpdateIconImage();
+
+  // Updates the badge icon image to display for this entry.
+  void UpdateBadgeIconImage();
 
   // Retrieve the image to show proxy operations.
   gfx::ImageSkia GetImage() const;
 
-  // Gets the resized `icon_image_` without the shadow.
-  gfx::ImageSkia GetIconImage() const;
+  // Gets the resized icon image represented by `icon_image_model_` without the
+  // shadow, assuming the provided `icon_scale`.
+  gfx::ImageSkia GetIconImage(float icon_scale) const;
+
+  const ui::ImageModel& icon_image_model() const { return icon_image_model_; }
+
+  views::ImageView* icon_view() { return icon_view_; }
+
+  // Returns the badge icon image for the app assuming the provided
+  // `icon_scale`. Returns an empty image if the app does not have a badge icon.
+  gfx::ImageSkia GetBadgeIconImage(float icon_scale) const;
+
+  // Sets the `icon_image_model_` for this entry. If |is_placeholder_icon| is
+  // true, the |main_image| will be ignored and this entry will be assigned a
+  // placeholder vector icon. This method also SetHostBadgeImage() depending on
+  // `has_host_badge` and then calls into UpdateIconImage().
+  void SetMainAndMaybeHostBadgeImage(const gfx::ImageSkia& main_image,
+                                     bool is_placeholder_icon,
+                                     const gfx::ImageSkia& host_badge_image);
 
   // |state| is or'd into the current state.
   void AddState(State state);
@@ -95,6 +113,13 @@ class ASH_EXPORT ShelfAppButton : public ShelfButton,
   // and with the provided icon scale.
   gfx::Rect GetIdealIconBounds(const gfx::Size& button_size,
                                float icon_scale) const;
+
+  // Returns the ideal host badge icon bounds within the shelf button cntents
+  // view. The badge icon bounds are calculated for assuming the provided
+  // `main_app_icon_bounds`, and `icon_scale`.
+  gfx::Rect GetIdealHostBadgeContainerBounds(
+      const gfx::Rect& main_app_icon_bounds,
+      float icon_scale);
 
   views::InkDrop* GetInkDropForTesting();
 
@@ -118,6 +143,7 @@ class ASH_EXPORT ShelfAppButton : public ShelfButton,
   bool OnMouseDragged(const ui::MouseEvent& event) override;
   void Layout() override;
   void ChildPreferredSizeChanged(views::View* child) override;
+  void OnThemeChanged() override;
 
   // Update button state from ShelfItem.
   void ReflectItemStatus(const ShelfItem& item);
@@ -134,7 +160,19 @@ class ASH_EXPORT ShelfAppButton : public ShelfButton,
   // Return the bounds in the local coordinates enclosing the small ripple area.
   gfx::Rect CalculateSmallRippleArea() const;
 
-  std::unique_ptr<ui::LayerTreeOwner> RequestDuplicateLayer();
+  // Sets up the button to simulate promise app UI (icon scaled down, with
+  // progress indicator shown), and animates the button into the normal app UI
+  // (hides the progress indicator, and scales the app icon up).
+  // Used to animate the button in when it's replacing a promise icon.
+  // `fallback_icon` - the promise app icon that should be used while the app
+  // button is animating in. The installed app icon is loaded asynchronously, so
+  // there is a noticeable delay before the icon becomes available. Using
+  // fallback icon during animation prevents jankiness in the time period the
+  // app icon is loading. The jankiness manifests itself as the app icon
+  // disappearing for a moment after the promise icon is installed.
+  // `callback` - callback run when the animation completes.
+  void AnimateInFromPromiseApp(const ui::ImageModel& fallback_icon,
+                               const base::RepeatingClosure& callback);
 
   void SetNotificationBadgeColor(SkColor color);
 
@@ -177,8 +215,9 @@ class ASH_EXPORT ShelfAppButton : public ShelfButton,
   // Invoked when |ripple_activation_timer_| fires to activate the ink drop.
   void OnRippleTimer();
 
-  // Calculates the preferred size of the icon.
-  gfx::Size GetPreferredIconSize() const;
+  // Calculates the preferred size of the icon for the provided `icon_scale`.
+  gfx::Size GetPreferredIconSize(const ui::ImageModel& image_model,
+                                 float icon_scale) const;
 
   // Scales up app icon if |scale_up| is true, otherwise scales it back to
   // normal size.
@@ -186,7 +225,14 @@ class ASH_EXPORT ShelfAppButton : public ShelfButton,
 
   // Calculates the icon bounds for an icon scaled by |icon_scale|.
   gfx::Rect GetIconViewBounds(const gfx::Rect& button_bounds,
-                              float icon_scale) const;
+                              float icon_scale,
+                              bool ignore_shadow_insets) const;
+
+  // Calculates the bounds for either the shortcut icon container or shortcut
+  // icon scaled by `icon_scale`.
+  gfx::Rect GetShortcutViewBounds(const gfx::Rect& button_bounds,
+                                  float icon_scale,
+                                  const float icon_size) const;
 
   // Calculates the notification indicator bounds when scaled by |scale|.
   gfx::Rect GetNotificationIndicatorBounds(float scale);
@@ -205,12 +251,22 @@ class ASH_EXPORT ShelfAppButton : public ShelfButton,
   // active.
   void UpdateProgressRingBounds();
 
-  // Returns the icon scale adjusted to fit for the `progress_indicator_` if any
-  // is currently active.
-  float GetAdjustedIconScaleForProgressRing() const;
+  // Sets the host badge image to display for this entry
+  void SetHostBadgeImage(const gfx::ImageSkia& host_badge_image);
+
+  // Returns the preferred icon size for promise icons depending on this
+  // button's `app_state_`.
+  float GetIconDimensionByAppState() const;
+
+  // Called when the app button completes animating in from a promise app state.
+  void OnAnimatedInFromPromiseApp(base::RepeatingClosure callback);
 
   // The icon part of a button can be animated independently of the rest.
-  const raw_ptr<views::ImageView, ExperimentalAsh> icon_view_;
+  raw_ptr<views::ImageView, ExperimentalAsh> icon_view_ = nullptr;
+
+  // The host badge icon part of a button, can be animated independently of the
+  // rest.
+  raw_ptr<views::ImageView> host_badge_icon_view_ = nullptr;
 
   // The ShelfView showing this ShelfAppButton. Owned by RootWindowController.
   const raw_ptr<ShelfView, ExperimentalAsh> shelf_view_;
@@ -228,8 +284,11 @@ class ASH_EXPORT ShelfAppButton : public ShelfButton,
 
   gfx::ShadowValues icon_shadows_;
 
-  // The bitmap image for this app button.
-  gfx::ImageSkia icon_image_;
+  // The model image for this app button.
+  ui::ImageModel icon_image_model_;
+
+  // The bitmap image for the host badge icon if this is an App Shortcut.
+  gfx::ImageSkia host_badge_image_;
 
   // The scaling factor for displaying the app icon.
   float icon_scale_ = 1.0f;
@@ -267,6 +326,25 @@ class ASH_EXPORT ShelfAppButton : public ShelfButton,
 
   // The package id that is associated with this shelf app.
   std::string package_id_;
+
+  // Whether the app has a host badge (i.e. an App Shortcut).
+  bool has_host_badge_ = false;
+
+  // The fallback icon used as the app button image when the app is animated in
+  // from a promise icon. The fallback icon will be used at least until the
+  // actual app icon has been loaded. This prevents a flash of an empty icon
+  // when the app icon replaces a promise icon.
+  ui::ImageModel fallback_icon_image_model_;
+
+  // Whether the fallback icon should be used even if the actual app icon is
+  // available. This will be set animating the app button in from promise app
+  // state to prevent app icon changes mid animation.
+  bool force_fallback_icon_ = false;
+
+  std::optional<float> forced_progress_indicator_value_;
+
+  // Whether the non-placeholder app icon has been loaded for the app.
+  bool has_icon_image_ = false;
 
   // Used to track whether the menu was deleted while running. Must be last.
   base::WeakPtrFactory<ShelfAppButton> weak_factory_{this};

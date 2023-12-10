@@ -68,8 +68,8 @@ class CryptAuthGroupPrivateKeySharerImpl
 
   friend std::ostream& operator<<(std::ostream& stream, const State& state);
 
-  static absl::optional<base::TimeDelta> GetTimeoutForState(State state);
-  static absl::optional<CryptAuthDeviceSyncResult::ResultCode>
+  static std::optional<base::TimeDelta> GetTimeoutForState(State state);
+  static std::optional<CryptAuthDeviceSyncResult::ResultCode>
   ResultCodeErrorFromTimeoutDuringState(State state);
 
   CryptAuthGroupPrivateKeySharerImpl(CryptAuthClientFactory* client_factory,

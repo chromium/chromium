@@ -41,6 +41,8 @@ import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLog;
 
+import org.chromium.base.ActivityState;
+import org.chromium.base.ApplicationStatus;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
@@ -136,6 +138,8 @@ public class FeedSurfaceMediatorTest {
         mocker.mock(FeedServiceBridgeJni.TEST_HOOKS, mFeedServiceBridgeJniMock);
         mocker.mock(WebFeedBridge.getTestHooksForTesting(), mWebFeedBridgeJniMock);
 
+        ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.CREATED);
+
         // We want to make the feed service bridge ignore the ablation flag.
         when(mFeedServiceBridgeJniMock.isEnabled())
                 .thenAnswer(invocation -> mPrefService.getBoolean(Pref.ENABLE_SNIPPETS));
@@ -226,6 +230,7 @@ public class FeedSurfaceMediatorTest {
         when(mPrefService.getBoolean(Pref.ARTICLES_LIST_VISIBLE)).thenReturn(true);
         when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS_BY_DSE)).thenReturn(true);
         when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS)).thenReturn(true);
+        when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS_BY_DSE)).thenReturn(true);
 
         PropertyModel sectionHeaderModel = SectionHeaderListProperties.create(TOOLBAR_HEIGHT);
         mFeedSurfaceMediator =
@@ -245,6 +250,7 @@ public class FeedSurfaceMediatorTest {
     public void updateContent_openingTabIdForYou() {
         when(mPrefService.getBoolean(Pref.ARTICLES_LIST_VISIBLE)).thenReturn(true);
         when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS)).thenReturn(true);
+        when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS_BY_DSE)).thenReturn(true);
         when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS_BY_DSE)).thenReturn(true);
 
         PropertyModel sectionHeaderModel = SectionHeaderListProperties.create(TOOLBAR_HEIGHT);
@@ -269,6 +275,7 @@ public class FeedSurfaceMediatorTest {
         when(mPrefService.getBoolean(Pref.ARTICLES_LIST_VISIBLE)).thenReturn(true);
         when(mFeedServiceBridgeJniMock.isSignedIn()).thenReturn(true);
         when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS)).thenReturn(true);
+        when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS_BY_DSE)).thenReturn(true);
 
         PropertyModel model = SectionHeaderListProperties.create(TOOLBAR_HEIGHT);
         mFeedSurfaceMediator = createMediator(FeedSurfaceCoordinator.StreamTabId.FOR_YOU, model);
@@ -289,6 +296,7 @@ public class FeedSurfaceMediatorTest {
         when(mPrefService.getBoolean(Pref.ARTICLES_LIST_VISIBLE)).thenReturn(true);
         when(mFeedServiceBridgeJniMock.isSignedIn()).thenReturn(true);
         when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS)).thenReturn(true);
+        when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS_BY_DSE)).thenReturn(true);
 
         PropertyModel model = SectionHeaderListProperties.create(TOOLBAR_HEIGHT);
         mFeedSurfaceMediator = createMediator(FeedSurfaceCoordinator.StreamTabId.FOR_YOU, model);
@@ -311,6 +319,7 @@ public class FeedSurfaceMediatorTest {
         when(mPrefService.getBoolean(Pref.ARTICLES_LIST_VISIBLE)).thenReturn(true);
         when(mFeedServiceBridgeJniMock.isSignedIn()).thenReturn(true);
         when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS)).thenReturn(true);
+        when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS_BY_DSE)).thenReturn(true);
 
         PropertyModel model = SectionHeaderListProperties.create(TOOLBAR_HEIGHT);
         mFeedSurfaceMediator = createMediator(FeedSurfaceCoordinator.StreamTabId.FOR_YOU, model);
@@ -328,6 +337,7 @@ public class FeedSurfaceMediatorTest {
         when(mPrefService.getBoolean(Pref.ARTICLES_LIST_VISIBLE)).thenReturn(true);
         when(mFeedServiceBridgeJniMock.isSignedIn()).thenReturn(true);
         when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS)).thenReturn(true);
+        when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS_BY_DSE)).thenReturn(true);
         doReturn(true).when(mUrlService).isDefaultSearchEngineGoogle();
 
         PropertyModel model = SectionHeaderListProperties.create(TOOLBAR_HEIGHT);
@@ -347,6 +357,7 @@ public class FeedSurfaceMediatorTest {
         when(mPrefService.getBoolean(Pref.ARTICLES_LIST_VISIBLE)).thenReturn(false);
         when(mFeedServiceBridgeJniMock.isSignedIn()).thenReturn(true);
         when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS)).thenReturn(true);
+        when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS_BY_DSE)).thenReturn(true);
         doReturn(true).when(mUrlService).isDefaultSearchEngineGoogle();
 
         PropertyModel model = SectionHeaderListProperties.create(TOOLBAR_HEIGHT);
@@ -366,6 +377,7 @@ public class FeedSurfaceMediatorTest {
         when(mPrefService.getBoolean(Pref.ARTICLES_LIST_VISIBLE)).thenReturn(true);
         when(mFeedServiceBridgeJniMock.isSignedIn()).thenReturn(true);
         when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS)).thenReturn(true);
+        when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS_BY_DSE)).thenReturn(true);
         doReturn(false).when(mUrlService).isDefaultSearchEngineGoogle();
 
         PropertyModel model = SectionHeaderListProperties.create(TOOLBAR_HEIGHT);
@@ -386,6 +398,7 @@ public class FeedSurfaceMediatorTest {
         when(mPrefService.getBoolean(Pref.ARTICLES_LIST_VISIBLE)).thenReturn(false);
         when(mFeedServiceBridgeJniMock.isSignedIn()).thenReturn(true);
         when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS)).thenReturn(true);
+        when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS_BY_DSE)).thenReturn(true);
         doReturn(false).when(mUrlService).isDefaultSearchEngineGoogle();
 
         PropertyModel model = SectionHeaderListProperties.create(TOOLBAR_HEIGHT);
@@ -561,6 +574,7 @@ public class FeedSurfaceMediatorTest {
         when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS_BY_DSE)).thenReturn(true);
         mFeedSurfaceMediator = createMediator();
         when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS)).thenReturn(true);
+        when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS_BY_DSE)).thenReturn(true);
 
         mFeedSurfaceMediator.updateContent();
 
@@ -1139,6 +1153,7 @@ public class FeedSurfaceMediatorTest {
                 tabId,
                 /* actionDelegate= */ null,
                 mOptionsCoordinator,
-                uiConfig);
+                uiConfig,
+                mProfileMock);
     }
 }

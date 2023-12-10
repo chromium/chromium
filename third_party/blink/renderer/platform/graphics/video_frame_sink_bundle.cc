@@ -151,6 +151,11 @@ void VideoFrameSinkBundle::SetNeedsBeginFrame(uint32_t sink_id,
   bundle_->SetNeedsBeginFrame(sink_id, needs_begin_frame);
 }
 
+void VideoFrameSinkBundle::SetWantsBeginFrameAcks(uint32_t sink_id) {
+  // These messages are not sent often, so we don't bother batching them.
+  bundle_->SetWantsBeginFrameAcks(sink_id);
+}
+
 void VideoFrameSinkBundle::SubmitCompositorFrame(
     uint32_t sink_id,
     const viz::LocalSurfaceId& local_surface_id,

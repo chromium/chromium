@@ -28,11 +28,11 @@ const int kDownstreamEnrollBillableServiceNumber =
 }  // namespace
 
 GetDetailsForEnrollmentRequest::GetDetailsForEnrollmentRequest(
-    const PaymentsClient::GetDetailsForEnrollmentRequestDetails&
+    const PaymentsNetworkInterface::GetDetailsForEnrollmentRequestDetails&
         request_details,
-    base::OnceCallback<
-        void(AutofillClient::PaymentsRpcResult,
-             const PaymentsClient::GetDetailsForEnrollmentResponseDetails&)>
+    base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
+                            const PaymentsNetworkInterface::
+                                GetDetailsForEnrollmentResponseDetails&)>
         callback)
     : request_details_(request_details), callback_(std::move(callback)) {}
 

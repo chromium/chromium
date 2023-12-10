@@ -98,8 +98,8 @@ blink::mojom::FetchAPIRequestPtr TypeConverter<
   if (input.trust_token_params) {
     output->trust_token_params = input.trust_token_params->Clone();
   }
-  output->target_address_space =
-      static_cast<network::mojom::IPAddressSpace>(input.target_address_space);
+  output->target_address_space = static_cast<network::mojom::IPAddressSpace>(
+      input.required_ip_address_space);
   output->attribution_reporting_eligibility =
       input.attribution_reporting_eligibility;
   return output;

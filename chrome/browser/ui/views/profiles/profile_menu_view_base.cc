@@ -194,14 +194,14 @@ ui::ImageModel SizeImageModel(const ui::ImageModel& image_model, int size) {
                                         size);
 }
 
-const gfx::ImageSkia ProfileManagementImageFromIcon(
+const ui::ImageModel ProfileManagementImageFromIcon(
     const gfx::VectorIcon& icon,
     const ui::ColorProvider* color_provider) {
   constexpr float kIconToImageRatio = 0.75f;
   constexpr int kIconSize = 20;
   const SkColor icon_color = color_provider->GetColor(ui::kColorIcon);
   gfx::ImageSkia image = ImageForMenu(icon, kIconToImageRatio, icon_color);
-  return SizeImage(image, kIconSize);
+  return ui::ImageModel::FromImageSkia(SizeImage(image, kIconSize));
 }
 
 // TODO(crbug.com/1146998): Adjust button size to be 16x16.
@@ -277,7 +277,9 @@ class CircularImageButton : public views::ImageButton {
     }
     gfx::ImageSkia image =
         ImageForMenu(*icon_, shortcutIconToImageRatio, icon_color);
-    SetImage(views::Button::STATE_NORMAL, SizeImage(image, button_size_));
+    SetImageModel(
+        views::Button::STATE_NORMAL,
+        ui::ImageModel::FromImageSkia(SizeImage(image, button_size_)));
     views::InkDrop::Get(this)->SetBaseColor(icon_color);
   }
 
@@ -318,7 +320,8 @@ class FeatureButtonIconView : public views::ImageView {
     const SkColor icon_color = GetColorProvider()->GetColor(ui::kColorIcon);
     gfx::ImageSkia image =
         ImageForMenu(*icon_, icon_to_image_ratio_, icon_color);
-    SetImage(SizeImage(ColorImage(image, icon_color), kIconSize));
+    SetImage(ui::ImageModel::FromImageSkia(
+        SizeImage(ColorImage(image, icon_color), kIconSize)));
   }
 
  private:
@@ -337,8 +340,8 @@ class ProfileManagementFeatureButton : public HoverButton {
   // HoverButton:
   void OnThemeChanged() override {
     HoverButton::OnThemeChanged();
-    SetImage(STATE_NORMAL,
-             ProfileManagementImageFromIcon(*icon_, GetColorProvider()));
+    SetImageModel(Button::STATE_NORMAL,
+                  ProfileManagementImageFromIcon(*icon_, GetColorProvider()));
   }
 
  private:
@@ -395,7 +398,7 @@ class AvatarImageView : public views::ImageView {
         sized_avatar_image, GetBackgroundColor(), kIdentityImageSizeInclBorder);
 
     if (features::IsChromeRefresh2023()) {
-      SetImage(sized_avatar_image);
+      SetImage(ui::ImageModel::FromImageSkia(sized_avatar_image));
     } else {
       gfx::ImageSkia sized_badge = AddCircularBackground(
           SizeImage(root_view_->GetSyncIcon(), kBadgeSize),
@@ -408,7 +411,7 @@ class AvatarImageView : public views::ImageView {
       gfx::ImageSkia badged_image =
           gfx::ImageSkiaOperations::CreateIconWithBadge(
               sized_avatar_image, sized_badge_with_shadow);
-      SetImage(badged_image);
+      SetImage(ui::ImageModel::FromImageSkia(badged_image));
     }
   }
 
@@ -433,7 +436,9 @@ class SyncButton : public HoverButton {
   // HoverButton:
   void OnThemeChanged() override {
     HoverButton::OnThemeChanged();
-    SetImage(STATE_NORMAL, SizeImage(root_view_->GetSyncIcon(), kBadgeSize));
+    SetImageModel(Button::STATE_NORMAL,
+                  ui::ImageModel::FromImageSkia(
+                      SizeImage(root_view_->GetSyncIcon(), kBadgeSize)));
   }
 
  private:
@@ -452,7 +457,8 @@ class SyncImageView : public views::ImageView {
   // views::ImageView:
   void OnThemeChanged() override {
     ImageView::OnThemeChanged();
-    SetImage(SizeImage(root_view_->GetSyncIcon(), kBadgeSize));
+    SetImage(ui::ImageModel::FromImageSkia(
+        SizeImage(root_view_->GetSyncIcon(), kBadgeSize)));
   }
 
  private:
@@ -641,7 +647,7 @@ void ProfileMenuViewBase::BuildProfileBackgroundContainer(
 void ProfileMenuViewBase::SetProfileIdentityInfo(
     const std::u16string& profile_name,
     SkColor profile_background_color,
-    absl::optional<EditButtonParams> edit_button_params,
+    std::optional<EditButtonParams> edit_button_params,
     const ui::ImageModel& image_model,
     const std::u16string& title,
     const std::u16string& subtitle,
@@ -781,8 +787,6 @@ void ProfileMenuViewBase::BuildSyncInfoWithCallToAction(
                                            views::style::STYLE_BODY_3_EMPHASIS)
           : std::make_unique<views::Label>(description));
   label->SetMultiLine(true);
-  // TODO(crbug.com/1495581): Remove this.
-  label->SetUseLegacyPreferredSize(true);
   label->SetHandlesTooltips(false);
   label->SetProperty(
       views::kFlexBehaviorKey,
@@ -1151,7 +1155,7 @@ void ProfileMenuViewBase::OnThemeChanged() {
   views::BubbleDialogDelegateView::OnThemeChanged();
   const auto* color_provider = GetColorProvider();
   SetBackground(views::CreateSolidBackground(
-      color_provider->GetColor(ui::kColorDialogBackground)));
+      color_provider->GetColor(kColorProfileMenuBackground)));
   if (features::IsChromeRefresh2023()) {
     identity_info_color_callback_.Run(color_provider);
   }

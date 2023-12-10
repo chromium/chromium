@@ -524,10 +524,18 @@ void ShellSurfaceBase::SetTopInset(int height) {
   pending_top_inset_height_ = height;
 }
 
-void ShellSurfaceBase::SetWindowCornerRadii(const gfx::RoundedCornersF& radii) {
+void ShellSurfaceBase::SetWindowCornersRadii(
+    const gfx::RoundedCornersF& radii) {
   TRACE_EVENT1("exo", "ShellSurfaceBase::SetWindowCornerRadii", "radii",
                radii.ToString());
   pending_window_corners_radii_dp_ = radii;
+}
+
+void ShellSurfaceBase::SetShadowCornersRadii(
+    const gfx::RoundedCornersF& radii) {
+  TRACE_EVENT1("exo", "ShellSurfaceBase::SetShadowCornersRadii", "shadow_radii",
+               radii.ToString());
+  pending_shadow_corners_radii_dp_ = radii;
 }
 
 void ShellSurfaceBase::SetBoundsForShadows(
@@ -1768,7 +1776,14 @@ void ShellSurfaceBase::CreateShellSurfaceWidget(
   UpdateTopInset();
 
   aura::Window* window = widget_->GetNativeWindow();
-  window->AddChild(host_window());
+  {
+    // AddChild involves propagating a non-1 device_scale_factor to
+    // `host_window()`. Changing device_scale_factor this way does not send
+    // configure events. So suppress allocation of its LocalSurfaceId.
+    viz::ScopedSurfaceIdAllocator scoped_suppression =
+        host_window()->GetSurfaceIdAllocator(base::NullCallback());
+    window->AddChild(host_window());
+  }
   window->SetEventTargetingPolicy(
       aura::EventTargetingPolicy::kTargetAndDescendants);
   if (is_menu_) {
@@ -1779,6 +1794,9 @@ void ShellSurfaceBase::CreateShellSurfaceWidget(
   }
   InstallCustomWindowTargeter();
 
+  // TODO(fangzhoug): Consider performing the first shell_surface configure here
+  // s.t. there's no gap between the first configure to the point we start
+  // observing states of the window. crbug.com/1505583
   // Start tracking changes to window bounds and window state.
   window->AddObserver(this);
   ash::WindowState* window_state = ash::WindowState::Get(window);
@@ -1901,6 +1919,12 @@ void ShellSurfaceBase::UpdateWidgetBounds() {
 }
 
 void ShellSurfaceBase::UpdateHostWindowOrigin() {
+  // There's an animation happening on cloned layers, `host_window()` layer may
+  // be "ahead" of client's commit_target_layer. Do not update its origin,
+  // instead, rely on SurfaceLayer stretching until the client catches up.
+  if (GetCommitTargetLayer() != host_window()->layer()) {
+    return;
+  }
   gfx::Point origin = GetClientViewBounds().origin();
 
   origin += GetSurfaceOrigin().OffsetFromOrigin();
@@ -1954,7 +1978,15 @@ void ShellSurfaceBase::UpdateShadow() {
   aura::Window* window = widget_->GetNativeWindow();
 
   // Window shadows should be disabled if a window shape has been set.
-  if (!shadow_bounds_ || shape_dp_.has_value()) {
+  //
+  // Or if `host_window()`'s layer is not commit_target_layer, `shadow_bounds_`
+  // committed by the client should not go to current `widget_`'s shadow, but to
+  // the old widget's shadow prior to layer clone. Don't show the new shadow for
+  // now.
+  // TODO(crbug.com/1491604): Find the old widget's shadow layer and update it,
+  // and maybe show new widget's shadow by predicting its dimensions.
+  if (!shadow_bounds_ || shape_dp_.has_value() ||
+      GetCommitTargetLayer() != host_window()->layer()) {
     wm::SetShadowElevation(window, wm::kShadowElevationNone);
   } else {
     // Use a small style shadow for popup surface.
@@ -2008,6 +2040,8 @@ void ShellSurfaceBase::UpdateShadowRoundedCorners() {
     return;
   }
 
+  shadow_corners_radii_dp_ = pending_shadow_corners_radii_dp_;
+
   aura::Window* window = widget_->GetNativeWindow();
   ui::Shadow* shadow = wm::ShadowController::GetShadowForWindow(window);
 
@@ -2015,20 +2049,25 @@ void ShellSurfaceBase::UpdateShadowRoundedCorners() {
     return;
   }
 
-  int shadow_radius = 0;
+  gfx::RoundedCornersF shadow_radii;
 
   const ash::WindowState* window_state = ash::WindowState::Get(window);
   if (window_state && window_state->IsPip()) {
-    shadow_radius = chromeos::kPipRoundedCornerRadius;
+    shadow_radii = gfx::RoundedCornersF(chromeos::kPipRoundedCornerRadius);
   } else if (chromeos::features::IsRoundedWindowsEnabled() &&
-             window_corners_radii_dp_) {
+             (shadow_corners_radii_dp_.has_value() ||
+              window_corners_radii_dp_.has_value())) {
+    // For backward version compatibility, fallback to use the window radii if
+    // the shadow radii is not specified.
+    // TODO(crbug.com/1415486): Revisit once all the clients have migrated.
+    shadow_radii = shadow_corners_radii_dp_.value_or(
+        window_corners_radii_dp_.value_or(gfx::RoundedCornersF()));
+
     // TODO(crbug.com/1415486): Support shadow with variable radius corners.
-    // We expect to have windows with same rounded corners.
-    DCHECK(IsRadiiUniform(window_corners_radii_dp_.value()));
-    shadow_radius = window_corners_radii_dp_->upper_left();
+    DCHECK(IsRadiiUniform(shadow_radii));
   }
 
-  shadow->SetRoundedCornerRadius(shadow_radius);
+  shadow->SetRoundedCornerRadius(shadow_radii.upper_left());
 }
 
 void ShellSurfaceBase::UpdateFrameType() {
@@ -2207,7 +2246,7 @@ void ShellSurfaceBase::CommitWidget() {
   // type (e.g. caption height).
   UpdateFrameType();
   UpdateWidgetBounds();
-  UpdateHostWindowSizeAndRootSurfaceOrigin();
+  UpdateSurfaceLayerSizeAndRootSurfaceOrigin();
 
   // System modal container is used by clients to implement overlay
   // windows using a single ShellSurface instance.  If hit-test

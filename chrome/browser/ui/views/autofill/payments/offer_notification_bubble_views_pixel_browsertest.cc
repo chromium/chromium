@@ -42,7 +42,7 @@ AutofillOfferData CreateTestFreeListingCouponOffer(
 
 struct OfferNotificationBubbleViewPixelTestConfig {
   std::string name;
-  absl::optional<std::vector<base::test::FeatureRefAndParams>> enabled_features;
+  std::optional<std::vector<base::test::FeatureRefAndParams>> enabled_features;
 };
 
 std::string GetTestName(
@@ -118,11 +118,11 @@ INSTANTIATE_TEST_SUITE_P(
         OfferNotificationBubbleViewPixelTestConfig{"FreeListingOffer_default"},
         OfferNotificationBubbleViewPixelTestConfig{
             "FreeListingOffer_on_navigation",
-            absl::make_optional<std::vector<base::test::FeatureRefAndParams>>(
+            std::make_optional<std::vector<base::test::FeatureRefAndParams>>(
                 {{commerce::kShowDiscountOnNavigation, {}}})},
         OfferNotificationBubbleViewPixelTestConfig{
             "FreeListingOffer_on_navigation_chrome_refresh_style",
-            absl::make_optional<std::vector<base::test::FeatureRefAndParams>>(
+            std::make_optional<std::vector<base::test::FeatureRefAndParams>>(
                 {{commerce::kShowDiscountOnNavigation, {}},
                  {::features::kChromeRefresh2023, {}}})}),
     GetTestName);

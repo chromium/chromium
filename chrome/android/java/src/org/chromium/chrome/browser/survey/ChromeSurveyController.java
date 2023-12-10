@@ -5,12 +5,10 @@
 package org.chromium.chrome.browser.survey;
 
 import android.app.Activity;
-import android.content.res.Resources;
 
 import androidx.annotation.Nullable;
 
 import org.chromium.base.ResettersForTesting;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
@@ -65,9 +63,20 @@ public class ChromeSurveyController {
 
         assert SurveyClientFactory.getInstance() != null;
 
-        PropertyModel message = createBasicSurveyMessage(activity.getResources());
-        MessageSurveyUiDelegate messageDelegate = new MessageSurveyUiDelegate(
-                message, messageDispatcher, tabModelSelector, ChromeSurveyController::isUMAEnabled);
+        PropertyModel message =
+                new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
+                        .with(
+                                MessageBannerProperties.MESSAGE_IDENTIFIER,
+                                MessageIdentifier.CHROME_SURVEY)
+                        .build();
+        MessageSurveyUiDelegate.populateDefaultValuesForSurveyMessage(
+                activity.getResources(), message);
+        MessageSurveyUiDelegate messageDelegate =
+                new MessageSurveyUiDelegate(
+                        message,
+                        messageDispatcher,
+                        tabModelSelector,
+                        ChromeSurveyController::isUMAEnabled);
         SurveyClient client =
                 SurveyClientFactory.getInstance().createClient(config, messageDelegate, profile);
         if (client == null) return null;
@@ -75,18 +84,6 @@ public class ChromeSurveyController {
         ChromeSurveyController chromeSurveyController = new ChromeSurveyController(client);
         chromeSurveyController.showSurvey(activity, lifecycleDispatcher);
         return chromeSurveyController;
-    }
-
-    private static PropertyModel createBasicSurveyMessage(Resources resources) {
-        return new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
-                .with(MessageBannerProperties.MESSAGE_IDENTIFIER, MessageIdentifier.CHROME_SURVEY)
-                .with(MessageBannerProperties.TITLE,
-                        resources.getString(R.string.chrome_survey_message_title))
-                .with(MessageBannerProperties.ICON_RESOURCE_ID, R.drawable.chrome_sync_logo)
-                .with(MessageBannerProperties.ICON_TINT_COLOR, MessageBannerProperties.TINT_NONE)
-                .with(MessageBannerProperties.PRIMARY_BUTTON_TEXT,
-                        resources.getString(R.string.chrome_survey_message_button))
-                .build();
     }
 
     /** @return Whether metrics and crash dumps are enabled. */

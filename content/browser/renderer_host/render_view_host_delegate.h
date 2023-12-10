@@ -14,6 +14,7 @@
 #include "net/base/load_states.h"
 #include "services/network/public/mojom/attribution.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/page/color_provider_color_maps.h"
 #include "third_party/skia/include/core/SkColor.h"
 
 namespace blink {
@@ -98,6 +99,10 @@ class RenderViewHostDelegate {
   // WebContents.
   virtual void SetWebPreferences(const blink::web_pref::WebPreferences& prefs) {
   }
+
+  // Returns the light, dark and forced color maps for the ColorProvider
+  // associated with this RenderViewHost.
+  virtual blink::ColorProviderColorMaps GetColorProviderColorMaps() const = 0;
 
   // Triggers a total recomputation of WebPreferences by resetting the current
   // cached WebPreferences to null and triggering the recomputation path for

@@ -19,12 +19,6 @@
 #include "extensions/common/url_pattern.h"
 #include "extensions/common/url_pattern_set.h"
 
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-namespace supervised_user {
-class SupervisedUserService;
-}  // namespace supervised_user
-#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
-
 namespace content {
 class BrowserContext;
 }
@@ -109,9 +103,6 @@ class ExtensionInfoGenerator {
   raw_ptr<WarningService> warning_service_;
   raw_ptr<ErrorConsole> error_console_;
   raw_ptr<ImageLoader> image_loader_;
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-  raw_ptr<supervised_user::SupervisedUserService> supervised_user_service_;
-#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
   // The number of pending image loads.
   size_t pending_image_loads_;

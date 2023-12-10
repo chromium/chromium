@@ -7,6 +7,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/no_destructor.h"
+#include "ui/accessibility/ax_jni_headers/AccessibilityAutofillHelper_jni.h"
 #include "ui/accessibility/ax_jni_headers/AccessibilityState_jni.h"
 
 using base::android::AppendJavaStringArrayToStringVector;
@@ -127,6 +128,19 @@ std::vector<std::string> AccessibilityState::GetAccessibilityServiceIds() {
   std::vector<std::string> service_ids;
   AppendJavaStringArrayToStringVector(env, j_service_ids, &service_ids);
   return service_ids;
+}
+
+// static
+bool AccessibilityState::ShouldRespectDisplayedPasswordText() {
+  JNIEnv* env = AttachCurrentThread();
+  return ui::
+      Java_AccessibilityAutofillHelper_shouldRespectDisplayedPasswordText(env);
+}
+
+// static
+bool AccessibilityState::ShouldExposePasswordText() {
+  JNIEnv* env = AttachCurrentThread();
+  return ui::Java_AccessibilityAutofillHelper_shouldExposePasswordText(env);
 }
 
 }  // namespace ui

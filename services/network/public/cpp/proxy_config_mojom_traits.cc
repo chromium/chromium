@@ -39,12 +39,16 @@ bool StructTraits<network::mojom::ProxyBypassRulesDataView,
   return true;
 }
 
-std::vector<std::string>
+std::vector<std::vector<std::string>>
 StructTraits<network::mojom::ProxyListDataView, net::ProxyList>::proxies(
     const net::ProxyList& r) {
-  std::vector<std::string> out;
-  for (const auto& proxy : r.GetAll()) {
-    out.push_back(net::ProxyServerToPacResultElement(proxy));
+  std::vector<std::vector<std::string>> out;
+  for (const auto& proxy_chain : r.AllChains()) {
+    std::vector<std::string> proxy_servers;
+    for (const auto& proxy : proxy_chain.proxy_servers()) {
+      proxy_servers.push_back(net::ProxyServerToPacResultElement(proxy));
+    }
+    out.push_back(std::move(proxy_servers));
   }
   return out;
 }
@@ -52,18 +56,23 @@ StructTraits<network::mojom::ProxyListDataView, net::ProxyList>::proxies(
 bool StructTraits<network::mojom::ProxyListDataView, net::ProxyList>::Read(
     network::mojom::ProxyListDataView data,
     net::ProxyList* out_proxy_list) {
-  std::vector<std::string> proxies;
-  if (!data.ReadProxies(&proxies))
+  std::vector<std::vector<std::string>> proxy_chains;
+  if (!data.ReadProxies(&proxy_chains)) {
     return false;
-  for (const auto& proxy : proxies) {
-    net::ProxyServer proxy_server = net::PacResultElementToProxyServer(proxy);
-    if (!proxy_server.is_valid()) {
-      mojo::debug::ScopedMessageErrorCrashKey crash_key_value(
-          "!proxy_server.is_valid()");
-      base::debug::DumpWithoutCrashing();
-      return false;
+  }
+  for (const auto& proxy_chain : proxy_chains) {
+    std::vector<net::ProxyServer> proxy_servers;
+    for (const auto& proxy : proxy_chain) {
+      net::ProxyServer proxy_server = net::PacResultElementToProxyServer(proxy);
+      if (!proxy_server.is_valid()) {
+        mojo::debug::ScopedMessageErrorCrashKey crash_key_value(
+            "!proxy_server.is_valid()");
+        base::debug::DumpWithoutCrashing();
+        return false;
+      }
+      proxy_servers.push_back(std::move(proxy_server));
     }
-    out_proxy_list->AddProxyServer(proxy_server);
+    out_proxy_list->AddProxyChain(net::ProxyChain(proxy_servers));
   }
   return true;
 }

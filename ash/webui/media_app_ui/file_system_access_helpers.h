@@ -18,7 +18,7 @@ namespace ash {
 void ResolveTransferToken(
     mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken> token,
     content::WebContents* web_contents,
-    base::OnceCallback<void(absl::optional<storage::FileSystemURL>)> callback);
+    base::OnceCallback<void(std::optional<storage::FileSystemURL>)> callback);
 
 }  // namespace ash
 

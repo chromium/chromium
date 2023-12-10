@@ -73,6 +73,7 @@
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
+#include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
 namespace blink {
 
@@ -703,7 +704,7 @@ static bool ShouldMergeCombinedTextAfterRemoval(const Node& old_child) {
   if (!layout_object)
     return false;
 
-  // Request to merge previous and next |LayoutNGTextCombine| of |child|.
+  // Request to merge previous and next |LayoutTextCombine| of |child|.
   // See http:://crbug.com/1227066
   auto* const previous_sibling = layout_object->PreviousSibling();
   if (!previous_sibling)
@@ -1253,6 +1254,24 @@ unsigned ContainerNode::CountChildren() const {
   return count;
 }
 
+bool ContainerNode::HasOnlyText() const {
+  bool has_text = false;
+  for (Node* child = firstChild(); child; child = child->nextSibling()) {
+    switch (child->getNodeType()) {
+      case kTextNode:
+      case kCdataSectionNode:
+        has_text = has_text || !To<Text>(child)->data().empty();
+        break;
+      case kCommentNode:
+        // Ignore comments.
+        break;
+      default:
+        return false;
+    }
+  }
+  return has_text;
+}
+
 Element* ContainerNode::QuerySelector(const AtomicString& selectors,
                                       ExceptionState& exception_state) {
   SelectorQuery* selector_query = GetDocument().GetSelectorQueryCache().Add(
@@ -1569,6 +1588,19 @@ RadioNodeList* ContainerNode::GetRadioNodeList(const AtomicString& name,
   CollectionType type =
       only_match_img_elements ? kRadioImgNodeListType : kRadioNodeListType;
   return EnsureCachedCollection<RadioNodeList>(type, name);
+}
+
+String ContainerNode::FindTextInElementWith(
+    const AtomicString& substring) const {
+  for (Element& element : ElementTraversal::DescendantsOf(*this)) {
+    if (element.HasOnlyText()) {
+      const String& text = element.TextFromChildren();
+      if (text.Find(substring) != WTF::kNotFound) {
+        return text;
+      }
+    }
+  }
+  return String();
 }
 
 Element* ContainerNode::getElementById(const AtomicString& id) const {

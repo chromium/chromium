@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="or">
 <translation id="1075622780330595106">ଆପଣଙ୍କର <ph name="NUMBER_OF_TABS" />ଟି ଟାବ୍ ନିକଟରେ ବ୍ୟବହୃତ ହୋଇନାହିଁ। ସେଗୁଡ଼ିକୁ ବନ୍ଦ କରିବେ?</translation>
+<translation id="1155815720264022949">ପୁରୁଣା ଟାବଗୁଡ଼ିକୁ ବନ୍ଦ କରିବା ପାଇଁ ଚାହାଁନ୍ତି?</translation>
 <translation id="1215127405478249895">ଟାବଗୁଡ଼ିକର ସମୀକ୍ଷା କରନ୍ତୁ</translation>
 <translation id="125153950246128346">ଅନ୍ୟଏକ ଟାବ୍ ଦେଖିବା ପାଇଁ ଟାପ୍ କରନ୍ତୁ</translation>
 <translation id="1499635324672558517">ସମସ୍ତ ଇନକଗ୍ନିଟୋ ଟାବକୁ ବନ୍ଦ କରିବେ?</translation>
@@ -46,9 +47,11 @@
 <translation id="5073204694187207510">ପୂର୍ଣ୍ଣସ୍କ୍ରିନ୍‌ ଗ୍ରୀଡ୍‌କୁ ଲୁଚାନ୍ତୁ</translation>
 <translation id="5076161749301278626">ଷ୍ଟୋର ସମୀକ୍ଷାଗୁଡ଼ିକୁ ଦେଖିବେ?</translation>
 <translation id="5082793167783849073">ଗୋଟିଏ ଗୋଷ୍ଠୀ ତିଆରି କରି ପୃଷ୍ଠାଗୁଡ଼ିକୁ ତୁରନ୍ତ ତୁଳନା କରନ୍ତୁ। ଆରମ୍ଭ କରିବା ପାଇଁ, ଗୋଟିଏ ଲିଙ୍କ୍‍କୁ ଦାବି ଧରନ୍ତୁ।</translation>
+<translation id="5303274951032363933">{TABS_COUNT,plural, =1{ଆପଣ ବର୍ତ୍ତମାନ ବ୍ୟବହାର କରିନଥିବା <ph name="TABS_COUNT_ONE" /> ଟାବ ଆପଣଙ୍କ ପାଖରେ ଅଛି}other{ଆପଣ ବର୍ତ୍ତମାନ ବ୍ୟବହାର କରିନଥିବା <ph name="TABS_COUNT_MANY" /> ଟାବ ଆପଣଙ୍କ ପାଖରେ ଅଛି}}</translation>
 <translation id="5339733443032484186">ଆପଣଙ୍କ ଗତ ଟାବ</translation>
 <translation id="5490235265819901748">ଟାବ୍ ଗ୍ରୁପର ବିସ୍ତାର କରାଯାଇଛି</translation>
 <translation id="5494920125229734069">ସମସ୍ତ ଚୟନ କରନ୍ତୁ</translation>
+<translation id="5545379293264651575">ସମୀକ୍ଷା ନକରି ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="5556417849629758491">ଷ୍ଟୋରର ସୂଚନା ଦେଖନ୍ତୁ, ସ୍କ୍ରିନର ଶୀର୍ଷଭାଗର ନିକଟରେ ବିକଳ୍ପ ଉପଲବ୍ଧ ଅଛି</translation>
 <translation id="5558362125926932819"><ph name="NUMBER_OF_TABS" />ଟି ଟାବ୍ ଥିବା ଟାବ୍ ଗ୍ରୁପକୁ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" />ଟି ଟାବ୍ ଏକତ୍ର କରାଯାଇଛି</translation>
@@ -85,7 +88,6 @@
 <translation id="7885132941432959125">ଟାବ୍‍କୁ ଡାହାଣକୁ ମୁଭ୍ କରନ୍ତୁ</translation>
 <translation id="7966321538264951561">ପ୍ରସ୍ତାବଗୁଡ଼ିକୁ ଖାରଜ କରନ୍ତୁ।</translation>
 <translation id="8029301326595421733">ସମ୍ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନରେ ଖୋଲାଯାଇଥିବା ଏହି ଷ୍ଟୋର ବିଷୟରେ ସୂଚନା</translation>
-<translation id="814503310257431685">ସବୁ ଦେଖନ୍ତୁ</translation>
 <translation id="8205266828577616993">ଟାବ୍‌କୁ ଉପରକୁ ମୁଭ୍ କରନ୍ତୁ</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" />ଟି ଚୟନିତ ଟାବ୍ ବନ୍ଦ କରନ୍ତୁ}other{<ph name="TABS_COUNT_MANY" />ଟି ଚୟନିତ ଟାବ୍ ବନ୍ଦ କରନ୍ତୁ}}</translation>
 <translation id="8398929769197326728">ନୂଆ ଫୋଲ୍ଡର - <ph name="CURRENT_TIMESTAMP_MS" /></translation>

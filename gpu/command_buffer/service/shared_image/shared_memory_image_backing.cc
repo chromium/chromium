@@ -66,13 +66,13 @@ class OverlayImageRepresentationImpl : public OverlayImageRepresentation {
   void EndReadAccess(gfx::GpuFenceHandle release_fence) override {}
 
 #if BUILDFLAG(IS_WIN)
-  absl::optional<gl::DCLayerOverlayImage> GetDCLayerOverlayImage() override {
+  std::optional<gl::DCLayerOverlayImage> GetDCLayerOverlayImage() override {
     // This should only be called for the backing which references the Y plane,
     // eg. plane_index=0, of an NV12 shmem GMB - see allow_shm_overlay in
     // SharedImageFactory. This allows access to both Y and UV planes.
     const auto& shm_wrapper = static_cast<SharedMemoryImageBacking*>(backing())
                                   ->shared_memory_wrapper();
-    return absl::make_optional<gl::DCLayerOverlayImage>(
+    return std::make_optional<gl::DCLayerOverlayImage>(
         size(), shm_wrapper.GetMemory(0), shm_wrapper.GetStride(0));
   }
 #endif
@@ -204,7 +204,7 @@ SharedMemoryImageBacking::SharedMemoryImageBacking(
     uint32_t usage,
     SharedMemoryRegionWrapper wrapper,
     gfx::GpuMemoryBufferHandle handle,
-    absl::optional<gfx::BufferUsage> buffer_usage)
+    std::optional<gfx::BufferUsage> buffer_usage)
     : SharedImageBacking(mailbox,
                          format,
                          size,

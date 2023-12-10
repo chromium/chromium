@@ -79,7 +79,7 @@ TEST_F(AwFieldTrialsTest, TrialDisableFeatureOverrides) {
 TEST_F(AwFieldTrialsTest, CommandLineEnableFeatureOverrides) {
   AwFieldTrials aw_field_trials;
   auto feature_list = std::make_unique<base::FeatureList>();
-  feature_list->InitializeFromCommandLine(kUserAgentClientHintFeatureName, "");
+  feature_list->InitFromCommandLine(kUserAgentClientHintFeatureName, "");
   aw_field_trials.RegisterFeatureOverrides(feature_list.get());
   base::FeatureList::SetInstance(std::move(feature_list));
 
@@ -90,7 +90,7 @@ TEST_F(AwFieldTrialsTest, CommandLineEnableFeatureOverrides) {
 TEST_F(AwFieldTrialsTest, CommandLineDisableFeatureOverrides) {
   AwFieldTrials aw_field_trials;
   auto feature_list = std::make_unique<base::FeatureList>();
-  feature_list->InitializeFromCommandLine("", kUserAgentClientHintFeatureName);
+  feature_list->InitFromCommandLine("", kUserAgentClientHintFeatureName);
   aw_field_trials.RegisterFeatureOverrides(feature_list.get());
   base::FeatureList::SetInstance(std::move(feature_list));
 

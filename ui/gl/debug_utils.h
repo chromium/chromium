@@ -22,4 +22,4 @@ HRESULT GL_EXPORT SetDebugName(IDXGIObject* dxgi_object,
 
 }  // namespace gl
 
-#endif  // #define UI_GL_DEBUG_UTILS_H_
+#endif  // UI_GL_DEBUG_UTILS_H_

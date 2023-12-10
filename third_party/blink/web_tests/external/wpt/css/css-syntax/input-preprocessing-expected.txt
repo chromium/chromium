@@ -1,18 +1,13 @@
 This is a testharness.js-based test.
-[PASS] "foo\0" becomes "foo�"
-[PASS] "f\0oo" becomes "f�oo"
-[PASS] "\0foo" becomes "�foo"
-[PASS] "\0" becomes "�"
-[PASS] "\0\0\0" becomes "���"
 [FAIL] "fooU+d800" becomes "foo�"
-  assert_equals: expected "foo\ufffd" but got "fooU+d800"
+  assert_equals: expected "foo\\ufffd" but got "fooU+d800"
 [FAIL] "fU+d800oo" becomes "f�oo"
-  assert_equals: expected "f\ufffdoo" but got "fU+d800oo"
+  assert_equals: expected "f\\ufffdoo" but got "fU+d800oo"
 [FAIL] "U+d800foo" becomes "�foo"
-  assert_equals: expected "\ufffdfoo" but got "U+d800foo"
+  assert_equals: expected "\\ufffdfoo" but got "U+d800foo"
 [FAIL] "U+d800" becomes "�"
-  assert_equals: expected "\ufffd" but got "U+d800"
+  assert_equals: expected "\\ufffd" but got "U+d800"
 [FAIL] "U+d800U+d800U+d800" becomes "���"
-  assert_equals: expected "\ufffd\ufffd\ufffd" but got "U+d800U+d800U+d800"
+  assert_equals: expected "\\ufffd\\ufffd\\ufffd" but got "U+d800U+d800U+d800"
 Harness: the test ran to completion.
 

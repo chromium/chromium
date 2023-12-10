@@ -6,11 +6,7 @@
 
 #include <memory>
 
-#include "base/functional/callback.h"
-#include "base/run_loop.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "components/sync/base/features.h"
 #include "components/sync/service/configure_context.h"
 #include "components/sync/test/fake_data_type_controller.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -101,7 +97,7 @@ TEST_F(SyncModelLoadManagerTest, StopAfterFinish) {
 
   model_load_manager.Stop(SyncStopMetadataFate::KEEP_METADATA);
   EXPECT_EQ(GetController(BOOKMARKS)->state(), DataTypeController::NOT_RUNNING);
-  EXPECT_EQ(0, GetController(BOOKMARKS)->model()->clear_metadata_call_count());
+  EXPECT_EQ(0, GetController(BOOKMARKS)->model()->clear_metadata_count());
 }
 
 // Test that a model that failed to load is reported and stopped properly.
@@ -192,7 +188,7 @@ TEST_F(SyncModelLoadManagerTest, OnAllDataTypesReadyForConfigure) {
 
   EXPECT_EQ(GetController(BOOKMARKS)->state(), DataTypeController::NOT_RUNNING);
   EXPECT_EQ(GetController(APPS)->state(), DataTypeController::MODEL_LOADED);
-  EXPECT_EQ(1, GetController(BOOKMARKS)->model()->clear_metadata_call_count());
+  EXPECT_EQ(1, GetController(BOOKMARKS)->model()->clear_metadata_count());
 }
 
 // Test that OnAllDataTypesReadyForConfigure() is called correctly after
@@ -291,7 +287,7 @@ TEST_F(SyncModelLoadManagerTest, StopClearMetadata) {
   model_load_manager.Stop(SyncStopMetadataFate::CLEAR_METADATA);
 
   EXPECT_EQ(GetController(BOOKMARKS)->state(), DataTypeController::NOT_RUNNING);
-  EXPECT_EQ(1, GetController(BOOKMARKS)->model()->clear_metadata_call_count());
+  EXPECT_EQ(1, GetController(BOOKMARKS)->model()->clear_metadata_count());
 }
 
 // Test that stopping a single type clears the metadata for the disabled type.
@@ -315,7 +311,7 @@ TEST_F(SyncModelLoadManagerTest, StopDataType) {
                 "Data type is unready.", BOOKMARKS));
 
   EXPECT_EQ(GetController(BOOKMARKS)->state(), DataTypeController::NOT_RUNNING);
-  EXPECT_EQ(1, GetController(BOOKMARKS)->model()->clear_metadata_call_count());
+  EXPECT_EQ(1, GetController(BOOKMARKS)->model()->clear_metadata_count());
 }
 
 // Test that stopping a single type is ignored when the type is not running.
@@ -366,7 +362,7 @@ TEST_F(SyncModelLoadManagerTest, KeepsMetadataForPreferredDataType) {
   ASSERT_EQ(GetController(BOOKMARKS)->state(),
             DataTypeController::MODEL_LOADED);
   ASSERT_EQ(GetController(APPS)->state(), DataTypeController::NOT_RUNNING);
-  EXPECT_EQ(0, GetController(APPS)->model()->clear_metadata_call_count());
+  EXPECT_EQ(0, GetController(APPS)->model()->clear_metadata_count());
 }
 
 // Test that Configure stops controllers with CLEAR_METADATA for
@@ -402,7 +398,7 @@ TEST_F(SyncModelLoadManagerTest, ClearsMetadataForNotPreferredDataType) {
   ASSERT_EQ(GetController(BOOKMARKS)->state(),
             DataTypeController::MODEL_LOADED);
   ASSERT_EQ(GetController(APPS)->state(), DataTypeController::NOT_RUNNING);
-  EXPECT_EQ(1, GetController(APPS)->model()->clear_metadata_call_count());
+  EXPECT_EQ(1, GetController(APPS)->model()->clear_metadata_count());
 }
 
 TEST_F(SyncModelLoadManagerTest,
@@ -448,11 +444,17 @@ TEST_F(SyncModelLoadManagerTest,
             DataTypeController::MODEL_LOADED);
   ASSERT_EQ(GetController(APPS)->state(), DataTypeController::NOT_RUNNING);
 
-  // When switching modes, the metadata should get cleared for all datatypes,
-  // including datatypes that started in transport mode (BOOKMARKS) and
-  // datatypes that were excluded (APPS).
-  EXPECT_EQ(1, GetController(APPS)->model()->clear_metadata_call_count());
-  EXPECT_EQ(1, GetController(BOOKMARKS)->model()->clear_metadata_call_count());
+  // When switching modes, the Sync-the-feature mode metadata should get cleared
+  // for all datatypes, including datatypes that restarted in transport mode
+  // (BOOKMARKS) and datatypes that were excluded (APPS).
+  // Note that for BOOKMARKS, it actually gets cleared twice: Once by
+  // ModelLoadManager itself, and again via ClearMetadataWhileStopped() from
+  // ModelTypeController::LoadModels().
+  EXPECT_EQ(
+      1, GetController(APPS)->model(SyncMode::kFull)->clear_metadata_count());
+  EXPECT_EQ(
+      2,
+      GetController(BOOKMARKS)->model(SyncMode::kFull)->clear_metadata_count());
 }
 
 TEST_F(SyncModelLoadManagerTest,
@@ -497,13 +499,16 @@ TEST_F(SyncModelLoadManagerTest,
   ASSERT_EQ(GetController(BOOKMARKS)->state(),
             DataTypeController::MODEL_LOADED);
   ASSERT_EQ(GetController(APPS)->state(), DataTypeController::NOT_RUNNING);
-  // The metadata for all types should get cleared.
+  // The transport-mode metadata for all types should get cleared. Note that for
+  // BOOKMARKS, it actually gets cleared twice: Once by ModelLoadManager itself,
+  // and again via ClearMetadataWhileStopped() from
+  // ModelTypeController::LoadModels().
   EXPECT_EQ(1, GetController(APPS)
                    ->model(SyncMode::kTransportOnly)
-                   ->clear_metadata_call_count());
-  EXPECT_EQ(1, GetController(BOOKMARKS)
+                   ->clear_metadata_count());
+  EXPECT_EQ(2, GetController(BOOKMARKS)
                    ->model(SyncMode::kTransportOnly)
-                   ->clear_metadata_call_count());
+                   ->clear_metadata_count());
 }
 
 TEST_F(SyncModelLoadManagerTest, ShouldClearMetadataAfterStopped) {
@@ -519,10 +524,10 @@ TEST_F(SyncModelLoadManagerTest, ShouldClearMetadataAfterStopped) {
   model_load_manager.Stop(SyncStopMetadataFate::KEEP_METADATA);
   ASSERT_EQ(GetController(BOOKMARKS)->state(), DataTypeController::NOT_RUNNING);
 
-  ASSERT_EQ(0, GetController(BOOKMARKS)->model()->clear_metadata_call_count());
+  ASSERT_EQ(0, GetController(BOOKMARKS)->model()->clear_metadata_count());
   model_load_manager.Stop(SyncStopMetadataFate::CLEAR_METADATA);
   // Clearing metadata should work even though the type is already stopped.
-  EXPECT_EQ(1, GetController(BOOKMARKS)->model()->clear_metadata_call_count());
+  EXPECT_EQ(1, GetController(BOOKMARKS)->model()->clear_metadata_count());
 }
 
 TEST_F(SyncModelLoadManagerTest, ShouldClearMetadataIfNotRunning) {
@@ -531,34 +536,40 @@ TEST_F(SyncModelLoadManagerTest, ShouldClearMetadataIfNotRunning) {
 
   ASSERT_EQ(GetController(BOOKMARKS)->state(), DataTypeController::NOT_RUNNING);
 
-  ASSERT_EQ(0, GetController(BOOKMARKS)->model()->clear_metadata_call_count());
+  ASSERT_EQ(0, GetController(BOOKMARKS)->model()->clear_metadata_count());
   model_load_manager.Stop(SyncStopMetadataFate::CLEAR_METADATA);
 
   // Clearing metadata should work even though the type is not running.
-  EXPECT_EQ(1, GetController(BOOKMARKS)->model()->clear_metadata_call_count());
+  EXPECT_EQ(1, GetController(BOOKMARKS)->model()->clear_metadata_count());
 }
 
-TEST_F(SyncModelLoadManagerTest, ShouldClearMetadataIfFailed) {
+TEST_F(SyncModelLoadManagerTest, ShouldNotClearMetadataIfFailed) {
   controllers_[BOOKMARKS] = std::make_unique<FakeDataTypeController>(BOOKMARKS);
   EXPECT_CALL(delegate_, OnSingleDataTypeWillStop(BOOKMARKS, _)).Times(2);
 
-  // Bring the type to a failed state.
+  // Bring the underlying model to a failed state. Note that this does *not*
+  // bring the controller into the FAILED state yet.
   GetController(BOOKMARKS)->model()->SimulateModelError(
       ModelError(FROM_HERE, "Test error"));
 
   ModelLoadManager model_load_manager(&controllers_, &delegate_);
-  ModelTypeSet types;
-  types.Put(BOOKMARKS);
+  ModelTypeSet types{BOOKMARKS};
 
+  ASSERT_EQ(0, GetController(BOOKMARKS)->model()->clear_metadata_count());
+  // Trying to configure exposes the error to the controller (which calls back
+  // into the ModelLoadManager).
   model_load_manager.Configure(/*preferred_types_without_errors=*/types,
                                /*preferred_types=*/types,
                                BuildConfigureContext());
   ASSERT_EQ(DataTypeController::FAILED, GetController(BOOKMARKS)->state());
+  // Failure during model load does *not* clear metadata (see
+  // ModelLoadManager::ModelLoadCallback()).
+  EXPECT_EQ(0, GetController(BOOKMARKS)->model()->clear_metadata_count());
 
-  EXPECT_EQ(0, GetController(BOOKMARKS)->model()->clear_metadata_call_count());
+  // Clearing metadata should (again) have no effect since the type is not
+  // considered stopped.
   model_load_manager.Stop(SyncStopMetadataFate::CLEAR_METADATA);
-  // Clearing metadata should work even though the type has already failed.
-  EXPECT_EQ(1, GetController(BOOKMARKS)->model()->clear_metadata_call_count());
+  EXPECT_EQ(0, GetController(BOOKMARKS)->model()->clear_metadata_count());
 }
 
 // Test that Configure waits for desired types in STOPPING state to stop and
@@ -678,6 +689,46 @@ TEST_F(SyncModelLoadManagerTest, ShouldTimeoutIfNotAllTypesLoaded) {
   EXPECT_CALL(delegate_, OnAllDataTypesReadyForConfigure);
   // Types not loaded till now are skipped.
   task_environment_.FastForwardBy(kSyncLoadModelsTimeoutDuration);
+}
+
+// Regression test for crbug.com/1506701.
+// Tests that if LoadModels is called for a failed type, it's a no-op.
+TEST_F(SyncModelLoadManagerTest, ShouldNotStartFailedTypesUponLoadModels) {
+  // Create two controllers, one with delayed model load.
+  controllers_[APPS] = std::make_unique<FakeDataTypeController>(APPS);
+  controllers_[BOOKMARKS] = std::make_unique<FakeDataTypeController>(BOOKMARKS);
+  GetController(BOOKMARKS)->model()->EnableManualModelStart();
+
+  ModelLoadManager model_load_manager(&controllers_, &delegate_);
+  ModelTypeSet preferred_types = {APPS, BOOKMARKS};
+
+  model_load_manager.Configure(
+      /*preferred_types_without_errors=*/preferred_types, preferred_types,
+      BuildConfigureContext());
+
+  // Bring BOOKMARKS to a STOPPING state.
+  model_load_manager.Stop(SyncStopMetadataFate::KEEP_METADATA);
+
+  ASSERT_EQ(GetController(APPS)->state(), DataTypeController::NOT_RUNNING);
+  ASSERT_EQ(GetController(BOOKMARKS)->state(), DataTypeController::STOPPING);
+
+  model_load_manager.Configure(
+      /*preferred_types_without_errors=*/preferred_types, preferred_types,
+      BuildConfigureContext());
+
+  // APPS is started right away.
+  ASSERT_EQ(GetController(APPS)->state(), DataTypeController::MODEL_LOADED);
+  // BOOKMARKS needs to finish stopping first before it can start again.
+  ASSERT_EQ(GetController(BOOKMARKS)->state(), DataTypeController::STOPPING);
+
+  // Simulate model error while the type is stopping. ModelLoadManager should
+  // continue and not wait for the failed type.
+  EXPECT_CALL(delegate_, OnAllDataTypesReadyForConfigure);
+  GetController(BOOKMARKS)->model()->SimulateModelError(
+      ModelError(FROM_HERE, "Test error"));
+  ASSERT_EQ(GetController(BOOKMARKS)->state(), DataTypeController::FAILED);
+
+  // No crash from LoadModels.
 }
 
 }  // namespace syncer

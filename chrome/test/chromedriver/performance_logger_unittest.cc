@@ -185,7 +185,6 @@ void ExpectCommand(FakeDevToolsClient* client, const std::string& method) {
 
 void ExpectEnableDomains(FakeDevToolsClient* client) {
   ExpectCommand(client, "Network.enable");
-  ExpectCommand(client, "Page.enable");
 }
 
 }  // namespace
@@ -252,7 +251,6 @@ TEST(PerformanceLogger, PerfLoggingPrefs) {
 
   client.AddListener(&logger);
   logger.OnConnected(&client);
-  ExpectCommand(&client, "Page.enable");
 
   DevToolsCommand* cmd;
   ASSERT_FALSE(client.PopSentCommand(&cmd));

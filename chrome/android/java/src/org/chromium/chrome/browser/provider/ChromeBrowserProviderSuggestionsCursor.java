@@ -17,16 +17,17 @@ import org.chromium.chrome.R;
  */
 class ChromeBrowserProviderSuggestionsCursor extends AbstractCursor {
 
-    private static final String[] COLS = new String [] {
-        BaseColumns.ID,
-        SearchManager.SUGGEST_COLUMN_INTENT_ACTION,
-        SearchManager.SUGGEST_COLUMN_INTENT_DATA,
-        SearchManager.SUGGEST_COLUMN_TEXT_1,
-        SearchManager.SUGGEST_COLUMN_TEXT_2,
-        SearchManager.SUGGEST_COLUMN_TEXT_2_URL,
-        SearchManager.SUGGEST_COLUMN_ICON_1,
-        SearchManager.SUGGEST_COLUMN_LAST_ACCESS_HINT
-    };
+    private static final String[] COLS =
+            new String[] {
+                BaseColumns.ID,
+                SearchManager.SUGGEST_COLUMN_INTENT_ACTION,
+                SearchManager.SUGGEST_COLUMN_INTENT_DATA,
+                SearchManager.SUGGEST_COLUMN_TEXT_1,
+                SearchManager.SUGGEST_COLUMN_TEXT_2,
+                SearchManager.SUGGEST_COLUMN_TEXT_2_URL,
+                SearchManager.SUGGEST_COLUMN_ICON_1,
+                SearchManager.SUGGEST_COLUMN_LAST_ACCESS_HINT
+            };
 
     private static final int COLUMN_ID = 0;
     private static final int COLUMN_SUGGEST_INTENT_ACTION = 1;

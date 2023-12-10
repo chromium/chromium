@@ -4,9 +4,7 @@
 
 package org.chromium.chrome.browser.tab;
 
-/**
- * Resolves a tab, given a Tab ID.
- */
+/** Resolves a tab, given a Tab ID. */
 @FunctionalInterface
 public interface TabResolver {
     /**

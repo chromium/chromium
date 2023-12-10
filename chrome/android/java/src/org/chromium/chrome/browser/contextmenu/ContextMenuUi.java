@@ -35,12 +35,15 @@ public interface ContextMenuUi {
      * @param onMenuClosed When the menu is closed, this method is called to do any possible final
      *                     clean up.
      */
-    void displayMenu(WindowAndroid window, WebContents webContents, ContextMenuParams params,
-            List<Pair<Integer, ModelList>> items, Callback<Integer> onItemClicked,
-            Runnable onMenuShown, Runnable onMenuClosed);
+    void displayMenu(
+            WindowAndroid window,
+            WebContents webContents,
+            ContextMenuParams params,
+            List<Pair<Integer, ModelList>> items,
+            Callback<Integer> onItemClicked,
+            Runnable onMenuShown,
+            Runnable onMenuClosed);
 
-    /**
-     * Dismiss the context menu.
-     */
+    /** Dismiss the context menu. */
     void dismiss();
 }

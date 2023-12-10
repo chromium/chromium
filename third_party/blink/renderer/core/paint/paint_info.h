@@ -30,7 +30,7 @@
 #include "base/check_op.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
+#include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/paint/paint_flags.h"
 #include "third_party/blink/renderer/core/paint/paint_phase.h"
 #include "third_party/blink/renderer/platform/geometry/layout_rect.h"
@@ -144,7 +144,7 @@ struct CORE_EXPORT PaintInfo {
   // certain types of monolithic content, but there may still be multiple
   // fragments in such cases, due to repeated table headers/footers or repeated
   // fixed positioned objects when printing. The correct FragmentData is
-  // typically obtained via an NGPhysicalBoxFragment object, but there are no
+  // typically obtained via an PhysicalBoxFragment object, but there are no
   // physical fragments passed to legacy painters.
   const FragmentData* fragment_data_override_ = nullptr;
 

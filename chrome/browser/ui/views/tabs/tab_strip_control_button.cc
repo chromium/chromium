@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/tabs/tab_strip_control_button.h"
 
+#include <utility>
+
 #include "chrome/browser/ui/views/frame/browser_non_client_frame_view.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_controller.h"
@@ -62,7 +64,7 @@ TabStripControlButton::TabStripControlButton(
     const gfx::VectorIcon& icon,
     Edge flat_edge)
     : TabStripControlButton(tab_strip_controller,
-                            callback,
+                            std::move(callback),
                             icon,
                             std::u16string(),
                             flat_edge) {}
@@ -73,7 +75,7 @@ TabStripControlButton::TabStripControlButton(
     const std::u16string& text,
     Edge flat_edge)
     : TabStripControlButton(tab_strip_controller,
-                            callback,
+                            std::move(callback),
                             kEmptyIcon,
                             text,
                             flat_edge) {}
@@ -118,6 +120,7 @@ TabStripControlButton::TabStripControlButton(
   views::FocusRing::Get(this)->SetColorId(kColorNewTabButtonFocusRing);
 
   if (text.size() > 0) {
+    SetEnabledTextColorIds(foreground_frame_active_color_id_);
     // Required for text to be visible on hover
     label()->SetPaintToLayer();
     label()->SetSkipSubpixelRenderingOpacityCheck(true);
@@ -221,9 +224,8 @@ void TabStripControlButton::UpdateBackground() {
     return;
   }
 
-  const absl::optional<int> bg_id =
-      tab_strip_controller_->GetCustomBackgroundId(
-          BrowserFrameActiveState::kUseCurrent);
+  const std::optional<int> bg_id = tab_strip_controller_->GetCustomBackgroundId(
+      BrowserFrameActiveState::kUseCurrent);
 
   // Paint the background as transparent for image based themes.
   if (bg_id.has_value() && paint_transparent_for_custom_image_theme_) {

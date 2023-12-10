@@ -2438,9 +2438,10 @@ void GLES2DecoderPassthroughTestBase::SetUp() {
       &passthrough_discardable_manager_, &shared_image_manager_);
 
   surface_ = gl::init::CreateOffscreenGLSurface(display_, gfx::Size(4, 4));
-  context_ = gl::init::CreateGLContext(
-      nullptr, surface_.get(),
-      GenerateGLContextAttribs(context_creation_attribs_, group_.get()));
+  context_ =
+      gl::init::CreateGLContext(nullptr, surface_.get(),
+                                GenerateGLContextAttribsForDecoder(
+                                    context_creation_attribs_, group_.get()));
   context_->MakeCurrent(surface_.get());
 
   command_buffer_service_ = std::make_unique<FakeCommandBufferServiceBase>();

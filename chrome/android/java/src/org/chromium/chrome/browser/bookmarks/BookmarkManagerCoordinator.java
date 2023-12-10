@@ -30,9 +30,7 @@ import org.chromium.chrome.browser.bookmarks.BookmarkListEntry.ViewType;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowDisplayPref;
 import org.chromium.chrome.browser.commerce.ShoppingFeatures;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.native_page.BasicNativePage;
 import org.chromium.components.bookmarks.BookmarkId;
@@ -165,14 +163,11 @@ public class BookmarkManagerCoordinator
         SelectableListLayout<BookmarkId> selectableList =
                 mMainView.findViewById(R.id.selectable_list);
         mSelectableListLayout = selectableList;
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.EMPTY_STATES)) {
-            mSelectableListLayout.initializeEmptyStateView(
-                    R.drawable.bookmark_empty_state_illustration,
-                    R.string.bookmark_manager_empty_state,
-                    R.string.bookmark_manager_back_to_page_by_adding_bookmark);
-        } else {
-            mSelectableListLayout.initializeEmptyView(R.string.bookmarks_folder_empty);
-        }
+        mSelectableListLayout.initializeEmptyStateView(
+                R.drawable.bookmark_empty_state_illustration,
+                R.string.bookmark_manager_empty_state,
+                R.string.bookmark_manager_back_to_page_by_adding_bookmark);
+        mSelectableListLayout.ignoreItemTypeForEmptyState(ViewType.SEARCH_BOX);
 
         ModelList modelList = new ModelList();
         DragReorderableRecyclerViewAdapter dragReorderableRecyclerViewAdapter =
@@ -224,8 +219,7 @@ public class BookmarkManagerCoordinator
                         largeIconBridge,
                         BookmarkUtils.getRoundedIconGenerator(context, displayPref),
                         BookmarkUtils.getImageIconSize(res, displayPref),
-                        BookmarkUtils.getFaviconDisplaySize(res),
-                        SyncServiceFactory.getForProfile(profile));
+                        BookmarkUtils.getFaviconDisplaySize(res));
 
         BookmarkUndoController bookmarkUndoController =
                 new BookmarkUndoController(context, mBookmarkModel, snackbarManager);

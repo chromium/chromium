@@ -20,6 +20,7 @@ void AAudioStreamBuilder_setFramesPerDataCallback(AAudioStreamBuilder* builder, 
 void AAudioStreamBuilder_setUsage(AAudioStreamBuilder* builder, aaudio_usage_t usage);
 void AAudioStreamBuilder_setDataCallback(AAudioStreamBuilder* builder, AAudioStream_dataCallback callback, void *userData);
 void AAudioStreamBuilder_setErrorCallback(AAudioStreamBuilder* builder, AAudioStream_errorCallback callback, void *userData);
+void AAudioStreamBuilder_setInputPreset(AAudioStreamBuilder* builder, aaudio_input_preset_t inputPreset);
 aaudio_result_t AAudioStreamBuilder_openStream(AAudioStreamBuilder* builder, AAudioStream** stream);
 aaudio_result_t AAudioStreamBuilder_delete(AAudioStreamBuilder* builder);
 aaudio_result_t AAudioStream_close(AAudioStream* stream);

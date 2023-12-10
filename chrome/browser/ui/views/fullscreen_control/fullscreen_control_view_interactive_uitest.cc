@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/containers/flat_set.h"
@@ -26,7 +27,6 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/events/base_event_utils.h"
@@ -141,7 +141,7 @@ class FullscreenControlViewTest : public InProcessBrowserTest {
   }
 
   bool EnableKeyboardLock() {
-    absl::optional<base::flat_set<ui::DomCode>> codes({ui::DomCode::ESCAPE});
+    std::optional<base::flat_set<ui::DomCode>> codes({ui::DomCode::ESCAPE});
     return content::RequestKeyboardLock(GetActiveWebContents(),
                                         std::move(codes));
   }

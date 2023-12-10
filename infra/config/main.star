@@ -256,8 +256,9 @@ exec("//targets/variants.star")
 
 exec("//notifiers.star")
 
-exec("//subprojects/chromium/subproject.star")
+exec("//subprojects/build/subproject.star")
 exec("//subprojects/chrome/subproject.star")
+exec("//subprojects/chromium/subproject.star")
 exec("//subprojects/infra.star")
 branches.exec("//subprojects/codesearch/subproject.star")
 branches.exec("//subprojects/findit/subproject.star")

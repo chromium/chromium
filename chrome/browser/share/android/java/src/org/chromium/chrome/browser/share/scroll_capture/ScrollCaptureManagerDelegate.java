@@ -8,22 +8,14 @@ import android.view.View;
 
 import org.chromium.chrome.browser.tab.Tab;
 
-/**
- * Delegate to handle Android S API calls for {@link ScrollCaptureManager}.
- */
+/** Delegate to handle Android S API calls for {@link ScrollCaptureManager}. */
 public interface ScrollCaptureManagerDelegate {
-    /**
-     * Sets up scroll capture API for a {@link View}.
-     */
+    /** Sets up scroll capture API for a {@link View}. */
     public void addScrollCaptureBindings(View view);
 
-    /**
-     * Removes the scroll capture API bindings from a {@link View}.
-     */
+    /** Removes the scroll capture API bindings from a {@link View}. */
     public void removeScrollCaptureBindings(View view);
 
-    /**
-     * Updates the current tab.
-     */
+    /** Updates the current tab. */
     public void setCurrentTab(Tab tab);
 }

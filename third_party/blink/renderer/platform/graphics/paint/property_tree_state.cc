@@ -83,6 +83,13 @@ bool PropertyTreeStateOrAlias::Changed(
          Effect().Changed(change, relative_to, &Transform());
 }
 
+bool PropertyTreeStateOrAlias::ChangedExceptScrollAndEffect(
+    PaintPropertyChangeType change,
+    const PropertyTreeState& relative_to) const {
+  return Transform().ChangedExceptScroll(change, relative_to.Transform()) ||
+         Clip().ChangedExceptScroll(change, relative_to, &Transform());
+}
+
 absl::optional<PropertyTreeState> PropertyTreeState::CanUpcastWith(
     const PropertyTreeState& guest,
     IsCompositedScrollFunction is_composited_scroll) const {

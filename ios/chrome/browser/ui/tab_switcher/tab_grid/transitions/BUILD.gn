@@ -17,8 +17,12 @@ source_set("transitions") {
     "tab_grid_transition_direction.h",
     "tab_grid_transition_handler.h",
     "tab_grid_transition_handler.mm",
+    "tab_grid_transition_item.h",
+    "tab_grid_transition_item.mm",
+    "tab_grid_transition_layout.h",
+    "tab_grid_transition_layout.mm",
+    "tab_grid_transition_layout_providing.h",
   ]
-
   deps = [
     "//base",
     "//ios/chrome/browser/crash_report/model",

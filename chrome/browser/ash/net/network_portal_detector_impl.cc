@@ -240,7 +240,7 @@ void NetworkPortalDetectorImpl::ScheduleAttempt(const base::TimeDelta& delay) {
   if (!IsEnabled())
     return;
 
-  if (is_idle()) {
+  if (!is_idle()) {
     NET_LOG(EVENT) << "ScheduleAttempt(): Attempt already running, restarting.";
   }
 

@@ -515,6 +515,7 @@ source_set("unit_tests") {
     "//ui/base:test_support",
     "//ui/base/clipboard",
     "//ui/base/ime",
+    "//ui/display:test_support",
     "//ui/events",
     "//ui/events:dom_keycode_converter",
     "//ui/events:test_support",

@@ -42,7 +42,7 @@ void SearchProviderAsh::RegisterSearchController(
 
 void SearchProviderAsh::OnSearchResultsReceived(
     mojom::SearchStatus status,
-    absl::optional<std::vector<mojom::SearchResultPtr>> results) {
+    std::optional<std::vector<mojom::SearchResultPtr>> results) {
   switch (status) {
     case mojom::SearchStatus::kError: {
       LOG(ERROR) << "Search failed.";

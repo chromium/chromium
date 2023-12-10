@@ -51,13 +51,16 @@
     // Document Policy
     [RuntimeEnabled=DocumentPolicyNegotiation, CEReactions, Reflect] attribute DOMString policy;
 
-    [RuntimeEnabled=LazyFrameLoading, CEReactions, Reflect, ReflectOnly=("lazy", "eager", "auto"), ReflectMissing="auto", ReflectInvalid="auto"] attribute DOMString loading;
+    [CEReactions, Reflect, ReflectOnly=("lazy", "eager", "auto"), ReflectMissing="auto", ReflectInvalid="auto"] attribute DOMString loading;
 
     // Trust Tokens request parameters (https://github.com/wicg/trust-token-api)
     [RuntimeEnabled=PrivateStateTokens, SecureContext, Reflect, MeasureAs=TrustTokenIframe] attribute DOMString privateToken;
 
     // Topics API (https://github.com/patcg-individual-drafts/topics)
     [RuntimeEnabled=TopicsAPI, SecureContext, CEReactions, Reflect] attribute boolean browsingTopics;
+
+    // Protected Audience (https://wicg.github.io/turtledove)
+    [RuntimeEnabled=FledgeNegativeTargeting, SecureContext, CEReactions, Reflect] attribute boolean adAuctionHeaders;
 
     // Iframes credentialless
     // https://github.com/WICG/anonymous-iframe

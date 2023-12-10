@@ -15,9 +15,10 @@
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/native_theme/native_theme.h"
+#include "ui/views/layout/flex_layout.h"
 #include "ui/views/test/ax_event_counter.h"
 #include "ui/views/test/views_test_base.h"
-#include "ui/views/widget/widget_utils.h"
+#include "ui/views/test/views_test_utils.h"
 
 namespace views {
 
@@ -28,20 +29,27 @@ class ProgressBarTest : public ViewsTestBase {
     ViewsTestBase::SetUp();
 
     widget_ = CreateTestWidget();
-    widget_->SetContentsView(std::make_unique<ProgressBar>());
+    container_view_ = widget_->SetContentsView(std::make_unique<View>());
+    auto* layout =
+        container_view_->SetLayoutManager(std::make_unique<FlexLayout>());
+    layout->SetOrientation(views::LayoutOrientation::kVertical);
+    bar_ = container_view_->AddChildView(std::make_unique<ProgressBar>());
+    views::test::RunScheduledLayout(container_view_);
     widget_->Show();
   }
 
   void TearDown() override {
+    container_view_ = nullptr;
+    bar_ = nullptr;
     widget_.reset();
     ViewsTestBase::TearDown();
   }
 
-  ProgressBar* bar() {
-    return static_cast<ProgressBar*>(widget_->GetContentsView());
-  }
+  ProgressBar* bar() { return bar_.get(); }
 
   std::unique_ptr<Widget> widget_;
+  raw_ptr<views::View> container_view_;
+  raw_ptr<ProgressBar> bar_;
 };
 
 TEST_F(ProgressBarTest, AccessibleNodeData) {
@@ -118,6 +126,42 @@ TEST_F(ProgressBarTest, OverrideDefaultColors) {
   EXPECT_EQ(SK_ColorGREEN, bar()->GetBackgroundColor());
   EXPECT_EQ(absl::nullopt, bar()->GetForegroundColorId());
   EXPECT_EQ(absl::nullopt, bar()->GetBackgroundColorId());
+}
+
+// Test that if no `preferred_corner_radii` are provided the default radius is
+// 3, and a value of `absl::nullopt` will not round the corners.
+TEST_F(ProgressBarTest, RoundCornerDefault) {
+  // The default bar should have a rounded corner radius of 3.
+  EXPECT_EQ(gfx::RoundedCornersF(3), bar()->GetPreferredCornerRadii());
+
+  // Setting `absl::nullopt` for the corner radius should make the bar have no
+  // rounded corners.
+  bar()->SetPreferredHeight(12);
+  bar()->SetPreferredCornerRadii(absl::nullopt);
+  views::test::RunScheduledLayout(container_view_);
+  EXPECT_EQ(gfx::RoundedCornersF(0), bar()->GetPreferredCornerRadii());
+  EXPECT_TRUE(bar()->GetPreferredCornerRadii().IsEmpty());
+}
+
+// Test that a value set for `preferred_corner_radii` is saved and can be
+// retrieved from `GetPreferredCornerRadii()`.
+TEST_F(ProgressBarTest, RoundCornerRetrieval) {
+  // Setting custom corners should result in them being saved.
+  bar()->SetPreferredHeight(12);
+  bar()->SetPreferredCornerRadii(gfx::RoundedCornersF(6));
+  views::test::RunScheduledLayout(container_view_);
+  EXPECT_EQ(gfx::RoundedCornersF(6), bar()->GetPreferredCornerRadii());
+}
+
+// Test that `GetPreferredCornerRadii()` will return no corner with a radius
+// greater than the height of the bar.
+TEST_F(ProgressBarTest, RoundCornerMax) {
+  // The max corner radius for a bar with a height of 12 should be 12.
+  bar()->SetPreferredHeight(12);
+  bar()->SetPreferredCornerRadii(gfx::RoundedCornersF(13, 14, 15, 16));
+  views::test::RunScheduledLayout(container_view_);
+  EXPECT_EQ(gfx::RoundedCornersF(12, 12, 12, 12),
+            bar()->GetPreferredCornerRadii());
 }
 
 }  // namespace views

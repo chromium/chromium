@@ -6,9 +6,9 @@
 #define ASH_PUBLIC_CPP_PRESENTATION_TIME_RECORDER_H_
 
 #include <memory>
+#include <optional>
 
 #include "ash/public/cpp/ash_public_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace aura {
 class Window;
@@ -23,7 +23,7 @@ class ASH_PUBLIC_EXPORT PresentationTimeRecorder {
   static std::unique_ptr<PresentationTimeRecorder> CreateCompositorRecorder(
       aura::Window* window,
       const char* latency_histogram_name,
-      absl::optional<const char*> max_latency_histogram_name = absl::nullopt);
+      std::optional<const char*> max_latency_histogram_name = std::nullopt);
 
   virtual ~PresentationTimeRecorder() = default;
 

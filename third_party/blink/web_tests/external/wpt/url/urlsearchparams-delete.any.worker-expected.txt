@@ -1,12 +1,5 @@
 This is a testharness.js-based test.
-[PASS] Delete basics
-[PASS] Deleting appended multiple
-[PASS] Deleting all params removes ? from URL
-[PASS] Removing non-existent param removes ? from URL
 [FAIL] Changing the query of a URL with an opaque path can impact the path
   assert_equals: expected "space" but got "space    "
-[PASS] Changing the query of a URL with an opaque path can impact the path if the URL has no fragment
-[PASS] Two-argument delete()
-[PASS] Two-argument delete() respects undefined as second arg
 Harness: the test ran to completion.
 

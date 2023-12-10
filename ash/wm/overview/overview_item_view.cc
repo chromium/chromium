@@ -70,11 +70,13 @@ void AnimateLayerOpacity(ui::Layer* layer, bool visible) {
 
 OverviewItemView::OverviewItemView(
     OverviewItem* overview_item,
+    EventHandlerDelegate* event_handler_delegate,
     views::Button::PressedCallback close_callback,
     aura::Window* window,
     bool show_preview)
     : WindowMiniView(window),
       overview_item_(overview_item),
+      event_handler_delegate_(event_handler_delegate),
       close_button_(header_view()->icon_label_view()->AddChildView(
           std::make_unique<CloseButton>(std::move(close_callback),
                                         CloseButton::Type::kMediumFloating))) {
@@ -115,6 +117,7 @@ void OverviewItemView::HideCloseInstantlyAndThenShowItSlowly() {
     close_button_->SetPaintToLayer();
     close_button_->layer()->SetFillsBoundsOpaquely(false);
   }
+
   ui::Layer* layer = close_button_->layer();
 
   views::AnimationBuilder()
@@ -130,7 +133,12 @@ void OverviewItemView::HideCloseInstantlyAndThenShowItSlowly() {
 }
 
 void OverviewItemView::OnOverviewItemWindowRestoring() {
+  // Explicitly reset `overview_item_` and `event_handler_delegate_` to avoid
+  // dangling pointer since the corresponding `item_widget_` may outlive its
+  // corresponding `overview_item_` see `FadeOutWidgetFromOverview()` in
+  // `overview_utils.cc` for example.
   overview_item_ = nullptr;
+  event_handler_delegate_ = nullptr;
   close_button_->ResetListener();
 }
 
@@ -189,15 +197,21 @@ void OverviewItemView::RefreshItemVisuals() {
 
   RefreshHeaderViewRoundedCorners();
   RefreshPreviewRoundedCorners(/*show=*/true);
+  RefreshFocusRingVisuals();
 }
 
 views::View* OverviewItemView::GetView() {
   return this;
 }
 
+OverviewItemBase* OverviewItemView::GetOverviewItem() {
+  return overview_item_;
+}
+
 void OverviewItemView::MaybeActivateFocusedView() {
-  if (overview_item_)
+  if (overview_item_) {
     overview_item_->OnFocusedViewActivated();
+  }
 }
 
 void OverviewItemView::MaybeCloseFocusedView(bool primary_action) {
@@ -232,32 +246,38 @@ gfx::Point OverviewItemView::GetMagnifierFocusPointInScreen() {
 }
 
 bool OverviewItemView::OnMousePressed(const ui::MouseEvent& event) {
-  if (!overview_item_)
+  if (!event_handler_delegate_) {
     return views::View::OnMousePressed(event);
-  overview_item_->HandleMouseEvent(event);
+  }
+
+  event_handler_delegate_->HandleMouseEvent(event, overview_item_);
   return true;
 }
 
 bool OverviewItemView::OnMouseDragged(const ui::MouseEvent& event) {
-  if (!overview_item_)
+  if (!event_handler_delegate_) {
     return views::View::OnMouseDragged(event);
-  overview_item_->HandleMouseEvent(event);
+  }
+
+  event_handler_delegate_->HandleMouseEvent(event, overview_item_);
   return true;
 }
 
 void OverviewItemView::OnMouseReleased(const ui::MouseEvent& event) {
-  if (!overview_item_) {
+  if (!event_handler_delegate_) {
     views::View::OnMouseReleased(event);
     return;
   }
-  overview_item_->HandleMouseEvent(event);
+
+  event_handler_delegate_->HandleMouseEvent(event, overview_item_);
 }
 
 void OverviewItemView::OnGestureEvent(ui::GestureEvent* event) {
-  if (!overview_item_)
+  if (!event_handler_delegate_) {
     return;
+  }
 
-  overview_item_->HandleGestureEvent(event);
+  event_handler_delegate_->HandleGestureEvent(event, overview_item_);
   event->SetHandled();
 }
 

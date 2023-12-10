@@ -47,18 +47,18 @@ base::Value::Dict WorkerNodeImplDescriber::DescribeWorkerNodeData(
     return base::Value::Dict();
 
   base::Value::Dict ret;
-  ret.Set("browser_context_id", impl->browser_context_id());
+  ret.Set("worker_type", WorkerTypeToString(impl->GetWorkerType()));
+  ret.Set("browser_context_id", impl->GetBrowserContextID());
   ret.Set("worker_token", impl->GetWorkerToken().ToString());
-  ret.Set("url", impl->url().spec());
-  ret.Set("worker_type", WorkerTypeToString(impl->worker_type()));
-  ret.Set("priority", PriorityAndReasonToValue(impl->priority_and_reason()));
   ret.Set("resource_context", impl->GetResourceContext().ToString());
+  ret.Set("url", impl->GetURL().spec());
+  ret.Set("priority", PriorityAndReasonToValue(impl->GetPriorityAndReason()));
 
   base::Value::Dict metrics;
   metrics.Set("resident_set",
-              base::NumberToString(impl->resident_set_kb_estimate()));
+              base::NumberToString(impl->GetResidentSetKbEstimate()));
   metrics.Set("private_footprint",
-              base::NumberToString(impl->private_footprint_kb_estimate()));
+              base::NumberToString(impl->GetPrivateFootprintKbEstimate()));
   ret.Set("metrics_estimates", std::move(metrics));
 
   return ret;

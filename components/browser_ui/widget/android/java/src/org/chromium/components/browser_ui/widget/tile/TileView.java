@@ -33,9 +33,7 @@ public class TileView extends FrameLayout {
     protected ImageView mIconView;
     protected View mIconBackgroundView;
 
-    /**
-     * Constructor for inflating from XML.
-     */
+    /** Constructor for inflating from XML. */
     public TileView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
@@ -77,16 +75,12 @@ public class TileView extends FrameLayout {
         setTitle(title, titleLines);
     }
 
-    /**
-     * Renders the icon or clears it from the view if the icon is null.
-     */
+    /** Renders the icon or clears it from the view if the icon is null. */
     public void setIconDrawable(Drawable icon) {
         mIconView.setImageDrawable(icon);
     }
 
-    /**
-     * Applies or clears icon tint.
-     */
+    /** Applies or clears icon tint. */
     public void setIconTint(ColorStateList color) {
         ImageViewCompat.setImageTintList(mIconView, color);
     }

@@ -32,7 +32,7 @@
 INCLUDE PERFETTO MODULE chrome.scroll_jank.scroll_jank_v3;
 
 -- Non-coalesced scroll update events and their timestamps.
-CREATE VIEW internal_non_coalesced_scrolls AS
+CREATE PERFETTO VIEW internal_non_coalesced_scrolls AS
 SELECT
   scroll_update_id,
   ts
@@ -58,7 +58,7 @@ WHERE name = "TranslateAndScaleWebInputEvent";
 -- (internal_non_coalesced_scroll_updates) to get the timestamp of the event
 -- those deltas. This allows for ordering delta recordings to track them over
 -- time.
-CREATE VIEW internal_non_coalesced_deltas AS
+CREATE PERFETTO VIEW internal_non_coalesced_deltas AS
 SELECT
   scroll_update_id,
   ts,
@@ -85,7 +85,7 @@ WHERE name = "WebCoalescedInputEvent::CoalesceWith" AND
 -- to get the timestamp of the event those deltas were coalesced into. This
 -- allows us to get the scaled coordinates for all of the input events
 -- (original input coordinates can't be used due to scaling).
-CREATE VIEW internal_coalesced_deltas AS
+CREATE PERFETTO VIEW internal_coalesced_deltas AS
 SELECT
   internal_scroll_update_coalesce_info.coalesced_to_scroll_update_id AS scroll_update_id,
   ts,
@@ -96,11 +96,13 @@ LEFT JOIN internal_scroll_deltas
   USING (scroll_update_id);
 
 -- All of the presented frame scroll update ids.
--- @column arg_set_id                ID slice of the presented frame.
--- @column scroll_update_id          A scroll update id that was included in the
---                                   presented frame. There may be zero, one, or
---                                   more.
-CREATE VIEW chrome_deltas_presented_frame_scroll_update_ids AS
+CREATE PERFETTO VIEW chrome_deltas_presented_frame_scroll_update_ids(
+  -- A scroll update id that was included in the presented frame.
+  -- There may be zero, one, or more.
+  scroll_update_id INT,
+  -- Slice id
+  id INT
+) AS
 SELECT
   args.int_value AS scroll_update_id,
   slice.id
@@ -113,7 +115,7 @@ AND args.flat_key GLOB 'scroll_deltas.trace_ids_in_gpu_frame*';;
 -- When every GestureScrollUpdate event is processed, the offset set by the
 -- compositor is recorded. This offset is scaled to the device screen size, and
 -- can be used to calculate deltas.
-CREATE VIEW internal_presented_frame_offsets AS
+CREATE PERFETTO VIEW internal_presented_frame_offsets AS
 SELECT
   EXTRACT_ARG(arg_set_id, 'scroll_deltas.trace_id') AS scroll_update_id,
   EXTRACT_ARG(arg_set_id, 'scroll_deltas.visual_offset_y') AS visual_offset_y
@@ -124,14 +126,16 @@ WHERE name = 'InputHandlerProxy::HandleGestureScrollUpdate_Result';
 -- a scroll. This includes input events that were converted to scroll events
 -- which were presented (internal_non_coalesced_scrolls) and scroll events which
 -- were coalesced (internal_coalesced_deltas).
---
--- @column scroll_update_id          Trace Id associated with the scroll.
--- @column ts                        Timestamp the of the scroll input event.
--- @column delta_y                   The delta in raw coordinates between this
---                                   scroll update event and the previous.
--- @column offset_y                  The pixel offset of this scroll update
---                                   event compared to the previous one.
-CREATE PERFETTO TABLE chrome_scroll_input_offsets AS
+CREATE PERFETTO TABLE chrome_scroll_input_offsets(
+  -- Trace id associated with the scroll.
+  scroll_update_id INT,
+  -- Timestamp the of the scroll input event.
+  ts INT,
+  -- The delta in raw coordinates between this scroll update event and the previous.
+  delta_y INT,
+  -- The pixel offset of this scroll update event compared to the previous one.
+  offset_y INT
+) AS
 -- First collect all coalesced and non-coalesced deltas so that the offsets
 -- can be calculated from them in order of timestamp.
 WITH all_deltas AS (
@@ -161,15 +165,16 @@ FROM all_deltas;
 -- Calculate the total visual offset for all presented frames (non-coalesced
 -- scroll updates) that have raw deltas recorded. These visual offsets
 -- correspond with the inverse of the deltas for the presented frame.
-CREATE VIEW internal_preprocessed_presented_frame_offsets AS
+CREATE PERFETTO VIEW internal_preprocessed_presented_frame_offsets AS
 SELECT
-  internal_non_coalesced_scrolls.scroll_update_id,
-  internal_non_coalesced_scrolls.ts,
+  chrome_full_frame_view.scroll_update_id,
+  chrome_full_frame_view.presentation_timestamp AS ts,
   chrome_deltas_presented_frame_scroll_update_ids.id,
   internal_presented_frame_offsets.visual_offset_y -
     LAG(internal_presented_frame_offsets.visual_offset_y)
-    OVER (ORDER BY internal_non_coalesced_scrolls.ts) AS presented_frame_visual_offset_y
-FROM internal_non_coalesced_scrolls
+    OVER (ORDER BY chrome_full_frame_view.presentation_timestamp)
+      AS presented_frame_visual_offset_y
+FROM chrome_full_frame_view
 LEFT JOIN internal_scroll_deltas
   USING (scroll_update_id)
 LEFT JOIN chrome_deltas_presented_frame_scroll_update_ids
@@ -181,16 +186,18 @@ WHERE internal_scroll_deltas.delta_y IS NOT NULL;
 -- The scrolling offsets for the actual (applied) scroll events. These are not
 -- necessarily inclusive of all user scroll events, rather those scroll events
 -- that are actually processed.
---
--- @column scroll_update_id          Trace Id associated with the scroll.
--- @column ts                        Presentation timestamp.
--- @column delta_y                   The delta in coordinates as processed by
---                                   Chrome between this scroll update event and
---                                   the previous.
--- @column offset_y                  The pixel offset of this scroll update (the
---                                   presented frame) compared to the previous
---                                   one.
-CREATE PERFETTO TABLE chrome_presented_scroll_offsets AS
+CREATE PERFETTO TABLE chrome_presented_scroll_offsets(
+  -- Trace Id associated with the scroll.
+  scroll_update_id INT,
+  -- Presentation timestamp.
+  ts INT,
+  -- The delta in coordinates as processed by Chrome between this scroll update
+  -- event and the previous.
+  delta_y INT,
+  -- The pixel offset of this scroll update (the presented frame) compared to
+  -- the previous one.
+  offset_y INT
+) AS
 WITH all_deltas AS (
   SELECT
     scroll_update_id,

@@ -32,8 +32,7 @@
 // the widest window in the foreground.
 - (void)screenshotService:(UIScreenshotService*)screenshotService
     generatePDFRepresentationWithCompletion:
-        (void (^)(NSData*, NSInteger, CGRect))completionHandler
-    API_AVAILABLE(ios(14.0)) {
+        (void (^)(NSData*, NSInteger, CGRect))completionHandler {
   Browser* browser = _browserProviderInterface.currentBrowserProvider.browser;
 
   if (!browser) {

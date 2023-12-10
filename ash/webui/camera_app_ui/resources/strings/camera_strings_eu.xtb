@@ -5,7 +5,6 @@
 <translation id="1076394037877376434">Ezabatu <ph name="PAGE_NUMBER" />. orria</translation>
 <translation id="1113173431709655881">Kamera modua</translation>
 <translation id="1153190633558910465">Sareta desaktibatuta</translation>
-<translation id="1175958423215084756">Esteka bat hauteman da. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213">Ezabatu da <ph name="PAGE_NUMBER" />. orria</translation>
 <translation id="1258009455399840361">Biratu 90 gradu eskuinetara</translation>
 <translation id="1417314334557041815">Editatu <ph name="INDEX" />. orria</translation>
@@ -60,14 +59,12 @@
 <translation id="3642192109456033823">Bideoa prozesatzen…</translation>
 <translation id="3789724198583203151">Biratu 90 gradu ezkerretara</translation>
 <translation id="3810838688059735925">Bideoa</translation>
-<translation id="3892148308691398805">Kopiatu testua</translation>
 <translation id="4060608699153044055">Ezin duzu grabatu gailuak biltegiratzeko toki gutxi duelako. Grabatzen hasteko, tokia egin behar duzu gailuan.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
 <translation id="4118525110028899586">Pausatu grabaketa</translation>
 <translation id="4121305183798804752">Hauteman egin da dokumentua</translation>
 <translation id="414641094616694804">Kamerak ezin du aldatu bereizmena</translation>
 <translation id="4176463684765177261">Desgaituta</translation>
-<translation id="4269820728363426813">Kopiatu estekaren helbidea</translation>
 <translation id="428234092390943511">Orriaren irudi txikia</translation>
 <translation id="4349714250734879769">Egokitu Chrome-ko fotogramak</translation>
 <translation id="4383571725254449280">Inprimatu errendimendu-erregistroak</translation>
@@ -144,7 +141,6 @@ Irudi edo bideoaren kalitateari buruzko iritzia eman nahi baduzu, erantsi argazk
 <translation id="7726641833034062494">Grabatu bideo normal bat</translation>
 <translation id="7748344063862150053">Dokumentuaren goiko eskuinaldeko ertza</translation>
 <translation id="7933675232020478311">Behera eta eskuinera mugitzen ari da</translation>
-<translation id="7983668134180549431">Testua hauteman da.</translation>
 <translation id="8079255378695216066">Ezin da hasi grabatzen</translation>
 <translation id="8120146556401698679">Mugitu, okertu, zooma</translation>
 <translation id="8131740175452115882">Berretsi</translation>
@@ -163,6 +159,7 @@ Irudi edo bideoaren kalitateari buruzko iritzia eman nahi baduzu, erantsi argazk
 <translation id="8870695351537079478">Ezin da hasi grabatzen</translation>
 <translation id="8880167521484863515">4:3</translation>
 <translation id="8903921497873541725">Handitu</translation>
+<translation id="8926890870105777777">Sartu "<ph name="WIFINAME" />" sarean</translation>
 <translation id="9045010116236796332">Jarri dokumentuaren ertz guztiak markoaren barruan</translation>
 <translation id="9045155556724273246">10 segundo</translation>
 <translation id="906331135292332864">Irudia prozesatzen…</translation>

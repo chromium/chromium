@@ -14,7 +14,7 @@ include_rules = [
   "+net/base/isolation_info.h",
   "+net/cert/cert_status_flags.h",
   "+net/http/http_response_headers.h",
-  "+net/http/http_response_info.h",
+  "+net/http/http_connection_info.h",
   "+net/url_request/referrer_policy.h",
   "+net/traffic_annotation/network_traffic_annotation.h",
   "+services/device/public",

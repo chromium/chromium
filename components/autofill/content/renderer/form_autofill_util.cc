@@ -7,6 +7,7 @@
 #include <limits>
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <string_view>
@@ -29,7 +30,6 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
-#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "components/autofill/core/common/autocomplete_parsing_util.h"
@@ -1106,13 +1106,13 @@ bool ShouldSkipFillField(const FormFieldData& field,
     return true;
   }
 
-  if (element == trigger_element) {
-    return false;
-  }
-
   // Skip if there is no value to fill.
   if (field.value.empty() || !field.is_autofilled) {
     return true;
+  }
+
+  if (element == trigger_element) {
+    return false;
   }
 
   // Skip filling previously autofilled fields unless autofill is instructed to
@@ -1165,7 +1165,8 @@ bool ShouldSkipFillField(const FormFieldData& field,
 // causing the background to be blue.
 void FillFormField(const FormFieldData& data,
                    bool is_initiating_node,
-                   blink::WebFormControlElement* field) {
+                   blink::WebFormControlElement* field,
+                   FieldDataManager& field_data_manager) {
   CHECK(!IsCheckableElement(*field));
   WebInputElement input_element = field->DynamicTo<WebInputElement>();
   WebAutofillState new_autofill_state = data.is_autofilled
@@ -1177,6 +1178,11 @@ void FillFormField(const FormFieldData& data,
     // If the maxlength attribute contains a negative value, maxLength()
     // returns the default maxlength value.
     value = std::move(value).substr(0, input_element.MaxLength());
+  }
+
+  if (IsTextInput(input_element)) {
+    field_data_manager.UpdateFieldDataMap(GetFieldRendererId(*field), value,
+                                          FieldPropertiesFlags::kAutofilled);
   }
   field->SetAutofillValue(blink::WebString::FromUTF16(value),
                           new_autofill_state);
@@ -1204,7 +1210,8 @@ void FillFormField(const FormFieldData& data,
 // Also sets the "autofilled" attribute, causing the background to be blue.
 void PreviewFormField(const FormFieldData& data,
                       bool is_initiating_node,
-                      blink::WebFormControlElement* field) {
+                      blink::WebFormControlElement* field,
+                      FieldDataManager& field_data_manager) {
   CHECK(!IsCheckableElement(*field));
   // Preview input, textarea and select fields. For input fields, excludes
   // checkboxes and radio buttons, as there is no provision for
@@ -1381,7 +1388,7 @@ bool OwnedOrUnownedFormToFormData(
     const blink::WebFormControlElement* form_control_element,
     const WebVector<WebFormControlElement>& control_elements,
     const std::vector<blink::WebElement>& iframe_elements,
-    const FieldDataManager* field_data_manager,
+    const FieldDataManager& field_data_manager,
     DenseSet<ExtractOption> extract_options,
     FormData* form,
     FormFieldData* optional_field) {
@@ -1419,7 +1426,7 @@ bool OwnedOrUnownedFormToFormData(
     form->fields.emplace_back();
     shadow_fields.emplace_back();
     WebFormControlElementToFormField(
-        form_element, control_element, field_data_manager, extract_options,
+        form_element, control_element, &field_data_manager, extract_options,
         &form->fields.back(), &shadow_fields.back());
     fields_extracted[i] = true;
 
@@ -1511,7 +1518,7 @@ bool OwnedOrUnownedFormToFormData(
           iframe->ToWebRemoteFrame()->GetRemoteFrameToken().value());
     }
   }
-  base::EraseIf(form->child_frames, [](const auto& child_frame) {
+  std::erase_if(form->child_frames, [](const auto& child_frame) {
     return absl::visit([](const auto& token) { return token.is_empty(); },
                        child_frame.token);
   });
@@ -1529,20 +1536,19 @@ bool OwnedOrUnownedFormToFormData(
   return success;
 }
 
-// Check if a script modified username is suitable for Password Manager to
-// remember.
-bool ScriptModifiedUsernameAcceptable(
+// Returns if a script-modified username or credit card number is suitable to
+// store in Password Manager/Autofill given `typed_value`.
+bool ScriptModifiedUsernameOrCreditCardNumberAcceptable(
     const std::u16string& value,
     const std::u16string& typed_value,
-    const FieldDataManager* field_data_manager) {
+    const FieldDataManager& field_data_manager) {
   // The minimal size of a field value that will be substring-matched.
   constexpr size_t kMinMatchSize = 3u;
   const auto lowercase = base::i18n::ToLower(value);
   const auto typed_lowercase = base::i18n::ToLower(typed_value);
   // If the page-generated value is just a completion of the typed value, that's
   // likely acceptable.
-  if (base::StartsWith(lowercase, typed_lowercase,
-                       base::CompareCase::SENSITIVE)) {
+  if (lowercase.starts_with(typed_lowercase)) {
     return true;
   }
   if (typed_lowercase.size() >= kMinMatchSize &&
@@ -1552,7 +1558,7 @@ bool ScriptModifiedUsernameAcceptable(
 
   // If the page-generated value comes from user typed or autofilled values in
   // other fields, that's also likely OK.
-  return field_data_manager->FindMatchedValue(value);
+  return field_data_manager.FindMatchedValue(value);
 }
 
 // Build a map from entries in |form_control_renderer_ids| to their indices,
@@ -1711,38 +1717,22 @@ void GetDataListSuggestions(const WebInputElement& element,
   }
 }
 
-bool ExtractFormData(const WebFormElement& form_element,
-                     const FieldDataManager& field_data_manager,
-                     FormData* data) {
-  return WebFormElementToFormData(
-      form_element, WebFormControlElement(), &field_data_manager,
+std::optional<FormData> ExtractFormData(
+    const WebFormElement& form_element,
+    const FieldDataManager& field_data_manager) {
+  if (form_element.IsNull()) {
+    return std::nullopt;
+  }
+  FormData extracted_form;
+  // TODO(crbug.com/1007974): Make this function return std::optional too.
+  bool extraction_successful = WebFormElementToFormData(
+      form_element, WebFormControlElement(), field_data_manager,
       {ExtractOption::kValue, ExtractOption::kOptionText,
        ExtractOption::kOptions},
-      data,
+      &extracted_form,
       /*field=*/nullptr);
-}
-
-bool IsSomeControlElementVisible(
-    const blink::WebDocument& document,
-    const std::set<FieldRendererId>& control_elements) {
-  // Returns true iff at least one element from |fields| is visible and there
-  // exists an element in |control_elements| with the same field renderer id.
-  // The average case time complexity is O(N log M), where N is the number of
-  // elements in |fields| and M is the number of elements in
-  // |control_elements|.
-  auto ContainsVisibleField =
-      [&](const WebVector<WebFormControlElement>& fields) {
-        return base::ranges::any_of(
-            fields, [&](const WebFormControlElement& field) {
-              return IsWebElementFocusableForAutofill(field) &&
-                     base::Contains(control_elements,
-                                    GetFieldRendererId(field));
-            });
-      };
-  return !document.IsNull() &&
-         (base::ranges::any_of(document.Forms(), ContainsVisibleField,
-                               &WebFormElement::GetFormControlElements) ||
-          ContainsVisibleField(document.UnassociatedFormControls()));
+  return extraction_successful ? std::optional(std::move(extracted_form))
+                               : std::nullopt;
 }
 
 GURL GetCanonicalActionForForm(const WebFormElement& form) {
@@ -1771,6 +1761,10 @@ bool IsTextInput(const WebInputElement& element) {
   return !element.IsNull() && element.IsTextField();
 }
 
+bool IsTextInput(const blink::WebFormControlElement& element) {
+  return IsTextInput(element.DynamicTo<WebInputElement>());
+}
+
 bool IsSelectOrSelectListElement(const WebFormControlElement& element) {
   return IsSelectElement(element) || IsSelectListElement(element);
 }
@@ -1791,8 +1785,7 @@ bool IsTextAreaElement(const WebFormControlElement& element) {
 }
 
 bool IsTextAreaElementOrTextInput(const WebFormControlElement& element) {
-  return IsTextAreaElement(element) ||
-         IsTextInput(element.DynamicTo<WebInputElement>());
+  return IsTextAreaElement(element) || IsTextInput(element);
 }
 
 bool IsCheckableElement(const WebFormControlElement& element) {
@@ -1881,9 +1874,8 @@ bool IsWebElementVisible(const blink::WebElement& element) {
 }
 
 uint64_t GetMaxLength(const blink::WebFormControlElement& element) {
-  if (IsTextInput(element.DynamicTo<WebInputElement>()) ||
-      element.FormControlTypeForAutofill() ==
-          blink::mojom::FormControlType::kTextArea) {
+  if (IsTextInput(element) || element.FormControlTypeForAutofill() ==
+                                  blink::mojom::FormControlType::kTextArea) {
     auto max_length = element.MaxLength();
     static_assert(uint64_t{std::numeric_limits<decltype(max_length)>::max()} <=
                   FormFieldData::kDefaultMaxLength);
@@ -2121,11 +2113,9 @@ void WebFormControlElementToFormField(
     }
   }
 
-  // Constrain the maximum data length to prevent a malicious site from DOS'ing
-  // the browser: http://crbug.com/49332
   field->value = std::move(value).substr(0, kMaxStringLength);
-  field->selection_start = std::min(element.SelectionStart(), kMaxStringLength);
-  field->selection_end = std::min(element.SelectionEnd(), kMaxStringLength);
+  field->selected_text =
+      element.SelectedText().Utf16().substr(0, kMaxSelectedTextLength);
 
   // If the field was autofilled or the user typed into it, check the value
   // stored in |field_data_manager| against the value property of the DOM
@@ -2140,11 +2130,12 @@ void WebFormControlElementToFormField(
         field_data_manager->GetUserInput(GetFieldRendererId(element));
 
     // The typed value is preserved for all passwords. It is also preserved for
-    // potential usernames, as long as the |value| is not deemed acceptable.
+    // potential usernames and credit cards, as long as the |value| is not
+    // deemed acceptable.
     if (field->form_control_type == FormControlType::kInputPassword ||
-        !ScriptModifiedUsernameAcceptable(field->value, user_input,
-                                          field_data_manager)) {
-      field->user_input = user_input;
+        !ScriptModifiedUsernameOrCreditCardNumberAcceptable(
+            field->value, user_input, *field_data_manager)) {
+      field->user_input = user_input.substr(0, kMaxStringLength);
     }
   }
 }
@@ -2152,7 +2143,7 @@ void WebFormControlElementToFormField(
 bool WebFormElementToFormData(
     const blink::WebFormElement& form_element,
     const blink::WebFormControlElement& form_control_element,
-    const FieldDataManager* field_data_manager,
+    const FieldDataManager& field_data_manager,
     DenseSet<ExtractOption> extract_options,
     FormData* form,
     FormFieldData* field) {
@@ -2245,7 +2236,7 @@ bool UnownedFormElementsToFormData(
     const std::vector<blink::WebElement>& iframe_elements,
     const blink::WebFormControlElement* element,
     const blink::WebDocument& document,
-    const FieldDataManager* field_data_manager,
+    const FieldDataManager& field_data_manager,
     DenseSet<ExtractOption> extract_options,
     FormData* form,
     FormFieldData* field) {
@@ -2265,7 +2256,7 @@ bool UnownedFormElementsToFormData(
 
 bool FindFormAndFieldForFormControlElement(
     const WebFormControlElement& element,
-    const FieldDataManager* field_data_manager,
+    const FieldDataManager& field_data_manager,
     DenseSet<ExtractOption> extract_options,
     FormData* form,
     FormFieldData* field) {
@@ -2342,15 +2333,24 @@ std::optional<FormData> FindFormForContentEditable(
   }
   field.aria_label = GetAriaLabel(document, content_editable);
   field.aria_description = GetAriaDescription(document, content_editable);
-  // TODO(crbug.com/1490372): Extract the value.
+  // TextContent() includes hidden elements and does not add linebreaks. If this
+  // is not sufficient in the future, consider calling HTMLElement::innerText(),
+  // which returns the text "as rendered" (i.e., it inserts whitespace at the
+  // right places and it ignores "display:none" subtrees), but is significantly
+  // more expensive because it triggers a layout.
+  field.value =
+      content_editable.TextContent().Utf16().substr(0, kMaxStringLength);
+  field.selected_text =
+      content_editable.SelectedText().Utf16().substr(0, kMaxSelectedTextLength);
   return form;
 }
 
-std::vector<WebFormControlElement> ApplyFormAction(
-    const FormData& form,
+std::vector<FieldRef> ApplyFormAction(
+    base::span<const FormFieldData> fields,
     const WebFormControlElement& initiating_element,
     mojom::ActionType action_type,
-    mojom::ActionPersistence action_persistence) {
+    mojom::ActionPersistence action_persistence,
+    FieldDataManager& field_data_manager) {
   DCHECK(!initiating_element.IsNull());
 
   WebFormElement form_element = GetOwningForm(initiating_element);
@@ -2362,7 +2362,7 @@ std::vector<WebFormControlElement> ApplyFormAction(
     return {};
   }
   const bool num_elements_matches_num_fields =
-      control_elements.size() == form.fields.size();
+      control_elements.size() == fields.size();
   UMA_HISTOGRAM_BOOLEAN("Autofill.NumElementsMatchesNumFields",
                         num_elements_matches_num_fields);
 
@@ -2377,7 +2377,7 @@ std::vector<WebFormControlElement> ApplyFormAction(
   std::vector<std::pair<WebFormControlElement*, const FormFieldData*>>
       autofillable_elements_index_pairs;
 
-  std::vector<WebFormControlElement> matching_fields;
+  std::vector<FieldRef> matching_fields;
   matching_fields.reserve(control_elements.size());
 
   // Prepare for binary search.
@@ -2404,7 +2404,7 @@ std::vector<WebFormControlElement> ApplyFormAction(
   // * Send the blur event.
   // * For each other element, focus -> autofill -> blur.
   // * Send the focus event for the initially focused element.
-  for (const FormFieldData& field : form.fields) {
+  for (const FormFieldData& field : fields) {
     auto it = SearchInSortedVector(field, control_elements);
     if (it == control_elements.end()) {
       continue;
@@ -2426,7 +2426,7 @@ std::vector<WebFormControlElement> ApplyFormAction(
         initially_focused_element = &element;
       }
 
-      matching_fields.push_back(element);
+      matching_fields.emplace_back(element);
       // In preview mode, only fill the field if it changes the fields value.
       // With this, the WebAutofillState is not changed from kAutofilled to
       // kPreviewed. This prevents the highlighting to change.
@@ -2434,7 +2434,8 @@ std::vector<WebFormControlElement> ApplyFormAction(
           field.value != element.Value().Utf16() ||
           !base::FeatureList::IsEnabled(
               features::kAutofillHighlightOnlyChangedValuesInPreviewMode)) {
-        fill_or_preview(field, is_initiating_element, &element);
+        fill_or_preview(field, is_initiating_element, &element,
+                        field_data_manager);
       }
       continue;
     }
@@ -2459,8 +2460,8 @@ std::vector<WebFormControlElement> ApplyFormAction(
   // Autofill the non-initiating elements.
   for (const auto& [filled_element, field_data] :
        autofillable_elements_index_pairs) {
-    matching_fields.push_back(*filled_element);
-    fill_or_preview(*field_data, false, filled_element);
+    matching_fields.emplace_back(*filled_element);
+    fill_or_preview(*field_data, false, filled_element, field_data_manager);
   }
 
   // A focus event is emitted for the initiating element after autofilling is

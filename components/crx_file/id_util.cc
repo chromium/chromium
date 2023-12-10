@@ -41,12 +41,11 @@ const size_t kIdSize = 16;
 std::string GenerateId(base::StringPiece input) {
   uint8_t hash[kIdSize];
   crypto::SHA256HashString(input, hash, sizeof(hash));
-  return GenerateIdFromHash(hash, sizeof(hash));
+  return GenerateIdFromHash(hash);
 }
 
-std::string GenerateIdFromHash(const uint8_t* hash, size_t hash_size) {
-  CHECK_GE(hash_size, kIdSize);
-  std::string result = base::HexEncode(hash, kIdSize);
+std::string GenerateIdFromHash(base::span<const uint8_t> hash) {
+  std::string result = base::HexEncode(hash.first(kIdSize));
   ConvertHexadecimalToIDAlphabet(&result);
   return result;
 }
@@ -66,9 +65,8 @@ std::string GenerateIdForPath(const base::FilePath& path) {
 }
 
 std::string HashedIdInHex(const std::string& id) {
-  const std::string id_hash = base::SHA1HashString(id);
-  DCHECK_EQ(base::kSHA1Length, id_hash.length());
-  return base::HexEncode(id_hash.c_str(), id_hash.length());
+  return base::HexEncode(
+      base::SHA1HashSpan(base::as_bytes(base::make_span(id))));
 }
 
 base::FilePath MaybeNormalizePath(const base::FilePath& path) {

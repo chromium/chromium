@@ -511,7 +511,9 @@ ServiceWorkerVersion::EffectiveFetchHandlerType() const {
     case FetchHandlerType::kNotSkippable:
       return FetchHandlerType::kNotSkippable;
     case FetchHandlerType::kEmptyFetchHandler: {
-      if (features::kSkipEmptyFetchHandler.Get()) {
+      if (base::FeatureList::IsEnabled(
+              features::kServiceWorkerSkipIgnorableFetchHandler) &&
+          features::kSkipEmptyFetchHandler.Get()) {
         return FetchHandlerType::kEmptyFetchHandler;
       } else {
         return FetchHandlerType::kNotSkippable;

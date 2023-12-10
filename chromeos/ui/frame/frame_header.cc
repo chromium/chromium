@@ -392,7 +392,7 @@ gfx::Rect FrameHeader::GetPaintedBounds() const {
 }
 
 void FrameHeader::UpdateCaptionButtonColors(
-    absl::optional<ui::ColorId> icon_color_id) {
+    std::optional<ui::ColorId> icon_color_id) {
   const SkColor frame_color = GetCurrentFrameColor();
   if (caption_button_container_->window_controls_overlay_enabled()) {
     caption_button_container_->SetBackground(

@@ -5,13 +5,13 @@
 #ifndef CC_TREES_SCROLL_NODE_H_
 #define CC_TREES_SCROLL_NODE_H_
 
+#include <optional>
 #include "cc/base/region.h"
 #include "cc/cc_export.h"
 #include "cc/input/overscroll_behavior.h"
 #include "cc/input/scroll_snap_data.h"
 #include "cc/paint/element_id.h"
 #include "cc/paint/filter_operations.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace base {
@@ -65,7 +65,7 @@ struct CC_EXPORT ScrollNode {
 
   OverscrollBehavior overscroll_behavior;
 
-  absl::optional<SnapContainerData> snap_container_data;
+  std::optional<SnapContainerData> snap_container_data;
 
   bool is_composited : 1;
 

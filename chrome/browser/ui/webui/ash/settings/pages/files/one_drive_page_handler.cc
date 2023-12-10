@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/webui/ash/settings/pages/files/one_drive_page_handler.h"
 
+#include <optional>
+
 #include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "chrome/browser/ash/file_manager/open_util.h"
 #include "chrome/browser/ash/file_system_provider/mount_path_util.h"
@@ -17,7 +19,6 @@
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/files/mojom/one_drive_handler.mojom.h"
 #include "chrome/common/extensions/extension_constants.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::settings {
 
@@ -28,12 +29,12 @@ void OnGetEmailAddress(
         metadata_or_error) {
   if (!metadata_or_error.has_value()) {
     LOG(ERROR) << "Failed to get user email: " << metadata_or_error.error();
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
   if (metadata_or_error->user_email.empty()) {
     LOG(ERROR) << "User email is empty";
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
   std::move(callback).Run(metadata_or_error->user_email);
@@ -74,7 +75,7 @@ void OneDrivePageHandler::GetUserEmailAddress(
   file_system_provider::ProvidedFileSystemInterface* file_system =
       cloud_upload::GetODFS(profile_);
   if (!file_system) {
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
   cloud_upload::GetODFSMetadata(
@@ -83,7 +84,7 @@ void OneDrivePageHandler::GetUserEmailAddress(
 
 void OneDrivePageHandler::ConnectToOneDrive(
     ConnectToOneDriveCallback callback) {
-  absl::optional<file_system_provider::ProvidedFileSystemInfo>
+  std::optional<file_system_provider::ProvidedFileSystemInfo>
       odfs_file_system_info = cloud_upload::GetODFSInfo(profile_);
   if (odfs_file_system_info.has_value()) {
     // ODFS is already mounted.
@@ -103,7 +104,7 @@ void OneDrivePageHandler::ConnectToOneDrive(
 
 void OneDrivePageHandler::DisconnectFromOneDrive(
     DisconnectFromOneDriveCallback callback) {
-  absl::optional<file_system_provider::ProvidedFileSystemInfo> file_system =
+  std::optional<file_system_provider::ProvidedFileSystemInfo> file_system =
       cloud_upload::GetODFSInfo(profile_);
   if (!file_system) {
     // ODFS is not mounted.
@@ -117,7 +118,7 @@ void OneDrivePageHandler::DisconnectFromOneDrive(
 
 void OneDrivePageHandler::OpenOneDriveFolder(
     OpenOneDriveFolderCallback callback) {
-  absl::optional<file_system_provider::ProvidedFileSystemInfo> file_system =
+  std::optional<file_system_provider::ProvidedFileSystemInfo> file_system =
       cloud_upload::GetODFSInfo(profile_);
   if (!file_system) {
     // ODFS is not mounted.

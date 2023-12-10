@@ -34,11 +34,14 @@
 #include "content/browser/bluetooth/bluetooth_util.h"
 #include "content/browser/bluetooth/frame_connected_bluetooth_devices.h"
 #include "content/browser/bluetooth/web_bluetooth_pairing_manager_impl.h"
+#include "content/browser/renderer_host/back_forward_cache_disable.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
+#include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/bluetooth_delegate.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/document_user_data.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -329,7 +332,7 @@ struct GATTNotifySessionAndCharacteristicClient {
 };
 
 // static
-WebBluetoothServiceImpl* WebBluetoothServiceImpl::Create(
+void WebBluetoothServiceImpl::BindIfAllowed(
     RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<blink::mojom::WebBluetoothService> receiver) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -340,7 +343,7 @@ WebBluetoothServiceImpl* WebBluetoothServiceImpl::Create(
     // a fenced frame. Anything getting past the renderer checks must be marked
     // as a bad request.
     mojo::ReportBadMessage(kFencedFrameError);
-    return nullptr;
+    return;
   }
 
   if (render_frame_host->GetOutermostMainFrame()
@@ -348,18 +351,33 @@ WebBluetoothServiceImpl* WebBluetoothServiceImpl::Create(
           .opaque()) {
     mojo::ReportBadMessage(
         "Web Bluetooth is not allowed from an opaque origin.");
-    return nullptr;
+    return;
   }
 
-  return new WebBluetoothServiceImpl(*render_frame_host, std::move(receiver));
+  auto* impl = GetOrCreateForCurrentDocument(render_frame_host);
+  if (!impl->Bind(std::move(receiver))) {
+    // The renderer should only ever try to bind one instance of this service
+    // per document.
+    mojo::ReportBadMessage("Web Bluetooth already bound for current document.");
+  }
 }
 
+WebBluetoothServiceImpl* WebBluetoothServiceImpl::CreateForTesting(
+    RenderFrameHost* render_frame_host,
+    mojo::PendingReceiver<blink::mojom::WebBluetoothService> receiver) {
+  WebBluetoothServiceImpl::BindIfAllowed(render_frame_host,
+                                         std::move(receiver));
+  return WebBluetoothServiceImpl::GetForCurrentDocument(render_frame_host);
+}
+
+DOCUMENT_USER_DATA_KEY_IMPL(WebBluetoothServiceImpl);
+
 WebBluetoothServiceImpl::WebBluetoothServiceImpl(
-    RenderFrameHost& render_frame_host,
-    mojo::PendingReceiver<blink::mojom::WebBluetoothService> receiver)
-    : DocumentService(render_frame_host, std::move(receiver)),
-      WebContentsObserver(WebContents::FromRenderFrameHost(&render_frame_host)),
-      connected_devices_(new FrameConnectedBluetoothDevices(render_frame_host))
+    RenderFrameHost* render_frame_host)
+    : DocumentUserData(render_frame_host),
+      WebContentsObserver(WebContents::FromRenderFrameHost(render_frame_host)),
+      receiver_(this),
+      connected_devices_(new FrameConnectedBluetoothDevices(*render_frame_host))
 #if PAIR_BLUETOOTH_ON_DEMAND()
       ,
       pairing_manager_(std::make_unique<WebBluetoothPairingManagerImpl>(this))
@@ -367,6 +385,11 @@ WebBluetoothServiceImpl::WebBluetoothServiceImpl(
 {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   CHECK(web_contents());
+
+  BackForwardCache::DisableForRenderFrameHost(
+      render_frame_host,
+      BackForwardCacheDisable::DisabledReason(
+          BackForwardCacheDisable::DisabledReasonId::kWebBluetooth));
 
   if (base::FeatureList::IsEnabled(
           features::kWebBluetoothNewPermissionsBackend)) {
@@ -376,6 +399,15 @@ WebBluetoothServiceImpl::WebBluetoothServiceImpl(
       observer_.Observe(delegate);
     }
   }
+}
+
+bool WebBluetoothServiceImpl::Bind(
+    mojo::PendingReceiver<blink::mojom::WebBluetoothService> receiver) {
+  if (receiver_.is_bound()) {
+    return false;
+  }
+  receiver_.Bind(std::move(receiver));
+  return true;
 }
 
 WebBluetoothServiceImpl::~WebBluetoothServiceImpl() {
@@ -1079,7 +1111,7 @@ void WebBluetoothServiceImpl::RemoteCharacteristicWriteValue(
   // get a value with length > 512, we can assume it's a hostile
   // renderer and kill it.
   if (value.size() > 512) {
-    TerminateRendererAndDeleteThis(bad_message::BDH_INVALID_WRITE_VALUE_LENGTH);
+    ReceivedBadMessage(bad_message::BDH_INVALID_WRITE_VALUE_LENGTH);
     return;
   }
 
@@ -1296,7 +1328,7 @@ void WebBluetoothServiceImpl::RemoteDescriptorWriteValue(
   // get a value with length > 512, we can assume it's a hostile
   // renderer and kill it.
   if (value.size() > 512) {
-    TerminateRendererAndDeleteThis(bad_message::BDH_INVALID_WRITE_VALUE_LENGTH);
+    ReceivedBadMessage(bad_message::BDH_INVALID_WRITE_VALUE_LENGTH);
     return;
   }
 
@@ -1355,7 +1387,7 @@ void WebBluetoothServiceImpl::RequestScanningStart(
 
   // The renderer should never send invalid options.
   if (!IsValidRequestScanOptions(options)) {
-    TerminateRendererAndDeleteThis(bad_message::BDH_INVALID_OPTIONS);
+    ReceivedBadMessage(bad_message::BDH_INVALID_OPTIONS);
     return;
   }
 
@@ -1392,7 +1424,7 @@ void WebBluetoothServiceImpl::WatchAdvertisementsForDevice(
 
   // The renderer should never send an invalid |device_id|.
   if (!device_id.IsValid()) {
-    TerminateRendererAndDeleteThis(bad_message::BDH_INVALID_OPTIONS);
+    ReceivedBadMessage(bad_message::BDH_INVALID_OPTIONS);
     return;
   }
 
@@ -1544,7 +1576,7 @@ void WebBluetoothServiceImpl::RequestDeviceImpl(
     scoped_refptr<BluetoothAdapter> adapter) {
   // The renderer should never send invalid options.
   if (!IsValidRequestDeviceOptions(options)) {
-    TerminateRendererAndDeleteThis(bad_message::BDH_INVALID_OPTIONS);
+    ReceivedBadMessage(bad_message::BDH_INVALID_OPTIONS);
     return;
   }
 
@@ -2074,8 +2106,7 @@ CacheQueryResult WebBluetoothServiceImpl::QueryCacheForDevice(
   }
 
   if (device_address.empty()) {
-    TerminateRendererAndDeleteThis(
-        bad_message::BDH_DEVICE_NOT_ALLOWED_FOR_ORIGIN);
+    ReceivedBadMessage(bad_message::BDH_DEVICE_NOT_ALLOWED_FOR_ORIGIN);
     return CacheQueryResult(CacheQueryOutcome::BAD_RENDERER);
   }
 
@@ -2097,7 +2128,7 @@ CacheQueryResult WebBluetoothServiceImpl::QueryCacheForService(
 
   // Kill the render, see "ID Not in Map Note" above.
   if (device_iter == service_id_to_device_address_.end()) {
-    TerminateRendererAndDeleteThis(bad_message::BDH_INVALID_SERVICE_ID);
+    ReceivedBadMessage(bad_message::BDH_INVALID_SERVICE_ID);
     return CacheQueryResult(CacheQueryOutcome::BAD_RENDERER);
   }
 
@@ -2106,8 +2137,7 @@ CacheQueryResult WebBluetoothServiceImpl::QueryCacheForService(
 
   // Kill the renderer if origin is not allowed to access the device.
   if (!device_id.IsValid()) {
-    TerminateRendererAndDeleteThis(
-        bad_message::BDH_DEVICE_NOT_ALLOWED_FOR_ORIGIN);
+    ReceivedBadMessage(bad_message::BDH_DEVICE_NOT_ALLOWED_FOR_ORIGIN);
     return CacheQueryResult(CacheQueryOutcome::BAD_RENDERER);
   }
 
@@ -2122,8 +2152,7 @@ CacheQueryResult WebBluetoothServiceImpl::QueryCacheForService(
   }
 
   if (!IsAllowedToAccessService(device_id, result.service->GetUUID())) {
-    TerminateRendererAndDeleteThis(
-        bad_message::BDH_SERVICE_NOT_ALLOWED_FOR_ORIGIN);
+    ReceivedBadMessage(bad_message::BDH_SERVICE_NOT_ALLOWED_FOR_ORIGIN);
     return CacheQueryResult(CacheQueryOutcome::BAD_RENDERER);
   }
   return result;
@@ -2136,7 +2165,7 @@ CacheQueryResult WebBluetoothServiceImpl::QueryCacheForCharacteristic(
 
   // Kill the render, see "ID Not in Map Note" above.
   if (characteristic_iter == characteristic_id_to_service_id_.end()) {
-    TerminateRendererAndDeleteThis(bad_message::BDH_INVALID_CHARACTERISTIC_ID);
+    ReceivedBadMessage(bad_message::BDH_INVALID_CHARACTERISTIC_ID);
     return CacheQueryResult(CacheQueryOutcome::BAD_RENDERER);
   }
 
@@ -2163,7 +2192,7 @@ CacheQueryResult WebBluetoothServiceImpl::QueryCacheForDescriptor(
 
   // Kill the render, see "ID Not in Map Note" above.
   if (descriptor_iter == descriptor_id_to_characteristic_id_.end()) {
-    TerminateRendererAndDeleteThis(bad_message::BDH_INVALID_DESCRIPTOR_ID);
+    ReceivedBadMessage(bad_message::BDH_INVALID_DESCRIPTOR_ID);
     return CacheQueryResult(CacheQueryOutcome::BAD_RENDERER);
   }
 
@@ -2212,10 +2241,13 @@ BluetoothAdapter* WebBluetoothServiceImpl::GetAdapter() {
   return BluetoothAdapterFactoryWrapper::Get().GetAdapter(this);
 }
 
-void WebBluetoothServiceImpl::TerminateRendererAndDeleteThis(
+void WebBluetoothServiceImpl::ReceivedBadMessage(
     bad_message::BadMessageReason reason) {
   bad_message::ReceivedBadMessage(GetRenderProcessHost(), reason);
-  ResetAndDeleteThis();
+  // Ideally, this would use receiver_.ReportBadMessage(), but for legacy
+  // reasons, the Bluetooth service code uses the BadMessageReason enum, which
+  // is incompatible.
+  receiver_.reset();
 }
 
 BluetoothAllowedDevices& WebBluetoothServiceImpl::allowed_devices() {

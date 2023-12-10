@@ -30,33 +30,40 @@ public class AddToHomescreenMostVisitedTileClickObserver implements MostVisitedT
      * @param addToHomescreenIPHController The {@link AddToHomescreenIPHController} responsible for
      *         showing the IPH messages.
      */
-    public AddToHomescreenMostVisitedTileClickObserver(ObservableSupplier<Tab> tabSupplier,
+    public AddToHomescreenMostVisitedTileClickObserver(
+            ObservableSupplier<Tab> tabSupplier,
             AddToHomescreenIPHController addToHomescreenIPHController) {
         if (!ChromeFeatureList.isEnabled(ChromeFeatureList.ADD_TO_HOMESCREEN_IPH)) return;
 
-        mCurrentTabObserver = new CurrentTabObserver(tabSupplier, new EmptyTabObserver() {
-            @Override
-            public void onPageLoadFinished(Tab tab, GURL url) {
-                if (isNTP(tab)) {
-                    // If we are on NTP, add ourselves as an observer for most visited tiles.
-                    NewTabPage ntp = (NewTabPage) tab.getNativePage();
-                    ntp.addMostVisitedTileClickObserver(
-                            AddToHomescreenMostVisitedTileClickObserver.this);
-                } else {
-                    // If it is a regular web page, and started from a most visited tile, show IPH.
-                    if (url.getOrigin().equals(mLastClickedMostVisitedTileUrl)) {
-                        addToHomescreenIPHController.showAddToHomescreenIPH(tab);
-                    }
-                    removeObserver(tab);
-                }
-                mLastClickedMostVisitedTileUrl = null;
-            }
+        mCurrentTabObserver =
+                new CurrentTabObserver(
+                        tabSupplier,
+                        new EmptyTabObserver() {
+                            @Override
+                            public void onPageLoadFinished(Tab tab, GURL url) {
+                                if (isNtp(tab)) {
+                                    // If we are on NTP, add ourselves as an observer for most
+                                    // visited tiles.
+                                    NewTabPage ntp = (NewTabPage) tab.getNativePage();
+                                    ntp.addMostVisitedTileClickObserver(
+                                            AddToHomescreenMostVisitedTileClickObserver.this);
+                                } else {
+                                    // If it is a regular web page, and started from a most visited
+                                    // tile, show IPH.
+                                    if (url.getOrigin().equals(mLastClickedMostVisitedTileUrl)) {
+                                        addToHomescreenIPHController.showAddToHomescreenIPH(tab);
+                                    }
+                                    removeObserver(tab);
+                                }
+                                mLastClickedMostVisitedTileUrl = null;
+                            }
 
-            @Override
-            public void onContentChanged(Tab tab) {
-                removeObserver(tab);
-            }
-        }, null);
+                            @Override
+                            public void onContentChanged(Tab tab) {
+                                removeObserver(tab);
+                            }
+                        },
+                        null);
     }
 
     @Override
@@ -66,13 +73,13 @@ public class AddToHomescreenMostVisitedTileClickObserver implements MostVisitedT
     }
 
     private void removeObserver(Tab tab) {
-        if (!isNTP(tab)) return;
+        if (!isNtp(tab)) return;
 
         NewTabPage ntp = (NewTabPage) tab.getNativePage();
         ntp.removeMostVisitedTileClickObserver(this);
     }
 
-    private boolean isNTP(Tab tab) {
+    private boolean isNtp(Tab tab) {
         return tab != null && tab.getNativePage() instanceof NewTabPage;
     }
 }

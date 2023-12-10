@@ -75,13 +75,13 @@ TEST_F(FileSystemProviderOperationsCreateDirectoryTest, Execute) {
   const base::Value* options_as_value = &event_args[0];
   ASSERT_TRUE(options_as_value->is_dict());
 
-  CreateDirectoryRequestedOptions options;
-  ASSERT_TRUE(CreateDirectoryRequestedOptions::Populate(
-      options_as_value->GetDict(), options));
-  EXPECT_EQ(kFileSystemId, options.file_system_id);
-  EXPECT_EQ(kRequestId, options.request_id);
-  EXPECT_EQ(kDirectoryPath, options.directory_path);
-  EXPECT_TRUE(options.recursive);
+  auto options =
+      CreateDirectoryRequestedOptions::FromValue(options_as_value->GetDict());
+  ASSERT_TRUE(options);
+  EXPECT_EQ(kFileSystemId, options->file_system_id);
+  EXPECT_EQ(kRequestId, options->request_id);
+  EXPECT_EQ(kDirectoryPath, options->directory_path);
+  EXPECT_TRUE(options->recursive);
 }
 
 TEST_F(FileSystemProviderOperationsCreateDirectoryTest, Execute_NoListener) {

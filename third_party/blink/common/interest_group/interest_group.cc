@@ -168,6 +168,18 @@ bool InterestGroup::IsValid() const {
       return false;
   }
 
+  if (trusted_bidding_signals_slot_size_mode !=
+          blink::mojom::InterestGroup::TrustedBiddingSignalsSlotSizeMode::
+              kNone &&
+      trusted_bidding_signals_slot_size_mode !=
+          blink::mojom::InterestGroup::TrustedBiddingSignalsSlotSizeMode::
+              kSlotSize &&
+      trusted_bidding_signals_slot_size_mode !=
+          blink::mojom::InterestGroup::TrustedBiddingSignalsSlotSizeMode::
+              kAllSlotsRequestedSizes) {
+    return false;
+  }
+
   if (ads) {
     for (const auto& ad : ads.value()) {
       if (!IsUrlAllowedForRenderUrls(ad.render_url)) {
@@ -303,6 +315,7 @@ size_t InterestGroup::EstimateSize() const {
     for (const std::string& key : *trusted_bidding_signals_keys)
       size += key.size();
   }
+  size += sizeof(trusted_bidding_signals_slot_size_mode);
   if (user_bidding_signals)
     size += user_bidding_signals->size();
   if (ads) {
@@ -347,20 +360,23 @@ bool InterestGroup::IsEqualForTesting(const InterestGroup& other) const {
                   all_sellers_capabilities, execution_mode, bidding_url,
                   bidding_wasm_helper_url, update_url,
                   trusted_bidding_signals_url, trusted_bidding_signals_keys,
-                  user_bidding_signals, ads, ad_components, ad_sizes,
-                  size_groups, auction_server_request_flags, additional_bid_key,
+                  trusted_bidding_signals_slot_size_mode, user_bidding_signals,
+                  ads, ad_components, ad_sizes, size_groups,
+                  auction_server_request_flags, additional_bid_key,
                   aggregation_coordinator_origin) ==
-         std::tie(
-             other.expiry, other.owner, other.name, other.priority,
-             other.enable_bidding_signals_prioritization, other.priority_vector,
-             other.priority_signals_overrides, other.seller_capabilities,
-             other.all_sellers_capabilities, other.execution_mode,
-             other.bidding_url, other.bidding_wasm_helper_url, other.update_url,
-             other.trusted_bidding_signals_url,
-             other.trusted_bidding_signals_keys, other.user_bidding_signals,
-             other.ads, other.ad_components, other.ad_sizes, other.size_groups,
-             other.auction_server_request_flags, other.additional_bid_key,
-             other.aggregation_coordinator_origin);
+         std::tie(other.expiry, other.owner, other.name, other.priority,
+                  other.enable_bidding_signals_prioritization,
+                  other.priority_vector, other.priority_signals_overrides,
+                  other.seller_capabilities, other.all_sellers_capabilities,
+                  other.execution_mode, other.bidding_url,
+                  other.bidding_wasm_helper_url, other.update_url,
+                  other.trusted_bidding_signals_url,
+                  other.trusted_bidding_signals_keys,
+                  other.trusted_bidding_signals_slot_size_mode,
+                  other.user_bidding_signals, other.ads, other.ad_components,
+                  other.ad_sizes, other.size_groups,
+                  other.auction_server_request_flags, other.additional_bid_key,
+                  other.aggregation_coordinator_origin);
 }
 
 std::string KAnonKeyForAdBid(const InterestGroup& group, const GURL& ad_url) {

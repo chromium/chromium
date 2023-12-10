@@ -16,6 +16,10 @@
 #include "chrome/browser/password_manager/affiliation_service_factory.h"
 #include "chrome/browser/password_manager/password_manager_test_util.h"
 #include "chrome/browser/sync/sync_service_factory.h"
+#include "chrome/browser/ui/webui/password_manager/promo_cards/access_on_any_device_promo.h"
+#include "chrome/browser/ui/webui/password_manager/promo_cards/password_checkup_promo.h"
+#include "chrome/browser/ui/webui/password_manager/promo_cards/password_manager_shortcut_promo.h"
+#include "chrome/browser/ui/webui/password_manager/promo_cards/web_password_manager_promo.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -60,15 +64,19 @@ MATCHER_P(PromoCardPrefInfo, expected, "") {
                *arg.GetDict().FindBool("was_dismissed"));
 }
 
-class FakePromoCard : public PromoCardInterface {
+class FakePromoCard : public PasswordPromoCardBase {
  public:
   explicit FakePromoCard(PrefService* prefs)
-      : PromoCardInterface(GetPromoID(), prefs) {}
+      : PasswordPromoCardBase(GetPromoID(), prefs) {}
 
   static constexpr char kId[] = "password_checkup_promo";
 
-  // PromoCardInterface implementation.
+  // PasswordPromoCardBase implementation.
   std::string GetPromoID() const override { return kId; }
+
+  PromoCardType GetPromoCardType() const override {
+    return PromoCardType::kCheckup;
+  }
 
   bool ShouldShowPromo() const override { return true; }
 
@@ -195,27 +203,6 @@ TEST_F(PromoCardBaseTest, OnPromoCardShown) {
                   PrefInfo{card.GetPromoID(), 1, base::Time::Now(), false})));
 }
 
-TEST_F(PromoCardBaseTest, GetAllPromoCards) {
-  ASSERT_THAT(pref_service()->GetList(prefs::kPasswordManagerPromoCardsList),
-              IsEmpty());
-
-  // Enforce delegate creation before retrieving promo cards.
-  scoped_refptr<extensions::PasswordsPrivateDelegate> delegate =
-      extensions::PasswordsPrivateDelegateFactory::GetForBrowserContext(
-          profile(), true);
-
-  std::vector<std::unique_ptr<PromoCardInterface>> promo_cards =
-      PromoCardInterface::GetAllPromoCardsForProfile(profile());
-  const base::Value::List& list =
-      pref_service()->GetList(prefs::kPasswordManagerPromoCardsList);
-  EXPECT_THAT(list,
-              testing::UnorderedElementsAre(
-                  PromoCardPrefInfo(PrefInfo{"password_checkup_promo"}),
-                  PromoCardPrefInfo(PrefInfo{"passwords_on_web_promo"}),
-                  PromoCardPrefInfo(PrefInfo{"password_shortcut_promo"}),
-                  PromoCardPrefInfo(PrefInfo{"access_on_any_device_promo"})));
-}
-
 class PromoCardCheckupTest : public PromoCardBaseTest {
  public:
   void SetUp() override {
@@ -248,7 +235,7 @@ class PromoCardCheckupTest : public PromoCardBaseTest {
 TEST_F(PromoCardCheckupTest, NoPromoIfNoPasswords) {
   ASSERT_THAT(pref_service()->GetList(prefs::kPasswordManagerPromoCardsList),
               IsEmpty());
-  std::unique_ptr<PromoCardInterface> promo =
+  std::unique_ptr<PasswordPromoCardBase> promo =
       std::make_unique<PasswordCheckupPromo>(pref_service(), delegate());
 
   EXPECT_THAT(
@@ -265,7 +252,7 @@ TEST_F(PromoCardCheckupTest, NoPromoIfLeakCheckDisabledByPolicy) {
 
   ASSERT_THAT(pref_service()->GetList(prefs::kPasswordManagerPromoCardsList),
               IsEmpty());
-  std::unique_ptr<PromoCardInterface> promo =
+  std::unique_ptr<PasswordPromoCardBase> promo =
       std::make_unique<PasswordCheckupPromo>(pref_service(), delegate());
 
   EXPECT_THAT(
@@ -280,7 +267,7 @@ TEST_F(PromoCardCheckupTest, PromoShownWithSavedPasswords) {
 
   ASSERT_THAT(pref_service()->GetList(prefs::kPasswordManagerPromoCardsList),
               IsEmpty());
-  std::unique_ptr<PromoCardInterface> promo =
+  std::unique_ptr<PasswordPromoCardBase> promo =
       std::make_unique<PasswordCheckupPromo>(pref_service(), delegate());
 
   EXPECT_TRUE(promo->ShouldShowPromo());
@@ -291,7 +278,7 @@ TEST_F(PromoCardCheckupTest, PromoShownFirstThreeTimes) {
 
   ASSERT_THAT(pref_service()->GetList(prefs::kPasswordManagerPromoCardsList),
               IsEmpty());
-  std::unique_ptr<PromoCardInterface> promo =
+  std::unique_ptr<PasswordPromoCardBase> promo =
       std::make_unique<PasswordCheckupPromo>(pref_service(), delegate());
 
   EXPECT_TRUE(promo->ShouldShowPromo());
@@ -315,7 +302,7 @@ TEST_F(PromoCardCheckupTest, PromoShownIn7DaysAfterDismiss) {
 
   ASSERT_THAT(pref_service()->GetList(prefs::kPasswordManagerPromoCardsList),
               IsEmpty());
-  std::unique_ptr<PromoCardInterface> promo =
+  std::unique_ptr<PasswordPromoCardBase> promo =
       std::make_unique<PasswordCheckupPromo>(pref_service(), delegate());
   EXPECT_TRUE(promo->ShouldShowPromo());
 
@@ -362,7 +349,7 @@ TEST_F(PromoCardInWebTest, NoPromoIfNotSyncing) {
 
   ASSERT_THAT(pref_service()->GetList(prefs::kPasswordManagerPromoCardsList),
               IsEmpty());
-  std::unique_ptr<PromoCardInterface> promo =
+  std::unique_ptr<PasswordPromoCardBase> promo =
       std::make_unique<WebPasswordManagerPromo>(pref_service(), sync_service());
 
   EXPECT_THAT(
@@ -377,7 +364,7 @@ TEST_F(PromoCardInWebTest, PromoIsShownWhenSyncing) {
 
   ASSERT_THAT(pref_service()->GetList(prefs::kPasswordManagerPromoCardsList),
               IsEmpty());
-  std::unique_ptr<PromoCardInterface> promo =
+  std::unique_ptr<PasswordPromoCardBase> promo =
       std::make_unique<WebPasswordManagerPromo>(pref_service(), sync_service());
 
   EXPECT_TRUE(promo->ShouldShowPromo());
@@ -389,7 +376,7 @@ TEST_F(PromoCardInWebTest, ShouldShowPromoFirstThreeTimes) {
 
   ASSERT_THAT(pref_service()->GetList(prefs::kPasswordManagerPromoCardsList),
               IsEmpty());
-  std::unique_ptr<PromoCardInterface> promo =
+  std::unique_ptr<PasswordPromoCardBase> promo =
       std::make_unique<WebPasswordManagerPromo>(pref_service(), sync_service());
 
   // Show promo 3 times.
@@ -409,7 +396,7 @@ TEST_F(PromoCardInWebTest, PromoNotShownAfterDismiss) {
 
   ASSERT_THAT(pref_service()->GetList(prefs::kPasswordManagerPromoCardsList),
               IsEmpty());
-  std::unique_ptr<PromoCardInterface> promo =
+  std::unique_ptr<PasswordPromoCardBase> promo =
       std::make_unique<WebPasswordManagerPromo>(pref_service(), sync_service());
   EXPECT_TRUE(promo->ShouldShowPromo());
 
@@ -444,7 +431,7 @@ TEST_F(PromoCardShortcutTest, NoPromoIfShortcutInstalled) {
 
   ASSERT_THAT(pref_service()->GetList(prefs::kPasswordManagerPromoCardsList),
               IsEmpty());
-  std::unique_ptr<PromoCardInterface> promo =
+  std::unique_ptr<PasswordPromoCardBase> promo =
       std::make_unique<PasswordManagerShortcutPromo>(profile());
   EXPECT_FALSE(promo->ShouldShowPromo());
 }
@@ -452,7 +439,7 @@ TEST_F(PromoCardShortcutTest, NoPromoIfShortcutInstalled) {
 TEST_F(PromoCardShortcutTest, ShouldShowPromoFirstThreeTimes) {
   ASSERT_THAT(pref_service()->GetList(prefs::kPasswordManagerPromoCardsList),
               IsEmpty());
-  std::unique_ptr<PromoCardInterface> promo =
+  std::unique_ptr<PasswordPromoCardBase> promo =
       std::make_unique<PasswordManagerShortcutPromo>(profile());
 
   // Show promo 3 times.
@@ -468,7 +455,7 @@ TEST_F(PromoCardShortcutTest, PromoNotShownAfterDismiss) {
   base::HistogramTester histogram_tester;
   ASSERT_THAT(pref_service()->GetList(prefs::kPasswordManagerPromoCardsList),
               IsEmpty());
-  std::unique_ptr<PromoCardInterface> promo =
+  std::unique_ptr<PasswordPromoCardBase> promo =
       std::make_unique<PasswordManagerShortcutPromo>(profile());
   EXPECT_TRUE(promo->ShouldShowPromo());
 
@@ -483,7 +470,7 @@ using PromoCardAccessAnyDeviceTest = PromoCardBaseTest;
 TEST_F(PromoCardAccessAnyDeviceTest, ShouldShowPromoFirstThreeTimes) {
   ASSERT_THAT(pref_service()->GetList(prefs::kPasswordManagerPromoCardsList),
               IsEmpty());
-  std::unique_ptr<PromoCardInterface> promo =
+  std::unique_ptr<PasswordPromoCardBase> promo =
       std::make_unique<AccessOnAnyDevicePromo>(pref_service());
 
   // Show promo 3 times.
@@ -499,7 +486,7 @@ TEST_F(PromoCardAccessAnyDeviceTest, PromoNotShownAfterDismiss) {
   base::HistogramTester histogram_tester;
   ASSERT_THAT(pref_service()->GetList(prefs::kPasswordManagerPromoCardsList),
               IsEmpty());
-  std::unique_ptr<PromoCardInterface> promo =
+  std::unique_ptr<PasswordPromoCardBase> promo =
       std::make_unique<AccessOnAnyDevicePromo>(pref_service());
   EXPECT_TRUE(promo->ShouldShowPromo());
 

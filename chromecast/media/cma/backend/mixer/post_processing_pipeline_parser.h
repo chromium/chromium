@@ -9,9 +9,9 @@
 #include <string>
 #include <vector>
 
+#include <optional>
 #include "base/files/file_path.h"
 #include "base/values.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromecast {
 namespace media {
@@ -27,13 +27,13 @@ struct StreamPipelineDescriptor {
   base::Value prerender_pipeline;
   base::Value pipeline;
   const base::Value* stream_types;
-  absl::optional<int> num_input_channels;
+  std::optional<int> num_input_channels;
   const base::Value* volume_limits;
 
   StreamPipelineDescriptor(base::Value prerender_pipeline_in,
                            base::Value pipeline_in,
                            const base::Value* stream_types_in,
-                           const absl::optional<int> num_input_channels_in,
+                           const std::optional<int> num_input_channels_in,
                            const base::Value* volume_limits_in);
   ~StreamPipelineDescriptor();
   StreamPipelineDescriptor(StreamPipelineDescriptor&& other);

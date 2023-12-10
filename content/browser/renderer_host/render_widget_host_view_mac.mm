@@ -96,7 +96,7 @@ namespace {
 // update it immediately.
 BASE_FEATURE(kDelayUpdateWindowsAfterTextInputStateChanged,
              "DelayUpdateWindowsAfterTextInputStateChanged",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace
 
@@ -620,13 +620,16 @@ CursorManager* RenderWidgetHostViewMac::GetCursorManager() {
   return cursor_manager_.get();
 }
 
-void RenderWidgetHostViewMac::DidNavigateMainFramePreCommit() {
-  CHECK(browser_compositor_) << "Shouldn't be called during destruction!";
-  gesture_provider_.ResetDetection();
+void RenderWidgetHostViewMac::OnOldViewDidNavigatePreCommit() {
   if (base::FeatureList::IsEnabled(
           features::kInvalidateLocalSurfaceIdPreCommit)) {
+    CHECK(browser_compositor_) << "Shouldn't be called during destruction!";
     browser_compositor_->DidNavigateMainFramePreCommit();
   }
+}
+
+void RenderWidgetHostViewMac::OnNewViewDidNavigatePostCommit() {
+  gesture_provider_.ResetDetection();
 }
 
 void RenderWidgetHostViewMac::DidEnterBackForwardCache() {
@@ -1489,6 +1492,12 @@ const viz::LocalSurfaceId& RenderWidgetHostViewMac::GetLocalSurfaceId() const {
 
 void RenderWidgetHostViewMac::InvalidateLocalSurfaceIdAndAllocationGroup() {
   browser_compositor_->InvalidateSurfaceAllocationGroup();
+}
+
+void RenderWidgetHostViewMac::UpdateFrameSinkIdRegistration() {
+  RenderWidgetHostViewBase::UpdateFrameSinkIdRegistration();
+  browser_compositor_->GetDelegatedFrameHost()->SetIsFrameSinkIdOwner(
+      is_frame_sink_id_owner());
 }
 
 const viz::FrameSinkId& RenderWidgetHostViewMac::GetFrameSinkId() const {

@@ -169,9 +169,7 @@ public class WebViewCrashInfoCollectorTest {
                                         UploadState.UPLOADED))));
     }
 
-    /**
-     * Test that merging hidden {@code CrashInfo} that has the same {@code localID} works correctly.
-     */
+    /** Test that merging hidden {@code CrashInfo} that has the same {@code localID} works correctly. */
     @Test
     @SmallTest
     public void testMergeDuplicatesAndIgnoreHidden() {

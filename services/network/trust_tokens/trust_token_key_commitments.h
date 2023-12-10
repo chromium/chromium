@@ -5,6 +5,8 @@
 #ifndef SERVICES_NETWORK_TRUST_TOKENS_TRUST_TOKEN_KEY_COMMITMENTS_H_
 #define SERVICES_NETWORK_TRUST_TOKENS_TRUST_TOKEN_KEY_COMMITMENTS_H_
 
+#include <string_view>
+
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
 #include "services/network/public/mojom/trust_tokens.mojom.h"
@@ -37,7 +39,7 @@ class TrustTokenKeyCommitments
   // of a collection of issuers' key commitments according to the format
   // specified, for now, in the Trust Tokens design doc:
   // https://docs.google.com/document/d/1TNnya6B8pyomDK2F1R9CL3dY10OAmqWlnCxsWyOBDVQ/edit#heading=h.z52drgpfgulz.
-  void ParseAndSet(base::StringPiece raw_commitments);
+  void ParseAndSet(std::string_view raw_commitments);
 
   // TrustTokenKeyCommitmentGetter implementation:
   //

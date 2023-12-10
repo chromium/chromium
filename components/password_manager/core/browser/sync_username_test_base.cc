@@ -7,6 +7,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
 
 using autofill::FormData;
 using autofill::FormFieldData;
@@ -34,27 +35,39 @@ FormData CreateSigninFormData(const GURL& url, const char* username) {
 
 }  // namespace
 
-SyncUsernameTestBase::SyncUsernameTestBase() = default;
+SyncUsernameTestBase::SyncUsernameTestBase() {
+  // Start TestSyncService signed out by default to be consistent with
+  // IdentityManager, until FakeSigninAs() is invoked.
+  CHECK(!identity_test_env_.identity_manager()->HasPrimaryAccount(
+      signin::ConsentLevel::kSignin));
+  sync_service_.SetAccountInfo(CoreAccountInfo());
+}
 
 SyncUsernameTestBase::~SyncUsernameTestBase() = default;
 
-void SyncUsernameTestBase::FakeSigninAs(const std::string& email) {
+void SyncUsernameTestBase::FakeSigninAs(const std::string& email,
+                                        signin::ConsentLevel consent_level) {
+  CHECK(!email.empty());
   // This method is called in a roll by some tests. IdentityTestEnvironment does
   // not allow logging in without a previously log-out.
   // So make sure tests only log in once and that the email is the same in case
   // of FakeSigninAs calls roll.
   signin::IdentityManager* identity_manager =
       identity_test_env_.identity_manager();
-  if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
+  if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
     CHECK_EQ(
-        identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
+        identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
             .email,
         email);
+    CHECK_EQ(*signin::GetPrimaryAccountConsentLevel(identity_manager),
+             consent_level);
     CHECK_EQ(sync_service_.GetAccountInfo().email, email);
   } else {
-    CoreAccountInfo account = identity_test_env_.MakePrimaryAccountAvailable(
-        email, signin::ConsentLevel::kSync);
+    CoreAccountInfo account =
+        identity_test_env_.MakePrimaryAccountAvailable(email, consent_level);
     sync_service_.SetAccountInfo(account);
+    sync_service_.SetHasSyncConsent(consent_level ==
+                                    signin::ConsentLevel::kSync);
   }
 }
 

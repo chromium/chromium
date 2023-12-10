@@ -30,9 +30,10 @@ public class ExistingAccountRowViewBinder implements ViewBinder<PropertyModel, V
     public void bind(PropertyModel model, View view, PropertyKey propertyKey) {
         DisplayableProfileData profileData = model.get(ExistingAccountRowProperties.PROFILE_DATA);
         if (propertyKey == ExistingAccountRowProperties.ON_CLICK_LISTENER) {
-            view.setOnClickListener(v
-                    -> model.get(ExistingAccountRowProperties.ON_CLICK_LISTENER)
-                               .onResult(profileData));
+            view.setOnClickListener(
+                    v ->
+                            model.get(ExistingAccountRowProperties.ON_CLICK_LISTENER)
+                                    .onResult(profileData));
         } else if (propertyKey == ExistingAccountRowProperties.PROFILE_DATA) {
             bindAccountView(profileData, view);
         } else {

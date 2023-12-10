@@ -20,6 +20,7 @@
 #include <utility>
 #include <vector>
 
+#include <optional>
 #include "base/base_switches.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
@@ -42,7 +43,6 @@
 #include "services/network/public/cpp/network_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -445,7 +445,7 @@ class ContextProviderImplTest : public ::testing::Test {
   // A mock fuchsia::component/Realm used to bridge to `fake_realm_`.
   ::testing::StrictMock<fuchsia_component_support::MockRealm> mock_realm_;
   fidl::BindingSet<fuchsia::web::ContextProvider> bindings_;
-  absl::optional<ContextProviderImpl> provider_;
+  std::optional<ContextProviderImpl> provider_;
   fuchsia::web::ContextProviderPtr provider_ptr_;
 };
 

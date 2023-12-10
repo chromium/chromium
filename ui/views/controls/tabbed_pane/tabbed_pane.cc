@@ -180,8 +180,12 @@ bool TabbedPaneTab::OnKeyPressed(const ui::KeyEvent& event) {
   const ui::KeyboardCode key = event.key_code();
   if (tabbed_pane_->GetOrientation() == TabbedPane::Orientation::kHorizontal) {
     // Use left and right arrows to navigate tabs in horizontal orientation.
+    int delta = key == ui::VKEY_RIGHT ? 1 : -1;
+    if (base::i18n::IsRTL()) {
+      delta = key == ui::VKEY_RIGHT ? -1 : 1;
+    }
     return (key == ui::VKEY_LEFT || key == ui::VKEY_RIGHT) &&
-           tabbed_pane_->MoveSelectionBy(key == ui::VKEY_RIGHT ? 1 : -1);
+           tabbed_pane_->MoveSelectionBy(delta);
   }
   // Use up and down arrows to navigate tabs in vertical orientation.
   return (key == ui::VKEY_UP || key == ui::VKEY_DOWN) &&
@@ -284,7 +288,7 @@ void TabbedPaneTab::UpdateTitleColor() {
   title_->SetEnabledColor(font_color);
 }
 
-BEGIN_METADATA(TabbedPaneTab, View)
+BEGIN_METADATA(TabbedPaneTab)
 END_METADATA
 
 // static
@@ -497,7 +501,7 @@ void TabbedPaneTabStrip::OnPaintBorder(gfx::Canvas* canvas) {
                    GetColorProvider()->GetColor(ui::kColorTabBorderSelected));
 }
 
-BEGIN_METADATA(TabbedPaneTabStrip, View)
+BEGIN_METADATA(TabbedPaneTabStrip)
 ADD_READONLY_PROPERTY_METADATA(size_t, SelectedTabIndex)
 ADD_READONLY_PROPERTY_METADATA(TabbedPane::Orientation, Orientation)
 ADD_READONLY_PROPERTY_METADATA(TabbedPane::TabStripStyle, Style)
@@ -654,7 +658,7 @@ void TabbedPane::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   }
 }
 
-BEGIN_METADATA(TabbedPane, View)
+BEGIN_METADATA(TabbedPane)
 END_METADATA
 
 }  // namespace views

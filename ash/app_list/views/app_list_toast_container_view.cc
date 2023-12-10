@@ -24,6 +24,7 @@
 #include "ash/style/ash_color_id.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
@@ -242,7 +243,7 @@ void AppListToastContainerView::UpdateVisibilityState(VisibilityState state) {
 }
 
 void AppListToastContainerView::OnTemporarySortOrderChanged(
-    const absl::optional<AppListSortOrder>& new_order) {
+    const std::optional<AppListSortOrder>& new_order) {
   // Remove `toast_view_` when the temporary sorting order is cleared.
   if (!GetVisibilityForSortOrder(new_order)) {
     if (committing_sort_order_) {
@@ -303,7 +304,7 @@ void AppListToastContainerView::OnTemporarySortOrderChanged(
 }
 
 bool AppListToastContainerView::GetVisibilityForSortOrder(
-    const absl::optional<AppListSortOrder>& new_order) const {
+    const std::optional<AppListSortOrder>& new_order) const {
   return new_order && *new_order != AppListSortOrder::kCustom &&
          *new_order != AppListSortOrder::kAlphabeticalEphemeralAppFirst;
 }
@@ -420,5 +421,8 @@ std::u16string AppListToastContainerView::GetA11yTextOnUndoButtonFromOrder(
       return u"";
   }
 }
+
+BEGIN_METADATA(AppListToastContainerView)
+END_METADATA
 
 }  // namespace ash

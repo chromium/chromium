@@ -797,7 +797,7 @@ std::vector<views::View*> MediaNotificationViewImpl::GetButtons() {
   return buttons;
 }
 
-BEGIN_METADATA(MediaNotificationViewImpl, views::View)
+BEGIN_METADATA(MediaNotificationViewImpl)
 ADD_READONLY_PROPERTY_METADATA(bool, Expandable)
 ADD_READONLY_PROPERTY_METADATA(bool, ActuallyExpanded)
 END_METADATA

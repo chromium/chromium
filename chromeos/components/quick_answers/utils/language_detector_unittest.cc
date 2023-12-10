@@ -76,10 +76,10 @@ class LanguageDetectorTest : public testing::Test {
   LanguageDetectorTest(const LanguageDetectorTest&) = delete;
   LanguageDetectorTest& operator=(const LanguageDetectorTest&) = delete;
 
-  const absl::optional<std::string>& DetectLanguage(
+  const std::optional<std::string>& DetectLanguage(
       const std::string& surrounding_text,
       const std::string& selected_text) {
-    base::test::TestFuture<absl::optional<std::string>> future;
+    base::test::TestFuture<std::optional<std::string>> future;
 
     language_detector_.DetectLanguage(surrounding_text, selected_text,
                                       future.GetCallback());
@@ -94,7 +94,7 @@ class LanguageDetectorTest : public testing::Test {
  private:
   base::test::TaskEnvironment task_environment_;
 
-  absl::optional<std::string> detected_locale_;
+  std::optional<std::string> detected_locale_;
 
   FakeTextClassifier text_classifier_;
   LanguageDetector language_detector_;

@@ -19,8 +19,8 @@ public class UrlFilterBridge implements UrlFilter {
     @Override
     public boolean matchesUrl(String url) {
         assert mNativeUrlFilterBridge != 0;
-        return UrlFilterBridgeJni.get().matchesUrl(
-                mNativeUrlFilterBridge, UrlFilterBridge.this, url);
+        return UrlFilterBridgeJni.get()
+                .matchesUrl(mNativeUrlFilterBridge, UrlFilterBridge.this, url);
     }
 
     /** Destroys the native counterpart of this object. */
@@ -47,6 +47,7 @@ public class UrlFilterBridge implements UrlFilter {
     @NativeMethods
     interface Natives {
         boolean matchesUrl(long nativeUrlFilterBridge, UrlFilterBridge caller, String url);
+
         void destroy(long nativeUrlFilterBridge, UrlFilterBridge caller);
     }
 }

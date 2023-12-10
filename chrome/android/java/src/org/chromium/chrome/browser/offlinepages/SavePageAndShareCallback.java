@@ -18,7 +18,9 @@ public class SavePageAndShareCallback implements OfflinePageBridge.SavePageCallb
     private Callback<ShareParams> mShareCallback;
     private OfflinePageBridge mBridge;
 
-    public SavePageAndShareCallback(WindowAndroid window, final Callback<ShareParams> shareCallback,
+    public SavePageAndShareCallback(
+            WindowAndroid window,
+            final Callback<ShareParams> shareCallback,
             OfflinePageBridge bridge) {
         mWindow = window;
         mShareCallback = shareCallback;
@@ -31,11 +33,13 @@ public class SavePageAndShareCallback implements OfflinePageBridge.SavePageCallb
             // If the page is not saved, skip the sharing part.
             return;
         }
-        mBridge.getPageByOfflineId(offlineId, new Callback<OfflinePageItem>() {
-            @Override
-            public void onResult(OfflinePageItem page) {
-                OfflinePageUtils.sharePublishedPage(page, mWindow, mShareCallback);
-            }
-        });
+        mBridge.getPageByOfflineId(
+                offlineId,
+                new Callback<OfflinePageItem>() {
+                    @Override
+                    public void onResult(OfflinePageItem page) {
+                        OfflinePageUtils.sharePublishedPage(page, mWindow, mShareCallback);
+                    }
+                });
     }
 }

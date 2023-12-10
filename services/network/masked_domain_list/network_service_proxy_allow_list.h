@@ -9,6 +9,7 @@
 #include "net/base/network_anonymization_key.h"
 #include "services/network/masked_domain_list/url_matcher_with_bypass.h"
 #include "services/network/public/mojom/network_context.mojom.h"
+#include "services/network/public/mojom/network_service.mojom-forward.h"
 
 namespace network {
 
@@ -18,7 +19,8 @@ namespace network {
 // Proxy and determines if pairs of request and top_frame URLs are eligible.
 class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceProxyAllowList {
  public:
-  NetworkServiceProxyAllowList();
+  explicit NetworkServiceProxyAllowList(
+      network::mojom::IpProtectionProxyBypassPolicy);
   ~NetworkServiceProxyAllowList();
   NetworkServiceProxyAllowList(const NetworkServiceProxyAllowList&);
 
@@ -56,6 +58,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceProxyAllowList {
  private:
   void AddDomainWithBypass(const std::string& domain,
                            net::SchemeHostPortMatcher bypass_matcher);
+
+  // Policy that determines which domains are bypassed from IP Protection.
+  network::mojom::IpProtectionProxyBypassPolicy proxy_bypass_policy_;
 
   // Contains match rules from the Masked Domain List.
   UrlMatcherWithBypass url_matcher_with_bypass_;

@@ -227,8 +227,7 @@ class MessageLoopRunner : public base::RefCountedThreadSafe<MessageLoopRunner> {
 // If the callback returns |true|, the condition is met. Otherwise, the
 // condition is not yet met and the callback will be invoked again every time a
 // notification of the expected type is received until the callback returns
-// |true|. For convenience, two callback types are defined, one that is provided
-// with the notification source and details, and one that is not.
+// |true|.
 //
 // This helper class exists to avoid the following common pattern in tests:
 //   PerformAction()
@@ -244,14 +243,10 @@ class MessageLoopRunner : public base::RefCountedThreadSafe<MessageLoopRunner> {
 class WindowedNotificationObserver : public NotificationObserver {
  public:
   // Callback invoked on notifications. Should return |true| when the condition
-  // being waited for is met. For convenience, there is a choice between two
-  // callback types, one that is provided with the notification source and
-  // details, and one that is not.
+  // being waited for is met.
   using ConditionTestCallback =
       base::RepeatingCallback<bool(const NotificationSource&,
                                    const NotificationDetails&)>;
-  using ConditionTestCallbackWithoutSourceAndDetails =
-      base::RepeatingCallback<bool(void)>;
 
   // Set up to wait for a simple condition. The condition is met when a
   // notification of the given |notification_type| from the given |source| is
@@ -265,9 +260,6 @@ class WindowedNotificationObserver : public NotificationObserver {
   // of |notification_type| from any source is received.
   WindowedNotificationObserver(int notification_type,
                                ConditionTestCallback callback);
-  WindowedNotificationObserver(
-      int notification_type,
-      ConditionTestCallbackWithoutSourceAndDetails callback);
 
   WindowedNotificationObserver(const WindowedNotificationObserver&) = delete;
   WindowedNotificationObserver& operator=(const WindowedNotificationObserver&) =
@@ -275,26 +267,13 @@ class WindowedNotificationObserver : public NotificationObserver {
 
   ~WindowedNotificationObserver() override;
 
-  // Adds an additional notification type to wait for. The condition will be met
-  // if any of the registered notification types from their respective sources
-  // is received.
-  void AddNotificationType(int notification_type,
-                           const NotificationSource& source);
-
   // Wait until the specified condition is met. If the condition is already met
   // (that is, the expected notification has already been received or the
   // given callback returns |true| already), Wait() returns immediately.
   void Wait();
 
-  // Returns NotificationService::AllSources() if we haven't observed a
-  // notification yet.
-  const NotificationSource& source() const {
-    return source_;
-  }
-
-  const NotificationDetails& details() const {
-    return details_;
-  }
+  // Whether the expected notification has already been received.
+  bool NotificationReceived() const;
 
   // NotificationObserver:
   void Observe(int type,
@@ -307,8 +286,6 @@ class WindowedNotificationObserver : public NotificationObserver {
 
   ConditionTestCallback callback_;
 
-  NotificationSource source_;
-  NotificationDetails details_;
   base::RunLoop run_loop_;
 };
 

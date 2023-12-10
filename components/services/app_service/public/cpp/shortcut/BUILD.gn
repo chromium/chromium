@@ -39,6 +39,7 @@ source_set("unit_tests") {
   deps = [
     ":shortcut",
     "//base",
+    "//components/services/app_service/public/cpp:app_types",
     "//testing/gtest",
   ]
 }

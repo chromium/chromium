@@ -20,13 +20,12 @@ import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.url.GURL;
 
-/**
- * A class containing some utility static methods.
- */
+/** A class containing some utility static methods. */
 public class DownloadUtils {
     public static final long INVALID_SYSTEM_DOWNLOAD_ID = -1;
     private static final int[] BYTES_STRINGS = {
-            R.string.download_ui_kb, R.string.download_ui_mb, R.string.download_ui_gb};
+        R.string.download_ui_kb, R.string.download_ui_mb, R.string.download_ui_gb
+    };
 
     // Limit the origin length so that the eTLD+1 cannot be hidden. If the origin exceeds this
     // length the eTLD+1 is extracted and shown.
@@ -74,11 +73,17 @@ public class DownloadUtils {
      * @see android.app.DownloadManager#addCompletedDownload(String, String, boolean, String,
      * String, long, boolean)
      */
-    public static long addCompletedDownload(String fileName, String description, String mimeType,
-            String filePath, long fileSizeBytes, GURL originalUrl, GURL referer) {
+    public static long addCompletedDownload(
+            String fileName,
+            String description,
+            String mimeType,
+            String filePath,
+            long fileSizeBytes,
+            GURL originalUrl,
+            GURL referer) {
         assert !ThreadUtils.runningOnUiThread();
         assert Build.VERSION.SDK_INT < Build.VERSION_CODES.Q
-            : "addCompletedDownload is deprecated in Q, may cause crash.";
+                : "addCompletedDownload is deprecated in Q, may cause crash.";
         Context context = ContextUtils.getApplicationContext();
         DownloadManager manager =
                 (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
@@ -88,8 +93,16 @@ public class DownloadUtils {
             // OriginalUri has to be null or non-empty http(s) scheme.
             Uri originalUri = parseOriginalUrl(originalUrl.getSpec());
             Uri refererUri = GURL.isEmptyOrInvalid(referer) ? null : Uri.parse(referer.getSpec());
-            return manager.addCompletedDownload(fileName, description, true, mimeType, filePath,
-                    fileSizeBytes, useSystemNotification, originalUri, refererUri);
+            return manager.addCompletedDownload(
+                    fileName,
+                    description,
+                    true,
+                    mimeType,
+                    filePath,
+                    fileSizeBytes,
+                    useSystemNotification,
+                    originalUri,
+                    refererUri);
         } catch (Exception e) {
             return INVALID_SYSTEM_DOWNLOAD_ID;
         }
@@ -131,6 +144,6 @@ public class DownloadUtils {
 
         // The origin is too long. Strip down to eTLD+1.
         return UrlUtilities.getDomainAndRegistry(
-                url.getSpec(), false /* includePrivateRegistries */);
+                url.getSpec(), /* includePrivateRegistries= */ false);
     }
 }

@@ -8,6 +8,7 @@
 <translation id="1420684932347524586">Der per Zufallsauswahl generierte private RSA-Schlüssel konnte nicht erstellt werden.</translation>
 <translation id="1445572445564823378">Diese Erweiterung verlangsamt die Ausführung von <ph name="PRODUCT_NAME" />. Deaktiviere sie, um die Leistung von <ph name="PRODUCT_NAME" /> nicht zu beeinträchtigen.</translation>
 <translation id="1468038450257740950">WebGL wird nicht unterstützt.</translation>
+<translation id="1610570795592207282">CSS-Datei „<ph name="RELATIVE_PATH" />“ konnte nicht für das Script geladen werden.</translation>
 <translation id="1803557475693955505">Hintergrundseite "<ph name="BACKGROUND_PAGE" />" konnte nicht geladen werden.</translation>
 <translation id="2159915644201199628">Bild konnte nicht decodiert werden: "<ph name="IMAGE_NAME" />"</translation>
 <translation id="2350172092385603347">Lokalisierung wurde verwendet, in der Manifest-Datei war jedoch kein Wert für "default_locale" angegeben.</translation>
@@ -18,14 +19,12 @@
 <translation id="3115238746683532089">Unbekanntes Produkt <ph name="PRODUCT_ID" /> von Anbieter <ph name="VENDOR_ID" /> (Seriennummer <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">CRX-Datei konnte nicht ersetzt werden. Überprüfe, ob die Datei verwendet wird.</translation>
 <translation id="3163201441334626963">Unbekanntes Produkt <ph name="PRODUCT_ID" /> von Anbieter <ph name="VENDOR_ID" /></translation>
-<translation id="3302709122321372472">CSS-Datei "<ph name="RELATIVE_PATH" />" konnte nicht für das Content-Script geladen werden.</translation>
 <translation id="3369521687965833290">Erweiterung kann nicht entpackt werden. Damit eine Erweiterung sicher entpackt werden kann, muss ein Pfad zu deinem Profilverzeichnis zur Verfügung stehen, der mit einem Laufwerksbuchstaben beginnt und keine Verknüpfung, keinen Bereitstellungspunkt und keine symbolische Verbindung enthält. Für dein Profil besteht kein solcher Pfad.</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (Seriennummer <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> von Anbieter <ph name="VENDOR_ID" /> (Seriennummer <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Der Eingabewert für den privaten Schlüssel muss ein gültiger Pfad sein.</translation>
 <translation id="388442998277590542">Optionsseite "<ph name="OPTIONS_PAGE" />" konnte nicht geladen werden.</translation>
 <translation id="3984413272403535372">Fehler bei der Signatur der Erweiterung</translation>
-<translation id="39964277676607559">JavaScript-Datei "<ph name="RELATIVE_PATH" />" konnte nicht für das Content-Script geladen werden.</translation>
 <translation id="4115165561519362854">Der Administrator dieses Geräts hat festgelegt, dass für <ph name="EXTENSION_NAME" /> mindestens Version <ph name="EXTENSION_VERSION" /> installiert sein muss. Die Erweiterung kann erst aktiviert werden, nachdem sie auf diese oder eine höhere Version aktualisiert wurde.</translation>
 <translation id="4233778200880751280">Infoseite "<ph name="ABOUT_PAGE" />" konnte nicht geladen werden.</translation>
 <translation id="471800408830181311">Privater Schlüssel konnte nicht ausgegeben werden.</translation>
@@ -33,6 +32,7 @@
 <translation id="4988792151665380515">Öffentlicher Schlüssel konnte nicht exportiert werden.</translation>
 <translation id="5026754133087629784">Web-Ansicht: <ph name="WEBVIEW_TAG_NAME" /></translation>
 <translation id="5098647635849512368">Der absolute Pfad zum Verzeichnis wurde nicht gefunden.</translation>
+<translation id="5160071981665899014">JavaScript-Code „<ph name="RELATIVE_PATH" />“ konnte nicht für Script geladen werden.</translation>
 <translation id="5356315618422219272">Appview: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5436430103864390185">Es werden nur rechteckige Fenster unterstützt.</translation>
 <translation id="5456409301717116725">Die Erweiterung enthält die Schlüsseldatei „<ph name="KEY_PATH" />“. Möchtest du den Vorgang wirklich fortsetzen?</translation>

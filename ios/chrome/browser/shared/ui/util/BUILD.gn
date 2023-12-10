@@ -22,8 +22,6 @@ source_set("util") {
     "layout_guide_names.mm",
     "named_guide.h",
     "named_guide.mm",
-    "named_guide_util.h",
-    "named_guide_util.mm",
     "optional_property_animator.h",
     "optional_property_animator.mm",
     "page_animation_util.h",

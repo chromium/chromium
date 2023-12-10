@@ -178,6 +178,8 @@ export class EduCoexistenceController extends PostMessageApiServer {
     this.authenticator.addEventListener(
         'getAccounts', () => this.onGetAccounts());
     this.authenticator.addEventListener(
+        'getDeviceId', () => this.onGetDeviceId());
+    this.authenticator.addEventListener(
         'authCompleted',
         e => this.onAuthCompleted(e as CustomEvent<AuthCompletedCredentials>));
   }
@@ -189,6 +191,12 @@ export class EduCoexistenceController extends PostMessageApiServer {
   private onGetAccounts() {
     this.browserProxy.getAccounts().then(result => {
       this.authenticator.getAccountsResponse(result);
+    });
+  }
+
+  private onGetDeviceId() {
+    this.browserProxy.getDeviceId().then(deviceId => {
+      this.authenticator.getDeviceIdResponse(deviceId);
     });
   }
 

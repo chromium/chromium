@@ -44,10 +44,8 @@ class ChromePermissionsClient : public permissions::PermissionsClient {
   void AreSitesImportant(
       content::BrowserContext* browser_context,
       std::vector<std::pair<url::Origin, bool>>* urls) override;
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
   bool IsCookieDeletionDisabled(content::BrowserContext* browser_context,
                                 const GURL& origin) override;
-#endif
   void GetUkmSourceId(content::BrowserContext* browser_context,
                       content::WebContents* web_contents,
                       const GURL& requesting_origin,
@@ -58,9 +56,8 @@ class ChromePermissionsClient : public permissions::PermissionsClient {
   CreatePermissionUiSelectors(
       content::BrowserContext* browser_context) override;
 
-#if !BUILDFLAG(IS_ANDROID)
   void TriggerPromptHatsSurveyIfEnabled(
-      content::BrowserContext* context,
+      content::WebContents* web_contents,
       permissions::RequestType request_type,
       absl::optional<permissions::PermissionAction> action,
       permissions::PermissionPromptDisposition prompt_disposition,
@@ -71,6 +68,7 @@ class ChromePermissionsClient : public permissions::PermissionsClient {
       const GURL& gurl,
       base::OnceCallback<void()> hats_shown_callback_) override;
 
+#if !BUILDFLAG(IS_ANDROID)
   permissions::PermissionIgnoredReason DetermineIgnoreReason(
       content::WebContents* web_contents) override;
 #endif

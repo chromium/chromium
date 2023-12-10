@@ -228,6 +228,36 @@ export class OsSettingsPrivacyPageElement extends
         value: loadTimeData.getBoolean('showSyncSettingsRevamp'),
         readOnly: true,
       },
+
+      rowIcons_: {
+        type: Object,
+        value() {
+          if (isRevampWayfindingEnabled()) {
+            return {
+              privacyHub: 'os-settings:privacy-controls',
+              sync: 'os-settings:sync-revamp',
+              lockScreen: 'os-settings:lock-revamp',
+              manageOtherPeople: 'os-settings:privacy-manage-people',
+              smartPrivacy: 'os-settings:privacy-smart-privacy',
+              suggestedContent: 'os-settings:content-recommend',
+              verifiedAccess: 'os-settings:privacy-verified-access',
+              dataAccessProtection:
+                  'os-settings:privacy-data-access-protection',
+            };
+          }
+
+          return {
+            privacyHub: '',
+            sync: '',
+            lockScreen: '',
+            manageOtherPeople: '',
+            smartPrivacy: '',
+            suggestedContent: '',
+            verifiedAccess: '',
+            dataAccessProtection: '',
+          };
+        },
+      },
     };
   }
 
@@ -238,6 +268,7 @@ export class OsSettingsPrivacyPageElement extends
   syncStatus: SyncStatus;
   private authTokenInfo_: chrome.quickUnlockPrivate.TokenInfo|undefined;
   private browserProxy_: PeripheralDataAccessBrowserProxy;
+  private rowIcons_: Record<string, string>;
 
   /**
    * The timeout ID to pass to clearTimeout() to cancel auth token

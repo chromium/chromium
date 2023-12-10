@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/printing/cups_printers_manager.h"
 
 #include <map>
+#include <optional>
 #include <utility>
 
 #include "ash/constants/ash_features.h"
@@ -59,7 +60,6 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "printing/printer_query_result.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -303,7 +303,7 @@ class CupsPrintersManagerImpl
   }
 
   // Public API function.
-  absl::optional<Printer> GetPrinter(const std::string& id) const override {
+  std::optional<Printer> GetPrinter(const std::string& id) const override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_);
     if (!user_printers_allowed_.GetValue()) {
       LOG(WARNING) << "UserPrintersAllowed is disabled - only searching "
@@ -542,7 +542,7 @@ class CupsPrintersManagerImpl
 
   void FetchPrinterStatus(const std::string& printer_id,
                           PrinterStatusCallback cb) override {
-    absl::optional<Printer> printer = GetPrinter(printer_id);
+    std::optional<Printer> printer = GetPrinter(printer_id);
     if (!printer) {
       PRINTER_LOG(ERROR) << "Unable to complete printer status request. "
                          << "Printer not found. Printer id: " << printer_id;
@@ -749,7 +749,7 @@ class CupsPrintersManagerImpl
   }
 
  private:
-  absl::optional<Printer> GetEnterprisePrinter(const std::string& id) const {
+  std::optional<Printer> GetEnterprisePrinter(const std::string& id) const {
     return printers_.Get(PrinterClass::kEnterprise, id);
   }
 
@@ -1049,7 +1049,7 @@ class CupsPrintersManagerImpl
       // The better solution would be, instead of checking this flag, to NOT
       // record events for server and enterprise printers.
       if (user_printers_allowed_.GetValue()) {
-        absl::optional<chromeos::Printer> printer = printers_.Get(printer_id);
+        std::optional<chromeos::Printer> printer = printers_.Get(printer_id);
         if (printer) {
           MaybeRecordInstallation(*printer, is_automatic_installation);
         }

@@ -27,7 +27,6 @@ import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.components.autofill.AutofillProfile;
 import org.chromium.components.payments.Event;
-import org.chromium.components.payments.NotShownReason;
 import org.chromium.components.payments.PaymentFeatureList;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
@@ -343,13 +342,6 @@ public class PaymentRequestMetricsTest {
                 "androidPayBuy", mPaymentRequestTestRule.getShowFailed());
         mPaymentRequestTestRule.expectResultContains(
                 new String[] {"The payment method", "not supported"});
-
-        // Make sure that it was logged as a reason why the Payment Request was not shown.
-        Assert.assertEquals(
-                1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        "PaymentRequest.CheckoutFunnel.NoShow",
-                        NotShownReason.NO_MATCHING_PAYMENT_METHOD));
 
         // Make sure the events were logged correctly.
         int expectedSample =

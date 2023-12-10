@@ -128,6 +128,17 @@ void MLContextMojo::CreateWebNNGraph(
                                WTF::BindOnce(std::move(callback)));
 }
 
+bool MLContextMojo::CreateWebNNGraphSync(
+    webnn::mojom::blink::GraphInfoPtr graph_info,
+    webnn::mojom::blink::CreateGraphResultPtr* out_result) {
+  // Ensures that sync methods are only called from worker threads.
+  CHECK(!IsMainThread());
+  CHECK(remote_context_.is_bound());
+
+  // Use `WebNNContext` to create `WebNNGraph` message pipe.
+  return remote_context_->CreateGraph(std::move(graph_info), out_result);
+}
+
 void MLContextMojo::OnCreateWebNNContext(
     ScriptPromiseResolver* resolver,
     blink_mojom::CreateContextResultPtr result) {

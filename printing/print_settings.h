@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include <optional>
 #include "base/component_export.h"
 #include "build/build_config.h"
 #include "printing/buildflags/buildflags.h"
@@ -17,7 +18,6 @@
 #include "printing/page_range.h"
 #include "printing/page_setup.h"
 #include "printing/print_job_constants.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -67,9 +67,9 @@ mojom::ColorModel ColorModeToColorModel(int color_mode);
 
 // Returns true if `color_model` is color and false if it is B&W.  Callers
 // are not supposed to pass in `mojom::ColorModel::kUnknownColorModel`, but
-// if they do then the result will be absl::nullopt.
+// if they do then the result will be std::nullopt.
 COMPONENT_EXPORT(PRINTING)
-absl::optional<bool> IsColorModelSelected(mojom::ColorModel color_model);
+std::optional<bool> IsColorModelSelected(mojom::ColorModel color_model);
 
 #if BUILDFLAG(USE_CUPS)
 // Get the color model setting name and value for the `color_model`.
@@ -316,7 +316,7 @@ class COMPONENT_EXPORT(PRINTING) PrintSettings {
       crosapi::mojom::StatusReason::Reason printer_status_reason) {
     printer_status_reason_ = printer_status_reason;
   }
-  absl::optional<crosapi::mojom::StatusReason::Reason> printer_status_reason()
+  std::optional<crosapi::mojom::StatusReason::Reason> printer_status_reason()
       const {
     return printer_status_reason_;
   }
@@ -457,7 +457,7 @@ class COMPONENT_EXPORT(PRINTING) PrintSettings {
 
   // The printer status reason shown for the selected printer at the time print
   // is requested. Only local CrOS printers set printer statuses.
-  absl::optional<crosapi::mojom::StatusReason::Reason> printer_status_reason_;
+  std::optional<crosapi::mojom::StatusReason::Reason> printer_status_reason_;
 #endif  // BUILDFLAG(IS_CHROMEOS)
 };
 

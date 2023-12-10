@@ -24,6 +24,11 @@ BASE_FEATURE(kTestIPHFeature2,
              base::FEATURE_ENABLED_BY_DEFAULT);
 constexpr char kAppName1[] = "App1";
 constexpr char kAppName2[] = "App2";
+constexpr base::Time kSessionTime =
+    base::Time::FromDeltaSinceWindowsEpoch(base::Days(1000));
+constexpr base::Time kLastActiveTime = kSessionTime + base::Hours(2);
+constexpr base::Time kNewSessionTime = kSessionTime + base::Days(3);
+constexpr base::Time kNewActiveTime = kNewSessionTime + base::Minutes(17);
 }  // namespace
 
 // Repeats some of the tests in FeaturePromoStorageServiceTest except that a
@@ -42,11 +47,11 @@ class BrowserFeaturePromoStorageServiceTest : public testing::Test {
     user_education::FeaturePromoData data;
     data.is_dismissed = true;
     data.last_dismissed_by = user_education::FeaturePromoClosedReason::kSnooze;
-    data.last_show_time = base::Time::FromMillisecondsSinceUnixEpoch(1);
-    data.last_snooze_time = base::Time::FromMillisecondsSinceUnixEpoch(2);
+    data.first_show_time = base::Time::FromMillisecondsSinceUnixEpoch(1);
+    data.last_show_time = base::Time::FromMillisecondsSinceUnixEpoch(100);
+    data.last_snooze_time = base::Time::FromMillisecondsSinceUnixEpoch(200);
     data.snooze_count = 3;
     data.show_count = 4;
-    data.last_snooze_duration = base::Days(3);
     data.shown_for_apps.insert(kAppName1);
     data.shown_for_apps.insert(kAppName2);
     return data;
@@ -61,11 +66,11 @@ class BrowserFeaturePromoStorageServiceTest : public testing::Test {
     const auto actual = service_.ReadPromoData(to_read_data_for);
     ASSERT_TRUE(actual.has_value());
     EXPECT_EQ(expected.is_dismissed, actual->is_dismissed);
+    EXPECT_EQ(expected.first_show_time, actual->first_show_time);
     EXPECT_EQ(expected.last_show_time, actual->last_show_time);
     EXPECT_EQ(expected.last_snooze_time, actual->last_snooze_time);
     EXPECT_EQ(expected.snooze_count, actual->snooze_count);
     EXPECT_EQ(expected.show_count, actual->show_count);
-    EXPECT_EQ(expected.last_snooze_duration, actual->last_snooze_duration);
     EXPECT_THAT(actual->shown_for_apps,
                 testing::ContainerEq(expected.shown_for_apps));
   }
@@ -77,6 +82,24 @@ class BrowserFeaturePromoStorageServiceTest : public testing::Test {
 
   auto ReadData(const base::Feature& to_read_data_for) {
     return service_.ReadPromoData(to_read_data_for);
+  }
+
+  void ResetSessionData() { service_.ResetSession(); }
+
+  user_education::FeaturePromoSessionData ReadSessionData() {
+    return service_.ReadSessionData();
+  }
+
+  void SaveSessionData(
+      const user_education::FeaturePromoSessionData& session_data) {
+    service_.SaveSessionData(session_data);
+  }
+
+  void CompareSessionData(
+      const user_education::FeaturePromoSessionData& expected) {
+    const auto actual = ReadSessionData();
+    EXPECT_EQ(expected.start_time, actual.start_time);
+    EXPECT_EQ(expected.most_recent_active_time, actual.most_recent_active_time);
   }
 
  private:
@@ -124,4 +147,36 @@ TEST_F(BrowserFeaturePromoStorageServiceTest, SavesAndReadsMultipleFeatures) {
   SaveData(kTestIPHFeature2, data2);
   CompareData(data, kTestIPHFeature);
   CompareData(data2, kTestIPHFeature2);
+}
+
+TEST_F(BrowserFeaturePromoStorageServiceTest, NoSessionDataByDefault) {
+  CompareSessionData(user_education::FeaturePromoSessionData());
+}
+
+TEST_F(BrowserFeaturePromoStorageServiceTest, SavesAndReadsSessionData) {
+  user_education::FeaturePromoSessionData data;
+  data.start_time = kSessionTime;
+  data.most_recent_active_time = kLastActiveTime;
+  SaveSessionData(data);
+  CompareSessionData(data);
+}
+
+TEST_F(BrowserFeaturePromoStorageServiceTest, SaveSessionAgain) {
+  user_education::FeaturePromoSessionData data;
+  data.start_time = kSessionTime;
+  data.most_recent_active_time = kLastActiveTime;
+  SaveSessionData(data);
+  data.start_time = kNewSessionTime;
+  data.most_recent_active_time = kNewActiveTime;
+  SaveSessionData(data);
+  CompareSessionData(data);
+}
+
+TEST_F(BrowserFeaturePromoStorageServiceTest, ResetSessionClearsData) {
+  user_education::FeaturePromoSessionData data;
+  data.start_time = kSessionTime;
+  data.most_recent_active_time = kLastActiveTime;
+  SaveSessionData(data);
+  ResetSessionData();
+  CompareSessionData(user_education::FeaturePromoSessionData());
 }

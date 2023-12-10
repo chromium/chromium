@@ -13,6 +13,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/wm/core/visibility_controller.h"
 #include "ui/wm/core/window_animations.h"
+#include "ui/wm/public/activation_delegate.h"
 
 namespace ash {
 namespace {
@@ -29,6 +30,7 @@ WindowDimmer::WindowDimmer(aura::Window* parent,
     : parent_(parent),
       window_(new aura::Window(nullptr, aura::client::WINDOW_TYPE_NORMAL)),
       delegate_(delegate) {
+  wm::SetActivationDelegate(window_, this);
   window_->Init(ui::LAYER_SOLID_COLOR);
   window_->SetName("Dimming Window");
   if (animate) {
@@ -89,6 +91,11 @@ void WindowDimmer::SetDimColor(ui::ColorId color_id) {
   DCHECK(window_);
   dim_color_type_ = color_id;
   UpdateDimColor();
+}
+
+bool WindowDimmer::ShouldActivate() const {
+  // The dimming window should never be activate-able.
+  return false;
 }
 
 void WindowDimmer::OnWindowBoundsChanged(aura::Window* window,

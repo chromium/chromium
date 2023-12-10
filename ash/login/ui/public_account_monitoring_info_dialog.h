@@ -7,6 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "base/memory/weak_ptr.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/window/dialog_delegate.h"
 
 namespace ash {
@@ -17,6 +18,8 @@ class LoginExpandedPublicAccountView;
 // present on the public account expanded view.
 class ASH_EXPORT PublicAccountMonitoringInfoDialog
     : public views::DialogDelegateView {
+  METADATA_HEADER(PublicAccountMonitoringInfoDialog, views::DialogDelegateView)
+
  public:
   explicit PublicAccountMonitoringInfoDialog(
       base::WeakPtr<LoginExpandedPublicAccountView> controller);

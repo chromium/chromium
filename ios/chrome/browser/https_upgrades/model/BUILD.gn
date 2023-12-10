@@ -113,7 +113,7 @@ source_set("eg2_tests") {
     "//components/omnibox/common",
     "//components/security_interstitials/core",
     "//components/strings",
-    "//ios/chrome/browser/metrics:eg_test_support+eg2",
+    "//ios/chrome/browser/metrics/model:eg_test_support+eg2",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/test:eg_test_support+eg2",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",

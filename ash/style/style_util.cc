@@ -87,7 +87,7 @@ class RoundedCornerHighlightPathGenerator
       const RoundedCornerHighlightPathGenerator&) = delete;
 
   // views::HighlightPathGenerator:
-  absl::optional<gfx::RRectF> GetRoundRect(const gfx::RectF& rect) override {
+  std::optional<gfx::RRectF> GetRoundRect(const gfx::RectF& rect) override {
     return gfx::RRectF(rect, corners_);
   }
 
@@ -186,7 +186,7 @@ void StyleUtil::ConfigureInkDropAttributes(views::View* view,
 // static
 views::FocusRing* StyleUtil::SetUpFocusRingForView(
     views::View* view,
-    absl::optional<int> halo_inset) {
+    std::optional<int> halo_inset) {
   DCHECK(view);
   views::FocusRing::Install(view);
   views::FocusRing* focus_ring = views::FocusRing::Get(view);

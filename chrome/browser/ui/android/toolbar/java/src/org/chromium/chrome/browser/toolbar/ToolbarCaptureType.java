@@ -13,8 +13,12 @@ import java.lang.annotation.RetentionPolicy;
  * Simple enum for the types of toolbar bitmap captures. Treat this list as append only and keep it
  * in sync with ToolbarCaptureType in enums.xml.
  **/
-@IntDef({ToolbarCaptureType.UNKNOWN, ToolbarCaptureType.TOP, ToolbarCaptureType.BOTTOM,
-        ToolbarCaptureType.NUM_ENTRIES})
+@IntDef({
+    ToolbarCaptureType.UNKNOWN,
+    ToolbarCaptureType.TOP,
+    ToolbarCaptureType.BOTTOM,
+    ToolbarCaptureType.NUM_ENTRIES
+})
 @Retention(RetentionPolicy.SOURCE)
 public @interface ToolbarCaptureType {
     int UNKNOWN = 0;

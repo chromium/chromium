@@ -10,6 +10,8 @@
 #include "chrome/browser/user_education/browser_feature_promo_storage_service.h"
 #include "chrome/browser/user_education/user_education_service.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "components/user_education/common/feature_promo_session_manager.h"
+#include "components/user_education/common/feature_promo_session_manager_impl.h"
 #include "content/public/browser/browser_context.h"
 
 UserEducationServiceFactory* UserEducationServiceFactory::GetInstance() {
@@ -39,7 +41,16 @@ UserEducationServiceFactory::~UserEducationServiceFactory() = default;
 std::unique_ptr<KeyedService>
 UserEducationServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return std::make_unique<UserEducationService>(
+  auto result = std::make_unique<UserEducationService>(
       std::make_unique<BrowserFeaturePromoStorageService>(
           Profile::FromBrowserContext(context)));
+  result->feature_promo_session_manager().Init(
+      &result->feature_promo_storage_service(),
+      disable_idle_polling_
+          ? std::make_unique<
+                user_education::FeaturePromoSessionManager::IdleObserver>()
+          : std::make_unique<user_education::PollingIdleObserver>(),
+      std::make_unique<
+          user_education::FeaturePromoSessionManager::IdlePolicy>());
+  return result;
 }

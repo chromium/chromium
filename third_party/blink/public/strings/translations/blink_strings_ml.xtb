@@ -30,6 +30,7 @@
 <translation id="2226276347425096477">ഈ വാചകത്തെ <ph name="MAX_CHARACTERS" /> അല്ലെങ്കില്‍ അതില്‍‌ക്കുറവ് പ്രതീകങ്ങളായി ദയവായി കുറയ്ക്കുക (നിങ്ങള്‍ നിലവില്‍ <ph name="CURRENT_LENGTH" /> പ്രതീകങ്ങള്‍ ഉപയോഗിക്കുകയാണ്).</translation>
 <translation id="2247351761944213033">ആഴ്‌ച <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">ട്രാക്ക് <ph name="NUMBER" /></translation>
+<translation id="2353297238722298836">ക്യാമറയും മൈക്രോഫോണും അനുവദനീയം</translation>
 <translation id="2393030564806080191">ഹെക്‌സാഡെസിമല്‍ വർണ മൂല്യം</translation>
 <translation id="2398813069815436052">ഡയലോഗ് തുറന്നു.</translation>
 <translation id="245932805758469625">വീഡിയോയുടെ അവശേഷിക്കുന്ന സമയം സെക്കൻഡിൽ</translation>
@@ -60,10 +61,12 @@
 <translation id="3822383571486410024">ഈ ടെക്‌സ്റ്റിന്‍റെ ദൈർഘ്യം <ph name="MIN_CHARACTERS" /> അല്ലെങ്കിൽ അതിൽക്കൂടുതൽ പ്രതീകങ്ങൾ നൽകി കൂട്ടുക. (നിങ്ങൾ നിലവിൽ <ph name="CURRENT_LENGTH" /> പ്രതീകങ്ങളാണ് ഉപയോഗിക്കുന്നത്).</translation>
 <translation id="383465348367842624">'<ph name="ATSIGN" />' എന്നതിനുശേഷം വരുന്ന ഒരു ഭാഗത്തിൽ '<ph name="INVALIDCHARACTER" />' ചിഹ്നം ഉണ്ടാകരുത്.</translation>
 <translation id="3846214748874656680">പൂർണ്ണ സ്‌ക്രീനിൽ നിന്ന് പുറത്തുകടക്കുക</translation>
+<translation id="4031179711345676612">മൈക്രോഫോൺ അനുവദനീയം</translation>
 <translation id="4103419683916926126">മില്ലിസെക്കൻഡ്</translation>
 <translation id="4201051445878709314">മുമ്പത്തെ മാസം കാണിക്കുക</translation>
 <translation id="4360991593054037559">സാധുവായ മൂല്യം നൽകുക. സാധുവായ ഏറ്റവുമടുത്ത രണ്ട് മൂല്യങ്ങൾ <ph name="VALID_VALUE_LOW" />, <ph name="VALID_VALUE_HIGHER" /> എന്നിവയാണ്.</translation>
 <translation id="4522570452068850558">വിശദാംശങ്ങൾ‌</translation>
+<translation id="4663373278480897665">ക്യാമറ അനുവദനീയം</translation>
 <translation id="4664250907885839816">'<ph name="ATSIGN" />' എന്നതിനുശേഷം വരുന്ന ഭാഗത്തിൽ '<ph name="INVALIDCHARACTER" />' ചിഹ്നം ഉണ്ടാകരുത്.</translation>
 <translation id="4718048029184481307">ചിത്രത്തിനുള്ളിൽ ചിത്രത്തിൽ പ്ലേ ചെയ്യുന്നു</translation>
 <translation id="4748357248530471599">ഡിസ്‌പ്ലേ കട്ടൗട്ട് പൂർണ്ണ സ്ക്രീൻ മാറ്റുക</translation>
@@ -137,6 +140,7 @@
 <translation id="6941933287844615239">മീഡിയ ഡൗൺലോഡ് ചെയ്യുക</translation>
 <translation id="698788488269350478">വികസിപ്പിച്ചു.</translation>
 <translation id="6989848892321993519">ഈ ടെക്‌സ്റ്റിന്‍റെ ദൈർഘ്യം <ph name="MIN_CHARACTERS" /> പ്രതീകങ്ങളോ അതിൽ കൂടുതലോ ആയി വർദ്ധിപ്പിക്കുക (നിങ്ങൾ നിലവിൽ ഒരു പ്രതീകം മാത്രമേ ഉപയോഗിക്കുന്നുള്ളൂ).</translation>
+<translation id="7080893216867146095">ലൊക്കേഷൻ പങ്കിടൽ അനുവദനീയമാണ്</translation>
 <translation id="709897737746224366">അഭ്യര്‍ത്ഥി ച്ചഫോര്‍മാറ്റ് ദയവായി പൊരുത്തപ്പെടുത്തുക.</translation>
 <translation id="7102274145889307184">നിലവിലെ ലൊക്കേഷൻ</translation>
 <translation id="7263440858009898357">പട്ടികയിലെ ഒരു ഇനം ദയവായി തിരഞ്ഞെടുക്കുക</translation>

@@ -22,7 +22,7 @@
 #include "base/types/strong_alias.h"
 #include "build/build_config.h"
 #include "components/password_manager/core/browser/leak_detection/bulk_leak_check.h"
-#include "components/password_manager/core/browser/password_store_interface.h"
+#include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/browser/ui/credential_utils.h"
 #include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #include "url/gurl.h"

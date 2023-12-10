@@ -297,7 +297,7 @@ TEST(ThreadCheckerTest, MoveFromDetachedRebinds) {
 }
 
 TEST(ThreadCheckerTest, MoveOffThreadBanned) {
-  testing::GTEST_FLAG(death_test_style) = "threadsafe";
+  GTEST_FLAG_SET(death_test_style, "threadsafe");
 
   ThreadCheckerImpl other_thread;
   other_thread.DetachFromThread();
@@ -341,7 +341,7 @@ class ThreadCheckerMacroTest : public testing::Test {
 }  // namespace
 
 TEST_F(ThreadCheckerMacroTest, Macros) {
-  testing::GTEST_FLAG(death_test_style) = "threadsafe";
+  GTEST_FLAG_SET(death_test_style, "threadsafe");
 
   THREAD_CHECKER(my_thread_checker);
 

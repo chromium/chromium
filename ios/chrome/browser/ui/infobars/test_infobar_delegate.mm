@@ -6,7 +6,7 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "components/infobars/core/infobar.h"
-#import "ios/chrome/browser/infobars/infobar_utils.h"
+#import "ios/chrome/browser/infobars/model/infobar_utils.h"
 
 TestInfoBarDelegate::TestInfoBarDelegate(NSString* infobar_message)
     : infobar_message_(infobar_message) {}

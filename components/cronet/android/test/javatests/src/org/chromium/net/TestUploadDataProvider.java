@@ -13,17 +13,23 @@ import java.util.ArrayList;
 import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-/**
- * An UploadDataProvider implementation used in tests.
- */
+/** An UploadDataProvider implementation used in tests. */
 public class TestUploadDataProvider extends UploadDataProvider {
     // Indicates whether all success callbacks are synchronous or asynchronous.
     // Doesn't apply to errors.
-    public enum SuccessCallbackMode { SYNC, ASYNC }
+    public enum SuccessCallbackMode {
+        SYNC,
+        ASYNC
+    }
 
     // Indicates whether failures should throw exceptions, invoke callbacks
     // synchronously, or invoke callback asynchronously.
-    public enum FailMode { NONE, THROWN, CALLBACK_SYNC, CALLBACK_ASYNC }
+    public enum FailMode {
+        NONE,
+        THROWN,
+        CALLBACK_SYNC,
+        CALLBACK_ASYNC
+    }
 
     private ArrayList<byte[]> mReads = new ArrayList<byte[]>();
     private final SuccessCallbackMode mSuccessCallbackMode;
@@ -94,9 +100,7 @@ public class TestUploadDataProvider extends UploadDataProvider {
         return mNumRewindCalls;
     }
 
-    /**
-     * Returns the cumulative length of all data added by calls to addRead.
-     */
+    /** Returns the cumulative length of all data added by calls to addRead. */
     @Override
     public long getLength() throws IOException {
         if (mClosed.get()) {
@@ -120,8 +124,8 @@ public class TestUploadDataProvider extends UploadDataProvider {
     }
 
     @Override
-    public void read(final UploadDataSink uploadDataSink,
-            final ByteBuffer byteBuffer) throws IOException {
+    public void read(final UploadDataSink uploadDataSink, final ByteBuffer byteBuffer)
+            throws IOException {
         int currentReadCall = mNumReadCalls;
         ++mNumReadCalls;
         if (mClosed.get()) {
@@ -139,25 +143,23 @@ public class TestUploadDataProvider extends UploadDataProvider {
 
         final boolean finalChunk = (mChunked && mNextRead == mReads.size() - 1);
         if (mNextRead < mReads.size()) {
-            if ((byteBuffer.limit() - byteBuffer.position())
-                    < mReads.get(mNextRead).length) {
-                throw new IllegalStateException(
-                        "Read buffer smaller than expected.");
+            if ((byteBuffer.limit() - byteBuffer.position()) < mReads.get(mNextRead).length) {
+                throw new IllegalStateException("Read buffer smaller than expected.");
             }
             byteBuffer.put(mReads.get(mNextRead));
             ++mNextRead;
         } else {
-            throw new IllegalStateException(
-                    "Too many reads: " + mNextRead);
+            throw new IllegalStateException("Too many reads: " + mNextRead);
         }
 
-        Runnable completeRunnable = new Runnable() {
-            @Override
-            public void run() {
-                mReadPending = false;
-                uploadDataSink.onReadSucceeded(finalChunk);
-            }
-        };
+        Runnable completeRunnable =
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        mReadPending = false;
+                        uploadDataSink.onReadSucceeded(finalChunk);
+                    }
+                };
         if (mSuccessCallbackMode == SuccessCallbackMode.SYNC) {
             completeRunnable.run();
         } else {
@@ -180,20 +182,20 @@ public class TestUploadDataProvider extends UploadDataProvider {
 
         if (mNextRead == 0) {
             // Should never try and rewind when rewinding does nothing.
-            throw new IllegalStateException(
-                    "Unexpected rewind when already at beginning");
+            throw new IllegalStateException("Unexpected rewind when already at beginning");
         }
 
         mRewindPending = true;
         mNextRead = 0;
 
-        Runnable completeRunnable = new Runnable() {
-            @Override
-            public void run() {
-                mRewindPending = false;
-                uploadDataSink.onRewindSucceeded();
-            }
-        };
+        Runnable completeRunnable =
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        mRewindPending = false;
+                        uploadDataSink.onRewindSucceeded();
+                    }
+                };
         if (mSuccessCallbackMode == SuccessCallbackMode.SYNC) {
             completeRunnable.run();
         } else {
@@ -206,34 +208,31 @@ public class TestUploadDataProvider extends UploadDataProvider {
             throw new IllegalStateException("Unexpected operation during read");
         }
         if (mRewindPending) {
-            throw new IllegalStateException(
-                    "Unexpected operation during rewind");
+            throw new IllegalStateException("Unexpected operation during rewind");
         }
         if (mFailed) {
-            throw new IllegalStateException(
-                    "Unexpected operation after failure");
+            throw new IllegalStateException("Unexpected operation after failure");
         }
     }
 
-    private boolean maybeFailRead(int readIndex,
-            final UploadDataSink uploadDataSink) {
+    private boolean maybeFailRead(int readIndex, final UploadDataSink uploadDataSink) {
         if (readIndex != mReadFailIndex) return false;
 
         switch (mReadFailMode) {
             case THROWN:
                 throw new IllegalStateException("Thrown read failure");
             case CALLBACK_SYNC:
-                uploadDataSink.onReadError(
-                        new IllegalStateException("Sync read failure"));
+                uploadDataSink.onReadError(new IllegalStateException("Sync read failure"));
                 return true;
             case CALLBACK_ASYNC:
-                Runnable errorRunnable = new Runnable() {
-                    @Override
-                    public void run() {
-                        uploadDataSink.onReadError(
-                                new IllegalStateException("Async read failure"));
-                    }
-                };
+                Runnable errorRunnable =
+                        new Runnable() {
+                            @Override
+                            public void run() {
+                                uploadDataSink.onReadError(
+                                        new IllegalStateException("Async read failure"));
+                            }
+                        };
                 mExecutor.execute(errorRunnable);
                 return true;
             default:
@@ -246,17 +245,17 @@ public class TestUploadDataProvider extends UploadDataProvider {
             case THROWN:
                 throw new IllegalStateException("Thrown rewind failure");
             case CALLBACK_SYNC:
-                uploadDataSink.onRewindError(
-                        new IllegalStateException("Sync rewind failure"));
+                uploadDataSink.onRewindError(new IllegalStateException("Sync rewind failure"));
                 return true;
             case CALLBACK_ASYNC:
-                Runnable errorRunnable = new Runnable() {
-                    @Override
-                    public void run() {
-                        uploadDataSink.onRewindError(new IllegalStateException(
-                                "Async rewind failure"));
-                    }
-                };
+                Runnable errorRunnable =
+                        new Runnable() {
+                            @Override
+                            public void run() {
+                                uploadDataSink.onRewindError(
+                                        new IllegalStateException("Async rewind failure"));
+                            }
+                        };
                 mExecutor.execute(errorRunnable);
                 return true;
             default:

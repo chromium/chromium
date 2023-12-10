@@ -22,6 +22,8 @@ namespace blink {
 
 class DOMSchedulerTest : public PageTestBase {
  public:
+  DOMSchedulerTest()
+      : PageTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
   void SetUp() override {
     EnablePlatform();
     PageTestBase::SetUp();
@@ -149,14 +151,5 @@ class DOMSchedulerTestWithCompositionDisabled : public DOMSchedulerTest {
  private:
   ScopedAbortSignalCompositionForTest scoped_signal_composition_;
 };
-
-TEST_F(DOMSchedulerTestWithCompositionDisabled, FixedPriorirtySignal) {
-  // Regression test for crbug.com/1431940.
-  V8TestingScope scope;
-  auto* signal = GetScheduler()->GetFixedPriorityTaskSignal(
-      scope.GetScriptState(), WebSchedulingPriority::kUserVisiblePriority);
-  // This should not crash.
-  signal->HasPendingActivity();
-}
 
 }  // namespace blink

@@ -46,9 +46,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
-/**
- * Integration tests for text input for Android L (or above) features.
- */
+/** Integration tests for text input for Android L (or above) features. */
 class ImeActivityTestRule extends ContentShellActivityTestRule {
     private ChromiumBaseInputConnection mConnection;
     private TestInputConnectionFactory mConnectionFactory;
@@ -72,39 +70,41 @@ class ImeActivityTestRule extends ContentShellActivityTestRule {
         final ImeAdapter imeAdapter = getImeAdapter();
         InputConnectionProvider provider =
                 TestInputMethodManagerWrapper.defaultInputConnectionProvider(imeAdapter);
-        mInputMethodManagerWrapper = new TestInputMethodManagerWrapper(provider) {
-            private boolean mExpectsSelectionOutsideComposition;
+        mInputMethodManagerWrapper =
+                new TestInputMethodManagerWrapper(provider) {
+                    private boolean mExpectsSelectionOutsideComposition;
 
-            @Override
-            public void expectsSelectionOutsideComposition() {
-                mExpectsSelectionOutsideComposition = true;
-            }
-
-            @Override
-            public void onUpdateSelection(
-                    Range oldSel, Range oldComp, Range newSel, Range newComp) {
-                // We expect that selection will be outside composition in some cases. Keyboard
-                // app will not finish composition in this case.
-                if (mExpectsSelectionOutsideComposition) {
-                    mExpectsSelectionOutsideComposition = false;
-                    return;
-                }
-                if (oldComp == null || oldComp.start() == oldComp.end()
-                        || newComp.start() == newComp.end()) {
-                    return;
-                }
-                // This emulates keyboard app's behavior that finishes composition when
-                // selection is outside composition.
-                if (!newSel.intersects(newComp)) {
-                    try {
-                        finishComposingText();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        Assert.fail();
+                    @Override
+                    public void expectsSelectionOutsideComposition() {
+                        mExpectsSelectionOutsideComposition = true;
                     }
-                }
-            }
-        };
+
+                    @Override
+                    public void onUpdateSelection(
+                            Range oldSel, Range oldComp, Range newSel, Range newComp) {
+                        // We expect that selection will be outside composition in some cases.
+                        // Keyboard app will not finish composition in this case.
+                        if (mExpectsSelectionOutsideComposition) {
+                            mExpectsSelectionOutsideComposition = false;
+                            return;
+                        }
+                        if (oldComp == null
+                                || oldComp.start() == oldComp.end()
+                                || newComp.start() == newComp.end()) {
+                            return;
+                        }
+                        // This emulates keyboard app's behavior that finishes composition when
+                        // selection is outside composition.
+                        if (!newSel.intersects(newComp)) {
+                            try {
+                                finishComposingText();
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                                Assert.fail();
+                            }
+                        }
+                    }
+                };
         getImeAdapter().setInputMethodManagerWrapper(mInputMethodManagerWrapper);
         Assert.assertEquals(0, mInputMethodManagerWrapper.getShowSoftInputCounter());
         mConnectionFactory =
@@ -153,7 +153,9 @@ class ImeActivityTestRule extends ContentShellActivityTestRule {
         CallbackHelper done = mCallbackContainer.getOnFirstVisuallyNonEmptyPaintHelper();
         int currentCallCount = done.getCallCount();
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { getActivity().getActiveShell().loadUrl(url); });
+                () -> {
+                    getActivity().getActiveShell().loadUrl(url);
+                });
         waitForActiveShellToBeDoneLoading();
         done.waitForCallback(currentCallCount);
     }
@@ -166,32 +168,37 @@ class ImeActivityTestRule extends ContentShellActivityTestRule {
     void waitForEventLogs(String expectedLogs) throws Exception {
         final String code = "getEventLogs()";
         final String sanitizedExpectedLogs = "\"" + expectedLogs + "\"";
-        Assert.assertEquals(sanitizedExpectedLogs,
+        Assert.assertEquals(
+                sanitizedExpectedLogs,
                 JavaScriptUtils.executeJavaScriptAndWaitForResult(getWebContents(), code));
     }
 
     void waitForEventLogState(String expectedLogs) {
         final String code = "getEventLogs()";
         final String sanitizedExpectedLogs = "\"" + expectedLogs + "\"";
-        CriteriaHelper.pollInstrumentationThread(() -> {
-            try {
-                Criteria.checkThat(
-                        JavaScriptUtils.executeJavaScriptAndWaitForResult(getWebContents(), code),
-                        Matchers.is(sanitizedExpectedLogs));
-            } catch (TimeoutException ex) {
-                throw new CriteriaNotSatisfiedException(ex);
-            }
-        });
+        CriteriaHelper.pollInstrumentationThread(
+                () -> {
+                    try {
+                        Criteria.checkThat(
+                                JavaScriptUtils.executeJavaScriptAndWaitForResult(
+                                        getWebContents(), code),
+                                Matchers.is(sanitizedExpectedLogs));
+                    } catch (TimeoutException ex) {
+                        throw new CriteriaNotSatisfiedException(ex);
+                    }
+                });
     }
 
     void waitForFocusedElement(String id) {
-        CriteriaHelper.pollInstrumentationThread(() -> {
-            try {
-                Criteria.checkThat(DOMUtils.getFocusedNode(getWebContents()), Matchers.is(id));
-            } catch (TimeoutException ex) {
-                throw new CriteriaNotSatisfiedException(ex);
-            }
-        });
+        CriteriaHelper.pollInstrumentationThread(
+                () -> {
+                    try {
+                        Criteria.checkThat(
+                                DOMUtils.getFocusedNode(getWebContents()), Matchers.is(id));
+                    } catch (TimeoutException ex) {
+                        throw new CriteriaNotSatisfiedException(ex);
+                    }
+                });
     }
 
     void assertTextsAroundCursor(CharSequence before, CharSequence selected, CharSequence after)
@@ -204,27 +211,40 @@ class ImeActivityTestRule extends ContentShellActivityTestRule {
     void waitForKeyboardStates(int show, int hide, int restart, Integer[] textInputTypeHistory) {
         final String expected =
                 stringifyKeyboardStates(show, hide, restart, textInputTypeHistory, null, null);
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat(getKeyboardStates(false, false), Matchers.is(expected));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(getKeyboardStates(false, false), Matchers.is(expected));
+                });
     }
 
-    void waitForKeyboardStates(int show, int hide, int restart, Integer[] textInputTypeHistory,
+    void waitForKeyboardStates(
+            int show,
+            int hide,
+            int restart,
+            Integer[] textInputTypeHistory,
             Integer[] textInputModeHistory) {
-        final String expected = stringifyKeyboardStates(
-                show, hide, restart, textInputTypeHistory, textInputModeHistory, null);
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat(getKeyboardStates(true, false), Matchers.is(expected));
-        });
+        final String expected =
+                stringifyKeyboardStates(
+                        show, hide, restart, textInputTypeHistory, textInputModeHistory, null);
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(getKeyboardStates(true, false), Matchers.is(expected));
+                });
     }
 
-    void waitForKeyboardInputActionStates(int show, int hide, int restart,
-            Integer[] textInputTypeHistory, Integer[] textInputActionHistory) {
-        final String expected = stringifyKeyboardStates(
-                show, hide, restart, textInputTypeHistory, null, textInputActionHistory);
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat(getKeyboardStates(false, true), Matchers.is(expected));
-        });
+    void waitForKeyboardInputActionStates(
+            int show,
+            int hide,
+            int restart,
+            Integer[] textInputTypeHistory,
+            Integer[] textInputActionHistory) {
+        final String expected =
+                stringifyKeyboardStates(
+                        show, hide, restart, textInputTypeHistory, null, textInputActionHistory);
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(getKeyboardStates(false, true), Matchers.is(expected));
+                });
     }
 
     void resetAllStates() {
@@ -243,16 +263,34 @@ class ImeActivityTestRule extends ContentShellActivityTestRule {
         if (includeInputAction) {
             textInputActionHistory = mConnectionFactory.getTextInputActionHistory();
         }
-        return stringifyKeyboardStates(showCount, hideCount, restartCount, textInputTypeHistory,
-                textInputModeHistory, textInputActionHistory);
+        return stringifyKeyboardStates(
+                showCount,
+                hideCount,
+                restartCount,
+                textInputTypeHistory,
+                textInputModeHistory,
+                textInputActionHistory);
     }
 
-    String stringifyKeyboardStates(int show, int hide, int restart, Integer[] inputTypeHistory,
-            Integer[] inputModeHistory, Integer[] inputActionHistory) {
-        return "show count: " + show + ", hide count: " + hide + ", restart count: " + restart
-                + ", input type history: " + Arrays.deepToString(inputTypeHistory)
-                + ", input mode history: " + Arrays.deepToString(inputModeHistory)
-                + ", input action history: " + Arrays.deepToString(inputActionHistory);
+    String stringifyKeyboardStates(
+            int show,
+            int hide,
+            int restart,
+            Integer[] inputTypeHistory,
+            Integer[] inputModeHistory,
+            Integer[] inputActionHistory) {
+        return "show count: "
+                + show
+                + ", hide count: "
+                + hide
+                + ", restart count: "
+                + restart
+                + ", input type history: "
+                + Arrays.deepToString(inputTypeHistory)
+                + ", input mode history: "
+                + Arrays.deepToString(inputModeHistory)
+                + ", input action history: "
+                + Arrays.deepToString(inputActionHistory);
     }
 
     String[] getLastTextHistory() {
@@ -260,13 +298,15 @@ class ImeActivityTestRule extends ContentShellActivityTestRule {
     }
 
     void waitForEditorAction(final int expectedAction) {
-        CriteriaHelper.pollUiThread(() -> {
-            EditorInfo editorInfo = mConnectionFactory.getOutAttrs();
-            int actualAction = editorInfo.actionId != 0
-                    ? editorInfo.actionId
-                    : editorInfo.imeOptions & EditorInfo.IME_MASK_ACTION;
-            Criteria.checkThat(actualAction, Matchers.is(expectedAction));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    EditorInfo editorInfo = mConnectionFactory.getOutAttrs();
+                    int actualAction =
+                            editorInfo.actionId != 0
+                                    ? editorInfo.actionId
+                                    : editorInfo.imeOptions & EditorInfo.IME_MASK_ACTION;
+                    Criteria.checkThat(actualAction, Matchers.is(expectedAction));
+                });
     }
 
     void performEditorAction(final int action) {
@@ -275,16 +315,18 @@ class ImeActivityTestRule extends ContentShellActivityTestRule {
 
     void performGo(TestCallbackHelperContainer testCallbackHelperContainer) throws Throwable {
         final InputConnection inputConnection = mConnection;
-        final Callable<Void> callable = new Callable<Void>() {
-            @Override
-            public Void call() {
-                inputConnection.performEditorAction(EditorInfo.IME_ACTION_GO);
-                return null;
-            }
-        };
+        final Callable<Void> callable =
+                new Callable<Void>() {
+                    @Override
+                    public Void call() {
+                        inputConnection.performEditorAction(EditorInfo.IME_ACTION_GO);
+                        return null;
+                    }
+                };
 
         handleBlockingCallbackAction(
-                testCallbackHelperContainer.getOnPageFinishedHelper(), new Runnable() {
+                testCallbackHelperContainer.getOnPageFinishedHelper(),
+                new Runnable() {
                     @Override
                     public void run() {
                         try {
@@ -298,20 +340,24 @@ class ImeActivityTestRule extends ContentShellActivityTestRule {
     }
 
     void assertWaitForKeyboardStatus(final boolean show) {
-        CriteriaHelper.pollUiThread(() -> {
-            if (show) {
-                Criteria.checkThat(getInputConnection(), Matchers.notNullValue());
-            }
-            Criteria.checkThat(
-                    mInputMethodManagerWrapper.isShowWithoutHideOutstanding(), Matchers.is(show));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    if (show) {
+                        Criteria.checkThat(getInputConnection(), Matchers.notNullValue());
+                    }
+                    Criteria.checkThat(
+                            mInputMethodManagerWrapper.isShowWithoutHideOutstanding(),
+                            Matchers.is(show));
+                });
     }
 
     void assertWaitForSelectActionBarStatus(final boolean show) {
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat(
-                    mSelectionPopupController.isSelectActionBarShowing(), Matchers.is(show));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            mSelectionPopupController.isSelectActionBarShowing(),
+                            Matchers.is(show));
+                });
     }
 
     void verifyNoUpdateSelection() {
@@ -319,8 +365,12 @@ class ImeActivityTestRule extends ContentShellActivityTestRule {
         Assert.assertEquals(0, states.size());
     }
 
-    void waitAndVerifyUpdateSelection(final int index, final int selectionStart,
-            final int selectionEnd, final int compositionStart, final int compositionEnd) {
+    void waitAndVerifyUpdateSelection(
+            final int index,
+            final int selectionStart,
+            final int selectionEnd,
+            final int compositionStart,
+            final int compositionEnd) {
         final List<Pair<Range, Range>> states = mInputMethodManagerWrapper.getUpdateSelectionList();
         CriteriaHelper.pollUiThread(
                 () -> Criteria.checkThat(states.size(), Matchers.greaterThan(index)));
@@ -337,14 +387,15 @@ class ImeActivityTestRule extends ContentShellActivityTestRule {
     }
 
     void assertClipboardContents(final Activity activity, final String expectedContents) {
-        CriteriaHelper.pollUiThread(() -> {
-            ClipboardManager clipboardManager =
-                    (ClipboardManager) activity.getSystemService(Context.CLIPBOARD_SERVICE);
-            ClipData clip = clipboardManager.getPrimaryClip();
-            Criteria.checkThat(clip, Matchers.notNullValue());
-            Criteria.checkThat(clip.getItemCount(), Matchers.is(1));
-            Criteria.checkThat(clip.getItemAt(0).getText(), Matchers.is(expectedContents));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    ClipboardManager clipboardManager =
+                            (ClipboardManager) activity.getSystemService(Context.CLIPBOARD_SERVICE);
+                    ClipData clip = clipboardManager.getPrimaryClip();
+                    Criteria.checkThat(clip, Matchers.notNullValue());
+                    Criteria.checkThat(clip.getItemCount(), Matchers.is(1));
+                    Criteria.checkThat(clip.getItemAt(0).getText(), Matchers.is(expectedContents));
+                });
     }
 
     ChromiumBaseInputConnection getInputConnection() {
@@ -353,8 +404,8 @@ class ImeActivityTestRule extends ContentShellActivityTestRule {
                     new Callable<ChromiumBaseInputConnection>() {
                         @Override
                         public ChromiumBaseInputConnection call() {
-                            return (ChromiumBaseInputConnection) getImeAdapter()
-                                    .getInputConnectionForTest();
+                            return (ChromiumBaseInputConnection)
+                                    getImeAdapter().getInputConnectionForTest();
                         }
                     });
         } catch (ExecutionException e) {
@@ -365,51 +416,74 @@ class ImeActivityTestRule extends ContentShellActivityTestRule {
     }
 
     void restartInput() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> { mImeAdapter.restartInput(); });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mImeAdapter.restartInput();
+                });
     }
 
     // After calling this method, we should call assertClipboardContents() to wait for the clipboard
     // to get updated. See cubug.com/621046
     void copy() {
         final WebContentsImpl webContents = (WebContentsImpl) getWebContents();
-        TestThreadUtils.runOnUiThreadBlocking(() -> { webContents.copy(); });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    webContents.copy();
+                });
     }
 
     void cut() {
         final WebContentsImpl webContents = (WebContentsImpl) getWebContents();
-        TestThreadUtils.runOnUiThreadBlocking(() -> { webContents.cut(); });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    webContents.cut();
+                });
     }
 
     void notifyVirtualKeyboardOverlayRect(int x, int y, int width, int height) {
         final WebContentsImpl webContents = (WebContentsImpl) getWebContents();
-        RenderFrameHostTestExt rfh = TestThreadUtils.runOnUiThreadBlockingNoException(
-                () -> new RenderFrameHostTestExt(webContents.getMainFrame()));
+        RenderFrameHostTestExt rfh =
+                TestThreadUtils.runOnUiThreadBlockingNoException(
+                        () -> new RenderFrameHostTestExt(webContents.getMainFrame()));
         Assert.assertTrue("Did not get a focused frame", rfh != null);
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { rfh.notifyVirtualKeyboardOverlayRect(x, y, width, height); });
+                () -> {
+                    rfh.notifyVirtualKeyboardOverlayRect(x, y, width, height);
+                });
     }
 
     void setClip(final CharSequence text) {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            final ClipboardManager clipboardManager =
-                    (ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
-            clipboardManager.setPrimaryClip(ClipData.newPlainText(null, text));
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    final ClipboardManager clipboardManager =
+                            (ClipboardManager)
+                                    getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
+                    clipboardManager.setPrimaryClip(ClipData.newPlainText(null, text));
+                });
     }
 
     void paste() {
         final WebContentsImpl webContents = (WebContentsImpl) getWebContents();
-        TestThreadUtils.runOnUiThreadBlocking(() -> { webContents.paste(); });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    webContents.paste();
+                });
     }
 
     void selectAll() {
         final WebContentsImpl webContents = (WebContentsImpl) getWebContents();
-        TestThreadUtils.runOnUiThreadBlocking(() -> { webContents.selectAll(); });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    webContents.selectAll();
+                });
     }
 
     void collapseSelection() {
         final WebContentsImpl webContents = (WebContentsImpl) getWebContents();
-        TestThreadUtils.runOnUiThreadBlocking(() -> { webContents.collapseSelection(); });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    webContents.collapseSelection();
+                });
     }
 
     /**
@@ -423,83 +497,91 @@ class ImeActivityTestRule extends ContentShellActivityTestRule {
 
     boolean beginBatchEdit() throws Exception {
         final ChromiumBaseInputConnection connection = mConnection;
-        return runBlockingOnImeThread(new Callable<Boolean>() {
-            @Override
-            public Boolean call() {
-                return connection.beginBatchEdit();
-            }
-        });
+        return runBlockingOnImeThread(
+                new Callable<Boolean>() {
+                    @Override
+                    public Boolean call() {
+                        return connection.beginBatchEdit();
+                    }
+                });
     }
 
     boolean endBatchEdit() throws Exception {
         final ChromiumBaseInputConnection connection = mConnection;
-        return runBlockingOnImeThread(new Callable<Boolean>() {
-            @Override
-            public Boolean call() {
-                return connection.endBatchEdit();
-            }
-        });
+        return runBlockingOnImeThread(
+                new Callable<Boolean>() {
+                    @Override
+                    public Boolean call() {
+                        return connection.endBatchEdit();
+                    }
+                });
     }
 
     boolean commitText(final CharSequence text, final int newCursorPosition) throws Exception {
         final ChromiumBaseInputConnection connection = mConnection;
-        return runBlockingOnImeThread(new Callable<Boolean>() {
-            @Override
-            public Boolean call() {
-                return connection.commitText(text, newCursorPosition);
-            }
-        });
+        return runBlockingOnImeThread(
+                new Callable<Boolean>() {
+                    @Override
+                    public Boolean call() {
+                        return connection.commitText(text, newCursorPosition);
+                    }
+                });
     }
 
     boolean setSelection(final int start, final int end) throws Exception {
         final ChromiumBaseInputConnection connection = mConnection;
-        return runBlockingOnImeThread(new Callable<Boolean>() {
-            @Override
-            public Boolean call() {
-                return connection.setSelection(start, end);
-            }
-        });
+        return runBlockingOnImeThread(
+                new Callable<Boolean>() {
+                    @Override
+                    public Boolean call() {
+                        return connection.setSelection(start, end);
+                    }
+                });
     }
 
     boolean setComposingRegion(final int start, final int end) throws Exception {
         final ChromiumBaseInputConnection connection = mConnection;
-        return runBlockingOnImeThread(new Callable<Boolean>() {
-            @Override
-            public Boolean call() {
-                return connection.setComposingRegion(start, end);
-            }
-        });
+        return runBlockingOnImeThread(
+                new Callable<Boolean>() {
+                    @Override
+                    public Boolean call() {
+                        return connection.setComposingRegion(start, end);
+                    }
+                });
     }
 
     protected boolean setComposingText(final CharSequence text, final int newCursorPosition)
             throws Exception {
         final ChromiumBaseInputConnection connection = mConnection;
-        return runBlockingOnImeThread(new Callable<Boolean>() {
-            @Override
-            public Boolean call() {
-                return connection.setComposingText(text, newCursorPosition);
-            }
-        });
+        return runBlockingOnImeThread(
+                new Callable<Boolean>() {
+                    @Override
+                    public Boolean call() {
+                        return connection.setComposingText(text, newCursorPosition);
+                    }
+                });
     }
 
     boolean finishComposingText() throws Exception {
         final ChromiumBaseInputConnection connection = mConnection;
-        return runBlockingOnImeThread(new Callable<Boolean>() {
-            @Override
-            public Boolean call() {
-                return connection.finishComposingText();
-            }
-        });
+        return runBlockingOnImeThread(
+                new Callable<Boolean>() {
+                    @Override
+                    public Boolean call() {
+                        return connection.finishComposingText();
+                    }
+                });
     }
 
     boolean deleteSurroundingText(final int before, final int after) throws Exception {
         final ChromiumBaseInputConnection connection = mConnection;
-        return runBlockingOnImeThread(new Callable<Boolean>() {
-            @Override
-            public Boolean call() {
-                return connection.deleteSurroundingText(before, after);
-            }
-        });
+        return runBlockingOnImeThread(
+                new Callable<Boolean>() {
+                    @Override
+                    public Boolean call() {
+                        return connection.deleteSurroundingText(before, after);
+                    }
+                });
     }
 
     // Note that deleteSurroundingTextInCodePoints() was introduced in Android N (Api level 24), but
@@ -508,56 +590,64 @@ class ImeActivityTestRule extends ContentShellActivityTestRule {
     @RequiresApi(24)
     boolean deleteSurroundingTextInCodePoints(final int before, final int after) throws Exception {
         final ThreadedInputConnection connection = (ThreadedInputConnection) mConnection;
-        return runBlockingOnImeThread(new Callable<Boolean>() {
-            @Override
-            public Boolean call() {
-                return connection.deleteSurroundingTextInCodePoints(before, after);
-            }
-        });
+        return runBlockingOnImeThread(
+                new Callable<Boolean>() {
+                    @Override
+                    public Boolean call() {
+                        return connection.deleteSurroundingTextInCodePoints(before, after);
+                    }
+                });
     }
 
     CharSequence getTextBeforeCursor(final int length, final int flags) throws Exception {
         final ChromiumBaseInputConnection connection = mConnection;
-        return runBlockingOnImeThread(new Callable<CharSequence>() {
-            @Override
-            public CharSequence call() {
-                return connection.getTextBeforeCursor(length, flags);
-            }
-        });
+        return runBlockingOnImeThread(
+                new Callable<CharSequence>() {
+                    @Override
+                    public CharSequence call() {
+                        return connection.getTextBeforeCursor(length, flags);
+                    }
+                });
     }
 
     CharSequence getSelectedText(final int flags) throws Exception {
         final ChromiumBaseInputConnection connection = mConnection;
-        return runBlockingOnImeThread(new Callable<CharSequence>() {
-            @Override
-            public CharSequence call() {
-                return connection.getSelectedText(flags);
-            }
-        });
+        return runBlockingOnImeThread(
+                new Callable<CharSequence>() {
+                    @Override
+                    public CharSequence call() {
+                        return connection.getSelectedText(flags);
+                    }
+                });
     }
 
     CharSequence getTextAfterCursor(final int length, final int flags) throws Exception {
         final ChromiumBaseInputConnection connection = mConnection;
-        return runBlockingOnImeThread(new Callable<CharSequence>() {
-            @Override
-            public CharSequence call() {
-                return connection.getTextAfterCursor(length, flags);
-            }
-        });
+        return runBlockingOnImeThread(
+                new Callable<CharSequence>() {
+                    @Override
+                    public CharSequence call() {
+                        return connection.getTextAfterCursor(length, flags);
+                    }
+                });
     }
 
     int getCursorCapsMode(final int reqModes) throws Throwable {
         final ChromiumBaseInputConnection connection = mConnection;
-        return runBlockingOnImeThread(new Callable<Integer>() {
-            @Override
-            public Integer call() {
-                return connection.getCursorCapsMode(reqModes);
-            }
-        });
+        return runBlockingOnImeThread(
+                new Callable<Integer>() {
+                    @Override
+                    public Integer call() {
+                        return connection.getCursorCapsMode(reqModes);
+                    }
+                });
     }
 
     void dispatchKeyEvent(final KeyEvent event) {
-        TestThreadUtils.runOnUiThreadBlocking(() -> { mImeAdapter.dispatchKeyEvent(event); });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mImeAdapter.dispatchKeyEvent(event);
+                });
     }
 
     void attachPhysicalKeyboard() {
@@ -580,7 +670,9 @@ class ImeActivityTestRule extends ContentShellActivityTestRule {
 
     private void onConfigurationChanged(final Configuration config) {
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { ViewEventSinkImpl.from(getWebContents()).onConfigurationChanged(config); });
+                () -> {
+                    ViewEventSinkImpl.from(getWebContents()).onConfigurationChanged(config);
+                });
     }
 
     /**
@@ -620,16 +712,33 @@ class ImeActivityTestRule extends ContentShellActivityTestRule {
         }
 
         @Override
-        public ChromiumBaseInputConnection initializeAndGet(View view, ImeAdapterImpl imeAdapter,
-                int inputType, int inputFlags, int inputMode, int inputAction, int selectionStart,
-                int selectionEnd, String lastText, EditorInfo outAttrs) {
+        public ChromiumBaseInputConnection initializeAndGet(
+                View view,
+                ImeAdapterImpl imeAdapter,
+                int inputType,
+                int inputFlags,
+                int inputMode,
+                int inputAction,
+                int selectionStart,
+                int selectionEnd,
+                String lastText,
+                EditorInfo outAttrs) {
             mTextInputTypeList.add(inputType);
             mTextInputModeList.add(inputMode);
             mTextInputActionList.add(inputAction);
             mTextInputLastTextList.add(lastText);
             mOutAttrs = outAttrs;
-            return mFactory.initializeAndGet(view, imeAdapter, inputType, inputFlags, inputMode,
-                    inputAction, selectionStart, selectionEnd, lastText, outAttrs);
+            return mFactory.initializeAndGet(
+                    view,
+                    imeAdapter,
+                    inputType,
+                    inputFlags,
+                    inputMode,
+                    inputAction,
+                    selectionStart,
+                    selectionEnd,
+                    lastText,
+                    outAttrs);
         }
 
         @Override

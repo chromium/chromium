@@ -7,7 +7,7 @@ if (window.testRunner) {
     testRunner.setPopupBlockingEnabled(false);
 }
 
-function unloadHandler() {
+function pagehideHandler() {
     document.getElementById('result').innerHTML = "PASS";
 }
 
@@ -18,7 +18,7 @@ function loadHandler() {
 function test()
 {
     var w = window.open('http://127.0.0.1:8080/security/resources/has-window-events.html');
-    w.addEventListener('unload', unloadHandler, false);
+    w.addEventListener('pagehide', pagehideHandler, false);
     w.addEventListener('load', loadHandler, false);
 }
 

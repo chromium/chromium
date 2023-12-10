@@ -131,7 +131,7 @@ class IndexedDBTest
             base::MakeRefCounted<storage::MockQuotaManagerProxy>(
                 quota_manager_.get(),
                 base::SequencedTaskRunner::GetCurrentDefault())),
-        context_(base::MakeRefCounted<IndexedDBContextImpl>(
+        context_(std::make_unique<IndexedDBContextImpl>(
             temp_dir_.GetPath(),
             quota_manager_proxy_.get(),
             /*blob_storage_context=*/mojo::NullRemote(),
@@ -243,7 +243,7 @@ class IndexedDBTest
       // Loop through all open buckets, and force close them, and request
       // the deletion of the leveldb state. Once the states are no longer
       // around, delete all of the databases on disk.
-      for (const auto& bucket_id : factory->GetOpenBuckets()) {
+      for (const auto& bucket_id : factory->GetOpenBucketIdsForTesting()) {
         context_->ForceClose(
             bucket_id,
             storage::mojom::ForceCloseReason::FORCE_CLOSE_DELETE_ORIGIN,
@@ -353,7 +353,7 @@ class IndexedDBTest
   scoped_refptr<storage::MockSpecialStoragePolicy> special_storage_policy_;
   scoped_refptr<storage::MockQuotaManager> quota_manager_;
   scoped_refptr<storage::MockQuotaManagerProxy> quota_manager_proxy_;
-  scoped_refptr<IndexedDBContextImpl> context_;
+  std::unique_ptr<IndexedDBContextImpl> context_;
   mojo::Remote<blink::mojom::IDBFactory> factory_remote_;
 };
 
@@ -428,7 +428,7 @@ TEST_P(IndexedDBTest, ClearSessionOnlyDatabases) {
   context()->ForceInitializeFromFilesForTesting(run_loop.QuitClosure());
   run_loop.Run();
 
-  context()->Shutdown();
+  IndexedDBContextImpl::Shutdown(std::move(context_));
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(base::DirectoryExists(normal_path_first_party));
@@ -485,7 +485,7 @@ TEST_P(IndexedDBTest, SetForceKeepSessionState) {
   context()->ForceInitializeFromFilesForTesting(base::DoNothing());
   base::RunLoop().RunUntilIdle();
 
-  context()->Shutdown();
+  IndexedDBContextImpl::Shutdown(std::move(context_));
   base::RunLoop().RunUntilIdle();
 
   // No data was cleared because of SetForceKeepSessionState.
@@ -528,7 +528,10 @@ TEST_P(IndexedDBTestFirstOrThirdParty, ForceCloseOpenDatabasesOnCommitFailure) {
   VerifyForcedClosedCalled(
       base::BindOnce(
           [](IndexedDBFactory* factory, storage::BucketInfo* bucket_info) {
-            factory->HandleBackingStoreFailure(bucket_info->ToBucketLocator());
+            factory->GetBucketContextForTesting(bucket_info->id)
+                ->delegate()
+                .on_fatal_error.Run(
+                    leveldb::Status::NotSupported("operation not supported"));
           },
           context()->GetIDBFactory(), &bucket_info),
       &bucket_info);
@@ -564,7 +567,8 @@ TEST_P(IndexedDBTestFirstOrThirdParty,
       base::BindOnce(&IndexedDBFactory::ContextDestroyed,
                      base::Unretained(context()->GetIDBFactory())),
       &bucket_info);
-  EXPECT_FALSE(context()->GetIDBFactory()->GetBucketContext(bucket_info.id));
+  EXPECT_FALSE(
+      context()->GetIDBFactory()->GetBucketContextForTesting(bucket_info.id));
 }
 
 TEST_P(IndexedDBTestFirstOrThirdParty, DeleteFailsIfDirectoryLocked) {

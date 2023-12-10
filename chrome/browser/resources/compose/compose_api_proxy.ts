@@ -2,15 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CloseReason, ComposeClientPageHandlerRemote, ComposeDialogCallbackRouter, ComposeSessionPageHandlerFactory, ComposeSessionPageHandlerRemote, ComposeState, OpenMetadata, StyleModifiers} from './compose.mojom-webui.js';
+import {CloseReason, ComposeClientPageHandlerRemote, ComposeDialogCallbackRouter, ComposeSessionPageHandlerFactory, ComposeSessionPageHandlerRemote, ComposeState, OpenMetadata, StyleModifiers, UserFeedback} from './compose.mojom-webui.js';
 
 /** @interface */
 export interface ComposeApiProxy {
   acceptComposeResult(): Promise<boolean>;
+  acknowledgeConsentDisclaimer(): void;
+  approveConsent(): void;
   closeUi(reason: CloseReason): void;
-  compose(style: StyleModifiers, input: string): void;
+  compose(input: string, edited: boolean): void;
+  rewrite(style: StyleModifiers): void;
   getRouter(): ComposeDialogCallbackRouter;
   openBugReportingLink(): void;
+  openFeedbackSurveyLink(): void;
+  openComposeSettings(): void;
+  setUserFeedback(reason: UserFeedback): void;
   requestInitialState(): Promise<OpenMetadata>;
   saveWebuiState(state: string): void;
   showUi(): void;
@@ -46,12 +52,24 @@ export class ComposeApiProxyImpl implements ComposeApiProxy {
         res => res.success);
   }
 
+  acknowledgeConsentDisclaimer(): void {
+    this.composeClientPageHandler.acknowledgeConsentDisclaimer();
+  }
+
+  approveConsent(): void {
+    this.composeClientPageHandler.approveConsent();
+  }
+
   closeUi(reason: CloseReason): void {
     this.composeClientPageHandler.closeUI(reason);
   }
 
-  compose(style: StyleModifiers, input: string): void {
-    this.composeSessionPageHandler.compose(style, input);
+  compose(input: string, edited: boolean): void {
+    this.composeSessionPageHandler.compose(input, edited);
+  }
+
+  rewrite(style: StyleModifiers): void {
+    this.composeSessionPageHandler.rewrite(style);
   }
 
   getRouter() {
@@ -60,6 +78,14 @@ export class ComposeApiProxyImpl implements ComposeApiProxy {
 
   openBugReportingLink() {
     this.composeSessionPageHandler.openBugReportingLink();
+  }
+
+  openFeedbackSurveyLink() {
+    this.composeSessionPageHandler.openFeedbackSurveyLink();
+  }
+
+  openComposeSettings() {
+    this.composeSessionPageHandler.openComposeSettings();
   }
 
   requestInitialState(): Promise<OpenMetadata> {
@@ -73,6 +99,10 @@ export class ComposeApiProxyImpl implements ComposeApiProxy {
 
   showUi() {
     this.composeClientPageHandler.showUI();
+  }
+
+  setUserFeedback(reason: UserFeedback) {
+    this.composeSessionPageHandler.setUserFeedback(reason);
   }
 
   undo(): Promise<(ComposeState | null)> {

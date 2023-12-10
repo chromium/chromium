@@ -31,6 +31,7 @@ class POLICY_EXPORT LocalTestPolicyProvider
   void LoadJsonPolicies(const std::string& json_policies_string);
   void ClearPolicies();
   void SetUserAffiliated(bool affiliated);
+  const std::string& GetPolicies() const;
 
   // ConfigurationPolicyProvider implementation
   void RefreshPolicies(PolicyFetchReason reason) override;

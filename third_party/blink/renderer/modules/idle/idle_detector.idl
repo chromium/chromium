@@ -17,8 +17,7 @@ enum ScreenIdleState {
 [
   SecureContext,
   Exposed=(Window,DedicatedWorker),
-  ActiveScriptWrappable,
-  RuntimeEnabled=IdleDetection
+  ActiveScriptWrappable
 ] interface IdleDetector : EventTarget {
   [CallWith=ScriptState] constructor();
   readonly attribute UserIdleState? userState;

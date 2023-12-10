@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "third_party/blink/renderer/modules/mediarecorder/media_recorder_handler.h"
+
 #include <stddef.h>
 
 #include <string>
@@ -25,7 +27,6 @@
 #include "third_party/blink/renderer/core/testing/scoped_mock_overlay_scrollbars.h"
 #include "third_party/blink/renderer/modules/mediarecorder/fake_encoded_video_frame.h"
 #include "third_party/blink/renderer/modules/mediarecorder/media_recorder.h"
-#include "third_party/blink/renderer/modules/mediarecorder/media_recorder_handler.h"
 #include "third_party/blink/renderer/modules/mediarecorder/video_track_recorder.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_track_impl.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_media_stream_registry.h"
@@ -37,6 +38,7 @@
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_track.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component_impl.h"
 #include "third_party/blink/renderer/platform/testing/io_task_runner_testing_platform_support.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
@@ -269,6 +271,7 @@ class MediaRecorderHandlerFixture : public ScopedMockOverlayScrollbars {
   }
 #endif
 
+  test::TaskEnvironment task_environment_;
   ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform_;
   MockMediaStreamRegistry registry_;
   bool has_video_;
@@ -1218,6 +1221,7 @@ class MediaRecorderHandlerPassthroughTest
         std::move(frame), base::TimeTicks::Now());
   }
 
+  test::TaskEnvironment task_environment_;
   ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform_;
   MockMediaStreamRegistry registry_;
   raw_ptr<MockMediaStreamVideoSource, DanglingUntriaged> video_source_ =

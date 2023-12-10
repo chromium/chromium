@@ -67,6 +67,7 @@ class ShellDesktopControllerAuraBrowserTest : public ShellApiTest {
 
   void TearDownOnMainThread() override {
     EXPECT_FALSE(KeepAliveRegistry::GetInstance()->IsKeepingAlive());
+    desktop_controller_ = nullptr;
     ShellApiTest::TearDownOnMainThread();
   }
 
@@ -83,8 +84,7 @@ class ShellDesktopControllerAuraBrowserTest : public ShellApiTest {
   scoped_refptr<const Extension> app_;
 
  private:
-  raw_ptr<ShellDesktopControllerAura, DanglingUntriaged> desktop_controller_ =
-      nullptr;
+  raw_ptr<ShellDesktopControllerAura> desktop_controller_ = nullptr;
 };
 
 // Test that closing the app window stops the DesktopController.

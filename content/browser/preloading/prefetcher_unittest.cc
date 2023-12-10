@@ -124,9 +124,16 @@ class PrefetcherTest : public RenderViewHostTestHarness {
         prefetch_service_.get());
   }
   void TearDown() override {
+    // The PrefetchService we created for the test contains a
+    // PrefetchOriginProber, which holds a raw pointer to the BrowserContext.
+    // When tearing down, it's important to free our PrefetchService
+    // before freeing the BrowserContext, to avoid any chance of a use after
+    // free.
+    PrefetchDocumentManager::SetPrefetchServiceForTesting(nullptr);
+    prefetch_service_.reset();
+
     web_contents_.reset();
     browser_context_.reset();
-    PrefetchDocumentManager::SetPrefetchServiceForTesting(nullptr);
     RenderViewHostTestHarness::TearDown();
   }
 
@@ -151,11 +158,6 @@ class PrefetcherTest : public RenderViewHostTestHarness {
 };
 
 TEST_F(PrefetcherTest, ProcessCandidatesForPrefetch) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      features::kPrefetchUseContentRefactor,
-      {{"proxy_host", "https://testproxyhost.com"}});
-
   MockContentBrowserClient browser_client;
   auto prefetcher = Prefetcher(GetPrimaryMainFrame());
   base::WeakPtr<MockSpeculationHostDelegate> delegate =

@@ -115,8 +115,8 @@ ui::KeyboardDevice KeyboardDeviceFromCapabilities(
       device_info.HasKeyEvent(KEY_ASSISTANT)};
 }
 
-absl::optional<uint32_t> GetEvdevKeyCodeForScanCode(const base::ScopedFD& fd,
-                                                    uint32_t scancode) {
+std::optional<uint32_t> GetEvdevKeyCodeForScanCode(const base::ScopedFD& fd,
+                                                   uint32_t scancode) {
   switch (scancode) {
     case CustomTopRowScanCode::kPreviousTrack:
       return KEY_PREVIOUSSONG;
@@ -158,7 +158,7 @@ absl::optional<uint32_t> GetEvdevKeyCodeForScanCode(const base::ScopedFD& fd,
       return KEY_REFRESH;
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 class FakeDeviceManager {
@@ -187,8 +187,8 @@ class FakeDeviceManager {
       sysfs_properties[kKbdTopRowPropertyName] = layout;
     }
     fake_udev_.AddFakeDevice(fake_keyboard.name, fake_keyboard.sys_path.value(),
-                             /*subsystem=*/"input", /*devnode=*/absl::nullopt,
-                             /*devtype=*/absl::nullopt,
+                             /*subsystem=*/"input", /*devnode=*/std::nullopt,
+                             /*devtype=*/std::nullopt,
                              std::move(sysfs_attributes),
                              std::move(sysfs_properties));
   }

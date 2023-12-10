@@ -137,7 +137,7 @@ void GpuWatchdogTest::SetUp() {
   } else {
     // Check Mac machine model version.
     std::string model_str = base::SysInfo::HardwareModelName();
-    absl::optional<base::SysInfo::HardwareModelNameSplit> split =
+    std::optional<base::SysInfo::HardwareModelNameSplit> split =
         base::SysInfo::SplitHardwareModelNameDoNotUse(model_str);
 
     if (split && split.value().category == "MacBookPro" &&

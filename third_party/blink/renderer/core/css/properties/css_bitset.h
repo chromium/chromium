@@ -7,10 +7,10 @@
 
 #include <algorithm>
 #include <array>
+#include <bit>
 #include <cstring>
 #include <initializer_list>
 
-#include "base/bits.h"
 #include "base/check_op.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
@@ -104,7 +104,7 @@ class CORE_EXPORT CSSBitsetBase {
         }
         chunk_ = chunks_[chunk_index_];
       }
-      index_ = chunk_index_ * 64 + base::bits::CountTrailingZeroBits(chunk_);
+      index_ = chunk_index_ * 64 + std::countr_zero(chunk_);
       chunk_ &= chunk_ - 1;  // Clear the lowest bit.
     }
 

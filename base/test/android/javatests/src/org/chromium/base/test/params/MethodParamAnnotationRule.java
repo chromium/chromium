@@ -21,8 +21,11 @@ import java.util.List;
  */
 public class MethodParamAnnotationRule extends MethodParamRule {
     @Override
-    protected Statement applyParameterAndValues(final Statement base, Object target,
-            Class<? extends ParameterProvider> parameterProvider, List<Object> values) {
+    protected Statement applyParameterAndValues(
+            final Statement base,
+            Object target,
+            Class<? extends ParameterProvider> parameterProvider,
+            List<Object> values) {
         final List<Method> beforeMethods = new ArrayList<>();
         final List<Method> afterMethods = new ArrayList<>();
         for (Method m : target.getClass().getDeclaredMethods()) {

@@ -80,6 +80,7 @@ java -cp third_party/r8/lib/r8.jar com.android.tools.r8.BackportedMethodList --m
 
 How to file bugs against R8:
 * Copy & paste the failing ninja command (starts with proguard.py), and add --dump-inputs.
+  * On siso you may need to find it at the beginning of `out/<Directory>/siso_output`.
   * This also works for dex.py, it produces d8inputs.zip
   * As a shortcut: third_party/r8/dump_inputs.py out/Release/apks/ChromePublic.apk.mapping
 * File bug at go/r8bug

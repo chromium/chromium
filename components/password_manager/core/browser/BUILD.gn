@@ -4,7 +4,6 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
-import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/libprotobuf-mutator/fuzzable_proto_library.gni")
 
 if (is_android) {
@@ -89,9 +88,6 @@ static_library("browser") {
     "password_autofill_manager.h",
     "password_bubble_experiment.cc",
     "password_bubble_experiment.h",
-    "password_change_success_tracker.h",
-    "password_change_success_tracker_impl.cc",
-    "password_change_success_tracker_impl.h",
     "password_check_referrer_android.h",
     "password_counter.cc",
     "password_counter.h",
@@ -150,6 +146,7 @@ static_library("browser") {
     "password_ui_utils.h",
     "possible_username_data.cc",
     "possible_username_data.h",
+    "shared_preferences_delegate.h",
     "store_metrics_reporter.cc",
     "store_metrics_reporter.h",
     "sync_credentials_filter.cc",
@@ -165,11 +162,11 @@ static_library("browser") {
   public_deps = [
     ":metrics_util",
     ":passkey_credential",
-    ":password_store_impl",
     "//base",
     "//components/password_manager/core/browser/affiliation",
     "//components/password_manager/core/browser/features:utils",
     "//components/password_manager/core/browser/leak_detection:leak_detection_interface_headers",
+    "//components/password_manager/core/browser/password_store:password_store_impl",
     "//components/password_manager/core/browser/sync",
 
     # TODO(crbug.com/1479425): Remove and update all tagerts to include browser/ui directly.
@@ -181,59 +178,28 @@ static_library("browser") {
   deps = [
     ":hash_password_manager",
     ":password_hash_data",
-    "//base",
-    "//base:i18n",
     "//build:blink_buildflags",
     "//build:branding_buildflags",
-    "//build:chromeos_buildflags",
     "//components/autofill/core/browser",
-    "//components/autofill/core/browser/proto",
     "//components/autofill/core/common",
-    "//components/autofill/core/common:features",
-    "//components/autofill/core/common/mojom:mojo_types",
     "//components/device_reauth",
     "//components/favicon/core",
-    "//components/keyed_service/core",
-    "//components/os_crypt/sync",
-    "//components/password_manager/core/browser/affiliation:affiliation_proto",
+    "//components/os_crypt/sync:os_crypt",
     "//components/password_manager/core/browser/features:password_features",
     "//components/password_manager/core/browser/form_parsing",
     "//components/password_manager/core/browser/generation",
-    "//components/password_manager/core/browser/import:csv",
     "//components/password_manager/core/browser/leak_detection:leak_detection",
     "//components/password_manager/core/common",
-    "//components/password_manager/core/common:features",
     "//components/pref_registry",
     "//components/prefs",
     "//components/profile_metrics",
     "//components/safe_browsing/core/common",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
-    "//components/security_state/core",
-    "//components/signin/public/base",
-    "//components/signin/public/identity_manager",
     "//components/strings",
-    "//components/strings:components_strings",
-    "//components/sync",
-    "//components/sync_preferences",
-    "//components/undo",
     "//components/url_formatter",
-    "//components/variations/net",
-    "//components/version_info:channel",
-    "//components/webdata/common",
-    "//google_apis",
-    "//net",
     "//services/metrics/public/cpp:metrics_cpp",
     "//services/metrics/public/cpp:ukm_builders",
-    "//services/network/public/cpp",
-    "//sql",
-    "//third_party/abseil-cpp:absl",
-    "//third_party/protobuf:protobuf_lite",
-    "//third_party/re2",
     "//ui/accessibility:accessibility",
-    "//ui/base",
-    "//ui/gfx",
-    "//ui/gfx/range",
-    "//url",
   ]
 
   if (is_android) {
@@ -284,29 +250,6 @@ source_set("password_form") {
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
-source_set("password_store_interface") {
-  sources = [
-    "interactions_stats.cc",
-    "interactions_stats.h",
-    "password_store_backend_error.cc",
-    "password_store_backend_error.h",
-    "password_store_change.cc",
-    "password_store_change.h",
-    "password_store_consumer.cc",
-    "password_store_consumer.h",
-    "password_store_interface.h",
-    "password_store_util.cc",
-    "password_store_util.h",
-  ]
-  deps = [
-    ":password_form",
-    "//base",
-    "//components/keyed_service/core",
-    "//url",
-  ]
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-}
-
 source_set("passkey_credential") {
   sources = [
     "passkey_credential.cc",
@@ -339,86 +282,6 @@ source_set("metrics_util") {
     "//services/metrics/public/cpp:metrics_cpp",
     "//services/metrics/public/cpp:ukm_builders",
   ]
-}
-
-# TODO(crbug.com/1479425): Move to a subfolder.
-source_set("password_store_impl") {
-  sources = [
-    "password_store/get_logins_with_affiliations_request_handler.cc",
-    "password_store/get_logins_with_affiliations_request_handler.h",
-    "password_store/insecure_credentials_table.cc",
-    "password_store/insecure_credentials_table.h",
-    "password_store/login_database.cc",
-    "password_store/login_database.h",
-    "password_store/login_database_async_helper.cc",
-    "password_store/login_database_async_helper.h",
-    "password_store/password_notes_table.cc",
-    "password_store/password_notes_table.h",
-    "password_store/password_store.cc",
-    "password_store/password_store.h",
-    "password_store/password_store_backend.h",
-    "password_store/password_store_backend_metrics_recorder.cc",
-    "password_store/password_store_backend_metrics_recorder.h",
-    "password_store/password_store_built_in_backend.cc",
-    "password_store/password_store_built_in_backend.h",
-    "password_store/psl_matching_helper.cc",
-    "password_store/psl_matching_helper.h",
-    "password_store/smart_bubble_stats_store.h",
-    "password_store/statistics_table.cc",
-    "password_store/statistics_table.h",
-  ]
-  public_deps = [
-    ":password_form",
-    ":password_store_interface",
-  ]
-  deps = [
-    ":metrics_util",
-    ":sql_builder",
-    "//base",
-    "//build:blink_buildflags",
-    "//components/autofill/core/common",
-    "//components/os_crypt/sync:os_crypt",
-    "//components/password_manager/core/browser/affiliation",
-    "//components/password_manager/core/browser/features:password_features",
-    "//components/password_manager/core/browser/sync",
-    "//components/password_manager/core/common",
-    "//components/password_manager/core/common:features",
-    "//components/prefs",
-    "//components/safe_browsing/core/common:safe_browsing_prefs",
-    "//components/sync/base",
-    "//components/sync/base:features",
-    "//components/sync/model",
-    "//components/sync/protocol",
-    "//sql",
-    "//third_party/abseil-cpp:absl",
-    "//third_party/re2",
-    "//url",
-  ]
-  if (is_android) {
-    sources += [
-      "password_store/android_backend_error.cc",
-      "password_store/android_backend_error.h",
-      "password_store/unified_password_manager_proto_utils.cc",
-      "password_store/unified_password_manager_proto_utils.h",
-    ]
-    deps += [ ":unified_password_manager_proto" ]
-  }
-
-  if ((is_posix && !is_apple) || is_fuchsia) {
-    sources += [ "password_store/login_database_posix.cc" ]
-  }
-
-  if (is_mac) {
-    sources += [ "password_store/login_database_mac.cc" ]
-  }
-
-  if (is_ios) {
-    sources += [ "password_store/login_database_ios.cc" ]
-  }
-
-  if (is_win) {
-    sources += [ "password_store/login_database_win.cc" ]
-  }
 }
 
 if (is_android) {
@@ -474,10 +337,6 @@ static_library("test_support") {
   sources = [
     "fake_form_fetcher.cc",
     "fake_form_fetcher.h",
-    "fake_password_store_backend.cc",
-    "fake_password_store_backend.h",
-    "mock_password_change_success_tracker.cc",
-    "mock_password_change_success_tracker.h",
     "mock_password_feature_manager.cc",
     "mock_password_feature_manager.h",
     "mock_password_form_manager_for_ui.cc",
@@ -486,20 +345,10 @@ static_library("test_support") {
     "mock_password_manager_settings_service.h",
     "mock_password_reuse_manager.cc",
     "mock_password_reuse_manager.h",
-    "mock_password_store_consumer.cc",
-    "mock_password_store_consumer.h",
-    "mock_password_store_interface.cc",
-    "mock_password_store_interface.h",
-    "mock_smart_bubble_stats_store.cc",
-    "mock_smart_bubble_stats_store.h",
     "mock_webauthn_credentials_delegate.cc",
     "mock_webauthn_credentials_delegate.h",
     "password_manager_test_utils.cc",
     "password_manager_test_utils.h",
-    "password_store/mock_password_store_backend.cc",
-    "password_store/mock_password_store_backend.h",
-    "password_store/test_password_store.cc",
-    "password_store/test_password_store.h",
     "stub_credentials_filter.cc",
     "stub_credentials_filter.h",
     "stub_form_saver.cc",
@@ -522,6 +371,7 @@ static_library("test_support") {
     "//components/keyed_service/core",
     "//components/password_manager/core/browser/affiliation:test_support",
     "//components/password_manager/core/browser/leak_detection",
+    "//components/password_manager/core/browser/password_store:test_support",
     "//components/safe_browsing:buildflags",
     "//components/signin/public/identity_manager:test_support",
     "//components/sync:test_support",
@@ -567,7 +417,6 @@ source_set("unit_tests") {
     "origin_credential_store_unittest.cc",
     "passkey_credential_unittest.cc",
     "password_autofill_manager_unittest.cc",
-    "password_change_success_tracker_impl_unittest.cc",
     "password_counter_unittest.cc",
     "password_feature_manager_impl_unittest.cc",
     "password_form_filling_unittest.cc",
@@ -586,33 +435,17 @@ source_set("unit_tests") {
     "password_reuse_detector_unittest.cc",
     "password_reuse_manager_impl_unittest.cc",
     "password_save_manager_impl_unittest.cc",
-    "password_store/get_logins_with_affiliations_request_handler_unittest.cc",
-    "password_store/insecure_credentials_table_unittest.cc",
-    "password_store/login_database_unittest.cc",
-    "password_store/password_notes_table_unittest.cc",
-    "password_store/password_store_built_in_backend_unittest.cc",
-    "password_store/password_store_unittest.cc",
-    "password_store/psl_matching_helper_unittest.cc",
-    "password_store_consumer_unittest.cc",
     "password_sync_util_unittest.cc",
     "password_ui_utils_unittest.cc",
     "possible_username_data_unittest.cc",
     "sql_table_builder_unittest.cc",
-    "statistics_table_unittest.cc",
     "store_metrics_reporter_unittest.cc",
     "sync_credentials_filter_unittest.cc",
     "vote_uploads_test_matchers.h",
     "votes_uploader_unittest.cc",
   ]
   if (is_android) {
-    sources += [
-      "password_credential_filler_impl_unittest.cc",
-      "password_store/password_store_backend_metrics_recorder_unittest.cc",
-      "unified_password_manager_proto_utils_unittest.cc",
-    ]
-  }
-  if (is_ios) {
-    sources += [ "login_database_ios_unittest.cc" ]
+    sources += [ "password_credential_filler_impl_unittest.cc" ]
   }
   if (use_blink) {
     sources += [ "http_credentials_cleaner_unittest.cc" ]
@@ -627,65 +460,41 @@ source_set("unit_tests") {
   }
 
   deps = [
-    ":hash_password_manager",
-    ":password_hash_data",
     ":sql_builder",
     ":test_support",
-    "//base/test:test_support",
     "//build:branding_buildflags",
-    "//build:chromeos_buildflags",
     "//components/autofill/core/browser",
     "//components/autofill/core/browser:test_support",
-    "//components/autofill/core/browser/proto",
     "//components/autofill/core/common",
+    "//components/autofill/core/common:test_support",
     "//components/device_reauth",
     "//components/device_reauth:test_support",
     "//components/favicon/core/test:test_support",
-    "//components/os_crypt/sync",
     "//components/os_crypt/sync:test_support",
-    "//components/password_manager/core/browser/affiliation:affiliation_proto",
-    "//components/password_manager/core/browser/affiliation:test_support",
     "//components/password_manager/core/browser/features:password_features",
-    "//components/password_manager/core/browser/features:utils",
-    "//components/password_manager/core/browser/form_parsing:form_parsing",
-    "//components/password_manager/core/browser/form_parsing:unit_tests",
-    "//components/password_manager/core/browser/form_parsing/fuzzer:unit_tests",
+    "//components/password_manager/core/browser/form_parsing",
     "//components/password_manager/core/browser/generation",
-    "//components/password_manager/core/browser/import:csv",
-    "//components/password_manager/core/browser/import:csv_unit_tests",
-    "//components/password_manager/core/browser/leak_detection",
-    "//components/password_manager/core/browser/leak_detection:leak_detection_interface_headers",
+    "//components/password_manager/core/browser/leak_detection:leak_detection",
     "//components/password_manager/core/browser/leak_detection:test_support",
-    "//components/password_manager/core/browser/leak_detection:unit_tests",
     "//components/password_manager/core/common",
-    "//components/password_manager/core/common:features",
     "//components/prefs:test_support",
-    "//components/safe_browsing/core/browser/password_protection:test_support",
     "//components/safe_browsing/core/common",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//components/security_state/core",
     "//components/signin/public/base",
-    "//components/signin/public/identity_manager:test_support",
     "//components/strings",
-    "//components/sync:test_support",
     "//components/sync_preferences:test_support",
     "//components/ukm:test_support",
     "//components/url_formatter",
-    "//components/variations:test_support",
-    "//components/version_info:channel",
-    "//google_apis:google_apis",
     "//net:test_support",
     "//services/metrics/public/cpp:ukm_builders",
     "//services/network:network_service",
     "//services/network:test_support",
-    "//services/network/public/cpp",
     "//sql:test_support",
     "//testing/gmock",
     "//testing/gtest",
-    "//third_party/sqlite",
     "//ui/base",
     "//ui/gfx:test_support",
-    "//url",
   ]
 
   if (!is_android && !is_ios) {
@@ -704,35 +513,6 @@ source_set("unit_tests") {
   }
 
   if (is_android) {
-    deps += [
-      "//components/password_manager/core/browser:unified_password_manager_proto",
-      "//components/webauthn/android",
-    ]
-  }
-}
-
-if (is_android) {
-  import("//build/config/android/rules.gni")
-
-  fuzzable_proto_library("unified_password_manager_proto") {
-    sources = [
-      "protos/list_affiliated_passwords_result.proto",
-      "protos/list_passwords_result.proto",
-      "protos/password_info.proto",
-      "protos/password_with_local_data.proto",
-    ]
-    deps = [ "//components/sync/protocol" ]
-    proto_in_dir = "//"
-  }
-
-  proto_java_library("unified_password_manager_proto_java") {
-    proto_path = "//"
-    sources = [
-      "protos/list_affiliated_passwords_result.proto",
-      "protos/list_passwords_result.proto",
-      "protos/password_info.proto",
-      "protos/password_with_local_data.proto",
-    ]
-    deps = [ "//components/sync/protocol:protocol_java" ]
+    deps += [ "//components/webauthn/android" ]
   }
 }

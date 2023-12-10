@@ -15,6 +15,7 @@
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/browser/webui/url_data_manager_backend.h"
+#include "content/common/features.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/site_isolation_policy.h"
 #include "content/public/browser/storage_partition_config.h"
@@ -77,12 +78,16 @@ GURL SchemeAndHostToSite(const std::string& scheme, const std::string& host) {
 
 // Figure out which origin to use for computing site and process lock URLs for
 // `url`. In most cases, this should just be `url`'s origin. However, there are
-// some exceptions where an alternate origin must be used. Namely, for
-// LoadDataWithBaseURL navigations, this should be the origin of the base URL
-// rather than the data URL. about:blank navigations ought to inherit the
-// initiator's origin. In all these cases, we should use the alternate origin
-// which will be passed through `overridden_origin`, ensuring to use its
-// precursor if the origin is opaque to still compute a meaningful site URL.
+// some exceptions where an alternate origin must be used.
+//   - data: URLs: The tentative origin to commit, stored in `overridden_origin`
+//     should be used. We store the value there because it's an opaque origin
+//     and this lets us use the same nonce throughout the navigation.
+//   - LoadDataWithBaseURL: The origin of the base URL should be used, rather
+//     than the data URL.
+//   - about:blank: The initiator's origin should be inherited.
+// In all these cases, we should use the alternate origin which will be passed
+// through `overridden_origin`, ensuring to use its precursor in the about:blank
+// case if the origin is opaque to still compute a meaningful site URL.
 url::Origin GetPossiblyOverriddenOriginFromUrl(
     const GURL& url,
     absl::optional<url::Origin> overridden_origin) {
@@ -90,7 +95,20 @@ url::Origin GetPossiblyOverriddenOriginFromUrl(
       url.SchemeIs(url::kDataScheme) || url.IsAboutBlank();
   if (overridden_origin.has_value() && scheme_allows_origin_override) {
     auto precursor = overridden_origin->GetTupleOrPrecursorTupleIfOpaque();
-    if (precursor.IsValid()) {
+    if (url.SchemeIs(url::kDataScheme) &&
+        base::FeatureList::IsEnabled(features::kDataUrlsHaveStableNonce)) {
+      // data: URLs have an overridden origin so they can have the same nonce
+      // over the course of a navigation.
+      // This is checked first, since we don't want to use the precursor for
+      // data: URLs. For regular data: URLs, we should use the overridden_origin
+      // value, not the precursor. In the LoadDataWithBaseURL case, the base URL
+      // which is a real, non-opaque origin is used, and should also not use the
+      // precursor. We don't expect LoadDataWithBaseURL to have an opaque origin
+      // with a precursor in any case. If there is no base URL, then it should
+      // be treated as a regular data: URL.
+      return overridden_origin.value();
+    } else if (precursor.IsValid()) {
+      // The precursor should only be used in the about:blank case.
       return url::Origin::CreateFromNormalizedTuple(
           precursor.scheme(), precursor.host(), precursor.port());
     } else {
@@ -802,13 +820,21 @@ GURL SiteInfo::GetSiteForURLInternal(const IsolationContext& isolation_context,
       DCHECK(!origin.scheme().empty());
       site_url = GURL(origin.scheme() + ":");
     } else if (url.has_scheme()) {
-      // In some cases, it is not safe to use just the scheme as a site URL, as
-      // that might allow two URLs created by different sites to share a
-      // process. See https://crbug.com/863623 and https://crbug.com/863069.
-      //
-      // TODO(alexmos,creis): This should eventually be expanded to certain
-      // other schemes, such as file:.
-      if (url.SchemeIsBlob() || url.scheme() == url::kDataScheme) {
+      if (url.SchemeIs(url::kDataScheme) &&
+          base::FeatureList::IsEnabled(features::kDataUrlsHaveOriginAsUrl)) {
+        // We get here for browser-initiated navigations to data URLs.
+        // We use the serialized opaque origin as the body of the data: URL to
+        // avoid storing the entire data: URL multiple times, and to use the
+        // origin's nonce to distinguish between instances of the same URL. This
+        // means each browser-initiated data: URL will get its own process.
+        site_url = GetOriginBasedSiteURLForDataURL(origin);
+      } else if (url.SchemeIsBlob() || url.SchemeIs(url::kDataScheme)) {
+        // In some cases, it is not safe to use just the scheme as a site URL,
+        // as that might allow two URLs created by different sites to share a
+        // process. See https://crbug.com/863623 and https://crbug.com/863069.
+        //
+        // TODO(alexmos,creis): This should eventually be expanded to certain
+        // other schemes, such as file:.
         // We get here for blob URLs of form blob:null/guid.  Use the full URL
         // with the guid in that case, which isolates all blob URLs with unique
         // origins from each other.  We also get here for browser-initiated
@@ -872,6 +898,13 @@ WebExposedIsolationLevel SiteInfo::ComputeWebExposedIsolationLevelForEmptySite(
   return web_exposed_isolation_info.is_isolated()
              ? WebExposedIsolationLevel::kMaybeIsolated
              : WebExposedIsolationLevel::kNotIsolated;
+}
+
+// static
+GURL SiteInfo::GetOriginBasedSiteURLForDataURL(const url::Origin& origin) {
+  CHECK(origin.opaque());
+  return GURL(url::kDataScheme + std::string(":") +
+              origin.GetNonceForSerialization()->ToString());
 }
 
 }  // namespace content

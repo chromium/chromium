@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="de">
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> von deinen Tabs wurden längere Zeit nicht verwendet. Möchtest du sie schließen?</translation>
+<translation id="1155815720264022949">Möchtest du alte Tabs schließen?</translation>
 <translation id="1215127405478249895">Tabs überprüfen</translation>
 <translation id="125153950246128346">Tippen, um einen anderen Tab zu sehen</translation>
 <translation id="1499635324672558517">Alle Inkognitotabs schließen?</translation>
@@ -46,9 +47,11 @@
 <translation id="5073204694187207510">Vollbildraster ausblenden</translation>
 <translation id="5076161749301278626">Möchtest du dir Händlerrezensionen ansehen?</translation>
 <translation id="5082793167783849073">Du kannst Seiten schnell miteinander vergleichen, indem du eine Gruppe erstellst. Berühre und halte einen Link, um den Vorgang zu starten.</translation>
+<translation id="5303274951032363933">{TABS_COUNT,plural, =1{Du hast <ph name="TABS_COUNT_ONE" /> Tab, den du in letzter Zeit nicht verwendet hast}other{Du hast <ph name="TABS_COUNT_MANY" /> Tabs, die du in letzter Zeit nicht verwendet hast}}</translation>
 <translation id="5339733443032484186">Dein letzter Tab</translation>
 <translation id="5490235265819901748">Tabgruppe maximiert</translation>
 <translation id="5494920125229734069">Alle auswählen</translation>
+<translation id="5545379293264651575">Ohne Ansehen schließen</translation>
 <translation id="5556417849629758491">Geschäftsinformationen anzeigen, Option ist oben auf dem Bildschirm verfügbar</translation>
 <translation id="5558362125926932819">Tabgruppe mit <ph name="NUMBER_OF_TABS" /> Tabs schließen</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" /> Tabs gruppiert</translation>
@@ -85,7 +88,6 @@
 <translation id="7885132941432959125">Tab nach rechts verschieben</translation>
 <translation id="7966321538264951561">Vorschläge ablehnen.</translation>
 <translation id="8029301326595421733">Informationen zu diesem Händler sind vollständig geöffnet</translation>
-<translation id="814503310257431685">Alle anzeigen</translation>
 <translation id="8205266828577616993">Tab nach oben verschieben</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ausgewählten Tab schließen}other{<ph name="TABS_COUNT_MANY" /> ausgewählte Tabs schließen}}</translation>
 <translation id="8398929769197326728">Neuer Ordner – <ph name="CURRENT_TIMESTAMP_MS" /></translation>

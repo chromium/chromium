@@ -12,6 +12,7 @@
 #include "ash/system/unified/unified_system_tray_bubble.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/test/ash_test_helper.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/services/hotspot_config/public/cpp/cros_hotspot_config_test_helper.h"
@@ -32,11 +33,7 @@ class HotspotDetailedViewControllerTest : public AshTestBase {
   ~HotspotDetailedViewControllerTest() override = default;
 
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kHotspot, features::kQsRevamp}, {});
-    cros_hotspot_config_test_helper_ =
-        std::make_unique<hotspot_config::CrosHotspotConfigTestHelper>(
-            /*use_fake_implementation=*/true);
+    scoped_feature_list_.InitWithFeatures({features::kHotspot}, {});
     AshTestBase::SetUp();
 
     GetPrimaryUnifiedSystemTray()->ShowBubble();
@@ -55,11 +52,6 @@ class HotspotDetailedViewControllerTest : public AshTestBase {
     base::RunLoop().RunUntilIdle();
   }
 
-  void TearDown() override {
-    AshTestBase::TearDown();
-    cros_hotspot_config_test_helper_.reset();
-  }
-
   void UpdateHotspotInfo(HotspotState state,
                          HotspotAllowStatus allow_status,
                          int client_count = 0,
@@ -69,7 +61,7 @@ class HotspotDetailedViewControllerTest : public AshTestBase {
     hotspot_info->allow_status = allow_status;
     hotspot_info->client_count = client_count;
     hotspot_info->config = std::move(config);
-    cros_hotspot_config_test_helper_->SetFakeHotspotInfo(
+    ash_test_helper()->cros_hotspot_config_test_helper()->SetFakeHotspotInfo(
         std::move(hotspot_info));
     // Spin the runloop to observe the hotspot info change.
     base::RunLoop().RunUntilIdle();
@@ -105,8 +97,6 @@ class HotspotDetailedViewControllerTest : public AshTestBase {
   base::test::ScopedFeatureList scoped_feature_list_;
   raw_ptr<HotspotDetailedViewController, DanglingUntriaged | ExperimentalAsh>
       hotspot_detailed_view_controller_;
-  std::unique_ptr<hotspot_config::CrosHotspotConfigTestHelper>
-      cros_hotspot_config_test_helper_;
 };
 
 TEST_F(HotspotDetailedViewControllerTest, ToggleClicked) {

@@ -21,9 +21,7 @@ import org.chromium.mojo.system.MojoException;
 import org.chromium.shape_detection.mojom.TextDetection;
 import org.chromium.shape_detection.mojom.TextDetectionResult;
 
-/**
- * Implementation of mojo TextDetection, using Google Play Services vision package.
- */
+/** Implementation of mojo TextDetection, using Google Play Services vision package. */
 public class TextDetectionImpl implements TextDetection {
     private static final String TAG = "TextDetectionImpl";
 
@@ -88,7 +86,7 @@ public class TextDetectionImpl implements TextDetection {
 
     public static TextDetection create() {
         if (!ChromiumPlayServicesAvailability.isGooglePlayServicesAvailable(
-                    ContextUtils.getApplicationContext())) {
+                ContextUtils.getApplicationContext())) {
             Log.e(TAG, "Google Play Services not available");
             return null;
         }

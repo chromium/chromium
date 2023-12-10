@@ -53,19 +53,21 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
-/**
- * Contact information editor.
- */
+/** Contact information editor. */
 public class ContactEditor extends EditorBase<AutofillContact> {
     // Bit field values are identical to ProfileFields in payments_profile_comparator.h.
     // Please also modify payments_profile_comparator.h after changing these bits.
     public @interface CompletionStatus {}
+
     /** Can be sent to the merchant as-is without editing first. */
     public static final int COMPLETE = 0;
+
     /** The contact name is missing. */
     public static final int INVALID_NAME = 1 << 0;
+
     /** The contact phone number is invalid or missing. */
     public static final int INVALID_PHONE_NUMBER = 1 << 1;
+
     /** The contact email is invalid or missing. */
     public static final int INVALID_EMAIL = 1 << 2;
 
@@ -77,8 +79,7 @@ public class ContactEditor extends EditorBase<AutofillContact> {
     private final Set<String> mPhoneNumbers;
     private final Set<String> mEmailAddresses;
     @Nullable private PayerErrors mPayerErrors;
-    @Nullable
-    private EditorFieldValidator mEmailValidator;
+    @Nullable private EditorFieldValidator mEmailValidator;
     private boolean mContactNew;
     private AutofillContact mContact;
     private Optional<PropertyModel> mNameField;
@@ -95,8 +96,11 @@ public class ContactEditor extends EditorBase<AutofillContact> {
      * @param requestPayerEmail Whether to request the user's email address.
      * @param saveToDisk        Whether to save changes to disk.
      */
-    public ContactEditor(boolean requestPayerName, boolean requestPayerPhone,
-            boolean requestPayerEmail, boolean saveToDisk) {
+    public ContactEditor(
+            boolean requestPayerName,
+            boolean requestPayerPhone,
+            boolean requestPayerEmail,
+            boolean saveToDisk) {
         assert requestPayerName || requestPayerPhone || requestPayerEmail;
         mRequestPayerName = requestPayerName;
         mRequestPayerPhone = requestPayerPhone;
@@ -201,79 +205,102 @@ public class ContactEditor extends EditorBase<AutofillContact> {
     }
 
     @Override
-    public void edit(@Nullable final AutofillContact toEdit,
+    public void edit(
+            @Nullable final AutofillContact toEdit,
             final Callback<AutofillContact> doneCallback,
             final Callback<AutofillContact> cancelCallback) {
         super.edit(toEdit, doneCallback, cancelCallback);
         mDoneCallback = doneCallback;
         mCancelCallback = cancelCallback;
 
-        mContactNew = toEdit == null;
-        mContact = mContactNew ? new AutofillContact(mContext, AutofillProfile.builder().build(),
-                           null, null, null, INVALID_NAME | INVALID_PHONE_NUMBER | INVALID_EMAIL,
-                           mRequestPayerName, mRequestPayerPhone, mRequestPayerEmail)
-                               : toEdit;
+        boolean contactNew = toEdit == null;
+        mContactNew = contactNew;
+        var context = mContext;
+        AutofillContact contact =
+                contactNew
+                        ? new AutofillContact(
+                                context,
+                                AutofillProfile.builder().build(),
+                                null,
+                                null,
+                                null,
+                                INVALID_NAME | INVALID_PHONE_NUMBER | INVALID_EMAIL,
+                                mRequestPayerName,
+                                mRequestPayerPhone,
+                                mRequestPayerEmail)
+                        : toEdit;
+        mContact = contact;
 
         final String nameCustomErrorMessage = mPayerErrors != null ? mPayerErrors.name : null;
-        mNameField = Optional.ofNullable(mRequestPayerName
-                        ? new PropertyModel.Builder(TEXT_ALL_KEYS)
-                                  .with(TEXT_FIELD_TYPE, ServerFieldType.NAME_FULL)
-                                  .with(LABEL,
-                                          mContext.getString(
-                                                  R.string.payments_name_field_in_contact_details))
-                                  .with(TEXT_SUGGESTIONS, new ArrayList<>(mPayerNames))
-                                  .with(IS_REQUIRED, true)
-                                  .with(VALIDATOR,
-                                          EditorFieldValidator.builder()
-                                                  .withRequiredErrorMessage(mContext.getString(
-                                                          R.string.pref_edit_dialog_field_required_validation_message))
-                                                  .withInitialErrorMessage(nameCustomErrorMessage)
-                                                  .build())
-                                  .with(VALUE, mContact.getPayerName())
-                                  .build()
-                        : null);
+        PropertyModel nameField = null;
+        if (mRequestPayerName) {
+            String label = context.getString(R.string.payments_name_field_in_contact_details);
+            String errorMessage =
+                    context.getString(R.string.pref_edit_dialog_field_required_validation_message);
+            nameField =
+                    new PropertyModel.Builder(TEXT_ALL_KEYS)
+                            .with(TEXT_FIELD_TYPE, ServerFieldType.NAME_FULL)
+                            .with(LABEL, label)
+                            .with(TEXT_SUGGESTIONS, new ArrayList<>(mPayerNames))
+                            .with(IS_REQUIRED, true)
+                            .with(
+                                    VALIDATOR,
+                                    EditorFieldValidator.builder()
+                                            .withRequiredErrorMessage(errorMessage)
+                                            .withInitialErrorMessage(nameCustomErrorMessage)
+                                            .build())
+                            .with(VALUE, contact.getPayerName())
+                            .build();
+        }
+        mNameField = Optional.ofNullable(nameField);
 
-        mPhoneField = Optional.ofNullable(mRequestPayerPhone
-                        ? new PropertyModel.Builder(TEXT_ALL_KEYS)
-                                  .with(TEXT_FIELD_TYPE, ServerFieldType.PHONE_HOME_WHOLE_NUMBER)
-                                  .with(LABEL,
-                                          mContext.getString(
-                                                  R.string.autofill_profile_editor_phone_number))
-                                  .with(TEXT_SUGGESTIONS, new ArrayList<>(mPhoneNumbers))
-                                  .with(TEXT_FORMATTER,
-                                          new PhoneNumberUtil.CountryAwareFormatTextWatcher())
-                                  .with(IS_REQUIRED, true)
-                                  .with(VALIDATOR, getPhoneValidator())
-                                  .with(VALUE, mContact.getPayerPhone())
-                                  .build()
-                        : null);
+        PropertyModel phoneField = null;
+        if (mRequestPayerPhone) {
+            String label = context.getString(R.string.autofill_profile_editor_phone_number);
+            phoneField =
+                    new PropertyModel.Builder(TEXT_ALL_KEYS)
+                            .with(TEXT_FIELD_TYPE, ServerFieldType.PHONE_HOME_WHOLE_NUMBER)
+                            .with(LABEL, label)
+                            .with(TEXT_SUGGESTIONS, new ArrayList<>(mPhoneNumbers))
+                            .with(
+                                    TEXT_FORMATTER,
+                                    new PhoneNumberUtil.CountryAwareFormatTextWatcher())
+                            .with(IS_REQUIRED, true)
+                            .with(VALIDATOR, getPhoneValidator())
+                            .with(VALUE, contact.getPayerPhone())
+                            .build();
+        }
+        mPhoneField = Optional.ofNullable(phoneField);
 
-        mEmailField = Optional.ofNullable(mRequestPayerEmail
-                        ? new PropertyModel.Builder(TEXT_ALL_KEYS)
-                                  .with(TEXT_FIELD_TYPE, ServerFieldType.EMAIL_ADDRESS)
-                                  .with(LABEL,
-                                          mContext.getString(
-                                                  R.string.autofill_profile_editor_email_address))
-                                  .with(TEXT_SUGGESTIONS, new ArrayList<>(mEmailAddresses))
-                                  .with(IS_REQUIRED, true)
-                                  .with(VALIDATOR, getEmailValidator())
-                                  .with(VALUE, mContact.getPayerEmail())
-                                  .build()
-                        : null);
+        PropertyModel emailField = null;
+        if (mRequestPayerEmail) {
+            String label = context.getString(R.string.autofill_profile_editor_email_address);
+            emailField =
+                    new PropertyModel.Builder(TEXT_ALL_KEYS)
+                            .with(TEXT_FIELD_TYPE, ServerFieldType.EMAIL_ADDRESS)
+                            .with(LABEL, label)
+                            .with(TEXT_SUGGESTIONS, new ArrayList<>(mEmailAddresses))
+                            .with(IS_REQUIRED, true)
+                            .with(VALIDATOR, getEmailValidator())
+                            .with(VALUE, contact.getPayerEmail())
+                            .build();
+        }
+        mEmailField = Optional.ofNullable(emailField);
 
-        final String editorTitle = toEdit == null
-                ? mContext.getString(R.string.payments_add_contact_details_label)
-                : toEdit.getEditTitle();
+        final String editorTitle =
+                toEdit == null
+                        ? context.getString(R.string.payments_add_contact_details_label)
+                        : toEdit.getEditTitle();
 
         ListModel<FieldItem> editorFields = new ListModel<>();
         if (mNameField.isPresent()) {
-            editorFields.add(new FieldItem(TEXT_INPUT, mNameField.get(), /*isFullLine=*/true));
+            editorFields.add(new FieldItem(TEXT_INPUT, mNameField.get(), /* isFullLine= */ true));
         }
         if (mPhoneField.isPresent()) {
-            editorFields.add(new FieldItem(TEXT_INPUT, mPhoneField.get(), /*isFullLine=*/true));
+            editorFields.add(new FieldItem(TEXT_INPUT, mPhoneField.get(), /* isFullLine= */ true));
         }
         if (mEmailField.isPresent()) {
-            editorFields.add(new FieldItem(TEXT_INPUT, mEmailField.get(), /*isFullLine=*/true));
+            editorFields.add(new FieldItem(TEXT_INPUT, mEmailField.get(), /* isFullLine= */ true));
         }
 
         mEditorModel =
@@ -285,11 +312,12 @@ public class ContactEditor extends EditorBase<AutofillContact> {
                         .with(CANCEL_RUNNABLE, this::onCancel)
                         .with(ALLOW_DELETE, false)
                         // Form validation must be performed only for non-empty address profiles.
-                        .with(VALIDATE_ON_SHOW, !mContactNew)
+                        .with(VALIDATE_ON_SHOW, !contactNew)
                         .build();
 
-        mEditorMCP = PropertyModelChangeProcessor.create(
-                mEditorModel, mEditorDialog, EditorDialogViewBinder::bindEditorDialogView);
+        mEditorMCP =
+                PropertyModelChangeProcessor.create(
+                        mEditorModel, mEditorDialog, EditorDialogViewBinder::bindEditorDialogView);
         mEditorModel.set(VISIBLE, true);
     }
 
@@ -362,22 +390,28 @@ public class ContactEditor extends EditorBase<AutofillContact> {
     }
 
     private EditorFieldValidator getEmailValidator() {
+        var context = mContext;
         return EditorFieldValidator.builder()
-                .withRequiredErrorMessage(mContext.getString(
-                        R.string.pref_edit_dialog_field_required_validation_message))
+                .withRequiredErrorMessage(
+                        context.getString(
+                                R.string.pref_edit_dialog_field_required_validation_message))
                 .withInitialErrorMessage(mPayerErrors != null ? mPayerErrors.email : null)
-                .withValidationPredicate(ContactEditor::isEmailValid,
-                        mContext.getString(R.string.payments_email_invalid_validation_message))
+                .withValidationPredicate(
+                        ContactEditor::isEmailValid,
+                        context.getString(R.string.payments_email_invalid_validation_message))
                 .build();
     }
 
     private EditorFieldValidator getPhoneValidator() {
+        var context = mContext;
         return EditorFieldValidator.builder()
-                .withRequiredErrorMessage(mContext.getString(
-                        R.string.pref_edit_dialog_field_required_validation_message))
+                .withRequiredErrorMessage(
+                        context.getString(
+                                R.string.pref_edit_dialog_field_required_validation_message))
                 .withInitialErrorMessage(mPayerErrors != null ? mPayerErrors.phone : null)
-                .withValidationPredicate(ContactEditor::isPhoneValid,
-                        mContext.getString(R.string.payments_phone_invalid_validation_message))
+                .withValidationPredicate(
+                        ContactEditor::isPhoneValid,
+                        context.getString(R.string.payments_phone_invalid_validation_message))
                 .build();
     }
 }

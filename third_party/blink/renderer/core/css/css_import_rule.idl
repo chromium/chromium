@@ -29,4 +29,5 @@
     [SameObject] readonly attribute CSSStyleSheet styleSheet;
 
     readonly attribute CSSOMString? layerName;
+    readonly attribute CSSOMString? supportsText;
 };

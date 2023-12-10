@@ -19,7 +19,12 @@ accounts for **newly added or modified lines**. Both these coverage metrics, are
 classified into Unit Tests coverage(coverage from just unit tests) and All Tests coverage(covererd by all tests running in CQ, including unit tests). All Tests coverage is a superset of Unit Tests coverage.
 
 To further dig into specific lines that are not covered by tests, **look at the
-right column of the side by side diff view**. It only shows All Tests Coverage right now
+right column of the side by side diff view, and specifically notice the
+background color of each line number**, where a light orange color indicates
+missing coverage and a light blue color indicates existing coverage. Moreover
+hovering over the line number shows an informative tooltip with
+"Not covered by tests" or "Covered by tests" text respectively. It only shows
+All Tests Coverage right now
 
 ![code_coverage_annotations]
 

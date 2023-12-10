@@ -26,9 +26,7 @@ public class SplitPreloader {
     private final SimpleArrayMap<String, PreloadTask> mPreloadTasks = new SimpleArrayMap<>();
     private final Context mContext;
 
-    /**
-     * Interface to run code after preload completion.
-     */
+    /** Interface to run code after preload completion. */
     public interface OnComplete {
         /**
          * Runs immediately on the background thread as soon as the split context is available.

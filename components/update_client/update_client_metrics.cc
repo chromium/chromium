@@ -49,4 +49,18 @@ void RecordCRXDownloaderFallback() {
   base::UmaHistogramBoolean("UpdateClient.CrxDownloader.Fallback", true);
 }
 
+void RecordUpdateCheckResult(UpdateCheckResult result) {
+  base::UmaHistogramEnumeration("UpdateClient.Component.UpdateCheckResult",
+                                result);
+}
+
+void RecordCanUpdateResult(CanUpdateResult result) {
+  base::UmaHistogramEnumeration("UpdateClient.Component.CanUpdateResult",
+                                result);
+}
+
+void RecordComponentUpdated() {
+  base::UmaHistogramBoolean("UpdateClient.Component.Updated", true);
+}
+
 }  // namespace update_client::metrics

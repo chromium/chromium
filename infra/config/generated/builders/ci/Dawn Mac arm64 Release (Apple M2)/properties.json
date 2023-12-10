@@ -1,6 +1,9 @@
 {
   "$build/chromium_tests_builder_config": {
     "builder_config": {
+      "additional_exclusions": [
+        "infra/config/generated/builders/ci/Dawn Mac arm64 Release (Apple M2)/gn-args.json"
+      ],
       "builder_db": {
         "entries": [
           {
@@ -44,6 +47,10 @@
       "mirroring_builder_group_and_names": [
         {
           "builder": "dawn-try-mac-arm64-rel",
+          "group": "tryserver.chromium.dawn"
+        },
+        {
+          "builder": "mac-arm64-dawn-rel",
           "group": "tryserver.chromium.dawn"
         }
       ]

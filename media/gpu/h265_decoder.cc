@@ -79,6 +79,11 @@ H265Decoder::H265Accelerator::H265Accelerator() = default;
 
 H265Decoder::H265Accelerator::~H265Accelerator() = default;
 
+scoped_refptr<H265Picture>
+H265Decoder::H265Accelerator::CreateH265PictureSecure(uint64_t secure_handle) {
+  return nullptr;
+}
+
 void H265Decoder::H265Accelerator::ProcessVPS(
     const H265VPS* vps,
     base::span<const uint8_t> vps_nalu_data) {}
@@ -156,6 +161,12 @@ void H265Decoder::SetStream(int32_t id, const DecoderBuffer& decoder_buffer) {
     parser_.SetStream(ptr, size);
     current_decrypt_config_ = nullptr;
   }
+  if (decoder_buffer.has_side_data() &&
+      decoder_buffer.side_data()->secure_handle) {
+    secure_handle_ = decoder_buffer.side_data()->secure_handle;
+  } else {
+    secure_handle_ = 0;
+  }
 }
 
 void H265Decoder::Reset() {
@@ -168,6 +179,7 @@ void H265Decoder::Reset() {
   last_slice_hdr_ = nullptr;
   curr_sps_id_ = -1;
   curr_pps_id_ = -1;
+  aux_alpha_layer_id_ = 0;
 
   prev_tid0_pic_ = nullptr;
   ref_pic_list_.clear();
@@ -180,6 +192,8 @@ void H265Decoder::Reset() {
   dpb_.Clear();
   parser_.Reset();
   accelerator_->Reset();
+
+  secure_handle_ = 0;
 
   state_ = kAfterReset;
 }
@@ -234,12 +248,11 @@ H265Decoder::DecodeResult H265Decoder::Decode() {
       DVLOG(4) << "New NALU: " << static_cast<int>(curr_nalu_->nal_unit_type);
     }
 
-    // 8.1.2 We only handle nuh_layer_id of zero.
-    // As a workaround for accelerators that support alpha layers, the data is
-    // simply passed through.
-    // TODO(crbug.com/1331597): Only pass through vps->aux_alpha_layer_id.
     if (curr_nalu_->nuh_layer_id) {
-      if (accelerator_->IsAlphaLayerSupported()) {
+      // For accelerators that support alpha layers, the data is
+      // simply passed through.
+      if (aux_alpha_layer_id_ == curr_nalu_->nuh_layer_id &&
+          accelerator_->IsAlphaLayerSupported()) {
         switch (curr_nalu_->nal_unit_type) {
           case H265NALU::BLA_W_LP:
           case H265NALU::BLA_W_RADL:
@@ -314,6 +327,7 @@ H265Decoder::DecodeResult H265Decoder::Decode() {
             break;
         }
       } else {
+        // 8.1.2 Otherwise only handle nuh_layer_id of zero.
         DVLOG(4) << "Skipping NALU with nuh_layer_id="
                  << curr_nalu_->nuh_layer_id;
       }
@@ -385,7 +399,11 @@ H265Decoder::DecodeResult H265Decoder::Decode() {
           } else {
             // New picture, try to start a new one or tell client we need more
             // surfaces.
-            curr_pic_ = accelerator_->CreateH265Picture();
+            if (secure_handle_) {
+              curr_pic_ = accelerator_->CreateH265PictureSecure(secure_handle_);
+            } else {
+              curr_pic_ = accelerator_->CreateH265Picture();
+            }
             if (!curr_pic_)
               return kRanOutOfSurfaces;
             if (current_decrypt_config_)
@@ -417,6 +435,10 @@ H265Decoder::DecodeResult H265Decoder::Decode() {
         if (par_res != H265Parser::kOk) {
           SET_ERROR_AND_RETURN();
         }
+        // TODO(crbug.com/1495665): Technically, we should cache a map of vps_id
+        // to aux_alpha_layer_id, and look up the aux_alpha_layer_id for each
+        // NALU.
+        aux_alpha_layer_id_ = parser_.GetVPS(vps_id)->aux_alpha_layer_id;
         accelerator_->ProcessVPS(
             parser_.GetVPS(vps_id),
             base::span<const uint8_t>(
@@ -676,6 +698,7 @@ H265Decoder::H265Accelerator::Status H265Decoder::ProcessCurrentSlice() {
 
   const H265PPS* pps = parser_.GetPPS(curr_pps_id_);
   DCHECK(pps);
+
   return accelerator_->SubmitSlice(
       sps, pps, slice_hdr, ref_pic_list0_, ref_pic_list1_, ref_pic_set_lt_curr_,
       ref_pic_set_st_curr_after_, ref_pic_set_st_curr_before_, curr_pic_.get(),
@@ -1247,6 +1270,8 @@ bool H265Decoder::FinishPicture(scoped_refptr<H265Picture> pic,
   ref_pic_set_lt_curr_.clear();
   ref_pic_set_st_curr_after_.clear();
   ref_pic_set_st_curr_before_.clear();
+
+  secure_handle_ = 0;
 
   return true;
 }

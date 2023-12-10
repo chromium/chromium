@@ -125,7 +125,7 @@ class Receiver {
   }
   bool HasResultOrError() const { return result_.has_value(); }
 
-  void Receive(ProtoFetcherStatus fetch_status,
+  void Receive(const ProtoFetcherStatus& fetch_status,
                std::unique_ptr<Response> response) {
     if (!fetch_status.IsOk()) {
       result_ = base::unexpected(fetch_status);
@@ -689,7 +689,8 @@ INSTANTIATE_TEST_SUITE_P(All,
 class FetchManagerTest : public testing::Test {
  public:
   MOCK_METHOD2(Done,
-               void(ProtoFetcherStatus, std::unique_ptr<ClassifyUrlResponse>));
+               void(const ProtoFetcherStatus&,
+                    std::unique_ptr<ClassifyUrlResponse>));
 
  protected:
   void SetUp() override {
@@ -787,7 +788,7 @@ TEST_F(FetchManagerTest, CancelsRequestsUponDestruction) {
 
 class DeferredFetcherTest : public ::testing::Test {
  protected:
-  using CallbackType = void(ProtoFetcherStatus,
+  using CallbackType = void(const ProtoFetcherStatus&,
                             std::unique_ptr<CreatePermissionRequestResponse>);
 
  public:
@@ -807,7 +808,7 @@ class DeferredFetcherTest : public ::testing::Test {
       std::unique_ptr<DeferredProtoFetcher<CreatePermissionRequestResponse>>
           fetcher,
       base::OnceCallback<CallbackType> callback,
-      ProtoFetcherStatus status,
+      const ProtoFetcherStatus& status,
       std::unique_ptr<CreatePermissionRequestResponse> response) {
     std::move(callback).Run(status, std::move(response));
   }

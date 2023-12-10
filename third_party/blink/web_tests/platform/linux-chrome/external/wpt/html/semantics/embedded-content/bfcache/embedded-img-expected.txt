@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+[PRECONDITION_FAILED] Page with <embed type=image/png src=/images/blue.png>
+  Could have been BFCached but actually wasn't
+[PRECONDITION_FAILED] Page with <object type=image/png data=/images/blue.png>
+  Could have been BFCached but actually wasn't
+Harness: the test ran to completion.

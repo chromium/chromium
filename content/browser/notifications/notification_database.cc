@@ -260,12 +260,7 @@ NotificationDatabase::ReadNotificationDataAndRecordInteraction(
       break;
   }
 
-  // Write the changed values to the database.
-  status = WriteNotificationData(origin, *notification_database_data);
-  UMA_HISTOGRAM_ENUMERATION(
-      "Notifications.Database.ReadResultRecordInteraction", status,
-      NotificationDatabase::STATUS_COUNT);
-  return status;
+  return WriteNotificationData(origin, *notification_database_data);
 }
 
 NotificationDatabase::Status NotificationDatabase::ForEachNotificationData(

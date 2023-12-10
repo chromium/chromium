@@ -118,13 +118,13 @@
   }
 </style>
 <iron-media-query query="(prefers-color-scheme: dark)"
-  query-matches="{{isDarkModeEnabled_}}">
+    query-matches="{{isDarkModeEnabled}}">
 </iron-media-query>
 <div id="helpContentContainer">
   <div id="helpContentLabelContainer">
-    <h2 class="help-content-label">[[getLabel_(searchResult, isOnline_)]]</h2>
+    <h2 class="help-content-label">[[getLabel(searchResult, isOnline)]]</h2>
     <iron-icon icon="os-feedback:info" id="helpContentIcon" tabindex="0"
-        hidden$="[[!hasSuggestedHelpContent_(searchResult, isOnline_)]]"
+        hidden$="[[!hasSuggestedHelpContent(searchResult, isOnline)]]"
         aria-labelledby="helpContentLabelTooltip">
     </iron-icon>
     <paper-tooltip for="helpContentIcon" position="right" offset="-20">
@@ -133,11 +133,11 @@
       </div>
     </paper-tooltip>
   </div>
-  <template is="dom-if" if="[[!isOnline_]]">
+  <template is="dom-if" if="[[!isOnline]]">
     <div class="no-help-content-details">
       <!-- TODO(b/276493287): After the Jelly experiment is launched, remove
                               unused image elements and SVGs. -->
-      <template is="dom-if" if="[[isJellyEnabled_]]">
+      <template is="dom-if" if="[[isJellyEnabled]]">
         <svg id="offlineSvg" preserveAspectRatio="xMidYMid meet" role="img"
             viewBox="0 0 400 168">
           <title>[[i18n('helpContentOfflineAltText')]]</title>
@@ -146,8 +146,8 @@
           </use>
         </svg>
       </template>
-      <template is="dom-if" if="[[!isJellyEnabled_]]">
-        <img src="[[getOfflineIllustrationSrc_(isDarkModeEnabled_)]]"
+      <template is="dom-if" if="[[!isJellyEnabled]]">
+        <img src="[[getOfflineIllustrationSrc(isDarkModeEnabled)]]"
             alt="[[i18n('helpContentOfflineAltText')]]">
       </template>
       <div class="no-help-content-text">
@@ -155,25 +155,25 @@
       </div>
     </div>
   </template>
-  <template is="dom-if" if="[[isOnline_]]">
+  <template is="dom-if" if="[[isOnline]]">
     <dom-repeat items="[[searchResult.contentList]]">
       <template>
         <div class="help-item">
-          <a href="[[getUrl_(item)]]" target="_blank"
-              on-click="handleHelpContentClicked_">
-            <iron-icon icon="[[getIcon_(item.contentType)]]"
+          <a href="[[getUrl(item)]]" target="_blank"
+              on-click="handleHelpContentClicked">
+            <iron-icon icon="[[getIcon(item.contentType)]]"
                 class="help-item-icon">
             </iron-icon>
-            [[getTitle_(item)]]
+            [[getTitle(item)]]
           </a>
         </div>
       </template>
     </dom-repeat>
     <div class="no-help-content-details"
-        hidden$="[[!showHelpContentNotAvailableMsg_(searchResult)]]">
+        hidden$="[[!showHelpContentNotAvailableMsg(searchResult)]]">
       <!-- TODO(b/276493287): After the Jelly experiment is launched, remove
                               unused image elements and SVGs. -->
-      <template is="dom-if" if="[[isJellyEnabled_]]">
+      <template is="dom-if" if="[[isJellyEnabled]]">
         <svg id="noContentSvg" preserveAspectRatio="xMidYMid meet" role="img"
             viewBox="0 0 400 168">
           <title>[[i18n('helpContentNotAvailableAltText')]]</title>
@@ -182,8 +182,8 @@
           </use>
         </svg>
       </template>
-      <template is="dom-if" if="[[!isJellyEnabled_]]">
-        <img src="[[getContentNotAvailableIllustrationSrc_(isDarkModeEnabled_)]]"
+      <template is="dom-if" if="[[!isJellyEnabled]]">
+        <img src="[[getContentNotAvailableIllustrationSrc(isDarkModeEnabled)]]"
             alt="[[i18n('helpContentNotAvailableAltText')]]">
       </template>
       <div class="no-help-content-text">

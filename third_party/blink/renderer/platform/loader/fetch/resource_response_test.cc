@@ -69,4 +69,18 @@ TEST(ResourceResponseTest, DnsAliasesCanBeSetAndAccessed) {
   EXPECT_THAT(response.DnsAliases(), testing::ElementsAre("alias1", "alias2"));
 }
 
+TEST(ResourceResponseTest, TreatExpiresZeroAsExpired) {
+  ResourceResponse response(CreateTestResponse());
+
+  response.SetHttpHeaderField(http_names::kExpires, AtomicString("0"));
+
+  absl::optional<base::Time> expires = response.Expires();
+  EXPECT_EQ(base::Time::Min(), expires);
+
+  base::Time creation_time = base::Time::UnixEpoch();
+  base::TimeDelta calculated_expires = expires.value() - creation_time;
+  // Check the value is not overflow by ClampedNumeric after subtracting value
+  EXPECT_EQ(base::TimeDelta::Min(), calculated_expires);
+}
+
 }  // namespace blink

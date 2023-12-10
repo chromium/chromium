@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string_view>
+
 #include "device/fido/filter.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -19,8 +21,8 @@ TEST(FidoFilter, Basic) {
   static const struct {
     const char* filter;
     Operation op;
-    base::StringPiece rp_id;
-    absl::optional<base::StringPiece> device;
+    std::string_view rp_id;
+    absl::optional<std::string_view> device;
     absl::optional<std::pair<IDType, base::span<const uint8_t>>> id;
     Action expected;
   } kTests[] = {

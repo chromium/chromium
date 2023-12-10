@@ -37,7 +37,6 @@ DEFINE_TEXT_PROTO_FUZZER(
     page_holder->GetFrame().GetSettings()->SetScriptEnabled(true);
     return page_holder.release();
   }();
-
   // Request a full GC upon returning.
   auto scoped_gc =
       MakeScopedGarbageCollectionRequest(test_support.GetIsolate());
@@ -93,8 +92,21 @@ DEFINE_TEXT_PROTO_FUZZER(
             break;
           }
           case wc_fuzzer::VideoEncoderApiInvocation::kEncode: {
-            VideoFrame* frame =
-                MakeVideoFrame(script_state, invocation.encode().frame());
+            VideoFrame* frame;
+            switch (invocation.encode().Frames_case()) {
+              case wc_fuzzer::EncodeVideo::kFrame:
+                frame =
+                    MakeVideoFrame(script_state, invocation.encode().frame());
+                break;
+              case wc_fuzzer::EncodeVideo::kFrameFromBuffer:
+                frame = MakeVideoFrame(script_state,
+                                       invocation.encode().frame_from_buffer());
+                break;
+              default:
+                frame = nullptr;
+                break;
+            }
+
             // Often the fuzzer input will be too crazy to produce a valid frame
             // (e.g. bitmap width > bitmap length). In these cases, return early
             // to discourage this sort of fuzzer input. WebIDL doesn't allow

@@ -29,7 +29,7 @@ crosapi::mojom::ExtensionControllingProxyPtr GetExtensionPtr(
       !ash_proxy_monitor->GetLacrosExtensionControllingTheProxy()) {
     return nullptr;
   }
-  absl::optional<ash::AshProxyMonitor::ExtensionMetadata> extension_metadata =
+  std::optional<ash::AshProxyMonitor::ExtensionMetadata> extension_metadata =
       ash_proxy_monitor->GetLacrosExtensionControllingTheProxy();
   crosapi::mojom::ExtensionControllingProxyPtr extension =
       crosapi::mojom::ExtensionControllingProxy::New();

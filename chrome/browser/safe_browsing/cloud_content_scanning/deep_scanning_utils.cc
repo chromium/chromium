@@ -42,8 +42,6 @@ std::string MaybeGetUnscannedReason(BinaryUploadService::Result result) {
       return "SERVICE_UNAVAILABLE";
     case BinaryUploadService::Result::FILE_ENCRYPTED:
       return "FILE_PASSWORD_PROTECTED";
-    case BinaryUploadService::Result::DLP_SCAN_UNSUPPORTED_FILE_TYPE:
-      return "DLP_SCAN_UNSUPPORTED_FILE_TYPE";
   }
 }
 
@@ -380,8 +378,6 @@ std::string BinaryUploadServiceResultToString(
       return "";
     case BinaryUploadService::Result::FILE_ENCRYPTED:
       return "FileEncrypted";
-    case BinaryUploadService::Result::DLP_SCAN_UNSUPPORTED_FILE_TYPE:
-      return "DlpScanUnsupportedFileType";
     case BinaryUploadService::Result::TOO_MANY_REQUESTS:
       return "TooManyRequests";
   }

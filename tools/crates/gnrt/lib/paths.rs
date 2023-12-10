@@ -8,6 +8,13 @@ use std::env;
 use std::io;
 use std::path::{Path, PathBuf};
 
+/// Paths to the toolchain tools, if the user specified them. Otherwise they
+/// can be found from the user's PATH.
+pub struct ToolPaths {
+    pub rustc: Option<String>,
+    pub cargo: Option<String>,
+}
+
 /// Chromium source tree paths. All members other than `root` are relative to
 /// `root`.
 pub struct ChromiumPaths {
@@ -22,11 +29,15 @@ pub struct ChromiumPaths {
     /// The root of the Rust source tree that is installed in //third_party and
     /// used in the Chromium GN build.
     pub rust_src_installed: &'static Path,
+
     pub std_config_file: &'static Path,
     pub std_build: &'static Path,
     pub std_fake_root: &'static Path,
     pub std_fake_root_config_template: &'static Path,
     pub std_fake_root_cargo_template: &'static Path,
+
+    pub third_party_cargo_root: &'static Path,
+    pub third_party_config_file: &'static Path,
 }
 
 impl ChromiumPaths {
@@ -55,6 +66,9 @@ impl ChromiumPaths {
             std_fake_root: check_path(&cur_dir, STD_FAKE_ROOT)?,
             std_fake_root_config_template: check_path(&cur_dir, STD_FAKE_ROOT_CONFIG_TEMPLATE)?,
             std_fake_root_cargo_template: check_path(&cur_dir, STD_FAKE_ROOT_CARGO_TEMPLATE)?,
+
+            third_party_cargo_root: check_path(&cur_dir, THIRD_PARTY_CARGO_ROOT)?,
+            third_party_config_file: check_path(&cur_dir, THIRD_PARTY_CONFIG_FILE)?,
         })
     }
 
@@ -95,8 +109,12 @@ static RUST_THIRD_PARTY_DIR: &str = "third_party/rust";
 static RUST_SRC_LIBRARY_SUBDIR: &str = "library";
 static RUST_SRC_VENDOR_SUBDIR: &str = "vendor";
 static RUST_SRC_INSTALLED_DIR: &str = "third_party/rust-toolchain/lib/rustlib/src/rust";
+
 static STD_CONFIG_FILE: &str = "build/rust/std/gnrt_config.toml";
 static STD_BUILD_DIR: &str = "build/rust/std/rules";
 static STD_FAKE_ROOT: &str = "build/rust/std/fake_root";
 static STD_FAKE_ROOT_CONFIG_TEMPLATE: &str = "build/rust/std/fake_root/.cargo/config.toml.template";
 static STD_FAKE_ROOT_CARGO_TEMPLATE: &str = "build/rust/std/fake_root/Cargo.toml.template";
+
+static THIRD_PARTY_CARGO_ROOT: &str = "third_party/rust/chromium_crates_io";
+static THIRD_PARTY_CONFIG_FILE: &str = "third_party/rust/chromium_crates_io/gnrt_config.toml";

@@ -1,1 +1,0 @@
-XPathResult_stringValue: Success

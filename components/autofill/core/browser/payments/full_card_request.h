@@ -15,7 +15,7 @@
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/payments/card_unmask_delegate.h"
-#include "components/autofill/core/browser/payments/payments_client.h"
+#include "components/autofill/core/browser/payments/payments_network_interface.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_options.h"
 #include "url/origin.h"
 
@@ -107,9 +107,10 @@ class FullCardRequest final : public CardUnmaskDelegate {
   };
 
   // The parameters should outlive the FullCardRequest.
-  FullCardRequest(AutofillClient* autofill_client,
-                  payments::PaymentsClient* payments_client,
-                  PersonalDataManager* personal_data_manager);
+  FullCardRequest(
+      AutofillClient* autofill_client,
+      payments::PaymentsNetworkInterface* payments_network_interface,
+      PersonalDataManager* personal_data_manager);
 
   FullCardRequest(const FullCardRequest&) = delete;
   FullCardRequest& operator=(const FullCardRequest&) = delete;
@@ -169,21 +170,22 @@ class FullCardRequest final : public CardUnmaskDelegate {
           absl::nullopt,
       absl::optional<std::string> context_token = absl::nullopt);
 
-  // Called by the payments client when a card has been unmasked.
+  // Called by the PaymentsNetworkInterface when a card has been unmasked.
   void OnDidGetRealPan(
       AutofillClient::PaymentsRpcResult result,
-      payments::PaymentsClient::UnmaskResponseDetails& response_details);
+      payments::PaymentsNetworkInterface::UnmaskResponseDetails&
+          response_details);
 
   // Called when verification is cancelled. This is used only by
   // CreditCardFidoAuthenticator to cancel the flow for opted-in users.
   void OnFIDOVerificationCancelled();
 
-  payments::PaymentsClient::UnmaskResponseDetails unmask_response_details()
-      const {
+  payments::PaymentsNetworkInterface::UnmaskResponseDetails
+  unmask_response_details() const {
     return unmask_response_details_;
   }
 
-  payments::PaymentsClient::UnmaskRequestDetails*
+  payments::PaymentsNetworkInterface::UnmaskRequestDetails*
   GetUnmaskRequestDetailsForTesting() const {
     return request_.get();
   }
@@ -240,7 +242,7 @@ class FullCardRequest final : public CardUnmaskDelegate {
   void OnDidGetUnmaskRiskData(const std::string& risk_data);
 
   // Makes final preparations for the unmask request and calls
-  // PaymentsClient::UnmaskCard().
+  // PaymentsNetworkInterface::UnmaskCard().
   void SendUnmaskCardRequest();
 
   // Resets the state of the request.
@@ -250,7 +252,7 @@ class FullCardRequest final : public CardUnmaskDelegate {
   const raw_ref<AutofillClient> autofill_client_;
 
   // Responsible for unmasking a masked server card.
-  const raw_ptr<payments::PaymentsClient> payments_client_;
+  const raw_ptr<payments::PaymentsNetworkInterface> payments_network_interface_;
 
   // Responsible for updating the server card on disk after it's been unmasked.
   const raw_ptr<PersonalDataManager> personal_data_manager_;
@@ -262,7 +264,8 @@ class FullCardRequest final : public CardUnmaskDelegate {
   base::WeakPtr<UIDelegate> ui_delegate_;
 
   // The pending request to get a card's full PAN and CVC.
-  std::unique_ptr<payments::PaymentsClient::UnmaskRequestDetails> request_;
+  std::unique_ptr<payments::PaymentsNetworkInterface::UnmaskRequestDetails>
+      request_;
 
   // Whether the card unmask request should be sent to the payment server.
   bool should_unmask_card_;
@@ -272,7 +275,8 @@ class FullCardRequest final : public CardUnmaskDelegate {
   base::TimeTicks real_pan_request_timestamp_;
 
   // Includes all details from GetRealPan response.
-  payments::PaymentsClient::UnmaskResponseDetails unmask_response_details_;
+  payments::PaymentsNetworkInterface::UnmaskResponseDetails
+      unmask_response_details_;
 
   // Enables destroying FullCardRequest while CVC prompt is showing or a server
   // communication is pending.

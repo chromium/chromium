@@ -5,12 +5,12 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_ASH_SETTINGS_SERVICES_METRICS_PER_SESSION_SETTINGS_USER_ACTION_TRACKER_H_
 #define CHROME_BROWSER_UI_WEBUI_ASH_SETTINGS_SERVICES_METRICS_PER_SESSION_SETTINGS_USER_ACTION_TRACKER_H_
 
+#include <optional>
 #include <set>
 
 #include "ash/webui/settings/public/constants/setting.mojom.h"
 #include "base/time/time.h"
 #include "components/prefs/pref_service.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::settings {
 
@@ -42,8 +42,8 @@ class PerSessionSettingsUserActionTracker {
   // backfilled with the information on what specific Setting has been changed.
   // In the meantime, this parameter is optional, and if it is not provided, it
   // will be set to nullopt to indicate that it has not been initialized.
-  void RecordSettingChange(absl::optional<chromeos::settings::mojom::Setting>
-                               setting = absl::nullopt);
+  void RecordSettingChange(
+      std::optional<chromeos::settings::mojom::Setting> setting = std::nullopt);
 
   const std::set<std::string>& GetChangedSettingsForTesting() {
     return changed_settings_;

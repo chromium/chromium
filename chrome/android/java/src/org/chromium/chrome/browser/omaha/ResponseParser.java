@@ -73,13 +73,20 @@ public class ResponseParser {
         this(appId, expectInstallEvent, !expectInstallEvent, !expectInstallEvent);
     }
 
-    public ResponseParser(String appId, boolean expectInstallEvent, boolean expectPing,
+    public ResponseParser(
+            String appId,
+            boolean expectInstallEvent,
+            boolean expectPing,
             boolean expectUpdatecheck) {
         this(false, appId, expectInstallEvent, expectPing, expectUpdatecheck);
     }
 
-    public ResponseParser(boolean strictParsing, String appId, boolean expectInstallEvent,
-            boolean expectPing, boolean expectUpdatecheck) {
+    public ResponseParser(
+            boolean strictParsing,
+            String appId,
+            boolean expectInstallEvent,
+            boolean expectPing,
+            boolean expectUpdatecheck) {
         mStrictParsingMode = strictParsing;
         mAppId = appId;
         mExpectInstallEvent = expectInstallEvent;

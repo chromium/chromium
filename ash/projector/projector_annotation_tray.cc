@@ -23,6 +23,7 @@
 #include "chromeos/constants/chromeos_features.h"
 #include "components/prefs/pref_service.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
@@ -367,5 +368,8 @@ void ProjectorAnnotationTray::SetIconImage(bool is_active) {
       is_active ? cros_tokens::kCrosSysSystemOnPrimaryContainer
                 : cros_tokens::kCrosSysOnSurface));
 }
+
+BEGIN_METADATA(ProjectorAnnotationTray)
+END_METADATA
 
 }  // namespace ash

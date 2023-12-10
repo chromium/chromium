@@ -93,7 +93,8 @@ TEST_F(VideoThumbnailDecoderTest, Success) {
                       RunCallback<4>(expected_frame)));
   EXPECT_CALL(*mock_video_decoder(), Decode_(_, _))
       .Times(2)
-      .WillRepeatedly(RunOnceCallback<1>(DecoderStatus::Codes::kOk));
+      .WillRepeatedly(
+          base::test::RunOnceCallbackRepeatedly<1>(DecoderStatus::Codes::kOk));
 
   Start();
   EXPECT_TRUE(frame());

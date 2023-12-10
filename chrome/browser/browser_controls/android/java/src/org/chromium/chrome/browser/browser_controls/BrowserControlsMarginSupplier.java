@@ -31,8 +31,12 @@ public class BrowserControlsMarginSupplier extends ObservableSupplierImpl<Rect>
     }
 
     @Override
-    public void onControlsOffsetChanged(int topOffset, int topControlsMinHeightOffset,
-            int bottomOffset, int bottomControlsMinHeightOffset, boolean needsAnimate) {
+    public void onControlsOffsetChanged(
+            int topOffset,
+            int topControlsMinHeightOffset,
+            int bottomOffset,
+            int bottomControlsMinHeightOffset,
+            boolean needsAnimate) {
         updateMargins();
     }
 
@@ -48,10 +52,12 @@ public class BrowserControlsMarginSupplier extends ObservableSupplierImpl<Rect>
     }
 
     private void updateMargins() {
-        int topMargin = mBrowserControlsStateProvider.getTopControlsHeight()
-                + mBrowserControlsStateProvider.getTopControlOffset();
-        int bottomMargin = mBrowserControlsStateProvider.getBottomControlsHeight()
-                - mBrowserControlsStateProvider.getBottomControlOffset();
+        int topMargin =
+                mBrowserControlsStateProvider.getTopControlsHeight()
+                        + mBrowserControlsStateProvider.getTopControlOffset();
+        int bottomMargin =
+                mBrowserControlsStateProvider.getBottomControlsHeight()
+                        - mBrowserControlsStateProvider.getBottomControlOffset();
         super.set(new Rect(0, topMargin, 0, bottomMargin));
     }
 }

@@ -6,12 +6,12 @@ import {assert} from 'chrome://resources/js/assert.js';
 
 import {ArrayDataModel} from '../../../common/js/array_data_model.js';
 import {isTeamDriveRoot} from '../../../common/js/entry_utils.js';
-import {FileType} from '../../../common/js/file_type.js';
+import {getIcon, isEncrypted} from '../../../common/js/file_type.js';
 import {isDlpEnabled, isDriveFsBulkPinningEnabled} from '../../../common/js/flags.js';
 import {getEntryLabel, str, strf} from '../../../common/js/translations.js';
 import {EntryLocation} from '../../../externs/entry_location.js';
 import {FilesAppEntry} from '../../../externs/files_app_entry_interfaces.js';
-import {VolumeManager} from '../../../externs/volume_manager.js';
+import type {VolumeManager} from '../../../externs/volume_manager.js';
 import {FileListModel} from '../file_list_model.js';
 import {MetadataItem} from '../metadata/metadata_item.js';
 import {MetadataModel} from '../metadata/metadata_model.js';
@@ -38,6 +38,7 @@ type OnMergeItemsCallback = (beginIndex: number, endIndex: number) => void;
  */
 export class FileTableList extends TableList {
   private onMergeItems_: null|OnMergeItemsCallback = null;
+  shouldStartDragSelection: null|((e: MouseEvent) => boolean) = null;
 
   constructor() {
     // To silence closure compiler.
@@ -52,6 +53,10 @@ export class FileTableList extends TableList {
     self.setAttribute('aria-multiselectable', 'true');
     self.setAttribute('aria-describedby', 'more-actions-info');
     self.onMergeItems_ = null;
+  }
+
+  override get table(): FileTable {
+    return super.table as FileTable;
   }
 
   override get dataModel(): FileListModel {
@@ -125,16 +130,14 @@ export class FileTableList extends TableList {
   }
 
   get a11y(): A11yAnnounce {
-    // TODO: Remove the type case once FileTable is converted to TS.
-    return (this.table as unknown as FileTable).a11y!;
+    return this.table.a11y!;
   }
 
   /**
    * @param index Index of the list item.
    */
   getItemLabel(index: number): string {
-    // TODO: Remove the type case once FileTable is converted to TS.
-    return (this.table as unknown as FileTable).getItemLabel(index);
+    return this.table.getItemLabel(index);
   }
 
   /**
@@ -377,27 +380,6 @@ export function decorateListItem(
   } else {
     li.removeAttribute('aria-disabled');
   }
-
-  Object.defineProperty(li, 'selected', {
-    /**
-     * @this {ListItem}
-     * @return True if the list item is selected.
-     */
-    get: function(): boolean {
-      return this.hasAttribute('selected');
-    },
-
-    /**
-     * @this {ListItem}
-     */
-    set: function(v) {
-      if (v) {
-        this.setAttribute('selected', '');
-      } else {
-        this.removeAttribute('selected');
-      }
-    },
-  });
 }
 
 /**
@@ -444,8 +426,7 @@ export function renderFileTypeIcon(
   const icon = doc.createElement('div');
   icon.className = 'detail-icon';
   const rootType = locationInfo?.rootType;
-  icon.setAttribute(
-      'file-type-icon', FileType.getIcon(entry, mimeType, rootType));
+  icon.setAttribute('file-type-icon', getIcon(entry, mimeType, rootType));
   return icon;
 }
 
@@ -495,8 +476,7 @@ export function updateListItemExternalProps(
     li.classList.toggle('dim-hosted', !!externalProps.hosted);
     if (externalProps.contentMimeType) {
       li.classList.toggle(
-          'dim-encrypted',
-          FileType.isEncrypted(entry, externalProps.contentMimeType));
+          'dim-encrypted', isEncrypted(entry, externalProps.contentMimeType));
     }
     const dlpIcon = li.querySelector('.dlp-managed-icon');
     if (dlpIcon) {
@@ -941,7 +921,7 @@ export function focusParentList(event: Event) {
  * @param metadataModel Cache to retrieve metadata.
  */
 export function updateCacheItemInlineStatus(
-    restoredItem: ListItem, dataModel: ArrayDataModel,
+    restoredItem: ListItem, dataModel: ArrayDataModel|null,
     metadataModel: MetadataModel) {
   if (!dataModel || !metadataModel) {
     console.error('dataModel or metadataModel unavailable.');

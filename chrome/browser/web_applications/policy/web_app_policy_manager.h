@@ -112,22 +112,17 @@ class WebAppPolicyManager {
 
   bool IsPreventCloseEnabled(const webapps::AppId& app_id) const;
 
-  void RefreshPolicyInstalledAppsForTesting();
+  void RefreshPolicyInstalledAppsForTesting(
+      bool allow_close_and_relaunch = false);
 
  private:
   friend class WebAppPolicyManagerTest;
 
   struct WebAppSetting {
-    WebAppSetting();
-    WebAppSetting(const WebAppSetting&) = default;
-    WebAppSetting& operator=(const WebAppSetting&) = default;
-    ~WebAppSetting() = default;
-
     bool Parse(const base::Value::Dict& dict, bool for_default_settings);
-    void ResetSettings();
 
-    RunOnOsLoginPolicy run_on_os_login_policy;
-    bool prevent_close;
+    RunOnOsLoginPolicy run_on_os_login_policy = RunOnOsLoginPolicy::kAllowed;
+    bool prevent_close = false;
     bool force_unregister_os_integration = false;
   };
 
@@ -147,7 +142,7 @@ class WebAppPolicyManager {
 
   void InitChangeRegistrarAndRefreshPolicy(bool enable_pwa_support);
 
-  void RefreshPolicyInstalledApps();
+  void RefreshPolicyInstalledApps(bool allow_close_and_relaunch = false);
 #if BUILDFLAG(IS_CHROMEOS)
   void RefreshPolicyInstalledIsolatedWebApps();
 #endif
@@ -226,7 +221,7 @@ class WebAppPolicyManager {
 
   base::flat_map<std::string, WebAppSetting> settings_by_url_;
   base::flat_map<GURL, CustomManifestValues> custom_manifest_values_by_url_;
-  std::unique_ptr<WebAppSetting> default_settings_;
+  WebAppSetting default_settings_;
 
   base::OnceClosure policy_settings_and_force_installs_applied_;
 

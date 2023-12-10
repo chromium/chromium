@@ -53,7 +53,6 @@
 #include "chromeos/ash/components/dbus/biod/constants.pb.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/ash/components/login/auth/authenticator.h"
-#include "chromeos/ash/components/login/auth/extended_authenticator.h"
 #include "chromeos/ash/components/login/auth/public/auth_failure.h"
 #include "chromeos/ash/components/login/session/session_termination_manager.h"
 #include "components/password_manager/core/browser/hash_password_manager.h"
@@ -219,7 +218,6 @@ void ScreenLocker::Init() {
       ->DisableNonLockScreenLayouts();
 
   authenticator_ = UserSessionManager::GetInstance()->CreateAuthenticator(this);
-  extended_authenticator_ = ExtendedAuthenticator::Create(this);
 
   // Create ViewScreenLocker that calls into the views-based lock screen via
   // mojo.
@@ -481,7 +479,7 @@ void ScreenLocker::OnChallengeResponseKeysPrepared(
 }
 
 void ScreenLocker::OnPinAttemptDone(std::unique_ptr<UserContext> user_context,
-                                    absl::optional<AuthenticationError> error) {
+                                    std::optional<AuthenticationError> error) {
   if (error.has_value()) {
     // PIN authentication has failed; try submitting as a normal password.
     user_context->SetIsUsingPin(false);
@@ -720,10 +718,8 @@ bool ScreenLocker::IsAuthTemporarilyDisabledForUser(
 }
 
 void ScreenLocker::SetAuthenticatorsForTesting(
-    scoped_refptr<Authenticator> authenticator,
-    scoped_refptr<ExtendedAuthenticator> extended_authenticator) {
+    scoped_refptr<Authenticator> authenticator) {
   authenticator_ = std::move(authenticator);
-  extended_authenticator_ = std::move(extended_authenticator);
 }
 
 // static
@@ -757,8 +753,6 @@ ScreenLocker::~ScreenLocker() {
 
   if (authenticator_)
     authenticator_->SetConsumer(nullptr);
-  if (extended_authenticator_)
-    extended_authenticator_->SetConsumer(nullptr);
 
   ClearErrors();
 

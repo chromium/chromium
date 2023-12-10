@@ -33,7 +33,7 @@ bool IsEnabledHost(const RemoteDeviceRef& device) {
 }
 
 bool IsEligibleForFeature(
-    const absl::optional<RemoteDeviceRef>& local_device,
+    const std::optional<RemoteDeviceRef>& local_device,
     multidevice_setup::MultiDeviceSetupClient::HostStatusWithDevice host_status,
     const RemoteDeviceRefList& remote_devices,
     FeatureState feature_state) {

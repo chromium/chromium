@@ -12,14 +12,11 @@ import org.chromium.components.webapps.pwa_restore_ui.PwaRestoreProperties.ViewS
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
-/**
- * Binds a pwa-restore {@link PropertyModel} with a {@link PwaRestoreBottomSheetView}.
- */
+/** Binds a pwa-restore {@link PropertyModel} with a {@link PwaRestoreBottomSheetView}. */
 class PwaRestoreBottomSheetViewBinder {
     static void bind(PropertyModel model, PwaRestoreBottomSheetView view, PropertyKey propertyKey) {
         if (propertyKey == PwaRestoreProperties.VIEW_STATE) {
-            @ViewState
-            int viewState = model.get(PwaRestoreProperties.VIEW_STATE);
+            @ViewState int viewState = model.get(PwaRestoreProperties.VIEW_STATE);
             view.setDisplayedView(viewState);
         } else if (propertyKey.equals(PwaRestoreProperties.APPS)) {
             view.setAppList(
@@ -65,6 +62,9 @@ class PwaRestoreBottomSheetViewBinder {
                     .setOnClickListener(
                             model.get(PwaRestoreProperties.RESTORE_BUTTON_ON_CLICK_CALLBACK));
             ((Button) view.getContentView().findViewById(R.id.restore_button)).setEnabled(true);
+        } else if (propertyKey.equals(PwaRestoreProperties.SELECTION_TOGGLE_CLICK_CALLBACK)) {
+            view.setSelectionToggleButtonListener(
+                    model.get(PwaRestoreProperties.SELECTION_TOGGLE_CLICK_CALLBACK));
         }
     }
 }

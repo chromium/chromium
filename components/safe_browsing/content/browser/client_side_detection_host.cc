@@ -31,7 +31,6 @@
 #include "components/safe_browsing/core/browser/db/database_manager.h"
 #include "components/safe_browsing/core/browser/sync/sync_utils.h"
 #include "components/safe_browsing/core/common/features.h"
-#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/security_interstitials/content/unsafe_resource_util.h"
 #include "components/zoom/zoom_controller.h"
 #include "content/public/browser/browser_context.h"
@@ -46,6 +45,7 @@
 #include "content/public/common/url_constants.h"
 #include "net/base/ip_endpoint.h"
 #include "net/http/http_response_headers.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/mojom/loader/referrer.mojom.h"
@@ -111,13 +111,15 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest
           ClientSideDetectionHost::ShouldClassifyUrlRequest> {
  public:
   ShouldClassifyUrlRequest(
-      content::NavigationHandle* navigation_handle,
+      const GURL& url,
+      const network::mojom::URLResponseHead* response_head,
       ShouldClassifyUrlCallback start_phishing_classification,
       WebContents* web_contents,
       base::WeakPtr<ClientSideDetectionService> csd_service,
       SafeBrowsingDatabaseManager* database_manager,
       base::WeakPtr<ClientSideDetectionHost> host)
-      : web_contents_(web_contents),
+      : url_(url),
+        web_contents_(web_contents),
         csd_service_(csd_service),
         database_manager_(database_manager),
         host_(host),
@@ -128,11 +130,12 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest
     DCHECK(csd_service_);
     DCHECK(database_manager_.get());
     DCHECK(host_);
-    url_ = navigation_handle->GetURL();
-    if (navigation_handle->GetResponseHeaders()) {
-      navigation_handle->GetResponseHeaders()->GetMimeType(&mime_type_);
+    if (response_head) {
+      if (response_head->headers) {
+        response_head->headers->GetMimeType(&mime_type_);
+      }
+      remote_endpoint_ = response_head->remote_endpoint;
     }
-    remote_endpoint_ = navigation_handle->GetSocketAddress();
   }
 
   ShouldClassifyUrlRequest(const ShouldClassifyUrlRequest&) = delete;
@@ -177,13 +180,6 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest
     if (host_ && host_->delegate_->GetPrefs() &&
         IsURLAllowlistedByPolicy(url_, *host_->delegate_->GetPrefs())) {
       DontClassifyForPhishing(NO_CLASSIFY_ALLOWLISTED_BY_POLICY);
-    }
-
-    // Don't start classification if CSD-Phishing is not allowed by enterprise
-    // policy.
-    if (host_ && host_->delegate_->GetPrefs() &&
-        !IsCsdPhishingProtectionAllowed(*host_->delegate_->GetPrefs())) {
-      DontClassifyForPhishing(NO_CLASSIFY_NOT_ALLOWED_BY_POLICY);
     }
 
     // If the tab has a delayed warning, ignore this second verdict. We don't
@@ -244,13 +240,13 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest
     NO_CLASSIFY_HAS_DELAYED_WARNING = 14,
     NO_CLASSIFY_LOCAL_RESOURCE = 15,
     NO_CLASSIFY_CHROME_UI_PAGE = 16,
-    NO_CLASSIFY_NOT_ALLOWED_BY_POLICY = 17,
+    // NO_CLASSIFY_NOT_ALLOWED_BY_POLICY = 17,  Obsolete
 
     NO_CLASSIFY_MAX  // Always add new values before this one.
   };
 
   // The destructor can be called either from the UI or the IO thread.
-  virtual ~ShouldClassifyUrlRequest() = default;
+  ~ShouldClassifyUrlRequest() = default;
 
   bool ShouldClassifyForPhishing() const {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -376,7 +372,7 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest
     }
   }
 
-  GURL url_;
+  const GURL url_;
   std::string mime_type_;
   net::IPEndPoint remote_endpoint_;
   raw_ptr<WebContents> web_contents_;
@@ -444,13 +440,7 @@ ClientSideDetectionHost::~ClientSideDetectionHost() {
   }
 }
 
-void ClientSideDetectionHost::DidFinishNavigation(
-    content::NavigationHandle* navigation_handle) {
-  if (!navigation_handle->IsInPrimaryMainFrame() ||
-      !navigation_handle->HasCommitted()) {
-    return;
-  }
-
+void ClientSideDetectionHost::PrimaryPageChanged(content::Page& page) {
   if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
     return;
   }
@@ -458,35 +448,28 @@ void ClientSideDetectionHost::DidFinishNavigation(
   // TODO(noelutz): move this DCHECK to WebContents and fix all the unit tests
   // that don't call this method on the UI thread.
   // DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (navigation_handle->IsSameDocument()) {
-    // If the navigation is within the same document, the user isn't really
-    // navigating away.  We don't need to cancel a pending callback or
-    // begin a new classification.
-    return;
-  }
+
   // Cancel any pending classification request.
   if (classification_request_.get()) {
     classification_request_->Cancel();
   }
-  // If we navigate away and there currently is a pending phishing
-  // report request we have to cancel it to make sure we don't display
-  // an interstitial for the wrong page.  Note that this won't cancel
-  // the server ping back but only cancel the showing of the
-  // interstitial.
+  // If we navigate away and there currently is a pending phishing report
+  // request we have to cancel it to make sure we don't display an interstitial
+  // for the wrong page.  Note that this won't cancel the server ping back but
+  // only cancel the showing of the interstitial.
   weak_factory_.InvalidateWeakPtrs();
 
   if (!csd_service_) {
     return;
   }
 
-  current_url_ = navigation_handle->GetURL();
-  current_outermost_main_frame_id_ = navigation_handle->GetRenderFrameHost()
-                                         ->GetOutermostMainFrame()
-                                         ->GetGlobalId();
+  content::RenderFrameHost& rfh = page.GetMainDocument();
+  current_url_ = rfh.GetLastCommittedURL();
+  current_outermost_main_frame_id_ = rfh.GetGlobalId();
 
   // Check whether we can cassify the current URL for phishing.
   classification_request_ = new ShouldClassifyUrlRequest(
-      navigation_handle,
+      rfh.GetLastCommittedURL(), rfh.GetLastResponseHead(),
       base::BindOnce(&ClientSideDetectionHost::OnPhishingPreClassificationDone,
                      weak_factory_.GetWeakPtr()),
       web_contents(), csd_service_, database_manager_.get(),
@@ -743,8 +726,9 @@ void ClientSideDetectionHost::MaybeShowPhishingWarning(bool is_from_cache,
   if (is_phishing) {
     DCHECK(web_contents());
     if (ui_manager_.get()) {
+      auto* primary_main_frame = web_contents()->GetPrimaryMainFrame();
       const content::GlobalRenderFrameHostId primary_main_frame_id =
-          web_contents()->GetPrimaryMainFrame()->GetGlobalId();
+          primary_main_frame->GetGlobalId();
 
       security_interstitials::UnsafeResource resource;
       resource.url = phishing_url;
@@ -754,7 +738,7 @@ void ClientSideDetectionHost::MaybeShowPhishingWarning(bool is_from_cache,
       resource.threat_source =
           safe_browsing::ThreatSource::CLIENT_SIDE_DETECTION;
       resource.render_process_id = primary_main_frame_id.child_id;
-      resource.render_frame_id = primary_main_frame_id.frame_routing_id;
+      resource.render_frame_token = primary_main_frame->GetFrameToken().value();
       if (!ui_manager_->IsAllowlisted(resource)) {
         // We need to stop any pending navigations, otherwise the interstitial
         // might not get created properly.

@@ -8,10 +8,10 @@
 #include <lib/fit/function.h>
 #include <zircon/types.h>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/component_export.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/debug/debugging_buildflags.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/logging.h"
 #include "build/build_config.h"
+#include "partition_alloc/partition_alloc_base/component_export.h"
+#include "partition_alloc/partition_alloc_base/debug/debugging_buildflags.h"
+#include "partition_alloc/partition_alloc_base/logging.h"
 
 // Use the PA_ZX_LOG family of macros along with a zx_status_t containing a
 // Zircon error. The error value will be decoded so that logged messages explain
@@ -39,7 +39,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE) ZxLogMessage
 }  // namespace partition_alloc::internal::logging
 
 #define PA_ZX_LOG_STREAM(severity, zx_err) \
-  PA_COMPACT_GOOGLE_LOG_EX_##severity(ZxLogMessage, zx_err).stream()
+  PA_COMPACT_GOOGLE_PLOG_EX_##severity(ZxLogMessage, zx_err).stream()
 
 #define PA_ZX_LOG(severity, zx_err) \
   PA_LAZY_STREAM(PA_ZX_LOG_STREAM(severity, zx_err), PA_LOG_IS_ON(severity))

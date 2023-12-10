@@ -15,13 +15,9 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.Certificate;
 
-/**
- * Certificate related utility methods.
- */
+/** Certificate related utility methods. */
 public class CertTestUtil {
-    /**
-     * The location of the directory that contains certificates for testing.
-     */
+    /** The location of the directory that contains certificates for testing. */
     public static final String CERTS_DIRECTORY =
             UrlUtils.getIsolatedTestFilePath("net/data/ssl/certificates/");
 

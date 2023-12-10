@@ -33,6 +33,9 @@ class HoldingSpaceKeyedServiceDelegate : public HoldingSpaceModelObserver {
   // space persistence has been restored.
   void NotifyPersistenceRestored();
 
+  // Returns if persistence is being restored.
+  bool is_restoring_persistence() const { return is_restoring_persistence_; }
+
  protected:
   HoldingSpaceKeyedServiceDelegate(HoldingSpaceKeyedService* service,
                                    HoldingSpaceModel* model);
@@ -45,9 +48,6 @@ class HoldingSpaceKeyedServiceDelegate : public HoldingSpaceModelObserver {
 
   // Returns the holding space model owned by `service_`.
   HoldingSpaceModel* model() { return model_; }
-
-  // Returns if persistence is being restored.
-  bool is_restoring_persistence() const { return is_restoring_persistence_; }
 
  private:
   // HoldingSpaceModelObserver:

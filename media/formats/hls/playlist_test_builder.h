@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
+#include "media/base/media_serializers_base.h"
 #include "media/formats/hls/playlist.h"
 #include "media/formats/hls/source_string.h"
 #include "media/formats/hls/tags.h"
@@ -62,14 +63,24 @@ class PlaylistTestBuilder {
         std::move(fn), std::move(arg), std::move(location)));
   }
 
+  template <typename... Args>
   scoped_refptr<PlaylistT> Parse(
+      Args&&... args,
       const base::Location& from = base::Location::Current()) {
-    auto result = PlaylistT::Parse(source_, uri_, version_);
-    EXPECT_TRUE(result.has_value()) << "Error: " << from.ToString();
-    auto playlist = std::move(result).value();
-    // Ensure that playlist has expected version
-    EXPECT_EQ(playlist->GetVersion(), version_) << from.ToString();
-    return std::move(playlist);
+    auto result =
+        PlaylistT::Parse(source_, uri_, version_, std::forward<Args>(args)...);
+
+    if (!result.has_value()) {
+      EXPECT_TRUE(result.has_value())
+          << MediaSerialize(std::move(result).error())
+          << "\nFrom: " << from.ToString();
+      return nullptr;
+    } else {
+      auto playlist = std::move(result).value();
+      // Ensure that playlist has expected version
+      EXPECT_EQ(playlist->GetVersion(), version_) << from.ToString();
+      return std::move(playlist);
+    }
   }
 
  protected:

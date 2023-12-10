@@ -8,15 +8,19 @@ namespace cc {
 
 namespace {
 
-// When |op| is a nested PaintOpBuffer, this returns the PaintOp inside
-// that buffer if the buffer contains a single drawing op, otherwise it
-// returns null. This searches recursively if the PaintOpBuffer contains only
-// another PaintOpBuffer.
+// When |op| is a DrawRecordOp, this returns the PaintOp inside that record if
+// it contains (recursively) a single drawing op, otherwise it returns |op| if
+// it's a drawing op, or nullptr.
 static const PaintOp* GetNestedSingleDrawingOp(const PaintOp* op) {
   if (!op->IsDrawOp())
     return nullptr;
-  while (op->GetType() == PaintOpType::kDrawrecord) {
+  while (op->GetType() == PaintOpType::kDrawRecord) {
     auto* draw_record_op = static_cast<const DrawRecordOp*>(op);
+    if (draw_record_op->record.empty()) {
+      // We could omit this empty DrawRecordOp (as well as the enclosing
+      // SaveLayerAlphaOp/RestoreOp), but the case is very rare.
+      return nullptr;
+    }
     if (draw_record_op->record.size() > 1) {
       // If there's more than one op, then we need to keep the
       // SaveLayer.
@@ -39,10 +43,10 @@ PaintOpBuffer::CompositeIterator::CompositeIterator(
     const PaintOpBuffer& buffer,
     const std::vector<size_t>* offsets)
     : iter_(offsets == nullptr ? absl::variant<Iterator, OffsetIterator>(
-                                     absl::in_place_type<Iterator>,
+                                     std::in_place_type<Iterator>,
                                      buffer)
                                : absl::variant<Iterator, OffsetIterator>(
-                                     absl::in_place_type<OffsetIterator>,
+                                     std::in_place_type<OffsetIterator>,
                                      buffer,
                                      *offsets)) {}
 
@@ -65,7 +69,7 @@ void PaintOpBuffer::PlaybackFoldingIterator::FindNextOp() {
   current_alpha_ = 1.0f;
   for (current_op_ = NextUnfoldedOp(); current_op_;
        current_op_ = NextUnfoldedOp()) {
-    if (current_op_->GetType() != PaintOpType::kSavelayeralpha) {
+    if (current_op_->GetType() != PaintOpType::kSaveLayerAlpha) {
       break;
     }
     const PaintOp* second = NextUnfoldedOp();
@@ -73,7 +77,7 @@ void PaintOpBuffer::PlaybackFoldingIterator::FindNextOp() {
       break;
 
     if (second->GetType() == PaintOpType::kRestore) {
-      // Drop a kSavelayeralpha/kRestore combo.
+      // Drop a kSaveLayerAlpha/kRestore combo.
       continue;
     }
 
@@ -89,16 +93,16 @@ void PaintOpBuffer::PlaybackFoldingIterator::FindNextOp() {
         auto* save_op = static_cast<const SaveLayerAlphaOp*>(current_op_);
         if (draw_op->IsPaintOpWithFlags() &&
             // SkPaint::drawTextBlob() applies alpha on each glyph so we don't
-            // fold kSavelayeralpha into DrwaTextBlob to ensure correct alpha
+            // fold kSaveLayerAlpha into DrwaTextBlob to ensure correct alpha
             // even if some glyphs overlap.
-            draw_op->GetType() != PaintOpType::kDrawtextblob) {
+            draw_op->GetType() != PaintOpType::kDrawTextBlob) {
           auto* flags_op = static_cast<const PaintOpWithFlags*>(draw_op);
           if (flags_op->flags.SupportsFoldingAlpha()) {
             current_alpha_ = save_op->alpha;
             current_op_ = draw_op;
             break;
           }
-        } else if (draw_op->GetType() == PaintOpType::kDrawcolor &&
+        } else if (draw_op->GetType() == PaintOpType::kDrawColor &&
                    static_cast<const DrawColorOp*>(draw_op)->mode ==
                        SkBlendMode::kSrcOver) {
           auto* draw_color_op = static_cast<const DrawColorOp*>(draw_op);
@@ -112,7 +116,7 @@ void PaintOpBuffer::PlaybackFoldingIterator::FindNextOp() {
     }
 
     // If we get here, then we could not find a foldable sequence after
-    // this kSavelayeralpha, so store any peeked at ops.
+    // this kSaveLayerAlpha, so store any peeked at ops.
     stack_.push_back(second);
     if (third)
       stack_.push_back(third);

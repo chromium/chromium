@@ -66,7 +66,7 @@ void XmppRegisterSupportHostRequest::StartRequest(
     SignalStrategy* signal_strategy,
     scoped_refptr<RsaKeyPair> key_pair,
     const std::string& authorized_helper,
-    absl::optional<ChromeOsEnterpriseParams> params,
+    std::optional<ChromeOsEnterpriseParams> params,
     RegisterCallback callback) {
   DCHECK(signal_strategy);
   DCHECK(key_pair.get());

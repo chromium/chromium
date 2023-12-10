@@ -115,7 +115,7 @@ class AddressNormalizerTest : public testing::Test {
 
  private:
   bool success_ = false;
-  AutofillProfile profile_;
+  AutofillProfile profile_{i18n_model_definition::kLegacyHierarchyCountryCode};
   TestAddressNormalizer normalizer_;
 };
 

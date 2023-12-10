@@ -147,6 +147,10 @@ class FirstPartySetsPolicyService : public KeyedService {
     return browser_context_;
   }
 
+  base::WeakPtr<first_party_sets::FirstPartySetsPolicyService> GetWeakPtr() {
+    return weak_factory_.GetWeakPtr();
+  }
+
  private:
   // Initialize this instance by getting the config if needed.
   void Init();

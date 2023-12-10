@@ -243,6 +243,7 @@ viz_component("service") {
     # Note that dependency on //gpu/ipc/client is for GpuMemoryBufferImpl. This
     # dependency should not be in public_deps.
     "//components/ml/webnn:features",
+    "//components/version_info:version_info",
     "//components/viz/common",
     "//gpu/command_buffer/client",
     "//gpu/config",
@@ -258,10 +259,11 @@ viz_component("service") {
     "//services/metrics/public/mojom",
     "//services/tracing/public/cpp:cpp",
     "//services/viz/privileged/mojom",
-    "//services/webnn",
+    "//services/webnn:webnn_service",
     "//skia",
     "//skia:skcms",
     "//third_party/libyuv",
+    "//ui/base:ozone_buildflags",
     "//ui/display/types",
     "//ui/gfx/animation/keyframe",
   ]
@@ -462,12 +464,13 @@ viz_component("service") {
     }
   }
 
-  if (skia_use_dawn && is_win) {
-    sources += [
-      "display_embedder/skia_output_device_dawn.cc",
-      "display_embedder/skia_output_device_dawn.h",
-    ]
-
+  if (skia_use_dawn) {
+    if (is_win) {
+      sources += [
+        "display_embedder/skia_output_device_dawn.cc",
+        "display_embedder/skia_output_device_dawn.h",
+      ]
+    }
     public_deps += [ "//third_party/dawn/include/dawn:headers" ]
 
     deps += [

@@ -122,7 +122,7 @@ class BlobStorageContextMojoTest : public testing::Test {
 
   void CreateFile(base::FilePath path,
                   std::string data,
-                  absl::optional<base::Time> modification_time) {
+                  std::optional<base::Time> modification_time) {
     base::ScopedAllowBlockingForTesting allow_blocking;
     EXPECT_TRUE(base::WriteFile(path, data));
     if (modification_time) {
@@ -136,7 +136,7 @@ class BlobStorageContextMojoTest : public testing::Test {
       base::test::TaskEnvironment::MainThreadType::IO};
   scoped_refptr<base::SequencedTaskRunner> file_runner_;
   std::unique_ptr<BlobStorageContext> context_;
-  absl::optional<base::ScopedDisallowBlocking> disallow_blocking_;
+  std::optional<base::ScopedDisallowBlocking> disallow_blocking_;
 };
 
 TEST_F(BlobStorageContextMojoTest, BasicBlobCreation) {
@@ -214,7 +214,7 @@ TEST_F(BlobStorageContextMojoTest, SaveBlobToFileNoDate) {
   base::RunLoop loop;
   base::FilePath file_path = temp_dir_.GetPath().AppendASCII("TestFile.txt");
   context->WriteBlobToFile(
-      blob.Unbind(), file_path, true, absl::nullopt,
+      blob.Unbind(), file_path, true, std::nullopt,
       base::BindLambdaForTesting([&](mojom::WriteBlobToFileResult result) {
         EXPECT_EQ(result, mojom::WriteBlobToFileResult::kSuccess);
         loop.Quit();
@@ -494,7 +494,7 @@ TEST_F(BlobStorageContextMojoTest, InvalidInputFileTimeModified) {
   base::FilePath file_path =
       temp_dir_.GetPath().AppendASCII("DestinationFile.txt");
   context->WriteBlobToFile(
-      blob.Unbind(), file_path, true, absl::nullopt,
+      blob.Unbind(), file_path, true, std::nullopt,
       base::BindLambdaForTesting([&loop](mojom::WriteBlobToFileResult result) {
         EXPECT_EQ(result, mojom::WriteBlobToFileResult::kInvalidBlob);
         loop.Quit();
@@ -519,7 +519,7 @@ TEST_F(BlobStorageContextMojoTest, NoProfileDirectory) {
   base::RunLoop loop;
   base::FilePath file_path = temp_dir_.GetPath().AppendASCII("TestFile.txt");
   context->WriteBlobToFile(
-      blob.Unbind(), file_path, true, absl::nullopt,
+      blob.Unbind(), file_path, true, std::nullopt,
       base::BindLambdaForTesting([&](mojom::WriteBlobToFileResult result) {
         EXPECT_EQ(result, mojom::WriteBlobToFileResult::kBadPath);
         loop.Quit();
@@ -541,7 +541,7 @@ TEST_F(BlobStorageContextMojoTest, PathWithReferences) {
   base::FilePath file_path =
       temp_dir_.GetPath().AppendASCII("..").AppendASCII("UnaccessibleFile.txt");
   context->WriteBlobToFile(
-      blob.Unbind(), file_path, true, absl::nullopt,
+      blob.Unbind(), file_path, true, std::nullopt,
       base::BindLambdaForTesting([&](mojom::WriteBlobToFileResult result) {
         EXPECT_EQ(result, mojom::WriteBlobToFileResult::kBadPath);
         loop.Quit();
@@ -562,7 +562,7 @@ TEST_F(BlobStorageContextMojoTest, InvalidPath) {
   base::RunLoop loop;
   base::FilePath file_path = base::FilePath::FromUTF8Unsafe("/etc/passwd");
   context->WriteBlobToFile(
-      blob.Unbind(), file_path, true, absl::nullopt,
+      blob.Unbind(), file_path, true, std::nullopt,
       base::BindLambdaForTesting([&](mojom::WriteBlobToFileResult result) {
         EXPECT_EQ(result, mojom::WriteBlobToFileResult::kBadPath);
         loop.Quit();
@@ -609,7 +609,7 @@ TEST_F(BlobStorageContextMojoTest, SaveOptimizedBlobToFileNoDirectory) {
       temp_dir_.GetPath().AppendASCII("SourceFile.txt");
 
   // Create a file to copy from.
-  CreateFile(copy_from_file, kData, absl::nullopt);
+  CreateFile(copy_from_file, kData, std::nullopt);
 
   std::unique_ptr<BlobDataBuilder> builder =
       std::make_unique<BlobDataBuilder>("1234");
@@ -628,7 +628,7 @@ TEST_F(BlobStorageContextMojoTest, SaveOptimizedBlobToFileNoDirectory) {
                                  .AppendASCII("NotCreatedDirectory")
                                  .AppendASCII("TestFile.txt");
   context->WriteBlobToFile(
-      std::move(blob), file_path, true, absl::nullopt,
+      std::move(blob), file_path, true, std::nullopt,
       base::BindLambdaForTesting([&](mojom::WriteBlobToFileResult result) {
         EXPECT_EQ(result, mojom::WriteBlobToFileResult::kIOError);
         loop.Quit();
@@ -648,7 +648,7 @@ TEST_F(BlobStorageContextMojoTest, SaveOptimizedBlobNoFileSize) {
       temp_dir_.GetPath().AppendASCII("SourceFile.txt");
 
   // Create a file to copy from.
-  CreateFile(copy_from_file, kData, absl::nullopt);
+  CreateFile(copy_from_file, kData, std::nullopt);
 
   std::unique_ptr<BlobDataBuilder> builder =
       std::make_unique<BlobDataBuilder>("1234");
@@ -666,7 +666,7 @@ TEST_F(BlobStorageContextMojoTest, SaveOptimizedBlobNoFileSize) {
   base::RunLoop loop;
   base::FilePath file_path = temp_dir_.GetPath().AppendASCII("TestFile.txt");
   context->WriteBlobToFile(
-      std::move(blob), file_path, true, absl::nullopt,
+      std::move(blob), file_path, true, std::nullopt,
       base::BindLambdaForTesting([&](mojom::WriteBlobToFileResult result) {
         EXPECT_EQ(result, mojom::WriteBlobToFileResult::kSuccess);
         loop.Quit();

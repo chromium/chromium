@@ -17,6 +17,9 @@
 namespace {
 
 constexpr const char kShowTouchpadSettingsPage[] = "ShowTouchpadSettingsPage";
+constexpr const char kShowMouseSettingsPage[] = "ShowMouseSettingsPage";
+constexpr const char kShowGraphicsTabletSettingsPage[] =
+    "ShowGraphicsTabletSettingsPage";
 constexpr const char kShowRemapKeysSettingsSubpage[] =
     "ShowRemapKeysSettingsSubpage";
 
@@ -74,6 +77,29 @@ TEST_F(SystemTrayClientImplTest, ShowTouchpadSettings) {
             chrome::GetOSSettingsUrl(
                 chromeos::settings::mojom::kPerDeviceTouchpadSubpagePath));
   EXPECT_EQ(1, user_action_tester.GetActionCount(kShowTouchpadSettingsPage));
+}
+
+TEST_F(SystemTrayClientImplTest, ShowMouseSettings) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(ash::features::kPeripheralCustomization);
+  base::UserActionTester user_action_tester;
+  client_impl_->ShowMouseSettings();
+  EXPECT_EQ(settings_window_manager_->last_url(),
+            chrome::GetOSSettingsUrl(
+                chromeos::settings::mojom::kPerDeviceMouseSubpagePath));
+  EXPECT_EQ(1, user_action_tester.GetActionCount(kShowMouseSettingsPage));
+}
+
+TEST_F(SystemTrayClientImplTest, ShowGraphicsTabletSettings) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(ash::features::kPeripheralCustomization);
+  base::UserActionTester user_action_tester;
+  client_impl_->ShowGraphicsTabletSettings();
+  EXPECT_EQ(settings_window_manager_->last_url(),
+            chrome::GetOSSettingsUrl(
+                chromeos::settings::mojom::kGraphicsTabletSubpagePath));
+  EXPECT_EQ(1,
+            user_action_tester.GetActionCount(kShowGraphicsTabletSettingsPage));
 }
 
 TEST_F(SystemTrayClientImplTest, ShowRemapKeysSettings) {

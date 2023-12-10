@@ -30,13 +30,13 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-/**
- * A RunListener that list out all the test information into a json file.
- */
+/** A RunListener that list out all the test information into a json file. */
 public class TestListInstrumentationRunListener extends InstrumentationRunListener {
     private static final String TAG = "TestListRunListener";
-    private static final Set<String> SKIP_METHODS = new HashSet<>(
-            Arrays.asList(new String[] {"toString", "hashCode", "annotationType", "equals"}));
+    private static final Set<String> SKIP_METHODS =
+            new HashSet<>(
+                    Arrays.asList(
+                            new String[] {"toString", "hashCode", "annotationType", "equals"}));
 
     private final Map<Class<?>, JSONObject> mTestClassJsonMap = new HashMap<>();
     private Failure mFirstFailure;
@@ -57,7 +57,8 @@ public class TestListInstrumentationRunListener extends InstrumentationRunListen
                     new JSONObject()
                             .put("class", testClass.getName())
                             .put("superclass", testClass.getSuperclass().getName())
-                            .put("annotations",
+                            .put(
+                                    "annotations",
                                     getAnnotationJSON(Arrays.asList(testClass.getAnnotations())))
                             .put("methods", new JSONArray());
             mTestClassJsonMap.put(testClass, classEntry);
@@ -74,9 +75,11 @@ public class TestListInstrumentationRunListener extends InstrumentationRunListen
         // BaseJUnit4ClassRunner only fires testFinished(), so a call to
         // testStarted means a different runner is active, and the test is
         // actually being executed rather than just listed.
-        throw new InitializationError("All tests must use"
-                + " @RunWith(BaseJUnit4ClassRunner.class) or a subclass thereof."
-                + " Found that this test does not: " + desc.getTestClass());
+        throw new InitializationError(
+                "All tests must use"
+                        + " @RunWith(BaseJUnit4ClassRunner.class) or a subclass thereof."
+                        + " Found that this test does not: "
+                        + desc.getTestClass());
     }
 
     /**
@@ -98,9 +101,7 @@ public class TestListInstrumentationRunListener extends InstrumentationRunListen
         }
     }
 
-    /**
-     * Return a JSONOject that represent a Description of a method".
-     */
+    /** Return a JSONObject that represent a Description of a method". */
     static JSONObject getTestMethodJSON(Description desc) throws Exception {
         return new JSONObject()
                 .put("method", desc.getMethodName())
@@ -166,8 +167,10 @@ public class TestListInstrumentationRunListener extends InstrumentationRunListen
             // If proguard is enabled and InnerClasses attribute is not kept,
             // then getCanonicalName() will return Outer$Inner instead of
             // Outer.Inner.  So just use getName().
-            outerJson.put(annotationType.getName().replaceFirst(
-                                  annotationType.getPackage().getName() + ".", ""),
+            outerJson.put(
+                    annotationType
+                            .getName()
+                            .replaceFirst(annotationType.getPackage().getName() + ".", ""),
                     json);
             return outerJson;
         } else {

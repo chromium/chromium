@@ -1,4 +1,4 @@
 include_rules = [
-  "+ios/chrome/browser/follow/follow_configuration.h",
-  "+ios/chrome/browser/follow/follow_service.h",
+  "+ios/chrome/browser/follow/model/follow_configuration.h",
+  "+ios/chrome/browser/follow/model/follow_service.h",
 ]

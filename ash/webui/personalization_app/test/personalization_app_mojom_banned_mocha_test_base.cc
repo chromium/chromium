@@ -108,7 +108,25 @@ class MockPersonalizationAppSeaPenProvider
               (override));
   MOCK_METHOD(void,
               SearchWallpaper,
-              (const std::string& text, SearchWallpaperCallback callback),
+              (const mojom::SeaPenQueryPtr, SearchWallpaperCallback callback),
+              (override));
+  MOCK_METHOD(void,
+              SelectSeaPenThumbnail,
+              (uint32_t, SelectSeaPenThumbnailCallback),
+              (override));
+  MOCK_METHOD(void,
+              SelectRecentSeaPenImage,
+              (const base::FilePath& file_path,
+               SelectRecentSeaPenImageCallback),
+              (override));
+  MOCK_METHOD(void,
+              GetRecentSeaPenImages,
+              (GetRecentSeaPenImagesCallback),
+              (override));
+  MOCK_METHOD(void,
+              GetRecentSeaPenImageThumbnail,
+              (const base::FilePath& file_path,
+               GetRecentSeaPenImageThumbnailCallback),
               (override));
 };
 
@@ -183,12 +201,12 @@ class MockPersonalizationAppWallpaperProvider
               (override));
   MOCK_METHOD(void,
               FetchGooglePhotosAlbums,
-              (const absl::optional<std::string>& resume_token,
+              (const std::optional<std::string>& resume_token,
                FetchGooglePhotosAlbumsCallback callback),
               (override));
   MOCK_METHOD(void,
               FetchGooglePhotosSharedAlbums,
-              (const absl::optional<std::string>& resume_token,
+              (const std::optional<std::string>& resume_token,
                FetchGooglePhotosAlbumsCallback callback),
               (override));
   MOCK_METHOD(void,
@@ -197,9 +215,9 @@ class MockPersonalizationAppWallpaperProvider
               (override));
   MOCK_METHOD(void,
               FetchGooglePhotosPhotos,
-              (const absl::optional<std::string>& item_id,
-               const absl::optional<std::string>& album_id,
-               const absl::optional<std::string>& resume_token,
+              (const std::optional<std::string>& item_id,
+               const std::optional<std::string>& album_id,
+               const std::optional<std::string>& resume_token,
                FetchGooglePhotosPhotosCallback callback),
               (override));
   MOCK_METHOD(void,
@@ -275,6 +293,10 @@ class MockPersonalizationAppWallpaperProvider
               (override));
   MOCK_METHOD(void, ConfirmPreviewWallpaper, (), (override));
   MOCK_METHOD(void, CancelPreviewWallpaper, (), (override));
+  MOCK_METHOD(void,
+              ShouldShowTimeOfDayWallpaperDialog,
+              (ShouldShowTimeOfDayWallpaperDialogCallback callback),
+              (override));
 };
 
 class MockPersonalizationAppUserProvider

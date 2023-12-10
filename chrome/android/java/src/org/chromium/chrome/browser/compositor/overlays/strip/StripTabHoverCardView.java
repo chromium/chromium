@@ -27,7 +27,6 @@ import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
-import org.chromium.chrome.browser.tasks.tab_management.TabManagementFieldTrial;
 import org.chromium.chrome.browser.tasks.tab_management.TabThumbnailView;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeProvider;
 import org.chromium.components.embedder_support.util.UrlUtilities;
@@ -99,9 +98,7 @@ public class StripTabHoverCardView extends FrameLayout {
         setVisibility(VISIBLE);
     }
 
-    /**
-     * Hide the strip tab hover card.
-     */
+    /** Hide the strip tab hover card. */
     public void hide() {
         mIsShowing = false;
         setVisibility(GONE);
@@ -115,16 +112,18 @@ public class StripTabHoverCardView extends FrameLayout {
      * @param tabModelSelector The {@link TabModelSelector} to observe.
      * @param tabContentManagerSupplier Supplier of the {@link TabContentManager} instance.
      */
-    public void initialize(TabModelSelector tabModelSelector,
+    public void initialize(
+            TabModelSelector tabModelSelector,
             ObservableSupplier<TabContentManager> tabContentManagerSupplier) {
         mTabModelSelector = tabModelSelector;
         mTabContentManager = tabContentManagerSupplier.get();
-        mTabModelSelectorObserver = new TabModelSelectorObserver() {
-            @Override
-            public void onTabModelSelected(TabModel newModel, TabModel oldModel) {
-                updateHoverCardColors(newModel.isIncognito());
-            }
-        };
+        mTabModelSelectorObserver =
+                new TabModelSelectorObserver() {
+                    @Override
+                    public void onTabModelSelected(TabModel newModel, TabModel oldModel) {
+                        updateHoverCardColors(newModel.isIncognito());
+                    }
+                };
         mTabModelSelector.addObserver(mTabModelSelectorObserver);
         updateHoverCardColors(mTabModelSelector.isIncognitoSelected());
     }
@@ -136,7 +135,7 @@ public class StripTabHoverCardView extends FrameLayout {
      */
     public void updateHoverCardColors(boolean incognito) {
         if (!ChromeFeatureList.isEnabled(
-                    ChromeFeatureList.ADVANCED_PERIPHERALS_SUPPORT_TAB_STRIP)) {
+                ChromeFeatureList.ADVANCED_PERIPHERALS_SUPPORT_TAB_STRIP)) {
             return;
         }
 
@@ -145,7 +144,8 @@ public class StripTabHoverCardView extends FrameLayout {
         mUrlView.setTextColor(
                 TabUiThemeProvider.getStripTabHoverCardTextColorSecondary(getContext(), incognito));
 
-        ViewCompat.setBackgroundTintList(this,
+        ViewCompat.setBackgroundTintList(
+                this,
                 TabUiThemeProvider.getStripTabHoverCardBackgroundTintList(getContext(), incognito));
     }
 
@@ -168,9 +168,6 @@ public class StripTabHoverCardView extends FrameLayout {
      *     position of the hover card, in px.
      */
     float[] getHoverCardPosition(boolean isSelectedTab, float tabX, float tabWidth, float height) {
-        boolean isFolioEnabled = TabManagementFieldTrial.isTabStripFolioEnabled();
-        boolean isDetachedEnabled = TabManagementFieldTrial.isTabStripDetachedEnabled();
-
         // 1. Determine the window width.
         DisplayMetrics displayMetrics = getContext().getResources().getDisplayMetrics();
         float displayDensity = displayMetrics.density;
@@ -187,22 +184,22 @@ public class StripTabHoverCardView extends FrameLayout {
         // Update the card LayoutParams if an adjustment on the current width is required.
         var layoutParams = getLayoutParams();
         if (hoverCardWidthPx != layoutParams.width) {
-            setLayoutParams(new CoordinatorLayout.LayoutParams(
-                    Math.round(hoverCardWidthPx), layoutParams.height));
+            setLayoutParams(
+                    new CoordinatorLayout.LayoutParams(
+                            Math.round(hoverCardWidthPx), layoutParams.height));
         }
 
         // 3. Determine the horizontal position of the hover card.
         float hoverCardXDp =
                 LocalizationUtils.isLayoutRtl() ? (tabX - (hoverCardWidthDp - tabWidth)) : tabX;
-        // Adjust the TSR detached and inactive folio tab hover card to align with the tab container
+        // Adjust the inactive folio tab hover card to align with the tab container
         // edge.
-        if (isDetachedEnabled || (isFolioEnabled && !isSelectedTab)) {
+        if (!isSelectedTab) {
             hoverCardXDp +=
                     MathUtils.flipSignIf(
                             getContext()
                                             .getResources()
-                                            .getDimension(
-                                                    R.dimen.tsr_no_feet_tab_hover_card_x_offset)
+                                            .getDimension(R.dimen.inactive_tab_hover_card_x_offset)
                                     / displayDensity,
                             LocalizationUtils.isLayoutRtl());
         }
@@ -231,10 +228,6 @@ public class StripTabHoverCardView extends FrameLayout {
 
         // 4. Determine the vertical position of the hover card.
         float hoverCardYDp = height;
-        // Adjust the TSR detached tab hover card to be at a fixed distance from the tab container.
-        if (isDetachedEnabled) {
-            hoverCardYDp += StripLayoutHelper.FOLIO_DETACHED_BOTTOM_MARGIN_DP;
-        }
 
         // On a low-end device adjust the card to account for the shadow length of the background
         // drawable.

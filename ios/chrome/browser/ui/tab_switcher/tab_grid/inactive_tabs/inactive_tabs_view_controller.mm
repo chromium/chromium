@@ -121,7 +121,7 @@
   CGFloat leftInset = self.view.safeAreaInsets.left;
   CGFloat rightInset = self.view.safeAreaInsets.right;
 
-  _gridViewController.gridView.contentInset =
+  _gridViewController.contentInsets =
       UIEdgeInsetsMake(topInset, leftInset, bottomInset, rightInset);
 }
 

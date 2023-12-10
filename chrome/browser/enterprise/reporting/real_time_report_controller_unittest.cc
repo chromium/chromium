@@ -160,7 +160,7 @@ TEST_F(RealTimeReportControllerTest, LegacyTech) {
 
   static_cast<RealTimeReportControllerDelegate*>(
       report_controller.GetDelegateForTesting())
-      ->TriggerLegacyTech(data);
+      ->TriggerLegacyTech(std::move(data));
 }
 
 }  // namespace enterprise_reporting

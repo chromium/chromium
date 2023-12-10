@@ -38,7 +38,7 @@
 #include "third_party/blink/renderer/core/css/style_rule_counter_style.h"
 #include "third_party/blink/renderer/core/css/style_rule_font_feature_values.h"
 #include "third_party/blink/renderer/core/css/style_rule_font_palette_values.h"
-#include "third_party/blink/renderer/core/css/style_rule_view_transitions.h"
+#include "third_party/blink/renderer/core/css/style_rule_view_transition.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_linked_stack.h"
@@ -47,6 +47,8 @@
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
 
 namespace blink {
+
+class RuleSet;
 
 using AddRuleFlags = unsigned;
 
@@ -108,7 +110,8 @@ class CORE_EXPORT RuleData {
   // give to the constructor), you will need to call
   // MovedToDifferentRuleSet() below. Otherwise,
   // DescendantSelectorIdentifierHashes() will return a slice
-  // into a nonexistent backing.
+  // into a nonexistent backing (and GetPosition() will return
+  // a bogus value, which cannot be used for Seeker lookups).
   RuleData(StyleRule*,
            unsigned selector_index,
            unsigned position,
@@ -153,7 +156,8 @@ class CORE_EXPORT RuleData {
   void ComputeBloomFilterHashes(const StyleScope* style_scope,
                                 Vector<unsigned>& backing);
   void MovedToDifferentRuleSet(const Vector<unsigned>& old_backing,
-                               Vector<unsigned>& new_backing);
+                               Vector<unsigned>& new_backing,
+                               unsigned new_position);
 
   void Trace(Visitor*) const;
 
@@ -250,8 +254,8 @@ class RuleMap {
   void AddFilteredRulesFromOtherSet(
       const RuleMap& other,
       const HeapHashSet<Member<StyleRule>>& only_include,
-      const Vector<unsigned>& old_bloom_hash_backing,
-      Vector<unsigned>& new_bloom_hash_backing);
+      const RuleSet& old_rule_set,
+      RuleSet& new_rule_set);
   base::span<const RuleData> Find(const AtomicString& key) const {
     if (buckets.IsNull()) {
       return {};
@@ -461,9 +465,9 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
       const {
     return font_feature_values_rules_;
   }
-  const HeapVector<Member<StyleRuleViewTransitions>>& ViewTransitionsRules()
+  const HeapVector<Member<StyleRuleViewTransition>>& ViewTransitionRules()
       const {
-    return view_transitions_rules_;
+    return view_transition_rules_;
   }
   const HeapVector<Member<StyleRulePositionFallback>>& PositionFallbackRules()
       const {
@@ -572,6 +576,8 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
   FRIEND_TEST_ALL_PREFIXES(RuleSetTest, RuleCountNotIncreasedByInvalidRuleData);
   FRIEND_TEST_ALL_PREFIXES(RuleSetTest, RuleDataPositionLimit);
   friend class RuleSetCascadeLayerTest;
+  friend class RuleMap;  // For scope_intervals_ and
+                         // NewlyAddedFromDifferentRuleSet().
 
   using SubstringMatcherMap =
       HashMap<AtomicString, std::unique_ptr<base::SubstringSetMatcher>>;
@@ -586,7 +592,7 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
   void AddFontPaletteValuesRule(StyleRuleFontPaletteValues*);
   void AddFontFeatureValuesRule(StyleRuleFontFeatureValues*);
   void AddPositionFallbackRule(StyleRulePositionFallback*);
-  void AddViewTransitionsRule(StyleRuleViewTransitions*);
+  void AddViewTransitionRule(StyleRuleViewTransition*);
 
   bool MatchMediaForAddRules(const MediaQueryEvaluator& evaluator,
                              const MediaQuerySet* media_queries);
@@ -613,6 +619,19 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
                const ContainerQuery*,
                const CascadeLayer*,
                const StyleScope*);
+
+  // Must be called when a RuleData has been added to this RuleSet
+  // through some form that does not go through AddRule();
+  // used during creation of diff rulesets (AddFilteredRulesFromOtherSet()).
+  // In particular, it will adjust the position of new_rule_data,
+  // add it to the necessary intervals for diff rulesets, and adjust
+  // rule_count_.
+  //
+  // Used only by RuleSet itself, and RuleMap (through a friend declaration).
+  void NewlyAddedFromDifferentRuleSet(const RuleData& old_rule_data,
+                                      const StyleScope* style_scope,
+                                      const RuleSet& old_rule_set,
+                                      RuleData& new_rule_data);
 
   void SortKeyframesRulesIfNeeded();
 
@@ -682,7 +701,7 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
   HeapVector<Member<StyleRuleFontFace>> font_face_rules_;
   HeapVector<Member<StyleRuleFontPaletteValues>> font_palette_values_rules_;
   HeapVector<Member<StyleRuleFontFeatureValues>> font_feature_values_rules_;
-  HeapVector<Member<StyleRuleViewTransitions>> view_transitions_rules_;
+  HeapVector<Member<StyleRuleViewTransition>> view_transition_rules_;
   HeapVector<Member<StyleRuleKeyframes>> keyframes_rules_;
   HeapVector<Member<StyleRuleProperty>> property_rules_;
   HeapVector<Member<StyleRuleCounterStyle>> counter_style_rules_;

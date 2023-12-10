@@ -10,6 +10,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/file_system_access/file_system_access_features.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/page_info/chrome_page_info_ui_delegate.h"
 #include "chrome/browser/ui/views/accessibility/non_accessible_image_view.h"
@@ -142,6 +143,27 @@ void PermissionToggleRowView::InitForUserSource(
   toggle_button_ = row_view_->AddControl(std::move(toggle_button));
 
   const int icon_size = GetLayoutConstant(PAGE_INFO_ICON_SIZE);
+  // TODO(crbug.com/1011533): Remove separate handling of
+  // `FILE_SYSTEM_WRITE_GUARD` when implementing the final version of the
+  // FSA Persistent Permissions Page Info UI, which utilizes the existing
+  // pattern below for One Time Permissions.
+  if (base::FeatureList::IsEnabled(
+          features::kFileSystemAccessPersistentPermissions) &&
+      permission_.type == ContentSettingsType::FILE_SYSTEM_WRITE_GUARD) {
+    auto subpage_button = views::CreateVectorImageButtonWithNativeTheme(
+        base::BindRepeating(
+            [](PermissionToggleRowView* row) {
+              row->delegate_->OpenSiteSettingsFileSystem();
+            },
+            base::Unretained(this)),
+        vector_icons::kLaunchIcon);
+    subpage_button->SetTooltipText(l10n_util::GetStringUTF16(
+        IDS_PAGE_INFO_PERMISSIONS_SUBPAGE_BUTTON_TOOLTIP));
+    views::InstallCircleHighlightPathGenerator(subpage_button.get());
+    subpage_button->SetMinimumImageSize({icon_size, icon_size});
+    subpage_button->SetFlipCanvasOnPaintForRTLUI(false);
+    row_view_->AddControl(std::move(subpage_button));
+  }
   if (permissions::PermissionUtil::CanPermissionBeAllowedOnce(
           permission_.type)) {
     auto subpage_button = views::CreateVectorImageButtonWithNativeTheme(

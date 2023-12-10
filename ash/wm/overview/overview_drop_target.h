@@ -6,7 +6,6 @@
 #define ASH_WM_OVERVIEW_OVERVIEW_DROP_TARGET_H_
 
 #include "ash/wm/overview/overview_item_base.h"
-#include "base/memory/raw_ptr.h"
 
 namespace aura {
 class Window;
@@ -46,7 +45,7 @@ class OverviewDropTarget : public OverviewItemBase {
   float GetItemScale(int height) override;
   void ScaleUpSelectedItem(OverviewAnimationType animation_type) override;
   void EnsureVisible() override;
-  OverviewFocusableView* GetFocusableView() const override;
+  std::vector<OverviewFocusableView*> GetFocusableViews() const override;
   views::View* GetBackDropView() const override;
   void UpdateRoundedCornersAndShadow() override;
   void SetOpacity(float opacity) override;
@@ -76,9 +75,8 @@ class OverviewDropTarget : public OverviewItemBase {
   gfx::Point GetMagnifierFocusPointInScreen() const override;
   const gfx::RoundedCornersF GetRoundedCorners() const override;
 
- protected:
-  // OverviewItemBase:
-  void CreateItemWidget() override;
+ private:
+  void CreateItemWidget();
 };
 
 }  // namespace ash

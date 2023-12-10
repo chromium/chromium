@@ -102,8 +102,12 @@ class SingleTestRunner(object):
         args = self._port.args_for_test(self._test_name)
         test_name = self._port.name_for_test(self._test_name)
         wpt_print_mode = self._port.is_wpt_print_reftest(self._test_name)
+        trace_file = self._port.trace_file_for_test(self._test_name)
+        startup_trace_file = self._port.startup_trace_file_for_test(
+            self._test_name)
         return DriverInput(test_name, self._timeout_ms, image_hash,
-                           wpt_print_mode, args)
+                           wpt_print_mode, trace_file, startup_trace_file,
+                           args)
 
     def run(self):
         # WPT crash tests do not have baselines, so even when re-baselining we
@@ -680,6 +684,8 @@ class SingleTestRunner(object):
                                        self._timeout_ms,
                                        image_hash=test_output.image_hash,
                                        wpt_print_mode=wpt_print_mode,
+                                       trace_file=None,
+                                       startup_trace_file=None,
                                        args=args)
             expected_output = self._driver.run_test(driver_input)
             total_test_time += expected_output.test_time
@@ -774,7 +780,8 @@ class SingleTestRunner(object):
                         actual_driver_output, reference_driver_output,
                         reference_filename))
             elif err_str:
-                # TODO(rmhasan) Should we include this error message in the artifacts ?
+                # TODO(weizhong) Should we include this error message in the
+                # artifacts ?
                 _log.error('  %s : %s', self._test_name, err_str)
             elif not max_pixels_diff:
                 _log.warning(

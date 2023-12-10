@@ -157,7 +157,7 @@ WebmEncoderMuxer::WebmEncoderMuxer(
                              webm_file_path,
                              std::move(drive_fs_quota_delegate),
                              this),
-                         /*max_data_output_interval=*/absl::nullopt),
+                         /*max_data_output_interval=*/std::nullopt),
                      /*has_video=*/true,
                      /*has_audio=*/!!audio_input_params) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -359,7 +359,7 @@ void WebmEncoderMuxer::EncodeVideoImpl(scoped_refptr<media::VideoFrame> frame) {
 
 void WebmEncoderMuxer::OnVideoEncoderOutput(
     media::VideoEncoderOutput output,
-    absl::optional<media::VideoEncoder::CodecDescription> codec_description) {
+    std::optional<media::VideoEncoder::CodecDescription> codec_description) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   DCHECK(!encoded_video_params_.empty());
@@ -381,7 +381,7 @@ void WebmEncoderMuxer::OnVideoEncoderOutput(
 
 void WebmEncoderMuxer::OnAudioEncoded(
     media::EncodedAudioBuffer encoded_audio,
-    absl::optional<media::AudioEncoder::CodecDescription> codec_description) {
+    std::optional<media::AudioEncoder::CodecDescription> codec_description) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(audio_encoder_);
 

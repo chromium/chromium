@@ -13,7 +13,7 @@ namespace {
 // `ASSERT_TRUE()` requires a function signature that returns `void`.
 void ToTimeTodayInternal(const TimeOfDay& time_of_day,
                          base::Time* time_today_out) {
-  const absl::optional<base::Time> time_today = time_of_day.ToTimeToday();
+  const std::optional<base::Time> time_today = time_of_day.ToTimeToday();
   ASSERT_TRUE(time_today);
   *time_today_out = *time_today;
 }

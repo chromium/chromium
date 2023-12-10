@@ -1,8 +1,8 @@
 include_rules = [
   "+ios/chrome/browser/favicon",
-  "+ios/chrome/browser/signin",
+  "+ios/chrome/browser/signin/model",
   "+ios/chrome/browser/sync/model",
-  "+ios/chrome/browser/history",
+  "+ios/chrome/browser/history/model",
   "+ios/chrome/browser/dom_distiller/model",
 ]
 

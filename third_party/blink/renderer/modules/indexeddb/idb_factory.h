@@ -43,8 +43,8 @@
 #include "third_party/blink/renderer/modules/indexeddb/idb_open_db_request.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/heap/weak_cell.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
-#include "third_party/blink/renderer/platform/wtf/gc_plugin.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -59,7 +59,6 @@ class MODULES_EXPORT IDBFactory final
     : public ScriptWrappable,
       public ExecutionContextLifecycleObserver {
   DEFINE_WRAPPERTYPEINFO();
-  USING_PRE_FINALIZER(IDBFactory, Dispose);
 
  public:
   explicit IDBFactory(ExecutionContext* context);
@@ -94,8 +93,6 @@ class MODULES_EXPORT IDBFactory final
 
   // ExecutionContextLifecycleObserver
   void ContextDestroyed() override;
-
-  void Dispose();
 
   void Trace(Visitor*) const override;
 
@@ -157,7 +154,7 @@ class MODULES_EXPORT IDBFactory final
   HeapMojoRemote<mojom::blink::IDBFactory> remote_;
   HeapMojoRemote<mojom::blink::FeatureObserver> feature_observer_;
 
-  base::WeakPtrFactory<IDBFactory> weak_factory_{this};
+  WeakCellFactory<IDBFactory> weak_factory_{this};
 };
 
 }  // namespace blink

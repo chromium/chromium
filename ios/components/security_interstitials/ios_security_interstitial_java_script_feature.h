@@ -5,6 +5,8 @@
 #ifndef IOS_COMPONENTS_SECURITY_INTERSTITIALS_IOS_SECURITY_INTERSTITIAL_JAVA_SCRIPT_FEATURE_H_
 #define IOS_COMPONENTS_SECURITY_INTERSTITIALS_IOS_SECURITY_INTERSTITIAL_JAVA_SCRIPT_FEATURE_H_
 
+#import <optional>
+
 #import "base/no_destructor.h"
 #import "ios/web/public/js_messaging/java_script_feature.h"
 
@@ -21,7 +23,7 @@ class IOSSecurityInterstitialJavaScriptFeature : public web::JavaScriptFeature {
   friend class base::NoDestructor<IOSSecurityInterstitialJavaScriptFeature>;
 
   // JavaScriptFeature overrides
-  absl::optional<std::string> GetScriptMessageHandlerName() const override;
+  std::optional<std::string> GetScriptMessageHandlerName() const override;
   void ScriptMessageReceived(web::WebState* web_state,
                              const web::ScriptMessage& script_message) override;
 

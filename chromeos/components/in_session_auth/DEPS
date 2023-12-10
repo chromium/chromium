@@ -1,0 +1,4 @@
+include_rules = [
+  "+ash/public/cpp",
+  "+chrome/browser/ash/login/quick_unlock",
+]

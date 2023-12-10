@@ -5,12 +5,12 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_ATTESTATION_MOCK_ATTESTATION_FLOW_H_
 #define CHROMEOS_ASH_COMPONENTS_ATTESTATION_MOCK_ATTESTATION_FLOW_H_
 
+#include <optional>
 #include <string>
 
 #include "base/functional/callback.h"
 #include "chromeos/ash/components/attestation/attestation_flow.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class AccountId;
 
@@ -94,7 +94,7 @@ class MockAttestationFlow : public AttestationFlow {
        bool /*force_new_key*/,
        ::attestation::KeyType /*key_crypto_type*/,
        const std::string& /*key_name*/,
-       const absl::optional<
+       const std::optional<
            AttestationFlow::CertProfileSpecificData>& /*profile_specific_data*/,
        CertificateCallback /*callback*/));
 };

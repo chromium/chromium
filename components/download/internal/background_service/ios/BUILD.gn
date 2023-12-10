@@ -17,7 +17,7 @@ source_set("background_service") {
     ":*",
     "//ios/chrome/browser/download/model/background_service",
     "//ios/chrome/browser/download/model/background_service:unit_tests",
-    "//ios/chrome/browser/optimization_guide:unit_tests",
+    "//ios/chrome/browser/optimization_guide/model:unit_tests",
   ]
 
   deps = [

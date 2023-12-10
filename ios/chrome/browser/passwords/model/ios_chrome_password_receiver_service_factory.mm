@@ -12,7 +12,7 @@
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
 #import "components/password_manager/core/browser/features/password_features.h"
-#import "components/password_manager/core/browser/password_store_interface.h"
+#import "components/password_manager/core/browser/password_store/password_store_interface.h"
 #import "components/password_manager/core/browser/sharing/incoming_password_sharing_invitation_sync_bridge.h"
 #import "components/password_manager/core/browser/sharing/password_receiver_service_impl.h"
 #import "components/sync/base/model_type.h"

@@ -39,7 +39,6 @@ class PrefChangeRegistrar;
 namespace ash {
 
 class Authenticator;
-class ExtendedAuthenticator;
 class ViewsScreenLocker;
 
 // ScreenLocker displays the lock UI and takes care of authenticating the user
@@ -158,9 +157,7 @@ class ScreenLocker
   bool IsAuthTemporarilyDisabledForUser(const AccountId& account_id);
 
   // Change the authenticators; should only be used by tests.
-  void SetAuthenticatorsForTesting(
-      scoped_refptr<Authenticator> authenticator,
-      scoped_refptr<ExtendedAuthenticator> extended_authenticator);
+  void SetAuthenticatorsForTesting(scoped_refptr<Authenticator> authenticator);
 
   static void SetClocksForTesting(const base::Clock* clock,
                                   const base::TickClock* tick_clock);
@@ -238,7 +235,7 @@ class ScreenLocker
       std::vector<ChallengeResponseKey> challenge_response_keys);
 
   void OnPinAttemptDone(std::unique_ptr<UserContext>,
-                        absl::optional<AuthenticationError>);
+                        std::optional<AuthenticationError>);
 
   // Called to select the appropriate Authenticator and perform unlock
   // operation.
@@ -275,9 +272,6 @@ class ScreenLocker
 
   // Used to authenticate the user to unlock.
   scoped_refptr<Authenticator> authenticator_;
-
-  // Used to authenticate the user to unlock supervised users.
-  scoped_refptr<ExtendedAuthenticator> extended_authenticator_;
 
   // True if the screen is locked, or false otherwise.  This changes
   // from false to true, but will never change from true to

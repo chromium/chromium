@@ -18,12 +18,6 @@
 #include "net/first_party_sets/global_first_party_sets.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/test/base/testing_profile_manager.h"
-#include "components/account_id/account_id.h"
-#include "components/user_manager/fake_user_manager.h"
-#endif
-
 namespace system_logs {
 
 namespace {
@@ -64,9 +58,10 @@ class RelatedWebsiteSetsSourceTest : public BrowserWithTestWindowTest {
     BrowserWithTestWindowTest::TearDown();
   }
 
-  std::unique_ptr<SystemLogsResponse> GetRelatedWebsiteSetsSource() {
+  std::unique_ptr<SystemLogsResponse> GetRelatedWebsiteSetsSource(
+      first_party_sets::FirstPartySetsPolicyService* service) {
     base::RunLoop run_loop;
-    RelatedWebsiteSetsSource source;
+    RelatedWebsiteSetsSource source(service);
     std::unique_ptr<SystemLogsResponse> response;
     source.Fetch(
         base::BindLambdaForTesting([&](std::unique_ptr<SystemLogsResponse> r) {
@@ -93,18 +88,6 @@ class RelatedWebsiteSetsSourceTest : public BrowserWithTestWindowTest {
   first_party_sets::FirstPartySetsPolicyService* service() { return service_; }
 
  private:
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // BrowserWithTestWindowTest:
-  TestingProfile* CreateProfile() override {
-    const std::string name = "test2@example.com";
-    const AccountId account_id(AccountId::FromUserEmail(name));
-    auto* user = user_manager()->AddUser(account_id);
-    user_manager()->UserLoggedIn(account_id, user->username_hash(), false,
-                                 false);
-    return profile_manager()->CreateTestingProfile(name);
-  }
-#endif
-
   first_party_sets::ScopedMockFirstPartySetsHandler first_party_sets_handler_;
   raw_ptr<first_party_sets::FirstPartySetsPolicyService, DanglingUntriaged>
       service_;
@@ -113,20 +96,37 @@ class RelatedWebsiteSetsSourceTest : public BrowserWithTestWindowTest {
 TEST_F(RelatedWebsiteSetsSourceTest, RWS_Disabled) {
   SetRwsEnabledViaPref(false);
   service()->InitForTesting();
-  auto response = GetRelatedWebsiteSetsSource();
+  auto response = GetRelatedWebsiteSetsSource(service());
   EXPECT_EQ(kRelatedWebsiteSetsDisabled,
             response->at(RelatedWebsiteSetsSource::kSetsInfoField));
 }
 
 TEST_F(RelatedWebsiteSetsSourceTest, RWS_NotReady) {
-  auto response = GetRelatedWebsiteSetsSource();
+  auto response = GetRelatedWebsiteSetsSource(service());
   EXPECT_EQ("", response->at(RelatedWebsiteSetsSource::kSetsInfoField));
 }
 
 TEST_F(RelatedWebsiteSetsSourceTest, RWS_Empty) {
   service()->InitForTesting();
-  auto response = GetRelatedWebsiteSetsSource();
+  auto response = GetRelatedWebsiteSetsSource(service());
   EXPECT_EQ(base::Value::List().DebugString(),
+            response->at(RelatedWebsiteSetsSource::kSetsInfoField));
+}
+
+TEST_F(RelatedWebsiteSetsSourceTest, RWS_OTRProfile) {
+  first_party_sets::FirstPartySetsPolicyService* otr_service =
+      first_party_sets::FirstPartySetsPolicyServiceFactory::
+          GetForBrowserContext(
+              profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true));
+
+  base::RunLoop run_loop;
+  otr_service->WaitForFirstInitCompleteForTesting(run_loop.QuitClosure());
+  run_loop.Run();
+  otr_service->ResetForTesting();
+  otr_service->InitForTesting();
+
+  auto response = GetRelatedWebsiteSetsSource(otr_service);
+  EXPECT_EQ(kRelatedWebsiteSetsDisabled,
             response->at(RelatedWebsiteSetsSource::kSetsInfoField));
 }
 
@@ -171,17 +171,72 @@ TEST_F(RelatedWebsiteSetsSourceTest, RWS) {
                   .Set("AssociatedSites",
                        base::Value::List().Append(associate_site.Serialize()))
                   .Set("PrimarySites", base::Value::List()
-                                           .Append(primary1_site.Serialize())
-                                           .Append(primary1_cctld.Serialize())))
+                                           .Append(primary1_cctld.Serialize())
+                                           .Append(primary1_site.Serialize())))
           .Append(
               base::Value::Dict()
                   .Set("PrimarySites",
                        base::Value::List().Append(primary2_site.Serialize()))
                   .Set("ServiceSites",
                        base::Value::List().Append(service_site.Serialize())));
-  auto response = GetRelatedWebsiteSetsSource();
+  auto response = GetRelatedWebsiteSetsSource(service());
   EXPECT_EQ(expected.DebugString(),
             response->at(RelatedWebsiteSetsSource::kSetsInfoField));
+}
+
+TEST_F(RelatedWebsiteSetsSourceTest, SubsetsAreSorted) {
+  const net::SchemefulSite primary(GURL("https://primary.test"));
+  const net::SchemefulSite associated1(GURL("https://associated1.test"));
+  const net::SchemefulSite associated2(GURL("https://associated2.test"));
+  const net::SchemefulSite associated3(GURL("https://associated3.test"));
+
+  const net::SchemefulSite service1(GURL("https://service1.test"));
+  const net::SchemefulSite service2(GURL("https://service2.test"));
+  const net::SchemefulSite service3(GURL("https://service3.test"));
+
+  SetGlobalSets(net::GlobalFirstPartySets(
+      base::Version("0.0"),
+      {
+          {primary,
+           {net::FirstPartySetEntry(primary, net::SiteType::kPrimary,
+                                    absl::nullopt)}},
+          {associated3,
+           {net::FirstPartySetEntry(primary, net::SiteType::kAssociated, 2)}},
+          {associated1,
+           {net::FirstPartySetEntry(primary, net::SiteType::kAssociated, 0)}},
+          {associated2,
+           {net::FirstPartySetEntry(primary, net::SiteType::kAssociated, 1)}},
+          {service2,
+           {net::FirstPartySetEntry(primary, net::SiteType::kService,
+                                    absl::nullopt)}},
+          {service1,
+           {net::FirstPartySetEntry(primary, net::SiteType::kService,
+                                    absl::nullopt)}},
+          {service3,
+           {net::FirstPartySetEntry(primary, net::SiteType::kService,
+                                    absl::nullopt)}},
+      },
+      {}));
+
+  service()->InitForTesting();
+
+  EXPECT_EQ(
+      GetRelatedWebsiteSetsSource(service())->at(
+          RelatedWebsiteSetsSource::kSetsInfoField),
+      base::Value::List()
+          .Append(
+              base::Value::Dict()
+                  .Set("AssociatedSites", base::Value::List()
+                                              .Append(associated1.Serialize())
+                                              .Append(associated2.Serialize())
+                                              .Append(associated3.Serialize()))
+                  .Set("PrimarySites",
+                       base::Value::List().Append(primary.Serialize()))
+                  .Set("ServiceSites", base::Value::List()
+                                           .Append(service1.Serialize())
+                                           .Append(service2.Serialize())
+                                           .Append(service3.Serialize())))
+          .DebugString());
 }
 
 }  // namespace system_logs

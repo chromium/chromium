@@ -39,6 +39,8 @@ namespace blink {
 
 StyleRuleImport::StyleRuleImport(const String& href,
                                  LayerName&& layer,
+                                 bool supported,
+                                 String&& supports_string,
                                  const MediaQuerySet* media,
                                  OriginClean origin_clean)
     : StyleRuleBase(kImport),
@@ -46,8 +48,10 @@ StyleRuleImport::StyleRuleImport(const String& href,
       style_sheet_client_(MakeGarbageCollected<ImportedStyleSheetClient>(this)),
       str_href_(href),
       layer_(std::move(layer)),
+      supports_string_(std::move(supports_string)),
       media_queries_(media),
       loading_(false),
+      supported_(supported),
       origin_clean_(origin_clean) {
   if (!media_queries_) {
     media_queries_ = MediaQuerySet::Create(String(), nullptr);

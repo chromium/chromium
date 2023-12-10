@@ -59,11 +59,6 @@
 #include "content/browser/renderer_host/frame_navigation_entry.h"
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/input/input_router.h"
-#include "content/browser/renderer_host/input/synthetic_gesture.h"
-#include "content/browser/renderer_host/input/synthetic_gesture_target.h"
-#include "content/browser/renderer_host/input/synthetic_pointer_action.h"
-#include "content/browser/renderer_host/input/synthetic_tap_gesture.h"
-#include "content/browser/renderer_host/input/synthetic_touchscreen_pinch_gesture.h"
 #include "content/browser/renderer_host/navigation_controller_impl.h"
 #include "content/browser/renderer_host/navigation_entry_impl.h"
 #include "content/browser/renderer_host/navigation_entry_restore_context_impl.h"
@@ -82,7 +77,12 @@
 #include "content/common/content_navigation_policy.h"
 #include "content/common/frame.mojom-test-utils.h"
 #include "content/common/input/actions_parser.h"
+#include "content/common/input/synthetic_gesture.h"
+#include "content/common/input/synthetic_gesture_target.h"
 #include "content/common/input/synthetic_pinch_gesture_params.h"
+#include "content/common/input/synthetic_pointer_action.h"
+#include "content/common/input/synthetic_tap_gesture.h"
+#include "content/common/input/synthetic_touchscreen_pinch_gesture.h"
 #include "content/common/renderer.mojom.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -2488,6 +2488,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, SandboxFlagsReplication) {
 
 // Check that dynamic updates to iframe sandbox flags are propagated correctly.
 IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, DynamicSandboxFlags) {
+  bool sandboxed_iframes_are_isolated =
+      SiteIsolationPolicy::AreIsolatedSandboxedIframesEnabled();
   GURL main_url(
       embedded_test_server()->GetURL("/frame_tree/page_with_two_frames.html"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
@@ -2548,13 +2550,14 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, DynamicSandboxFlags) {
   ASSERT_EQ(1U, root->child_at(0)->child_count());
 
   EXPECT_EQ(
-      " Site A ------------ proxies for B C\n"
-      "   |--Site B ------- proxies for A C\n"
-      "   |    +--Site B -- proxies for A C\n"
-      "   +--Site C ------- proxies for A B\n"
-      "Where A = http://127.0.0.1/\n"
-      "      B = http://bar.com/\n"
-      "      C = http://baz.com/",
+      base::StringPrintf(" Site A ------------ proxies for B C\n"
+                         "   |--Site B ------- proxies for A C\n"
+                         "   |    +--Site B -- proxies for A C\n"
+                         "   +--Site C ------- proxies for A B\n"
+                         "Where A = http://127.0.0.1/\n"
+                         "      B = http://bar.com/%s\n"
+                         "      C = http://baz.com/",
+                         sandboxed_iframes_are_isolated ? " (sandboxed)" : ""),
       DepictFrameTree(root));
 
   // Confirm that the browser process has updated the frame's current sandbox
@@ -2574,21 +2577,49 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, DynamicSandboxFlags) {
   // is currently a proxy in baz.com's renderer process.  This checks that the
   // proxies of |root->child_at(0)| were also updated with the latest sandbox
   // flags.
+  // TODO(https://crbug.com/1502845): When IsolateSandboxedIframes is enabled,
+  // this test no longer uses the proxy inheritance mentioned above, because
+  // sandboxed and unsandboxed baz.com pages will be in different SiteInstances.
+  // Restructure the test so it still provides coverage for proxy inheritance
+  // when IsolateSandboxedIframes is enabled.
   GURL baz_child_url(embedded_test_server()->GetURL("baz.com", "/title2.html"));
   EXPECT_TRUE(
       NavigateToURLFromRenderer(root->child_at(0)->child_at(0), baz_child_url));
   EXPECT_TRUE(observer.last_navigation_succeeded());
   EXPECT_EQ(baz_child_url, observer.last_navigation_url());
 
-  EXPECT_EQ(
-      " Site A ------------ proxies for B C\n"
-      "   |--Site B ------- proxies for A C\n"
-      "   |    +--Site C -- proxies for A B\n"
-      "   +--Site C ------- proxies for A B\n"
-      "Where A = http://127.0.0.1/\n"
-      "      B = http://bar.com/\n"
-      "      C = http://baz.com/",
-      DepictFrameTree(root));
+  if (sandboxed_iframes_are_isolated) {
+    switch (blink::features::kIsolateSandboxedIframesGroupingParam.Get()) {
+      case blink::features::IsolateSandboxedIframesGrouping::kPerSite:
+      case blink::features::IsolateSandboxedIframesGrouping::kPerOrigin:
+        EXPECT_EQ(
+            " Site A ------------ proxies for B C D\n"
+            "   |--Site B ------- proxies for A C D\n"
+            "   |    +--Site D -- proxies for A B C\n"
+            "   +--Site C ------- proxies for A B D\n"
+            "Where A = http://127.0.0.1/\n"
+            "      B = http://bar.com/ (sandboxed)\n"
+            "      C = http://baz.com/\n"
+            "      D = http://baz.com/ (sandboxed)",
+            DepictFrameTree(root));
+        break;
+      case blink::features::IsolateSandboxedIframesGrouping::kPerDocument:
+        // TODO(https://crbug.com/1501430): Add output for the PerDocument
+        // case, and parameterize this test to run all variants (none, per-site,
+        // per-origin, per-document).
+        break;
+    }
+  } else {
+    EXPECT_EQ(
+        " Site A ------------ proxies for B C\n"
+        "   |--Site B ------- proxies for A C\n"
+        "   |    +--Site C -- proxies for A B\n"
+        "   +--Site C ------- proxies for A B\n"
+        "Where A = http://127.0.0.1/\n"
+        "      B = http://bar.com/\n"
+        "      C = http://baz.com/",
+        DepictFrameTree(root));
+  }
 
   // Opening a popup in the child of a sandboxed frame should fail.
   EXPECT_EQ(false, EvalJs(root->child_at(0)->child_at(0),
@@ -5493,6 +5524,60 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   web_contents()->GetController().GoBack();
   frame_observer.WaitForCommit();
   EXPECT_EQ(orig_site_instance, child->current_frame_host()->GetSiteInstance());
+}
+
+// The site URL for a data: URL is the scheme + the serialized nonce from the
+// origin. This means that two data: URLs with the same body will have different
+// site URLs.
+IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, DataUrlsHaveUniqueSiteURLs) {
+  // Force process reuse for same-site URLs, to test whether identical data:
+  // URLs share a process with each other.
+  RenderProcessHost::SetMaxRendererProcessCount(1);
+
+  // Load a main frame data: URL.
+  GURL data_url("data:text/html,dataurl");
+  EXPECT_TRUE(NavigateToURL(shell(), data_url));
+
+  // Open another tab, then load the same data: URL in that tab. We need to
+  // first navigate the new tab to a different page, a_url.
+  // Shell::CreateNewWindow opens a new tab to about:blank, then loads the URL
+  // passed in. Since the about:blank is in a new tab, it gets a new process,
+  // and the passed-in URL keeps using that about:blank process. By navigating
+  // from a_url to the data: URL, we exercise the flow that will reuse the
+  // existing data: URL process, if possible.
+  GURL a_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  ShellAddedObserver new_shell_observer;
+  Shell* new_shell =
+      Shell::CreateNewWindow(static_cast<NavigationControllerImpl&>(
+                                 shell()->web_contents()->GetController())
+                                 .GetBrowserContext(),
+                             a_url, nullptr, gfx::Size());
+  auto* new_contents = static_cast<WebContentsImpl*>(new_shell->web_contents());
+  EXPECT_TRUE(WaitForLoadStop(new_contents));
+  EXPECT_TRUE(NavigateToURL(new_shell, data_url));
+
+  auto* main_frame = shell()->web_contents()->GetPrimaryMainFrame();
+  auto* new_frame = new_shell->web_contents()->GetPrimaryMainFrame();
+  GURL main_url = main_frame->GetSiteInstance()->GetSiteURL();
+  GURL new_url = new_frame->GetSiteInstance()->GetSiteURL();
+  EXPECT_NE(new_frame->GetSiteInstance(), main_frame->GetSiteInstance());
+  if (base::FeatureList::IsEnabled(features::kDataUrlsHaveOriginAsUrl)) {
+    // The site URL is the data scheme followed by a serialized nonce, which is
+    // unique for every data: URL instance.
+    EXPECT_NE(main_url, new_url);
+    EXPECT_TRUE(main_url.SchemeIs(url::kDataScheme));
+    EXPECT_EQ(new_url.GetContent().length(),
+              base::UnguessableToken::Create().ToString().length());
+    EXPECT_NE(new_frame->GetProcess(), main_frame->GetProcess());
+
+  } else {
+    // Without the feature, the site URL of data: URLs is the entire data: URL,
+    // so if the data is the same in both cases, the site URLs will be the same,
+    // and they will be allowed to share a process.
+    EXPECT_EQ(main_url, new_url);
+    EXPECT_EQ(main_url, data_url);
+    EXPECT_EQ(new_frame->GetProcess(), main_frame->GetProcess());
+  }
 }
 
 // Ensures that subframes navigated to data: URLs start in a process based on
@@ -9778,19 +9863,42 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 // child frames, but are removed when the frame navigates.
 IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
                        ActiveSandboxFlagsMaintainedAcrossNavigation) {
+  bool sandboxed_iframes_are_isolated =
+      SiteIsolationPolicy::AreIsolatedSandboxedIframesEnabled();
   GURL main_url(
       embedded_test_server()->GetURL("a.com", "/sandbox_main_frame_csp.html"));
+  RenderFrameDeletedObserver deleted_observer(
+      web_contents()->GetPrimaryFrameTree().root()->current_frame_host());
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
+  if (sandboxed_iframes_are_isolated) {
+    // The initial navigation is away from an initial un-sandboxed mainframe to
+    // a sandboxed mainframe, so before we call DepictFrameTree below we need to
+    // wait for the RenderFrameHost from the initial mainframe to be deleted and
+    // its proxies removed.
+    // TODO(https://crbug.com/1485586): See if we can reuse the initial RFH for
+    // a navigation to a sandboxed frame instead?
+    deleted_observer.WaitUntilDeleted();
+  }
 
   // It is safe to obtain the root frame tree node here, as it doesn't change.
   FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
   ASSERT_EQ(1u, root->child_count());
 
   EXPECT_EQ(
-      " Site A\n"
-      "   +--Site A\n"
-      "Where A = http://a.com/",
+      base::StringPrintf(" Site A\n"
+                         "   +--Site A\n"
+                         "Where A = http://a.com/%s",
+                         sandboxed_iframes_are_isolated ? " (sandboxed)" : ""),
       DepictFrameTree(root));
+  if (sandboxed_iframes_are_isolated &&
+      blink::features::kIsolateSandboxedIframesGroupingParam.Get() ==
+          blink::features::IsolateSandboxedIframesGrouping::kPerOrigin) {
+    // In per-origin IsolatedSandboxedIframes mode, the server port is retained
+    // in the site URL.
+    GURL main_site(embedded_test_server()->GetURL("a.com", "/"));
+    EXPECT_EQ(main_site,
+              root->current_frame_host()->GetSiteInstance()->GetSiteURL());
+  }
 
   FrameTreeNode* child_node = root->child_at(0);
 
@@ -9960,6 +10068,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 // sandbox flags.
 IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
                        ActiveSandboxFlagsCorrectInProxies) {
+  bool sandboxed_iframes_are_isolated =
+      SiteIsolationPolicy::AreIsolatedSandboxedIframesEnabled();
   GURL main_url(embedded_test_server()->GetURL(
       "foo.com", "/cross_site_iframe_factory.html?foo(bar)"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
@@ -9977,34 +10087,93 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 
   // Navigate the child to a CSP-sandboxed page on the same origin as it is
   // currently. This should update the flags in its proxies as well.
+  auto* child = root->child_at(0);
+  RenderFrameDeletedObserver deleted_observer_child(
+      child->current_frame_host());
   EXPECT_TRUE(NavigateToURLFromRenderer(
       root->child_at(0),
       embedded_test_server()->GetURL("bar.com", "/csp_sandboxed_frame.html")));
-
-  EXPECT_EQ(
-      " Site A ------------ proxies for B\n"
-      "   +--Site B ------- proxies for A\n"
-      "        |--Site B -- proxies for A\n"
-      "        +--Site B -- proxies for A\n"
-      "Where A = http://foo.com/\n"
-      "      B = http://bar.com/",
-      DepictFrameTree(root));
+  // DepictFrameTree remembers all the sites it has seen in the test, so the
+  // expected output changes depending on whether we have additional sites from
+  // process-isolated sandboxed frames. How many additional sites we have
+  // depends on the grouping mode.
+  if (sandboxed_iframes_are_isolated) {
+    // Sandboxed iframes force the RFH to change; wait for the old one to go
+    // away so that proxies in its SiteInstance don't affect DepictFrameTree
+    // output.
+    deleted_observer_child.WaitUntilDeleted();
+    switch (blink::features::kIsolateSandboxedIframesGroupingParam.Get()) {
+      case blink::features::IsolateSandboxedIframesGrouping::kPerSite:
+      case blink::features::IsolateSandboxedIframesGrouping::kPerOrigin:
+        EXPECT_EQ(
+            " Site A ------------ proxies for C\n"
+            "   +--Site C ------- proxies for A\n"
+            "        |--Site C -- proxies for A\n"
+            "        +--Site C -- proxies for A\n"
+            "Where A = http://foo.com/\n"
+            "      C = http://bar.com/ (sandboxed)",
+            DepictFrameTree(root));
+        break;
+      case blink::features::IsolateSandboxedIframesGrouping::kPerDocument:
+        // TODO(https://crbug.com/1501430): Add output for the PerDocument
+        // case, and parameterize this test to run all variants (none, per-site,
+        // per-origin, per-document).
+        break;
+    }
+  } else {
+    EXPECT_EQ(
+        " Site A ------------ proxies for B\n"
+        "   +--Site B ------- proxies for A\n"
+        "        |--Site B -- proxies for A\n"
+        "        +--Site B -- proxies for A\n"
+        "Where A = http://foo.com/\n"
+        "      B = http://bar.com/",
+        DepictFrameTree(root));
+  }
 
   // Now navigate the first grandchild to a page on the same origin as the main
   // frame. It should still be sandboxed, as it should get its flags from its
   // (remote) parent.
+  // TODO(https://crbug.com/1502845): When IsolateSandboxedIframes is enabled,
+  // this test no longer uses proxy inheritance; the grandchild and the main
+  // frame won't be in the same SiteInstance anymore, so this test will no
+  // longer exercise sandbox flags inheritance from an existing remote frame.
+  // Restructure the test so it still provides coverage for proxy inheritance
+  // when IsolateSandboxedIframes is enabled.
   EXPECT_TRUE(NavigateToURLFromRenderer(
       root->child_at(0)->child_at(0),
       embedded_test_server()->GetURL("foo.com", "/title1.html")));
 
-  EXPECT_EQ(
-      " Site A ------------ proxies for B\n"
-      "   +--Site B ------- proxies for A\n"
-      "        |--Site A -- proxies for B\n"
-      "        +--Site B -- proxies for A\n"
-      "Where A = http://foo.com/\n"
-      "      B = http://bar.com/",
-      DepictFrameTree(root));
+  if (sandboxed_iframes_are_isolated) {
+    switch (blink::features::kIsolateSandboxedIframesGroupingParam.Get()) {
+      case blink::features::IsolateSandboxedIframesGrouping::kPerSite:
+      case blink::features::IsolateSandboxedIframesGrouping::kPerOrigin:
+        EXPECT_EQ(
+            " Site A ------------ proxies for C D\n"
+            "   +--Site C ------- proxies for A D\n"
+            "        |--Site D -- proxies for A C\n"
+            "        +--Site C -- proxies for A D\n"
+            "Where A = http://foo.com/\n"
+            "      C = http://bar.com/ (sandboxed)\n"
+            "      D = http://foo.com/ (sandboxed)",
+            DepictFrameTree(root));
+        break;
+      case blink::features::IsolateSandboxedIframesGrouping::kPerDocument:
+        // TODO(https://crbug.com/1501430): Add output for the PerDocument
+        // case, and parameterize this test to run all variants (none, per-site,
+        // per-origin, per-document).
+        break;
+    }
+  } else {
+    EXPECT_EQ(
+        " Site A ------------ proxies for B\n"
+        "   +--Site B ------- proxies for A\n"
+        "        |--Site A -- proxies for B\n"
+        "        +--Site B -- proxies for A\n"
+        "Where A = http://foo.com/\n"
+        "      B = http://bar.com/",
+        DepictFrameTree(root));
+  }
 
   // The child of the sandboxed frame should've inherited sandbox flags, so it
   // should not be able to create popups.
@@ -10023,19 +10192,44 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   // Finally, navigate the grandchild frame to a new origin, creating a new site
   // instance. Again, the new document should be sandboxed, as it should get its
   // flags from its (remote) parent in B.
+  RenderFrameDeletedObserver deleted_observer_grandchild(
+      root->child_at(0)->child_at(0)->current_frame_host());
   EXPECT_TRUE(NavigateToURLFromRenderer(
       root->child_at(0)->child_at(0),
       embedded_test_server()->GetURL("baz.com", "/title1.html")));
 
-  EXPECT_EQ(
-      " Site A ------------ proxies for B C\n"
-      "   +--Site B ------- proxies for A C\n"
-      "        |--Site C -- proxies for A B\n"
-      "        +--Site B -- proxies for A C\n"
-      "Where A = http://foo.com/\n"
-      "      B = http://bar.com/\n"
-      "      C = http://baz.com/",
-      DepictFrameTree(root));
+  deleted_observer_grandchild.WaitUntilDeleted();
+  if (sandboxed_iframes_are_isolated) {
+    switch (blink::features::kIsolateSandboxedIframesGroupingParam.Get()) {
+      case blink::features::IsolateSandboxedIframesGrouping::kPerSite:
+      case blink::features::IsolateSandboxedIframesGrouping::kPerOrigin:
+        EXPECT_EQ(
+            " Site A ------------ proxies for C E\n"
+            "   +--Site C ------- proxies for A E\n"
+            "        |--Site E -- proxies for A C\n"
+            "        +--Site C -- proxies for A E\n"
+            "Where A = http://foo.com/\n"
+            "      C = http://bar.com/ (sandboxed)\n"
+            "      E = http://baz.com/ (sandboxed)",
+            DepictFrameTree(root));
+        break;
+      case blink::features::IsolateSandboxedIframesGrouping::kPerDocument:
+        // TODO(https://crbug.com/1501430): Add output for the PerDocument
+        // case, and parameterize this test to run all variants (none, per-site,
+        // per-origin, per-document).
+        break;
+    }
+  } else {
+    EXPECT_EQ(
+        " Site A ------------ proxies for B C\n"
+        "   +--Site B ------- proxies for A C\n"
+        "        |--Site C -- proxies for A B\n"
+        "        +--Site B -- proxies for A C\n"
+        "Where A = http://foo.com/\n"
+        "      B = http://bar.com/\n"
+        "      C = http://baz.com/",
+        DepictFrameTree(root));
+  }
 
   // The child of the sandboxed frame should've inherited sandbox flags, so it
   // should not be able to create popups.

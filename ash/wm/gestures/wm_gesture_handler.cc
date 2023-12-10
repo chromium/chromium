@@ -94,7 +94,7 @@ bool MaybeHandleWrongVerticalGesture(float offset_y, bool in_overview) {
 // For the continuous scroll animation, calculate what `OverviewEnterExitType`
 // to use based on the scroll event and current overview state. Returns null if
 // we should exit overview.
-absl::optional<OverviewEnterExitType> HandleContinuousScrollIntoOverview(
+std::optional<OverviewEnterExitType> HandleContinuousScrollIntoOverview(
     float scroll_y,
     bool in_overview,
     bool scroll_in_progress) {
@@ -120,7 +120,7 @@ absl::optional<OverviewEnterExitType> HandleContinuousScrollIntoOverview(
   }
 
   // A continuous gesture has ended and we should animate out of overview mode.
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 // Handles vertical 3-finger scroll gesture by entering overview on scrolling
@@ -167,13 +167,15 @@ bool Handle3FingerContinuousVerticalScroll(float scroll_y,
     return false;
   }
 
-  // Ignore scrolls beyond the upward threshold. Note that we already clamped
-  // `scroll_y` to `kVerticalThresholdDp`. If the threshold has been met but the
-  // scroll is in progress, we will need to do the final placement before we
-  // mark the scroll as finished.
+  // Consume overscroll after continuous scroll has
+  // completed progress. This prevents the scroll from propagating to another
+  // view and triggering additional behavior.
+  // Note that we already clamped `scroll_y` to `kVerticalThresholdDp`. If the
+  // threshold has been met but the scroll is in progress, we will need to do
+  // the final placement before we mark the scroll as finished.
   if (scroll_y == WmGestureHandler::kVerticalThresholdDp &&
       !overview_controller->is_continuous_scroll_in_progress()) {
-    return false;
+    return true;
   }
 
   // Prevent accidental swipes from triggering the continuous animation.
@@ -184,7 +186,7 @@ bool Handle3FingerContinuousVerticalScroll(float scroll_y,
   }
 
   // Handle the different scroll scenarios.
-  absl::optional<OverviewEnterExitType> entry_type =
+  std::optional<OverviewEnterExitType> entry_type =
       HandleContinuousScrollIntoOverview(scroll_y, in_overview,
                                          scroll_in_progress);
 

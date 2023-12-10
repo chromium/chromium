@@ -57,7 +57,7 @@ public class MenuSheetContentUnitTest {
     @Test
     public void testNotifySheetClosed() {
         when(mBottomSheetController.getCurrentSheetContent()).thenReturn(mContent);
-        mContent.notifySheetClosed();
+        mContent.notifySheetClosed(mContent);
         verify(mBottomSheetController).requestShowContent(mBottomSheetContent, true);
     }
 

@@ -47,7 +47,7 @@ base::Value::List RulesToValue(
 }
 
 std::vector<api::events::Rule> RulesFromValue(
-    const absl::optional<base::Value>& value) {
+    const std::optional<base::Value>& value) {
   std::vector<api::events::Rule> rules;
 
   if (!value || !value->is_list())
@@ -57,9 +57,9 @@ std::vector<api::events::Rule> RulesFromValue(
   for (const base::Value& dict_value : value->GetList()) {
     if (!dict_value.is_dict())
       continue;
-    api::events::Rule rule;
-    if (api::events::Rule::Populate(dict_value.GetDict(), rule)) {
-      rules.push_back(std::move(rule));
+    auto rule = api::events::Rule::FromValue(dict_value.GetDict());
+    if (rule) {
+      rules.push_back(std::move(rule).value());
     }
   }
 
@@ -77,11 +77,9 @@ std::string ToId(int identifier) {
 
 RulesRegistry::RulesRegistry(content::BrowserContext* browser_context,
                              const std::string& event_name,
-                             content::BrowserThread::ID owner_thread,
                              RulesCacheDelegate* cache_delegate,
                              int id)
     : browser_context_(browser_context),
-      owner_thread_(owner_thread),
       event_name_(event_name),
       id_(id),
       ready_(/*signaled=*/!cache_delegate),  // Immediately ready if no cache
@@ -98,7 +96,7 @@ std::string RulesRegistry::AddRulesNoFill(
     std::vector<api::events::Rule> rules_in,
     RulesDictionary* destination,
     std::vector<const api::events::Rule*>* rules_out) {
-  DCHECK_CURRENTLY_ON(owner_thread());
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   // Verify that all rule IDs are new.
   for (const auto& rule : rules_in) {
@@ -153,7 +151,7 @@ std::string RulesRegistry::AddRulesInternal(
     std::vector<api::events::Rule> rules_in,
     RulesDictionary* destination,
     std::vector<const api::events::Rule*>* rules_out) {
-  DCHECK_CURRENTLY_ON(owner_thread());
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   std::string error = CheckAndFillInOptionalRules(extension_id, &rules_in);
   if (!error.empty())
@@ -167,7 +165,7 @@ std::string RulesRegistry::AddRulesInternal(
 std::string RulesRegistry::RemoveRules(
     const std::string& extension_id,
     const std::vector<std::string>& rule_identifiers) {
-  DCHECK_CURRENTLY_ON(owner_thread());
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   // Check if any of the rules are non-removable.
   for (RuleId rule_id : rule_identifiers) {
@@ -202,7 +200,7 @@ std::string RulesRegistry::RemoveAllRules(const std::string& extension_id) {
 std::string RulesRegistry::RemoveAllRulesNoStoreUpdate(
     const std::string& extension_id,
     bool remove_manifest_rules) {
-  DCHECK_CURRENTLY_ON(owner_thread());
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   std::string error = RemoveAllRulesImpl(extension_id);
 
@@ -228,7 +226,7 @@ std::string RulesRegistry::RemoveAllRulesNoStoreUpdate(
 void RulesRegistry::GetRules(const std::string& extension_id,
                              const std::vector<std::string>& rule_identifiers,
                              std::vector<const api::events::Rule*>* out) {
-  DCHECK_CURRENTLY_ON(owner_thread());
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   for (const auto& i : rule_identifiers) {
     RulesDictionaryKey lookup_key(extension_id, i);
@@ -253,27 +251,31 @@ void RulesRegistry::GetRules(const std::string& extension_id,
 
 void RulesRegistry::GetAllRules(const std::string& extension_id,
                                 std::vector<const api::events::Rule*>* out) {
-  DCHECK_CURRENTLY_ON(owner_thread());
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   GetRules(extension_id, &manifest_rules_, out);
   GetRules(extension_id, &rules_, out);
 }
 
+void RulesRegistry::OnShutdown() {
+  browser_context_ = nullptr;
+}
+
 void RulesRegistry::OnExtensionUnloaded(const Extension* extension) {
-  DCHECK_CURRENTLY_ON(owner_thread());
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   std::string error = RemoveAllRulesImpl(extension->id());
   if (!error.empty())
     ReportInternalError(extension->id(), error);
 }
 
 void RulesRegistry::OnExtensionUninstalled(const Extension* extension) {
-  DCHECK_CURRENTLY_ON(owner_thread());
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   std::string error = RemoveAllRulesNoStoreUpdate(extension->id(), true);
   if (!error.empty())
     ReportInternalError(extension->id(), error);
 }
 
 void RulesRegistry::OnExtensionLoaded(const Extension* extension) {
-  DCHECK_CURRENTLY_ON(owner_thread());
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   std::vector<const api::events::Rule*> rules;
   GetAllRules(extension->id(), &rules);
@@ -309,8 +311,8 @@ size_t RulesRegistry::GetNumberOfUsedRuleIdentifiersForTesting() const {
 }
 
 void RulesRegistry::DeserializeAndAddRules(const std::string& extension_id,
-                                           absl::optional<base::Value> rules) {
-  DCHECK_CURRENTLY_ON(owner_thread());
+                                           std::optional<base::Value> rules) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   // Since this is called in response to asynchronously loading rules from
   // storage, the extension may have been unloaded by the time this is called.
@@ -337,29 +339,20 @@ void RulesRegistry::ReportInternalError(const std::string& extension_id,
 RulesRegistry::~RulesRegistry() {
 }
 
-void RulesRegistry::MarkReady(base::Time storage_init_time) {
-  DCHECK_CURRENTLY_ON(owner_thread());
-
-  if (!storage_init_time.is_null()) {
-    UMA_HISTOGRAM_TIMES("Extensions.DeclarativeRulesStorageInitialization",
-                        base::Time::Now() - storage_init_time);
-  }
-
+void RulesRegistry::MarkReady() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   ready_.Signal();
 }
 
 void RulesRegistry::ProcessChangedRules(const std::string& extension_id) {
-  DCHECK_CURRENTLY_ON(owner_thread());
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   DCHECK(base::Contains(process_changed_rules_requested_, extension_id));
   process_changed_rules_requested_[extension_id] = NOT_SCHEDULED_FOR_PROCESSING;
 
   std::vector<const api::events::Rule*> new_rules;
   GetRules(extension_id, &rules_, &new_rules);
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&RulesCacheDelegate::UpdateRules, cache_delegate_,
-                     extension_id, RulesToValue(new_rules)));
+  cache_delegate_->UpdateRules(extension_id, RulesToValue(new_rules));
 }
 
 void RulesRegistry::MaybeProcessChangedRules(const std::string& extension_id) {

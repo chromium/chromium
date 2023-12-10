@@ -34,7 +34,7 @@ class DeskActionContextMenu : public views::ContextMenuController,
   // If `combine_desks_target_name` is not set, the option to combine desks will
   // not be visible.
   DeskActionContextMenu(
-      const absl::optional<std::u16string>& combine_desks_target_name,
+      const std::optional<std::u16string>& combine_desks_target_name,
       const views::MenuAnchorPosition anchor_position,
       base::RepeatingClosure combine_desks_callback,
       base::RepeatingClosure close_all_callback,

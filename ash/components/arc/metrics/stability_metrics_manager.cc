@@ -58,11 +58,11 @@ void StabilityMetricsManager::RecordMetricsToUMA() {
     return;
   }
 
-  const absl::optional<bool> enabled_state = GetArcEnabledState();
+  const std::optional<bool> enabled_state = GetArcEnabledState();
   if (enabled_state)
     UMA_STABILITY_HISTOGRAM_ENUMERATION("Arc.State", *enabled_state ? 1 : 0, 2);
 
-  const absl::optional<NativeBridgeType> native_bridge_type =
+  const std::optional<NativeBridgeType> native_bridge_type =
       GetArcNativeBridgeType();
   if (native_bridge_type) {
     UMA_STABILITY_HISTOGRAM_ENUMERATION(
@@ -76,7 +76,7 @@ void StabilityMetricsManager::ResetMetrics() {
   local_state_->SetDict(prefs::kStabilityMetrics, base::Value::Dict());
 }
 
-absl::optional<bool> StabilityMetricsManager::GetArcEnabledState() {
+std::optional<bool> StabilityMetricsManager::GetArcEnabledState() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const base::Value::Dict& dict =
       local_state_->GetDict(prefs::kStabilityMetrics);
@@ -89,18 +89,17 @@ void StabilityMetricsManager::SetArcEnabledState(bool enabled) {
   update->Set(kArcEnabledStateKey, enabled);
 }
 
-absl::optional<NativeBridgeType>
+std::optional<NativeBridgeType>
 StabilityMetricsManager::GetArcNativeBridgeType() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const base::Value::Dict& dict =
       local_state_->GetDict(prefs::kStabilityMetrics);
-  absl::optional<int> native_bridge_type =
-      dict.FindInt(kArcNativeBridgeTypeKey);
+  std::optional<int> native_bridge_type = dict.FindInt(kArcNativeBridgeTypeKey);
   if (native_bridge_type) {
-    return absl::make_optional(
+    return std::make_optional(
         static_cast<NativeBridgeType>(*native_bridge_type));
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void StabilityMetricsManager::SetArcNativeBridgeType(

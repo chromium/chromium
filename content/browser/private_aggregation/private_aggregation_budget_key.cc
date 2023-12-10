@@ -4,10 +4,11 @@
 
 #include "content/browser/private_aggregation/private_aggregation_budget_key.h"
 
+#include <optional>
+
 #include "base/check.h"
 #include "base/time/time.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 namespace content {
@@ -33,12 +34,12 @@ PrivateAggregationBudgetKey::PrivateAggregationBudgetKey(
   DCHECK(network::IsOriginPotentiallyTrustworthy(origin_));
 }
 
-absl::optional<PrivateAggregationBudgetKey> PrivateAggregationBudgetKey::Create(
+std::optional<PrivateAggregationBudgetKey> PrivateAggregationBudgetKey::Create(
     url::Origin origin,
     base::Time api_invocation_time,
     Api api) {
   if (!network::IsOriginPotentiallyTrustworthy(origin)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return PrivateAggregationBudgetKey(std::move(origin), api_invocation_time,

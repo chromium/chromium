@@ -14,19 +14,59 @@
 
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/memory/raw_ref.h"
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "components/attribution_reporting/event_report_windows.h"
 #include "components/attribution_reporting/source_registration_error.mojom-forward.h"
 #include "components/attribution_reporting/source_type.mojom-forward.h"
-#include "components/attribution_reporting/trigger_data_matching.mojom.h"
+#include "components/attribution_reporting/summary_window_operator.mojom-forward.h"
+#include "components/attribution_reporting/trigger_data_matching.mojom-forward.h"
 
 namespace base {
 class TimeDelta;
 }  // namespace base
 
 namespace attribution_reporting {
+
+class MaxEventLevelReports;
+
+// Controls the bucketization of event-level triggers.
+// Corresponds to
+// https://wicg.github.io/attribution-reporting-api/#summary-bucket-list
+class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) SummaryBuckets {
+ public:
+  static base::expected<SummaryBuckets, mojom::SourceRegistrationError> Parse(
+      const base::Value::Dict&,
+      MaxEventLevelReports);
+
+  // Represents `[1, 2, ... max_event_level_reports]`.
+  // `CHECK()`s that `max_event_level_reports` is positive.
+  explicit SummaryBuckets(MaxEventLevelReports max_event_level_reports);
+
+  // `CHECK()`s that `starts` is valid: Must be non-empty, all values > 0, and
+  // length <= `MaxEventLevelReports::Max()`.
+  explicit SummaryBuckets(base::flat_set<uint32_t> starts);
+
+  ~SummaryBuckets();
+
+  SummaryBuckets(const SummaryBuckets&);
+  SummaryBuckets& operator=(const SummaryBuckets&);
+
+  SummaryBuckets(SummaryBuckets&&);
+  SummaryBuckets& operator=(SummaryBuckets&&);
+
+  const base::flat_set<uint32_t>& starts() const { return starts_; }
+
+  void Serialize(base::Value::Dict&) const;
+
+  friend bool operator==(const SummaryBuckets&,
+                         const SummaryBuckets&) = default;
+
+ private:
+  base::flat_set<uint32_t> starts_;
+};
 
 class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) TriggerSpec {
  public:
@@ -47,6 +87,8 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) TriggerSpec {
   }
 
   base::Value::Dict ToJson() const;
+
+  friend bool operator==(const TriggerSpec&, const TriggerSpec&) = default;
 
  private:
   EventReportWindows event_report_windows_;
@@ -92,10 +134,6 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) TriggerSpecs {
 
   // Will return nullptr if there is not a single shared spec.
   const TriggerSpec* SingleSharedSpec() const;
-
-  // TODO(apaseltiner): Add a `find(uint32_t)` method that performs an optimized
-  // lookup for a given trigger data value and use it in
-  // `content::AttributionStorageSql`.
 
   base::Value::List ToJson() const;
 
@@ -163,11 +201,26 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) TriggerSpecs {
     return Iterator(*this, trigger_data_indices_.cend());
   }
 
+  // Returns the matching trigger spec and its associated trigger data, if any.
+  // Returns `TriggerSpecs::end()` if there is no match.
+  //
+  // Accepts a 64-bit integer instead of a 32-bit one for backward
+  // compatibility with pre-Flex triggers that supply the full range.
+  //
+  // Note: `TriggerDataMatching::kModulus` can still be applied
+  // even if the trigger data does not form a contiguous range starting at 0.
+  // Such a combination is prohibited by `TriggerSpecs::Parse()`, but there is
+  // still a well-defined meaning for it for arbitrary trigger data, so we do
+  // not bother preventing it here, though we may do so in the future.
+  const_iterator find(uint64_t trigger_data, mojom::TriggerDataMatching) const;
+
   const TriggerDataIndices& trigger_data_indices() const {
     return trigger_data_indices_;
   }
 
   const std::vector<TriggerSpec>& specs() const { return specs_; }
+
+  friend bool operator==(const TriggerSpecs&, const TriggerSpecs&) = default;
 
  private:
   TriggerSpecs(TriggerDataIndices, std::vector<TriggerSpec>);
@@ -185,38 +238,16 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) TriggerSpecs {
   std::vector<TriggerSpec> specs_;
 };
 
-class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) TriggerConfig {
- public:
-  static base::expected<TriggerConfig, mojom::SourceRegistrationError> Parse(
-      const base::Value::Dict&);
+COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
+base::expected<mojom::TriggerDataMatching, mojom::SourceRegistrationError>
+ParseTriggerDataMatching(const base::Value::Dict&);
 
-  TriggerConfig();
+COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
+void Serialize(base::Value::Dict&, mojom::TriggerDataMatching);
 
-  explicit TriggerConfig(mojom::TriggerDataMatching);
-
-  ~TriggerConfig();
-
-  TriggerConfig(const TriggerConfig&);
-  TriggerConfig& operator=(const TriggerConfig&);
-
-  TriggerConfig(TriggerConfig&&);
-  TriggerConfig& operator=(TriggerConfig&&);
-
-  mojom::TriggerDataMatching trigger_data_matching() const {
-    return trigger_data_matching_;
-  }
-
-  // Serializes into the given dictionary iff
-  // `features::kAttributionReportingTriggerConfig` is enabled.
-  void Serialize(base::Value::Dict&) const;
-
-  // Always serializes regardless of the above feature status.
-  void SerializeForTesting(base::Value::Dict&) const;
-
- private:
-  mojom::TriggerDataMatching trigger_data_matching_ =
-      mojom::TriggerDataMatching::kModulus;
-};
+COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
+base::expected<mojom::SummaryWindowOperator, mojom::SourceRegistrationError>
+ParseSummaryWindowOperator(const base::Value::Dict&);
 
 }  // namespace attribution_reporting
 

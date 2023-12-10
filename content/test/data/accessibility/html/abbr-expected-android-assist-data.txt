@@ -1,0 +1,6 @@
+WebView textSize:16.00 style:0 bundle:[display="", htmlTag="#document"]
+++View textSize:16.00 style:0 bundle:[display="block", htmlTag="p"]
+++++TextView text:"The " textSize:16.00 style:0 bundle:[display="", htmlTag=""]
+++++View text:"World Health Organization" textSize:16.00 style:4 bundle:[display="inline", htmlTag="abbr", title="World Health Organization"]
+++++++TextView text:"WHO" textSize:16.00 style:4 bundle:[display="", htmlTag=""]
+++++TextView text:" was founded in 1948." textSize:16.00 style:0 bundle:[display="", htmlTag=""]

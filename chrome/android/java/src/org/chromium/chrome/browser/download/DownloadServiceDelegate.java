@@ -25,12 +25,12 @@ public interface DownloadServiceDelegate {
 
     /**
      * Called to resume a paused download.
+     *
      * @param id The {@link ContentId} of the download to cancel.
-     * @param item Download item to resume.
-     * @param hasUserGesture Whether the resumption is triggered by user gesture.
-     * TODO(fgorski): Update the interface to not require download item.
+     * @param item Download item to resume. TODO(fgorski): Update the interface to not require
+     *     download item.
      */
-    void resumeDownload(ContentId id, DownloadItem item, boolean hasUserGesture);
+    void resumeDownload(ContentId id, DownloadItem item);
 
     /** Called to destroy the delegate, in case it needs to be destroyed. */
     void destroyServiceDelegate();

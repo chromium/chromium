@@ -16,6 +16,9 @@ import org.chromium.ui.base.WindowAndroid;
  */
 public class ImageEditorDialogCoordinatorImpl implements ImageEditorDialogCoordinator {
     @Override
-    public void launchEditor(Activity activity, Bitmap image, WindowAndroid windowAndroid,
+    public void launchEditor(
+            Activity activity,
+            Bitmap image,
+            WindowAndroid windowAndroid,
             ChromeOptionShareCallback chromeOptionShareCallback) {}
 }

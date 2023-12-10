@@ -241,8 +241,9 @@ void SimulateFillForm(const FormData& form_data,
   autofill_agent->FormControlElementClicked(
       fname_element.To<WebInputElement>());
 
-  autofill_agent->ApplyFormAction(mojom::ActionType::kFill,
-                                  mojom::ActionPersistence::kFill, form_data);
+  autofill_agent->ApplyFormAction(
+      mojom::ActionType::kFill, mojom::ActionPersistence::kFill,
+      form_data.unique_renderer_id, form_data.fields);
 }
 
 // Simulates receiving a message from the browser to fill a form.
@@ -271,31 +272,31 @@ void SimulateFillFormWithNonFillableFields(
           .To<WebFormControlElement>();
   ASSERT_FALSE(lname_element.IsNull());
 
-  FormData data;
-  data.name = u"name";
-  data.url = GURL("http://example.com/");
-  data.action = GURL("http://example.com/blade.php");
-  data.is_form_tag = true;  // Default value.
+  FormData form;
+  form.name = u"name";
+  form.url = GURL("http://example.com/");
+  form.action = GURL("http://example.com/blade.php");
+  form.is_form_tag = true;  // Default value.
 
-  FormFieldData field_data;
-  field_data.name = u"fname";
-  field_data.value = u"John";
-  field_data.is_autofilled = true;
-  field_data.unique_renderer_id = form_util::GetFieldRendererId(fname_element);
-  data.fields.push_back(field_data);
+  FormFieldData field;
+  field.name = u"fname";
+  field.value = u"John";
+  field.is_autofilled = true;
+  field.unique_renderer_id = form_util::GetFieldRendererId(fname_element);
+  form.fields.push_back(field);
 
-  field_data.name = u"lname";
-  field_data.value = u"Smith";
-  field_data.is_autofilled = true;
-  field_data.unique_renderer_id = form_util::GetFieldRendererId(lname_element);
-  data.fields.push_back(field_data);
+  field.name = u"lname";
+  field.value = u"Smith";
+  field.is_autofilled = true;
+  field.unique_renderer_id = form_util::GetFieldRendererId(lname_element);
+  form.fields.push_back(field);
 
   // Additional non-autofillable field.
-  field_data.name = u"mname";
-  field_data.value = u"James";
-  field_data.is_autofilled = false;
-  field_data.unique_renderer_id = form_util::GetFieldRendererId(mname_element);
-  data.fields.push_back(field_data);
+  field.name = u"mname";
+  field.value = u"James";
+  field.is_autofilled = false;
+  field.unique_renderer_id = form_util::GetFieldRendererId(mname_element);
+  form.fields.push_back(field);
 
   // This call is necessary to setup the autofill agent appropriate for the
   // user selection; simulates the menu actually popping up.
@@ -303,7 +304,8 @@ void SimulateFillFormWithNonFillableFields(
       fname_element.To<WebInputElement>());
 
   autofill_agent->ApplyFormAction(mojom::ActionType::kFill,
-                                  mojom::ActionPersistence::kFill, data);
+                                  mojom::ActionPersistence::kFill,
+                                  form.unique_renderer_id, form.fields);
 }
 
 }  // end namespace
@@ -818,16 +820,16 @@ TEST_F(FormAutocompleteTest, CollectFormlessElements) {
       "<form><input type='text' name='excluded'/></form>"
       "</html>");
 
-  FormData result;
-  autofill_agent_->CollectFormlessElements(&result);
+  std::optional<FormData> result = autofill_agent_->CollectFormlessElements();
+  ASSERT_TRUE(result);
 
   // Asserting size 4 also ensures that 'excluded' field inside <form> is not
   // collected.
-  ASSERT_EQ(4U, result.fields.size());
-  EXPECT_EQ(u"text_input", result.fields[0].name);
-  EXPECT_EQ(u"check_input", result.fields[1].name);
-  EXPECT_EQ(u"number_input", result.fields[2].name);
-  EXPECT_EQ(u"select_input", result.fields[3].name);
+  ASSERT_EQ(4U, result->fields.size());
+  EXPECT_EQ(u"text_input", result->fields[0].name);
+  EXPECT_EQ(u"check_input", result->fields[1].name);
+  EXPECT_EQ(u"number_input", result->fields[2].name);
+  EXPECT_EQ(u"select_input", result->fields[3].name);
 }
 
 // Unit test for AutofillAgent::AcceptDataListSuggestion.

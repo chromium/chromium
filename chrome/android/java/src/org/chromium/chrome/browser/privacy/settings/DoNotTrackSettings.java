@@ -31,9 +31,10 @@ public class DoNotTrackSettings extends ChromeBaseSettingsFragment {
         boolean isDoNotTrackEnabled = prefService.getBoolean(Pref.ENABLE_DO_NOT_TRACK);
         doNotTrackSwitch.setChecked(isDoNotTrackEnabled);
 
-        doNotTrackSwitch.setOnPreferenceChangeListener((preference, newValue) -> {
-            prefService.setBoolean(Pref.ENABLE_DO_NOT_TRACK, (boolean) newValue);
-            return true;
-        });
+        doNotTrackSwitch.setOnPreferenceChangeListener(
+                (preference, newValue) -> {
+                    prefService.setBoolean(Pref.ENABLE_DO_NOT_TRACK, (boolean) newValue);
+                    return true;
+                });
     }
 }

@@ -18,9 +18,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
 
-/**
- * A class that provides the current {@link Tab} for various states of the browser's activity.
- */
+/** A class that provides the current {@link Tab} for various states of the browser's activity. */
 public class ActivityTabProvider extends ObservableSupplierImpl<Tab> implements Destroyable {
     /**
      * A utility class for observing the activity tab via {@link TabObserver}. When the activity
@@ -79,30 +77,34 @@ public class ActivityTabProvider extends ObservableSupplierImpl<Tab> implements 
     /** An observer for watching tab model switching event. */
     private TabModelSelectorObserver mTabModelSelectorObserver;
 
-    /**
-     * Default constructor.
-     */
+    /** Default constructor. */
     public ActivityTabProvider() {
-        mLayoutStateObserver = new LayoutStateObserver() {
-            @Override
-            public void onTabSelectionHinted(int tabId) {
-                if (mTabModelSelector == null) return;
-                set(mTabModelSelector.getTabById(tabId));
-            }
+        mLayoutStateObserver =
+                new LayoutStateObserver() {
+                    @Override
+                    public void onStartedShowing(@LayoutType int layout) {
+                        // The {@link SimpleAnimationLayout} is a special case, the intent is not to
+                        // switch tabs, but to merely run an animation. In this case, do nothing.
+                        // If the animation layout does result in a new tab {@link
+                        // TabModelObserver#didSelectTab} will trigger the event instead. If the
+                        // tab does not change, the event will noop.
+                        if (LayoutType.SIMPLE_ANIMATION == layout) return;
 
-            @Override
-            public void onStartedShowing(@LayoutType int layout) {
-                // The {@link SimpleAnimationLayout} is a special case, the intent is not to switch
-                // tabs, but to merely run an animation. In this case, do nothing. If the animation
-                // layout does result in a new tab {@link TabModelObserver#didSelectTab} will
-                // trigger the event instead. If the tab does not change, the event will no
-                if (LayoutType.SIMPLE_ANIMATION == layout) return;
+                        Tab tab = mTabModelSelector.getCurrentTab();
+                        if (layout != LayoutType.BROWSING) tab = null;
+                        triggerActivityTabChangeEvent(tab);
+                    }
 
-                Tab tab = mTabModelSelector.getCurrentTab();
-                if (layout != LayoutType.BROWSING) tab = null;
-                triggerActivityTabChangeEvent(tab);
-            }
-        };
+                    @Override
+                    public void onStartedHiding(@LayoutType int layout) {
+                        if (mTabModelSelector == null) return;
+
+                        if (LayoutType.START_SURFACE == layout
+                                || LayoutType.TAB_SWITCHER == layout) {
+                            set(mTabModelSelector.getCurrentTab());
+                        }
+                    }
+                };
     }
 
     /**
@@ -111,29 +113,32 @@ public class ActivityTabProvider extends ObservableSupplierImpl<Tab> implements 
     public void setTabModelSelector(TabModelSelector selector) {
         assert mTabModelSelector == null;
         mTabModelSelector = selector;
-        mTabModelObserver = new TabModelSelectorTabModelObserver(mTabModelSelector) {
-            @Override
-            public void didSelectTab(Tab tab, @TabSelectionType int type, int lastId) {
-                triggerActivityTabChangeEvent(tab);
-            }
+        mTabModelObserver =
+                new TabModelSelectorTabModelObserver(mTabModelSelector) {
+                    @Override
+                    public void didSelectTab(Tab tab, @TabSelectionType int type, int lastId) {
+                        triggerActivityTabChangeEvent(tab);
+                    }
 
-            @Override
-            public void willCloseTab(Tab tab, boolean animate, boolean didCloseAlone) {
-                // If this is the last tab to close, make sure a signal is sent to the observers.
-                if (mTabModelSelector.getCurrentModel().getCount() <= 1) {
-                    triggerActivityTabChangeEvent(null);
-                }
-            }
-        };
+                    @Override
+                    public void willCloseTab(Tab tab, boolean animate, boolean didCloseAlone) {
+                        // If this is the last tab to close, make sure a signal is sent to the
+                        // observers.
+                        if (mTabModelSelector.getCurrentModel().getCount() <= 1) {
+                            triggerActivityTabChangeEvent(null);
+                        }
+                    }
+                };
 
-        mTabModelSelectorObserver = new TabModelSelectorObserver() {
-            @Override
-            public void onTabModelSelected(TabModel newModel, TabModel oldModel) {
-                // Send a signal with null tab if a new model has no tab. Other cases
-                // are taken care of by TabModelSelectorTabModelObserver#didSelectTab.
-                if (newModel.getCount() == 0) triggerActivityTabChangeEvent(null);
-            }
-        };
+        mTabModelSelectorObserver =
+                new TabModelSelectorObserver() {
+                    @Override
+                    public void onTabModelSelected(TabModel newModel, TabModel oldModel) {
+                        // Send a signal with null tab if a new model has no tab. Other cases
+                        // are taken care of by TabModelSelectorTabModelObserver#didSelectTab.
+                        if (newModel.getCount() == 0) triggerActivityTabChangeEvent(null);
+                    }
+                };
         mTabModelSelector.addObserver(mTabModelSelectorObserver);
     }
 

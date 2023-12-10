@@ -63,7 +63,7 @@ class CastGpuFactoryImpl : public CastGpuFactory,
   std::unique_ptr<media::VideoDecoder> CreateVideoDecoder(
       ::media::MediaLog* media_log,
       ::media::RequestOverlayInfoCB request_overlay_info_cb) override;
-  absl::optional<media::VideoEncodeAccelerator::SupportedProfiles>
+  std::optional<media::VideoEncodeAccelerator::SupportedProfiles>
   GetVideoEncodeAcceleratorSupportedProfiles() override;
   bool IsEncoderSupportKnown() override;
   void NotifyEncoderSupportKnown(base::OnceClosure) override;

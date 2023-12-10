@@ -18,7 +18,7 @@ import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeo
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
-export function firmwareUpdateDialogTest() {
+suite('FirmwareUpdateDialogTest', () => {
   let updateDialogElement: FirmwareUpdateDialogElement|null = null;
 
   setup(() => {
@@ -187,4 +187,37 @@ export function firmwareUpdateDialogTest() {
     assertFalse(isVisible(updateDialogElement.shadowRoot.querySelector(
         '#indeterminateProgressBar')));
   });
-}
+
+  test('UpdateDialogContent_WaitingForUser_V2Disabled', async () => {
+    loadTimeData.overrideValues({isFirmwareUpdateUIV2Enabled: false});
+
+    assert(updateDialogElement?.shadowRoot);
+    // Start update.
+    await setInstallationProgress(1, UpdateState.kUpdating);
+    assertTrue(getUpdateDialog().open);
+
+    // Dialog remains open while the device is waiting for user action.
+    await setInstallationProgress(70, UpdateState.kWaitingForUser);
+    assertTrue(getUpdateDialog().open);
+
+    // If the v2 flag is disabled, the dialog should indicate that it's
+    // restarting when the state is kWaitingForUser.
+    assertEquals(
+        getTextContent('#updateDialogTitle'),
+        loadTimeData.getStringF(
+            'restartingTitleText',
+            mojoString16ToString(updateDialogElement.update!.deviceName)));
+    assertEquals(
+        getTextContent('#updateDialogBody'),
+        loadTimeData.getString('restartingBodyText'));
+    assertEquals(
+        getTextContent('#progress'),
+        loadTimeData.getString('restartingFooterText'));
+    // Check that the indeterminate progress is shown.
+    assertTrue(!!updateDialogElement.shadowRoot.querySelector(
+        '#indeterminateProgressBar'));
+    // No percentage progress bar.
+    assertFalse(
+        !!updateDialogElement.shadowRoot.querySelector('#updateProgressBar'));
+  });
+});

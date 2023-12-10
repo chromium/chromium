@@ -37,7 +37,7 @@ WebDocument WebDisallowTransitionScopeTest::TopWebDocument() const {
 TEST_F(WebDisallowTransitionScopeTest, TestDisallowTransition) {
   // Make the death test thread-safe. For more info, see:
   // https://github.com/google/googletest/blob/main/googletest/docs/advanced.md#death-tests-and-threads
-  ::testing::FLAGS_gtest_death_test_style = "threadsafe";
+  GTEST_FLAG_SET(death_test_style, "threadsafe");
 
   web_view_helper_.InitializeAndLoad("about:blank");
 

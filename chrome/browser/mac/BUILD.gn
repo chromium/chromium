@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/util/process_version.gni")
+
 source_set("keystone_glue") {
   sources = [
     "keystone_glue.h",
@@ -19,4 +21,15 @@ source_set("keystone_glue") {
     "//components/version_info",
     "//ui/base",
   ]
+}
+
+process_version("install") {
+  extra_args = [
+    "-e",
+    "SHEBANGGUARD=\"\"",
+  ]
+  process_only = true
+  executable = true
+  template_file = "install.sh.in"
+  output = "$target_gen_dir/install.sh"
 }

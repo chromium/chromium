@@ -5,6 +5,7 @@
 #include "chrome/browser/performance_manager/metrics/page_timeline_monitor.h"
 
 #include <stdint.h>
+#include <algorithm>
 #include <array>
 #include <limits>
 #include <map>
@@ -26,6 +27,7 @@
 #include "base/system/sys_info.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "chrome/browser/performance_manager/metrics/cpu_probe/cpu_probe.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/performance_manager/public/decorators/page_live_state_decorator.h"
 #include "components/performance_manager/public/features.h"
@@ -80,11 +82,13 @@ PageMeasurementBackgroundState GetBackgroundStateForMeasurementPeriod(
 
 }  // namespace
 
-PageTimelineMonitor::PageTimelineMonitor()
+PageTimelineMonitor::PageTimelineMonitor(bool enable_system_cpu_probe)
     // These counters are initialized to a random value due to privacy concerns,
     // so that we cannot tie either the startup time of a specific tab or the
     // recording time of a specific slice to the browser startup time.
-    : slice_id_counter_(base::RandInt(1, 32767)) {
+    : slice_id_counter_(base::RandInt(1, 32767)),
+      system_cpu_probe_(enable_system_cpu_probe ? CpuProbe::Create()
+                                                : nullptr) {
   collect_slice_timer_.Start(
       FROM_HERE,
       performance_manager::features::kPageTimelineStateIntervalTime.Get(), this,
@@ -95,6 +99,9 @@ PageTimelineMonitor::PageTimelineMonitor()
       FROM_HERE, base::Minutes(2),
       base::BindRepeating(&PageTimelineMonitor::CollectPageResourceUsage,
                           weak_factory_.GetWeakPtr(), base::DoNothing()));
+  if (system_cpu_probe_) {
+    system_cpu_probe_->StartSampling();
+  }
 }
 
 PageTimelineMonitor::~PageTimelineMonitor() = default;
@@ -120,22 +127,31 @@ PageTimelineMonitor::PageNodeInfo::GetPageState() {
 
 void PageTimelineMonitor::CollectPageResourceUsage(
     base::OnceClosure done_closure) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CalculatePageCPUUsage(
+      /*use_delayed_system_cpu_probe=*/false,
       base::BindOnce(&PageTimelineMonitor::OnPageResourceUsageResult,
                      weak_factory_.GetWeakPtr())
           .Then(std::move(done_closure)));
 }
 
 void PageTimelineMonitor::OnPageResourceUsageResult(
-    const PageCPUUsageVector& page_cpu_usage) {
+    const PageCPUUsageVector& page_cpu_usage,
+    absl::optional<PressureSample> system_cpu) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Calculate the overall CPU usage.
   double total_cpu_usage = 0;
-  for (const auto& [page_node, cpu_usage] : page_cpu_usage) {
+  for (const auto& [page_context, cpu_usage] : page_cpu_usage) {
     total_cpu_usage += cpu_usage;
   }
 
   const auto now = base::TimeTicks::Now();
-  for (const auto& [page_node, cpu_usage] : page_cpu_usage) {
+  for (const auto& [page_context, cpu_usage] : page_cpu_usage) {
+    const PageNode* page_node = page_context.GetPageNode();
+    if (!page_node) {
+      // Page was deleted while waiting for system CPU. Nothing to log.
+      continue;
+    }
     const ukm::SourceId source_id = page_node->GetUkmSourceID();
     ukm::builders::PerformanceManager_PageResourceUsage2(source_id)
         .SetResidentSetSizeEstimate(page_node->EstimateResidentSetSize())
@@ -152,7 +168,7 @@ void PageTimelineMonitor::OnPageResourceUsageResult(
 #if !BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(
           performance_manager::features::kCPUInterventionEvaluationLogging)) {
-    LogCPUInterventionMetrics(page_cpu_usage, now,
+    LogCPUInterventionMetrics(page_cpu_usage, system_cpu, now,
                               CPUInterventionSuffix::kBaseline);
     bool is_cpu_over_threshold =
         (100 * total_cpu_usage / base::SysInfo::NumberOfProcessors() >
@@ -161,12 +177,20 @@ void PageTimelineMonitor::OnPageResourceUsageResult(
       CHECK(!log_cpu_on_delay_timer_.IsRunning());
       if (is_cpu_over_threshold) {
         time_of_last_cpu_threshold_exceeded_ = now;
-        LogCPUInterventionMetrics(page_cpu_usage, now,
+        LogCPUInterventionMetrics(page_cpu_usage, system_cpu, now,
                                   CPUInterventionSuffix::kImmediate);
 
         // Only logged delayed metrics when using the new CPU monitor.
         if (performance_manager::features::kUseResourceAttributionCPUMonitor
                 .Get()) {
+          if (system_cpu_probe_) {
+            // `system_cpu_probe_` needs to be called at fixed intervals, so
+            // start a second probe  to measure the CPU until the delay timer
+            // fires.
+            CHECK(!delayed_system_cpu_probe_);
+            delayed_system_cpu_probe_ = CpuProbe::Create();
+            delayed_system_cpu_probe_->StartSampling();
+          }
           log_cpu_on_delay_timer_.Start(
               FROM_HERE,
               performance_manager::features::kDelayBeforeLogging.Get(), this,
@@ -181,12 +205,14 @@ void PageTimelineMonitor::OnPageResourceUsageResult(
           base::Hours(24), 50);
       log_cpu_on_delay_timer_.AbandonAndStop();
       time_of_last_cpu_threshold_exceeded_ = absl::nullopt;
+      delayed_system_cpu_probe_.reset();
     }
   }
 #endif
 }
 
 void PageTimelineMonitor::CollectSlice() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // We only collect a slice randomly every ~20 times this gets called for
   // privacy purposes. Always fall through when we're in a test.
   if (!ShouldCollectSlice()) {
@@ -284,6 +310,7 @@ void PageTimelineMonitor::CollectSlice() {
 }
 
 bool PageTimelineMonitor::ShouldCollectSlice() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (should_collect_slice_callback_) {
     return should_collect_slice_callback_.Run();
   }
@@ -293,39 +320,55 @@ bool PageTimelineMonitor::ShouldCollectSlice() const {
 }
 
 void PageTimelineMonitor::CheckDelayedCPUInterventionMetrics() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(performance_manager::features::kUseResourceAttributionCPUMonitor.Get());
-  CalculatePageCPUUsage(base::BindOnce(
-      &PageTimelineMonitor::OnDelayedCPUInterventionMetricsResult,
-      weak_factory_.GetWeakPtr()));
+  CalculatePageCPUUsage(
+      /*use_delayed_system_cpu_probe=*/true,
+      base::BindOnce(
+          &PageTimelineMonitor::OnDelayedCPUInterventionMetricsResult,
+          weak_factory_.GetWeakPtr()));
 }
 
 void PageTimelineMonitor::OnDelayedCPUInterventionMetricsResult(
-    const PageCPUUsageVector& page_cpu_usage) {
+    const PageCPUUsageVector& page_cpu_usage,
+    absl::optional<PressureSample> system_cpu) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(performance_manager::features::kUseResourceAttributionCPUMonitor.Get());
+  // Now that `system_cpu` is received, stop the delayed CPU probe. This is a
+  // no-op if it was already nullptr.
+  delayed_system_cpu_probe_.reset();
   double total_cpu_usage = 0;
-  for (const auto& [page_node, cpu_usage] : page_cpu_usage) {
+  for (const auto& [page_context, cpu_usage] : page_cpu_usage) {
     total_cpu_usage += cpu_usage;
   }
 
   if (100 * total_cpu_usage / base::SysInfo::NumberOfProcessors() >
       performance_manager::features::kThresholdChromeCPUPercent.Get()) {
     // Still over the threshold so we should log .Delayed UMA metrics.
-    LogCPUInterventionMetrics(page_cpu_usage, base::TimeTicks::Now(),
+    LogCPUInterventionMetrics(page_cpu_usage, system_cpu,
+                              base::TimeTicks::Now(),
                               CPUInterventionSuffix::kDelayed);
   }
 }
 
 void PageTimelineMonitor::LogCPUInterventionMetrics(
     const PageCPUUsageVector& page_cpu_usage,
+    const absl::optional<PressureSample>& system_cpu,
     const base::TimeTicks now,
     CPUInterventionSuffix histogram_suffix) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::vector<double> background_cpu_usage;
   double total_foreground_cpu_usage = 0;
 
   int foreground_tab_count = 0;
   int background_tab_count = 0;
 
-  for (const auto& [page_node, cpu_usage] : page_cpu_usage) {
+  for (const auto& [page_context, cpu_usage] : page_cpu_usage) {
+    const PageNode* page_node = page_context.GetPageNode();
+    if (!page_node) {
+      // Page was deleted while waiting for system CPU.
+      continue;
+    }
     if (GetBackgroundStateForMeasurementPeriod(
             page_node, now - time_of_last_resource_usage_) !=
         PageMeasurementBackgroundState::kForeground) {
@@ -355,40 +398,77 @@ void PageTimelineMonitor::LogCPUInterventionMetrics(
   }
   CHECK(suffix);
 
+  const int total_background_cpu_percent =
+      total_background_cpu_usage * 100 / base::SysInfo::NumberOfProcessors();
   base::UmaHistogramPercentage(
       base::StrCat({"PerformanceManager.PerformanceInterventions.CPU."
                     "TotalBackgroundCPU.",
                     suffix}),
-      total_background_cpu_usage * 100 / base::SysInfo::NumberOfProcessors());
+      total_background_cpu_percent);
   base::UmaHistogramCounts1000(
       base::StrCat({"PerformanceManager.PerformanceInterventions.CPU."
                     "TotalBackgroundTabCount.",
                     suffix}),
       background_tab_count);
-  base::UmaHistogramPercentage(
-      base::StrCat({"PerformanceManager.PerformanceInterventions.CPU."
-                    "AverageBackgroundCPU.",
-                    suffix}),
-      total_background_cpu_usage * 100 / base::SysInfo::NumberOfProcessors() /
-          background_tab_count);
+  if (background_tab_count) {
+    base::UmaHistogramPercentage(
+        base::StrCat({"PerformanceManager.PerformanceInterventions.CPU."
+                      "AverageBackgroundCPU.",
+                      suffix}),
+        total_background_cpu_percent / background_tab_count);
+  }
 
   // Log basic foreground UMA metrics.
+  const int total_foreground_cpu_percent =
+      total_foreground_cpu_usage * 100 / base::SysInfo::NumberOfProcessors();
   base::UmaHistogramPercentage(
       base::StrCat({"PerformanceManager.PerformanceInterventions.CPU."
                     "TotalForegroundCPU.",
                     suffix}),
-      total_foreground_cpu_usage * 100 / base::SysInfo::NumberOfProcessors());
+      total_foreground_cpu_percent);
   base::UmaHistogramCounts1000(
       base::StrCat({"PerformanceManager.PerformanceInterventions.CPU."
                     "TotalForegroundTabCount.",
                     suffix}),
       foreground_tab_count);
-  base::UmaHistogramPercentage(
-      base::StrCat({"PerformanceManager.PerformanceInterventions.CPU."
-                    "AverageForegroundCPU.",
-                    suffix}),
-      total_foreground_cpu_usage * 100 / base::SysInfo::NumberOfProcessors() /
-          foreground_tab_count);
+  if (foreground_tab_count) {
+    base::UmaHistogramPercentage(
+        base::StrCat({"PerformanceManager.PerformanceInterventions.CPU."
+                      "AverageForegroundCPU.",
+                      suffix}),
+        total_foreground_cpu_percent / foreground_tab_count);
+  }
+
+  // Log comparisons with system CPU.
+  if (system_cpu.has_value()) {
+    const int system_cpu_percent = system_cpu->cpu_utilization * 100;
+    base::UmaHistogramPercentage(
+        base::StrCat({"PerformanceManager.PerformanceInterventions.CPU."
+                      "System.",
+                      suffix}),
+        system_cpu_percent);
+    base::UmaHistogramPercentage(
+        base::StrCat({"PerformanceManager.PerformanceInterventions.CPU."
+                      "NonChrome.",
+                      suffix}),
+        std::max(system_cpu_percent - total_background_cpu_percent -
+                     total_foreground_cpu_percent,
+                 0));
+  } else if (system_cpu_probe_) {
+    // System CPU probing is available, so there must have been an error in
+    // CpuProbe::RequestSample().
+    //
+    // For .Delayed histograms this can also include a failure to initialize
+    // `delayed_system_cpu_probe_` when `system_cpu_probe_` initialized
+    // successfully. Failure to even initialize `system_cpu_probe_` isn't
+    // recorded because that means system CPU isn't available at all on this
+    // system rather than a transient error.
+    base::UmaHistogramBoolean(
+        base::StrCat({"PerformanceManager.PerformanceInterventions.CPU."
+                      "SystemCPUError.",
+                      suffix}),
+        true);
+  }
 
   // Log derived background UMA metrics.
   if (histogram_suffix == CPUInterventionSuffix::kBaseline) {
@@ -441,30 +521,47 @@ void PageTimelineMonitor::LogCPUInterventionMetrics(
 }
 
 void PageTimelineMonitor::CalculatePageCPUUsage(
-    base::OnceCallback<void(const PageCPUUsageVector&)> callback) {
-  cpu_monitor_.UpdateCPUMeasurements(
-      base::BindOnce(&PageTimelineMonitor::OnCPUUsageResult,
-                     weak_factory_.GetWeakPtr(), std::move(callback)));
+    bool use_delayed_system_cpu_probe,
+    base::OnceCallback<void(const PageCPUUsageVector&,
+                            absl::optional<PressureSample>)> callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  cpu_monitor_.UpdateCPUMeasurements(base::BindOnce(
+      &PageTimelineMonitor::OnPageCPUUsageResult, weak_factory_.GetWeakPtr(),
+      use_delayed_system_cpu_probe, std::move(callback)));
 }
 
-void PageTimelineMonitor::OnCPUUsageResult(
-    base::OnceCallback<void(const PageCPUUsageVector&)> callback,
+void PageTimelineMonitor::OnPageCPUUsageResult(
+    bool use_delayed_system_cpu_probe,
+    base::OnceCallback<void(const PageCPUUsageVector&,
+                            absl::optional<PressureSample>)> callback,
     const PageTimelineCPUMonitor::CPUUsageMap& cpu_usage_map) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   // Calculate the overall CPU usage.
   PageCPUUsageVector page_cpu_usage;
   page_cpu_usage.reserve(page_node_info_map_.size());
-
   for (const auto& [tab_handle, info_ptr] : page_node_info_map_) {
     const PageNode* page_node = tab_handle->page_node();
     CheckPageState(page_node, *info_ptr);
     double cpu_usage =
         PageTimelineCPUMonitor::EstimatePageCPUUsage(page_node, cpu_usage_map);
-    page_cpu_usage.emplace_back(page_node, cpu_usage);
+    page_cpu_usage.emplace_back(page_node->GetResourceContext(), cpu_usage);
   }
-  std::move(callback).Run(std::move(page_cpu_usage));
+
+  // Now fetch the system CPU usage if available.
+  CpuProbe* cpu_probe = use_delayed_system_cpu_probe
+                            ? delayed_system_cpu_probe_.get()
+                            : system_cpu_probe_.get();
+  if (cpu_probe) {
+    cpu_probe->RequestSample(
+        base::BindOnce(std::move(callback), page_cpu_usage));
+  } else {
+    std::move(callback).Run(page_cpu_usage, absl::nullopt);
+  }
 }
 
 void PageTimelineMonitor::SetTriggerCollectionManuallyForTesting() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   collect_slice_timer_.Stop();
   collect_page_resource_usage_timer_.Stop();
   log_cpu_on_delay_timer_.Stop();
@@ -472,10 +569,30 @@ void PageTimelineMonitor::SetTriggerCollectionManuallyForTesting() {
 
 void PageTimelineMonitor::SetShouldCollectSliceCallbackForTesting(
     base::RepeatingCallback<bool()> should_collect_slice_callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   should_collect_slice_callback_ = should_collect_slice_callback;
 }
 
+void PageTimelineMonitor::SetCPUMeasurementDelegateFactoryForTesting(
+    Graph* graph,
+    PageTimelineCPUMonitor::CPUMeasurementDelegate::Factory* factory) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Callback should be installed before `cpu_monitor_` starts
+  // measuring the graph.
+  CHECK(graph);
+  CHECK(!graph_);
+  cpu_monitor_.SetCPUMeasurementDelegateFactoryForTesting(  // IN-TEST
+      graph, factory);
+}
+
+PageTimelineMonitor::PageNodeInfoMap&
+PageTimelineMonitor::GetPageNodeInfoForTesting() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return page_node_info_map_;
+}
+
 void PageTimelineMonitor::OnPassedToGraph(Graph* graph) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   graph_ = graph;
   graph_->AddPageNodeObserver(this);
   graph_->RegisterObject(this);
@@ -484,6 +601,7 @@ void PageTimelineMonitor::OnPassedToGraph(Graph* graph) {
 }
 
 void PageTimelineMonitor::OnTakenFromGraph(Graph* graph) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   cpu_monitor_.StopMonitoring(graph_);
 
   // GraphOwned object destruction order is undefined, so only remove ourselves
@@ -500,6 +618,7 @@ void PageTimelineMonitor::OnTakenFromGraph(Graph* graph) {
 }
 
 void PageTimelineMonitor::OnTabAdded(TabPageDecorator::TabHandle* tab_handle) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   page_node_info_map_[tab_handle] = std::make_unique<PageNodeInfo>(
       base::TimeTicks::Now(), tab_handle->page_node(), slice_id_counter_++);
 }
@@ -507,6 +626,7 @@ void PageTimelineMonitor::OnTabAdded(TabPageDecorator::TabHandle* tab_handle) {
 void PageTimelineMonitor::OnTabAboutToBeDiscarded(
     const PageNode* old_page_node,
     TabPageDecorator::TabHandle* tab_handle) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto it = page_node_info_map_.find(tab_handle);
   CHECK(it != page_node_info_map_.end());
 
@@ -516,10 +636,12 @@ void PageTimelineMonitor::OnTabAboutToBeDiscarded(
 
 void PageTimelineMonitor::OnBeforeTabRemoved(
     TabPageDecorator::TabHandle* tab_handle) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   page_node_info_map_.erase(tab_handle);
 }
 
 void PageTimelineMonitor::OnIsVisibleChanged(const PageNode* page_node) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (page_node->GetType() != performance_manager::PageType::kTab) {
     return;
   }
@@ -563,6 +685,7 @@ void PageTimelineMonitor::OnIsVisibleChanged(const PageNode* page_node) {
 
 void PageTimelineMonitor::OnPageLifecycleStateChanged(
     const PageNode* page_node) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (page_node->GetType() != performance_manager::PageType::kTab) {
     return;
   }
@@ -586,11 +709,13 @@ void PageTimelineMonitor::OnPageLifecycleStateChanged(
 }
 
 void PageTimelineMonitor::SetBatterySaverEnabled(bool enabled) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   battery_saver_enabled_ = enabled;
 }
 
 void PageTimelineMonitor::CheckPageState(const PageNode* page_node,
                                          const PageNodeInfo& info) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // There's a window after OnAboutToBeDiscarded() where a discarded placeholder
   // page is in the map with type kUnknown, before it's updated to kTab in
   // OnTypeChanged().

@@ -233,7 +233,6 @@ template("chrome_extra_paks") {
         "$root_gen_dir/ash/webui/ash_face_ml_app_untrusted_resources.pak",
         "$root_gen_dir/ash/webui/ash_files_internals_resources.pak",
         "$root_gen_dir/ash/webui/ash_firmware_update_app_resources.pak",
-        "$root_gen_dir/ash/webui/ash_guest_os_installer_resources.pak",
         "$root_gen_dir/ash/webui/ash_help_app_resources.pak",
         "$root_gen_dir/ash/webui/ash_media_app_resources.pak",
         "$root_gen_dir/ash/webui/ash_multidevice_debug_resources.pak",
@@ -249,11 +248,13 @@ template("chrome_extra_paks") {
         "$root_gen_dir/ash/webui/ash_shortcut_customization_app_resources.pak",
         "$root_gen_dir/ash/webui/ash_status_area_internals_resources.pak",
         "$root_gen_dir/ash/webui/ash_system_extensions_internals_resources.pak",
+        "$root_gen_dir/ash/webui/ash_vc_background_resources.pak",
         "$root_gen_dir/ash/webui/ash_webui_common_resources.pak",
         "$root_gen_dir/ash/webui/connectivity_diagnostics_resources.pak",
         "$root_gen_dir/ash/webui/file_manager/resources/file_manager_swa_resources.pak",
         "$root_gen_dir/ash/webui/file_manager/untrusted_resources/file_manager_untrusted_resources.pak",
         "$root_gen_dir/chrome/add_supervision_resources.pak",
+        "$root_gen_dir/chrome/app_install_resources.pak",
         "$root_gen_dir/chrome/arc_account_picker_resources.pak",
         "$root_gen_dir/chrome/assistant_optin_resources.pak",
         "$root_gen_dir/chrome/audio_resources.pak",
@@ -287,9 +288,9 @@ template("chrome_extra_paks") {
         "$root_gen_dir/chrome/password_change_resources.pak",
         "$root_gen_dir/chrome/remote_maintenance_curtain_resources.pak",
         "$root_gen_dir/chrome/sensor_info_resources.pak",
+        "$root_gen_dir/chrome/set_time_dialog_resources.pak",
         "$root_gen_dir/chrome/supervision_resources.pak",
         "$root_gen_dir/chrome/vc_tray_tester_resources.pak",
-        "$root_gen_dir/chrome/web_app_install_resources.pak",
         "$root_gen_dir/chromeos/ash/ash_resources.pak",
         "$root_gen_dir/chromeos/chromeos_help_app_bundle_resources.pak",
         "$root_gen_dir/chromeos/chromeos_help_app_kids_magazine_bundle_resources.pak",
@@ -309,7 +310,8 @@ template("chrome_extra_paks") {
         "//ash/webui/file_manager/resources:file_manager_swa_resources",
         "//ash/webui/file_manager/untrusted_resources:file_manager_untrusted_resources",
         "//ash/webui/firmware_update_ui/resources:resources",
-        "//ash/webui/guest_os_installer/resources:resources",
+        "//ash/webui/os_feedback_ui/resources:resources",
+        "//ash/webui/os_feedback_ui/untrusted_resources:resources",
         "//ash/webui/personalization_app/resources:resources",
         "//ash/webui/print_management/resources:resources",
         "//ash/webui/resources:camera_app_resources",
@@ -329,8 +331,6 @@ template("chrome_extra_paks") {
         "//ash/webui/resources:media_app_bundle_resources",
         "//ash/webui/resources:media_app_resources",
         "//ash/webui/resources:multidevice_debug_resources",
-        "//ash/webui/resources:os_feedback_resources",
-        "//ash/webui/resources:os_feedback_untrusted_resources",
         "//ash/webui/resources:projector_annotator_untrusted_resources",
         "//ash/webui/resources:projector_app_bundle_resources",
         "//ash/webui/resources:projector_app_untrusted_resources",
@@ -340,6 +340,7 @@ template("chrome_extra_paks") {
         "//ash/webui/resources:system_extensions_internals_resources",
         "//ash/webui/scanning/resources:resources",
         "//ash/webui/status_area_internals/resources:resources",
+        "//ash/webui/vc_background_ui/resources:resources",
         "//chromeos/ash/resources",
         "//chromeos/resources",
         "//ui/chromeos/styles:cros_styles_resources",
@@ -580,10 +581,9 @@ template("chrome_paks") {
 
   if (defined(invoker.files_to_hash)) {
     _prefix = "$target_gen_dir/app/${target_name}_integrity"
-    _integrity_outputs = [
-      "$_prefix.cc",
-      "$_prefix.h",
-    ]
+
+    # User of this template needs to check in a pre-generated "$_prefix.h".
+    _integrity_outputs = [ "$_prefix.cc" ]
 
     action("${target_name}_integrity_hash") {
       script = "tools/build/sha256_file.py"
@@ -594,12 +594,15 @@ template("chrome_paks") {
       }
 
       args = rebase_path([ _prefix ] + inputs, root_build_dir)
-
       deps = [ ":${invoker.target_name}" ]
     }
 
     source_set("${target_name}_integrity") {
       sources = _integrity_outputs
+
+      # This allows starting compilation in dependent targets earlier.
+      public = []
+
       deps = [ ":${target_name}_hash" ]
     }
   }

@@ -754,25 +754,62 @@ bool ResourceScriptStreamer::TryStartStreamingTask() {
   v8::ScriptCompiler::CompileOptions compile_options =
       v8::ScriptCompiler::kNoCompileOptions;
   v8::CompileHintCallback compile_hint_callback = nullptr;
+  void* compile_hint_callback_data = nullptr;
 
   v8_compile_hints::V8CrowdsourcedCompileHintsProducer* compile_hints_producer =
       script_resource_->GetV8CrowdsourcedCompileHintsProducer();
   v8_compile_hints::V8CrowdsourcedCompileHintsConsumer* compile_hints_consumer =
       script_resource_->GetV8CrowdsourcedCompileHintsConsumer();
+
+  bool local_compile_hints_enabled =
+      base::FeatureList::IsEnabled(features::kLocalCompileHints);
+
   if (compile_hints_producer && compile_hints_producer->MightGenerateData()) {
     DCHECK(base::FeatureList::IsEnabled(features::kProduceCompileHints2));
     compile_options = v8::ScriptCompiler::kProduceCompileHints;
+  } else if (local_compile_hints_enabled &&
+             V8CodeCache::HasCompileHints(
+                 script_resource_->CacheHandler(),
+                 CachedMetadataHandler::kAllowUnchecked) &&
+             V8CodeCache::HasHotTimestamp(script_resource_->CacheHandler())) {
+    // For now, we can only consume local or crowdsourced compile hints, but
+    // not both at the same time.
+    // TODO(chromium:1495723): Enable consuming both at the same time.
+
+    // TODO(1495723): It's not clear what we should do if the resource is not
+    // hot but we have compile hints. 1) Consume compile hints and produce new
+    // ones (currently not possible in the API) and combine both compile hints.
+    // 2) Ignore existing compile hints (we're anyway not creating the
+    // code cache yet) and produce new ones.
+    CachedMetadataHandler* cache_handler = script_resource_->CacheHandler();
+    scoped_refptr<CachedMetadata> cached_metadata =
+        V8CodeCache::GetCachedMetadataForCompileHints(cache_handler);
+    local_compile_hints_consumer_ =
+        std::make_unique<v8_compile_hints::V8LocalCompileHintsConsumer>(
+            cached_metadata.get());
+    if (!local_compile_hints_consumer_->IsRejected()) {
+      compile_hint_callback_data = local_compile_hints_consumer_.get();
+      compile_hint_callback =
+          v8_compile_hints::V8LocalCompileHintsConsumer::GetCompileHint;
+      compile_options = v8::ScriptCompiler::kConsumeCompileHints;
+    }
   } else if (compile_hints_consumer && compile_hints_consumer->HasData()) {
     // This doesn't need to be gated behind a runtime flag, because there won't
     // be any data unless the v8_compile_hints::kConsumeCompileHints
     // flag is on.
-    compile_hint_callback_data_ =
+    crowdsourced_compile_hint_callback_data_ =
         compile_hints_consumer->GetDataWithScriptNameHash(
             v8_compile_hints::ScriptNameHash(script_resource_->Url()));
+    compile_hint_callback_data = crowdsourced_compile_hint_callback_data_.get();
     compile_hint_callback =
         &v8_compile_hints::V8CrowdsourcedCompileHintsConsumer::
             CompileHintCallback;
     compile_options = v8::ScriptCompiler::kConsumeCompileHints;
+  } else if (local_compile_hints_enabled) {
+    // Produce local compile hints. TODO(chromium:1495723): If we later find out
+    // there were local compile hints (but the cache arrived late), we'll need
+    // to use them.
+    compile_options = v8::ScriptCompiler::kProduceCompileHints;
   }
 
   std::unique_ptr<v8::ScriptCompiler::ScriptStreamingTask>
@@ -780,7 +817,7 @@ bool ResourceScriptStreamer::TryStartStreamingTask() {
           base::WrapUnique(v8::ScriptCompiler::StartStreaming(
               V8PerIsolateData::MainThreadIsolate(), source_.get(),
               script_type_, compile_options, compile_hint_callback,
-              compile_hint_callback_data_.get()));
+              compile_hint_callback_data));
 
   if (!script_streaming_task) {
     // V8 cannot stream the script.

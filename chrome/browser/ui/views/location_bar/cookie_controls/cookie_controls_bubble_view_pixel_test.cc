@@ -27,6 +27,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/content_mock_cert_verifier.h"
 #include "net/dns/mock_host_resolver.h"
 #include "ui/views/widget/any_widget_observer.h"
 #include "url/gurl.h"
@@ -87,9 +88,11 @@ class CookieControlsBubbleViewPixelTest
           std::tuple<bool, std::string, CookieControlsEnforcement>> {
  public:
   CookieControlsBubbleViewPixelTest() {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        content_settings::features::kUserBypassUI,
-        {{"expiration", std::get<1>(GetParam())}});
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{content_settings::features::kUserBypassUI,
+          {{"expiration", std::get<1>(GetParam())}}}},
+        // TODO(http://b/306151669): Add coverage for 3PCD state.
+        {content_settings::features::kTrackingProtection3pcd});
   }
 
   void TearDownOnMainThread() override {
@@ -111,7 +114,26 @@ class CookieControlsBubbleViewPixelTest
     DialogBrowserTest::SetUp();
   }
 
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    DialogBrowserTest::SetUpCommandLine(command_line);
+    mock_cert_verifier_.SetUpCommandLine(command_line);
+  }
+
+  void SetUpInProcessBrowserTestFixture() override {
+    mock_cert_verifier_.SetUpInProcessBrowserTestFixture();
+    DialogBrowserTest::SetUpInProcessBrowserTestFixture();
+  }
+
+  void TearDownInProcessBrowserTestFixture() override {
+    DialogBrowserTest::TearDownInProcessBrowserTestFixture();
+    mock_cert_verifier_.TearDownInProcessBrowserTestFixture();
+  }
+
   void SetUpOnMainThread() override {
+    // This test uses a mock time, so use mock cert verifier to not have cert
+    // verification depend on the current mocked time.
+    mock_cert_verifier_.mock_cert_verifier()->set_default_result(net::OK);
+
     host_resolver()->AddRule("*", "127.0.0.1");
     content::SetupCrossSiteRedirector(https_test_server());
     ASSERT_TRUE(https_test_server()->Start());
@@ -199,6 +221,7 @@ class CookieControlsBubbleViewPixelTest
       &CookieControlsBubbleViewPixelTest::GetReferenceTime,
       /*time_ticks_override=*/nullptr, /*thread_ticks_override=*/nullptr};
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
+  content::ContentMockCertVerifier mock_cert_verifier_;
   base::test::ScopedFeatureList scoped_feature_list_;
   raw_ptr<CookieControlsIconView> cookie_controls_icon_;
   raw_ptr<CookieControlsBubbleCoordinator> cookie_controls_coordinator_;

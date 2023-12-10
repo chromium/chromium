@@ -43,6 +43,12 @@ function accumulateWheelScrollDelta() {
 }
 
 promise_test(async () => {
+    // Not seeing wheel events if the scrollAccumulator is initialized
+    // immediately ahead of a wheel scroll. This likely has something to do with
+    // how the events are queued and synchronously handled once the gesture
+    // promise is resolved. As long as the wheel event listener is queued in an
+    // earlier frame than the wheel scroll, events are properly triggered.
+    const scrollAccumulator = accumulateWheelScrollDelta();
     await waitForCompositorCommit();
     const scroller = document.getElementById("scroller");
     const center = pointInElement(scroller, 50, 50);
@@ -52,8 +58,7 @@ promise_test(async () => {
     // scrolling is enabled.
     const adjustedPixelsPerTick = calculateExpectedScroll(
       document.scrollingElement, 0, pixelsPerTick()).y;
-    const scrollAccumulator = accumulateWheelScrollDelta();
-    await wheelScroll(center.x, center.y, 0, adjustedPixelsPerTick);
+    await wheelScroll(center.x, center.y, 0, adjustedPixelsPerTick, document);
     const scrollDelta = await scrollAccumulator;
     assert_approx_equals(window.scrollY, scrollDelta, 0.01);
     assert_approx_equals(window.scrollY, adjustedPixelsPerTick, 0.01);

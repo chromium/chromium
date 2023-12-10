@@ -23,6 +23,7 @@
 #include "content/public/common/url_constants.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
 
@@ -122,9 +123,10 @@ class LoaderTask : public content::WebContentsObserver {
       return;
     }
 
-    const net::HttpResponseHeaders* headers =
-        render_frame_host->GetLastResponseHeaders();
-    if (headers && headers->response_code() != net::HTTP_OK) {
+    const network::mojom::URLResponseHead* response_head =
+        render_frame_host->GetLastResponseHead();
+    if (response_head && response_head->headers &&
+        response_head->headers->response_code() != net::HTTP_OK) {
       // Navigation loads content but is not successful. For example, HTTP-500
       // class of errors.
       PostResultTask(WebAppUrlLoader::Result::kFailedErrorPageLoaded);

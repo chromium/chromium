@@ -17,13 +17,16 @@ namespace {
 
 // Source and target unit values for testing.
 const double kSourceUnitValue = 1;
+const double kExpectedSourceUnitValue = 1;
 const double kExpectedTargetUnitValue = 1000;
+const double kExpectedDefaultValue = 0;
 
-// Source unit value field in valid format.
+// Source and target units value fields in valid format.
 NSString* kValidSourceUnitValueField = @"1";
+NSString* kValidTargetUnitValueField = @"1000";
 
-// Source unit value field in invalid format.
-NSString* kInvalidSourceUnitValueField = @"&1";
+// Source/Target unit value field in invalid format.
+NSString* kInvalidUnitValueField = @"&1";
 
 }  // namespace
 
@@ -67,12 +70,13 @@ class UnitConversionMediatorTest : public PlatformTest {
  public:
   void SetUp() override {
     PlatformTest::SetUp();
-    mediator_ = [[UnitConversionMediator alloc] init];
+    mediator_ = [[UnitConversionMediator alloc] initWithService:&service_];
     helper_ = [[TestUnitConversionProviderTestHelper alloc] init];
     ios::provider::test::SetUnitConversionProviderTestHelper(helper_);
   }
 
   void TearDown() override {
+    service_.Shutdown();
     ios::provider::test::SetUnitConversionProviderTestHelper(nil);
     PlatformTest::TearDown();
   }
@@ -80,6 +84,7 @@ class UnitConversionMediatorTest : public PlatformTest {
  protected:
   UnitConversionMediator* mediator_;
   TestUnitConversionProviderTestHelper* helper_;
+  UnitConversionService service_;
 };
 
 // Tests that the conversion and the updates are handled correctly when the
@@ -291,15 +296,53 @@ TEST_F(UnitConversionMediatorTest, TestValidSourceUnitValueFieldChange) {
 }
 
 // Tests that no update nor conversion is taking place when the source unit
-// field value is invalid.
+// field value is invalid and that the target unit field is updated with the
+// default value 0.
 TEST_F(UnitConversionMediatorTest, TestInvalidSourceUnitValueFieldChange) {
   id consumer_mock = OCMStrictProtocolMock(@protocol(UnitConversionConsumer));
   mediator_.consumer = consumer_mock;
   NSUnitMass* source_unit = [NSUnitMass kilograms];
   NSUnitMass* target_unit = [NSUnitMass grams];
-  [mediator_ sourceUnitValueFieldDidChange:kInvalidSourceUnitValueField
+  OCMExpect([consumer_mock updateTargetUnitValue:kExpectedDefaultValue
+                                          reload:YES]);
+  [mediator_ sourceUnitValueFieldDidChange:kInvalidUnitValueField
                                 sourceUnit:source_unit
                                 targetUnit:target_unit];
+}
+
+// Tests that the target field unit is handled properly when the string to
+// NSNumber cast is possible.
+TEST_F(UnitConversionMediatorTest, TestValidTargetUnitValueFieldChange) {
+  base::UserActionTester user_action_tester;
+  id consumer_mock = OCMStrictProtocolMock(@protocol(UnitConversionConsumer));
+  mediator_.consumer = consumer_mock;
+  NSUnitMass* source_unit = [NSUnitMass kilograms];
+  NSUnitMass* target_unit = [NSUnitMass grams];
+  OCMExpect([consumer_mock updateSourceUnitValue:kExpectedSourceUnitValue
+                                          reload:YES]);
+
+  [mediator_ targetUnitValueFieldDidChange:kValidTargetUnitValueField
+                                sourceUnit:source_unit
+                                targetUnit:target_unit];
+  [mediator_ reportMetrics];
   // Test.
   EXPECT_OCMOCK_VERIFY(consumer_mock);
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "IOS.UnitConversion.TargetUnitValueChange"),
+            1);
+}
+
+// Tests that no update nor conversion is taking place when the target unit
+// field value is invalid and that the source unit field is updated with the
+// default value 0.
+TEST_F(UnitConversionMediatorTest, TestInvalidTargetUnitValueFieldChange) {
+  id consumer_mock = OCMStrictProtocolMock(@protocol(UnitConversionConsumer));
+  mediator_.consumer = consumer_mock;
+  NSUnitMass* source_unit = [NSUnitMass kilograms];
+  NSUnitMass* target_unit = [NSUnitMass grams];
+  OCMExpect([consumer_mock updateSourceUnitValue:kExpectedDefaultValue
+                                          reload:YES]);
+  [mediator_ targetUnitValueFieldDidChange:kInvalidUnitValueField
+                                sourceUnit:source_unit
+                                targetUnit:target_unit];
 }

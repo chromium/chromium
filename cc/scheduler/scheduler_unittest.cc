@@ -19,10 +19,12 @@
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/time/time.h"
 #include "base/time/time_override.h"
 #include "base/trace_event/trace_event.h"
+#include "cc/base/features.h"
 #include "cc/metrics/begin_main_frame_metrics.h"
 #include "cc/metrics/event_metrics.h"
 #include "cc/test/fake_compositor_frame_reporting_controller.h"
@@ -295,7 +297,7 @@ class FakeSchedulerClient : public SchedulerClient,
   std::vector<const char*> actions_;
   raw_ptr<TestScheduler, DanglingUntriaged> scheduler_ = nullptr;
   base::TimeDelta frame_interval_;
-  absl::optional<FrameSkippedReason> last_frame_skipped_reason_;
+  std::optional<FrameSkippedReason> last_frame_skipped_reason_;
 };
 
 enum BeginFrameSourceType {
@@ -333,7 +335,7 @@ class SchedulerTestTaskRunner : public base::TestMockTimeTaskRunner {
   void RunTasksWhile(base::RepeatingCallback<bool()> condition) {
     run_condition_ = condition;
     FastForwardUntilNoTasksRemain();
-    run_condition_ = absl::nullopt;
+    run_condition_ = std::nullopt;
     // We've moved all the pending tasks away to break the execution loop,
     // now we should restore them.
     while (!tasks_to_requeue_.empty()) {
@@ -359,7 +361,7 @@ class SchedulerTestTaskRunner : public base::TestMockTimeTaskRunner {
   ~SchedulerTestTaskRunner() override = default;  // Ref-counted.
 
   size_t task_count_ = 0u;
-  absl::optional<base::RepeatingCallback<bool()>> run_condition_;
+  std::optional<base::RepeatingCallback<bool()>> run_condition_;
   base::circular_deque<base::TestPendingTask> tasks_to_requeue_;
 };
 
@@ -3980,6 +3982,11 @@ TEST_F(SchedulerTest, NoInvalidationForAnimateOnlyFrames) {
 }
 
 TEST_F(SchedulerTest, SendEarlyDidNotProduceFrameIfIdle) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /* enabled_features*/ {},
+      /* disabled_features*/ {features::kResetTimerWhenNoActiveTreeLikely});
+
   SetUpScheduler(EXTERNAL_BFS);
   scheduler_->SetNeedsBeginMainFrame();
 
@@ -4037,6 +4044,91 @@ TEST_F(SchedulerTest,
   // No invalidation should be performed since we are waiting for the main
   // thread to respond and merge with the commit.
   EXPECT_ACTIONS("WillBeginImplFrame");
+}
+
+TEST_F(SchedulerTest, SendEarlyDidNotProduceFrameInDeadlineIfIdle) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /* enabled_features*/ {features::kResetTimerWhenNoActiveTreeLikely},
+      /* disabled_features*/ {});
+
+  SetUpScheduler(EXTERNAL_BFS);
+  scheduler_->SetNeedsBeginMainFrame();
+
+  client_->Reset();
+  EXPECT_SCOPED(AdvanceFrame());
+  EXPECT_ACTIONS("WillBeginImplFrame", "ScheduledActionSendBeginMainFrame");
+  auto begin_main_frame_args = client_->last_begin_main_frame_args();
+  EXPECT_NE(client_->last_begin_frame_ack().frame_id.sequence_number,
+            begin_main_frame_args.frame_id.sequence_number);
+
+  client_->Reset();
+  scheduler_->NotifyBeginMainFrameStarted(task_runner_->NowTicks());
+  // Request a new commit before finishing the current one to simulate behavior
+  // seen in certain OOPIF renderers.
+  scheduler_->SetNeedsBeginMainFrame();
+  scheduler_->BeginMainFrameAborted(CommitEarlyOutReason::kFinishedNoUpdates);
+  // Early DidNotProduceFrame is sent in immediate timer.
+  task_runner_->RunUntilTime(task_runner_->NowTicks());
+  EXPECT_EQ(client_->last_begin_frame_ack().frame_id.sequence_number,
+            begin_main_frame_args.frame_id.sequence_number);
+}
+
+TEST_F(SchedulerTest, StopBeginFramesWhenNoNewActiveTreeLikely) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /* enabled_features*/ {features::kResetTimerWhenNoActiveTreeLikely},
+      /* disabled_features*/ {});
+
+  SetUpScheduler(EXTERNAL_BFS);
+  scheduler_->SetNeedsBeginMainFrame();
+  EXPECT_ACTIONS("AddObserver(this)");
+  client_->Reset();
+
+  constexpr uint64_t kSourceId = viz::BeginFrameArgs::kStartingSourceId;
+  uint64_t sequence_number = viz::BeginFrameArgs::kStartingFrameNumber;
+  base::TimeDelta interval = viz::BeginFrameArgs::DefaultInterval();
+  // Time gap between first args and second args.
+  base::TimeDelta time_gap = base::Milliseconds(1) + interval;
+  base::TimeTicks tick1 = task_runner_->NowTicks();
+  base::TimeTicks tick2 = task_runner_->NowTicks() + time_gap + interval;
+  base::TimeTicks tick3 = task_runner_->NowTicks() + time_gap + interval * 2;
+
+  // First begin frame is missed.
+  viz::BeginFrameArgs first_args = viz::BeginFrameArgs::Create(
+      BEGINFRAME_FROM_HERE, kSourceId, sequence_number++, tick1,
+      tick1 + interval, interval, viz::BeginFrameArgs::MISSED);
+  viz::BeginFrameArgs second_args = viz::BeginFrameArgs::Create(
+      BEGINFRAME_FROM_HERE, kSourceId, sequence_number++, tick2,
+      tick2 + interval, interval, viz::BeginFrameArgs::NORMAL);
+  viz::BeginFrameArgs third_args = viz::BeginFrameArgs::Create(
+      BEGINFRAME_FROM_HERE, kSourceId, sequence_number++, tick3,
+      tick3 + interval, interval, viz::BeginFrameArgs::NORMAL);
+
+  // Deliver first missed begin frame little late.
+  task_runner_->AdvanceMockTickClock(time_gap);
+  fake_external_begin_frame_source_->TestOnBeginFrame(first_args);
+
+  // Second begin frame.
+  task_runner_->AdvanceMockTickClock(interval);
+  fake_external_begin_frame_source_->TestOnBeginFrame(second_args);
+  task_runner_->RunUntilTime(task_runner_->NowTicks());
+  EXPECT_ACTIONS("WillBeginImplFrame", "ScheduledActionSendBeginMainFrame");
+  scheduler_->NotifyBeginMainFrameStarted(task_runner_->NowTicks());
+  scheduler_->NotifyReadyToCommit(nullptr);
+  scheduler_->NotifyReadyToActivate();
+  scheduler_->NotifyReadyToDraw();
+
+  // Third begin frame.
+  client_->Reset();
+  task_runner_->AdvanceMockTickClock(interval);
+  fake_external_begin_frame_source_->TestOnBeginFrame(third_args);
+  task_runner_->RunUntilTime(task_runner_->NowTicks());
+  // "RemoveObserver(this)" will be called only when
+  // features::kResetTimerWhenNoActiveTreeLikely is enabled, otherwise
+  // "RemoveObserver(this)" will be called on next vsync in late timer.
+  EXPECT_ACTIONS("ScheduledActionDrawIfPossible", "WillBeginImplFrame",
+                 "RemoveObserver(this)");
 }
 
 }  // namespace

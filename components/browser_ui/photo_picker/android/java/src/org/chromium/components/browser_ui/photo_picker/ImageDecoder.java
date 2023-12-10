@@ -19,9 +19,8 @@ import java.io.FileDescriptor;
 import java.io.IOException;
 
 /**
- * A helper to accept requests to take image file contents and decode them.
- * As this is intended to be run in a separate, sandboxed process, it also requires calling code to
- * initialize the sandbox.
+ * A helper to accept requests to take image file contents and decode them. As this is intended to
+ * be run in a separate, sandboxed process, it also requires calling code to initialize the sandbox.
  */
 public class ImageDecoder extends IDecoderService.Stub {
     // The keys for the bundle when passing data to and from this service.
@@ -40,9 +39,7 @@ public class ImageDecoder extends IDecoderService.Stub {
     // Whether the native library and the sandbox have been initialized.
     private boolean mSandboxInitialized;
 
-    /**
-     * Initializes the seccomp-bpf sandbox when it's supported by the device.
-     */
+    /** Initializes the seccomp-bpf sandbox when it's supported by the device. */
     public void initializeSandbox() {
         ImageDecoderJni.get().initializePhotoPickerSandbox();
         mSandboxInitialized = true;
@@ -108,8 +105,13 @@ public class ImageDecoder extends IDecoderService.Stub {
             // This service has no UI and maintains no state so if it crashes on
             // decoding a photo, it is better UX to eat the exception instead of showing
             // a crash dialog and discarding other requests that have already been sent.
-            Log.e(TAG,
-                    "Unexpected error during decoding " + filePath + " (width: " + width + ") "
+            Log.e(
+                    TAG,
+                    "Unexpected error during decoding "
+                            + filePath
+                            + " (width: "
+                            + width
+                            + ") "
                             + e);
 
             if (bundle != null) sendReply(callback, bundle);

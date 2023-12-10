@@ -67,14 +67,6 @@ class PlusAddressService : public KeyedService,
   // Check whether the passed-in string is a known plus address.
   bool IsPlusAddress(std::string potential_plus_address);
 
-  // Asks the PlusAddressClient to get a plus address for use on `origin` and on
-  // completion: runs`callback` with the created plus address, and stores the
-  // plus address in this service.
-  // Virtual to allow overriding the behavior in tests.
-  // TODO (crbug.com/1467623): Remove this once dependencies are migrated away.
-  virtual void OfferPlusAddressCreation(const url::Origin& origin,
-                                        PlusAddressCallback callback);
-
   // Asks the PlusAddressClient to reserve a plus address for use on `origin`,
   // and returns the plus address via `on_completed`.
   //
@@ -128,6 +120,14 @@ class PlusAddressService : public KeyedService,
 
   void HandleSignout();
 
+  // Get and parse the excluded sites.
+  std::set<std::string> GetAndParseExcludedSites();
+
+  // Checks whether the `origin` supports plus address.
+  // Returns `true` when origin is not opaque, ETLD+1 of `origin` is not
+  // on `excluded_sites_` set, and scheme is http or https.
+  bool IsSupportedOrigin(const url::Origin& origin) const;
+
   // The user's existing set of plus addresses, scoped to sites.
   PlusAddressMap plus_address_by_site_ GUARDED_BY_CONTEXT(sequence_checker_);
 
@@ -150,6 +150,10 @@ class PlusAddressService : public KeyedService,
 
   // Handles requests to a remote server that this service uses.
   PlusAddressClient plus_address_client_;
+
+  // Store set of excluded sites ETLD+1 where PlusAddressService is not
+  // supported.
+  std::set<std::string> excluded_sites_;
 
   // Stores last auth error (potentially NONE) to toggle is_enabled() on/off.
   // Defaults to NONE to enable this service while refresh tokens (and potential

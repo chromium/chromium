@@ -9,6 +9,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
+#include "base/system/sys_info.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "content/common/features.h"
@@ -56,6 +57,7 @@ ServiceWorkerRaceNetworkRequestURLLoaderClient::
       body_consumer_watcher_(FROM_HERE,
                              mojo::SimpleWatcher::ArmingPolicy::MANUAL,
                              base::SequencedTaskRunner::GetCurrentDefault()),
+      data_pipe_buffer_size_(GetDataPipeCapacityBytes()),
       request_start_(base::TimeTicks::Now()),
       request_start_time_(base::Time::Now()) {
   TRACE_EVENT_WITH_FLOW0("ServiceWorker",
@@ -63,19 +65,17 @@ ServiceWorkerRaceNetworkRequestURLLoaderClient::
                          "ServiceWorkerRaceNetworkRequestURLLoaderClient",
                          TRACE_ID_LOCAL(this), TRACE_EVENT_FLAG_FLOW_OUT);
 
-  uint32_t data_pipe_size = ServiceWorkerRaceNetworkRequestURLLoaderClient::
-      GetDataPipeCapacityBytes();
   // Create two data pipes. One is for RaceNetworkRequest. The other is for the
   // corresponding request in the fetch handler.
   if (CreateDataPipe(data_pipe_for_race_network_request_.producer,
                      data_pipe_for_race_network_request_.consumer,
-                     data_pipe_size) != MOJO_RESULT_OK) {
+                     data_pipe_buffer_size_) != MOJO_RESULT_OK) {
     TransitionState(State::kAborted);
     return;
   }
   if (CreateDataPipe(data_pipe_for_fetch_handler_.producer,
                      data_pipe_for_fetch_handler_.consumer,
-                     data_pipe_size) != MOJO_RESULT_OK) {
+                     data_pipe_buffer_size_) != MOJO_RESULT_OK) {
     TransitionState(State::kAborted);
     return;
   }
@@ -581,6 +581,17 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::CompleteWriteData(
     void* write_buffer,
     const void* read_buffer,
     uint32_t num_bytes_to_consume) {
+  SCOPED_CRASH_KEY_NUMBER("SWRace", "physical_memory_mb",
+                          base::SysInfo::AmountOfPhysicalMemoryMB());
+  SCOPED_CRASH_KEY_NUMBER("SWRace", "available_physical_memory_mb",
+                          base::SysInfo::AmountOfAvailablePhysicalMemory());
+  SCOPED_CRASH_KEY_NUMBER("SWRace", "is_lowend_device",
+                          base::SysInfo::IsLowEndDevice());
+  SCOPED_CRASH_KEY_NUMBER("SWRace", "data_pipe_buffer_size",
+                          data_pipe_buffer_size_);
+  SCOPED_CRASH_KEY_NUMBER("SWRace", "num_bytes_to_consume",
+                          num_bytes_to_consume);
+  CHECK_GE(data_pipe_buffer_size_, num_bytes_to_consume);
   memcpy(write_buffer, read_buffer, num_bytes_to_consume);
   MojoResult result =
       data_pipe_info.producer->EndWriteData(num_bytes_to_consume);
@@ -825,11 +836,14 @@ ServiceWorkerRaceNetworkRequestURLLoaderClient::NetworkTrafficAnnotationTag() {
 
 uint32_t
 ServiceWorkerRaceNetworkRequestURLLoaderClient::GetDataPipeCapacityBytes() {
-  return data_pipe_size_for_test_ > 0
-             ? data_pipe_size_for_test_
-             : network::features::GetDataPipeDefaultAllocationSize(
-                   network::features::DataPipeAllocationSize::
-                       kLargerSizeIfPossible);
+  if (data_pipe_size_for_test_ > 0) {
+    return data_pipe_size_for_test_;
+  }
+  // The feature param may override the buffer size.
+  return base::GetFieldTrialParamByFeatureAsInt(
+      features::kServiceWorkerAutoPreload, "data_pipe_capacity_num_bytes",
+      network::features::GetDataPipeDefaultAllocationSize(
+          network::features::DataPipeAllocationSize::kLargerSizeIfPossible));
 }
 
 // static

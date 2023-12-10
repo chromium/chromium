@@ -28,9 +28,7 @@ import java.util.Map;
  * {@link PropertyModel} based on the message type.
  */
 public class MessageCardProviderMediator implements MessageService.MessageObserver {
-    /**
-     * A class represents a Message.
-     */
+    /** A class represents a Message. */
     public class Message {
         public final @MessageService.MessageType int type;
         public final PropertyModel model;
@@ -47,7 +45,9 @@ public class MessageCardProviderMediator implements MessageService.MessageObserv
     private Map<Integer, Message> mShownMessageItems = new LinkedHashMap<>();
     private MessageCardView.DismissActionProvider mUiDismissActionProvider;
 
-    public MessageCardProviderMediator(Context context, Supplier<Boolean> isIncognitoSupplier,
+    public MessageCardProviderMediator(
+            Context context,
+            Supplier<Boolean> isIncognitoSupplier,
             MessageCardView.DismissActionProvider uiDismissActionProvider) {
         mContext = context;
         mIsIncognitoSupplier = isIncognitoSupplier;
@@ -58,7 +58,7 @@ public class MessageCardProviderMediator implements MessageService.MessageObserv
      * @return A list of {@link Message} that can be shown.
      */
     public List<Message> getMessageItems() {
-        for (Iterator<Integer> it = mMessageItems.keySet().iterator(); it.hasNext();) {
+        for (Iterator<Integer> it = mMessageItems.keySet().iterator(); it.hasNext(); ) {
             int key = it.next();
             if (mShownMessageItems.containsKey(key)) continue;
 
@@ -72,6 +72,7 @@ public class MessageCardProviderMediator implements MessageService.MessageObserv
 
         for (Message message : mShownMessageItems.values()) {
             message.model.set(MessageCardViewProperties.IS_INCOGNITO, mIsIncognitoSupplier.get());
+            message.model.set(TabListModel.CardProperties.CARD_ALPHA, 1F);
         }
 
         return new ArrayList<>(mShownMessageItems.values());
@@ -96,8 +97,10 @@ public class MessageCardProviderMediator implements MessageService.MessageObserv
 
     boolean isMessageShown(@MessageService.MessageType int messageType, int identifier) {
         if (!mShownMessageItems.containsKey(messageType)) return false;
-        return mShownMessageItems.get(messageType)
-                       .model.get(MessageCardViewProperties.MESSAGE_IDENTIFIER)
+        return mShownMessageItems
+                        .get(messageType)
+                        .model
+                        .get(MessageCardViewProperties.MESSAGE_IDENTIFIER)
                 == identifier;
     }
 
@@ -105,21 +108,28 @@ public class MessageCardProviderMediator implements MessageService.MessageObserv
         switch (messageType) {
             case TAB_SUGGESTION:
                 assert data instanceof TabSuggestionMessageService.TabSuggestionMessageData;
-                return TabSuggestionMessageCardViewModel.create(mContext,
+                return TabSuggestionMessageCardViewModel.create(
+                        mContext,
                         this::invalidateShownMessage,
                         (TabSuggestionMessageService.TabSuggestionMessageData) data);
             case IPH:
                 assert data instanceof IphMessageService.IphMessageData;
-                return IphMessageCardViewModel.create(mContext, this::invalidateShownMessage,
+                return IphMessageCardViewModel.create(
+                        mContext,
+                        this::invalidateShownMessage,
                         (IphMessageService.IphMessageData) data);
             case PRICE_MESSAGE:
                 assert data instanceof PriceMessageService.PriceMessageData;
-                return PriceMessageCardViewModel.create(mContext, this::invalidateShownMessage,
+                return PriceMessageCardViewModel.create(
+                        mContext,
+                        this::invalidateShownMessage,
                         (PriceMessageService.PriceMessageData) data);
             case INCOGNITO_REAUTH_PROMO_MESSAGE:
                 assert data
                         instanceof IncognitoReauthPromoMessageService.IncognitoReauthMessageData;
-                return IncognitoReauthPromoViewModel.create(mContext, this::invalidateShownMessage,
+                return IncognitoReauthPromoViewModel.create(
+                        mContext,
+                        this::invalidateShownMessage,
                         (IncognitoReauthPromoMessageService.IncognitoReauthMessageData) data);
             default:
                 return new PropertyModel.Builder(MessageCardViewProperties.ALL_KEYS)

@@ -1,0 +1,4 @@
+WebView textSize:16.00 style:0 bundle:[display="", htmlTag="#document"]
+++View textSize:16.00 style:0 bundle:[display="block", htmlTag="body"]
+++++Image text:"svg" textSize:16.00 style:0 bundle:[aria-label="svg", display="inline", height="10", htmlTag="svg", viewbox="0 0 10 10", width="10"]
+++++++View text:"svg-with-link-to-document" textSize:16.00 style:0 bundle:[display="inline", href="#", htmlTag="a"]

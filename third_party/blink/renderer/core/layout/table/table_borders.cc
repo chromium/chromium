@@ -6,10 +6,10 @@
 
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_block_node.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_constraint_space.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_constraint_space_builder.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_length_utils.h"
+#include "third_party/blink/renderer/core/layout/block_node.h"
+#include "third_party/blink/renderer/core/layout/constraint_space.h"
+#include "third_party/blink/renderer/core/layout/constraint_space_builder.h"
+#include "third_party/blink/renderer/core/layout/length_utils.h"
 #include "third_party/blink/renderer/core/layout/table/layout_table.h"
 #include "third_party/blink/renderer/core/layout/table/layout_table_column_visitor.h"
 #include "third_party/blink/renderer/core/layout/table/table_layout_algorithm_types.h"
@@ -49,7 +49,7 @@ class ColBordersMarker {
   STACK_ALLOCATED();
 
  public:
-  void VisitCol(const NGLayoutInputNode& column,
+  void VisitCol(const LayoutInputNode& column,
                 wtf_size_t start_column_index,
                 wtf_size_t span) {
     for (wtf_size_t i = 0; i < span; ++i) {
@@ -59,9 +59,9 @@ class ColBordersMarker {
                            box_order, table_writing_direction);
     }
   }
-  void EnterColgroup(const NGLayoutInputNode& colgroup,
+  void EnterColgroup(const LayoutInputNode& colgroup,
                      wtf_size_t start_column_index) {}
-  void LeaveColgroup(const NGLayoutInputNode& colgroup,
+  void LeaveColgroup(const LayoutInputNode& colgroup,
                      wtf_size_t start_column_index,
                      wtf_size_t span,
                      bool has_children) {}
@@ -83,12 +83,12 @@ class ColgroupBordersMarker {
   STACK_ALLOCATED();
 
  public:
-  void VisitCol(const NGLayoutInputNode& column,
+  void VisitCol(const LayoutInputNode& column,
                 wtf_size_t start_column_index,
                 wtf_size_t span) {}
-  void EnterColgroup(const NGLayoutInputNode& colgroup,
+  void EnterColgroup(const LayoutInputNode& colgroup,
                      wtf_size_t start_column_index) {}
-  void LeaveColgroup(const NGLayoutInputNode& colgroup,
+  void LeaveColgroup(const LayoutInputNode& colgroup,
                      wtf_size_t start_column_index,
                      wtf_size_t span,
                      bool has_children) {
@@ -112,8 +112,7 @@ class ColgroupBordersMarker {
 
 }  // namespace
 
-const TableBorders* TableBorders::ComputeTableBorders(
-    const NGBlockNode& table) {
+const TableBorders* TableBorders::ComputeTableBorders(const BlockNode& table) {
   const ComputedStyle& table_style = table.Style();
   const bool is_collapsed =
       table_style.BorderCollapse() == EBorderCollapse::kCollapse;
@@ -133,14 +132,14 @@ const TableBorders* TableBorders::ComputeTableBorders(
   wtf_size_t table_row_index = 0;
   // Mark cell borders.
   bool found_multispan_cells = false;
-  for (const NGBlockNode section : grouped_children) {
+  for (const BlockNode section : grouped_children) {
     wtf_size_t section_start_row = table_row_index;
     ColspanCellTabulator tabulator;
-    for (NGBlockNode row = To<NGBlockNode>(section.FirstChild()); row;
-         row = To<NGBlockNode>(row.NextSibling())) {
+    for (BlockNode row = To<BlockNode>(section.FirstChild()); row;
+         row = To<BlockNode>(row.NextSibling())) {
       tabulator.StartRow();
-      for (NGBlockNode cell = To<NGBlockNode>(row.FirstChild()); cell;
-           cell = To<NGBlockNode>(cell.NextSibling())) {
+      for (BlockNode cell = To<BlockNode>(row.FirstChild()); cell;
+           cell = To<BlockNode>(cell.NextSibling())) {
         tabulator.FindNextFreeColumn();
         wtf_size_t cell_colspan = cell.TableCellColspan();
         found_multispan_cells |=
@@ -176,13 +175,13 @@ const TableBorders* TableBorders::ComputeTableBorders(
   // If any cells have rowspan, need to redistribute cell borders.
   if (found_multispan_cells) {
     wtf_size_t section_index = 0;
-    for (NGBlockNode section : grouped_children) {
+    for (BlockNode section : grouped_children) {
       ColspanCellTabulator tabulator;
-      for (NGBlockNode row = To<NGBlockNode>(section.FirstChild()); row;
-           row = To<NGBlockNode>(row.NextSibling())) {
+      for (BlockNode row = To<BlockNode>(section.FirstChild()); row;
+           row = To<BlockNode>(row.NextSibling())) {
         tabulator.StartRow();
-        for (NGBlockNode cell = To<NGBlockNode>(row.FirstChild()); cell;
-             cell = To<NGBlockNode>(cell.NextSibling())) {
+        for (BlockNode cell = To<BlockNode>(row.FirstChild()); cell;
+             cell = To<BlockNode>(cell.NextSibling())) {
           tabulator.FindNextFreeColumn();
           table_borders->MergeBorders(
               table_row_index, tabulator.CurrentColumn(),
@@ -200,9 +199,9 @@ const TableBorders* TableBorders::ComputeTableBorders(
 
   // Mark row borders.
   table_row_index = 0;
-  for (NGBlockNode section : grouped_children) {
-    for (NGBlockNode row = To<NGBlockNode>(section.FirstChild()); row;
-         row = To<NGBlockNode>(row.NextSibling())) {
+  for (BlockNode section : grouped_children) {
+    for (BlockNode row = To<BlockNode>(section.FirstChild()); row;
+         row = To<BlockNode>(row.NextSibling())) {
       table_borders->MergeBorders(table_row_index, 0, 1, table_column_count,
                                   row.Style(), TableBorders::EdgeSource::kRow,
                                   ++box_order, table_writing_direction);
@@ -214,7 +213,7 @@ const TableBorders* TableBorders::ComputeTableBorders(
   // It is tempting to traverse sections at the same time as rows,
   // but it would cause precedence errors.
   wtf_size_t section_index = 0;
-  for (NGBlockNode section : grouped_children) {
+  for (BlockNode section : grouped_children) {
     TableBorders::Section section_info =
         table_borders->GetSection(section_index);
     table_borders->MergeBorders(
@@ -230,12 +229,12 @@ const TableBorders* TableBorders::ComputeTableBorders(
   ColBordersMarker col_borders_marker(table_row_count, ++box_order,
                                       table_writing_direction, *table_borders);
   VisitLayoutTableColumn(
-      const_cast<HeapVector<NGBlockNode>&>(grouped_children.columns),
+      const_cast<HeapVector<BlockNode>&>(grouped_children.columns),
       table_column_count, &col_borders_marker);
   ColgroupBordersMarker colgroup_borders_marker(
       table_row_count, ++box_order, table_writing_direction, *table_borders);
   VisitLayoutTableColumn(
-      const_cast<HeapVector<NGBlockNode>&>(grouped_children.columns),
+      const_cast<HeapVector<BlockNode>&>(grouped_children.columns),
       table_column_count, &colgroup_borders_marker);
 
   // Mark table borders.
@@ -400,7 +399,7 @@ void TableBorders::UpdateTableBorder(wtf_size_t table_row_count,
 }
 
 BoxStrut TableBorders::CellBorder(
-    const NGBlockNode& cell,
+    const BlockNode& cell,
     wtf_size_t row,
     wtf_size_t column,
     wtf_size_t section,
@@ -411,8 +410,8 @@ BoxStrut TableBorders::CellBorder(
                           ClampColspan(column, cell.TableCellColspan()));
   }
   return ComputeBorders(
-      NGConstraintSpaceBuilder(table_writing_direction.GetWritingMode(),
-                               table_writing_direction, /* is_new_fc */ false)
+      ConstraintSpaceBuilder(table_writing_direction.GetWritingMode(),
+                             table_writing_direction, /* is_new_fc */ false)
           .ToConstraintSpace(),
       cell);
 }
@@ -425,9 +424,9 @@ BoxStrut TableBorders::CellPaddingForMeasure(
   if (!cell_style.MayHavePadding())
     return BoxStrut();
   return ComputePadding(
-      NGConstraintSpaceBuilder(table_writing_direction.GetWritingMode(),
-                               table_writing_direction,
-                               /* is_new_fc */ false)
+      ConstraintSpaceBuilder(table_writing_direction.GetWritingMode(),
+                             table_writing_direction,
+                             /* is_new_fc */ false)
           .ToConstraintSpace(),
       cell_style);
 }

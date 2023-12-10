@@ -11,17 +11,17 @@
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/html_names.h"
+#include "third_party/blink/renderer/core/layout/constraint_space.h"
+#include "third_party/blink/renderer/core/layout/constraint_space_builder.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_child_layout_context.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_item_span.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_layout_algorithm.h"
 #include "third_party/blink/renderer/core/layout/inline/physical_line_box_fragment.h"
+#include "third_party/blink/renderer/core/layout/layout_ng_block_flow.h"
+#include "third_party/blink/renderer/core/layout/layout_result.h"
 #include "third_party/blink/renderer/core/layout/layout_text_combine.h"
-#include "third_party/blink/renderer/core/layout/ng/layout_ng_block_flow.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_constraint_space.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_constraint_space_builder.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_layout_result.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
+#include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_text.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/svg_names.h"
@@ -117,9 +117,9 @@ class InlineNodeTest : public RenderingTest {
 
   MinMaxSizes ComputeMinMaxSizes(InlineNode node) {
     const auto space =
-        NGConstraintSpaceBuilder(node.Style().GetWritingMode(),
-                                 node.Style().GetWritingDirection(),
-                                 /* is_new_fc */ false)
+        ConstraintSpaceBuilder(node.Style().GetWritingMode(),
+                               node.Style().GetWritingDirection(),
+                               /* is_new_fc */ false)
             .ToConstraintSpace();
 
     return node
@@ -152,8 +152,7 @@ class InlineNodeTest : public RenderingTest {
 
   void TestAnyItemsAreDirty(const LayoutBlockFlow& block_flow, bool expected) {
     FragmentItems::DirtyLinesFromNeedsLayout(block_flow);
-    for (const NGPhysicalBoxFragment& fragment :
-         block_flow.PhysicalFragments()) {
+    for (const PhysicalBoxFragment& fragment : block_flow.PhysicalFragments()) {
       if (const FragmentItems* items = fragment.Items()) {
         // Check |FragmentItem::IsDirty| directly without using
         // |EndOfReusableItems|. This is different from the line cache logic,
@@ -1588,7 +1587,7 @@ TEST_F(InlineNodeTest, InitialLetter) {
       sample.GetPseudoElement(kPseudoIdFirstLetter)->GetLayoutObject());
 
   EXPECT_TRUE(InlineNode(&block_flow).HasInitialLetterBox());
-  EXPECT_TRUE(NGBlockNode(&initial_letter_box).IsInitialLetterBox());
+  EXPECT_TRUE(BlockNode(&initial_letter_box).IsInitialLetterBox());
   EXPECT_TRUE(InlineNode(&initial_letter_box).IsInitialLetterBox());
   EXPECT_TRUE(initial_letter_box.GetPhysicalFragment(0)->IsInitialLetterBox());
 

@@ -35,7 +35,7 @@ class MediaAccessHandler {
   // made from a drive-by page.
   virtual bool CheckMediaAccessPermission(
       content::RenderFrameHost* render_frame_host,
-      const GURL& security_origin,
+      const url::Origin& security_origin,
       blink::mojom::MediaStreamType type,
       const extensions::Extension* extension) = 0;
 

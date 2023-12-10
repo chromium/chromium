@@ -112,11 +112,9 @@ public final class SplashActivityTest {
                         HostBrowserUtils.MINIMUM_REQUIRED_CHROMIUM_VERSION_NEW_SPLASH));
     }
 
-    /**
-     * Test common cases that SplashActivity:
-     * - Does not finish itself when the WebAPK is launched from the app list.
-     * - Finishes itself when the user backs out of the activity stacked on top.
-     */
+    // Test common cases that SplashActivity:
+    // - Does not finish itself when the WebAPK is launched from the app list.
+    // - Finishes itself when the user backs out of the activity stacked on top.
     @Test
     public void testNormalLaunch() {
         ActivityController<SplashActivity> splashActivityController =
@@ -134,13 +132,11 @@ public final class SplashActivityTest {
         assertTrue(splashActivityController.get().isFinishing());
     }
 
-    /**
-     * Test that SplashActivity finishes itself when:
-     * - the user backs out of the activity stacked on top
-     * AND
-     * - the activity is recreated because it was previously killed by the Android OS due to memory
-     *   pressure.
-     */
+    // Test that SplashActivity finishes itself when:
+    // - the user backs out of the activity stacked on top
+    // AND
+    // - the activity is recreated because it was previously killed by the Android OS due to memory
+    //   pressure.
     @Test
     public void testWebApkKilledByOomFinishOnBack() {
         ActivityController<SplashActivity> splashActivityController =
@@ -155,13 +151,11 @@ public final class SplashActivityTest {
         assertTrue(splashActivityController.get().isFinishing());
     }
 
-    /**
-     * Test that SplashActivity does not finish itself when:
-     * - the choose-host-browser dialog is up
-     * AND
-     * - the activity is recreated because it was previously killed by the Android OS due to memory
-     *   pressure.
-     */
+    // Test that SplashActivity does not finish itself when:
+    // - the choose-host-browser dialog is up
+    // AND
+    // - the activity is recreated because it was previously killed by the Android OS due to memory
+    //   pressure.
     @Test
     public void testWebApkKilledByOomHostBrowserNotSelected() {
         ActivityController<SplashActivity> splashActivityController =
@@ -178,15 +172,13 @@ public final class SplashActivityTest {
         assertFalse(splashActivityController.get().isFinishing());
     }
 
-    /**
-     * Test that SplashActivity does not finish itself when:
-     * - the WebAPK is launched from Android Recents on Android O+
-     * AND
-     * - the activity is recreated because it was previously killed by the Android OS due to memory
-     *   pressure.
-     * On pre-O, the activity stacked on top of SplashActivity is recreated but SplashActivity isn't
-     * when the user taps the WebAPK in Android recents.
-     */
+    // Test that SplashActivity does not finish itself when:
+    // - the WebAPK is launched from Android Recents on Android O+
+    // AND
+    // - the activity is recreated because it was previously killed by the Android OS due to memory
+    //   pressure.
+    // On pre-O, the activity stacked on top of SplashActivity is recreated but SplashActivity isn't
+    // when the user taps the WebAPK in Android recents.
     @Test
     public void testWebApkKilledByOomRecreatedViaRecentsAndroidOPlus() {
         ActivityController<SplashActivity> splashActivityController =
@@ -198,13 +190,11 @@ public final class SplashActivityTest {
         assertFalse(splashActivityController.get().isFinishing());
     }
 
-    /**
-     * Test that SplashActivity does not finish itself when:
-     * - the WebAPK is launched from a deep link.
-     * AND
-     * - the WebAPK is already running, but SplashActivity is not running because it was killed by
-     *   the Android OS due to memory pressure.
-     */
+    // Test that SplashActivity does not finish itself when:
+    // - the WebAPK is launched from a deep link.
+    // AND
+    // - the WebAPK is already running, but SplashActivity is not running because it was killed by
+    //   the Android OS due to memory pressure.
     @Test
     public void testDeepLink() {
         ActivityController<SplashActivity> splashActivityController =
@@ -221,8 +211,8 @@ public final class SplashActivityTest {
     }
 
     /**
-     * Test that SplashActivity does not finish itself when it receives onActivityResult()
-     * prior to onNewIntent().
+     * Test that SplashActivity does not finish itself when it receives onActivityResult() prior to
+     * onNewIntent().
      */
     @Test
     public void testActivityResultBeforeNewIntent() {
@@ -259,8 +249,8 @@ public final class SplashActivityTest {
     }
 
     /**
-     * Test that SplashActivity sets the light theme color when the system is in night mode
-     * and the dark theme color is invalid.
+     * Test that SplashActivity sets the light theme color when the system is in night mode and the
+     * dark theme color is invalid.
      */
     @Test
     @Config(qualifiers = "night")
@@ -279,8 +269,8 @@ public final class SplashActivityTest {
     }
 
     /**
-     * Test that SplashActivity sets the light theme color when the system is in night mode
-     * and the dark theme color is missing.
+     * Test that SplashActivity sets the light theme color when the system is in night mode and the
+     * dark theme color is missing.
      */
     @Test
     @Config(qualifiers = "night")

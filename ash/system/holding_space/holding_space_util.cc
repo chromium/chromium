@@ -5,8 +5,8 @@
 #include "ash/system/holding_space/holding_space_util.h"
 
 #include <memory>
+#include <optional>
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_element.h"
@@ -38,7 +38,7 @@ class CallbackPathGenerator : public views::HighlightPathGenerator {
 
  private:
   // views::HighlightPathGenerator:
-  absl::optional<gfx::RRectF> GetRoundRect(const gfx::RectF& rect) override {
+  std::optional<gfx::RRectF> GetRoundRect(const gfx::RectF& rect) override {
     return callback_.Run();
   }
 
@@ -85,8 +85,8 @@ class CircleBackground : public views::Background {
 
  private:
   const ui::ColorId color_id_;
-  const absl::optional<size_t> fixed_size_;
-  const absl::optional<gfx::InsetsF> insets_;
+  const std::optional<size_t> fixed_size_;
+  const std::optional<gfx::InsetsF> insets_;
 };
 
 // Helpers ---------------------------------------------------------------------

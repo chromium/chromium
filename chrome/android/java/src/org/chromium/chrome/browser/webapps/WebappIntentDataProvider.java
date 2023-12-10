@@ -33,9 +33,7 @@ import org.chromium.components.browser_ui.widget.TintedDrawable;
 import org.chromium.device.mojom.ScreenOrientationLockType;
 import org.chromium.ui.util.ColorUtils;
 
-/**
- * Stores info about a web app.
- */
+/** Stores info about a web app. */
 public class WebappIntentDataProvider extends BrowserServicesIntentDataProvider {
     private final Drawable mCloseButtonIcon;
     private final TrustedWebActivityDisplayMode mTwaDisplayMode;
@@ -47,33 +45,37 @@ public class WebappIntentDataProvider extends BrowserServicesIntentDataProvider 
     private final ColorProviderImpl mColorProvider;
     private final ColorProviderImpl mDarkColorProvider;
 
-    /**
-     * Returns the toolbar color to use if a custom color is not specified by the webapp.
-     */
+    /** Returns the toolbar color to use if a custom color is not specified by the webapp. */
     public static int getDefaultToolbarColor() {
         return Color.WHITE;
     }
 
-    /**
-     * Returns the toolbar color to use if a custom dark color is not specified by the webapp.
-     */
+    /** Returns the toolbar color to use if a custom dark color is not specified by the webapp. */
     public static int getDefaultDarkToolbarColor() {
         return Color.BLACK;
     }
 
-    WebappIntentDataProvider(@NonNull Intent intent, int toolbarColor,
-            boolean hasCustomToolbarColor, int darkToolbarColor, boolean hasCustomDarkToolbarColor,
-            @Nullable ShareData shareData, @NonNull WebappExtras webappExtras,
+    WebappIntentDataProvider(
+            @NonNull Intent intent,
+            int toolbarColor,
+            boolean hasCustomToolbarColor,
+            int darkToolbarColor,
+            boolean hasCustomDarkToolbarColor,
+            @Nullable ShareData shareData,
+            @NonNull WebappExtras webappExtras,
             @Nullable WebApkExtras webApkExtras) {
         mIntent = intent;
         mColorProvider = new ColorProviderImpl(toolbarColor, hasCustomToolbarColor);
         mDarkColorProvider = new ColorProviderImpl(darkToolbarColor, hasCustomDarkToolbarColor);
-        final Context context = new ContextThemeWrapper(
-                ContextUtils.getApplicationContext(), ActivityUtils.getThemeId());
+        final Context context =
+                new ContextThemeWrapper(
+                        ContextUtils.getApplicationContext(), ActivityUtils.getThemeId());
         mCloseButtonIcon = TintedDrawable.constructTintedDrawable(context, R.drawable.btn_close);
-        mTwaDisplayMode = (webappExtras.displayMode == DisplayMode.FULLSCREEN)
-                ? new ImmersiveMode(false /* sticky */, LAYOUT_IN_DISPLAY_CUTOUT_MODE_DEFAULT)
-                : new DefaultMode();
+        mTwaDisplayMode =
+                (webappExtras.displayMode == DisplayMode.FULLSCREEN)
+                        ? new ImmersiveMode(
+                                /* sticky= */ false, LAYOUT_IN_DISPLAY_CUTOUT_MODE_DEFAULT)
+                        : new DefaultMode();
         mShareData = shareData;
         mWebappExtras = webappExtras;
         mWebApkExtras = webApkExtras;
@@ -108,8 +110,9 @@ public class WebappIntentDataProvider extends BrowserServicesIntentDataProvider 
         boolean inDarkMode = ColorUtils.inNightMode(ContextUtils.getApplicationContext());
         boolean hasValidDarkToolbar = mDarkColorProvider.hasCustomToolbarColor();
         boolean hasValidLightToolbar = mColorProvider.hasCustomToolbarColor();
-        return inDarkMode && (hasValidDarkToolbar || !hasValidLightToolbar) ? mDarkColorProvider
-                                                                            : mColorProvider;
+        return inDarkMode && (hasValidDarkToolbar || !hasValidLightToolbar)
+                ? mDarkColorProvider
+                : mColorProvider;
     }
 
     @Override

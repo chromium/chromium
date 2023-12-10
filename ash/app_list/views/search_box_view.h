@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -23,7 +24,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 
 namespace views {
 class MenuItemView;
@@ -48,6 +49,8 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
                                  public SearchBoxModelObserver,
                                  public LauncherSearchIphView::Delegate,
                                  public AssistantViewDelegateObserver {
+  METADATA_HEADER(SearchBoxView, SearchBoxViewBase)
+
  public:
   enum class PlaceholderTextType {
     kShortcuts = 0,
@@ -106,7 +109,6 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void OnPaintBackground(gfx::Canvas* canvas) override;
   void OnPaintBorder(gfx::Canvas* canvas) override;
-  const char* GetClassName() const override;
   void OnThemeChanged() override;
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
   void AddedToWidget() override;
@@ -171,8 +173,7 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
   // The active descendant should be the currently selected result view in the
   // search results list.
   // `nullopt` indicates no active descendant, i.e. that no result is selected.
-  void SetA11yActiveDescendant(
-      const absl::optional<int32_t>& active_descendant);
+  void SetA11yActiveDescendant(const std::optional<int32_t>& active_descendant);
 
   // Refreshes the placeholder text with a fixed one rather than the one picked
   // up randomly
@@ -273,6 +274,10 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
   // toggle.
   std::vector<AppListSearchControlCategory> GetToggleableCategories();
 
+  // Returns a map of enable states for each category, including the
+  // non-toggleable ones. The result is used for metrics.
+  CategoryEnableStateMap GetSearchCategoryEnableState();
+
   // Tracks whether the search result page view is visible.
   bool search_result_page_visible_ = false;
 
@@ -315,7 +320,7 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
   // Set by SearchResultPageView when the accessibility selection moves to a
   // search result view - the value is the ID of the currently selected result
   // view.
-  absl::optional<int32_t> a11y_active_descendant_;
+  std::optional<int32_t> a11y_active_descendant_;
 
   // Owned by SearchResultPageView (for fullscreen launcher) or
   // ProductivityLauncherSearchPage (for bubble launcher).

@@ -29,12 +29,13 @@ enum class KioskBrowserWindowType {
   kOpenedDevToolsBrowser = 3,
   kOpenedTroubleshootingNormalBrowser = 4,
   kOpenedSystemWebApp = 5,
-  kMaxValue = kOpenedSystemWebApp,
+  kClosedAshBrowserWithLacrosEnabled = 6,
+  kMaxValue = kClosedAshBrowserWithLacrosEnabled,
 };
 
 // This class monitors for the addition and removal of new browser windows
 // during the kiosk session. On construction for web kiosk sessions, it gets a
-// wab app name stored as `web_app_name_`.
+// web app name stored as `web_app_name_`.
 //
 //
 // If a new browser window is opened, this gets closed immediately, unless it's
@@ -88,8 +89,7 @@ class KioskBrowserWindowHandler : public BrowserListObserver {
 
   // Owned by `ProfileManager`.
   const raw_ptr<Profile, DanglingUntriaged> profile_;
-  // `web_app_name_` is set only when we have the initial browser in the web
-  // kiosk session.
+  // `web_app_name_` is set only for web kiosk sessions.
   const absl::optional<std::string> web_app_name_;
   base::RepeatingCallback<void(bool is_closing)>
       on_browser_window_added_callback_;

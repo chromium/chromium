@@ -1,6 +1,4 @@
 This is a wdspec test.
 [FAIL] test_element_outside_of_not_scrollable_viewport
   AssertionError: element not interactable (400): element not interactable
-[PASS] test_element_outside_of_scrollable_viewport
-[PASS] test_contenteditable_element_outside_of_scrollable_viewport
 Harness: the test ran to completion.

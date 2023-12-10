@@ -22,34 +22,48 @@ class WebsiteApprovalMediator {
     private final BottomSheetController mBottomSheetController;
     private final WebsiteApprovalSheetContent mSheetContent;
     private final PropertyModel mModel;
+    private final Profile mProfile;
 
-    WebsiteApprovalMediator(WebsiteApprovalCoordinator.CompletionCallback completionCallback,
-            BottomSheetController bottomSheetController, WebsiteApprovalSheetContent sheetContent,
-            PropertyModel model) {
+    WebsiteApprovalMediator(
+            WebsiteApprovalCoordinator.CompletionCallback completionCallback,
+            BottomSheetController bottomSheetController,
+            WebsiteApprovalSheetContent sheetContent,
+            PropertyModel model,
+            Profile profile) {
         mCompletionCallback = completionCallback;
         mBottomSheetController = bottomSheetController;
         mSheetContent = sheetContent;
         mModel = model;
+        mProfile = profile;
     }
 
     void show() {
-        mModel.set(WebsiteApprovalProperties.ON_CLICK_APPROVE, v -> {
-            mBottomSheetController.hideContent(mSheetContent, true,
-                    BottomSheetController.StateChangeReason.INTERACTION_COMPLETE);
-            mCompletionCallback.onWebsiteApproved();
-        });
-        mModel.set(WebsiteApprovalProperties.ON_CLICK_DENY, v -> {
-            mBottomSheetController.hideContent(mSheetContent, true,
-                    BottomSheetController.StateChangeReason.INTERACTION_COMPLETE);
-            mCompletionCallback.onWebsiteDenied();
-        });
+        mModel.set(
+                WebsiteApprovalProperties.ON_CLICK_APPROVE,
+                v -> {
+                    mBottomSheetController.hideContent(
+                            mSheetContent,
+                            true,
+                            BottomSheetController.StateChangeReason.INTERACTION_COMPLETE);
+                    mCompletionCallback.onWebsiteApproved();
+                });
+        mModel.set(
+                WebsiteApprovalProperties.ON_CLICK_DENY,
+                v -> {
+                    mBottomSheetController.hideContent(
+                            mSheetContent,
+                            true,
+                            BottomSheetController.StateChangeReason.INTERACTION_COMPLETE);
+                    mCompletionCallback.onWebsiteDenied();
+                });
 
         // Set the child name.  We use the given name if there is one for this account, otherwise we
         // use the full account email address.
-        IdentityManager identityManager = IdentityServicesProvider.get().getIdentityManager(
-                Profile.getLastUsedRegularProfile());
-        String childEmail = CoreAccountInfo.getEmailFrom(
-                identityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN));
+        IdentityManager identityManager =
+                IdentityServicesProvider.get().getIdentityManager(mProfile);
+        String childEmail =
+                CoreAccountInfo.getEmailFrom(
+                        identityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN));
         if (childEmail == null) {
             // This is an unexpected window condition: there is no signed in account.
             // TODO(crbug.com/1330900): dismiss the bottom sheet.
@@ -62,6 +76,7 @@ class WebsiteApprovalMediator {
         if (childAccountInfo != null && !childAccountInfo.getGivenName().isEmpty()) {
             childNameProperty = childAccountInfo.getGivenName();
         }
+
         mModel.set(WebsiteApprovalProperties.CHILD_NAME, childNameProperty);
 
         // Now show the actual content.

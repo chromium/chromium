@@ -48,10 +48,22 @@ public class ContextualSearchRequestTest {
                         () -> {
                             mRequest =
                                     new ContextualSearchRequest(
-                                            "barack obama", "barack", "", true, null, null);
+                                            sActivityTestRule.getProfile(false),
+                                            "barack obama",
+                                            "barack",
+                                            "",
+                                            true,
+                                            null,
+                                            null);
                             mNormalPriorityOnlyRequest =
                                     new ContextualSearchRequest(
-                                            "woody allen", "allen", "", false, null, null);
+                                            sActivityTestRule.getProfile(false),
+                                            "woody allen",
+                                            "allen",
+                                            "",
+                                            false,
+                                            null,
+                                            null);
                         });
     }
 
@@ -96,10 +108,22 @@ public class ContextualSearchRequestTest {
                         () -> {
                             mRequest =
                                     new ContextualSearchRequest(
-                                            "", "", "", true, serverUrlFull, serverUrlPreload);
+                                            sActivityTestRule.getProfile(false),
+                                            "",
+                                            "",
+                                            "",
+                                            true,
+                                            serverUrlFull,
+                                            serverUrlPreload);
                             mNormalPriorityOnlyRequest =
                                     new ContextualSearchRequest(
-                                            "", "", "", false, serverUrlFull, null);
+                                            sActivityTestRule.getProfile(false),
+                                            "",
+                                            "",
+                                            "",
+                                            false,
+                                            serverUrlFull,
+                                            null);
                         });
         Assert.assertTrue(mRequest.isUsingLowPriority());
         Assert.assertEquals(serverUrlPreload, mRequest.getSearchUrl());

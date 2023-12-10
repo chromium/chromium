@@ -46,8 +46,9 @@ void SetFlagFromCheckbox(Checkbox* checkbox, int* flags, int flag) {
 
 // TextExample's content view, which draws stylized string.
 class TextExample::TextExampleView : public View {
+  METADATA_HEADER(TextExampleView, View)
+
  public:
-  METADATA_HEADER(TextExampleView);
   TextExampleView() = default;
   TextExampleView(const TextExampleView&) = delete;
   TextExampleView& operator=(const TextExampleView&) = delete;

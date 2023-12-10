@@ -357,7 +357,7 @@ class AndroidPort(base.Port):
                 self._devices.set_device_prepared(serial)
 
     def bot_expectations(self):
-        # TODO(rmhasan) Add bot expectations to WPT metadata.
+        # TODO(weizhong) Add bot expectations to WPT metadata.
         return {}
 
     def expected_test(self, _):

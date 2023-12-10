@@ -30,6 +30,7 @@
 <translation id="2226276347425096477">দয়া করে এই পাঠ্যটি <ph name="MAX_CHARACTERS" />টি অক্ষর বা তার কমে (আপনি বর্তমানে <ph name="CURRENT_LENGTH" />টি অক্ষর ব্যবহার করছেন) সংক্ষিপ্ত করুন৷</translation>
 <translation id="2247351761944213033"><ph name="WEEKNUMBER" /> সপ্তাহ, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">ট্র্যাক <ph name="NUMBER" /></translation>
+<translation id="2353297238722298836">ক্যামেরা এবং মাইক্রোফোন ব্যবহারে অনুমতি দেওয়া হয়েছে</translation>
 <translation id="2393030564806080191">রঙের হেক্সাডেসিমেল মান</translation>
 <translation id="2398813069815436052">ডায়ালগ খোলা হয়েছে।</translation>
 <translation id="245932805758469625">ভিডিও শেষ হতে এখনও যত সেকেন্ড বাকি আছে</translation>
@@ -60,10 +61,12 @@
 <translation id="3822383571486410024">দয়া করে এই পাঠ্যকে ন্যূনতম <ph name="MIN_CHARACTERS" /> অক্ষরের বা তার বেশি (আপনি বর্তমানে <ph name="CURRENT_LENGTH" />টি অক্ষর ব্যবহার করেছেন) দৈর্ঘের করুন।</translation>
 <translation id="383465348367842624">'<ph name="ATSIGN" />' অনুসরণ করে এমন একটি অংশে '<ph name="INVALIDCHARACTER" />' চিহ্ন থাকা উচিত নয়৷</translation>
 <translation id="3846214748874656680">পূর্ণস্ক্রীন থেকে প্রস্থান করুন</translation>
+<translation id="4031179711345676612">মাইক্রোফোন ব্যবহারের অনুমতি দেওয়া হয়েছে</translation>
 <translation id="4103419683916926126">মিলিসেকেন্ড</translation>
 <translation id="4201051445878709314">পূর্ববর্তী মাস দেখান</translation>
 <translation id="4360991593054037559">দয়া করে একটি বৈধ মান লিখুন৷ দুটি কাছাকাছির বৈধ মান হল <ph name="VALID_VALUE_LOW" /> এবং <ph name="VALID_VALUE_HIGHER" />৷</translation>
 <translation id="4522570452068850558">বিবরণগুলি</translation>
+<translation id="4663373278480897665">ক্যামেরা ব্যবহারের অনুমতি দেওয়া হয়েছে</translation>
 <translation id="4664250907885839816">'<ph name="ATSIGN" />' অনুসরণ করে এমন একটি অংশে '<ph name="INVALIDCHARACTER" />' চিহ্ন থাকা উচিত নয়৷</translation>
 <translation id="4718048029184481307">ছবির-মধ্যে-ছবি মোডে চলছে</translation>
 <translation id="4748357248530471599">ডিসপ্লে কাট-আউট ফুল-স্ক্রিনে টগল করুন</translation>
@@ -137,6 +140,7 @@
 <translation id="6941933287844615239">মিডিয়া ডাউনলোড করুন</translation>
 <translation id="698788488269350478">বড় করা হয়েছে।</translation>
 <translation id="6989848892321993519">দয়া করে এই পাঠ্যকে ন্যূনতম <ph name="MIN_CHARACTERS" /> অক্ষরের বা তার বেশি দৈর্ঘ্যের করুন (আপনি বর্তমানে ১টি অক্ষর ব্যবহার করেছেন)।</translation>
+<translation id="7080893216867146095">লোকেশন শেয়ার করা অনুমোদিত</translation>
 <translation id="709897737746224366">দয়া করে অনুরোধ হওয়া বিন্যাসটি মেলান৷</translation>
 <translation id="7102274145889307184">বর্তমান লোকেশন</translation>
 <translation id="7263440858009898357">তালিকা থেকে একটি আইটেম নির্বাচন করুন৷ </translation>

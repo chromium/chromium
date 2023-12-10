@@ -1,0 +1,16 @@
+[package]
+name = "skrifa"
+version = "0.13.0"
+edition = "2021"
+license = "MIT/Apache-2.0"
+description = "Metadata reader and glyph scaler for OpenType fonts."
+repository = "https://github.com/googlefonts/fontations"
+readme = "README.md"
+categories = ["text-processing", "parsing", "graphics"]
+
+[dependencies]
+read-fonts = { version = "0.13.2", path = "../read-fonts" }
+
+[dev-dependencies]
+font-test-data= { path = "../font-test-data" }
+read-fonts = { version = "0.13.2", path = "../read-fonts", features = ["scaler_test"] }

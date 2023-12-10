@@ -101,7 +101,7 @@ dictionary CheckVisibilityOptions {
     [CEReactions, RaisesException=Setter] attribute [LegacyNullToEmptyString, StringContext=TrustedHTML] DOMString outerHTML;
     [CEReactions, RaisesException] void insertAdjacentHTML(DOMString position, HTMLString text);
     // https://github.com/whatwg/html/pull/9538
-    [RuntimeEnabled=HTMLUnsafeMethods,RaisesException,MeasureAs=SetHTMLUnsafe] void setHTMLUnsafe(DOMString html);
+    [RuntimeEnabled=HTMLUnsafeMethods,RaisesException,MeasureAs=SetHTMLUnsafe,CEReactions] void setHTMLUnsafe(DOMString html);
 
     // Declarative Shadow DOM getInnerHTML() function.
     [Affects=Nothing, MeasureAs=ElementGetInnerHTML] HTMLString getInnerHTML(optional GetInnerHTMLOptions options = {});
@@ -114,7 +114,7 @@ dictionary CheckVisibilityOptions {
     // CSSOM View Module
     // https://drafts.csswg.org/cssom-view/#extension-to-the-element-interface
     [Measure] DOMRectList getClientRects();
-    [Affects=Nothing, Measure, RuntimeCallStatsCounter=ElementGetBoundingClientRect] DOMRect getBoundingClientRect();
+    [Affects=Nothing, Measure, RuntimeCallStatsCounter=ElementGetBoundingClientRect, ImplementedAs=GetBoundingClientRectForBinding] DOMRect getBoundingClientRect();
 
     // https://drafts.csswg.org/cssom-view/#dom-element-checkvisibility
     [MeasureAs=ElementCheckVisibility] boolean checkVisibility(optional CheckVisibilityOptions options = {});

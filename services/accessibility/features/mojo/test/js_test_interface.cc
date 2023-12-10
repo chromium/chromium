@@ -56,4 +56,8 @@ void JSTestInterface::TestComplete(bool success) {
   std::move(on_complete_).Run(success);
 }
 
+void JSTestInterface::Log(const std::string& log_string) {
+  LOG(INFO) << log_string;
+}
+
 }  // namespace ax

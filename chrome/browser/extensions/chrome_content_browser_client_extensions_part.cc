@@ -176,8 +176,9 @@ bool AllowServiceWorker(const GURL& scope,
 
   // If an extension doesn't have a service worker-based background script, it
   // can register a service worker at any scope.
-  if (!extensions::BackgroundInfo::IsServiceWorkerBased(extension))
+  if (!BackgroundInfo::IsServiceWorkerBased(extension)) {
     return true;
+  }
 
   // If the script_url parameter is an empty string, allow it. The
   // infrastructure will call this function at times when the script url is
@@ -193,7 +194,7 @@ bool AllowServiceWorker(const GURL& scope,
   // If an extension is service-worker based, only the script specified in the
   // manifest can be registered at the root scope.
   const std::string& sw_script =
-      extensions::BackgroundInfo::GetBackgroundServiceWorkerScript(extension);
+      BackgroundInfo::GetBackgroundServiceWorkerScript(extension);
   return script_url == extension->GetResourceURL(sw_script);
 }
 
@@ -286,7 +287,7 @@ GURL ChromeContentBrowserClientExtensionsPart::GetEffectiveURL(
   // hosting a disabled extension URL from incorrectly getting reused after
   // re-enabling the extension, which would lead to renderer kills
   // (https://crbug.com/1197360).
-  if (url.SchemeIs(extensions::kExtensionScheme) &&
+  if (url.SchemeIs(kExtensionScheme) &&
       !registry->enabled_extensions().GetExtensionOrAppByURL(url)) {
     return GURL(chrome::kExtensionInvalidRequestURL);
   }
@@ -379,6 +380,26 @@ bool ChromeContentBrowserClientExtensionsPart::DoesSiteRequireDedicatedProcess(
 }
 
 // static
+bool ChromeContentBrowserClientExtensionsPart::
+    ShouldAllowCrossProcessSandboxedFrameForPrecursor(
+        content::BrowserContext* browser_context,
+        const GURL& precursor) {
+  if (precursor.is_empty()) {
+    return true;
+  }
+
+  // Disallow cross-process sandboxed iframes for for cases with an extension
+  // precursor origin (including data: URLs, about:srcdoc, and same-origin
+  // extensions).
+  // TODO(https://crbug.com/1501910): remove this once we have an implementation
+  // that correctly allows sandboxed frames in extensions access to resources.
+  const ExtensionId extension_id = ExtensionRegistry::Get(browser_context)
+                                       ->enabled_extensions()
+                                       .GetExtensionIdByURL(precursor);
+  return extension_id.empty();
+}
+
+// static
 bool ChromeContentBrowserClientExtensionsPart::CanCommitURL(
     content::RenderProcessHost* process_host,
     const GURL& url) {
@@ -442,7 +463,7 @@ bool ChromeContentBrowserClientExtensionsPart::CanCommitURL(
     DCHECK(found_owner);
     return extension->is_platform_app() &&
            extension->permissions_data()->HasAPIPermission(
-               extensions::mojom::APIPermissionID::kWebView) &&
+               mojom::APIPermissionID::kWebView) &&
            extension->id() == owner_extension_id;
   }
 
@@ -693,8 +714,9 @@ void ChromeContentBrowserClientExtensionsPart::OverrideURLLoaderFactoryParams(
 bool ChromeContentBrowserClientExtensionsPart::IsBuiltinComponent(
     content::BrowserContext* browser_context,
     const url::Origin& origin) {
-  if (origin.scheme() != extensions::kExtensionScheme)
+  if (origin.scheme() != kExtensionScheme) {
     return false;
+  }
 
   const auto& extension_id = origin.host();
 

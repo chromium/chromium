@@ -69,10 +69,7 @@
 #define _LIBCPP_HAS_NO_INT128
 #endif
 
-// TODO(crbug.com/1481891): Enable on Android too.
 // TODO(thakis): Remove this after LLVM 19's libc++ is rolled in.
-#if !defined(__ANDROID__)
 #define _LIBCPP_CHAR_TRAITS_REMOVE_BASE_SPECIALIZATION
-#endif
 
 #endif // _LIBCPP_CONFIG_SITE

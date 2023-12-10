@@ -5,7 +5,6 @@
 <translation id="1076394037877376434">Odstrániť <ph name="PAGE_NUMBER" />. stranu</translation>
 <translation id="1113173431709655881">Režim kamery</translation>
 <translation id="1153190633558910465">Vypnúť mriežku</translation>
-<translation id="1175958423215084756">Bol rozpoznaný odkaz. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213"><ph name="PAGE_NUMBER" />. strana bola odstránená</translation>
 <translation id="1258009455399840361">Otočiť o 90 stupňov v smere hodinových ručičiek</translation>
 <translation id="1417314334557041815">Upraviť stránku <ph name="INDEX" /></translation>
@@ -60,14 +59,12 @@
 <translation id="3642192109456033823">Video sa spracúva…</translation>
 <translation id="3789724198583203151">Otočiť o 90 stupňov proti smeru hodinových ručičiek</translation>
 <translation id="3810838688059735925">Video</translation>
-<translation id="3892148308691398805">Kopírovať text</translation>
 <translation id="4060608699153044055">Nemôžete nahrávať, pretože v zariadení nie je dostatok priestoru. Ak chcete začať nahrávať, musíte v zariadení uvoľniť priestor.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> Mpx</translation>
 <translation id="4118525110028899586">Pozastaviť nahrávanie</translation>
 <translation id="4121305183798804752">Bol rozpoznaný dokument</translation>
 <translation id="414641094616694804">Rozlíšenie tejto kamery sa nedá zmeniť</translation>
 <translation id="4176463684765177261">Deaktivované</translation>
-<translation id="4269820728363426813">Kopírovať adresu odkazu</translation>
 <translation id="428234092390943511">Miniatúra stránky</translation>
 <translation id="4349714250734879769">Zmeniť veľkosť snímok podľa Chromu</translation>
 <translation id="4383571725254449280">Tlačiť denníky výkonnosti</translation>
@@ -144,7 +141,6 @@ Ak sa týka kvality obrázkov či videí, priložte ukážku fotky alebo videa a
 <translation id="7726641833034062494">Nahrať normálne video</translation>
 <translation id="7748344063862150053">Pravý horný roh dokumentu</translation>
 <translation id="7933675232020478311">Presúvate doprava nadol</translation>
-<translation id="7983668134180549431">Bol rozpoznaný text.</translation>
 <translation id="8079255378695216066">Nahrávanie sa nedá spustiť</translation>
 <translation id="8120146556401698679">Posunúť nakloniť priblížiť</translation>
 <translation id="8131740175452115882">Potvrdiť</translation>
@@ -163,6 +159,7 @@ Ak sa týka kvality obrázkov či videí, priložte ukážku fotky alebo videa a
 <translation id="8870695351537079478">Zaznamenávanie sa nedá spustiť</translation>
 <translation id="8880167521484863515">4 ku 3</translation>
 <translation id="8903921497873541725">Priblížiť</translation>
+<translation id="8926890870105777777">Pripojte sa k sieti <ph name="WIFINAME" /></translation>
 <translation id="9045010116236796332">Umiestnite všetky okraje dokumentu do rámu</translation>
 <translation id="9045155556724273246">10 sekúnd</translation>
 <translation id="906331135292332864">Obrázok sa spracúva…</translation>

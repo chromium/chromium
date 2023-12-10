@@ -20,6 +20,7 @@ class MediaLicenseDatabase {
  public:
   // The database will be in-memory if `path` is empty.
   explicit MediaLicenseDatabase(const base::FilePath& path);
+  ~MediaLicenseDatabase();
 
   MediaLicenseStorageHost::MediaLicenseStorageHostOpenError OpenFile(
       const media::CdmType& cdm_type,
@@ -33,6 +34,8 @@ class MediaLicenseDatabase {
 
   bool ClearDatabase();
 
+  uint64_t GetDatabaseSize();
+
  private:
   // Opens and sets up a database if one is not already set up.
   MediaLicenseStorageHost::MediaLicenseStorageHostOpenError OpenDatabase(
@@ -44,6 +47,13 @@ class MediaLicenseDatabase {
 
   // Empty if the database is in-memory.
   const base::FilePath path_;
+
+  // A descriptor of the last SQL statement that was executed, used for metrics.
+  absl::optional<std::string> last_operation_;
+
+  // Integer of last file size that the CDM sent to be written, used for
+  // metrics.
+  absl::optional<int> last_write_file_size_;
 
   sql::Database db_ GUARDED_BY_CONTEXT(sequence_checker_);
 };

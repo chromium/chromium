@@ -5,6 +5,7 @@
 #include "ash/user_education/holding_space_wallpaper_nudge/holding_space_wallpaper_nudge_controller.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -14,7 +15,9 @@
 #include "ash/drag_drop/scoped_drag_drop_observer.h"
 #include "ash/public/cpp/holding_space/holding_space_client.h"
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
+#include "ash/public/cpp/holding_space/holding_space_controller_observer.h"
 #include "ash/public/cpp/holding_space/holding_space_model.h"
+#include "ash/public/cpp/holding_space/holding_space_prefs.h"
 #include "ash/public/cpp/holding_space/holding_space_util.h"
 #include "ash/public/cpp/wallpaper/wallpaper_controller.h"
 #include "ash/root_window_controller.h"
@@ -34,7 +37,6 @@
 #include "base/containers/cxx20_erase_vector.h"
 #include "base/files/file_path.h"
 #include "base/scoped_observation.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/client/drag_drop_client.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
 #include "ui/base/clipboard/custom_data_helper.h"
@@ -130,9 +132,10 @@ WallpaperView* GetWallpaperViewNearestPoint(
       ->wallpaper_view();
 }
 
-// Indicates whether the nudge should be shown based on when it was last shown
-// and how many times total it's been shown. It should be no more than once
-// in a 24 hour period, and no more than 3 times total.
+// Indicates whether the nudge should be shown based on when it was last shown,
+// how many times total it's been shown, and whether the user has pinned a file
+// before. It should be no more than once in a 24 hour period, no more than 3
+// times total, and never if the user has pinned a file before.
 bool NudgeShouldBeShown() {
   if (!features::IsHoldingSpaceWallpaperNudgeRateLimitingEnabled()) {
     return true;
@@ -140,16 +143,22 @@ bool NudgeShouldBeShown() {
 
   PrefService* const prefs =
       Shell::Get()->session_controller()->GetLastActiveUserPrefService();
+
+  // If the user has ever pinned a file, don't show the nudge.
+  if (holding_space_prefs::GetTimeOfFirstPin(prefs).has_value()) {
+    return false;
+  }
+
+  // If the user has seen the nudge 3 times, don't show it again.
+  if (holding_space_wallpaper_nudge_prefs::GetNudgeShownCount(prefs) >= 3u) {
+    return false;
+  }
+
+  // Show the nudge if the user has not seen the nudge in the last 24 hours.
   const auto time_of_last_nudge =
       holding_space_wallpaper_nudge_prefs::GetLastTimeNudgeWasShown(prefs);
-  const auto nudge_shown_count =
-      holding_space_wallpaper_nudge_prefs::GetNudgeShownCount(prefs);
-
-  bool nudge_shown_recently =
-      time_of_last_nudge.has_value() &&
-      base::Time::Now() - time_of_last_nudge.value() < base::Hours(24);
-
-  return nudge_shown_count < 3u && !nudge_shown_recently;
+  return !time_of_last_nudge.has_value() ||
+         base::Time::Now() - time_of_last_nudge.value() >= base::Hours(24);
 }
 
 // Highlight -------------------------------------------------------------------
@@ -221,7 +230,8 @@ class Highlight : public ui::LayerOwner, public views::ViewObserver {
 // (b) holding space is visible in the shelf on all displays
 //
 // While the observed drag-and-drop sequence is in progress.
-class DragDropDelegate : public WallpaperDragDropDelegate {
+class DragDropDelegate : public WallpaperDragDropDelegate,
+                         public HoldingSpaceControllerObserver {
  private:
   // WallpaperDragDropDelegate:
   void GetDropFormats(int* formats,
@@ -238,6 +248,15 @@ class DragDropDelegate : public WallpaperDragDropDelegate {
 
   void OnDragEntered(const ui::OSExchangeData& data,
                      const gfx::Point& location_in_screen) override {
+    if (features::IsHoldingSpaceWallpaperNudgeEnabledCounterfactually()) {
+      if (NudgeShouldBeShown()) {
+        // Mark the nudge as "shown" for the counterfactual experiment arm.
+        holding_space_wallpaper_nudge_prefs::MarkNudgeShown(
+            Shell::Get()->session_controller()->GetLastActiveUserPrefService());
+      }
+      return;
+    }
+
     if (features::IsHoldingSpaceWallpaperNudgeDropToPinEnabled()) {
       // Highlight the wallpaper when `data` is dragged over it so that the user
       // better understands the wallpaper is a drop target.
@@ -250,6 +269,12 @@ class DragDropDelegate : public WallpaperDragDropDelegate {
     // current drag-and-drop sequence and can no-op here.
     if (drag_drop_observer_) {
       return;
+    }
+
+    // Begin observing the `HoldingSpaceController` in case holding space is
+    // opened/closed. This observation will continue until destruction.
+    if (!holding_space_controller_observer_.IsObserving()) {
+      holding_space_controller_observer_.Observe(HoldingSpaceController::Get());
     }
 
     // Once the user has dragged a file from the Files app over the wallpaper,
@@ -274,13 +299,15 @@ class DragDropDelegate : public WallpaperDragDropDelegate {
     // NOTE: Data is assumed to be constant during a drag-and-drop sequence.
     DCHECK(CanDrop(data));
 #endif  // EXPENSIVE_DCHECKS_ARE_ON()
-    return features::IsHoldingSpaceWallpaperNudgeDropToPinEnabled()
+    return (!features::IsHoldingSpaceWallpaperNudgeEnabledCounterfactually() &&
+            features::IsHoldingSpaceWallpaperNudgeDropToPinEnabled())
                ? ui::DragDropTypes::DragOperation::DRAG_COPY
                : ui::DragDropTypes::DragOperation::DRAG_NONE;
   }
 
   void OnDragExited() override {
-    if (features::IsHoldingSpaceWallpaperNudgeDropToPinEnabled()) {
+    if (!features::IsHoldingSpaceWallpaperNudgeEnabledCounterfactually() &&
+        features::IsHoldingSpaceWallpaperNudgeDropToPinEnabled()) {
       // When `data` is dragged out of the wallpaper, remove the highlight which
       // was used to indicate the wallpaper was a drop target.
       CHECK(wallpaper_highlight_);
@@ -291,7 +318,8 @@ class DragDropDelegate : public WallpaperDragDropDelegate {
   ui::mojom::DragOperation OnDrop(
       const ui::OSExchangeData& data,
       const gfx::Point& location_in_screen) override {
-    if (!features::IsHoldingSpaceWallpaperNudgeDropToPinEnabled()) {
+    if (!features::IsHoldingSpaceWallpaperNudgeDropToPinEnabled() ||
+        features::IsHoldingSpaceWallpaperNudgeEnabledCounterfactually()) {
       return ui::mojom::DragOperation::kNone;
     }
 
@@ -339,7 +367,7 @@ class DragDropDelegate : public WallpaperDragDropDelegate {
     // wallpaper.
     CHECK(drag_drop_observer_);
 
-    absl::optional<gfx::Point> location_in_screen;
+    std::optional<gfx::Point> location_in_screen;
 
     if (event_type == ScopedDragDropObserver::EventType::kDragUpdated) {
       location_in_screen = event->root_location();
@@ -351,7 +379,7 @@ class DragDropDelegate : public WallpaperDragDropDelegate {
     OnDragOrDropEvent(std::move(location_in_screen));
   }
 
-  void OnDragOrDropEvent(absl::optional<gfx::Point> location_in_screen) {
+  void OnDragOrDropEvent(std::optional<gfx::Point> location_in_screen) {
     // This code should only be reached if we are observing a drag-and-drop
     // sequence due to the user dragging a file from the Files app over the
     // wallpaper.
@@ -362,7 +390,7 @@ class DragDropDelegate : public WallpaperDragDropDelegate {
     // sequences and reset the shelf to its natural state.
     if (!location_in_screen) {
       drag_drop_observer_.reset();
-      force_holding_space_show_in_shelf_.reset();
+      force_holding_space_show_in_shelf_for_drag_.reset();
 
       // Reset shelf auto-hide behavior asynchronously so that it won't animate
       // out and immediately back in again if the user drops a file from the
@@ -385,22 +413,35 @@ class DragDropDelegate : public WallpaperDragDropDelegate {
           std::make_unique<Shelf::ScopedDisableAutoHide>(shelf);
     }
 
+    const bool nudge_should_be_shown = NudgeShouldBeShown();
+
+    // The user should be directed to the tray during drag operations iff the
+    // nudge will be shown or drop-to-pin is disabled. This is because we want
+    // to direct users to drag to the holding space when drop-to-pin is
+    // disabled, but encourage dropping on the desktop when it's enabled.
+    const bool should_direct_users_to_tray =
+        nudge_should_be_shown ||
+        !features::IsHoldingSpaceWallpaperNudgeDropToPinEnabled();
+
     // Ensure that holding space is visible in the shelf on all displays while
-    // the observed drag-and-drop sequence is in progress.
-    if (!force_holding_space_show_in_shelf_) {
-      force_holding_space_show_in_shelf_ =
+    // the observed drag-and-drop sequence is in progress when we're trying to
+    // encourage users to drag files there.
+    if (!force_holding_space_show_in_shelf_for_drag_ &&
+        should_direct_users_to_tray) {
+      force_holding_space_show_in_shelf_for_drag_ =
           std::make_unique<HoldingSpaceController::ScopedForceShowInShelf>();
     }
 
-    if (!NudgeShouldBeShown()) {
-      return;
-    }
-
     // Ensure the shelf is visible on the active display while the observed
-    // drag-and-drop sequence is in progress.
-    if (!disable_shelf_auto_hide_) {
+    // drag-and-drop sequence is in progress when we're trying to encourage
+    // users to drag files there.
+    if (!disable_shelf_auto_hide_ && should_direct_users_to_tray) {
       disable_shelf_auto_hide_ =
           std::make_unique<Shelf::ScopedDisableAutoHide>(shelf);
+    }
+
+    if (!nudge_should_be_shown || help_bubble_anchor_) {
+      return;
     }
 
     // Cache the `holding_space_tray` nearest the `location_in_screen` so that
@@ -415,16 +456,22 @@ class DragDropDelegate : public WallpaperDragDropDelegate {
     help_bubble_params.extended_properties =
         user_education_util::CreateExtendedProperties(HelpBubbleStyle::kNudge);
 
+    // `base::AutoReset` is safe here, because this is guaranteed to be
+    // destroyed before destruction of `this` is complete.
+    base::AutoReset<uintptr_t> reset_help_bubble_anchor(
+        &help_bubble_anchor_, /*new_value=*/0, /*expected_old_value=*/0);
+
     // While the help bubble is showing, do not allow either the associated
-    // `shelf` or `holding_space_tray` to hide.
-    // TODO(http://b/283171784): Explicitly close the help bubble if the user
-    // opens holding space or successfully pins a file to holding space.
+    // `shelf` or `holding_space_tray` to hide. Also reset the pointer to
+    // the `help_bubble_anchor_` on close.
     base::OnceClosure close_callback = base::BindOnce(
         [](Shelf::ScopedDisableAutoHide*,
-           HoldingSpaceController::ScopedForceShowInShelf*) {},
+           HoldingSpaceController::ScopedForceShowInShelf*,
+           const base::AutoReset<uintptr_t>&) {},
         base::Owned(std::make_unique<Shelf::ScopedDisableAutoHide>(shelf)),
-        base::Owned(std::make_unique<
-                    HoldingSpaceController::ScopedForceShowInShelf>()));
+        base::Owned(
+            std::make_unique<HoldingSpaceController::ScopedForceShowInShelf>()),
+        base::OwnedRef(std::move(reset_help_bubble_anchor)));
 
     // Attempt to show the help bubble.
     if (auto scoped_help_bubble_closer =
@@ -442,12 +489,45 @@ class DragDropDelegate : public WallpaperDragDropDelegate {
       // bubbles have already closed.
       scoped_help_bubble_closer_ = std::move(scoped_help_bubble_closer);
 
+      // Store a pointer to the `HoldingSpaceTray` anchoring the help bubble to
+      // test for potential overlap later.
+      help_bubble_anchor_ = reinterpret_cast<uintptr_t>(holding_space_tray);
+
       // If successful in showing the help bubble, ping the `holding_space_tray`
       // to further attract the user's attention.
       UserEducationPingController::Get()->CreatePing(
           PingId::kHoldingSpaceWallpaperNudge, holding_space_tray);
     }
   }
+
+  // HoldingSpaceControllerObserver:
+  void OnHoldingSpaceControllerDestroying() override {
+    holding_space_controller_observer_.Reset();
+  }
+
+  void OnHoldingSpaceTrayBubbleVisibilityChanged(const HoldingSpaceTray* tray,
+                                                 bool visible) override {
+    if (visible && help_bubble_anchor_) {
+      force_holding_space_show_in_shelf_for_tray_bubble_ =
+          std::make_unique<HoldingSpaceController::ScopedForceShowInShelf>();
+
+      // If the tray that emitted this event is the one that the currently open
+      // help bubble is anchored to, close the help bubble to avoid overlap
+      // between the two bubbles.
+      if (reinterpret_cast<uintptr_t>(tray) == help_bubble_anchor_) {
+        scoped_help_bubble_closer_.RunAndReset();
+      }
+    } else {
+      force_holding_space_show_in_shelf_for_tray_bubble_.reset();
+    }
+  }
+
+  // A pointer to the `HoldingSpaceTray` anchoring the currently open help
+  // bubble. Used to determine if the help bubble should be dismissed to prevent
+  // overlap between the help bubble and `HoldingSpaceTrayBubble`. NOTE: Do not
+  // dereference this pointer. It is for comparison only, as there is no
+  // guarantee that this `HoldingSpaceTray` still exists.
+  uintptr_t help_bubble_anchor_ = 0;
 
   // Used to observe a single drag-and-drop sequence once the user has dragged
   // a file from the Files app over the wallpaper.
@@ -460,7 +540,12 @@ class DragDropDelegate : public WallpaperDragDropDelegate {
   // Used to ensure that holding space is visible in the shelf on all displays
   // while an observed drag-and-drop sequence is in progress.
   std::unique_ptr<HoldingSpaceController::ScopedForceShowInShelf>
-      force_holding_space_show_in_shelf_;
+      force_holding_space_show_in_shelf_for_drag_;
+
+  // Used to ensure that holding space is visible in the shelf on all displays
+  // while the tray bubble is open.
+  std::unique_ptr<HoldingSpaceController::ScopedForceShowInShelf>
+      force_holding_space_show_in_shelf_for_tray_bubble_;
 
   // Used to close the help bubble on drop-to-pin.
   base::ScopedClosureRunner scoped_help_bubble_closer_;
@@ -468,6 +553,11 @@ class DragDropDelegate : public WallpaperDragDropDelegate {
   // Used to highlight the wallpaper when data is dragged over it so that the
   // user better understands the wallpaper is a drop target.
   std::unique_ptr<Highlight> wallpaper_highlight_;
+
+  // Observes the `HoldingSpaceController` to watch for tray bubble visibility.
+  base::ScopedObservation<HoldingSpaceController,
+                          HoldingSpaceControllerObserver>
+      holding_space_controller_observer_{this};
 };
 
 }  // namespace

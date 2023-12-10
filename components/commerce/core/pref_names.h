@@ -16,7 +16,6 @@ extern const char kShoppingListBookmarkLastUpdateTime[];
 // in enterprise settings.
 extern const char kShoppingListEnabledPrefName[];
 
-extern const char kWebAndAppActivityEnabledForShopping[];
 extern const char kPriceEmailNotificationsEnabled[];
 
 // Register preference names for commerce features.

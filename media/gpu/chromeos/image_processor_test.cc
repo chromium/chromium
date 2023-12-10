@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <sys/mman.h>
+#include <sys/poll.h>
 #include <memory>
 #include <string>
 #include <tuple>
@@ -19,6 +20,14 @@
 #include "base/test/test_suite.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "components/viz/common/resources/shared_image_format.h"
+#include "gpu/command_buffer/common/mailbox.h"
+#include "gpu/command_buffer/common/shared_image_usage.h"
+#include "gpu/command_buffer/service/shared_context_state.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_factory.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_frame_layout.h"
 #include "media/base/video_types.h"
@@ -28,7 +37,7 @@
 #include "media/gpu/chromeos/image_processor_backend.h"
 #include "media/gpu/chromeos/image_processor_factory.h"
 #include "media/gpu/chromeos/platform_video_frame_utils.h"
-#include "media/gpu/chromeos/vulkan_image_processor_backend.h"
+#include "media/gpu/chromeos/vulkan_image_processor.h"
 #include "media/gpu/test/image.h"
 #include "media/gpu/test/image_processor/image_processor_client.h"
 #include "media/gpu/test/video_frame_file_writer.h"
@@ -196,8 +205,10 @@ scoped_refptr<VideoFrame> CreateNV12Frame(const gfx::Size& size,
 
 scoped_refptr<VideoFrame> CreateRandomMM21Frame(const gfx::Size& size,
                                                 VideoFrame::StorageType type) {
-  DCHECK(size.width() == base::bits::AlignUp(size.width(), MM21_TILE_WIDTH));
-  DCHECK(size.height() == base::bits::AlignUp(size.height(), MM21_TILE_HEIGHT));
+  DCHECK_EQ(size.width(), base::bits::AlignUpDeprecatedDoNotUse(
+                              size.width(), MM21_TILE_WIDTH));
+  DCHECK_EQ(size.height(), base::bits::AlignUpDeprecatedDoNotUse(
+                               size.height(), MM21_TILE_HEIGHT));
 
   scoped_refptr<VideoFrame> ret = CreateNV12Frame(size, type);
   if (!ret) {
@@ -577,10 +588,6 @@ INSTANTIATE_TEST_SUITE_P(NV12CroppingAndScaling,
 
 #if BUILDFLAG(USE_V4L2_CODEC)
 TEST(ImageProcessorBackendTest, CompareLibYUVAndGLBackendsForMM21Image) {
-  gl::GLSurfaceTestSupport::InitializeOneOffImplementation(
-      gl::GLImplementationParts(gl::kGLImplementationEGLGLES2),
-      /*fallback_to_software_gl=*/false);
-
   if (!SupportsNecessaryGLExtension()) {
     GTEST_SKIP() << "Skipping GL Backend test, unsupported platform.";
   }
@@ -673,6 +680,7 @@ TEST(ImageProcessorBackendTest, CompareLibYUVAndGLBackendsForMM21Image) {
   ASSERT_TRUE(CompareNV12VideoFrames(gl_output_frame, libyuv_output_frame));
 }
 
+#if BUILDFLAG(ENABLE_VULKAN)
 TEST(ImageProcessorBackendTest, VulkanDetileScaleTest) {
   test::Image input_image(BuildSourceFilePath(base::FilePath(kMM21Image270P)));
   ASSERT_TRUE(input_image.Load());
@@ -718,41 +726,76 @@ TEST(ImageProcessorBackendTest, VulkanDetileScaleTest) {
       test::CreateVideoFrameLayout(input_image.PixelFormat(), coded_size);
   auto output_layout = test::CreateVideoFrameLayout(
       output_fourcc.ToVideoPixelFormat(), output_size);
-  ImageProcessor::PortConfig input_config(
-      Fourcc(Fourcc::MM21), coded_size, input_layout->planes(), visible_rect,
-      {VideoFrame::STORAGE_GPU_MEMORY_BUFFER});
-  ImageProcessor::PortConfig output_config(
-      output_fourcc, output_size, output_layout->planes(), output_visible_rect,
-      {VideoFrame::STORAGE_GPU_MEMORY_BUFFER});
-  base::RunLoop run_loop;
-  base::RepeatingClosure quit_closure = run_loop.QuitClosure();
-  bool image_processor_error = false;
-  auto client_task_runner = base::SequencedTaskRunner::GetCurrentDefault();
-  ImageProcessor::ErrorCB error_cb = base::BindRepeating(
-      [](scoped_refptr<base::SequencedTaskRunner> client_task_runner,
-         base::RepeatingClosure quit_closure, bool* image_processor_error) {
-        CHECK(client_task_runner->RunsTasksInCurrentSequence());
-        *image_processor_error = true;
-        quit_closure.Run();
-      },
-      client_task_runner, quit_closure, &image_processor_error);
-  auto vulkan_image_processor = VulkanImageProcessorBackend::Create(
-      input_config, output_config, ImageProcessorBackend::OutputMode::IMPORT,
-      error_cb);
+  auto in_gmb = CreateGpuMemoryBufferHandle(mm21_frame.get());
+  auto out_gmb = CreateGpuMemoryBufferHandle(vulkan_output_frame.get());
+
+  // Initialize shared image infrastructure.
+  auto share_group = base::MakeRefCounted<gl::GLShareGroup>();
+  auto surface =
+      gl::init::CreateOffscreenGLSurface(gl::GetDefaultDisplay(), gfx::Size());
+  auto context = gl::init::CreateGLContext(share_group.get(), surface.get(),
+                                           gl::GLContextAttribs());
+  context->MakeCurrent(surface.get());
+  auto context_state = base::MakeRefCounted<gpu::SharedContextState>(
+      share_group, surface, context, false, base::DoNothing(),
+      gpu::GpuPreferences().gr_context_type);
+  gpu::SharedImageManager shared_image_manager;
+  gpu::GpuPreferences gpu_preferences;
+  gpu::GpuDriverBugWorkarounds gpu_workarounds;
+  gpu::GpuFeatureInfo gpu_info;
+  gpu::SharedImageFactory shared_image_factory(
+      gpu_preferences, gpu_workarounds, gpu_info, context_state.get(),
+      &shared_image_manager, nullptr, false);
+
+  // Wrap input and output frames in shared images.
+  auto input_mailbox = gpu::Mailbox::GenerateForSharedImage();
+  auto output_mailbox = gpu::Mailbox::GenerateForSharedImage();
+  viz::SharedImageFormat format_nv12 = viz::SharedImageFormat::MultiPlane(
+      viz::SharedImageFormat::PlaneConfig::kY_UV,
+      viz::SharedImageFormat::Subsampling::k420,
+      viz::SharedImageFormat::ChannelFormat::k8);
+  format_nv12.SetPrefersExternalSampler();
+  shared_image_factory.CreateSharedImage(
+      input_mailbox, format_nv12, coded_size, gfx::ColorSpace::CreateSRGB(),
+      kTopLeft_GrSurfaceOrigin, kOpaque_SkAlphaType,
+      gpu::SharedImageUsage::SHARED_IMAGE_USAGE_DISPLAY_READ, "TestLabel",
+      std::move(in_gmb));
+  shared_image_factory.CreateSharedImage(
+      output_mailbox, viz::SinglePlaneFormat::kRGBA_8888, coded_size,
+      gfx::ColorSpace::CreateSRGB(), kTopLeft_GrSurfaceOrigin,
+      kUnpremul_SkAlphaType,
+      gpu::SharedImageUsage::SHARED_IMAGE_USAGE_DISPLAY_WRITE |
+          gpu::SharedImageUsage::SHARED_IMAGE_USAGE_SCANOUT,
+      "TestLabel", std::move(out_gmb));
+
+  auto vulkan_image_processor = VulkanImageProcessor::Create();
   ASSERT_TRUE(vulkan_image_processor);
 
-  ImageProcessor::FrameReadyCB vulkan_callback = base::BindOnce(
-      [](scoped_refptr<base::SequencedTaskRunner> client_task_runner,
-         base::RepeatingClosure quit_closure,
-         scoped_refptr<VideoFrame>* output_frame,
-         scoped_refptr<VideoFrame> frame) {
-        CHECK(client_task_runner->RunsTasksInCurrentSequence());
-        quit_closure.Run();
-      },
-      client_task_runner, quit_closure, &vulkan_output_frame);
-  vulkan_image_processor->Process(mm21_frame, vulkan_output_frame,
-                                  std::move(vulkan_callback));
-  run_loop.Run();
+  auto input_vulkan_representation = shared_image_manager.ProduceVulkan(
+      input_mailbox, nullptr, vulkan_image_processor->GetVulkanDeviceQueue(),
+      vulkan_image_processor->GetVulkanImplementation());
+  auto output_vulkan_representation = shared_image_manager.ProduceVulkan(
+      output_mailbox, nullptr, vulkan_image_processor->GetVulkanDeviceQueue(),
+      vulkan_image_processor->GetVulkanImplementation());
+  {
+    std::vector<VkSemaphore> begin_semaphores;
+    std::vector<VkSemaphore> end_semaphores;
+    auto input_access = input_vulkan_representation->BeginScopedAccess(
+        gpu::RepresentationAccessMode::kRead, begin_semaphores, end_semaphores);
+    auto output_access = output_vulkan_representation->BeginScopedAccess(
+        gpu::RepresentationAccessMode::kWrite, begin_semaphores,
+        end_semaphores);
+
+    vulkan_image_processor->Process(
+        input_access->GetVulkanImage(), coded_size, visible_rect.size(),
+        output_access->GetVulkanImage(), output_size,
+        output_visible_rect.size(), begin_semaphores, end_semaphores);
+  }
+
+  // This implicitly waits for all semaphores to signal.
+  vulkan_image_processor->GetVulkanDeviceQueue()
+      ->GetFenceHelper()
+      ->PerformImmediateCleanup();
 
   // Replicate this operation using LibYUV. Note that we don't use the image
   // processor since we need to do a very specific conversion and scale
@@ -851,6 +894,7 @@ TEST(ImageProcessorBackendTest, VulkanDetileScaleTest) {
   munmap(vulkan_output_v, i420_scaled_u_v_size);
 }
 #endif
+#endif
 
 }  // namespace
 }  // namespace media
@@ -891,5 +935,12 @@ int main(int argc, char** argv) {
   auto* const test_environment = new media::test::VideoTestEnvironment;
   media::g_env = reinterpret_cast<media::test::VideoTestEnvironment*>(
       testing::AddGlobalTestEnvironment(test_environment));
+
+#if BUILDFLAG(USE_V4L2_CODEC)
+  gl::GLSurfaceTestSupport::InitializeOneOffImplementation(
+      gl::GLImplementationParts(gl::kGLImplementationEGLGLES2),
+      /*fallback_to_software_gl=*/false);
+#endif
+
   return RUN_ALL_TESTS();
 }

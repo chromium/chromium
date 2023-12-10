@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="iw">
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> מהכרטיסיות לא היו בשימוש לאחרונה. לסגור אותן?</translation>
+<translation id="1155815720264022949">רוצה לסגור כרטיסיות ישנות?</translation>
 <translation id="1215127405478249895">בדיקת הכרטיסיות</translation>
 <translation id="125153950246128346">יש להקיש כדי לראות כרטיסייה אחרת</translation>
 <translation id="1499635324672558517">לסגור את כל הכרטיסיות הפרטיות?</translation>
@@ -46,9 +47,11 @@
 <translation id="5073204694187207510">הסתרת רשת מסך מלא</translation>
 <translation id="5076161749301278626">להציג ביקורות נוספות על החנות?</translation>
 <translation id="5082793167783849073">כדי להשוות במהירות בין דפים, אפשר ליצור קבוצה. כדי להתחיל, צריך ללחוץ לחיצה ארוכה על קישור.</translation>
+<translation id="5303274951032363933">{TABS_COUNT,plural, =1{יש כרטיסייה אחת (<ph name="TABS_COUNT_ONE" />) שלא השתמשת בה לאחרונה}one{יש <ph name="TABS_COUNT_MANY" /> כרטיסיות שלא השתמשת בהן לאחרונה}two{יש <ph name="TABS_COUNT_MANY" /> כרטיסיות שלא השתמשת בהן לאחרונה}other{יש <ph name="TABS_COUNT_MANY" /> כרטיסיות שלא השתמשת בהן לאחרונה}}</translation>
 <translation id="5339733443032484186">הכרטיסייה האחרונה שלך</translation>
 <translation id="5490235265819901748">קבוצת כרטיסיות הורחבה</translation>
 <translation id="5494920125229734069">בחירת הכול</translation>
+<translation id="5545379293264651575">סגירה בלי בדיקה</translation>
 <translation id="5556417849629758491">ניתן להציג את פרטי החנות. האפשרות זמינה בחלק העליון של המסך</translation>
 <translation id="5558362125926932819">סגירת קבוצת הכרטיסיות עם <ph name="NUMBER_OF_TABS" /> כרטיסיות</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" /> כרטיסיות מקובצות</translation>
@@ -85,7 +88,6 @@
 <translation id="7885132941432959125">העברת הכרטיסייה שמאלה</translation>
 <translation id="7966321538264951561">סגירת ההצעות.</translation>
 <translation id="8029301326595421733">המידע על החנות הזו פתוח בגובה מלא</translation>
-<translation id="814503310257431685">הצגת הכול</translation>
 <translation id="8205266828577616993">העברת הכרטיסייה למעלה</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{סגירה של כרטיסייה אחת (<ph name="TABS_COUNT_ONE" />) שנבחרה}one{סגירה של <ph name="TABS_COUNT_MANY" /> כרטיסיות שנבחרו}two{סגירה של <ph name="TABS_COUNT_MANY" /> כרטיסיות שנבחרו}other{סגירה של <ph name="TABS_COUNT_MANY" /> כרטיסיות שנבחרו}}</translation>
 <translation id="8398929769197326728">תיקייה חדשה – <ph name="CURRENT_TIMESTAMP_MS" /></translation>

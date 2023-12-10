@@ -19,7 +19,7 @@ class ChromePopupNavigationDelegate
   GURL GetURL() override;
   NavigateResult NavigateWithGesture(
       const blink::mojom::WindowFeatures& window_features,
-      absl::optional<WindowOpenDisposition> updated_disposition) override;
+      std::optional<WindowOpenDisposition> updated_disposition) override;
   void OnPopupBlocked(content::WebContents* web_contents,
                       int total_popups_blocked_on_page) override;
 

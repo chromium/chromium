@@ -17,6 +17,7 @@ source_set("parcel_tracking") {
     "//ios/chrome/browser/commerce/model:shopping_service",
     "//ios/chrome/browser/parcel_tracking:metrics",
     "//ios/chrome/browser/parcel_tracking:parcel_tracking_step",
+    "//ios/chrome/browser/parcel_tracking:tracking_source",
     "//ios/chrome/browser/parcel_tracking:util",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",

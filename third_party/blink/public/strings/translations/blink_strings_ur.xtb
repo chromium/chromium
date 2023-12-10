@@ -30,6 +30,7 @@
 <translation id="2226276347425096477">براہ کرم اس متن کو مختصر کر کے <ph name="MAX_CHARACTERS" /> یا اس سے کم حروف تک لائیں (آپ فی الحال <ph name="CURRENT_LENGTH" /> حروف استعمال کر رہے ہیں)۔</translation>
 <translation id="2247351761944213033">ہفتہ <ph name="WEEKNUMBER" />، <ph name="YEAR" /></translation>
 <translation id="2277199496770840904"><ph name="NUMBER" /> کو ٹریک کریں</translation>
+<translation id="2353297238722298836">کیمرا اور مائیکروفون اجازت یافتہ ہے</translation>
 <translation id="2393030564806080191">رنگ کی ہیگسا ڈیسیمل قدر</translation>
 <translation id="2398813069815436052">ڈائیلاگ کھولا گیا۔</translation>
 <translation id="245932805758469625">ویڈیو کے باقی بچے سیکنڈز کی تعداد</translation>
@@ -60,10 +61,12 @@
 <translation id="3822383571486410024">براہ کرم اس متن کو <ph name="MIN_CHARACTERS" /> حروف یا زیادہ تک بڑھائیں (آپ فی الحال <ph name="CURRENT_LENGTH" /> حروف استعمال کر رہے ہیں)۔</translation>
 <translation id="383465348367842624">'<ph name="ATSIGN" />' کے بعد ایک حصہ میں علامت '<ph name="INVALIDCHARACTER" />' شامل نہیں ہونی چاہیے۔</translation>
 <translation id="3846214748874656680">پوری اسکرین سے باہر نکلیں</translation>
+<translation id="4031179711345676612">مائیکروفون اجازت یافتہ ہے</translation>
 <translation id="4103419683916926126">ملی سیکنڈز</translation>
 <translation id="4201051445878709314">پچھلا مہینہ دکھائیں</translation>
 <translation id="4360991593054037559">براہ کرم ایک درست قدر درج کریں۔ دو قریب ترین درست اقدار <ph name="VALID_VALUE_LOW" /> اور <ph name="VALID_VALUE_HIGHER" /> ہیں۔</translation>
 <translation id="4522570452068850558">تفصیلات</translation>
+<translation id="4663373278480897665">کیمرا اجازت یافتہ ہے</translation>
 <translation id="4664250907885839816">'<ph name="ATSIGN" />' کے بعد کے حصہ میں علامت '<ph name="INVALIDCHARACTER" />' شامل نہیں ہونی چاہیے۔</translation>
 <translation id="4718048029184481307">تصویر میں تصویر چلائی جا رہی ہے</translation>
 <translation id="4748357248530471599">ڈسپلے کٹ آؤٹ فل اسکرین ٹوگل کریں</translation>
@@ -137,6 +140,7 @@
 <translation id="6941933287844615239">میڈیا ڈاؤن لوڈ کریں</translation>
 <translation id="698788488269350478">پھیلایا گیا۔</translation>
 <translation id="6989848892321993519">براہ کرم اس متن کو <ph name="MIN_CHARACTERS" /> حروف یا اس سے زیادہ تک بڑھائیں (آپ فی الحال 1 حرف استعمال کر رہے ہیں)۔</translation>
+<translation id="7080893216867146095">مقام کے اشتراک کی اجازت ہے</translation>
 <translation id="709897737746224366">براہ کرم مطلوبہ فارمیٹ کا مماثل بنائیں۔</translation>
 <translation id="7102274145889307184">موجودہ مقام</translation>
 <translation id="7263440858009898357">براہ کرم فہرست میں ایک آئٹم منتخب کریں۔</translation>

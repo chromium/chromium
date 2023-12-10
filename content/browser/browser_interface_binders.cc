@@ -18,6 +18,7 @@
 #include "content/browser/attribution_reporting/attribution_internals_ui.h"
 #include "content/browser/background_fetch/background_fetch_service_impl.h"
 #include "content/browser/bad_message.h"
+#include "content/browser/bluetooth/web_bluetooth_service_impl.h"
 #include "content/browser/browser_context_impl.h"
 #include "content/browser/browser_main_loop.h"
 #include "content/browser/browsing_topics/browsing_topics_document_host.h"
@@ -186,6 +187,7 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "content/browser/android/text_suggestion_host_android.h"
 #include "content/browser/renderer_host/render_widget_host_view_android.h"
+#include "content/common/gin_java_bridge.mojom.h"
 #include "services/device/public/mojom/nfc.mojom.h"
 #include "third_party/blink/public/mojom/hid/hid.mojom.h"
 #include "third_party/blink/public/mojom/unhandled_tap_notifier/unhandled_tap_notifier.mojom.h"
@@ -354,7 +356,8 @@ void BindDateTimeChooserForFrame(
 void BindTextSuggestionHostForFrame(
     RenderFrameHost* host,
     mojo::PendingReceiver<blink::mojom::TextSuggestionHost> receiver) {
-  auto* view = static_cast<RenderWidgetHostViewAndroid*>(host->GetView());
+  auto* view =
+      RenderWidgetHostViewAndroid::FromRenderWidgetHostView(host->GetView());
   if (!view || !view->text_suggestion_host())
     return;
 
@@ -693,20 +696,9 @@ void BindPressureManager(
   GetDeviceService().BindPressureManager(std::move(receiver));
 }
 
-DevicePostureProviderBinder& GetDevicePostureProviderBinderOverride() {
-  static base::NoDestructor<DevicePostureProviderBinder> binder;
-  return *binder;
-}
-
 void BindDevicePostureProvider(
     mojo::PendingReceiver<device::mojom::DevicePostureProvider> receiver) {
-  const auto& binder = GetDevicePostureProviderBinderOverride();
-  if (binder)
-    binder.Run(std::move(receiver));
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)
-  else if (base::FeatureList::IsEnabled(features::kDevicePosture))
-    GetDeviceService().BindDevicePostureProvider(std::move(receiver));
-#endif
+  GetDeviceService().BindDevicePostureProvider(std::move(receiver));
 }
 
 VibrationManagerBinder& GetVibrationManagerBinderOverride() {
@@ -936,7 +928,7 @@ void PopulateFrameBinders(RenderFrameHostImpl* host, mojo::BinderMap* map) {
   }
 
   map->Add<blink::mojom::WebBluetoothService>(base::BindRepeating(
-      &RenderFrameHostImpl::CreateWebBluetoothService, base::Unretained(host)));
+      &WebBluetoothServiceImpl::BindIfAllowed, base::Unretained(host)));
 
   map->Add<blink::mojom::PushMessaging>(base::BindRepeating(
       &RenderFrameHostImpl::GetPushMessaging, base::Unretained(host)));
@@ -1207,7 +1199,7 @@ void PopulateBinderMapWithContext(
                                          ProcessInternalsUI>(map);
   RegisterWebUIControllerInterfaceBinder<storage::mojom::QuotaInternalsHandler,
                                          QuotaInternalsUI>(map);
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   RegisterWebUIControllerInterfaceBinder<
       trace_report::mojom::TraceReportHandlerFactory, TraceReportInternalsUI>(
       map);
@@ -1653,11 +1645,6 @@ AgentSchedulingGroupHost* GetContextForHost(AgentSchedulingGroupHost* host) {
 }
 
 }  // namespace internal
-
-void OverrideDevicePostureProviderBinderForTesting(
-    DevicePostureProviderBinder binder) {
-  internal::GetDevicePostureProviderBinderOverride() = std::move(binder);
-}
 
 void OverrideBatteryMonitorBinderForTesting(BatteryMonitorBinder binder) {
   internal::GetBatteryMonitorBinderOverride() = std::move(binder);

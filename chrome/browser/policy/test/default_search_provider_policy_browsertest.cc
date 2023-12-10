@@ -26,6 +26,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/safe_search_api/safe_search_util.h"
 #include "components/search_engines/template_url.h"
+#include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -55,6 +56,8 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, DefaultSearchProvider) {
   search_test_utils::WaitForTemplateURLServiceToLoad(service);
   const TemplateURL* default_search = service->GetDefaultSearchProvider();
   ASSERT_TRUE(default_search);
+  EXPECT_EQ(default_search->created_by_policy(),
+            TemplateURLData::CreatedByPolicy::kNoPolicy);
   EXPECT_NE(kKeyword, default_search->keyword());
   EXPECT_NE(kSearchURL, default_search->url());
   EXPECT_FALSE(default_search->alternate_urls().size() == 2 &&
@@ -93,6 +96,8 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, DefaultSearchProvider) {
   UpdateProviderPolicy(policies);
   default_search = service->GetDefaultSearchProvider();
   ASSERT_TRUE(default_search);
+  EXPECT_EQ(default_search->created_by_policy(),
+            TemplateURLData::CreatedByPolicy::kDefaultSearchProvider);
   EXPECT_EQ(kKeyword, default_search->keyword());
   EXPECT_EQ(kSearchURL, default_search->url());
   EXPECT_EQ(2U, default_search->alternate_urls().size());

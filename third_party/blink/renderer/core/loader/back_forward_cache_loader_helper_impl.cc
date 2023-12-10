@@ -20,10 +20,12 @@ void BackForwardCacheLoaderHelperImpl::EvictFromBackForwardCache(
 }
 
 void BackForwardCacheLoaderHelperImpl::DidBufferLoadWhileInBackForwardCache(
+    bool update_process_wide_count,
     size_t num_bytes) {
   if (!delegate_)
     return;
-  delegate_->DidBufferLoadWhileInBackForwardCache(num_bytes);
+  delegate_->DidBufferLoadWhileInBackForwardCache(update_process_wide_count,
+                                                  num_bytes);
 }
 
 void BackForwardCacheLoaderHelperImpl::Detach() {

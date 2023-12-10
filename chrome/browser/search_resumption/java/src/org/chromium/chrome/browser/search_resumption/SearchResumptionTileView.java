@@ -15,9 +15,7 @@ import androidx.core.content.ContextCompat;
 import org.chromium.chrome.browser.search_resumption.SearchResumptionTileBuilder.OnSuggestionClickCallback;
 import org.chromium.url.GURL;
 
-/**
- * The view for a search suggestion tile.
- */
+/** The view for a search suggestion tile. */
 public class SearchResumptionTileView extends RelativeLayout {
     private GURL mGurl;
     private TextView mTileContent;
@@ -32,9 +30,7 @@ public class SearchResumptionTileView extends RelativeLayout {
         mTileContent = findViewById(R.id.tile_content);
     }
 
-    /**
-     * Updates the content of the tile.
-     */
+    /** Updates the content of the tile. */
     void updateSuggestionData(GURL gUrl, String displayText) {
         mGurl = gUrl;
         mTileContent.setText(displayText);
@@ -52,11 +48,13 @@ public class SearchResumptionTileView extends RelativeLayout {
      */
     void mayUpdateBackground(int index, int totalCount) {
         if (index == 0) {
-            setBackground(ContextCompat.getDrawable(
-                    getContext(), R.drawable.search_resumption_module_background_top));
+            setBackground(
+                    ContextCompat.getDrawable(
+                            getContext(), R.drawable.search_resumption_module_background_top));
         } else if (index == totalCount - 1) {
-            setBackground(ContextCompat.getDrawable(
-                    getContext(), R.drawable.search_resumption_module_background_bottom));
+            setBackground(
+                    ContextCompat.getDrawable(
+                            getContext(), R.drawable.search_resumption_module_background_bottom));
         }
     }
 

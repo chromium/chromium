@@ -14,10 +14,6 @@ class AutofillAgentTestApi {
  public:
   explicit AutofillAgentTestApi(AutofillAgent* agent) : agent_(*agent) {}
 
-  void DidAddOrRemoveFormRelatedElementsDynamically() {
-    agent_->DidAddOrRemoveFormRelatedElementsDynamically();
-  }
-
  private:
   const raw_ref<AutofillAgent> agent_;
 };

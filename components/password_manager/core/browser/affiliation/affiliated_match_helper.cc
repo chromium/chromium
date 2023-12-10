@@ -24,9 +24,9 @@ using AffiliatedRealms =
 using GroupedRealms =
     base::StrongAlias<class GroupedRealmsTag, std::vector<std::string>>;
 
-bool IsValidAndroidCredential(PasswordForm* form) {
-  return form->scheme == PasswordForm::Scheme::kHtml &&
-         IsValidAndroidFacetURI(form->signon_realm);
+bool IsValidAndroidCredential(const PasswordForm& form) {
+  return form.scheme == PasswordForm::Scheme::kHtml &&
+         IsValidAndroidFacetURI(form.signon_realm);
 }
 
 std::vector<std::string> GetRealmsFromFacets(const FacetURI& original_facet_uri,
@@ -132,12 +132,12 @@ void AffiliatedMatchHelper::GetAffiliatedAndGroupedRealms(
 }
 
 void AffiliatedMatchHelper::InjectAffiliationAndBrandingInformation(
-    std::vector<std::unique_ptr<PasswordForm>> forms,
+    std::vector<PasswordForm> forms,
     base::OnceCallback<void(LoginsResultOrError)> result_callback) {
   std::vector<PasswordForm*> android_credentials;
-  for (const auto& form : forms) {
-    if (IsValidAndroidCredential(form.get())) {
-      android_credentials.push_back(form.get());
+  for (auto& form : forms) {
+    if (IsValidAndroidCredential(form)) {
+      android_credentials.push_back(&form);
     }
   }
 

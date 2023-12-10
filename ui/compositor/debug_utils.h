@@ -6,7 +6,9 @@
 #define UI_COMPOSITOR_DEBUG_UTILS_H_
 
 #include <sstream>
+#include <vector>
 
+#include "base/functional/callback.h"
 #include "ui/compositor/compositor_export.h"
 
 namespace gfx {
@@ -17,15 +19,20 @@ namespace ui {
 
 class Layer;
 
+using DebugLayerChildCallback =
+    base::RepeatingCallback<std::vector<Layer*>(const Layer*)>;
+
 // Log the layer hierarchy. Mark layers which contain |mouse_location| with '*'.
 COMPOSITOR_EXPORT void PrintLayerHierarchy(const Layer* layer,
                                            const gfx::Point& mouse_location);
 
 // Print the layer hierarchy to |out|. Mark layers which contain
 // |mouse_location| with '*'.
-COMPOSITOR_EXPORT void PrintLayerHierarchy(const Layer* layer,
-                                           const gfx::Point& mouse_location,
-                                           std::ostringstream* out);
+COMPOSITOR_EXPORT void PrintLayerHierarchy(
+    const Layer* layer,
+    const gfx::Point& mouse_location,
+    std::ostringstream* out,
+    DebugLayerChildCallback child_cb = DebugLayerChildCallback());
 
 }  // namespace ui
 

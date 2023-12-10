@@ -8,6 +8,7 @@
 
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -29,7 +30,6 @@
 #include "chrome/updater/util/util.h"
 #include "components/update_client/network.h"
 #import "net/base/mac/url_conversions.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 using ResponseStartedCallback =
@@ -399,7 +399,7 @@ base::OnceClosure NetworkFetcher::DownloadToFile(
 class NetworkFetcherFactory::Impl {};
 
 NetworkFetcherFactory::NetworkFetcherFactory(
-    absl::optional<PolicyServiceProxyConfiguration>) {}
+    std::optional<PolicyServiceProxyConfiguration>) {}
 NetworkFetcherFactory::~NetworkFetcherFactory() = default;
 
 std::unique_ptr<update_client::NetworkFetcher> NetworkFetcherFactory::Create()

@@ -1,0 +1,12 @@
+This is a testharness.js-based test.
+[FAIL] <selectlist> should fire input and change events when new option is selected.
+  assert_false: expected false got true
+[FAIL] <selectlist> should fire input and change events even when new selected option has the same value as the old.
+  assert_array_equals: input event should have fired after ArrowDown. lengths differ, expected array ["input"] length 1, got [] length 0
+[FAIL] Check that <Space> opens <selectlist>.
+  assert_false: <Enter> should close selectlist expected false got true
+[FAIL] Check that <Space> opens <selectlist> when <selectlist> specifies tabindex
+  assert_false: <Enter> should close selectlist expected false got true
+[FAIL] Test that <selectlist> button slot receives key events.
+  promise_test: Unhandled rejection with value: "error: Action send_keys failed"
+Harness: the test ran to completion.

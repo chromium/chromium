@@ -46,10 +46,7 @@ class SyncClientMock : public SyncClient {
               GetSyncApiComponentFactory,
               (),
               (override));
-  MOCK_METHOD(SyncTypePreferenceProvider*,
-              GetPreferenceProvider,
-              (),
-              (override));
+  MOCK_METHOD(bool, IsCustomPassphraseAllowed, (), (override));
   MOCK_METHOD(void, OnLocalSyncTransportDataCleared, (), (override));
   MOCK_METHOD(
       void,

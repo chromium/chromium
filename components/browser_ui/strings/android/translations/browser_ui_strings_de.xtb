@@ -23,6 +23,7 @@
 <translation id="1415402041810619267">URL abgeschnitten</translation>
 <translation id="1426410128494586442">Ja</translation>
 <translation id="1448064542941920355">Herauszoomen</translation>
+<translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> Website}other{<ph name="SITE_COUNT" /> Websites}}</translation>
 <translation id="1510341833810331442">Websites dürfen keine Daten auf deinem Gerät speichern</translation>
 <translation id="1547123415014299762">Drittanbieter-Cookies werden zugelassen</translation>
 <translation id="1568470248891039841">Auf Websites, die du besuchst, können von anderen Websites stammende Inhalte eingebettet sein, z. B. Bilder, Werbung und Text. Diese anderen Websites dürfen die Berechtigung anfordern, Informationen zu nutzen, die sie zu deiner Person gespeichert haben, wenn du auf der Website surfst. <ph name="BEGIN_LINK" />Weitere Informationen zu eingebetteten Inhalten<ph name="END_LINK" /></translation>
@@ -31,6 +32,7 @@
 <translation id="1633720957382884102">Ähnliche Websites</translation>
 <translation id="1644574205037202324">Verlauf</translation>
 <translation id="1647582022260550163">Möchtest du die Berechtigungen dieser Website wirklich zurücksetzen und ihre Cookies und Daten löschen?</translation>
+<translation id="1652197001188145583">Wenn dieser Schalter aktiviert ist, können Websites anfragen, ob sie NFC-Geräte verwenden dürfen. Wenn er deaktiviert ist, können Websites keine NFC-Geräte verwenden.</translation>
 <translation id="1660204651932907780">Wiedergabe von Ton auf Websites zulassen (empfohlen)</translation>
 <translation id="1677097821151855053">Durch Cookies und andere Websitedaten erinnert sich die Website an dich, z. B. bei der Anmeldung oder für personalisierte Werbung. Du kannst Cookies für alle Websites <ph name="BEGIN_LINK" />in den Einstellungen verwalten<ph name="END_LINK" />.</translation>
 <translation id="169515064810179024">Zugriff auf Bewegungssensoren für Websites blockieren</translation>
@@ -39,13 +41,13 @@
 <translation id="1779089405699405702">Bild-Decodierer</translation>
 <translation id="1785415724048343560">Für eine optimale Nutzung empfohlen</translation>
 <translation id="1818308510395330587">Damit <ph name="APP_NAME" /> AR verwenden kann, muss die Kameraberechtigung auch in den <ph name="BEGIN_LINK" />Android-Einstellungen<ph name="END_LINK" /> aktiviert sein.</translation>
-<translation id="187227595286001730">Ähnliche Websites können deine Aktivitäten in der Gruppe sehen</translation>
 <translation id="1887786770086287077">Der Standortzugriff ist für dieses Gerät deaktiviert. Du kannst ihn in den <ph name="BEGIN_LINK" />Android-Einstellungen<ph name="END_LINK" /> aktivieren.</translation>
 <translation id="1915307458270490472">Auflegen</translation>
 <translation id="1919950603503897840">Kontakte auswählen</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> von <ph name="FILE_SIZE_WITH_UNITS" /></translation>
 <translation id="1979673356880165407">Damit können Text und Bilder auf allen Websites, die du besuchst, vergrößert oder verkleinert werden</translation>
 <translation id="1984937141057606926">Zugelassen, außer Drittanbieter-Cookies</translation>
+<translation id="1985247341569771101">Wenn dieser Schalter aktiviert ist, können Websites die Bewegungssensoren deines Geräts verwenden. Wenn er deaktiviert ist, können Websites keine Bewegungssensoren verwenden.</translation>
 <translation id="1989112275319619282">Durchsuchen</translation>
 <translation id="1994173015038366702">Website-URL</translation>
 <translation id="2004697686368036666">Einige Websites funktionieren dann möglicherweise nicht mehr richtig</translation>
@@ -61,7 +63,6 @@
 <translation id="2182457891543959921">Nachfragen, bevor Websites erlaubt wird, eine 3D-Karte meiner Umgebung zu erstellen oder die Kameraposition zu verfolgen (empfohlen)</translation>
 <translation id="2185965788978862351">Dadurch werden <ph name="DATASIZE" /> an von Websites oder Apps auf dem Startbildschirm gespeicherten Daten und Cookies gelöscht.</translation>
 <translation id="2194856509914051091">Wichtige Punkte</translation>
-<translation id="2212565012507486665">Cookies zulassen</translation>
 <translation id="2228071138934252756">Um <ph name="APP_NAME" /> Zugriff auf deine Kamera zu gewähren, muss die Kameraberechtigung auch in den <ph name="BEGIN_LINK" />Android-Einstellungen<ph name="END_LINK" /> aktiviert werden.</translation>
 <translation id="2235344399760031203">Drittanbieter-Cookies werden blockiert</translation>
 <translation id="2238944249568001759">Vorgeschlagene Suchanfragen basierend auf deinem letzten Tab</translation>
@@ -80,6 +81,7 @@
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> und <ph name="NUM_MORE" /> weitere zugelassen}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> und <ph name="NUM_MORE" /> weitere zugelassen}}</translation>
 <translation id="2410940059315936967">Auf einer Website, die du besuchst, können Inhalte von anderen Websites eingebettet sein, z. B. Bilder, Werbung und Text. Cookies, die von diesen anderen Websites gesetzt werden, werden als Drittanbieter-Cookies bezeichnet.</translation>
 <translation id="2434158240863470628">Download abgeschlossen <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
+<translation id="2438120137003069591">Du hast dieser Website vorübergehend erlaubt, Drittanbieter-Cookies zu verwenden. Das bedeutet zwar weniger Schutz beim Surfen, aber dadurch erhöht sich die Wahrscheinlichkeit, dass Websites wie erwartet funktionieren. <ph name="BEGIN_LINK" />Feedback geben<ph name="END_LINK" /></translation>
 <translation id="244264527810019436">Einige Websites funktionieren im Inkognitomodus möglicherweise nicht richtig</translation>
 <translation id="2442870161001914531">Desktopwebsite immer anfordern</translation>
 <translation id="2469312991797799607">Durch diese Aktion werden alle Daten und Cookies für <ph name="ORIGIN" /> und alle untergeordneten Websites gelöscht</translation>
@@ -101,10 +103,10 @@
 <translation id="2677748264148917807">Verlassen</translation>
 <translation id="2678468611080193228">Versuche, Drittanbieter-Cookies vorübergehend zuzulassen. Das bedeutet zwar weniger Schutz, aber dadurch erhöht sich die Wahrscheinlichkeit, dass Websites richtig funktionieren.</translation>
 <translation id="2683434792633810741">Löschen und zurücksetzen?</translation>
-<translation id="2687403674020088961">Alle Cookies blockieren (nicht empfohlen)</translation>
 <translation id="2713106313042589954">Kamera ausschalten</translation>
 <translation id="2717722538473713889">E-Mail-Adressen</translation>
 <translation id="2750481671343847896">Websites dürfen Anmeldungsaufforderungen von Identitätsdiensten anzeigen.</translation>
+<translation id="2790501146643349491">Wenn dieser Schalter aktiviert ist, können vor Kurzem geschlossene Websites das Senden und Empfangen von Daten abschließen. Wenn er deaktiviert ist, können vor Kurzem geschlossene Websites das Senden oder Empfangen von Daten nicht abschließen.</translation>
 <translation id="2822354292072154809">Möchtest du wirklich alle Websiteberechtigungen für <ph name="CHOSEN_OBJECT_NAME" /> zurücksetzen?</translation>
 <translation id="2850913818900871965">Mobile Ansicht anfordern</translation>
 <translation id="2870560284913253234">Website</translation>
@@ -113,7 +115,9 @@
 <translation id="2903493209154104877">Adressen</translation>
 <translation id="2910701580606108292">Fragen, bevor die Wiedergabe geschützter Inhalte auf Websites zugelassen wird</translation>
 <translation id="2932883381142163287">Missbrauch melden</translation>
+<translation id="2939338015096024043">Wenn dieser Schalter aktiviert ist, können Websites anfragen, ob sie deine Kameraposition erfassen und mehr über deine Umgebung ermitteln dürfen. Wenn er deaktiviert ist, können Websites deine Kameraposition nicht erfassen und nichts über deine Umgebung ermitteln.</translation>
 <translation id="2968755619301702150">Zertifikats-Viewer</translation>
+<translation id="2979365474350987274">Drittanbieter-Cookies sind eingeschränkt</translation>
 <translation id="3008272652534848354">Berechtigungen zurücksetzen</translation>
 <translation id="3013291976881901233">MIDI-Geräte</translation>
 <translation id="301521992641321250">Automatisch blockiert</translation>
@@ -130,6 +134,7 @@
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> gespeicherte Daten</translation>
 <translation id="321187648315454507">Damit <ph name="APP_NAME" /> dir Benachrichtigungen senden kann, musst du die Berechtigung für Benachrichtigungen auch in den <ph name="BEGIN_LINK" />Android-Einstellungen<ph name="END_LINK" /> aktivieren.</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
+<translation id="3242646949159196181">Wenn dieser Schalter aktiviert ist, können Websites Ton wiedergeben. Wenn er deaktiviert ist, können Websites keinen Ton wiedergeben.</translation>
 <translation id="3277252321222022663">Websites den Zugriff auf Sensoren erlauben (empfohlen)</translation>
 <translation id="3285500645985761267">Ähnliche Websites dürfen meine Aktivitäten in der Gruppe sehen</translation>
 <translation id="3295019059349372795">Kapitel 11: Die wundervolle Smaragdstadt von Oz</translation>
@@ -140,6 +145,7 @@
 <translation id="3386292677130313581">Nachfragen, bevor Websites mein Standort angezeigt wird (empfohlen)</translation>
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="344449859752187052">Drittanbieter-Cookies blockiert</translation>
+<translation id="3448554387819310837">Wenn dieser Schalter aktiviert ist, können Websites anfragen, ob sie deine Kamera verwenden dürfen. Wenn er deaktiviert ist, können Websites deine Kamera nicht verwenden.</translation>
 <translation id="3465378418721443318">{DAYS,plural, =1{Chrome blockiert morgen wieder Cookies}other{Noch # Tage, bis Chrome wieder Cookies blockiert}}</translation>
 <translation id="3521663503435878242">Websites unter <ph name="DOMAIN" /></translation>
 <translation id="3538390592868664640">Websites daran hindern, eine 3D-Karte meiner Umgebung zu erstellen oder die Kameraposition zu verfolgen</translation>
@@ -148,10 +154,10 @@
 <translation id="3586500876634962664">Kamera- und Mikrofonnutzung</translation>
 <translation id="358794129225322306">Einer Website erlauben, automatisch mehrere Dateien herunterzuladen.</translation>
 <translation id="3594780231884063836">Video stummschalten</translation>
-<translation id="3596414637720633074">Drittanbieter-Cookies im Inkognitomodus blockieren</translation>
 <translation id="3600792891314830896">Websites stummschalten, die Ton wiedergeben</translation>
 <translation id="3602290021589620013">Vorschau</translation>
 <translation id="3628308229821498208">Vorgeschlagene Suchanfragen</translation>
+<translation id="3697164069658504920">Wenn dieser Schalter aktiviert ist, können Websites anfragen, ob sie USB-Geräte verwenden dürfen. Wenn er deaktiviert ist, können Websites keine USB-Geräte verwenden.</translation>
 <translation id="3707034683772193706">Von dir besuchte Websites können eine kleine Datenmenge in Chrome speichern, die hauptsächlich dazu dienen, zu belegen, dass du kein Bot bist</translation>
 <translation id="3721953990244350188">Schließen und nächste verfügbare Aktion anzeigen</translation>
 <translation id="3744111561329211289">Hintergrundsynchronisierung</translation>
@@ -175,9 +181,7 @@
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> von ?</translation>
 <translation id="3992684624889376114">Über diese Seite</translation>
 <translation id="4002066346123236978">Titel</translation>
-<translation id="4008040567710660924">Cookies für eine bestimmte Website werden zugelassen.</translation>
 <translation id="4046123991198612571">Nächster Titel</translation>
-<translation id="4053720452172726777">Google Chrome anpassen und verwalten</translation>
 <translation id="4149890623864272035">Möchtest du wirklich alle lokalen Daten einschließlich Cookies löschen und alle Berechtigungen für diese Website zurücksetzen?</translation>
 <translation id="4149994727733219643">Vereinfachte Ansicht für Webseiten</translation>
 <translation id="4151930093518524179">Standardeinstellung für den Zoom</translation>
@@ -190,6 +194,7 @@
 <translation id="4278390842282768270">Zugelassen</translation>
 <translation id="429312253194641664">Eine Website gibt Medien wieder</translation>
 <translation id="42981349822642051">Maximieren</translation>
+<translation id="4336566011000459927">Chrome schränkt heute wieder Cookies ein</translation>
 <translation id="4338831206024587507">Alle Websites unter <ph name="DOMAIN" /></translation>
 <translation id="4402755511846832236">Websites daran hindern, Informationen zu deiner aktiven Nutzung dieses Geräts abzurufen</translation>
 <translation id="4412992751769744546">Drittanbieter-Cookies zulassen</translation>
@@ -208,13 +213,14 @@
 <translation id="4645575059429386691">Von deinen Eltern verwaltet</translation>
 <translation id="4670064810192446073">Virtual Reality</translation>
 <translation id="4751476147751820511">Bewegungs- oder Lichtsensoren</translation>
+<translation id="4755971844837804407">Wenn dieser Schalter aktiviert ist, können dir Websites beliebige Werbung anzeigen. Wenn er deaktiviert ist, können dir Websites keine aufdringliche oder irreführende Werbung anzeigen.</translation>
 <translation id="4779083564647765204">Zoomen</translation>
 <translation id="4811450222531576619">Informationen zur Quelle und zum Thema</translation>
 <translation id="4836046166855586901">Nachfragen, wenn eine Website Informationen zu deiner aktiven Nutzung dieses Geräts abrufen möchte</translation>
 <translation id="483914009762354899">Alle Websites unter dieser Domain einschließen</translation>
 <translation id="4883854917563148705">Verwaltete Einstellungen können nicht zurückgesetzt werden</translation>
 <translation id="4887024562049524730">Nachfragen, bevor Websites erlaubt wird, mein Virtual-Reality-Gerät und meine Virtual-Reality-Daten zu verwenden (empfohlen)</translation>
-<translation id="4955223779495905865">Auf einer Website, die du besuchst, können Inhalte von anderen Websites eingebettet sein, z. B. Bilder, Anzeigen und Text. Alle diese Websites können Cookies und andere Daten speichern, um die Nutzung zu personalisieren.</translation>
+<translation id="4953688446973710931">Wenn dieser Schalter aktiviert ist, können Websites anfragen, ob sie automatisch mehrere Dateien herunterladen dürfen. Wenn er deaktiviert ist, können Websites nicht automatisch mehrere Dateien herunterladen.</translation>
 <translation id="4962975101802056554">Alle Berechtigungen für Gerät entziehen</translation>
 <translation id="497421865427891073">Weiter</translation>
 <translation id="4976702386844183910">Zuletzt besucht am <ph name="DATE" /></translation>
@@ -228,6 +234,7 @@
 <translation id="5063480226653192405">Verwendung</translation>
 <translation id="5091013926750941408">Mobile Website</translation>
 <translation id="509133520954049755">Desktop-Ansicht anzeigen</translation>
+<translation id="5091663350197390230">Wenn dieser Schalter aktiviert ist, können Websites JavaScript verwenden. Wenn er deaktiviert ist, können Websites JavaScript nicht verwenden.</translation>
 <translation id="5099358668261120049">Dadurch werden alle von <ph name="ORIGIN" /> oder der zugehörigen App auf dem Startbildschirm gespeicherten Daten und Cookies gelöscht.</translation>
 <translation id="5100237604440890931">Minimiert – zum Maximieren klicken</translation>
 <translation id="5123685120097942451">Inkognitotab</translation>
@@ -239,6 +246,7 @@
 <translation id="5246825184569358663">Durch diesen Schritt werden alle lokalen Daten, einschließlich Cookies, gelöscht und alle Berechtigungen für die Domain <ph name="DOMAIN" /> und alle ihr untergeordneten Websites zurückgesetzt</translation>
 <translation id="5264323282659631142">"<ph name="CHIP_LABEL" />" entfernen</translation>
 <translation id="528192093759286357">Ziehe zum Beenden des Vollbildmodus von oben und tippe auf die Zurück-Taste.</translation>
+<translation id="5295729974480418933">Wenn dieser Schalter aktiviert ist, können Websites anfragen, ob sie Informationen verwenden dürfen, die sie über dich gespeichert haben. Wenn er deaktiviert ist, können Websites nicht anfragen, ob sie Informationen verwenden dürfen, die sie über dich gespeichert haben.</translation>
 <translation id="5300589172476337783">Anzeigen</translation>
 <translation id="5301954838959518834">Ok</translation>
 <translation id="5317780077021120954">Speichern</translation>
@@ -249,6 +257,7 @@
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 weitere)}other{(+ # weitere)}}</translation>
 <translation id="5403592356182871684">Namen</translation>
 <translation id="5438097262470833822">Mit dieser Option werden die Berechtigungen für <ph name="WEBSITE" /> zurückgesetzt</translation>
+<translation id="5459413148890178711">Wenn dieser Schalter aktiviert ist, können Websites nach deinem Standort fragen. Wenn er deaktiviert ist, können Websites deinen Standort nicht abrufen.</translation>
 <translation id="5489227211564503167">Verstrichene Zeit: <ph name="ELAPSED_TIME" /> von <ph name="TOTAL_TIME" />.</translation>
 <translation id="5502860503640766021"><ph name="PERMISSION_1" /> zugelassen, <ph name="PERMISSION_2" /> blockiert</translation>
 <translation id="5505264765875738116">Websites können nicht fragen, ob du Benachrichtigungen erhalten möchtest</translation>
@@ -263,12 +272,15 @@
 <translation id="5677928146339483299">Blockiert</translation>
 <translation id="5689516760719285838">Standort</translation>
 <translation id="5690795753582697420">Die Kamera wurde in den Android-Einstellungen deaktiviert</translation>
+<translation id="5691080386278724773"><ph name="SITE" /> kann deine Informationen während des Surfens verwenden</translation>
 <translation id="5700761515355162635">Drittanbieter-Cookies zugelassen</translation>
 <translation id="5706552988683188916">Dadurch werden Cookies und andere Websitedaten für <ph name="WEBSITE" /> gelöscht</translation>
 <translation id="5723967018671998714">Drittanbieter-Cookies sind im Inkognitomodus blockiert</translation>
 <translation id="5740126560802162366">Websites können Daten auf deinem Gerät speichern</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> blockiert</translation>
 <translation id="5804241973901381774">Berechtigungen</translation>
+<translation id="5844448279347999754">Wenn dieser Schalter aktiviert ist, können Websites anfragen, ob sie Text und Bilder abrufen dürfen, die in der Zwischenablage gespeichert sind. Wenn er deaktiviert ist, können Websites keine Texte oder Bilder abrufen, die in der Zwischenablage gespeichert sind.</translation>
+<translation id="5853982612236235577">Wenn dieser Schalter aktiviert ist, können Websites anfragen, ob sie Benachrichtigungen senden dürfen. Wenn er deaktiviert ist, können Websites keine Benachrichtigungen senden.</translation>
 <translation id="5860033963881614850">Aus</translation>
 <translation id="5876056640971328065">Video anhalten</translation>
 <translation id="5884085660368669834">Websiteeinstellung</translation>
@@ -287,21 +299,24 @@
 <translation id="6042308850641462728">Mehr</translation>
 <translation id="6064125863973209585">Abgeschlossene Downloads</translation>
 <translation id="6071501408666570960">Du wirst möglicherweise von dieser Website abgemeldet</translation>
+<translation id="6120483543004435978">Wenn dieser Schalter aktiviert ist, können Websites anfragen, ob sie ermitteln dürfen, wann du dein Gerät aktiv nutzt. Wenn er deaktiviert ist, können Websites nicht ermitteln, wann du dein Gerät aktiv nutzt.</translation>
 <translation id="6165508094623778733">Weitere Informationen</translation>
+<translation id="6171020522141473435">Wenn dieser Schalter aktiviert ist, können Websites anfragen, ob sie Bluetooth-Geräte verwenden dürfen. Wenn er deaktiviert ist, können Websites keine Bluetooth-Geräte verwenden.</translation>
 <translation id="6177111841848151710">Für die aktuelle Suchmaschine blockiert</translation>
 <translation id="6177128806592000436">Die Verbindung zu dieser Website ist nicht sicher</translation>
 <translation id="6181444274883918285">Ausnahme für Website hinzufügen</translation>
 <translation id="6192792657125177640">Ausnahmen</translation>
+<translation id="6194967801833346599">{DAYS,plural, =1{Chrome blockiert morgen wieder Cookies}other{Noch # Tage, bis Cookies wieder blockiert werden}}</translation>
 <translation id="6195163219142236913">Drittanbieter-Cookies eingeschränkt</translation>
 <translation id="6196640612572343990">Drittanbieter-Cookies blockieren</translation>
 <translation id="6205314730813004066">Datenschutz bei Anzeigen</translation>
 <translation id="6207207788774442484">Daten löschen und Berechtigungen zurücksetzen</translation>
-<translation id="6216432067784365534">Optionen für <ph name="NAME_OF_LIST_ITEM" /></translation>
 <translation id="6231752747840485235">„<ph name="APP_NAME" />“ deinstallieren?</translation>
 <translation id="6262191102408817757">Basierend auf deinem letzten Tab</translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> und <ph name="PERMISSION_2" /> blockiert</translation>
 <translation id="6270391203985052864">Websites können fragen, ob du Benachrichtigungen erhalten möchtest</translation>
 <translation id="6295158916970320988">Alle Websites</translation>
+<translation id="6304434827459067558"><ph name="SITE" /> wird daran gehindert, deine Informationen zu nutzen auf</translation>
 <translation id="6320088164292336938">Vibrieren</translation>
 <translation id="6344622098450209924">Schutz vor Tracking</translation>
 <translation id="6367753977865761591">Hier kannst du Websites angeben, für die die Drittanbieter-Anmeldung blockiert werden soll.</translation>
@@ -313,6 +328,7 @@
 <translation id="6500423977866688905">Mobile Ansicht anfordern, wenn das Fenster schmal ist</translation>
 <translation id="6527303717912515753">Teilen</translation>
 <translation id="652937045869844725">Versuche, Drittanbieter-Cookies zuzulassen. Das bedeutet zwar weniger Schutz, aber dadurch erhöht sich die Wahrscheinlichkeit, dass Websites richtig funktionieren.</translation>
+<translation id="6530703012083415527">Wenn dieser Schalter aktiviert ist, können Websites Pop-ups und Weiterleitungen verwenden. Wenn er deaktiviert ist, können Websites keine Pop-ups und Weiterleitungen verwenden.</translation>
 <translation id="6545864417968258051">Bluetooth-Suche</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> und <ph name="NUM_MORE" /> weitere blockiert}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> und <ph name="NUM_MORE" /> weitere blockiert}}</translation>
 <translation id="6554732001434021288">Vor <ph name="NUM_DAYS" /> Tagen zuletzt besucht</translation>
@@ -344,6 +360,7 @@
 <translation id="7053983685419859001">Blockieren</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 ausgewählt}other{# ausgewählt}}</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> ausgewählt. Optionen sind oben auf dem Bildschirm verfügbar</translation>
+<translation id="7137403271056944713">MIDI-Gerätesteuerung/‑Neuprogrammierung</translation>
 <translation id="7141896414559753902">Anzeige von Pop-ups und Weiterleitungen für Websites blockieren (empfohlen)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="7180611975245234373">Aktualisieren</translation>
@@ -355,6 +372,8 @@
 <translation id="7243308994586599757">Optionen unten auf dem Bildschirm verfügbar</translation>
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> ausgewählt</translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> und <ph name="PERMISSION_2" /> zugelassen</translation>
+<translation id="7276071417425470385">Wenn dieser Schalter aktiviert ist, können Websites anfragen, ob sie Virtual-Reality-Geräte verwenden dürfen. Wenn er deaktiviert ist, können Websites keine Virtual-Reality-Geräte verwenden.</translation>
+<translation id="7284451015630589124">Du hast Websites daran gehindert, Drittanbieter-Cookies zu verwenden, mit denen deine Aktivitäten während des Surfens erfasst werden. Rufe die Einstellungen auf, <ph name="BEGIN_LINK" />um deinen Schutz vor Tracking zu verwalten<ph name="END_LINK" />.</translation>
 <translation id="7302486331832100261">Normalerweise blockierst du Benachrichtigungen. Du kannst auf Details tippen, um sie zuzulassen.</translation>
 <translation id="7366415735885268578">Website hinzufügen</translation>
 <translation id="7368695150573390554">Sämtliche Offlinedaten werden gelöscht</translation>
@@ -363,7 +382,9 @@
 <translation id="7423098979219808738">Zuerst fragen</translation>
 <translation id="7423538860840206698">Es dürfen keine Dateien aus der Zwischenablage abgerufen werden</translation>
 <translation id="7425915948813553151">Dunkles Design für Websites</translation>
+<translation id="7474522811371247902">In Chrome ist die Verwendung von Drittanbieter-Cookies für die meisten Websites eingeschränkt. Drittanbieter-Cookies sind jedoch auf dieser Website erlaubt, weil sie für die Bereitstellung grundlegender Dienste erforderlich sind.\n\nRufe die Einstellungen auf, <ph name="BEGIN_LINK" />um deinen Schutz vor Tracking zu verwalten<ph name="END_LINK" />.</translation>
 <translation id="7521387064766892559">JavaScript</translation>
+<translation id="7547989957535180761">Wenn dieser Schalter aktiviert ist, können Websites Aufforderungen zur Anmeldung anzeigen. Wenn er deaktiviert ist, können Websites keine Aufforderungen zur Anmeldung anzeigen.</translation>
 <translation id="7554752735887601236">Eine Website verwendet dein Mikrofon</translation>
 <translation id="7561196759112975576">Immer</translation>
 <translation id="757524316907819857">Wiedergabe von geschützten Inhalten für Websites blockieren</translation>
@@ -379,6 +400,7 @@
 <translation id="780301667611848630">Nein, danke</translation>
 <translation id="7804248752222191302">Eine Website verwendet deine Kamera</translation>
 <translation id="7807060072011926525">Von Google bereitgestellt</translation>
+<translation id="7822573154188733812">Chrome verhindert, dass Websites Drittanbieter-Cookies verwenden, um deine Aktivitäten während des Surfens zu erfassen. Rufe die Einstellungen auf, <ph name="BEGIN_LINK" />um deinen Schutz vor Tracking zu verwalten<ph name="END_LINK" />.</translation>
 <translation id="7835852323729233924">Medien werden wiedergegeben</translation>
 <translation id="783819812427904514">Stummschaltung des Videos aufheben</translation>
 <translation id="7846076177841592234">Auswahl aufheben</translation>
@@ -387,6 +409,7 @@
 <translation id="7940722705963108451">Erinnern</translation>
 <translation id="7974024493641668069">{COUNT,plural, =1{<ph name="FPS_MEMBERS_COUNT" /> Website in der Gruppe von Websites von <ph name="FPS_OWNER" />, die deine Aktivitäten in der Gruppe sehen kann}other{<ph name="FPS_MEMBERS_COUNT" /> Websites in der Gruppe von Websites von <ph name="FPS_OWNER" />, die deine Aktivitäten in der Gruppe sehen können}}</translation>
 <translation id="7986741934819883144">Kontakt auswählen</translation>
+<translation id="7990211076305263060">Wenn dieser Schalter aktiviert ist, können Websites anfragen, ob sie dein Mikrofon verwenden dürfen. Wenn er deaktiviert ist, können Websites dein Mikrofon nicht verwenden.</translation>
 <translation id="8007176423574883786">Für dieses Gerät deaktiviert</translation>
 <translation id="802154636333426148">Downloadfehler</translation>
 <translation id="8042586301629853791">Sortieren nach:</translation>
@@ -395,10 +418,11 @@
 <translation id="8077120325605624147">Jede Website, die du besuchst, kann dir beliebige Werbung präsentieren</translation>
 <translation id="8087000398470557479">Dieser Inhalt ist von <ph name="DOMAIN_NAME" /> und wurde von Google bereitgestellt.</translation>
 <translation id="8088603949666785339">Weitere Optionen in „<ph name="BANNER_TITLE" />“</translation>
+<translation id="8113501330600751161">{DAYS,plural, =1{Chrome schränkt morgen wieder Cookies ein}other{Noch # Tage, bis Chrome wieder Cookies einschränkt}}</translation>
 <translation id="8116925261070264013">Stummgeschaltet</translation>
+<translation id="8117244575099414087">Wenn dieser Schalter aktiviert ist, können Websites die Sensoren deines Geräts verwenden. Wenn er deaktiviert ist, können Websites keine Sensoren verwenden.</translation>
 <translation id="813082847718468539">Website-Informationen anzeigen</translation>
 <translation id="8131740175452115882">Bestätigen</translation>
-<translation id="8154912474061769055">Viele Websites funktionieren dann möglicherweise nicht mehr richtig</translation>
 <translation id="8168435359814927499">Inhalte</translation>
 <translation id="8186479265534291036">Website funktioniert nicht? Drittanbieter-Cookies werden blockiert.</translation>
 <translation id="8197286292360124385"><ph name="PERMISSION_1" /> zugelassen</translation>
@@ -412,7 +436,6 @@
 <translation id="8324158725704657629">Nicht mehr fragen</translation>
 <translation id="8362795839483915693">Du kannst Websites, die du besuchst, heranzoomen und wieder herauszoomen</translation>
 <translation id="8372893542064058268">Lässt die Hintergrundsynchronisierung für eine bestimmte Website zu.</translation>
-<translation id="8376384591331888629">Einschließlich Drittanbieter-Cookies auf dieser Website</translation>
 <translation id="83792324527827022">Eine Website verwendet deine Kamera und dein Mikrofon</translation>
 <translation id="8380167699614421159">Diese Website zeigt aufdringliche oder irreführende Werbung an</translation>
 <translation id="8394832520002899662">Tippen, um zur Website zurückzukehren</translation>
@@ -433,11 +456,14 @@
 <translation id="8564613706851221529">{COUNT,plural, =1{Cookies zugelassen für <ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" />-Website}other{Cookies zugelassen für <ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" />-Websites}}</translation>
 <translation id="857943718398505171">Zugelassen (empfohlen)</translation>
 <translation id="8609465669617005112">Nach oben</translation>
+<translation id="8617611086246832542">Wenn dieser Schalter aktiviert ist, wird die Desktop-Ansicht von Websites angezeigt. Wenn er deaktiviert ist, wird die mobile Ansicht von Websites angezeigt.</translation>
+<translation id="8649036394979866943">Chrome schränkt die Verwendung von Drittanbieter-Cookies, mit denen deine Aktivitäten während des Surfens erfasst werden, für die meisten Websites ein. Rufe die Einstellungen auf, <ph name="BEGIN_LINK" />um deinen Schutz vor Tracking zu verwalten<ph name="END_LINK" />.</translation>
 <translation id="8676374126336081632">Eingabe löschen</translation>
 <translation id="8681886425883659911">Werbung auf Websites, die bekanntermaßen aufdringliche oder irreführende Anzeigen präsentieren, wird blockiert</translation>
 <translation id="868929229000858085">Kontakte durchsuchen</translation>
 <translation id="8712637175834984815">Ok</translation>
 <translation id="8719283222052720129">Die Berechtigung für <ph name="APP_NAME" /> kann in den <ph name="BEGIN_LINK" />Android-Einstellungen<ph name="END_LINK" /> aktiviert werden.</translation>
+<translation id="8721719390026067591">Wenn dieser Schalter aktiviert ist, können Websites anfragen, ob sie nach Bluetooth-Geräten suchen dürfen. Wenn er deaktiviert ist, können Websites nicht nach Bluetooth-Geräten suchen.</translation>
 <translation id="8725066075913043281">Erneut versuchen</translation>
 <translation id="8730621377337864115">Fertig</translation>
 <translation id="8736193154595564524">{NUM_SELECTED,plural, =1{1 Website zugelassen}other{# Websites zugelassen}}</translation>
@@ -447,8 +473,8 @@
 <translation id="8803526663383843427">Wenn aktiviert</translation>
 <translation id="8805385115381080995">Das Surfen ist so schneller, da es weniger wahrscheinlich ist, dass eine Website dich darum bittet, deine Identität als echte Person zu bestätigen</translation>
 <translation id="8816026460808729765">Zugriff auf Sensoren für Websites blockieren</translation>
-<translation id="8823559166155093873">Cookies blockieren</translation>
 <translation id="8847988622838149491">USB</translation>
+<translation id="8874790741333031443">Versuche, Drittanbieter-Cookies vorübergehend zuzulassen. Das bedeutet zwar weniger Schutz beim Surfen, aber dadurch erhöht sich die Wahrscheinlichkeit, dass Websites wie erwartet funktionieren.</translation>
 <translation id="8889294078294184559">Wenn du weitersurfst, können Websites diese Daten von Chrome abrufen und über eine zuvor von dir besuchte Website bestätigen, dass du wahrscheinlich eine echte Person bist</translation>
 <translation id="8899807382908246773">Aufdringliche Anzeigen</translation>
 <translation id="8903921497873541725">Vergrößern</translation>
@@ -456,10 +482,10 @@
 <translation id="8926666909099850184">NFC ist für dieses Gerät deaktiviert. Du kannst die Funktion in den <ph name="BEGIN_LINK" />Android-Einstellungen<ph name="END_LINK" /> aktivieren.</translation>
 <translation id="8928445016601307354">Websites daran hindern, Informationen auf NFC-Geräten abzurufen und zu ändern</translation>
 <translation id="8944485226638699751">Eingeschränkt</translation>
-<translation id="8958424370300090006">Cookies für eine bestimmte Website werden blockiert.</translation>
 <translation id="8959122750345127698">Navigation nicht möglich: <ph name="URL" /> ist nicht erreichbar.</translation>
 <translation id="8986362086234534611">Entfernen</translation>
 <translation id="8990043154272859344">Du wirst von allen Websites abgemeldet</translation>
+<translation id="9002538116239926534">Wenn dieser Schalter aktiviert ist, können Websites Daten auf deinem Gerät speichern. Wenn er deaktiviert ist, können Websites keine Daten auf deinem Gerät speichern.</translation>
 <translation id="9011903857143958461"><ph name="SITE_NAME" /> zugelassen</translation>
 <translation id="9019902583201351841">Von deinen Eltern verwaltet</translation>
 <translation id="9039697262778250930">Du wirst möglicherweise von diesen Websites abgemeldet</translation>

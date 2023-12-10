@@ -59,8 +59,10 @@ import org.chromium.chrome.R;
      * @param context The context for inflating the UI layout XML file.
      */
     AutofillVcnEnrollBottomSheetView(Context context) {
-        mContentView = (ViewGroup) LayoutInflater.from(context).inflate(
-                R.layout.autofill_vcn_enroll_bottom_sheet_content, null);
+        mContentView =
+                (ViewGroup)
+                        LayoutInflater.from(context)
+                                .inflate(R.layout.autofill_vcn_enroll_bottom_sheet_content, null);
         mScrollView = mContentView.findViewById(R.id.scroll_view);
         mDialogTitle = mContentView.findViewById(R.id.dialog_title);
         mVirtualCardDescription = mContentView.findViewById(R.id.virtual_card_description);

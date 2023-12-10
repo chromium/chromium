@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/mediastream/media_stream_device_observer.h"
 
 #include <stddef.h>
+
 #include <memory>
 #include <string>
 #include <utility>
@@ -17,6 +18,7 @@
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-blink.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_mojo_media_stream_dispatcher_host.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 
@@ -109,6 +111,7 @@ class MediaStreamDeviceObserverTest : public ::testing::Test {
   }
 
  protected:
+  test::TaskEnvironment task_environment_;
   String stream_label_;
   MockMojoMediaStreamDispatcherHost mock_dispatcher_host_;
   std::unique_ptr<MediaStreamDeviceObserver> observer_;

@@ -14,7 +14,7 @@
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_util.h"
-#include "chrome/browser/extensions/navigation_observer.h"
+#include "chrome/browser/extensions/navigation_extension_enabler.h"
 #include "chrome/browser/sync/test/integration/extensions_helper.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"

@@ -92,18 +92,18 @@ chromium-metrics-reviews@google.com.
 
 <variants name="Enterprise_UserSessionType">
   <variant name="AffiliatedUserSession"
-      summary="The local user is affiliated to the organisation."/>
+      summary="The local user is affiliated to the organization."/>
   <variant name="AutoLaunchedKioskSession"
       summary="The local session is auto launched kiosk."/>
   <variant name="GuestSession"
-      summary="The local guest session is not managed by an organisation."/>
+      summary="The local guest session is not managed by an organization."/>
   <variant name="ManagedGuestSession"
-      summary="The local guest session is managed by an organisation."/>
+      summary="The local guest session is managed by an organization."/>
   <variant name="ManuallyLaunchedKioskSession"
       summary="The local session is manually launched kiosk"/>
   <variant name="NoUserSession" summary="There is no user."/>
   <variant name="UnaffiliatedUserSession"
-      summary="The local user is not affiliated to the organisation."/>
+      summary="The local user is not affiliated to the organization."/>
   <variant name="UnknownUserSession" summary="user session is unknown."/>
 </variants>
 
@@ -597,16 +597,6 @@ chromium-metrics-reviews@google.com.
   <summary>Reports success/failure when a session is attempted.</summary>
 </histogram>
 
-<histogram name="Enterprise.DeviceRemoteCommand.Crd.SessionType"
-    enum="EnterpriseCrdUserType" expires_after="2024-04-28">
-  <owner>macinashutosh@google.com</owner>
-  <owner>chromeos-commercial-crd@google.com</owner>
-  <summary>
-    Reports the user type for the attempted session only when the result is
-    EnterpriseCrdSessionResultCode::SUCCESS.
-  </summary>
-</histogram>
-
 <histogram
     name="Enterprise.DeviceRemoteCommand.Crd.{Enterprise_CrdSessionType}.{Enterprise_UserSessionType}.Result"
     enum="EnterpriseCrdSessionResultCode" expires_after="2024-03-10">
@@ -727,7 +717,7 @@ chromium-metrics-reviews@google.com.
   <owner>seblalancette@chromium.org</owner>
   <owner>cbe-device-trust-eng@google.com</owner>
   <summary>
-    Captures an error that occured while trying to get signals from the
+    Captures an error that occurred while trying to get signals from the
     CrowdStrike agent.
   </summary>
 </histogram>
@@ -1233,7 +1223,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.Dlp.ConfidentialContentsCount" units="entries"
-    expires_after="2024-03-17">
+    expires_after="2024-05-19">
   <owner>aidazolic@chromium.org</owner>
   <owner>chromeos-dlp@google.com</owner>
   <summary>
@@ -1294,7 +1284,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.Dlp.Errors.DaemonInit"
-    enum="EnterpriseDlpPolicyCrOSDaemonInitError" expires_after="2024-01-01">
+    enum="EnterpriseDlpPolicyCrOSDaemonInitError" expires_after="2024-12-01">
   <owner>accorsi@google.com</owner>
   <owner>chromeos-dlp@google.com</owner>
   <summary>
@@ -1917,7 +1907,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.EnrollmentForcedInitialAttestationBased"
-    enum="EnterpriseEnrollmentType" expires_after="2024-02-04">
+    enum="EnterpriseEnrollmentType" expires_after="2024-05-05">
   <owner>asumaneev@google.com</owner>
   <owner>sergiyb@chromium.org</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
@@ -2043,148 +2033,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Enterprise.FCMInvalidationService.CBCMPolicyInvalidations"
-    enum="EnterprisePolicyInvalidations" expires_after="2023-01-15">
-  <owner>anthonyvd@chromium.org</owner>
-  <owner>chrome-enterprise-team-core@google.com</owner>
-  <summary>
-    Events for counting CBCM policy invalidations received with and without
-    payloads. Invalidations indicate that a policy has been updated and should
-    be refreshed. Payloads provide context about the policy update, but may be
-    absent if dropped by the invalidation service. Subset of
-    &quot;Enterprise.CBCMPolicyInvalidations&quot;. Gets recorded only when
-    FCMInvalidationService is used as InvalidationService.
-  </summary>
-</histogram>
-
-<histogram name="Enterprise.FCMInvalidationService.CBCMPolicyRefresh"
-    enum="EnterprisePolicyRefresh" expires_after="2023-01-15">
-  <owner>anthonyvd@chromium.org</owner>
-  <owner>chrome-enterprise-team-core@google.com</owner>
-  <summary>
-    Events measuring effectiveness of refreshing CBCM policy when invalidations
-    are received from a service. For each refresh, indicates whether the policy
-    changed, and whether the policy was invalidated at the time of the refresh.
-    Subset of &quot;Enterprise.CBCMPolicyRefresh&quot;. Gets recorded only when
-    FCMInvalidationService is used as InvalidationService.
-  </summary>
-</histogram>
-
-<histogram
-    name="Enterprise.FCMInvalidationService.DeviceLocalAccountPolicyInvalidations2"
-    enum="EnterprisePolicyInvalidations" expires_after="2024-06-01">
-  <owner>asumaneev@google.com</owner>
-  <owner>chromeos-commercial-remote-management@google.com</owner>
-  <summary>
-    Events for counting device local account policy invalidations received with
-    and without payloads. Invalidations indicate that a policy has been updated
-    and should be refreshed. Payloads provide context about the policy update,
-    but may be absent if dropped by the invalidation service. Subset of
-    &quot;Enterprise.DeviceLocalAccountPolicyInvalidations2&quot;. Gets recorded
-    only when FCMInvalidationService is used as InvalidationService.
-
-    As opposed to current histogram,
-    Enterprise.FCMInvalidationService.DevicePolicyInvalidations2 counts only
-    events of device policy invalidations.
-  </summary>
-</histogram>
-
-<histogram
-    name="Enterprise.FCMInvalidationService.DeviceLocalAccountPolicyRefresh3"
-    enum="EnterprisePolicyRefresh" expires_after="2024-06-01">
-  <owner>asumaneev@google.com</owner>
-  <owner>chromeos-commercial-remote-management@google.com</owner>
-  <summary>
-    Events measuring effectiveness of refreshing device local account policy
-    when invalidations are received from a service. For each refresh, indicates
-    whether the policy changed, and whether the policy was invalidated at the
-    time of the refresh. Subset of
-    &quot;Enterprise.DeviceLocalAccountPolicyRefresh3&quot;. Gets recorded only
-    when FCMInvalidationService is used as InvalidationService.
-
-    As opposed to current histogram,
-    Enterprise.FCMInvalidationService.DevicePolicyRefresh3 counts only events of
-    refreshing device policies.
-  </summary>
-</histogram>
-
-<histogram name="Enterprise.FCMInvalidationService.DevicePolicyInvalidations2"
-    enum="EnterprisePolicyInvalidations" expires_after="2024-06-01">
-  <owner>asumaneev@google.com</owner>
-  <owner>chromeos-commercial-remote-management@google.com</owner>
-  <summary>
-    Events for counting device policy invalidations received with and without
-    payloads. Invalidations indicate that a policy has been updated and should
-    be refreshed. Payloads provide context about the policy update, but may be
-    absent if dropped by the invalidation service. Subset of
-    &quot;Enterprise.DevicePolicyInvalidations2&quot;. Gets recorded only when
-    FCMInvalidationService is used as InvalidationService.
-
-    As opposed to current histogram,
-    Enterprise.FCMInvalidationService.DeviceLocalAccountPolicyInvalidations2
-    counts only events of device local account policy invalidations.
-  </summary>
-</histogram>
-
-<histogram name="Enterprise.FCMInvalidationService.DevicePolicyRefresh3"
-    enum="EnterprisePolicyRefresh" expires_after="2024-06-01">
-  <owner>asumaneev@google.com</owner>
-  <owner>chromeos-commercial-remote-management@google.com</owner>
-  <summary>
-    Events measuring effectiveness of refreshing device policy when
-    invalidations are received from a service. For each refresh, indicates
-    whether the policy changed, and whether the policy was invalidated at the
-    time of the refresh. Subset of &quot;Enterprise.DevicePolicyRefresh3&quot;.
-    Gets recorded only when FCMInvalidationService is used as
-    InvalidationService.
-
-    As opposed to current histogram,
-    Enterprise.FCMInvalidationService.DeviceLocalAccountPolicyRefresh3 counts
-    only events of refreshing device local account policies.
-  </summary>
-</histogram>
-
-<histogram name="Enterprise.FCMInvalidationService.PolicyInvalidations"
-    enum="EnterprisePolicyInvalidations" expires_after="2024-06-01">
-  <owner>asumaneev@google.com</owner>
-  <owner>chromeos-commercial-remote-management@google.com</owner>
-  <summary>
-    Events for counting user policy invalidations received with and without
-    payloads. Invalidations indicate that a policy has been updated and should
-    be refreshed. Payloads provide context about the policy update, but may be
-    absent if dropped by the invalidation service. Subset of
-    &quot;Enterprise.PolicyInvalidations&quot;. Gets recorded only when
-    FCMInvalidationService is used as InvalidationService.
-  </summary>
-</histogram>
-
-<histogram
-    name="Enterprise.FCMInvalidationService.PolicyInvalidationsRegistrationResult"
-    enum="BooleanSuccess" expires_after="2024-06-01">
-  <owner>asumaneev@google.com</owner>
-  <owner>chromeos-commercial-remote-management@google.com</owner>
-  <summary>
-    Tracks the result of registration for policy invalidations. It will fail
-    when duplicate invalidation names are used for different policies due to
-    http://b/119860379. Subset of
-    &quot;Enterprise.PolicyInvalidationsRegistrationResult&quot;. Gets recorded
-    only when FCMInvalidationService is used as InvalidationService.
-  </summary>
-</histogram>
-
-<histogram name="Enterprise.FCMInvalidationService.PolicyRefresh2"
-    enum="EnterprisePolicyRefresh" expires_after="2024-06-01">
-  <owner>asumaneev@google.com</owner>
-  <owner>chromeos-commercial-remote-management@google.com</owner>
-  <summary>
-    Events measuring effectiveness of refreshing user policy when invalidations
-    are received from a service. For each refresh, indicates whether the policy
-    changed, and whether the policy was invalidated at the time of the refresh.
-    Subset of &quot;Enterprise.PolicyRefresh2&quot;. Gets recorded only when
-    FCMInvalidationService is used as InvalidationService.
-  </summary>
-</histogram>
-
 <histogram name="Enterprise.InvalidDevicePolicyFilesStatus"
     enum="InvalidDevicePolicyFilesStatus" expires_after="2024-04-28">
   <owner>emaxx@chromium.org</owner>
@@ -2222,7 +2070,7 @@ chromium-metrics-reviews@google.com.
   <owner>zmin@chromium.org</owner>
   <summary>
     Records whether browser unenrollment via DMToken deletion completed
-    succcessfully after attempting to delete the token.
+    successfully after attempting to delete the token.
   </summary>
 </histogram>
 
@@ -2285,8 +2133,8 @@ chromium-metrics-reviews@google.com.
   <owner>zmin@chromium.org</owner>
   <owner>domfc@chromium.org</owner>
   <summary>
-    Records whether a browser unenrollment was completed succcessfully by
-    writing an invalid DMToken to storage or not.
+    Records whether a browser unenrollment was completed successfully by writing
+    an invalid DMToken to storage or not.
   </summary>
 </histogram>
 
@@ -2343,12 +2191,12 @@ chromium-metrics-reviews@google.com.
     This includes tasks such as getting the list of downloaded images, checking
     that the list has a minimal amount of images, decoding them, etc. Note this
     measurement does not include the lock screen inactivity timeout. The metric
-    would be emitted when the first two images are loaded succcessfully.
+    would be emitted when the first two images are loaded successfully.
   </summary>
 </histogram>
 
 <histogram name="Enterprise.OnBulkDataEntry.DataSize" units="bytes"
-    expires_after="2024-03-17">
+    expires_after="2024-05-19">
   <owner>domfc@chromium.org</owner>
   <owner>webprotect-team@google.com</owner>
   <summary>
@@ -2356,12 +2204,6 @@ chromium-metrics-reviews@google.com.
     OnBulkDataEntry Enterprise Connector. Is is logged once per user action that
     would trigger this Connector.
   </summary>
-</histogram>
-
-<histogram name="Enterprise.ONC.PolicyValidation" enum="BooleanSuccess"
-    expires_after="M85">
-  <owner>mnissler@chromium.org</owner>
-  <summary>Result of the OpenNetworkConfiguration policy validation.</summary>
 </histogram>
 
 <histogram name="Enterprise.OnPrint.{ContentAnalysisType}.PrintType"
@@ -2432,8 +2274,8 @@ chromium-metrics-reviews@google.com.
     Record summary of sources of all policies. It's recorded ever 24 hours and
     at startup.
 
-    This does not include user cloud policy and some speicial policy sources
-    like enterprise_default.
+    This does not include user cloud policy and some special policy sources like
+    enterprise_default.
   </summary>
 </histogram>
 
@@ -2462,26 +2304,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Enterprise.PolicyInvalidationsRegistrationResult"
-    enum="BooleanSuccess" expires_after="2024-06-01">
-  <owner>asumaneev@google.com</owner>
-  <owner>chromeos-commercial-remote-management@google.com</owner>
-  <summary>
-    Tracks the result of registration for policy invalidations. It will fail
-    when duplicate invalidation names are used for different policies due to
-    http://b/119860379.
-  </summary>
-</histogram>
-
-<histogram name="Enterprise.PolicyInvalidationsStartupTime" units="ms"
-    expires_after="M77">
-  <owner>mnissler@chromium.org</owner>
-  <summary>
-    Time since startup of the cloud policy code until the policy invalidation
-    service first reported its online status.
-  </summary>
-</histogram>
-
 <histogram name="Enterprise.PolicyLoadStatus" enum="EnterprisePolicyLoadStatus"
     expires_after="M82">
   <owner>mnissler@chromium.org</owner>
@@ -2492,7 +2314,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.PolicyRefresh2" enum="EnterprisePolicyRefresh"
-    expires_after="2023-12-01">
+    expires_after="2024-06-01">
   <owner>asumaneev@google.com</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
   <summary>
@@ -2534,7 +2356,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.PolicyUpdatePeriod.MachineLevelUser" units="days"
-    expires_after="2024-03-03">
+    expires_after="2024-05-05">
   <owner>zmin@chromium.org</owner>
   <owner>pastarmovj@chromium.org</owner>
   <summary>
@@ -2561,7 +2383,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.ProfileIdentifier.Error"
-    enum="EnterpriseProfileIdError" expires_after="2023-11-10">
+    enum="EnterpriseProfileIdError" expires_after="2024-11-08">
   <owner>hmare@google.com</owner>
   <owner>cbe-device-trust-eng@google.com</owner>
   <summary>
@@ -2586,9 +2408,9 @@ chromium-metrics-reviews@google.com.
   <owner>zmin@chromium.org</owner>
   <summary>
     The Http statuses returned by the server when trying to get the
-    ManagedAccounsSigninRestriction policy value for individual dasher accounts.
-    This is recorded after trying to the the policy value, when the status is
-    available.
+    ManagedAccountsSigninRestriction policy value for individual dasher
+    accounts. This is recorded after trying to the the policy value, when the
+    status is available.
   </summary>
 </histogram>
 
@@ -2598,8 +2420,8 @@ chromium-metrics-reviews@google.com.
   <owner>zmin@chromium.org</owner>
   <summary>
     The network errors that happen when trying to get the
-    ManagedAccounsSigninRestriction policy value for individual dasher accounts.
-    This is recorded every time after trying to the the policy value.
+    ManagedAccountsSigninRestriction policy value for individual dasher
+    accounts. This is recorded every time after trying to the the policy value.
   </summary>
 </histogram>
 
@@ -2618,29 +2440,16 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.RegularUserSession.SessionLength" units="minutes"
-    expires_after="2024-03-17">
+    expires_after="2024-05-19">
   <owner>bfranz@chromium.org</owner>
   <owner>chromeos-kiosk-eng@google.com</owner>
   <summary>
-    A regular user session starts when a user signs in using his/her user
-    account. It stops when the user signs out. Session length is the duration
-    between the start and stop events. It is recorded during signing out and
-    reported on the next chrome run. This metric tracks the recorded session
-    length on an enrolled device rouned down to the nearest 10-minute bucket and
-    capped at 24 hours.
-  </summary>
-</histogram>
-
-<histogram name="Enterprise.RemoteCommandInvalidationsRegistrationResult"
-    enum="BooleanSuccess" expires_after="2024-06-01">
-  <owner>asumaneev@google.com</owner>
-  <owner>chromeos-commercial-remote-management@google.com</owner>
-  <summary>
-    Tracks whether remote commands invalidator registered for corresponding
-    invalidations. In case of success the invalidator is able to receive
-    incoming invalidations.
-
-    Metric is similar to Enterprise.PolicyInvalidationsRegistrationResult.
+    A regular user session starts when a user signs in using their user account.
+    It stops when the user signs out. Session length is the duration between the
+    start and stop events. It is recorded during signing out and reported on the
+    next chrome run. This metric tracks the recorded session length on an
+    enrolled device rounded down to the nearest 10-minute bucket and capped at
+    24 hours.
   </summary>
 </histogram>
 
@@ -2955,7 +2764,7 @@ chromium-metrics-reviews@google.com.
   <owner>pmarko@chromium.org</owner>
   <summary>
     Duration between when the construction of the policy stack for a user
-    profile starts and when its initialization gets untrottled.
+    profile starts and when its initialization gets unthrottled.
 
     Only reported on ChromeOS Ash, only for managed users who are primary users
     in the given session. The values are capped at around 5 seconds, and
@@ -2977,7 +2786,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.UserPolicyChromeOS.ChildUser.OAuthTokenError"
-    enum="GoogleServiceAuthError" expires_after="2024-03-17">
+    enum="GoogleServiceAuthError" expires_after="2024-05-19">
   <owner>agawronska@chromium.org</owner>
   <owner>michaelpg@chromium.org</owner>
   <summary>Failure reason for OAuth token fetch for child user.</summary>
@@ -3024,7 +2833,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.UserRemoteCommand.Received"
-    enum="RemoteCommandReceivedStatus" expires_after="2024-02-04">
+    enum="RemoteCommandReceivedStatus" expires_after="2024-05-26">
   <owner>asumaneev@google.com</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
   <summary>
@@ -3036,7 +2845,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.UserRemoteCommandInvalidations"
-    enum="EnterprisePolicyInvalidations" expires_after="2023-12-01">
+    enum="EnterprisePolicyInvalidations" expires_after="2024-06-01">
   <owner>asumaneev@google.com</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
   <summary>
@@ -3172,7 +2981,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="EnterpriseCheck.IsEnterpriseUser" enum="BooleanEnabled"
-    expires_after="2024-02-04">
+    expires_after="2024-05-05">
   <owner>pastarmovj@chromium.org</owner>
   <owner>rogerta@chromium.org</owner>
   <owner>zmin@chromium.org</owner>
@@ -3184,7 +2993,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="EnterpriseCheck.IsFullyManaged2" enum="IsFullyManagedBoolean"
-    expires_after="2024-03-17">
+    expires_after="2024-05-19">
   <owner>twellington@google.com</owner>
   <owner>tedchcoc@chromium.org</owner>
   <summary>
@@ -3298,7 +3107,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="EnterpriseCheck.OSType" enum="OsSuite"
-    expires_after="2024-03-10">
+    expires_after="2024-05-12">
   <owner>ydago@chromium.org</owner>
   <owner>pastarmovj@chromium.org</owner>
   <summary>

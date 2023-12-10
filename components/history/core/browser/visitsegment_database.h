@@ -59,6 +59,9 @@ class VisitSegmentDatabase {
       int max_result_count,
       const base::RepeatingCallback<bool(const GURL&)>& url_filter);
 
+  // Deletes all segment data older than `older_than`.
+  bool DeleteSegmentDataOlderThan(base::Time older_than);
+
   // Delete the segment currently using the provided url for representation.
   // This will also delete any associated segment usage data.
   bool DeleteSegmentForURL(URLID url_id);

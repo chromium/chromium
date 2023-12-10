@@ -20,8 +20,6 @@ source_set("browser") {
     "autofill_java_script_feature.mm",
     "autofill_manager_observer_bridge.h",
     "autofill_manager_observer_bridge.mm",
-    "child_frame_registration_java_script_feature.h",
-    "child_frame_registration_java_script_feature.mm",
     "credit_card_util.h",
     "credit_card_util.mm",
     "form_suggestion.h",
@@ -37,7 +35,6 @@ source_set("browser") {
 
   deps = [
     ":autofill_js",
-    ":child_frame_registration_ts",
     ":suggestion_controller_js",
     ":util",
     "//base",
@@ -94,17 +91,6 @@ optimize_js("autofill_js") {
   ]
 }
 
-optimize_ts("child_frame_registration_ts") {
-  visibility = [ ":browser" ]
-
-  sources = [ "resources/child_frame_registration.ts" ]
-  deps = [
-    "//ios/web/public/js_messaging:frame_id",
-    "//ios/web/public/js_messaging:gcrweb",
-    "//ios/web/public/js_messaging:util_scripts",
-  ]
-}
-
 optimize_ts("suggestion_controller_js") {
   sources = [ "resources/suggestion_controller.ts" ]
 
@@ -135,12 +121,14 @@ source_set("test_support") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "autofill_across_iframes_unittest.mm",
     "autofill_agent_unittests.mm",
     "autofill_util_unittests.mm",
     "form_suggestion_provider_query_unittests.mm",
   ]
   deps = [
     ":browser",
+    ":test_support",
     ":util",
     "//base",
     "//base/test:test_support",
@@ -148,24 +136,24 @@ source_set("unit_tests") {
     "//components/autofill/core/common",
     "//components/autofill/ios/form_util",
     "//components/autofill/ios/form_util:form_handler_feature",
+    "//components/autofill/ios/form_util:form_util_feature",
+    "//components/autofill/ios/form_util:test_support",
     "//components/leveldb_proto:leveldb_proto",
     "//components/prefs",
+    "//components/prefs:test_support",
+    "//ios/testing:embedded_test_server_support",
     "//ios/web/public",
     "//ios/web/public/js_messaging",
     "//ios/web/public/test",
     "//ios/web/public/test:test_fixture",
     "//ios/web/public/test/fakes",
+    "//net:test_support",
     "//services/metrics/public/cpp:ukm_builders",
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/ocmock",
     "//ui/gfx:test_support",
   ]
-
-  # TODO(crbug.com/1427365): Test currently fails on iOS blink.
-  if (is_ios && use_blink) {
-    sources -= [ "autofill_agent_unittests.mm" ]
-  }
 }
 
 bundle_data("autofill_test_bundle_data") {

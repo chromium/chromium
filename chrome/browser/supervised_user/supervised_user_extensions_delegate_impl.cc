@@ -16,7 +16,7 @@
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/browser/ui/extensions/extensions_dialogs.h"
 #include "chrome/browser/ui/supervised_user/parent_permission_dialog.h"
-#include "components/supervised_user/core/browser/supervised_user_service.h"
+#include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/common/features.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_dialog_auto_confirm.h"
@@ -66,8 +66,9 @@ void SupervisedUserExtensionsDelegateImpl::
 }
 
 bool SupervisedUserExtensionsDelegateImpl::IsChild() const {
-  return SupervisedUserServiceFactory::GetForBrowserContext(context_)
-      ->AreExtensionsPermissionsEnabled();
+  auto* profile = Profile::FromBrowserContext(context_);
+  return profile &&
+         supervised_user::AreExtensionsPermissionsEnabled(*profile->GetPrefs());
 }
 
 bool SupervisedUserExtensionsDelegateImpl::IsExtensionAllowedByParent(

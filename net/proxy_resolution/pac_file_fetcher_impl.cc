@@ -81,7 +81,7 @@ void ConvertResponseToUTF16(const std::string& charset,
     // Guess the charset by looking at the BOM.
     base::StringPiece bytes_str(bytes);
     for (const auto& bom : kBomMappings) {
-      if (base::StartsWith(bytes_str, bom.prefix)) {
+      if (bytes_str.starts_with(bom.prefix)) {
         return ConvertResponseToUTF16(
             bom.charset,
             // Strip the BOM in the converted response.
@@ -316,7 +316,7 @@ void PacFileFetcherImpl::OnReadCompleted(URLRequest* request, int num_bytes) {
 
 PacFileFetcherImpl::PacFileFetcherImpl(URLRequestContext* url_request_context)
     : url_request_context_(url_request_context),
-      buf_(base::MakeRefCounted<IOBuffer>(kBufSize)),
+      buf_(base::MakeRefCounted<IOBufferWithSize>(kBufSize)),
       max_response_bytes_(kDefaultMaxResponseBytes),
       max_duration_(kDefaultMaxDuration) {
   DCHECK(url_request_context);
@@ -375,8 +375,6 @@ void PacFileFetcherImpl::FetchCompleted() {
     // Calculate duration of time for PAC file fetch to complete.
     DCHECK(!fetch_start_time_.is_null());
     DCHECK(!fetch_time_to_first_byte_.is_null());
-    UMA_HISTOGRAM_MEDIUM_TIMES("Net.ProxyScriptFetcher.SuccessDuration",
-                               base::TimeTicks::Now() - fetch_start_time_);
     UMA_HISTOGRAM_MEDIUM_TIMES("Net.ProxyScriptFetcher.FirstByteDuration",
                                fetch_time_to_first_byte_ - fetch_start_time_);
 

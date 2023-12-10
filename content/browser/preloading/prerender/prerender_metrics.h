@@ -11,14 +11,14 @@
 #include "base/time/time.h"
 #include "content/browser/preloading/prerender/prerender_final_status.h"
 #include "content/browser/preloading/prerender/prerender_host.h"
-#include "content/public/browser/prerender_trigger_type.h"
+#include "content/common/content_export.h"
+#include "content/public/browser/preloading_trigger_type.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace content {
 
-// TODO(miinak): support multiple headers
-struct PrerenderMismatchedHeaders {
+struct CONTENT_EXPORT PrerenderMismatchedHeaders {
  public:
   PrerenderMismatchedHeaders(const std::string& header_name,
                              absl::optional<std::string> initial_value,
@@ -68,14 +68,18 @@ enum class PrerenderCrossOriginRedirectionMismatch {
 // Assembles PrerenderHostFinalStatus with a detailed explanation if applicable.
 // Some FinalStatus enums cover multiple sub cases. To explain them in detail,
 // some explanations can be attached to the status.
-class PrerenderCancellationReason {
+class CONTENT_EXPORT PrerenderCancellationReason {
  public:
   // Tagged by `final_status_`. See `BuildFor*` and `ToDevtoolReasonString`.
-  using DetailedReasonVariant = absl::variant<absl::monostate,
-                                              int32_t,
-                                              uint64_t,
-                                              std::string,
-                                              PrerenderMismatchedHeaders>;
+  using DetailedReasonVariant =
+      absl::variant<absl::monostate,
+                    int32_t,
+                    uint64_t,
+                    std::string,
+                    std::vector<PrerenderMismatchedHeaders>>;
+
+  explicit PrerenderCancellationReason(PrerenderFinalStatus final_status);
+  ~PrerenderCancellationReason();
 
   static PrerenderCancellationReason BuildForDisallowActivationState(
       uint64_t disallow_activation_reason);
@@ -83,19 +87,15 @@ class PrerenderCancellationReason {
   static PrerenderCancellationReason BuildForMojoBinderPolicy(
       const std::string& interface_name);
 
-  static PrerenderCancellationReason
-  BuildForActivationNavigationParameterMismatch(
-      std::unique_ptr<PrerenderMismatchedHeaders> mismatched_headers);
-
   static PrerenderCancellationReason BuildForLoadingError(int32_t error_code);
 
-  explicit PrerenderCancellationReason(PrerenderFinalStatus final_status);
-  ~PrerenderCancellationReason();
+  static PrerenderCancellationReason
+  CreateCandidateReasonForActivationParameterMismatch();
 
   PrerenderCancellationReason(PrerenderCancellationReason&& reason);
 
   // Reports UMA and UKM metrics.
-  void ReportMetrics(PrerenderTriggerType trigger_type,
+  void ReportMetrics(PreloadingTriggerType trigger_type,
                      const std::string& embedder_histogram_suffix) const;
 
   PrerenderFinalStatus final_status() const { return final_status_; }
@@ -104,15 +104,14 @@ class PrerenderCancellationReason {
   // `kMojoBinderPolicy`.
   absl::optional<std::string> DisallowedMojoInterface() const;
 
-  // Returns the pointer of PrerenderMismatchHeaders if prerender was cancelled
-  // due to header mismatch.
-  // Returns absl::nullopt in the following cases:
-  // 1. When the final status is not `kActivationNavigationParameterMismatch`.
-  // 2. When the final status is `kActivationNavigationParameterMismatch` but
-  //    the header mismatch did not occur.
-  // TODO(miinak): Do not return PrerenderMismatchHeaders if the header matches.
-  absl::optional<const PrerenderMismatchedHeaders*>
-  GetPrerenderMismatchedHeaders() const;
+  // Returns the pointer of the vector of PrerenderMismatchedHeaders iff
+  // header mismatch occurred.
+  const std::vector<PrerenderMismatchedHeaders>* GetPrerenderMismatchedHeaders()
+      const;
+
+  void SetPrerenderMismatchedHeaders(
+      std::unique_ptr<std::vector<PrerenderMismatchedHeaders>>
+          mismatched_headers);
 
  private:
   PrerenderCancellationReason(PrerenderFinalStatus final_status,
@@ -137,7 +136,7 @@ void RecordPrerenderTriggered(ukm::SourceId ukm_id);
 
 void RecordPrerenderActivationTime(
     base::TimeDelta delta,
-    PrerenderTriggerType trigger_type,
+    PreloadingTriggerType trigger_type,
     const std::string& embedder_histogram_suffix);
 
 // Used by failing prerender attempts. Records the status to UMA and UKM, and
@@ -156,20 +155,20 @@ void ReportSuccessActivation(const PrerenderAttributes& attributes,
 // initial prerender navigation when activation fails.
 void RecordPrerenderActivationNavigationParamsMatch(
     PrerenderHost::ActivationNavigationParamsMatch result,
-    PrerenderTriggerType trigger_type,
+    PreloadingTriggerType trigger_type,
     const std::string& embedder_suffix);
 
 // Records the detailed types of the cross-origin redirection, e.g., changes to
 // scheme, host name etc.
 void RecordPrerenderRedirectionMismatchType(
     PrerenderCrossOriginRedirectionMismatch case_type,
-    PrerenderTriggerType trigger_type,
+    PreloadingTriggerType trigger_type,
     const std::string& embedder_histogram_suffix);
 
 // Records whether the redirection was caused by HTTP protocol upgrade.
 void RecordPrerenderRedirectionProtocolChange(
     PrerenderCrossOriginRedirectionProtocolChange change_type,
-    PrerenderTriggerType trigger_type,
+    PreloadingTriggerType trigger_type,
     const std::string& embedder_histogram_suffix);
 
 // Takes the headers of incoming navigation which can potentially activate a
@@ -185,14 +184,14 @@ void RecordPrerenderRedirectionProtocolChange(
 void CONTENT_EXPORT AnalyzePrerenderActivationHeader(
     net::HttpRequestHeaders potential_activation_headers,
     net::HttpRequestHeaders prerender_headers,
-    PrerenderTriggerType trigger_type,
+    PreloadingTriggerType trigger_type,
     const std::string& embedder_histogram_suffix);
 
 // Records ui::PageTransition of prerender activation navigation when transition
 // mismatch happens on prerender activation.
 void RecordPrerenderActivationTransition(
     int32_t potential_activation_transition,
-    PrerenderTriggerType trigger_type,
+    PreloadingTriggerType trigger_type,
     const std::string& embedder_histogram_suffix);
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -227,12 +226,12 @@ void RecordPrerenderBackNavigationEligibility(
 
 void RecordPrerenderActivationCommitDeferTime(
     base::TimeDelta time_delta,
-    PrerenderTriggerType trigger_type,
+    PreloadingTriggerType trigger_type,
     const std::string& embedder_histogram_suffix);
 
 void RecordReceivedPrerendersPerPrimaryPageChangedCount(
     int number,
-    PrerenderTriggerType trigger_type,
+    PreloadingTriggerType trigger_type,
     const std::string& eagerness_category);
 
 }  // namespace content

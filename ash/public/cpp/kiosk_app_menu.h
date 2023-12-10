@@ -5,13 +5,13 @@
 #ifndef ASH_PUBLIC_CPP_KIOSK_APP_MENU_H_
 #define ASH_PUBLIC_CPP_KIOSK_APP_MENU_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "ash/public/cpp/ash_public_export.h"
 #include "base/functional/callback_forward.h"
 #include "components/account_id/account_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/image/image_skia.h"
 
 namespace ash {
@@ -23,7 +23,7 @@ struct ASH_PUBLIC_EXPORT KioskAppMenuEntry {
 
   KioskAppMenuEntry(AppType type,
                     const AccountId& account_id,
-                    const absl::optional<std::string>& chrome_app_id,
+                    const std::optional<std::string>& chrome_app_id,
                     std::u16string name,
                     gfx::ImageSkia icon);
   KioskAppMenuEntry(const KioskAppMenuEntry& other);
@@ -39,7 +39,7 @@ struct ASH_PUBLIC_EXPORT KioskAppMenuEntry {
   AccountId account_id;
 
   // Only present in Chrome apps, `nullopt` in other types.
-  absl::optional<std::string> chrome_app_id;
+  std::optional<std::string> chrome_app_id;
 
   std::u16string name;
 

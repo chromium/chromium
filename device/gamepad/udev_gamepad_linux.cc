@@ -15,20 +15,20 @@ namespace {
 // Extract the device |index| from a device node |path|. The path must begin
 // with |prefix| and the remainder of the string must be parsable as an integer.
 // Returns true if parsing succeeded.
-bool DeviceIndexFromDevicePath(base::StringPiece path,
-                               base::StringPiece prefix,
+bool DeviceIndexFromDevicePath(std::string_view path,
+                               std::string_view prefix,
                                int* index) {
   DCHECK(index);
   if (!base::StartsWith(path, prefix))
     return false;
-  base::StringPiece index_str = path;
+  std::string_view index_str = path;
   index_str.remove_prefix(prefix.length());
   return base::StringToInt(index_str, index);
 }
 
-// Small helper to avoid constructing a `StringPiece` from nullptr.
-base::StringPiece ToStringPiece(const char* str) {
-  return str ? base::StringPiece(str) : base::StringPiece();
+// Small helper to avoid constructing a `std::string_view` from nullptr.
+std::string_view ToStringView(const char* str) {
+  return str ? std::string_view(str) : std::string_view();
 }
 
 }  // namespace
@@ -38,8 +38,8 @@ const char UdevGamepadLinux::kHidrawSubsystem[] = "hidraw";
 
 UdevGamepadLinux::UdevGamepadLinux(Type type,
                                    int index,
-                                   base::StringPiece path,
-                                   base::StringPiece syspath_prefix)
+                                   std::string_view path,
+                                   std::string_view syspath_prefix)
     : type(type), index(index), path(path), syspath_prefix(syspath_prefix) {}
 
 // static
@@ -54,24 +54,24 @@ std::unique_ptr<UdevGamepadLinux> UdevGamepadLinux::Create(udev_device* dev) {
   if (!dev)
     return nullptr;
 
-  const auto node_path = ToStringPiece(device::udev_device_get_devnode(dev));
+  const auto node_path = ToStringView(device::udev_device_get_devnode(dev));
   if (node_path.empty())
     return nullptr;
 
-  const auto node_syspath = ToStringPiece(device::udev_device_get_syspath(dev));
+  const auto node_syspath = ToStringView(device::udev_device_get_syspath(dev));
   if (node_syspath.empty())
     return nullptr;
 
-  base::StringPiece parent_syspath;
+  std::string_view parent_syspath;
   udev_device* parent_dev =
       device::udev_device_get_parent_with_subsystem_devtype(
           dev, kInputSubsystem, nullptr);
   if (parent_dev)
-    parent_syspath = ToStringPiece(device::udev_device_get_syspath(parent_dev));
+    parent_syspath = ToStringView(device::udev_device_get_syspath(parent_dev));
 
   for (const auto& entry : device_roots) {
     const Type node_type = entry.first;
-    const base::StringPiece prefix = entry.second;
+    const std::string_view prefix = entry.second;
     int index_value;
     if (!DeviceIndexFromDevicePath(node_path, prefix, &index_value))
       continue;
@@ -90,8 +90,8 @@ std::unique_ptr<UdevGamepadLinux> UdevGamepadLinux::Create(udev_device* dev) {
     //     /sys/devices/[...]/0003:054C:09CC.0026/hidraw/hidraw3
     // Then |syspath_prefix| is the common prefix before "input" or "hidraw":
     //     /sys/devices/[...]/0003:054C:09CC.0026/
-    base::StringPiece syspath;
-    base::StringPiece subsystem;
+    std::string_view syspath;
+    std::string_view subsystem;
     if (node_type == Type::EVDEV || node_type == Type::JOYDEV) {
       // If the device is in the input subsystem but does not have the
       // ID_INPUT_JOYSTICK property, ignore it.
@@ -105,7 +105,7 @@ std::unique_ptr<UdevGamepadLinux> UdevGamepadLinux::Create(udev_device* dev) {
       subsystem = kHidrawSubsystem;
     }
 
-    base::StringPiece syspath_prefix;
+    std::string_view syspath_prefix;
     if (!syspath.empty()) {
       size_t subsystem_start = syspath.find(subsystem);
       if (subsystem_start == std::string::npos)

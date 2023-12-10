@@ -193,17 +193,6 @@ void AwContentBrowserClient::ExposeInterfacesToRenderer(
               &AwContentBrowserClient::GetSafeBrowsingUrlCheckerDelegate,
               base::Unretained(this))),
       content::GetUIThreadTaskRunner({}));
-
-#if BUILDFLAG(ENABLE_SPELLCHECK)
-  auto create_spellcheck_host =
-      [](mojo::PendingReceiver<spellcheck::mojom::SpellCheckHost> receiver) {
-        mojo::MakeSelfOwnedReceiver(std::make_unique<SpellCheckHostImpl>(),
-                                    std::move(receiver));
-      };
-  registry->AddInterface<spellcheck::mojom::SpellCheckHost>(
-      base::BindRepeating(create_spellcheck_host),
-      content::GetUIThreadTaskRunner({}));
-#endif
 }
 
 void AwContentBrowserClient::RegisterBrowserInterfaceBindersForFrame(
@@ -211,6 +200,18 @@ void AwContentBrowserClient::RegisterBrowserInterfaceBindersForFrame(
     mojo::BinderMapWithContext<content::RenderFrameHost*>* map) {
   map->Add<network_hints::mojom::NetworkHintsHandler>(
       base::BindRepeating(&BindNetworkHintsHandler));
+
+#if BUILDFLAG(ENABLE_SPELLCHECK)
+  auto create_spellcheck_host =
+      [](content::RenderFrameHost* render_frame_host,
+         mojo::PendingReceiver<spellcheck::mojom::SpellCheckHost> receiver) {
+        mojo::MakeSelfOwnedReceiver(std::make_unique<SpellCheckHostImpl>(),
+                                    std::move(receiver));
+      };
+  map->Add<spellcheck::mojom::SpellCheckHost>(
+      base::BindRepeating(create_spellcheck_host),
+      content::GetUIThreadTaskRunner({}));
+#endif
 }
 
 }  // namespace android_webview

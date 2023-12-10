@@ -165,9 +165,8 @@ base::FilePath ConstructOriginPath(const base::FilePath& profile_path,
   if (owner != storage::mojom::CacheStorageOwner::kCacheAPI) {
     identifier += "-" + base::NumberToString(static_cast<int>(owner));
   }
-  const std::string origin_hash = base::SHA1HashString(identifier);
-  const std::string origin_hash_hex = base::ToLowerASCII(
-      base::HexEncode(origin_hash.c_str(), origin_hash.length()));
+  const std::string origin_hash_hex = base::ToLowerASCII(base::HexEncode(
+      base::SHA1HashSpan(base::as_bytes(base::make_span(identifier)))));
   return first_party_default_root_path.AppendASCII(origin_hash_hex);
 }
 

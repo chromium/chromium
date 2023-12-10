@@ -25,10 +25,18 @@ public class BottomSheetControllerFactory {
      * @return A new instance of the {@link BottomSheetController}.
      */
     public static ManagedBottomSheetController createBottomSheetController(
-            final Supplier<ScrimCoordinator> scrim, Callback<View> initializedCallback,
-            Window window, KeyboardVisibilityDelegate keyboardDelegate, Supplier<ViewGroup> root) {
-        return new BottomSheetControllerImpl(scrim, initializedCallback, window, keyboardDelegate,
-                root, /*alwaysFullWidth=*/false);
+            final Supplier<ScrimCoordinator> scrim,
+            Callback<View> initializedCallback,
+            Window window,
+            KeyboardVisibilityDelegate keyboardDelegate,
+            Supplier<ViewGroup> root) {
+        return new BottomSheetControllerImpl(
+                scrim,
+                initializedCallback,
+                window,
+                keyboardDelegate,
+                root,
+                /* alwaysFullWidth= */ false);
     }
 
     /**
@@ -41,10 +49,18 @@ public class BottomSheetControllerFactory {
      * @return A new instance of the {@link BottomSheetController}.
      */
     public static ManagedBottomSheetController createFullWidthBottomSheetController(
-            final Supplier<ScrimCoordinator> scrim, Callback<View> initializedCallback,
-            Window window, KeyboardVisibilityDelegate keyboardDelegate, Supplier<ViewGroup> root) {
-        return new BottomSheetControllerImpl(scrim, initializedCallback, window, keyboardDelegate,
-                root, /*alwaysFullWidth=*/true);
+            final Supplier<ScrimCoordinator> scrim,
+            Callback<View> initializedCallback,
+            Window window,
+            KeyboardVisibilityDelegate keyboardDelegate,
+            Supplier<ViewGroup> root) {
+        return new BottomSheetControllerImpl(
+                scrim,
+                initializedCallback,
+                window,
+                keyboardDelegate,
+                root,
+                /* alwaysFullWidth= */ true);
     }
 
     // Redirect methods to provider to make them only accessible to classes that have access to the

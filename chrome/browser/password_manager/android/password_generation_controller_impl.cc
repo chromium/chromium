@@ -18,8 +18,8 @@
 #include "chrome/browser/password_manager/android/password_generation_dialog_view_interface.h"
 #include "chrome/browser/password_manager/android/password_infobar_utils.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
-#include "chrome/browser/touch_to_fill/password_generation/android/touch_to_fill_password_generation_bridge_impl.h"
-#include "chrome/browser/touch_to_fill/password_generation/android/touch_to_fill_password_generation_controller.h"
+#include "chrome/browser/touch_to_fill/password_manager/password_generation/android/touch_to_fill_password_generation_bridge_impl.h"
+#include "chrome/browser/touch_to_fill/password_manager/password_generation/android/touch_to_fill_password_generation_controller.h"
 #include "components/autofill/core/browser/ui/accessory_sheet_enums.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/password_generation_util.h"
@@ -160,6 +160,7 @@ void PasswordGenerationControllerImpl::GeneratedPasswordAccepted(
   driver->GeneratedPasswordAccepted(
       generation_element_data_->form_data,
       generation_element_data_->generation_element_id, password);
+  driver->FocusNextFieldAfterPasswords();
   ResetFocusState();
 }
 

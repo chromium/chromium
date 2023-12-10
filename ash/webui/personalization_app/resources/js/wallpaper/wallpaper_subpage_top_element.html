@@ -5,9 +5,8 @@
   </wallpaper-selected>
 </template>
 <template is="dom-if" if="[[shouldShowInputQuery_(path, templateId)]]">
-  <sea-pen-input-query></sea-pen-input-query>
+  <sea-pen-input-query path="[[path]]"></sea-pen-input-query>
 </template>
-<template is="dom-if" if="[[shouldShowTemplateQuery_(path, templateId)]]">
-  <!-- TODO(b/300674234) add template query. -->
-  <sea-pen-template-query></sea-pen-template-query>
+<template is="dom-if" if="[[shouldShowTemplateQuery_(path, templateId)]]" restamp>
+  <sea-pen-template-query template-id="[[templateId]]" path="[[path]]"></sea-pen-template-query>
 </template>

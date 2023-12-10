@@ -47,7 +47,7 @@ export class OsSettingsCellularSetupDialogElement extends
 
       delegate_: Object,
 
-      dialogTitle_: {
+      psimBanner_: {
         type: String,
       },
 
@@ -60,7 +60,7 @@ export class OsSettingsCellularSetupDialogElement extends
   pageName: CellularSetupPageName;
   private delegate_: CellularSetupDelegate;
   private dialogHeader_: string;
-  private dialogTitle_: string;
+  private psimBanner_: string;
 
   constructor() {
     super();
@@ -84,8 +84,8 @@ export class OsSettingsCellularSetupDialogElement extends
     this.$.dialog.close();
   }
 
-  private shouldShowDialogTitle_(): boolean {
-    return !!this.dialogTitle_;
+  private shouldShowPsimBanner_(): boolean {
+    return !!this.psimBanner_;
   }
 
   private getDialogHeader_(): string {

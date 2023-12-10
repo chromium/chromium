@@ -77,7 +77,7 @@ std::set<std::string> CreateDynamicScriptIds(
 // `apply_update_callback`. If any of the `scripts_to_update` hasn't been
 // previously loaded or parsing fails, populates error and returns nullptr.
 template <typename Script>
-std::unique_ptr<UserScriptList> UpdateScripts(
+UserScriptList UpdateScripts(
     std::vector<Script>& scripts_to_update,
     UserScript::Source source,
     ExtensionUserScriptLoader& loader,
@@ -106,14 +106,14 @@ std::unique_ptr<UserScriptList> UpdateScripts(
       *error = ErrorUtils::FormatErrorMessage(
           "Script with ID '*' does not exist or is not fully registered",
           UserScript::TrimPrefixFromScriptID(script.id));
-      return nullptr;
+      return {};
     }
   }
 
   // Update the scripts.
   std::u16string parse_error;
-  auto parsed_scripts = std::make_unique<UserScriptList>();
-  parsed_scripts->reserve(scripts_to_update.size());
+  UserScriptList parsed_scripts;
+  parsed_scripts.reserve(scripts_to_update.size());
   for (Script& new_script : scripts_to_update) {
     CHECK(base::Contains(loaded_scripts_metadata, new_script.id));
     Script& existent_script = loaded_scripts_metadata[new_script.id];
@@ -124,10 +124,10 @@ std::unique_ptr<UserScriptList> UpdateScripts(
     if (!script) {
       CHECK(!parse_error.empty());
       *error = base::UTF16ToASCII(parse_error);
-      return nullptr;
+      return {};
     }
 
-    parsed_scripts->push_back(std::move(script));
+    parsed_scripts.push_back(std::move(script));
   }
 
   return parsed_scripts;
@@ -139,7 +139,7 @@ std::unique_ptr<UserScriptList> UpdateScripts(
 // true and removes the script from the UserScriptLoader invoking
 // `remove_callback` on completion.
 bool RemoveScripts(
-    const absl::optional<std::vector<std::string>>& ids,
+    const std::optional<std::vector<std::string>>& ids,
     UserScript::Source source,
     content::BrowserContext* browser_context,
     const ExtensionId& extension_id,
@@ -167,12 +167,12 @@ void ClearPersistentScriptURLPatterns(content::BrowserContext* browser_context,
 // Holds a list of user scripts as the first item, or an error string as the
 // second item when the user scripts are invalid.
 using ValidateScriptsResult =
-    std::pair<std::unique_ptr<UserScriptList>, absl::optional<std::string>>;
+    std::pair<UserScriptList, std::optional<std::string>>;
 
 // Validates that `scripts` resources exist and are properly encoded.
 ValidateScriptsResult ValidateParsedScriptsOnFileThread(
     ExtensionResource::SymlinkPolicy symlink_policy,
-    std::unique_ptr<UserScriptList> scripts);
+    UserScriptList scripts);
 
 }  // namespace extensions::scripting
 

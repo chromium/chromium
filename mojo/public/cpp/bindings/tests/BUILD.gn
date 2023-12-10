@@ -175,6 +175,7 @@ mojom("test_mojom") {
     "enum_default_unittest.test-mojom",
     "enum_headers_unittest.test-mojom",
     "feature_unittest.test-mojom",
+    "feature_unittest_other.test-mojom",
     "flush_async_unittest.test-mojom",
     "idle_tracking_unittest.test-mojom",
     "interface_unittest.test-mojom",

@@ -157,7 +157,7 @@ constexpr base::StringPiece kTurkeyFLayoutRegionCode = "tr.f";
 mojom::MechanicalLayout GetSystemMechanicalLayout() {
   system::StatisticsProvider* stats_provider =
       system::StatisticsProvider::GetInstance();
-  const absl::optional<base::StringPiece> layout_string =
+  const std::optional<base::StringPiece> layout_string =
       stats_provider->GetMachineStatistic(system::kKeyboardMechanicalLayoutKey);
   if (!layout_string) {
     LOG(ERROR) << "Couldn't determine mechanical layout";
@@ -175,14 +175,14 @@ mojom::MechanicalLayout GetSystemMechanicalLayout() {
   }
 }
 
-absl::optional<std::string> GetRegionCode() {
+std::optional<std::string> GetRegionCode() {
   system::StatisticsProvider* stats_provider =
       system::StatisticsProvider::GetInstance();
-  const absl::optional<base::StringPiece> layout_string =
+  const std::optional<base::StringPiece> layout_string =
       stats_provider->GetMachineStatistic(system::kRegionKey);
   if (!layout_string) {
     LOG(ERROR) << "Couldn't determine region";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // In Turkey, two different layouts are shipped (Q-Type and F-Type) under the
@@ -403,7 +403,7 @@ mojom::KeyboardInfoPtr InputDataProviderKeyboard::ConstructKeyboard(
     result->region_code = GetRegionCode();
   } else {
     result->mechanical_layout = mojom::MechanicalLayout::kUnknown;
-    result->region_code = absl::nullopt;
+    result->region_code = std::nullopt;
   }
 
   // Determine number pad presence.

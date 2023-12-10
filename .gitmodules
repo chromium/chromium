@@ -193,7 +193,7 @@
 [submodule "third_party/cros_system_api"]
 	path = third_party/cros_system_api
 	url = https://chromium.googlesource.com/chromiumos/platform2/system_api.git
-	gclient-condition = checkout_linux
+	gclient-condition = checkout_linux or checkout_chromeos
 [submodule "third_party/crossbench"]
 	path = third_party/crossbench
 	url = https://chromium.googlesource.com/crossbench.git
@@ -767,10 +767,6 @@
 	path = third_party/khronos_glcts
 	url = https://chrome-internal.googlesource.com/chrome/deps/khronos_glcts.git
 	gclient-condition = checkout_src_internal
-[submodule "third_party/ml"]
-	path = third_party/ml
-	url = https://chrome-internal.googlesource.com/chrome/third_party/ml.git
-	gclient-condition = checkout_third_party_ml
 [submodule "third_party/widevine/cdm/chromeos"]
 	path = third_party/widevine/cdm/chromeos
 	url = https://chrome-internal.googlesource.com/chrome/deps/widevine/cdm/chromeos.git

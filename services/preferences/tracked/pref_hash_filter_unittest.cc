@@ -10,6 +10,7 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -175,7 +176,7 @@ class MockPrefHashStore : public PrefHashStore {
     }
 
     // PrefHashStoreTransaction implementation.
-    base::StringPiece GetStoreUMASuffix() const override;
+    std::string_view GetStoreUMASuffix() const override;
     ValueState CheckValue(const std::string& path,
                           const base::Value* value) const override;
     void StoreHash(const std::string& path,
@@ -294,7 +295,7 @@ void MockPrefHashStore::ClearStoreHash(const std::string& path) {
   stored_values_.erase(path);
 }
 
-base::StringPiece
+std::string_view
 MockPrefHashStore::MockPrefHashStoreTransaction ::GetStoreUMASuffix() const {
   return "unused";
 }
@@ -394,7 +395,7 @@ class MockHashStoreContents : public HashStoreContents {
   // HashStoreContents implementation.
   bool IsCopyable() const override;
   std::unique_ptr<HashStoreContents> MakeCopy() const override;
-  base::StringPiece GetUMASuffix() const override;
+  std::string_view GetUMASuffix() const override;
   void Reset() override;
   bool GetMac(const std::string& path, std::string* out_value) override;
   bool GetSplitMacs(const std::string& path,
@@ -483,7 +484,7 @@ std::unique_ptr<HashStoreContents> MockHashStoreContents::MakeCopy() const {
       new MockHashStoreContents(const_cast<MockHashStoreContents*>(this)));
 }
 
-base::StringPiece MockHashStoreContents::GetUMASuffix() const {
+std::string_view MockHashStoreContents::GetUMASuffix() const {
   return "Unused";
 }
 

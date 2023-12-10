@@ -8,7 +8,6 @@
 #include "chrome/browser/ui/views/frame/browser_non_client_frame_view_chromeos.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
-#include "chromeos/ui/base/tablet_state.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
 #include "chromeos/ui/frame/frame_utils.h"
@@ -18,6 +17,7 @@
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
+#include "ui/display/screen.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -146,9 +146,9 @@ void BrowserFrameHeaderChromeOS::DoPaintHeader(gfx::Canvas* canvas) {
 
 views::CaptionButtonLayoutSize BrowserFrameHeaderChromeOS::GetButtonLayoutSize()
     const {
-  if (chromeos::TabletState::Get() &&
-      chromeos::TabletState::Get()->InTabletMode())
+  if (display::Screen::GetScreen()->InTabletMode()) {
     return views::CaptionButtonLayoutSize::kBrowserCaptionMaximized;
+  }
 
   return chromeos::ShouldUseRestoreFrame(target_widget())
              ? views::CaptionButtonLayoutSize::kBrowserCaptionRestored
@@ -165,7 +165,7 @@ SkColor BrowserFrameHeaderChromeOS::GetCurrentFrameColor() const {
 
 void BrowserFrameHeaderChromeOS::UpdateFrameColors() {
   SetPaintAsActive(target_widget()->ShouldPaintAsActive());
-  absl::optional<ui::ColorId> button_colors;
+  std::optional<ui::ColorId> button_colors;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (features::IsChromeRefresh2023()) {

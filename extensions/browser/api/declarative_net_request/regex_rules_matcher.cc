@@ -105,7 +105,7 @@ size_t RegexRulesMatcher::GetRulesCount() const {
 
 std::vector<RequestAction> RegexRulesMatcher::GetModifyHeadersActions(
     const RequestParams& params,
-    absl::optional<uint64_t> min_priority) const {
+    std::optional<uint64_t> min_priority) const {
   const std::vector<RegexRuleInfo>& potential_matches =
       GetPotentialMatches(params);
 
@@ -126,7 +126,7 @@ std::vector<RequestAction> RegexRulesMatcher::GetModifyHeadersActions(
   return GetModifyHeadersActionsFromMetadata(params, rules, *metadata_list_);
 }
 
-absl::optional<RequestAction> RegexRulesMatcher::GetAllowAllRequestsAction(
+std::optional<RequestAction> RegexRulesMatcher::GetAllowAllRequestsAction(
     const RequestParams& params) const {
   const std::vector<RegexRuleInfo>& potential_matches =
       GetPotentialMatches(params);
@@ -137,12 +137,12 @@ absl::optional<RequestAction> RegexRulesMatcher::GetAllowAllRequestsAction(
                re2::RE2::PartialMatch(params.url->spec(), *info.regex);
       });
   if (info == potential_matches.end())
-    return absl::nullopt;
+    return std::nullopt;
 
   return CreateAllowAllRequestsAction(params, *info->regex_rule->url_rule());
 }
 
-absl::optional<RequestAction>
+std::optional<RequestAction>
 RegexRulesMatcher::GetBeforeRequestActionIgnoringAncestors(
     const RequestParams& params) const {
   const std::vector<RegexRuleInfo>& potential_matches =
@@ -153,7 +153,7 @@ RegexRulesMatcher::GetBeforeRequestActionIgnoringAncestors(
                re2::RE2::PartialMatch(params.url->spec(), *info.regex);
       });
   if (info == potential_matches.end())
-    return absl::nullopt;
+    return std::nullopt;
 
   const flat_rule::UrlRule& rule = *info->regex_rule->url_rule();
   switch (info->regex_rule->action_type()) {
@@ -179,7 +179,7 @@ RegexRulesMatcher::GetBeforeRequestActionIgnoringAncestors(
       break;
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void RegexRulesMatcher::InitializeMatcher() {
@@ -307,7 +307,7 @@ const std::vector<RegexRuleInfo>& RegexRulesMatcher::GetPotentialMatches(
   return result.first->second;
 }
 
-absl::optional<RequestAction>
+std::optional<RequestAction>
 RegexRulesMatcher::CreateRegexSubstitutionRedirectAction(
     const RequestParams& params,
     const RegexRuleInfo& info) const {
@@ -330,7 +330,7 @@ RegexRulesMatcher::CreateRegexSubstitutionRedirectAction(
         info.regex->pattern().c_str(),
         info.regex_rule->regex_substitution()->c_str(),
         params.url->spec().c_str());
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   GURL redirect_url(redirect_str);
@@ -338,7 +338,7 @@ RegexRulesMatcher::CreateRegexSubstitutionRedirectAction(
   // Redirects to JavaScript urls are not allowed.
   // TODO(crbug.com/1033780): this results in counterintuitive behavior.
   if (redirect_url.SchemeIs(url::kJavaScriptScheme))
-    return absl::nullopt;
+    return std::nullopt;
 
   return CreateRedirectAction(params, *info.regex_rule->url_rule(),
                               std::move(redirect_url));

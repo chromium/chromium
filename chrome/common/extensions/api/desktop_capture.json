@@ -6,9 +6,6 @@
   {
     "namespace": "desktopCapture",
     "description": "Desktop Capture API that can be used to capture content of screen, individual windows or tabs.",
-    "compiler_options": {
-      "modernised_enums": true
-    },
     "types": [
       {
         "id": "DesktopCaptureSourceType",

@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <optional>
 #include "cc/slim/delayed_scheduler.h"
 #include "cc/slim/scheduler.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace cc::slim {
 
@@ -28,12 +28,12 @@ class TestSchedulerClient : public SchedulerClient {
   }
 
   void SetDoBeginFrameResult(bool result) { do_begin_frame_result_ = result; }
-  absl::optional<viz::BeginFrameArgs> TakeLastDoBeginFrameArgs() {
+  std::optional<viz::BeginFrameArgs> TakeLastDoBeginFrameArgs() {
     auto rv = last_do_begin_frame_args_;
     last_do_begin_frame_args_.reset();
     return rv;
   }
-  absl::optional<viz::BeginFrameArgs> TakeLastDidNotProduceFrameArgs() {
+  std::optional<viz::BeginFrameArgs> TakeLastDidNotProduceFrameArgs() {
     auto rv = last_did_not_produce_frame_args_;
     last_did_not_produce_frame_args_.reset();
     return rv;
@@ -41,8 +41,8 @@ class TestSchedulerClient : public SchedulerClient {
 
  private:
   const raw_ptr<Scheduler> scheduler_;
-  absl::optional<viz::BeginFrameArgs> last_do_begin_frame_args_;
-  absl::optional<viz::BeginFrameArgs> last_did_not_produce_frame_args_;
+  std::optional<viz::BeginFrameArgs> last_do_begin_frame_args_;
+  std::optional<viz::BeginFrameArgs> last_did_not_produce_frame_args_;
   bool do_begin_frame_result_ = false;
 };
 

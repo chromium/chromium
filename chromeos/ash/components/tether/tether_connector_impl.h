@@ -5,6 +5,8 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_TETHER_TETHER_CONNECTOR_IMPL_H_
 #define CHROMEOS_ASH_COMPONENTS_TETHER_TETHER_CONNECTOR_IMPL_H_
 
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -12,7 +14,6 @@
 #include "chromeos/ash/components/tether/connect_tethering_operation.h"
 #include "chromeos/ash/components/tether/host_connection_metrics_logger.h"
 #include "chromeos/ash/components/tether/tether_connector.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -87,19 +88,16 @@ class TetherConnectorImpl : public TetherConnector,
  private:
   friend class TetherConnectorImplTest;
 
-  void SetConnectionFailed(const std::string& error_name,
-                           HostConnectionMetricsLogger::ConnectionToHostResult
-                               connection_to_host_result);
+  void SetConnectionFailed(const std::string& error_name);
   void SetConnectionSucceeded(const std::string& device_id,
                               const std::string& wifi_network_guid);
 
   void OnTetherHostToConnectFetched(
       const std::string& device_id,
-      absl::optional<multidevice::RemoteDeviceRef> tether_host_to_connect);
+      std::optional<multidevice::RemoteDeviceRef> tether_host_to_connect);
   void OnWifiConnection(const std::string& device_id,
                         const std::string& wifi_network_guid);
-  HostConnectionMetricsLogger::ConnectionToHostResult
-  GetConnectionToHostResultFromErrorCode(
+  void RecordConnectTetheringOperationResult(
       const std::string& device_id,
       ConnectTetheringOperation::HostResponseErrorCode error_code);
 

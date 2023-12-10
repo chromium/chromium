@@ -54,7 +54,7 @@ void IncognitoMenuView::BuildMenu() {
   SetProfileIdentityInfo(
       /*profile_name=*/std::u16string(),
       /*background_color=*/SK_ColorTRANSPARENT,
-      /*edit_button=*/absl::nullopt,
+      /*edit_button=*/std::nullopt,
       ui::ImageModel::FromVectorIcon(kIncognitoProfileIcon,
                                      ui::kColorAvatarIconIncognito),
       l10n_util::GetStringUTF16(IDS_INCOGNITO_PROFILE_MENU_TITLE),

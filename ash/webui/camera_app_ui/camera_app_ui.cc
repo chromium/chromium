@@ -125,13 +125,12 @@ void CreateAndAddCameraAppUIHTMLSource(content::BrowserContext* browser_context,
 void GotSalt(
     const url::Origin& origin,
     const std::string& source_id,
-    base::OnceCallback<void(const absl::optional<std::string>&)> callback,
+    base::OnceCallback<void(const std::optional<std::string>&)> callback,
     const std::string& salt) {
   auto callback_on_io_thread = base::BindOnce(
       [](const std::string& salt, const url::Origin& origin,
          const std::string& source_id,
-         base::OnceCallback<void(const absl::optional<std::string>&)>
-             callback) {
+         base::OnceCallback<void(const std::optional<std::string>&)> callback) {
         content::GetMediaDeviceIDForHMAC(
             blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE, salt,
             std::move(origin), source_id, content::GetIOThreadTaskRunner({}),
@@ -148,7 +147,7 @@ void TranslateVideoDeviceId(
     media_device_salt::MediaDeviceSaltService* salt_service,
     const url::Origin& origin,
     const std::string& source_id,
-    base::OnceCallback<void(const absl::optional<std::string>&)> callback) {
+    base::OnceCallback<void(const std::optional<std::string>&)> callback) {
   if (salt_service) {
     salt_service->GetSalt(
         blink::StorageKey::CreateFirstParty(origin),
@@ -257,6 +256,8 @@ CameraAppUI::CameraAppUI(content::WebUI* web_ui,
       host_origin, ContentSettingsType::MEDIASTREAM_MIC);
   allowlist->RegisterAutoGrantedPermission(
       host_origin, ContentSettingsType::MEDIASTREAM_CAMERA);
+  allowlist->RegisterAutoGrantedPermission(
+      host_origin, ContentSettingsType::CAMERA_PAN_TILT_ZOOM);
   allowlist->RegisterAutoGrantedPermission(
       host_origin, ContentSettingsType::FILE_SYSTEM_READ_GUARD);
   allowlist->RegisterAutoGrantedPermission(

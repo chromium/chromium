@@ -43,27 +43,27 @@ TEST(PaintInvalidationReasonTest, IsFullGeometryPaintInvalidationReason) {
              [](PaintInvalidationReason r) {
                EXPECT_FALSE(IsFullPaintInvalidationReason(r));
                EXPECT_FALSE(IsNonLayoutFullPaintInvalidationReason(r));
-               EXPECT_FALSE(IsLayoutPaintInvalidationReason(r));
+               EXPECT_FALSE(IsLayoutFullPaintInvalidationReason(r));
              });
   ForReasons(NextReason(PaintInvalidationReason::kNonFullMax),
              PaintInvalidationReason::kNonLayoutMax,
              [](PaintInvalidationReason r) {
                EXPECT_TRUE(IsFullPaintInvalidationReason(r));
                EXPECT_TRUE(IsNonLayoutFullPaintInvalidationReason(r));
-               EXPECT_FALSE(IsLayoutPaintInvalidationReason(r));
+               EXPECT_FALSE(IsLayoutFullPaintInvalidationReason(r));
              });
   ForReasons(NextReason(PaintInvalidationReason::kNonLayoutMax),
              PaintInvalidationReason::kLayoutMax,
              [](PaintInvalidationReason r) {
                EXPECT_TRUE(IsFullPaintInvalidationReason(r));
                EXPECT_FALSE(IsNonLayoutFullPaintInvalidationReason(r));
-               EXPECT_TRUE(IsLayoutPaintInvalidationReason(r));
+               EXPECT_TRUE(IsLayoutFullPaintInvalidationReason(r));
              });
   ForReasons(NextReason(PaintInvalidationReason::kLayoutMax),
              PaintInvalidationReason::kMax, [](PaintInvalidationReason r) {
                EXPECT_TRUE(IsFullPaintInvalidationReason(r));
                EXPECT_FALSE(IsNonLayoutFullPaintInvalidationReason(r));
-               EXPECT_FALSE(IsLayoutPaintInvalidationReason(r));
+               EXPECT_FALSE(IsLayoutFullPaintInvalidationReason(r));
              });
 }
 

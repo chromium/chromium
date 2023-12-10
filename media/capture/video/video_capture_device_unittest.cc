@@ -281,23 +281,14 @@ class VideoCaptureDeviceTest
         video_capture_client_(CreateDeviceClient()),
         image_capture_client_(new MockImageCaptureClient()) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+    CHECK(test_thread_.Start()) << "Cannot start the test thread";
     local_gpu_memory_buffer_manager_ =
         std::make_unique<LocalGpuMemoryBufferManager>();
     VideoCaptureDeviceFactoryChromeOS::SetGpuBufferManager(
         local_gpu_memory_buffer_manager_.get());
     if (media::ShouldUseCrosCameraService() &&
         !CameraHalDispatcherImpl::GetInstance()->IsStarted()) {
-      CameraHalDispatcherImpl::GetInstance()->Start(base::DoNothing(),
-                                                    base::DoNothing());
-      // Since the callback is posted to the main task, it might introduce
-      // issues when destroying the main task runner while the callback hasn't
-      // been triggered. Since we don't do sensor related check in video capture
-      // tests, it should be okay to simply disable sensor code path for
-      // testing.
-      // If the sensor initialization becomes a part of the camera
-      // initialization in the future, we should include the check for sensors
-      // in the test codes instead of simply disabling it.
-      CameraHalDispatcherImpl::GetInstance()->DisableSensorForTesting();
+      CameraHalDispatcherImpl::GetInstance()->Start();
     }
 #endif
     video_capture_device_factory_ = CreateVideoCaptureDeviceFactory(
@@ -460,6 +451,17 @@ class VideoCaptureDeviceTest
             },
             &run_loop, &test_case));
     run_loop.Run();
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
+    base::RunLoop run_loop;
+    test_thread_.task_runner()->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            [](base::RunLoop* run_loop, base::OnceClosure* test_case) {
+              std::move(*test_case).Run();
+              run_loop->Quit();
+            },
+            &run_loop, &test_case));
+    run_loop.Run();
 #else
     std::move(test_case).Run();
 #endif
@@ -476,6 +478,7 @@ class VideoCaptureDeviceTest
   const scoped_refptr<MockImageCaptureClient> image_capture_client_;
   VideoCaptureFormat last_format_;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+  base::Thread test_thread_{"VCD test thread"};
   std::unique_ptr<LocalGpuMemoryBufferManager> local_gpu_memory_buffer_manager_;
 #endif
   std::unique_ptr<VideoCaptureDeviceFactory> video_capture_device_factory_;

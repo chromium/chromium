@@ -6,9 +6,11 @@
 #define ASH_WEBUI_COMMON_BACKEND_SHORTCUT_INPUT_PROVIDER_H_
 
 #include "ash/accelerators/shortcut_input_handler.h"
+#include "ash/public/mojom/input_device_settings.mojom.h"
 #include "ash/webui/common/mojom/shortcut_input_provider.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
+#include "ui/events/event.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 
@@ -41,6 +43,10 @@ class ShortcutInputProvider : public common::mojom::ShortcutInputProvider,
   // ShortcutInputHandler::Observer:
   void OnShortcutInputEventPressed(const mojom::KeyEvent& key_event) override;
   void OnShortcutInputEventReleased(const mojom::KeyEvent& key_event) override;
+  void OnPrerewrittenShortcutInputEventPressed(
+      const mojom::KeyEvent& key_event) override;
+  void OnPrerewrittenShortcutInputEventReleased(
+      const mojom::KeyEvent& key_event) override;
 
   // views::WidgetObserver:
   void OnWidgetVisibilityChanged(views::Widget* widget, bool visible) override;
@@ -56,6 +62,9 @@ class ShortcutInputProvider : public common::mojom::ShortcutInputProvider,
   // Observing is only unpaused when the target window has focus, is visible,
   // and is open.
   bool observing_paused_ = true;
+
+  // A clone of the most recent prerewritten key event.
+  mojom::KeyEventPtr prerewritten_event_;
 
   raw_ptr<views::Widget, ExperimentalAsh> widget_ = nullptr;
 

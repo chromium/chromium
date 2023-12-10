@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -21,6 +22,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -45,7 +47,6 @@
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -98,7 +99,8 @@ std::unique_ptr<views::LabelButton> CreateMenuItem(
           ? gfx::Insets::VH(5 * vertical_spacing / 4, horizontal_spacing)
           : gfx::Insets::VH(vertical_spacing, horizontal_spacing);
 
-  auto button = CreateBubbleMenuItem(button_id, name, callback, icon);
+  auto button =
+      CreateBubbleMenuItem(button_id, name, std::move(callback), icon);
   button->SetBorder(views::CreateEmptyBorder(control_insets));
   if (features::IsChromeRefresh2023()) {
     button->SetLabelStyle(views::style::STYLE_BODY_3_EMPHASIS);
@@ -326,9 +328,12 @@ views::Widget* TabGroupEditorBubbleView::Show(
     const Browser* browser,
     const tab_groups::TabGroupId& group,
     TabGroupHeader* header_view,
-    absl::optional<gfx::Rect> anchor_rect,
+    std::optional<gfx::Rect> anchor_rect,
     views::View* anchor_view,
     bool stop_context_menu_propagation) {
+  feature_engagement::TrackerFactory::GetForBrowserContext(browser->profile())
+      ->NotifyEvent("tab_group_editor_shown");
+
   // TODO(pbos): Clean this duplicate implementation up. This is only here while
   // development of a DialogModel version of this bubble is in progress. This is
   // also only checked in so that development on DialogModel and
@@ -402,6 +407,7 @@ views::Widget* TabGroupEditorBubbleView::Show(
     bubble_ptr->GetBubbleFrameView()->SetPreferredArrowAdjustment(
         views::BubbleFrameView::PreferredArrowAdjustment::kOffset);
     widget->Show();
+
     return widget;
   }
 
@@ -488,7 +494,7 @@ TabGroupEditorBubbleView::TabGroupEditorBubbleView(
     const Browser* browser,
     const tab_groups::TabGroupId& group,
     views::View* anchor_view,
-    absl::optional<gfx::Rect> anchor_rect,
+    std::optional<gfx::Rect> anchor_rect,
     TabGroupHeader* header_view,
     bool stop_context_menu_propagation)
     : browser_(browser),
@@ -687,7 +693,7 @@ tab_groups::TabGroupColorId TabGroupEditorBubbleView::InitColorSet() {
 }
 
 void TabGroupEditorBubbleView::UpdateGroup() {
-  const absl::optional<int> selected_element =
+  const std::optional<int> selected_element =
       color_selector_->GetSelectedElement();
   TabGroup* const tab_group =
       browser_->tab_strip_model()->group_model()->GetTabGroup(group_);

@@ -5,13 +5,14 @@
 #include "chrome/browser/apps/app_service/launch_utils.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/notreached.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "build/build_config.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/file_utils.h"
@@ -33,7 +34,6 @@
 #include "extensions/common/constants.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
 #include "storage/browser/file_system/file_system_url.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition_utils.h"
 #include "ui/events/event_constants.h"
@@ -139,23 +139,22 @@ WindowOpenDisposition ConvertWindowOpenDispositionFromCrosapi(
   NOTREACHED();
 }
 
-apps::LaunchContainer ConvertWindowModeToAppLaunchContainer(
-    apps::WindowMode window_mode) {
-  switch (window_mode) {
-    case apps::WindowMode::kBrowser:
-      return apps::LaunchContainer::kLaunchContainerTab;
-    case apps::WindowMode::kWindow:
-    case apps::WindowMode::kTabbedWindow:
-      return apps::LaunchContainer::kLaunchContainerWindow;
-    case apps::WindowMode::kUnknown:
-      return apps::LaunchContainer::kLaunchContainerNone;
-  }
-}
-
 }  // namespace
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace apps {
+
+LaunchContainer ConvertWindowModeToAppLaunchContainer(WindowMode window_mode) {
+  switch (window_mode) {
+    case WindowMode::kBrowser:
+      return LaunchContainer::kLaunchContainerTab;
+    case WindowMode::kWindow:
+    case WindowMode::kTabbedWindow:
+      return LaunchContainer::kLaunchContainerWindow;
+    case WindowMode::kUnknown:
+      return LaunchContainer::kLaunchContainerNone;
+  }
+}
 
 std::vector<base::FilePath> GetLaunchFilesFromCommandLine(
     const base::CommandLine& command_line) {
@@ -327,6 +326,7 @@ extensions::AppLaunchSource GetAppLaunchSource(LaunchSource launch_source) {
     case LaunchSource::kFromReparenting:
     case LaunchSource::kFromProfileMenu:
     case LaunchSource::kFromSysTrayCalendar:
+    case LaunchSource::kFromInstaller:
       return extensions::AppLaunchSource::kSourceNone;
   }
 }
@@ -471,7 +471,7 @@ AppIdsToLaunchForUrl FindAppIdsToLaunchForUrl(AppServiceProxy* proxy,
     return result;
   }
 
-  absl::optional<std::string> preferred =
+  std::optional<std::string> preferred =
       proxy->PreferredAppsList().FindPreferredAppForUrl(url);
   if (preferred && base::Contains(result.candidates, *preferred)) {
     result.preferred = std::move(preferred);

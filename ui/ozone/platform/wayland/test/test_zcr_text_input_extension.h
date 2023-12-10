@@ -45,4 +45,4 @@ class TestZcrTextInputExtensionV1 : public GlobalObject {
 
 }  // namespace wl
 
-#endif  // UI_OZONE_PLATFORM_WAYLAND_TEST_TEST_ZWP_TEXT_INPUT_EXTENSION_H_
+#endif  // UI_OZONE_PLATFORM_WAYLAND_TEST_TEST_ZCR_TEXT_INPUT_EXTENSION_H_

@@ -509,8 +509,7 @@ AccessCodeCastSinkService::CreateCastSocketOpenParams(
   return cast_channel::CastSocketOpenParams(
       sink.cast_data().ip_endpoint, base::Seconds(kConnectTimeoutInSeconds),
       base::Seconds(kLivenessTimeoutInSeconds),
-      base::Seconds(kPingIntervalInSeconds),
-      cast_channel::CastDeviceCapability::NONE);
+      base::Seconds(kPingIntervalInSeconds), /*CastDeviceCapabilitySet*/ {});
 }
 
 void AccessCodeCastSinkService::OnChannelOpenedResult(

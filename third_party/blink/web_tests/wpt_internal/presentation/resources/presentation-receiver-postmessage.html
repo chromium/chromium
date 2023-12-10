@@ -29,7 +29,7 @@ navigator.presentation.receiver.connectionList.then(list => {
   connection.terminate();
 });
 
-window.onunload = () => {
+window.onpagehide = () => {
   if (connection.state == 'terminated') {
     opener.postMessage('passed', '*');
   } else {

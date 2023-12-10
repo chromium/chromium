@@ -30,6 +30,7 @@
 <translation id="2226276347425096477">Sicela unciphisele lo mbhalo kuzinhlamvu ezingu-<ph name="MAX_CHARACTERS" /> noma ngaphansi (okwamanje usebenzisa izinhlamvu ezingu-<ph name="CURRENT_LENGTH" />).</translation>
 <translation id="2247351761944213033">Iviki elingu-<ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Ithrekhi engu-<ph name="NUMBER" /></translation>
+<translation id="2353297238722298836">Ikhamera nemakrofoni ivunyelwe</translation>
 <translation id="2393030564806080191">Inani lombala we-Hexadecimal</translation>
 <translation id="2398813069815436052">ibhokisi livuliwe.</translation>
 <translation id="245932805758469625">inombolo yamasekhondi wevidiyo asele</translation>
@@ -60,10 +61,12 @@
 <translation id="3822383571486410024">Sicela welule lo mbhalo kuya kuzinhlamvu ezingu-<ph name="MIN_CHARACTERS" /> noma ngaphezulu (okwamanje usebenzisa izinhlamvu ezingu-<ph name="CURRENT_LENGTH" />).</translation>
 <translation id="383465348367842624">Ingxenye elandelwa yi-'<ph name="ATSIGN" />' akumele iqukathe isimbuli engu-'<ph name="INVALIDCHARACTER" />'.</translation>
 <translation id="3846214748874656680">Phuma kusikrini esigcwele</translation>
+<translation id="4031179711345676612">Imakrofoni ivunyelwe</translation>
 <translation id="4103419683916926126">Ama-millisecond</translation>
 <translation id="4201051445878709314">bonisa inyanga yangaphambilini</translation>
 <translation id="4360991593054037559">Sicela ufake inani elivumelekile. Amanani amabili avumelekile asondele kakhulu ngu-<ph name="VALID_VALUE_LOW" /> no-<ph name="VALID_VALUE_HIGHER" />.</translation>
 <translation id="4522570452068850558">Imininingwane</translation>
+<translation id="4663373278480897665">Ikhamera ivunyelwe</translation>
 <translation id="4664250907885839816">Ingxenye elandelai-'<ph name="ATSIGN" />' akumele iqukathe isimbuli engu-'<ph name="INVALIDCHARACTER" />'.</translation>
 <translation id="4718048029184481307">Idlala kusithombe esiphakathi kwesithombe</translation>
 <translation id="4748357248530471599">shintsha isibonisi sesikrini esiphelele</translation>
@@ -137,6 +140,7 @@
 <translation id="6941933287844615239">landa imidiya</translation>
 <translation id="698788488269350478">inwetshiwe.</translation>
 <translation id="6989848892321993519">Sicela welule lo mbhalo kuya kuzinhlamvu ezingu-<ph name="MIN_CHARACTERS" /> noma ngaphezulu (okwamanje usebenzisa uhlamvu olungu1.</translation>
+<translation id="7080893216867146095">Ukwabelana ngendawo kuvunyelwe</translation>
 <translation id="709897737746224366">Sicela ufanise ifomethi eceliwe.</translation>
 <translation id="7102274145889307184">indawo yamanje</translation>
 <translation id="7263440858009898357">Sicela ukhethe into kuhlu.</translation>

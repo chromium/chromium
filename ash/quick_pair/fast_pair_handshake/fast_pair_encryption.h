@@ -8,10 +8,10 @@
 #include <stdint.h>
 
 #include <array>
+#include <optional>
 #include <string>
 
 #include "ash/quick_pair/fast_pair_handshake/fast_pair_key_pair.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 namespace quick_pair {
@@ -23,7 +23,7 @@ constexpr int kHmacKeySizeBytes = 64;
 constexpr int kNonceSizeBytes = 8;
 constexpr int kSecretKeySizeBytes = 16;
 
-absl::optional<KeyPair> GenerateKeysWithEcdhKeyAgreement(
+std::optional<KeyPair> GenerateKeysWithEcdhKeyAgreement(
     const std::string& decoded_public_anti_spoofing);
 
 const std::array<uint8_t, kBlockSizeBytes> EncryptBytes(

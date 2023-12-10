@@ -43,7 +43,6 @@ void TestSyncedTabDelegate::Navigate(const std::string& url,
                                                                    entry.get());
 
   entries_.push_back(std::move(entry));
-  page_language_per_index_.emplace_back();
   set_current_entry_index(GetCurrentEntryIndex() + 1);
   notify_cb_.Run(this);
 }
@@ -61,12 +60,6 @@ void TestSyncedTabDelegate::set_blocked_navigations(
   }
 }
 
-void TestSyncedTabDelegate::SetPageLanguageAtIndex(
-    int i,
-    const std::string& language) {
-  page_language_per_index_[i] = language;
-}
-
 bool TestSyncedTabDelegate::IsInitialBlankNavigation() const {
   // This differs from NavigationControllerImpl, which has an initial blank
   // NavigationEntry.
@@ -82,11 +75,6 @@ GURL TestSyncedTabDelegate::GetVirtualURLAtIndex(int i) const {
     return GURL();
   }
   return entries_[i]->virtual_url();
-}
-
-std::string TestSyncedTabDelegate::GetPageLanguageAtIndex(int i) const {
-  DCHECK(static_cast<size_t>(i) < page_language_per_index_.size());
-  return page_language_per_index_[i];
 }
 
 void TestSyncedTabDelegate::GetSerializedNavigationAtIndex(
@@ -243,11 +231,6 @@ int PlaceholderTabDelegate::GetEntryCount() const {
 GURL PlaceholderTabDelegate::GetVirtualURLAtIndex(int i) const {
   NOTREACHED();
   return GURL();
-}
-
-std::string PlaceholderTabDelegate::GetPageLanguageAtIndex(int i) const {
-  NOTREACHED();
-  return std::string();
 }
 
 void PlaceholderTabDelegate::GetSerializedNavigationAtIndex(

@@ -11,6 +11,7 @@ import 'chrome://resources/cr_elements/cr_icons.css.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import './check_mark_wrapper.js';
 import './strings.m.js';
+import './wallpaper_search/wallpaper_search_tile.js';
 
 import {SpHeading} from 'chrome://customize-chrome-side-panel.top-chrome/shared/sp_heading.js';
 import {HelpBubbleMixin, HelpBubbleMixinInterface} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin.js';
@@ -19,6 +20,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './categories.html.js';
+import {CustomizeChromeAction, recordCustomizeChromeAction} from './common.js';
 import {BackgroundCollection, CustomizeChromePageHandlerInterface, Theme} from './customize_chrome.mojom-webui.js';
 import {CustomizeChromeApiProxy} from './customize_chrome_api_proxy.js';
 import {WindowProxy} from './window_proxy.js';
@@ -219,15 +221,21 @@ export class CategoriesElement extends CategoriesElementBase {
   }
 
   private onClassicChromeClick_() {
+    recordCustomizeChromeAction(
+        CustomizeChromeAction.CATEGORIES_DEFAULT_CHROME_SELECTED);
     this.pageHandler_.setDefaultColor();
     this.pageHandler_.removeBackgroundImage();
   }
 
   private onWallpaperSearchClick_() {
+    recordCustomizeChromeAction(
+        CustomizeChromeAction.CATEGORIES_WALLPAPER_SEARCH_SELECTED);
     this.dispatchEvent(new Event('wallpaper-search-select'));
   }
 
   private async onUploadImageClick_() {
+    recordCustomizeChromeAction(
+        CustomizeChromeAction.CATEGORIES_UPLOAD_IMAGE_SELECTED);
     chrome.metricsPrivate.recordUserAction(
         'NTPRicherPicker.Backgrounds.UploadClicked');
     const {success} = await this.pageHandler_.chooseLocalCustomBackground();
@@ -241,6 +249,8 @@ export class CategoriesElement extends CategoriesElementBase {
   }
 
   private onCollectionClick_(e: DomRepeatEvent<BackgroundCollection>) {
+    recordCustomizeChromeAction(
+        CustomizeChromeAction.CATEGORIES_FIRST_PARTY_COLLECTION_SELECTED);
     this.dispatchEvent(new CustomEvent<BackgroundCollection>(
         'collection-select', {detail: e.model.item}));
   }

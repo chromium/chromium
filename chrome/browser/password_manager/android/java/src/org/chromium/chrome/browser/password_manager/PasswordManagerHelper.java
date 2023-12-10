@@ -57,15 +57,19 @@ public class PasswordManagerHelper {
     public static final String MANAGE_PASSWORDS_REFERRER = "manage-passwords-referrer";
 
     // Indicates the operation that was requested from the {@link PasswordCheckupClientHelper}.
-    @IntDef({PasswordCheckOperation.RUN_PASSWORD_CHECKUP,
-            PasswordCheckOperation.GET_BREACHED_CREDENTIALS_COUNT,
-            PasswordCheckOperation.GET_PASSWORD_CHECKUP_INTENT})
+    @IntDef({
+        PasswordCheckOperation.RUN_PASSWORD_CHECKUP,
+        PasswordCheckOperation.GET_BREACHED_CREDENTIALS_COUNT,
+        PasswordCheckOperation.GET_PASSWORD_CHECKUP_INTENT
+    })
     @Retention(RetentionPolicy.SOURCE)
     public @interface PasswordCheckOperation {
         /** Run password checkup. */
         int RUN_PASSWORD_CHECKUP = 0;
+
         /** Obtain the number of breached credentials. */
         int GET_BREACHED_CREDENTIALS_COUNT = 1;
+
         /** Obtain pending intent for launching password checkup UI */
         int GET_PASSWORD_CHECKUP_INTENT = 2;
     }
@@ -106,7 +110,7 @@ public class PasswordManagerHelper {
             "PasswordManager.CredentialManager.LocalProfile.GetIntent.APIError";
     private static final String LOCAL_GET_INTENT_ERROR_CONNECTION_RESULT_CODE_HISTOGRAM =
             "PasswordManager.CredentialManager.LocalProfile.GetIntent.APIError"
-            + ".ConnectionResultCode";
+                    + ".ConnectionResultCode";
     private static final String LOCAL_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM =
             "PasswordManager.CredentialManager.LocalProfile.Launch.Success";
 
@@ -121,19 +125,27 @@ public class PasswordManagerHelper {
      *  Please, keep in sync with tools/metrics/histograms/enums.xml.
      */
     @VisibleForTesting
-    @IntDef({LoadingDialogOutcome.NOT_SHOWN_LOADED, LoadingDialogOutcome.SHOWN_LOADED,
-            LoadingDialogOutcome.SHOWN_CANCELLED, LoadingDialogOutcome.SHOWN_TIMED_OUT,
-            LoadingDialogOutcome.NUM_ENTRIES})
+    @IntDef({
+        LoadingDialogOutcome.NOT_SHOWN_LOADED,
+        LoadingDialogOutcome.SHOWN_LOADED,
+        LoadingDialogOutcome.SHOWN_CANCELLED,
+        LoadingDialogOutcome.SHOWN_TIMED_OUT,
+        LoadingDialogOutcome.NUM_ENTRIES
+    })
     @Retention(RetentionPolicy.SOURCE)
     @interface LoadingDialogOutcome {
         /** The loading dialog was requested but loading finished before it got shown. */
         int NOT_SHOWN_LOADED = 0;
+
         /** The loading dialog was shown, loading process finished.  */
         int SHOWN_LOADED = 1;
+
         /** The loading dialog was shown and cancelled by user before loading finished. */
         int SHOWN_CANCELLED = 2;
+
         /** The loading dialog was shown and timed out before loading finished. */
         int SHOWN_TIMED_OUT = 3;
+
         int NUM_ENTRIES = 4;
     }
 
@@ -145,17 +157,27 @@ public class PasswordManagerHelper {
      * @param managePasskeys indicates whether passkey management is needed, which when true will
      *      attempt to launch the credential manager even without syncing enabled.
      */
-    public static void showPasswordSettings(Context context, @ManagePasswordsReferrer int referrer,
-            SettingsLauncher settingsLauncher, SyncService syncService,
-            Supplier<ModalDialogManager> modalDialogManagerSupplier, boolean managePasskeys) {
-        RecordHistogram.recordEnumeratedHistogram("PasswordManager.ManagePasswordsReferrer",
-                referrer, ManagePasswordsReferrer.MAX_VALUE + 1);
+    public static void showPasswordSettings(
+            Context context,
+            @ManagePasswordsReferrer int referrer,
+            SettingsLauncher settingsLauncher,
+            SyncService syncService,
+            Supplier<ModalDialogManager> modalDialogManagerSupplier,
+            boolean managePasskeys) {
+        RecordHistogram.recordEnumeratedHistogram(
+                "PasswordManager.ManagePasswordsReferrer",
+                referrer,
+                ManagePasswordsReferrer.MAX_VALUE + 1);
 
         if (canUseUpm()) {
             LoadingModalDialogCoordinator loadingDialogCoordinator =
                     LoadingModalDialogCoordinator.create(modalDialogManagerSupplier, context);
-            launchTheCredentialManager(referrer, syncService, loadingDialogCoordinator,
-                    modalDialogManagerSupplier, context);
+            launchTheCredentialManager(
+                    referrer,
+                    syncService,
+                    loadingDialogCoordinator,
+                    modalDialogManagerSupplier,
+                    context);
             return;
         }
 
@@ -175,17 +197,19 @@ public class PasswordManagerHelper {
                 return;
             }
 
-            String accountName = (syncService != null)
-                    ? CoreAccountInfo.getEmailFrom(syncService.getAccountInfo())
-                    : "";
+            String accountName =
+                    (syncService != null)
+                            ? CoreAccountInfo.getEmailFrom(syncService.getAccountInfo())
+                            : "";
             credentialManagerLauncher.getAccountSettingsIntent(accountName, context::startActivity);
             return;
         }
 
         Bundle fragmentArgs = new Bundle();
         fragmentArgs.putInt(MANAGE_PASSWORDS_REFERRER, referrer);
-        context.startActivity(settingsLauncher.createSettingsActivityIntent(
-                context, PASSWORD_SETTINGS_CLASS, fragmentArgs));
+        context.startActivity(
+                settingsLauncher.createSettingsActivityIntent(
+                        context, PASSWORD_SETTINGS_CLASS, fragmentArgs));
     }
 
     /**
@@ -205,9 +229,12 @@ public class PasswordManagerHelper {
         Profile profile = Profile.getLastUsedRegularProfile();
         SyncService syncService = SyncServiceFactory.getForProfile(profile);
         PrefService prefService = UserPrefs.get(profile);
-        return syncService != null && hasChosenToSyncPasswords(syncService)
-                && !prefService.getBoolean(
-                        Pref.UNENROLLED_FROM_GOOGLE_MOBILE_SERVICES_DUE_TO_ERRORS)
+        // TODO(crbug.com/1327294): Reevaluate if passing the syncService instead of the boolean is
+        // better.
+        // TODO(crbug.com/1327294): Move the syncService and backend presence checks in the util.
+        boolean isPwdSyncEnabled = hasChosenToSyncPasswords(syncService);
+        return syncService != null
+                && PasswordManagerUtilBridge.canUseUPMBackend(isPwdSyncEnabled, prefService)
                 && PasswordManagerBackendSupportHelper.getInstance().isBackendPresent();
     }
 
@@ -235,13 +262,17 @@ public class PasswordManagerHelper {
      * @param modalDialogManagerSupplier The supplier of the ModalDialogManager to be used by
      *         loading dialog.
      */
-    public static void showPasswordCheckup(Context context, @PasswordCheckReferrer int referrer,
-            SyncService syncService, Supplier<ModalDialogManager> modalDialogManagerSupplier) {
+    public static void showPasswordCheckup(
+            Context context,
+            @PasswordCheckReferrer int referrer,
+            SyncService syncService,
+            Supplier<ModalDialogManager> modalDialogManagerSupplier) {
         assert canUseUpm();
 
-        Optional<String> account = hasChosenToSyncPasswords(syncService)
-                ? Optional.of(CoreAccountInfo.getEmailFrom(syncService.getAccountInfo()))
-                : Optional.empty();
+        Optional<String> account =
+                hasChosenToSyncPasswords(syncService)
+                        ? Optional.of(CoreAccountInfo.getEmailFrom(syncService.getAccountInfo()))
+                        : Optional.empty();
 
         LoadingModalDialogCoordinator loadingDialogCoordinator =
                 LoadingModalDialogCoordinator.create(modalDialogManagerSupplier, context);
@@ -260,8 +291,10 @@ public class PasswordManagerHelper {
      * @param successCallback callback called when password check finishes successfully
      * @param failureCallback callback called if password check encountered an error
      */
-    public static void runPasswordCheckupInBackground(@PasswordCheckReferrer int referrer,
-            Optional<String> accountName, Callback<Void> successCallback,
+    public static void runPasswordCheckupInBackground(
+            @PasswordCheckReferrer int referrer,
+            Optional<String> accountName,
+            Callback<Void> successCallback,
             Callback<Exception> failureCallback) {
         assert canUseUpm();
 
@@ -277,9 +310,10 @@ public class PasswordManagerHelper {
             return;
         }
 
-        checkupClient.runPasswordCheckupInBackground(referrer, accountName,
-                result
-                -> {
+        checkupClient.runPasswordCheckupInBackground(
+                referrer,
+                accountName,
+                result -> {
                     passwordCheckupMetricsRecorder.recordMetrics(Optional.empty());
                     successCallback.onResult(result);
                 },
@@ -298,8 +332,10 @@ public class PasswordManagerHelper {
      * @param successCallback callback called with the number of breached passwords.
      * @param failureCallback callback called if encountered an error.
      */
-    public static void getBreachedCredentialsCount(@PasswordCheckReferrer int referrer,
-            Optional<String> accountName, Callback<Integer> successCallback,
+    public static void getBreachedCredentialsCount(
+            @PasswordCheckReferrer int referrer,
+            Optional<String> accountName,
+            Callback<Integer> successCallback,
             Callback<Exception> failureCallback) {
         assert canUseUpm();
 
@@ -315,9 +351,10 @@ public class PasswordManagerHelper {
             return;
         }
 
-        checkupClient.getBreachedCredentialsCount(referrer, accountName,
-                result
-                -> {
+        checkupClient.getBreachedCredentialsCount(
+                referrer,
+                accountName,
+                result -> {
                     passwordCheckupMetricsRecorder.recordMetrics(Optional.empty());
                     successCallback.onResult(result);
                 },
@@ -335,7 +372,8 @@ public class PasswordManagerHelper {
      * @return true if syncing passwords is enabled
      */
     public static boolean hasChosenToSyncPasswords(SyncService syncService) {
-        return syncService != null && syncService.isSyncFeatureEnabled()
+        return syncService != null
+                && syncService.isSyncFeatureEnabled()
                 && syncService.getSelectedTypes().contains(UserSelectableType.PASSWORDS);
     }
 
@@ -387,8 +425,11 @@ public class PasswordManagerHelper {
 
     public static void launchGmsUpdate(Context context) {
         Intent intent = new Intent(Intent.ACTION_VIEW);
-        String deepLinkUrl = "market://details?id="
-                + GoogleApiAvailability.GOOGLE_PLAY_SERVICES_PACKAGE + "&referrer=" + STORE_REFERER;
+        String deepLinkUrl =
+                "market://details?id="
+                        + GoogleApiAvailability.GOOGLE_PLAY_SERVICES_PACKAGE
+                        + "&referrer="
+                        + STORE_REFERER;
 
         intent.setPackage("com.android.vending");
         intent.setData(Uri.parse(deepLinkUrl));
@@ -404,9 +445,12 @@ public class PasswordManagerHelper {
     }
 
     @VisibleForTesting
-    static void launchTheCredentialManager(@ManagePasswordsReferrer int referrer,
-            SyncService syncService, LoadingModalDialogCoordinator loadingDialogCoordinator,
-            Supplier<ModalDialogManager> modalDialogManagerSupplier, Context context) {
+    static void launchTheCredentialManager(
+            @ManagePasswordsReferrer int referrer,
+            SyncService syncService,
+            LoadingModalDialogCoordinator loadingDialogCoordinator,
+            Supplier<ModalDialogManager> modalDialogManagerSupplier,
+            Context context) {
         assert canUseUpm();
         assert syncService != null;
 
@@ -423,21 +467,39 @@ public class PasswordManagerHelper {
         loadingDialogCoordinator.show();
 
         long startTimeMs = SystemClock.elapsedRealtime();
-        credentialManagerLauncher.getAccountCredentialManagerIntent(referrer,
-                CoreAccountInfo.getEmailFrom(syncService.getAccountInfo()),
-                (intent)
-                        -> PasswordManagerHelper.launchCredentialManagerIntent(
-                                intent, startTimeMs, true, loadingDialogCoordinator),
-                (exception) -> {
-                    PasswordManagerHelper.recordFailureMetrics(exception, true);
-                    loadingDialogCoordinator.dismiss();
-                });
+        String account = CoreAccountInfo.getEmailFrom(syncService.getAccountInfo());
+        if (hasChosenToSyncPasswords(syncService)) {
+            assert account != null;
+            credentialManagerLauncher.getAccountCredentialManagerIntent(
+                    referrer,
+                    account,
+                    (intent) ->
+                            PasswordManagerHelper.launchCredentialManagerIntent(
+                                    intent, startTimeMs, true, loadingDialogCoordinator),
+                    (exception) -> {
+                        PasswordManagerHelper.recordFailureMetrics(exception, true);
+                        loadingDialogCoordinator.dismiss();
+                    });
+        } else {
+            credentialManagerLauncher.getLocalCredentialManagerIntent(
+                    referrer,
+                    (intent) ->
+                            PasswordManagerHelper.launchCredentialManagerIntent(
+                                    intent, startTimeMs, false, loadingDialogCoordinator),
+                    (exception) -> {
+                        PasswordManagerHelper.recordFailureMetrics(exception, false);
+                        loadingDialogCoordinator.dismiss();
+                    });
+        }
     }
 
     @VisibleForTesting
-    static void launchPasswordCheckup(@PasswordCheckReferrer int referrer, Optional<String> account,
+    static void launchPasswordCheckup(
+            @PasswordCheckReferrer int referrer,
+            Optional<String> account,
             LoadingModalDialogCoordinator loadingDialogCoordinator,
-            Supplier<ModalDialogManager> modalDialogManagerSupplier, Context context) {
+            Supplier<ModalDialogManager> modalDialogManagerSupplier,
+            Context context) {
         assert canUseUpm();
 
         PasswordCheckupClientHelper checkupClient;
@@ -454,11 +516,14 @@ public class PasswordManagerHelper {
         PasswordCheckupClientMetricsRecorder passwordCheckupMetricsRecorder =
                 new PasswordCheckupClientMetricsRecorder(
                         (PasswordCheckOperation.GET_PASSWORD_CHECKUP_INTENT));
-        checkupClient.getPasswordCheckupIntent(referrer, account,
-                (intent)
-                        -> {
+        checkupClient.getPasswordCheckupIntent(
+                referrer,
+                account,
+                (intent) -> {
                     passwordCheckupMetricsRecorder.recordMetrics(Optional.empty());
-                    maybeLaunchIntentWithLoadingDialog(loadingDialogCoordinator, intent,
+                    maybeLaunchIntentWithLoadingDialog(
+                            loadingDialogCoordinator,
+                            intent,
                             PASSWORD_CHECKUP_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM);
                 },
                 (error) -> {
@@ -468,10 +533,10 @@ public class PasswordManagerHelper {
     }
 
     private static void recordFailureMetrics(Exception exception, boolean forAccount) {
-        // While support for the local storage API exists in Chrome, it isn't used at this time.
-        assert forAccount : "Local storage for preferences not ready for use";
-        final String kGetIntentSuccessHistogram = forAccount ? ACCOUNT_GET_INTENT_SUCCESS_HISTOGRAM
-                                                             : LOCAL_GET_INTENT_SUCCESS_HISTOGRAM;
+        final String kGetIntentSuccessHistogram =
+                forAccount
+                        ? ACCOUNT_GET_INTENT_SUCCESS_HISTOGRAM
+                        : LOCAL_GET_INTENT_SUCCESS_HISTOGRAM;
         final String kGetIntentErrorHistogram =
                 forAccount ? ACCOUNT_GET_INTENT_ERROR_HISTOGRAM : LOCAL_GET_INTENT_ERROR_HISTOGRAM;
         RecordHistogram.recordBooleanHistogram(kGetIntentSuccessHistogram, false);
@@ -484,17 +549,21 @@ public class PasswordManagerHelper {
 
         // If the exception is not a Chrome-defined one, it means that the call failed at the
         // API call level.
-        RecordHistogram.recordEnumeratedHistogram(kGetIntentErrorHistogram,
-                CredentialManagerError.API_ERROR, CredentialManagerError.COUNT);
+        RecordHistogram.recordEnumeratedHistogram(
+                kGetIntentErrorHistogram,
+                CredentialManagerError.API_ERROR,
+                CredentialManagerError.COUNT);
 
         if (!(exception instanceof ApiException)) return;
 
-        final String kGetIntentApiErrorHistogram = forAccount
-                ? ACCOUNT_GET_INTENT_API_ERROR_HISTOGRAM
-                : LOCAL_GET_INTENT_API_ERROR_HISTOGRAM;
-        final String kGetIntentErrorConnectionResultCodeHistogram = forAccount
-                ? ACCOUNT_GET_INTENT_ERROR_CONNECTION_RESULT_CODE_HISTOGRAM
-                : LOCAL_GET_INTENT_ERROR_CONNECTION_RESULT_CODE_HISTOGRAM;
+        final String kGetIntentApiErrorHistogram =
+                forAccount
+                        ? ACCOUNT_GET_INTENT_API_ERROR_HISTOGRAM
+                        : LOCAL_GET_INTENT_API_ERROR_HISTOGRAM;
+        final String kGetIntentErrorConnectionResultCodeHistogram =
+                forAccount
+                        ? ACCOUNT_GET_INTENT_ERROR_CONNECTION_RESULT_CODE_HISTOGRAM
+                        : LOCAL_GET_INTENT_ERROR_CONNECTION_RESULT_CODE_HISTOGRAM;
 
         int apiErrorCode = PasswordManagerAndroidBackendUtil.getApiErrorCode(exception);
         RecordHistogram.recordSparseHistogram(kGetIntentApiErrorHistogram, apiErrorCode);
@@ -518,24 +587,30 @@ public class PasswordManagerHelper {
                 intentLaunchSuccessHistogram, launchIntentSuccessfully);
     }
 
-    private static void launchCredentialManagerIntent(PendingIntent intent, long startTimeMs,
-            boolean forAccount, LoadingModalDialogCoordinator loadingDialogCoordinator) {
-        // While support for the local storage API exists in Chrome, it isn't used at this time.
-        assert forAccount : "Local storage for preferences not ready for use";
+    private static void launchCredentialManagerIntent(
+            PendingIntent intent,
+            long startTimeMs,
+            boolean forAccount,
+            LoadingModalDialogCoordinator loadingDialogCoordinator) {
         recordSuccessMetrics(SystemClock.elapsedRealtime() - startTimeMs, forAccount);
 
-        maybeLaunchIntentWithLoadingDialog(loadingDialogCoordinator, intent,
-                forAccount ? ACCOUNT_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM
-                           : LOCAL_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM);
+        maybeLaunchIntentWithLoadingDialog(
+                loadingDialogCoordinator,
+                intent,
+                forAccount
+                        ? ACCOUNT_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM
+                        : LOCAL_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM);
     }
 
     private static void recordSuccessMetrics(long elapsedTimeMs, boolean forAccount) {
-        // While support for the local storage API exists in Chrome, it isn't used at this time.
-        assert forAccount : "Local storage for preferences not ready for use";
-        final String kGetIntentLatencyHistogram = forAccount ? ACCOUNT_GET_INTENT_LATENCY_HISTOGRAM
-                                                             : LOCAL_GET_INTENT_LATENCY_HISTOGRAM;
-        final String kGetIntentSuccessHistogram = forAccount ? ACCOUNT_GET_INTENT_SUCCESS_HISTOGRAM
-                                                             : LOCAL_GET_INTENT_SUCCESS_HISTOGRAM;
+        final String kGetIntentLatencyHistogram =
+                forAccount
+                        ? ACCOUNT_GET_INTENT_LATENCY_HISTOGRAM
+                        : LOCAL_GET_INTENT_LATENCY_HISTOGRAM;
+        final String kGetIntentSuccessHistogram =
+                forAccount
+                        ? ACCOUNT_GET_INTENT_SUCCESS_HISTOGRAM
+                        : LOCAL_GET_INTENT_SUCCESS_HISTOGRAM;
 
         RecordHistogram.recordTimesHistogram(kGetIntentLatencyHistogram, elapsedTimeMs);
         RecordHistogram.recordBooleanHistogram(kGetIntentSuccessHistogram, true);
@@ -551,7 +626,8 @@ public class PasswordManagerHelper {
      * @param intentLaunchSuccessHistogram Name of the intent launch success histogram.
      */
     private static void maybeLaunchIntentWithLoadingDialog(
-            LoadingModalDialogCoordinator loadingDialogCoordinator, PendingIntent intent,
+            LoadingModalDialogCoordinator loadingDialogCoordinator,
+            PendingIntent intent,
             String intentLaunchSuccessHistogram) {
         @LoadingModalDialogCoordinator.State
         int loadingDialogState = loadingDialogCoordinator.getState();
@@ -581,20 +657,23 @@ public class PasswordManagerHelper {
 
         // Dialog could not be dismissed right now, wait for it to become immediately
         // dismissable.
-        loadingDialogCoordinator.addObserver(new LoadingModalDialogCoordinator.Observer() {
-            @Override
-            public void onDismissable() {
-                // Record the known state - if the dialog was cancelled or timed out,
-                // {@link #onCancelledOrTimedOut()} would be called.
-                launchIntentAndRecordSuccess(intent, intentLaunchSuccessHistogram);
-                new Handler(Looper.getMainLooper())
-                        .postDelayed(
-                                loadingDialogCoordinator::dismiss, LOADING_DIALOG_DISMISS_DELAY_MS);
-            }
+        loadingDialogCoordinator.addObserver(
+                new LoadingModalDialogCoordinator.Observer() {
+                    @Override
+                    public void onDismissable() {
+                        // Record the known state - if the dialog was cancelled or timed out,
+                        // {@link #onCancelledOrTimedOut()} would be called.
+                        launchIntentAndRecordSuccess(intent, intentLaunchSuccessHistogram);
+                        new Handler(Looper.getMainLooper())
+                                .postDelayed(
+                                        loadingDialogCoordinator::dismiss,
+                                        LOADING_DIALOG_DISMISS_DELAY_MS);
+                    }
 
-            @Override
-            public void onDismissedWithState(@LoadingModalDialogCoordinator.State int finalState) {}
-        });
+                    @Override
+                    public void onDismissedWithState(
+                            @LoadingModalDialogCoordinator.State int finalState) {}
+                });
     }
 
     private static void showGmsUpdateDialog(
@@ -603,9 +682,12 @@ public class PasswordManagerHelper {
         if (modalDialogManager == null) return;
 
         OutdatedGmsCoreDialog dialog =
-                new OutdatedGmsCoreDialog(modalDialogManager, context, isAccepted -> {
-                    if (isAccepted) launchGmsUpdate(context);
-                });
+                new OutdatedGmsCoreDialog(
+                        modalDialogManager,
+                        context,
+                        isAccepted -> {
+                            if (isAccepted) launchGmsUpdate(context);
+                        });
         dialog.show();
     }
 
@@ -617,7 +699,8 @@ public class PasswordManagerHelper {
         if (helper != null) return helper;
 
         if (PasswordManagerBackendSupportHelper.getInstance().isUpdateNeeded()) {
-            throw new PasswordCheckBackendException("Backend version is not supported.",
+            throw new PasswordCheckBackendException(
+                    "Backend version is not supported.",
                     CredentialManagerError.BACKEND_VERSION_NOT_SUPPORTED);
         }
         if (!PasswordManagerBackendSupportHelper.getInstance().isBackendPresent()) {
@@ -638,7 +721,8 @@ public class PasswordManagerHelper {
         if (launcher != null) return launcher;
 
         if (PasswordManagerBackendSupportHelper.getInstance().isUpdateNeeded()) {
-            throw new CredentialManagerBackendException("Backend version is not supported.",
+            throw new CredentialManagerBackendException(
+                    "Backend version is not supported.",
                     CredentialManagerError.BACKEND_VERSION_NOT_SUPPORTED);
         }
         if (!PasswordManagerBackendSupportHelper.getInstance().isBackendPresent()) {

@@ -15,8 +15,6 @@
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/native_pixmap.h"
 #include "ui/gl/gl_bindings.h"
-#include "ui/gl/gl_context.h"
-#include "ui/gl/gl_surface.h"
 #include "ui/gl/scoped_binders.h"
 #include "ui/ozone/public/gl_ozone.h"
 #include "ui/ozone/public/native_pixmap_gl_binding.h"
@@ -163,83 +161,22 @@ std::unique_ptr<ui::NativePixmapGLBinding> GetBinding(
 // static
 scoped_refptr<OzoneImageGLTexturesHolder>
 OzoneImageGLTexturesHolder::CreateAndInitTexturesHolder(
-    gl::GLContext* current_context,
     SharedImageBacking* backing,
     scoped_refptr<gfx::NativePixmap> pixmap,
     gfx::BufferPlane plane,
     bool is_passthrough) {
-  // See more details in the constructor below.
-  if (current_context) {
-    DCHECK_EQ(current_context, gl::GLContext::GetCurrent());
-  } else {
-    DCHECK(!current_context);
-  }
-  scoped_refptr<OzoneImageGLTexturesHolder> holder = base::WrapRefCounted(
-      new OzoneImageGLTexturesHolder(is_passthrough, current_context));
+  scoped_refptr<OzoneImageGLTexturesHolder> holder =
+      base::WrapRefCounted(new OzoneImageGLTexturesHolder(is_passthrough));
   if (!holder->Initialize(backing, std::move(pixmap), plane)) {
     holder.reset();
   }
   return holder;
 }
 
-OzoneImageGLTexturesHolder::OzoneImageGLTexturesHolder(
-    bool is_passthrough,
-    gl::GLContext* current_context)
-    : context_(current_context), is_passthrough_(is_passthrough) {
-  // Only the context that was initialized with an offscreen surface must be
-  // passed here. That is, the texture holder can be per-context cached by the
-  // OzoneImageBacking. In that case, the textures are shared between image
-  // representations and their destruction can happen on a wrong context. To
-  // avoid that, a correct context is passed here and it's made current so that
-  // textures are destroyed on the same context they were created.
-  DCHECK(!context_ || context_->default_surface());
-}
+OzoneImageGLTexturesHolder::OzoneImageGLTexturesHolder(bool is_passthrough)
+    : is_passthrough_(is_passthrough) {}
 
-OzoneImageGLTexturesHolder::~OzoneImageGLTexturesHolder() {
-  // If the context was lost or the textures have already been destroyed, there
-  // is no need to call |MaybeDestroyTexturesOnContext| as it will unnecessary
-  // switch contexts.
-  if (WasContextLost() ||
-      (textures_passthrough_.empty() && textures_.empty())) {
-    return;
-  }
-
-  MaybeDestroyTexturesOnContext();
-}
-
-void OzoneImageGLTexturesHolder::OnContextWillDestroy(gl::GLContext* context) {
-  // It's not expected that this is called if the |context_| is null.
-  DCHECK(context_);
-  DCHECK_EQ(context_, context);
-  MaybeDestroyTexturesOnContext();
-  context_ = nullptr;
-  context_destroyed_ = true;
-}
-
-void OzoneImageGLTexturesHolder::MaybeDestroyTexturesOnContext() {
-  if (!context_) {
-    if (context_destroyed_) {
-      DCHECK(textures_.empty() && textures_passthrough_.empty());
-    }
-    return;
-  }
-
-  gl::GLContext* prev_current_context = gl::GLContext::GetCurrent();
-  gl::GLSurface* prev_current_surface = gl::GLSurface::GetCurrent();
-
-  context_->MakeCurrentDefault();
-
-  textures_passthrough_.clear();
-  textures_.clear();
-  bindings_.clear();
-
-  if (prev_current_context) {
-    DCHECK(prev_current_surface);
-    prev_current_context->MakeCurrent(prev_current_surface);
-  } else {
-    context_->ReleaseCurrent(nullptr);
-  }
-}
+OzoneImageGLTexturesHolder::~OzoneImageGLTexturesHolder() = default;
 
 void OzoneImageGLTexturesHolder::MarkContextLost() {
   if (WasContextLost()) {
@@ -254,6 +191,24 @@ void OzoneImageGLTexturesHolder::MarkContextLost() {
 
 bool OzoneImageGLTexturesHolder::WasContextLost() {
   return context_lost_;
+}
+
+void OzoneImageGLTexturesHolder::OnAddedToCache() {
+  (++cache_count_).ValueOrDie();
+}
+
+void OzoneImageGLTexturesHolder::OnRemovedFromCache() {
+  (--cache_count_).ValueOrDie();
+}
+
+size_t OzoneImageGLTexturesHolder::GetCacheCount() const {
+  return cache_count_.ValueOrDie();
+}
+
+void OzoneImageGLTexturesHolder::DestroyTextures() {
+  textures_passthrough_.clear();
+  textures_.clear();
+  bindings_.clear();
 }
 
 size_t OzoneImageGLTexturesHolder::GetNumberOfTextures() const {

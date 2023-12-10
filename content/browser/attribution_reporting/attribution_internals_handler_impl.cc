@@ -78,11 +78,8 @@ attribution_internals::mojom::WebUISourcePtr WebUISource(
       source.destination_sites(), common_info.reporting_origin(),
       source.source_time().InMillisecondsFSinceUnixEpoch(),
       source.expiry_time().InMillisecondsFSinceUnixEpoch(),
-      SerializeAttributionJson(
-          attribution_reporting::TriggerSpecs::Default(
-              common_info.source_type(), source.event_report_windows())
-              .ToJson(),
-          /*pretty_print=*/true),
+      SerializeAttributionJson(source.trigger_specs().ToJson(),
+                               /*pretty_print=*/true),
       source.aggregatable_report_window_time().InMillisecondsFSinceUnixEpoch(),
       source.max_event_level_reports(), common_info.source_type(),
       source.priority(), source.debug_key(), source.dedup_keys(),
@@ -95,7 +92,8 @@ attribution_internals::mojom::WebUISourcePtr WebUISource(
                 attribution_reporting::HexEncodeAggregationKey(key.second));
           }),
       source.aggregatable_budget_consumed(), source.aggregatable_dedup_keys(),
-      source.trigger_config(), source.debug_cookie_set(), attributability);
+      source.trigger_data_matching(), source.event_level_epsilon(),
+      source.debug_cookie_set(), attributability);
 }
 
 void ForwardSourcesToWebUI(
@@ -254,7 +252,8 @@ void AttributionInternalsHandlerImpl::IsAttributionReportingEnabled(
           contents->GetBrowserContext(),
           ContentBrowserClient::AttributionReportingOperation::kAny,
           /*rfh=*/nullptr, /*source_origin=*/nullptr,
-          /*destination_origin=*/nullptr, /*reporting_origin=*/nullptr);
+          /*destination_origin=*/nullptr, /*reporting_origin=*/nullptr,
+          /*can_bypass=*/nullptr);
 
   // TODO(apaseltiner): This is a layering violation: The internals handler
   // should query the manager for its configuration, not the command line,

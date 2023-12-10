@@ -424,9 +424,6 @@ class WebMediaPlayerImplTest
         ukm::kInvalidSourceId, media::learning::FeatureValue(0),
         media::VideoDecodePerfHistory::SaveCallback(),
         media::MediaMetricsProvider::GetLearningSessionCallback(),
-        WTF::BindRepeating(
-            &WebMediaPlayerImplTest::GetRecordAggregateWatchTimeCallback,
-            WTF::Unretained(this)),
         WTF::BindRepeating(&WebMediaPlayerImplTest::IsShuttingDown,
                            WTF::Unretained(this)),
         provider.BindNewPipeAndPassReceiver());
@@ -493,11 +490,6 @@ class WebMediaPlayerImplTest
   void SetDuration(base::TimeDelta value) {
     wmpi_->SetPipelineMediaDurationForTest(value);
     wmpi_->OnDurationChange();
-  }
-
-  media::MediaMetricsProvider::RecordAggregateWatchTimeCallback
-  GetRecordAggregateWatchTimeCallback() {
-    return base::NullCallback();
   }
 
   MOCK_METHOD(bool, IsShuttingDown, ());

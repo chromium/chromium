@@ -22,7 +22,6 @@ import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.LocationBarLayout;
 import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
-import org.chromium.chrome.browser.omnibox.SearchEngineLogoUtils;
 import org.chromium.chrome.browser.omnibox.UrlBar;
 import org.chromium.chrome.browser.omnibox.UrlBarCoordinator;
 import org.chromium.chrome.browser.omnibox.UrlBarCoordinator.SelectionState;
@@ -51,14 +50,12 @@ public class SearchActivityLocationBarLayout extends LocationBarLayout {
             @NonNull AutocompleteCoordinator autocompleteCoordinator,
             @NonNull UrlBarCoordinator urlCoordinator,
             @NonNull StatusCoordinator statusCoordinator,
-            @NonNull LocationBarDataProvider locationBarDataProvider,
-            @NonNull SearchEngineLogoUtils searchEngineLogoUtils) {
+            @NonNull LocationBarDataProvider locationBarDataProvider) {
         super.initialize(
                 autocompleteCoordinator,
                 urlCoordinator,
                 statusCoordinator,
-                locationBarDataProvider,
-                searchEngineLogoUtils);
+                locationBarDataProvider);
         mPendingSearchPromoDecision = LocaleManager.getInstance().needToCheckForSearchEnginePromo();
         mAutocompleteCoordinator.setShouldPreventOmniboxAutocomplete(mPendingSearchPromoDecision);
         findViewById(R.id.url_action_container).setVisibility(View.VISIBLE);
@@ -89,7 +86,7 @@ public class SearchActivityLocationBarLayout extends LocationBarLayout {
 
         // Expand status view's left and right space, and expand the vertical padding of the
         // location bar to match the expanded interface on the regular omnibox.
-        setUrlFocusChangePercent(1f, 1f, 1f, /* isUrlFocusChangeInProgress */ false);
+        setUrlFocusChangePercent(1f, 1f, 1f, /* isUrlFocusChangeInProgress= */ false);
     }
 
     @Override
@@ -109,7 +106,6 @@ public class SearchActivityLocationBarLayout extends LocationBarLayout {
         assert !LocaleManager.getInstance().needToCheckForSearchEnginePromo();
         mPendingSearchPromoDecision = false;
         mAutocompleteCoordinator.setShouldPreventOmniboxAutocomplete(mPendingSearchPromoDecision);
-        String textWithAutocomplete = mUrlCoordinator.getTextWithAutocomplete();
         // Do not prefetch suggestions here; instead, we're asking the server for ZPS directly.
         // Issuing multiple requests would result with only the final one being executed.
         mAutocompleteCoordinator.onTextChanged(mUrlCoordinator.getTextWithoutAutocomplete());

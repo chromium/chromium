@@ -942,7 +942,8 @@ void SyncTest::SetUpOnMainThread() {
       // initialized.
       base::FilePath user_data_dir;
       base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir);
-      fake_server_ = std::make_unique<fake_server::FakeServer>(user_data_dir);
+      fake_server_ = std::make_unique<fake_server::FakeServer>(
+          user_data_dir.AppendASCII("FakeServer"));
       fake_server_sync_invalidation_sender_ =
           std::make_unique<fake_server::FakeServerSyncInvalidationSender>(
               fake_server_.get());
@@ -1142,9 +1143,6 @@ syncer::ModelTypeSet AllowedTypesInStandaloneTransportMode() {
           syncer::kSyncEnableWalletOfferInTransportMode)) {
     allowed_types.Put(syncer::AUTOFILL_WALLET_OFFER);
   }
-  if (base::FeatureList::IsEnabled(syncer::kEnableBookmarksAccountStorage)) {
-    allowed_types.Put(syncer::BOOKMARKS);
-  }
   if (base::FeatureList::IsEnabled(
           password_manager::features::kEnablePasswordsAccountStorage)) {
     allowed_types.Put(syncer::PASSWORDS);
@@ -1156,8 +1154,6 @@ syncer::ModelTypeSet AllowedTypesInStandaloneTransportMode() {
     allowed_types.Put(syncer::PRIORITY_PREFERENCES);
   }
   if (base::FeatureList::IsEnabled(
-          syncer::kReadingListEnableDualReadingListModel) &&
-      base::FeatureList::IsEnabled(
           syncer::kReadingListEnableSyncTransportModeUponSignIn)) {
     allowed_types.Put(syncer::READING_LIST);
   }

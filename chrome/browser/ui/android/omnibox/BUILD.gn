@@ -36,7 +36,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/omnibox/OmniboxSuggestionsDropdownEmbedderImpl.java",
     "java/src/org/chromium/chrome/browser/omnibox/OmniboxViewUtil.java",
     "java/src/org/chromium/chrome/browser/omnibox/OverrideUrlLoadingDelegate.java",
-    "java/src/org/chromium/chrome/browser/omnibox/SearchEngineLogoUtils.java",
+    "java/src/org/chromium/chrome/browser/omnibox/SearchEngineUtils.java",
     "java/src/org/chromium/chrome/browser/omnibox/SpannableAutocompleteEditTextModel.java",
     "java/src/org/chromium/chrome/browser/omnibox/UrlBar.java",
     "java/src/org/chromium/chrome/browser/omnibox/UrlBarApi26.java",
@@ -252,26 +252,6 @@ android_library("util_java") {
   ]
 }
 
-android_library("javatests") {
-  testonly = true
-  sources = [ "java/src/org/chromium/chrome/browser/omnibox/voice/VoiceRecognitionUtilTest.java" ]
-
-  deps = [
-    ":util_java",
-    "//base:base_java",
-    "//base:base_java_test_support",
-    "//base/test:test_support_java",
-    "//chrome/test/android:chrome_java_unit_test_support",
-    "//content/public/test/android:content_java_test_support",
-    "//third_party/android_sdk:android_test_mock_java",
-    "//third_party/androidx:androidx_test_core_java",
-    "//third_party/androidx:androidx_test_monitor_java",
-    "//third_party/androidx:androidx_test_runner_java",
-    "//third_party/junit",
-    "//third_party/mockito:mockito_java",
-  ]
-}
-
 generate_jni("jni_headers") {
   sources = [
     "java/src/org/chromium/chrome/browser/omnibox/ChromeAutocompleteProviderClient.java",
@@ -386,6 +366,7 @@ android_library("unit_device_javatests") {
   deps = [
     ":java",
     ":java_resources",
+    "//base:base_java",
     "//base:base_java_test_support",
     "//chrome/android:chrome_app_java_resources",
     "//chrome/browser/flags:java",
@@ -406,6 +387,7 @@ android_library("unit_device_javatests") {
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/hamcrest:hamcrest_java",
     "//third_party/hamcrest:hamcrest_library_java",
+    "//third_party/jni_zero:jni_zero_java",
     "//third_party/junit:junit",
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_java_test_support",
@@ -422,7 +404,7 @@ robolectric_library("junit") {
     "java/src/org/chromium/chrome/browser/omnibox/KeyboardHideHelperUnitTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/LocationBarMediatorTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/OmniboxSuggestionsDropdownEmbedderImplTest.java",
-    "java/src/org/chromium/chrome/browser/omnibox/SearchEngineLogoUtilsUnitTest.java",
+    "java/src/org/chromium/chrome/browser/omnibox/SearchEngineUtilsUnitTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/ShadowUrlBarData.java",
     "java/src/org/chromium/chrome/browser/omnibox/SpannableAutocompleteEditTextModelUnitTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/UrlBarDataTest.java",
@@ -433,6 +415,7 @@ robolectric_library("junit") {
     "java/src/org/chromium/chrome/browser/omnibox/geo/PlatformNetworksManagerTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/geo/VisibleNetworksTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/geo/VisibleNetworksTrackerTest.java",
+    "java/src/org/chromium/chrome/browser/omnibox/status/PageInfoIPHControllerUnitTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/status/StatusMediatorUnitTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/styles/OmniboxImageSupplierUnitTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/styles/OmniboxResourceProviderTest.java",
@@ -486,6 +469,7 @@ robolectric_library("junit") {
     "java/src/org/chromium/chrome/browser/omnibox/suggestions/tail/TailSuggestionViewBinderUnitTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/voice/RecognitionTestHelper.java",
     "java/src/org/chromium/chrome/browser/omnibox/voice/VoiceRecognitionHandlerUnitTest.java",
+    "java/src/org/chromium/chrome/browser/omnibox/voice/VoiceRecognitionUtilTest.java",
   ]
   deps = [
     ":java",
@@ -498,6 +482,7 @@ robolectric_library("junit") {
     "//chrome/android:chrome_app_java_resources",
     "//chrome/browser/commerce/merchant_viewer/android:java",
     "//chrome/browser/device:java",
+    "//chrome/browser/feature_engagement:java",
     "//chrome/browser/flags:java",
     "//chrome/browser/gsa:java",
     "//chrome/browser/lens:java",
@@ -514,6 +499,7 @@ robolectric_library("junit") {
     "//chrome/browser/ui/android/favicon:java",
     "//chrome/browser/ui/android/theme:java",
     "//chrome/browser/ui/android/toolbar:java",
+    "//chrome/browser/user_education:java",
     "//chrome/browser/util:java",
     "//chrome/test/android:chrome_java_unit_test_support",
     "//components/browser_ui/settings/android:java",
@@ -526,6 +512,7 @@ robolectric_library("junit") {
     "//components/embedder_support/android:util_java",
     "//components/externalauth/android:java",
     "//components/favicon/android:java",
+    "//components/feature_engagement/public:public_java",
     "//components/image_fetcher:java",
     "//components/omnibox/browser:browser_java",
     "//components/omnibox/browser:junit_test_support",

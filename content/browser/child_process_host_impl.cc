@@ -368,6 +368,10 @@ bool ChildProcessHostImpl::OnMessageReceived(const IPC::Message& msg) {
 void ChildProcessHostImpl::OnChannelConnected(int32_t peer_pid) {
   // Propagate the pseudonymization salt to all the child processes.
   //
+  // Doing this as the first step in this method helps to minimize scenarios
+  // where child process runs code that depends on the pseudonymization salt
+  // before it has been set.  See also https://crbug.com/1479308#c5
+  //
   // TODO(dullweber, lukasza): Figure out if it is possible to reset the salt
   // at a regular interval (on the order of hours?).  The browser would need
   // to be responsible for 1) deciding when the refresh happens and 2) pushing

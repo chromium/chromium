@@ -6,7 +6,7 @@
 
 dictionary GPUProgrammableStage {
     required GPUShaderModule module;
-    required USVString entryPoint;
+    USVString entryPoint;
 
     // Should have a default of {}, but Blink doesn't seem to support that yet.
     record<USVString, GPUPipelineConstantValue> constants;

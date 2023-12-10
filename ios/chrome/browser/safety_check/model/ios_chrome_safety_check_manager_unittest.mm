@@ -14,7 +14,6 @@
 #import "components/password_manager/core/browser/password_manager_test_utils.h"
 #import "components/password_manager/core/browser/password_store/test_password_store.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
-#import "components/password_manager/core/common/password_manager_features.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/pref_service.h"
 #import "components/prefs/testing_pref_service.h"
@@ -245,33 +244,8 @@ TEST_F(IOSChromeSafetyCheckManagerTest, ConvertsPasswordCheckStateNoPasswords) {
 }
 
 // Tests `CalculatePasswordSafetyCheckState()` correctly converts
-// PasswordCheckState::kSignedOut when `kIOSPasswordCheckup` is disabled.
-TEST_F(IOSChromeSafetyCheckManagerTest,
-       ConvertsPasswordCheckStateSignedOutWithPasswordCheckupDisabled) {
-  feature_list_.InitAndDisableFeature(
-      password_manager::features::kIOSPasswordCheckup);
-
-  std::vector<password_manager::CredentialUIEntry> empty_credentials_list;
-  std::vector<password_manager::CredentialUIEntry> populated_credentials_list =
-      CreateCredentialsListWithNoInsecurePasswords();
-
-  EXPECT_EQ(CalculatePasswordSafetyCheckState(
-                PasswordCheckState::kSignedOut, empty_credentials_list,
-                safety_check_manager_->GetPasswordCheckState()),
-            PasswordSafetyCheckState::kSignedOut);
-  EXPECT_EQ(CalculatePasswordSafetyCheckState(
-                PasswordCheckState::kSignedOut, populated_credentials_list,
-                safety_check_manager_->GetPasswordCheckState()),
-            PasswordSafetyCheckState::kUnmutedCompromisedPasswords);
-}
-
-// Tests `CalculatePasswordSafetyCheckState()` correctly converts
-// PasswordCheckState::kSignedOut when `kIOSPasswordCheckup` is enabled.
-TEST_F(IOSChromeSafetyCheckManagerTest,
-       ConvertsPasswordCheckStateSignedOutWithPasswordCheckupEnabled) {
-  feature_list_.InitAndEnableFeature(
-      password_manager::features::kIOSPasswordCheckup);
-
+// PasswordCheckState::kSignedOut.
+TEST_F(IOSChromeSafetyCheckManagerTest, ConvertsPasswordCheckStateSignedOut) {
   std::vector<password_manager::CredentialUIEntry> empty_credentials_list;
   std::vector<password_manager::CredentialUIEntry> populated_credentials_list =
       CreateCredentialsListWithNoInsecurePasswords();
@@ -287,33 +261,8 @@ TEST_F(IOSChromeSafetyCheckManagerTest,
 }
 
 // Tests `CalculatePasswordSafetyCheckState()` correctly converts
-// PasswordCheckState::kOffline when `kIOSPasswordCheckup` is disabled.
-TEST_F(IOSChromeSafetyCheckManagerTest,
-       ConvertsPasswordCheckStateOfflineWithPasswordCheckupDisabled) {
-  feature_list_.InitAndDisableFeature(
-      password_manager::features::kIOSPasswordCheckup);
-
-  std::vector<password_manager::CredentialUIEntry> empty_credentials_list;
-  std::vector<password_manager::CredentialUIEntry> populated_credentials_list =
-      CreateCredentialsListWithNoInsecurePasswords();
-
-  EXPECT_EQ(CalculatePasswordSafetyCheckState(
-                PasswordCheckState::kOffline, empty_credentials_list,
-                safety_check_manager_->GetPasswordCheckState()),
-            PasswordSafetyCheckState::kError);
-  EXPECT_EQ(CalculatePasswordSafetyCheckState(
-                PasswordCheckState::kOffline, populated_credentials_list,
-                safety_check_manager_->GetPasswordCheckState()),
-            PasswordSafetyCheckState::kUnmutedCompromisedPasswords);
-}
-
-// Tests `CalculatePasswordSafetyCheckState()` correctly converts
-// PasswordCheckState::kOffline when `kIOSPasswordCheckup` is enabled.
-TEST_F(IOSChromeSafetyCheckManagerTest,
-       ConvertsPasswordCheckStateOfflineWithPasswordCheckupEnabled) {
-  feature_list_.InitAndEnableFeature(
-      password_manager::features::kIOSPasswordCheckup);
-
+// PasswordCheckState::kOffline.
+TEST_F(IOSChromeSafetyCheckManagerTest, ConvertsPasswordCheckStateOffline) {
   std::vector<password_manager::CredentialUIEntry> empty_credentials_list;
   std::vector<password_manager::CredentialUIEntry> populated_credentials_list =
       CreateCredentialsListWithNoInsecurePasswords();
@@ -329,33 +278,8 @@ TEST_F(IOSChromeSafetyCheckManagerTest,
 }
 
 // Tests `CalculatePasswordSafetyCheckState()` correctly converts
-// PasswordCheckState::kQuotaLimit when `kIOSPasswordCheckup` is disabled.
-TEST_F(IOSChromeSafetyCheckManagerTest,
-       ConvertsPasswordCheckStateQuotaLimitWithPasswordCheckupDisabled) {
-  feature_list_.InitAndDisableFeature(
-      password_manager::features::kIOSPasswordCheckup);
-
-  std::vector<password_manager::CredentialUIEntry> empty_credentials_list;
-  std::vector<password_manager::CredentialUIEntry> populated_credentials_list =
-      CreateCredentialsListWithNoInsecurePasswords();
-
-  EXPECT_EQ(CalculatePasswordSafetyCheckState(
-                PasswordCheckState::kQuotaLimit, empty_credentials_list,
-                safety_check_manager_->GetPasswordCheckState()),
-            PasswordSafetyCheckState::kError);
-  EXPECT_EQ(CalculatePasswordSafetyCheckState(
-                PasswordCheckState::kQuotaLimit, populated_credentials_list,
-                safety_check_manager_->GetPasswordCheckState()),
-            PasswordSafetyCheckState::kUnmutedCompromisedPasswords);
-}
-
-// Tests `CalculatePasswordSafetyCheckState()` correctly converts
-// PasswordCheckState::kQuotaLimit when `kIOSPasswordCheckup` is enabled.
-TEST_F(IOSChromeSafetyCheckManagerTest,
-       ConvertsPasswordCheckStateQuotaLimitWithPasswordCheckupEnabled) {
-  feature_list_.InitAndEnableFeature(
-      password_manager::features::kIOSPasswordCheckup);
-
+// PasswordCheckState::kQuotaLimit.
+TEST_F(IOSChromeSafetyCheckManagerTest, ConvertsPasswordCheckStateQuotaLimit) {
   std::vector<password_manager::CredentialUIEntry> empty_credentials_list;
   std::vector<password_manager::CredentialUIEntry> populated_credentials_list =
       CreateCredentialsListWithNoInsecurePasswords();
@@ -371,33 +295,8 @@ TEST_F(IOSChromeSafetyCheckManagerTest,
 }
 
 // Tests `CalculatePasswordSafetyCheckState()` correctly converts
-// PasswordCheckState::kOther when `kIOSPasswordCheckup` is disabled.
-TEST_F(IOSChromeSafetyCheckManagerTest,
-       ConvertsPasswordCheckStateOtherWithPasswordCheckupDisabled) {
-  feature_list_.InitAndDisableFeature(
-      password_manager::features::kIOSPasswordCheckup);
-
-  std::vector<password_manager::CredentialUIEntry> empty_credentials_list;
-  std::vector<password_manager::CredentialUIEntry> populated_credentials_list =
-      CreateCredentialsListWithNoInsecurePasswords();
-
-  EXPECT_EQ(CalculatePasswordSafetyCheckState(
-                PasswordCheckState::kOther, empty_credentials_list,
-                safety_check_manager_->GetPasswordCheckState()),
-            PasswordSafetyCheckState::kError);
-  EXPECT_EQ(CalculatePasswordSafetyCheckState(
-                PasswordCheckState::kOther, populated_credentials_list,
-                safety_check_manager_->GetPasswordCheckState()),
-            PasswordSafetyCheckState::kUnmutedCompromisedPasswords);
-}
-
-// Tests `CalculatePasswordSafetyCheckState()` correctly converts
-// PasswordCheckState::kOther when `kIOSPasswordCheckup` is enabled.
-TEST_F(IOSChromeSafetyCheckManagerTest,
-       ConvertsPasswordCheckStateOtherWithPasswordCheckupEnabled) {
-  feature_list_.InitAndEnableFeature(
-      password_manager::features::kIOSPasswordCheckup);
-
+// PasswordCheckState::kOther.
+TEST_F(IOSChromeSafetyCheckManagerTest, ConvertsPasswordCheckStateOther) {
   std::vector<password_manager::CredentialUIEntry> empty_credentials_list;
   std::vector<password_manager::CredentialUIEntry> populated_credentials_list =
       CreateCredentialsListWithNoInsecurePasswords();
@@ -413,33 +312,8 @@ TEST_F(IOSChromeSafetyCheckManagerTest,
 }
 
 // Tests `CalculatePasswordSafetyCheckState()` correctly converts
-// PasswordCheckState::kCanceled when `kIOSPasswordCheckup` is disabled.
-TEST_F(IOSChromeSafetyCheckManagerTest,
-       ConvertsPasswordCheckStateCanceledWithPasswordCheckupDisabled) {
-  feature_list_.InitAndDisableFeature(
-      password_manager::features::kIOSPasswordCheckup);
-
-  std::vector<password_manager::CredentialUIEntry> empty_credentials_list;
-  std::vector<password_manager::CredentialUIEntry> populated_credentials_list =
-      CreateCredentialsListWithNoInsecurePasswords();
-
-  EXPECT_EQ(CalculatePasswordSafetyCheckState(
-                PasswordCheckState::kCanceled, empty_credentials_list,
-                safety_check_manager_->GetPasswordCheckState()),
-            PasswordSafetyCheckState::kDefault);
-  EXPECT_EQ(CalculatePasswordSafetyCheckState(
-                PasswordCheckState::kCanceled, populated_credentials_list,
-                safety_check_manager_->GetPasswordCheckState()),
-            PasswordSafetyCheckState::kUnmutedCompromisedPasswords);
-}
-
-// Tests `CalculatePasswordSafetyCheckState()` correctly converts
-// PasswordCheckState::kCanceled when `kIOSPasswordCheckup` is enabled.
-TEST_F(IOSChromeSafetyCheckManagerTest,
-       ConvertsPasswordCheckStateCanceledWithPasswordCheckupEnabled) {
-  feature_list_.InitAndEnableFeature(
-      password_manager::features::kIOSPasswordCheckup);
-
+// PasswordCheckState::kCanceled.
+TEST_F(IOSChromeSafetyCheckManagerTest, ConvertsPasswordCheckStateCanceled) {
   std::vector<password_manager::CredentialUIEntry> empty_credentials_list;
   std::vector<password_manager::CredentialUIEntry> populated_credentials_list =
       CreateCredentialsListWithNoInsecurePasswords();
@@ -455,41 +329,8 @@ TEST_F(IOSChromeSafetyCheckManagerTest,
 }
 
 // Tests `CalculatePasswordSafetyCheckState()` correctly converts
-// PasswordCheckState::kIdle when `kIOSPasswordCheckup` is disabled.
-TEST_F(IOSChromeSafetyCheckManagerTest,
-       ConvertsPasswordCheckStateIdleWithPasswordCheckupDisabled) {
-  feature_list_.InitAndDisableFeature(
-      password_manager::features::kIOSPasswordCheckup);
-
-  std::vector<password_manager::CredentialUIEntry> empty_credentials_list;
-  std::vector<password_manager::CredentialUIEntry> populated_credentials_list =
-      CreateCredentialsListWithNoInsecurePasswords();
-
-  EXPECT_EQ(CalculatePasswordSafetyCheckState(
-                PasswordCheckState::kIdle, empty_credentials_list,
-                safety_check_manager_->GetPasswordCheckState()),
-            PasswordSafetyCheckState::kDefault);
-  EXPECT_EQ(CalculatePasswordSafetyCheckState(
-                PasswordCheckState::kIdle, populated_credentials_list,
-                safety_check_manager_->GetPasswordCheckState()),
-            PasswordSafetyCheckState::kUnmutedCompromisedPasswords);
-  EXPECT_EQ(CalculatePasswordSafetyCheckState(
-                PasswordCheckState::kIdle, empty_credentials_list,
-                PasswordSafetyCheckState::kRunning),
-            PasswordSafetyCheckState::kSafe);
-  EXPECT_EQ(CalculatePasswordSafetyCheckState(
-                PasswordCheckState::kIdle, populated_credentials_list,
-                PasswordSafetyCheckState::kRunning),
-            PasswordSafetyCheckState::kUnmutedCompromisedPasswords);
-}
-
-// Tests `CalculatePasswordSafetyCheckState()` correctly converts
-// PasswordCheckState::kIdle when `kIOSPasswordCheckup` is enabled.
-TEST_F(IOSChromeSafetyCheckManagerTest,
-       ConvertsPasswordCheckStateIdleWithPasswordCheckupEnabled) {
-  feature_list_.InitAndEnableFeature(
-      password_manager::features::kIOSPasswordCheckup);
-
+// PasswordCheckState::kIdle.
+TEST_F(IOSChromeSafetyCheckManagerTest, ConvertsPasswordCheckStateIdle) {
   std::vector<password_manager::CredentialUIEntry> empty_credentials_list;
   std::vector<password_manager::CredentialUIEntry> populated_credentials_list =
       CreateCredentialsListWithNoInsecurePasswords();

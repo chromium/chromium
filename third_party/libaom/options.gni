@@ -1,4 +1,4 @@
-import("//build/config/chromecast_build.gni")
+import("//build/config/cast.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/gclient_args.gni")
 

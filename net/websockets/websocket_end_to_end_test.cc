@@ -366,10 +366,22 @@ TEST_F(WebSocketEndToEndTest, BasicSmokeTest) {
   EXPECT_TRUE(ConnectAndWait(ws_server.GetURL(kEchoServer)));
 }
 
+// These test are not compatible with RemoteTestServer because RemoteTestServer
+// doesn't support TYPE_BASIC_AUTH_PROXY.
+// TODO(ricea): Make these tests work. See crbug.com/441711.
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_HttpsProxyUnauthedFails DISABLED_HttpsProxyUnauthedFails
+#define MAYBE_HttpsWssProxyUnauthedFails DISABLED_HttpsWssProxyUnauthedFails
+#define MAYBE_HttpsProxyUsed DISABLED_HttpsProxyUsed
+#else
+#define MAYBE_HttpsProxyUnauthedFails HttpsProxyUnauthedFails
+#define MAYBE_HttpsWssProxyUnauthedFails HttpsWssProxyUnauthedFails
+#define MAYBE_HttpsProxyUsed HttpsProxyUsed
+#endif
+
 // Test for issue crbug.com/433695 "Unencrypted WebSocket connection via
-// authenticated proxy times out"
-// TODO(ricea): Enable this when the issue is fixed.
-TEST_F(WebSocketEndToEndTest, DISABLED_HttpsProxyUnauthedFails) {
+// authenticated proxy times out".
+TEST_F(WebSocketEndToEndTest, MAYBE_HttpsProxyUnauthedFails) {
   SpawnedTestServer proxy_server(SpawnedTestServer::TYPE_BASIC_AUTH_PROXY,
                                  base::FilePath());
   SpawnedTestServer ws_server(SpawnedTestServer::TYPE_WS,
@@ -378,28 +390,23 @@ TEST_F(WebSocketEndToEndTest, DISABLED_HttpsProxyUnauthedFails) {
   ASSERT_TRUE(ws_server.StartInBackground());
   ASSERT_TRUE(proxy_server.BlockUntilStarted());
   ASSERT_TRUE(ws_server.BlockUntilStarted());
-  std::string proxy_config =
-      "https=" + proxy_server.host_port_pair().ToString();
+  ProxyConfig proxy_config;
+  proxy_config.proxy_rules().ParseFromString(
+      "https=" + proxy_server.host_port_pair().ToString());
+  // TODO(https://crbug.com/901896): Don't rely on proxying localhost.
+  proxy_config.proxy_rules().bypass_rules.AddRulesToSubtractImplicit();
+
   std::unique_ptr<ProxyResolutionService> proxy_resolution_service(
       ConfiguredProxyResolutionService::CreateFixedForTest(
-          proxy_config, TRAFFIC_ANNOTATION_FOR_TESTS));
+          ProxyConfigWithAnnotation(proxy_config,
+                                    TRAFFIC_ANNOTATION_FOR_TESTS)));
   ASSERT_TRUE(proxy_resolution_service);
   context_builder_->set_proxy_resolution_service(
       std::move(proxy_resolution_service));
+
   EXPECT_FALSE(ConnectAndWait(ws_server.GetURL(kEchoServer)));
   EXPECT_EQ("Proxy authentication failed", event_interface_->failure_message());
 }
-
-// These test are not compatible with RemoteTestServer because RemoteTestServer
-// doesn't support TYPE_BASIC_AUTH_PROXY.
-// TODO(ricea): Make these tests work. See crbug.com/441711.
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
-#define MAYBE_HttpsWssProxyUnauthedFails DISABLED_HttpsWssProxyUnauthedFails
-#define MAYBE_HttpsProxyUsed DISABLED_HttpsProxyUsed
-#else
-#define MAYBE_HttpsWssProxyUnauthedFails HttpsWssProxyUnauthedFails
-#define MAYBE_HttpsProxyUsed HttpsProxyUsed
-#endif
 
 TEST_F(WebSocketEndToEndTest, MAYBE_HttpsWssProxyUnauthedFails) {
   SpawnedTestServer proxy_server(SpawnedTestServer::TYPE_BASIC_AUTH_PROXY,
@@ -533,7 +540,7 @@ TEST_F(WebSocketEndToEndTest, MAYBE_ProxyPacUsed) {
   const auto& info = proxy_delegate_->resolved_proxy_info();
   EXPECT_EQ(ws_url, info.url);
   EXPECT_TRUE(info.proxy_info.is_http());
-  EXPECT_EQ(info.proxy_info.ToPacString(),
+  EXPECT_EQ(info.proxy_info.ToDebugString(),
             base::StrCat({"PROXY ", proxy_server.host_port_pair().ToString()}));
 }
 

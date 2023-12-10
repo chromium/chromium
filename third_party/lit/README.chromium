@@ -1,0 +1,38 @@
+Name: Lit
+Short Name: lit
+URL: https://lit.dev
+Version: 3.0.2
+Revision: N/A
+License: BSD 3-Clause
+License File: LICENSE
+Security Critical: no
+Shipped: yes
+
+Description:
+
+This directory depends on //third_party/node/node_modules/ which actually holds
+all Lit related dependencies.
+
+The source git repositories can be found at:
+https://github.com/lit/lit
+
+Local Modifications:
+
+This directory contains
+ 1) //third_party/lit/v3_0:build_ts
+    A ts_library() target, holding .d.ts definition files to be added as a
+    dependency from any other targets that will be using Lit.
+ 2) A lit.ts file used as input to bundle_js() (after passed through the target
+    at #1)
+ 3) //third_party/lit/v3_0:build_bundle
+    A bundle_js() target, along with a custom Rollup config and plugin, used to
+    create bundled JS file containing all Lit related dependencies. This file is
+    shipped with the Chrome binary and used by WebUI.
+ 4) //third_party/lit/v3_0:build_min_js
+    A minify_js() target used to minify the Lit bundle.
+ 5) //third_party/lit/v3_0:build_grdp
+    A generate_grd() target, referred by other parts of the code, in order to
+    include lit.rollup.js in the final build.
+ 6) cr_lit_element.ts: A Chromium specific LitElement subclass, to be used as
+    the superclass for all web components based on Lit. Offers some
+    functionality that bridges the gap between Polymer and Lit.

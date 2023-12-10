@@ -7,7 +7,7 @@
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/layout/ng/layout_ng_block_flow.h"
+#include "third_party/blink/renderer/core/layout/layout_ng_block_flow.h"
 #include "third_party/blink/renderer/core/paint/line_relative_rect.h"
 
 namespace blink {
@@ -58,9 +58,9 @@ class CORE_EXPORT LayoutTextCombine final : public LayoutNGBlockFlow {
   //  * |LayoutText::PhysicalLinesBoundingBox()| used by
   //    |LayoutObject::DebugRect()|, intersection observer, and scroll anchor.
   //  * |FragmentItem::RecalcInkOverflow()| for line box
-  //  * |NGLayoutOverflowCalculator::AddItemsInternal()| for line box.
-  //  * |NGPhysicalFragment::AddOutlineRectsForCursor()|
-  //  * |NGPhysicalFragment::AddScrollableOverflowForInlineChild()|
+  //  * |ScrollableOverflowCalculator::AddItemsInternal()| for line box.
+  //  * |PhysicalFragment::AddOutlineRectsForCursor()|
+  //  * |PhysicalFragment::AddScrollableOverflowForInlineChild()|
   PhysicalRect AdjustRectForBoundingBox(const PhysicalRect& rect) const;
 
   PhysicalRect ComputeTextBoundsRectForHitTest(
@@ -92,7 +92,7 @@ class CORE_EXPORT LayoutTextCombine final : public LayoutNGBlockFlow {
       const PhysicalOffset paint_offset) const;
 
   // Returns visual rect for painting emphasis mark and text decoration for
-  // |NGBoxFragmentPainter|.
+  // |BoxFragmentPainter|.
   gfx::Rect VisualRectForPaint(const PhysicalOffset& paint_offset) const;
 
   static void AssertStyleIsValid(const ComputedStyle& style);

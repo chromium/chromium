@@ -4,7 +4,7 @@
 
 #import "ios/showcase/follow/sc_follow_view_controller.h"
 
-#import "ios/chrome/browser/follow/followed_web_site_state.h"
+#import "ios/chrome/browser/follow/model/followed_web_site_state.h"
 #import "ios/chrome/browser/net/crurl.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_favicon_data_source.h"

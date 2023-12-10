@@ -4,8 +4,7 @@
 
 #include "ppapi/shared_impl/var_tracker.h"
 
-#include <string.h>
-
+#include <algorithm>
 #include <limits>
 #include <memory>
 
@@ -214,8 +213,9 @@ ArrayBufferVar* VarTracker::MakeArrayBufferVar(uint32_t size_in_bytes,
 
   ArrayBufferVar* array_buffer(CreateArrayBuffer(size_in_bytes));
   if (!array_buffer)
-    return NULL;
-  memcpy(array_buffer->Map(), data, size_in_bytes);
+    return nullptr;
+  std::copy_n(static_cast<const uint8_t*>(data), size_in_bytes,
+              static_cast<uint8_t*>(array_buffer->Map()));
   return array_buffer;
 }
 

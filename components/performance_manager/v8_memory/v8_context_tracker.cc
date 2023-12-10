@@ -277,9 +277,7 @@ void V8ContextTracker::OnRemoteIframeAttached(
   });
 
   // Posts |on_ui_thread| to the UI sequence.
-  auto rph_id = parent_frame_node->process_node()
-                    ->render_process_host_proxy()
-                    .render_process_host_id();
+  auto rph_id = parent_frame_node->process_node()->GetRenderProcessHostId();
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(std::move(on_ui_thread), std::move(on_pm_seq),
                                 std::move(data), rph_id));

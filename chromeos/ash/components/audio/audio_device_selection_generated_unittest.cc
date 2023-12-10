@@ -15,12 +15,6 @@ namespace ash {
 namespace {
 
 class AudioDeviceSelectionGeneratedTest : public AudioDeviceSelectionTestBase {
- public:
-  AudioDeviceSelectionGeneratedTest()
-      : feature_list_(ash::features::kRobustAudioDeviceSelectLogic) {}
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(AudioDeviceSelectionGeneratedTest, BandDocScenario1Input) {

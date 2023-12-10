@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+Harness Error. harness_status.status = 1 , harness_status.message = Uncaught ReferenceError: eventSender is not defined
+[TIMEOUT] Using tab navigation to target an element in an auto subtree focuses element
+  Test timed out
+Harness: the test ran to completion.

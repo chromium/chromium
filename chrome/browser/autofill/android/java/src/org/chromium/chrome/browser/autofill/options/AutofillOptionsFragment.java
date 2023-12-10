@@ -18,9 +18,7 @@ import org.chromium.components.browser_ui.settings.SettingsUtils;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-/**
- * Autofill options fragment, which allows the user to configure autofill.
- */
+/** Autofill options fragment, which allows the user to configure autofill. */
 public class AutofillOptionsFragment extends ChromeBaseSettingsFragment {
     // Key for the argument with which the AutofillOptions fragment will be launched. The value for
     // this argument is part of the AutofillOptionsReferrer enum containing all entry points.
@@ -35,24 +33,23 @@ public class AutofillOptionsFragment extends ChromeBaseSettingsFragment {
     // numeric values should never be reused.
     //
     // Needs to stay in sync with AutofillOptionsReferrer in enums.xml.
-    @IntDef({AutofillOptionsReferrer.SETTINGS, AutofillOptionsReferrer.DEEP_LINK_TO_SETTINGS,
-            AutofillOptionsReferrer.COUNT})
+    @IntDef({
+        AutofillOptionsReferrer.SETTINGS,
+        AutofillOptionsReferrer.DEEP_LINK_TO_SETTINGS,
+        AutofillOptionsReferrer.COUNT
+    })
     @Retention(RetentionPolicy.SOURCE)
     public @interface AutofillOptionsReferrer {
-        /**
-         * Corresponds to the Settings page.
-         */
+        /** Corresponds to the Settings page. */
         int SETTINGS = 0;
-        /**
-         * Corresponds to an external link opening Chrome.
-         */
+
+        /** Corresponds to an external link opening Chrome. */
         int DEEP_LINK_TO_SETTINGS = 1;
+
         int COUNT = 2;
     }
 
-    /**
-     * This default constructor is required to instantiate the fragment.
-     */
+    /** This default constructor is required to instantiate the fragment. */
     public AutofillOptionsFragment() {}
 
     RadioButtonGroupThirdPartyPreference getThirdPartyFillingOption() {
@@ -86,8 +83,11 @@ public class AutofillOptionsFragment extends ChromeBaseSettingsFragment {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.menu_id_targeted_help) {
-            getHelpAndFeedbackLauncher().show(
-                    getActivity(), getActivity().getString(R.string.help_context_autofill), null);
+            getHelpAndFeedbackLauncher()
+                    .show(
+                            getActivity(),
+                            getActivity().getString(R.string.help_context_autofill),
+                            null);
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -118,7 +118,7 @@ public class AutofillOptionsFragment extends ChromeBaseSettingsFragment {
         }
         Bundle extras = getArguments();
         assert extras.containsKey(AUTOFILL_OPTIONS_REFERRER)
-            : "AutofillOptionsFragment must be launched with a autofill-options-referrer fragment!";
+                : "missing autofill-options-referrer fragment";
         return extras.getInt(AUTOFILL_OPTIONS_REFERRER);
     }
 }

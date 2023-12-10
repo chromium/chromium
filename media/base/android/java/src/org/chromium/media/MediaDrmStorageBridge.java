@@ -20,9 +20,7 @@ class MediaDrmStorageBridge {
 
     private long mNativeMediaDrmStorageBridge;
 
-    /**
-     * Information that need to be persistent on the device. Exposed to JNI.
-     */
+    /** Information that need to be persistent on the device. Exposed to JNI. */
     static class PersistentInfo {
         // EME session ID, which is generated randomly.
         private final byte[] mEmeId;
@@ -75,49 +73,43 @@ class MediaDrmStorageBridge {
         assert isNativeMediaDrmStorageValid();
     }
 
-    /**
-     * Called when device provisioning is finished.
-     */
+    /** Called when device provisioning is finished. */
     void onProvisioned(Callback<Boolean> cb) {
         if (isNativeMediaDrmStorageValid()) {
-            MediaDrmStorageBridgeJni.get().onProvisioned(
-                    mNativeMediaDrmStorageBridge, MediaDrmStorageBridge.this, cb);
+            MediaDrmStorageBridgeJni.get()
+                    .onProvisioned(mNativeMediaDrmStorageBridge, MediaDrmStorageBridge.this, cb);
         } else {
             cb.onResult(true);
         }
     }
 
-    /**
-     * Load |emeId|'s storage into memory.
-     */
+    /** Load |emeId|'s storage into memory. */
     void loadInfo(byte[] emeId, Callback<PersistentInfo> cb) {
         if (isNativeMediaDrmStorageValid()) {
-            MediaDrmStorageBridgeJni.get().onLoadInfo(
-                    mNativeMediaDrmStorageBridge, MediaDrmStorageBridge.this, emeId, cb);
+            MediaDrmStorageBridgeJni.get()
+                    .onLoadInfo(
+                            mNativeMediaDrmStorageBridge, MediaDrmStorageBridge.this, emeId, cb);
         } else {
             cb.onResult(null);
         }
     }
 
-    /**
-     * Save persistent information. Override the existing value.
-     */
+    /** Save persistent information. Override the existing value. */
     void saveInfo(PersistentInfo info, Callback<Boolean> cb) {
         if (isNativeMediaDrmStorageValid()) {
-            MediaDrmStorageBridgeJni.get().onSaveInfo(
-                    mNativeMediaDrmStorageBridge, MediaDrmStorageBridge.this, info, cb);
+            MediaDrmStorageBridgeJni.get()
+                    .onSaveInfo(mNativeMediaDrmStorageBridge, MediaDrmStorageBridge.this, info, cb);
         } else {
             cb.onResult(false);
         }
     }
 
-    /**
-     * Remove persistent information related |emeId|.
-     */
+    /** Remove persistent information related |emeId|. */
     void clearInfo(byte[] emeId, Callback<Boolean> cb) {
         if (isNativeMediaDrmStorageValid()) {
-            MediaDrmStorageBridgeJni.get().onClearInfo(
-                    mNativeMediaDrmStorageBridge, MediaDrmStorageBridge.this, emeId, cb);
+            MediaDrmStorageBridgeJni.get()
+                    .onClearInfo(
+                            mNativeMediaDrmStorageBridge, MediaDrmStorageBridge.this, emeId, cb);
         } else {
             cb.onResult(true);
         }
@@ -129,13 +121,27 @@ class MediaDrmStorageBridge {
 
     @NativeMethods
     interface Natives {
-        void onProvisioned(long nativeMediaDrmStorageBridge, MediaDrmStorageBridge caller,
+        void onProvisioned(
+                long nativeMediaDrmStorageBridge,
+                MediaDrmStorageBridge caller,
                 Callback<Boolean> cb);
-        void onLoadInfo(long nativeMediaDrmStorageBridge, MediaDrmStorageBridge caller,
-                byte[] sessionId, Callback<PersistentInfo> cb);
-        void onSaveInfo(long nativeMediaDrmStorageBridge, MediaDrmStorageBridge caller,
-                PersistentInfo info, Callback<Boolean> cb);
-        void onClearInfo(long nativeMediaDrmStorageBridge, MediaDrmStorageBridge caller,
-                byte[] sessionId, Callback<Boolean> cb);
+
+        void onLoadInfo(
+                long nativeMediaDrmStorageBridge,
+                MediaDrmStorageBridge caller,
+                byte[] sessionId,
+                Callback<PersistentInfo> cb);
+
+        void onSaveInfo(
+                long nativeMediaDrmStorageBridge,
+                MediaDrmStorageBridge caller,
+                PersistentInfo info,
+                Callback<Boolean> cb);
+
+        void onClearInfo(
+                long nativeMediaDrmStorageBridge,
+                MediaDrmStorageBridge caller,
+                byte[] sessionId,
+                Callback<Boolean> cb);
     }
 }

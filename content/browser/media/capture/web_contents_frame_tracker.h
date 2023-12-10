@@ -172,6 +172,10 @@ class CONTENT_EXPORT WebContentsFrameTracker final
   // the capture scale override, if necessary.
   float DetermineMaxScaleOverride();
 
+  // Return the right VideoCaptureSubTarget based on whether which sub-capture
+  // has been applied, if any.
+  viz::VideoCaptureSubTarget DeriveSubTarget() const;
+
   // The maximum capture scale override.
   static const float kMaxCaptureScaleOverride;
 
@@ -192,8 +196,16 @@ class CONTENT_EXPORT WebContentsFrameTracker final
   // We may not have a frame sink ID target at all times.
   std::unique_ptr<Context> context_;
   viz::FrameSinkId target_frame_sink_id_;
-  base::Token crop_id_;
   gfx::NativeView target_native_view_ = gfx::NativeView();
+
+  struct SubCaptureTargetInfo {
+    SubCaptureTargetInfo(media::mojom::SubCaptureTargetType type,
+                         base::Token token)
+        : type(type), token(token) {}
+    media::mojom::SubCaptureTargetType type;
+    base::Token token;
+  };
+  absl::optional<SubCaptureTargetInfo> sub_capture_target_;
 
   // Indicates whether the WebContents's capturer count needs to be
   // decremented.

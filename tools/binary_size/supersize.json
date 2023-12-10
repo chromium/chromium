@@ -3,6 +3,9 @@
     "assets/icudtl.dat": {
       "source_path": "../../third_party/icu/android/icudtl.dat"
     },
+    "assets/highlighter.js": {
+      "source_path": "../../clank/features/readaloud/internal"
+    },
     "assets/snapshot_blob_32.bin": {
       "source_path": "v8/snapshot_blob_32.bin"
     },
@@ -34,6 +37,9 @@
     },
     "image_editor": {
       "default_component": "UI>Browser>Sharing"
+    },
+    "read_aloud_playback": {
+      "default_component": "UI>Browser>ReadAloud"
     },
     "stack_unwinder": {
       "default_component": "Speed>Tracing"

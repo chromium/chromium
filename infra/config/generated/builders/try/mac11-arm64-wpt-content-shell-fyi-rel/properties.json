@@ -1,6 +1,9 @@
 {
   "$build/chromium_tests_builder_config": {
     "builder_config": {
+      "additional_exclusions": [
+        "infra/config/generated/builders/try/mac11-arm64-wpt-content-shell-fyi-rel/gn-args.json"
+      ],
       "builder_db": {
         "entries": [
           {

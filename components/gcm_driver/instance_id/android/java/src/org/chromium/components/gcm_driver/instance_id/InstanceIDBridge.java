@@ -14,7 +14,6 @@ import org.chromium.components.gcm_driver.LazySubscriptionsManager;
 import org.chromium.components.gcm_driver.SubscriptionFlagManager;
 
 import java.io.IOException;
-import java.util.concurrent.ExecutionException;
 
 /**
  * Wraps InstanceIDWithSubtype so it can be used over JNI.
@@ -24,6 +23,7 @@ import java.util.concurrent.ExecutionException;
 public class InstanceIDBridge {
     private final String mSubtype;
     private long mNativeInstanceIDAndroid;
+
     /**
      * Underlying InstanceIDWithSubtype. May be shared by multiple InstanceIDBridges. Must be
      * initialized on a background thread.
@@ -75,10 +75,11 @@ public class InstanceIDBridge {
             protected String doBackgroundWork() {
                 return mInstanceID.getId();
             }
+
             @Override
             protected void sendResultToNative(String id) {
-                InstanceIDBridgeJni.get().didGetID(
-                        mNativeInstanceIDAndroid, InstanceIDBridge.this, requestId, id);
+                InstanceIDBridgeJni.get()
+                        .didGetID(mNativeInstanceIDAndroid, InstanceIDBridge.this, requestId, id);
             }
         }.execute();
     }
@@ -91,10 +92,15 @@ public class InstanceIDBridge {
             protected Long doBackgroundWork() {
                 return mInstanceID.getCreationTime();
             }
+
             @Override
             protected void sendResultToNative(Long creationTime) {
-                InstanceIDBridgeJni.get().didGetCreationTime(
-                        mNativeInstanceIDAndroid, InstanceIDBridge.this, requestId, creationTime);
+                InstanceIDBridgeJni.get()
+                        .didGetCreationTime(
+                                mNativeInstanceIDAndroid,
+                                InstanceIDBridge.this,
+                                requestId,
+                                creationTime);
             }
         }.execute();
     }
@@ -127,10 +133,12 @@ public class InstanceIDBridge {
                     return "";
                 }
             }
+
             @Override
             protected void sendResultToNative(String token) {
-                InstanceIDBridgeJni.get().didGetToken(
-                        mNativeInstanceIDAndroid, InstanceIDBridge.this, requestId, token);
+                InstanceIDBridgeJni.get()
+                        .didGetToken(
+                                mNativeInstanceIDAndroid, InstanceIDBridge.this, requestId, token);
             }
         }.execute();
     }
@@ -144,8 +152,9 @@ public class InstanceIDBridge {
             protected Boolean doBackgroundWork() {
                 try {
                     mInstanceID.deleteToken(authorizedEntity, scope);
-                    String subscriptionId = LazySubscriptionsManager.buildSubscriptionUniqueId(
-                            mSubtype, authorizedEntity);
+                    String subscriptionId =
+                            LazySubscriptionsManager.buildSubscriptionUniqueId(
+                                    mSubtype, authorizedEntity);
                     if (LazySubscriptionsManager.isSubscriptionLazy(subscriptionId)) {
                         LazySubscriptionsManager.deletePersistedMessagesForSubscriptionId(
                                 subscriptionId);
@@ -158,10 +167,15 @@ public class InstanceIDBridge {
                     return false;
                 }
             }
+
             @Override
             protected void sendResultToNative(Boolean success) {
-                InstanceIDBridgeJni.get().didDeleteToken(
-                        mNativeInstanceIDAndroid, InstanceIDBridge.this, requestId, success);
+                InstanceIDBridgeJni.get()
+                        .didDeleteToken(
+                                mNativeInstanceIDAndroid,
+                                InstanceIDBridge.this,
+                                requestId,
+                                success);
             }
         }.execute();
     }
@@ -179,10 +193,15 @@ public class InstanceIDBridge {
                     return false;
                 }
             }
+
             @Override
             protected void sendResultToNative(Boolean success) {
-                InstanceIDBridgeJni.get().didDeleteID(
-                        mNativeInstanceIDAndroid, InstanceIDBridge.this, requestId, success);
+                InstanceIDBridgeJni.get()
+                        .didDeleteID(
+                                mNativeInstanceIDAndroid,
+                                InstanceIDBridge.this,
+                                requestId,
+                                success);
             }
         }.execute();
     }
@@ -190,12 +209,17 @@ public class InstanceIDBridge {
     /**
      * Custom {@link AsyncTask} wrapper. As usual, this performs work on a background thread, then
      * sends the result back on the UI thread. Key differences:
-     * 1. Lazily initializes mInstanceID before running doBackgroundWork.
-     * 2. sendResultToNative will be skipped if the C++ counterpart has been destroyed.
-     * 3. Tasks run in parallel (using THREAD_POOL_EXECUTOR) to avoid blocking other Chrome tasks.
-     * 4. If setBlockOnAsyncTasksForTesting has been enabled, executing the task will block the UI
-     *    thread, then directly call sendResultToNative. This is a workaround for use in tests
-     *    that lack a nested Java message loop (which prevents onPostExecute from running).
+     *
+     * <p>1. Lazily initializes mInstanceID before running doBackgroundWork.
+     *
+     * <p>2. sendResultToNative will be skipped if the C++ counterpart has been destroyed.
+     *
+     * <p>3. Tasks run in parallel (using THREAD_POOL_EXECUTOR) to avoid blocking other Chrome
+     * tasks.
+     *
+     * <p>4. If setBlockOnAsyncTasksForTesting has been enabled, the work will skip the thread pool
+     * executor and run directly on the main thread. This is necessary because there are some
+     * complex behaviors around executor lifecycle in unit tests.
      */
     private abstract class BridgeAsyncTask<Result> {
         protected abstract Result doBackgroundWork();
@@ -203,35 +227,35 @@ public class InstanceIDBridge {
         protected abstract void sendResultToNative(Result result);
 
         public void execute() {
-            AsyncTask<Result> task = new AsyncTask<Result>() {
-                @Override
-                @SuppressWarnings("NoSynchronizedThisCheck") // Only used/accessible by native.
-                protected Result doInBackground() {
-                    synchronized (InstanceIDBridge.this) {
-                        if (mInstanceID == null) {
-                            mInstanceID = InstanceIDWithSubtype.getInstance(mSubtype);
-                        }
-                    }
-                    return doBackgroundWork();
-                }
-                @Override
-                protected void onPostExecute(Result result) {
-                    if (!sBlockOnAsyncTasksForTesting && mNativeInstanceIDAndroid != 0) {
-                        sendResultToNative(result);
-                    }
-                }
-            };
-            task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
             if (sBlockOnAsyncTasksForTesting) {
-                Result result;
-                try {
-                    // Synchronously block the UI thread until doInBackground returns result.
-                    result = task.get();
-                } catch (InterruptedException | ExecutionException e) {
-                    throw new IllegalStateException(e); // Shouldn't happen in tests.
+                if (mInstanceID == null) {
+                    mInstanceID = InstanceIDWithSubtype.getInstance(mSubtype);
                 }
-                sendResultToNative(result);
+                sendResultToNative(doBackgroundWork());
+                return;
             }
+            AsyncTask<Result> task =
+                    new AsyncTask<Result>() {
+                        @Override
+                        @SuppressWarnings(
+                                "NoSynchronizedThisCheck") // Only used/accessible by native.
+                        protected Result doInBackground() {
+                            synchronized (InstanceIDBridge.this) {
+                                if (mInstanceID == null) {
+                                    mInstanceID = InstanceIDWithSubtype.getInstance(mSubtype);
+                                }
+                            }
+                            return doBackgroundWork();
+                        }
+
+                        @Override
+                        protected void onPostExecute(Result result) {
+                            if (mNativeInstanceIDAndroid != 0) {
+                                sendResultToNative(result);
+                            }
+                        }
+                    };
+            task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         }
     }
 
@@ -239,13 +263,26 @@ public class InstanceIDBridge {
     interface Natives {
         void didGetID(
                 long nativeInstanceIDAndroid, InstanceIDBridge caller, int requestId, String id);
-        void didGetCreationTime(long nativeInstanceIDAndroid, InstanceIDBridge caller,
-                int requestId, long creationTime);
+
+        void didGetCreationTime(
+                long nativeInstanceIDAndroid,
+                InstanceIDBridge caller,
+                int requestId,
+                long creationTime);
+
         void didGetToken(
                 long nativeInstanceIDAndroid, InstanceIDBridge caller, int requestId, String token);
-        void didDeleteToken(long nativeInstanceIDAndroid, InstanceIDBridge caller, int requestId,
+
+        void didDeleteToken(
+                long nativeInstanceIDAndroid,
+                InstanceIDBridge caller,
+                int requestId,
                 boolean success);
-        void didDeleteID(long nativeInstanceIDAndroid, InstanceIDBridge caller, int requestId,
+
+        void didDeleteID(
+                long nativeInstanceIDAndroid,
+                InstanceIDBridge caller,
+                int requestId,
                 boolean success);
     }
 }

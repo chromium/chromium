@@ -1,4 +1,4 @@
-Test that Fetch.requestFulfill at reponse stage without body parameter will use original response body
+Test that Fetch.continueResponse without body parameter will use original response body
 Intercepted response 200
 Intercepted response body: '<p>hello world</p>
 '

@@ -11,11 +11,16 @@
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/simple_combobox_model.h"
+#include "ui/gfx/vector_icon_utils.h"
+#include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/combobox/combobox.h"
 #include "ui/views/controls/editable_combobox/editable_combobox.h"
 #include "ui/views/controls/editable_combobox/editable_password_combobox.h"
+#include "ui/views/controls/image_view.h"
+#include "ui/views/controls/label.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/flex_layout.h"
 
@@ -68,6 +73,23 @@ std::unique_ptr<views::StyledLabel> CreateGooglePasswordManagerLabel(
       gfx::Range(offsets.at(0), offsets.at(0) + link.length()),
       views::StyledLabel::RangeStyleInfo::CreateForLink(open_link_closure));
 
+  return label;
+}
+
+std::unique_ptr<views::Label> CreateGooglePasswordManagerLabel(
+    int text_message_id,
+    int password_manager_message_id,
+    const std::u16string& email,
+    int context) {
+  const std::u16string password_manager =
+      l10n_util::GetStringUTF16(password_manager_message_id);
+  std::u16string text =
+      l10n_util::GetStringFUTF16(text_message_id, password_manager, email);
+
+  auto label = std::make_unique<views::Label>(text, context,
+                                              views::style::STYLE_SECONDARY);
+  label->SetMultiLine(true);
+  label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   return label;
 }
 
@@ -280,4 +302,34 @@ std::unique_ptr<views::Combobox> CreateDestinationCombobox(
   combobox->SetProperty(views::kElementIdentifierKey,
                         kSavePasswordComboboxElementId);
   return combobox;
+}
+
+std::unique_ptr<views::View> CreateTitleView(const std::u16string& title) {
+  const ChromeLayoutProvider* layout_provider = ChromeLayoutProvider::Get();
+  auto header = std::make_unique<views::BoxLayoutView>();
+  // Set the space between the icon and title similar to the default behavior in
+  // BubbleFrameView::Layout().
+  header->SetBetweenChildSpacing(
+      layout_provider->GetInsetsMetric(views::INSETS_DIALOG_TITLE).left());
+  header->AddChildView(
+      std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
+          GooglePasswordManagerVectorIcon(), ui::kColorIcon,
+          layout_provider->GetDistanceMetric(
+              DISTANCE_BUBBLE_HEADER_VECTOR_ICON_SIZE))));
+  views::Label* title_label = header->AddChildView(
+      views::BubbleFrameView::CreateDefaultTitleLabel(title));
+
+  const int close_button_width =
+      layout_provider->GetDistanceMetric(
+          views::DISTANCE_RELATED_BUTTON_HORIZONTAL) +
+      gfx::GetDefaultSizeOfVectorIcon(vector_icons::kCloseRoundedIcon) +
+      layout_provider->GetDistanceMetric(views::DISTANCE_CLOSE_BUTTON_MARGIN);
+  const int title_width =
+      layout_provider->GetDistanceMetric(
+          views::DISTANCE_BUBBLE_PREFERRED_WIDTH) -
+      layout_provider->GetInsetsMetric(views::INSETS_DIALOG).width() -
+      layout_provider->GetInsetsMetric(views::INSETS_DIALOG_TITLE).width() -
+      close_button_width;
+  title_label->SetMaximumWidth(title_width);
+  return header;
 }

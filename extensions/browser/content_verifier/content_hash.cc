@@ -214,8 +214,7 @@ std::unique_ptr<VerifiedContents> ContentHash::StoreAndRetrieveVerifiedContents(
   // can be a login redirect html, xml file, etc. if you aren't logged in with
   // the right cookies).  TODO(asargent) - It would be a nice enhancement to
   // move to parsing this in a sandboxed helper (https://crbug.com/372878).
-  absl::optional<base::Value> parsed =
-      base::JSONReader::Read(*fetched_contents);
+  std::optional<base::Value> parsed = base::JSONReader::Read(*fetched_contents);
   if (!parsed) {
     LOG(ERROR)
         << "Failed to parse fetched verified_contents.json for extension id: "
@@ -368,7 +367,7 @@ bool ContentHash::CreateHashes(const base::FilePath& hashes_file,
   base::ElapsedTimer timer;
   did_attempt_creating_computed_hashes_ = true;
 
-  absl::optional<ComputedHashes::Data> computed_hashes_data =
+  std::optional<ComputedHashes::Data> computed_hashes_data =
       ComputedHashes::Compute(
           extension_root_, block_size_, is_cancelled,
           // Using base::Unretained is safe here as
@@ -427,7 +426,7 @@ void ContentHash::BuildComputedHashes(bool attempted_fetching_verified_contents,
   if (!will_create) {
     // Note: Tolerate for existing implementation.
     // Try to read and initialize the file first. On failure, continue creating.
-    absl::optional<ComputedHashes> computed_hashes =
+    std::optional<ComputedHashes> computed_hashes =
         ComputedHashes::CreateFromFile(computed_hashes_path,
                                        &computed_hashes_status_);
     DCHECK_EQ(computed_hashes_status_ == ComputedHashes::Status::SUCCESS,
@@ -453,7 +452,7 @@ void ContentHash::BuildComputedHashes(bool attempted_fetching_verified_contents,
   if (!base::PathExists(computed_hashes_path))
     return;
 
-  absl::optional<ComputedHashes> computed_hashes =
+  std::optional<ComputedHashes> computed_hashes =
       ComputedHashes::CreateFromFile(computed_hashes_path,
                                      &computed_hashes_status_);
   DCHECK_EQ(computed_hashes_status_ == ComputedHashes::Status::SUCCESS,

@@ -155,15 +155,6 @@ TEST_F(PartialMagnifierControllerTest, ActivatesOnlyForPointer) {
   EXPECT_FALSE(GetTestApi().is_active());
 }
 
-// The magnifier activates for mouse events.
-TEST_F(PartialMagnifierControllerTest, ActivatesForMouseEvents) {
-  GetController()->SetEnabled(true);
-  GetController()->set_allow_mouse_following(true);
-  ui::test::EventGenerator* event_generator = GetEventGenerator();
-  event_generator->MoveMouseBy(1, 1);
-  EXPECT_TRUE(GetTestApi().is_active());
-}
-
 // The magnifier is always located at pointer.
 TEST_F(PartialMagnifierControllerTest, MagnifierFollowsPointer) {
   ui::test::EventGenerator* event_generator = GetEventGenerator();

@@ -71,6 +71,7 @@ robolectric_library("junit") {
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabModelSelectorTabModelObserverUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabModelSelectorTabRegistrationObserverUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabModelTabObserverUnitTest.java",
+    "android/java/src/org/chromium/chrome/browser/tabmodel/TabModelUtilsUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabWindowManagerTest.java",
   ]
 

@@ -42,8 +42,11 @@ public interface HistoryClustersDelegate {
      * specifying a list of additional urls to open with the same options.
      */
     @Nullable
-    <SerializableList extends List<String> & Serializable> Intent getOpenUrlIntent(GURL gurl,
-            boolean inIncognito, boolean createNewTab, boolean inTabGroup,
+    <SerializableList extends List<String> & Serializable> Intent getOpenUrlIntent(
+            GURL gurl,
+            boolean inIncognito,
+            boolean createNewTab,
+            boolean inTabGroup,
             @Nullable SerializableList additionalUrls);
 
     /** Returns a toggle view that swaps between the Journeys UI and the "normal" History UI. */
@@ -97,6 +100,7 @@ public interface HistoryClustersDelegate {
     default String getSearchEmptyString() {
         return "";
     }
+
     /**
      * Called when the user opts out of the Journeys feature to signal to the embedding component
      * that it should remove the HistoryClusters UI.

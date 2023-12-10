@@ -189,6 +189,13 @@ ExclusionSpaceInternal::ExclusionSpaceInternal(
 
 ExclusionSpaceInternal& ExclusionSpaceInternal::operator=(
     const ExclusionSpaceInternal& other) {
+  CopyFrom(other);
+  derived_geometry_ = std::move(other.derived_geometry_);
+  other.derived_geometry_ = nullptr;
+  return *this;
+}
+
+void ExclusionSpaceInternal::CopyFrom(const ExclusionSpaceInternal& other) {
   exclusions_ = other.exclusions_;
   num_exclusions_ = other.num_exclusions_;
   left_clear_offset_ = other.left_clear_offset_;
@@ -201,9 +208,17 @@ ExclusionSpaceInternal& ExclusionSpaceInternal::operator=(
   has_break_before_right_float_ = other.has_break_before_right_float_;
   has_break_inside_left_float_ = other.has_break_inside_left_float_;
   has_break_inside_right_float_ = other.has_break_inside_right_float_;
-  derived_geometry_ = std::move(other.derived_geometry_);
-  other.derived_geometry_ = nullptr;
-  return *this;
+  // `derived_geometry_` is a cached value that can be generated when needed.
+  derived_geometry_ = nullptr;
+}
+
+void ExclusionSpace::CopyFrom(const ExclusionSpace& other) {
+  if (!other.exclusion_space_) {
+    exclusion_space_ = nullptr;
+    return;
+  }
+  exclusion_space_ = std::make_unique<ExclusionSpaceInternal>();
+  exclusion_space_->CopyFrom(*other.exclusion_space_);
 }
 
 ExclusionSpaceInternal::DerivedGeometry::DerivedGeometry(

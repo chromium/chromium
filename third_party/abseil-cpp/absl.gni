@@ -32,7 +32,7 @@ template("absl_source_set") {
 
     if (is_component_build) {
       defines = [ "ABSL_BUILD_DLL" ]
-      if (!is_win) {
+      if (!is_win && (current_os != "aix")) {
         configs -= [ "//build/config/gcc:symbol_visibility_hidden" ]
         configs += [ "//build/config/gcc:symbol_visibility_default" ]
       }
@@ -78,7 +78,7 @@ template("absl_source_set") {
           "//libassistant/*",
 
           # Not built into Chrome.
-          "//third_party/ml/*",
+          "//components/optimization_guide/internal/*",
         ]
       } else {
         visibility = [ "*" ]

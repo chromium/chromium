@@ -18,7 +18,6 @@
 #include "base/lazy_instance.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
@@ -142,12 +141,10 @@ void SetRlzPingSent(int retry_count) {
 // Callback invoked for DebugDaemonClient::SetRlzPingSent.
 void OnSetRlzPingSent(int retry_count, bool success) {
   if (success) {
-    UMA_HISTOGRAM_BOOLEAN("Rlz.SetRlzPingSent", true);
     return;
   }
 
   if (retry_count >= RlzValueStoreChromeOS::kMaxRetryCount) {
-    UMA_HISTOGRAM_BOOLEAN("Rlz.SetRlzPingSent", false);
     LOG(ERROR) << "Setting " << ash::system::kShouldSendRlzPingKey
                << " failed after " << RlzValueStoreChromeOS::kMaxRetryCount
                << " attempts.";
@@ -158,21 +155,21 @@ void OnSetRlzPingSent(int retry_count, bool success) {
 }
 
 // Copy |value| without empty children.
-absl::optional<base::Value> CopyWithoutEmptyChildren(const base::Value& value) {
+std::optional<base::Value> CopyWithoutEmptyChildren(const base::Value& value) {
   switch (value.type()) {
     case base::Value::Type::DICT: {
       base::Value::Dict dict;
       const base::Value::Dict& dict_in = value.GetDict();
 
       for (auto it = dict_in.begin(); it != dict_in.end(); ++it) {
-        absl::optional<base::Value> item_copy =
+        std::optional<base::Value> item_copy =
             CopyWithoutEmptyChildren(it->second);
         if (item_copy)
           dict.Set(it->first, std::move(*item_copy));
       }
 
       if (dict.empty())
-        return absl::nullopt;
+        return std::nullopt;
 
       return base::Value(std::move(dict));
     }
@@ -182,13 +179,13 @@ absl::optional<base::Value> CopyWithoutEmptyChildren(const base::Value& value) {
       list.reserve(value.GetList().size());
 
       for (const base::Value& item : value.GetList()) {
-        absl::optional<base::Value> item_copy = CopyWithoutEmptyChildren(item);
+        std::optional<base::Value> item_copy = CopyWithoutEmptyChildren(item);
         if (item_copy)
           list.Append(std::move(*item_copy));
       }
 
       if (list.empty())
-        return absl::nullopt;
+        return std::nullopt;
 
       return base::Value(std::move(list));
     }
@@ -379,7 +376,7 @@ bool RlzValueStoreChromeOS::IsStatefulEvent(Product product,
   if (strcmp(event_rlz, "CAF") == 0) {
     ash::system::StatisticsProvider* stats =
         ash::system::StatisticsProvider::GetInstance();
-    if (const absl::optional<base::StringPiece> should_send_rlz_ping_value =
+    if (const std::optional<base::StringPiece> should_send_rlz_ping_value =
             stats->GetMachineStatistic(ash::system::kShouldSendRlzPingKey)) {
       if (should_send_rlz_ping_value ==
           ash::system::kShouldSendRlzPingValueFalse) {

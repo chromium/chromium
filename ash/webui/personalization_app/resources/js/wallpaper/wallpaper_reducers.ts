@@ -12,6 +12,9 @@ import {PersonalizationState} from '../personalization_state.js';
 import {isImageDataUrl, isNonEmptyArray} from '../utils.js';
 
 import {DefaultImageSymbol, kDefaultImageSymbol} from './constants.js';
+import {SeaPenActionName, SeaPenActions} from './sea_pen/sea_pen_actions.js';
+import {seaPenReducer} from './sea_pen/sea_pen_reducer.js';
+import {SeaPenState} from './sea_pen/sea_pen_state';
 import {findAlbumById, isDefaultImage, isFilePath, isImageEqualToSelected} from './utils.js';
 import {WallpaperActionName} from './wallpaper_actions.js';
 import {DailyRefreshType, WallpaperState} from './wallpaper_state.js';
@@ -427,6 +430,16 @@ function fullscreenReducer(
   }
 }
 
+function shouldShowTimeOfDayWallpaperDialogReducer(
+    state: boolean, action: Actions, _: PersonalizationState): boolean {
+  switch (action.name) {
+    case WallpaperActionName.SET_SHOULD_SHOW_TIME_OF_DAY_WALLPAPER_DIALOG:
+      return action.shouldShowDialog;
+    default:
+      return state;
+  }
+}
+
 function googlePhotosReducer(
     state: WallpaperState['googlePhotos'], action: Actions,
     _: PersonalizationState): WallpaperState['googlePhotos'] {
@@ -625,31 +638,19 @@ function googlePhotosReducer(
   }
 }
 
-function seaPenReducer(
-    state: WallpaperState['seaPen'], action: Actions,
-    _: PersonalizationState): WallpaperState['seaPen'] {
-  switch (action.name) {
-    case WallpaperActionName.BEGIN_SEARCH_IMAGE_THUMBNAILS:
-      return {
-        ...state,
-        thumbnailsLoading: true,
-        query: action.query,
-      };
-    case WallpaperActionName.SET_IMAGE_THUMBNAILS:
-      console.log('seaPenReducer, text: ', action.query);
-      assert(!!action.query, 'input text is empty.');
-      console.log('seapenReducer, thumbnails: ', action.images);
-      return {
-        ...state,
-        thumbnailsLoading: false,
-        query: action.query,
-        thumbnails: action.images,
-      };
-    case WallpaperActionName.SET_RECENT_WALLPAPER_IMAGES:
-      return {...state, recentWallpapers: action.recentWallpapers};
-    default:
-      return state;
+const allSeaPenActionNames =
+    new Set<Actions['name']>(Object.values(SeaPenActionName));
+
+function actionIsSeaPenAction(action: Actions): action is SeaPenActions {
+  return allSeaPenActionNames.has(action.name);
+}
+
+function seaPenReducerAdapter(
+    state: SeaPenState, action: Actions, _: PersonalizationState): SeaPenState {
+  if (actionIsSeaPenAction(action)) {
+    return seaPenReducer(state, action);
   }
+  return state;
 }
 
 export const wallpaperReducers:
@@ -662,6 +663,8 @@ export const wallpaperReducers:
       pendingSelected: pendingSelectedReducer,
       dailyRefresh: dailyRefreshReducer,
       fullscreen: fullscreenReducer,
+      shouldShowTimeOfDayWallpaperDialog:
+          shouldShowTimeOfDayWallpaperDialogReducer,
       googlePhotos: googlePhotosReducer,
-      seaPen: seaPenReducer,
+      seaPen: seaPenReducerAdapter,
     };

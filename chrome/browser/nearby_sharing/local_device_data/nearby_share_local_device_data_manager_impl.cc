@@ -203,7 +203,7 @@ void NearbyShareLocalDeviceDataManagerImpl::DownloadDeviceData() {
 }
 
 void NearbyShareLocalDeviceDataManagerImpl::UploadContacts(
-    std::vector<nearbyshare::proto::Contact> contacts,
+    std::vector<nearby::sharing::proto::Contact> contacts,
     UploadCompleteCallback callback) {
   device_data_updater_->UpdateDeviceData(
       std::move(contacts),
@@ -214,7 +214,7 @@ void NearbyShareLocalDeviceDataManagerImpl::UploadContacts(
 }
 
 void NearbyShareLocalDeviceDataManagerImpl::UploadCertificates(
-    std::vector<nearbyshare::proto::PublicCertificate> certificates,
+    std::vector<nearby::sharing::proto::PublicCertificate> certificates,
     UploadCompleteCallback callback) {
   device_data_updater_->UpdateDeviceData(
       /*contacts=*/absl::nullopt, std::move(certificates),
@@ -264,7 +264,8 @@ void NearbyShareLocalDeviceDataManagerImpl::OnDownloadDeviceDataRequested() {
 }
 
 void NearbyShareLocalDeviceDataManagerImpl::OnDownloadDeviceDataFinished(
-    const absl::optional<nearbyshare::proto::UpdateDeviceResponse>& response) {
+    const absl::optional<nearby::sharing::proto::UpdateDeviceResponse>&
+        response) {
   if (response)
     HandleUpdateDeviceResponse(response);
 
@@ -274,7 +275,8 @@ void NearbyShareLocalDeviceDataManagerImpl::OnDownloadDeviceDataFinished(
 
 void NearbyShareLocalDeviceDataManagerImpl::OnUploadContactsFinished(
     UploadCompleteCallback callback,
-    const absl::optional<nearbyshare::proto::UpdateDeviceResponse>& response) {
+    const absl::optional<nearby::sharing::proto::UpdateDeviceResponse>&
+        response) {
   // NOTE(http://crbug.com/1211189): Only process the UpdateDevice response for
   // DownloadDeviceData() calls. We want avoid infinite loops if the full name
   // or icon URL unexpectedly change.
@@ -284,7 +286,8 @@ void NearbyShareLocalDeviceDataManagerImpl::OnUploadContactsFinished(
 
 void NearbyShareLocalDeviceDataManagerImpl::OnUploadCertificatesFinished(
     UploadCompleteCallback callback,
-    const absl::optional<nearbyshare::proto::UpdateDeviceResponse>& response) {
+    const absl::optional<nearby::sharing::proto::UpdateDeviceResponse>&
+        response) {
   // NOTE(http://crbug.com/1211189): Only process the UpdateDevice response for
   // DownloadDeviceData() calls. We want avoid infinite loops if the full name
   // or icon URL unexpectedly change.
@@ -293,7 +296,8 @@ void NearbyShareLocalDeviceDataManagerImpl::OnUploadCertificatesFinished(
 }
 
 void NearbyShareLocalDeviceDataManagerImpl::HandleUpdateDeviceResponse(
-    const absl::optional<nearbyshare::proto::UpdateDeviceResponse>& response) {
+    const absl::optional<nearby::sharing::proto::UpdateDeviceResponse>&
+        response) {
   if (!response)
     return;
 

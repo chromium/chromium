@@ -7,10 +7,11 @@
 
 #import <UIKit/UIKit.h>
 
+#import <optional>
+
 #import "base/functional/callback.h"
 #import "ios/public/provider/chrome/browser/lens/lens_query.h"
 #import "ios/web/public/navigation/navigation_manager.h"
-#import "third_party/abseil-cpp/absl/types/optional.h"
 
 @class LensConfiguration;
 @class UIViewController;
@@ -70,7 +71,7 @@ bool IsLensSupported();
 bool IsLensWebResultsURL(const GURL& url);
 
 // Returns the Lens entry point for `url` if it is a Lens Web results page.
-absl::optional<LensEntrypoint> GetLensEntryPointFromURL(const GURL& url);
+std::optional<LensEntrypoint> GetLensEntryPointFromURL(const GURL& url);
 
 // Generates web load params for a Lens image search for the given
 // `query`. `completion` will be run on the main thread.

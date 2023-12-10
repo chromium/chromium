@@ -1,0 +1,5 @@
+WebView textSize:16.00 style:0 bundle:[display="", htmlTag="#document"]
+++View textSize:16.00 style:0 bundle:[display="block", htmlTag="body"]
+++++Image text:"svg SVG Title Tag" textSize:16.00 style:0 bundle:[aria-label="svg", display="inline", htmlTag="svg"]
+++++++View textSize:16.00 style:0 bundle:[display="block", fill="red", htmlTag="text", x="150", y="130"]
+++++++++TextView text:"Test" textSize:16.00 style:0 bundle:[display="", htmlTag=""]

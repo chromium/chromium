@@ -24,18 +24,15 @@ import org.chromium.base.compat.ApiHelperForS;
  */
 public class ForegroundServiceUtils {
     private static final String TAG = "ForegroundService";
+
     private ForegroundServiceUtils() {}
 
-    /**
-     * Gets the singleton instance of ForegroundServiceUtils.
-     */
+    /** Gets the singleton instance of ForegroundServiceUtils. */
     public static ForegroundServiceUtils getInstance() {
         return ForegroundServiceUtils.LazyHolder.sInstance;
     }
 
-    /**
-     * Sets a mocked instance for testing.
-     */
+    /** Sets a mocked instance for testing. */
     public static void setInstanceForTesting(ForegroundServiceUtils instance) {
         var oldValue = ForegroundServiceUtils.LazyHolder.sInstance;
         ForegroundServiceUtils.LazyHolder.sInstance = instance;

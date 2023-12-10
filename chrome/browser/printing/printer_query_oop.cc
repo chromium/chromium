@@ -10,13 +10,13 @@
 #include "base/check_op.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/printing/prefs_util.h"
 #include "chrome/browser/printing/print_backend_service_manager.h"
 #include "chrome/browser/printing/print_job_worker_oop.h"
 #include "components/device_event_log/device_event_log.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/web_contents.h"
 #include "printing/buildflags/buildflags.h"
-#include "printing/printing_features.h"
 
 namespace printing {
 
@@ -251,6 +251,16 @@ void PrinterQueryOop::OnDidUpdatePrintSettings(
     // unregister it.  Just drop any local reference to it.
     query_with_ui_client_id_.reset();
 
+    // With the failure to update the setting, the registered client must be
+    // released.  The context ID is also no longer relevant to use.
+    if (print_document_client_id_.has_value()) {
+      PrintBackendServiceManager::GetInstance().UnregisterClient(
+          print_document_client_id_.value());
+      print_document_client_id_.reset();
+      CHECK(context_id_.has_value());
+      context_id_.reset();
+    }
+
     // TODO(crbug.com/809738)  Fill in support for handling of access-denied
     // result code.
   } else {
@@ -291,7 +301,7 @@ void PrinterQueryOop::SendEstablishPrintingContext(
     PrintBackendServiceManager::ClientId client_id,
     const std::string& printer_name) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(features::ShouldPrintJobOop());
+  DCHECK(ShouldPrintJobOop());
 
   DVLOG(1) << "Establishing printing context for system print";
 
@@ -314,7 +324,7 @@ void PrinterQueryOop::SendEstablishPrintingContext(
 
 void PrinterQueryOop::SendUseDefaultSettings(SettingsCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(features::ShouldPrintJobOop());
+  DCHECK(ShouldPrintJobOop());
   CHECK(query_with_ui_client_id_.has_value());
 
   PrintBackendServiceManager& service_mgr =
@@ -332,7 +342,7 @@ void PrinterQueryOop::SendAskUserForSettings(uint32_t document_page_count,
                                              bool is_scripted,
                                              SettingsCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(features::ShouldPrintJobOop());
+  DCHECK(ShouldPrintJobOop());
 
   if (document_page_count > kMaxPageCount) {
     InvokeSettingsCallback(std::move(callback), mojom::ResultCode::kFailed);

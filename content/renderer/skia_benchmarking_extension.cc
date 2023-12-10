@@ -234,7 +234,7 @@ void SkiaBenchmarking::Rasterize(gin::Arguments* args) {
                    .Set("width", snapped_clip.width())
                    .Set("height", snapped_clip.height())
                    .Set("data", blink::WebArrayBufferConverter::ToV8Value(
-                                    &buffer, context->Global(), isolate))
+                                    &buffer, isolate))
                    .Build());
 }
 

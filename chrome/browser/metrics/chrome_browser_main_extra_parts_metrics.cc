@@ -86,11 +86,6 @@
 #include "base/strings/string_util.h"
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
-#if BUILDFLAG(IS_OZONE)
-#include "ui/events/devices/device_data_manager.h"
-#include "ui/events/devices/input_device_event_observer.h"
-#endif  // BUILDFLAG(IS_OZONE)
-
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
 
@@ -362,17 +357,6 @@ enum UMALinuxGlibcVersion {
   UMA_LINUX_GLIBC_UNKNOWN,
   UMA_LINUX_GLIBC_2_11,
   // To log newer versions, just update tools/metrics/histograms/histograms.xml.
-};
-
-enum UMATouchEventFeatureDetectionState {
-  UMA_TOUCH_EVENT_FEATURE_DETECTION_ENABLED,
-  UMA_TOUCH_EVENT_FEATURE_DETECTION_AUTO_ENABLED,
-  UMA_TOUCH_EVENT_FEATURE_DETECTION_AUTO_DISABLED,
-  UMA_TOUCH_EVENT_FEATURE_DETECTION_DISABLED,
-  // NOTE: Add states only immediately above this line. Make sure to
-  // update the enum list in tools/metrics/histograms/histograms.xml
-  // accordingly.
-  UMA_TOUCH_EVENT_FEATURE_DETECTION_STATE_COUNT
 };
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -730,72 +714,6 @@ void RecordLinuxGlibcVersion() {
   base::UmaHistogramSparse("Linux.GlibcVersion", glibc_version_result);
 #endif
 }
-
-void RecordTouchEventState() {
-  const base::CommandLine& command_line =
-      *base::CommandLine::ForCurrentProcess();
-  const std::string touch_enabled_switch =
-      command_line.HasSwitch(switches::kTouchEventFeatureDetection)
-          ? command_line.GetSwitchValueASCII(
-                switches::kTouchEventFeatureDetection)
-          : switches::kTouchEventFeatureDetectionAuto;
-
-  UMATouchEventFeatureDetectionState state;
-  if (touch_enabled_switch.empty() ||
-      touch_enabled_switch == switches::kTouchEventFeatureDetectionEnabled) {
-    state = UMA_TOUCH_EVENT_FEATURE_DETECTION_ENABLED;
-  } else if (touch_enabled_switch ==
-             switches::kTouchEventFeatureDetectionAuto) {
-    state = (ui::GetTouchScreensAvailability() ==
-             ui::TouchScreensAvailability::ENABLED)
-                ? UMA_TOUCH_EVENT_FEATURE_DETECTION_AUTO_ENABLED
-                : UMA_TOUCH_EVENT_FEATURE_DETECTION_AUTO_DISABLED;
-  } else if (touch_enabled_switch ==
-             switches::kTouchEventFeatureDetectionDisabled) {
-    state = UMA_TOUCH_EVENT_FEATURE_DETECTION_DISABLED;
-  } else {
-    NOTREACHED();
-    return;
-  }
-
-  base::UmaHistogramEnumeration("Touchscreen.TouchEventsEnabled", state,
-                                UMA_TOUCH_EVENT_FEATURE_DETECTION_STATE_COUNT);
-}
-
-#if BUILDFLAG(IS_OZONE)
-
-// Asynchronously records the touch event state when the ui::DeviceDataManager
-// completes a device scan.
-class AsynchronousTouchEventStateRecorder
-    : public ui::InputDeviceEventObserver {
- public:
-  AsynchronousTouchEventStateRecorder();
-
-  AsynchronousTouchEventStateRecorder(
-      const AsynchronousTouchEventStateRecorder&) = delete;
-  AsynchronousTouchEventStateRecorder& operator=(
-      const AsynchronousTouchEventStateRecorder&) = delete;
-
-  ~AsynchronousTouchEventStateRecorder() override;
-
-  // ui::InputDeviceEventObserver overrides.
-  void OnDeviceListsComplete() override;
-};
-
-AsynchronousTouchEventStateRecorder::AsynchronousTouchEventStateRecorder() {
-  ui::DeviceDataManager::GetInstance()->AddObserver(this);
-}
-
-AsynchronousTouchEventStateRecorder::~AsynchronousTouchEventStateRecorder() {
-  ui::DeviceDataManager::GetInstance()->RemoveObserver(this);
-}
-
-void AsynchronousTouchEventStateRecorder::OnDeviceListsComplete() {
-  ui::DeviceDataManager::GetInstance()->RemoveObserver(this);
-  RecordTouchEventState();
-}
-
-#endif  // BUILDFLAG(IS_OZONE)
 
 #if BUILDFLAG(IS_WIN)
 // Record the UMA histogram when a response is received.
@@ -1156,20 +1074,6 @@ void ChromeBrowserMainExtraPartsMetrics::PostBrowserStart() {
   base::ThreadPool::PostTask(FROM_HERE, kBestEffortTaskTraits,
                              base::BindOnce(&RecordLinuxDistro));
 #endif
-
-#if BUILDFLAG(IS_OZONE)
-  // The touch event state for Ozone based event sub-systems are based on device
-  // scans that happen asynchronously. So we may need to attach an observer to
-  // wait until these scans complete.
-  if (ui::DeviceDataManager::GetInstance()->AreDeviceListsComplete()) {
-    RecordTouchEventState();
-  } else {
-    input_device_event_observer_ =
-        std::make_unique<AsynchronousTouchEventStateRecorder>();
-  }
-#else
-  RecordTouchEventState();
-#endif  // BUILDFLAG(IS_OZONE)
 
 #if BUILDFLAG(IS_MAC)
   RecordMacMetrics();

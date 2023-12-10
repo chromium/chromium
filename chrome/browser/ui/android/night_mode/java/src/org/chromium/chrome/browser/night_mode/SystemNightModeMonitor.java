@@ -57,9 +57,7 @@ public class SystemNightModeMonitor {
         mObservers.removeObserver(observer);
     }
 
-    /**
-     * Updates the system night mode state, and notifies observers if system night mode changes.
-     */
+    /** Updates the system night mode state, and notifies observers if system night mode changes. */
     public void onApplicationConfigurationChanged() {
         final boolean oldNightMode = mSystemNightModeOn;
         calculateSystemNightMode();

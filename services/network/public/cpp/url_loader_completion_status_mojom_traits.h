@@ -109,11 +109,6 @@ class COMPONENT_EXPORT(NETWORK_CPP_BASE)
     return status.should_report_corb_blocking;
   }
 
-  static const net::ProxyServer& proxy_server(
-      const network::URLLoaderCompletionStatus& status) {
-    return status.proxy_server;
-  }
-
   static const net::ResolveErrorInfo& resolve_error_info(
       const network::URLLoaderCompletionStatus& status) {
     return status.resolve_error_info;

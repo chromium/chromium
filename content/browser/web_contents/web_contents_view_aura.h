@@ -364,8 +364,6 @@ class CONTENT_EXPORT WebContentsViewAura
 
   std::unique_ptr<WebContentsViewDelegate> delegate_;
 
-  ui::mojom::DragOperation current_drag_op_ = ui::mojom::DragOperation::kNone;
-
   // This member holds the dropped data from the drag enter phase to the end
   // of the drop.  A drop may end if the user releases the mouse button over
   // the view, if the cursor moves off the view, or some other events occurs

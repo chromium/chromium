@@ -1,0 +1,22 @@
+<!doctype html>
+System accent color should not be applied in image contexts, as that can allow
+sites to fingerprint by reading the system accent color via canvas.<br><br>
+
+Change the system accent color to a non-default value. Only the first box
+should change:<br>
+<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100'>
+  <foreignObject width='100px' height='100px'>
+    <body xmlns='http://www.w3.org/1999/xhtml'>
+      <div style='width: 100px; height: 100px; background: AccentColor'></div>
+    </body>
+  </foreignObject>
+</svg>
+<br>
+<img src="data:image/svg+xml;utf8,
+<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100'>
+  <foreignObject width='100px' height='100px'>
+    <body xmlns='http://www.w3.org/1999/xhtml'>
+      <div style='width: 100px; height: 100px; background: AccentColor'></div>
+    </body>
+  </foreignObject>
+</svg>">

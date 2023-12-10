@@ -18,8 +18,9 @@
 namespace views {
 
 class VIEWS_EXPORT TableLayoutView : public View {
+  METADATA_HEADER(TableLayoutView, View)
+
  public:
-  METADATA_HEADER(TableLayoutView);
   TableLayoutView() = default;
   TableLayoutView(const TableLayoutView&) = delete;
   TableLayoutView& operator=(const TableLayoutView&) = delete;

@@ -55,4 +55,4 @@ class WallpaperAsh : public mojom::Wallpaper {
 
 }  // namespace crosapi
 
-#endif
+#endif  // CHROME_BROWSER_ASH_CROSAPI_WALLPAPER_ASH_H_

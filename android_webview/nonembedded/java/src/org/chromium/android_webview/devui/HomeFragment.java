@@ -51,17 +51,18 @@ public class HomeFragment extends DevUiBaseFragment {
 
         mInfoListView = view.findViewById(R.id.main_info_list);
         // Copy item's text to clipboard on long tapping a list item.
-        mInfoListView.setOnItemLongClickListener((parent, clickedView, pos, id) -> {
-            InfoItem item = (InfoItem) parent.getItemAtPosition(pos);
-            ClipboardManager clipboard =
-                    (ClipboardManager) mContext.getSystemService(Context.CLIPBOARD_SERVICE);
-            ClipData clip = ClipData.newPlainText(item.title, item.subtitle);
-            clipboard.setPrimaryClip(clip);
-            // Show a toast that the text has been copied.
-            Toast.makeText(mContext, "Copied " + item.title, Toast.LENGTH_SHORT).show();
+        mInfoListView.setOnItemLongClickListener(
+                (parent, clickedView, pos, id) -> {
+                    InfoItem item = (InfoItem) parent.getItemAtPosition(pos);
+                    ClipboardManager clipboard =
+                            (ClipboardManager) mContext.getSystemService(Context.CLIPBOARD_SERVICE);
+                    ClipData clip = ClipData.newPlainText(item.title, item.subtitle);
+                    clipboard.setPrimaryClip(clip);
+                    // Show a toast that the text has been copied.
+                    Toast.makeText(mContext, "Copied " + item.title, Toast.LENGTH_SHORT).show();
 
-            return true;
-        });
+                    return true;
+                });
     }
 
     @Override
@@ -71,21 +72,36 @@ public class HomeFragment extends DevUiBaseFragment {
         List<InfoItem> infoItems = new ArrayList<>();
         PackageInfo currentWebViewPackage = WebViewPackageHelper.getCurrentWebViewPackage(mContext);
         PackageInfo devToolsPackage = WebViewPackageHelper.getContextPackageInfo(mContext);
-        boolean isDifferentPackage = currentWebViewPackage == null
-                || !devToolsPackage.packageName.equals(currentWebViewPackage.packageName);
+        boolean isDifferentPackage =
+                currentWebViewPackage == null
+                        || !devToolsPackage.packageName.equals(currentWebViewPackage.packageName);
 
         if (currentWebViewPackage != null) {
-            infoItems.add(new InfoItem("WebView package",
-                    String.format(Locale.US, "%s (%s/%s)", currentWebViewPackage.packageName,
-                            currentWebViewPackage.versionName, currentWebViewPackage.versionCode)));
+            infoItems.add(
+                    new InfoItem(
+                            "WebView package",
+                            String.format(
+                                    Locale.US,
+                                    "%s (%s/%s)",
+                                    currentWebViewPackage.packageName,
+                                    currentWebViewPackage.versionName,
+                                    currentWebViewPackage.versionCode)));
         }
         if (isDifferentPackage) {
-            infoItems.add(new InfoItem("DevTools package",
-                    String.format(Locale.US, "%s (%s/%s)", devToolsPackage.packageName,
-                            devToolsPackage.versionName, devToolsPackage.versionCode)));
+            infoItems.add(
+                    new InfoItem(
+                            "DevTools package",
+                            String.format(
+                                    Locale.US,
+                                    "%s (%s/%s)",
+                                    devToolsPackage.packageName,
+                                    devToolsPackage.versionName,
+                                    devToolsPackage.versionCode)));
         }
-        infoItems.add(new InfoItem("Device info",
-                String.format(Locale.US, "%s - %s", Build.MODEL, Build.FINGERPRINT)));
+        infoItems.add(
+                new InfoItem(
+                        "Device info",
+                        String.format(Locale.US, "%s - %s", Build.MODEL, Build.FINGERPRINT)));
 
         ArrayAdapter<InfoItem> itemsArrayAdapter = new InfoListAdapter(infoItems);
         mInfoListView.setAdapter(itemsArrayAdapter);

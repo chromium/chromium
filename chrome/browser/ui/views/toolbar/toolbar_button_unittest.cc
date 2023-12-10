@@ -16,10 +16,13 @@
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
+#include "components/vector_icons/vector_icons.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/actions/actions.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
+#include "ui/base/models/image_model.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/views/controls/button/button.h"
@@ -44,7 +47,7 @@ class ToolbarButtonTestApi {
   const gfx::Insets layout_inset_delta() const {
     return button_->layout_inset_delta_;
   }
-  const absl::optional<SkColor> last_border_color() const {
+  const std::optional<SkColor> last_border_color() const {
     return button_->last_border_color_;
   }
   void SetAnimationTimingForTesting() {
@@ -270,4 +273,23 @@ TEST_F(ToolbarButtonUITest, BorderUpdatedOnTouchModeSwitch) {
   // This constant is different in touch mode.
   touch_mode_override.UpdateState(true);
   EXPECT_EQ(button_->GetInsets(), GetLayoutInsets(TOOLBAR_BUTTON));
+}
+
+using ToolbarButtonActionViewInterfaceTest = ToolbarButtonViewsTest;
+
+TEST_F(ToolbarButtonActionViewInterfaceTest, TestActionChanged) {
+  auto toolbar_button = std::make_unique<ToolbarButton>();
+  EXPECT_FALSE(toolbar_button->GetVectorIconsHasValueForTesting());
+  std::unique_ptr<actions::ActionItem> action_item =
+      actions::ActionItem::Builder()
+          .SetActionId(0)
+          .SetEnabled(false)
+          .SetImage(ui::ImageModel::FromVectorIcon(vector_icons::kErrorIcon))
+          .Build();
+  toolbar_button->GetActionViewInterface()->ActionItemChangedImpl(
+      action_item.get());
+  // Test some properties to ensure that the right ActionViewInterface is linked
+  // to the view.
+  EXPECT_TRUE(toolbar_button->GetVectorIconsHasValueForTesting());
+  EXPECT_FALSE(toolbar_button->GetEnabled());
 }

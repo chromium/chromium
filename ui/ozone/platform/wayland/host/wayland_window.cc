@@ -8,6 +8,7 @@
 #include <stdint.h>
 #include <wayland-cursor.h>
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 
@@ -909,10 +910,15 @@ bool WaylandWindow::IsScreenCoordinatesEnabled() const {
 
 uint32_t WaylandWindow::DispatchEventToDelegate(
     const PlatformEvent& native_event) {
-  bool handled = DispatchEventFromNativeUiEvent(
+  EventResult result = DispatchEventFromNativeUiEvent(
       native_event, base::BindOnce(&PlatformWindowDelegate::DispatchEvent,
                                    base::Unretained(delegate_)));
-  return handled ? POST_DISPATCH_STOP_PROPAGATION : POST_DISPATCH_NONE;
+  if (result == ER_UNHANDLED) {
+    return POST_DISPATCH_NONE;
+  }
+
+  return !!(result & ER_SKIPPED) ? POST_DISPATCH_PERFORM_DEFAULT
+                                 : POST_DISPATCH_STOP_PROPAGATION;
 }
 
 std::unique_ptr<WaylandSurface> WaylandWindow::TakeWaylandSurface() {
@@ -976,8 +982,13 @@ bool WaylandWindow::CommitOverlays(
     return true;
   }
 
-  // |overlays| is sorted from bottom to top.
-  std::sort(overlays.begin(), overlays.end(), OverlayStackOrderCompare);
+  // Lacros submits from front to back. A simple reverse can avoid a full sort.
+  std::reverse(overlays.begin(), overlays.end());
+  if (!std::is_sorted(overlays.begin(), overlays.end(),
+                      OverlayStackOrderCompare)) {
+    // |overlays| is sorted from bottom to top.
+    std::sort(overlays.begin(), overlays.end(), OverlayStackOrderCompare);
+  }
 
   // Find the location where z_oder becomes non-negative.
   wl::WaylandOverlayConfig value;

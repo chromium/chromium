@@ -47,6 +47,7 @@ class _Generator(object):
                self._namespace.short_filename))
       .Append()
       .Append('#include <memory>')
+      .Append('#include <optional>')
       .Append('#include <ostream>')
       .Append('#include <string>')
       .Append('#include <utility>')
@@ -147,9 +148,9 @@ class _Generator(object):
         .Append('%s::~%s() = default;' % (classname_in_namespace, classname))
       )
       # Note: we use 'rhs' because some API objects have a member 'other'.
-      (c.Append('%s::%s(%s&& rhs) = default;' %
+      (c.Append('%s::%s(%s&& rhs) noexcept = default;' %
                     (classname_in_namespace, classname, classname))
-        .Append('%s& %s::operator=(%s&& rhs) = default;' %
+        .Append('%s& %s::operator=(%s&& rhs) noexcept = default;' %
                     (classname_in_namespace, classname_in_namespace,
                      classname))
       )
@@ -165,9 +166,6 @@ class _Generator(object):
           c.Cblock(self._GenerateTypePopulate(classname_in_namespace, type_))
         c.Cblock(self._GenerateTypePopulateFromValue(
           classname_in_namespace, type_))
-        if cpp_namespace is None:  # only generate for top-level types
-          c.Cblock(self._GenerateTypeFromValueDeprecated(
-              classname_in_namespace, type_))
 
         if type_.property_type is not PropertyType.CHOICES:
           c.Cblock(self._GenerateTypeFromValue(
@@ -429,44 +427,6 @@ class _Generator(object):
     })
     return c
 
-  def _GenerateTypeFromValueDeprecated(self, cpp_namespace, type_):
-    classname = cpp_util.Classname(schema_util.StripNamespace(type_.name))
-    c = Code()
-    (c.Append('// static')
-      .Append('std::unique_ptr<%s> %s::FromValueDeprecated(%s) {' % (classname,
-        cpp_namespace, self._GenerateParams(('const base::Value& value',),
-          error_as_ptr=True)))
-    )
-    c.Sblock();
-
-    c.Append('auto out = std::make_unique<%s>();' % classname)
-
-    if self._generate_error_messages:
-      c.Append('DCHECK(error_ptr);')
-      c.Append('auto& error = *error_ptr;')
-
-    if type_.property_type == PropertyType.CHOICES:
-      c.Append('bool result = Populate(%s);' %
-        self._GenerateArgs(('value', '*out')))
-    else:
-      (c.Sblock('if (!value.is_dict()) {')
-        .Concat(self._AppendError16(
-          'u"expected dictionary, got " + ' +
-          self._util_cc_helper.GetValueTypeString('value')))
-        .Append('return nullptr;')
-        .Eblock('}'))
-      c.Append('bool result = Populate(%s);' %
-        self._GenerateArgs(('value.GetDict()', '*out')))
-
-    if self._generate_error_messages:
-      c.Append('DCHECK_EQ(result, error.empty());')
-    c.Sblock('if (!result) {')
-    c.Append('return nullptr;')
-    c.Eblock('}')
-    c.Append('return out;')
-    c.Eblock('}')
-    return c
-
   def _GenerateTypeFromValue(self, cpp_namespace, type_, is_dict):
     classname = cpp_util.Classname(schema_util.StripNamespace(type_.name))
 
@@ -499,7 +459,7 @@ class _Generator(object):
       c.Append('DCHECK(!error.empty());')
       c.Append('return base::unexpected(std::move(error));')
     else:
-      c.Append('return absl::nullopt;')
+      c.Append('return std::nullopt;')
     c.Eblock('}')
 
     c.Append('return out;')
@@ -851,8 +811,8 @@ class _Generator(object):
       c.Concat(self._GeneratePropertyFunctions('Params', function.params))
       (c.Append('Params::Params() = default;')
         .Append('Params::~Params() = default;')
-        .Append('Params::Params(Params&& rhs) = default;')
-        .Append('Params& Params::operator=(Params&& rhs) = default;')
+        .Append('Params::Params(Params&& rhs) noexcept = default;')
+        .Append('Params& Params::operator=(Params&& rhs) noexcept = default;')
         .Append()
         .Cblock(self._GenerateFunctionParamsCreate(function))
       )
@@ -1011,12 +971,12 @@ class _Generator(object):
     c = Code()
 
     (c.Append('// static')
-      .Sblock('absl::optional<Params> Params::Create(%s) {' %
+      .Sblock('std::optional<Params> Params::Create(%s) {' %
                   self._GenerateParams([
                       'const base::Value::List& args']))
     )
 
-    failure_value = 'absl::nullopt'
+    failure_value = 'std::nullopt'
     (c.Concat(self._GenerateParamsCheck(function, 'args', failure_value))
       .Append('Params params;')
     )
@@ -1132,14 +1092,14 @@ class _Generator(object):
                 type_.name,
                 self._util_cc_helper.GetValueTypeString('%%(src_var)s')))))
       if is_ptr:
-        if cpp_util.ShouldUseAbslOptional(underlying_type):
-          c.Append('%(dst_var)s = absl::nullopt;')
+        if cpp_util.ShouldUseStdOptional(underlying_type):
+          c.Append('%(dst_var)s = std::nullopt;')
         else:
           c.Append('%(dst_var)s.reset();')
       c.Append('return %(failure_value)s;')
       (c.Eblock('}'))
       if is_ptr:
-        if cpp_util.ShouldUseAbslOptional(underlying_type):
+        if cpp_util.ShouldUseStdOptional(underlying_type):
           c.Append('%(dst_var)s = *temp;')
         elif is_string_or_function:
           c.Append('%(dst_var)s = std::make_unique<%(cpp_type)s>(*temp);')
@@ -1503,7 +1463,7 @@ class _Generator(object):
     return c
 
   def _GenerateParams(
-      self, params, generate_error_messages=None, error_as_ptr=None):
+      self, params, generate_error_messages=None):
     """Builds the parameter list for a function, given an array of parameters.
     If |generate_error_messages| is specified, it overrides
     |self._generate_error_messages|.
@@ -1511,10 +1471,7 @@ class _Generator(object):
     if generate_error_messages is None:
       generate_error_messages = self._generate_error_messages
     if generate_error_messages:
-      if error_as_ptr:
-        params = list(params) + ['std::u16string* error_ptr']
-      else:
-        params = list(params) + ['std::u16string& error']
+      params = list(params) + ['std::u16string& error']
     return ', '.join(str(p) for p in params)
 
   def _GenerateArgs(self, args, generate_error_messages=None):

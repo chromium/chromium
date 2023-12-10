@@ -58,7 +58,8 @@ class AddressEditorViewTest : public ChromeViewsTestBase {
  protected:
   // Required for test_web_content.
   content::RenderViewHostTestEnabler test_render_host_factories_;
-  autofill::AutofillProfile profile_to_edit_;
+  autofill::AutofillProfile profile_to_edit_{
+      i18n_model_definition::kLegacyHierarchyCountryCode};
   TestingProfile profile_;
   TestingPrefServiceSimple pref_service_;
   TestPersonalDataManager pdm_;

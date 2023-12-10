@@ -52,6 +52,15 @@ struct AHardwareBufferHandle {
 };
 
 // gfx::DXGIHandleToken
+// A unique identifier to identify one of the below resources
+// (cannot identify the other at the same time):
+// - Texture corresponding to the GMB handle. Handles get duplicated and OS
+//   provides no other identifier. DXGISharedHandleManager in the GPU services
+//   uses this as a key to cache state across calls that reference the same
+//   texture via different handles.
+// - Fence corresponding to the GPUFenceHandle. Fence handle get duplicated
+//   and OS provides no other identifier. D3DImageBacking in the GPU services
+//   uses this as a key to reference the same fence via different handles.
 [EnableIf=is_win]
 struct DXGIHandleToken {
   mojo_base.mojom.UnguessableToken value;

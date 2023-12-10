@@ -13,6 +13,7 @@
 #include "content/browser/preloading/prefetch/prefetch_params.h"
 #include "content/browser/preloading/preloading.h"
 #include "content/browser/preloading/preloading_data_impl.h"
+#include "content/browser/preloading/preloading_trigger_type_impl.h"
 #include "content/browser/preloading/prerender/prerender_features.h"
 #include "content/browser/preloading/prerenderer_impl.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -341,8 +342,12 @@ void PreloadingDecider::UpdateSpeculationCandidates(
 
     // TODO(crbug.com/1341019): Pass the action requested by speculation rules
     // to PreloadingPrediction.
-    AddPreloadingPrediction(candidate->url, GetPredictorForSpeculationRules(
-                                                candidate->injection_world));
+    PreloadingTriggerType trigger_type =
+        PreloadingTriggerTypeFromSpeculationInjectionType(
+            candidate->injection_type);
+    PreloadingPredictor predictor =
+        GetPredictorForPreloadingTriggerType(trigger_type);
+    AddPreloadingPrediction(candidate->url, std::move(predictor));
 
     return false;
   };

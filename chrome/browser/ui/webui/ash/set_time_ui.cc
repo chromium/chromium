@@ -23,8 +23,9 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
-#include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/grit/set_time_dialog_resources.h"
+#include "chrome/grit/set_time_dialog_resources_map.h"
 #include "chromeos/ash/components/dbus/system_clock/system_clock_client.h"
 #include "chromeos/ash/components/settings/timezone_settings.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -193,13 +194,10 @@ SetTimeUI::SetTimeUI(content::WebUI* web_ui) : MojoWebDialogUI(web_ui) {
 
   source->AddLocalizedStrings(values);
 
-  source->AddResourcePath("set_time.js", IDR_SET_TIME_JS);
-  source->AddResourcePath("set_time_browser_proxy.js",
-                          IDR_SET_TIME_BROWSER_PROXY_JS);
-  source->AddResourcePath("set_time_dialog.html.js",
-                          IDR_SET_TIME_DIALOG_HTML_JS);
-  source->AddResourcePath("set_time_dialog.js", IDR_SET_TIME_DIALOG_JS);
-  source->SetDefaultResource(IDR_SET_TIME_HTML);
+  webui::SetupWebUIDataSource(
+      source,
+      base::make_span(kSetTimeDialogResources, kSetTimeDialogResourcesSize),
+      IDR_SET_TIME_DIALOG_SET_TIME_HTML);
 
   source->AddBoolean("isJellyEnabled", chromeos::features::IsJellyEnabled());
 }

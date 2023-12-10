@@ -104,8 +104,8 @@ public class ScrollingBottomViewSceneLayer extends SceneOverlayLayer implements 
 
     @Override
     public void setContentTree(SceneLayer contentTree) {
-        ScrollingBottomViewSceneLayerJni.get().setContentTree(
-                mNativePtr, ScrollingBottomViewSceneLayer.this, contentTree);
+        ScrollingBottomViewSceneLayerJni.get()
+                .setContentTree(mNativePtr, ScrollingBottomViewSceneLayer.this, contentTree);
     }
 
     @Override
@@ -114,10 +114,16 @@ public class ScrollingBottomViewSceneLayer extends SceneOverlayLayer implements 
         // The composited shadow should be visible if the Android toolbar's isn't.
         boolean isShadowVisible = mBottomView.getVisibility() != View.VISIBLE;
 
-        ScrollingBottomViewSceneLayerJni.get().updateScrollingBottomViewLayer(mNativePtr,
-                ScrollingBottomViewSceneLayer.this, resourceManager, mResourceId,
-                mTopShadowHeightPx, mCurrentXOffsetPx, viewport.height() + mCurrentYOffsetPx,
-                isShadowVisible);
+        ScrollingBottomViewSceneLayerJni.get()
+                .updateScrollingBottomViewLayer(
+                        mNativePtr,
+                        ScrollingBottomViewSceneLayer.this,
+                        resourceManager,
+                        mResourceId,
+                        mTopShadowHeightPx,
+                        mCurrentXOffsetPx,
+                        viewport.height() + mCurrentYOffsetPx,
+                        isShadowVisible);
 
         return this;
     }
@@ -163,11 +169,20 @@ public class ScrollingBottomViewSceneLayer extends SceneOverlayLayer implements 
     @NativeMethods
     interface Natives {
         long init(ScrollingBottomViewSceneLayer caller);
-        void setContentTree(long nativeScrollingBottomViewSceneLayer,
-                ScrollingBottomViewSceneLayer caller, SceneLayer contentTree);
-        void updateScrollingBottomViewLayer(long nativeScrollingBottomViewSceneLayer,
-                ScrollingBottomViewSceneLayer caller, ResourceManager resourceManager,
-                int viewResourceId, int shadowHeightPx, float xOffset, float yOffset,
+
+        void setContentTree(
+                long nativeScrollingBottomViewSceneLayer,
+                ScrollingBottomViewSceneLayer caller,
+                SceneLayer contentTree);
+
+        void updateScrollingBottomViewLayer(
+                long nativeScrollingBottomViewSceneLayer,
+                ScrollingBottomViewSceneLayer caller,
+                ResourceManager resourceManager,
+                int viewResourceId,
+                int shadowHeightPx,
+                float xOffset,
+                float yOffset,
                 boolean showShadow);
     }
 }

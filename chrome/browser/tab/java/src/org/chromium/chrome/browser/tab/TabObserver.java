@@ -17,9 +17,7 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.mojom.VirtualKeyboardMode;
 import org.chromium.url.GURL;
 
-/**
- * An observer that is notified of changes to a {@link Tab} object.
- */
+/** An observer that is notified of changes to a {@link Tab} object. */
 public interface TabObserver {
     /**
      * Called when a {@link Tab} finished initialization. The {@link TabState} contains,
@@ -328,8 +326,12 @@ public interface TabObserver {
      * @param topControlsMinHeightOffsetY The Y offset of the current top controls min-height.
      * @param bottomControlsMinHeightOffsetY The Y offset of the current bottom controls min-height.
      */
-    void onBrowserControlsOffsetChanged(Tab tab, int topControlsOffsetY, int bottomControlsOffsetY,
-            int contentOffsetY, int topControlsMinHeightOffsetY,
+    void onBrowserControlsOffsetChanged(
+            Tab tab,
+            int topControlsOffsetY,
+            int bottomControlsOffsetY,
+            int contentOffsetY,
+            int topControlsMinHeightOffsetY,
             int bottomControlsMinHeightOffsetY);
 
     /**
@@ -338,9 +340,7 @@ public interface TabObserver {
      */
     void onContentViewScrollingStateChanged(boolean scrolling);
 
-    /**
-     * Back press refactor related. Called when navigation state is invalidated.
-     */
+    /** Back press refactor related. Called when navigation state is invalidated. */
     void onNavigationStateChanged();
 
     /**

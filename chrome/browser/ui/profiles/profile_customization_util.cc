@@ -26,8 +26,8 @@ namespace {
 constexpr base::TimeDelta kDefaultExtendedAccountInfoTimeout =
     base::Seconds(10);
 
-absl::optional<base::TimeDelta> g_extended_account_info_timeout_for_testing =
-    absl::nullopt;
+std::optional<base::TimeDelta> g_extended_account_info_timeout_for_testing =
+    std::nullopt;
 
 }  // namespace
 
@@ -96,7 +96,7 @@ void FinalizeNewProfileSetup(Profile* profile,
 ProfileNameResolver::ScopedInfoFetchTimeoutOverride
 ProfileNameResolver::CreateScopedInfoFetchTimeoutOverrideForTesting(
     base::TimeDelta timeout) {
-  return base::AutoReset<absl::optional<base::TimeDelta>>(
+  return base::AutoReset<std::optional<base::TimeDelta>>(
       &g_extended_account_info_timeout_for_testing, timeout);
 }
 

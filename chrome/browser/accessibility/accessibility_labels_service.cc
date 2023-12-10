@@ -22,6 +22,7 @@
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "components/version_info/channel.h"
 #include "content/public/browser/browser_accessibility_state.h"
+#include "content/public/browser/web_contents.h"
 #include "google_apis/google_api_keys.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/image_annotation/image_annotation_service.h"
@@ -29,15 +30,10 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 
 #if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tab_contents/tab_contents_iterator.h"
 #else
 #include "base/android/jni_android.h"
 #include "chrome/browser/image_descriptions/jni_headers/ImageDescriptionsController_jni.h"
-#include "content/public/browser/web_contents.h"
-#include "ui/accessibility/platform/ax_platform_node.h"
 #endif
 
 using LanguageInfo = language::UrlLanguageHistogram::LanguageInfo;
@@ -143,11 +139,10 @@ AccessibilityLabelsService::AccessibilityLabelsService(Profile* profile)
   DCHECK(state);
 
   net::NetworkChangeNotifier::AddNetworkChangeObserver(this);
-  ui::AXPlatformNode::AddAXModeObserver(this);
+  ax_mode_observation_.Observe(&ui::AXPlatform::GetInstance());
 }
 AccessibilityLabelsService::~AccessibilityLabelsService() {
   net::NetworkChangeNotifier::RemoveNetworkChangeObserver(this);
-  ui::AXPlatformNode::RemoveAXModeObserver(this);
 }
 #endif
 
@@ -209,7 +204,8 @@ bool AccessibilityLabelsService::IsEnabled() {
 #endif
 }
 
-void AccessibilityLabelsService::EnableLabelsServiceOnce() {
+void AccessibilityLabelsService::EnableLabelsServiceOnce(
+    content::WebContents* web_contents) {
   if (!accessibility_state_utils::IsScreenReaderEnabled()) {
     return;
   }
@@ -217,12 +213,6 @@ void AccessibilityLabelsService::EnableLabelsServiceOnce() {
   // For Android, we call through the JNI (see below) and send the web contents
   // directly, since Android does not support BrowserList::GetInstance.
 #if !BUILDFLAG(IS_ANDROID)
-  Browser* browser = chrome::FindLastActiveWithProfile(profile_);
-  if (!browser)
-    return;
-  auto* web_contents = browser->tab_strip_model()->GetActiveWebContents();
-  if (!web_contents)
-    return;
   // Fire an AXAction on the active tab to enable this feature once only.
   // We only need to fire this event for the active page.
   ui::AXActionData action_data;

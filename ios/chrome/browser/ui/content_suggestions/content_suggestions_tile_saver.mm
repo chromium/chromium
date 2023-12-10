@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_tile_saver.h"
 
+#import "base/feature_list.h"
 #import "base/functional/bind.h"
 #import "base/hash/md5.h"
 #import "base/logging.h"
@@ -24,6 +25,10 @@
 #endif
 
 namespace content_suggestions_tile_saver {
+
+BASE_FEATURE(kContentSuggestionsTileSaverKillswitch,
+             "ContentSuggestionsTileSaverKillswitch",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Write the `most_visited_sites` to disk.
 void WriteSavedMostVisited(NSDictionary<NSURL*, NTPTile*>* most_visited_sites);
@@ -65,6 +70,11 @@ void UpdateTileList(const ntp_tiles::NTPTilesVector& most_visited_data) {
   for (size_t i = 0; i < most_visited_data.size(); i++) {
     const ntp_tiles::NTPTile& ntp_tile = most_visited_data[i];
     NSURL* ns_url = net::NSURLWithGURL(ntp_tile.url);
+    if (base::FeatureList::IsEnabled(kContentSuggestionsTileSaverKillswitch) &&
+        !ns_url) {
+      // If the URL for a particular tile is invalid, skip including it.
+      continue;
+    }
     NTPTile* tile =
         [[NTPTile alloc] initWithTitle:base::SysUTF16ToNSString(ntp_tile.title)
                                    URL:ns_url

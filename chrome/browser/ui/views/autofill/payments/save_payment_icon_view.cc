@@ -44,7 +44,7 @@ SavePaymentIconView::SavePaymentIconView(
   }
   command_id_ = command_id;
   SetUpForInOutAnimation();
-  SetAccessibilityProperties(/*role*/ absl::nullopt,
+  SetAccessibilityProperties(/*role*/ std::nullopt,
                              GetTextForTooltipAndAccessibleName());
 }
 
@@ -104,14 +104,6 @@ const gfx::VectorIcon& SavePaymentIconView::GetVectorIcon() const {
   return OmniboxFieldTrial::IsChromeRefreshIconsEnabled()
              ? kCreditCardChromeRefreshIcon
              : kCreditCardIcon;
-}
-
-const gfx::VectorIcon& SavePaymentIconView::GetVectorIconBadge() const {
-  SavePaymentIconController* controller = GetController();
-  if (controller && controller->ShouldShowSaveFailureBadge())
-    return vector_icons::kBlockedBadgeIcon;
-
-  return gfx::kNoneIcon;
 }
 
 std::u16string SavePaymentIconView::GetTextForTooltipAndAccessibleName() const {

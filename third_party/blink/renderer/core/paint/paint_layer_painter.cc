@@ -10,13 +10,13 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
+#include "third_party/blink/renderer/core/layout/fragmentation_utils.h"
 #include "third_party/blink/renderer/core/layout/layout_video.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_fragmentation_utils.h"
+#include "third_party/blink/renderer/core/paint/box_fragment_painter.h"
 #include "third_party/blink/renderer/core/paint/clip_path_clipper.h"
 #include "third_party/blink/renderer/core/paint/fragment_data_iterator.h"
-#include "third_party/blink/renderer/core/paint/ng/ng_box_fragment_painter.h"
-#include "third_party/blink/renderer/core/paint/ng/ng_inline_box_fragment_painter.h"
+#include "third_party/blink/renderer/core/paint/inline_box_fragment_painter.h"
 #include "third_party/blink/renderer/core/paint/object_paint_properties.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
@@ -369,7 +369,7 @@ void PaintLayerPainter::PaintFragmentWithPhase(
     PaintPhase phase,
     const FragmentData& fragment_data,
     wtf_size_t fragment_data_idx,
-    const NGPhysicalBoxFragment* physical_fragment,
+    const PhysicalBoxFragment* physical_fragment,
     GraphicsContext& context,
     PaintFlags paint_flags) {
   DCHECK(paint_layer_.IsSelfPaintingLayer() ||
@@ -397,11 +397,11 @@ void PaintLayerPainter::PaintFragmentWithPhase(
     paint_info.SetDescendantPaintingBlocked(true);
 
   if (physical_fragment) {
-    NGBoxFragmentPainter(*physical_fragment).Paint(paint_info);
+    BoxFragmentPainter(*physical_fragment).Paint(paint_info);
   } else if (const auto* layout_inline =
                  DynamicTo<LayoutInline>(&paint_layer_.GetLayoutObject())) {
-    NGInlineBoxFragmentPainter::PaintAllFragments(
-        *layout_inline, fragment_data, fragment_data_idx, paint_info);
+    InlineBoxFragmentPainter::PaintAllFragments(*layout_inline, fragment_data,
+                                                fragment_data_idx, paint_info);
   } else {
     // We are about to enter legacy paint code. Set the right FragmentData
     // object, to use the right paint offset.
@@ -426,7 +426,7 @@ void PaintLayerPainter::PaintWithPhase(PaintPhase phase,
 
   for (const FragmentData& fragment :
        FragmentDataIterator(paint_layer_.GetLayoutObject())) {
-    const NGPhysicalBoxFragment* physical_fragment = nullptr;
+    const PhysicalBoxFragment* physical_fragment = nullptr;
     if (layout_box_with_fragments) {
       physical_fragment =
           layout_box_with_fragments->GetPhysicalFragment(fragment_idx);

@@ -54,7 +54,7 @@ import java.util.concurrent.TimeoutException;
 /** End-to-end tests for TabSuggestion. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE, RESTRICTION_TYPE_NON_LOW_END_DEVICE})
-@EnableFeatures({ChromeFeatureList.CLOSE_TAB_SUGGESTIONS + "<Study"})
+@EnableFeatures({ChromeFeatureList.ARCHIVE_TAB_SERVICE + "<Study"})
 // Disable TAB_TO_GTS_ANIMATION to make it less flaky. When animation is enabled, the suggestion
 // cards will be removed temporarily, then append again.
 // TODO(https://crbug.com/1362059): The message cards aren't shown the first time when entering GTS
@@ -70,15 +70,15 @@ public class TabSuggestionMessageCardTest {
                     + "Study.Group:baseline_tab_suggestions/true/enable_launch_polish/true"
                     + "/min_time_between_prefetches/0/thumbnail_aspect_ratio/1.0";
     private static final String ENABLE_CLOSE_SUGGESTION_PARAM =
-            "/baseline_close_tab_suggestions/true";
+            "/baseline_archive_tab_service/true";
     private static final String ENABLE_GROUP_SUGGESTION_PARAM =
             "/baseline_group_tab_suggestions/true";
 
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
-    private final TabSelectionEditorTestingRobot mTabSelectionEditorTestingRobot =
-            new TabSelectionEditorTestingRobot();
+    private final TabListEditorTestingRobot mTabListEditorTestingRobot =
+            new TabListEditorTestingRobot();
     private final String mClosingSuggestionMessage =
             "3 of your tabs haven't been used lately. Close them?";
     private final String mGroupingSuggestionMessage = "3 tabs seem related. Group them?";
@@ -149,20 +149,20 @@ public class TabSuggestionMessageCardTest {
     private void reviewSuggestion() {
         onView(allOf(withId(R.id.action_button), withParent(withId(R.id.tab_grid_message_item))))
                 .perform(click());
-        mTabSelectionEditorTestingRobot.resultRobot.verifyTabSelectionEditorIsVisible();
+        mTabListEditorTestingRobot.resultRobot.verifyTabListEditorIsVisible();
     }
 
     private void acceptSuggestion(int id) {
-        mTabSelectionEditorTestingRobot.resultRobot.verifyTabSelectionEditorIsVisible();
-        mTabSelectionEditorTestingRobot.actionRobot.clickToolbarActionView(id);
-        mTabSelectionEditorTestingRobot.resultRobot.verifyTabSelectionEditorIsHidden();
+        mTabListEditorTestingRobot.resultRobot.verifyTabListEditorIsVisible();
+        mTabListEditorTestingRobot.actionRobot.clickToolbarActionView(id);
+        mTabListEditorTestingRobot.resultRobot.verifyTabListEditorIsHidden();
     }
 
     private void dismissSuggestion(boolean isReviewed) {
         if (isReviewed) {
-            mTabSelectionEditorTestingRobot.resultRobot.verifyTabSelectionEditorIsVisible();
-            mTabSelectionEditorTestingRobot.actionRobot.clickToolbarNavigationButton();
-            mTabSelectionEditorTestingRobot.resultRobot.verifyTabSelectionEditorIsHidden();
+            mTabListEditorTestingRobot.resultRobot.verifyTabListEditorIsVisible();
+            mTabListEditorTestingRobot.actionRobot.clickToolbarNavigationButton();
+            mTabListEditorTestingRobot.resultRobot.verifyTabListEditorIsHidden();
         } else {
             onView(withId(R.id.tab_grid_message_item)).check(matches(isDisplayed()));
             onView(allOf(withId(R.id.close_button), withParent(withId(R.id.tab_grid_message_item))))
@@ -179,7 +179,7 @@ public class TabSuggestionMessageCardTest {
 
         enteringTabSwitcherAndVerifySuggestionIsShown(mClosingSuggestionMessage);
         reviewSuggestion();
-        acceptSuggestion(R.id.tab_selection_editor_close_menu_item);
+        acceptSuggestion(R.id.tab_list_editor_close_menu_item);
 
         onViewWaiting(allOf(withParent(withId(R.id.snackbar)), withText("3 tabs closed")));
     }
@@ -207,7 +207,7 @@ public class TabSuggestionMessageCardTest {
 
         enteringTabSwitcherAndVerifySuggestionIsShown(mGroupingSuggestionMessage);
         reviewSuggestion();
-        acceptSuggestion(R.id.tab_selection_editor_group_menu_item);
+        acceptSuggestion(R.id.tab_list_editor_group_menu_item);
 
         onViewWaiting(allOf(withParent(withId(R.id.snackbar)), withText("3 tabs grouped")));
     }
@@ -303,7 +303,7 @@ public class TabSuggestionMessageCardTest {
 
         enteringTabSwitcherAndVerifySuggestionIsShown(mGroupingSuggestionMessage);
         reviewSuggestion();
-        acceptSuggestion(R.id.tab_selection_editor_group_menu_item);
+        acceptSuggestion(R.id.tab_list_editor_group_menu_item);
 
         onView(withId(R.id.tab_grid_message_item)).check(doesNotExist());
     }

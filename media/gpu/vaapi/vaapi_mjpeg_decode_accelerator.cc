@@ -547,7 +547,6 @@ void VaapiMjpegDecodeAccelerator::VideoFrameReady(int32_t task_id) {
 VaapiMjpegDecodeAccelerator::VaapiMjpegDecodeAccelerator(
     const scoped_refptr<base::SingleThreadTaskRunner>& io_task_runner)
     : io_task_runner_(io_task_runner),
-      client_(nullptr),
       weak_this_factory_(this) {
   DCHECK(io_task_runner_->BelongsToCurrentThread());
 }

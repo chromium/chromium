@@ -321,6 +321,49 @@ void FormField::ParseStandaloneEmailFields(
 }
 
 // static
+bool FormField::FieldMatchesMatchPatternRef(
+    base::span<const MatchPatternRef> patterns,
+    const AutofillField& field,
+    const RegExLogging& logging) {
+  for (MatchPatternRef pattern_ref : patterns) {
+    MatchingPattern pattern = *pattern_ref;
+    if (!MatchesFormControlType(
+            FormControlTypeToString(field.form_control_type),
+            pattern.match_field_input_types)) {
+      continue;
+    }
+
+    // For each of the two match field attributes, kName and kLabel, that are
+    // active for the current pattern, test if the attribute matches the
+    // negative pattern. If yes, remove it from the attributes that are
+    // considered for positive matching.
+    MatchParams match_type(pattern.match_field_attributes,
+                           pattern.match_field_input_types);
+
+    if (!IsEmpty(pattern.negative_pattern)) {
+      for (MatchAttribute attribute : pattern.match_field_attributes) {
+        if (FormField::Match(&field, pattern.negative_pattern,
+                             MatchParams({attribute}, match_type.field_types),
+                             logging)) {
+          match_type.attributes.erase(attribute);
+        }
+      }
+    }
+
+    if (match_type.attributes.empty()) {
+      continue;
+    }
+
+    if (!IsEmpty(pattern.positive_pattern) &&
+        FormField::Match(&field, pattern.positive_pattern, match_type,
+                         logging)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+// static
 bool FormField::ParseField(AutofillScanner* scanner,
                            base::StringPiece16 pattern,
                            base::span<const MatchPatternRef> patterns,
@@ -410,7 +453,11 @@ bool FormField::ParseFieldSpecifics(
     raw_ptr<AutofillField>* match,
     const RegExLogging& logging,
     MatchingPattern (*projection)(const MatchingPattern&)) {
-  return base::FeatureList::IsEnabled(features::kAutofillParsingPatternProvider)
+  return (base::FeatureList::IsEnabled(
+              features::kAutofillParsingPatternProvider) ||
+          // Some patterns may not exist as an old-school regex because they
+          // require negative matching.
+          pattern == kNoLegacyPattern)
              ? ParseFieldSpecificsWithNewPatterns(scanner, patterns, match,
                                                   logging, projection)
              : ParseFieldSpecificsWithLegacyPattern(scanner, pattern,

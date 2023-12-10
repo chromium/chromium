@@ -93,7 +93,7 @@ class GenericSequenceLocalStorageSlot {
     auto* value =
         internal::SequenceLocalStorageMap::GetForCurrentThread().Get(slot_id_);
     if (value) {
-      return &value->external_value.value_as<T>();
+      return std::addressof(value->external_value.value_as<T>());
     }
     return nullptr;
   }

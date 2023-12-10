@@ -197,20 +197,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="ChromeOS.FamilyUser.ChildUserTypeMismatchError"
-    enum="ChildUserTypeMismatchError" expires_after="2024-12-12">
-  <owner>agawronska@chromium.org</owner>
-  <owner>cros-families-eng@google.com</owner>
-  <summary>
-    Reports errors that occur when there is a mismatch between child account
-    status detected during online sign-in from the device login screen and the
-    child status read from the ID token. This error results in ChromeOS crashing
-    to prevent an unsupervised experience. Errors can occur when we receive (1)
-    a non-child token for a signed-in child user or (2) a child token for a
-    signed-in non-child user.
-  </summary>
-</histogram>
-
 <histogram name="ChromeOS.FamilyUser.LogSegment2" enum="FamilyUserLogSegment"
     expires_after="never">
 <!-- expires-never: used internally for filtering -->
@@ -257,7 +243,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FamilyLinkUser.ClassifyUrlRequest.AuthError"
-    enum="GoogleServiceAuthError" expires_after="2024-03-03">
+    enum="GoogleServiceAuthError" expires_after="2024-05-05">
   <owner>tju@google.com</owner>
   <owner>chrome-kids-eng@google.com</owner>
   <summary>
@@ -278,7 +264,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FamilyLinkUser.ClassifyUrlRequest.Latency" units="ms"
-    expires_after="2024-03-24">
+    expires_after="2024-05-26">
   <owner>tju@google.com</owner>
   <owner>chrome-kids-eng@google.com</owner>
   <summary>
@@ -291,7 +277,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FamilyLinkUser.ClassifyUrlRequest.ParsingResult"
-    enum="KidsChromeManagementClientParsingError" expires_after="2024-03-03">
+    enum="KidsChromeManagementClientParsingError" expires_after="2024-05-05">
   <owner>tju@google.com</owner>
   <owner>chrome-kids-eng@google.com</owner>
   <summary>
@@ -301,7 +287,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FamilyLinkUser.ClassifyUrlRequest.Status"
-    enum="SupervisedUserProtoFetcherStatus" expires_after="2024-03-24">
+    enum="SupervisedUserProtoFetcherStatus" expires_after="2024-05-26">
   <owner>tju@google.com</owner>
   <owner>chrome-kids-eng@google.com</owner>
   <summary>
@@ -339,7 +325,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FamilyLinkUser.ClassifyUrlRequest.{Status}.Latency" units="ms"
-    expires_after="2024-03-31">
+    expires_after="2024-06-02">
   <owner>tju@google.com</owner>
   <owner>chrome-kids-eng@google.com</owner>
   <summary>
@@ -459,23 +445,25 @@ chromium-metrics-reviews@google.com.
 <!-- expires-never: used internally for filtering -->
 
   <owner>fernandex@chromium.org</owner>
+  <owner>courtneywong@chromium.org</owner>
+  <owner>agawronska@chromium.org</owner>
   <owner>chrome-kids-eng@google.com</owner>
+  <owner>cros-families-eng@google.com</owner>
   <summary>
     Categorizes the current user based on Family Link user type. Other is for
     all unsupervised users. Users under the age of consent automatically have
     supervision applied to their accounts. Users over the age of consent can opt
     into supervision. Mixed Profile is for profiles with both supervised and
     unsupervised users. Recorded for Chrome browser platforms on Android,
-    Desktop and ChromeOS Lacros at the start of a user session, if the state
-    changes during the session this will only be recorded at the start of the
-    next session.
+    Desktop and ChromeOS at the start of a user session, if the state changes
+    during the session this will only be recorded at the start of the next
+    session.
   </summary>
 </histogram>
 
 <histogram name="FamilyUser.ChromeBrowserEngagement.Duration2" units="ms"
     expires_after="2024-02-11">
   <owner>agawronska@chromium.org</owner>
-  <owner>xiqiruan@chromium.org</owner>
   <owner>cros-families-eng@google.com</owner>
   <summary>
     Records the Chrome OS user Chrome browser usage in milliseconds. Reports
@@ -491,7 +479,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="FamilyUser.DeviceOwner" enum="Boolean"
     expires_after="2024-04-28">
   <owner>agawronska@chromium.org</owner>
-  <owner>xiqiruan@chromium.org</owner>
   <owner>cros-families-eng@google.com</owner>
   <summary>
     Records whether the current primary user is the owner of device. Reports at
@@ -502,7 +489,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="FamilyUser.FamilyLinkUsersCount" units="Number of Users"
     expires_after="2024-04-28">
   <owner>agawronska@chromium.org</owner>
-  <owner>xiqiruan@chromium.org</owner>
   <owner>cros-families-eng@google.com</owner>
   <summary>
     Records the number of family link users on a Chrome OS device at the
@@ -513,7 +499,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="FamilyUser.GaiaUsersCount" units="Number of Users"
     expires_after="2024-04-28">
   <owner>agawronska@chromium.org</owner>
-  <owner>xiqiruan@chromium.org</owner>
   <owner>cros-families-eng@google.com</owner>
   <summary>
     Records the number of Gaia users on a Chrome OS device, at the beginning of
@@ -525,7 +510,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="FamilyUser.ManagedSiteList" enum="FamilyLinkManagedSiteList"
     expires_after="2024-04-28">
   <owner>agawronska@chromium.org</owner>
-  <owner>xiqiruan@chromium.org</owner>
   <owner>cros-families-eng@google.com</owner>
   <summary>
     Records whether managed sites approved list and blocked list are enabled for
@@ -549,7 +533,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FamilyUser.ManagedSiteList.SubdomainConflictType"
-    enum="FamilyLinkFilteringSubdomainConflictType" expires_after="2024-02-11">
+    enum="FamilyLinkFilteringSubdomainConflictType" expires_after="2024-05-12">
   <owner>anthie@google.com</owner>
   <owner>chrome-kids-eng@google.com</owner>
   <owner>cros-families-eng@google.com</owner>
@@ -562,7 +546,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="FamilyUser.ManagedSiteListCount.Approved"
     units="Number of approved sites" expires_after="2024-04-28">
   <owner>agawronska@chromium.org</owner>
-  <owner>xiqiruan@chromium.org</owner>
   <owner>cros-families-eng@google.com</owner>
   <summary>
     Records number of approved urls and hosts for currently active Family Link
@@ -575,7 +558,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="FamilyUser.ManagedSiteListCount.Blocked"
     units="Number of blocked sites" expires_after="2024-04-28">
   <owner>agawronska@chromium.org</owner>
-  <owner>xiqiruan@chromium.org</owner>
   <owner>cros-families-eng@google.com</owner>
   <summary>
     Records number of blocked urls and hosts for currently active Family Link
@@ -588,7 +570,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="FamilyUser.NewUserAdded" enum="NewUserAdded"
     expires_after="2024-12-12">
   <owner>agawronska@chromium.org</owner>
-  <owner>xiqiruan@chromium.org</owner>
   <owner>cros-families-eng@google.com</owner>
   <summary>
     Reports NewUserAdded enum when a new Family Link user or regular user is
@@ -600,7 +581,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="FamilyUser.SessionEngagement.Duration" units="ms"
     expires_after="2024-12-12">
   <owner>agawronska@chromium.org</owner>
-  <owner>xiqiruan@chromium.org</owner>
   <owner>cros-families-eng@google.com</owner>
   <summary>
     Records the Chrome OS user session duration in milliseconds. Reports current
@@ -612,7 +592,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="FamilyUser.SessionEngagement.Total" units="Hour of day"
     expires_after="2024-12-12">
   <owner>agawronska@chromium.org</owner>
-  <owner>xiqiruan@chromium.org</owner>
   <owner>cros-families-eng@google.com</owner>
   <summary>
     Records the Chrome OS user engagement hour within the current day (0-23),
@@ -625,7 +604,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="FamilyUser.SessionEngagement.Weekday" units="Hour of day"
     expires_after="2024-04-28">
   <owner>agawronska@chromium.org</owner>
-  <owner>xiqiruan@chromium.org</owner>
   <owner>cros-families-eng@google.com</owner>
   <summary>
     Records the Chrome OS user engagement hour of day (0-23) on weekday. Logged
@@ -637,7 +615,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="FamilyUser.SessionEngagement.Weekend" units="Hour of day"
     expires_after="2024-04-28">
   <owner>agawronska@chromium.org</owner>
-  <owner>xiqiruan@chromium.org</owner>
   <owner>cros-families-eng@google.com</owner>
   <summary>
     Records the Chrome OS user engagement hour of day (0-23) on weekend. Logged
@@ -649,7 +626,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="FamilyUser.TimeLimitPolicyTypes" enum="TimeLimitPolicyType"
     expires_after="2024-12-12">
   <owner>agawronska@chromium.org</owner>
-  <owner>xiqiruan@chromium.org</owner>
   <owner>cros-families-eng@google.com</owner>
   <summary>
     Records what time limit policy types are enabled for the currently active
@@ -664,7 +640,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="FamilyUser.WebFilterType" enum="FamilyLinkWebFilterType"
     expires_after="2024-04-28">
   <owner>agawronska@chromium.org</owner>
-  <owner>xiqiruan@chromium.org</owner>
   <owner>cros-families-eng@google.com</owner>
   <summary>
     Records the web filter type for currently active Family Link user. Prior to
@@ -722,8 +697,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="ManagedUsers.BlockedIframeCount" units="iframes"
     expires_after="2024-04-28">
-  <owner>yilkal@chromium.org</owner>
-  <owner>michaelpg@chromium.org</owner>
+  <owner>agawronska@chromium.org</owner>
   <owner>cros-families-eng@google.com</owner>
   <summary>
     The number of blocked iframes per unblocked main frame load. The value is
@@ -783,8 +757,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="ManagedUsers.RequestPermissionSource"
     enum="ManagedUserURLRequestPermissionSource" expires_after="2024-04-28">
-  <owner>michaelpg@chromium.org</owner>
-  <owner>yilkal@chromium.org</owner>
+  <owner>agawronska@chromium.org</owner>
   <owner>cros-families-eng@google.com</owner>
   <summary>
     The counts of request for permission sent from main frame or sub-frame.
@@ -891,7 +864,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="SupervisedUsers.PerAppTimeLimits.AppsWithTimeLimit"
     units="Apps" expires_after="2024-12-12">
   <owner>agawronska@chromium.org</owner>
-  <owner>yilkal@chromium.org</owner>
   <owner>cros-families-eng@google.com</owner>
   <summary>
     The count of applications with time limit set by parents. Recorded once per
@@ -902,7 +874,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="SupervisedUsers.PerAppTimeLimits.BlockedAppsCount"
     units="Apps" expires_after="2024-12-12">
   <owner>agawronska@chromium.org</owner>
-  <owner>yilkal@chromium.org</owner>
   <owner>cros-families-eng@google.com</owner>
   <summary>
     The count of applications blocked by parents. It only applies to ARC++
@@ -913,7 +884,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="SupervisedUsers.PerAppTimeLimits.Engagement" units="Apps"
     expires_after="2024-12-12">
   <owner>agawronska@chromium.org</owner>
-  <owner>yilkal@chromium.org</owner>
   <owner>cros-families-eng@google.com</owner>
   <summary>
     Per-App Time Limits feature engagement measured by the number of apps with
@@ -925,7 +895,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="SupervisedUsers.PerAppTimeLimits.PolicyChangeCount"
     units="Changes" expires_after="2024-12-12">
   <owner>agawronska@chromium.org</owner>
-  <owner>yilkal@chromium.org</owner>
   <owner>cros-families-eng@google.com</owner>
   <summary>
     The total number of PerAppTimeLimits policy changes seen in a session.

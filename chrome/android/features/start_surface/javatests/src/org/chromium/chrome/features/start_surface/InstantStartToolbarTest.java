@@ -46,6 +46,7 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.UiRestriction;
@@ -67,6 +68,7 @@ import java.io.IOException;
     ChromeFeatureList.START_SURFACE_ANDROID + "<Study",
     ChromeFeatureList.INSTANT_START
 })
+@DisableFeatures({ChromeFeatureList.SHOW_NTP_AT_STARTUP_ANDROID})
 @Restriction({
     Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE,
     UiRestriction.RESTRICTION_TYPE_PHONE
@@ -118,17 +120,17 @@ public class InstantStartToolbarTest {
 
         StartSurfaceToolbarCoordinator startSurfaceToolbarCoordinator =
                 topToolbarCoordinator.getStartSurfaceToolbarForTesting();
-        // Verifies that the TabCountProvider for incognito toggle tab layout hasn't been set when
+        // Verifies that the TabModelSelector for incognito toggle tab layout hasn't been set when
         // the {@link StartSurfaceToolbarCoordinator#inflate()} is called.
         Assert.assertNull(
-                startSurfaceToolbarCoordinator.getIncognitoToggleTabCountProviderForTesting());
+                startSurfaceToolbarCoordinator.getIncognitoToggleTabModelSelectorForTesting());
 
         // Initializes native.
         StartSurfaceTestUtils.startAndWaitNativeInitialization(mActivityTestRule);
         CriteriaHelper.pollInstrumentationThread(
                 () ->
                         startSurfaceToolbarCoordinator
-                                        .getIncognitoToggleTabCountProviderForTesting()
+                                        .getIncognitoToggleTabModelSelectorForTesting()
                                 != null);
     }
 
@@ -198,7 +200,7 @@ public class InstantStartToolbarTest {
 
     private void testMenuUpdateBadge(boolean shouldShowUpdateBadgeOnStartAndTabs)
             throws IOException {
-        StartSurfaceTestUtils.createTabStateFile(new int[] {0, 1, 2});
+        StartSurfaceTestUtils.createTabStatesAndMetadataFile(new int[] {0, 1, 2});
         StartSurfaceTestUtils.startMainActivityFromLauncher(mActivityTestRule);
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         StartSurfaceTestUtils.waitForStartSurfaceVisible(cta);

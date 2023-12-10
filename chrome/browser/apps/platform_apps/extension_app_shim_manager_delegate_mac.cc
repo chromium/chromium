@@ -92,7 +92,7 @@ const Extension* MaybeGetAppExtension(
 
   ExtensionRegistry* registry = ExtensionRegistry::Get(context);
   const Extension* extension =
-      registry->GetExtensionById(extension_id, ExtensionRegistry::ENABLED);
+      registry->enabled_extensions().GetByID(extension_id);
   return extension &&
                  (extension->is_platform_app() || extension->is_hosted_app())
              ? extension

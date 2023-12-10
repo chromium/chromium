@@ -96,7 +96,7 @@ class ASH_EXPORT WelcomeTourController : public UserEducationFeatureController,
 
   // Sets the current step of the tutorial, since that information is not
   // directly available.
-  void SetCurrentStep(absl::optional<welcome_tour_metrics::Step> step);
+  void SetCurrentStep(std::optional<welcome_tour_metrics::Step> step);
 
   // The reason the tour was aborted.
   welcome_tour_metrics::AbortedReason aborted_reason_ =
@@ -104,7 +104,7 @@ class ASH_EXPORT WelcomeTourController : public UserEducationFeatureController,
 
   // The current step of the Welcome Tour, if it is active. Tracked here because
   // it is not directly available from the tutorial.
-  absl::optional<welcome_tour_metrics::Step> current_step_;
+  std::optional<welcome_tour_metrics::Step> current_step_;
 
   // The elapsed time since the beginning of the `current_step_`.
   base::ElapsedTimer current_step_timer_;

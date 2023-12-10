@@ -139,7 +139,7 @@ void FileSystemOperationImpl::DirectoryExists(const FileSystemURL& url,
                                               StatusCallback callback) {
   CheckOperationType(OperationType::kDirectoryExists);
   async_file_util_->GetFileInfo(
-      std::move(operation_context_), url, GET_METADATA_FIELD_IS_DIRECTORY,
+      std::move(operation_context_), url, {GetMetadataField::kIsDirectory},
       base::BindOnce(&FileSystemOperationImpl::DidDirectoryExists,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }
@@ -148,13 +148,13 @@ void FileSystemOperationImpl::FileExists(const FileSystemURL& url,
                                          StatusCallback callback) {
   CheckOperationType(OperationType::kFileExists);
   async_file_util_->GetFileInfo(
-      std::move(operation_context_), url, GET_METADATA_FIELD_IS_DIRECTORY,
+      std::move(operation_context_), url, {GetMetadataField::kIsDirectory},
       base::BindOnce(&FileSystemOperationImpl::DidFileExists,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void FileSystemOperationImpl::GetMetadata(const FileSystemURL& url,
-                                          int fields,
+                                          GetMetadataFieldSet fields,
                                           GetMetadataCallback callback) {
   CheckOperationType(OperationType::kGetMetadata);
   async_file_util_->GetFileInfo(std::move(operation_context_), url, fields,

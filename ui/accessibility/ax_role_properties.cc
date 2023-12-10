@@ -57,8 +57,8 @@ bool HasPresentationalChildren(const ax::mojom::Role role) {
 
 bool IsAlert(const ax::mojom::Role role) {
   switch (role) {
-    case ax::mojom::Role::kAlert:
-    case ax::mojom::Role::kAlertDialog:
+    case ax::mojom::Role::kAlert:        // For simple or hidden alerts.
+    case ax::mojom::Role::kAlertDialog:  // For alerts that must be dismissed.
       return true;
     default:
       return false;
@@ -117,6 +117,7 @@ bool IsClickable(const ax::mojom::Role role) {
     case ax::mojom::Role::kDate:
     case ax::mojom::Role::kDateTime:
     case ax::mojom::Role::kDisclosureTriangle:
+    case ax::mojom::Role::kDisclosureTriangleGrouped:
     case ax::mojom::Role::kDocBackLink:
     case ax::mojom::Role::kDocBiblioRef:
     case ax::mojom::Role::kDocGlossRef:
@@ -215,6 +216,7 @@ bool IsControl(const ax::mojom::Role role) {
     case ax::mojom::Role::kDate:
     case ax::mojom::Role::kDateTime:
     case ax::mojom::Role::kDisclosureTriangle:
+    case ax::mojom::Role::kDisclosureTriangleGrouped:
     case ax::mojom::Role::kInputTime:
     case ax::mojom::Role::kListBox:
     case ax::mojom::Role::kListGrid:
@@ -369,6 +371,7 @@ bool IsItemLike(const ax::mojom::Role role) {
   switch (role) {
     case ax::mojom::Role::kArticle:
     case ax::mojom::Role::kComment:
+    case ax::mojom::Role::kDisclosureTriangleGrouped:
     case ax::mojom::Role::kListItem:
     case ax::mojom::Role::kMenuItem:
     case ax::mojom::Role::kMenuItemRadio:
@@ -926,6 +929,7 @@ bool IsUIAEmbeddedObject(ax::mojom::Role role) {
     case ax::mojom::Role::kDescriptionListTerm:
     case ax::mojom::Role::kDirectory:
     case ax::mojom::Role::kDisclosureTriangle:
+    case ax::mojom::Role::kDisclosureTriangleGrouped:
     case ax::mojom::Role::kDocBackLink:
     case ax::mojom::Role::kDocBiblioEntry:
     case ax::mojom::Role::kDocBiblioRef:
@@ -1048,6 +1052,7 @@ bool SupportsExpandCollapse(const ax::mojom::Role role) {
     case ax::mojom::Role::kComboBoxMenuButton:
     case ax::mojom::Role::kComboBoxSelect:
     case ax::mojom::Role::kDisclosureTriangle:
+    case ax::mojom::Role::kDisclosureTriangleGrouped:
     case ax::mojom::Role::kTextFieldWithComboBox:
     case ax::mojom::Role::kTreeItem:
       return true;

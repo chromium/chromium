@@ -41,10 +41,14 @@ public class ZygotePreload implements android.app.ZygotePreload {
 
     protected final void doPreloadCommon(ApplicationInfo appInfo) {
         // Using concatenation rather than %s to allow values to be inlined by R8.
-        Log.i(TAG,
-                "Loaded Zygote. version=" + VersionConstants.PRODUCT_VERSION
-                        + " minSdkVersion=" + BuildConfig.MIN_SDK_VERSION
-                        + " isBundle=" + BuildConfig.BUNDLES_SUPPORTED);
+        Log.i(
+                TAG,
+                "Loaded Zygote. version="
+                        + VersionConstants.PRODUCT_VERSION
+                        + " minSdkVersion="
+                        + BuildConfig.MIN_SDK_VERSION
+                        + " isBundle="
+                        + BuildConfig.BUNDLES_SUPPORTED);
         try {
             // The current thread time is the best approximation we have of the zygote start time
             // since Process.getStartUptimeMillis() is not reliable in the zygote process. This will

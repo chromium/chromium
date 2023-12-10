@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_GWP_ASAN_COMMON_LIGHTWEIGHT_DETECTOR_STATE_H_
 #define COMPONENTS_GWP_ASAN_COMMON_LIGHTWEIGHT_DETECTOR_STATE_H_
 
+#include <stdint.h>
+
 #include "components/gwp_asan/common/allocation_info.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -12,9 +14,10 @@ namespace gwp_asan::internal {
 
 // This enum is used during GWP-ASan initialization to control the
 // Lightweight UAF Detector.
-enum class LightweightDetectorMode : bool {
+enum class LightweightDetectorMode : uint8_t {
   kOff,
   kBrpQuarantine,
+  kRandom,
 };
 
 // Encapsulates Lightweight UAF Detector's state shared with with the crash
@@ -22,7 +25,7 @@ enum class LightweightDetectorMode : bool {
 class LightweightDetectorState {
  public:
   using MetadataId = uint32_t;
-  using PseudoAddresss = uint64_t;
+  using PseudoAddress = uint64_t;
 
   // Maximum number of metadata slots used by Lightweight UAF Detector.
   static constexpr size_t kMaxMetadata = 32768;
@@ -67,13 +70,13 @@ class LightweightDetectorState {
     MetadataId id = std::numeric_limits<MetadataId>::max();
   };
 
-  static PseudoAddresss EncodeMetadataId(MetadataId metadata_id) {
+  static PseudoAddress EncodeMetadataId(MetadataId metadata_id) {
     return kMetadataIdMarker |
-           (static_cast<PseudoAddresss>(metadata_id) << kMetadataIdShift) |
+           (static_cast<PseudoAddress>(metadata_id) << kMetadataIdShift) |
            kMetadataIdOffset;
   }
 
-  static absl::optional<MetadataId> ExtractMetadataId(PseudoAddresss address) {
+  static absl::optional<MetadataId> ExtractMetadataId(PseudoAddress address) {
     if ((address & kMetadataIdMarkerMask) != kMetadataIdMarker) {
       return absl::nullopt;
     }

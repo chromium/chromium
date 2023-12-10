@@ -65,20 +65,20 @@
   </settings-toggle-button>
 </div>
 <!-- TODO(b/299724949): Add deep link focus ID -->
-<template is="dom-if" if="[[isAccessibilityFaceTrackingEnabled_]]">
+<template is="dom-if" if="[[isAccessibilityFaceGazeEnabled_]]">
   <settings-toggle-button
-      id="faceTrackingToggle"
-      pref="{{prefs.settings.a11y.face_tracking.enabled}}"
-      icon="os-settings:face-tracking"
-      label="$i18n{accessibilityFaceTrackingLabel}"
-      sub-label="$i18n{accessibilityFaceTrackingDescription}">
+      id="faceGazeToggle"
+      pref="{{prefs.settings.a11y.face_gaze.enabled}}"
+      icon="os-settings:face-gaze"
+      label="$i18n{accessibilityFaceGazeLabel}"
+      sub-label="$i18n{accessibilityFaceGazeDescription}">
   </settings-toggle-button>
-  <iron-collapse opened="[[prefs.settings.a11y.face_tracking.enabled.value]]">
+  <iron-collapse opened="[[prefs.settings.a11y.face_gaze.enabled.value]]">
     <div class="sub-item">
-      <!-- TODO(b/299725221): Open the face tracking settings app from here -->
-      <cr-link-row id="faceTrackingSettingsButton"
+      <!-- TODO(b/299725221): Open the FaceGaze settings app from here -->
+      <cr-link-row id="faceGazeSettingsButton"
           class="settings-box"
-          label="$i18n{accessibilityFaceTrackingSettings}"
+          label="$i18n{accessibilityFaceGazeSettings}"
           external>
       </cr-link-row>
     </div>
@@ -100,7 +100,7 @@
     <settings-slider
         id="largeCursorSizeSlider"
         pref="{{prefs.settings.a11y.large_cursor_dip_size}}"
-        min="25" max="64"
+        min="25" max="[[largeCursorMaxSize_]]"
         label-aria="$i18n{largeMouseCursorSizeLabel}"
         label-min="$i18n{largeMouseCursorSizeDefaultLabel}"
         label-max="$i18n{largeMouseCursorSizeLargeLabel}">

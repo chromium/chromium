@@ -52,7 +52,7 @@ Test that back/forward navigations report the bfcache status
                 type : Circumstantial
             }
         ]
-        url : http://127.0.0.1:8000/inspector-protocol/bfcache/chrome://version
+        url : http://127.0.0.1:8000/inspector-protocol/bfcache/resources/empty.html
     }
 }
 

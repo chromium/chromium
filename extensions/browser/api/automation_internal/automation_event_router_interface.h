@@ -5,6 +5,7 @@
 #ifndef EXTENSIONS_BROWSER_API_AUTOMATION_INTERNAL_AUTOMATION_EVENT_ROUTER_INTERFACE_H_
 #define EXTENSIONS_BROWSER_API_AUTOMATION_INTERNAL_AUTOMATION_EVENT_ROUTER_INTERFACE_H_
 
+#include <optional>
 #include <set>
 #include <vector>
 
@@ -12,7 +13,6 @@
 #include "extensions/common/api/automation_internal.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/extension_messages.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class BrowserContext;
@@ -49,7 +49,7 @@ class AutomationEventRouterInterface {
   // ax::mojom::Action::kGetTextLocation.
   virtual void DispatchGetTextLocationDataResult(
       const ui::AXActionData& data,
-      const absl::optional<gfx::Rect>& rect) = 0;
+      const std::optional<gfx::Rect>& rect) = 0;
 };
 
 }  // namespace extensions

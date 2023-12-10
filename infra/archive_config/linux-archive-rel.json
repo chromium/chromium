@@ -15,9 +15,6 @@
                 "libvulkan.so.1",
                 "MEIPreload/manifest.json",
                 "MEIPreload/preloaded_data.pb",
-                "nacl_helper",
-                "nacl_helper_bootstrap",
-                "nacl_irt_x86_64.nexe",
                 "product_logo_48.png",
                 "resources.pak",
                 "v8_context_snapshot.bin",
@@ -58,8 +55,6 @@
                 "content_shell.pak",
                 "dump_syms",
                 "icudtl.dat",
-                "libblink_deprecated_test_plugin.so",
-                "libblink_test_plugin.so",
                 "minidump_stackwalk",
                 "v8_context_snapshot.bin"
             ],
@@ -139,15 +134,6 @@
             ],
             "gcs_bucket": "chromium-browser-snapshots",
             "gcs_path": "Linux_x64/{%position%}/mojojs.zip",
-            "archive_type": "ARCHIVE_TYPE_ZIP"
-        },
-        {
-            "dirs": ["pnacl"],
-            "rename_dirs": [
-                {"from_dir": ".", "to_dir": "pnacl"}
-            ],
-            "gcs_bucket": "chromium-browser-snapshots",
-            "gcs_path": "Linux_x64/{%position%}/pnacl.zip",
             "archive_type": "ARCHIVE_TYPE_ZIP"
         },
         {

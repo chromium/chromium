@@ -357,8 +357,9 @@ gfx::Rect NativeThemeBase::GetNinePatchAperture(Part part) const {
 NativeThemeBase::NativeThemeBase() : NativeThemeBase(false) {}
 
 NativeThemeBase::NativeThemeBase(bool should_only_use_dark_colors,
-                                 ui::SystemTheme system_theme)
-    : NativeTheme(should_only_use_dark_colors, system_theme) {}
+                                 ui::SystemTheme system_theme,
+                                 NativeTheme* theme_to_update)
+    : NativeTheme(should_only_use_dark_colors, system_theme, theme_to_update) {}
 
 NativeThemeBase::~NativeThemeBase() = default;
 
@@ -1020,12 +1021,12 @@ void NativeThemeBase::PaintSliderTrack(
       GetBorderRadiusForPart(kSliderTrack, rect.width(), rect.height());
   canvas->drawRoundRect(track_rect, border_radius, border_radius, flags);
 
-  // Clip the track to create rounded corners for the value bar.
-  SkRRect rounded_rect;
-  rounded_rect.setRectXY(track_rect, border_radius, border_radius);
-  canvas->clipRRect(rounded_rect, SkClipOp::kIntersect, true);
+  // Set the clip to the extent of the value bar.
+  SkRect value_rect = AlignSliderTrack(rect, slider, true, track_height);
+  canvas->save();
+  canvas->clipRect(value_rect, SkClipOp::kIntersect, true);
 
-  // Paint the value slider track.
+  // Draw the full value bar, clipped to its extent.
   if (accent_color && state != kDisabled) {
     flags.setColor(
         CustomAccentColorForState(*accent_color, state, color_scheme));
@@ -1033,8 +1034,10 @@ void NativeThemeBase::PaintSliderTrack(
     flags.setColor(
         ControlsSliderColorForState(state, color_scheme, color_provider));
   }
-  SkRect value_rect = AlignSliderTrack(rect, slider, true, track_height);
-  canvas->drawRect(value_rect, flags);
+  SkRRect rounded_rect;
+  rounded_rect.setRectXY(track_rect, border_radius, border_radius);
+  canvas->drawRRect(rounded_rect, flags);
+  canvas->restore();
 
   // Paint the border.
   flags.setStyle(cc::PaintFlags::kStroke_Style);

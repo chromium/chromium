@@ -17,38 +17,37 @@ import org.chromium.base.ContextUtils;
 
 import java.util.Locale;
 
-/**
- * Factory class to build bug URI for a crash report.
- */
+/** Factory class to build bug URI for a crash report. */
 public class CrashBugUrlFactory {
     // There is a limit on the length of this query string, see https://crbug.com/1015923
     // TODO(https://crbug.com/1052295): add assert statement to check the length of this String.
-    private static final String CRASH_REPORT_TEMPLATE = ""
-            + "Build fingerprint: %s\n"
-            + "Android API level: %s\n"
-            + "Crashed WebView version: %s\n"
-            + "DevTools version: %s\n"
-            + "Application: %s\n"
-            + "If this app is available on Google Play, please include a URL:\n"
-            + "\n"
-            + "\n"
-            + "Steps to reproduce:\n"
-            + "(1)\n"
-            + "(2)\n"
-            + "(3)\n"
-            + "\n"
-            + "\n"
-            + "Expected result:\n"
-            + "(What should have happened?)\n"
-            + "\n"
-            + "\n"
-            + "<Any additional comments, you want to share>"
-            + "\n"
-            + "\n"
-            + "****DO NOT CHANGE BELOW THIS LINE****\n"
-            + "Crash ID: http://crash/%s\n"
-            + "Instructions for triaging this report (Chromium members only): "
-            + "https://bit.ly/2SM1Y9t\n";
+    private static final String CRASH_REPORT_TEMPLATE =
+            ""
+                    + "Build fingerprint: %s\n"
+                    + "Android API level: %s\n"
+                    + "Crashed WebView version: %s\n"
+                    + "DevTools version: %s\n"
+                    + "Application: %s\n"
+                    + "If this app is available on Google Play, please include a URL:\n"
+                    + "\n"
+                    + "\n"
+                    + "Steps to reproduce:\n"
+                    + "(1)\n"
+                    + "(2)\n"
+                    + "(3)\n"
+                    + "\n"
+                    + "\n"
+                    + "Expected result:\n"
+                    + "(What should have happened?)\n"
+                    + "\n"
+                    + "\n"
+                    + "<Any additional comments, you want to share>"
+                    + "\n"
+                    + "\n"
+                    + "****DO NOT CHANGE BELOW THIS LINE****\n"
+                    + "Crash ID: http://crash/%s\n"
+                    + "Instructions for triaging this report (Chromium members only): "
+                    + "https://bit.ly/2SM1Y9t\n";
 
     private static final String DEFAULT_LABELS =
             "User-Submitted,Via-WebView-DevTools,Pri-3,Type-Bug,OS-Android";
@@ -59,9 +58,7 @@ public class CrashBugUrlFactory {
         mCrashInfo = crashInfo;
     }
 
-    /**
-     * Build an {@link Intent} to open a URL to report the crash bug in a browser.
-     */
+    /** Build an {@link Intent} to open a URL to report the crash bug in a browser. */
     public Intent getReportIntent() {
         return new Intent(Intent.ACTION_VIEW, getReportUri());
     }
@@ -83,10 +80,15 @@ public class CrashBugUrlFactory {
 
     // Construct bug description using CRASH_REPORT_TEMPLATE
     private String getDescription() {
-        return String.format(Locale.US, CRASH_REPORT_TEMPLATE, Build.FINGERPRINT,
+        return String.format(
+                Locale.US,
+                CRASH_REPORT_TEMPLATE,
+                Build.FINGERPRINT,
                 mCrashInfo.getCrashKeyOrDefault(CrashInfo.ANDROID_SDK_INT_KEY, ""),
                 mCrashInfo.getCrashKeyOrDefault(CrashInfo.WEBVIEW_VERSION_KEY, ""),
-                getCurrentDevToolsVersion(), getCrashAppPackageInfo(), mCrashInfo.uploadId);
+                getCurrentDevToolsVersion(),
+                getCrashAppPackageInfo(),
+                mCrashInfo.uploadId);
     }
 
     // Current Developer UI version and package name which can be different from crash's.
@@ -94,8 +96,12 @@ public class CrashBugUrlFactory {
     public static String getCurrentDevToolsVersion() {
         PackageInfo webViewPackage =
                 WebViewPackageHelper.getContextPackageInfo(ContextUtils.getApplicationContext());
-        return String.format(Locale.US, "%s (%s/%s)", webViewPackage.packageName,
-                webViewPackage.versionName, webViewPackage.versionCode);
+        return String.format(
+                Locale.US,
+                "%s (%s/%s)",
+                webViewPackage.packageName,
+                webViewPackage.versionName,
+                webViewPackage.versionCode);
     }
 
     // The package name and version code of the app where WebView crashed.

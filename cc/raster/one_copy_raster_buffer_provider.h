@@ -73,7 +73,7 @@ class CC_EXPORT OneCopyRasterBufferProvider : public RasterBufferProvider {
 
   // Playback raster source and copy result into |resource|.
   gpu::SyncToken PlaybackAndCopyOnWorkerThread(
-      gpu::Mailbox* mailbox,
+      scoped_refptr<gpu::ClientSharedImage>& shared_image,
       GLenum mailbox_texture_target,
       bool mailbox_texture_is_overlay_candidate,
       const gpu::SyncToken& sync_token,
@@ -86,7 +86,8 @@ class CC_EXPORT OneCopyRasterBufferProvider : public RasterBufferProvider {
       const gfx::ColorSpace& color_space,
       const RasterSource::PlaybackSettings& playback_settings,
       uint64_t previous_content_id,
-      uint64_t new_content_id);
+      uint64_t new_content_id,
+      bool& should_destroy_shared_image);
 
  protected:
   void Flush() override;
@@ -127,12 +128,13 @@ class CC_EXPORT OneCopyRasterBufferProvider : public RasterBufferProvider {
     const gfx::ColorSpace color_space_;
     const uint64_t previous_content_id_;
     const gpu::SyncToken before_raster_sync_token_;
-    gpu::Mailbox mailbox_;
+    scoped_refptr<gpu::ClientSharedImage> shared_image_;
     const GLenum mailbox_texture_target_;
     const bool mailbox_texture_is_overlay_candidate_;
     // A SyncToken to be returned from the worker thread, and waited on before
     // using the rastered resource.
     gpu::SyncToken after_raster_sync_token_;
+    bool should_destroy_shared_image_ = false;
   };
 
   // Returns true if data has successfully put in the staging buffer.
@@ -147,16 +149,17 @@ class CC_EXPORT OneCopyRasterBufferProvider : public RasterBufferProvider {
       const RasterSource::PlaybackSettings& playback_settings,
       uint64_t previous_content_id,
       uint64_t new_content_id);
-  gpu::SyncToken CopyOnWorkerThread(StagingBuffer* staging_buffer,
-                                    const RasterSource* raster_source,
-                                    const gfx::Rect& rect_to_copy,
-                                    viz::SharedImageFormat format,
-                                    const gfx::Size& resource_size,
-                                    gpu::Mailbox* mailbox,
-                                    GLenum mailbox_texture_target,
-                                    bool mailbox_texture_is_overlay_candidate,
-                                    const gpu::SyncToken& sync_token,
-                                    const gfx::ColorSpace& color_space);
+  gpu::SyncToken CopyOnWorkerThread(
+      StagingBuffer* staging_buffer,
+      const RasterSource* raster_source,
+      const gfx::Rect& rect_to_copy,
+      viz::SharedImageFormat format,
+      const gfx::Size& resource_size,
+      scoped_refptr<gpu::ClientSharedImage>& shared_image,
+      GLenum mailbox_texture_target,
+      bool mailbox_texture_is_overlay_candidate,
+      const gpu::SyncToken& sync_token,
+      const gfx::ColorSpace& color_space);
 
   const raw_ptr<viz::RasterContextProvider> compositor_context_provider_;
   const raw_ptr<viz::RasterContextProvider> worker_context_provider_;

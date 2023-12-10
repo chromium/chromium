@@ -251,10 +251,10 @@ void EndpointFetcher::PerformRequest(
                                       network::SimpleURLLoader::RETRY_ON_5XX);
   simple_url_loader_->SetTimeoutDuration(base::Milliseconds(timeout_ms_));
   simple_url_loader_->SetAllowHttpErrorResults(true);
-  network::SimpleURLLoader::BodyAsStringCallback body_as_string_callback =
-      base::BindOnce(&EndpointFetcher::OnResponseFetched,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     std::move(endpoint_fetcher_callback));
+  network::SimpleURLLoader::BodyAsStringCallbackDeprecated
+      body_as_string_callback = base::BindOnce(
+          &EndpointFetcher::OnResponseFetched, weak_ptr_factory_.GetWeakPtr(),
+          std::move(endpoint_fetcher_callback));
   simple_url_loader_->DownloadToString(
       url_loader_factory_.get(), std::move(body_as_string_callback),
       network::SimpleURLLoader::kMaxBoundedStringDownloadSize);

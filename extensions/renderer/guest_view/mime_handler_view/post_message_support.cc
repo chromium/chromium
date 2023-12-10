@@ -140,7 +140,8 @@ void PostMessageSupport::PostJavaScriptMessage(v8::Isolate* isolate,
 
   v8::Context::Scope context_scope(
       delegate_->GetSourceFrame()->MainWorldScriptContext());
-  v8::Local<v8::Object> target_window_proxy = target_frame->GlobalProxy();
+  v8::Local<v8::Object> target_window_proxy =
+      target_frame->GlobalProxy(isolate);
   gin::Dictionary window_object(isolate, target_window_proxy);
   v8::Local<v8::Function> post_message;
   if (!window_object.Get(std::string(kPostMessageName), &post_message))

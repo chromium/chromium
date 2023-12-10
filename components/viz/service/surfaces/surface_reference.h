@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_VIZ_SERVICE_SURFACES_SURFACE_REFERENCE_H_
 #define COMPONENTS_VIZ_SERVICE_SURFACES_SURFACE_REFERENCE_H_
 
+#include <compare>
 #include <string>
 
 #include "base/hash/hash.h"
@@ -30,18 +31,8 @@ class VIZ_SERVICE_EXPORT SurfaceReference {
                           static_cast<uint64_t>(child_id_.hash()));
   }
 
-  bool operator==(const SurfaceReference& other) const {
-    return parent_id_ == other.parent_id_ && child_id_ == other.child_id_;
-  }
-
-  bool operator!=(const SurfaceReference& other) const {
-    return !(*this == other);
-  }
-
-  bool operator<(const SurfaceReference& other) const {
-    return std::tie(parent_id_, child_id_) <
-           std::tie(other.parent_id_, other.child_id_);
-  }
+  friend std::strong_ordering operator<=>(const SurfaceReference&,
+                                          const SurfaceReference&) = default;
 
   std::string ToString() const;
 

@@ -29,6 +29,9 @@ class RegisteredWrappable : public BindingsIsolateHolder::IsolateObserver {
   // BindingsIsolateHolder::IsolateObserver:
   void OnIsolateWillDestroy() override;
 
+ protected:
+  void StopObserving();
+
  private:
   base::ScopedObservation<BindingsIsolateHolder,
                           BindingsIsolateHolder::IsolateObserver>

@@ -30,6 +30,7 @@
 <translation id="2226276347425096477">దయచేసి ఈ వచనాన్ని <ph name="MAX_CHARACTERS" /> అక్షరాలకు లేదా అంతకంటే తక్కువకు తగ్గించండి (మీరు ప్రస్తుతం <ph name="CURRENT_LENGTH" /> అక్షరాలను ఉపయోగిస్తున్నారు).</translation>
 <translation id="2247351761944213033"><ph name="WEEKNUMBER" />వ వారం, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">ట్రాక్ <ph name="NUMBER" /></translation>
+<translation id="2353297238722298836">కెమెరా మరియు మైక్రోఫోన్ అనుమతించబడ్డాయి</translation>
 <translation id="2393030564806080191">హెక్సాడెసిమల్ రంగు విలువ</translation>
 <translation id="2398813069815436052">డైలాగ్ తెరవబడింది.</translation>
 <translation id="245932805758469625">వీడియోలో మిగిలి ఉన్న సెకన్లు</translation>
@@ -60,10 +61,12 @@
 <translation id="3822383571486410024">దయచేసి ఈ వచనాన్ని <ph name="MIN_CHARACTERS" /> లేదా అంతకంటే ఎక్కువ అక్షరాలకు పొడిగించండి (ప్రస్తుతం మీరు <ph name="CURRENT_LENGTH" /> అక్షరాలను ఉపయోగిస్తున్నారు).</translation>
 <translation id="383465348367842624">'<ph name="ATSIGN" />'కి ముందు ఉన్న భాగంలో '<ph name="INVALIDCHARACTER" />' చిహ్నం ఉండకూడదు.</translation>
 <translation id="3846214748874656680">ఫుల్-స్క్రీన్‌ నుండి నిష్క్రమించండి</translation>
+<translation id="4031179711345676612">మైక్రోఫోన్ అనుమతించబడింది</translation>
 <translation id="4103419683916926126">మిల్లీసెకన్లు</translation>
 <translation id="4201051445878709314">మునుపటి నెలను చూపుతుంది</translation>
 <translation id="4360991593054037559">దయచేసి చెల్లుబాటు అయ్యే విలువను నమోదు చేయండి. <ph name="VALID_VALUE_LOW" /> మరియు <ph name="VALID_VALUE_HIGHER" /> అనేవి రెండు సమీప చెల్లుబాటు విలువలు.</translation>
 <translation id="4522570452068850558">వివరాలు</translation>
+<translation id="4663373278480897665">కెమెరా అనుమతించబడింది</translation>
 <translation id="4664250907885839816">'<ph name="ATSIGN" />'కి తర్వాత ఉన్న భాగంలో '<ph name="INVALIDCHARACTER" />' చిహ్నం ఉండకూడదు.</translation>
 <translation id="4718048029184481307">చిత్రంలో చిత్రం మోడ్‌లో ప్లే అవుతోంది</translation>
 <translation id="4748357248530471599">డిస్‌ప్లే కత్తిరింపు ఫుల్-స్క్రీన్‌ను సక్రియం చేస్తుంది</translation>
@@ -137,6 +140,7 @@
 <translation id="6941933287844615239">మీడియా అంశం డౌన్‌లోడ్ చేయి</translation>
 <translation id="698788488269350478">విస్తరించబడింది.</translation>
 <translation id="6989848892321993519">దయచేసి ఈ వచనాన్ని <ph name="MIN_CHARACTERS" /> లేదా అంతకంటే ఎక్కువ అక్షరాలకు పొడిగించండి (ప్రస్తుతం మీరు 1 అక్షరాన్ని ఉపయోగిస్తున్నారు).</translation>
+<translation id="7080893216867146095">లొకేషన్ షేరింగ్ అనుమతించబడింది</translation>
 <translation id="709897737746224366">దయచేసి రిక్వెస్ట్ చేసిన ఫార్మాటింగ్‌ను సరిపోల్చండి.</translation>
 <translation id="7102274145889307184">ప్రస్తుత లొకేషన్</translation>
 <translation id="7263440858009898357">దయచేసి లిస్ట్‌లోని ఒక అంశాన్ని ఎంచుకోండి.</translation>

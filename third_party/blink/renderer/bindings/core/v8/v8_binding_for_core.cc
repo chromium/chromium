@@ -782,7 +782,18 @@ ScriptState* ToScriptState(LocalFrame* frame, DOMWrapperWorld& world) {
 }
 
 ScriptState* ToScriptStateForMainWorld(LocalFrame* frame) {
-  return ToScriptState(frame, DOMWrapperWorld::MainWorld());
+  if (!frame) {
+    return nullptr;
+  }
+  auto* isolate = ToIsolate(frame);
+  v8::HandleScope handle_scope(isolate);
+  return ToScriptStateImpl(frame, DOMWrapperWorld::MainWorld(isolate));
+}
+
+ScriptState* ToScriptStateForMainWorld(ExecutionContext* context) {
+  DCHECK(context);
+  return ToScriptState(context,
+                       DOMWrapperWorld::MainWorld(context->GetIsolate()));
 }
 
 bool IsValidEnum(const String& value,

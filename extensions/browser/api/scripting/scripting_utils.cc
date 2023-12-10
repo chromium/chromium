@@ -75,7 +75,7 @@ bool ScriptsShouldBeAllowedInIncognito(
 }
 
 bool RemoveScripts(
-    const absl::optional<std::vector<std::string>>& ids,
+    const std::optional<std::vector<std::string>>& ids,
     UserScript::Source source,
     content::BrowserContext* browser_context,
     const ExtensionId& extension_id,
@@ -144,12 +144,12 @@ void ClearPersistentScriptURLPatterns(content::BrowserContext* browser_context,
                                       const ExtensionId& extension_id) {
   ExtensionPrefs::Get(browser_context)
       ->UpdateExtensionPref(extension_id, kPrefPersistentScriptURLPatterns,
-                            absl::nullopt);
+                            std::nullopt);
 }
 
 ValidateScriptsResult ValidateParsedScriptsOnFileThread(
     ExtensionResource::SymlinkPolicy symlink_policy,
-    std::unique_ptr<UserScriptList> scripts) {
+    UserScriptList scripts) {
   DCHECK(GetExtensionFileTaskRunner()->RunsTasksInCurrentSequence());
 
   // Validate that claimed script resources actually exist, and are UTF-8
@@ -157,7 +157,7 @@ ValidateScriptsResult ValidateParsedScriptsOnFileThread(
   std::string error;
   std::vector<InstallWarning> warnings;
   bool are_script_files_valid = script_parsing::ValidateFileSources(
-      *scripts, symlink_policy, &error, &warnings);
+      scripts, symlink_policy, &error, &warnings);
 
   // Script files over the per script/extension size limit are recorded as
   // warnings. However, for this case we should treat "install warnings" as
@@ -169,8 +169,8 @@ ValidateScriptsResult ValidateParsedScriptsOnFileThread(
   }
 
   return std::make_pair(std::move(scripts), are_script_files_valid
-                                                ? absl::nullopt
-                                                : absl::make_optional(error));
+                                                ? std::nullopt
+                                                : std::make_optional(error));
 }
 
 }  // namespace extensions::scripting

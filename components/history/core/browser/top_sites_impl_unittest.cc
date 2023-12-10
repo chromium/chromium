@@ -446,7 +446,6 @@ TEST_F(TopSitesImplTest, GetMostVisitedURLsAndQueries) {
 
     histogram_tester.ExpectTotalCount("History.TopSites.QueryFromHistoryTime",
                                       1);
-    histogram_tester.ExpectTotalCount("History.QueryMostVisitedURLsTime", 1);
     histogram_tester.ExpectTotalCount("History.QueryMostRepeatedQueriesTimeV2",
                                       0);
   }
@@ -475,7 +474,6 @@ TEST_F(TopSitesImplTest, GetMostVisitedURLsAndQueries) {
 
     histogram_tester.ExpectTotalCount("History.TopSites.QueryFromHistoryTime",
                                       1);
-    histogram_tester.ExpectTotalCount("History.QueryMostVisitedURLsTime", 1);
     histogram_tester.ExpectTotalCount("History.QueryMostRepeatedQueriesTimeV2",
                                       1);
   }
@@ -504,7 +502,6 @@ TEST_F(TopSitesImplTest, GetMostVisitedURLsAndQueries) {
 
     histogram_tester.ExpectTotalCount("History.TopSites.QueryFromHistoryTime",
                                       1);
-    histogram_tester.ExpectTotalCount("History.QueryMostVisitedURLsTime", 1);
     histogram_tester.ExpectTotalCount("History.QueryMostRepeatedQueriesTimeV2",
                                       1);
   }
@@ -533,7 +530,6 @@ TEST_F(TopSitesImplTest, GetMostVisitedURLsAndQueries) {
 
     histogram_tester.ExpectTotalCount("History.TopSites.QueryFromHistoryTime",
                                       1);
-    histogram_tester.ExpectTotalCount("History.QueryMostVisitedURLsTime", 1);
     histogram_tester.ExpectTotalCount("History.QueryMostRepeatedQueriesTimeV2",
                                       1);
   }

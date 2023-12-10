@@ -52,7 +52,7 @@ class LoginPinViewTest : public LoginTestBase {
 
   raw_ptr<LoginPinView, DanglingUntriaged | ExperimentalAsh> view_ =
       nullptr;  // Owned by test widget view hierarchy.
-  absl::optional<int> value_;
+  std::optional<int> value_;
   // Number of times the backspace event has been fired.
   int backspace_ = 0;
   // Number of times the submit event has been fired.

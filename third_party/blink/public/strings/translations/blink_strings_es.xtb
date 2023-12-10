@@ -30,6 +30,7 @@
 <translation id="2226276347425096477">Reduce la longitud de este texto a <ph name="MAX_CHARACTERS" /> caracteres o menos (actualmente, el texto tiene <ph name="CURRENT_LENGTH" /> caracteres)</translation>
 <translation id="2247351761944213033">Semana <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Pista <ph name="NUMBER" /></translation>
+<translation id="2353297238722298836">Cámara y micrófono permitidos</translation>
 <translation id="2393030564806080191">Valor hexadecimal del color</translation>
 <translation id="2398813069815436052">Cuadro de diálogo abierto.</translation>
 <translation id="245932805758469625">segundos de vídeo restantes</translation>
@@ -60,10 +61,12 @@
 <translation id="3822383571486410024">Aumenta la longitud del texto a <ph name="MIN_CHARACTERS" /> caracteres como mínimo (actualmente, el texto tiene <ph name="CURRENT_LENGTH" /> caracteres).</translation>
 <translation id="383465348367842624">El texto seguido del signo "<ph name="ATSIGN" />" no debe incluir el símbolo "<ph name="INVALIDCHARACTER" />".</translation>
 <translation id="3846214748874656680">Salir de pantalla completa</translation>
+<translation id="4031179711345676612">Micrófono permitido</translation>
 <translation id="4103419683916926126">Millisegundos</translation>
 <translation id="4201051445878709314">Mostrar mes anterior</translation>
 <translation id="4360991593054037559">Introduce un valor válido. Los dos valores válidos más aproximados son <ph name="VALID_VALUE_LOW" /> y <ph name="VALID_VALUE_HIGHER" />.</translation>
 <translation id="4522570452068850558">Detalles</translation>
+<translation id="4663373278480897665">Cámara permitida</translation>
 <translation id="4664250907885839816">El texto detrás del signo "<ph name="ATSIGN" />" no debe incluir el símbolo "<ph name="INVALIDCHARACTER" />".</translation>
 <translation id="4718048029184481307">Reproduciendo en modo imagen en imagen</translation>
 <translation id="4748357248530471599">activar pantalla completa en el recorte de la pantalla</translation>
@@ -137,6 +140,7 @@
 <translation id="6941933287844615239">descargar archivos multimedia</translation>
 <translation id="698788488269350478">desplegado.</translation>
 <translation id="6989848892321993519">Aumenta la longitud de este texto a <ph name="MIN_CHARACTERS" /> caracteres o más (actualmente, el texto tiene 1 carácter).</translation>
+<translation id="7080893216867146095">Se permite compartir ubicación</translation>
 <translation id="709897737746224366">Utiliza un formato que coincida con el solicitado</translation>
 <translation id="7102274145889307184">ubicación actual</translation>
 <translation id="7263440858009898357">Selecciona un elemento de la lista</translation>

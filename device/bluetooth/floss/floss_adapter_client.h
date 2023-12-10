@@ -78,6 +78,15 @@ class DEVICE_BLUETOOTH_EXPORT FlossAdapterClient : public FlossDBusClient {
     kLocalIoCaps,
     kLocalIoCapsBle,
     kDynamicAudioBuffer,
+    kRemoteIsCoordinatedSetMember,
+    kAppearance,
+    kVendorProductInfo,
+    // Unimplemented:
+    //  BT_PROPERTY_WL_MEDIA_PLAYERS_LIST,
+    //  BT_PROPERTY_REMOTE_ASHA_CAPABILITY,
+    //  BT_PROPERTY_REMOTE_ASHA_TRUNCATED_HISYNCID,
+    //  BT_PROPERTY_REMOTE_MODEL_NUM,
+    kRemoteAddrType = 0x18,
 
     kUnknown = 0xFE,
     kRemoteDeviceTimestamp = 0xFF,

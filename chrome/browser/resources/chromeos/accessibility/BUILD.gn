@@ -6,8 +6,8 @@ import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//chrome/common/features.gni")
 import("//chrome/test/base/ash/js2gtest.gni")
-import("manifest.gni")
 import("strings/accessibility_strings.gni")
+import("tools/manifest.gni")
 import("tools/run_jsbundler.gni")
 
 assert(is_chromeos_ash)
@@ -19,6 +19,7 @@ group("build") {
     ":accessibility_strings",
     ":chromevox_guest_manifest",
     ":chromevox_manifest",
+    "braille_ime:build",
     "chromevox:build",
     "common:build",
   ]

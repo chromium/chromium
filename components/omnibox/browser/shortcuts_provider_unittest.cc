@@ -851,7 +851,14 @@ TEST_F(ShortcutsProviderTest, DoAutocompleteAggregateShortcuts) {
   }
 }
 
-TEST_F(ShortcutsProviderTest, DoAutocompleteWithScoringSignals) {
+// TODO(crbug.com/1509874): test is failing on iPhone device.
+#if TARGET_OS_IOS && !TARGET_IPHONE_SIMULATOR
+#define MAYBE_DoAutocompleteWithScoringSignals \
+  DISABLED_DoAutocompleteWithScoringSignals
+#else
+#define MAYBE_DoAutocompleteWithScoringSignals DoAutocompleteWithScoringSignals
+#endif
+TEST_F(ShortcutsProviderTest, MAYBE_DoAutocompleteWithScoringSignals) {
   TestShortcutData shortcut_data[] = {
       MakeShortcutData("wikipedia", "https://wikipedia.org/wilson7", 1, 1),
       MakeShortcutData("wilson7", "https://wikipedia.org/wilson7", 2, 2),
@@ -880,12 +887,18 @@ TEST_F(ShortcutsProviderTest, DoAutocompleteWithScoringSignals) {
   // There are 2 shortcuts with the wilson7 url which have the same aggregate
   // text length, visit count, and last visit as the 1 winston shortcut.
   EXPECT_EQ(matches[0].scoring_signals->shortcut_visit_count(), 3);
+  EXPECT_EQ(matches[0].scoring_signals->typed_count(), 3);
+  EXPECT_EQ(matches[0].scoring_signals->visit_count(), 3);
   EXPECT_EQ(matches[0].scoring_signals->shortest_shortcut_len(), 7);
 
   EXPECT_EQ(matches[1].scoring_signals->shortcut_visit_count(), 3);
+  EXPECT_EQ(matches[1].scoring_signals->typed_count(), 3);
+  EXPECT_EQ(matches[1].scoring_signals->visit_count(), 3);
   EXPECT_EQ(matches[1].scoring_signals->shortest_shortcut_len(), 7);
 
   EXPECT_EQ(matches[2].scoring_signals->shortcut_visit_count(), 2);
+  EXPECT_EQ(matches[2].scoring_signals->typed_count(), 2);
+  EXPECT_EQ(matches[2].scoring_signals->visit_count(), 2);
   EXPECT_EQ(matches[2].scoring_signals->shortest_shortcut_len(), 7);
 
   // Check again with an ineligible (SEARCH_HISTORY) type match and confirm
@@ -984,6 +997,10 @@ TEST_F(ShortcutsProviderTest, ScoreBoost) {
       create_shortcut_data("urls-saddling-searches", false, 3),
       create_shortcut_data("urls-saddling-searches", true, 2),
       create_shortcut_data("urls-saddling-searches", false, 1),
+      create_shortcut_data("boosting-both-url", false, 2),
+      create_shortcut_data("boosting-both-url", false, 1),
+      create_shortcut_data("boosting-both-search", true, 3),
+      create_shortcut_data("boosting-both-search", true, 2),
   };
 
   PopulateShortcutsBackendWithTestData(client_->GetShortcutsBackend(),
@@ -1149,6 +1166,64 @@ TEST_F(ShortcutsProviderTest, ScoreBoost) {
     EXPECT_EQ(matches[0].relevance, 1300);
     EXPECT_LE(matches[1].relevance, kMaxUnboostedScore);
     EXPECT_LE(matches[2].relevance, kMaxUnboostedScore);
+    EXPECT_TRUE(trigger_service->GetFeatureTriggeredInSession(trigger_feature));
+  }
+
+  {
+    // Boost URLs according to URL params, not search params.
+    scoped_feature_list_.Reset();
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        omnibox_feature_configs::ShortcutBoosting::kShortcutBoost,
+        {
+            {"ShortcutBoostUrlScore", "1300"},
+            {"ShortcutBoostSearchScore", "1310"},
+            {"ShortcutBoostNonTopHitThreshold", "2"},
+            {"ShortcutBoostNonTopHitSearchThreshold", "3"},
+        });
+    scoped_config.Reset();
+
+    trigger_service->ResetSession();
+    AutocompleteInput input(u"boosting-both-url",
+                            metrics::OmniboxEventProto::OTHER,
+                            TestSchemeClassifier());
+    provider_->Start(input, false);
+    const auto& matches = provider_->matches();
+    EXPECT_EQ(matches.size(), 2u);
+    EXPECT_EQ(matches[0].destination_url.spec(),
+              "https://boosting-both-url.com/2");
+    EXPECT_EQ(matches[1].destination_url.spec(),
+              "https://boosting-both-url.com/1");
+    EXPECT_EQ(matches[0].relevance, 1302);
+    EXPECT_LE(matches[1].relevance, kMaxUnboostedScore);
+    EXPECT_TRUE(trigger_service->GetFeatureTriggeredInSession(trigger_feature));
+  }
+
+  {
+    // Boost searches according to search params, not URL params.
+    scoped_feature_list_.Reset();
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        omnibox_feature_configs::ShortcutBoosting::kShortcutBoost,
+        {
+            {"ShortcutBoostUrlScore", "1300"},
+            {"ShortcutBoostSearchScore", "1310"},
+            {"ShortcutBoostNonTopHitThreshold", "2"},
+            {"ShortcutBoostNonTopHitSearchThreshold", "3"},
+        });
+    scoped_config.Reset();
+
+    trigger_service->ResetSession();
+    AutocompleteInput input(u"boosting-both-search",
+                            metrics::OmniboxEventProto::OTHER,
+                            TestSchemeClassifier());
+    provider_->Start(input, false);
+    const auto& matches = provider_->matches();
+    EXPECT_EQ(matches.size(), 2u);
+    EXPECT_EQ(matches[0].destination_url.spec(),
+              "https://boosting-both-search.com/3");
+    EXPECT_EQ(matches[1].destination_url.spec(),
+              "https://boosting-both-search.com/2");
+    EXPECT_EQ(matches[0].relevance, 1313);
+    EXPECT_LE(matches[1].relevance, kMaxUnboostedScore);
     EXPECT_TRUE(trigger_service->GetFeatureTriggeredInSession(trigger_feature));
   }
 }

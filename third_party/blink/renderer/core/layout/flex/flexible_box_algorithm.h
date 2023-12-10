@@ -32,11 +32,11 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_FLEX_FLEXIBLE_BOX_ALGORITHM_H_
 
 #include "base/check_op.h"
+#include "third_party/blink/renderer/core/layout/baseline_utils.h"
+#include "third_party/blink/renderer/core/layout/block_node.h"
 #include "third_party/blink/renderer/core/layout/geometry/flex_offset.h"
+#include "third_party/blink/renderer/core/layout/layout_result.h"
 #include "third_party/blink/renderer/core/layout/min_max_sizes.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_baseline_utils.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_block_node.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_layout_result.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/geometry/layout_point.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
@@ -174,8 +174,8 @@ class FlexItem {
 
   // The above fields are used by the flex algorithm. The following fields, by
   // contrast, are just convenient storage.
-  NGBlockNode ng_input_node_;
-  Member<const NGLayoutResult> layout_result_;
+  BlockNode ng_input_node_;
+  Member<const LayoutResult> layout_result_;
   absl::optional<LayoutUnit> max_content_contribution_;
 };
 

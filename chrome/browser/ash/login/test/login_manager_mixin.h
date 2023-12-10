@@ -5,19 +5,21 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_TEST_LOGIN_MANAGER_MIXIN_H_
 #define CHROME_BROWSER_ASH_LOGIN_TEST_LOGIN_MANAGER_MIXIN_H_
 
+#include <initializer_list>
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/login/test/local_state_mixin.h"
 #include "chrome/browser/ash/login/test/session_flags_manager.h"
+#include "chrome/browser/ash/login/test/user_auth_config.h"
 #include "chrome/test/base/fake_gaia_mixin.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_type.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -42,23 +44,40 @@ class LoginManagerMixin : public InProcessBrowserTestMixin,
   // Represents test user.
   struct TestUserInfo {
     // Creates test user with regular user type from the given `account_id`.
-    explicit TestUserInfo(const AccountId& account_id)
-        : TestUserInfo(account_id, user_manager::USER_TYPE_REGULAR) {}
+    explicit TestUserInfo(const AccountId& account_id,
+                          std::initializer_list<ash::AshAuthFactor> factors =
+                              test::kDefaultAuthSetup)
+        : TestUserInfo(account_id, factors, user_manager::USER_TYPE_REGULAR) {}
 
     // Creates test user with `user_type` from the given `account_id`.
-    TestUserInfo(const AccountId& account_id, user_manager::UserType user_type)
+    TestUserInfo(const AccountId& account_id,
+                 std::initializer_list<ash::AshAuthFactor> factors,
+                 user_manager::UserType user_type)
         : TestUserInfo(account_id,
+                       factors,
                        user_type,
                        user_manager::User::OAUTH2_TOKEN_STATUS_VALID) {}
 
     TestUserInfo(const AccountId& account_id,
+                 std::initializer_list<ash::AshAuthFactor> factors,
+                 user_manager::UserType user_type,
+                 user_manager::User::OAuthTokenStatus token_status)
+        : TestUserInfo(account_id,
+                       test::UserAuthConfig::Create(factors),
+                       user_type,
+                       token_status) {}
+
+    TestUserInfo(const AccountId& account_id,
+                 test::UserAuthConfig auth_config,
                  user_manager::UserType user_type,
                  user_manager::User::OAuthTokenStatus token_status)
         : account_id(account_id),
+          auth_config(auth_config),
           user_type(user_type),
           token_status(token_status) {}
 
     const AccountId account_id;
+    const test::UserAuthConfig auth_config;
     const user_manager::UserType user_type;
     const user_manager::User::OAuthTokenStatus token_status;
   };
@@ -68,6 +87,9 @@ class LoginManagerMixin : public InProcessBrowserTestMixin,
   // Convenience method for creating default UserContext for an account ID. The
   // result can be used with Login* methods below.
   static UserContext CreateDefaultUserContext(const TestUserInfo& account_id);
+
+  // Convenience method for creating several test accounts.
+  static AccountId CreateConsumerAccountId(int unique_number);
 
   // Should be called before any InProcessBrowserTestMixin functions.
   void AppendRegularUsers(int n);
@@ -159,7 +181,7 @@ class LoginManagerMixin : public InProcessBrowserTestMixin,
   // proceeding into the session from the login screen.
   // If |user_context| is not set, built-in default will be used.
   void LoginAsNewRegularUser(
-      absl::optional<UserContext> user_context = absl::nullopt);
+      std::optional<UserContext> user_context = std::nullopt);
 
   // Logs in as a child user with default user context.Should be used for
   // proceeding into the session from the login screen.

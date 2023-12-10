@@ -11,6 +11,7 @@
 #include <memory>
 #include <string>
 
+#include <optional>
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -33,7 +34,6 @@
 #include "ipc/ipc_sync_channel.h"
 #include "mojo/public/cpp/bindings/generic_pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/gpu_extra_info.h"
 #include "ui/gfx/native_widget_types.h"
@@ -139,7 +139,7 @@ class GPU_IPC_SERVICE_EXPORT GpuChannel : public IPC::Listener,
   // Called to remove a listener for a particular message routing ID.
   void RemoveRoute(int32_t route_id);
 
-  absl::optional<gpu::GpuDiskCacheHandle> GetCacheHandleForType(
+  std::optional<gpu::GpuDiskCacheHandle> GetCacheHandleForType(
       gpu::GpuDiskCacheType type);
   void RegisterCacheHandle(const gpu::GpuDiskCacheHandle& handle);
   void CacheBlob(gpu::GpuDiskCacheType type,

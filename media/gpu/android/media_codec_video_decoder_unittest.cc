@@ -275,13 +275,14 @@ class MediaCodecVideoDecoderTest : public testing::TestWithParam<VideoCodec> {
     if (!InitializeWithTextureOwner_OneDecodePending(config)) {
       return nullptr;
     }
+    codec_allocator_->most_recent_config->on_buffers_available_cb.Run();
     return codec_allocator_->ProvideMockCodecAsync();
   }
 
   // Provide access to MCVD's private PumpCodec() to drive the state transitions
   // that depend on queueing and dequeueing buffers. It uses |mcvd_raw_| so that
   // it can be called after |mcvd_| is reset.
-  void PumpCodec() { mcvd_raw_->PumpCodec(false); }
+  void PumpCodec() { mcvd_raw_->PumpCodec(); }
 
   // Start and finish a reset.
   void DoReset() {
@@ -360,7 +361,8 @@ TEST_P(MediaCodecVideoDecoderAV1Test, Av1IsSupported) {
   if (!HasAv1Decoder()) {
     return;
   }
-  EXPECT_CALL(*device_info_, IsAv1DecoderAvailable()).WillOnce(Return(true));
+  EXPECT_CALL(*device_info_, IsAv1DecoderAvailable())
+      .WillRepeatedly(Return(true));
   ASSERT_TRUE(Initialize(TestVideoConfig::Normal(VideoCodec::kAV1)));
 }
 
@@ -698,7 +700,7 @@ TEST_P(MediaCodecVideoDecoderTest, ResetDoesNotFlushAnAlreadyFlushedCodec) {
   testing::Mock::VerifyAndClearExpectations(&decode_cb_);
 }
 
-TEST_P(MediaCodecVideoDecoderVp8Test, ResetDrainsVP8CodecsBeforeFlushing) {
+TEST_P(MediaCodecVideoDecoderTest, ResetDoesNotDrainCodecs) {
   auto* codec =
       InitializeFully_OneDecodePending(TestVideoConfig::Large(codec_));
   ASSERT_TRUE(codec);
@@ -706,86 +708,14 @@ TEST_P(MediaCodecVideoDecoderVp8Test, ResetDrainsVP8CodecsBeforeFlushing) {
   codec->AcceptOneInput();
   PumpCodec();
 
-  // The reset should not complete immediately because the codec needs to be
-  // drained.
-  EXPECT_CALL(*codec, Flush()).Times(0);
+  // The reset should complete immediately because the no codec needs draining
+  // anymore. We don't expect a call to Flush on the codec since it will be
+  // deferred until the first decode after the reset.
   base::MockCallback<base::OnceClosure> reset_cb;
-  EXPECT_CALL(reset_cb, Run()).Times(0);
-  mcvd_->Reset(reset_cb.Get());
-
-  // The next input should be an EOS.
-  codec->AcceptOneInput(MockMediaCodecBridge::kEos);
-  PumpCodec();
-  testing::Mock::VerifyAndClearExpectations(codec);
-
-  // After the EOS is dequeued, the reset should complete.
   EXPECT_CALL(reset_cb, Run());
-  codec->ProduceOneOutput(MockMediaCodecBridge::kEos);
-  PumpCodec();
+  mcvd_->Reset(reset_cb.Get());
+  // The reset should complete before destroying the codec.
   testing::Mock::VerifyAndClearExpectations(&reset_cb);
-}
-
-TEST_P(MediaCodecVideoDecoderVp8Test, ResetDoesNotDrainVp8WithAsyncApi) {
-  EXPECT_CALL(*device_info_, IsAsyncApiSupported())
-      .WillRepeatedly(Return(true));
-
-  auto* codec =
-      InitializeFully_OneDecodePending(TestVideoConfig::Large(codec_));
-  ASSERT_TRUE(codec);
-  // Accept the first decode to transition out of the flushed state.
-  codec->AcceptOneInput();
-  PumpCodec();
-
-  // The reset should complete immediately because the codec is not VP8 so
-  // it doesn't need draining.  We don't expect a call to Flush on the codec
-  // since it will be deferred until the first decode after the reset.
-  base::MockCallback<base::OnceClosure> reset_cb;
-  EXPECT_CALL(reset_cb, Run());
-  mcvd_->Reset(reset_cb.Get());
-  // The reset should complete before destroying the codec, since TearDown will
-  // complete the drain for VP8.  It still might not call reset since a drain
-  // for destroy probably doesn't, but either way we expect it before the drain.
-  testing::Mock::VerifyAndClearExpectations(&reset_cb);
-}
-
-TEST_P(MediaCodecVideoDecoderH264Test, ResetDoesNotDrainNonVp8Codecs) {
-  auto* codec =
-      InitializeFully_OneDecodePending(TestVideoConfig::Large(codec_));
-  ASSERT_TRUE(codec);
-  // Accept the first decode to transition out of the flushed state.
-  codec->AcceptOneInput();
-  PumpCodec();
-
-  // The reset should complete immediately because the codec is not VP8 so
-  // it doesn't need draining.  We don't expect a call to Flush on the codec
-  // since it will be deferred until the first decode after the reset.
-  base::MockCallback<base::OnceClosure> reset_cb;
-  EXPECT_CALL(reset_cb, Run());
-  mcvd_->Reset(reset_cb.Get());
-  // The reset should complete before destroying the codec, since TearDown will
-  // complete the drain for VP8.  It still might not call reset since a drain
-  // for destroy probably doesn't, but either way we expect it before the drain.
-  testing::Mock::VerifyAndClearExpectations(&reset_cb);
-}
-
-TEST_P(MediaCodecVideoDecoderVp8Test, TeardownCompletesPendingReset) {
-  auto* codec =
-      InitializeFully_OneDecodePending(TestVideoConfig::Large(codec_));
-  ASSERT_TRUE(codec);
-
-  // Accept the first decode to transition out of the flushed state.
-  codec->AcceptOneInput();
-  PumpCodec();
-
-  base::MockCallback<base::OnceClosure> reset_cb;
-  EXPECT_CALL(reset_cb, Run()).Times(0);
-  mcvd_->Reset(reset_cb.Get());
-  EXPECT_CALL(reset_cb, Run());
-  mcvd_.reset();
-
-  // VP8 codecs requiring draining for teardown to complete (tested below).
-  codec->ProduceOneOutput(MockMediaCodecBridge::kEos);
-  PumpCodec();
 }
 
 TEST_P(MediaCodecVideoDecoderTest, CodecFlushIsDeferredAfterDraining) {
@@ -862,15 +792,10 @@ TEST_P(MediaCodecVideoDecoderTest, TeardownDoesNotDrainFlushedCodecs) {
   ASSERT_TRUE(InitializeFully_OneDecodePending(TestVideoConfig::Large(codec_)));
   // Since we assert that MCVD is destructed by default, this test verifies that
   // MCVD is destructed without requiring the codec to output an EOS buffer.
-
-  // We assert this since, otherwise, we'll complete the drain for VP8 codecs in
-  // TearDown.  This guarantees that we won't, so any drain started by MCVD
-  // won't complete.  Otherwise, this tests nothing.  Note that 'Drained' here
-  // is a bit of a misnomer; the mock codec doesn't track flushed.
   ASSERT_TRUE(codec_allocator_->most_recent_codec->IsDrained());
 }
 
-TEST_P(MediaCodecVideoDecoderH264Test, TeardownDoesNotDrainNonVp8Codecs) {
+TEST_P(MediaCodecVideoDecoderTest, TeardownDoesNotDrainCodecs) {
   auto* codec =
       InitializeFully_OneDecodePending(TestVideoConfig::Large(codec_));
   ASSERT_TRUE(codec);
@@ -879,28 +804,6 @@ TEST_P(MediaCodecVideoDecoderH264Test, TeardownDoesNotDrainNonVp8Codecs) {
   PumpCodec();
   // Since we assert that MCVD is destructed by default, this test verifies that
   // MCVD is destructed without requiring the codec to output an EOS buffer.
-  // Remember that we do not complete the drain for non-VP8 codecs in TearDown.
-}
-
-TEST_P(MediaCodecVideoDecoderVp8Test,
-       TeardownDrainsVp8CodecsBeforeDestruction) {
-  auto* codec =
-      InitializeFully_OneDecodePending(TestVideoConfig::Large(codec_));
-  ASSERT_TRUE(codec);
-  // Accept the first decode to transition out of the flushed state.
-  codec->AcceptOneInput();
-  PumpCodec();
-
-  // MCVD should not be destructed immediately.
-  mcvd_.reset();
-  base::RunLoop().RunUntilIdle();
-
-  // It should be destructed after draining completes.
-  codec->AcceptOneInput(MockMediaCodecBridge::kEos);
-  codec->ProduceOneOutput(MockMediaCodecBridge::kEos);
-  EXPECT_CALL(*codec, Flush()).Times(0);
-  PumpCodec();
-  base::RunLoop().RunUntilIdle();
 }
 
 TEST_P(MediaCodecVideoDecoderTest, CdmInitializationWorksForL3) {

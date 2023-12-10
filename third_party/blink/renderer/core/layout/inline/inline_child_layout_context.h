@@ -62,12 +62,11 @@ class CORE_EXPORT InlineChildLayoutContext {
     item_index_ = item_index;
   }
 
-  const HeapVector<Member<const NGBreakToken>>& ParallelFlowBreakTokens()
-      const {
+  const HeapVector<Member<const BreakToken>>& ParallelFlowBreakTokens() const {
     return parallel_flow_break_tokens_;
   }
   void ClearParallelFlowBreakTokens();
-  void PropagateParallelFlowBreakToken(const NGBreakToken*);
+  void PropagateParallelFlowBreakToken(const BreakToken*);
 
   const absl::optional<LayoutUnit>& BalancedAvailableWidth() const {
     return balanced_available_width_;
@@ -78,14 +77,14 @@ class CORE_EXPORT InlineChildLayoutContext {
 
  protected:
   InlineChildLayoutContext(const InlineNode& node,
-                           NGBoxFragmentBuilder* container_builder,
+                           BoxFragmentBuilder* container_builder,
                            LineInfo* line_info);
   InlineChildLayoutContext(const InlineNode& node,
-                           NGBoxFragmentBuilder* container_builder,
+                           BoxFragmentBuilder* container_builder,
                            ScoreLineBreakContext* score_line_break_context);
 
  private:
-  NGBoxFragmentBuilder* container_builder_ = nullptr;
+  BoxFragmentBuilder* container_builder_ = nullptr;
   FragmentItemsBuilder items_builder_;
 
   LineInfo* line_info_ = nullptr;
@@ -99,7 +98,7 @@ class CORE_EXPORT InlineChildLayoutContext {
   const HeapVector<InlineItem>* items_ = nullptr;
   unsigned item_index_ = 0;
 
-  HeapVector<Member<const NGBreakToken>> parallel_flow_break_tokens_;
+  HeapVector<Member<const BreakToken>> parallel_flow_break_tokens_;
 
   // Used by `ParagraphLineBreaker`.
   absl::optional<LayoutUnit> balanced_available_width_;
@@ -111,7 +110,7 @@ class CORE_EXPORT SimpleInlineChildLayoutContext
     : public InlineChildLayoutContext {
  public:
   SimpleInlineChildLayoutContext(const InlineNode& node,
-                                 NGBoxFragmentBuilder* container_builder)
+                                 BoxFragmentBuilder* container_builder)
       : InlineChildLayoutContext(node, container_builder, &line_info_storage_) {
   }
 
@@ -126,7 +125,7 @@ class CORE_EXPORT OptimalInlineChildLayoutContext
     : public InlineChildLayoutContext {
  public:
   OptimalInlineChildLayoutContext(const InlineNode& node,
-                                  NGBoxFragmentBuilder* container_builder)
+                                  BoxFragmentBuilder* container_builder)
       : InlineChildLayoutContext(node,
                                  container_builder,
                                  &score_line_break_context_instance_) {}

@@ -8,6 +8,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/webui/media_app_ui/url_constants.h"
+#include "chrome/browser/accessibility/media_app/ax_media_app_handler_factory.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
@@ -88,6 +89,17 @@ void ChromeMediaAppGuestUIDelegate::PopulateLoadTimeData(
   source->AddBoolean("isDevChannel", channel == version_info::Channel::DEV);
 }
 
+std::unique_ptr<ash::media_app_ui::mojom::OcrUntrustedPageHandler>
+ChromeMediaAppGuestUIDelegate::CreateAndBindOcrHandler(
+    content::BrowserContext& context,
+    mojo::PendingReceiver<ash::media_app_ui::mojom::OcrUntrustedPageHandler>
+        receiver,
+    mojo::PendingRemote<ash::media_app_ui::mojom::OcrUntrustedPage> page) {
+  return ash::AXMediaAppHandlerFactory::GetInstance()
+      ->CreateAXMediaAppUntrustedHandler(context, std::move(receiver),
+                                         std::move(page));
+}
+
 MediaAppGuestUIConfig::MediaAppGuestUIConfig()
     : WebUIConfig(content::kChromeUIUntrustedScheme,
                   ash::kChromeUIMediaAppHost) {}
@@ -97,6 +109,6 @@ MediaAppGuestUIConfig::~MediaAppGuestUIConfig() = default;
 std::unique_ptr<content::WebUIController>
 MediaAppGuestUIConfig::CreateWebUIController(content::WebUI* web_ui,
                                              const GURL& url) {
-  ChromeMediaAppGuestUIDelegate delegate;
-  return std::make_unique<ash::MediaAppGuestUI>(web_ui, &delegate);
+  auto delegate = std::make_unique<ChromeMediaAppGuestUIDelegate>();
+  return std::make_unique<ash::MediaAppGuestUI>(web_ui, std::move(delegate));
 }

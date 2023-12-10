@@ -122,7 +122,7 @@ class PageInfoUI {
     CookieControlsBreakageConfidenceLevel confidence;
 
     // Whether the current profile is "off the record".
-    bool is_otr;
+    bool is_otr = false;
   };
 
   // |ChosenObjectInfo| contains information about a single |chooser_object| of

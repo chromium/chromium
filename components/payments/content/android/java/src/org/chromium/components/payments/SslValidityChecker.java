@@ -43,6 +43,7 @@ public class SslValidityChecker {
     @NativeMethods
     interface Natives {
         String getInvalidSslCertificateErrorMessage(WebContents webContents);
+
         boolean isValidPageInPaymentHandlerWindow(WebContents webContents);
     }
 }

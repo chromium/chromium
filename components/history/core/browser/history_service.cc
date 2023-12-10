@@ -21,6 +21,7 @@
 
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
+#include "base/containers/cxx20_erase_vector.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
@@ -91,7 +92,7 @@ class HistoryService::BackendDelegate : public HistoryBackend::Delegate {
         can_add_url_(can_add_url) {}
 
   bool CanAddURL(const GURL& url) const override {
-    return can_add_url_ ? can_add_url_.Run(url) : true;
+    return can_add_url_ ? can_add_url_.Run(url) : url.is_valid();
   }
 
   void NotifyProfileError(sql::InitStatus init_status,
@@ -589,13 +590,18 @@ void HistoryService::AddPage(const GURL& url,
       /*did_replace_entry=*/false, /*consider_for_ntp_most_visited=*/true));
 }
 
-void HistoryService::AddPage(const HistoryAddPageArgs& add_page_args) {
+void HistoryService::AddPage(HistoryAddPageArgs add_page_args) {
   TRACE_EVENT0("browser", "HistoryService::AddPage");
   DCHECK(backend_task_runner_) << "History service being called after cleanup";
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!CanAddURL(add_page_args.url))
     return;
+
+  DCHECK(add_page_args.url.is_valid());
+
+  base::EraseIf(add_page_args.redirects,
+                [this](const GURL& url) { return !CanAddURL(url); });
 
   // Inform VisitedDelegate of all links and redirects.
   if (visit_delegate_) {
@@ -631,6 +637,8 @@ void HistoryService::AddPageNoVisitForBookmark(const GURL& url,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!CanAddURL(url))
     return;
+
+  DCHECK(url.is_valid());
 
   ScheduleTask(PRIORITY_NORMAL,
                base::BindOnce(&HistoryBackend::AddPageNoVisitForBookmark,
@@ -767,6 +775,8 @@ void HistoryService::AddPageWithDetails(const GURL& url,
   // Filter out unwanted URLs.
   if (!CanAddURL(url))
     return;
+
+  DCHECK(url.is_valid());
 
   // Inform VisitDelegate of the URL.
   if (visit_delegate_) {
@@ -1734,7 +1744,7 @@ void HistoryService::NotifyFaviconsChanged(const std::set<GURL>& page_urls,
 
 bool HistoryService::CanAddURL(const GURL& url) {
   if (!history_client_) {
-    return true;
+    return url.is_valid();
   }
   return history_client_->GetThreadSafeCanAddURLCallback().Run(url);
 }

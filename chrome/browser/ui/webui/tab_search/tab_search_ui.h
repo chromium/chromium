@@ -66,7 +66,7 @@ class TabSearchUI : public ui::MojoBubbleWebUIController,
 
   // A timer used to track the duration between when the WebUI is constructed
   // and when the TabSearchPageHandler is constructed.
-  absl::optional<base::ElapsedTimer> page_handler_timer_;
+  std::optional<base::ElapsedTimer> page_handler_timer_;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };

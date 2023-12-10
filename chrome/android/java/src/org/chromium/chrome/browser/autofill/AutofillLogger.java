@@ -9,14 +9,10 @@ import org.jni_zero.JNINamespace;
 
 import org.chromium.base.ResettersForTesting;
 
-/**
-* JNI call glue for AutofillExternalDelagate C++ and Java objects.
-*/
+/** JNI call glue for AutofillExternalDelagate C++ and Java objects. */
 @JNINamespace("autofill")
 public class AutofillLogger {
-    /**
-     * An entry to be sent to Logger.
-     */
+    /** An entry to be sent to Logger. */
     public static class LogEntry {
         private final String mAutofilledValue;
         private final String mProfileFullName;

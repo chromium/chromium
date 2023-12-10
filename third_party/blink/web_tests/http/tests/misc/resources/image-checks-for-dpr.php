@@ -1,5 +1,5 @@
 <?php
-    $dpr = $_SERVER["HTTP_DPR"];
+    $dpr = $_SERVER["HTTP_DPR"] ?? null;
 
     if(isset($dpr)) {
         $fn = fopen("compass.jpg", "r");

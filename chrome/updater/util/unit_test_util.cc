@@ -6,6 +6,7 @@
 
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <sstream>
 #include <string>
 #include <utility>
@@ -44,7 +45,6 @@
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util/util.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <shlobj.h>
@@ -144,7 +144,7 @@ void SetupFakeUpdaterPrefs(UpdaterScope scope, const base::Version& version) {
 void SetupFakeUpdaterInstallFolder(UpdaterScope scope,
                                    const base::Version& version,
                                    bool should_create_updater_executable) {
-  absl::optional<base::FilePath> folder_path =
+  std::optional<base::FilePath> folder_path =
       GetVersionedInstallDirectory(scope, version);
   ASSERT_TRUE(folder_path);
   const base::FilePath updater_executable_path(
@@ -222,7 +222,7 @@ std::string GetTestName() {
 }
 
 bool DeleteFileAndEmptyParentDirectories(
-    const absl::optional<base::FilePath>& file_path) {
+    const std::optional<base::FilePath>& file_path) {
   struct Local {
     // Deletes recursively `dir` and its parents up, if dir is empty
     // and until one non-empty parent directory is found.
@@ -249,11 +249,11 @@ base::FilePath GetLogDestinationDir() {
 }
 
 void InitLoggingForUnitTest(const base::FilePath& log_base_path) {
-  const absl::optional<base::FilePath> log_file_path = [&log_base_path]() {
+  const std::optional<base::FilePath> log_file_path = [&log_base_path] {
     const base::FilePath dest_dir = GetLogDestinationDir();
     return dest_dir.empty()
-               ? absl::nullopt
-               : absl::make_optional(dest_dir.Append(log_base_path));
+               ? std::nullopt
+               : std::make_optional(dest_dir.Append(log_base_path));
   }();
   if (log_file_path) {
     logging::LoggingSettings settings;

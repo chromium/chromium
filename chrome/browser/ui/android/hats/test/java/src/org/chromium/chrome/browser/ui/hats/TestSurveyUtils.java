@@ -27,9 +27,7 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
-/**
- * Util class for survey related testing.
- */
+/** Util class for survey related testing. */
 public class TestSurveyUtils {
     /**
      * Template for trigger Id override for command line. Usage:
@@ -47,6 +45,7 @@ public class TestSurveyUtils {
      */
     public static final String TEST_SURVEY_TRIGGER_ID_OVERRIDE_TEMPLATE =
             "probability/1.0/en_site_id/";
+
     public static final String TEST_TRIGGER_ID_FOO = "test_trigger_id_foo";
 
     /**
@@ -55,8 +54,9 @@ public class TestSurveyUtils {
      */
     public static void setTestSurveyConfigForTrigger(
             String trigger, String[] psdBitFields, String[] psdStringFields) {
-        SurveyConfig.setSurveyConfigForTesting(new SurveyConfig(
-                trigger, TEST_TRIGGER_ID_FOO, 1.0f, false, psdBitFields, psdStringFields));
+        SurveyConfig.setSurveyConfigForTesting(
+                new SurveyConfig(
+                        trigger, TEST_TRIGGER_ID_FOO, 1.0f, false, psdBitFields, psdStringFields));
     }
 
     /**
@@ -81,16 +81,12 @@ public class TestSurveyUtils {
     public static class TestSurveyComponentRule implements TestRule {
         private TestSurveyFactory mTestSurveyFactory;
 
-        /**
-         * Return the trigger ID of the last shown survey.
-         */
+        /** Return the trigger ID of the last shown survey. */
         public String getLastShownTriggerId() {
             return mTestSurveyFactory.getLastShownTriggerId();
         }
 
-        /**
-         * Return the set of PSD of the last shown survey.
-         */
+        /** Return the set of PSD of the last shown survey. */
         public Map<String, String> getLastShownSurveyPsd() {
             return mTestSurveyFactory.getLastShownSurveyPsd();
         }
@@ -124,9 +120,7 @@ public class TestSurveyUtils {
         }
     }
 
-    /**
-     * Test impl of factory that generate SurveyClient using test set up.
-     */
+    /** Test impl of factory that generate SurveyClient using test set up. */
     static class TestSurveyFactory extends SurveyClientFactory {
         private final AlwaysSucceedSurveyController mTestController;
         private final ObservableSupplierImpl<Boolean> mCrashUploadPermissionSupplier;
@@ -142,16 +136,12 @@ public class TestSurveyUtils {
             SurveyMetadata.initializeForTesting(mMetadata, 1);
         }
 
-        /**
-         * Return the trigger ID of the last shown survey.
-         */
+        /** Return the trigger ID of the last shown survey. */
         String getLastShownTriggerId() {
             return mTestController.mLastShownTriggerId;
         }
 
-        /**
-         * Return the set of PSD of the last shown survey.
-         */
+        /** Return the set of PSD of the last shown survey. */
         Map<String, String> getLastShownSurveyPsd() {
             return mTestController.mLastShownSurveyPsd;
         }
@@ -181,13 +171,19 @@ public class TestSurveyUtils {
         Map<String, String> mLastShownSurveyPsd;
 
         @Override
-        public void downloadSurvey(Context context, String triggerId, Runnable onSuccessRunnable,
+        public void downloadSurvey(
+                Context context,
+                String triggerId,
+                Runnable onSuccessRunnable,
                 Runnable onFailureRunnable) {
             onSuccessRunnable.run();
         }
 
         @Override
-        public void showSurveyIfAvailable(Activity activity, String triggerId, int displayLogoResId,
+        public void showSurveyIfAvailable(
+                Activity activity,
+                String triggerId,
+                int displayLogoResId,
                 @Nullable ActivityLifecycleDispatcher lifecycleDispatcher,
                 @Nullable Map<String, String> psd) {
             mLastShownTriggerId = triggerId;
@@ -203,22 +199,26 @@ public class TestSurveyUtils {
         public void destroy() {}
     }
 
-    /**
-     * Test implementation of a SurveyController.
-     */
+    /** Test implementation of a SurveyController. */
     static class TestSurveyController implements SurveyController {
         private String mShownSurveyTriggerId;
         private SurveyEntry mSurveyEntry;
 
         @Override
-        public void downloadSurvey(Context context, String triggerId, Runnable onSuccessRunnable,
+        public void downloadSurvey(
+                Context context,
+                String triggerId,
+                Runnable onSuccessRunnable,
                 Runnable onFailureRunnable) {
             assert mSurveyEntry == null;
             mSurveyEntry = new SurveyEntry(triggerId, onSuccessRunnable, onFailureRunnable);
         }
 
         @Override
-        public void showSurveyIfAvailable(Activity activity, String triggerId, int displayLogoResId,
+        public void showSurveyIfAvailable(
+                Activity activity,
+                String triggerId,
+                int displayLogoResId,
                 @Nullable ActivityLifecycleDispatcher lifecycleDispatcher,
                 @Nullable Map<String, String> psd) {
             assert triggerId.equals(mSurveyEntry.triggerId) : "Survey not downloaded yet.";
@@ -239,9 +239,7 @@ public class TestSurveyUtils {
             mShownSurveyTriggerId = null;
         }
 
-        /**
-         * Simulate download being successful with a given survey.
-         */
+        /** Simulate download being successful with a given survey. */
         public void simulateDownloadFinished(String triggerId, boolean succeed) {
             assert mSurveyEntry != null && triggerId.equals(mSurveyEntry.triggerId);
 
@@ -255,16 +253,12 @@ public class TestSurveyUtils {
             mSurveyEntry.isExpired = true;
         }
 
-        /**
-         * Whether the given survey is shown.
-         */
+        /** Whether the given survey is shown. */
         public boolean isSurveyShown(String triggerId) {
             return triggerId.equals(mShownSurveyTriggerId);
         }
 
-        /**
-         * Whether there are any survey being downloaded.
-         */
+        /** Whether there are any survey being downloaded. */
         public boolean hasSurveyDownloadInQueue() {
             return mSurveyEntry != null;
         }
@@ -285,9 +279,7 @@ public class TestSurveyUtils {
         }
     }
 
-    /**
-     * Test implementation of a SurveyUiDelegate.
-     */
+    /** Test implementation of a SurveyUiDelegate. */
     static class TestSurveyUiDelegate implements SurveyUiDelegate {
         private Runnable mOnSurveyAcceptedCallable;
         private Runnable mOnSurveyDeclinedCallable;
@@ -297,7 +289,9 @@ public class TestSurveyUtils {
         private boolean mPresentationWillFail;
 
         @Override
-        public void showSurveyInvitation(Runnable onSurveyAccepted, Runnable onSurveyDeclined,
+        public void showSurveyInvitation(
+                Runnable onSurveyAccepted,
+                Runnable onSurveyDeclined,
                 Runnable onSurveyPresentationFailed) {
             mOnSurveyAcceptedCallable = onSurveyAccepted;
             mOnSurveyDeclinedCallable = onSurveyDeclined;

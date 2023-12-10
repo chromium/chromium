@@ -39,17 +39,18 @@ class BLEAdvert implements Closeable {
             return;
         }
 
-        mCallback = new AdvertiseCallback() {
-            @Override
-            public void onStartFailure(int errorCode) {
-                Log.i(TAG, "advertising failure " + errorCode);
-            }
+        mCallback =
+                new AdvertiseCallback() {
+                    @Override
+                    public void onStartFailure(int errorCode) {
+                        Log.i(TAG, "advertising failure " + errorCode);
+                    }
 
-            @Override
-            public void onStartSuccess(AdvertiseSettings settingsInEffect) {
-                Log.i(TAG, "advertising success");
-            }
-        };
+                    @Override
+                    public void onStartSuccess(AdvertiseSettings settingsInEffect) {
+                        Log.i(TAG, "advertising success");
+                    }
+                };
 
         AdvertiseSettings settings =
                 (new AdvertiseSettings.Builder())
@@ -58,12 +59,13 @@ class BLEAdvert implements Closeable {
                         .setTxPowerLevel(AdvertiseSettings.ADVERTISE_TX_POWER_HIGH)
                         .build();
         ParcelUuid fidoUuid = new ParcelUuid(UUID.fromString(CABLE_UUID));
-        AdvertiseData data = (new AdvertiseData.Builder())
-                                     .addServiceUuid(fidoUuid)
-                                     .addServiceData(fidoUuid, payload)
-                                     .setIncludeDeviceName(false)
-                                     .setIncludeTxPowerLevel(false)
-                                     .build();
+        AdvertiseData data =
+                (new AdvertiseData.Builder())
+                        .addServiceUuid(fidoUuid)
+                        .addServiceData(fidoUuid, payload)
+                        .setIncludeDeviceName(false)
+                        .setIncludeTxPowerLevel(false)
+                        .build();
 
         advertiser.startAdvertising(settings, data, mCallback);
     }

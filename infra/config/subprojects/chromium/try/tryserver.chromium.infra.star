@@ -8,7 +8,6 @@ load("//lib/try.star", "try_")
 load("//lib/consoles.star", "consoles")
 
 try_.defaults.set(
-    executable = "recipe:chromium_3pp",
     builder_group = "tryserver.chromium.infra",
     pool = try_.DEFAULT_POOL,
     execution_timeout = try_.DEFAULT_EXECUTION_TIMEOUT,
@@ -21,6 +20,7 @@ consoles.list_view(
 
 try_.builder(
     name = "3pp-linux-amd64-packager",
+    executable = "recipe:chromium_3pp",
     builderless = False,
     cores = 8,
     os = os.LINUX_DEFAULT,
@@ -51,6 +51,7 @@ try_.builder(
 
 try_.builder(
     name = "3pp-mac-amd64-packager",
+    executable = "recipe:chromium_3pp",
     builderless = True,
     os = os.MAC_DEFAULT,
     properties = {
@@ -63,16 +64,31 @@ try_.builder(
 )
 
 try_.builder(
-    name = "3pp-win-amd64-packager",
+    name = "3pp-windows-amd64-packager",
     description_html = "3PP Packager for Windows",
+    executable = "recipe:chromium_3pp",
     builderless = True,
     os = os.WINDOWS_DEFAULT,
     contact_team_email = "chrome-browser-infra-team@google.com",
     properties = {
         "$build/chromium_3pp": {
-            "platform": "win-amd64",
+            "platform": "windows-amd64",
             "package_prefix": "chromium_3pp",
             "gclient_config": "chromium",
         },
     },
+)
+
+try_.builder(
+    name = "mega-cq-launcher",
+    # TODO(crbug.com/1227778): Document the Mega-CQ somewhere in markdown, then
+    # link to it in the description here.
+    description_html = "Triggers all builders needed for Chromium's Mega CQ.",
+    executable = "recipe:chromium/mega_cq_launcher",
+    builderless = True,
+    cores = 2,
+    os = os.LINUX_DEFAULT,
+    contact_team_email = "chrome-browser-infra-team@google.com",
+    execution_timeout = 36 * time.hour,  # We expect it can take a while.
+    service_account = try_.DEFAULT_SERVICE_ACCOUNT,
 )

@@ -230,16 +230,42 @@ bool AddressComponent::IsSupportedType(ServerFieldType field_type) const {
 
 void AddressComponent::GetSupportedTypes(
     ServerFieldTypeSet* supported_types) const {
+  return AddressComponent::GetTypes(/*storable_only=*/false, supported_types);
+}
+
+void AddressComponent::GetStorableTypes(
+    ServerFieldTypeSet* supported_types) const {
+  return AddressComponent::GetTypes(/*storable_only=*/true, supported_types);
+}
+
+void AddressComponent::GetTypes(bool storable_only,
+                                ServerFieldTypeSet* supported_types) const {
   // A proper AddressComponent tree contains every type only once.
   CHECK(supported_types->find(storage_type_) == supported_types->end())
       << "The AddressComponent already contains a node that supports this "
          "type: "
       << storage_type_;
   supported_types->insert(storage_type_);
-  supported_types->insert_all(GetAdditionalSupportedFieldTypes());
-  for (auto& subcomponent : subcomponents_) {
-    subcomponent->GetSupportedTypes(supported_types);
+  if (!storable_only) {
+    supported_types->insert_all(GetAdditionalSupportedFieldTypes());
   }
+
+  for (auto& subcomponent : subcomponents_) {
+    subcomponent->GetTypes(storable_only, supported_types);
+  }
+}
+
+std::optional<ServerFieldType> AddressComponent::GetStorableTypeOf(
+    ServerFieldType type) const {
+  if (IsSupportedType(type)) {
+    return storage_type_;
+  }
+  for (const std::unique_ptr<AddressComponent>& subcomponent : subcomponents_) {
+    if (auto storeable_type = subcomponent->GetStorableTypeOf(type)) {
+      return storeable_type;
+    }
+  }
+  return std::nullopt;
 }
 
 const ServerFieldTypeSet AddressComponent::GetAdditionalSupportedFieldTypes()
@@ -440,7 +466,9 @@ void AddressComponent::ParseValueAndAssignSubcomponents() {
   }
 
   bool parsing_successful =
-      base::FeatureList::IsEnabled(features::kAutofillUseI18nAddressModel)
+      base::FeatureList::IsEnabled(features::kAutofillUseI18nAddressModel) &&
+              GroupTypeOfServerFieldType(GetStorageType()) ==
+                  FieldTypeGroup::kAddress
           ? ParseValueAndAssignSubcomponentsByI18nParsingRules()
           : ParseValueAndAssignSubcomponentsByRegularExpressions();
 
@@ -481,7 +509,9 @@ bool AddressComponent::ParseValueAndAssignSubcomponentsByRegularExpressions() {
 
 void AddressComponent::
     TryParseValueAndAssignSubcomponentsRespectingSetValues() {
-  if (base::FeatureList::IsEnabled(features::kAutofillUseI18nAddressModel)) {
+  if (base::FeatureList::IsEnabled(features::kAutofillUseI18nAddressModel) &&
+      GroupTypeOfServerFieldType(GetStorageType()) ==
+          FieldTypeGroup::kAddress) {
     const AddressCountryCode country_code = AddressCountryCode(
         base::UTF16ToUTF8(GetRootNode().GetValueForType(ADDRESS_HOME_COUNTRY)));
 

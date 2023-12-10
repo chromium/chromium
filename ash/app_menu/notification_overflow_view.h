@@ -11,6 +11,8 @@
 #include "ash/app_menu/app_menu_export.h"
 #include "ash/app_menu/notification_item_view.h"
 #include "base/memory/raw_ptr.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/views/view.h"
 
 namespace message_center {
 class ProportionalImageView;
@@ -24,6 +26,8 @@ namespace ash {
 class NotificationOverflowImageView;
 
 class APP_MENU_EXPORT NotificationOverflowView : public views::View {
+  METADATA_HEADER(NotificationOverflowView, views::View)
+
  public:
   NotificationOverflowView();
 

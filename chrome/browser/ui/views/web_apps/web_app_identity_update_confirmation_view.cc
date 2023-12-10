@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/web_apps/web_app_identity_update_confirmation_view.h"
 
+#include <optional>
+
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -18,7 +20,6 @@
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/browser/uninstall_result_code.h"
 #include "content/public/browser/web_contents.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
@@ -118,7 +119,8 @@ WebAppIdentityUpdateConfirmationView::WebAppIdentityUpdateConfirmationView(
               .AddChildren(
                   views::Builder<views::ImageView>()
                       .SetImageSize(image_size)
-                      .SetImage(gfx::ImageSkia::CreateFrom1xBitmap(old_icon))
+                      .SetImage(ui::ImageModel::FromImageSkia(
+                          gfx::ImageSkia::CreateFrom1xBitmap(old_icon)))
                       .SetAccessibleName(l10n_util::GetStringUTF16(
                           IDS_WEBAPP_UPDATE_CURRENT_ICON)),
                   views::Builder<views::ImageView>().SetImage(
@@ -127,7 +129,8 @@ WebAppIdentityUpdateConfirmationView::WebAppIdentityUpdateConfirmationView(
                           kArrowIconSizeDp)),
                   views::Builder<views::ImageView>()
                       .SetImageSize(image_size)
-                      .SetImage(gfx::ImageSkia::CreateFrom1xBitmap(new_icon))
+                      .SetImage(ui::ImageModel::FromImageSkia(
+                          gfx::ImageSkia::CreateFrom1xBitmap(new_icon)))
                       .SetAccessibleName(l10n_util::GetStringUTF16(
                           IDS_WEBAPP_UPDATE_NEW_ICON)))
               .AddPaddingRow(views::TableLayout::kFixedSize,

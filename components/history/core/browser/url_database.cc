@@ -35,9 +35,10 @@ URLDatabase::URLEnumeratorBase::~URLEnumeratorBase() = default;
 URLDatabase::URLEnumerator::URLEnumerator() = default;
 
 bool URLDatabase::URLEnumerator::GetNextURL(URLRow* r) {
-  if (statement_.Step()) {
-    FillURLRow(statement_, r);
-    return true;
+  while (statement_.Step()) {
+    if (FillURLRow(statement_, r)) {
+      return true;
+    }
   }
   return false;
 }
@@ -48,17 +49,22 @@ URLDatabase::URLDatabase()
 
 URLDatabase::~URLDatabase() = default;
 
-// Convenience to fill a URLRow. Must be in sync with the fields in
-// kURLRowFields.
-void URLDatabase::FillURLRow(sql::Statement& s, URLRow* i) {
+bool URLDatabase::FillURLRow(sql::Statement& s, URLRow* i) {
   DCHECK(i);
+
+  GURL url(s.ColumnString(1));
+  if (!url.is_valid()) {
+    return false;
+  }
+
   i->set_id(s.ColumnInt64(0));
-  i->set_url(GURL(s.ColumnString(1)));
+  i->set_url(url);
   i->set_title(s.ColumnString16(2));
   i->set_visit_count(s.ColumnInt(3));
   i->set_typed_count(s.ColumnInt(4));
   i->set_last_visit(s.ColumnTime(5));
   i->set_hidden(s.ColumnInt(6) != 0);
+  return true;
 }
 
 bool URLDatabase::MigrateKeywordsSearchTermsLowerTermColumn() {
@@ -120,8 +126,7 @@ bool URLDatabase::GetURLRow(URLID url_id, URLRow* info) {
   statement.BindInt64(0, url_id);
 
   if (statement.Step()) {
-    FillURLRow(statement, info);
-    return true;
+    return FillURLRow(statement, info);
   }
   return false;
 }
@@ -132,11 +137,14 @@ URLID URLDatabase::GetRowForURL(const GURL& url, URLRow* info) {
   std::string url_string = database_utils::GurlToDatabaseUrl(url);
   statement.BindString(0, url_string);
 
-  if (!statement.Step())
-    return 0;  // no data
+  if (!statement.Step()) {
+    return 0;  // No data.
+  }
 
-  if (info)
-    FillURLRow(statement, info);
+  if (info && !FillURLRow(statement, info)) {
+    return 0;  // Invalid URL row.
+  }
+
   return statement.ColumnInt64(0);
 }
 
@@ -345,9 +353,9 @@ bool URLDatabase::AutocompleteForPrefix(const std::string& prefix,
 
   while (statement.Step()) {
     URLRow info;
-    FillURLRow(statement, &info);
-    if (info.url().is_valid())
+    if (FillURLRow(statement, &info)) {
       results->push_back(info);
+    }
   }
   return !results->empty();
 }
@@ -378,6 +386,8 @@ bool URLDatabase::FindShortestURLFromBase(const std::string& base,
                                           int min_typed,
                                           bool allow_base,
                                           URLRow* info) {
+  DCHECK(info);
+
   // Select URLs that start with `base` and are prefixes of `url`.  All parts
   // of this query except the substr() call can be done using the index.  We
   // could do this query with a couple of LIKE or GLOB statements as well, but
@@ -387,21 +397,26 @@ bool URLDatabase::FindShortestURLFromBase(const std::string& base,
   sql.append(kURLRowFields);
   sql.append(" FROM urls WHERE url ");
   sql.append(allow_base ? ">=" : ">");
-  sql.append(" ? AND url < :end AND url = substr(:end, 1, length(url)) "
-             "AND hidden = 0 AND visit_count >= ? AND typed_count >= ? "
-             "ORDER BY url LIMIT 1");
+  // Avoid limiting to 1 read to guard against the hypothetical case that a
+  // URL stored in the database is invalid, which requires moving on to the
+  // next best.
+  sql.append(
+      " ? AND url < :end AND url = substr(:end, 1, length(url)) "
+      "AND hidden = 0 AND visit_count >= ? AND typed_count >= ? "
+      "ORDER BY url");
   sql::Statement statement(GetDB().GetUniqueStatement(sql.c_str()));
   statement.BindString(0, base);
   statement.BindString(1, url);   // :end
   statement.BindInt(2, min_visits);
   statement.BindInt(3, min_typed);
 
-  if (!statement.Step())
-    return false;
+  while (statement.Step()) {
+    if (FillURLRow(statement, info)) {
+      return true;
+    }
+  }
 
-  DCHECK(info);
-  FillURLRow(statement, info);
-  return true;
+  return false;
 }
 
 URLRows URLDatabase::GetTextMatches(const std::u16string& query) {
@@ -436,9 +451,9 @@ URLRows URLDatabase::GetTextMatchesWithAlgorithm(
 
     if (query_parser::QueryParser::DoesQueryMatch(query_words, query_nodes)) {
       URLResult info;
-      FillURLRow(statement, &info);
-      if (info.url().is_valid())
+      if (FillURLRow(statement, &info)) {
         results.push_back(info);
+      }
     }
   }
   return results;

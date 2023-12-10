@@ -8,12 +8,17 @@
 #include <xdg-shell-client-protocol.h>
 #include <cstdint>
 
+#include "ash/host/ash_window_tree_host_platform.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "cc/trees/layer_tree_host.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/exo/wayland/test/client_util.h"
 #include "components/exo/wayland/test/server_util.h"
 #include "components/exo/wayland/test/wayland_server_test.h"
+#include "ui/aura/window_tree_host.h"
+#include "ui/compositor/compositor.h"
+#include "ui/compositor/test/begin_main_frame_waiter.h"
 
 namespace exo::wayland {
 
@@ -410,6 +415,74 @@ TEST_F(ShellWithClientTest, CreateWithDisplayId) {
     // ash. This has to be updated once the bug is fixed.
     EXPECT_EQ(gfx::Rect({100, 0}, kAlmostOnPrimary.size()),
               shell_surface_base->GetWidget()->GetWindowBoundsInScreen());
+  }
+}
+
+TEST_F(ShellWithClientTest, BufferCommitNoNeedsCommit) {
+  auto* ash_window_tree_host = static_cast<ash::AshWindowTreeHostPlatform*>(
+      ash::Shell::GetPrimaryRootWindow()->GetHost());
+  // The compositor may receive draw request upon X11's damage event, which
+  // results in commit request. The event is not important in this test, so
+  // simply ignore the damage rect event.
+  ash_window_tree_host->set_ignore_platform_damage_rect_for_test(true);
+  auto* compositor = ash_window_tree_host->compositor();
+
+  // Wait if the commit requests during initialization still exists.
+  if (compositor->host_for_testing()->CommitRequested()) {
+    ui::BeginMainFrameWaiter(compositor).Wait();
+  }
+
+  {
+    ui::BeginMainFrameWaiter waiter(compositor);
+    PostToClientAndWait([&](test::TestClient* client) {
+      ASSERT_TRUE(client->InitShmBufferFactory(800 * 100 * 4));
+      auto data = std::make_unique<ShellClientData>(client);
+      auto* data_ptr = data.get();
+      client->set_data(std::move(data));
+      data_ptr->CreateXdgToplevel();
+    });
+
+    // Make sure a commit never been received nor processed.
+    EXPECT_FALSE(waiter.begin_main_frame_received());
+    EXPECT_FALSE(compositor->host_for_testing()->CommitRequested());
+  }
+  {
+    ui::BeginMainFrameWaiter waiter(compositor);
+    PostToClientAndWait([&](test::TestClient* client) {
+      auto* data_ptr = client->GetDataAs<ShellClientData>();
+      data_ptr->CreateAndAttachBuffer({256, 256});
+      data_ptr->Commit();
+    });
+    // BeginMainFrame might have been already processed so check both
+    // condition.
+    EXPECT_TRUE(waiter.begin_main_frame_received() ||
+                compositor->host_for_testing()->CommitRequested());
+  }
+
+  if (compositor->host_for_testing()->CommitRequested()) {
+    ui::BeginMainFrameWaiter(compositor).Wait();
+  }
+
+  {
+    ui::BeginMainFrameWaiter waiter(compositor);
+    PostToClientAndWait([&](test::TestClient* client) {
+      auto* data_ptr = client->GetDataAs<ShellClientData>();
+      data_ptr->CreateAndAttachBuffer({256, 256});
+      data_ptr->Commit();
+    });
+    EXPECT_FALSE(waiter.begin_main_frame_received());
+    EXPECT_FALSE(compositor->host_for_testing()->CommitRequested());
+  }
+
+  {
+    ui::BeginMainFrameWaiter waiter(compositor);
+    PostToClientAndWait([&](test::TestClient* client) {
+      auto* data_ptr = client->GetDataAs<ShellClientData>();
+      data_ptr->CreateAndAttachBuffer({256, 128});
+      data_ptr->Commit();
+    });
+    EXPECT_TRUE(waiter.begin_main_frame_received() ||
+                compositor->host_for_testing()->CommitRequested());
   }
 }
 

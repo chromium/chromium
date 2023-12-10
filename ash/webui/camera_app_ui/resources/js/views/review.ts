@@ -123,11 +123,25 @@ export class Review extends View {
     URL.revokeObjectURL(image.src);
   }
 
-  async setReviewVideo(video: FileAccessEntry): Promise<void> {
+  /**
+   * Setup the video element's source for review.
+   *
+   * @return Function to cleanup the object URL. Make sure to call this function
+   * after the review is complete.
+   */
+  async setReviewVideo(video: FileAccessEntry): Promise<() => void> {
     this.image.hidden = true;
     this.video.hidden = false;
+    this.video.controls = true;
     const url = await getObjectURL(video);
     this.video.src = url;
+    return () => {
+      URL.revokeObjectURL(url);
+      // When the video element's `controls` is true, the video element is
+      // focusable even when it is hidden. Set `controls` to false to make it
+      // not focusable. See b/301384798.
+      this.video.controls = false;
+    };
   }
 
   async startReview<T>(...optionGroups: Array<OptionGroup<T>>):

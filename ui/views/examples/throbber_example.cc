@@ -20,8 +20,9 @@ namespace views::examples {
 namespace {
 
 class ThrobberView : public View {
+  METADATA_HEADER(ThrobberView, View)
+
  public:
-  METADATA_HEADER(ThrobberView);
   ThrobberView() {
     throbber_ = AddChildView(std::make_unique<Throbber>());
     throbber_->Start();
@@ -60,7 +61,7 @@ class ThrobberView : public View {
   bool is_checked_ = false;
 };
 
-BEGIN_METADATA(ThrobberView, View)
+BEGIN_METADATA(ThrobberView)
 END_METADATA
 
 }  // namespace

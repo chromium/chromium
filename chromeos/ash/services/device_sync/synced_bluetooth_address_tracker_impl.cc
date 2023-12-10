@@ -155,7 +155,7 @@ void SyncedBluetoothAddressTrackerImpl::ScheduleSyncIfAddressChanged() {
   cryptauth_scheduler_->RequestDeviceSync(
       cryptauthv2::ClientMetadata::InvocationReason::
           ClientMetadata_InvocationReason_ADDRESS_CHANGE,
-      /*session_id=*/absl::nullopt);
+      /*session_id=*/std::nullopt);
 }
 
 std::string SyncedBluetoothAddressTrackerImpl::GetAddress() {

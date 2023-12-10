@@ -14,9 +14,7 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 
-/**
- * Manages the actual showing and hiding of the full screen Incognito re-auth modal dialog.
- */
+/** Manages the actual showing and hiding of the full screen Incognito re-auth modal dialog. */
 class IncognitoReauthDialog {
     /** The {@link ModalDialogManager} which launches the full-screen re-auth dialog. */
     private final @NonNull ModalDialogManager mModalDialogManager;
@@ -29,6 +27,7 @@ class IncognitoReauthDialog {
             new ModalDialogProperties.Controller() {
                 @Override
                 public void onClick(PropertyModel model, int buttonType) {}
+
                 @Override
                 public void onDismiss(PropertyModel model, int dismissalCause) {}
             };
@@ -43,26 +42,29 @@ class IncognitoReauthDialog {
      * @param backPressedCallback {@link OnBackPressedCallback} which would be called when a user
      *         presses back while the fullscreen re-auth is shown.
      */
-    IncognitoReauthDialog(@NonNull ModalDialogManager modalDialogManager,
-            @NonNull View incognitoReauthView, @NonNull OnBackPressedCallback backPressedCallback) {
+    IncognitoReauthDialog(
+            @NonNull ModalDialogManager modalDialogManager,
+            @NonNull View incognitoReauthView,
+            @NonNull OnBackPressedCallback backPressedCallback) {
         mModalDialogManager = modalDialogManager;
         mModalDialogPropertyModel =
                 new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
                         .with(ModalDialogProperties.CONTROLLER, mModalDialogController)
                         .with(ModalDialogProperties.CUSTOM_VIEW, incognitoReauthView)
                         .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, false)
-                        .with(ModalDialogProperties.DIALOG_STYLES,
+                        .with(
+                                ModalDialogProperties.DIALOG_STYLES,
                                 ModalDialogProperties.DialogStyles.FULLSCREEN_DARK_DIALOG)
-                        .with(ModalDialogProperties.APP_MODAL_DIALOG_BACK_PRESS_HANDLER,
+                        .with(
+                                ModalDialogProperties.APP_MODAL_DIALOG_BACK_PRESS_HANDLER,
                                 backPressedCallback)
                         .build();
     }
 
-    /**
-     * Method to show the full-screen re-auth dialog.
-     */
+    /** Method to show the full-screen re-auth dialog. */
     void showIncognitoReauthDialog() {
-        mModalDialogManager.showDialog(mModalDialogPropertyModel,
+        mModalDialogManager.showDialog(
+                mModalDialogPropertyModel,
                 ModalDialogManager.ModalDialogType.APP,
                 ModalDialogManager.ModalDialogPriority.VERY_HIGH);
     }

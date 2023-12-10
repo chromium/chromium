@@ -49,10 +49,6 @@ void WebIDBDatabase::CreateTransaction(
                                object_store_ids, mode, durability);
 }
 
-void WebIDBDatabase::Close() {
-  database_->Close();
-}
-
 void WebIDBDatabase::VersionChangeIgnored() {
   database_->VersionChangeIgnored();
 }

@@ -8,6 +8,7 @@
 #define CHROME_BROWSER_EXTENSIONS_API_CONTEXT_MENUS_CONTEXT_MENUS_API_HELPERS_H_
 
 #include "base/notreached.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/types/optional_util.h"
 #include "chrome/browser/extensions/menu_manager.h"
 #include "chrome/common/extensions/api/context_menus.h"
@@ -51,6 +52,7 @@ extern const char kLauncherNotAllowedError[];
 extern const char kOnclickDisallowedError[];
 extern const char kParentsMustBeNormalError[];
 extern const char kTitleNeededError[];
+extern const char kTooManyMenuItems[];
 
 std::string GetIDString(const MenuItem::Id& id);
 
@@ -73,6 +75,14 @@ bool CreateMenuItem(const PropertyWithEnumT& create_properties,
                     std::string* error) {
   bool is_webview = item_id.extension_key.webview_instance_id != 0;
   MenuManager* menu_manager = MenuManager::Get(browser_context);
+
+  if (menu_manager->MenuItemsSize(item_id.extension_key) >=
+      MenuManager::kMaxItemsPerExtension) {
+    *error = ErrorUtils::FormatErrorMessage(
+        kTooManyMenuItems,
+        base::NumberToString(MenuManager::kMaxItemsPerExtension));
+    return false;
+  }
 
   if (menu_manager->GetItemById(item_id)) {
     *error = ErrorUtils::FormatErrorMessage(kDuplicateIDError,

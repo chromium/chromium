@@ -4,13 +4,12 @@
 
 #include "chrome/browser/ui/webui/ash/login/app_launch_splash_screen_handler.h"
 
-#include <memory>
+#include <string_view>
 #include <utility>
 
 #include "ash/public/cpp/login_screen.h"
 #include "base/values.h"
-#include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
-#include "chrome/browser/ash/app_mode/kiosk_app_manager_base.h"
+#include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/screens/network_error.h"
 #include "chrome/browser/ui/webui/ash/login/error_screen_handler.h"
@@ -24,35 +23,37 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/webui/web_ui_util.h"
+#include "ui/gfx/image/image_skia.h"
+#include "url/gurl.h"
 
 namespace ash {
 
 namespace {
 
-base::Value::Dict ConvertAppToDict(KioskAppManagerBase::App app) {
-  base::Value::Dict out_info;
+std::string NameOrDefault(std::string_view name) {
+  return name.empty() ? l10n_util::GetStringUTF8(IDS_SHORT_PRODUCT_NAME)
+                      : std::string(name);
+}
 
-  if (app.name.empty()) {
-    app.name = l10n_util::GetStringUTF8(IDS_SHORT_PRODUCT_NAME);
-  }
-
-  if (app.icon.isNull()) {
-    app.icon = *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
-        IDR_PRODUCT_LOGO_128);
-  }
-
-  // Display app domain if present.
-  if (!app.url.is_empty()) {
-    app.url = app.url.DeprecatedGetOriginAsURL();
-  }
-
-  out_info.Set("name", app.name);
-  out_info.Set("iconURL", webui::GetBitmapDataUrl(*app.icon.bitmap()));
-  out_info.Set("url", app.url.spec());
-  return out_info;
+gfx::ImageSkia IconOrDefault(gfx::ImageSkia icon) {
+  return icon.isNull()
+             ? *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
+                   IDR_PRODUCT_LOGO_128)
+             : icon;
 }
 
 }  // namespace
+
+AppLaunchSplashScreenView::Data::Data(std::string_view name,
+                                      gfx::ImageSkia icon,
+                                      const GURL& url)
+    : name(NameOrDefault(name)),
+      icon(IconOrDefault(icon)),
+      url(url.DeprecatedGetOriginAsURL()) {}
+AppLaunchSplashScreenView::Data::Data(Data&&) = default;
+AppLaunchSplashScreenView::Data& AppLaunchSplashScreenView::Data::operator=(
+    Data&&) = default;
+AppLaunchSplashScreenView::Data::~Data() = default;
 
 AppLaunchSplashScreenHandler::AppLaunchSplashScreenHandler(
     const scoped_refptr<NetworkStateInformer>& network_state_informer,
@@ -73,17 +74,21 @@ void AppLaunchSplashScreenHandler::DeclareLocalizedValues(
                                           product_os_name));
 }
 
-void AppLaunchSplashScreenHandler::Show(KioskAppManagerBase::App app_data) {
+void AppLaunchSplashScreenHandler::Show(Data data) {
   is_shown_ = true;
 
-  base::Value::Dict data;
-  data.Set("shortcutEnabled",
-           !KioskAppManager::Get()->GetDisableBailoutShortcut());
-
-  data.Set("appInfo", ConvertAppToDict(app_data));
+  base::Value::Dict dict =
+      base::Value::Dict()
+          .Set("shortcutEnabled",
+               !KioskChromeAppManager::Get()->GetDisableBailoutShortcut())
+          .Set("appInfo",
+               base::Value::Dict()
+                   .Set("name", data.name)
+                   .Set("iconURL", webui::GetBitmapDataUrl(*data.icon.bitmap()))
+                   .Set("url", data.url.spec()));
 
   SetLaunchText(l10n_util::GetStringUTF8(GetProgressMessageFromState(state_)));
-  ShowInWebUI(std::move(data));
+  ShowInWebUI(std::move(dict));
   if (toggle_network_config_on_show_.has_value()) {
     DoToggleNetworkConfig(toggle_network_config_on_show_.value());
     toggle_network_config_on_show_.reset();
@@ -183,8 +188,6 @@ int AppLaunchSplashScreenHandler::GetProgressMessageFromState(
       return IDS_APP_START_EXTENSION_WAIT_MESSAGE;
     case AppLaunchState::kWaitingAppWindow:
       return IDS_APP_START_WAIT_FOR_APP_WINDOW_MESSAGE;
-    case AppLaunchState::kWaitingAppWindowInstallFailed:
-      return IDS_APP_START_WAIT_FOR_APP_WINDOW_INSTALL_FAILED_MESSAGE;
     case AppLaunchState::kNetworkWaitTimeout:
       return IDS_APP_START_NETWORK_WAIT_TIMEOUT_MESSAGE;
     case AppLaunchState::kShowingNetworkConfigureUI:

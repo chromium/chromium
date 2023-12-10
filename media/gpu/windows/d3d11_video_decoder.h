@@ -17,6 +17,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/sequence_bound.h"
 #include "base/time/time.h"
+#include "base/win/windows_types.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "gpu/config/gpu_preferences.h"
 #include "media/base/callback_registry.h"
@@ -69,7 +70,8 @@ class MEDIA_GPU_EXPORT D3D11VideoDecoder : public VideoDecoder,
       base::RepeatingCallback<gpu::CommandBufferStub*()> get_stub_cb,
       GetD3D11DeviceCB get_d3d11_device_cb,
       SupportedConfigs supported_configs,
-      bool system_hdr_enabled);
+      bool system_hdr_enabled,
+      CHROME_LUID luid);
 
   D3D11VideoDecoder(const D3D11VideoDecoder&) = delete;
   D3D11VideoDecoder& operator=(const D3D11VideoDecoder&) = delete;
@@ -125,7 +127,8 @@ class MEDIA_GPU_EXPORT D3D11VideoDecoder : public VideoDecoder,
           get_helper_cb,
       GetD3D11DeviceCB get_d3d11_device_cb,
       SupportedConfigs supported_configs,
-      bool system_hdr_enabled);
+      bool system_hdr_enabled,
+      CHROME_LUID luid);
 
   // Receive |buffer|, that is now unused by the client.
   void ReceivePictureBufferFromClient(scoped_refptr<D3D11PictureBuffer> buffer);
@@ -307,6 +310,9 @@ class MEDIA_GPU_EXPORT D3D11VideoDecoder : public VideoDecoder,
   // rate limit the measurements, so we don't spent too much time counting
   // unused picture buffers.
   int decode_count_until_picture_buffer_measurement_ = 0;
+
+  // Adapter currently used by ANGLE/Dawn for its D3D device.
+  const CHROME_LUID luid_;
 
   base::WeakPtrFactory<D3D11VideoDecoder> weak_factory_{this};
 };

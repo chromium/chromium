@@ -177,7 +177,7 @@ internal::TPMSupport MeasureVirtualTpmOperations() {
 
   const uint8_t msg[] = {1, 2, 3, 4};
   base::ElapsedTimer message_signing_timer;
-  absl::optional<std::vector<uint8_t>> signed_bytes = current_key->Sign(msg);
+  std::optional<std::vector<uint8_t>> signed_bytes = current_key->Sign(msg);
   ReportUmaTpmOperation(TPMOperation::kMessageSigning, supported_virtual_algo,
                         message_signing_timer.Elapsed(),
                         signed_bytes.has_value(), KeyType::kVirtualizedKey);
@@ -257,7 +257,7 @@ void MeasureTpmOperationsInternal() {
 
   const uint8_t msg[] = {1, 2, 3, 4};
   base::ElapsedTimer message_signing_timer;
-  absl::optional<std::vector<uint8_t>> signed_bytes =
+  std::optional<std::vector<uint8_t>> signed_bytes =
       current_key->SignSlowly(msg);
   ReportUmaTpmOperation(TPMOperation::kMessageSigning, supported_algo,
                         message_signing_timer.Elapsed(),

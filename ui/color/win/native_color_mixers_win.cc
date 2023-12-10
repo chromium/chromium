@@ -15,7 +15,6 @@
 #include "ui/color/win/accent_color_observer.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
-#include "ui/native_theme/native_theme_features.h"
 
 namespace ui {
 
@@ -163,34 +162,11 @@ void AddNativeCoreColorMixer(ColorProvider* provider,
 
 void AddNativeUiColorMixer(ColorProvider* provider,
                            const ColorProviderKey& key) {
-  if (key.contrast_mode == ColorProviderKey::ContrastMode::kNormal &&
-      !IsFluentScrollbarEnabled()) {
+  if (key.contrast_mode == ColorProviderKey::ContrastMode::kNormal) {
     return;
   }
 
   ColorMixer& mixer = provider->AddMixer();
-
-  if (IsFluentScrollbarEnabled()) {
-    if (key.contrast_mode == ColorProviderKey::ContrastMode::kNormal) {
-      const bool dark_mode =
-          key.color_mode == ColorProviderKey::ColorMode::kDark;
-
-      mixer[kColorWebNativeControlScrollbarArrowForeground] = {
-          dark_mode ? SkColorSetA(SK_ColorWHITE, 0x8B)
-                    : SkColorSetA(SK_ColorBLACK, 0x72)};
-      mixer[kColorWebNativeControlScrollbarArrowForegroundPressed] = {
-          dark_mode ? SkColorSetA(SK_ColorWHITE, 0xC8)
-                    : SkColorSetA(SK_ColorBLACK, 0x9B)};
-      mixer[kColorWebNativeControlScrollbarCorner] = {
-          dark_mode ? SkColorSetRGB(0x2C, 0x2C, 0x2C)
-                    : SkColorSetRGB(0xFC, 0xFC, 0xFC)};
-    }
-    CompleteScrollbarColorsDefinition(mixer);
-  }
-
-  if (key.contrast_mode == ColorProviderKey::ContrastMode::kNormal) {
-    return;
-  }
 
   mixer[kColorRadioButtonForegroundChecked] = {
       key.color_mode == ColorProviderKey::ColorMode::kDark
@@ -200,8 +176,6 @@ void AddNativeUiColorMixer(ColorProvider* provider,
       SetAlpha(kColorNotificationInputForeground, gfx::kGoogleGreyAlpha700);
   mixer[kColorSliderTrack] = AlphaBlend(
       kColorNativeHighlight, kColorNativeWindow, gfx::kGoogleGreyAlpha400);
-
-  CompleteControlsForcedColorsDefinition(mixer);
 
   // Window Background
   mixer[kColorBubbleFooterBackground] = {kColorNativeWindow};

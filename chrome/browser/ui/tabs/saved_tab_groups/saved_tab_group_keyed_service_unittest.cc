@@ -265,7 +265,7 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest, AlreadyOpenedGroupIsFocused) {
       GURL(chrome::kChromeUINewTabURL), u"New Tab", guid_1, /*position=*/0)};
 
   SavedTabGroup saved_group_1(u"Group 1", tab_groups::TabGroupColorId::kGrey,
-                              std::move(group_1_tabs), absl::nullopt, guid_1);
+                              std::move(group_1_tabs), std::nullopt, guid_1);
 
   service()->model()->Add(saved_group_1);
 
@@ -311,7 +311,7 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest,
       SavedTabGroupTab(GURL("https://www.youtube.com"), u"Youtube", guid_1,
                        /*position=*/1)};
   SavedTabGroup saved_group_1(u"Group 1", tab_groups::TabGroupColorId::kGrey,
-                              std::move(group_1_tabs), absl::nullopt, guid_1);
+                              std::move(group_1_tabs), std::nullopt, guid_1);
 
   service()->model()->Add(saved_group_1);
 
@@ -410,9 +410,9 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest,
                        /*position=*/1)};
 
   SavedTabGroup saved_group_1(u"Group 1", tab_groups::TabGroupColorId::kGrey,
-                              std::move(group_1_tabs), absl::nullopt, guid_1);
+                              std::move(group_1_tabs), std::nullopt, guid_1);
   SavedTabGroup saved_group_2(u"Group 2", tab_groups::TabGroupColorId::kRed,
-                              std::move(group_2_tabs), absl::nullopt, guid_2);
+                              std::move(group_2_tabs), std::nullopt, guid_2);
   service()->model()->Add(saved_group_1);
   service()->model()->Add(saved_group_2);
 
@@ -463,7 +463,7 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest,
       GURL(chrome::kChromeUINewTabURL), u"New Tab", guid, /*position=*/0)};
 
   SavedTabGroup saved_group(u"Group", tab_groups::TabGroupColorId::kGrey,
-                            std::move(group_tabs), absl::nullopt, guid);
+                            std::move(group_tabs), std::nullopt, guid);
   service()->model()->Add(saved_group);
 
   // Notify the KeyedService that the SavedTabGroupModel has loaded all local
@@ -529,7 +529,7 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest,
                        /*position=*/1)};
 
   SavedTabGroup saved_group(u"Group", tab_groups::TabGroupColorId::kGrey,
-                            std::move(group_tabs), absl::nullopt, guid);
+                            std::move(group_tabs), std::nullopt, guid);
   service()->model()->Add(saved_group);
 
   // Notify the KeyedService that the SavedTabGroupModel has loaded all local
@@ -595,7 +595,7 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest,
                        /*position=*/0);
 
   SavedTabGroup saved_group(u"Group", tab_groups::TabGroupColorId::kGrey,
-                            std::move(group_tabs), absl::nullopt, guid);
+                            std::move(group_tabs), std::nullopt, guid);
   service()->model()->Add(saved_group);
 
   // Notify the KeyedService that the SavedTabGroupModel has loaded all local

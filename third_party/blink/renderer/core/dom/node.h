@@ -627,6 +627,8 @@ class CORE_EXPORT Node : public EventTarget {
   // This is called only when the node is focused.
   virtual bool ShouldHaveFocusAppearance() const;
 
+  void FocusabilityLost();
+
   // Returns how |this| participates to the nodes with hand cursor set.
   LinkHighlightCandidate IsLinkHighlightCandidate() const;
 
@@ -1004,7 +1006,7 @@ class CORE_EXPORT Node : public EventTarget {
 
   void Trace(Visitor*) const override;
 
-  bool IsModifiedBySoftNavigation() {
+  bool IsModifiedBySoftNavigation() const {
     return GetFlag(kModifiedBySoftNavigation);
   }
   void SetIsModifiedBySoftNavigation() { SetFlag(kModifiedBySoftNavigation); }

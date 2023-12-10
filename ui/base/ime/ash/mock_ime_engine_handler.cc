@@ -29,8 +29,6 @@ void MockIMEEngineHandler::Blur() {
   last_text_input_context_.type = ui::TEXT_INPUT_TYPE_NONE;
 }
 
-void MockIMEEngineHandler::OnTouch(ui::EventPointerType pointerType) {}
-
 void MockIMEEngineHandler::Enable(const std::string& component_id) {
 }
 

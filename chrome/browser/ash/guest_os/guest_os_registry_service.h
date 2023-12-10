@@ -98,7 +98,6 @@ class GuestOsRegistryService : public KeyedService {
     std::string ContainerName() const;
 
     std::string Name() const;
-    std::string Comment() const;
     std::string Exec() const;
     std::string ExecutableFileName() const;
     std::set<std::string> Extensions() const;
@@ -140,6 +139,12 @@ class GuestOsRegistryService : public KeyedService {
         const std::vector<std::string>& updated_apps,
         const std::vector<std::string>& removed_apps,
         const std::vector<std::string>& inserted_apps) {}
+
+    // Called at the end of AppLaunched().
+    virtual void OnAppLastLaunchTimeUpdated(
+        VmType vm_type,
+        const std::string& app_id,
+        const base::Time& last_launch_time) {}
 
    protected:
     virtual ~Observer() = default;

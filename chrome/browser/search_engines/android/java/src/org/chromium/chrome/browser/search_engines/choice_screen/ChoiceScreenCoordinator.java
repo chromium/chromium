@@ -29,9 +29,13 @@ class ChoiceScreenCoordinator {
     ChoiceScreenCoordinator(Activity activity, ChoiceScreenDelegate delegate) {
         PropertyModel propertyModel = ChoiceScreenProperties.createPropertyModel();
 
-        mChoiceScreenView = (ChoiceScreenView) LayoutInflater.from(activity).inflate(
-                org.chromium.chrome.browser.search_engines.R.layout.search_engine_choice_view,
-                /*root=*/null);
+        mChoiceScreenView =
+                (ChoiceScreenView)
+                        LayoutInflater.from(activity)
+                                .inflate(
+                                        org.chromium.chrome.browser.search_engines.R.layout
+                                                .search_engine_choice_view,
+                                        /* root= */ null);
 
         PropertyModelChangeProcessor.create(
                 propertyModel, mChoiceScreenView, ChoiceScreenViewBinder::bindContentView);

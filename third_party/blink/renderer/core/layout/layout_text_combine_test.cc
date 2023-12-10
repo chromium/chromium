@@ -12,7 +12,7 @@
 #include "third_party/blink/renderer/core/html/html_br_element.h"
 #include "third_party/blink/renderer/core/layout/inline/fragment_item.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
+#include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 
 namespace blink {
@@ -28,10 +28,10 @@ class LayoutTextCombineTest : public RenderingTest {
       ostream << cursor.CurrentItem() << std::endl;
       ostream << "                 Rect "
               << cursor.CurrentItem()->RectInContainerFragment() << std::endl;
-      ostream << "          InkOverflow " << cursor.CurrentItem()->InkOverflow()
-              << std::endl;
+      ostream << "          InkOverflow "
+              << cursor.CurrentItem()->InkOverflowRect() << std::endl;
       ostream << "      SelfInkOverflow "
-              << cursor.CurrentItem()->SelfInkOverflow() << std::endl;
+              << cursor.CurrentItem()->SelfInkOverflowRect() << std::endl;
       ostream << "  ContentsInkOverflow "
               << ContentsInkOverflow(*cursor.CurrentItem()) << std::endl;
     }
@@ -39,8 +39,8 @@ class LayoutTextCombineTest : public RenderingTest {
   }
 
   static PhysicalRect ContentsInkOverflow(const FragmentItem& item) {
-    if (const NGPhysicalBoxFragment* box_fragment = item.BoxFragment()) {
-      return box_fragment->ContentsInkOverflow();
+    if (const PhysicalBoxFragment* box_fragment = item.BoxFragment()) {
+      return box_fragment->ContentsInkOverflowRect();
     }
     if (!item.HasInkOverflow()) {
       return PhysicalRect();
@@ -542,7 +542,7 @@ LayoutNGBlockFlow DIV id="root"
             ToSimpleLayoutTree(*root.GetLayoutObject()));
 }
 
-TEST_F(LayoutTextCombineTest, LayoutOverflow) {
+TEST_F(LayoutTextCombineTest, ScrollableOverflow) {
   LoadAhem();
   InsertStyleElement(
       "div {"
@@ -569,18 +569,18 @@ TEST_F(LayoutTextCombineTest, LayoutOverflow) {
   const auto& sample1 = *To<LayoutBlockFlow>(GetLayoutObjectByElementId("t1"));
   ASSERT_EQ(sample1.PhysicalFragmentCount(), 1u);
   const auto& sample_fragment1 = *sample1.GetPhysicalFragment(0);
-  EXPECT_FALSE(sample_fragment1.HasLayoutOverflow());
+  EXPECT_FALSE(sample_fragment1.HasScrollableOverflow());
   EXPECT_EQ(PhysicalSize(150, 200), sample_fragment1.Size());
   EXPECT_EQ(PhysicalRect(PhysicalOffset(), PhysicalSize(150, 200)),
-            sample_fragment1.LayoutOverflow());
+            sample_fragment1.ScrollableOverflow());
 
   const auto& sample2 = *To<LayoutBlockFlow>(GetLayoutObjectByElementId("t2"));
   ASSERT_EQ(sample2.PhysicalFragmentCount(), 1u);
   const auto& sample_fragment2 = *sample2.GetPhysicalFragment(0);
-  EXPECT_FALSE(sample_fragment2.HasLayoutOverflow());
+  EXPECT_FALSE(sample_fragment2.HasScrollableOverflow());
   EXPECT_EQ(PhysicalSize(150, 200), sample_fragment2.Size());
   EXPECT_EQ(PhysicalRect(PhysicalOffset(), PhysicalSize(150, 200)),
-            sample_fragment2.LayoutOverflow());
+            sample_fragment2.ScrollableOverflow());
 }
 
 // http://crbug.com/1223015
@@ -718,14 +718,14 @@ TEST_F(LayoutTextCombineTest, Outline) {
   const auto& sample1 = *GetLayoutObjectByElementId("t1");
   VectorOutlineRectCollector collector;
   sample1.AddOutlineRects(collector, nullptr, PhysicalOffset(),
-                          NGOutlineType::kDontIncludeBlockVisualOverflow);
+                          OutlineType::kDontIncludeBlockInkOverflow);
   Vector<PhysicalRect> standard_outlines1 = collector.TakeRects();
   EXPECT_THAT(
       standard_outlines1,
       ElementsAre(PhysicalRect(PhysicalOffset(0, 0), PhysicalSize(150, 200))));
 
   sample1.AddOutlineRects(collector, nullptr, PhysicalOffset(),
-                          NGOutlineType::kIncludeBlockVisualOverflow);
+                          OutlineType::kIncludeBlockInkOverflow);
   Vector<PhysicalRect> focus_outlines1 = collector.TakeRects();
   EXPECT_THAT(
       focus_outlines1,
@@ -741,14 +741,14 @@ TEST_F(LayoutTextCombineTest, Outline) {
   // Sample 1 without text-combine-upright:all
   const auto& sample2 = *GetLayoutObjectByElementId("t2");
   sample2.AddOutlineRects(collector, nullptr, PhysicalOffset(),
-                          NGOutlineType::kDontIncludeBlockVisualOverflow);
+                          OutlineType::kDontIncludeBlockInkOverflow);
   Vector<PhysicalRect> standard_outlines2 = collector.TakeRects();
   EXPECT_THAT(
       standard_outlines2,
       ElementsAre(PhysicalRect(PhysicalOffset(0, 0), PhysicalSize(150, 100))));
 
   sample1.AddOutlineRects(collector, nullptr, PhysicalOffset(),
-                          NGOutlineType::kIncludeBlockVisualOverflow);
+                          OutlineType::kIncludeBlockInkOverflow);
   Vector<PhysicalRect> focus_outlines2 = collector.TakeRects();
   EXPECT_THAT(
       focus_outlines2,

@@ -44,6 +44,11 @@ class COMPONENTS_PREFS_EXPORT PrefServiceAndroid {
   void SetInteger(JNIEnv* env,
                   const base::android::JavaParamRef<jstring>& j_preference,
                   const jint j_value);
+  jdouble GetDouble(JNIEnv* env,
+                    const base::android::JavaParamRef<jstring>& j_preference);
+  void SetDouble(JNIEnv* env,
+                 const base::android::JavaParamRef<jstring>& j_preference,
+                 const jdouble j_value);
   base::android::ScopedJavaLocalRef<jstring> GetString(
       JNIEnv* env,
       const base::android::JavaParamRef<jstring>& j_preference);

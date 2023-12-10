@@ -25,9 +25,8 @@ class AttributionStorageDelegate;
 class AttributionTrigger;
 class CreateReportResult;
 class StorableSource;
+class StoreSourceResult;
 class StoredSource;
-
-struct StoreSourceResult;
 
 // This class provides an interface for persisting attribution data to
 // disk, and performing queries on it. AttributionStorage should initialize

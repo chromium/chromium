@@ -83,7 +83,7 @@ void RemoteWebAuthnNativeMessagingHost::OnMessage(const std::string& message) {
     return;
   }
 
-  absl::optional<base::Value::Dict> response =
+  std::optional<base::Value::Dict> response =
       CreateNativeMessageResponse(request);
   if (!response.has_value()) {
     return;

@@ -249,6 +249,24 @@ public class ReaderModeManagerTest {
 
     @Test
     @Feature("ReaderMode")
+    @EnableFeatures({
+        ChromeFeatureList.CONTEXTUAL_PAGE_ACTIONS,
+        ChromeFeatureList.CONTEXTUAL_PAGE_ACTION_READER_MODE
+    })
+    public void testUI_notTriggered_contextualPageActionUiEnabled_exceptOnCCT() {
+        when(mTab.isCustomTab()).thenReturn(true);
+        mDistillabilityObserver.onIsPageDistillableResult(mTab, true, true, false);
+        assertEquals(
+                "Distillation should be possible.",
+                DistillationStatus.POSSIBLE,
+                mManager.getDistillationStatus());
+        verify(mMessageDispatcher)
+                .enqueueMessage(
+                        any(), eq(mWebContents), eq(MessageScopeType.NAVIGATION), eq(false));
+    }
+
+    @Test
+    @Feature("ReaderMode")
     public void testWebContentsObserver_distillerNavigationRemoved() {
         when(mNavController.getEntryAtIndex(0))
                 .thenReturn(createNavigationEntry(0, MOCK_DISTILLER_URL));

@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="kn">
+<translation id="1003363546227723021">ನಿಮ್ಮ ಸ್ಕ್ರೀನ್ ತಟಸ್ಥವಾಗಿದ್ದಾಗ, ಫೋಟೋಗಳು, ಸಮಯ, ತಾಪಮಾನ ಮತ್ತು ಮಾಧ್ಯಮದ ಮಾಹಿತಿಯನ್ನು ತೋರಿಸಿ</translation>
 <translation id="1014750484722996375">ಡೆಸ್ಕ್‌ಗಳು</translation>
 <translation id="1018219910092211213">DNS ಅನ್ನು ಬಗೆಹರಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ</translation>
 <translation id="1018656279737460067">ರದ್ದುಗೊಳಿಸಲಾಗಿದೆ</translation>
@@ -28,6 +29,7 @@
 <translation id="1175697296044146566">ಈ <ph name="DEVICE_TYPE" />, <ph name="MANAGER" /> ಇಂದ ನಿರ್ವಹಿಸಲ್ಪಡುತ್ತದೆ.</translation>
 <translation id="1175951029573070619">ಸರಾಸರಿ (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">ತೆಗೆದುಹಾಕು</translation>
+<translation id="1191518099344003522">APN ಅನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ.</translation>
 <translation id="1195447618553298278">ಅಪರಿಚಿತ ದೋಷ.</translation>
 <translation id="1196959502276349371">ಆವೃತ್ತಿ <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">ಪ್ಲೇ/ವಿರಾಮ</translation>
@@ -79,6 +81,7 @@
 <translation id="1515129336378114413">ಬ್ರೌಸರ್ ಹೋಮ್</translation>
 <translation id="1526389707933164996">ಸ್ಕ್ರೀನ್‌ಸೇವರ್ ಆ್ಯನಿಮೇಶನ್</translation>
 <translation id="152892567002884378">ವಾಲ್ಯೂಮ್ ಹೆಚ್ಚು ಮಾಡಿ</translation>
+<translation id="1539242642795599947">APN ಎಂಬುದು ಡೀಫಾಲ್ಟ್ ಮತ್ತು ಲಗತ್ತಿಸುವ ಪ್ರಕಾರವಾಗಿದೆ.</translation>
 <translation id="1555130319947370107">ನೀಲಿ</translation>
 <translation id="155865706765934889">ಟಚ್‌ಪ್ಯಾಡ್</translation>
 <translation id="1561927818299383735">ಬ್ಯಾಕ್‌‌ಲಿಟ್‌‌ ಬಣ್ಣ</translation>
@@ -256,6 +259,7 @@
 <translation id="2872961005593481000">ಮುಚ್ಚಿಬಿಡಿ </translation>
 <translation id="2873483161362553159">ಬ್ರೌಸರ್ ನ್ಯಾವಿಗೇಷನ್</translation>
 <translation id="2874939134665556319">ಹಿಂದಿನ ಟ್ರ್ಯಾಕ್</translation>
+<translation id="2875812231449496375">ಈ ವಾಲ್‌ಪೇಪರ್ ಕುರಿತು ಉತ್ತಮ ಫಲಿತಾಂಶಗಳನ್ನು ಪಡೆಯಲು ಅದನ್ನು ಆನ್ ಮಾಡಿ. ನೀವು ಯಾವಾಗ ಬೇಕಾದರೂ ಈ ಸೆಟ್ಟಿಂಗ್ ಅನ್ನು ಆಫ್ ಮಾಡಬಹುದು.</translation>
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> ಸೆಕೆಂಡ್‌ಗಳಲ್ಲಿ <ph name="RATE" /> ಡಿಸ್‌ಚಾರ್ಜ್ ಆಗಿದೆ.</translation>
 <translation id="2880569433548999039">ಮೋಡ ತೆಲುತ್ತಿರುವ ಸ್ಕ್ರೀನ್ ಸೇವರ್</translation>
 <translation id="2926057806159140518">ನಿಮ್ಮ ಬಳಕೆದಾರರ ಹೆಸರು ಮತ್ತು ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ನಮೂದಿಸಿ ಅಥವಾ ನಿಮ್ಮ QR ಕೋಡ್ ಅನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡಿ</translation>
@@ -337,6 +341,7 @@
 <translation id="3577473026931028326">ಏನೋ ತಪ್ಪಾಗಿದೆ. ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="357889014807611375">ಮಾಪನ ಮಾಡಿದ ವೈ-ಫೈ</translation>
 <translation id="3583278742022654445">ಸಿಗ್ನಲ್ ಸಾಮರ್ಥ್ಯ ದುರ್ಬಲವಾಗಿದೆ. ವೈ-ಫೈ ಸಿಗ್ನಲ್ ಮೂಲದ ಸಮೀಪಕ್ಕೆ ಹೋಗಲು ಪ್ರಯತ್ನಿಸಿ.</translation>
+<translation id="3594280220611906414"><ph name="USER_FRIENDLY_APN_NAME" /> ಎಂಬುದು <ph name="APN_NAME" /> ನ ಬಳಕೆದಾರ ಸ್ನೇಹಿ ಹೆಸರಾಗಿದೆ.</translation>
 <translation id="3595596368722241419">ಬ್ಯಾಟರಿ ಭರ್ತಿಯಾಗಿದೆ</translation>
 <translation id="3600339377155080675">ಸ್ಕ್ರೀನ್ ಮಿರರ್</translation>
 <translation id="3602290021589620013">ಪೂರ್ವವೀಕ್ಷಣೆ</translation>
@@ -435,7 +440,7 @@
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> ಚಿತ್ರಗಳು</translation>
 <translation id="4333390807948134856"><ph name="KEY_NAME" /> ಕೀ ಒತ್ತಲಾಗಿದೆ</translation>
 <translation id="4354430579665871434">ಕೀ</translation>
-<translation id="435692326371619097">ನೆಟ್‌ವರ್ಕ್ APN ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸಿ. APN ಗಳು ಸೆಲ್ಯುಲಾರ್ ನೆಟ್‌ವರ್ಕ್ ಹಾಗೂ ಇಂಟರ್ನೆಟ್ ನಡುವೆ ಕನೆಕ್ಷನ್ ಅನ್ನು ಸ್ಥಾಪಿಸುತ್ತವೆ. <ph name="BEGIN_LINK" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK" /></translation>
+<translation id="4361257691546579041">APN ಎಂಬುದು ಡೀಫಾಲ್ಟ್ ಪ್ರಕಾರವಾಗಿದೆ.</translation>
 <translation id="437294888293595148">ಎಲ್ಲಾ ಶಾರ್ಟ್‌ಕಟ್‌ಗಳನ್ನು ರೀಸೆಟ್ ಮಾಡಿ</translation>
 <translation id="4378373042927530923">ರನ್ ಆಗಲಿಲ್ಲ</translation>
 <translation id="4378551569595875038">ಕನೆಕ್ಟ್...</translation>
@@ -535,7 +540,6 @@
 <translation id="4999333166442584738">ವರದಿಯನ್ನು ಮರೆಮಾಡಿ</translation>
 <translation id="500920857929044050">ಪರೀಕ್ಷೆ ನಿಲ್ಲಿಸಿ</translation>
 <translation id="5017508259293544172">LEAP</translation>
-<translation id="5019310272469539976">ನಿಮ್ಮ ಸ್ಕ್ರೀನ್ ತಟಸ್ಥವಾಗಿದ್ದಾಗ, ಫೋಟೋಗಳು, ಸಮಯ, ತಾಪಮಾನ ಮತ್ತು ಮೀಡಿಯಾ ಮಾಹಿತಿಯನ್ನು ತೋರಿಸಿ.</translation>
 <translation id="5035083460461104704">ಥೀಮ್ ಬಣ್ಣ</translation>
 <translation id="5038292761217083259">ಕೀಬೋರ್ಡ್ ಮಲ್ಟಿಕಲರ್</translation>
 <translation id="5039804452771397117">ಅನುಮತಿಸಿ</translation>
@@ -548,6 +552,7 @@
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
 <translation id="5137451382116112100">ಸಂಪೂರ್ಣ</translation>
 <translation id="5142961317498132443">ಪ್ರಮಾಣೀಕರಣ</translation>
+<translation id="5145081769226915336">ಡಾರ್ಕ್ ಮೋಡ್ ಅನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಆನ್ ಮಾಡಬೇಕೆ?</translation>
 <translation id="5154917547274118687">ಸ್ಮರಣೆ</translation>
 <translation id="5160857336552977725">ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ಸಾಧನದಲ್ಲಿ ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>
 <translation id="5166918508782100047">ತ್ವರಿತ ಉತ್ತರಗಳ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
@@ -626,6 +631,7 @@
 <translation id="574392208103952083">ಮಧ್ಯಮ</translation>
 <translation id="5757187557809630523">ಮುಂದಿನ ಟ್ರ್ಯಾಕ್</translation>
 <translation id="5760715441271661976">ಪೋರ್ಟಲ್ ಸ್ಥಿತಿ</translation>
+<translation id="5763838252932650682"><ph name="APP_NAME" /> ಅನ್ನು ಮರುಪ್ರಾರಂಭಿಸಲಾಗುತ್ತಿದೆ ಹಾಗೂ ಅಪ್‌ಡೇಟ್ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
 <translation id="576835345334454681">ಡಿಸ್‌ಪ್ಲೇ ಪ್ರಖರತೆಯನ್ನು ಹೆಚ್ಚಿಸಿ</translation>
 <translation id="57838592816432529">ಮ್ಯೂಟ್</translation>
 <translation id="5784136236926853061">ಅಧಿಕ HTTP ವಿಳಂಬ</translation>
@@ -656,6 +662,7 @@
 <translation id="5946538341867151940">ನೀವು ಇನ್ನೂ ಕನೆಕ್ಟ್ ಮಾಡಿಲ್ಲ. ನಿಮ್ಮ ಮೊಬೈಲ್ ಕ್ಯಾರಿಯರ್ ಕಸ್ಟಮ್ APN ಅನ್ನು ಶಿಫಾರಸು ಮಾಡಿದರೆ, "+ ಹೊಸ APN" ಅನ್ನು ಆಯ್ಕೆಮಾಡುವ ಮೂಲಕ APN ಮಾಹಿತಿಯನ್ನು ನಮೂದಿಸಿ</translation>
 <translation id="5972388717451707488">ಎಂಜಿನ್ ಅಪ್‌ಡೇಟ್ ಮಾಡಿ</translation>
 <translation id="5984145644188835034">ಡೀಫಾಲ್ಟ್ ವಾಲ್‌ಪೇಪರ್</translation>
+<translation id="6001235009374883388">APN ಎಂಬುದು ಲಗತ್ತಿಸುವ ಪ್ರಕಾರವಾಗಿದೆ.</translation>
 <translation id="6017514345406065928">ಹಸಿರು</translation>
 <translation id="6019566113895157499">Key Shortcuts</translation>
 <translation id="6034694447310538551">ಸ್ವಯಂಚಾಲಿತ ಮಾಸಿಕ ರೀಸೆಟ್ ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
@@ -822,6 +829,7 @@
 <translation id="7180611975245234373">ರಿಫ್ರೆಶ್ ಮಾಡಿ</translation>
 <translation id="7180865173735832675">ಕಸ್ಟಮೈಸ್</translation>
 <translation id="7184043045742675738">ನಿಮ್ಮ ಬಟನ್ ಅನ್ನು ಕಸ್ಟಮೈಸ್ ಮಾಡಲು ಯಾವುದೇ ಕೀ ಮೇಲೆ ಕ್ಲಿಕ್ ಮಾಡಿ. ಮೌಸ್ ಅಥವಾ ಬಾಣದ ಕೀಗಳೊಂದಿಗೆ ಕೀಯ ಸ್ಥಾನವನ್ನು ಬದಲಾಯಿಸಿ.</translation>
+<translation id="7212547870105584639">ನೆಟ್‌ವರ್ಕ್ APN ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸಿ. APN ಗಳು ಸೆಲ್ಯುಲಾರ್ ನೆಟ್‌ವರ್ಕ್ ಹಾಗೂ ಇಂಟರ್ನೆಟ್ ನಡುವೆ ಕನೆಕ್ಷನ್ ಅನ್ನು ಸ್ಥಾಪಿಸುತ್ತವೆ. <ph name="BEGIN_LINK_LEARN_MORE" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">ಬಾಹ್ಯ ಸಾಧನಗಳಿಗಾಗಿ ಫರ್ಮ್‌ವೇರ್ ಅಪ್‌ಡೇಟ್‌ಗಳು</translation>
 <translation id="7216409898977639127">ಸೆಲ್ಯುಲಾರ್ ಒದಗಿಸುವವರು</translation>
 <translation id="725133483556299729">ಇಮೇಲ್‌ ಅನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
@@ -832,6 +840,7 @@
 <translation id="7287310195820267359">ವಾಲ್‌ಪೇಪರ್ ಸಂಗ್ರಹಗಳು</translation>
 <translation id="7297226631177386107">HTTPS ವೆಬ್‌ಸೈಟ್‌ಗಳಿಗೆ ಫೈರ್‌ವಾಲ್ ಮೂಲಕ ಕನೆಕ್ಟ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ</translation>
 <translation id="7297726121602187087">ಗಾಢ ಹಸಿರು</translation>
+<translation id="7301262279595293068">ಈ ಆ್ಯಪ್ ಅನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡುತ್ತಿರುವಾಗ ಸ್ವಲ್ಪ ನಿರೀಕ್ಷಿಸಿ</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7308203371573257315">Chromebook ಸಹಾಯ ಫೋರಮ್‌ನಲ್ಲಿನ ತಜ್ಞರನ್ನು ಕೇಳಿ</translation>

@@ -1,8 +1,9 @@
 Name: unicode-ident
 URL: https://crates.io/crates/unicode-ident
 Description: Determine whether characters have the XID_Start or XID_Continue properties according to Unicode Standard Annex #31
-Version: 1.0.8
-Security Critical: no
+Version: 1.0.12
+Security Critical: yes
 Shipped: yes
-License: Apache 2.0, Unicode License Agreement - Data Files and Software (2016)
-Revision: c4f455414fdb61f354bbed176d27528b8d726391
+License: Apache 2.0 AND Unicode License Agreement - Data Files and Software (2016)
+License File: //third_party/rust/chromium_crates_io/vendor/unicode-ident-1.0.12/LICENSE-APACHE,//third_party/rust/chromium_crates_io/vendor/unicode-ident-1.0.12/LICENSE-UNICODE
+Revision: ff4d27c49422d8f9e0aa4bc799a02544a2a44baf

@@ -12,9 +12,7 @@ import java.io.IOException;
 import java.nio.channels.FileLock;
 import java.util.concurrent.Callable;
 
-/**
- * Helpers for dealing with .lock files used during install / first run.
- */
+/** Helpers for dealing with .lock files used during install / first run. */
 final class LockFile {
     private static final String TAG = "incrementalinstall";
 
@@ -28,9 +26,7 @@ final class LockFile {
         mFileLock = fileLock;
     }
 
-    /**
-     * Clears the lock file by writing to it (making it non-zero in length);
-     */
+    /** Clears the lock file by writing to it (making it non-zero in length); */
     static void clearInstallerLock(File lockFile) throws IOException {
         Log.i(TAG, "Clearing " + lockFile);
         // On Android M+, we can't delete files in /data/local/tmp, so we write to it instead.
@@ -39,20 +35,20 @@ final class LockFile {
         os.close();
     }
 
-    /**
-     * Waits for the given file to be non-zero in length.
-     */
+    /** Waits for the given file to be non-zero in length. */
     static void waitForInstallerLock(final File file, long timeoutMs) {
-        pollingWait(new Callable<Boolean>() {
-            @Override public Boolean call() {
-                return !installerLockExists(file);
-            }
-        }, file, timeoutMs);
+        pollingWait(
+                new Callable<Boolean>() {
+                    @Override
+                    public Boolean call() {
+                        return !installerLockExists(file);
+                    }
+                },
+                file,
+                timeoutMs);
     }
 
-    /**
-     * Waits for the given file to be non-zero in length.
-     */
+    /** Waits for the given file to be non-zero in length. */
     private static void pollingWait(Callable<Boolean> func, File file, long timeoutMs) {
         long pollIntervalMs = 200;
         for (int i = 0; i < timeoutMs / pollIntervalMs; i++) {
@@ -77,9 +73,7 @@ final class LockFile {
         throw new RuntimeException("Timed out waiting for lock file: " + file);
     }
 
-    /**
-     * Returns whether the given lock file is missing or is in the locked state.
-     */
+    /** Returns whether the given lock file is missing or is in the locked state. */
     static boolean installerLockExists(File file) {
         return !file.exists() || file.length() == 0;
     }
@@ -104,20 +98,20 @@ final class LockFile {
         return null;
     }
 
-    /**
-     * Waits for the given file to not exist.
-     */
+    /** Waits for the given file to not exist. */
     static void waitForRuntimeLock(final File file, long timeoutMs) {
-        pollingWait(new Callable<Boolean>() {
-            @Override public Boolean call() {
-                return !file.exists();
-            }
-        }, file, timeoutMs);
+        pollingWait(
+                new Callable<Boolean>() {
+                    @Override
+                    public Boolean call() {
+                        return !file.exists();
+                    }
+                },
+                file,
+                timeoutMs);
     }
 
-    /**
-     * Releases and deletes the lock file.
-     */
+    /** Releases and deletes the lock file. */
     void release() throws IOException {
         Log.i(TAG, "Deleting lock file: " + mFile);
         mFileLock.release();

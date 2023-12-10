@@ -11,13 +11,14 @@
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/signin/authentication_service.h"
-#import "ios/chrome/browser/signin/authentication_service_factory.h"
-#import "ios/chrome/browser/signin/chrome_account_manager_service.h"
-#import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
-#import "ios/chrome/browser/signin/fake_authentication_service_delegate.h"
-#import "ios/chrome/browser/signin/fake_system_identity.h"
-#import "ios/chrome/browser/signin/fake_system_identity_manager.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
+#import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
+#import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
+#import "ios/chrome/browser/ui/authentication/authentication_constants.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/recipient_info.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/sharing_status_consumer.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -140,7 +141,7 @@ TEST_F(SharingStatusMediatorTest, NotifiesSignedInConsumerAboutTheirAvatar) {
                  recipients:CreateRecipients(1)
                     website:kWebsite
                         URL:kGURL
-          changePasswordURL:absl::nullopt];
+          changePasswordURL:std::nullopt];
   mediator.consumer = consumer;
 
   EXPECT_NSEQ(UIImagePNGRepresentation(CircularImageFromImage(
@@ -159,7 +160,7 @@ TEST_F(SharingStatusMediatorTest, NotifiesSignedOutConsumerWithDefaultAvatar) {
                  recipients:CreateRecipients(1)
                     website:kWebsite
                         URL:kGURL
-          changePasswordURL:absl::nullopt];
+          changePasswordURL:std::nullopt];
   mediator.consumer = consumer;
 
   EXPECT_NSEQ(UIImagePNGRepresentation(DefaultSymbolTemplateWithPointSize(
@@ -176,11 +177,13 @@ TEST_F(SharingStatusMediatorTest, NotifiesConsumerWithRecipientImage) {
                  recipients:CreateRecipients(1)
                     website:kWebsite
                         URL:kGURL
-          changePasswordURL:absl::nullopt];
+          changePasswordURL:std::nullopt];
   mediator.consumer = consumer;
 
-  EXPECT_NSEQ(UIImagePNGRepresentation(DefaultSymbolTemplateWithPointSize(
-                  kPersonCropCircleSymbol, 40.0)),
+  EXPECT_NSEQ(UIImagePNGRepresentation(CircularImageFromImage(
+                  DefaultSymbolTemplateWithPointSize(
+                      kPersonCropCircleSymbol, kAccountProfilePhotoDimension),
+                  60.0)),
               UIImagePNGRepresentation(consumer.recipientImage));
 }
 
@@ -194,7 +197,7 @@ TEST_F(SharingStatusMediatorTest,
                  recipients:CreateRecipients(1)
                     website:kWebsite
                         URL:kGURL
-          changePasswordURL:absl::nullopt];
+          changePasswordURL:std::nullopt];
   mediator.consumer = consumer;
 
   EXPECT_NSEQ(base::SysUTF16ToNSString(l10n_util::GetStringFUTF16(
@@ -213,7 +216,7 @@ TEST_F(SharingStatusMediatorTest,
                  recipients:CreateRecipients(2)
                     website:kWebsite
                         URL:kGURL
-          changePasswordURL:absl::nullopt];
+          changePasswordURL:std::nullopt];
   mediator.consumer = consumer;
 
   EXPECT_NSEQ(base::SysUTF16ToNSString(l10n_util::GetStringFUTF16(
@@ -248,7 +251,7 @@ TEST_F(SharingStatusMediatorTest, NotifiesConsumerAboutFooterForAndroidApp) {
                  recipients:CreateRecipients(2)
                     website:kWebsite
                         URL:kGURL
-          changePasswordURL:absl::nullopt];
+          changePasswordURL:std::nullopt];
   mediator.consumer = consumer;
 
   EXPECT_NSEQ(base::SysUTF16ToNSString(l10n_util::GetStringFUTF16(
@@ -266,7 +269,7 @@ TEST_F(SharingStatusMediatorTest, NotifiesConsumerAboutGURL) {
                  recipients:CreateRecipients(2)
                     website:kWebsite
                         URL:kGURL
-          changePasswordURL:absl::nullopt];
+          changePasswordURL:std::nullopt];
   mediator.consumer = consumer;
 
   EXPECT_EQ(kGURL, consumer.URL);

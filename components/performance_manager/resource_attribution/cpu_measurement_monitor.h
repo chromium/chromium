@@ -43,10 +43,9 @@ class CPUMeasurementMonitor : public FrameNode::ObserverDefaultImpl,
   CPUMeasurementMonitor(const CPUMeasurementMonitor& other) = delete;
   CPUMeasurementMonitor& operator=(const CPUMeasurementMonitor&) = delete;
 
-  // The given `factory_callback` will be called to create a
-  // CPUMeasurementDelegate for each ProcessNode to be measured.
-  void SetCPUMeasurementDelegateFactoryForTesting(
-      CPUMeasurementDelegate::FactoryCallback factory_callback);
+  // The given `factory` will be used to create a CPUMeasurementDelegate for
+  // each ProcessNode to be measured.
+  void SetDelegateFactoryForTesting(CPUMeasurementDelegate::Factory* factory);
 
   // Starts monitoring CPU usage for all renderer ProcessNode's in `graph`.
   void StartMonitoring(Graph* graph);
@@ -59,8 +58,9 @@ class CPUMeasurementMonitor : public FrameNode::ObserverDefaultImpl,
 
   // Updates the CPU measurements for each ProcessNode being tracked and returns
   // the estimated CPU usage of each frame and worker in those processes, and
-  // all pages containing them.
-  std::map<ResourceContext, CPUTimeResult> UpdateAndGetCPUMeasurements();
+  // all pages containing them. Each QueryResult variant will contain a
+  // CPUTimeResult.
+  std::map<ResourceContext, QueryResult> UpdateAndGetCPUMeasurements();
 
   // FrameNode::Observer:
   void OnFrameNodeAdded(const FrameNode* frame_node) override;
@@ -163,9 +163,9 @@ class CPUMeasurementMonitor : public FrameNode::ObserverDefaultImpl,
   std::map<ResourceContext, CPUTimeResult> measurement_results_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
-  // Callback that will be invoked to create CPUMeasurementDelegate objects for
-  // each ProcessNode being measured.
-  CPUMeasurementDelegate::FactoryCallback cpu_measurement_delegate_factory_
+  // Factory that creates CPUMeasurementDelegate objects for each ProcessNode
+  // being measured.
+  raw_ptr<CPUMeasurementDelegate::Factory> delegate_factory_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Graph being monitored. This will be only be set if StartMonitoring() was

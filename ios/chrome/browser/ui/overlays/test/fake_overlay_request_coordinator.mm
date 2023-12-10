@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/overlays/test/fake_overlay_request_coordinator.h"
 
-#import "ios/chrome/browser/overlays/public/overlay_request_support.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_request_support.h"
 
 @implementation FakeOverlayRequestCoordinator
 

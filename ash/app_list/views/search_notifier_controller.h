@@ -13,6 +13,9 @@ class PrefService;
 namespace ash {
 
 // Controls the toast search notifier in launcher search.
+// TODO(b/311785210): Currently this is not used before the category toggle is
+// finished. Either remove this controller if we don't need any notifier in
+// launcher search or implement the category nudge to keep this.
 class ASH_EXPORT SearchNotifierController {
  public:
   SearchNotifierController();
@@ -36,9 +39,6 @@ class ASH_EXPORT SearchNotifierController {
 
   // Whether the privacy notice is accepted by the user.
   static bool IsPrivacyNoticeAccepted();
-
-  // Enables the image search category in launcher search.
-  void EnableImageSearch();
 
   // Updates the privacy notice's accepted pref.
   void SetPrivacyNoticeAcceptedPref();

@@ -75,7 +75,7 @@ void ContextMenuJavaScriptFeature::GetElementAtPoint(
                          parameters);
 }
 
-absl::optional<std::string>
+std::optional<std::string>
 ContextMenuJavaScriptFeature::GetScriptMessageHandlerName() const {
   return kFindElementResultHandlerName;
 }

@@ -51,6 +51,11 @@ export function isTimeOfDayWallpaperEnabled() {
   return loadTimeData.getBoolean('isTimeOfDayWallpaperEnabled');
 }
 
+export function isTimeOfDayWallpaperForcedAutoScheduleEnabled() {
+  return loadTimeData.getBoolean(
+      'isTimeOfDayWallpaperForcedAutoScheduleEnabled');
+}
+
 export function isSeaPenEnabled() {
   return loadTimeData.getBoolean('isSeaPenEnabled');
 }

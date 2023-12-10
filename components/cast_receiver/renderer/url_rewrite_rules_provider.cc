@@ -6,14 +6,16 @@
 
 #include "base/functional/bind.h"
 #include "content/public/renderer/render_frame.h"
-#include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
+#include "third_party/blink/public/web/web_local_frame.h"
 
 namespace cast_receiver {
 
 UrlRewriteRulesProvider::UrlRewriteRulesProvider(
     content::RenderFrame* render_frame,
-    base::OnceCallback<void(int)> on_render_frame_deleted_callback)
+    base::OnceCallback<void(const blink::LocalFrameToken&)>
+        on_render_frame_deleted_callback)
     : content::RenderFrameObserver(render_frame),
+      frame_token_(render_frame->GetWebFrame()->GetLocalFrameToken()),
       url_request_rules_receiver_(render_frame),
       on_render_frame_deleted_callback_(
           std::move(on_render_frame_deleted_callback)) {
@@ -29,7 +31,7 @@ UrlRewriteRulesProvider::GetCachedRules() const {
 }
 
 void UrlRewriteRulesProvider::OnDestruct() {
-  std::move(on_render_frame_deleted_callback_).Run(routing_id());
+  std::move(on_render_frame_deleted_callback_).Run(frame_token_);
 }
 
 }  // namespace cast_receiver

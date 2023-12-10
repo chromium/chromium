@@ -48,23 +48,13 @@ class LazyLoadImageObserver final
   // resources started loading as a result.
   bool LoadAllImagesAndBlockLoadEvent(Document& for_document);
 
-  // Called when the document finishes loading. If DelayOutOfViewportLazyImages
-  // is enabled, this may update the intersection observer to start using a
-  // non-zero viewport threshold.
-  void DocumentOnLoadFinished(Document* root_document);
-
  private:
   void LoadIfNearViewport(const HeapVector<Member<IntersectionObserverEntry>>&);
 
   void OnVisibilityChanged(
       const HeapVector<Member<IntersectionObserverEntry>>&);
 
-  void CreateLazyLoadIntersectionObserver(Document* root_document);
-
-  // True if `lazy_load_intersection_observer_` should use a non-zero threshold
-  // for the viewport. True by default and used by DelayOutOfViewportLazyImages
-  // to not use a threshold while loading.
-  bool use_viewport_distance_threshold_;
+  int GetLazyLoadingImageMarginPx(const Document& document);
 
   // The intersection observer responsible for loading the image once it's near
   // the viewport.

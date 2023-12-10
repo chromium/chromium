@@ -33,7 +33,10 @@ class PasswordSaveManagerImpl : public PasswordSaveManager {
   const std::u16string& GetGeneratedPassword() const override;
   FormSaver* GetProfileStoreFormSaverForTesting() const override;
 
-  // |metrics_recorder| and |votes_uploader| can both be nullptr.
+  // `client`: must be non-null and outlive this object.
+  // `form_fetcher`: must be non-null and outlive this object.
+  // `metrics_recorder`: can be null.
+  // `votes_uploader`: must be either null or outlive this object.
   void Init(PasswordManagerClient* client,
             const FormFetcher* form_fetcher,
             scoped_refptr<PasswordFormMetricsRecorder> metrics_recorder,

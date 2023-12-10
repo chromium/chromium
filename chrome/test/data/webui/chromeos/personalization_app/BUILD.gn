@@ -13,9 +13,6 @@ build_webui_tests("build_webui_tests") {
     "chrome://webui-test/chromeos/*|" +
         rebase_path("$root_gen_dir/chrome/test/data/webui/chromeos/tsc/*",
                     target_gen_dir),
-    "chrome://webui-test/*|" +
-        rebase_path("$root_gen_dir/chrome/test/data/webui/tsc/*",
-                    target_gen_dir),
   ]
 
   files = [
@@ -40,9 +37,11 @@ build_webui_tests("build_webui_tests") {
     "personalization_router_element_test.ts",
     "personalization_theme_element_test.ts",
     "personalization_toast_element_test.ts",
-    "sea_pen_collection_element_test.ts",
+    "sea_pen_controller_test.ts",
     "sea_pen_images_element_test.ts",
+    "sea_pen_input_query_element_test.ts",
     "sea_pen_recent_wallpapers_element_test.ts",
+    "sea_pen_template_query_element_test.ts",
     "test_ambient_interface_provider.ts",
     "test_keyboard_backlight_interface_provider.ts",
     "test_personalization_store.ts",

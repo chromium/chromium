@@ -63,6 +63,7 @@ public class PageInsightsCoordinator {
      * @param controlsStateProvider Provides the browser controls' state.
      * @param browserControlsSizer Bottom browser controls resizer.
      * @param backPressManager Back press manager.
+     * @param inMotionSupplier Supplier for whether the compositor is in motion.
      * @param isPageInsightsHubEnabled Supplier of the feature flag.
      * @param firstLoadTimeMs Timestamp for the first page load completion.
      */
@@ -78,6 +79,7 @@ public class PageInsightsCoordinator {
             BrowserControlsStateProvider controlsStateProvider,
             BrowserControlsSizer browserControlsSizer,
             @Nullable BackPressManager backPressManager,
+            @Nullable ObservableSupplier<Boolean> inMotionSupplier,
             BooleanSupplier isPageInsightsEnabledSupplier,
             Function<NavigationHandle, PageInsightsConfig> pageInsightsConfigProvider) {
         mContext = context;
@@ -100,13 +102,12 @@ public class PageInsightsCoordinator {
                         mControlsStateProvider,
                         mBrowserControlsSizer,
                         backPressManager,
+                        inMotionSupplier,
                         isPageInsightsEnabledSupplier,
                         pageInsightsConfigProvider);
     }
 
-    /**
-     * Launch PageInsights hub in bottom sheet container and fetch the data to show.
-     */
+    /** Launch PageInsights hub in bottom sheet container and fetch the data to show. */
     public void launch() {
         mMediator.launch();
     }
@@ -144,8 +145,8 @@ public class PageInsightsCoordinator {
         return mMediator.getCornerRadiusForTesting();
     }
 
-    void setAutoTriggerReadyForTesting() {
-        mMediator.setAutoTriggerReadyForTesting();
+    void onAutoTriggerTimerFinishedForTesting() {
+        mMediator.onAutoTriggerTimerFinished();
     }
 
     void setPageInsightsDataLoaderForTesting(PageInsightsDataLoader pageInsightsDataLoader) {

@@ -168,8 +168,8 @@ class Manifest final {
   // property does not exist or if the manifest type can't access it.
   const base::Value* FindKey(base::StringPiece path) const;
   const base::Value* FindPath(base::StringPiece path) const;
-  absl::optional<bool> FindBoolPath(base::StringPiece path) const;
-  absl::optional<int> FindIntPath(base::StringPiece path) const;
+  std::optional<bool> FindBoolPath(base::StringPiece path) const;
+  std::optional<int> FindIntPath(base::StringPiece path) const;
   const std::string* FindStringPath(base::StringPiece path) const;
 
   const base::Value::Dict* FindDictPath(base::StringPiece path) const;

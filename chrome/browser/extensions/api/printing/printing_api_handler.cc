@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/check_is_test.h"
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
@@ -24,6 +23,7 @@
 #include "chrome/browser/chromeos/printing/printer_error_codes.h"
 #include "chrome/browser/extensions/api/printing/print_job_submitter.h"
 #include "chrome/browser/extensions/api/printing/printing_api_utils.h"
+#include "chrome/browser/printing/local_printer_utils_chromeos.h"
 #include "chrome/browser/printing/pdf_blob_data_flattener.h"
 #include "chrome/browser/printing/print_job.h"
 #include "chrome/browser/printing/print_job_controller.h"
@@ -41,15 +41,6 @@
 #include "printing/print_settings.h"
 #include "printing/printed_document.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/crosapi/crosapi_ash.h"
-#include "chrome/browser/ash/crosapi/crosapi_manager.h"
-#include "chrome/browser/ash/crosapi/local_printer_ash.h"
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/printing/print_job_utils_lacros.h"
-#include "chromeos/lacros/lacros_service.h"
-#endif
-
 namespace extensions {
 
 namespace {
@@ -57,21 +48,6 @@ namespace {
 constexpr char kInvalidPrinterIdError[] = "Invalid printer ID";
 constexpr char kNoActivePrintJobWithIdError[] =
     "No active print job with given ID";
-
-crosapi::mojom::LocalPrinter* GetLocalPrinterInterface() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (!crosapi::CrosapiManager::IsInitialized()) {
-    // Only happens in tests.
-    CHECK_IS_TEST();
-    return nullptr;
-  }
-  return crosapi::CrosapiManager::Get()->crosapi_ash()->local_printer_ash();
-#else
-  auto* service = chromeos::LacrosService::Get();
-  CHECK(service->IsAvailable<crosapi::mojom::LocalPrinter>());
-  return service->GetRemote<crosapi::mojom::LocalPrinter>().get();
-#endif
-}
 
 }  // namespace
 
@@ -94,7 +70,7 @@ PrintingAPIHandler::PrintingAPIHandler(content::BrowserContext* browser_context)
                          ExtensionRegistry::Get(browser_context),
                          std::make_unique<printing::PrintJobController>(),
                          chromeos::CupsWrapper::Create(),
-                         GetLocalPrinterInterface()) {
+                         printing::GetLocalPrinterInterface()) {
   CHECK(local_printer_);
   local_printer_->AddPrintJobObserver(
       receiver_.BindNewPipeAndPassRemoteWithVersion(),
@@ -332,11 +308,6 @@ void PrintingAPIHandler::OnPrinterStatusRetrieved(
           /*error=*/absl::nullopt));
 }
 
-void PrintingAPIHandler::SetPrintJobControllerForTesting(
-    std::unique_ptr<printing::PrintJobController> print_job_controller) {
-  print_job_controller_ = std::move(print_job_controller);
-}
-
 void PrintingAPIHandler::OnPrintJobUpdate(
     const std::string& printer_id,
     unsigned int job_id,
@@ -386,11 +357,6 @@ KeyedService*
 BrowserContextKeyedAPIFactory<PrintingAPIHandler>::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  if (!GetLocalPrinterInterface()) {
-    CHECK_IS_TEST();
-    return nullptr;
-  }
 
   Profile* profile = Profile::FromBrowserContext(context);
   // We do not want an instance of PrintingAPIHandler on the lock screen.

@@ -85,11 +85,12 @@ class CONTENT_EXPORT UsbDelegate {
       const std::string& guid) = 0;
 
   // Returns whether `origin` in `browser_context` has permission to access
-  // the USB device described by `device`.
+  // the USB device described by `device_info`.
   virtual bool HasDevicePermission(
       BrowserContext* browser_context,
+      RenderFrameHost* frame,
       const url::Origin& origin,
-      const device::mojom::UsbDeviceInfo& device) = 0;
+      const device::mojom::UsbDeviceInfo& device_info) = 0;
 
   // These two methods are expected to proxy to the UsbDeviceManager interface
   // owned by the embedder.

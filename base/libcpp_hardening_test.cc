@@ -12,11 +12,9 @@ namespace {
 
 // TODO(thakis): Remove _LIBCPP_ENABLE_ASSERTIONS here once
 // pnacl-saigo's libc++ is new enough.
-#if !_LIBCPP_ENABLE_ASSERTIONS && !_LIBCPP_ENABLE_SAFE_MODE
-#error \
-    "Define _LIBCPP_ENABLE_SAFE_MODE to 1 in \
-buildtools/third_party/libc++/__config_site"
-
+#if !_LIBCPP_ENABLE_ASSERTIONS && \
+    _LIBCPP_HARDENING_MODE != _LIBCPP_HARDENING_MODE_EXTENSIVE
+#error "_LIBCPP_HARDENING_MODE not defined"
 #endif
 
 using ::testing::ContainsRegex;

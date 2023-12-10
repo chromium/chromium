@@ -369,8 +369,8 @@ void AndroidStreamReaderURLLoader::ReadMore() {
       return;
   }
   uint32_t num_bytes = pending_buffer_->size();
-  scoped_refptr<net::IOBuffer> buffer(
-      new network::NetToMojoIOBuffer(pending_buffer_.get()));
+  auto buffer =
+      base::MakeRefCounted<network::NetToMojoIOBuffer>(pending_buffer_);
 
   if (!input_stream_reader_wrapper_.get()) {
     // This will happen if opening the InputStream fails in which case the

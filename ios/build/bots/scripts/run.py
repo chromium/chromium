@@ -67,7 +67,7 @@ class Runner():
       self.parse_args(args)
 
   def use_xcodebuild_runner(self, args):
-    return args.xcode_parallelization or args.xcodebuild_device_runner
+    return args.xcodebuild_sim_runner or args.xcodebuild_device_runner
 
   def resolve_test_cases(self):
     """Forms |self.args.test_cases| considering swarming shard and cmd inputs.
@@ -156,7 +156,7 @@ class Runner():
     try:
       self.resolve_test_cases()
 
-      if self.args.xcode_parallelization:
+      if self.args.xcodebuild_sim_runner:
         tr = xcodebuild_runner.SimulatorParallelTestRunner(
             self.args.app,
             self.args.host_app,
@@ -168,7 +168,7 @@ class Runner():
             release=self.args.release,
             repeat_count=self.args.repeat,
             retries=self.args.retries,
-            shards=self.args.shards,
+            clones=self.args.clones,
             test_cases=self.args.test_cases,
             test_args=self.test_args,
             use_clang_coverage=self.args.use_clang_coverage,
@@ -203,7 +203,7 @@ class Runner():
             env_vars=env_vars,
             readline_timeout=self.args.readline_timeout,
             retries=self.args.retries,
-            shards=self.args.shards,
+            clones=self.args.clones,
             test_args=self.test_args,
             test_cases=self.args.test_cases,
             xctest=self.args.xctest,
@@ -219,7 +219,7 @@ class Runner():
             readline_timeout=self.args.readline_timeout,
             repeat_count=self.args.repeat,
             retries=self.args.retries,
-            shards=self.args.shards,
+            clones=self.args.clones,
             test_args=self.test_args,
             test_cases=self.args.test_cases,
             use_clang_coverage=self.args.use_clang_coverage,
@@ -347,12 +347,6 @@ class Runner():
     parser = argparse.ArgumentParser()
 
     parser.add_argument(
-        '-x',
-        '--xcode-parallelization',
-        help='Run tests using xcodebuild\'s parallelization.',
-        action='store_true',
-    )
-    parser.add_argument(
         '-a',
         '--app',
         help='Compiled .app to run for EG1, Compiled -Runner.app for EG2',
@@ -364,6 +358,14 @@ class Runner():
         help='Xcode build version to install.',
         required=True,
         metavar='build_id',
+    )
+    parser.add_argument(
+        '-c',
+        '--clones',
+        help='Number of iOS simulator clones to split test cases across',
+        metavar='n',
+        type=int,
+        default=1,
     )
     parser.add_argument(
         '-e',
@@ -484,13 +486,6 @@ class Runner():
         default='Runtime-ios-',
     )
     parser.add_argument(
-        '-s',
-        '--shards',
-        help='Number of shards to split test cases.',
-        metavar='n',
-        type=int,
-    )
-    parser.add_argument(
         '-t',
         '--test-cases',
         action='append',
@@ -548,6 +543,11 @@ class Runner():
         action='store_true',
     )
     parser.add_argument(
+        '--xcodebuild-sim-runner',
+        help='Run tests using xcodebuild\'s on iOS simulators',
+        action='store_true',
+    )
+    parser.add_argument(
         '--xctest',
         action='store_true',
         help='Whether or not the given app should be run as an XCTest.',
@@ -584,12 +584,12 @@ class Runner():
       args.env_var.extend(args_json.get('env_var', []))
       args.restart = args_json.get('restart', args.restart)
       args.xctest = args_json.get('xctest', args.xctest)
-      args.xcode_parallelization = args_json.get('xcode_parallelization',
-                                                 args.xcode_parallelization)
+      args.xcodebuild_sim_runner = args_json.get('xcodebuild_sim_runner',
+                                                 args.xcodebuild_sim_runner)
       args.xcodebuild_device_runner = (
           args_json.get('xcodebuild_device_runner',
                         args.xcodebuild_device_runner))
-      args.shards = args_json.get('shards', args.shards)
+      args.clones = args_json.get('clones', args.clones)
       test_args.extend(args_json.get('test_args', []))
 
     def validate(args):
@@ -604,8 +604,8 @@ class Runner():
           parser.error('must specify all or none of '
                        '-i/--iossim, -p/--platform, -v/--version')
 
-      if args.xcode_parallelization and not (args.platform and args.version):
-        parser.error('--xcode-parallelization also requires '
+      if args.xcodebuild_sim_runner and not (args.platform and args.version):
+        parser.error('--xcodebuild-sim-runner also requires '
                      'both -p/--platform and -v/--version')
 
       if not self.use_xcodebuild_runner(args) and args.record_video:

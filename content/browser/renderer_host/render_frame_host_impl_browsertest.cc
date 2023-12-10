@@ -77,6 +77,8 @@
 #include "content/public/test/test_utils.h"
 #include "content/public/test/url_loader_interceptor.h"
 #include "content/shell/browser/shell.h"
+#include "content/shell/browser/shell_browser_context.h"
+#include "content/shell/browser/shell_content_browser_client.h"
 #include "content/test/content_browser_test_utils_internal.h"
 #include "content/test/data/mojo_web_test_helper_test.mojom.h"
 #include "content/test/did_commit_navigation_interceptor.h"
@@ -108,6 +110,7 @@
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/common/switches.h"
 #include "third_party/blink/public/mojom/browser_interface_broker.mojom-test-utils.h"
@@ -128,6 +131,16 @@
 #include "content/browser/renderer_host/delegated_frame_host.h"
 #include "content/browser/renderer_host/render_widget_host_view_aura.h"
 #endif  // defined(USE_AURA)
+
+#if BUILDFLAG(IS_MAC)
+#include "content/browser/renderer_host/browser_compositor_view_mac.h"
+#include "content/browser/renderer_host/test_render_widget_host_view_mac_factory.h"
+#endif
+
+#if BUILDFLAG(IS_IOS)
+#include "content/browser/renderer_host/browser_compositor_ios.h"
+#include "content/browser/renderer_host/test_render_widget_host_view_ios_factory.h"
+#endif
 
 namespace content {
 namespace {
@@ -206,7 +219,6 @@ class FirstPartySchemeContentBrowserClient
 
   void RegisterNonNetworkNavigationURLLoaderFactories(
       int frame_tree_node_id,
-      ukm::SourceIdObj ukm_source_id,
       NonNetworkURLLoaderFactoryMap* factories) override {
     mojo::PendingRemote<network::mojom::URLLoaderFactory> trustme_remote;
     trustme_factory_->Clone(trustme_remote.InitWithNewPipeAndPassReceiver());
@@ -509,7 +521,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
       network::SimpleURLLoader::Create(std::move(request),
                                        TRAFFIC_ANNOTATION_FOR_TESTS);
   simple_loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
-      url_loader_factory.get(), simple_loader_helper.GetCallback());
+      url_loader_factory.get(), simple_loader_helper.GetCallbackDeprecated());
   simple_loader_helper.WaitForCallback();
   EXPECT_FALSE(simple_loader_helper.response_body());
   EXPECT_EQ(net::ERR_INVALID_ARGUMENT, simple_loader->NetError());
@@ -837,8 +849,12 @@ class RenderFrameHostImplWithTokensBrowserTest : public ContentBrowserTest {
   static constexpr char kOriginTrialUrl[] = "https://127.0.0.1:44444";
   // The URL that will be used to load third-party scripts.
   static constexpr char kThirdPartyScriptUrl[] = "https://127.0.0.1:44445";
+  // The URL that is same-site but cross-origin to the third-party scripts URL.
+  static constexpr char kThirdPartyCrossOriginUrl[] = "https://127.0.0.1:44446";
   // URL for empty page responses.
   static constexpr char kEmptyPageUrl[] = "https://127.0.0.1:44440";
+  // A cross-site URL used for Origin Trials.
+  static constexpr char kCrossSiteOriginTrialUrl[] = "https://a.com";
 
  protected:
   void SetUpOnMainThread() override {
@@ -889,6 +905,18 @@ class RenderFrameHostImplWithTokensBrowserTest : public ContentBrowserTest {
 
   GURL meta_tag_injecting_javascript_url() const {
     return GURL(base::StrCat({kThirdPartyScriptUrl, "/meta.js"}));
+  }
+
+  GURL cross_site_script_meta_tag_origin_trial_url() const {
+    return GURL(base::StrCat({kCrossSiteOriginTrialUrl, "/meta_script.html"}));
+  }
+
+  GURL empty_frame_meta_origin_trial_url() const {
+    return GURL(base::StrCat({kThirdPartyScriptUrl, "/empty.html"}));
+  }
+
+  GURL same_site_cross_origin_url() const {
+    return GURL(base::StrCat({kThirdPartyCrossOriginUrl, "/empty.html"}));
   }
 
   WebContentsImpl* web_contents() const {
@@ -961,7 +989,9 @@ class RenderFrameHostImplWithTokensBrowserTest : public ContentBrowserTest {
                       "otMeta.content = '",
                       origin_trial_token_,
                       "'; "
-                      "document.head.append(otMeta);"});
+                      "document.head.append(otMeta); ",
+                      "const iframe = document.createElement('iframe'); ",
+                      "document.head.appendChild(iframe); "});
     URLLoaderInterceptor::WriteResponse(headers, body, params->client.get());
     return true;
   }
@@ -982,6 +1012,16 @@ class RenderFrameHostImplWithTokensBrowserTest : public ContentBrowserTest {
     }
     if (params->url_request.url == meta_tag_injecting_javascript_url()) {
       return RespondForMetaTagInjectingScriptUrl(params);
+    }
+    if (params->url_request.url ==
+        cross_site_script_meta_tag_origin_trial_url()) {
+      return RespondForScriptMetaTagOriginTrialUrl(params);
+    }
+    if (params->url_request.url == empty_frame_meta_origin_trial_url()) {
+      return RespondForEmptyUrl(params);
+    }
+    if (params->url_request.url == same_site_cross_origin_url()) {
+      return RespondForEmptyUrl(params);
     }
 
     return false;
@@ -1182,6 +1222,57 @@ IN_PROC_BROWSER_TEST_F(
       blink::mojom::OriginTrialFeature::
           kOriginTrialsSampleAPIPersistentThirdPartyDeprecationFeature,
       validTime));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    RenderFrameHostImplWithTokensBrowserTest,
+    ReusedChildFrameNavigatedFromDeprecationTrialIsPartitioned) {
+  // Generated with
+  // tools/origin_trials/generate_token.py https://127.0.0.1:44445
+  // DisableThirdPartyStoragePartitioning --expire-timestamp=2000000000
+  // --is-third-party
+  const char kValidToken[] =
+      "Ayom1wtawpnUfk8Om3a/EYemMJVC77lAo/"
+      "l0q5+r82zkJlavqefYq0yd+"
+      "X2aUFG5Jaf71UH1qoePdy87cjs5CQ8AAACEeyJvcmlnaW4iOiAiaHR0cHM6Ly8xMjcuMC4wL"
+      "jE6NDQ0NDUiLCAiZmVhdHVyZSI6ICJEaXNhYmxlVGhpcmRQYXJ0eVN0b3JhZ2VQYXJ0aXRpb"
+      "25pbmciLCAiZXhwaXJ5IjogMjAwMDAwMDAwMCwgImlzVGhpcmRQYXJ0eSI6IHRydWV"
+      "9";
+  SetOriginTrialToken(kValidToken);
+
+  // Navigate to "a.com" and load a script from a third-party. In that script,
+  // the deprecation trial token above is added via <meta> tag. Then, the script
+  // adds an iframe.
+  EXPECT_TRUE(
+      NavigateToURL(shell(), cross_site_script_meta_tag_origin_trial_url()));
+  RenderFrameHostImpl* child_frame =
+      static_cast<RenderFrameHostImpl*>(ChildFrameAt(shell(), 0));
+  ASSERT_TRUE(child_frame);
+  // Navigate the currently empty iframe to a URL that is same-site with the
+  // third-party script.
+  EXPECT_TRUE(NavigateToURLFromRenderer(child_frame,
+                                        empty_frame_meta_origin_trial_url()));
+  // Execute a dummy roundtrip to ensure the <meta> tag trial token has time to
+  // parse and be applied to the iframe.
+  EXPECT_TRUE(ExecJs(shell(), ";"));
+
+  // Re-obtain the iframe after confirming the navigation is complete. If
+  // deprecation trial is registered correctly, its StorageKey will be
+  // first-party.
+  child_frame = static_cast<RenderFrameHostImpl*>(ChildFrameAt(shell(), 0));
+  EXPECT_TRUE(child_frame->GetStorageKey().IsFirstPartyContext());
+
+  // Calculate the StorageKey when providing a same-site, cross-origin
+  // `new_rfh_origin`, which simulates a navigation where the RenderFrameHost
+  // would be reused.
+  url::Origin new_rfh_origin =
+      url::Origin::Create(same_site_cross_origin_url());
+  blink::StorageKey new_storage_key =
+      child_frame->CalculateStorageKey(new_rfh_origin, /*nonce=*/nullptr);
+  // Ensure that the StorageKey is third-party, even though the
+  // RenderFrameHost we "reused" had ThirdPartyStoragePartitioning
+  // disabled via deprecation trial.
+  EXPECT_TRUE(new_storage_key.IsThirdPartyContext());
 }
 
 IN_PROC_BROWSER_TEST_F(RenderFrameHostImplWithTokensBrowserTest,
@@ -5161,7 +5252,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   SetupRemoteObjectInvocation(shell(), url);
 
   std::string kScript = "testObject.getInnerId();";
-  EXPECT_FALSE(EvalJs(web_contents(), kScript).error.empty());
+  EXPECT_THAT(EvalJs(web_contents(), kScript), EvalJsResult::IsError());
 }
 
 // TODO(crbug.com/1357783): This test is flaky.
@@ -5185,7 +5276,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   SetupRemoteObjectInvocation(shell(), url);
 
   std::string kScript = "testObject.readArray([6, 8, 2]);";
-  EXPECT_TRUE(EvalJs(web_contents(), kScript).error.empty());
+  EXPECT_THAT(EvalJs(web_contents(), kScript), EvalJsResult::IsOk());
   EXPECT_EQ(
       3, injector.GetObjectHost().GetMockObject()->get_num_elements_received());
 }
@@ -7443,6 +7534,160 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   EXPECT_NE(dnt_a, dnt_b);
 }
 
+IN_PROC_BROWSER_TEST_F(
+    RenderFrameHostImplBrowserTest,
+    RecordNewProcessUsedForNavigationWhenSameSiteProcessExists_SameSite) {
+  base::HistogramTester histogram;
+  GURL url = embedded_test_server()->GetURL("a.com", "/title1.html");
+  GURL second_shell_start_url =
+      embedded_test_server()->GetURL("start.test", "/title1.html");
+
+  ASSERT_TRUE(NavigateToURL(shell(), url));
+
+  // Navigation from the initial empty RFH does not count.
+  histogram.ExpectTotalCount(
+      "SiteIsolation.NewProcessUsedForNavigationWhenSameSiteProcessExists", 0);
+
+  Shell* second_shell =
+      Shell::CreateNewWindow(shell()->web_contents()->GetBrowserContext(),
+                             second_shell_start_url, nullptr, gfx::Size());
+  ASSERT_TRUE(NavigateToURL(second_shell, url));
+  ASSERT_NE(shell()->web_contents()->GetPrimaryMainFrame()->GetProcess(),
+            second_shell->web_contents()->GetPrimaryMainFrame()->GetProcess());
+
+  // `shell()` and `second_shell` opened the same site.
+  EXPECT_THAT(
+      histogram.GetAllSamples(
+          "SiteIsolation.NewProcessUsedForNavigationWhenSameSiteProcessExists"),
+      testing::ElementsAre(base::Bucket(true, 1)));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    RenderFrameHostImplBrowserTest,
+    RecordNewProcessUsedForNavigationWhenSameSiteProcessExists_OtherSiteToSameSite) {
+  base::HistogramTester histogram;
+  GURL url = embedded_test_server()->GetURL("a.com", "/title1.html");
+  GURL second_shell_start_url =
+      embedded_test_server()->GetURL("start.test", "/title1.html");
+  GURL other_url = embedded_test_server()->GetURL("b.com", "/title1.html");
+
+  ASSERT_TRUE(NavigateToURL(shell(), url));
+
+  // Navigation from the initial empty RFH does not count.
+  histogram.ExpectTotalCount(
+      "SiteIsolation.NewProcessUsedForNavigationWhenSameSiteProcessExists", 0);
+
+  Shell* second_shell =
+      Shell::CreateNewWindow(shell()->web_contents()->GetBrowserContext(),
+                             second_shell_start_url, nullptr, gfx::Size());
+  ASSERT_TRUE(NavigateToURL(second_shell, other_url));
+  ASSERT_NE(shell()->web_contents()->GetPrimaryMainFrame()->GetProcess(),
+            second_shell->web_contents()->GetPrimaryMainFrame()->GetProcess());
+
+  bool requires_dedicated_process = second_shell->web_contents()
+                                        ->GetPrimaryMainFrame()
+                                        ->GetSiteInstance()
+                                        ->RequiresDedicatedProcess();
+
+  // `shell()` and `second_shell` opened different sites.
+  if (requires_dedicated_process) {
+    EXPECT_THAT(histogram.GetAllSamples(
+                    "SiteIsolation."
+                    "NewProcessUsedForNavigationWhenSameSiteProcessExists"),
+                testing::ElementsAre(base::Bucket(false, 1)));
+  } else {
+    EXPECT_THAT(histogram.GetAllSamples(
+                    "SiteIsolation."
+                    "NewProcessUsedForNavigationWhenSameSiteProcessExists"),
+                testing::ElementsAre(base::Bucket(true, 1)));
+  }
+
+  ASSERT_TRUE(NavigateToURL(second_shell, url));
+  // Now `shell()` and `second_shell` opened the same site.
+  if (requires_dedicated_process) {
+    EXPECT_THAT(
+        histogram.GetAllSamples(
+            "SiteIsolation."
+            "NewProcessUsedForNavigationWhenSameSiteProcessExists"),
+        testing::ElementsAre(base::Bucket(false, 1), base::Bucket(true, 1)));
+  } else {
+    EXPECT_THAT(histogram.GetAllSamples(
+                    "SiteIsolation."
+                    "NewProcessUsedForNavigationWhenSameSiteProcessExists"),
+                testing::ElementsAre(base::Bucket(true, 2)));
+  }
+}
+
+// TODO(https://crbug.com/1434900): Consider enabling this test on Android.
+// There is no plan to analyze the histogram on Android for now.
+#if !BUILDFLAG(IS_ANDROID)
+IN_PROC_BROWSER_TEST_F(
+    RenderFrameHostImplBrowserTest,
+    RecordNewProcessUsedForNavigationWhenSameSiteProcessExists_DifferentProfile) {
+  base::HistogramTester histogram;
+  GURL url = embedded_test_server()->GetURL("a.com", "/title1.html");
+  GURL second_shell_start_url =
+      embedded_test_server()->GetURL("start.test", "/title1.html");
+
+  ASSERT_TRUE(NavigateToURL(shell(), url));
+
+  // Navigation from the initial empty RFH does not count.
+  histogram.ExpectTotalCount(
+      "SiteIsolation.NewProcessUsedForNavigationWhenSameSiteProcessExists", 0);
+
+  Shell* second_shell = Shell::CreateNewWindow(
+      ShellContentBrowserClient::Get()->off_the_record_browser_context(),
+      second_shell_start_url, nullptr, gfx::Size());
+  ASSERT_TRUE(NavigateToURL(second_shell, url));
+  ASSERT_NE(shell()->web_contents()->GetPrimaryMainFrame()->GetProcess(),
+            second_shell->web_contents()->GetPrimaryMainFrame()->GetProcess());
+
+  // `shell()` and `second_shell` opened the same site but use different
+  // profiles.
+  EXPECT_THAT(
+      histogram.GetAllSamples(
+          "SiteIsolation.NewProcessUsedForNavigationWhenSameSiteProcessExists"),
+      testing::ElementsAre(base::Bucket(false, 1)));
+}
+#endif
+
+IN_PROC_BROWSER_TEST_F(
+    RenderFrameHostImplBrowserTest,
+    RecordNewProcessUsedForNavigationWhenSameSiteProcessExists_SameSiteNavigateTwice) {
+  base::HistogramTester histogram;
+  GURL url = embedded_test_server()->GetURL("a.com", "/title1.html");
+  GURL url2 = embedded_test_server()->GetURL("a.com", "/title2.html");
+  GURL second_shell_start_url =
+      embedded_test_server()->GetURL("start.test", "/title1.html");
+
+  ASSERT_TRUE(NavigateToURL(shell(), url));
+
+  // Navigation from the initial empty RFH does not count.
+  histogram.ExpectTotalCount(
+      "SiteIsolation.NewProcessUsedForNavigationWhenSameSiteProcessExists", 0);
+
+  Shell* second_shell =
+      Shell::CreateNewWindow(shell()->web_contents()->GetBrowserContext(),
+                             second_shell_start_url, nullptr, gfx::Size());
+  ASSERT_TRUE(NavigateToURL(second_shell, url));
+  ASSERT_NE(shell()->web_contents()->GetPrimaryMainFrame()->GetProcess(),
+            second_shell->web_contents()->GetPrimaryMainFrame()->GetProcess());
+
+  // `shell()` and `second_shell` opened the same site.
+  EXPECT_THAT(
+      histogram.GetAllSamples(
+          "SiteIsolation.NewProcessUsedForNavigationWhenSameSiteProcessExists"),
+      testing::ElementsAre(base::Bucket(true, 1)));
+
+  ASSERT_TRUE(NavigateToURL(second_shell, url2));
+  // Navigating the different page in the same site shouldn't count up
+  // histograms.
+  EXPECT_THAT(
+      histogram.GetAllSamples(
+          "SiteIsolation.NewProcessUsedForNavigationWhenSameSiteProcessExists"),
+      testing::ElementsAre(base::Bucket(true, 1)));
+}
+
 class RenderFrameHostImplBrowserTestWithBFCache
     : public RenderFrameHostImplBrowserTest {
  public:
@@ -7589,6 +7834,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTestWithBFCache,
 }
 
 namespace {
+
 class RenderFrameHostImplBrowserTestWithBFCacheAndViewTransition
     : public RenderFrameHostImplBrowserTestWithBFCache {
  public:
@@ -7598,6 +7844,8 @@ class RenderFrameHostImplBrowserTestWithBFCacheAndViewTransition
             /*ignore_outstanding_network_request=*/false);
     enabled_features.push_back(
         {blink::features::kViewTransitionOnNavigation, {{}}});
+    enabled_features.push_back(
+        {features::kInvalidateLocalSurfaceIdPreCommit, {{}}});
     scoped_feature_list_.InitWithFeaturesAndParameters(
         enabled_features,
         GetDefaultDisabledBackForwardCacheFeaturesForTesting());
@@ -7621,6 +7869,55 @@ void AssertBitmapOfColor(const SkBitmap& bitmap, SkColor color) {
     }
   }
 }
+
+bool IsChildFrame(RenderWidgetHostView* view) {
+  CHECK(view);
+  return static_cast<RenderWidgetHostViewBase*>(view)
+      ->IsRenderWidgetHostViewChildFrame();
+}
+
+#if BUILDFLAG(IS_ANDROID)
+ui::DelegatedFrameHostAndroid* GetDelegatedFrameHost(
+    RenderWidgetHostView* view) {
+  CHECK(!IsChildFrame(view));
+  return static_cast<RenderWidgetHostViewAndroid*>(view)
+      ->delegated_frame_host_for_testing();
+}
+#else
+DelegatedFrameHost* GetDelegatedFrameHost(RenderWidgetHostView* view) {
+  CHECK(!IsChildFrame(view));
+  DelegatedFrameHost* dfh = nullptr;
+#if BUILDFLAG(IS_MAC)
+  auto* compositor = GetBrowserCompositorMacForTesting(view);
+  dfh = compositor->GetDelegatedFrameHost();
+#elif BUILDFLAG(IS_IOS)
+  auto* compositor = GetBrowserCompositorIOSForTesting(view);
+  dfh = compositor->GetDelegatedFrameHost();
+#elif defined(USE_AURA)
+  dfh = static_cast<RenderWidgetHostViewAura*>(view)
+            ->GetDelegatedFrameHostForTesting();
+#endif  // BUILDFLAG(IS_MAC)
+  return dfh;
+}
+#endif  // BUILDFLAG(IS_ANDROID)
+
+viz::SurfaceId GetCurrentSurfaceIdOnDelegatedFrameHost(
+    RenderWidgetHostView* view) {
+  auto* dfh = GetDelegatedFrameHost(view);
+  CHECK(dfh);
+#if BUILDFLAG(IS_ANDROID)
+  return dfh->GetCurrentSurfaceIdForTesting();
+#else
+  return dfh->GetCurrentSurfaceId();
+#endif  // BUILDFLAG(IS_ANDROID)
+}
+
+viz::SurfaceId GetFirstSurfaceIdAfterNavigation(RenderWidgetHostView* view) {
+  auto* dfh = GetDelegatedFrameHost(view);
+  CHECK(dfh);
+  return dfh->GetFirstSurfaceIdAfterNavigationForTesting();
+}
+
 }  // namespace
 
 // https://crbug.com/1415340: For a page with ViewTransition being restored from
@@ -7628,12 +7925,16 @@ void AssertBitmapOfColor(const SkBitmap& bitmap, SkColor color) {
 // visual glitches.
 //
 // TODO(https://crbug.com/1472026): Investigate and re-enable.
-//
-// TODO(https://crbug.com/1487799): Disabled globally as the killswitch has been
-// flipped. Re-enable once the proper fix for VT+BFCache has landed.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_NewContentTimeoutIsSetWhenLeavingBFCacheWithViewTransition \
+  DISABLED_NewContentTimeoutIsSetWhenLeavingBFCacheWithViewTransition
+#else
+#define MAYBE_NewContentTimeoutIsSetWhenLeavingBFCacheWithViewTransition \
+  NewContentTimeoutIsSetWhenLeavingBFCacheWithViewTransition
+#endif
 IN_PROC_BROWSER_TEST_F(
     RenderFrameHostImplBrowserTestWithBFCacheAndViewTransition,
-    DISABLED_NewContentTimeoutIsSetWhenLeavingBFCacheWithViewTransition) {
+    MAYBE_NewContentTimeoutIsSetWhenLeavingBFCacheWithViewTransition) {
   // "red_jank_second_pageshow.html" janks the renderer on the second pageshow
   // event.
   const GURL url_red(embedded_test_server()->GetURL(
@@ -7644,25 +7945,59 @@ IN_PROC_BROWSER_TEST_F(
   // Navigate to Red.
   ASSERT_TRUE(NavigateToURL(shell(), url_red));
   RenderFrameHostWrapper rfh_red(web_contents()->GetPrimaryMainFrame());
+  const auto first_surface_id_after_nav_before_bfcache_restore =
+      GetFirstSurfaceIdAfterNavigation(rfh_red->GetView());
 
   // Navigate to Green.
   ASSERT_TRUE(NavigateToURL(shell(), url_green));
   ASSERT_FALSE(rfh_red.IsDestroyed());
   ASSERT_TRUE(
       static_cast<RenderFrameHostImpl*>(rfh_red.get())->IsInBackForwardCache());
+  auto* rwhi_red =
+      RenderWidgetHostImpl::From(rfh_red->GetView()->GetRenderWidgetHost());
+  // The BFCached `RenderWidgetHostImpl` must have a stopped timer.
+  ASSERT_FALSE(rwhi_red->IsContentRenderingTimeoutRunning());
 
   // Navigate back to Red.
   ASSERT_TRUE(HistoryGoBack(web_contents()));
   ASSERT_EQ(rfh_red.get(), web_contents()->GetPrimaryMainFrame());
-
-  RenderWidgetHostImpl* rwhi_red =
-      RenderWidgetHostImpl::From(rfh_red->GetView()->GetRenderWidgetHost());
   ASSERT_TRUE(rwhi_red->IsContentRenderingTimeoutRunning());
 
-  gfx::Image screenshot;
-  ui::GrabViewSnapshot(web_contents()->GetView()->GetNativeView(),
-                       gfx::Rect(web_contents()->GetSize()), &screenshot);
-  AssertBitmapOfColor(screenshot.AsBitmap(), SK_ColorGREEN);
+  const auto first_surface_id_after_nav_after_bfcache_restore =
+      GetFirstSurfaceIdAfterNavigation(rfh_red->GetView());
+  // The `first_surface_id_after_nav_` of the DelegatedFrameHost{Android}, after
+  // the BFCache restore, should have a different value than before.
+  ASSERT_NE(first_surface_id_after_nav_after_bfcache_restore,
+            first_surface_id_after_nav_before_bfcache_restore);
+  // The first call to `DelegatedFrameHost{Android}::EmbedSurface` will set
+  // `first_surface_id_after_nav_` to the new current `viz::SurfaceId`; if there
+  // are subsequent `EmbedSurface` calls (i.e., Android), the current surface id
+  // will be newer than `first_surface_id_after_nav_`.
+  ASSERT_TRUE(
+      GetCurrentSurfaceIdOnDelegatedFrameHost(rfh_red->GetView())
+          .IsSameOrNewerThan(first_surface_id_after_nav_after_bfcache_restore));
+
+  {
+    gfx::Image screenshot;
+    ui::GrabViewSnapshot(web_contents()->GetView()->GetNativeView(),
+                         gfx::Rect(web_contents()->GetSize()), &screenshot);
+    AssertBitmapOfColor(screenshot.AsBitmap(), SK_ColorGREEN);
+  }
+
+  ASSERT_TRUE(rwhi_red->IsContentRenderingTimeoutRunning());
+  rwhi_red->ForceFirstFrameAfterNavigationTimeout();
+
+  WaitForBrowserCompositorFramePresented(web_contents());
+
+  // `ForceFirstFrameAfterNavigationTimeout` resets the fallback surface id to
+  // `first_surface_id_after_nav_` of the `DelegatedFrameHost{Android}`. This
+  // should have no effects on the screen.
+  {
+    gfx::Image screenshot;
+    ui::GrabViewSnapshot(web_contents()->GetView()->GetNativeView(),
+                         gfx::Rect(web_contents()->GetSize()), &screenshot);
+    AssertBitmapOfColor(screenshot.AsBitmap(), SK_ColorGREEN);
+  }
 }
 
 // Tests that when a RenderFrameHost is stored in BFCache, that the visibility
@@ -7931,5 +8266,74 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplDeathTest,
   EXPECT_TRUE(rfh_a->IsPendingDeletion() || rfh_a->IsInBackForwardCache());
   EXPECT_CHECK_DEATH(rfh_a->Reload());
 }
+
+class RenderFrameHostImplUrgentNavigationIPCBrowserTest
+    : public RenderFrameHostImplBrowserTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  RenderFrameHostImplUrgentNavigationIPCBrowserTest() {
+    if (RenderDocumentEnabled()) {
+      scoped_feature_list_.InitWithFeaturesAndParameters(
+          /*enabled_features=*/
+          {{blink::features::kBlinkSchedulerPrioritizeNavigationIPCs, {}},
+           {features::kRenderDocument, {{"level", "all-frames"}}}},
+          /*disabled_features=*/{});
+    } else {
+      scoped_feature_list_.InitWithFeatures(
+          /*enabled_features=*/
+          {blink::features::kBlinkSchedulerPrioritizeNavigationIPCs},
+          /*disabled_features=*/{features::kRenderDocument});
+    }
+  }
+
+  ~RenderFrameHostImplUrgentNavigationIPCBrowserTest() override = default;
+
+ private:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    // Override RenderFrameHostImplBrowserTest command line switches, which
+    // aren't needed for this test.
+    base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+        switches::kEnableBlinkFeatures, "SchedulerYield");
+  }
+
+  bool RenderDocumentEnabled() { return GetParam(); }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(RenderFrameHostImplUrgentNavigationIPCBrowserTest,
+                       UrgentMessageNavigationIPCs) {
+  GURL url(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  std::string script =
+      "function spin(howLong) {"
+      "  const start = performance.now();"
+      "  while (performance.now() - start < howLong);"
+      "}"
+      "window.onbeforeunload = () => spin(5);"
+      "async function runTest() {"
+      "  while (true) {"
+      "    spin(5);"
+      "    await scheduler.yield()"
+      "  }"
+      "}"
+      "runTest()";
+  EXPECT_TRUE(
+      ExecJs(web_contents(), script, EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
+
+  // Disable the hang monitor to ensure the beforeunload task is prioritized.
+  web_contents()
+      ->GetPrimaryMainFrame()
+      ->DisableBeforeUnloadHangMonitorForTesting();
+
+  // Reload. The loop shouldn't cause WaitForLoadStop to hang.
+  web_contents()->GetController().Reload(ReloadType::NORMAL, false);
+  EXPECT_TRUE(WaitForLoadStop(web_contents()));
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         RenderFrameHostImplUrgentNavigationIPCBrowserTest,
+                         /*RenderDocumentEnabled()*/ testing::Bool());
 
 }  // namespace content

@@ -580,7 +580,7 @@ ConnectToServiceError GetConnectToServiceError(const std::string& error) {
   return ConnectToServiceError::kUnknownError;
 }
 
-absl::optional<std::string> GetFastPairDeviceType(
+std::optional<std::string> GetFastPairDeviceType(
     const nearby::fastpair::Device& device_metadata) {
   // Needs to stay up to date with `DeviceType` enum in
   // ash/quick_pair/proto/enums.proto. We only expect these device
@@ -603,10 +603,10 @@ absl::optional<std::string> GetFastPairDeviceType(
     return kDeviceTypeUnspecified;
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-absl::optional<std::string> GetFastPairNotificationType(
+std::optional<std::string> GetFastPairNotificationType(
     const nearby::fastpair::Device& device_metadata) {
   // Needs to stay up to date with `NotificationType` enum in
   // ash/quick_pair/proto/enums.proto. We only expect these notification
@@ -629,7 +629,7 @@ absl::optional<std::string> GetFastPairNotificationType(
                  NOTIFICATION_TYPE_UNSPECIFIED) {
     return kNotificationTypeUnspecified;
   } else {
-    return absl::nullopt;
+    return std::nullopt;
   }
 }
 
@@ -868,48 +868,48 @@ const std::string GetAccountKeyWriteResultRetroactiveModelIdMetric(
          GetFastPairTrackedModelId(device.metadata_id());
 }
 
-absl::optional<std::string>
+std::optional<std::string>
 GetEngagementFunnelInitialDeviceTypeNotificationTypeMetric(
     const nearby::fastpair::Device& device_metadata) {
-  absl::optional<std::string> device_type =
+  std::optional<std::string> device_type =
       GetFastPairDeviceType(device_metadata);
-  absl::optional<std::string> notification_type =
+  std::optional<std::string> notification_type =
       GetFastPairNotificationType(device_metadata);
 
   if (!device_type || !notification_type) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return std::string(kEngagementFlowInitialMetric) + "." + device_type.value() +
          "." + notification_type.value();
 }
 
-absl::optional<std::string>
+std::optional<std::string>
 GetEngagementFunnelSubsequentDeviceTypeNotificationTypeMetric(
     const nearby::fastpair::Device& device_metadata) {
-  absl::optional<std::string> device_type =
+  std::optional<std::string> device_type =
       GetFastPairDeviceType(device_metadata);
-  absl::optional<std::string> notification_type =
+  std::optional<std::string> notification_type =
       GetFastPairNotificationType(device_metadata);
 
   if (!device_type || !notification_type) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return std::string(kEngagementFlowSubsequentMetric) + "." +
          device_type.value() + "." + notification_type.value();
 }
 
-absl::optional<std::string>
+std::optional<std::string>
 GetEngagementFunnelRetroactiveDeviceTypeNotificationTypeMetric(
     const nearby::fastpair::Device& device_metadata) {
-  absl::optional<std::string> device_type =
+  std::optional<std::string> device_type =
       GetFastPairDeviceType(device_metadata);
-  absl::optional<std::string> notification_type =
+  std::optional<std::string> notification_type =
       GetFastPairNotificationType(device_metadata);
 
   if (!device_type || !notification_type) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return std::string(kRetroactiveEngagementFlowMetric) + "." +
@@ -925,7 +925,7 @@ void RecordFastPairDeviceAndNotificationSpecificEngagementFlow(
     const Device& device,
     const nearby::fastpair::Device& device_details,
     FastPairEngagementFlowEvent event) {
-  absl::optional<std::string> funnel_name;
+  std::optional<std::string> funnel_name;
 
   switch (device.protocol()) {
     case Protocol::kFastPairInitial:
@@ -960,7 +960,7 @@ void RecordFastPairDeviceAndNotificationSpecificRetroactiveEngagementFlow(
     const Device& device,
     const nearby::fastpair::Device& device_details,
     FastPairRetroactiveEngagementFlowEvent event) {
-  absl::optional<std::string> funnel_name;
+  std::optional<std::string> funnel_name;
 
   switch (device.protocol()) {
     case Protocol::kFastPairInitial:
@@ -1546,7 +1546,7 @@ void RecordSavedDevicesCount(int num_devices) {
   base::UmaHistogramCounts100(kSavedDevicesCount, num_devices);
 }
 
-int ConvertFastPairVersionToInt(absl::optional<DeviceFastPairVersion> version) {
+int ConvertFastPairVersionToInt(std::optional<DeviceFastPairVersion> version) {
   if (!version) {
     return 0;
   }

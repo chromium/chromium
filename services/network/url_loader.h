@@ -574,6 +574,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   // send or store credentials for no-cors cross-origin request.
   bool CoepAllowCredentials(const GURL& url);
 
+  // Returns whether TransferSizeUpdated IPC should be sent.
+  bool ShouldSendTransferSizeUpdated() const;
+
   raw_ptr<net::URLRequestContext> url_request_context_;
 
   raw_ptr<mojom::NetworkContextClient, DanglingUntriaged>
@@ -596,7 +599,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   const int keepalive_request_size_;
   const bool keepalive_;
   const bool do_not_prompt_for_login_;
-  const bool is_ad_tagged_;
   std::unique_ptr<net::URLRequest> url_request_;
   mojo::Receiver<mojom::URLLoader> receiver_;
   mojo::Receiver<mojom::AuthChallengeResponder>
@@ -786,6 +788,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   // high-priority requests that cannot yet be written to the mojo data pipe
   // because it is full.
   std::unique_ptr<SlopBucket> slop_bucket_;
+
+  // Keeps the result of IsSharedDictionaryReadAllowed(). Used only for metrics.
+  bool shared_dictionary_allowed_check_passed_ = false;
 
   base::WeakPtrFactory<URLLoader> weak_ptr_factory_{this};
 };

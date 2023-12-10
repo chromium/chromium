@@ -29,7 +29,7 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/network_session_configurator/common/network_switches.h"
-#include "components/password_manager/core/browser/password_store_interface.h"
+#include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/base/features.h"
 #include "components/sync/test/test_sync_service.h"
@@ -283,7 +283,7 @@ class WebAuthnAutofillIntegrationTest : public CertVerifierBrowserTest {
         << "WebAuthn entry not found";
     EXPECT_EQ(webauthn_entry.main_text.value, u"flandre");
     EXPECT_EQ(webauthn_entry.labels.at(0).at(0).value, GetDeviceString());
-    EXPECT_EQ(webauthn_entry.icon, "globeIcon");
+    EXPECT_EQ(webauthn_entry.icon, autofill::Suggestion::Icon::kGlobe);
 
     // Click the credential.
     popup_controller->AcceptSuggestion(
@@ -330,7 +330,7 @@ class WebAuthnAutofillIntegrationTest : public CertVerifierBrowserTest {
         << "WebAuthn entry not found";
     EXPECT_EQ(webauthn_entry.main_text.value, u"flandre");
     EXPECT_EQ(webauthn_entry.labels.at(0).at(0).value, GetDeviceString());
-    EXPECT_EQ(webauthn_entry.icon, "globeIcon");
+    EXPECT_EQ(webauthn_entry.icon, autofill::Suggestion::Icon::kGlobe);
 
     // Abort the request.
     content::ExecuteScriptAsync(web_contents,
@@ -486,7 +486,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthnDevtoolsAutofillIntegrationTest, GPMPasskeys) {
   EXPECT_EQ(webauthn_entry.labels.at(0).at(0).value,
             l10n_util::GetStringFUTF16(IDS_PASSWORD_MANAGER_PASSKEY_FROM_PHONE,
                                        kPhoneName));
-  EXPECT_EQ(webauthn_entry.icon, "globeIcon");
+  EXPECT_EQ(webauthn_entry.icon, autofill::Suggestion::Icon::kGlobe);
 
   // Click the credential.
   popup_controller->AcceptSuggestion(
@@ -564,7 +564,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthnDevtoolsAutofillIntegrationTest,
   EXPECT_EQ(webauthn_entry->labels.at(0).at(0).value,
             l10n_util::GetStringFUTF16(IDS_PASSWORD_MANAGER_PASSKEY_FROM_PHONE,
                                        kPhoneName));
-  EXPECT_EQ(webauthn_entry->icon, "globeIcon");
+  EXPECT_EQ(webauthn_entry->icon, autofill::Suggestion::Icon::kGlobe);
 
   // Click the credential.
   popup_controller->AcceptSuggestion(

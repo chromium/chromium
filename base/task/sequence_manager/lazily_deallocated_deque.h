@@ -7,12 +7,14 @@
 
 #include <algorithm>
 #include <cmath>
+#include <limits>
 #include <memory>
 #include <utility>
 #include <vector>
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/debug/alias.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
@@ -233,12 +235,10 @@ class LazilyDeallocatedDeque {
 
   struct Ring {
     explicit Ring(size_t capacity)
-        : capacity_(capacity),
-          front_index_(0),
-          back_index_(0),
-          data_(reinterpret_cast<T*>(new char[sizeof(T) * capacity])),
-          next_(nullptr) {
-      DCHECK_GE(capacity_, kMinimumRingSize);
+        : backing_store_(std::make_unique<char[]>(sizeof(T) * capacity)),
+          data_(reinterpret_cast<T*>(backing_store_.get()), capacity) {
+      DCHECK_GE(capacity, kMinimumRingSize);
+      CHECK_LT(capacity, std::numeric_limits<size_t>::max() / sizeof(T));
     }
     Ring(const Ring&) = delete;
     Ring& operator=(const Ring&) = delete;
@@ -246,16 +246,11 @@ class LazilyDeallocatedDeque {
       while (!empty()) {
         pop_front();
       }
-      // Stop referencing the memory with the raw_ptr first, before releasing
-      // memory. This avoids the raw_ptr to be temporarily dangling.
-      char* memory = reinterpret_cast<char*>(data_.get());
-      data_ = nullptr;
-      delete[] memory;
     }
 
     bool empty() const { return back_index_ == front_index_; }
 
-    size_t capacity() const { return capacity_; }
+    size_t capacity() const { return data_.size(); }
 
     bool CanPush() const {
       return front_index_ != CircularIncrement(back_index_);
@@ -304,23 +299,24 @@ class LazilyDeallocatedDeque {
 
     size_t CircularDecrement(size_t index) const {
       if (index == 0)
-        return capacity_ - 1;
+        return capacity() - 1;
       return index - 1;
     }
 
     size_t CircularIncrement(size_t index) const {
-      DCHECK_LT(index, capacity_);
+      DCHECK_LT(index, capacity());
       ++index;
-      if (index == capacity_)
+      if (index == capacity()) {
         return 0;
+      }
       return index;
     }
 
-    size_t capacity_;
-    size_t front_index_;
-    size_t back_index_;
-    raw_ptr<T, AllowPtrArithmetic> data_;
-    std::unique_ptr<Ring> next_;
+    size_t front_index_ = 0;
+    size_t back_index_ = 0;
+    std::unique_ptr<char[]> backing_store_;
+    base::span<T> data_;
+    std::unique_ptr<Ring> next_ = nullptr;
   };
 
  public:

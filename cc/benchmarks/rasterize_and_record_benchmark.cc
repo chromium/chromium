@@ -10,6 +10,7 @@
 #include <limits>
 #include <string>
 
+#include <optional>
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/task/single_thread_task_runner.h"
@@ -20,7 +21,6 @@
 #include "cc/layers/recording_source.h"
 #include "cc/paint/display_item_list.h"
 #include "cc/trees/layer_tree_host.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace cc {

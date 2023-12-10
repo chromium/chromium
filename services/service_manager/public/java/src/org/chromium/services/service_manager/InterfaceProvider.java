@@ -12,9 +12,7 @@ import org.chromium.mojo.system.MessagePipeHandle;
 import org.chromium.mojo.system.MojoException;
 import org.chromium.mojo.system.Pair;
 
-/**
- * Provides access to interfaces exposed by an InterfaceProvider mojo interface.
- */
+/** Provides access to interfaces exposed by an InterfaceProvider mojo interface. */
 public class InterfaceProvider implements ConnectionErrorHandler {
     private Core mCore;
     private org.chromium.service_manager.mojom.InterfaceProvider.Proxy mInterfaceProvider;

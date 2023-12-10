@@ -133,13 +133,17 @@ public class UsbNotificationManager {
         NotificationWrapperBuilder builder =
                 NotificationWrapperBuilderFactory.createNotificationWrapperBuilder(
                         ChromeChannelDefinitions.ChannelId.USB,
-                        new NotificationMetadata(NotificationUmaTracker.SystemNotificationType.USB,
-                                NOTIFICATION_NAMESPACE, notificationId));
+                        new NotificationMetadata(
+                                NotificationUmaTracker.SystemNotificationType.USB,
+                                NOTIFICATION_NAMESPACE,
+                                notificationId));
 
         Intent tabIntent = mDelegate.createTrustedBringTabToFrontIntent(notificationId);
-        PendingIntentProvider contentIntent = tabIntent == null
-                ? null
-                : PendingIntentProvider.getActivity(appContext, notificationId, tabIntent, 0);
+        PendingIntentProvider contentIntent =
+                tabIntent == null
+                        ? null
+                        : PendingIntentProvider.getActivity(
+                                appContext, notificationId, tabIntent, 0);
 
         builder.setAutoCancel(false)
                 .setOngoing(true)
@@ -154,8 +158,9 @@ public class UsbNotificationManager {
             contentText = appContext.getString(R.string.usb_notification_content_text_incognito);
             builder.setSubText(appContext.getString(R.string.notification_incognito_tab));
         } else {
-            String urlForDisplay = UrlFormatter.formatUrlForSecurityDisplay(
-                    new GURL(url), SchemeDisplay.OMIT_HTTP_AND_HTTPS);
+            String urlForDisplay =
+                    UrlFormatter.formatUrlForSecurityDisplay(
+                            new GURL(url), SchemeDisplay.OMIT_HTTP_AND_HTTPS);
             if (contentIntent == null) {
                 contentText = urlForDisplay;
             } else {
@@ -170,8 +175,10 @@ public class UsbNotificationManager {
         mNotificationManager.notify(notification);
         mNotificationIds.add(notificationId);
         updateSharedPreferencesEntry(notificationId, false);
-        NotificationUmaTracker.getInstance().onNotificationShown(
-                NotificationUmaTracker.SystemNotificationType.USB, notification.getNotification());
+        NotificationUmaTracker.getInstance()
+                .onNotificationShown(
+                        NotificationUmaTracker.SystemNotificationType.USB,
+                        notification.getNotification());
     }
 
     /**
@@ -180,9 +187,12 @@ public class UsbNotificationManager {
      * @param remove Boolean describing if the notification was added or removed.
      */
     private void updateSharedPreferencesEntry(int notificationId, boolean remove) {
-        Set<String> notificationIds = new HashSet<>(mSharedPreferences.readStringSet(
-                ChromePreferenceKeys.USB_NOTIFICATION_IDS, new HashSet<>()));
-        if (remove && !notificationIds.isEmpty()
+        Set<String> notificationIds =
+                new HashSet<>(
+                        mSharedPreferences.readStringSet(
+                                ChromePreferenceKeys.USB_NOTIFICATION_IDS, new HashSet<>()));
+        if (remove
+                && !notificationIds.isEmpty()
                 && notificationIds.contains(String.valueOf(notificationId))) {
             notificationIds.remove(String.valueOf(notificationId));
         } else if (!remove) {
@@ -212,9 +222,12 @@ public class UsbNotificationManager {
      * @param url Url of the website interacting with Usb devices.
      * @param isIncognito Whether tab is in incognito mode.
      */
-
-    public static void updateUsbNotificationForTab(Context context, Class service,
-            int notificationTabId, @Nullable WebContents webContents, GURL url,
+    public static void updateUsbNotificationForTab(
+            Context context,
+            Class service,
+            int notificationTabId,
+            @Nullable WebContents webContents,
+            GURL url,
             boolean isIncognito) {
         boolean isConnected = UsbBridge.isWebContentsConnectedToUsbDevice(webContents);
         if (!shouldStartService(context, isConnected, notificationTabId)) return;

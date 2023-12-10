@@ -58,6 +58,7 @@ import java.util.concurrent.atomic.AtomicReference;
 public class CriteriaHelper {
     /** The default maximum time to wait for a criteria to become valid. */
     public static final long DEFAULT_MAX_TIME_TO_POLL = 3000L;
+
     /** The default polling interval to wait between checking for a satisfied criteria. */
     public static final long DEFAULT_POLLING_INTERVAL = 50;
 
@@ -135,7 +136,12 @@ public class CriteriaHelper {
         AtomicBoolean called = new AtomicBoolean(false);
 
         // Ensure we pump the message handler in case no new tasks arrive.
-        new Handler(Looper.myLooper()).postDelayed(() -> { called.set(true); }, checkIntervalMs);
+        new Handler(Looper.myLooper())
+                .postDelayed(
+                        () -> {
+                            called.set(true);
+                        },
+                        checkIntervalMs);
 
         TimeoutTimer timer = new TimeoutTimer(checkIntervalMs);
         // To allow a checkInterval of 0ms, ensure we at least run a single task, which allows a
@@ -143,7 +149,9 @@ public class CriteriaHelper {
         do {
             try {
                 LooperUtils.runSingleNestedLooperTask();
-            } catch (IllegalArgumentException | IllegalAccessException | SecurityException
+            } catch (IllegalArgumentException
+                    | IllegalAccessException
+                    | SecurityException
                     | InvocationTargetException e) {
                 throw new RuntimeException(e);
             }
@@ -166,21 +174,23 @@ public class CriteriaHelper {
     }
 
     /**
-     * Checks whether the given Callable<Boolean> is satisfied at a given interval, until either
-     * the criteria is satisfied, or the specified maxTimeoutMs number of ms has elapsed.
+     * Checks whether the given Callable<Boolean> is satisfied at a given interval, until either the
+     * criteria is satisfied, or the specified maxTimeoutMs number of ms has elapsed.
      *
-     * <p>
-     * This evaluates the Callable<Boolean> on the test thread, which more often than not is not
-     * correct in an InstrumentationTest.  Use {@link #pollUiThread(Callable)} instead.
+     * <p>This evaluates the Callable<Boolean> on the test thread, which more often than not is not
+     * correct in an InstrumentationTest. Use {@link #pollUiThread(Callable)} instead.
      *
      * @param criteria The Callable<Boolean> that will be checked.
      * @param failureReason The static failure reason
-     * @param maxTimeoutMs The maximum number of ms that this check will be performed for
-     *                     before timeout.
+     * @param maxTimeoutMs The maximum number of ms that this check will be performed for before
+     *     timeout.
      * @param checkIntervalMs The number of ms between checks.
      */
-    public static void pollInstrumentationThread(final Callable<Boolean> criteria,
-            String failureReason, long maxTimeoutMs, long checkIntervalMs) {
+    public static void pollInstrumentationThread(
+            final Callable<Boolean> criteria,
+            String failureReason,
+            long maxTimeoutMs,
+            long checkIntervalMs) {
         pollInstrumentationThread(
                 toNotSatisfiedRunnable(criteria, failureReason), maxTimeoutMs, checkIntervalMs);
     }
@@ -246,26 +256,30 @@ public class CriteriaHelper {
     public static void pollUiThread(
             final Runnable criteria, long maxTimeoutMs, long checkIntervalMs) {
         assert !ThreadUtils.runningOnUiThread();
-        pollInstrumentationThread(() -> {
-            AtomicReference<Throwable> throwableRef = new AtomicReference<>();
-            ThreadUtils.runOnUiThreadBlocking(() -> {
-                try {
-                    criteria.run();
-                } catch (Throwable t) {
-                    throwableRef.set(t);
-                }
-            });
-            Throwable throwable = throwableRef.get();
-            if (throwable != null) {
-                if (throwable instanceof CriteriaNotSatisfiedException) {
-                    throw new CriteriaNotSatisfiedException(throwable);
-                } else if (throwable instanceof RuntimeException) {
-                    throw(RuntimeException) throwable;
-                } else {
-                    throw new RuntimeException(throwable);
-                }
-            }
-        }, maxTimeoutMs, checkIntervalMs);
+        pollInstrumentationThread(
+                () -> {
+                    AtomicReference<Throwable> throwableRef = new AtomicReference<>();
+                    ThreadUtils.runOnUiThreadBlocking(
+                            () -> {
+                                try {
+                                    criteria.run();
+                                } catch (Throwable t) {
+                                    throwableRef.set(t);
+                                }
+                            });
+                    Throwable throwable = throwableRef.get();
+                    if (throwable != null) {
+                        if (throwable instanceof CriteriaNotSatisfiedException) {
+                            throw new CriteriaNotSatisfiedException(throwable);
+                        } else if (throwable instanceof RuntimeException) {
+                            throw (RuntimeException) throwable;
+                        } else {
+                            throw new RuntimeException(throwable);
+                        }
+                    }
+                },
+                maxTimeoutMs,
+                checkIntervalMs);
     }
 
     /**
@@ -285,14 +299,16 @@ public class CriteriaHelper {
      *
      * @param criteria The Callable<Boolean> that will be checked.
      * @param failureReason The static failure reason
-     * @param maxTimeoutMs The maximum number of ms that this check will be performed for
-     *                     before timeout.
+     * @param maxTimeoutMs The maximum number of ms that this check will be performed for before
+     *     timeout.
      * @param checkIntervalMs The number of ms between checks.
-     *
      * @see #pollInstrumentationThread(Criteria)
      */
-    public static void pollUiThread(final Callable<Boolean> criteria, String failureReason,
-            long maxTimeoutMs, long checkIntervalMs) {
+    public static void pollUiThread(
+            final Callable<Boolean> criteria,
+            String failureReason,
+            long maxTimeoutMs,
+            long checkIntervalMs) {
         pollUiThread(
                 toNotSatisfiedRunnable(criteria, failureReason), maxTimeoutMs, checkIntervalMs);
     }

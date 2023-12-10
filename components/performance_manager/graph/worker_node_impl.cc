@@ -44,12 +44,12 @@ WorkerNodeImpl::~WorkerNodeImpl() {
 
 WorkerNode::WorkerType WorkerNodeImpl::GetWorkerType() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return worker_type();
+  return worker_type_;
 }
 
 const std::string& WorkerNodeImpl::GetBrowserContextID() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return browser_context_id();
+  return browser_context_id_;
 }
 
 const blink::WorkerToken& WorkerNodeImpl::GetWorkerToken() const {
@@ -64,17 +64,22 @@ resource_attribution::WorkerContext WorkerNodeImpl::GetResourceContext() const {
 
 const GURL& WorkerNodeImpl::GetURL() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return url();
+  return url_;
+}
+
+const PriorityAndReason& WorkerNodeImpl::GetPriorityAndReason() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return priority_and_reason_.value();
 }
 
 uint64_t WorkerNodeImpl::GetResidentSetKbEstimate() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return resident_set_kb_estimate();
+  return resident_set_kb_estimate_;
 }
 
 uint64_t WorkerNodeImpl::GetPrivateFootprintKbEstimate() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return private_footprint_kb_estimate();
+  return private_footprint_kb_estimate_;
 }
 
 void WorkerNodeImpl::AddClientFrame(FrameNodeImpl* frame_node) {
@@ -107,7 +112,7 @@ void WorkerNodeImpl::AddClientWorker(WorkerNodeImpl* worker_node) {
     case WorkerType::kDedicated:
       // Nested dedicated workers are only available from other dedicated
       // workers in Chrome.
-      DCHECK_EQ(worker_node->worker_type(), WorkerType::kDedicated);
+      DCHECK_EQ(worker_node->GetWorkerType(), WorkerType::kDedicated);
       break;
     case WorkerType::kShared:
       // Nested shared workers are not available in Chrome.
@@ -115,7 +120,7 @@ void WorkerNodeImpl::AddClientWorker(WorkerNodeImpl* worker_node) {
       break;
     case WorkerType::kService:
       // A service worker may not control another service worker.
-      DCHECK_NE(worker_node->worker_type(), WorkerType::kService);
+      DCHECK_NE(worker_node->GetWorkerType(), WorkerType::kService);
       break;
   }
 
@@ -165,24 +170,9 @@ void WorkerNodeImpl::OnFinalResponseURLDetermined(const GURL& url) {
     observer->OnFinalResponseURLDetermined(this);
 }
 
-const std::string& WorkerNodeImpl::browser_context_id() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return browser_context_id_;
-}
-
-WorkerNode::WorkerType WorkerNodeImpl::worker_type() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return worker_type_;
-}
-
 ProcessNodeImpl* WorkerNodeImpl::process_node() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return process_node_;
-}
-
-const GURL& WorkerNodeImpl::url() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return url_;
 }
 
 const base::flat_set<FrameNodeImpl*>& WorkerNodeImpl::client_frames() const {
@@ -198,21 +188,6 @@ const base::flat_set<WorkerNodeImpl*>& WorkerNodeImpl::client_workers() const {
 const base::flat_set<WorkerNodeImpl*>& WorkerNodeImpl::child_workers() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return child_workers_;
-}
-
-const PriorityAndReason& WorkerNodeImpl::priority_and_reason() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return priority_and_reason_.value();
-}
-
-uint64_t WorkerNodeImpl::resident_set_kb_estimate() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return resident_set_kb_estimate_;
-}
-
-uint64_t WorkerNodeImpl::private_footprint_kb_estimate() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return private_footprint_kb_estimate_;
 }
 
 base::WeakPtr<WorkerNodeImpl> WorkerNodeImpl::GetWeakPtrOnUIThread() {
@@ -319,10 +294,6 @@ bool WorkerNodeImpl::VisitChildDedicatedWorkers(
     }
   }
   return true;
-}
-
-const PriorityAndReason& WorkerNodeImpl::GetPriorityAndReason() const {
-  return priority_and_reason();
 }
 
 void WorkerNodeImpl::AddChildWorker(WorkerNodeImpl* worker_node) {

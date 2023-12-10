@@ -10,9 +10,7 @@ import org.chromium.components.minidump_uploader.MinidumpUploadJob;
 import org.chromium.components.minidump_uploader.MinidumpUploadJobImpl;
 import org.chromium.components.minidump_uploader.MinidumpUploadJobService;
 
-/**
- * Class that interacts with the Android JobScheduler to upload Minidumps at appropriate times.
- */
+/** Class that interacts with the Android JobScheduler to upload Minidumps at appropriate times. */
 // OBS: This class needs to be public to be started from android.app.ActivityThread.
 public class AwMinidumpUploadJobService extends MinidumpUploadJobService {
     @Override

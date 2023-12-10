@@ -15,15 +15,19 @@ suite('ComboboxTest', () => {
   function addGroup(): HTMLElement {
     const group = document.createElement('div');
     group.setAttribute('role', 'group');
+    const label = document.createElement('label');
+    label.innerText = 'Group';
+    group.appendChild(label);
     combobox.appendChild(group);
-    return group;
+    return label;
   }
 
-  function addOption(parent: HTMLElement = combobox): OptionElement {
+  function addOption(
+      parent: HTMLElement = combobox, value: string = 'value'): OptionElement {
     const option = document.createElement('div') as OptionElement;
     option.setAttribute('role', 'option');
     option.innerText = 'Option';
-    option.value = 'value';
+    option.value = value;
     parent.appendChild(option);
     return option;
   }
@@ -106,6 +110,50 @@ suite('ComboboxTest', () => {
     assertEquals(null, combobox.querySelector('[highlighted]'));
   });
 
+  test('HighlightsOnPointerover', async () => {
+    const group = addGroup();
+    const option = addOption(group);
+    await flushTasks();
+
+    // Open the dropdown.
+    combobox.$.input.click();
+
+    group.dispatchEvent(
+        new PointerEvent('pointerover', {bubbles: true, composed: true}));
+    assertEquals(group, combobox.querySelector('[highlighted]'));
+    option.dispatchEvent(
+        new PointerEvent('pointerover', {bubbles: true, composed: true}));
+    assertEquals(option, combobox.querySelector('[highlighted]'));
+  });
+
+  test('HighlightsOnPointermoveAfterKeyEvent', async () => {
+    const option1 = addOption();
+    const option2 = addOption();
+    await flushTasks();
+
+    // Open the dropdown.
+    combobox.$.input.click();
+
+    // Mouse moves to first option.
+    option1.dispatchEvent(
+        new PointerEvent('pointerover', {bubbles: true, composed: true}));
+    assertEquals(option1, combobox.querySelector('[highlighted]'));
+
+    // Keydown down to highlight second option. Mouse still over first option.
+    combobox.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowDown'}));
+    assertEquals(option2, combobox.querySelector('[highlighted]'));
+
+    // Pointerover event over first option should not highlight first option,
+    // since it follows a key event.
+    option1.dispatchEvent(new PointerEvent('pointerover'));
+    assertEquals(option2, combobox.querySelector('[highlighted]'));
+
+    // Mock moving mouse within the first option again.
+    option1.dispatchEvent(
+        new PointerEvent('pointermove', {bubbles: true, composed: true}));
+    assertEquals(option1, combobox.querySelector('[highlighted]'));
+  });
+
   test('SelectsItem', async () => {
     const groupA = addGroup();
     const optionA1 = addOption(groupA);
@@ -134,7 +182,9 @@ suite('ComboboxTest', () => {
     // Pressing Enter or clicking on an unselectable item should not select it.
     combobox.$.input.click();
     combobox.dispatchEvent(new KeyboardEvent('keydown', {key: 'Home'}));
+    const groupAClickEvent = eventToPromise('click', groupA);
     combobox.dispatchEvent(new KeyboardEvent('keydown', {key: 'Enter'}));
+    await groupAClickEvent;
     assertFalse(groupA.hasAttribute('selected'));
     groupA.dispatchEvent(new Event('click', {composed: true, bubbles: true}));
     assertFalse(groupA.hasAttribute('selected'));
@@ -175,6 +225,35 @@ suite('ComboboxTest', () => {
     combobox.value = 'option-2-value';
     assertFalse(option1.hasAttribute('selected'));
     assertTrue(option2.hasAttribute('selected'));
+  });
+
+  test('UpdatesWithBoundValueOnDomChange', async () => {
+    const groupA = addGroup();
+    addOption(groupA, 'valueA1');
+    const groupB = addGroup();
+
+    // Set the bound value to an option that does not exist yet.
+    combobox.value = 'valueB1';
+    await flushTasks();
+    assertEquals(0, combobox.querySelectorAll('[selected]').length);
+
+    // Add an option with the selected value.
+    const optionB1 = addOption(groupB, 'valueB1');
+    await flushTasks();
+    assertEquals(1, combobox.querySelectorAll('[selected]').length);
+    assertTrue(optionB1.hasAttribute('selected'));
+
+    // Removing the option should keep the bound value.
+    optionB1.remove();
+    await flushTasks();
+    assertEquals('valueB1', combobox.value);
+    assertEquals(0, combobox.querySelectorAll('[selected]').length);
+
+    // Adding a new option with the same value should select it.
+    const newOptionB1 = addOption(groupB, 'valueB1');
+    await flushTasks();
+    assertEquals(1, combobox.querySelectorAll('[selected]').length);
+    assertTrue(newOptionB1.hasAttribute('selected'));
   });
 
   test('SetsUniqueIdsAndAriaActiveDescendant', async () => {

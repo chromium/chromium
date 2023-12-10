@@ -56,6 +56,7 @@ namespace platformKeysInternal {
     // <code>KeyAlgorithm</code> dictionary describing the key's algorithm. The
     // <code>name</code> property will equal <code>algorithmName</code>.
     // Otherwise, calls back with an error.
+    [doesNotSupportPromises="Multi-parameter callback crbug.com/1313625"]
     static void getPublicKey(ArrayBuffer certificate,
                              DOMString algorithmName,
                              GetPublicKeyCallback callback);
@@ -67,6 +68,7 @@ namespace platformKeysInternal {
     // <code>KeyAlgorithm</code> dictionary describing the key's algorithm. The
     // <code>name</code> property will equal <code>algorithmName</code>.
     // Otherwise, calls back with an error.
+    [doesNotSupportPromises="Multi-parameter callback crbug.com/1313625"]
     static void getPublicKeyBySpki(ArrayBuffer publicKeySpkiDer,
                                    DOMString algorithmName,
                                    GetPublicKeyCallback callback);

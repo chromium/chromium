@@ -10,8 +10,8 @@
 
 namespace blink {
 
-class NGLayoutInputNode;
 class CustomLayoutChild;
+class LayoutInputNode;
 
 // This represents the result of intrinsicSizes (on a LayoutChild).
 //
@@ -33,7 +33,7 @@ class CustomIntrinsicSizes : public ScriptWrappable {
   double minContentSize() const { return min_content_size_; }
   double maxContentSize() const { return max_content_size_; }
 
-  const NGLayoutInputNode& GetLayoutNode() const;
+  const LayoutInputNode& GetLayoutNode() const;
 
   bool IsValid() const { return token_->IsValid(); }
 

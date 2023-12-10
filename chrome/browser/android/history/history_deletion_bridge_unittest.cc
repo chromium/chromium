@@ -42,7 +42,7 @@ TEST(HistoryDeletionBridge, TestTimeRangeDeletion) {
   history::DeletionInfo info(time_range,
                              /*is_from_expiration=*/false, /*deleted_rows=*/{},
                              /*favicon_urls=*/{},
-                             /*restrict_urls=*/absl::nullopt);
+                             /*restrict_urls=*/std::nullopt);
   history::DeletionInfo sanitized_info =
       HistoryDeletionBridge::SanitizeDeletionInfo(info);
   EXPECT_EQ(time_range.begin(), sanitized_info.time_range().begin());

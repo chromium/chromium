@@ -18,16 +18,16 @@ crbug.com/420606 [ Linux ] external/wpt/workers/constructors/Worker/Worker-const
 # Flaky under MSan (hang forever).
 crbug.com/422982 [ Linux ] virtual/threaded/* [ Skip ]
 
-crbug.com/700795 [ Linux ] http/tests/devtools/animation/animation-transition-setTiming-crash.js [ Skip ]
-
 crbug.com/708175 [ Linux ] external/wpt/IndexedDB/interleaved-cursors-small.html [ Timeout ]
 crbug.com/708175 [ Linux ] external/wpt/IndexedDB/interleaved-cursors-large.html [ Timeout ]
 
 # Times out on MSAN
 crbug.com/462190 [ Linux ] inspector-protocol/heap-profiler/heap-samples-in-snapshot.js [ Timeout ]
 
-crbug.com/810960 [ Linux ] external/wpt/IndexedDB/nested-cloning-large.html [ Timeout ]
-crbug.com/736554 [ Linux ] external/wpt/IndexedDB/nested-cloning-large-multiple.html [ Timeout ]
+# Very slow under MSAN. See https://bugs.chromium.org/p/chromium/issues/detail?id=1508160#c5
+crbug.com/810960 [ Linux ] external/wpt/IndexedDB/nested-cloning-large.html [ Skip ]
+crbug.com/736554 [ Linux ] external/wpt/IndexedDB/nested-cloning-large-multiple.html [ Skip ]
+crbug.com/1508160 [ Linux ] external/wpt/IndexedDB/nested-cloning-small.html [ Skip ]
 
 # These tests use OpenGl, which crashes on MSAN builds due to missing instrumentation
 crbug.com/555703 [ Linux ] virtual/media-gpu-accelerated/* [ Skip ]
@@ -114,7 +114,3 @@ crbug.com/1419916 [ Linux ] virtual/oopr-canvas2d/fast/canvas/canvas-fillPath-al
 crbug.com/1419916 [ Linux ] virtual/oopr-canvas2d/fast/canvas/canvas-fillPath-gradient-shadow.html [ Crash ]
 
 crbug.com/1457275 [ Linux ] external/wpt/dom/ranges/Range-surroundContents.html [ Skip ]
-
-# Gardener (Sheriff) 2023-07-12
-# use-of-uninitialized-value
-crbug.com/1464214 [ Linux ] virtual/plz-dedicated-worker/external/wpt/html/cross-origin-embedder-policy/credentialless/dedicated-worker.https.window.html [ Skip ]

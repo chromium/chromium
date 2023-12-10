@@ -144,40 +144,16 @@ export class Oobe extends DisplayManager {
       waitForOobeScreen('gaia-signin', function() {
         // TODO(crbug.com/1100910): migrate logic to dedicated test api.
         chrome.send('OobeTestApi.advanceToScreen', ['enterprise-enrollment']);
-        chrome.send('toggleFakeEnrollment');
       });
 
       waitForOobeScreen('enterprise-enrollment', function() {
         chrome.send(
-            'oauthEnrollCompleteLogin',
-            [username, OobeTypes.LicenseType.ENTERPRISE]);
+            'toggleFakeEnrollmentAndCompleteLogin',
+            [username, OobeTypes.LicenseType.ENTERPRISE],
+        );
       });
     }
   }  // loginForTesting
-
-  /**
-   * Shows the add user dialog. Used in browser tests.
-   */
-  static showAddUserForTesting() {
-    // TODO(crbug.com/1100910): migrate logic to dedicated test api.
-    chrome.send('OobeTestApi.showGaiaDialog');
-  }
-
-  /**
-   * Begin enterprise enrollment for telemetry.
-   */
-  static switchToEnterpriseEnrollmentForTesting() {
-    // TODO(crbug.com/1100910): migrate logic to dedicated test api.
-    chrome.send('OobeTestApi.advanceToScreen', ['enterprise-enrollment']);
-  }
-
-  /**
-   * Finish enterprise enrollment for telemetry.
-   */
-  static enterpriseEnrollmentDone() {
-    // TODO(crbug.com/1100910): migrate logic to dedicated test api.
-    chrome.send('oauthEnrollClose', ['done']);
-  }
 
   /**
    * Returns true if enrollment was successful. Dismisses the enrollment

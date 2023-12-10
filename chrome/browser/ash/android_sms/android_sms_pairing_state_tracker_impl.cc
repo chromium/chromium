@@ -99,7 +99,7 @@ GURL AndroidSmsPairingStateTrackerImpl::GetPairingUrl() {
   // If the app registry is not ready, we can't see check what is currently
   // installed.
   if (android_sms_app_manager_->IsAppRegistryReady()) {
-    absl::optional<GURL> app_url = android_sms_app_manager_->GetCurrentAppUrl();
+    std::optional<GURL> app_url = android_sms_app_manager_->GetCurrentAppUrl();
     if (app_url)
       return *app_url;
   }

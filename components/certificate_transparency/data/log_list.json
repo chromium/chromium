@@ -1,6 +1,6 @@
 {
-  "version": "26.35",
-  "log_list_timestamp": "2023-11-06T12:57:46Z",
+  "version": "28.10",
+  "log_list_timestamp": "2023-12-09T12:53:46Z",
   "operators": [
     {
       "name": "Google",
@@ -47,8 +47,8 @@
           "url": "https://ct.googleapis.com/logs/us1/argon2025h1/",
           "mmd": 86400,
           "state": {
-            "qualified": {
-              "timestamp": "2023-09-15T23:09:45Z"
+            "usable": {
+              "timestamp": "2023-11-26T12:00:00Z"
             }
           },
           "temporal_interval": {
@@ -63,8 +63,8 @@
           "url": "https://ct.googleapis.com/logs/us1/argon2025h2/",
           "mmd": 86400,
           "state": {
-            "qualified": {
-              "timestamp": "2023-09-15T23:09:45Z"
+            "usable": {
+              "timestamp": "2023-11-26T12:00:00Z"
             }
           },
           "temporal_interval": {
@@ -111,8 +111,8 @@
           "url": "https://ct.googleapis.com/logs/eu1/xenon2025h1/",
           "mmd": 86400,
           "state": {
-            "qualified": {
-              "timestamp": "2023-09-15T23:09:45Z"
+            "usable": {
+              "timestamp": "2023-11-26T12:00:00Z"
             }
           },
           "temporal_interval": {
@@ -127,8 +127,8 @@
           "url": "https://ct.googleapis.com/logs/eu1/xenon2025h2/",
           "mmd": 86400,
           "state": {
-            "qualified": {
-              "timestamp": "2023-09-15T23:09:45Z"
+            "usable": {
+              "timestamp": "2023-11-26T12:00:00Z"
             }
           },
           "temporal_interval": {
@@ -203,22 +203,6 @@
         "ctops@digicert.com"
       ],
       "logs": [
-        {
-          "description": "DigiCert Yeti2023 Log",
-          "log_id": "Nc8ZG7+xbFe/D61MbULLu7YnICZR6j/hKu+oA8M71kw=",
-          "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEfQ0DsdWYitzwFTvG3F4Nbj8Nv5XIVYzQpkyWsU4nuSYlmcwrAp6m092fsdXEw6w1BAeHlzaqrSgNfyvZaJ9y0Q==",
-          "url": "https://yeti2023.ct.digicert.com/log/",
-          "mmd": 86400,
-          "state": {
-            "retired": {
-              "timestamp": "2022-09-29T00:00:00Z"
-            }
-          },
-          "temporal_interval": {
-            "start_inclusive": "2023-01-01T00:00:00Z",
-            "end_exclusive": "2024-01-01T00:00:00Z"
-          }
-        },
         {
           "description": "DigiCert Yeti2024 Log",
           "log_id": "SLDja9qmRzQP5WoC+p0w6xxSActW3SyB2bu/qznYhHM=",
@@ -326,8 +310,8 @@
           "url": "https://sabre2024h1.ct.sectigo.com/",
           "mmd": 86400,
           "state": {
-            "qualified": {
-              "timestamp": "2023-09-15T23:09:45Z"
+            "usable": {
+              "timestamp": "2023-11-26T12:00:00Z"
             }
           },
           "temporal_interval": {
@@ -342,8 +326,8 @@
           "url": "https://sabre2024h2.ct.sectigo.com/",
           "mmd": 86400,
           "state": {
-            "qualified": {
-              "timestamp": "2023-09-15T23:09:45Z"
+            "usable": {
+              "timestamp": "2023-11-26T12:00:00Z"
             }
           },
           "temporal_interval": {
@@ -358,8 +342,8 @@
           "url": "https://sabre2025h1.ct.sectigo.com/",
           "mmd": 86400,
           "state": {
-            "qualified": {
-              "timestamp": "2023-09-15T23:09:45Z"
+            "usable": {
+              "timestamp": "2023-11-26T12:00:00Z"
             }
           },
           "temporal_interval": {
@@ -374,8 +358,8 @@
           "url": "https://sabre2025h2.ct.sectigo.com/",
           "mmd": 86400,
           "state": {
-            "qualified": {
-              "timestamp": "2023-09-15T23:09:45Z"
+            "usable": {
+              "timestamp": "2023-11-26T12:00:00Z"
             }
           },
           "temporal_interval": {
@@ -402,8 +386,8 @@
           "url": "https://mammoth2024h1.ct.sectigo.com/",
           "mmd": 86400,
           "state": {
-            "qualified": {
-              "timestamp": "2023-09-15T23:09:45Z"
+            "usable": {
+              "timestamp": "2023-11-26T12:00:00Z"
             }
           },
           "temporal_interval": {
@@ -418,8 +402,8 @@
           "url": "https://mammoth2024h2.ct.sectigo.com/",
           "mmd": 86400,
           "state": {
-            "qualified": {
-              "timestamp": "2023-09-15T23:09:45Z"
+            "usable": {
+              "timestamp": "2023-11-26T12:00:00Z"
             }
           },
           "temporal_interval": {
@@ -434,8 +418,8 @@
           "url": "https://mammoth2025h1.ct.sectigo.com/",
           "mmd": 86400,
           "state": {
-            "qualified": {
-              "timestamp": "2023-09-15T23:09:45Z"
+            "usable": {
+              "timestamp": "2023-11-26T12:00:00Z"
             }
           },
           "temporal_interval": {
@@ -450,8 +434,8 @@
           "url": "https://mammoth2025h2.ct.sectigo.com/",
           "mmd": 86400,
           "state": {
-            "qualified": {
-              "timestamp": "2023-09-15T23:09:45Z"
+            "usable": {
+              "timestamp": "2023-11-26T12:00:00Z"
             }
           },
           "temporal_interval": {
@@ -522,8 +506,8 @@
           "url": "https://oak.ct.letsencrypt.org/2025h1/",
           "mmd": 86400,
           "state": {
-            "qualified": {
-              "timestamp": "2023-09-15T23:09:45Z"
+            "usable": {
+              "timestamp": "2023-11-26T12:00:00Z"
             }
           },
           "temporal_interval": {
@@ -538,8 +522,8 @@
           "url": "https://oak.ct.letsencrypt.org/2025h2/",
           "mmd": 86400,
           "state": {
-            "qualified": {
-              "timestamp": "2023-09-15T23:09:45Z"
+            "usable": {
+              "timestamp": "2023-11-26T12:00:00Z"
             }
           },
           "temporal_interval": {
@@ -594,8 +578,8 @@
           "url": "https://ct2025-a.trustasia.com/log2025a/",
           "mmd": 86400,
           "state": {
-            "qualified": {
-              "timestamp": "2023-09-15T23:09:45Z"
+            "usable": {
+              "timestamp": "2023-11-26T12:00:00Z"
             }
           },
           "temporal_interval": {
@@ -610,8 +594,8 @@
           "url": "https://ct2025-b.trustasia.com/log2025b/",
           "mmd": 86400,
           "state": {
-            "qualified": {
-              "timestamp": "2023-09-15T23:09:45Z"
+            "usable": {
+              "timestamp": "2023-11-26T12:00:00Z"
             }
           },
           "temporal_interval": {

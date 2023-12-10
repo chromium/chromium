@@ -15,8 +15,12 @@
 #include "third_party/blink/renderer/bindings/core/v8/dictionary.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_union_object_objectarray.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_object_objectarray_string.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser.h"
+#include "third_party/blink/renderer/core/css/resolver/filter_operation_resolver.h"
+#include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css/style_color.h"
+#include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/style/filter_operation.h"
@@ -425,20 +429,10 @@ TurbulenceFilterOperation* ResolveTurbulence(const Dictionary& dict,
 
 }  // namespace
 
-FilterOperations CanvasFilterOperationResolver::CreateFilterOperations(
-    const V8CanvasFilterInput& filter_init,
+FilterOperations CanvasFilterOperationResolver::CreateFilterOperationsFromList(
+    const HeapVector<ScriptValue>& filters,
     ExecutionContext& execution_context,
     ExceptionState& exception_state) {
-  HeapVector<ScriptValue> filters;
-  switch (filter_init.GetContentType()) {
-    case V8CanvasFilterInput::ContentType::kObject:
-      filters.push_back(filter_init.GetAsObject());
-      break;
-    case V8CanvasFilterInput::ContentType::kObjectArray:
-      filters = filter_init.GetAsObjectArray();
-      break;
-  }
-
   FilterOperations operations;
   for (auto filter : filters) {
     Dictionary filter_dict = Dictionary(filter);
@@ -520,6 +514,32 @@ FilterOperations CanvasFilterOperationResolver::CreateFilterOperations(
   }
 
   return operations;
+}
+
+FilterOperations
+CanvasFilterOperationResolver::CreateFilterOperationsFromCSSFilter(
+    const String& filter_string,
+    const ExecutionContext& execution_context,
+    Element* style_resolution_host,
+    const Font& font) {
+  FilterOperations operations;
+  const CSSValue* css_value = CSSParser::ParseSingleValue(
+      CSSPropertyID::kFilter, filter_string,
+      MakeGarbageCollected<CSSParserContext>(
+          kHTMLStandardMode, execution_context.GetSecureContextMode()));
+  if (!css_value || css_value->IsCSSWideKeyword()) {
+    return operations;
+  }
+  // The style resolution for fonts is not available in frame-less documents.
+  if (style_resolution_host != nullptr &&
+      style_resolution_host->GetDocument().GetFrame() != nullptr) {
+    return style_resolution_host->GetDocument()
+        .GetStyleResolver()
+        .ComputeFilterOperations(style_resolution_host, font, *css_value);
+  } else {
+    return FilterOperationResolver::CreateOffscreenFilterOperations(*css_value,
+                                                                    font);
+  }
 }
 
 }  // namespace blink

@@ -4,6 +4,8 @@
 
 #include "ash/hud_display/hud_header_view.h"
 
+#include <utility>
+
 #include "ash/hud_display/hud_constants.h"
 #include "ash/hud_display/hud_display.h"
 #include "ash/hud_display/hud_properties.h"
@@ -72,10 +74,11 @@ class SettingsButton : public views::ImageButton {
   METADATA_HEADER(SettingsButton);
 
   explicit SettingsButton(views::Button::PressedCallback callback)
-      : views::ImageButton(callback) {
-    SetImage(views::Button::ButtonState::STATE_NORMAL,
-             gfx::CreateVectorIcon(vector_icons::kSettingsIcon,
-                                   kHUDSettingsIconSize, kHUDDefaultColor));
+      : views::ImageButton(std::move(callback)) {
+    SetImageModel(
+        views::Button::ButtonState::STATE_NORMAL,
+        ui::ImageModel::FromVectorIcon(vector_icons::kSettingsIcon,
+                                       kHUDDefaultColor, kHUDSettingsIconSize));
     SetBorder(views::CreateEmptyBorder(kHUDSettingsIconBorder));
     SetProperty(kHUDClickHandler, HTCLIENT);
 

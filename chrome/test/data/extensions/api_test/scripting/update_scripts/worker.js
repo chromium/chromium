@@ -184,7 +184,7 @@ chrome.test.runTests([
 
     await chrome.test.assertPromiseRejects(
         chrome.scripting.updateContentScripts(updatedScripts),
-        `Error: Could not load javascript '${scriptFile}' for content script.`);
+        `Error: Could not load javascript '${scriptFile}' for script.`);
 
     const expectedScripts = [{
       id: 'inject_element_1',

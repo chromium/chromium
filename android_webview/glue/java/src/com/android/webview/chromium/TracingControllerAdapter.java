@@ -33,8 +33,10 @@ public class TracingControllerAdapter extends TracingController {
             throw new IllegalArgumentException("tracingConfig cannot be null");
         }
 
-        mTracingController.start(tracingConfig.getPredefinedCategories(),
-                tracingConfig.getCustomIncludedCategories(), tracingConfig.getTracingMode());
+        mTracingController.start(
+                tracingConfig.getPredefinedCategories(),
+                tracingConfig.getCustomIncludedCategories(),
+                tracingConfig.getTracingMode());
     }
 
     @Override

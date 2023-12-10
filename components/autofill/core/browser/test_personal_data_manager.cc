@@ -83,7 +83,7 @@ void TestPersonalDataManager::RemoveByGuidWithoutNotifications(
         GetProfileStorage(profile->source());
     profiles.erase(base::ranges::find(profiles, profile,
                                       &std::unique_ptr<AutofillProfile>::get));
-  } else if (Iban* iban = GetIbanByGUID(guid)) {
+  } else if (const Iban* iban = GetIbanByGUID(guid)) {
     local_ibans_.erase(
         base::ranges::find(local_ibans_, iban, &std::unique_ptr<Iban>::get));
   }
@@ -102,7 +102,7 @@ void TestPersonalDataManager::AddCreditCard(const CreditCard& credit_card) {
   NotifyPersonalDataObserver();
 }
 
-std::string TestPersonalDataManager::AddIban(Iban iban) {
+std::string TestPersonalDataManager::AddAsLocalIban(Iban iban) {
   CHECK_EQ(iban.record_type(), Iban::kUnknown);
   iban.set_record_type(Iban::kLocalIban);
   iban.set_identifier(
@@ -114,10 +114,10 @@ std::string TestPersonalDataManager::AddIban(Iban iban) {
 }
 
 std::string TestPersonalDataManager::UpdateIban(const Iban& iban) {
-  Iban* old_iban = GetIbanByGUID(iban.guid());
+  const Iban* old_iban = GetIbanByGUID(iban.guid());
   CHECK(old_iban);
-  *old_iban = iban;
-  NotifyPersonalDataObserver();
+  local_ibans_.push_back(std::make_unique<Iban>(iban));
+  RemoveByGUID(old_iban->guid());
   return iban.guid();
 }
 
@@ -155,7 +155,6 @@ void TestPersonalDataManager::LoadProfiles() {
   // for the side-effect of logging the profile count.
   pending_synced_local_profiles_query_ = 123;
   pending_account_profiles_query_ = 124;
-  pending_creditcard_billing_addresses_query_ = 125;
   {
     std::vector<std::unique_ptr<AutofillProfile>> profiles;
     synced_local_profiles_.swap(profiles);
@@ -172,15 +171,6 @@ void TestPersonalDataManager::LoadProfiles() {
         WDResult<std::vector<std::unique_ptr<AutofillProfile>>>>(
         AUTOFILL_PROFILES_RESULT, std::move(profiles));
     OnWebDataServiceRequestDone(pending_account_profiles_query_,
-                                std::move(result));
-  }
-  {
-    std::vector<std::unique_ptr<AutofillProfile>> profiles;
-    credit_card_billing_addresses_.swap(profiles);
-    auto result = std::make_unique<
-        WDResult<std::vector<std::unique_ptr<AutofillProfile>>>>(
-        AUTOFILL_PROFILES_RESULT, std::move(profiles));
-    OnWebDataServiceRequestDone(pending_creditcard_billing_addresses_query_,
                                 std::move(result));
   }
 }
@@ -394,6 +384,7 @@ void TestPersonalDataManager::AddAutofillOfferData(
 }
 
 void TestPersonalDataManager::AddServerIban(const Iban& iban) {
+  CHECK(iban.value().empty());
   server_ibans_.push_back(std::make_unique<Iban>(iban));
   NotifyPersonalDataObserver();
 }

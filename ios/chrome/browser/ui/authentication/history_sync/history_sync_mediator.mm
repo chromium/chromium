@@ -11,9 +11,10 @@
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_user_settings.h"
 #import "components/unified_consent/unified_consent_service.h"
-#import "ios/chrome/browser/signin/authentication_service.h"
-#import "ios/chrome/browser/signin/chrome_account_manager_service.h"
-#import "ios/chrome/browser/signin/chrome_account_manager_service_observer_bridge.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
+#import "ios/chrome/browser/signin/model/chrome_account_manager_service_observer_bridge.h"
+#import "ios/chrome/browser/ui/authentication/account_capabilities_latency_tracker.h"
 #import "ios/chrome/browser/ui/authentication/history_sync/history_sync_consumer.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -35,6 +36,9 @@
   syncer::SyncService* _syncService;
   // `YES` if the user's email should be shown in the footer text.
   BOOL _showUserEmail;
+  // Records the latency of capabilities fetch for this view.
+  std::unique_ptr<signin::AccountCapabilitiesLatencyTracker>
+      _accountCapabilitiesLatencyTracker;
 }
 
 - (instancetype)
@@ -56,11 +60,15 @@
                                                                 self);
     _syncService = syncService;
     _showUserEmail = showUserEmail;
+    _accountCapabilitiesLatencyTracker =
+        std::make_unique<signin::AccountCapabilitiesLatencyTracker>(
+            identityManager);
   }
   return self;
 }
 
 - (void)disconnect {
+  _accountCapabilitiesLatencyTracker.reset();
   _accountManagerServiceObserver.reset();
   _identityManagerObserver.reset();
   _authenticationService = nullptr;
@@ -125,6 +133,10 @@
       signin::PrimaryAccountChangeEvent::Type::kCleared) {
     [self.delegate historySyncMediatorPrimaryAccountCleared:self];
   }
+}
+
+- (void)onExtendedAccountInfoUpdated:(const AccountInfo&)info {
+  _accountCapabilitiesLatencyTracker->OnExtendedAccountInfoUpdated(info);
 }
 
 #pragma mark - Private

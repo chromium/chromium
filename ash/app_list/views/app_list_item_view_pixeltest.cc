@@ -16,6 +16,7 @@
 #include "ash/app_list/views/apps_grid_view_test_api.h"
 #include "ash/app_list/views/paged_apps_grid_view.h"
 #include "ash/app_list/views/scrollable_apps_grid_view.h"
+#include "ash/constants/ash_features.h"
 #include "ash/drag_drop/drag_drop_controller.h"
 #include "ash/drag_drop/drag_drop_controller_test_api.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
@@ -30,6 +31,7 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "ui/gfx/image/image_skia.h"
 
 namespace ash {
 
@@ -42,11 +44,13 @@ class AppListItemViewPixelTest
                      /*use_dense_ui=*/bool,
                      /*use_rtl=*/bool,
                      /*is_new_install=*/bool,
-                     /*has_notification=*/bool,
-                     /*jelly_enabled=*/bool>> {
+                     /*has_notification=*/bool>> {
  public:
+  AppListItemViewPixelTest() = default;
+  explicit AppListItemViewPixelTest(bool enable_promise_icons)
+      : enable_promise_icons_(enable_promise_icons) {}
   // AshTestBase:
-  absl::optional<pixel_test::InitParams> CreatePixelTestInitParams()
+  std::optional<pixel_test::InitParams> CreatePixelTestInitParams()
       const override {
     pixel_test::InitParams init_params;
     init_params.under_rtl = use_rtl();
@@ -57,7 +61,7 @@ class AppListItemViewPixelTest
   void SetUp() override {
     scoped_feature_list_.InitWithFeatureStates(
         {{app_list_features::kDragAndDropRefactor, use_drag_drop_refactor()},
-         {chromeos::features::kJelly, jelly_enabled()}});
+         {ash::features::kPromiseIcons, enable_promise_icons_}});
 
     AshTestBase::SetUp();
 
@@ -131,9 +135,6 @@ class AppListItemViewPixelTest
         is_new_install() ? "new_install=true" : "new_install=false",
         has_notification() ? "has_notification=true"
                            : "has_notification=false"};
-    if (jelly_enabled()) {
-      parameters.push_back("jelly_enabled");
-    }
     std::string stringified_params = base::JoinString(parameters, "|");
     return base::JoinString({"app_list_item_view", stringified_params}, ".");
   }
@@ -146,21 +147,6 @@ class AppListItemViewPixelTest
                      ->GetWidgetForTesting();
   }
 
-  size_t GetRevisionNumber() {
-    if (jelly_enabled()) {
-      // Revision numbers reset with Jelly.
-      return 5;
-    }
-
-    size_t base_revision_number = 8;
-
-    if (use_drag_drop_refactor()) {
-      ++base_revision_number;
-    }
-
-    return base_revision_number;
-  }
-
   bool use_drag_drop_refactor() const { return std::get<0>(GetParam()); }
   bool use_folder_icon_refresh() const { return std::get<1>(GetParam()); }
   bool use_tablet_mode() const { return std::get<2>(GetParam()); }
@@ -168,9 +154,9 @@ class AppListItemViewPixelTest
   bool use_rtl() const { return std::get<4>(GetParam()); }
   bool is_new_install() const { return std::get<5>(GetParam()); }
   bool has_notification() const { return std::get<6>(GetParam()); }
-  bool jelly_enabled() const { return std::get<7>(GetParam()); }
 
  private:
+  bool enable_promise_icons_ = false;
   std::unique_ptr<DragDropControllerTestApi> drag_drop_controller_test_api_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -184,8 +170,7 @@ INSTANTIATE_TEST_SUITE_P(
                      /*use_dense_ui=*/testing::Bool(),
                      /*use_rtl=*/testing::Bool(),
                      /*is_new_install=*/testing::Bool(),
-                     /*has_notification=*/testing::Bool(),
-                     /*jelly_enabled=*/testing::Bool()));
+                     /*has_notification=*/testing::Bool()));
 
 TEST_P(AppListItemViewPixelTest, AppListItemView) {
   CreateAppListItem("App");
@@ -193,7 +178,7 @@ TEST_P(AppListItemViewPixelTest, AppListItemView) {
 
   ShowAppList();
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      GenerateScreenshotName(), /*revision_number=*/3, GetItemViewAt(0),
+      GenerateScreenshotName(), /*revision_number=*/5, GetItemViewAt(0),
       GetItemViewAt(1)));
 }
 
@@ -216,17 +201,9 @@ TEST_P(AppListItemViewPixelTest, AppListFolderItemsLayoutInIcon) {
   CreateFoldersContainingDifferentNumOfItems(max_items_in_folder);
   ShowAppList();
 
-  if (jelly_enabled()) {
-    EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-        GenerateScreenshotName(), /*revision_number=*/4, GetItemViewAt(0),
-        GetItemViewAt(1), GetItemViewAt(2), GetItemViewAt(3),
-        GetItemViewAt(4)));
-  } else {
-    EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-        GenerateScreenshotName(), /*revision_number=*/5, GetItemViewAt(0),
-        GetItemViewAt(1), GetItemViewAt(2), GetItemViewAt(3),
-        GetItemViewAt(4)));
-  }
+  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
+      GenerateScreenshotName(), /*revision_number=*/9, GetItemViewAt(0),
+      GetItemViewAt(1), GetItemViewAt(2), GetItemViewAt(3), GetItemViewAt(4)));
 }
 
 // Verifies the folder icon is extended when an app is dragged upon it.
@@ -261,17 +238,9 @@ TEST_P(AppListItemViewPixelTest, AppListFolderIconExtendedState) {
     GetItemViewAt(i)->OnDraggedViewEnter();
   }
 
-  if (jelly_enabled()) {
-    EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-        GenerateScreenshotName(), /*revision_number=*/4, GetItemViewAt(0),
-        GetItemViewAt(1), GetItemViewAt(2), GetItemViewAt(3),
-        GetItemViewAt(4)));
-  } else {
-    EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-        GenerateScreenshotName(), /*revision_number=*/5, GetItemViewAt(0),
-        GetItemViewAt(1), GetItemViewAt(2), GetItemViewAt(3),
-        GetItemViewAt(4)));
-  }
+  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
+      GenerateScreenshotName(), /*revision_number=*/10, GetItemViewAt(0),
+      GetItemViewAt(1), GetItemViewAt(2), GetItemViewAt(3), GetItemViewAt(4)));
 
   // Reset the states.
   for (int i = 0; i < max_items_in_folder; ++i) {
@@ -312,15 +281,13 @@ TEST_P(AppListItemViewPixelTest, DraggedAppListFolderIcon) {
     folder_list.push_back(GetItemViewAt(i));
   }
 
-  const size_t revision_number = GetRevisionNumber();
-
   auto verify_folder_widget =
       [&](int number_of_items) {
         std::string filename =
             base::NumberToString(number_of_items) + "_items_folder";
         EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
             base::JoinString({GenerateScreenshotName(), filename}, "."),
-            revision_number, GetDraggedWidget()));
+            /*revision_number=*/6, GetDraggedWidget()));
       };
 
   for (size_t i = 0; i < max_items_in_folder; ++i) {
@@ -359,6 +326,77 @@ TEST_P(AppListItemViewPixelTest, DraggedAppListFolderIcon) {
     MaybeRunDragAndDropSequenceForAppList(&tasks,
                                           /*is_touch=*/use_tablet_mode());
   }
+}
+
+class AppListViewPromiseAppPixelTest : public AppListItemViewPixelTest {
+ public:
+  AppListViewPromiseAppPixelTest()
+      : AppListItemViewPixelTest(/*enable_promise_icons=*/true) {}
+
+  AppListItem* CreateAppListPromiseItem(const std::string& name) {
+    return GetAppListTestHelper()->model()->CreateAndAddPromiseItem(name +
+                                                                    "_id");
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    AppListViewPromiseAppPixelTest,
+    testing::Combine(/*use_drag_drop_refactor=*/testing::Values(false),
+                     /*use_folder_icon_refresh=*/testing::Values(false),
+                     /*use_tablet_mode=*/testing::Bool(),
+                     /*use_dense_ui=*/testing::Bool(),
+                     /*use_rtl=*/testing::Bool(),
+                     /*is_new_install=*/testing::Values(false),
+                     /*has_notification=*/testing::Values(false)));
+
+TEST_P(AppListViewPromiseAppPixelTest, PromiseAppWaiting) {
+  // Reset any configs set by previous tests so that
+  // ItemIconInFolderIconMargin() in app_list_config.cc is correctly
+  // initialized. Can be removed if folder icon refresh is set as default.
+  AppListConfigProvider::Get().ResetForTesting();
+  CreateAppListPromiseItem("PromiseApp");
+  AppListItem* placeholder = CreateAppListPromiseItem("PromiseApp_placeholder");
+  placeholder->SetDefaultIconAndColor(placeholder->GetDefaultIcon(),
+                                      placeholder->GetDefaultIconColor(),
+                                      /*is_placeholder_icon=*/true);
+  ShowAppList();
+  EXPECT_EQ(GetItemViewAt(0)->item()->progress(), -1.0f);
+  EXPECT_EQ(GetItemViewAt(0)->item()->app_status(), AppStatus::kPending);
+  EXPECT_EQ(GetItemViewAt(1)->item()->progress(), -1.0f);
+  EXPECT_EQ(GetItemViewAt(1)->item()->app_status(), AppStatus::kPending);
+
+  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
+      base::JoinString({"promise_app_waiting", GenerateScreenshotName()}, "."),
+      /*revision_number=*/0, GetItemViewAt(0), GetItemViewAt(1)));
+}
+
+TEST_P(AppListViewPromiseAppPixelTest, PromiseAppInstalling) {
+  // Reset any configs set by previous tests so that
+  // ItemIconInFolderIconMargin() in app_list_config.cc is correctly
+  // initialized. Can be removed if folder icon refresh is set as default.
+  AppListConfigProvider::Get().ResetForTesting();
+  AppListItem* item = CreateAppListPromiseItem("PromiseApp");
+  AppListItem* placeholder = CreateAppListPromiseItem("PromiseApp_placeholder");
+  placeholder->SetDefaultIconAndColor(placeholder->GetDefaultIcon(),
+                                      placeholder->GetDefaultIconColor(),
+                                      /*is_placeholder_icon=*/true);
+
+  // Start install progress bar.
+  item->SetAppStatus(AppStatus::kInstalling);
+  item->SetProgress(0.8f);
+  placeholder->SetAppStatus(AppStatus::kInstalling);
+  placeholder->SetProgress(0.8f);
+  ShowAppList();
+
+  EXPECT_EQ(GetItemViewAt(0)->item()->progress(), 0.8f);
+  EXPECT_EQ(GetItemViewAt(0)->item()->app_status(), AppStatus::kInstalling);
+  EXPECT_EQ(GetItemViewAt(1)->item()->progress(), 0.8f);
+  EXPECT_EQ(GetItemViewAt(1)->item()->app_status(), AppStatus::kInstalling);
+  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
+      base::JoinString({"promise_app_installing", GenerateScreenshotName()},
+                       "."),
+      /*revision_number=*/0, GetItemViewAt(0), GetItemViewAt(1)));
 }
 
 }  // namespace ash

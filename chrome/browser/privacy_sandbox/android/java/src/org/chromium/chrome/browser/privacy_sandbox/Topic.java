@@ -56,7 +56,12 @@ public final class Topic {
 
     @Override
     public String toString() {
-        return "Topic{topicId=" + mTopicId + ", taxonomyVersion=" + mTaxonomyVersion
-                + ", name=" + mName + '}';
+        return "Topic{topicId="
+                + mTopicId
+                + ", taxonomyVersion="
+                + mTaxonomyVersion
+                + ", name="
+                + mName
+                + '}';
     }
 }

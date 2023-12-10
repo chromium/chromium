@@ -465,18 +465,34 @@ void DrmThread::SetHDCPState(int64_t display_id,
       display_manager_->SetHDCPState(display_id, state, protection_method));
 }
 
+void DrmThread::SetColorTemperatureAdjustment(
+    int64_t display_id,
+    const display::ColorTemperatureAdjustment& cta) {
+  display_manager_->SetColorTemperatureAdjustment(display_id, cta);
+}
+
+void DrmThread::SetColorCalibration(
+    int64_t display_id,
+    const display::ColorCalibration& calibration) {
+  display_manager_->SetColorCalibration(display_id, calibration);
+}
+
+void DrmThread::SetGammaAdjustment(int64_t display_id,
+                                   const display::GammaAdjustment& adjustment) {
+  display_manager_->SetGammaAdjustment(display_id, adjustment);
+}
+
 void DrmThread::SetColorMatrix(int64_t display_id,
                                const std::vector<float>& color_matrix) {
   TRACE_EVENT0("drm", "DrmThread::SetColorMatrix");
   display_manager_->SetColorMatrix(display_id, color_matrix);
 }
 
-void DrmThread::SetGammaCorrection(
-    int64_t display_id,
-    const std::vector<display::GammaRampRGBEntry>& degamma_lut,
-    const std::vector<display::GammaRampRGBEntry>& gamma_lut) {
+void DrmThread::SetGammaCorrection(int64_t display_id,
+                                   const display::GammaCurve& degamma,
+                                   const display::GammaCurve& gamma) {
   TRACE_EVENT0("drm", "DrmThread::SetGammaCorrection");
-  display_manager_->SetGammaCorrection(display_id, degamma_lut, gamma_lut);
+  display_manager_->SetGammaCorrection(display_id, degamma, gamma);
 }
 
 void DrmThread::SetPrivacyScreen(int64_t display_id,

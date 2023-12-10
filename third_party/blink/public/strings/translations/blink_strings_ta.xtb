@@ -30,6 +30,7 @@
 <translation id="2226276347425096477">இந்த உரையை <ph name="MAX_CHARACTERS" /> எழுத்துக்குறிகள் அல்லது அதற்கும் குறைவாக சுருக்கிடுங்கள் (நீங்கள் தற்போது <ph name="CURRENT_LENGTH" /> எழுத்துக்குறிகளைப் பயன்படுத்துகிறீர்கள்).</translation>
 <translation id="2247351761944213033">வாரம் <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">டிராக் <ph name="NUMBER" /></translation>
+<translation id="2353297238722298836">கேமராவும் மைக்ரோஃபோனும் அனுமதிக்கப்பட்டன</translation>
 <translation id="2393030564806080191">ஹெக்சாடெசிமல் வண்ண மதிப்பு</translation>
 <translation id="2398813069815436052">உரையாடல் திறக்கப்பட்டது.</translation>
 <translation id="245932805758469625">மீதமுள்ள வீடியோவின் வினாடிகள்</translation>
@@ -60,10 +61,12 @@
 <translation id="3822383571486410024">இந்த உரையை <ph name="MIN_CHARACTERS" /> எழுத்துக்குறிகள் அல்லது அதற்கும் அதிகமாக (தற்போது <ph name="CURRENT_LENGTH" /> எழுத்துக்குறிகளைப் பயன்படுத்துகிறீர்கள்) நீட்டிக்கவும்.</translation>
 <translation id="383465348367842624">'<ph name="ATSIGN" />' ஐத் தொடர்ந்து வரும் பகுதியில் '<ph name="INVALIDCHARACTER" />' சின்னம் இருக்கக்கூடாது.</translation>
 <translation id="3846214748874656680">முழுத்திரை வேண்டாம்</translation>
+<translation id="4031179711345676612">மைக்ரோஃபோன் அனுமதிக்கப்பட்டது</translation>
 <translation id="4103419683916926126">மில்லிவினாடிகள்</translation>
 <translation id="4201051445878709314">முந்தைய மாதத்தைக் காட்டு</translation>
 <translation id="4360991593054037559">சரியான மதிப்பை உள்ளிடவும். <ph name="VALID_VALUE_LOW" /> மற்றும் <ph name="VALID_VALUE_HIGHER" /> ஆகியவை மிக நெருக்கமான சரியான இரண்டு மதிப்புகளாகும்.</translation>
 <translation id="4522570452068850558">விவரங்கள்</translation>
+<translation id="4663373278480897665">கேமரா அனுமதிக்கப்பட்டது</translation>
 <translation id="4664250907885839816">'<ph name="ATSIGN" />' ஐத் தொடரும் பகுதியில், '<ph name="INVALIDCHARACTER" />' சின்னம் இருக்கக்கூடாது.</translation>
 <translation id="4718048029184481307">’பிக்ச்சர்-இன்-பிக்ச்சர்' பயன்முறையில் பிளே ஆகிறது</translation>
 <translation id="4748357248530471599">டிஸ்ப்ளே கட்அவுட் முழுத்திரை நிலைமாற்ற பட்டன்</translation>
@@ -137,6 +140,7 @@
 <translation id="6941933287844615239">மீடியாவைப் பதிவிறக்கு</translation>
 <translation id="698788488269350478">விரிவாக்கப்பட்டது.</translation>
 <translation id="6989848892321993519">இந்த உரையில் <ph name="MIN_CHARACTERS" /> அல்லது அதற்கு மேற்பட்ட எழுத்துக்குறிகளைப் பயன்படுத்தவும் (தற்போது 1 எழுத்துக்குறியைப் பயன்படுத்துகிறீர்கள்).</translation>
+<translation id="7080893216867146095">இருப்பிடப் பகிர்வு அனுமதிக்கப்பட்டுள்ளது</translation>
 <translation id="709897737746224366">கோரிய வடிவமைப்பில் தருக.</translation>
 <translation id="7102274145889307184">தற்போதைய இருப்பிடம்</translation>
 <translation id="7263440858009898357">பட்டியலிலிருந்து ஒரு உருப்படியைத் தேர்ந்தெடுங்கள்.</translation>

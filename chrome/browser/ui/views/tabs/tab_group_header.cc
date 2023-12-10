@@ -381,7 +381,7 @@ void TabGroupHeader::ShowContextMenuForViewImpl(
 #endif
 
   editor_bubble_tracker_.Opened(TabGroupEditorBubbleView::Show(
-      tab_slot_controller_->GetBrowser(), group().value(), this, absl::nullopt,
+      tab_slot_controller_->GetBrowser(), group().value(), this, std::nullopt,
       nullptr, kStopContextMenuPropagation));
 }
 

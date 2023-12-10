@@ -9,8 +9,10 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.robolectric.Shadows.shadowOf;
@@ -41,7 +43,9 @@ import org.robolectric.shadows.ShadowAccountManager;
 import org.robolectric.shadows.ShadowUserManager;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.base.task.test.CustomShadowAsyncTask;
+import org.chromium.base.task.test.ShadowPostTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.components.externalauth.ExternalAuthUtils;
@@ -52,6 +56,7 @@ import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.test.util.AccountHolder;
 import org.chromium.components.signin.test.util.FakeAccountManagerDelegate;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -63,11 +68,28 @@ import java.util.concurrent.atomic.AtomicBoolean;
         shadows = {
             CustomShadowAsyncTask.class,
             ShadowUserManager.class,
-            ShadowAccountManager.class
+            ShadowAccountManager.class,
+            ShadowPostTask.class
         })
 @LooperMode(LooperMode.Mode.LEGACY)
 public class AccountManagerFacadeImplTest {
     private static final String TEST_TOKEN_SCOPE = "test-token-scope";
+
+    private static class ShadowPostTaskImpl implements ShadowPostTask.TestImpl {
+        private final List<Runnable> mRunnables = new ArrayList<>();
+
+        @Override
+        public void postDelayedTask(@TaskTraits int traits, Runnable task, long delay) {
+            mRunnables.add(task);
+        }
+
+        void runAll() {
+            for (int index = 0; index < mRunnables.size(); index++) {
+                mRunnables.get(index).run();
+            }
+            mRunnables.clear();
+        }
+    }
 
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
@@ -85,6 +107,7 @@ public class AccountManagerFacadeImplTest {
     private final Context mContext = RuntimeEnvironment.application;
     private ShadowUserManager mShadowUserManager;
     private ShadowAccountManager mShadowAccountManager;
+    private ShadowPostTaskImpl mPostTaskRunner;
     private FakeAccountManagerDelegate mDelegate;
     private AccountManagerFacade mFacade;
 
@@ -100,6 +123,8 @@ public class AccountManagerFacadeImplTest {
         mShadowUserManager =
                 shadowOf((UserManager) mContext.getSystemService(Context.USER_SERVICE));
         mShadowAccountManager = shadowOf(AccountManager.get(mContext));
+        mPostTaskRunner = new ShadowPostTaskImpl();
+        ShadowPostTask.setTestImpl(mPostTaskRunner);
         ThreadUtils.setThreadAssertsDisabledForTesting(true);
         mDelegate = spy(new FakeAccountManagerDelegate());
         mFacade = new AccountManagerFacadeImpl(mDelegate);
@@ -119,7 +144,7 @@ public class AccountManagerFacadeImplTest {
     }
 
     @Test
-    public void testCountOfAccountLoggedAfterAccountsFetched() {
+    public void testCountOfAccountLoggedAfterAccountsFetched() throws Exception {
         HistogramWatcher numberOfAccountsHistogram =
                 HistogramWatcher.newSingleRecordWatcher("Signin.AndroidNumberOfDeviceAccounts", 1);
         addTestAccount("test@gmail.com");
@@ -130,7 +155,7 @@ public class AccountManagerFacadeImplTest {
     }
 
     @Test
-    public void testCanonicalAccount() {
+    public void testCanonicalAccount() throws Exception {
         addTestAccount("test@gmail.com");
         List<CoreAccountInfo> coreAccountInfos = mFacade.getCoreAccountInfos().getResult();
 
@@ -144,10 +169,46 @@ public class AccountManagerFacadeImplTest {
                 AccountUtils.findCoreAccountInfoByEmail(coreAccountInfos, "te@googlemail.com"));
     }
 
+    @Test
+    public void testErrorFetchingAccounts() throws Exception {
+        AccountHolder accountHolder = AccountHolder.createFromEmail("test@gmail.com");
+        doThrow(AccountManagerDelegateException.class)
+                .doReturn(new Account[] {accountHolder.getAccount()})
+                .when(mDelegate)
+                .getAccountsSynchronous();
+
+        mDelegate.callOnCoreAccountInfoChanged();
+        // Called once on AccountManagerFacade creation and a second time when the account is added.
+        // TODO(crbug.com/1502123): Add verification that getCoreAccountInfos isn't fulfilled until
+        // getAccountsSynchronous stops throwing exceptions (and that it is correctly fulfilled when
+        // it stops throwing).
+        verify(mDelegate, times(2)).getAccountsSynchronous();
+
+        // The delegate call is retried once, and succeeds (for a total of three interactions with
+        // the mock).
+        mPostTaskRunner.runAll();
+        verify(mDelegate, times(3)).getAccountsSynchronous();
+    }
+
+    @Test
+    public void testErrorFetchingAccounts_maxNumberOfRetries() throws Exception {
+        doThrow(AccountManagerDelegateException.class).when(mDelegate).getAccountsSynchronous();
+
+        mDelegate.callOnCoreAccountInfoChanged();
+        // Called once on AccountManagerFacade creation and a second time when the account is added.
+        verify(mDelegate, times(2)).getAccountsSynchronous();
+
+        // The delegate call fails indefinitely but is only retried MAXIMUM_RETRIES times (plus the
+        // two interactions checked above).
+        mPostTaskRunner.runAll();
+        verify(mDelegate, times(AccountManagerFacadeImpl.MAXIMUM_RETRIES + 2))
+                .getAccountsSynchronous();
+    }
+
     // If this test starts flaking, please re-open crbug.com/568636 and make sure there is some sort
     // of stack trace or error message in that bug BEFORE disabling the test.
     @Test
-    public void testNonCanonicalAccount() {
+    public void testNonCanonicalAccount() throws Exception {
         addTestAccount("test.me@gmail.com");
         List<CoreAccountInfo> coreAccountInfos = mFacade.getCoreAccountInfos().getResult();
 
@@ -162,7 +223,7 @@ public class AccountManagerFacadeImplTest {
     }
 
     @Test
-    public void testGetCoreAccountInfos() {
+    public void testGetCoreAccountInfos() throws Exception {
         CoreAccountInfo accountInfo1 = addTestAccount("test1@gmail.com");
         CoreAccountInfo accountInfo2 = addTestAccount("test2@gmail.com");
 
@@ -174,7 +235,7 @@ public class AccountManagerFacadeImplTest {
     }
 
     @Test
-    public void testGetCoreAccountInfosWhenGaiaIdIsNull() {
+    public void testGetCoreAccountInfosWhenGaiaIdIsNull() throws Exception {
         final String accountEmail = "test@gmail.com";
         AtomicBoolean accountRemoved = new AtomicBoolean(false);
         doAnswer(
@@ -200,7 +261,7 @@ public class AccountManagerFacadeImplTest {
     }
 
     @Test
-    public void testCoreAccountInfosAreCached() {
+    public void testCoreAccountInfosAreCached() throws Exception {
         final String accountEmail = "test@gmail.com";
         addTestAccount(accountEmail);
 
@@ -212,7 +273,7 @@ public class AccountManagerFacadeImplTest {
     }
 
     @Test
-    public void testGetCoreAccountInfosWithAccountPattern() {
+    public void testGetCoreAccountInfosWithAccountPattern() throws Exception {
         setAccountRestrictionPatterns("*@example.com");
         CoreAccountInfo accountInfo1 = addTestAccount("test1@example.com");
         Assert.assertEquals(List.of(accountInfo1), mFacade.getCoreAccountInfos().getResult());
@@ -233,7 +294,7 @@ public class AccountManagerFacadeImplTest {
     }
 
     @Test
-    public void testGetCoreAccountInfosWithTwoAccountPatterns() {
+    public void testGetCoreAccountInfosWithTwoAccountPatterns() throws Exception {
         setAccountRestrictionPatterns("test1@example.com", "test2@gmail.com");
         addTestAccount("test@gmail.com"); // Doesn't match the pattern.
         addTestAccount("test@example.com"); // Doesn't match the pattern.
@@ -251,7 +312,7 @@ public class AccountManagerFacadeImplTest {
     }
 
     @Test
-    public void testGetCoreAccountInfosWithAccountPatternsChange() {
+    public void testGetCoreAccountInfosWithAccountPatternsChange() throws Exception {
         Assert.assertEquals(List.of(), mFacade.getCoreAccountInfos().getResult());
 
         CoreAccountInfo accountInfo1 = addTestAccount("test1@gmail.com");
@@ -278,7 +339,7 @@ public class AccountManagerFacadeImplTest {
     }
 
     @Test
-    public void testGetCoreAccountInfosWithAccountPatternsCleared() {
+    public void testGetCoreAccountInfosWithAccountPatternsCleared() throws Exception {
         CoreAccountInfo accountInfo1 = addTestAccount("test1@gmail.com");
         CoreAccountInfo accountInfo2 = addTestAccount("test2@example.com");
         setAccountRestrictionPatterns("*@example.com");
@@ -292,7 +353,7 @@ public class AccountManagerFacadeImplTest {
     }
 
     @Test
-    public void testGetCoreAccountInfosMultipleMatchingPatterns() {
+    public void testGetCoreAccountInfosMultipleMatchingPatterns() throws Exception {
         setAccountRestrictionPatterns("*@gmail.com", "test@gmail.com");
 
         // Matches both patterns
@@ -322,7 +383,7 @@ public class AccountManagerFacadeImplTest {
     }
 
     @Test
-    public void testGetAndInvalidateAccessToken() throws AuthException {
+    public void testGetAndInvalidateAccessToken() throws Exception {
         final CoreAccountInfo coreAccountInfo = addTestAccount("test@gmail.com");
         final AccessTokenData originalToken =
                 mFacade.getAccessToken(coreAccountInfo, TEST_TOKEN_SCOPE);
@@ -346,7 +407,7 @@ public class AccountManagerFacadeImplTest {
     }
 
     @Test
-    public void testGetAccountCapabilitiesResponseYes() {
+    public void testGetAccountCapabilitiesResponseYes() throws Exception {
         AccountManagerFacade facade = new AccountManagerFacadeImpl(mDelegate);
         final Account account = AccountUtils.createAccountFromName("test1@gmail.com");
         mDelegate.addAccount(AccountHolder.createFromAccount(account));
@@ -363,7 +424,7 @@ public class AccountManagerFacadeImplTest {
     }
 
     @Test
-    public void testGetAccountCapabilitiesResponseNo() {
+    public void testGetAccountCapabilitiesResponseNo() throws Exception {
         AccountManagerFacade facade = new AccountManagerFacadeImpl(mDelegate);
         final Account account = AccountUtils.createAccountFromName("test1@gmail.com");
         mDelegate.addAccount(AccountHolder.createFromAccount(account));
@@ -380,7 +441,7 @@ public class AccountManagerFacadeImplTest {
     }
 
     @Test
-    public void testGetAccountCapabilitiesResponseException() {
+    public void testGetAccountCapabilitiesResponseException() throws Exception {
         AccountManagerFacade facade = new AccountManagerFacadeImpl(mDelegate);
         final Account account = AccountUtils.createAccountFromName("test1@gmail.com");
         mDelegate.addAccount(AccountHolder.createFromAccount(account));

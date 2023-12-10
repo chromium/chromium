@@ -97,7 +97,7 @@ void SetSuggestionsExpanded(PrefService* prefs, bool expanded) {
   prefs->SetBoolean(kSuggestionsExpanded, expanded);
 }
 
-absl::optional<base::Time> GetTimeOfFirstAdd(PrefService* prefs) {
+std::optional<base::Time> GetTimeOfFirstAdd(PrefService* prefs) {
   // The `kTimeOfFirstAdd` preference was added after the `kTimeOfFirstPin`
   // preference, so if the `kTimeOfFirstAdd` has not yet been marked it's
   // possible that the user may still have pinned a file at an earlier time.
@@ -119,9 +119,9 @@ bool MarkTimeOfFirstAdd(PrefService* prefs) {
   return false;
 }
 
-absl::optional<base::Time> GetTimeOfFirstAvailability(PrefService* prefs) {
+std::optional<base::Time> GetTimeOfFirstAvailability(PrefService* prefs) {
   auto* pref = prefs->FindPreference(kTimeOfFirstAvailability);
-  return pref->IsDefaultValue() ? absl::nullopt
+  return pref->IsDefaultValue() ? std::nullopt
                                 : base::ValueToTime(pref->GetValue());
 }
 
@@ -133,9 +133,9 @@ bool MarkTimeOfFirstAvailability(PrefService* prefs) {
   return false;
 }
 
-absl::optional<base::Time> GetTimeOfFirstEntry(PrefService* prefs) {
+std::optional<base::Time> GetTimeOfFirstEntry(PrefService* prefs) {
   auto* pref = prefs->FindPreference(kTimeOfFirstEntry);
-  return pref->IsDefaultValue() ? absl::nullopt
+  return pref->IsDefaultValue() ? std::nullopt
                                 : base::ValueToTime(pref->GetValue());
 }
 
@@ -147,9 +147,9 @@ bool MarkTimeOfFirstEntry(PrefService* prefs) {
   return false;
 }
 
-absl::optional<base::Time> GetTimeOfFirstPin(PrefService* prefs) {
+std::optional<base::Time> GetTimeOfFirstPin(PrefService* prefs) {
   auto* pref = prefs->FindPreference(kTimeOfFirstPin);
-  return pref->IsDefaultValue() ? absl::nullopt
+  return pref->IsDefaultValue() ? std::nullopt
                                 : base::ValueToTime(pref->GetValue());
 }
 
@@ -161,9 +161,9 @@ bool MarkTimeOfFirstPin(PrefService* prefs) {
   return false;
 }
 
-absl::optional<base::Time> GetTimeOfFirstFilesAppChipPress(PrefService* prefs) {
+std::optional<base::Time> GetTimeOfFirstFilesAppChipPress(PrefService* prefs) {
   auto* pref = prefs->FindPreference(kTimeOfFirstFilesAppChipPress);
-  return pref->IsDefaultValue() ? absl::nullopt
+  return pref->IsDefaultValue() ? std::nullopt
                                 : base::ValueToTime(pref->GetValue());
 }
 

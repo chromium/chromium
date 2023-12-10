@@ -8,7 +8,7 @@
 #include <set>
 
 #include "base/memory/raw_ptr.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "components/performance_manager/embedder/graph_features.h"
 #include "content/public/test/content_browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"

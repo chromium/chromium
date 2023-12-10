@@ -10,7 +10,7 @@
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/layout/layout_block.h"
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_layout_result.h"
+#include "third_party/blink/renderer/core/layout/layout_result.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
@@ -31,7 +31,7 @@ TEST_F(LayoutBlockTest, LayoutNameCalledWithNullStyle) {
 }
 
 TEST_F(LayoutBlockTest, WidthAvailableToChildrenChanged) {
-  USE_NON_OVERLAY_SCROLLBARS();
+  USE_NON_OVERLAY_SCROLLBARS_OR_QUIT();
 
   SetBodyInnerHTML(R"HTML(
     <!DOCTYPE html>
@@ -72,7 +72,7 @@ TEST_F(LayoutBlockTest, OverflowWithTransformAndPerspective) {
     </div>
   )HTML");
   auto* scroller = GetLayoutBoxByElementId("target");
-  EXPECT_EQ(187.625, scroller->PhysicalLayoutOverflowRect().Width().ToFloat());
+  EXPECT_EQ(187.625, scroller->ScrollableOverflowRect().Width().ToFloat());
 }
 
 TEST_F(LayoutBlockTest, NestedInlineVisualOverflow) {
@@ -122,7 +122,7 @@ TEST_F(LayoutBlockTest, ContainmentStyleChange) {
       GetDocument().getElementById(AtomicString("target"));
   auto* target = To<LayoutBlockFlow>(target_element->GetLayoutObject());
   EXPECT_TRUE(target->GetSingleCachedLayoutResult()
-                  ->PhysicalFragment()
+                  ->GetPhysicalFragment()
                   .HasOutOfFlowFragmentChild());
 
   // Remove layout containment. This should cause |contained| to now be
@@ -131,11 +131,11 @@ TEST_F(LayoutBlockTest, ContainmentStyleChange) {
                                AtomicString("contain:style"));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_FALSE(target->GetSingleCachedLayoutResult()
-                   ->PhysicalFragment()
+                   ->GetPhysicalFragment()
                    .HasOutOfFlowFragmentChild());
   const LayoutView* view = GetDocument().GetLayoutView();
   EXPECT_TRUE(view->GetSingleCachedLayoutResult()
-                  ->PhysicalFragment()
+                  ->GetPhysicalFragment()
                   .HasOutOfFlowFragmentChild());
 }
 

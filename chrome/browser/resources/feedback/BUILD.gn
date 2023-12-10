@@ -39,6 +39,7 @@ build_webui("build") {
 
   non_web_component_files = [
     "js/autofill_metadata.ts",
+    "js/feedback_browser_proxy.ts",
     "js/feedback.ts",
     "js/feedback_util.ts",
     "js/logs_map_page.ts",
@@ -51,6 +52,7 @@ build_webui("build") {
     non_web_component_files += [ "js/jelly_colors.ts" ]
   }
 
+  ts_composite = true
   ts_definitions = [
     "//tools/typescript/definitions/feedback_private.d.ts",
     "//tools/typescript/definitions/chrome_send.d.ts",

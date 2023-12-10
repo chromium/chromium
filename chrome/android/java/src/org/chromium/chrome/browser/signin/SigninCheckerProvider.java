@@ -8,39 +8,42 @@ import androidx.annotation.MainThread;
 
 import org.chromium.base.ResettersForTesting;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileKeyedMap;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninChecker;
 import org.chromium.chrome.browser.sync.SyncErrorNotifier;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 
-/**
- * This class is used to get a singleton instance of {@link SigninChecker}.
- */
+/** This class is used to get a singleton instance of {@link SigninChecker}. */
 public final class SigninCheckerProvider {
-    private static SigninChecker sInstance;
+    private static ProfileKeyedMap<SigninChecker> sProfileMap =
+            ProfileKeyedMap.createMapOfDestroyables();
+    private static SigninChecker sInstanceForTesting;
 
     /**
-     * @return A singleton instance of {@link SigninChecker}.
+     * @return A {@link SigninChecker} instance for the given Profile.
      */
     @MainThread
-    public static SigninChecker get() {
-        if (sInstance == null) {
-            // SyncErrorNotifier must be explicitly initialized.
-            // TODO(crbug.com/1156620): Move the initializations elsewhere.
-            SyncErrorNotifier.get();
-            Profile profile = Profile.getLastUsedRegularProfile();
-            sInstance = new SigninChecker(IdentityServicesProvider.get().getSigninManager(profile),
-                    IdentityServicesProvider.get().getAccountTrackerService(profile),
-                    SyncServiceFactory.getForProfile(profile));
-        }
-        return sInstance;
+    public static SigninChecker get(Profile profile) {
+        if (sInstanceForTesting != null) return sInstanceForTesting;
+        return sProfileMap.getForProfile(
+                profile,
+                () -> {
+                    // SyncErrorNotifier must be explicitly initialized.
+                    // TODO(crbug.com/1156620): Move the initializations elsewhere.
+                    SyncErrorNotifier.get();
+                    return new SigninChecker(
+                            IdentityServicesProvider.get().getSigninManager(profile),
+                            IdentityServicesProvider.get().getAccountTrackerService(profile),
+                            SyncServiceFactory.getForProfile(profile));
+                });
     }
 
     @MainThread
     public static void setForTests(SigninChecker signinChecker) {
-        var oldValue = sInstance;
-        sInstance = signinChecker;
-        ResettersForTesting.register(() -> sInstance = oldValue);
+        var oldValue = sInstanceForTesting;
+        sInstanceForTesting = signinChecker;
+        ResettersForTesting.register(() -> sInstanceForTesting = oldValue);
     }
 
     private SigninCheckerProvider() {}

@@ -29,7 +29,7 @@
 #include "chrome/common/chrome_features.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/content_capture/browser/onscreen_content_provider.h"
-#include "components/metrics/call_stack_profile_collector.h"
+#include "components/metrics/call_stacks/call_stack_profile_collector.h"
 #include "components/offline_pages/buildflags/buildflags.h"
 #include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
 #include "components/password_manager/content/browser/content_password_manager_driver_factory.h"
@@ -96,6 +96,7 @@
 
 #if BUILDFLAG(ENABLE_SPELLCHECK)
 #include "chrome/browser/spellchecker/spell_check_host_chrome_impl.h"
+#include "chrome/browser/spellchecker/spell_check_initialization_host_impl.h"
 #include "components/spellcheck/common/spellcheck.mojom.h"
 #if BUILDFLAG(HAS_SPELLCHECK_PANEL)
 #include "chrome/browser/spellchecker/spell_check_panel_host_impl.h"
@@ -428,6 +429,15 @@ void ChromeContentBrowserClient::RegisterBrowserInterfaceBindersForFrame(
   chrome::internal::PopulateChromeFrameBinders(map, render_frame_host);
   chrome::internal::PopulateChromeWebUIFrameBinders(map, render_frame_host);
 
+#if BUILDFLAG(ENABLE_SPELLCHECK)
+  map->Add<spellcheck::mojom::SpellCheckHost>(base::BindRepeating(
+      [](content::RenderFrameHost* frame_host,
+         mojo::PendingReceiver<spellcheck::mojom::SpellCheckHost> receiver) {
+        SpellCheckHostChromeImpl::Create(frame_host->GetProcess()->GetID(),
+                                         std::move(receiver));
+      }));
+#endif  // BUILDFLAG(ENABLE_SPELLCHECK)
+
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   const GURL& site = render_frame_host->GetSiteInstance()->GetSiteURL();
   if (!site.SchemeIs(extensions::kExtensionScheme))
@@ -738,9 +748,10 @@ void ChromeContentBrowserClient::BindHostReceiverForRenderer(
   }
 
 #if BUILDFLAG(ENABLE_SPELLCHECK)
-  if (auto host_receiver = receiver.As<spellcheck::mojom::SpellCheckHost>()) {
-    SpellCheckHostChromeImpl::Create(render_process_host->GetID(),
-                                     std::move(host_receiver));
+  if (auto host_receiver =
+          receiver.As<spellcheck::mojom::SpellCheckInitializationHost>()) {
+    SpellCheckInitializationHostImpl::Create(render_process_host->GetID(),
+                                             std::move(host_receiver));
     return;
   }
 

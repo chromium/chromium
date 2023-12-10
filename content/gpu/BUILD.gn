@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromecast_build.gni")
+import("//build/config/cast.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/ui.gni")
 import("//gpu/vulkan/features.gni")
@@ -76,7 +76,7 @@ target(link_target_type, "gpu_sources") {
     "//services/service_manager/public/mojom",
     "//services/tracing/public/cpp",
     "//services/viz/privileged/mojom",
-    "//services/webnn",
+    "//services/webnn:webnn_service",
     "//services/webnn/public/mojom",
     "//skia",
     "//third_party/angle:angle_gpu_info_util",
@@ -91,17 +91,6 @@ target(link_target_type, "gpu_sources") {
       "//services/shape_detection:lib",
       "//services/shape_detection/public/mojom",
     ]
-  }
-
-  if (is_linux || is_chromeos) {
-    sources += [
-      "gpu_sandbox_hook_linux.cc",
-      "gpu_sandbox_hook_linux.h",
-    ]
-
-    if (use_v4l2_codec) {
-      deps += [ "//media/gpu/v4l2" ]
-    }
   }
 
   if (is_chromeos_ash) {

@@ -57,14 +57,17 @@ class DownloadInterstitialView {
         fileInfo.addView(mInProgressGenericViewHolder.itemView);
 
         mPrimaryButton = DualControlLayout.createButtonForLayout(context, true, "", null);
-        mPrimaryButton.setLayoutParams(new ViewGroup.LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        mPrimaryButton.setLayoutParams(
+                new ViewGroup.LayoutParams(
+                        ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         mPrimaryButton.setVisibility(View.INVISIBLE);
 
-        mSecondaryButton = DualControlLayout.createButtonForLayout(
-                context, false, mView.getResources().getString(R.string.cancel), null);
-        mSecondaryButton.setLayoutParams(new ViewGroup.LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        mSecondaryButton =
+                DualControlLayout.createButtonForLayout(
+                        context, false, mView.getResources().getString(R.string.cancel), null);
+        mSecondaryButton.setLayoutParams(
+                new ViewGroup.LayoutParams(
+                        ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         mSecondaryButton.setVisibility(View.INVISIBLE);
 
         DualControlLayout buttonBar = mView.findViewById(R.id.button_bar);

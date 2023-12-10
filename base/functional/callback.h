@@ -10,6 +10,8 @@
 #define BASE_FUNCTIONAL_CALLBACK_H_
 
 #include <stddef.h>
+
+#include <type_traits>
 #include <utility>
 
 #include "base/check.h"
@@ -208,17 +210,23 @@ class TRIVIAL_ABI OnceCallback<R(Args...)> {
 
   // NOLINTNEXTLINE(google-explicit-constructor)
   constexpr OnceCallback(internal::DoNothingCallbackTag)
+    requires(std::is_void_v<R>)
       : OnceCallback(BindOnce([](Args... args) {})) {}
-  constexpr OnceCallback& operator=(internal::DoNothingCallbackTag) {
+  constexpr OnceCallback& operator=(internal::DoNothingCallbackTag)
+    requires(std::is_void_v<R>)
+  {
     *this = BindOnce([](Args... args) {});
     return *this;
   }
 
   // NOLINTNEXTLINE(google-explicit-constructor)
   constexpr OnceCallback(internal::DoNothingCallbackTag::WithSignature<RunType>)
+    requires(std::is_void_v<R>)
       : OnceCallback(internal::DoNothingCallbackTag()) {}
   constexpr OnceCallback& operator=(
-      internal::DoNothingCallbackTag::WithSignature<RunType>) {
+      internal::DoNothingCallbackTag::WithSignature<RunType>)
+    requires(std::is_void_v<R>)
+  {
     *this = internal::DoNothingCallbackTag();
     return *this;
   }
@@ -227,11 +235,14 @@ class TRIVIAL_ABI OnceCallback<R(Args...)> {
   // NOLINTNEXTLINE(google-explicit-constructor)
   constexpr OnceCallback(
       internal::DoNothingCallbackTag::WithBoundArguments<BoundArgs...> tag)
+    requires(std::is_void_v<R>)
       : OnceCallback(
             internal::ToDoNothingCallback<true, R, Args...>(std::move(tag))) {}
   template <typename... BoundArgs>
   constexpr OnceCallback& operator=(
-      internal::DoNothingCallbackTag::WithBoundArguments<BoundArgs...> tag) {
+      internal::DoNothingCallbackTag::WithBoundArguments<BoundArgs...> tag)
+    requires(std::is_void_v<R>)
+  {
     *this = internal::ToDoNothingCallback<true, R, Args...>(std::move(tag));
     return *this;
   }
@@ -311,12 +322,8 @@ class TRIVIAL_ABI RepeatingCallback<R(Args...)> {
   bool MaybeValid() const { return holder_.MaybeValid(); }
 
   // Equality operators: two `RepeatingCallback`'s are equal
-  bool operator==(const RepeatingCallback& other) const {
-    return holder_ == other.holder_;
-  }
-  bool operator!=(const RepeatingCallback& other) const {
-    return !operator==(other);
-  }
+  friend bool operator==(const RepeatingCallback&,
+                         const RepeatingCallback&) = default;
 
   // Resets this to null.
   REINITIALIZES_AFTER_MOVE void Reset() { holder_.Reset(); }
@@ -410,8 +417,11 @@ class TRIVIAL_ABI RepeatingCallback<R(Args...)> {
 
   // NOLINTNEXTLINE(google-explicit-constructor)
   constexpr RepeatingCallback(internal::DoNothingCallbackTag)
+    requires(std::is_void_v<R>)
       : RepeatingCallback(BindRepeating([](Args... args) {})) {}
-  constexpr RepeatingCallback& operator=(internal::DoNothingCallbackTag) {
+  constexpr RepeatingCallback& operator=(internal::DoNothingCallbackTag)
+    requires(std::is_void_v<R>)
+  {
     *this = BindRepeating([](Args... args) {});
     return *this;
   }
@@ -419,9 +429,12 @@ class TRIVIAL_ABI RepeatingCallback<R(Args...)> {
   // NOLINTNEXTLINE(google-explicit-constructor)
   constexpr RepeatingCallback(
       internal::DoNothingCallbackTag::WithSignature<RunType>)
+    requires(std::is_void_v<R>)
       : RepeatingCallback(internal::DoNothingCallbackTag()) {}
   constexpr RepeatingCallback& operator=(
-      internal::DoNothingCallbackTag::WithSignature<RunType>) {
+      internal::DoNothingCallbackTag::WithSignature<RunType>)
+    requires(std::is_void_v<R>)
+  {
     *this = internal::DoNothingCallbackTag();
     return *this;
   }
@@ -430,11 +443,14 @@ class TRIVIAL_ABI RepeatingCallback<R(Args...)> {
   // NOLINTNEXTLINE(google-explicit-constructor)
   constexpr RepeatingCallback(
       internal::DoNothingCallbackTag::WithBoundArguments<BoundArgs...> tag)
+    requires(std::is_void_v<R>)
       : RepeatingCallback(
             internal::ToDoNothingCallback<false, R, Args...>(std::move(tag))) {}
   template <typename... BoundArgs>
   constexpr RepeatingCallback& operator=(
-      internal::DoNothingCallbackTag::WithBoundArguments<BoundArgs...> tag) {
+      internal::DoNothingCallbackTag::WithBoundArguments<BoundArgs...> tag)
+    requires(std::is_void_v<R>)
+  {
     *this = internal::ToDoNothingCallback<false, R, Args...>(std::move(tag));
     return this;
   }

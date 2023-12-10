@@ -105,11 +105,13 @@ class CORE_EXPORT HTMLVideoElement final
   bool IsDefaultPosterImageURL() const;
 
   // Helper for GetSourceImageForCanvas() and other external callers who want a
-  // StaticBitmapImage of the current VideoFrame. If |allow_accelerated_images|
+  // StaticBitmapImage of the current VideoFrame. If `allow_accelerated_images`
   // is set to false a software backed CanvasResourceProvider will be used to
-  // produce the StaticBitmapImage.
+  // produce the StaticBitmapImage. If `size` is specified, the image will be
+  // scaled to it, otherwise the image will be in its natural size.
   scoped_refptr<StaticBitmapImage> CreateStaticBitmapImage(
-      bool allow_accelerated_images = true);
+      bool allow_accelerated_images = true,
+      absl::optional<gfx::Size> size = absl::nullopt);
 
   // CanvasImageSource implementation
   scoped_refptr<Image> GetSourceImageForCanvas(

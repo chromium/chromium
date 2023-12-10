@@ -27,9 +27,9 @@ class RoundedImageView;
 // A button with an image derived from a file's thumbnail and file's name as the
 // label.
 class ASH_EXPORT HoldingSpaceItemChipView : public HoldingSpaceItemView {
- public:
-  METADATA_HEADER(HoldingSpaceItemChipView);
+  METADATA_HEADER(HoldingSpaceItemChipView, HoldingSpaceItemView)
 
+ public:
   HoldingSpaceItemChipView(HoldingSpaceViewDelegate* delegate,
                            const HoldingSpaceItem* item);
   HoldingSpaceItemChipView(const HoldingSpaceItemChipView&) = delete;

@@ -241,6 +241,8 @@ struct Sense {
 struct DefinitionResult {
  public:
   DefinitionResult();
+  DefinitionResult(const DefinitionResult& other);
+  DefinitionResult& operator=(const DefinitionResult& other);
   ~DefinitionResult();
 
   std::string word;
@@ -253,6 +255,8 @@ struct DefinitionResult {
 struct TranslationResult {
  public:
   TranslationResult();
+  TranslationResult(const TranslationResult& other);
+  TranslationResult& operator=(const TranslationResult& other);
   ~TranslationResult();
 
   // TODO(b/278929409): Migrate to `std::string` for strings in structs.
@@ -260,6 +264,23 @@ struct TranslationResult {
   std::u16string translated_text;
   std::string source_locale;
   std::string target_locale;
+};
+
+// `UnitConversionResult` holds result for unit conversion intent.
+// `UnitConversionResult` must be copyable.
+struct UnitConversionResult {
+ public:
+  UnitConversionResult();
+  UnitConversionResult(const UnitConversionResult& other);
+  UnitConversionResult& operator=(const UnitConversionResult& other);
+  ~UnitConversionResult();
+
+  std::string result_text;
+  std::string category;
+  std::string source_amount;
+  std::string destination_amount;
+  std::string source_unit;
+  std::string destination_unit;
 };
 
 // `StructuredResult` is NOT copyable as it's not trivial to make a class with
@@ -274,6 +295,7 @@ class StructuredResult {
   // Result type specific structs must be copyable.
   std::unique_ptr<TranslationResult> translation_result;
   std::unique_ptr<DefinitionResult> definition_result;
+  std::unique_ptr<UnitConversionResult> unit_conversion_result;
 };
 
 // `QuickAnswersSession` holds states related to a single Quick Answer session.

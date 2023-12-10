@@ -123,7 +123,8 @@ int SocketBIOAdapter::BIORead(char* out, int len) {
     // reused after shutdown for non-SSL traffic, so overreading is fine.
     CHECK(!read_buffer_);
     CHECK_EQ(0, read_offset_);
-    read_buffer_ = base::MakeRefCounted<IOBuffer>(read_buffer_capacity_);
+    read_buffer_ =
+        base::MakeRefCounted<IOBufferWithSize>(read_buffer_capacity_);
     read_result_ = ERR_IO_PENDING;
     int result = socket_->ReadIfReady(
         read_buffer_.get(), read_buffer_capacity_,

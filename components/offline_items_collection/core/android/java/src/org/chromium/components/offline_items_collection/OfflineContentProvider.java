@@ -42,7 +42,7 @@ public interface OfflineContentProvider {
     void pauseDownload(ContentId id);
 
     /** See OfflineContentProvider::ResumeDownload(...). */
-    void resumeDownload(ContentId id, boolean hasUserGesture);
+    void resumeDownload(ContentId id);
 
     /** See OfflineContentProvider::GetItemById(...). */
     void getItemById(ContentId id, Callback<OfflineItem> callback);

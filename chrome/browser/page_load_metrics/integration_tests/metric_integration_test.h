@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_PAGE_LOAD_METRICS_INTEGRATION_TESTS_METRIC_INTEGRATION_TEST_H_
 #define CHROME_BROWSER_PAGE_LOAD_METRICS_INTEGRATION_TESTS_METRIC_INTEGRATION_TEST_H_
 
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "chrome/test/base/in_process_browser_test.h"
 
 #include "base/test/metrics/histogram_tester.h"

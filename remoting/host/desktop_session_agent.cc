@@ -729,7 +729,7 @@ void DesktopSessionAgent::SetScreenResolution(
   CHECK(started_);
 
   if (screen_controls_) {
-    screen_controls_->SetScreenResolution(resolution, absl::nullopt);
+    screen_controls_->SetScreenResolution(resolution, std::nullopt);
   }
 }
 

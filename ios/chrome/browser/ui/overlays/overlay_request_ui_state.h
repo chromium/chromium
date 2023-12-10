@@ -7,8 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
-#include "ios/chrome/browser/overlays/public/overlay_dismissal_callback.h"
-#include "ios/chrome/browser/overlays/public/overlay_presentation_callback.h"
+#include "ios/chrome/browser/overlays/model/public/overlay_dismissal_callback.h"
+#include "ios/chrome/browser/overlays/model/public/overlay_presentation_callback.h"
 
 @class OverlayRequestCoordinator;
 class OverlayRequest;

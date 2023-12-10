@@ -74,6 +74,7 @@ class DataDevice : public DataOfferObserver,
   void OnClipboardDataChanged() override;
 
   // Overridden from SeatObserver:
+  void OnSurfaceCreated(Surface* surface) override;
   void OnSurfaceFocused(Surface* surface,
                         Surface* lost_focus,
                         bool has_focused_client) override;

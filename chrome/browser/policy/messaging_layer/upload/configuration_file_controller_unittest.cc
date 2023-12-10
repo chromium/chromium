@@ -48,7 +48,7 @@ class ConfigurationFileControllerTest : public ::testing::Test {
   void EnableSignatureTestFlag() {
     scoped_feature_list_.Reset();
     std::unique_ptr<base::FeatureList> feature_list(new base::FeatureList);
-    feature_list->InitializeFromCommandLine(
+    feature_list->InitFromCommandLine(
         "ReportingConfigurationFileTestSignature, "
         "ShouldRequestConfigurationFile",
         "");

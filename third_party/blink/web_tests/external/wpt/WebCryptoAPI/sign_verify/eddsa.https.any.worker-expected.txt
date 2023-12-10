@@ -1,6 +1,4 @@
 This is a testharness.js-based test.
-[PASS] setup
-[PASS] Sign and verify using generated Ed25519 keys.
 [FAIL] Sign and verify using generated Ed448 keys.
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name"
 [FAIL] importVectorKeys step: EdDSA Ed448 verification
@@ -23,21 +21,9 @@ This is a testharness.js-based test.
   assert_unreached: importVectorKeys failed for EdDSA Ed448. Message: ''Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name'' Reached unreachable code
 [FAIL] importVectorKeys step: EdDSA Ed448 verification failure due to altered data
   assert_unreached: importVectorKeys failed for EdDSA Ed448. Message: ''Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name'' Reached unreachable code
-[PASS] EdDSA Ed25519 verification
-[PASS] EdDSA Ed25519 verification with altered signature after call
-[PASS] EdDSA Ed25519 with altered data after call
-[PASS] EdDSA Ed25519 using privateKey to verify
-[PASS] EdDSA Ed25519 using publicKey to sign
-[PASS] EdDSA Ed25519 no verify usage
-[PASS] EdDSA Ed25519 round trip
-[PASS] EdDSA Ed25519 signing with wrong algorithm name
 [FAIL] importVectorKeys step: EdDSA Ed448 signing with wrong algorithm name
   assert_unreached: importVectorKeys failed for EdDSA Ed448. Message: ''Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name'' Reached unreachable code
-[PASS] EdDSA Ed25519 verifying with wrong algorithm name
 [FAIL] importVectorKeys step: EdDSA Ed448 verifying with wrong algorithm name
   assert_unreached: importVectorKeys failed for EdDSA Ed448. Message: ''Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name'' Reached unreachable code
-[PASS] EdDSA Ed25519 verification failure due to altered signature
-[PASS] EdDSA Ed25519 verification failure due to shortened signature
-[PASS] EdDSA Ed25519 verification failure due to altered data
 Harness: the test ran to completion.
 

@@ -59,10 +59,11 @@ bool DesktopMediaID::operator!=(const DesktopMediaID& other) const {
 
 // static
 // Input string should in format:
-// for WebContents:
-// web-contents-media-stream://"render_process_id":"render_process_id" for
-// screen: screen:window_id:native_window_id for window:
-// window:window_id:native_window_id
+// - For WebContents:
+//   web-contents-media-stream://"render_process_id":"main_render_frame_id",
+//   with optional local_echo=false specified as a "query string".
+// - For screen: screen:window_id:native_window_id
+// - For window: window:window_id:native_window_id
 DesktopMediaID DesktopMediaID::Parse(const std::string& str) {
   // For WebContents type.
   WebContentsMediaCaptureId web_id;

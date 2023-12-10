@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/color/win/forced_colors_mixer_win.h"
-
 #include "ui/color/color_id.h"
 #include "ui/color/color_mixer.h"
 #include "ui/color/color_provider.h"
@@ -13,13 +11,9 @@
 
 namespace ui {
 
-// TODO(crbug.com/1231644): Implementation of the new browser setting Page
-// Colors will allow users to enable forced colors mode on different platforms.
-// Need to ensure compatibility with the existing forced colors mode on Windows.
-void AddSystemForcedColorsColorMixer(ColorProvider* provider,
-                                     const ColorProviderKey& key) {
-  ColorMixer& mixer = provider->AddMixer();
-
+// Adds the default Windows system colors to `mixer` when High Contrast mode is
+// enabled.
+void AddSystemForcedColorsToMixer(ColorMixer& mixer) {
   mixer[kColorForcedBtnFace] = {kColorNativeBtnFace};
   mixer[kColorForcedBtnText] = {kColorNativeBtnText};
   mixer[kColorForcedGrayText] = {kColorNativeGrayText};
@@ -30,7 +24,6 @@ void AddSystemForcedColorsColorMixer(ColorProvider* provider,
   mixer[kColorForcedScrollbar] = {kColorNativeScrollbar};
   mixer[kColorForcedWindow] = {kColorNativeWindow};
   mixer[kColorForcedWindowText] = {kColorNativeWindowText};
-  CompleteControlsForcedColorsDefinition(mixer);
 }
 
 }  // namespace ui

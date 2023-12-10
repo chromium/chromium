@@ -7,6 +7,7 @@
 #import "base/apple/foundation_util.h"
 #import "base/ios/ios_util.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_model.h"
 #import "ios/web/common/features.h"
@@ -120,24 +121,28 @@
     }
   }
 
-  // Update the content offset of the scroll view to match the padding
-  // that will be included in the frame.
   CGFloat currentTopInset = webView.frame.origin.y;
   CGPoint newContentOffset = scrollViewProxy.contentOffset;
   newContentOffset.y += insets.top - currentTopInset;
-  if (self.compensateFrameChangeByOffset) {
-    scrollViewProxy.contentOffset = newContentOffset;
+  if (!base::FeatureList::IsEnabled(kFullscreenImprovement)) {
+    // Update the content offset of the scroll view to match the padding
+    // that will be included in the frame.
+    if (self.compensateFrameChangeByOffset) {
+      scrollViewProxy.contentOffset = newContentOffset;
+    }
   }
 
   webView.frame = newFrame;
 
-  // Setting WKWebView frame can mistakenly reset contentOffset. Change it
-  // back to the initial value if necessary.
-  // TODO(crbug.com/645857): Remove this workaround once WebKit bug is
-  // fixed.
-  if (self.compensateFrameChangeByOffset &&
-      [scrollViewProxy contentOffset].y != newContentOffset.y) {
-    [scrollViewProxy setContentOffset:newContentOffset];
+  if (!base::FeatureList::IsEnabled(kFullscreenImprovement)) {
+    // Setting WKWebView frame can mistakenly reset contentOffset. Change it
+    // back to the initial value if necessary.
+    // TODO(crbug.com/645857): Remove this workaround once WebKit bug is
+    // fixed.
+    if (self.compensateFrameChangeByOffset &&
+        [scrollViewProxy contentOffset].y != newContentOffset.y) {
+      [scrollViewProxy setContentOffset:newContentOffset];
+    }
   }
 }
 

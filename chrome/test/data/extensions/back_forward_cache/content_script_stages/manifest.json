@@ -20,5 +20,9 @@
       "js": ["document_end.js"],
       "run_at": "document_end"
     }
-  ]
+  ],
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": false
+  }
 }

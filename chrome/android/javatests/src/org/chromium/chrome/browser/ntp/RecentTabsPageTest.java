@@ -35,7 +35,6 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -47,7 +46,6 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.RecentTabsPageTestUtils;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestUtil;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -67,7 +65,6 @@ import java.util.concurrent.ExecutionException;
 /** Instrumentation tests for {@link RecentTabsPage}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@EnableFeatures(ChromeFeatureList.EMPTY_STATES)
 public class RecentTabsPageTest {
     private static final String EMAIL = "email@gmail.com";
     private static final String NAME = "Email Emailson";

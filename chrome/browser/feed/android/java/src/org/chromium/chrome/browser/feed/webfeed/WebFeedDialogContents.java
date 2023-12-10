@@ -9,9 +9,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 
-/**
- * Class containing all data that customizes the contents displayed in the dialog.
- */
+/** Class containing all data that customizes the contents displayed in the dialog. */
 class WebFeedDialogContents {
     final String mTitle;
     final String mDetails;
@@ -32,8 +30,12 @@ class WebFeedDialogContents {
      * @param buttonClickCallback The callback handling clicks on the primary and secondary buttons.
      *        It takes the type of the button as a parameter.
      */
-    public WebFeedDialogContents(String title, String details, int illustrationId,
-            String primaryButtonText, @Nullable String secondaryButtonText,
+    public WebFeedDialogContents(
+            String title,
+            String details,
+            int illustrationId,
+            String primaryButtonText,
+            @Nullable String secondaryButtonText,
             Callback<Integer> buttonClickCallback) {
         mTitle = title;
         mDetails = details;

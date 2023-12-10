@@ -7,6 +7,7 @@
 #include <cmath>
 #include <cstdint>
 #include <limits>
+#include <optional>
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -16,7 +17,6 @@
 #include "base/time/time.h"
 #include "chromeos/ash/components/memory/memory.h"
 #include "chromeos/ash/components/memory/swap_configuration.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::memory {
 

@@ -91,6 +91,7 @@ size_t EstimateBlinkInterestGroupSize(
     for (const String& key : *group.trusted_bidding_signals_keys)
       size += key.length();
   }
+  size += sizeof(group.trusted_bidding_signals_slot_size_mode);
   size += group.user_bidding_signals.length();
 
   if (group.ads) {
@@ -243,6 +244,25 @@ bool ValidateBlinkInterestGroup(const mojom::blink::InterestGroup& group,
           "or embedded credentials.";
       return false;
     }
+  }
+
+  // This check is here to keep it in sync with InterestGroup::IsValid(), but
+  // checks in navigator_auction.cc should ensure the execution mode is always
+  // valid.
+  if (group.trusted_bidding_signals_slot_size_mode !=
+          mojom::blink::InterestGroup::TrustedBiddingSignalsSlotSizeMode::
+              kNone &&
+      group.trusted_bidding_signals_slot_size_mode !=
+          mojom::blink::InterestGroup::TrustedBiddingSignalsSlotSizeMode::
+              kSlotSize &&
+      group.trusted_bidding_signals_slot_size_mode !=
+          mojom::blink::InterestGroup::TrustedBiddingSignalsSlotSizeMode::
+              kAllSlotsRequestedSizes) {
+    error_field_name = "trustedBiddingSignalsSlotSizeMode";
+    error_field_value = String::Number(
+        static_cast<int>(group.trusted_bidding_signals_slot_size_mode));
+    error = "trustedBiddingSignalsSlotSizeMode is not valid.";
+    return false;
   }
 
   if (group.ads) {

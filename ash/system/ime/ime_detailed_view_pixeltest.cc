@@ -28,7 +28,7 @@ class IMEDetailedViewPixelTest : public AshTestBase {
   }
 
   // AshTestBase:
-  absl::optional<pixel_test::InitParams> CreatePixelTestInitParams()
+  std::optional<pixel_test::InitParams> CreatePixelTestInitParams()
       const override {
     return pixel_test::InitParams();
   }
@@ -76,7 +76,7 @@ TEST_F(IMEDetailedViewPixelTest, Basics) {
   ASSERT_TRUE(detailed_view);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "check_view",
-      /*revision_number=*/7, detailed_view));
+      /*revision_number=*/11, detailed_view));
 }
 
 }  // namespace

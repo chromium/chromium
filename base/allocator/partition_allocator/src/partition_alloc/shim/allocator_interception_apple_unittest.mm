@@ -2,12 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/allocator/partition_allocator/src/partition_alloc/shim/allocator_interception_apple.h"
+#include "partition_alloc/shim/allocator_interception_apple.h"
 
+#include "partition_alloc/partition_alloc_buildflags.h"
+
+#if BUILDFLAG(USE_ALLOCATOR_SHIM)
 #include <mach/mach.h>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/shim/allocator_shim.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/shim/malloc_zone_functions_apple.h"
+#include "partition_alloc/shim/allocator_shim.h"
+#include "partition_alloc/shim/malloc_zone_functions_apple.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace allocator_shim {
@@ -52,7 +55,12 @@ TEST_F(AllocatorInterceptionTest, ShimNewMallocZones) {
       reinterpret_cast<ChromeMallocZone*>(malloc_default_zone());
 
   malloc_zone_t new_zone;
+  // Uninitialized: this is not a problem, because `ShimNewMalloc()` will just
+  // copy a member from this struct, not use it, which is why its pointer in
+  // `new_zone` must be valid, but its content can be meaningless.
+  malloc_introspection_t introspection;
   memset(&new_zone, 1, sizeof(malloc_zone_t));
+  new_zone.introspect = &introspection;
   malloc_zone_register(&new_zone);
   EXPECT_NE(new_zone.malloc, default_malloc_zone->malloc);
   ShimNewMallocZones();
@@ -63,3 +71,5 @@ TEST_F(AllocatorInterceptionTest, ShimNewMallocZones) {
 #endif
 
 }  // namespace allocator_shim
+
+#endif  // BUILDFLAG(USE_ALLOCATOR_SHIM)

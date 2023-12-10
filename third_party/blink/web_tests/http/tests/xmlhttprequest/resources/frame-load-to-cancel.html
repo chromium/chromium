@@ -29,7 +29,7 @@ function readyStateChanged(evt)
 
 </script>
 </head>
-<body onload="loadXMLDoc(); window.parent.subframeLoaded();" onunload="window.parent.log('Iframe unloaded');">
+<body onload="loadXMLDoc(); window.parent.subframeLoaded();" onpagehide="window.parent.log('Iframe unloaded');">
 <p>This should have an XMLHttpRequest going on inside it</p>
 </body>
 </html>

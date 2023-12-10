@@ -28,28 +28,32 @@ import javax.annotation.concurrent.GuardedBy;
  */
 public class ChainedTasks {
     private final LinkedList<Pair<Integer, Runnable>> mTasks = new LinkedList<>();
+
     @GuardedBy("mTasks")
     private boolean mFinalized;
+
     private volatile boolean mCanceled;
     private int mIterationIdForTesting = PostTask.sTestIterationForTesting;
 
-    private final Runnable mRunAndPost = new Runnable() {
-        @Override
-        @SuppressWarnings("NoDynamicStringsInTraceEventCheck")
-        public void run() {
-            if (mIterationIdForTesting != PostTask.sTestIterationForTesting) {
-                cancel();
-            }
-            if (mCanceled) return;
+    private final Runnable mRunAndPost =
+            new Runnable() {
+                @Override
+                @SuppressWarnings("NoDynamicStringsInTraceEventCheck")
+                public void run() {
+                    if (mIterationIdForTesting != PostTask.sTestIterationForTesting) {
+                        cancel();
+                    }
+                    if (mCanceled) return;
 
-            Pair<Integer, Runnable> pair = mTasks.pop();
-            try (TraceEvent e = TraceEvent.scoped(
-                         "ChainedTask.run: " + pair.second.getClass().getName())) {
-                pair.second.run();
-            }
-            if (!mTasks.isEmpty()) PostTask.postTask(mTasks.peek().first, this);
-        }
-    };
+                    Pair<Integer, Runnable> pair = mTasks.pop();
+                    try (TraceEvent e =
+                            TraceEvent.scoped(
+                                    "ChainedTask.run: " + pair.second.getClass().getName())) {
+                        pair.second.run();
+                    }
+                    if (!mTasks.isEmpty()) PostTask.postTask(mTasks.peek().first, this);
+                }
+            };
 
     /**
      * Adds a task to the list of tasks to run. Cannot be called once {@link start()} has been
@@ -64,9 +68,7 @@ public class ChainedTasks {
         }
     }
 
-    /**
-     * Cancels the remaining tasks.
-     */
+    /** Cancels the remaining tasks. */
     public void cancel() {
         synchronized (mTasks) {
             mFinalized = true;
@@ -82,20 +84,21 @@ public class ChainedTasks {
      */
     public void start(final boolean coalesceTasks) {
         synchronized (mTasks) {
-            assert !mFinalized :"Cannot call start() several times";
+            assert !mFinalized : "Cannot call start() several times";
             mFinalized = true;
         }
         if (mTasks.isEmpty()) return;
         if (coalesceTasks) {
-            @TaskTraits
-            int traits = mTasks.peek().first;
-            PostTask.runOrPostTask(traits, () -> {
-                for (Pair<Integer, Runnable> pair : mTasks) {
-                    assert PostTask.canRunTaskImmediately(pair.first);
-                    pair.second.run();
-                    if (mCanceled) return;
-                }
-            });
+            @TaskTraits int traits = mTasks.peek().first;
+            PostTask.runOrPostTask(
+                    traits,
+                    () -> {
+                        for (Pair<Integer, Runnable> pair : mTasks) {
+                            assert PostTask.canRunTaskImmediately(pair.first);
+                            pair.second.run();
+                            if (mCanceled) return;
+                        }
+                    });
         } else {
             PostTask.postTask(mTasks.peek().first, mRunAndPost);
         }

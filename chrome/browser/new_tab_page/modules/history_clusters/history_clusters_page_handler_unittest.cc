@@ -507,6 +507,9 @@ TEST_F(HistoryClustersPageHandlerTest, NotLoadCartWithoutFeature) {
 }
 
 TEST_F(HistoryClustersPageHandlerTest, NotLoadDiscountWithoutFeature) {
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(
+      ntp_features::kNtpHistoryClustersModuleDiscounts);
   history_clusters::mojom::ClusterPtr cluster_mojom;
   EXPECT_CALL(mock_shopping_service(),
               GetDiscountInfoForUrls(testing::_, testing::_))

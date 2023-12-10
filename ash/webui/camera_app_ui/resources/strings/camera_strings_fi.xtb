@@ -5,7 +5,6 @@
 <translation id="1076394037877376434">Poista sivu <ph name="PAGE_NUMBER" /></translation>
 <translation id="1113173431709655881">Kameratila</translation>
 <translation id="1153190633558910465">Ruudukko pois</translation>
-<translation id="1175958423215084756">Linkki havaittu. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213">Sivu <ph name="PAGE_NUMBER" /> poistettu</translation>
 <translation id="1258009455399840361">Kierrä 90 astetta myötäpäivään</translation>
 <translation id="1417314334557041815">Muokkaa sivua <ph name="INDEX" /></translation>
@@ -60,14 +59,12 @@
 <translation id="3642192109456033823">Käsitellään videota…</translation>
 <translation id="3789724198583203151">Kierrä 90 astetta vastapäivään</translation>
 <translation id="3810838688059735925">Video</translation>
-<translation id="3892148308691398805">Kopioi teksti</translation>
 <translation id="4060608699153044055">Et voi tallentaa, koska laitteen tallennustila on vähissä. Sinun on vapautettava tilaa laitteelta, jotta voit aloittaa tallennuksen.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> Mpx</translation>
 <translation id="4118525110028899586">Keskeytä tallennus</translation>
 <translation id="4121305183798804752">Dokumentti havaittiin</translation>
 <translation id="414641094616694804">Kamera ei voi muuttaa resoluutiota</translation>
 <translation id="4176463684765177261">Pois käytöstä</translation>
-<translation id="4269820728363426813">Kopioi linkin osoite</translation>
 <translation id="428234092390943511">Sivun pikkukuva</translation>
 <translation id="4349714250734879769">Skaalaa kehykset Chromella</translation>
 <translation id="4383571725254449280">Tulosta kehityslokit</translation>
@@ -144,7 +141,6 @@ Jos palautteesi koskee kuvan tai videon laatua, liitä mukaan esimerkkikuva tai 
 <translation id="7726641833034062494">Kuvaa normaali video</translation>
 <translation id="7748344063862150053">Dokumentin oikea yläkulma</translation>
 <translation id="7933675232020478311">Siirretään alaoikealla</translation>
-<translation id="7983668134180549431">Tekstiä havaittu.</translation>
 <translation id="8079255378695216066">Tallennusta ei voi aloittaa</translation>
 <translation id="8120146556401698679">Panoroi kallista zoomaa</translation>
 <translation id="8131740175452115882">Vahvista</translation>
@@ -163,6 +159,7 @@ Jos palautteesi koskee kuvan tai videon laatua, liitä mukaan esimerkkikuva tai 
 <translation id="8870695351537079478">Tallennuksen aloittaminen epäonnistui</translation>
 <translation id="8880167521484863515">Kuvasuhde 4:3</translation>
 <translation id="8903921497873541725">Lähennä</translation>
+<translation id="8926890870105777777">Yhdistä tähän verkkoon: <ph name="WIFINAME" /></translation>
 <translation id="9045010116236796332">Aseta dokumentti niin, että kaikki reunat ovat kehyksen sisällä</translation>
 <translation id="9045155556724273246">10 sekuntia</translation>
 <translation id="906331135292332864">Käsitellään kuvaa…</translation>

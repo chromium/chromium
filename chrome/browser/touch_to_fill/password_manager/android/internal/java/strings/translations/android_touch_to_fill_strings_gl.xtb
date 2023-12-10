@@ -1,0 +1,27 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="gl">
+<translation id="1220509181886849806">Queres usar o contrasinal gardado?</translation>
+<translation id="1435940442311036198">Usar clave de acceso dun dispositivo distinto</translation>
+<translation id="1717486229951421299">A lista de credenciais que se completarán ao tocar está aberta ata a metade da pantalla.</translation>
+<translation id="2359808026110333948">Continuar</translation>
+<translation id="2364266287022099258">Queres usar a clave de acceso gardada?</translation>
+<translation id="3399357656427473483">A lista de credenciais que se completarán ao tocar.</translation>
+<translation id="3653689374478248324">Iniciarás sesión en <ph name="SITE_NAME" /></translation>
+<translation id="3950820424414687140">Iniciar sesión</translation>
+<translation id="4553044860350038560">Máis claves de acceso</translation>
+<translation id="4598345735110653698">Xestionar claves de acceso</translation>
+<translation id="4722735765955348426">Contrasinal de <ph name="USERNAME" /></translation>
+<translation id="4907224763885298217">Usa o bloqueo de pantalla</translation>
+<translation id="5012523644916800014">Xestionar contrasinais e claves de acceso</translation>
+<translation id="5441504010984421144">A lista de credenciais que se completarán ao tocar está aberta a pantalla completa.</translation>
+<translation id="5591247451101092906">Queres usar a clave de acceso ou o contrasinal gardado?</translation>
+<translation id="5624120631404540903">Xestionar contrasinais</translation>
+<translation id="6560306912274274630">Clave de acceso de <ph name="USERNAME" />; usar o bloqueo de pantalla</translation>
+<translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{Novo contrasinal para este sitio}other{Novos contrasinais para este sitio}}</translation>
+<translation id="7286867818472074330">Seleccionar clave de acceso</translation>
+<translation id="7669320311687290322"><ph name="ITEM_LABEL" />, <ph name="ITEM_POSITION" /> de <ph name="ITEMS_TOTAL" />.</translation>
+<translation id="7738288782501322815">Recibiches contrasinais para <ph name="SITE_NAME" /></translation>
+<translation id="8614995815226664591"><ph name="SENDER_NAME" /> compartiu un contrasinal contigo para <ph name="SITE_NAME" /></translation>
+<translation id="8891372124884726271">A lista de credenciais está pechada.</translation>
+</translationbundle>

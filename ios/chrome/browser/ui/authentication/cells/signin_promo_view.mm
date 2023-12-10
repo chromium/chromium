@@ -10,7 +10,6 @@
 #import "base/notreached.h"
 #import "build/branding_buildflags.h"
 #import "components/signin/public/base/signin_metrics.h"
-#import "ios/chrome/browser/ntp/home/features.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_constants.h"
@@ -482,8 +481,8 @@ constexpr CGFloat kCompactStyleTextSize = 15.0;
     case SigninPromoViewModeSigninWithAccount:
       [self activateSigninWithAccountMode];
       return;
-    case SigninPromoViewModeSyncWithPrimaryAccount:
-      [self activateSyncWithPrimaryAccountMode];
+    case SigninPromoViewModeSignedInWithPrimaryAccount:
+      [self activateSignedInWithPrimaryAccountMode];
       return;
   }
 }
@@ -770,9 +769,9 @@ constexpr CGFloat kCompactStyleTextSize = 15.0;
   self.secondaryButton.hidden = NO;
 }
 
-// Updates promo for sync with account mode.
-- (void)activateSyncWithPrimaryAccountMode {
-  DCHECK_EQ(_mode, SigninPromoViewModeSyncWithPrimaryAccount);
+// Updates promo for a signed-in account mode.
+- (void)activateSignedInWithPrimaryAccountMode {
+  DCHECK_EQ(_mode, SigninPromoViewModeSignedInWithPrimaryAccount);
   self.secondaryButton.hidden = YES;
 }
 
@@ -799,8 +798,8 @@ constexpr CGFloat kCompactStyleTextSize = 15.0;
       [self.delegate signinPromoViewDidTapSigninWithNewAccount:self];
       break;
     case SigninPromoViewModeSigninWithAccount:
-    case SigninPromoViewModeSyncWithPrimaryAccount:
-      [self.delegate signinPromoViewDidTapSigninWithDefaultAccount:self];
+    case SigninPromoViewModeSignedInWithPrimaryAccount:
+      [self.delegate signinPromoViewDidTapPrimaryButtonWithDefaultAccount:self];
       break;
   }
 }

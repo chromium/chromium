@@ -7,19 +7,21 @@
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
+#import "components/image_fetcher/core/image_fetcher_impl.h"
+#import "components/image_fetcher/ios/ios_image_decoder_impl.h"
 #import "components/password_manager/core/browser/features/password_features.h"
 #import "components/password_manager/core/browser/password_form.h"
 #import "components/password_manager/core/browser/password_manager.h"
-#import "components/password_manager/core/browser/password_store_interface.h"
+#import "components/password_manager/core/browser/password_store/password_store_interface.h"
 #import "components/password_manager/core/browser/password_ui_utils.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/password_manager/ios/ios_password_manager_driver_factory.h"
 #import "components/password_manager/ios/shared_password_controller.h"
 #import "components/prefs/pref_service.h"
-#import "ios/chrome/browser/autofill/bottom_sheet/autofill_bottom_sheet_java_script_feature.h"
-#import "ios/chrome/browser/autofill/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
-#import "ios/chrome/browser/autofill/form_input_suggestions_provider.h"
-#import "ios/chrome/browser/autofill/form_suggestion_tab_helper.h"
+#import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_java_script_feature.h"
+#import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
+#import "ios/chrome/browser/autofill/model/form_input_suggestions_provider.h"
+#import "ios/chrome/browser/autofill/model/form_suggestion_tab_helper.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/passwords/model/password_tab_helper.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -28,6 +30,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/ui/passwords/bottom_sheet/password_suggestion_bottom_sheet_consumer.h"
+#import "ios/chrome/browser/ui/settings/password/password_sharing/multi_avatar_image_util.h"
 #import "ios/chrome/common/ui/favicon/favicon_attributes.h"
 #import "ios/chrome/common/ui/favicon/favicon_constants.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_event.h"
@@ -36,8 +39,15 @@
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_observer_bridge.h"
+#import "services/network/public/cpp/shared_url_loader_factory.h"
 #import "ui/base/l10n/l10n_util_mac.h"
+#import "ui/gfx/image/image.h"
 #import "url/gurl.h"
+
+namespace {
+
+const char kImageFetcherUmaClient[] = "PasswordBottomSheet";
+const CGFloat kProfileImageSize = 80.0;
 
 using PasswordSuggestionBottomSheetExitReason::kDismissal;
 using PasswordSuggestionBottomSheetExitReason::kUsePasswordSuggestion;
@@ -45,6 +55,19 @@ using ReauthenticationEvent::kAttempt;
 using ReauthenticationEvent::kFailure;
 using ReauthenticationEvent::kMissingPasscode;
 using ReauthenticationEvent::kSuccess;
+
+int PrimaryActionStringIdFromSuggestion(FormSuggestion* suggestion) {
+  if (!base::FeatureList::IsEnabled(
+          password_manager::features::kIOSPasswordSignInUff)) {
+    return IDS_IOS_PASSWORD_BOTTOM_SHEET_USE_PASSWORD;
+  }
+
+  return suggestion.metadata.is_single_username_form
+             ? IDS_IOS_PASSWORD_BOTTOM_SHEET_CONTINUE
+             : IDS_IOS_PASSWORD_BOTTOM_SHEET_USE_PASSWORD;
+}
+
+}  // namespace
 
 @interface PasswordSuggestionBottomSheetMediator () <WebStateListObserving,
                                                      CRWWebStateObserver>
@@ -90,12 +113,13 @@ using ReauthenticationEvent::kSuccess;
   // and the user has not been notified about them yet.
   std::vector<const password_manager::PasswordForm*> _sharedUnnotifiedForms;
 
+  // Profile images of password senders if any of the passwords were received
+  // via the password sharing feature. Empty otherwise.
+  NSMutableArray<UIImage*>* _senderImages;
+
   // Whether the field that triggered the bottom sheet will need to refocus when
   // the bottom sheet is dismissed. Default is true.
   bool _needsRefocus;
-
-  // Whether to disable the bottom sheet on exit. Default is false.
-  bool _disableBottomSheetOnExit;
 
   // FaviconLoader is a keyed service that uses LargeIconService to retrieve
   // favicon images.
@@ -106,6 +130,9 @@ using ReauthenticationEvent::kSuccess;
 
   // Module containing the reauthentication mechanism.
   __weak id<ReauthenticationProtocol> _reauthenticationModule;
+
+  // Fetches profile pictures.
+  std::unique_ptr<image_fetcher::ImageFetcher> _imageFetcher;
 }
 
 @synthesize defaultGlobeIconAttributes = _defaultGlobeIconAttributes;
@@ -121,10 +148,12 @@ using ReauthenticationEvent::kSuccess;
                         profilePasswordStore
                 accountPasswordStore:
                     (scoped_refptr<password_manager::PasswordStoreInterface>)
-                        accountPasswordStore {
+                        accountPasswordStore
+              sharedURLLoaderFactory:
+                  (scoped_refptr<network::SharedURLLoaderFactory>)
+                      sharedURLLoaderFactory {
   if (self = [super init]) {
     _needsRefocus = true;
-    _disableBottomSheetOnExit = false;
     _faviconLoader = faviconLoader;
     _prefService = prefService;
     _reauthenticationModule = reauthModule;
@@ -132,6 +161,9 @@ using ReauthenticationEvent::kSuccess;
     _profilePasswordStore = profilePasswordStore;
     _accountPasswordStore = accountPasswordStore;
     _URL = URL;
+    _imageFetcher = std::make_unique<image_fetcher::ImageFetcherImpl>(
+        image_fetcher::CreateIOSImageDecoder(), sharedURLLoaderFactory);
+    _senderImages = [NSMutableArray array];
 
     _webStateList = webStateList;
     web::WebState* activeWebState = _webStateList->GetActiveWebState();
@@ -189,7 +221,7 @@ using ReauthenticationEvent::kSuccess;
   return [self.suggestions count] > 0;
 }
 
-- (absl::optional<password_manager::CredentialUIEntry>)
+- (std::optional<password_manager::CredentialUIEntry>)
     getCredentialForFormSuggestion:(FormSuggestion*)formSuggestion {
   NSString* username = formSuggestion.value;
   if ([username containsString:kPasswordFormSuggestionSuffix]) {
@@ -210,8 +242,8 @@ using ReauthenticationEvent::kSuccess;
         return false;
       });
   return it != _credentials.end()
-             ? absl::optional<password_manager::CredentialUIEntry>(*it)
-             : absl::nullopt;
+             ? std::optional<password_manager::CredentialUIEntry>(*it)
+             : std::nullopt;
 }
 
 - (void)logExitReason:(PasswordSuggestionBottomSheetExitReason)exitReason {
@@ -239,7 +271,17 @@ using ReauthenticationEvent::kSuccess;
     if ([self shouldDisplaySharingNotification]) {
       [consumer setTitle:[self sharingNotificationTitle]
                 subtitle:[self sharingNotificationSubtitle:domain]];
+      [consumer setAvatarImage:CreateMultiAvatarImage(_senderImages,
+                                                      kProfileImageSize)];
     }
+
+    // Determine the primary action label only from the first suggestion, which
+    // is sufficient as all the suggestions should have the same metadata. There
+    // should be at least one suggestion at this point because the consumer is
+    // set when there is at least one suggestion.
+    [consumer setPrimaryActionString:l10n_util::GetNSString(
+                                        PrimaryActionStringIdFromSuggestion(
+                                            self.suggestions.firstObject))];
   } else {
     [consumer dismiss];
   }
@@ -279,7 +321,7 @@ using ReauthenticationEvent::kSuccess;
 }
 
 - (void)dismiss {
-  if ((_needsRefocus || _disableBottomSheetOnExit) && _webStateList) {
+  if (_needsRefocus && _webStateList) {
     [self logExitReason:kDismissal];
     [self incrementDismissCount];
     [self markSharedPasswordNotificationsDisplayed];
@@ -302,16 +344,6 @@ using ReauthenticationEvent::kSuccess;
 
 - (void)disableRefocus {
   _needsRefocus = false;
-}
-
-- (void)willSelectSuggestion:(NSInteger)row {
-  if ([[self usernameAtRow:row] length] == 0) {
-    // If the currently selected row has no username, the bottom sheet will
-    // disable itself on exit to allow the user to open the keyboard to fill in
-    // the username field.
-    _disableBottomSheetOnExit = true;
-  }
-  [self disableRefocus];
 }
 
 - (NSString*)usernameAtRow:(NSInteger)row {
@@ -376,7 +408,6 @@ using ReauthenticationEvent::kSuccess;
 
 - (void)onWebStateChange {
   _needsRefocus = false;
-  _disableBottomSheetOnExit = false;
   [self.consumer dismiss];
 }
 
@@ -469,6 +500,18 @@ using ReauthenticationEvent::kSuccess;
             password_manager::PasswordForm::Type::kReceivedViaSharing &&
         !form->sharing_notification_displayed) {
       _sharedUnnotifiedForms.push_back(form);
+      __weak __typeof__(self) weakSelf = self;
+      image_fetcher::ImageFetcherParams params(NO_TRAFFIC_ANNOTATION_YET,
+                                               kImageFetcherUmaClient);
+      _imageFetcher->FetchImage(
+          form->sender_profile_image_url,
+          base::BindOnce(^(const gfx::Image& image,
+                           const image_fetcher::RequestMetadata& metadata) {
+            if (!image.IsEmpty()) {
+              [weakSelf onSenderImageFetched:[image.ToUIImage() copy]];
+            }
+          }),
+          params);
     }
     _credentials.push_back(password_manager::CredentialUIEntry(*form));
   }
@@ -484,7 +527,6 @@ using ReauthenticationEvent::kSuccess;
 
 // Marks sharing notification as displayed in password store for all credentials
 // on `_sharedUnnotifiedForms`.
-// TODO(crbug.com/1493620): Add calling this on any type of sheet dismissal.
 - (void)markSharedPasswordNotificationsDisplayed {
   if (![self shouldDisplaySharingNotification]) {
     return;
@@ -524,6 +566,13 @@ using ReauthenticationEvent::kSuccess;
         IDS_IOS_PASSWORD_SHARING_NOTIFICATION_MULTIPLE_PASSWORDS_SUBTITLE,
         base::SysNSStringToUTF16(domain)));
   }
+}
+
+// Stores the fetched `image` and passes it to the consumer.
+- (void)onSenderImageFetched:(UIImage*)image {
+  [_senderImages addObject:image];
+  [_consumer
+      setAvatarImage:CreateMultiAvatarImage(_senderImages, kProfileImageSize)];
 }
 
 @end

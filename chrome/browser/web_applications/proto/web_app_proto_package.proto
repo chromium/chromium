@@ -1,0 +1,19 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package web_app.proto;
+
+// This file is separate from web_app.proto to specify the web_app.proto
+// package, which all proto types should eventually move to.
+// http://b/307989065
+
+enum LinkCapturingUserPreference {
+  LINK_CAPTURING_PREFERENCE_DEFAULT = 0;
+  CAPTURE_SUPPORTED_LINKS = 1;
+  DO_NOT_CAPTURE_SUPPORTED_LINKS = 2;
+}

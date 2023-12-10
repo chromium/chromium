@@ -12,20 +12,6 @@
 struct BlinkGCPluginOptions {
   bool dump_graph = false;
 
-  // Member<T> fields are only permitted in managed classes,
-  // something CheckFieldsVisitor verifies, issuing errors if
-  // found in unmanaged classes. WeakMember<T> should be treated
-  // the exact same, but CheckFieldsVisitor was missing the case
-  // for handling the weak member variant until crbug.com/724418.
-  //
-  // We've default-enabled the checking for those also now, but do
-  // offer an opt-out option should enabling the check lead to
-  // unexpected (but wanted, really) compilation errors while
-  // rolling out an updated GC plugin version.
-  //
-  // TODO(sof): remove this option once safely rolled out.
-  bool enable_weak_members_in_unmanaged_classes = false;
-
   // Persistent<T> fields are not allowed in garbage collected classes to avoid
   // memory leaks. Enabling this flag allows the plugin to check also for
   // Persistent<T> in types held by unique_ptr in garbage collected classes. The
@@ -56,12 +42,14 @@ struct BlinkGCPluginOptions {
 
   // Enables checking for `mojo::Associated{Remote,Receiver}` in the forbidden
   // fields checker.
-  bool forbid_associated_remote_receiver = false;
+  bool forbid_associated_remote_receiver = true;
 
   // Enables checks for GCed objects, Members, and pointers or references to
   // GCed objects and in stl and WTF collections.
   bool enable_off_heap_collections_of_gced_check = false;
-  bool enable_off_heap_collections_of_gced_check_pdfium = false;
+
+  // Enables checks for WeakPtr and WeakPtrFactory with GCed types.
+  bool enable_weak_ptrs_check = false;
 
   std::set<std::string> ignored_classes;
   std::set<std::string> checked_namespaces;

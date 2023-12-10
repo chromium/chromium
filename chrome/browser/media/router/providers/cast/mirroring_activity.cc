@@ -42,8 +42,8 @@
 #include "components/media_router/browser/mirroring_to_flinging_switcher.h"
 #include "components/media_router/common/discovery/media_sink_internal.h"
 #include "components/media_router/common/mojom/media_router.mojom.h"
+#include "components/media_router/common/providers/cast/channel/cast_device_capability.h"
 #include "components/media_router/common/providers/cast/channel/cast_message_util.h"
-#include "components/media_router/common/providers/cast/channel/cast_socket.h"
 #include "components/media_router/common/providers/cast/channel/enum_table.h"
 #include "components/media_router/common/route_request_result.h"
 #include "components/mirroring/mojom/session_parameters.mojom.h"
@@ -791,11 +791,11 @@ void MirroringActivity::StartSession(const std::string& destination_id,
 
   // Derive session type by intersecting the sink capabilities with what the
   // media source can provide.
-  const bool has_audio = (cast_data_.capabilities &
-                          static_cast<uint8_t>(cast_channel::AUDIO_OUT)) != 0 &&
+  const bool has_audio = cast_data_.capabilities.Has(
+                             cast_channel::CastDeviceCapability::kAudioOut) &&
                          cast_source->ProvidesStreamingAudioCapture();
-  const bool has_video = (cast_data_.capabilities &
-                          static_cast<uint8_t>(cast_channel::VIDEO_OUT)) != 0;
+  const bool has_video = cast_data_.capabilities.Has(
+      cast_channel::CastDeviceCapability::kVideoOut);
   if (!has_audio && !has_video) {
     return;
   }

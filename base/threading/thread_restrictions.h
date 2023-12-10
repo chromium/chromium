@@ -178,7 +178,6 @@ class OutputDevice;
 namespace blink {
 class AudioDestination;
 class DiskDataAllocator;
-class IdentifiabilityActiveSampler;
 class RTCVideoDecoderAdapter;
 class RTCVideoEncoder;
 class SourceStream;
@@ -460,6 +459,7 @@ class PlatformSharedMemoryRegion;
 
 namespace win {
 class OSInfo;
+class ObjectWatcher;
 class ScopedAllowBlockingForUserAccountControl;
 }  // namespace win
 
@@ -733,7 +733,6 @@ class BASE_EXPORT [[maybe_unused, nodiscard]] ScopedAllowBaseSyncPrimitives {
   friend class android_webview::JsSandboxIsolate;
   friend class base::SimpleThread;
   friend class base::internal::GetAppOutputScopedAllowBaseSyncPrimitives;
-  friend class blink::IdentifiabilityActiveSampler;
   friend class blink::SourceStream;
   friend class blink::VideoTrackRecorderImplContextProvider;
   friend class blink::WorkerThread;
@@ -817,6 +816,7 @@ class BASE_EXPORT
   friend class base::StackSamplingProfiler;
   friend class base::internal::JobTaskSource;
   friend class base::sequence_manager::internal::TaskQueueImpl;
+  friend class base::win::ObjectWatcher;
   friend class blink::AudioDestination;
   friend class blink::RTCVideoDecoderAdapter;
   friend class blink::RTCVideoEncoder;

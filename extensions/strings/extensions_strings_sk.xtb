@@ -8,6 +8,7 @@
 <translation id="1420684932347524586">Generovanie náhodného súkromného kľúča RSA žiaľ zlyhalo.</translation>
 <translation id="1445572445564823378">Toto rozšírenie spomaľuje prehliadač <ph name="PRODUCT_NAME" />. Ak chcete obnoviť výkonnosť prehliadača <ph name="PRODUCT_NAME" />, zakážte ho.</translation>
 <translation id="1468038450257740950">Rozhranie WebGL nie je podporované.</translation>
+<translation id="1610570795592207282">Pre skript sa nepodarilo načítať súbor css „<ph name="RELATIVE_PATH" />“.</translation>
 <translation id="1803557475693955505">Nepodarilo sa načítať stránku na pozadí „<ph name="BACKGROUND_PAGE" />“.</translation>
 <translation id="2159915644201199628">Nepodarilo sa dekódovať obrázok: <ph name="IMAGE_NAME" /></translation>
 <translation id="2350172092385603347">Lokalizácia sa použila, parameter default_locale však nebol v manifeste určený.</translation>
@@ -18,14 +19,12 @@
 <translation id="3115238746683532089">Neznámy produkt <ph name="PRODUCT_ID" /> od dodávateľa <ph name="VENDOR_ID" /> (sériové číslo: <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">Súbor crx sa nepodarilo nahradiť. Skontrolujte, či je súbor používaný.</translation>
 <translation id="3163201441334626963">Neznámy produkt <ph name="PRODUCT_ID" /> od dodávateľa <ph name="VENDOR_ID" /></translation>
-<translation id="3302709122321372472">Pre skript obsahu sa nepodarilo načítať súbor css „<ph name="RELATIVE_PATH" />“.</translation>
 <translation id="3369521687965833290">Rozšírenie sa nepodarilo rozbaliť. Aby bolo rozbalenie rozšírenia bezpečné, musíte zadať cestu k profilovému adresáru, ktorá začína písmenom jednotky a neobsahuje žiadny styčný bod, bod prepojenia ani odkaz symlink. Pre váš profil nie je k dispozícii žiadna takáto cesta.</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (sériové číslo: <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> od dodávateľa <ph name="VENDOR_ID" /> (sériové číslo: <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Vstupná hodnota pre súkromný kľúč musí byť platná cesta.</translation>
 <translation id="388442998277590542">Nepodarilo sa načítať stránku s možnosťami „<ph name="OPTIONS_PAGE" />“.</translation>
 <translation id="3984413272403535372">Pri podpisovaní rozšírenia sa vyskytla chyba.</translation>
-<translation id="39964277676607559">Pre skript obsahu sa nepodarilo načítať súbor javascript „<ph name="RELATIVE_PATH" />“.</translation>
 <translation id="4115165561519362854">Správca tohto zariadenia vyžaduje, aby ste používali rozšírenie <ph name="EXTENSION_NAME" /> aspoň vo verzii <ph name="EXTENSION_VERSION" />. Kým nebude aktualizované na túto alebo vyššiu verziu, nedá sa povoliť.</translation>
 <translation id="4233778200880751280">Informačnú stránku <ph name="ABOUT_PAGE" /> sa nepodarilo načítať.</translation>
 <translation id="471800408830181311">Výstup súkromného kľúča zlyhal.</translation>
@@ -33,6 +32,7 @@
 <translation id="4988792151665380515">Exportovanie verejného kľúča zlyhalo.</translation>
 <translation id="5026754133087629784">Webview: <ph name="WEBVIEW_TAG_NAME" /></translation>
 <translation id="5098647635849512368">Absolútnu cestu k adresáru na zbalenie nie je možné nájsť.</translation>
+<translation id="5160071981665899014">Pre skript sa nepodarilo načítať súbor javascript „<ph name="RELATIVE_PATH" />“.</translation>
 <translation id="5356315618422219272">Značka appview: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5436430103864390185">Tvarované okná nie sú podporované.</translation>
 <translation id="5456409301717116725">Toto rozšírenie obsahuje súbor kľúča <ph name="KEY_PATH" />. Pravdepodobne to nechcete urobiť.</translation>

@@ -6,6 +6,7 @@
 #define ASH_PUBLIC_CPP_HOLDING_SPACE_HOLDING_SPACE_ITEM_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -18,7 +19,6 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/vector_icon_types.h"
 
@@ -176,17 +176,17 @@ class ASH_PUBLIC_EXPORT HoldingSpaceItem {
   // Sets the text that should be shown for the item, returning `true` if a
   // change occurred or `false` to indicate no-op. If absent, the lossy display
   // name of the item's backing file will be used.
-  bool SetText(const absl::optional<std::u16string>& text);
+  bool SetText(const std::optional<std::u16string>& text);
 
   // Sets the secondary text that should be shown for the item, returning `true`
   // if a change occurred or `false` to indicate no-op.
-  bool SetSecondaryText(const absl::optional<std::u16string>& secondary_text);
+  bool SetSecondaryText(const std::optional<std::u16string>& secondary_text);
 
   // Sets the color id for the secondary text that should be shown for the item,
   // returning `true` if a change occurred or `false` to indicate no-op. If
-  // `absl::nullopt` is provided, secondary text color will fallback to default.
+  // `std::nullopt` is provided, secondary text color will fallback to default.
   bool SetSecondaryTextColorId(
-      const absl::optional<ui::ColorId>& secondary_text_color_id);
+      const std::optional<ui::ColorId>& secondary_text_color_id);
 
   // Returns `accessible_name_`, falling back to a concatenation of primary
   // and secondary text if absent.
@@ -196,7 +196,7 @@ class ASH_PUBLIC_EXPORT HoldingSpaceItem {
   // if a change occurred or `false` to indicate no-op. Note that if the
   // accessible name is absent, `GetAccessibleName()` will fallback to a
   // concatenation of primary and secondary text.
-  bool SetAccessibleName(const absl::optional<std::u16string>& accessible_name);
+  bool SetAccessibleName(const std::optional<std::u16string>& accessible_name);
 
   // Sets the commands for an in-progress item which are shown in the item's
   // context menu and possibly, in the case of cancel/pause/resume, as primary/
@@ -217,11 +217,11 @@ class ASH_PUBLIC_EXPORT HoldingSpaceItem {
 
   Type type() const { return type_; }
 
-  const absl::optional<std::u16string>& secondary_text() const {
+  const std::optional<std::u16string>& secondary_text() const {
     return secondary_text_;
   }
 
-  const absl::optional<ui::ColorId>& secondary_text_color_id() const {
+  const std::optional<ui::ColorId>& secondary_text_color_id() const {
     return secondary_text_color_id_;
   }
 
@@ -254,17 +254,17 @@ class ASH_PUBLIC_EXPORT HoldingSpaceItem {
   HoldingSpaceFile file_;
 
   // If set, the text that should be shown for the item.
-  absl::optional<std::u16string> text_;
+  std::optional<std::u16string> text_;
 
   // If set, the secondary text that should be shown for the item.
-  absl::optional<std::u16string> secondary_text_;
+  std::optional<std::u16string> secondary_text_;
 
   // If set, the color resolved from the color id for the secondary text that
   // should be shown for the item.
-  absl::optional<ui::ColorId> secondary_text_color_id_;
+  std::optional<ui::ColorId> secondary_text_color_id_;
 
   // If set, the accessible name that should be used for the item.
-  absl::optional<std::u16string> accessible_name_;
+  std::optional<std::u16string> accessible_name_;
 
   // The image representation of the item.
   std::unique_ptr<HoldingSpaceImage> image_;

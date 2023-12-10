@@ -51,8 +51,8 @@ public class SelectionPopupBackPressTest {
     private static final String TEST_PAGE =
             UrlUtils.encodeHtmlDataUri(
                     "<html><head>  <meta name=viewport content='width=device-width,"
-                        + " initial-scale=1.0'></head><body><p id=\"selection_popup_text\">Test</p>"
-                        + "</body></html>");
+                            + " initial-scale=1.0'></head><body><p id=\"selection_popup_text\">Test</p>"
+                            + "</body></html>");
 
     @Test
     @MediumTest

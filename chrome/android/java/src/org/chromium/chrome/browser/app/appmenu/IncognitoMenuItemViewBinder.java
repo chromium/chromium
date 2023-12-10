@@ -21,9 +21,7 @@ import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.widget.ChromeImageView;
 
-/**
- * A custom binder used to bind the incognito menu item.
- */
+/** A custom binder used to bind the incognito menu item. */
 class IncognitoMenuItemViewBinder implements CustomViewBinder {
     private static final int INCOGNITO_ITEM_VIEW_TYPE = 0;
 
@@ -34,8 +32,9 @@ class IncognitoMenuItemViewBinder implements CustomViewBinder {
 
     @Override
     public int getItemViewType(int id) {
-        return id == R.id.new_incognito_tab_menu_id ? INCOGNITO_ITEM_VIEW_TYPE
-                                                    : CustomViewBinder.NOT_HANDLED;
+        return id == R.id.new_incognito_tab_menu_id
+                ? INCOGNITO_ITEM_VIEW_TYPE
+                : CustomViewBinder.NOT_HANDLED;
     }
 
     @Override
@@ -98,8 +97,9 @@ class IncognitoMenuItemViewBinder implements CustomViewBinder {
 
     @Override
     public int getPixelHeight(Context context) {
-        TypedArray a = context.obtainStyledAttributes(
-                new int[] {android.R.attr.listPreferredItemHeightSmall});
+        TypedArray a =
+                context.obtainStyledAttributes(
+                        new int[] {android.R.attr.listPreferredItemHeightSmall});
         return a.getDimensionPixelSize(0, 0);
     }
 }

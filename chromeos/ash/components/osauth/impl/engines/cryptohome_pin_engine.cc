@@ -26,12 +26,12 @@ CryptohomePinEngine::CryptohomePinEngine(CryptohomeCore& core,
 
 CryptohomePinEngine::~CryptohomePinEngine() = default;
 
-absl::optional<cryptohome::AuthFactorRef> CryptohomePinEngine::LookUpFactor(
+std::optional<cryptohome::AuthFactorRef> CryptohomePinEngine::LookUpFactor(
     UserContext& context) {
   const cryptohome::AuthFactor* pin_factor =
       context.GetAuthFactorsData().FindPinFactor();
   if (!pin_factor) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return pin_factor->ref();
 }
@@ -68,7 +68,7 @@ void CryptohomePinEngine::PerformPinAttempt(const std::string& raw_pin) {
 
 void CryptohomePinEngine::OnAuthAttempt(
     std::unique_ptr<UserContext> context,
-    absl::optional<AuthenticationError> error) {
+    std::optional<AuthenticationError> error) {
   get_core()->ReturnContext(std::move(context));
   get_observer()->OnFactorAttemptResult(GetFactor(),
                                         /* success= */ !error.has_value());

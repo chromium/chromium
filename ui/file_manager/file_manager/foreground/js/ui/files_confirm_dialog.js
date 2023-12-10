@@ -58,7 +58,6 @@ export class FilesConfirmDialog extends ConfirmDialog {
 
   /**
    * @override
-   * @suppress {accessControls}
    */
   // @ts-ignore: error TS7019: Rest parameter 'args' implicitly has an 'any[]'
   // type.

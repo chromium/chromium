@@ -201,7 +201,7 @@ extension-event based interface in M119. The interface is described in
 | runDnsResolutionRoutine | () => Promise<RunRoutineResponse\> | `os.diagnostics` | M108 |
 | runDnsResolverPresentRoutine | () => Promise<RunRoutineResponse\> | `os.diagnostics` | M108 |
 | runEmmcLifetimeRoutine | () => Promise<RunRoutineResponse\> | `os.diagnostics` | M110 |
-| runFanRoutine | () => Promise<RunRoutineResponse\> | `os.diagnostics` | M120 |
+| runFanRoutine | () => Promise<RunRoutineResponse\> | `os.diagnostics` | M121 |
 | runFingerprintAliveRoutine | () => Promise<RunRoutineResponse\> | `os.diagnostics` | M110 |
 | runGatewayCanBePingedRoutine | () => Promise<RunRoutineResponse\> | `os.diagnostics` | M108 |
 | runLanConnectivityRoutine | () => Promise<RunRoutineResponse\> | `os.diagnostics` | M102 |
@@ -306,6 +306,26 @@ extension-event based interface in M119. The interface is described in
 ------------ | ------- | ----------- |
 | maxTestingMemKib | number | An optional field to indicate how much memory should be tested. If the value is null, memory test will run with as much memory as possible |
 
+### Enum HardwarePresenceStatus
+| Property Name |
+------------ |
+| matched |
+| not_matched |
+| not_configured |
+
+### FanRoutineFinishedInfo
+| Property Name | Type | Description |
+------------ | ------- | ----------- |
+| uuid | string | UUID of the routine that entered this state  |
+| has_passed | boolean | Whether the routine finished successfully |
+| passed_fan_ids | Array<number\> | The ids of fans that can be controlled |
+| failed_fan_ids | Array<number\> | The ids of fans that cannot be controlled |
+| fan_count_status | HardwarePresenceStatus | Whether the number of fan probed is matched |
+
+### RunFanRoutineArguments
+| Property Name | Type | Description |
+------------ | ------- | ----------- |
+
 ### Enum VolumeButtonType
 | Property Name |
 ------------ |
@@ -351,9 +371,11 @@ extension-event based interface in M119. The interface is described in
 | startRoutine | (params: StartRoutineRequest) => Promise<void\> | `os.diagnostics` | M119 |
 | cancelRoutine | (params: CancelRoutineRequest) => Promise<void\> | `os.diagnostics` | M119 |
 | createMemoryRoutine | (args: RunMemoryRoutineArguments) => Promise<CreateRoutineResponse\> | `os.diagnostics` | M119 |
-| createVolumeButtonRoutine | (args: RunVolumeButtonRoutineArguments) => Promise<CreateRoutineResponse\> | `os.diagnostics` | M120 |
+| createFanRoutine | (args: RunFanRoutineArguments) => Promise<CreateRoutineResponse\> | `os.diagnostics` | M121 |
+| createVolumeButtonRoutine | (args: RunVolumeButtonRoutineArguments) => Promise<CreateRoutineResponse\> | `os.diagnostics` | M121 |
 | isMemoryRoutineArgumentSupported | (args: RunMemoryRoutineArguments) => Promise<RoutineSupportStatusInfo\> | `os.diagnostics` | M119 |
-| isVolumeButtonRoutineArgumentSupported | (args: RunVolumeButtonRoutineArguments) => Promise<RoutineSupportStatusInfo\> | `os.diagnostics` | M120 |
+| isFanRoutineArgumentSupported | (args: RunFanRoutineArguments) => Promise<RoutineSupportStatusInfo\> | `os.diagnostics` | M121 |
+| isVolumeButtonRoutineArgumentSupported | (args: RunVolumeButtonRoutineArguments) => Promise<RoutineSupportStatusInfo\> | `os.diagnostics` | M121 |
 
 ## Events
 
@@ -364,7 +386,8 @@ extension-event based interface in M119. The interface is described in
 | onRoutineWaiting | function(RoutineWaitingInfo) | `os.diagnostics` | M119 | Informs the extension that a routine stopped execution and waits for an event, e.g. user interaction. `RoutineWaitingInfo` contains information about what the routine is waiting for |
 | onRoutineException | function(ExceptionInfo) | `os.diagnostics` | M119 | Informs the extension that an exception occurred. The error passed in `ExceptionInfo` is non-recoverable |
 | onMemoryRoutineFinished | function(MemoryRoutineFinishedInfo) | `os.diagnostics` | M119 | Informs the extension that a memory routine finished |
-| onVolumeButtonRoutineFinished | function(VolumeButtonRoutineFinishedInfo) | `os.diagnostics` | M120 | Informs the extension that a volume button routine finished |
+| onFanRoutineFinished | function(FanRoutineFinishedInfo) | `os.diagnostics` | M121 | Informs the extension that a fan routine finished |
+| onVolumeButtonRoutineFinished | function(VolumeButtonRoutineFinishedInfo) | `os.diagnostics` | M121 | Informs the extension that a volume button routine finished |
 
 # Events
 

@@ -56,6 +56,7 @@ class VIZ_SERVICE_EXPORT OverlayCandidateFactory {
     bool supports_arbitrary_transform = false;
     bool supports_rounded_display_masks = false;
     bool supports_mask_filter = false;
+    bool transform_and_clip_rpdq = false;
   };
 
   // The coordinate space of |render_pass| is the target space for candidates

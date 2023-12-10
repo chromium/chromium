@@ -15,7 +15,7 @@
 #import "ios/chrome/browser/ui/mini_map/mini_map_interstitial_view_controller.h"
 #import "ios/chrome/browser/ui/mini_map/mini_map_mediator.h"
 #import "ios/chrome/browser/ui/mini_map/mini_map_mediator_delegate.h"
-#import "ios/chrome/browser/web/annotations/annotations_util.h"
+#import "ios/chrome/browser/web/model/annotations/annotations_util.h"
 #import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_branded_strings.h"

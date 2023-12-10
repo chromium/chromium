@@ -10,9 +10,7 @@ import org.chromium.base.Log;
 
 import java.util.Map;
 
-/**
- * {@link PolicyProvider} based on values from {@link PolicyCache}.
- */
+/** {@link PolicyProvider} based on values from {@link PolicyCache}. */
 public class PolicyCacheProvider extends PolicyProvider {
     private static final String TAG = "PolicyCacheProvider";
 

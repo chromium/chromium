@@ -31,9 +31,8 @@ GraphicsDelegateWin::GraphicsDelegateWin() {
       gpu_channel_host_, content::kGpuStreamIdDefault,
       content::kGpuStreamPriorityUI, gpu::kNullSurfaceHandle,
       GURL(std::string("chrome://gpu/VrUiWin")), false /* automatic flushes */,
-      false /* support locking */, false /* support grcontext */,
-      gpu::SharedMemoryLimits::ForMailboxContext(), attributes,
-      viz::command_buffer_metrics::ContextType::XR_COMPOSITING);
+      false /* support locking */, gpu::SharedMemoryLimits::ForMailboxContext(),
+      attributes, viz::command_buffer_metrics::ContextType::XR_COMPOSITING);
 
   if (context_provider_->BindToCurrentSequence() ==
       gpu::ContextResult::kSuccess) {
@@ -68,8 +67,8 @@ bool GraphicsDelegateWin::PreRender() {
   }
 
   // Create a texture id and associate it with shared image.
-  dest_texture_id_ =
-      gl_->CreateAndTexStorage2DSharedImageCHROMIUM(mailbox_.name);
+  dest_texture_id_ = gl_->CreateAndTexStorage2DSharedImageCHROMIUM(
+      client_shared_image_->mailbox().name);
   gl_->BeginSharedImageAccessDirectCHROMIUM(
       dest_texture_id_, GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM);
 
@@ -116,11 +115,12 @@ void GraphicsDelegateWin::PostRender() {
 }
 
 mojo::PlatformHandle GraphicsDelegateWin::GetTexture() {
-  if (buffer_handle_.is_null()) {
+  if (!client_shared_image_) {
     return {};
   }
 
-  gfx::GpuMemoryBufferHandle gpu_handle = buffer_handle_.Clone();
+  gfx::GpuMemoryBufferHandle gpu_handle =
+      client_shared_image_->CloneGpuMemoryBufferHandle();
   return mojo::PlatformHandle(std::move(gpu_handle.dxgi_handle));
 }
 
@@ -130,47 +130,36 @@ const gpu::SyncToken& GraphicsDelegateWin::GetSyncToken() {
 
 bool GraphicsDelegateWin::EnsureMemoryBuffer() {
   gfx::Size buffer_size = GetTextureSize();
-  if (!buffer_handle_.is_null() && last_size_ == buffer_size) {
+  if (client_shared_image_ && last_size_ == buffer_size) {
     return true;
   }
 
-  if (!mailbox_.IsZero()) {
-    sii_->DestroySharedImage(access_done_sync_token_, mailbox_);
-    mailbox_.SetZero();
-    access_done_sync_token_.Clear();
-  }
-
-  viz::SharedImageFormat format = viz::SinglePlaneFormat::kRGBA_8888;
-
-  {
-    mojo::SyncCallRestrictions::ScopedAllowSyncCall scoped_allow_sync_call;
-
-    gpu_channel_host_->CreateGpuMemoryBuffer(
-        buffer_size, format, gfx::BufferUsage::SCANOUT, &buffer_handle_);
-  }
-
-  if (buffer_handle_.is_null()) {
-    return false;
-  }
+  // Destroy any existing SharedImage as its size is not correct.
+  ResetMemoryBuffer();
 
   last_size_ = buffer_size;
 
-  auto client_shared_image = sii_->CreateSharedImage(
+  viz::SharedImageFormat format = viz::SinglePlaneFormat::kRGBA_8888;
+  client_shared_image_ = sii_->CreateSharedImage(
       format, buffer_size, gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin,
       kPremul_SkAlphaType,
       gpu::SHARED_IMAGE_USAGE_GLES2 |
           gpu::SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT,
-      "VRGraphicsDelegate", buffer_handle_.Clone());
-  CHECK(client_shared_image);
-  mailbox_ = client_shared_image->mailbox();
+      "VRGraphicsDelegate", gpu::kNullSurfaceHandle, gfx::BufferUsage::SCANOUT);
+  if (!client_shared_image_) {
+    return false;
+  }
 
   gl_->WaitSyncTokenCHROMIUM(sii_->GenUnverifiedSyncToken().GetConstData());
   return true;
 }
 
 void GraphicsDelegateWin::ResetMemoryBuffer() {
-  // Stop using a memory buffer if we had an error submitting with it.
-  buffer_handle_ = gfx::GpuMemoryBufferHandle();
+  if (client_shared_image_) {
+    sii_->DestroySharedImage(access_done_sync_token_,
+                             std::move(client_shared_image_));
+  }
+  access_done_sync_token_.Clear();
 }
 
 void GraphicsDelegateWin::ClearBufferToBlack() {

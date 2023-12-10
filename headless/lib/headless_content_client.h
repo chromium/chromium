@@ -6,6 +6,7 @@
 #define HEADLESS_LIB_HEADLESS_CONTENT_CLIENT_H_
 
 #include <memory>
+#include <string_view>
 
 #include "base/synchronization/lock.h"
 #include "content/public/common/content_client.h"
@@ -27,7 +28,7 @@ class HeadlessContentClient : public content::ContentClient {
 
   // content::ContentClient implementation:
   std::u16string GetLocalizedString(int message_id) override;
-  base::StringPiece GetDataResource(
+  std::string_view GetDataResource(
       int resource_id,
       ui::ResourceScaleFactor scale_factor) override;
   base::RefCountedMemory* GetDataResourceBytes(int resource_id) override;

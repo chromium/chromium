@@ -222,6 +222,10 @@ class CORE_EXPORT PaintTimingDetector
   }
   void RestartRecordingLCP();
   void SoftNavigationDetected(LocalDOMWindow*);
+  bool IsSoftNavigationDetected() const {
+    return soft_navigation_was_detected_;
+  }
+  bool WasLCPRestarted() const { return lcp_was_restarted_; }
 
   void RestartRecordingLCPToUkm();
 
@@ -248,6 +252,8 @@ class CORE_EXPORT PaintTimingDetector
   void ReportIgnoredContent();
 
   absl::optional<PaintTimingVisualizer>& Visualizer() { return visualizer_; }
+  bool IsUnrelatedSoftNavigationPaint(const Node&);
+
   void Trace(Visitor* visitor) const;
 
  private:

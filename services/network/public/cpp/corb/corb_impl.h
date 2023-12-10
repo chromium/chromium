@@ -7,11 +7,11 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/component_export.h"
 #include "base/gtest_prod_util.h"
-#include "base/strings/string_piece_forward.h"
 #include "services/network/public/cpp/corb/corb_api.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
@@ -116,7 +116,7 @@ class COMPONENT_EXPORT(NETWORK_CPP) CrossOriginReadBlocking {
         mojom::RequestMode request_mode,
         mojom::RequestDestination /*request_destination_from_renderer*/,
         const network::mojom::URLResponseHead& response) override;
-    Decision Sniff(base::StringPiece data) override;
+    Decision Sniff(std::string_view data) override;
     Decision HandleEndOfSniffableResponseBody() override;
     bool ShouldReportBlockedResponse() const override;
     BlockedResponseHandling ShouldHandleBlockedResponseAs() const override;
@@ -282,22 +282,22 @@ class COMPONENT_EXPORT(NETWORK_CPP) CrossOriginReadBlocking {
 
   // Returns whether `mime_type` is a Javascript MIME type based on
   // https://mimesniff.spec.whatwg.org/#javascript-mime-type
-  static bool IsJavascriptMimeType(base::StringPiece mime_type);
+  static bool IsJavascriptMimeType(std::string_view mime_type);
 
   // Returns the representative mime type enum value of the mime type of
   // response. For example, this returns the same value for all text/xml mime
   // type families such as application/xml, application/rss+xml.
-  static MimeType GetCanonicalMimeType(base::StringPiece mime_type);
+  static MimeType GetCanonicalMimeType(std::string_view mime_type);
 
-  static SniffingResult SniffForHTML(base::StringPiece data);
-  static SniffingResult SniffForXML(base::StringPiece data);
-  static SniffingResult SniffForJSON(base::StringPiece data);
+  static SniffingResult SniffForHTML(std::string_view data);
+  static SniffingResult SniffForXML(std::string_view data);
+  static SniffingResult SniffForJSON(std::string_view data);
 
   // Sniff for patterns that indicate |data| only ought to be consumed by XHR()
   // or fetch(). This detects Javascript parser-breaker and particular JS
   // infinite-loop patterns, which are used conventionally as a defense against
   // JSON data exfiltration by means of a <script> tag.
-  static SniffingResult SniffForFetchOnlyResource(base::StringPiece data);
+  static SniffingResult SniffForFetchOnlyResource(std::string_view data);
 };
 
 inline std::ostream& operator<<(

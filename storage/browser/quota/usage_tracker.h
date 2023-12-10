@@ -78,7 +78,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) UsageTracker
   // Updates usage for `bucket` in the ClientUsageTracker for `client_type`.
   void UpdateBucketUsageCache(QuotaClientType client_type,
                               const BucketLocator& bucket,
-                              absl::optional<int64_t> delta);
+                              std::optional<int64_t> delta);
 
   // Deletes `bucket` from the cache for `client_type` if it exists.
   // Called by QuotaManagerImpl::BucketDataDeleter.

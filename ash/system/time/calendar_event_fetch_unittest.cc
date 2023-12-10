@@ -175,11 +175,11 @@ class CalendarEventFetchTest : public NoSessionAshTestBase {
     return fetch;
   }
 
-  absl::optional<int> events_fetched_count() { return events_fetched_count_; }
-  absl::optional<google_apis::ApiErrorCode> api_error_code() {
+  std::optional<int> events_fetched_count() { return events_fetched_count_; }
+  std::optional<google_apis::ApiErrorCode> api_error_code() {
     return api_error_code_;
   }
-  absl::optional<CalendarEventFetchInternalErrorCode> internal_error_code() {
+  std::optional<CalendarEventFetchInternalErrorCode> internal_error_code() {
     return internal_error_code_;
   }
 
@@ -191,9 +191,9 @@ class CalendarEventFetchTest : public NoSessionAshTestBase {
     return AccountId::FromUserEmail("user0@tray");
   }
 
-  absl::optional<int> events_fetched_count_;
-  absl::optional<google_apis::ApiErrorCode> api_error_code_;
-  absl::optional<CalendarEventFetchInternalErrorCode> internal_error_code_;
+  std::optional<int> events_fetched_count_;
+  std::optional<google_apis::ApiErrorCode> api_error_code_;
+  std::optional<CalendarEventFetchInternalErrorCode> internal_error_code_;
 
   base::WeakPtrFactory<CalendarEventFetchTest> weak_factory_{this};
 };
@@ -214,12 +214,11 @@ TEST_F(CalendarEventFetchTest, NoEvents) {
   task_environment()->FastForwardBy(client_.get_response_delay());
 
   // No events were set in the client, so fetch should return no results.
-  absl::optional<int> count = events_fetched_count();
+  std::optional<int> count = events_fetched_count();
   EXPECT_TRUE(count.has_value() && count.value() == 0);
 
   // API error is HTTP_SUCCESS.
-  absl::optional<google_apis::ApiErrorCode> return_error_code =
-      api_error_code();
+  std::optional<google_apis::ApiErrorCode> return_error_code = api_error_code();
   EXPECT_TRUE(return_error_code.has_value() &&
               return_error_code == google_apis::HTTP_SUCCESS);
 
@@ -253,7 +252,7 @@ TEST_F(CalendarEventFetchTest, HaveEvents) {
   task_environment()->FastForwardBy(client_.get_response_delay());
 
   // No events for this month in the client, so fetch should return no results.
-  absl::optional<int> count = events_fetched_count();
+  std::optional<int> count = events_fetched_count();
   EXPECT_TRUE(count.has_value() && count.value() == 0);
 
   // No internal error.
@@ -275,8 +274,7 @@ TEST_F(CalendarEventFetchTest, HaveEvents) {
   EXPECT_TRUE(count.has_value() && count.value() == 1);
 
   // API error is HTTP_SUCCESS.
-  absl::optional<google_apis::ApiErrorCode> return_error_code =
-      api_error_code();
+  std::optional<google_apis::ApiErrorCode> return_error_code = api_error_code();
   EXPECT_TRUE(return_error_code.has_value() &&
               return_error_code == google_apis::HTTP_SUCCESS);
 
@@ -304,12 +302,11 @@ TEST_F(CalendarEventFetchTest, ApiFailure) {
   task_environment()->FastForwardBy(client_.get_response_delay());
 
   // No events were set in the client, so fetch should return no results.
-  absl::optional<int> count = events_fetched_count();
+  std::optional<int> count = events_fetched_count();
   EXPECT_TRUE(count.has_value() && count.value() == 0);
 
   // API error is what we set.
-  absl::optional<google_apis::ApiErrorCode> return_error_code =
-      api_error_code();
+  std::optional<google_apis::ApiErrorCode> return_error_code = api_error_code();
   EXPECT_TRUE(return_error_code.has_value() && return_error_code == error_code);
 
   // No internal error.
@@ -336,7 +333,7 @@ TEST_F(CalendarEventFetchTest, Timeout) {
       GetStartOfMonthFromString("23 Oct 2009 11:30 GMT");
 
   // No internal error code reported.
-  absl::optional<CalendarEventFetchInternalErrorCode> internal_error =
+  std::optional<CalendarEventFetchInternalErrorCode> internal_error =
       internal_error_code();
   EXPECT_FALSE(internal_error.has_value());
 
@@ -351,8 +348,7 @@ TEST_F(CalendarEventFetchTest, Timeout) {
   EXPECT_FALSE(events_fetched_count().has_value());
 
   // API error should be completely nonexistent.
-  absl::optional<google_apis::ApiErrorCode> return_error_code =
-      api_error_code();
+  std::optional<google_apis::ApiErrorCode> return_error_code = api_error_code();
   EXPECT_FALSE(return_error_code.has_value());
 
   // Internal error code reported is kTimeout.
@@ -384,8 +380,7 @@ TEST_F(CalendarEventFetchTest, Cancel) {
   task_environment()->FastForwardBy(client_.get_response_delay());
 
   // API error is CANCELLED.
-  absl::optional<google_apis::ApiErrorCode> return_error_code =
-      api_error_code();
+  std::optional<google_apis::ApiErrorCode> return_error_code = api_error_code();
   EXPECT_TRUE(return_error_code.has_value() &&
               return_error_code == google_apis::CANCELLED);
 }

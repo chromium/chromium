@@ -4,6 +4,8 @@
 
 #include "components/metrics/structured/structured_metrics_features.h"
 
+#include "base/feature_list.h"
+
 namespace metrics::structured {
 
 BASE_FEATURE(kEventSequenceLogging,
@@ -19,9 +21,17 @@ BASE_FEATURE(kFastPairMetrics,
              "FastPairMetrics",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kNearbyShareMetrics,
+             "NearbyShareMetrics",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kEnabledStructuredMetricsService,
              "EnableStructuredMetricsService",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kPhoneHubStructuredMetrics,
+             "PhoneHubStructuredMetrics",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 constexpr base::FeatureParam<int> kLimitFilesPerScanParam{
     &features::kStructuredMetrics, "file_limit", 50};
@@ -47,6 +57,12 @@ constexpr base::FeatureParam<int> kMaxLogSizeBytes{
 constexpr base::FeatureParam<int> kUploadTimeInSeconds{
     &kEnabledStructuredMetricsService, "upload_time_in_seconds",
     40 * 60  // 40 minutes
+};
+
+constexpr base::FeatureParam<int> kExternalMetricsCollectionIntervalInSeconds{
+    &features::kStructuredMetrics,
+    "external_metrics_collection_interval_in_seconds",
+    10 * 60  // 10 minutes
 };
 
 constexpr base::FeatureParam<int> kStructuredMetricsUploadCadenceMinutes{
@@ -82,6 +98,10 @@ std::string GetDisabledProjects() {
 
 int GetUploadInterval() {
   return kUploadTimeInSeconds.Get();
+}
+
+base::TimeDelta GetExternalMetricsCollectionInterval() {
+  return base::Seconds(kExternalMetricsCollectionIntervalInSeconds.Get());
 }
 
 }  // namespace metrics::structured

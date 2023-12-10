@@ -147,13 +147,15 @@ class ToolbarActionViewController {
       extensions::ExtensionContextMenuModel::ContextMenuSource
           context_menu_source) = 0;
 
-  // Called when a context menu is shown so the controller can perform any
-  // necessary setup.
-  virtual void OnContextMenuShown() {}
+  // Called when a context menu is shown from `source` so the controller can
+  // perform any necessary setup.
+  virtual void OnContextMenuShown(
+      extensions::ExtensionContextMenuModel::ContextMenuSource source) {}
 
-  // Called when a context menu has closed so the controller can perform any
-  // necessary cleanup.
-  virtual void OnContextMenuClosed() {}
+  // Called when a context menu has closed from `source` so the controller can
+  // perform any necessary cleanup.
+  virtual void OnContextMenuClosed(
+      extensions::ExtensionContextMenuModel::ContextMenuSource source) {}
 
   // Executes the default behavior associated with the action. This should only
   // be called as a result of a user action.

@@ -64,8 +64,7 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
 
   var apiFunctions = bindingsAPI.apiFunctions;
 
-  apiFunctions.setCustomCallback('searchDrive',
-      function(callback, response) {
+  apiFunctions.setCustomCallback('searchDrive', function(callback, response) {
     if (response && !response.error && response.entries) {
       response.entries = response.entries.map(getExternalFileEntry);
     }
@@ -76,7 +75,7 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
     }
 
     if (callback) {
-      callback(response.entries, response.nextFeed);
+      callback({entries: response.entries, nextFeed: response.nextFeed});
     }
   });
 
@@ -368,13 +367,13 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
       'getCrostiniSharedPaths',
       function(
           observeFirstForSession, vmName, successCallback, failureCallback) {
-        // TODO(tjudkins): This call can't use the callbackAdaptor due to it
-        // having a multiparameter callback.
         fileManagerPrivateInternal.getCrostiniSharedPaths(
-            observeFirstForSession, vmName,
-            function(entryDescriptions, firstForSession) {
-              successCallback(
-                  entryDescriptions.map(getExternalFileEntry), firstForSession);
+            observeFirstForSession, vmName, function(response) {
+              const {entries, firstForSession} = response;
+              successCallback({
+                entries: entries.map(getExternalFileEntry),
+                firstForSession,
+              });
             });
       });
 
@@ -387,10 +386,9 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
 
   apiFunctions.setHandleRequest(
       'installLinuxPackage', function(entry, successCallback, failureCallback) {
-        // TODO(tjudkins): This call can't use the callbackAdaptor due to it
-        // having a multiparameter callback.
         var url = getEntryURL(entry);
-        fileManagerPrivateInternal.installLinuxPackage(url, successCallback);
+        fileManagerPrivateInternal.installLinuxPackage(
+            url, callbackAdaptor(successCallback, failureCallback));
       });
 
   apiFunctions.setCustomCallback('searchFiles',

@@ -33,6 +33,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
@@ -143,6 +144,8 @@ class LoginExpandedPublicAccountEventHandler : public ui::EventHandler {
 
 // Button with text on the left side and an icon on the right side.
 class SelectionButtonView : public LoginButton {
+  METADATA_HEADER(SelectionButtonView, LoginButton)
+
  public:
   SelectionButtonView(PressedCallback callback, const std::u16string& text)
       : LoginButton(std::move(callback)) {
@@ -247,9 +250,14 @@ class SelectionButtonView : public LoginButton {
   raw_ptr<views::View, ExperimentalAsh> right_margin_view_ = nullptr;
 };
 
+BEGIN_METADATA(SelectionButtonView)
+END_METADATA
+
 // Container for the device monitoring warning. Composed of an optional warning
 // icon on the left and a label to the right.
 class MonitoringWarningView : public NonAccessibleView {
+  METADATA_HEADER(MonitoringWarningView, NonAccessibleView)
+
  public:
   MonitoringWarningView()
       : NonAccessibleView(kMonitoringWarningClassName),
@@ -346,13 +354,18 @@ class MonitoringWarningView : public NonAccessibleView {
   friend class LoginExpandedPublicAccountView::TestApi;
 
   WarningType warning_type_;
-  absl::optional<std::string> device_manager_;
+  std::optional<std::string> device_manager_;
   raw_ptr<views::ImageView, ExperimentalAsh> image_;
   raw_ptr<views::Label, ExperimentalAsh> label_;
 };
 
+BEGIN_METADATA(MonitoringWarningView)
+END_METADATA
+
 // Implements the right part of the expanded public session view.
 class RightPaneView : public NonAccessibleView {
+  METADATA_HEADER(RightPaneView, NonAccessibleView)
+
  public:
   explicit RightPaneView(const base::RepeatingClosure& on_learn_more_tapped)
       : NonAccessibleView(kRightPaneViewClassName) {
@@ -622,6 +635,9 @@ class RightPaneView : public NonAccessibleView {
 
   base::WeakPtrFactory<RightPaneView> weak_factory_{this};
 };
+
+BEGIN_METADATA(RightPaneView)
+END_METADATA
 
 LoginExpandedPublicAccountView::TestApi::TestApi(
     LoginExpandedPublicAccountView* view)
@@ -968,7 +984,7 @@ void LoginExpandedPublicAccountView::UseLandscapeLayout() {
 void LoginExpandedPublicAccountView::UsePortraitLayout() {
   layout_->SetOrientation(views::BoxLayout::Orientation::kVertical);
 
-  left_pane_->SetPreferredSize(absl::nullopt);
+  left_pane_->SetPreferredSize(std::nullopt);
   left_pane_->SetProperty(views::kMarginsKey,
                           gfx::Insets::TLBR(kPaddingDp, kPaddingDp,
                                             kPortraitPaneSpacing, kPaddingDp));
@@ -979,5 +995,8 @@ void LoginExpandedPublicAccountView::UsePortraitLayout() {
       views::kMarginsKey,
       gfx::Insets::TLBR(0, kPaddingDp, kPaddingDp, kPaddingDp));
 }
+
+BEGIN_METADATA(LoginExpandedPublicAccountView)
+END_METADATA
 
 }  // namespace ash

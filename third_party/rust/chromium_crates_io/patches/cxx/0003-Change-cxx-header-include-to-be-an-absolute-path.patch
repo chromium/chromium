@@ -1,0 +1,23 @@
+From 608e9f748a6327620f04735ff8eae279c42cd4c9 Mon Sep 17 00:00:00 2001
+From: Adrian Taylor <adetaylor@chromium.org>
+Date: Wed, 8 Nov 2023 17:08:01 +0000
+Subject: [PATCH 3/4] Absolute path for cxx header
+
+Change-Id: Iaaa5965443bd3446ac8cd645936614a24e8bb500
+---
+ third_party/rust/chromium_crates_io/vendor/cxx-1.0.110/src/cxx.cc | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/third_party/rust/chromium_crates_io/vendor/cxx-1.0.110/src/cxx.cc b/third_party/rust/chromium_crates_io/vendor/cxx-1.0.110/src/cxx.cc
+index 2522d61aa33dc..a1cdc44ea1ba9 100644
+--- a/third_party/rust/chromium_crates_io/vendor/cxx-1.0.110/src/cxx.cc
++++ b/third_party/rust/chromium_crates_io/vendor/cxx-1.0.110/src/cxx.cc
+@@ -1,4 +1,4 @@
+-#include "../include/cxx.h"
++#include "third_party/rust/cxx/v1/cxx.h"
+ #include <cstdio>
+ #include <cstring>
+ #include <iostream>
+-- 
+2.42.0.869.gea05f2083d-goog
+

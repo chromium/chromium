@@ -79,7 +79,7 @@ enum class NotificationCatalogName {
   kBluetoothPairingRequest = 64,
   // [Deprecated] kBluetoothPairedDevice = 65,
   kCellularSetup = 66,
-  kScreenSecurity = 67,
+  // [Deprecated] kScreenSecurity = 67,
   kWifiToggle = 68,
   kUSBPeripheralInvalidDpCable = 69,
   kUSBPeripheralInvalidUSB4ValidTBTCable = 70,
@@ -196,7 +196,7 @@ enum class NotificationCatalogName {
 
 // A living catalog that registers system nudges.
 // Current values should not be renumbered or removed. Please keep in sync with
-// "NudgeCatalogName" in tools/metrics/histograms/enums.xml.
+// "NudgeCatalogName" in tools/metrics/histograms/metadata/ash/enums.xml.
 // To deprecate comment out the entry.
 // Please call `SystemNudgeController::MaybeRecordNudgeAction()` (old nudges) or
 // `AnchoredNudgeManager::Get()->MaybeRecordNudgeAction()` when the nudge's
@@ -224,7 +224,11 @@ enum class NudgeCatalogName {
   kVideoConferenceTrayCameraMicrophoneUseWhileDisabled = 19,
   kMultitaskMenuClamshell = 20,
   kMultitaskMenuTablet = 21,
-  kMaxValue = kMultitaskMenuTablet
+  kCaptureModeEducationShortcutNudge = 22,
+  kCaptureModeEducationShortcutTutorial = 23,
+  kCaptureModeEducationQuickSettingsNudge = 24,
+  kGameDashboardControlsNudge = 25,
+  kMaxValue = kGameDashboardControlsNudge
 };
 
 // A living catalog that registers toasts.

@@ -19,10 +19,8 @@ import java.util.LinkedList;
  */
 @JNINamespace("autofill")
 public class VirtualCardEnrollmentFields {
-    @VisibleForTesting
-    final LinkedList<LegalMessageLine> mGoogleLegalMessages = new LinkedList<>();
-    @VisibleForTesting
-    final LinkedList<LegalMessageLine> mIssuerLegalMessages = new LinkedList<>();
+    @VisibleForTesting final LinkedList<LegalMessageLine> mGoogleLegalMessages = new LinkedList<>();
+    @VisibleForTesting final LinkedList<LegalMessageLine> mIssuerLegalMessages = new LinkedList<>();
     private final String mCardName;
     private final String mCardNumber;
     private final int mNetworkIconId;

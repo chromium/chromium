@@ -10,6 +10,8 @@
 #include "chrome/browser/user_education/browser_tutorial_service.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/user_education/common/feature_promo_registry.h"
+#include "components/user_education/common/feature_promo_session_manager.h"
+#include "components/user_education/common/feature_promo_session_policy.h"
 #include "components/user_education/common/feature_promo_storage_service.h"
 #include "components/user_education/common/help_bubble_factory_registry.h"
 #include "components/user_education/common/product_messaging_controller.h"
@@ -45,6 +47,12 @@ class UserEducationService : public KeyedService {
   user_education::FeaturePromoStorageService& feature_promo_storage_service() {
     return *feature_promo_storage_service_;
   }
+  user_education::FeaturePromoSessionManager& feature_promo_session_manager() {
+    return feature_promo_session_manager_;
+  }
+  user_education::FeaturePromoSessionPolicy& feature_promo_session_policy() {
+    return *feature_promo_session_policy_;
+  }
 
  private:
   user_education::TutorialRegistry tutorial_registry_;
@@ -54,6 +62,9 @@ class UserEducationService : public KeyedService {
   user_education::ProductMessagingController product_messaging_controller_;
   std::unique_ptr<user_education::FeaturePromoStorageService>
       feature_promo_storage_service_;
+  user_education::FeaturePromoSessionManager feature_promo_session_manager_;
+  std::unique_ptr<user_education::FeaturePromoSessionPolicy>
+      feature_promo_session_policy_;
 };
 
-#endif  // CHROME_BROWSER_UI_USER_EDUCATION_USER_EDUCATION_SERVICE_H_
+#endif  // CHROME_BROWSER_USER_EDUCATION_USER_EDUCATION_SERVICE_H_

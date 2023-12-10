@@ -48,7 +48,6 @@
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
-#include "third_party/blink/renderer/core/paint/clip_rects.h"
 #include "third_party/blink/renderer/core/paint/compositing/compositing_reason_finder.h"
 #include "third_party/blink/renderer/core/paint/object_paint_properties.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"

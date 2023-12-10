@@ -8,13 +8,12 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <string>
-
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "extensions/common/mojom/message_port.mojom.h"
 #include "extensions/renderer/bindings/api_binding_types.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "v8/include/v8-forward.h"
 
 namespace base {
@@ -169,7 +168,7 @@ class OneTimeMessageHandler {
   // listeners.
   void OnEventFired(const PortId& port_id,
                     v8::Local<v8::Context> context,
-                    absl::optional<base::Value> result);
+                    std::optional<base::Value> result);
 
   // The associated bindings system. Outlives this object.
   const raw_ptr<NativeExtensionBindingsSystem, ExperimentalRenderer>

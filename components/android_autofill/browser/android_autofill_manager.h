@@ -14,6 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "components/autofill/core/browser/autofill_manager.h"
+#include "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_manager.h"
 #include "components/autofill/core/common/dense_set.h"
 
 namespace autofill {
@@ -47,7 +48,6 @@ class AndroidAutofillManager : public AutofillManager,
   }
 
   base::WeakPtr<AutofillManager> GetWeakPtr() override;
-  CreditCardAccessManager* GetCreditCardAccessManager() override;
 
   bool ShouldClearPreviewedForm() override;
 
@@ -139,9 +139,10 @@ class AndroidAutofillManager : public AutofillManager,
   void OnAfterProcessParsedForms(
       const DenseSet<FormType>& form_types) override {}
 
-  void OnServerRequestError(FormSignature form_signature,
-                            AutofillDownloadManager::RequestType request_type,
-                            int http_error) override;
+  void OnServerRequestError(
+      FormSignature form_signature,
+      AutofillCrowdsourcingManager::RequestType request_type,
+      int http_error) override;
 
  private:
   // AutofillManager::Observer:

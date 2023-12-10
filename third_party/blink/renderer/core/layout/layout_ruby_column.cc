@@ -5,10 +5,24 @@
 #include "third_party/blink/renderer/core/layout/layout_ruby_column.h"
 
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
+#include "third_party/blink/renderer/core/layout/layout_ruby.h"
+#include "third_party/blink/renderer/core/layout/layout_ruby_as_block.h"
 #include "third_party/blink/renderer/core/layout/layout_ruby_base.h"
 #include "third_party/blink/renderer/core/layout/layout_ruby_text.h"
 
 namespace blink {
+
+namespace {
+
+void UpdateRubyBaseStyle(const LayoutObject* child,
+                         ComputedStyleBuilder& builder) {
+  DCHECK(child->IsRubyBase());
+  // FIXME: use WEBKIT_CENTER?
+  builder.SetTextAlign(ETextAlign::kCenter);
+  builder.SetHasLineIfEmpty(true);
+}
+
+}  // namespace
 
 LayoutRubyColumn::LayoutRubyColumn() : LayoutNGBlockFlow(nullptr) {
   SetInline(true);
@@ -62,7 +76,7 @@ LayoutRubyBase& LayoutRubyColumn::EnsureRubyBase() {
   if (auto* base = RubyBase()) {
     return *base;
   }
-  auto& new_base = CreateRubyBase();
+  auto& new_base = CreateRubyBase(*this);
   LayoutBlockFlow::AddChild(&new_base);
   return new_base;
 }
@@ -85,6 +99,7 @@ void LayoutRubyColumn::AddChild(LayoutObject* child,
       // prepend ruby texts as first child
       LayoutBlockFlow::AddChild(child, FirstChild());
     } else if (before_child->IsRubyText()) {
+      DCHECK(!RuntimeEnabledFeatures::RubySimplePairingEnabled());
       // New text is inserted just before another.
       // In this case the new text takes the place of the old one, and
       // the old text goes into a new column that is inserted as next sibling.
@@ -102,6 +117,7 @@ void LayoutRubyColumn::AddChild(LayoutObject* child,
       LayoutBlockFlow::RemoveChild(before_child);
       new_column.AddChild(before_child);
     } else if (RubyBase()->FirstChild()) {
+      DCHECK(!RuntimeEnabledFeatures::RubySimplePairingEnabled());
       // Insertion before a ruby base object.
       // In this case we need insert a new column before the current one and
       // split the base.
@@ -113,7 +129,13 @@ void LayoutRubyColumn::AddChild(LayoutObject* child,
 
       EnsureRubyBase().MoveChildren(new_base, before_child);
     }
+  } else if (RuntimeEnabledFeatures::RubySimplePairingEnabled() &&
+             child->IsRubyBase()) {
+    DCHECK(!before_child);
+    DCHECK(!RubyBase());
+    LayoutBlockFlow::AddChild(child);
   } else {
+    DCHECK(!RuntimeEnabledFeatures::RubySimplePairingEnabled());
     // child is not a text -> insert it into the base
     // (append it instead if beforeChild is the ruby text)
     auto& base = EnsureRubyBase();
@@ -132,7 +154,8 @@ void LayoutRubyColumn::RemoveChild(LayoutObject* child) {
   NOT_DESTROYED();
   // If the child is a ruby text, then merge the ruby base with the base of
   // the right sibling column, if possible.
-  if (!BeingDestroyed() && !DocumentBeingDestroyed() && child->IsRubyText()) {
+  if (!RuntimeEnabledFeatures::RubySimplePairingEnabled() &&
+      !BeingDestroyed() && !DocumentBeingDestroyed() && child->IsRubyText()) {
     auto* base = RubyBase();
     LayoutObject* right_neighbour = NextSibling();
     if (base->FirstChild() && right_neighbour &&
@@ -151,6 +174,18 @@ void LayoutRubyColumn::RemoveChild(LayoutObject* child) {
 
   LayoutBlockFlow::RemoveChild(child);
 
+  if (RuntimeEnabledFeatures::RubySimplePairingEnabled()) {
+    if (!DocumentBeingDestroyed()) {
+      DCHECK(child->IsRubyBase() || child->IsRubyText());
+      if (auto* inline_ruby = DynamicTo<LayoutRubyAsInline>(Parent())) {
+        inline_ruby->DidRemoveChildFromColumn(*child);
+      } else {
+        To<LayoutRubyAsBlock>(Parent())->DidRemoveChildFromColumn(*child);
+      }
+      // Do nothing here! `this` might be destroyed by RubyContainer::Repair().
+    }
+    return;
+  }
   if (!BeingDestroyed() && !DocumentBeingDestroyed()) {
     // If this has only an empty LayoutRubyBase, destroy this sub-tree.
     LayoutBlockFlow* base = RubyBase();
@@ -162,14 +197,31 @@ void LayoutRubyColumn::RemoveChild(LayoutObject* child) {
   }
 }
 
-LayoutRubyBase& LayoutRubyColumn::CreateRubyBase() const {
-  NOT_DESTROYED();
+void LayoutRubyColumn::RemoveAllChildren() {
+  if (auto* text = RubyText()) {
+    LayoutBlockFlow::RemoveChild(text);
+  }
+  if (auto* base = RubyBase()) {
+    LayoutBlockFlow::RemoveChild(base);
+    if (base->IsPlaceholder()) {
+      // This RubyBase was created for a RubyText without a corresponding
+      // RubyBase.  It should be destroyed here.
+      base->Destroy();
+    }
+  }
+}
+
+// static
+LayoutRubyBase& LayoutRubyColumn::CreateRubyBase(
+    const LayoutObject& reference) {
   auto* layout_object = MakeGarbageCollected<LayoutRubyBase>();
-  layout_object->SetDocumentForAnonymous(&GetDocument());
+  layout_object->SetDocumentForAnonymous(&reference.GetDocument());
   ComputedStyleBuilder new_style_builder =
-      GetDocument().GetStyleResolver().CreateAnonymousStyleBuilderWithDisplay(
-          StyleRef(), EDisplay::kBlock);
-  UpdateAnonymousChildStyle(layout_object, new_style_builder);
+      reference.GetDocument()
+          .GetStyleResolver()
+          .CreateAnonymousStyleBuilderWithDisplay(reference.StyleRef(),
+                                                  EDisplay::kBlock);
+  UpdateRubyBaseStyle(layout_object, new_style_builder);
   layout_object->SetStyle(new_style_builder.TakeStyle());
   return *layout_object;
 }
@@ -179,9 +231,7 @@ void LayoutRubyColumn::UpdateAnonymousChildStyle(
     ComputedStyleBuilder& builder) const {
   NOT_DESTROYED();
   if (child->IsRubyBase()) {
-    // FIXME: use WEBKIT_CENTER?
-    builder.SetTextAlign(ETextAlign::kCenter);
-    builder.SetHasLineIfEmpty(true);
+    UpdateRubyBaseStyle(child, builder);
   }
 }
 

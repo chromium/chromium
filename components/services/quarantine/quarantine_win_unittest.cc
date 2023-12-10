@@ -2,9 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/services/quarantine/quarantine.h"
+
 #include <windows.h>
 
 #include <wininet.h>
+
+#include <string_view>
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -19,7 +23,6 @@
 #include "base/win/scoped_com_initializer.h"
 #include "base/win/win_util.h"
 #include "base/win/windows_version.h"
-#include "components/services/quarantine/quarantine.h"
 #include "components/services/quarantine/test_support.h"
 #include "net/base/filename_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -78,7 +81,7 @@ class ScopedZoneForSite {
   };
 
   ScopedZoneForSite(base::StringPiece domain,
-                    base::WStringPiece protocol,
+                    std::wstring_view protocol,
                     ZoneIdentifierType zone_identifier_type);
 
   ScopedZoneForSite(const ScopedZoneForSite&) = delete;
@@ -94,7 +97,7 @@ class ScopedZoneForSite {
 };
 
 ScopedZoneForSite::ScopedZoneForSite(base::StringPiece domain,
-                                     base::WStringPiece protocol,
+                                     std::wstring_view protocol,
                                      ZoneIdentifierType zone_identifier_type)
     : domain_(base::ASCIIToWide(domain)), protocol_(protocol) {
   base::win::RegKey registry_key(HKEY_CURRENT_USER, GetRegistryPath().c_str(),

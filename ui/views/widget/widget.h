@@ -24,6 +24,7 @@
 #include "ui/base/ui_base_types.h"
 #include "ui/color/color_provider_key.h"
 #include "ui/color/color_provider_source.h"
+#include "ui/color/color_provider_utils.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/events/event_source.h"
 #include "ui/gfx/geometry/rect.h"
@@ -252,6 +253,11 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
     // Returns the z-order level, based on the overriding |z_order| but also
     // taking into account special levels due to |type|.
     ui::ZOrderLevel EffectiveZOrderLevel() const;
+
+    // Returns whether the widget should be initialized as headless by checking
+    // if |headless_mode| or the associated top level widget's |is_headless_|
+    // are set.
+    bool ShouldInitAsHeadless() const;
 
     Type type = TYPE_WINDOW;
 
@@ -653,6 +659,9 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   void SetBounds(const gfx::Rect& bounds);
   void SetSize(const gfx::Size& size);
 
+  // Retrieves the restored size for the window.
+  gfx::Size GetSize() const;
+
   // Sizes the window to the specified size and centers it.
   void CenterWindow(const gfx::Size& size);
 
@@ -1036,6 +1045,9 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   // with it. TYPE_CONTROL and TYPE_TOOLTIP is not considered top level.
   bool is_top_level() const { return is_top_level_; }
 
+  // True if widget was created in headless mode.
+  bool is_headless() const { return is_headless_; }
+
   // True when window movement via mouse interaction with the frame is disabled.
   bool movement_disabled() const { return movement_disabled_; }
   void set_movement_disabled(bool disabled) { movement_disabled_ = disabled; }
@@ -1158,6 +1170,9 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
 
   // ui::ColorProviderSource:
   const ui::ColorProvider* GetColorProvider() const override;
+  const ui::RendererColorMap GetRendererColorMap(
+      ui::ColorProviderKey::ColorMode color_mode,
+      ui::ColorProviderKey::ForcedColors forced_colors) const override;
 
   // Set the native theme from which this widget gets color from for testing.
   void SetNativeThemeForTest(ui::NativeTheme* native_theme) {
@@ -1400,6 +1415,9 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   // TODO(beng): Remove NativeWidgetGtk's dependence on these:
   // If true, the mouse is currently down.
   bool is_mouse_button_pressed_ = false;
+
+  // If set, the widget was created in headless mode.
+  bool is_headless_ = false;
 
   // True if capture losses should be ignored.
   bool ignore_capture_loss_ = false;

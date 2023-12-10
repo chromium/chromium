@@ -18,8 +18,6 @@
 #include "chrome/browser/apps/app_deduplication_service/duplicate_group.h"
 #include "chrome/browser/apps/app_deduplication_service/entry_types.h"
 #include "chrome/browser/apps/app_deduplication_service/proto/deduplication_data.pb.h"
-#include "chrome/browser/apps/app_provisioning_service/app_provisioning_data_manager.h"
-#include "chrome/browser/apps/app_provisioning_service/proto/app_data.pb.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 
@@ -32,7 +30,6 @@ class PrefRegistrySyncable;
 namespace apps::deduplication {
 
 class AppDeduplicationService : public KeyedService,
-                                public AppProvisioningDataManager::Observer,
                                 public apps::AppRegistryCache::Observer {
  public:
   explicit AppDeduplicationService(Profile* profile);
@@ -83,7 +80,7 @@ class AppDeduplicationService : public KeyedService,
   // Returns the map key of the duplicate group in the duplication map if a
   // group is found, and return nullptr if the entry id doesn't belong to
   // and duplicate group.
-  absl::optional<uint32_t> FindDuplicationIndex(const Entry& entry);
+  std::optional<uint32_t> FindDuplicationIndex(const Entry& entry);
 
   // Calls server connector to make a request to the Fondue server to retrieve
   // duplicate app group data.
@@ -91,7 +88,7 @@ class AppDeduplicationService : public KeyedService,
 
   // Processes data retrieved by server connector and stores in disk.
   void OnGetDeduplicateDataFromServerCompleted(
-      absl::optional<proto::DeduplicateData> response);
+      std::optional<proto::DeduplicateData> response);
 
   // Checks for any errors after data is written to cache. If the write is
   // successful, it will call the cache to read from disk.
@@ -99,7 +96,7 @@ class AppDeduplicationService : public KeyedService,
 
   // Process data read from cache and converts it into `Entry`s.
   void OnReadDeduplicationCacheCompleted(
-      absl::optional<proto::DeduplicateData> data);
+      std::optional<proto::DeduplicateData> data);
 
   // Maps deduplicate data read from disk to `Entry`s which are then stored
   // inside the class as maps.
@@ -118,9 +115,6 @@ class AppDeduplicationService : public KeyedService,
   std::map<Entry, uint32_t> entry_to_group_map_;
   raw_ptr<Profile, ExperimentalAsh> profile_;
 
-  base::ScopedObservation<AppProvisioningDataManager,
-                          AppProvisioningDataManager::Observer>
-      app_provisioning_data_observeration_{this};
   base::ScopedObservation<apps::AppRegistryCache,
                           apps::AppRegistryCache::Observer>
       app_registry_cache_observation_{this};

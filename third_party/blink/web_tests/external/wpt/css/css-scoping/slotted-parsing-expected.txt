@@ -1,20 +1,4 @@
 This is a testharness.js-based test.
-[PASS] "::slotted" should be an invalid selector
-[PASS] "::slotted()" should be an invalid selector
-[PASS] "::slotted(*).class" should be an invalid selector
-[PASS] "::slotted(*)#id {}" should be an invalid selector
-[PASS] "::slotted(*)[attr]" should be an invalid selector
-[PASS] "::slotted(*):host" should be an invalid selector
-[PASS] "::slotted(*):host(div)" should be an invalid selector
-[PASS] "::slotted(*):hover" should be an invalid selector
-[PASS] "::slotted(*):read-only" should be an invalid selector
-[PASS] "::slotted(*)::slotted(*)" should be an invalid selector
-[PASS] "::slotted(*)::before::slotted(*)" should be an invalid selector
-[PASS] "::slotted(*) span" should be an invalid selector
-[PASS] "::slotted(*)" should be a valid selector
-[PASS] "::slotted(div)" should be a valid selector
-[PASS] "::slotted([attr]:hover)" should be a valid selector
-[PASS] "::slotted(:not(.a))" should be a valid selector
 [FAIL] "::slotted(*):is()" should be a valid selector
   Failed to execute 'querySelector' on 'Document': '::slotted(*):is()' is not a valid selector.
 [FAIL] "::slotted(*):is(:hover)" should be a valid selector
@@ -29,12 +13,5 @@ This is a testharness.js-based test.
   Failed to execute 'querySelector' on 'Document': '::slotted(*):where(#id)' is not a valid selector.
 [FAIL] "::slotted(*):where(::before)" should be a valid selector
   Failed to execute 'querySelector' on 'Document': '::slotted(*):where(::before)' is not a valid selector.
-[PASS] "::slotted(*)::before" should be a valid selector
-[PASS] "::slotted(*)::after" should be a valid selector
-[PASS] "::slotted(*)::placeholder" should be a valid selector
-[PASS] "::slotted(*)::marker" should be a valid selector
-[PASS] "::slotted(*)::first-line" should be an invalid selector
-[PASS] "::slotted(*)::first-letter" should be an invalid selector
-[PASS] "::slotted(*)::selection" should be an invalid selector
 Harness: the test ran to completion.
 

@@ -92,6 +92,15 @@ MakeGraphiteRecorderWithImageProvider(skgpu::graphite::Context* context) {
   return context->makeRecorder(options);
 }
 
+#if BUILDFLAG(SKIA_USE_DAWN)
+int32_t GetDawnMaxTextureSize(gpu::DawnContextProvider* context_provider) {
+  wgpu::SupportedLimits limits = {};
+  auto succeded = context_provider->GetDevice().GetLimits(&limits);
+  CHECK(succeded);
+  return limits.limits.maxTextureDimension2D;
+}
+#endif  // BUILDFLAG(SKIA_USE_DAWN)
+
 }  // anonymous namespace
 
 namespace gpu {
@@ -339,9 +348,8 @@ bool SharedContextState::InitializeGanesh(
 
   if (gr_context_type_ == GrContextType::kGL) {
     DCHECK(context_->IsCurrent(nullptr));
-    constexpr bool use_version_es2 = false;
     sk_sp<GrGLInterface> gr_gl_interface(gl::init::CreateGrGLInterface(
-        *context_->GetVersionInfo(), use_version_es2, progress_reporter));
+        *context_->GetVersionInfo(), progress_reporter));
     if (!gr_gl_interface) {
       LOG(ERROR) << "OOP raster support disabled: GrGLInterface creation "
                     "failed.";
@@ -406,7 +414,10 @@ bool SharedContextState::InitializeGanesh(
   }
 
   gr_context_->setResourceCacheLimit(max_resource_cache_bytes);
-  transfer_cache_ = std::make_unique<ServiceTransferCache>(gpu_preferences);
+  transfer_cache_ = std::make_unique<ServiceTransferCache>(
+      gpu_preferences,
+      base::BindRepeating(&SharedContextState::ScheduleSkiaCleanup,
+                          base::Unretained(this)));
   gr_cache_controller_ = std::make_unique<raster::GrCacheController>(this);
   return true;
 }
@@ -456,7 +467,10 @@ bool SharedContextState::InitializeGraphite(
   viz_compositor_graphite_recorder_ =
       MakeGraphiteRecorderWithImageProvider(graphite_context_);
 
-  transfer_cache_ = std::make_unique<ServiceTransferCache>(gpu_preferences);
+  transfer_cache_ = std::make_unique<ServiceTransferCache>(
+      gpu_preferences,
+      base::BindRepeating(&SharedContextState::ScheduleSkiaCleanup,
+                          base::Unretained(this)));
   return true;
 }
 
@@ -703,7 +717,7 @@ bool SharedContextState::OnMemoryDump(
       base::trace_event::MemoryDumpLevelOfDetail::kBackground) {
     raster::DumpBackgroundGrMemoryStatistics(gr_context_, pmd);
   } else {
-    raster::DumpGrMemoryStatistics(gr_context_, pmd, absl::nullopt);
+    raster::DumpGrMemoryStatistics(gr_context_, pmd, std::nullopt);
   }
 
   return true;
@@ -743,7 +757,7 @@ void SharedContextState::PurgeMemory(
       // With critical pressure, purge as much as possible.
       sk_surface_cache_.Clear();
       {
-        absl::optional<raster::GrShaderCache::ScopedCacheUse> cache_use;
+        std::optional<raster::GrShaderCache::ScopedCacheUse> cache_use;
         // ScopedCacheUse is to avoid the empty/invalid client id DCHECKS caused
         // while accessing GrShaderCache. Note that since the actual client_id
         // here does not matter, we are using gpu::kDisplayCompositorClientId.
@@ -804,7 +818,7 @@ void SharedContextState::StoreVkPipelineCacheIfNeeded() {
 }
 
 void SharedContextState::UseShaderCache(
-    absl::optional<gpu::raster::GrShaderCache::ScopedCacheUse>& cache_use,
+    std::optional<gpu::raster::GrShaderCache::ScopedCacheUse>& cache_use,
     int32_t client_id) const {
   if (gr_shader_cache_) {
     cache_use.emplace(gr_shader_cache_, client_id);
@@ -902,7 +916,7 @@ QueryManager* SharedContextState::GetQueryManager() {
   return nullptr;
 }
 
-absl::optional<error::ContextLostReason> SharedContextState::GetResetStatus(
+std::optional<error::ContextLostReason> SharedContextState::GetResetStatus(
     bool needs_gl) {
   DCHECK(!context_lost());
 
@@ -928,11 +942,11 @@ absl::optional<error::ContextLostReason> SharedContextState::GetResetStatus(
 
   // Not using GL.
   if (!GrContextIsGL() && !needs_gl)
-    return absl::nullopt;
+    return std::nullopt;
 
   // GL is not initialized.
   if (!context_state_)
-    return absl::nullopt;
+    return std::nullopt;
 
   GLenum error;
   while ((error = context_state_->api()->glGetErrorFn()) != GL_NO_ERROR) {
@@ -949,13 +963,13 @@ absl::optional<error::ContextLostReason> SharedContextState::GetResetStatus(
   base::Time now = base::Time::Now();
   if (!disable_check_reset_status_throttling_for_test_ &&
       now < last_gl_check_graphics_reset_status_ + kMinCheckDelay) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   last_gl_check_graphics_reset_status_ = now;
 
   GLenum driver_status = context()->CheckStickyGraphicsResetStatus();
   if (driver_status == GL_NO_ERROR)
-    return absl::nullopt;
+    return std::nullopt;
   LOG(ERROR) << "SharedContextState context lost via ARB/EXT_robustness. Reset "
                 "status = "
              << gles2::GLES2Util::GetStringEnum(driver_status);
@@ -971,7 +985,7 @@ absl::optional<error::ContextLostReason> SharedContextState::GetResetStatus(
       NOTREACHED();
       break;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 bool SharedContextState::CheckResetStatus(bool need_gl) {
@@ -988,6 +1002,9 @@ bool SharedContextState::CheckResetStatus(bool need_gl) {
 }
 
 void SharedContextState::ScheduleSkiaCleanup() {
+  if (!MakeCurrent(nullptr)) {
+    return;
+  }
   if (gr_cache_controller_) {
     gr_cache_controller_->ScheduleGrContextCleanup();
   }
@@ -1011,9 +1028,19 @@ int32_t SharedContextState::GetMaxTextureSize() const {
     NOTREACHED_NORETURN();
 #endif
   } else {
-    // TODO(crbug.com/1090476): Query Dawn for this value once an API exists for
-    // capabilities.
     max_texture_size = 8192;
+#if BUILDFLAG(SKIA_USE_DAWN)
+#if BUILDFLAG(IS_IOS)
+    // Note: We currently run tests against the Graphite-Metal backend on iOS;
+    // in these contexts the Dawn context provider is not created.
+    if (dawn_context_provider()) {
+      max_texture_size = GetDawnMaxTextureSize(dawn_context_provider());
+    }
+#else
+    CHECK(dawn_context_provider());
+    max_texture_size = GetDawnMaxTextureSize(dawn_context_provider());
+#endif  // BUILDFLAG(IS_IOS)
+#endif  // BUILDFLAG(SKIA_USE_DAWN)
   }
   // Ensure max_texture_size_ is less than INT_MAX so that gfx::Rect and friends
   // can be used to accurately represent all valid sub-rects, with overflow
@@ -1029,8 +1056,10 @@ Microsoft::WRL::ComPtr<ID3D11Device> SharedContextState::GetD3D11Device()
     case GrContextType::kGL:
     case GrContextType::kVulkan:
       return gl::QueryD3D11DeviceObjectFromANGLE();
+#if BUILDFLAG(SKIA_USE_DAWN)
     case GrContextType::kGraphiteDawn:
       return dawn_context_provider_->GetD3D11Device();
+#endif
     default:
       NOTREACHED();
       return nullptr;

@@ -7,12 +7,13 @@
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/ranges/algorithm.h"
-#include "base/task/thread_pool/worker_thread.h"
+#include "base/task/thread_pool/worker_thread_waitable_event.h"
 
 namespace base::internal {
 
-bool WorkerThreadSet::Compare::operator()(const WorkerThread* a,
-                                          const WorkerThread* b) const {
+bool WorkerThreadSet::Compare::operator()(
+    const WorkerThreadWaitableEvent* a,
+    const WorkerThreadWaitableEvent* b) const {
   return a->sequence_num() < b->sequence_num();
 }
 
@@ -20,7 +21,7 @@ WorkerThreadSet::WorkerThreadSet() = default;
 
 WorkerThreadSet::~WorkerThreadSet() = default;
 
-void WorkerThreadSet::Insert(WorkerThread* worker) {
+void WorkerThreadSet::Insert(WorkerThreadWaitableEvent* worker) {
   DCHECK(!Contains(worker)) << "WorkerThread already on stack";
   auto old_first = set_.begin();
   set_.insert(worker);
@@ -30,30 +31,30 @@ void WorkerThreadSet::Insert(WorkerThread* worker) {
     (*old_first)->BeginUnusedPeriod();
 }
 
-WorkerThread* WorkerThreadSet::Take() {
+WorkerThreadWaitableEvent* WorkerThreadSet::Take() {
   if (IsEmpty())
     return nullptr;
-  WorkerThread* const worker = *set_.begin();
+  WorkerThreadWaitableEvent* const worker = *set_.begin();
   set_.erase(set_.begin());
   if (!IsEmpty())
     (*set_.begin())->EndUnusedPeriod();
   return worker;
 }
 
-WorkerThread* WorkerThreadSet::Peek() const {
+WorkerThreadWaitableEvent* WorkerThreadSet::Peek() const {
   if (IsEmpty())
     return nullptr;
   return *set_.begin();
 }
 
-bool WorkerThreadSet::Contains(const WorkerThread* worker) const {
-  return set_.count(const_cast<WorkerThread*>(worker)) > 0;
+bool WorkerThreadSet::Contains(const WorkerThreadWaitableEvent* worker) const {
+  return set_.count(const_cast<WorkerThreadWaitableEvent*>(worker)) > 0;
 }
 
-void WorkerThreadSet::Remove(const WorkerThread* worker) {
+void WorkerThreadSet::Remove(const WorkerThreadWaitableEvent* worker) {
   DCHECK(!IsEmpty());
   DCHECK_NE(worker, *set_.begin());
-  auto it = set_.find(const_cast<WorkerThread*>(worker));
+  auto it = set_.find(const_cast<WorkerThreadWaitableEvent*>(worker));
   DCHECK(it != set_.end());
   DCHECK_NE(TimeTicks(), (*it)->GetLastUsedTime());
   set_.erase(it);

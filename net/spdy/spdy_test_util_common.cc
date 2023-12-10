@@ -533,11 +533,6 @@ class FakeSpdySessionClientSocket : public MockClientSocket {
     return false;
   }
 
-  bool WasAlpnNegotiated() const override {
-    ADD_FAILURE();
-    return false;
-  }
-
   bool GetSSLInfo(SSLInfo* ssl_info) override {
     SSLConnectionStatusSetVersion(SSL_CONNECTION_VERSION_TLS1_3,
                                   &ssl_info->connection_status);

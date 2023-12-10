@@ -13,7 +13,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "chrome/common/extensions/api/passwords_private.h"
 #include "components/password_manager/core/browser/export/export_progress_status.h"
 #include "components/password_manager/core/browser/import/import_results.h"

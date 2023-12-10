@@ -24,8 +24,12 @@
 // The switch view.
 @property(nonatomic, readonly, strong) UISwitch* switchView;
 
-// Returns the default text color used for the given `state`.
-+ (UIColor*)defaultTextColorForState:(UIControlState)state;
+// Configures the cell with its `title`, `subtitle` and whether the switch is
+// `enabled` and `on`.
+- (void)configureCellWithTitle:(NSString*)title
+                      subtitle:(NSString*)subtitle
+                 switchEnabled:(BOOL)enabled
+                            on:(BOOL)on;
 
 // Sets the `image` that should be displayed at the leading edge of the cell
 // with a `tintColor`. If set to nil, the icon will be hidden and the text

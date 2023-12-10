@@ -192,10 +192,10 @@ bool RecentTabsSubMenuModel::GetAcceleratorForCommandId(
   // the header, otherwise, we show it beside the first item underneath it.
   // If the first item underneath it is a submenu, we instead show it beside
   // the first item in that submenu.
-  const absl::optional<size_t> index_in_menu = GetIndexOfCommandId(command_id);
+  const std::optional<size_t> index_in_menu = GetIndexOfCommandId(command_id);
   const int parent_id = GetParentCommandId(command_id);
-  const absl::optional<size_t> parent_index =
-      parent_id == -1 ? absl::nullopt : GetIndexOfCommandId(parent_id);
+  const std::optional<size_t> parent_index =
+      parent_id == -1 ? std::nullopt : GetIndexOfCommandId(parent_id);
   if ((command_id == kDisabledRecentlyClosedHeaderCommandId ||
        (recently_closed_title_index_.has_value() &&
         ((!IsSubMenuModelCommandId(command_id) &&
@@ -499,7 +499,7 @@ void RecentTabsSubMenuModel::BuildTabsFromOtherDevices() {
 
 void RecentTabsSubMenuModel::BuildLocalTabItem(
     SessionID session_id,
-    absl::optional<tab_groups::TabGroupVisualData> visual_data,
+    std::optional<tab_groups::TabGroupVisualData> visual_data,
     const std::u16string& title,
     const GURL& url,
     size_t curr_model_index) {
@@ -612,7 +612,7 @@ RecentTabsSubMenuModel::CreateWindowSubMenuModel(
     window_model->AddSeparator(ui::NORMAL_SEPARATOR);
   }
 
-  absl::optional<tab_groups::TabGroupId> last_group;
+  std::optional<tab_groups::TabGroupId> last_group;
   tab_groups::TabGroupVisualData current_group_visual_data;
   std::unique_ptr<ui::SimpleMenuModel> current_group_model;
   for (const std::unique_ptr<sessions::TabRestoreService::Tab>& tab :
@@ -808,7 +808,7 @@ void RecentTabsSubMenuModel::OnFaviconDataAvailable(
     // Default icon has already been set.
     return;
   }
-  const absl::optional<size_t> index_in_menu =
+  const std::optional<size_t> index_in_menu =
       menu_model->GetIndexOfCommandId(command_id);
   DCHECK(index_in_menu.has_value());
   menu_model->SetIcon(index_in_menu.value(),

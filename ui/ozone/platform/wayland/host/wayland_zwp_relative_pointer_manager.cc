@@ -7,6 +7,7 @@
 #include <relative-pointer-unstable-v1-client-protocol.h>
 
 #include "base/logging.h"
+#include "build/buildflag.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_event_source.h"
 #include "ui/ozone/platform/wayland/host/wayland_pointer.h"
@@ -96,7 +97,14 @@ void WaylandZwpRelativePointerManager::OnRelativeMotion(
       static_cast<float>(wl_fixed_to_double(dx_unaccel)),
       static_cast<float>(wl_fixed_to_double(dy_unaccel))};
 
-  self->delegate_->OnRelativePointerMotion(delta);
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // The unit of timestamp should be same as unit used in event events, which is
+  // one uint32_t (it is CPU clock time in milliseconds). ChromeOS is using only
+  // using utime_lo, and utime_hi should always be zero.
+  CHECK(!utime_hi);
+#endif
+  self->delegate_->OnRelativePointerMotion(
+      delta, wl::EventMillisecondsToTimeTicks(utime_lo));
 }
 
 }  // namespace ui

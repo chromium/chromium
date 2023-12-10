@@ -13,7 +13,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/account_id/account_id.h"
@@ -116,6 +116,9 @@ const char kTokenHandleRotatedObsolete[] = "TokenHandleRotated";
 // Cache of the auth factors configured for the user.
 const char kAuthFactorPresenceCache[] = "AuthFactorsPresenceCache";
 
+// Records for each user whether Lacros is enabled.
+const char kLacrosEnabled[] = "lacros_enabled";
+
 // List containing all the known user preferences keys.
 const char* kReservedKeys[] = {kCanonicalEmail,
                                kGAIAIdKey,
@@ -139,7 +142,8 @@ const char* kReservedKeys[] = {kCanonicalEmail,
                                kPasswordSyncToken,
                                kOnboardingCompletedVersion,
                                kPendingOnboardingScreen,
-                               kAuthFactorPresenceCache};
+                               kAuthFactorPresenceCache,
+                               kLacrosEnabled};
 
 // List containing all known user preference keys that used to be reserved and
 // are now obsolete.
@@ -391,7 +395,7 @@ void KnownUser::RemovePref(const AccountId& account_id,
 
 AccountId KnownUser::GetAccountId(const std::string& user_email,
                                   const std::string& id,
-                                  const AccountType& account_type) {
+                                  const AccountType& account_type) const {
   DCHECK((id.empty() && account_type == AccountType::UNKNOWN) ||
          (!id.empty() && account_type != AccountType::UNKNOWN));
   // In tests empty accounts are possible.
@@ -568,7 +572,7 @@ void KnownUser::SetDeviceId(const AccountId& account_id,
   SetStringPref(account_id, kDeviceId, device_id);
 }
 
-std::string KnownUser::GetDeviceId(const AccountId& account_id) {
+std::string KnownUser::GetDeviceId(const AccountId& account_id) const {
   const std::string* device_id = FindStringPath(account_id, kDeviceId);
   if (device_id)
     return *device_id;
@@ -807,6 +811,17 @@ std::string KnownUser::GetPendingOnboardingScreen(const AccountId& account_id) {
   }
   // Return empty string if no screen is pending.
   return std::string();
+}
+
+void KnownUser::SetLacrosEnabled(const AccountId& account_id, bool enabled) {
+  SetBooleanPref(account_id, kLacrosEnabled, enabled);
+}
+
+bool KnownUser::GetLacrosEnabledForAnyUser() {
+  const std::vector<AccountId> account_ids = GetKnownAccountIds();
+  return base::ranges::any_of(account_ids, [this](const AccountId& account_id) {
+    return FindBoolPath(account_id, kLacrosEnabled).value_or(false);
+  });
 }
 
 bool KnownUser::UserExists(const AccountId& account_id) {

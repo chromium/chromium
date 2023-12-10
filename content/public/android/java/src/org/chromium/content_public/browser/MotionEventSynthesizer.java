@@ -8,9 +8,7 @@ import android.view.View;
 
 import org.chromium.content.browser.MotionEventSynthesizerImpl;
 
-/**
- * Injects synthetic touch events. All the coordinates are of physical unit.
- */
+/** Injects synthetic touch events. All the coordinates are of physical unit. */
 public interface MotionEventSynthesizer {
     public static MotionEventSynthesizer create(View target) {
         return MotionEventSynthesizerImpl.create(target);

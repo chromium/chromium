@@ -75,7 +75,7 @@ class PasswordManagerSettingsServiceAndroidImpl
   // If the `value` is not given, the prefs will be set to default.
   void WriteToTheCacheAndRegularPref(
       password_manager::PasswordManagerSetting setting,
-      absl::optional<bool> value);
+      std::optional<bool> value);
 
   // syncer::SyncServiceObserver implementation
   void OnStateChanged(syncer::SyncService* sync) override;
@@ -129,4 +129,4 @@ class PasswordManagerSettingsServiceAndroidImpl
       weak_ptr_factory_{this};
 };
 
-#endif  // CHROME_BROWSER_PASSWORD_MANAGER_PASSWORD_MANAGER_SETTINGS_SERVICE_ANDROID_IMPL_H_
+#endif  // CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_PASSWORD_MANAGER_SETTINGS_SERVICE_ANDROID_IMPL_H_

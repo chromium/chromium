@@ -111,4 +111,4 @@ class GFX_EXPORT D3DSharedFence : public base::RefCounted<D3DSharedFence> {
 
 }  // namespace gfx
 
-#endif
+#endif  // UI_GFX_WIN_D3D_SHARED_FENCE_H_

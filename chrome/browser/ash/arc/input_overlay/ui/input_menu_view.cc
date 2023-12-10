@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/arc/input_overlay/ui/input_menu_view.h"
 
+#include <utility>
+
 #include "ash/components/arc/compat_mode/style/arc_color_provider.h"
 #include "ash/login/ui/views_utils.h"
 #include "ash/public/cpp/new_window_delegate.h"
@@ -21,6 +23,7 @@
 #include "net/base/url_util.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/chromeos/styles/cros_styles.h"
@@ -118,10 +121,12 @@ int GetAlphaLeftMargin(int parent_width) {
 }  // namespace
 
 class InputMenuView::FeedbackButton : public views::LabelButton {
+  METADATA_HEADER(FeedbackButton, views::LabelButton)
+
  public:
   explicit FeedbackButton(PressedCallback callback = PressedCallback(),
                           const std::u16string& text = std::u16string())
-      : LabelButton(callback, text) {
+      : LabelButton(std::move(callback), text) {
     SetAccessibleName(
         l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_MENU_SEND_FEEDBACK));
     SetBorder(views::CreateEmptyBorder(
@@ -154,6 +159,9 @@ class InputMenuView::FeedbackButton : public views::LabelButton {
   FeedbackButton& operator=(const FeedbackButton&) = delete;
   ~FeedbackButton() override = default;
 };
+
+BEGIN_METADATA(InputMenuView, FeedbackButton, views::LabelButton)
+END_METADATA
 
 // static
 std::unique_ptr<InputMenuView> InputMenuView::BuildMenuView(
@@ -467,5 +475,8 @@ void InputMenuView::SetCustomToggleColor(views::ToggleButton* toggle) {
   toggle->SetTrackOffColor(color_provider->GetContentLayerColor(
       ash::AshColorProvider::ContentLayerType::kSwitchTrackColorInactive));
 }
+
+BEGIN_METADATA(InputMenuView)
+END_METADATA
 
 }  // namespace arc::input_overlay

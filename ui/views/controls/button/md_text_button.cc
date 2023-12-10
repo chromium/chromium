@@ -12,6 +12,7 @@
 #include "base/i18n/case_conversion.h"
 #include "base/memory/ptr_util.h"
 #include "build/build_config.h"
+#include "ui/actions/actions.h"
 #include "ui/base/metadata/base_type_conversion.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_features.h"
@@ -21,6 +22,7 @@
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/native_theme/native_theme.h"
+#include "ui/views/action_view_interface.h"
 #include "ui/views/animation/flood_fill_ink_drop_ripple.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_highlight.h"
@@ -35,13 +37,16 @@
 #include "ui/views/style/platform_style.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/style/typography_provider.h"
+#include "ui/views/view_utils.h"
 
 namespace views {
 
 MdTextButton::MdTextButton(PressedCallback callback,
                            const std::u16string& text,
-                           int button_context)
-    : LabelButton(std::move(callback), text, button_context) {
+                           int button_context,
+                           bool use_text_color_for_icon)
+    : LabelButton(std::move(callback), text, button_context),
+      use_text_color_for_icon_(use_text_color_for_icon) {
   InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
   SetHasInkDropActionOnClick(true);
   SetShowInkDropWhenHotTracked(true);
@@ -107,22 +112,6 @@ void MdTextButton::SetStyle(ui::ButtonStyle button_style) {
 
 ui::ButtonStyle MdTextButton::GetStyle() const {
   return style_;
-}
-
-SkColor MdTextButton::GetHoverColor(ui::ButtonStyle button_style) {
-  if (!features::IsChromeRefresh2023()) {
-    return color_utils::DeriveDefaultIconColor(label()->GetEnabledColor());
-  }
-
-  switch (button_style) {
-    case ui::ButtonStyle::kProminent:
-      return GetColorProvider()->GetColor(ui::kColorSysStateHoverOnProminent);
-    case ui::ButtonStyle::kDefault:
-    case ui::ButtonStyle::kText:
-    case ui::ButtonStyle::kTonal:
-    default:
-      return GetColorProvider()->GetColor(ui::kColorSysStateHoverOnSubtle);
-  }
 }
 
 void MdTextButton::SetBgColorOverride(const absl::optional<SkColor>& color) {
@@ -325,7 +314,8 @@ void MdTextButton::UpdateBackgroundColor() {
 }
 
 void MdTextButton::UpdateIconColor() {
-  if (features::IsChromeRefresh2023() && HasImage(ButtonState::STATE_NORMAL)) {
+  if (features::IsChromeRefresh2023() && use_text_color_for_icon_ &&
+      HasImage(ButtonState::STATE_NORMAL)) {
     auto image_model = GetImageModel(ButtonState::STATE_NORMAL);
     if (image_model.IsVectorIcon()) {
       LabelButton::SetImageModel(ButtonState::STATE_NORMAL,
@@ -346,7 +336,39 @@ void MdTextButton::UpdateColors() {
   }
 }
 
-BEGIN_METADATA(MdTextButton, LabelButton)
+SkColor MdTextButton::GetHoverColor(ui::ButtonStyle button_style) {
+  if (!features::IsChromeRefresh2023()) {
+    return color_utils::DeriveDefaultIconColor(label()->GetEnabledColor());
+  }
+
+  switch (button_style) {
+    case ui::ButtonStyle::kProminent:
+      return GetColorProvider()->GetColor(ui::kColorSysStateHoverOnProminent);
+    case ui::ButtonStyle::kDefault:
+    case ui::ButtonStyle::kText:
+    case ui::ButtonStyle::kTonal:
+    default:
+      return GetColorProvider()->GetColor(ui::kColorSysStateHoverOnSubtle);
+  }
+}
+
+std::unique_ptr<ActionViewInterface> MdTextButton::GetActionViewInterface() {
+  return std::make_unique<MdTextButtonActionViewInterface>(this);
+}
+
+MdTextButtonActionViewInterface::MdTextButtonActionViewInterface(
+    MdTextButton* action_view)
+    : LabelButtonActionViewInterface(action_view), action_view_(action_view) {}
+
+void MdTextButtonActionViewInterface::ActionItemChangedImpl(
+    actions::ActionItem* action_item) {
+  LabelButtonActionViewInterface::ActionItemChangedImpl(action_item);
+  action_view_->SetText(action_item->GetText());
+  action_view_->SetImageModel(action_view_->GetState(),
+                              action_item->GetImage());
+}
+
+BEGIN_METADATA(MdTextButton)
 ADD_PROPERTY_METADATA(bool, Prominent)
 ADD_PROPERTY_METADATA(absl::optional<float>, CornerRadius)
 ADD_PROPERTY_METADATA(absl::optional<SkColor>, BgColorOverride)

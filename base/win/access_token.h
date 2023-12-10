@@ -312,6 +312,11 @@ class BASE_EXPORT AccessToken {
   // The token must be opened with TOKEN_ADJUST_PRIVILEGES access.
   bool RemovePrivilege(const std::wstring& name);
 
+  // Permanently remove all privileges from the token.
+  // Returns true if the operation was successful.
+  // The token must be opened with TOKEN_ADJUST_PRIVILEGES access.
+  bool RemoveAllPrivileges();
+
   // Indicates if the AccessToken object is valid.
   bool is_valid() const;
 

@@ -1,0 +1,13 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<!-- This file is generated using tools/search_engine_choice/generate_search_engine_snippets.py. Do not modify it manually. -->
+<translationbundle lang="et">
+  <translation id="IDS_BING_SEARCH_DESCRIPTION">Kiire, täpne ja privaatne otsing Microsoftilt</translation>
+  <translation id="IDS_DUCKDUCKGO_SEARCH_DESCRIPTION">Me ei jälita sind. Privaatsus lihtsustatud kujul.</translation>
+  <translation id="IDS_GOOGLE_SEARCH_DESCRIPTION">Leidke maailma enim kasutatava otsingumootori abil seda, mida vajate.</translation>
+  <translation id="IDS_INFOCOM_SEARCH_DESCRIPTION">Kiire ja lihtne otsimootor</translation>
+  <translation id="IDS_MOJEEK_SEARCH_DESCRIPTION">Sõltumatu Euroopa otsingumootor ilma jälgimiseta</translation>
+  <translation id="IDS_PRIVACYWALL_SEARCH_DESCRIPTION">Teie privaatsust kaitsev otsimootor.</translation>
+  <translation id="IDS_YANDEX_SEARCH_DESCRIPTION">Saitide, piltide ja videote kiire ja turvaline otsing</translation>
+  <translation id="IDS_YEP_SEARCH_DESCRIPTION">Veebiotsingumootor, mille eesmärk on jagada reklaamitulu loojatega.</translation>
+</translationbundle>

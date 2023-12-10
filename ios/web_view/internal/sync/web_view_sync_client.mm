@@ -197,8 +197,8 @@ WebViewSyncClient::GetSyncApiComponentFactory() {
   return component_factory_.get();
 }
 
-syncer::SyncTypePreferenceProvider* WebViewSyncClient::GetPreferenceProvider() {
-  return nullptr;
+bool WebViewSyncClient::IsCustomPassphraseAllowed() {
+  return true;
 }
 
 void WebViewSyncClient::OnLocalSyncTransportDataCleared() {

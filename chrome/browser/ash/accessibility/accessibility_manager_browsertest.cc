@@ -5,6 +5,8 @@
 #include "ash/shell.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 
+#include <optional>
+
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
@@ -53,7 +55,6 @@
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/extension_host_test_helper.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/accessibility_switches.h"
 #include "ui/base/ime/ash/component_extension_ime_manager.h"
@@ -122,7 +123,7 @@ class MockAccessibilityObserver {
 
   bool observed() const { return observed_; }
   bool observed_enabled() const { return observed_enabled_; }
-  absl::optional<AccessibilityNotificationType> observed_type() const {
+  std::optional<AccessibilityNotificationType> observed_type() const {
     return observed_type_;
   }
 
@@ -141,7 +142,7 @@ class MockAccessibilityObserver {
 
   bool observed_ = false;
   bool observed_enabled_ = false;
-  absl::optional<AccessibilityNotificationType> observed_type_;
+  std::optional<AccessibilityNotificationType> observed_type_;
 
   base::CallbackListSubscription accessibility_subscription_;
 };
@@ -353,7 +354,7 @@ void ClearDictationOfflineNudgePref(const std::string& locale) {
   update->RemoveByDottedPath(locale);
 }
 
-absl::optional<bool> GetDictationOfflineNudgePref(const std::string& locale) {
+std::optional<bool> GetDictationOfflineNudgePref(const std::string& locale) {
   const base::Value::Dict& offline_nudges = GetActiveUserPrefs()->GetDict(
       prefs::kAccessibilityDictationLocaleOfflineNudge);
   return offline_nudges.FindBool(locale);
@@ -996,8 +997,7 @@ class AccessibilityManagerDlcTest : public AccessibilityManagerTest {
   }
 
   void OnPumpkinDataCreated(
-      absl::optional<extensions::api::accessibility_private::PumpkinData>
-          data) {
+      std::optional<extensions::api::accessibility_private::PumpkinData> data) {
     AccessibilityManager::Get()->OnPumpkinDataCreated(std::move(data));
   }
 
@@ -1497,7 +1497,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerDlcTest,
   SetDictationLocale("en-US");
   SetDictationEnabled(true);
   InstallPumpkinAndWait();
-  OnPumpkinDataCreated(absl::nullopt);
+  OnPumpkinDataCreated(std::nullopt);
 }
 
 enum DictationDialogTestVariant {

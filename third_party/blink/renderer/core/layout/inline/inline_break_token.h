@@ -7,17 +7,17 @@
 
 #include "base/dcheck_is_on.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/layout/break_token.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_item_text_index.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_node.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_break_token.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
 
-class NGBlockBreakToken;
+class BlockBreakToken;
 
 // Represents a break token for an inline node.
-class CORE_EXPORT InlineBreakToken final : public NGBreakToken {
+class CORE_EXPORT InlineBreakToken final : public BreakToken {
  public:
   enum InlineBreakTokenFlags {
     kDefault = 0,
@@ -37,7 +37,7 @@ class CORE_EXPORT InlineBreakToken final : public NGBreakToken {
       const ComputedStyle* style,
       const InlineItemTextIndex& start,
       unsigned flags /* InlineBreakTokenFlags */,
-      const NGBlockBreakToken* sub_break_token = nullptr);
+      const BlockBreakToken* sub_break_token = nullptr);
 
   // Wrap a block break token inside an inline break token. The block break
   // token may for instance be for a float inside an inline formatting context.
@@ -46,7 +46,7 @@ class CORE_EXPORT InlineBreakToken final : public NGBreakToken {
   static InlineBreakToken* CreateForParallelBlockFlow(
       InlineNode node,
       const InlineItemTextIndex& start,
-      const NGBlockBreakToken& child_break_token);
+      const BlockBreakToken& child_break_token);
 
   // The style at the end of this break token. The next line should start with
   // this style.
@@ -67,7 +67,7 @@ class CORE_EXPORT InlineBreakToken final : public NGBreakToken {
   }
 
   // The BreakToken when a block-in-inline or float is block-fragmented.
-  const NGBlockBreakToken* BlockBreakToken() const;
+  const BlockBreakToken* GetBlockBreakToken() const;
 
   // True if the current position has open tags that has `box-decoration-break:
   // clone`. They should be cloned to the start of the next line.
@@ -85,9 +85,9 @@ class CORE_EXPORT InlineBreakToken final : public NGBreakToken {
                    const ComputedStyle*,
                    const InlineItemTextIndex& start,
                    unsigned flags /* InlineBreakTokenFlags */,
-                   const NGBlockBreakToken* sub_break_token);
+                   const BlockBreakToken* sub_break_token);
 
-  explicit InlineBreakToken(PassKey, NGLayoutInputNode node);
+  explicit InlineBreakToken(PassKey, LayoutInputNode node);
 
 #if DCHECK_IS_ON()
   String ToString() const;
@@ -96,18 +96,18 @@ class CORE_EXPORT InlineBreakToken final : public NGBreakToken {
   void TraceAfterDispatch(Visitor*) const;
 
  private:
-  const Member<const NGBreakToken>* SubBreakTokenAddress() const;
+  const Member<const BreakToken>* SubBreakTokenAddress() const;
 
   Member<const ComputedStyle> style_;
   InlineItemTextIndex start_;
 
   // This is an array of one item if |kHasSubBreakToken|, or zero.
-  Member<const NGBlockBreakToken> sub_break_token_[];
+  Member<const BlockBreakToken> sub_break_token_[];
 };
 
 template <>
 struct DowncastTraits<InlineBreakToken> {
-  static bool AllowFrom(const NGBreakToken& token) {
+  static bool AllowFrom(const BreakToken& token) {
     return token.IsInlineType();
   }
 };

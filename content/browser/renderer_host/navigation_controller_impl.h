@@ -154,7 +154,6 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   void PruneAllButLastCommitted() override;
   void DeleteNavigationEntries(
       const DeletionPredicate& deletionPredicate) override;
-  bool IsEntryMarkedToBeSkipped(int index) override;
   BackForwardCacheImpl& GetBackForwardCache() override;
 
   // Discards the pending entry if any. If this is caused by a navigation
@@ -858,7 +857,8 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   void BroadcastHistoryOffsetAndLength();
 
   // Used by PopulateNavigationApiHistoryEntryVectors to initialize a single
-  // vector.
+  // vector. `last_index_checked` is an out parameter that indicates the last
+  // entry index walked in `direction` before stopping.
   std::vector<blink::mojom::NavigationApiHistoryEntryPtr>
   PopulateSingleNavigationApiHistoryEntryVector(
       Direction direction,
@@ -867,7 +867,8 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
       FrameTreeNode* node,
       SiteInstance* site_instance,
       int64_t pending_item_sequence_number,
-      int64_t pending_document_sequence_number);
+      int64_t pending_document_sequence_number,
+      int& last_index_checked);
   // Helper for NavigateToNavigationApiKey(). Ensures that we only navigate to
   // |target_entry| if it matches |current_entry|'s origin and site instance, as
   // well as having |navigation_api_key| as its key.

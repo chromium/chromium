@@ -102,7 +102,7 @@ class RendererStartupHelper : public KeyedService,
   // Sets properties for the user script world CSP for the given `extension`
   // in all applicable renderers.
   void SetUserScriptWorldProperties(const Extension& extension,
-                                    absl::optional<std::string> csp,
+                                    std::optional<std::string> csp,
                                     bool enable_messaging);
 
   // Returns mojom::Renderer* corresponding to |process|. This would return

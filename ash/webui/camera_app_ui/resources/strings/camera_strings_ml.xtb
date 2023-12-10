@@ -5,7 +5,6 @@
 <translation id="1076394037877376434">പേജ് <ph name="PAGE_NUMBER" /> ഇല്ലാതാക്കുക</translation>
 <translation id="1113173431709655881">ക്യാമറാ മോഡ്</translation>
 <translation id="1153190633558910465">ഗ്രിഡ് ഓഫാക്കുക</translation>
-<translation id="1175958423215084756">ലിങ്ക് തിരിച്ചറിഞ്ഞു. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213">പേജ് <ph name="PAGE_NUMBER" /> ഇല്ലാതാക്കി</translation>
 <translation id="1258009455399840361">ഘടികാരദിശയിൽ 90 ഡിഗ്രി റൊട്ടേറ്റ് ചെയ്യുക</translation>
 <translation id="1417314334557041815"><ph name="INDEX" />-ാമത്തെ പേജ് എഡിറ്റ് ചെയ്യുക</translation>
@@ -60,14 +59,12 @@
 <translation id="3642192109456033823">വീഡിയോ പ്രോസസ് ചെയ്യുന്നു...</translation>
 <translation id="3789724198583203151">എതിർഘടികാരദിശയിൽ 90 ഡിഗ്രി റൊട്ടേറ്റ് ചെയ്യുക</translation>
 <translation id="3810838688059735925">വീഡിയോ</translation>
-<translation id="3892148308691398805">ടെക്‌സ്‌റ്റ് പകർത്തുക</translation>
 <translation id="4060608699153044055">ഉപകരണത്തിൽ സ്റ്റോറേജ് സ്പെയ്‌സ് കുറവായതിനാൽ നിങ്ങൾക്ക് റെക്കോർഡ് ചെയ്യാനാകില്ല. റെക്കോർഡിംഗ് ആരംഭിക്കാൻ, നിങ്ങളുടെ ഉപകരണത്തിൽ ഇടം സൃഷ്ടിക്കേണ്ടതുണ്ട്.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
 <translation id="4118525110028899586">റെക്കോർഡ് ചെയ്യൽ തൽക്കാലം നിർത്തുക</translation>
 <translation id="4121305183798804752">ഡോക്യുമെന്റ് കണ്ടെത്തി</translation>
 <translation id="414641094616694804">ഈ ക്യാമറയ്ക്ക് റെസല്യൂഷൻ മാറ്റാനാകില്ല</translation>
 <translation id="4176463684765177261">അപ്രാപ്തമാക്കി</translation>
-<translation id="4269820728363426813">ലിങ്ക് വിലാസം പകർത്തുക</translation>
 <translation id="428234092390943511">പേജിന്റെ ലഘുചിത്രം</translation>
 <translation id="4349714250734879769">Chrome മുഖേന ഫ്രെയിമുകൾ സ്കെയിൽ ചെയ്യുക</translation>
 <translation id="4383571725254449280">പ്രകടന ലോഗുകൾ പ്രിന്റ് ചെയ്യുക</translation>
@@ -144,7 +141,6 @@
 <translation id="7726641833034062494">സാധാരണ വീഡിയോ റെക്കോർഡ് ചെയ്യുക</translation>
 <translation id="7748344063862150053">ഡോക്യുമെന്റിന്റെ മുകൾ ഭാഗത്തെ വലത് മൂല</translation>
 <translation id="7933675232020478311">താഴെ വലത് ദിശയിൽ നീങ്ങുന്നു</translation>
-<translation id="7983668134180549431">ടെക്‌സ്റ്റ് തിരിച്ചറിഞ്ഞു.</translation>
 <translation id="8079255378695216066">റെക്കോർഡിംഗ് ആരംഭിക്കാനാകില്ല</translation>
 <translation id="8120146556401698679">പാൻ ടിൽറ്റ് സൂം</translation>
 <translation id="8131740175452115882">സ്ഥിരീകരിക്കുക</translation>
@@ -163,6 +159,7 @@
 <translation id="8870695351537079478">റെക്കോർഡിംഗ് ആരംഭിക്കാനായില്ല</translation>
 <translation id="8880167521484863515">4 അനുപാതം 3</translation>
 <translation id="8903921497873541725">സൂം ഇന്‍ ചെയ്യുക</translation>
+<translation id="8926890870105777777">"<ph name="WIFINAME" />" നെറ്റ്‌വർക്കിൽ ചേരുക</translation>
 <translation id="9045010116236796332">ഡോക്യുമെന്റിന്റെ എല്ലാ അരികുകളും ഫ്രെയിമിനകത്ത് ഉൾക്കൊള്ളിക്കുക</translation>
 <translation id="9045155556724273246">10 സെക്കൻഡ്</translation>
 <translation id="906331135292332864">ചിത്രം പ്രോസസ് ചെയ്യുന്നു...</translation>

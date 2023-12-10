@@ -190,9 +190,18 @@ HttpsUpgradesInterceptor::MaybeCreateInterceptor(
       !g_browser_process->profile_manager()->IsValidProfile(profile)) {
     return nullptr;
   }
+
   PrefService* prefs = profile->GetPrefs();
   bool https_first_mode_enabled =
       prefs && prefs->GetBoolean(prefs::kHttpsOnlyModeEnabled);
+
+  if (base::FeatureList::IsEnabled(features::kHttpsFirstModeIncognito)) {
+    if (profile->IsIncognitoProfile() && prefs &&
+        prefs->GetBoolean(prefs::kHttpsFirstModeIncognito)) {
+      https_first_mode_enabled = true;
+    }
+  }
+
   return std::make_unique<HttpsUpgradesInterceptor>(
       frame_tree_node_id, https_first_mode_enabled, navigation_ui_data);
 }
@@ -259,8 +268,8 @@ void HttpsUpgradesInterceptor::MaybeCreateLoader(
       security_interstitials::https_only_mode::HttpInterstitialState>();
   interstitial_state_->enabled_by_pref = http_interstitial_enabled_by_pref_;
   // StatefulSSLHostStateDelegate can be null during tests.
-  if (state && state->IsHttpsEnforcedForHost(
-                   tentative_resource_request.url.host(), storage_partition)) {
+  if (state && state->IsHttpsEnforcedForUrl(tentative_resource_request.url,
+                                            storage_partition)) {
     interstitial_state_->enabled_by_engagement_heuristic = true;
   }
 
@@ -337,7 +346,7 @@ void HttpsUpgradesInterceptor::MaybeCreateLoader(
   auto query_complete_callback = base::BindOnce(
       &HttpsUpgradesInterceptor::MaybeCreateLoaderOnHstsQueryCompleted,
       weak_factory_.GetWeakPtr(), tentative_resource_request,
-      std::move(callback), profile, web_contents, tab_helper);
+      std::move(callback));
   network::mojom::NetworkContext* network_context =
       profile->GetDefaultStoragePartition()->GetNetworkContext();
   network_context->IsHSTSActiveForHost(
@@ -350,11 +359,27 @@ void HttpsUpgradesInterceptor::MaybeCreateLoader(
 void HttpsUpgradesInterceptor::MaybeCreateLoaderOnHstsQueryCompleted(
     const network::ResourceRequest& tentative_resource_request,
     content::URLLoaderRequestInterceptor::LoaderCallback callback,
-    Profile* profile,
-    content::WebContents* web_contents,
-    HttpsOnlyModeTabHelper* tab_helper,
     bool is_hsts_active_for_host) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Reconstruct objects here instead of binding them as parameters to this
+  // callback method.
+  //
+  // It's possible for the WebContents to be destroyed during the
+  // asynchronous HSTS query call, before this callback is run. If it no longer
+  // exists, don't upgrade and return. (See crbug.com/1499515.)
+  content::WebContents* web_contents =
+      content::WebContents::FromFrameTreeNodeId(frame_tree_node_id_);
+  if (!web_contents) {
+    std::move(callback).Run({});
+    return;
+  }
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+  HttpsOnlyModeTabHelper* tab_helper =
+      HttpsOnlyModeTabHelper::FromWebContents(web_contents);
+  CHECK(profile);
+  CHECK(tab_helper);
 
   // Don't upgrade this request if HSTS is active for this host.
   if (is_hsts_active_for_host) {
@@ -549,9 +574,7 @@ bool HttpsUpgradesInterceptor::MaybeCreateLoaderForResponse(
     mojo::ScopedDataPipeConsumerHandle* response_body,
     mojo::PendingRemote<network::mojom::URLLoader>* loader,
     mojo::PendingReceiver<network::mojom::URLLoaderClient>* client_receiver,
-    blink::ThrottlingURLLoader* url_loader,
-    bool* skip_other_interceptors,
-    bool* will_return_unsafe_redirect) {
+    blink::ThrottlingURLLoader* url_loader) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // When an upgraded navigation fails, this method creates a loader to trigger
   // the fallback to HTTP.

@@ -6,7 +6,7 @@
 
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "components/password_manager/core/browser/mock_password_store_interface.h"
+#include "components/password_manager/core/browser/password_store/mock_password_store_interface.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
@@ -52,12 +52,8 @@ class OldGoogleCredentialCleanerTest : public testing::Test {
         .WillOnce(testing::WithArg<0>(
             [password_forms, store = store_.get()](
                 base::WeakPtr<PasswordStoreConsumer> consumer) {
-              std::vector<std::unique_ptr<PasswordForm>> results;
-              for (auto& form : password_forms)
-                results.push_back(
-                    std::make_unique<PasswordForm>(std::move(form)));
               consumer->OnGetPasswordStoreResultsOrErrorFrom(
-                  store, std::move(results));
+                  store, std::move(password_forms));
             }));
   }
 

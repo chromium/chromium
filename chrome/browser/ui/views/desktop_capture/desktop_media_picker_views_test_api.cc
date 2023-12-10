@@ -116,13 +116,12 @@ DesktopMediaPickerViewsTestApi::GetSelectedSourceListType() const {
   return picker_->dialog_->GetSelectedSourceListType();
 }
 
-absl::optional<int> DesktopMediaPickerViewsTestApi::GetSelectedSourceId()
-    const {
+std::optional<int> DesktopMediaPickerViewsTestApi::GetSelectedSourceId() const {
   DesktopMediaListController* controller =
       picker_->dialog_->GetSelectedController();
-  absl::optional<content::DesktopMediaID> source = controller->GetSelection();
-  return source.has_value() ? absl::optional<int>(source.value().id)
-                            : absl::nullopt;
+  std::optional<content::DesktopMediaID> source = controller->GetSelection();
+  return source.has_value() ? std::optional<int>(source.value().id)
+                            : std::nullopt;
 }
 
 bool DesktopMediaPickerViewsTestApi::HasSourceAtIndex(size_t index) const {

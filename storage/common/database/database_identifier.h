@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/component_export.h"
-#include "base/strings/string_piece.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TABS_TAB_STRIP_LAYOUT_HELPER_H_
 #define CHROME_BROWSER_UI_VIEWS_TABS_TAB_STRIP_LAYOUT_HELPER_H_
 
+#include <optional>
 #include <vector>
 
 #include "base/functional/callback.h"
@@ -15,7 +16,6 @@
 #include "chrome/browser/ui/views/tabs/tab_slot_view.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_layout.h"
 #include "chrome/browser/ui/views/tabs/tab_width_constraints.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/view_model.h"
 
@@ -72,7 +72,7 @@ class TabStripLayoutHelper {
 
   // Moves the tab at |prev_index| with group |moving_tab_group| to |new_index|.
   // Also updates the group header's location if necessary.
-  void MoveTab(absl::optional<tab_groups::TabGroupId> moving_tab_group,
+  void MoveTab(std::optional<tab_groups::TabGroupId> moving_tab_group,
                int prev_index,
                int new_index);
 
@@ -91,8 +91,8 @@ class TabStripLayoutHelper {
   void UpdateGroupHeaderIndex(tab_groups::TabGroupId group);
 
   // Changes the active tab from |prev_active_index| to |new_active_index|.
-  void SetActiveTab(absl::optional<size_t> prev_active_index,
-                    absl::optional<size_t> new_active_index);
+  void SetActiveTab(std::optional<size_t> prev_active_index,
+                    std::optional<size_t> new_active_index);
 
   // Calculates the smallest width the tabs can occupy.
   int CalculateMinimumWidth();
@@ -112,7 +112,7 @@ class TabStripLayoutHelper {
   // Calculates the bounds each tab should occupy, subject to the provided
   // width constraint.
   std::vector<gfx::Rect> CalculateIdealBounds(
-      absl::optional<int> available_width);
+      std::optional<int> available_width);
 
   // Given |model_index| for a tab already present in |slots_|, return
   // the corresponding index in |slots_|.
@@ -122,7 +122,7 @@ class TabStripLayoutHelper {
   // |slots_|. |group| is the new tab's group.
   int GetSlotInsertionIndexForNewTab(
       int new_model_index,
-      absl::optional<tab_groups::TabGroupId> group) const;
+      std::optional<tab_groups::TabGroupId> group) const;
 
   // Used internally in the above two functions. For a tabstrip with N
   // tabs, this takes 0 <= |model_index| <= N and returns the first

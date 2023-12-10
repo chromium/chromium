@@ -17,7 +17,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/time/time.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/io_buffer.h"
@@ -91,7 +90,6 @@ class SSLClientSocketImpl : public SSLClientSocket,
   int GetLocalAddress(IPEndPoint* address) const override;
   const NetLogWithSource& NetLog() const override;
   bool WasEverUsed() const override;
-  bool WasAlpnNegotiated() const override;
   NextProto GetNegotiatedProtocol() const override;
   absl::optional<base::StringPiece> GetPeerApplicationSettings() const override;
   bool GetSSLInfo(SSLInfo* ssl_info) override;
@@ -255,7 +253,6 @@ class SSLClientSocketImpl : public SSLClientSocket,
   const raw_ptr<SSLClientContext> context_;
 
   std::unique_ptr<CertVerifier::Request> cert_verifier_request_;
-  base::TimeTicks start_cert_verification_time_;
 
   // Result from Cert Verifier.
   int cert_verification_result_;

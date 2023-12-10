@@ -44,9 +44,10 @@ MediaControlsProgressView::MediaControlsProgressView(
       is_modern_notification_ ? kModernProgressViewInsets : kProgressViewInsets,
       kProgressBarAndTimeSpacing));
 
-  progress_bar_ = AddChildView(std::make_unique<views::ProgressBar>(
-      is_modern_notification_ ? kModernProgressBarHeight : kProgressBarHeight,
-      false));
+  progress_bar_ = AddChildView(std::make_unique<views::ProgressBar>());
+  progress_bar_->SetPreferredHeight(
+      is_modern_notification_ ? kModernProgressBarHeight : kProgressBarHeight);
+  progress_bar_->SetPreferredCornerRadii(absl::nullopt);
 
   // Font list for text views.
   gfx::Font default_font;

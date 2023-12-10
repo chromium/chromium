@@ -178,21 +178,27 @@ TEST_P(ScrollbarThemeFluentTest, HorizontalScrollbarPartsSizes) {
 // Test that Scrollbar objects are correctly sized with Overlay Fluent theme
 // parts.
 TEST_P(OverlayScrollbarThemeFluentTest, OverlaySetsCorrectTrackAndInsetSize) {
-  EXPECT_TRUE(theme_->UsesOverlayScrollbars());
-  Scrollbar* horizontal_scrollbar = Scrollbar::CreateForTesting(
-      mock_scrollable_area(), kHorizontalScrollbar, &(theme_->GetInstance()));
-  int scrollbar_thickness = ScrollbarThickness();
-  horizontal_scrollbar->SetFrameRect(
-      gfx::Rect(0, kOffsetFromViewport, kScrollbarLength, scrollbar_thickness));
+  // Some OSes keep fluent scrollbars disabled even if the feature flag is set
+  // to enable them.
+  if (ui::IsFluentScrollbarEnabled()) {
+    EXPECT_TRUE(theme_->UsesOverlayScrollbars());
+    Scrollbar* horizontal_scrollbar = Scrollbar::CreateForTesting(
+        mock_scrollable_area(), kHorizontalScrollbar, &(theme_->GetInstance()));
+    int scrollbar_thickness = ScrollbarThickness();
+    horizontal_scrollbar->SetFrameRect(gfx::Rect(
+        0, kOffsetFromViewport, kScrollbarLength, scrollbar_thickness));
 
-  // Check that ThumbOffset() calculation is correct.
-  EXPECT_EQ(ThumbThickness() + 2 * ThumbOffset(), scrollbar_thickness);
+    // Check that ThumbOffset() calculation is correct.
+    EXPECT_EQ(ThumbThickness() + 2 * ThumbOffset(), scrollbar_thickness);
 
-  const gfx::Rect track_rect = theme_->TrackRect(*horizontal_scrollbar);
-  EXPECT_EQ(track_rect,
-            gfx::Rect(theme_->ButtonLength(*horizontal_scrollbar),
-                      kOffsetFromViewport, TrackLength(*horizontal_scrollbar),
-                      scrollbar_thickness));
+    const gfx::Rect track_rect = theme_->TrackRect(*horizontal_scrollbar);
+    EXPECT_EQ(track_rect,
+              gfx::Rect(theme_->ButtonLength(*horizontal_scrollbar),
+                        kOffsetFromViewport, TrackLength(*horizontal_scrollbar),
+                        scrollbar_thickness));
+  } else {
+    EXPECT_FALSE(theme_->UsesOverlayScrollbars());
+  }
 }
 
 // Same as ScrollbarThemeFluentTest.ScrollbarThicknessScalesProperly, but for

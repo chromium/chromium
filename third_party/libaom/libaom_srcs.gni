@@ -210,20 +210,20 @@ aom_av1_encoder_intrin_avx2 = [
 ]
 
 aom_av1_encoder_intrin_neon = [
-  "//third_party/libaom/source/libaom/av1/encoder/arm/neon/quantize_neon.c",
+  "//third_party/libaom/source/libaom/av1/encoder/arm/neon/av1_error_neon.c",
+  "//third_party/libaom/source/libaom/av1/encoder/arm/neon/av1_fwd_txfm2d_neon.c",
   "//third_party/libaom/source/libaom/av1/encoder/arm/neon/av1_highbd_quantize_neon.c",
+  "//third_party/libaom/source/libaom/av1/encoder/arm/neon/av1_k_means_neon.c",
+  "//third_party/libaom/source/libaom/av1/encoder/arm/neon/encodetxb_neon.c",
+  "//third_party/libaom/source/libaom/av1/encoder/arm/neon/highbd_fwd_txfm_neon.c",
+  "//third_party/libaom/source/libaom/av1/encoder/arm/neon/hybrid_fwd_txfm_neon.c",
   "//third_party/libaom/source/libaom/av1/encoder/arm/neon/ml_neon.c",
   "//third_party/libaom/source/libaom/av1/encoder/arm/neon/pickrst_neon.c",
+  "//third_party/libaom/source/libaom/av1/encoder/arm/neon/quantize_neon.c",
   "//third_party/libaom/source/libaom/av1/encoder/arm/neon/rdopt_neon.c",
-  "//third_party/libaom/source/libaom/av1/encoder/arm/neon/av1_error_neon.c",
-  "//third_party/libaom/source/libaom/av1/encoder/arm/neon/encodetxb_neon.c",
-  "//third_party/libaom/source/libaom/av1/encoder/arm/neon/hybrid_fwd_txfm_neon.c",
-  "//third_party/libaom/source/libaom/av1/encoder/arm/neon/av1_k_means_neon.c",
-  "//third_party/libaom/source/libaom/av1/encoder/arm/neon/av1_fwd_txfm2d_neon.c",
-  "//third_party/libaom/source/libaom/av1/encoder/arm/neon/highbd_fwd_txfm_neon.c",
-  "//third_party/libaom/source/libaom/av1/encoder/arm/neon/wedge_utils_neon.c",
   "//third_party/libaom/source/libaom/av1/encoder/arm/neon/reconinter_enc_neon.c",
   "//third_party/libaom/source/libaom/av1/encoder/arm/neon/temporal_filter_neon.c",
+  "//third_party/libaom/source/libaom/av1/encoder/arm/neon/wedge_utils_neon.c",
   "//third_party/libaom/source/libaom/av1/encoder/arm/neon/av1_temporal_denoiser_neon.c",
 ]
 

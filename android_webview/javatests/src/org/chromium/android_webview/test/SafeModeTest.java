@@ -279,8 +279,7 @@ public class SafeModeTest extends AwParameterizedTest {
         }
     }
 
-    @Rule
-    public AwActivityTestRule mActivityTestRule;
+    @Rule public AwActivityTestRule mActivityTestRule;
 
     public SafeModeTest(AwSettingsMutation param) {
         this.mActivityTestRule = new AwActivityTestRule(param.getMutation());
@@ -1015,29 +1014,21 @@ public class SafeModeTest extends AwParameterizedTest {
         histogramWatcherBuilder.expectIntRecords(
                 "Android.WebView.SafeMode.ActionName",
                 SafeModeController.sSafeModeActionLoggingMap.get(
-                        SafeModeActionIds.DISABLE_CHROME_AUTOCOMPLETE),
-                SafeModeController.sSafeModeActionLoggingMap.get(
                         SafeModeActionIds.DISABLE_AW_SAFE_BROWSING),
                 SafeModeController.sSafeModeActionLoggingMap.get(
                         SafeModeActionIds.DISABLE_ORIGIN_TRIALS));
         watcher = histogramWatcherBuilder.build();
-        successAction1 = new TestSafeModeAction(SafeModeActionIds.DISABLE_CHROME_AUTOCOMPLETE);
-        successAction2 = new TestSafeModeAction(SafeModeActionIds.DISABLE_AW_SAFE_BROWSING);
-        TestSafeModeAction successAction3 =
-                new TestSafeModeAction(SafeModeActionIds.DISABLE_ORIGIN_TRIALS);
-        allSuccessful =
-                asSet(successAction1.getId(), successAction2.getId(), successAction3.getId());
+        successAction1 = new TestSafeModeAction(SafeModeActionIds.DISABLE_AW_SAFE_BROWSING);
+        successAction2 = new TestSafeModeAction(SafeModeActionIds.DISABLE_ORIGIN_TRIALS);
+        allSuccessful = asSet(successAction1.getId(), successAction2.getId());
         SafeModeController.getInstance()
-                .registerActions(
-                        new SafeModeAction[] {successAction1, successAction2, successAction3});
+                .registerActions(new SafeModeAction[] {successAction1, successAction2});
         SafeModeController.getInstance().executeActions(allSuccessful);
         watcher.assertExpected(
                 "SafeModeAction names should be recorded: ["
                         + successAction1.getId()
                         + ", "
                         + successAction2.getId()
-                        + ", "
-                        + successAction3.getId()
                         + "]");
         Assert.assertEquals(
                 "successAction1 should have been executed exactly 1 time",
@@ -1047,10 +1038,6 @@ public class SafeModeTest extends AwParameterizedTest {
                 "successAction2 should have been executed exactly 1 time",
                 1,
                 successAction2.getCallCount());
-        Assert.assertEquals(
-                "successAction3 should have been executed exactly 1 time",
-                1,
-                successAction3.getCallCount());
     }
 
     @Test

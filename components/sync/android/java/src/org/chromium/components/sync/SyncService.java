@@ -22,9 +22,7 @@ import java.util.Set;
  * TODO(crbug.com/1158816): Document the remaining methods.
  */
 public interface SyncService {
-    /**
-     * Listener for the underlying sync status.
-     */
+    /** Listener for the underlying sync status. */
     public interface SyncStateChangedListener {
         // Invoked when the status has changed.
         public void syncStateChanged();
@@ -221,9 +219,7 @@ public interface SyncService {
      */
     public boolean isTrustedVaultRecoverabilityDegraded();
 
-    /**
-     * @return Whether setting a custom passphrase is allowed.
-     */
+    /** @return Whether setting a custom passphrase is allowed. */
     public boolean isCustomPassphraseAllowed();
 
     /**
@@ -265,9 +261,7 @@ public interface SyncService {
     /** @return Whether the user should be offered to opt in to trusted vault encryption. */
     public boolean shouldOfferTrustedVaultOptIn();
 
-    /**
-     * @return Whether sync is enabled to sync urls with a non custom passphrase.
-     */
+    /** @return Whether sync is enabled to sync urls with a non custom passphrase. */
     public boolean isSyncingUnencryptedUrls();
 
     /**

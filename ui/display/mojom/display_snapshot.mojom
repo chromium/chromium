@@ -27,7 +27,6 @@ struct DisplaySnapshot {
   display.mojom.PrivacyScreenState privacy_screen_state;
   bool has_content_protection_key;
   bool has_color_correction_matrix;
-  bool color_correction_in_linear_space;
   gfx.mojom.ColorSpace color_space;
   uint32 bits_per_channel;
   gfx.mojom.HDRStaticMetadata? hdr_static_metadata;

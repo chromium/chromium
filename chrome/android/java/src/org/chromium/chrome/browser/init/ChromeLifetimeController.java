@@ -26,8 +26,8 @@ import org.chromium.chrome.browser.BrowserRestartActivity;
  * https://crbug.com/515919 details why another Activity is used instead of using the AlarmManager.
  * https://crbug.com/545453 details why the BrowserRestartActivity handles the process killing.
  */
-class ChromeLifetimeController implements ApplicationLifetime.Observer,
-        ApplicationStatus.ActivityStateListener {
+class ChromeLifetimeController
+        implements ApplicationLifetime.Observer, ApplicationStatus.ActivityStateListener {
     /** Amount of time to wait for Chrome to destroy all the activities of the main process. */
     private static final long WATCHDOG_DELAY_MS = 1000;
 
@@ -49,9 +49,7 @@ class ChromeLifetimeController implements ApplicationLifetime.Observer,
     /** How many Chrome Activities are still alive. */
     private int mRemainingActivitiesCount;
 
-    /**
-     * Initialize the ChromeLifetimeController;
-     */
+    /** Initialize the ChromeLifetimeController; */
     public static void initialize() {
         ThreadUtils.assertOnUiThread();
         if (sInstance != null) return;
@@ -61,12 +59,13 @@ class ChromeLifetimeController implements ApplicationLifetime.Observer,
 
     private ChromeLifetimeController() {
         mHandler = new Handler(Looper.getMainLooper());
-        mRestartRunnable = new Runnable() {
-            @Override
-            public void run() {
-                fireBrowserRestartActivityIntent();
-            }
-        };
+        mRestartRunnable =
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        fireBrowserRestartActivityIntent();
+                    }
+                };
     }
 
     @Override

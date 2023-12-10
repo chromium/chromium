@@ -2,11 +2,14 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="te">
 <translation id="1178581264944972037">పాజ్ చేయి</translation>
-<translation id="2558806128245168542">వెనుకకు నావిగేట్ చేయండి</translation>
-<translation id="3523426587027570423">“ఈ పేజీలో ఉన్న కంటెంట్‌ను వినండి” పేజీని మూసివేయడానికి ట్యాప్ చేయండి.</translation>
+<translation id="1921351128855867012"><ph name="NUMBER_OF_SECONDS" /> సెకన్లు వేగంగా ఫార్వర్డ్ చేయండి</translation>
+<translation id="1984328900355667246">ప్లేబ్యాక్ అందుబాటులో లేదు</translation>
+<translation id="3023502830214299618">దురదృష్టవశాత్తూ, ఈ సమయంలో ఈ పేజీకి ప్లేబ్యాక్ అందుబాటులో లేదు. దయచేసి మళ్లీ ట్రై చేయండి.</translation>
+<translation id="3807208219231826020">స్క్రబ్ ప్లేబ్యాక్</translation>
+<translation id="385051799172605136">వెనుకకు</translation>
 <translation id="4431240646217225907">టెక్స్ట్‌ను హైలైట్ చేయండి, ఆటోమెటిక్ స్క్రోల్ చేయండి</translation>
 <translation id="4654641641922242357">"ఈ పేజీలో ఉన్న కంటెంట్‌ను వినండి" ప్లేయర్.</translation>
-<translation id="4731877163452936634">ప్లేబ్యాక్ వేగం: <ph name="PLAYBACK_SPEED" />. మార్చడానికి క్లిక్ చేయండి.</translation>
+<translation id="4872475766448853257"><ph name="NUMBER_OF_SECONDS" /> సెకన్లు వెనక్కి వెళ్లండి</translation>
 <translation id="5234971936051226002">“ఈ పేజీలో ఉన్న కంటెంట్‌ను వినండి” ప్లేయర్ మినిమైజ్ చేయబడింది.</translation>
 <translation id="5596627076506792578">మరిన్ని ఆప్షన్‌లు</translation>
 <translation id="6315170314923504164">Voice</translation>
@@ -15,8 +18,8 @@
 <translation id="6831043979455480757">అనువదించు</translation>
 <translation id="6846298663435243399">లోడ్ చేస్తున్నాము…</translation>
 <translation id="7587250070160020374">Chrome ఇప్పుడు ప్లే అవుతోంది</translation>
-<translation id="7945822420239537236"><ph name="NUMBER_OF_SECONDS" /> సెకన్లు ఫార్వర్డ్ చేయండి</translation>
-<translation id="7972866381678406344"><ph name="NUMBER_OF_SECONDS" /> సెకన్లు వెనుకకు వెళ్లండి</translation>
 <translation id="8136852699834914183">ఈ పేజీకి ప్లేబ్యాక్ అందుబాటులో లేదు.</translation>
+<translation id="8264989794233974275">వేగాన్ని <ph name="PLAYBACK_SPEED" />xకు పెంచండి/తగ్గించండి.</translation>
+<translation id="8407011429883244666">ప్లేయర్‌ను మూసివేయండి.</translation>
 <translation id="8953618380150219653">"ఈ పేజీలో ఉన్న కంటెంట్‌ను వినండి" ప్లేయర్ పూర్తి ఎత్తులో తెరవబడింది.</translation>
 </translationbundle>

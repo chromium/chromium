@@ -29,7 +29,7 @@ void DedicatedWorkerServiceImpl::EnumerateDedicatedWorkers(Observer* observer) {
 
     observer->OnWorkerCreated(dedicated_worker_token,
                               host->GetProcessHost()->GetID(),
-                              host->GetAncestorRenderFrameHostId());
+                              host->GetCreator());
     auto& maybe_url = host->GetFinalResponseURL();
     if (maybe_url) {
       observer->OnFinalResponseURLDetermined(dedicated_worker_token,
@@ -46,19 +46,18 @@ void DedicatedWorkerServiceImpl::NotifyWorkerCreated(
 
   for (Observer& observer : observers_) {
     observer.OnWorkerCreated(host->GetToken(), host->GetProcessHost()->GetID(),
-                             host->GetAncestorRenderFrameHostId());
+                             host->GetCreator());
   }
 }
 
 void DedicatedWorkerServiceImpl::NotifyBeforeWorkerDestroyed(
     const blink::DedicatedWorkerToken& dedicated_worker_token,
-    GlobalRenderFrameHostId ancestor_render_frame_host_id) {
+    DedicatedWorkerCreator creator) {
   size_t removed = dedicated_worker_hosts_.erase(dedicated_worker_token);
   DCHECK_EQ(1u, removed);
 
   for (Observer& observer : observers_) {
-    observer.OnBeforeWorkerDestroyed(dedicated_worker_token,
-                                     ancestor_render_frame_host_id);
+    observer.OnBeforeWorkerDestroyed(dedicated_worker_token, creator);
   }
 }
 

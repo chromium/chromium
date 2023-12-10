@@ -26,7 +26,7 @@
 #include "media/base/video_decoder.h"
 #include "media/base/video_decoder_config.h"
 #include "media/gpu/codec_picture.h"
-#include "media/gpu/mac/video_toolbox_decompression_interface.h"
+#include "media/gpu/mac/video_toolbox_decompression_session_manager.h"
 #include "media/gpu/mac/video_toolbox_frame_converter.h"
 #include "media/gpu/mac/video_toolbox_output_queue.h"
 #include "media/gpu/media_gpu_export.h"
@@ -40,6 +40,7 @@ namespace media {
 class AcceleratedVideoDecoder;
 class MediaLog;
 struct VideoToolboxDecodeMetadata;
+struct VideoToolboxDecompressionSessionMetadata;
 
 class MEDIA_GPU_EXPORT VideoToolboxVideoDecoder : public VideoDecoder {
  public:
@@ -85,7 +86,7 @@ class MEDIA_GPU_EXPORT VideoToolboxVideoDecoder : public VideoDecoder {
   // |accelerator_| callbacks.
   void OnAcceleratorDecode(
       base::apple::ScopedCFTypeRef<CMSampleBufferRef> sample,
-      VideoToolboxSessionMetadata session_metadata,
+      VideoToolboxDecompressionSessionMetadata session_metadata,
       scoped_refptr<CodecPicture> picture);
   void OnAcceleratorOutput(scoped_refptr<CodecPicture> picture);
 
@@ -108,7 +109,7 @@ class MEDIA_GPU_EXPORT VideoToolboxVideoDecoder : public VideoDecoder {
   bool has_error_ = false;
 
   std::unique_ptr<AcceleratedVideoDecoder> accelerator_;
-  VideoToolboxDecompressionInterface video_toolbox_;
+  VideoToolboxDecompressionSessionManager video_toolbox_;
   scoped_refptr<VideoToolboxFrameConverter> converter_;
   VideoToolboxOutputQueue output_queue_;
 

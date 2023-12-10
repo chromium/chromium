@@ -1,0 +1,8 @@
+WebView textSize:16.00 style:0 bundle:[display="", htmlTag="#document"]
+++View textSize:16.00 style:0 bundle:[display="block", htmlTag="body"]
+++++EditText text:"1/1/2015 1:00AM" textSize:13.33 style:0 bundle:[display="inline-block", htmlTag="input", type="datetime", value="1/1/2015 1:00AM"]
+++++++View textSize:13.33 style:0 bundle:[display="flow-root", htmlTag="div"]
+++++++++TextView text:"1/1/2015 1:00AM" textSize:13.33 style:0 bundle:[display="", htmlTag=""]
+++++EditText text:"1/1/2015 1:00AM" textSize:13.33 style:0 bundle:[aria-label="Launch", display="inline-block", htmlTag="input", type="datetime", value="1/1/2015 1:00AM"]
+++++++View textSize:13.33 style:0 bundle:[display="flow-root", htmlTag="div"]
+++++++++TextView text:"1/1/2015 1:00AM" textSize:13.33 style:0 bundle:[display="", htmlTag=""]

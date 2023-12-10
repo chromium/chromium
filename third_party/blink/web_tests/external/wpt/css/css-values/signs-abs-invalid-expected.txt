@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+Found 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] e.style['font-weight'] = "sign(10%)" should not set the property value
+  assert_equals: expected "" but got "sign(10%)"
+Harness: the test ran to completion.
+

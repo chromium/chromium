@@ -55,7 +55,7 @@ void RecordBudgetValidity(ValidityStatus status) {
       "BudgetValidityStatus histogram.");
 
   base::UmaHistogramEnumeration(
-      "PrivacySandbox.PrivateAggregation.Budgeter.BudgetValidityStatus",
+      "PrivacySandbox.PrivateAggregation.Budgeter.BudgetValidityStatus2",
       status);
 }
 

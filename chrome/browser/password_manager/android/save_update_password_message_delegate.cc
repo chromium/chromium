@@ -34,8 +34,6 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "url/origin.h"
 
-using password_manager::features::kPasswordEditDialogWithDetails;
-
 namespace {
 
 // Duration of message before timeout; 20 seconds.
@@ -149,7 +147,7 @@ void SaveUpdatePasswordMessageDelegate::DisplaySaveUpdatePasswordPrompt(
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
 
-  absl::optional<AccountInfo> account_info =
+  std::optional<AccountInfo> account_info =
       password_manager::GetAccountInfoForPasswordMessages(profile);
   DisplaySaveUpdatePasswordPromptInternal(
       web_contents, std::move(form_to_save), std::move(account_info),
@@ -174,7 +172,7 @@ void SaveUpdatePasswordMessageDelegate::DismissSaveUpdatePasswordMessage(
 void SaveUpdatePasswordMessageDelegate::DisplaySaveUpdatePasswordPromptInternal(
     content::WebContents* web_contents,
     std::unique_ptr<password_manager::PasswordFormManagerForUI> form_to_save,
-    absl::optional<AccountInfo> account_info,
+    std::optional<AccountInfo> account_info,
     bool update_password,
     password_manager::PasswordManagerClient* password_manager_client) {
   // Dismiss previous message if it is displayed.
@@ -254,36 +252,16 @@ void SaveUpdatePasswordMessageDelegate::CreateMessage(bool update_password) {
         IDR_ANDROID_PASSWORD_MANAGER_LOGO_24DP));
     message_->DisableIconTint();
 
-  // With kPasswordEditDialogWithDetails feature on: the cog button is always
-  // shown for the save message and for the update message when there is
-  // just one password stored for the web site. When there are multiple
-  // credentials stored, the dialog will be called anyway from the followup
-  // button, so there are no options to put under the cog.
-  // With kPasswordEditDialogWithDetails feature off: the cog button is
-  // shown only for the Save password message.
-  if (base::FeatureList::IsEnabled(kPasswordEditDialogWithDetails) &&
-      (!update_password || !use_followup_button)) {
-    SetupCogMenuForDialogWithDetails(message_, update_password);
-  } else if (!base::FeatureList::IsEnabled(kPasswordEditDialogWithDetails) &&
-             !update_password) {
-    SetupCogMenu(message_, update_password);
-  }
+    // The cog button is always shown for the save message and for the update
+    // message when there is just one password stored for the web site. When
+    // there are multiple credentials stored, the dialog will be called anyway
+    // from the followup button, so there are no options to put under the cog.
+    if (!update_password || !use_followup_button) {
+      SetupCogMenu(message_, update_password);
+    }
 }
 
 void SaveUpdatePasswordMessageDelegate::SetupCogMenu(
-    std::unique_ptr<messages::MessageWrapper>& message,
-    bool update_password) {
-  message->SetSecondaryIconResourceId(
-      ResourceMapper::MapToJavaDrawableId(IDR_ANDROID_MESSAGE_SETTINGS));
-  message->SetSecondaryButtonMenuText(
-      l10n_util::GetStringUTF16(IDS_PASSWORD_MESSAGE_NEVER_SAVE_MENU_ITEM));
-
-  message->SetSecondaryActionCallback(base::BindRepeating(
-      &SaveUpdatePasswordMessageDelegate::HandleNeverSaveClicked,
-      base::Unretained(this)));
-}
-
-void SaveUpdatePasswordMessageDelegate::SetupCogMenuForDialogWithDetails(
     std::unique_ptr<messages::MessageWrapper>& message,
     bool update_password) {
   message->SetSecondaryIconResourceId(
@@ -359,11 +337,7 @@ unsigned int SaveUpdatePasswordMessageDelegate::GetDisplayUsernames(
   const std::u16string& default_username =
       passwords_state_.form_manager()->GetPendingCredentials().username_value;
   for (const auto& form : password_forms) {
-    const std::u16string username =
-        base::FeatureList::IsEnabled(kPasswordEditDialogWithDetails)
-            ? form->username_value
-            : GetDisplayUsername(*form);
-    usernames->push_back(username);
+    usernames->push_back(form->username_value);
     if (form->username_value == default_username) {
       selected_username_index = usernames->size() - 1;
     }
@@ -429,14 +403,9 @@ void SaveUpdatePasswordMessageDelegate::DisplayEditDialog(
     return;
 
   std::vector<std::u16string> usernames;
-  int selected_username_index = GetDisplayUsernames(&usernames);
-  if (base::FeatureList::IsEnabled(kPasswordEditDialogWithDetails)) {
-    password_edit_dialog_->ShowPasswordEditDialog(
-        usernames, current_username, current_password, account_email_);
-  } else {
-    password_edit_dialog_->ShowLegacyPasswordEditDialog(
-        usernames, selected_username_index, account_email_);
-  }
+  GetDisplayUsernames(&usernames);
+  password_edit_dialog_->ShowPasswordEditDialog(
+      usernames, current_username, current_password, account_email_);
 
   DismissSaveUpdatePasswordMessage(messages::DismissReason::SECONDARY_ACTION);
 }
@@ -452,10 +421,8 @@ void SaveUpdatePasswordMessageDelegate::HandleMessageDismissed(
   // Record metrics and cleanup state.
   RecordDismissalReasonMetrics(
       MessageDismissReasonToPasswordManagerUIDismissalReason(dismiss_reason));
-  if (base::FeatureList::IsEnabled(kPasswordEditDialogWithDetails)) {
-    RecordSaveUpdateUIDismissalReason(
-        GetSaveUpdatePasswordMessageDismissReason(dismiss_reason));
-  }
+  RecordSaveUpdateUIDismissalReason(
+      GetSaveUpdatePasswordMessageDismissReason(dismiss_reason));
 
   // If Device Lock UI needs to be shown and can be (i.e. WindowAndroid is
   // available), these lines are handled in the SavePasswordAfterDeviceLockUi()
@@ -489,9 +456,6 @@ void SaveUpdatePasswordMessageDelegate::CreatePasswordEditDialog() {
       base::BindOnce(
           &SaveUpdatePasswordMessageDelegate::HandleSavePasswordFromDialog,
           base::Unretained(this)),
-      base::BindOnce(&SaveUpdatePasswordMessageDelegate::
-                         HandleSavePasswordFromLegacyDialog,
-                     base::Unretained(this)),
       base::BindOnce(&SaveUpdatePasswordMessageDelegate::HandleDialogDismissed,
                      base::Unretained(this)));
 }
@@ -501,10 +465,8 @@ void SaveUpdatePasswordMessageDelegate::HandleDialogDismissed(
   RecordDismissalReasonMetrics(
       dialog_accepted ? password_manager::metrics_util::CLICKED_ACCEPT
                       : password_manager::metrics_util::CLICKED_CANCEL);
-  if (base::FeatureList::IsEnabled(kPasswordEditDialogWithDetails)) {
-    RecordSaveUpdateUIDismissalReason(
-        GetPasswordEditDialogDismissReason(dialog_accepted));
-  }
+  RecordSaveUpdateUIDismissalReason(
+      GetPasswordEditDialogDismissReason(dialog_accepted));
 
   password_edit_dialog_.reset();
 
@@ -524,15 +486,6 @@ void SaveUpdatePasswordMessageDelegate::HandleSavePasswordFromDialog(
     const std::u16string& password) {
   UpdatePasswordFormUsernameAndPassword(username, password,
                                         passwords_state_.form_manager());
-  SavePassword();
-}
-
-void SaveUpdatePasswordMessageDelegate::HandleSavePasswordFromLegacyDialog(
-    int username_index) {
-  UpdatePasswordFormUsernameAndPassword(
-      passwords_state_.GetCurrentForms()[username_index]->username_value,
-      passwords_state_.form_manager()->GetPendingCredentials().password_value,
-      passwords_state_.form_manager());
   SavePassword();
 }
 
@@ -561,7 +514,7 @@ void SaveUpdatePasswordMessageDelegate::RecordDismissalReasonMetrics(
         ui_dismissal_reason);
   } else {
     password_manager::metrics_util::LogSaveUIDismissalReason(
-        ui_dismissal_reason, /*user_state=*/absl::nullopt);
+        ui_dismissal_reason, /*user_state=*/std::nullopt);
   }
   if (auto* recorder = passwords_state_.form_manager()->GetMetricsRecorder()) {
     recorder->RecordUIDismissalReason(ui_dismissal_reason);

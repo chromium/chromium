@@ -19,36 +19,16 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor.ViewBinder;
 
 /** Binds model properties to view methods for {@link BookmarkSearchBoxRow}. */
 class BookmarkSearchBoxRowViewBinder {
-    /** Allows raising a flag that will automatically lower when exiting scoped context. */
-    private static class AutoFlag {
-        public boolean isActive;
-
-        public ScopedNoException raiseFlag() {
-            return new ScopedNoException();
-        }
-
-        private class ScopedNoException implements AutoCloseable {
-            public ScopedNoException() {
-                isActive = true;
-            }
-
-            @Override
-            public void close() {
-                isActive = false;
-            }
-        }
-    }
-
     public static ViewBinder<PropertyModel, View, PropertyKey> createViewBinder() {
         return new BookmarkSearchBoxRowViewBinder()::bind;
     }
 
-    private AutoFlag mBindFlag = new AutoFlag();
+    private boolean mInBind;
 
     private void bind(PropertyModel model, View view, PropertyKey key) {
-        try (AutoFlag.ScopedNoException ignored = mBindFlag.raiseFlag()) {
-            bindInternal(model, view, key);
-        }
+        mInBind = true;
+        bindInternal(model, view, key);
+        mInBind = false;
     }
 
     private void bindInternal(PropertyModel model, View view, PropertyKey key) {
@@ -104,7 +84,7 @@ class BookmarkSearchBoxRowViewBinder {
     private Runnable wrapRunnable(
             PropertyModel model, ReadableObjectPropertyKey<Runnable> propertyKey) {
         return () -> {
-            if (!mBindFlag.isActive) {
+            if (!mInBind) {
                 model.get(propertyKey).run();
             }
         };
@@ -113,7 +93,7 @@ class BookmarkSearchBoxRowViewBinder {
     private <T> Callback<T> wrapCallback(
             PropertyModel model, ReadableObjectPropertyKey<Callback<T>> propertyKey) {
         return result -> {
-            if (!mBindFlag.isActive) {
+            if (!mInBind) {
                 model.get(propertyKey).onResult(result);
             }
         };

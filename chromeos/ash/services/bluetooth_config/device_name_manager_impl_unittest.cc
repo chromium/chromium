@@ -37,7 +37,7 @@ class FakeObserver : public DeviceNameManager::Observer {
     return last_device_id_nickname_changed_;
   }
 
-  const absl::optional<std::string>& last_device_nickname_changed() const {
+  const std::optional<std::string>& last_device_nickname_changed() const {
     return last_device_nickname_changed_;
   }
 
@@ -45,7 +45,7 @@ class FakeObserver : public DeviceNameManager::Observer {
   // DeviceNameManager::Observer:
   void OnDeviceNicknameChanged(
       const std::string& device_id,
-      const absl::optional<std::string>& nickname) override {
+      const std::optional<std::string>& nickname) override {
     ++num_device_nickname_changed_calls_;
     last_device_id_nickname_changed_ = device_id;
     last_device_nickname_changed_ = nickname;
@@ -53,7 +53,7 @@ class FakeObserver : public DeviceNameManager::Observer {
 
   size_t num_device_nickname_changed_calls_ = 0u;
   std::string last_device_id_nickname_changed_;
-  absl::optional<std::string> last_device_nickname_changed_;
+  std::optional<std::string> last_device_nickname_changed_;
 };
 
 }  // namespace
@@ -109,7 +109,7 @@ class DeviceNameManagerImplTest : public testing::Test {
     return fake_observer_.last_device_id_nickname_changed();
   }
 
-  const absl::optional<std::string>& GetLastDeviceNicknameChanged() const {
+  const std::optional<std::string>& GetLastDeviceNicknameChanged() const {
     return fake_observer_.last_device_nickname_changed();
   }
 
@@ -234,7 +234,7 @@ TEST_F(DeviceNameManagerImplTest, RemoveThenSetThenRemove) {
   EXPECT_EQ(GetNumDeviceNicknameObserverEvents(), 2u);
   EXPECT_FALSE(manager->GetDeviceNickname(device_id));
   EXPECT_EQ(GetLastDeviceIdNicknameChanged(), device_id);
-  EXPECT_EQ(GetLastDeviceNicknameChanged(), absl::nullopt);
+  EXPECT_EQ(GetLastDeviceNicknameChanged(), std::nullopt);
 
   // Create a new manager and destroy the old one.
   manager = CreateDeviceNameManager();

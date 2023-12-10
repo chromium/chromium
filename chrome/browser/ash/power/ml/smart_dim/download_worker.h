@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_POWER_ML_SMART_DIM_DOWNLOAD_WORKER_H_
 
 #include "base/containers/flat_map.h"
+#include "base/functional/callback.h"
 #include "chrome/browser/ash/power/ml/smart_dim/smart_dim_worker.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 
@@ -49,10 +50,15 @@ class DownloadWorker : public SmartDimWorker {
   // If IsReady(), this function won't be called again.
   void InitializeFromComponent(const ComponentFileContents& contents);
 
+  // Sets a callback that will be invoked when the component is ready.
+  void SetOnReadyForTest(base::OnceClosure on_ready);
+
  private:
   base::flat_map<std::string, int> inputs_;
   base::flat_map<std::string, int> outputs_;
   std::string metrics_model_name_;
+
+  base::OnceClosure on_ready_for_test_;
 
   void LoadModelAndCreateGraphExecutor(const std::string& model_flatbuffer);
   void OnJsonParsed(const std::string& model_flatbuffer,

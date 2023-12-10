@@ -4,6 +4,7 @@
 
 #include "chromeos/printing/ppd_metadata_parser.h"
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -13,7 +14,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/values.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -26,18 +26,18 @@ namespace {
 // Additionally,
 // *  this function never returns empty Value objects and
 // *  |target_type| must appear in the switch statement below.
-absl::optional<base::Value> ParseJsonAndUnnestKey(
+std::optional<base::Value> ParseJsonAndUnnestKey(
     base::StringPiece input,
     base::StringPiece key,
     base::Value::Type target_type) {
-  absl::optional<base::Value> parsed = base::JSONReader::Read(input);
+  std::optional<base::Value> parsed = base::JSONReader::Read(input);
   if (!parsed || !parsed->is_dict()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
-  absl::optional<base::Value> unnested = parsed->GetDict().Extract(key);
+  std::optional<base::Value> unnested = parsed->GetDict().Extract(key);
   if (!unnested || unnested->type() != target_type) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   bool unnested_is_empty = true;
@@ -54,7 +54,7 @@ absl::optional<base::Value> ParseJsonAndUnnestKey(
   }
 
   if (unnested_is_empty) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return unnested;
 }
@@ -83,13 +83,13 @@ Restrictions ParseRestrictionsFromDict(const base::Value::Dict& dict) {
 }
 
 // Returns a ParsedPrinter from a leaf `dict` from Printers metadata.
-absl::optional<ParsedPrinter> ParsePrinterFromDict(
+std::optional<ParsedPrinter> ParsePrinterFromDict(
     const base::Value::Dict& dict) {
   const std::string* const effective_make_and_model = dict.FindString("emm");
   const std::string* const name = dict.FindString("name");
   if (!effective_make_and_model || effective_make_and_model->empty() || !name ||
       name->empty()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   ParsedPrinter printer;
   printer.effective_make_and_model = *effective_make_and_model;
@@ -104,9 +104,9 @@ absl::optional<ParsedPrinter> ParsePrinterFromDict(
 }
 
 // Returns a ParsedIndexLeaf from |value|.
-absl::optional<ParsedIndexLeaf> ParsedIndexLeafFrom(const base::Value& value) {
+std::optional<ParsedIndexLeaf> ParsedIndexLeafFrom(const base::Value& value) {
   if (!value.is_dict()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   const base::Value::Dict& dict = value.GetDict();
@@ -114,7 +114,7 @@ absl::optional<ParsedIndexLeaf> ParsedIndexLeafFrom(const base::Value& value) {
 
   const std::string* const ppd_basename = dict.FindString("name");
   if (!ppd_basename) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   leaf.ppd_basename = *ppd_basename;
 
@@ -134,26 +134,26 @@ absl::optional<ParsedIndexLeaf> ParsedIndexLeafFrom(const base::Value& value) {
 
 // Returns a ParsedIndexValues from a |value| extracted from a forward
 // index.
-absl::optional<ParsedIndexValues> UnnestPpdMetadata(const base::Value& value) {
+std::optional<ParsedIndexValues> UnnestPpdMetadata(const base::Value& value) {
   if (!value.is_dict()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   const base::Value::List* const ppd_metadata_list =
       value.GetDict().FindList("ppdMetadata");
   if (!ppd_metadata_list || ppd_metadata_list->empty()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   ParsedIndexValues parsed_index_values;
   for (const base::Value& v : *ppd_metadata_list) {
-    absl::optional<ParsedIndexLeaf> parsed_index_leaf = ParsedIndexLeafFrom(v);
+    std::optional<ParsedIndexLeaf> parsed_index_leaf = ParsedIndexLeafFrom(v);
     if (parsed_index_leaf.has_value()) {
       parsed_index_values.values.push_back(parsed_index_leaf.value());
     }
   }
 
   if (parsed_index_values.values.empty()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return parsed_index_values;
 }
@@ -181,12 +181,12 @@ ParsedIndexValues::ParsedIndexValues(const ParsedIndexValues&) = default;
 ParsedIndexValues& ParsedIndexValues::operator=(const ParsedIndexValues&) =
     default;
 
-absl::optional<std::vector<std::string>> ParseLocales(
+std::optional<std::vector<std::string>> ParseLocales(
     base::StringPiece locales_json) {
   const auto as_value =
       ParseJsonAndUnnestKey(locales_json, "locales", base::Value::Type::LIST);
   if (!as_value.has_value()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   std::vector<std::string> locales;
@@ -197,17 +197,17 @@ absl::optional<std::vector<std::string>> ParseLocales(
   }
 
   if (locales.empty()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return locales;
 }
 
-absl::optional<ParsedManufacturers> ParseManufacturers(
+std::optional<ParsedManufacturers> ParseManufacturers(
     base::StringPiece manufacturers_json) {
   const auto as_value = ParseJsonAndUnnestKey(manufacturers_json, "filesMap",
                                               base::Value::Type::DICT);
   if (!as_value.has_value()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   ParsedManufacturers manufacturers;
   for (const auto [key, value] : as_value->GetDict()) {
@@ -216,17 +216,17 @@ absl::optional<ParsedManufacturers> ParseManufacturers(
     }
     manufacturers[key] = value.GetString();
   }
-  return manufacturers.empty() ? absl::nullopt
-                               : absl::make_optional(manufacturers);
+  return manufacturers.empty() ? std::nullopt
+                               : std::make_optional(manufacturers);
 }
 
-absl::optional<ParsedIndex> ParseForwardIndex(
+std::optional<ParsedIndex> ParseForwardIndex(
     base::StringPiece forward_index_json) {
   // Firstly, we unnest the dictionary keyed by "ppdIndex."
-  absl::optional<base::Value> ppd_index = ParseJsonAndUnnestKey(
+  std::optional<base::Value> ppd_index = ParseJsonAndUnnestKey(
       forward_index_json, "ppdIndex", base::Value::Type::DICT);
   if (!ppd_index.has_value()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   ParsedIndex parsed_index;
@@ -234,23 +234,23 @@ absl::optional<ParsedIndex> ParseForwardIndex(
   // Secondly, we iterate on the key-value pairs of the ppdIndex.
   // This yields a list of leaf values (dictionaries).
   for (const auto [key, value] : ppd_index->GetDict()) {
-    absl::optional<ParsedIndexValues> values = UnnestPpdMetadata(value);
+    std::optional<ParsedIndexValues> values = UnnestPpdMetadata(value);
     if (values.has_value()) {
       parsed_index.insert_or_assign(key, values.value());
     }
   }
 
   if (parsed_index.empty()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return parsed_index;
 }
 
-absl::optional<ParsedUsbIndex> ParseUsbIndex(base::StringPiece usb_index_json) {
-  absl::optional<base::Value> usb_index = ParseJsonAndUnnestKey(
+std::optional<ParsedUsbIndex> ParseUsbIndex(base::StringPiece usb_index_json) {
+  std::optional<base::Value> usb_index = ParseJsonAndUnnestKey(
       usb_index_json, "usbIndex", base::Value::Type::DICT);
   if (!usb_index.has_value()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   ParsedUsbIndex parsed_usb_index;
@@ -272,17 +272,17 @@ absl::optional<ParsedUsbIndex> ParseUsbIndex(base::StringPiece usb_index_json) {
     parsed_usb_index.insert_or_assign(product_id, *effective_make_and_model);
   }
   if (parsed_usb_index.empty()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return parsed_usb_index;
 }
 
-absl::optional<ParsedUsbVendorIdMap> ParseUsbVendorIdMap(
+std::optional<ParsedUsbVendorIdMap> ParseUsbVendorIdMap(
     base::StringPiece usb_vendor_id_map_json) {
-  absl::optional<base::Value> as_value = ParseJsonAndUnnestKey(
+  std::optional<base::Value> as_value = ParseJsonAndUnnestKey(
       usb_vendor_id_map_json, "entries", base::Value::Type::LIST);
   if (!as_value.has_value()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   ParsedUsbVendorIdMap usb_vendor_ids;
@@ -291,7 +291,7 @@ absl::optional<ParsedUsbVendorIdMap> ParseUsbVendorIdMap(
       continue;
     }
 
-    absl::optional<int> vendor_id =
+    std::optional<int> vendor_id =
         usb_vendor_description.GetDict().FindInt("vendorId");
     const std::string* const vendor_name =
         usb_vendor_description.GetDict().FindString("vendorName");
@@ -302,16 +302,16 @@ absl::optional<ParsedUsbVendorIdMap> ParseUsbVendorIdMap(
   }
 
   if (usb_vendor_ids.empty()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return usb_vendor_ids;
 }
 
-absl::optional<ParsedPrinters> ParsePrinters(base::StringPiece printers_json) {
+std::optional<ParsedPrinters> ParsePrinters(base::StringPiece printers_json) {
   const auto as_value =
       ParseJsonAndUnnestKey(printers_json, "printers", base::Value::Type::LIST);
   if (!as_value.has_value()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   ParsedPrinters printers;
@@ -320,24 +320,24 @@ absl::optional<ParsedPrinters> ParsePrinters(base::StringPiece printers_json) {
     if (!printer_dict) {
       continue;
     }
-    absl::optional<ParsedPrinter> printer = ParsePrinterFromDict(*printer_dict);
+    std::optional<ParsedPrinter> printer = ParsePrinterFromDict(*printer_dict);
     if (!printer.has_value()) {
       continue;
     }
     printers.push_back(printer.value());
   }
   if (printers.empty()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return printers;
 }
 
-absl::optional<ParsedReverseIndex> ParseReverseIndex(
+std::optional<ParsedReverseIndex> ParseReverseIndex(
     base::StringPiece reverse_index_json) {
-  const absl::optional<base::Value> makes_and_models = ParseJsonAndUnnestKey(
+  const std::optional<base::Value> makes_and_models = ParseJsonAndUnnestKey(
       reverse_index_json, "reverseIndex", base::Value::Type::DICT);
   if (!makes_and_models.has_value()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   ParsedReverseIndex parsed;
@@ -355,7 +355,7 @@ absl::optional<ParsedReverseIndex> ParseReverseIndex(
   }
 
   if (parsed.empty()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return parsed;
 }

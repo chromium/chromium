@@ -21,7 +21,6 @@
 #include "ash/wm/snap_group/snap_group.h"
 #include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/splitview/split_view_utils.h"
-#include "chromeos/constants/chromeos_features.h"
 
 namespace ash {
 
@@ -46,12 +45,13 @@ std::unique_ptr<OverviewItemBase> OverviewItemBase::Create(
       return std::make_unique<OverviewGroupItem>(
           std::vector<aura::Window*>{snap_group->window1(),
                                      snap_group->window2()},
-          overview_session, /*delegate=*/overview_grid);
+          overview_session, overview_grid);
     }
   }
 
   return std::make_unique<OverviewItem>(window, overview_session, overview_grid,
-                                        /*delegate=*/overview_grid,
+                                        /*destruction_delegate=*/overview_grid,
+                                        /*event_handler_delegate=*/nullptr,
                                         /*eligible_for_shadow_config=*/true);
 }
 
@@ -68,9 +68,7 @@ void OverviewItemBase::RefreshShadowVisuals(bool shadow_visible) {
     return;
   }
 
-  const bool is_jellyroll_enabled = chromeos::features::IsJellyrollEnabled();
-  const gfx::RectF shadow_bounds_in_screen =
-      is_jellyroll_enabled ? target_bounds_ : GetTargetBoundsWithInsets();
+  const gfx::RectF shadow_bounds_in_screen = target_bounds_;
   auto* shadow_layer = shadow_->GetLayer();
   if (!shadow_visible || shadow_bounds_in_screen.IsEmpty()) {
     shadow_layer->SetVisible(false);
@@ -82,23 +80,71 @@ void OverviewItemBase::RefreshShadowVisuals(bool shadow_visible) {
   gfx::Rect shadow_content_bounds(
       gfx::ToRoundedRect(shadow_bounds_in_screen).size());
   shadow_->SetContentBounds(shadow_content_bounds);
-  shadow_->SetRoundedCornerRadius(
-      is_jellyroll_enabled ? kOverviewItemCornerRadius : 0);
+  shadow_->SetRoundedCornerRadius(kOverviewItemCornerRadius);
 }
 
 void OverviewItemBase::UpdateShadowTypeForDrag(bool is_dragging) {
   shadow_->SetType(is_dragging ? kDraggedShadowType : kDefaultShadowType);
 }
 
-void OverviewItemBase::OnFocusedViewActivated() {
-  overview_session_->OnFocusedItemActivated(this);
+void OverviewItemBase::HandleGestureEventForTabletModeLayout(
+    ui::GestureEvent* event,
+    OverviewItemBase* event_source_item) {
+  const gfx::PointF location = event->details().bounding_box_f().CenterPoint();
+  OverviewGridEventHandler* grid_event_handler =
+      overview_grid()->grid_event_handler();
+  const bool is_drag_item = IsDragItem();
+  switch (event->type()) {
+    case ui::ET_SCROLL_FLING_START:
+      if (is_drag_item) {
+        HandleFlingStartEvent(location, event->details().velocity_x(),
+                              event->details().velocity_y());
+      } else {
+        grid_event_handler->OnGestureEvent(event);
+      }
+      break;
+    case ui::ET_GESTURE_SCROLL_BEGIN:
+      if (std::abs(event->details().scroll_y_hint()) >
+          std::abs(event->details().scroll_x_hint())) {
+        HandlePressEvent(location, /*from_touch_gesture=*/true,
+                         event_source_item);
+      } else {
+        grid_event_handler->OnGestureEvent(event);
+      }
+      break;
+    case ui::ET_GESTURE_SCROLL_UPDATE:
+      if (is_drag_item) {
+        HandleDragEvent(location);
+      } else {
+        grid_event_handler->OnGestureEvent(event);
+      }
+      break;
+    case ui::ET_GESTURE_SCROLL_END:
+      if (is_drag_item) {
+        HandleReleaseEvent(location);
+      } else {
+        grid_event_handler->OnGestureEvent(event);
+      }
+      break;
+    case ui::ET_GESTURE_LONG_PRESS:
+      HandlePressEvent(location, /*from_touch_gesture=*/true,
+                       event_source_item);
+      HandleLongPressEvent(location);
+      break;
+    case ui::ET_GESTURE_TAP:
+      HandleTapEvent(location, event_source_item);
+      break;
+    case ui::ET_GESTURE_END:
+      HandleGestureEndEvent();
+      break;
+    default:
+      grid_event_handler->OnGestureEvent(event);
+      break;
+  }
 }
 
-void OverviewItemBase::OnFocusedViewClosed() {
-  overview_session_->OnFocusedItemClosed(this);
-}
-
-void OverviewItemBase::HandleMouseEvent(const ui::MouseEvent& event) {
+void OverviewItemBase::HandleMouseEvent(const ui::MouseEvent& event,
+                                        OverviewItemBase* event_source_item) {
   if (!overview_session_->CanProcessEvent(this, /*from_touch_gesture=*/false)) {
     return;
   }
@@ -112,7 +158,8 @@ void OverviewItemBase::HandleMouseEvent(const ui::MouseEvent& event) {
                      : gfx::PointF(GetWindowsUnionScreenBounds().CenterPoint());
   switch (event.type()) {
     case ui::ET_MOUSE_PRESSED:
-      HandlePressEvent(screen_location, /*from_touch_gesture=*/false);
+      HandlePressEvent(screen_location, /*from_touch_gesture=*/false,
+                       event_source_item);
       break;
     case ui::ET_MOUSE_RELEASED:
       HandleReleaseEvent(screen_location);
@@ -126,7 +173,8 @@ void OverviewItemBase::HandleMouseEvent(const ui::MouseEvent& event) {
   }
 }
 
-void OverviewItemBase::HandleGestureEvent(ui::GestureEvent* event) {
+void OverviewItemBase::HandleGestureEvent(ui::GestureEvent* event,
+                                          OverviewItemBase* event_source_item) {
   if (!overview_session_->CanProcessEvent(this, /*from_touch_gesture=*/true)) {
     event->StopPropagation();
     event->SetHandled();
@@ -134,14 +182,15 @@ void OverviewItemBase::HandleGestureEvent(ui::GestureEvent* event) {
   }
 
   if (ShouldUseTabletModeGridLayout()) {
-    HandleGestureEventForTabletModeLayout(event);
+    HandleGestureEventForTabletModeLayout(event, event_source_item);
     return;
   }
 
   const gfx::PointF location = event->details().bounding_box_f().CenterPoint();
   switch (event->type()) {
     case ui::ET_GESTURE_TAP_DOWN:
-      HandlePressEvent(location, /*from_touch_gesture=*/true);
+      HandlePressEvent(location, /*from_touch_gesture=*/true,
+                       event_source_item);
       break;
     case ui::ET_GESTURE_SCROLL_UPDATE:
       HandleDragEvent(location);
@@ -157,64 +206,12 @@ void OverviewItemBase::HandleGestureEvent(ui::GestureEvent* event) {
       HandleLongPressEvent(location);
       break;
     case ui::ET_GESTURE_TAP:
-      HandleTapEvent();
+      HandleTapEvent(location, event_source_item);
       break;
     case ui::ET_GESTURE_END:
       HandleGestureEndEvent();
       break;
     default:
-      break;
-  }
-}
-
-void OverviewItemBase::HandleGestureEventForTabletModeLayout(
-    ui::GestureEvent* event) {
-  const gfx::PointF location = event->details().bounding_box_f().CenterPoint();
-  OverviewGridEventHandler* grid_event_handler =
-      overview_grid()->grid_event_handler();
-  switch (event->type()) {
-    case ui::ET_SCROLL_FLING_START:
-      if (IsDragItem()) {
-        HandleFlingStartEvent(location, event->details().velocity_x(),
-                              event->details().velocity_y());
-      } else {
-        grid_event_handler->OnGestureEvent(event);
-      }
-      break;
-    case ui::ET_GESTURE_SCROLL_BEGIN:
-      if (std::abs(event->details().scroll_y_hint()) >
-          std::abs(event->details().scroll_x_hint())) {
-        HandlePressEvent(location, /*from_touch_gesture=*/true);
-      } else {
-        grid_event_handler->OnGestureEvent(event);
-      }
-      break;
-    case ui::ET_GESTURE_SCROLL_UPDATE:
-      if (IsDragItem()) {
-        HandleDragEvent(location);
-      } else {
-        grid_event_handler->OnGestureEvent(event);
-      }
-      break;
-    case ui::ET_GESTURE_SCROLL_END:
-      if (IsDragItem()) {
-        HandleReleaseEvent(location);
-      } else {
-        grid_event_handler->OnGestureEvent(event);
-      }
-      break;
-    case ui::ET_GESTURE_LONG_PRESS:
-      HandlePressEvent(location, /*from_touch_gesture=*/true);
-      HandleLongPressEvent(location);
-      break;
-    case ui::ET_GESTURE_TAP:
-      overview_session_->SelectWindow(this);
-      break;
-    case ui::ET_GESTURE_END:
-      HandleGestureEndEvent();
-      break;
-    default:
-      grid_event_handler->OnGestureEvent(event);
       break;
   }
 }
@@ -227,8 +224,6 @@ views::Widget::InitParams OverviewItemBase::CreateOverviewItemWidgetParams(
   params.type = views::Widget::InitParams::TYPE_POPUP;
   params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
-  // TODO(sammiequon): Investigate if this parameter is necessary.
-  params.visible_on_all_workspaces = true;
   params.name = widget_name;
   params.activatable = views::Widget::InitParams::Activatable::kDefault;
   params.accept_events = accept_events;
@@ -246,14 +241,22 @@ void OverviewItemBase::ConfigureTheShadow() {
   shadow_->ObserveColorProviderSource(item_widget_.get());
 }
 
+void OverviewItemBase::HandleDragEvent(const gfx::PointF& location_in_screen) {
+  if (IsDragItem()) {
+    overview_session_->Drag(this, location_in_screen);
+  }
+}
+
 void OverviewItemBase::HandlePressEvent(const gfx::PointF& location_in_screen,
-                                        bool from_touch_gesture) {
+                                        bool from_touch_gesture,
+                                        OverviewItemBase* event_source_item) {
   // No need to start the drag again if already in a drag. This can happen if we
   // switch fingers midway through a drag.
   if (!IsDragItem()) {
     StartDrag();
     overview_session_->InitiateDrag(this, location_in_screen,
-                                    /*is_touch_dragging=*/from_touch_gesture);
+                                    /*is_touch_dragging=*/from_touch_gesture,
+                                    event_source_item);
   }
 }
 
@@ -261,12 +264,6 @@ void OverviewItemBase::HandleReleaseEvent(
     const gfx::PointF& location_in_screen) {
   if (IsDragItem()) {
     overview_session_->CompleteDrag(this, location_in_screen);
-  }
-}
-
-void OverviewItemBase::HandleDragEvent(const gfx::PointF& location_in_screen) {
-  if (IsDragItem()) {
-    overview_session_->Drag(this, location_in_screen);
   }
 }
 
@@ -286,10 +283,14 @@ void OverviewItemBase::HandleFlingStartEvent(
   overview_session_->Fling(this, location_in_screen, velocity_x, velocity_y);
 }
 
-void OverviewItemBase::HandleTapEvent() {
+void OverviewItemBase::HandleTapEvent(const gfx::PointF& location_in_screen,
+                                      OverviewItemBase* event_source_item) {
   if (IsDragItem()) {
     overview_session_->ActivateDraggedWindow();
+    return;
   }
+
+  overview_session_->SelectWindow(event_source_item);
 }
 
 void OverviewItemBase::HandleGestureEndEvent() {

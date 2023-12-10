@@ -33,6 +33,12 @@ const char* kPasswords[] = {"password0", "secret"};
 const char* kAdditionalUsernames[] = {"u$er2", nullptr};
 const char* kAdditionalPasswords[] = {"secret", nullptr};
 
+// Returns a field renderer ID that isn't used in any testing data, which
+// represents an unexisting field renderer ID.
+autofill::FieldRendererId UnexistingFieldRendererId() {
+  return autofill::FieldRendererId(1000);
+}
+
 class AccountSelectFillDataTest : public PlatformTest {
  public:
   AccountSelectFillDataTest() {
@@ -237,6 +243,84 @@ TEST_F(AccountSelectFillDataTest, CrossOriginSuggestionHasRealm) {
     EXPECT_EQ(kUrl, suggestions[0].realm);
     EXPECT_EQ(kUrl, suggestions[1].realm);
   }
+}
+
+// Tests getting existing form info for an existing username field.
+TEST_F(AccountSelectFillDataTest, GetFormInfo_FocusedOnExistingUsernameField) {
+  const auto& form_data = form_data_[0];
+
+  AccountSelectFillData account_select_fill_data;
+  account_select_fill_data.Add(form_data, /*is_cross_origin_iframe=*/false);
+
+  const password_manager::FormInfo* form_info =
+      account_select_fill_data.GetFormInfo(
+          form_data.form_renderer_id, form_data.username_element_renderer_id,
+          /*is_password_field=*/false);
+
+  ASSERT_TRUE(form_info);
+
+  EXPECT_EQ(form_data.url, form_info->origin);
+  EXPECT_EQ(form_data.form_renderer_id, form_info->form_id);
+  EXPECT_EQ(form_data.username_element_renderer_id,
+            form_info->username_element_id);
+  EXPECT_EQ(form_data.password_element_renderer_id,
+            form_info->password_element_id);
+}
+
+// Tests getting form info for an unexisting username field that was no added to
+// the data.
+TEST_F(AccountSelectFillDataTest,
+       GetFormInfo_FocusedOnUnexistingUsernameField) {
+  const auto& form_data = form_data_[0];
+
+  AccountSelectFillData account_select_fill_data;
+  account_select_fill_data.Add(form_data, /*is_cross_origin_iframe=*/false);
+
+  const password_manager::FormInfo* form_info =
+      account_select_fill_data.GetFormInfo(form_data.form_renderer_id,
+                                           UnexistingFieldRendererId(),
+                                           /*is_password_field=*/false);
+
+  EXPECT_FALSE(form_info);
+}
+
+// Tests getting existing form info when focus on a random password field.
+TEST_F(AccountSelectFillDataTest, GetFormInfo_FocusedOnPasswordField) {
+  const auto& form_data = form_data_[0];
+
+  AccountSelectFillData account_select_fill_data;
+  account_select_fill_data.Add(form_data, /*is_cross_origin_iframe=*/false);
+
+  // Get form info for a password field with a unexisting field renderer ID,
+  // which should still give a non-null result because any password field should
+  // get form info.
+  const password_manager::FormInfo* form_info =
+      account_select_fill_data.GetFormInfo(form_data.form_renderer_id,
+                                           UnexistingFieldRendererId(),
+                                           /*is_password_field=*/true);
+
+  ASSERT_TRUE(form_info);
+
+  EXPECT_EQ(form_data.url, form_info->origin);
+  EXPECT_EQ(form_data.form_renderer_id, form_info->form_id);
+  EXPECT_EQ(form_data.username_element_renderer_id,
+            form_info->username_element_id);
+  EXPECT_EQ(form_data.password_element_renderer_id,
+            form_info->password_element_id);
+}
+
+// Test getting form info when there is no data for the form.
+TEST_F(AccountSelectFillDataTest, GetFormInfo_NoMatch) {
+  const auto& form_data = form_data_[0];
+
+  AccountSelectFillData account_select_fill_data;
+
+  const password_manager::FormInfo* form_info =
+      account_select_fill_data.GetFormInfo(
+          form_data.form_renderer_id, form_data.username_element_renderer_id,
+          /*is_password_field=*/false);
+
+  EXPECT_FALSE(form_info);
 }
 
 }  // namespace

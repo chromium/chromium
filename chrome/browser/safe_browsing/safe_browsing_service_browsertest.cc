@@ -285,8 +285,20 @@ class FakeSafeBrowsingUIManager : public TestSafeBrowsingUIManager {
                                                       web_contents);
   }
 
+  void MaybeSendClientSafeBrowsingWarningShownReport(
+      std::unique_ptr<safe_browsing::ClientSafeBrowsingReportRequest> report,
+      content::WebContents* web_contents) override {
+    EXPECT_FALSE(got_warning_shown_report_);
+    got_warning_shown_report_ = true;
+    warning_shown_report_ = *(report.get());
+    SafeBrowsingUIManager::MaybeSendClientSafeBrowsingWarningShownReport(
+        std::move(report), web_contents);
+  }
+
   bool got_hit_report_ = false;
   safe_browsing::HitReport hit_report_;
+  bool got_warning_shown_report_ = false;
+  safe_browsing::ClientSafeBrowsingReportRequest warning_shown_report_;
 
  private:
   ~FakeSafeBrowsingUIManager() override {}
@@ -456,7 +468,10 @@ class TestSBClient : public base::RefCountedThreadSafe<TestSBClient>,
 // Tests the safe browsing blocking page in a browser.
 class V4SafeBrowsingServiceTest : public InProcessBrowserTest {
  public:
-  V4SafeBrowsingServiceTest() {}
+  V4SafeBrowsingServiceTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        safe_browsing::kCreateWarningShownClientSafeBrowsingReports);
+  }
 
   V4SafeBrowsingServiceTest(const V4SafeBrowsingServiceTest&) = delete;
   V4SafeBrowsingServiceTest& operator=(const V4SafeBrowsingServiceTest&) =
@@ -599,6 +614,12 @@ class V4SafeBrowsingServiceTest : public InProcessBrowserTest {
   const safe_browsing::HitReport& hit_report() {
     return ui_manager()->hit_report_;
   }
+  bool got_warning_shown_report() {
+    return ui_manager()->got_warning_shown_report_;
+  }
+  const safe_browsing::ClientSafeBrowsingReportRequest& report() {
+    return ui_manager()->warning_shown_report_;
+  }
 
  protected:
   StrictMock<MockObserver> observer_;
@@ -612,6 +633,7 @@ class V4SafeBrowsingServiceTest : public InProcessBrowserTest {
       v4_get_hash_factory_;
   // Owned by the V4Database.
   raw_ptr<TestV4StoreFactory, AcrossTasksDanglingUntriaged> store_factory_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 
 #if defined(ADDRESS_SANITIZER)
   // TODO(lukasza): https://crbug.com/971820: Disallow renderer crashes once the
@@ -634,6 +656,7 @@ IN_PROC_BROWSER_TEST_F(V4SafeBrowsingServiceTest, UnwantedImgIgnored) {
 
   EXPECT_FALSE(ShowingInterstitialPage());
   EXPECT_FALSE(got_hit_report());
+  EXPECT_FALSE(got_warning_shown_report());
 }
 
 // Proceeding through an interstitial should cause it to get allowlisted for
@@ -684,6 +707,7 @@ IN_PROC_BROWSER_TEST_F(V4SafeBrowsingServiceTest, Prefetch) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   EXPECT_FALSE(ShowingInterstitialPage());
   EXPECT_FALSE(got_hit_report());
+  EXPECT_FALSE(got_warning_shown_report());
   Mock::VerifyAndClear(&observer_);
 
   // However, when we navigate to the malware page, we should still get
@@ -693,6 +717,7 @@ IN_PROC_BROWSER_TEST_F(V4SafeBrowsingServiceTest, Prefetch) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), malware_url));
   EXPECT_TRUE(ShowingInterstitialPage());
   EXPECT_TRUE(got_hit_report());
+  EXPECT_TRUE(got_warning_shown_report());
   Mock::VerifyAndClear(&observer_);
 }
 
@@ -707,6 +732,7 @@ IN_PROC_BROWSER_TEST_F(V4SafeBrowsingServiceTest, MainFrameHitWithReferrer) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), first_url));
   EXPECT_FALSE(ShowingInterstitialPage());
   EXPECT_FALSE(got_hit_report());
+  EXPECT_FALSE(got_warning_shown_report());
   Mock::VerifyAndClear(&observer_);
 
   // Navigate to malware page, should show interstitial and have first page in
@@ -724,6 +750,10 @@ IN_PROC_BROWSER_TEST_F(V4SafeBrowsingServiceTest, MainFrameHitWithReferrer) {
   EXPECT_EQ(bad_url, hit_report().page_url);
   EXPECT_EQ(first_url, hit_report().referrer_url);
   EXPECT_FALSE(hit_report().is_subresource);
+  EXPECT_TRUE(got_warning_shown_report());
+  EXPECT_EQ(bad_url, report().url());
+  EXPECT_EQ(bad_url, report().page_url());
+  EXPECT_EQ(first_url, report().referrer_url());
 }
 
 // TODO(https://crbug.com/1399454): Test is flaky.
@@ -746,6 +776,7 @@ IN_PROC_BROWSER_TEST_F(V4SafeBrowsingServiceTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), first_url));
   EXPECT_FALSE(ShowingInterstitialPage());
   EXPECT_FALSE(got_hit_report());
+  EXPECT_FALSE(got_warning_shown_report());
   Mock::VerifyAndClear(&observer_);
 
   // Navigate to page which has malware subresource, should show interstitial
@@ -767,9 +798,14 @@ IN_PROC_BROWSER_TEST_F(V4SafeBrowsingServiceTest,
     EXPECT_EQ(second_url, hit_report().page_url);
     EXPECT_EQ(first_url, hit_report().referrer_url);
     EXPECT_TRUE(hit_report().is_subresource);
+    EXPECT_TRUE(got_warning_shown_report());
+    EXPECT_EQ(bad_url, report().url());
+    EXPECT_EQ(second_url, report().page_url());
+    EXPECT_EQ(first_url, report().referrer_url());
   } else {
     EXPECT_FALSE(ShowingInterstitialPage());
     EXPECT_FALSE(got_hit_report());
+    EXPECT_FALSE(got_warning_shown_report());
   }
 }
 
@@ -792,6 +828,7 @@ IN_PROC_BROWSER_TEST_F(V4SafeBrowsingServiceTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), first_url));
   EXPECT_FALSE(ShowingInterstitialPage());
   EXPECT_FALSE(got_hit_report());
+  EXPECT_FALSE(got_warning_shown_report());
   Mock::VerifyAndClear(&observer_);
 
   // Navigate to malware page. The malware subresources haven't loaded yet, so
@@ -802,6 +839,7 @@ IN_PROC_BROWSER_TEST_F(V4SafeBrowsingServiceTest,
 
   EXPECT_FALSE(ShowingInterstitialPage());
   EXPECT_FALSE(got_hit_report());
+  EXPECT_FALSE(got_warning_shown_report());
   Mock::VerifyAndClear(&observer_);
 
   EXPECT_CALL(observer_, OnSafeBrowsingHit(IsUnsafeResourceFor(bad_url)))
@@ -824,6 +862,10 @@ IN_PROC_BROWSER_TEST_F(V4SafeBrowsingServiceTest,
   EXPECT_EQ(second_url, hit_report().page_url);
   EXPECT_EQ(first_url, hit_report().referrer_url);
   EXPECT_TRUE(hit_report().is_subresource);
+  EXPECT_TRUE(got_warning_shown_report());
+  EXPECT_EQ(bad_url, report().url());
+  EXPECT_EQ(second_url, report().page_url());
+  EXPECT_EQ(first_url, report().referrer_url());
 }
 
 IN_PROC_BROWSER_TEST_F(V4SafeBrowsingServiceTest,
@@ -845,6 +887,7 @@ IN_PROC_BROWSER_TEST_F(V4SafeBrowsingServiceTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), first_url));
   EXPECT_FALSE(ShowingInterstitialPage());
   EXPECT_FALSE(got_hit_report());
+  EXPECT_FALSE(got_warning_shown_report());
   Mock::VerifyAndClear(&observer_);
 
   // Navigate to malware page. The malware subresources haven't loaded yet, so
@@ -855,6 +898,7 @@ IN_PROC_BROWSER_TEST_F(V4SafeBrowsingServiceTest,
 
   EXPECT_FALSE(ShowingInterstitialPage());
   EXPECT_FALSE(got_hit_report());
+  EXPECT_FALSE(got_warning_shown_report());
   Mock::VerifyAndClear(&observer_);
 
   EXPECT_CALL(observer_, OnSafeBrowsingHit(IsUnsafeResourceFor(bad_url)))
@@ -883,6 +927,10 @@ IN_PROC_BROWSER_TEST_F(V4SafeBrowsingServiceTest,
   EXPECT_EQ(second_url, hit_report().page_url);
   EXPECT_EQ(first_url, hit_report().referrer_url);
   EXPECT_TRUE(hit_report().is_subresource);
+  EXPECT_TRUE(got_warning_shown_report());
+  EXPECT_EQ(bad_url, report().url());
+  EXPECT_EQ(second_url, report().page_url());
+  EXPECT_EQ(first_url, report().referrer_url());
 }
 
 #if (BUILDFLAG(IS_LINUX))
@@ -950,6 +998,10 @@ IN_PROC_BROWSER_TEST_F(V4SafeBrowsingServiceTest,
   // the synchronous about:blank commit.
   EXPECT_EQ(GURL(url::kAboutBlankURL), hit_report().page_url);
   EXPECT_EQ(GURL(url::kAboutBlankURL), hit_report().referrer_url);
+  EXPECT_TRUE(got_warning_shown_report());
+  EXPECT_EQ(img_url, report().url());
+  EXPECT_EQ(GURL(url::kAboutBlankURL), report().page_url());
+  EXPECT_EQ(GURL(url::kAboutBlankURL), report().referrer_url());
 
   // Proceed through it.
   security_interstitials::SecurityInterstitialTabHelper* helper =
@@ -1112,6 +1164,32 @@ IN_PROC_BROWSER_TEST_F(V4SafeBrowsingServiceWithAutoReloadTest,
   EXPECT_EQ(absl::nullopt, timer);
 }
 
+class V4SafeBrowsingServiceWarningShownCSBRRsDisabled
+    : public V4SafeBrowsingServiceTest {
+ public:
+  V4SafeBrowsingServiceWarningShownCSBRRsDisabled() {
+    scoped_feature_list_.InitAndDisableFeature(
+        safe_browsing::kCreateWarningShownClientSafeBrowsingReports);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(V4SafeBrowsingServiceWarningShownCSBRRsDisabled,
+                       CheckWarningShownReportNotSent) {
+  GURL bad_url = embedded_test_server()->GetURL(kMalwarePage);
+  MarkUrlForMalwareUnexpired(bad_url);
+
+  EXPECT_CALL(observer_, OnSafeBrowsingHit(IsUnsafeResourceFor(bad_url)))
+      .Times(1);
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), bad_url));
+  EXPECT_TRUE(ShowingInterstitialPage());
+
+  EXPECT_FALSE(got_warning_shown_report());
+}
+
 // Parameterised fixture to permit running the same test for Window and Worker
 // scopes.
 class V4SafeBrowsingServiceJsRequestTest
@@ -1152,6 +1230,9 @@ IN_PROC_BROWSER_TEST_P(V4SafeBrowsingServiceJsRequestInterstitialTest,
   EXPECT_EQ(js_request_url, hit_report().malicious_url);
   EXPECT_EQ(page_url, hit_report().page_url);
   EXPECT_TRUE(hit_report().is_subresource);
+  EXPECT_TRUE(got_warning_shown_report());
+  EXPECT_EQ(js_request_url, report().url());
+  EXPECT_EQ(page_url, report().page_url());
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -1188,12 +1269,14 @@ IN_PROC_BROWSER_TEST_P(V4SafeBrowsingServiceJsRequestNoInterstitialTest,
     EXPECT_EQ("NOT BLOCKED", new_title);
     EXPECT_FALSE(ShowingInterstitialPage());
     EXPECT_FALSE(got_hit_report());
+    EXPECT_FALSE(got_warning_shown_report());
   } else {
     EXPECT_EQ("ERROR", new_title);
     EXPECT_FALSE(ShowingInterstitialPage());
 
     // got_hit_report() is only set when an interstitial is shown.
     EXPECT_FALSE(got_hit_report());
+    EXPECT_FALSE(got_warning_shown_report());
   }
 }
 
@@ -1223,6 +1306,7 @@ IN_PROC_BROWSER_TEST_P(V4SafeBrowsingServiceJsRequestSafeTest,
   EXPECT_EQ("NOT BLOCKED", new_title);
   EXPECT_FALSE(ShowingInterstitialPage());
   EXPECT_FALSE(got_hit_report());
+  EXPECT_FALSE(got_warning_shown_report());
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -1310,12 +1394,18 @@ class V4SafeBrowsingServiceMetadataTest
     : public V4SafeBrowsingServiceTest,
       public ::testing::WithParamInterface<ThreatPatternType> {
  public:
-  V4SafeBrowsingServiceMetadataTest() {}
+  V4SafeBrowsingServiceMetadataTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        safe_browsing::kCreateWarningShownClientSafeBrowsingReports);
+  }
 
   V4SafeBrowsingServiceMetadataTest(const V4SafeBrowsingServiceMetadataTest&) =
       delete;
   V4SafeBrowsingServiceMetadataTest& operator=(
       const V4SafeBrowsingServiceMetadataTest&) = delete;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Irrespective of the threat_type classification, if the main frame URL is
@@ -1335,6 +1425,10 @@ IN_PROC_BROWSER_TEST_P(V4SafeBrowsingServiceMetadataTest, MalwareMainFrame) {
   EXPECT_EQ(url, hit_report().page_url);
   EXPECT_EQ(GURL(), hit_report().referrer_url);
   EXPECT_FALSE(hit_report().is_subresource);
+  EXPECT_TRUE(got_warning_shown_report());
+  EXPECT_EQ(url, report().url());
+  EXPECT_EQ(url, report().page_url());
+  EXPECT_EQ(GURL(), report().referrer_url());
 }
 
 // Irrespective of the threat_type classification, if the iframe URL is marked
@@ -1361,9 +1455,14 @@ IN_PROC_BROWSER_TEST_P(V4SafeBrowsingServiceMetadataTest, MalwareIFrame) {
     EXPECT_EQ(main_url, hit_report().page_url);
     EXPECT_EQ(GURL(), hit_report().referrer_url);
     EXPECT_TRUE(hit_report().is_subresource);
+    EXPECT_TRUE(got_warning_shown_report());
+    EXPECT_EQ(iframe_url, report().url());
+    EXPECT_EQ(main_url, report().page_url());
+    EXPECT_EQ(GURL(), report().referrer_url());
   } else {
     EXPECT_FALSE(ShowingInterstitialPage());
     EXPECT_FALSE(got_hit_report());
+    EXPECT_FALSE(got_warning_shown_report());
   }
 }
 
@@ -1403,10 +1502,15 @@ IN_PROC_BROWSER_TEST_P(V4SafeBrowsingServiceMetadataTest, DISABLED_MalwareImg) {
       EXPECT_EQ(main_url, hit_report().page_url);
       EXPECT_EQ(GURL(), hit_report().referrer_url);
       EXPECT_TRUE(hit_report().is_subresource);
+      EXPECT_TRUE(got_warning_shown_report());
+      EXPECT_EQ(img_url, report().url());
+      EXPECT_EQ(main_url, report().page_url());
+      EXPECT_EQ(GURL(), report().referrer_url());
       break;
     case ThreatPatternType::MALWARE_LANDING:
       EXPECT_FALSE(ShowingInterstitialPage());
       EXPECT_FALSE(got_hit_report());
+      EXPECT_FALSE(got_warning_shown_report());
       break;
     default:
       break;

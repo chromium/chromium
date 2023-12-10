@@ -54,14 +54,14 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Profile.AppCount" units="units" expires_after="2024-03-03">
+<histogram name="Profile.AppCount" units="units" expires_after="2024-05-05">
   <owner>etienneb@chromium.org</owner>
   <owner>gab@chromium.org</owner>
   <summary>The number of installed apps when a profile is opened.</summary>
 </histogram>
 
 <histogram name="Profile.Avatar" enum="ProfileAvatar"
-    expires_after="2024-03-17">
+    expires_after="2024-05-19">
   <owner>droger@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>The frequency of selection of each avatar.</summary>
@@ -74,7 +74,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Profile.BrowserActive.PerProfile" enum="Profile"
-    expires_after="2024-03-17">
+    expires_after="2024-05-19">
   <owner>msarda@chromium.org</owner>
   <owner>tangltom@chromium.org</owner>
   <summary>
@@ -198,7 +198,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Profile.Incognito.MainFrameNavigationsPerSession"
-    units="navigations" expires_after="2024-02-11">
+    units="navigations" expires_after="2024-05-19">
   <owner>rhalavati@chromium.org</owner>
   <owner>chrome-incognito@google.com</owner>
   <summary>
@@ -259,29 +259,7 @@ chromium-metrics-reviews@google.com.
     closed.
   </summary>
   <token key="ProfileType">
-    <variant name="Original">
-      <obsolete>
-        This histogram considered a KeyedService as active even if NULL. This
-        was fixed in M-106 in commit 903912cd. Non-NULL KeyedServices were no
-        longer counted. However, that change forgot to revise the histogram
-        names. The meaning of values in his histogram changed. In order to avoid
-        having a histogram with a meaning that differs by Chrome version, this
-        histogram was renamed in M-107 to Original-M-107. Original-M-107 counts
-        only non-NULL KeyedServices.
-      </obsolete>
-    </variant>
     <variant name="Original-M-107"/>
-    <variant name="OTR" summary="off the record">
-      <obsolete>
-        This histogram considered a KeyedService as active even if NULL. This
-        was fixed in M-106 in commit 903912cd. Non-NULL KeyedServices were no
-        longer counted. However, that change forgot to revise the histogram
-        names. The meaning of values in his histogram changed. In order to avoid
-        having a histogram with a meaning that differs by Chrome version, this
-        histogram was renamed in M-107 to OTR-M-107. OTR-M-107 counts only
-        non-NULL KeyedServices.
-      </obsolete>
-    </variant>
     <variant name="OTR-M-107" summary="off the record"/>
   </token>
 </histogram>
@@ -348,7 +326,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Profile.NetUserCount" enum="ProfileNetUserCount"
-    expires_after="2024-03-17">
+    expires_after="2024-05-19">
   <owner>rogerta@chromium.org</owner>
   <summary>
     Counts of users added and deleted. Percentages are not meaningful. Please
@@ -371,7 +349,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Profile.NumberOfAccountsPerProfile" units="units"
-    expires_after="2024-03-17">
+    expires_after="2024-05-19">
   <owner>msarda@chromium.org</owner>
   <owner>droger@chromium.org</owner>
   <summary>
@@ -395,9 +373,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Profile.NumberOfManagedProfiles" units="profiles"
-    expires_after="2024-02-11">
+    expires_after="2024-11-01">
   <owner>agawronska@chromium.org</owner>
-  <owner>michaelpg@chromium.org</owner>
   <owner>cros-families-eng@google.com</owner>
   <summary>
     Counts the number of locally managed profiles on a user's machine every 24
@@ -423,7 +400,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Profile.NumberOfProfilesAtProfileSwitch" units="profiles"
-    expires_after="2024-03-24">
+    expires_after="2024-05-26">
   <owner>droger@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
@@ -435,7 +412,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Profile.NumberOfSignedInProfiles" units="profiles"
-    expires_after="2024-03-17">
+    expires_after="2024-05-19">
   <owner>droger@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
@@ -457,9 +434,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Profile.PercentageOfManagedProfiles" units="units"
-    expires_after="2023-08-08">
+    expires_after="2024-11-01">
   <owner>agawronska@chromium.org</owner>
-  <owner>michaelpg@chromium.org</owner>
   <owner>cros-families-eng@google.com</owner>
   <summary>
     Tracks the percentage (0-100) of profiles that are locally managed, recorded
@@ -468,7 +444,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Profile.ProfilesOrderChanged" enum="BooleanHit"
-    expires_after="2023-12-31">
+    expires_after="2024-03-31">
   <owner>rsult@google.com</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
@@ -511,7 +487,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Profile.State.LastUsed" units="days"
-    expires_after="2024-03-17">
+    expires_after="2024-06-02">
   <owner>droger@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
@@ -521,7 +497,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Profile.State.SyncEnabled" enum="BooleanEnabled"
-    expires_after="2024-03-17">
+    expires_after="2024-05-19">
   <owner>droger@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
@@ -610,7 +586,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Profile.{Database}Size" units="MB" expires_after="2024-03-03">
+<histogram name="Profile.{Database}Size" units="MB" expires_after="2024-05-05">
   <owner>etienneb@chromium.org</owner>
   <owner>gab@chromium.org</owner>
   <summary>
@@ -908,20 +884,11 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ProfilePicker.UserAction" enum="ProfilePickerAction"
-    expires_after="2024-03-17">
+    expires_after="2024-05-19">
   <owner>msalama@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
     Records the action performed by the user in the profile picker.
-  </summary>
-</histogram>
-
-<histogram name="ProfileReset.ResetRequestOrigin"
-    enum="ProfileResetRequestOriginEnum" expires_after="M90">
-  <owner>proberge@chromium.org</owner>
-  <summary>
-    Encodes from where the request for resetting the profile settings
-    originated.
   </summary>
 </histogram>
 

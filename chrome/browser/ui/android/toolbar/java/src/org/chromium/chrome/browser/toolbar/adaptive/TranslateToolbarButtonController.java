@@ -20,9 +20,7 @@ import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
 
-/**
- * Handles the translate button on the toolbar.
- */
+/** Handles the translate button on the toolbar. */
 public class TranslateToolbarButtonController extends BaseButtonDataProvider {
     private final Supplier<Tracker> mTrackerSupplier;
 
@@ -34,21 +32,32 @@ public class TranslateToolbarButtonController extends BaseButtonDataProvider {
      * @param contentDescription String for the button's content description.
      * @param trackerSupplier  Supplier for the current profile tracker, used for IPH.
      */
-    public TranslateToolbarButtonController(Supplier<Tab> activeTabSupplier,
-            Drawable buttonDrawable, String contentDescription, Supplier<Tracker> trackerSupplier) {
-        super(activeTabSupplier, /* modalDialogManager = */ null, buttonDrawable,
-                contentDescription, Resources.ID_NULL, /* supportsTinting = */ true, null,
-                AdaptiveToolbarButtonVariant.TRANSLATE, /*tooltipTextResId*/ Resources.ID_NULL,
-                /*showHoverHighlight*/ true);
+    public TranslateToolbarButtonController(
+            Supplier<Tab> activeTabSupplier,
+            Drawable buttonDrawable,
+            String contentDescription,
+            Supplier<Tracker> trackerSupplier) {
+        super(
+                activeTabSupplier,
+                /* modalDialogManager= */ null,
+                buttonDrawable,
+                contentDescription,
+                Resources.ID_NULL,
+                /* supportsTinting= */ true,
+                null,
+                AdaptiveToolbarButtonVariant.TRANSLATE,
+                /* tooltipTextResId= */ Resources.ID_NULL,
+                /* showHoverHighlight= */ true);
         mTrackerSupplier = trackerSupplier;
     }
 
     @Override
     protected IPHCommandBuilder getIphCommandBuilder(Tab tab) {
-        return new IPHCommandBuilder(tab.getContext().getResources(),
+        return new IPHCommandBuilder(
+                tab.getContext().getResources(),
                 FeatureConstants.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_TRANSLATE_FEATURE,
-                /* stringId = */ R.string.adaptive_toolbar_button_translate_iph,
-                /* accessibilityStringId = */ R.string.adaptive_toolbar_button_translate_iph);
+                /* stringId= */ R.string.adaptive_toolbar_button_translate_iph,
+                /* accessibilityStringId= */ R.string.adaptive_toolbar_button_translate_iph);
     }
 
     @Override
@@ -57,8 +66,9 @@ public class TranslateToolbarButtonController extends BaseButtonDataProvider {
 
         RecordUserAction.record("MobileTopToolbarTranslateButton");
         if (mTrackerSupplier.hasValue()) {
-            mTrackerSupplier.get().notifyEvent(
-                    EventConstants.ADAPTIVE_TOOLBAR_CUSTOMIZATION_TRANSLATE_OPENED);
+            mTrackerSupplier
+                    .get()
+                    .notifyEvent(EventConstants.ADAPTIVE_TOOLBAR_CUSTOMIZATION_TRANSLATE_OPENED);
         }
 
         TranslateBridge.translateTabWhenReady(mActiveTabSupplier.get());

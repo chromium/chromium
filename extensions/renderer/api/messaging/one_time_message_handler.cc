@@ -53,13 +53,17 @@ namespace {
 // An opener port in the context; i.e., the caller of runtime.sendMessage.
 struct OneTimeOpener {
   int request_id = -1;
+#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
   int routing_id = MSG_ROUTING_NONE;
+#endif
   binding::AsyncResponseType async_type = binding::AsyncResponseType::kNone;
 };
 
 // A receiver port in the context; i.e., a listener to runtime.onMessage.
 struct OneTimeReceiver {
+#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
   int routing_id = MSG_ROUTING_NONE;
+#endif
   std::string event_name;
   v8::Global<v8::Object> sender;
 };
@@ -77,10 +81,12 @@ struct OneTimeMessageContextData : public base::SupportsUserData::Data {
 
 constexpr char OneTimeMessageContextData::kPerContextDataKey[];
 
+#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
 int RoutingIdForScriptContext(ScriptContext* script_context) {
   content::RenderFrame* render_frame = script_context->GetRenderFrame();
   return render_frame ? render_frame->GetRoutingID() : MSG_ROUTING_NONE;
 }
+#endif
 
 void OneTimeMessageResponseHelper(
     const v8::FunctionCallbackInfo<v8::Value>& info) {
@@ -112,7 +118,7 @@ void OneTimeMessageResponseHelper(
 // Called with the results of dispatching an onMessage event to listeners.
 // Returns true if any of the listeners responded with `true`, indicating they
 // will respond to the call asynchronously.
-bool WillListenerReplyAsync(absl::optional<base::Value> result) {
+bool WillListenerReplyAsync(std::optional<base::Value> result) {
   // `result` can be `nullopt` if the context was destroyed before the
   // listeners were ran (or while they were running).
   if (!result)
@@ -179,7 +185,9 @@ v8::Local<v8::Promise> OneTimeMessageHandler::SendMessage(
 
   v8::Local<v8::Promise> promise;
   bool wants_response = async_type != binding::AsyncResponseType::kNone;
+#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
   int routing_id = RoutingIdForScriptContext(script_context);
+#endif
   if (wants_response) {
     // If this is a promise based request no callback should have been passed
     // in.
@@ -192,7 +200,9 @@ v8::Local<v8::Promise> OneTimeMessageHandler::SendMessage(
             binding::ResultModifierFunction());
     OneTimeOpener& port = data->openers[new_port_id];
     port.request_id = details.request_id;
+#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
     port.routing_id = routing_id;
+#endif
     port.async_type = async_type;
     promise = details.promise;
     DCHECK_EQ(async_type == binding::AsyncResponseType::kPromise,
@@ -260,7 +270,9 @@ void OneTimeMessageHandler::AddReceiver(ScriptContext* script_context,
   DCHECK(!base::Contains(data->receivers, target_port_id));
   OneTimeReceiver& receiver = data->receivers[target_port_id];
   receiver.sender.Reset(isolate, sender);
+#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
   receiver.routing_id = RoutingIdForScriptContext(script_context);
+#endif
   receiver.event_name = event_name;
 }
 
@@ -625,7 +637,7 @@ void OneTimeMessageHandler::OnResponseCallbackCollected(
 
 void OneTimeMessageHandler::OnEventFired(const PortId& port_id,
                                          v8::Local<v8::Context> context,
-                                         absl::optional<base::Value> result) {
+                                         std::optional<base::Value> result) {
   // The context could be tearing down by the time the event is fully
   // dispatched.
   OneTimeMessageContextData* data =

@@ -32,14 +32,11 @@ import javax.net.ssl.HttpsURLConnection;
  */
 public abstract class CronetEngine {
     private static final String TAG = CronetEngine.class.getSimpleName();
-    /**
-     * The value of the active request count is unknown
-     */
+
+    /** The value of the active request count is unknown */
     public static final int ACTIVE_REQUEST_COUNT_UNKNOWN = -1;
 
-    /**
-     * The value of a connection metric is unknown.
-     */
+    /** The value of a connection metric is unknown. */
     public static final int CONNECTION_METRIC_UNKNOWN = -1;
 
     /**
@@ -114,9 +111,7 @@ public abstract class CronetEngine {
             public abstract void loadLibrary(String libName);
         }
 
-        /**
-         * Reference to the actual builder implementation. {@hide exclude from JavaDoc}.
-         */
+        /** Reference to the actual builder implementation. {@hide exclude from JavaDoc}. */
         protected final ICronetEngineBuilder mBuilderDelegate;
 
         /**
@@ -336,8 +331,11 @@ public abstract class CronetEngine {
          * @throws IllegalArgumentException if the given host name is invalid or {@code pinsSha256}
          * contains a byte array that does not represent a valid SHA-256 hash.
          */
-        public Builder addPublicKeyPins(String hostName, Set<byte[]> pinsSha256,
-                boolean includeSubdomains, Date expirationDate) {
+        public Builder addPublicKeyPins(
+                String hostName,
+                Set<byte[]> pinsSha256,
+                boolean includeSubdomains,
+                Date expirationDate) {
             mBuilderDelegate.addPublicKeyPins(
                     hostName, pinsSha256, includeSubdomains, expirationDate);
             return this;
@@ -406,9 +404,7 @@ public abstract class CronetEngine {
             return this;
         }
 
-        /**
-         * @see #setQuicOptions(QuicOptions)
-         */
+        /** @see #setQuicOptions(QuicOptions) */
         @QuicOptions.Experimental
         public Builder setQuicOptions(QuicOptions.Builder quicOptionsBuilder) {
             return setQuicOptions(quicOptionsBuilder.build());
@@ -428,9 +424,7 @@ public abstract class CronetEngine {
             return this;
         }
 
-        /**
-         * @see #setDnsOptions(DnsOptions)
-         */
+        /** @see #setDnsOptions(DnsOptions) */
         @DnsOptions.Experimental
         public Builder setDnsOptions(DnsOptions.Builder dnsOptions) {
             return setDnsOptions(dnsOptions.build());
@@ -452,9 +446,7 @@ public abstract class CronetEngine {
             return this;
         }
 
-        /**
-         * @see #setConnectionMigrationOptions(ConnectionMigrationOptions)
-         */
+        /** @see #setConnectionMigrationOptions(ConnectionMigrationOptions) */
         @ConnectionMigrationOptions.Experimental
         public Builder setConnectionMigrationOptions(
                 ConnectionMigrationOptions.Builder connectionMigrationOptionsBuilder) {
@@ -469,9 +461,12 @@ public abstract class CronetEngine {
         public CronetEngine build() {
             int implLevel = getImplementationApiLevel();
             if (implLevel != -1 && implLevel < getMaximumApiLevel()) {
-                Log.w(TAG,
+                Log.w(
+                        TAG,
                         "The implementation version is lower than the API version. Calls to "
-                                + "methods added in API " + (implLevel + 1) + " and newer will "
+                                + "methods added in API "
+                                + (implLevel + 1)
+                                + " and newer will "
                                 + "likely have no effect.");
             }
 
@@ -491,8 +486,10 @@ public abstract class CronetEngine {
                     new ArrayList<>(CronetProvider.getAllProviders(context));
             CronetProvider provider = getEnabledCronetProviders(context, providers).get(0);
             if (Log.isLoggable(TAG, Log.DEBUG)) {
-                Log.d(TAG,
-                        String.format("Using '%s' provider for creating CronetEngine.Builder.",
+                Log.d(
+                        TAG,
+                        String.format(
+                                "Using '%s' provider for creating CronetEngine.Builder.",
                                 provider));
             }
             return provider.createBuilder().mBuilderDelegate;
@@ -513,12 +510,13 @@ public abstract class CronetEngine {
                 Context context, List<CronetProvider> providers) {
             // Check that there is at least one available provider.
             if (providers.isEmpty()) {
-                throw new RuntimeException("Unable to find any Cronet provider."
-                        + " Have you included all necessary jars?");
+                throw new RuntimeException(
+                        "Unable to find any Cronet provider."
+                                + " Have you included all necessary jars?");
             }
 
             // Exclude disabled providers from the list.
-            for (Iterator<CronetProvider> i = providers.iterator(); i.hasNext();) {
+            for (Iterator<CronetProvider> i = providers.iterator(); i.hasNext(); ) {
                 CronetProvider provider = i.next();
                 if (!provider.isEnabled()) {
                     i.remove();
@@ -527,25 +525,28 @@ public abstract class CronetEngine {
 
             // Check that there is at least one enabled provider.
             if (providers.isEmpty()) {
-                throw new RuntimeException("All available Cronet providers are disabled."
-                        + " A provider should be enabled before it can be used.");
+                throw new RuntimeException(
+                        "All available Cronet providers are disabled."
+                                + " A provider should be enabled before it can be used.");
             }
 
             // Sort providers based on version and type.
-            Collections.sort(providers, new Comparator<CronetProvider>() {
-                @Override
-                public int compare(CronetProvider p1, CronetProvider p2) {
-                    // The fallback provider should always be at the end of the list.
-                    if (CronetProvider.PROVIDER_NAME_FALLBACK.equals(p1.getName())) {
-                        return 1;
-                    }
-                    if (CronetProvider.PROVIDER_NAME_FALLBACK.equals(p2.getName())) {
-                        return -1;
-                    }
-                    // A provider with higher version should go first.
-                    return -compareVersions(p1.getVersion(), p2.getVersion());
-                }
-            });
+            Collections.sort(
+                    providers,
+                    new Comparator<CronetProvider>() {
+                        @Override
+                        public int compare(CronetProvider p1, CronetProvider p2) {
+                            // The fallback provider should always be at the end of the list.
+                            if (CronetProvider.PROVIDER_NAME_FALLBACK.equals(p1.getName())) {
+                                return 1;
+                            }
+                            if (CronetProvider.PROVIDER_NAME_FALLBACK.equals(p2.getName())) {
+                                return -1;
+                            }
+                            // A provider with higher version should go first.
+                            return -compareVersions(p1.getVersion(), p2.getVersion());
+                        }
+                    });
             return providers;
         }
 
@@ -576,8 +577,12 @@ public abstract class CronetEngine {
                         return Integer.signum(s1segment - s2segment);
                     }
                 } catch (NumberFormatException e) {
-                    throw new IllegalArgumentException("Unable to convert version segments into"
-                                    + " integers: " + s1segments[i] + " & " + s2segments[i],
+                    throw new IllegalArgumentException(
+                            "Unable to convert version segments into"
+                                    + " integers: "
+                                    + s1segments[i]
+                                    + " & "
+                                    + s2segments[i],
                             e);
                 }
             }
@@ -608,9 +613,7 @@ public abstract class CronetEngine {
         }
     }
 
-    /**
-     * @return a human-readable version string of the engine.
-     */
+    /** @return a human-readable version string of the engine. */
     public abstract String getVersionString();
 
     /**
@@ -866,8 +869,10 @@ public abstract class CronetEngine {
      *         computing
      * the effective connection type or when writing the prefs.
      */
-    public void configureNetworkQualityEstimatorForTesting(boolean useLocalHostRequests,
-            boolean useSmallerResponses, boolean disableOfflineCheck) {}
+    public void configureNetworkQualityEstimatorForTesting(
+            boolean useLocalHostRequests,
+            boolean useSmallerResponses,
+            boolean disableOfflineCheck) {}
 
     /**
      * Registers a listener that gets called whenever the network quality estimator witnesses a

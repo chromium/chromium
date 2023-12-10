@@ -9,6 +9,7 @@
 #include "ash/style/option_button_group.h"
 #include "chrome/browser/ash/arc/input_overlay/db/proto/app_data.pb.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/action_type_button.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 
 namespace arc::input_overlay {
 
@@ -22,6 +23,8 @@ class DisplayOverlayController;
 // change color.
 class ActionTypeButtonGroup : public ash::OptionButtonGroup,
                               public ash::OptionButtonBase::Delegate {
+  METADATA_HEADER(ActionTypeButtonGroup, ash::OptionButtonGroup)
+
  public:
   static std::unique_ptr<ActionTypeButtonGroup> CreateButtonGroup(
       DisplayOverlayController* controller,

@@ -3,10 +3,10 @@
 // found in the LICENSE file.
 
 #include <cmath>
+#include <optional>
 #include <string>
 
 #include "base/command_line.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -36,7 +36,6 @@
 #include "pdf/buildflags.h"
 #include "printing/buildflags/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/display/display_switches.h"
@@ -116,7 +115,7 @@ class HeadlessCommandBrowserTest : public HeadlessBrowserTest,
 
   void set_aborted() { aborted_ = true; }
 
-  absl::optional<HeadlessCommandHandler::Result> result() const {
+  std::optional<HeadlessCommandHandler::Result> result() const {
     return result_;
   }
 
@@ -129,7 +128,7 @@ class HeadlessCommandBrowserTest : public HeadlessBrowserTest,
   }
 
   bool aborted_ = false;
-  absl::optional<HeadlessCommandHandler::Result> result_;
+  std::optional<HeadlessCommandHandler::Result> result_;
 };
 
 class HeadlessFileCommandBrowserTest : public HeadlessCommandBrowserTest {
@@ -355,7 +354,7 @@ IN_PROC_BROWSER_TEST_P(HeadlessDumpDomSubResourceTimeoutCommandBrowserTest,
   capture_stdout.StopCapture();
 
   std::string captured_stdout_data = capture_stdout.TakeCapturedData();
-  base::EraseIf(captured_stdout_data, isspace);
+  std::erase_if(captured_stdout_data, isspace);
 
   if (delay_response()) {
     EXPECT_THAT(result(),

@@ -7,6 +7,7 @@
 #include <cstdint>
 #include <iostream>
 #include <map>
+#include <optional>
 #include <vector>
 
 #include "ash/constants/ash_features.h"
@@ -51,7 +52,6 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/events/ash/event_rewriter_ash.h"
 #include "ui/events/ash/keyboard_capability.h"
@@ -618,11 +618,11 @@ class TestEventRewriterAshDelegate : public ui::EventRewriterAsh::Delegate {
     return true;
   }
   void SuppressMetaTopRowKeyComboRewrites(bool should_suppress) override {}
-  absl::optional<ui::mojom::ModifierKey> GetKeyboardRemappedModifierValue(
+  std::optional<ui::mojom::ModifierKey> GetKeyboardRemappedModifierValue(
       int device_id,
       ui::mojom::ModifierKey modifier_key,
       const std::string& pref_name) const override {
-    return absl::nullopt;
+    return std::nullopt;
   }
   bool TopRowKeysAreFunctionKeys(int device_id) const override { return false; }
   bool IsExtensionCommandRegistered(ui::KeyboardCode key_code,
@@ -637,15 +637,15 @@ class TestEventRewriterAshDelegate : public ui::EventRewriterAsh::Delegate {
   void RecordEventRemappedToRightClick(bool alt_based_right_click) override {}
   void RecordSixPackEventRewrite(ui::KeyboardCode key_code,
                                  bool alt_based) override {}
-  absl::optional<ui::mojom::SimulateRightClickModifier>
+  std::optional<ui::mojom::SimulateRightClickModifier>
   GetRemapRightClickModifier(int device_id) override {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
-  absl::optional<ui::mojom::SixPackShortcutModifier>
+  std::optional<ui::mojom::SixPackShortcutModifier>
   GetShortcutModifierForSixPackKey(int device_id,
                                    ui::KeyboardCode key_code) override {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   void NotifyRightClickRewriteBlockedBySetting(
@@ -658,10 +658,10 @@ class TestEventRewriterAshDelegate : public ui::EventRewriterAsh::Delegate {
       ui::mojom::SixPackShortcutModifier active_modifier,
       int device_id) override {}
 
-  absl::optional<ui::mojom::ExtendedFkeysModifier> GetExtendedFkeySetting(
+  std::optional<ui::mojom::ExtendedFkeysModifier> GetExtendedFkeySetting(
       int device_id,
       ui::KeyboardCode key_code) override {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
  protected:
@@ -839,8 +839,8 @@ class InputDataProviderTest : public AshTestBase {
     const std::string sys_path = device_name + "-" + device_caps.path;
 
     fake_udev_->AddFakeDevice(device_caps.name, sys_path.c_str(),
-                              /*subsystem=*/"input", /*devnode=*/absl::nullopt,
-                              /*devtype=*/absl::nullopt,
+                              /*subsystem=*/"input", /*devnode=*/std::nullopt,
+                              /*devtype=*/std::nullopt,
                               std::move(sysfs_attributes),
                               std::move(sysfs_properties));
   }
@@ -1198,7 +1198,7 @@ TEST_F(InputDataProviderTest, KeyboardRegionDetection) {
   EXPECT_EQ("jp", internal_keyboard->region_code);
 
   const mojom::KeyboardInfoPtr& external_keyboard = keyboards[1];
-  EXPECT_EQ(absl::nullopt, external_keyboard->region_code);
+  EXPECT_EQ(std::nullopt, external_keyboard->region_code);
 }
 
 TEST_F(InputDataProviderTest, KeyboardRegionDetection_Failure) {
@@ -1220,7 +1220,7 @@ TEST_F(InputDataProviderTest, KeyboardRegionDetection_Failure) {
   ASSERT_EQ(1ul, keyboards.size());
 
   const mojom::KeyboardInfoPtr& internal_keyboard = keyboards[0];
-  EXPECT_EQ(absl::nullopt, internal_keyboard->region_code);
+  EXPECT_EQ(std::nullopt, internal_keyboard->region_code);
 }
 
 TEST_F(InputDataProviderTest, KeyboardAssistantKeyDetection) {

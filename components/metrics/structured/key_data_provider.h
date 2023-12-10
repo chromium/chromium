@@ -5,11 +5,12 @@
 #ifndef COMPONENTS_METRICS_STRUCTURED_KEY_DATA_PROVIDER_H_
 #define COMPONENTS_METRICS_STRUCTURED_KEY_DATA_PROVIDER_H_
 
+#include <optional>
+
 #include "base/functional/callback_forward.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "components/metrics/structured/key_data.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class FilePath;
@@ -51,7 +52,7 @@ class KeyDataProvider {
   //
   // If no valid key is found for |project_name|, this function will return
   // absl::nullopt.
-  virtual absl::optional<uint64_t> GetId(const std::string& project_name) = 0;
+  virtual std::optional<uint64_t> GetId(const std::string& project_name) = 0;
 
   // Retrieves the secondary ID for given |project_name|.
   //
@@ -60,7 +61,7 @@ class KeyDataProvider {
   //
   // TODO(b/290096302): Refactor event sequence populator so there is no
   // dependency on concepts such as device/profile in //components.
-  virtual absl::optional<uint64_t> GetSecondaryId(
+  virtual std::optional<uint64_t> GetSecondaryId(
       const std::string& project_name) = 0;
 
   // Retrieves the key data to be used for |project_name|. Returns nullptr if

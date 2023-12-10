@@ -21,9 +21,7 @@ import com.google.android.material.tabs.TabLayout;
 import org.chromium.base.StrictModeContext;
 import org.chromium.ui.interpolators.Interpolators;
 
-/**
- * TabLayout shown in the TranslateCompactInfoBar.
- */
+/** TabLayout shown in the TranslateCompactInfoBar. */
 public class TranslateTabLayout extends TabLayout {
     /** The tab in which a spinning progress bar is showing. */
     private Tab mTabShowingProgressBar;
@@ -43,17 +41,19 @@ public class TranslateTabLayout extends TabLayout {
     /** End padding of a Tab.  Used for width calculation only.  Will not be applied to views. */
     private int mTabPaddingEnd;
 
-    /**
-     * Constructor for inflating from XML.
-     */
+    /** Constructor for inflating from XML. */
     @SuppressLint("CustomViewStyleable") // TODO(crbug.com/807725): Remove and fix.
     public TranslateTabLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
 
-        TypedArray a = context.obtainStyledAttributes(
-                attrs, R.styleable.TabLayout, 0, R.style.Widget_MaterialComponents_TabLayout);
-        mTabPaddingStart = mTabPaddingEnd =
-                a.getDimensionPixelSize(R.styleable.TabLayout_tabPadding, 0);
+        TypedArray a =
+                context.obtainStyledAttributes(
+                        attrs,
+                        R.styleable.TabLayout,
+                        0,
+                        R.style.Widget_MaterialComponents_TabLayout);
+        mTabPaddingStart =
+                mTabPaddingEnd = a.getDimensionPixelSize(R.styleable.TabLayout_tabPadding, 0);
         mTabPaddingStart =
                 a.getDimensionPixelSize(R.styleable.TabLayout_tabPaddingStart, mTabPaddingStart);
         mTabPaddingEnd =
@@ -78,8 +78,10 @@ public class TranslateTabLayout extends TabLayout {
         TranslateTabContent tabContent;
         // LayoutInflater may trigger accessing the disk.
         try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
-            tabContent = (TranslateTabContent) LayoutInflater.from(getContext())
-                                 .inflate(R.layout.infobar_translate_tab_content, this, false);
+            tabContent =
+                    (TranslateTabContent)
+                            LayoutInflater.from(getContext())
+                                    .inflate(R.layout.infobar_translate_tab_content, this, false);
         }
         // Set text color using tabLayout's ColorStateList.  So that the title text will change
         // color when selected and unselected.
@@ -123,9 +125,7 @@ public class TranslateTabLayout extends TabLayout {
         }
     }
 
-    /**
-     * Hide the spinning progress bar in the tabs.
-     */
+    /** Hide the spinning progress bar in the tabs. */
     public void hideProgressBar() {
         if (mTabShowingProgressBar == null) return;
 
@@ -203,9 +203,7 @@ public class TranslateTabLayout extends TabLayout {
         return scrollDistance > 0 ? scrollDistance : 0;
     }
 
-    /**
-     * Perform the scrolling animation if this tablayout has any scrollable distance.
-     */
+    /** Perform the scrolling animation if this tablayout has any scrollable distance. */
     // TODO(crbug.com/900912): Figure out whether setScrollX is actually available.
     @SuppressLint("ObjectAnimatorBinding")
     public void startScrollingAnimationIfNeeded() {
@@ -216,23 +214,25 @@ public class TranslateTabLayout extends TabLayout {
         // The steps of the scrolling animation:
         //   1. wait for START_POSITION_WAIT_DURATION_MS.
         //   2. scroll to the end in SCROLL_DURATION_MS.
-        mScrollToEndAnimator = ObjectAnimator.ofInt(this, "scrollX",
-                getLayoutDirection() == LAYOUT_DIRECTION_RTL ? 0 : maxScrollDistance);
+        mScrollToEndAnimator =
+                ObjectAnimator.ofInt(
+                        this,
+                        "scrollX",
+                        getLayoutDirection() == LAYOUT_DIRECTION_RTL ? 0 : maxScrollDistance);
         mScrollToEndAnimator.setStartDelay(START_POSITION_WAIT_DURATION_MS);
         mScrollToEndAnimator.setDuration(SCROLL_DURATION_MS);
         mScrollToEndAnimator.setInterpolator(Interpolators.DECELERATE_INTERPOLATOR);
-        mScrollToEndAnimator.addListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                mScrollToEndAnimator = null;
-            }
-        });
+        mScrollToEndAnimator.addListener(
+                new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        mScrollToEndAnimator = null;
+                    }
+                });
         mScrollToEndAnimator.start();
     }
 
-    /**
-     * End the scrolling animation if it is playing.
-     */
+    /** End the scrolling animation if it is playing. */
     public void endScrollingAnimationIfPlaying() {
         if (mScrollToEndAnimator != null) mScrollToEndAnimator.end();
     }

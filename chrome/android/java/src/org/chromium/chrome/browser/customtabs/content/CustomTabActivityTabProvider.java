@@ -24,17 +24,14 @@ import javax.inject.Inject;
  */
 @ActivityScope
 public class CustomTabActivityTabProvider {
-    private final ObserverList<Observer> mObservers =  new ObserverList<>();
+    private final ObserverList<Observer> mObservers = new ObserverList<>();
 
-    @Nullable
-    private Tab mTab;
+    @Nullable private Tab mTab;
     private @TabCreationMode int mTabCreationMode = TabCreationMode.NONE;
-    @Nullable
-    private String mSpeculatedUrl;
+    @Nullable private String mSpeculatedUrl;
 
     @Inject
     CustomTabActivityTabProvider() {}
-
 
     /** Adds an {@link Observer} */
     public void addObserver(Observer observer) {
@@ -68,9 +65,7 @@ public class CustomTabActivityTabProvider {
         return mTabCreationMode;
     }
 
-    /**
-     * Returns speculated url, if there was one.
-     */
+    /** Returns speculated url, if there was one. */
     public @Nullable String getSpeculatedUrl() {
         return mSpeculatedUrl;
     }
@@ -121,9 +116,7 @@ public class CustomTabActivityTabProvider {
      * activity.
      */
     public abstract static class Observer {
-        /**
-         * Fired when the initial tab has been created.
-         */
+        /** Fired when the initial tab has been created. */
         public void onInitialTabCreated(@NonNull Tab tab, @TabCreationMode int mode) {}
 
         /**

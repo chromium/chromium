@@ -33,8 +33,7 @@ import org.chromium.net.test.util.TestWebServer;
 @RunWith(Parameterized.class)
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
 public class SaveRestoreStateTest extends AwParameterizedTest {
-    @Rule
-    public AwActivityTestRule mActivityTestRule;
+    @Rule public AwActivityTestRule mActivityTestRule;
 
     private static class TestVars {
         public final TestAwContentsClient contentsClient;

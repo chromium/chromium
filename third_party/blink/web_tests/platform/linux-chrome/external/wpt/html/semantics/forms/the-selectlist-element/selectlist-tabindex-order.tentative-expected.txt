@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+[FAIL] Check that tabindex applies to <selectlist>
+  assert_equals: input3 should be active expected "input3" but got ""
+Harness: the test ran to completion.

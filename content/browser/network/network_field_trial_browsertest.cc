@@ -37,9 +37,9 @@ class TestFieldTrialListObserver : public base::FieldTrialList::Observer {
   void WaitForTrialGroupToBeFinalized() { run_loop_.Run(); }
 
   // base::FieldTrialList::Observer:
-  void OnFieldTrialGroupFinalized(const std::string& trial_name,
+  void OnFieldTrialGroupFinalized(const base::FieldTrial& trial,
                                   const std::string& group_name) override {
-    if (trial_name == kFieldTrialName) {
+    if (trial.trial_name() == kFieldTrialName) {
       EXPECT_EQ(kFieldTrialGroup, group_name);
       run_loop_.Quit();
     }

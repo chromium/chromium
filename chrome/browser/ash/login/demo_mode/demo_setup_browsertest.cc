@@ -13,6 +13,7 @@
 #include "ash/public/cpp/login_accelerators.h"
 #include "base/command_line.h"
 #include "base/containers/flat_map.h"
+#include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/i18n/time_formatting.h"
@@ -23,6 +24,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_run_loop_timeout.h"
 #include "base/test/test_timeouts.h"
+#include "base/threading/thread_restrictions.h"
 #include "base/timer/timer.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -45,7 +47,10 @@
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_status.h"
+#include "chrome/browser/chrome_browser_main.h"
+#include "chrome/browser/chrome_browser_main_extra_parts.h"
 #include "chrome/browser/component_updater/cros_component_installer_chromeos.h"
+#include "chrome/browser/component_updater/fake_cros_component_manager.h"
 #include "chrome/browser/ui/webui/ash/login/demo_preferences_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/demo_setup_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/error_screen_handler.h"
@@ -53,9 +58,12 @@
 #include "chrome/browser/ui/webui/ash/login/network_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/welcome_screen_handler.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/test/base/browser_process_platform_part_test_api_chromeos.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/dbus/shill/shill_service_client.h"
 #include "chromeos/ash/components/dbus/update_engine/fake_update_engine_client.h"
+#include "chromeos/ash/components/growth/campaigns_manager.h"
+#include "chromeos/ash/components/growth/campaigns_model.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
@@ -102,8 +110,6 @@ const test::UIPath kDemoPreferencesNext = {kDemoPrefsId, "nextButton"};
 const test::UIPath kNetworkScreen = {kNetworkId};
 const test::UIPath kNetworkNextButton = {kNetworkId, "nextButton"};
 const test::UIPath kNetworkBackButton = {kNetworkId, "backButton"};
-const test::UIPath kNetworkQuickStartButton = {kNetworkId,
-                                               "quick-start-network-button"};
 
 const test::UIPath kDemoSetupProgressDialog = {kDemoSetupId,
                                                "demoSetupProgressDialog"};
@@ -124,6 +130,11 @@ constexpr char kDefaultNetworkServicePath[] = "/service/eth1";
 constexpr char kDefaultNetworkName[] = "eth1";
 
 constexpr int kInvokeDemoModeGestureTapsCount = 10;
+
+inline constexpr char kGrowthCampaignsComponentName[] = "growth-campaigns";
+inline constexpr char kDemoAppComponentName[] = "demo-mode-app";
+inline constexpr char kDemoResourcesComponentName[] = "demo-mode-resources";
+inline constexpr char kCampaignsFileName[] = "campaigns.json";
 
 // Basic tests for demo mode setup flow.
 class DemoSetupTestBase : public OobeBaseTest {
@@ -172,6 +183,10 @@ class DemoSetupTestBase : public OobeBaseTest {
     ClickOkOnConfirmationDialog();
 
     OobeScreenWaiter(NetworkScreenView::kScreenId).Wait();
+
+    WizardController::default_controller()
+        ->demo_setup_controller()
+        ->EnableLoadRealComponentsForTest();
   }
 
   // Returns whether error message is shown on demo setup error screen and
@@ -308,6 +323,87 @@ class DemoSetupTestBase : public OobeBaseTest {
   std::unique_ptr<base::AutoReset<bool>> branded_build_override_;
 };
 
+// Extra parts for setting up the FakeCrOSComponentManager before the real one
+// has been initialized on the browser
+class DemoSetupTestMainExtraParts : public ChromeBrowserMainExtraParts {
+ public:
+  explicit DemoSetupTestMainExtraParts(
+      bool growth_campaigns_enabled = false,
+      component_updater::CrOSComponentManager::Error
+          demo_mode_app_load_response =
+              component_updater::CrOSComponentManager::Error::NONE)
+      : growth_campaigns_enabled_(growth_campaigns_enabled),
+        demo_mode_app_load_response_(demo_mode_app_load_response) {
+    CHECK(components_temp_dir_.CreateUniqueTempDir());
+  }
+  DemoSetupTestMainExtraParts(const DemoSetupTestMainExtraParts&) = delete;
+  DemoSetupTestMainExtraParts& operator=(const DemoSetupTestMainExtraParts&) =
+      delete;
+
+  base::FilePath GetGrowthCampaignsPath() {
+    return components_temp_dir_.GetPath()
+        .AppendASCII("cros-components")
+        .AppendASCII(kGrowthCampaignsComponentName);
+  }
+
+  void PostEarlyInitialization() override {
+    auto cros_component_manager =
+        base::MakeRefCounted<component_updater::FakeCrOSComponentManager>();
+    std::set<std::string> supported_components = {kDemoResourcesComponentName,
+                                                  kDemoAppComponentName};
+    if (growth_campaigns_enabled_) {
+      supported_components.insert(kGrowthCampaignsComponentName);
+    }
+
+    cros_component_manager->set_supported_components(supported_components);
+    if (demo_mode_app_load_response_ ==
+        component_updater::CrOSComponentManager::Error::NONE) {
+      cros_component_manager->ResetComponentState(
+          kDemoAppComponentName,
+          component_updater::FakeCrOSComponentManager::ComponentInfo(
+              demo_mode_app_load_response_, base::FilePath("/dev/null"),
+              base::FilePath("/run/imageloader/demo-mode-app")));
+    } else {
+      cros_component_manager->ResetComponentState(
+          kDemoAppComponentName,
+          component_updater::FakeCrOSComponentManager::ComponentInfo(
+              demo_mode_app_load_response_, base::FilePath(),
+              base::FilePath()));
+    }
+    cros_component_manager->ResetComponentState(
+        kDemoResourcesComponentName,
+        component_updater::FakeCrOSComponentManager::ComponentInfo(
+            component_updater::CrOSComponentManager::Error::NONE,
+            base::FilePath("/dev/null"),
+            base::FilePath("/run/imageloader/demo-mode-resources")));
+
+    if (growth_campaigns_enabled_) {
+      cros_component_manager->ResetComponentState(
+          kGrowthCampaignsComponentName,
+          component_updater::FakeCrOSComponentManager::ComponentInfo(
+              component_updater::CrOSComponentManager::Error::NONE,
+              base::FilePath("/dev/null"), GetGrowthCampaignsPath()));
+    }
+
+    platform_part_test_api_ =
+        std::make_unique<BrowserProcessPlatformPartTestApi>(
+            g_browser_process->platform_part());
+    platform_part_test_api_->InitializeCrosComponentManager(
+        std::move(cros_component_manager));
+  }
+
+  void PostMainMessageLoopRun() override {
+    platform_part_test_api_->ShutdownCrosComponentManager();
+    platform_part_test_api_.reset();
+  }
+
+ private:
+  std::unique_ptr<BrowserProcessPlatformPartTestApi> platform_part_test_api_;
+  base::ScopedTempDir components_temp_dir_;
+  bool growth_campaigns_enabled_;
+  component_updater::CrOSComponentManager::Error demo_mode_app_load_response_;
+};
+
 class DemoSetupArcSupportedTest : public DemoSetupTestBase {
  public:
   DemoSetupArcSupportedTest() {
@@ -316,6 +412,14 @@ class DemoSetupArcSupportedTest : public DemoSetupTestBase {
         system::StatisticsProvider::VpdStatus::kValid);
   }
   ~DemoSetupArcSupportedTest() override = default;
+
+  void CreatedBrowserMainParts(
+      content::BrowserMainParts* browser_main_parts) override {
+    auto extra_parts = std::make_unique<DemoSetupTestMainExtraParts>();
+    static_cast<ChromeBrowserMainParts*>(browser_main_parts)
+        ->AddParts(std::move(extra_parts));
+    DemoSetupTestBase::CreatedBrowserMainParts(browser_main_parts);
+  }
 
   // DemoSetupTestBase:
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -682,34 +786,6 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
   EXPECT_FALSE(StartupUtils::IsDeviceRegistered());
 }
 
-IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
-                       OnlineSetupFlowCrosComponentFailure) {
-  // Simulate failure to load demo resources CrOS component.
-  // There is no enrollment attempt, as process fails earlier.
-  enrollment_helper_.ExpectNoEnrollment();
-  SimulateNetworkConnected();
-
-  TriggerDemoModeOnWelcomeScreen();
-
-  UseOnlineModeOnNetworkScreen();
-
-  // Set the component to fail to install when requested.
-  WizardController::default_controller()
-      ->demo_setup_controller()
-      ->SetCrOSComponentLoadErrorForTest(
-          component_updater::CrOSComponentManager::Error::INSTALL_FAILURE);
-
-  ProceedThroughDemoPreferencesScreen();
-
-  AcceptTermsAndExpectDemoSetupFailure();
-
-  ExpectErrorMessage(IDS_DEMO_SETUP_COMPONENT_ERROR,
-                     IDS_DEMO_SETUP_RECOVERY_CHECK_NETWORK);
-
-  EXPECT_FALSE(StartupUtils::IsOobeCompleted());
-  EXPECT_FALSE(StartupUtils::IsDeviceRegistered());
-}
-
 IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, OfflineDemoModeUnavailable) {
   SimulateNetworkDisconnected();
 
@@ -958,6 +1034,47 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcUnsupportedTest, DoNotInvokeWithTaps) {
 }
 
 /**
+ * Test case of Demo Mode setup with Growth Framework enabled.
+ */
+class DemoSetupComponentLoadErrorTest : public DemoSetupArcSupportedTest {
+ public:
+  DemoSetupComponentLoadErrorTest() = default;
+  ~DemoSetupComponentLoadErrorTest() override = default;
+
+  void CreatedBrowserMainParts(
+      content::BrowserMainParts* browser_main_parts) override {
+    auto extra_parts = std::make_unique<DemoSetupTestMainExtraParts>(
+        /*growth_campaigns_enabled=*/false,
+        component_updater::CrOSComponentManager::Error::INSTALL_FAILURE);
+    static_cast<ChromeBrowserMainParts*>(browser_main_parts)
+        ->AddParts(std::move(extra_parts));
+    DemoSetupTestBase::CreatedBrowserMainParts(browser_main_parts);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(DemoSetupComponentLoadErrorTest,
+                       OnlineSetupFlowCrosComponentFailure) {
+  // Simulate failure to load demo resources CrOS component.
+  // There is no enrollment attempt, as process fails earlier.
+  enrollment_helper_.ExpectNoEnrollment();
+  SimulateNetworkConnected();
+
+  TriggerDemoModeOnWelcomeScreen();
+
+  UseOnlineModeOnNetworkScreen();
+
+  ProceedThroughDemoPreferencesScreen();
+
+  AcceptTermsAndExpectDemoSetupFailure();
+
+  ExpectErrorMessage(IDS_DEMO_SETUP_COMPONENT_ERROR,
+                     IDS_DEMO_SETUP_RECOVERY_CHECK_NETWORK);
+
+  EXPECT_FALSE(StartupUtils::IsOobeCompleted());
+  EXPECT_FALSE(StartupUtils::IsDeviceRegistered());
+}
+
+/**
  * Test case of device variant region code, e.g. ca.fr etc.
  */
 class DemoSetupVariantCountryCodeRegionTest : public DemoSetupArcSupportedTest {
@@ -1156,7 +1273,137 @@ IN_PROC_BROWSER_TEST_F(DemoSetupQuickStartEnabledTest, QuickStartButton) {
 
   TriggerDemoModeOnWelcomeScreen();
 
-  test::OobeJS().ExpectHiddenPath(kNetworkQuickStartButton);
+  OobeScreenWaiter(NetworkScreenView::kScreenId).Wait();
+
+  // Check that QuickStart button is missing from network_selector
+  auto kQuickStartEntryPointName = l10n_util::GetStringUTF8(
+      IDS_LOGIN_QUICK_START_SETUP_NETWORK_SCREEN_ENTRY_POINT);
+
+  std::string networkElementSelector =
+      test::GetOobeElementPath(
+          {kNetworkId, "networkSelectLogin", "networkSelect"}) +
+      ".getNetworkListItemByNameForTest('" + kQuickStartEntryPointName + "')";
+
+  test::OobeJS().ExpectTrue(networkElementSelector + " == null");
+}
+
+/**
+ * Test case of Demo Mode setup with Growth Framework enabled.
+ */
+class DemoSetupGrowthFrameworkEnabledTest : public DemoSetupArcSupportedTest {
+ public:
+  ~DemoSetupGrowthFrameworkEnabledTest() override = default;
+
+  DemoSetupGrowthFrameworkEnabledTest() {
+    feature_list_.InitWithFeatures(
+        {features::kGrowthCampaignsInDemoMode, ash::features::kGrowthFramework},
+        {});
+  }
+
+  void CreatedBrowserMainParts(
+      content::BrowserMainParts* browser_main_parts) override {
+    auto extra_parts = std::make_unique<DemoSetupTestMainExtraParts>(
+        /*growth_campaigns_enabled=*/true);
+    growth_campaigns_mounted_path_ = extra_parts->GetGrowthCampaignsPath();
+    static_cast<ChromeBrowserMainParts*>(browser_main_parts)
+        ->AddParts(std::move(extra_parts));
+    DemoSetupTestBase::CreatedBrowserMainParts(browser_main_parts);
+  }
+
+  void CreateTestCampaignsFile(base::StringPiece data) {
+    CHECK(base::CreateDirectory(growth_campaigns_mounted_path_));
+
+    base::FilePath campaigns_file(
+        growth_campaigns_mounted_path_.Append(kCampaignsFileName));
+    CHECK(base::WriteFile(campaigns_file, data));
+  }
+
+  void SimulateSetupFlowAndVerifyComplete() {
+    // Simulate successful online setup.
+    enrollment_helper_.ExpectEnrollmentMode(
+        policy::EnrollmentConfig::MODE_ATTESTATION);
+    enrollment_helper_.ExpectAttestationEnrollmentSuccess();
+    SimulateNetworkConnected();
+
+    TriggerDemoModeOnWelcomeScreen();
+
+    UseOnlineModeOnNetworkScreen();
+
+    // Test a couple valid inputs, verify the "continue" button is enabled.
+    SetAndVerifyValidRetailerNameAndStoreNumber("Ret@iler with $ymb0ls",
+                                                "0000");
+    SetAndVerifyValidRetailerNameAndStoreNumber("R", "1");
+    SetAndVerifyValidRetailerNameAndStoreNumber("Retailer", "1234");
+
+    test::OobeJS().ExpectElementText(
+        l10n_util::GetStringUTF8(
+            IDS_OOBE_DEMO_SETUP_PREFERENCES_STORE_NUMBER_INPUT_HELP_TEXT),
+        kDemoPreferencesStoreNumberInputDisplayMessage);
+
+    test::OobeJS().ClickOnPath(kDemoPreferencesNext);
+
+    AcceptTermsAndExpectDemoSetupProgress();
+
+    EXPECT_EQ("admin-us@cros-demo-mode.com",
+              DemoSetupController::GetSubOrganizationEmail());
+    // LoginOrLockScreen is shown at beginning of OOBE, so we need to wait until
+    // it's shown again when Demo setup completes.
+    LoginOrLockScreenVisibleWaiter().WaitEvenIfShown();
+
+    // Verify that pref value has been normalized to uppercase.
+    EXPECT_EQ("retailer", g_browser_process->local_state()->GetString(
+                              prefs::kDemoModeRetailerId));
+    EXPECT_EQ("1234", g_browser_process->local_state()->GetString(
+                          prefs::kDemoModeStoreId));
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+  base::FilePath growth_campaigns_mounted_path_;
+};
+
+IN_PROC_BROWSER_TEST_F(DemoSetupGrowthFrameworkEnabledTest,
+                       OnlineSetupFlowSuccessWithNoCampaignsFile) {
+  SimulateSetupFlowAndVerifyComplete();
+  // Verify that loading growth component failed silently and fetching campaign
+  // returns nullptr.
+  EXPECT_EQ(nullptr, growth::CampaignsManager::Get()->GetCampaignBySlot(
+                         growth::Slot::kDemoModeApp));
+}
+
+IN_PROC_BROWSER_TEST_F(DemoSetupGrowthFrameworkEnabledTest,
+                       OnlineSetupFlowSuccessWithCampaigns) {
+  base::ScopedAllowBlockingForTesting scoped_allow_blocking;
+  CreateTestCampaignsFile(R"({
+      "reactiveCampaigns": {
+        "0": [
+          {
+            "id": 3,
+            "targetings": [],
+            "payload": {
+              "demoModeApp": {
+                "attractionLoop": {
+                  "videoSrcLang1": "/asset/peripherals_lang1.mp4",
+                  "videoSrcLang2": "/asset/peripherals_lang2.mp4"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "proactiveCampaigns": {}
+  })");
+
+  SimulateSetupFlowAndVerifyComplete();
+
+  // Verify that loading growth component and fetching campaign successfully.
+  const auto* campaign = growth::CampaignsManager::Get()->GetCampaignBySlot(
+      growth::Slot::kDemoModeApp);
+  const auto* payload = campaign->FindDictByDottedPath("payload.demoModeApp");
+  ASSERT_EQ("/asset/peripherals_lang1.mp4",
+            *payload->FindStringByDottedPath("attractionLoop.videoSrcLang1"));
+  ASSERT_EQ("/asset/peripherals_lang2.mp4",
+            *payload->FindStringByDottedPath("attractionLoop.videoSrcLang2"));
 }
 
 }  // namespace

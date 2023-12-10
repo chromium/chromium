@@ -21,14 +21,14 @@
 #include "third_party/blink/renderer/core/css/cssom/prepopulated_computed_style_property_map.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
+#include "third_party/blink/renderer/core/layout/block_node.h"
+#include "third_party/blink/renderer/core/layout/constraint_space.h"
 #include "third_party/blink/renderer/core/layout/custom/custom_layout_child.h"
 #include "third_party/blink/renderer/core/layout/custom/custom_layout_constraints.h"
 #include "third_party/blink/renderer/core/layout/custom/custom_layout_edges.h"
 #include "third_party/blink/renderer/core/layout/custom/custom_layout_fragment.h"
 #include "third_party/blink/renderer/core/layout/custom/custom_layout_scope.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_block_node.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_constraint_space.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_layout_input_node.h"
+#include "third_party/blink/renderer/core/layout/layout_input_node.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding_macros.h"
 #include "third_party/blink/renderer/platform/bindings/v8_object_constructor.h"
@@ -38,12 +38,12 @@ namespace blink {
 
 namespace {
 
-void GatherChildren(const NGBlockNode& node,
+void GatherChildren(const BlockNode& node,
                     CustomLayoutScope* custom_layout_scope,
                     HeapVector<Member<CustomLayoutChild>>* children) {
   // TODO(ikilpatrick): Determine if knowing the size of the array ahead of
   // time improves performance in any noticeable way.
-  for (NGLayoutInputNode child = node.FirstChild(); child;
+  for (LayoutInputNode child = node.FirstChild(); child;
        child = child.NextSibling()) {
     if (child.IsOutOfFlowPositioned())
       continue;
@@ -85,9 +85,9 @@ CSSLayoutDefinition::Instance::Instance(CSSLayoutDefinition* definition,
       instance_(definition->GetScriptState()->GetIsolate(), instance) {}
 
 bool CSSLayoutDefinition::Instance::Layout(
-    const NGConstraintSpace& space,
+    const ConstraintSpace& space,
     const Document& document,
-    const NGBlockNode& node,
+    const BlockNode& node,
     const LogicalSize& border_box_size,
     const BoxStrut& border_scrollbar_padding,
     CustomLayoutScope* custom_layout_scope,
@@ -227,9 +227,9 @@ bool CSSLayoutDefinition::Instance::Layout(
 }
 
 bool CSSLayoutDefinition::Instance::IntrinsicSizes(
-    const NGConstraintSpace& space,
+    const ConstraintSpace& space,
     const Document& document,
-    const NGBlockNode& node,
+    const BlockNode& node,
     const LogicalSize& border_box_size,
     const BoxStrut& border_scrollbar_padding,
     const LayoutUnit child_available_block_size,

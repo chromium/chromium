@@ -11,10 +11,6 @@
 
 namespace ash {
 
-namespace quick_unlock {
-class QuickUnlockStorage;
-}
-
 namespace multidevice_setup {
 
 // Concrete AuthTokenValidator implementation.
@@ -24,8 +20,7 @@ namespace multidevice_setup {
 // should be added.
 class AuthTokenValidatorImpl : public AuthTokenValidator, public KeyedService {
  public:
-  AuthTokenValidatorImpl(
-      quick_unlock::QuickUnlockStorage* quick_unlock_storage);
+  AuthTokenValidatorImpl();
 
   AuthTokenValidatorImpl(const AuthTokenValidatorImpl&) = delete;
   AuthTokenValidatorImpl& operator=(const AuthTokenValidatorImpl&) = delete;
@@ -33,13 +28,6 @@ class AuthTokenValidatorImpl : public AuthTokenValidator, public KeyedService {
   ~AuthTokenValidatorImpl() override;
 
   bool IsAuthTokenValid(const std::string& auth_token) override;
-
- private:
-  // KeyedService:
-  void Shutdown() override;
-
-  raw_ptr<quick_unlock::QuickUnlockStorage, ExperimentalAsh>
-      quick_unlock_storage_;
 };
 
 }  // namespace multidevice_setup

@@ -23,6 +23,7 @@
 <translation id="1415402041810619267">URLa moztuta dago</translation>
 <translation id="1426410128494586442">Bai</translation>
 <translation id="1448064542941920355">Gutxitu zooma</translation>
+<translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> webgune}other{<ph name="SITE_COUNT" /> webgune}}</translation>
 <translation id="1510341833810331442">Webguneek ez dute zure gailuan datuak gordetzeko baimenik</translation>
 <translation id="1547123415014299762">Hirugarrenen cookieak onartzen dira</translation>
 <translation id="1568470248891039841">Bisitatzen dituzun webguneek beste webgune batzuetako edukia kapsula dezakete; adibidez, irudiak, iragarkiak eta testua. Halaber, webgune horiek arakatu bitartean zuri buruz gorde duten informazioa erabiltzeko baimena eska dezakete. <ph name="BEGIN_LINK" />Lortu eduki kapsulatuari buruzko informazio gehiago<ph name="END_LINK" /></translation>
@@ -31,6 +32,7 @@
 <translation id="1633720957382884102">Erlazionatutako webguneak</translation>
 <translation id="1644574205037202324">Historia</translation>
 <translation id="1647582022260550163">Ziur baimenak berrezarri nahi dituzula, eta cookieak eta webguneetako datuak garbitu?</translation>
+<translation id="1652197001188145583">Aktibatuta dagoenean, webguneek NFC bidezko gailuak erabiltzeko baimena eska dezakete. Desaktibatuta dagoenean, webguneek ezin dute erabili NFC bidezko gailurik.</translation>
 <translation id="1660204651932907780">Baimendu webguneei soinua erreproduzitzea (gomendatua)</translation>
 <translation id="1677097821151855053">Cookieak eta webguneko beste datu batzuk zu gogoratzeko erabiltzen dira; adibidez, saioa hasteko edo iragarkiak pertsonalizatzeko. Webgune guztietako cookieak kudeatzeko, ikusi <ph name="BEGIN_LINK" />Ezarpenak<ph name="END_LINK" /> atala.</translation>
 <translation id="169515064810179024">Ez utzi webguneei mugimendu-sentsoreak atzitzen</translation>
@@ -39,13 +41,13 @@
 <translation id="1779089405699405702">Irudi-deskodetzailea</translation>
 <translation id="1785415724048343560">Zerbitzurik onena jasotzeko gomendatua</translation>
 <translation id="1818308510395330587"><ph name="APP_NAME" /> aplikazioari errealitate areagotua erabiltzeko baimena emateko, kamera erabiltzeko baimena aktibatu behar duzu <ph name="BEGIN_LINK" />Android-en ezarpenetan<ph name="END_LINK" />.</translation>
-<translation id="187227595286001730">Erlazionatutako webguneek taldean egiten dituzun jarduerak ikus ditzakete</translation>
 <translation id="1887786770086287077">Kokapenerako sarbidea desaktibatuta dago gailuan. Aktiba ezazu <ph name="BEGIN_LINK" />Android-en ezarpenetan<ph name="END_LINK" />.</translation>
 <translation id="1915307458270490472">Amaitu deia</translation>
 <translation id="1919950603503897840">Hautatu kontaktuak</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / <ph name="FILE_SIZE_WITH_UNITS" /></translation>
 <translation id="1979673356880165407">Handitu edo txikitu testua eta irudiak bisitatzen dituzun webgune guztietan</translation>
 <translation id="1984937141057606926">Onartuta, hirugarrenenak izan ezik</translation>
+<translation id="1985247341569771101">Aktibatuta dagoenean, webguneek gailuaren mugimendu-sentsoreak erabil ditzakete. Desaktibatuta dagoenean, webguneek ezin dute erabili mugimendu-sentsorerik.</translation>
 <translation id="1989112275319619282">Arakatu</translation>
 <translation id="1994173015038366702">Webgunearen URLa</translation>
 <translation id="2004697686368036666">Baliteke webgune batzuetako eginbideek ez funtzionatzea</translation>
@@ -61,7 +63,6 @@
 <translation id="2182457891543959921">Eskatu zure baimena webguneei inguruaren 3D-ko mapa bat sortu edo kameraren posizioaren jarraipena egiteko baimena eman aurretik (gomendatua)</translation>
 <translation id="2185965788978862351">Webguneek edo hasierako pantailako aplikazioek gorde dituzten datu eta cookieen <ph name="DATASIZE" /> ezabatuko dira.</translation>
 <translation id="2194856509914051091">Kontuan hartu beharrekoak</translation>
-<translation id="2212565012507486665">Onartu cookieak</translation>
 <translation id="2228071138934252756"><ph name="APP_NAME" /> aplikazioari kamera erabiltzeko baimena emateko, kamera erabiltzeko baimena aktibatu behar duzu <ph name="BEGIN_LINK" />Android-en ezarpenetan<ph name="END_LINK" />.</translation>
 <translation id="2235344399760031203">Hirugarrenen cookieak blokeatu dira</translation>
 <translation id="2238944249568001759">Azken fitxaren arabera iradokitako bilaketak</translation>
@@ -80,6 +81,7 @@
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{Baimena eman zaie hauei: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> eta beste <ph name="NUM_MORE" />}other{Baimena eman zaie hauei: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> eta beste <ph name="NUM_MORE" />}}</translation>
 <translation id="2410940059315936967">Bisitatzen dituzun webguneek beste webgune batzuetako edukia kapsula dezakete; adibidez, irudiak, iragarkiak eta testua. Beste webgune horiek ezarritako cookieei "hirugarrenen cookie" deritze.</translation>
 <translation id="2434158240863470628">Deskargatu da <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
+<translation id="2438120137003069591">Hirugarrenen cookieak aldi baterako erabiltzeko baimena eman diozu webgune honi. Babes txikiagoa izango duzu, baina webgunearen eginbideek espero bezala funtzionatzeko probabilitate handiagoa izango dute. <ph name="BEGIN_LINK" />Bidali oharrak<ph name="END_LINK" /></translation>
 <translation id="244264527810019436">Baliteke ezkutuko modua aktibatuta dagoenean webgune batzuetako eginbideek ez funtzionatzea</translation>
 <translation id="2442870161001914531">Eskatu beti ordenagailuetarako webgunea</translation>
 <translation id="2469312991797799607"><ph name="ORIGIN" /> webgunearen eta haren mendeko webgune guztien datu eta cookie guztiak ezabatuko dira</translation>
@@ -101,10 +103,10 @@
 <translation id="2677748264148917807">Irten</translation>
 <translation id="2678468611080193228">Eman hirugarrenen cookieak erabiltzeko baimena aldi baterako. Babes txikiagoa izango duzu, baina webgunearen eginbideek funtzionatzeko probabilitate handiagoa izango dute.</translation>
 <translation id="2683434792633810741">Ezabatu eta berrezarri nahi duzu?</translation>
-<translation id="2687403674020088961">Blokeatu cookie guztiak (ez da gomendatzen)</translation>
 <translation id="2713106313042589954">Desaktibatu kamera</translation>
 <translation id="2717722538473713889">Helbide elektronikoak</translation>
 <translation id="2750481671343847896">Identitate-zerbitzuek saioa hasteko bidalitako onarpen-mezuak blokea ditzakete webguneek.</translation>
+<translation id="2790501146643349491">Aktibatuta dagoenean, berriki itxitako webguneek datuak bidaltzen eta jasotzen amai dezakete. Desaktibatuta dagoenean, berriki itxitako webguneek ezin dute amaitu datuak bidaltzen eta jasotzen.</translation>
 <translation id="2822354292072154809">Ziur <ph name="CHOSEN_OBJECT_NAME" /> objektuaren webgune-baimen guztiak berrezarri nahi dituzula?</translation>
 <translation id="2850913818900871965">Eskatu mugikorretarako ikuspegia</translation>
 <translation id="2870560284913253234">Webgunea</translation>
@@ -113,6 +115,7 @@
 <translation id="2903493209154104877">Helbideak</translation>
 <translation id="2910701580606108292">Webguneei eduki babestua erreproduzitzeko baimena eman aurretik, eskatu onespena</translation>
 <translation id="2932883381142163287">Eman erabilera okerren berri</translation>
+<translation id="2939338015096024043">Aktibatuta dagoenean, webguneek kameraren posizioaren jarraipena egiteko eta zure inguruari buruzko informazioa lortzeko baimena eska dezakete. Desaktibatuta dagoenean, webguneek ezin dute egin kameraren posizioaren jarraipena, ezta zure inguruari buruzko informazioa lortu ere.</translation>
 <translation id="2968755619301702150">Ziurtagiri-ikustailea</translation>
 <translation id="2979365474350987274">Hirugarrenen cookieek murriztapenak dituzte</translation>
 <translation id="3008272652534848354">Berrezarri baimenak</translation>
@@ -131,6 +134,7 @@
 <translation id="3198916472715691905">Gordetako datuak: <ph name="STORAGE_AMOUNT" /></translation>
 <translation id="321187648315454507"><ph name="APP_NAME" /> aplikazioari jakinarazpenak bidaltzeko baimena emateko, jakinarazpenak bidaltzeko baimena aktibatu behar duzu <ph name="BEGIN_LINK" />Android-en ezarpenetan<ph name="END_LINK" />.</translation>
 <translation id="3227137524299004712">Mikrofonoa</translation>
+<translation id="3242646949159196181">Aktibatuta dagoenean, webguneek soinua erreproduzi dezakete. Desaktibatuta dagoenean, webguneek ezin dute erreproduzitu soinurik.</translation>
 <translation id="3277252321222022663">Eman sentsoreak erabiltzeko baimena webguneei (gomendatua)</translation>
 <translation id="3285500645985761267">Eman taldean egiten dituzun jarduerak ikusteko baimena erlazionatutako webguneei</translation>
 <translation id="3295019059349372795">11. kapitulua: Esmeraldazko Oz hiri harrigarria</translation>
@@ -141,6 +145,7 @@
 <translation id="3386292677130313581">Webguneei zure kokapena erakusteko baimena eman aurretik, eskatu onespena (gomendatua)</translation>
 <translation id="3403537308306431953">%% <ph name="ZOOM_LEVEL" /></translation>
 <translation id="344449859752187052">Hirugarrenen cookieak blokeatuta</translation>
+<translation id="3448554387819310837">Aktibatuta dagoenean, webguneek kamera erabiltzeko baimena eska dezakete. Desaktibatuta dagoenean, webguneek ezin dute erabili kamera.</translation>
 <translation id="3465378418721443318">{DAYS,plural, =1{Bihar blokeatuko ditu cookieak berriro Chrome-k}other{# egun barru blokeatuko ditu cookieak berriro Chrome-k}}</translation>
 <translation id="3521663503435878242"><ph name="DOMAIN" /> domeinuko webguneak</translation>
 <translation id="3538390592868664640">Ez utzi inongo webguneri inguruaren 3D-ko mapa bat sortzen edo kameraren posizioaren jarraipena egiten</translation>
@@ -149,10 +154,10 @@
 <translation id="3586500876634962664">Kamera- eta mikrofono-erabilera</translation>
 <translation id="358794129225322306">Eman hainbat fitxategi automatikoki deskargatzeko baimena webgune bati.</translation>
 <translation id="3594780231884063836">Desaktibatu bideoaren audioa</translation>
-<translation id="3596414637720633074">Blokeatu hirugarrenen cookieak ezkutuko moduan</translation>
 <translation id="3600792891314830896">Desaktibatu soinua erreproduzitzen duten webguneen audioa</translation>
 <translation id="3602290021589620013">Aurrebista</translation>
 <translation id="3628308229821498208">Bilaketa iradokiak</translation>
+<translation id="3697164069658504920">Aktibatuta dagoenean, webguneek USB bidezko gailuak erabiltzeko baimena eska dezakete. Desaktibatuta dagoenean, webguneek ezin dute erabili USB bidezko gailurik.</translation>
 <translation id="3707034683772193706">Bisitatzen dituzun webguneek informazio pixka bat gorde dezakete Chrome-rekin, batez ere robot bat ez zarela egiaztatzeko.</translation>
 <translation id="3721953990244350188">Baztertu eta erakutsi erabilgarri dagoen hurrengo ekintza</translation>
 <translation id="3744111561329211289">Atzeko planoko sinkronizazioa</translation>
@@ -176,9 +181,7 @@
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / ?</translation>
 <translation id="3992684624889376114">Orri honi buruz</translation>
 <translation id="4002066346123236978">Izena</translation>
-<translation id="4008040567710660924">Onartu webgune zehatz baten cookieak.</translation>
 <translation id="4046123991198612571">Hurrengo pista</translation>
-<translation id="4053720452172726777">Pertsonalizatu eta kontrolatu Google Chrome</translation>
 <translation id="4149890623864272035">Ziur gailuko datu guztiak ezabatu nahi dituzula, cookieak barne, eta webgune honetako baimen guztiak berrezarri?</translation>
 <translation id="4149994727733219643">Web-orrien ikuspegi sinplifikatua</translation>
 <translation id="4151930093518524179">Zoom lehenetsia</translation>
@@ -191,6 +194,7 @@
 <translation id="4278390842282768270">Baimenduta</translation>
 <translation id="429312253194641664">Webgune bat multimedia-edukia erreproduzitzen ari da</translation>
 <translation id="42981349822642051">Zabaldu</translation>
+<translation id="4336566011000459927">Gaur mugatuko ditu cookieak berriro Chrome-k</translation>
 <translation id="4338831206024587507"><ph name="DOMAIN" /> domeinuko webgune guztiak</translation>
 <translation id="4402755511846832236">Ez utzi jakiten webguneei gailua noiz erabiltzen ari zaren</translation>
 <translation id="4412992751769744546">Onartu hirugarrenen cookieak</translation>
@@ -209,13 +213,14 @@
 <translation id="4645575059429386691">Gurasoek kudeatuta</translation>
 <translation id="4670064810192446073">Errealitate birtuala</translation>
 <translation id="4751476147751820511">Mugimenduaren eta argiaren sentsoreak</translation>
+<translation id="4755971844837804407">Aktibatuta dagoenean, webguneek edozein iragarki erakusteko aukera dute. Desaktibatuta dagoenean, webguneek ezin dituzte erakutsi iragarki oztopatzaileak edo engainagarriak.</translation>
 <translation id="4779083564647765204">Zooma</translation>
 <translation id="4811450222531576619">Lortu haren iturburuari eta bertan jorratzen den gaiari buruzko informazio gehiago</translation>
 <translation id="4836046166855586901">Eman gailua erabiltzen ari zaren galdetzeko baimena webguneei</translation>
 <translation id="483914009762354899">Sartu domeinu honetako webgune guztiak</translation>
 <translation id="4883854917563148705">Kudeatutako ezarpenak ezin dira berrezarri</translation>
 <translation id="4887024562049524730">Eskatu zure baimena webguneren batek errealitate birtualeko gailuak eta datuak erabili nahi dituenean (gomendatua)</translation>
-<translation id="4955223779495905865">Bisitatzen dituzun webguneek beste webgune batzuetako edukia kapsula dezakete; adibidez, irudiak, iragarkiak eta testua. Webgune horiek cookieak eta bestelako datuak gorde ditzakete zerbitzua pertsonalizatzeko.</translation>
+<translation id="4953688446973710931">Aktibatuta dagoenean, webguneek fitxategi bat baino gehiago automatikoki deskargatzeko baimena eska dezakete. Desaktibatuta dagoenean, webguneek ezin dute deskargatu fitxategi bat baino gehiago automatikoki.</translation>
 <translation id="4962975101802056554">Baliogabetu gailuaren baimen guztiak</translation>
 <translation id="497421865427891073">Aurrera</translation>
 <translation id="4976702386844183910">Azken bisita: <ph name="DATE" /></translation>
@@ -229,6 +234,7 @@
 <translation id="5063480226653192405">Erabilera</translation>
 <translation id="5091013926750941408">Mugikorretarako webgunea</translation>
 <translation id="509133520954049755">Eskatu ordenagailuetarako ikuspegia</translation>
+<translation id="5091663350197390230">Aktibatuta dagoenean, webguneek JavaScript erabil dezakete. Desaktibatuta dagoenean, webguneek ezin dute erabili JavaScript.</translation>
 <translation id="5099358668261120049"><ph name="ORIGIN" /> webguneak edo hari dagokion hasierako pantailako aplikazioak gorde dituen datu eta cookie guztiak ezabatuko dira.</translation>
 <translation id="5100237604440890931">Tolestuta; egin klik zabaltzeko.</translation>
 <translation id="5123685120097942451">Ezkutuko moduko fitxa</translation>
@@ -240,6 +246,7 @@
 <translation id="5246825184569358663">Gailuko datu guztiak ezabatuko dira, cookieak barne, eta <ph name="DOMAIN" /> domeinuko eta haren azpiko webgune guztietako baimen guztiak berrezarriko</translation>
 <translation id="5264323282659631142">Kendu "<ph name="CHIP_LABEL" />"</translation>
 <translation id="528192093759286357">Pantaila osoko ikuspegitik irteteko, arrastatu goitik eta ukitu Atzera botoia.</translation>
+<translation id="5295729974480418933">Aktibatuta dagoenean, webguneek zuri buruz gorde duten informazioa erabiltzeko baimena eska dezakete. Desaktibatuta dagoenean, webguneek ezin dizute eskatu zuri buruz gorde duten informazioa erabiltzeko baimenik.</translation>
 <translation id="5300589172476337783">Erakutsi</translation>
 <translation id="5301954838959518834">Ados, ulertu dut</translation>
 <translation id="5317780077021120954">Gorde</translation>
@@ -250,6 +257,7 @@
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(eta beste bat)}other{(eta beste #)}}</translation>
 <translation id="5403592356182871684">Izenak</translation>
 <translation id="5438097262470833822"><ph name="WEBSITE" /> webgunearen baimenak berrezarriko dira</translation>
+<translation id="5459413148890178711">Aktibatuta dagoenean, webguneek kokapena eska diezazukete. Desaktibatuta dagoenean, webguneek ezin dute ikusi zure kokapena.</translation>
 <translation id="5489227211564503167"><ph name="ELAPSED_TIME" /> igaro dira, eta <ph name="TOTAL_TIME" /> gelditzen</translation>
 <translation id="5502860503640766021">Baimena eman zaio honi: <ph name="PERMISSION_1" />; <ph name="PERMISSION_2" /> blokeatu egin da</translation>
 <translation id="5505264765875738116">Webguneek ezin dute eskatu jakinarazpenak bidaltzea</translation>
@@ -264,12 +272,15 @@
 <translation id="5677928146339483299">Blokeatuta</translation>
 <translation id="5689516760719285838">Kokapena</translation>
 <translation id="5690795753582697420">Kamera erabiltzeko baimena desaktibatuta dago Android-en ezarpenetan</translation>
+<translation id="5691080386278724773"><ph name="SITE" /> webguneak zure informazioa erabil dezake hauek arakatu bitartean:</translation>
 <translation id="5700761515355162635">Hirugarrenen cookieak erabil daitezke</translation>
 <translation id="5706552988683188916"><ph name="WEBSITE" /> webguneko cookieak eta webguneetako bestelako datuak ezabatuko dira</translation>
 <translation id="5723967018671998714">Hirugarrenen cookieak blokeatuta daude ezkutuko moduan</translation>
 <translation id="5740126560802162366">Webguneek gailuan datuak gorde ditzakete</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> blokeatu egin da</translation>
 <translation id="5804241973901381774">Baimenak</translation>
+<translation id="5844448279347999754">Aktibatuta dagoenean, webguneek arbelean gordetako testua eta irudiak ikusteko baimena eska dezakete. Desaktibatuta dagoenean, webguneek ezin dute ikusi arbelean gordetako testu edo irudirik.</translation>
+<translation id="5853982612236235577">Aktibatuta dagoenean, webguneek jakinarazpenak bidaltzeko baimena eska dezakete. Desaktibatuta dagoenean, webguneek ezin dute bidali jakinarazpenik.</translation>
 <translation id="5860033963881614850">Desaktibatuta</translation>
 <translation id="5876056640971328065">Pausatu bideoa</translation>
 <translation id="5884085660368669834">Webgunerako hobespena</translation>
@@ -288,21 +299,24 @@
 <translation id="6042308850641462728">Gehiago</translation>
 <translation id="6064125863973209585">Osatutako deskargak</translation>
 <translation id="6071501408666570960">Baliteke webguneko saioa amaitzea.</translation>
+<translation id="6120483543004435978">Aktibatuta dagoenean, webguneek gailua noiz erabiltzen ari zaren jakiteko baimena eska dezakete. Desaktibatuta dagoenean, webguneek ezin dute jakin noiz erabiltzen ari zaren gailua.</translation>
 <translation id="6165508094623778733">Lortu informazio gehiago</translation>
+<translation id="6171020522141473435">Aktibatuta dagoenean, webguneek Bluetooth bidezko gailuak erabiltzeko baimena eska dezakete. Desaktibatuta dagoenean, webguneek ezin dute erabili Bluetooth bidezko gailurik.</translation>
 <translation id="6177111841848151710">Blokeatuta dago oraingo bilatzailean</translation>
 <translation id="6177128806592000436">Webgune honetarako konexioa ez da guztiz segurua</translation>
 <translation id="6181444274883918285">Gehitu webgune bat salbuespen gisa</translation>
 <translation id="6192792657125177640">Salbuespenak</translation>
+<translation id="6194967801833346599">{DAYS,plural, =1{Bihar blokeatuko ditu cookieak berriro Chrome-k}other{# egun barru blokeatuko dira berriro cookieak}}</translation>
 <translation id="6195163219142236913">Hirugarrenen cookieak mugatuta</translation>
 <translation id="6196640612572343990">Blokeatu hirugarrenen cookieak</translation>
 <translation id="6205314730813004066">Iragarkien pribatutasuna</translation>
 <translation id="6207207788774442484">Ezabatu datuak eta berrezarri baimenak</translation>
-<translation id="6216432067784365534"><ph name="NAME_OF_LIST_ITEM" /> - Aukerak</translation>
 <translation id="6231752747840485235">"<ph name="APP_NAME" />" desinstalatu nahi duzu?</translation>
 <translation id="6262191102408817757">Azken fitxaren arabera</translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> eta <ph name="PERMISSION_2" /> blokeatu egin dira</translation>
 <translation id="6270391203985052864">Webguneek jakinarazpenak bidaltzea eska dezakete</translation>
 <translation id="6295158916970320988">Webgune guztiak</translation>
+<translation id="6304434827459067558"><ph name="SITE" /> webguneak debekatuta dauka zure informazioa erabiltzea hemen:</translation>
 <translation id="6320088164292336938">Dardara</translation>
 <translation id="6344622098450209924">Jarraipenaren aurkako babesa</translation>
 <translation id="6367753977865761591">Blokeatu webgune jakin batean saioa hasteko aukera hirugarrenei.</translation>
@@ -314,6 +328,7 @@
 <translation id="6500423977866688905">Leihoa estua denean, eskatu mugikorretarako ikuspegia</translation>
 <translation id="6527303717912515753">Partekatu</translation>
 <translation id="652937045869844725">Eman hirugarrenen cookieak erabiltzeko baimena. Babes txikiagoa izango duzu, baina webgunearen eginbideek funtzionatzeko probabilitate handiagoa izango dute.</translation>
+<translation id="6530703012083415527">Aktibatuta dagoenean, webguneek leiho gainerakorrak eta birbideratzeak erabil ditzakete. Desaktibatuta dagoenean, webguneek ezin dute erabili leiho gainerakorrik, ezta birbideratzerik ere.</translation>
 <translation id="6545864417968258051">Bluetooth bidezko bilaketa</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> eta beste <ph name="NUM_MORE" /> blokeatu egin dira}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> eta beste <ph name="NUM_MORE" /> blokeatu egin dira}}</translation>
 <translation id="6554732001434021288">Duela <ph name="NUM_DAYS" /> egun bisitatu zenuen azkenengoz</translation>
@@ -345,6 +360,7 @@
 <translation id="7053983685419859001">Blokeatu</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 hautatuta}other{# hautatuta}}</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> hautatu dira. Pantailaren goialdean daude aukera erabilgarriak.</translation>
+<translation id="7137403271056944713">MIDI gailua kontrolatu/berriro programatu</translation>
 <translation id="7141896414559753902">Ez utzi webguneei leiho gainerakorrak eta birbideratzeak erakusten (gomendatua)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> kB</translation>
 <translation id="7180611975245234373">Freskatu</translation>
@@ -356,6 +372,7 @@
 <translation id="7243308994586599757">Pantailaren behealdean agertzen dira dauden aukerak</translation>
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> hautatu dira</translation>
 <translation id="7260727271532453612">Baimena eman zaie hauei: <ph name="PERMISSION_1" /> eta <ph name="PERMISSION_2" /></translation>
+<translation id="7276071417425470385">Aktibatuta dagoenean, webguneek errealitate birtualeko gailuak erabiltzeko baimena eska dezakete. Desaktibatuta dagoenean, webguneek ezin dute erabili errealitate birtualeko gailurik.</translation>
 <translation id="7284451015630589124">Arakatzen duzun bitartean hirugarrenen cookieen bidez zure jarraipena egiteko aukera kendu diezu webguneei. Joan ezarpenetara <ph name="BEGIN_LINK" />jarraipenaren aurkako babesa kudeatzeko<ph name="END_LINK" />.</translation>
 <translation id="7302486331832100261">Jakinarazpenak blokeatu ohi dituzu. Baimena emateko, sakatu "Xehetasunak".</translation>
 <translation id="7366415735885268578">Gehitu webgune bat</translation>
@@ -365,7 +382,9 @@
 <translation id="7423098979219808738">Galdetu lehenbizi</translation>
 <translation id="7423538860840206698">Blokeatuta dago arbeleko edukia irakurtzeko aukera</translation>
 <translation id="7425915948813553151">Webguneetarako gai iluna</translation>
+<translation id="7474522811371247902">Hirugarrenen cookieak erabiltzea galarazten die Chrome-k webgune gehienei. Webgune honetan, ordea, hirugarrenen cookieak erabiltzeko baimena eman da, beharrezkoak baitira oinarrizko zerbitzuak emateko.\n\nJoan ezarpenetara<ph name="BEGIN_LINK" />jarraipenaren aurkako babesa kudeatzeko<ph name="END_LINK" />.</translation>
 <translation id="7521387064766892559">JavaScript</translation>
+<translation id="7547989957535180761">Aktibatuta dagoenean, webguneek saioa hasteko eskaera-mezuak erakusteko aukera dute. Desaktibatuta dagoenean, webguneek ezin dute erakutsi saioa hasteko eskaera-mezurik.</translation>
 <translation id="7554752735887601236">Webgune bat mikrofonoa erabiltzen ari da</translation>
 <translation id="7561196759112975576">Beti</translation>
 <translation id="757524316907819857">Ez utzi webguneei eduki babestua erreproduzitzen</translation>
@@ -381,6 +400,7 @@
 <translation id="780301667611848630">Ez, eskerrik asko</translation>
 <translation id="7804248752222191302">Webgune bat kamera erabiltzen ari da</translation>
 <translation id="7807060072011926525">Google-k eman du</translation>
+<translation id="7822573154188733812">Arakatzen duzun bitartean zure jarraipena egiteko hirugarrenen cookieak erabiltzea eragozten die Chrome-k webguneei. Joan ezarpenetara <ph name="BEGIN_LINK" />jarraipenaren aurkako babesa kudeatzeko<ph name="END_LINK" />.</translation>
 <translation id="7835852323729233924">Multimedia-edukia erreproduzitzen</translation>
 <translation id="783819812427904514">Aktibatu bideoaren audioa</translation>
 <translation id="7846076177841592234">Utzi hautapena bertan behera</translation>
@@ -389,6 +409,7 @@
 <translation id="7940722705963108451">Gogorarazi</translation>
 <translation id="7974024493641668069">{COUNT,plural, =1{<ph name="FPS_OWNER" /> domeinuaren webgune taldeko <ph name="FPS_MEMBERS_COUNT" /> webgunek taldean egiten dituzun jarduerak ikus ditzake}other{<ph name="FPS_OWNER" /> domeinuaren webgune taldeko <ph name="FPS_MEMBERS_COUNT" /> webgunek taldean egiten dituzun jarduerak ikus ditzakete}}</translation>
 <translation id="7986741934819883144">Hautatu kontaktu bat</translation>
+<translation id="7990211076305263060">Aktibatuta dagoenean, webguneek mikrofonoa erabiltzeko baimena eska dezakete. Desaktibatuta dagoenean, webguneek ezin dute erabili mikrofonoa.</translation>
 <translation id="8007176423574883786">Desaktibatu egin da gailu honetan</translation>
 <translation id="802154636333426148">Ezin izan da deskargatu</translation>
 <translation id="8042586301629853791">Ordenatzeko irizpidea:</translation>
@@ -397,10 +418,11 @@
 <translation id="8077120325605624147">Bisitatzen dituzun webgune guztiek edozein iragarki erakusteko aukera dute</translation>
 <translation id="8087000398470557479">Eduki hau <ph name="DOMAIN_NAME" /> domeinukoa da eta Google-k eskaintzen du.</translation>
 <translation id="8088603949666785339"><ph name="BANNER_TITLE" /> banda-mezuko aukera gehiago</translation>
+<translation id="8113501330600751161">{DAYS,plural, =1{Bihar mugatuko ditu cookieak berriro Chrome-k}other{# egun barru mugatuko ditu cookieak berriro Chrome-k}}</translation>
 <translation id="8116925261070264013">Audioa desaktibatuta</translation>
+<translation id="8117244575099414087">Aktibatuta dagoenean, webguneek gailuaren sentsoreak erabil ditzakete. Desaktibatuta dagoenean, webguneek ezin dute erabili sentsorerik.</translation>
 <translation id="813082847718468539">Ikusi webgunearen informazioa</translation>
 <translation id="8131740175452115882">Berretsi</translation>
-<translation id="8154912474061769055">Baliteke webgune askotako eginbideek ez funtzionatzea</translation>
 <translation id="8168435359814927499">Edukia</translation>
 <translation id="8186479265534291036">Ez al du funtzionatzen webguneak? Hirugarrenen cookieak blokeatuta daude.</translation>
 <translation id="8197286292360124385">Baimena eman zaio honi: <ph name="PERMISSION_1" /></translation>
@@ -414,7 +436,6 @@
 <translation id="8324158725704657629">Ez galdetu berriro</translation>
 <translation id="8362795839483915693">Bisitatzen dituzun webguneak handitu edo txikitu ahal dituzu</translation>
 <translation id="8372893542064058268">Baimendu atzeko planoko sinkronizazioa webgune zehatz batean.</translation>
-<translation id="8376384591331888629">Webgune honetako hirugarrenen cookieak barne</translation>
 <translation id="83792324527827022">Webgune bat kamera eta mikrofonoa erabiltzen ari da</translation>
 <translation id="8380167699614421159">Webgune honek iragarki oztopatzaile edo iruzurrezkoak erakusten ditu</translation>
 <translation id="8394832520002899662">Sakatu hau webgunera itzultzeko</translation>
@@ -435,12 +456,14 @@
 <translation id="8564613706851221529">{COUNT,plural, =1{<ph name="FPS_OWNER" /> domeinuko <ph name="FPS_MEMBERS_COUNT" /> webgunek cookieak erabiltzeko baimena du}other{<ph name="FPS_OWNER" /> domeinuko <ph name="FPS_MEMBERS_COUNT" /> webgunek cookieak erabiltzeko baimena dute}}</translation>
 <translation id="857943718398505171">Baimenduta (gomendatua)</translation>
 <translation id="8609465669617005112">Eraman gora</translation>
+<translation id="8617611086246832542">Aktibatuta dagoenean, webguneen ordenagailuetarako ikuspegia erakusten da. Desaktibatuta dagoenean, webguneen mugikorretarako ikuspegia erakusten da.</translation>
 <translation id="8649036394979866943">Arakatzen duzun bitartean hirugarrenen cookieen bidez zure jarraipena egitea galarazten die Chrome-k webgune gehienei. Joan ezarpenetara<ph name="BEGIN_LINK" />jarraipenaren aurkako babesa kudeatzeko<ph name="END_LINK" />.</translation>
 <translation id="8676374126336081632">Garbitu idatzitakoa</translation>
 <translation id="8681886425883659911">Iragarki oztopatzaileak edo engainagarriak erakusten dituzten webguneak blokeatzen dira</translation>
 <translation id="868929229000858085">Bilatu kontaktuak</translation>
 <translation id="8712637175834984815">Ados</translation>
 <translation id="8719283222052720129">Aktibatu <ph name="APP_NAME" /> aplikaziorako baimena <ph name="BEGIN_LINK" />Android-en ezarpenetan<ph name="END_LINK" />.</translation>
+<translation id="8721719390026067591">Aktibatuta dagoenean, webguneek Bluetooth bidezko gailuak bilatzeko baimena eska dezakete. Desaktibatuta dagoenean, webguneek ezin dute bilatu Bluetooth bidezko gailurik.</translation>
 <translation id="8725066075913043281">Saiatu berriro</translation>
 <translation id="8730621377337864115">Eginda</translation>
 <translation id="8736193154595564524">{NUM_SELECTED,plural, =1{Webgune batek onartzen ditu cookieak}other{# webgunek onartzen dituzte cookieak}}</translation>
@@ -450,8 +473,8 @@
 <translation id="8803526663383843427">Aktibatuta dagoenean</translation>
 <translation id="8805385115381080995">Bizkorrago arakatuko duzu, probabilitate gutxiago egongo baita webguneek benetako pertsona bat zarela egiaztatzea eskatzeko</translation>
 <translation id="8816026460808729765">Ez utzi webguneei sentsoreak erabiltzen</translation>
-<translation id="8823559166155093873">Blokeatu cookieak</translation>
 <translation id="8847988622838149491">USB</translation>
+<translation id="8874790741333031443">Eman hirugarrenen cookieak erabiltzeko baimena aldi baterako. Babes txikiagoa izango duzu arakatzean, baina webgunearen eginbideek espero bezala funtzionatzeko probabilitate handiagoa izango dute.</translation>
 <translation id="8889294078294184559">Arakatzen jarraitu ahala, beste webgune batzuek Chrome-ren informazioa ikus dezakete, eta aurrez bisitatu duzun webgune batek benetako pertsonatzat hartu zaituela egiaztatu.</translation>
 <translation id="8899807382908246773">Iragarki oztopatzaileak</translation>
 <translation id="8903921497873541725">Handitu</translation>
@@ -459,10 +482,10 @@
 <translation id="8926666909099850184">NFC aukera desaktibatuta dago gailu honetan. Aktiba ezazu <ph name="BEGIN_LINK" />Android-en ezarpenetan<ph name="END_LINK" />.</translation>
 <translation id="8928445016601307354">Ez utzi webguneei NFC darabilten gailuetako informazioa ikusten eta aldatzen</translation>
 <translation id="8944485226638699751">Mugatuak</translation>
-<translation id="8958424370300090006">Blokeatu webgune jakin bateko cookieak.</translation>
 <translation id="8959122750345127698">Ezin da joan <ph name="URL" /> orrira</translation>
 <translation id="8986362086234534611">Ahaztu</translation>
 <translation id="8990043154272859344">Webgune guztietan amaituko da saioa</translation>
+<translation id="9002538116239926534">Aktibatuta dagoenean, webguneek gailuan datuak gorde ditzakete. Desaktibatuta dagoenean, webguneek ezin dute gorde daturik gailuan.</translation>
 <translation id="9011903857143958461"><ph name="SITE_NAME" /> webguneari baimena eman zaio</translation>
 <translation id="9019902583201351841">Gurasoek kudeatuta</translation>
 <translation id="9039697262778250930">Baliteke webgune horietako saioa amaitzea</translation>

@@ -8,18 +8,16 @@
 #include "ash/accessibility/magnifier/magnifier_utils.h"
 #include "ash/accessibility/scoped_a11y_override_window_setter.h"
 #include "ash/shell.h"
-#include "ash/wm/desks/cros_next_desk_icon_button.h"
+#include "ash/wm/desks/desk_icon_button.h"
 #include "ash/wm/desks/desk_mini_view.h"
 #include "ash/wm/desks/desk_name_view.h"
 #include "ash/wm/desks/desk_preview_view.h"
 #include "ash/wm/desks/desks_controller.h"
-#include "ash/wm/desks/expanded_desks_bar_button.h"
 #include "ash/wm/desks/legacy_desk_bar_view.h"
 #include "ash/wm/desks/templates/saved_desk_grid_view.h"
 #include "ash/wm/desks/templates/saved_desk_item_view.h"
 #include "ash/wm/desks/templates/saved_desk_library_view.h"
 #include "ash/wm/desks/templates/saved_desk_name_view.h"
-#include "ash/wm/desks/zero_state_button.h"
 #include "ash/wm/overview/overview_focusable_view.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_item.h"
@@ -43,60 +41,24 @@ void AddDesksBarTraversableViews(
     return;
   }
 
-  const bool is_zero_state = bar_view->IsZeroState();
-
   // The desk items are always traversable from left to right, even in RTL
   // languages.
-  if (chromeos::features::IsJellyrollEnabled()) {
-    if (is_zero_state) {
-      out_traversable_views.push_back(bar_view->default_desk_button());
-    } else {
-      for (auto* mini_view : bar_view->mini_views()) {
-        out_traversable_views.push_back(mini_view->desk_preview());
-        out_traversable_views.push_back(mini_view->desk_name_view());
-      }
+  if (bar_view->IsZeroState()) {
+    out_traversable_views.push_back(bar_view->default_desk_button());
+  } else {
+    for (auto* mini_view : bar_view->mini_views()) {
+      out_traversable_views.push_back(mini_view->desk_preview());
+      out_traversable_views.push_back(mini_view->desk_name_view());
     }
-    auto* new_desk_button = bar_view->new_desk_button();
-    if (new_desk_button->GetEnabled()) {
-      out_traversable_views.push_back(new_desk_button);
-    }
-
-    if (auto* library_button = bar_view->library_button()) {
-      if (library_button->GetVisible()) {
-        out_traversable_views.push_back(library_button);
-      }
-    }
-    return;
   }
-
-  if (is_zero_state) {
-    out_traversable_views.push_back(bar_view->zero_state_default_desk_button());
-    out_traversable_views.push_back(bar_view->zero_state_new_desk_button());
-    // Library button is only present if the desk templates feature or the
-    // save and recall feature is enabled.
-    if (auto* library_button = bar_view->zero_state_library_button()) {
-      if (library_button->GetVisible()) {
-        out_traversable_views.push_back(library_button);
-      }
-    }
-    return;
-  }
-
-  for (auto* mini_view : bar_view->mini_views()) {
-    out_traversable_views.push_back(mini_view->desk_preview());
-    out_traversable_views.push_back(mini_view->desk_name_view());
-  }
-
-  auto* new_desk_button =
-      bar_view->expanded_state_new_desk_button()->GetInnerButton();
+  auto* new_desk_button = bar_view->new_desk_button();
   if (new_desk_button->GetEnabled()) {
     out_traversable_views.push_back(new_desk_button);
   }
 
-  if (auto* library_button = bar_view->expanded_state_library_button()) {
-    auto* inner_library_button = library_button->GetInnerButton();
-    if (library_button->GetVisible() && inner_library_button->GetEnabled()) {
-      out_traversable_views.push_back(inner_library_button);
+  if (auto* library_button = bar_view->library_button()) {
+    if (library_button->GetVisible()) {
+      out_traversable_views.push_back(library_button);
     }
   }
 }
@@ -253,19 +215,7 @@ bool OverviewFocusCycler::MaybeActivateFocusedViewOnOverviewExit() {
 }
 
 OverviewItemBase* OverviewFocusCycler::GetFocusedItem() const {
-  if (!focused_view_) {
-    return nullptr;
-  }
-
-  for (auto& grid : overview_session_->grid_list()) {
-    for (auto& item : grid->window_list()) {
-      if (focused_view_->GetView() == item->GetFocusableView()->GetView()) {
-        return item.get();
-      }
-    }
-  }
-
-  return nullptr;
+  return focused_view_ ? focused_view_->GetOverviewItem() : nullptr;
 }
 
 void OverviewFocusCycler::ResetFocusedView() {
@@ -305,8 +255,10 @@ std::vector<OverviewFocusableView*> OverviewFocusCycler::GetTraversableViews()
         }
       }
     } else {
-      for (auto& item : grid->window_list()) {
-        traversable_views.push_back(item->GetFocusableView());
+      for (const auto& item : grid->window_list()) {
+        for (auto* focusable_view : item->GetFocusableViews()) {
+          traversable_views.push_back(focusable_view);
+        }
       }
     }
 

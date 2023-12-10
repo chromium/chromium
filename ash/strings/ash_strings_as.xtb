@@ -66,7 +66,6 @@
 <translation id="1225748608451425081">এটা জ্ঞাত সমস্যাৰ বাবে আপোনাৰ Chromebookটো লক কৰা হৈছে। আপুনি এই সময়ৰ পাছত ছাইন ইন কৰিব পাৰিব: <ph name="TIME_LEFT" />।</translation>
 <translation id="1226877728704622336">নিষ্ক্ৰিয় ডেস্ক</translation>
 <translation id="1229194443904279055">বাছনি কৰা বন্ধ কৰক</translation>
-<translation id="1233979878541157665">ফাইলৰ নামৰ সলনি "সূৰ্যাস্ত" অথবা "গছ" সন্ধান কৰি চাওক। আপুনি সন্ধানৰ বাৰত প্ৰতিচ্ছবিৰ সন্ধান অফ কৰিব পাৰে।</translation>
 <translation id="1235458158152011030">চিনাকী নেটৱর্ক</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" />ৰ সৈতে সংযোগ কৰা হ’ল।</translation>
 <translation id="1240638468526743569">এটা এপ্‌</translation>
@@ -93,7 +92,6 @@
 <translation id="1293556467332435079">Files</translation>
 <translation id="1293699935367580298">Esc</translation>
 <translation id="1294046132466831888">অন্বেষণ কৰক খোলক</translation>
-<translation id="1294929383540927798">বন্ধ স্ক্ৰীনৰ জাননী ছেটিংসমূহ সলনি কৰক</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1306549533752902673">চুপাৰিছ কৰা এপ্‌</translation>
 <translation id="1311294419381837540">আপুনি এটা টেব কাষ্ট কৰি আছে। আপুনি যিকোনো সময়তে কাষ্ট কৰা পজ কৰিব অথবা বন্ধ কৰিব পাৰে।</translation>
@@ -131,8 +129,8 @@
 <translation id="146902737843070955">আপোনাৰ প্ৰশাসকে এই সালসলনিটোৰ অনুৰোধ কৰিছে</translation>
 <translation id="1469148162491666137">এইটোৱে <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> তথা কেমেৰা আৰু মাইক্ৰ’ফ’নৰ অনুমতি থকা আটাইবোৰ এপ্‌ আৰু ৱেবছাইটৰ বাবে এক্সেছৰ অনুমতি দিয়ে। আপুনি ৱেবপৃষ্ঠাখন ৰিফ্ৰেশ্ব কৰিব লাগিব পাৰে বা এপ্‌টো পুনৰাৰম্ভ কৰিব লাগিব পাৰে।</translation>
 <translation id="147310119694673958">ফ’নৰ বেটাৰী <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="1475340220124222168">হ’টস্প’ট ট’গল কৰক। হ’টস্প’ট অন হৈ আছে, ১ টা ডিভাইচ সংযুক্ত হৈ আছে।</translation>
 <translation id="1479909375538722835">সাধ্য সুবিধাৰ উপঙি থকা মেনু</translation>
-<translation id="1480845547124508962"><ph name="CURRENT_TIME" />, কেলেণ্ডাৰ ভিউটো খুলিবলৈ এণ্টাৰ কীটো টিপক</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1486307154719069822">শ্ৰুতলিপিৰ সহায়ত আপুনি আপোনাৰ কণ্ঠ ব্যৱহাৰ কৰি টাইপ কৰিব পাৰে। আপুনি পাঠ টাইপ কৰা ক্ষেত্ৰত থাকোঁতে শ্ৰুতলিপি কী টিপক অথবা স্ক্ৰীনৰ তলত মাইক্ৰ’ফ'ন চিহ্নটো বাছনি কৰক। আপোনাৰ শ্ৰুতলিপিৰ ভাষা <ph name="LANGUAGE" /> ছেট কৰা হৈছে। কথন প্ৰক্ৰিয়াকৰণৰ বাবে Googleলৈ পঠিওৱা হয়। আপুনি ছেটিং &gt; সাধ্য সুবিধাত যিকোনো সময়তে শ্ৰুতলিপিৰ ভাষা সলনি কৰিব পাৰে।</translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" />ক <ph name="SECOND_ITEM_TITLE" />ৰ সৈতে সলনাসলনি কৰা হৈছে</translation>
@@ -213,15 +211,6 @@
 <translation id="1796561540704213354">আপুনি চোৱা আৰু খোলা পৃষ্ঠাসমূহকে ধৰি ৱেবছাইটসমূহ</translation>
 <translation id="181103072419391116">ছিগনেলৰ ক্ষমতা <ph name="SIGNAL_STRENGTH" />, আপোনাৰ প্ৰশাসকে পৰিচালনা কৰে</translation>
 <translation id="1816896987747843206">এইটোৱে কেমেৰাৰ অনুমতি থকা আটাইবোৰ এপ্‌ আৰু ৱেবছাইটৰ বাবে কেমেৰা এক্সেছ কৰাৰ অনুমতি দিয়ে</translation>
-<translation id="1823280932251546115">স্থিতিৰ ট্ৰে’, সময় <ph name="TIME" />,
-        <ph name="BATTERY" />
-        <ph name="CHANNEL" />
-        <ph name="NETWORK" />,
-        <ph name="PRIVACY" />,
-        <ph name="MANAGED" />
-        <ph name="NOTIFICATION" />,
-        <ph name="IME" />
-        <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">ইথাৰনেট: <ph name="ADDRESS" /></translation>
 <translation id="1824922790784036530">অৱস্থানৰ এক্সেছ অন কৰক</translation>
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" />ক আন-পিন কৰা হৈছে</translation>
@@ -304,6 +293,7 @@
 <translation id="2224075387478458881">সুৰক্ষিত সমল দৃশ্যমান হৈ থকাৰ সময়ত স্ক্ৰীন ৰেকৰ্ডিঙৰ অনুমতি দিয়া নহয়</translation>
 <translation id="2227179592712503583">পৰামৰ্শ আঁতৰাওক</translation>
 <translation id="2248634276911611268">নতুন টেবত লিংক খোলক আৰু এই নতুন টেবটোলৈ সলনি কৰক</translation>
+<translation id="2253808149208613283">এই ডিভাইচটো কাষ্টমাইজ কৰিবলৈ এপ্‌টো ইনষ্টল কৰক</translation>
 <translation id="225680501294068881">ডিভাইচসমূহৰ বাবে স্কেন কৰি থকা হৈছে...</translation>
 <translation id="2257486738914982088"><ph name="FILENAME" /> ডাউনল’ড কৰি থাকোঁতে কিবা ভুল হৈছে</translation>
 <translation id="2258734398699965611">পৰামৰ্শিত ফাইল</translation>
@@ -353,7 +343,6 @@
 <translation id="243878895369688216">কালি খুলিছিল</translation>
 <translation id="2440978926514840421">GIF ৰেকৰ্ড কৰা হ’ল</translation>
 <translation id="2441427462554639370">ষ্ট’ৰেজৰ ঠাই একেবাৰে কমি যোৱাৰ কাৰণে ৰেকৰ্ডিং সমাপ্ত হৈছে</translation>
-<translation id="2448312741937722512">প্রকাৰ</translation>
 <translation id="2449089818483227734">বেটাৰী কম আছে</translation>
 <translation id="2450205753526923158">স্ক্ৰীনশ্বট ম'ড</translation>
 <translation id="2455994958736234930">ঠিকনাৰ বাৰত www. আৰু .com যোগ দিয়ক, তাৰ পাছত ৱেবছাইট খোলক</translation>
@@ -458,6 +447,7 @@
 <translation id="2914580577416829331">স্ক্ৰীন কেপচাৰ</translation>
 <translation id="2924416280450782352">বস্তু দেখুৱাব নোৱাৰি। এই পেনেলটো পুনৰ খুলি চাওক।</translation>
 <translation id="2931572158271115754">এই টু-ডু লিষ্টত একো নাই।</translation>
+<translation id="2935225303485967257">প্ৰ’ফাইল পৰিচালনা কৰক</translation>
 <translation id="2941112035454246133">কম</translation>
 <translation id="2942350706960889382">ড'ক কৰা বিৱৰ্ধক</translation>
 <translation id="2942516765047364088">শ্বেল্ফৰ স্থান</translation>
@@ -635,6 +625,7 @@
 <translation id="3593646411856133110">খোলা এপ্‌সমূহ চাবলৈ ওপৰলৈ ছোৱাইপ কৰি ধৰি ৰাখক</translation>
 <translation id="3595596368722241419">বেটাৰী চাৰ্জ সম্পূৰ্ণ হৈছে</translation>
 <translation id="3596012367874587041">এপৰ ছেটিং</translation>
+<translation id="3598452309062311481">সন্ধান+h</translation>
 <translation id="3600061223661453002">অফ কৰক</translation>
 <translation id="3604801046548457007"><ph name="DESK_TITILE" /> ডেস্কখন সৃষ্টি কৰা হ’ল</translation>
 <translation id="3606978283550408104">ব্ৰেইল ডিছপ্লে’ সংযোগ কৰা হৈছে।</translation>
@@ -661,6 +652,7 @@
 <translation id="3659667652322717492">আপুনি পাছত যিকোনো সময়তে মাইকৰ আচৰণ সলনি কৰিব পাৰে।</translation>
 <translation id="3659814201068740063">প্ৰায় <ph name="TIME_LEFT" /> বাকী আছে (<ph name="PERCENTAGE" />%)।
 আপোনাৰ ডিভাইচটো পাৱাৰৰ সৈতে সংযোগ কৰক।</translation>
+<translation id="3660860940251915011"><ph name="FEATURE_NAME" />ৰ উচ্চ দৃশ্যমানতা ট’গল কৰক</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" />এ পৰিচালনা কৰা ব্যৱহাৰকাৰী</translation>
 <translation id="3666266999138159418">আপোনাৰ উপঙি থকা ৱিণ্ড’ লুকুৱাবলৈ ছোৱাইপ কৰক</translation>
 <translation id="367531336287639526">ঠিকনাৰ বাৰৰ বাওঁফালে থকা প্ৰথম চিহ্নটো বাছনি কৰক</translation>
@@ -669,6 +661,7 @@
 <translation id="36813544980941320">আপোনাৰ ফ'ন আৰু <ph name="DEVICE_NAME" />ৰ মাজত ৱাই-ফাই নেটৱৰ্কটো শ্বেয়াৰ কৰা হ'ব</translation>
 <translation id="3682279812299376603"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> তাৰ পাছত <ph name="KEY_TWO" /></translation>
 <translation id="3694122362646626770">ৱেবছাইট</translation>
+<translation id="3697991387880191195">স্ক্ৰীনশ্বটৰ শ্বৰ্টকাটত টিপক</translation>
 <translation id="3702809606464356667">বর্তমানৰ ডেস্কখনৰ পৰা ৱিণ্ড’সমূহ দেখুৱাই থকা হৈছে, আটাইবোৰ ডেস্কৰ পৰা ৱিণ্ড' দেখুৱাবলৈ আপ এৰ' কীটো টিপক</translation>
 <translation id="3702846122927433391">নাইজেৰিয়াৰ জনসংখ্যা</translation>
 <translation id="3705722231355495246">-</translation>
@@ -765,7 +758,6 @@
 <translation id="412298498316631026">ৱিণ্ড’</translation>
 <translation id="4123259114412175274">আপোনাৰ Chromebook আনলক কৰিবলৈ আপোনাৰ ফ’নৰ ব্লুটুথ অন হৈ থকাটো নিশ্চিত কৰক</translation>
 <translation id="4125970834901680537">টেবলেট ম’ডত এপৰ সমল ষ্ট্ৰীম কৰিব নোৱাৰি। লেপটপ ম’ডত পুনৰ চেষ্টা কৰক।</translation>
-<translation id="4129129681837227511">আপোনাৰ লক স্ক্রীণত জাননীসমূহ চাবলৈ ছেটিংটো সলনি কৰিবলৈ আনলক কৰক</translation>
 <translation id="4131973331381812765">তাপমান: <ph name="TEMPERATURE" />°চে - বৰ্তমান গতিবেগ: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" />গিগাহাৰ্টজ</translation>
 <translation id="4132502210362661715">আপোনাক কামবোৰ সম্পন্ন কৰাত সহায় কৰিবলৈ আপোনাৰ Chromebookত বিল্ট-ইন এপ্‌ থাকে। লঞ্চাৰত আপোনাৰ এপ্‌সমূহ বিচাৰি উলিয়াওক।</translation>
 <translation id="4136724716305260864">সূৰ্যোদয় পৰ্যন্ত অন কৰি ৰাখক</translation>
@@ -785,6 +777,7 @@
 <translation id="4190780880566297084">আপোনাৰ ফ’নৰ শেহতীয়া ফট’, মিডিয়া আৰু এপ্‌সমূহ চোৱাৰ সুবিধা ছেট আপ কৰাটো বাতিল কৰক</translation>
 <translation id="4192112279662688596">অথবা</translation>
 <translation id="4193857202545160520">ক্লিক আৰু কীসমূহ দেখুৱাওক</translation>
+<translation id="4193969623755915875">Explore এপত "<ph name="NEW_SHORTCUT" />"ৰ জৰিয়তে "সহায়" খোলক।</translation>
 <translation id="4195579532193195633">সাম্প্ৰতিক সংস্কৰণ <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="4195814663415092787">আপুনি পূর্বতে এৰাৰ পৰা পুনৰ আৰম্ভ কৰক</translation>
 <translation id="4195877955194704651">স্বয়ংক্ৰিয়ভাৱে ক্লিকৰ বুটাম</translation>
@@ -831,6 +824,7 @@
 <translation id="4324840740119394760">এইটোৱে <ph name="APP_NAME" /> আৰু কেমেৰাৰ অনুমতি থকা আটাইবোৰ এপ্‌ আৰু ৱেবছাইটৰ বাবে কেমেৰা এক্সেছ কৰাৰ অনুমতি দিয়ে</translation>
 <translation id="4333628967105022692">একাধিক ব্যৱহাৰকাৰী ছাইন ইন হৈ থকাৰ সময়ত Lacrosএ কাম নকৰে।</translation>
 <translation id="4338109981321384717">বিবৰ্ধক কাঁচ</translation>
+<translation id="4351244548802238354">ডায়ল'গ বন্ধ কৰক</translation>
 <translation id="4356872429719185452">হ’টস্প’টৰ সবিশেষ দেখুৱাওক। হ’টস্প’ট অন কৰি থকা হৈছে।</translation>
 <translation id="4364101114148522660"><ph name="DURATION" />  ৰেকৰ্ড কৰি থকা হৈছে</translation>
 <translation id="4371348193907997655">কাষ্ট ছেটিংসমূহ</translation>
@@ -844,6 +838,7 @@
 <translation id="4389184120735010762">আপুনি ড'ক কৰা বিৱৰ্ধকৰ বাবে কীব'ৰ্ডৰ শ্বৰ্টকাট টিপিছে। আপুনি এইটো অন কৰিব খোজেনে?</translation>
 <translation id="439598569299422042">পজ কৰা আছে, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">স্ক্ৰীনকাষ্ট ছেভ কৰিব পৰা নগ’ল</translation>
+<translation id="4403371424034411727"><ph name="PERIPHERAL_NAME" /> সংযুক্ত হৈ আছে আৰু ই ব্যৱহাৰ কৰিবলৈ সাজু। আপুনি ছেটিঙত নিজৰ মাউছটো কাষ্টমাইজ কৰিব পাৰে।</translation>
 <translation id="4405151984121254935">সংযোজিত পৰিধীয় ডিভাইচৰ প্ৰকাৰটো সমৰ্থিত নহয়</translation>
 <translation id="4406883609789734330">লাইভ কেপশ্বন</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> অফ কৰা আছে।</translation>
@@ -890,6 +885,7 @@
 <translation id="4577990005084629481">পূৰ্বদৰ্শন দেখুৱাওক</translation>
 <translation id="4578906031062871102">ছেটিঙৰ মেনু খোলা হ'ল</translation>
 <translation id="458210817642223147">GIF ৰেকৰ্ড কৰক</translation>
+<translation id="4582666543382004902">ৱাইফাই ব্যৱহাৰ কৰিবলৈ হ’টস্প’ট অফ কৰা হৈছে। হ’টস্প’ট ব্যৱহাৰ কৰিবলৈ ৱাইফাই অফ কৰক।</translation>
 <translation id="4585337515783392668">কোনো অজ্ঞাত প্ৰাপকলৈ কাষ্ট কৰাটো বন্ধ কৰক</translation>
 <translation id="4596144739579517758">গাঢ় ৰঙৰ ম’ড অফ আছে</translation>
 <translation id="4611292653554630842">লগ ইন কৰক</translation>
@@ -964,6 +960,7 @@
 <translation id="4889868803215848840">পৰামৰ্শ উন্নত কৰিবলৈ ঐচ্ছিক মতামত প্ৰদান কৰক:</translation>
 <translation id="4890187583552566966">আপোনাৰ প্ৰশাসকে Google Assistant অক্ষম কৰিছে।</translation>
 <translation id="4890408602550914571">আপোনাৰ ফ’নটো ওচৰত থকাটো আৰু ব্লুটুথ অন হৈ থকাটো নিশ্চিত কৰক।</translation>
+<translation id="4892981359753171125">মুখাৱয়বৰ জৰিয়তে নিয়ন্ত্ৰণ</translation>
 <translation id="4895488851634969361">বেটাৰী চ্চার্জ সম্পূর্ণ হৈছে।</translation>
 <translation id="490375751687810070">উলম্ব</translation>
 <translation id="490788395437447240"><ph name="BATTERY_PERCENTAGE" />% বেটাৰী</translation>
@@ -990,6 +987,7 @@
         <ph name="NOTIFICATION_1" />,
         <ph name="NOTIFICATION_2" />,
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
+<translation id="4981175556418720939">সংশোধন কৰাৰ সময় <ph name="DATE_AND_TIME" /></translation>
 <translation id="4987738733603015246">ডেস্ক ১৬</translation>
 <translation id="4989163558385430922">সকলো চাওক</translation>
 <translation id="5003993274120026347">পৰৱৰ্তী বাক্য</translation>
@@ -1024,7 +1022,6 @@
 <translation id="5117590920725113268">পৰৱৰ্তী মাহ দেখুৱাওক</translation>
 <translation id="5121628974188116412">পৃষ্ঠাটোৰ একেবাৰে তললৈ যাওক</translation>
 <translation id="5136175204352732067">বিভিন্ন কীব’র্ড সংযোগ কৰা হৈছে</translation>
-<translation id="5145331109270917438">তাৰিখ সংশোধন কৰা হৈছে</translation>
 <translation id="5147567197700016471">আনলক কৰা হ’ল</translation>
 <translation id="5150070631291639005">গোপনীয়তাৰ ছেটিংসমূহ</translation>
 <translation id="5155897006997040331">পঢ়াৰ গতিবেগ</translation>
@@ -1096,7 +1093,7 @@
 <translation id="5393156353051693207">আপোনাৰ এপ্ পুনৰ সজাবলৈ যিকোনো ঠাইতে স্পৰ্শ কৰি ধৰি ৰাখক</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> <ph name="IN_PLACE_APP" />ৰ ওপৰত আছে, ফ'ল্ডাৰ সৃষ্টি কৰিবলৈ এৰি দিয়ক।</translation>
 <translation id="5397578532367286026">পৰিচালকে(<ph name="MANAGER_EMAIL" />) chrome.comত এই ব্যৱহাৰকাৰীৰ ডিভাইচৰ ব্যৱহাৰ আৰু ইতিহাস পর্যালোচনা কৰিব পাৰে।</translation>
-<translation id="5400461572260843123">দ্ৰুত ছেটিংসমূহ, জাননী কেন্দ্ৰ এক্সেছ কৰিবলৈ search + left টিপক।</translation>
+<translation id="540713187982329711">হ’টস্প’ট ট’গল কৰক। হ’টস্প’ট অন হৈ আছে, কোনো ডিভাইচ সংযুক্ত হৈ থকা নাই।</translation>
 <translation id="5413656666631274079">ছেটিঙৰ পৃষ্ঠা</translation>
 <translation id="5414198321558177633">প্ৰ’ফাইলৰ সূচী ৰিফ্ৰেশ্ব কৰি থকা হৈছে। এই কামত কেইমিনিটমান সময় লাগিব পাৰে।</translation>
 <translation id="5426063383988017631">ছেটিঙৰ মেনু বন্ধ আছে</translation>
@@ -1143,7 +1140,6 @@
 <translation id="558849140439112033">কেপচাৰ কৰিবৰ বাবে এটা অংশ বাছনি কৰিবলৈ টানি আনি এৰক</translation>
 <translation id="5590609058453685222">নাজ মিউট কৰাৰ সুবিধাটো অন আছে। আপুনি মিউট হৈ থাকোঁতে কথা ক’লে জাননী পাব।</translation>
 <translation id="5596627076506792578">অধিক বিকল্প</translation>
-<translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" />, <ph name="DATE" /></translation>
 <translation id="5599242528220103262">কীব’ৰ্ডৰ শ্বৰ্টকাটটো অফ হৈ আছে</translation>
 <translation id="5600837773213129531">কথিত প্ৰতিক্ৰিয়া অক্ষম কৰিবলৈ Ctrl + Alt + Z দবাওক।</translation>
 <translation id="5601503069213153581">পিন</translation>
@@ -1153,7 +1149,7 @@
 <translation id="5620979661744857819">এইটোৱে <ph name="APP_NAME" /> তথা কেমেৰা আৰু মাইক্ৰ’ফ’নৰ অনুমতি থকা আটাইবোৰ এপ্‌ আৰু ৱেবছাইটৰ বাবে এক্সেছৰ অনুমতি দিয়ে। আপুনি ৱেবপৃষ্ঠাখন ৰিফ্ৰেশ্ব কৰিব লাগিব পাৰে বা এপ্‌টো পুনৰাৰম্ভ কৰিব লাগিব পাৰে।</translation>
 <translation id="5625955975703555628">এলটিই+</translation>
 <translation id="5627392655516693966">আপোনাৰ পাছৱৰ্ডটো সত্যাপন কৰিব পৰা নগ‘ল। পুনৰ চেষ্টা কৰক।</translation>
-<translation id="5646376287012673985">অৱস্থান</translation>
+<translation id="5632485077360054581">কেনেকৈ কৰে মোক দেখুৱাওক</translation>
 <translation id="5648021990716966815">মাইকৰ জেক</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" />এ আপোনাৰ মনোযোগ বিচাৰি অনুৰোধ কৰিছে।</translation>
 <translation id="5662075790140998213">ডেস্ক ১০</translation>
@@ -1188,15 +1184,18 @@
 <translation id="576341972084747908">বিপজ্জনক <ph name="FILENAME" /> ডাউনল’ড কৰক</translation>
 <translation id="576453121877257266">ৰাতিৰ লাইট অন কৰা আছে।</translation>
 <translation id="5764569119212455782">অন্তিমবাৰ বাছনি কৰা ভাষাটোলৈ সলনি কৰক</translation>
+<translation id="5767730327234918501">আপোনাৰ প্ৰশাসকে হ’টস্প’ট অফ কৰিছে।</translation>
 <translation id="5769373120130404283">গোপনীয়তাৰ স্ক্ৰীন</translation>
 <translation id="5773950591113557721">এইটোৱে <ph name="APP_NAME" /> তথা কেমেৰা আৰু মাইক্ৰ’ফ’নৰ অনুমতি থকা আটাইবোৰ এপ্‌ আৰু ৱেবছাইটৰ বাবে এক্সেছৰ অনুমতি দিয়ে</translation>
 <translation id="5774295353725270860">Files এপ্‌টো খোলক</translation>
+<translation id="5775936059231769503">হ’টস্প’ট ট’গল কৰক। হ’টস্প’ট অফ হৈ আছে।</translation>
 <translation id="5777841717266010279">স্ক্ৰীন শ্বেয়াৰ কৰাটো বন্ধ কৰিবনে?</translation>
 <translation id="5779721926447984944">পিন কৰা ফাইল</translation>
 <translation id="5785221443435874078">এই চুপাৰিছটো আঁতৰাওক</translation>
 <translation id="5788127256798019331">Play ফাইল</translation>
 <translation id="5788535737706478207">বন্ধ কৰা অন্তিমটো টেব অথবা ৱিণ্ড’ পুনৰ খোলক</translation>
 <translation id="5790085346892983794">সফল হৈছে</translation>
+<translation id="5802516411616338943">ক্ষিপ্ৰ ছেটিং খোলক</translation>
 <translation id="5804651031882187592">"ছিম লক কৰক" ছেটিংটো অফ কৰক</translation>
 <translation id="5805809050170488595"><ph name="NETWORK_NAME" /> সক্ৰিয় কৰিবলৈ টিপক</translation>
 <translation id="5823239091726045201">ৱেবত Google কার্য</translation>
@@ -1222,6 +1221,7 @@
 <translation id="5901630391730855834">হালধীয়া</translation>
 <translation id="5911231045062997865">বৰ্তমান Lacros ৱিণ্ড’সমূহ সমৰ্থন নকৰে। অন্য এপ্ ছেভ কৰা হ’ব।</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
+<translation id="5916646100036936191">নতুন জাননী, মুঠ <ph name="NOTIFICATION_COUNT" /> খন</translation>
 <translation id="5916664084637901428">অন আছে</translation>
 <translation id="5920710855273935292">মাইক মিউট কৰা আছে।</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> অন কৰা আছে।</translation>
@@ -1299,6 +1299,7 @@
 <translation id="6199775032047436064">বৰ্তমানৰ পৃষ্ঠাখন পুনৰ ল’ড কৰক</translation>
 <translation id="6200515304866777730">এপ্‌টোৰ দ্বাৰা সমৰ্থিত নহয়</translation>
 <translation id="6210042900243040400">আগতে <ph name="EMAIL" />ত ছেভ হৈ থকা <ph name="NAME" /> সংযোগ কৰক</translation>
+<translation id="6212097153736801627">আপোনাৰ <ph name="PERIPHERAL_NAME" /> কাষ্টমাইজ কৰক</translation>
 <translation id="6213808132343683860">আংশিক স্ক্ৰীনশ্বট লওক অথবা স্ক্ৰীন ৰেকৰ্ডিং কৰক</translation>
 <translation id="6220928844947387476">আপুনি এতিয়া একে সময়তে নিজক আৰু আপোনাৰ স্ক্ৰীনখন ৰেকৰ্ড কৰিব পাৰে</translation>
 <translation id="622484624075952240">Down</translation>
@@ -1343,7 +1344,6 @@
 <translation id="643593192654616063">মুঠ <ph name="STORAGE_TOTAL_SIZE" />ৰ <ph name="STORAGE_IN_USE_SIZE" /> ষ্ট'ৰেজ ব্যৱহাৰ কৰা হৈছে</translation>
 <translation id="6445835306623867477"><ph name="RECEIVER_NAME" />ত <ph name="ROUTE_TITLE" /></translation>
 <translation id="6445915701151710649">চিপিইউ</translation>
-<translation id="6446225358675593408">সমল অনুসৰি আপোনাৰ প্ৰতিচ্ছবিসমূহ বিচাৰক</translation>
 <translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> টা অনুষ্ঠান</translation>
 <translation id="6449483711453944360">বর্তমান Linux এপ্ আৰু ইনক'গনিট' ৱিণ্ড'সমূহ সমর্থন নকৰে</translation>
 <translation id="6450245544201845082">ৰাইট-ক্লিক শ্বৰ্টকাটটো বৰ্তমান অফ হৈ আছে</translation>
@@ -1449,6 +1449,7 @@
 <translation id="6827049576281411231">অনুষ্ঠানৰ পেনেল বন্ধ কৰক</translation>
 <translation id="6831561626108366035"><ph name="ACTIVE_STATE" /> <ph name="DESK_NAME" /> বুটামলৈ যাওক।</translation>
 <translation id="6836499262298959512">বিপজ্জনক ফাইল</translation>
+<translation id="6837621009301897464">এটা স্ক্ৰীনশ্বট ল’বলৈ ইয়াত টিপক</translation>
 <translation id="6852052252232534364">সক্ৰিয় কৰিব টিপক</translation>
 <translation id="6855029042976311970">এইমাত্ৰ সম্পাদনা কৰিছে</translation>
 <translation id="6856708615407876657">সন্ধানৰ ফলাফল শিতানসমূহ ট’গল কৰক</translation>
@@ -1506,6 +1507,7 @@
 <translation id="7068360136237591149">ফাইলসমূহ খোলক</translation>
 <translation id="7076293881109082629">ছাইন ইন কৰি থকা হৈছে</translation>
 <translation id="7076878155205969899">ধ্বনি মিউট কৰক</translation>
+<translation id="7084678090004350185">হ’টস্প’ট ট’গল কৰক। হ’টস্প’ট অন হৈ আছে, <ph name="DEVICECOUNT" /> টা ডিভাইচ সংযুক্ত হৈ আছে।</translation>
 <translation id="7086931198345821656">এই আপডে’টটোৰ বাবে আপোনাৰ <ph name="DEVICE_TYPE" />টো পাৱাৰৱাশ্ব কৰাৰ আৱশ্যক। আটাইবোৰ ডেটা মচা হ’ব। শেহতীয়া <ph name="SYSTEM_APP_NAME" /> আপডে’ট সম্পৰ্কে অধিক জানক।</translation>
 <translation id="7088960765736518739">ছুইচ্চ এক্সেছ</translation>
 <translation id="709015856939120012">পৃষ্ঠাটোত জুম ইন কৰক</translation>
@@ -1525,6 +1527,7 @@
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358"><ph name="TIMEOUT_SECONDS" />ত আগৰ ৰিজলিউশ্বনটোলৈ উভতি যোৱা হ’ব</translation>
+<translation id="7173114856073700355">ছেটিংসমূহ খোলক</translation>
 <translation id="7180611975245234373">ৰিফ্ৰেশ্ব কৰক</translation>
 <translation id="7188494361780961876">স্ক্ৰীনখনৰ ওপৰৰ বাওঁফালৰ কোণটোলৈ মেনুখন নিয়া হৈছে।</translation>
 <translation id="7189412385142492784">শুক্ৰ গ্ৰহলৈ কিমান দূৰ</translation>
@@ -1538,13 +1541,13 @@
 <translation id="726276584504105859">বিভাজিত স্ক্ৰীন ব্যৱহাৰ কৰিবলৈ ইয়ালৈ টানি আনি এৰক</translation>
 <translation id="7262906531272962081">ৰিমাইণ্ডাৰ সৃষ্টি কৰক</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + বেকস্পেচ</translation>
+<translation id="7285232777292757180">স্ক্ৰীনশ্বট ল’বলৈ ক্ষিপ্ৰ ছেটিঙত থকা স্ক্ৰীন কেপচাৰ কৰাৰ সঁজুলিটো ব্যৱহাৰ কৰক</translation>
 <translation id="7302889331339392448">লাইভ কেপশ্বন অফ আছে।</translation>
 <translation id="7303365578352795231">অন্য এটা ডিভাইচত উত্তৰ দি থকা হৈছে।</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7312210124139670355">আপোনাৰ প্ৰশাসকে আপোনাৰ ই-ছিম ৰিছেট কৰি আছে। এই কামটোৰ বাবে কেইমিনিটমান সময় লাগিব পাৰে।</translation>
 <translation id="7313193732017069507">কেমেৰা বিস্তাৰ কৰক</translation>
 <translation id="7316261577130609484">নতুন কাম যোগ দিয়ক</translation>
-<translation id="7321889295239318128">অধিক জানিবলৈ Shift আৰু Tab টিপক</translation>
 <translation id="7330397557116570022">শ্ৰুতলিপিৰ সুবিধা ব্যৱহাৰ কৰিবলৈ এটা পাঠৰ ক্ষেত্ৰলৈ যাওক</translation>
 <translation id="7331646370422660166">alt + তলমুৱা কাঁড়</translation>
 <translation id="7340731148882810149">স্বয়ংক্ৰিয় ক্লিকৰ মেনু</translation>
@@ -1691,6 +1694,13 @@
 <translation id="7893503627044934815">এই ফাইলটো দেখুওৱাটো নিবিচাৰোঁ</translation>
 <translation id="7895348134893321514">ট’ট</translation>
 <translation id="7897375687985782769">আপুনি স্ক্রীণখন ঘূৰাবলৈ কীব'ৰ্ডৰ শ্বৰ্টকাটত টিপিলে। আপুনি স্ক্রীণখন ঘূৰাব বিচাৰেনে?</translation>
+<translation id="7897626842031123113">স্থিতিৰ ট্ৰে’, সময় <ph name="TIME" />,
+        <ph name="BATTERY" />
+        <ph name="CHANNEL" />
+        <ph name="NETWORK" />,
+        <ph name="MANAGED" />
+        <ph name="IME" />
+        <ph name="LOCALE" /></translation>
 <translation id="7901190436359881020">ৱিণ্ড’সমূহ সলনাসলনি কৰক</translation>
 <translation id="7901405293566323524">ফ’ন হাব</translation>
 <translation id="7902625623987030061">ফিংগাৰপ্ৰিণ্ট ছেন্সৰটো স্পৰ্শ কৰক</translation>
@@ -1724,7 +1734,6 @@
 <translation id="8001755249288974029">কাৰ্ছৰৰ পৰা শাৰীৰ আৰম্ভণিলৈকে পাঠ বাছনি কৰক</translation>
 <translation id="8004512796067398576">বৃদ্ধি</translation>
 <translation id="8026334261755873520">ব্ৰাউজিং ডেটা মচক</translation>
-<translation id="8028993641010258682">আকাৰ</translation>
 <translation id="8029247720646289474">হটস্পটৰ সৈতে সংযোগ কৰিব পৰা নগ’ল</translation>
 <translation id="8029629653277878342">অধিক সুৰক্ষাৰ বাবে পিন অথবা পাছৱর্ডৰ আৱশ্যক</translation>
 <translation id="8030169304546394654">সংযোগ বিচ্ছিন্ন কৰা হ'ল</translation>
@@ -1764,7 +1773,6 @@
 <translation id="8155628902202578800"><ph name="USER_EMAIL_ADDRESS" />ৰ বাবে তথ্যৰ ডায়লগ খোলক</translation>
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" /> ব্যৱহাৰ কৰি থকা হৈছে</translation>
 <translation id="8185090165691050712">লক ম’ডৰ আকাৰ সলনি কৰাৰ মেনু অন/অফ কৰক</translation>
-<translation id="8192202700944119416">জাননীবোৰ লুকুৱাই ৰখা হৈছে।</translation>
 <translation id="8198456017687137612">টেব কাষ্ট কৰি থকা হৈছে</translation>
 <translation id="8200772114523450471">পুনৰ আৰম্ভ কৰক</translation>
 <translation id="8203795194971602413">সোঁফালে ক্লিক</translation>
@@ -1809,7 +1817,6 @@
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (কে’ছ)</translation>
 <translation id="8420205633584771378">এই পৰামৰ্শটো আঁতৰাবনে?</translation>
 <translation id="8421270167862077762">এই ডিভাইচটোত <ph name="UNAVAILABLE_APPS" /> নাই।</translation>
-<translation id="8425213833346101688">সলনি কৰক</translation>
 <translation id="8426708595819210923">শুভ সন্ধ্যা <ph name="GIVEN_NAME" />,</translation>
 <translation id="8428213095426709021">ছেটিংসমূহ</translation>
 <translation id="8428810263141909179"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="DELIMITER" /><ph name="KEY_ONE" />ৰ পৰা <ph name="KEY_TWO" />লৈ</translation>
@@ -1828,7 +1835,6 @@
 <translation id="8487699605742506766">হটস্পট</translation>
 <translation id="8491237443345908933">লিংকটো নতুন টেবত খোলক</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" />এ <ph name="SPECIFIED_RESOLUTION" /> সমৰ্থন নকৰে। ৰিজ’লিউশ্বনটো <ph name="FALLBACK_RESOLUTION" />লৈ সলনি কৰা হৈছে। সালসলনিসমূহ ৰাখিবলৈ নিশ্চিত কৰকত ক্লিক কৰক। পূৰ্বৱৰ্তী ছেটিংসমূহ <ph name="TIMEOUT_SECONDS" />ত পুনঃস্থাপন কৰা হ’ব।</translation>
-<translation id="8496402167048257517">Nearby Shareৰ ছেটিং দেখুৱাওক</translation>
 <translation id="8507563469658346379">সকলো, <ph name="REMAINING_TIME" /></translation>
 <translation id="8511123073331775246">নতুন ডেস্ক সৃষ্টি কৰক</translation>
 <translation id="85123341071060231">আপোনাৰ Chromebookৰ ব্লুটুথ অফ হৈ আছে। আপোনাৰ Chromebook আনলক কৰিবলৈ পাছৱৰ্ড দিয়ক।</translation>
@@ -1919,6 +1925,7 @@
 <translation id="888982883502837004">আপোনাৰ ডিভাইচটোৰ বাবে ফাৰ্মৱেৰ আপডে’ট উপলব্ধ। পৰ্যালোচনা আৰু আপডে’ট কৰিবলৈ ক্লিক কৰক।</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> স্থায়ীভাৱে মচা হ’ব</translation>
 <translation id="889790758758811533">বেটাৰীৰ চাৰ্জ <ph name="PERCENTAGE" />% বাকী আছে (প্ৰায় <ph name="TIME_LEFT" /> বাকী আছে)। আপোনাৰ ডিভাইচটো পাৱাৰৰ সৈতে সংযোগ কৰক।</translation>
+<translation id="8897940060812808966"><ph name="PERIPHERAL_NAME" /> সংযুক্ত হৈ আছে আৰু ই ব্যৱহাৰ কৰিবলৈ সাজু। আপুনি ছেটিঙত নিজৰ গ্ৰাফিক টেবলেটটো কাষ্টমাইজ কৰিব পাৰে।</translation>
 <translation id="88986195241502842">পেজ ডাউন</translation>
 <translation id="8905919797434099235">(শিৰোনাম নাই)</translation>
 <translation id="890616557918890486">উৎস সলনি কৰক</translation>
@@ -1955,7 +1962,6 @@
 <translation id="9070640332319875144">Assistantৰ ছেটিংসমূহ</translation>
 <translation id="9072519059834302790">বেটাৰী খালী হ’বলৈ <ph name="TIME_LEFT" /> বাকী আছে।</translation>
 <translation id="9074739597929991885">ব্লুটুথ</translation>
-<translation id="9077404278023321866">টেমপ্লে’ট</translation>
 <translation id="9077515519330855811">মিডিয়াৰ নিয়ন্ত্ৰণ, এতিয়া <ph name="MEDIA_TITLE" /> প্লে’ হৈ আছে</translation>
 <translation id="9079731690316798640">ৱাই-ফাই: <ph name="ADDRESS" /></translation>
 <translation id="9080073830732419341">কেমেৰা ওপৰৰ বাওঁফালৰ কোণলৈ স্নেপ কৰা হৈছে</translation>

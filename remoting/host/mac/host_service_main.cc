@@ -7,6 +7,7 @@
 
 #include <iostream>
 #include <string>
+#include <string_view>
 
 #include "base/at_exit.h"
 #include "base/command_line.h"
@@ -266,7 +267,7 @@ bool HostService::Enable() {
     HOST_LOG << "Message from chmod: " << output;
   }
 
-  if (!base::WriteFile(enabled_file_, base::StringPiece())) {
+  if (!base::WriteFile(enabled_file_, std::string_view())) {
     LOG(ERROR) << "Failed to write enabled file";
     return false;
   }

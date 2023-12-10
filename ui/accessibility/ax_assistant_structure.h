@@ -35,6 +35,9 @@ struct AssistantNode {
   // Geometry of the view in pixels, unclipped.
   gfx::Rect unclipped_rect;
 
+  // Geometry of the view in absolute pixels relative to the page, unclipped.
+  gfx::Rect page_absolute_rect;
+
   // Text of the view.
   std::u16string text;
 

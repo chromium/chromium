@@ -6,6 +6,10 @@
       img {
         width: 100%;
       }
+
+      #safetyHubModule {
+        padding: 0 var(--cr-section-padding);
+      }
     </style>
     <picture>
       <source
@@ -16,12 +20,15 @@
     </picture>
     <template is="dom-if" if="[[showUnusedSitePermissions_]]">
       <template is="dom-if" if="[[enableSafetyHub_]]">
+        <div class="cr-row first">
+          <h2>$i18n{safetyHub}</h2>
+        </div>
         <settings-safety-hub-module id="safetyHubModule"
             header="[[unusedSitePermissionsHeader_]]"
             subheader="[[unusedSitePermissionsSubheader_]]"
             header-icon="cr:security" header-icon-color="blue">
           <cr-button id="safetyHubButton" slot="button-container"
-              on-click="onSafetyHubButtonClick_">
+              class="action-button" on-click="onSafetyHubButtonClick_">
             $i18n{safetyHubEntryPointButton}
           </cr-button>
         </settings-safety-hub-module>

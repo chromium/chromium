@@ -1,0 +1,67 @@
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+
+This file describes the enumerations referenced by entries in histograms.xml for
+this directory. Some enums may instead be listed in the central enums.xml file
+at src/tools/metrics/histograms/enums.xml when multiple files use them.
+
+For best practices on writing enumerations descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md#Enum-Histograms
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<!-- Enum types -->
+
+<enums>
+
+<enum name="BiquadFilterType">
+  <int value="0" label="lowpass"/>
+  <int value="1" label="highpass"/>
+  <int value="2" label="bandpass"/>
+  <int value="3" label="lowshelf"/>
+  <int value="4" label="highshelf"/>
+  <int value="5" label="peaking"/>
+  <int value="6" label="notch"/>
+  <int value="7" label="allpass"/>
+</enum>
+
+<enum name="PanningModelType">
+  <int value="0" label="equalpower"/>
+  <int value="1" label="HRTF"/>
+</enum>
+
+<enum name="WebAudioAutoplayStatus">
+  <int value="0" label="The AudioContext failed to autoplay"/>
+  <int value="1"
+      label="(Deprecated) Failed to autoplay but start() called on user
+             gesture"/>
+  <int value="2" label="The AudioContext successfully autoplayed"/>
+</enum>
+
+<enum name="WebAudioAutoplayUnlockType">
+  <int value="0" label="AudioContext construction"/>
+  <int value="1" label="AudioContext resume()"/>
+  <int value="2" label="Source Node start()"/>
+</enum>
+
+<enum name="WebAudioContextOperation">
+  <int value="0" label="AudioContext created"/>
+  <int value="1" label="AudioContext closed via the close() method"/>
+  <int value="2" label="AudioContext deleted"/>
+</enum>
+
+</enums>
+
+</histogram-configuration>

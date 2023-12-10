@@ -21,6 +21,8 @@ component("vr_cardboard") {
     "cardboard_sdk.h",
     "cardboard_sdk_impl.cc",
     "cardboard_sdk_impl.h",
+    "mock_cardboard_sdk.cc",
+    "mock_cardboard_sdk.h",
     "scoped_cardboard_objects.h",
   ]
 

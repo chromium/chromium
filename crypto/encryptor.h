@@ -12,11 +12,11 @@
 #include <string>
 #include <string_view>
 
+#include <optional>
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "crypto/crypto_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace crypto {
 
@@ -86,12 +86,12 @@ class CRYPTO_EXPORT Encryptor {
   // On success, these helper functions return the number of bytes written to
   // |output|.
   size_t MaxOutput(bool do_encrypt, size_t length);
-  absl::optional<size_t> Crypt(bool do_encrypt,
-                               base::span<const uint8_t> input,
-                               base::span<uint8_t> output);
-  absl::optional<size_t> CryptCTR(bool do_encrypt,
-                                  base::span<const uint8_t> input,
-                                  base::span<uint8_t> output);
+  std::optional<size_t> Crypt(bool do_encrypt,
+                              base::span<const uint8_t> input,
+                              base::span<uint8_t> output);
+  std::optional<size_t> CryptCTR(bool do_encrypt,
+                                 base::span<const uint8_t> input,
+                                 base::span<uint8_t> output);
 
   // In CBC mode, the IV passed to Init(). In CTR mode, the counter value passed
   // to SetCounter().

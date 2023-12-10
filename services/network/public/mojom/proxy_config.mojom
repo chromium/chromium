@@ -10,10 +10,12 @@ struct ProxyBypassRules {
   array<string> rules;
 };
 
-// A list of proxies, each in the format of a single semi-colon delimited entry
+// A list of proxy chains. Each chain is represented by a list of its proxy
+// servers, each server in the format of a single semi-colon delimited entry
 // in the output of a PAC script (e.g., "PROXY foo.com", "DIRECT").
 struct ProxyList {
-  array<string> proxies;
+  // TODO(crbug.com/1491092): Update to be list of ProxyChain elements.
+  array<array<string>> proxies;
 };
 
 // This corresponds to net::ProxyConfig::ProxyRules::Type.
@@ -48,4 +50,15 @@ struct ProxyConfig {
   mojo_base.mojom.BigString pac_url;
   bool pac_mandatory;
   ProxyRules proxy_rules;
+};
+
+// The policy used for bypassing requests that are eligible for IP Protection.
+// Even if a domain is part of the masked domain list, the bypass policy can
+// be used to bypass certain network requests from IP Protection.
+enum IpProtectionProxyBypassPolicy {
+  // No bypass policy.
+  kNone = 0,
+  // Request to domains that are first party to the top level frame are
+  // bypassed.
+  kFirstPartyToTopLevelFrame = 1,
 };

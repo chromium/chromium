@@ -155,9 +155,7 @@ NaClBrowserDelegate* NaClBrowser::GetDelegate() {
   return g_browser_delegate;
 }
 
-void NaClBrowser::ClearAndDeleteDelegateForTest() {
-  DCHECK(
-      !content::BrowserThread::IsThreadInitialized(content::BrowserThread::UI));
+void NaClBrowser::ClearAndDeleteDelegate() {
   DCHECK(g_browser_delegate);
   delete g_browser_delegate;
   g_browser_delegate = nullptr;

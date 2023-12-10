@@ -40,7 +40,7 @@ TEST(SmartDimMlAgentUtilTest, ParseInvalidMetadata) {
   base::flat_map<std::string, int> inputs;
   base::flat_map<std::string, int> outputs;
 
-  const absl::optional<base::Value> root = base::JSONReader::Read(json_string);
+  const std::optional<base::Value> root = base::JSONReader::Read(json_string);
   EXPECT_FALSE(ParseMetaInfoFromJsonObject(root.value(), &metrics_model_name,
                                            &threshold, &expected_feature_size,
                                            &inputs, &outputs));
@@ -62,7 +62,7 @@ TEST(SmartDimMlAgentUtilTest, ParseValidMetadata) {
   base::flat_map<std::string, int> inputs;
   base::flat_map<std::string, int> outputs;
 
-  const absl::optional<base::Value> root = base::JSONReader::Read(json_string);
+  const std::optional<base::Value> root = base::JSONReader::Read(json_string);
   EXPECT_TRUE(ParseMetaInfoFromJsonObject(root.value(), &metrics_model_name,
                                           &threshold, &expected_feature_size,
                                           &inputs, &outputs));

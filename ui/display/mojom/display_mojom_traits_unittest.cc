@@ -12,15 +12,18 @@
 #include "ui/display/display.h"
 #include "ui/display/display_layout.h"
 #include "ui/display/mojom/display.mojom.h"
+#include "ui/display/mojom/display_color_management.mojom.h"
+#include "ui/display/mojom/display_color_management_mojom_traits.h"
 #include "ui/display/mojom/display_layout_mojom_traits.h"
 #include "ui/display/mojom/display_mode_mojom_traits.h"
 #include "ui/display/mojom/display_mojom_traits.h"
 #include "ui/display/mojom/display_snapshot_mojom_traits.h"
+#include "ui/display/mojom/gamma_ramp_rgb_entry.mojom.h"
 #include "ui/display/mojom/gamma_ramp_rgb_entry_mojom_traits.h"
+#include "ui/display/types/display_color_management.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/display/types/display_mode.h"
 #include "ui/display/types/display_snapshot.h"
-#include "ui/display/types/gamma_ramp_rgb_entry.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/mojom/color_space_mojom_traits.h"
@@ -91,8 +94,6 @@ void CheckDisplaySnapShotMojoEqual(const DisplaySnapshot& input,
   EXPECT_EQ(input.privacy_screen_state(), output.privacy_screen_state());
   EXPECT_EQ(input.has_color_correction_matrix(),
             output.has_color_correction_matrix());
-  EXPECT_EQ(input.color_correction_in_linear_space(),
-            output.color_correction_in_linear_space());
   EXPECT_EQ(input.display_name(), output.display_name());
   EXPECT_EQ(input.sys_path(), output.sys_path());
   EXPECT_EQ(input.product_code(), output.product_code());
@@ -256,14 +257,83 @@ TEST(DisplayStructTraitsTest, DisplayLayoutThreeExtended) {
 }
 
 TEST(DisplayStructTraitsTest, BasicGammaRampRGBEntry) {
-  const GammaRampRGBEntry input{259, 81, 16};
-
+  GammaRampRGBEntry input{259, 81, 16};
   GammaRampRGBEntry output;
   SerializeAndDeserialize<mojom::GammaRampRGBEntry>(input, &output);
 
   EXPECT_EQ(input.r, output.r);
   EXPECT_EQ(input.g, output.g);
   EXPECT_EQ(input.b, output.b);
+
+  GammaCurve curve_input({input});
+  GammaCurve curve_output;
+  SerializeAndDeserialize<mojom::GammaCurve>(curve_input, &curve_output);
+
+  curve_input.Evaluate(0.5f, input.r, input.g, input.b);
+  curve_output.Evaluate(0.5f, output.r, output.g, output.b);
+
+  EXPECT_EQ(input.r, output.r);
+  EXPECT_EQ(input.g, output.g);
+  EXPECT_EQ(input.b, output.b);
+}
+
+TEST(DisplayStructTraitsTest, ColorCalibrationRoundtrip) {
+  uint16_t in_r, in_g, in_b;
+  uint16_t out_r, out_g, out_b;
+
+  ColorCalibration input;
+  input.srgb_to_linear = GammaCurve({{0, 0, 0}, {10, 20, 30}});
+  input.linear_to_device = GammaCurve({{5, 5, 5}, {10, 20, 30}});
+  input.srgb_to_device_matrix = SkNamedGamut::kDisplayP3;
+
+  ColorCalibration output;
+  SerializeAndDeserialize<mojom::ColorCalibration>(input, &output);
+
+  // Validate `srgb_to_device_matrix`.
+  EXPECT_EQ(0, memcmp(&input.srgb_to_device_matrix,
+                      &output.srgb_to_device_matrix, sizeof(skcms_Matrix3x3)));
+
+  // Valdiate `srgb_to_linear`.
+  input.srgb_to_linear.Evaluate(0.5f, in_r, in_g, in_b);
+  output.srgb_to_linear.Evaluate(0.5f, out_r, out_g, out_b);
+  EXPECT_EQ(in_r, out_r);
+  EXPECT_EQ(in_g, out_g);
+  EXPECT_EQ(in_b, out_b);
+
+  // Valdiate `linear_to_device`.
+  input.linear_to_device.Evaluate(0.5f, in_r, in_g, in_b);
+  output.linear_to_device.Evaluate(0.5f, out_r, out_g, out_b);
+  EXPECT_EQ(in_r, out_r);
+  EXPECT_EQ(in_g, out_g);
+  EXPECT_EQ(in_b, out_b);
+}
+
+TEST(DisplayStructTraitsTest, ColorTemperatureAdjustmentRoundtrip) {
+  ColorTemperatureAdjustment input;
+  input.srgb_matrix = SkNamedGamut::kDisplayP3;
+
+  ColorTemperatureAdjustment output;
+  SerializeAndDeserialize<mojom::ColorTemperatureAdjustment>(input, &output);
+
+  EXPECT_EQ(0, memcmp(&input.srgb_matrix, &output.srgb_matrix,
+                      sizeof(skcms_Matrix3x3)));
+}
+
+TEST(DisplayStructTraitsTest, GammaAdjustmentRoundtrip) {
+  uint16_t in_r, in_g, in_b;
+  uint16_t out_r, out_g, out_b;
+
+  GammaAdjustment input;
+  input.curve = GammaCurve({{0, 10, 20}, {10, 20, 30}});
+  GammaAdjustment output;
+
+  SerializeAndDeserialize<mojom::GammaAdjustment>(input, &output);
+
+  input.curve.Evaluate(0.5f, in_r, in_g, in_b);
+  output.curve.Evaluate(0.5f, out_r, out_g, out_b);
+  EXPECT_EQ(in_r, out_r);
+  EXPECT_EQ(in_g, out_g);
+  EXPECT_EQ(in_b, out_b);
 }
 
 // One display mode, current and native mode nullptr.
@@ -283,7 +353,6 @@ TEST(DisplayStructTraitsTest, DisplaySnapshotCurrentAndNativeModesNull) {
   const PrivacyScreenState privacy_screen_state = kEnabled;
   const bool has_content_protection_key = false;
   const bool has_color_correction_matrix = true;
-  const bool color_correction_in_linear_space = true;
   const gfx::ColorSpace display_color_space = gfx::ColorSpace::CreateREC709();
   const int32_t bits_per_channel = 8;
   const gfx::HDRStaticMetadata hdr_static_metadata(
@@ -316,11 +385,11 @@ TEST(DisplayStructTraitsTest, DisplaySnapshotCurrentAndNativeModesNull) {
       origin, physical_size, type, base_connector_id, path_topology,
       is_aspect_preserving_scaling, has_overscan, privacy_screen_state,
       has_content_protection_key, has_color_correction_matrix,
-      color_correction_in_linear_space, display_color_space, bits_per_channel,
-      hdr_static_metadata, display_name, sys_path, std::move(modes),
-      PanelOrientation::kNormal, edid, current_mode, native_mode, product_code,
-      year_of_manufacture, maximum_cursor_size, variable_refresh_rate_state,
-      vsync_rate_min, std::move(drm_formats_and_modifiers));
+      display_color_space, bits_per_channel, hdr_static_metadata, display_name,
+      sys_path, std::move(modes), PanelOrientation::kNormal, edid, current_mode,
+      native_mode, product_code, year_of_manufacture, maximum_cursor_size,
+      variable_refresh_rate_state, vsync_rate_min,
+      std::move(drm_formats_and_modifiers));
 
   std::unique_ptr<DisplaySnapshot> output;
   SerializeAndDeserialize<mojom::DisplaySnapshot>(input->Clone(), &output);
@@ -345,7 +414,6 @@ TEST(DisplayStructTraitsTest, DisplaySnapshotCurrentModeNull) {
   const PrivacyScreenState privacy_screen_state = kEnabled;
   const bool has_content_protection_key = false;
   const bool has_color_correction_matrix = true;
-  const bool color_correction_in_linear_space = true;
   const gfx::ColorSpace display_color_space = gfx::ColorSpace::CreateREC709();
   const uint32_t bits_per_channel = 8u;
   const gfx::HDRStaticMetadata hdr_static_metadata(
@@ -378,11 +446,11 @@ TEST(DisplayStructTraitsTest, DisplaySnapshotCurrentModeNull) {
       origin, physical_size, type, base_connector_id, path_topology,
       is_aspect_preserving_scaling, has_overscan, privacy_screen_state,
       has_content_protection_key, has_color_correction_matrix,
-      color_correction_in_linear_space, display_color_space, bits_per_channel,
-      hdr_static_metadata, display_name, sys_path, std::move(modes),
-      PanelOrientation::kNormal, edid, current_mode, native_mode, product_code,
-      year_of_manufacture, maximum_cursor_size, variable_refresh_rate_state,
-      vsync_rate_min, std::move(drm_formats_and_modifiers));
+      display_color_space, bits_per_channel, hdr_static_metadata, display_name,
+      sys_path, std::move(modes), PanelOrientation::kNormal, edid, current_mode,
+      native_mode, product_code, year_of_manufacture, maximum_cursor_size,
+      variable_refresh_rate_state, vsync_rate_min,
+      std::move(drm_formats_and_modifiers));
 
   std::unique_ptr<DisplaySnapshot> output;
   SerializeAndDeserialize<mojom::DisplaySnapshot>(input->Clone(), &output);
@@ -407,7 +475,6 @@ TEST(DisplayStructTraitsTest, DisplaySnapshotExternal) {
   const PrivacyScreenState privacy_screen_state = kDisabled;
   const bool has_content_protection_key = true;
   const bool has_color_correction_matrix = false;
-  const bool color_correction_in_linear_space = false;
   const std::string display_name("HP Z24i");
   const gfx::ColorSpace display_color_space = gfx::ColorSpace::CreateSRGB();
   const uint32_t bits_per_channel = 8u;
@@ -446,11 +513,11 @@ TEST(DisplayStructTraitsTest, DisplaySnapshotExternal) {
       origin, physical_size, type, base_connector_id, path_topology,
       is_aspect_preserving_scaling, has_overscan, privacy_screen_state,
       has_content_protection_key, has_color_correction_matrix,
-      color_correction_in_linear_space, display_color_space, bits_per_channel,
-      hdr_static_metadata, display_name, sys_path, std::move(modes),
-      PanelOrientation::kLeftUp, edid, current_mode, native_mode, product_code,
-      year_of_manufacture, maximum_cursor_size, variable_refresh_rate_state,
-      vsync_rate_min, std::move(drm_formats_and_modifiers));
+      display_color_space, bits_per_channel, hdr_static_metadata, display_name,
+      sys_path, std::move(modes), PanelOrientation::kLeftUp, edid, current_mode,
+      native_mode, product_code, year_of_manufacture, maximum_cursor_size,
+      variable_refresh_rate_state, vsync_rate_min,
+      std::move(drm_formats_and_modifiers));
 
   std::unique_ptr<DisplaySnapshot> output;
   SerializeAndDeserialize<mojom::DisplaySnapshot>(input->Clone(), &output);
@@ -474,7 +541,6 @@ TEST(DisplayStructTraitsTest, DisplaySnapshotInternal) {
   const PrivacyScreenState privacy_screen_state = kNotSupported;
   const bool has_content_protection_key = false;
   const bool has_color_correction_matrix = false;
-  const bool color_correction_in_linear_space = false;
   const gfx::ColorSpace display_color_space =
       gfx::ColorSpace::CreateDisplayP3D65();
   const uint32_t bits_per_channel = 9u;
@@ -507,11 +573,11 @@ TEST(DisplayStructTraitsTest, DisplaySnapshotInternal) {
       origin, physical_size, type, base_connector_id, path_topology,
       is_aspect_preserving_scaling, has_overscan, privacy_screen_state,
       has_content_protection_key, has_color_correction_matrix,
-      color_correction_in_linear_space, display_color_space, bits_per_channel,
-      hdr_static_metadata, display_name, sys_path, std::move(modes),
-      PanelOrientation::kRightUp, edid, current_mode, native_mode, product_code,
-      year_of_manufacture, maximum_cursor_size, variable_refresh_rate_state,
-      absl::nullopt, drm_formats_and_modifiers);
+      display_color_space, bits_per_channel, hdr_static_metadata, display_name,
+      sys_path, std::move(modes), PanelOrientation::kRightUp, edid,
+      current_mode, native_mode, product_code, year_of_manufacture,
+      maximum_cursor_size, variable_refresh_rate_state, absl::nullopt,
+      drm_formats_and_modifiers);
 
   std::unique_ptr<DisplaySnapshot> output;
   SerializeAndDeserialize<mojom::DisplaySnapshot>(input->Clone(), &output);

@@ -500,7 +500,7 @@
     Proceed
   </message>
 
-  <if expr="not is_ios">
+  <if expr="use_blink">
     <!-- Blocked interception interstitial strings -->
     <message name="IDS_BLOCKED_INTERCEPTION_HEADING" desc="Large heading of the known interception interstitial.">
       Your activity on <ph name="HOSTNAME">$1<ex>example.com</ex></ph> is being monitored

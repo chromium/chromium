@@ -19,16 +19,13 @@ import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.IS_INCOG
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.IS_INCOGNITO_DESCRIPTION_INITIALIZED;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.IS_INCOGNITO_DESCRIPTION_VISIBLE;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.IS_LENS_BUTTON_VISIBLE;
-import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.IS_TAB_CAROUSEL_TITLE_VISIBLE;
-import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.IS_TAB_CAROUSEL_VISIBLE;
+import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.IS_TAB_CARD_VISIBLE;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.IS_VOICE_RECOGNITION_BUTTON_VISIBLE;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.LENS_BUTTON_CLICK_LISTENER;
-import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.MORE_TABS_CLICK_LISTENER;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.MV_TILES_CONTAINER_LEFT_RIGHT_MARGIN;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.MV_TILES_CONTAINER_TOP_MARGIN;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.MV_TILES_VISIBLE;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.SINGLE_TAB_TOP_MARGIN;
-import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.TAB_SWITCHER_TITLE_TOP_MARGIN;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.TASKS_SURFACE_BODY_TOP_MARGIN;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.TOP_TOOLBAR_PLACEHOLDER_HEIGHT;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.VOICE_SEARCH_BUTTON_CLICK_LISTENER;
@@ -126,22 +123,12 @@ public class TasksViewBinderUnitTest {
 
     @Test
     @SmallTest
-    public void testSetTabCarouselMode() {
-        mTasksViewPropertyModel.set(IS_TAB_CAROUSEL_VISIBLE, true);
+    public void testSetTabCardVisibilityMode() {
+        mTasksViewPropertyModel.set(IS_TAB_CARD_VISIBLE, true);
         assertTrue(isViewVisible(R.id.tab_switcher_module_container));
 
-        mTasksViewPropertyModel.set(IS_TAB_CAROUSEL_VISIBLE, false);
+        mTasksViewPropertyModel.set(IS_TAB_CARD_VISIBLE, false);
         assertFalse(isViewVisible(R.id.tab_switcher_module_container));
-    }
-
-    @Test
-    @SmallTest
-    public void testSetTabCarouselTitle() {
-        mTasksViewPropertyModel.set(IS_TAB_CAROUSEL_TITLE_VISIBLE, true);
-        assertTrue(isViewVisible(R.id.tab_switcher_title));
-
-        mTasksViewPropertyModel.set(IS_TAB_CAROUSEL_TITLE_VISIBLE, false);
-        assertFalse(isViewVisible(R.id.tab_switcher_title));
     }
 
     @Test
@@ -246,23 +233,6 @@ public class TasksViewBinderUnitTest {
 
         mTasksViewPropertyModel.set(MV_TILES_VISIBLE, false);
         assertFalse(isViewVisible(R.id.mv_tiles_container));
-    }
-
-    @Test
-    @SmallTest
-    public void testSetMoreTabsClickListener() {
-        mTasksViewPropertyModel.set(IS_TAB_CAROUSEL_VISIBLE, true);
-
-        mViewClicked.set(false);
-        // Note that onView(R.id.more_tabs).perform(click()) can not be used since it requires 90
-        // percent of the view's area is displayed to the users. However, this view has negative
-        // margin which makes the percentage is less than 90.
-        // TODO (crbug.com/1186752): Investigate whether this would be a problem for real users.
-        mTasksView.findViewById(R.id.more_tabs).performClick();
-        assertFalse(mViewClicked.get());
-        mTasksViewPropertyModel.set(MORE_TABS_CLICK_LISTENER, mViewOnClickListener);
-        mTasksView.findViewById(R.id.more_tabs).performClick();
-        assertTrue(mViewClicked.get());
     }
 
     @Test
@@ -379,9 +349,9 @@ public class TasksViewBinderUnitTest {
                                 .getLayoutInflater()
                                 .inflate(
                                         R.layout.single_tab_view_layout,
-                                        mTasksView.getCarouselTabSwitcherContainer(),
+                                        mTasksView.getCardTabSwitcherContainer(),
                                         false);
-        mTasksView.getCarouselTabSwitcherContainer().addView(singleTabView);
+        mTasksView.getCardTabSwitcherContainer().addView(singleTabView);
 
         ViewGroup.MarginLayoutParams params =
                 (ViewGroup.MarginLayoutParams)
@@ -390,19 +360,6 @@ public class TasksViewBinderUnitTest {
         assertEquals(24, params.topMargin);
 
         mTasksViewPropertyModel.set(SINGLE_TAB_TOP_MARGIN, 16);
-
-        assertEquals(16, params.topMargin);
-    }
-
-    @Test
-    @SmallTest
-    public void testSetTabSwitcherTitleTopMargin() {
-        ViewGroup.MarginLayoutParams params =
-                (ViewGroup.MarginLayoutParams)
-                        mTasksView.findViewById(R.id.tab_switcher_title).getLayoutParams();
-        assertEquals(0, params.topMargin);
-
-        mTasksViewPropertyModel.set(TAB_SWITCHER_TITLE_TOP_MARGIN, 16);
 
         assertEquals(16, params.topMargin);
     }

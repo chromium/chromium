@@ -53,10 +53,13 @@ public final class BootstrapApplication extends Application {
     protected void attachBaseContext(Context context) {
         super.attachBaseContext(context);
         try {
-            ApplicationInfo appInfo = context.getPackageManager().getApplicationInfo(
-                    context.getPackageName(), PackageManager.GET_META_DATA);
-            mActivityThread = Reflect.invokeMethod(Class.forName("android.app.ActivityThread"),
-                    "currentActivityThread");
+            ApplicationInfo appInfo =
+                    context.getPackageManager()
+                            .getApplicationInfo(
+                                    context.getPackageName(), PackageManager.GET_META_DATA);
+            mActivityThread =
+                    Reflect.invokeMethod(
+                            Class.forName("android.app.ActivityThread"), "currentActivityThread");
             mClassLoaderPatcher = new ClassLoaderPatcher(context);
 
             mOrigInstrumentation =
@@ -89,9 +92,10 @@ public final class BootstrapApplication extends Application {
             File instInstallLockFile = new File(instIncrementalRootDir, "install.lock");
             File instFirstRunLockFile = new File(instIncrementalRootDir, "firstrun.lock");
 
-            boolean isFirstRun = LockFile.installerLockExists(appFirstRunLockFile)
-                    || (instPackageNameDiffers
-                               && LockFile.installerLockExists(instFirstRunLockFile));
+            boolean isFirstRun =
+                    LockFile.installerLockExists(appFirstRunLockFile)
+                            || (instPackageNameDiffers
+                                    && LockFile.installerLockExists(instFirstRunLockFile));
             if (isFirstRun) {
                 if (mClassLoaderPatcher.mIsPrimaryProcess) {
                     // Wait for incremental_install.py to finish.
@@ -157,8 +161,9 @@ public final class BootstrapApplication extends Application {
             Log.i(TAG, "Instantiating " + realApplicationName);
             Instrumentation anyInstrumentation =
                     mRealInstrumentation != null ? mRealInstrumentation : mOrigInstrumentation;
-            mRealApplication = anyInstrumentation.newApplication(
-                    getClassLoader(), realApplicationName, context);
+            mRealApplication =
+                    anyInstrumentation.newApplication(
+                            getClassLoader(), realApplicationName, context);
 
             // Between attachBaseContext() and onCreate(), ActivityThread tries to instantiate
             // all ContentProviders. The ContentProviders break without the correct Application
@@ -171,9 +176,7 @@ public final class BootstrapApplication extends Application {
         }
     }
 
-    /**
-     * Instantiates and initializes mRealInstrumentation (the real Instrumentation class).
-     */
+    /** Instantiates and initializes mRealInstrumentation (the real Instrumentation class). */
     private Instrumentation initInstrumentation(String realInstrumentationName)
             throws ReflectiveOperationException {
         if (realInstrumentationName == null) {
@@ -200,8 +203,15 @@ public final class BootstrapApplication extends Application {
     private void populateInstrumenationFields(Instrumentation target)
             throws ReflectiveOperationException {
         // Initialize the fields that are set by Instrumentation.init().
-        String[] initFields = {"mAppContext", "mComponent", "mInstrContext", "mMessageQueue",
-                "mThread", "mUiAutomationConnection", "mWatcher"};
+        String[] initFields = {
+            "mAppContext",
+            "mComponent",
+            "mInstrContext",
+            "mMessageQueue",
+            "mThread",
+            "mUiAutomationConnection",
+            "mWatcher"
+        };
         for (String fieldName : initFields) {
             Reflect.setField(target, fieldName, Reflect.getField(mOrigInstrumentation, fieldName));
         }
@@ -236,9 +246,7 @@ public final class BootstrapApplication extends Application {
         }
     }
 
-    /**
-     * Nulls out ActivityThread.mBoundApplication.providers.
-     */
+    /** Nulls out ActivityThread.mBoundApplication.providers. */
     private void disableContentProviders() throws ReflectiveOperationException {
         Object data = Reflect.getField(mActivityThread, "mBoundApplication");
         mStashedProviderList = Reflect.getField(data, "providers");
@@ -254,7 +262,10 @@ public final class BootstrapApplication extends Application {
         Reflect.setField(data, "providers", mStashedProviderList);
         if (mStashedProviderList != null && mClassLoaderPatcher.mIsPrimaryProcess) {
             Log.i(TAG, "Instantiating content providers");
-            Reflect.invokeMethod(mActivityThread, "installContentProviders", mRealApplication,
+            Reflect.invokeMethod(
+                    mActivityThread,
+                    "installContentProviders",
+                    mRealApplication,
                     mStashedProviderList);
         }
         mStashedProviderList = null;

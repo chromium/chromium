@@ -25,9 +25,7 @@ import org.chromium.base.test.util.JniMocker;
 import org.chromium.net.ConnectionType;
 import org.chromium.net.NetworkChangeNotifierAutoDetect;
 
-/**
- * Unit test for {@link NetworkStatusListenerAndroid} and {@link BackgroundNetworkStatusListener}.
- */
+/** Unit test for {@link NetworkStatusListenerAndroid} and {@link BackgroundNetworkStatusListener}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class NetworkStatusListenerAndroidTest {

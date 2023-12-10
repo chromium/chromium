@@ -80,6 +80,8 @@ enum class PhoneImportStatus {
 // the user's decision to (not) import, based on how we construct the candidate
 // profile in FormDataImporter.
 struct ProfileImportMetadata {
+  // Tracks if the form section contains an invalid country.
+  bool observed_invalid_country = false;
   // Whether the profile's country was complemented automatically.
   bool did_complement_country = false;
   // Whether the form originally contained a phone number and if that phone

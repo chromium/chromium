@@ -60,12 +60,14 @@ class SigninView extends LinearLayout {
         mMoreButton = findViewById(R.id.more_button);
 
         mRefuseButton = DualControlLayout.createButtonForLayout(getContext(), false, "", null);
-        mRefuseButton.setLayoutParams(new ViewGroup.LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        mRefuseButton.setLayoutParams(
+                new ViewGroup.LayoutParams(
+                        ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
         mAcceptButton = DualControlLayout.createButtonForLayout(getContext(), true, "", null);
-        mAcceptButton.setLayoutParams(new ViewGroup.LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        mAcceptButton.setLayoutParams(
+                new ViewGroup.LayoutParams(
+                        ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
         mButtonBar = findViewById(R.id.dual_control_button_bar);
         mButtonBar.addView(mAcceptButton);
@@ -141,7 +143,9 @@ class SigninView extends LinearLayout {
     }
 
     static Drawable getExpandArrowDrawable(Context context) {
-        return UiUtils.getTintedDrawable(context, R.drawable.ic_expand_more_black_24dp,
+        return UiUtils.getTintedDrawable(
+                context,
+                R.drawable.ic_expand_more_black_24dp,
                 R.color.default_icon_color_tint_list);
     }
 

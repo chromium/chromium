@@ -950,12 +950,9 @@ void DriveIntegrationService::RemoveDriveMountPoint() {
       logger_.Log(logging::LOGGING_INFO, "Drive mount point is removed");
     }
   }
-  GetDriveFsHost()->Unmount();
 
-  if (pinning_manager_) {
-    pinning_manager_->Stop();
-    pinning_manager_.reset();
-  }
+  GetDriveFsHost()->Unmount();
+  pinning_manager_.reset();
 }
 
 void DriveIntegrationService::MaybeRemountFileSystem(

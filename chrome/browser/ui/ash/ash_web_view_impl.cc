@@ -175,7 +175,7 @@ void AshWebViewImpl::RequestMediaAccessPermission(
 
 bool AshWebViewImpl::CheckMediaAccessPermission(
     content::RenderFrameHost* render_frame_host,
-    const GURL& security_origin,
+    const url::Origin& security_origin,
     blink::mojom::MediaStreamType type) {
   if (!params_.can_record_media) {
     return false;

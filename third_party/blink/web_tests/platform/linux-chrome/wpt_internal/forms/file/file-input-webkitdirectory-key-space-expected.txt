@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+[FAIL] pressing Space on a focused webkitdirectory file input element launches a file chooser
+  promise_test: Unhandled rejection with value: object "ReferenceError: eventSender is not defined"
+Harness: the test ran to completion.

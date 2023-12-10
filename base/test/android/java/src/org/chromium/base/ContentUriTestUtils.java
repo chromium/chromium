@@ -11,9 +11,7 @@ import android.provider.MediaStore;
 
 import org.jni_zero.CalledByNative;
 
-/**
- * Utilities for testing operations on content URI.
- */
+/** Utilities for testing operations on content URI. */
 public class ContentUriTestUtils {
     /**
      * Insert an image into the MediaStore, and return the content URI. If the
@@ -25,22 +23,29 @@ public class ContentUriTestUtils {
     @CalledByNative
     private static String insertImageIntoMediaStore(String path) {
         // Check whether the content URI exists.
-        Cursor c = ContextUtils.getApplicationContext().getContentResolver().query(
-                MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                new String[] {MediaStore.Video.VideoColumns._ID},
-                MediaStore.Images.Media.DATA + " LIKE ?", new String[] {path}, null);
+        Cursor c =
+                ContextUtils.getApplicationContext()
+                        .getContentResolver()
+                        .query(
+                                MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                                new String[] {MediaStore.Video.VideoColumns._ID},
+                                MediaStore.Images.Media.DATA + " LIKE ?",
+                                new String[] {path},
+                                null);
         if (c != null && c.getCount() > 0) {
             c.moveToFirst();
             int id = c.getInt(0);
-            return Uri.withAppendedPath(
-                    MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "" + id).toString();
+            return Uri.withAppendedPath(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "" + id)
+                    .toString();
         }
 
         // Insert the content URI into MediaStore.
         ContentValues values = new ContentValues();
         values.put(MediaStore.MediaColumns.DATA, path);
-        Uri uri = ContextUtils.getApplicationContext().getContentResolver().insert(
-                MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+        Uri uri =
+                ContextUtils.getApplicationContext()
+                        .getContentResolver()
+                        .insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
         return uri.toString();
     }
 }

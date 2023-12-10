@@ -28,7 +28,8 @@ public class FeedReliabilityLogger implements UrlFocusChangeListener {
      * @param userInteractionLogger FeedUserInteractionReliabilityLogger for tracking user
      *         interaction with feed content.
      */
-    public FeedReliabilityLogger(FeedLaunchReliabilityLogger launchLogger,
+    public FeedReliabilityLogger(
+            FeedLaunchReliabilityLogger launchLogger,
             @Nullable FeedUserInteractionReliabilityLogger userInteractionLogger) {
         mLaunchLogger = launchLogger;
         mUserInteractionLogger = userInteractionLogger;
@@ -37,7 +38,7 @@ public class FeedReliabilityLogger implements UrlFocusChangeListener {
     /** Call this when the activity is paused. */
     public void onActivityPaused() {
         logLaunchFinishedIfInProgress(
-                DiscoverLaunchResult.FRAGMENT_PAUSED, /*userMightComeBack=*/false);
+                DiscoverLaunchResult.FRAGMENT_PAUSED, /* userMightComeBack= */ false);
     }
 
     /** Call this when the activity is resumed. */
@@ -50,7 +51,7 @@ public class FeedReliabilityLogger implements UrlFocusChangeListener {
         // The user could return to the feed while it's still loading, so consider the launch
         // "pending finished".
         logLaunchFinishedIfInProgress(
-                DiscoverLaunchResult.SEARCH_BOX_TAPPED, /*userMightComeBack=*/true);
+                DiscoverLaunchResult.SEARCH_BOX_TAPPED, /* userMightComeBack= */ true);
     }
 
     /** Call this when the user performs a voice search. */
@@ -58,7 +59,7 @@ public class FeedReliabilityLogger implements UrlFocusChangeListener {
         // The user could return to the feed while it's still loading, so consider the launch
         // "pending finished".
         logLaunchFinishedIfInProgress(
-                DiscoverLaunchResult.VOICE_SEARCH_TAPPED, /*userMightComeBack=*/true);
+                DiscoverLaunchResult.VOICE_SEARCH_TAPPED, /* userMightComeBack= */ true);
     }
 
     /**
@@ -67,7 +68,7 @@ public class FeedReliabilityLogger implements UrlFocusChangeListener {
      */
     public void onPageLoadStarted() {
         logLaunchFinishedIfInProgress(
-                DiscoverLaunchResult.NAVIGATED_AWAY_IN_APP, /*userMightComeBack=*/false);
+                DiscoverLaunchResult.NAVIGATED_AWAY_IN_APP, /* userMightComeBack= */ false);
     }
 
     /**
@@ -75,19 +76,19 @@ public class FeedReliabilityLogger implements UrlFocusChangeListener {
      */
     public void onNavigateBack() {
         logLaunchFinishedIfInProgress(
-                DiscoverLaunchResult.NAVIGATED_BACK, /*userMightComeBack=*/false);
+                DiscoverLaunchResult.NAVIGATED_BACK, /* userMightComeBack= */ false);
     }
 
     /** Call this when the user selects a tab. */
     public void onSwitchTabs() {
-        logLaunchFinishedIfInProgress(DiscoverLaunchResult.NAVIGATED_TO_ANOTHER_TAB,
-                /*userMightComeBack=*/false);
+        logLaunchFinishedIfInProgress(
+                DiscoverLaunchResult.NAVIGATED_TO_ANOTHER_TAB, /* userMightComeBack= */ false);
     }
 
     /** Call this when the user switches to another stream. */
     public void onSwitchStream(@StreamType int switchedToStream) {
         logLaunchFinishedIfInProgress(
-                DiscoverLaunchResult.SWITCHED_FEED_TABS, /*userMightComeBack=*/false);
+                DiscoverLaunchResult.SWITCHED_FEED_TABS, /* userMightComeBack= */ false);
         mLaunchLogger.logSwitchedFeeds(switchedToStream, SystemClock.elapsedRealtimeNanos());
     }
 
@@ -104,14 +105,14 @@ public class FeedReliabilityLogger implements UrlFocusChangeListener {
     /** Call this when the stream is unbinded. */
     public void onUnbindStream(@ClosedReason int closedReason) {
         logLaunchFinishedIfInProgress(
-                DiscoverLaunchResult.FRAGMENT_STOPPED, /*userMightComeBack=*/false);
+                DiscoverLaunchResult.FRAGMENT_STOPPED, /* userMightComeBack= */ false);
         reportStreamClosed(closedReason);
     }
 
     /** Call this when the card is about to open. */
     public void onOpenCard() {
         logLaunchFinishedIfInProgress(
-                DiscoverLaunchResult.CARD_TAPPED, /*userMightComeBack=*/false);
+                DiscoverLaunchResult.CARD_TAPPED, /* userMightComeBack= */ false);
     }
 
     /** Call this when the view is barely visible for the first time. */

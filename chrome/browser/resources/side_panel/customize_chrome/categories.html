@@ -179,29 +179,37 @@
     width: 21px;
   }
 
+  customize-chrome-wallpaper-search-tile {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+
   #wallpaperSearchIcon {
-    --cr-icon-image: url(icons/image.svg);
-    --cr-icon-size: 21px;
-    height: 21px;
+    --cr-icon-image: url(icons/generated_image.svg);
+    --cr-icon-size: 24px;
+    height: 24px;
     left: 50%;
     margin: 0;
     top: 50%;
     transform: translate(-50%, -50%);
-    width: 21px;
+    width: 24px;
   }
 
   #cornerNewTabPage {
     left: 12%;
     top: 15%;
+    width: 88%;
   }
 
   :host-context([chrome-refresh-2023]) #cornerNewTabPage {
     border-radius: 4px;
     box-shadow: var(--cr-elevation-2);
-    height: 128px;
-    width: 128px;
-    left: 20px;
-    top: 20px;
+    height: 100%;
+    width: 100%;
+    left: 15.5%;
+    top: 15.5%;
   }
 
   svg {
@@ -292,10 +300,12 @@
         <customize-chrome-check-mark-wrapper
             checked="[[isWallpaperSearchSelected_]]">
           <div class="image-container">
+            <customize-chrome-wallpaper-search-tile>
+            </customize-chrome-wallpaper-search-tile>
             <div id="wallpaperSearchIcon" class="cr-icon"></div>
           </div>
         </customize-chrome-check-mark-wrapper>
-        <div class="label">Wallpaper Search</div>
+        <div class="label">$i18n{wallpaperSearchTileLabel}</div>
       </div>
     </template>
     <div class="tile" tabindex="0" id="uploadImageTile"

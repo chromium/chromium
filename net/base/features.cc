@@ -95,10 +95,9 @@ BASE_FEATURE(kEncryptedClientHelloQuic,
              "EncryptedClientHelloQuic",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// TODO(crbug.com/795089): Enable this feature.
 BASE_FEATURE(kRSAKeyUsageForLocalAnchors,
              "RSAKeyUsageForLocalAnchors",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kNetworkQualityEstimator,
              "NetworkQualityEstimator",
@@ -278,11 +277,11 @@ BASE_FEATURE(kSupportPartitionedBlobUrl,
 
 BASE_FEATURE(kTpcdSupportSettings,
              "TpcdSupportSettings",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTpcdMetadataGrants,
              "TpcdMetadataGrants",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAlpsParsing, "AlpsParsing", base::FEATURE_ENABLED_BY_DEFAULT);
 
@@ -401,6 +400,22 @@ const base::FeatureParam<bool> kIpPrivacyBsaEnablePrivacyPass{
     &kEnableIpProtectionProxy, /*name=*/"IpPrivacyBsaEnablePrivacyPass",
     /*default_value=*/false};
 
+const base::FeatureParam<std::string> kIpPrivacyProxyBPsk{
+    &kEnableIpProtectionProxy, /*name=*/"IpPrivacyProxyBPsk",
+    /*default_value=*/""};
+
+const base::FeatureParam<bool> kIpPrivacyUseProxyChains{
+    &kEnableIpProtectionProxy, /*name=*/"IpPrivacyUseProxyChains",
+    /*default_value=*/false};
+
+const base::FeatureParam<std::string> kIpPrivacyProxyAHostnameOverride{
+    &kEnableIpProtectionProxy, /*name=*/"IpPrivacyProxyAHostnameOverride",
+    /*default_value=*/""};
+
+const base::FeatureParam<std::string> kIpPrivacyProxyBHostnameOverride{
+    &kEnableIpProtectionProxy, /*name=*/"IpPrivacyProxyBHostnameOverride",
+    /*default_value=*/""};
+
 // Network-change migration requires NetworkHandle support, which are currently
 // only supported on Android (see
 // NetworkChangeNotifier::AreNetworkHandlesSupported).
@@ -474,6 +489,18 @@ BASE_FEATURE(kReceiveEcn, "ReceiveEcn", base::FEATURE_DISABLED_BY_DEFAULT);
 // limit sticks.
 BASE_FEATURE(kNewCertPathBuilderIterationLimit,
              "NewCertPathBuilderIterationLimit",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kUseNewAlpsCodepointHttp2,
+             "UseNewAlpsCodepointHttp2",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kUseNewAlpsCodepointQUIC,
+             "UseNewAlpsCodepointQUIC",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kTreatHTTPExpiresHeaderValueZeroAsExpired,
+             "TreatHTTPExpiresHeaderValueZeroAsExpired",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace net::features

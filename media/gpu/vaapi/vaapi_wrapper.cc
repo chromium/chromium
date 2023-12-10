@@ -1445,54 +1445,6 @@ bool IsVBREncodingSupported(VAProfile va_profile) {
   return VASupportedProfiles::Get().IsProfileSupported(mode, va_profile);
 }
 
-#if BUILDFLAG(IS_LINUX)
-// Some VA-API drivers (vdpau-va-driver) will crash if used with VA/DRM on
-// NVIDIA GPUs. This function checks if such drivers are present.
-bool IsBrokenNvidiaVaapiDriverPresent() {
-  std::vector<std::string> va_drivers_paths;
-
-  std::string va_drivers_paths_env;
-  auto env = base::Environment::Create();
-  if (env->GetVar("LIBVA_DRIVERS_PATH", &va_drivers_paths_env)) {
-    va_drivers_paths =
-        base::SplitString(va_drivers_paths_env, ":", base::KEEP_WHITESPACE,
-                          base::SPLIT_WANT_NONEMPTY);
-  } else {
-    // All known default VA driver paths of distributions shipping
-    // vdpau-va-driver
-    va_drivers_paths = {
-        "/usr/lib32/dri",
-        "/usr/lib64/dri",
-        "/usr/lib/dri",
-
-        "/usr/lib/aarch64-linux-gnu/dri",
-        "/usr/lib/i386-linux-gnu/dri",
-        "/usr/lib/x86_64-linux-gnu/dri",
-    };
-  }
-
-  // For NVIDIA GPUs (i.e., DRM driver name "nvidia-drm"), libva will look for
-  // nvidia_drv_video.so [1]. Therefore, all we need to check is whether
-  // nvidia_drv_video.so actually points to vdpau_drv_video.so. This check is
-  // best effort: base::MakeAbsoluteFilePath() resolves symbolic links, but it's
-  // entirely possible that nvidia_drv_video.so is actually a hard link to
-  // vdpau_drv_video.so or just a plain rename of it. We don't attempt to detect
-  // those cases.
-  //
-  // [1]
-  // https://github.com/intel/libva/blob/b4870fdfe2d41b579036dae280dfc7a5e732127f/va/drm/va_drm_utils.c#L67
-  for (const auto& va_drivers_path : va_drivers_paths) {
-    const auto nvidia_va_driver_path = base::MakeAbsoluteFilePath(
-        base::FilePath(va_drivers_path).Append("nvidia_drv_video.so"));
-    if (nvidia_va_driver_path.BaseName().value() == "vdpau_drv_video.so") {
-      return true;
-    }
-  }
-
-  return false;
-}
-#endif
-
 }  // namespace
 
 // static
@@ -1505,19 +1457,6 @@ VADisplayStateSingleton& VADisplayStateSingleton::GetInstance() {
 void VADisplayStateSingleton::PreSandboxInitialization() {
   VADisplayStateSingleton& va_display_state = GetInstance();
   base::AutoLock lock(va_display_state.lock_);
-
-#if BUILDFLAG(IS_LINUX)
-  std::string va_driver_name;
-  auto env = base::Environment::Create();
-  if (env->GetVar("LIBVA_DRIVER_NAME", &va_driver_name) &&
-      va_driver_name == "vdpau") {
-    // The vdpau VA driver will crash if used with VA/DRM. Do not open any DRM
-    // device if the user explicitly requested this driver.
-    return;
-  }
-
-  const bool is_nvidia_va_drm_broken = IsBrokenNvidiaVaapiDriverPresent();
-#endif
 
   constexpr char kRenderNodeFilePattern[] = "/dev/dri/renderD%d";
   // This loop ends on either the first card that does not exist or the first
@@ -1543,14 +1482,13 @@ void VADisplayStateSingleton::PreSandboxInitialization() {
     if (base::EqualsCaseInsensitiveASCII(version_name, "vgem")) {
       continue;
     }
-#if BUILDFLAG(IS_LINUX)
-    // Skip NVIDIA GPUs if the VA-API driver used for them is known for crashing
-    // with VA/DRM.
-    if (is_nvidia_va_drm_broken &&
-        base::EqualsCaseInsensitiveASCII(version_name, "nvidia-drm")) {
+    // Skip NVIDIA device because their VA-API drivers do not support
+    // Chromium and can sometimes cause crashes (see crbug.com/1492880).
+    if (base::EqualsCaseInsensitiveASCII(version_name, "nvidia-drm") &&
+        !base::FeatureList::IsEnabled(kVaapiOnNvidiaGPUs)) {
+      LOG(WARNING) << "Skipping nVidia device named: " << version_name;
       continue;
     }
-#endif
     va_display_state.drm_fd_ = base::ScopedFD(drm_file.TakePlatformFile());
     return;
   }
@@ -3300,6 +3238,10 @@ bool VaapiWrapper::VaInitialize(
   }
 
   return true;
+}
+
+bool VaapiWrapper::HasContext() const {
+  return va_context_id_ != VA_INVALID_ID;
 }
 
 void VaapiWrapper::DestroyContext() {

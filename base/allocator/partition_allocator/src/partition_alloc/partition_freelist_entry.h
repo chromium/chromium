@@ -7,11 +7,11 @@
 
 #include <cstddef>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/bits.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/compiler_specific.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/component_export.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_constants.h"
+#include "partition_alloc/partition_alloc_base/bits.h"
+#include "partition_alloc/partition_alloc_base/compiler_specific.h"
+#include "partition_alloc/partition_alloc_base/component_export.h"
+#include "partition_alloc/partition_alloc_buildflags.h"
+#include "partition_alloc/partition_alloc_constants.h"
 
 namespace partition_alloc::internal {
 
@@ -21,9 +21,9 @@ namespace partition_alloc::internal {
 }  // namespace partition_alloc::internal
 
 #if BUILDFLAG(USE_FREELIST_POOL_OFFSETS)
-#include "base/allocator/partition_allocator/src/partition_alloc/pool_offset_freelist.h"  // IWYU pragma: export
+#include "partition_alloc/pool_offset_freelist.h"  // IWYU pragma: export
 #else
-#include "base/allocator/partition_allocator/src/partition_alloc/encoded_next_freelist.h"  // IWYU pragma: export
+#include "partition_alloc/encoded_next_freelist.h"  // IWYU pragma: export
 #endif  // BUILDFLAG(USE_FREELIST_POOL_OFFSETS)
 
 namespace partition_alloc::internal {
@@ -32,19 +32,35 @@ namespace partition_alloc::internal {
 
 static_assert(kSmallestBucket >= sizeof(EncodedNextFreelistEntry),
               "Need enough space for freelist entries in the smallest slot");
+#if BUILDFLAG(USE_FREELIST_POOL_OFFSETS)
+static_assert(kSmallestBucket >= sizeof(PoolOffsetFreelistEntry),
+              "Need enough space for freelist entries in the smallest slot");
+#endif
 
 #if BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
+
 // The smallest bucket actually used. Note that the smallest request is 1 (if
 // it's 0, it gets patched to 1), and ref-count gets added to it.
 namespace {
 constexpr size_t kSmallestUsedBucket =
     base::bits::AlignUp(1 + sizeof(PartitionRefCount), kSmallestBucket);
 }
+
 static_assert(kSmallestUsedBucket >=
                   sizeof(EncodedNextFreelistEntry) + sizeof(PartitionRefCount),
               "Need enough space for freelist entries and the ref-count in the "
               "smallest *used* slot");
+
+#if BUILDFLAG(USE_FREELIST_POOL_OFFSETS)
+static_assert(kSmallestUsedBucket >=
+                  sizeof(PoolOffsetFreelistEntry) + sizeof(PartitionRefCount),
+              "Need enough space for freelist entries and the ref-count in the "
+              "smallest *used* slot");
+#endif  // BUILDFLAG(USE_FREELIST_POOL_OFFSETS)
+
 #endif  // BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
+
+using PartitionFreelistEntry = EncodedNextFreelistEntry;
 
 }  // namespace partition_alloc::internal
 

@@ -118,4 +118,19 @@ std::unique_ptr<BookmarkLoadDetails> ModelLoader::DoLoadOnBackgroundThread(
   return details;
 }
 
+// static
+scoped_refptr<ModelLoader> ModelLoader::CreateForTest(
+    BookmarkLoadDetails* details) {
+  CHECK(details);
+  // Note: base::MakeRefCounted is not available here, as ModelLoader's
+  // constructor is private.
+  details->LoadManagedNode();
+  details->CreateIndices();
+
+  auto model_loader = base::WrapRefCounted(new ModelLoader());
+  model_loader->history_bookmark_model_ = details->url_index();
+  model_loader->loaded_signal_.Signal();
+  return model_loader;
+}
+
 }  // namespace bookmarks

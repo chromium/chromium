@@ -15,11 +15,11 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/signin/authentication_service.h"
-#import "ios/chrome/browser/signin/authentication_service_factory.h"
-#import "ios/chrome/browser/signin/chrome_account_manager_service.h"
-#import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
-#import "ios/chrome/browser/signin/identity_manager_factory.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
+#import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/sync/model/sync_setup_service_factory.h"
 #import "ios/chrome/browser/ui/authentication/authentication_flow.h"
@@ -87,8 +87,12 @@ using signin_metrics::PromoAction;
                                    browser:(Browser*)browser
                                   identity:(id<SystemIdentity>)identity
                               signinIntent:(UserSigninIntent)signinIntent
-                                    logger:(UserSigninLogger*)logger {
-  self = [super initWithBaseViewController:viewController browser:browser];
+                                    logger:(UserSigninLogger*)logger
+                               accessPoint:
+                                   (signin_metrics::AccessPoint)accessPoint {
+  self = [super initWithBaseViewController:viewController
+                                   browser:browser
+                               accessPoint:accessPoint];
   if (self) {
     _defaultIdentity = identity;
     _signinIntent = signinIntent;
@@ -409,7 +413,8 @@ using signin_metrics::PromoAction;
           self.viewController
                                                       browser:self.browser
                                                   signinState:
-                                                      self.signinStateOnStart];
+                                                      self.signinStateOnStart
+                                                  accessPoint:self.accessPoint];
   __weak UserSigninCoordinator* weakSelf = self;
   self.advancedSettingsSigninCoordinator.signinCompletion = ^(
       SigninCoordinatorResult advancedSigninResult,

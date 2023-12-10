@@ -45,7 +45,7 @@ import org.chromium.components.signin.identitymanager.IdentityManager;
  *     override onFlowIsKnown
  * }.start();
  */
-public abstract class FirstRunFlowSequencer  {
+public abstract class FirstRunFlowSequencer {
     private static final String TAG = "firstrun";
 
     /**
@@ -76,7 +76,7 @@ public abstract class FirstRunFlowSequencer  {
                 // if sync is not allowed.
                 return false;
             }
-                // Show the sync consent page only to the signed-in users.
+            // Show the sync consent page only to the signed-in users.
             return identityManager.hasPrimaryAccount(ConsentLevel.SIGNIN);
         }
 
@@ -94,8 +94,9 @@ public abstract class FirstRunFlowSequencer  {
         protected boolean isSyncAllowed() {
             Profile profile = mProfileSupplier.get().getOriginalProfile();
             SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(profile);
-            return FirstRunUtils.canAllowSync() && !signinManager.isSigninDisabledByPolicy()
-                    && signinManager.isSigninSupported(/*requireUpdatedPlayServices=*/false);
+            return FirstRunUtils.canAllowSync()
+                    && !signinManager.isSigninDisabledByPolicy()
+                    && signinManager.isSigninSupported(/* requireUpdatedPlayServices= */ false);
         }
     }
 
@@ -107,6 +108,7 @@ public abstract class FirstRunFlowSequencer  {
     }
 
     private final Activity mActivity;
+
     /**
      * The delegate to be used by the Sequencer. By default, it's an instance of
      * {@link FirstRunFlowSequencerDelegate}, unless it's overridden by {@code sDelegateForTesting}.
@@ -134,9 +136,10 @@ public abstract class FirstRunFlowSequencer  {
             OneshotSupplier<Boolean> childAccountStatusSupplier) {
         mActivity = activity;
 
-        mDelegate = sDelegateFactoryForTesting != null
-                ? sDelegateFactoryForTesting.buildFactory(profileSupplier)
-                : new FirstRunFlowSequencerDelegate(profileSupplier);
+        mDelegate =
+                sDelegateFactoryForTesting != null
+                        ? sDelegateFactoryForTesting.buildFactory(profileSupplier)
+                        : new FirstRunFlowSequencerDelegate(profileSupplier);
 
         childAccountStatusSupplier.onAvailable(this::setChildAccountStatus);
     }
@@ -223,9 +226,10 @@ public abstract class FirstRunFlowSequencer  {
      */
     public static boolean checkIfFirstRunIsNecessary(
             boolean preferLightweightFre, Intent fromIntent) {
-        boolean isCct = fromIntent.getBooleanExtra(
+        boolean isCct =
+                fromIntent.getBooleanExtra(
                                 FirstRunActivityBase.EXTRA_CHROME_LAUNCH_INTENT_IS_CCT, false)
-                || LaunchIntentDispatcher.isCustomTabIntent(fromIntent);
+                        || LaunchIntentDispatcher.isCustomTabIntent(fromIntent);
         return checkIfFirstRunIsNecessary(preferLightweightFre, isCct);
     }
 

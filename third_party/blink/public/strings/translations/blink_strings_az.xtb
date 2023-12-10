@@ -30,6 +30,7 @@
 <translation id="2226276347425096477">Mətni <ph name="MAX_CHARACTERS" /> və ya daha az simvola qədər azaldın (hazırda <ph name="CURRENT_LENGTH" /> simvol işlədirsiniz).</translation>
 <translation id="2247351761944213033"><ph name="WEEKNUMBER" /> həftə, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Trek <ph name="NUMBER" /></translation>
+<translation id="2353297238722298836">Kamera və mikrofona icazə verildi</translation>
 <translation id="2393030564806080191">Altırəqəmli rəng dəyəri</translation>
 <translation id="2398813069815436052">dialoq açılıb.</translation>
 <translation id="245932805758469625">videonun göstərilməmiş saniyələrinin sayı</translation>
@@ -60,10 +61,12 @@
 <translation id="3822383571486410024">Lütfən, bu mətni <ph name="MIN_CHARACTERS" /> və ya daha çox simvoladək uzadın (hazırda <ph name="CURRENT_LENGTH" /> simvol istifadə edirsiniz).</translation>
 <translation id="383465348367842624">'<ph name="ATSIGN" />' ilə davam edən hissə '<ph name="INVALIDCHARACTER" />' simvolunu içərməməlidir.</translation>
 <translation id="3846214748874656680">Tam ekrandan çıxın</translation>
+<translation id="4031179711345676612">Mikrofona icazə verildi</translation>
 <translation id="4103419683916926126">Millisaniyə</translation>
 <translation id="4201051445878709314">Keçən ayı göstərin</translation>
 <translation id="4360991593054037559">Düzgün dəyər daxil edin. Ən uyğun düzgün dəyərlər: <ph name="VALID_VALUE_LOW" /> və <ph name="VALID_VALUE_HIGHER" />.</translation>
 <translation id="4522570452068850558">Detallar</translation>
+<translation id="4663373278480897665">Kameraya icazə verildi</translation>
 <translation id="4664250907885839816">'<ph name="ATSIGN" />' bir hissəsi '<ph name="INVALIDCHARACTER" />' simvolunu içərməməlidir.</translation>
 <translation id="4718048029184481307">Şəkildə şəkil rejimində oxudulur</translation>
 <translation id="4748357248530471599">Kəsilmiş sahə tam ekrana keçirilsin</translation>
@@ -137,6 +140,7 @@
 <translation id="6941933287844615239">medianı endirin</translation>
 <translation id="698788488269350478">genişləndirilib.</translation>
 <translation id="6989848892321993519">Bu mətni <ph name="MIN_CHARACTERS" /> və ya daha çox simvola qədər uzadın (hazırda 1 simvol istifadə edirsiniz).</translation>
+<translation id="7080893216867146095">Məkan paylaşımına icazə verilib</translation>
 <translation id="709897737746224366">Tələb olunan formata uyğun edin.</translation>
 <translation id="7102274145889307184">cari məkan</translation>
 <translation id="7263440858009898357">Lütfən, siyahıdan bir element seçin.</translation>

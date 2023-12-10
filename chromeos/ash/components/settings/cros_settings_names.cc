@@ -312,11 +312,6 @@ const char kFeatureFlags[] = "cros.feature_flags";
 const char kVariationsRestrictParameter[] =
     "cros.variations_restrict_parameter";
 
-// TODO(b/285556135): Remove this pref together with AttestationEnabledForDevice
-// A boolean pref that indicates whether enterprise attestation is enabled for
-// the device.
-const char kDeviceAttestationEnabled[] = "cros.device.attestation_enabled";
-
 // A boolean pref that indicates whether attestation for content protection is
 // enabled for the device.
 const char kAttestationForContentProtectionEnabled[] =

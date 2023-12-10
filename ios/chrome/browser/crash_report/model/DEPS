@@ -1,20 +1,9 @@
 include_rules = [
   "+components/breadcrumbs/core",
-  "+ios/chrome/browser/metrics",
-  "+ios/chrome/browser/overlays/public",
-  "+ios/chrome/browser/infobars",
+  "+ios/chrome/browser/metrics/model",
+  "+ios/chrome/browser/overlays/model/public",
+  "+ios/chrome/browser/infobars/model",
 
   # For fuzzer
   "+third_party/crashpad/crashpad",
 ]
-
-specific_include_rules = {
-  # TODO(crbug.com/1294160): Remove this dependency.
-  "^crash_restore_helper.mm": [
-    "+ios/chrome/browser/ui/icons",
-    "+ios/chrome/browser/ui/main/scene_state.h",
-    "+ios/chrome/browser/ui/main/scene_state_browser_agent.h",
-    "+ios/chrome/browser/ui/ui_feature_flags.h",
-  ],
-}
-

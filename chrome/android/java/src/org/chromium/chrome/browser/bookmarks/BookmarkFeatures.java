@@ -7,13 +7,9 @@ package org.chromium.chrome.browser.bookmarks;
 import org.chromium.base.FeatureList;
 import org.chromium.chrome.browser.commerce.ShoppingFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.flags.MutableFlagWithSafeDefault;
 
 /** Self-documenting feature class for bookmarks. */
 public class BookmarkFeatures {
-    private static final MutableFlagWithSafeDefault sAndroidImprovedBookmarksFlag =
-            new MutableFlagWithSafeDefault(ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS, false);
-
     /** Returns whether an additional "add bookmark" item should be in the overflow menu. */
     public static boolean isBookmarkMenuItemAsDedicatedRowEnabled() {
         // TODO(wylieb): Remove the BOOKMARKS_REFRESH flag.
@@ -32,6 +28,10 @@ public class BookmarkFeatures {
      * instead of folders/hierarchy.
      */
     public static boolean isAndroidImprovedBookmarksEnabled() {
-        return sAndroidImprovedBookmarksFlag.isEnabled();
+        return ChromeFeatureList.sAndroidImprovedBookmarks.isEnabled();
+    }
+
+    public static boolean isBookmarksAccountStorageEnabled() {
+        return ChromeFeatureList.sEnableBookmarkFoldersForAccountStorage.isEnabled();
     }
 }

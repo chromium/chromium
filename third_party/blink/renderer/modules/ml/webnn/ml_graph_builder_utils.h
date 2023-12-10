@@ -24,17 +24,17 @@ MLGraphBuilder* CreateMLGraphBuilder(
 MLOperand* BuildInput(MLGraphBuilder* builder,
                       const String& name,
                       const Vector<uint32_t>& dimensions,
-                      V8MLOperandType::Enum type,
+                      V8MLOperandDataType::Enum data_type,
                       ExceptionState& exception_state);
 
 NotShared<DOMArrayBufferView> CreateDOMArrayBufferView(
     size_t size,
-    V8MLOperandType::Enum type);
+    V8MLOperandDataType::Enum data_type);
 
 MLOperand* BuildConstant(
     MLGraphBuilder* builder,
     const Vector<uint32_t>& dimensions,
-    V8MLOperandType::Enum type,
+    V8MLOperandDataType::Enum data_type,
     ExceptionState& exception_state,
     absl::optional<NotShared<DOMArrayBufferView>> buffer_view = absl::nullopt);
 

@@ -45,6 +45,10 @@ BASE_FEATURE(kLauncherSystemInfoAnswerCards,
              "LauncherSystemInfoAnswerCards",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kLauncherManateeForKeyboardShortcuts,
+             "LauncherManateeForKeyboardShortcuts",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 bool IsLauncherGameSearchEnabled() {
   return base::FeatureList::IsEnabled(kLauncherGameSearch) ||
          chromeos::features::IsCloudGamingDeviceEnabled();
@@ -80,6 +84,10 @@ bool IsLauncherImageSearchOcrEnabled() {
 
 bool isLauncherSystemInfoAnswerCardsEnabled() {
   return base::FeatureList::IsEnabled(kLauncherSystemInfoAnswerCards);
+}
+
+bool isLauncherManateeForKeyboardShortcutsEnabled() {
+  return base::FeatureList::IsEnabled(kLauncherManateeForKeyboardShortcuts);
 }
 
 }  // namespace search_features

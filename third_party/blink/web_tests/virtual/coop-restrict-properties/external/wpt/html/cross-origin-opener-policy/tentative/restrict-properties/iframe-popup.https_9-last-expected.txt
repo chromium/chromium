@@ -1,6 +1,3 @@
 This is a testharness.js-based test.
-[PASS] COOP: restrict-properties to popup COOP: restrict-properties via an iframe, with cross origin iframe, cross origin popup with window_open
-[PASS] COOP: restrict-properties to popup COOP: restrict-properties via an iframe, with cross origin iframe, cross origin popup with anchor
-[PASS] COOP: restrict-properties to popup COOP: restrict-properties via an iframe, with cross origin iframe, cross origin popup with form
 Harness: the test ran to completion.
 

@@ -680,6 +680,9 @@ ScriptPromise SubtleCrypto::deriveBits(
   Platform::Current()->Crypto()->DeriveBits(
       normalized_algorithm, base_key->Key(), length_bits, result->Result(),
       std::move(task_runner));
+
+  HistogramDeriveBitsTruncation(result->GetExecutionContext(), length_bits,
+                                result->GetWarning());
   return promise;
 }
 

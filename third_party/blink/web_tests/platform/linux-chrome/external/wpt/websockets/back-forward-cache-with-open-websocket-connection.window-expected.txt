@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+[FAIL] Testing BFCache support for page with open WebSocket connection.
+  assert_true: Expected: websocket\nGot: internal-error,websocket\nMissing: \nExtra: internal-error\n expected true got false
+Harness: the test ran to completion.

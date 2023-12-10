@@ -4,6 +4,7 @@
 
 #include "testing/perf/luci_test_result.h"
 
+#include <optional>
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -11,7 +12,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace perf_test {
 
@@ -43,10 +43,10 @@ class LuciTestResultTest : public testing::Test {
 
     std::string json;
     ASSERT_TRUE(ReadFileToString(GetResultFilePath(), &json));
-    absl::optional<base::Value> value = base::JSONReader::Read(json);
+    std::optional<base::Value> value = base::JSONReader::Read(json);
     ASSERT_TRUE(value.has_value());
 
-    absl::optional<base::Value> expected_value =
+    std::optional<base::Value> expected_value =
         base::JSONReader::Read(expected_json);
     ASSERT_TRUE(expected_value.has_value());
 

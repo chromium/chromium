@@ -12,9 +12,19 @@ class TimeDelta;
 namespace compose {
 
 // Compose histogram names.
+extern const char kComposeDialogOpenLatency[];
+extern const char kComposeDialogSelectionLength[];
 extern const char kComposeResponseDurationOk[];
 extern const char kComposeResponseDurationError[];
 extern const char kComposeResponseStatus[];
+extern const char kComposeSessionComposeCount[];
+extern const char kComposeSessionCloseReason[];
+extern const char kComposeSessionDialogShownCount[];
+extern const char kComposeSessionUndoCount[];
+extern const char kComposeShowStatus[];
+extern const char kComposeConsentSessionCloseReason[];
+extern const char kComposeConsentSessionDialogShownCount[];
+extern const char kComposeSessionConsentGivenInSession[];
 
 // Enum for calculating the CTR of the Compose context menu item.
 // These values are persisted to logs. Entries should not be renumbered and
@@ -25,6 +35,29 @@ enum class ComposeContextMenuCtrEvent {
   kMenuItemDisplayed = 0,
   kComposeOpened = 1,
   kMaxValue = kComposeOpened,
+};
+
+// Keep in sync with ComposeConsentSessionCloseReasonType in
+// src/tools/metrics/histograms/metadata/compose/enums.xml.
+enum class ComposeConsentSessionCloseReason {
+  kEndedImplicitly = 0,
+  kCloseButtonPressed = 1,
+  kPageContentConsentAcceptedWithoutInsert = 2,
+  kPageContentDisclaimerAcknowledgedWithoutInsert = 3,
+  kPageContentConsentDeclined = 4,
+  kPageContentConsentGivenWithInsert = 5,
+  kNewSessionWithSelectedText = 6,
+  kMaxValue = kNewSessionWithSelectedText,
+};
+
+// Keep in sync with ComposeSessionCloseReasonType in
+// src/tools/metrics/histograms/metadata/compose/enums.xml.
+enum class ComposeSessionCloseReason {
+  kAcceptedSuggestion = 0,
+  kCloseButtonPressed = 1,
+  kEndedImplicitly = 2,
+  kNewSessionWithSelectedText = 3,
+  kMaxValue = kNewSessionWithSelectedText,
 };
 
 // Enum for recording the show status of the Compose context menu item.
@@ -39,7 +72,10 @@ enum class ComposeShowStatus {
   kDisabledMsbb = 3,
   kSignedOut = 4,
   kUnsupportedLanguage = 5,
-  kMaxValue = kUnsupportedLanguage,
+  kFormFieldInCrossOriginFrame = 6,
+  kPerUrlChecksFailed = 7,
+  kUserNotAllowedByOptimizationGuide = 8,
+  kMaxValue = kUserNotAllowedByOptimizationGuide,
 };
 
 void LogComposeContextMenuCtr(ComposeContextMenuCtrEvent event);
@@ -49,6 +85,35 @@ void LogComposeContextMenuShowStatus(ComposeShowStatus status);
 // Log the duration of a compose request. |is_valid| indicates the status of
 // the request.
 void LogComposeRequestDuration(base::TimeDelta duration, bool is_ok);
+
+void LogComposeConsentSessionCloseReason(
+    ComposeConsentSessionCloseReason reason);
+
+// Log session based metrics when a consent session ends.
+void LogComposeConsentSessionDialogShownCount(
+    ComposeConsentSessionCloseReason reason,
+    int dialog_shown_count);
+
+// Log session based metrics when a session ends.
+void LogComposeSessionCloseMetrics(ComposeSessionCloseReason reason,
+                                   int compose_count,
+                                   int dialog_shown_count,
+                                   int undo_count,
+                                   bool consent_given_in_session);
+
+// Log the amount trimmed from the inner text from the page (in bytes) when the
+// dialog is opened.
+void LogComposeDialogInnerTextShortenedBy(int shortened_by);
+
+// Log the size (in bytes) of the untrimmed inner text from the page when the
+// dialog is opened.
+void LogComposeDialogInnerTextSize(int size);
+
+// Log the time taken for the dialog to be fully shown and interactable.
+void LogComposeDialogOpenLatency(base::TimeDelta duration);
+
+// Log the character length of the selection when the dialog is opened.
+void LogComposeDialogSelectionLength(int length);
 }  // namespace compose
 
 #endif  // COMPONENTS_COMPOSE_CORE_BROWSER_COMPOSE_METRICS_H_

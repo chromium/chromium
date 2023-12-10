@@ -6,8 +6,17 @@ package org.chromium.chrome.browser.autofill.settings;
 
 import static com.google.common.truth.Truth.assertThat;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
@@ -18,9 +27,14 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
+import org.chromium.base.ContextUtils;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.browser.autofill.AutofillEditorBase;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
+import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.settings.SettingsActivity;
@@ -32,6 +46,8 @@ import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.autofill.VirtualCardEnrollmentState;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.test.util.modaldialog.FakeModalDialogManager;
 
 /** Instrumentation tests for AutofillLocalCardEditor. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -84,11 +100,44 @@ public class AutofillLocalCardEditorTest {
                     /* cardNameForAutofillDisplay= */ "",
                     /* obfuscatedLastFourDigits= */ "",
                     /* cvc= */ "123");
+    private static final CreditCard SAMPLE_AMEX_CARD_WITH_CVC =
+            new CreditCard(
+                    /* guid= */ "",
+                    /* origin= */ "",
+                    /* isLocal= */ true,
+                    /* isCached= */ false,
+                    /* isVirtual= */ false,
+                    /* name= */ "John Doe",
+                    /* number= */ "378282246310005",
+                    /* obfuscatedNumber= */ "",
+                    /* month= */ "5",
+                    AutofillTestHelper.nextYear(),
+                    /* basicCardIssuerNetwork= */ "amex",
+                    /* issuerIconDrawableId= */ 0,
+                    /* billingAddressId= */ "",
+                    /* serverId= */ "",
+                    /* instrumentId= */ 0,
+                    /* cardLabel= */ "",
+                    /* nickname= */ "",
+                    /* cardArtUrl= */ null,
+                    /* virtualCardEnrollmentState= */ VirtualCardEnrollmentState
+                            .UNENROLLED_AND_ELIGIBLE,
+                    /* productDescription= */ "",
+                    /* cardNameForAutofillDisplay= */ "",
+                    /* obfuscatedLastFourDigits= */ "",
+                    /* cvc= */ "1234");
+    private static final String AMEX_CARD_NUMBER = "378282246310005";
+    private static final String AMEX_CARD_NUMBER_PREFIX = "37";
+    private static final String NON_AMEX_CARD_NUMBER = "4111111111111111";
+    private static final String NON_AMEX_CARD_NUMBER_PREFIX = "41";
 
+    @Mock private ObservableSupplierImpl<ModalDialogManager> mModalDialogManagerSupplierMock;
+    @Mock private PersonalDataManager mPersonalDataManagerMock;
     private AutofillTestHelper mAutofillTestHelper;
 
     @Before
     public void setUp() {
+        MockitoAnnotations.initMocks(this);
         mAutofillTestHelper = new AutofillTestHelper();
     }
 
@@ -321,6 +370,101 @@ public class AutofillLocalCardEditorTest {
     @Test
     @MediumTest
     @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_CVC_STORAGE})
+    public void testSecurityCode_whenAmExCardIsSet_usesAmExCvcHintImage() throws Exception {
+        String guid = mAutofillTestHelper.setCreditCard(SAMPLE_AMEX_CARD_WITH_CVC);
+
+        SettingsActivity activity =
+                mSettingsActivityTestRule.startSettingsActivity(fragmentArgs(guid));
+        AutofillLocalCardEditor autofillLocalCardEditorFragment =
+                (AutofillLocalCardEditor) activity.getMainFragment();
+
+        verifyCvcHintImage(
+                autofillLocalCardEditorFragment, /* expectedImage= */ R.drawable.cvc_icon_amex);
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_CVC_STORAGE})
+    public void testSecurityCode_whenCardIsNotSet_usesDefaultCvcHintImage() throws Exception {
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
+        AutofillLocalCardEditor autofillLocalCardEditorFragment =
+                (AutofillLocalCardEditor) activity.getMainFragment();
+
+        verifyCvcHintImage(
+                autofillLocalCardEditorFragment, /* expectedImage= */ R.drawable.cvc_icon);
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_CVC_STORAGE})
+    public void testSecurityCode_whenAmExCardNumberIsEntered_usesAmExCvcHintImage()
+            throws Exception {
+        String guid = mAutofillTestHelper.setCreditCard(SAMPLE_LOCAL_CARD_WITH_CVC);
+
+        SettingsActivity activity =
+                mSettingsActivityTestRule.startSettingsActivity(fragmentArgs(guid));
+        AutofillLocalCardEditor autofillLocalCardEditorFragment =
+                (AutofillLocalCardEditor) activity.getMainFragment();
+        setCardNumberOnEditor(autofillLocalCardEditorFragment, AMEX_CARD_NUMBER);
+
+        verifyCvcHintImage(
+                autofillLocalCardEditorFragment, /* expectedImage= */ R.drawable.cvc_icon_amex);
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_CVC_STORAGE})
+    public void testSecurityCode_whenNonAmExCardNumberIsEntered_usesDefaultCvcHintImage()
+            throws Exception {
+        String guid = mAutofillTestHelper.setCreditCard(SAMPLE_LOCAL_CARD_WITH_CVC);
+
+        SettingsActivity activity =
+                mSettingsActivityTestRule.startSettingsActivity(fragmentArgs(guid));
+        AutofillLocalCardEditor autofillLocalCardEditorFragment =
+                (AutofillLocalCardEditor) activity.getMainFragment();
+        setCardNumberOnEditor(autofillLocalCardEditorFragment, NON_AMEX_CARD_NUMBER);
+
+        verifyCvcHintImage(
+                autofillLocalCardEditorFragment, /* expectedImage= */ R.drawable.cvc_icon);
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_CVC_STORAGE})
+    public void testSecurityCode_whenNumberIsChangedFromAmExToNonAmEx_usesDefaultCvcHintImage()
+            throws Exception {
+        String guid = mAutofillTestHelper.setCreditCard(SAMPLE_AMEX_CARD_WITH_CVC);
+
+        SettingsActivity activity =
+                mSettingsActivityTestRule.startSettingsActivity(fragmentArgs(guid));
+        AutofillLocalCardEditor autofillLocalCardEditorFragment =
+                (AutofillLocalCardEditor) activity.getMainFragment();
+        setCardNumberOnEditor(autofillLocalCardEditorFragment, NON_AMEX_CARD_NUMBER);
+
+        verifyCvcHintImage(
+                autofillLocalCardEditorFragment, /* expectedImage= */ R.drawable.cvc_icon);
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_CVC_STORAGE})
+    public void testSecurityCode_whenNumberIsChangedFromNonAmExToAmEx_usesAmExCvcHintImage()
+            throws Exception {
+        String guid = mAutofillTestHelper.setCreditCard(SAMPLE_LOCAL_CARD_WITH_CVC);
+
+        SettingsActivity activity =
+                mSettingsActivityTestRule.startSettingsActivity(fragmentArgs(guid));
+        AutofillLocalCardEditor autofillLocalCardEditorFragment =
+                (AutofillLocalCardEditor) activity.getMainFragment();
+        setCardNumberOnEditor(autofillLocalCardEditorFragment, AMEX_CARD_NUMBER);
+
+        verifyCvcHintImage(
+                autofillLocalCardEditorFragment, /* expectedImage= */ R.drawable.cvc_icon_amex);
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_CVC_STORAGE})
     public void expirationDateFieldSet_cardHasExpirationDate() throws Exception {
         String validExpirationMonth = "12";
         String validExpirationYear = AutofillTestHelper.nextYear();
@@ -508,6 +652,78 @@ public class AutofillLocalCardEditorTest {
         assertThat(autofillLocalCardEditorFragment.mDoneButton.isEnabled()).isFalse();
     }
 
+    @Test
+    @MediumTest
+    public void deleteCreditCardConfirmationDialog_deleteEntryCanceled_dialogDismissed()
+            throws Exception {
+        String guid = mAutofillTestHelper.setCreditCard(SAMPLE_LOCAL_CARD);
+        SettingsActivity activity =
+                mSettingsActivityTestRule.startSettingsActivity(fragmentArgs(guid));
+        AutofillLocalCardEditor autofillLocalCardEditorFragment =
+                (AutofillLocalCardEditor) activity.getMainFragment();
+
+        PersonalDataManager.setInstanceForTesting(mPersonalDataManagerMock);
+
+        FakeModalDialogManager fakeModalDialogManager =
+                new FakeModalDialogManager(ModalDialogManager.ModalDialogType.APP);
+        openDeleteCreditCardConfirmationDialog(
+                autofillLocalCardEditorFragment, fakeModalDialogManager);
+
+        // Verify the dialog is open
+        Assert.assertNotNull(fakeModalDialogManager.getShownDialogModel());
+        TestThreadUtils.runOnUiThreadBlocking(() -> fakeModalDialogManager.clickNegativeButton());
+
+        // Verify the dialog is closed
+        Assert.assertNull(fakeModalDialogManager.getShownDialogModel());
+
+        // Verify the card entry is not deleted
+        verify(mPersonalDataManagerMock, never()).deleteCreditCard(guid);
+    }
+
+    @Test
+    @MediumTest
+    public void
+            deleteCreditCardConfirmationDialog_deleteEntryConfirmed_dialogDismissedAndEntryDeleted()
+                    throws Exception {
+        String guid = mAutofillTestHelper.setCreditCard(SAMPLE_LOCAL_CARD);
+        SettingsActivity activity =
+                mSettingsActivityTestRule.startSettingsActivity(fragmentArgs(guid));
+        AutofillLocalCardEditor autofillLocalCardEditorFragment =
+                (AutofillLocalCardEditor) activity.getMainFragment();
+
+        PersonalDataManager.setInstanceForTesting(mPersonalDataManagerMock);
+
+        FakeModalDialogManager fakeModalDialogManager =
+                new FakeModalDialogManager(ModalDialogManager.ModalDialogType.APP);
+        openDeleteCreditCardConfirmationDialog(
+                autofillLocalCardEditorFragment, fakeModalDialogManager);
+
+        // Verify the dialog is open
+        Assert.assertNotNull(fakeModalDialogManager.getShownDialogModel());
+        TestThreadUtils.runOnUiThreadBlocking(() -> fakeModalDialogManager.clickPositiveButton());
+
+        // Verify the dialog is closed
+        Assert.assertNull(fakeModalDialogManager.getShownDialogModel());
+
+        // Verify the card entry is deleted
+        verify(mPersonalDataManagerMock, times(1)).deleteCreditCard(guid);
+    }
+
+    private void openDeleteCreditCardConfirmationDialog(
+            AutofillLocalCardEditor autofillLocalCardEditorFragment,
+            ModalDialogManager modalDialogManager) {
+        when(mModalDialogManagerSupplierMock.get()).thenReturn(modalDialogManager);
+        autofillLocalCardEditorFragment.setModalDialogManagerSupplier(
+                mModalDialogManagerSupplierMock);
+
+        MenuItem deleteButton = mock(MenuItem.class);
+        when(deleteButton.getItemId()).thenReturn(R.id.delete_menu_id);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    autofillLocalCardEditorFragment.onOptionsItemSelected(deleteButton);
+                });
+    }
+
     private void setExpirationDateOnEditor(
             AutofillLocalCardEditor autofillLocalCardEditorFragment, String date) {
         TestThreadUtils.runOnUiThreadBlocking(
@@ -549,5 +765,56 @@ public class AutofillLocalCardEditorTest {
     @SmallTest
     public void getExpirationYear_returnsYearWithPrefix() throws Exception {
         assertThat(AutofillLocalCardEditor.getExpirationYear("12/23")).isEqualTo("2023");
+    }
+
+    @Test
+    @SmallTest
+    public void testIsAmExCard_whenAmExCardNumberPrefixIsEntered_returnsTrue() {
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    try {
+                        assertThat(AutofillLocalCardEditor.isAmExCard(AMEX_CARD_NUMBER_PREFIX))
+                                .isTrue();
+                    } catch (Exception e) {
+                        Assert.fail("Failed to verify AmEx card.");
+                    }
+                });
+    }
+
+    @Test
+    @SmallTest
+    public void testIsAmExCard_whenNonAmExCardNumberPrefixIsEntered_returnsFalse() {
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    try {
+                        assertThat(AutofillLocalCardEditor.isAmExCard(NON_AMEX_CARD_NUMBER_PREFIX))
+                                .isFalse();
+                    } catch (Exception e) {
+                        Assert.fail("Failed to verify AmEx card.");
+                    }
+                });
+    }
+
+    private void setCardNumberOnEditor(
+        AutofillLocalCardEditor autofillLocalCardEditorFragment, String cardNumber) {
+        TestThreadUtils.runOnUiThreadBlocking(
+            () -> {
+                try {
+                    autofillLocalCardEditorFragment.mNumberText.setText(cardNumber);
+                } catch (Exception e) {
+                    Assert.fail("Failed to set the card number");
+                }
+            });
+    }
+
+    private void verifyCvcHintImage(
+            AutofillLocalCardEditor autofillLocalCardEditorFragment, int expectedImage) {
+        ImageView expectedCvcHintImage = new ImageView(ContextUtils.getApplicationContext());
+        expectedCvcHintImage.setImageResource(expectedImage);
+
+        BitmapDrawable expectedDrawable = (BitmapDrawable) expectedCvcHintImage.getDrawable();
+        BitmapDrawable actualDrawable =
+                (BitmapDrawable) autofillLocalCardEditorFragment.mCvcHintImage.getDrawable();
+        assertThat(expectedDrawable.getBitmap().sameAs(actualDrawable.getBitmap())).isTrue();
     }
 }

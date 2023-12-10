@@ -23,6 +23,7 @@
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
+#include "v8-message.h"
 
 namespace blink {
 
@@ -45,7 +46,7 @@ void AnimationFrameTimingMonitor::Shutdown() {
   Thread::Current()->RemoveTaskTimeObserver(this);
 }
 
-void AnimationFrameTimingMonitor::WillBeginMainFrame() {
+void AnimationFrameTimingMonitor::BeginMainFrame(base::TimeTicks frame_time) {
   base::TimeTicks now = base::TimeTicks::Now();
   if (!current_frame_timing_info_) {
     current_frame_timing_info_ =
@@ -54,6 +55,7 @@ void AnimationFrameTimingMonitor::WillBeginMainFrame() {
 
   current_frame_timing_info_->SetRenderStartTime(now);
   state_ = State::kRenderingFrame;
+  ApplyTaskDuration(now - current_task_start_);
 }
 
 void AnimationFrameTimingMonitor::WillPerformStyleAndLayoutCalculation() {
@@ -72,7 +74,6 @@ void AnimationFrameTimingMonitor::DidBeginMainFrame() {
   }
 
   CHECK(state_ == State::kRenderingFrame);
-  CHECK(!desired_render_start_time_.is_null());
   current_frame_timing_info_->SetRenderEndTime(base::TimeTicks::Now());
 
   if (did_pause_) {
@@ -80,19 +81,8 @@ void AnimationFrameTimingMonitor::DidBeginMainFrame() {
   }
   did_pause_ = false;
 
-  // These would be (non-event) scripts that are handled while rendering, e.g.
-  // ResizeObserver and requestAnimationFrame callbacks.
-  // Their desired execution time would be set to the frame's desired render
-  // start time.
-  for (ScriptTimingInfo* script : current_scripts_) {
-    if (script->DesiredExecutionStartTime().is_null()) {
-      script->SetDesiredExecutionStartTime(desired_render_start_time_);
-    }
-  }
   current_frame_timing_info_->SetScripts(current_scripts_);
   if (current_frame_timing_info_->Duration() >= kLongAnimationFrameDuration) {
-    current_frame_timing_info_->SetDesiredRenderStartTime(
-        desired_render_start_time_);
     if (!first_ui_event_timestamp_.is_null()) {
       current_frame_timing_info_->SetFirstUIEventTime(
           first_ui_event_timestamp_);
@@ -121,7 +111,6 @@ void AnimationFrameTimingMonitor::DidBeginMainFrame() {
     RecordLongAnimationFrameUKMAndTrace(*current_frame_timing_info_);
   }
 
-  desired_render_start_time_ = base::TimeTicks();
   first_ui_event_timestamp_ = base::TimeTicks();
   current_frame_timing_info_.Clear();
   current_scripts_.clear();
@@ -134,6 +123,7 @@ void AnimationFrameTimingMonitor::WillProcessTask(base::TimeTicks start_time) {
   if (state_ == State::kIdle) {
     state_ = State::kProcessingTask;
   }
+  current_task_start_ = start_time;
 }
 
 void AnimationFrameTimingMonitor::ApplyTaskDuration(
@@ -156,12 +146,14 @@ void AnimationFrameTimingMonitor::ApplyTaskDuration(
 void AnimationFrameTimingMonitor::OnTaskCompleted(
     base::TimeTicks start_time,
     base::TimeTicks end_time,
-    base::TimeTicks desired_execution_time,
     LocalFrame* frame) {
   HeapVector<Member<ScriptTimingInfo>> scripts;
 
   bool did_pause = false;
+  bool did_see_ui_events = false;
   std::swap(did_pause, did_pause_);
+  std::swap(did_see_ui_events, did_see_ui_events_);
+  current_task_start_ = base::TimeTicks();
 
   base::TimeDelta task_duration = end_time - start_time;
   if (pending_script_info_ && ((pending_script_info_->type ==
@@ -176,7 +168,7 @@ void AnimationFrameTimingMonitor::OnTaskCompleted(
 
   // If we already need an update and a new task is processed, count its
   // duration towards blockingTime.
-  if (frame) {
+  if (frame || did_see_ui_events) {
     if (RuntimeEnabledFeatures::LongTaskFromLongAnimationFrameEnabled() &&
         task_duration >= kLongTaskDuration) {
       client_.ReportLongTaskTiming(start_time, end_time, frame->DomWindow());
@@ -191,24 +183,11 @@ void AnimationFrameTimingMonitor::OnTaskCompleted(
   }
 
   bool should_report = client_.ShouldReportLongAnimationFrameTiming();
-  if (should_report && !desired_execution_time.is_null()) {
-    // These would be (non-event) scripts that are executed outside of the
-    // rendering phase. e.g. a timer callback or deferred script blocks.
-    // Their desired execution time would be set to the time the task was
-    // posted to the event loop - in the case of a timer this would be the
-    // timer expiry time.
-    for (ScriptTimingInfo* script : current_scripts_) {
-      if (script->DesiredExecutionStartTime().is_null()) {
-        script->SetDesiredExecutionStartTime(desired_execution_time);
-      }
-    }
-  }
-
   if (client_.RequestedMainFramePending() && should_report) {
     current_frame_timing_info_ =
         MakeGarbageCollected<AnimationFrameTimingInfo>(start_time);
     state_ = State::kPendingFrame;
-    if (frame) {
+    if (frame || did_see_ui_events) {
       ApplyTaskDuration(task_duration);
     }
     return;
@@ -300,18 +279,6 @@ void AnimationFrameTimingMonitor::RecordLongAnimationFrameUKMAndTrace(
 
   ukm::builders::PerformanceAPI_LongAnimationFrame builder(source_id);
   builder.SetDuration_Total(info.Duration().InMilliseconds());
-  base::TimeTicks desired_start_time = info.FrameStartTime();
-  if (!info.FirstUIEventTime().is_null()) {
-    desired_start_time = info.FirstUIEventTime();
-  }
-  if (!info.DesiredRenderStartTime().is_null()) {
-    desired_start_time = info.DesiredRenderStartTime() < desired_start_time
-                             ? info.DesiredRenderStartTime()
-                             : desired_start_time;
-  }
-
-  builder.SetDuration_DelayDefer(
-      (info.FrameStartTime() - desired_start_time).InMilliseconds());
   builder.SetDuration_EffectiveBlocking(
       info.TotalBlockingDuration().InMilliseconds());
   builder.SetDuration_StyleAndLayout_RenderPhase(
@@ -495,6 +462,10 @@ void AnimationFrameTimingMonitor::Will(
                                    : ScriptTimingInfo::Type::kClassicScript,
       .start_time = probe_data.CaptureStartTime(),
       .source_location = {.url = url}};
+  if (probe_data.sanitize) {
+    pending_script_info_->execution_start_time =
+        pending_script_info_->start_time;
+  }
 }
 
 void AnimationFrameTimingMonitor::Will(const probe::ExecuteScript& probe_data) {
@@ -517,6 +488,7 @@ void AnimationFrameTimingMonitor::Will(const probe::ExecuteScript& probe_data) {
 namespace {
 
 ScriptTimingInfo::ScriptSourceLocation CaptureScriptSourceLocation(
+    v8::Isolate* isolate,
     v8::MaybeLocal<v8::Value> maybe_value) {
   v8::Local<v8::Value> value;
 
@@ -534,16 +506,24 @@ ScriptTimingInfo::ScriptSourceLocation CaptureScriptSourceLocation(
   }
 
   v8::Local<v8::Function> function = value.As<v8::Function>();
-  if (function->IsFunction()) {
-    return ScriptTimingInfo::ScriptSourceLocation{
-        .url = ToCoreStringWithUndefinedOrNullCheck(
-            function->GetScriptOrigin().ResourceName()),
-        .function_name =
-            ToCoreStringWithUndefinedOrNullCheck(function->GetName()),
-        .start_position = function->GetScriptStartPosition()};
+  if (!function->IsFunction()) {
+    return ScriptTimingInfo::ScriptSourceLocation();
   }
 
-  return ScriptTimingInfo::ScriptSourceLocation();
+  v8::ScriptOrigin origin = function->GetScriptOrigin();
+
+  // Opaque scripts don't report source locations.
+  if (origin.Options().IsOpaque()) {
+    return ScriptTimingInfo::ScriptSourceLocation();
+  }
+
+  v8::Local<v8::Value> source_location = origin.ResourceName();
+
+  return ScriptTimingInfo::ScriptSourceLocation{
+      .url = ToCoreStringWithUndefinedOrNullCheck(isolate, source_location),
+      .function_name =
+          ToCoreStringWithUndefinedOrNullCheck(isolate, function->GetName()),
+      .start_position = function->GetScriptStartPosition()};
 }
 
 bool IsCallbackFromMainWorld(v8::MaybeLocal<v8::Value> callback) {
@@ -575,6 +555,7 @@ void AnimationFrameTimingMonitor::Will(
       .execution_start_time = probe_data.CaptureStartTime(),
       .property_like_name = probe_data.name,
       .source_location = CaptureScriptSourceLocation(
+          probe_data.context->GetIsolate(),
           probe_data.callback ? probe_data.callback->CallbackObject()
                               : probe_data.function)};
 }
@@ -605,6 +586,7 @@ void AnimationFrameTimingMonitor::Did(
   if (probe_data.event->IsUIEvent() && first_ui_event_timestamp_.is_null()) {
     first_ui_event_timestamp_ = probe_data.event->PlatformTimeStamp();
   }
+  did_see_ui_events_ = true;
 
   ScriptTimingInfo* info = PopScriptEntryPoint(probe_data);
   if (!info) {
@@ -612,7 +594,6 @@ void AnimationFrameTimingMonitor::Did(
   }
 
   info->SetPropertyLikeName(probe_data.event->type());
-  info->SetDesiredExecutionStartTime(probe_data.event->PlatformTimeStamp());
   if (Node* node = probe_data.event_target->ToNode()) {
     StringBuilder builder;
     builder.Append(node->nodeName());
@@ -638,6 +619,7 @@ void AnimationFrameTimingMonitor::Did(
 
   v8::HandleScope handle_scope(probe_data.context->GetIsolate());
   info->SetSourceLocation(CaptureScriptSourceLocation(
+      probe_data.context->GetIsolate(),
       To<JSBasedEventListener>(probe_data.listener)
           ->GetListenerObject(*probe_data.event_target)));
 }

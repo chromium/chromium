@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "ash/constants/ash_features.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
@@ -119,8 +118,8 @@ TEST_F(AcceleratorCommandsTest, CycleMixedMirrorModeSwapPrimaryDisplay) {
   // display)
   display::DisplayIdList dst_ids;
   dst_ids.emplace_back(id_list[1]);
-  absl::optional<display::MixedMirrorModeParams> mixed_params(
-      absl::in_place, id_list[0], dst_ids);
+  std::optional<display::MixedMirrorModeParams> mixed_params(
+      std::in_place, id_list[0], dst_ids);
 
   display_manager()->SetMirrorMode(display::MirrorMode::kMixed, mixed_params);
 
@@ -180,20 +179,11 @@ TEST_F(AcceleratorCommandsAudioTest, VolumeSetToZeroAndThenMute) {
   // Volume down again, should decrease to zero and mute.
   PressAndReleaseKey(ui::VKEY_VOLUME_DOWN, ui::EF_NONE);
   EXPECT_EQ(audio_handler->GetOutputVolumePercent(), 0);
-  // For QsRevamp: output node mute state will not change.
-  if (features::IsQsRevampEnabled()) {
-    EXPECT_FALSE(audio_handler->IsOutputMuted());
-  } else {
-    EXPECT_TRUE(audio_handler->IsOutputMuted());
-  }
+  // Output node mute state will not change.
+  EXPECT_FALSE(audio_handler->IsOutputMuted());
 }
 
 TEST_F(AcceleratorCommandsAudioTest, ChangeVolumeAfterMuted) {
-  // This behavior is for QsRevamp.
-  if (!features::IsQsRevampEnabled()) {
-    return;
-  }
-
   SetUpAudioNode();
   auto* audio_handler = CrasAudioHandler::Get();
   // Make sure that output node is in mute state.

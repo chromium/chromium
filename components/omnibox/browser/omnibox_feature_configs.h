@@ -59,7 +59,7 @@ regressions. 3 steps:
 */
 
 // A substitute for `BASE_DECLARE_FEATURE` for nesting in structs.
-#define DECLARE_FEATURE(feature) static CONSTINIT const base::Feature feature
+#define DECLARE_FEATURE(feature) static constinit const base::Feature feature
 
 // Base class other configs should inherit from.
 template <class T>
@@ -101,12 +101,18 @@ struct CalcProvider : Config<CalcProvider> {
   size_t num_non_calc_inputs;
 };
 
-// If enabled, set the minimum input length before requesting document
-// suggestions.
+// If enabled, allow document provider requests when all other conditions are
+// met.
 struct DocumentProvider : Config<DocumentProvider> {
   DocumentProvider();
   bool enabled;
+  // The minimum input length required before requesting document suggestions.
   size_t min_query_length;
+  // Whether to ignore the state of the document provider when deciding to
+  // finish debouncing.
+  bool ignore_when_debouncing;
+  // Whether to treat an HTTP 401 response code as a backoff signal.
+  bool backoff_on_401;
 };
 
 // If enabled, pretends all matches are allowed to be default. This is very
@@ -132,11 +138,12 @@ struct ShortcutBoosting : Config<ShortcutBoosting> {
   bool counterfactual;
   // Shortcuts are boosted if either:
   // 1) They are the top shortcut.
-  // 2) OR they have more hits than `non_top_hit_threshold`. If this is 1, then
-  //    all shortcuts are boosted, since all have at least 1 hit. If 0
-  //    (default), then no shortcuts will be boosted through (2) - only the top
-  //    shortcut will be boosted.
+  // 2) OR they have more hits than `non_top_hit_[searches_]threshold`. If this
+  //    is 1, then all shortcuts are boosted, since all have at least 1 hit. If
+  //    0 (default), then no shortcuts will be boosted through (2) - only the
+  //    top shortcut will be boosted.
   int non_top_hit_threshold;
+  int non_top_hit_search_threshold;
   // If enabled, boosted shortcuts will be grouped with searches. Unboosted
   // shortcuts are grouped with URLs, like traditionally, regardless of
   // `group_with_searches`.

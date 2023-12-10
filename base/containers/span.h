@@ -9,16 +9,16 @@
 #include <stdint.h>
 
 #include <array>
+#include <concepts>
 #include <iterator>
 #include <limits>
+#include <memory>
 #include <type_traits>
 #include <utility>
 
 #include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/containers/checked_iterators.h"
-#include "base/containers/contiguous_iterator.h"
-#include "base/cxx20_to_address.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/template_util.h"
 
@@ -33,6 +33,32 @@ template <typename T,
 class span;
 
 namespace internal {
+
+template <typename From, typename To>
+concept LegalDataConversion =
+    std::convertible_to<std::remove_reference_t<From> (*)[],
+                        std::remove_reference_t<To> (*)[]>;
+
+template <typename T, typename It>
+concept CompatibleIter = std::contiguous_iterator<It> &&
+                         LegalDataConversion<std::iter_reference_t<It>, T>;
+
+template <typename T, typename R>
+concept CompatibleRange =
+    std::ranges::contiguous_range<R> && std::ranges::sized_range<R> &&
+    LegalDataConversion<std::ranges::range_reference_t<R>, T> &&
+    (std::ranges::borrowed_range<R> || std::is_const_v<T>);
+
+// NOTE: Ideally we'd just use `CompatibleRange`, however this currently breaks
+// code that was written prior to C++20 being standardized and assumes providing
+// .data() and .size() is sufficient.
+// TODO: https://crbug.com/1504998 - Remove in favor of CompatibleRange and fix
+// callsites.
+template <typename T, typename R>
+concept LegacyCompatibleRange = requires(R& r) {
+  { *std::ranges::data(r) } -> LegalDataConversion<T>;
+  std::ranges::size(r);
+};
 
 template <size_t I>
 using size_constant = std::integral_constant<size_t, I>;
@@ -50,100 +76,10 @@ template <typename T, size_t N>
 struct ExtentImpl<base::span<T, N>> : size_constant<N> {};
 
 template <typename T>
-using Extent = ExtentImpl<remove_cvref_t<T>>;
+using Extent = ExtentImpl<std::remove_cvref_t<T>>;
 
 template <typename T>
-struct IsSpanImpl : std::false_type {};
-
-template <typename T, size_t Extent>
-struct IsSpanImpl<span<T, Extent>> : std::true_type {};
-
-template <typename T>
-using IsNotSpan = std::negation<IsSpanImpl<std::decay_t<T>>>;
-
-template <typename T>
-struct IsStdArrayImpl : std::false_type {};
-
-template <typename T, size_t N>
-struct IsStdArrayImpl<std::array<T, N>> : std::true_type {};
-
-template <typename T>
-using IsNotStdArray = std::negation<IsStdArrayImpl<std::decay_t<T>>>;
-
-template <typename T>
-using IsNotCArray = std::negation<std::is_array<std::remove_reference_t<T>>>;
-
-template <typename From, typename To>
-using IsLegalDataConversion = std::is_convertible<From (*)[], To (*)[]>;
-
-template <typename Iter, typename T>
-using IteratorHasConvertibleReferenceType =
-    IsLegalDataConversion<std::remove_reference_t<iter_reference_t<Iter>>, T>;
-
-template <typename Iter, typename T>
-using EnableIfCompatibleContiguousIterator = std::enable_if_t<
-    std::conjunction_v<IsContiguousIterator<Iter>,
-                       IteratorHasConvertibleReferenceType<Iter, T>>>;
-
-template <typename Container, typename T>
-using ContainerHasConvertibleData = IsLegalDataConversion<
-    std::remove_pointer_t<decltype(std::data(std::declval<Container>()))>,
-    T>;
-
-template <typename Container>
-using ContainerHasIntegralSize =
-    std::is_integral<decltype(std::size(std::declval<Container>()))>;
-
-template <typename From, size_t FromExtent, typename To, size_t ToExtent>
-using EnableIfLegalSpanConversion =
-    std::enable_if_t<(ToExtent == dynamic_extent || ToExtent == FromExtent) &&
-                     IsLegalDataConversion<From, To>::value>;
-
-// SFINAE check if Array can be converted to a span<T>.
-template <typename Array, typename T, size_t Extent>
-using EnableIfSpanCompatibleArray =
-    std::enable_if_t<(Extent == dynamic_extent ||
-                      Extent == internal::Extent<Array>::value) &&
-                     ContainerHasConvertibleData<Array, T>::value>;
-
-// SFINAE check if Container can be converted to a span<T>.
-template <typename Container, typename T>
-using IsSpanCompatibleContainer =
-    std::conjunction<IsNotSpan<Container>,
-                     IsNotStdArray<Container>,
-                     IsNotCArray<Container>,
-                     ContainerHasConvertibleData<Container, T>,
-                     ContainerHasIntegralSize<Container>>;
-
-template <typename Container, typename T>
-using EnableIfSpanCompatibleContainer =
-    std::enable_if_t<IsSpanCompatibleContainer<Container, T>::value>;
-
-template <typename Container, typename T, size_t Extent>
-using EnableIfSpanCompatibleContainerAndSpanIsDynamic =
-    std::enable_if_t<IsSpanCompatibleContainer<Container, T>::value &&
-                     Extent == dynamic_extent>;
-
-// A helper template for storing the size of a span. Spans with static extents
-// don't require additional storage, since the extent itself is specified in the
-// template parameter.
-template <size_t Extent>
-class ExtentStorage {
- public:
-  constexpr explicit ExtentStorage(size_t size) noexcept {}
-  constexpr size_t size() const noexcept { return Extent; }
-};
-
-// Specialization of ExtentStorage for dynamic extents, which do require
-// explicit storage for the size.
-template <>
-struct ExtentStorage<dynamic_extent> {
-  constexpr explicit ExtentStorage(size_t size) noexcept : size_(size) {}
-  constexpr size_t size() const noexcept { return size_; }
-
- private:
-  size_t size_;
-};
+inline constexpr size_t ExtentV = Extent<T>::value;
 
 // must_not_be_dynamic_extent prevents |dynamic_extent| from being returned in a
 // constexpr context.
@@ -212,34 +148,52 @@ constexpr size_t must_not_be_dynamic_extent() {
 //   std::vector<const int*>        =>  base::span<const int*>
 //   const std::vector<const int*>  =>  base::span<const int* const>
 //
-// Differences from the C++20 draft
-// --------------------------------
+// Differences from the C++ standard
+// ---------------------------------
 //
-// http://eel.is/c++draft/views contains the latest C++20 draft of std::span.
+// http://eel.is/c++draft/views.span contains the latest C++ draft of std::span.
 // Chromium tries to follow the draft as close as possible. Differences between
 // the draft and the implementation are documented in subsections below.
 //
+// Differences from [span.overview]:
+// - Dynamic spans are implemented as a partial specialization of the regular
+//   class template. This leads to significantly simpler checks involving the
+//   extent, at the expense of some duplicated code. The same strategy is used
+//   by libc++.
+//
 // Differences from [span.objectrep]:
 // - as_bytes() and as_writable_bytes() return spans of uint8_t instead of
-//   std::byte (std::byte is a C++17 feature)
+//   std::byte.
 //
 // Differences from [span.cons]:
-// - Constructing a static span (i.e. Extent != dynamic_extent) from a dynamic
-//   sized container (e.g. std::vector) requires an explicit conversion (in the
-//   C++20 draft this is simply UB)
+// - The constructors from a contiguous range apart from a C array are folded
+//   into a single one, using a construct similarly to the one proposed
+//   (but not standardized) in https://wg21.link/P1419.
+//   The C array constructor is kept so that a span can be constructed from
+//   an init list like {{1, 2, 3}}.
+//   TODO: https://crbug.com/828324 - Consider adding C++26's constructor from
+//   a std::initializer_list instead.
+// - The conversion constructors from a contiguous range into a dynamic span
+//   don't check for the range concept, but rather whether std::ranges::data
+//   and std::ranges::size are well formed. This is due to legacy reasons and
+//   should be fixed.
+//
+// Differences from [span.deduct]:
+// - The deduction guides from a contiguous range are folded into a single one,
+//   and treat borrowed ranges correctly.
+//
+// Additions beyond the C++ standard draft
+// - as_byte_span() function.
 //
 // Furthermore, all constructors and methods are marked noexcept due to the lack
 // of exceptions in Chromium.
 //
 // Due to the lack of class template argument deduction guides in C++14
-// appropriate make_span() utility functions are provided.
+// appropriate make_span() utility functions are provided for historic reasons.
 
 // [span], class template span
-template <typename T, size_t Extent, typename InternalPtrType>
-class GSL_POINTER span : public internal::ExtentStorage<Extent> {
- private:
-  using ExtentStorage = internal::ExtentStorage<Extent>;
-
+template <typename T, size_t N, typename InternalPtrType>
+class GSL_POINTER span {
  public:
   using element_type = T;
   using value_type = std::remove_cv_t<T>;
@@ -251,184 +205,119 @@ class GSL_POINTER span : public internal::ExtentStorage<Extent> {
   using const_reference = const T&;
   using iterator = CheckedContiguousIterator<T>;
   using reverse_iterator = std::reverse_iterator<iterator>;
-  static constexpr size_t extent = Extent;
+  static constexpr size_t extent = N;
 
   // [span.cons], span constructors, copy, assignment, and destructor
-  constexpr span() noexcept : ExtentStorage(0), data_(nullptr) {
-    static_assert(Extent == dynamic_extent || Extent == 0, "Invalid Extent");
+  constexpr span() noexcept
+    requires(N == 0)
+  = default;
+
+  template <typename It>
+    requires(internal::CompatibleIter<T, It>)
+  explicit constexpr span(It first, StrictNumeric<size_t> count) noexcept
+      :  // The use of to_address() here is to handle the case where the
+         // iterator `first` is pointing to the container's `end()`. In that
+         // case we can not use the address returned from the iterator, or
+         // dereference it through the iterator's `operator*`, but we can store
+         // it. We must assume in this case that `count` is 0, since the
+         // iterator does not point to valid data. Future hardening of iterators
+         // may disallow pulling the address from `end()`, as demonstrated by
+         // asserts() in libstdc++:
+         // https://gcc.gnu.org/bugzilla/show_bug.cgi?id=93960.
+         //
+         // The span API dictates that the `data()` is accessible when size is
+         // 0, since the pointer may be valid, so we cannot prevent storing and
+         // giving out an invalid pointer here without breaking API
+         // compatibility and our unit tests. Thus protecting against this can
+         // likely only be successful from inside iterators themselves, where
+         // the context about the pointer is known.
+         //
+         // We can not protect here generally against an invalid iterator/count
+         // being passed in, since we have no context to determine if the
+         // iterator or count are valid.
+        data_(std::to_address(first)) {
+    CHECK(N == count);
   }
 
-  template <typename It,
-            typename = internal::EnableIfCompatibleContiguousIterator<It, T>>
-  constexpr span(It first, StrictNumeric<size_t> count) noexcept
-      : ExtentStorage(count),
-        // The use of to_address() here is to handle the case where the iterator
-        // `first` is pointing to the container's `end()`. In that case we can
-        // not use the address returned from the iterator, or dereference it
-        // through the iterator's `operator*`, but we can store it. We must
-        // assume in this case that `count` is 0, since the iterator does not
-        // point to valid data. Future hardening of iterators may disallow
-        // pulling the address from `end()`, as demonstrated by asserts() in
-        // libstdc++: https://gcc.gnu.org/bugzilla/show_bug.cgi?id=93960.
-        //
-        // The span API dictates that the `data()` is accessible when size is 0,
-        // since the pointer may be valid, so we cannot prevent storing and
-        // giving out an invalid pointer here without breaking API compatibility
-        // and our unit tests. Thus protecting against this can likely only be
-        // successful from inside iterators themselves, where the context about
-        // the pointer is known.
-        //
-        // We can not protect here generally against an invalid iterator/count
-        // being passed in, since we have no context to determine if the
-        // iterator or count are valid.
-        data_(base::to_address(first)) {
-    CHECK(Extent == dynamic_extent || Extent == count);
-  }
+  template <typename It, typename End>
+    requires(internal::CompatibleIter<T, It> &&
+             std::sized_sentinel_for<End, It> &&
+             !std::convertible_to<End, size_t>)
+  explicit constexpr span(It begin, End end) noexcept
+      : span(begin, static_cast<size_t>(end - begin)) {}
 
-  template <typename It,
-            typename End,
-            typename = internal::EnableIfCompatibleContiguousIterator<It, T>,
-            typename = std::enable_if_t<!std::is_convertible_v<End, size_t>>>
-  constexpr span(It begin, End end) noexcept
-      // Subtracting two iterators gives a ptrdiff_t, but the result should be
-      // non-negative: see CHECK below.
-      : span(begin, static_cast<size_t>(end - begin)) {
-    // Note: CHECK_LE is not constexpr, hence regular CHECK must be used.
-    CHECK(begin <= end);
-  }
+  // NOLINTNEXTLINE(google-explicit-constructor)
+  constexpr span(T (&arr)[N]) noexcept
+      : span(std::ranges::data(arr), std::ranges::size(arr)) {}
 
-  template <
-      size_t N,
-      typename = internal::EnableIfSpanCompatibleArray<T (&)[N], T, Extent>>
-  constexpr span(T (&array)[N]) noexcept : span(std::data(array), N) {}
-
-  template <
-      typename U,
-      size_t N,
-      typename =
-          internal::EnableIfSpanCompatibleArray<std::array<U, N>&, T, Extent>>
-  constexpr span(std::array<U, N>& array) noexcept
-      : span(std::data(array), N) {}
-
-  template <typename U,
-            size_t N,
-            typename = internal::
-                EnableIfSpanCompatibleArray<const std::array<U, N>&, T, Extent>>
-  constexpr span(const std::array<U, N>& array) noexcept
-      : span(std::data(array), N) {}
-
-  // Conversion from a container that has compatible std::data() and integral
-  // std::size().
-  template <
-      typename Container,
-      typename =
-          internal::EnableIfSpanCompatibleContainerAndSpanIsDynamic<Container&,
-                                                                    T,
-                                                                    Extent>>
-  constexpr span(Container& container) noexcept
-      : span(std::data(container), std::size(container)) {}
-
-  template <
-      typename Container,
-      typename = internal::EnableIfSpanCompatibleContainerAndSpanIsDynamic<
-          const Container&,
-          T,
-          Extent>>
-  constexpr span(const Container& container) noexcept
-      : span(std::data(container), std::size(container)) {}
-
-  constexpr span(const span& other) noexcept = default;
-
-  // Conversions from spans of compatible types and extents: this allows a
-  // span<T> to be seamlessly used as a span<const T>, but not the other way
-  // around. If extent is not dynamic, OtherExtent has to be equal to Extent.
-  template <
-      typename U,
-      size_t OtherExtent,
-      typename =
-          internal::EnableIfLegalSpanConversion<U, OtherExtent, T, Extent>>
-  constexpr span(const span<U, OtherExtent>& other)
-      : span(other.data(), other.size()) {}
-
-  constexpr span& operator=(const span& other) noexcept = default;
-  ~span() noexcept = default;
+  template <typename R, size_t X = internal::ExtentV<R>>
+    requires(internal::CompatibleRange<T, R> && (X == N || X == dynamic_extent))
+  // NOLINTNEXTLINE(google-explicit-constructor)
+  explicit(X == dynamic_extent) constexpr span(R&& range) noexcept
+      : span(std::ranges::data(range), std::ranges::size(range)) {}
 
   // [span.sub], span subviews
   template <size_t Count>
-  constexpr span<T, Count> first() const noexcept {
-    static_assert(Count <= Extent, "Count must not exceed Extent");
-    CHECK(Extent != dynamic_extent || Count <= size());
-    return {data(), Count};
+  constexpr span<T, Count> first() const noexcept
+    requires(Count <= N)
+  {
+    return span<T, Count>(data(), Count);
   }
 
   template <size_t Count>
-  constexpr span<T, Count> last() const noexcept {
-    static_assert(Count <= Extent, "Count must not exceed Extent");
-    CHECK(Extent != dynamic_extent || Count <= size());
-    return {data() + (size() - Count), Count};
+  constexpr span<T, Count> last() const noexcept
+    requires(Count <= N)
+  {
+    return span<T, Count>(data() + (size() - Count), Count);
   }
 
   template <size_t Offset, size_t Count = dynamic_extent>
-  constexpr span<T,
-                 (Count != dynamic_extent
-                      ? Count
-                      : (Extent != dynamic_extent ? Extent - Offset
-                                                  : dynamic_extent))>
-  subspan() const noexcept {
-    static_assert(Offset <= Extent, "Offset must not exceed Extent");
-    static_assert(Count == dynamic_extent || Count <= Extent - Offset,
-                  "Count must not exceed Extent - Offset");
-    CHECK(Extent != dynamic_extent || Offset <= size());
-    CHECK(Extent != dynamic_extent || Count == dynamic_extent ||
-          Count <= size() - Offset);
-    return {data() + Offset, Count != dynamic_extent ? Count : size() - Offset};
+  constexpr auto subspan() const noexcept
+    requires(Offset <= N && (Count == dynamic_extent || Count <= N - Offset))
+  {
+    constexpr size_t kExtent = Count != dynamic_extent ? Count : N - Offset;
+    return span<T, kExtent>(data() + Offset, kExtent);
   }
 
   constexpr span<T, dynamic_extent> first(size_t count) const noexcept {
-    // Note: CHECK_LE is not constexpr, hence regular CHECK must be used.
-    CHECK(count <= size());
+    CHECK_LE(count, size());
     return {data(), count};
   }
 
   constexpr span<T, dynamic_extent> last(size_t count) const noexcept {
-    // Note: CHECK_LE is not constexpr, hence regular CHECK must be used.
-    CHECK(count <= size());
+    CHECK_LE(count, size());
     return {data() + (size() - count), count};
   }
 
-  constexpr span<T, dynamic_extent> subspan(size_t offset,
-                                            size_t count = dynamic_extent) const
-      noexcept {
-    // Note: CHECK_LE is not constexpr, hence regular CHECK must be used.
-    CHECK(offset <= size());
+  constexpr span<T, dynamic_extent> subspan(
+      size_t offset,
+      size_t count = dynamic_extent) const noexcept {
+    CHECK_LE(offset, size());
     CHECK(count == dynamic_extent || count <= size() - offset);
     return {data() + offset, count != dynamic_extent ? count : size() - offset};
   }
 
   // [span.obs], span observers
-  constexpr size_t size() const noexcept { return ExtentStorage::size(); }
+  constexpr size_t size() const noexcept { return N; }
   constexpr size_t size_bytes() const noexcept { return size() * sizeof(T); }
   [[nodiscard]] constexpr bool empty() const noexcept { return size() == 0; }
 
   // [span.elem], span element access
   constexpr T& operator[](size_t idx) const noexcept {
-    // Note: CHECK_LT is not constexpr, hence regular CHECK must be used.
-    CHECK(idx < size());
-    return *(data() + idx);
+    CHECK_LT(idx, size());
+    return data()[idx];
   }
 
-  constexpr T& front() const noexcept {
-    static_assert(Extent == dynamic_extent || Extent > 0,
-                  "Extent must not be 0");
-    CHECK(Extent != dynamic_extent || !empty());
-    return *data();
+  constexpr T& front() const noexcept
+    requires(N > 0)
+  {
+    return data()[0];
   }
 
-  constexpr T& back() const noexcept {
-    static_assert(Extent == dynamic_extent || Extent > 0,
-                  "Extent must not be 0");
-    CHECK(Extent != dynamic_extent || !empty());
-    return *(data() + size() - 1);
+  constexpr T& back() const noexcept
+    requires(N > 0)
+  {
+    return data()[size() - 1];
   }
 
   constexpr T* data() const noexcept { return data_; }
@@ -453,52 +342,185 @@ class GSL_POINTER span : public internal::ExtentStorage<Extent> {
  private:
   // This field is not a raw_ptr<> because it was filtered by the rewriter
   // for: #constexpr-ctor-field-initializer, #global-scope, #union
-  InternalPtrType data_;
+  InternalPtrType data_ = nullptr;
 };
 
-// span<T, Extent>::extent can not be declared inline prior to C++17, hence this
-// definition is required.
-template <class T, size_t Extent, typename InternalPtrType>
-constexpr size_t span<T, Extent, InternalPtrType>::extent;
+// [span], class template span
+template <typename T, typename InternalPtrType>
+class GSL_POINTER span<T, dynamic_extent, InternalPtrType> {
+ public:
+  using element_type = T;
+  using value_type = std::remove_cv_t<T>;
+  using size_type = size_t;
+  using difference_type = ptrdiff_t;
+  using pointer = T*;
+  using const_pointer = const T*;
+  using reference = T&;
+  using const_reference = const T&;
+  using iterator = CheckedContiguousIterator<T>;
+  using reverse_iterator = std::reverse_iterator<iterator>;
+  static constexpr size_t extent = dynamic_extent;
 
-template <typename It,
-          typename T = std::remove_reference_t<iter_reference_t<It>>>
-span(It, StrictNumeric<size_t>) -> span<T>;
+  constexpr span() noexcept = default;
 
-template <typename It,
-          typename End,
-          typename = std::enable_if_t<!std::is_convertible_v<End, size_t>>,
-          typename T = std::remove_reference_t<iter_reference_t<It>>>
-span(It, End) -> span<T>;
+  template <typename It>
+    requires(internal::CompatibleIter<T, It>)
+  constexpr span(It first, StrictNumeric<size_t> count) noexcept
+      // The use of to_address() here is to handle the case where the iterator
+      // `first` is pointing to the container's `end()`. In that case we can
+      // not use the address returned from the iterator, or dereference it
+      // through the iterator's `operator*`, but we can store it. We must
+      // assume in this case that `count` is 0, since the iterator does not
+      // point to valid data. Future hardening of iterators may disallow
+      // pulling the address from `end()`, as demonstrated by asserts() in
+      // libstdc++: https://gcc.gnu.org/bugzilla/show_bug.cgi?id=93960.
+      //
+      // The span API dictates that the `data()` is accessible when size is 0,
+      // since the pointer may be valid, so we cannot prevent storing and
+      // giving out an invalid pointer here without breaking API compatibility
+      // and our unit tests. Thus protecting against this can likely only be
+      // successful from inside iterators themselves, where the context about
+      // the pointer is known.
+      //
+      // We can not protect here generally against an invalid iterator/count
+      // being passed in, since we have no context to determine if the
+      // iterator or count are valid.
+      : data_(std::to_address(first)), size_(count) {}
 
-template <typename T, size_t N>
-span(T (&)[N]) -> span<T, N>;
+  template <typename It, typename End>
+    requires(internal::CompatibleIter<T, It> &&
+             std::sized_sentinel_for<End, It> &&
+             !std::convertible_to<End, size_t>)
+  constexpr span(It begin, End end) noexcept
+      // Subtracting two iterators gives a ptrdiff_t, but the result should be
+      // non-negative: see CHECK below.
+      : span(begin, static_cast<size_t>(end - begin)) {
+    CHECK(begin <= end);
+  }
 
-template <typename T, size_t N>
-span(std::array<T, N>&) -> span<T, N>;
+  template <size_t N>
+  // NOLINTNEXTLINE(google-explicit-constructor)
+  constexpr span(T (&arr)[N]) noexcept
+      : span(std::ranges::data(arr), std::ranges::size(arr)) {}
 
-template <typename T, size_t N>
-span(const std::array<T, N>&) -> span<const T, N>;
+  template <typename R>
+    requires(internal::LegacyCompatibleRange<T, R>)
+  // NOLINTNEXTLINE(google-explicit-constructor)
+  constexpr span(R&& range) noexcept
+      : span(std::ranges::data(range), std::ranges::size(range)) {}
 
-template <typename Container,
-          typename T = std::remove_pointer_t<
-              decltype(std::data(std::declval<Container>()))>,
-          size_t X = internal::Extent<Container>::value>
-span(Container&&) -> span<T, X>;
+  // [span.sub], span subviews
+  template <size_t Count>
+  constexpr span<T, Count> first() const noexcept {
+    CHECK_LE(Count, size());
+    return span<T, Count>(data(), Count);
+  }
+
+  template <size_t Count>
+  constexpr span<T, Count> last() const noexcept {
+    CHECK_LE(Count, size());
+    return span<T, Count>(data() + (size() - Count), Count);
+  }
+
+  template <size_t Offset, size_t Count = dynamic_extent>
+  constexpr span<T, Count> subspan() const noexcept {
+    CHECK_LE(Offset, size());
+    CHECK(Count == dynamic_extent || Count <= size() - Offset);
+    return span<T, Count>(data() + Offset,
+                          Count != dynamic_extent ? Count : size() - Offset);
+  }
+
+  constexpr span<T, dynamic_extent> first(size_t count) const noexcept {
+    CHECK_LE(count, size());
+    return {data(), count};
+  }
+
+  constexpr span<T, dynamic_extent> last(size_t count) const noexcept {
+    CHECK_LE(count, size());
+    return {data() + (size() - count), count};
+  }
+
+  constexpr span<T, dynamic_extent> subspan(
+      size_t offset,
+      size_t count = dynamic_extent) const noexcept {
+    CHECK_LE(offset, size());
+    CHECK(count == dynamic_extent || count <= size() - offset);
+    return {data() + offset, count != dynamic_extent ? count : size() - offset};
+  }
+
+  // [span.obs], span observers
+  constexpr size_t size() const noexcept { return size_; }
+  constexpr size_t size_bytes() const noexcept { return size() * sizeof(T); }
+  [[nodiscard]] constexpr bool empty() const noexcept { return size() == 0; }
+
+  // [span.elem], span element access
+  constexpr T& operator[](size_t idx) const noexcept {
+    CHECK_LT(idx, size());
+    return data()[idx];
+  }
+
+  constexpr T& front() const noexcept {
+    CHECK(!empty());
+    return data()[0];
+  }
+
+  constexpr T& back() const noexcept {
+    CHECK(!empty());
+    return data()[size() - 1];
+  }
+
+  constexpr T* data() const noexcept { return data_; }
+
+  // [span.iter], span iterator support
+  constexpr iterator begin() const noexcept {
+    return iterator(data(), data() + size());
+  }
+
+  constexpr iterator end() const noexcept {
+    return iterator(data(), data() + size(), data() + size());
+  }
+
+  constexpr reverse_iterator rbegin() const noexcept {
+    return reverse_iterator(end());
+  }
+
+  constexpr reverse_iterator rend() const noexcept {
+    return reverse_iterator(begin());
+  }
+
+ private:
+  // This field is not a raw_ptr<> because it was filtered by the rewriter
+  // for: #constexpr-ctor-field-initializer, #global-scope, #union
+  InternalPtrType data_ = nullptr;
+  size_t size_ = 0;
+};
+
+// [span.deduct], deduction guides.
+template <typename It, typename EndOrSize>
+  requires(std::contiguous_iterator<It>)
+span(It, EndOrSize) -> span<std::remove_reference_t<std::iter_reference_t<It>>>;
+
+template <
+    typename R,
+    typename T = std::remove_reference_t<std::ranges::range_reference_t<R>>>
+  requires(std::ranges::contiguous_range<R>)
+span(R&&)
+    -> span<std::conditional_t<std::ranges::borrowed_range<R>, T, const T>,
+            internal::ExtentV<R>>;
 
 // [span.objectrep], views of object representation
 template <typename T, size_t X>
-span<const uint8_t, (X == dynamic_extent ? dynamic_extent : sizeof(T) * X)>
-as_bytes(span<T, X> s) noexcept {
-  return {reinterpret_cast<const uint8_t*>(s.data()), s.size_bytes()};
+auto as_bytes(span<T, X> s) noexcept {
+  constexpr size_t N = X == dynamic_extent ? dynamic_extent : sizeof(T) * X;
+  return span<const uint8_t, N>(reinterpret_cast<const uint8_t*>(s.data()),
+                                s.size_bytes());
 }
 
-template <typename T,
-          size_t X,
-          typename = std::enable_if_t<!std::is_const_v<T>>>
-span<uint8_t, (X == dynamic_extent ? dynamic_extent : sizeof(T) * X)>
-as_writable_bytes(span<T, X> s) noexcept {
-  return {reinterpret_cast<uint8_t*>(s.data()), s.size_bytes()};
+template <typename T, size_t X>
+  requires(!std::is_const_v<T>)
+auto as_writable_bytes(span<T, X> s) noexcept {
+  constexpr size_t N = X == dynamic_extent ? dynamic_extent : sizeof(T) * X;
+  return span<uint8_t, N>(reinterpret_cast<uint8_t*>(s.data()), s.size_bytes());
 }
 
 // Type-deducing helpers for constructing a span.
@@ -560,7 +582,24 @@ constexpr auto make_span(Container&& container) noexcept {
   return span<T, N>(std::data(container), std::size(container));
 }
 
+// Convenience function for converting an object which is itself convertible
+// to span into a span of bytes (i.e. span of const uint8_t). Typically used
+// to convert std::string or string-objects holding chars, or std::vector
+// or vector-like objects holding other scalar types, prior to passing them
+// into an API that requires byte spans.
+template <typename T>
+span<const uint8_t> as_byte_span(const T& arg) {
+  return as_bytes(make_span(arg));
+}
+
 }  // namespace base
+
+template <typename T, size_t N, typename Ptr>
+inline constexpr bool
+    std::ranges::enable_borrowed_range<base::span<T, N, Ptr>> = true;
+
+template <typename T, size_t N, typename Ptr>
+inline constexpr bool std::ranges::enable_view<base::span<T, N, Ptr>> = true;
 
 // EXTENT returns the size of any type that can be converted to a |base::span|
 // with definite extent, i.e. everything that is a contiguous storage of some

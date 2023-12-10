@@ -5,11 +5,13 @@
 package org.chromium.chrome.browser.omnibox.status;
 
 import android.app.Activity;
+import android.graphics.Rect;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.View;
 
 import androidx.annotation.StringRes;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.omnibox.R;
@@ -25,6 +27,12 @@ public class PageInfoIPHController {
     private final UserEducationHelper mUserEducationHelper;
     private final View mStatusView;
 
+    @VisibleForTesting
+    public PageInfoIPHController(UserEducationHelper educationHelper, View statusView) {
+        mUserEducationHelper = educationHelper;
+        mStatusView = statusView;
+    }
+
     /**
      * Constructor
      *
@@ -32,9 +40,7 @@ public class PageInfoIPHController {
      * @param statusView The status view in the omnibox. Used as anchor for IPH bubble.
      */
     public PageInfoIPHController(Activity activity, View statusView) {
-        mUserEducationHelper =
-                new UserEducationHelper(activity, new Handler(Looper.getMainLooper()));
-        mStatusView = statusView;
+        this(new UserEducationHelper(activity, new Handler(Looper.getMainLooper())), statusView);
     }
 
     /**
@@ -54,6 +60,7 @@ public class PageInfoIPHController {
                                 R.string.page_info_iph)
                         .setAutoDismissTimeout(iphTimeout)
                         .setAnchorView(mStatusView)
+                        .setInsetRect(new Rect())
                         .build());
     }
 
@@ -73,6 +80,7 @@ public class PageInfoIPHController {
                                 stringId)
                         .setAutoDismissTimeout(iphTimeout)
                         .setAnchorView(mStatusView)
+                        .setInsetRect(new Rect())
                         .setDismissOnTouch(true)
                         .build());
     }
@@ -93,6 +101,7 @@ public class PageInfoIPHController {
                                 stringId)
                         .setAutoDismissTimeout(iphTimeout)
                         .setAnchorView(mStatusView)
+                        .setInsetRect(new Rect())
                         .setDismissOnTouch(true)
                         .build());
     }
@@ -103,18 +112,16 @@ public class PageInfoIPHController {
      * @param iphTimeout The timeout after which the IPH bubble should disappear if it was shown.
      * @param stringId Resource id of the string displayed. The string will also be used for
      *     accessibility.
-     * @param onShownCallback Callback triggered when the IPH is shown.
      */
-    public void showCookieControlsReminderIPH(
-            int iphTimeout, @StringRes int stringId, Runnable onShownCallback) {
+    public void showCookieControlsReminderIPH(int iphTimeout, @StringRes int stringId) {
         mUserEducationHelper.requestShowIPH(
                 new IPHCommandBuilder(
                                 mStatusView.getContext().getResources(),
                                 FeatureConstants.COOKIE_CONTROLS_3PCD_FEATURE,
                                 stringId,
                                 stringId)
-                        .setOnShowCallback(onShownCallback)
                         .setAutoDismissTimeout(iphTimeout)
+                        .setInsetRect(new Rect())
                         .setAnchorView(mStatusView)
                         .setDismissOnTouch(true)
                         .build());

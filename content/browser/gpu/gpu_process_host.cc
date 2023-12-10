@@ -287,7 +287,6 @@ static const char* const kSwitchNames[] = {
     switches::kOzonePlatform,
     switches::kDisableExplicitDmaFences,
     switches::kOzoneDumpFile,
-    switches::kDisableBufferBWCompression,
 #endif
 #if BUILDFLAG(IS_LINUX)
     switches::kX11Display,
@@ -305,12 +304,10 @@ static const char* const kSwitchNames[] = {
     switches::kDisableAdpf,
 #endif
 #if BUILDFLAG(IS_CHROMEOS)
-    switches::kPlatformDisallowsChromeOSDirectVideoDecoder,
     switches::kSchedulerBoostUrgent,
 #endif
 #if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
     switches::kHardwareVideoDecodeFrameRate,
-    switches::kChromeOSVideoDecoderTaskRunner,
 #endif
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
     switches::kLacrosEnablePlatformHevc,

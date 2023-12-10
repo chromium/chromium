@@ -174,8 +174,11 @@ void ImageContextImpl::CreateFallbackImage(
   // allocated. Skia will skip drawing a null GrPromiseImageTexture, do nothing
   // and leave it null.
   const auto& formats = backend_formats();
-  if (formats.empty() || formats[0].textureType() == GrTextureType::kExternal)
+  // Return early if SIFormat prefers external sampler.
+  if (formats.empty() || formats[0].textureType() == GrTextureType::kExternal ||
+      format().PrefersExternalSampler()) {
     return;
+  }
 
   DCHECK(!fallback_context_state_);
   fallback_context_state_ = context_state;
@@ -268,11 +271,10 @@ void ImageContextImpl::BeginAccessIfNecessary(
 
   // Legacy mailboxes support only single planar formats.
   CHECK(format().is_single_plane());
-  bool angle_rgbx_internal_format =
-      context_state->feature_info()->feature_flags().angle_rgbx_internal_format;
   GrBackendTexture backend_texture;
-  gpu::GLFormatDesc format_desc = gpu::ToGLFormatDesc(
-      format(), /*plane_index=*/0, angle_rgbx_internal_format);
+  gpu::GLFormatDesc format_desc =
+      context_state->GetGLFormatCaps().ToGLFormatDesc(format(),
+                                                      /*plane_index=*/0);
   gpu::GetGrBackendTexture(
       context_state->feature_info(), texture_base->target(), size(),
       texture_base->service_id(), format_desc.storage_internal_format,

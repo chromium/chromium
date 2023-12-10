@@ -28,16 +28,13 @@ public class CompositorModelChangeProcessor<V extends SceneLayer> {
      * request another frame.
      */
     public static class FrameRequestSupplier extends ObservableSupplierImpl<Long> {
-        @NonNull
-        private final Runnable mRenderRequestRunnable;
+        @NonNull private final Runnable mRenderRequestRunnable;
 
         public FrameRequestSupplier(@NonNull Runnable renderRequestRunnable) {
             mRenderRequestRunnable = renderRequestRunnable;
         }
 
-        /**
-         * Request to generate a new frame.
-         */
+        /** Request to generate a new frame. */
         void request() {
             mRenderRequestRunnable.run();
         }
@@ -57,9 +54,12 @@ public class CompositorModelChangeProcessor<V extends SceneLayer> {
      * @param viewBinder This is used to bind the model to the view.
      * @param frameSupplier A supplier for the new generated frame.
      */
-    private CompositorModelChangeProcessor(PropertyModel model, V view,
+    private CompositorModelChangeProcessor(
+            PropertyModel model,
+            V view,
             ViewBinder<PropertyModel, V, PropertyKey> viewBinder,
-            FrameRequestSupplier frameSupplier, boolean performInitialBind) {
+            FrameRequestSupplier frameSupplier,
+            boolean performInitialBind) {
         mModel = model;
         mView = view;
         mViewBinder = viewBinder;
@@ -85,8 +85,11 @@ public class CompositorModelChangeProcessor<V extends SceneLayer> {
      * @param performInitialBind Whether the model should be immediately bound to the view.
      */
     public static <V extends SceneLayer> CompositorModelChangeProcessor<V> create(
-            PropertyModel model, V view, ViewBinder<PropertyModel, V, PropertyKey> viewBinder,
-            FrameRequestSupplier frameSupplier, boolean performInitialBind) {
+            PropertyModel model,
+            V view,
+            ViewBinder<PropertyModel, V, PropertyKey> viewBinder,
+            FrameRequestSupplier frameSupplier,
+            boolean performInitialBind) {
         return new CompositorModelChangeProcessor(
                 model, view, viewBinder, frameSupplier, performInitialBind);
     }
@@ -101,14 +104,14 @@ public class CompositorModelChangeProcessor<V extends SceneLayer> {
      * @param frameSupplier A supplier for the new generated frame.
      */
     public static <V extends SceneLayer> CompositorModelChangeProcessor<V> create(
-            PropertyModel model, V view, ViewBinder<PropertyModel, V, PropertyKey> viewBinder,
+            PropertyModel model,
+            V view,
+            ViewBinder<PropertyModel, V, PropertyKey> viewBinder,
             FrameRequestSupplier frameSupplier) {
         return create(model, view, viewBinder, frameSupplier, true);
     }
 
-    /**
-     * Clean up members.
-     */
+    /** Clean up members. */
     public void destroy() {
         mModel.removeObserver(mPropertyObserver);
         mFrameSupplier.removeObserver(mNewFrameCallback);

@@ -1,5 +1,4 @@
 CONSOLE WARNING: A <selectlist>'s default listbox was removed and a new one was not provided. This <selectlist> will not be fully functional.
 This is a testharness.js-based test.
-[PASS] selectlist-slot-warning-listbox
 Harness: the test ran to completion.
 

@@ -87,6 +87,7 @@
 <translation id="4195557071150719219">Недавние вкладки в Chromium</translation>
 <translation id="4408912345039114853">Запустить проверку безопасности в Chromium</translation>
 <translation id="4432744876818348753">Чтобы пользоваться всеми возможностями Chromium, войдите в аккаунт.</translation>
+<translation id="4498832288620833153">Указанные URL будут добавлены в список для чтения в Chromium.</translation>
 <translation id="452436063477828504">Обеспечьте доступ к данным Chromium в аккаунте Google.</translation>
 <translation id="4555020257205549924">Когда эта функция включена, Chrome предлагает перевести страницы с помощью Google Переводчика. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="4576283463017113841">Откроется страница настройки способов оплаты в Chromium.</translation>
@@ -107,6 +108,7 @@
 <translation id="5048795749726991615">Чтобы легко вводить сохраненные пароли в других приложениях, укажите значение Chromium для параметра "Автозаполнение".</translation>
 <translation id="5076601183701536878">Удалить данные о работе в Chromium</translation>
 <translation id="5131565040785979529">Аккаунтом, в который вы вошли, и использованием Chromium управляет ваша организация (<ph name="DOMAIN" />).</translation>
+<translation id="5146749061471423558">Создать закладки в Chromium</translation>
 <translation id="5171868502429358653">Вход в Chromium</translation>
 <translation id="5213683223491576284">Открывает Менеджер паролей в Chromium.</translation>
 <translation id="5224391634244552924">Сохраненных паролей нет. Чтобы браузер Chromium мог проверять пароли, сохраните их.</translation>
@@ -114,6 +116,7 @@
 
         Подождите несколько минут. Если вы выйдете прямо сейчас, эти данные будут удалены.</translation>
 <translation id="5308226104666789935">Браузеру Chromium не удалось проверить наличие обновлений</translation>
+<translation id="5311557153294205270">Указанные URL будут добавлены в закладки в Chromium.</translation>
 <translation id="5396916991083608703">Сделать Chromium браузером по умолчанию?</translation>
 <translation id="5453478652154926037">Не удается проверить пароли в Chromium</translation>
 <translation id="5521125884468363740">Чтобы ваши вкладки всегда были доступны вам при работе с Chromium, выполните вход и включите синхронизацию.</translation>
@@ -165,7 +168,6 @@
 <translation id="6911341667534646387">Продолжайте использовать данные Chromium в аккаунте Google.</translation>
 <translation id="7006920032187763988">Вы можете использовать пароли, сохраненные в Менеджере паролей, для других приложений на своем устройстве iPad.</translation>
 <translation id="7018284295775193585">Не удается обновить Chromium</translation>
-<translation id="7025471822960602362">Отслеживание обнаруженных посылок в Chromium</translation>
 <translation id="7045244423563602563">Войдите в Chromium</translation>
 <translation id="7055269218854630176">Аккаунтом, в который вы входите, и использованием Chromium управляет ваша организация (<ph name="DOMAIN" />). Администратор может настраивать определенные функции и ограничивать к ним доступ.</translation>
 <translation id="7099326575020694068">Chromium не может использовать камеру в режиме Split View.</translation>
@@ -195,6 +197,7 @@
 <translation id="7928628054454574139">При переходе по ссылкам в других приложениях будет открываться браузер Chromium.</translation>
 <translation id="7931842119211730154">Блокировать доступ к вкладкам инкогнито при закрытии Chromium</translation>
 <translation id="7934404985878918282">Просмотр списка для чтения в Chromium</translation>
+<translation id="7971753607796745700">Добавить в список для чтения в Chromium</translation>
 <translation id="7980860476903281594">Chromium сообщает геоданные только тем сайтам, которые вы разрешили.</translation>
 <translation id="7995166854192397899">Подсказки предлагаются на основе ваших действий в браузере на других устройствах. Чтобы получать подсказки, войдите в Chromium на всех устройствах.</translation>
 <translation id="800195749539500647">Максимально эффективная работа с Chromium</translation>

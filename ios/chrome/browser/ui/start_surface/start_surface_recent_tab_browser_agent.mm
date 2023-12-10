@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/ui/start_surface/start_surface_recent_tab_browser_agent.h"
 
-#import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
 #import "ios/chrome/browser/ui/ntp/metrics/home_metrics.h"
@@ -124,7 +123,8 @@ void StartSurfaceRecentTabBrowserAgent::OnFaviconUpdated(
     gfx::Image favicon = driver->GetFavicon();
     if (!favicon.IsEmpty()) {
       for (auto& observer : observers_) {
-        observer.MostRecentTabFaviconUpdated(favicon.ToUIImage());
+        observer.MostRecentTabFaviconUpdated(most_recent_tab_,
+                                             favicon.ToUIImage());
       }
     }
   }
@@ -132,6 +132,6 @@ void StartSurfaceRecentTabBrowserAgent::OnFaviconUpdated(
 
 void StartSurfaceRecentTabBrowserAgent::TitleWasSet(web::WebState* web_state) {
   for (auto& observer : observers_) {
-    observer.MostRecentTabTitleUpdated(web_state->GetTitle());
+    observer.MostRecentTabTitleUpdated(web_state, web_state->GetTitle());
   }
 }

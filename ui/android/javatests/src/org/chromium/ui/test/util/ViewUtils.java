@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 package org.chromium.ui.test.util;
+
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.matcher.ViewMatchers.isRoot;
 
@@ -46,13 +47,14 @@ import java.util.List;
 
 import javax.annotation.CheckReturnValue;
 
-/**
- * Collection of utilities helping to clarify expectations on views in tests.
- */
+/** Collection of utilities helping to clarify expectations on views in tests. */
 public class ViewUtils {
     @Retention(SOURCE)
-    @IntDef(flag = true, value = {VIEW_VISIBLE, VIEW_INVISIBLE, VIEW_GONE, VIEW_NULL})
+    @IntDef(
+            flag = true,
+            value = {VIEW_VISIBLE, VIEW_INVISIBLE, VIEW_GONE, VIEW_NULL})
     public @interface ExpectedViewState {}
+
     public static final int VIEW_VISIBLE = 1;
     public static final int VIEW_INVISIBLE = 1 << 1;
     public static final int VIEW_GONE = 1 << 2;
@@ -90,26 +92,35 @@ public class ViewUtils {
 
         private void assertViewExpectedState(View view) {
             if (view == null) {
-                Criteria.checkThat("No view found to match: " + mViewMatcher.toString(),
-                        (mViewState & VIEW_NULL) != 0, is(true));
+                Criteria.checkThat(
+                        "No view found to match: " + mViewMatcher.toString(),
+                        (mViewState & VIEW_NULL) != 0,
+                        is(true));
                 return;
             }
 
             switch (view.getVisibility()) {
                 case View.VISIBLE:
-                    Criteria.checkThat("View matching '" + mViewMatcher.toString()
+                    Criteria.checkThat(
+                            "View matching '"
+                                    + mViewMatcher.toString()
                                     + "' is unexpectedly visible!",
-                            (mViewState & VIEW_VISIBLE) != 0, is(true));
+                            (mViewState & VIEW_VISIBLE) != 0,
+                            is(true));
                     break;
                 case View.INVISIBLE:
-                    Criteria.checkThat("View matching '" + mViewMatcher.toString()
+                    Criteria.checkThat(
+                            "View matching '"
+                                    + mViewMatcher.toString()
                                     + "' is unexpectedly invisible!",
-                            (mViewState & VIEW_INVISIBLE) != 0, is(true));
+                            (mViewState & VIEW_INVISIBLE) != 0,
+                            is(true));
                     break;
                 case View.GONE:
                     Criteria.checkThat(
                             "View matching '" + mViewMatcher.toString() + "' is unexpectedly gone!",
-                            (mViewState & VIEW_GONE) != 0, is(true));
+                            (mViewState & VIEW_GONE) != 0,
+                            is(true));
                     break;
             }
         }
@@ -220,12 +231,17 @@ public class ViewUtils {
      * @return An interaction on the matching view.
      */
     public static ViewInteraction onViewWaiting(Matcher<View> viewMatcher) {
-        CriteriaHelper.pollInstrumentationThread(() -> {
-            onView(isRoot()).check((View view, NoMatchingViewException noMatchException) -> {
-                if (noMatchException != null) throw noMatchException;
-                new ExpectedViewCriteria(viewMatcher, VIEW_VISIBLE, (ViewGroup) view).run();
-            });
-        });
+        CriteriaHelper.pollInstrumentationThread(
+                () -> {
+                    onView(isRoot())
+                            .check(
+                                    (View view, NoMatchingViewException noMatchException) -> {
+                                        if (noMatchException != null) throw noMatchException;
+                                        new ExpectedViewCriteria(
+                                                        viewMatcher, VIEW_VISIBLE, (ViewGroup) view)
+                                                .run();
+                                    });
+                });
         return onView(viewMatcher);
     }
 
@@ -235,11 +251,12 @@ public class ViewUtils {
      * @param view The specified view.
      */
     public static void waitForStableView(final View view) {
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat("The view is dirty.", view.isDirty(), is(false));
-            Criteria.checkThat(
-                    "The view has layout requested.", view.isLayoutRequested(), is(false));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat("The view is dirty.", view.isDirty(), is(false));
+                    Criteria.checkThat(
+                            "The view has layout requested.", view.isLayoutRequested(), is(false));
+                });
     }
 
     public static MotionEvent createMotionEvent(float x, float y) {
@@ -262,8 +279,9 @@ public class ViewUtils {
                 this.mContext = imageView.getContext();
                 Drawable background = imageView.getBackground();
                 if (!(background instanceof ColorDrawable)) return false;
-                int expectedColor = AppCompatResources.getColorStateList(mContext, colorResId)
-                                            .getDefaultColor();
+                int expectedColor =
+                        AppCompatResources.getColorStateList(mContext, colorResId)
+                                .getDefaultColor();
                 return ((ColorDrawable) background).getColor() == expectedColor;
             }
 

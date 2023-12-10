@@ -2,10 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <algorithm>
 #include <memory>
 #include <string>
-#include <utility>
 #include <vector>
 
 #include "base/files/file.h"
@@ -33,6 +31,62 @@
 
 namespace ash {
 
+namespace {
+
+// Allows one to specify just the parameters that are relevant to a given test.
+struct TestParams {
+  TestParams& Query(const std::string query) {
+    query_ = query;
+    return *this;
+  }
+
+  TestParams& CutoffTime(const base::Time& cutoff_time) {
+    cutoff_time_ = cutoff_time;
+    return *this;
+  }
+
+  TestParams& FileType(const RecentSource::FileType type) {
+    file_type_ = type;
+    return *this;
+  }
+
+  TestParams& IgnoreDotFiles(bool ignore_dot_files) {
+    ignore_dot_files_ = ignore_dot_files;
+    return *this;
+  }
+
+  TestParams& MaxDepth(int max_depth) {
+    max_depth_ = max_depth;
+    return *this;
+  }
+
+  TestParams& MaxFiles(int max_files) {
+    max_files_ = max_files;
+    return *this;
+  }
+
+  RecentSource::Params MakeParams(storage::FileSystemContext* context,
+                                  const GURL& origin) {
+    return RecentSource::Params(context, origin, query_, cutoff_time_,
+                                base::TimeTicks::Max(), file_type_);
+  }
+
+  std::unique_ptr<RecentDiskSource> MakeSource(
+      const std::string& mount_point_name,
+      const std::string& uma_histogram_name) {
+    return std::make_unique<RecentDiskSource>(mount_point_name,
+                                              ignore_dot_files_, max_depth_,
+                                              max_files_, uma_histogram_name);
+  }
+
+  std::string query_ = "";
+  base::Time cutoff_time_ = base::Time::Min();
+  RecentSource::FileType file_type_ = RecentSource::FileType::kAll;
+  bool ignore_dot_files_ = false;
+  int max_depth_ = 0;
+  size_t max_files_ = 100;
+};
+
 class RecentDiskSourceTest : public testing::Test {
  public:
   RecentDiskSourceTest() : origin_("https://example.com/") {}
@@ -52,10 +106,6 @@ class RecentDiskSourceTest : public testing::Test {
         storage::ExternalMountPoints::GetSystemInstance()->RegisterFileSystem(
             mount_point_name_, storage::kFileSystemTypeTest,
             storage::FileSystemMountOption(), base::FilePath()));
-
-    source_ = std::make_unique<RecentDiskSource>(
-        mount_point_name_, false /* ignore_dotfiles */, 0 /* max_depth */,
-        uma_histogram_name_);
   }
 
   void TearDown() override {
@@ -74,25 +124,20 @@ class RecentDiskSourceTest : public testing::Test {
     return file.SetTimes(time, time);
   }
 
-  std::vector<RecentFile> GetRecentFiles(
-      size_t max_files,
-      const base::Time& cutoff_time,
-      const std::string& query = "",
-      RecentSource::FileType file_type = RecentSource::FileType::kAll) {
+  std::vector<RecentFile> GetRecentFiles(TestParams params) {
     std::vector<RecentFile> files;
-
     base::RunLoop run_loop;
 
-    source_->GetRecentFiles(RecentSource::Params(
-        file_system_context_.get(), origin_, max_files, query, cutoff_time,
-        base::TimeTicks::Max(), file_type,
+    auto source = params.MakeSource(mount_point_name_, uma_histogram_name_);
+    source->GetRecentFiles(
+        params.MakeParams(file_system_context_.get(), origin_),
         base::BindOnce(
             [](base::RunLoop* run_loop, std::vector<RecentFile>* out_files,
                std::vector<RecentFile> files) {
               run_loop->Quit();
               *out_files = std::move(files);
             },
-            &run_loop, &files)));
+            &run_loop, &files));
 
     run_loop.Run();
 
@@ -106,7 +151,6 @@ class RecentDiskSourceTest : public testing::Test {
   scoped_refptr<storage::FileSystemContext> file_system_context_;
   std::string mount_point_name_;
   const std::string uma_histogram_name_ = "uma_histogram_name";
-  std::unique_ptr<RecentDiskSource> source_;
   base::Time base_time_;
 };
 
@@ -122,9 +166,7 @@ TEST_F(RecentDiskSourceTest, GetRecentFiles) {
       CreateEmptyFile("4.jpg", base::Time::FromSecondsSinceUnixEpoch(4)));
   // Newest
 
-  std::vector<RecentFile> files = GetRecentFiles(3, base::Time(), "");
-
-  std::sort(files.begin(), files.end(), RecentFileComparator());
+  std::vector<RecentFile> files = GetRecentFiles(TestParams().MaxFiles(3));
 
   ASSERT_EQ(3u, files.size());
   EXPECT_EQ("4.jpg", files[0].url().path().BaseName().value());
@@ -134,11 +176,11 @@ TEST_F(RecentDiskSourceTest, GetRecentFiles) {
   EXPECT_EQ("2.jpg", files[2].url().path().BaseName().value());
   EXPECT_EQ(base::Time::FromSecondsSinceUnixEpoch(2), files[2].last_modified());
 
-  files = GetRecentFiles(3, base::Time(), "4");
+  files = GetRecentFiles(TestParams().Query("4").MaxFiles(3));
   ASSERT_EQ(1u, files.size());
   EXPECT_EQ("4.jpg", files[0].url().path().BaseName().value());
 
-  files = GetRecentFiles(3, base::Time(), "foo");
+  files = GetRecentFiles(TestParams().Query("foo").MaxFiles(3));
   ASSERT_EQ(0u, files.size());
 }
 
@@ -154,10 +196,10 @@ TEST_F(RecentDiskSourceTest, GetRecentFiles_CutoffTime) {
       CreateEmptyFile("4.jpg", base::Time::FromSecondsSinceUnixEpoch(4)));
   // Newest
 
-  std::vector<RecentFile> files =
-      GetRecentFiles(3, base::Time::FromMillisecondsSinceUnixEpoch(2500));
-
-  std::sort(files.begin(), files.end(), RecentFileComparator());
+  std::vector<RecentFile> files = GetRecentFiles(
+      TestParams()
+          .CutoffTime(base::Time::FromMillisecondsSinceUnixEpoch(2500))
+          .MaxFiles(3));
 
   ASSERT_EQ(2u, files.size());
   EXPECT_EQ("4.jpg", files[0].url().path().BaseName().value());
@@ -181,9 +223,7 @@ TEST_F(RecentDiskSourceTest, IgnoreDotFiles) {
       CreateEmptyFile(".4.jpg", base::Time::FromSecondsSinceUnixEpoch(4)));
   // Newest
 
-  std::vector<RecentFile> files = GetRecentFiles(4, base::Time());
-
-  std::sort(files.begin(), files.end(), RecentFileComparator());
+  std::vector<RecentFile> files = GetRecentFiles(TestParams().MaxFiles(4));
 
   ASSERT_EQ(4u, files.size());
   EXPECT_EQ(".4.jpg", files[0].url().path().BaseName().value());
@@ -195,13 +235,7 @@ TEST_F(RecentDiskSourceTest, IgnoreDotFiles) {
   EXPECT_EQ("1.jpg", files[3].url().path().BaseName().value());
   EXPECT_EQ(base::Time::FromSecondsSinceUnixEpoch(1), files[3].last_modified());
 
-  source_ = std::make_unique<RecentDiskSource>(
-      mount_point_name_, true /* ignore_dotfiles */, 0 /* max_depth */,
-      uma_histogram_name_);
-
-  files = GetRecentFiles(4, base::Time());
-
-  std::sort(files.begin(), files.end(), RecentFileComparator());
+  files = GetRecentFiles(TestParams().IgnoreDotFiles(true).MaxFiles(4));
 
   ASSERT_EQ(2u, files.size());
   EXPECT_EQ("3.jpg", files[0].url().path().BaseName().value());
@@ -226,15 +260,10 @@ TEST_F(RecentDiskSourceTest, MaxDepth) {
       CreateEmptyFile("a/b/c/4.jpg", base::Time::FromSecondsSinceUnixEpoch(4)));
   // Newest
 
-  std::vector<RecentFile> files = GetRecentFiles(4, base::Time());
+  std::vector<RecentFile> files = GetRecentFiles(TestParams().MaxFiles(4));
   ASSERT_EQ(4u, files.size());
 
-  source_ = std::make_unique<RecentDiskSource>(mount_point_name_, false, 2,
-                                               uma_histogram_name_);
-
-  files = GetRecentFiles(4, base::Time());
-
-  std::sort(files.begin(), files.end(), RecentFileComparator());
+  files = GetRecentFiles(TestParams().MaxFiles(4).MaxDepth(2));
 
   ASSERT_EQ(2u, files.size());
   EXPECT_EQ("2.jpg", files[0].url().path().BaseName().value());
@@ -262,9 +291,7 @@ TEST_F(RecentDiskSourceTest, GetAudioFiles) {
   // Newest
 
   std::vector<RecentFile> files =
-      GetRecentFiles(7, base::Time(), "", RecentSource::FileType::kAudio);
-
-  std::sort(files.begin(), files.end(), RecentFileComparator());
+      GetRecentFiles(TestParams().FileType(RecentSource::FileType::kAudio));
 
   ASSERT_EQ(2u, files.size());
   EXPECT_EQ("7.amr", files[0].url().path().BaseName().value());
@@ -272,11 +299,13 @@ TEST_F(RecentDiskSourceTest, GetAudioFiles) {
   EXPECT_EQ("4.mp3", files[1].url().path().BaseName().value());
   EXPECT_EQ(base::Time::FromSecondsSinceUnixEpoch(4), files[1].last_modified());
 
-  files = GetRecentFiles(7, base::Time(), "7", RecentSource::FileType::kAudio);
+  files = GetRecentFiles(
+      TestParams().Query("7").FileType(RecentSource::FileType::kAudio));
   ASSERT_EQ(1u, files.size());
   EXPECT_EQ("7.amr", files[0].url().path().BaseName().value());
 
-  files = GetRecentFiles(7, base::Time(), "6", RecentSource::FileType::kAudio);
+  files = GetRecentFiles(
+      TestParams().Query("6").FileType(RecentSource::FileType::kAudio));
   ASSERT_EQ(0u, files.size());
 }
 
@@ -302,9 +331,7 @@ TEST_F(RecentDiskSourceTest, GetImageFiles) {
   // Newest
 
   std::vector<RecentFile> files =
-      GetRecentFiles(8, base::Time(), "", RecentSource::FileType::kImage);
-
-  std::sort(files.begin(), files.end(), RecentFileComparator());
+      GetRecentFiles(TestParams().FileType(RecentSource::FileType::kImage));
 
   ASSERT_EQ(5u, files.size());
   EXPECT_EQ("8.nef", files[0].url().path().BaseName().value());
@@ -343,9 +370,7 @@ TEST_F(RecentDiskSourceTest, GetVideoFiles) {
   // Newest
 
   std::vector<RecentFile> files =
-      GetRecentFiles(9, base::Time(), "", RecentSource::FileType::kVideo);
-
-  std::sort(files.begin(), files.end(), RecentFileComparator());
+      GetRecentFiles(TestParams().FileType(RecentSource::FileType::kVideo));
 
   ASSERT_EQ(4u, files.size());
   EXPECT_EQ("8.mov", files[0].url().path().BaseName().value());
@@ -379,9 +404,7 @@ TEST_F(RecentDiskSourceTest, GetDocumentFiles) {
   // Newest
 
   std::vector<RecentFile> files =
-      GetRecentFiles(8, base::Time(), "", RecentSource::FileType::kDocument);
-
-  std::sort(files.begin(), files.end(), RecentFileComparator());
+      GetRecentFiles(TestParams().FileType(RecentSource::FileType::kDocument));
 
   ASSERT_EQ(3u, files.size());
   EXPECT_EQ("8.gdoc", files[0].url().path().BaseName().value());
@@ -395,9 +418,11 @@ TEST_F(RecentDiskSourceTest, GetDocumentFiles) {
 TEST_F(RecentDiskSourceTest, GetRecentFiles_UmaStats) {
   base::HistogramTester histogram_tester;
 
-  GetRecentFiles(3, base::Time());
+  GetRecentFiles(TestParams());
 
   histogram_tester.ExpectTotalCount(uma_histogram_name_, 1);
 }
+
+}  // namespace
 
 }  // namespace ash

@@ -9,10 +9,12 @@
 #include <utility>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/wallpaper/online_wallpaper_params.h"
 #include "ash/public/cpp/wallpaper/online_wallpaper_variant.h"
 #include "ash/public/cpp/wallpaper/wallpaper_controller_client.h"
 #include "ash/public/cpp/wallpaper/wallpaper_info.h"
+#include "ash/wallpaper/wallpaper_constants.h"
 #include "ash/wallpaper/wallpaper_pref_manager.h"
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
 #include "base/functional/callback_helpers.h"
@@ -40,6 +42,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/manta/proto/manta.pb.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -80,7 +83,6 @@ void AddAndLoginUser(const AccountId& account_id) {
   ash::FakeChromeUserManager* user_manager =
       static_cast<ash::FakeChromeUserManager*>(
           user_manager::UserManager::Get());
-
   user_manager->AddUser(account_id);
   user_manager->LoginUser(account_id);
   user_manager->SwitchActiveUser(account_id);
@@ -374,11 +376,41 @@ TEST_F(PersonalizationAppWallpaperProviderImplTest,
             current->layout);
 }
 
+TEST_F(PersonalizationAppWallpaperProviderImplTest, SendsSeaPenWallpaper) {
+  SetWallpaperObserver();
+
+  test_wallpaper_controller()->SetSeaPenWallpaper(
+      GetTestAccountId(),
+      {/*jpg_bytes=*/std::string(), /*id=*/111, manta::proto::RESOLUTION_64},
+      base::DoNothing());
+
+  ash::personalization_app::mojom::CurrentWallpaper* current =
+      current_wallpaper();
+  EXPECT_EQ(ash::WallpaperType::kSeaPen, current->type);
+  EXPECT_EQ(std::string(), current->description_content);
+  EXPECT_EQ(std::string(), current->description_title);
+}
+
+TEST_F(PersonalizationAppWallpaperProviderImplTest,
+       SendsSeaPenWallpaperFromFile) {
+  SetWallpaperObserver();
+
+  test_wallpaper_controller()->SetSeaPenWallpaperFromFile(
+      GetTestAccountId(), base::FilePath("/sea_pen/111.jpg"),
+      base::DoNothing());
+
+  ash::personalization_app::mojom::CurrentWallpaper* current =
+      current_wallpaper();
+  EXPECT_EQ(ash::WallpaperType::kSeaPen, current->type);
+  EXPECT_EQ(std::string(), current->description_content);
+  EXPECT_EQ(std::string(), current->description_title);
+}
+
 TEST_F(PersonalizationAppWallpaperProviderImplTest, SetCurrentWallpaperLayout) {
   auto* ctrl = test_wallpaper_controller();
 
   EXPECT_EQ(ctrl->update_current_wallpaper_layout_count(), 0);
-  EXPECT_EQ(ctrl->update_current_wallpaper_layout_layout(), absl::nullopt);
+  EXPECT_EQ(ctrl->update_current_wallpaper_layout_layout(), std::nullopt);
 
   auto layout = ash::WallpaperLayout::WALLPAPER_LAYOUT_CENTER;
   wallpaper_provider_remote()->SetCurrentWallpaperLayout(layout);
@@ -442,6 +474,52 @@ TEST_F(PersonalizationAppWallpaperProviderImplTest, SetDailyRefreshBanned) {
             bad_message_observer.WaitForBadMessage());
 }
 
+TEST_F(PersonalizationAppWallpaperProviderImplTest,
+       ShouldShowTimeOfDayWallpaperDialog) {
+  test_wallpaper_controller()->ClearCounts();
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures({features::kFeatureManagementTimeOfDayWallpaper,
+                             features::kTimeOfDayWallpaperForcedAutoSchedule},
+                            {});
+
+  auto image_info = GetDefaultImageInfo();
+  image_info.collection_id =
+      wallpaper_constants::kTimeOfDayWallpaperCollectionId;
+  std::vector<ash::OnlineWallpaperVariant> variants;
+  variants.emplace_back(image_info.asset_id, image_info.image_url,
+                        backdrop::Image::IMAGE_TYPE_UNKNOWN);
+
+  AddWallpaperImage(image_info);
+
+  base::test::TestFuture<bool> should_show_dialog_future;
+  wallpaper_provider_remote()->ShouldShowTimeOfDayWallpaperDialog(
+      should_show_dialog_future.GetCallback());
+  // Expects to return true before time of day wallpaper is set.
+  EXPECT_TRUE(should_show_dialog_future.Take());
+
+  base::test::TestFuture<bool> success_future;
+  wallpaper_provider_remote()->SelectWallpaper(image_info.asset_id,
+                                               /*preview_mode=*/false,
+                                               success_future.GetCallback());
+  EXPECT_TRUE(success_future.Take());
+
+  EXPECT_EQ(1, test_wallpaper_controller()->set_online_wallpaper_count());
+  EXPECT_TRUE(
+      test_wallpaper_controller()->wallpaper_info().value().MatchesSelection(
+          ash::WallpaperInfo(
+              {GetTestAccountId(),
+               wallpaper_constants::kTimeOfDayWallpaperCollectionId,
+               ash::WallpaperLayout::WALLPAPER_LAYOUT_CENTER_CROPPED,
+               /*preview_mode=*/false, /*from_user=*/true,
+               /*daily_refresh_enabled=*/false, image_info.unit_id, variants},
+              variants.front())));
+
+  wallpaper_provider_remote()->ShouldShowTimeOfDayWallpaperDialog(
+      should_show_dialog_future.GetCallback());
+  // Expects to return false after time of day wallpaper is set.
+  EXPECT_FALSE(should_show_dialog_future.Take());
+}
+
 class PersonalizationAppWallpaperProviderImplGooglePhotosTest
     : public PersonalizationAppWallpaperProviderImplTest {
  protected:
@@ -495,12 +573,12 @@ TEST_F(PersonalizationAppWallpaperProviderImplGooglePhotosTest, FetchAlbums) {
   // Simulate the client making multiple requests for the same information to
   // test that all callbacks for that query are called.
   EXPECT_CALL(*google_photos_albums_fetcher,
-              AddRequestAndStartIfNecessary(absl::make_optional(kResumeToken),
+              AddRequestAndStartIfNecessary(std::make_optional(kResumeToken),
                                             ::testing::_))
       .Times(kNumFetches);
 
   EXPECT_CALL(*google_photos_shared_albums_fetcher,
-              AddRequestAndStartIfNecessary(absl::make_optional(kResumeToken),
+              AddRequestAndStartIfNecessary(std::make_optional(kResumeToken),
                                             ::testing::_))
       .Times(kNumFetches);
 
@@ -568,8 +646,8 @@ TEST_F(PersonalizationAppWallpaperProviderImplGooglePhotosTest, FetchPhotos) {
   const std::string album_id = "albumId";
   EXPECT_CALL(*google_photos_photos_fetcher,
               AddRequestAndStartIfNecessary(
-                  absl::make_optional(item_id), absl::make_optional(album_id),
-                  absl::make_optional(kResumeToken), false, ::testing::_))
+                  std::make_optional(item_id), std::make_optional(album_id),
+                  std::make_optional(kResumeToken), false, ::testing::_))
       .Times(kNumFetches);
 
   // Test fetching Google Photos photos after fetching the enterprise setting.

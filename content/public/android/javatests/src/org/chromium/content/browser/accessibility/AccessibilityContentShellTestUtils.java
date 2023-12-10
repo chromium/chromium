@@ -10,9 +10,7 @@ import android.view.accessibility.AccessibilityEvent;
 
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 
-/**
- * Helper class with various testing util methods for content shell accessibility tests.
- */
+/** Helper class with various testing util methods for content shell accessibility tests. */
 public class AccessibilityContentShellTestUtils {
     // Common test output error messages
     public static final String ANP_ERROR =
@@ -48,40 +46,44 @@ public class AccessibilityContentShellTestUtils {
     static AccessibilityNodeInfoMatcher<String> sClassNameMatcher =
             (node, className) -> node.getClassName().equals(className);
 
-    static AccessibilityNodeInfoMatcher<String> sTextMatcher = (node, text) -> {
-        if (node.getText() == null) return false;
+    static AccessibilityNodeInfoMatcher<String> sTextMatcher =
+            (node, text) -> {
+                if (node.getText() == null) return false;
 
-        return node.getText().toString().equals(text);
-    };
+                return node.getText().toString().equals(text);
+            };
 
-    static AccessibilityNodeInfoMatcher<String> sTextOrContentDescriptionMatcher = (node, text) -> {
-        // If there is no content description, rely only on text
-        if (node.getContentDescription() == null) {
-            return text.equals(node.getText());
-        }
+    static AccessibilityNodeInfoMatcher<String> sTextOrContentDescriptionMatcher =
+            (node, text) -> {
+                // If there is no content description, rely only on text
+                if (node.getContentDescription() == null) {
+                    return text.equals(node.getText());
+                }
 
-        // If there is no text, rely only on content description
-        if (node.getText() == null) {
-            return text.equals(node.getContentDescription());
-        }
+                // If there is no text, rely only on content description
+                if (node.getText() == null) {
+                    return text.equals(node.getContentDescription());
+                }
 
-        return text.equals(node.getText()) || text.equals(node.getContentDescription());
-    };
+                return text.equals(node.getText()) || text.equals(node.getContentDescription());
+            };
 
-    static AccessibilityNodeInfoMatcher<String> sTextVisibleToUserMatcher = (node, text) -> {
-        if (node.getText() == null) return false;
+    static AccessibilityNodeInfoMatcher<String> sTextVisibleToUserMatcher =
+            (node, text) -> {
+                if (node.getText() == null) return false;
 
-        return node.getText().toString().equals(text) && node.isVisibleToUser();
-    };
+                return node.getText().toString().equals(text) && node.isVisibleToUser();
+            };
 
     static AccessibilityNodeInfoMatcher<String> sRangeInfoMatcher =
             (node, element) -> node.getRangeInfo() != null;
 
-    static AccessibilityNodeInfoMatcher<String> sViewIdResourceNameMatcher = (node, text) -> {
-        if (node.getViewIdResourceName() == null) return false;
+    static AccessibilityNodeInfoMatcher<String> sViewIdResourceNameMatcher =
+            (node, text) -> {
+                if (node.getViewIdResourceName() == null) return false;
 
-        return node.getViewIdResourceName().equals(text);
-    };
+                return node.getViewIdResourceName().equals(text);
+            };
 
     /**
      * Main AccessibilityDelegate for accessibility content shell tests.
@@ -100,41 +102,47 @@ public class AccessibilityContentShellTestUtils {
 
                     // Switch on eventType and save relevant data as needed.
                     switch (event.getEventType()) {
-                        // Save the text of proactive announcements.
-                        case AccessibilityEvent.TYPE_ANNOUNCEMENT: {
-                            data.setAnnouncementText(event.getText().get(0).toString());
-                            break;
-                        }
+                            // Save the text of proactive announcements.
+                        case AccessibilityEvent.TYPE_ANNOUNCEMENT:
+                            {
+                                data.setAnnouncementText(event.getText().get(0).toString());
+                                break;
+                            }
 
-                        // Save the traverse and selection indices during text traversal.
-                        case AccessibilityEvent.TYPE_VIEW_TEXT_SELECTION_CHANGED: {
-                            data.setSelectionFromIndex(event.getFromIndex());
-                            data.setSelectionToIndex(event.getToIndex());
-                            data.setReceivedSelectionEvent(true);
-                            break;
-                        }
-                        case AccessibilityEvent.TYPE_VIEW_TEXT_TRAVERSED_AT_MOVEMENT_GRANULARITY: {
-                            data.setTraverseFromIndex(event.getFromIndex());
-                            data.setTraverseToIndex(event.getToIndex());
-                            data.setReceivedTraversalEvent(true);
-                            break;
-                        }
+                            // Save the traverse and selection indices during text traversal.
+                        case AccessibilityEvent.TYPE_VIEW_TEXT_SELECTION_CHANGED:
+                            {
+                                data.setSelectionFromIndex(event.getFromIndex());
+                                data.setSelectionToIndex(event.getToIndex());
+                                data.setReceivedSelectionEvent(true);
+                                break;
+                            }
+                        case AccessibilityEvent.TYPE_VIEW_TEXT_TRAVERSED_AT_MOVEMENT_GRANULARITY:
+                            {
+                                data.setTraverseFromIndex(event.getFromIndex());
+                                data.setTraverseToIndex(event.getToIndex());
+                                data.setReceivedTraversalEvent(true);
+                                break;
+                            }
 
-                        // Save that a particular type of event has been sent.
-                        case AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUSED: {
-                            data.setReceivedAccessibilityFocusEvent(true);
-                            break;
-                        }
-                        case AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED: {
-                            data.incrementWindowContentChangedCount();
-                            break;
-                        }
-                        case AccessibilityEvent.TYPE_VIEW_SCROLLED: {
-                            data.setReceivedEvent(true);
-                            break;
-                        }
+                            // Save that a particular type of event has been sent.
+                        case AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUSED:
+                            {
+                                data.setReceivedAccessibilityFocusEvent(true);
+                                break;
+                            }
+                        case AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED:
+                            {
+                                data.incrementWindowContentChangedCount();
+                                break;
+                            }
+                        case AccessibilityEvent.TYPE_VIEW_SCROLLED:
+                            {
+                                data.setReceivedEvent(true);
+                                break;
+                            }
 
-                        // Currently unused/ignored for content shell test purposes.
+                            // Currently unused/ignored for content shell test purposes.
                         case AccessibilityEvent.TYPE_ASSIST_READING_CONTEXT:
                         case AccessibilityEvent.TYPE_GESTURE_DETECTION_END:
                         case AccessibilityEvent.TYPE_GESTURE_DETECTION_START:

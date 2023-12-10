@@ -164,11 +164,6 @@ class PhishingClassifierDelegate : public content::RenderFrameObserver,
   // Set to true if the classifier is currently running.
   bool is_classifying_;
 
-  // This is to track the current model version we are using to classify. This
-  // is so that when the Scorer update changes and there is a classification
-  // going on, we do not cancel when the version hasn't changed.
-  int model_version_;
-
   // Set to true when StartPhishingDetection method is called. It is
   // set to false whenever phishing detection has finished.
   bool is_phishing_detection_running_ = false;

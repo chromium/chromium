@@ -125,10 +125,10 @@ public class EditorDialogViewBinder {
         } else if (key == VALUE) {
             view.setValue(model.get(VALUE));
         } else if (key == DROPDOWN_KEY_VALUE_LIST || key == DROPDOWN_HINT) {
-            List<String> values = model.get(DROPDOWN_KEY_VALUE_LIST)
-                                          .stream()
-                                          .map(DropdownKeyValue::getValue)
-                                          .collect(Collectors.toList());
+            List<String> values =
+                    model.get(DROPDOWN_KEY_VALUE_LIST).stream()
+                            .map(DropdownKeyValue::getValue)
+                            .collect(Collectors.toList());
             view.setDropdownValues(values, model.get(DROPDOWN_HINT));
             view.setValue(model.get(VALUE));
             view.setErrorMessage(model.get(ERROR_MESSAGE));

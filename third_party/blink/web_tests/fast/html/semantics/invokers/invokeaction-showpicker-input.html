@@ -22,6 +22,9 @@ document.querySelectorAll('#tests>*').forEach(el => {
     el.id = 'invokee';
     t.add_cleanup(() => el.remove());
     await test_driver.click(invokerbutton);
+    await new Promise(resolve => {
+      requestAnimationFrame(resolve);
+    });
     assert_not_equals(internals.pagePopupWindow, null, "Picker is opened.");
   }, `invoking ${el.type} input with showPicker action should show picker`)
 })

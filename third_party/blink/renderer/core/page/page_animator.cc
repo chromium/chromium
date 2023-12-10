@@ -24,11 +24,14 @@
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/svg/svg_document_extensions.h"
 #include "third_party/blink/renderer/core/timing/time_clamper.h"
+#include "third_party/blink/renderer/core/view_transition/page_reveal_event.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition.h"
+#include "third_party/blink/renderer/core/view_transition/view_transition_supplement.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_utils.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
 
@@ -160,25 +163,54 @@ void PageAnimator::ServiceScriptedAnimations(
 
   // https://html.spec.whatwg.org/multipage/webappapis.html#event-loop-processing-model
 
-  // TODO(bokan): Requires an update to "update the rendering" steps in HTML.
-  run_for_all_active_controllers_with_timing([&](wtf_size_t i) {
-    if (RuntimeEnabledFeatures::PageRevealEventEnabled()) {
-      active_controllers[i]->DispatchEvents([](const Event* event) {
-        return event->type() == event_type_names::kPagereveal;
-      });
-    }
+  // For each fully active Document doc in docs, run the reveal steps for doc.
+  // Not currently in spec but comes from monkeypatch in:
+  // https://drafts.csswg.org/css-view-transitions-2/#monkey-patch-to-html
+  if (RuntimeEnabledFeatures::PageRevealEventEnabled()) {
+    // The event will be dispatched if the filter returns true. The sequencing
+    // here is important:
+    // 1. Resolve the view transition based on @view-transition and set it to
+    //    the event. This happens in the filter so before the event is fired.
+    // 2. Dispatch the pagereveal event
+    // 3. Activate the view transition
+    auto page_reveal_event_filter =
+        WTF::BindRepeating([](const LocalDOMWindow* window, Event* event) {
+          PageRevealEvent* page_reveal = DynamicTo<PageRevealEvent>(event);
+          if (!page_reveal) {
+            return false;
+          }
 
-    if (RuntimeEnabledFeatures::ViewTransitionOnNavigationEnabled()) {
-      CHECK(RuntimeEnabledFeatures::PageRevealEventEnabled());
-      if (const LocalDOMWindow* window = active_controllers[i]->GetWindow()) {
-        CHECK(window->document());
+          // pagereveal is only fired on Documents.
+          CHECK(window);
+          CHECK(window->document());
+
+          if (RuntimeEnabledFeatures::ViewTransitionOnNavigationEnabled()) {
+            if (auto* supplement = ViewTransitionSupplement::FromIfExists(
+                    *window->document())) {
+              DOMViewTransition* view_transition =
+                  supplement->ResolveCrossDocumentViewTransition();
+              page_reveal->SetViewTransition(view_transition);
+            }
+          }
+
+          return true;
+        });
+
+    run_for_all_active_controllers_with_timing([&](wtf_size_t i) {
+      const LocalDOMWindow* window = active_controllers[i]->GetWindow();
+      bool pagereveal_dispatched = active_controllers[i]->DispatchEvents(
+          WTF::BindRepeating(page_reveal_event_filter, WrapPersistent(window)));
+
+      if (RuntimeEnabledFeatures::ViewTransitionOnNavigationEnabled() &&
+          pagereveal_dispatched) {
         if (ViewTransition* transition =
-                ViewTransitionUtils::GetTransition(*window->document())) {
+                ViewTransitionUtils::GetTransition(*window->document());
+            transition && transition->IsForNavigationOnNewDocument()) {
           transition->ActivateFromSnapshot();
         }
       }
-    }
-  });
+    });
+  }
 
   // 6. For each fully active Document in docs, flush autofocus
   // candidates for that Document if its browsing context is a top-level
@@ -195,9 +227,9 @@ void PageAnimator::ServiceScriptedAnimations(
   auto start_time = base::TimeTicks::Now();
   for (wtf_size_t i = 0; i < controllers.size(); ++i) {
     auto& [controller, can_throttle] = controllers[i];
-    controller->DispatchEvents([](const Event* event) {
+    controller->DispatchEvents(WTF::BindRepeating([](Event* event) {
       return event->type() == event_type_names::kResize;
-    });
+    }));
     auto end_time = base::TimeTicks::Now();
     if (active_controller_id < active_controllers_ids.size() &&
         i == active_controllers_ids[active_controller_id]) {
@@ -217,11 +249,12 @@ void PageAnimator::ServiceScriptedAnimations(
   // 8. For each fully active Document in docs, run the scroll steps
   // for that Document, passing in now as the timestamp.
   run_for_all_active_controllers_with_timing([&](wtf_size_t i) {
-    active_controllers[i]->DispatchEvents([](const Event* event) {
+    active_controllers[i]->DispatchEvents(WTF::BindRepeating([](Event* event) {
       return event->type() == event_type_names::kScroll ||
              event->type() == event_type_names::kSnapchanged ||
+             event->type() == event_type_names::kSnapchanging ||
              event->type() == event_type_names::kScrollend;
-    });
+    }));
   });
 
   // 9. For each fully active Document in docs, evaluate media

@@ -423,6 +423,8 @@ class WebAppCommandScheduler {
       base::OnceClosure done,
       const base::Location& location = FROM_HERE);
 
+  base::WeakPtr<WebAppCommandScheduler> GetWeakPtr();
+
   // TODO(https://crbug.com/1298130): expose all commands for web app
   // operations.
 

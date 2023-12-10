@@ -91,6 +91,8 @@ class CallbackPainter : public views::Painter {
 
 // A view which respects a minimum size restriction.
 class MinimumSizableView : public views::View {
+  METADATA_HEADER(MinimumSizableView, views::View)
+
  public:
   explicit MinimumSizableView(const gfx::Size& min_size)
       : min_size_(min_size) {}
@@ -113,6 +115,9 @@ class MinimumSizableView : public views::View {
 
   const gfx::Size min_size_;
 };
+
+BEGIN_METADATA(MinimumSizableView, views::View)
+END_METADATA
 
 }  // namespace
 

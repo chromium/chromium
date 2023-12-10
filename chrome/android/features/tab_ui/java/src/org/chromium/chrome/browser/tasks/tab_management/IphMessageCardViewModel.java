@@ -13,9 +13,7 @@ import android.content.Context;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.ui.modelutil.PropertyModel;
 
-/**
- * This is a util class for creating the property model of the IphMessageCardView.
- */
+/** This is a util class for creating the property model of the IphMessageCardView. */
 public class IphMessageCardViewModel {
     /**
      * Create a {@link PropertyModel} for IphMessageCardView.
@@ -24,7 +22,8 @@ public class IphMessageCardViewModel {
      * @param data The {@link IphMessageService.IphMessageData} to use.
      * @return A {@link PropertyModel} for the given {@code data}.
      */
-    public static PropertyModel create(Context context,
+    public static PropertyModel create(
+            Context context,
             MessageCardView.DismissActionProvider uiDismissActionProvider,
             IphMessageService.IphMessageData data) {
         String descriptionText = context.getString(R.string.iph_drag_and_drop_introduction);

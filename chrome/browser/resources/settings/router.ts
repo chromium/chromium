@@ -16,6 +16,7 @@ export interface SettingsRoutes {
   ACCESSIBILITY: Route;
   ADDRESSES: Route;
   ADVANCED: Route;
+  AI: Route;
   APPEARANCE: Route;
   AUTOFILL: Route;
   BASIC: Route;

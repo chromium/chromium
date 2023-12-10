@@ -4,8 +4,257 @@
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_layout.h"
 
+#import "base/notreached.h"
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_constants.h"
+#import "ios/chrome/common/ui/util/ui_util.h"
+#import "ios/web/common/uikit_ui_util.h"
+#import "ui/base/device_form_factor.h"
+
+namespace {
+
+// Items aspect ratios.
+constexpr CGFloat kPortraitAspectRatio = 4. / 3.;
+// Percentage of the grid width dedicated to spacing.
+constexpr CGFloat kSpacingPercentage = 0.12;
+// Specific spacing for iPhone Portrait.
+constexpr CGFloat kIPhonePortraitSpacing = 16;
+constexpr CGFloat kMinimumSpacing = kIPhonePortraitSpacing;
+// Estimated size of the Inactive Tabs headers.
+constexpr CGFloat kInactiveTabsHeaderEstimatedHeight = 100;
+// Estimated size of the Search headers.
+constexpr CGFloat kSearchHeaderEstimatedHeight = 50;
+// Estimated size of the SuggestedActions item.
+constexpr CGFloat kSuggestedActionsEstimatedHeight = 150;
+// Different width thresholds for determining the columns count.
+constexpr CGFloat kSmallWidthThreshold = 500;
+constexpr CGFloat kLargeWidthThreshold = 1000;
+// Magic padding to fit UX mocks for items sizes. See where it is used for more
+// details.
+constexpr CGFloat kMagicPadding = 50;
+
+// Short helper for a fractional width NSCollectionLayoutDimension.
+NSCollectionLayoutDimension* FractionalWidth(CGFloat value) {
+  return [NSCollectionLayoutDimension fractionalWidthDimension:value];
+}
+
+// Short helper for a fractional height NSCollectionLayoutDimension.
+NSCollectionLayoutDimension* FractionalHeight(CGFloat value) {
+  return [NSCollectionLayoutDimension fractionalHeightDimension:value];
+}
+
+// Short helper for an estimated NSCollectionLayoutDimension.
+NSCollectionLayoutDimension* EstimatedDimension(CGFloat value) {
+  return [NSCollectionLayoutDimension estimatedDimension:value];
+}
+
+// Short helper for an estimated NSCollectionLayoutDimension.
+NSCollectionLayoutDimension* AbsoluteDimension(CGFloat value) {
+  return [NSCollectionLayoutDimension absoluteDimension:value];
+}
+
+// Returns the number of columns based on the layout environment.
+NSInteger ColumnsCount(id<NSCollectionLayoutEnvironment> layout_environment) {
+  const CGFloat width = layout_environment.container.effectiveContentSize.width;
+  const UIContentSizeCategory content_size_category =
+      layout_environment.traitCollection.preferredContentSizeCategory;
+
+  NSInteger count;
+  if (width < kSmallWidthThreshold) {
+    count = 2;
+  } else if (width < kLargeWidthThreshold) {
+    count = 3;
+  } else {
+    count = 4;
+  }
+
+  // If Dynamic Type uses an Accessibility setting, just remove a column.
+  if (UIContentSizeCategoryIsAccessibilityCategory(content_size_category)) {
+    count -= 1;
+  }
+
+  return count;
+}
+
+// Returns the aspect ratio (height / width) of an item based on the layout
+// environment.
+CGFloat ItemAspectRatio(id<NSCollectionLayoutEnvironment> layout_environment) {
+  const CGFloat width = layout_environment.container.effectiveContentSize.width;
+  const CGFloat height =
+      layout_environment.container.effectiveContentSize.height;
+
+  const CGRect screen_bounds = UIScreen.mainScreen.bounds;
+  const CGFloat screen_aspect_ratio =
+      CGRectGetHeight(screen_bounds) / CGRectGetWidth(screen_bounds);
+
+  // On iPad Landscape with 3/4 - 1/4 Split View, the 3/4 width is just a bit
+  // smaller than the height, but design-wise, a landscape aspect ratio should
+  // be preferred. Pad a bit the width with a magic constant before comparing to
+  // the height.
+  return width + kMagicPadding > height ? screen_aspect_ratio
+                                        : kPortraitAspectRatio;
+}
+
+// Returns the spacing based on the layout environment.
+CGFloat Spacing(id<NSCollectionLayoutEnvironment> layout_environment) {
+  // Get the grid width.
+  const CGFloat width = layout_environment.container.effectiveContentSize.width;
+  // Compute the total amount of space.
+  const CGFloat total_spacing = width * kSpacingPercentage;
+  // Compute the number of spaces.
+  const NSInteger spaces_count = ColumnsCount(layout_environment) + 1;
+  // Compute the theoretical size of the spacing, rounded to the nearest pixel.
+  const CGFloat spacing = AlignValueToPixel(total_spacing / spaces_count);
+  // Cap to a minimum spacing.
+  return MAX(spacing, kMinimumSpacing);
+}
+
+// Returns a header layout item to add to Search mode sections.
+NSCollectionLayoutBoundarySupplementaryItem* SearchModeHeader(
+    id<NSCollectionLayoutEnvironment> layout_environment) {
+  NSCollectionLayoutSize* header_size = [NSCollectionLayoutSize
+      sizeWithWidthDimension:FractionalWidth(1.)
+             heightDimension:EstimatedDimension(kSearchHeaderEstimatedHeight)];
+  return [NSCollectionLayoutBoundarySupplementaryItem
+      boundarySupplementaryItemWithLayoutSize:header_size
+                                  elementKind:
+                                      UICollectionElementKindSectionHeader
+                                    alignment:NSRectAlignmentTopLeading];
+}
+
+// Returns a header layout item to add to the Open Tabs section as needed.
+NSCollectionLayoutBoundarySupplementaryItem* InactiveTabsHeader() {
+  NSCollectionLayoutDimension* height_dimension =
+      EstimatedDimension(kInactiveTabsHeaderEstimatedHeight);
+  NSCollectionLayoutSize* header_size =
+      [NSCollectionLayoutSize sizeWithWidthDimension:FractionalWidth(1.)
+                                     heightDimension:height_dimension];
+  return [NSCollectionLayoutBoundarySupplementaryItem
+      boundarySupplementaryItemWithLayoutSize:header_size
+                                  elementKind:
+                                      UICollectionElementKindSectionHeader
+                                    alignment:NSRectAlignmentTopLeading];
+}
+
+// Returns a header layout item to add to the Open Tabs section as needed.
+NSCollectionLayoutBoundarySupplementaryItem* AnimatingOutHeader() {
+  NSCollectionLayoutSize* header_size =
+      [NSCollectionLayoutSize sizeWithWidthDimension:FractionalWidth(1.)
+                                     heightDimension:AbsoluteDimension(0.1)];
+  return [NSCollectionLayoutBoundarySupplementaryItem
+      boundarySupplementaryItemWithLayoutSize:header_size
+                                  elementKind:
+                                      UICollectionElementKindSectionHeader
+                                    alignment:NSRectAlignmentTopLeading];
+}
+
+// Returns a compositional layout grid section for opened tabs.
+NSCollectionLayoutSection* TabsSection(
+    id<NSCollectionLayoutEnvironment> layout_environment,
+    TabsSectionHeaderType tabs_section_header_type,
+    NSDirectionalEdgeInsets section_insets) {
+  // Determine the number of columns.
+  NSInteger count = ColumnsCount(layout_environment);
+
+  // Configure the layout item.
+  NSCollectionLayoutDimension* item_width_dimension =
+      FractionalWidth(1. / count);
+  const CGFloat item_aspect_ratio = ItemAspectRatio(layout_environment);
+  NSCollectionLayoutDimension* item_height_dimension =
+      FractionalWidth(item_aspect_ratio / count);
+  NSCollectionLayoutSize* item_size =
+      [NSCollectionLayoutSize sizeWithWidthDimension:item_width_dimension
+                                     heightDimension:item_height_dimension];
+  NSCollectionLayoutItem* item =
+      [NSCollectionLayoutItem itemWithLayoutSize:item_size];
+
+  // Configure the layout group.
+  const CGFloat width = layout_environment.container.effectiveContentSize.width;
+  // Estimate the height of the group by ignoring spacings.
+  NSCollectionLayoutDimension* group_height_dimension =
+      EstimatedDimension(item_aspect_ratio * width / count);
+  NSCollectionLayoutSize* group_size =
+      [NSCollectionLayoutSize sizeWithWidthDimension:FractionalWidth(1.)
+                                     heightDimension:group_height_dimension];
+  NSCollectionLayoutGroup* group;
+  if (@available(iOS 16, *)) {
+    group = [NSCollectionLayoutGroup horizontalGroupWithLayoutSize:group_size
+                                                  repeatingSubitem:item
+                                                             count:count];
+  } else {
+    group = [NSCollectionLayoutGroup horizontalGroupWithLayoutSize:group_size
+                                                           subitem:item
+                                                             count:count];
+  }
+  const CGFloat spacing = Spacing(layout_environment);
+  group.interItemSpacing = [NSCollectionLayoutSpacing fixedSpacing:spacing];
+
+  // Configure the layout section.
+  NSCollectionLayoutSection* section =
+      [NSCollectionLayoutSection sectionWithGroup:group];
+  section_insets.top += spacing;
+  section_insets.leading += spacing;
+  section_insets.bottom += spacing;
+  section_insets.trailing += spacing;
+  section.contentInsets = section_insets;
+  section.contentInsetsReference = UIContentInsetsReferenceNone;
+  section.interGroupSpacing = spacing;
+
+  switch (tabs_section_header_type) {
+    case TabsSectionHeaderType::kNone:
+      break;
+    case TabsSectionHeaderType::kSearch:
+      section.boundarySupplementaryItems =
+          @[ SearchModeHeader(layout_environment) ];
+      break;
+    case TabsSectionHeaderType::kInactiveTabs:
+      section.boundarySupplementaryItems = @[ InactiveTabsHeader() ];
+      break;
+    case TabsSectionHeaderType::kAnimatingOut:
+      section.boundarySupplementaryItems = @[ AnimatingOutHeader() ];
+      break;
+  }
+
+  return section;
+}
+
+// Returns a compositional layout section for Suggested Actions.
+NSCollectionLayoutSection* SuggestedActionsSection(
+    id<NSCollectionLayoutEnvironment> layout_environment,
+    NSDirectionalEdgeInsets section_insets) {
+  // Configure the layout item.
+  NSCollectionLayoutSize* item_size =
+      [NSCollectionLayoutSize sizeWithWidthDimension:FractionalWidth(1.)
+                                     heightDimension:FractionalHeight(1.)];
+  NSCollectionLayoutItem* item =
+      [NSCollectionLayoutItem itemWithLayoutSize:item_size];
+
+  // Configure the layout group.
+  NSCollectionLayoutDimension* group_height_dimension =
+      EstimatedDimension(kSuggestedActionsEstimatedHeight);
+  NSCollectionLayoutSize* group_size =
+      [NSCollectionLayoutSize sizeWithWidthDimension:FractionalWidth(1.)
+                                     heightDimension:group_height_dimension];
+  NSCollectionLayoutGroup* group =
+      [NSCollectionLayoutGroup horizontalGroupWithLayoutSize:group_size
+                                                    subitems:@[ item ]];
+
+  // Configure the layout section.
+  NSCollectionLayoutSection* section =
+      [NSCollectionLayoutSection sectionWithGroup:group];
+  const CGFloat spacing = Spacing(layout_environment);
+  section_insets.top += spacing;
+  section_insets.leading += spacing;
+  section_insets.bottom += spacing;
+  section_insets.trailing += spacing;
+  section.contentInsets = section_insets;
+  section.contentInsetsReference = UIContentInsetsReferenceNone;
+  section.boundarySupplementaryItems =
+      @[ SearchModeHeader(layout_environment) ];
+
+  return section;
+}
+
+}  // namespace
 
 @implementation GridLayout {
   NSArray<NSIndexPath*>* _indexPathsOfDeletingItems;
@@ -13,7 +262,16 @@
 }
 
 - (instancetype)init {
-  self = [super init];
+  // Use a `futureSelf` variable as the super init requires a closure, and as
+  // `self` is not instantiated yet, it can't be used.
+  __block __typeof(self) futureSelf;
+  self = [super initWithSectionProvider:^(
+                    NSInteger sectionIndex,
+                    id<NSCollectionLayoutEnvironment> layoutEnvironment) {
+    return [futureSelf sectionAtIndex:sectionIndex
+                    layoutEnvironment:layoutEnvironment];
+  }];
+  futureSelf = self;
   if (self) {
     _animatesItemUpdates = YES;
   }
@@ -21,56 +279,6 @@
 }
 
 #pragma mark - UICollectionViewLayout
-
-// This is called whenever the layout is invalidated, including during rotation.
-// Resizes item, margins, and spacing to fit new size classes and width.
-- (void)prepareLayout {
-  [super prepareLayout];
-
-  UIUserInterfaceSizeClass horizontalSizeClass =
-      self.collectionView.traitCollection.horizontalSizeClass;
-  UIUserInterfaceSizeClass verticalSizeClass =
-      self.collectionView.traitCollection.verticalSizeClass;
-  CGFloat width = CGRectGetWidth(self.collectionView.bounds);
-  if (UIContentSizeCategoryIsAccessibilityCategory(
-          UIApplication.sharedApplication.preferredContentSizeCategory)) {
-    self.itemSize = kGridCellSizeAccessibility;
-    self.sectionInset = kGridLayoutInsetsRegularCompact;
-    self.minimumLineSpacing = kGridLayoutLineSpacingRegularCompact;
-  } else if (horizontalSizeClass == UIUserInterfaceSizeClassCompact &&
-             verticalSizeClass == UIUserInterfaceSizeClassCompact) {
-    self.itemSize = kGridCellSizeSmall;
-    if (width < kGridLayoutCompactCompactLimitedWidth) {
-      self.sectionInset = kGridLayoutInsetsCompactCompactLimitedWidth;
-      self.minimumLineSpacing =
-          kGridLayoutLineSpacingCompactCompactLimitedWidth;
-    } else {
-      self.sectionInset = kGridLayoutInsetsCompactCompact;
-      self.minimumLineSpacing = kGridLayoutLineSpacingCompactCompact;
-    }
-  } else if (horizontalSizeClass == UIUserInterfaceSizeClassCompact &&
-             verticalSizeClass == UIUserInterfaceSizeClassRegular) {
-    if (width < kGridLayoutCompactRegularLimitedWidth) {
-      self.itemSize = kGridCellSizeSmall;
-      self.sectionInset = kGridLayoutInsetsCompactRegularLimitedWidth;
-      self.minimumLineSpacing =
-          kGridLayoutLineSpacingCompactRegularLimitedWidth;
-    } else {
-      self.itemSize = kGridCellSizeMedium;
-      self.sectionInset = kGridLayoutInsetsCompactRegular;
-      self.minimumLineSpacing = kGridLayoutLineSpacingCompactRegular;
-    }
-  } else if (horizontalSizeClass == UIUserInterfaceSizeClassRegular &&
-             verticalSizeClass == UIUserInterfaceSizeClassCompact) {
-    self.itemSize = kGridCellSizeSmall;
-    self.sectionInset = kGridLayoutInsetsRegularCompact;
-    self.minimumLineSpacing = kGridLayoutLineSpacingRegularCompact;
-  } else {
-    self.itemSize = kGridCellSizeLarge;
-    self.sectionInset = kGridLayoutInsetsRegularRegular;
-    self.minimumLineSpacing = kGridLayoutLineSpacingRegularRegular;
-  }
-}
 
 - (void)prepareForCollectionViewUpdates:
     (NSArray<UICollectionViewUpdateItem*>*)updateItems {
@@ -168,6 +376,21 @@
 
 - (BOOL)flipsHorizontallyInOppositeLayoutDirection {
   return UseRTLLayout() ? YES : NO;
+}
+
+#pragma mark - Private
+
+- (NSCollectionLayoutSection*)sectionAtIndex:(NSInteger)sectionIndex
+                           layoutEnvironment:(id<NSCollectionLayoutEnvironment>)
+                                                 layoutEnvironment {
+  if (sectionIndex == 0) {
+    return TabsSection(layoutEnvironment, self.tabsSectionHeaderType,
+                       self.sectionInsets);
+  }
+  if (sectionIndex == 1) {
+    return SuggestedActionsSection(layoutEnvironment, self.sectionInsets);
+  }
+  NOTREACHED_NORETURN();
 }
 
 @end

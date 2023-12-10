@@ -7,6 +7,7 @@
 #import <stdint.h>
 
 #import <memory>
+#import <optional>
 #import <string>
 #import <vector>
 
@@ -23,6 +24,7 @@
 #import "components/update_client/net/network_chromium.h"
 #import "components/update_client/patch/patch_impl.h"
 #import "components/update_client/patcher.h"
+#import "components/update_client/persisted_data.h"
 #import "components/update_client/protocol_handler.h"
 #import "components/update_client/unzip/unzip_impl.h"
 #import "components/update_client/unzipper.h"
@@ -30,7 +32,6 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/common/channel_info.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
-#import "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace component_updater {
 
@@ -64,18 +65,19 @@ class IOSConfigurator : public update_client::Configurator {
   bool EnabledBackgroundDownloader() const override;
   bool EnabledCupSigning() const override;
   PrefService* GetPrefService() const override;
-  update_client::ActivityDataService* GetActivityDataService() const override;
+  update_client::PersistedData* GetPersistedData() const override;
   bool IsPerUserInstall() const override;
   std::unique_ptr<update_client::ProtocolHandlerFactory>
   GetProtocolHandlerFactory() const override;
-  absl::optional<bool> IsMachineExternallyManaged() const override;
+  std::optional<bool> IsMachineExternallyManaged() const override;
   update_client::UpdaterStateProvider GetUpdaterStateProvider() const override;
-  absl::optional<base::FilePath> GetCrxCachePath() const override;
+  std::optional<base::FilePath> GetCrxCachePath() const override;
 
  private:
   friend class base::RefCountedThreadSafe<IOSConfigurator>;
 
   ConfiguratorImpl configurator_impl_;
+  std::unique_ptr<update_client::PersistedData> persisted_data_;
   scoped_refptr<update_client::NetworkFetcherFactory> network_fetcher_factory_;
   scoped_refptr<update_client::CrxDownloaderFactory> crx_downloader_factory_;
   scoped_refptr<update_client::UnzipperFactory> unzip_factory_;
@@ -89,7 +91,10 @@ class IOSConfigurator : public update_client::Configurator {
 // a custom message signing protocol and it does not depend on using HTTPS.
 IOSConfigurator::IOSConfigurator(const base::CommandLine* cmdline)
     : configurator_impl_(ComponentUpdaterCommandLineConfigPolicy(cmdline),
-                         false) {}
+                         false),
+      persisted_data_(update_client::CreatePersistedData(
+          GetApplicationContext()->GetLocalState(),
+          nullptr)) {}
 
 base::TimeDelta IOSConfigurator::InitialDelay() const {
   return configurator_impl_.InitialDelay();
@@ -200,9 +205,8 @@ PrefService* IOSConfigurator::GetPrefService() const {
   return GetApplicationContext()->GetLocalState();
 }
 
-update_client::ActivityDataService* IOSConfigurator::GetActivityDataService()
-    const {
-  return nullptr;
+update_client::PersistedData* IOSConfigurator::GetPersistedData() const {
+  return persisted_data_.get();
 }
 
 bool IOSConfigurator::IsPerUserInstall() const {
@@ -214,7 +218,7 @@ IOSConfigurator::GetProtocolHandlerFactory() const {
   return configurator_impl_.GetProtocolHandlerFactory();
 }
 
-absl::optional<bool> IOSConfigurator::IsMachineExternallyManaged() const {
+std::optional<bool> IOSConfigurator::IsMachineExternallyManaged() const {
   return configurator_impl_.IsMachineExternallyManaged();
 }
 
@@ -223,10 +227,10 @@ update_client::UpdaterStateProvider IOSConfigurator::GetUpdaterStateProvider()
   return configurator_impl_.GetUpdaterStateProvider();
 }
 
-absl::optional<base::FilePath> IOSConfigurator::GetCrxCachePath() const {
+std::optional<base::FilePath> IOSConfigurator::GetCrxCachePath() const {
   base::FilePath path;
   if (!base::PathService::Get(base::DIR_CACHE, &path)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return path.Append(FILE_PATH_LITERAL("ios_crx_cache"));
 }

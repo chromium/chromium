@@ -470,7 +470,7 @@ void AppListSyncableService::InitFromLocalStorage() {
       LOG(ERROR) << "Dictionary not found for " << item_id + ".";
       continue;
     }
-    absl::optional<int> type = item_dict->FindInt(kTypeKey);
+    std::optional<int> type = item_dict->FindInt(kTypeKey);
     if (!type) {
       LOG(ERROR) << "Item type is not set in local storage for " << *item_dict
                  << ".";
@@ -847,7 +847,7 @@ void AppListSyncableService::SetPinPosition(
     // `true` if the policy changes and the app gets removed from the shelf,
     // after which the user decides to pin the app again.
     // In other words, transitions from `true` to `false` and vice versa must
-    // involve the `absl::nullopt` phase.
+    // involve the `std::nullopt` phase.
     if (!sync_item->is_user_pinned.has_value()) {
       sync_item->is_user_pinned = !pinned_by_policy;
     }
@@ -946,7 +946,7 @@ void AppListSyncableService::RemovePinPosition(const std::string& app_id) {
   }
 
   sync_item->item_pin_ordinal = syncer::StringOrdinal();
-  sync_item->is_user_pinned = absl::nullopt;
+  sync_item->is_user_pinned = std::nullopt;
 
   UpdateSyncItemInLocalStorage(profile_, sync_item);
   SendSyncChange(sync_item, syncer::SyncChange::SyncChangeType::ACTION_UPDATE);
@@ -1106,13 +1106,13 @@ syncer::StringOrdinal AppListSyncableService::GetPositionAfterApp(
   return app_item->item_ordinal.CreateAfter();
 }
 
-absl::optional<AppListSyncableService::LinkedPromiseAppSyncItem>
+std::optional<AppListSyncableService::LinkedPromiseAppSyncItem>
 AppListSyncableService::CreateLinkedPromiseSyncItemIfAvailable(
     const std::string& promise_package_id) {
   auto linked_item_it = items_linked_to_promise_item_.find(promise_package_id);
   if (linked_item_it != items_linked_to_promise_item_.end()) {
     if (linked_item_it->second.empty()) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     return LinkedPromiseAppSyncItem{
         .linked_item_id = linked_item_it->second,
@@ -1136,7 +1136,7 @@ AppListSyncableService::CreateLinkedPromiseSyncItemIfAvailable(
   // moved to the target app sync item once the promise app installs).
   if (!linked_sync_item) {
     items_linked_to_promise_item_.emplace(promise_package_id, "");
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   SyncItem* sync_item = CreateSyncItem(
@@ -1260,7 +1260,7 @@ void AppListSyncableService::WaitUntilReadyToSync(base::OnceClosure done) {
   }
 }
 
-absl::optional<syncer::ModelError>
+std::optional<syncer::ModelError>
 AppListSyncableService::MergeDataAndStartSyncing(
     syncer::ModelType type,
     const syncer::SyncDataList& initial_sync_data,
@@ -1387,7 +1387,7 @@ AppListSyncableService::MergeDataAndStartSyncing(
     on_first_sync_.Signal();
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void AppListSyncableService::StopSyncing(syncer::ModelType type) {
@@ -1406,7 +1406,7 @@ syncer::SyncDataList AppListSyncableService::GetAllSyncDataForTesting() const {
   return list;
 }
 
-absl::optional<syncer::ModelError> AppListSyncableService::ProcessSyncChanges(
+std::optional<syncer::ModelError> AppListSyncableService::ProcessSyncChanges(
     const base::Location& from_here,
     const syncer::SyncChangeList& change_list) {
   if (!sync_processor_.get()) {
@@ -1433,7 +1433,7 @@ absl::optional<syncer::ModelError> AppListSyncableService::ProcessSyncChanges(
 
   HandleUpdateFinished(false /* clean_up_after_init_sync */);
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void AppListSyncableService::Shutdown() {
@@ -1847,11 +1847,11 @@ void AppListSyncableService::UpdateSyncItemFromSync(
       // value. Note that this is a best-effort heuristic which is not
       // consistent with the behavior in MergeDataAndStartSyncing.
     } else if (!item->item_pin_ordinal.IsValid()) {
-      item->is_user_pinned = absl::nullopt;
+      item->is_user_pinned = std::nullopt;
     }
   } else {
     // Nullify pin info if the feature is not supported.
-    item->is_user_pinned = absl::nullopt;
+    item->is_user_pinned = std::nullopt;
   }
   // `is_user_pinned` cannot be set while `item_pin_ordinal` is invalid.
   DCHECK(

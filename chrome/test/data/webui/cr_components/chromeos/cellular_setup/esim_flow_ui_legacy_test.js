@@ -534,7 +534,7 @@ suite(`CrComponentsEsimFlowUiTest${suiteSuffix}`, function() {
             assertProfileDiscoveryPageLegacy();
             assertFocusDefaultButtonEventFired();
             assertEquals(
-                eSimPage.forwardButtonLabel, 'Skip & Set up new profile');
+                eSimPage.forwardButtonLabel, 'Skip & set up new profile');
 
             endFlowAndVerifyResult(
                 ESimSetupFlowResult.CANCELLED_NEEDS_CONFIRMATION_CODE);

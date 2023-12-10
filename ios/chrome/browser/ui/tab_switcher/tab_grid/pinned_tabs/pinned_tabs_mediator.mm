@@ -13,7 +13,7 @@
 #import "base/scoped_multi_source_observation.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/drag_and_drop/model/drag_item_util.h"
-#import "ios/chrome/browser/main/browser_util.h"
+#import "ios/chrome/browser/main/model/browser_util.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
@@ -21,7 +21,6 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
-#import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/chrome/browser/tabs/model/features.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_collection_consumer.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_collection_drag_drop_metrics.h"
@@ -439,7 +438,7 @@ web::WebStateID GetActivePinnedTabID(WebStateList* web_state_list) {
     }
 
     // Reorder tabs.
-    [self.consumer moveItemWithID:tabInfo.tabID toIndex:destinationIndex];
+    [self moveItemWithID:tabInfo.tabID toIndex:destinationIndex];
     return;
   }
   base::UmaHistogramEnumeration(kUmaPinnedViewDragOrigin,
@@ -473,6 +472,11 @@ web::WebStateID GetActivePinnedTabID(WebStateList* web_state_list) {
         });
       };
   [itemProvider loadObjectOfClass:[NSURL class] completionHandler:loadHandler];
+}
+
+- (NSArray<UIDragItem*>*)allSelectedDragItems {
+  NOTREACHED_NORETURN() << "You should not be able to drag and drop multiple "
+                           "items. There is no selection mode in pinned tabs.";
 }
 
 #pragma mark - Private

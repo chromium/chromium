@@ -11,24 +11,16 @@ import android.view.View;
  * omnibox, feed, etc.).
  */
 public interface ScrollableContainerDelegate {
-    /**
-     * Adds a |listener| for the scroll events from the root surface.
-     */
+    /** Adds a |listener| for the scroll events from the root surface. */
     void addScrollListener(ScrollListener listener);
 
-    /**
-     * Removes a |listener| for the scroll events from the root surface.
-     */
+    /** Removes a |listener| for the scroll events from the root surface. */
     void removeScrollListener(ScrollListener listener);
 
-    /**
-     * Gets the absolute value of the vertical scroll offset on the root surface.
-     */
+    /** Gets the absolute value of the vertical scroll offset on the root surface. */
     int getVerticalScrollOffset();
 
-    /**
-     * Gets the height of the view of the root surface.
-     */
+    /** Gets the height of the view of the root surface. */
     int getRootViewHeight();
 
     /**

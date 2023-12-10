@@ -5,6 +5,12 @@
 #ifndef CHROME_BROWSER_POLICY_CLOUD_USER_POLICY_SIGNIN_SERVICE_UTIL_H_
 #define CHROME_BROWSER_POLICY_CLOUD_USER_POLICY_SIGNIN_SERVICE_UTIL_H_
 
+#include <string>
+#include <vector>
+
+// Util functions in this file are designed only to be used by
+// user_policy_signin_service.cc and user_policy_signin_service_mobile.cc/
+
 class Profile;
 class ProfileManager;
 
@@ -13,6 +19,13 @@ namespace policy {
 // Update the Profile attributes for when the account is signed out.
 void UpdateProfileAttributesWhenSignout(Profile* profile,
                                         ProfileManager* profile_manager);
+
+// Returns the device DM token if the user is affiliated. For most of platforms,
+// this means DM token for CBCM. For Lacros, it means the DM token used for
+// device management from Ash.
+// The function is used as `CloudPolicyClient::DeviceDMTokenCallback()`.
+std::string GetDeviceDMTokenIfAffiliated(
+    const std::vector<std::string>& user_affiliation_ids);
 
 }  // namespace policy
 

@@ -21,8 +21,32 @@ class ToolbarController : public ui::SimpleMenuModel::Delegate {
  public:
   // Data structure to store information of responsive elements.
   struct ResponsiveElementInfo {
+    // Overflow menu structure:
+    // -------------------
+    // | Forward         |
+    // |-----------------|
+    // | Home            | -> section end
+    // |=================| -> potential separator
+    // | Reading list    |
+    // |-----------------|
+    // | Bookmarks       | -> section end
+    // |=================| -> potential separator
+    // | Labs            |
+    // |-----------------|
+    // | Cast            |
+    // |-----------------|
+    // | Media controls  |
+    // |-----------------|
+    // | Downloads       | -> section end
+    // |=================| -> potential separator
+    // | Profile         |
+    // |-----------------|
+
+    // The toolbar element that potentially overflows.
+    ui::ElementIdentifier overflow_identifier;
+
     // Menu text when the element is overflow to the overflow menu.
-    int menu_text_id;
+    int menu_text_id = 0;
 
     // The toolbar button to be activated with menu text pressed. This is not
     // necessarily the same as the element that overflows. E.g. when the
@@ -30,20 +54,17 @@ class ToolbarController : public ui::SimpleMenuModel::Delegate {
     // `activate_identifier` should be kExtensionsMenuButtonElementId.
     ui::ElementIdentifier activate_identifier;
 
+    // True if current element is a section end in overflow menu structure.
+    bool is_section_end = false;
+
     // Pop out button when `observed_identifier` is shown. End pop out when it's
     // hidden.
-    absl::optional<ui::ElementIdentifier> observed_identifier;
+    std::optional<ui::ElementIdentifier> observed_identifier;
   };
 
-  // A map from identifier to its observed identifier. Used to create
-  // PopOutHandlers for each element in the map.
-  using ResponsiveElementInfoMap =
-      base::flat_map<ui::ElementIdentifier,
-                     ToolbarController::ResponsiveElementInfo>;
-
   ToolbarController(
-      std::vector<ui::ElementIdentifier> element_ids,
-      const ToolbarController::ResponsiveElementInfoMap& element_info_map,
+      const std::vector<ResponsiveElementInfo>& responsive_elements,
+      const std::vector<ui::ElementIdentifier>& elements_in_overflow_order,
       int element_flex_order_start,
       views::View* toolbar_container_view,
       views::View* overflow_button);
@@ -87,7 +108,7 @@ class ToolbarController : public ui::SimpleMenuModel::Delegate {
     ~PopOutState();
 
     // The original FlexSpecification.
-    absl::optional<views::FlexSpecification> original_spec;
+    std::optional<views::FlexSpecification> original_spec;
 
     // The responsive FlexSpecification modified by ToolbarController.
     views::FlexSpecification responsive_spec;
@@ -98,8 +119,15 @@ class ToolbarController : public ui::SimpleMenuModel::Delegate {
     std::unique_ptr<PopOutHandler> handler;
   };
 
-  // Return the default element info map used by the browser.
-  static ToolbarController::ResponsiveElementInfoMap GetDefaultElementInfoMap();
+  // Return the default responsive elements list in the toolbar.
+  static std::vector<ResponsiveElementInfo> GetDefaultResponsiveElements();
+
+  // Return the element list in desired overflow order. The list should contain
+  // only the immediate children of toolbar i.e. those managed by
+  // `toolbar_container_view_` layout manager. For those inside a child
+  // container (e.g. PinnedToolbarActionsContainer) of `toolbar_container_view_`
+  // they should have their own overflow order.
+  static std::vector<ui::ElementIdentifier> GetDefaultOverflowOrder();
 
   // Return the action name from element identifier. Return empty if not found.
   static std::string GetActionNameFromElementIdentifier(
@@ -115,7 +143,7 @@ class ToolbarController : public ui::SimpleMenuModel::Delegate {
 
   // Returns true if layout manager of `toolbar_container_view_` hides any
   // toolbar elements.
-  bool ShouldShowOverflowButton();
+  bool ShouldShowOverflowButton() const;
 
   views::View* overflow_button() { return overflow_button_; }
 
@@ -128,46 +156,42 @@ class ToolbarController : public ui::SimpleMenuModel::Delegate {
   std::unique_ptr<ui::SimpleMenuModel> CreateOverflowMenuModel();
 
   // Generate menu text from the responsive element.
-  virtual std::u16string GetMenuText(ui::ElementIdentifier id);
+  virtual std::u16string GetMenuText(
+      const ResponsiveElementInfo& element_info) const;
 
   // Utility that recursively searches for a view with `id` from `view`.
   static views::View* FindToolbarElementWithId(views::View* view,
                                                ui::ElementIdentifier id);
 
  private:
-  friend class ToolbarControllerInteractiveTest;
+  friend class ToolbarControllerUiTest;
   friend class ToolbarControllerUnitTest;
 
   // Returns currently hidden elements.
-  std::vector<ui::ElementIdentifier> GetOverflowedElements();
+  std::vector<const ResponsiveElementInfo*> GetOverflowedElements();
 
   // Check if element has overflowed.
-  bool IsOverflowed(ui::ElementIdentifier id);
+  bool IsOverflowed(ui::ElementIdentifier id) const;
 
   // ui::SimpleMenuModel::Delegate:
   void ExecuteCommand(int command_id, int event_flags) override;
   bool IsCommandIdEnabled(int command_id) const override;
 
-  // Returns the element in `element_ids_` at index `command_id`.
-  ui::ElementIdentifier GetHiddenElementOfCommandId(int command_id) const;
-
   // The toolbar elements managed by this controller.
-  // Order matters as each will be assigned with a flex order that increments by
-  // 1 starting from `element_flex_order_start_`. So the last element drops out
-  // first once overflow starts. This also serves as a map that its indices are
-  // used as command ids in overflowed menu model.
-  const std::vector<ui::ElementIdentifier> element_ids_;
+  // This also serves as a map that its indices are used as command ids in
+  // overflowed menu model. To facilitate menu creation elements order should
+  // match overflow menu top to bottom.
+  const std::vector<ResponsiveElementInfo> responsive_elements_;
 
-  const ToolbarController::ResponsiveElementInfoMap element_info_map_;
-
-  // The starting flex order assigned to the first element in `elements_ids_`.
+  // The starting flex order assigned to the last overflowed element in
+  // `responsive_elements_`.
   const int element_flex_order_start_;
 
   // Reference to ToolbarView::container_view_. Must outlive `this`.
   const raw_ptr<views::View> toolbar_container_view_;
 
   // The button with a chevron icon that indicates at least one element in
-  // `element_ids_` overflows. Owned by `toolbar_container_view_`.
+  // `responsive_elements_` overflows. Owned by `toolbar_container_view_`.
   raw_ptr<views::View> overflow_button_;
 
   // A map to save the original and modified FlexSpecification of responsive

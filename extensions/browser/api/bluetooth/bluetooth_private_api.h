@@ -5,6 +5,7 @@
 #ifndef EXTENSIONS_BROWSER_API_BLUETOOTH_BLUETOOTH_PRIVATE_API_H_
 #define EXTENSIONS_BROWSER_API_BLUETOOTH_BLUETOOTH_PRIVATE_API_H_
 
+#include <optional>
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "device/bluetooth/bluetooth_device.h"
@@ -12,7 +13,6 @@
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/common/api/bluetooth_private.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 class BluetoothAdapter;
@@ -119,7 +119,7 @@ class BluetoothPrivateSetAdapterStateFunction
   // up state requests.
   bool parsed_ = false;
 
-  absl::optional<bluetooth_private::SetAdapterState::Params> params_;
+  std::optional<bluetooth_private::SetAdapterState::Params> params_;
 };
 
 class BluetoothPrivateSetPairingResponseFunction
@@ -141,7 +141,7 @@ class BluetoothPrivateSetPairingResponseFunction
  private:
   ~BluetoothPrivateSetPairingResponseFunction() override;
 
-  absl::optional<bluetooth_private::SetPairingResponse::Params> params_;
+  std::optional<bluetooth_private::SetPairingResponse::Params> params_;
 };
 
 class BluetoothPrivateDisconnectAllFunction
@@ -167,7 +167,7 @@ class BluetoothPrivateDisconnectAllFunction
   void OnErrorCallback(scoped_refptr<device::BluetoothAdapter> adapter,
                        const std::string& device_address);
 
-  absl::optional<bluetooth_private::DisconnectAll::Params> params_;
+  std::optional<bluetooth_private::DisconnectAll::Params> params_;
 };
 
 class BluetoothPrivateForgetDeviceFunction : public BluetoothExtensionFunction {
@@ -192,7 +192,7 @@ class BluetoothPrivateForgetDeviceFunction : public BluetoothExtensionFunction {
   void OnErrorCallback(scoped_refptr<device::BluetoothAdapter> adapter,
                        const std::string& device_address);
 
-  absl::optional<bluetooth_private::ForgetDevice::Params> params_;
+  std::optional<bluetooth_private::ForgetDevice::Params> params_;
 };
 
 class BluetoothPrivateSetDiscoveryFilterFunction
@@ -218,7 +218,7 @@ class BluetoothPrivateSetDiscoveryFilterFunction
   void OnSuccessCallback();
   void OnErrorCallback();
 
-  absl::optional<bluetooth_private::SetDiscoveryFilter::Params> params_;
+  std::optional<bluetooth_private::SetDiscoveryFilter::Params> params_;
 };
 
 class BluetoothPrivateConnectFunction : public BluetoothExtensionFunction {
@@ -240,9 +240,9 @@ class BluetoothPrivateConnectFunction : public BluetoothExtensionFunction {
   ~BluetoothPrivateConnectFunction() override;
 
   void OnConnect(
-      absl::optional<device::BluetoothDevice::ConnectErrorCode> error);
+      std::optional<device::BluetoothDevice::ConnectErrorCode> error);
 
-  absl::optional<bluetooth_private::Connect::Params> params_;
+  std::optional<bluetooth_private::Connect::Params> params_;
 };
 
 class BluetoothPrivatePairFunction : public BluetoothExtensionFunction {
@@ -262,9 +262,9 @@ class BluetoothPrivatePairFunction : public BluetoothExtensionFunction {
   ~BluetoothPrivatePairFunction() override;
 
   void OnPair(
-      absl::optional<device::BluetoothDevice::ConnectErrorCode> error_code);
+      std::optional<device::BluetoothDevice::ConnectErrorCode> error_code);
 
-  absl::optional<bluetooth_private::Pair::Params> params_;
+  std::optional<bluetooth_private::Pair::Params> params_;
 };
 
 class BluetoothPrivateRecordPairingFunction
@@ -288,7 +288,7 @@ class BluetoothPrivateRecordPairingFunction
   void DoWork(scoped_refptr<device::BluetoothAdapter> adapter) override;
 
  private:
-  absl::optional<bluetooth_private::RecordPairing::Params> params_;
+  std::optional<bluetooth_private::RecordPairing::Params> params_;
 };
 
 class BluetoothPrivateRecordReconnectionFunction
@@ -312,7 +312,7 @@ class BluetoothPrivateRecordReconnectionFunction
   void DoWork(scoped_refptr<device::BluetoothAdapter> adapter) override;
 
  private:
-  absl::optional<bluetooth_private::RecordReconnection::Params> params_;
+  std::optional<bluetooth_private::RecordReconnection::Params> params_;
 };
 
 class BluetoothPrivateRecordDeviceSelectionFunction
@@ -336,7 +336,7 @@ class BluetoothPrivateRecordDeviceSelectionFunction
   void DoWork(scoped_refptr<device::BluetoothAdapter> adapter) override;
 
  private:
-  absl::optional<bluetooth_private::RecordDeviceSelection::Params> params_;
+  std::optional<bluetooth_private::RecordDeviceSelection::Params> params_;
 };
 
 }  // namespace api

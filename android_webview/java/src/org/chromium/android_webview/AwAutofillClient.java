@@ -43,8 +43,8 @@ public class AwAutofillClient {
     }
 
     @CalledByNative
-    private void showAutofillPopup(View anchorView, boolean isRtl,
-            AutofillSuggestion[] suggestions) {
+    private void showAutofillPopup(
+            View anchorView, boolean isRtl, AutofillSuggestion[] suggestions) {
 
         if (mAutofillPopup == null) {
             if (ContextUtils.activityFromContext(mContext) == null) {
@@ -52,23 +52,35 @@ public class AwAutofillClient {
                 return;
             }
             try {
-                mAutofillPopup = new AutofillPopup(mContext, anchorView, new AutofillDelegate() {
-                    @Override
-                    public void dismissed() {
-                        AwAutofillClientJni.get().dismissed(
-                                mNativeAwAutofillClient, AwAutofillClient.this);
-                    }
-                    @Override
-                    public void suggestionSelected(int listIndex) {
-                        AwAutofillClientJni.get().suggestionSelected(
-                                mNativeAwAutofillClient, AwAutofillClient.this, listIndex);
-                    }
-                    @Override
-                    public void deleteSuggestion(int listIndex) {}
+                mAutofillPopup =
+                        new AutofillPopup(
+                                mContext,
+                                anchorView,
+                                new AutofillDelegate() {
+                                    @Override
+                                    public void dismissed() {
+                                        AwAutofillClientJni.get()
+                                                .dismissed(
+                                                        mNativeAwAutofillClient,
+                                                        AwAutofillClient.this);
+                                    }
 
-                    @Override
-                    public void accessibilityFocusCleared() {}
-                }, null);
+                                    @Override
+                                    public void suggestionSelected(int listIndex) {
+                                        AwAutofillClientJni.get()
+                                                .suggestionSelected(
+                                                        mNativeAwAutofillClient,
+                                                        AwAutofillClient.this,
+                                                        listIndex);
+                                    }
+
+                                    @Override
+                                    public void deleteSuggestion(int listIndex) {}
+
+                                    @Override
+                                    public void accessibilityFocusCleared() {}
+                                },
+                                null);
             } catch (RuntimeException e) {
                 // Deliberately swallowing exception because bad fraemwork implementation can
                 // throw exceptions in ListPopupWindow constructor.
@@ -99,8 +111,12 @@ public class AwAutofillClient {
      * @param uniqueId Unique suggestion id.
      */
     @CalledByNative
-    private static void addToAutofillSuggestionArray(AutofillSuggestion[] array, int index,
-            String name, String label, @PopupItemId int popupItemId) {
+    private static void addToAutofillSuggestionArray(
+            AutofillSuggestion[] array,
+            int index,
+            String name,
+            String label,
+            @PopupItemId int popupItemId) {
         array[index] =
                 new AutofillSuggestion.Builder()
                         .setLabel(name)
@@ -114,6 +130,7 @@ public class AwAutofillClient {
     @NativeMethods
     interface Natives {
         void dismissed(long nativeAwAutofillClient, AwAutofillClient caller);
+
         void suggestionSelected(long nativeAwAutofillClient, AwAutofillClient caller, int position);
     }
 }

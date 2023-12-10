@@ -14,25 +14,6 @@ BASE_FEATURE(kStructuredMetrics,
              "EnableStructuredMetrics",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-#if BUILDFLAG(IS_ANDROID)
-BASE_FEATURE(kMergeSubprocessMetricsOnBgAndFg,
-             "MergeSubprocessMetricsOnBgAndFg",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_ANDROID)
-
-BASE_FEATURE(kSubprocessMetricsAsync,
-             "SubprocessMetricsAsync",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-const base::FeatureParam<bool> kPeriodicMergeAsync{&kSubprocessMetricsAsync,
-                                                   "PeriodicMergeAsync", false};
-
-const base::FeatureParam<bool> kDeregisterAsync{&kSubprocessMetricsAsync,
-                                                "DeregisterAsync", false};
-
-const base::FeatureParam<bool> kDeregisterSequenced{
-    &kSubprocessMetricsAsync, "DeregisterSequenced", false};
-
 BASE_FEATURE(kFlushPersistentSystemProfileOnWrite,
              "FlushPersistentSystemProfileOnWrite",
              base::FEATURE_DISABLED_BY_DEFAULT);

@@ -508,14 +508,22 @@ export class PrintPreviewDestinationSettingsElement extends
 
   // Trigger updates to the printer status icons and text for the selected
   // destination and corresponding dropdown.
-  private onPrinterStatusUpdate_(e: CustomEvent<string>): void {
-    const destinationKey = e.detail;
+  private onPrinterStatusUpdate_(
+      e: CustomEvent<{destinationKey: string, nowOnline: boolean}>): void {
+    const destinationKey = e.detail.destinationKey;
 
     // If `destinationKey` matches the currently selected destination, use
     // notifyPath to trigger the destination to recalculate its status icon and
     // error status text.
     if (this.destination && this.destination.key === destinationKey) {
       this.notifyPath(`destination.printerStatusReason`);
+
+      // If the selected destination was unreachable and now it's online, force
+      // select it again so the capabilities and preview will now load.
+      if (e.detail.nowOnline) {
+        this.destinationStore_!.selectDestination(
+            this.destination, /*refreshDestination=*/ true);
+      }
     }
 
     // If this destination is in the dropdown, notify it to recalculate its

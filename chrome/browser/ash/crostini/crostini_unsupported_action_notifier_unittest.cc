@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/crostini/crostini_unsupported_action_notifier.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <tuple>
 
@@ -12,7 +13,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace crostini {
 

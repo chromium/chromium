@@ -13,7 +13,6 @@
 #include "base/check.h"
 #include "base/json/json_reader.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
@@ -21,6 +20,7 @@
 #include "components/attribution_reporting/aggregation_keys.h"
 #include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/destination_set.h"
+#include "components/attribution_reporting/event_level_epsilon.h"
 #include "components/attribution_reporting/event_report_windows.h"
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/max_event_level_reports.h"
@@ -60,9 +60,9 @@ base::TimeDelta AdjustExpiry(base::TimeDelta expiry, SourceType source_type) {
 void RecordSourceRegistrationError(SourceRegistrationError error) {
   static_assert(
       SourceRegistrationError::kMaxValue ==
-          SourceRegistrationError::kInvalidTriggerDataForMatchingMode,
-      "Bump version of Conversions.SourceRegistrationError7 histogram.");
-  base::UmaHistogramEnumeration("Conversions.SourceRegistrationError7", error);
+          SourceRegistrationError::kEventLevelEpsilonValueInvalid,
+      "Bump version of Conversions.SourceRegistrationError10 histogram.");
+  base::UmaHistogramEnumeration("Conversions.SourceRegistrationError10", error);
 }
 
 SourceRegistration::SourceRegistration(mojo::DefaultConstruct::Tag tag)
@@ -142,7 +142,11 @@ SourceRegistration::Parse(base::Value::Dict registration,
   ASSIGN_OR_RETURN(result.max_event_level_reports,
                    MaxEventLevelReports::Parse(registration, source_type));
 
-  ASSIGN_OR_RETURN(result.trigger_config, TriggerConfig::Parse(registration));
+  ASSIGN_OR_RETURN(result.trigger_data_matching,
+                   ParseTriggerDataMatching(registration));
+
+  ASSIGN_OR_RETURN(result.event_level_epsilon,
+                   EventLevelEpsilon::Parse(registration));
 
   result.debug_key = ParseDebugKey(registration);
 
@@ -155,7 +159,7 @@ SourceRegistration::Parse(base::Value::Dict registration,
 
 // static
 base::expected<SourceRegistration, SourceRegistrationError>
-SourceRegistration::Parse(base::StringPiece json, SourceType source_type) {
+SourceRegistration::Parse(std::string_view json, SourceType source_type) {
   base::expected<SourceRegistration, SourceRegistrationError> source =
       base::unexpected(SourceRegistrationError::kInvalidJson);
 
@@ -205,7 +209,9 @@ base::Value::Dict SourceRegistration::ToJson() const {
 
   max_event_level_reports.Serialize(dict);
 
-  trigger_config.Serialize(dict);
+  Serialize(dict, trigger_data_matching);
+
+  event_level_epsilon.Serialize(dict);
 
   return dict;
 }

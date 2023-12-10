@@ -11,6 +11,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "media/gpu/macros.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace media {
 
@@ -512,6 +513,11 @@ VideoDecoder::Result H264Decoder::InitializeSliceMetadata(
   slice_metadata->pic_num = slice_hdr.frame_num;
   slice_metadata->pic_order_cnt_lsb = slice_hdr.pic_order_cnt_lsb;
 
+  const auto visible_rect = sps->GetVisibleRect();
+  // If there is no value, then the bitstream is invalid
+  CHECK(visible_rect.has_value());
+  slice_metadata->visible_rect_ = *visible_rect;
+
   slice_metadata->long_term_reference_flag = slice_hdr.long_term_reference_flag;
 
   if (slice_hdr.adaptive_ref_pic_marking_mode_flag) {
@@ -905,15 +911,8 @@ std::unique_ptr<H264Decoder> H264Decoder::Create(
 
   absl::optional<gfx::Size> coded_size = sps->GetCodedSize();
   CHECK(coded_size);
-  LOG(INFO) << "h.264 coded size : " << coded_size->ToString();
 
   auto v4l2_ioctl = std::make_unique<V4L2IoctlShim>(kDriverCodecFourcc);
-
-  if (!v4l2_ioctl->VerifyCapabilities(kDriverCodecFourcc)) {
-    LOG(ERROR) << "Device doesn't support "
-               << media::FourccToString(kDriverCodecFourcc) << ".";
-    return nullptr;
-  }
 
   return base::WrapUnique(
       new H264Decoder(std::move(v4l2_ioctl), coded_size.value(), stream));
@@ -974,10 +973,15 @@ VideoDecoder::Result H264Decoder::DecodeNextFrame(const int frame_number,
   last_decoded_frame_visible_ = picture.outputted;
   scoped_refptr<MmappedBuffer> buffer =
       CAPTURE_queue_->GetBuffer(picture.capture_queue_buffer_id);
+  size = picture.visible_rect_.size();
 
-  ConvertToYUV(y_plane, u_plane, v_plane, OUTPUT_queue_->resolution(),
-               buffer->mmapped_planes(), CAPTURE_queue_->resolution(),
-               CAPTURE_queue_->fourcc());
+  if (!picture.visible_rect_.origin().IsOrigin()) {
+    // TODO(b/315491484): Handle cropping with non-zero origin
+    LOG(INFO) << "Non-zero visible rect origin.";
+  }
+
+  ConvertToYUV(y_plane, u_plane, v_plane, size, buffer->mmapped_planes(),
+               CAPTURE_queue_->resolution(), CAPTURE_queue_->fourcc());
 
   slice_ready_queue_.pop();
   return VideoDecoder::kOk;

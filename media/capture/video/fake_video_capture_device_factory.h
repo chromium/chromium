@@ -12,7 +12,9 @@
 #include <vector>
 
 #include "build/build_config.h"
+#include "media/base/video_facing.h"
 #include "media/capture/video/fake_video_capture_device.h"
+#include "media/capture/video/video_capture_device_descriptor.h"
 #include "media/capture/video/video_capture_device_factory.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -36,6 +38,7 @@ struct CAPTURE_EXPORT FakeVideoCaptureDeviceSettings {
   VideoCaptureFormats supported_formats;
   FakePhotoDeviceConfig photo_device_config;
   FakeVideoCaptureDevice::DisplayMediaType display_media_type;
+  absl::optional<media::CameraAvailability> availability;
 };
 
 // Implementation of VideoCaptureDeviceFactory that creates fake devices

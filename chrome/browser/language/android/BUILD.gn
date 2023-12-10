@@ -44,6 +44,7 @@ android_library("java") {
 
     # Todo(https://crbug.com/1176981): Remove cyclical dependancy with Translate bridge.
     "java/src/org/chromium/chrome/browser/translate/TranslateBridge.java",
+    "java/src/org/chromium/chrome/browser/translate/TranslationObserver.java",
   ]
   deps = [
     ":base_module_java",
@@ -85,6 +86,7 @@ generate_jni("jni_headers") {
   sources = [
     "java/src/org/chromium/chrome/browser/language/LanguageBridge.java",
     "java/src/org/chromium/chrome/browser/translate/TranslateBridge.java",
+    "java/src/org/chromium/chrome/browser/translate/TranslationObserver.java",
   ]
 }
 

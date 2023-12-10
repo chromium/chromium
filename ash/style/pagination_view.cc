@@ -4,12 +4,14 @@
 
 #include "ash/style/pagination_view.h"
 
+#include <optional>
+#include <utility>
+
 #include "ash/public/cpp/pagination/pagination_model.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/style_util.h"
 #include "base/i18n/number_formatting.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
@@ -74,7 +76,7 @@ class IndicatorButton : public views::Button {
 
   IndicatorButton(PressedCallback callback,
                   const std::u16string& accessible_name)
-      : views::Button(callback) {
+      : views::Button(std::move(callback)) {
     SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
     SetAccessibleName(accessible_name);
   }
@@ -280,7 +282,7 @@ class PaginationView::IndicatorContainer : public views::BoxLayoutView {
       ScrollWithOffset(canceled ? scroll_interval_->start_value
                                 : scroll_interval_->target_value);
     }
-    scroll_interval_ = absl::nullopt;
+    scroll_interval_ = std::nullopt;
   }
 
   // Returns true if the scrolling is in progress.
@@ -297,7 +299,7 @@ class PaginationView::IndicatorContainer : public views::BoxLayoutView {
   }
 
   std::vector<raw_ptr<IndicatorButton>> buttons_;
-  absl::optional<InterpolationInterval<int>> scroll_interval_;
+  std::optional<InterpolationInterval<int>> scroll_interval_;
 };
 
 BEGIN_METADATA(PaginationView, IndicatorContainer, views::BoxLayoutView)
@@ -319,7 +321,7 @@ PaginationView::PaginationView(PaginationModel* model, Orientation orientation)
   model_observation_.Observe(model_.get());
 
   // Remove the default background color.
-  indicator_scroll_view_->SetBackgroundColor(absl::nullopt);
+  indicator_scroll_view_->SetBackgroundColor(std::nullopt);
 
   // The scroll view does not accept any scroll event.
   indicator_scroll_view_->SetHorizontalScrollBarMode(

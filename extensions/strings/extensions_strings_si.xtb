@@ -8,6 +8,7 @@
 <translation id="1420684932347524586">චික්! අහඹු RSA පුද්ගලික යතුර සෑදීම අසාර්ථකයි.</translation>
 <translation id="1445572445564823378">මෙම දිගුව <ph name="PRODUCT_NAME" /> හි වේගය අඩාල කරයි. <ph name="PRODUCT_NAME" /> හි කාර්යක්ෂමතාව සඳහා එය අක්‍රීය කිරීමට සිදුවේ.</translation>
 <translation id="1468038450257740950">WebGLට සහාය නොවේ.</translation>
+<translation id="1610570795592207282">ස්ක්‍රිප්ටය සඳහා css '<ph name="RELATIVE_PATH" />' පූරණය කළ නොහැකි විය.</translation>
 <translation id="1803557475693955505">'<ph name="BACKGROUND_PAGE" />' පසුබිම් පිටුව ලබාගත නොහැකි විය.</translation>
 <translation id="2159915644201199628">අනුරුව විසංකේතනය කළ නොහැකි විය: '<ph name="IMAGE_NAME" />'</translation>
 <translation id="2350172092385603347">දේශීයකරණය භාවිතා කෙරිණ, නමුත් manifest හි default_locale නීර්ණය කර නොමැත.</translation>
@@ -18,14 +19,12 @@
 <translation id="3115238746683532089"><ph name="VENDOR_ID" /> වෙතින් නොදන්නා නිෂ්පාදනය <ph name="PRODUCT_ID" /> (අනුක්‍රමික අංකය <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">crx ගොනුව යළි පිහිටුවිය නොහැකි විය. මෙම ගොනුව භාවිතයේදැයි පිරික්සන්න.</translation>
 <translation id="3163201441334626963"><ph name="VENDOR_ID" /> වෙතින් නොදන්නා නිෂ්පාදනය <ph name="PRODUCT_ID" /></translation>
-<translation id="3302709122321372472">අන්තර්ගත ස්ක්‍රිප්ට '<ph name="RELATIVE_PATH" />' css සඳහා ලබාගත නොහැක.</translation>
 <translation id="3369521687965833290">දිගුව ඇසුරුම් ඉවත් කළ නොහැක.  දිගුවක් ආරක්ෂිතව ඇසුරුම් ඉවත් කිරීමට, ඔබගේ පැතිකඩ ඩිරෙක්ටරිය වෙත ධාවක අකුරකින් ආරම්භ වන සහ ජන්ක්ෂන්, මවුන්ට් පොයින්ට්, හෝ සිම්ලින්ක් අඩංගු නොවන පෙතක් තිබිය යුතුය. ඔබගේ පැතිකඩ සඳහා එවැනි පෙතක් නැත.</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (අනුක්‍රමික අංකය <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="VENDOR_ID" /> වෙතින් <ph name="PRODUCT_NAME" />  (අනුක්‍රමික අංකය <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">පුද්ගලික යතුර සඳහා යෙදවුම් යතුර වලංගු මාර්ගයක් විය යුතුය.</translation>
 <translation id="388442998277590542">'<ph name="OPTIONS_PAGE" />' අභිප්‍රේත පිටුව පූර්ණය කළ නොහැක.</translation>
 <translation id="3984413272403535372">දිගුවට ප්‍රවිෂ්ට වීමේදී දෝෂයක් මතුවිය.</translation>
-<translation id="39964277676607559">අන්තර්ගත පිටපත සඳහා javascript '<ph name="RELATIVE_PATH" />' පැටවිය නොහැකි විය.</translation>
 <translation id="4115165561519362854">මෙම පරිගණකයේ පරිපාලක හට <ph name="EXTENSION_NAME" /> සතුව <ph name="EXTENSION_VERSION" /> ක වත් අවම සංස්කරණයක් පැවතීම අවශ්‍යයි. එය එම සංස්කරණයට (හෝ ඉහළ) යාවත් කරන තෙක් සක්‍රීය කළ නොහැක.</translation>
 <translation id="4233778200880751280">පිටුව '<ph name="ABOUT_PAGE" />' පිළිබඳව ප්‍රවේශනය කළ නොහැක.</translation>
 <translation id="471800408830181311">පුද්ගලික යතුර ප්‍රතිදානය කළ නොහැකි විය.</translation>
@@ -33,6 +32,7 @@
 <translation id="4988792151665380515">පොදු යතුර නිර්යාත කිරීම අසාර්ථකයි.</translation>
 <translation id="5026754133087629784">වෙබ දක්වනය: <ph name="WEBVIEW_TAG_NAME" /></translation>
 <translation id="5098647635849512368">ඇසිරීමට වන නාමාවලිය වෙත නිරපේක්ෂ පෙත සොයා ගත නොහැක.</translation>
+<translation id="5160071981665899014">ස්ක්‍රිප්ටය සඳහා ජාවාස්ක්‍රිප්ට් '<ph name="RELATIVE_PATH" />' පූරණය කළ නොහැකි විය.</translation>
 <translation id="5356315618422219272">යෙදුම්දසුන: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5436430103864390185">හැඩගැසූ කවුළු සඳහා සහය නොලැබේ.</translation>
 <translation id="5456409301717116725">මෙම දිගුවේ මූලික ගොනුව '<ph name="KEY_PATH" />' අඩංගුවේ. ඔබට සමහරවිට එය කිරීමට අවශ්‍ය නැත.</translation>

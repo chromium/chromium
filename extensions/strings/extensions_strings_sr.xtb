@@ -8,6 +8,7 @@
 <translation id="1420684932347524586">Генерисање насумичног RSA приватног кључа није успело.</translation>
 <translation id="1445572445564823378">Овај додатак успорава <ph name="PRODUCT_NAME" />. Требало би да га онемогућите да би се учинак производа <ph name="PRODUCT_NAME" /> вратио.</translation>
 <translation id="1468038450257740950">WebGL није подржан.</translation>
+<translation id="1610570795592207282">Учитавање css-а <ph name="RELATIVE_PATH" /> за скрипту није успело.</translation>
 <translation id="1803557475693955505">Није могуће учитати страницу у позадини „<ph name="BACKGROUND_PAGE" />“.</translation>
 <translation id="2159915644201199628">Није могуће декодирати слику: „<ph name="IMAGE_NAME" />“</translation>
 <translation id="2350172092385603347">Коришћена је локализација, али параметар default_locale није наведен у манифесту.</translation>
@@ -18,14 +19,12 @@
 <translation id="3115238746683532089">Непознати производ <ph name="PRODUCT_ID" /> продавца <ph name="VENDOR_ID" /> (серијски број <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">Замена crx датотеке није успела. Проверите да ли се датотека користи.</translation>
 <translation id="3163201441334626963">Непознати производ <ph name="PRODUCT_ID" /> продавца <ph name="VENDOR_ID" /></translation>
-<translation id="3302709122321372472">Није могуће учитати css „<ph name="RELATIVE_PATH" />“ за скрипту садржаја.</translation>
 <translation id="3369521687965833290">Није могуће отпаковати додатак. Да бисте безбедно отпаковали додатак, мора да постоји путања до директоријума профила која почиње словом за ознаку јединице и не садржи спој, тачку повезивања или симболичку везу. За ваш профил не постоји таква путања.</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (серијски број <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> продавца <ph name="VENDOR_ID" /> (серијски број <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Улазна вредност приватног кључа мора бити важећа путања.</translation>
 <translation id="388442998277590542">Није могуће учитати страницу опција „<ph name="OPTIONS_PAGE" />“.</translation>
 <translation id="3984413272403535372">Дошло је до грешке приликом потписивања додатка.</translation>
-<translation id="39964277676607559">Није могуће учитати javascript „<ph name="RELATIVE_PATH" />“ за скрипту садржаја.</translation>
 <translation id="4115165561519362854">Администратор овог рачунара захтева да <ph name="EXTENSION_NAME" /> има минималну верзију <ph name="EXTENSION_VERSION" />. Не можете да га омогућите док га не ажурирате на ту верзију (или новију).</translation>
 <translation id="4233778200880751280">Није могуће учитати страницу са основним подацима „<ph name="ABOUT_PAGE" />“.</translation>
 <translation id="471800408830181311">Формирање излазних резултата приватног кључа није успело.</translation>
@@ -33,6 +32,7 @@
 <translation id="4988792151665380515">Извоз јавног кључа није успео.</translation>
 <translation id="5026754133087629784">Веб-приказ: <ph name="WEBVIEW_TAG_NAME" /></translation>
 <translation id="5098647635849512368">Није могуће пронаћи апсолутну путању до директоријума за паковање.</translation>
+<translation id="5160071981665899014">Учитавање JavaScript-а <ph name="RELATIVE_PATH" /> за скрипту није успело.</translation>
 <translation id="5356315618422219272">Приказ апликације: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5436430103864390185">Прозори различитих облика нису подржани.</translation>
 <translation id="5456409301717116725">Овај додатак садржи датотеку кључа „<ph name="KEY_PATH" />“. Вероватно то не желите.</translation>

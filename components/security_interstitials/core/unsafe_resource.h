@@ -5,11 +5,13 @@
 #ifndef COMPONENTS_SECURITY_INTERSTITIALS_CORE_UNSAFE_RESOURCE_H_
 #define COMPONENTS_SECURITY_INTERSTITIALS_CORE_UNSAFE_RESOURCE_H_
 
+#include <optional>
 #include <vector>
 
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/unguessable_token.h"
 #include "components/safe_browsing/core/browser/db/hit_report.h"
 #include "components/safe_browsing/core/common/proto/realtimeapi.pb.h"
 #include "components/safe_browsing/core/common/safebrowsing_constants.h"
@@ -40,14 +42,12 @@ struct UnsafeResource {
   // plumbed through this struct.
   // Equivalent to GlobalRenderFrameHostId.
   using RenderProcessId = int;
-  using RenderFrameId = int;
+  using RenderFrameToken = std::optional<base::UnguessableToken>;
   // See RenderFrameHost::GetFrameTreeNodeId.
   using FrameTreeNodeId = int;
   // Copies of the sentinel values used in content/.
   // Equal to ChildProcessHost::kInvalidUniqueID.
   static constexpr RenderProcessId kNoRenderProcessId = -1;
-  // Equal to MSG_ROUTING_NONE.
-  static constexpr RenderFrameId kNoRenderFrameId = -2;
   // Equal to RenderFrameHost::kNoFrameTreeNodeId.
   static constexpr FrameTreeNodeId kNoFrameTreeNodeId = -1;
 
@@ -88,7 +88,7 @@ struct UnsafeResource {
   // case of something triggered by a document (e.g. subresource loading), we
   // should have the RenderFrameHost's id.
   RenderProcessId render_process_id = kNoRenderProcessId;
-  RenderFrameId render_frame_id = kNoRenderFrameId;
+  RenderFrameToken render_frame_token;
   FrameTreeNodeId frame_tree_node_id = kNoFrameTreeNodeId;
 
   base::WeakPtr<web::WebState> weak_web_state;

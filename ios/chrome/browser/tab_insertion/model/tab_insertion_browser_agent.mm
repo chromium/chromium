@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/tab_insertion/model/tab_insertion_browser_agent.h"
 
 #import "build/blink_buildflags.h"
-#import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
+#import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/sessions/session_restoration_service.h"
 #import "ios/chrome/browser/sessions/session_restoration_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
@@ -14,13 +14,8 @@
 #import "ios/chrome/browser/url_loading/model/new_tab_animation_tab_helper.h"
 #import "ios/web/common/user_agent.h"
 #import "ios/web/public/navigation/navigation_util.h"
-#import "ios/web/public/session/crw_session_storage.h"
 #import "ios/web/public/session/proto/storage.pb.h"
 #import "ios/web/public/web_state.h"
-
-// To get access to UseSessionSerializationOptimizations().
-// TODO(crbug.com/1383087): remove once the feature is fully launched.
-#import "ios/web/common/features.h"
 
 namespace TabInsertion {
 Params::Params() = default;
@@ -98,16 +93,11 @@ web::WebState* TabInsertionBrowserAgent::InsertWebState(
         tab_insertion_params.opened_by_dom, web::UserAgentType::MOBILE,
         base::Time::Now());
 
-    // If the optimised session storage feature is enabled, the creation of
-    // the WebState needs to happen through SessionRestorationService.
-    if (web::features::UseSessionSerializationOptimizations()) {
-      web_state =
-          SessionRestorationServiceFactory::GetForBrowserState(browser_state)
-              ->CreateUnrealizedWebState(browser_.get(), std::move(storage));
-    } else {
-      web_state = web::WebState::CreateWithStorageSession(
-          create_params, [[CRWSessionStorage alloc] initWithProto:storage]);
-    }
+    // Ask the SessionRestorationService to create an unrealized WebState
+    // that can be inserted into the WebStateList of `browser_`.
+    web_state =
+        SessionRestorationServiceFactory::GetForBrowserState(browser_state)
+            ->CreateUnrealizedWebState(browser_.get(), std::move(storage));
   }
   DCHECK(web_state);
 

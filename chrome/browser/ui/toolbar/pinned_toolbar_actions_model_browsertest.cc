@@ -390,7 +390,7 @@ IN_PROC_BROWSER_TEST_F(PinnedToolbarActionsModelBrowserTest,
     ASSERT_EQ(1u, list_1.size());
     EXPECT_EQ(1, observer()->inserted_count());
 
-    const absl::optional<std::string>& search_companion_string =
+    const std::optional<std::string>& search_companion_string =
         actions::ActionIdMap::ActionIdToString(
             kActionSidePanelShowSearchCompanion);
     EXPECT_EQ(search_companion_string, list_1[0].GetString());
@@ -400,6 +400,3 @@ IN_PROC_BROWSER_TEST_F(PinnedToolbarActionsModelBrowserTest,
 
 // TODO(dljames): Write tests for guest and incognito mode profile that check
 // that we cannot modify the model at all.
-
-// TODO(dljames): Write tests for ids that are directly added to the prefs
-// object.

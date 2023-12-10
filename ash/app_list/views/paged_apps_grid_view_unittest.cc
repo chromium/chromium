@@ -137,7 +137,7 @@ class PagedAppsGridViewTest : public AshTestBase,
 
   // Sorts app list with the specified order. If `wait` is true, wait for the
   // reorder animation to complete.
-  void SortAppList(const absl::optional<AppListSortOrder>& order, bool wait) {
+  void SortAppList(const std::optional<AppListSortOrder>& order, bool wait) {
     AppListController::Get()->UpdateAppListWithNewTemporarySortOrder(
         order,
         /*animate=*/true, /*update_position_closure=*/base::DoNothing());
@@ -629,7 +629,7 @@ TEST_P(PagedAppsGridViewTest, SortAppsWithItemFocused) {
 
   // Simulate the sort undo by setting the new order to nullopt. The focus
   // should be on the search box after undoing the sort.
-  SortAppList(absl::nullopt, /*wait=*/true);
+  SortAppList(std::nullopt, /*wait=*/true);
   EXPECT_TRUE(helper->GetSearchBoxView()->search_box()->HasFocus());
 }
 

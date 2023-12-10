@@ -12,7 +12,7 @@
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/browser_sync/browser_sync_client.h"
 #include "components/browser_sync/sync_api_component_factory_impl.h"
-#include "components/password_manager/core/browser/password_store_interface.h"
+#include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "ios/web_view/internal/web_view_browser_state.h"
 
 namespace ios_web_view {
@@ -62,7 +62,7 @@ class WebViewSyncClient : public browser_sync::BrowserSyncClient {
   base::WeakPtr<syncer::ModelTypeControllerDelegate>
   GetControllerDelegateForModelType(syncer::ModelType type) override;
   syncer::SyncApiComponentFactory* GetSyncApiComponentFactory() override;
-  syncer::SyncTypePreferenceProvider* GetPreferenceProvider() override;
+  bool IsCustomPassphraseAllowed() override;
   void OnLocalSyncTransportDataCleared() override;
 
  private:

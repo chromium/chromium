@@ -17,4 +17,4 @@ void AddUiColorMixer(ColorProvider* provider, const ColorProviderKey& key);
 
 }  // namespace ui
 
-#endif  // UI_COLOR_CORE_DEFAULT_COLOR_MIXER_H_
+#endif  // UI_COLOR_UI_COLOR_MIXER_H_

@@ -269,6 +269,25 @@ TEST_F(WindowStateTest, CanTransitionToPipWindow) {
   EXPECT_TRUE(window_state->IsPip());
 }
 
+// Test that the PIP window is set to the `PipController` before the
+// widget is deactivated. Regression test for http://b/309362942.
+TEST_F(WindowStateTest, PipWindowIsSetBeforeWidgetDeactivate) {
+  // Make `background_widget` to trigger shelf visibility change after
+  // entering PIP.
+  auto background_widget = CreateTestWidget();
+  auto* window_state = WindowState::Get(background_widget->GetNativeWindow());
+  const WMEvent enter_fullscreen(WM_EVENT_FULLSCREEN);
+  window_state->OnWMEvent(&enter_fullscreen);
+
+  auto pip_widget = CreateTestWidget();
+  auto* pip_window_state = WindowState::Get(pip_widget->GetNativeWindow());
+  const WMEvent enter_pip(WM_EVENT_PIP);
+
+  // Entering PIP results in shelf visibility change, but it shouldn't
+  // cause any crash.
+  pip_window_state->OnWMEvent(&enter_pip);
+}
+
 // Test that a PIP window cannot be snapped.
 TEST_F(WindowStateTest, PipWindowCannotSnap) {
   std::unique_ptr<aura::Window> window(
@@ -2077,7 +2096,7 @@ TEST_F(WindowStateTest, WindowSnapActionSourceUmaMetrics) {
   window_state->Maximize();
 
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
-  EXPECT_TRUE(Shell::Get()->tablet_mode_controller()->InTabletMode());
+  EXPECT_TRUE(display::Screen::GetScreen()->InTabletMode());
 
   // Use keyboard to snap the window in tablet mode.
   AcceleratorController::Get()->PerformActionIfEnabled(

@@ -65,6 +65,9 @@ class MODULES_EXPORT CryptoResultImpl final : public CryptoResult {
   void CompleteWithKey(const WebCryptoKey&) override;
   void CompleteWithKeyPair(const WebCryptoKey& public_key,
                            const WebCryptoKey& private_key) override;
+  ExecutionContext* GetExecutionContext() override;
+  WebCryptoWarningType GetWarning() override { return warning_code_; }
+  void SetWarning(WebCryptoWarningType code) override { warning_code_ = code; }
 
   void CompleteWithError(ExceptionState&);
 
@@ -94,6 +97,8 @@ class MODULES_EXPORT CryptoResultImpl final : public CryptoResult {
   // cancellation status object for the purpose, which will outlive the
   // result object and can be safely accessed by multiple threads.
   scoped_refptr<CryptoResultCancel> cancel_;
+
+  WebCryptoWarningType warning_code_;
 };
 
 }  // namespace blink

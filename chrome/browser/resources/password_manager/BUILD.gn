@@ -21,6 +21,8 @@ build_webui("build") {
     "images/password_sharing_secure_lock.svg",
     "images/password_sharing_progress_bar.svg",
     "password_manager.html",
+    "images/relaunch_chrome_promo.svg",
+    "images/relaunch_chrome_promo_dark.svg",
   ]
   if (is_chrome_branded) {
     static_files += [
@@ -77,10 +79,8 @@ build_webui("build") {
     "side_bar.ts",
     "site_favicon.ts",
     "toolbar.ts",
+    "promo_cards/promo_card.ts",
   ]
-  if (is_chrome_branded) {
-    web_component_files += [ "promo_cards/promo_card.ts" ]
-  }
 
   non_web_component_files = [
     "password_manager.ts",

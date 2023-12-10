@@ -20,14 +20,11 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
-/**
- * AwContentsLifecycleNotifier tests.
- */
+/** AwContentsLifecycleNotifier tests. */
 @RunWith(Parameterized.class)
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
 public class AwContentsLifecycleNotifierTest extends AwParameterizedTest {
-    @Rule
-    public AwActivityTestRule mActivityTestRule;
+    @Rule public AwActivityTestRule mActivityTestRule;
 
     private TestAwContentsClient mContentsClient = new TestAwContentsClient();
 

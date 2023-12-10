@@ -40,7 +40,6 @@ import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabHidingType;
-import org.chromium.chrome.browser.tab.TabImpl;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.TabViewManager;
@@ -64,8 +63,8 @@ public final class PageViewObserverTest {
 
     @Mock private Activity mActivity;
     @Mock private ObservableSupplier<Tab> mTabSupplier;
-    @Mock private TabImpl mTab;
-    @Mock private TabImpl mTab2;
+    @Mock private Tab mTab;
+    @Mock private Tab mTab2;
     @Mock private EventTracker mEventTracker;
     @Mock private TokenTracker mTokenTracker;
     @Mock private SuspensionTracker mSuspensionTracker;
@@ -502,26 +501,25 @@ public final class PageViewObserverTest {
         return observer;
     }
 
-    private void updateUrl(TabImpl tab, GURL url, TabObserver tabObserver) {
+    private void updateUrl(Tab tab, GURL url, TabObserver tabObserver) {
         updateUrlNoPaint(tab, url, tabObserver);
         reportPaint(tab, url, tabObserver);
     }
 
-    private void updateUrlNoPaint(TabImpl tab, GURL url, TabObserver tabObserver) {
+    private void updateUrlNoPaint(Tab tab, GURL url, TabObserver tabObserver) {
         tabObserver.onUpdateUrl(tab, url);
     }
 
-    private void reportPaint(TabImpl tab, GURL url, TabObserver tabObserver) {
+    private void reportPaint(Tab tab, GURL url, TabObserver tabObserver) {
         doReturn(url).when(tab).getUrl();
         tabObserver.didFirstVisuallyNonEmptyPaint(tab);
     }
 
-    private void onHidden(TabImpl tab, @TabHidingType int hidingType, TabObserver tabObserver) {
+    private void onHidden(Tab tab, @TabHidingType int hidingType, TabObserver tabObserver) {
         tabObserver.onHidden(tab, hidingType);
     }
 
-    private void onShown(
-            TabImpl tab, @TabSelectionType int selectionType, TabObserver tabObserver) {
+    private void onShown(Tab tab, @TabSelectionType int selectionType, TabObserver tabObserver) {
         tabObserver.onShown(tab, selectionType);
     }
 

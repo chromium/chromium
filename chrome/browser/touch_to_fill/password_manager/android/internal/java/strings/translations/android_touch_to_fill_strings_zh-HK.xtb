@@ -1,0 +1,27 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="zh-HK">
+<translation id="1220509181886849806">要使用已儲存的密碼嗎？</translation>
+<translation id="1435940442311036198">在其他裝置上使用密鑰</translation>
+<translation id="1717486229951421299">㩒一下先可以填嘅憑證清單宜家顯示喺畫面下半部。</translation>
+<translation id="2359808026110333948">繼續</translation>
+<translation id="2364266287022099258">要使用已儲存的密鑰嗎？</translation>
+<translation id="3399357656427473483">㩒一下先可以填嘅憑證清單。</translation>
+<translation id="3653689374478248324">您將會登入 <ph name="SITE_NAME" /></translation>
+<translation id="3950820424414687140">登入</translation>
+<translation id="4553044860350038560">更多密鑰</translation>
+<translation id="4598345735110653698">管理密鑰</translation>
+<translation id="4722735765955348426"><ph name="USERNAME" />的密碼</translation>
+<translation id="4907224763885298217">請使用螢幕鎖定</translation>
+<translation id="5012523644916800014">管理密碼和密鑰</translation>
+<translation id="5441504010984421144">㩒一下先可以填嘅憑證清單，宜家顯示喺成個畫面。</translation>
+<translation id="5591247451101092906">要使用已儲存的密碼或密鑰嗎？</translation>
+<translation id="5624120631404540903">管理密碼</translation>
+<translation id="6560306912274274630"><ph name="USERNAME" /> 嘅密鑰，用螢幕鎖定</translation>
+<translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{收到此網站的新密碼}other{收到此網站的新密碼}}</translation>
+<translation id="7286867818472074330">選取密鑰</translation>
+<translation id="7669320311687290322"><ph name="ITEM_LABEL" />，第 <ph name="ITEM_POSITION" /> 個，共 <ph name="ITEMS_TOTAL" /> 個。</translation>
+<translation id="7738288782501322815">你已收到 <ph name="SITE_NAME" /> 的密碼</translation>
+<translation id="8614995815226664591"><ph name="SENDER_NAME" />已與你分享 <ph name="SITE_NAME" /> 的密碼</translation>
+<translation id="8891372124884726271">憑證清單閂咗。</translation>
+</translationbundle>

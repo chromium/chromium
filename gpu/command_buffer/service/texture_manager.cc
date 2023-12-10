@@ -8,11 +8,12 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <bit>
+#include <cstdint>
 #include <set>
 #include <tuple>
 #include <utility>
 
-#include "base/bits.h"
 #include "base/containers/contains.h"
 #include "base/format_macros.h"
 #include "base/lazy_instance.h"
@@ -1624,14 +1625,6 @@ bool Texture::IsLevelPartiallyCleared(GLenum target, GLint level) const {
           info.cleared_rect != gfx::Rect());
 }
 
-void Texture::InitTextureMaxAnisotropyIfNeeded(GLenum target) {
-  if (texture_max_anisotropy_initialized_)
-    return;
-  texture_max_anisotropy_initialized_ = true;
-  GLfloat params[] = { 1.0f };
-  glTexParameterfv(target, GL_TEXTURE_MAX_ANISOTROPY_EXT, params);
-}
-
 bool Texture::ClearLevel(DecoderContext* decoder, GLenum target, GLint level) {
   DCHECK(decoder);
   size_t face_index = GLES2Util::GLTargetToFaceIndex(target);
@@ -2361,9 +2354,9 @@ GLsizei TextureManager::ComputeMipMapCount(GLenum target,
     case GL_TEXTURE_RECTANGLE_ARB:
       return 1;
     case GL_TEXTURE_3D:
-      return 1 + base::bits::Log2Floor(std::max({width, height, depth}));
+      return std::bit_width<uint32_t>(std::max({width, height, depth}));
     default:
-      return 1 + base::bits::Log2Floor(std::max(width, height));
+      return std::bit_width<uint32_t>(std::max(width, height));
   }
 }
 

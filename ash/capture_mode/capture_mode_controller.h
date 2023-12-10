@@ -6,6 +6,7 @@
 #define ASH_CAPTURE_MODE_CAPTURE_MODE_CONTROLLER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -32,7 +33,6 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/viz/privileged/mojom/compositing/frame_sink_video_capture.mojom-forward.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/image/image.h"
 
@@ -385,7 +385,7 @@ class ASH_EXPORT CaptureModeController
   // performed (i.e. the window to be captured, and the capture bounds). If
   // nothing is to be captured (e.g. when there's no window selected in a
   // kWindow source, or no region is selected in a kRegion source), then a
-  // absl::nullopt is returned.
+  // std::nullopt is returned.
   struct CaptureParams {
     // This field is not a raw_ptr<> because it was filtered by the rewriter
     // for: #union
@@ -396,7 +396,7 @@ class ASH_EXPORT CaptureModeController
     gfx::Rect bounds;
   };
 
-  absl::optional<CaptureParams> GetCaptureParams() const;
+  std::optional<CaptureParams> GetCaptureParams() const;
 
   // Launches the mojo service that handles audio and video recording, and
   // begins recording according to the given `capture_params`. It creates an
@@ -480,7 +480,7 @@ class ASH_EXPORT CaptureModeController
   void HandleNotificationClicked(const base::FilePath& screen_capture_path,
                                  const CaptureModeType type,
                                  const BehaviorType behavior_type,
-                                 absl::optional<int> button_index);
+                                 std::optional<int> button_index);
 
   // Builds a path for a file of an image screenshot, or a video screen
   // recording, builds with display index if there are

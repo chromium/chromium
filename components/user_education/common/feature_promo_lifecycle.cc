@@ -10,43 +10,14 @@
 #include "base/metrics/user_metrics.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
+#include "components/user_education/common/feature_promo_data.h"
 #include "components/user_education/common/feature_promo_storage_service.h"
 #include "components/user_education/common/help_bubble.h"
+#include "components/user_education/common/user_education_features.h"
 
 namespace user_education {
 
 namespace {
-
-FeaturePromoResult CanShowSnoozePromo(const FeaturePromoData& promo_data) {
-  // This IPH has been dismissed by user permanently.
-  if (promo_data.is_dismissed) {
-    return FeaturePromoResult::kPermanentlyDismissed;
-  }
-
-  // This IPH is shown for the first time.
-  if (promo_data.show_count == 0) {
-    return FeaturePromoResult::Success();
-  }
-
-  // Corruption: Snooze time is in the future.
-  if (promo_data.last_snooze_time > base::Time::Now()) {
-    return FeaturePromoResult::kSnoozed;
-  }
-
-  // Use the snooze duration if this promo was snoozed the last time it was
-  // shown; otherwise use the default duration.
-  // TODO(dfried): Revisit this for 2.0.
-  const base::TimeDelta snooze_time =
-      (promo_data.last_snooze_time > promo_data.last_show_time)
-          ? promo_data.last_snooze_duration
-          : FeaturePromoLifecycle::kDefaultSnoozeDuration;
-
-  // The IPH was snoozed, so it shouldn't be shown again until the snooze
-  // duration ends.
-  return base::Time::Now() >= (promo_data.last_show_time + snooze_time)
-             ? FeaturePromoResult::Success()
-             : FeaturePromoResult::kSnoozed;
-}
 
 class ScopedPromoData {
  public:
@@ -70,8 +41,6 @@ class ScopedPromoData {
 };
 
 }  // namespace
-
-constexpr base::TimeDelta FeaturePromoLifecycle::kDefaultSnoozeDuration;
 
 FeaturePromoLifecycle::FeaturePromoLifecycle(
     FeaturePromoStorageService* storage_service,
@@ -122,6 +91,24 @@ FeaturePromoResult FeaturePromoLifecycle::CanShow() const {
   }
 }
 
+bool FeaturePromoLifecycle::CanSnooze() const {
+  switch (promo_type_) {
+    case PromoType::kLegacy:
+    case PromoType::kToast:
+      return false;
+    case PromoType::kCustomAction:
+    case PromoType::kSnooze:
+    case PromoType::kTutorial:
+      // Only enforce snooze count in V2 to avoid breaking backwards behavior.
+      return !features::IsUserEducationV2() ||
+             storage_service_->GetSnoozeCount(*iph_feature_) <
+                 features::GetMaxSnoozeCount();
+    case PromoType::kUnspecified:
+      NOTREACHED();
+      return false;
+  }
+}
+
 void FeaturePromoLifecycle::OnPromoShown(
     std::unique_ptr<HelpBubble> help_bubble,
     feature_engagement::Tracker* tracker) {
@@ -133,8 +120,12 @@ void FeaturePromoLifecycle::OnPromoShown(
     return;
   }
   ScopedPromoData data(storage_service_, iph_feature_);
+  const auto now = GetCurrentTime();
+  if (data->show_count == 0) {
+    data->first_show_time = now;
+  }
   ++data->show_count;
-  data->last_show_time = base::Time::Now();
+  data->last_show_time = now;
   RecordShown();
 }
 
@@ -192,6 +183,49 @@ bool FeaturePromoLifecycle::MaybeEndPromo() {
   return true;
 }
 
+FeaturePromoResult FeaturePromoLifecycle::CanShowSnoozePromo(
+    const FeaturePromoData& promo_data) const {
+  // This IPH has been dismissed by user permanently.
+  if (promo_data.is_dismissed) {
+    return FeaturePromoResult::kPermanentlyDismissed;
+  }
+
+  // This IPH is shown for the first time.
+  if (promo_data.show_count == 0) {
+    return FeaturePromoResult::Success();
+  }
+
+  const auto now = GetCurrentTime();
+
+  // Figure out when the promo can show next.
+  if (features::IsUserEducationV2()) {
+    // In V2, there is a separate cooldown if a promo is snoozed vs. shown but
+    // not snoozed, for example, if it was aborted for some other reason and not
+    // dismissed.
+    if (now < promo_data.last_snooze_time + features::GetSnoozeDuration()) {
+      return FeaturePromoResult::kSnoozed;
+    }
+    if (now < promo_data.last_show_time + features::GetAbortCooldown()) {
+      return FeaturePromoResult::kRecentlyAborted;
+    }
+  } else {
+    // In V1, it was always the default snooze duration from the previous
+    // show or snooze time (non-snoozed IPH were subject to "non-clicker policy"
+    // which still used the default snooze duration).
+    const auto last_show =
+        std::max(promo_data.last_show_time, promo_data.last_snooze_time);
+    if (now < last_show + features::GetSnoozeDuration()) {
+      return FeaturePromoResult::kSnoozed;
+    }
+  }
+
+  return FeaturePromoResult::Success();
+}
+
+base::Time FeaturePromoLifecycle::GetCurrentTime() const {
+  return storage_service_->GetCurrentTime();
+}
+
 void FeaturePromoLifecycle::MaybeWriteClosedPromoData(
     FeaturePromoClosedReason close_reason) {
   if (is_demo() || wrote_close_data_) {
@@ -218,8 +252,7 @@ void FeaturePromoLifecycle::MaybeWriteClosedPromoData(
     case FeaturePromoClosedReason::kSnooze: {
       ScopedPromoData data(storage_service_, iph_feature_);
       ++data->snooze_count;
-      data->last_snooze_time = base::Time::Now();
-      data->last_snooze_duration = kDefaultSnoozeDuration;
+      data->last_snooze_time = GetCurrentTime();
       break;
     }
 

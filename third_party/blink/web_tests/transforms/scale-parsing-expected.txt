@@ -1,40 +1,11 @@
 This is a testharness.js-based test.
-[PASS] "scale: initial;" should parse as "initial"
-[PASS] "scale: initial;" should be computed to "none"
-[PASS] "scale: inherit;" should parse as "inherit"
-[PASS] "scale: none;" should parse as "none"
-[PASS] "scale: none;" should be computed to "none"
-[PASS] "scale: 1;" should parse as "1"
-[PASS] "scale: 1;" should be computed to "1"
-[PASS] "scale: 5;" should parse as "5"
-[PASS] "scale: 5;" should be computed to "5"
-[PASS] "scale: 5 5;" should parse as "5"
-[PASS] "scale: 5 5;" should be computed to "5"
-[PASS] "scale: 1 -2.3;" should parse as "1 -2.3"
-[PASS] "scale: 1 -2.3;" should be computed to "1 -2.3"
-[PASS] "scale: 1 -2.3 4;" should parse as "1 -2.3 4"
-[PASS] "scale: 1 -2.3 4;" should be computed to "1 -2.3 4"
-[PASS] "scale: 30%;" should parse as "0.3"
-[PASS] "scale: 30%;" should be computed to "0.3"
 [FAIL] "scale: calc(1 * 2);" should parse as "2"
   assert_equals: expected "2" but got "calc(2)"
-[PASS] "scale: calc(1 * 2);" should be computed to "2"
 [FAIL] "scale: calc(1 * 2) calc(2 / 4);" should parse as "2 0.5"
   assert_equals: expected "2 0.5" but got "calc(2) calc(0.5)"
-[PASS] "scale: calc(1 * 2) calc(2 / 4);" should be computed to "2 0.5"
 [FAIL] "scale: calc(1 * 2) calc(2 / 4) calc(0.5);" should parse as "2 0.5 0.5"
   assert_equals: expected "2 0.5 0.5" but got "calc(2) calc(0.5) calc(0.5)"
-[PASS] "scale: calc(1 * 2) calc(2 / 4) calc(0.5);" should be computed to "2 0.5 0.5"
 [FAIL] "scale: calc(1 * 2) calc(2 / 4) calc(0.5%);" should parse as "2 0.5 0.005"
   assert_equals: expected "2 0.5 0.005" but got "calc(2) calc(0.5) 0.005"
-[PASS] "scale: calc(1 * 2) calc(2 / 4) calc(0.5%);" should be computed to "2 0.5 0.005"
-[PASS] "scale: 2px;" should be invalid
-[PASS] "scale: 1 1 1 1;" should be invalid
-[PASS] "scale: 1 2 3deg;" should be invalid
-[PASS] "scale: 1 + 1;" should be invalid
-[PASS] "scale: 1,;" should be invalid
-[PASS] "scale: 1, 2,;" should be invalid
-[PASS] "scale: calc(1 * 2 + 4px) calc(2 / 4) calc(0.5);" should be invalid
-[PASS] "scale: calc(1 * 2) calc(2 / 4 * 4deg) calc(0.5);" should be invalid
 Harness: the test ran to completion.
 

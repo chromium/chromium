@@ -16,13 +16,9 @@ import com.google.android.material.tabs.TabLayout;
 
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 
-/**
- * A {@link TabLayout} containing the tabs in the keyboard accessory.
- */
+/** A {@link TabLayout} containing the tabs in the keyboard accessory. */
 class KeyboardAccessoryTabLayoutView extends TabLayout {
-    /**
-     * Constructor for inflating from XML.
-     */
+    /** Constructor for inflating from XML. */
     public KeyboardAccessoryTabLayoutView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
@@ -35,8 +31,10 @@ class KeyboardAccessoryTabLayoutView extends TabLayout {
     void addTabAt(int position, Drawable icon, CharSequence contentDescription) {
         TabLayout.Tab tab = newTab();
         tab.setIcon(icon.mutate()); // mutate() needed to change the active tint.
-        tab.getIcon().setColorFilter(
-                SemanticColorUtils.getDefaultIconColor(getContext()), PorterDuff.Mode.SRC_IN);
+        tab.getIcon()
+                .setColorFilter(
+                        SemanticColorUtils.getDefaultIconColor(getContext()),
+                        PorterDuff.Mode.SRC_IN);
         tab.setContentDescription(contentDescription);
         addTab(tab, position, false);
     }
@@ -80,9 +78,13 @@ class KeyboardAccessoryTabLayoutView extends TabLayout {
                 // This triggers the tab observer but as the active tab doesn't change, it's a noop.
                 t.select();
             }
-            t.getIcon().setColorFilter(getTabTextColors().getColorForState(new int[] {activeState},
-                                               getTabTextColors().getDefaultColor()),
-                    PorterDuff.Mode.SRC_IN);
+            t.getIcon()
+                    .setColorFilter(
+                            getTabTextColors()
+                                    .getColorForState(
+                                            new int[] {activeState},
+                                            getTabTextColors().getDefaultColor()),
+                            PorterDuff.Mode.SRC_IN);
         }
     }
 

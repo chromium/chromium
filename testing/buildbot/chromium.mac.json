@@ -1170,6 +1170,21 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "webkit_unit_tests_v2",
+        "swarming": {
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Mac-10.15"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "blink_unittests_v2",
+        "test_id_prefix": "ninja://third_party/blink/renderer/controller:blink_unittests_v2/"
+      },
+      {
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
         "name": "wtf_unittests",
         "swarming": {
           "dimensions": {
@@ -1305,6 +1320,27 @@
         },
         "test": "chromedriver_py_tests",
         "test_id_prefix": "ninja://chrome/test/chromedriver:chromedriver_py_tests/"
+      },
+      {
+        "args": [
+          "--test-type=integration"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "chromedriver_py_tests_headless_shell",
+        "resultdb": {
+          "enable": true
+        },
+        "swarming": {
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Mac-10.15"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "chromedriver_py_tests_headless_shell",
+        "test_id_prefix": "ninja://chrome/test/chromedriver:chromedriver_py_tests_headless_shell/"
       },
       {
         "merge": {
@@ -2715,6 +2751,22 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "webkit_unit_tests_v2",
+        "swarming": {
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Mac-11|Mac-10.16"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "blink_unittests_v2",
+        "test_id_prefix": "ninja://third_party/blink/renderer/controller:blink_unittests_v2/"
+      },
+      {
+        "isolate_profile_data": true,
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
         "name": "wtf_unittests",
         "swarming": {
           "dimensions": {
@@ -2858,6 +2910,28 @@
         },
         "test": "chromedriver_py_tests",
         "test_id_prefix": "ninja://chrome/test/chromedriver:chromedriver_py_tests/"
+      },
+      {
+        "args": [
+          "--test-type=integration"
+        ],
+        "isolate_profile_data": true,
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "chromedriver_py_tests_headless_shell",
+        "resultdb": {
+          "enable": true
+        },
+        "swarming": {
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Mac-11|Mac-10.16"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "chromedriver_py_tests_headless_shell",
+        "test_id_prefix": "ninja://chrome/test/chromedriver:chromedriver_py_tests_headless_shell/"
       },
       {
         "isolate_profile_data": true,
@@ -4304,6 +4378,22 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "webkit_unit_tests_v2",
+        "swarming": {
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Mac-12"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "blink_unittests_v2",
+        "test_id_prefix": "ninja://third_party/blink/renderer/controller:blink_unittests_v2/"
+      },
+      {
+        "isolate_profile_data": true,
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
         "name": "wtf_unittests",
         "swarming": {
           "dimensions": {
@@ -4371,7 +4461,8 @@
       {
         "args": [
           "--num-retries=3",
-          "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json"
+          "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json",
+          "--driver-logging"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -4400,7 +4491,8 @@
       {
         "args": [
           "--num-retries=3",
-          "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json"
+          "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json",
+          "--driver-logging"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -4447,6 +4539,28 @@
         },
         "test": "chromedriver_py_tests",
         "test_id_prefix": "ninja://chrome/test/chromedriver:chromedriver_py_tests/"
+      },
+      {
+        "args": [
+          "--test-type=integration"
+        ],
+        "isolate_profile_data": true,
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "chromedriver_py_tests_headless_shell",
+        "resultdb": {
+          "enable": true
+        },
+        "swarming": {
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Mac-12"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "chromedriver_py_tests_headless_shell",
+        "test_id_prefix": "ninja://chrome/test/chromedriver:chromedriver_py_tests_headless_shell/"
       },
       {
         "isolate_profile_data": true,
@@ -5943,6 +6057,22 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "webkit_unit_tests_v2",
+        "swarming": {
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Mac-13"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "blink_unittests_v2",
+        "test_id_prefix": "ninja://third_party/blink/renderer/controller:blink_unittests_v2/"
+      },
+      {
+        "isolate_profile_data": true,
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
         "name": "wtf_unittests",
         "swarming": {
           "dimensions": {
@@ -6086,6 +6216,28 @@
         },
         "test": "chromedriver_py_tests",
         "test_id_prefix": "ninja://chrome/test/chromedriver:chromedriver_py_tests/"
+      },
+      {
+        "args": [
+          "--test-type=integration"
+        ],
+        "isolate_profile_data": true,
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "chromedriver_py_tests_headless_shell",
+        "resultdb": {
+          "enable": true
+        },
+        "swarming": {
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Mac-13"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "chromedriver_py_tests_headless_shell",
+        "test_id_prefix": "ninja://chrome/test/chromedriver:chromedriver_py_tests_headless_shell/"
       },
       {
         "isolate_profile_data": true,
@@ -7478,6 +7630,21 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "webkit_unit_tests_v2",
+        "swarming": {
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Mac-13"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "blink_unittests_v2",
+        "test_id_prefix": "ninja://third_party/blink/renderer/controller:blink_unittests_v2/"
+      },
+      {
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
         "name": "wtf_unittests",
         "swarming": {
           "dimensions": {
@@ -7795,7 +7962,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -7844,7 +8011,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -7893,7 +8060,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -7942,7 +8109,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -7991,7 +8158,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -8040,7 +8207,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -8089,7 +8256,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -8138,7 +8305,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -8187,7 +8354,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -8236,7 +8403,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -8285,7 +8452,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -8334,7 +8501,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -8383,7 +8550,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -8432,7 +8599,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -8481,7 +8648,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -8530,7 +8697,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -8579,7 +8746,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -8628,7 +8795,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -8677,7 +8844,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -8726,7 +8893,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -8775,7 +8942,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -8824,7 +8991,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -8873,7 +9040,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -8922,7 +9089,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -8956,9 +9123,9 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--shards",
+          "--clones",
           "2",
-          "--xcode-parallelization"
+          "--xcodebuild-sim-runner"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -8974,7 +9141,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -9009,9 +9176,9 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--shards",
+          "--clones",
           "2",
-          "--xcode-parallelization"
+          "--xcodebuild-sim-runner"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -9027,7 +9194,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -9077,7 +9244,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -9126,7 +9293,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -9175,7 +9342,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -9224,7 +9391,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -9273,7 +9440,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -9322,7 +9489,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -9371,7 +9538,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -9421,7 +9588,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -9471,7 +9638,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -9520,7 +9687,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -9569,7 +9736,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -9618,7 +9785,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -9667,7 +9834,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -9716,7 +9883,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -9765,7 +9932,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -9814,7 +9981,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -9848,7 +10015,7 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcodebuild-sim-runner"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -9864,7 +10031,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -9898,7 +10065,7 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcodebuild-sim-runner"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -9914,7 +10081,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -9963,7 +10130,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -10012,7 +10179,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -10061,7 +10228,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -10110,7 +10277,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -10159,7 +10326,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -10208,7 +10375,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -10257,7 +10424,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -10306,7 +10473,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -10355,7 +10522,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -10404,7 +10571,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -10453,7 +10620,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -10502,7 +10669,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -10551,7 +10718,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -10600,7 +10767,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -10649,7 +10816,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -10698,7 +10865,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -10747,7 +10914,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -10796,7 +10963,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -10845,7 +11012,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -10894,7 +11061,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -10943,7 +11110,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -10992,7 +11159,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -11041,7 +11208,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -11090,7 +11257,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -11139,7 +11306,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -11188,7 +11355,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -11237,7 +11404,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -11286,7 +11453,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -11342,7 +11509,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -11391,7 +11558,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -11440,7 +11607,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -11489,7 +11656,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -11538,7 +11705,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -11587,7 +11754,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -11636,7 +11803,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -11685,7 +11852,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -11734,7 +11901,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -11783,7 +11950,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -11832,7 +11999,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -11881,7 +12048,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -11930,7 +12097,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -11979,7 +12146,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -12028,7 +12195,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -12077,7 +12244,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -12126,7 +12293,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -12175,7 +12342,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -12224,7 +12391,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -12273,7 +12440,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -12322,7 +12489,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -12371,7 +12538,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -12420,7 +12587,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -12469,7 +12636,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -12503,7 +12670,7 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcodebuild-sim-runner"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -12519,7 +12686,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -12553,7 +12720,7 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcodebuild-sim-runner"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -12569,7 +12736,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -12603,7 +12770,7 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcodebuild-sim-runner"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -12619,7 +12786,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -12653,7 +12820,7 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcodebuild-sim-runner"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -12669,7 +12836,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -12703,9 +12870,9 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--shards",
+          "--clones",
           "2",
-          "--xcode-parallelization"
+          "--xcodebuild-sim-runner"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -12721,7 +12888,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -12756,9 +12923,9 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--shards",
+          "--clones",
           "2",
-          "--xcode-parallelization"
+          "--xcodebuild-sim-runner"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -12774,7 +12941,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -12809,9 +12976,9 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--shards",
+          "--clones",
           "2",
-          "--xcode-parallelization"
+          "--xcodebuild-sim-runner"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -12827,7 +12994,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -12862,9 +13029,9 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--shards",
+          "--clones",
           "2",
-          "--xcode-parallelization"
+          "--xcodebuild-sim-runner"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -12880,7 +13047,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -12915,9 +13082,9 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--shards",
+          "--clones",
           "2",
-          "--xcode-parallelization"
+          "--xcodebuild-sim-runner"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -12933,7 +13100,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -12968,9 +13135,9 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--shards",
+          "--clones",
           "2",
-          "--xcode-parallelization"
+          "--xcodebuild-sim-runner"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -12986,7 +13153,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -13021,9 +13188,9 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--shards",
+          "--clones",
           "2",
-          "--xcode-parallelization"
+          "--xcodebuild-sim-runner"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -13039,7 +13206,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -13074,9 +13241,9 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--shards",
+          "--clones",
           "2",
-          "--xcode-parallelization"
+          "--xcodebuild-sim-runner"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -13092,7 +13259,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -13127,9 +13294,9 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--shards",
+          "--clones",
           "2",
-          "--xcode-parallelization"
+          "--xcodebuild-sim-runner"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -13145,7 +13312,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -13180,9 +13347,9 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--shards",
+          "--clones",
           "2",
-          "--xcode-parallelization"
+          "--xcodebuild-sim-runner"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -13198,7 +13365,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -13233,7 +13400,7 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcodebuild-sim-runner"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -13249,7 +13416,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -13284,7 +13451,7 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcodebuild-sim-runner"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -13300,7 +13467,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -13335,7 +13502,7 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcodebuild-sim-runner"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -13351,7 +13518,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -13386,7 +13553,7 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcodebuild-sim-runner"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -13402,7 +13569,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -13437,7 +13604,7 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcodebuild-sim-runner"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -13453,7 +13620,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -13487,7 +13654,7 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcodebuild-sim-runner"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -13503,7 +13670,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -13537,7 +13704,7 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcodebuild-sim-runner"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -13553,7 +13720,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -13587,7 +13754,7 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcodebuild-sim-runner"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -13603,7 +13770,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -13637,9 +13804,9 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--shards",
+          "--clones",
           "2",
-          "--xcode-parallelization"
+          "--xcodebuild-sim-runner"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -13655,7 +13822,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -13690,9 +13857,9 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--shards",
+          "--clones",
           "2",
-          "--xcode-parallelization"
+          "--xcodebuild-sim-runner"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -13708,7 +13875,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -13743,9 +13910,9 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--shards",
+          "--clones",
           "2",
-          "--xcode-parallelization"
+          "--xcodebuild-sim-runner"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -13761,7 +13928,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -13796,9 +13963,9 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--shards",
+          "--clones",
           "2",
-          "--xcode-parallelization"
+          "--xcodebuild-sim-runner"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -13814,7 +13981,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -13864,7 +14031,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -13913,7 +14080,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -13962,7 +14129,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -14011,7 +14178,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -14045,7 +14212,7 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcodebuild-sim-runner"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -14061,7 +14228,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -14096,7 +14263,7 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcodebuild-sim-runner"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -14112,7 +14279,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -14147,7 +14314,7 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcodebuild-sim-runner"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -14163,7 +14330,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -14198,7 +14365,7 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcodebuild-sim-runner"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -14214,7 +14381,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -14264,7 +14431,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -14313,7 +14480,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -14362,7 +14529,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -14412,7 +14579,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -14462,7 +14629,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -14511,7 +14678,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -14545,7 +14712,7 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcodebuild-sim-runner"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -14561,7 +14728,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -14595,7 +14762,7 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcodebuild-sim-runner"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -14611,7 +14778,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -14645,7 +14812,7 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcodebuild-sim-runner"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -14661,7 +14828,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -14695,7 +14862,7 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcodebuild-sim-runner"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -14711,7 +14878,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -14760,7 +14927,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -14809,7 +14976,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -14858,7 +15025,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -14907,7 +15074,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -14956,7 +15123,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -15005,7 +15172,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -15039,7 +15206,7 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcodebuild-sim-runner"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -15055,7 +15222,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -15089,7 +15256,7 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcodebuild-sim-runner"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -15105,7 +15272,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -15139,7 +15306,7 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcodebuild-sim-runner"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -15155,7 +15322,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -15189,7 +15356,7 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcodebuild-sim-runner"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -15205,7 +15372,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -15239,7 +15406,7 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcodebuild-sim-runner"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -15255,7 +15422,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -15289,7 +15456,7 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcodebuild-sim-runner"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -15305,7 +15472,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -15354,7 +15521,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -15403,7 +15570,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -15452,7 +15619,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -15501,7 +15668,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -15550,7 +15717,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -15599,7 +15766,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -15648,7 +15815,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -15697,7 +15864,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -15746,7 +15913,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -15795,7 +15962,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -15844,7 +16011,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -15893,7 +16060,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -15942,7 +16109,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -15991,7 +16158,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -16040,7 +16207,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -16089,7 +16256,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -16138,7 +16305,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -16187,7 +16354,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -16236,7 +16403,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -16285,7 +16452,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -16334,7 +16501,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -16383,7 +16550,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -16432,7 +16599,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -16481,7 +16648,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -16530,7 +16697,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -16579,7 +16746,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -16628,7 +16795,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -16677,7 +16844,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -16732,7 +16899,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -16780,7 +16947,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -16828,7 +16995,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -16876,7 +17043,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -16924,7 +17091,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -16972,7 +17139,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -17020,7 +17187,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -17068,7 +17235,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -17116,7 +17283,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -17164,7 +17331,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -17212,7 +17379,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -17260,7 +17427,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -17308,7 +17475,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -17356,7 +17523,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -17404,7 +17571,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -17452,7 +17619,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -17500,7 +17667,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -17548,7 +17715,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -17596,7 +17763,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -17644,7 +17811,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -17692,7 +17859,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -17740,7 +17907,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -17788,7 +17955,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -17836,7 +18003,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -17884,7 +18051,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -17932,7 +18099,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -17980,7 +18147,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -18028,7 +18195,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -18076,7 +18243,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -18124,7 +18291,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -18158,7 +18325,7 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--xcode-parallelization",
+          "--xcodebuild-sim-runner",
           "--record-video",
           "failed_only"
         ],
@@ -18175,7 +18342,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -18209,7 +18376,7 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--xcode-parallelization",
+          "--xcodebuild-sim-runner",
           "--record-video",
           "failed_only"
         ],
@@ -18226,7 +18393,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -18260,7 +18427,7 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--xcode-parallelization",
+          "--xcodebuild-sim-runner",
           "--record-video",
           "failed_only"
         ],
@@ -18277,7 +18444,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -18311,9 +18478,9 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--shards",
+          "--clones",
           "2",
-          "--xcode-parallelization",
+          "--xcodebuild-sim-runner",
           "--record-video",
           "failed_only"
         ],
@@ -18330,7 +18497,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -18365,9 +18532,9 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--shards",
+          "--clones",
           "2",
-          "--xcode-parallelization",
+          "--xcodebuild-sim-runner",
           "--record-video",
           "failed_only"
         ],
@@ -18384,7 +18551,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -18419,9 +18586,9 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--shards",
+          "--clones",
           "2",
-          "--xcode-parallelization",
+          "--xcodebuild-sim-runner",
           "--record-video",
           "failed_only"
         ],
@@ -18438,7 +18605,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -18473,9 +18640,9 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--shards",
+          "--clones",
           "2",
-          "--xcode-parallelization",
+          "--xcodebuild-sim-runner",
           "--record-video",
           "failed_only"
         ],
@@ -18492,7 +18659,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -18527,9 +18694,9 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--shards",
+          "--clones",
           "2",
-          "--xcode-parallelization",
+          "--xcodebuild-sim-runner",
           "--record-video",
           "failed_only"
         ],
@@ -18546,7 +18713,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -18581,9 +18748,9 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--shards",
+          "--clones",
           "2",
-          "--xcode-parallelization",
+          "--xcodebuild-sim-runner",
           "--record-video",
           "failed_only"
         ],
@@ -18600,7 +18767,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -18635,7 +18802,7 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--xcode-parallelization",
+          "--xcodebuild-sim-runner",
           "--record-video",
           "failed_only"
         ],
@@ -18652,7 +18819,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -18687,7 +18854,7 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--xcode-parallelization",
+          "--xcodebuild-sim-runner",
           "--record-video",
           "failed_only"
         ],
@@ -18704,7 +18871,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -18739,7 +18906,7 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--xcode-parallelization",
+          "--xcodebuild-sim-runner",
           "--record-video",
           "failed_only"
         ],
@@ -18756,7 +18923,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -18791,7 +18958,7 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--xcode-parallelization",
+          "--xcodebuild-sim-runner",
           "--record-video",
           "failed_only"
         ],
@@ -18808,7 +18975,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -18842,7 +19009,7 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--xcode-parallelization",
+          "--xcodebuild-sim-runner",
           "--record-video",
           "failed_only"
         ],
@@ -18859,7 +19026,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -18893,7 +19060,7 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--xcode-parallelization",
+          "--xcodebuild-sim-runner",
           "--record-video",
           "failed_only"
         ],
@@ -18910,7 +19077,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -18944,9 +19111,9 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--shards",
+          "--clones",
           "2",
-          "--xcode-parallelization",
+          "--xcodebuild-sim-runner",
           "--record-video",
           "failed_only"
         ],
@@ -18963,7 +19130,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -18998,9 +19165,9 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--shards",
+          "--clones",
           "2",
-          "--xcode-parallelization",
+          "--xcodebuild-sim-runner",
           "--record-video",
           "failed_only"
         ],
@@ -19017,7 +19184,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -19052,9 +19219,9 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--shards",
+          "--clones",
           "2",
-          "--xcode-parallelization",
+          "--xcodebuild-sim-runner",
           "--record-video",
           "failed_only"
         ],
@@ -19071,7 +19238,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -19120,7 +19287,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -19168,7 +19335,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -19216,7 +19383,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -19264,7 +19431,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -19312,7 +19479,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -19360,7 +19527,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -19408,7 +19575,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -19456,7 +19623,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -19504,7 +19671,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -19552,7 +19719,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -19586,7 +19753,7 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--xcode-parallelization",
+          "--xcodebuild-sim-runner",
           "--record-video",
           "failed_only"
         ],
@@ -19603,7 +19770,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -19638,7 +19805,7 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--xcode-parallelization",
+          "--xcodebuild-sim-runner",
           "--record-video",
           "failed_only"
         ],
@@ -19655,7 +19822,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -19690,7 +19857,7 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--xcode-parallelization",
+          "--xcodebuild-sim-runner",
           "--record-video",
           "failed_only"
         ],
@@ -19707,7 +19874,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -19742,7 +19909,7 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcodebuild-sim-runner"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -19757,7 +19924,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -19791,7 +19958,7 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcodebuild-sim-runner"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -19806,7 +19973,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -19840,7 +20007,7 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--xcode-parallelization"
+          "--xcodebuild-sim-runner"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -19855,7 +20022,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -19889,7 +20056,7 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--xcode-parallelization",
+          "--xcodebuild-sim-runner",
           "--record-video",
           "failed_only"
         ],
@@ -19906,7 +20073,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -19940,7 +20107,7 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--xcode-parallelization",
+          "--xcodebuild-sim-runner",
           "--record-video",
           "failed_only"
         ],
@@ -19957,7 +20124,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -19991,7 +20158,7 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--xcode-parallelization",
+          "--xcodebuild-sim-runner",
           "--record-video",
           "failed_only"
         ],
@@ -20008,7 +20175,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -20056,7 +20223,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -20104,7 +20271,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -20152,7 +20319,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -20200,7 +20367,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -20248,7 +20415,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -20296,7 +20463,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -20344,7 +20511,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -20392,7 +20559,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -20440,7 +20607,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -20488,7 +20655,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -20522,7 +20689,7 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--xcode-parallelization",
+          "--xcodebuild-sim-runner",
           "--record-video",
           "failed_only"
         ],
@@ -20539,7 +20706,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -20573,7 +20740,7 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--xcode-parallelization",
+          "--xcodebuild-sim-runner",
           "--record-video",
           "failed_only"
         ],
@@ -20590,7 +20757,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -20624,7 +20791,7 @@
           "--xcode-build-version",
           "15a507",
           "--xctest",
-          "--xcode-parallelization",
+          "--xcodebuild-sim-runner",
           "--record-video",
           "failed_only"
         ],
@@ -20641,7 +20808,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -20689,7 +20856,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -20737,7 +20904,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -20785,7 +20952,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -20833,7 +21000,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -20881,7 +21048,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -20929,7 +21096,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -20977,7 +21144,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -21025,7 +21192,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -21073,7 +21240,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -21121,7 +21288,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -21169,7 +21336,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -21217,7 +21384,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -21265,7 +21432,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -21313,7 +21480,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -21361,7 +21528,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -21409,7 +21576,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -21457,7 +21624,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -21505,7 +21672,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -21553,7 +21720,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -21601,7 +21768,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -21649,7 +21816,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -21697,7 +21864,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -21745,7 +21912,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -21793,7 +21960,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -21841,7 +22008,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -21889,7 +22056,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -21937,7 +22104,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -21985,7 +22152,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -22033,7 +22200,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -22081,7 +22248,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -22129,7 +22296,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -22177,7 +22344,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -22225,7 +22392,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -22273,7 +22440,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -22321,7 +22488,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -22369,7 +22536,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -22417,7 +22584,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -22465,7 +22632,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -22513,7 +22680,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -22561,7 +22728,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -22609,7 +22776,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -22657,7 +22824,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -22705,7 +22872,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -22753,7 +22920,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -22801,7 +22968,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -22849,7 +23016,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -22897,7 +23064,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -22945,7 +23112,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -22993,7 +23160,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -23041,7 +23208,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
+              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
             }
           ],
           "dimensions": {
@@ -24211,6 +24378,21 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "webkit_unit_tests_v2",
+        "swarming": {
+          "dimensions": {
+            "cpu": "arm64",
+            "os": "Mac-11"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "blink_unittests_v2",
+        "test_id_prefix": "ninja://third_party/blink/renderer/controller:blink_unittests_v2/"
+      },
+      {
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
         "name": "wtf_unittests",
         "swarming": {
           "dimensions": {
@@ -24348,6 +24530,27 @@
         },
         "test": "chromedriver_py_tests",
         "test_id_prefix": "ninja://chrome/test/chromedriver:chromedriver_py_tests/"
+      },
+      {
+        "args": [
+          "--test-type=integration"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "chromedriver_py_tests_headless_shell",
+        "resultdb": {
+          "enable": true
+        },
+        "swarming": {
+          "dimensions": {
+            "cpu": "arm64",
+            "os": "Mac-11"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "chromedriver_py_tests_headless_shell",
+        "test_id_prefix": "ninja://chrome/test/chromedriver:chromedriver_py_tests_headless_shell/"
       },
       {
         "merge": {
@@ -25719,6 +25922,22 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "webkit_unit_tests_v2",
+        "swarming": {
+          "dimensions": {
+            "cpu": "arm64",
+            "os": "Mac-12"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "blink_unittests_v2",
+        "test_id_prefix": "ninja://third_party/blink/renderer/controller:blink_unittests_v2/"
+      },
+      {
+        "ci_only": true,
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
         "name": "wtf_unittests",
         "swarming": {
           "dimensions": {
@@ -25786,7 +26005,8 @@
       {
         "args": [
           "--num-retries=3",
-          "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json"
+          "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json",
+          "--driver-logging"
         ],
         "ci_only": true,
         "merge": {
@@ -25815,7 +26035,8 @@
       {
         "args": [
           "--num-retries=3",
-          "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json"
+          "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json",
+          "--driver-logging"
         ],
         "ci_only": true,
         "merge": {
@@ -25862,6 +26083,28 @@
         },
         "test": "chromedriver_py_tests",
         "test_id_prefix": "ninja://chrome/test/chromedriver:chromedriver_py_tests/"
+      },
+      {
+        "args": [
+          "--test-type=integration"
+        ],
+        "ci_only": true,
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "chromedriver_py_tests_headless_shell",
+        "resultdb": {
+          "enable": true
+        },
+        "swarming": {
+          "dimensions": {
+            "cpu": "arm64",
+            "os": "Mac-12"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "chromedriver_py_tests_headless_shell",
+        "test_id_prefix": "ninja://chrome/test/chromedriver:chromedriver_py_tests_headless_shell/"
       },
       {
         "ci_only": true,
@@ -27242,6 +27485,22 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "webkit_unit_tests_v2",
+        "swarming": {
+          "dimensions": {
+            "cpu": "arm64",
+            "os": "Mac-13"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "blink_unittests_v2",
+        "test_id_prefix": "ninja://third_party/blink/renderer/controller:blink_unittests_v2/"
+      },
+      {
+        "ci_only": true,
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
         "name": "wtf_unittests",
         "swarming": {
           "dimensions": {
@@ -27385,6 +27644,28 @@
         },
         "test": "chromedriver_py_tests",
         "test_id_prefix": "ninja://chrome/test/chromedriver:chromedriver_py_tests/"
+      },
+      {
+        "args": [
+          "--test-type=integration"
+        ],
+        "ci_only": true,
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "chromedriver_py_tests_headless_shell",
+        "resultdb": {
+          "enable": true
+        },
+        "swarming": {
+          "dimensions": {
+            "cpu": "arm64",
+            "os": "Mac-13"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "chromedriver_py_tests_headless_shell",
+        "test_id_prefix": "ninja://chrome/test/chromedriver:chromedriver_py_tests_headless_shell/"
       },
       {
         "ci_only": true,

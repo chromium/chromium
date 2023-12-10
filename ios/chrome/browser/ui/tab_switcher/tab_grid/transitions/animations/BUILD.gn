@@ -8,7 +8,11 @@ source_set("animations") {
   sources = [
     "centered_zoom_transition_animation.h",
     "centered_zoom_transition_animation.mm",
+    "point_zoom_transition_animation.h",
+    "point_zoom_transition_animation.mm",
     "tab_grid_transition_animation.h",
+    "tab_grid_transition_animation_group.h",
+    "tab_grid_transition_animation_group.mm",
   ]
 
   deps = [
@@ -16,5 +20,19 @@ source_set("animations") {
     "//ios/chrome/browser/crash_report/model",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/common/ui/util",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "fake_tab_grid_transition_animation.h",
+    "fake_tab_grid_transition_animation.mm",
+    "tab_grid_transition_animation_group_unittest.mm",
+  ]
+  deps = [
+    ":animations",
+    "//base/test:test_support",
+    "//ios/chrome/test:test_support",
   ]
 }

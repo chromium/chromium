@@ -5106,8 +5106,8 @@ class CheckDanglingUntriagedTest(unittest.TestCase):
     mock_input_api.files = [
       MockAffectedFile(
         local_path="foo/foo.cc",
-        old_contents="raw_ptr<T>",
-        new_contents="raw_ptr<T, DanglingUntriaged>",
+        old_contents=["raw_ptr<T>"],
+        new_contents=["raw_ptr<T, DanglingUntriaged>"],
       )
     ]
     msgs = PRESUBMIT.CheckDanglingUntriaged(mock_input_api, mock_output_api)
@@ -5128,18 +5128,15 @@ class CheckDanglingUntriagedTest(unittest.TestCase):
     mock_input_api.files = [
       MockAffectedFile(
         local_path="foo/foo.cc",
-        old_contents="raw_ptr<T>",
-        new_contents="raw_ptr<T, DanglingUntriaged>",
+        old_contents=["raw_ptr<T>"],
+        new_contents=["raw_ptr<T, DanglingUntriaged>"],
       )
     ]
     msgs = PRESUBMIT.CheckDanglingUntriaged(mock_input_api,
                         mock_output_api)
     self.assertEqual(len(msgs), 1)
-    self.assertEqual(len(msgs[0].message), 11)
-    self.assertEqual(
-      msgs[0].message[0],
-      "Unexpected new occurrences of `DanglingUntriaged` detected. Please",
-    )
+    self.assertTrue(("Unexpected new occurrences of `DanglingUntriaged` detected"
+                    in msgs[0].message))
 
   def testNonCppFile(self):
     """Test patch adding dangling pointers are not reported in non C++ files"""
@@ -5150,8 +5147,8 @@ class CheckDanglingUntriagedTest(unittest.TestCase):
     mock_input_api.files = [
       MockAffectedFile(
         local_path="foo/README.md",
-        old_contents="",
-        new_contents="The DanglingUntriaged annotation means",
+        old_contents=[""],
+        new_contents=["The DanglingUntriaged annotation means"],
       )
     ]
     msgs = PRESUBMIT.CheckDanglingUntriaged(mock_input_api,
@@ -5167,8 +5164,8 @@ class CheckDanglingUntriagedTest(unittest.TestCase):
     mock_input_api.files = [
       MockAffectedFile(
         local_path="foo/foo.cc",
-        old_contents="raw_ptr<T>",
-        new_contents="raw_ptr<T, DanglingUntriaged>",
+        old_contents=["raw_ptr<T>"],
+        new_contents=["raw_ptr<T, DanglingUntriaged>"],
       )
     ]
     mock_input_api.change.DescriptionText = lambda: (
@@ -5186,8 +5183,8 @@ class CheckDanglingUntriagedTest(unittest.TestCase):
     mock_input_api.files = [
       MockAffectedFile(
         local_path="foo/foo.cc",
-        old_contents="raw_ptr<T>",
-        new_contents="raw_ptr<T, DanglingUntriaged>",
+        old_contents=["raw_ptr<T>"],
+        new_contents=["raw_ptr<T, DanglingUntriaged>"],
       )
     ]
     mock_input_api.change.DescriptionText = lambda: "description"
@@ -5204,8 +5201,8 @@ class CheckDanglingUntriagedTest(unittest.TestCase):
     mock_input_api.files = [
       MockAffectedFile(
         local_path="foo/foo.cc",
-        old_contents="raw_ptr<T, DanglingUntriaged>",
-        new_contents="raw_ptr<T>",
+        old_contents=["raw_ptr<T, DanglingUntriaged>"],
+        new_contents=["raw_ptr<T>"],
       )
     ]
     mock_input_api.change.DescriptionText = lambda: (
@@ -5225,14 +5222,14 @@ class CheckDanglingUntriagedTest(unittest.TestCase):
     mock_input_api.files = [
       MockAffectedFile(
         local_path="foo/foo.cc",
-        old_contents="raw_ptr<T, DanglingUntriaged>",
-        new_contents="",
+        old_contents=["raw_ptr<T, DanglingUntriaged>"],
+        new_contents=[""],
         action="D",
       ),
       MockAffectedFile(
         local_path="foo/foo.cc",
-        old_contents="",
-        new_contents="raw_ptr<T, DanglingUntriaged>",
+        old_contents=[""],
+        new_contents=["raw_ptr<T, DanglingUntriaged>"],
         action="A",
       ),
     ]

@@ -8,9 +8,7 @@ import android.content.ContentResolver;
 
 import org.chromium.android_webview.AwContents;
 
-/**
- * Chromium implementation of WebIconDatabase -- big old no-op (base class is deprecated).
- */
+/** Chromium implementation of WebIconDatabase -- big old no-op (base class is deprecated). */
 @SuppressWarnings("deprecation")
 final class WebIconDatabaseAdapter extends android.webkit.WebIconDatabase {
     @Override

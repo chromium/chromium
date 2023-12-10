@@ -1,7 +1,4 @@
 This is a testharness.js-based test.
-[PASS] COOP: restrict-properties to popup COOP: restrict-properties via an iframe, with cross origin iframe, same origin popup with window_open
-[PASS] COOP: restrict-properties to popup COOP: restrict-properties via an iframe, with cross origin iframe, same origin popup with anchor
-[PASS] COOP: restrict-properties to popup COOP: restrict-properties via an iframe, with cross origin iframe, same origin popup with form
 [FAIL] COOP: restrict-properties to popup COOP: restrict-properties via an iframe, with same origin iframe, same site popup with window_open
   assert_equals: Popup name is cleared? expected "true" but got "false"
 [FAIL] COOP: restrict-properties to popup COOP: restrict-properties via an iframe, with same origin iframe, same site popup with anchor

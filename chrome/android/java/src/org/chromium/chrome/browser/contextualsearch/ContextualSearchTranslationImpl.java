@@ -12,11 +12,10 @@ import org.chromium.chrome.browser.translate.TranslateBridge;
 
 import java.util.List;
 
-/**
- * Controls how Translation triggering is handled for the {@link ContextualSearchManager}.
- */
+/** Controls how Translation triggering is handled for the {@link ContextualSearchManager}. */
 public class ContextualSearchTranslationImpl implements ContextualSearchTranslation {
     private final TranslateBridgeWrapper mTranslateBridgeWrapper;
+
     /**
      * Creates a {@link ContextualSearchTranslation} for updating {@link ContextualSearchRequest}s
      * for translation.

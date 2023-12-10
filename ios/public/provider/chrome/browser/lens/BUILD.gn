@@ -14,5 +14,4 @@ source_set("lens_api") {
     "//base",
     "//ios/web/public/navigation:navigation",
   ]
-  public_deps = [ "//third_party/abseil-cpp:absl" ]
 }

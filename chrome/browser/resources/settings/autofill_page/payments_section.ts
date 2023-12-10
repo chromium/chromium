@@ -33,7 +33,7 @@ import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
-import {MetricsBrowserProxyImpl, PrivacyElementInteractions} from '../metrics_browser_proxy.js';
+import {CvcDeletionUserAction, MetricsBrowserProxyImpl, PrivacyElementInteractions} from '../metrics_browser_proxy.js';
 import {SettingsSimpleConfirmationDialogElement} from '../simple_confirmation_dialog.js';
 
 import {PersonalDataChangedListener} from './autofill_manager_proxy.js';
@@ -415,6 +415,7 @@ export class SettingsPaymentsSectionElement extends
   }
 
   private onRemoteEditIbanMenuClick_() {
+    this.paymentsManager_.logServerIbanLinkClicked();
     OpenWindowProxyImpl.getInstance().openUrl(
         loadTimeData.getString('managePaymentMethodsUrl'));
   }
@@ -662,15 +663,32 @@ export class SettingsPaymentsSectionElement extends
    */
   private onBulkRemoveCvcClick_() {
     assert(this.cvcStorageAvailable_);
+    // Log the metric for user clicking on the bulk delete hyperlink which
+    // triggers the dialog window.
+    MetricsBrowserProxyImpl.getInstance().recordAction(
+        CvcDeletionUserAction.HYPERLINK_CLICKED);
     this.showBulkRemoveCvcConfirmationDialog_ = true;
   }
 
   /**
    * Method to bulk delete all the CVCs present on the local DB.
-   * TODO(crbug/1464441): Add the code to delete all the CVCs from the local DB.
    */
   private onShowBulkRemoveCvcConfirmationDialogClose_() {
     assert(this.cvcStorageAvailable_);
+    const confirmationDialog =
+        this.shadowRoot!.querySelector<SettingsSimpleConfirmationDialogElement>(
+            '#bulkDeleteCvcConfirmDialog');
+    assert(confirmationDialog);
+
+    // Log the metric for user either clicking on "Delete" or "Cancel" on the
+    // bulk delete dialog window.
+    MetricsBrowserProxyImpl.getInstance().recordAction(
+        confirmationDialog.wasConfirmed() ?
+            CvcDeletionUserAction.DIALOG_ACCEPTED :
+            CvcDeletionUserAction.DIALOG_CANCELLED);
+    if (confirmationDialog.wasConfirmed()) {
+      this.paymentsManager_.bulkDeleteAllCvcs();
+    }
     this.showBulkRemoveCvcConfirmationDialog_ = false;
   }
 

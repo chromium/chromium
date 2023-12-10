@@ -6,6 +6,7 @@
 
 #include "content/browser/preloading/preloading.h"
 #include "content/browser/preloading/preloading_attempt_impl.h"
+#include "content/browser/preloading/preloading_trigger_type_impl.h"
 #include "content/browser/preloading/prerender/prerender_attributes.h"
 #include "content/browser/preloading/prerender/prerender_features.h"
 #include "content/browser/preloading/prerender/prerender_final_status.h"
@@ -14,28 +15,13 @@
 #include "content/browser/preloading/prerender/prerender_navigation_utils.h"
 #include "content/browser/preloading/prerender/prerender_new_tab_handle.h"
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
+#include "content/public/browser/preloading_trigger_type.h"
 #include "content/public/browser/web_contents.h"
 
 namespace content {
 
-namespace {
-
-PrerenderTriggerType GetTriggerType(
-    blink::mojom::SpeculationInjectionWorld world) {
-  switch (world) {
-    case blink::mojom::SpeculationInjectionWorld::kNone:
-      [[fallthrough]];
-    case blink::mojom::SpeculationInjectionWorld::kMain:
-      return PrerenderTriggerType::kSpeculationRule;
-    case blink::mojom::SpeculationInjectionWorld::kIsolated:
-      return PrerenderTriggerType::kSpeculationRuleFromIsolatedWorld;
-  }
-}
-
-}  // namespace
-
 struct PrerendererImpl::PrerenderInfo {
-  blink::mojom::SpeculationInjectionWorld injection_world;
+  blink::mojom::SpeculationInjectionType injection_type;
   blink::mojom::SpeculationEagerness eagerness;
   int prerender_host_id;
   GURL url;
@@ -221,7 +207,9 @@ bool PrerendererImpl::MaybePrerender(
   GetContentClient()->browser()->LogWebFeatureForCurrentPage(
       &rfhi, blink::mojom::WebFeature::kSpeculationRulesPrerender);
   IncrementReceivedPrerendersCountForMetrics(
-      GetTriggerType(candidate->injection_world), candidate->eagerness);
+      PreloadingTriggerTypeFromSpeculationInjectionType(
+          candidate->injection_type),
+      candidate->eagerness);
 
   // TODO(crbug.com/1176054): Remove it after supporting cross-site
   // prerender.
@@ -239,7 +227,9 @@ bool PrerendererImpl::MaybePrerender(
 
   Referrer referrer(*(candidate->referrer));
   PrerenderAttributes attributes(
-      candidate->url, GetTriggerType(candidate->injection_world),
+      candidate->url,
+      PreloadingTriggerTypeFromSpeculationInjectionType(
+          candidate->injection_type),
       /*embedder_histogram_suffix=*/"",
       candidate->target_browsing_context_name_hint, referrer,
       candidate->eagerness, rfhi.GetLastCommittedOrigin(),
@@ -250,69 +240,65 @@ bool PrerendererImpl::MaybePrerender(
       /*prerender_navigation_handle_callback=*/absl::nullopt,
       rfhi.GetDevToolsNavigationToken());
 
-  // TODO(crbug.com/1354049): Handle the case where multiple speculation rules
-  // have the same URL but its `target_browsing_context_name_hint` is
-  // different. In the current implementation, only the first rule is
-  // triggered.
-  switch (candidate->target_browsing_context_name_hint) {
-    case blink::mojom::SpeculationTargetHint::kBlank: {
-      if (base::FeatureList::IsEnabled(blink::features::kPrerender2InNewTab)) {
-        // For the prerender-in-new-tab, PreloadingAttempt will be managed by a
-        // prerender WebContents to be created later.
-        int prerender_host_id = registry_->CreateAndStartHostForNewTab(
-            attributes,
-            GetPredictorForSpeculationRules(candidate->injection_world));
-        started_prerenders_.insert(
-            end, {.injection_world = candidate->injection_world,
-                  .eagerness = candidate->eagerness,
-                  .prerender_host_id = prerender_host_id,
-                  .url = candidate->url,
-                  .referrer = referrer});
-        break;
+  PreloadingTriggerType trigger_type =
+      PreloadingTriggerTypeFromSpeculationInjectionType(
+          candidate->injection_type);
+  PreloadingPredictor predictor =
+      GetPredictorForPreloadingTriggerType(trigger_type);
+  int prerender_host_id = [&] {
+    // TODO(crbug.com/1354049): Handle the case where multiple speculation rules
+    // have the same URL but its `target_browsing_context_name_hint` is
+    // different. In the current implementation, only the first rule is
+    // triggered.
+    switch (candidate->target_browsing_context_name_hint) {
+      case blink::mojom::SpeculationTargetHint::kBlank: {
+        if (base::FeatureList::IsEnabled(
+                blink::features::kPrerender2InNewTab)) {
+          // For the prerender-in-new-tab, PreloadingAttempt will be managed by
+          // a prerender WebContents to be created later.
+          return registry_->CreateAndStartHostForNewTab(attributes,
+                                                        std::move(predictor));
+        }
+        // Handle the rule as kNoHint if the prerender-in-new-tab is not
+        // enabled.
+        [[fallthrough]];
       }
-      // Handle the rule as kNoHint if the prerender-in-new-tab is not
-      // enabled.
-      [[fallthrough]];
-    }
-    case blink::mojom::SpeculationTargetHint::kNoHint:
-    case blink::mojom::SpeculationTargetHint::kSelf: {
-      // Create new PreloadingAttempt and pass all the values corresponding to
-      // this prerendering attempt.
-      auto* preloading_data =
-          PreloadingData::GetOrCreateForWebContents(web_contents);
-      PreloadingURLMatchCallback same_url_matcher =
-          PreloadingData::GetSameURLMatcher(candidate->url);
-      auto* preloading_attempt = static_cast<PreloadingAttemptImpl*>(
-          preloading_data->AddPreloadingAttempt(
-              GetPredictorForSpeculationRules(candidate->injection_world),
-              PreloadingType::kPrerender, std::move(same_url_matcher),
-              web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId()));
-      preloading_attempt->SetSpeculationEagerness(candidate->eagerness);
-
-      int prerender_host_id =
-          registry_->CreateAndStartHost(attributes, preloading_attempt);
-
-      // Under kPrerender2NewLimitAndScheduler, an existing prerender may be
-      // canceled to start a new prerender, and started_prerenders_ may be
-      // modified through this cancellation. Therefore, it is needed to
-      // re-calculate the right place here on started_prerenders_ for new
-      // candidates.
-      if (base::FeatureList::IsEnabled(
-              features::kPrerender2NewLimitAndScheduler)) {
-        end = base::ranges::upper_bound(
-            started_prerenders_.begin(), started_prerenders_.end(),
-            candidate->url, std::less<>(), &PrerenderInfo::url);
+      case blink::mojom::SpeculationTargetHint::kNoHint:
+      case blink::mojom::SpeculationTargetHint::kSelf: {
+        // Create new PreloadingAttempt and pass all the values corresponding to
+        // this prerendering attempt.
+        auto* preloading_data =
+            PreloadingData::GetOrCreateForWebContents(web_contents);
+        PreloadingURLMatchCallback same_url_matcher =
+            PreloadingData::GetSameURLMatcher(candidate->url);
+        auto* preloading_attempt = static_cast<PreloadingAttemptImpl*>(
+            preloading_data->AddPreloadingAttempt(
+                std::move(predictor), PreloadingType::kPrerender,
+                std::move(same_url_matcher),
+                web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId()));
+        preloading_attempt->SetSpeculationEagerness(candidate->eagerness);
+        return registry_->CreateAndStartHost(attributes, preloading_attempt);
       }
-
-      started_prerenders_.insert(end,
-                                 {.injection_world = candidate->injection_world,
-                                  .eagerness = candidate->eagerness,
-                                  .prerender_host_id = prerender_host_id,
-                                  .url = candidate->url,
-                                  .referrer = referrer});
-      break;
     }
+  }();
+
+  // Under kPrerender2NewLimitAndScheduler, an existing prerender may be
+  // canceled to start a new prerender, and started_prerenders_ may be
+  // modified through this cancellation. Therefore, it is needed to
+  // re-calculate the right place here on started_prerenders_ for new
+  // candidates.
+  if (base::FeatureList::IsEnabled(features::kPrerender2NewLimitAndScheduler)) {
+    end = base::ranges::upper_bound(started_prerenders_.begin(),
+                                    started_prerenders_.end(), candidate->url,
+                                    std::less<>(), &PrerenderInfo::url);
   }
+
+  started_prerenders_.insert(end, {.injection_type = candidate->injection_type,
+                                   .eagerness = candidate->eagerness,
+                                   .prerender_host_id = prerender_host_id,
+                                   .url = candidate->url,
+                                   .referrer = referrer});
+
   return true;
 }
 
@@ -384,14 +370,14 @@ void PrerendererImpl::CancelStartedPrerenders() {
 
 void PrerendererImpl::ResetReceivedPrerendersCountForMetrics() {
   for (auto trigger_type :
-       {PrerenderTriggerType::kSpeculationRule,
-        PrerenderTriggerType::kSpeculationRuleFromIsolatedWorld}) {
+       {PreloadingTriggerType::kSpeculationRule,
+        PreloadingTriggerType::kSpeculationRuleFromIsolatedWorld}) {
     received_prerenders_by_eagerness_[trigger_type].fill({});
   }
 }
 
 void PrerendererImpl::IncrementReceivedPrerendersCountForMetrics(
-    PrerenderTriggerType trigger_type,
+    PreloadingTriggerType trigger_type,
     blink::mojom::SpeculationEagerness eagerness) {
   received_prerenders_by_eagerness_[trigger_type]
                                    [static_cast<size_t>(eagerness)]++;
@@ -399,8 +385,8 @@ void PrerendererImpl::IncrementReceivedPrerendersCountForMetrics(
 
 void PrerendererImpl::RecordReceivedPrerendersCountToMetrics() {
   for (auto trigger_type :
-       {PrerenderTriggerType::kSpeculationRule,
-        PrerenderTriggerType::kSpeculationRuleFromIsolatedWorld}) {
+       {PreloadingTriggerType::kSpeculationRule,
+        PreloadingTriggerType::kSpeculationRuleFromIsolatedWorld}) {
     int conservative =
         received_prerenders_by_eagerness_[trigger_type][static_cast<size_t>(
             blink::mojom::SpeculationEagerness::kConservative)];

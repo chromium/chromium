@@ -6,10 +6,10 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_GRID_GRID_ITEM_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/layout/baseline_utils.h"
+#include "third_party/blink/renderer/core/layout/block_node.h"
+#include "third_party/blink/renderer/core/layout/constraint_space.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_track_collection.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_baseline_utils.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_block_node.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_constraint_space.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -35,7 +35,7 @@ struct CORE_EXPORT GridItemData {
   GridItemData(const GridItemData&) = default;
   GridItemData& operator=(const GridItemData&) = default;
 
-  GridItemData(NGBlockNode node,
+  GridItemData(BlockNode node,
                const ComputedStyle& root_grid_style,
                FontBaseline parent_grid_font_baseline,
                bool parent_must_consider_grid_items_for_column_sizing = false,
@@ -226,7 +226,7 @@ struct CORE_EXPORT GridItemData {
 
   void Trace(Visitor* visitor) const { visitor->Trace(node); }
 
-  NGBlockNode node;
+  BlockNode node;
   GridArea resolved_position;
 
   bool has_subgridded_columns : 1;
@@ -254,8 +254,8 @@ struct CORE_EXPORT GridItemData {
   absl::optional<bool> is_inline_axis_overflow_safe_fallback;
   absl::optional<bool> is_block_axis_overflow_safe_fallback;
 
-  NGAutoBehavior inline_auto_behavior;
-  NGAutoBehavior block_auto_behavior;
+  AutoSizeBehavior inline_auto_behavior;
+  AutoSizeBehavior block_auto_behavior;
 
   enum BaselineGroup column_baseline_group;
   enum BaselineGroup row_baseline_group;

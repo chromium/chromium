@@ -11,7 +11,7 @@ source_set("unit_tests") {
     deps += [
       "core:unit_tests",
       "text_finder:unit_tests",
-      "visual_search:unit_tests",
+      "visual_query:unit_tests",
     ]
   }
 }

@@ -1,0 +1,6 @@
+WebView textSize:16.00 style:0 bundle:[display="", htmlTag="#document"]
+++View textSize:16.00 style:0 bundle:[display="block", htmlTag="body"]
+++++TextView text:"Some LTR text" textSize:16.00 style:0 bundle:[display="", htmlTag=""]
+++++TextView text:" " textSize:16.00 style:0 bundle:[display="", htmlTag=""]
+++++TextView text:"Some RTL text " textSize:16.00 style:0 bundle:[display="", htmlTag=""]
+++++TextView text:"with some LTR text embedded" textSize:16.00 style:0 bundle:[display="", htmlTag=""]

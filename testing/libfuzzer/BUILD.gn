@@ -18,6 +18,7 @@ import("//build/config/sanitizers/sanitizers.gni")
 # TODO: remove this target once they've all migrated.
 source_set("libfuzzer_main") {
   deps = [ ":fuzzing_engine" ]
+  testonly = true
   sources = []
   if (use_libfuzzer) {
     deps += [ "//third_party/libFuzzer:libfuzzer_main" ]
@@ -29,6 +30,10 @@ source_set("libfuzzer_main") {
     deps += [ "//third_party/libFuzzer:afl_driver" ]
   } else if (use_centipede) {
     deps += [ "//third_party/fuzztest:centipede_runner_main" ]
+    data_deps = [
+      # Centipede based fuzzers require the centipede runner in order to fuzz.
+      "//third_party/fuzztest:centipede",
+    ]
   } else {
     sources += [ "unittest_main.cc" ]
   }
@@ -39,10 +44,15 @@ if (fuzzing_engine_supports_custom_main) {
   # executable
   group("fuzzing_engine_no_main") {
     deps = [ ":fuzzing_engine" ]
+    testonly = true
     if (use_libfuzzer) {
       deps += [ "//third_party/libFuzzer:libfuzzer" ]
     } else if (use_centipede) {
       deps += [ "//third_party/fuzztest:centipede_runner_no_main" ]
+      data_deps = [
+        # Centipede based fuzzers require the centipede runner in order to fuzz.
+        "//third_party/fuzztest:centipede",
+      ]
     }
   }
 }
@@ -51,6 +61,7 @@ if (fuzzing_engine_supports_custom_main) {
 # Fuzzers should depend upon this.
 group("fuzzing_engine_main") {
   deps = [ ":libfuzzer_main" ]
+  testonly = true
 }
 
 # Any fuzzer using any fuzzing engine. This will be used by infra scripts

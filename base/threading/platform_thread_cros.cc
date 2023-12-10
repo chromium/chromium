@@ -228,7 +228,7 @@ absl::optional<int> GetNiceValueForThreadId(PlatformThreadId thread_id) {
   int nice_value = getpriority(PRIO_PROCESS, static_cast<id_t>(thread_id));
   if (nice_value == -1 && errno != 0) {
     // The thread may disappear for any reason so ignore ESRCH.
-    DPLOG_IF(ERROR, errno != ESRCH)
+    DVPLOG_IF(1, errno != ESRCH)
         << "Failed to call getpriority for thread id " << thread_id
         << ", performance may be effected.";
     return absl::nullopt;
@@ -288,7 +288,7 @@ void SetThreadRTPrioFromType(ProcessId process_id,
 
   PlatformThreadId syscall_tid = thread_id == PlatformThread::CurrentId() ? 0 : thread_id;
   if (sched_setscheduler(syscall_tid, policy, &prio) != 0) {
-    DPLOG(ERROR) << "Failed to set policy/priority for thread " << thread_id;
+    DVPLOG(1) << "Failed to set policy/priority for thread " << thread_id;
   }
 }
 
@@ -298,8 +298,8 @@ void SetThreadNiceFromType(ProcessId process_id,
   PlatformThreadId syscall_tid = thread_id == PlatformThread::CurrentId() ? 0 : thread_id;
   const int nice_setting = internal::ThreadTypeToNiceValue(thread_type);
   if (setpriority(PRIO_PROCESS, static_cast<id_t>(syscall_tid), nice_setting)) {
-    DPLOG(ERROR) << "Failed to set nice value of thread " << thread_id << " to "
-                 << nice_setting;
+    DVPLOG(1) << "Failed to set nice value of thread " << thread_id << " to "
+              << nice_setting;
   }
 }
 

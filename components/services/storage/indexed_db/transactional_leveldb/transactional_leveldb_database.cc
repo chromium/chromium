@@ -100,7 +100,6 @@ leveldb::Status TransactionalLevelDBDatabase::Put(const StringPiece& key,
       db()->Put(write_options, leveldb_env::MakeSlice(key),
                 leveldb_env::MakeSlice(*value));
   EvictAllIterators();
-  last_modified_ = clock_->Now();
   return s;
 }
 
@@ -112,7 +111,6 @@ leveldb::Status TransactionalLevelDBDatabase::Remove(const StringPiece& key) {
       db()->Delete(write_options, leveldb_env::MakeSlice(key));
 
   EvictAllIterators();
-  last_modified_ = clock_->Now();
   return s;
 }
 
@@ -145,7 +143,6 @@ leveldb::Status TransactionalLevelDBDatabase::Write(
   UMA_HISTOGRAM_TIMES("WebCore.IndexedDB.LevelDB.WriteTime",
                       base::TimeTicks::Now() - begin_time);
   EvictAllIterators();
-  last_modified_ = clock_->Now();
   return s;
 }
 

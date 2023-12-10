@@ -6,12 +6,14 @@
 
 #include "ui/base/ui_base_features.h"
 #include "ui/color/core_default_color_mixer.h"
+#include "ui/color/fluent_ui_color_mixer.h"
 #include "ui/color/forced_colors_mixer.h"
 #include "ui/color/material_ui_color_mixer.h"
 #include "ui/color/native_color_mixers.h"
 #include "ui/color/ref_color_mixer.h"
 #include "ui/color/sys_color_mixer.h"
 #include "ui/color/ui_color_mixer.h"
+#include "ui/native_theme/native_theme_features.h"
 
 namespace ui {
 
@@ -26,6 +28,13 @@ void AddColorMixers(ColorProvider* provider, const ColorProviderKey& key) {
     // This must come after the UI and native UI mixers to ensure leaf node
     // colors are overridden with GM3 recipes when the refresh flag is enabled.
     AddMaterialUiColorMixer(provider, key);
+  }
+  if (IsFluentScrollbarEnabled()) {
+    // This must come after the UI and before the native UI mixers to ensure
+    // leaf node colors are overridden with the Fluent recipes but that high
+    // contrast (specified via native UI on Windows) can override the Fluent
+    // colors.
+    AddFluentUiColorMixer(provider, key);
   }
   AddNativeUiColorMixer(provider, key);
   AddForcedColorsColorMixer(provider, key);

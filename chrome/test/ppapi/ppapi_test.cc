@@ -310,16 +310,6 @@ void OutOfProcessPPAPITest::SetUpCommandLine(base::CommandLine* command_line) {
   command_line->AppendSwitch(switches::kUseFakeUIForMediaStream);
 }
 
-void OutOfProcessPPAPITest::RunTest(const std::string& test_case) {
-#if BUILDFLAG(IS_WIN)
-  // See crbug.com/1231528 for context.
-  if (test_case == "Printing")
-    return;
-#endif
-
-  PPAPITestBase::RunTest(test_case);
-}
-
 // Send touch events to a plugin and expect the events to reach the renderer
 void OutOfProcessPPAPITest::RunTouchEventTest(const std::string& test_case) {
   RunTest(test_case);

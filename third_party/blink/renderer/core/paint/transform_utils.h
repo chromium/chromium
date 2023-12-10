@@ -10,11 +10,11 @@
 namespace blink {
 
 class LayoutBox;
-class NGPhysicalBoxFragment;
+class PhysicalBoxFragment;
 
 // Compute the transform reference box, based on the computed 'transform-box'
 // property, for the specified entity.
-PhysicalRect ComputeReferenceBox(const NGPhysicalBoxFragment&);
+PhysicalRect ComputeReferenceBox(const PhysicalBoxFragment&);
 PhysicalRect ComputeReferenceBox(const LayoutBox&);
 
 }  // namespace blink

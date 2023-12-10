@@ -162,7 +162,8 @@ export class XfDlpRestrictionDetailsDialog extends HTMLElement {
    * @param level DLP level. Must be one of BLOCK, WARN, REPORT.
    */
   private showComponentsForLevel(
-      components: string[], level: chrome.fileManagerPrivate.DlpLevel) {
+      components: chrome.fileManagerPrivate.VolumeType[],
+      level: chrome.fileManagerPrivate.DlpLevel) {
     if (level === chrome.fileManagerPrivate.DlpLevel.ALLOW) {
       console.warn('Should not be called for ALLOW.');
       return;

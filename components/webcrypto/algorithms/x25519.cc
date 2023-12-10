@@ -219,7 +219,8 @@ Status X25519Implementation::DeriveBits(
     return Status::Success();
   }
 
-  if (8 * derived_len < *length_bits) {
+  size_t derived_len_bits = 8 * derived_len;
+  if (derived_len_bits < *length_bits) {
     return Status::ErrorX25519LengthTooLong();
   }
 
@@ -228,7 +229,8 @@ Status X25519Implementation::DeriveBits(
   // Truncation isn't safe!
   TruncateToBitLength(*length_bits, derived_bytes);
 
-  return Status::Success();
+  return *length_bits < derived_len_bits ? Status::SuccessDeriveBitsTruncation()
+                                         : Status::Success();
 }
 
 Status X25519Implementation::ImportKeyRaw(

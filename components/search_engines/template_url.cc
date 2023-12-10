@@ -230,7 +230,6 @@ size_t TemplateURLRef::SearchTermsArgs::EstimateMemoryUsage() const {
 
   res += base::trace_event::EstimateMemoryUsage(search_terms);
   res += base::trace_event::EstimateMemoryUsage(original_query);
-  res += base::trace_event::EstimateMemoryUsage(assisted_query_stats);
   res += base::trace_event::EstimateMemoryUsage(current_page_url);
   res += base::trace_event::EstimateMemoryUsage(session_token);
   res += base::trace_event::EstimateMemoryUsage(prefetch_query);
@@ -1090,48 +1089,17 @@ std::string TemplateURLRef::HandleReplacements(
         DCHECK(!replacement.is_post_param);
         const size_t searchbox_stats_size =
             search_terms_args.searchbox_stats.ByteSizeLong();
-        if (!search_terms_args.assisted_query_stats.empty()) {
-          DCHECK(searchbox_stats_size > 0)
-              << "searchbox_stats must be set when assisted_query_stats is.";
-          // Get the base URL without substituting AQS and gs_lcrp to avoid
-          // infinite recursion and unwanted replacement respectively. We need
-          // the URL to find out if it meets all AQS requirements (e.g. HTTPS
-          // protocol check). See TemplateURLRef::SearchTermsArgs for more
-          // details.
-          SearchTermsArgs sanitized_search_terms_args(search_terms_args);
-          sanitized_search_terms_args.assisted_query_stats.clear();
-          // Clear the proto. Its empty state has a serialized size of zero.
-          sanitized_search_terms_args.searchbox_stats.Clear();
-          GURL base_url(ReplaceSearchTerms(sanitized_search_terms_args,
-                                           search_terms_data, nullptr));
-          if (base_url.SchemeIsCryptographic() &&
-              base::FeatureList::IsEnabled(
-                  omnibox::kReportAssistedQueryStats)) {
-            HandleReplacement("aqs", search_terms_args.assisted_query_stats,
-                              replacement, &url);
-            base::UmaHistogramCounts1000(
-                "Omnibox.AssistedQueryStats.Length",
-                static_cast<int>(
-                    search_terms_args.assisted_query_stats.length()));
-          }
-        }
-
         if (searchbox_stats_size > 0) {
-          DCHECK(!search_terms_args.assisted_query_stats.empty())
-              << "assisted_query_stats must be set when searchbox_stats is.";
-          // Get the base URL without substituting gs_lcrp and AQS to avoid
-          // infinite recursion and unwanted replacement respectively. We need
-          // the URL to find out if it meets all gs_lcrp requirements (e.g.
-          // HTTPS protocol check). See TemplateURLRef::SearchTermsArgs for more
-          // details.
+          // Get the base URL without substituting gs_lcrp to avoid infinite
+          // recursion and unwanted replacement respectively. We need the URL to
+          // find out if it meets all gs_lcrp requirements (e.g. HTTPS protocol
+          // check). See TemplateURLRef::SearchTermsArgs for more details.
           SearchTermsArgs sanitized_search_terms_args(search_terms_args);
-          sanitized_search_terms_args.assisted_query_stats.clear();
           // Clear the proto. Its empty state has a serialized size of zero.
           sanitized_search_terms_args.searchbox_stats.Clear();
           GURL base_url(ReplaceSearchTerms(sanitized_search_terms_args,
                                            search_terms_data, nullptr));
-          if (base_url.SchemeIsCryptographic() &&
-              base::FeatureList::IsEnabled(omnibox::kReportSearchboxStats)) {
+          if (base_url.SchemeIsCryptographic()) {
             TRACE_EVENT0(
                 "omnibox",
                 "TemplateURLRef::HandleReplacement:serialize_searchbox_stats");
@@ -1213,7 +1181,7 @@ std::string TemplateURLRef::HandleReplacements(
       case GOOGLE_ORIGINAL_QUERY_FOR_SUGGESTION:
         DCHECK(!replacement.is_post_param);
         if (search_terms_args.accepted_suggestion >= 0 ||
-            !search_terms_args.assisted_query_stats.empty()) {
+            search_terms_args.searchbox_stats.ByteSizeLong() > 0) {
           HandleReplacement("oq", base::UTF16ToUTF8(encoded_original_query),
                             replacement, &url);
         }

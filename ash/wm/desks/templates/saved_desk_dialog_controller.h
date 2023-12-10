@@ -62,7 +62,7 @@ class ASH_EXPORT SavedDeskDialogController : public views::WidgetObserver {
   // views::WidgetObserver:
   void OnWidgetDestroying(views::Widget* widget) override;
 
-  // Helper function to get the system dialog view for Jelly tests.
+  // Helper function to get the system dialog view.
   const SystemDialogDelegateView* GetSystemDialogViewForTesting() const;
 
  private:

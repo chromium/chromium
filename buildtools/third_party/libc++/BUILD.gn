@@ -7,6 +7,7 @@ import("//build/config/sanitizers/sanitizers.gni")
 import("//build/toolchain/toolchain.gni")
 
 # Used by libc++ and libc++abi.
+# See //build/config/c++:runtime_library for the config used by users of libc++.
 config("config") {
   cflags = [ "-fstrict-aliasing" ]
   if (is_win) {
@@ -77,6 +78,7 @@ target(_libcxx_target_type, "libc++") {
     "//third_party/libc++/src/src/atomic.cpp",
     "//third_party/libc++/src/src/barrier.cpp",
     "//third_party/libc++/src/src/bind.cpp",
+    "//third_party/libc++/src/src/call_once.cpp",
     "//third_party/libc++/src/src/charconv.cpp",
     "//third_party/libc++/src/src/chrono.cpp",
     "//third_party/libc++/src/src/condition_variable.cpp",

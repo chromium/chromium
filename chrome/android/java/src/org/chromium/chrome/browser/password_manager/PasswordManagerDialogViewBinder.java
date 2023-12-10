@@ -15,9 +15,7 @@ import android.view.View;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
-/**
- * Class responsible for binding the model and the view.
- */
+/** Class responsible for binding the model and the view. */
 class PasswordManagerDialogViewBinder {
     static void bind(PropertyModel model, View view, PropertyKey propertyKey) {
         PasswordManagerDialogView dialogView = (PasswordManagerDialogView) view;

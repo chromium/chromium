@@ -83,6 +83,7 @@
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
+#include "ui/display/tablet_state.h"
 #include "ui/display/test/display_manager_test_api.h"
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
@@ -246,7 +247,7 @@ class ProgressIndicatorWaiter {
   // Waits for `progress_indicator` to reach the specified `progress`. If the
   // `progress_indicator` is already at `progress`, this method no-ops.
   void WaitForProgress(ProgressIndicator* progress_indicator,
-                       const absl::optional<float>& progress) {
+                       const std::optional<float>& progress) {
     if (progress_indicator->progress() == progress) {
       return;
     }
@@ -1002,7 +1003,7 @@ TEST_F(ShelfViewTest, DragAppsToPin) {
 
   // After pinning the last unpinned app by dragging, the separator is removed
   // as there is no unpinned app on the shelf.
-  EXPECT_EQ(test_api_->GetSeparatorIndex(), absl::nullopt);
+  EXPECT_EQ(test_api_->GetSeparatorIndex(), std::nullopt);
 }
 
 // Ensure that the unpinnable apps can not be pinned by dragging.
@@ -1798,7 +1799,7 @@ TEST_P(LtrRtlShelfViewTest, TabletModeStartAndEndClosesContextMenu) {
   generator->PressRightButton();
 
   // Start tablet mode, which should close the menu.
-  shelf_view_->OnTabletModeStarted();
+  shelf_view_->OnDisplayTabletStateChanged(display::TabletState::kInTabletMode);
 
   // Attempt to close the menu, which should already be closed.
   EXPECT_FALSE(test_api_->CloseMenu());
@@ -1808,7 +1809,8 @@ TEST_P(LtrRtlShelfViewTest, TabletModeStartAndEndClosesContextMenu) {
   generator->PressRightButton();
 
   // End tablet mode, which should close the menu.
-  shelf_view_->OnTabletModeEnded();
+  shelf_view_->OnDisplayTabletStateChanged(
+      display::TabletState::kInClamshellMode);
 
   // Attempt to close the menu, which should already be closed.
   EXPECT_FALSE(test_api_->CloseMenu());
@@ -4175,15 +4177,12 @@ TEST_F(ShelfViewPromiseAppTest, PromiseIconLayers) {
   // Simulate pushing the installed app.
   model_->RemoveItemAt(index);
 
-  ui::LayerTreeOwner* promise_app_duplicate_layer =
-      test_api_->GetPendingPromiseLayerForId(promise_app_id);
-  ASSERT_TRUE(promise_app_duplicate_layer);
+  ASSERT_TRUE(test_api_->HasPendingPromiseAppRemoval(promise_app_id));
 
-  LayerAnimationWaiter animation_waiter(
-      promise_app_duplicate_layer->root()->GetAnimator());
   {
     ShelfItem installed_item;
     installed_item.id = ShelfID("foo");
+    installed_item.title = u"Test app";
     installed_item.type = TYPE_APP;
     installed_item.package_id = promise_app_id;
     ShelfModel::Get()->Add(
@@ -4192,21 +4191,22 @@ TEST_F(ShelfViewPromiseAppTest, PromiseIconLayers) {
     ShelfAppButton* installed_button = GetButtonByID(installed_item.id);
 
     ASSERT_TRUE(installed_button->layer());
-    ASSERT_TRUE(test_api_->GetPendingPromiseLayerForId(promise_app_id));
+    EXPECT_TRUE(test_api_->HasPendingPromiseAppRemoval(promise_app_id));
 
-    // Verify that the layer is still animating.
-    EXPECT_TRUE(installed_button->layer()->GetAnimator()->is_animating());
-    EXPECT_EQ(1.0f,
-              installed_button->layer()->GetAnimator()->GetTargetOpacity());
+    // Verify that the icon layer is animating.
+    EXPECT_FALSE(installed_button->layer()->GetAnimator()->is_animating());
     EXPECT_TRUE(
-        promise_app_duplicate_layer->root()->GetAnimator()->is_animating());
-    EXPECT_EQ(
-        0.0f,
-        promise_app_duplicate_layer->root()->GetAnimator()->GetTargetOpacity());
+        installed_button->icon_view()->layer()->GetAnimator()->is_animating());
+    EXPECT_EQ(gfx::Transform(), installed_button->icon_view()
+                                    ->layer()
+                                    ->GetAnimator()
+                                    ->GetTargetTransform());
+    LayerAnimationWaiter animation_waiter(
+        installed_button->icon_view()->layer()->GetAnimator());
+    animation_waiter.Wait();
   }
-  animation_waiter.Wait();
 
-  EXPECT_FALSE(test_api_->GetPendingPromiseLayerForId(promise_app_id));
+  EXPECT_FALSE(test_api_->HasPendingPromiseAppRemoval(promise_app_id));
 }
 
 }  // namespace ash

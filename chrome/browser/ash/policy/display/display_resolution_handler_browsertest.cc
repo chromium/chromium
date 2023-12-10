@@ -40,11 +40,11 @@ namespace {
 namespace em = ::enterprise_management;
 
 struct PolicyValue {
-  absl::optional<int> external_width;
-  absl::optional<int> external_height;
-  absl::optional<int> external_scale_percentage;
+  std::optional<int> external_width;
+  std::optional<int> external_height;
+  std::optional<int> external_scale_percentage;
   bool use_native = false;
-  absl::optional<int> internal_scale_percentage;
+  std::optional<int> internal_scale_percentage;
 
   bool operator==(const PolicyValue& rhs) const {
     return external_width == rhs.external_width &&
@@ -77,7 +77,7 @@ PolicyValue GetPolicySetting() {
       resolution_pref->FindInt(ash::kDeviceDisplayResolutionKeyExternalScale);
   result.internal_scale_percentage =
       resolution_pref->FindInt(ash::kDeviceDisplayResolutionKeyInternalScale);
-  const absl::optional<bool> use_native = resolution_pref->FindBool(
+  const std::optional<bool> use_native = resolution_pref->FindBool(
       ash::kDeviceDisplayResolutionKeyExternalUseNative);
   if (use_native && *use_native)
     result.use_native = true;
@@ -401,14 +401,14 @@ class DeviceDisplayResolutionRecommendedTest
       extensions::api::system_display::DisplayProperties props) {
     base::RunLoop run_loop;
     base::OnceClosure quit_closure(run_loop.QuitClosure());
-    absl::optional<std::string> operation_error;
+    std::optional<std::string> operation_error;
     extensions::DisplayInfoProvider* provider =
         extensions::DisplayInfoProvider::Get();
     ASSERT_TRUE(provider);
     provider->SetDisplayProperties(
         std::to_string(display_id), std::move(props),
         base::BindOnce(
-            [](base::OnceClosure quit_closure, absl::optional<std::string>) {
+            [](base::OnceClosure quit_closure, std::optional<std::string>) {
               std::move(quit_closure).Run();
             },
             std::move(quit_closure)));

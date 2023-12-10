@@ -4,7 +4,7 @@
 
 import("//third_party/protobuf/proto_library.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 proto_library("proto") {
   proto_in_dir = "//"
@@ -15,8 +15,6 @@ proto_library("proto") {
 
 source_set("app_install_service") {
   sources = [
-    "app_install_almanac_connector.cc",
-    "app_install_almanac_connector.h",
     "app_install_service.cc",
     "app_install_service.h",
     "app_install_types.cc",
@@ -24,16 +22,35 @@ source_set("app_install_service") {
   ]
 
   deps = [
-    ":proto",
     "//base",
-    "//chrome/browser/apps/almanac_api_client",
-    "//chrome/browser/ash/crosapi",
-    "//chrome/browser/profiles:profile",
-    "//chrome/browser/web_applications",
     "//chromeos/crosapi/mojom",
     "//components/services/app_service",
     "//services/network/public/cpp",
   ]
+
+  if (is_chromeos_ash) {
+    sources += [
+      "app_install_almanac_connector.cc",
+      "app_install_almanac_connector.h",
+      "app_install_service_ash.cc",
+      "app_install_service_ash.h",
+    ]
+
+    deps += [
+      ":proto",
+      "//chrome/browser/apps/almanac_api_client",
+      "//chrome/browser/ash/crosapi",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/web_applications",
+    ]
+  }
+
+  if (is_chromeos_lacros) {
+    sources += [
+      "app_install_service_lacros.cc",
+      "app_install_service_lacros.h",
+    ]
+  }
 }
 
 source_set("navigation_throttle") {
@@ -57,20 +74,54 @@ source_set("navigation_throttle") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [
-    "app_install_almanac_connector_unittest.cc",
-    "app_install_navigation_throttle_unittest.cc",
-  ]
+  sources = [ "app_install_navigation_throttle_unittest.cc" ]
 
   deps = [
-    ":app_install_service",
+    ":navigation_throttle",
+    "//base",
+    "//components/services/app_service",
+    "//testing/gtest",
+  ]
+
+  if (is_chromeos_ash) {
+    sources += [ "app_install_almanac_connector_unittest.cc" ]
+
+    deps += [
+      ":app_install_service",
+      ":proto",
+      "//chrome/browser/apps/almanac_api_client/proto",
+      "//chrome/test:test_support",
+      "//content/test:test_support",
+      "//services/network:test_support",
+      "//testing/gtest",
+    ]
+  }
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  sources = [ "app_install_navigation_throttle_browsertest.cc" ]
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  deps = [
     ":navigation_throttle",
     ":proto",
     "//base",
     "//chrome/browser/apps/almanac_api_client/proto",
+    "//chrome/browser/web_applications:web_applications_test_support",
     "//chrome/test:test_support",
+    "//components/webapps/common",
     "//content/test:test_support",
     "//services/network:test_support",
     "//testing/gtest",
   ]
+
+  if (is_chromeos_lacros) {
+    deps += [
+      "//chromeos/lacros",
+      "//chromeos/startup",
+    ]
+  }
 }

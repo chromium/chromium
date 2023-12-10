@@ -8,9 +8,7 @@ import android.view.View;
 
 import org.chromium.chrome.browser.content_creation.internal.R;
 
-/**
- * Coordinator for the TopBar.
- */
+/** Coordinator for the TopBar. */
 public class TopBarCoordinator {
     public TopBarCoordinator(Context context, View parentView, TopBarDelegate delegate) {
         TopBarView topBarView = (TopBarView) parentView.findViewById(R.id.top_bar);

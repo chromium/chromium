@@ -9,6 +9,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/strings/string_split.h"
+#include "chrome/browser/accessibility/accessibility_state_utils.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/screen_ai/screen_ai_service_router.h"
@@ -25,6 +26,7 @@
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_iterator.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/accessibility/view_accessibility.h"
 
@@ -81,6 +83,10 @@ std::vector<content::WebContents*> GetPdfHtmlWebContentses(Profile* profile) {
 
 // Invoke screen reader alert to notify the user of the state.
 void AnnounceToScreenReader(const int message_id) {
+// TODO(crbug.com/1442928): Sending announcements results in a failure in
+// `AuraLinuxAccessibilityInProcessBrowserTest::IndexInParentWithModal` and
+// flaky fail when running Chrome.
+#if !BUILDFLAG(IS_LINUX)
   const Browser* browser = BrowserList::GetInstance()->GetLastActive();
   if (!browser) {
     VLOG(2) << "Browser is not ready to announce";
@@ -94,6 +100,7 @@ void AnnounceToScreenReader(const int message_id) {
 
   browser_view->GetViewAccessibility().AnnounceText(
       l10n_util::GetStringUTF16(message_id));
+#endif
 }
 
 void RecordAcceptLanguages(const std::string& accept_languages) {
@@ -103,7 +110,7 @@ void RecordAcceptLanguages(const std::string& accept_languages) {
     // Convert to a Chrome language code synonym. This language synonym is then
     // converted into a `LocaleCodeISO639` enum value for a UMA histogram.
     language::ToChromeLanguageSynonym(&language);
-    // TODO(crbug.com/1443345): Add a browser test to validate this UMA metric.
+    // TODO(crbug.com/1443346): Add a browser test to validate this UMA metric.
     base::UmaHistogramSparse("Accessibility.PdfOcr.UserAcceptLanguage",
                              base::HashMetricName(language));
   }
@@ -123,9 +130,13 @@ PdfOcrController::PdfOcrController(Profile* profile) : profile_(profile) {
       base::BindRepeating(&PdfOcrController::OnPdfOcrAlwaysActiveChanged,
                           weak_ptr_factory_.GetWeakPtr()));
 
-  // Trigger if the preference is already set.
+  // Trigger if the preference is already set, and a screen reader or Select-to-
+  // Speak on ChromeOS is enabled.
   if (profile_->GetPrefs()->GetBoolean(
-          prefs::kAccessibilityPdfOcrAlwaysActive)) {
+          prefs::kAccessibilityPdfOcrAlwaysActive) &&
+      (accessibility_state_utils::IsScreenReaderEnabled() ||
+       (features::IsAccessibilityPdfOcrForSelectToSpeakEnabled() &&
+        accessibility_state_utils::IsSelectToSpeakEnabled()))) {
     OnPdfOcrAlwaysActiveChanged();
   }
 }
@@ -236,11 +247,11 @@ void PdfOcrController::StateChanged(ScreenAIInstallState::State state) {
     case ScreenAIInstallState::State::kFailed:
       AnnounceToScreenReader(IDS_SETTINGS_PDF_OCR_DOWNLOAD_ERROR);
       if (send_always_active_state_when_service_is_ready_) {
-        // Update the PDF OCR pref to be false to toggle off the button.
-        profile_->GetPrefs()->SetBoolean(
-            prefs::kAccessibilityPdfOcrAlwaysActive, false);
         send_always_active_state_when_service_is_ready_ = false;
       }
+      // Update the PDF OCR pref to be false to toggle off the button.
+      profile_->GetPrefs()->SetBoolean(prefs::kAccessibilityPdfOcrAlwaysActive,
+                                       false);
       break;
 
     case ScreenAIInstallState::State::kDownloaded:

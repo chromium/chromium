@@ -18,6 +18,7 @@
 #include "mojo/public/cpp/bindings/lib/interface_ptr_state.h"
 #include "mojo/public/cpp/bindings/pending_flush.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/runtime_features.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 
 namespace mojo {
@@ -247,6 +248,10 @@ class Remote {
       scoped_refptr<base::SequencedTaskRunner> task_runner) {
     DCHECK(!is_bound()) << "Remote for " << Interface::Name_
                         << " is already bound";
+    if (!internal::GetRuntimeFeature_ExpectEnabled<Interface>()) {
+      reset();
+      return PendingReceiver<Interface>();
+    }
     MessagePipe pipe;
     Bind(PendingRemote<Interface>(std::move(pipe.handle0), 0),
          std::move(task_runner));
@@ -277,7 +282,10 @@ class Remote {
       reset();
       return;
     }
-
+    if (!internal::GetRuntimeFeature_ExpectEnabled<Interface>()) {
+      reset();
+      return;
+    }
     internal_state_.Bind(pending_remote.internal_state(),
                          std::move(task_runner));
 

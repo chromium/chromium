@@ -104,7 +104,7 @@ TEST_F(SavedDeviceRegistryTest, InvalidLookup) {
 
   auto invalid_result =
       saved_device_registry_->GetAccountKey(kNotSavedMacAddress);
-  ASSERT_EQ(absl::nullopt, invalid_result);
+  ASSERT_EQ(std::nullopt, invalid_result);
 
   EXPECT_TRUE(
       saved_device_registry_->IsAccountKeySavedToRegistry(kAccountKey1));
@@ -124,8 +124,8 @@ TEST_F(SavedDeviceRegistryTest, MissingPrefService) {
   auto first = saved_device_registry_->GetAccountKey(kFirstSavedMacAddress);
   auto second = saved_device_registry_->GetAccountKey(kSecondSavedMacAddress);
 
-  ASSERT_EQ(absl::nullopt, first);
-  ASSERT_EQ(absl::nullopt, second);
+  ASSERT_EQ(std::nullopt, first);
+  ASSERT_EQ(std::nullopt, second);
 
   EXPECT_FALSE(saved_device_registry_->DeleteAccountKey(kFirstSavedMacAddress));
   EXPECT_FALSE(

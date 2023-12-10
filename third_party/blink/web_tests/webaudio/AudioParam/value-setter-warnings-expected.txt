@@ -6,33 +6,5 @@ CONSOLE MESSAGE: Test: test-3
 CONSOLE MESSAGE: Test: test-4
 CONSOLE MESSAGE: Test: test-5
 This is a testharness.js-based test.
-[PASS] # AUDIT TASK RUNNER STARTED.
-[PASS] Executing "test-0"
-[PASS] Executing "test-1"
-[PASS] Executing "test-2"
-[PASS] Executing "test-3"
-[PASS] Executing "test-4"
-[PASS] Executing "test-5"
-[PASS] Audit report
-[PASS] > [test-0] 
-[PASS]   test-0 : rendered successfully
-[PASS] < [test-0] All assertions passed. (total 1 assertions)
-[PASS] > [test-1] 
-[PASS]   test-1 : rendered successfully
-[PASS] < [test-1] All assertions passed. (total 1 assertions)
-[PASS] > [test-2] 
-[PASS]   test-2 : rendered successfully
-[PASS] < [test-2] All assertions passed. (total 1 assertions)
-[PASS] > [test-3] 
-[PASS]   test-3 : rendered successfully
-[PASS] < [test-3] All assertions passed. (total 1 assertions)
-[PASS] > [test-4] 
-[PASS]   test-4 : rendered successfully
-[PASS] < [test-4] All assertions passed. (total 1 assertions)
-[PASS] > [test-5] 
-[PASS]   Value setter overlaps setValueCurve threw NotSupportedError: "Failed to set the 'value' property on 'AudioParam': setValueAtTime(99, 0.5013333333333333) overlaps setValueCurveAtTime(..., 0.25, 0.5)".
-[PASS]   test-5 : rendered successfully
-[PASS] < [test-5] All assertions passed. (total 2 assertions)
-[PASS] # AUDIT TASK RUNNER FINISHED: 6 tasks ran successfully.
 Harness: the test ran to completion.
 

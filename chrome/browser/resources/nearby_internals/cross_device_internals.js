@@ -22,6 +22,7 @@ import {getTemplate} from './cross_device_internals.html.js';
 import {NearbyLogsBrowserProxy} from './cross_device_logs_browser_proxy.js';
 import {NearbyPrefsBrowserProxy} from './nearby_prefs_browser_proxy.js';
 import {NearbyPresenceBrowserProxy} from './nearby_presence_browser_proxy.js';
+import {NearbyUiTriggerBrowserProxy} from './nearby_ui_trigger_browser_proxy.js';
 import {ActionValues, FeatureValues, LogMessage, LogProvider, PresenceDevice, SelectOption, Severity} from './types.js';
 
 
@@ -72,6 +73,9 @@ Polymer({
   /** @private {?NearbyPrefsBrowserProxy}*/
   prefsBrowserProxy_: null,
 
+  /** @private {?NearbyUiTriggerBrowserProxy}*/
+  nearbyUITriggerBrowserProxy_: null,
+
   properties: {
     /** @private {!Array<!PresenceDevice>} */
     npDiscoveredDevicesList_: {
@@ -118,6 +122,10 @@ Polymer({
       type: Array,
       value: [
         {name: 'Reset Nearby Share', value: ActionValues.RESET_NEARBY_SHARE},
+        {
+          name: 'Show received notification',
+          value: ActionValues.SHOW_RECEIVED_NOTIFICATION,
+        },
       ],
     },
 
@@ -199,6 +207,8 @@ Polymer({
     this.nearbyPresenceBrowserProxy_ = NearbyPresenceBrowserProxy.getInstance();
     this.chimeBrowserProxy_ = chimeBrowserProxy.getInstance();
     this.prefsBrowserProxy_ = NearbyPrefsBrowserProxy.getInstance();
+    this.nearbyUITriggerBrowserProxy_ =
+        NearbyUiTriggerBrowserProxy.getInstance();
   },
 
   /**
@@ -208,6 +218,7 @@ Polymer({
    */
   attached() {
     this.nearbyPresenceBrowserProxy_.initialize();
+    this.nearbyUITriggerBrowserProxy_.initialize();
     this.chimeBrowserProxy_.initialize();
     this.addWebUIListener(
         'presence-device-found', device => this.onPresenceDeviceFound_(device));
@@ -274,6 +285,8 @@ Polymer({
         break;
       case ActionValues.ADD_CHIME_CLIENT:
         this.chimeBrowserProxy_.SendAddChimeClient();
+      case ActionValues.SHOW_RECEIVED_NOTIFICATION:
+        this.nearbyUITriggerBrowserProxy_.showNearbyShareReceivedNotification();
       default:
         break;
     }

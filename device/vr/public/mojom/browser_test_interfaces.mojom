@@ -4,6 +4,7 @@
 
 module device_test.mojom;
 
+import "device/vr/public/mojom/openxr_interaction_profile_type.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "ui/gfx/mojom/transform.mojom";
 
@@ -87,27 +88,10 @@ enum EventType {
   kNoEvent
 };
 
-// InteractionProfileType is used to indicate which interaction profile runtime
-// would like to change to.
-enum InteractionProfileType {
-  // Windows Mixed Reality Motion Controller
-  kWMRMotion = 0,
-  // Khronos Simple Controller
-  kKHRSimple,
-  kOculusTouch,
-  kValveIndex,
-  kHTCVive,
-  kSamsungOdyssey,
-  kHPReverbG2,
-  kHandSelectGrasp,
-  kViveCosmos,
-  kInvalid,
-};
-
 // EventData is used by test to pass all event related data.
 struct EventData {
   EventType type = kNoEvent;
-  InteractionProfileType interaction_profile = kInvalid;
+  device.mojom.OpenXrInteractionProfileType interaction_profile = kInvalid;
 };
 
 // Tests may implement this, and register it to control behavior of devices for

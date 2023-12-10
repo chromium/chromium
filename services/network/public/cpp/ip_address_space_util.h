@@ -5,11 +5,11 @@
 #ifndef SERVICES_NETWORK_PUBLIC_CPP_IP_ADDRESS_SPACE_UTIL_H_
 #define SERVICES_NETWORK_PUBLIC_CPP_IP_ADDRESS_SPACE_UTIL_H_
 
+#include <string_view>
 #include <vector>
 
 #include "base/component_export.h"
 #include "base/memory/raw_ptr_exclusion.h"
-#include "base/strings/string_piece_forward.h"
 #include "services/network/public/mojom/ip_address_space.mojom-forward.h"
 #include "services/network/public/mojom/parsed_headers.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -27,7 +27,7 @@ struct TransportInfo;
 namespace network {
 
 // Returns a human-readable string representing `space`, suitable for logging.
-base::StringPiece COMPONENT_EXPORT(NETWORK_CPP)
+std::string_view COMPONENT_EXPORT(NETWORK_CPP)
     IPAddressSpaceToStringPiece(mojom::IPAddressSpace space);
 
 // Returns the `IPAddressSpace` to which `address` belongs.

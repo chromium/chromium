@@ -12,12 +12,12 @@
 #include "base/command_line.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "chromeos/ui/base/display_util.h"
-#include "chromeos/ui/base/tablet_state.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "chromeos/ui/frame/caption_buttons/caption_button_model.h"
@@ -133,13 +133,13 @@ class DefaultCaptionButtonModel : public CaptionButtonModel {
     switch (type) {
       case views::CAPTION_BUTTON_ICON_MINIMIZE:
         return frame_->widget_delegate()->CanMinimize() &&
-               !TabletState::Get()->InTabletMode();
+               !display::Screen::GetScreen()->InTabletMode();
       case views::CAPTION_BUTTON_ICON_MAXIMIZE_RESTORE: {
         if (!frame_->widget_delegate()->CanMaximize()) {
           return false;
         }
 
-        if (!TabletState::Get()->InTabletMode()) {
+        if (!display::Screen::GetScreen()->InTabletMode()) {
           return true;
         }
 
@@ -159,7 +159,7 @@ class DefaultCaptionButtonModel : public CaptionButtonModel {
         if (!frame_->IsNativeWidgetInitialized()) {
           return false;
         }
-        if (chromeos::TabletState::Get()->InTabletMode()) {
+        if (display::Screen::GetScreen()->InTabletMode()) {
           return false;
         }
         // Only need to show the float button for apps that normally can't be
@@ -192,11 +192,21 @@ class DefaultCaptionButtonModel : public CaptionButtonModel {
   }
   bool InZoomMode() const override { return false; }
 
+  void SetCloseButtonEnabled(bool is_close_button_enabled) {
+    is_close_button_enabled_ = is_close_button_enabled;
+  }
+
+  base::WeakPtr<DefaultCaptionButtonModel> GetWeakPtr() {
+    return weak_factory_.GetWeakPtr();
+  }
+
  private:
   raw_ptr<views::Widget> frame_;
 
   // Configures whether the close button is enabled.
   bool is_close_button_enabled_ = true;
+
+  base::WeakPtrFactory<DefaultCaptionButtonModel> weak_factory_{this};
 };
 
 }  // namespace
@@ -205,11 +215,16 @@ FrameCaptionButtonContainerView::FrameCaptionButtonContainerView(
     views::Widget* frame,
     bool is_close_button_enabled,
     std::unique_ptr<views::FrameCaptionButton> custom_button)
-    : views::AnimationDelegateViews(frame->GetRootView()),
-      frame_(frame),
-      model_(std::make_unique<DefaultCaptionButtonModel>(
-          frame,
-          is_close_button_enabled)) {
+    : views::AnimationDelegateViews(frame->GetRootView()), frame_(frame) {
+  auto default_caption_button_model =
+      std::make_unique<DefaultCaptionButtonModel>(frame,
+                                                  is_close_button_enabled);
+  on_close_button_enabled_changed_callback_ =
+      base::BindRepeating(&DefaultCaptionButtonModel::SetCloseButtonEnabled,
+                          default_caption_button_model->GetWeakPtr());
+
+  model_ = std::move(default_caption_button_model);
+
   SetOrientation(views::BoxLayout::Orientation::kHorizontal);
   SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kCenter);
   SetMainAxisAlignment(views::BoxLayout::MainAxisAlignment::kEnd);
@@ -429,6 +444,10 @@ void FrameCaptionButtonContainerView::UpdateCaptionButtonState(bool animate) {
       model_->IsVisible(views::CAPTION_BUTTON_ICON_CLOSE));
   close_button_->SetEnabled(
       model_->IsEnabled(views::CAPTION_BUTTON_ICON_CLOSE));
+  close_button_->SetTooltipText(
+      model_->IsEnabled(views::CAPTION_BUTTON_ICON_CLOSE)
+          ? l10n_util::GetStringUTF16(IDS_APP_ACCNAME_CLOSE)
+          : l10n_util::GetStringUTF16(IDS_APP_CLOSE_BUTTON_DISABLED_BY_ADMIN));
 }
 
 void FrameCaptionButtonContainerView::UpdateButtonsImageAndTooltip() {
@@ -453,11 +472,17 @@ void FrameCaptionButtonContainerView::SetButtonSize(const gfx::Size& size) {
     constexpr int kExtraTargetSpaceForCloseButton = 8;
     close_button_->SetPreferredSize(gfx::Size(
         size.width() + kExtraTargetSpaceForCloseButton, size.height()));
-    // Add padding to trailing edge to keep distance between caption buttons
-    // unchanged.
-    close_button_->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
-        0, base::i18n::IsRTL() ? kExtraTargetSpaceForCloseButton : 0, 0,
-        base::i18n::IsRTL() ? 0 : kExtraTargetSpaceForCloseButton)));
+
+    // Do not create a new border if there already exists. Otherwise, that could
+    // cause a significant performance issue as `SetButtonSize` is called on
+    // every layout.
+    if (!close_button_->GetBorder()) {
+      // Add padding to trailing edge to keep distance between caption buttons
+      // unchanged.
+      close_button_->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
+          0, base::i18n::IsRTL() ? kExtraTargetSpaceForCloseButton : 0, 0,
+          base::i18n::IsRTL() ? 0 : kExtraTargetSpaceForCloseButton)));
+    }
   } else {
     close_button_->SetPreferredSize(size);
   }
@@ -465,9 +490,18 @@ void FrameCaptionButtonContainerView::SetButtonSize(const gfx::Size& size) {
   SetMinimumCrossAxisSize(size.height());
 }
 
+void FrameCaptionButtonContainerView::SetCloseButtonEnabled(
+    bool close_button_enabled) {
+  if (on_close_button_enabled_changed_callback_) {
+    on_close_button_enabled_changed_callback_.Run(close_button_enabled);
+    UpdateCaptionButtonState(false /*=animate*/);
+  }
+}
+
 void FrameCaptionButtonContainerView::SetModel(
     std::unique_ptr<CaptionButtonModel> model) {
   model_ = std::move(model);
+  on_close_button_enabled_changed_callback_.Reset();
 }
 
 void FrameCaptionButtonContainerView::SetOnSizeButtonPressedCallback(
@@ -540,7 +574,7 @@ void FrameCaptionButtonContainerView::OnWidgetActivationChanged(
 
   // Tablet nudge is controlled by ash by another class
   // (`::ash::TabletModeMultitaskCueController`).
-  if (TabletState::Get()->InTabletMode()) {
+  if (display::Screen::GetScreen()->InTabletMode()) {
     return;
   }
 
@@ -607,17 +641,16 @@ void FrameCaptionButtonContainerView::UpdateSizeButton() {
 }
 
 void FrameCaptionButtonContainerView::UpdateSnapButtons() {
-  const bool is_horizontal_display = chromeos::IsDisplayLayoutHorizontal(
-      display::Screen::GetScreen()->GetDisplayNearestWindow(
-          frame_->GetNativeWindow()));
+  const bool is_landscape =
+      display::Screen::GetScreen()
+          ->GetDisplayNearestWindow(frame_->GetNativeWindow())
+          .is_landscape();
   SetButtonImage(views::CAPTION_BUTTON_ICON_LEFT_TOP_SNAPPED,
-                 is_horizontal_display
-                     ? chromeos::kWindowControlLeftSnappedIcon
-                     : chromeos::kWindowControlTopSnappedIcon);
+                 is_landscape ? chromeos::kWindowControlLeftSnappedIcon
+                              : chromeos::kWindowControlTopSnappedIcon);
   SetButtonImage(views::CAPTION_BUTTON_ICON_RIGHT_BOTTOM_SNAPPED,
-                 is_horizontal_display
-                     ? chromeos::kWindowControlRightSnappedIcon
-                     : chromeos::kWindowControlBottomSnappedIcon);
+                 is_landscape ? chromeos::kWindowControlRightSnappedIcon
+                              : chromeos::kWindowControlBottomSnappedIcon);
 }
 
 void FrameCaptionButtonContainerView::UpdateFloatButton() {
@@ -677,7 +710,7 @@ void FrameCaptionButtonContainerView::CloseButtonPressed() {
   SetButtonsToNormal(Animate::kNo);
 
   frame_->Close();
-  if (TabletState::Get()->InTabletMode()) {
+  if (display::Screen::GetScreen()->InTabletMode()) {
     base::RecordAction(
         base::UserMetricsAction("Tablet_WindowCloseFromCaptionButton"));
   } else {

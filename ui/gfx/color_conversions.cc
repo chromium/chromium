@@ -266,7 +266,7 @@ std::tuple<float, float, float> XYZD50ToLab(float x, float y, float z) {
 }
 
 std::tuple<float, float, float> OklabToXYZD65(float l, float a, float b) {
-  skcms_Vector3 lab_input{{l / 100.f, a, b}};
+  skcms_Vector3 lab_input{{l, a, b}};
   skcms_Vector3 lms_intermediate =
       skcms_Matrix3x3_apply(getOklabToLMSMatrix(), &lab_input);
   lms_intermediate.vals[0] = lms_intermediate.vals[0] *
@@ -295,7 +295,7 @@ std::tuple<float, float, float> XYZD65ToOklab(float x, float y, float z) {
 
   skcms_Vector3 lab_output =
       skcms_Matrix3x3_apply(getLMSToOklabMatrix(), &lms_intermediate);
-  return std::make_tuple(lab_output.vals[0] * 100.0f, lab_output.vals[1],
+  return std::make_tuple(lab_output.vals[0], lab_output.vals[1],
                          lab_output.vals[2]);
 }
 

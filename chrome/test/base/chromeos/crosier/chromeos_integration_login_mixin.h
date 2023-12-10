@@ -50,6 +50,9 @@ class ChromeOSIntegrationLoginMixin : public InProcessBrowserTestMixin {
   // For kGaiaLogin, the account is randomly picked from `gaiaPoolDefault`.
   void Login();
 
+  // Returns true if cryptohome for `username_` is mounted.
+  bool IsCryptohomeMounted() const;
+
   // InProcessBrowserTestMixin:
   void SetUp() override;
   void SetUpCommandLine(base::CommandLine* command_line) override;
@@ -68,6 +71,9 @@ class ChromeOSIntegrationLoginMixin : public InProcessBrowserTestMixin {
   bool setup_called_ = false;
 
   Mode mode_ = Mode::kStubLogin;
+
+  // Username used to login. Only set for kTestLogin and kGaiaLogin.
+  std::string username_;
 
   std::unique_ptr<FakeSessionManagerClientBrowserHelper>
       fake_session_manager_client_helper_;

@@ -89,6 +89,9 @@ class DownloadBubbleRowView : public views::View,
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
   bool CanHandleAccelerators() const override;
 
+  // Returns the transparent button that is activated when the row is clicked.
+  views::Button* transparent_button() { return transparent_button_; }
+
   const std::u16string& GetSecondaryLabelTextForTesting();
 
   DownloadUIModel* model() { return info_->model(); }
@@ -233,7 +236,7 @@ class DownloadBubbleRowView : public views::View,
   // Whether we are dragging the download bubble row.
   bool dragging_ = false;
   // Position that a possible drag started at.
-  absl::optional<gfx::Point> drag_start_point_;
+  std::optional<gfx::Point> drag_start_point_;
   // A CloseOnDeactivate pin that prevents the download bubble from closing on
   // deactivating, for the duration of its lifetime. This is used to prevent
   // the dialog from closing when the row is being dragged.

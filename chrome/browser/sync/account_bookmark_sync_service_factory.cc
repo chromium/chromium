@@ -46,7 +46,8 @@ AccountBookmarkSyncServiceFactory::~AccountBookmarkSyncServiceFactory() =
 
 KeyedService* AccountBookmarkSyncServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
-  if (!base::FeatureList::IsEnabled(syncer::kEnableBookmarksAccountStorage)) {
+  if (!base::FeatureList::IsEnabled(
+          syncer::kEnableBookmarkFoldersForAccountStorage)) {
     return nullptr;
   }
 

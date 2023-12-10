@@ -6,7 +6,6 @@
 
 #include "base/check_deref.h"
 #include "base/check_is_test.h"
-#include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/browser_process.h"
@@ -14,16 +13,13 @@
 #include "chrome/browser/profiles/profile_selections.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_service.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
-#include "components/prefs/pref_service.h"
 #include "components/search_engines/search_engine_choice_utils.h"
 #include "components/search_engines/search_engines_pref_names.h"
-#include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/template_url_service.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chromeos/components/kiosk/kiosk_utils.h"
-#include "chromeos/components/mgs/managed_guest_session_utils.h"
 #endif
 
 namespace {
@@ -49,14 +45,11 @@ search_engines::SearchEngineChoiceScreenConditions ComputeProfileEligibility(
         kProfileOutOfScope;
   }
 
-  bool is_regular_profile = profile.IsRegularProfile();
+  bool is_regular_or_guest_profile =
+      profile.IsRegularProfile() || profile.IsGuestSession();
 #if BUILDFLAG(IS_CHROMEOS)
-  is_regular_profile &= !chromeos::IsManagedGuestSession() &&
-                        !chromeos::IsKioskSession() &&
-                        !profiles::IsChromeAppKioskSession();
-#endif
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  is_regular_profile &= !profile.IsGuestSession();
+  is_regular_or_guest_profile &=
+      !chromeos::IsKioskSession() && !profiles::IsChromeAppKioskSession();
 #endif
 
   TemplateURLService* template_url_service =
@@ -65,14 +58,19 @@ search_engines::SearchEngineChoiceScreenConditions ComputeProfileEligibility(
   return search_engines::GetStaticChoiceScreenConditions(
       CHECK_DEREF(g_browser_process->policy_service()),
       /*profile_properties=*/
-      {.is_regular_profile = is_regular_profile,
+      {.is_regular_profile = is_regular_or_guest_profile,
        .pref_service = profile.GetPrefs()},
       CHECK_DEREF(template_url_service));
 }
 
 bool IsProfileEligibleForChoiceScreen(Profile& profile) {
   auto eligibility_conditions = ComputeProfileEligibility(profile);
+  // TODO(b/312755450): Move metrics recording outside of this function or
+  // rename it to not appear like a simple getter.
   RecordChoiceScreenProfileInitCondition(eligibility_conditions);
+  DVLOG(1) << "Choice screen eligibility condition for profile "
+           << profile.GetBaseName() << ": "
+           << static_cast<int>(eligibility_conditions);
   return eligibility_conditions ==
          search_engines::SearchEngineChoiceScreenConditions::kEligible;
 }
@@ -85,7 +83,7 @@ SearchEngineChoiceServiceFactory::SearchEngineChoiceServiceFactory()
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kOriginalOnly)
               .WithAshInternals(ProfileSelection::kNone)
-              .WithGuest(ProfileSelection::kNone)
+              .WithGuest(ProfileSelection::kOffTheRecordOnly)
               .Build()) {
   DependsOn(TemplateURLServiceFactory::GetInstance());
 }
@@ -117,26 +115,9 @@ SearchEngineChoiceServiceFactory::ScopedChromeBuildOverrideForTesting(
 // static
 bool SearchEngineChoiceServiceFactory::IsSelectedChoiceProfile(Profile& profile,
                                                                bool try_claim) {
-  base::CommandLine* const command_line =
-      base::CommandLine::ForCurrentProcess();
-  // Force-enable the choice screen for testing the screen itself.
-  if (command_line->HasSwitch(switches::kForceSearchEngineChoiceScreen)) {
-    return true;
-  }
-
-  auto* local_state = g_browser_process->local_state();
-  CHECK(local_state);
-  if (!local_state->HasPrefPath(prefs::kSearchEnginesChoiceProfile)) {
-    if (try_claim) {
-      // Claim the dialog so other profiles don't trigger.
-      local_state->SetFilePath(prefs::kSearchEnginesChoiceProfile,
-                               profile.GetBaseName());
-    }
-    return true;
-  }
-
-  return profile.GetBaseName() ==
-         local_state->GetFilePath(prefs::kSearchEnginesChoiceProfile);
+  // TODO(b/309936758): Remove this method and deprecate
+  // prefs::kSearchEnginesChoiceProfile
+  return true;
 }
 
 // static
@@ -154,7 +135,12 @@ SearchEngineChoiceServiceFactory::BuildServiceInstanceForBrowserContext(
   }
 
   auto& profile = CHECK_DEREF(Profile::FromBrowserContext(context));
+  search_engines::PreprocessPrefsForReprompt(CHECK_DEREF(profile.GetPrefs()));
+
   if (!IsProfileEligibleForChoiceScreen(profile)) {
+    DVLOG(1) << "Profile not eligible, removing tag for profile "
+             << profile.GetBaseName();
+    profile.GetPrefs()->ClearPref(prefs::kDefaultSearchProviderChoicePending);
     return nullptr;
   }
 

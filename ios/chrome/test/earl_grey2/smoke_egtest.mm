@@ -5,7 +5,6 @@
 #import <UIKit/UIKit.h>
 
 #import "base/ios/ios_util.h"
-#import "components/password_manager/core/common/password_manager_features.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_earl_grey.h"
@@ -60,8 +59,6 @@
 - (void)testToggleSettingsSwitch {
   AppLaunchConfiguration config = [self appConfigurationForTestCase];
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
-  config.features_enabled.push_back(
-      password_manager::features::kIOSPasswordUISplit);
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 
   [ChromeEarlGreyUI openSettingsMenu];

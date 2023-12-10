@@ -8,7 +8,9 @@
 #import "ios/chrome/browser/promos_manager/promos_manager.h"
 
 #import <Foundation/Foundation.h>
+
 #import <map>
+#import <optional>
 #import <set>
 #import <vector>
 
@@ -19,7 +21,6 @@
 #import "ios/chrome/browser/promos_manager/constants.h"
 #import "ios/chrome/browser/promos_manager/impression_limit.h"
 #import "ios/chrome/browser/promos_manager/promo_config.h"
-#import "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace feature_engagement {
 class Tracker;
@@ -118,6 +119,9 @@ class PromosManagerImpl : public PromosManager {
   bool CanShowPromoUsingFeatureEngagementTracker(
       promos_manager::Promo promo) const;
 
+  // Returns the corresponding base::Feature for the given Promo.
+  const base::Feature* FeatureForPromo(promos_manager::Promo promo) const;
+
   // Returns a list of impression counts (std::vector<int>) from a promo
   // impression counts map.
   std::vector<int> ImpressionCounts(
@@ -132,7 +136,7 @@ class PromosManagerImpl : public PromosManager {
   void Init() override;
   void InitializePromoConfigs(PromoConfigsSet promo_configs) override;
   void RecordImpression(promos_manager::Promo promo) override;
-  absl::optional<promos_manager::Promo> NextPromoForDisplay() override;
+  std::optional<promos_manager::Promo> NextPromoForDisplay() override;
   void RegisterPromoForContinuousDisplay(promos_manager::Promo promo) override;
   void RegisterPromoForSingleDisplay(promos_manager::Promo promo) override;
   void RegisterPromoForSingleDisplay(

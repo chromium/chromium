@@ -29,8 +29,9 @@ void WebNNGraphBuilderTest::SetUp() {
   SKIP_TEST_IF(!UseGPUInTests());
   ASSERT_TRUE(InitializeGLDisplay());
   Adapter::EnableDebugLayerForTesting();
-  scoped_refptr<Adapter> adapter = Adapter::GetInstanceForTesting();
-  ASSERT_NE(adapter.get(), nullptr);
+  auto adapter_creation_result = Adapter::GetInstanceForTesting();
+  ASSERT_TRUE(adapter_creation_result.has_value());
+  auto adapter = adapter_creation_result.value();
   dml_device_ = adapter->dml_device();
   ASSERT_NE(dml_device_.Get(), nullptr);
   // Graph compilation relies on IDMLDevice1::CompileGraph introduced in

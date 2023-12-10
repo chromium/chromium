@@ -60,7 +60,7 @@ class _Speedometer2(press._PressBenchmark):  # pylint: disable=protected-access
                   iteration_count))
     return story_set
 
-  def CreateCoreTimelinedMeasurementOptions(self):
+  def CreateCoreTimelineBasedMeasurementOptions(self):
     if not self.enable_systrace:
       return timeline_based_measurement.Options()
 
@@ -83,11 +83,11 @@ class _Speedometer2(press._PressBenchmark):  # pylint: disable=protected-access
 
       tbm_options = timeline_based_measurement.Options(
           overhead_level=cat_filter)
-      tbm_options.SetTimelinedMetrics(['runtimeStatsTotalMetric'])
+      tbm_options.SetTimelineBasedMetrics(['runtimeStatsTotalMetric'])
       return tbm_options
 
     tbm_options = timeline_based_measurement.Options(overhead_level=cat_filter)
-    tbm_options.SetTimelinedMetrics(['tracingMetric'])
+    tbm_options.SetTimelineBasedMetrics(['tracingMetric'])
     return tbm_options
 
   def SetExtraBrowserOptions(self, options):

@@ -79,15 +79,7 @@
           "group": "tryserver.chromium.linux"
         },
         {
-          "builder": "linux-mbi-mode-per-site-instance-rel",
-          "group": "tryserver.chromium.linux"
-        },
-        {
           "builder": "linux-rel",
-          "group": "tryserver.chromium.linux"
-        },
-        {
-          "builder": "linux-siso-rel",
           "group": "tryserver.chromium.linux"
         },
         {

@@ -31,11 +31,9 @@ import org.chromium.ui.text.NoUnderlineClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.widget.ChromeBulletSpan;
 
-/**
- * The view to describe revamped incognito mode.
- */
-public class RevampedIncognitoDescriptionView
-        extends LinearLayout implements IncognitoDescriptionView {
+/** The view to describe revamped incognito mode. */
+public class RevampedIncognitoDescriptionView extends LinearLayout
+        implements IncognitoDescriptionView {
     private Resources mResources;
 
     private int mWidthPx;
@@ -95,9 +93,11 @@ public class RevampedIncognitoDescriptionView
 
         mContainer = findViewById(R.id.revamped_incognito_ntp_container);
 
-        populateDescriptions(R.id.revamped_incognito_ntp_does_description_view,
+        populateDescriptions(
+                R.id.revamped_incognito_ntp_does_description_view,
                 R.string.revamped_incognito_ntp_does_description);
-        populateDescriptions(R.id.revamped_incognito_ntp_does_not_description_view,
+        populateDescriptions(
+                R.id.revamped_incognito_ntp_does_not_description_view,
                 R.string.revamped_incognito_ntp_does_not_description);
 
         mTitle = findViewById(R.id.revamped_incognito_ntp_title);
@@ -150,10 +150,15 @@ public class RevampedIncognitoDescriptionView
         // them.
         text = text.replaceAll(" *</?ul>\\n?", "");
 
-        view.setText(SpanApplier.applySpans(text,
-                new SpanApplier.SpanInfo("<li1>", "</li1>", new ChromeBulletSpan(getContext())),
-                new SpanApplier.SpanInfo("<li2>", "</li2>", new ChromeBulletSpan(getContext())),
-                new SpanApplier.SpanInfo("<li3>", "</li3>", new ChromeBulletSpan(getContext()))));
+        view.setText(
+                SpanApplier.applySpans(
+                        text,
+                        new SpanApplier.SpanInfo(
+                                "<li1>", "</li1>", new ChromeBulletSpan(getContext())),
+                        new SpanApplier.SpanInfo(
+                                "<li2>", "</li2>", new ChromeBulletSpan(getContext())),
+                        new SpanApplier.SpanInfo(
+                                "<li3>", "</li3>", new ChromeBulletSpan(getContext()))));
     }
 
     /**
@@ -174,13 +179,17 @@ public class RevampedIncognitoDescriptionView
 
         if (isNarrowScreen()) {
             // Small padding.
-            int thresholdPx = mResources.getDimensionPixelSize(
-                    R.dimen.incognito_ntp_portrait_small_or_big_threshold);
-            paddingHorizontalPx = mResources.getDimensionPixelSize(mWidthPx <= thresholdPx
-                            ? R.dimen.incognito_ntp_portrait_horizontal_small_padding
-                            : R.dimen.incognito_ntp_portrait_horizontal_big_padding);
-            paddingVerticalPx = mResources.getDimensionPixelSize(
-                    R.dimen.incognito_ntp_portrait_vertical_padding);
+            int thresholdPx =
+                    mResources.getDimensionPixelSize(
+                            R.dimen.incognito_ntp_portrait_small_or_big_threshold);
+            paddingHorizontalPx =
+                    mResources.getDimensionPixelSize(
+                            mWidthPx <= thresholdPx
+                                    ? R.dimen.incognito_ntp_portrait_horizontal_small_padding
+                                    : R.dimen.incognito_ntp_portrait_horizontal_big_padding);
+            paddingVerticalPx =
+                    mResources.getDimensionPixelSize(
+                            R.dimen.incognito_ntp_portrait_vertical_padding);
 
             mContainer.setGravity(Gravity.START);
 
@@ -190,21 +199,26 @@ public class RevampedIncognitoDescriptionView
 
             // Set layout params for portrait orientation. Must be done programmatically to cover
             // the case when the user switches from landscape to portrait.
-            LinearLayout.LayoutParams layoutParams = new LinearLayoutCompat.LayoutParams(
-                    LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+            LinearLayout.LayoutParams layoutParams =
+                    new LinearLayoutCompat.LayoutParams(
+                            LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
             layoutParams.setMargins(0, doesTopMarginPx, 0, 0);
 
             mDoesLayout.setLayoutParams(layoutParams);
             mDoesNotLayout.setLayoutParams(layoutParams);
         } else {
             // Large padding.
-            int thresholdPx = mResources.getDimensionPixelSize(
-                    R.dimen.incognito_ntp_landscape_small_or_big_threshold);
-            paddingHorizontalPx = mResources.getDimensionPixelSize(
-                    R.dimen.incognito_ntp_landscape_horizontal_padding);
-            paddingVerticalPx = mResources.getDimensionPixelSize(mHeightPx <= thresholdPx
-                            ? R.dimen.incognito_ntp_landscape_vertical_small_padding
-                            : R.dimen.incognito_ntp_landscape_vertical_big_padding);
+            int thresholdPx =
+                    mResources.getDimensionPixelSize(
+                            R.dimen.incognito_ntp_landscape_small_or_big_threshold);
+            paddingHorizontalPx =
+                    mResources.getDimensionPixelSize(
+                            R.dimen.incognito_ntp_landscape_horizontal_padding);
+            paddingVerticalPx =
+                    mResources.getDimensionPixelSize(
+                            mHeightPx <= thresholdPx
+                                    ? R.dimen.incognito_ntp_landscape_vertical_small_padding
+                                    : R.dimen.incognito_ntp_landscape_vertical_big_padding);
 
             mContainer.setGravity(Gravity.CENTER_HORIZONTAL);
 
@@ -213,34 +227,42 @@ public class RevampedIncognitoDescriptionView
             contentWidthPx = Math.min(contentMaxWidthPx, mWidthPx - 2 * paddingHorizontalPx);
 
             // Set layout params for landscape orientation.
-            int doesRightMarginPx = mResources.getDimensionPixelSize(
-                    R.dimen.incognito_ntp_descriptions_horizontal_spacing);
-            LinearLayout.LayoutParams layoutParamsDoes = new LinearLayoutCompat.LayoutParams(
-                    0, LayoutParams.WRAP_CONTENT, descriptionsWeight);
+            int doesRightMarginPx =
+                    mResources.getDimensionPixelSize(
+                            R.dimen.incognito_ntp_descriptions_horizontal_spacing);
+            LinearLayout.LayoutParams layoutParamsDoes =
+                    new LinearLayoutCompat.LayoutParams(
+                            0, LayoutParams.WRAP_CONTENT, descriptionsWeight);
             layoutParamsDoes.setMargins(0, doesTopMarginPx, doesRightMarginPx, 0);
             mDoesLayout.setLayoutParams(layoutParamsDoes);
 
-            LinearLayout.LayoutParams layoutParamsDoesNot = new LinearLayoutCompat.LayoutParams(
-                    0, LayoutParams.WRAP_CONTENT, descriptionsWeight);
+            LinearLayout.LayoutParams layoutParamsDoesNot =
+                    new LinearLayoutCompat.LayoutParams(
+                            0, LayoutParams.WRAP_CONTENT, descriptionsWeight);
             layoutParamsDoesNot.setMargins(0, doesTopMarginPx, 0, 0);
             mDoesNotLayout.setLayoutParams(layoutParamsDoesNot);
         }
 
-        mContent.setLayoutParams(new LinearLayout.LayoutParams(
-                contentWidthPx, LinearLayout.LayoutParams.WRAP_CONTENT));
+        mContent.setLayoutParams(
+                new LinearLayout.LayoutParams(
+                        contentWidthPx, LinearLayout.LayoutParams.WRAP_CONTENT));
 
         // The learn more text view has height of min_touch_target_size. This effectively
         // creates padding above and below it, depending on Android font size settings.
         // We want to have a R.dimen.learn_more_vertical_spacing tall gap between the learn more
         // text and the adjacent elements. So adjust the margin to be the difference between
         // targeted spacing and effective padding.
-        int innerSpacing = (int) ((getContext().getResources().getDimensionPixelSize(
-                                           R.dimen.min_touch_target_size)
-                                          - mLearnMore.getTextSize())
-                / 2);
+        int innerSpacing =
+                (int)
+                        ((getContext()
+                                                .getResources()
+                                                .getDimensionPixelSize(
+                                                        R.dimen.min_touch_target_size)
+                                        - mLearnMore.getTextSize())
+                                / 2);
         int learnMoreVerticalMargin =
                 mResources.getDimensionPixelSize(R.dimen.incognito_ntp_learn_more_vertical_spacing)
-                - innerSpacing;
+                        - innerSpacing;
 
         LinearLayout.LayoutParams params = (LayoutParams) mLearnMore.getLayoutParams();
         params.setMargins(0, learnMoreVerticalMargin, 0, learnMoreVerticalMargin);
@@ -255,9 +277,14 @@ public class RevampedIncognitoDescriptionView
                 getContext().getResources().getString(R.string.revamped_incognito_ntp_learn_more);
 
         // Make the text between the <a> tags to be clickable, blue, without underline.
-        SpanApplier.SpanInfo spanInfo = new SpanApplier.SpanInfo("<a>", "</a>",
-                new NoUnderlineClickableSpan(getContext(), R.color.default_text_color_link_light,
-                        onClickListener::onClick));
+        SpanApplier.SpanInfo spanInfo =
+                new SpanApplier.SpanInfo(
+                        "<a>",
+                        "</a>",
+                        new NoUnderlineClickableSpan(
+                                getContext(),
+                                R.color.default_text_color_link_light,
+                                onClickListener::onClick));
 
         SpannableString formattedText = SpanApplier.applySpans(text, spanInfo);
 
@@ -297,8 +324,9 @@ public class RevampedIncognitoDescriptionView
                 break;
             case CookieControlsEnforcement.ENFORCED_BY_COOKIE_SETTING:
                 iconRes = R.drawable.settings_cog;
-                addition = resources.getString(
-                        R.string.new_tab_otr_cookie_controls_controlled_tooltip_text);
+                addition =
+                        resources.getString(
+                                R.string.new_tab_otr_cookie_controls_controlled_tooltip_text);
                 break;
             default:
                 return;

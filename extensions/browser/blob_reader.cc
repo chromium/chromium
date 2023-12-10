@@ -28,7 +28,7 @@ void BlobReader::Read(mojo::PendingRemote<blink::mojom::Blob> blob,
 void BlobReader::Read(mojo::PendingRemote<blink::mojom::Blob> blob,
                       BlobReadCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  Read(std::move(blob), std::move(callback), /*range=*/absl::nullopt);
+  Read(std::move(blob), std::move(callback), /*range=*/std::nullopt);
 }
 
 BlobReader::~BlobReader() { DCHECK_CURRENTLY_ON(content::BrowserThread::UI); }
@@ -36,7 +36,7 @@ BlobReader::~BlobReader() { DCHECK_CURRENTLY_ON(content::BrowserThread::UI); }
 // static
 void BlobReader::Read(mojo::PendingRemote<blink::mojom::Blob> blob,
                       BlobReadCallback callback,
-                      absl::optional<BlobReader::Range> range) {
+                      std::optional<BlobReader::Range> range) {
   auto reader =
       base::WrapUnique(new BlobReader(std::move(blob), std::move(range)));
 
@@ -53,7 +53,7 @@ void BlobReader::Read(mojo::PendingRemote<blink::mojom::Blob> blob,
 }
 
 BlobReader::BlobReader(mojo::PendingRemote<blink::mojom::Blob> blob,
-                       absl::optional<Range> range)
+                       std::optional<Range> range)
     : blob_(std::move(blob)), read_range_(std::move(range)) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   blob_.set_disconnect_handler(

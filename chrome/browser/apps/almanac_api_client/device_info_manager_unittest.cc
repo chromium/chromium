@@ -5,6 +5,7 @@
 #include "chrome/browser/apps/almanac_api_client/device_info_manager.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/test/scoped_chromeos_version_info.h"
 #include "base/test/test_future.h"
@@ -19,7 +20,6 @@
 #include "components/version_info/channel.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace apps {
 
@@ -72,7 +72,7 @@ TEST_F(DeviceInfoManagerTest, CheckDeviceInfo) {
   ASSERT_EQ(device_info.version_info.channel, chrome::GetChannel());
   ASSERT_EQ(device_info.hardware_id, "FOOBAR D0G-F4N-C1UB");
   ASSERT_EQ(device_info.locale, kTestLocale);
-  ASSERT_EQ(device_info.custom_label_tag, absl::nullopt);
+  ASSERT_EQ(device_info.custom_label_tag, std::nullopt);
 }
 
 TEST_F(DeviceInfoManagerTest, CheckDeviceInfoNoLanguagePreference) {

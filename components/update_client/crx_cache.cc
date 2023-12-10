@@ -97,7 +97,7 @@ CrxCache::Result CrxCache::ProcessPut(const base::FilePath& crx_path,
 void CrxCache::RemoveAll(const std::string& id) {
   if (base::PathExists(crx_cache_root_path_)) {
     base::FileEnumerator file_enum(
-        crx_cache_root_path_, false, base::FileEnumerator::FILES, [&id]() {
+        crx_cache_root_path_, false, base::FileEnumerator::FILES, [&id] {
           std::string result = base::StrCat({id, "*"});
 #if BUILDFLAG(IS_WIN)
           return base::ASCIIToWide(result);

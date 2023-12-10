@@ -12,6 +12,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "components/leveldb_proto/public/proto_database.h"
 #include "components/segmentation_platform/internal/database/signal_database.h"
@@ -34,7 +35,8 @@ class SignalDatabaseImpl : public SignalDatabase {
   using SignalProtoDb = leveldb_proto::ProtoDatabase<proto::SignalData>;
 
   SignalDatabaseImpl(std::unique_ptr<SignalProtoDb> database,
-                     base::Clock* clock);
+                     base::Clock* clock,
+                     scoped_refptr<base::SequencedTaskRunner> task_runner);
   ~SignalDatabaseImpl() override;
 
   // Disallow copy/assign.
@@ -95,6 +97,8 @@ class SignalDatabaseImpl : public SignalDatabase {
 
   // The backing LevelDB proto database.
   std::unique_ptr<SignalProtoDb> database_;
+
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   // Used for getting current time.
   raw_ptr<base::Clock> clock_;

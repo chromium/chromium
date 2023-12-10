@@ -1,0 +1,272 @@
+This is a testharness.js-based test.
+Found 134 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] <a>: Setting <ssh://me@example.net>.protocol = 'http' Can’t switch from non-special scheme to special
+  assert_equals: expected "ssh://me@example.net" but got "http://me@example.net/"
+[FAIL] <area>: Setting <ssh://me@example.net>.protocol = 'http' Can’t switch from non-special scheme to special
+  assert_equals: expected "ssh://me@example.net" but got "http://me@example.net/"
+[FAIL] <a>: Setting <ssh://me@example.net>.protocol = 'https'
+  assert_equals: expected "ssh://me@example.net" but got "https://me@example.net/"
+[FAIL] <area>: Setting <ssh://me@example.net>.protocol = 'https'
+  assert_equals: expected "ssh://me@example.net" but got "https://me@example.net/"
+[FAIL] <a>: Setting <ssh://me@example.net>.protocol = 'file'
+  assert_equals: expected "ssh://me@example.net" but got "file://me%40example.net/"
+[FAIL] <area>: Setting <ssh://me@example.net>.protocol = 'file'
+  assert_equals: expected "ssh://me@example.net" but got "file://me%40example.net/"
+[FAIL] <a>: Setting <ssh://example.net>.protocol = 'file'
+  assert_equals: expected "ssh://example.net" but got "file://example.net/"
+[FAIL] <area>: Setting <ssh://example.net>.protocol = 'file'
+  assert_equals: expected "ssh://example.net" but got "file://example.net/"
+[FAIL] <a>: Setting <nonsense:///test>.protocol = 'https'
+  assert_equals: expected "nonsense:///test" but got "https://test/"
+[FAIL] <area>: Setting <nonsense:///test>.protocol = 'https'
+  assert_equals: expected "nonsense:///test" but got "https://test/"
+[FAIL] <a>: Setting <http://test/>.protocol = 'h\r\ntt	ps' Tab and newline are stripped
+  assert_equals: expected "https://test/" but got "http://test/"
+[FAIL] <area>: Setting <http://test/>.protocol = 'h\r\ntt	ps' Tab and newline are stripped
+  assert_equals: expected "https://test/" but got "http://test/"
+[FAIL] <a>: Setting <http://test/>.protocol = 'https\r'
+  assert_equals: expected "https://test/" but got "http://test/"
+[FAIL] <area>: Setting <http://test/>.protocol = 'https\r'
+  assert_equals: expected "https://test/" but got "http://test/"
+[FAIL] <a>: Setting <http://example.net>.username = '\0	\n\r !"#$%&'()*+,-./09:;<=>?@AZ[\]^_`az{|}~Éé' UTF-8 percent encoding with the userinfo encode set.
+  assert_equals: expected "http://%00%01%09%0A%0D%1F%20!%22%23$%&'()*+,-.%2F09%3A%3B%3C%3D%3E%3F%40AZ%5B%5C%5D%5E_%60az%7B%7C%7D~%7F%C2%80%C2%81%C3%89%C3%A9@example.net/" but got "http://%00%01%09%0A%0D%1F%20!%22%23$%&%27()*+,-.%2F09%3A%3B%3C%3D%3E%3F%40AZ%5B%5C%5D%5E_%60az%7B%7C%7D~%7F%C2%80%C2%81%C3%89%C3%A9@example.net/"
+[FAIL] <area>: Setting <http://example.net>.username = '\0	\n\r !"#$%&'()*+,-./09:;<=>?@AZ[\]^_`az{|}~Éé' UTF-8 percent encoding with the userinfo encode set.
+  assert_equals: expected "http://%00%01%09%0A%0D%1F%20!%22%23$%&'()*+,-.%2F09%3A%3B%3C%3D%3E%3F%40AZ%5B%5C%5D%5E_%60az%7B%7C%7D~%7F%C2%80%C2%81%C3%89%C3%A9@example.net/" but got "http://%00%01%09%0A%0D%1F%20!%22%23$%&%27()*+,-.%2F09%3A%3B%3C%3D%3E%3F%40AZ%5B%5C%5D%5E_%60az%7B%7C%7D~%7F%C2%80%C2%81%C3%89%C3%A9@example.net/"
+[FAIL] <a>: Setting <http://example.net>.password = '\0	\n\r !"#$%&'()*+,-./09:;<=>?@AZ[\]^_`az{|}~Éé' UTF-8 percent encoding with the userinfo encode set.
+  assert_equals: expected "http://:%00%01%09%0A%0D%1F%20!%22%23$%&'()*+,-.%2F09%3A%3B%3C%3D%3E%3F%40AZ%5B%5C%5D%5E_%60az%7B%7C%7D~%7F%C2%80%C2%81%C3%89%C3%A9@example.net/" but got "http://:%00%01%09%0A%0D%1F%20!%22%23$%&%27()*+,-.%2F09%3A%3B%3C%3D%3E%3F%40AZ%5B%5C%5D%5E_%60az%7B%7C%7D~%7F%C2%80%C2%81%C3%89%C3%A9@example.net/"
+[FAIL] <area>: Setting <http://example.net>.password = '\0	\n\r !"#$%&'()*+,-./09:;<=>?@AZ[\]^_`az{|}~Éé' UTF-8 percent encoding with the userinfo encode set.
+  assert_equals: expected "http://:%00%01%09%0A%0D%1F%20!%22%23$%&'()*+,-.%2F09%3A%3B%3C%3D%3E%3F%40AZ%5B%5C%5D%5E_%60az%7B%7C%7D~%7F%C2%80%C2%81%C3%89%C3%A9@example.net/" but got "http://:%00%01%09%0A%0D%1F%20!%22%23$%&%27()*+,-.%2F09%3A%3B%3C%3D%3E%3F%40AZ%5B%5C%5D%5E_%60az%7B%7C%7D~%7F%C2%80%C2%81%C3%89%C3%A9@example.net/"
+[FAIL] <a>: Setting <sc://x/>.host = '\0' Non-special scheme
+  assert_equals: expected "x" but got ""
+[FAIL] <area>: Setting <sc://x/>.host = '\0' Non-special scheme
+  assert_equals: expected "x" but got ""
+[FAIL] <a>: Setting <sc://x/>.host = '	'
+  assert_equals: expected "sc:///" but got "sc://x/"
+[FAIL] <area>: Setting <sc://x/>.host = '	'
+  assert_equals: expected "sc:///" but got "sc://x/"
+[FAIL] <a>: Setting <sc://x/>.host = '\n'
+  assert_equals: expected "sc:///" but got "sc://x/"
+[FAIL] <area>: Setting <sc://x/>.host = '\n'
+  assert_equals: expected "sc:///" but got "sc://x/"
+[FAIL] <a>: Setting <sc://x/>.host = '\r'
+  assert_equals: expected "sc:///" but got "sc://x/"
+[FAIL] <area>: Setting <sc://x/>.host = '\r'
+  assert_equals: expected "sc:///" but got "sc://x/"
+[FAIL] <a>: Setting <sc://x/>.host = ' '
+  assert_equals: expected "x" but got ""
+[FAIL] <area>: Setting <sc://x/>.host = ' '
+  assert_equals: expected "x" but got ""
+[FAIL] <a>: Setting <sc://x/>.host = '#'
+  assert_equals: expected "sc:///" but got "sc://x/"
+[FAIL] <area>: Setting <sc://x/>.host = '#'
+  assert_equals: expected "sc:///" but got "sc://x/"
+[FAIL] <a>: Setting <sc://x/>.host = '/'
+  assert_equals: expected "sc:///" but got "sc://x/"
+[FAIL] <area>: Setting <sc://x/>.host = '/'
+  assert_equals: expected "sc:///" but got "sc://x/"
+[FAIL] <a>: Setting <sc://x/>.host = '?'
+  assert_equals: expected "sc:///" but got "sc://x/"
+[FAIL] <area>: Setting <sc://x/>.host = '?'
+  assert_equals: expected "sc:///" but got "sc://x/"
+[FAIL] <a>: Setting <sc://x/>.host = '@'
+  assert_equals: expected "x" but got ""
+[FAIL] <area>: Setting <sc://x/>.host = '@'
+  assert_equals: expected "x" but got ""
+[FAIL] <a>: Setting <sc://x/>.host = 'ß'
+  assert_equals: expected "sc://%C3%9F/" but got "sc://x/"
+[FAIL] <area>: Setting <sc://x/>.host = 'ß'
+  assert_equals: expected "sc://%C3%9F/" but got "sc://x/"
+[FAIL] <a>: Setting <view-source+http://example.net/foo>.host = '' The empty host is OK for non-special schemes
+  assert_equals: expected "view-source+http:///foo" but got "view-source+http://example.net/foo"
+[FAIL] <area>: Setting <view-source+http://example.net/foo>.host = '' The empty host is OK for non-special schemes
+  assert_equals: expected "view-source+http:///foo" but got "view-source+http://example.net/foo"
+[FAIL] <a>: Setting <a:/foo>.host = 'example.net' Path-only URLs can gain a host
+  assert_equals: expected "a://example.net/foo" but got "a:/foo"
+[FAIL] <area>: Setting <a:/foo>.host = 'example.net' Path-only URLs can gain a host
+  assert_equals: expected "a://example.net/foo" but got "a:/foo"
+[FAIL] <a>: Setting <view-source+http://example.net/path>.host = 'example.com\stuff' \ is not a delimiter for non-special schemes, but still forbidden in hosts
+  assert_equals: expected "example.net" but got ""
+[FAIL] <area>: Setting <view-source+http://example.net/path>.host = 'example.com\stuff' \ is not a delimiter for non-special schemes, but still forbidden in hosts
+  assert_equals: expected "example.net" but got ""
+[FAIL] <a>: Setting <view-source+http://example.net/path>.host = 'example.com:8080stuff2' Anything other than ASCII digit stops the port parser in a setter but is not an error
+  assert_equals: expected "view-source+http://example.com:8080/path" but got "view-source+http://example.net/path"
+[FAIL] <area>: Setting <view-source+http://example.net/path>.host = 'example.com:8080stuff2' Anything other than ASCII digit stops the port parser in a setter but is not an error
+  assert_equals: expected "view-source+http://example.com:8080/path" but got "view-source+http://example.net/path"
+[FAIL] <a>: Setting <sc://test@test/>.host = ''
+  assert_equals: expected "test" but got ""
+[FAIL] <area>: Setting <sc://test@test/>.host = ''
+  assert_equals: expected "test" but got ""
+[FAIL] <a>: Setting <sc://test:12/>.host = ''
+  assert_equals: expected "test:12" but got ""
+[FAIL] <area>: Setting <sc://test:12/>.host = ''
+  assert_equals: expected "test:12" but got ""
+[FAIL] <a>: Setting <sc://example.com/>.host = '///bad.com' Leading / is not stripped
+  assert_equals: expected "sc:///" but got "sc://example.com/"
+[FAIL] <area>: Setting <sc://example.com/>.host = '///bad.com' Leading / is not stripped
+  assert_equals: expected "sc:///" but got "sc://example.com/"
+[FAIL] <a>: Setting <https://example.com/>.host = 'xn--'
+  assert_equals: expected "https://example.com/" but got "https://xn--/"
+[FAIL] <area>: Setting <https://example.com/>.host = 'xn--'
+  assert_equals: expected "https://example.com/" but got "https://xn--/"
+[FAIL] <a>: Setting <sc://x/>.hostname = '\0' Non-special scheme
+  assert_equals: expected "x" but got ""
+[FAIL] <area>: Setting <sc://x/>.hostname = '\0' Non-special scheme
+  assert_equals: expected "x" but got ""
+[FAIL] <a>: Setting <sc://x/>.hostname = '	'
+  assert_equals: expected "sc:///" but got "sc://x/"
+[FAIL] <area>: Setting <sc://x/>.hostname = '	'
+  assert_equals: expected "sc:///" but got "sc://x/"
+[FAIL] <a>: Setting <sc://x/>.hostname = '\n'
+  assert_equals: expected "sc:///" but got "sc://x/"
+[FAIL] <area>: Setting <sc://x/>.hostname = '\n'
+  assert_equals: expected "sc:///" but got "sc://x/"
+[FAIL] <a>: Setting <sc://x/>.hostname = '\r'
+  assert_equals: expected "sc:///" but got "sc://x/"
+[FAIL] <area>: Setting <sc://x/>.hostname = '\r'
+  assert_equals: expected "sc:///" but got "sc://x/"
+[FAIL] <a>: Setting <sc://x/>.hostname = ' '
+  assert_equals: expected "x" but got ""
+[FAIL] <area>: Setting <sc://x/>.hostname = ' '
+  assert_equals: expected "x" but got ""
+[FAIL] <a>: Setting <sc://x/>.hostname = '#'
+  assert_equals: expected "sc:///" but got "sc://x/"
+[FAIL] <area>: Setting <sc://x/>.hostname = '#'
+  assert_equals: expected "sc:///" but got "sc://x/"
+[FAIL] <a>: Setting <sc://x/>.hostname = '/'
+  assert_equals: expected "sc:///" but got "sc://x/"
+[FAIL] <area>: Setting <sc://x/>.hostname = '/'
+  assert_equals: expected "sc:///" but got "sc://x/"
+[FAIL] <a>: Setting <sc://x/>.hostname = '?'
+  assert_equals: expected "sc:///" but got "sc://x/"
+[FAIL] <area>: Setting <sc://x/>.hostname = '?'
+  assert_equals: expected "sc:///" but got "sc://x/"
+[FAIL] <a>: Setting <sc://x/>.hostname = '@'
+  assert_equals: expected "x" but got ""
+[FAIL] <area>: Setting <sc://x/>.hostname = '@'
+  assert_equals: expected "x" but got ""
+[FAIL] <a>: Setting <view-source+http://example.net/foo>.hostname = '' The empty host is OK for non-special schemes
+  assert_equals: expected "view-source+http:///foo" but got "view-source+http://example.net/foo"
+[FAIL] <area>: Setting <view-source+http://example.net/foo>.hostname = '' The empty host is OK for non-special schemes
+  assert_equals: expected "view-source+http:///foo" but got "view-source+http://example.net/foo"
+[FAIL] <a>: Setting <a:/foo>.hostname = 'example.net' Path-only URLs can gain a host
+  assert_equals: expected "a://example.net/foo" but got "a:/foo"
+[FAIL] <area>: Setting <a:/foo>.hostname = 'example.net' Path-only URLs can gain a host
+  assert_equals: expected "a://example.net/foo" but got "a:/foo"
+[FAIL] <a>: Setting <view-source+http://example.net/path>.hostname = 'example.com\stuff' \ is not a delimiter for non-special schemes, but still forbidden in hosts
+  assert_equals: expected "example.net" but got ""
+[FAIL] <area>: Setting <view-source+http://example.net/path>.hostname = 'example.com\stuff' \ is not a delimiter for non-special schemes, but still forbidden in hosts
+  assert_equals: expected "example.net" but got ""
+[FAIL] <a>: Setting <sc://test@test/>.hostname = ''
+  assert_equals: expected "test" but got ""
+[FAIL] <area>: Setting <sc://test@test/>.hostname = ''
+  assert_equals: expected "test" but got ""
+[FAIL] <a>: Setting <sc://test:12/>.hostname = ''
+  assert_equals: expected "test:12" but got ""
+[FAIL] <area>: Setting <sc://test:12/>.hostname = ''
+  assert_equals: expected "test:12" but got ""
+[FAIL] <a>: Setting <non-spec:/.//p>.hostname = 'h' Drop /. from path
+  assert_equals: expected "non-spec://h//p" but got "non-spec:/.//p"
+[FAIL] <area>: Setting <non-spec:/.//p>.hostname = 'h' Drop /. from path
+  assert_equals: expected "non-spec://h//p" but got "non-spec:/.//p"
+[FAIL] <a>: Setting <non-spec:/.//p>.hostname = ''
+  assert_equals: expected "non-spec:////p" but got "non-spec:/.//p"
+[FAIL] <area>: Setting <non-spec:/.//p>.hostname = ''
+  assert_equals: expected "non-spec:////p" but got "non-spec:/.//p"
+[FAIL] <a>: Setting <sc://example.com/>.hostname = '///bad.com' Leading / is not stripped
+  assert_equals: expected "sc:///" but got "sc://example.com/"
+[FAIL] <area>: Setting <sc://example.com/>.hostname = '///bad.com' Leading / is not stripped
+  assert_equals: expected "sc:///" but got "sc://example.com/"
+[FAIL] <a>: Setting <https://example.com/>.hostname = 'xn--'
+  assert_equals: expected "https://example.com/" but got "https://xn--/"
+[FAIL] <area>: Setting <https://example.com/>.hostname = 'xn--'
+  assert_equals: expected "https://example.com/" but got "https://xn--/"
+[FAIL] <a>: Setting <view-source+http://example.net/path>.port = '8080stuff2' Anything other than ASCII digit stops the port parser in a setter but is not an error
+  assert_equals: expected "view-source+http://example.net:8080/path" but got "view-source+http://example.net/path"
+[FAIL] <area>: Setting <view-source+http://example.net/path>.port = '8080stuff2' Anything other than ASCII digit stops the port parser in a setter but is not an error
+  assert_equals: expected "view-source+http://example.net:8080/path" but got "view-source+http://example.net/path"
+[FAIL] <a>: Setting <non-special://example.net:8080/path>.port = '65536' Port numbers are 16 bit integers, overflowing is an error
+  assert_equals: expected "example.net:8080" but got ""
+[FAIL] <area>: Setting <non-special://example.net:8080/path>.port = '65536' Port numbers are 16 bit integers, overflowing is an error
+  assert_equals: expected "example.net:8080" but got ""
+[FAIL] <a>: Setting <sc://x/>.port = '12'
+  assert_equals: expected "sc://x:12/" but got "sc://x/"
+[FAIL] <area>: Setting <sc://x/>.port = '12'
+  assert_equals: expected "sc://x:12/" but got "sc://x/"
+[FAIL] <a>: Setting <wpt++://domain.com:443>.port = '	8080' Leading u0009 on non-special scheme
+  assert_equals: expected "8080" but got ""
+[FAIL] <area>: Setting <wpt++://domain.com:443>.port = '	8080' Leading u0009 on non-special scheme
+  assert_equals: expected "8080" but got ""
+[FAIL] <a>: Setting <foo://somehost/some/path>.pathname = '' Non-special URLs can have their paths erased
+  assert_equals: expected "foo://somehost" but got "foo://somehost/some/path"
+[FAIL] <area>: Setting <foo://somehost/some/path>.pathname = '' Non-special URLs can have their paths erased
+  assert_equals: expected "foo://somehost" but got "foo://somehost/some/path"
+[FAIL] <a>: Setting <foo:///some/path>.pathname = '' Non-special URLs with an empty host can have their paths erased
+  assert_equals: expected "foo://" but got "foo:///some/path"
+[FAIL] <area>: Setting <foo:///some/path>.pathname = '' Non-special URLs with an empty host can have their paths erased
+  assert_equals: expected "foo://" but got "foo:///some/path"
+[FAIL] <a>: Setting <foo:/some/path>.pathname = '' Path-only URLs cannot have their paths erased
+  assert_equals: expected "foo:/" but got "foo:/some/path"
+[FAIL] <area>: Setting <foo:/some/path>.pathname = '' Path-only URLs cannot have their paths erased
+  assert_equals: expected "foo:/" but got "foo:/some/path"
+[FAIL] <a>: Setting <foo:/some/path>.pathname = 'test' Path-only URLs always have an initial slash
+  assert_equals: expected "foo:/test" but got "foo:/some/path"
+[FAIL] <area>: Setting <foo:/some/path>.pathname = 'test' Path-only URLs always have an initial slash
+  assert_equals: expected "foo:/test" but got "foo:/some/path"
+[FAIL] <a>: Setting <unix:/run/foo.socket?timeout=10>.pathname = '/var/log/../run/bar.socket'
+  assert_equals: expected "unix:/var/run/bar.socket?timeout=10" but got "unix:/run/foo.socket?timeout=10"
+[FAIL] <area>: Setting <unix:/run/foo.socket?timeout=10>.pathname = '/var/log/../run/bar.socket'
+  assert_equals: expected "unix:/var/run/bar.socket?timeout=10" but got "unix:/run/foo.socket?timeout=10"
+[FAIL] <a>: Setting <view-source+http://example.net/home?lang=fr#nav>.pathname = '\a\%2E\b\%2e.\c' \ is *not* a segment delimiter for non-'special' URLs
+  assert_equals: expected "view-source+http://example.net/\\a\\%2E\\b\\%2e.\\c?lang=fr#nav" but got "view-source+http://example.net/home?lang=fr#nav"
+[FAIL] <area>: Setting <view-source+http://example.net/home?lang=fr#nav>.pathname = '\a\%2E\b\%2e.\c' \ is *not* a segment delimiter for non-'special' URLs
+  assert_equals: expected "view-source+http://example.net/\\a\\%2E\\b\\%2e.\\c?lang=fr#nav" but got "view-source+http://example.net/home?lang=fr#nav"
+[FAIL] <a>: Setting <a:/>.pathname = '\0	\n\r !"#$%&'()*+,-./09:;<=>?@AZ[\]^_`az{|}~Éé' UTF-8 percent encoding with the default encode set. Tabs and newlines are removed.
+  assert_equals: expected "a:/%00%01%1F%20!%22%23$%&'()*+,-./09:;%3C=%3E%3F@AZ[\\]^_%60az%7B|%7D~%7F%C2%80%C2%81%C3%89%C3%A9" but got "a:/"
+[FAIL] <area>: Setting <a:/>.pathname = '\0	\n\r !"#$%&'()*+,-./09:;<=>?@AZ[\]^_`az{|}~Éé' UTF-8 percent encoding with the default encode set. Tabs and newlines are removed.
+  assert_equals: expected "a:/%00%01%1F%20!%22%23$%&'()*+,-./09:;%3C=%3E%3F@AZ[\\]^_%60az%7B|%7D~%7F%C2%80%C2%81%C3%89%C3%A9" but got "a:/"
+[FAIL] <a>: Setting <http://example.net>.pathname = '%2e%2E%c3%89té' Bytes already percent-encoded are left as-is, including %2E outside dotted segments.
+  assert_equals: expected "http://example.net/%2e%2E%c3%89t%C3%A9" but got "http://example.net/..%c3%89t%C3%A9"
+[FAIL] <area>: Setting <http://example.net>.pathname = '%2e%2E%c3%89té' Bytes already percent-encoded are left as-is, including %2E outside dotted segments.
+  assert_equals: expected "http://example.net/%2e%2E%c3%89t%C3%A9" but got "http://example.net/..%c3%89t%C3%A9"
+[FAIL] <a>: Setting <sc://example.net>.pathname = '?' ? needs to be encoded, non-special scheme
+  assert_equals: expected "sc://example.net/%3F" but got "sc://example.net"
+[FAIL] <area>: Setting <sc://example.net>.pathname = '?' ? needs to be encoded, non-special scheme
+  assert_equals: expected "sc://example.net/%3F" but got "sc://example.net"
+[FAIL] <a>: Setting <sc://example.net>.pathname = '#' # needs to be encoded, non-special scheme
+  assert_equals: expected "sc://example.net/%23" but got "sc://example.net"
+[FAIL] <area>: Setting <sc://example.net>.pathname = '#' # needs to be encoded, non-special scheme
+  assert_equals: expected "sc://example.net/%23" but got "sc://example.net"
+[FAIL] <a>: Setting <non-spec:/>.pathname = '/.//p' Serialize /. in path
+  assert_equals: expected "non-spec:/.//p" but got "non-spec:/"
+[FAIL] <area>: Setting <non-spec:/>.pathname = '/.//p' Serialize /. in path
+  assert_equals: expected "non-spec:/.//p" but got "non-spec:/"
+[FAIL] <a>: Setting <non-spec:/>.pathname = '/..//p'
+  assert_equals: expected "non-spec:/.//p" but got "non-spec:/"
+[FAIL] <area>: Setting <non-spec:/>.pathname = '/..//p'
+  assert_equals: expected "non-spec:/.//p" but got "non-spec:/"
+[FAIL] <a>: Setting <non-spec:/>.pathname = '//p'
+  assert_equals: expected "non-spec:/.//p" but got "non-spec:/"
+[FAIL] <area>: Setting <non-spec:/>.pathname = '//p'
+  assert_equals: expected "non-spec:/.//p" but got "non-spec:/"
+[FAIL] <a>: Setting <non-spec:/.//>.pathname = 'p' Drop /. from path
+  assert_equals: expected "non-spec:/p" but got "non-spec:/.//"
+[FAIL] <area>: Setting <non-spec:/.//>.pathname = 'p' Drop /. from path
+  assert_equals: expected "non-spec:/p" but got "non-spec:/.//"
+[FAIL] <a>: Setting <data:/nospace>.pathname = 'space ' Non-special URLs with non-opaque paths percent-encode U+0020
+  assert_equals: expected "data:/space%20" but got "data:/nospace"
+[FAIL] <area>: Setting <data:/nospace>.pathname = 'space ' Non-special URLs with non-opaque paths percent-encode U+0020
+  assert_equals: expected "data:/space%20" but got "data:/nospace"
+[FAIL] <a>: Setting <sc:/nospace>.pathname = 'space '
+  assert_equals: expected "sc:/space%20" but got "sc:/nospace"
+[FAIL] <area>: Setting <sc:/nospace>.pathname = 'space '
+  assert_equals: expected "sc:/space%20" but got "sc:/nospace"
+[FAIL] <a>: Setting <https://example.net?lang=en-US#nav>.search = '?'
+  assert_equals: expected "https://example.net/?#nav" but got "https://example.net/#nav"
+[FAIL] <area>: Setting <https://example.net?lang=en-US#nav>.search = '?'
+  assert_equals: expected "https://example.net/?#nav" but got "https://example.net/#nav"
+[FAIL] <a>: Setting <a:/>.search = '\0	\n\r !"#$%&'()*+,-./09:;<=>?@AZ[\]^_`az{|}~Éé' UTF-8 percent encoding with the query encode set. Tabs and newlines are removed.
+  assert_equals: expected "a:/?%00%01%1F%20!%22%23$%&'()*+,-./09:;%3C=%3E?@AZ[\\]^_`az{|}~%7F%C2%80%C2%81%C3%89%C3%A9" but got "a:/?%00%01%1F%20!%22%23$%&%27()*+,-./09:;%3C=%3E?@AZ[\\]^_`az{|}~%7F%C2%80%C2%81%C3%89%C3%A9"
+[FAIL] <area>: Setting <a:/>.search = '\0	\n\r !"#$%&'()*+,-./09:;<=>?@AZ[\]^_`az{|}~Éé' UTF-8 percent encoding with the query encode set. Tabs and newlines are removed.
+  assert_equals: expected "a:/?%00%01%1F%20!%22%23$%&'()*+,-./09:;%3C=%3E?@AZ[\\]^_`az{|}~%7F%C2%80%C2%81%C3%89%C3%A9" but got "a:/?%00%01%1F%20!%22%23$%&%27()*+,-./09:;%3C=%3E?@AZ[\\]^_`az{|}~%7F%C2%80%C2%81%C3%89%C3%A9"
+Harness: the test ran to completion.
+

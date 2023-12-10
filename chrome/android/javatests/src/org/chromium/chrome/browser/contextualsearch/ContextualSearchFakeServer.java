@@ -19,6 +19,7 @@ import org.chromium.chrome.browser.compositor.bottombar.OverlayContentProgressOb
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelContent;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelContentFactory;
 import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.ContextualSearchPanel;
+import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.url.GURL;
@@ -133,7 +134,6 @@ class ContextualSearchFakeServer
             mIsVisible = false;
         }
     }
-    ;
 
     private ContentsObserver mContentsObserver;
 
@@ -424,7 +424,8 @@ class ContextualSearchFakeServer
                     contentDelegate,
                     progressObserver,
                     activity,
-                    false,
+                    ProfileProvider.getOrCreateProfile(
+                            activity.getProfileProviderSupplier().get(), false),
                     barHeight,
                     activity.getCompositorViewHolderForTesting(),
                     activity.getWindowAndroid(),

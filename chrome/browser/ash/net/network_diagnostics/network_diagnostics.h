@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_NET_NETWORK_DIAGNOSTICS_NETWORK_DIAGNOSTICS_H_
 #define CHROME_BROWSER_ASH_NET_NETWORK_DIAGNOSTICS_NETWORK_DIAGNOSTICS_H_
 
+#include <optional>
 #include <string>
 
 #include "base/containers/flat_map.h"
@@ -15,7 +16,6 @@
 #include "chromeos/services/network_health/public/mojom/network_diagnostics.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -54,7 +54,7 @@ class NetworkDiagnostics
   void RunDnsResolution(RunDnsResolutionCallback callback) override;
   void RunCaptivePortal(RunCaptivePortalCallback callback) override;
   void RunHttpsLatency(RunHttpsLatencyCallback callback) override;
-  void RunVideoConferencing(const absl::optional<std::string>& stun_server_name,
+  void RunVideoConferencing(const std::optional<std::string>& stun_server_name,
                             RunVideoConferencingCallback callback) override;
   void RunArcHttp(RunArcHttpCallback callback) override;
   void RunArcDnsResolution(RunArcDnsResolutionCallback callback) override;

@@ -12,10 +12,8 @@ component("system") {
   output_name = "chromeos_ash_components_system"
   defines = [ "IS_CHROMEOS_ASH_COMPONENTS_SYSTEM_IMPL" ]
 
-  deps = [
-    "//ash/constants",
-    "//base",
-  ]
+  public_deps = [ "//base" ]
+  deps = [ "//ash/constants" ]
   sources = [
     "factory_ping_embargo_check.cc",
     "factory_ping_embargo_check.h",

@@ -76,7 +76,6 @@ const char* const kKnownSettings[] = {
     kDeviceActivityHeartbeatCollectionRateMs,
     kDeviceActivityHeartbeatEnabled,
     kDeviceAllowedBluetoothServices,
-    kDeviceAttestationEnabled,
     kDeviceAutoUpdateTimeRestrictions,
     kDeviceCrostiniArcAdbSideloadingAllowed,
     kDeviceDisabled,
@@ -948,10 +947,6 @@ void DecodeGenericPolicies(const em::ChromeDeviceSettingsProto& policy,
     new_values_cache->SetString(kVariationsRestrictParameter,
                                 policy.variations_parameter().parameter());
   }
-
-  new_values_cache->SetBoolean(
-      kDeviceAttestationEnabled,
-      policy.attestation_settings().attestation_enabled());
 
   if (policy.has_attestation_settings() &&
       policy.attestation_settings().has_content_protection_enabled()) {

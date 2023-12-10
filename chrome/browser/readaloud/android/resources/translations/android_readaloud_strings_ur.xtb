@@ -2,11 +2,14 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ur">
 <translation id="1178581264944972037">موقوف کریں</translation>
-<translation id="2558806128245168542">پیچھے نیویگیٹ کریں</translation>
-<translation id="3523426587027570423">"اس صفحہ کو سنیں" کو بند کرنے کے لیے تھپتھپائیں۔</translation>
+<translation id="1921351128855867012"><ph name="NUMBER_OF_SECONDS" /> سیکنڈز تیزی سے فارورڈ کریں</translation>
+<translation id="1984328900355667246">پلے بیک دستیاب نہیں ہے</translation>
+<translation id="3023502830214299618">بدقسمتی سے، پلے بیک اس وقت اس صفحہ کے لیے دستیاب نہیں ہے۔ براہ کرم بعد میں دوبارہ کوشش کریں۔</translation>
+<translation id="3807208219231826020">اسکرب پلے بیک</translation>
+<translation id="385051799172605136">پیچھے</translation>
 <translation id="4431240646217225907">ٹیکسٹ اور خودکار اسکرول کو نمایاں کریں</translation>
 <translation id="4654641641922242357">"اس صفحہ کو سنیں" پلیئر۔</translation>
-<translation id="4731877163452936634">پلے بیک کی رفتار: <ph name="PLAYBACK_SPEED" />۔ تبدیل کرنے کیلئے کلک کریں۔</translation>
+<translation id="4872475766448853257"><ph name="NUMBER_OF_SECONDS" /> سیکنڈ پیچھے جائیں</translation>
 <translation id="5234971936051226002">"اس صفحہ کو سنیں" پلیئر کو کم سے کم کر دیا گیا۔</translation>
 <translation id="5596627076506792578">مزید اختیارات</translation>
 <translation id="6315170314923504164">آواز</translation>
@@ -15,8 +18,8 @@
 <translation id="6831043979455480757">ترجمہ کریں</translation>
 <translation id="6846298663435243399">لوڈ ہو رہا ہے…</translation>
 <translation id="7587250070160020374">‏Chrome اب چل رہا ہے</translation>
-<translation id="7945822420239537236"><ph name="NUMBER_OF_SECONDS" /> سیکنڈز آگے لے جائیں</translation>
-<translation id="7972866381678406344"><ph name="NUMBER_OF_SECONDS" /> سیکنڈز پیچھے جائیں</translation>
 <translation id="8136852699834914183">پلے بیک اس صفحہ کے لیے دستیاب نہیں ہے۔</translation>
+<translation id="8264989794233974275">‏<ph name="PLAYBACK_SPEED" />x رفتار میں اضافہ/کمی۔</translation>
+<translation id="8407011429883244666">پلیئر بند کریں۔</translation>
 <translation id="8953618380150219653">"اس صفحہ کو سنیں" پلیئر پوری اسکرین پر کھلا ہے۔</translation>
 </translationbundle>

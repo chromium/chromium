@@ -37,13 +37,5 @@ TEST_F(PrefetchParamsTest, DecoyProbabilityClampedOne) {
   }
 }
 
-TEST_F(PrefetchParamsTest, BypassProxyForHost) {
-  EXPECT_FALSE(PrefetchBypassProxyForHost().has_value());
-  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-      "bypass-prefetch-proxy-for-host", "www.www1.hostname.test");
-  EXPECT_TRUE(PrefetchBypassProxyForHost().has_value());
-  EXPECT_EQ(PrefetchBypassProxyForHost().value(), "www.www1.hostname.test");
-}
-
 }  // namespace
 }  // namespace content

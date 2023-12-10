@@ -67,16 +67,16 @@ std::unique_ptr<AndroidVideoImageBacking> AndroidVideoImageBacking::Create(
 }
 
 // Static.
-absl::optional<VulkanYCbCrInfo> AndroidVideoImageBacking::GetYcbcrInfo(
+std::optional<VulkanYCbCrInfo> AndroidVideoImageBacking::GetYcbcrInfo(
     TextureOwner* texture_owner,
     viz::VulkanContextProvider* vulkan_context_provider) {
   if (!vulkan_context_provider)
-    return absl::nullopt;
+    return std::nullopt;
 
   // Get AHardwareBuffer from the latest frame.
   auto scoped_hardware_buffer = texture_owner->GetAHardwareBuffer();
   if (!scoped_hardware_buffer)
-    return absl::nullopt;
+    return std::nullopt;
 
   DCHECK(scoped_hardware_buffer->buffer());
   VulkanImplementation* vk_implementation =
@@ -88,9 +88,9 @@ absl::optional<VulkanYCbCrInfo> AndroidVideoImageBacking::GetYcbcrInfo(
   if (!vk_implementation->GetSamplerYcbcrConversionInfo(
           vk_device, scoped_hardware_buffer->TakeBuffer(), &ycbcr_info)) {
     LOG(ERROR) << "Failed to get the ycbcr info.";
-    return absl::nullopt;
+    return std::nullopt;
   }
-  return absl::optional<VulkanYCbCrInfo>(ycbcr_info);
+  return std::optional<VulkanYCbCrInfo>(ycbcr_info);
 }
 
 std::unique_ptr<AbstractTextureAndroid>

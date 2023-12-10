@@ -141,45 +141,39 @@ class ManagedCellularPrefHandlerTest : public testing::Test {
   std::unique_ptr<ManagedCellularPrefHandler> managed_cellular_pref_handler_;
 };
 
-class ManagedCellularPrefHandlerTestSmdsSupportEuiccUploadDisabled
+class ManagedCellularPrefHandlerTestSmdsSupportDisabled
     : public ManagedCellularPrefHandlerTest {
  public:
-  ManagedCellularPrefHandlerTestSmdsSupportEuiccUploadDisabled(
-      const ManagedCellularPrefHandlerTestSmdsSupportEuiccUploadDisabled&) =
-      delete;
-  ManagedCellularPrefHandlerTestSmdsSupportEuiccUploadDisabled& operator=(
-      const ManagedCellularPrefHandlerTestSmdsSupportEuiccUploadDisabled&) =
-      delete;
+  ManagedCellularPrefHandlerTestSmdsSupportDisabled(
+      const ManagedCellularPrefHandlerTestSmdsSupportDisabled&) = delete;
+  ManagedCellularPrefHandlerTestSmdsSupportDisabled& operator=(
+      const ManagedCellularPrefHandlerTestSmdsSupportDisabled&) = delete;
 
  protected:
-  ManagedCellularPrefHandlerTestSmdsSupportEuiccUploadDisabled()
+  ManagedCellularPrefHandlerTestSmdsSupportDisabled()
       : ManagedCellularPrefHandlerTest(
             /*enabled_features=*/{},
-            /*disabled_features=*/{ash::features::kSmdsSupportEuiccUpload}) {}
-  ~ManagedCellularPrefHandlerTestSmdsSupportEuiccUploadDisabled() override =
-      default;
+            /*disabled_features=*/{ash::features::kSmdsSupport}) {}
+  ~ManagedCellularPrefHandlerTestSmdsSupportDisabled() override = default;
 };
 
-class ManagedCellularPrefHandlerTestSmdsSupportEuiccUploadEnabled
+class ManagedCellularPrefHandlerTestSmdsSupportEnabled
     : public ManagedCellularPrefHandlerTest {
  public:
-  ManagedCellularPrefHandlerTestSmdsSupportEuiccUploadEnabled(
-      const ManagedCellularPrefHandlerTestSmdsSupportEuiccUploadEnabled&) =
-      delete;
-  ManagedCellularPrefHandlerTestSmdsSupportEuiccUploadEnabled& operator=(
-      const ManagedCellularPrefHandlerTestSmdsSupportEuiccUploadEnabled&) =
-      delete;
+  ManagedCellularPrefHandlerTestSmdsSupportEnabled(
+      const ManagedCellularPrefHandlerTestSmdsSupportEnabled&) = delete;
+  ManagedCellularPrefHandlerTestSmdsSupportEnabled& operator=(
+      const ManagedCellularPrefHandlerTestSmdsSupportEnabled&) = delete;
 
  protected:
-  ManagedCellularPrefHandlerTestSmdsSupportEuiccUploadEnabled()
+  ManagedCellularPrefHandlerTestSmdsSupportEnabled()
       : ManagedCellularPrefHandlerTest(
-            /*enabled_features=*/{ash::features::kSmdsSupportEuiccUpload},
+            /*enabled_features=*/{ash::features::kSmdsSupport},
             /*disabled_features=*/{}) {}
-  ~ManagedCellularPrefHandlerTestSmdsSupportEuiccUploadEnabled() override =
-      default;
+  ~ManagedCellularPrefHandlerTestSmdsSupportEnabled() override = default;
 };
 
-TEST_F(ManagedCellularPrefHandlerTestSmdsSupportEuiccUploadDisabled,
+TEST_F(ManagedCellularPrefHandlerTestSmdsSupportDisabled,
        AddRemoveIccidSmdpPair) {
   Init();
   SetDevicePrefs();
@@ -198,8 +192,7 @@ TEST_F(ManagedCellularPrefHandlerTestSmdsSupportEuiccUploadDisabled,
   EXPECT_FALSE(smdp_address);
 }
 
-TEST_F(ManagedCellularPrefHandlerTestSmdsSupportEuiccUploadDisabled,
-       AddApnMigratedIccid) {
+TEST_F(ManagedCellularPrefHandlerTestSmdsSupportDisabled, AddApnMigratedIccid) {
   Init();
   SetDevicePrefs();
 
@@ -218,8 +211,7 @@ TEST_F(ManagedCellularPrefHandlerTestSmdsSupportEuiccUploadDisabled,
   EXPECT_TRUE(ContainsApnMigratedIccid(kIccid1));
 }
 
-TEST_F(ManagedCellularPrefHandlerTestSmdsSupportEuiccUploadDisabled,
-       NoDevicePrefSet) {
+TEST_F(ManagedCellularPrefHandlerTestSmdsSupportDisabled, NoDevicePrefSet) {
   Init();
   SetDevicePrefs(/*set_to_null=*/true);
 
@@ -240,7 +232,7 @@ TEST_F(ManagedCellularPrefHandlerTestSmdsSupportEuiccUploadDisabled,
   EXPECT_FALSE(ContainsApnMigratedIccid(kIccid0));
 }
 
-TEST_F(ManagedCellularPrefHandlerTestSmdsSupportEuiccUploadEnabled,
+TEST_F(ManagedCellularPrefHandlerTestSmdsSupportEnabled,
        AddAndRemoveESimMetadata) {
   Init();
   SetDevicePrefs();
@@ -291,8 +283,7 @@ TEST_F(ManagedCellularPrefHandlerTestSmdsSupportEuiccUploadEnabled,
   EXPECT_EQ(4, NumObserverEvents());
 }
 
-TEST_F(ManagedCellularPrefHandlerTestSmdsSupportEuiccUploadEnabled,
-       AddApnMigratedIccid) {
+TEST_F(ManagedCellularPrefHandlerTestSmdsSupportEnabled, AddApnMigratedIccid) {
   Init();
   SetDevicePrefs();
 
@@ -311,8 +302,7 @@ TEST_F(ManagedCellularPrefHandlerTestSmdsSupportEuiccUploadEnabled,
   EXPECT_TRUE(ContainsApnMigratedIccid(kIccid1));
 }
 
-TEST_F(ManagedCellularPrefHandlerTestSmdsSupportEuiccUploadEnabled,
-       NoDevicePrefSet) {
+TEST_F(ManagedCellularPrefHandlerTestSmdsSupportEnabled, NoDevicePrefSet) {
   Init();
   SetDevicePrefs(/*set_to_null=*/true);
 
@@ -341,7 +331,7 @@ TEST_F(ManagedCellularPrefHandlerTestSmdsSupportEuiccUploadEnabled,
   EXPECT_FALSE(ContainsApnMigratedIccid(kIccid0));
 }
 
-TEST_F(ManagedCellularPrefHandlerTestSmdsSupportEuiccUploadDisabled,
+TEST_F(ManagedCellularPrefHandlerTestSmdsSupportDisabled,
        IccidSmdpPairMigration_DisablingClearsPrefs) {
   Init();
 
@@ -355,7 +345,7 @@ TEST_F(ManagedCellularPrefHandlerTestSmdsSupportEuiccUploadDisabled,
       device_prefs()->HasPrefPath(prefs::kManagedCellularESimMetadata));
 }
 
-TEST_F(ManagedCellularPrefHandlerTestSmdsSupportEuiccUploadEnabled,
+TEST_F(ManagedCellularPrefHandlerTestSmdsSupportEnabled,
        IccidSmdpPairMigration_MigrationHappensOnce) {
   Init();
 
@@ -380,7 +370,7 @@ TEST_F(ManagedCellularPrefHandlerTestSmdsSupportEuiccUploadEnabled,
   EXPECT_EQ(new_prefs, migrated_prefs);
 }
 
-TEST_F(ManagedCellularPrefHandlerTestSmdsSupportEuiccUploadEnabled,
+TEST_F(ManagedCellularPrefHandlerTestSmdsSupportEnabled,
        IccidSmdpPairMigration_Migration) {
   Init();
 

@@ -407,6 +407,8 @@ class OzonePlatformWayland : public OzonePlatform,
           buffer_manager_->supports_affine_transform();
       properties.supports_out_of_window_clip_rect =
           buffer_manager_->supports_out_of_window_clip_rect();
+      properties.has_transformation_fix =
+          buffer_manager_->has_transformation_fix();
     }
     return properties;
   }

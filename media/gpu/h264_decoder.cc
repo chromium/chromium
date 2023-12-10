@@ -84,6 +84,11 @@ H264Decoder::H264Accelerator::H264Accelerator() = default;
 
 H264Decoder::H264Accelerator::~H264Accelerator() = default;
 
+scoped_refptr<H264Picture>
+H264Decoder::H264Accelerator::CreateH264PictureSecure(uint64_t secure_handle) {
+  return nullptr;
+}
+
 void H264Decoder::H264Accelerator::ProcessSPS(
     const H264SPS* sps,
     base::span<const uint8_t> sps_nalu_data) {}
@@ -102,8 +107,7 @@ H264Decoder::H264Accelerator::ParseEncryptedSliceHeader(
 
 H264Decoder::H264Accelerator::Status H264Decoder::H264Accelerator::SetStream(
     base::span<const uint8_t> stream,
-    const DecryptConfig* decrypt_config,
-    uint64_t secure_handle) {
+    const DecryptConfig* decrypt_config) {
   return H264Decoder::H264Accelerator::Status::kNotSupported;
 }
 
@@ -1464,7 +1468,7 @@ H264Decoder::DecodeResult H264Decoder::Decode() {
     // originally set in case the accelerator needs to return kTryAgain.
     H264Accelerator::Status result = accelerator_->SetStream(
         base::span<const uint8_t>(current_stream_, current_stream_size_),
-        current_decrypt_config_.get(), secure_handle_);
+        current_decrypt_config_.get());
     switch (result) {
       case H264Accelerator::Status::kOk:
       case H264Accelerator::Status::kNotSupported:
@@ -1564,7 +1568,11 @@ H264Decoder::DecodeResult H264Decoder::Decode() {
           } else {
             // New picture/finished previous one, try to start a new one
             // or tell the client we need more surfaces.
-            curr_pic_ = accelerator_->CreateH264Picture();
+            if (secure_handle_) {
+              curr_pic_ = accelerator_->CreateH264PictureSecure(secure_handle_);
+            } else {
+              curr_pic_ = accelerator_->CreateH264Picture();
+            }
             if (!curr_pic_)
               return kRanOutOfSurfaces;
             if (current_decrypt_config_)

@@ -14,9 +14,7 @@ import androidx.annotation.VisibleForTesting;
  * Only one timer per instance can exist.
  */
 public class AutoDisableAccessibilityHandler {
-    /**
-     * Interface for any Client of this handler.
-     */
+    /** Interface for any Client of this handler. */
     interface Client {
         /**
          * View of the Client. This View will be used to post a delayed Runnable for the
@@ -25,9 +23,7 @@ public class AutoDisableAccessibilityHandler {
          */
         View getView();
 
-        /**
-         * Callback that is triggered when the running timer has expired for this Client.
-         */
+        /** Callback that is triggered when the running timer has expired for this Client. */
         void onDisabled();
     }
 
@@ -51,9 +47,7 @@ public class AutoDisableAccessibilityHandler {
         mHasPendingTimer = true;
     }
 
-    /**
-     * Cancels the running timer for this instance.
-     */
+    /** Cancels the running timer for this instance. */
     public void cancelDisableTimer() {
         if (!mHasPendingTimer) return;
 
@@ -61,18 +55,14 @@ public class AutoDisableAccessibilityHandler {
         mHasPendingTimer = false;
     }
 
-    /**
-     * Helper method to notify Client and reset local state when the timer has expired.
-     */
+    /** Helper method to notify Client and reset local state when the timer has expired. */
     @VisibleForTesting()
     public void notifyDisable() {
         mClient.onDisabled();
         mHasPendingTimer = false;
     }
 
-    /**
-     * Return true when there is a pending timer.
-     */
+    /** Return true when there is a pending timer. */
     @VisibleForTesting
     public boolean hasPendingTimer() {
         return mHasPendingTimer;

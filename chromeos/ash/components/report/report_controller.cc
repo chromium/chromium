@@ -161,7 +161,10 @@ MarketSegment ReportController::GetMarketSegment(
 
   // Policy device modes that should be classified as enterprise devices.
   const std::unordered_set<policy::DeviceMode> kDeviceModeEnterprise{
-      policy::DeviceMode::DEVICE_MODE_ENTERPRISE,
+      policy::DeviceMode::DEVICE_MODE_ENTERPRISE};
+
+  // Policy device modes that should be classified as demo devices.
+  const std::unordered_set<policy::DeviceMode> kDeviceModeDemoEnterprise{
       policy::DeviceMode::DEVICE_MODE_DEMO};
 
   // Determine Fresnel market segment using the retrieved device policy
@@ -172,6 +175,10 @@ MarketSegment ReportController::GetMarketSegment(
 
   if (kDeviceModeConsumer.count(device_mode)) {
     return MARKET_SEGMENT_CONSUMER;
+  }
+
+  if (kDeviceModeDemoEnterprise.count(device_mode)) {
+    return MARKET_SEGMENT_ENTERPRISE_DEMO;
   }
 
   if (kDeviceModeEnterprise.count(device_mode)) {
@@ -195,11 +202,15 @@ ReportController::ReportController(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     base::Time chrome_first_run_time,
     base::RepeatingCallback<base::TimeDelta()> check_oobe_completed_callback,
+    base::RepeatingCallback<policy::DeviceMode()> device_mode_callback,
+    base::RepeatingCallback<policy::MarketSegment()> market_segment_callback,
     std::unique_ptr<device_metrics::PsmClientManager> psm_client_manager)
     : chrome_device_params_(chrome_device_params),
       local_state_(local_state),
       url_loader_factory_(url_loader_factory),
       chrome_first_run_time_(chrome_first_run_time),
+      device_mode_callback_(std::move(device_mode_callback)),
+      market_segment_callback_(std::move(market_segment_callback)),
       report_timer_(std::make_unique<base::RepeatingTimer>()),
       network_state_handler_(NetworkHandler::Get()->network_state_handler()),
       statistics_provider_(system::StatisticsProvider::GetInstance()),
@@ -310,6 +321,11 @@ void ReportController::OnOobeFileWritten(
 
     return;
   }
+
+  // Set the market segment since we know OOBE was completed and the
+  // .oobe_completed file existed for more than 1 minute.
+  chrome_device_params_.market_segment = GetMarketSegment(
+      device_mode_callback_.Run(), market_segment_callback_.Run());
 
   // Wrap with callback from |psm_device_active_secret_| retrieval using
   // |SessionManagerClient| DBus.
@@ -441,13 +457,16 @@ void ReportController::OnSystemClockSyncResult(bool system_clock_synchronized) {
 }
 
 void ReportController::StartReport() {
+  DCHECK(local_state_);
+  DCHECK(psm_client_manager_.get());
+
   // Get new adjusted timestamp from GMT to Pacific Time.
   active_ts_ = utils::ConvertGmtToPt(clock_);
 
   // Create instances of use cases and parameters.
   use_case_params_ = std::make_unique<device_metrics::UseCaseParameters>(
       active_ts_, chrome_device_params_, url_loader_factory_,
-      high_entropy_seed_, local_state_, std::move(psm_client_manager_));
+      high_entropy_seed_, local_state_, psm_client_manager_.get());
   one_day_impl_ =
       std::make_unique<device_metrics::OneDayImpl>(use_case_params_.get());
   twenty_eight_day_impl_ = std::make_unique<device_metrics::TwentyEightDayImpl>(

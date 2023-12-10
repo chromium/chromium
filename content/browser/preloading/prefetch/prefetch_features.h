@@ -9,7 +9,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "content/common/content_export.h"
 
-namespace content::features {
+namespace features {
 
 // If enabled, then prefetch requests from speculation rules should use the code
 // in content/browser/preloading/prefetch/ instead of
@@ -28,6 +28,15 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchReusable);
 CONTENT_EXPORT extern const base::FeatureParam<int>
     kPrefetchReusableBodySizeLimit;
 
-}  // namespace content::features
+// If enabled, navigational prefetch is scoped to the referring document's
+// network isolation key instead of the old behavior of the referring document
+// itself. See crbug.com/1502326
+BASE_DECLARE_FEATURE(kPrefetchNIKScope);
+
+// If enabled, the early cookie copy in `PrefetchDocumentManager` is
+// skipped. See crbug.com/1503003 for details.
+BASE_DECLARE_FEATURE(kPrefetchDocumentManagerEarlyCookieCopySkipped);
+
+}  // namespace features
 
 #endif  // CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_FEATURES_H_

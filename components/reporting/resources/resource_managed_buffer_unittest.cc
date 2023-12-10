@@ -12,6 +12,7 @@
 #include "base/test/task_environment.h"
 #include "components/reporting/resources/resource_manager.h"
 #include "components/reporting/util/status.h"
+#include "components/reporting/util/status_macros.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

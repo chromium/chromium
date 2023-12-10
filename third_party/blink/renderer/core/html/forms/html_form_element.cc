@@ -30,6 +30,7 @@
 #include "base/auto_reset.h"
 #include "third_party/blink/public/common/security_context/insecure_request_policy.h"
 #include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom-blink.h"
+#include "third_party/blink/public/web/web_form_related_change_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_submit_event_init.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_element_radionodelist.h"
@@ -139,8 +140,10 @@ Node::InsertionNotificationRequest HTMLFormElement::InsertedInto(
   HTMLElement::InsertedInto(insertion_point);
   LogAddElementIfIsolatedWorldAndInDocument("form", html_names::kMethodAttr,
                                             html_names::kActionAttr);
-  if (insertion_point.isConnected())
-    GetDocument().DidAddOrRemoveFormRelatedElement(this);
+  if (insertion_point.isConnected()) {
+    GetDocument().DidChangeFormRelatedElementDynamically(
+        this, WebFormRelatedChangeType::kAdd);
+  }
   return kInsertionDone;
 }
 
@@ -182,10 +185,9 @@ void HTMLFormElement::RemovedFrom(ContainerNode& insertion_point) {
   GetDocument().GetFormController().WillDeleteForm(this);
   HTMLElement::RemovedFrom(insertion_point);
 
-  if (base::FeatureList::IsEnabled(
-          blink::features::kAutofillDetectRemovedFormControls) &&
-      insertion_point.isConnected()) {
-    GetDocument().DidAddOrRemoveFormRelatedElement(this);
+  if (insertion_point.isConnected()) {
+    GetDocument().DidChangeFormRelatedElementDynamically(
+        this, WebFormRelatedChangeType::kRemove);
   }
 }
 
@@ -340,8 +342,14 @@ void HTMLFormElement::PrepareForSubmission(
   }
 
   for (ListedElement* element : ListedElements()) {
-    if (auto* form_control = DynamicTo<HTMLFormControlElement>(element)) {
-      form_control->SetInteractedSinceLastFormSubmit(true);
+    if (auto* form_control =
+            DynamicTo<HTMLFormControlElementWithState>(element)) {
+      // After attempting form submission we have to make the controls start
+      // matching :user-valid/:user-invalid. We could do this by calling
+      // SetUserHasEditedTheFieldAndBlurred() even though the user has not
+      // actually taken those actions, but that would have side effects on
+      // autofill.
+      form_control->ForceUserValid();
     }
   }
 
@@ -643,6 +651,20 @@ void HTMLFormElement::reset() {
     frame->GetPage()->GetChromeClient().FormElementReset(*this);
 }
 
+void HTMLFormElement::AttachLayoutTree(AttachContext& context) {
+  HTMLElement::AttachLayoutTree(context);
+  if (!GetLayoutObject()) {
+    FocusabilityLost();
+  }
+}
+
+void HTMLFormElement::DetachLayoutTree(bool performing_reattach) {
+  HTMLElement::DetachLayoutTree(performing_reattach);
+  if (!performing_reattach) {
+    FocusabilityLost();
+  }
+}
+
 void HTMLFormElement::ParseAttribute(
     const AttributeModificationParams& params) {
   const QualifiedName& name = params.name;
@@ -677,8 +699,7 @@ void HTMLFormElement::ParseAttribute(
     attributes_.SetAcceptCharset(params.new_value);
   } else if (name == html_names::kDisabledAttr) {
     UseCounter::Count(GetDocument(), WebFeature::kFormDisabledAttributePresent);
-  } else if (name == html_names::kRelAttr &&
-             RuntimeEnabledFeatures::FormRelAttributeEnabled()) {
+  } else if (name == html_names::kRelAttr) {
     rel_attribute_ = RelAttribute::kNone;
     rel_list_->DidUpdateAttributeValue(params.old_value, params.new_value);
     if (rel_list_->contains(AtomicString("noreferrer")))
@@ -779,8 +800,6 @@ void HTMLFormElement::CollectListedElements(
 // because of lazy evaluation.
 const ListedElement::List& HTMLFormElement::ListedElements(
     bool include_shadow_trees) const {
-  if (!RuntimeEnabledFeatures::AutofillShadowDOMEnabled())
-    include_shadow_trees = false;
   bool collect_shadow_inputs =
       include_shadow_trees && listed_elements_including_shadow_trees_are_dirty_;
 

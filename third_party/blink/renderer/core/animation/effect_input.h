@@ -35,15 +35,6 @@ class CORE_EXPORT EffectInput {
       const ScriptValue& keyframes,
       ScriptState*,
       ExceptionState&);
-
-  // Ensures that a CompositeOperation is of an allowed value for a set of
-  // StringKeyframes and the current runtime flags.
-  //
-  // Under certain runtime flags, additive composite operations are not allowed
-  // for CSS properties.
-  static EffectModel::CompositeOperation ResolveCompositeOperation(
-      EffectModel::CompositeOperation,
-      const StringKeyframeVector&);
 };
 
 }  // namespace blink

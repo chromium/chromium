@@ -18,7 +18,7 @@ class FamilyLinkNoticeView;
 // Controller for the family link notice screen.
 class FamilyLinkNoticeScreen : public BaseScreen {
  public:
-  enum class Result { DONE, SKIPPED };
+  enum class Result { kDone, kSkipped };
 
   static std::string GetResultString(Result result);
 

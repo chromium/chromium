@@ -19,7 +19,7 @@
 #include "base/no_destructor.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -28,8 +28,6 @@
 #include "chrome/browser/ash/login/quick_unlock/auth_token.h"
 #include "chrome/browser/ash/login/quick_unlock/pin_backend.h"
 #include "chrome/browser/ash/login/quick_unlock/pin_storage_prefs.h"
-#include "chrome/browser/ash/login/quick_unlock/quick_unlock_factory.h"
-#include "chrome/browser/ash/login/quick_unlock/quick_unlock_storage.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
 #include "chrome/browser/ash/login/smart_lock/smart_lock_service.h"
 #include "chrome/browser/ash/login/smart_lock/smart_lock_service_factory.h"
@@ -41,10 +39,10 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/ash/components/cryptohome/constants.h"
 #include "chromeos/ash/components/cryptohome/system_salt_getter.h"
 #include "chromeos/ash/components/dbus/userdataauth/fake_cryptohome_misc_client.h"
 #include "chromeos/ash/components/dbus/userdataauth/fake_userdataauth_client.h"
-#include "chromeos/ash/components/login/auth/fake_extended_authenticator.h"
 #include "chromeos/ash/components/login/auth/public/cryptohome_key_constants.h"
 #include "chromeos/ash/components/osauth/impl/auth_parts_impl.h"
 #include "chromeos/ash/components/osauth/impl/auth_session_storage_impl.h"
@@ -59,6 +57,7 @@
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/api_test_utils.h"
 #include "extensions/browser/extension_function_dispatcher.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 namespace {
@@ -272,13 +271,8 @@ class QuickUnlockPrivateUnitTest
           ash::AuthFactorsConfiguration());
     }
 
-    if (ash::features::ShouldUseAuthSessionStorage()) {
-      token_ = ash::AuthSessionStorage::Get()->Store(
-          std::make_unique<ash::UserContext>(auth_token_user_context_));
-    } else {
-      token_ = ash::quick_unlock::QuickUnlockFactory::GetForProfile(profile)
-                   ->CreateAuthToken(auth_token_user_context_);
-    }
+    token_ = ash::AuthSessionStorage::Get()->Store(
+        std::make_unique<ash::UserContext>(auth_token_user_context_));
 
     base::RunLoop().RunUntilIdle();
 
@@ -319,7 +313,7 @@ class QuickUnlockPrivateUnitTest
 
   // Wrapper for chrome.quickUnlockPrivate.getAuthToken. Expects the function
   // to succeed and returns the result.
-  std::unique_ptr<quick_unlock_private::TokenInfo> GetAuthToken(
+  absl::optional<quick_unlock_private::TokenInfo> GetAuthToken(
       const std::string& password) {
     auto func = base::MakeRefCounted<QuickUnlockPrivateGetAuthTokenFunction>();
 
@@ -328,8 +322,7 @@ class QuickUnlockPrivateUnitTest
     absl::optional<base::Value> result =
         RunFunction(std::move(func), std::move(params));
     EXPECT_TRUE(result);
-    auto token_info =
-        quick_unlock_private::TokenInfo::FromValueDeprecated(*result);
+    auto token_info = quick_unlock_private::TokenInfo::FromValue(*result);
     EXPECT_TRUE(token_info);
     return token_info;
   }
@@ -436,9 +429,9 @@ class QuickUnlockPrivateUnitTest
         std::move(params));
     EXPECT_TRUE(result->is_dict());
 
-    CredentialCheck function_result;
-    EXPECT_TRUE(CredentialCheck::Populate(result->GetDict(), function_result));
-    return function_result;
+    auto function_result = CredentialCheck::FromValue(result->GetDict());
+    EXPECT_TRUE(function_result);
+    return std::move(function_result).value();
   }
 
   void CheckGetCredentialRequirements(int expected_pin_min_length,
@@ -452,12 +445,11 @@ class QuickUnlockPrivateUnitTest
                     std::move(params));
     EXPECT_TRUE(result->is_dict());
 
-    CredentialRequirements function_result;
-    EXPECT_TRUE(
-        CredentialRequirements::Populate(result->GetDict(), function_result));
+    auto function_result = CredentialRequirements::FromValue(result->GetDict());
+    ASSERT_TRUE(function_result);
 
-    EXPECT_EQ(function_result.min_length, expected_pin_min_length);
-    EXPECT_EQ(function_result.max_length, expected_pin_max_length);
+    EXPECT_EQ(function_result->min_length, expected_pin_min_length);
+    EXPECT_EQ(function_result->max_length, expected_pin_max_length);
   }
 
   base::Value::List GetSetModesParams(const std::string& token,
@@ -701,19 +693,12 @@ class QuickUnlockPrivateUnitTest
 
 // Verifies that GetAuthTokenValid succeeds when a valid password is provided.
 TEST_P(QuickUnlockPrivateUnitTest, GetAuthTokenValid) {
-  std::unique_ptr<quick_unlock_private::TokenInfo> token_info =
+  absl::optional<quick_unlock_private::TokenInfo> token_info =
       GetAuthToken(kValidPassword);
 
-  ash::quick_unlock::QuickUnlockStorage* quick_unlock_storage =
-      ash::quick_unlock::QuickUnlockFactory::GetForProfile(profile());
-  if (ash::features::ShouldUseAuthSessionStorage()) {
-    EXPECT_TRUE(ash::AuthSessionStorage::Get()->IsValid(token_info->token));
-  } else {
-    EXPECT_EQ(token_info->token,
-              quick_unlock_storage->GetAuthToken()->Identifier());
-  }
+  EXPECT_TRUE(ash::AuthSessionStorage::Get()->IsValid(token_info->token));
   EXPECT_EQ(token_info->lifetime_seconds,
-            ash::quick_unlock::AuthToken::kTokenExpiration.InSeconds());
+            cryptohome::kAuthsessionInitialLifetime.InSeconds());
 }
 
 // Verifies that GetAuthTokenValid fails when an invalid password is provided.

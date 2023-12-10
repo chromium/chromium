@@ -125,8 +125,8 @@ const MediaAppUIBrowserTest = {
   runTestInGuest,
 };
 
-// Expose an old-style export for js2gtest.
-window['MediaAppUIBrowserTest_for_js2gtest'] = MediaAppUIBrowserTest;
+// Expose an export for tests run through `isolatedTestRunner`.
+window['MediaAppUiBrowserTest'] = MediaAppUIBrowserTest;
 
 // Tests that chrome://media-app is allowed to frame
 // chrome-untrusted://media-app. The URL is set in the html. If that URL can't

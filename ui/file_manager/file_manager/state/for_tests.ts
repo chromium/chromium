@@ -5,10 +5,9 @@
 import {assertDeepEquals} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {MockVolumeManager} from '../background/js/mock_volume_manager.js';
-import {DialogType} from '../common/js/dialog_type.js';
 import {Crostini} from '../externs/background/crostini.js';
 import {FilesAppDirEntry} from '../externs/files_app_entry_interfaces.js';
-import {FileKey, PropStatus, State} from '../externs/ts/state.js';
+import {DialogType, FileKey, PropStatus, State} from '../externs/ts/state.js';
 import type {VolumeInfo} from '../externs/volume_info.js';
 import {DirectoryTreeNamingController} from '../foreground/js/directory_tree_naming_controller.js';
 import {FakeFileSelectionHandler} from '../foreground/js/fake_file_selection_handler.js';
@@ -16,6 +15,7 @@ import {MetadataModel} from '../foreground/js/metadata/metadata_model.js';
 import {MockMetadataModel} from '../foreground/js/metadata/mock_metadata.js';
 import {createFakeDirectoryModel} from '../foreground/js/mock_directory_model.js';
 import {TaskController} from '../foreground/js/task_controller.js';
+import type {FileManagerUI} from '../foreground/js/ui/file_manager_ui.js';
 
 import {type EntryMetadata, updateMetadata} from './ducks/all_entries.js';
 import {changeDirectory, updateDirectoryContent, updateSelection} from './ducks/current_directory.js';
@@ -144,6 +144,7 @@ export function setUpFileManagerOnWindow() {
   window.fileManager = {
     volumeManager: volumeManager,
     metadataModel: new MockMetadataModel({}) as unknown as MetadataModel,
+    ui: {} as unknown as FileManagerUI,
     crostini: {} as unknown as Crostini,
     selectionHandler: new FakeFileSelectionHandler(),
     taskController: {} as unknown as TaskController,
@@ -151,6 +152,13 @@ export function setUpFileManagerOnWindow() {
     directoryModel: createFakeDirectoryModel(),
     directoryTreeNamingController: {} as unknown as
         DirectoryTreeNamingController,
+    getLastVisitedURL() {
+      return '';
+    },
+    getTranslatedString(_id: string) {
+      return '';
+    },
+    onUnloadForTest() {},
   };
 }
 
@@ -163,19 +171,19 @@ export function createFakeVolumeMetadata(
     ): chrome.fileManagerPrivate.VolumeMetadata {
   return {
     volumeId: volumeInfo.volumeId,
-    volumeType: volumeInfo.volumeType,
+    volumeType: volumeInfo.volumeType as chrome.fileManagerPrivate.VolumeType,
     profile: {
       ...volumeInfo.profile,
       profileId: '',
     },
     configurable: volumeInfo.configurable,
     watchable: volumeInfo.watchable,
-    source: volumeInfo.source,
+    source: volumeInfo.source as chrome.fileManagerPrivate.Source,
     volumeLabel: volumeInfo.label,
     fileSystemId: undefined,
     providerId: volumeInfo.providerId,
     sourcePath: undefined,
-    deviceType: volumeInfo.deviceType,
+    deviceType: volumeInfo.deviceType as chrome.fileManagerPrivate.DeviceType,
     devicePath: volumeInfo.devicePath,
     isParentDevice: undefined,
     isReadOnly: volumeInfo.isReadOnly,

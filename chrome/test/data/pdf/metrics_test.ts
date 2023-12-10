@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {FittingType, record, recordFitTo, resetForTesting, UserAction} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import {FittingType, record, recordFitTo, resetForTesting as resetMetricsForTesting, UserAction} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 
 chrome.test.runTests(function() {
   'use strict';
@@ -32,7 +32,7 @@ chrome.test.runTests(function() {
 
   return [
     function testMetricsDocumentOpened() {
-      resetForTesting();
+      resetMetricsForTesting();
       const mockMetricsPrivate = new MockMetricsPrivate();
       chrome.metricsPrivate =
           mockMetricsPrivate as unknown as typeof chrome.metricsPrivate;
@@ -48,7 +48,7 @@ chrome.test.runTests(function() {
     // Test that for every UserAction.<action> recorded an equivalent
     // UserAction.<action>_FIRST is recorded only once.
     function testMetricsFirstRecorded() {
-      resetForTesting();
+      resetMetricsForTesting();
       const mockMetricsPrivate = new MockMetricsPrivate();
       chrome.metricsPrivate =
           mockMetricsPrivate as unknown as typeof chrome.metricsPrivate;
@@ -80,7 +80,7 @@ chrome.test.runTests(function() {
     },
 
     function testMetricsFitTo() {
-      resetForTesting();
+      resetMetricsForTesting();
       const mockMetricsPrivate = new MockMetricsPrivate();
       chrome.metricsPrivate =
           mockMetricsPrivate as unknown as typeof chrome.metricsPrivate;

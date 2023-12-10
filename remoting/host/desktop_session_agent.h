@@ -11,6 +11,7 @@
 #include <map>
 #include <memory>
 
+#include <optional>
 #include "base/compiler_specific.h"
 #include "base/functional/callback.h"
 #include "base/memory/read_only_shared_memory_region.h"
@@ -30,7 +31,6 @@
 #include "remoting/host/mojom/remoting_mojom_traits.h"
 #include "remoting/proto/url_forwarder_control.pb.h"
 #include "remoting/protocol/clipboard_stub.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 #include "third_party/webrtc/modules/desktop_capture/mouse_cursor_monitor.h"
@@ -252,7 +252,7 @@ class DesktopSessionAgent
 
   // Routes file-transfer messages to the corresponding reader/writer to be
   // executed.
-  absl::optional<SessionFileOperationsHandler> session_file_operations_handler_;
+  std::optional<SessionFileOperationsHandler> session_file_operations_handler_;
 
   mojo::AssociatedRemote<mojom::DesktopSessionEventHandler>
       desktop_session_event_handler_;

@@ -18,7 +18,7 @@ class FakeFastPairDataEncryptor : public FastPairDataEncryptor {
       delete;
   ~FakeFastPairDataEncryptor() override;
 
-  void public_key(absl::optional<std::array<uint8_t, 64>> public_key) {
+  void public_key(std::optional<std::array<uint8_t, 64>> public_key) {
     public_key_ = std::move(public_key);
   }
 
@@ -26,11 +26,11 @@ class FakeFastPairDataEncryptor : public FastPairDataEncryptor {
     encrypted_bytes_ = std::move(encrypted_bytes);
   }
 
-  void response(absl::optional<DecryptedResponse> response) {
+  void response(std::optional<DecryptedResponse> response) {
     response_ = std::move(response);
   }
 
-  void passkey(absl::optional<DecryptedPasskey> passkey) {
+  void passkey(std::optional<DecryptedPasskey> passkey) {
     passkey_ = std::move(passkey);
   }
 
@@ -49,15 +49,15 @@ class FakeFastPairDataEncryptor : public FastPairDataEncryptor {
   // FastPairDataEncryptor:
   const std::array<uint8_t, kBlockSizeBytes> EncryptBytes(
       const std::array<uint8_t, kBlockSizeBytes>& bytes_to_encrypt) override;
-  const absl::optional<std::array<uint8_t, 64>>& GetPublicKey() override;
+  const std::optional<std::array<uint8_t, 64>>& GetPublicKey() override;
   void ParseDecryptedResponse(
       const std::vector<uint8_t>& encrypted_response_bytes,
-      base::OnceCallback<void(const absl::optional<DecryptedResponse>&)>
+      base::OnceCallback<void(const std::optional<DecryptedResponse>&)>
           callback) override;
   void ParseDecryptedPasskey(
       const std::vector<uint8_t>& encrypted_passkey_bytes,
-      base::OnceCallback<void(const absl::optional<DecryptedPasskey>&)>
-          callback) override;
+      base::OnceCallback<void(const std::optional<DecryptedPasskey>&)> callback)
+      override;
   std::vector<uint8_t> CreateAdditionalDataPacket(
       std::array<uint8_t, kNonceSizeBytes> nonce,
       const std::vector<uint8_t>& additional_data) override;
@@ -70,11 +70,11 @@ class FakeFastPairDataEncryptor : public FastPairDataEncryptor {
       const std::vector<uint8_t>& additional_data) override;
 
  private:
-  absl::optional<std::array<uint8_t, 64>> public_key_ = absl::nullopt;
+  std::optional<std::array<uint8_t, 64>> public_key_ = std::nullopt;
   std::array<uint8_t, kBlockSizeBytes> encrypted_bytes_ = {};
   std::vector<uint8_t> additional_data_packet_encrypted_bytes_ = {};
-  absl::optional<DecryptedResponse> response_ = absl::nullopt;
-  absl::optional<DecryptedPasskey> passkey_ = absl::nullopt;
+  std::optional<DecryptedResponse> response_ = std::nullopt;
+  std::optional<DecryptedPasskey> passkey_ = std::nullopt;
   std::vector<uint8_t> encrypted_additional_data_ = {};
   bool verify_ = false;
 };

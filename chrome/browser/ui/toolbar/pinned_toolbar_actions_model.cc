@@ -6,6 +6,7 @@
 
 #include <iterator>
 #include <string>
+#include <vector>
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -24,6 +25,7 @@
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
+#include "components/prefs/scoped_user_pref_update.h"
 #include "ui/actions/action_id.h"
 #include "ui/actions/actions.h"
 
@@ -104,49 +106,40 @@ void PinnedToolbarActionsModel::MovePinnedAction(
   }
 
   if (target_index < 0 || target_index >= int(pinned_action_ids_.size())) {
-    // Do nothing if the index is out of bounds.
+    // Do nothing if the target index is out of bounds.
     return;
   }
 
-  auto iter = base::ranges::find(pinned_action_ids_, action_id);
-  if (iter == pinned_action_ids_.end()) {
+  auto action_to_move = base::ranges::find(pinned_action_ids_, action_id);
+  if (action_to_move == pinned_action_ids_.end()) {
     // Do nothing if this action is not pinned.
     return;
   }
-
-  int start_index = iter - pinned_action_ids_.begin();
+  // If the target index and starting index are the same, do nothing.
+  int start_index = action_to_move - pinned_action_ids_.begin();
   if (start_index == target_index) {
     return;
   }
 
-  const absl::optional<std::string>& action_id_to_move =
-      actions::ActionIdMap::ActionIdToString(action_id);
-  const absl::optional<std::string>& action_id_of_target =
-      actions::ActionIdMap::ActionIdToString(pinned_action_ids_[target_index]);
+  std::vector<actions::ActionId> updated_pinned_action_ids = pinned_action_ids_;
 
-  // Both ActionIds should have a string equivalent.
-  CHECK(action_id_to_move.has_value());
-  CHECK(action_id_of_target.has_value());
+  auto start_iter = base::ranges::find(updated_pinned_action_ids, action_id);
+  CHECK(start_iter != updated_pinned_action_ids.end());
 
-  base::Value::List updated_pinned_action_ids =
-      pref_service_->GetList(prefs::kPinnedActions).Clone();
-  updated_pinned_action_ids.EraseValue(base::Value(action_id_to_move.value()));
+  auto end_iter = base::ranges::find(updated_pinned_action_ids,
+                                     pinned_action_ids_[target_index]);
+  CHECK(end_iter != updated_pinned_action_ids.end());
 
-  auto prefs_iter = base::ranges::find(updated_pinned_action_ids,
-                                       action_id_of_target.value());
-  CHECK(prefs_iter != updated_pinned_action_ids.end());
-
-  if (target_index == 0) {
-    updated_pinned_action_ids.Insert(prefs_iter,
-                                     base::Value(action_id_to_move.value()));
+  // Rotate |action_id| to be in the target position.
+  bool is_left_to_right_move = target_index > start_index;
+  if (is_left_to_right_move) {
+    std::rotate(start_iter, std::next(start_iter), std::next(end_iter));
   } else {
-    updated_pinned_action_ids.Insert(++prefs_iter,
-                                     base::Value(action_id_to_move.value()));
+    std::rotate(end_iter, start_iter, std::next(start_iter));
   }
 
   // Updating the pref causes `UpdatePinnedActionIds()` to be called.
-  pref_service_->SetList(prefs::kPinnedActions,
-                         std::move(updated_pinned_action_ids));
+  UpdatePref(updated_pinned_action_ids);
 
   // Notify observers the action was moved.
   for (Observer& observer : observers_) {
@@ -155,18 +148,12 @@ void PinnedToolbarActionsModel::MovePinnedAction(
 }
 
 void PinnedToolbarActionsModel::PinAction(const actions::ActionId& action_id) {
-  base::Value::List updated_pinned_action_ids =
-      pref_service_->GetList(prefs::kPinnedActions).Clone();
-  const absl::optional<std::string>& id =
-      actions::ActionIdMap::ActionIdToString(action_id);
-  // The ActionId should have a string equivalent.
-  CHECK(id.has_value());
+  std::vector<actions::ActionId> updated_pinned_action_ids = pinned_action_ids_;
 
-  updated_pinned_action_ids.Append(base::Value(id.value()));
+  updated_pinned_action_ids.push_back(action_id);
 
   // Updating the pref causes `UpdatePinnedActionIds()` to be called.
-  pref_service_->SetList(prefs::kPinnedActions,
-                         std::move(updated_pinned_action_ids));
+  UpdatePref(updated_pinned_action_ids);
 
   // Notify observers the action was added.
   for (Observer& observer : observers_) {
@@ -176,17 +163,15 @@ void PinnedToolbarActionsModel::PinAction(const actions::ActionId& action_id) {
 
 void PinnedToolbarActionsModel::UnpinAction(
     const actions::ActionId& action_id) {
-  base::Value::List updated_pinned_action_ids =
-      pref_service_->GetList(prefs::kPinnedActions).Clone();
-  const absl::optional<std::string>& id =
-      actions::ActionIdMap::ActionIdToString(action_id);
-  // The ActionId should have a string equivalent.
-  CHECK(id.has_value());
-  updated_pinned_action_ids.EraseValue(base::Value(id.value()));
+  std::vector<actions::ActionId> updated_pinned_action_ids = pinned_action_ids_;
+  updated_pinned_action_ids.erase(
+      std::remove_if(
+          updated_pinned_action_ids.begin(), updated_pinned_action_ids.end(),
+          [action_id](const actions::ActionId id) { return id == action_id; }),
+      updated_pinned_action_ids.end());
 
   // Updating the pref causes `UpdatePinnedActionIds()` to be called.
-  pref_service_->SetList(prefs::kPinnedActions,
-                         std::move(updated_pinned_action_ids));
+  UpdatePref(std::move(updated_pinned_action_ids));
 
   // Notify observers the action was removed.
   for (Observer& observer : observers_) {
@@ -207,7 +192,7 @@ void PinnedToolbarActionsModel::UpdatePinnedActionIds() {
 
   for (const base::Value& action_id : updated_pinned_action_ids) {
     if (action_id.is_string()) {
-      const absl::optional<actions::ActionId>& id =
+      const std::optional<actions::ActionId>& id =
           actions::ActionIdMap::StringToActionId(action_id.GetString());
       // It could be possible that an ActionId is not mapped to the string if it
       // comes from the prefs object. Example: One version could have an id that
@@ -231,9 +216,16 @@ void PinnedToolbarActionsModel::UpdatePinnedActionIds() {
 
 void PinnedToolbarActionsModel::MaybeMigrateSearchCompanionPinnedState() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  // Checks if the search companion action id is present beceause in tests this
+  // model can be created before the browser actions are initialized if testing
+  // factories are added to create this model. This prevents failures when the
+  // companion feature is enabled.
   if (pref_service_->GetBoolean(
           prefs::kPinnedSearchCompanionMigrationComplete) ||
-      !CanUpdate()) {
+      !CanUpdate() ||
+      !actions::ActionIdMap::ActionIdToString(
+           kActionSidePanelShowSearchCompanion)
+           .has_value()) {
     return;
   }
 
@@ -275,26 +267,43 @@ void PinnedToolbarActionsModel::UpdateSearchCompanionDefaultState() {
   bool is_valid_unpin = Contains(kActionSidePanelShowSearchCompanion) &&
                         !companion_should_be_default_pinned;
 
-  base::Value::List updated_pinned_action_ids =
-      pref_service_->GetList(prefs::kPinnedActions).Clone();
-  const absl::optional<std::string>& id =
-      actions::ActionIdMap::ActionIdToString(
-          kActionSidePanelShowSearchCompanion);
+  std::vector<actions::ActionId> updated_pinned_action_ids = pinned_action_ids_;
+  const std::optional<std::string>& id = actions::ActionIdMap::ActionIdToString(
+      kActionSidePanelShowSearchCompanion);
   // The ActionId should have a string equivalent.
   CHECK(id.has_value());
 
   if (is_valid_pin) {
-    updated_pinned_action_ids.Append(base::Value(id.value()));
+    updated_pinned_action_ids.push_back(kActionSidePanelShowSearchCompanion);
   } else if (is_valid_unpin) {
-    updated_pinned_action_ids.EraseValue(base::Value(id.value()));
+    updated_pinned_action_ids.erase(
+        std::remove_if(updated_pinned_action_ids.begin(),
+                       updated_pinned_action_ids.end(),
+                       [](const actions::ActionId id) {
+                         return id == kActionSidePanelShowSearchCompanion;
+                       }),
+        updated_pinned_action_ids.end());
   }
 
   // Updating the pref causes `UpdatePinnedActionIds()` to be called.
-  pref_service_->SetList(prefs::kPinnedActions,
-                         std::move(updated_pinned_action_ids));
+  UpdatePref(updated_pinned_action_ids);
 }
 
 void PinnedToolbarActionsModel::
     MaybeMigrateSearchCompanionPinnedStateForTesting() {
   MaybeMigrateSearchCompanionPinnedState();
+}
+
+void PinnedToolbarActionsModel::UpdatePref(
+    const std::vector<actions::ActionId>& updated_list) {
+  ScopedListPrefUpdate update(pref_service_, prefs::kPinnedActions);
+  base::Value::List& list_of_values = update.Get();
+  list_of_values.clear();
+  for (auto id : updated_list) {
+    const std::optional<std::string>& id_string =
+        actions::ActionIdMap::ActionIdToString(id);
+    // The ActionId should have a string equivalent.
+    CHECK(id_string.has_value());
+    list_of_values.Append(id_string.value());
+  }
 }

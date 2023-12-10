@@ -30,7 +30,7 @@ Note: don’t forget to run ‘gclient sync’ after you make changes.
 
 Only 2 sets of gn args are officially supported. Some small changes should
 likely work but there’s no guarantee. If you are new to this, highly recommend
-you do not change any gn args. For non-Googlers, you can ignore the use_goma arg.
+you do not change any gn args. For non-Googlers, you can ignore the use_remoteexec arg.
 
 CQ gn args:
 ```
@@ -41,7 +41,7 @@ is_component_build = false
 is_debug = false
 symbol_level = 0
 target_os = "chromeos"
-use_goma = true
+use_remoteexec = true
 ```
 
 CI gn args:
@@ -52,7 +52,7 @@ dcheck_always_on = false
 is_component_build = false
 is_debug = false
 target_os = "chromeos"
-use_goma = true
+use_remoteexec = true
 ```
 
 3.  Build your target
@@ -163,7 +163,7 @@ is_component_build = false
 is_debug = false
 proprietary_codecs = true
 target_os = "chromeos"
-use_goma = true
+use_remoteexec = true
 ```
 Run the demo test with:
 ```

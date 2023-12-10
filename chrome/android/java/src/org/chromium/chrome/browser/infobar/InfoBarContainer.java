@@ -17,7 +17,6 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.ObserverList;
 import org.chromium.base.UserData;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManagerSupplier;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
@@ -53,16 +52,16 @@ public class InfoBarContainer implements UserData, KeyboardVisibilityListener, I
     private static final AccessibilityState.Listener sAccessibilityStateListener;
 
     static {
-        sAccessibilityStateListener = (oldAccessibilityState, newAccessibilityState) -> {
-            setIsAllowedToAutoHide(!newAccessibilityState.isTouchExplorationEnabled
-                    && !newAccessibilityState.isPerformGesturesEnabled);
-        };
+        sAccessibilityStateListener =
+                (oldAccessibilityState, newAccessibilityState) -> {
+                    setIsAllowedToAutoHide(
+                            !newAccessibilityState.isTouchExplorationEnabled
+                                    && !newAccessibilityState.isPerformGesturesEnabled);
+                };
         AccessibilityState.addListener(sAccessibilityStateListener);
     }
 
-    /**
-     * An observer that is notified of changes to a {@link InfoBarContainer} object.
-     */
+    /** An observer that is notified of changes to a {@link InfoBarContainer} object. */
     public interface InfoBarContainerObserver {
         /**
          * Called when an {@link InfoBar} is about to be added (before the animation).
@@ -95,38 +94,40 @@ public class InfoBarContainer implements UserData, KeyboardVisibilityListener, I
     }
 
     /** Resets the state of the InfoBarContainer when the user navigates. */
-    private final TabObserver mTabObserver = new EmptyTabObserver() {
-        @Override
-        public void onDidStartNavigationInPrimaryMainFrame(
-                Tab tab, NavigationHandle navigationHandle) {
-            // Make sure Y translation is reset on navigation.
-            if (mInfoBarContainerView != null) {
-                mInfoBarContainerView.setTranslationY(0);
-            }
-        }
+    private final TabObserver mTabObserver =
+            new EmptyTabObserver() {
+                @Override
+                public void onDidStartNavigationInPrimaryMainFrame(
+                        Tab tab, NavigationHandle navigationHandle) {
+                    // Make sure Y translation is reset on navigation.
+                    if (mInfoBarContainerView != null) {
+                        mInfoBarContainerView.setTranslationY(0);
+                    }
+                }
 
-        @Override
-        public void onDidFinishNavigationInPrimaryMainFrame(Tab tab, NavigationHandle navigation) {
-            if (navigation.hasCommitted()) {
-                setHidden(false);
-            }
-        }
+                @Override
+                public void onDidFinishNavigationInPrimaryMainFrame(
+                        Tab tab, NavigationHandle navigation) {
+                    if (navigation.hasCommitted()) {
+                        setHidden(false);
+                    }
+                }
 
-        @Override
-        public void onContentChanged(Tab tab) {
-            updateWebContents();
-        }
+                @Override
+                public void onContentChanged(Tab tab) {
+                    updateWebContents();
+                }
 
-        @Override
-        public void onActivityAttachmentChanged(Tab tab, @Nullable WindowAndroid window) {
-            if (window != null) {
-                initializeContainerView(getActivity(tab));
-                updateWebContents();
-            } else {
-                destroyContainerView();
-            }
-        }
-    };
+                @Override
+                public void onActivityAttachmentChanged(Tab tab, @Nullable WindowAndroid window) {
+                    if (window != null) {
+                        initializeContainerView(getActivity(tab));
+                        updateWebContents();
+                    } else {
+                        destroyContainerView();
+                    }
+                }
+            };
 
     /**
      * Adds/removes the {@link InfoBarContainer} when the tab's view is attached/detached. This is
@@ -286,9 +287,7 @@ public class InfoBarContainer implements UserData, KeyboardVisibilityListener, I
         mObservers.removeObserver(observer);
     }
 
-    /**
-     * Sets the parent {@link ViewGroup} that contains the {@link InfoBarContainer}.
-     */
+    /** Sets the parent {@link ViewGroup} that contains the {@link InfoBarContainer}. */
     public void setParentView(ViewGroup parent) {
         if (mInfoBarContainerView != null) mInfoBarContainerView.setParentView(parent);
     }
@@ -298,9 +297,7 @@ public class InfoBarContainer implements UserData, KeyboardVisibilityListener, I
         mAnimationListeners.addObserver(listener);
     }
 
-    /**
-     * Removes the passed in {@link InfoBarAnimationListener} from the {@link InfoBarContainer}.
-     */
+    /** Removes the passed in {@link InfoBarAnimationListener} from the {@link InfoBarContainer}. */
     public void removeAnimationListener(InfoBarAnimationListener listener) {
         mAnimationListeners.removeObserver(listener);
     }
@@ -381,8 +378,8 @@ public class InfoBarContainer implements UserData, KeyboardVisibilityListener, I
             observer.onRemoveInfoBar(this, infoBar, mInfoBars.isEmpty());
         }
 
-        assert mInfoBarContainerView
-                != null : "The container view is null when removing an InfoBar.";
+        assert mInfoBarContainerView != null
+                : "The container view is null when removing an InfoBar.";
         mInfoBarContainerView.removeInfoBar(infoBar);
     }
 
@@ -472,8 +469,9 @@ public class InfoBarContainer implements UserData, KeyboardVisibilityListener, I
         if (webContents != null && webContents != mInfoBarContainerView.getWebContents()) {
             mInfoBarContainerView.setWebContents(webContents);
             if (mNativeInfoBarContainer != 0) {
-                InfoBarContainerJni.get().setWebContents(
-                        mNativeInfoBarContainer, InfoBarContainer.this, webContents);
+                InfoBarContainerJni.get()
+                        .setWebContents(
+                                mNativeInfoBarContainer, InfoBarContainer.this, webContents);
             }
         }
 
@@ -485,10 +483,13 @@ public class InfoBarContainer implements UserData, KeyboardVisibilityListener, I
     private void initializeContainerView(Activity activity) {
         BrowserControlsManager browserControlsManager =
                 BrowserControlsManagerSupplier.getValueOrNullFrom(mTab.getWindowAndroid());
-        mInfoBarContainerView = new InfoBarContainerView(activity, mContainerViewObserver,
-                browserControlsManager, DeviceFormFactor.isWindowOnTablet(mTab.getWindowAndroid()));
-        if (browserControlsManager != null
-                && ChromeFeatureList.isEnabled(ChromeFeatureList.INFOBAR_SCROLL_OPTIMIZATION)) {
+        mInfoBarContainerView =
+                new InfoBarContainerView(
+                        activity,
+                        mContainerViewObserver,
+                        browserControlsManager,
+                        DeviceFormFactor.isWindowOnTablet(mTab.getWindowAndroid()));
+        if (browserControlsManager != null) {
             browserControlsManager.getFullscreenManager().removeObserver(mFullscreenObserver);
             browserControlsManager.getFullscreenManager().addObserver(mFullscreenObserver);
         }
@@ -497,24 +498,11 @@ public class InfoBarContainer implements UserData, KeyboardVisibilityListener, I
                 new View.OnAttachStateChangeListener() {
                     @Override
                     public void onViewAttachedToWindow(View view) {
-                        if (mBottomSheetObserver == null) {
-                            mBottomSheetObserver = new EmptyBottomSheetObserver() {
-                                @Override
-                                public void onSheetStateChanged(int sheetState, int reason) {
-                                    if (mTab.isHidden()) return;
-                                    mInfoBarContainerView.setVisibility(
-                                            sheetState == BottomSheetController.SheetState.FULL
-                                                    ? View.INVISIBLE
-                                                    : View.VISIBLE);
-                                }
-                            };
-                            mBottomSheetController =
-                                    BottomSheetControllerProvider.from(mTab.getWindowAndroid());
-                            mBottomSheetController.addObserver(mBottomSheetObserver);
-                        }
+                        initBottomSheetObserver();
+                        boolean infoBarsExist = !mInfoBars.isEmpty();
 
                         for (InfoBarContainer.InfoBarContainerObserver observer : mObservers) {
-                            observer.onInfoBarContainerAttachedToWindow(!mInfoBars.isEmpty());
+                            observer.onInfoBarContainerAttachedToWindow(infoBarsExist);
                         }
                     }
 
@@ -532,6 +520,25 @@ public class InfoBarContainer implements UserData, KeyboardVisibilityListener, I
         mTab.getWindowAndroid().getKeyboardDelegate().addKeyboardVisibilityListener(this);
     }
 
+    private void initBottomSheetObserver() {
+        if (mBottomSheetObserver != null) {
+            return;
+        }
+        mBottomSheetObserver =
+                new EmptyBottomSheetObserver() {
+                    @Override
+                    public void onSheetStateChanged(int sheetState, int reason) {
+                        if (mTab.isHidden()) return;
+                        mInfoBarContainerView.setVisibility(
+                                sheetState == BottomSheetController.SheetState.FULL
+                                        ? View.INVISIBLE
+                                        : View.VISIBLE);
+                    }
+                };
+        mBottomSheetController = BottomSheetControllerProvider.from(mTab.getWindowAndroid());
+        mBottomSheetController.addObserver(mBottomSheetObserver);
+    }
+
     private void destroyContainerView() {
         if (mIPHSupport != null) {
             removeAnimationListener(mIPHSupport);
@@ -541,16 +548,15 @@ public class InfoBarContainer implements UserData, KeyboardVisibilityListener, I
 
         BrowserControlsManager browserControlsManager =
                 BrowserControlsManagerSupplier.getValueOrNullFrom(mTab.getWindowAndroid());
-        if (browserControlsManager != null
-                && ChromeFeatureList.isEnabled(ChromeFeatureList.INFOBAR_SCROLL_OPTIMIZATION)) {
+        if (browserControlsManager != null) {
             browserControlsManager.getFullscreenManager().removeObserver(mFullscreenObserver);
         }
 
         if (mInfoBarContainerView != null) {
             mInfoBarContainerView.setWebContents(null);
             if (mNativeInfoBarContainer != 0) {
-                InfoBarContainerJni.get().setWebContents(
-                        mNativeInfoBarContainer, InfoBarContainer.this, null);
+                InfoBarContainerJni.get()
+                        .setWebContents(mNativeInfoBarContainer, InfoBarContainer.this, null);
             }
             mInfoBarContainerView.destroy();
             mInfoBarContainerView = null;
@@ -575,9 +581,7 @@ public class InfoBarContainer implements UserData, KeyboardVisibilityListener, I
         return mInfoBars.get(0) == infoBar;
     }
 
-    /**
-     * Returns true if any animations are pending or in progress.
-     */
+    /** Returns true if any animations are pending or in progress. */
     @VisibleForTesting
     public boolean isAnimating() {
         assert mInfoBarContainerView != null;
@@ -594,8 +598,12 @@ public class InfoBarContainer implements UserData, KeyboardVisibilityListener, I
     @NativeMethods
     interface Natives {
         long init(InfoBarContainer caller);
-        void setWebContents(long nativeInfoBarContainerAndroid, InfoBarContainer caller,
+
+        void setWebContents(
+                long nativeInfoBarContainerAndroid,
+                InfoBarContainer caller,
                 WebContents webContents);
+
         void destroy(long nativeInfoBarContainerAndroid, InfoBarContainer caller);
     }
 }

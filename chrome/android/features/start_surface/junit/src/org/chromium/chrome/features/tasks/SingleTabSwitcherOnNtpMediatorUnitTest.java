@@ -132,7 +132,8 @@ public class SingleTabSwitcherOnNtpMediatorUnitTest {
                         false,
                         null,
                         null,
-                        null, isTablet);
+                        null,
+                        isTablet);
         assertNull(mPropertyModel.get(FAVICON));
         assertNull(mPropertyModel.get(TITLE));
         assertNotNull(mPropertyModel.get(CLICK_LISTENER));
@@ -179,7 +180,8 @@ public class SingleTabSwitcherOnNtpMediatorUnitTest {
                         false,
                         null,
                         mTabContentManager,
-                        null, isTablet);
+                        null,
+                        isTablet);
         doNothing()
                 .when(mTabContentManager)
                 .getTabThumbnailWithCallback(anyInt(), any(), any(), anyBoolean(), anyBoolean());
@@ -237,7 +239,8 @@ public class SingleTabSwitcherOnNtpMediatorUnitTest {
                         false,
                         null,
                         null,
-                        null, true);
+                        null,
+                        true);
         assertNotNull(mPropertyModel.get(CLICK_LISTENER));
 
         mediator.setVisibility(true);
@@ -260,24 +263,25 @@ public class SingleTabSwitcherOnNtpMediatorUnitTest {
 
     private void testUpdateMostRecentTabInfoImpl(boolean isTablet) {
         SingleTabSwitcherOnNtpMediator mediator =
-            new SingleTabSwitcherOnNtpMediator(
-                ContextUtils.getApplicationContext(),
-                mPropertyModel,
-                null,
-                mTabModelSelector,
-                mTabListFaviconProvider,
-                mTab,
-                false,
-                null,
-                null,
-                null, isTablet);
+                new SingleTabSwitcherOnNtpMediator(
+                        ContextUtils.getApplicationContext(),
+                        mPropertyModel,
+                        null,
+                        mTabModelSelector,
+                        mTabListFaviconProvider,
+                        mTab,
+                        false,
+                        null,
+                        null,
+                        null,
+                        isTablet);
         assertFalse(mediator.getInitialized());
 
         mediator.setVisibility(true);
 
         verify(mTabListFaviconProvider)
-            .getFaviconDrawableForUrlAsync(
-                eq(mUrl), eq(false), mFaviconCallbackCaptor.capture());
+                .getFaviconDrawableForUrlAsync(
+                        eq(mUrl), eq(false), mFaviconCallbackCaptor.capture());
         assertEquals(mPropertyModel.get(TITLE), mTitle);
         assertTrue(mediator.getInitialized());
 
@@ -285,7 +289,7 @@ public class SingleTabSwitcherOnNtpMediatorUnitTest {
         mediator.setVisibility(true);
 
         verify(mTabListFaviconProvider, times(1))
-            .getFaviconDrawableForUrlAsync(any(), anyBoolean(), any());
+                .getFaviconDrawableForUrlAsync(any(), anyBoolean(), any());
         assertEquals(mPropertyModel.get(TITLE), mTitle);
         assertNotEquals(mPropertyModel.get(TITLE), mTitle2);
     }
@@ -305,17 +309,18 @@ public class SingleTabSwitcherOnNtpMediatorUnitTest {
         doReturn("").when(mTab3).getTitle();
         doReturn(mUrl).when(mTab3).getUrl();
         SingleTabSwitcherOnNtpMediator mediator =
-            new SingleTabSwitcherOnNtpMediator(
-                ContextUtils.getApplicationContext(),
-                mPropertyModel,
-                null,
-                mTabModelSelector,
-                mTabListFaviconProvider,
-                mTab3,
-                false,
-                null,
-                null,
-                null, isTablet);
+                new SingleTabSwitcherOnNtpMediator(
+                        ContextUtils.getApplicationContext(),
+                        mPropertyModel,
+                        null,
+                        mTabModelSelector,
+                        mTabListFaviconProvider,
+                        mTab3,
+                        false,
+                        null,
+                        null,
+                        null,
+                        isTablet);
         mediator.updateTitle();
         verify(mTab3).addObserver(mTabObserverCaptor.capture());
         doReturn(mTitle).when(mTab3).getTitle();
@@ -323,6 +328,7 @@ public class SingleTabSwitcherOnNtpMediatorUnitTest {
         assertEquals(mPropertyModel.get(TITLE), mTitle);
         verify(mTab3).removeObserver(mTabObserverCaptor.getValue());
     }
+
     @Test
     public void testStartMarginWith1RowMvTiles_Tablet() {
         SingleTabSwitcherOnNtpMediator mediator =
@@ -336,7 +342,8 @@ public class SingleTabSwitcherOnNtpMediatorUnitTest {
                         /* isScrollableMvtEnabled= */ true,
                         null,
                         null,
-                        null, true);
+                        null,
+                        true);
         verify(mActivityLifecycleDispatcher).register(mConfigurationChangedObserver.capture());
 
         Resources resources = ContextUtils.getApplicationContext().getResources();
@@ -366,23 +373,24 @@ public class SingleTabSwitcherOnNtpMediatorUnitTest {
         verify(mActivityLifecycleDispatcher).unregister(mConfigurationChangedObserver.getValue());
     }
 
-        @Test
+    @Test
     public void testStartMarginWith1RowMvTiles_Phone() {
         // Sets up the mediator with surface polish flag disabled, i.e., TabContentManager is null.
         SingleTabSwitcherOnNtpMediator mediator =
-            new SingleTabSwitcherOnNtpMediator(
-                ContextUtils.getApplicationContext(),
-                mPropertyModel,
-                mActivityLifecycleDispatcher,
-                mTabModelSelector,
-                mTabListFaviconProvider,
-                mTab3,
-                /* isScrollableMvtEnabled= */ true,
-                null,
-                /* TabContentManager */ null,
-                null, /* isTablet */ false);
-        verify(mActivityLifecycleDispatcher, never()).register(
-            mConfigurationChangedObserver.capture());
+                new SingleTabSwitcherOnNtpMediator(
+                        ContextUtils.getApplicationContext(),
+                        mPropertyModel,
+                        mActivityLifecycleDispatcher,
+                        mTabModelSelector,
+                        mTabListFaviconProvider,
+                        mTab3,
+                        /* isScrollableMvtEnabled= */ true,
+                        /* singleTabCardClickedCallback= */ null,
+                        /* tabContentManager= */ null,
+                        /* uiConfig= */ null,
+                        /* isTablet= */ false);
+        verify(mActivityLifecycleDispatcher, never())
+                .register(mConfigurationChangedObserver.capture());
 
         // Verifies the LATERAL_MARGIN is set to 0.
         Configuration config = Mockito.mock(Configuration.class);
@@ -396,30 +404,29 @@ public class SingleTabSwitcherOnNtpMediatorUnitTest {
         assertEquals(0, mPropertyModel.get(LATERAL_MARGIN));
     }
 
-
     @Test
     public void testStartMarginWith1RowMvTiles_Phone_SurfacePolish() {
         // Sets up the mediator with surface polish flag enabled, i.e., TabContentManager isn't
         // null.
         SingleTabSwitcherOnNtpMediator mediator =
-            new SingleTabSwitcherOnNtpMediator(
-                ContextUtils.getApplicationContext(),
-                mPropertyModel,
-                mActivityLifecycleDispatcher,
-                mTabModelSelector,
-                mTabListFaviconProvider,
-                mTab3,
-                /* isScrollableMvtEnabled= */ true,
-                null,
-                mTabContentManager,
-                null, /* isTablet */ false);
-        verify(mActivityLifecycleDispatcher, never()).register(
-            mConfigurationChangedObserver.capture());
+                new SingleTabSwitcherOnNtpMediator(
+                        ContextUtils.getApplicationContext(),
+                        mPropertyModel,
+                        mActivityLifecycleDispatcher,
+                        mTabModelSelector,
+                        mTabListFaviconProvider,
+                        mTab3,
+                        /* isScrollableMvtEnabled= */ true,
+                        null,
+                        mTabContentManager,
+                        null,
+                        /* isTablet= */ false);
+        verify(mActivityLifecycleDispatcher, never())
+                .register(mConfigurationChangedObserver.capture());
 
         Resources resources = ContextUtils.getApplicationContext().getResources();
         int marginLandscape =
-            resources.getDimensionPixelSize(
-                R.dimen.search_box_lateral_margin_polish);
+                resources.getDimensionPixelSize(R.dimen.search_box_lateral_margin_polish);
         int marginPortrait = marginLandscape;
 
         // Verifies the LATERAL_MARGIN is set to the margin in the landscape mode.
@@ -447,7 +454,8 @@ public class SingleTabSwitcherOnNtpMediatorUnitTest {
                         /* isScrollableMvtEnabled= */ false,
                         null,
                         null,
-                        null, true);
+                        null,
+                        true);
         verify(mActivityLifecycleDispatcher).register(mConfigurationChangedObserver.capture());
 
         int lateralMargin =
@@ -490,7 +498,8 @@ public class SingleTabSwitcherOnNtpMediatorUnitTest {
                         /* isScrollableMvtEnabled= */ false,
                         null,
                         tabContentManager,
-                        null, true);
+                        null,
+                        true);
         verify(mActivityLifecycleDispatcher, never())
                 .register(mConfigurationChangedObserver.capture());
 
@@ -513,7 +522,8 @@ public class SingleTabSwitcherOnNtpMediatorUnitTest {
                 /* isScrollableMvtEnabled= */ false,
                 callback,
                 null,
-                null, true);
+                null,
+                true);
         verify(callback, never()).run();
 
         mPropertyModel.get(CLICK_LISTENER).onClick(null);
@@ -537,7 +547,8 @@ public class SingleTabSwitcherOnNtpMediatorUnitTest {
                         /* isScrollableMvtEnabled= */ true,
                         null,
                         mTabContentManager,
-                        mUiConfig, true);
+                        mUiConfig,
+                        true);
 
         verify(mUiConfig).addObserver(mDisplayStyleObserverCaptor.capture());
         assertEquals(0, mPropertyModel.get(LATERAL_MARGIN));

@@ -49,9 +49,13 @@ BASE_FEATURE(kClientSideDetectionTypeForceRequest,
              "ClientSideDetectionTypeForceRequest",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kCreateWarningShownClientSafeBrowsingReports,
+             "CreateWarningShownClientSafeBrowsingReports",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kDeepScanningEncryptedArchives,
              "SafeBrowsingDeepScanningEncryptedArchives",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kDelayedWarnings,
              "SafeBrowsingDelayedWarnings",
@@ -63,14 +67,6 @@ BASE_FEATURE(kDelayedWarnings,
 const base::FeatureParam<bool> kDelayedWarningsEnableMouseClicks{
     &kDelayedWarnings, "mouse",
     /*default_value=*/false};
-
-BASE_FEATURE(kDownloadBubble,
-             "DownloadBubble",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kDownloadBubbleV2,
-             "DownloadBubbleV2",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kDownloadTailoredWarnings,
              "DownloadTailoredWarnings",
@@ -136,7 +132,7 @@ BASE_FEATURE(
 
 BASE_FEATURE(kExtensionTelemetryTabsApiSignal,
              "SafeBrowsingExtensionTelemetryTabsApiSignal",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kExtensionTelemetryTabsExecuteScriptSignal,
              "SafeBrowsingExtensionTelemetryTabsExecuteScriptSignal",
@@ -144,7 +140,7 @@ BASE_FEATURE(kExtensionTelemetryTabsExecuteScriptSignal,
 
 BASE_FEATURE(kExtensionTelemetryDisableOffstoreExtensions,
              "SafeBrowsingExtensionTelemetryDisableOffstoreExtensions",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kFriendlierSafeBrowsingSettingsEnhancedProtection,
              "FriendlierSafeBrowsingSettingsEnhancedProtection",
@@ -161,7 +157,8 @@ BASE_FEATURE(kHashPrefixRealTimeLookups,
 constexpr base::FeatureParam<std::string> kHashPrefixRealTimeLookupsRelayUrl{
     &kHashPrefixRealTimeLookups,
     "SafeBrowsingHashPrefixRealTimeLookupsRelayUrl",
-    /*default_value=*/""};
+    /*default_value=*/
+    "https://google-ohttp-relay-safebrowsing.fastly-edge.com/"};
 
 BASE_FEATURE(kHashRealTimeOverOhttp,
              "SafeBrowsingHashRealTimeOverOhttp",
@@ -211,7 +208,7 @@ constexpr base::FeatureParam<std::string> kRedWarningSurveyDidProceedFilter{
 
 BASE_FEATURE(kRedInterstitialFacelift,
              "RedInterstitialFacelift",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kReferrerChainParameters,
              "SafeBrowsingReferrerChainParameters",
@@ -228,6 +225,10 @@ BASE_FEATURE(kSafeBrowsingCsbrrNewDownloadTrigger,
              "SafeBrowsingCsbrrNewDownloadTrigger",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kSafeBrowsingAsyncRealTimeCheck,
+             "SafeBrowsingAsyncRealTimeCheck",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kSafeBrowsingLookupMechanismExperiment,
              "SafeBrowsingLookupMechanismExperiment",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -240,6 +241,10 @@ const base::FeatureParam<bool> kUrlLevelValidationForHprtExperimentEnabled{
 #if BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kSafeBrowsingNewGmsApiForBrowseUrlDatabaseCheck,
              "SafeBrowsingNewGmsApiForBrowseUrlDatabaseCheck",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kSafeBrowsingNewGmsApiForSubresourceFilterCheck,
+             "SafeBrowsingNewGmsApiForSubresourceFilterCheck",
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
@@ -287,6 +292,10 @@ BASE_FEATURE(kStrictDownloadTimeout,
 constexpr base::FeatureParam<int> kStrictDownloadTimeoutMilliseconds{
     &kStrictDownloadTimeout, "TimeoutMilliseconds",
     /*default_value=*/7000};
+
+BASE_FEATURE(kSuspiciousSiteDetectionRTLookups,
+             "SuspiciousSiteDetectionRTLookups",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSuspiciousSiteTriggerQuotaFeature,
              "SafeBrowsingSuspiciousSiteTriggerQuota",
@@ -356,9 +365,8 @@ constexpr struct {
     {&kClientSideDetectionKillswitch, true},
     {&kClientSideDetectionModelIsFlatBuffer, true},
     {&kClientSideDetectionTypeForceRequest, true},
+    {&kCreateWarningShownClientSafeBrowsingReports, false},
     {&kDelayedWarnings, true},
-    {&kDownloadBubble, true},
-    {&kDownloadBubbleV2, true},
     {&kDownloadTailoredWarnings, true},
     {&kEvaluateProtectedPasswordLengthMinimum, false},
     {&kExtensionTelemetryDisableOffstoreExtensions, true},
@@ -378,6 +386,7 @@ constexpr struct {
     {&kNestedArchives, true},
     {&kRedInterstitialFacelift, false},
     {&kSafeBrowsingCsbrrNewDownloadTrigger, true},
+    {&kSafeBrowsingAsyncRealTimeCheck, true},
     {&kSafeBrowsingLookupMechanismExperiment, true},
     {&kSafeBrowsingRemoveCookiesInAuthRequests, true},
     {&kSafeBrowsingSkipImageCssFont, true},
@@ -386,6 +395,7 @@ constexpr struct {
     {&kSevenZipEvaluationEnabled, true},
     {&kSimplifiedUrlDisplay, true},
     {&kStrictDownloadTimeout, true},
+    {&kSuspiciousSiteDetectionRTLookups, false},
     {&kSuspiciousSiteTriggerQuotaFeature, true},
     {&kTailoredSecurityIntegration, true},
     {&kThreatDomDetailsTagAndAttributeFeature, false},

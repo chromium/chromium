@@ -21,6 +21,10 @@
 #include "ppapi/host/resource_host.h"
 #include "ppapi/proxy/resource_message_params.h"
 
+namespace gpu {
+class ClientSharedImage;
+}
+
 namespace content {
 
 class RendererPpapiHost;
@@ -71,8 +75,15 @@ class PepperVideoDecoderHost : public ppapi::host::ResourceHost {
   };
 
   struct SharedImage {
+    SharedImage(gfx::Size size,
+                PictureBufferState state,
+                scoped_refptr<gpu::ClientSharedImage> client_shared_image);
+    SharedImage(const SharedImage& shared_image);
+    ~SharedImage();
+
     gfx::Size size;
     PictureBufferState state;
+    scoped_refptr<gpu::ClientSharedImage> client_shared_image;
   };
 
   friend class VideoDecoderShim;

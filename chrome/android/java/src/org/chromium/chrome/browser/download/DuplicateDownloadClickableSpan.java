@@ -37,8 +37,12 @@ public class DuplicateDownloadClickableSpan extends ClickableSpan {
      * @param otrProfileID Off the record profile ID.
      * @param source Enum for UMA reporting.
      */
-    public DuplicateDownloadClickableSpan(Context context, String filePath, Runnable runnable,
-            OTRProfileID otrProfileID, @DownloadOpenSource int source) {
+    public DuplicateDownloadClickableSpan(
+            Context context,
+            String filePath,
+            Runnable runnable,
+            OTRProfileID otrProfileID,
+            @DownloadOpenSource int source) {
         mContext = context;
         mRunnable = runnable;
         mOTRProfileID = otrProfileID;

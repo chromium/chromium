@@ -8,6 +8,7 @@ load("//lib/builder_config.star", "builder_config")
 load("//lib/builders.star", "builders", "cpu", "os", "reclient", "xcode")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
+load("//lib/gn_args.star", "gn_args")
 load("//lib/structs.star", "structs")
 
 ci.defaults.set(
@@ -21,6 +22,9 @@ ci.defaults.set(
     reclient_jobs = reclient.jobs.DEFAULT,
     service_account = ci.DEFAULT_SERVICE_ACCOUNT,
     shadow_service_account = ci.DEFAULT_SHADOW_SERVICE_ACCOUNT,
+    siso_configs = ["builder"],
+    siso_enable_cloud_profiler = True,
+    siso_enable_cloud_trace = True,
 )
 
 consoles.console_view(
@@ -103,6 +107,13 @@ ci.builder(
         ),
         build_gs_bucket = "chromium-fyi-archive",
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "release_builder",
+            "try_builder",
+            "reclient",
+        ],
+    ),
     os = os.LINUX_DEFAULT,
     console_view_entry = consoles.console_view_entry(
         category = "viz",
@@ -125,6 +136,16 @@ ci.builder(
         android_config = builder_config.android_config(config = "arm64_builder_mb"),
         build_gs_bucket = "chromium-fyi-archive",
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "android_builder",
+            "release_builder",
+            "reclient",
+            "minimal_symbols",
+            "arm64",
+            "strip_debug_info",
+        ],
+    ),
     os = os.LINUX_DEFAULT,
     console_view_entry = consoles.console_view_entry(
         category = "site_isolation",
@@ -133,7 +154,11 @@ ci.builder(
 )
 
 ci.builder(
-    name = "lacros-amd64-generic-rel-fyi",
+    name = "chromeos-jacuzzi-rel-skylab-fyi",
+    description_html = """\
+This builder builds public image and runs tests on DUTs in the lab.<br/>\
+This is experimental.
+""",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -146,92 +171,47 @@ ci.builder(
             config = "chromium",
             apply_configs = [
                 "mb",
-                "mb_no_luci_auth",
             ],
-            target_bits = 64,
-            target_platform = builder_config.target_platform.CHROMEOS,
-            target_cros_boards = ["eve"],
-            cros_boards_with_qemu_images = ["amd64-generic"],
-        ),
-        build_gs_bucket = "chromium-fyi-archive",
-    ),
-    os = os.LINUX_DEFAULT,
-    console_view_entry = consoles.console_view_entry(
-        category = "lacros",
-        short_name = "lcr",
-    ),
-    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
-)
-
-ci.builder(
-    name = "lacros-amd64-generic-rel-skylab-fyi",
-    # Some tests on this bot depend on being unauthenticated with GS, so
-    # don't run the tests inside a luci-auth context to avoid having the
-    # BOTO config setup for the task's service account.
-    # TODO(crbug.com/1217155): Fix this.
-    builder_spec = builder_config.builder_spec(
-        gclient_config = builder_config.gclient_config(
-            config = "chromium",
-            apply_configs = [
-                "chromeos",
-                "checkout_lacros_sdk",
-            ],
-        ),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium",
-            apply_configs = ["mb", "mb_no_luci_auth"],
-            target_bits = 64,
-            target_platform = "chromeos",
-            target_cros_boards = "eve",
-            cros_boards_with_qemu_images = "amd64-generic",
-        ),
-        build_gs_bucket = "chromium-fyi-archive",
-        skylab_upload_location = builder_config.skylab_upload_location(
-            gs_bucket = "chromium-ci-skylab",
-        ),
-    ),
-    os = os.LINUX_DEFAULT,
-    console_view_entry = consoles.console_view_entry(
-        category = "lacros",
-        short_name = "lsf",
-    ),
-)
-
-ci.builder(
-    name = "lacros-arm-generic-rel-skylab-fyi",
-    builder_spec = builder_config.builder_spec(
-        gclient_config = builder_config.gclient_config(
-            config = "chromium",
-            apply_configs = [
-                "chromeos",
-                "checkout_lacros_sdk",
-            ],
-        ),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium",
-            apply_configs = ["mb"],
+            build_config = builder_config.build_config.RELEASE,
+            target_arch = builder_config.target_arch.ARM,
             target_bits = 32,
-            target_platform = "chromeos",
-            target_cros_boards = "kevin:jacuzzi:arm-generic",
+            target_platform = builder_config.target_platform.CHROMEOS,
+            target_cros_boards = [
+                "jacuzzi",
+                "arm64-generic",
+            ],
         ),
-        build_gs_bucket = "chromium-fyi-archive",
         skylab_upload_location = builder_config.skylab_upload_location(
-            gs_bucket = "chromium-ci-skylab",
+            gs_bucket = "chrome-test-builds",
+            gs_extra = "ash",
         ),
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "chromeos_device",
+            "ozone_headless",
+            "dcheck_off",
+            "reclient",
+            "jacuzzi",
+            "include_unwind_tables",
+            "also_build_lacros_chrome_for_architecture_arm64",
+            "is_skylab",
+        ],
     ),
     os = os.LINUX_DEFAULT,
     console_view_entry = consoles.console_view_entry(
-        category = "lacros",
-        short_name = "arm",
+        category = "ash",
+        short_name = "jcz",
     ),
+    contact_team_email = "chromeos-velocity@google.com",
 )
 
 ci.builder(
-    name = "lacros-arm64-generic-rel-skylab-fyi",
-    # Some tests on this bot depend on being unauthenticated with GS, so
-    # don't run the tests inside a luci-auth context to avoid having the
-    # BOTO config setup for the task's service account.
-    # TODO(crbug.com/1217155): Fix this.
+    name = "chromeos-octopus-rel-skylab-fyi",
+    description_html = """\
+This builder builds public image and runs tests on octopus DUTs in the lab.<br/>\
+This is experimental.
+""",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -242,22 +222,40 @@ ci.builder(
         ),
         chromium_config = builder_config.chromium_config(
             config = "chromium",
-            apply_configs = ["mb", "mb_no_luci_auth"],
-            target_bits = 64,
-            target_platform = "chromeos",
-            target_cros_boards = "kevin:jacuzzi",
-            cros_boards_with_qemu_images = "arm64-generic",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_arch = builder_config.target_arch.INTEL,
+            target_bits = 32,
+            target_platform = builder_config.target_platform.CHROMEOS,
+            target_cros_boards = [
+                "octopus",
+                "amd64-generic",
+            ],
         ),
-        build_gs_bucket = "chromium-fyi-archive",
         skylab_upload_location = builder_config.skylab_upload_location(
-            gs_bucket = "chromium-ci-skylab",
+            gs_bucket = "chrome-test-builds",
+            gs_extra = "ash",
         ),
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "also_build_lacros_chrome_for_architecture_amd64",
+            "chromeos_device",
+            "include_unwind_tables",
+            "is_skylab",
+            "octopus",
+            "ozone_headless",
+            "reclient",
+        ],
     ),
     os = os.LINUX_DEFAULT,
     console_view_entry = consoles.console_view_entry(
-        category = "lacros",
-        short_name = "larsf",
+        category = "ash",
+        short_name = "oct",
     ),
+    contact_team_email = "chromeos-velocity@google.com",
 )
 
 ci.builder(
@@ -271,6 +269,12 @@ ci.builder(
             target_bits = 64,
         ),
         build_gs_bucket = "chromium-fyi-archive",
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "release_builder",
+            "reclient",
+        ],
     ),
     os = os.LINUX_DEFAULT,
     console_view_entry = consoles.console_view_entry(
@@ -300,6 +304,14 @@ ci.builder(
         ),
         build_gs_bucket = "chromium-fyi-archive",
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "chromeos_with_codecs",
+            "release_builder",
+            "reclient",
+            "use_cups",
+        ],
+    ),
     builderless = True,
     os = os.LINUX_DEFAULT,
     console_view_entry = consoles.console_view_entry(
@@ -325,6 +337,13 @@ ci.builder(
         ),
         build_gs_bucket = "chromium-fyi-archive",
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "lacros_on_linux",
+            "release_builder",
+            "reclient",
+        ],
+    ),
     os = os.LINUX_DEFAULT,
     console_view_entry = consoles.console_view_entry(
         category = "default",
@@ -347,6 +366,13 @@ ci.builder(
             target_bits = 64,
         ),
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "release_builder_blink",
+            "reclient",
+            "minimal_symbols",
+        ],
+    ),
     os = os.LINUX_DEFAULT,
     console_view_entry = consoles.console_view_entry(
         category = "linux|blink",
@@ -366,6 +392,13 @@ ci.builder(
         ),
         build_gs_bucket = "chromium-fyi-archive",
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "debug_builder",
+            "reclient",
+            "enable_blink_animation_use_time_delta",
+        ],
+    ),
     os = os.LINUX_DEFAULT,
     console_view_entry = consoles.console_view_entry(
         category = "linux|blink",
@@ -384,6 +417,14 @@ ci.builder(
             target_bits = 64,
         ),
         build_gs_bucket = "chromium-fyi-archive",
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "release_builder_blink",
+            "reclient",
+            "enable_blink_heap_verification",
+            "dcheck_always_on",
+        ],
     ),
     os = os.LINUX_DEFAULT,
     console_view_entry = consoles.console_view_entry(
@@ -405,6 +446,13 @@ ci.builder(
             target_bits = 64,
         ),
         build_gs_bucket = "chromium-fyi-archive",
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "release_builder",
+            "reclient",
+            "minimal_symbols",
+        ],
     ),
     os = os.LINUX_DEFAULT,
     console_view_entry = consoles.console_view_entry(
@@ -467,6 +515,13 @@ ci.builder(
         ),
         build_gs_bucket = "chromium-fyi-archive",
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "release_builder",
+            "reclient",
+            "minimal_symbols",
+        ],
+    ),
     os = os.LINUX_DEFAULT,
     console_view_entry = consoles.console_view_entry(
         category = "network|sandbox",
@@ -497,6 +552,20 @@ ci.builder(
         ),
         build_gs_bucket = "chromium-android-archive",
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "android_builder",
+            "release_builder",
+            "reclient",
+            "minimal_symbols",
+            "x64",
+            "strip_debug_info",
+            "android_fastbuild",
+            "webview_trichrome",
+            "no_secondary_abi",
+            "webview_shell",
+        ],
+    ),
     builderless = False,
     os = os.LINUX_DEFAULT,
     console_view_entry = consoles.console_view_entry(
@@ -521,6 +590,15 @@ fyi_ios_builder(
             target_platform = "ios",
         ),
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "debug_static_builder",
+            "reclient",
+            "ios_simulator",
+            "arm64",
+            "xctest",
+        ],
+    ),
     builderless = False,
     console_view_entry = consoles.console_view_entry(
         category = "mac",
@@ -541,6 +619,14 @@ ci.builder(
             target_bits = 64,
         ),
         build_gs_bucket = "chromium-fyi-archive",
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "lacros_on_linux",
+            "release_builder",
+            "reclient",
+            "also_build_ash_chrome",
+        ],
     ),
     os = os.LINUX_DEFAULT,
     console_view_entry = consoles.console_view_entry(
@@ -582,6 +668,14 @@ ci.builder(
             target_bits = 64,
         ),
         build_gs_bucket = "chromium-fyi-archive",
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "lacros_on_linux",
+            "debug_builder",
+            "reclient",
+            "also_build_ash_chrome",
+        ],
     ),
     os = os.LINUX_DEFAULT,
     console_view_entry = consoles.console_view_entry(
@@ -629,6 +723,15 @@ ci.builder(
             config = "x64_builder",
         ),
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "perfetto",
+            "release_builder",
+            "reclient",
+            "android_builder",
+            "x64",
+        ],
+    ),
     builderless = True,
     os = os.LINUX_DEFAULT,
     console_view_entry = consoles.console_view_entry(
@@ -647,6 +750,13 @@ ci.builder(
             target_bits = 64,
         ),
         build_gs_bucket = "chromium-fyi-archive",
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "perfetto",
+            "release_builder",
+            "reclient",
+        ],
     ),
     os = os.LINUX_DEFAULT,
     console_view_entry = consoles.console_view_entry(
@@ -669,11 +779,45 @@ fyi_mac_builder(
             target_bits = 64,
         ),
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "perfetto",
+            "release_builder",
+            "reclient",
+        ],
+    ),
     builderless = True,
     cores = 8,
     console_view_entry = consoles.console_view_entry(
         category = "mac",
     ),
+)
+
+ci.builder(
+    name = "linux-wpt-chromium-rel",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(config = "chromium"),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = ["mb"],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+        ),
+        build_gs_bucket = "chromium-fyi-archive",
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "release_builder_blink",
+            "reclient",
+            "minimal_symbols",
+            "dcheck_always_on",
+        ],
+    ),
+    os = os.LINUX_DEFAULT,
+    console_view_entry = consoles.console_view_entry(
+        category = "linux",
+    ),
+    experimental = True,
 )
 
 ci.builder(
@@ -688,6 +832,13 @@ ci.builder(
             build_config = builder_config.build_config.RELEASE,
             target_bits = 64,
         ),
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "release_builder_blink",
+            "reclient",
+            "minimal_symbols",
+        ],
     ),
     os = os.LINUX_DEFAULT,
     console_view_entry = consoles.console_view_entry(
@@ -709,24 +860,12 @@ ci.builder(
             target_bits = 64,
         ),
     ),
-    os = os.LINUX_DEFAULT,
-    console_view_entry = consoles.console_view_entry(
-        category = "linux",
-    ),
-    experimental = True,
-)
-
-ci.builder(
-    name = "linux-wpt-fyi-rel",
-    builder_spec = builder_config.builder_spec(
-        gclient_config = builder_config.gclient_config(config = "chromium"),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium",
-            apply_configs = ["mb"],
-            build_config = builder_config.build_config.RELEASE,
-            target_bits = 64,
-        ),
-        build_gs_bucket = "chromium-fyi-archive",
+    gn_args = gn_args.config(
+        configs = [
+            "release_builder_blink",
+            "reclient",
+            "minimal_symbols",
+        ],
     ),
     os = os.LINUX_DEFAULT,
     console_view_entry = consoles.console_view_entry(
@@ -748,6 +887,15 @@ ci.builder(
             target_bits = 64,
         ),
         build_gs_bucket = "chromium-fyi-archive",
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "asan",
+            "lsan",
+            "release_builder",
+            "try_builder",
+            "reclient",
+        ],
     ),
     os = os.LINUX_DEFAULT,
     console_view_entry = consoles.console_view_entry(
@@ -775,6 +923,17 @@ fyi_ios_builder(
             target_platform = "ios",
         ),
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "minimal_symbols",
+            "ios_simulator",
+            "x64",
+            "release_builder",
+            "reclient",
+            "xctest",
+            "dcheck_always_on",
+        ],
+    ),
     builderless = False,
     os = os.MAC_DEFAULT,
     console_view_entry = consoles.console_view_entry(
@@ -799,6 +958,16 @@ ci.builder(
         ),
         build_gs_bucket = "chromium-fyi-archive",
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "gpu_tests",
+            "debug",
+            "no_symbols",
+            "dcheck_always_on",
+            "static",
+            "reclient",
+        ],
+    ),
     builderless = False,
     cores = 12,
     os = os.MAC_13,
@@ -821,6 +990,13 @@ ci.builder(
         ),
         build_gs_bucket = "chromium-fyi-archive",
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "headless_shell",
+            "release_builder",
+            "reclient",
+        ],
+    ),
     os = os.LINUX_DEFAULT,
     console_view_entry = consoles.console_view_entry(
         category = "linux",
@@ -834,6 +1010,14 @@ ci.builder(
     name = "linux-rel-no-external-ip",
     builder_spec = builder_config.copy_from(
         "ci/Linux Builder",
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "gpu_tests",
+            "release_builder",
+            "reclient",
+            "devtools_do_typecheck",
+        ],
     ),
     builderless = False,
     os = os.LINUX_DEFAULT,
@@ -859,6 +1043,13 @@ ci.builder(
             target_bits = 64,
         ),
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "perfetto",
+            "release_builder",
+            "reclient",
+        ],
+    ),
     builderless = True,
     os = os.WINDOWS_DEFAULT,
     console_view_entry = consoles.console_view_entry(
@@ -871,6 +1062,14 @@ ci.builder(
     name = "win10-rel-no-external-ip",
     builder_spec = builder_config.copy_from(
         "ci/Win x64 Builder",
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "gpu_tests",
+            "release_builder",
+            "reclient",
+            "minimal_symbols",
+        ],
     ),
     builderless = False,
     os = os.WINDOWS_ANY,
@@ -893,6 +1092,13 @@ ci.builder(
         ),
         build_gs_bucket = "chromium-fyi-archive",
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "release_builder",
+            "reclient",
+            "perfetto_zlib",
+        ],
+    ),
     os = os.LINUX_DEFAULT,
     console_view_entry = consoles.console_view_entry(
         category = "perfetto",
@@ -914,6 +1120,13 @@ fyi_mac_builder(
             target_bits = 64,
         ),
         build_gs_bucket = "chromium-fyi-archive",
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "release_builder",
+            "reclient",
+            "perfetto_zlib",
+        ],
     ),
     builderless = True,
     cores = None,
@@ -938,6 +1151,13 @@ ci.builder(
         ),
         build_gs_bucket = "chromium-fyi-archive",
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "release_builder",
+            "reclient",
+            "perfetto_zlib",
+        ],
+    ),
     builderless = True,
     os = os.WINDOWS_DEFAULT,
     console_view_entry = consoles.console_view_entry(
@@ -954,6 +1174,26 @@ fyi_reclient_comparison_builder(
 This builder measures Android build performance with reclient prod vs test.<br/>\
 The bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium/builders/ci/Deterministic%20Android%20(dbg)">Deterministic Android (dbg)</a>.\
 """,
+    gn_args = {
+        "build1": gn_args.config(
+            configs = [
+                "android_builder",
+                "debug_static_builder",
+                "reclient",
+                "arm64",
+                "webview_google",
+            ],
+        ),
+        "build2": gn_args.config(
+            configs = [
+                "android_builder",
+                "debug_static_builder",
+                "reclient",
+                "arm64",
+                "webview_google",
+            ],
+        ),
+    },
     cores = 16,
     os = os.LINUX_DEFAULT,
     # Target luci-chromium-ci-bionic-us-central1-b-ssd-16-*.
@@ -988,21 +1228,28 @@ The bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium
     shadow_reclient_instance = reclient.instance.TEST_UNTRUSTED,
 )
 
-fyi_reclient_comparison_builder(
-    name = "Comparison Linux (reclient)",
-    os = os.LINUX_DEFAULT,
-    console_view_entry = consoles.console_view_entry(
-        category = "linux",
-        short_name = "cmp",
-    ),
-    execution_timeout = 6 * time.hour,
-    reclient_cache_silo = "Comparison Linux - cache siloed",
-    reclient_instance = reclient.instance.TEST_TRUSTED,
-    shadow_reclient_instance = reclient.instance.TEST_UNTRUSTED,
-)
-
 fyi_mac_reclient_comparison_builder(
     name = "Comparison Mac (reclient)",
+    gn_args = {
+        "build1": gn_args.config(
+            configs = [
+                "gpu_tests",
+                "release_builder",
+                "reclient",
+                "minimal_symbols",
+                "disable_nacl",
+            ],
+        ),
+        "build2": gn_args.config(
+            configs = [
+                "gpu_tests",
+                "release_builder",
+                "reclient",
+                "minimal_symbols",
+                "disable_nacl",
+            ],
+        ),
+    },
     builderless = True,
     cores = None,
     console_view_entry = consoles.console_view_entry(
@@ -1020,6 +1267,28 @@ fyi_mac_reclient_comparison_builder(
 
 fyi_mac_reclient_comparison_builder(
     name = "Comparison Mac arm64 (reclient)",
+    gn_args = {
+        "build1": gn_args.config(
+            configs = [
+                "arm64",
+                "gpu_tests",
+                "release_builder",
+                "reclient",
+                "minimal_symbols",
+                "disable_nacl",
+            ],
+        ),
+        "build2": gn_args.config(
+            configs = [
+                "arm64",
+                "gpu_tests",
+                "release_builder",
+                "reclient",
+                "minimal_symbols",
+                "disable_nacl",
+            ],
+        ),
+    },
     builderless = True,
     cores = None,
     console_view_entry = consoles.console_view_entry(
@@ -1037,6 +1306,28 @@ fyi_mac_reclient_comparison_builder(
 
 fyi_mac_reclient_comparison_builder(
     name = "Comparison Mac arm64 on arm64 (reclient)",
+    gn_args = {
+        "build1": gn_args.config(
+            configs = [
+                "arm64",
+                "gpu_tests",
+                "release_builder",
+                "reclient",
+                "minimal_symbols",
+                "disable_nacl",
+            ],
+        ),
+        "build2": gn_args.config(
+            configs = [
+                "arm64",
+                "gpu_tests",
+                "release_builder",
+                "reclient",
+                "minimal_symbols",
+                "disable_nacl",
+            ],
+        ),
+    },
     builderless = True,
     cores = None,
     cpu = cpu.ARM64,
@@ -1055,6 +1346,24 @@ fyi_mac_reclient_comparison_builder(
 
 fyi_reclient_comparison_builder(
     name = "Comparison Windows (8 cores) (reclient)",
+    gn_args = {
+        "build1": gn_args.config(
+            configs = [
+                "gpu_tests",
+                "release_builder",
+                "reclient",
+                "minimal_symbols",
+            ],
+        ),
+        "build2": gn_args.config(
+            configs = [
+                "gpu_tests",
+                "release_builder",
+                "reclient",
+                "minimal_symbols",
+            ],
+        ),
+    },
     builderless = True,
     cores = 8,
     os = os.WINDOWS_DEFAULT,
@@ -1071,6 +1380,24 @@ fyi_reclient_comparison_builder(
 
 fyi_reclient_comparison_builder(
     name = "Comparison Windows (reclient)",
+    gn_args = {
+        "build1": gn_args.config(
+            configs = [
+                "gpu_tests",
+                "release_builder",
+                "reclient",
+                "minimal_symbols",
+            ],
+        ),
+        "build2": gn_args.config(
+            configs = [
+                "gpu_tests",
+                "release_builder",
+                "reclient",
+                "minimal_symbols",
+            ],
+        ),
+    },
     builderless = True,
     cores = 32,
     os = os.WINDOWS_DEFAULT,
@@ -1087,6 +1414,30 @@ fyi_reclient_comparison_builder(
 
 fyi_reclient_comparison_builder(
     name = "Comparison Simple Chrome (reclient)",
+    gn_args = {
+        "build1": gn_args.config(
+            configs = [
+                "chromeos_device",
+                "dcheck_off",
+                "reclient",
+                "amd64-generic-vm",
+                "ozone_headless",
+                "use_fake_dbus_clients",
+                "also_build_lacros_chrome_for_architecture_amd64",
+            ],
+        ),
+        "build2": gn_args.config(
+            configs = [
+                "chromeos_device",
+                "dcheck_off",
+                "reclient",
+                "amd64-generic-vm",
+                "ozone_headless",
+                "use_fake_dbus_clients",
+                "also_build_lacros_chrome_for_architecture_amd64",
+            ],
+        ),
+    },
     builderless = True,
     os = os.LINUX_DEFAULT,
     console_view_entry = consoles.console_view_entry(
@@ -1101,6 +1452,26 @@ fyi_reclient_comparison_builder(
 
 fyi_mac_reclient_comparison_builder(
     name = "Comparison ios (reclient)",
+    gn_args = {
+        "build1": gn_args.config(
+            configs = [
+                "debug_static_builder",
+                "reclient",
+                "ios_simulator",
+                "x64",
+                "xctest",
+            ],
+        ),
+        "build2": gn_args.config(
+            configs = [
+                "debug_static_builder",
+                "reclient",
+                "ios_simulator",
+                "x64",
+                "xctest",
+            ],
+        ),
+    },
     builderless = True,
     cores = None,
     console_view_entry = consoles.console_view_entry(
@@ -1118,7 +1489,7 @@ fyi_reclient_comparison_builder(
     name = "Comparison Android (reclient)(CQ)",
     description_html = """\
 This builder measures Android build performance with reclient prod vs test in cq configuration.<br/>\
-The bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium/builders/try/android-pie-arm64-rel-compilator">android-pie-arm64-rel-compilator</a>.\
+The bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium/builders/try/android-arm64-rel-compilator">android-arm64-rel-compilator</a>.\
 """,
     cores = 32,
     os = os.LINUX_DEFAULT,
@@ -1130,28 +1501,10 @@ The bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium
     execution_timeout = 15 * time.hour,
     reclient_cache_silo = "Comparison Android CQ - cache siloed",
     reclient_instance = reclient.instance.TEST_UNTRUSTED,
-    reclient_jobs = 300,
+    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
     shadow_reclient_instance = reclient.instance.TEST_UNTRUSTED,
-)
-
-fyi_reclient_comparison_builder(
-    name = "Comparison Linux (reclient)(CQ)",
-    description_html = """\
-This builder measures Linux build performance with reclient prod vs test in cq configuration.<br/>\
-The bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium/builders/try/linux-rel-compilator">linux-rel-compilator</a>.\
-""",
-    cores = 16,
-    os = os.LINUX_DEFAULT,
-    ssd = True,
-    console_view_entry = consoles.console_view_entry(
-        category = "linux|cq",
-        short_name = "cmp",
-    ),
-    execution_timeout = 6 * time.hour,
-    reclient_cache_silo = "Comparison Linux CQ - cache siloed",
-    reclient_instance = reclient.instance.TEST_UNTRUSTED,
-    reclient_jobs = 150,
-    shadow_reclient_instance = reclient.instance.TEST_UNTRUSTED,
+    siso_enabled = True,
+    siso_project = reclient.instance.TEST_UNTRUSTED,
 )
 
 fyi_mac_reclient_comparison_builder(
@@ -1181,7 +1534,7 @@ fyi_reclient_comparison_builder(
     name = "Comparison Windows (reclient)(CQ)",
     description_html = """\
 This builder measures Windows build performance with reclient prod vs test in cq configuration.<br/>\
-The bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium/builders/try/win10_chromium_x64_rel_ng-compilator">win10_chromium_x64_rel_ng-compilator</a>.\
+The bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium/builders/try/win-rel-compilator">win-rel-compilator</a>.\
 """,
     builderless = True,
     cores = 32,
@@ -1194,8 +1547,10 @@ The bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium
     execution_timeout = 6 * time.hour,
     reclient_cache_silo = "Comparison Windows CQ - cache siloed",
     reclient_instance = reclient.instance.TEST_UNTRUSTED,
-    reclient_jobs = 300,
+    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
     shadow_reclient_instance = reclient.instance.TEST_UNTRUSTED,
+    siso_enabled = True,
+    siso_project = reclient.instance.TEST_UNTRUSTED,
 )
 
 fyi_reclient_comparison_builder(
@@ -1215,8 +1570,10 @@ The bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium
     execution_timeout = 10 * time.hour,
     reclient_cache_silo = "Comparison Simple Chrome CQ - cache siloed",
     reclient_instance = reclient.instance.TEST_UNTRUSTED,
-    reclient_jobs = 300,
+    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
     shadow_reclient_instance = reclient.instance.TEST_UNTRUSTED,
+    siso_enabled = True,
+    siso_project = reclient.instance.TEST_UNTRUSTED,
 )
 
 fyi_mac_reclient_comparison_builder(
@@ -1252,6 +1609,13 @@ ci.builder(
             ),
             build_gs_bucket = None,
         ),
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "gpu_tests",
+            "release_builder",
+            "reclient",
+        ],
     ),
     cores = 32,
     os = os.LINUX_DEFAULT,
@@ -1292,6 +1656,14 @@ ci.builder(
         ),
         build_gs_bucket = "chromium-fyi-archive",
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "gpu_tests",
+            "release_builder",
+            "reclient",
+            "minimal_symbols",
+        ],
+    ),
     builderless = True,
     cores = 32,
     os = os.WINDOWS_DEFAULT,
@@ -1319,6 +1691,14 @@ ci.builder(
             target_bits = 64,
         ),
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "gpu_tests",
+            "release_builder",
+            "reclient",
+            "minimal_symbols",
+        ],
+    ),
     builderless = True,
     cores = 32,
     os = os.WINDOWS_DEFAULT,
@@ -1337,6 +1717,7 @@ ci.builder(
     shadow_reclient_instance = None,
 )
 
+# TODO(crbug.com/1260232): remove this after the migration.
 fyi_mac_builder(
     name = "Mac Builder (reclient compare)",
     description_html = "Verifies whether local and remote build artifacts are identical.",
@@ -1356,6 +1737,14 @@ fyi_mac_builder(
             target_bits = 64,
         ),
         build_gs_bucket = "chromium-fyi-archive",
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "gpu_tests",
+            "release_builder",
+            "reclient",
+            "minimal_symbols",
+        ],
     ),
     builderless = True,
     cores = None,  # crbug.com/1245114
@@ -1391,6 +1780,13 @@ fyi_mac_builder(
             target_platform = builder_config.target_platform.MAC,
         ),
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "release_builder_blink",
+            "reclient",
+            "minimal_symbols",
+        ],
+    ),
     builderless = False,
     cores = None,
     os = os.MAC_ANY,
@@ -1415,6 +1811,14 @@ fyi_mac_builder(
             target_platform = builder_config.target_platform.MAC,
         ),
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "release_builder_blink",
+            "reclient",
+            "arm64",
+            "minimal_symbols",
+        ],
+    ),
     builderless = False,
     cores = None,
     os = os.MAC_ANY,
@@ -1438,6 +1842,13 @@ fyi_mac_builder(
             target_bits = 64,
             target_platform = builder_config.target_platform.MAC,
         ),
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "release_builder_blink",
+            "reclient",
+            "minimal_symbols",
+        ],
     ),
     builderless = False,
     cores = None,
@@ -1464,6 +1875,14 @@ fyi_mac_builder(
             target_platform = builder_config.target_platform.MAC,
         ),
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "release_builder_blink",
+            "reclient",
+            "arm64",
+            "minimal_symbols",
+        ],
+    ),
     builderless = False,
     cores = None,
     os = os.MAC_ANY,
@@ -1487,6 +1906,13 @@ fyi_mac_builder(
             target_bits = 64,
             target_platform = builder_config.target_platform.MAC,
         ),
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "release_builder_blink",
+            "reclient",
+            "minimal_symbols",
+        ],
     ),
     builderless = False,
     cores = None,
@@ -1513,6 +1939,14 @@ fyi_mac_builder(
             target_platform = builder_config.target_platform.MAC,
         ),
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "release_builder_blink",
+            "reclient",
+            "arm64",
+            "minimal_symbols",
+        ],
+    ),
     builderless = False,
     cores = None,
     os = os.MAC_ANY,
@@ -1537,6 +1971,13 @@ fyi_mac_builder(
             target_bits = 64,
             target_platform = builder_config.target_platform.MAC,
         ),
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "release_builder_blink",
+            "reclient",
+            "minimal_symbols",
+        ],
     ),
     builderless = False,
     cores = None,
@@ -1565,6 +2006,17 @@ ci.builder(
         ),
         build_gs_bucket = "chromium-fyi-archive",
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "chromeos_device",
+            "dcheck_off",
+            "reclient",
+            "amd64-generic-vm",
+            "ozone_headless",
+            "use_fake_dbus_clients",
+            "also_build_lacros_chrome_for_architecture_amd64",
+        ],
+    ),
     os = os.LINUX_DEFAULT,
     console_view_entry = consoles.console_view_entry(
         category = "cros x64",
@@ -1592,6 +2044,17 @@ ci.builder(
             ],
         ),
         build_gs_bucket = "chromium-fyi-archive",
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "chromeos_device",
+            "dcheck_off",
+            "reclient",
+            "amd64-generic-vm",
+            "ozone_headless",
+            "use_fake_dbus_clients",
+            "also_build_lacros_chrome_for_architecture_amd64",
+        ],
     ),
     os = os.LINUX_DEFAULT,
     console_view_entry = consoles.console_view_entry(
@@ -1629,6 +2092,16 @@ ci.builder(
         ),
         build_gs_bucket = "chromium-fyi-archive",
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "chromeos_device",
+            "dcheck_off",
+            "reclient",
+            "amd64-generic-vm",
+            "ozone_headless",
+            "lacros",
+        ],
+    ),
     os = os.LINUX_DEFAULT,
     console_view_entry = consoles.console_view_entry(
         category = "lacros x64",
@@ -1653,6 +2126,14 @@ ci.builder(
         ),
         build_gs_bucket = "chromium-fyi-archive",
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "lacros_on_linux",
+            "release_builder",
+            "reclient",
+            "also_build_ash_chrome",
+        ],
+    ),
     os = os.LINUX_DEFAULT,
     console_view_entry = consoles.console_view_entry(
         category = "lacros rel",
@@ -1666,6 +2147,13 @@ ci.builder(
     executable = "recipe:celab",
     schedule = "0 0,6,12,18 * * *",
     triggered_by = [],
+    gn_args = gn_args.config(
+        configs = [
+            "release_builder",
+            "reclient",
+            "minimal_symbols",
+        ],
+    ),
     builderless = False,
     os = os.WINDOWS_ANY,
     console_view_entry = consoles.console_view_entry(
@@ -1697,12 +2185,22 @@ fyi_ios_builder(
             target_platform = builder_config.target_platform.IOS,
         ),
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "debug_static_builder",
+            "reclient",
+            "ios_simulator",
+            "arm64",
+            "xctest",
+        ],
+    ),
     os = os.MAC_DEFAULT,
     cpu = cpu.ARM64,
     console_view_entry = consoles.console_view_entry(
         category = "iOS|iOSM1",
         short_name = "iosM1",
     ),
+    contact_team_email = "bling-engprod@google.com",
 )
 
 fyi_ios_builder(
@@ -1723,6 +2221,17 @@ fyi_ios_builder(
             target_platform = builder_config.target_platform.IOS,
         ),
         build_gs_bucket = "chromium-fyi-archive",
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "release_builder_blink",
+            "try_builder",
+            "reclient",
+            "ios_simulator",
+            "arm64",
+            "use_blink",
+            "xctest",
+        ],
     ),
     builderless = True,
     cpu = cpu.ARM64,
@@ -1748,6 +2257,15 @@ fyi_ios_builder(
             target_platform = builder_config.target_platform.IOS,
         ),
         build_gs_bucket = "chromium-fyi-archive",
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "debug_static_builder",
+            "reclient",
+            "ios_simulator",
+            "x64",
+            "xctest",
+        ],
     ),
     cpu = cpu.ARM64,
     console_view_entry = consoles.console_view_entry(
@@ -1777,6 +2295,16 @@ fyi_ios_builder(
         ),
         build_gs_bucket = "chromium-fyi-archive",
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "debug_static_builder",
+            "reclient",
+            "ios_simulator",
+            "x64",
+            "xctest",
+            "no_lld",
+        ],
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "iOS",
         short_name = "wk",
@@ -1799,6 +2327,15 @@ fyi_ios_builder(
             target_platform = builder_config.target_platform.IOS,
         ),
         build_gs_bucket = "chromium-fyi-archive",
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "debug_static_builder",
+            "reclient",
+            "ios_simulator",
+            "arm64",
+            "xctest",
+        ],
     ),
     os = os.MAC_13,
     cpu = cpu.ARM64,
@@ -1828,6 +2365,16 @@ fyi_ios_builder(
         ),
         build_gs_bucket = "chromium-fyi-archive",
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "ios_device",
+            "arm64",
+            "ios_disable_code_signing",
+            "release_builder",
+            "reclient",
+            "xctest",
+        ],
+    ),
     os = os.MAC_13,
     cpu = cpu.ARM64,
     console_view_entry = [
@@ -1854,6 +2401,15 @@ fyi_ios_builder(
             target_platform = builder_config.target_platform.IOS,
         ),
         build_gs_bucket = "chromium-fyi-archive",
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "debug_static_builder",
+            "reclient",
+            "ios_simulator",
+            "arm64",
+            "xctest",
+        ],
     ),
     os = os.MAC_13,
     cpu = cpu.ARM64,
@@ -1886,6 +2442,15 @@ fyi_ios_builder(
         ),
         build_gs_bucket = "chromium-fyi-archive",
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "debug_static_builder",
+            "reclient",
+            "ios_simulator",
+            "arm64",
+            "xctest",
+        ],
+    ),
     os = os.MAC_13,
     cpu = cpu.ARM64,
     console_view_entry = consoles.console_view_entry(
@@ -1914,6 +2479,15 @@ fyi_ios_builder(
         ),
         build_gs_bucket = "chromium-fyi-archive",
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "debug_static_builder",
+            "reclient",
+            "ios_simulator",
+            "arm64",
+            "xctest",
+        ],
+    ),
     os = os.MAC_14,
     cpu = cpu.ARM64,
     console_view_entry = consoles.console_view_entry(
@@ -1936,6 +2510,17 @@ fyi_mac_builder(
         ),
         build_gs_bucket = "chromium-fyi-archive",
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "arm64",
+            "gpu_tests",
+            "debug_static_builder",
+            "reclient",
+            "disable_nacl",
+            "dcheck_off",
+            "shared",
+        ],
+    ),
     cores = None,
     os = os.MAC_13,
     cpu = cpu.ARM64,
@@ -1948,6 +2533,14 @@ fyi_mac_builder(
 fyi_mac_builder(
     name = "Mac deterministic",
     executable = "recipe:swarming/deterministic_build",
+    gn_args = gn_args.config(
+        configs = [
+            "release_builder",
+            "reclient",
+            "mac_strip",
+            "minimal_symbols",
+        ],
+    ),
     cores = None,
     console_view_entry = consoles.console_view_entry(
         category = "deterministic|mac",
@@ -1959,6 +2552,12 @@ fyi_mac_builder(
 fyi_mac_builder(
     name = "Mac deterministic (dbg)",
     executable = "recipe:swarming/deterministic_build",
+    gn_args = gn_args.config(
+        configs = [
+            "debug_builder",
+            "reclient",
+        ],
+    ),
     cores = None,
     os = os.MAC_DEFAULT,
     console_view_entry = consoles.console_view_entry(
@@ -1987,6 +2586,13 @@ ci.builder(
         ),
         build_gs_bucket = "chromium-fyi-archive",
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "release_builder",
+            "try_builder",
+            "reclient",
+        ],
+    ),
     builderless = False,
     os = os.WINDOWS_10,
     console_view_entry = consoles.console_view_entry(
@@ -1994,6 +2600,42 @@ ci.builder(
     ),
     notifies = ["Win 10 Fast Ring"],
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CI,
+)
+
+ci.builder(
+    name = "win10-multiscreen-fyi-rel",
+    description_html = (
+        "This builder is intended to run tests related to multiscreen " +
+        "functionality on Windows. For more info, see " +
+        "<a href=\"http://shortn/_4L6uYvA1xU\">http://shortn/_4L6uYvA1xU</a>."
+    ),
+    schedule = "with 5h interval",
+    triggered_by = [],
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = ["mb"],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+        ),
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "release_builder_blink",
+            "reclient",
+            "minimal_symbols",
+        ],
+    ),
+    builderless = True,
+    os = os.WINDOWS_10,
+    console_view_entry = consoles.console_view_entry(
+        category = "win10",
+    ),
+    contact_team_email = "web-windowing-team@google.com",
+    experimental = True,
 )
 
 ci.builder(
@@ -2010,6 +2652,13 @@ ci.builder(
             build_config = builder_config.build_config.RELEASE,
             target_bits = 64,
         ),
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "release_builder_blink",
+            "reclient",
+            "minimal_symbols",
+        ],
     ),
     builderless = True,
     os = os.WINDOWS_10,
@@ -2034,6 +2683,13 @@ ci.builder(
             target_bits = 64,
         ),
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "release_builder_blink",
+            "reclient",
+            "minimal_symbols",
+        ],
+    ),
     builderless = True,
     os = os.WINDOWS_ANY,
     console_view_entry = consoles.console_view_entry(
@@ -2057,6 +2713,15 @@ ci.builder(
             target_bits = 64,
         ),
         build_gs_bucket = "chromium-fyi-archive",
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "arm64",
+            "disable_nacl",
+            "minimal_symbols",
+            "release_builder",
+            "reclient",
+        ],
     ),
     builderless = False,
     cores = "8|16",
@@ -2085,6 +2750,13 @@ ci.builder(
         ),
         build_gs_bucket = "chromium-fyi-archive",
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "release_builder",
+            "reclient",
+            "minimal_symbols",
+        ],
+    ),
     builderless = False,
     os = os.WINDOWS_DEFAULT,
     console_view_entry = consoles.console_view_entry(
@@ -2104,6 +2776,12 @@ ci.builder(
             target_bits = 64,
         ),
         build_gs_bucket = "chromium-fyi-archive",
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "release_builder",
+            "reclient",
+        ],
     ),
     builderless = True,
     os = os.WINDOWS_DEFAULT,

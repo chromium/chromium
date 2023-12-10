@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/core/css/cascade_layer.h"
 #include "third_party/blink/renderer/core/css/css_rule_list.h"
+#include "third_party/blink/renderer/core/css/css_try_rule.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
@@ -19,6 +20,17 @@ StyleRulePositionFallback::StyleRulePositionFallback(
     const StyleRulePositionFallback&) = default;
 
 StyleRulePositionFallback::~StyleRulePositionFallback() = default;
+
+bool StyleRulePositionFallback::HasTryRule(wtf_size_t index) const {
+  return index < ChildRules().size();
+}
+
+const CSSPropertyValueSet* StyleRulePositionFallback::TryPropertyValueSetAt(
+    wtf_size_t index) const {
+  return HasTryRule(index)
+             ? &To<StyleRuleTry>(*ChildRules()[index]).Properties()
+             : nullptr;
+}
 
 void StyleRulePositionFallback::TraceAfterDispatch(Visitor* visitor) const {
   visitor->Trace(layer_);

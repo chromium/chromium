@@ -16,6 +16,7 @@
 #include "gin/converter.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "v8/include/v8-context.h"
 #include "v8/include/v8-exception.h"
 #include "v8/include/v8-external.h"
 #include "v8/include/v8-function.h"

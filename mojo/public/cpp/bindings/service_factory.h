@@ -79,12 +79,16 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) ServiceFactory {
   // Adds a new service to the factory. The argument may be any function that
   // accepts a single PendingReceiver<T> and returns a unique_ptr<T>, where T is
   // a service interface (that is, a generated mojom interface class
-  // corresponding to some service's main interface.)
+  // corresponding to some service's main interface.) Safely drops registration
+  // if Interface is RuntimeFeature disabled. CanRunService() will return false
+  // for these ignored Interfaces.
   template <typename Func>
   void Add(Func func) {
     using Interface = typename internal::ServiceFactoryTraits<Func>::Interface;
-    constructors_[Interface::Name_] =
-        base::BindRepeating(&RunConstructor<Func>, func);
+    if (internal::GetRuntimeFeature_IsEnabled<Interface>()) {
+      constructors_[Interface::Name_] =
+          base::BindRepeating(&RunConstructor<Func>, func);
+    }
   }
 
   // If `receiver` is references an interface matching a service known to this

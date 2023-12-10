@@ -100,10 +100,11 @@ public class PaymentRequestParamsBuilder implements ChromePaymentRequestService.
         Mockito.doReturn(methodDataMap).when(mSpec).getMethodData();
         Mockito.doReturn(mOptions).when(mSpec).getPaymentOptions();
 
-        PaymentRequest request = new MojoPaymentRequestGateKeeper(
-                (client, onClosed)
-                        -> new PaymentRequestService(
-                                mRenderFrameHost, client, onClosed, this, () -> null));
+        PaymentRequest request =
+                new MojoPaymentRequestGateKeeper(
+                        (client, onClosed) ->
+                                new PaymentRequestService(
+                                        mRenderFrameHost, client, onClosed, this, () -> null));
         request.init(mClient, mMethodData, mDetails, mOptions);
         return request;
     }
@@ -187,15 +188,22 @@ public class PaymentRequestParamsBuilder implements ChromePaymentRequestService.
     }
 
     @Override
-    public PaymentRequestSpec createPaymentRequestSpec(PaymentOptions options,
-            PaymentDetails details, Collection<PaymentMethodData> methodData, String appLocale) {
+    public PaymentRequestSpec createPaymentRequestSpec(
+            PaymentOptions options,
+            PaymentDetails details,
+            Collection<PaymentMethodData> methodData,
+            String appLocale) {
         return mSpec;
     }
 
     @Override
-    public PaymentUiService createPaymentUiService(PaymentUiService.Delegate delegate,
-            PaymentRequestParams params, WebContents webContents, boolean isOffTheRecord,
-            JourneyLogger journeyLogger, String topLevelOrigin) {
+    public PaymentUiService createPaymentUiService(
+            PaymentUiService.Delegate delegate,
+            PaymentRequestParams params,
+            WebContents webContents,
+            boolean isOffTheRecord,
+            JourneyLogger journeyLogger,
+            String topLevelOrigin) {
         return mPaymentUiService;
     }
 

@@ -68,8 +68,7 @@ TEST(SHA1Test, Test1BytesAndSpan) {
   for (size_t i = 0; i < base::kSHA1Length; i++)
     EXPECT_EQ(kExpected[i], output[i]);
 
-  base::SHA1Digest output_array =
-      base::SHA1HashSpan(base::as_bytes(base::make_span(input)));
+  base::SHA1Digest output_array = base::SHA1HashSpan(base::as_byte_span(input));
   for (size_t i = 0; i < base::kSHA1Length; i++)
     EXPECT_EQ(kExpected[i], output_array[i]);
 }
@@ -89,8 +88,7 @@ TEST(SHA1Test, Test2BytesAndSpan) {
   for (size_t i = 0; i < base::kSHA1Length; i++)
     EXPECT_EQ(kExpected[i], output[i]);
 
-  base::SHA1Digest output_array =
-      base::SHA1HashSpan(base::as_bytes(base::make_span(input)));
+  base::SHA1Digest output_array = base::SHA1HashSpan(base::as_byte_span(input));
   for (size_t i = 0; i < base::kSHA1Length; i++)
     EXPECT_EQ(kExpected[i], output_array[i]);
 }
@@ -109,8 +107,7 @@ TEST(SHA1Test, Test3BytesAndSpan) {
   for (size_t i = 0; i < base::kSHA1Length; i++)
     EXPECT_EQ(kExpected[i], output[i]);
 
-  base::SHA1Digest output_array =
-      base::SHA1HashSpan(base::as_bytes(base::make_span(input)));
+  base::SHA1Digest output_array = base::SHA1HashSpan(base::as_byte_span(input));
   for (size_t i = 0; i < base::kSHA1Length; i++)
     EXPECT_EQ(kExpected[i], output_array[i]);
 }

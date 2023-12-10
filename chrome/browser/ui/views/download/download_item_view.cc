@@ -1040,6 +1040,7 @@ ui::ImageModel DownloadItemView::GetIcon() const {
     case download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_WARNING:
       return kWarning;
     case download::DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING:
+    case download::DOWNLOAD_DANGER_TYPE_ASYNC_LOCAL_PASSWORD_SCANNING:
     case download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING:
     case download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_LOCAL_PASSWORD_SCANNING:
       return kInfo;

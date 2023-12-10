@@ -124,8 +124,8 @@ class ASH_EXPORT AshAcceleratorConfiguration : public AcceleratorConfiguration,
       AcceleratorActionId action);
 
   // Returns the ID of the action if `accelerator` is a default accelerator.
-  // If there is no ID found, returns absl::nullopt.
-  absl::optional<AcceleratorAction> GetIdForDefaultAccelerator(
+  // If there is no ID found, returns std::nullopt.
+  std::optional<AcceleratorAction> GetIdForDefaultAccelerator(
       ui::Accelerator accelerator);
 
   // Returns the default accelerators of a given accelerator ID.

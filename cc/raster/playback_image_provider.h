@@ -44,7 +44,7 @@ class CC_EXPORT PlaybackImageProvider : public ImageProvider {
   // If no settings are provided, all images are skipped during rasterization.
   PlaybackImageProvider(ImageDecodeCache* cache,
                         const TargetColorParams& target_color_params,
-                        absl::optional<Settings>&& settings);
+                        std::optional<Settings>&& settings);
   PlaybackImageProvider(const PlaybackImageProvider&) = delete;
   PlaybackImageProvider(PlaybackImageProvider&& other);
   ~PlaybackImageProvider() override;
@@ -61,7 +61,7 @@ class CC_EXPORT PlaybackImageProvider : public ImageProvider {
   // #union
   RAW_PTR_EXCLUSION ImageDecodeCache* cache_;
   TargetColorParams target_color_params_;
-  absl::optional<Settings> settings_;
+  std::optional<Settings> settings_;
 };
 
 }  // namespace cc

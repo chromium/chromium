@@ -24,12 +24,12 @@
 #include "base/time/time.h"
 #include "components/password_manager/core/browser/affiliation/fake_affiliation_service.h"
 #include "components/password_manager/core/browser/affiliation/mock_affiliation_service.h"
-#include "components/password_manager/core/browser/fake_password_store_backend.h"
-#include "components/password_manager/core/browser/mock_password_store_interface.h"
 #include "components/password_manager/core/browser/passkey_credential.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/password_store/fake_password_store_backend.h"
+#include "components/password_manager/core/browser/password_store/mock_password_store_interface.h"
+#include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
-#include "components/password_manager/core/browser/password_store_interface.h"
 #include "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/sync/base/features.h"
@@ -926,7 +926,7 @@ TEST_F(SavedPasswordsPresenterTest, GetAffiliatedGroupsWithPasskeys) {
   grouped_facets[1].branding_info.icon_url =
       GURL("https://test3.com/favicon.ico");
   EXPECT_CALL(mock_affiliation_service, GetGroupingInfo)
-      .WillRepeatedly(base::test::RunOnceCallback<1>(grouped_facets));
+      .WillRepeatedly(base::test::RunOnceCallbackRepeatedly<1>(grouped_facets));
   RunUntilIdle();
 
   CredentialUIEntry credential1(form1), credential2(form2), credential3(form3);
@@ -2022,9 +2022,9 @@ TEST_F(SavedPasswordsPresenterMoveToAccountTest, MovesToAccount) {
   credentials.emplace_back(form_1);
   credentials.emplace_back(form_2);
 
-  std::vector<std::unique_ptr<PasswordForm>> forms;
-  forms.push_back(std::make_unique<PasswordForm>(form_1));
-  forms.push_back(std::make_unique<PasswordForm>(form_2));
+  std::vector<PasswordForm> forms;
+  forms.push_back(form_1);
+  forms.push_back(form_2);
 
   presenter().Init();
   static_cast<PasswordStoreConsumer*>(&presenter())
@@ -2054,11 +2054,11 @@ TEST_F(SavedPasswordsPresenterMoveToAccountTest,
   credentials.emplace_back(
       std::vector<PasswordForm>{form_profile, form_account});
 
-  std::vector<std::unique_ptr<PasswordForm>> forms_from_profile;
-  forms_from_profile.push_back(std::make_unique<PasswordForm>(form_profile));
+  std::vector<PasswordForm> forms_from_profile;
+  forms_from_profile.push_back(form_profile);
 
-  std::vector<std::unique_ptr<PasswordForm>> forms_from_account;
-  forms_from_account.push_back(std::make_unique<PasswordForm>(form_account));
+  std::vector<PasswordForm> forms_from_account;
+  forms_from_account.push_back(form_account);
 
   presenter().Init();
   static_cast<PasswordStoreConsumer*>(&presenter())

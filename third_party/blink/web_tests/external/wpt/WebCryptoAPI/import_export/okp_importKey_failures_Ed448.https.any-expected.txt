@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 248 tests; 0 PASS, 248 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 248 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Bad usages: importKey(spki, {name: Ed448}, true, [encrypt])
   assert_equals: Bad usages not supported. expected "SyntaxError" but got "NotSupportedError"
 [FAIL] Bad usages: importKey(spki, {name: Ed448}, false, [encrypt])

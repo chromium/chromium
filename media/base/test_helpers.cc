@@ -21,6 +21,7 @@
 #include "media/base/decoder_buffer.h"
 #include "media/base/media_util.h"
 #include "media/base/mock_filters.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 
 using ::testing::_;
@@ -222,8 +223,26 @@ VideoDecoderConfig TestVideoConfig::NormalEncrypted(VideoCodec codec,
 
 // static
 VideoDecoderConfig TestVideoConfig::NormalRotated(VideoRotation rotation) {
-  return GetTestConfig(VideoCodec::kVP8, MinProfile(VideoCodec::kVP8),
+  return GetTestConfig(VideoCodec::kAV1, MinProfile(VideoCodec::kAV1),
                        VideoColorSpace::JPEG(), rotation, kNormalSize, false);
+}
+
+VideoDecoderConfig TestVideoConfig::NormalHdr(VideoCodec codec) {
+  auto config = Normal(codec);
+  config.set_color_space_info(
+      VideoColorSpace::FromGfxColorSpace(gfx::ColorSpace::CreateHDR10()));
+  config.set_hdr_metadata(
+      gfx::HDRMetadata::PopulateUnspecifiedWithDefaults(absl::nullopt));
+  return config;
+}
+
+VideoDecoderConfig TestVideoConfig::NormalHdrEncrypted(VideoCodec codec) {
+  auto config = NormalEncrypted(codec);
+  config.set_color_space_info(
+      VideoColorSpace::FromGfxColorSpace(gfx::ColorSpace::CreateHDR10()));
+  config.set_hdr_metadata(
+      gfx::HDRMetadata::PopulateUnspecifiedWithDefaults(absl::nullopt));
+  return config;
 }
 
 // static

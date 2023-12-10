@@ -57,7 +57,7 @@ WebUIBrowserAsyncGenTest.prototype = {
 };
 
 // Include the c++ test fixture.
-GEN('#include "chrome/test/data/webui/async_gen.h"');
+GEN('#include "chrome/test/data/webui/chromeos/async_gen.h"');
 
 /**
  * Will be set to continuation test #1.

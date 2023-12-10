@@ -2,8 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/cast.gni")
 import("//build/config/chrome_build.gni")
-import("//build/config/chromecast_build.gni")
 import("//build/config/chromeos/args.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/profiling/profiling.gni")
@@ -199,9 +199,7 @@ use_prebuilt_instrumented_libraries = is_msan
 use_fuzzing_engine =
     use_libfuzzer || use_afl || use_centipede || use_external_fuzzing_engine
 
-# Whether the current fuzzing engine supports libprotobuf_mutator. Right now
-# this is just libfuzzer, but others are likely to support this in future,
-# so it's preferable to check this.
+# Whether the current fuzzing engine supports libprotobuf_mutator.
 use_fuzzing_engine_with_lpm = use_libfuzzer || use_centipede
 
 # Whether the fuzzing engine supports fuzzers which supply their own

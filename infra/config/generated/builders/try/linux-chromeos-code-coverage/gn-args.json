@@ -1,0 +1,12 @@
+{
+  "gn_args": {
+    "dcheck_always_on": false,
+    "ffmpeg_branding": "ChromeOS",
+    "is_component_build": false,
+    "is_debug": false,
+    "proprietary_codecs": true,
+    "target_os": "chromeos",
+    "use_clang_coverage": true,
+    "use_remoteexec": true
+  }
+}

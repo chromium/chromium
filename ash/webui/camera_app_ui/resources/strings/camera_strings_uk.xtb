@@ -5,7 +5,6 @@
 <translation id="1076394037877376434">Видалити сторінку <ph name="PAGE_NUMBER" /></translation>
 <translation id="1113173431709655881">Режим камери</translation>
 <translation id="1153190633558910465">Сітку вимкнено</translation>
-<translation id="1175958423215084756">Виявлене посилання. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213">Сторінку <ph name="PAGE_NUMBER" /> видалено</translation>
 <translation id="1258009455399840361">Повернути на 90 градусів за годинниковою стрілкою</translation>
 <translation id="1417314334557041815">Редагувати сторінку <ph name="INDEX" /></translation>
@@ -60,14 +59,12 @@
 <translation id="3642192109456033823">Триває обробка відео…</translation>
 <translation id="3789724198583203151">Повернути на 90 градусів проти годинникової стрілки</translation>
 <translation id="3810838688059735925">Відео</translation>
-<translation id="3892148308691398805">Копіювати текст</translation>
 <translation id="4060608699153044055">На пристрої недостатньо пам’яті. Щоб почати запис, звільніть місце.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> Мп</translation>
 <translation id="4118525110028899586">Призупинити запис</translation>
 <translation id="4121305183798804752">Виявлено документ</translation>
 <translation id="414641094616694804">Для цієї камери не можна змінити роздільну здатність</translation>
 <translation id="4176463684765177261">Вимкнено</translation>
-<translation id="4269820728363426813">Копіювати адресу посилання</translation>
 <translation id="428234092390943511">Зменшене зображення сторінки</translation>
 <translation id="4349714250734879769">Масштабувати фрейми за допомогою Chrome</translation>
 <translation id="4383571725254449280">Друкувати журнали продуктивності</translation>
@@ -144,7 +141,6 @@
 <translation id="7726641833034062494">Записати звичайне відео</translation>
 <translation id="7748344063862150053">Верхній правий кут документа</translation>
 <translation id="7933675232020478311">Переміщення вниз і вправо</translation>
-<translation id="7983668134180549431">Виявлений текст.</translation>
 <translation id="8079255378695216066">Не вдається почати запис</translation>
 <translation id="8120146556401698679">Панорамування нахил масштаб</translation>
 <translation id="8131740175452115882">Підтвердити</translation>
@@ -163,6 +159,7 @@
 <translation id="8870695351537079478">Не вдалося почати запис</translation>
 <translation id="8880167521484863515">4:3</translation>
 <translation id="8903921497873541725">Збільшити масштаб</translation>
+<translation id="8926890870105777777">Підключитися до мережі "<ph name="WIFINAME" />"</translation>
 <translation id="9045010116236796332">Розмістіть усі краї документа всередині рамки</translation>
 <translation id="9045155556724273246">10 секунд</translation>
 <translation id="906331135292332864">Обробка зображення…</translation>

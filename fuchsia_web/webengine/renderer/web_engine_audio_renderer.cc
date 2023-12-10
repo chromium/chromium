@@ -23,7 +23,7 @@ namespace {
 
 // nullopt is returned in case the codec is not supported. nullptr is returned
 // for uncompressed PCM streams.
-absl::optional<std::unique_ptr<fuchsia::media::Compression>>
+std::optional<std::unique_ptr<fuchsia::media::Compression>>
 GetFuchsiaCompressionFromDecoderConfig(media::AudioDecoderConfig config) {
   auto compression = std::make_unique<fuchsia::media::Compression>();
   switch (config.codec()) {
@@ -49,7 +49,7 @@ GetFuchsiaCompressionFromDecoderConfig(media::AudioDecoderConfig config) {
       break;
 
     default:
-      return absl::nullopt;
+      return std::nullopt;
   }
 
   if (!config.extra_data().empty()) {
@@ -59,7 +59,7 @@ GetFuchsiaCompressionFromDecoderConfig(media::AudioDecoderConfig config) {
   return std::move(compression);
 }
 
-absl::optional<fuchsia::media::AudioSampleFormat>
+std::optional<fuchsia::media::AudioSampleFormat>
 GetFuchsiaSampleFormatFromSampleFormat(media::SampleFormat sample_format) {
   switch (sample_format) {
     case media::kSampleFormatU8:
@@ -72,7 +72,7 @@ GetFuchsiaSampleFormatFromSampleFormat(media::SampleFormat sample_format) {
       return fuchsia::media::AudioSampleFormat::FLOAT;
 
     default:
-      return absl::nullopt;
+      return std::nullopt;
   }
 }
 
@@ -253,7 +253,7 @@ void WebEngineAudioRenderer::InitializeStreamSink() {
 
   // Set sample_format for uncompressed streams.
   if (!compression.value()) {
-    absl::optional<fuchsia::media::AudioSampleFormat> sample_format =
+    std::optional<fuchsia::media::AudioSampleFormat> sample_format =
         GetFuchsiaSampleFormatFromSampleFormat(config.sample_format());
     if (!sample_format) {
       LOG(ERROR) << "Unsupported sample format: "
@@ -330,7 +330,7 @@ void WebEngineAudioRenderer::SetVolume(float volume) {
 }
 
 void WebEngineAudioRenderer::SetLatencyHint(
-    absl::optional<base::TimeDelta> latency_hint) {
+    std::optional<base::TimeDelta> latency_hint) {
   // TODO(crbug.com/1131116): Implement at some later date after we've vetted
   // the API shape and usefulness outside of fuchsia.
   NOTIMPLEMENTED();

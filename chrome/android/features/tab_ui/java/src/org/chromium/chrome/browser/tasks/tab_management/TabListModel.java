@@ -36,9 +36,7 @@ import java.util.List;
  * {@link org.chromium.chrome.browser.tab.Tab}s.
  */
 class TabListModel extends ModelList {
-    /**
-     * Required properties for each {@link PropertyModel} managed by this {@link ModelList}.
-     */
+    /** Required properties for each {@link PropertyModel} managed by this {@link ModelList}. */
     static class CardProperties {
         /** Supported Model type within this ModelList. */
         @IntDef({TAB, MESSAGE, NEW_TAB_TILE_DEPRECATED, OTHERS})
@@ -167,9 +165,7 @@ class TabListModel extends ModelList {
         return TabModel.INVALID_TAB_INDEX;
     }
 
-    /**
-     * Get the last index of a message item.
-     */
+    /** Get the last index of a message item. */
     public int lastIndexForMessageItem() {
         for (int i = size() - 1; i >= 0; i--) {
             PropertyModel model = get(i).model;
@@ -262,8 +258,10 @@ class TabListModel extends ModelList {
 
         assert get(index).model.get(CARD_TYPE) == TAB;
 
-        int status = isSelected ? ClosableTabGridView.AnimationStatus.SELECTED_CARD_ZOOM_IN
-                                : ClosableTabGridView.AnimationStatus.SELECTED_CARD_ZOOM_OUT;
+        int status =
+                isSelected
+                        ? ClosableTabGridView.AnimationStatus.SELECTED_CARD_ZOOM_IN
+                        : ClosableTabGridView.AnimationStatus.SELECTED_CARD_ZOOM_OUT;
         if (get(index).model.get(TabProperties.CARD_ANIMATION_STATUS) == status) return;
 
         get(index).model.set(TabProperties.CARD_ANIMATION_STATUS, status);
@@ -283,8 +281,10 @@ class TabListModel extends ModelList {
 
         assert get(index).model.get(CARD_TYPE) == TAB;
 
-        int status = isHovered ? ClosableTabGridView.AnimationStatus.HOVERED_CARD_ZOOM_IN
-                               : ClosableTabGridView.AnimationStatus.HOVERED_CARD_ZOOM_OUT;
+        int status =
+                isHovered
+                        ? ClosableTabGridView.AnimationStatus.HOVERED_CARD_ZOOM_IN
+                        : ClosableTabGridView.AnimationStatus.HOVERED_CARD_ZOOM_OUT;
         if (get(index).model.get(TabProperties.CARD_ANIMATION_STATUS) == status) return;
 
         get(index).model.set(TabProperties.CARD_ANIMATION_STATUS, status);

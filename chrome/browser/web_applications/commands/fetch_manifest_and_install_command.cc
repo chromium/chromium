@@ -44,10 +44,12 @@
 #include "ash/components/arc/session/arc_bridge_service.h"
 #include "ash/components/arc/session/arc_service_manager.h"
 #include "base/strings/string_util.h"
+#include "chromeos/constants/chromeos_features.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "base/strings/utf_string_conversions.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "net/base/url_util.h"
 #endif
 
@@ -352,8 +354,12 @@ void FetchManifestAndInstallCommand::OnDidPerformInstallableCheck(
   }
 
   if (install_surface_ == webapps::WebappInstallSource::MENU_CREATE_SHORTCUT &&
-      base::FeatureList::IsEnabled(
-          webapps::features::kCreateShortcutIgnoresManifest)) {
+      (base::FeatureList::IsEnabled(
+           webapps::features::kCreateShortcutIgnoresManifest)
+#if BUILDFLAG(IS_CHROMEOS)
+       || chromeos::features::IsCrosShortstandEnabled()
+#endif
+           )) {
     // When creating a shortcut, the |manifest_id| is not part of the App's
     // primary key. The only thing that identifies a shortcut is the start URL,
     // which is always set to the current page.
@@ -588,7 +594,17 @@ void FetchManifestAndInstallCommand::OnInstallFinalizedMaybeReparentTab(
   const bool can_reparent_tab =
       app_lock_->install_finalizer().CanReparentTab(app_id, !error);
 
-  if (can_reparent_tab &&
+  bool should_reparent_tab = true;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // All calls to this command in ash (and lacros soon) come from the ChromeOS
+  // install dialog, which should never reparent the tab.
+  if (base::FeatureList::IsEnabled(
+          chromeos::features::kCrosWebAppInstallDialog)) {
+    should_reparent_tab = false;
+  }
+#endif
+
+  if (should_reparent_tab && can_reparent_tab &&
       (web_app_info_->user_display_mode != mojom::UserDisplayMode::kBrowser)) {
     app_lock_->install_finalizer().ReparentTab(app_id, !error,
                                                web_contents_.get());

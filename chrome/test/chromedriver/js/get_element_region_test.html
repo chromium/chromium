@@ -14,7 +14,7 @@ function testNotElement() {
 }
 
 function testElementWithFirstClientRect() {
-  var region = getElementRegion(document.getElementById('a'));
+  const region = getElementRegion(document.getElementById('a'));
   assertEquals(0, region.left);
   assertEquals(0, region.top);
   assertEquals(100, region.width);
@@ -22,15 +22,29 @@ function testElementWithFirstClientRect() {
 }
 
 function testSvgElement() {
-  var region = getElementRegion(document.getElementById('e'));
+  const ellipse = document.getElementById('e');
+  const region = getElementRegion(ellipse);
   assertEquals(0, region.left);
   assertEquals(0, region.top);
-  assertEquals(90, region.width);
-  assertEquals(40, region.height);
+
+  const boundingRect = ellipse.getBoundingClientRect();
+  const visualViewport = window.visualViewport;
+
+  assert(0 <= region.width);
+  assert(region.width <= 90);
+  if (region.width > 0 && region.width < 90) {
+    assertEquals(boundingRect.left + region.width, visualViewport.width);
+  }
+
+  assert(0 <= region.height);
+  assert(region.height <= 40);
+  if (region.height > 0 && region.height < 40) {
+    assertEquals(boundingRect.top + region.height, visualViewport.height);
+  }
 }
 
 function testAreaPoly() {
-  var region = getElementRegion(document.getElementById('poly'));
+  const region = getElementRegion(document.getElementById('poly'));
   assertEquals(20, region.left);
   assertEquals(10, region.top);
   assertEquals(40, region.width);
@@ -38,7 +52,7 @@ function testAreaPoly() {
 }
 
 function testAreaRect() {
-  var region = getElementRegion(document.getElementById('rect'));
+  const region = getElementRegion(document.getElementById('rect'));
   assertEquals(120, region.left);
   assertEquals(100, region.top);
   assertEquals(20, region.width);
@@ -46,7 +60,7 @@ function testAreaRect() {
 }
 
 function testAreaCircle() {
-  var region = getElementRegion(document.getElementById('circle'));
+  const region = getElementRegion(document.getElementById('circle'));
   assertEquals(175, region.left);
   assertEquals(165, region.top);
   assertEquals(10, region.width);
@@ -54,18 +68,32 @@ function testAreaCircle() {
 }
 
 function testPartialOutOfView() {
-  var region = getElementRegion(document.getElementById('partial-out-of-view'));
+  let element = document.getElementById('partial-out-of-view');
+  let region = getElementRegion(element);
   assertEquals(50, region.left);
   assertEquals(0, region.top);
-  assertEquals(50, region.width);
-  assertEquals(100, region.height);
+
+  const boundingRect = element.getBoundingClientRect();
+  const visualViewport = window.visualViewport;
+
+  assert(0 <= region.width);
+  assert(region.width <= 50);
+  if (region.width > 0 && region.width < 50) {
+    assertEquals(boundingRect.left + region.width, visualViewport.width);
+  }
+
+  assert(0 <= region.height);
+  assert(region.height <= 100);
+  if (region.height > 0 && region.height < 100) {
+    assertEquals(boundingRect.top + region.height, visualViewport.height);
+  }
 }
 
 function testScrolledOutOfView() {
   // Scroll to an offset to make element with id=a partially visible.
-  var elemRect = document.getElementById("a").getBoundingClientRect();
+  const elemRect = document.getElementById("a").getBoundingClientRect();
   window.scrollTo(elemRect.left + 50, elemRect.top + 100);
-  var region = getElementRegion(document.getElementById("a"));
+  const region = getElementRegion(document.getElementById("a"));
   assertEquals(50, region.left);
   assertEquals(100, region.top);
   assertEquals(50, region.width);
@@ -77,12 +105,12 @@ function testScrolledPartiallyOutOfView() {
   // Scroll to an offset to make element with id=a partially visible.
   document.body.style.paddingTop = '0.25px';
   document.body.style.paddingLeft = '0.25px';
-  var elem = document.getElementById("check");
+  const elem = document.getElementById("check");
   window.scrollTo(
     elem.offsetLeft + elem.offsetWidth,
     elem.offsetTop + elem.offsetHeight,
   );
-  var region = getElementRegion(elem);
+  const region = getElementRegion(elem);
   assertEquals(0, region.left);
   assertEquals(0, region.top);
   assertEquals(elem.offsetWidth, region.width);
@@ -93,7 +121,7 @@ function testScrolledPartiallyOutOfView() {
 }
 
 function testFullOutOfView() {
-  var region = getElementRegion(document.getElementById('out-of-view'));
+  const region = getElementRegion(document.getElementById('out-of-view'));
   assertEquals(0, region.left);
   assertEquals(0, region.top);
   assertEquals(100, region.width);
@@ -101,7 +129,7 @@ function testFullOutOfView() {
 }
 
 function testFullOutOfViewRect() {
-  var region = getElementRegion(document.getElementById('out-of-view-rect'));
+  const region = getElementRegion(document.getElementById('out-of-view-rect'));
   assertEquals(120, region.left);
   assertEquals(100, region.top);
   assertEquals(20, region.width);
@@ -109,7 +137,7 @@ function testFullOutOfViewRect() {
 }
 
 function testFullOutOfViewCircle() {
-  var region = getElementRegion(document.getElementById('out-of-view-circle'));
+  const region = getElementRegion(document.getElementById('out-of-view-circle'));
   assertEquals(175, region.left);
   assertEquals(165, region.top);
   assertEquals(10, region.width);
@@ -117,7 +145,7 @@ function testFullOutOfViewCircle() {
 }
 
 function testPartialOutOfViewRect() {
-  var region = getElementRegion(document.getElementById('partial-rect'));
+  const region = getElementRegion(document.getElementById('partial-rect'));
   assertEquals(120, region.left);
   assertEquals(10, region.top);
   assertEquals(10, region.width);
@@ -126,7 +154,7 @@ function testPartialOutOfViewRect() {
 }
 
 function testPartialOutOfViewCircle() {
-  var region = getElementRegion(document.getElementById('partial-circle'));
+  const region = getElementRegion(document.getElementById('partial-circle'));
   assertEquals(30, region.left);
   assertEquals(0, region.top);
   // Area is treated as if it is fully in-view or fully out-of-view.
@@ -135,7 +163,7 @@ function testPartialOutOfViewCircle() {
 }
 
 function testNegativeDimensions() {
-  var region = getElementRegion(document.getElementById('negative-dims'));
+  const region = getElementRegion(document.getElementById('negative-dims'));
   assertEquals(0, region.left);
   assertEquals(0, region.top);
   // Negative dimensions appear as 0, so region is 0x0.

@@ -10,7 +10,7 @@
 #include "third_party/blink/renderer/core/editing/ng_flat_tree_shorthands.h"
 #include "third_party/blink/renderer/core/editing/selection_template.h"
 #include "third_party/blink/renderer/core/editing/visible_position.h"
-#include "third_party/blink/renderer/core/layout/inline/caret_position.h"
+#include "third_party/blink/renderer/core/layout/inline/inline_caret_position.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
 
 namespace blink {
@@ -160,13 +160,13 @@ class AbstractInlineBox {
 enum SideAffinity { kLeft, kRight };
 
 // Returns whether |caret_position| is at the start of its fragment.
-bool IsAtFragmentStart(const CaretPosition& caret_position) {
+bool IsAtFragmentStart(const InlineCaretPosition& caret_position) {
   switch (caret_position.position_type) {
-    case CaretPositionType::kBeforeBox:
+    case InlineCaretPositionType::kBeforeBox:
       return true;
-    case CaretPositionType::kAfterBox:
+    case InlineCaretPositionType::kAfterBox:
       return false;
-    case CaretPositionType::kAtTextOffset:
+    case InlineCaretPositionType::kAtTextOffset:
       DCHECK(caret_position.text_offset.has_value());
       return *caret_position.text_offset ==
              caret_position.cursor.Current().TextStartOffset();
@@ -176,13 +176,13 @@ bool IsAtFragmentStart(const CaretPosition& caret_position) {
 }
 
 // Returns whether |caret_position| is at the end of its fragment.
-bool IsAtFragmentEnd(const CaretPosition& caret_position) {
+bool IsAtFragmentEnd(const InlineCaretPosition& caret_position) {
   switch (caret_position.position_type) {
-    case CaretPositionType::kBeforeBox:
+    case InlineCaretPositionType::kBeforeBox:
       return false;
-    case CaretPositionType::kAfterBox:
+    case InlineCaretPositionType::kAfterBox:
       return true;
-    case CaretPositionType::kAtTextOffset:
+    case InlineCaretPositionType::kAtTextOffset:
       DCHECK(caret_position.text_offset.has_value());
       return *caret_position.text_offset ==
              caret_position.cursor.Current().TextEndOffset();
@@ -192,7 +192,7 @@ bool IsAtFragmentEnd(const CaretPosition& caret_position) {
 }
 
 // Returns whether |caret_position| is at the left or right side of fragment.
-SideAffinity GetSideAffinity(const CaretPosition& caret_position) {
+SideAffinity GetSideAffinity(const InlineCaretPosition& caret_position) {
   DCHECK(!caret_position.IsNull());
   DCHECK(IsAtFragmentStart(caret_position) || IsAtFragmentEnd(caret_position));
   const bool is_at_start = IsAtFragmentStart(caret_position);
@@ -214,31 +214,32 @@ class AbstractInlineBoxAndSideAffinity {
     DCHECK(box_.IsNotNull());
   }
 
-  explicit AbstractInlineBoxAndSideAffinity(const CaretPosition& caret_position)
+  explicit AbstractInlineBoxAndSideAffinity(
+      const InlineCaretPosition& caret_position)
       : box_(caret_position.cursor), side_(GetSideAffinity(caret_position)) {
     DCHECK(!caret_position.IsNull());
   }
 
-  CaretPosition ToCaretPosition() const {
+  InlineCaretPosition ToInlineCaretPosition() const {
     DCHECK(box_.IsNotNull());
     const bool is_at_start = IsLtr(box_.Direction()) == AtLeftSide();
     InlineCursor cursor(box_.GetCursor());
 
     if (!cursor.Current().IsText()) {
       return {cursor,
-              is_at_start ? CaretPositionType::kBeforeBox
-                          : CaretPositionType::kAfterBox,
+              is_at_start ? InlineCaretPositionType::kBeforeBox
+                          : InlineCaretPositionType::kAfterBox,
               absl::nullopt};
     }
 
-    return {cursor, CaretPositionType::kAtTextOffset,
+    return {cursor, InlineCaretPositionType::kAtTextOffset,
             is_at_start ? cursor.Current().TextStartOffset()
                         : cursor.Current().TextEndOffset()};
   }
 
   PositionInFlatTree GetPosition() const {
     DCHECK(box_.IsNotNull());
-    return ToPositionInFlatTree(ToCaretPosition().ToPositionInDOMTree());
+    return ToPositionInFlatTree(ToInlineCaretPosition().ToPositionInDOMTree());
   }
 
   AbstractInlineBox GetBox() const { return box_; }
@@ -402,11 +403,11 @@ AbstractInlineBox FindBoundaryOfEntireBidiRunIgnoringLineBreak(
 
 // Adjustment algorithm at the end of caret position resolution.
 template <typename TraversalStrategy>
-class CaretPositionResolutionAdjuster {
-  STATIC_ONLY(CaretPositionResolutionAdjuster);
+class InlineCaretPositionResolutionAdjuster {
+  STATIC_ONLY(InlineCaretPositionResolutionAdjuster);
 
  public:
-  static AbstractInlineBoxAndSideAffinity UnadjustedCaretPosition(
+  static AbstractInlineBoxAndSideAffinity UnadjustedInlineCaretPosition(
       const AbstractInlineBox& box) {
     return AbstractInlineBoxAndBackwardSideAffinity<TraversalStrategy>(box);
   }
@@ -419,7 +420,7 @@ class CaretPositionResolutionAdjuster {
   static AbstractInlineBoxAndSideAffinity AdjustForPrimaryDirectionAlgorithm(
       const AbstractInlineBox& box) {
     if (IsStartOfDifferentDirection(box))
-      return UnadjustedCaretPosition(box);
+      return UnadjustedInlineCaretPosition(box);
 
     const unsigned level = TraversalStrategy::Backward(box).BidiLevel();
     const AbstractInlineBox forward_box =
@@ -427,7 +428,7 @@ class CaretPositionResolutionAdjuster {
 
     // For example, abc FED 123 ^ CBA when adjusting right side of 123
     if (forward_box.IsNotNull() && forward_box.BidiLevel() == level)
-      return UnadjustedCaretPosition(box);
+      return UnadjustedInlineCaretPosition(box);
 
     // For example, abc 123 ^ CBA when adjusting right side of 123
     const AbstractInlineBox result_box =
@@ -458,7 +459,7 @@ class CaretPositionResolutionAdjuster {
     }
 
     if (backward_box.BidiLevel() <= level)
-      return UnadjustedCaretPosition(box);
+      return UnadjustedInlineCaretPosition(box);
 
     // Forward side of a "tertiary" run. Set to the backward side of that run.
     const AbstractInlineBox result_box =
@@ -471,8 +472,8 @@ class CaretPositionResolutionAdjuster {
 
 // TODO(editing-dev): Try to unify the algorithms for both directions.
 template <>
-bool CaretPositionResolutionAdjuster<TraverseLeft>::IsStartOfDifferentDirection(
-    const AbstractInlineBox& box) {
+bool InlineCaretPositionResolutionAdjuster<
+    TraverseLeft>::IsStartOfDifferentDirection(const AbstractInlineBox& box) {
   DCHECK(box.IsNotNull());
   const AbstractInlineBox backward_box = TraverseRight::Forward(box);
   if (backward_box.IsNull())
@@ -481,7 +482,7 @@ bool CaretPositionResolutionAdjuster<TraverseLeft>::IsStartOfDifferentDirection(
 }
 
 template <>
-bool CaretPositionResolutionAdjuster<
+bool InlineCaretPositionResolutionAdjuster<
     TraverseRight>::IsStartOfDifferentDirection(const AbstractInlineBox& box) {
   DCHECK(box.IsNotNull());
   const AbstractInlineBox backward_box = TraverseLeft::Forward(box);
@@ -650,7 +651,7 @@ class RangeSelectionAdjuster {
         : box_(box), bidi_boundary_type_(type) {}
 
     static BidiBoundaryType GetPotentialBidiBoundaryType(
-        const CaretPosition& caret_position) {
+        const InlineCaretPosition& caret_position) {
       DCHECK(!caret_position.IsNull());
       DCHECK(!RuntimeEnabledFeatures::BidiCaretAffinityEnabled());
       if (!IsAtFragmentStart(caret_position) &&
@@ -672,7 +673,8 @@ class RangeSelectionAdjuster {
         return RenderedPosition();
 
       if (NGInlineFormattingContextOf(adjusted.GetPosition())) {
-        const CaretPosition caret_position = ComputeCaretPosition(adjusted);
+        const InlineCaretPosition caret_position =
+            ComputeInlineCaretPosition(adjusted);
         if (caret_position.IsNull())
           return RenderedPosition();
         return RenderedPosition(AbstractInlineBox(caret_position.cursor),
@@ -740,28 +742,28 @@ RangeSelectionAdjuster::RenderedPosition::Create(
 
 }  // namespace
 
-CaretPosition BidiAdjustment::AdjustForCaretPositionResolution(
-    const CaretPosition& caret_position) {
+InlineCaretPosition BidiAdjustment::AdjustForInlineCaretPositionResolution(
+    const InlineCaretPosition& caret_position) {
   DCHECK(!RuntimeEnabledFeatures::BidiCaretAffinityEnabled());
   const AbstractInlineBoxAndSideAffinity unadjusted(caret_position);
   const AbstractInlineBoxAndSideAffinity adjusted =
       unadjusted.AtLeftSide()
-          ? CaretPositionResolutionAdjuster<TraverseRight>::AdjustFor(
+          ? InlineCaretPositionResolutionAdjuster<TraverseRight>::AdjustFor(
                 unadjusted.GetBox())
-          : CaretPositionResolutionAdjuster<TraverseLeft>::AdjustFor(
+          : InlineCaretPositionResolutionAdjuster<TraverseLeft>::AdjustFor(
                 unadjusted.GetBox());
-  return adjusted.ToCaretPosition();
+  return adjusted.ToInlineCaretPosition();
 }
 
-CaretPosition BidiAdjustment::AdjustForHitTest(
-    const CaretPosition& caret_position) {
+InlineCaretPosition BidiAdjustment::AdjustForHitTest(
+    const InlineCaretPosition& caret_position) {
   DCHECK(!RuntimeEnabledFeatures::BidiCaretAffinityEnabled());
   const AbstractInlineBoxAndSideAffinity unadjusted(caret_position);
   const AbstractInlineBoxAndSideAffinity adjusted =
       unadjusted.AtLeftSide()
           ? HitTestAdjuster<TraverseRight>::AdjustFor(unadjusted.GetBox())
           : HitTestAdjuster<TraverseLeft>::AdjustFor(unadjusted.GetBox());
-  return adjusted.ToCaretPosition();
+  return adjusted.ToInlineCaretPosition();
 }
 
 SelectionInFlatTree BidiAdjustment::AdjustForRangeSelection(

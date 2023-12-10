@@ -24,12 +24,19 @@ found in the LICENSE file.
         android:layout_marginEnd="16dp"
         android:visibility="gone"
         android:importantForAccessibility="no"/>
+    <ProgressBar
+        android:id="@+id/spinner"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="@dimen/preview_play_button_diameter"
+        android:layout_height="@dimen/preview_play_button_diameter"
+        android:layout_marginEnd="@dimen/preview_play_button_margin_end"
+        android:visibility="gone" />
     <ImageView
         android:id="@+id/play_button"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
+        android:layout_width="@dimen/preview_play_button_diameter"
+        android:layout_height="@dimen/preview_play_button_diameter"
         android:layout_gravity="center_vertical"
-        android:layout_marginEnd="16dp"
+        android:layout_marginEnd="@dimen/preview_play_button_margin_end"
         android:visibility="gone"
         android:src="@drawable/mini_play_button"
         android:background="@drawable/rounded_ripple"
@@ -62,7 +69,7 @@ found in the LICENSE file.
     <FrameLayout
         android:id="@+id/end_view"
         android:layout_width="wrap_content"
-        android:layout_height="24dp"
+        android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
         android:layout_weight="0"/>
 </LinearLayout>

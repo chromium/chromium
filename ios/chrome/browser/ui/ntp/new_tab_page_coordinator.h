@@ -7,7 +7,7 @@
 
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
-#import "ios/chrome/browser/discover_feed/feed_constants.h"
+#import "ios/chrome/browser/discover_feed/model/feed_constants.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_configuring.h"
 
 namespace web {

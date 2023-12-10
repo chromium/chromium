@@ -112,13 +112,13 @@ void PrintingMetricsService::GetPrintJobs(
 void PrintingMetricsService::OnPrintJobFinished(base::Value print_job) {
   absl::optional<api::printing_metrics::PrintJobInfo> print_job_info =
       api::printing_metrics::PrintJobInfo::FromValue(std::move(print_job));
-  DCHECK(print_job_info);
+  DCHECK(print_job_info.has_value());
 
   auto event = std::make_unique<Event>(
       events::PRINTING_METRICS_ON_PRINT_JOB_FINISHED,
       api::printing_metrics::OnPrintJobFinished::kEventName,
       api::printing_metrics::OnPrintJobFinished::Create(
-          std::move(*print_job_info)));
+          std::move(print_job_info).value()));
 
   EventRouter::Get(context_)->BroadcastEvent(std::move(event));
 }

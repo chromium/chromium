@@ -22,7 +22,7 @@ class OptionalButtonViewBinder {
             view.setTransitionFinishedCallback(
                     model.get(OptionalButtonProperties.TRANSITION_FINISHED_CALLBACK));
         } else if (OptionalButtonProperties.ON_BEFORE_HIDE_TRANSITION_CALLBACK.equals(
-                           propertyKey)) {
+                propertyKey)) {
             view.setOnBeforeHideTransitionCallback(
                     model.get(OptionalButtonProperties.ON_BEFORE_HIDE_TRANSITION_CALLBACK));
         } else if (OptionalButtonProperties.TRANSITION_ROOT.equals(propertyKey)) {

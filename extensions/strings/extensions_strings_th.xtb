@@ -8,6 +8,7 @@
 <translation id="1420684932347524586">อ้าว! ไม่สามารถสร้างคีย์ส่วนตัว RSA แบบสุ่มได้</translation>
 <translation id="1445572445564823378">ส่วนขยายนี้จะทำให้ <ph name="PRODUCT_NAME" /> ทำงานช้าลง คุณควรปิดใช้งานส่วนขยายเพื่อให้ประสิทธิภาพการทำงานของ <ph name="PRODUCT_NAME" /> กลับมาเป็นปกติ</translation>
 <translation id="1468038450257740950">WebGL ไม่ไ้ด้รับการสนับสนุน</translation>
+<translation id="1610570795592207282">ไม่สามารถโหลด CSS "<ph name="RELATIVE_PATH" />" สำหรับสคริปต์</translation>
 <translation id="1803557475693955505">ไม่สามารถโหลดหน้าพื้นหลัง "<ph name="BACKGROUND_PAGE" />"</translation>
 <translation id="2159915644201199628">ไม่สามารถถอดรหัสภาพ: '<ph name="IMAGE_NAME" />'</translation>
 <translation id="2350172092385603347">ใช้การแปลภาษาท้องถิ่นแล้ว แต่ไม่ได้ระบุ default_locale ในมานิเฟสต์</translation>
@@ -18,14 +19,12 @@
 <translation id="3115238746683532089">ผลิตภัณฑ์ที่ไม่รู้จัก <ph name="PRODUCT_ID" /> จากผู้ขาย <ph name="VENDOR_ID" /> (หมายเลขซีเรียล <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">ไม่สามารถแทนที่ไฟล์ CRX ได้ โปรดตรวจสอบดูว่าไฟล์มีการใช้งานอยู่หรือไม่</translation>
 <translation id="3163201441334626963">ผลิตภัณฑ์ที่ไม่รู้จัก <ph name="PRODUCT_ID" /> จากผู้ขาย <ph name="VENDOR_ID" /></translation>
-<translation id="3302709122321372472">ไม่สามารถโหลด CSS "<ph name="RELATIVE_PATH" />" เพื่อดูสคริปต์เนื้อหา</translation>
 <translation id="3369521687965833290">ไม่สามารถแยกส่วนขยายได้ หากต้องการแยกส่วนขยายอย่างปลอดภัย คุณต้องมีเส้นทางไปยังไดเรกทอรีโปรไฟล์ของคุณซึ่งขึ้นต้นด้วยตัวอักษรของไดรฟ์และจะต้องไม่มีจังก์ชัน จุดต่อเชื่อม หรือลิงก์สัญลักษณ์ ไม่มีเส้นทางในรูปแบบดังกล่าวสำหรับโปรไฟล์ของคุณ</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (หมายเลขซีเรียล <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> จากผู้ขาย <ph name="VENDOR_ID" /> (หมายเลขซีเรียล <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">ค่าที่ป้อนสำหรับคีย์ส่วนตัวจะต้องเป็นเส้นทางที่ถูกต้อง</translation>
 <translation id="388442998277590542">ไม่สามารถโหลดหน้าตัวเลือก "<ph name="OPTIONS_PAGE" />"</translation>
 <translation id="3984413272403535372">พบข้อผิดพลาดขณะเซ็นชื่อบนส่วนขยาย</translation>
-<translation id="39964277676607559">ไม่สามารถโหลด javascript "<ph name="RELATIVE_PATH" />" สำหรับสคริปต์เนื้อหา</translation>
 <translation id="4115165561519362854">ผู้ดูแลระบบของเครื่องนี้ต้องการ <ph name="EXTENSION_NAME" /> เวอร์ชัน <ph name="EXTENSION_VERSION" /> ซึ่งเป็นเวอร์ชันขั้นต่ำ จะไม่สามารถเปิดใช้ได้จนกว่าจะมีการอัปเดตส่วนขยายนี้เป็นเวอร์ชันดังกล่าว (หรือสูงกว่า)</translation>
 <translation id="4233778200880751280">ไม่สามารถโหลดหน้าเกี่ยวกับ "<ph name="ABOUT_PAGE" />"</translation>
 <translation id="471800408830181311">ไม่สามารถส่งค่าคีย์ส่วนตัว</translation>
@@ -33,6 +32,7 @@
 <translation id="4988792151665380515">ไม่สามารถส่งออกคีย์สาธารณะ</translation>
 <translation id="5026754133087629784">มุมมองเว็บ: <ph name="WEBVIEW_TAG_NAME" /></translation>
 <translation id="5098647635849512368">ไม่พบเส้นทางสัมบูรณ์ไปยังไดเรกทอรีนี้เพื่อทำการแพค</translation>
+<translation id="5160071981665899014">ไม่สามารถโหลด JavaScript "<ph name="RELATIVE_PATH" />" สำหรับสคริปต์</translation>
 <translation id="5356315618422219272">การดูแอป: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5436430103864390185">หน้าต่างที่สร้างขึ้นไม่ได้รับการสนับสนุน</translation>
 <translation id="5456409301717116725">ส่วนขยายนี้มีไฟล์คีย์ "<ph name="KEY_PATH" />" คุณอาจจะไม่ต้องการดำเนินการนั้น</translation>

@@ -79,24 +79,15 @@ class InstallableEvaluatorUnitTest : public content::RenderViewHostTestHarness {
     web_contents_tester()->TestSetFaviconURL(mojo::Clone(favicon_urls));
   }
 
-  bool IsWebAppInstallable(InstallableCriteria criteria) {
-    evaluator_ = std::make_unique<InstallableEvaluator>(web_contents(),
-                                                        *page_data_, criteria);
-
-    errors_ = evaluator_->CheckInstallability().value();
-    return errors_.empty();
-  }
-
-  InstallableStatusCode GetErrorCode() {
-    return errors_.empty() ? NO_ERROR_DETECTED : errors_[0];
-  }
-
   void SetManifest(blink::mojom::ManifestPtr manifest) {
-    page_data_->manifest_->manifest = std::move(manifest);
+    GURL manifest_url("http://example.com");
+    page_data_->OnManifestFetched(std::move(manifest), manifest_url,
+                                  NO_ERROR_DETECTED);
   }
 
   void SetMetadata(mojom::WebPageMetadataPtr metadata) {
-    page_data_->web_page_metadata_->metadata = (std::move(metadata));
+    page_data_->web_page_metadata_->fetched = false;
+    page_data_->OnPageMetadataFetched(std::move(metadata));
   }
 
   blink::mojom::Manifest* manifest() {
@@ -107,112 +98,182 @@ class InstallableEvaluatorUnitTest : public content::RenderViewHostTestHarness {
     return page_data_->web_page_metadata_->metadata.get();
   }
 
+  absl::optional<InstallableStatusCode> GetCheckInstallabilityErrorCode(
+      InstallableCriteria criteria) {
+    InstallableEvaluator evaluator(web_contents(), *page_data_, criteria);
+    auto errors = evaluator.CheckInstallability();
+    if (!errors.has_value()) {
+      return absl::nullopt;
+    }
+    return errors->empty() ? NO_ERROR_DETECTED : errors.value()[0];
+  }
+
  private:
   std::unique_ptr<InstallablePageData> page_data_;
-  std::unique_ptr<InstallableEvaluator> evaluator_;
-  std::vector<InstallableStatusCode> errors_;
 };
 
-TEST_F(InstallableEvaluatorUnitTest, EmptyManifestIsInvalid) {
+TEST_F(InstallableEvaluatorUnitTest, DoNotCheck) {
+  EXPECT_EQ(absl::nullopt,
+            GetCheckInstallabilityErrorCode(InstallableCriteria::kDoNotCheck));
+}
+
+class InstallableEvaluatorCriteriaUnitTest
+    : public InstallableEvaluatorUnitTest,
+      public testing::WithParamInterface<InstallableCriteria> {
+ public:
+  void TestCheckInstallability(InstallableStatusCode valid_manifest_code,
+                               InstallableStatusCode implicit_fields_code,
+                               InstallableStatusCode root_page_code) {
+    auto error_code = GetCheckInstallabilityErrorCode(GetParam());
+    switch (GetParam()) {
+      case InstallableCriteria::kValidManifestWithIcons:
+        EXPECT_EQ(valid_manifest_code, error_code);
+        break;
+      case InstallableCriteria::kImplicitManifestFieldsHTML:
+        EXPECT_EQ(implicit_fields_code, error_code);
+        break;
+      case InstallableCriteria::kNoManifestAtRootScope:
+        EXPECT_EQ(root_page_code, error_code);
+        break;
+      default:
+        NOTREACHED();
+    }
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    InstallableEvaluatorCriteriaUnitTest,
+    testing::Values(InstallableCriteria::kValidManifestWithIcons,
+                    InstallableCriteria::kImplicitManifestFieldsHTML,
+                    InstallableCriteria::kNoManifestAtRootScope));
+
+TEST_P(InstallableEvaluatorCriteriaUnitTest, NoManifest) {
+  web_contents_tester()->NavigateAndCommit(GURL("https://www.example.com"));
+  TestCheckInstallability(NO_MANIFEST, NO_MANIFEST,
+                          MANIFEST_MISSING_NAME_OR_SHORT_NAME);
+
+  web_contents_tester()->NavigateAndCommit(
+      GURL("https://www.example.com/path/page.html"));
+  TestCheckInstallability(NO_MANIFEST, NO_MANIFEST, NO_MANIFEST);
+}
+
+TEST_P(InstallableEvaluatorCriteriaUnitTest, EmptyManifest) {
   SetManifest(blink::mojom::Manifest::New());
-  EXPECT_FALSE(
-      IsWebAppInstallable(InstallableCriteria::kValidManifestWithIcons));
-  EXPECT_EQ(MANIFEST_EMPTY, GetErrorCode());
+  TestCheckInstallability(MANIFEST_EMPTY, MANIFEST_EMPTY,
+                          MANIFEST_MISSING_NAME_OR_SHORT_NAME);
+
+  web_contents_tester()->NavigateAndCommit(
+      GURL("https://www.example.com/path/page.html"));
+  TestCheckInstallability(MANIFEST_EMPTY, MANIFEST_EMPTY, MANIFEST_EMPTY);
 }
 
-TEST_F(InstallableEvaluatorUnitTest, CheckMinimalValidManifest) {
+TEST_P(InstallableEvaluatorCriteriaUnitTest, CheckStartUrl) {
+  web_contents_tester()->NavigateAndCommit(GURL("https://www.example.com"));
   SetManifest(GetValidManifest());
-  EXPECT_TRUE(
-      IsWebAppInstallable(InstallableCriteria::kValidManifestWithIcons));
-  EXPECT_EQ(NO_ERROR_DETECTED, GetErrorCode());
+  SetMetadata(mojom::WebPageMetadata::New());
+  // Valid manifest start_url
+  manifest()->start_url = GURL("https://www.example.com");
+  TestCheckInstallability(NO_ERROR_DETECTED, NO_ERROR_DETECTED,
+                          NO_ERROR_DETECTED);
+
+  // No manifest start_url
+  manifest()->start_url = GURL();
+  TestCheckInstallability(START_URL_NOT_VALID, START_URL_NOT_VALID,
+                          NO_ERROR_DETECTED);
+
+  // manifest start_url invalid
+  manifest()->start_url = GURL("/");
+  TestCheckInstallability(START_URL_NOT_VALID, START_URL_NOT_VALID,
+                          NO_ERROR_DETECTED);
+
+  // Valid application_url
+  metadata()->application_url = GURL("http://example.com");
+  TestCheckInstallability(START_URL_NOT_VALID, NO_ERROR_DETECTED,
+                          NO_ERROR_DETECTED);
+
+  // No start_url, root scope page
+  metadata()->application_url = GURL();
+  web_contents_tester()->NavigateAndCommit(
+      GURL("https://www.example.com/pageA"));
+  TestCheckInstallability(START_URL_NOT_VALID, START_URL_NOT_VALID,
+                          NO_ERROR_DETECTED);
+
+  // No start_url, Not root scope page
+  web_contents_tester()->NavigateAndCommit(
+      GURL("https://www.example.com/path/pageB"));
+  TestCheckInstallability(START_URL_NOT_VALID, START_URL_NOT_VALID,
+                          START_URL_NOT_VALID);
 }
 
-TEST_F(InstallableEvaluatorUnitTest, ManifestRequiresNameOrShortName) {
+TEST_P(InstallableEvaluatorCriteriaUnitTest, CheckNameOrShortName) {
   SetManifest(GetValidManifest());
 
   manifest()->name = absl::nullopt;
-  EXPECT_TRUE(
-      IsWebAppInstallable(InstallableCriteria::kValidManifestWithIcons));
-  EXPECT_EQ(NO_ERROR_DETECTED, GetErrorCode());
+  manifest()->short_name = u"bar";
+  TestCheckInstallability(NO_ERROR_DETECTED, NO_ERROR_DETECTED,
+                          NO_ERROR_DETECTED);
 
   manifest()->name = u"foo";
   manifest()->short_name = absl::nullopt;
-  EXPECT_TRUE(
-      IsWebAppInstallable(InstallableCriteria::kValidManifestWithIcons));
-  EXPECT_EQ(NO_ERROR_DETECTED, GetErrorCode());
+  TestCheckInstallability(NO_ERROR_DETECTED, NO_ERROR_DETECTED,
+                          NO_ERROR_DETECTED);
 
   manifest()->name = absl::nullopt;
-  EXPECT_FALSE(
-      IsWebAppInstallable(InstallableCriteria::kValidManifestWithIcons));
-  EXPECT_EQ(MANIFEST_MISSING_NAME_OR_SHORT_NAME, GetErrorCode());
-}
+  manifest()->short_name = absl::nullopt;
+  TestCheckInstallability(MANIFEST_MISSING_NAME_OR_SHORT_NAME,
+                          MANIFEST_MISSING_NAME_OR_SHORT_NAME,
+                          MANIFEST_MISSING_NAME_OR_SHORT_NAME);
 
-TEST_F(InstallableEvaluatorUnitTest, ManifestRequiresNonEmptyNameORShortName) {
-  SetManifest(GetValidManifest());
-
+  SetMetadata(mojom::WebPageMetadata::New());
   manifest()->name = std::u16string();
-  EXPECT_TRUE(
-      IsWebAppInstallable(InstallableCriteria::kValidManifestWithIcons));
-  EXPECT_EQ(NO_ERROR_DETECTED, GetErrorCode());
-
-  manifest()->name = u"foo";
   manifest()->short_name = std::u16string();
-  EXPECT_TRUE(
-      IsWebAppInstallable(InstallableCriteria::kValidManifestWithIcons));
-  EXPECT_EQ(NO_ERROR_DETECTED, GetErrorCode());
+  metadata()->application_name = std::u16string();
+  metadata()->title = std::u16string();
+  TestCheckInstallability(MANIFEST_MISSING_NAME_OR_SHORT_NAME,
+                          MANIFEST_MISSING_NAME_OR_SHORT_NAME,
+                          MANIFEST_MISSING_NAME_OR_SHORT_NAME);
 
-  manifest()->name = std::u16string();
-  EXPECT_FALSE(
-      IsWebAppInstallable(InstallableCriteria::kValidManifestWithIcons));
-  EXPECT_EQ(MANIFEST_MISSING_NAME_OR_SHORT_NAME, GetErrorCode());
-}
+  metadata()->application_name = u"Name";
+  TestCheckInstallability(MANIFEST_MISSING_NAME_OR_SHORT_NAME,
+                          NO_ERROR_DETECTED, NO_ERROR_DETECTED);
 
-TEST_F(InstallableEvaluatorUnitTest, ManifestRequiresValidStartURL) {
-  SetManifest(GetValidManifest());
-
-  manifest()->start_url = GURL();
-  manifest()->id = GURL();
-  EXPECT_FALSE(
-      IsWebAppInstallable(InstallableCriteria::kValidManifestWithIcons));
-  EXPECT_EQ(START_URL_NOT_VALID, GetErrorCode());
-
-  manifest()->start_url = GURL("/");
-  manifest()->id = GURL("/");
-  EXPECT_FALSE(
-      IsWebAppInstallable(InstallableCriteria::kValidManifestWithIcons));
-  EXPECT_EQ(START_URL_NOT_VALID, GetErrorCode());
+  metadata()->application_name = std::u16string();
+  metadata()->title = u"Title";
+  TestCheckInstallability(MANIFEST_MISSING_NAME_OR_SHORT_NAME,
+                          NO_ERROR_DETECTED, NO_ERROR_DETECTED);
 }
 
 TEST_F(InstallableEvaluatorUnitTest, ManifestSupportsImagePNG) {
   SetManifest(GetValidManifest());
 
   manifest()->icons[0].type = u"image/gif";
-  EXPECT_FALSE(
-      IsWebAppInstallable(InstallableCriteria::kValidManifestWithIcons));
-  EXPECT_EQ(MANIFEST_MISSING_SUITABLE_ICON, GetErrorCode());
+  EXPECT_EQ(MANIFEST_MISSING_SUITABLE_ICON,
+            GetCheckInstallabilityErrorCode(
+                InstallableCriteria::kValidManifestWithIcons));
 
   manifest()->icons[0].type.clear();
-  EXPECT_FALSE(
-      IsWebAppInstallable(InstallableCriteria::kValidManifestWithIcons));
-  EXPECT_EQ(MANIFEST_MISSING_SUITABLE_ICON, GetErrorCode());
+  EXPECT_EQ(MANIFEST_MISSING_SUITABLE_ICON,
+            GetCheckInstallabilityErrorCode(
+                InstallableCriteria::kValidManifestWithIcons));
 
   // If the type is null, the icon src will be checked instead.
   manifest()->icons[0].src = GURL("http://example.com/icon.png");
-  EXPECT_TRUE(
-      IsWebAppInstallable(InstallableCriteria::kValidManifestWithIcons));
-  EXPECT_EQ(NO_ERROR_DETECTED, GetErrorCode());
+  EXPECT_EQ(NO_ERROR_DETECTED,
+            GetCheckInstallabilityErrorCode(
+                InstallableCriteria::kValidManifestWithIcons));
 
   // Capital file extension is also permissible.
   manifest()->icons[0].src = GURL("http://example.com/icon.PNG");
-  EXPECT_TRUE(
-      IsWebAppInstallable(InstallableCriteria::kValidManifestWithIcons));
-  EXPECT_EQ(NO_ERROR_DETECTED, GetErrorCode());
+  EXPECT_EQ(NO_ERROR_DETECTED,
+            GetCheckInstallabilityErrorCode(
+                InstallableCriteria::kValidManifestWithIcons));
 
   // Unsupported extensions are rejected.
   manifest()->icons[0].src = GURL("http://example.com/icon.gif");
-  EXPECT_FALSE(
-      IsWebAppInstallable(InstallableCriteria::kValidManifestWithIcons));
-  EXPECT_EQ(MANIFEST_MISSING_SUITABLE_ICON, GetErrorCode());
+  EXPECT_EQ(MANIFEST_MISSING_SUITABLE_ICON,
+            GetCheckInstallabilityErrorCode(
+                InstallableCriteria::kValidManifestWithIcons));
 }
 
 TEST_F(InstallableEvaluatorUnitTest, ManifestSupportsImageSVG) {
@@ -220,22 +281,22 @@ TEST_F(InstallableEvaluatorUnitTest, ManifestSupportsImageSVG) {
 
   // The correct mimetype is image/svg+xml.
   manifest()->icons[0].type = u"image/svg";
-  EXPECT_FALSE(
-      IsWebAppInstallable(InstallableCriteria::kValidManifestWithIcons));
-  EXPECT_EQ(MANIFEST_MISSING_SUITABLE_ICON, GetErrorCode());
+  EXPECT_EQ(MANIFEST_MISSING_SUITABLE_ICON,
+            GetCheckInstallabilityErrorCode(
+                InstallableCriteria::kValidManifestWithIcons));
 
   // If the type is null, the icon src will be checked instead.
   manifest()->icons[0].type.clear();
   manifest()->icons[0].src = GURL("http://example.com/icon.svg");
-  EXPECT_TRUE(
-      IsWebAppInstallable(InstallableCriteria::kValidManifestWithIcons));
-  EXPECT_EQ(NO_ERROR_DETECTED, GetErrorCode());
+  EXPECT_EQ(NO_ERROR_DETECTED,
+            GetCheckInstallabilityErrorCode(
+                InstallableCriteria::kValidManifestWithIcons));
 
   // Capital file extension is also permissible.
   manifest()->icons[0].src = GURL("http://example.com/icon.SVG");
-  EXPECT_TRUE(
-      IsWebAppInstallable(InstallableCriteria::kValidManifestWithIcons));
-  EXPECT_EQ(NO_ERROR_DETECTED, GetErrorCode());
+  EXPECT_EQ(NO_ERROR_DETECTED,
+            GetCheckInstallabilityErrorCode(
+                InstallableCriteria::kValidManifestWithIcons));
 }
 
 TEST_F(InstallableEvaluatorUnitTest, ManifestSupportsImageWebP) {
@@ -243,17 +304,17 @@ TEST_F(InstallableEvaluatorUnitTest, ManifestSupportsImageWebP) {
 
   manifest()->icons[0].type = u"image/webp";
   manifest()->icons[0].src = GURL("http://example.com/");
-  EXPECT_TRUE(
-      IsWebAppInstallable(InstallableCriteria::kValidManifestWithIcons));
-  EXPECT_EQ(NO_ERROR_DETECTED, GetErrorCode());
+  EXPECT_EQ(NO_ERROR_DETECTED,
+            GetCheckInstallabilityErrorCode(
+                InstallableCriteria::kValidManifestWithIcons));
 
   // If the type is null, the icon src is checked instead.
   // Case is ignored.
   manifest()->icons[0].type.clear();
   manifest()->icons[0].src = GURL("http://example.com/icon.wEBp");
-  EXPECT_TRUE(
-      IsWebAppInstallable(InstallableCriteria::kValidManifestWithIcons));
-  EXPECT_EQ(NO_ERROR_DETECTED, GetErrorCode());
+  EXPECT_EQ(NO_ERROR_DETECTED,
+            GetCheckInstallabilityErrorCode(
+                InstallableCriteria::kValidManifestWithIcons));
 }
 
 TEST_F(InstallableEvaluatorUnitTest, ManifestRequiresPurposeAny) {
@@ -261,15 +322,15 @@ TEST_F(InstallableEvaluatorUnitTest, ManifestRequiresPurposeAny) {
 
   // The icon MUST have IconPurpose::ANY at least.
   manifest()->icons[0].purpose[0] = IconPurpose::MASKABLE;
-  EXPECT_FALSE(
-      IsWebAppInstallable(InstallableCriteria::kValidManifestWithIcons));
-  EXPECT_EQ(MANIFEST_MISSING_SUITABLE_ICON, GetErrorCode());
+  EXPECT_EQ(MANIFEST_MISSING_SUITABLE_ICON,
+            GetCheckInstallabilityErrorCode(
+                InstallableCriteria::kValidManifestWithIcons));
 
   // If one of the icon purposes match the requirement, it should be accepted.
   manifest()->icons[0].purpose.push_back(IconPurpose::ANY);
-  EXPECT_TRUE(
-      IsWebAppInstallable(InstallableCriteria::kValidManifestWithIcons));
-  EXPECT_EQ(NO_ERROR_DETECTED, GetErrorCode());
+  EXPECT_EQ(NO_ERROR_DETECTED,
+            GetCheckInstallabilityErrorCode(
+                InstallableCriteria::kValidManifestWithIcons));
 }
 
 TEST_F(InstallableEvaluatorUnitTest, ManifestRequiresIconSize) {
@@ -277,155 +338,204 @@ TEST_F(InstallableEvaluatorUnitTest, ManifestRequiresIconSize) {
 
   // The icon MUST be 144x144 size at least.
   manifest()->icons[0].sizes[0] = gfx::Size(1, 1);
-  EXPECT_FALSE(
-      IsWebAppInstallable(InstallableCriteria::kValidManifestWithIcons));
-  EXPECT_EQ(MANIFEST_MISSING_SUITABLE_ICON, GetErrorCode());
+  EXPECT_EQ(MANIFEST_MISSING_SUITABLE_ICON,
+            GetCheckInstallabilityErrorCode(
+                InstallableCriteria::kValidManifestWithIcons));
 
   manifest()->icons[0].sizes[0] = gfx::Size(143, 143);
-  EXPECT_FALSE(
-      IsWebAppInstallable(InstallableCriteria::kValidManifestWithIcons));
-  EXPECT_EQ(MANIFEST_MISSING_SUITABLE_ICON, GetErrorCode());
+  EXPECT_EQ(MANIFEST_MISSING_SUITABLE_ICON,
+            GetCheckInstallabilityErrorCode(
+                InstallableCriteria::kValidManifestWithIcons));
 
   // If one of the sizes match the requirement, it should be accepted.
   manifest()->icons[0].sizes.emplace_back(144, 144);
-  EXPECT_TRUE(
-      IsWebAppInstallable(InstallableCriteria::kValidManifestWithIcons));
-  EXPECT_EQ(NO_ERROR_DETECTED, GetErrorCode());
+  EXPECT_EQ(NO_ERROR_DETECTED,
+            GetCheckInstallabilityErrorCode(
+                InstallableCriteria::kValidManifestWithIcons));
 
   // Higher than the required size is okay.
   manifest()->icons[0].sizes[1] = gfx::Size(200, 200);
-  EXPECT_TRUE(
-      IsWebAppInstallable(InstallableCriteria::kValidManifestWithIcons));
-  EXPECT_EQ(NO_ERROR_DETECTED, GetErrorCode());
+  EXPECT_EQ(NO_ERROR_DETECTED,
+            GetCheckInstallabilityErrorCode(
+                InstallableCriteria::kValidManifestWithIcons));
 
   // Icon size matching the maximum size requirement is correct.
   manifest()->icons[0].sizes[1] = gfx::Size(1024, 1024);
-  EXPECT_TRUE(
-      IsWebAppInstallable(InstallableCriteria::kValidManifestWithIcons));
-  EXPECT_EQ(NO_ERROR_DETECTED, GetErrorCode());
+  EXPECT_EQ(NO_ERROR_DETECTED,
+            GetCheckInstallabilityErrorCode(
+                InstallableCriteria::kValidManifestWithIcons));
 
   // Icon size larger than maximum size 1024x1024 should not
   // be accepted on desktop.
   manifest()->icons[0].sizes[1] = gfx::Size(1025, 1025);
 #if BUILDFLAG(IS_ANDROID)
-  EXPECT_TRUE(
-      IsWebAppInstallable(InstallableCriteria::kValidManifestWithIcons));
-  EXPECT_EQ(NO_ERROR_DETECTED, GetErrorCode());
+  EXPECT_EQ(NO_ERROR_DETECTED,
+            GetCheckInstallabilityErrorCode(
+                InstallableCriteria::kValidManifestWithIcons));
 #else
-  EXPECT_FALSE(
-      IsWebAppInstallable(InstallableCriteria::kValidManifestWithIcons));
-  EXPECT_EQ(MANIFEST_MISSING_SUITABLE_ICON, GetErrorCode());
+  EXPECT_EQ(MANIFEST_MISSING_SUITABLE_ICON,
+            GetCheckInstallabilityErrorCode(
+                InstallableCriteria::kValidManifestWithIcons));
 #endif  // BUILDFLAG(IS_ANDROID)
 
   // Non-square is okay.
   manifest()->icons[0].sizes[1] = gfx::Size(144, 200);
-  EXPECT_TRUE(
-      IsWebAppInstallable(InstallableCriteria::kValidManifestWithIcons));
-  EXPECT_EQ(NO_ERROR_DETECTED, GetErrorCode());
+  EXPECT_EQ(NO_ERROR_DETECTED,
+            GetCheckInstallabilityErrorCode(
+                InstallableCriteria::kValidManifestWithIcons));
 
   // The representation of the keyword 'any' should be recognized.
   manifest()->icons[0].sizes[1] = gfx::Size(0, 0);
-  EXPECT_TRUE(
-      IsWebAppInstallable(InstallableCriteria::kValidManifestWithIcons));
-  EXPECT_EQ(NO_ERROR_DETECTED, GetErrorCode());
+  EXPECT_EQ(NO_ERROR_DETECTED,
+            GetCheckInstallabilityErrorCode(
+                InstallableCriteria::kValidManifestWithIcons));
 }
 
 TEST_F(InstallableEvaluatorUnitTest, ManifestDisplayModes) {
   SetManifest(GetValidManifest());
 
   manifest()->display = blink::mojom::DisplayMode::kUndefined;
-  EXPECT_TRUE(
-      IsWebAppInstallable(InstallableCriteria::kValidManifestIgnoreDisplay));
-  EXPECT_FALSE(
-      IsWebAppInstallable(InstallableCriteria::kValidManifestWithIcons));
-  EXPECT_EQ(MANIFEST_DISPLAY_NOT_SUPPORTED, GetErrorCode());
+  EXPECT_EQ(NO_ERROR_DETECTED,
+            GetCheckInstallabilityErrorCode(
+                InstallableCriteria::kValidManifestIgnoreDisplay));
+  EXPECT_EQ(MANIFEST_DISPLAY_NOT_SUPPORTED,
+            GetCheckInstallabilityErrorCode(
+                InstallableCriteria::kValidManifestWithIcons));
+  EXPECT_EQ(NO_ERROR_DETECTED,
+            GetCheckInstallabilityErrorCode(
+                InstallableCriteria::kImplicitManifestFieldsHTML));
 
   manifest()->display = blink::mojom::DisplayMode::kBrowser;
-  EXPECT_TRUE(
-      IsWebAppInstallable(InstallableCriteria::kValidManifestIgnoreDisplay));
-  EXPECT_FALSE(
-      IsWebAppInstallable(InstallableCriteria::kValidManifestWithIcons));
-  EXPECT_EQ(MANIFEST_DISPLAY_NOT_SUPPORTED, GetErrorCode());
+  EXPECT_EQ(NO_ERROR_DETECTED,
+            GetCheckInstallabilityErrorCode(
+                InstallableCriteria::kValidManifestIgnoreDisplay));
+  EXPECT_EQ(MANIFEST_DISPLAY_NOT_SUPPORTED,
+            GetCheckInstallabilityErrorCode(
+                InstallableCriteria::kValidManifestWithIcons));
+  EXPECT_EQ(MANIFEST_DISPLAY_NOT_SUPPORTED,
+            GetCheckInstallabilityErrorCode(
+                InstallableCriteria::kImplicitManifestFieldsHTML));
 
   manifest()->display = blink::mojom::DisplayMode::kMinimalUi;
-  EXPECT_TRUE(
-      IsWebAppInstallable(InstallableCriteria::kValidManifestWithIcons));
-  EXPECT_EQ(NO_ERROR_DETECTED, GetErrorCode());
+  EXPECT_EQ(NO_ERROR_DETECTED,
+            GetCheckInstallabilityErrorCode(
+                InstallableCriteria::kValidManifestWithIcons));
+  EXPECT_EQ(NO_ERROR_DETECTED,
+            GetCheckInstallabilityErrorCode(
+                InstallableCriteria::kImplicitManifestFieldsHTML));
 
   manifest()->display = blink::mojom::DisplayMode::kStandalone;
-  EXPECT_TRUE(
-      IsWebAppInstallable(InstallableCriteria::kValidManifestWithIcons));
-  EXPECT_EQ(NO_ERROR_DETECTED, GetErrorCode());
+  EXPECT_EQ(NO_ERROR_DETECTED,
+            GetCheckInstallabilityErrorCode(
+                InstallableCriteria::kValidManifestWithIcons));
+  EXPECT_EQ(NO_ERROR_DETECTED,
+            GetCheckInstallabilityErrorCode(
+                InstallableCriteria::kImplicitManifestFieldsHTML));
 
   manifest()->display = blink::mojom::DisplayMode::kFullscreen;
-  EXPECT_TRUE(
-      IsWebAppInstallable(InstallableCriteria::kValidManifestWithIcons));
-  EXPECT_EQ(NO_ERROR_DETECTED, GetErrorCode());
+  EXPECT_EQ(NO_ERROR_DETECTED,
+            GetCheckInstallabilityErrorCode(
+                InstallableCriteria::kValidManifestWithIcons));
+  EXPECT_EQ(NO_ERROR_DETECTED,
+            GetCheckInstallabilityErrorCode(
+                InstallableCriteria::kImplicitManifestFieldsHTML));
 
   manifest()->display = blink::mojom::DisplayMode::kWindowControlsOverlay;
-  EXPECT_TRUE(
-      IsWebAppInstallable(InstallableCriteria::kValidManifestIgnoreDisplay));
-  EXPECT_TRUE(
-      IsWebAppInstallable(InstallableCriteria::kValidManifestWithIcons));
-  EXPECT_EQ(NO_ERROR_DETECTED, GetErrorCode());
+  EXPECT_EQ(NO_ERROR_DETECTED,
+            GetCheckInstallabilityErrorCode(
+                InstallableCriteria::kValidManifestIgnoreDisplay));
+  EXPECT_EQ(NO_ERROR_DETECTED,
+            GetCheckInstallabilityErrorCode(
+                InstallableCriteria::kValidManifestWithIcons));
+  EXPECT_EQ(NO_ERROR_DETECTED,
+            GetCheckInstallabilityErrorCode(
+                InstallableCriteria::kImplicitManifestFieldsHTML));
 
   manifest()->display = blink::mojom::DisplayMode::kTabbed;
-  EXPECT_TRUE(
-      IsWebAppInstallable(InstallableCriteria::kValidManifestIgnoreDisplay));
-  EXPECT_TRUE(
-      IsWebAppInstallable(InstallableCriteria::kValidManifestWithIcons));
-  EXPECT_EQ(NO_ERROR_DETECTED, GetErrorCode());
+  EXPECT_EQ(NO_ERROR_DETECTED,
+            GetCheckInstallabilityErrorCode(
+                InstallableCriteria::kValidManifestIgnoreDisplay));
+  EXPECT_EQ(NO_ERROR_DETECTED,
+            GetCheckInstallabilityErrorCode(
+                InstallableCriteria::kValidManifestWithIcons));
+  EXPECT_EQ(NO_ERROR_DETECTED,
+            GetCheckInstallabilityErrorCode(
+                InstallableCriteria::kImplicitManifestFieldsHTML));
 }
 
 TEST_F(InstallableEvaluatorUnitTest, ManifestDisplayOverride) {
   SetManifest(GetValidManifest());
 
   manifest()->display_override.push_back(blink::mojom::DisplayMode::kMinimalUi);
-  EXPECT_TRUE(
-      IsWebAppInstallable(InstallableCriteria::kValidManifestWithIcons));
-  EXPECT_EQ(NO_ERROR_DETECTED, GetErrorCode());
+  EXPECT_EQ(NO_ERROR_DETECTED,
+            GetCheckInstallabilityErrorCode(
+                InstallableCriteria::kValidManifestWithIcons));
+  EXPECT_EQ(NO_ERROR_DETECTED,
+            GetCheckInstallabilityErrorCode(
+                InstallableCriteria::kImplicitManifestFieldsHTML));
 
   manifest()->display_override.push_back(blink::mojom::DisplayMode::kBrowser);
-  EXPECT_TRUE(
-      IsWebAppInstallable(InstallableCriteria::kValidManifestWithIcons));
-  EXPECT_EQ(NO_ERROR_DETECTED, GetErrorCode());
+  EXPECT_EQ(NO_ERROR_DETECTED,
+            GetCheckInstallabilityErrorCode(
+                InstallableCriteria::kValidManifestWithIcons));
+  EXPECT_EQ(NO_ERROR_DETECTED,
+            GetCheckInstallabilityErrorCode(
+                InstallableCriteria::kImplicitManifestFieldsHTML));
 
   manifest()->display_override.insert(manifest()->display_override.begin(),
                                       blink::mojom::DisplayMode::kStandalone);
-  EXPECT_TRUE(
-      IsWebAppInstallable(InstallableCriteria::kValidManifestWithIcons));
-  EXPECT_EQ(NO_ERROR_DETECTED, GetErrorCode());
+  EXPECT_EQ(NO_ERROR_DETECTED,
+            GetCheckInstallabilityErrorCode(
+                InstallableCriteria::kValidManifestWithIcons));
+  EXPECT_EQ(NO_ERROR_DETECTED,
+            GetCheckInstallabilityErrorCode(
+                InstallableCriteria::kImplicitManifestFieldsHTML));
 
   manifest()->display_override.insert(manifest()->display_override.begin(),
                                       blink::mojom::DisplayMode::kStandalone);
-  EXPECT_TRUE(
-      IsWebAppInstallable(InstallableCriteria::kValidManifestWithIcons));
-  EXPECT_EQ(NO_ERROR_DETECTED, GetErrorCode());
+  EXPECT_EQ(NO_ERROR_DETECTED,
+            GetCheckInstallabilityErrorCode(
+                InstallableCriteria::kValidManifestWithIcons));
+  EXPECT_EQ(NO_ERROR_DETECTED,
+            GetCheckInstallabilityErrorCode(
+                InstallableCriteria::kImplicitManifestFieldsHTML));
 
   manifest()->display_override.insert(manifest()->display_override.begin(),
                                       blink::mojom::DisplayMode::kBrowser);
-  EXPECT_TRUE(
-      IsWebAppInstallable(InstallableCriteria::kValidManifestIgnoreDisplay));
-  EXPECT_FALSE(
-      IsWebAppInstallable(InstallableCriteria::kValidManifestWithIcons));
-  EXPECT_EQ(MANIFEST_DISPLAY_OVERRIDE_NOT_SUPPORTED, GetErrorCode());
+  EXPECT_EQ(NO_ERROR_DETECTED,
+            GetCheckInstallabilityErrorCode(
+                InstallableCriteria::kValidManifestIgnoreDisplay));
+  EXPECT_EQ(MANIFEST_DISPLAY_OVERRIDE_NOT_SUPPORTED,
+            GetCheckInstallabilityErrorCode(
+                InstallableCriteria::kValidManifestWithIcons));
+  EXPECT_EQ(MANIFEST_DISPLAY_OVERRIDE_NOT_SUPPORTED,
+            GetCheckInstallabilityErrorCode(
+                InstallableCriteria::kImplicitManifestFieldsHTML));
 
   manifest()->display_override.insert(
       manifest()->display_override.begin(),
       blink::mojom::DisplayMode::kWindowControlsOverlay);
-  EXPECT_TRUE(
-      IsWebAppInstallable(InstallableCriteria::kValidManifestIgnoreDisplay));
-  EXPECT_TRUE(
-      IsWebAppInstallable(InstallableCriteria::kValidManifestWithIcons));
-  EXPECT_EQ(NO_ERROR_DETECTED, GetErrorCode());
+  EXPECT_EQ(NO_ERROR_DETECTED,
+            GetCheckInstallabilityErrorCode(
+                InstallableCriteria::kValidManifestIgnoreDisplay));
+  EXPECT_EQ(NO_ERROR_DETECTED,
+            GetCheckInstallabilityErrorCode(
+                InstallableCriteria::kValidManifestWithIcons));
+  EXPECT_EQ(NO_ERROR_DETECTED,
+            GetCheckInstallabilityErrorCode(
+                InstallableCriteria::kImplicitManifestFieldsHTML));
 
   manifest()->display_override.insert(manifest()->display_override.begin(),
                                       blink::mojom::DisplayMode::kTabbed);
-  EXPECT_TRUE(
-      IsWebAppInstallable(InstallableCriteria::kValidManifestIgnoreDisplay));
-  EXPECT_TRUE(
-      IsWebAppInstallable(InstallableCriteria::kValidManifestWithIcons));
-  EXPECT_EQ(NO_ERROR_DETECTED, GetErrorCode());
+  EXPECT_EQ(NO_ERROR_DETECTED,
+            GetCheckInstallabilityErrorCode(
+                InstallableCriteria::kValidManifestIgnoreDisplay));
+  EXPECT_EQ(NO_ERROR_DETECTED,
+            GetCheckInstallabilityErrorCode(
+                InstallableCriteria::kValidManifestWithIcons));
+  EXPECT_EQ(NO_ERROR_DETECTED,
+            GetCheckInstallabilityErrorCode(
+                InstallableCriteria::kImplicitManifestFieldsHTML));
 }
 
 TEST_F(InstallableEvaluatorUnitTest, FallbackToBrowser) {
@@ -433,9 +543,9 @@ TEST_F(InstallableEvaluatorUnitTest, FallbackToBrowser) {
 
   manifest()->display = blink::mojom::DisplayMode::kBrowser;
   manifest()->display_override.push_back(blink::mojom::DisplayMode::kMinimalUi);
-  EXPECT_TRUE(
-      IsWebAppInstallable(InstallableCriteria::kValidManifestWithIcons));
-  EXPECT_EQ(NO_ERROR_DETECTED, GetErrorCode());
+  EXPECT_EQ(NO_ERROR_DETECTED,
+            GetCheckInstallabilityErrorCode(
+                InstallableCriteria::kValidManifestWithIcons));
 }
 
 TEST_F(InstallableEvaluatorUnitTest, SupportWindowControlsOverlay) {
@@ -443,9 +553,9 @@ TEST_F(InstallableEvaluatorUnitTest, SupportWindowControlsOverlay) {
 
   manifest()->display_override.push_back(
       blink::mojom::DisplayMode::kWindowControlsOverlay);
-  EXPECT_TRUE(
-      IsWebAppInstallable(InstallableCriteria::kValidManifestWithIcons));
-  EXPECT_EQ(NO_ERROR_DETECTED, GetErrorCode());
+  EXPECT_EQ(NO_ERROR_DETECTED,
+            GetCheckInstallabilityErrorCode(
+                InstallableCriteria::kValidManifestWithIcons));
 }
 
 class InstallableEvaluatorUnitTest_Tabbed
@@ -462,36 +572,18 @@ TEST_F(InstallableEvaluatorUnitTest_Tabbed, SupportTabbed) {
   SetManifest(GetValidManifest());
 
   manifest()->display_override.push_back(blink::mojom::DisplayMode::kTabbed);
-  EXPECT_TRUE(
-      IsWebAppInstallable(InstallableCriteria::kValidManifestWithIcons));
-  EXPECT_EQ(NO_ERROR_DETECTED, GetErrorCode());
+  EXPECT_EQ(NO_ERROR_DETECTED,
+            GetCheckInstallabilityErrorCode(
+                InstallableCriteria::kValidManifestWithIcons));
 }
 
 TEST_F(InstallableEvaluatorUnitTest, ValidManifestValidMetadata) {
   SetManifest(GetValidManifest());
   SetMetadata(GetWebPageMetadata());
 
-  EXPECT_TRUE(
-      IsWebAppInstallable(InstallableCriteria::kImplicitManifestFieldsHTML));
-  EXPECT_EQ(NO_ERROR_DETECTED, GetErrorCode());
-}
-
-TEST_F(InstallableEvaluatorUnitTest, ValidManifestEmptyMetadata) {
-  SetManifest(GetValidManifest());
-  SetMetadata(mojom::WebPageMetadata::New());
-
-  EXPECT_TRUE(
-      IsWebAppInstallable(InstallableCriteria::kImplicitManifestFieldsHTML));
-  EXPECT_EQ(NO_ERROR_DETECTED, GetErrorCode());
-}
-
-TEST_F(InstallableEvaluatorUnitTest, EmptyManifestValidMetadata) {
-  SetManifest(blink::mojom::Manifest::New());
-  SetMetadata(GetWebPageMetadata());
-
-  EXPECT_FALSE(
-      IsWebAppInstallable(InstallableCriteria::kImplicitManifestFieldsHTML));
-  EXPECT_EQ(MANIFEST_EMPTY, GetErrorCode());
+  EXPECT_EQ(NO_ERROR_DETECTED,
+            GetCheckInstallabilityErrorCode(
+                InstallableCriteria::kImplicitManifestFieldsHTML));
 }
 
 TEST_F(InstallableEvaluatorUnitTest, ValidMetadata) {
@@ -502,51 +594,21 @@ TEST_F(InstallableEvaluatorUnitTest, ValidMetadata) {
   SetMetadata(GetWebPageMetadata());
   AddFavicon();
 
-  EXPECT_TRUE(
-      IsWebAppInstallable(InstallableCriteria::kImplicitManifestFieldsHTML));
-  EXPECT_EQ(NO_ERROR_DETECTED, GetErrorCode());
+  EXPECT_EQ(NO_ERROR_DETECTED,
+            GetCheckInstallabilityErrorCode(
+                InstallableCriteria::kImplicitManifestFieldsHTML));
 }
 
-TEST_F(InstallableEvaluatorUnitTest, ImplicitAppName) {
-  // Test that a site is installable when no manifest name but an "name" meta
-  // tag is provided.
-  SetManifest(GetValidManifest());
-  SetMetadata(mojom::WebPageMetadata::New());
+TEST_F(InstallableEvaluatorUnitTest, ValidMetadataRootScopePage) {
+  // Test that a root-scoped page, with no manifest and a valid metadata is
+  // installable.
+  web_contents_tester()->NavigateAndCommit(GURL("https://www.example.com"));
+  SetMetadata(GetWebPageMetadata());
+  AddFavicon();
 
-  manifest()->name = std::u16string();
-  manifest()->short_name = absl::nullopt;
-  EXPECT_FALSE(
-      IsWebAppInstallable(InstallableCriteria::kImplicitManifestFieldsHTML));
-  EXPECT_EQ(MANIFEST_MISSING_NAME_OR_SHORT_NAME, GetErrorCode());
-
-  SetMetadata(mojom::WebPageMetadata::New());
-  metadata()->application_name = u"Name";
-  EXPECT_TRUE(
-      IsWebAppInstallable(InstallableCriteria::kImplicitManifestFieldsHTML));
-  EXPECT_EQ(NO_ERROR_DETECTED, GetErrorCode());
-
-  SetMetadata(mojom::WebPageMetadata::New());
-  metadata()->title = u"Title";
-  EXPECT_TRUE(
-      IsWebAppInstallable(InstallableCriteria::kImplicitManifestFieldsHTML));
-  EXPECT_EQ(NO_ERROR_DETECTED, GetErrorCode());
-}
-
-TEST_F(InstallableEvaluatorUnitTest, MetadataStartUrl) {
-  // Test that a site is installable when no manifest start_url but an
-  // "application-url" meta tag is provided.
-  SetManifest(GetValidManifest());
-  SetMetadata(mojom::WebPageMetadata::New());
-
-  manifest()->start_url = GURL();
-  EXPECT_FALSE(
-      IsWebAppInstallable(InstallableCriteria::kImplicitManifestFieldsHTML));
-  EXPECT_EQ(START_URL_NOT_VALID, GetErrorCode());
-
-  metadata()->application_url = GURL("http://example.com");
-  EXPECT_TRUE(
-      IsWebAppInstallable(InstallableCriteria::kImplicitManifestFieldsHTML));
-  EXPECT_EQ(NO_ERROR_DETECTED, GetErrorCode());
+  EXPECT_EQ(NO_ERROR_DETECTED,
+            GetCheckInstallabilityErrorCode(
+                InstallableCriteria::kNoManifestAtRootScope));
 }
 
 TEST_F(InstallableEvaluatorUnitTest, ImplicitIcons) {
@@ -556,45 +618,14 @@ TEST_F(InstallableEvaluatorUnitTest, ImplicitIcons) {
   SetMetadata(mojom::WebPageMetadata::New());
 
   manifest()->icons.clear();
-  EXPECT_FALSE(
-      IsWebAppInstallable(InstallableCriteria::kImplicitManifestFieldsHTML));
-  EXPECT_EQ(MANIFEST_MISSING_SUITABLE_ICON, GetErrorCode());
+  EXPECT_EQ(MANIFEST_MISSING_SUITABLE_ICON,
+            GetCheckInstallabilityErrorCode(
+                InstallableCriteria::kImplicitManifestFieldsHTML));
 
   AddFavicon();
-  EXPECT_TRUE(
-      IsWebAppInstallable(InstallableCriteria::kImplicitManifestFieldsHTML));
-  EXPECT_EQ(NO_ERROR_DETECTED, GetErrorCode());
-}
-
-TEST_F(InstallableEvaluatorUnitTest, ImplicitDisplayMode) {
-  // Test that a site is installable when manifest display mode is not
-  // explicitly set to "browser".
-  SetManifest(GetValidManifest());
-  SetMetadata(mojom::WebPageMetadata::New());
-
-  // DisplayMode::kBrowser is not installable.
-  manifest()->display = blink::mojom::DisplayMode::kBrowser;
-  EXPECT_FALSE(
-      IsWebAppInstallable(InstallableCriteria::kImplicitManifestFieldsHTML));
-  EXPECT_EQ(MANIFEST_DISPLAY_NOT_SUPPORTED, GetErrorCode());
-
-  // Everything else can be installable.
-  manifest()->display = blink::mojom::DisplayMode::kUndefined;
-  EXPECT_TRUE(
-      IsWebAppInstallable(InstallableCriteria::kImplicitManifestFieldsHTML));
-  EXPECT_EQ(NO_ERROR_DETECTED, GetErrorCode());
-  manifest()->display = blink::mojom::DisplayMode::kMinimalUi;
-  EXPECT_TRUE(
-      IsWebAppInstallable(InstallableCriteria::kImplicitManifestFieldsHTML));
-  EXPECT_EQ(NO_ERROR_DETECTED, GetErrorCode());
-  manifest()->display = blink::mojom::DisplayMode::kStandalone;
-  EXPECT_TRUE(
-      IsWebAppInstallable(InstallableCriteria::kImplicitManifestFieldsHTML));
-  EXPECT_EQ(NO_ERROR_DETECTED, GetErrorCode());
-  manifest()->display = blink::mojom::DisplayMode::kFullscreen;
-  EXPECT_TRUE(
-      IsWebAppInstallable(InstallableCriteria::kImplicitManifestFieldsHTML));
-  EXPECT_EQ(NO_ERROR_DETECTED, GetErrorCode());
+  EXPECT_EQ(NO_ERROR_DETECTED,
+            GetCheckInstallabilityErrorCode(
+                InstallableCriteria::kImplicitManifestFieldsHTML));
 }
 
 }  // namespace webapps

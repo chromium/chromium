@@ -198,7 +198,7 @@ void CellularMetricsLogger::RecordSimLockNotificationLockType(
 void CellularMetricsLogger::RecordSimPinOperationResult(
     const SimPinOperation& pin_operation,
     const bool allow_cellular_sim_lock,
-    const absl::optional<std::string>& shill_error_name) {
+    const std::optional<std::string>& shill_error_name) {
   SimPinOperationResult result =
       shill_error_name.has_value()
           ? GetSimPinOperationResultForShillError(*shill_error_name)
@@ -399,9 +399,7 @@ class ESimFeatureUsageMetrics
         continue;
       }
       const std::vector<dbus::ObjectPath>& profiles =
-          ash::features::IsSmdsDbusMigrationEnabled()
-              ? euicc_properties->profiles().value()
-              : euicc_properties->installed_carrier_profiles().value();
+          euicc_properties->profiles().value();
       for (const dbus::ObjectPath& profile_path : profiles) {
         HermesProfileClient::Properties* profile_properties =
             HermesProfileClient::Get()->GetProperties(profile_path);
@@ -461,7 +459,7 @@ class EnterpriseESimFeatureUsageMetrics
   }
 
   // feature_usage::FeatureUsageMetrics::Delegate:
-  absl::optional<bool> IsAccessible() const final {
+  std::optional<bool> IsAccessible() const final {
     if (!IsEligible()) {
       return false;
     }
@@ -889,7 +887,7 @@ void CellularMetricsLogger::CheckForConnectionStateMetric(
   bool new_is_connected = network->IsConnectedState();
   if (connection_info->is_connected == new_is_connected)
     return;
-  absl::optional<bool> old_is_connected = connection_info->is_connected;
+  std::optional<bool> old_is_connected = connection_info->is_connected;
   connection_info->is_connected = new_is_connected;
 
   if (new_is_connected) {
@@ -909,7 +907,7 @@ void CellularMetricsLogger::CheckForConnectionStateMetric(
   if (!old_is_connected.has_value())
     return;
 
-  absl::optional<base::TimeDelta> time_since_disconnect_requested;
+  std::optional<base::TimeDelta> time_since_disconnect_requested;
   if (connection_info->last_disconnect_request_time) {
     time_since_disconnect_requested =
         base::TimeTicks::Now() - *connection_info->last_disconnect_request_time;
@@ -981,7 +979,7 @@ void CellularMetricsLogger::CheckForPSimActivationStateMetric() {
   if (network_list.size() == 0)
     return;
 
-  absl::optional<std::string> psim_activation_state;
+  std::optional<std::string> psim_activation_state;
   for (const auto* network : network_list) {
     if (GetSimType(network) == SimType::kPSim)
       psim_activation_state = network->activation_state();
@@ -1048,7 +1046,7 @@ void CellularMetricsLogger::CheckForCellularUsageMetrics() {
   network_state_handler_->GetVisibleNetworkListByType(
       NetworkTypePattern::NonVirtual(), &network_list);
 
-  absl::optional<const NetworkState*> connected_cellular_network;
+  std::optional<const NetworkState*> connected_cellular_network;
   bool is_non_cellular_connected = false;
   for (auto* network : network_list) {
     if (!network->IsConnectedState())
@@ -1068,7 +1066,7 @@ void CellularMetricsLogger::CheckForCellularUsageMetrics() {
   }
 
   CellularUsage usage;
-  absl::optional<SimType> sim_type;
+  std::optional<SimType> sim_type;
   bool is_managed_by_policy = false;
   if (connected_cellular_network.has_value()) {
     usage = is_non_cellular_connected

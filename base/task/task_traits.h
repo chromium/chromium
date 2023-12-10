@@ -231,9 +231,8 @@ class BASE_EXPORT TaskTraits {
   // constexpr base::TaskTraits other_user_visible_may_block_traits = {
   //     base::MayBlock(), base::TaskPriority::USER_VISIBLE
   // };
-  template <class... ArgTypes,
-            class CheckArgumentsAreValid = std::enable_if_t<
-                trait_helpers::AreValidTraits<ValidTrait, ArgTypes...>::value>>
+  template <class... ArgTypes>
+    requires trait_helpers::AreValidTraits<ValidTrait, ArgTypes...>
   // TaskTraits are intended to be implicitly-constructable (eg {}).
   // NOLINTNEXTLINE(google-explicit-constructor)
   constexpr TaskTraits(ArgTypes... args)
@@ -263,16 +262,7 @@ class BASE_EXPORT TaskTraits {
   constexpr TaskTraits(const TaskTraits& other) = default;
   TaskTraits& operator=(const TaskTraits& other) = default;
 
-  // TODO(eseckler): Default the comparison operator once C++20 arrives.
-  bool operator==(const TaskTraits& other) const {
-    static_assert(sizeof(TaskTraits) == 5,
-                  "Update comparison operator when TaskTraits change");
-    return priority_ == other.priority_ &&
-           shutdown_behavior_ == other.shutdown_behavior_ &&
-           thread_policy_ == other.thread_policy_ &&
-           may_block_ == other.may_block_ &&
-           with_base_sync_primitives_ == other.with_base_sync_primitives_;
-  }
+  friend bool operator==(const TaskTraits&, const TaskTraits&) = default;
 
   // Sets the priority of tasks with these traits to |priority|.
   void UpdatePriority(TaskPriority priority) { priority_ = priority; }

@@ -112,6 +112,7 @@ class CONTENT_EXPORT MediaLicenseStorageHost : public media::mojom::CdmStorage {
                    CdmStorageBindingContext binding_context,
                    OpenCallback callback,
                    MediaLicenseStorageHostOpenError error);
+  void DidGetDatabaseSize(const uint64_t size);
   void DidReadFile(const media::CdmType& cdm_type,
                    const std::string& file_name,
                    ReadFileCallback callback,
@@ -119,6 +120,9 @@ class CONTENT_EXPORT MediaLicenseStorageHost : public media::mojom::CdmStorage {
   void DidWriteFile(WriteFileCallback callback, bool success);
 
   SEQUENCE_CHECKER(sequence_checker_);
+
+  // Track MediaLicenseDatabaseSize
+  bool database_size_reported_ = false;
 
   // MediaLicenseManager instance which owns this object.
   const raw_ptr<MediaLicenseManager> manager_

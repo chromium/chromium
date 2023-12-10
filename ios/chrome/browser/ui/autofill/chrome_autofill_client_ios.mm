@@ -24,7 +24,7 @@
 #import "components/autofill/core/browser/payments/autofill_save_card_ui_info.h"
 #import "components/autofill/core/browser/payments/credit_card_cvc_authenticator.h"
 #import "components/autofill/core/browser/payments/credit_card_otp_authenticator.h"
-#import "components/autofill/core/browser/payments/payments_client.h"
+#import "components/autofill/core/browser/payments/payments_network_interface.h"
 #import "components/autofill/core/browser/ui/payments/card_unmask_prompt_view.h"
 #import "components/autofill/core/browser/ui/popup_item_ids.h"
 #import "components/autofill/core/common/autofill_features.h"
@@ -40,27 +40,28 @@
 #import "components/translate/core/browser/translate_manager.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
 #import "components/variations/service/variations_service.h"
-#import "ios/chrome/browser/autofill/address_normalizer_factory.h"
-#import "ios/chrome/browser/autofill/autocomplete_history_manager_factory.h"
-#import "ios/chrome/browser/autofill/autofill_log_router_factory.h"
-#import "ios/chrome/browser/autofill/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
-#import "ios/chrome/browser/autofill/personal_data_manager_factory.h"
-#import "ios/chrome/browser/autofill/strike_database_factory.h"
+#import "ios/chrome/browser/autofill/model/address_normalizer_factory.h"
+#import "ios/chrome/browser/autofill/model/autocomplete_history_manager_factory.h"
+#import "ios/chrome/browser/autofill/model/autofill_log_router_factory.h"
+#import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
+#import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
+#import "ios/chrome/browser/autofill/model/strike_database_factory.h"
 #import "ios/chrome/browser/device_reauth/ios_device_authenticator.h"
 #import "ios/chrome/browser/device_reauth/ios_device_authenticator_factory.h"
-#import "ios/chrome/browser/infobars/infobar_ios.h"
-#import "ios/chrome/browser/infobars/infobar_utils.h"
+#import "ios/chrome/browser/infobars/model/infobar_ios.h"
+#import "ios/chrome/browser/infobars/model/infobar_utils.h"
 #import "ios/chrome/browser/passwords/model/password_tab_helper.h"
 #import "ios/chrome/browser/plus_addresses/model/plus_address_service_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/signin/authentication_service.h"
-#import "ios/chrome/browser/signin/authentication_service_factory.h"
-#import "ios/chrome/browser/signin/identity_manager_factory.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/translate/model/chrome_ios_translate_client.h"
 #import "ios/chrome/browser/ui/autofill/card_expiration_date_fix_flow_view_bridge.h"
 #import "ios/chrome/browser/ui/autofill/card_name_fix_flow_view_bridge.h"
 #import "ios/chrome/browser/ui/autofill/create_card_unmask_prompt_view_bridge.h"
+#import "ios/chrome/browser/ui/autofill/ios_chrome_payments_autofill_client.h"
 #import "ios/chrome/browser/webdata_services/model/web_data_service_factory.h"
 #import "ios/chrome/common/channel_info.h"
 #import "ios/public/provider/chrome/browser/risk_data/risk_data_api.h"
@@ -97,15 +98,16 @@ ChromeAutofillClientIOS::ChromeAutofillClientIOS(
       bridge_(bridge),
       identity_manager_(IdentityManagerFactory::GetForBrowserState(
           browser_state->GetOriginalChromeBrowserState())),
-      payments_client_(std::make_unique<payments::PaymentsClient>(
-          base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-              browser_state_->GetURLLoaderFactory()),
-          identity_manager_,
-          personal_data_manager_,
-          browser_state_->IsOffTheRecord())),
+      payments_network_interface_(
+          std::make_unique<payments::PaymentsNetworkInterface>(
+              base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+                  browser_state_->GetURLLoaderFactory()),
+              identity_manager_,
+              personal_data_manager_,
+              browser_state_->IsOffTheRecord())),
       form_data_importer_(std::make_unique<FormDataImporter>(
           this,
-          payments_client_.get(),
+          payments_network_interface_.get(),
           personal_data_manager_,
           GetApplicationContext()->GetApplicationLocale())),
       infobar_manager_(infobar_manager),
@@ -140,13 +142,14 @@ ChromeAutofillClientIOS::GetURLLoaderFactory() {
       web_state_->GetBrowserState()->GetURLLoaderFactory());
 }
 
-AutofillDownloadManager* ChromeAutofillClientIOS::GetDownloadManager() {
-  if (!download_manager_) {
+AutofillCrowdsourcingManager*
+ChromeAutofillClientIOS::GetCrowdsourcingManager() {
+  if (!crowdsourcing_manager_) {
     // Lazy initialization to avoid virtual function calls in the constructor.
-    download_manager_ = std::make_unique<AutofillDownloadManager>(
+    crowdsourcing_manager_ = std::make_unique<AutofillCrowdsourcingManager>(
         this, GetChannel(), GetLogManager());
   }
-  return download_manager_.get();
+  return crowdsourcing_manager_.get();
 }
 
 PersonalDataManager* ChromeAutofillClientIOS::GetPersonalDataManager() {
@@ -190,8 +193,19 @@ FormDataImporter* ChromeAutofillClientIOS::GetFormDataImporter() {
   return form_data_importer_.get();
 }
 
-payments::PaymentsClient* ChromeAutofillClientIOS::GetPaymentsClient() {
-  return payments_client_.get();
+payments::PaymentsAutofillClient*
+ChromeAutofillClientIOS::GetPaymentsAutofillClient() {
+  if (!payments_autofill_client_) {
+    payments_autofill_client_ =
+        std::make_unique<payments::IOSChromePaymentsAutofillClient>();
+  }
+
+  return payments_autofill_client_.get();
+}
+
+payments::PaymentsNetworkInterface*
+ChromeAutofillClientIOS::GetPaymentsNetworkInterface() {
+  return payments_network_interface_.get();
 }
 
 StrikeDatabase* ChromeAutofillClientIOS::GetStrikeDatabase() {
@@ -453,14 +467,10 @@ ChromeAutofillClientIOS::GetPlusAddressService() {
 void ChromeAutofillClientIOS::OfferPlusAddressCreation(
     const url::Origin& main_frame_origin,
     plus_addresses::PlusAddressCallback callback) {
-  plus_addresses::PlusAddressService* service = GetPlusAddressService();
-  // This code path should have set up the service. If not, something is badly
-  // wrong, so bail out.
-  CHECK(service);
-  // TODO(crbug.com/1467623): Run UI orchestration here rather than filling
-  // directly in response to the eventual service call. This will eventually
-  // trigger a bottom sheet.
-  service->OfferPlusAddressCreation(main_frame_origin, std::move(callback));
+  AutofillBottomSheetTabHelper* bottomSheetTabHelper =
+      AutofillBottomSheetTabHelper::FromWebState(web_state_);
+  bottomSheetTabHelper->ShowPlusAddressesBottomSheet(main_frame_origin,
+                                                     std::move(callback));
 }
 
 void ChromeAutofillClientIOS::UpdateAutofillPopupDataListValues(
@@ -553,7 +563,7 @@ void ChromeAutofillClientIOS::LoadRiskData(
       base::SysNSStringToUTF8(ios::provider::GetRiskData()));
 }
 
-absl::optional<std::u16string> ChromeAutofillClientIOS::GetUserEmail() {
+std::optional<std::u16string> ChromeAutofillClientIOS::GetUserEmail() {
   AuthenticationService* authenticationService =
       AuthenticationServiceFactory::GetForBrowserState(browser_state_);
   DCHECK(authenticationService);
@@ -562,7 +572,7 @@ absl::optional<std::u16string> ChromeAutofillClientIOS::GetUserEmail() {
   if (identity) {
     return base::SysNSStringToUTF16(identity.userEmail);
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 }  // namespace autofill

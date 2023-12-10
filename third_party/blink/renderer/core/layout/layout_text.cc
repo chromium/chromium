@@ -53,11 +53,11 @@
 #include "third_party/blink/renderer/core/layout/inline/inline_node.h"
 #include "third_party/blink/renderer/core/layout/inline/offset_mapping.h"
 #include "third_party/blink/renderer/core/layout/layout_block.h"
+#include "third_party/blink/renderer/core/layout/layout_ng_block_flow.h"
 #include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
 #include "third_party/blink/renderer/core/layout/layout_text_combine.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
-#include "third_party/blink/renderer/core/layout/ng/layout_ng_block_flow.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
+#include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_inline_text.h"
 #include "third_party/blink/renderer/core/layout/text_autosizer.h"
 #include "third_party/blink/renderer/core/paint/object_paint_invalidator.h"
@@ -78,9 +78,8 @@ namespace blink {
 namespace {
 
 struct SameSizeAsLayoutText : public LayoutObject {
-  uint32_t bitfields : 12;
+  uint32_t bitfields : 4;
   DOMNodeId node_id;
-  float widths[4];
   String text;
   LogicalOffset previous_starting_point;
   InlineItemSpan inline_items;
@@ -153,20 +152,10 @@ SelectionDisplayItemClientMap& GetSelectionDisplayItemClientMap() {
 
 LayoutText::LayoutText(Node* node, String str)
     : LayoutObject(node),
-      has_tab_(false),
-      lines_dirty_(false),
       valid_ng_items_(false),
       has_bidi_control_items_(false),
-      contains_reversed_text_(false),
-      known_to_have_no_overflow_and_no_fallback_fonts_(false),
-      contains_only_whitespace_or_nbsp_(
-          static_cast<unsigned>(OnlyWhitespaceOrNbsp::kUnknown)),
       is_text_fragment_(false),
       has_abstract_inline_text_box_(false),
-      min_width_(-1),
-      max_width_(-1),
-      first_line_min_width_(0),
-      last_line_line_min_width_(0),
       text_(std::move(str)) {
   DCHECK(text_);
   DCHECK(!node || !node->IsDocumentNode());
@@ -239,7 +228,6 @@ void LayoutText::StyleDidChange(StyleDifference diff,
   if (diff.NeedsFullLayout()) {
     SetNeedsLayoutAndIntrinsicWidthsRecalc(
         layout_invalidation_reason::kStyleChange);
-    known_to_have_no_overflow_and_no_fallback_fonts_ = false;
   }
 
   const ComputedStyle& new_style = StyleRef();
@@ -659,16 +647,9 @@ void LayoutText::AbsoluteQuadsForRange(Vector<gfx::QuadF>& quads,
 gfx::RectF LayoutText::LocalBoundingBoxRectForAccessibility() const {
   NOT_DESTROYED();
   gfx::RectF result;
-  const LayoutBlock* block_for_flipping =
-      UNLIKELY(HasFlippedBlocksWritingMode()) ? ContainingBlock() : nullptr;
   CollectLineBoxRects(
-      [this, &result, block_for_flipping](const PhysicalRect& r) {
-        DeprecatedLayoutRect rect = FlipForWritingMode(r, block_for_flipping);
-        result.Union(gfx::RectF(rect));
-      },
+      [&result](const PhysicalRect& rect) { result.Union(gfx::RectF(rect)); },
       kClipToEllipsis);
-  // TODO(wangxianzhu): This is one of a few cases that a gfx::RectF is required
-  // to be in flipped blocks direction. Should eliminite them.
   return result;
 }
 
@@ -695,7 +676,7 @@ PositionWithAffinity LayoutText::PositionForPoint(
           containing_block_flow->PixelSnappedScrolledContentOffset());
     }
     const auto* const text_combine = DynamicTo<LayoutTextCombine>(Parent());
-    const NGPhysicalBoxFragment* container_fragment = nullptr;
+    const PhysicalBoxFragment* container_fragment = nullptr;
     PhysicalOffset point_in_container_fragment;
     DCHECK(!IsSVGInlineText());
     for (; cursor; cursor.MoveToNextForSameLayoutObject()) {
@@ -748,19 +729,6 @@ bool LayoutText::IsAllCollapsibleWhitespace() const {
       return false;
   }
   return true;
-}
-
-bool LayoutText::ContainsOnlyWhitespace(unsigned from, unsigned len) const {
-  NOT_DESTROYED();
-  DCHECK(text_);
-  unsigned curr_pos;
-  for (curr_pos = from;
-       curr_pos < from + len && (text_[curr_pos] == kNewlineCharacter ||
-                                 text_[curr_pos] == kSpaceCharacter ||
-                                 text_[curr_pos] == kTabulationCharacter);
-       curr_pos++) {
-  }
-  return curr_pos >= (from + len);
 }
 
 UChar32 LayoutText::FirstCharacterAfterWhitespaceCollapsing() const {
@@ -853,15 +821,11 @@ void LayoutText::SetTextWithOffset(String text, unsigned offset, unsigned len) {
     return;
   }
 
-  bool dirtied_lines = false;
-
   // If the text node is empty, dirty the line where new text will be inserted.
   if (!HasInlineFragments() && Parent()) {
     Parent()->DirtyLinesFromChangedChild(this);
-    dirtied_lines = true;
   }
 
-  lines_dirty_ = dirtied_lines;
   ForceSetText(std::move(text));
 
   // TODO(layout-dev): Invalidation is currently all or nothing in LayoutNG,
@@ -884,13 +848,6 @@ static inline bool IsInlineFlowOrEmptyText(const LayoutObject* o) {
   if (!o->IsText())
     return false;
   return To<LayoutText>(o)->GetText().empty();
-}
-
-OnlyWhitespaceOrNbsp LayoutText::ContainsOnlyWhitespaceOrNbsp() const {
-  NOT_DESTROYED();
-  return IntrinsicLogicalWidthsDirty() ? OnlyWhitespaceOrNbsp::kUnknown
-                                       : static_cast<OnlyWhitespaceOrNbsp>(
-                                             contains_only_whitespace_or_nbsp_);
 }
 
 UChar LayoutText::PreviousCharacter() const {
@@ -1016,7 +973,6 @@ void LayoutText::TextDidChange() {
 void LayoutText::TextDidChangeWithoutInvalidation() {
   NOT_DESTROYED();
   ApplyTextTransform();
-  known_to_have_no_overflow_and_no_fallback_fonts_ = false;
 
   if (AXObjectCache* cache = GetDocument().ExistingAXObjectCache())
     cache->TextChanged(this);
@@ -1039,27 +995,10 @@ void LayoutText::InvalidateSubtreeLayoutForFontUpdates() {
   if (IsFontFallbackValid())
     return;
 
-  known_to_have_no_overflow_and_no_fallback_fonts_ = false;
   valid_ng_items_ = false;
   SetNeedsCollectInlines();
   SetNeedsLayoutAndIntrinsicWidthsRecalcAndFullPaintInvalidation(
       layout_invalidation_reason::kFontsChanged);
-}
-
-void LayoutText::DirtyOrDeleteLineBoxesIfNeeded(bool full_layout) {
-  NOT_DESTROYED();
-  if (full_layout)
-    DeleteTextBoxes();
-  else if (!lines_dirty_)
-    DirtyLineBoxes();
-  lines_dirty_ = false;
-  valid_ng_items_ = false;
-}
-
-void LayoutText::DirtyLineBoxes() {
-  NOT_DESTROYED();
-  lines_dirty_ = false;
-  valid_ng_items_ = false;
 }
 
 PhysicalRect LayoutText::PhysicalLinesBoundingBox() const {
@@ -1129,13 +1068,7 @@ PhysicalRect LayoutText::LocalSelectionVisualRect() const {
     return rect;
   }
 
-  const LayoutTextSelectionStatus& selection_status =
-      frame_selection.ComputeLayoutSelectionStatus(*this);
-  const unsigned start_pos = selection_status.start;
-  const unsigned end_pos = selection_status.end;
-  DCHECK_LE(start_pos, end_pos);
-  DeprecatedLayoutRect rect;
-  return FlipForWritingMode(rect);
+  return PhysicalRect();
 }
 
 void LayoutText::InvalidateVisualOverflow() {

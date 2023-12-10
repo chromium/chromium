@@ -86,6 +86,21 @@ class CookieSettingsBase {
     kUnpartitionedOnly,
   };
 
+  // Enum for measuring the mechanism for re-enabling third-party cookies when
+  // applying 3PCD experiment. These values are persisted to logs. Entries
+  // should not be renumbered and numeric values should never be reused.
+  enum class ThirdPartyCookieAllowMechanism {
+    kNone = 0,
+    kAllowByExplicitSetting = 1,
+    kAllowByGlobalSetting = 2,
+    kAllowBy3PCDMetadata = 3,
+    kAllowBy3PCD = 4,
+    kAllowBy3PCDHeuristics = 5,
+    kAllowByStorageAccess = 6,
+    kAllowByTopLevelStorageAccess = 7,
+    kMaxValue = kAllowByTopLevelStorageAccess,
+  };
+
   class CookieSettingWithMetadata {
    public:
     CookieSettingWithMetadata() = default;
@@ -93,7 +108,8 @@ class CookieSettingsBase {
     CookieSettingWithMetadata(
         ContentSetting cookie_setting,
         absl::optional<ThirdPartyBlockingScope> third_party_blocking_scope,
-        bool is_explicit_setting);
+        bool is_explicit_setting,
+        ThirdPartyCookieAllowMechanism third_party_cookie_allow_mechanism);
 
     // Returns true iff the setting is "block" due to the user's
     // third-party-cookie-blocking setting.
@@ -104,6 +120,10 @@ class CookieSettingsBase {
     ContentSetting cookie_setting() const { return cookie_setting_; }
 
     bool is_explicit_setting() const { return is_explicit_setting_; }
+
+    ThirdPartyCookieAllowMechanism third_party_cookie_allow_mechanism() const {
+      return third_party_cookie_allow_mechanism_;
+    }
 
    private:
     // The setting itself.
@@ -117,6 +137,9 @@ class CookieSettingsBase {
 
     // Whether the setting is for a specific pattern.
     bool is_explicit_setting_ = false;
+
+    // The mechanism to enable third-party cookie access.
+    ThirdPartyCookieAllowMechanism third_party_cookie_allow_mechanism_;
   };
 
   // Set of types relevant for CookieSettings.
@@ -170,6 +193,13 @@ class CookieSettingsBase {
                                   const GURL& first_party_url,
                                   net::CookieSettingOverrides overrides,
                                   SettingInfo* info = nullptr) const;
+
+  // A helper to get third party cookie allow mechanism.
+  ThirdPartyCookieAllowMechanism GetThirdPartyCookieAllowMechanism(
+      const GURL& url,
+      const GURL& first_party_url,
+      net::CookieSettingOverrides overrides,
+      content_settings::SettingInfo* info = nullptr) const;
 
   // Returns the cookie access semantics (legacy or nonlegacy) to be applied for
   // cookies on the given domain. The |cookie_domain| can be provided as the
@@ -258,7 +288,8 @@ class CookieSettingsBase {
 
   // Returns true iff the query for third-party cookie access should consider
   // grants awarded by the global allowlist.
-  bool ShouldConsider3pcdMetadataGrantsSettings() const;
+  bool ShouldConsider3pcdMetadataGrantsSettings(
+      net::CookieSettingOverrides overrides) const;
 
  private:
   // Returns a content setting for the requested parameters and populates |info|
@@ -275,9 +306,11 @@ class CookieSettingsBase {
   bool IsAllowedByStorageAccessGrant(const GURL& url,
                                      const GURL& first_party_url) const;
 
-  bool ShouldConsider3pcdSupportSettings() const;
+  bool ShouldConsider3pcdSupportSettings(
+      net::CookieSettingOverrides overrides) const;
 
-  bool ShouldConsider3pcdHeuristicsGrantsSettings() const;
+  bool ShouldConsider3pcdHeuristicsGrantsSettings(
+      net::CookieSettingOverrides overrides) const;
 
   // Returns true iff the query should consider Storage Access API permission
   // grants.
@@ -312,7 +345,6 @@ class CookieSettingsBase {
 
   static bool storage_access_api_grants_unpartitioned_storage_;
   const bool is_storage_partitioned_;
-  const bool is_privacy_sandbox_v4_enabled_;
 };
 
 }  // namespace content_settings

@@ -12,11 +12,9 @@
 #include "base/check.h"
 #include "base/check_deref.h"
 #include "ui/aura/window_tree_host.h"
-#include "ui/compositor/layer.h"
 #include "ui/display/display_finder.h"
 #include "ui/display/display_layout.h"
 #include "ui/display/manager/display_manager.h"
-#include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/wm/core/coordinate_conversion.h"
 
@@ -62,7 +60,7 @@ gfx::PointF ConvertWindowPixelsToScreenPixels(
 }
 
 bool IsInUnifiedDesktop() {
-  return ash::Shell::Get()->display_manager()->unified_desktop_enabled();
+  return ash::Shell::Get()->display_manager()->IsInUnifiedMode();
 }
 
 const display::Displays& PhysicalDisplaysInUnifiedDesktop() {

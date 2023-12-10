@@ -16,9 +16,9 @@ namespace internal {
 class [[nodiscard]] ErrorStatus final : public Status {
  public:
   ErrorStatus(const ErrorStatus&);
-  ErrorStatus& operator=(const ErrorStatus& x);
+  ErrorStatus& operator=(const ErrorStatus&);
   ErrorStatus(ErrorStatus&&);
-  ErrorStatus& operator=(ErrorStatus&& x);
+  ErrorStatus& operator=(ErrorStatus&&);
   ~ErrorStatus() override;
 
   // Construct from `Status`. Check that status should not be OK.

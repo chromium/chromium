@@ -27,6 +27,7 @@
 
 #include <tuple>
 
+#include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 #include "third_party/blink/renderer/bindings/core/v8/window_proxy_manager.h"
 #include "third_party/blink/renderer/bindings/modules/v8/init_idl_interfaces_for_testing.h"
 #include "third_party/blink/renderer/bindings/modules/v8/properties_per_feature_installer_for_testing.h"
@@ -85,19 +86,18 @@ void WebTestingSupport::ResetRuntimeFeatures() {
 
 void WebTestingSupport::InjectInternalsObject(WebLocalFrame* frame) {
   EnsureV8BindingsForTesting();
-  v8::HandleScope handle_scope(v8::Isolate::GetCurrent());
+  v8::HandleScope handle_scope(frame->GetAgentGroupScheduler()->Isolate());
   web_core_test_support::InjectInternalsObject(frame->MainWorldScriptContext());
 }
 
 void WebTestingSupport::InjectInternalsObject(v8::Local<v8::Context> context) {
   EnsureV8BindingsForTesting();
-  v8::HandleScope handle_scope(v8::Isolate::GetCurrent());
   web_core_test_support::InjectInternalsObject(context);
 }
 
 void WebTestingSupport::ResetMainFrame(WebLocalFrame* main_frame) {
   auto* main_frame_impl = To<WebLocalFrameImpl>(main_frame);
-  v8::HandleScope handle_scope(v8::Isolate::GetCurrent());
+  v8::HandleScope handle_scope(main_frame->GetAgentGroupScheduler()->Isolate());
   web_core_test_support::ResetInternalsObject(
       main_frame_impl->MainWorldScriptContext());
   main_frame_impl->GetFrame()

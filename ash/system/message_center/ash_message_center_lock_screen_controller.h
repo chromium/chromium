@@ -5,11 +5,12 @@
 #ifndef ASH_SYSTEM_MESSAGE_CENTER_ASH_MESSAGE_CENTER_LOCK_SCREEN_CONTROLLER_H_
 #define ASH_SYSTEM_MESSAGE_CENTER_ASH_MESSAGE_CENTER_LOCK_SCREEN_CONTROLLER_H_
 
+#include <optional>
+
 #include "ash/ash_export.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "base/gtest_prod_util.h"
 #include "components/account_id/account_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/message_center/lock_screen/lock_screen_controller.h"
 
 namespace ash {
@@ -44,15 +45,6 @@ class AshMessageCenterLockScreenController
   bool IsScreenLocked() const override;
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(UnifiedSystemTrayControllerTest,
-                           NotificationHiddenView_ModeShow);
-  FRIEND_TEST_ALL_PREFIXES(UnifiedSystemTrayControllerTest,
-                           NotificationHiddenView_ModeHide);
-  FRIEND_TEST_ALL_PREFIXES(UnifiedSystemTrayControllerTest,
-                           NotificationHiddenView_ModeHideSensitive);
-  FRIEND_TEST_ALL_PREFIXES(UnifiedSystemTrayControllerTest,
-                           NotificationHiddenView_ModeProhibited);
-
   // Modes of the lock screen notification.
   enum class Mode { PROHIBITED, HIDE, SHOW, HIDE_SENSITIVE };
 
@@ -61,9 +53,9 @@ class AshMessageCenterLockScreenController
 
   // Override the current mode for tests.
   // Exporting for test.
-  static ASH_EXPORT void OverrideModeForTest(absl::optional<Mode> new_mode);
+  static ASH_EXPORT void OverrideModeForTest(std::optional<Mode> new_mode);
 
-  static absl::optional<Mode> overridden_mode_for_testing_;
+  static std::optional<Mode> overridden_mode_for_testing_;
 
   // SessionObserver:
   void OnLockStateChanged(bool locked) override;

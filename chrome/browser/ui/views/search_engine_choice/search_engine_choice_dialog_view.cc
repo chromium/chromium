@@ -34,8 +34,8 @@ constexpr int kPreferredMaxDialogHeight = 768;
 }  // namespace
 void ShowSearchEngineChoiceDialog(
     Browser& browser,
-    absl::optional<gfx::Size> boundary_dimensions_for_test,
-    absl::optional<double> zoom_factor_for_test) {
+    std::optional<gfx::Size> boundary_dimensions_for_test,
+    std::optional<double> zoom_factor_for_test) {
   if (boundary_dimensions_for_test.has_value() ||
       zoom_factor_for_test.has_value()) {
     CHECK_IS_TEST();
@@ -56,10 +56,19 @@ void ShowSearchEngineChoiceDialog(
       std::move(delegate), browser.window()->GetNativeWindow());
 }
 
+bool CanWindowHeightFitSearchEngineChoiceDialog(Browser& browser) {
+  int max_dialog_height = browser.window()
+                              ->GetWebContentsModalDialogHost()
+                              ->GetMaximumDialogSize()
+                              .height();
+
+  return max_dialog_height >= kMinHeight;
+}
+
 SearchEngineChoiceDialogView::SearchEngineChoiceDialogView(
     Browser* browser,
-    absl::optional<gfx::Size> boundary_dimensions_for_test,
-    absl::optional<double> zoom_factor_for_test)
+    std::optional<gfx::Size> boundary_dimensions_for_test,
+    std::optional<double> zoom_factor_for_test)
     : browser_(browser),
       boundary_dimensions_for_test_(boundary_dimensions_for_test),
       zoom_factor_for_test_(zoom_factor_for_test) {

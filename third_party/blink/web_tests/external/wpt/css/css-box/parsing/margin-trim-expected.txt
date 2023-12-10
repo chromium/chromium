@@ -29,14 +29,5 @@ This is a testharness.js-based test.
   assert_not_equals: property should be set got disallowed value ""
 [FAIL] e.style['margin-trim'] = "inline-end block-end inline-start block-start" should set the property value
   assert_not_equals: property should be set got disallowed value ""
-[PASS] e.style['margin-trim'] = "block inline" should not set the property value
-[PASS] e.style['margin-trim'] = "block block" should not set the property value
-[PASS] e.style['margin-trim'] = "inline inline" should not set the property value
-[PASS] e.style['margin-trim'] = "block inline-start inline-end" should not set the property value
-[PASS] e.style['margin-trim'] = "block block-start block-end" should not set the property value
-[PASS] e.style['margin-trim'] = "block-start block-end block" should not set the property value
-[PASS] e.style['margin-trim'] = "block 10px" should not set the property value
-[PASS] e.style['margin-trim'] = "auto" should not set the property value
-[PASS] e.style['margin-trim'] = "left" should not set the property value
 Harness: the test ran to completion.
 

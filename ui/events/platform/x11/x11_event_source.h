@@ -23,7 +23,7 @@ class Point;
 }
 
 namespace x11 {
-class XScopedEventSelector;
+class ScopedEventSelector;
 }
 
 namespace ui {
@@ -97,7 +97,7 @@ class EVENTS_EXPORT X11EventSource : public PlatformEventSource,
   bool dummy_initialized_;
   x11::Window dummy_window_;
   x11::Atom dummy_atom_;
-  std::unique_ptr<x11::XScopedEventSelector> dummy_window_events_;
+  x11::ScopedEventSelector dummy_window_events_;
 
   std::unique_ptr<X11HotplugEventHandler> hotplug_event_handler_;
 };

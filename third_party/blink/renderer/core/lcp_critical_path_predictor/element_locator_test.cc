@@ -70,7 +70,7 @@ TEST_F(ElementLocatorTest, OfElement) {
     auto locator = element_locator::OfElement(*target);
 
     if (test_case.expected_locator_string) {
-      String locator_string = element_locator::ToString(locator);
+      String locator_string = element_locator::ToStringForTesting(locator);
       EXPECT_EQ(String(test_case.expected_locator_string), locator_string);
     }
   }
@@ -177,7 +177,8 @@ TEST_F(TokenStreamMatcherTest, CloseAPElement) {
   auto* c1 = locator.add_components()->mutable_id();
   c1->set_id_attr("container");
 
-  EXPECT_EQ(String("/p[2]/#container"), element_locator::ToString(locator));
+  EXPECT_EQ(String("/p[2]/#container"),
+            element_locator::ToStringForTesting(locator));
 
   element_locator::TokenStreamMatcher matcher({locator});
   Vector<Expectation> exps = {
@@ -204,9 +205,68 @@ TEST_F(TokenStreamMatcherTest, Complicated) {
   c2->set_id_attr("container");
 
   EXPECT_EQ(String("/img[1]/article[2]/#container"),
-            element_locator::ToString(locator));
+            element_locator::ToStringForTesting(locator));
 
   element_locator::TokenStreamMatcher matcher({locator});
+  Vector<Expectation> exps = {
+      {.tag_name = "section", .id_attr = "container"},
+      {.tag_name = "article"},
+      {.type = kEndTag, .tag_name = "article"},
+      {.tag_name = "article"},
+      {.type = kEndTag, .tag_name = "article"},
+      {.tag_name = "article"},
+      {.tag_name = "h2"},
+      {.type = kEndTag, .tag_name = "h2"},
+      {.tag_name = "img"},
+      {.tag_name = "img", .should_match = true},
+      {.type = kEndTag, .tag_name = "article"},
+      {.tag_name = "article"},
+      {.type = kEndTag, .tag_name = "article"},
+      {.type = kEndTag, .tag_name = "section"},
+  };
+
+  TestMatch(matcher, exps);
+}
+
+TEST_F(TokenStreamMatcherTest, DontMatchNonImgWhenRestrictedModeOn) {
+  ElementLocator locator;
+  auto* c0 = locator.add_components()->mutable_nth();
+  c0->set_tag_name("p");
+  c0->set_index(2);
+  auto* c1 = locator.add_components()->mutable_id();
+  c1->set_id_attr("container");
+
+  EXPECT_EQ(String("/p[2]/#container"),
+            element_locator::ToStringForTesting(locator));
+
+  element_locator::TokenStreamMatcher matcher({locator}, true);
+  Vector<Expectation> exps = {
+      {.tag_name = "div", .id_attr = "container"},
+      {.tag_name = "p"},
+      {.tag_name = "img"},
+      {.tag_name = "p"},
+      {.tag_name = "p", .should_match = false},
+      {.type = kEndTag, .tag_name = "div"},
+  };
+
+  TestMatch(matcher, exps);
+}
+
+TEST_F(TokenStreamMatcherTest, MatchImgWhenRestrictedModeOn) {
+  ElementLocator locator;
+  auto* c0 = locator.add_components()->mutable_nth();
+  c0->set_tag_name("img");
+  c0->set_index(1);
+  auto* c1 = locator.add_components()->mutable_nth();
+  c1->set_tag_name("article");
+  c1->set_index(2);
+  auto* c2 = locator.add_components()->mutable_id();
+  c2->set_id_attr("container");
+
+  EXPECT_EQ(String("/img[1]/article[2]/#container"),
+            element_locator::ToStringForTesting(locator));
+
+  element_locator::TokenStreamMatcher matcher({locator}, true);
   Vector<Expectation> exps = {
       {.tag_name = "section", .id_attr = "container"},
       {.tag_name = "article"},

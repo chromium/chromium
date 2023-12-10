@@ -9,6 +9,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 
@@ -17,6 +18,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
+#include "chrome/browser/ash/arc/tracing/arc_app_performance_tracing_session.h"
+#include "chrome/browser/ash/arc/tracing/uma_perf_reporting.h"
 #include "components/exo/surface_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "ui/aura/window_observer.h"
@@ -29,10 +32,6 @@ class Window;
 namespace content {
 class BrowserContext;
 }  // namespace content
-
-namespace exo {
-class ScopedSurface;
-}  // namespace exo
 
 namespace arc {
 
@@ -47,10 +46,6 @@ class ArcAppPerformanceTracing : public KeyedService,
                                  public ArcAppListPrefs::Observer,
                                  public exo::SurfaceObserver {
  public:
-  using ResultCallback = base::OnceCallback<void(bool success,
-                                                 double fps,
-                                                 double commit_deviation,
-                                                 double render_quality)>;
   using CustomSessionReadyCallback = base::RepeatingCallback<void()>;
 
   ArcAppPerformanceTracing(content::BrowserContext* context,
@@ -80,7 +75,7 @@ class ArcAppPerformanceTracing : public KeyedService,
   // Starts custom tracing. Returns true if tracing was successfully started.
   bool StartCustomTracing();
   // Stops custom tracing and returns tracing results.
-  void StopCustomTracing(ResultCallback result_callback);
+  base::Value::Dict StopCustomTracing();
 
   // wm::ActivationChangeObserver:
   void OnWindowActivated(ActivationReason reason,
@@ -89,6 +84,9 @@ class ArcAppPerformanceTracing : public KeyedService,
 
   // aura::WindowObserver:
   void OnWindowDestroying(aura::Window* window) override;
+  void OnWindowPropertyChanged(aura::Window* window,
+                               const void* key,
+                               intptr_t old) override;
 
   // ArcAppListPrefs::Observer:
   void OnTaskCreated(int32_t task_id,
@@ -104,20 +102,13 @@ class ArcAppPerformanceTracing : public KeyedService,
 
   void HandleActiveAppRendered(base::Time timestamp);
 
-  // Returns true in case |category| was already reported in the current user's
-  // session.
-  bool WasReported(const std::string& category) const;
-  // Marks that |category| is reported in the current user's session.
-  void SetReported(const std::string& category);
-
   // Returns active tracing session or nullptr.
   ArcAppPerformanceTracingSession* session() { return session_.get(); }
 
-  // Returns currently active ARC window or null. It may or may not be currently
-  // profiled.
-  aura::Window* active_window() { return arc_active_window_; }
-
   static void EnsureFactoryBuilt();
+
+  static TicksNowCallback* ticks_now_callback();
+  static void reset_ticks_now_callback();
 
  private:
   // May be start tracing session if all conditions are met. Window creating is
@@ -137,11 +128,12 @@ class ArcAppPerformanceTracing : public KeyedService,
   // Stops tracing session if it was active and cancels any scheduled session.
   void MaybeStopTracing();
 
-  // Attaches observer to the |window| and stores at as |arc_active_window_|.
-  void AttachActiveWindow(aura::Window* window, exo::Surface* surface);
+  // Checks if |active_window_| is an ARC task, and if so, observes its root
+  // surface and records its task ID in |active_task_|.
+  void TrackIfTaskIsActive();
 
-  // Detaches observer from |arc_active_window_| and resets
-  // |arc_active_window_|.
+  // Detaches observer from |active_window_| and resets
+  // |active_window_|.
   void DetachActiveWindow();
 
   // Starts timer for jankiness tracing. Called by OnWindowActivation() and
@@ -164,8 +156,8 @@ class ArcAppPerformanceTracing : public KeyedService,
 
   // Unowned pointers.
   const raw_ptr<content::BrowserContext, ExperimentalAsh> context_;
-  // Currently active ARC++ app window.
-  raw_ptr<aura::Window, ExperimentalAsh> arc_active_window_ = nullptr;
+  // Currently active window.
+  raw_ptr<aura::Window, ExperimentalAsh> active_window_ = nullptr;
 
   // Maps active tasks to app id and package name.
   std::map<int, std::pair<std::string, std::string>> task_id_to_app_id_;
@@ -177,11 +169,11 @@ class ArcAppPerformanceTracing : public KeyedService,
   // calculation.
   std::map<std::string, mojom::GfxMetrics> package_name_to_gfx_metrics_;
 
-  // Set of already reported ARC++ apps for the current session. Used to prevent
-  // capturing too frequently.
-  std::set<std::string> reported_categories_;
+  UmaPerfReporting reporting_;
+  std::optional<base::Value::Dict> custom_trace_result_;
+  void OnCustomTraceDone(const std::optional<PerfTraceResult>& result);
 
-  // Keeps current active tracing session associated with |arc_active_window_|.
+  // Keeps current active tracing session associated with |active_window_|.
   std::unique_ptr<ArcAppPerformanceTracingSession> session_;
 
   // Callback to call when custom session is ready for testing.
@@ -190,8 +182,11 @@ class ArcAppPerformanceTracing : public KeyedService,
   // Timer for jankiness tracing.
   base::OneShotTimer jankiness_timer_;
 
-  // Used for automatic observer adding/removing.
-  std::unique_ptr<exo::ScopedSurface> scoped_surface_;
+  // Currently-observed window which may be traced.
+  struct ActiveTask;
+  std::unique_ptr<ActiveTask> active_task_;
+
+  base::WeakPtrFactory<ArcAppPerformanceTracing> weak_ptr_factory_;
 };
 
 }  // namespace arc

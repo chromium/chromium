@@ -75,11 +75,10 @@ namespace net {
 // and hence the buffer it was reading into must remain alive. Using
 // reference counting we can add a reference to the IOBuffer and make sure
 // it is not destroyed until after the synchronous operation has completed.
+
+// Base class, never instantiated, does not own the buffer.
 class NET_EXPORT IOBuffer : public base::RefCountedThreadSafe<IOBuffer> {
  public:
-  IOBuffer();
-  explicit IOBuffer(size_t buffer_size);
-
   int size() const { return size_; }
 
   char* data() { return data_; }
@@ -95,8 +94,7 @@ class NET_EXPORT IOBuffer : public base::RefCountedThreadSafe<IOBuffer> {
 
   static void AssertValidBufferSize(size_t size);
 
-  // Only allow derived classes to specify data_.
-  // In all other cases, we own data_, and must delete it at destruction time.
+  IOBuffer();
   IOBuffer(char* data, size_t size);
 
   virtual ~IOBuffer();
@@ -106,19 +104,13 @@ class NET_EXPORT IOBuffer : public base::RefCountedThreadSafe<IOBuffer> {
   int size_ = 0;
 };
 
-// Currently, this is the same as IOBuffer.
-// TODO(tsepez): Long-term this should become the only class which owns
-// its buffers, with IOBuffer becoming a non-owning root class.
+// Class which owns its buffer and manages its destruction.
 class NET_EXPORT IOBufferWithSize : public IOBuffer {
  public:
   IOBufferWithSize();
   explicit IOBufferWithSize(size_t size);
 
  protected:
-  // Purpose of this constructor is to give a subclass access to the base class
-  // constructor IOBuffer(char*) thus allowing subclass to use underlying
-  // memory it does not own.
-  IOBufferWithSize(char* data, size_t size);
   ~IOBufferWithSize() override;
 };
 

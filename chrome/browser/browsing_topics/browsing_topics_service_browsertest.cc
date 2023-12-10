@@ -105,31 +105,6 @@ EpochTopics CreateTestEpochTopics(
                      /*from_manually_triggered_calculation=*/false);
 }
 
-class PortalActivationWaiter : public content::WebContentsObserver {
- public:
-  explicit PortalActivationWaiter(content::WebContents* portal_contents)
-      : content::WebContentsObserver(portal_contents) {}
-
-  void Wait() {
-    if (!web_contents()->IsPortal())
-      return;
-
-    base::RunLoop run_loop;
-    quit_closure_ = run_loop.QuitClosure();
-    run_loop.Run();
-  }
-
-  // content::WebContentsObserver:
-  void DidActivatePortal(content::WebContents* predecessor_contents,
-                         base::TimeTicks activation_time) override {
-    if (quit_closure_)
-      std::move(quit_closure_).Run();
-  }
-
- private:
-  base::OnceClosure quit_closure_;
-};
-
 }  // namespace
 
 // A tester class that allows waiting for the first calculation to finish.
@@ -306,9 +281,9 @@ class BrowsingTopicsAnnotationGoldenDataBrowserTest
   BrowsingTopicsAnnotationGoldenDataBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/
-        {blink::features::kBrowsingTopics, blink::features::kBrowsingTopicsXHR,
+        {blink::features::kBrowsingTopics,
          blink::features::kBrowsingTopicsBypassIPIsPubliclyRoutableCheck,
-         features::kPrivacySandboxAdsAPIsOverride, blink::features::kPortals},
+         features::kPrivacySandboxAdsAPIsOverride},
         /*disabled_features=*/{
             optimization_guide::features::kPreventLongRunningPredictionModels});
   }
@@ -396,9 +371,9 @@ class BrowsingTopicsBrowserTest : public BrowsingTopicsBrowserTestBase {
                                 base::Unretained(this))) {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/
-        {blink::features::kBrowsingTopics, blink::features::kBrowsingTopicsXHR,
+        {blink::features::kBrowsingTopics,
          blink::features::kBrowsingTopicsBypassIPIsPubliclyRoutableCheck,
-         features::kPrivacySandboxAdsAPIsOverride, blink::features::kPortals},
+         features::kPrivacySandboxAdsAPIsOverride},
         /*disabled_features=*/{});
   }
 
@@ -1146,48 +1121,6 @@ IN_PROC_BROWSER_TEST_F(BrowsingTopicsBrowserTest,
   EXPECT_EQ(result, kExpectedApiResult);
 }
 
-IN_PROC_BROWSER_TEST_F(BrowsingTopicsBrowserTest, TopicsAPINotAllowedInPortal) {
-  GURL main_frame_url =
-      https_server_.GetURL("a.test", "/browsing_topics/one_iframe_page.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_frame_url));
-
-  GURL portal_url =
-      https_server_.GetURL("a.test", "/browsing_topics/empty_page.html");
-
-  ASSERT_EQ(true, content::EvalJs(web_contents()->GetPrimaryMainFrame(),
-                                  content::JsReplace(R"(
-                          new Promise((resolve) => {
-                            let portal = document.createElement('portal');
-                            portal.src = $1;
-                            portal.onload = () => { resolve(true); }
-                            document.body.appendChild(portal);
-                          });
-                          )",
-                                                     portal_url)));
-
-  std::vector<content::WebContents*> inner_web_contents =
-      web_contents()->GetInnerWebContents();
-  EXPECT_EQ(1u, inner_web_contents.size());
-  content::WebContents* portal_contents = inner_web_contents[0];
-
-  EXPECT_EQ(
-      "document.browsingTopics() is only allowed in the outermost page and "
-      "when the page is active.",
-      InvokeTopicsAPI(portal_contents));
-
-  // Activate the portal. The API call should succeed.
-  PortalActivationWaiter activation_waiter(portal_contents);
-  content::ExecuteScriptAsync(web_contents()->GetPrimaryMainFrame(),
-                              "document.querySelector('portal').activate();");
-  activation_waiter.Wait();
-
-  EXPECT_EQ(portal_contents, web_contents());
-
-  std::string result = InvokeTopicsAPI(web_contents());
-
-  EXPECT_EQ(result, kExpectedApiResult);
-}
-
 // Regression test for crbug/1339735.
 IN_PROC_BROWSER_TEST_F(
     BrowsingTopicsBrowserTest,
@@ -1720,172 +1653,6 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(api_usage_contexts[1].hashed_context_domain, HashedDomain(1));
 }
 
-IN_PROC_BROWSER_TEST_F(BrowsingTopicsBrowserTest, XhrWithoutTopicsFlagSet) {
-  GURL main_frame_url =
-      https_server_.GetURL("b.test", "/browsing_topics/empty_page.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_frame_url));
-
-  GURL xhr_url = https_server_.GetURL(
-      "b.test", "/browsing_topics/page_with_custom_topics_header.html");
-
-  {
-    // Send a XHR without the `deprecatedBrowsingTopics` flag. This request
-    // isn't eligible for topics.
-    EXPECT_EQ("success", EvalJs(web_contents()->GetPrimaryMainFrame(),
-                                content::JsReplace(R"(
-      const xhr = new XMLHttpRequest();
-
-      new Promise(resolve => {
-        xhr.onreadystatechange = function() {
-          if (xhr.readyState == XMLHttpRequest.DONE) {
-            resolve('success');
-          }
-        }
-
-        xhr.open('GET', $1);
-        xhr.send();
-      });)",
-                                                   xhr_url)));
-
-    absl::optional<std::string> topics_header_value =
-        GetTopicsHeaderForRequestPath(
-            "/browsing_topics/page_with_custom_topics_header.html");
-
-    // Expect no topics header as the request did not set
-    // xhr.deprecatedBrowsingTopics.
-    EXPECT_FALSE(topics_header_value);
-  }
-
-  {
-    // Send a XHR with the `deprecatedBrowsingTopics` flag set to false. This
-    // request isn't eligible for topics.
-    EXPECT_EQ("success", EvalJs(web_contents()->GetPrimaryMainFrame(),
-                                content::JsReplace(R"(
-      const xhr = new XMLHttpRequest();
-
-      new Promise(resolve => {
-        xhr.onreadystatechange = function() {
-          if (xhr.readyState == XMLHttpRequest.DONE) {
-            resolve('success');
-          }
-        }
-
-        xhr.open('GET', $1);
-        xhr.deprecatedBrowsingTopics = false;
-        xhr.send();
-      });)",
-                                                   xhr_url)));
-
-    absl::optional<std::string> topics_header_value =
-        GetTopicsHeaderForRequestPath(
-            "/browsing_topics/page_with_custom_topics_header.html");
-
-    // Expect no topics header as xhr.deprecatedBrowsingTopics was false.
-    EXPECT_FALSE(topics_header_value);
-  }
-}
-
-// On an insecure site (i.e. URL with http scheme), test XHR request that
-// attempts to set their `deprecatedBrowsingTopics` to true. Expect that the
-// request is not eligible for topics.
-IN_PROC_BROWSER_TEST_F(
-    BrowsingTopicsBrowserTest,
-    XhrCrossOrigin_TopicsNotEligibleDueToInsecureInitiatorContext) {
-  GURL main_frame_url = embedded_test_server()->GetURL(
-      "b.test", "/browsing_topics/empty_page.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_frame_url));
-
-  GURL xhr_url = https_server_.GetURL(
-      "b.test", "/browsing_topics/page_with_custom_topics_header.html");
-
-  EXPECT_EQ("success", EvalJs(web_contents()->GetPrimaryMainFrame(),
-                              content::JsReplace(R"(
-    const xhr = new XMLHttpRequest();
-
-    new Promise(resolve => {
-      xhr.onreadystatechange = function() {
-        if (xhr.readyState == XMLHttpRequest.DONE) {
-          resolve('success');
-        }
-      }
-
-      xhr.open('GET', $1);
-
-      // This will no-op.
-      xhr.deprecatedBrowsingTopics = true;
-
-      xhr.send();
-    });)",
-                                                 xhr_url)));
-
-  absl::optional<std::string> topics_header_value =
-      GetTopicsHeaderForRequestPath(
-          "/browsing_topics/page_with_custom_topics_header.html");
-
-  // Expect no topics header as the request was not eligible for topics due to
-  // insecure initiator context.
-  EXPECT_FALSE(topics_header_value);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    BrowsingTopicsBrowserTest,
-    XhrCrossOrigin_TopicsEligible_SendTopics_HasObserveResponse) {
-  GURL main_frame_url =
-      https_server_.GetURL("b.test", "/browsing_topics/empty_page.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_frame_url));
-
-  base::StringPairs replacement;
-  replacement.emplace_back(std::make_pair("{{STATUS}}", "200 OK"));
-  replacement.emplace_back(std::make_pair("{{OBSERVE_BROWSING_TOPICS_HEADER}}",
-                                          "Observe-Browsing-Topics: ?1"));
-  replacement.emplace_back(std::make_pair("{{REDIRECT_HEADER}}", ""));
-
-  GURL xhr_url = https_server_.GetURL(
-      "a.test", net::test_server::GetFilePathWithReplacements(
-                    "/browsing_topics/"
-                    "page_with_custom_topics_header.html",
-                    replacement));
-
-  EXPECT_EQ("success", EvalJs(web_contents()->GetPrimaryMainFrame(),
-                              content::JsReplace(R"(
-    const xhr = new XMLHttpRequest();
-
-    new Promise(resolve => {
-      xhr.onreadystatechange = function() {
-        if (xhr.readyState == XMLHttpRequest.DONE) {
-          resolve('success');
-        }
-      }
-
-      xhr.open('GET', $1);
-      xhr.deprecatedBrowsingTopics = true;
-      xhr.send();
-    });)",
-                                                 xhr_url)));
-
-  absl::optional<std::string> topics_header_value =
-      GetTopicsHeaderForRequestPath(
-          "/browsing_topics/page_with_custom_topics_header.html");
-
-  EXPECT_TRUE(topics_header_value);
-  EXPECT_EQ(*topics_header_value, kExpectedHeaderValueForSiteB);
-
-  // A new observation should have been recorded in addition to the pre-existing
-  // one, as the response had the `Observe-Browsing-Topics: ?1` header and the
-  // request was eligible for topics.
-  std::vector<ApiUsageContext> api_usage_contexts =
-      content::GetBrowsingTopicsApiUsage(browsing_topics_site_data_manager());
-  EXPECT_EQ(api_usage_contexts.size(), 2u);
-  EXPECT_EQ(
-      api_usage_contexts[0].hashed_main_frame_host,
-      HashMainFrameHostForStorage(https_server_.GetURL("b.test", "/").host()));
-  EXPECT_EQ(api_usage_contexts[0].hashed_context_domain,
-            GetHashedDomain("a.test"));
-  EXPECT_EQ(api_usage_contexts[1].hashed_main_frame_host,
-            HashMainFrameHostForStorage("foo1.com"));
-  EXPECT_EQ(api_usage_contexts[1].hashed_context_domain, HashedDomain(1));
-}
-
 IN_PROC_BROWSER_TEST_F(BrowsingTopicsBrowserTest, UseCounter_DocumentApi) {
   base::HistogramTester histogram_tester;
 
@@ -1947,77 +1714,6 @@ IN_PROC_BROWSER_TEST_F(BrowsingTopicsBrowserTest, UseCounter_Fetch) {
     histogram_tester.ExpectBucketCount(
         "Blink.UseCounter.Features", blink::mojom::WebFeature::kTopicsAPIFetch,
         1);
-  }
-}
-
-IN_PROC_BROWSER_TEST_F(BrowsingTopicsBrowserTest, UseCounter_Xhr) {
-  base::HistogramTester histogram_tester;
-
-  GURL main_frame_url =
-      https_server_.GetURL("a.test", "/browsing_topics/empty_page.html");
-
-  GURL xhr_url = main_frame_url;
-
-  {
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_frame_url));
-
-    // Send a XHR request with `deprecatedBrowsingTopics` set to false. Expect
-    // no `kTopicsAPIXhr` use counter.
-    EXPECT_EQ("success", EvalJs(web_contents()->GetPrimaryMainFrame(),
-                                content::JsReplace(R"(
-      const xhr = new XMLHttpRequest();
-
-      new Promise(resolve => {
-        xhr.onreadystatechange = function() {
-          if (xhr.readyState == XMLHttpRequest.DONE) {
-            resolve('success');
-          }
-        }
-
-        xhr.open('GET', $1);
-        xhr.deprecatedBrowsingTopics = false;
-        xhr.send();
-      });)",
-                                                   xhr_url)));
-
-    // Navigate away to flush use counters.
-    ASSERT_TRUE(
-        ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
-
-    histogram_tester.ExpectBucketCount("Blink.UseCounter.Features",
-                                       blink::mojom::WebFeature::kTopicsAPIXhr,
-                                       0);
-  }
-
-  {
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_frame_url));
-
-    // Send a XHR request with `deprecatedBrowsingTopics` set to false. Expect
-    // one `kTopicsAPIXhr` use counter.
-    EXPECT_EQ("success", EvalJs(web_contents()->GetPrimaryMainFrame(),
-                                content::JsReplace(R"(
-    const xhr = new XMLHttpRequest();
-
-    new Promise(resolve => {
-      xhr.onreadystatechange = function() {
-        if (xhr.readyState == XMLHttpRequest.DONE) {
-          resolve('success');
-        }
-      }
-
-      xhr.open('GET', $1);
-      xhr.deprecatedBrowsingTopics = true;
-      xhr.send();
-    });)",
-                                                   xhr_url)));
-
-    // Navigate away to flush use counters.
-    ASSERT_TRUE(
-        ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
-
-    histogram_tester.ExpectBucketCount("Blink.UseCounter.Features",
-                                       blink::mojom::WebFeature::kTopicsAPIXhr,
-                                       1);
   }
 }
 
@@ -2316,7 +2012,7 @@ class AttestationBrowsingTopicsBrowserTest : public BrowsingTopicsBrowserTest {
   AttestationBrowsingTopicsBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/
-        {blink::features::kBrowsingTopics, blink::features::kBrowsingTopicsXHR,
+        {blink::features::kBrowsingTopics,
          blink::features::kBrowsingTopicsBypassIPIsPubliclyRoutableCheck,
          features::kPrivacySandboxAdsAPIsOverride},
         /*disabled_features=*/{});

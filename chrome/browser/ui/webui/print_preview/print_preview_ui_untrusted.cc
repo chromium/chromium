@@ -58,7 +58,7 @@ PrintPreviewUIUntrusted::~PrintPreviewUIUntrusted() = default;
 // static
 scoped_refptr<base::RefCountedMemory>
 PrintPreviewUIUntrusted::GetPrintPreviewData(const std::string& path) {
-  absl::optional<PrintPreviewIdAndPageIndex> parsed = ParseDataPath(path);
+  std::optional<PrintPreviewIdAndPageIndex> parsed = ParseDataPath(path);
   CHECK(parsed);
 
   scoped_refptr<base::RefCountedMemory> data;

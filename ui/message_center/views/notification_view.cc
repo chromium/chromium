@@ -118,6 +118,8 @@ gfx::Insets CalculateTopPadding(int font_list_height) {
 // as well as capitalizing the given label string. Used by chrome notifications.
 // Ash notifications create their own.
 class NotificationTextButton : public views::MdTextButton {
+  METADATA_HEADER(NotificationTextButton, views::MdTextButton)
+
  public:
   NotificationTextButton(PressedCallback callback, const std::u16string& label)
       : views::MdTextButton(std::move(callback), label) {
@@ -153,9 +155,14 @@ class NotificationTextButton : public views::MdTextButton {
   absl::optional<SkColor> color_;
 };
 
+BEGIN_METADATA(NotificationTextButton)
+END_METADATA
+
 // InlineSettingsRadioButton ///////////////////////////////////////////////////
 
 class InlineSettingsRadioButton : public views::RadioButton {
+  METADATA_HEADER(InlineSettingsRadioButton, views::RadioButton)
+
  public:
   explicit InlineSettingsRadioButton(const std::u16string& label_text)
       : views::RadioButton(label_text, 1 /* group */) {
@@ -176,6 +183,9 @@ class InlineSettingsRadioButton : public views::RadioButton {
     return GetColorProvider()->GetColor(ui::kColorLabelForeground);
   }
 };
+
+BEGIN_METADATA(InlineSettingsRadioButton)
+END_METADATA
 
 // NotificationInkDropImpl /////////////////////////////////////////////////////
 

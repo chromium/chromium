@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/network/https_latency_sampler.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/task/bind_post_task.h"
@@ -13,7 +14,6 @@
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_type_pattern.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace reporting {
 
@@ -98,7 +98,7 @@ void HttpsLatencySampler::MaybeCollect(OptionalMetricCallback callback) {
           ->network_state_handler()
           ->ConnectedNetworkByType(ash::NetworkTypePattern::Default());
   if (!network_state || !network_state->IsOnline()) {
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
 

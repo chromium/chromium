@@ -967,12 +967,10 @@ HttpHandler::HttpHandler(
                      WrapToCommand("SelectAccount",
                                    base::BindRepeating(&ExecuteSelectAccount))),
 
-      // This command is prefixed because standardization is still pending:
-      // https://github.com/fedidcg/FedCM/pull/436/files
-      VendorPrefixedCommandMapping(
-          kPost, "session/:sessionId/%s/fedcm/confirmidplogin",
-          WrapToCommand("ConfirmIdpLogin",
-                        base::BindRepeating(&ExecuteConfirmIdpLogin))),
+      CommandMapping(
+          kPost, "session/:sessionId/fedcm/clickdialogbutton",
+          WrapToCommand("ClickDialogButton",
+                        base::BindRepeating(&ExecuteClickDialogButton))),
 
       CommandMapping(kGet, "session/:sessionId/fedcm/accountlist",
                      WrapToCommand("GetAccounts",

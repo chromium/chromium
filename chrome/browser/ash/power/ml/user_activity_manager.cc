@@ -426,7 +426,7 @@ void UserActivityManager::OnLacrosInstanceDisconnected(
 }
 
 void UserActivityManager::OnReceiveSwitchStates(
-    absl::optional<chromeos::PowerManagerClient::SwitchStates> switch_states) {
+    std::optional<chromeos::PowerManagerClient::SwitchStates> switch_states) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (switch_states.has_value()) {
     lid_state_ = switch_states->lid_state;
@@ -435,7 +435,7 @@ void UserActivityManager::OnReceiveSwitchStates(
 }
 
 void UserActivityManager::OnReceiveInactivityDelays(
-    absl::optional<power_manager::PowerManagementPolicy::Delays> delays) {
+    std::optional<power_manager::PowerManagementPolicy::Delays> delays) {
   if (delays.has_value()) {
     screen_dim_delay_ = base::Milliseconds(delays->screen_dim_ms());
     screen_off_delay_ = base::Milliseconds(delays->screen_off_ms());
@@ -711,9 +711,9 @@ void UserActivityManager::PopulatePreviousEventData(
 
 void UserActivityManager::ResetAfterLogging() {
   features_.Clear();
-  idle_event_start_since_boot_ = absl::nullopt;
+  idle_event_start_since_boot_ = std::nullopt;
   waiting_for_final_action_ = false;
-  model_prediction_ = absl::nullopt;
+  model_prediction_ = std::nullopt;
 
   previous_idle_event_data_.reset();
 }

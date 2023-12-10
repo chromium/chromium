@@ -1,44 +1,4 @@
 This is a testharness.js-based test.
-[PASS] document.all is an HTMLAllCollection
-[PASS] length attribute
-[PASS] indexed property getter
-[PASS] indexed property getter out of range
-[PASS] named property getter
-[PASS] named property getter with dot syntax
-[PASS] named property getter with invalid name
-[PASS] named property getter returning collection
-[PASS] named property getter with "array index property name"
-[PASS] named property getter with invalid "array index property name"
-[PASS] named property getter with undefined
-[PASS] named property getter with null
-[PASS] namedItem method
-[PASS] namedItem method with invalid name
-[PASS] namedItem method returning collection
-[PASS] namedItem method with "array index property name"
-[PASS] namedItem method with invalid "array index property name"
-[PASS] namedItem method with undefined
-[PASS] namedItem method with null
-[PASS] namedItem method with no argument
-[PASS] legacy caller
-[PASS] legacy caller with invalid name
-[PASS] legacy caller returning collection
-[PASS] legacy caller with "array index property name"
-[PASS] legacy caller with "array index property name" as number
-[PASS] legacy caller with invalid "array index property name"
-[PASS] legacy caller with undefined
-[PASS] legacy caller with null
-[PASS] legacy caller with no argument
-[PASS] legacy caller is not a constructor
-[PASS] legacy caller with arbitrary this value
-[PASS] item method
-[PASS] item method with invalid name
-[PASS] item method returning collection
-[PASS] item method with "array index property name"
-[PASS] item method with "array index property name" as number
-[PASS] item method with invalid "array index property name"
-[PASS] item method with undefined
-[PASS] item method with null
-[PASS] item method with no argument
 [FAIL] collections are new live HTMLCollection instances
   assert_not_equals: got disallowed value object "[object HTMLCollection]"
 Harness: the test ran to completion.

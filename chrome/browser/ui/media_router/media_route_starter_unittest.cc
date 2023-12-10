@@ -31,6 +31,7 @@
 #include "components/media_router/common/route_request_result.h"
 #include "components/media_router/common/test/test_helper.h"
 #include "components/sessions/content/session_tab_helper.h"
+#include "components/sessions/core/session_id.h"
 #include "content/public/browser/presentation_request.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -838,9 +839,8 @@ TEST_F(MediaRouteStarterTest, StartRoute_StartPresentationContext_Cast) {
   EXPECT_EQ(kStartPresentationUrl, route_request_result()->presentation_url());
 }
 
-// TODO(crbug.com/1494156) Test is flaky on all platforms.
 TEST_F(MediaRouteStarterTest,
-       DISABLED_StartRoute_StartPresentationContext_RemotePlayback) {
+       StartRoute_StartPresentationContext_RemotePlayback) {
   auto start_presentation_context = CreateStartPresentationContext(
       CreatePresentationRequest(kRemotePlaybackUrl, kStartOriginUrl));
 
@@ -857,8 +857,12 @@ TEST_F(MediaRouteStarterTest,
   // Remote Playback presentation url.
   EXPECT_EQ(mojom::RouteRequestResultCode::OK,
             route_request_result()->result_code());
-  EXPECT_EQ(base::StrCat({kRemotePlaybackUrl, "&tab_id=1"}),
-            route_request_result()->presentation_url());
+  EXPECT_EQ(
+      base::StrCat(
+          {kRemotePlaybackUrl, "&tab_id=",
+           base::NumberToString(
+               sessions::SessionTabHelper::IdForTab(web_contents()).id())}),
+      route_request_result()->presentation_url());
 }
 
 // Demonstrates that failures to create presentation routes from start

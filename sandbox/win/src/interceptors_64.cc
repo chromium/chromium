@@ -6,7 +6,6 @@
 
 #include "sandbox/win/src/filesystem_interception.h"
 #include "sandbox/win/src/interceptors.h"
-#include "sandbox/win/src/named_pipe_interception.h"
 #include "sandbox/win/src/policy_target.h"
 #include "sandbox/win/src/process_mitigations_win32k_interception.h"
 #include "sandbox/win/src/process_thread_interception.h"
@@ -149,24 +148,6 @@ TargetNtSetInformationFile64(HANDLE file,
           g_originals[SET_INFO_FILE_ID]);
   return TargetNtSetInformationFile(orig_fn, file, io_status, file_information,
                                     length, file_information_class);
-}
-
-// -----------------------------------------------------------------------
-
-SANDBOX_INTERCEPT HANDLE WINAPI
-TargetCreateNamedPipeW64(LPCWSTR pipe_name,
-                         DWORD open_mode,
-                         DWORD pipe_mode,
-                         DWORD max_instance,
-                         DWORD out_buffer_size,
-                         DWORD in_buffer_size,
-                         DWORD default_timeout,
-                         LPSECURITY_ATTRIBUTES security_attributes) {
-  CreateNamedPipeWFunction orig_fn = reinterpret_cast<CreateNamedPipeWFunction>(
-      g_originals[CREATE_NAMED_PIPE_ID]);
-  return TargetCreateNamedPipeW(orig_fn, pipe_name, open_mode, pipe_mode,
-                                max_instance, out_buffer_size, in_buffer_size,
-                                default_timeout, security_attributes);
 }
 
 // -----------------------------------------------------------------------

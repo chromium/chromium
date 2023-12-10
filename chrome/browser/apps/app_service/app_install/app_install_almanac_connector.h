@@ -6,11 +6,11 @@
 #define CHROME_BROWSER_APPS_APP_SERVICE_APP_INSTALL_APP_INSTALL_ALMANAC_CONNECTOR_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 
@@ -39,7 +39,7 @@ class AppInstallAlmanacConnector {
 
   // TODO(b/304681468): Report specific errors on failure for metrics.
   using GetAppInstallInfoCallback =
-      base::OnceCallback<void(absl::optional<AppInstallData>)>;
+      base::OnceCallback<void(std::optional<AppInstallData>)>;
 
   void GetAppInstallInfo(PackageId package_id,
                          DeviceInfo device_info,

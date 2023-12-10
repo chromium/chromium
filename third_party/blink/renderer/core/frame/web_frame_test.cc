@@ -1023,9 +1023,6 @@ class CapabilityDelegationMessageListener final : public NativeEventListener {
 }  // namespace
 
 TEST_F(WebFrameTest, CapabilityDelegationMessageEventTest) {
-  ScopedCapabilityDelegationFullscreenRequestForTest fullscreen_delegation(
-      true);
-
   RegisterMockedHttpURLLoad("single_iframe.html");
   RegisterMockedHttpURLLoad("visible_iframe.html");
 
@@ -6613,9 +6610,9 @@ class CompositedSelectionBoundsTest
     v8::Array& expected_result = *v8::Array::Cast(*result);
     ASSERT_GE(expected_result.Length(), 10u);
 
-    v8::Local<v8::Context> context = web_view_helper_.GetAgentGroupScheduler()
-                                         .Isolate()
-                                         ->GetCurrentContext();
+    v8::Local<v8::Context> context =
+        expected_result.GetCreationContext().ToLocalChecked();
+    v8::Context::Scope v8_context_scope(context);
 
     int start_edge_start_in_layer_x = expected_result.Get(context, 1)
                                           .ToLocalChecked()
@@ -9898,7 +9895,8 @@ TEST_F(WebFrameSwapTest, SetTimeoutAfterSwap) {
     EXPECT_EQ(
         "SecurityError: Blocked a frame with origin \"http://internal.test\" "
         "from accessing a cross-origin frame.",
-        ToCoreString(exception
+        ToCoreString(isolate,
+                     exception
                          ->ToString(ToScriptStateForMainWorld(
                                         WebView()->MainFrameImpl()->GetFrame())
                                         ->GetContext())
@@ -10231,6 +10229,33 @@ TEST_F(RemoteWindowCloseTest, WindowOpenRemoteClose) {
   // that the JS finishes executing, so we need to wait for pending tasks first.
   RunPendingTasks();
   EXPECT_TRUE(Closed());
+}
+
+// Tests that calling window.close() when detaching document as a result of
+// closing the WebView shouldn't crash. This is a regression test for
+// https://crbug.com/5058796.
+TEST_F(WebFrameTest, WindowCloseOnDetach) {
+  // Open a page that calls window.close() from its pagehide handler.
+  RegisterMockedHttpURLLoad("close-on-pagehide.html");
+  frame_test_helpers::WebViewHelper main_web_view;
+  main_web_view.InitializeAndLoad(base_url_ + "close-on-pagehide.html");
+
+  // Mark the Page as opened by DOM so that window.close() will work.
+  LocalFrame* local_frame = main_web_view.LocalMainFrame()->GetFrame();
+  local_frame->GetPage()->SetOpenedByDOM();
+
+  // Reset the WebView, which will detach the document, triggering the pagehide
+  // handler, eventually calling window.close().
+  main_web_view.Reset();
+
+  // window.close() should synchronously mark the page as closed.
+  EXPECT_TRUE(local_frame->DomWindow()->closed());
+
+  // We used to still post a task to close the WebView even after the WebView is
+  // reset, causing a crash when the task runs. Now we won't post the task, and
+  // the crash should not happen. Verify that we won't crash if we run pending
+  // tasks.
+  RunPendingTasks();
 }
 
 TEST_F(WebFrameTest, NavigateRemoteToLocalWithOpener) {
@@ -11632,14 +11657,16 @@ TEST(WebFrameGlobalReuseTest, ReuseForMainFrameIfEnabled) {
   helper.Initialize(nullptr, nullptr, EnableGlobalReuseForUnownedMainFrames);
 
   WebLocalFrame* main_frame = helper.LocalMainFrame();
-  v8::HandleScope scope(helper.GetAgentGroupScheduler().Isolate());
+  v8::Isolate* isolate = helper.GetAgentGroupScheduler().Isolate();
+  v8::HandleScope scope(isolate);
   main_frame->ExecuteScript(WebScriptSource("hello = 'world';"));
   frame_test_helpers::LoadFrame(main_frame, "data:text/html,new page");
   v8::Local<v8::Value> result =
       main_frame->ExecuteScriptAndReturnValue(WebScriptSource("hello"));
   ASSERT_TRUE(result->IsString());
   EXPECT_EQ("world",
-            ToCoreString(result->ToString(main_frame->MainWorldScriptContext())
+            ToCoreString(isolate,
+                         result->ToString(main_frame->MainWorldScriptContext())
                              .ToLocalChecked()));
 }
 
@@ -12774,10 +12801,10 @@ TEST_F(WebFrameSimTest, ScrollFocusedIntoViewClipped) {
       ->ScrollFocusedEditableElementIntoView();
 
   Element* input = GetDocument().getElementById(AtomicString("target"));
-  gfx::Rect input_rect(input->getBoundingClientRect()->top(),
-                       input->getBoundingClientRect()->left(),
-                       input->getBoundingClientRect()->width(),
-                       input->getBoundingClientRect()->height());
+  gfx::Rect input_rect(input->GetBoundingClientRect()->top(),
+                       input->GetBoundingClientRect()->left(),
+                       input->GetBoundingClientRect()->width(),
+                       input->GetBoundingClientRect()->height());
 
   gfx::Rect visible_content_rect(frame_view->Size());
   EXPECT_TRUE(visible_content_rect.Contains(input_rect))
@@ -12899,7 +12926,7 @@ TEST_F(WebFrameSimTest, DoubleTapZoomWhileScrolled) {
       ScrollOffset(2000 - 440, 3000 - 450),
       mojom::blink::ScrollType::kProgrammatic);
   Element* target = GetDocument().QuerySelector(AtomicString("#target"));
-  DOMRect* rect = target->getBoundingClientRect();
+  DOMRect* rect = target->GetBoundingClientRect();
   ASSERT_EQ(440, rect->left());
   ASSERT_EQ(450, rect->top());
 
@@ -13593,14 +13620,14 @@ void RecursiveCollectTextRunDOMNodeIds(
     DOMNodeId dom_node_id,
     std::vector<TextRunDOMNodeIdInfo>* text_runs) {
   for (const cc::PaintOp& op : paint_record) {
-    if (op.GetType() == cc::PaintOpType::kDrawrecord) {
+    if (op.GetType() == cc::PaintOpType::kDrawRecord) {
       const auto& draw_record_op = static_cast<const cc::DrawRecordOp&>(op);
       RecursiveCollectTextRunDOMNodeIds(draw_record_op.record, dom_node_id,
                                         text_runs);
-    } else if (op.GetType() == cc::PaintOpType::kSetnodeid) {
+    } else if (op.GetType() == cc::PaintOpType::kSetNodeId) {
       const auto& set_node_id_op = static_cast<const cc::SetNodeIdOp&>(op);
       dom_node_id = set_node_id_op.node_id;
-    } else if (op.GetType() == cc::PaintOpType::kDrawtextblob) {
+    } else if (op.GetType() == cc::PaintOpType::kDrawTextBlob) {
       const auto& draw_text_op = static_cast<const cc::DrawTextBlobOp&>(op);
       SkTextBlob::Iter iter(*draw_text_op.blob);
       SkTextBlob::Iter::Run run;

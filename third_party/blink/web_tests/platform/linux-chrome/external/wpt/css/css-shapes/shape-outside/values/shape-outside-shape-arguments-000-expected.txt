@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+[FAIL] Font relative units - computed
+  assert_equals: expected "polygon(16px 12.8px, 16px 16px)" but got "polygon(16px 8px, 8px 16px)"
+Harness: the test ran to completion.

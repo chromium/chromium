@@ -18,9 +18,9 @@ class Label;
 
 // Class to create and manage an information bubble for errors or tooltips.
 class VIEWS_EXPORT InfoBubble : public BubbleDialogDelegateView {
- public:
-  METADATA_HEADER(InfoBubble);
+  METADATA_HEADER(InfoBubble, BubbleDialogDelegateView)
 
+ public:
   InfoBubble(View* anchor,
              BubbleBorder::Arrow arrow,
              const std::u16string& message);

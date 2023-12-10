@@ -263,16 +263,6 @@ CGFloat const kContentOptimalWidth = 327;
                              forBarMetrics:UIBarMetricsDefault];
     self.navigationBar.shadowImage = nil;
     self.navigationBar.translucent = NO;
-
-    // Revert navigation bar style for iOS 14 and under to workaround bug that
-    // navigation bar height not adjusting consistently across subviews. Should
-    // be removed once iOS 14 is deprecated.
-    if (!base::ios::IsRunningOnIOS15OrLater()) {
-      self.navigationBar.standardAppearance = self.defaultAppearance;
-      self.navigationBar.compactAppearance = self.defaultAppearance;
-      self.navigationBar.scrollEdgeAppearance = self.defaultAppearance;
-    }
-
     self.navigationBar = nil;
   }
 }
@@ -288,20 +278,6 @@ CGFloat const kContentOptimalWidth = 327;
     self.navigationItem.rightBarButtonItem = doneButton;
 
     self.navigationBar = self.navigationController.navigationBar;
-
-    // Set navigation bar to transparent for iOS 14 and under to workaround bug
-    // that navigation bar height not adjusting consistently across subviews.
-    // Should be removed once iOS 14 is deprecated.
-    if (!base::ios::IsRunningOnIOS15OrLater()) {
-      UINavigationBarAppearance* transparentAppearance =
-          [[UINavigationBarAppearance alloc] init];
-      [transparentAppearance configureWithTransparentBackground];
-      self.defaultAppearance = self.navigationBar.standardAppearance;
-      self.navigationBar.standardAppearance = transparentAppearance;
-      self.navigationBar.compactAppearance = transparentAppearance;
-      self.navigationBar.scrollEdgeAppearance = transparentAppearance;
-    }
-
     [self.navigationBar setBackgroundImage:[[UIImage alloc] init]
                              forBarMetrics:UIBarMetricsDefault];
     self.navigationBar.shadowImage = [[UIImage alloc] init];

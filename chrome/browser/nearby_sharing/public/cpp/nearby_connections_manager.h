@@ -14,12 +14,15 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_enums.h"
 #include "chrome/browser/nearby_sharing/public/cpp/nearby_connection.h"
+#include "chromeos/ash/components/nearby/presence/nearby_presence_service.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_connections_types.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 // A wrapper around the Nearby Connections mojo API.
 class NearbyConnectionsManager {
  public:
+  using PresenceDevice =
+      ash::nearby::presence::NearbyPresenceService::PresenceDevice;
   using Payload = nearby::connections::mojom::Payload;
   using PayloadPtr = nearby::connections::mojom::PayloadPtr;
   using ConnectionsStatus = nearby::connections::mojom::Status;
@@ -129,7 +132,7 @@ class NearbyConnectionsManager {
   // Stops discovery through Nearby Connections.
   virtual void StopDiscovery() = 0;
 
-  // Conntects to remote |endpoint_id| through Nearby Connections.
+  // Connects to remote |endpoint_id| through Nearby Connections.
   virtual void Connect(
       std::vector<uint8_t> endpoint_info,
       const std::string& endpoint_id,
@@ -178,6 +181,18 @@ class NearbyConnectionsManager {
 
   // Initiates bandwidth upgrade for |endpoint_id|.
   virtual void UpgradeBandwidth(const std::string& endpoint_id) = 0;
+
+  // Connects to a |remote_presence_device| through Nearby Connections.
+  // TODO(b/306188252): Once ConnectionsDevice is implemented, change to take in
+  // the NearbyDevice base class instead of PresenceDevice.
+  virtual void ConnectV3(PresenceDevice remote_presence_device,
+                         DataUsage data_usage,
+                         NearbyConnectionCallback callback) = 0;
+
+  // Disconnects from a |remote_presence_device| through Nearby Connections.
+  // TODO(b/306188252): Once ConnectionsDevice is implemented, change to take in
+  // the NearbyDevice base class instead of PresenceDevice.
+  virtual void DisconnectV3(PresenceDevice remote_presence_device) = 0;
 
   virtual base::WeakPtr<NearbyConnectionsManager> GetWeakPtr() = 0;
 };

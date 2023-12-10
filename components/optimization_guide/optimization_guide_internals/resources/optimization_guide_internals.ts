@@ -8,7 +8,7 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {$, getRequiredElement} from 'chrome://resources/js/util.js';
 import {Time} from 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
 
-import {DownloadedModelInfo, PageHandlerFactory} from './optimization_guide_internals.mojom-webui.js';
+import {DownloadedModelInfo, LoggedClientIds, PageHandlerFactory} from './optimization_guide_internals.mojom-webui.js';
 import {OptimizationGuideInternalsBrowserProxy} from './optimization_guide_internals_browser_proxy.js';
 
 // Contains all the log events received when the internals page is open.
@@ -91,6 +91,9 @@ function getLogSource(logSource: number) {
   if (logSource == 5) {
     return 'TEXT_CLASSIFIER';
   }
+  if (logSource == 6) {
+    return 'MODEL_EXECUTION';
+  }
   return logSource.toString();
 }
 
@@ -144,6 +147,25 @@ async function onModelsPageOpen() {
   } catch (err) {
     throw new Error(
         `Error resolving promise from requestDownloadedModelsInfo, ${err}`);
+  }
+}
+
+async function onClientIDsPageOpen() {
+  const loggedClientIdsContainer =
+      getRequiredElement<HTMLTableElement>('logged-client-ids-container');
+  try {
+    const response: {loggedClientIds: LoggedClientIds[]} =
+        await PageHandlerFactory.getRemote()
+            .requestLoggedModelQualityClientIds();
+    const loggedClientIds = response.loggedClientIds;
+    for (const {clientId} of loggedClientIds) {
+      const clientIdStr = clientId.toString();
+      const loggedClients = loggedClientIdsContainer.insertRow();
+      appendTD(loggedClients, clientIdStr, 'logged-client-ids');
+    }
+  } catch (err) {
+    throw new Error(
+        `Error resolving promise from requestLoggedClientIds, ${err}`);
   }
 }
 
@@ -230,6 +252,8 @@ function initialize() {
 
     if (hash === 'models') {
       onModelsPageOpen();
+    } else if (hash === 'client-ids') {
+      onClientIDsPageOpen();
     }
   };
 

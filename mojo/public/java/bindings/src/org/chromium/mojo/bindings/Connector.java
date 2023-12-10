@@ -24,29 +24,19 @@ import java.nio.ByteBuffer;
  */
 public class Connector implements MessageReceiver, HandleOwner<MessagePipeHandle> {
 
-    /**
-     * The callback that is notified when the state of the owned handle changes.
-     */
+    /** The callback that is notified when the state of the owned handle changes. */
     private final WatcherCallback mWatcherCallback = new WatcherCallback();
 
-    /**
-     * The owned message pipe.
-     */
+    /** The owned message pipe. */
     private final MessagePipeHandle mMessagePipeHandle;
 
-    /**
-     * A watcher which is notified when a new message is available on the owned message pipe.
-     */
+    /** A watcher which is notified when a new message is available on the owned message pipe. */
     private final Watcher mWatcher;
 
-    /**
-     * The {@link MessageReceiver} to which received messages are sent.
-     */
+    /** The {@link MessageReceiver} to which received messages are sent. */
     private MessageReceiver mIncomingMessageReceiver;
 
-    /**
-     * The error handler to notify of errors.
-     */
+    /** The error handler to notify of errors. */
     private ConnectionErrorHandler mErrorHandler;
 
     /**
@@ -66,9 +56,7 @@ public class Connector implements MessageReceiver, HandleOwner<MessagePipeHandle
         mWatcher = watcher;
     }
 
-    /**
-     * Set the {@link MessageReceiver} that will receive message from the owned message pipe.
-     */
+    /** Set the {@link MessageReceiver} that will receive message from the owned message pipe. */
     public void setIncomingMessageReceiver(MessageReceiver incomingMessageReceiver) {
         mIncomingMessageReceiver = incomingMessageReceiver;
     }
@@ -81,9 +69,7 @@ public class Connector implements MessageReceiver, HandleOwner<MessagePipeHandle
         mErrorHandler = errorHandler;
     }
 
-    /**
-     * Start listening for incoming messages.
-     */
+    /** Start listening for incoming messages. */
     public void start() {
         mWatcher.start(mMessagePipeHandle, Core.HandleSignals.READABLE, mWatcherCallback);
     }
@@ -94,8 +80,8 @@ public class Connector implements MessageReceiver, HandleOwner<MessagePipeHandle
     @Override
     public boolean accept(Message message) {
         try {
-            mMessagePipeHandle.writeMessage(message.getData(),
-                    message.getHandles(), MessagePipeHandle.WriteFlags.NONE);
+            mMessagePipeHandle.writeMessage(
+                    message.getData(), message.getHandles(), MessagePipeHandle.WriteFlags.NONE);
             return true;
         } catch (MojoException e) {
             onError(e);
@@ -141,7 +127,6 @@ public class Connector implements MessageReceiver, HandleOwner<MessagePipeHandle
         public void onResult(int result) {
             Connector.this.onWatcherResult(result);
         }
-
     }
 
     /**
@@ -166,9 +151,7 @@ public class Connector implements MessageReceiver, HandleOwner<MessagePipeHandle
         }
     }
 
-    /**
-     * Read all available messages on the owned message pipe.
-     */
+    /** Read all available messages on the owned message pipe. */
     private void readOutstandingMessages() {
         ResultAnd<Boolean> result;
         do {
@@ -207,8 +190,10 @@ public class Connector implements MessageReceiver, HandleOwner<MessagePipeHandle
         if (receiver != null) {
             boolean accepted;
             try {
-                accepted = receiver.accept(
-                        new Message(ByteBuffer.wrap(readResult.mData), readResult.mHandles));
+                accepted =
+                        receiver.accept(
+                                new Message(
+                                        ByteBuffer.wrap(readResult.mData), readResult.mHandles));
             } catch (RuntimeException e) {
                 // The DefaultExceptionHandler will decide whether any uncaught exception will
                 // close the connection or not.

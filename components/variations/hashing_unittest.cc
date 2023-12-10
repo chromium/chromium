@@ -30,4 +30,8 @@ TEST(HashingTest, HashName) {
   }
 }
 
+TEST(HashingTest, HashNameAsHexString) {
+  EXPECT_EQ("37e4f786", HashNameAsHexString("a"));
+}
+
 }  // namespace variations

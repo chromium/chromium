@@ -11,14 +11,13 @@
 #import "components/sync_sessions/session_sync_service.h"
 #import "ios/chrome/browser/favicon/favicon_loader.h"
 #import "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
-#import "ios/chrome/browser/metrics/new_tab_page_uma.h"
-#import "ios/chrome/browser/ntp/home/features.h"
+#import "ios/chrome/browser/metrics/model/new_tab_page_uma.h"
 #import "ios/chrome/browser/sessions/session_util.h"
-#import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/sync/model/session_sync_service_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/synced_sessions/model/distant_session.h"
@@ -129,8 +128,7 @@ void TabResumptionHelper::LastTabResumptionItem(
 
   web::WebState* most_recent_tab = recent_tab_browser_agent_->most_recent_tab();
   if (most_recent_tab) {
-    SceneState* scene =
-        SceneStateBrowserAgent::FromBrowser(browser_)->GetSceneState();
+    SceneState* scene = browser_->GetSceneState();
     NSDate* most_recent_tab_date = base::apple::ObjCCastStrict<NSDate>(
         [scene sessionObjectForKey:kStartSurfaceSceneEnterIntoBackgroundTime]);
     if (most_recent_tab_date != nil) {

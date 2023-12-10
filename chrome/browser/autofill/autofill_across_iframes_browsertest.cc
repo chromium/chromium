@@ -215,6 +215,7 @@ class AutofillAcrossIframesTest : public InProcessBrowserTest {
     InProcessBrowserTest::SetUpOnMainThread();
     // Prevent the Keychain from coming up on Mac.
     test::DisableSystemServices(browser()->profile()->GetPrefs());
+
     // Set up the HTTPS (!) server (embedded_test_server() is an HTTP server).
     // Every hostname is handled by that server.
     host_resolver()->AddRule("*", "127.0.0.1");
@@ -240,6 +241,7 @@ class AutofillAcrossIframesTest : public InProcessBrowserTest {
   }
 
   void TearDownOnMainThread() override {
+    base::RunLoop().RunUntilIdle();
     // Make sure to close any showing popups prior to tearing down the UI.
     main_autofill_manager().client().HideAutofillPopup(
         PopupHidingReason::kTabGone);
@@ -561,8 +563,15 @@ IN_PROC_BROWSER_TEST_F(AutofillAcrossIframesTest_Dynamic,
 }
 
 // Tests that a newly emerging field inside a frame triggers a refill.
+// TODO(crbug.com/1486516): Test is flaky on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_RefillDynamicFormWithNewField \
+  DISABLED_RefillDynamicFormWithNewField
+#else
+#define MAYBE_RefillDynamicFormWithNewField RefillDynamicFormWithNewField
+#endif
 IN_PROC_BROWSER_TEST_F(AutofillAcrossIframesTest_Dynamic,
-                       RefillDynamicFormWithNewField) {
+                       MAYBE_RefillDynamicFormWithNewField) {
   const FormStructure* form = LoadFormWithAppearingField();
   ASSERT_TRUE(form);
   EXPECT_THAT(FillForm(*form, *form->field(1)),
@@ -772,9 +781,16 @@ IN_PROC_BROWSER_TEST_F(AutofillAcrossIframesTest_NestedAndLargeForm,
 
 // Tests that a deeply nested form where some iframes don't even contain any
 // fields (but their subframes do) is extracted and filled correctly.
+// TODO(crbug.com/1486516): Test is flaky on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_FlattenFormEvenAcrossFramesWithoutFields \
+  DISABLED_FlattenFormEvenAcrossFramesWithoutFields
+#else
+#define MAYBE_FlattenFormEvenAcrossFramesWithoutFields \
+  FlattenFormEvenAcrossFramesWithoutFields
+#endif
 IN_PROC_BROWSER_TEST_F(AutofillAcrossIframesTest_NestedAndLargeForm,
-                       // TODO(crbug.com/1393990): Re-enable this test
-                       DISABLED_FlattenFormEvenAcrossFramesWithoutFields) {
+                       MAYBE_FlattenFormEvenAcrossFramesWithoutFields) {
   SetUrlContent("/", MakeCss(3) +
                          R"(<iframe src="$4/3.html"></iframe>
                             <iframe src="$3/3.html"></iframe>
@@ -797,7 +813,7 @@ IN_PROC_BROWSER_TEST_F(AutofillAcrossIframesTest_NestedAndLargeForm,
     // and <form> elements.
     auto name = HtmlFieldType::kCreditCardNameFull;
     auto num = HtmlFieldType::kCreditCardNumber;
-    auto exp = HtmlFieldType::kCreditCardExp;
+    auto exp = HtmlFieldType::kCreditCardExpDate4DigitYear;
     auto cvc = HtmlFieldType::kCreditCardVerificationCode;
     auto m = [](HtmlFieldType type) {
       return Pointee(AllOf(Property(&AutofillField::html_type, Eq(type)),
@@ -890,8 +906,14 @@ INSTANTIATE_TEST_SUITE_P(AutofillAcrossIframesTest,
                          ::testing::Bool());
 
 // Tests that submission of a cross-frame form is detected in the main frame.
+// TODO(crbug.com/1510056): Test is flaky on Linux.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_SubmissionGetsDetected DISABLED_SubmissionGetsDetected
+#else
+#define MAYBE_SubmissionGetsDetected SubmissionGetsDetected
+#endif
 IN_PROC_BROWSER_TEST_P(AutofillAcrossIframesTest_Submission,
-                       SubmissionGetsDetected) {
+                       MAYBE_SubmissionGetsDetected) {
   const FormStructure* form = LoadForm({"$2", "$2", "$2"});
   ASSERT_TRUE(form);
   ASSERT_THAT(FillForm(*form, *form->field(1)),
@@ -914,7 +936,7 @@ class AutofillAcrossIframesTest_FullIframes
  public:
   AutofillAcrossIframesTest_FullIframes() {
     feature_list_.InitAndEnableFeature(
-        blink::features::kAutofillDetectRemovedFormControls);
+        features::kAutofillDetectRemovedFormControls);
   }
 
   [[nodiscard]] const FormStructure* LoadForm() {

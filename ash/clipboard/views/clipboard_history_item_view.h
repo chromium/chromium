@@ -23,8 +23,9 @@ class ClipboardHistoryItem;
 
 // The base class for menu items of the clipboard history menu.
 class ASH_EXPORT ClipboardHistoryItemView : public views::View {
+  METADATA_HEADER(ClipboardHistoryItemView, views::View)
+
  public:
-  METADATA_HEADER(ClipboardHistoryItemView);
   static std::unique_ptr<ClipboardHistoryItemView>
   CreateFromClipboardHistoryItem(const base::UnguessableToken& item_id,
                                  const ClipboardHistory* clipboard_history,
@@ -74,8 +75,9 @@ class ASH_EXPORT ClipboardHistoryItemView : public views::View {
   // clipboard history refresh is enabled, a `ContentsView` observes its sibling
   // `ClipboardHistoryDeleteButton` so that it knows when to clip its contents.
   class ContentsView : public views::View, public views::ViewObserver {
+    METADATA_HEADER(ContentsView, views::View)
+
    public:
-    METADATA_HEADER(ContentsView);
     ContentsView();
     ContentsView(const ContentsView& rhs) = delete;
     ContentsView& operator=(const ContentsView& rhs) = delete;

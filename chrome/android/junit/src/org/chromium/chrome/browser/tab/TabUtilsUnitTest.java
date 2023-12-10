@@ -10,13 +10,20 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.app.Activity;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.util.DisplayMetrics;
 import android.util.Size;
+
+import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -34,16 +41,20 @@ import org.robolectric.annotation.Resetter;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.TabUtils.UseDesktopUserAgentCaller;
 import org.chromium.chrome.browser.tasks.tab_management.TabThumbnailView;
 import org.chromium.chrome.test.AutomotiveContextWrapperTestRule;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni;
+import org.chromium.components.browser_ui.util.AutomotiveUtils;
+import org.chromium.components.browser_ui.util.BrowserUiUtilsCachedFlags;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.display.DisplayUtil;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
@@ -80,12 +91,24 @@ public class TabUtilsUnitTest {
     public AutomotiveContextWrapperTestRule mAutomotiveContextWrapperTestRule =
             new AutomotiveContextWrapperTestRule();
 
+    @Rule
+    public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
+            new ActivityScenarioRule<>(TestActivity.class);
+
+    private static final int TEST_SCREEN_WIDTH = 1000;
+    private static final int TEST_SCREEN_HEIGHT = 1000;
+    private static final float TEST_DENSITY = 1.3f;
+
     @Mock WebsitePreferenceBridge.Natives mWebsitePreferenceBridgeJniMock;
     @Mock private Tab mTab;
     @Mock private Tab mTabNative;
     @Mock private WebContents mWebContents;
     @Mock private NavigationController mNavigationController;
     @Mock private Profile mProfile;
+    @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
+    @Mock private Resources mResources;
+    @Mock private Configuration mConfiguration;
+    @Mock private DisplayMetrics mDisplayMetrics;
 
     private boolean mRdsDefault;
     private @ContentSettingValues int mRdsException;
@@ -338,6 +361,80 @@ public class TabUtilsUnitTest {
     }
 
     @Test
+    public void testGetTabThumbnailAspectRatioWithHorizontalAutomotiveToolbar() {
+        mAutomotiveContextWrapperTestRule.setIsAutomotive(true);
+
+        mActivityScenarioRule
+                .getScenario()
+                .onActivity(
+                        activity -> {
+                            Activity spyActivity = spy(activity);
+                            doReturn(mResources).when(spyActivity).getResources();
+                            doReturn(mConfiguration).when(mResources).getConfiguration();
+                            doReturn(mDisplayMetrics).when(mResources).getDisplayMetrics();
+                            doReturn(false)
+                                    .when(mResources)
+                                    .getBoolean(R.bool.use_vertical_automotive_back_button_toolbar);
+                            doReturn(0).when(mBrowserControlsStateProvider).getTopControlsHeight();
+                            mConfiguration.orientation = Configuration.ORIENTATION_LANDSCAPE;
+                            mConfiguration.screenWidthDp = TEST_SCREEN_WIDTH;
+                            mConfiguration.screenHeightDp = TEST_SCREEN_HEIGHT;
+                            mDisplayMetrics.density = TEST_DENSITY;
+                            int horizontalAutomotiveToolbarHeightDp =
+                                    AutomotiveUtils.getHorizontalAutomotiveToolbarHeightDp(
+                                            spyActivity);
+                            float expectedAspectRatio =
+                                    (TEST_SCREEN_WIDTH * 1.f)
+                                            / (TEST_SCREEN_HEIGHT
+                                                    - horizontalAutomotiveToolbarHeightDp);
+                            assertEquals(
+                                    "Thumbnail aspect ratio should take into account the horizontal"
+                                            + " automotive toolbar.",
+                                    expectedAspectRatio,
+                                    TabUtils.getTabThumbnailAspectRatio(
+                                            spyActivity, mBrowserControlsStateProvider),
+                                    0.01);
+                        });
+    }
+
+    @Test
+    public void testGetTabThumbnailAspectRatioWithVerticalAutomotiveToolbar() {
+        mAutomotiveContextWrapperTestRule.setIsAutomotive(true);
+        BrowserUiUtilsCachedFlags.getInstance().setVerticalAutomotiveBackButtonToolbarFlag(true);
+
+        mActivityScenarioRule
+                .getScenario()
+                .onActivity(
+                        activity -> {
+                            Activity spyActivity = spy(activity);
+                            doReturn(mResources).when(spyActivity).getResources();
+                            doReturn(mConfiguration).when(mResources).getConfiguration();
+                            doReturn(mDisplayMetrics).when(mResources).getDisplayMetrics();
+                            doReturn(true)
+                                    .when(mResources)
+                                    .getBoolean(R.bool.use_vertical_automotive_back_button_toolbar);
+                            doReturn(0).when(mBrowserControlsStateProvider).getTopControlsHeight();
+                            mConfiguration.orientation = Configuration.ORIENTATION_LANDSCAPE;
+                            mConfiguration.screenWidthDp = TEST_SCREEN_WIDTH;
+                            mConfiguration.screenHeightDp = TEST_SCREEN_HEIGHT;
+                            mDisplayMetrics.density = TEST_DENSITY;
+                            int verticalAutomotiveToolbarWidthDp =
+                                    AutomotiveUtils.getVerticalAutomotiveToolbarWidthDp(
+                                            spyActivity);
+                            float expectedAspectRatio =
+                                    (TEST_SCREEN_WIDTH * 1.f - verticalAutomotiveToolbarWidthDp)
+                                            / (TEST_SCREEN_HEIGHT);
+                            assertEquals(
+                                    "Thumbnail aspect ratio should take into account the vertical"
+                                            + " automotive toolbar.",
+                                    expectedAspectRatio,
+                                    TabUtils.getTabThumbnailAspectRatio(
+                                            spyActivity, mBrowserControlsStateProvider),
+                                    0.01);
+                        });
+    }
+
+    @Test
     public void testUpdateThumbnailMatrix_notOnAutomotiveDevice_thumbnailImageHasOriginalDensity() {
         mAutomotiveContextWrapperTestRule.setIsAutomotive(false);
         int mockImageSize = 100;
@@ -372,9 +469,7 @@ public class TabUtilsUnitTest {
         assertNotEquals("The bitmap image density should not be zero.", 0, bitmap.getDensity());
         assertEquals(
                 "The bitmap image's density should be scaled up on automotive.",
-                (int)
-                        (DisplayMetrics.DENSITY_DEFAULT
-                                * DisplayUtil.getUiScalingFactorForAutomotive()),
+                DisplayUtil.getUiDensityForAutomotive(DisplayMetrics.DENSITY_DEFAULT),
                 bitmap.getDensity());
     }
 }

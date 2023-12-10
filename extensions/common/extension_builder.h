@@ -7,9 +7,9 @@
 
 #include <initializer_list>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
-
 #include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_piece.h"
@@ -17,7 +17,6 @@
 #include "extensions/common/api/extension_action/action_info.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/mojom/manifest.mojom-shared.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 class Extension;
@@ -178,7 +177,7 @@ class ExtensionBuilder {
   // manifest which will be used to construct it, or the dictionary itself. Only
   // one will be present.
   std::unique_ptr<ManifestData> manifest_data_;
-  absl::optional<base::Value::Dict> manifest_value_;
+  std::optional<base::Value::Dict> manifest_value_;
 
   base::FilePath path_;
   mojom::ManifestLocation location_;

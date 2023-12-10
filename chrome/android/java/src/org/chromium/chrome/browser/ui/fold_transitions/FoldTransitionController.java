@@ -23,9 +23,7 @@ import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.features.start_surface.StartSurface;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 
-/**
- * A utility class to handle saving and restoring the UI state across fold transitions.
- */
+/** A utility class to handle saving and restoring the UI state across fold transitions. */
 public class FoldTransitionController {
     public static final String DID_CHANGE_TABLET_MODE = "did_change_tablet_mode";
     public static final String RESUME_HOME_SURFACE_ON_MODE_CHANGE =
@@ -81,7 +79,8 @@ public class FoldTransitionController {
         savedInstanceState.putBoolean(DID_CHANGE_TABLET_MODE, didChangeTabletMode);
         if (mToolbarManagerSupplier.hasValue() && mToolbarManagerSupplier.get().isUrlBarFocused()) {
             savedInstanceState.putBoolean(URL_BAR_FOCUS_STATE, true);
-            savedInstanceState.putString(URL_BAR_EDIT_TEXT,
+            savedInstanceState.putString(
+                    URL_BAR_EDIT_TEXT,
                     mToolbarManagerSupplier.get().getUrlBarTextWithoutAutocomplete());
         }
 
@@ -124,20 +123,26 @@ public class FoldTransitionController {
             return;
         }
 
-        restoreOmniboxState(savedInstanceState, mToolbarManagerSupplier.get(),
-                mLayoutManagerSupplier.get(), mLayoutStateHandler);
-        restoreKeyboardState(savedInstanceState, mActivityTabProvider, mLayoutManagerSupplier.get(),
+        restoreOmniboxState(
+                savedInstanceState,
+                mToolbarManagerSupplier.get(),
+                mLayoutManagerSupplier.get(),
+                mLayoutStateHandler);
+        restoreKeyboardState(
+                savedInstanceState,
+                mActivityTabProvider,
+                mLayoutManagerSupplier.get(),
                 mLayoutStateHandler);
         restoreTabSwitcherState(savedInstanceState, mLayoutManagerSupplier.get());
     }
 
-    /**
-     * Saves the Home surface state on a phone to tablet configuration change.
-     */
+    /** Saves the Home surface state on a phone to tablet configuration change. */
     @VisibleForTesting
     static void saveHomeSurfaceState(
             Bundle savedInstanceState, StartSurface startSurface, boolean isIncognito) {
-        if (savedInstanceState == null || startSurface == null || isIncognito
+        if (savedInstanceState == null
+                || startSurface == null
+                || isIncognito
                 || !savedInstanceState.getBoolean(DID_CHANGE_TABLET_MODE)) {
             return;
         }
@@ -206,17 +211,20 @@ public class FoldTransitionController {
      * @return {@code true} if the keyboard is visible, {@code false} otherwise.
      */
     private static boolean isKeyboardVisible(@NonNull ActivityTabProvider activityTabProvider) {
-        if (activityTabProvider.get() == null || activityTabProvider.get().getWebContents() == null
+        if (activityTabProvider.get() == null
+                || activityTabProvider.get().getWebContents() == null
                 || activityTabProvider.get().getWebContents().getViewAndroidDelegate() == null) {
             return false;
         }
 
-        return KeyboardVisibilityDelegate.getInstance().isKeyboardShowing(
-                activityTabProvider.get().getContext(),
-                activityTabProvider.get()
-                        .getWebContents()
-                        .getViewAndroidDelegate()
-                        .getContainerView());
+        return KeyboardVisibilityDelegate.getInstance()
+                .isKeyboardShowing(
+                        activityTabProvider.get().getContext(),
+                        activityTabProvider
+                                .get()
+                                .getWebContents()
+                                .getViewAndroidDelegate()
+                                .getContainerView());
     }
 
     /**
@@ -233,8 +241,10 @@ public class FoldTransitionController {
                 && SystemClock.elapsedRealtime() - timestamp <= KEYBOARD_RESTORATION_TIMEOUT_MS;
     }
 
-    private static void restoreUiStateOnLayoutDoneShowing(LayoutManager layoutManager,
-            Handler layoutStateHandler, Runnable onLayoutFinishedShowing) {
+    private static void restoreUiStateOnLayoutDoneShowing(
+            LayoutManager layoutManager,
+            Handler layoutStateHandler,
+            Runnable onLayoutFinishedShowing) {
         /* TODO (crbug/1395495): Restore the UI state directly if the invocation of {@code
          * StaticLayout#requestFocus(Tab)} in {@code StaticLayout#doneShowing()} is removed. We
          * should restore the desired UI state after the {@link StaticLayout} is done showing to
@@ -244,37 +254,45 @@ public class FoldTransitionController {
                 && !layoutManager.isLayoutStartingToShow(LayoutType.BROWSING)) {
             onLayoutFinishedShowing.run();
         } else {
-            layoutManager.addObserver(new LayoutStateObserver() {
-                @Override
-                public void onFinishedShowing(int layoutType) {
-                    assert layoutManager.isLayoutVisible(LayoutType.BROWSING)
-                        : "LayoutType is "
-                            + layoutManager.getActiveLayoutType()
-                            + ", expected BROWSING type on activity start.";
-                    LayoutStateObserver.super.onFinishedShowing(layoutType);
-                    layoutStateHandler.post(() -> {
-                        onLayoutFinishedShowing.run();
-                        layoutManager.removeObserver(this);
-                        layoutStateHandler.removeCallbacksAndMessages(null);
+            layoutManager.addObserver(
+                    new LayoutStateObserver() {
+                        @Override
+                        public void onFinishedShowing(int layoutType) {
+                            assert layoutManager.isLayoutVisible(LayoutType.BROWSING)
+                                    : "LayoutType is "
+                                            + layoutManager.getActiveLayoutType()
+                                            + ", expected BROWSING type on activity start.";
+                            LayoutStateObserver.super.onFinishedShowing(layoutType);
+                            layoutStateHandler.post(
+                                    () -> {
+                                        onLayoutFinishedShowing.run();
+                                        layoutManager.removeObserver(this);
+                                        layoutStateHandler.removeCallbacksAndMessages(null);
+                                    });
+                        }
                     });
-                }
-            });
         }
     }
 
-    private static void restoreOmniboxState(@NonNull Bundle savedInstanceState,
-            ToolbarManager toolbarManager, @NonNull LayoutManager layoutManager,
+    private static void restoreOmniboxState(
+            @NonNull Bundle savedInstanceState,
+            ToolbarManager toolbarManager,
+            @NonNull LayoutManager layoutManager,
             Handler layoutStateHandler) {
         if (toolbarManager == null || !savedInstanceState.getBoolean(URL_BAR_FOCUS_STATE, false)) {
             return;
         }
         String urlBarText = savedInstanceState.getString(URL_BAR_EDIT_TEXT, "");
-        restoreUiStateOnLayoutDoneShowing(layoutManager, layoutStateHandler,
+        restoreUiStateOnLayoutDoneShowing(
+                layoutManager,
+                layoutStateHandler,
                 () -> setUrlBarFocusAndText(toolbarManager, urlBarText));
     }
 
-    private static void restoreKeyboardState(@NonNull Bundle savedInstanceState,
-            @NonNull ActivityTabProvider activityTabProvider, @NonNull LayoutManager layoutManager,
+    private static void restoreKeyboardState(
+            @NonNull Bundle savedInstanceState,
+            @NonNull ActivityTabProvider activityTabProvider,
+            @NonNull LayoutManager layoutManager,
             Handler layoutStateHandler) {
         // Restore the keyboard only if the omnibox focus was not restored, because omnibox code
         // is assumed to restore the keyboard on omnibox focus restoration.

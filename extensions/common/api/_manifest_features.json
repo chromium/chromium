@@ -40,6 +40,11 @@
     "extension_types": ["platform_app"]
   },
   "automation": {
+    // This is a private API which, for historical reasons, does not include
+    // 'private' in the name. It should not be exposed outside of first-party
+    // allow-listed very trusted extensions and component extensions.
+    // This API has no protection in the JS wrappers around untrusted scripts
+    // putting getters/setters to intercept and manipulate native bindings.
     "channel": "stable",
     "extension_types": ["extension", "legacy_packaged_app", "platform_app"],
     "allowlist": [

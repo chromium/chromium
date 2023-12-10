@@ -8,7 +8,7 @@
 # you add a new build file, there must be some path of dependencies from this
 # file to your new one or GN won't know about it.
 
-import("//build/config/chromecast_build.gni")
+import("//build/config/cast.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/compiler/compiler.gni")
 import("//build/config/cronet/config.gni")
@@ -30,6 +30,7 @@ import("//pdf/features.gni")
 import("//ppapi/buildflags/buildflags.gni")
 import("//printing/buildflags/buildflags.gni")
 import("//remoting/remoting_enable.gni")
+import("//services/on_device_model/on_device_model.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/ipc_fuzzer/ipc_fuzzer.gni")
 import("//ui/base/ui_features.gni")
@@ -83,8 +84,6 @@ group("gn_all") {
   if (is_cronet_build) {
     if (is_android) {
       deps = [ "//components/cronet/android:cronet_package_android" ]
-    } else if (is_ios) {
-      deps = [ "//components/cronet/ios:cronet_package_ios" ]
     } else {
       deps = []
     }
@@ -106,6 +105,7 @@ group("gn_all") {
       "//third_party/angle/src/tests:angle_end2end_tests",
       "//third_party/angle/src/tests:angle_unittests",
       "//third_party/angle/src/tests:angle_white_box_tests",
+      "//third_party/distributed_point_functions:distributed_point_functions_unittests",
       "//third_party/flatbuffers:flatbuffers_unittests",
       "//third_party/liburlpattern:liburlpattern_unittests",
       "//tools/binary_size:binary_size_trybot_py",
@@ -273,7 +273,7 @@ group("gn_all") {
 
     deps += root_extra_deps
 
-    if (enable_printing || enable_printing_unittests) {
+    if (enable_printing || enable_printing_tests) {
       deps += [ "//printing:printing_unittests" ]
     }
 
@@ -284,6 +284,11 @@ group("gn_all") {
         "//extensions/browser/api/declarative_net_request/filter_list_converter",
         "//extensions/shell:app_shell_unittests",
       ]
+    }
+
+    if (enable_ml_internal) {
+      deps +=
+          [ "//components/optimization_guide/internal:ondevice_model_example" ]
     }
 
     if (enable_pdf) {
@@ -382,7 +387,7 @@ group("gn_all") {
         "//tools/android/audio_focus_grabber:audio_focus_grabber_apk",
         "//tools/android/customtabs_benchmark:customtabs_benchmark_apk",
         "//tools/android/kerberos/SpnegoAuthenticator:spnego_authenticator_apk",
-        "//ui/android:ui_junit_tests",
+        "//ui:ui_junit_tests",
       ]
       deps -= [
         "//net:net_perftests",
@@ -395,6 +400,7 @@ group("gn_all") {
           "//android_webview/test",
           "//android_webview/tools/automated_ui_tests:webview_ui_test_app",
           "//android_webview/tools/captured_sites_tests:captured_sites_test_app",
+          "//android_webview/tools/sdk_sandbox",
           "//android_webview/tools/system_webview_shell",
           "//chrome/android:chrome_junit_tests",
           "//chrome/android:chrome_public_apk",
@@ -404,10 +410,6 @@ group("gn_all") {
           "//chrome/browser/android/examples/partner_browser_customizations_provider:partner_browser_customizations_example_apk",
           "//content/shell/android:content_shell_test_apk",
         ]
-
-        if (android_sdk_release == "tprivacysandbox") {
-          deps += [ "//android_webview/tools/sdk_sandbox" ]
-        }
       }
 
       if (enable_chrome_android_internal) {
@@ -654,9 +656,6 @@ group("gn_all") {
         "//tools/accessibility/inspect:ax_dump_events",
         "//tools/accessibility/inspect:ax_dump_tree",
         "//tools/win/chromeexts:chromeexts",
-
-        # Windows virtual display driver testing executable.
-        "//third_party/win_virtual_display/controller:display_driver_controller_executable",
       ]
 
       # TODO(thakis): Enable this in cross builds, https://crbug.com/799827
@@ -1093,7 +1092,15 @@ if (use_blink && !is_cronet_build) {
         "--no-show-results",
         "--zero-tests-executed-ok",
       ]
-      data = [ "//third_party/blink/web_tests/platform/linux-chrome/" ]
+      if (dcheck_always_on) {
+        args += [ "--timeout-multiplier=2" ]
+      } else {
+        args += [ "--timeout-multiplier=1" ]
+      }
+      data = [
+        "//third_party/blink/web_tests/platform/linux-chrome/",
+        "//third_party/blink/web_tests/ChromeTestExpectations",
+      ]
       data_deps = [
         ":blink_web_tests_expectations",
         "//chrome:chrome",
@@ -1219,7 +1226,7 @@ if (use_blink && !is_cronet_build) {
       ]
     }
 
-    if (is_linux || is_fuchsia) {
+    if (is_linux || is_chromeos || is_fuchsia) {
       data += [ "//third_party/apache-linux/" ]
     }
 
@@ -1253,6 +1260,9 @@ if (use_blink && !is_cronet_build) {
     if (dcheck_always_on) {
       _common_web_test_args += [ "--timeout-ms=12000" ]
     }
+  }
+  if (is_chrome_branded) {
+    _common_web_test_args += [ "--chrome-branded" ]
   }
 
   if (is_android) {
@@ -1344,6 +1354,7 @@ if (use_blink && !is_cronet_build) {
       "//third_party/blink/web_tests/permissionclient/",
       "//third_party/blink/web_tests/plugins/",
       "//third_party/blink/web_tests/pointer-lock/",
+      "//third_party/blink/web_tests/ppapi/",
       "//third_party/blink/web_tests/print_testharness/",
       "//third_party/blink/web_tests/printing/",
       "//third_party/blink/web_tests/register-protocol-handler/",
@@ -1536,9 +1547,13 @@ if (use_blink && !is_cronet_build) {
 
   script_test("blink_python_tests") {
     script = "//testing/scripts/run_isolated_script_test.py"
-    args = [ "@WrappedPath(" +
-             rebase_path("//third_party/blink/tools/run_blinkpy_tests.py",
-                         root_build_dir) + ")" ]
+    args = [
+      "@WrappedPath(" +
+          rebase_path("//third_party/blink/tools/run_blinkpy_tests.py",
+                      root_build_dir) + ")",
+      "-v",
+      "-t",
+    ]
 
     data = [
       # These tests use //build/android/devil_chromium.py even when !is_android,
@@ -1609,7 +1624,7 @@ group("chromium_builder_perf") {
       "//tools/perf/chrome_telemetry_build:telemetry_chrome_test",
     ]
 
-    if (!is_chromeos_ash) {
+    if (!is_chromeos_ash && !(is_fuchsia && optimize_for_size)) {
       data_deps += [ "//chrome/test:performance_browser_tests" ]
     }
 

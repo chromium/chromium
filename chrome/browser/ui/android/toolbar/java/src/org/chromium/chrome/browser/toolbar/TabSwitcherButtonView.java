@@ -16,9 +16,7 @@ import org.chromium.ui.listmenu.ListMenuButton;
  * toolbar tab switcher button.
  */
 public class TabSwitcherButtonView extends ListMenuButton {
-    /**
-     * A drawable for the tab switcher icon.
-     */
+    /** A drawable for the tab switcher icon. */
     private TabSwitcherDrawable mTabSwitcherButtonDrawable;
 
     public TabSwitcherButtonView(Context context, AttributeSet attrs) {
@@ -29,8 +27,9 @@ public class TabSwitcherButtonView extends ListMenuButton {
     protected void onFinishInflate() {
         super.onFinishInflate();
 
-        mTabSwitcherButtonDrawable = TabSwitcherDrawable.createTabSwitcherDrawable(
-                getContext(), BrandedColorScheme.APP_DEFAULT);
+        mTabSwitcherButtonDrawable =
+                TabSwitcherDrawable.createTabSwitcherDrawable(
+                        getContext(), BrandedColorScheme.APP_DEFAULT);
         setImageDrawable(mTabSwitcherButtonDrawable);
     }
 

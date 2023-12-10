@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/functional/bind.h"
@@ -40,7 +41,6 @@
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/public/mojom/url_loader_network_service_observer.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace bruschetta {
@@ -142,7 +142,7 @@ void BruschettaNetworkContext::OnSSLCertificateError(
 }
 
 void BruschettaNetworkContext::OnCertificateRequested(
-    const absl::optional<base::UnguessableToken>& window_id,
+    const std::optional<base::UnguessableToken>& window_id,
     const scoped_refptr<net::SSLCertRequestInfo>& cert_info,
     mojo::PendingRemote<network::mojom::ClientCertificateResponder>
         cert_responder_remote) {
@@ -214,7 +214,7 @@ void BruschettaNetworkContext::ContinueWithCertificate(
 }
 
 void BruschettaNetworkContext::OnAuthRequired(
-    const absl::optional<base::UnguessableToken>& window_id,
+    const std::optional<base::UnguessableToken>& window_id,
     uint32_t request_id,
     const GURL& url,
     bool first_auth_attempt,
@@ -224,14 +224,14 @@ void BruschettaNetworkContext::OnAuthRequired(
         auth_challenge_responder) {
   mojo::Remote<network::mojom::AuthChallengeResponder>
       auth_challenge_responder_remote(std::move(auth_challenge_responder));
-  auth_challenge_responder_remote->OnAuthCredentials(absl::nullopt);
+  auth_challenge_responder_remote->OnAuthCredentials(std::nullopt);
 }
 
 void BruschettaNetworkContext::OnPrivateNetworkAccessPermissionRequired(
     const GURL& url,
     const net::IPAddress& ip_address,
-    const absl::optional<std::string>& private_network_device_id,
-    const absl::optional<std::string>& private_network_device_name,
+    const std::optional<std::string>& private_network_device_id,
+    const std::optional<std::string>& private_network_device_name,
     OnPrivateNetworkAccessPermissionRequiredCallback callback) {
   std::move(callback).Run(false);
 }
@@ -240,7 +240,7 @@ void BruschettaNetworkContext::OnClearSiteData(
     const GURL& url,
     const std::string& header_value,
     int32_t load_flags,
-    const absl::optional<net::CookiePartitionKey>& cookie_partition_key,
+    const std::optional<net::CookiePartitionKey>& cookie_partition_key,
     bool partitioned_state_allowed_only,
     OnClearSiteDataCallback callback) {
   std::move(callback).Run();

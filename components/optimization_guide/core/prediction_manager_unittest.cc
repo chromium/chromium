@@ -587,8 +587,9 @@ class PredictionManagerRemoteFetchingDisabledTest
   PredictionManagerRemoteFetchingDisabledTest() {
     // This needs to be done before any tasks are run that might check if a
     // feature is enabled, to avoid tsan errors.
-    feature_list_.InitAndDisableFeature(
-        features::kRemoteOptimizationGuideFetching);
+    feature_list_.InitWithFeatures(
+        {}, {features::kRemoteOptimizationGuideFetching,
+             features::kOptimizationGuideInstallWideModelStore});
   }
 };
 
@@ -613,8 +614,9 @@ class PredictionManagerModelDownloadingDisabledTest
   PredictionManagerModelDownloadingDisabledTest() {
     // This needs to be done before any tasks are run that might check if a
     // feature is enabled, to avoid tsan errors.
-    feature_list_.InitAndDisableFeature(
-        features::kOptimizationGuideModelDownloading);
+    feature_list_.InitWithFeatures(
+        {}, {features::kOptimizationGuideModelDownloading,
+             features::kOptimizationGuideInstallWideModelStore});
   }
 };
 
@@ -645,13 +647,17 @@ class PredictionManagerTest : public testing::WithParamInterface<bool>,
         features::kRemoteOptimizationGuideFetching,
         features::kOptimizationGuideModelDownloading,
     };
+    std::vector<base::test::FeatureRef> disabled_features;
     if (ShouldEnableInstallWideModelStore()) {
       local_state_prefs_ = std::make_unique<TestingPrefServiceSimple>();
       prefs::RegisterLocalStatePrefs(local_state_prefs_->registry());
       enabled_features.emplace_back(
           features::kOptimizationGuideInstallWideModelStore);
+    } else {
+      disabled_features.emplace_back(
+          features::kOptimizationGuideInstallWideModelStore);
     }
-    feature_list_.InitWithFeatures(enabled_features, {});
+    feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 
   void SetUp() override {
@@ -904,7 +910,7 @@ TEST_P(PredictionManagerTest, AddObserverForOptimizationTargetModel) {
 TEST_P(PredictionManagerTest,
        AddObserverForOptimizationTargetModelAddAnotherObserverForSameTarget) {
   // Fails under "threadsafe" mode.
-  testing::GTEST_FLAG(death_test_style) = "fast";
+  GTEST_FLAG_SET(death_test_style, "fast");
 
   CreatePredictionManager();
 

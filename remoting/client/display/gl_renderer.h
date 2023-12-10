@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include <optional>
 #include "base/containers/queue.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
@@ -15,7 +16,6 @@
 #include "remoting/client/display/gl_cursor_feedback.h"
 #include "remoting/client/display/gl_desktop.h"
 #include "remoting/proto/control.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace webrtc {
 class DesktopFrame;
@@ -139,7 +139,7 @@ class GlRenderer {
   std::unique_ptr<Canvas> canvas_;
 
   // Used to recover the transformation matrix when the canvas is recreated.
-  absl::optional<std::array<float, 9>> transformation_matrix_;
+  std::optional<std::array<float, 9>> transformation_matrix_;
 
   GlCursor cursor_;
   GlCursorFeedback cursor_feedback_;

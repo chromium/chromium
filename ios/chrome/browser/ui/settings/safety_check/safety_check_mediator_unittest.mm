@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/settings/safety_check/safety_check_mediator.h"
+#import "ios/chrome/browser/ui/settings/safety_check/safety_check_mediator+Testing.h"
 
 #import <memory>
 
@@ -21,7 +22,6 @@
 #import "components/password_manager/core/browser/password_manager_test_utils.h"
 #import "components/password_manager/core/browser/password_store/test_password_store.h"
 #import "components/password_manager/core/browser/ui/password_check_referrer.h"
-#import "components/password_manager/core/common/password_manager_features.h"
 #import "components/prefs/pref_service.h"
 #import "components/prefs/testing_pref_service.h"
 #import "components/safe_browsing/core/common/features.h"
@@ -30,7 +30,6 @@
 #import "components/strings/grit/components_strings.h"
 #import "components/sync/test/mock_sync_service.h"
 #import "components/sync_preferences/pref_service_mock_factory.h"
-#import "ios/chrome/browser/ntp/home/features.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_affiliation_service_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager_factory.h"
@@ -46,14 +45,13 @@
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller_test.h"
-#import "ios/chrome/browser/signin/authentication_service.h"
-#import "ios/chrome/browser/signin/authentication_service_factory.h"
-#import "ios/chrome/browser/signin/fake_authentication_service_delegate.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_check_item.h"
 #import "ios/chrome/browser/ui/settings/safety_check/safety_check_constants.h"
 #import "ios/chrome/browser/ui/settings/safety_check/safety_check_consumer.h"
-#import "ios/chrome/browser/ui/settings/safety_check/safety_check_mediator+private.h"
 #import "ios/chrome/browser/upgrade/model/upgrade_constants.h"
 #import "ios/chrome/browser/upgrade/model/upgrade_recommended_details.h"
 #import "ios/chrome/common/string_util.h"
@@ -74,7 +72,6 @@ namespace {
 using l10n_util::GetNSString;
 using password_manager::InsecureType;
 using password_manager::TestPasswordStore;
-using password_manager::features::IsPasswordCheckupEnabled;
 
 typedef NS_ENUM(NSInteger, SafetyCheckItemType) {
   // CheckTypes section.
@@ -119,21 +116,18 @@ UIImage* SafeImage() {
 
 // The image when the state is unsafe.
 UIImage* UnsafeImage() {
-  return DefaultSymbolTemplateWithPointSize(
-      IsPasswordCheckupEnabled() ? kErrorCircleFillSymbol : kWarningFillSymbol,
-      kTrailingSymbolImagePointSize);
+  return DefaultSymbolTemplateWithPointSize(kErrorCircleFillSymbol,
+                                            kTrailingSymbolImagePointSize);
 }
 
 // The color when the state is safe.
 UIColor* GreenColor() {
-  return [UIColor
-      colorNamed:IsPasswordCheckupEnabled() ? kGreen500Color : kGreenColor];
+  return [UIColor colorNamed:kGreen500Color];
 }
 
 // The color when the state is unsafe.
 UIColor* RedColor() {
-  return [UIColor
-      colorNamed:IsPasswordCheckupEnabled() ? kRed500Color : kRedColor];
+  return [UIColor colorNamed:kRed500Color];
 }
 
 }  // namespace
@@ -510,32 +504,8 @@ TEST_F(SafetyCheckMediatorTest, PasswordCheckSafeCheck) {
 }
 
 // Tests that the content of the `passwordCheckItem` is as expected when in safe
-// state and when the kIOSPasswordCheckup feature is disabled.
-TEST_F(SafetyCheckMediatorTest, PasswordCheckSafeUIWithoutKIOSPasswordCheckup) {
-  // Disable Password Checkup feature.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      password_manager::features::kIOSPasswordCheckup);
-
-  mediator_.passwordCheckRowState = PasswordCheckRowStateSafe;
-  [mediator_ reconfigurePasswordCheckItem];
-  EXPECT_NSEQ(mediator_.passwordCheckItem.detailText,
-              base::SysUTF16ToNSString(l10n_util::GetPluralStringFUTF16(
-                  IDS_IOS_PASSWORD_CHECKUP_COMPROMISED_COUNT, 0)));
-  EXPECT_EQ(mediator_.passwordCheckItem.trailingImage, SafeImage());
-  EXPECT_TRUE([mediator_.passwordCheckItem.trailingImageTintColor
-      isEqual:GreenColor()]);
-  EXPECT_EQ(mediator_.passwordCheckItem.accessoryType,
-            UITableViewCellAccessoryNone);
-}
-
-// Tests that the content of the `passwordCheckItem` is as expected when in safe
-// state and when the kIOSPasswordCheckup feature is enabled.
-TEST_F(SafetyCheckMediatorTest, PasswordCheckSafeUIWithKIOSPasswordCheckup) {
-  // Enable Password Checkup feature.
-  base::test::ScopedFeatureList feature_list(
-      password_manager::features::kIOSPasswordCheckup);
-
+// state.
+TEST_F(SafetyCheckMediatorTest, PasswordCheckSafeUI) {
   mediator_.passwordCheckRowState = PasswordCheckRowStateSafe;
   [mediator_ reconfigurePasswordCheckItem];
   EXPECT_NSEQ(mediator_.passwordCheckItem.detailText,
@@ -551,52 +521,12 @@ TEST_F(SafetyCheckMediatorTest, PasswordCheckSafeUIWithKIOSPasswordCheckup) {
 // Tests that only having a leaked password results in an umuted compromised
 // password row state.
 TEST_F(SafetyCheckMediatorTest, PasswordCheckUnmutedCompromisedPasswordsCheck) {
-  {
-    base::test::ScopedFeatureList feature_list(
-        password_manager::features::kIOSPasswordCheckup);
-
-    CheckCompromisedRowState();
-  }
-  {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndDisableFeature(
-        password_manager::features::kIOSPasswordCheckup);
-
-    CheckCompromisedRowState();
-  }
+  CheckCompromisedRowState();
 }
 
 // Tests that the content of the `passwordCheckItem` is as expected when in
-// compromised state and when the kIOSPasswordCheckup feature is disabled.
-TEST_F(SafetyCheckMediatorTest,
-       PasswordCheckUnmutedCompromisedPasswordsUIWithoutKIOSPasswordCheckup) {
-  // Disable Password Checkup feature.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      password_manager::features::kIOSPasswordCheckup);
-
-  AddSavedInsecureForm(InsecureType::kLeaked);
-  mediator_.passwordCheckRowState =
-      PasswordCheckRowStateUnmutedCompromisedPasswords;
-  [mediator_ reconfigurePasswordCheckItem];
-  EXPECT_NSEQ(mediator_.passwordCheckItem.detailText,
-              base::SysUTF16ToNSString(l10n_util::GetPluralStringFUTF16(
-                  IDS_IOS_CHECK_PASSWORDS_COMPROMISED_COUNT, 1)));
-  EXPECT_EQ(mediator_.passwordCheckItem.trailingImage, UnsafeImage());
-  EXPECT_TRUE(
-      [mediator_.passwordCheckItem.trailingImageTintColor isEqual:RedColor()]);
-  EXPECT_EQ(mediator_.passwordCheckItem.accessoryType,
-            UITableViewCellAccessoryDisclosureIndicator);
-}
-
-// Tests that the content of the `passwordCheckItem` is as expected when in
-// compromised state and when the kIOSPasswordCheckup feature is enabled.
-TEST_F(SafetyCheckMediatorTest,
-       PasswordCheckUnmutedCompromisedPasswordsUIWithKIOSPasswordCheckup) {
-  // Enable Password Checkup feature.
-  base::test::ScopedFeatureList feature_list(
-      password_manager::features::kIOSPasswordCheckup);
-
+// compromised state.
+TEST_F(SafetyCheckMediatorTest, PasswordCheckUnmutedCompromisedPasswordsUI) {
   AddSavedInsecureForm(InsecureType::kLeaked);
   mediator_.passwordCheckRowState =
       PasswordCheckRowStateUnmutedCompromisedPasswords;
@@ -612,12 +542,8 @@ TEST_F(SafetyCheckMediatorTest,
 }
 
 // Tests that only having a reused password results in a reused password row
-// state. kIOSPasswordCheckup feature needs to be enabled for this test.
+// state.
 TEST_F(SafetyCheckMediatorTest, PasswordCheckReusedPasswordsCheck) {
-  // Enable Password Checkup feature.
-  base::test::ScopedFeatureList feature_list(
-      password_manager::features::kIOSPasswordCheckup);
-
   base::HistogramTester histogram_tester;
 
   AddSavedInsecureForm(InsecureType::kReused);
@@ -635,12 +561,8 @@ TEST_F(SafetyCheckMediatorTest, PasswordCheckReusedPasswordsCheck) {
 }
 
 // Tests that the content of the `passwordCheckItem` is as expected when in
-// reused state. kIOSPasswordCheckup feature needs to be enabled for this test.
+// reused state.
 TEST_F(SafetyCheckMediatorTest, PasswordCheckReusedPasswordsUI) {
-  // Enable Password Checkup feature.
-  base::test::ScopedFeatureList feature_list(
-      password_manager::features::kIOSPasswordCheckup);
-
   AddSavedInsecureForm(InsecureType::kReused);
   AddSavedInsecureForm(InsecureType::kReused, /*is_muted=*/false,
                        /*signon_realm=*/"http://www.example1.com/");
@@ -655,12 +577,7 @@ TEST_F(SafetyCheckMediatorTest, PasswordCheckReusedPasswordsUI) {
 }
 
 // Tests that only having a weak password results in a weak password row state.
-// kIOSPasswordCheckup feature needs to be enabled for this test.
 TEST_F(SafetyCheckMediatorTest, PasswordCheckWeakPasswordsCheck) {
-  // Enable Password Checkup feature.
-  base::test::ScopedFeatureList feature_list(
-      password_manager::features::kIOSPasswordCheckup);
-
   base::HistogramTester histogram_tester;
 
   AddSavedInsecureForm(InsecureType::kWeak);
@@ -676,12 +593,8 @@ TEST_F(SafetyCheckMediatorTest, PasswordCheckWeakPasswordsCheck) {
 }
 
 // Tests that the content of the `passwordCheckItem` is as expected when in weak
-// state. kIOSPasswordCheckup feature needs to be enabled for this test.
+// state.
 TEST_F(SafetyCheckMediatorTest, PasswordCheckWeakPasswordsUI) {
-  // Enable Password Checkup feature.
-  base::test::ScopedFeatureList feature_list(
-      password_manager::features::kIOSPasswordCheckup);
-
   AddSavedInsecureForm(InsecureType::kWeak);
   mediator_.passwordCheckRowState = PasswordCheckRowStateWeakPasswords;
   [mediator_ reconfigurePasswordCheckItem];
@@ -694,13 +607,8 @@ TEST_F(SafetyCheckMediatorTest, PasswordCheckWeakPasswordsUI) {
 }
 
 // Tests that only having a dismissed compromsied warning results in a dismissed
-// warning row state. kIOSPasswordCheckup feature needs to be enabled for this
-// test.
+// warning row state.
 TEST_F(SafetyCheckMediatorTest, PasswordCheckDismissedWarningsCheck) {
-  // Enable Password Checkup feature.
-  base::test::ScopedFeatureList feature_list(
-      password_manager::features::kIOSPasswordCheckup);
-
   base::HistogramTester histogram_tester;
 
   AddSavedInsecureForm(InsecureType::kLeaked, /*is_muted=*/true);
@@ -716,13 +624,8 @@ TEST_F(SafetyCheckMediatorTest, PasswordCheckDismissedWarningsCheck) {
 }
 
 // Tests that the content of the `passwordCheckItem` is as expected when in
-// dismissed warning state. kIOSPasswordCheckup feature needs to be enabled for
-// this test.
+// dismissed warning state.
 TEST_F(SafetyCheckMediatorTest, PasswordCheckDismissedWarningsUI) {
-  // Enable Password Checkup feature.
-  base::test::ScopedFeatureList feature_list(
-      password_manager::features::kIOSPasswordCheckup);
-
   AddSavedInsecureForm(InsecureType::kLeaked, /*is_muted=*/true);
   mediator_.passwordCheckRowState = PasswordCheckRowStateDismissedWarnings;
   [mediator_ reconfigurePasswordCheckItem];
@@ -875,28 +778,8 @@ TEST_F(SafetyCheckMediatorTest, PasswordClickableUnmutedCompromisedPasswords) {
   EXPECT_TRUE([mediator_ isItemClickable:passwordItem]);
 }
 
-// When in safe state, the password check item is non clickable when the
-// kIOSPasswordCheckup feature is disabled.
-TEST_F(SafetyCheckMediatorTest, PasswordNonclickableSafe) {
-  // Disable Password Checkup feature.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      password_manager::features::kIOSPasswordCheckup);
-
-  mediator_.passwordCheckRowState = PasswordCheckRowStateSafe;
-  [mediator_ reconfigurePasswordCheckItem];
-  TableViewItem* passwordItem = [[TableViewItem alloc]
-      initWithType:SafetyCheckItemType::PasswordItemType];
-  EXPECT_FALSE([mediator_ isItemClickable:passwordItem]);
-}
-
-// When in safe state, the password check item is clickable when the
-// kIOSPasswordCheckup feature is enabled.
+// When in safe state, the password check item is clickable.
 TEST_F(SafetyCheckMediatorTest, PasswordClickableSafe) {
-  // Enable Password Checkup feature.
-  base::test::ScopedFeatureList feature_list(
-      password_manager::features::kIOSPasswordCheckup);
-
   mediator_.passwordCheckRowState = PasswordCheckRowStateSafe;
   [mediator_ reconfigurePasswordCheckItem];
   TableViewItem* passwordItem = [[TableViewItem alloc]
@@ -904,13 +787,8 @@ TEST_F(SafetyCheckMediatorTest, PasswordClickableSafe) {
   EXPECT_TRUE([mediator_ isItemClickable:passwordItem]);
 }
 
-// Reused passwords are only available when the kIOSPasswordCheckup feature is
-// enabled.
+// When in reused state, the password check item is clickable.
 TEST_F(SafetyCheckMediatorTest, PasswordClickableReusedPasswords) {
-  // Enable Password Checkup feature.
-  base::test::ScopedFeatureList feature_list(
-      password_manager::features::kIOSPasswordCheckup);
-
   mediator_.passwordCheckRowState = PasswordCheckRowStateReusedPasswords;
   [mediator_ reconfigurePasswordCheckItem];
   TableViewItem* passwordItem = [[TableViewItem alloc]
@@ -918,13 +796,8 @@ TEST_F(SafetyCheckMediatorTest, PasswordClickableReusedPasswords) {
   EXPECT_TRUE([mediator_ isItemClickable:passwordItem]);
 }
 
-// Weak passwords are only available when the kIOSPasswordCheckup feature is
-// enabled.
+// When in weak state, the password check item is clickable.
 TEST_F(SafetyCheckMediatorTest, PasswordClickableWeakPasswords) {
-  // Enable Password Checkup feature.
-  base::test::ScopedFeatureList feature_list(
-      password_manager::features::kIOSPasswordCheckup);
-
   mediator_.passwordCheckRowState = PasswordCheckRowStateWeakPasswords;
   [mediator_ reconfigurePasswordCheckItem];
   TableViewItem* passwordItem = [[TableViewItem alloc]
@@ -932,13 +805,8 @@ TEST_F(SafetyCheckMediatorTest, PasswordClickableWeakPasswords) {
   EXPECT_TRUE([mediator_ isItemClickable:passwordItem]);
 }
 
-// Dismissed warnings are only available when the kIOSPasswordCheckup feature is
-// enabled.
+// When in dismissed warnings state, the password check item is clickable.
 TEST_F(SafetyCheckMediatorTest, PasswordClickableDismissedWarnings) {
-  // Enable Password Checkup feature.
-  base::test::ScopedFeatureList feature_list(
-      password_manager::features::kIOSPasswordCheckup);
-
   mediator_.passwordCheckRowState = PasswordCheckRowStateDismissedWarnings;
   [mediator_ reconfigurePasswordCheckItem];
   TableViewItem* passwordItem = [[TableViewItem alloc]

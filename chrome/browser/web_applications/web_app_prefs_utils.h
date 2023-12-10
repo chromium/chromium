@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_PREFS_UTILS_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_PREFS_UTILS_H_
 
-#include <map>
-
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "components/webapps/common/web_app_id.h"
@@ -20,9 +18,8 @@ class PrefRegistrySyncable;
 
 namespace web_app {
 
-extern const char kIphIgnoreCount[];
-extern const char kIphLastIgnoreTime[];
-
+// TODO(b/313491176): Remove all these public utilities once this utility file
+// is retired.
 absl::optional<int> GetIntWebAppPref(const PrefService* pref_service,
                                      const webapps::AppId& app_id,
                                      base::StringPiece path);
@@ -47,69 +44,6 @@ void RemoveWebAppPref(PrefService* pref_service,
 
 void WebAppPrefsUtilsRegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry);
-
-// Deprecated. See crbug.com/1287292
-absl::optional<int> GetWebAppInstallSourceDeprecated(
-    PrefService* prefs,
-    const webapps::AppId& app_id);
-
-// Looks up all install sources in the web apps prefs dictionary and returns
-// them as a map. Also deletes the values from the dictionary. Used for
-// migration to the WebApp database. This should be safe to delete one year
-// after 02-2022.
-std::map<webapps::AppId, int> TakeAllWebAppInstallSources(PrefService* prefs);
-
-void RecordInstallIphIgnored(PrefService* pref_service,
-                             const webapps::AppId& app_id,
-                             base::Time time);
-
-void RecordInstallIphInstalled(PrefService* pref_service,
-                               const webapps::AppId& app_id);
-
-// Returns whether Web App Install In Product Help should be shown based on
-// previous interactions with this promo.
-bool ShouldShowIph(PrefService* pref_service, const webapps::AppId& app_id);
-
-// -------------------------ML Promotion Guardrails-------------------------
-// Pref entries
-extern const char kLastTimeMlInstallIgnored[];
-extern const char kLastTimeMlInstallDismissed[];
-extern const char kConsecutiveMlInstallNotAcceptedCount[];
-extern const char kAllMLPromosBlockedTime[];
-extern const char kMLPromotionGuardrailBlockReason[];
-
-// Values of all constants required to compute guardrail logic.
-extern const int kMuteMlInstallAfterConsecutiveAppSpecificNotAcceptedCount;
-extern const int kMuteMlInstallAfterIgnoreForDays;
-extern const int kMuteMlInstallAfterDismissForDays;
-extern const int kMuteMlInstallAfterConsecutiveAppAgnosticNotAcceptedCount;
-extern const int kMuteMlInstallAfterAnyIgnoreForDays;
-extern const int kMuteMlInstallAfterAnyDismissForDays;
-
-// The user has ignored the installation dialog and it went away due to
-// another interaction (e.g. the tab was changed, page navigated, etc).
-void RecordMlInstallIgnored(PrefService* pref_service,
-                            const webapps::AppId& app_id,
-                            base::Time time);
-// The user has taken active action on the dialog to make it go away.
-void RecordMlInstallDismissed(PrefService* pref_service,
-                              const webapps::AppId& app_id,
-                              base::Time time);
-void RecordMlInstallAccepted(PrefService* pref_service,
-                             const webapps::AppId& app_id,
-                             base::Time time);
-
-// Returns true or false based on whether ML promotion has been blocked by
-// history guardrails. Since this is triggered whenever Segmentation returns a
-// value to show the install prompt, this is a good place to perform
-// VerifyAndClearMlGuardrailsIfNeeded.
-bool IsMlPromotionBlockedByHistoryGuardrail(PrefService* pref_service,
-                                            const webapps::AppId& app_id);
-
-// Resets kAllMLPromosBlockedDate and kConsecutiveMlInstallNotAcceptedCount on
-// the app specific and app agnostic levels.
-void ResetAllMLPromosBlockedDateAndGuardrails(PrefService* pref_service,
-                                              const webapps::AppId& app_id);
 
 }  // namespace web_app
 

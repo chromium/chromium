@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromecast_build.gni")
+import("//build/config/cast.gni")
 import("//build/config/ui.gni")  # For the toolkit_views variables.
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//ppapi/buildflags/buildflags.gni")  # For the enable_plugins variable.
@@ -143,6 +143,8 @@ static_library("web_test_browser") {
     "browser/web_test_shell_platform_delegate.h",
     "browser/web_test_storage_access_manager.cc",
     "browser/web_test_storage_access_manager.h",
+    "browser/web_test_tracing_controller.cc",
+    "browser/web_test_tracing_controller.h",
     "browser/web_test_tts_platform.cc",
     "browser/web_test_tts_platform.h",
   ]
@@ -364,7 +366,7 @@ static_library("web_test_renderer") {
     "//third_party/blink/renderer/core/web_test",
   ]
 
-  if (enable_printing || enable_printing_unittests) {
+  if (enable_printing || enable_printing_tests) {
     sources += [
       "renderer/pixel_dump.cc",
       "renderer/pixel_dump.h",

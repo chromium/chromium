@@ -120,7 +120,7 @@ IPC_STRUCT_BEGIN(ExtensionMsg_ExternalConnectionInfo)
   IPC_STRUCT_MEMBER(GURL, source_url)
 
   // The origin of the object that initiated the request.
-  IPC_STRUCT_MEMBER(absl::optional<url::Origin>, source_origin)
+  IPC_STRUCT_MEMBER(std::optional<url::Origin>, source_origin)
 
   // The process ID of the webview that initiated the request.
   IPC_STRUCT_MEMBER(int, guest_process_id)
@@ -205,7 +205,7 @@ IPC_MESSAGE_ROUTED2(ExtensionMsg_ValidateMessagePort,
 // Dispatch the Port.onConnect event for message channels.
 IPC_MESSAGE_ROUTED2(ExtensionMsg_DispatchOnConnect,
                     // For main thread, this is kMainThreadId.
-                    // TODO(lazyboy): Can this be absl::optional<int> instead?
+                    // TODO(lazyboy): Can this be std::optional<int> instead?
                     int /* worker_thread_id */,
                     ExtensionMsg_OnConnectData /* connect_data */)
 
@@ -226,7 +226,9 @@ IPC_MESSAGE_ROUTED3(ExtensionMsg_DispatchOnDisconnect,
 // Messages sent from the renderer to the browser:
 
 // Notify the browser that an event has finished being dispatched.
-IPC_MESSAGE_ROUTED1(ExtensionHostMsg_EventAck, int /* message_id */)
+IPC_MESSAGE_ROUTED2(ExtensionHostMsg_EventAck,
+                    int /* message_id */,
+                    bool /* event_will_run_in_lazy_background_page_script */)
 
 // Open a channel to all listening contexts owned by the extension with
 // the given ID. This responds asynchronously with ExtensionMsg_AssignPortId.

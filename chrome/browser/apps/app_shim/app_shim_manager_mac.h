@@ -171,7 +171,7 @@ class AppShimManager
   void UpdateAppBadge(
       Profile* profile,
       const webapps::AppId& app_id,
-      const absl::optional<badging::BadgeManager::BadgeValue>& badge);
+      const std::optional<badging::BadgeManager::BadgeValue>& badge);
 
   // Called to connect to a MacNotificationProvider instance in the app shim
   // process for the given app_id. This is only supported for multi-profile

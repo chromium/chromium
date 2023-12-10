@@ -4,7 +4,7 @@
     grid-template-areas:
       'leftspacertop    selected   rightspacertop   '
       'leftspacerbottom imagegrid  rightspacerbottom';
-    grid-template-columns: minmax(16px, 1fr) minmax(568px, 920px) minmax(16px, 1fr);
+    grid-template-columns: minmax(10px, 1fr) minmax(568px, 920px) minmax(10px, 1fr);
     grid-template-rows: 172px minmax(0, 1fr);
     height: 100%;
     min-height: var(--personalization-app-subpage-container-min-height);
@@ -24,9 +24,10 @@
   wallpaper-images,
   google-photos-collection,
   local-images,
-  sea-pen-collection {
+  sea-pen-images,
+  .sea-pen-collections {
     grid-area: imagegrid;
-    padding: 12px 0 32px 0;
+    padding: 10px 0;
     background-color: var(--cros-bg-color);
   }
 
@@ -44,7 +45,8 @@
   wallpaper-images,
   google-photos-collection,
   local-images,
-  sea-pen-collection {
+  sea-pen-images,
+  .sea-pen-collections {
     background-color: var(--cros-bg-color);
   }
 </style>
@@ -74,8 +76,14 @@
     <local-images></local-images>
   </template>
   <template is="dom-if" if="[[shouldShowSeaPenCollection_(path)]]">
-    <sea-pen-collection template-id="[[queryParams.seaPenTemplateId]]"></sea-pen-collection>
- </template>
+    <div class="sea-pen-collections">
+      <sea-pen-templates></sea-pen-templates>
+      <sea-pen-recent-wallpapers></sea-pen-recent-wallpapers>
+    </div>
+  </template>
+  <template is="dom-if" if="[[shouldShowSeaPenResults_(path)]]">
+    <sea-pen-images template-id="[[queryParams.seaPenTemplateId]]"></sea-pen-images>
+  </template>
   <!-- Prevent the right margin from collapsing when window gets very
            narrow -->
   <div class="rightspacertop"></div>

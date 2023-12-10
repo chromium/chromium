@@ -36,9 +36,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 import org.chromium.ui.widget.Toast;
 
-/**
- * Dialog for the note creation.
- */
+/** Dialog for the note creation. */
 public class NoteCreationDialog extends DialogFragment {
     private static final float EXTREMITY_NOTE_PADDING_RATIO = 0.5f;
 
@@ -55,10 +53,15 @@ public class NoteCreationDialog extends DialogFragment {
     interface NoteDialogObserver {
         void onViewCreated(View view);
     }
+
     private NoteDialogObserver mNoteDialogObserver;
 
-    public void initDialog(NoteDialogObserver noteDialogObserver, String urlDomain, String title,
-            String selectedText, Runnable executeActionForAccessibility) {
+    public void initDialog(
+            NoteDialogObserver noteDialogObserver,
+            String urlDomain,
+            String title,
+            String selectedText,
+            Runnable executeActionForAccessibility) {
         mNoteDialogObserver = noteDialogObserver;
         mUrlDomain = urlDomain;
         mTitle = title;
@@ -123,16 +126,19 @@ public class NoteCreationDialog extends DialogFragment {
     public void createRecyclerViews(ModelList carouselItems) {
         RecyclerView noteCarousel = mContentView.findViewById(R.id.note_carousel);
 
-        SimpleRecyclerViewAdapter adapter = new SimpleRecyclerViewAdapter(carouselItems) {
-            @Override
-            public void onBindViewHolder(
-                    SimpleRecyclerViewAdapter.ViewHolder holder, int position) {
-                holder.itemView.setTag(position);
-                super.onBindViewHolder(holder, position);
-            }
-        };
-        adapter.registerType(NoteProperties.NOTE_VIEW_TYPE,
-                new LayoutViewBuilder(R.layout.carousel_item), this::bindCarouselItem);
+        SimpleRecyclerViewAdapter adapter =
+                new SimpleRecyclerViewAdapter(carouselItems) {
+                    @Override
+                    public void onBindViewHolder(
+                            SimpleRecyclerViewAdapter.ViewHolder holder, int position) {
+                        holder.itemView.setTag(position);
+                        super.onBindViewHolder(holder, position);
+                    }
+                };
+        adapter.registerType(
+                NoteProperties.NOTE_VIEW_TYPE,
+                new LayoutViewBuilder(R.layout.carousel_item),
+                this::bindCarouselItem);
         noteCarousel.setAdapter(adapter);
         LinearLayoutManager layoutManager =
                 new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false);
@@ -141,38 +147,36 @@ public class NoteCreationDialog extends DialogFragment {
         SnapHelper snapHelper = new PagerSnapHelper();
         snapHelper.attachToRecyclerView(noteCarousel);
 
-        noteCarousel.addOnScrollListener(new OnScrollListener() {
-            @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                LinearLayoutManager layoutManager =
-                        (LinearLayoutManager) recyclerView.getLayoutManager();
-                if (layoutManager.findFirstCompletelyVisibleItemPosition() < 0) return;
+        noteCarousel.addOnScrollListener(
+                new OnScrollListener() {
+                    @Override
+                    public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                        LinearLayoutManager layoutManager =
+                                (LinearLayoutManager) recyclerView.getLayoutManager();
+                        if (layoutManager.findFirstCompletelyVisibleItemPosition() < 0) return;
 
-                int first_visible = layoutManager.findFirstCompletelyVisibleItemPosition();
-                int last_visible = layoutManager.findLastCompletelyVisibleItemPosition();
+                        int first_visible = layoutManager.findFirstCompletelyVisibleItemPosition();
+                        int last_visible = layoutManager.findLastCompletelyVisibleItemPosition();
 
-                int newSelectedItemIndex = (last_visible - first_visible) / 2 + first_visible;
-                if (mSelectedItemIndex == newSelectedItemIndex) {
-                    return;
-                }
-                unFocus(mSelectedItemIndex);
-                mSelectedItemIndex = newSelectedItemIndex;
-                setSelectedItemTitle(carouselItems.get(mSelectedItemIndex).model);
-                focus(mSelectedItemIndex);
-            }
-        });
+                        int newSelectedItemIndex =
+                                (last_visible - first_visible) / 2 + first_visible;
+                        if (mSelectedItemIndex == newSelectedItemIndex) {
+                            return;
+                        }
+                        unFocus(mSelectedItemIndex);
+                        mSelectedItemIndex = newSelectedItemIndex;
+                        setSelectedItemTitle(carouselItems.get(mSelectedItemIndex).model);
+                        focus(mSelectedItemIndex);
+                    }
+                });
     }
 
-    /**
-     * Returns the index of the currently selected item.
-     */
+    /** Returns the index of the currently selected item. */
     public int getSelectedItemIndex() {
         return this.mSelectedItemIndex;
     }
 
-    /**
-     * Returns the View instance for a note at |index|.
-     */
+    /** Returns the View instance for a note at |index|. */
     public View getNoteViewAt(int index) {
         RecyclerView noteCarousel = mContentView.findViewById(R.id.note_carousel);
         LinearLayoutManager layoutManager = (LinearLayoutManager) noteCarousel.getLayoutManager();
@@ -181,9 +185,7 @@ public class NoteCreationDialog extends DialogFragment {
         return noteContainerView == null ? null : noteContainerView.findViewById(R.id.item);
     }
 
-    /**
-     * Returns the number of template switches the user did.
-     */
+    /** Returns the number of template switches the user did. */
     public int getNbTemplateSwitches() {
         return mNbTemplateSwitches;
     }
@@ -200,8 +202,10 @@ public class NoteCreationDialog extends DialogFragment {
         template.mainBackground.apply(carouselItemView, getNoteCornerRadius());
         carouselItemView.setClipToOutline(true);
         carouselItemView.setContentDescription(
-                getActivity().getString(R.string.content_creation_note_template_selected,
-                        model.get(NoteProperties.TEMPLATE).localizedName));
+                getActivity()
+                        .getString(
+                                R.string.content_creation_note_template_selected,
+                                model.get(NoteProperties.TEMPLATE).localizedName));
         Typeface typeface = model.get(NoteProperties.TYPEFACE);
         LineLimitedTextView noteText = (LineLimitedTextView) parent.findViewById(R.id.text);
         noteText.setTypeface(typeface);
@@ -223,27 +227,30 @@ public class NoteCreationDialog extends DialogFragment {
 
         template.footerStyle.apply(footerLink, footerTitle, footerIcon);
 
-        setPadding(model.get(NoteProperties.IS_FIRST), model.get(NoteProperties.IS_LAST),
+        setPadding(
+                model.get(NoteProperties.IS_FIRST),
+                model.get(NoteProperties.IS_LAST),
                 parent.findViewById(R.id.item));
 
-        carouselItemView.setAccessibilityDelegate(new View.AccessibilityDelegate() {
-            @Override
-            public void onPopulateAccessibilityEvent(View host, AccessibilityEvent event) {
-                int position;
-                switch (event.getEventType()) {
-                    case AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUSED:
-                        host.setClickable(true);
-                        mSelectedItemIndex = (Integer) host.getTag();
-                        centerCurrentNote();
-                        break;
-                    case AccessibilityEvent.TYPE_VIEW_CLICKED:
-                        mExecuteActionForAccessibility.run();
-                        break;
-                }
+        carouselItemView.setAccessibilityDelegate(
+                new View.AccessibilityDelegate() {
+                    @Override
+                    public void onPopulateAccessibilityEvent(View host, AccessibilityEvent event) {
+                        int position;
+                        switch (event.getEventType()) {
+                            case AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUSED:
+                                host.setClickable(true);
+                                mSelectedItemIndex = (Integer) host.getTag();
+                                centerCurrentNote();
+                                break;
+                            case AccessibilityEvent.TYPE_VIEW_CLICKED:
+                                mExecuteActionForAccessibility.run();
+                                break;
+                        }
 
-                super.onPopulateAccessibilityEvent(host, event);
-            }
-        });
+                        super.onPopulateAccessibilityEvent(host, event);
+                    }
+                });
     }
 
     // Adjust the padding for carousel items so that:
@@ -318,19 +325,26 @@ public class NoteCreationDialog extends DialogFragment {
     private void centerCurrentNote() {
         RecyclerView noteCarousel = mContentView.findViewById(R.id.note_carousel);
         LinearLayoutManager layoutManager = (LinearLayoutManager) noteCarousel.getLayoutManager();
-        int centerOfScreen = getActivity().getResources().getDisplayMetrics().widthPixels / 2
-                - getNoteViewAt(mSelectedItemIndex).getWidth() / 2
-                - getActivity().getResources().getDimensionPixelSize(R.dimen.note_side_padding);
+        int centerOfScreen =
+                getActivity().getResources().getDisplayMetrics().widthPixels / 2
+                        - getNoteViewAt(mSelectedItemIndex).getWidth() / 2
+                        - getActivity()
+                                .getResources()
+                                .getDimensionPixelSize(R.dimen.note_side_padding);
         layoutManager.scrollToPositionWithOffset(mSelectedItemIndex, centerOfScreen);
     }
 
     private void setTopMargin() {
         // Push down the note title depending on screensize.
-        int minTopMargin = getActivity().getResources().getDimensionPixelSize(
-                R.dimen.note_title_min_top_margin);
+        int minTopMargin =
+                getActivity()
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.note_title_min_top_margin);
         int screenHeight = getActivity().getResources().getDisplayMetrics().heightPixels;
-        int topMarginOffset = getActivity().getResources().getDimensionPixelSize(
-                R.dimen.note_title_top_margin_offset);
+        int topMarginOffset =
+                getActivity()
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.note_title_top_margin_offset);
         int templateWidth =
                 (int) getActivity().getResources().getDimensionPixelSize(R.dimen.note_width);
 
@@ -344,8 +358,9 @@ public class NoteCreationDialog extends DialogFragment {
         assert mContentView.findViewById(R.id.scrollview) == null;
 
         ScrollView scrollView = new ScrollView(getActivity());
-        scrollView.setLayoutParams(new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        scrollView.setLayoutParams(
+                new LinearLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         scrollView.setId(R.id.scrollview);
 
         LinearLayout dialogLayout = mContentView.findViewById(R.id.dialog_layout);

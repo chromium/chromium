@@ -5,32 +5,19 @@ This is a testharness.js-based test.
   assert_unreached: Valid preload fired error handler. Reached unreachable code
 [FAIL] <crossorigin="anonymous"> Same-origin with correct sha512 hash.
   assert_unreached: Valid preload fired error handler. Reached unreachable code
-[PASS] <crossorigin="anonymous"> Same-origin with empty integrity.
-[PASS] <crossorigin="anonymous"> Same-origin with no integrity.
-[PASS] <crossorigin="anonymous"> Same-origin with incorrect hash.
 [FAIL] <crossorigin="anonymous"> Same-origin with correct sha256 hash, options.
   assert_unreached: Valid preload fired error handler. Reached unreachable code
-[PASS] <crossorigin="anonymous"> Same-origin with unknown algorithm only.
 [FAIL] <crossorigin="anonymous"> Same-origin with multiple sha256 hashes, including correct.
   assert_unreached: Valid preload fired error handler. Reached unreachable code
 [FAIL] <crossorigin="anonymous"> Same-origin with multiple sha256 hashes, including unknown algorithm.
   assert_unreached: Valid preload fired error handler. Reached unreachable code
 [FAIL] <crossorigin="anonymous"> Same-origin with sha256 mismatch, sha512 match.
   assert_unreached: Valid preload fired error handler. Reached unreachable code
-[PASS] <crossorigin="anonymous"> Same-origin with sha256 match, sha512 mismatch.
 [FAIL] Same-origin, not CORS request, with correct sha256 hash.
   assert_unreached: Valid preload fired error handler. Reached unreachable code
-[PASS] Same-origin, not CORS request, with incorrect sha256 hash.
 [FAIL] <crossorigin="anonymous"> Cross-origin with correct sha256 hash, ACAO: *.
   assert_unreached: Valid preload fired error handler. Reached unreachable code
-[PASS] <crossorigin="anonymous"> Cross-origin with incorrect sha256 hash, ACAO: *.
-[PASS] <crossorigin="anonymous"> Cross-origin with correct sha256 hash, with CORS-ineligible resource.
-[PASS] Cross-origin, not CORS request, with correct sha256.
-[PASS] Cross-origin, not CORS request, with incorrect sha256.
-[PASS] <crossorigin="anonymous"> Cross-origin with empty integrity.
-[PASS] Cross-origin, not CORS request, with empty integrity.
 [FAIL] <crossorigin="use-credentials"> Cross-origin with correct sha256 hash, CORS-eligible.
   assert_unreached: Valid preload fired error handler. Reached unreachable code
-[PASS] <crossorigin="use-credentials"> Cross-origin with incorrect sha256 hash, CORS-eligible.
 Harness: the test ran to completion.
 

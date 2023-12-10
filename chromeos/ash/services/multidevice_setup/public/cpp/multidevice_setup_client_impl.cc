@@ -145,7 +145,7 @@ MultiDeviceSetupClientImpl::GetHostStatus() const {
 void MultiDeviceSetupClientImpl::SetFeatureEnabledState(
     mojom::Feature feature,
     bool enabled,
-    const absl::optional<std::string>& auth_token,
+    const std::optional<std::string>& auth_token,
     mojom::MultiDeviceSetup::SetFeatureEnabledStateCallback callback) {
   multidevice_setup_remote_->SetFeatureEnabledState(
       feature, enabled, auth_token, std::move(callback));
@@ -175,7 +175,7 @@ void MultiDeviceSetupClientImpl::SetQuickStartPhoneInstanceID(
 
 void MultiDeviceSetupClientImpl::OnHostStatusChanged(
     mojom::HostStatus host_status,
-    const absl::optional<multidevice::RemoteDevice>& host_device) {
+    const std::optional<multidevice::RemoteDevice>& host_device) {
   if (host_device) {
     remote_device_cache_->SetRemoteDevices({*host_device});
     host_status_with_device_ = std::make_pair(
@@ -183,7 +183,7 @@ void MultiDeviceSetupClientImpl::OnHostStatusChanged(
                          host_device->instance_id, host_device->GetDeviceId()));
   } else {
     host_status_with_device_ =
-        std::make_pair(host_status, absl::nullopt /* host_device */);
+        std::make_pair(host_status, std::nullopt /* host_device */);
   }
 
   PA_LOG(INFO) << "Host status with device has changed. New status: "

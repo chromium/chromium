@@ -82,4 +82,4 @@ class KAnonymityServiceMemoryStorage : public KAnonymityServiceStorage {
 std::unique_ptr<KAnonymityServiceStorage> CreateKAnonymitySqlStorageForPath(
     base::FilePath db_storage_path);
 
-#endif
+#endif  // CHROME_BROWSER_K_ANONYMITY_SERVICE_K_ANONYMITY_SERVICE_STORAGE_H_

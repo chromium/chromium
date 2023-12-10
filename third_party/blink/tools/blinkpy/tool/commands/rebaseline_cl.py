@@ -13,6 +13,7 @@ import re
 from concurrent.futures import Executor
 from typing import Dict, List, Optional
 
+from blinkpy.common.checkout.baseline_optimizer import BaselineOptimizer
 from blinkpy.common.net.git_cl import GitCL, TryJobStatus
 from blinkpy.common.net.rpc import Build, RPCError
 from blinkpy.common.net.web_test_results import WebTestResults
@@ -385,6 +386,8 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
         tasks_by_step = collections.defaultdict(set)
         for task in test_baseline_set:
             tasks_by_step[task.step_name].add(task)
+        optimizer = BaselineOptimizer(self._tool, self._host_port,
+                                      self._tool.builders.all_port_names())
         for step_name, tasks in tasks_by_step.items():
             all_ports = {
                 self._tool.builders.port_name_for_builder_name(builder)
@@ -397,16 +400,21 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
                     (task.build, task.port_name))
             for test in sorted(build_ports_by_test):
                 build_port_pairs = build_ports_by_test[test]
-                missing_ports = all_ports - {
-                    port
-                    for _, port in build_port_pairs
+                # Don't fill results for skipped port and test pairs. Otherwise,
+                # the baselines will be downloaded but not cleaned up.
+                missing_ports = {
+                    port_name
+                    for port_name in all_ports if
+                    not optimizer.skips_test(optimizer.port(port_name), test)
                 }
+                missing_ports -= {port for _, port in build_port_pairs}
                 if not missing_ports:
                     continue
                 _log.info('For %s:', test)
                 for port in sorted(missing_ports):
-                    build = self._choose_fill_in_build(port, build_port_pairs)
-                    _log.info('Using "%s" build %d for %s.',
+                    build = self._choose_fill_in_build(optimizer, port,
+                                                       build_port_pairs)
+                    _log.info('  Using "%s" build %d for %s.',
                               build.builder_name, build.build_number, port)
                     test_baseline_set.add(test,
                                           build,
@@ -414,7 +422,8 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
                                           port_name=port)
         return test_baseline_set
 
-    def _choose_fill_in_build(self, target_port, build_port_pairs):
+    def _choose_fill_in_build(self, optimizer: BaselineOptimizer, target_port,
+                              build_port_pairs):
         """Returns a Build to use to supply results for the given port.
 
         Ideally, this should return a build for a similar port so that the
@@ -425,10 +434,8 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
         # for example "win-win11", or "mac-mac13-arm64". For the test port used
         # in unit tests, though, the full port name may be
         # "test-<os>-<version>".
-        def os_name(port):
-            if '-' not in port:
-                return port
-            return port[:port.rfind('-')]
+        def os_name(port_name: str) -> str:
+            return optimizer.port(port_name).operating_system()
 
         # If any Build exists with the same OS, use the first one.
         target_os = os_name(target_port)

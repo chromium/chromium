@@ -7,9 +7,7 @@ package org.chromium.support_lib_boundary;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
 
-/**
- * Boundary interface for ServiceWorkerClient.
- */
+/** Boundary interface for ServiceWorkerClient. */
 public interface ServiceWorkerClientBoundaryInterface extends FeatureFlagHolderBoundaryInterface {
     WebResourceResponse shouldInterceptRequest(WebResourceRequest request);
 }

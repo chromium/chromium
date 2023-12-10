@@ -2,7 +2,9 @@ include_rules = [
   "+components/device_event_log",
   "+mojo/public",
   "+skia/ext",
+  "+skia/public/mojom",
   "+third_party/cros_system_api",
   "+third_party/re2",
+  "+third_party/skia/modules/skcms",
   "+ui/gfx",
 ]

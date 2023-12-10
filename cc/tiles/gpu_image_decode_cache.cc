@@ -74,18 +74,7 @@
 
 namespace cc {
 
-// A feature that will start a task on a timer to purge old cache entries.
-BASE_FEATURE(kPurgeOldCacheEntriesOnTimer,
-             "PurgeOldCacheEntriesOnTimer",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 namespace {
-
-constexpr base::FeatureParam<int> kPurgeInterval{&kPurgeOldCacheEntriesOnTimer,
-                                                 "seconds", 30};
-
-constexpr base::FeatureParam<int> kPurgeMaxAge{&kPurgeOldCacheEntriesOnTimer,
-                                               "seconds", 30};
 
 // The number or entries to keep in the cache, depending on the memory state of
 // the system. This limit can be breached by in-use cache items, which cannot
@@ -503,7 +492,7 @@ class HeapDiscardableMemory : public base::DiscardableMemory {
   size_t size_;
 };
 
-absl::optional<SkYUVAPixmapInfo> GetYUVADecodeInfo(
+std::optional<SkYUVAPixmapInfo> GetYUVADecodeInfo(
     const DrawImage& draw_image,
     AuxImage aux_image,
     const SkISize target_size,
@@ -511,7 +500,7 @@ absl::optional<SkYUVAPixmapInfo> GetYUVADecodeInfo(
   SkYUVAPixmapInfo original_yuva_pixmap_info;
   if (!draw_image.paint_image().IsYuv(yuva_supported_data_types, aux_image,
                                       &original_yuva_pixmap_info)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   DCHECK(original_yuva_pixmap_info.isValid());
 
@@ -1227,7 +1216,7 @@ GpuImageDecodeCache::GpuImageDecodeCache(
 
   {
     // TODO(crbug.com/1110007): We shouldn't need to lock to get capabilities.
-    absl::optional<viz::RasterContextProvider::ScopedRasterContextLock>
+    std::optional<viz::RasterContextProvider::ScopedRasterContextLock>
         context_lock;
     if (context_->GetLock())
       context_lock.emplace(context_);
@@ -1584,7 +1573,7 @@ void GpuImageDecodeCache::SetShouldAggressivelyFreeResources(
                "GpuImageDecodeCache::SetShouldAggressivelyFreeResources",
                "agressive_free_resources", aggressively_free_resources);
   if (aggressively_free_resources) {
-    absl::optional<viz::RasterContextProvider::ScopedRasterContextLock>
+    std::optional<viz::RasterContextProvider::ScopedRasterContextLock>
         context_lock;
     if (auto* lock = context_->GetLock()) {
       // There are callers that might have already acquired the lock. Thus,
@@ -1633,7 +1622,7 @@ void GpuImageDecodeCache::RecordStats() {
 
 void GpuImageDecodeCache::AddToPersistentCache(const DrawImage& draw_image,
                                                scoped_refptr<ImageData> data) {
-  if (base::FeatureList::IsEnabled(kPurgeOldCacheEntriesOnTimer)) {
+  if (features::EnablePurgeGpuImageDecodeCache()) {
     DCHECK(persistent_cache_.empty() || has_pending_purge_task());
     PostPurgeOldCacheEntriesTask();
   }
@@ -1705,7 +1694,7 @@ bool GpuImageDecodeCache::TryFlushPendingWork() {
   // fully static, then no flush will come, and no entries will actually be
   // deleted. We only need a shallow flush because no glFlush() is required, we
   // merely need the deletion commands to be processed service-side.
-  if (base::FeatureList::IsEnabled(kPurgeOldCacheEntriesOnTimer)) {
+  if (features::EnablePurgeGpuImageDecodeCache()) {
     context_->RasterInterface()->ShallowFlushCHROMIUM();
   }
   if (context_->GetLock()) {
@@ -1954,12 +1943,12 @@ void GpuImageDecodeCache::DecodeImageInTask(const DrawImage& draw_image,
 void GpuImageDecodeCache::UploadImageInTask(const DrawImage& draw_image) {
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
                "GpuImageDecodeCache::UploadImage");
-  absl::optional<viz::RasterContextProvider::ScopedRasterContextLock>
+  std::optional<viz::RasterContextProvider::ScopedRasterContextLock>
       context_lock;
   if (context_->GetLock())
     context_lock.emplace(context_);
 
-  absl::optional<ScopedGrContextAccess> gr_context_access;
+  std::optional<ScopedGrContextAccess> gr_context_access;
   if (!use_transfer_cache_)
     gr_context_access.emplace(context_);
   base::AutoLock lock(lock_);
@@ -2602,7 +2591,7 @@ void GpuImageDecodeCache::UploadImageIfNecessary(const DrawImage& draw_image,
                            draw_image.paint_image().HasGainmap())) {
         target_color_space = nullptr;
       }
-      const absl::optional<gfx::HDRMetadata> hdr_metadata =
+      const std::optional<gfx::HDRMetadata> hdr_metadata =
           draw_image.paint_image().GetHDRMetadata();
 
       UploadImageIfNecessary_TransferCache_SoftwareDecode(
@@ -2676,7 +2665,7 @@ void GpuImageDecodeCache::UploadImageIfNecessary_TransferCache_SoftwareDecode(
     const DrawImage& draw_image,
     ImageData* image_data,
     sk_sp<SkColorSpace> decoded_color_space,
-    const absl::optional<gfx::HDRMetadata>& hdr_metadata,
+    const std::optional<gfx::HDRMetadata>& hdr_metadata,
     sk_sp<SkColorSpace> target_color_space) {
   DCHECK_EQ(image_data->mode, DecodedDataMode::kTransferCache);
   DCHECK(use_transfer_cache_);
@@ -3714,11 +3703,11 @@ scoped_refptr<TileTask> GpuImageDecodeCache::GetTaskFromMapForClientId(
 }
 
 base::TimeDelta GpuImageDecodeCache::get_purge_interval() {
-  return base::Seconds(kPurgeInterval.Get());
+  return base::Seconds(30);
 }
 
 base::TimeDelta GpuImageDecodeCache::get_max_purge_age() {
-  return base::Seconds(kPurgeMaxAge.Get());
+  return base::Seconds(30);
 }
 
 }  // namespace cc

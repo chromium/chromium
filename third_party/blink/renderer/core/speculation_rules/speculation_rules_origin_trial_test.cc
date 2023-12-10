@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/core/speculation_rules/stub_speculation_host.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -104,15 +105,8 @@ namespace {
   script->setText(json);
   document.head()->appendChild(script);
 
-  if (!RuntimeEnabledFeatures::SpeculationRulesEnabled(frame.DomWindow())) {
-    // When the SpeculationRules is disabled, the host is never bound and
-    // doesn't receive candidates. Run the loop until idle to make sure that.
-    run_loop.RunUntilIdle();
-    EXPECT_FALSE(speculation_host.is_bound());
-  } else {
-    // Wait until UpdateSpeculationCandidates() is dispatched via mojo.
-    run_loop.Run();
-  }
+  // Wait until UpdateSpeculationCandidates() is dispatched via mojo.
+  run_loop.Run();
 
   // Reset the interface binder.
   broker.SetBinderForTesting(mojom::blink::SpeculationHost::Name_, {});
@@ -120,45 +114,6 @@ namespace {
   return speculation_host.candidates().empty()
              ? ::testing::AssertionFailure() << "no rule set was found"
              : ::testing::AssertionSuccess() << "a rule set was found";
-}
-
-// These tests only work on platforms where the feature is not already enabled
-// by default -- at which point an origin trial token is not required.
-// TODO(crbug.com/1173646): Remove these soon.
-
-// Without the corresponding base::Feature, this trial token should not be
-// accepted.
-TEST(SpeculationRulesOriginTrialTest, DISABLED_RequiresBaseFeature) {
-  base::test::ScopedFeatureList scoped_features;
-  scoped_features.InitAndDisableFeature(
-      features::kSpeculationRulesPrefetchProxy);
-  ScopedTestOriginTrialPolicy using_test_keys;
-
-  EXPECT_FALSE(DocumentAcceptsRuleSet(kSpeculationRulesPrefetchToken,
-                                      kSimplePrefetchProxyRuleSet));
-}
-
-// Without a valid origin trial token, this feature should not be exposed.
-TEST(SpeculationRulesOriginTrialTest, DISABLED_RequiresValidToken) {
-  base::test::ScopedFeatureList scoped_features;
-  scoped_features.InitAndEnableFeature(
-      features::kSpeculationRulesPrefetchProxy);
-  ScopedTestOriginTrialPolicy using_test_keys;
-
-  EXPECT_FALSE(
-      DocumentAcceptsRuleSet("invalid token", kSimplePrefetchProxyRuleSet));
-}
-
-// With the feature and a matching token, speculation rules should be turned on.
-TEST(SpeculationRulesOriginTrialTest,
-     DISABLED_BaseFeatureAndValidTokenSuffice) {
-  base::test::ScopedFeatureList scoped_features;
-  scoped_features.InitAndEnableFeature(
-      features::kSpeculationRulesPrefetchProxy);
-  ScopedTestOriginTrialPolicy using_test_keys;
-
-  EXPECT_TRUE(DocumentAcceptsRuleSet(kSpeculationRulesPrefetchToken,
-                                     kSimplePrefetchProxyRuleSet));
 }
 
 class ScopedRegisterMockedURLLoads {
@@ -253,6 +208,7 @@ void CommitTestNavigation(
 
 TEST(SpeculationRulesPrefetchFutureOriginTrialTest,
      CanEnableFromThirdPartyToken) {
+  test::TaskEnvironment task_environment;
   base::test::ScopedFeatureList scoped_features;
   scoped_features.InitWithFeatures(
       {// Allow a third-party origin trial to be enabled if it's linked to the
@@ -280,12 +236,11 @@ TEST(SpeculationRulesPrefetchFutureOriginTrialTest,
       frame.DomWindow()));
   EXPECT_TRUE(RuntimeEnabledFeatures::SpeculationRulesFetchFromHeaderEnabled(
       frame.DomWindow()));
-  EXPECT_TRUE(RuntimeEnabledFeatures::SpeculationRulesPrefetchProxyEnabled(
-      frame.DomWindow()));
 }
 
 TEST(SpeculationRulesPrefetchFutureOriginTrialTest,
      CannotEnableTrialNotInAllowList) {
+  test::TaskEnvironment task_environment;
   base::test::ScopedFeatureList scoped_features;
   scoped_features.InitWithFeatures(
       {// Allow a third-party origin trial to be enabled if it's linked to the
@@ -310,6 +265,7 @@ TEST(SpeculationRulesPrefetchFutureOriginTrialTest,
 
 TEST(SpeculationRulesPrefetchFutureOriginTrialTest,
      CannotEnableOriginTrialWhenFeatureIsDisabled) {
+  test::TaskEnvironment task_environment;
   base::test::ScopedFeatureList scoped_features;
   scoped_features.InitWithFeatures(
       {
@@ -350,6 +306,7 @@ TEST(SpeculationRulesPrefetchFutureOriginTrialTest,
 
 TEST(SpeculationRulesPrefetchFutureOriginTrialTest,
      FirstPartyTrialTokenStillWorks) {
+  test::TaskEnvironment task_environment;
   base::test::ScopedFeatureList scoped_features;
   scoped_features.InitWithFeatures(
       {
@@ -379,12 +336,11 @@ TEST(SpeculationRulesPrefetchFutureOriginTrialTest,
       frame.DomWindow()));
   EXPECT_TRUE(RuntimeEnabledFeatures::SpeculationRulesFetchFromHeaderEnabled(
       frame.DomWindow()));
-  EXPECT_TRUE(RuntimeEnabledFeatures::SpeculationRulesPrefetchProxyEnabled(
-      frame.DomWindow()));
 }
 
 TEST(SpeculationRulesPrefetchFutureOriginTrialTest,
      FirstPartyTrialTokenDoesNotRequireSpecialSupport) {
+  test::TaskEnvironment task_environment;
   base::test::ScopedFeatureList scoped_features;
   scoped_features.InitWithFeatures(
       {
@@ -414,8 +370,6 @@ TEST(SpeculationRulesPrefetchFutureOriginTrialTest,
   EXPECT_TRUE(RuntimeEnabledFeatures::SpeculationRulesDocumentRulesEnabled(
       frame.DomWindow()));
   EXPECT_TRUE(RuntimeEnabledFeatures::SpeculationRulesFetchFromHeaderEnabled(
-      frame.DomWindow()));
-  EXPECT_TRUE(RuntimeEnabledFeatures::SpeculationRulesPrefetchProxyEnabled(
       frame.DomWindow()));
 }
 

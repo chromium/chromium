@@ -1,0 +1,57 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//ios/web/public/js_messaging/optimize_ts.gni")
+
+source_set("bottom_sheet") {
+  sources = [
+    "autofill_bottom_sheet_java_script_feature.h",
+    "autofill_bottom_sheet_java_script_feature.mm",
+    "autofill_bottom_sheet_observer.h",
+    "autofill_bottom_sheet_observer_bridge.h",
+    "autofill_bottom_sheet_observer_bridge.mm",
+    "autofill_bottom_sheet_tab_helper.h",
+    "autofill_bottom_sheet_tab_helper.mm",
+  ]
+  deps = [
+    ":bottom_sheet_ts",
+    "//base",
+    "//components/autofill/core/browser",
+    "//components/autofill/core/common",
+    "//components/autofill/ios/browser",
+    "//components/autofill/ios/common",
+    "//components/autofill/ios/form_util",
+    "//components/password_manager/core/common:features",
+    "//components/password_manager/ios",
+    "//components/prefs",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/web/public",
+    "//ios/web/public:web_state_observer",
+    "//ios/web/public/js_messaging",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "autofill_bottom_sheet_observer_bridge_unittest.mm" ]
+  deps = [
+    ":bottom_sheet",
+    "//components/autofill/ios/form_util",
+    "//ios/web/public/test/fakes",
+    "//testing/gtest",
+  ]
+}
+
+optimize_ts("bottom_sheet_ts") {
+  visibility = [ ":bottom_sheet" ]
+
+  sources = [ "bottom_sheet.ts" ]
+  deps = [
+    "//ios/web/public/js_messaging:gcrweb",
+    "//ios/web/public/js_messaging:util_scripts",
+  ]
+}

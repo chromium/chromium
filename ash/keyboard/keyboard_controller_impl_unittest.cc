@@ -5,6 +5,7 @@
 #include "ash/keyboard/keyboard_controller_impl.h"
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <utility>
 
@@ -27,7 +28,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/test/display_manager_test_api.h"
@@ -122,7 +122,7 @@ class TestContainerBehavior : public keyboard::ContainerBehavior {
   gfx::Rect occluded_bounds_;
   gfx::Rect draggable_area_;
   gfx::Rect area_to_remain_on_screen_;
-  absl::optional<gfx::Rect> adjusted_bounds_in_screen_;
+  std::optional<gfx::Rect> adjusted_bounds_in_screen_;
 };
 
 class KeyboardControllerImplTest : public AshTestBase {

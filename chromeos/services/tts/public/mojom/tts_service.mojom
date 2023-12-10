@@ -5,6 +5,7 @@
 module chromeos.tts.mojom;
 
 import "media/mojo/mojom/audio_stream_factory.mojom";
+import "sandbox/policy/mojom/context.mojom";
 import "sandbox/policy/mojom/sandbox.mojom";
 
 // Audio parameters used for PlaybackTtsStream.
@@ -17,10 +18,12 @@ struct AudioParameters {
 // tts-sandboxed process.  TtsEngineExtensionObserver, the other end of this
 // interface, in the browser process, brokers a connection between TtsService
 // and two possible engine types, [Google|Playback]TtsStream.
-[ServiceSandbox=sandbox.mojom.Sandbox.kTts]
+[ServiceSandbox=sandbox.mojom.Sandbox.kTts,
+ RequireContext=sandbox.mojom.Context.kBrowswer]
 interface TtsService {
   // Binds a GoogleTtsStream received by this service.
   // The remote lives in the Google tts component extension.
+  [AllowedContext=sandbox.mojom.Context.kBrowser]
   BindGoogleTtsStream(
       pending_receiver<GoogleTtsStream> receiver,
       pending_remote<media.mojom.AudioStreamFactory> stream_factory);
@@ -29,6 +32,7 @@ interface TtsService {
   // The remote lives in the Ash Chrome browser process.
   // The caller can request specific |sample_rate| and |buffer_size|. The actual
   // audio parameters for the output device are returned.
+  [AllowedContext=sandbox.mojom.Context.kBrowser]
   BindPlaybackTtsStream(
       pending_receiver<PlaybackTtsStream> receiver,
       pending_remote<media.mojom.AudioStreamFactory> stream_factory,

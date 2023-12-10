@@ -355,7 +355,7 @@ void AcceleratedStaticBitmapImage::InitializeTextureBacking(
   const auto& capabilities =
       context_provider_wrapper->ContextProvider()->GetCapabilities();
 
-  if (capabilities.supports_oop_raster) {
+  if (capabilities.gpu_rasterization) {
     DCHECK_EQ(shared_image_texture_id, 0u);
     skia_context_provider_wrapper_ = context_provider_wrapper;
     texture_backing_ = sk_make_sp<MailboxTextureBacking>(

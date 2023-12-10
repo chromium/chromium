@@ -59,9 +59,7 @@ public class DisplayCutoutController implements InsetObserver.WindowInsetObserve
      */
     private @Nullable ObservableSupplier<Integer> mBrowserCutoutModeSupplier;
 
-    /**
-     * Observes {@link mBrowserCutoutModeSupplier}.
-     */
+    /** Observes {@link mBrowserCutoutModeSupplier}. */
     private @Nullable Callback<Integer> mBrowserCutoutModeObserver;
 
     /** Tracks Safe Area Insets. */
@@ -73,9 +71,7 @@ public class DisplayCutoutController implements InsetObserver.WindowInsetObserve
      */
     public interface SafeAreaInsetsTracker {
 
-        /**
-         * @return whether this Tracker was created for a web page set to Cover.
-         */
+        /** @return whether this Tracker was created for a web page set to Cover. */
         boolean isViewportFitCover();
     }
 
@@ -126,6 +122,9 @@ public class DisplayCutoutController implements InsetObserver.WindowInsetObserve
 
         /** Whether the activity is in browser (not-HTML) fullscreen. */
         boolean isInBrowserFullscreen();
+
+        /** Whether the basic Feature for drawing Edge To Edge is enabled. */
+        boolean isDrawEdgeToEdgeEnabled();
     }
 
     private final Delegate mDelegate;
@@ -209,9 +208,10 @@ public class DisplayCutoutController implements InsetObserver.WindowInsetObserve
         mBrowserCutoutModeSupplier = supplier;
         mBrowserCutoutModeObserver = null;
         if (mBrowserCutoutModeSupplier != null) {
-            mBrowserCutoutModeObserver = (browserDisplayCutoutMode) -> {
-                maybeUpdateLayout();
-            };
+            mBrowserCutoutModeObserver =
+                    (browserDisplayCutoutMode) -> {
+                        maybeUpdateLayout();
+                    };
             mBrowserCutoutModeSupplier.addObserver(mBrowserCutoutModeObserver);
         }
     }
@@ -231,7 +231,9 @@ public class DisplayCutoutController implements InsetObserver.WindowInsetObserve
                 value == ViewportFit.COVER || value == ViewportFit.COVER_FORCED_BY_USER_AGENT);
 
         // TODO(crbug.com/1480477): Investigate whether if() can be turned into assert.
-        if (!mDelegate.getWebContents().isFullscreenForCurrentTab()
+        // Most likely we will need to just remove this section when E2E is launched.
+        if (!mDelegate.isDrawEdgeToEdgeEnabled()
+                && !mDelegate.getWebContents().isFullscreenForCurrentTab()
                 && !mDelegate.isInBrowserFullscreen()) {
             value = ViewportFit.AUTO;
         }
@@ -261,7 +263,9 @@ public class DisplayCutoutController implements InsetObserver.WindowInsetObserve
         if (webContents == null) return;
 
         float dipScale = getDipScale();
-        area.set(adjustInsetForScale(area.left, dipScale), adjustInsetForScale(area.top, dipScale),
+        area.set(
+                adjustInsetForScale(area.left, dipScale),
+                adjustInsetForScale(area.top, dipScale),
                 adjustInsetForScale(area.right, dipScale),
                 adjustInsetForScale(area.bottom, dipScale));
 

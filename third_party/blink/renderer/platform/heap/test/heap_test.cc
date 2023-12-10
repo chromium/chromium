@@ -3192,8 +3192,8 @@ TEST_F(HeapTest, CollectNodeAndCssStatistics) {
         node_bytes_before = node_bytes;
         css_bytes_before = css_bytes;
       }));
-  auto* node = MakeGarbageCollected<FakeNode>();
-  auto* css = MakeGarbageCollected<FakeCSSValue>();
+  Persistent<FakeNode> node = MakeGarbageCollected<FakeNode>();
+  Persistent<FakeCSSValue> css = MakeGarbageCollected<FakeCSSValue>();
   ConservativelyCollectGarbage();
   size_t node_bytes_after, css_bytes_after;
   ThreadState::Current()->CollectNodeAndCssStatistics(

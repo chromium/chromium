@@ -69,12 +69,12 @@ TEST_F(FileSystemProviderOperationsCloseFileTest, Execute) {
   const base::Value* options_as_value = &event_args[0];
   ASSERT_TRUE(options_as_value->is_dict());
 
-  CloseFileRequestedOptions options;
-  ASSERT_TRUE(CloseFileRequestedOptions::Populate(options_as_value->GetDict(),
-                                                  options));
-  EXPECT_EQ(kFileSystemId, options.file_system_id);
-  EXPECT_EQ(kRequestId, options.request_id);
-  EXPECT_EQ(kOpenRequestId, options.open_request_id);
+  auto options =
+      CloseFileRequestedOptions::FromValue(options_as_value->GetDict());
+  ASSERT_TRUE(options);
+  EXPECT_EQ(kFileSystemId, options->file_system_id);
+  EXPECT_EQ(kRequestId, options->request_id);
+  EXPECT_EQ(kOpenRequestId, options->open_request_id);
 }
 
 TEST_F(FileSystemProviderOperationsCloseFileTest, Execute_NoListener) {

@@ -463,26 +463,30 @@ bool AuctionV8Helper::InsertJsonValue(v8::Local<v8::Context> context,
          InsertValue(key, v8_value, object);
 }
 
-// Attempts to convert |value| to JSON and write it to |out|. Returns false on
-// failure.
-bool AuctionV8Helper::ExtractJson(v8::Local<v8::Context> context,
-                                  v8::Local<v8::Value> value,
-                                  std::string* out) {
+// Attempts to convert |value| to JSON and write it to |out|.
+AuctionV8Helper::ExtractJsonResult AuctionV8Helper::ExtractJson(
+    v8::Local<v8::Context> context,
+    v8::Local<v8::Value> value,
+    std::string* out) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  v8::TryCatch try_catch(isolate());
   v8::MaybeLocal<v8::String> maybe_json = v8::JSON::Stringify(context, value);
+  if (try_catch.HasTerminated()) {
+    return ExtractJsonResult::kTimeout;
+  }
   v8::Local<v8::String> json;
   if (!maybe_json.ToLocal(&json))
-    return false;
+    return ExtractJsonResult::kFailure;
   bool success = gin::ConvertFromV8(isolate(), json, out);
   if (!success)
-    return false;
+    return ExtractJsonResult::kFailure;
   // Stringify can return the string "undefined" for certain inputs, which is
   // not actually JSON. Treat those as failures.
   if (*out == "undefined") {
     out->clear();
-    return false;
+    return ExtractJsonResult::kFailure;
   }
-  return true;
+  return ExtractJsonResult::kSuccess;
 }
 
 AuctionV8Helper::SerializedValue AuctionV8Helper::Serialize(

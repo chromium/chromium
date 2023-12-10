@@ -151,7 +151,7 @@ class D3DImageBackingFactoryTestBase : public testing::Test {
             &shared_image_manager_, nullptr);
     shared_image_factory_ = std::make_unique<D3DImageBackingFactory>(
         gl::QueryD3D11DeviceObjectFromANGLE(),
-        shared_image_manager_.dxgi_shared_handle_manager());
+        shared_image_manager_.dxgi_shared_handle_manager(), GLFormatCaps());
     dawnProcSetProcs(&dawn::native::GetProcs());
   }
 
@@ -710,8 +710,8 @@ void D3DImageBackingFactoryTest::CheckDawnPixels(
     const std::vector<uint8_t>& expected_color) const {
   wgpu::Texture texture(scoped_read_access->texture());
 
-  uint32_t buffer_stride =
-      static_cast<uint32_t>(base::bits::AlignUp(size.width() * 4, 256));
+  uint32_t buffer_stride = static_cast<uint32_t>(
+      base::bits::AlignUpDeprecatedDoNotUse(size.width() * 4, 256));
   size_t buffer_size = static_cast<size_t>(size.height()) * buffer_stride;
   wgpu::BufferDescriptor buffer_desc{
       .usage = wgpu::BufferUsage::CopyDst | wgpu::BufferUsage::MapRead,
@@ -1585,8 +1585,9 @@ D3DImageBackingFactoryTest::CreateVideoImages(const gfx::Size& size,
                                                  d3d11_texture);
     }
     shared_image_backings = D3DImageBacking::CreateFromVideoTexture(
-        mailboxes, DXGI_FORMAT_NV12, size, usage, d3d11_texture,
-        /*array_slice=*/0, std::move(dxgi_shared_handle_state));
+        mailboxes, DXGI_FORMAT_NV12, size, usage, /*array_slice=*/0,
+        context_state_->GetGLFormatCaps(), d3d11_texture,
+        std::move(dxgi_shared_handle_state));
   }
 
   std::vector<std::unique_ptr<SharedImageRepresentationFactoryRef>>
@@ -1902,7 +1903,7 @@ void D3DImageBackingFactoryTest::RunOverlayTest(bool use_shared_handle,
   auto scoped_read_access = overlay_representation->BeginScopedReadAccess();
   ASSERT_TRUE(scoped_read_access);
 
-  absl::optional<gl::DCLayerOverlayImage> overlay_image =
+  std::optional<gl::DCLayerOverlayImage> overlay_image =
       scoped_read_access->GetDCLayerOverlayImage();
   ASSERT_TRUE(overlay_image);
   EXPECT_EQ(overlay_image->type(), gl::DCLayerOverlayType::kNV12Texture);
@@ -2122,7 +2123,7 @@ TEST_F(D3DImageBackingFactoryTest, CreateFromSharedMemory) {
     auto scoped_read_access = overlay_representation->BeginScopedReadAccess();
     ASSERT_TRUE(scoped_read_access);
 
-    absl::optional<gl::DCLayerOverlayImage> overlay_image =
+    std::optional<gl::DCLayerOverlayImage> overlay_image =
         scoped_read_access->GetDCLayerOverlayImage();
     ASSERT_TRUE(overlay_image);
     EXPECT_EQ(overlay_image->type(), gl::DCLayerOverlayType::kNV12Pixmap);

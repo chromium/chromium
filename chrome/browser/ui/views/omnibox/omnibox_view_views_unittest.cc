@@ -91,12 +91,12 @@ class TestingOmniboxView : public OmniboxViewViews {
   bool base_text_emphasis() const { return base_text_emphasis_; }
 
   // Returns the latest color applied to |range| via ApplyColor(), or
-  // absl::nullopt if no color has been applied to |range|.
-  absl::optional<SkColor> GetLatestColorForRange(const gfx::Range& range);
+  // std::nullopt if no color has been applied to |range|.
+  std::optional<SkColor> GetLatestColorForRange(const gfx::Range& range);
 
   // Returns the latest style applied to |range| via ApplyStyle(), or
-  // absl::nullopt if no color has been applied to |range|.
-  absl::optional<std::pair<gfx::TextStyle, bool>> GetLatestStyleForRange(
+  // std::nullopt if no color has been applied to |range|.
+  std::optional<std::pair<gfx::TextStyle, bool>> GetLatestStyleForRange(
       const gfx::Range& range) const;
 
   // Resets the captured styles.
@@ -171,17 +171,17 @@ void TestingOmniboxView::CheckUpdatePopupNotCalled() {
   EXPECT_EQ(update_popup_call_count_, 0U);
 }
 
-absl::optional<SkColor> TestingOmniboxView::GetLatestColorForRange(
+std::optional<SkColor> TestingOmniboxView::GetLatestColorForRange(
     const gfx::Range& range) {
   // Iterate backwards to get the most recently applied color for |range|.
   for (const auto& [color, other_range] : base::Reversed(range_colors_)) {
     if (range == other_range)
       return color;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-absl::optional<std::pair<gfx::TextStyle, bool>>
+std::optional<std::pair<gfx::TextStyle, bool>>
 TestingOmniboxView::GetLatestStyleForRange(const gfx::Range& range) const {
   // Iterate backwards to get the most recently applied style for |range|.
   for (const auto& [style, value, other_range] :
@@ -189,7 +189,7 @@ TestingOmniboxView::GetLatestStyleForRange(const gfx::Range& range) const {
     if (range == other_range)
       return std::make_pair(style, value);
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void TestingOmniboxView::ResetStyles() {

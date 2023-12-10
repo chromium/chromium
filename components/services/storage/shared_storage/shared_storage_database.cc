@@ -206,11 +206,7 @@ SharedStorageDatabase::SharedStorageDatabase(
     base::FilePath db_path,
     scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy,
     std::unique_ptr<SharedStorageDatabaseOptions> options)
-    : db_({// Run the database in exclusive mode. Nobody else should be
-           // accessing the database while we're running, and this will give
-           // somewhat improved perf.
-           .exclusive_locking = true,
-           // We DCHECK that the page size is valid in the constructor for
+    : db_({// We DCHECK that the page size is valid in the constructor for
            // `SharedStorageOptions`.
            .page_size = options->max_page_size,
            .cache_size = options->max_cache_size}),

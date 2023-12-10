@@ -5,8 +5,10 @@
 #ifndef CHROME_BROWSER_SIGNIN_BOUND_SESSION_CREDENTIALS_BOUND_SESSION_COOKIE_REFRESH_SERVICE_H_
 #define CHROME_BROWSER_SIGNIN_BOUND_SESSION_CREDENTIALS_BOUND_SESSION_COOKIE_REFRESH_SERVICE_H_
 
+#include "base/containers/flat_set.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list_types.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_params.pb.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_registration_fetcher_param.h"
 #include "chrome/common/renderer_configuration.mojom.h"
@@ -25,6 +27,18 @@ class BoundSessionCookieRefreshService
  public:
   using RendererBoundSessionThrottlerParamsUpdaterDelegate =
       base::RepeatingClosure;
+
+  class Observer : public base::CheckedObserver {
+   public:
+    // TODO(b/314280617): Consider passing
+    // `bound_session_credentials::BoundSessionParams` instead.
+    // - `site` is the top-most origin covered by the terminated session.
+    // - `bound_cookie_names` contains names of short lived cookies required for
+    //   the user to be authenticated.
+    virtual void OnBoundSessionTerminated(
+        const GURL& site,
+        const base::flat_set<std::string>& bound_cookie_names) = 0;
+  };
 
   BoundSessionCookieRefreshService() = default;
 
@@ -54,6 +68,9 @@ class BoundSessionCookieRefreshService
       BoundSessionRegistrationFetcherParam registration_params) = 0;
 
   virtual base::WeakPtr<BoundSessionCookieRefreshService> GetWeakPtr() = 0;
+
+  virtual void AddObserver(Observer* observer) = 0;
+  virtual void RemoveObserver(Observer* observer) = 0;
 
  private:
   friend class RendererUpdater;

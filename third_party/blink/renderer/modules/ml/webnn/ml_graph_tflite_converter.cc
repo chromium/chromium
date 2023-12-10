@@ -52,19 +52,24 @@ Vector<int32_t> ConvertDimensions(const Vector<uint32_t>& input_dimensions) {
   return output_dimensions;
 }
 
-tflite::TensorType BlinkOperandTypeToTFLite(V8MLOperandType::Enum type) {
-  switch (type) {
-    case V8MLOperandType::Enum::kFloat32:
+tflite::TensorType BlinkOperandTypeToTFLite(
+    V8MLOperandDataType::Enum data_type) {
+  switch (data_type) {
+    case V8MLOperandDataType::Enum::kFloat32:
       return tflite::TensorType_FLOAT32;
-    case V8MLOperandType::Enum::kFloat16:
+    case V8MLOperandDataType::Enum::kFloat16:
       return tflite::TensorType_FLOAT16;
-    case V8MLOperandType::Enum::kInt32:
+    case V8MLOperandDataType::Enum::kInt32:
       return tflite::TensorType_INT32;
-    case V8MLOperandType::Enum::kUint32:
+    case V8MLOperandDataType::Enum::kUint32:
       return tflite::TensorType_UINT32;
-    case V8MLOperandType::Enum::kInt8:
+    case V8MLOperandDataType::Enum::kInt64:
+      return tflite::TensorType_INT64;
+    case V8MLOperandDataType::Enum::kUint64:
+      return tflite::TensorType_UINT64;
+    case V8MLOperandDataType::Enum::kInt8:
       return tflite::TensorType_INT8;
-    case V8MLOperandType::Enum::kUint8:
+    case V8MLOperandDataType::Enum::kUint8:
       return tflite::TensorType_UINT8;
   }
   NOTREACHED_NORETURN();
@@ -79,6 +84,57 @@ uint32_t GetOperatorCodeIndex(tflite::BuiltinOperator code,
   // The type of operation is determined by the index into the list of the valid
   // OperatorCodes.
   return operator_code_index;
+}
+
+OperatorOffset SerializeElementWiseBinary(
+    const OperandToIndexMap& operand_to_index_map,
+    const MLOperator* binary,
+    flatbuffers::FlatBufferBuilder& builder,
+    Vector<OperatorCodeOffset>& operator_codes) {
+  const int32_t lhs_index =
+      GetOperatorInputIndex(binary, operand_to_index_map, 0);
+  const int32_t rhs_index =
+      GetOperatorInputIndex(binary, operand_to_index_map, 1);
+  const int32_t output_index =
+      GetOperatorOutputIndex(binary, operand_to_index_map);
+  tflite::BuiltinOperator operator_kind;
+  switch (binary->Kind()) {
+    case MLOperator::OperatorKind::kAdd:
+      operator_kind = tflite::BuiltinOperator_ADD;
+      break;
+    case MLOperator::OperatorKind::kSub:
+      operator_kind = tflite::BuiltinOperator_SUB;
+      break;
+    case MLOperator::OperatorKind::kMul:
+      operator_kind = tflite::BuiltinOperator_MUL;
+      break;
+    case MLOperator::OperatorKind::kDiv:
+      operator_kind = tflite::BuiltinOperator_DIV;
+      break;
+    case MLOperator::OperatorKind::kMin:
+      operator_kind = tflite::BuiltinOperator_MINIMUM;
+      break;
+    case MLOperator::OperatorKind::kMax:
+      operator_kind = tflite::BuiltinOperator_MAXIMUM;
+      break;
+    case MLOperator::OperatorKind::kPow:
+      operator_kind = tflite::BuiltinOperator_POW;
+      break;
+    default:
+      NOTREACHED_NORETURN() << "The operator is not element-wise binary.";
+  }
+
+  // Create `tflite::Operator` with the tensor index of inputs and outputs
+  // operand. The type of operation is determined by the index of the operator
+  // code.
+  const auto operator_code_index =
+      GetOperatorCodeIndex(operator_kind, builder, operator_codes);
+  const std::vector<int32_t> operator_inputs = {lhs_index, rhs_index};
+  const std::vector<int32_t> operator_outputs = {output_index};
+  return tflite::CreateOperator(
+      builder, operator_code_index,
+      builder.CreateVector<int32_t>(operator_inputs),
+      builder.CreateVector<int32_t>(operator_outputs));
 }
 
 OperatorOffset SerializeRelu(const OperandToIndexMap& operand_to_index_map,
@@ -101,6 +157,60 @@ OperatorOffset SerializeRelu(const OperandToIndexMap& operand_to_index_map,
                                 builder.CreateVector<int32_t>(op_outputs));
 }
 
+OperatorOffset SerializeReshape(const OperandToIndexMap& operand_to_index_map,
+                                const MLOperator* reshape,
+                                flatbuffers::FlatBufferBuilder& builder,
+                                Vector<OperatorCodeOffset>& operator_codes) {
+  const int32_t input_index =
+      GetOperatorInputIndex(reshape, operand_to_index_map);
+  const int32_t output_index =
+      GetOperatorOutputIndex(reshape, operand_to_index_map);
+
+  // Create `tflite::ReshapeOptions` with output dimensions.
+  const auto& output = reshape->Outputs()[0];
+  const auto reshape_options = tflite::CreateReshapeOptions(
+      builder,
+      builder.CreateVector<int32_t>(ConvertDimensions(output->Dimensions())));
+
+  // Create `tflite::Operator` with the tensor index of inputs and outputs
+  // operand. The type of operation is determined by the index of the operator
+  // code.
+  const auto operator_code_index = GetOperatorCodeIndex(
+      tflite::BuiltinOperator_RESHAPE, builder, operator_codes);
+  const std::vector<int32_t> operator_inputs = {input_index};
+  const std::vector<int32_t> operator_outputs = {output_index};
+  return tflite::CreateOperator(builder, operator_code_index,
+                                builder.CreateVector<int32_t>(operator_inputs),
+                                builder.CreateVector<int32_t>(operator_outputs),
+                                tflite::BuiltinOptions_ReshapeOptions,
+                                reshape_options.Union());
+}
+
+OperatorOffset SerializeSoftmax(const OperandToIndexMap& operand_to_index_map,
+                                const MLOperator* softmax,
+                                flatbuffers::FlatBufferBuilder& builder,
+                                Vector<OperatorCodeOffset>& operator_codes) {
+  const int32_t input_index =
+      GetOperatorInputIndex(softmax, operand_to_index_map);
+  const int32_t output_index =
+      GetOperatorOutputIndex(softmax, operand_to_index_map);
+
+  // Create `tflite::Operator` with the tensor index of inputs and outputs
+  // operand. The type of operation is determined by the index of the operator
+  // code.
+  const auto softmax_options =
+      tflite::CreateSoftmaxOptions(builder, /*beta*/ 1.0);
+  const auto operator_code_index = GetOperatorCodeIndex(
+      tflite::BuiltinOperator_SOFTMAX, builder, operator_codes);
+  const std::vector<int32_t> operator_inputs = {input_index};
+  const std::vector<int32_t> operator_outputs = {output_index};
+  return tflite::CreateOperator(builder, operator_code_index,
+                                builder.CreateVector<int32_t>(operator_inputs),
+                                builder.CreateVector<int32_t>(operator_outputs),
+                                tflite::BuiltinOptions_SoftmaxOptions,
+                                softmax_options.Union());
+}
+
 }  // namespace
 
 MLGraphTfLiteConverter::MLGraphTfLiteConverter() {
@@ -110,8 +220,7 @@ MLGraphTfLiteConverter::MLGraphTfLiteConverter() {
 
 MLGraphTfLiteConverter::~MLGraphTfLiteConverter() = default;
 
-uint32_t MLGraphTfLiteConverter::SerializeBuffer(
-    const Member<const MLOperand>& constant) {
+uint32_t MLGraphTfLiteConverter::SerializeBuffer(const MLOperand* constant) {
   auto* const array_buffer_view = constant->ArrayBufferView();
   CHECK_NE(array_buffer_view, nullptr);
   CHECK(!array_buffer_view->IsDetached());
@@ -127,7 +236,7 @@ uint32_t MLGraphTfLiteConverter::SerializeBuffer(
 }
 
 int32_t MLGraphTfLiteConverter::SerializeTensor(
-    const Member<const MLOperand>& operand,
+    const MLOperand* operand,
     absl::optional<String> graph_output_name) {
   // The buffer index 0 represents input and output operand because there is no
   // data buffer associated.
@@ -168,7 +277,7 @@ int32_t MLGraphTfLiteConverter::SerializeTensor(
   // Create `Tensor` with operand shape, the index of buffer and the name.
   const auto dimensions =
       builder_.CreateVector<int32_t>(ConvertDimensions(operand->Dimensions()));
-  const auto operand_type = BlinkOperandTypeToTFLite(operand->Type());
+  const auto operand_type = BlinkOperandTypeToTFLite(operand->DataType());
   const auto operand_name =
       name.has_value() ? builder_.CreateString(name->Utf8()) : 0;
   tensors_.emplace_back(tflite::CreateTensor(builder_, std::move(dimensions),
@@ -182,9 +291,27 @@ base::expected<void, String> MLGraphTfLiteConverter::SerializeOperation(
     const MLOperator* op) {
   OperatorOffset operator_offset;
   switch (op->Kind()) {
+    case MLOperator::OperatorKind::kAdd:
+    case MLOperator::OperatorKind::kSub:
+    case MLOperator::OperatorKind::kMul:
+    case MLOperator::OperatorKind::kDiv:
+    case MLOperator::OperatorKind::kMin:
+    case MLOperator::OperatorKind::kMax:
+    case MLOperator::OperatorKind::kPow:
+      operator_offset = SerializeElementWiseBinary(operand_to_index_map, op,
+                                                   builder_, operator_codes_);
+      break;
     case MLOperator::OperatorKind::kRelu:
       operator_offset =
           SerializeRelu(operand_to_index_map, op, builder_, operator_codes_);
+      break;
+    case MLOperator::OperatorKind::kReshape:
+      operator_offset =
+          SerializeReshape(operand_to_index_map, op, builder_, operator_codes_);
+      break;
+    case MLOperator::OperatorKind::kSoftmax:
+      operator_offset =
+          SerializeSoftmax(operand_to_index_map, op, builder_, operator_codes_);
       break;
     default:
       return base::unexpected(MLOperator::OperatorKindToString(op->Kind()) +

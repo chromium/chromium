@@ -240,17 +240,23 @@ message ContentAnalysisResponse {
     }
     repeated TriggeredRule triggered_rules = 3;
 
+    // TODO(crbug.com/1147036): Remove fields 4-6 once a definitive approach is
+    // agreed upon.
+    optional string malware_family = 4;
+    optional string malware_category = 5;
+    optional string evidence_locker_filepath = 6;
+
     // This field is meant to override the OU-based custom messages set in the
     // client-side policies. When the result requires a
     // warning, if this field has a value it's the one that will be displayed to
     // the user, otherwise the client-side policy's custom message will be used.
     optional CustomMessage custom_message = 7;
 
-    // TODO(crbug.com/1147036): Remove fields 4-6 once a definitive approach is
-    // agreed upon.
-    optional string malware_family = 4;
-    optional string malware_category = 5;
-    optional string evidence_locker_filepath = 6;
+    enum StatusErrorMessage {
+      STATUS_ERROR_MESSAGE_UNSPECIFIED = 0;
+      DECRYPTION_FAILED = 1;
+    }
+    optional StatusErrorMessage status_error_message = 8;
   }
   repeated Result results = 4;
 

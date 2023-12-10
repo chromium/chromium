@@ -35,20 +35,21 @@ public class TabModelSelectorTabModelObserver implements TabModelObserver {
 
         List<TabModel> tabModels = mTabModelSelector.getModels();
         if (tabModels.isEmpty()) {
-            mSelectorObserver = new TabModelSelectorObserver() {
-                @Override
-                public void onNewTabCreated(Tab tab, @TabCreationState int creationState) {
-                    throw new IllegalStateException(
-                            "onChange should have happened and unregistered this listener.");
-                }
+            mSelectorObserver =
+                    new TabModelSelectorObserver() {
+                        @Override
+                        public void onNewTabCreated(Tab tab, @TabCreationState int creationState) {
+                            throw new IllegalStateException(
+                                    "onChange should have happened and unregistered this listener.");
+                        }
 
-                @Override
-                public void onChange() {
-                    mTabModelSelector.removeObserver(this);
-                    mSelectorObserver = null;
-                    registerModelObservers();
-                }
-            };
+                        @Override
+                        public void onChange() {
+                            mTabModelSelector.removeObserver(this);
+                            mSelectorObserver = null;
+                            registerModelObservers();
+                        }
+                    };
             mTabModelSelector.addObserver(mSelectorObserver);
         } else {
             registerModelObservers();
@@ -65,14 +66,10 @@ public class TabModelSelectorTabModelObserver implements TabModelObserver {
         onRegistrationComplete();
     }
 
-    /**
-     * Notifies that the registration of the observers has been completed.
-     */
+    /** Notifies that the registration of the observers has been completed. */
     protected void onRegistrationComplete() {}
 
-    /**
-     * Destroys the observer and removes itself as a listener for Tab updates.
-     */
+    /** Destroys the observer and removes itself as a listener for Tab updates. */
     public void destroy() {
         if (mSelectorObserver != null) {
             mTabModelSelector.removeObserver(mSelectorObserver);

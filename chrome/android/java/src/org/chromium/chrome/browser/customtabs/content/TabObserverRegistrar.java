@@ -75,9 +75,7 @@ public class TabObserverRegistrar implements TabModelObserver, DestroyObserver {
                 }
             };
 
-    /**
-     * Registers a {@link PageLoadMetrics.Observer} to be managed by this Registrar.
-     */
+    /** Registers a {@link PageLoadMetrics.Observer} to be managed by this Registrar. */
     public void registerPageLoadMetricsObserver(PageLoadMetrics.Observer observer) {
         mPageLoadMetricsObservers.add(observer);
     }
@@ -123,8 +121,10 @@ public class TabObserverRegistrar implements TabModelObserver, DestroyObserver {
     }
 
     @Inject
-    public TabObserverRegistrar(ActivityLifecycleDispatcher lifecycleDispatcher,
-            CustomTabActivityTabProvider tabProvider, CustomTabCountObserver tabCountObserver) {
+    public TabObserverRegistrar(
+            ActivityLifecycleDispatcher lifecycleDispatcher,
+            CustomTabActivityTabProvider tabProvider,
+            CustomTabCountObserver tabCountObserver) {
         mTabProvider = tabProvider;
         mTabCountObserver = tabCountObserver;
         mTabProvider.addObserver(mActivityTabProviderObserver);
@@ -172,9 +172,7 @@ public class TabObserverRegistrar implements TabModelObserver, DestroyObserver {
         }
     }
 
-    /**
-     * Called when the {@link CustomTabActivityTabProvider}'s active tab has changed.
-     */
+    /** Called when the {@link CustomTabActivityTabProvider}'s active tab has changed. */
     private void onTabProviderTabUpdated() {
         if (mTabProviderTab != null) {
             removeTabObservers(mTabProviderTab, mActivityTabObservers.iterator());

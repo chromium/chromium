@@ -11,7 +11,8 @@
 #import "components/navigation_metrics/navigation_metrics.h"
 #import "components/profile_metrics/browser_profile_type.h"
 #import "ios/chrome/browser/crash_report/model/crash_loop_detection_util.h"
-#import "ios/chrome/browser/sessions/session_restoration_observer_helper.h"
+#import "ios/chrome/browser/sessions/session_restoration_service.h"
+#import "ios/chrome/browser/sessions/session_restoration_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/all_web_state_observation_forwarder.h"
@@ -38,7 +39,9 @@ WebStateListMetricsBrowserAgent::WebStateListMetricsBrowserAgent(
   web_state_forwarder_ =
       std::make_unique<AllWebStateObservationForwarder>(web_state_list_, this);
 
-  AddSessionRestorationObserver(browser, this);
+  ChromeBrowserState* browser_state = browser->GetBrowserState();
+  session_restoration_service_observation_.Observe(
+      SessionRestorationServiceFactory::GetForBrowserState(browser_state));
 }
 
 WebStateListMetricsBrowserAgent::~WebStateListMetricsBrowserAgent() = default;
@@ -166,7 +169,7 @@ void WebStateListMetricsBrowserAgent::PageLoaded(
 void WebStateListMetricsBrowserAgent::BrowserDestroyed(Browser* browser) {
   DCHECK_EQ(browser->GetWebStateList(), web_state_list_);
 
-  RemoveSessionRestorationObserver(browser, this);
+  session_restoration_service_observation_.Reset();
 
   web_state_forwarder_.reset(nullptr);
   web_state_list_->RemoveObserver(this);

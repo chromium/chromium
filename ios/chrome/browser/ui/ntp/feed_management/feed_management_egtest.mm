@@ -5,8 +5,8 @@
 #import <UIKit/UIKit.h>
 #import <XCTest/XCTest.h>
 
-#import "ios/chrome/browser/ntp/features.h"
-#import "ios/chrome/browser/signin/fake_system_identity.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/grit/ios_strings.h"

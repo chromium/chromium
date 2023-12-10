@@ -10,6 +10,7 @@
 #include "ash/wallpaper/views/wallpaper_base_view.h"
 #include "ash/wallpaper/wallpaper_constants.h"
 #include "base/memory/raw_ptr.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/context_menu_controller.h"
 
 namespace aura {
@@ -22,6 +23,8 @@ namespace ash {
 // also add blur and dimming effects, as well as handle context menu requests.
 class WallpaperView : public WallpaperBaseView,
                       public views::ContextMenuController {
+  METADATA_HEADER(WallpaperView, WallpaperBaseView)
+
  public:
   explicit WallpaperView(float blur_sigma);
 
@@ -76,7 +79,7 @@ class WallpaperView : public WallpaperBaseView,
 
   // A cached downsampled image of the wallpaper image. It will help wallpaper
   // blur/brightness animations be more performant.
-  absl::optional<gfx::ImageSkia> small_image_;
+  std::optional<gfx::ImageSkia> small_image_;
 };
 
 std::unique_ptr<views::Widget> CreateWallpaperWidget(

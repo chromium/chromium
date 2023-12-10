@@ -448,7 +448,8 @@ void MainThreadDebugger::QuerySelectorCallback(
     const v8::FunctionCallbackInfo<v8::Value>& info) {
   if (info.Length() < 1)
     return;
-  String selector = ToCoreStringWithUndefinedOrNullCheck(info[0]);
+  const String& selector =
+      ToCoreStringWithUndefinedOrNullCheck(info.GetIsolate(), info[0]);
   if (selector.empty())
     return;
   auto* container_node = DynamicTo<ContainerNode>(SecondArgumentAsNode(info));
@@ -471,7 +472,8 @@ void MainThreadDebugger::QuerySelectorAllCallback(
     const v8::FunctionCallbackInfo<v8::Value>& info) {
   if (info.Length() < 1)
     return;
-  String selector = ToCoreStringWithUndefinedOrNullCheck(info[0]);
+  const String& selector =
+      ToCoreStringWithUndefinedOrNullCheck(info.GetIsolate(), info[0]);
   if (selector.empty())
     return;
   auto* container_node = DynamicTo<ContainerNode>(SecondArgumentAsNode(info));
@@ -503,7 +505,8 @@ void MainThreadDebugger::XpathSelectorCallback(
     const v8::FunctionCallbackInfo<v8::Value>& info) {
   if (info.Length() < 1)
     return;
-  String selector = ToCoreStringWithUndefinedOrNullCheck(info[0]);
+  const String& selector =
+      ToCoreStringWithUndefinedOrNullCheck(info.GetIsolate(), info[0]);
   if (selector.empty())
     return;
   Node* node = SecondArgumentAsNode(info);

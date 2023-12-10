@@ -7,8 +7,8 @@
 
 #import "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_model_factory.h"
 #import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
-#import "ios/chrome/browser/optimization_guide/optimization_guide_push_notification_client.h"
-#import "ios/chrome/browser/push_notification/push_notification_client.h"
+#import "ios/chrome/browser/optimization_guide/model/optimization_guide_push_notification_client.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_client.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 
 #import <Foundation/Foundation.h>

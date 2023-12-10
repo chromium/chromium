@@ -11,6 +11,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/user_education/common/feature_promo_data.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
@@ -25,15 +26,15 @@ constexpr char kIPHIsDismissedPath[] = "is_dismissed";
 // Path to the enum that indicates how an IPH was dismissed.
 // in_product_help.snoozed_feature.[iph_name].last_dismissed_by
 constexpr char kIPHLastDismissedByPath[] = "last_dismissed_by";
+// Path to the timestamp an IPH was first shown.
+// in_product_help.snoozed_feature.[iph_name].first_show_time
+constexpr char kIPHFirstShowTimePath[] = "first_show_time";
 // Path to the timestamp an IPH was last shown.
 // in_product_help.snoozed_feature.[iph_name].last_show_time
 constexpr char kIPHLastShowTimePath[] = "last_show_time";
 // Path to the timestamp an IPH was last snoozed.
 // in_product_help.snoozed_feature.[iph_name].last_snooze_time
 constexpr char kIPHLastSnoozeTimePath[] = "last_snooze_time";
-// Path to the duration of snooze.
-// in_product_help.snoozed_feature.[iph_name].last_snooze_duration
-constexpr char kIPHLastSnoozeDurationPath[] = "last_snooze_duration";
 // Path to the count of how many times this IPH has been snoozed.
 // in_product_help.snoozed_feature.[iph_name].snooze_count
 constexpr char kIPHSnoozeCountPath[] = "snooze_count";
@@ -43,6 +44,16 @@ constexpr char kIPHShowCountPath[] = "show_count";
 // Path to a list of app IDs that the IPH was shown for; applies to app-specific
 // IPH only.
 constexpr char kIPHShownForAppsPath[] = "shown_for_apps";
+
+// Path to the most recent session start time.
+constexpr char kIPHSessionStartPath[] = "in_product_help.session_start_time";
+// Path to the most recent active time.
+constexpr char kIPHSessionLastActiveTimePath[] =
+    "in_product_help.session_last_active_time";
+
+// Path to the time of the most recent heavyweight promo.
+constexpr char kIPHPolicyLastHeavyweightPromoPath[] =
+    "in_product_help.policy_last_heavyweight_promo_time";
 
 }  // namespace
 
@@ -56,6 +67,9 @@ BrowserFeaturePromoStorageService::~BrowserFeaturePromoStorageService() =
 void BrowserFeaturePromoStorageService::RegisterProfilePrefs(
     PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(kIPHPromoDataPath);
+  registry->RegisterTimePref(kIPHSessionStartPath, base::Time());
+  registry->RegisterTimePref(kIPHSessionLastActiveTimePath, base::Time());
+  registry->RegisterTimePref(kIPHPolicyLastHeavyweightPromoPath, base::Time());
 }
 
 void BrowserFeaturePromoStorageService::Reset(
@@ -74,12 +88,12 @@ BrowserFeaturePromoStorageService::ReadPromoData(
       pref_data.FindBoolByDottedPath(path_prefix + kIPHIsDismissedPath);
   absl::optional<int> last_dismissed_by =
       pref_data.FindIntByDottedPath(path_prefix + kIPHLastDismissedByPath);
-  absl::optional<base::Time> show_time = base::ValueToTime(
+  absl::optional<base::Time> first_show_time = base::ValueToTime(
+      pref_data.FindByDottedPath(path_prefix + kIPHFirstShowTimePath));
+  absl::optional<base::Time> last_show_time = base::ValueToTime(
       pref_data.FindByDottedPath(path_prefix + kIPHLastShowTimePath));
   absl::optional<base::Time> snooze_time = base::ValueToTime(
       pref_data.FindByDottedPath(path_prefix + kIPHLastSnoozeTimePath));
-  absl::optional<base::TimeDelta> snooze_duration = base::ValueToTimeDelta(
-      pref_data.FindByDottedPath(path_prefix + kIPHLastSnoozeDurationPath));
   absl::optional<int> snooze_count =
       pref_data.FindIntByDottedPath(path_prefix + kIPHSnoozeCountPath);
   absl::optional<int> show_count =
@@ -89,23 +103,29 @@ BrowserFeaturePromoStorageService::ReadPromoData(
 
   absl::optional<user_education::FeaturePromoData> promo_data;
 
-  if (!is_dismissed || !snooze_time || !snooze_count || !snooze_duration) {
+  if (!is_dismissed || !snooze_time || !snooze_count) {
     // IPH data is corrupt. Ignore the previous data.
     return promo_data;
   }
 
-  if (!show_time || !show_count) {
+  if (!last_show_time || !show_count) {
     // This data was stored by a previous version. Assume previous IPH were
     // snoozed.
-    show_time = *snooze_time - base::Seconds(1);
+    last_show_time = *snooze_time - base::Seconds(1);
     show_count = *snooze_count;
+  }
+
+  if (!first_show_time) {
+    // This data was stored by a previous version. First show time inherits
+    // last show time, or null.
+    first_show_time = show_count > 0 ? *last_show_time : base::Time();
   }
 
   promo_data = user_education::FeaturePromoData();
   promo_data->is_dismissed = *is_dismissed;
-  promo_data->last_show_time = *show_time;
+  promo_data->first_show_time = *first_show_time;
+  promo_data->last_show_time = *last_show_time;
   promo_data->last_snooze_time = *snooze_time;
-  promo_data->last_snooze_duration = *snooze_duration;
   promo_data->snooze_count = *snooze_count;
   promo_data->show_count = *show_count;
 
@@ -146,13 +166,12 @@ void BrowserFeaturePromoStorageService::SavePromoData(
                             promo_data.is_dismissed);
   pref_data.SetByDottedPath(path_prefix + kIPHLastDismissedByPath,
                             static_cast<int>(promo_data.last_dismissed_by));
+  pref_data.SetByDottedPath(path_prefix + kIPHFirstShowTimePath,
+                            base::TimeToValue(promo_data.first_show_time));
   pref_data.SetByDottedPath(path_prefix + kIPHLastShowTimePath,
                             base::TimeToValue(promo_data.last_show_time));
   pref_data.SetByDottedPath(path_prefix + kIPHLastSnoozeTimePath,
                             base::TimeToValue(promo_data.last_snooze_time));
-  pref_data.SetByDottedPath(
-      path_prefix + kIPHLastSnoozeDurationPath,
-      base::TimeDeltaToValue(promo_data.last_snooze_duration));
   pref_data.SetByDottedPath(path_prefix + kIPHSnoozeCountPath,
                             promo_data.snooze_count);
   pref_data.SetByDottedPath(path_prefix + kIPHShowCountPath,
@@ -164,4 +183,45 @@ void BrowserFeaturePromoStorageService::SavePromoData(
   }
   pref_data.SetByDottedPath(path_prefix + kIPHShownForAppsPath,
                             std::move(shown_for_apps));
+}
+
+void BrowserFeaturePromoStorageService::ResetSession() {
+  auto* const prefs = profile_->GetPrefs();
+  prefs->ClearPref(kIPHSessionStartPath);
+  prefs->ClearPref(kIPHSessionLastActiveTimePath);
+}
+
+user_education::FeaturePromoSessionData
+BrowserFeaturePromoStorageService::ReadSessionData() const {
+  user_education::FeaturePromoSessionData data;
+  auto* const prefs = profile_->GetPrefs();
+  data.start_time = prefs->GetTime(kIPHSessionStartPath);
+  data.most_recent_active_time = prefs->GetTime(kIPHSessionLastActiveTimePath);
+  return data;
+}
+
+void BrowserFeaturePromoStorageService::SaveSessionData(
+    const user_education::FeaturePromoSessionData& session_data) {
+  auto* const prefs = profile_->GetPrefs();
+  prefs->SetTime(kIPHSessionStartPath, session_data.start_time);
+  prefs->SetTime(kIPHSessionLastActiveTimePath,
+                 session_data.most_recent_active_time);
+}
+
+user_education::FeaturePromoPolicyData
+BrowserFeaturePromoStorageService::ReadPolicyData() const {
+  user_education::FeaturePromoPolicyData data;
+  data.last_heavyweight_promo_time =
+      profile_->GetPrefs()->GetTime(kIPHPolicyLastHeavyweightPromoPath);
+  return data;
+}
+
+void BrowserFeaturePromoStorageService::SavePolicyData(
+    const user_education::FeaturePromoPolicyData& policy_data) {
+  profile_->GetPrefs()->SetTime(kIPHPolicyLastHeavyweightPromoPath,
+                                policy_data.last_heavyweight_promo_time);
+}
+
+void BrowserFeaturePromoStorageService::ResetPolicy() {
+  profile_->GetPrefs()->ClearPref(kIPHPolicyLastHeavyweightPromoPath);
 }

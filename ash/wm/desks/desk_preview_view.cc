@@ -60,13 +60,7 @@ constexpr int kDeskPreviewMinHeight = 48;
 constexpr int kUseSmallerHeightDividerWidthThreshold = 600;
 
 // The rounded corner radii, also in dips.
-constexpr int kCornerRadius = 4;
-constexpr gfx::RoundedCornersF kCornerRadiiOld(kCornerRadius);
-
-// The rounded corner radii when feature flag Jellyroll is enabled.
-// TODO(http://b/291622042): After CrOS Next is launched, remove
-// `kCornerRadiiOld`.
-constexpr gfx::RoundedCornersF kCornerRadii(8);
+constexpr gfx::RoundedCornersF kCornerRadius(8);
 
 // Used for painting the highlight when the context menu is open.
 constexpr float kHighlightTransparency = 0.3f * 0xFF;
@@ -124,9 +118,9 @@ const LayerData GetLayerDataEntry(
 // Get the z-order of all-desk `window` in `desk` for `root`. If it does not
 // exist, then nullopt is returned. Please note, the z-order information is
 // retrieved from the stored stacking data of `desk` for all-desk windows.
-absl::optional<size_t> GetWindowZOrderForDeskAndRoot(const aura::Window* window,
-                                                     const Desk* desk,
-                                                     const aura::Window* root) {
+std::optional<size_t> GetWindowZOrderForDeskAndRoot(const aura::Window* window,
+                                                    const Desk* desk,
+                                                    const aura::Window* root) {
   const auto& adw_by_root = desk->all_desk_window_stacking();
 
   if (auto it = adw_by_root.find(root); it != adw_by_root.end()) {
@@ -136,7 +130,7 @@ absl::optional<size_t> GetWindowZOrderForDeskAndRoot(const aura::Window* window,
     }
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 // Recursively mirrors `source_layer` and its children and adds them as children
@@ -212,9 +206,9 @@ void MirrorLayerTree(
       // Find z order of `window`. If `features::IsPerDeskZOrderEnabled()` is
       // not on, default value of zero will be used so `window` would be put
       // on top.
-      absl::optional<size_t> target_desk_order =
+      std::optional<size_t> target_desk_order =
           GetWindowZOrderForDeskAndRoot(window, desk, root);
-      absl::optional<size_t> active_desk_order = GetWindowZOrderForDeskAndRoot(
+      std::optional<size_t> active_desk_order = GetWindowZOrderForDeskAndRoot(
           window, DesksController::Get()->active_desk(), root);
       layer_orders.push_back({.layer = window->layer(),
                               .primary_key = target_desk_order.value_or(0),
@@ -332,11 +326,6 @@ void GetLayersData(aura::Window* window,
     GetLayersData(child, out_layers_data);
 }
 
-gfx::RoundedCornersF GetRoundedCorner() {
-  return chromeos::features::IsJellyrollEnabled() ? kCornerRadii
-                                                  : kCornerRadiiOld;
-}
-
 }  // namespace
 
 // -----------------------------------------------------------------------------
@@ -366,21 +355,15 @@ DeskPreviewView::DeskPreviewView(PressedCallback callback,
   wallpaper_preview_->SetPaintToLayer();
   auto* wallpaper_preview_layer = wallpaper_preview_->layer();
   wallpaper_preview_layer->SetFillsBoundsOpaquely(false);
-  wallpaper_preview_layer->SetRoundedCornerRadius(GetRoundedCorner());
+  wallpaper_preview_layer->SetRoundedCornerRadius(kCornerRadius);
   wallpaper_preview_layer->SetIsFastRoundedCorner(true);
   AddChildView(wallpaper_preview_.get());
-
-  if (!chromeos::features::IsJellyrollEnabled()) {
-    shadow_ = SystemShadow::CreateShadowOnNinePatchLayerForView(
-        wallpaper_preview_, kDefaultShadowType);
-    shadow_->SetRoundedCornerRadius(kCornerRadius);
-  }
 
   desk_mirrored_contents_view_->SetPaintToLayer(ui::LAYER_NOT_DRAWN);
   ui::Layer* contents_view_layer = desk_mirrored_contents_view_->layer();
   contents_view_layer->SetMasksToBounds(true);
   contents_view_layer->SetName("Desk mirrored contents view");
-  contents_view_layer->SetRoundedCornerRadius(GetRoundedCorner());
+  contents_view_layer->SetRoundedCornerRadius(kCornerRadius);
   contents_view_layer->SetIsFastRoundedCorner(true);
   AddChildView(desk_mirrored_contents_view_.get());
 
@@ -389,7 +372,7 @@ DeskPreviewView::DeskPreviewView(PressedCallback callback,
   highlight_overlay_->SetVisible(false);
   ui::Layer* highlight_overlay_layer = highlight_overlay_->layer();
   highlight_overlay_layer->SetName("DeskPreviewView highlight overlay");
-  highlight_overlay_layer->SetRoundedCornerRadius(GetRoundedCorner());
+  highlight_overlay_layer->SetRoundedCornerRadius(kCornerRadius);
   highlight_overlay_layer->SetIsFastRoundedCorner(true);
 
   RecreateDeskContentsMirrorLayers();

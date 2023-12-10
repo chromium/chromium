@@ -523,6 +523,11 @@ bool CheckVulkanCompabilities(const VulkanInfo& vulkan_info,
     return false;
   }
 
+  // Canvas not working on NVidia shield https://crbug.com/1508791
+  if (device_info.properties.vendorID == kVendorNvidia) {
+    return false;
+  }
+
   return true;
 #endif  // BUILDFLAG(IS_ANDROID)
 }
@@ -672,6 +677,31 @@ VkResult QueryVkExternalMemoryProperties(
   *external_memory_properties =
       external_image_format_properties.externalMemoryProperties;
   return VK_SUCCESS;
+}
+
+std::vector<VkDrmFormatModifierPropertiesEXT>
+QueryVkDrmFormatModifierPropertiesEXT(VkPhysicalDevice physical_device,
+                                      VkFormat format) {
+  VkDrmFormatModifierPropertiesListEXT modifier_list = {
+      .sType = VK_STRUCTURE_TYPE_DRM_FORMAT_MODIFIER_PROPERTIES_LIST_EXT,
+  };
+  VkFormatProperties2 format_props = {
+      .sType = VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2,
+      .pNext = &modifier_list,
+  };
+  vkGetPhysicalDeviceFormatProperties2(physical_device, format, &format_props);
+
+  std::vector<VkDrmFormatModifierPropertiesEXT> modifier_props;
+  if (modifier_list.drmFormatModifierCount) {
+    modifier_props.resize(modifier_list.drmFormatModifierCount);
+    modifier_list.pDrmFormatModifierProperties = modifier_props.data();
+    vkGetPhysicalDeviceFormatProperties2(physical_device, format,
+                                         &format_props);
+
+    DCHECK_EQ(modifier_list.drmFormatModifierCount, modifier_props.size());
+  }
+
+  return modifier_props;
 }
 
 }  // namespace gpu

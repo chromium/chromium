@@ -82,7 +82,9 @@ StyleResolverState::StyleResolverState(
       is_outside_flat_tree_(style_recalc_context
                                 ? style_recalc_context->is_outside_flat_tree
                                 : false),
-      can_trigger_animations_(style_request.can_trigger_animations) {
+      can_trigger_animations_(style_request.can_trigger_animations),
+      is_resolving_position_fallback_style_(
+          style_recalc_context && style_recalc_context->is_position_fallback) {
   DCHECK(!!parent_style_ == !!layout_parent_style_);
 
   if (UsesHighlightPseudoInheritance()) {

@@ -11,9 +11,7 @@ import org.chromium.components.webxr.ArCompositorDelegate;
 import org.chromium.components.webxr.ArCompositorDelegateProvider;
 import org.chromium.content_public.browser.WebContents;
 
-/**
- * Concrete, Chrome-specific implementation of ArCompositorDelegateProvider interface.
- */
+/** Concrete, Chrome-specific implementation of ArCompositorDelegateProvider interface. */
 @JNINamespace("vr")
 public class ArCompositorDelegateProviderImpl implements ArCompositorDelegateProvider {
     @CalledByNative

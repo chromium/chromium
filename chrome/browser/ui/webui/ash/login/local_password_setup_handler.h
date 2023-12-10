@@ -23,7 +23,6 @@ class LocalPasswordSetupView
   LocalPasswordSetupView& operator=(const LocalPasswordSetupView&) = delete;
 
   virtual void Show(bool can_go_back, bool is_recovery_flow) = 0;
-  virtual void ShowLocalPasswordSetupSuccess() = 0;
   virtual void ShowLocalPasswordSetupFailure() = 0;
 };
 
@@ -43,7 +42,6 @@ class LocalPasswordSetupHandler : public BaseScreenHandler,
 
   // LocalPasswordSetupView:
   void Show(bool can_go_back, bool is_recovery_flow) override;
-  void ShowLocalPasswordSetupSuccess() override;
   void ShowLocalPasswordSetupFailure() override;
 
   // BaseScreenHandler:

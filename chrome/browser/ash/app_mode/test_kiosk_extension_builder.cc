@@ -28,7 +28,7 @@ TestKioskExtensionBuilder::TestKioskExtensionBuilder(
 
 TestKioskExtensionBuilder& TestKioskExtensionBuilder::AddSecondaryExtension(
     const std::string& id) {
-  secondary_extensions_.emplace_back(id, absl::nullopt);
+  secondary_extensions_.emplace_back(id, std::nullopt);
   return *this;
 }
 
@@ -37,7 +37,7 @@ TestKioskExtensionBuilder::AddSecondaryExtensionWithEnabledOnLaunch(
     const std::string& id,
     bool enabled_on_launch) {
   secondary_extensions_.emplace_back(id,
-                                     absl::optional<bool>(enabled_on_launch));
+                                     std::optional<bool>(enabled_on_launch));
   return *this;
 }
 

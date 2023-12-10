@@ -5,8 +5,6 @@
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack_half_sheet_table_view_controller.h"
 
 #import "base/apple/foundation_util.h"
-#import "ios/chrome/browser/ntp/features.h"
-#import "ios/chrome/browser/ntp/home/features.h"
 #import "ios/chrome/browser/parcel_tracking/parcel_tracking_util.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -120,7 +118,7 @@ enum ItemType : NSInteger {
 
   [self.tableViewModel addSectionWithIdentifier:SectionIdentifierOptions];
 
-  if (IsIOSSetUpListEnabled() && _showSetUpList) {
+  if (_showSetUpList) {
     NSString* listSymbolName = kListBulletRectangleSymbol;
     if (@available(iOS 16.0, *)) {
       listSymbolName = kListBulletClipboardSymbol;

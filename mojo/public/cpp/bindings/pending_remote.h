@@ -18,6 +18,7 @@
 #include "mojo/public/cpp/bindings/lib/pending_remote_state.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/pipe_control_message_proxy.h"
+#include "mojo/public/cpp/bindings/runtime_features.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 
 namespace mojo {
@@ -168,6 +169,9 @@ template <typename Interface>
 PendingReceiver<Interface>
 PendingRemote<Interface>::InitWithNewPipeAndPassReceiver() {
   DCHECK(!is_valid()) << "PendingReceiver already has a remote";
+  if (!internal::GetRuntimeFeature_ExpectEnabled<Interface>()) {
+    return PendingReceiver<Interface>();
+  }
   MessagePipe pipe;
   state_.pipe = std::move(pipe.handle0);
   return PendingReceiver<Interface>(std::move(pipe.handle1));

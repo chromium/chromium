@@ -18,7 +18,6 @@ MockNavigationHandle::MockNavigationHandle() : MockNavigationHandle(nullptr) {}
 
 MockNavigationHandle::MockNavigationHandle(WebContents* web_contents)
     : navigation_id_(++g_mock_handle_id), web_contents_(web_contents) {
-  proxy_server_ = net::ProxyServer::Direct();
 }
 
 MockNavigationHandle::MockNavigationHandle(const GURL& url,
@@ -31,7 +30,6 @@ MockNavigationHandle::MockNavigationHandle(const GURL& url,
                                     ? render_frame_host_->IsInPrimaryMainFrame()
                                     : true) {
   redirect_chain_.push_back(url);
-  proxy_server_ = net::ProxyServer::Direct();
   runtime_feature_state_context_ = blink::RuntimeFeatureStateContext();
 }
 

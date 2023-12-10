@@ -9,7 +9,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/trusted_vault/trusted_vault_client.h"
-#include "components/trusted_vault/trusted_vault_registration_verifier.h"
 
 namespace network {
 class SharedURLLoaderFactory;
@@ -62,17 +61,9 @@ class IOSTrustedVaultClient : public trusted_vault::TrustedVaultClient {
  private:
   // Returns the identity for `account_info`.
   id<SystemIdentity> IdentityForAccount(const CoreAccountInfo& account_info);
-  void VerifyDeviceRegistration(const std::string& gaia_id);
-  void VerifyDeviceRegistrationWithPublicKey(
-      const std::string& gaia_id,
-      const std::vector<uint8_t>& public_key);
-  void VerifyDeviceRegistrationWithPublicKeyDelayed(
-      const std::string& gaia_id,
-      const std::vector<uint8_t>& public_key);
 
   const raw_ptr<ChromeAccountManagerService> account_manager_service_;
   const raw_ptr<TrustedVaultClientBackend> backend_;
-  trusted_vault::TrustedVaultRegistrationVerifier registration_verifier_;
   base::WeakPtrFactory<IOSTrustedVaultClient> weak_ptr_factory_{this};
 };
 

@@ -5,8 +5,13 @@
 #include "device/vr/openxr/openxr_interaction_profiles.h"
 
 #include "base/no_destructor.h"
+#include "device/vr/openxr/openxr_interaction_profile_paths.h"
+#include "device/vr/public/mojom/openxr_interaction_profile_type.mojom.h"
 
 namespace device {
+
+using device::mojom::OpenXrInteractionProfileType;
+
 OpenXrSystemInputProfiles::OpenXrSystemInputProfiles(
     std::string system_name,
     std::vector<std::string> input_profiles)
@@ -111,6 +116,14 @@ GetOpenXrInputProfilesMap() {
           // Vive Cosmos
           {OpenXrInteractionProfileType::kViveCosmos,
            {{"", {"htc-vive-cosmos", "generic-trigger-squeeze-thumbstick"}}}},
+
+          // EXT Hand Interaction
+          {OpenXrInteractionProfileType::kExtHand,
+           {{"", {"generic-hand-select-grasp", "generic-hand-select"}}}},
+
+          // XR_ANDROID_hand_gestures
+          {OpenXrInteractionProfileType::kAndroidHandGestures,
+           {{"", {"generic-hand-select", "generic-button"}}}},
       });
   return *kInputProfilesMap;
 }
@@ -459,6 +472,29 @@ GetOpenXrControllerInteractionProfiles() {
                {OpenXrAxisType::kThumbstick, "/input/thumbstick"},
            }},
           // Vive Cosmos
+
+          // EXT Hands Profile
+          {OpenXrInteractionProfileType::kExtHand,
+           kExtHandInteractionProfilePath,
+           /*required_extension=*/XR_EXT_HAND_INTERACTION_EXTENSION_NAME,
+           GamepadMapping::kXrStandard,
+           /*common_button_maps=*/
+           {
+               {OpenXrButtonType::kTrigger,
+                {
+                    {OpenXrButtonActionType::kPress, "/input/pinch_ext/value"},
+                    {OpenXrButtonActionType::kValue, "/input/pinch_ext/value"},
+                }},
+               {OpenXrButtonType::kGrasp,
+                {
+                    {OpenXrButtonActionType::kPress, "/input/grasp_ext/value"},
+                    {OpenXrButtonActionType::kValue, "/input/grasp_ext/value"},
+                }},
+           },
+           /*left_button_maps=*/{},
+           /*right_button_maps=*/{},
+           /*axis_maps=*/{}},
+          // EXT Hands Profile
       });
   return *kOpenXrControllerInteractionProfiles;
 }

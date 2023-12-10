@@ -1,0 +1,24 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("model") {
+  sources = [ "promos_manager.h" ]
+  public_deps = [ "//ios/chrome/browser/promos_manager" ]
+}
+
+source_set("constants") {
+  sources = [ "constants.h" ]
+  public_deps = [ "//ios/chrome/browser/promos_manager:constants" ]
+}
+
+source_set("types") {
+  sources = [ "promo_config.h" ]
+  public_deps = [ "//ios/chrome/browser/promos_manager:types" ]
+}
+
+source_set("test_support") {
+  sources = [ "mock_promos_manager.h" ]
+  public_deps = [ "//ios/chrome/browser/promos_manager:test_support" ]
+  testonly = true
+}

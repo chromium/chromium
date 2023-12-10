@@ -7,8 +7,8 @@ example_value: true
 features:
   dynamic_refresh: true
   per_profile: false
-future_on:
-- ios
+supported_on:
+- ios:121-
 items:
 - caption: Allow <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> data to be
     included in backups

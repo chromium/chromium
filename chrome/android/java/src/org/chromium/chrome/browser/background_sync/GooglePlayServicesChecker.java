@@ -18,6 +18,7 @@ import org.chromium.components.externalauth.ExternalAuthUtils;
  */
 final class GooglePlayServicesChecker {
     private static final String TAG = "PlayServicesChecker";
+
     private GooglePlayServicesChecker() {}
 
     /**

@@ -4,9 +4,9 @@
 
 #include "base/task/sequence_manager/task_queue_selector.h"
 
+#include <bit>
 #include <utility>
 
-#include "base/bits.h"
 #include "base/check_op.h"
 #include "base/task/sequence_manager/associated_thread_id.h"
 #include "base/task/sequence_manager/task_queue_impl.h"
@@ -282,10 +282,9 @@ void TaskQueueSelector::ActivePriorityTracker::SetActive(
 
 TaskQueue::QueuePriority
 TaskQueueSelector::ActivePriorityTracker::HighestActivePriority() const {
-  DCHECK_NE(active_priorities_, 0u)
-      << "CountTrailingZeroBits(0) has undefined behavior";
+  DCHECK_NE(active_priorities_, 0u);
   return static_cast<TaskQueue::QueuePriority>(
-      bits::CountTrailingZeroBits(active_priorities_));
+      std::countr_zero(active_priorities_));
 }
 
 }  // namespace internal

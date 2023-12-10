@@ -5,10 +5,10 @@
 #ifndef ASH_ACCELERATORS_ACCELERATOR_ALIAS_CONVERTER_H_
 #define ASH_ACCELERATORS_ACCELERATOR_ALIAS_CONVERTER_H_
 
+#include <optional>
 #include <vector>
 
 #include "ash/ash_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/accelerators/accelerator.h"
 
 namespace ui {
@@ -38,12 +38,12 @@ class ASH_EXPORT AcceleratorAliasConverter {
 
  private:
   // Create accelerator alias for |top_row_key| for the given |keyboard|.
-  absl::optional<ui::Accelerator> CreateTopRowAliases(
+  std::optional<ui::Accelerator> CreateTopRowAliases(
       const ui::KeyboardDevice& keyboard,
       const ui::Accelerator& accelerator) const;
 
   // Create accelerator alias for |function_key| for the given |keyboard|.
-  absl::optional<ui::Accelerator> CreateFunctionKeyAliases(
+  std::optional<ui::Accelerator> CreateFunctionKeyAliases(
       const ui::KeyboardDevice& keyboard,
       const ui::Accelerator& accelerator) const;
 
@@ -51,7 +51,7 @@ class ASH_EXPORT AcceleratorAliasConverter {
   // one alias found. Use a vector to be more consistent and cleaner.
   std::vector<ui::Accelerator> CreateSixPackAliases(
       const ui::Accelerator& accelerator,
-      absl::optional<int> device_id) const;
+      std::optional<int> device_id) const;
 
   // Given a list of accelerators, filter out those accelerators that have
   // unsupported keys. Return a list of filtered accelerators with supported

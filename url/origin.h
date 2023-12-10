@@ -11,6 +11,7 @@
 #include <string>
 #include <string_view>
 
+#include <optional>
 #include "base/component_export.h"
 #include "base/debug/alias.h"
 #include "base/debug/crash_logging.h"
@@ -21,7 +22,6 @@
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "build/robolectric_buildflags.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/scheme_host_port.h"
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_ROBOLECTRIC)
@@ -36,6 +36,10 @@ class SecurityOriginTest;
 class StorageKey;
 class StorageKeyTest;
 }  // namespace blink
+
+namespace content {
+class SiteInfo;
+}  // namespace content
 
 namespace IPC {
 template <class P>
@@ -190,7 +194,7 @@ class COMPONENT_EXPORT(URL) Origin {
   // forth over IPC (as transitioning through GURL would risk potentially
   // dangerous recanonicalization); other potential callers should prefer the
   // 'GURL'-based constructor.
-  static absl::optional<Origin> UnsafelyCreateTupleOriginWithoutNormalization(
+  static std::optional<Origin> UnsafelyCreateTupleOriginWithoutNormalization(
       std::string_view scheme,
       std::string_view host,
       uint16_t port);
@@ -301,6 +305,10 @@ class COMPONENT_EXPORT(URL) Origin {
   // |d|, and |d| is cross-origin to |a| and |c|.
   Origin DeriveNewOpaqueOrigin() const;
 
+  // Returns the nonce associated with the origin, if it is opaque, or nullptr
+  // otherwise. This is only for use in tests.
+  const base::UnguessableToken* GetNonceForTesting() const;
+
   // Creates a string representation of the object that can be used for logging
   // and debugging. It serializes the internal state, such as the nonce value
   // and precursor information.
@@ -336,6 +344,9 @@ class COMPONENT_EXPORT(URL) Origin {
   friend class blink::SecurityOrigin;
   friend class blink::SecurityOriginTest;
   friend class blink::StorageKey;
+  // SiteInfo needs the nonce to compute the site URL for some opaque origins,
+  // like data: URLs.
+  friend class content::SiteInfo;
   // SchemefulSite needs access to the serialization/deserialization logic which
   // includes the nonce.
   friend class net::SchemefulSite;
@@ -417,7 +428,7 @@ class COMPONENT_EXPORT(URL) Origin {
   // This factory method should be used in order to pass opaque Origin objects
   // back and forth over IPC (as transitioning through GURL would risk
   // potentially dangerous recanonicalization).
-  static absl::optional<Origin> UnsafelyCreateOpaqueOriginWithoutNormalization(
+  static std::optional<Origin> UnsafelyCreateOpaqueOriginWithoutNormalization(
       std::string_view precursor_scheme,
       std::string_view precursor_host,
       uint16_t precursor_port,
@@ -439,17 +450,17 @@ class COMPONENT_EXPORT(URL) Origin {
   // origin's |tuple_| is invalid nullopt is returned. If the nonce is not
   // initialized, a nonce of 0 is used. Use of this method should be limited as
   // an opaque origin will never be matchable in future browser sessions.
-  absl::optional<std::string> SerializeWithNonce() const;
+  std::optional<std::string> SerializeWithNonce() const;
 
   // Like SerializeWithNonce(), but forces |nonce_| to be initialized prior to
   // serializing.
-  absl::optional<std::string> SerializeWithNonceAndInitIfNeeded();
+  std::optional<std::string> SerializeWithNonceAndInitIfNeeded();
 
-  absl::optional<std::string> SerializeWithNonceImpl() const;
+  std::optional<std::string> SerializeWithNonceImpl() const;
 
   // Deserializes an origin from |ToValueWithNonce|. Returns nullopt if the
   // value was invalid in any way.
-  static absl::optional<Origin> Deserialize(const std::string& value);
+  static std::optional<Origin> Deserialize(const std::string& value);
 
   // The tuple is used for both tuple origins (e.g. https://example.com:80), as
   // well as for opaque origins, where it tracks the tuple origin from which
@@ -460,7 +471,7 @@ class COMPONENT_EXPORT(URL) Origin {
   // The nonce is used for maintaining identity of an opaque origin. This
   // nonce is preserved when an opaque origin is copied or moved. An Origin
   // is considered opaque if and only if |nonce_| holds a value.
-  absl::optional<Nonce> nonce_;
+  std::optional<Nonce> nonce_;
 };
 
 // Pretty-printers for logging. These expose the internal state of the nonce.

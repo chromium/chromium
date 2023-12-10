@@ -23,7 +23,13 @@
 #include "gpu/ipc/service/gpu_channel_manager.h"
 #include "gpu/ipc/service/gpu_memory_buffer_factory.h"
 #include "ui/gfx/buffer_format_util.h"
+#include "ui/gfx/gpu_fence_handle.h"
+#include "ui/gfx/gpu_memory_buffer.h"
 #include "ui/gl/gl_context.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "ui/gfx/win/d3d_shared_fence.h"
+#endif
 
 namespace {
 
@@ -35,8 +41,27 @@ constexpr char kSICreationFailureError[] =
 
 }  // namespace
 
-namespace gpu {
+#if BUILDFLAG(IS_WIN)
+namespace base {
+bool operator<(const scoped_refptr<gfx::D3DSharedFence>& lhs,
+               const scoped_refptr<gfx::D3DSharedFence>& rhs) {
+  return lhs->GetDXGIHandleToken() < rhs->GetDXGIHandleToken();
+}
 
+bool operator<(const gfx::DXGIHandleToken& lhs,
+               const scoped_refptr<gfx::D3DSharedFence>& rhs) {
+  return lhs < rhs->GetDXGIHandleToken();
+}
+
+bool operator<(const scoped_refptr<gfx::D3DSharedFence>& lhs,
+               const gfx::DXGIHandleToken& rhs) {
+  return lhs->GetDXGIHandleToken() < rhs;
+}
+
+}  // namespace base
+#endif
+
+namespace gpu {
 SharedImageStub::SharedImageStub(GpuChannel* channel, int32_t route_id)
     : channel_(channel),
       command_buffer_id_(
@@ -138,6 +163,22 @@ void SharedImageStub::ExecuteDeferredRequest(
       OnPresentSwapChain(request->get_present_swap_chain()->mailbox,
                          request->get_present_swap_chain()->release_id);
       break;
+    case mojom::DeferredSharedImageRequest::Tag::kRegisterDxgiFence: {
+      auto& reg = *request->get_register_dxgi_fence();
+      OnRegisterDxgiFence(reg.mailbox, reg.dxgi_token,
+                          std::move(reg.fence_handle));
+      break;
+    }
+    case mojom::DeferredSharedImageRequest::Tag::kUpdateDxgiFence: {
+      auto& update = *request->get_update_dxgi_fence();
+      OnUpdateDxgiFence(update.mailbox, update.dxgi_token, update.fence_value);
+      break;
+    }
+    case mojom::DeferredSharedImageRequest::Tag::kUnregisterDxgiFence: {
+      auto& unregister = *request->get_unregister_dxgi_fence();
+      OnUnregisterDxgiFence(unregister.mailbox, unregister.dxgi_token);
+      break;
+    }
 #endif  // BUILDFLAG(IS_WIN)
   }
 }
@@ -447,6 +488,10 @@ void SharedImageStub::OnDestroySharedImage(const Mailbox& mailbox) {
     OnError();
     return;
   }
+
+#if BUILDFLAG(IS_WIN)
+  registered_dxgi_fences_.erase(mailbox);
+#endif
 }
 
 #if BUILDFLAG(IS_WIN)
@@ -523,6 +568,103 @@ void SharedImageStub::OnPresentSwapChain(const Mailbox& mailbox,
 
   sync_point_client_state_->ReleaseFenceSync(release_id);
 }
+
+void SharedImageStub::OnRegisterDxgiFence(const Mailbox& mailbox,
+                                          gfx::DXGIHandleToken dxgi_token,
+                                          gfx::GpuFenceHandle fence_handle) {
+  if (!mailbox.IsSharedImage()) {
+    LOG(ERROR)
+        << "SharedImageStub: Trying to register a fence handle in SharedImage "
+           "with a non-SharedImage mailbox.";
+    OnError();
+    return;
+  }
+
+  if (!factory_->HasSharedImage(mailbox)) {
+    LOG(ERROR) << "SharedImageStub: Trying to register a fence handle to a "
+                  "invalid SharedImage.";
+    OnError();
+    return;
+  }
+
+  auto& mailbox_fences = registered_dxgi_fences_[mailbox];
+  auto it = mailbox_fences.find(dxgi_token);
+  if (it != mailbox_fences.end()) {
+    LOG(ERROR) << "SharedImageStub: Trying to register the same fence handle "
+                  "multiple times in SharedImage.";
+    OnError();
+    return;
+  }
+
+  mailbox_fences.emplace_hint(mailbox_fences.begin(),
+                              gfx::D3DSharedFence::CreateFromScopedHandle(
+                                  fence_handle.Release(), dxgi_token));
+}
+
+void SharedImageStub::OnUpdateDxgiFence(const Mailbox& mailbox,
+                                        gfx::DXGIHandleToken dxgi_token,
+                                        uint64_t fence_value) {
+  if (!mailbox.IsSharedImage()) {
+    LOG(ERROR)
+        << "SharedImageStub: Trying to register a fence handle in SharedImage "
+           "with a non-SharedImage mailbox.";
+    OnError();
+    return;
+  }
+
+  if (!factory_->HasSharedImage(mailbox)) {
+    LOG(ERROR) << "SharedImageStub: Trying to register a fence handle to a "
+                  "invalid SharedImage.";
+    OnError();
+    return;
+  }
+
+  auto mailbox_fences_it = registered_dxgi_fences_.find(mailbox);
+  if (mailbox_fences_it == registered_dxgi_fences_.end()) {
+    LOG(ERROR) << "Trying to update a fence on shared image with no registered "
+                  "fences.";
+    OnError();
+    return;
+  }
+
+  auto& mailbox_fences = mailbox_fences_it->second;
+  auto fence_it = mailbox_fences.find(dxgi_token);
+  if (fence_it == mailbox_fences.end()) {
+    LOG(ERROR) << "Trying to update a fence that has not been registered with "
+                  "shared image.";
+    OnError();
+    return;
+  }
+
+  scoped_refptr<gfx::D3DSharedFence> fence = *fence_it;
+  fence->Update(fence_value);
+
+  channel_->gpu_channel_manager()->shared_image_manager()->UpdateExternalFence(
+      mailbox, std::move(fence));
+}
+
+void SharedImageStub::OnUnregisterDxgiFence(const Mailbox& mailbox,
+                                            gfx::DXGIHandleToken dxgi_token) {
+  auto mailbox_fences_it = registered_dxgi_fences_.find(mailbox);
+  if (mailbox_fences_it == registered_dxgi_fences_.end()) {
+    LOG(ERROR) << "Trying to unregister a fence on shared image with no "
+                  "registered fences.";
+    OnError();
+    return;
+  }
+
+  auto& mailbox_fences = mailbox_fences_it->second;
+  auto fence_it = mailbox_fences.find(dxgi_token);
+  if (fence_it == mailbox_fences.end()) {
+    LOG(ERROR) << "Trying to unregister a fence that has not been registered "
+                  "with shared image.";
+    OnError();
+    return;
+  }
+
+  mailbox_fences.erase(fence_it);
+}
+
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_FUCHSIA)

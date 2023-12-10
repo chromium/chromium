@@ -3,7 +3,6 @@ This is a wdspec test.
   AssertionError: assert 'stale element reference' == 'no such element'
 [FAIL] test_no_browsing_context
   AssertionError: assert 'no such element' == 'no such window'
-[PASS] test_no_such_element_with_invalid_value
 [FAIL] test_no_such_element_with_shadow_root
   assert 200 == 404
 [FAIL] test_no_such_element_from_other_window_handle[open]
@@ -14,39 +13,4 @@ This is a wdspec test.
   AssertionError: assert 'stale element reference' == 'no such element'
 [FAIL] test_no_such_element_from_other_frame[closed]
   AssertionError: assert 'stale element reference' == 'no such element'
-[PASS] test_stale_element_reference[top_context]
-[PASS] test_stale_element_reference[child_context]
-[PASS] test_form_control_disabled[button]
-[PASS] test_form_control_disabled[input]
-[PASS] test_form_control_disabled[select]
-[PASS] test_form_control_disabled[textarea]
-[PASS] test_form_control_enabled[button]
-[PASS] test_form_control_enabled[input]
-[PASS] test_form_control_enabled[select]
-[PASS] test_form_control_enabled[textarea]
-[PASS] test_fieldset_disabled_descendant[button]
-[PASS] test_fieldset_disabled_descendant[input]
-[PASS] test_fieldset_disabled_descendant[select]
-[PASS] test_fieldset_disabled_descendant[textarea]
-[PASS] test_fieldset_enabled_descendant[button]
-[PASS] test_fieldset_enabled_descendant[input]
-[PASS] test_fieldset_enabled_descendant[select]
-[PASS] test_fieldset_enabled_descendant[textarea]
-[PASS] test_fieldset_disabled_descendant_legend[button]
-[PASS] test_fieldset_disabled_descendant_legend[input]
-[PASS] test_fieldset_disabled_descendant_legend[select]
-[PASS] test_fieldset_disabled_descendant_legend[textarea]
-[PASS] test_fieldset_enabled_descendant_legend[button]
-[PASS] test_fieldset_enabled_descendant_legend[input]
-[PASS] test_fieldset_enabled_descendant_legend[select]
-[PASS] test_fieldset_enabled_descendant_legend[textarea]
-[PASS] test_xhtml_form_control_disabled[button]
-[PASS] test_xhtml_form_control_disabled[input]
-[PASS] test_xhtml_form_control_disabled[select]
-[PASS] test_xhtml_form_control_disabled[textarea]
-[PASS] test_xhtml_form_control_enabled[button]
-[PASS] test_xhtml_form_control_enabled[input]
-[PASS] test_xhtml_form_control_enabled[select]
-[PASS] test_xhtml_form_control_enabled[textarea]
-[PASS] test_xml_always_not_enabled
 Harness: the test ran to completion.

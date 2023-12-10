@@ -38,15 +38,10 @@ class AutomationInternalCustomBindingsTest
     script_context->set_url(extension->url());
     bindings_system()->UpdateBindingsForContext(script_context);
 
-    // Currently the TaskRunner is not used, because the thread ID is
-    // kMainThreadId.
-    // When testing with a different thread ID, a runloop will be needed to
-    // allow the TaskRunner to complete.
     // TODO(crbug/1487002) Add tests for service worker.
     auto automation_internal_bindings =
-        std::make_unique<AutomationInternalCustomBindings>(
-            script_context, bindings_system(),
-            base::SingleThreadTaskRunner::GetCurrentDefault(), kMainThreadId);
+        std::make_unique<AutomationInternalCustomBindings>(script_context,
+                                                           bindings_system());
     automation_internal_bindings_ = automation_internal_bindings.get();
     script_context->module_system()->RegisterNativeHandler(
         "automationInternal", std::move(automation_internal_bindings));

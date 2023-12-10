@@ -1,0 +1,12 @@
+# cargo-vet config file
+
+default-criteria = "safe-to-run"
+
+[cargo-vet]
+version = "0.8"
+
+[imports.google]
+url = "https://raw.githubusercontent.com/google/rust-crate-audits/main/audits.toml"
+
+[policy.chromium]
+audit-as-crates-io = false

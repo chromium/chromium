@@ -6,7 +6,9 @@
 #define IOS_CHROME_BROWSER_PASSWORDS_MODEL_TEST_MOCK_IOS_CHROME_SAVE_PASSWORDS_INFOBAR_DELEGATE_H_
 
 #import <Foundation/Foundation.h>
+
 #include <memory>
+#include <optional>
 
 #include "components/password_manager/core/browser/password_form.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_save_password_infobar_delegate.h"
@@ -28,7 +30,7 @@ class MockIOSChromeSavePasswordInfoBarDelegate
       NSString* username,
       NSString* password,
       const GURL& url = GURL::EmptyGURL(),
-      absl::optional<std::string> account_to_store_password = absl::nullopt);
+      std::optional<std::string> account_to_store_password = std::nullopt);
 
   MOCK_METHOD0(InfoBarDismissed, void());
   MOCK_METHOD2(UpdateCredentials, void(NSString* username, NSString* password));
@@ -41,7 +43,7 @@ class MockIOSChromeSavePasswordInfoBarDelegate
   MockIOSChromeSavePasswordInfoBarDelegate(
       std::unique_ptr<password_manager::PasswordForm> form,
       std::unique_ptr<GURL> url,
-      absl::optional<std::string> account_to_store_password);
+      std::optional<std::string> account_to_store_password);
 
   std::unique_ptr<password_manager::PasswordForm> form_;
   std::unique_ptr<GURL> url_;

@@ -20,7 +20,7 @@ FakeCryptAuthScheduler::~FakeCryptAuthScheduler() = default;
 
 void FakeCryptAuthScheduler::RequestEnrollment(
     const cryptauthv2::ClientMetadata::InvocationReason& invocation_reason,
-    const absl::optional<std::string>& session_id) {
+    const std::optional<std::string>& session_id) {
   DCHECK(HasEnrollmentSchedulingStarted());
   is_waiting_for_enrollment_result_ = true;
   ++num_enrollment_requests_;
@@ -37,7 +37,7 @@ void FakeCryptAuthScheduler::RequestEnrollment(
 
 void FakeCryptAuthScheduler::RequestDeviceSync(
     const cryptauthv2::ClientMetadata::InvocationReason& invocation_reason,
-    const absl::optional<std::string>& session_id) {
+    const std::optional<std::string>& session_id) {
   DCHECK(HasDeviceSyncSchedulingStarted());
   is_waiting_for_device_sync_result_ = true;
   ++num_sync_requests_;
@@ -65,12 +65,12 @@ void FakeCryptAuthScheduler::HandleDeviceSyncResult(
   is_waiting_for_device_sync_result_ = false;
 }
 
-absl::optional<base::Time>
+std::optional<base::Time>
 FakeCryptAuthScheduler::GetLastSuccessfulEnrollmentTime() const {
   return last_successful_enrollment_time_;
 }
 
-absl::optional<base::Time>
+std::optional<base::Time>
 FakeCryptAuthScheduler::GetLastSuccessfulDeviceSyncTime() const {
   return last_successful_device_sync_time_;
 }
@@ -79,12 +79,12 @@ base::TimeDelta FakeCryptAuthScheduler::GetRefreshPeriod() const {
   return refresh_period_;
 }
 
-absl::optional<base::TimeDelta>
+std::optional<base::TimeDelta>
 FakeCryptAuthScheduler::GetTimeToNextEnrollmentRequest() const {
   return time_to_next_enrollment_request_;
 }
 
-absl::optional<base::TimeDelta>
+std::optional<base::TimeDelta>
 FakeCryptAuthScheduler::GetTimeToNextDeviceSyncRequest() const {
   return time_to_next_device_sync_request_;
 }
@@ -118,7 +118,7 @@ FakeCryptAuthSchedulerEnrollmentDelegate::GetWeakPtr() {
 
 void FakeCryptAuthSchedulerEnrollmentDelegate::OnEnrollmentRequested(
     const cryptauthv2::ClientMetadata& client_metadata,
-    const absl::optional<cryptauthv2::PolicyReference>&
+    const std::optional<cryptauthv2::PolicyReference>&
         client_directive_policy_reference) {
   client_metadata_from_enrollment_requests_.push_back(client_metadata);
   policy_references_from_enrollment_requests_.push_back(

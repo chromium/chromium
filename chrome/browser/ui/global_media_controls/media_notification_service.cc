@@ -143,7 +143,7 @@ MediaNotificationService::MediaNotificationService(Profile* profile,
     : profile_(profile), receiver_(this) {
   item_manager_ = global_media_controls::MediaItemManager::Create();
 
-  absl::optional<base::UnguessableToken> source_id;
+  std::optional<base::UnguessableToken> source_id;
   if (!show_from_all_profiles) {
     source_id = content::MediaSession::GetSourceId(profile);
   }
@@ -353,7 +353,7 @@ void MediaNotificationService::SetDialogDelegateForWebContents(
   // routes in the GMC dialog, Cast presentation routes should be shown as Cast
   // notification items and Remote Playback presentation routes should be shown
   // as media session notification items.
-  absl::optional<std::string> cast_presentation_route_id;
+  std::optional<std::string> cast_presentation_route_id;
   for (auto route : media_router::WebContentsPresentationManager::Get(contents)
                         ->GetMediaRoutes()) {
     if (route.media_source().IsCastPresentationUrl()) {
@@ -443,7 +443,7 @@ void MediaNotificationService::GetDeviceListHostForSession(
     const std::string& session_id,
     mojo::PendingReceiver<mojom::DeviceListHost> host_receiver,
     mojo::PendingRemote<mojom::DeviceListClient> client_remote) {
-  absl::optional<std::string> remoting_session_id;
+  std::optional<std::string> remoting_session_id;
   // `remoting_session_id` is used to construct the MediaRemotingCallback for
   // CastDeviceListHost to request Media Remoting for a MediaSession. This is
   // used for Media Remoting sessions started from the GMC dialog. However, when
@@ -464,7 +464,7 @@ void MediaNotificationService::GetDeviceListHostForPresentation(
     mojo::PendingRemote<mojom::DeviceListClient> client_remote) {
   CreateCastDeviceListHost(CreateCastDialogControllerForPresentationRequest(),
                            std::move(host_receiver), std::move(client_remote),
-                           absl::nullopt);
+                           std::nullopt);
 }
 
 void MediaNotificationService::SetDevicePickerProvider(
@@ -524,7 +524,7 @@ void MediaNotificationService::CreateCastDeviceListHost(
     std::unique_ptr<media_router::CastDialogController> dialog_controller,
     mojo::PendingReceiver<mojom::DeviceListHost> host_pending_receiver,
     mojo::PendingRemote<mojom::DeviceListClient> client_remote,
-    absl::optional<std::string> remoting_session_id) {
+    std::optional<std::string> remoting_session_id) {
   if (!dialog_controller) {
     // We discard the PendingReceiver/Remote here, and if they have disconnect
     // handlers set, those get called.

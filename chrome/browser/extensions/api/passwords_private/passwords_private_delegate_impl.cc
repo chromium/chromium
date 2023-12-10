@@ -299,14 +299,6 @@ PasswordsPrivateDelegateImpl::PasswordsPrivateDelegateImpl(Profile* profile)
           base::BindRepeating(
               &PasswordsPrivateDelegateImpl::OnPasswordsExportProgress,
               base::Unretained(this)))),
-      password_account_storage_settings_watcher_(
-          std::make_unique<
-              password_manager::PasswordAccountStorageSettingsWatcher>(
-              profile_->GetPrefs(),
-              SyncServiceFactory::GetForProfile(profile_),
-              base::BindRepeating(&PasswordsPrivateDelegateImpl::
-                                      OnAccountStorageOptInStateChanged,
-                                  base::Unretained(this)))),
       password_check_delegate_(profile,
                                &saved_passwords_presenter_,
                                &credential_id_generator_),
@@ -318,6 +310,11 @@ PasswordsPrivateDelegateImpl::PasswordsPrivateDelegateImpl(Profile* profile)
   saved_passwords_presenter_.AddObserver(this);
   saved_passwords_presenter_.Init();
 
+  if (syncer::SyncService* service =
+          SyncServiceFactory::GetForProfile(profile_)) {
+    sync_service_observation_.Observe(service);
+  }
+
 #if !BUILDFLAG(IS_CHROMEOS)
   auto* provider = web_app::WebAppProvider::GetForWebApps(profile);
   install_manager_observation_.Observe(&provider->install_manager());
@@ -327,6 +324,10 @@ PasswordsPrivateDelegateImpl::PasswordsPrivateDelegateImpl(Profile* profile)
 PasswordsPrivateDelegateImpl::~PasswordsPrivateDelegateImpl() {
   saved_passwords_presenter_.RemoveObserver(this);
   install_manager_observation_.Reset();
+  if (device_authenticator_) {
+    device_authenticator_->Cancel();
+  }
+  device_authenticator_.reset();
 }
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
@@ -550,7 +551,7 @@ void PasswordsPrivateDelegateImpl::RequestCredentialsDetails(
       base::BindOnce(
           &PasswordsPrivateDelegateImpl::OnRequestCredentialDetailsAuthResult,
           weak_ptr_factory_.GetWeakPtr(), ids, std::move(callback),
-          web_contents));
+          web_contents->GetWeakPtr()));
 }
 
 void PasswordsPrivateDelegateImpl::OnFetchingFamilyMembersCompleted(
@@ -797,7 +798,7 @@ void PasswordsPrivateDelegateImpl::ExportPasswords(
       web_contents, base::Seconds(0), message,
       base::BindOnce(&PasswordsPrivateDelegateImpl::OnExportPasswordsAuthResult,
                      weak_ptr_factory_.GetWeakPtr(),
-                     std::move(accepted_callback), web_contents));
+                     std::move(accepted_callback), web_contents->GetWeakPtr()));
 }
 
 api::passwords_private::ExportProgressStatus
@@ -807,7 +808,7 @@ PasswordsPrivateDelegateImpl::GetExportProgressStatus() {
 
 bool PasswordsPrivateDelegateImpl::IsOptedInForAccountStorage() {
   return password_manager::features_util::IsOptedInForAccountStorage(
-      profile_->GetPrefs(), SyncServiceFactory::GetForProfile(profile_));
+      SyncServiceFactory::GetForProfile(profile_));
 }
 
 void PasswordsPrivateDelegateImpl::SetAccountStorageOptIn(
@@ -920,8 +921,11 @@ void PasswordsPrivateDelegateImpl::RestartAuthTimer() {
 }
 
 void PasswordsPrivateDelegateImpl::MaybeShowPasswordShareButtonIPH(
-    content::WebContents* web_contents) {
-  Browser* browser = chrome::FindBrowserWithTab(web_contents);
+    base::WeakPtr<content::WebContents> web_contents) {
+  if (!web_contents) {
+    return;
+  }
+  Browser* browser = chrome::FindBrowserWithTab(web_contents.get());
   if (!browser || !browser->window()) {
     return;
   }
@@ -972,9 +976,9 @@ void PasswordsPrivateDelegateImpl::OnRequestPlaintextPasswordAuthResult(
 void PasswordsPrivateDelegateImpl::OnRequestCredentialDetailsAuthResult(
     const std::vector<int>& ids,
     UiEntriesCallback callback,
-    content::WebContents* web_contents,
+    base::WeakPtr<content::WebContents> web_contents,
     bool authenticated) {
-  if (!authenticated) {
+  if (!authenticated || !web_contents) {
     std::move(callback).Run({});
     return;
   }
@@ -1019,9 +1023,9 @@ void PasswordsPrivateDelegateImpl::OnRequestCredentialDetailsAuthResult(
 
 void PasswordsPrivateDelegateImpl::OnExportPasswordsAuthResult(
     base::OnceCallback<void(const std::string&)> accepted_callback,
-    content::WebContents* web_contents,
+    base::WeakPtr<content::WebContents> web_contents,
     bool authenticated) {
-  if (!authenticated) {
+  if (!authenticated || !web_contents) {
     std::move(accepted_callback).Run(kReauthenticationFailed);
     return;
   }
@@ -1050,7 +1054,8 @@ void PasswordsPrivateDelegateImpl::OnImportPasswordsAuthResult(
       base::BindOnce(&ConvertImportResults).Then(std::move(results_callback)));
 }
 
-void PasswordsPrivateDelegateImpl::OnAccountStorageOptInStateChanged() {
+void PasswordsPrivateDelegateImpl::OnStateChanged(
+    syncer::SyncService* sync_service) {
   PasswordsPrivateEventRouter* router =
       PasswordsPrivateEventRouterFactory::GetForProfile(profile_);
   if (router) {
@@ -1058,11 +1063,14 @@ void PasswordsPrivateDelegateImpl::OnAccountStorageOptInStateChanged() {
   }
 }
 
-bool PasswordsPrivateDelegateImpl::OnReauthCompleted(bool authenticated) {
+void PasswordsPrivateDelegateImpl::OnSyncShutdown(syncer::SyncService* sync) {
+  sync_service_observation_.Reset();
+}
+
+void PasswordsPrivateDelegateImpl::OnReauthCompleted(bool authenticated) {
   device_authenticator_.reset();
 
   auth_timeout_handler_.OnUserReauthenticationResult(authenticated);
-  return authenticated;
 }
 
 void PasswordsPrivateDelegateImpl::ExecuteFunction(base::OnceClosure callback) {
@@ -1143,11 +1151,19 @@ void PasswordsPrivateDelegateImpl::AuthenticateUser(
   device_authenticator_ =
       GetDeviceAuthenticator(web_contents, auth_validity_period);
 
-  AuthResultIntermediateCallback on_reauth_completed =
-      base::BindOnce(&PasswordsPrivateDelegateImpl::OnReauthCompleted, this);
+  AuthResultCallback on_reauth_completed =
+      base::BindOnce(&PasswordsPrivateDelegateImpl::OnReauthCompleted,
+                     weak_ptr_factory_.GetWeakPtr());
+
+  auto pass_through = base::BindOnce(
+      [](AuthResultCallback callback, bool auth_result) {
+        std::move(callback).Run(auth_result);
+        return auth_result;
+      },
+      std::move(callback));
 
   device_authenticator_->AuthenticateWithMessage(
-      message, std::move(on_reauth_completed).Then(std::move(callback)));
+      message, std::move(pass_through).Then(std::move(on_reauth_completed)));
 #endif
 }
 

@@ -5,6 +5,7 @@
 #include "ash/shelf/shelf_layout_manager.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "ash/accelerators/accelerator_controller_impl.h"
@@ -66,6 +67,7 @@
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "ash/wm/lock_state_controller.h"
 #include "ash/wm/overview/overview_controller.h"
+#include "ash/wm/splitview/split_view_types.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
@@ -85,7 +87,6 @@
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "components/prefs/pref_service.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/drag_drop_client.h"
 #include "ui/aura/client/window_parenting_client.h"
@@ -3206,10 +3207,8 @@ TEST_F(ShelfLayoutManagerWindowDraggingTest, DraggedMRUWindow) {
     auto window2 = AshTestBase::CreateTestWindow(gfx::Rect(0, 0, 400, 400));
     SplitViewController* split_view_controller =
         SplitViewController::Get(Shell::GetPrimaryRootWindow());
-    split_view_controller->SnapWindow(
-        window.get(), SplitViewController::SnapPosition::kPrimary);
-    split_view_controller->SnapWindow(
-        window2.get(), SplitViewController::SnapPosition::kSecondary);
+    split_view_controller->SnapWindow(window.get(), SnapPosition::kPrimary);
+    split_view_controller->SnapWindow(window2.get(), SnapPosition::kSecondary);
     StartScroll(gfx::Point(widget_bounds.x(), shelf_widget_bottom));
     UpdateScroll(
         gfx::Vector2d(0, -shelf_size - hotseat_size - hotseat_padding_size));
@@ -3324,10 +3323,8 @@ TEST_F(ShelfLayoutManagerWindowDraggingTest, NoOpInOverview) {
   // screen also does nothing.
   SplitViewController* split_view_controller =
       SplitViewController::Get(Shell::GetPrimaryRootWindow());
-  split_view_controller->SnapWindow(
-      window1.get(), SplitViewController::SnapPosition::kPrimary);
-  split_view_controller->SnapWindow(
-      window2.get(), SplitViewController::SnapPosition::kSecondary);
+  split_view_controller->SnapWindow(window1.get(), SnapPosition::kPrimary);
+  split_view_controller->SnapWindow(window2.get(), SnapPosition::kSecondary);
   EnterOverview();
   EXPECT_TRUE(split_view_controller->InSplitViewMode());
   EXPECT_TRUE(OverviewController::Get()->InOverviewSession());
@@ -3458,10 +3455,8 @@ TEST_F(ShelfLayoutManagerWindowDraggingTest,
 
   SplitViewController* split_view_controller =
       SplitViewController::Get(Shell::GetPrimaryRootWindow());
-  split_view_controller->SnapWindow(
-      window1.get(), SplitViewController::SnapPosition::kPrimary);
-  split_view_controller->SnapWindow(
-      window2.get(), SplitViewController::SnapPosition::kSecondary);
+  split_view_controller->SnapWindow(window1.get(), SnapPosition::kPrimary);
+  split_view_controller->SnapWindow(window2.get(), SnapPosition::kSecondary);
   OverviewController* overview_controller = OverviewController::Get();
 
   base::HistogramTester histogram_tester;
@@ -3535,10 +3530,8 @@ TEST_F(ShelfLayoutManagerWindowDraggingTest, FlingHomeInSplitModeWithOverview) {
 
   SplitViewController* split_view_controller =
       SplitViewController::Get(Shell::GetPrimaryRootWindow());
-  split_view_controller->SnapWindow(
-      window1.get(), SplitViewController::SnapPosition::kPrimary);
-  split_view_controller->SnapWindow(
-      window2.get(), SplitViewController::SnapPosition::kSecondary);
+  split_view_controller->SnapWindow(window1.get(), SnapPosition::kPrimary);
+  split_view_controller->SnapWindow(window2.get(), SnapPosition::kSecondary);
   OverviewController* overview_controller = OverviewController::Get();
   EnterOverview();
   EXPECT_TRUE(overview_controller->InOverviewSession());
@@ -3586,10 +3579,8 @@ TEST_F(ShelfLayoutManagerWindowDraggingTest, FlingInSplitView) {
 
   SplitViewController* split_view_controller =
       SplitViewController::Get(Shell::GetPrimaryRootWindow());
-  split_view_controller->SnapWindow(
-      window1.get(), SplitViewController::SnapPosition::kPrimary);
-  split_view_controller->SnapWindow(
-      window2.get(), SplitViewController::SnapPosition::kSecondary);
+  split_view_controller->SnapWindow(window1.get(), SnapPosition::kPrimary);
+  split_view_controller->SnapWindow(window2.get(), SnapPosition::kSecondary);
 
   base::HistogramTester histogram_tester;
   HotseatStateWatcher watcher(GetShelfLayoutManager());
@@ -3635,10 +3626,8 @@ TEST_F(ShelfLayoutManagerWindowDraggingTest, ShortFlingInSplitView) {
 
   SplitViewController* split_view_controller =
       SplitViewController::Get(Shell::GetPrimaryRootWindow());
-  split_view_controller->SnapWindow(
-      window1.get(), SplitViewController::SnapPosition::kPrimary);
-  split_view_controller->SnapWindow(
-      window2.get(), SplitViewController::SnapPosition::kSecondary);
+  split_view_controller->SnapWindow(window1.get(), SnapPosition::kPrimary);
+  split_view_controller->SnapWindow(window2.get(), SnapPosition::kSecondary);
 
   base::HistogramTester histogram_tester;
   HotseatStateWatcher watcher(GetShelfLayoutManager());
@@ -4993,8 +4982,6 @@ TEST_P(NavigationWidgetRTLTest, VerifyHomeButtonBounds) {
   const gfx::Rect display_bounds = GetPrimaryDisplay().bounds();
   Shelf* shelf = GetPrimaryShelf();
   ShelfNavigationWidget* navigation_widget = shelf->navigation_widget();
-  const gfx::Size widget_size_in_home_launcher =
-      navigation_widget->GetWindowBoundsInScreen().size();
 
   auto fetch_home_button_screen_bounds =
       [](const ShelfNavigationWidget* navigation_widget,
@@ -5050,10 +5037,6 @@ TEST_P(NavigationWidgetRTLTest, VerifyHomeButtonBounds) {
   waiter.WaitForAnimation();
 
   ASSERT_EQ(HotseatState::kHidden, GetShelfLayoutManager()->hotseat_state());
-
-  const gfx::Size widget_size_in_hidden_state =
-      navigation_widget->GetWindowBoundsInScreen().size();
-  EXPECT_EQ(widget_size_in_home_launcher, widget_size_in_hidden_state);
 
   // Verify home button bounds in the hidden state.
   {

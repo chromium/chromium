@@ -172,7 +172,6 @@ class WMHelper : public chromeos::PowerManagerClient::Observer,
   void RemovePreTargetHandler(ui::EventHandler* handler);
   void AddPostTargetHandler(ui::EventHandler* handler);
   void RemovePostTargetHandler(ui::EventHandler* handler);
-  bool InTabletMode() const;
   double GetDeviceScaleFactorForWindow(aura::Window* window) const;
   void SetDefaultScaleCancellation(bool default_scale_cancellation);
   bool use_default_scale_cancellation() const {

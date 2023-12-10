@@ -1,9 +1,8 @@
 This is a wdspec test.
-[PASS] test_clip_element
-[FAIL] test_clip_element_with_scroll_into_view
-  webdriver.bidi.error.UnsupportedOperationException: unsupported operation ('scrollIntoView' is currently not supported)
-[PASS] test_clip_viewport
-[FAIL] test_clip_viewport_scroll_to
+[FAIL] test_clip_box_scroll_to
   assert False
-[PASS] test_clip_viewport_partially_visible
+[FAIL] test_clip_box_outside_of_window_viewport[document]
+  TypeError: capture_screenshot() got an unexpected keyword argument 'origin'
+[FAIL] test_clip_element_outside_of_window_viewport[document]
+  TypeError: capture_screenshot() got an unexpected keyword argument 'origin'
 Harness: the test ran to completion.

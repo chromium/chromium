@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/arc/input_overlay/ui/edit_finish_view.h"
 
+#include <utility>
+
 #include "ash/app_list/app_list_util.h"
 #include "ash/style/style_util.h"
 #include "base/functional/bind.h"
@@ -16,6 +18,7 @@
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
 #include "ui/events/event.h"
 #include "ui/gfx/geometry/size.h"
@@ -86,6 +89,8 @@ std::unique_ptr<views::InkDropHighlight> CreateInkDropHighlight(
 }  // namespace
 
 class EditFinishView::ChildButton : public views::LabelButton {
+  METADATA_HEADER(ChildButton, views::LabelButton)
+
  public:
   using OnMousePressedCallback =
       base::RepeatingCallback<bool(const ui::MouseEvent& event)>;
@@ -101,7 +106,8 @@ class EditFinishView::ChildButton : public views::LabelButton {
               OnMousePressedCallback on_mouse_pressed_callback,
               OnMouseDraggedCallback on_mouse_dragged_callback,
               OnMouseReleasedCallback on_mouse_released_callback)
-      : LabelButton(callback, l10n_util::GetStringUTF16(text_source_id)),
+      : LabelButton(std::move(callback),
+                    l10n_util::GetStringUTF16(text_source_id)),
         on_mouse_pressed_callback_(on_mouse_pressed_callback),
         on_mouse_dragged_callback_(on_mouse_dragged_callback),
         on_mouse_released_callback_(on_mouse_released_callback) {
@@ -172,6 +178,9 @@ class EditFinishView::ChildButton : public views::LabelButton {
   OnMouseDraggedCallback on_mouse_dragged_callback_;
   OnMouseReleasedCallback on_mouse_released_callback_;
 };
+
+BEGIN_METADATA(EditFinishView, ChildButton, views::LabelButton)
+END_METADATA
 
 // static
 EditFinishView* EditFinishView::BuildView(
@@ -369,5 +378,8 @@ void EditFinishView::SetRepositionController() {
   reposition_controller_->set_key_released_callback(base::BindRepeating(
       &EditFinishView::OnKeyReleasedCallback, base::Unretained(this)));
 }
+
+BEGIN_METADATA(EditFinishView)
+END_METADATA
 
 }  // namespace arc::input_overlay

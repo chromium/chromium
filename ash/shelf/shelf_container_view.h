@@ -8,11 +8,14 @@
 #include "ash/ash_export.h"
 #include "ash/shelf/shelf_view.h"
 #include "base/memory/raw_ptr.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 namespace ash {
 
 class ASH_EXPORT ShelfContainerView : public views::View {
+  METADATA_HEADER(ShelfContainerView, views::View)
+
  public:
   explicit ShelfContainerView(ShelfView* shelf_view);
 
@@ -36,7 +39,6 @@ class ASH_EXPORT ShelfContainerView : public views::View {
   // views::View:
   gfx::Size CalculatePreferredSize() const override;
   void ChildPreferredSizeChanged(views::View* child) override;
-  const char* GetClassName() const override;
 
  protected:
   // Owned by views hierarchy.

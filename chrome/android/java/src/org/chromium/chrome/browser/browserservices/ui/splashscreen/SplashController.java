@@ -14,6 +14,8 @@ import android.view.ViewTreeObserver;
 
 import androidx.annotation.Nullable;
 
+import dagger.Lazy;
+
 import org.chromium.base.ObserverList;
 import org.chromium.base.TraceEvent;
 import org.chromium.chrome.R;
@@ -36,20 +38,18 @@ import java.lang.reflect.Method;
 
 import javax.inject.Inject;
 
-import dagger.Lazy;
-
 /** Shows and hides splash screen for Webapps, WebAPKs and TWAs. */
 @ActivityScope
-public class SplashController
-        extends CustomTabTabObserver implements InflationObserver, DestroyObserver {
+public class SplashController extends CustomTabTabObserver
+        implements InflationObserver, DestroyObserver {
     private static class SingleShotOnDrawListener implements ViewTreeObserver.OnDrawListener {
         private final View mView;
         private final Runnable mAction;
         private boolean mHasRun;
 
         public static void install(View view, Runnable action) {
-            view.getViewTreeObserver().addOnDrawListener(
-                    new SingleShotOnDrawListener(view, action));
+            view.getViewTreeObserver()
+                    .addOnDrawListener(new SingleShotOnDrawListener(view, action));
         }
 
         private SingleShotOnDrawListener(View view, Runnable action) {
@@ -65,7 +65,7 @@ public class SplashController
             // Cannot call removeOnDrawListener within OnDraw, so do on next tick.
             mView.post(() -> mView.getViewTreeObserver().removeOnDrawListener(this));
         }
-    };
+    }
 
     private final Activity mActivity;
     private final ActivityLifecycleDispatcher mLifecycleDispatcher;
@@ -79,11 +79,9 @@ public class SplashController
     /** View to which the splash screen is added. */
     private ViewGroup mParentView;
 
-    @Nullable
-    private View mSplashView;
+    @Nullable private View mSplashView;
 
-    @Nullable
-    private ViewPropertyAnimator mFadeOutAnimator;
+    @Nullable private ViewPropertyAnimator mFadeOutAnimator;
 
     /** The duration of the splash hide animation. */
     private long mSplashHideAnimationDurationMs;
@@ -105,9 +103,12 @@ public class SplashController
     private ObserverList<SplashscreenObserver> mObservers;
 
     @Inject
-    public SplashController(Activity activity, ActivityLifecycleDispatcher lifecycleDispatcher,
+    public SplashController(
+            Activity activity,
+            ActivityLifecycleDispatcher lifecycleDispatcher,
             TabObserverRegistrar tabObserverRegistrar,
-            CustomTabOrientationController orientationController, TwaFinishHandler finishHandler,
+            CustomTabOrientationController orientationController,
+            TwaFinishHandler finishHandler,
             CustomTabActivityTabProvider tabProvider,
             Lazy<CompositorViewHolder> compositorViewHolder) {
         mActivity = activity;
@@ -179,36 +180,37 @@ public class SplashController
     @Override
     public void didFirstVisuallyNonEmptyPaint(Tab tab) {
         if (canHideSplashScreen()) {
-            hideSplash(tab, false /* loadFailed */);
+            hideSplash(tab, /* loadFailed= */ false);
         }
     }
 
     @Override
     public void onPageLoadFinished(Tab tab, GURL url) {
         if (canHideSplashScreen()) {
-            hideSplash(tab, false /* loadFailed */);
+            hideSplash(tab, /* loadFailed= */ false);
         }
     }
 
     @Override
     public void onPageLoadFailed(Tab tab, int errorCode) {
         if (canHideSplashScreen()) {
-            hideSplash(tab, true /* loadFailed */);
+            hideSplash(tab, /* loadFailed= */ true);
         }
     }
 
     @Override
     public void onInteractabilityChanged(Tab tab, boolean isInteractable) {
-        if (!tab.isLoading() && isInteractable
+        if (!tab.isLoading()
+                && isInteractable
                 && mTabProvider.getInitialTabCreationMode() == TabCreationMode.RESTORED
                 && canHideSplashScreen()) {
-            hideSplash(tab, false /* loadFailed */);
+            hideSplash(tab, /* loadFailed= */ false);
         }
     }
 
     @Override
     public void onCrash(Tab tab) {
-        hideSplash(tab, true /* loadFailed */);
+        hideSplash(tab, /* loadFailed= */ true);
     }
 
     private void showSplash() {
@@ -267,8 +269,13 @@ public class SplashController
         // Delay hiding the splash screen till the compositor has finished drawing the next frame.
         // Without this callback we were seeing a short flash of white between the splash screen and
         // the web content (crbug.com/734500).
-        mCompositorViewHolder.get().getCompositorView().surfaceRedrawNeededAsync(
-                () -> { animateHideSplash(tab); });
+        mCompositorViewHolder
+                .get()
+                .getCompositorView()
+                .surfaceRedrawNeededAsync(
+                        () -> {
+                            animateHideSplash(tab);
+                        });
     }
 
     private void removeTranslucency() {
@@ -306,10 +313,15 @@ public class SplashController
             hideSplashNow(tab);
             return;
         }
-        mFadeOutAnimator = mSplashView.animate()
-                                   .alpha(0f)
-                                   .setDuration(mSplashHideAnimationDurationMs)
-                                   .withEndAction(() -> { hideSplashNow(tab); });
+        mFadeOutAnimator =
+                mSplashView
+                        .animate()
+                        .alpha(0f)
+                        .setDuration(mSplashHideAnimationDurationMs)
+                        .withEndAction(
+                                () -> {
+                                    hideSplashNow(tab);
+                                });
     }
 
     private void hideSplashNow(Tab tab) {
@@ -331,16 +343,12 @@ public class SplashController
         mFadeOutAnimator = null;
     }
 
-    /**
-     * Register an observer for the splashscreen hidden/visible events.
-     */
+    /** Register an observer for the splashscreen hidden/visible events. */
     public void addObserver(SplashscreenObserver observer) {
         mObservers.addObserver(observer);
     }
 
-    /**
-     * Deregister an observer for the splashscreen hidden/visible events.
-     */
+    /** Deregister an observer for the splashscreen hidden/visible events. */
     public void removeObserver(SplashscreenObserver observer) {
         mObservers.removeObserver(observer);
     }
@@ -360,7 +368,10 @@ public class SplashController
 
     private void recordTraceEventsShowedSplash() {
         SingleShotOnDrawListener.install(
-                mParentView, () -> { TraceEvent.startAsync("SplashScreen.visible", hashCode()); });
+                mParentView,
+                () -> {
+                    TraceEvent.startAsync("SplashScreen.visible", hashCode());
+                });
     }
 
     private void recordTraceEventsStartedHidingSplash() {
@@ -369,7 +380,10 @@ public class SplashController
 
     private void recordTraceEventsFinishedHidingSplash() {
         TraceEvent.finishAsync("SplashScreen.hidingAnimation", hashCode());
-        SingleShotOnDrawListener.install(mParentView,
-                () -> { TraceEvent.finishAsync("WebappSplashScreen.visible", hashCode()); });
+        SingleShotOnDrawListener.install(
+                mParentView,
+                () -> {
+                    TraceEvent.finishAsync("WebappSplashScreen.visible", hashCode());
+                });
     }
 }

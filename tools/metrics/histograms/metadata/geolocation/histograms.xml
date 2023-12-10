@@ -23,7 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="Geolocation.Android.LocationPermissionState"
-    enum="AndroidLocationPermissionState" expires_after="2024-03-10">
+    enum="AndroidLocationPermissionState" expires_after="2024-05-12">
   <owner>mattreynolds@chromium.org</owner>
   <owner>device-dev@chromium.org</owner>
   <summary>
@@ -42,78 +42,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="Geolocation.Header.LocationAge" units="seconds"
-    expires_after="M85">
-  <obsolete>
-    Code for recording this histogram was removed in July 2022. Recording this
-    long-expired histogram was slowing down navigations.
-  </obsolete>
-  <owner>kcarattini@chromium.org</owner>
-  <owner>dominickn@chromium.org</owner>
-  <summary>
-    For Geolocation requests from the omnibox on Android, the time since the
-    location was most recently acquired. If no location has been acquired, the
-    maximum bucket is incremented.
-  </summary>
-</histogram>
-
-<histogram name="Geolocation.Header.PermissionState"
-    enum="GeolocationHeaderPermissionState" expires_after="M85">
-  <obsolete>
-    Code for recording this histogram was removed in July 2022. Recording this
-    long-expired histogram was slowing down navigations.
-  </obsolete>
-  <owner>kcarattini@chromium.org</owner>
-  <owner>dominickn@chromium.org</owner>
-  <summary>
-    Counts Geolocation requests for omnibox searches sliced by various
-    permission combinations. The location mode abbreviations indicate one of:
-    High Accuracy, Battery Saving, GPS On or Location Mode Off.
-  </summary>
-</histogram>
-
-<histogram base="true" name="Geolocation.Header.TimeListening" units="ms"
-    expires_after="M85">
-  <obsolete>
-    Code for recording this histogram was removed in July 2022. Recording this
-    long-expired histogram was slowing down navigations.
-  </obsolete>
-  <owner>kcarattini@chromium.org</owner>
-  <owner>dominickn@chromium.org</owner>
-  <summary>
-    For Geolocation requests from the omnibox on Android, the time since the
-    location was first acquired. If no location has been acquired, the minimum
-    bucket is incremented.
-  </summary>
-</histogram>
-
-<histogram name="Geolocation.HeaderSentOrNot" enum="GeolocationHeaderSentOrNot"
-    expires_after="M85">
-  <obsolete>
-    Long expired.
-  </obsolete>
-  <owner>kiyun@google.com</owner>
-  <owner>mvanouwerkerk@chromium.org</owner>
-  <owner>newt@chromium.org</owner>
-  <summary>
-    Reason why the X-Geo header was or was not included in a Google search from
-    the omnibox. Not recorded in Incognito mode. (X-Geo headers are never
-    allowed to be added to such requests in Incognito mode.)
-
-    If multiple reasons for not sending the header are true, only the first
-    found during the code flow is recorded. Refer to the code for the order.
-  </summary>
-</histogram>
-
-<histogram name="Geolocation.NetworkLocationRequest.AccessPoints" units="units"
-    expires_after="M85">
-  <owner>mattreynolds@chromium.org</owner>
-  <owner>device-dev@chromium.org</owner>
-  <summary>
-    The number of WiFi access points used to determine geolocation.
-  </summary>
-</histogram>
-
 <histogram name="Geolocation.NetworkLocationRequest.Event"
     enum="NetworkLocationRequestEvent" expires_after="2024-04-28">
   <owner>mattreynolds@chromium.org</owner>
@@ -127,7 +55,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Geolocation.NetworkLocationRequest.RequestInterval"
-    units="mins" expires_after="2024-03-03">
+    units="mins" expires_after="2024-05-05">
   <owner>alvinji@chromium.org</owner>
   <owner>device-dev@chromium.org</owner>
   <summary>

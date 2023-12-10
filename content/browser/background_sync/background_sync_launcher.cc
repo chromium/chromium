@@ -71,16 +71,13 @@ void BackgroundSyncLauncher::FireBackgroundSyncEventsImpl(
       base::BindOnce(base::android::RunRunnableAndroid,
                      base::android::ScopedJavaGlobalRef<jobject>(j_runnable)));
 
-  browser_context->ForEachLoadedStoragePartition(base::BindRepeating(
-      [](blink::mojom::BackgroundSyncType sync_type,
-         base::OnceClosure done_closure, StoragePartition* storage_partition) {
+  browser_context->ForEachLoadedStoragePartition(
+      [&](StoragePartition* storage_partition) {
         BackgroundSyncContext* sync_context =
             storage_partition->GetBackgroundSyncContext();
         DCHECK(sync_context);
-        sync_context->FireBackgroundSyncEvents(sync_type,
-                                               std::move(done_closure));
-      },
-      sync_type, std::move(done_closure)));
+        sync_context->FireBackgroundSyncEvents(sync_type, done_closure);
+      });
 }
 #endif
 
@@ -113,9 +110,10 @@ base::TimeDelta BackgroundSyncLauncher::GetSoonestWakeupDeltaImpl(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   SetGlobalSoonestWakeupDelta(sync_type, base::TimeDelta::Max());
-  browser_context->ForEachLoadedStoragePartition(base::BindRepeating(
-      &BackgroundSyncLauncher::GetSoonestWakeupDeltaForStoragePartition,
-      base::Unretained(this), sync_type));
+  browser_context->ForEachLoadedStoragePartition(
+      [&](StoragePartition* partition) {
+        GetSoonestWakeupDeltaForStoragePartition(sync_type, partition);
+      });
 
   return GetGlobalSoonestWakeupDelta(sync_type);
 }

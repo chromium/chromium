@@ -3648,6 +3648,11 @@ be describing additional metrics about the same event.
       queries.
     </summary>
   </metric>
+  <metric name="FieldLogEventCount">
+    <summary>
+      The total number of all the field log events created for this field.
+    </summary>
+  </metric>
   <metric name="FieldSessionIdentifier">
     <summary>
       A random variable assigned to a specific instance of a form control (e.g.
@@ -3672,6 +3677,9 @@ be describing additional metrics about the same event.
     </summary>
   </metric>
   <metric name="FormControlType" enum="AutofillFormControlType">
+    <obsolete>
+      Deprecated as of 11/2023. Replaced by FormControlType2.
+    </obsolete>
     <summary>
       A form control type of a web form-associated element. We only list the
       very common ones that are seen in autofill, such as text, textarea,
@@ -4460,6 +4468,13 @@ be describing additional metrics about the same event.
       where the site of the iframe is compared with the site of the main frame.
     </summary>
   </metric>
+  <metric name="Status.Disconnect" enum="FedCmDisconnectStatus">
+    <summary>
+      Records the status of a disconnect call to the FedCM API. Recorded once
+      per IdentityCredential.disconnect() call, once the browser knows the
+      result.
+    </summary>
+  </metric>
   <metric name="Status.MediationRequirement"
       enum="CredentialManagerMediationRequirement">
     <summary>
@@ -4481,10 +4496,10 @@ be describing additional metrics about the same event.
       Records the status of a revoke call to the FedCM API.
     </summary>
   </metric>
-  <metric name="Status.Revoke2" enum="FedCmRevokeStatus2">
+  <metric name="Status.SignInStateMatch" enum="FedCmSignInStateMatchStatus">
     <summary>
-      Records the status of a revoke call to the FedCM API. Recorded once per
-      IdentityCredential.revoke() call, once the browser knows the result.
+      Records whether user sign-in states between IDP and browser match after
+      browser receives an account list from IDP prior to showing UI.
     </summary>
   </metric>
   <metric name="Timing.AccountsDialogShownDuration">
@@ -4596,6 +4611,13 @@ be describing additional metrics about the same event.
       Records a 1 each time a mismatch dialog is shown.
     </summary>
   </metric>
+  <metric name="Status.Disconnect" enum="FedCmDisconnectStatus">
+    <summary>
+      Records the status of a disconnect call to the FedCM API. Recorded once
+      per IdentityCredential.disconnect() call, once the browser knows the
+      result.
+    </summary>
+  </metric>
   <metric name="Status.MediationRequirement"
       enum="CredentialManagerMediationRequirement">
     <summary>
@@ -4607,12 +4629,6 @@ be describing additional metrics about the same event.
   <metric name="Status.RequestIdToken" enum="FedCmRequestIdTokenStatus">
     <summary>
       Records the status of a request id token call to the FedCM API.
-    </summary>
-  </metric>
-  <metric name="Status.Revoke2" enum="FedCmRevokeStatus2">
-    <summary>
-      Records the status of a revoke call to the FedCM API. Recorded once per
-      IdentityCredential.revoke() call, once the browser knows the result.
     </summary>
   </metric>
   <metric name="Status.SignInStateMatch" enum="FedCmSignInStateMatchStatus">
@@ -16485,6 +16501,11 @@ be describing additional metrics about the same event.
       another page before interacting with the pop-up.
     </summary>
   </metric>
+  <metric name="IsAdTaggedPopupClick" enum="Boolean">
+    <summary>
+      Whether the popup frame was opened by a click on an ad-tagged frame.
+    </summary>
+  </metric>
   <metric name="PopupId">
     <summary>
       A random integer to identify the pop-up and associate this event with
@@ -17340,6 +17361,18 @@ be describing additional metrics about the same event.
       exponential bucket.
     </summary>
   </metric>
+  <metric name="InteractiveTiming.INPOffset">
+    <summary>
+      The one-based offset of the interaction in the list of all interactions in
+      this page load which was the INP (https://web.dev/inp).
+    </summary>
+  </metric>
+  <metric name="InteractiveTiming.INPTime">
+    <summary>
+      The time (in milliseconds from navigation start) of the interaction which
+      was the INP (https://web.dev/inp).
+    </summary>
+  </metric>
   <metric name="InteractiveTiming.LongestInputDelay">
     <obsolete>
       Deprecated on January 2019 in favor of
@@ -17682,6 +17715,19 @@ be describing additional metrics about the same event.
       Responsiveness.UserInteraction.TotalEventDuration and we reduct a budget
       from the original value. If the latency value is below the budget, it will
       be treated as 0 ms. Each type of interaction has its own budget.
+    </summary>
+  </metric>
+  <metric name="InteractiveTimingBeforeSoftNavigation.INPOffset">
+    <summary>
+      The one-based offset of the interaction in the list of all interactions in
+      this page load which was the INP before the first soft navigation
+      (https://web.dev/inp).
+    </summary>
+  </metric>
+  <metric name="InteractiveTimingBeforeSoftNavigation.INPTime">
+    <summary>
+      The time (in milliseconds from navigation starte) of the interaction which
+      was the INP before the first soft navigation (https://web.dev/inp).
     </summary>
   </metric>
   <metric name="InteractiveTimingBeforeSoftNavigation.NumInteractions">
@@ -19295,6 +19341,9 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="PasswordManager.PasswordChangeFlowDuration">
+  <obsolete>
+    Deprecated as of November 2023 (M121).
+  </obsolete>
   <owner>kolos@chromium.org</owner>
   <owner>jkeitel@google.com</owner>
   <summary>
@@ -23575,6 +23624,23 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="Shopping.PDPStateWithLocalInfo">
+  <owner>yuezhanggg@chromium.org</owner>
+  <owner>mdjones@chromium.org</owner>
+  <summary>
+    Records if and how a page has been determined to be a product details page.
+    It is recorded per eligible navigation (e.g. limited to main frame
+    navigation, http/https check, etc), and is recorded after the page has
+    finished loading.
+  </summary>
+  <metric name="PDPState" enum="ShoppingPDPDetectionMethod">
+    <summary>
+      The state of if and how the page has been determined to be a product
+      details page.
+    </summary>
+  </metric>
+</event>
+
 <event name="Shopping.WillSendRequest">
   <owner>wychen@chromium.org</owner>
   <owner>yuezhanggg@chromium.org</owner>
@@ -23796,6 +23862,22 @@ be describing additional metrics about the same event.
         </statistics>
       </history>
     </aggregation>
+  </metric>
+</event>
+
+<event name="SiteInstance">
+  <owner>bashi@chromium.org</owner>
+  <owner>chrome-site-isolation@google.com</owner>
+  <summary>
+    Records how likely a tab can share processes with other tabs.
+  </summary>
+  <metric name="NewProcessUsedForNavigationWhenSameSiteProcessExists"
+      enum="Boolean">
+    <summary>
+      Records whether a new process is used for navigation when there are other
+      same site process(es). Recorded for the outer-most main frame navigation
+      when navigation is committed (cross-origin redirects are not recorded).
+    </summary>
   </metric>
 </event>
 
@@ -24029,6 +24111,18 @@ be describing additional metrics about the same event.
     Soft navigation metrics like LCP are equivalent to their counterpart of the
     PageLoad event.
   </summary>
+  <metric name="InteractiveTiming.INPOffset">
+    <summary>
+      One-based offset in the list of all user interactions of the interaction
+      which was the INP (https://web.dev/inp).
+    </summary>
+  </metric>
+  <metric name="InteractiveTiming.INPTime">
+    <summary>
+      The time (in milliseconds from navigation start) of the interaction which
+      was the INP (https://web.dev/inp).
+    </summary>
+  </metric>
   <metric name="InteractiveTiming.NumInteractions">
     <summary>
       The number of distinct user interactions from the time when the soft

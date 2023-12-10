@@ -10,6 +10,7 @@
 #include <cstdint>
 #include <iterator>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -17,6 +18,7 @@
 #include "base/check.h"
 #include "base/check_is_test.h"
 #include "base/containers/contains.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -27,6 +29,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_piece.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -60,14 +63,16 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/common/constants.h"
-#include "storage/browser/file_system/file_system_context.h"
-#include "storage/browser/file_system/file_system_url.h"
-#include "storage/browser/file_system/recursive_operation_delegate.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace policy {
 namespace {
+
+// System application URLs.
+// Please keep them updated with dlp_files_controller_ash_unittest.cc.
+constexpr char kFileManagerUrl[] = "chrome://file-manager/";
+constexpr char kImageLoaderUrl[] =
+    "chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/";
 
 // Timeout defining when two events having the same properties are considered
 // duplicates.
@@ -78,10 +83,6 @@ constexpr base::TimeDelta kCooldownTimeout = base::Seconds(5);
 // DlpFilesEventStorage.
 // TODO(crbug.com/1366299): determine the value to use.
 constexpr size_t kEntriesLimit = 100;
-
-// FileSystemContext instance set for testing.
-absl::optional<storage::FileSystemContext*> g_file_system_context_for_testing =
-    absl::nullopt;
 
 // Returns true if `file_path` is in My Files directory.
 bool IsInLocalFileSystem(Profile* profile, const base::FilePath& file_path) {
@@ -95,7 +96,7 @@ bool IsInLocalFileSystem(Profile* profile, const base::FilePath& file_path) {
 
 // Returns a `DlpFileDestination` with a source URL or component, based on
 // |app_update|. If neither URL nor component can be found, returns nullopt.
-absl::optional<DlpFileDestination> GetFileDestinationForApp(
+std::optional<DlpFileDestination> GetFileDestinationForApp(
     const apps::AppUpdate& app_update) {
   switch (app_update.AppType()) {
     case apps::AppType::kStandaloneBrowserChromeApp:
@@ -122,157 +123,17 @@ absl::optional<DlpFileDestination> GetFileDestinationForApp(
     case apps::AppType::kRemote:
     case apps::AppType::kBorealis:
     case apps::AppType::kBruschetta:
-      return absl::nullopt;
+      return std::nullopt;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
-
-// Returns |g_file_system_context_for_testing| if set, otherwise
-// it returns FileSystemContext* for the primary profile.
-storage::FileSystemContext* GetFileSystemContext(Profile* profile) {
-  return g_file_system_context_for_testing.value_or(
-      file_manager::util::GetFileManagerFileSystemContext(profile));
-}
-
-// Gets all files inside |root| recursively and runs |callback_| with the
-// files list.
-class FolderRecursionDelegate : public storage::RecursiveOperationDelegate {
- public:
-  using FileURLsCallback =
-      base::OnceCallback<void(std::vector<storage::FileSystemURL>)>;
-
-  FolderRecursionDelegate(storage::FileSystemContext* file_system_context,
-                          const storage::FileSystemURL& root,
-                          FileURLsCallback callback)
-      : RecursiveOperationDelegate(file_system_context),
-        root_(root),
-        callback_(std::move(callback)) {}
-
-  FolderRecursionDelegate(const FolderRecursionDelegate&) = delete;
-  FolderRecursionDelegate& operator=(const FolderRecursionDelegate&) = delete;
-
-  ~FolderRecursionDelegate() override = default;
-
-  // RecursiveOperationDelegate:
-  void Run() override { NOTREACHED(); }
-  void RunRecursively() override {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-    StartRecursiveOperation(*root_,
-                            storage::FileSystemOperation::ERROR_BEHAVIOR_SKIP,
-                            base::BindOnce(&FolderRecursionDelegate::Completed,
-                                           weak_ptr_factory_.GetWeakPtr()));
-  }
-  void ProcessFile(const storage::FileSystemURL& url,
-                   StatusCallback callback) override {
-    file_system_context()->operation_runner()->GetMetadata(
-        url, storage::FileSystemOperation::GET_METADATA_FIELD_IS_DIRECTORY,
-        base::BindOnce(&FolderRecursionDelegate::OnGetMetadata,
-                       weak_ptr_factory_.GetWeakPtr(), url,
-                       std::move(callback)));
-  }
-  void ProcessDirectory(const storage::FileSystemURL& url,
-                        StatusCallback callback) override {
-    std::move(callback).Run(base::File::FILE_OK);
-  }
-  void PostProcessDirectory(const storage::FileSystemURL& url,
-                            StatusCallback callback) override {
-    std::move(callback).Run(base::File::FILE_OK);
-  }
-
- private:
-  void OnGetMetadata(const storage::FileSystemURL& url,
-                     StatusCallback callback,
-                     base::File::Error result,
-                     const base::File::Info& file_info) {
-    if (result != base::File::FILE_OK) {
-      std::move(callback).Run(result);
-      return;
-    }
-    if (file_info.is_directory) {
-      std::move(callback).Run(base::File::FILE_ERROR_NOT_A_FILE);
-      return;
-    }
-    files_urls_.push_back(url);
-    std::move(callback).Run(base::File::FILE_OK);
-  }
-
-  void Completed(base::File::Error result) {
-    std::move(callback_).Run(std::move(files_urls_));
-  }
-
-  const raw_ref<const storage::FileSystemURL, ExperimentalAsh> root_;
-  FileURLsCallback callback_;
-  std::vector<storage::FileSystemURL> files_urls_;
-
-  base::WeakPtrFactory<FolderRecursionDelegate> weak_ptr_factory_{this};
-};
-
-// Gets all files inside |roots| recursively and runs |callback_| with the
-// whole files list. Deletes itself after |callback_| is run.
-// TODO(crbug.com/1378202): Extract RootsRecursionDelegate to another file to
-// have better testing coverage.
-class RootsRecursionDelegate {
- public:
-  RootsRecursionDelegate(storage::FileSystemContext* file_system_context,
-                         std::vector<storage::FileSystemURL> roots,
-                         FolderRecursionDelegate::FileURLsCallback callback)
-      : file_system_context_(file_system_context),
-        roots_(std::move(roots)),
-        callback_(std::move(callback)) {}
-
-  RootsRecursionDelegate(const RootsRecursionDelegate&) = delete;
-  RootsRecursionDelegate& operator=(const RootsRecursionDelegate&) = delete;
-
-  ~RootsRecursionDelegate() = default;
-
-  // Starts getting all files inside |roots| recursively.
-  void Run() {
-    for (const auto& root : roots_) {
-      auto recursion_delegate = std::make_unique<FolderRecursionDelegate>(
-          file_system_context_, root,
-          base::BindOnce(&RootsRecursionDelegate::Completed,
-                         weak_ptr_factory_.GetWeakPtr()));
-      recursion_delegate->RunRecursively();
-      delegates_.push_back(std::move(recursion_delegate));
-    }
-  }
-
-  // Runs |callback_| when all files are ready.
-  void Completed(std::vector<storage::FileSystemURL> files_urls) {
-    counter_++;
-    files_urls_.insert(std::end(files_urls_), std::begin(files_urls),
-                       std::end(files_urls));
-    if (counter_ == roots_.size()) {
-      content::GetUIThreadTaskRunner({})->PostTask(
-          FROM_HERE,
-          base::BindOnce(std::move(callback_), std::move(files_urls_)));
-      content::GetIOThreadTaskRunner({})->DeleteSoon(FROM_HERE, this);
-    }
-  }
-
- private:
-  // counts the number of |roots| processed.
-  uint counter_ = 0;
-  raw_ptr<storage::FileSystemContext, DanglingUntriaged | ExperimentalAsh>
-      file_system_context_ = nullptr;
-  const std::vector<storage::FileSystemURL> roots_;
-  FolderRecursionDelegate::FileURLsCallback callback_;
-  std::vector<storage::FileSystemURL> files_urls_;
-  std::vector<std::unique_ptr<FolderRecursionDelegate>> delegates_;
-
-  base::WeakPtrFactory<RootsRecursionDelegate> weak_ptr_factory_{this};
-};
 
 // Converts files paths to file system URLs.
 std::vector<storage::FileSystemURL> ConvertFilePathsToFileSystemUrls(
     Profile* profile,
+    const storage::FileSystemContext& file_system_context,
     const std::vector<base::FilePath>& files_paths) {
   std::vector<storage::FileSystemURL> file_system_urls;
-
-  auto* file_system_context = GetFileSystemContext(profile);
-  if (!file_system_context) {
-    return file_system_urls;
-  }
 
   for (const auto& file_path : files_paths) {
     GURL gurl;
@@ -280,47 +141,18 @@ std::vector<storage::FileSystemURL> ConvertFilePathsToFileSystemUrls(
             profile, file_path, file_manager::util::GetFileManagerURL(),
             &gurl)) {
       file_system_urls.push_back(
-          file_system_context->CrackURLInFirstPartyContext(gurl));
+          file_system_context.CrackURLInFirstPartyContext(gurl));
     }
   }
 
   return file_system_urls;
 }
 
-// Converts DataTransferEndpoint object to DlpFileDestination.
-DlpFileDestination DTEndpointToFileDestination(
-    const ui::DataTransferEndpoint* endpoint) {
-  DCHECK(endpoint);
-
-  switch (endpoint->type()) {
-    case ui::EndpointType::kUrl:
-      DCHECK(endpoint->GetURL());
-      return DlpFileDestination(*endpoint->GetURL());
-
-    case ui::EndpointType::kArc:
-      return DlpFileDestination(data_controls::Component::kArc);
-
-    case ui::EndpointType::kCrostini:
-      return DlpFileDestination(data_controls::Component::kCrostini);
-
-    case ui::EndpointType::kPluginVm:
-      return DlpFileDestination(data_controls::Component::kPluginVm);
-
-    case ui::EndpointType::kLacros:
-    case ui::EndpointType::kDefault:
-    case ui::EndpointType::kClipboardHistory:
-    case ui::EndpointType::kBorealis:
-    case ui::EndpointType::kUnknownVm:
-      return DlpFileDestination(data_controls::Component::kUnknownComponent);
-  }
-}
-
 // Shows DLP block desktop notification.
-void ShowDlpBlockedFiles(
-    Profile* profile,
-    absl::optional<file_manager::io_task::IOTaskId> task_id,
-    std::vector<base::FilePath> blocked_files,
-    dlp::FileAction action) {
+void ShowDlpBlockedFiles(Profile* profile,
+                         std::optional<file_manager::io_task::IOTaskId> task_id,
+                         std::vector<base::FilePath> blocked_files,
+                         dlp::FileAction action) {
   auto* fpnm =
       FilesPolicyNotificationManagerFactory::GetForBrowserContext(profile);
   if (!fpnm) {
@@ -344,6 +176,15 @@ file_manager::VolumeManager* GetVolumeManager(
   }
   return volume_manager;
 }
+
+// Returns whether `url` represents the URL of a system application.
+bool IsSystemAppURL(const GURL& url) {
+  static constexpr auto kSystemURLsMap =
+      base::MakeFixedFlatSet<base::StringPiece>(
+          {kFileManagerUrl, kImageLoaderUrl});
+  return kSystemURLsMap.contains(url.spec());
+}
+
 }  // namespace
 
 // static
@@ -417,12 +258,12 @@ DlpFilesControllerAsh::~DlpFilesControllerAsh() {
 }
 
 void DlpFilesControllerAsh::CheckIfTransferAllowed(
-    absl::optional<file_manager::io_task::IOTaskId> task_id,
+    std::optional<file_manager::io_task::IOTaskId> task_id,
     const std::vector<storage::FileSystemURL>& transferred_files,
     storage::FileSystemURL destination,
     bool is_move,
     CheckIfTransferAllowedCallback result_callback) {
-  auto* file_system_context = GetFileSystemContext(profile_);
+  auto* file_system_context = GetFileSystemContextForPrimaryProfile();
   if (!file_system_context) {
     std::move(result_callback).Run(std::vector<storage::FileSystemURL>());
     return;
@@ -466,7 +307,7 @@ void DlpFilesControllerAsh::CheckIfTransferAllowed(
 
 void DlpFilesControllerAsh::GetDlpMetadata(
     const std::vector<storage::FileSystemURL>& files,
-    absl::optional<DlpFileDestination> destination,
+    std::optional<DlpFileDestination> destination,
     GetDlpMetadataCallback result_callback) {
   if (!chromeos::DlpClient::Get() || !chromeos::DlpClient::Get()->IsAlive()) {
     std::move(result_callback).Run(std::vector<DlpFileMetadata>());
@@ -494,22 +335,22 @@ void DlpFilesControllerAsh::FilterDisallowedUploads(
     return;
   }
 
+  auto* file_system_context = GetFileSystemContextForPrimaryProfile();
+  if (!file_system_context) {
+    std::move(result_callback).Run(std::move(selected_files));
+    return;
+  }
+
   std::vector<base::FilePath> files_paths;
   for (const auto& file : selected_files) {
     files_paths.push_back(file.local_path.empty() ? file.file_path
                                                   : file.local_path);
   }
-
   std::vector<storage::FileSystemURL> file_system_urls =
-      ConvertFilePathsToFileSystemUrls(profile_, files_paths);
+      ConvertFilePathsToFileSystemUrls(profile_, *file_system_context,
+                                       files_paths);
 
   if (file_system_urls.empty()) {
-    std::move(result_callback).Run(std::move(selected_files));
-    return;
-  }
-
-  auto* file_system_context = GetFileSystemContext(profile_);
-  if (!file_system_context) {
     std::move(result_callback).Run(std::move(selected_files));
     return;
   }
@@ -551,8 +392,9 @@ void DlpFilesControllerAsh::CheckIfDownloadAllowed(
   FileDaemonInfo file_info(/*inode=*/{}, /*crtime=*/{}, file_path,
                            download_src.url()->spec(),
                            /*referrer_url=*/"");
+
   IsFilesTransferRestricted(
-      absl::nullopt, {std::move(file_info)}, dlp_destination,
+      std::nullopt, {std::move(file_info)}, dlp_destination,
       dlp::FileAction::kDownload,
       base::BindOnce(
           [](CheckIfDlpAllowedCallback result_callback, Profile* profile,
@@ -569,8 +411,9 @@ void DlpFilesControllerAsh::CheckIfDownloadAllowed(
               }
             }
             if (!is_allowed) {
-              ShowDlpBlockedFiles(profile, /*task_id=*/absl::nullopt,
-                                  {file_path}, dlp::FileAction::kDownload);
+              ::policy::ShowDlpBlockedFiles(profile, /*task_id=*/std::nullopt,
+                                            {file_path},
+                                            dlp::FileAction::kDownload);
             }
             std::move(result_callback).Run(is_allowed);
           },
@@ -607,7 +450,7 @@ void DlpFilesControllerAsh::CheckIfLaunchAllowed(
     std::move(result_callback).Run(/*is_allowed=*/true);
     return;
   }
-  absl::optional<DlpFileDestination> destination =
+  std::optional<DlpFileDestination> destination =
       GetFileDestinationForApp(app_update);
   if (!destination.has_value()) {
     std::move(result_callback).Run(/*is_allowed=*/true);
@@ -644,7 +487,7 @@ bool DlpFilesControllerAsh::IsLaunchBlocked(const apps::AppUpdate& app_update,
     return false;
   }
 
-  absl::optional<DlpFileDestination> destination =
+  std::optional<DlpFileDestination> destination =
       GetFileDestinationForApp(app_update);
 
   if (!destination.has_value()) {
@@ -678,7 +521,7 @@ bool DlpFilesControllerAsh::IsLaunchBlocked(const apps::AppUpdate& app_update,
 }
 
 void DlpFilesControllerAsh::IsFilesTransferRestricted(
-    absl::optional<file_manager::io_task::IOTaskId> task_id,
+    std::optional<file_manager::io_task::IOTaskId> task_id,
     const std::vector<FileDaemonInfo>& transferred_files,
     const DlpFileDestination& destination,
     dlp::FileAction files_action,
@@ -687,7 +530,7 @@ void DlpFilesControllerAsh::IsFilesTransferRestricted(
 
   std::vector<std::pair<FileDaemonInfo, ::dlp::RestrictionLevel>> files_levels;
   std::vector<FileDaemonInfo> warned_files;
-  absl::optional<std::string> destination_pattern;
+  std::optional<std::string> destination_pattern;
   std::vector<std::string> warned_source_patterns;
   std::vector<DlpRulesManager::RuleMetadata> warned_rules_metadata;
   for (const auto& file : transferred_files) {
@@ -702,7 +545,7 @@ void DlpFilesControllerAsh::IsFilesTransferRestricted(
           &rule_metadata);
       actual_dst = DlpFileDestination(dst_component);
       MaybeReportEvent(file.inode, file.crtime, file.path, source_pattern,
-                       actual_dst, absl::nullopt, rule_metadata, level);
+                       actual_dst, std::nullopt, rule_metadata, level);
     } else if (destination.IsFileSystem()) {
       level = DlpRulesManager::Level::kAllow;
     } else {
@@ -712,8 +555,10 @@ void DlpFilesControllerAsh::IsFilesTransferRestricted(
           GURL(file.source_url), GURL(*destination.url()),
           DlpRulesManager::Restriction::kFiles, &source_pattern,
           &destination_pattern.value(), &rule_metadata);
-      MaybeReportEvent(file.inode, file.crtime, file.path, source_pattern,
-                       actual_dst, destination_pattern, rule_metadata, level);
+      if (!IsSystemAppURL(destination.url().value())) {
+        MaybeReportEvent(file.inode, file.crtime, file.path, source_pattern,
+                         actual_dst, destination_pattern, rule_metadata, level);
+      }
     }
 
     switch (level) {
@@ -852,52 +697,7 @@ bool DlpFilesControllerAsh::IsDlpPolicyMatched(const FileDaemonInfo& file) {
   data_controls::DlpHistogramEnumeration(
       data_controls::dlp::kFilesUnknownAccessLevel, level);
 
-  MaybeReportEvent(
-      file.inode, file.crtime, file.path, src_pattern,
-      DlpFileDestination(data_controls::Component::kUnknownComponent),
-      absl::nullopt, rule_metadata, level);
-
   return restricted;
-}
-
-void DlpFilesControllerAsh::CheckIfDropAllowed(
-    const std::vector<ui::FileInfo>& dropped_files,
-    const ui::DataTransferEndpoint* data_dst,
-    CheckIfDlpAllowedCallback result_callback) {
-  std::vector<base::FilePath> files_paths;
-  for (const auto& file : dropped_files) {
-    if (!IsInLocalFileSystem(profile_, file.path)) {
-      continue;
-    }
-    files_paths.push_back(file.path);
-  }
-
-  std::vector<storage::FileSystemURL> files_urls =
-      ConvertFilePathsToFileSystemUrls(profile_, files_paths);
-  if (files_urls.empty()) {
-    std::move(result_callback).Run(/*is_allowed=*/true);
-    return;
-  }
-
-  DlpFileDestination destination = DTEndpointToFileDestination(data_dst);
-
-  auto* file_system_context = GetFileSystemContext(profile_);
-  if (!file_system_context) {
-    std::move(result_callback).Run(/*is_allowed=*/true);
-    return;
-  }
-
-  auto* roots_recursion_delegate = new RootsRecursionDelegate(
-      file_system_context, std::move(files_urls),
-      base::BindOnce(&DlpFilesControllerAsh::ContinueCheckIfDropAllowed,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(destination),
-                     std::move(result_callback)));
-  content::GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&RootsRecursionDelegate::Run,
-                     // base::Unretained() is safe since |recursion_delegate|
-                     // will delete itself after all the files list if ready.
-                     base::Unretained(roots_recursion_delegate)));
 }
 
 void DlpFilesControllerAsh::OnShutdownStart(
@@ -912,12 +712,7 @@ DlpFilesEventStorage* DlpFilesControllerAsh::GetEventStorageForTesting() {
   return event_storage_.get();
 }
 
-void DlpFilesControllerAsh::SetFileSystemContextForTesting(
-    storage::FileSystemContext* file_system_context) {
-  g_file_system_context_for_testing = file_system_context;
-}
-
-absl::optional<data_controls::Component>
+std::optional<data_controls::Component>
 DlpFilesControllerAsh::MapFilePathToPolicyComponent(
     Profile* profile,
     const base::FilePath& file_path) {
@@ -961,6 +756,14 @@ DlpFilesControllerAsh::MapFilePathToPolicyComponent(
   return {};
 }
 
+void DlpFilesControllerAsh::ShowDlpBlockedFiles(
+    std::optional<file_manager::io_task::IOTaskId> task_id,
+    std::vector<base::FilePath> blocked_files,
+    dlp::FileAction action) {
+  ::policy::ShowDlpBlockedFiles(profile_, std::move(task_id),
+                                std::move(blocked_files), action);
+}
+
 void DlpFilesControllerAsh::OnDlpWarnDialogReply(
     std::vector<std::pair<FileDaemonInfo, ::dlp::RestrictionLevel>>
         files_levels,
@@ -968,10 +771,10 @@ void DlpFilesControllerAsh::OnDlpWarnDialogReply(
     std::vector<std::string> warned_src_patterns,
     std::vector<DlpRulesManager::RuleMetadata> warned_rules_metadata,
     const DlpFileDestination& dst,
-    const absl::optional<std::string>& dst_pattern,
+    const std::optional<std::string>& dst_pattern,
     dlp::FileAction files_action,
     IsFilesTransferRestrictedCallback callback,
-    absl::optional<std::u16string> user_justification,
+    std::optional<std::u16string> user_justification,
     bool should_proceed) {
   DCHECK(warned_files.size() == warned_src_patterns.size());
   DCHECK(warned_files.size() == warned_rules_metadata.size());
@@ -981,7 +784,7 @@ void DlpFilesControllerAsh::OnDlpWarnDialogReply(
           data_controls::dlp::kFileActionWarnProceededUMA, files_action);
       MaybeReportEvent(warned_files[i].inode, warned_files[i].crtime,
                        warned_files[i].path, warned_src_patterns[i], dst,
-                       dst_pattern, warned_rules_metadata[i], absl::nullopt);
+                       dst_pattern, warned_rules_metadata[i], std::nullopt);
     }
     files_levels.emplace_back(warned_files[i],
                               should_proceed
@@ -992,7 +795,7 @@ void DlpFilesControllerAsh::OnDlpWarnDialogReply(
 }
 
 void DlpFilesControllerAsh::ReturnDisallowedFiles(
-    absl::optional<file_manager::io_task::IOTaskId> task_id,
+    std::optional<file_manager::io_task::IOTaskId> task_id,
     base::flat_map<std::string, storage::FileSystemURL> files_map,
     dlp::FileAction file_action,
     CheckIfTransferAllowedCallback result_callback,
@@ -1017,8 +820,9 @@ void DlpFilesControllerAsh::ReturnDisallowedFiles(
   if (!restricted_files_paths.empty() &&
       base::FeatureList::IsEnabled(features::kNewFilesPolicyUX) &&
       task_id.has_value()) {
-    ShowDlpBlockedFiles(profile_, std::move(task_id),
-                        std::move(restricted_files_paths), file_action);
+    ::policy::ShowDlpBlockedFiles(profile_, std::move(task_id),
+                                  std::move(restricted_files_paths),
+                                  file_action);
   }
   std::move(result_callback).Run(std::move(restricted_files_urls));
 }
@@ -1049,8 +853,9 @@ void DlpFilesControllerAsh::ReturnAllowedUploads(
               });
         });
 
-    ShowDlpBlockedFiles(profile_, /*task_id=*/absl::nullopt,
-                        std::move(restricted_files), dlp::FileAction::kUpload);
+    ::policy::ShowDlpBlockedFiles(profile_, /*task_id=*/std::nullopt,
+                                  std::move(restricted_files),
+                                  dlp::FileAction::kUpload);
   }
 
   std::move(result_callback).Run(std::move(selected_files));
@@ -1058,7 +863,7 @@ void DlpFilesControllerAsh::ReturnAllowedUploads(
 
 void DlpFilesControllerAsh::ReturnDlpMetadata(
     const std::vector<storage::FileSystemURL>& files,
-    absl::optional<DlpFileDestination> destination,
+    std::optional<DlpFileDestination> destination,
     GetDlpMetadataCallback result_callback,
     const ::dlp::GetFilesSourcesResponse response) {
   if (response.has_error_message()) {
@@ -1077,7 +882,7 @@ void DlpFilesControllerAsh::ReturnDlpMetadata(
     // Only if it's restricted by any rule and the destination is passed, check
     // if this combination is also blocked or not.
     if (level == DlpRulesManager::Level::kBlock && destination.has_value()) {
-      absl::optional<data_controls::Component> dst_component =
+      std::optional<data_controls::Component> dst_component =
           destination->component();
       if (dst_component.has_value()) {
         DlpRulesManager::Level dst_level =
@@ -1117,38 +922,15 @@ void DlpFilesControllerAsh::ReturnDlpMetadata(
   std::move(result_callback).Run(std::move(result));
 }
 
-void DlpFilesControllerAsh::ReturnIfActionAllowed(
-    dlp::FileAction action,
-    CheckIfDlpAllowedCallback result_callback,
-    ::dlp::CheckFilesTransferResponse response) {
-  if (response.has_error_message()) {
-    LOG(ERROR) << "Failed to get check files transfer, error: "
-               << response.error_message();
-    std::move(result_callback).Run(/*is_allowed=*/true);
-    return;
-  }
-
-  if (response.files_paths().empty()) {
-    std::move(result_callback).Run(/*is_allowed=*/true);
-    return;
-  }
-
-  std::vector<base::FilePath> blocked_files(response.files_paths().begin(),
-                                            response.files_paths().end());
-  ShowDlpBlockedFiles(profile_, /*task_id=*/absl::nullopt,
-                      std::move(blocked_files), action);
-  std::move(result_callback).Run(/*is_allowed=*/false);
-}
-
 void DlpFilesControllerAsh::MaybeReportEvent(
     ino64_t inode,
     time_t crtime,
     const base::FilePath& path,
     const std::string& source_pattern,
     const DlpFileDestination& dst,
-    const absl::optional<std::string>& dst_pattern,
+    const std::optional<std::string>& dst_pattern,
     const DlpRulesManager::RuleMetadata& rule_metadata,
-    absl::optional<DlpRulesManager::Level> level) {
+    std::optional<DlpRulesManager::Level> level) {
   const bool is_warning_proceeded_event = !level.has_value();
 
   if (!is_warning_proceeded_event &&
@@ -1193,7 +975,7 @@ void DlpFilesControllerAsh::MaybeReportEvent(
 }
 
 void DlpFilesControllerAsh::ContinueCheckIfTransferAllowed(
-    absl::optional<file_manager::io_task::IOTaskId> task_id,
+    std::optional<file_manager::io_task::IOTaskId> task_id,
     storage::FileSystemURL destination,
     bool is_move,
     CheckIfTransferAllowedCallback result_callback,
@@ -1215,7 +997,7 @@ void DlpFilesControllerAsh::ContinueCheckIfTransferAllowed(
     return;
   }
 
-  absl::optional<data_controls::Component> component =
+  std::optional<data_controls::Component> component =
       MapFilePathToPolicyComponent(profile_, destination.path());
   ::dlp::DlpComponent proto;
   if (component) {
@@ -1271,38 +1053,6 @@ void DlpFilesControllerAsh::ContinueFilterDisallowedUploads(
                      std::move(result_callback));
   chromeos::DlpClient::Get()->CheckFilesTransfer(
       request, std::move(return_uploads_callback));
-}
-
-void DlpFilesControllerAsh::ContinueCheckIfDropAllowed(
-    const DlpFileDestination& destination,
-    CheckIfDlpAllowedCallback result_callback,
-    std::vector<storage::FileSystemURL> dropped_files) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  if (!chromeos::DlpClient::Get() || !chromeos::DlpClient::Get()->IsAlive()) {
-    std::move(result_callback).Run(/*is_allowed=*/true);
-    return;
-  }
-
-  ::dlp::CheckFilesTransferRequest request;
-  for (const auto& file : dropped_files) {
-    request.add_files_paths(file.path().value());
-  }
-  if (destination.component().has_value()) {
-    request.set_destination_component(
-        dlp::MapPolicyComponentToProto(destination.component().value()));
-  } else {
-    DCHECK(destination.url());
-    request.set_destination_url(destination.url()->spec());
-  }
-  request.set_file_action(::dlp::FileAction::MOVE);
-
-  auto return_drop_allowed_cb =
-      base::BindOnce(&DlpFilesControllerAsh::ReturnIfActionAllowed,
-                     weak_ptr_factory_.GetWeakPtr(), dlp::FileAction::kMove,
-                     std::move(result_callback));
-  chromeos::DlpClient::Get()->CheckFilesTransfer(
-      request, std::move(return_drop_allowed_cb));
 }
 
 }  // namespace policy

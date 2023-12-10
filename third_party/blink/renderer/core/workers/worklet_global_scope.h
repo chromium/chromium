@@ -124,6 +124,9 @@ class CORE_EXPORT WorkletGlobalScope
 
   void Trace(Visitor*) const override;
 
+  // ActiveScriptWrappable.
+  bool HasPendingActivity() const override;
+
   HttpsState GetHttpsState() const override { return https_state_; }
 
   // Constructs an instance as a main thread worklet. Must be called on the main

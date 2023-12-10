@@ -28,7 +28,7 @@ namespace blink {
 class ComputedStyle;
 class Document;
 class GraphicsContext;
-class NGInlinePaintContext;
+class InlinePaintContext;
 class Node;
 
 namespace {
@@ -42,8 +42,8 @@ constexpr float kDecorationClipMaxDilation = 13;
 
 }  // anonymous namespace
 
-// Base class for text painting. This is the base class of NGTextPainter and
-// NGTextCombinePainter.
+// Base class for text painting. This is the base class of TextPainter and
+// TextCombinePainter.
 class CORE_EXPORT TextPainterBase {
   STACK_ALLOCATED();
 
@@ -51,12 +51,11 @@ class CORE_EXPORT TextPainterBase {
   TextPainterBase(GraphicsContext&,
                   const Font&,
                   const LineRelativeOffset& text_origin,
-                  const LineRelativeRect& text_frame_rect,
-                  NGInlinePaintContext* inline_context,
+                  InlinePaintContext* inline_context,
                   bool horizontal);
   ~TextPainterBase();
 
-  const NGInlinePaintContext* InlineContext() const { return inline_context_; }
+  const InlinePaintContext* InlineContext() const { return inline_context_; }
 
   void SetEmphasisMark(const AtomicString&, TextEmphasisPosition);
 
@@ -110,41 +109,40 @@ class CORE_EXPORT TextPainterBase {
   //   2. Paint text
   //   3. Paint line through text decoration
   void PaintUnderOrOverLineDecorations(
-      const NGTextFragmentPaintInfo& fragment_paint_info,
-      const NGTextDecorationOffset& decoration_offset,
+      const TextFragmentPaintInfo& fragment_paint_info,
+      const TextDecorationOffset& decoration_offset,
       TextDecorationInfo& decoration_info,
       TextDecorationLine lines_to_paint,
       const PaintInfo& paint_info,
       const TextPaintStyle& text_style,
       const cc::PaintFlags* flags = nullptr);
 
-  virtual void ClipDecorationsStripe(const NGTextFragmentPaintInfo&,
+  virtual void ClipDecorationsStripe(const TextFragmentPaintInfo&,
                                      float upper,
                                      float stripe_width,
                                      float dilation) = 0;
 
   enum PaintInternalStep { kPaintText, kPaintEmphasisMark };
 
-  NGInlinePaintContext* inline_context_ = nullptr;
+  InlinePaintContext* inline_context_ = nullptr;
   GraphicsContext& graphics_context_;
   const Font& font_;
   const LineRelativeOffset text_origin_;
-  const LineRelativeRect text_frame_rect_;
   AtomicString emphasis_mark_;
   int emphasis_mark_offset_ = 0;
   const bool horizontal_;
 
  private:
   void PaintDecorationUnderOrOverLine(
-      const NGTextFragmentPaintInfo& fragment_paint_info,
+      const TextFragmentPaintInfo& fragment_paint_info,
       GraphicsContext& context,
       TextDecorationInfo& decoration_info,
       TextDecorationLine line,
       const cc::PaintFlags* flags = nullptr);
 
   void PaintUnderOrOverLineDecorationShadows(
-      const NGTextFragmentPaintInfo& fragment_paint_info,
-      const NGTextDecorationOffset& decoration_offset,
+      const TextFragmentPaintInfo& fragment_paint_info,
+      const TextDecorationOffset& decoration_offset,
       TextDecorationInfo& decoration_info,
       TextDecorationLine lines_to_paint,
       const cc::PaintFlags* flags,
@@ -152,8 +150,8 @@ class CORE_EXPORT TextPainterBase {
       GraphicsContext& context);
 
   void PaintUnderOrOverLineDecorations(
-      const NGTextFragmentPaintInfo& fragment_paint_info,
-      const NGTextDecorationOffset& decoration_offset,
+      const TextFragmentPaintInfo& fragment_paint_info,
+      const TextDecorationOffset& decoration_offset,
       TextDecorationInfo& decoration_info,
       TextDecorationLine lines_to_paint,
       const cc::PaintFlags* flags,

@@ -51,10 +51,15 @@ VideoCodecProfile AV1ProfileToVideoCodecProfile(
   }
 }
 
-// Returns true iff the sequence has spatial or temporal scalability information
-// for the selected operating point.
-bool SequenceUsesScalability(int operating_point_idc) {
-  return operating_point_idc != 0;
+// Returns true iff the current decode sequence has multiple spatial layers.
+bool IsSpatialLayerDecoding(int operating_point_idc) {
+  // Spec 6.4.1.
+  constexpr int kTemporalLayerBitMaskBits = 8;
+  const int kUsedSpatialLayerBitMask =
+      (operating_point_idc >> kTemporalLayerBitMaskBits) & 0b1111;
+  // In case of an only temporal layer encoding e.g. L1T3, spatial layer#0 bit
+  // is 1. We allow this case.
+  return kUsedSpatialLayerBitMask > 1;
 }
 
 bool IsValidBitDepth(uint8_t bit_depth, VideoCodecProfile profile) {
@@ -116,6 +121,12 @@ gfx::HdrMetadataCta861_3 ToGfxCta861_3(const libgav1::ObuMetadataHdrCll& cll) {
 }
 }  // namespace
 
+scoped_refptr<AV1Picture> AV1Decoder::AV1Accelerator::CreateAV1PictureSecure(
+    bool apply_grain,
+    uint64_t secure_handle) {
+  return nullptr;
+}
+
 AV1Decoder::AV1Decoder(std::unique_ptr<AV1Accelerator> accelerator,
                        VideoCodecProfile profile,
                        const VideoColorSpace& container_color_space)
@@ -164,6 +175,7 @@ void AV1Decoder::Reset() {
   ClearReferenceFrames();
   parser_.reset();
   decrypt_config_.reset();
+  secure_handle_ = 0;
 
   buffer_pool_ = std::make_unique<libgav1::BufferPool>(
       /*on_frame_buffer_size_changed=*/nullptr,
@@ -193,6 +205,12 @@ void AV1Decoder::SetStream(int32_t id, const DecoderBuffer& decoder_buffer) {
     decrypt_config_ = decoder_buffer.decrypt_config()->Clone();
   else
     decrypt_config_.reset();
+  if (decoder_buffer.has_side_data() &&
+      decoder_buffer.side_data()->secure_handle) {
+    secure_handle_ = decoder_buffer.side_data()->secure_handle;
+  } else {
+    secure_handle_ = 0;
+  }
 }
 
 void AV1Decoder::ClearCurrentFrame() {
@@ -261,11 +279,15 @@ AcceleratedVideoDecoder::DecodeResult AV1Decoder::DecodeInternal() {
               << "temporal_id=0";
           return kDecodeError;
         }
-        if (SequenceUsesScalability(
+        if (IsSpatialLayerDecoding(
                 parser_->sequence_header()
                     .operating_point_idc[kDefaultOperatingPoint])) {
-          DVLOG(3) << "Either temporal or spatial layer decoding is not "
-                   << "supported";
+          constexpr size_t kOperatingPointIdcBits = 12;
+          DVLOG(1) << "Spatial layer decoding is not supported: "
+                   << "operating_point_idc="
+                   << std::bitset<kOperatingPointIdcBits>(
+                          parser_->sequence_header()
+                              .operating_point_idc[kDefaultOperatingPoint]);
           return kDecodeError;
         }
 
@@ -296,8 +318,8 @@ AcceleratedVideoDecoder::DecodeResult AV1Decoder::DecodeInternal() {
             base::strict_cast<int>(current_sequence_header_->max_frame_width),
             base::strict_cast<int>(current_sequence_header_->max_frame_height));
         gfx::Rect new_visible_rect(
-            base::strict_cast<int>(current_frame_header_->render_width),
-            base::strict_cast<int>(current_frame_header_->render_height));
+            base::strict_cast<int>(current_frame_header_->width),
+            base::strict_cast<int>(current_frame_header_->height));
         DCHECK(!new_frame_size.IsEmpty());
         if (!gfx::Rect(new_frame_size).Contains(new_visible_rect)) {
           DVLOG(1) << "Render size exceeds picture size. render size: "
@@ -451,8 +473,11 @@ AcceleratedVideoDecoder::DecodeResult AV1Decoder::DecodeInternal() {
 
     DCHECK(current_sequence_header_->film_grain_params_present ||
            !frame_header.film_grain_params.apply_grain);
-    auto pic = accelerator_->CreateAV1Picture(
-        frame_header.film_grain_params.apply_grain);
+    auto pic = secure_handle_ ? accelerator_->CreateAV1PictureSecure(
+                                    frame_header.film_grain_params.apply_grain,
+                                    secure_handle_)
+                              : accelerator_->CreateAV1Picture(
+                                    frame_header.film_grain_params.apply_grain);
     if (!pic) {
       clear_current_frame.ReplaceClosure(base::DoNothing());
       return kRanOutOfSurfaces;

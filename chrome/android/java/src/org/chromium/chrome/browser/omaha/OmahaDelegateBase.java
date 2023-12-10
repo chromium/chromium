@@ -19,14 +19,17 @@ public abstract class OmahaDelegateBase extends OmahaDelegate {
     private final ExponentialBackoffScheduler mScheduler;
 
     OmahaDelegateBase() {
-        mScheduler = new ExponentialBackoffScheduler(
-                OmahaBase.PREF_PACKAGE, OmahaBase.MS_POST_BASE_DELAY, OmahaBase.MS_POST_MAX_DELAY);
+        mScheduler =
+                new ExponentialBackoffScheduler(
+                        OmahaBase.PREF_PACKAGE,
+                        OmahaBase.MS_POST_BASE_DELAY,
+                        OmahaBase.MS_POST_MAX_DELAY);
     }
 
     @Override
     boolean isInSystemImage() {
         return (ContextUtils.getApplicationContext().getApplicationInfo().flags
-                       & ApplicationInfo.FLAG_SYSTEM)
+                        & ApplicationInfo.FLAG_SYSTEM)
                 != 0;
     }
 
@@ -45,8 +48,9 @@ public abstract class OmahaDelegateBase extends OmahaDelegate {
         if (!ApplicationStatus.hasVisibleActivities()) return false;
 
         PowerManager powerManager =
-                (PowerManager) ContextUtils.getApplicationContext().getSystemService(
-                        Context.POWER_SERVICE);
+                (PowerManager)
+                        ContextUtils.getApplicationContext()
+                                .getSystemService(Context.POWER_SERVICE);
         return powerManager.isInteractive();
     }
 

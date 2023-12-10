@@ -37,11 +37,7 @@ FakeServerHttpPostProvider::FakeServerHttpPostProvider(
     const base::WeakPtr<FakeServer>& fake_server,
     scoped_refptr<base::SequencedTaskRunner> fake_server_task_runner)
     : fake_server_(fake_server),
-      fake_server_task_runner_(fake_server_task_runner),
-      synchronous_post_completion_(
-          base::WaitableEvent::ResetPolicy::AUTOMATIC,
-          base::WaitableEvent::InitialState::NOT_SIGNALED),
-      aborted_(false) {}
+      fake_server_task_runner_(fake_server_task_runner) {}
 
 FakeServerHttpPostProvider::~FakeServerHttpPostProvider() = default;
 

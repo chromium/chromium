@@ -28,6 +28,7 @@
 
 // UnitConversionViewController designated init function.
 - (instancetype)initWithSourceUnit:(NSUnit*)sourceUnit
+                        targetUnit:(NSUnit*)targetUnit
                          unitValue:(double)unitValue NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

@@ -6,13 +6,13 @@
 #define CHROME_BROWSER_APPS_APP_PRELOAD_SERVICE_APP_PRELOAD_SERVER_CONNECTOR_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 
@@ -31,7 +31,7 @@ struct DeviceInfo;
 class PreloadAppDefinition;
 
 using GetInitialAppsCallback =
-    base::OnceCallback<void(absl::optional<std::vector<PreloadAppDefinition>>)>;
+    base::OnceCallback<void(std::optional<std::vector<PreloadAppDefinition>>)>;
 
 // The AppPreloadServerConnector is used to talk to the App Provisioning Service
 // API endpoint. Its role is to build requests and convert responses into
@@ -46,7 +46,7 @@ class AppPreloadServerConnector {
 
   // Fetches a list of apps to be installed on the device at first login from
   // the App Provisioning Service API. `callback` will be called with a list of
-  // (possibly zero) apps, or `absl::nullopt` if an error occurred while
+  // (possibly zero) apps, or `std::nullopt` if an error occurred while
   // fetching apps.
   void GetAppsForFirstLogin(
       const DeviceInfo& device_info,

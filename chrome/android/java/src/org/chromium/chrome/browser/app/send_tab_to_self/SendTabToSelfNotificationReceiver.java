@@ -19,12 +19,13 @@ import org.chromium.chrome.browser.share.send_tab_to_self.NotificationManager;
 public class SendTabToSelfNotificationReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
-        final BrowserParts parts = new EmptyBrowserParts() {
-            @Override
-            public void finishNativeInitialization() {
-                NotificationManager.handleIntent(intent);
-            }
-        };
+        final BrowserParts parts =
+                new EmptyBrowserParts() {
+                    @Override
+                    public void finishNativeInitialization() {
+                        NotificationManager.handleIntent(intent);
+                    }
+                };
 
         // Try to load native.
         ChromeBrowserInitializer.getInstance().handlePreNativeStartupAndLoadLibraries(parts);

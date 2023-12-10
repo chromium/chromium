@@ -224,6 +224,9 @@ struct COMPONENT_EXPORT(APP_TYPES) App {
   // Whether the app runs on os login in a new window or not.
   absl::optional<RunOnOsLogin> run_on_os_login;
 
+  // Whether the app can be closed by the user.
+  absl::optional<bool> allow_close;
+
   // Storage space size for app and associated data.
   absl::optional<uint64_t> app_size_in_bytes;
   absl::optional<uint64_t> data_size_in_bytes;
@@ -236,7 +239,11 @@ struct COMPONENT_EXPORT(APP_TYPES) App {
   absl::optional<std::string> selected_locale;
 
   // When adding new fields to the App type, the `Clone` function, the
-  // `operator==` function, and the `AppUpdate` class should also be updated.
+  // `operator==` function, and the `AppUpdate` class should also be updated. If
+  // the new fields should be saved, below functions should be updated:
+  // `AppStorage::IsAppChanged`
+  // `AppStorageFileHandler::ConvertAppsToValue`
+  // `AppStorageFileHandler::ConvertValueToApps`
 };
 
 using AppPtr = std::unique_ptr<App>;

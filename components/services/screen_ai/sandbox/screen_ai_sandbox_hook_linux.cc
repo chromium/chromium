@@ -70,13 +70,6 @@ bool ScreenAIPreSandboxHook(sandbox::policy::SandboxLinux::Options options) {
       BrokerFilePermission::ReadOnly("/sys/devices/system/cpu/present"));
 #endif
 
-  // The models are in the same folder as the library, and the library requires
-  // read access for them.
-  if (!library_path.empty()) {
-    permissions.push_back(BrokerFilePermission::ReadOnlyRecursive(
-        library_path.DirName().MaybeAsASCII() + base::FilePath::kSeparators));
-  }
-
   instance->StartBrokerProcess(
       MakeBrokerCommandSet({sandbox::syscall_broker::COMMAND_ACCESS,
                             sandbox::syscall_broker::COMMAND_OPEN}),

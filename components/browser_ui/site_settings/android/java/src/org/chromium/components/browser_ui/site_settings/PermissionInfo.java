@@ -12,9 +12,7 @@ import org.chromium.content_public.browser.BrowserContextHandle;
 
 import java.io.Serializable;
 
-/**
- * Permission information for a given origin.
- */
+/** Permission information for a given origin. */
 public class PermissionInfo implements Serializable {
     private final boolean mIsEmbargoed;
     private final String mEmbedder;
@@ -24,9 +22,8 @@ public class PermissionInfo implements Serializable {
     public PermissionInfo(
             @ContentSettingsType int type, String origin, String embedder, boolean isEmbargoed) {
         assert WebsitePermissionsFetcher.getPermissionsType(type)
-                == WebsitePermissionsFetcher.WebsitePermissionsType.PERMISSION_INFO
-            : "invalid type: "
-                        + type;
+                        == WebsitePermissionsFetcher.WebsitePermissionsType.PERMISSION_INFO
+                : "invalid type: " + type;
         mOrigin = origin;
         mEmbedder = embedder;
         mContentSettingsType = type;
@@ -53,21 +50,23 @@ public class PermissionInfo implements Serializable {
         return mIsEmbargoed;
     }
 
-    /**
-     * Returns the ContentSetting value for this origin.
-     */
+    /** Returns the ContentSetting value for this origin. */
     public @ContentSettingValues @Nullable Integer getContentSetting(
             BrowserContextHandle browserContextHandle) {
-        return WebsitePreferenceBridgeJni.get().getPermissionSettingForOrigin(
-                browserContextHandle, mContentSettingsType, mOrigin, getEmbedderSafe());
+        return WebsitePreferenceBridgeJni.get()
+                .getPermissionSettingForOrigin(
+                        browserContextHandle, mContentSettingsType, mOrigin, getEmbedderSafe());
     }
 
-    /**
-     * Sets the native ContentSetting value for this origin.
-     */
+    /** Sets the native ContentSetting value for this origin. */
     public void setContentSetting(
             BrowserContextHandle browserContextHandle, @ContentSettingValues int value) {
-        WebsitePreferenceBridgeJni.get().setPermissionSettingForOrigin(
-                browserContextHandle, mContentSettingsType, mOrigin, getEmbedderSafe(), value);
+        WebsitePreferenceBridgeJni.get()
+                .setPermissionSettingForOrigin(
+                        browserContextHandle,
+                        mContentSettingsType,
+                        mOrigin,
+                        getEmbedderSafe(),
+                        value);
     }
 }

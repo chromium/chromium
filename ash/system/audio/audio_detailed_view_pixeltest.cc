@@ -25,7 +25,7 @@ class AudioDetailedViewPixelTest : public AshTestBase {
   AudioDetailedViewPixelTest() = default;
 
   // AshTestBase:
-  absl::optional<pixel_test::InitParams> CreatePixelTestInitParams()
+  std::optional<pixel_test::InitParams> CreatePixelTestInitParams()
       const override {
     return pixel_test::InitParams();
   }
@@ -48,7 +48,7 @@ TEST_F(AudioDetailedViewPixelTest, Basics) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "qs_audio_detailed_view",
-      /*revision_number=*/8, detailed_view));
+      /*revision_number=*/12, detailed_view));
 }
 
 TEST_F(AudioDetailedViewPixelTest, ShowNoiseCancellationButton) {
@@ -83,7 +83,7 @@ TEST_F(AudioDetailedViewPixelTest, ShowNoiseCancellationButton) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "qs_audio_detailed_view",
-      /*revision_number=*/2, detailed_view));
+      /*revision_number=*/6, detailed_view));
 }
 
 }  // namespace ash

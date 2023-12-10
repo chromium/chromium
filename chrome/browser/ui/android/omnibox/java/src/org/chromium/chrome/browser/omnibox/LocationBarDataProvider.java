@@ -48,6 +48,9 @@ public interface LocationBarDataProvider {
         default void onUrlChanged() {}
 
         default void hintZeroSuggestRefresh() {}
+
+        /** Notifies when the tab crashes. */
+        default void onTabCrashed() {}
     }
 
     /** Adds an observer of changes to LocationBarDataProvider's data. */

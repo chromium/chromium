@@ -10,9 +10,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.components.crash.CrashKeyIndex;
 import org.chromium.components.crash.CrashKeys;
 
-/**
- * This class updates crash keys when the application state changes.
- */
+/** This class updates crash keys when the application state changes. */
 public class ApplicationStatusTracker implements ApplicationStatus.ApplicationStateListener {
     private static final String APP_FOREGROUND = "app_foreground";
     private static final String APP_BACKGROUND = "app_background";

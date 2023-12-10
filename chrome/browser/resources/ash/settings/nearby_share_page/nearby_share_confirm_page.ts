@@ -26,17 +26,17 @@ import {getTemplate} from './nearby_share_confirm_page.html.js';
 /**
  * The progress bar asset URL for light mode.
  */
-const PROGRESS_BAR_URL_LIGHT: string = 'nearby_share_progress_bar_light.json';
+const PROGRESS_BAR_URL_LIGHT = 'nearby_share_progress_bar_light.json';
 
 /**
  * The progress bar asset URL for dark mode.
  */
-const PROGRESS_BAR_URL_DARK: string = 'nearby_share_progress_bar_dark.json';
+const PROGRESS_BAR_URL_DARK = 'nearby_share_progress_bar_dark.json';
 
 /**
  * The progress bar asset URL for jelly mode.
  */
-const PROGRESS_BAR_URL_JELLY: string = 'nearby_share_progress_bar_jelly.json';
+const PROGRESS_BAR_URL_JELLY = 'nearby_share_progress_bar_jelly.json';
 
 const NearbyShareConfirmPageElementBase = I18nMixin(PolymerElement);
 

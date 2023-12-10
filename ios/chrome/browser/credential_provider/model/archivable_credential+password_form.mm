@@ -32,7 +32,7 @@ password_manager::PasswordForm PasswordFormFromCredential(
   form.url = password_manager_util::StripAuthAndParams(url);
   form.signon_realm = form.url.DeprecatedGetOriginAsURL().spec();
   form.username_value = SysNSStringToUTF16(credential.user);
-  form.keychain_identifier = SysNSStringToUTF8(credential.keychainIdentifier);
+  form.password_value = SysNSStringToUTF16(credential.password);
   form.times_used_in_html_form = credential.rank;
   form.SetNoteWithEmptyUniqueDisplayName(SysNSStringToUTF16(credential.note));
 
@@ -49,8 +49,6 @@ password_manager::PasswordForm PasswordFormFromCredential(
   }
   std::string site_name =
       password_manager::GetShownOrigin(url::Origin::Create(passwordForm.url));
-  NSString* keychainIdentifier =
-      SysUTF8ToNSString(passwordForm.keychain_identifier);
 
   NSString* serviceName = SysUTF8ToNSString(site_name);
   NSString* note =
@@ -89,7 +87,7 @@ password_manager::PasswordForm PasswordFormFromCredential(
   DCHECK(serviceIdentifier.length);
 
   return [self initWithFavicon:favicon
-            keychainIdentifier:keychainIdentifier
+                      password:SysUTF16ToNSString(passwordForm.password_value)
                           rank:passwordForm.times_used_in_html_form
               recordIdentifier:RecordIdentifierForPasswordForm(passwordForm)
              serviceIdentifier:serviceIdentifier

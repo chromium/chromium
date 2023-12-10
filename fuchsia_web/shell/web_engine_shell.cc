@@ -13,6 +13,7 @@
 #include <iostream>
 #include <utility>
 
+#include <optional>
 #include "base/base_paths.h"
 #include "base/check.h"
 #include "base/command_line.h"
@@ -36,7 +37,6 @@
 #include "fuchsia_web/shell/shell_relauncher.h"
 #include "fuchsia_web/webinstance_host/web_instance_host.h"
 #include "fuchsia_web/webinstance_host/web_instance_host_constants.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/widevine/cdm/buildflags.h"
 #include "url/gurl.h"
 
@@ -112,7 +112,7 @@ int main(int argc, char** argv) {
     }
   }
 
-  absl::optional<uint16_t> remote_debugging_port =
+  std::optional<uint16_t> remote_debugging_port =
       GetRemoteDebuggingPort(*command_line);
   if (!remote_debugging_port) {
     PrintUsage();

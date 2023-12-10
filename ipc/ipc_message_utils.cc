@@ -281,7 +281,7 @@ bool ReadValue(const base::Pickle* pickle,
       break;
     }
     case base::Value::Type::BINARY: {
-      absl::optional<base::span<const uint8_t>> data = iter->ReadData();
+      std::optional<base::span<const uint8_t>> data = iter->ReadData();
       if (!data) {
         return false;
       }
@@ -449,7 +449,7 @@ void ParamTraits<std::u16string>::Log(const param_type& p, std::string* l) {
 bool ParamTraits<std::wstring>::Read(const base::Pickle* m,
                                      base::PickleIterator* iter,
                                      param_type* r) {
-  base::StringPiece16 piece16;
+  std::u16string_view piece16;
   if (!iter->ReadStringPiece16(&piece16))
     return false;
 
@@ -1322,7 +1322,7 @@ bool ParamTraits<base::UnguessableToken>::Read(const base::Pickle* m,
   // This is not mapped as nullable_is_same_type, so any UnguessableToken
   // deserialized by the traits should always yield a non-empty token.
   // If deserialization results in an empty token, the data is malformed.
-  absl::optional<base::UnguessableToken> token =
+  std::optional<base::UnguessableToken> token =
       base::UnguessableToken::Deserialize(high, low);
   if (!token.has_value()) {
     return false;

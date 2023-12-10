@@ -127,7 +127,7 @@ TEST_F(DisplayItemListTest, TraceEmptyVisualRect) {
   EXPECT_TRACED_RECT(0, 0, 0, 0, visual_rect);
   name = item_dict->FindString("name");
   ASSERT_NE(nullptr, name);
-  EXPECT_EQ("DrawRect", *name);
+  EXPECT_EQ("DrawRectOp", *name);
 
   item_dict = ((*items)[1]).GetIfDict();
   ASSERT_NE(nullptr, item_dict);
@@ -136,7 +136,7 @@ TEST_F(DisplayItemListTest, TraceEmptyVisualRect) {
   EXPECT_TRACED_RECT(8, 9, 10, 10, visual_rect);
   name = item_dict->FindString("name");
   ASSERT_NE(nullptr, name);
-  EXPECT_EQ("DrawRect", *name);
+  EXPECT_EQ("DrawRectOp", *name);
 }
 
 TEST_F(DisplayItemListTest, SingleUnpairedRange) {
@@ -570,9 +570,9 @@ TEST_F(DisplayItemListTest, AsValueWithOps) {
       ASSERT_NE(nullptr, items);
       ASSERT_EQ(7u, items->size());
 
-      const char* expected_names[] = {"Save",      "Concat",   "SaveLayer",
-                                      "Translate", "DrawRect", "Restore",
-                                      "Restore"};
+      const char* expected_names[] = {
+          "SaveOp",     "ConcatOp",  "SaveLayerOp", "TranslateOp",
+          "DrawRectOp", "RestoreOp", "RestoreOp"};
       bool expected_has_skp[] = {false, true, true, true, true, false, false};
 
       for (int i = 0; i < 7; ++i) {

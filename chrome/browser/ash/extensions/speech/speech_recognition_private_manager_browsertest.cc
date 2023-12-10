@@ -39,23 +39,23 @@ class SpeechRecognitionPrivateManagerTest
   }
 
   std::string CreateKey(const std::string& extension_id,
-                        absl::optional<int> client_id) {
+                        std::optional<int> client_id) {
     return manager_->CreateKey(extension_id, client_id);
   }
 
   void HandleStart(
       const std::string& key,
-      absl::optional<std::string> locale,
-      absl::optional<bool> interim_results,
+      std::optional<std::string> locale,
+      std::optional<bool> interim_results,
       base::OnceCallback<void(speech::SpeechRecognitionType,
-                              absl::optional<std::string>)> on_start_callback) {
+                              std::optional<std::string>)> on_start_callback) {
     manager_->HandleStart(key, locale, interim_results,
                           std::move(on_start_callback));
   }
 
   void HandleStopAndWait(
       const std::string& key,
-      base::OnceCallback<void(absl::optional<std::string>)> callback) {
+      base::OnceCallback<void(std::optional<std::string>)> callback) {
     manager_->HandleStop(key, std::move(callback));
     WaitForRecognitionStopped();
   }
@@ -96,9 +96,9 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Values(speech::SpeechRecognitionType::kOnDevice));
 
 IN_PROC_BROWSER_TEST_P(SpeechRecognitionPrivateManagerTest, CreateKey) {
-  ASSERT_EQ("Testing", CreateKey("Testing", absl::optional<int>()));
-  ASSERT_EQ("Testing.0", CreateKey("Testing", absl::optional<int>(0)));
-  ASSERT_EQ("Testing.1", CreateKey("Testing", absl::optional<int>(1)));
+  ASSERT_EQ("Testing", CreateKey("Testing", std::optional<int>()));
+  ASSERT_EQ("Testing.0", CreateKey("Testing", std::optional<int>(0)));
+  ASSERT_EQ("Testing.1", CreateKey("Testing", std::optional<int>(1)));
 }
 
 IN_PROC_BROWSER_TEST_P(SpeechRecognitionPrivateManagerTest,
@@ -117,8 +117,8 @@ IN_PROC_BROWSER_TEST_P(SpeechRecognitionPrivateManagerTest,
 
 IN_PROC_BROWSER_TEST_P(SpeechRecognitionPrivateManagerTest, HandleStart) {
   const std::string key = "Testing";
-  absl::optional<std::string> locale;
-  absl::optional<bool> interim_results(true);
+  std::optional<std::string> locale;
+  std::optional<bool> interim_results(true);
 
   HandleStart(key, locale, interim_results, base::DoNothing());
   WaitForRecognitionStarted();
@@ -148,8 +148,8 @@ IN_PROC_BROWSER_TEST_P(SpeechRecognitionPrivateManagerTest, HandleStart) {
 IN_PROC_BROWSER_TEST_P(SpeechRecognitionPrivateManagerTest,
                        HandleStartAndStop) {
   const std::string key = "Testing";
-  absl::optional<std::string> locale;
-  absl::optional<bool> interim_results(true);
+  std::optional<std::string> locale;
+  std::optional<bool> interim_results(true);
 
   HandleStart(key, locale, interim_results, base::DoNothing());
   WaitForRecognitionStarted();

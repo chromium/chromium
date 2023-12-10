@@ -17,10 +17,10 @@
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/features/password_manager_features_util.h"
 #include "components/password_manager/core/browser/mock_password_reuse_manager.h"
-#include "components/password_manager/core/browser/mock_password_store_interface.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
+#include "components/password_manager/core/browser/password_store/mock_password_store_interface.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/password_manager/core/browser/sync_username_test_base.h"
@@ -187,7 +187,7 @@ TEST_F(StoreMetricsReporterTest, ReportMetricsPasswordManagerEnabledDefault) {
   base::HistogramTester histogram_tester;
   StoreMetricsReporter reporter(
       /*profile_store=*/nullptr, /*account_store=*/nullptr, sync_service(),
-      identity_manager(), &prefs_, /*password_reuse_manager=*/nullptr,
+      &prefs_, /*password_reuse_manager=*/nullptr,
       /*is_under_advanced_protection=*/false,
       /*done_callback*/ base::DoNothing());
 
@@ -244,7 +244,7 @@ TEST_P(StoreMetricsReporterTestWithEnableStateParams,
   base::HistogramTester histogram_tester;
   StoreMetricsReporter reporter(
       /*profile_store=*/nullptr, /*account_store=*/nullptr, sync_service(),
-      identity_manager(), &prefs_, /*password_reuse_manager=*/nullptr,
+      &prefs_, /*password_reuse_manager=*/nullptr,
       /*is_under_advanced_protection=*/false,
       /*done_callback*/ base::DoNothing());
 
@@ -285,7 +285,7 @@ TEST_P(StoreMetricsReporterTestWithParams,
 
   StoreMetricsReporter reporter(
       /*profile_store=*/nullptr, /*account_store=*/nullptr, sync_service(),
-      identity_manager(), &prefs_, /*password_reuse_manager=*/nullptr,
+      &prefs_, /*password_reuse_manager=*/nullptr,
       /*is_under_advanced_protection=*/false,
       /*done_callback*/ base::DoNothing());
 
@@ -306,8 +306,8 @@ TEST_F(StoreMetricsReporterTest, ReportMetricsAtMostOncePerDay) {
   base::HistogramTester histogram_tester;
   base::MockCallback<base::OnceClosure> done_callback;
   StoreMetricsReporter reporter(
-      profile_store.get(), /*account_store=*/nullptr, sync_service(),
-      identity_manager(), &prefs_, /*password_reuse_manager=*/nullptr,
+      profile_store.get(), /*account_store=*/nullptr, sync_service(), &prefs_,
+      /*password_reuse_manager=*/nullptr,
       /*is_under_advanced_protection=*/false, done_callback.Get());
   histogram_tester.ExpectTotalCount("PasswordManager.EnableState", 1);
   EXPECT_CALL(done_callback, Run());
@@ -319,8 +319,8 @@ TEST_F(StoreMetricsReporterTest, ReportMetricsAtMostOncePerDay) {
   base::HistogramTester histogram_tester2;
   base::MockCallback<base::OnceClosure> done_callback2;
   StoreMetricsReporter reporter2(
-      profile_store.get(), /*account_store=*/nullptr, sync_service(),
-      identity_manager(), &prefs_, /*password_reuse_manager=*/nullptr,
+      profile_store.get(), /*account_store=*/nullptr, sync_service(), &prefs_,
+      /*password_reuse_manager=*/nullptr,
       /*is_under_advanced_protection=*/false, done_callback2.Get());
   histogram_tester2.ExpectTotalCount("PasswordManager.Enabled4", 0);
   EXPECT_CALL(done_callback2, Run());
@@ -348,7 +348,7 @@ TEST_F(StoreMetricsReporterTest, ReportAccountsPerSiteHiResMetricsTest) {
 
   base::HistogramTester histogram_tester;
   StoreMetricsReporter reporter(profile_store.get(), account_store.get(),
-                                sync_service(), identity_manager(), &prefs_,
+                                sync_service(), &prefs_,
                                 /*password_reuse_manager=*/nullptr,
                                 /*is_under_advanced_protection=*/false,
                                 /*done_callback*/ base::DoNothing());
@@ -435,7 +435,7 @@ TEST_F(StoreMetricsReporterTest, ReportPasswordProtectedMetricsTest) {
 
   base::HistogramTester histogram_tester;
   StoreMetricsReporter reporter(profile_store.get(), account_store.get(),
-                                sync_service(), identity_manager(), &prefs_,
+                                sync_service(), &prefs_,
                                 /*password_reuse_manager=*/nullptr,
                                 /*is_under_advanced_protection=*/false,
                                 /*done_callback*/ base::DoNothing());
@@ -497,7 +497,7 @@ TEST_F(StoreMetricsReporterTest,
 
   base::HistogramTester histogram_tester;
   StoreMetricsReporter reporter(profile_store.get(), account_store.get(),
-                                sync_service(), identity_manager(), &prefs_,
+                                sync_service(), &prefs_,
                                 /*password_reuse_manager=*/nullptr,
                                 /*is_under_advanced_protection=*/false,
                                 /*done_callback*/ base::DoNothing());
@@ -531,7 +531,7 @@ TEST_F(StoreMetricsReporterTest, ReportTotalAccountsHiResMetricsTest) {
 
   base::HistogramTester histogram_tester;
   StoreMetricsReporter reporter(profile_store.get(), account_store.get(),
-                                sync_service(), identity_manager(), &prefs_,
+                                sync_service(), &prefs_,
                                 /*password_reuse_manager=*/nullptr,
                                 /*is_under_advanced_protection=*/false,
                                 /*done_callback*/ base::DoNothing());
@@ -617,7 +617,7 @@ TEST_F(StoreMetricsReporterTest, ReportTimesPasswordUsedMetricsTest) {
 
   base::HistogramTester histogram_tester;
   StoreMetricsReporter reporter(profile_store.get(), account_store.get(),
-                                sync_service(), identity_manager(), &prefs_,
+                                sync_service(), &prefs_,
                                 /*password_reuse_manager=*/nullptr,
                                 /*is_under_advanced_protection=*/false,
                                 /*done_callback*/ base::DoNothing());
@@ -714,7 +714,7 @@ TEST_F(StoreMetricsReporterTest,
 
   base::HistogramTester histogram_tester;
   StoreMetricsReporter reporter(profile_store.get(), account_store.get(),
-                                sync_service(), identity_manager(), &prefs_,
+                                sync_service(), &prefs_,
                                 /*password_reuse_manager=*/nullptr,
                                 /*is_under_advanced_protection=*/false,
                                 /*done_callback*/ base::DoNothing());
@@ -786,7 +786,7 @@ TEST_F(StoreMetricsReporterTest,
 
   base::HistogramTester histogram_tester;
   StoreMetricsReporter reporter(profile_store.get(), account_store.get(),
-                                sync_service(), identity_manager(), &prefs_,
+                                sync_service(), &prefs_,
                                 /*password_reuse_manager=*/nullptr,
                                 /*is_under_advanced_protection=*/false,
                                 /*done_callback*/ base::DoNothing());
@@ -874,7 +874,7 @@ TEST_F(StoreMetricsReporterTest,
 
   base::HistogramTester histogram_tester;
   StoreMetricsReporter reporter(profile_store.get(), account_store.get(),
-                                sync_service(), identity_manager(), &prefs_,
+                                sync_service(), &prefs_,
                                 /*password_reuse_manager=*/nullptr,
                                 /*is_under_advanced_protection=*/false,
                                 /*done_callback*/ base::DoNothing());
@@ -980,7 +980,7 @@ TEST_F(StoreMetricsReporterTest, DuplicatesMetrics_NoDuplicates) {
 
   base::HistogramTester histogram_tester;
   StoreMetricsReporter reporter(profile_store.get(), /*account_store=*/nullptr,
-                                sync_service(), identity_manager(), &prefs_,
+                                sync_service(), &prefs_,
                                 /*password_reuse_manager=*/nullptr,
                                 /*is_under_advanced_protection=*/false,
                                 /*done_callback*/ base::DoNothing());
@@ -1032,7 +1032,7 @@ TEST_F(StoreMetricsReporterTest, DuplicatesMetrics_ExactDuplicates) {
 
   base::HistogramTester histogram_tester;
   StoreMetricsReporter reporter(profile_store.get(), /*account_store=*/nullptr,
-                                sync_service(), identity_manager(), &prefs_,
+                                sync_service(), &prefs_,
                                 /*password_reuse_manager=*/nullptr,
                                 /*is_under_advanced_protection=*/false,
                                 /*done_callback*/ base::DoNothing());
@@ -1083,7 +1083,7 @@ TEST_F(StoreMetricsReporterTest, DuplicatesMetrics_MismatchedDuplicates) {
 
   base::HistogramTester histogram_tester;
   StoreMetricsReporter reporter(profile_store.get(), /*account_store=*/nullptr,
-                                sync_service(), identity_manager(), &prefs_,
+                                sync_service(), &prefs_,
                                 /*password_reuse_manager=*/nullptr,
                                 /*is_under_advanced_protection=*/false,
                                 /*done_callback*/ base::DoNothing());
@@ -1175,15 +1175,15 @@ TEST_F(StoreMetricsReporterTest, MultiStoreMetrics) {
   for (bool opted_in : {false, true}) {
     if (opted_in) {
 #if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
-      features_util::OptInToAccountStorage(&prefs_, sync_service());
+      features_util::OptInToAccountStorage(&prefs_, test_sync_service());
 #else
       test_sync_service()->GetUserSettings()->SetSelectedTypes(
           /*sync_everything=*/true, syncer::UserSelectableTypeSet::All());
 #endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
     } else {
 #if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
-      features_util::OptOutOfAccountStorageAndClearSettings(&prefs_,
-                                                            sync_service());
+      features_util::OptOutOfAccountStorageAndClearSettings(
+          &prefs_, test_sync_service());
 #else
       test_sync_service()->GetUserSettings()->SetSelectedTypes(
           /*sync_everything=*/false, syncer::UserSelectableTypeSet());
@@ -1199,7 +1199,7 @@ TEST_F(StoreMetricsReporterTest, MultiStoreMetrics) {
     base::HistogramTester histogram_tester;
 
     StoreMetricsReporter reporter(profile_store.get(), account_store.get(),
-                                  sync_service(), identity_manager(), &prefs_,
+                                  sync_service(), &prefs_,
                                   /*password_reuse_manager=*/nullptr,
                                   /*is_under_advanced_protection=*/false,
                                   /*done_callback*/ base::DoNothing());
@@ -1263,14 +1263,14 @@ TEST_F(StoreMetricsReporterTest, ReportMetricsForAdvancedProtection) {
 
   const std::string username = "test@google.com";
   SetSyncingPasswords(true);
-  FakeSigninAs(username);
+  FakeSigninAs(username, signin::ConsentLevel::kSync);
 
   base::HistogramTester histogram_tester;
 
   EXPECT_CALL(reuse_manager, ReportMetrics(username, true));
   StoreMetricsReporter reporter(/*profile_store=*/store.get(),
                                 /*account_store=*/nullptr, sync_service(),
-                                identity_manager(), &prefs_, &reuse_manager,
+                                &prefs_, &reuse_manager,
                                 /*is_under_advanced_protection=*/true,
                                 /*done_callback*/ base::DoNothing());
 
@@ -1332,7 +1332,7 @@ TEST_F(StoreMetricsReporterTest, ReportPasswordNoteMetrics) {
 
   base::HistogramTester histogram_tester;
   StoreMetricsReporter reporter(profile_store.get(), account_store.get(),
-                                sync_service(), identity_manager(), &prefs_,
+                                sync_service(), &prefs_,
                                 /*password_reuse_manager=*/nullptr,
                                 /*is_under_advanced_protection=*/false,
                                 /*done_callback*/ base::DoNothing());
@@ -1389,7 +1389,7 @@ TEST_F(StoreMetricsReporterTest, ReportPasswordInsecureCredentialMetrics) {
 
   base::HistogramTester histogram_tester;
   StoreMetricsReporter reporter(profile_store.get(), /*account_store=*/nullptr,
-                                sync_service(), identity_manager(), &prefs_,
+                                sync_service(), &prefs_,
                                 /*password_reuse_manager=*/nullptr,
                                 /*is_under_advanced_protection=*/false,
                                 /*done_callback*/ base::DoNothing());

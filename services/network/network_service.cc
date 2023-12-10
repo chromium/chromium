@@ -6,12 +6,13 @@
 
 #include <algorithm>
 #include <map>
+#include <optional>
 #include <utility>
 #include <vector>
 
+#include "base/callback_list.h"
 #include "base/check.h"
 #include "base/check_op.h"
-#include "base/command_line.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/environment.h"
@@ -37,6 +38,7 @@
 #include "build/chromecast_buildflags.h"
 #include "build/chromeos_buildflags.h"
 #include "components/network_session_configurator/common/network_features.h"
+#include "components/os_crypt/async/common/encryptor.h"
 #include "components/os_crypt/sync/os_crypt.h"
 #include "components/privacy_sandbox/masked_domain_list/masked_domain_list.pb.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
@@ -62,6 +64,7 @@
 #include "net/dns/public/doh_provider_entry.h"
 #include "net/dns/system_dns_config_change_notifier.h"
 #include "net/dns/test_dns_config_service.h"
+#include "net/extras/sqlite/cookie_crypto_delegate.h"
 #include "net/first_party_sets/global_first_party_sets.h"
 #include "net/http/http_auth_handler_factory.h"
 #include "net/log/file_net_log_observer.h"
@@ -85,6 +88,7 @@
 #include "services/network/public/cpp/load_info_util.h"
 #include "services/network/public/cpp/network_switches.h"
 #include "services/network/public/cpp/parsed_headers.h"
+#include "services/network/public/mojom/cookie_encryption_provider.mojom.h"
 #include "services/network/public/mojom/key_pinning.mojom.h"
 #include "services/network/public/mojom/network_service_test.mojom.h"
 #include "services/network/public/mojom/system_dns_resolution.mojom-forward.h"
@@ -112,7 +116,6 @@
 #endif
 
 #if BUILDFLAG(IS_CT_SUPPORTED)
-#include "components/certificate_transparency/ct_features.h"
 #include "services/network/ct_log_list_distributor.h"
 #include "services/network/sct_auditing/sct_auditing_cache.h"
 #endif
@@ -126,6 +129,89 @@ namespace network {
 namespace {
 
 NetworkService* g_network_service = nullptr;
+
+// This implementation initializes an OSCryptAsync Encryptor instance and uses
+// that.
+class CookieOSCryptAsyncDelegate : public net::CookieCryptoDelegate {
+ public:
+  explicit CookieOSCryptAsyncDelegate(
+      mojo::PendingRemote<network::mojom::CookieEncryptionProvider> provider);
+
+  CookieOSCryptAsyncDelegate(const CookieOSCryptAsyncDelegate&) = delete;
+  CookieOSCryptAsyncDelegate& operator=(const CookieOSCryptAsyncDelegate&) =
+      delete;
+
+  void Init(base::OnceClosure callback) override;
+  bool EncryptString(const std::string& plaintext,
+                     std::string* ciphertext) override;
+  bool DecryptString(const std::string& ciphertext,
+                     std::string* plaintext) override;
+
+ private:
+  void InitCallback(
+      mojo::Remote<network::mojom::CookieEncryptionProvider> lifetime,
+      os_crypt_async::Encryptor encryptor);
+
+  std::optional<os_crypt_async::Encryptor> instance_;
+  mojo::PendingRemote<network::mojom::CookieEncryptionProvider> provider_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+  base::OnceClosureList callbacks_ GUARDED_BY_CONTEXT(sequence_checker_);
+  bool is_initializing_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
+  bool is_initialized_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
+
+  SEQUENCE_CHECKER(sequence_checker_);
+
+  base::WeakPtrFactory<CookieOSCryptAsyncDelegate> weak_ptr_factory_{this};
+};
+
+CookieOSCryptAsyncDelegate::CookieOSCryptAsyncDelegate(
+    mojo::PendingRemote<network::mojom::CookieEncryptionProvider> provider)
+    : provider_(std::move(provider)) {
+  DETACH_FROM_SEQUENCE(sequence_checker_);
+}
+
+bool CookieOSCryptAsyncDelegate::EncryptString(const std::string& plaintext,
+                                               std::string* ciphertext) {
+  return instance_->EncryptString(plaintext, ciphertext);
+}
+
+bool CookieOSCryptAsyncDelegate::DecryptString(const std::string& ciphertext,
+                                               std::string* plaintext) {
+  return instance_->DecryptString(ciphertext, plaintext);
+}
+
+void CookieOSCryptAsyncDelegate::InitCallback(
+    mojo::Remote<network::mojom::CookieEncryptionProvider> lifetime,
+    os_crypt_async::Encryptor encryptor) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  instance_.emplace(std::move(encryptor));
+  is_initialized_ = true;
+  callbacks_.Notify();
+}
+
+void CookieOSCryptAsyncDelegate::Init(base::OnceClosure callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (is_initialized_) {
+    std::move(callback).Run();
+    return;
+  }
+
+  // AddUnsafe is safe here because it's always called with a callback that is
+  // owned by a refcounted object. See SQLitePersistentCookieStore::Backend.
+  callbacks_.AddUnsafe(std::move(callback));
+
+  if (is_initializing_) {
+    return;
+  }
+
+  is_initializing_ = true;
+  mojo::Remote<network::mojom::CookieEncryptionProvider> remote(
+      std::move(provider_));
+  auto* raw_remote = remote.get();
+  raw_remote->GetEncryptor(
+      base::BindOnce(&CookieOSCryptAsyncDelegate::InitCallback,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(remote)));
+}
 
 std::unique_ptr<net::NetworkChangeNotifier> CreateNetworkChangeNotifierIfNeeded(
     net::NetworkChangeNotifier::ConnectionType initial_connection_type,
@@ -407,14 +493,6 @@ void NetworkService::Initialize(mojom::NetworkServiceParamsPtr params,
     SetEnvironment(std::move(params->environment));
   }
 
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-
-  // Record this once per session, though the switch is applied on a
-  // per-NetworkContext basis.
-  UMA_HISTOGRAM_BOOLEAN(
-      "Net.Certificate.IgnoreCertificateErrorsSPKIListPresent",
-      command_line->HasSwitch(switches::kIgnoreCertificateErrorsSPKIList));
-
   if (params->system_dns_resolver) {
     SetSystemDnsResolver(std::move(params->system_dns_resolver));
   }
@@ -486,7 +564,8 @@ void NetworkService::Initialize(mojom::NetworkServiceParamsPtr params,
       std::make_unique<FirstPartySetsManager>(params->first_party_sets_enabled);
 
   network_service_proxy_allow_list_ =
-      std::make_unique<NetworkServiceProxyAllowList>();
+      std::make_unique<NetworkServiceProxyAllowList>(
+          params->ip_protection_proxy_bypass_policy);
 
   network_service_resource_block_list_ =
       std::make_unique<NetworkServiceResourceBlockList>();
@@ -889,13 +968,9 @@ void NetworkService::UpdateCtLogList(std::vector<mojom::CTLogInfoPtr> log_list,
   log_list_ = std::move(log_list);
   ct_log_list_update_time_ = update_time;
 
-  if (base::FeatureList::IsEnabled(
-          certificate_transparency::features::
-              kCertificateTransparencyComponentUpdater)) {
-    ct_log_list_distributor_->OnNewCtConfig(log_list_);
-    for (auto* context : network_contexts_) {
-      context->OnCTLogListUpdated(log_list_, update_time);
-    }
+  ct_log_list_distributor_->OnNewCtConfig(log_list_);
+  for (auto* context : network_contexts_) {
+    context->OnCTLogListUpdated(log_list_, update_time);
   }
   std::move(callback).Run();
 }
@@ -911,9 +986,6 @@ void NetworkService::SetCtEnforcementEnabled(
     bool enabled,
     SetCtEnforcementEnabledCallback callback) {
   ct_enforcement_enabled_ = enabled;
-  DCHECK(base::FeatureList::IsEnabled(
-      certificate_transparency::features::
-          kCertificateTransparencyComponentUpdater));
   for (auto* context : network_contexts_) {
     context->url_request_context()
         ->transport_security_state()
@@ -1006,6 +1078,14 @@ void NetworkService::SetGssapiLibraryLoadObserver(
   gssapi_library_load_observer_.Bind(std::move(gssapi_library_load_observer));
 }
 #endif  // BUILDFLAG(IS_LINUX)
+
+void NetworkService::SetCookieEncryptionProvider(
+    mojo::PendingRemote<mojom::CookieEncryptionProvider> provider) {
+  CHECK(!cookie_crypto_delegate_)
+      << "Cannot set Cookie encryption provider more than once.";
+  cookie_crypto_delegate_ =
+      std::make_unique<CookieOSCryptAsyncDelegate>(std::move(provider));
+}
 
 void NetworkService::StartNetLogBounded(base::File file,
                                         uint64_t max_total_size,

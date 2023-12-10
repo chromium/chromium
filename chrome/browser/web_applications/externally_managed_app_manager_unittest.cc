@@ -904,7 +904,8 @@ TEST_F(ExternallyAppManagerTest, PlaceholderResolvedFromInstallNow) {
 
   ExternalInstallOptions options = template_options;
   options.install_url = kInstallUrl;
-  options.wait_for_windows_closed = false;
+  options.placeholder_resolution_behavior =
+      PlaceholderResolutionBehavior::kClose;
   InstallNowFuture install_future;
   provider().externally_managed_app_manager().InstallNow(
       std::move(options), install_future.GetCallback());

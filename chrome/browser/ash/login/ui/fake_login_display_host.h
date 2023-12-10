@@ -6,11 +6,11 @@
 #define CHROME_BROWSER_ASH_LOGIN_UI_FAKE_LOGIN_DISPLAY_HOST_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "components/user_manager/user_type.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace session_manager {
 class SessionManager;
@@ -51,11 +51,13 @@ class FakeLoginDisplayHost : public LoginDisplayHost {
   void UpdateWallpaper(const AccountId& prefilled_account) override;
   bool IsUserAllowlisted(
       const AccountId& account_id,
-      const absl::optional<user_manager::UserType>& user_type) override;
+      const std::optional<user_manager::UserType>& user_type) override;
   void ShowGaiaDialog(const AccountId& prefilled_account) override;
+  void StartUserRecovery(const AccountId& account_to_recover) override;
   void ShowAllowlistCheckFailedError() override;
   void ShowOsInstallScreen() override;
   void ShowGuestTosScreen() override;
+  void ShowRemoteActivityNotificationScreen() override;
   void HideOobeDialog(bool saml_page_closed = false) override;
   void SetShelfButtonsEnabled(bool enabled) override;
   void UpdateOobeDialogState(OobeDialogState state) override;
@@ -67,7 +69,6 @@ class FakeLoginDisplayHost : public LoginDisplayHost {
   void UpdateAddUserButtonStatus() override;
   void RequestSystemInfoUpdate() override;
   bool HasUserPods() override;
-  void VerifyOwnerForKiosk(base::OnceClosure on_success) override;
   void AddObserver(LoginDisplayHost::Observer* observer) override;
   void RemoveObserver(LoginDisplayHost::Observer* observer) override;
   WizardContext* GetWizardContext() override;

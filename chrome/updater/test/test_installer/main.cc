@@ -8,6 +8,8 @@
 // All command lines arguments are forwarded to the child process.
 
 #include <windows.h>
+
+#include <optional>
 #include <string>
 
 #include "base/command_line.h"
@@ -15,7 +17,6 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/process/launch.h"
 #include "chrome/updater/win/installer/pe_resource.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -45,7 +46,7 @@ base::CommandLine::StringType CommandWrapperForScript(
   return {};
 }
 
-absl::optional<int> RunScript(const base::FilePath& script_path) {
+std::optional<int> RunScript(const base::FilePath& script_path) {
   // Copy current process's command line so all arguments are forwarded.
   base::CommandLine command = *base::CommandLine::ForCurrentProcess();
   command.SetProgram(script_path);
@@ -53,11 +54,11 @@ absl::optional<int> RunScript(const base::FilePath& script_path) {
   int exit_code = -1;
   return base::LaunchProcess(command, {})
                  .WaitForExitWithTimeout(base::Minutes(1), &exit_code)
-             ? absl::make_optional(exit_code)
-             : absl::nullopt;
+             ? std::make_optional(exit_code)
+             : std::nullopt;
 }
 
-absl::optional<base::FilePath> CreateScriptFile(
+std::optional<base::FilePath> CreateScriptFile(
     HMODULE module,
     const std::wstring& name,
     const std::wstring& type,
@@ -73,8 +74,8 @@ absl::optional<base::FilePath> CreateScriptFile(
       working_dir.AppendASCII("TestAppSetup")
           .AddExtension(ExtensionFromResourceName(name));
   return resource.WriteToDisk(script_path.value().c_str())
-             ? absl::make_optional(script_path)
-             : absl::nullopt;
+             ? std::make_optional(script_path)
+             : std::nullopt;
 }
 
 BOOL CALLBACK OnResourceFound(HMODULE module,

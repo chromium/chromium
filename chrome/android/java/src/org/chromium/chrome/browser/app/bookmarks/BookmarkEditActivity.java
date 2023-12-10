@@ -35,7 +35,6 @@ import org.chromium.chrome.browser.bookmarks.ImprovedBookmarkRowViewBinder;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.browser_ui.widget.TintedDrawable;
@@ -48,14 +47,13 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.url.GURL;
 
-/**
- * The activity that enables the user to modify the title, url and parent folder of a bookmark.
- */
+/** The activity that enables the user to modify the title, url and parent folder of a bookmark. */
 // TODO(crbug.com/1448929): Separate the activity from its view.
 // TODO(crbug.com/1448929): Add a coordinator/mediator for business logic.
 public class BookmarkEditActivity extends SynchronousInitializationActivity {
     /** The intent extra specifying the ID of the bookmark to be edited. */
     public static final String INTENT_BOOKMARK_ID = "BookmarkEditActivity.BookmarkId";
+
     /** The code when starting the folder move activity for a result. */
     static final int MOVE_REQUEST_CODE = 15;
 
@@ -77,27 +75,30 @@ public class BookmarkEditActivity extends SynchronousInitializationActivity {
     private FrameLayout mFolderPickerRowContainer;
     private ImprovedBookmarkRow mFolderSelectRow;
 
-    private BookmarkUiPrefs.Observer mBookmarkUiPrefsObserver = new BookmarkUiPrefs.Observer() {
-        @Override
-        public void onBookmarkRowDisplayPrefChanged(@BookmarkRowDisplayPref int displayPref) {
-            if (BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) {
-                updateFolderPickerRow(displayPref);
-            }
-        }
-    };
+    private BookmarkUiPrefs.Observer mBookmarkUiPrefsObserver =
+            new BookmarkUiPrefs.Observer() {
+                @Override
+                public void onBookmarkRowDisplayPrefChanged(
+                        @BookmarkRowDisplayPref int displayPref) {
+                    if (BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) {
+                        updateFolderPickerRow(displayPref);
+                    }
+                }
+            };
 
-    private BookmarkModelObserver mBookmarkModelObserver = new BookmarkModelObserver() {
-        @Override
-        public void bookmarkModelChanged() {
-            if (mModel.doesBookmarkExist(mBookmarkId)) {
-                updateViewContent(true);
-            } else if (!mInFolderSelect) {
-                // This happens either when the user clicks delete button or partner
-                // bookmark is removed in background.
-                finish();
-            }
-        }
-    };
+    private BookmarkModelObserver mBookmarkModelObserver =
+            new BookmarkModelObserver() {
+                @Override
+                public void bookmarkModelChanged() {
+                    if (mModel.doesBookmarkExist(mBookmarkId)) {
+                        updateViewContent(true);
+                    } else if (!mInFolderSelect) {
+                        // This happens either when the user clicks delete button or partner
+                        // bookmark is removed in background.
+                        finish();
+                    }
+                }
+            };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -118,21 +119,29 @@ public class BookmarkEditActivity extends SynchronousInitializationActivity {
         mFolderTextView = (TextView) findViewById(R.id.folder_text);
         mUrlEditText = findViewById(R.id.url_text);
 
-        mFolderTextView.setOnClickListener((v) -> {
-            mInFolderSelect = true;
-            Intent intent = BookmarkFolderSelectActivity.createIntent(
-                    BookmarkEditActivity.this, /*createFolder=*/false, mBookmarkId);
-            startActivityForResult(intent, MOVE_REQUEST_CODE);
-        });
+        mFolderTextView.setOnClickListener(
+                (v) -> {
+                    mInFolderSelect = true;
+                    Intent intent =
+                            BookmarkFolderSelectActivity.createIntent(
+                                    BookmarkEditActivity.this,
+                                    /* createFolder= */ false,
+                                    mBookmarkId);
+                    startActivityForResult(intent, MOVE_REQUEST_CODE);
+                });
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         View shadow = findViewById(R.id.shadow);
         View scrollView = findViewById(R.id.scroll_view);
-        scrollView.getViewTreeObserver().addOnScrollChangedListener(() -> {
-            shadow.setVisibility(scrollView.getScrollY() > 0 ? View.VISIBLE : View.GONE);
-        });
+        scrollView
+                .getViewTreeObserver()
+                .addOnScrollChangedListener(
+                        () -> {
+                            shadow.setVisibility(
+                                    scrollView.getScrollY() > 0 ? View.VISIBLE : View.GONE);
+                        });
 
         mRegularFolderContainer = findViewById(R.id.folder_container);
         mImprovedFolderContainer = findViewById(R.id.improved_folder_container);
@@ -146,8 +155,8 @@ public class BookmarkEditActivity extends SynchronousInitializationActivity {
             folderTitle.setText(
                     isFolder ? R.string.bookmark_parent_folder : R.string.bookmark_folder);
             mUrlEditText.setVisibility(isFolder ? View.GONE : View.VISIBLE);
-            getSupportActionBar().setTitle(
-                    isFolder ? R.string.edit_folder : R.string.edit_bookmark);
+            getSupportActionBar()
+                    .setTitle(isFolder ? R.string.edit_folder : R.string.edit_bookmark);
             mBookmarkUiPrefs = new BookmarkUiPrefs(ChromeSharedPreferences.getInstance());
             mBookmarkUiPrefs.addObserver(mBookmarkUiPrefsObserver);
 
@@ -167,8 +176,7 @@ public class BookmarkEditActivity extends SynchronousInitializationActivity {
                                             this, BookmarkRowDisplayPref.VISUAL),
                                     BookmarkUtils.getImageIconSize(
                                             res, BookmarkRowDisplayPref.VISUAL),
-                                    BookmarkUtils.getFaviconDisplaySize(res),
-                                    SyncServiceFactory.getForProfile(profile)),
+                                    BookmarkUtils.getFaviconDisplaySize(res)),
                             mModel,
                             mBookmarkUiPrefs,
                             ShoppingServiceFactory.getForProfile(profile));
@@ -213,10 +221,12 @@ public class BookmarkEditActivity extends SynchronousInitializationActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        mDeleteButton = menu.add(R.string.bookmark_toolbar_delete)
-                                .setIcon(TintedDrawable.constructTintedDrawable(
+        mDeleteButton =
+                menu.add(R.string.bookmark_toolbar_delete)
+                        .setIcon(
+                                TintedDrawable.constructTintedDrawable(
                                         this, R.drawable.ic_delete_white_24dp))
-                                .setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+                        .setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_IF_ROOM);
 
         return super.onCreateOptionsMenu(menu);
     }
@@ -297,8 +307,9 @@ public class BookmarkEditActivity extends SynchronousInitializationActivity {
                 ImprovedBookmarkRowProperties.END_IMAGE_RES, R.drawable.outline_chevron_right_24dp);
         propertyModel.set(
                 ImprovedBookmarkRowProperties.END_IMAGE_VISIBILITY, ImageVisibility.DRAWABLE);
-        propertyModel.set(ImprovedBookmarkRowProperties.ROW_CLICK_LISTENER,
-                (v) -> { BookmarkUtils.startFolderPickerActivity(this, mBookmarkId); });
+        propertyModel.set(
+                ImprovedBookmarkRowProperties.ROW_CLICK_LISTENER,
+                () -> BookmarkUtils.startFolderPickerActivity(this, mBookmarkId));
 
         mFolderSelectRow =
                 ImprovedBookmarkRow.buildView(this, displayPref == BookmarkRowDisplayPref.VISUAL);

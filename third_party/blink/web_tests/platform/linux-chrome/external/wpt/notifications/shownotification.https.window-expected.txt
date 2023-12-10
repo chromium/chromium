@@ -1,0 +1,14 @@
+This is a testharness.js-based test.
+[FAIL] fetching notification with an empty title
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'showNotification' on 'ServiceWorkerRegistration': No notification permission has been granted for this origin."
+[FAIL] fetching notification by tag filter
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'showNotification' on 'ServiceWorkerRegistration': No notification permission has been granted for this origin."
+[FAIL] fetching multiple notifications
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'showNotification' on 'ServiceWorkerRegistration': No notification permission has been granted for this origin."
+[FAIL] fetching from another registration
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'showNotification' on 'ServiceWorkerRegistration': No notification permission has been granted for this origin."
+[FAIL] fetching only persistent notifications
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'showNotification' on 'ServiceWorkerRegistration': No notification permission has been granted for this origin."
+[FAIL] fetching a notification with custom data
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'showNotification' on 'ServiceWorkerRegistration': No notification permission has been granted for this origin."
+Harness: the test ran to completion.

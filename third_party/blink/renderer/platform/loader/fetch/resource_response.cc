@@ -26,18 +26,18 @@
 
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
 
-#include <algorithm>
-#include <limits>
-#include <memory>
 #include <string>
 
+#include "base/memory/scoped_refptr.h"
 #include "net/http/structured_headers.h"
 #include "net/ssl/ssl_info.h"
 #include "services/network/public/cpp/cors/cors.h"
 #include "services/network/public/mojom/fetch_api.mojom-blink.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/timing/resource_timing.mojom-blink.h"
 #include "third_party/blink/public/platform/web_url_response.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_load_timing.h"
+#include "third_party/blink/renderer/platform/loader/fetch/service_worker_router_info.h"
 #include "third_party/blink/renderer/platform/network/http_names.h"
 #include "third_party/blink/renderer/platform/network/http_parsers.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
@@ -77,6 +77,7 @@ ResourceResponse::ResourceResponse()
       did_use_shared_dictionary_(false),
       async_revalidation_requested_(false),
       is_signed_exchange_inner_response_(false),
+      is_web_bundle_inner_response_(false),
       was_in_prefetch_cache_(false),
       was_cookie_in_request_(false),
       network_accessed_(false),
@@ -104,7 +105,7 @@ bool ResourceResponse::IsHTTP() const {
 }
 
 bool ResourceResponse::ShouldPopulateResourceTiming() const {
-  return IsHTTP() || WebBundleURL().IsValid();
+  return IsHTTP() || is_web_bundle_inner_response_;
 }
 
 const KURL& ResourceResponse::CurrentRequestUrl() const {
@@ -229,6 +230,11 @@ void ResourceResponse::SetSSLInfo(const net::SSLInfo& ssl_info) {
   ssl_info_ = ssl_info;
 }
 
+void ResourceResponse::SetServiceWorkerRouterInfo(
+    scoped_refptr<ServiceWorkerRouterInfo> value) {
+  service_worker_router_info_ = std::move(value);
+}
+
 bool ResourceResponse::IsCorsSameOrigin() const {
   return network::cors::IsCorsSameOriginResponseType(response_type_);
 }
@@ -342,11 +348,24 @@ static absl::optional<base::Time> ParseDateValueInHeader(
   const AtomicString& header_value = headers.Get(header_name);
   if (header_value.empty())
     return absl::nullopt;
+
+  // In case of parsing the Expires header value, an invalid string 0 should be
+  // treated as expired according to the RFC 9111 section 5.3 as below:
+  //
+  // > A cache recipient MUST interpret invalid date formats, especially the
+  // > value "0", as representing a time in the past (i.e., "already expired").
+  if (base::FeatureList::IsEnabled(
+          blink::features::kTreatHTTPExpiresHeaderValueZeroAsExpiredInBlink) &&
+      header_name == http_names::kLowerExpires && header_value == "0") {
+    return base::Time::Min();
+  }
+
   // This handles all date formats required by RFC2616:
   // Sun, 06 Nov 1994 08:49:37 GMT  ; RFC 822, updated by RFC 1123
   // Sunday, 06-Nov-94 08:49:37 GMT ; RFC 850, obsoleted by RFC 1036
   // Sun Nov  6 08:49:37 1994       ; ANSI C's asctime() format
   absl::optional<base::Time> date = ParseDate(header_value);
+
   if (date && date.value().is_max())
     return absl::nullopt;
   return date;
@@ -443,8 +462,8 @@ void ResourceResponse::SetResourceLoadTiming(
 }
 
 AtomicString ResourceResponse::ConnectionInfoString() const {
-  std::string connection_info_string =
-      net::HttpResponseInfo::ConnectionInfoToString(connection_info_);
+  std::string_view connection_info_string =
+      net::HttpConnectionInfoToString(connection_info_);
   return AtomicString(
       reinterpret_cast<const LChar*>(connection_info_string.data()),
       connection_info_string.length());

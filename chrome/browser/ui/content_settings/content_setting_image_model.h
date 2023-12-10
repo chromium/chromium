@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_CONTENT_SETTINGS_CONTENT_SETTING_IMAGE_MODEL_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -14,7 +15,6 @@
 #include "chrome/browser/ui/content_settings/content_setting_bubble_model.h"
 #include "chrome/browser/ui/content_settings/content_setting_bubble_model_delegate.h"
 #include "components/content_settings/core/common/content_settings_types.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/image/image.h"
 
 namespace content {
@@ -51,6 +51,7 @@ class ContentSettingImageModel {
     NOTIFICATIONS_QUIET_PROMPT = 17,
     CLIPBOARD_READ_WRITE = 18,
     STORAGE_ACCESS = 19,
+    MIDI = 20,
 
     NUM_IMAGE_TYPES
   };
@@ -176,7 +177,7 @@ class ContentSettingImageModel {
   const bool image_type_should_notify_accessibility_;
   bool should_auto_open_bubble_ = false;
   bool should_show_promo_ = false;
-  absl::optional<int> icon_size_;
+  std::optional<int> icon_size_;
 };
 
 // A subclass for an image model tied to a single content type.

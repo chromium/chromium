@@ -34,23 +34,23 @@ std::vector<Printer> GetPrintersAsVector(
 PrintersMap::PrintersMap() = default;
 PrintersMap::~PrintersMap() = default;
 
-absl::optional<Printer> PrintersMap::Get(const std::string& printer_id) const {
+std::optional<Printer> PrintersMap::Get(const std::string& printer_id) const {
   for (const auto& [printer_class, printers_map] : printers_) {
     if (auto* printer = base::FindOrNull(printers_map, printer_id)) {
       return *printer;
     }
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-absl::optional<Printer> PrintersMap::Get(PrinterClass printer_class,
-                                         const std::string& printer_id) const {
+std::optional<Printer> PrintersMap::Get(PrinterClass printer_class,
+                                        const std::string& printer_id) const {
   if (auto* printers_map = FindPrintersInClassOrNull(printer_class)) {
     if (auto* printer = base::FindOrNull(*printers_map, printer_id)) {
       return *printer;
     }
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 std::vector<Printer> PrintersMap::Get(PrinterClass printer_class) const {

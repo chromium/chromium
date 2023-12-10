@@ -28,22 +28,28 @@ public final class ConsentAuditorBridge {
      * @param consentDescription The resource IDs of the text the user read before consenting.
      * @param consentConfirmation The resource ID of the text the user clicked when consenting.
      */
-    public void recordConsent(CoreAccountId accountId, @ConsentAuditorFeature int feature,
-            List<Integer> consentDescription, @StringRes int consentConfirmation) {
+    public void recordConsent(
+            CoreAccountId accountId,
+            @ConsentAuditorFeature int feature,
+            List<Integer> consentDescription,
+            @StringRes int consentConfirmation) {
         int[] consentDescriptionArray = new int[consentDescription.size()];
         for (int i = 0; i < consentDescription.size(); ++i) {
             consentDescriptionArray[i] = consentDescription.get(i);
         }
-        ConsentAuditorBridgeJni.get().recordConsent(ConsentAuditorBridge.this,
-                Profile.getLastUsedRegularProfile(), accountId, feature, consentDescriptionArray,
-                consentConfirmation);
+        ConsentAuditorBridgeJni.get()
+                .recordConsent(
+                        ConsentAuditorBridge.this,
+                        Profile.getLastUsedRegularProfile(),
+                        accountId,
+                        feature,
+                        consentDescriptionArray,
+                        consentConfirmation);
     }
 
     private ConsentAuditorBridge() {}
 
-    /**
-     * Returns the singleton bridge object.
-     */
+    /** Returns the singleton bridge object. */
     public static ConsentAuditorBridge getInstance() {
         ThreadUtils.assertOnUiThread();
         if (sInstance == null) sInstance = new ConsentAuditorBridge();
@@ -52,7 +58,12 @@ public final class ConsentAuditorBridge {
 
     @NativeMethods
     interface Natives {
-        void recordConsent(ConsentAuditorBridge caller, Profile profile, CoreAccountId accountId,
-                int feature, int[] consentDescription, int consentConfirmation);
+        void recordConsent(
+                ConsentAuditorBridge caller,
+                Profile profile,
+                CoreAccountId accountId,
+                int feature,
+                int[] consentDescription,
+                int consentConfirmation);
     }
 }

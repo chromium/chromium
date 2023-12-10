@@ -176,7 +176,7 @@ void CheckIfDirectoryExists(
 void GetMetadataForPath(
     scoped_refptr<storage::FileSystemContext> file_system_context,
     const base::FilePath& entry_path,
-    int fields,
+    storage::FileSystemOperationRunner::GetMetadataFieldSet fields,
     storage::FileSystemOperationRunner::GetMetadataCallback callback);
 
 // Groups a FileSystemURL and a related ScopedFSHandle.

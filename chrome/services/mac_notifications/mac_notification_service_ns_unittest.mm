@@ -177,7 +177,7 @@ class MacNotificationServiceNSTest : public testing::Test {
         "notificationId", std::move(profile_identifier));
     auto meta = mojom::NotificationMetadata::New(
         std::move(notification_identifier), /*type=*/0, /*origin_url=*/GURL(),
-        /*creator_pid=*/0);
+        /*user_data_dir=*/"");
 
     std::vector<mojom::NotificationActionButtonPtr> buttons;
     return mojom::Notification::New(

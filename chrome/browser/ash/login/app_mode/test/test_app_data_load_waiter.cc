@@ -7,12 +7,12 @@
 
 #include "base/files/file_path.h"
 #include "base/run_loop.h"
-#include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
+#include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/ash/login/app_mode/test/test_app_data_load_waiter.h"
 
 namespace ash {
 
-TestAppDataLoadWaiter::TestAppDataLoadWaiter(KioskAppManager* manager,
+TestAppDataLoadWaiter::TestAppDataLoadWaiter(KioskChromeAppManager* manager,
                                              const std::string& app_id,
                                              const std::string& version)
     : runner_(nullptr),
@@ -108,7 +108,7 @@ void TestAppDataLoadWaiter::OnKioskExtensionDownloadFailed(
 }
 
 bool TestAppDataLoadWaiter::IsAppDataLoaded() {
-  KioskAppManager::App app;
+  KioskChromeAppManager::App app;
   return manager_->GetApp(app_id_, &app) && !app.is_loading;
 }
 

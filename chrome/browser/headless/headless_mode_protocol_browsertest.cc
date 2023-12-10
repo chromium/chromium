@@ -255,14 +255,27 @@ HEADLESS_MODE_PROTOCOL_TEST_F(HeadlessModeInputSelectFileDialogTest,
                               MAYBE_InputSelectFileDialog,
                               "input/input-select-file-dialog.js")
 
-// https://crbug.com/1411976
+class HeadlessModeScreencastTest : public HeadlessModeProtocolBrowserTest {
+ public:
+  HeadlessModeScreencastTest() = default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    HeadlessModeProtocolBrowserTest::SetUpCommandLine(command_line);
+
 #if BUILDFLAG(IS_WIN)
-#define MAYBE_ScreencastBasics DISABLED_ScreencastBasics
-#else
-#define MAYBE_ScreencastBasics ScreencastBasics
+    // Screencast tests fail on Windows unless GPU compositing is disabled,
+    // see https://crbug.com/1411976 and https://crbug.com/1502651.
+    UseSoftwareCompositing();
 #endif
-HEADLESS_MODE_PROTOCOL_TEST(MAYBE_ScreencastBasics,
-                            "sanity/screencast-basics.js")
+  }
+};
+
+HEADLESS_MODE_PROTOCOL_TEST_F(HeadlessModeScreencastTest,
+                              ScreencastBasics,
+                              "sanity/screencast-basics.js")
+HEADLESS_MODE_PROTOCOL_TEST_F(HeadlessModeScreencastTest,
+                              ScreencastViewport,
+                              "sanity/screencast-viewport.js")
 
 HEADLESS_MODE_PROTOCOL_TEST(LargeBrowserWindowSize,
                             "sanity/large-browser-window-size.js")
@@ -275,10 +288,16 @@ HEADLESS_MODE_PROTOCOL_TEST(MaximizeRestoreWindow,
                             "sanity/maximize-restore-window.js")
 HEADLESS_MODE_PROTOCOL_TEST(FullscreenRestoreWindow,
                             "sanity/fullscreen-restore-window.js")
-#endif  // !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_MAC)
+#endif  // !BUILDFLAG(IS_MAC)
 
 HEADLESS_MODE_PROTOCOL_TEST(MaximizedWindowSize,
                             "sanity/maximized-window-size.js")
+
+// This currently fails on Mac,see https://crbug.com/1500046
+#if !BUILDFLAG(IS_MAC)
+HEADLESS_MODE_PROTOCOL_TEST(FullscreenWindowSize,
+                            "sanity/fullscreen-window-size.js")
+#endif  // !BUILDFLAG(IS_MAC)
 
 HEADLESS_MODE_PROTOCOL_TEST(PrintToPdfTinyPage,
                             "sanity/print-to-pdf-tiny-page.js")

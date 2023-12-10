@@ -27,7 +27,7 @@ class MockDialogModel : public AuthenticatorRequestDialogModel {
   MockDialogModel() : AuthenticatorRequestDialogModel(nullptr) {}
 
   MOCK_METHOD(base::span<const Mechanism>, mechanisms, (), (const));
-  MOCK_METHOD(absl::optional<std::u16string>,
+  MOCK_METHOD(std::optional<std::u16string>,
               GetPriorityPhoneName,
               (),
               (const override));

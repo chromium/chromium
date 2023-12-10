@@ -19,35 +19,31 @@
 #include "ash/system/unified/quick_settings_metrics_util.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
-#include "ash/system/unified/unified_system_tray_view.h"
 #include "ash/wm/container_finder.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/debug/crash_logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "ui/aura/window.h"
 #include "ui/compositor/layer.h"
+#include "ui/display/screen.h"
 #include "ui/events/event.h"
 
 namespace ash {
+
 namespace {
-
 constexpr int kDetailedViewHeight = 464;
-
-}
+}  // namespace
 
 UnifiedSystemTrayBubble::UnifiedSystemTrayBubble(UnifiedSystemTray* tray)
     : controller_(std::make_unique<UnifiedSystemTrayController>(tray->model(),
                                                                 this,
                                                                 tray)),
-      unified_system_tray_(tray),
-      is_qs_revamp_enabled_(features::IsQsRevampEnabled()) {
+      unified_system_tray_(tray) {
   time_opened_ = base::TimeTicks::Now();
 
   TrayBubbleView::InitParams init_params =
       CreateInitParamsForTrayBubble(tray, /*anchor_to_shelf_corner=*/true);
-  if (is_qs_revamp_enabled_) {
-    init_params.preferred_width = kRevampedTrayMenuWidth;
-  }
+  init_params.preferred_width = kWideTrayMenuWidth;
   init_params.close_on_deactivate = false;
 
   bubble_view_ = new TrayBubbleView(init_params);
@@ -56,23 +52,12 @@ UnifiedSystemTrayBubble::UnifiedSystemTrayBubble(UnifiedSystemTray* tray)
   int max_height = CalculateMaxTrayBubbleHeight(
       unified_system_tray_->GetBubbleWindowContainer());
 
-  if (is_qs_revamp_enabled_) {
-    auto quick_settings_view = controller_->CreateQuickSettingsView(max_height);
-    bubble_view_->SetMaxHeight(max_height);
-    quick_settings_view_ =
-        bubble_view_->AddChildView(std::move(quick_settings_view));
-    time_to_click_recorder_ = std::make_unique<TimeToClickRecorder>(
-        /*delegate=*/this, /*target_view=*/quick_settings_view_);
-  } else {
-    DCHECK(!is_qs_revamp_enabled_);
-    auto unified_view = controller_->CreateUnifiedQuickSettingsView();
-    unified_view->SetMaxHeight(max_height);
-    bubble_view_->SetMaxHeight(max_height);
-    controller_->ResetToCollapsedIfRequired();
-    unified_view_ = bubble_view_->AddChildView(std::move(unified_view));
-    time_to_click_recorder_ = std::make_unique<TimeToClickRecorder>(
-        /*delegate=*/this, /*target_view=*/unified_view_);
-  }
+  auto quick_settings_view = controller_->CreateQuickSettingsView(max_height);
+  bubble_view_->SetMaxHeight(max_height);
+  quick_settings_view_ =
+      bubble_view_->AddChildView(std::move(quick_settings_view));
+  time_to_click_recorder_ = std::make_unique<TimeToClickRecorder>(
+      /*delegate=*/this, /*target_view=*/quick_settings_view_);
 
   bubble_widget_ = views::BubbleDialogDelegateView::CreateBubble(bubble_view_);
   bubble_widget_->AddObserver(this);
@@ -84,21 +69,19 @@ UnifiedSystemTrayBubble::UnifiedSystemTrayBubble(UnifiedSystemTray* tray)
   NotifyAccessibilityEvent(ax::mojom::Event::kShow, true);
 
   // Explicitly close the app list in clamshell mode.
-  if (!Shell::Get()->tablet_mode_controller()->InTabletMode()) {
+  if (!display::Screen::GetScreen()->InTabletMode()) {
     Shell::Get()->app_list_controller()->DismissAppList();
   }
 }
 
 UnifiedSystemTrayBubble::~UnifiedSystemTrayBubble() {
   // Record the number of quick settings pages.
-  if (is_qs_revamp_enabled_) {
-    auto page_count = unified_system_tray_controller()
-                          ->model()
-                          ->pagination_model()
-                          ->total_pages();
-    DCHECK_GT(page_count, 0);
-    quick_settings_metrics_util::RecordQsPageCountOnClose(page_count);
-  }
+  auto page_count = unified_system_tray_controller()
+                        ->model()
+                        ->pagination_model()
+                        ->total_pages();
+  DCHECK_GT(page_count, 0);
+  quick_settings_metrics_util::RecordQsPageCountOnClose(page_count);
 
   if (controller_->showing_calendar_view()) {
     unified_system_tray_->NotifyLeavingCalendarView();
@@ -115,7 +98,6 @@ UnifiedSystemTrayBubble::~UnifiedSystemTrayBubble() {
   if (bubble_view_) {
     bubble_view_->RemoveAllChildViews();
     quick_settings_view_ = nullptr;
-    unified_view_ = nullptr;
     bubble_view_->ResetDelegate();
     bubble_view_ = nullptr;
   }
@@ -148,57 +130,12 @@ bool UnifiedSystemTrayBubble::IsBubbleActive() const {
   return bubble_widget_ && bubble_widget_->IsActive();
 }
 
-void UnifiedSystemTrayBubble::EnsureCollapsed() {
-  if (!bubble_widget_ || is_qs_revamp_enabled_) {
-    return;
-  }
-
-  DCHECK(unified_view_);
-  DCHECK(controller_);
-  controller_->EnsureCollapsed();
-}
-
-void UnifiedSystemTrayBubble::EnsureExpanded() {
-  if (!bubble_widget_) {
-    return;
-  }
-
-  DCHECK(unified_view_ || quick_settings_view_);
-  DCHECK(controller_);
-  controller_->EnsureExpanded();
-}
-
-void UnifiedSystemTrayBubble::CollapseWithoutAnimating() {
-  if (!bubble_widget_ || is_qs_revamp_enabled_) {
-    return;
-  }
-
-  DCHECK(unified_view_);
-  DCHECK(controller_);
-
-  controller_->CollapseWithoutAnimating();
-}
-
-void UnifiedSystemTrayBubble::CollapseMessageCenter() {
-  if (is_qs_revamp_enabled_) {
-    return;
-  }
-  unified_system_tray_->CollapseMessageCenter();
-}
-
-void UnifiedSystemTrayBubble::ExpandMessageCenter() {
-  if (is_qs_revamp_enabled_) {
-    return;
-  }
-  unified_system_tray_->ExpandMessageCenter();
-}
-
 void UnifiedSystemTrayBubble::ShowAudioDetailedView() {
   if (!bubble_widget_) {
     return;
   }
 
-  DCHECK(unified_view_ || quick_settings_view_);
+  DCHECK(quick_settings_view_);
   DCHECK(controller_);
   controller_->ShowAudioDetailedView();
 }
@@ -208,7 +145,7 @@ void UnifiedSystemTrayBubble::ShowDisplayDetailedView() {
     return;
   }
 
-  DCHECK(unified_view_ || quick_settings_view_);
+  DCHECK(quick_settings_view_);
   DCHECK(controller_);
   controller_->ShowDisplayDetailedView();
 }
@@ -231,19 +168,19 @@ void UnifiedSystemTrayBubble::ShowCalendarView(
     }
   }
 
-  DCHECK(unified_view_ || quick_settings_view_);
+  DCHECK(quick_settings_view_);
   DCHECK(controller_);
   controller_->ShowCalendarView(show_source, event_source);
 }
 
-void UnifiedSystemTrayBubble::ShowNetworkDetailedView(bool force) {
+void UnifiedSystemTrayBubble::ShowNetworkDetailedView() {
   if (!bubble_widget_) {
     return;
   }
 
-  DCHECK(unified_view_ || quick_settings_view_);
+  DCHECK(quick_settings_view_);
   DCHECK(controller_);
-  controller_->ShowNetworkDetailedView(force);
+  controller_->ShowNetworkDetailedView();
 }
 
 void UnifiedSystemTrayBubble::UpdateBubble() {
@@ -268,37 +205,7 @@ views::Widget* UnifiedSystemTrayBubble::GetBubbleWidget() const {
 }
 
 int UnifiedSystemTrayBubble::GetCurrentTrayHeight() const {
-  if (is_qs_revamp_enabled_) {
-    CHECK(quick_settings_view_);
-    return quick_settings_view_->GetCurrentHeight();
-  }
-
-  return unified_view_->GetCurrentHeight();
-}
-
-bool UnifiedSystemTrayBubble::FocusOut(bool reverse) {
-  if (is_qs_revamp_enabled_) {
-    return false;
-  }
-  return unified_system_tray_->FocusMessageCenter(reverse);
-}
-
-void UnifiedSystemTrayBubble::FocusEntered(bool reverse) {
-  if (is_qs_revamp_enabled_) {
-    return;
-  }
-
-  unified_view_->FocusEntered(reverse);
-}
-
-void UnifiedSystemTrayBubble::OnMessageCenterActivated() {
-  if (is_qs_revamp_enabled_) {
-    return;
-  }
-  // When the message center is activated, we no longer need to reroute key
-  // events to this bubble. Otherwise, we interfere with notifications that may
-  // require key input like inline replies. See crbug.com/1040738.
-  bubble_view_->StopReroutingEvents();
+  return quick_settings_view_->GetCurrentHeight();
 }
 
 void UnifiedSystemTrayBubble::OnDisplayConfigurationChanged() {
@@ -312,7 +219,6 @@ void UnifiedSystemTrayBubble::OnWidgetDestroying(views::Widget* widget) {
 
   bubble_view_->RemoveAllChildViews();
   quick_settings_view_ = nullptr;
-  unified_view_ = nullptr;
   bubble_view_->ResetDelegate();
   bubble_view_ = nullptr;
 
@@ -345,7 +251,6 @@ void UnifiedSystemTrayBubble::OnAutoHideStateChanged(
 }
 
 void UnifiedSystemTrayBubble::UpdateBubbleHeight(bool is_showing_detiled_view) {
-  DCHECK(is_qs_revamp_enabled_);
   if (!bubble_view_) {
     return;
   }
@@ -368,8 +273,7 @@ void UnifiedSystemTrayBubble::UpdateBubbleBounds() {
                         !!bubble_widget_ && !!bubble_widget_->IsClosed());
 
   // `bubble_view_` or `Shelf` may be null, see https://b/293264371,
-  if (!bubble_view_ || (is_qs_revamp_enabled_ && !quick_settings_view_) ||
-      (!is_qs_revamp_enabled_ && !unified_view_)) {
+  if (!bubble_view_ || !quick_settings_view_) {
     return;
   }
   if (!unified_system_tray_->shelf()) {
@@ -379,18 +283,15 @@ void UnifiedSystemTrayBubble::UpdateBubbleBounds() {
   int max_height = CalculateMaxTrayBubbleHeight(
       unified_system_tray_->GetBubbleWindowContainer());
   if (bubble_view_->ShouldUseFixedHeight()) {
-    DCHECK(is_qs_revamp_enabled_);
     const int qs_current_height = quick_settings_view_->height();
     max_height =
         std::min(max_height, std::max(qs_current_height, kDetailedViewHeight));
   }
-  if (is_qs_revamp_enabled_) {
-    // Setting the max height can result in the popup baseline being updated,
-    // closing this bubble.
-    quick_settings_view_->SetMaxHeight(max_height);
-  } else {
-    unified_view_->SetMaxHeight(max_height);
-  }
+
+  // Setting the max height can result in the popup baseline being updated,
+  // closing this bubble.
+  quick_settings_view_->SetMaxHeight(max_height);
+
   if (!bubble_view_) {
     // Updating the maximum height can result in popup baseline changing. If
     // there is not enough room for popups, the bubble will be closed, and this

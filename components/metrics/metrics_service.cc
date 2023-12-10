@@ -167,11 +167,9 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/variations/entropy_provider.h"
-// When removing the below header, also remove the friend declaration.
-#include "components/variations/synthetic_trial_registry.h"
-#include "components/variations/synthetic_trials.h"
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "components/keep_alive_registry/keep_alive_registry.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -426,20 +424,6 @@ void MetricsService::InitializeMetricsRecordingState() {
   // Init() has to be called after LogCrash() in order for LogCrash() to work.
   delegating_provider_.Init();
 
-  // Register the synthetic trial for StatisticsRecorder. Done here instead of
-  // the usual place to make sure this covers all UMA-reporting platforms.
-  auto* synthetic_trial_registry = client_->GetSyntheticTrialRegistry();
-  if (synthetic_trial_registry) {  // Null in tests.
-    base::StringPiece group_name =
-        base::StatisticsRecorder::GetLockTrialGroup();
-    if (!group_name.empty()) {
-      synthetic_trial_registry->RegisterSyntheticFieldTrial(
-          variations::SyntheticTrialGroup(
-              "StatisticsRecorderRWLock", group_name,
-              variations::SyntheticTrialAnnotationMode::kCurrentLog));
-    }
-  }
-
   state_ = INITIALIZED;
 }
 
@@ -618,10 +602,7 @@ void MetricsService::OnAppEnterBackground(bool keep_recording_in_background) {
         "UMA.MetricsService.PendingOngoingLogOnBackgrounded",
         pending_ongoing_log_);
 #if BUILDFLAG(IS_ANDROID)
-    if (base::FeatureList::IsEnabled(
-            features::kMergeSubprocessMetricsOnBgAndFg)) {
-      client_->MergeSubprocessHistograms();
-    }
+    client_->MergeSubprocessHistograms();
 #endif  // BUILDFLAG(IS_ANDROID)
     {
       ScopedTerminationChecker scoped_termination_checker(
@@ -647,10 +628,7 @@ void MetricsService::OnAppEnterForeground(bool force_open_new_log) {
         "UMA.MetricsService.PendingOngoingLogOnForegrounded",
         pending_ongoing_log_);
 #if BUILDFLAG(IS_ANDROID)
-    if (base::FeatureList::IsEnabled(
-            features::kMergeSubprocessMetricsOnBgAndFg)) {
-      client_->MergeSubprocessHistograms();
-    }
+    client_->MergeSubprocessHistograms();
 #endif  // BUILDFLAG(IS_ANDROID)
     // Because state_ >= SENDING_LOGS, PushPendingLogsToPersistentStorage()
     // will close the log, allowing a new log to be opened.
@@ -660,6 +638,10 @@ void MetricsService::OnAppEnterForeground(bool force_open_new_log) {
   }
 }
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+
+void MetricsService::OnPageLoadStarted() {
+  delegating_provider_.OnPageLoadStarted();
+}
 
 void MetricsService::LogCleanShutdown() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -1102,6 +1084,25 @@ void MetricsService::CloseCurrentLog(
       current_log->GetCurrentClockTime(/*record_time_zone=*/true);
   std::string signing_key = log_store()->GetSigningKeyForLogType(log_type);
   std::string current_app_version = client_->GetVersionString();
+
+#if !BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(
+          features::kMetricsServiceDeltaSnapshotInBg)) {
+    // If this is an async periodic log, and the browser is about to be shut
+    // down (determined by KeepAliveRegistry::IsShuttingDown(), indicating that
+    // there is nothing else to keep the browser alive), then do the work
+    // synchronously instead. Otherwise, creating a ScopedKeepAlive below while
+    // the KeepAliveRegistry has already started shutting down will trigger a
+    // CHECK. Alternatively, the ScopedKeepAlive below could be omitted when the
+    // KeepAliveRegistry is shutting down, but since the browser is shutting
+    // down soon, then it is likely that the asynchronous task to close the
+    // current the log will be cut short, causing data loss.
+    if (async && KeepAliveRegistry::GetInstance()->IsShuttingDown()) {
+      async = false;
+    }
+  }
+#endif
+
   if (async) {
     if (base::FeatureList::IsEnabled(
             features::kMetricsServiceDeltaSnapshotInBg)) {

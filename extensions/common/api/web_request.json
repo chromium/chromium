@@ -6,9 +6,6 @@
   {
     "namespace": "webRequest",
     "description": "Use the <code>chrome.webRequest</code> API to observe and analyze traffic and to intercept, block, or modify requests in-flight.",
-    "compiler_options": {
-      "modernised_enums": true
-    },
     "properties": {
       "MAX_HANDLER_BEHAVIOR_CHANGED_CALLS_PER_10_MINUTES": {
         "value": 20,

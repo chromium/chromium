@@ -150,18 +150,8 @@ class COMPONENT_EXPORT(HERMES_CLIENT) HermesEuiccClient {
 
     dbus::Property<std::string>& eid() { return eid_; }
     dbus::Property<bool>& is_active() { return is_active_; }
-    dbus::Property<std::vector<dbus::ObjectPath>>&
-    installed_carrier_profiles() {
-      DCHECK(!features::IsSmdsDbusMigrationEnabled());
-      return installed_carrier_profiles_;
-    }
     dbus::Property<std::vector<dbus::ObjectPath>>& profiles() {
-      DCHECK(features::IsSmdsDbusMigrationEnabled());
       return profiles_;
-    }
-    dbus::Property<std::vector<dbus::ObjectPath>>& pending_carrier_profiles() {
-      DCHECK(!features::IsSmdsDbusMigrationEnabled());
-      return pending_carrier_profiles_;
     }
     dbus::Property<int32_t>& physical_slot() { return physical_slot_; }
 
@@ -171,13 +161,6 @@ class COMPONENT_EXPORT(HERMES_CLIENT) HermesEuiccClient {
 
     // Boolean that indicates whether this euicc is currently active.
     dbus::Property<bool> is_active_;
-
-    // List of paths to carrier profiles currently installed on the device.
-    dbus::Property<std::vector<dbus::ObjectPath>> installed_carrier_profiles_;
-
-    // List of pending carrier profiles from SMDS available for
-    // installation on this device.
-    dbus::Property<std::vector<dbus::ObjectPath>> pending_carrier_profiles_;
 
     // List of all carrier profiles known to the device. This includes
     // currently installed profiles and pending profiles scanned from

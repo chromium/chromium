@@ -14,7 +14,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/ui/util/image/image_util.h"
 #import "ios/chrome/browser/shared/ui/util/pasteboard_util.h"
-#import "ios/chrome/browser/web/image_fetch/image_fetch_tab_helper.h"
+#import "ios/chrome/browser/web/model/image_fetch/image_fetch_tab_helper.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/thread/web_task_traits.h"
 #import "ios/web/public/thread/web_thread.h"

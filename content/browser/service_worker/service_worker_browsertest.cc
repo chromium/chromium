@@ -5130,19 +5130,30 @@ class ServiceWorkerSkipEmptyFetchHandlerBrowserTest
       case SkipEmptyFetchHandlerEnum::kEnabled:
         scoped_feature_list_.InitWithFeaturesAndParameters(
             {{features::kServiceWorkerSkipIgnorableFetchHandler,
-              {{"SkipEmptyFetchHandler", "true"}}}},
+              {
+                  {"SkipEmptyFetchHandler", "true"},
+                  {"StartServiceWorkerForEmptyFetchHandler", "false"},
+                  {"AsyncStartServiceWorkerForEmptyFetchHandler", "false"},
+                  {"AsyncStartServiceWorkerForEmptyFetchHandlerDurationInMs",
+                   "0"},
+              }}},
             {});
         break;
       case SkipEmptyFetchHandlerEnum::kEnabledAndStartWorker:
         scoped_feature_list_.InitWithFeaturesAndParameters(
             {{features::kServiceWorkerSkipIgnorableFetchHandler,
-              {{"SkipEmptyFetchHandler", "true"},
-               {"StartServiceWorkerForEmptyFetchHandler", "true"}}}},
+              {
+                  {"SkipEmptyFetchHandler", "true"},
+                  {"StartServiceWorkerForEmptyFetchHandler", "true"},
+                  {"AsyncStartServiceWorkerForEmptyFetchHandler", "false"},
+                  {"AsyncStartServiceWorkerForEmptyFetchHandlerDurationInMs",
+                   "0"},
+              }}},
             {});
         break;
       case SkipEmptyFetchHandlerEnum::kDisabled:
-        scoped_feature_list_.InitWithFeaturesAndParameters(
-            {}, {{features::kServiceWorkerSkipIgnorableFetchHandler}});
+        scoped_feature_list_.InitAndDisableFeature(
+            features::kServiceWorkerSkipIgnorableFetchHandler);
         break;
     }
   }
@@ -6531,6 +6542,133 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerAutoPreloadWithBlockedHostsBrowserTest,
   // request is for the host in the blocked host params.
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(0, GetRequestCount(relative_url));
+}
+
+class ServiceWorkerAutoPreloadWithEnableSubresourcePreloadBrowserTest
+    : public ServiceWorkerAutoPreloadBrowserTest {
+ public:
+  ServiceWorkerAutoPreloadWithEnableSubresourcePreloadBrowserTest() {
+    feature_list_.InitWithFeaturesAndParameters(
+        {
+            {features::kServiceWorkerAutoPreload,
+             {{"enable_subresource_preload", "false"}}},
+        },
+        {});
+    ServiceWorkerRaceNetworkRequestURLLoaderClient::
+        SetDataPipeCapacityBytesForTest(1024);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    ServiceWorkerAutoPreloadWithEnableSubresourcePreloadBrowserTest,
+    Disabled) {
+  SetupAndRegisterServiceWorker();
+  // Check the main resource request, ensuring the preload request is
+  // dispatched.
+  const std::string relative_url =
+      "/service_worker/mock_response?sw_slow&sw_respond";
+  const GURL test_url = embedded_test_server()->GetURL(relative_url);
+  NavigationHandleObserver observer(web_contents(), test_url);
+  WorkerRunningStatusObserver service_worker_running_status_observer(
+      public_context());
+  NavigateToURLBlockUntilNavigationsComplete(shell(), test_url, 1);
+  EXPECT_TRUE(observer.has_committed());
+  service_worker_running_status_observer.WaitUntilRunning();
+
+  // ServiceWorker will respond after the delay, so we expect the network
+  // request initiated by the RaceNetworkRequest is requested to the server
+  // although it's not actually used.
+  while (GetRequestCount(relative_url) != 1) {
+    base::RunLoop().RunUntilIdle();
+  }
+  EXPECT_EQ(1, GetRequestCount(relative_url));
+  EXPECT_EQ("[ServiceWorkerRaceNetworkRequest] Response from the fetch handler",
+            GetInnerText());
+  EXPECT_EQ("fetch-handler",
+            observer.GetNormalizedResponseHeader("X-Response-From"));
+
+  // Check the subresource request, ensuring the preload request is not
+  // dispatched. The request recorded count is not changed, because the
+  // subresource preload request is not dispatched.
+  EXPECT_EQ("[ServiceWorkerRaceNetworkRequest] Response from the fetch handler",
+            EvalJs(GetPrimaryMainFrame(),
+                   "fetch('" + relative_url +
+                       "').then(response => response.text())"));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(1, GetRequestCount(relative_url));
+}
+
+class ServiceWorkerAutoPreloadWithEnableOnlyWhenSWNotRunningBrowserTest
+    : public ServiceWorkerAutoPreloadBrowserTest {
+ public:
+  ServiceWorkerAutoPreloadWithEnableOnlyWhenSWNotRunningBrowserTest() {
+    feature_list_.InitWithFeaturesAndParameters(
+        {
+            {features::kServiceWorkerAutoPreload,
+             {{"enable_only_when_service_worker_not_running", "true"}}},
+        },
+        {});
+    ServiceWorkerRaceNetworkRequestURLLoaderClient::
+        SetDataPipeCapacityBytesForTest(1024);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    ServiceWorkerAutoPreloadWithEnableOnlyWhenSWNotRunningBrowserTest,
+    NotRunning) {
+  // Ensure the ServiceWorker is stopped.
+  scoped_refptr<ServiceWorkerVersion> version = SetupAndRegisterServiceWorker();
+  StopServiceWorker(version.get());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kStopped, version->running_status());
+
+  // Check the main resource request, ensuring the preload request is
+  // dispatched.
+  const std::string relative_url =
+      "/service_worker/mock_response?sw_slow&sw_respond";
+  const GURL test_url = embedded_test_server()->GetURL(relative_url);
+  NavigationHandleObserver observer(web_contents(), test_url);
+  NavigateToURLBlockUntilNavigationsComplete(shell(), test_url, 1);
+  EXPECT_TRUE(observer.has_committed());
+  // ServiceWorker will respond after the delay, so we expect the network
+  // request initiated by the RaceNetworkRequest is requested to the server
+  // although it's not actually used.
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(1, GetRequestCount(relative_url));
+  EXPECT_EQ("[ServiceWorkerRaceNetworkRequest] Response from the fetch handler",
+            GetInnerText());
+  EXPECT_EQ("fetch-handler",
+            observer.GetNormalizedResponseHeader("X-Response-From"));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ServiceWorkerAutoPreloadWithEnableOnlyWhenSWNotRunningBrowserTest,
+    Running) {
+  // Ensure the ServiceWorker is running.
+  scoped_refptr<ServiceWorkerVersion> version = SetupAndRegisterServiceWorker();
+  EXPECT_EQ(StartServiceWorker(version.get()),
+            blink::ServiceWorkerStatusCode::kOk);
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kRunning, version->running_status());
+
+  // Check the main resource request, ensuring the preload request is not
+  // dispatched.
+  const std::string relative_url =
+      "/service_worker/mock_response?sw_slow&sw_respond";
+  const GURL test_url = embedded_test_server()->GetURL(relative_url);
+  NavigationHandleObserver observer(web_contents(), test_url);
+  NavigateToURLBlockUntilNavigationsComplete(shell(), test_url, 1);
+  EXPECT_TRUE(observer.has_committed());
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(0, GetRequestCount(relative_url));
+  EXPECT_EQ("[ServiceWorkerRaceNetworkRequest] Response from the fetch handler",
+            GetInnerText());
+  EXPECT_EQ("fetch-handler",
+            observer.GetNormalizedResponseHeader("X-Response-From"));
 }
 
 class ServiceWorkerRaceNetworkRequestOriginTrialBrowserTest

@@ -59,8 +59,7 @@ public class TabUma extends EmptyTabObserver implements UserData {
      */
     static void createForTab(Tab tab) {
         assert tab.getUserDataHost().getUserData(USER_DATA_KEY) == null;
-        @TabCreationState
-        Integer creationState = ((TabImpl) tab).getCreationState();
+        @TabCreationState Integer creationState = ((TabImpl) tab).getCreationState();
         if (creationState != null) {
             tab.getUserDataHost().setUserData(USER_DATA_KEY, new TabUma(tab, creationState));
         }
@@ -126,8 +125,9 @@ public class TabUma extends EmptyTabObserver implements UserData {
 
         increaseTabShowCount();
         boolean isOnBrowserStartup = sAllTabsShowCount == 1;
-        boolean performsLazyLoad = mTabCreationState == TabCreationState.FROZEN_FOR_LAZY_LOAD
-                && mLastShownTimestamp == -1;
+        boolean performsLazyLoad =
+                mTabCreationState == TabCreationState.FROZEN_FOR_LAZY_LOAD
+                        && mLastShownTimestamp == -1;
 
         int status;
         if (mRestoreStartedAtMillis == -1 && !performsLazyLoad) {

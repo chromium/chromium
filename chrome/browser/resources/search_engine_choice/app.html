@@ -7,7 +7,7 @@
     --iron-icon-height: 24px;
     --search-engine-omnibox-shadow-color: var(--google-grey-300);
     --scrollbar-height: 116px;
-    --submit-button-margins: 40px;
+    --action-button-margins: 40px;
     color: var(--cr-primary-text-color);
   }
 
@@ -28,9 +28,9 @@
     position: fixed;
   }
 
-  #submitButton {
+  #actionButton {
     height: unset;
-    margin: var(--submit-button-margins);
+    margin: var(--action-button-margins);
     /* The max-width is needed to stop the button from overlapping with
      the choice list in case of large text.  */
     max-width: 115px;
@@ -108,7 +108,7 @@
     margin-left: 16px;
   }
 
-  cr-radio-group {
+  #choiceList {
     display: flex;
     flex-direction: column;
     gap: 1px;
@@ -116,6 +116,7 @@
     /* We add horizontal padding to put the scollbar on the right and keep
     the content centered. */
     padding: 0 8px 50px;
+    text-align: start;
     width: 100%;
   }
 
@@ -126,10 +127,16 @@
     gap: 16px;
   }
 
+  .choice-text {
+    display: flex;
+    flex-direction: column;
+  }
+
   .choice-icon {
     --choice-icon-height: 24px;
     background-size: var(--choice-icon-height);
     border-radius: 4px;
+    flex: none;
     height: var(--choice-icon-height);
     width: var(--choice-icon-height);
   }
@@ -139,6 +146,7 @@
     font-size: 0.875rem;
     font-weight: 400;
     line-height: 20px;
+    text-align: start;
   }
 
   cr-radio-button {
@@ -231,6 +239,12 @@
     border-radius: calc(var(--scrollbar-height) /2);
   }
 
+  cr-expand-button {
+    --cr-expand-button-size: 24px;
+    --cr-section-vertical-padding: 0px;
+    width: fit-content;
+  }
+
   @keyframes fade-in-animation {
     0% {
       opacity: 0;
@@ -312,7 +326,7 @@
 
   @media screen and (max-width: 920px) {
     :host {
-      --submit-button-margins: 28px;
+      --action-button-margins: 28px;
     }
 
     .button-container {
@@ -321,7 +335,7 @@
       pointer-events: unset;
     }
 
-    #submitButton {
+    #actionButton {
       max-width: unset;
       pointer-events: unset;
     }
@@ -331,9 +345,9 @@
       display: none;
     }
 
-    cr-radio-group {
+    #choiceList {
       --button-container-height: calc(var(--cr-button-height) + 2 *
-          var(--submit-button-margins));
+          var(--action-button-margins));
       padding-bottom: var(--button-container-height);
     }
   }
@@ -362,7 +376,7 @@
       font-size: 1.0625rem;
     }
 
-    cr-radio-group {
+    #choiceList {
       overflow: unset;
     }
   }
@@ -402,22 +416,36 @@
       $i18n{subtitleInfoLink}
     </a>
   </p>
-  <cr-radio-group class="custom-scrollbar" selected="{{selectedChoice_}}">
+  <cr-radio-group id="choiceList" class="custom-scrollbar"
+      selected="{{selectedChoice_}}">
     <template is="dom-repeat" items="[[choiceList_]]">
-      <cr-radio-button class="label-first" name="[[item.prepopulate_id]]">
-        <div class="choice">
-          <div class="choice-icon"
-              style$="background-image: [[item.icon_path]];"></div>
-          <div class="choice-title">[[item.name]]</div>
-        </div>
-      </cr-radio-button>
+        <cr-radio-button class="label-first" name="[[item.prepopulateId]]">
+          <div class="choice">
+            <div class="choice-icon"
+                style$="background-image: [[item.iconPath]];"></div>
+            <template is="dom-if" if="[[!withMarketingSnippets_]]">
+              <div class="choice-title">[[item.name]]</div>
+            </template>
+            <template is="dom-if" if="[[withMarketingSnippets_]]">
+              <div class="choice-text">
+                <cr-expand-button expanded="{{item.showMarketingSnippet}}"
+                    no-hover>
+                  <div class="choice-title">[[item.name]]</div>
+                </cr-expand-button>
+                <iron-collapse opened="[[item.showMarketingSnippet]]">
+                  [[item.marketingSnippet]]
+                </iron-collapse>
+              </div>
+            </template>
+          </div>
+        </cr-radio-button>
     </template>
   </cr-radio-group>
 </div>
 <div class="button-container">
-  <cr-button class="action-button" id="submitButton" on-click="onSubmitClicked_"
-      disabled="[[isSubmitDisabled_]]">
-    $i18n{buttonText}
+  <cr-button class="action-button" id="actionButton"
+      on-click="onActionButtonClicked_" disabled="[[isActionButtonDisabled_]]">
+    [[actionButtonText_]]
   </cr-button>
 </div>
 

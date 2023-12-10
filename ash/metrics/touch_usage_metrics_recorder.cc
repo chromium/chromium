@@ -5,9 +5,9 @@
 #include "ash/metrics/touch_usage_metrics_recorder.h"
 
 #include "ash/shell.h"
-#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
+#include "ui/display/screen.h"
 #include "ui/events/event.h"
 #include "ui/events/types/event_type.h"
 
@@ -131,9 +131,8 @@ void TouchUsageMetricsRecorder::OnTouchEvent(ui::TouchEvent* event) {
 
 void TouchUsageMetricsRecorder::NotifyTouchscreenUsageRecorders() {
   std::array<TouchscreenUsageRecorder, 7>& recorders =
-      Shell::Get()->tablet_mode_controller()->InTabletMode()
-          ? tablet_recorders_
-          : clamshell_recorders_;
+      display::Screen::GetScreen()->InTabletMode() ? tablet_recorders_
+                                                   : clamshell_recorders_;
 
   for (TouchscreenUsageRecorder& recorder : recorders) {
     recorder.RecordTouch();

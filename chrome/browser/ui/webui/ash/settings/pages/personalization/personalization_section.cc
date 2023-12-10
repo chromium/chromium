@@ -38,11 +38,11 @@ void PersonalizationSection::AddLoadTimeData(
                                        : IDS_OS_SETTINGS_PERSONALIZATION},
       {"personalizationMenuItemDescription",
        IDS_OS_SETTINGS_PERSONALIZATION_MENU_ITEM_DESCRIPTION},
-      {"personalizationHubTitle",
-       isRevampEnabled_ ? IDS_OS_SETTINGS_REVAMP_OPEN_PERSONALIZATION_HUB
-                        : IDS_OS_SETTINGS_OPEN_PERSONALIZATION_HUB},
+      {"personalizationHubTitle", IDS_OS_SETTINGS_OPEN_PERSONALIZATION_HUB},
       {"personalizationHubSubtitle",
-       IDS_OS_SETTINGS_OPEN_PERSONALIZATION_HUB_SUBTITLE},
+       isRevampEnabled_
+           ? IDS_OS_SETTINGS_REVAMP_OPEN_PERSONALIZATION_HUB_SUBTITLE
+           : IDS_OS_SETTINGS_OPEN_PERSONALIZATION_HUB_SUBTITLE},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 }

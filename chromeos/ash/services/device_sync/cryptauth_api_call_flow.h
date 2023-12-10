@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_ASH_SERVICES_DEVICE_SYNC_CRYPTAUTH_API_CALL_FLOW_H_
 #define CHROMEOS_ASH_SERVICES_DEVICE_SYNC_CRYPTAUTH_API_CALL_FLOW_H_
 
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -13,7 +14,6 @@
 #include "chromeos/ash/services/device_sync/network_request_error.h"
 #include "google_apis/gaia/oauth2_api_call_flow.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -105,12 +105,12 @@ class CryptAuthApiCallFlow : public OAuth2ApiCallFlow {
 
   // Serialized request message proto that will be sent in the API POST request.
   // Null if request type is not POST.
-  absl::optional<std::string> serialized_request_;
+  std::optional<std::string> serialized_request_;
 
   // The request message proto represented as key-value pairs that will be sent
   // as query parameters in the API GET request. Note: A key can have multiple
   // values. Null if request type is not GET.
-  absl::optional<std::vector<std::pair<std::string, std::string>>>
+  std::optional<std::vector<std::pair<std::string, std::string>>>
       request_as_query_parameters_;
 
   // Callback invoked with the serialized response message proto when the flow

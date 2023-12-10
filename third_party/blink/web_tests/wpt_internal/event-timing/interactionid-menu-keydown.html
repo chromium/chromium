@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<meta charset=utf-8 />
+<title>Event Timing: interactionid-menu-keydown</title>
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<script src=resources/event-timing-internal-test-utils.js></script>
+
+<script>
+  let platformSupported = false;
+  const map = new Map();
+  const events = ['keydown'];
+
+  // This test replicates a real world scenario that - on triggering contextmenu
+  // with the menu key, the keydown is captured but not keyup. (crbug/1428603)
+  // In this case, we need to make sure event timing will correctly report the
+  // keydown entry with a valid/non-trivial interactionId.
+  promise_test(async t => {
+    assert_implements(window.PerformanceEventTiming, 'Event Timing is not supported.');
+    assert_own_property(window, 'eventSender', 'This test requires eventSender.');
+    // This test is not applicable to platforms like Windows & Mac where
+    // contextmenu events won't be triggered from the menu key. So we do a
+    // platform behavior test first to distinguish and skip those platforms who
+    // do not dispatch contextmenu upon menu key press.
+    document.addEventListener('contextmenu', () => { platformSupported = true; });
+    await eventSender.keyDownOnly('ContextMenu');
+    // 2000ms is a magic number picked to wait for contextmenu being observed
+    // from the performance observer. Consider enlarge it if flaky.
+    await t.step_timeout(() => { }, 2000);
+    if (!platformSupported) {
+      return;
+    }
+
+    // Perform test on qualified platforms
+    const callback = (entryList) => { entryList.getEntries().filter(filterAndAddToMap(events, map)); };
+    const readyToResolve = () => { return map.has('keydown'); };
+    const observerPromise = createPerformanceObserverPromise(['event'], callback, readyToResolve);
+
+    await interactAndObserve('menu-keydown', document, observerPromise);
+    assert_greater_than(map.get('keydown'), 0, 'The keydown entry should have a non-trivial interactionId');
+  }, "Event Timing: verify keydown reporting for menu keydown only triggered contextmenu.");
+
+</script>
+
+</html>

@@ -393,25 +393,24 @@ std::unique_ptr<v8_inspector::DeepSerializedValue> DeepSerializeNodeList(
 
 std::unique_ptr<v8_inspector::DeepSerializedValue> DeepSerializeNode(
     Node* node,
-    v8::Isolate* isolate_,
+    v8::Isolate* isolate,
     int max_node_depth,
     ShadowTreeSerialization include_shadow_tree) {
   v8::Local<v8::Object> node_v8_object = SerializeNodeToV8Object(
-      node, isolate_, max_node_depth, include_shadow_tree);
+      node, isolate, max_node_depth, include_shadow_tree);
 
   v8::Local<v8::Value> value_v8_object =
-      node_v8_object
-          ->Get(isolate_->GetCurrentContext(), ValueStringKey(isolate_))
+      node_v8_object->Get(isolate->GetCurrentContext(), ValueStringKey(isolate))
           .ToLocalChecked();
 
   // Safely get `type` from object value.
-  v8::MaybeLocal<v8::Value> maybe_type_v8_value = node_v8_object->Get(
-      isolate_->GetCurrentContext(), TypeStringKey(isolate_));
+  v8::MaybeLocal<v8::Value> maybe_type_v8_value =
+      node_v8_object->Get(isolate->GetCurrentContext(), TypeStringKey(isolate));
   DCHECK(!maybe_type_v8_value.IsEmpty());
   v8::Local<v8::Value> type_v8_value = maybe_type_v8_value.ToLocalChecked();
   DCHECK(type_v8_value->IsString());
   v8::Local<v8::String> type_v8_string = type_v8_value.As<v8::String>();
-  String type_string = ToCoreString(type_v8_string);
+  String type_string = ToCoreString(isolate, type_v8_string);
   StringView type_string_view = StringView(type_string);
   std::unique_ptr<v8_inspector::StringBuffer> type_string_buffer =
       ToV8InspectorStringBuffer(type_string_view);
@@ -477,8 +476,8 @@ bool ReadAdditionalSerializationParameters(
                    " should be of type string."));
         return false;
       }
-      String include_shadow_tree_string =
-          ToCoreString(include_shadow_tree_value.As<v8::String>());
+      String include_shadow_tree_string = ToCoreString(
+          context->GetIsolate(), include_shadow_tree_value.As<v8::String>());
 
       if (include_shadow_tree_string == kIncludeShadowTreeValueNone) {
         include_shadow_tree = ShadowTreeSerialization::kNone;
@@ -786,17 +785,20 @@ void ThreadDebuggerCommonImpl::installAdditionalCommandLineAPI(
 static Vector<String> NormalizeEventTypes(
     const v8::FunctionCallbackInfo<v8::Value>& info) {
   Vector<String> types;
+  v8::Isolate* isolate = info.GetIsolate();
   if (info.Length() > 1 && info[1]->IsString())
-    types.push_back(ToCoreString(info[1].As<v8::String>()));
+    types.push_back(ToCoreString(isolate, info[1].As<v8::String>()));
   if (info.Length() > 1 && info[1]->IsArray()) {
     v8::Local<v8::Array> types_array = v8::Local<v8::Array>::Cast(info[1]);
     for (wtf_size_t i = 0; i < types_array->Length(); ++i) {
       v8::Local<v8::Value> type_value;
-      if (!types_array->Get(info.GetIsolate()->GetCurrentContext(), i)
+      if (!types_array->Get(isolate->GetCurrentContext(), i)
                .ToLocal(&type_value) ||
-          !type_value->IsString())
+          !type_value->IsString()) {
         continue;
-      types.push_back(ToCoreString(v8::Local<v8::String>::Cast(type_value)));
+      }
+      types.push_back(
+          ToCoreString(isolate, v8::Local<v8::String>::Cast(type_value)));
     }
   }
   if (info.Length() == 1)

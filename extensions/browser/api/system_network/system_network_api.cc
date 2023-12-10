@@ -30,7 +30,7 @@ SystemNetworkGetNetworkInterfacesFunction::Run() {
 }
 
 void SystemNetworkGetNetworkInterfacesFunction::SendResponseOnUIThread(
-    const absl::optional<net::NetworkInterfaceList>& interface_list) {
+    const std::optional<net::NetworkInterfaceList>& interface_list) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!interface_list.has_value()) {
     Respond(Error(kNetworkListError));

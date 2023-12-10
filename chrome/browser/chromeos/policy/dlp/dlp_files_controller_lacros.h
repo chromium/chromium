@@ -19,10 +19,13 @@ class DlpFilesControllerLacros : public DlpFilesController {
   ~DlpFilesControllerLacros() override;
 
  protected:
-  // DlpFilesController:
+  // DlpFilesController overrides:
   absl::optional<data_controls::Component> MapFilePathToPolicyComponent(
       Profile* profile,
       const base::FilePath& file_path) override;
+  void ShowDlpBlockedFiles(absl::optional<uint64_t> task_id,
+                           std::vector<base::FilePath> blocked_files,
+                           dlp::FileAction action) override;
 
   FRIEND_TEST_ALL_PREFIXES(DlpFilesControllerLacrosTest,
                            MapFilePathToPolicyComponentTest);

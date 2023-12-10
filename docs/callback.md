@@ -859,7 +859,7 @@ struct IsWeakReceiver {
 };
 
 template <typename Obj>
-struct UnwrapTraits {
+struct BindUnwrapTraits {
   template <typename T>
   T&& Unwrap(T&& obj) {
     return std::forward<T>(obj);
@@ -874,7 +874,7 @@ If `base::IsWeakReceiver<Receiver>::value` is true on a receiver of a method,
 if it's evaluated to false. You can specialize `base::IsWeakReceiver` to make
 an external smart pointer as a weak pointer.
 
-`base::UnwrapTraits<BoundObject>::Unwrap()` is called for each bound argument
+`base::BindUnwrapTraits<BoundObject>::Unwrap()` is called for each bound argument
 right before the callback calls the target function. You can specialize this to
 define an argument wrapper such as `base::Unretained`, `base::Owned`,
 `base::RetainedRef` and `base::Passed`.

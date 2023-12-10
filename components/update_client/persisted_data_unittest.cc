@@ -19,8 +19,8 @@ namespace update_client {
 TEST(PersistedDataTest, Simple) {
   base::test::TaskEnvironment env;
   auto pref = std::make_unique<TestingPrefServiceSimple>();
-  PersistedData::RegisterPrefs(pref->registry());
-  auto metadata = std::make_unique<PersistedData>(pref.get(), nullptr);
+  RegisterPersistedDataPrefs(pref->registry());
+  auto metadata = CreatePersistedData(pref.get(), nullptr);
   EXPECT_EQ(-2, metadata->GetDateLastRollCall("someappid"));
   EXPECT_EQ(-2, metadata->GetDateLastActive("someappid"));
   EXPECT_EQ(-2, metadata->GetDaysSinceLastRollCall("someappid"));
@@ -76,8 +76,8 @@ TEST(PersistedDataTest, Simple) {
 TEST(PersistedDataTest, MixedCase) {
   base::test::TaskEnvironment env;
   auto pref = std::make_unique<TestingPrefServiceSimple>();
-  PersistedData::RegisterPrefs(pref->registry());
-  auto metadata = std::make_unique<PersistedData>(pref.get(), nullptr);
+  RegisterPersistedDataPrefs(pref->registry());
+  auto metadata = CreatePersistedData(pref.get(), nullptr);
   std::vector<std::string> items;
   items.push_back("someappid");
   items.push_back("someAPPid.withdot");
@@ -91,8 +91,8 @@ TEST(PersistedDataTest, MixedCase) {
 TEST(PersistedDataTest, SharedPref) {
   base::test::TaskEnvironment env;
   auto pref = std::make_unique<TestingPrefServiceSimple>();
-  PersistedData::RegisterPrefs(pref->registry());
-  auto metadata = std::make_unique<PersistedData>(pref.get(), nullptr);
+  RegisterPersistedDataPrefs(pref->registry());
+  auto metadata = CreatePersistedData(pref.get(), nullptr);
   EXPECT_EQ(-2, metadata->GetDateLastRollCall("someappid"));
   EXPECT_EQ(-2, metadata->GetDateLastActive("someappid"));
   EXPECT_EQ(-2, metadata->GetDaysSinceLastRollCall("someappid"));
@@ -104,7 +104,7 @@ TEST(PersistedDataTest, SharedPref) {
 
   // Now, create a new PersistedData reading from the same path, verify
   // that it loads the value.
-  metadata = std::make_unique<PersistedData>(pref.get(), nullptr);
+  metadata = CreatePersistedData(pref.get(), nullptr);
   EXPECT_EQ(3383, metadata->GetDateLastRollCall("someappid"));
   EXPECT_EQ(-2, metadata->GetDateLastActive("someappid"));
   EXPECT_EQ(-2, metadata->GetDaysSinceLastRollCall("someappid"));
@@ -120,8 +120,8 @@ TEST(PersistedDataTest, SharedPref) {
 TEST(PersistedDataTest, SimpleCohort) {
   base::test::TaskEnvironment env;
   auto pref = std::make_unique<TestingPrefServiceSimple>();
-  PersistedData::RegisterPrefs(pref->registry());
-  auto metadata = std::make_unique<PersistedData>(pref.get(), nullptr);
+  RegisterPersistedDataPrefs(pref->registry());
+  auto metadata = CreatePersistedData(pref.get(), nullptr);
   EXPECT_EQ("", metadata->GetCohort("someappid"));
   EXPECT_EQ("", metadata->GetCohort("someotherappid"));
   EXPECT_EQ("", metadata->GetCohortHint("someappid"));
@@ -157,10 +157,11 @@ TEST(PersistedDataTest, SimpleCohort) {
 TEST(PersistedDataTest, ActivityData) {
   base::test::TaskEnvironment env;
   auto pref = std::make_unique<TestingPrefServiceSimple>();
-  auto activity_service = std::make_unique<TestActivityDataService>();
-  PersistedData::RegisterPrefs(pref->registry());
+  auto activity_service_unique = std::make_unique<TestActivityDataService>();
+  TestActivityDataService* activity_service = activity_service_unique.get();
+  RegisterPersistedDataPrefs(pref->registry());
   auto metadata =
-      std::make_unique<PersistedData>(pref.get(), activity_service.get());
+      CreatePersistedData(pref.get(), std::move(activity_service_unique));
 
   std::vector<std::string> items({"id1", "id2", "id3"});
 

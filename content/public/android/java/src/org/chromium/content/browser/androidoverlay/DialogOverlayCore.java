@@ -99,8 +99,10 @@ class DialogOverlayCore {
      * matches the current params.
      */
     private boolean copyRectToLayoutParams(final Rect rect) {
-        if (mLayoutParams.x == rect.x && mLayoutParams.y == rect.y
-                && mLayoutParams.width == rect.width && mLayoutParams.height == rect.height) {
+        if (mLayoutParams.x == rect.x
+                && mLayoutParams.y == rect.y
+                && mLayoutParams.width == rect.width
+                && mLayoutParams.height == rect.height) {
             return false;
         }
 
@@ -196,13 +198,16 @@ class DialogOverlayCore {
         // Use a media surface, which is what SurfaceView uses by default.  For
         // debugging overlay drawing, consider using TYPE_APPLICATION_PANEL to
         // move the dialog over the CompositorView.
-        layoutParams.type = mAsPanel ? WindowManager.LayoutParams.TYPE_APPLICATION_PANEL
-                                     : WindowManager.LayoutParams.TYPE_APPLICATION_MEDIA;
+        layoutParams.type =
+                mAsPanel
+                        ? WindowManager.LayoutParams.TYPE_APPLICATION_PANEL
+                        : WindowManager.LayoutParams.TYPE_APPLICATION_MEDIA;
 
-        layoutParams.flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
-                | WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
-                | WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
-                | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS;
+        layoutParams.flags =
+                WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
+                        | WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
+                        | WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
+                        | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS;
 
         if (secure) {
             layoutParams.flags |= WindowManager.LayoutParams.FLAG_SECURE;
@@ -221,7 +226,8 @@ class DialogOverlayCore {
         try {
             int currentFlags =
                     (Integer) layoutParams.getClass().getField("privateFlags").get(layoutParams);
-            layoutParams.getClass()
+            layoutParams
+                    .getClass()
                     .getField("privateFlags")
                     .set(layoutParams, currentFlags | 0x00000040);
             // It would be nice to just catch Exception, but findbugs doesn't
@@ -237,9 +243,7 @@ class DialogOverlayCore {
         return layoutParams;
     }
 
-    /**
-     * Package-private to retrieve our current dialog for tests.
-     */
+    /** Package-private to retrieve our current dialog for tests. */
     Dialog getDialog() {
         return mDialog;
     }

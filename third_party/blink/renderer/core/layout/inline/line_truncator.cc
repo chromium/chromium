@@ -9,7 +9,7 @@
 #include "third_party/blink/renderer/core/layout/inline/inline_item_result.h"
 #include "third_party/blink/renderer/core/layout/inline/line_info.h"
 #include "third_party/blink/renderer/core/layout/inline/logical_line_item.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
+#include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/platform/fonts/font_baseline.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/harfbuzz_shaper.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_view.h"
@@ -87,7 +87,7 @@ LayoutUnit LineTruncator::PlaceEllipsisNextTo(
   DCHECK(ellipsis_text_);
   DCHECK(ellipsis_shape_result_.get());
   line_box->AddChild(
-      *ellipsized_layout_object, NGStyleVariant::kEllipsis,
+      *ellipsized_layout_object, StyleVariant::kEllipsis,
       std::move(ellipsis_shape_result_), ellipsis_text_,
       LogicalRect(ellipsis_inline_offset, -ellipsis_metrics.ascent,
                   ellipsis_width_, ellipsis_metrics.LineHeight()),
@@ -406,10 +406,10 @@ LayoutUnit LineTruncator::TruncateLineInTheMiddle(
 void LineTruncator::HideChild(LogicalLineItem* child) {
   DCHECK(child->HasInFlowFragment());
 
-  if (const NGLayoutResult* layout_result = child->layout_result) {
+  if (const LayoutResult* layout_result = child->layout_result) {
     // Need to propagate OOF descendants in this inline-block child.
     const auto& fragment =
-        To<NGPhysicalBoxFragment>(layout_result->PhysicalFragment());
+        To<PhysicalBoxFragment>(layout_result->GetPhysicalFragment());
     if (fragment.HasOutOfFlowPositionedDescendants())
       return;
 

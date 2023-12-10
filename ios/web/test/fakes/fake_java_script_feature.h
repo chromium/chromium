@@ -6,6 +6,7 @@
 #define IOS_WEB_TEST_FAKES_FAKE_JAVA_SCRIPT_FEATURE_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -60,7 +61,7 @@ class FakeJavaScriptFeature : public JavaScriptFeature {
 
  private:
   // JavaScriptFeature:
-  absl::optional<std::string> GetScriptMessageHandlerName() const override;
+  std::optional<std::string> GetScriptMessageHandlerName() const override;
   void ScriptMessageReceived(WebState* web_state,
                              const ScriptMessage& message) override;
 

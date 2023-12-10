@@ -1,5 +1,0 @@
-include_rules = [
-  "+ios/net",
-  "+ios/web/common",
-  "+ios/web/public",
-]

@@ -30,20 +30,10 @@
   if (imageSize.width == 0 || imageSize.height == 0) {
     return;
   }
-  CGFloat widthScaleFactor = CGRectGetWidth(self.frame) / imageSize.width;
-  CGFloat heightScaleFactor = CGRectGetHeight(self.frame) / imageSize.height;
-  CGFloat imageViewWidth;
-  CGFloat imageViewHeight;
-  if (imageSize.width > imageSize.height) {
-    imageViewWidth = imageSize.width * heightScaleFactor;
-    imageViewHeight = CGRectGetHeight(self.frame);
-  } else {
-    imageViewWidth = CGRectGetWidth(self.frame);
-    imageViewHeight = imageSize.height * widthScaleFactor;
-  }
-  self.innerImageView.frame =
-      CGRectMake((self.frame.size.width - imageViewWidth) / 2.0f, 0,
-                 imageViewWidth, imageViewHeight);
+  CGFloat widthScaleFactor = CGRectGetWidth(self.bounds) / imageSize.width;
+  CGFloat imageViewWidth = CGRectGetWidth(self.bounds);
+  CGFloat imageViewHeight = imageSize.height * widthScaleFactor;
+  self.innerImageView.frame = CGRectMake(0, 0, imageViewWidth, imageViewHeight);
 }
 
 #pragma mark - Public properties

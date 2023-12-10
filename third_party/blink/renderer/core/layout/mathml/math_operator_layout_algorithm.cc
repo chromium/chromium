@@ -4,10 +4,10 @@
 
 #include "third_party/blink/renderer/core/layout/mathml/math_operator_layout_algorithm.h"
 
+#include "third_party/blink/renderer/core/layout/block_break_token.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_child_layout_context.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_node.h"
 #include "third_party/blink/renderer/core/layout/mathml/math_layout_utils.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_block_break_token.h"
 #include "third_party/blink/renderer/core/mathml/mathml_operator_element.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/stretchy_operator_shaper.h"
 
@@ -25,30 +25,30 @@ inline LayoutUnit DisplayOperatorMinHeight(const ComputedStyle& style) {
 }  // namespace
 
 MathOperatorLayoutAlgorithm::MathOperatorLayoutAlgorithm(
-    const NGLayoutAlgorithmParams& params)
-    : NGLayoutAlgorithm(params) {
+    const LayoutAlgorithmParams& params)
+    : LayoutAlgorithm(params) {
   DCHECK(params.space.IsNewFormattingContext());
   container_builder_.SetIsInlineFormattingContext(
       Node().IsInlineFormattingContextRoot());
 }
 
-const NGLayoutResult* MathOperatorLayoutAlgorithm::Layout() {
+const LayoutResult* MathOperatorLayoutAlgorithm::Layout() {
   // This algorithm can only be used for operators with a single text node,
   // which itself must contain only one glyph. We ensure that the subtree is
   // properly laid out but the glyph will actually be used to determine a
   // "large" or "stretched" version, from which we perform measurement and
   // painting.
   // See https://w3c.github.io/mathml-core/#layout-of-operators
-  NGLayoutInputNode child = Node().FirstChild();
+  LayoutInputNode child = Node().FirstChild();
   DCHECK(child && child.IsInline());
   DCHECK(!child.NextSibling());
   DCHECK(!child.IsOutOfFlowPositioned());
 
   SimpleInlineChildLayoutContext context(To<InlineNode>(child),
                                          &container_builder_);
-  const NGLayoutResult* child_layout_result =
-      To<InlineNode>(child).Layout(ConstraintSpace(), /* break_token */ nullptr,
-                                   /* column_spanner_path */ nullptr, &context);
+  const LayoutResult* child_layout_result = To<InlineNode>(child).Layout(
+      GetConstraintSpace(), /* break_token */ nullptr,
+      /* column_spanner_path */ nullptr, &context);
   container_builder_.AddResult(*child_layout_result, {});
 
   // https://w3c.github.io/mathml-core/#layout-of-operators
@@ -59,12 +59,13 @@ const NGLayoutResult* MathOperatorLayoutAlgorithm::Layout() {
     // "If the operator has the stretchy property:"
     if (!element->IsVertical()) {
       // "If the stretch axis of the operator is inline."
-      if (ConstraintSpace().HasTargetStretchInlineSize())
-        operator_target_size = ConstraintSpace().TargetStretchInlineSize();
+      if (GetConstraintSpace().HasTargetStretchInlineSize()) {
+        operator_target_size = GetConstraintSpace().TargetStretchInlineSize();
+      }
     } else {
       // "Otherwise, the stretch axis of the operator is block."
       if (auto target_stretch_block_sizes =
-              ConstraintSpace().TargetStretchBlockSizes()) {
+              GetConstraintSpace().TargetStretchBlockSizes()) {
         target_stretch_ascent = target_stretch_block_sizes->ascent;
         target_stretch_descent = target_stretch_block_sizes->descent;
         if (element->HasBooleanProperty(MathMLOperatorElement::kSymmetric)) {
@@ -145,7 +146,7 @@ const NGLayoutResult* MathOperatorLayoutAlgorithm::Layout() {
   // the one of the stretched glyph, but LayoutNG currently relies on the
   // min-max sizes. This means there can be excessive gap around vertical
   // stretchy operators and that unstretched size will be used for horizontal
-  // stretchy operators. See also NGMathMLPainter::PaintOperator.
+  // stretchy operators. See also MathMLPainter::PaintOperator.
   LayoutUnit operator_ascent = LayoutUnit::FromFloatFloor(metrics.ascent);
   LayoutUnit operator_descent = LayoutUnit::FromFloatFloor(metrics.descent);
 
@@ -167,7 +168,7 @@ const NGLayoutResult* MathOperatorLayoutAlgorithm::Layout() {
   }
   LayoutUnit intrinsic_block_size = ascent + descent;
   LayoutUnit block_size = ComputeBlockSizeForFragment(
-      ConstraintSpace(), Style(), BorderPadding(), intrinsic_block_size,
+      GetConstraintSpace(), Style(), BorderPadding(), intrinsic_block_size,
       container_builder_.InitialBorderBoxSize().inline_size);
   container_builder_.SetBaselines(ascent);
   container_builder_.SetIntrinsicBlockSize(intrinsic_block_size);

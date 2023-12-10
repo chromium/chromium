@@ -8,6 +8,7 @@
 <translation id="1420684932347524586">Gisp! Den tilfældige personlige RSA-nøgle kunne ikke genereres.</translation>
 <translation id="1445572445564823378">Denne udvidelse gør <ph name="PRODUCT_NAME" /> langsommere. Du bør deaktivere den for at gøre <ph name="PRODUCT_NAME" /> hurtig igen.</translation>
 <translation id="1468038450257740950">WebGL understøttes ikke.</translation>
+<translation id="1610570795592207282">Det var ikke muligt at indlæse CSS-filen "<ph name="RELATIVE_PATH" />" for scriptet.</translation>
 <translation id="1803557475693955505">Baggrundssiden '<ph name="BACKGROUND_PAGE" />' kunne ikke indlæses.</translation>
 <translation id="2159915644201199628">Billedet kunne afkodes: '<ph name="IMAGE_NAME" />'</translation>
 <translation id="2350172092385603347">Lokalisering anvendt, men default_locale blev ikke angivet i manifestet.</translation>
@@ -18,14 +19,12 @@
 <translation id="3115238746683532089">Ukendt produkt, <ph name="PRODUCT_ID" />, fra leverandøren <ph name="VENDOR_ID" /> (serienummer <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">Crx-filen kunne ikke erstattes. Tjek, om filen er i brug.</translation>
 <translation id="3163201441334626963">Ukendt produkt, <ph name="PRODUCT_ID" />, fra leverandøren <ph name="VENDOR_ID" /></translation>
-<translation id="3302709122321372472">Css '<ph name="RELATIVE_PATH" />' for indholdsscript kunne ikke indlæses.</translation>
 <translation id="3369521687965833290">Udvidelsen kunne ikke pakkes ud. Hvis du vil udpakke en udvidelse korrekt, skal der angives en sti til din profilmappe. Denne sti skal starte med et drevbogstav, og den må ikke indeholde et forbindelsespunkt, monteringspunkt eller symlink. Der findes ingen sådan sti for din profil.</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (serienummer <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> fra leverandøren <ph name="VENDOR_ID" /> (serienummer <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Indtastningsværdi for personlig nøgle skal være en gyldig sti.</translation>
 <translation id="388442998277590542">Siden med valgmuligheder '<ph name="OPTIONS_PAGE" />' kunne ikke indlæses.</translation>
 <translation id="3984413272403535372">Fejl under signering af udvidelse.</translation>
-<translation id="39964277676607559">JavaScriptet '<ph name="RELATIVE_PATH" />' til indholdsscript kunne ikke indlæses.</translation>
 <translation id="4115165561519362854">Administratoren af denne computer kræver, at <ph name="EXTENSION_NAME" /> har en minimumsversion af <ph name="EXTENSION_VERSION" />. Den kan ikke aktiveres, før den er blevet opdateret til den pågældende version (eller nyere).</translation>
 <translation id="4233778200880751280">Siden "<ph name="ABOUT_PAGE" />" kunne ikke indlæses.</translation>
 <translation id="471800408830181311">Den personlige nøgle kunne ikke udstedes.</translation>
@@ -33,6 +32,7 @@
 <translation id="4988792151665380515">Den offentlige nøgle kunne ikke eksporteres.</translation>
 <translation id="5026754133087629784">Webvisning: <ph name="WEBVIEW_TAG_NAME" /></translation>
 <translation id="5098647635849512368">Kunne ikke finde den fuldstændige sti til den mappe, der skal pakkes.</translation>
+<translation id="5160071981665899014">Det var ikke muligt at indlæse JavaScript-filen "<ph name="RELATIVE_PATH" />" for scriptet.</translation>
 <translation id="5356315618422219272">Appvisning: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5436430103864390185">Formede vinduer understøttes ikke.</translation>
 <translation id="5456409301717116725">Denne udvidelse inkluderer nøglefilen "<ph name="KEY_PATH" />". Det ønsker du sandsynligvis ikke at gøre.</translation>

@@ -185,7 +185,7 @@ void PerSessionSettingsUserActionTracker::RecordSearch() {
 }
 
 void PerSessionSettingsUserActionTracker::RecordSettingChange(
-    absl::optional<chromeos::settings::mojom::Setting> setting) {
+    std::optional<chromeos::settings::mojom::Setting> setting) {
   if (setting.has_value()) {
     changed_settings_.insert(
         base::NumberToString(static_cast<int>(setting.value())));

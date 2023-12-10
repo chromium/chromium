@@ -13,7 +13,7 @@
 #include "components/autofill/core/common/mojom/autofill_types.mojom-forward.h"
 #include "components/device_reauth/device_authenticator.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
-#include "components/password_manager/core/browser/password_store_consumer.h"
+#include "components/password_manager/core/browser/password_store/password_store_consumer.h"
 #include "ui/gfx/native_widget_types.h"
 #include "url/gurl.h"
 

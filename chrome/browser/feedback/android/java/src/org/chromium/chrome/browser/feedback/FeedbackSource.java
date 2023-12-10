@@ -10,9 +10,7 @@ import androidx.annotation.Nullable;
 
 import java.util.Map;
 
-/**
- * Used by various components to provide a set of feedback that can be gathered synchronously.
- */
+/** Used by various components to provide a set of feedback that can be gathered synchronously. */
 public interface FeedbackSource {
     /**
      * Called to get all relevant feedback for this source.

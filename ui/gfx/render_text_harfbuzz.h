@@ -16,7 +16,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/feature_list.h"
 #include "third_party/icu/source/common/unicode/ubidi.h"
 #include "third_party/icu/source/common/unicode/uscript.h"
 #include "ui/gfx/render_text.h"
@@ -26,8 +25,6 @@ namespace gfx {
 class Range;
 class RangeF;
 class RenderTextHarfBuzz;
-
-GFX_EXPORT BASE_DECLARE_FEATURE(kRenderTextEarlyEliding);
 
 namespace internal {
 
@@ -148,7 +145,6 @@ struct GFX_EXPORT TextRunHarfBuzz {
   FontParams font_params;
   ShapeOutput shape;
   float preceding_run_widths = 0.0;
-  float logical_preceding_run_widths = 0.0;
 };
 
 // Manages the list of TextRunHarfBuzz and its logical <-> visual index mapping.
@@ -226,10 +222,6 @@ class GFX_EXPORT RenderTextHarfBuzz : public RenderText {
   RangeF GetCursorSpan(const Range& text_range) override;
   size_t GetLineContainingCaret(const SelectionModel& caret) override;
 
-  using RenderText::DisplayIndexToTextIndex;
-  using RenderText::GetLayoutText;
-  using RenderText::TextIndexToDisplayIndex;
-
  protected:
   // RenderText:
   SelectionModel AdjacentCharSelectionModel(
@@ -305,10 +297,6 @@ class GFX_EXPORT RenderTextHarfBuzz : public RenderText {
 
   // Makes sure that text runs for layout text are shaped.
   void EnsureLayoutRunList();
-
-  // Elide |layout_text_| if required by applying Eliding attributes over
-  // |text_|.
-  void ElideLayoutText();
 
   // Returns whether the display range is still a valid range after the eliding
   // pass.

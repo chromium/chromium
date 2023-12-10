@@ -21,7 +21,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
 #include "base/uuid.h"
 #include "net/base/isolation_info.h"
 #include "net/base/schemeful_site.h"
@@ -352,6 +351,9 @@ void SetAttributionReportingHeaders(net::URLRequest& url_request,
           AttributionReportingRuntimeFeature::kCrossAppWeb) &&
       base::FeatureList::IsEnabled(
           features::kAttributionReportingCrossAppWeb)) {
+    base::UmaHistogramEnumeration("Conversions.RequestSupportHeader",
+                                  request.attribution_reporting_support);
+
     url_request.SetExtraRequestHeaderByName(
         "Attribution-Reporting-Support",
         GetAttributionSupportHeader(

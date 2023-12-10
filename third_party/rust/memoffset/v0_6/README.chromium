@@ -5,3 +5,5 @@ Version: 0.6.5
 Security Critical: yes
 Shipped: yes
 License: MIT
+License File: //third_party/rust/chromium_crates_io/vendor/memoffset-0.6.5/LICENSE
+Revision: 01e2e42ef0d833682c27b0f40a2cc748d86b2dc3

@@ -29,11 +29,11 @@
 #import "components/autofill/ios/form_util/form_util_java_script_feature.h"
 #import "components/autofill/ios/form_util/unique_id_data_tab_helper.h"
 #import "components/password_manager/core/browser/leak_detection/mock_leak_detection_check_factory.h"
-#import "components/password_manager/core/browser/mock_password_store_interface.h"
 #import "components/password_manager/core/browser/password_form_manager.h"
 #import "components/password_manager/core/browser/password_form_metrics_recorder.h"
 #import "components/password_manager/core/browser/password_manager.h"
-#import "components/password_manager/core/browser/password_store_consumer.h"
+#import "components/password_manager/core/browser/password_store/mock_password_store_interface.h"
+#import "components/password_manager/core/browser/password_store/password_store_consumer.h"
 #import "components/password_manager/core/browser/stub_password_manager_client.h"
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"
@@ -46,10 +46,10 @@
 #import "components/safe_browsing/core/browser/password_protection/stub_password_reuse_detection_manager_client.h"
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
-#import "ios/chrome/browser/autofill/form_suggestion_controller.h"
+#import "ios/chrome/browser/autofill/model/form_suggestion_controller.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/ui/autofill/form_input_accessory/form_input_accessory_mediator.h"
-#import "ios/chrome/browser/web/chrome_web_client.h"
+#import "ios/chrome/browser/web/model/chrome_web_client.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/navigation/navigation_item.h"
@@ -185,14 +185,14 @@ PasswordForm CreatePasswordForm(const char* origin_url,
 // Invokes the password store consumer with a single copy of `form`, coming from
 // `store`.
 ACTION_P2(InvokeConsumer, store, form) {
-  std::vector<std::unique_ptr<PasswordForm>> result;
-  result.push_back(std::make_unique<PasswordForm>(form));
+  std::vector<PasswordForm> result;
+  result.push_back(form);
   arg0->OnGetPasswordStoreResultsOrErrorFrom(store, std::move(result));
 }
 
 ACTION_P(InvokeEmptyConsumerWithForms, store) {
-  arg0->OnGetPasswordStoreResultsOrErrorFrom(
-      store, std::vector<std::unique_ptr<PasswordForm>>());
+  arg0->OnGetPasswordStoreResultsOrErrorFrom(store,
+                                             std::vector<PasswordForm>());
 }
 
 struct TestPasswordFormData {
@@ -1701,12 +1701,6 @@ TEST_F(PasswordControllerTest, CheckPasswordGenerationSuggestion) {
 // Tests that the user is prompted to save or update password on a succesful
 // form submission.
 TEST_F(PasswordControllerTest, ShowingSavingPromptOnSuccessfulSubmission) {
-  // TODO(crbug.com/1404697): Re-enable on iOS 14. This test is flaky on iOS 14,
-  // sometimes failing to finish loading the HTML.
-  if (!base::ios::IsRunningOnIOS15OrLater()) {
-    return;
-  }
-
   const char* kHtml = {"<html><body>"
                        "<form name='login_form' id='login_form'>"
                        "  <input type='text' name='username'>"
@@ -1772,12 +1766,6 @@ TEST_F(PasswordControllerTest, NotShowingSavingPromptWithoutSubmission) {
 // Tests that the user is not prompted to save or update password on a
 // succesful form submission while saving is disabled.
 TEST_F(PasswordControllerTest, NotShowingSavingPromptWhileSavingIsDisabled) {
-  // TODO(crbug.com/1404697): Re-enable on iOS 14. This test is flaky on iOS 14,
-  // sometimes failing to finish loading the HTML.
-  if (!base::ios::IsRunningOnIOS15OrLater()) {
-    return;
-  }
-
   const char* kHtml = {"<html><body>"
                        "<form name='login_form' id='login_form'>"
                        "  <input type='text' name='username'>"
@@ -1805,12 +1793,6 @@ TEST_F(PasswordControllerTest, NotShowingSavingPromptWhileSavingIsDisabled) {
 // form submission when there's already a credential with the same
 // username in the store.
 TEST_F(PasswordControllerTest, ShowingUpdatePromptOnSuccessfulSubmission) {
-  // TODO(crbug.com/1404697): Re-enable on iOS 14. This test is flaky on iOS 14,
-  // sometimes failing to finish loading the HTML.
-  if (!base::ios::IsRunningOnIOS15OrLater()) {
-    return;
-  }
-
   PasswordForm form(MakeSimpleForm());
   ON_CALL(*store_, GetLogins)
       .WillByDefault(WithArg<1>(InvokeConsumer(store_.get(), form)));
@@ -2204,12 +2186,6 @@ TEST_F(PasswordControllerTest,
 }
 
 TEST_F(PasswordControllerTest, PasswordMetricsNoSavedCredentials) {
-  // TODO(crbug.com/1404697): Re-enable on iOS 14. This test is flaky on iOS 14,
-  // sometimes failing to finish loading the HTML.
-  if (!base::ios::IsRunningOnIOS15OrLater()) {
-    return;
-  }
-
   base::HistogramTester histogram_tester;
   {
     ON_CALL(*store_, GetLogins)

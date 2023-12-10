@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="fr">
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> des onglets ouverts n'ont pas été utilisés récemment. Voulez-vous les fermer ?</translation>
+<translation id="1155815720264022949">Voulez-vous fermer les anciens onglets ?</translation>
 <translation id="1215127405478249895">Voir les onglets</translation>
 <translation id="125153950246128346">Appuyer pour afficher un autre onglet</translation>
 <translation id="1499635324672558517">Fermer tous les onglets de navigation privée ?</translation>
@@ -46,9 +47,11 @@
 <translation id="5073204694187207510">Masquer la grille en plein écran</translation>
 <translation id="5076161749301278626">Afficher les avis sur le magasin ?</translation>
 <translation id="5082793167783849073">Comparez rapidement des pages en créant un groupe. Commencez par appuyer de manière prolongée sur un lien.</translation>
+<translation id="5303274951032363933">{TABS_COUNT,plural, =1{Il y a <ph name="TABS_COUNT_ONE" /> onglet que vous n'avez pas utilisé récemment}one{Il y a <ph name="TABS_COUNT_MANY" /> onglet que vous n'avez pas utilisé récemment}other{Il y a <ph name="TABS_COUNT_MANY" /> onglets que vous n'avez pas utilisés récemment}}</translation>
 <translation id="5339733443032484186">Votre dernier onglet</translation>
 <translation id="5490235265819901748">Groupe d'onglets développé</translation>
 <translation id="5494920125229734069">Tout sélectionner</translation>
+<translation id="5545379293264651575">Fermer sans examiner</translation>
 <translation id="5556417849629758491">Afficher les infos sur le magasin, option disponible en haut de l'écran</translation>
 <translation id="5558362125926932819">Fermez le groupe d'onglets qui contient <ph name="NUMBER_OF_TABS" /> onglets</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" /> onglets regroupés</translation>
@@ -85,7 +88,6 @@
 <translation id="7885132941432959125">Déplacer l'onglet vers la droite</translation>
 <translation id="7966321538264951561">Fermer les suggestions.</translation>
 <translation id="8029301326595421733">Fiche d'infos sur ce magasin ouverte à pleine hauteur</translation>
-<translation id="814503310257431685">Tout afficher</translation>
 <translation id="8205266828577616993">Déplacer l'onglet vers le haut</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Fermer l'onglet sélectionné (<ph name="TABS_COUNT_ONE" />)}one{Fermer l'onglet sélectionné (<ph name="TABS_COUNT_MANY" />)}other{Fermer les onglets sélectionnés (<ph name="TABS_COUNT_MANY" />)}}</translation>
 <translation id="8398929769197326728">Nouveau dossier – <ph name="CURRENT_TIMESTAMP_MS" /></translation>

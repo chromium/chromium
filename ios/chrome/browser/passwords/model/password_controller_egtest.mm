@@ -15,7 +15,7 @@
 #import "components/sync/base/user_selectable_type.h"
 #import "components/sync/service/sync_prefs.h"
 #import "ios/chrome/browser/passwords/model/password_manager_app_interface.h"
-#import "ios/chrome/browser/signin/fake_system_identity.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/infobars/banners/infobar_banner_constants.h"
@@ -204,8 +204,9 @@ BOOL WaitForKeyboardToAppear() {
                           IDS_IOS_PASSWORDS_ACCOUNT_STORAGE_NOTICE_TITLE))];
 
   [[EarlGrey selectElementWithMatcher:
-                 grey_accessibilityLabel(l10n_util::GetNSString(
-                     IDS_IOS_PASSWORDS_ACCOUNT_STORAGE_NOTICE_BUTTON_TEXT))]
+                 chrome_test_util::StaticTextWithAccessibilityLabel(
+                     l10n_util::GetNSString(
+                         IDS_IOS_PASSWORDS_ACCOUNT_STORAGE_NOTICE_BUTTON_TEXT))]
       performAction:grey_tap()];
 
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
@@ -233,8 +234,9 @@ BOOL WaitForKeyboardToAppear() {
                           IDS_IOS_PASSWORDS_ACCOUNT_STORAGE_NOTICE_TITLE))];
 
   [[EarlGrey selectElementWithMatcher:
-                 grey_accessibilityLabel(l10n_util::GetNSString(
-                     IDS_IOS_PASSWORDS_ACCOUNT_STORAGE_NOTICE_BUTTON_TEXT))]
+                 chrome_test_util::StaticTextWithAccessibilityLabel(
+                     l10n_util::GetNSString(
+                         IDS_IOS_PASSWORDS_ACCOUNT_STORAGE_NOTICE_BUTTON_TEXT))]
       performAction:grey_tap()];
 
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:grey_accessibilityLabel(
@@ -250,11 +252,16 @@ BOOL WaitForKeyboardToAppear() {
       storeCredentialWithUsername:@"user"
                          password:@"password"
                               URL:net::NSURLWithGURL(self.testServer->GetURL(
-                                      "/simple_login_form.html"))];
+                                      "/simple_login_form_empty.html"))];
   [PasswordManagerAppInterface setAccountStorageNoticeShown:NO];
   [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
                                 enableSync:NO];
-  [self loadLoginPage];
+
+  // Loads simple login page with empty fields on localhost (it is considered a
+  // secure context).
+  [ChromeEarlGrey
+      loadURL:self.testServer->GetURL("/simple_login_form_empty.html")];
+  [ChromeEarlGrey waitForWebStateContainingText:"Login form."];
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:chrome_test_util::TapWebElementWithId(kFormPassword)];
@@ -264,16 +271,18 @@ BOOL WaitForKeyboardToAppear() {
                           IDS_IOS_PASSWORDS_ACCOUNT_STORAGE_NOTICE_TITLE))];
 
   [[EarlGrey selectElementWithMatcher:
-                 grey_accessibilityLabel(l10n_util::GetNSString(
-                     IDS_IOS_PASSWORDS_ACCOUNT_STORAGE_NOTICE_BUTTON_TEXT))]
+                 chrome_test_util::StaticTextWithAccessibilityLabel(
+                     l10n_util::GetNSString(
+                         IDS_IOS_PASSWORDS_ACCOUNT_STORAGE_NOTICE_BUTTON_TEXT))]
       performAction:grey_tap()];
 
   [ChromeEarlGrey
       waitForUIElementToAppearWithMatcher:grey_accessibilityID(@"user")];
 
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
-                                   IDS_IOS_PASSWORD_BOTTOM_SHEET_USE_PASSWORD))]
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::StaticTextWithAccessibilityLabel(
+                     l10n_util::GetNSString(
+                         IDS_IOS_PASSWORD_BOTTOM_SHEET_USE_PASSWORD))]
       performAction:grey_tap()];
 }
 
@@ -289,16 +298,6 @@ BOOL WaitForKeyboardToAppear() {
 
   // Load the page again and have a new password value to save.
   [self loadLoginPage];
-  // Open and dismiss the bottom sheet
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
-      performAction:chrome_test_util::TapWebElementWithId(kFormPassword)];
-  [ChromeEarlGrey
-      waitForUIElementToAppearWithMatcher:grey_accessibilityID(@"Eguser")];
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabelId(
-                                   IDS_IOS_PASSWORD_BOTTOM_SHEET_USE_KEYBOARD)]
-      performAction:grey_tap()];
-  [ChromeEarlGreyUI waitForAppToIdle];
   // Simulate user interacting with fields.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:chrome_test_util::TapWebElementWithId(kFormUsername)];

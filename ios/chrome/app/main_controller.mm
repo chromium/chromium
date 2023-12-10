@@ -22,6 +22,7 @@
 #import "components/component_updater/installer_policies/optimization_hints_component_installer.h"
 #import "components/component_updater/installer_policies/safety_tips_component_installer.h"
 #import "components/component_updater/url_param_filter_remover.h"
+#import "components/enterprise/idle/idle_features.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "components/metrics/metrics_pref_names.h"
@@ -46,6 +47,7 @@
 #import "ios/chrome/app/memory_monitor.h"
 #import "ios/chrome/app/post_restore_app_agent.h"
 #import "ios/chrome/app/safe_mode_app_state_agent.h"
+#import "ios/chrome/app/search_engine_choice_app_agent.h"
 #import "ios/chrome/app/spotlight/spotlight_manager.h"
 #import "ios/chrome/app/startup/chrome_app_startup_parameters.h"
 #import "ios/chrome/app/startup/chrome_main_starter.h"
@@ -69,24 +71,27 @@
 #import "ios/chrome/browser/credential_provider/model/credential_provider_buildflags.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/download/model/download_directory_util.h"
+#import "ios/chrome/browser/enterprise/model/idle/idle_service_factory.h"
 #import "ios/chrome/browser/external_files/model/external_file_remover_factory.h"
 #import "ios/chrome/browser/external_files/model/external_file_remover_impl.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
-#import "ios/chrome/browser/first_run/first_run.h"
-#import "ios/chrome/browser/mailto_handler/mailto_handler_service.h"
-#import "ios/chrome/browser/mailto_handler/mailto_handler_service_factory.h"
+#import "ios/chrome/browser/first_run/model/first_run.h"
+#import "ios/chrome/browser/mailto_handler/model/mailto_handler_service.h"
+#import "ios/chrome/browser/mailto_handler/model/mailto_handler_service_factory.h"
 #import "ios/chrome/browser/memory/model/memory_debugger_manager.h"
-#import "ios/chrome/browser/metrics/first_user_action_recorder.h"
-#import "ios/chrome/browser/metrics/incognito_usage_app_state_agent.h"
-#import "ios/chrome/browser/metrics/window_configuration_recorder.h"
-#import "ios/chrome/browser/omaha/omaha_service.h"
+#import "ios/chrome/browser/metrics/model/first_user_action_recorder.h"
+#import "ios/chrome/browser/metrics/model/incognito_usage_app_state_agent.h"
+#import "ios/chrome/browser/metrics/model/window_configuration_recorder.h"
+#import "ios/chrome/browser/omaha/model/omaha_service.h"
 #import "ios/chrome/browser/passwords/model/password_manager_util_ios.h"
 #import "ios/chrome/browser/promos_manager/promos_manager_factory.h"
 #import "ios/chrome/browser/screenshot/model/screenshot_metrics_recorder.h"
 #import "ios/chrome/browser/search_engines/model/extension_search_engine_data_updater.h"
 #import "ios/chrome/browser/search_engines/model/search_engines_util.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
-#import "ios/chrome/browser/sessions/session_restoration_util.h"
+#import "ios/chrome/browser/sessions/session_restoration_service.h"
+#import "ios/chrome/browser/sessions/session_restoration_service_factory.h"
+#import "ios/chrome/browser/sessions/session_util.h"
 #import "ios/chrome/browser/share_extension/model/share_extension_service.h"
 #import "ios/chrome/browser/share_extension/model/share_extension_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_delegate.h"
@@ -105,9 +110,9 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/signin/authentication_service_delegate.h"
-#import "ios/chrome/browser/signin/authentication_service_factory.h"
-#import "ios/chrome/browser/signin/identity_manager_factory.h"
+#import "ios/chrome/browser/signin/model/authentication_service_delegate.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_browser_agent.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_storage.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
@@ -116,10 +121,7 @@
 #import "ios/chrome/browser/ui/main/browser_view_wrangler.h"
 #import "ios/chrome/browser/ui/webui/chrome_web_ui_ios_controller_factory.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
-#import "ios/chrome/browser/web/certificate_policy_app_agent.h"
-#import "ios/chrome/browser/web/features.h"
-#import "ios/chrome/browser/web/session_state/web_session_state_cache.h"
-#import "ios/chrome/browser/web/session_state/web_session_state_cache_factory.h"
+#import "ios/chrome/browser/web/model/certificate_policy_app_agent.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
 #import "ios/chrome/common/app_group/app_group_field_trial_version.h"
 #import "ios/chrome/common/app_group/app_group_utils.h"
@@ -130,7 +132,6 @@
 #import "ios/public/provider/chrome/browser/overrides/overrides_api.h"
 #import "ios/public/provider/chrome/browser/ui_utils/ui_utils_api.h"
 #import "ios/public/provider/chrome/browser/user_feedback/user_feedback_api.h"
-#import "ios/web/common/features.h"
 #import "ios/web/public/webui/web_ui_ios_controller_factory.h"
 #import "net/base/mac/url_conversions.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
@@ -146,10 +147,6 @@
 #import "ios/chrome/app/dump_documents_statistics.h"
 #endif  // BUILDFLAG(IOS_ENABLE_SANDBOX_DUMP)
 
-// To get access to UseSessionSerializationOptimizations().
-// TODO(crbug.com/1383087): remove once the feature is fully launched.
-#import "ios/web/common/features.h"
-
 namespace {
 
 #if BUILDFLAG(FAST_APP_TERMINATE_ENABLED)
@@ -158,6 +155,20 @@ BASE_FEATURE(kFastApplicationWillTerminate,
              "FastApplicationWillTerminate",
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(FAST_APP_TERMINATE_ENABLED)
+
+// Returns a RepeatingClosure that will call `closure` after being called
+// exactly n time. The closure does not have to be called on a specific
+// thread or sequence.
+base::RepeatingClosure ExpectNCall(uint32_t n, base::RepeatingClosure closure) {
+  return base::BindRepeating(
+      [](base::RepeatingClosure closure,
+         const std::unique_ptr<std::atomic<uint32_t>>& counter) {
+        if (!--*counter) {
+          closure.Run();
+        }
+      },
+      std::move(closure), std::make_unique<std::atomic<uint32_t>>(n));
+}
 
 // Constants for deferring resetting the startup attempt count (to give the app
 // a little while to make sure it says alive).
@@ -606,6 +617,15 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 
   [self scheduleLowPriorityStartupTasks];
 
+  // Run after UI created to avoid trying to update UI before it is available.
+  // TODO(b/301676922): This should run for all browser states if multiple
+  // profiles become supported on iOS.
+  if (base::FeatureList::IsEnabled(enterprise_idle::kIdleTimeout)) {
+    enterprise_idle::IdleServiceFactory::GetForBrowserState(
+        self.appState.mainBrowserState)
+        ->OnApplicationWillEnterForeground();
+  }
+
   // Now that everything is properly set up, run the tests.
   tests_hook::RunTestsIfPresent();
 
@@ -743,6 +763,7 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
   [appState addAgent:[[AppMetricsAppStateAgent alloc] init]];
   [appState addAgent:[[SafeModeAppAgent alloc] init]];
   [appState addAgent:[[FeedAppAgent alloc] init]];
+  [appState addAgent:[[SearchEngineChoiceAppAgent alloc] init]];
   [appState addAgent:[[VariationsAppStateAgent alloc] init]];
 
   // Create the window accessibility agent only when multiple windows are
@@ -814,18 +835,37 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
   // applicationWillTerminate to fail after a 5s delay. Experiment with skipping
   // this shutdown call. See: crbug.com/1328891
   if (base::FeatureList::IsEnabled(kFastApplicationWillTerminate)) {
+    // Expected number of time the `completionBlock` defined below needs to
+    // be called before it signal the semaphore. This corresponds to the
+    // number of services that needs to be waited for.
+    uint32_t expected_count = 1;
+
+    ChromeBrowserState* browserState = self.appState.mainBrowserState;
+    if (browserState->HasOffTheRecordChromeBrowserState()) {
+      expected_count += 1;
+    }
+
     metrics::MetricsService* metrics =
         GetApplicationContext()->GetMetricsService();
-    dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
-    static std::atomic<uint32_t> counter{metrics ? 2u : 1u};
-    ProceduralBlock completionBlock = ^{
-      if (!--counter) {
-        dispatch_semaphore_signal(semaphore);
-      }
-    };
+    if (metrics) {
+      expected_count += 1;
+    }
 
-    ExecuteClosureWhenSessionServiceBackgroundProcessingDone(
-        self.appState.mainBrowserState, base::BindOnce(completionBlock));
+    dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
+    base::RepeatingClosure closure =
+        ExpectNCall(expected_count, base::BindRepeating(^{
+                      dispatch_semaphore_signal(semaphore);
+                    }));
+
+    SessionRestorationServiceFactory::GetForBrowserState(browserState)
+        ->InvokeClosureWhenBackgroundProcessingDone(closure);
+
+    if (browserState->HasOffTheRecordChromeBrowserState()) {
+      ChromeBrowserState* otrBrowserState =
+          browserState->GetOffTheRecordChromeBrowserState();
+      SessionRestorationServiceFactory::GetForBrowserState(otrBrowserState)
+          ->InvokeClosureWhenBackgroundProcessingDone(closure);
+    }
 
     if (metrics) {
       metrics->Stop();
@@ -834,8 +874,7 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
       // This will introduce a wait that will likely be the source of a number
       // of watchdog kills, but it should still be fewer than the number of
       // kills `_chromeMain.reset()` is responsible for.
-      GetApplicationContext()->GetLocalState()->CommitPendingWrite(
-          {}, base::BindOnce(completionBlock));
+      GetApplicationContext()->GetLocalState()->CommitPendingWrite({}, closure);
     }
 
     dispatch_time_t dispatchTime =
@@ -987,11 +1026,13 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
   [[DeferredInitializationRunner sharedInstance]
       enqueueBlockNamed:kPurgeWebSessionStates
                   block:^{
-                    if (web::UseNativeSessionRestorationCache()) {
-                      WebSessionStateCache* cache =
-                          WebSessionStateCacheFactory::GetForBrowserState(
-                              self.appState.mainBrowserState);
-                      [cache purgeUnassociatedData];
+                    ChromeBrowserState* browserState =
+                        self.appState.mainBrowserState;
+
+                    if (browserState) {
+                      SessionRestorationServiceFactory::GetForBrowserState(
+                          self.appState.mainBrowserState)
+                          ->PurgeUnassociatedData(base::DoNothing());
                     }
                   }];
 }
@@ -1312,13 +1353,31 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
       sessions_storage_util::GetDiscardedSessions();
   if (!sessionIDs)
     return;
-  BrowsingDataRemoverFactory::GetForBrowserState(
-      self.appState.mainBrowserState->GetOriginalChromeBrowserState())
-      ->RemoveSessionsData(sessionIDs);
-  BrowsingDataRemoverFactory::GetForBrowserState(
-      self.appState.mainBrowserState->GetOffTheRecordChromeBrowserState())
-      ->RemoveSessionsData(sessionIDs);
-  sessions_storage_util::ResetDiscardedSessions();
+
+  std::set<std::string> identifiers;
+  for (NSString* sessionID in sessionIDs) {
+    // Need to remove storage for both regular and inactive Browser. Removing
+    // data does nothing if there are no data to delete, so there is no need
+    // to check whether inactive tabs are enabled here.
+    const std::string identifier = base::SysNSStringToUTF8(sessionID);
+    identifiers.insert(session_util::GetSessionIdentifier(identifier, false));
+    identifiers.insert(session_util::GetSessionIdentifier(identifier, true));
+  }
+
+  ChromeBrowserState* browserState = self.appState.mainBrowserState;
+  base::RepeatingClosure dataDeletedClosure = ExpectNCall(
+      browserState->HasOffTheRecordChromeBrowserState() ? 2u : 1u,
+      base::BindRepeating(&sessions_storage_util::ResetDiscardedSessions));
+
+  SessionRestorationServiceFactory::GetForBrowserState(browserState)
+      ->DeleteDataForDiscardedSessions(identifiers, dataDeletedClosure);
+
+  if (browserState->HasOffTheRecordChromeBrowserState()) {
+    ChromeBrowserState* otrBrowserState =
+        browserState->GetOffTheRecordChromeBrowserState();
+    SessionRestorationServiceFactory::GetForBrowserState(otrBrowserState)
+        ->DeleteDataForDiscardedSessions(identifiers, dataDeletedClosure);
+  }
 }
 
 #pragma mark - BrowsingDataCommands

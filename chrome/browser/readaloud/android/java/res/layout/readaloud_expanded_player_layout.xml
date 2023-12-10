@@ -18,12 +18,6 @@ found in the LICENSE file.
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
-        <!-- This empty view balances the close button so the drag handlebar and "Chrome now playing" can be centered. -->
-        <View
-            android:layout_width="@dimen/readaloud_close_button_size"
-            android:layout_height="@dimen/readaloud_close_button_size"
-            android:layout_margin="@dimen/readaloud_close_button_margin"
-            android:layout_weight="0"/>
         <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
@@ -38,31 +32,75 @@ found in the LICENSE file.
                 android:layout_gravity="center_horizontal|top"
                 android:importantForAccessibility="no"
                 android:src="@drawable/drag_handlebar" />
-            <TextView
-                android:id="@+id/chrome_now_playing_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="@dimen/readaloud_now_playing_spacing"
-                android:text="@string/readaloud_chrome_now_playing"
-                android:textAppearance="@style/TextAppearance.TextMedium.Secondary"/>
         </LinearLayout>
-        <ImageView
-            android:id="@+id/readaloud_expanded_player_close_button"
-            android:src="@drawable/baseline_close_24"
-            android:contentDescription="@string/readaloud_close_player_button_content_description"
-            android:layout_width="@dimen/readaloud_close_button_size"
-            android:layout_height="@dimen/readaloud_close_button_size"
-            android:layout_margin="@dimen/readaloud_close_button_margin"
-            android:layout_weight="0"/>
     </LinearLayout>
 
+    <!-- Error layout. -->
     <LinearLayout
+        android:id="@+id/error_layout"
+        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="330dp"
+        android:orientation="vertical">
+        <LinearLayout
+            android:layout_width="289dp"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:paddingBottom="24dp">
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_gravity="center"
+                android:src="@drawable/error_24"
+                android:clickable="false"
+                android:focusable="false"
+                android:importantForAccessibility="no"/>
+
+            <!-- Error message -->
+            <TextView
+                android:id="@+id/error_message"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingVertical="4dp"
+                android:text="@string/readaloud_expanded_playback_error"
+                android:textAppearance="@style/TextAppearance.Headline2"
+                android:textAlignment="center"
+                android:clickable="false"
+                android:focusable="false"
+                android:ellipsize="none"/>
+            <TextView
+                android:id="@+id/error_message"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/readaloud_expanded_playback_error_description"
+                android:textAppearance="@style/TextAppearance.TextMedium"
+                android:paddingVertical="4dp"
+                android:textAlignment="center"
+                android:clickable="false"
+                android:focusable="false"
+                android:ellipsize="none"/>
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- Normal layout. -->
+    <LinearLayout
+        android:id="@+id/normal_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginHorizontal="@dimen/readaloud_expanded_player_margin_horizontal"
         android:layout_marginBottom="@dimen/readaloud_expanded_player_margin_bottom"
         android:orientation="vertical">
+        <TextView
+            android:id="@+id/chrome_now_playing_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="@dimen/readaloud_now_playing_spacing"
+            android:text="@string/readaloud_chrome_now_playing"
+            android:textAppearance="@style/TextAppearance.TextMedium.Secondary"/>
         <!-- Title. -->
         <TextView
             android:id="@+id/readaloud_expanded_player_title"
@@ -103,17 +141,25 @@ found in the LICENSE file.
         </LinearLayout>
 
         <!-- Seek bar and times. -->
-        <!-- TODO replace with working bar -->
-        <View
+        <SeekBar
             android:id="@+id/readaloud_expanded_player_seek_bar"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/readaloud_expanded_player_seek_bar_height"
             android:layout_marginTop="@dimen/readaloud_expanded_player_seek_bar_margin_top"
-            android:background="?attr/colorSurfaceVariant"/>
+            android:paddingTop="@dimen/readaloud_expanded_player_seek_bar_vertical_padding"
+            android:paddingBottom="@dimen/readaloud_expanded_player_seek_bar_vertical_padding"
+            android:paddingEnd="0dp"
+            android:paddingStart="0dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:max="1000"
+            android:progress="0"
+            android:maxHeight="@dimen/readaloud_expanded_player_seek_bar_height"
+            android:progressDrawable="@drawable/seekbar_style"
+            android:thumb="@drawable/scrubber_select_handle"
+            android:splitTrack="false"
+            android:contentDescription="@string/readaloud_seek_bar"/>
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/readaloud_expanded_player_times_margin_top"
             android:orientation="horizontal">
             <TextView
                 android:id="@+id/readaloud_player_time"

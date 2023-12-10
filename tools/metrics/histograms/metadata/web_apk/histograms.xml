@@ -59,34 +59,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="WebApk.Install.AvailableSpace.Fail" units="MB"
-    expires_after="2023-12-01">
+<histogram name="WebApk.Database.WriteResult" units="boolean"
+    expires_after="2024-06-01">
   <owner>hartmanng@chromium.org</owner>
   <owner>src/chrome/android/webapk/OWNERS</owner>
-  <summary>
-    Records the available space that can be used when installing a WebAPK from
-    Google Play fails. The space recorded is the available space beyond the
-    system's minimum free space threshold, with a range between -1000 and 1000
-    MB. Negative values mean that there is less free space available than the
-    system's minimum, by the given amount.
-  </summary>
-</histogram>
-
-<histogram name="WebApk.Install.AvailableSpaceAfterFreeUpCache.Fail" units="MB"
-    expires_after="2023-12-01">
-  <owner>hartmanng@chromium.org</owner>
-  <owner>src/chrome/android/webapk/OWNERS</owner>
-  <summary>
-    Records the available space that can be used when installing a WebAPK from
-    Google Play fails after freeing up cache. The space recorded is the
-    available space beyond the system's minimum free space threshold, with a
-    range between -1000 and 1000 MB. Negative values mean that there is less
-    free space available than the system's minimum, by the given amount.
-  </summary>
+  <summary>Records the write result (boolean) in WebApkDatabase.</summary>
 </histogram>
 
 <histogram name="WebApk.Install.GooglePlayErrorCode"
-    enum="WebApkInstallGooglePlayErrorCode" expires_after="2024-03-10">
+    enum="WebApkInstallGooglePlayErrorCode" expires_after="2024-05-12">
   <owner>hartmanng@chromium.org</owner>
   <owner>src/chrome/android/webapk/OWNERS</owner>
   <summary>
@@ -117,7 +98,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApk.Install.InstallEvent" enum="WebApkInstallEvent"
-    expires_after="2024-03-17">
+    expires_after="2024-05-19">
   <owner>hartmanng@chromium.org</owner>
   <owner>src/chrome/android/webapk/OWNERS</owner>
   <summary>
@@ -151,7 +132,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApk.Install.PathToInstall" enum="PwaInstallPath"
-    expires_after="2024-03-17">
+    expires_after="2024-05-19">
   <owner>finnur@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <owner>src/chrome/android/webapk/OWNERS</owner>
@@ -164,9 +145,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApk.Install.RequestTokenDurationV2" units="ms"
-    expires_after="2024-03-03">
+    expires_after="2024-05-05">
   <owner>hartmanng@chromium.org</owner>
-  <owner>rayankans@chromium.org</owner>
   <owner>src/chrome/android/webapk/OWNERS</owner>
   <summary>
     Records the amount of time which has elapsed from the &quot;install infobar
@@ -178,7 +158,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApk.Install.UserTheme" enum="WebApkUserTheme"
-    expires_after="2024-03-03">
+    expires_after="2024-05-05">
   <owner>johnwes@google.com</owner>
   <owner>src/chrome/android/webapk/OWNERS</owner>
   <summary>
@@ -188,7 +168,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApk.Launch.NetworkError" enum="NetErrorCodes"
-    expires_after="2023-12-01">
+    expires_after="2024-06-01">
   <owner>hartmanng@chromium.org</owner>
   <owner>src/chrome/android/webapk/OWNERS</owner>
   <summary>
@@ -203,19 +183,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records whether a user is using light theme or dark theme when launching a
     WebAPK.
-  </summary>
-</histogram>
-
-<histogram name="WebApk.Notification.Permission.Status"
-    enum="BooleanWebApkNotificationPermission" expires_after="2022-12-04">
-  <obsolete>
-    Replaced by WebApk.Notification.Permission.Status2 in June 20220.
-  </obsolete>
-  <owner>hartmanng@chromium.org</owner>
-  <owner>src/chrome/android/webapk/OWNERS</owner>
-  <summary>
-    When a WebAPK receives a notification, log whether it has permission to
-    display that notification.
   </summary>
 </histogram>
 
@@ -244,7 +211,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApk.Session.TotalDuration3{WebApkDistributorType}"
-    units="ms" expires_after="2024-04-01">
+    units="ms" expires_after="2024-06-02">
   <owner>hartmanng@chromium.org</owner>
   <owner>src/chrome/android/webapk/OWNERS</owner>
   <summary>
@@ -267,7 +234,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApk.Startup.Cold.NewStyle.ShellLaunchToSplashscreenVisible"
-    units="ms" expires_after="2023-12-01">
+    units="ms" expires_after="2024-06-01">
   <owner>hartmanng@chromium.org</owner>
   <owner>src/chrome/android/webapk/OWNERS</owner>
   <summary>
@@ -283,7 +250,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApk.Startup.Cold.ShellLaunchToSplashscreenVisible"
-    units="ms" expires_after="2023-12-31">
+    units="ms" expires_after="2024-06-01">
   <owner>mheikal@chromium.org</owner>
   <owner>yfriedman@chromium.org</owner>
   <summary>
@@ -330,7 +297,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApk.Update.NumStaleUpdateRequestFiles" units="files"
-    expires_after="2023-12-01">
+    expires_after="2024-06-01">
   <owner>hartmanng@chromium.org</owner>
   <owner>src/chrome/android/webapk/OWNERS</owner>
   <summary>
@@ -389,7 +356,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApk.WebappRegistry.NumberOfOrigins" units="count"
-    expires_after="2024-03-24">
+    expires_after="2024-05-26">
   <owner>eirage@chromium.org</owner>
   <owner>src/chrome/android/webapk/OWNERS</owner>
   <summary>

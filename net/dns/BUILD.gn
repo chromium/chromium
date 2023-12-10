@@ -619,6 +619,7 @@ fuzzer_test("net_host_resolver_manager_fuzzer") {
     "//net:test_support",
   ]
   dict = "//net/data/fuzzer_dictionaries/net_host_resolver_manager_fuzzer.dict"
+  libfuzzer_options = [ "max_len=4096" ]
 }
 
 if (is_win) {

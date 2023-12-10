@@ -46,7 +46,6 @@
 #include "content/browser/file_system_access/file_system_access_manager_impl.h"
 #include "content/browser/renderer_host/cross_process_frame_connector.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
-#include "content/browser/renderer_host/input/synthetic_touchscreen_pinch_gesture.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_frame_metadata_provider_impl.h"
@@ -60,6 +59,7 @@
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/browser/web_contents/web_contents_view.h"
 #include "content/common/frame.mojom.h"
+#include "content/common/input/synthetic_touchscreen_pinch_gesture.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -1806,6 +1806,13 @@ bool HasOriginKeyedProcess(RenderFrameHost* frame) {
       .requires_origin_keyed_process();
 }
 
+bool HasSandboxedSiteInstance(RenderFrameHost* frame) {
+  return static_cast<RenderFrameHostImpl*>(frame)
+      ->GetSiteInstance()
+      ->GetSiteInfo()
+      .is_sandboxed();
+}
+
 std::vector<RenderFrameHost*> CollectAllRenderFrameHosts(
     RenderFrameHost* starting_rfh) {
   std::vector<RenderFrameHost*> visited_frames;
@@ -2493,8 +2500,9 @@ void DOMMessageQueue::PrimaryMainFrameRenderProcessGone(
       break;
     default:
       renderer_crashed_ = true;
-      if (quit_closure_)
-        std::move(quit_closure_).Run();
+      if (callback_) {
+        std::move(callback_).Run();
+      }
       break;
   }
 }
@@ -2504,8 +2512,9 @@ void DOMMessageQueue::RenderFrameDeleted(RenderFrameHost* render_frame_host) {
     return;
   if (render_frame_host_ != render_frame_host)
     return;
-  if (quit_closure_)
-    std::move(quit_closure_).Run();
+  if (callback_) {
+    std::move(callback_).Run();
+  }
 }
 
 void DOMMessageQueue::ClearQueue() {
@@ -2514,8 +2523,9 @@ void DOMMessageQueue::ClearQueue() {
 
 void DOMMessageQueue::OnDomMessageReceived(const std::string& message) {
   message_queue_.push(message);
-  if (quit_closure_)
-    std::move(quit_closure_).Run();
+  if (callback_) {
+    std::move(callback_).Run();
+  }
 }
 
 void DOMMessageQueue::OnWebContentsCreated(WebContents* contents) {
@@ -2531,12 +2541,23 @@ void DOMMessageQueue::OnBackingWebContentsDestroyed(MessageObserver* observer) {
   }
 }
 
+void DOMMessageQueue::SetOnMessageAvailableCallback(
+    base::OnceClosure callback) {
+  CHECK(!callback_);
+  CHECK(!render_frame_host_);  // Not supported for simplicity.
+  if (!message_queue_.empty() || renderer_crashed_) {
+    std::move(callback).Run();
+  } else {
+    callback_ = std::move(callback);
+  }
+}
+
 bool DOMMessageQueue::WaitForMessage(std::string* message) {
   DCHECK(message);
   if (!renderer_crashed_ && message_queue_.empty()) {
     // This will be quit when a new message comes in.
     base::RunLoop run_loop{base::RunLoop::Type::kNestableTasksAllowed};
-    quit_closure_ = run_loop.QuitClosure();
+    callback_ = run_loop.QuitClosure();
     run_loop.Run();
   }
   return PopMessage(message);
@@ -3814,7 +3835,7 @@ int LoadBasicRequest(
                                        TRAFFIC_ANNOTATION_FOR_TESTS);
 
   simple_loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
-      url_loader_factory, simple_loader_helper.GetCallback());
+      url_loader_factory, simple_loader_helper.GetCallbackDeprecated());
   simple_loader_helper.WaitForCallback();
 
   return simple_loader->NetError();
@@ -3855,12 +3876,12 @@ int LoadBasicRequest(RenderFrameHost* frame, const GURL& url) {
 
 void EnsureCookiesFlushed(BrowserContext* browser_context) {
   browser_context->ForEachLoadedStoragePartition(
-      base::BindRepeating([](StoragePartition* partition) {
+      [](StoragePartition* partition) {
         base::RunLoop run_loop;
         partition->GetCookieManagerForBrowserProcess()->FlushCookieStore(
             run_loop.QuitClosure());
         run_loop.Run();
-      }));
+      });
 }
 
 bool TestGuestAutoresize(WebContents* embedder_web_contents,

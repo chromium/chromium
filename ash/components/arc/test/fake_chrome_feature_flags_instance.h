@@ -30,7 +30,7 @@ class FakeChromeFeatureFlagsInstance
   void NotifyFeatureFlags(mojom::FeatureFlagsPtr flags) override;
 
  private:
-  absl::optional<mojom::FeatureFlagsPtr> flags_called_value_;
+  std::optional<mojom::FeatureFlagsPtr> flags_called_value_;
 };
 
 }  // namespace arc

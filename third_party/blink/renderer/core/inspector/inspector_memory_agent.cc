@@ -159,7 +159,9 @@ InspectorMemoryAgent::GetSamplingProfileById(uint32_t id) {
   // TODO(alph): Add workers' heap sizes.
   if (!id) {
     v8::HeapStatistics heap_stats;
-    v8::Isolate::GetCurrent()->GetHeapStatistics(&heap_stats);
+    v8::Isolate* isolate =
+        frames_->Root()->GetPage()->GetAgentGroupScheduler().Isolate();
+    isolate->GetHeapStatistics(&heap_stats);
     size_t total_bytes = heap_stats.total_heap_size();
     auto stack = std::make_unique<protocol::Array<protocol::String>>();
     stack->emplace_back("<V8 Heap>");

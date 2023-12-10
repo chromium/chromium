@@ -11,9 +11,7 @@ import org.chromium.components.crash.PureJavaExceptionReporter;
 
 import java.io.File;
 
-/**
- * A custom PureJavaExceptionReporter for Android Chrome's browser.
- */
+/** A custom PureJavaExceptionReporter for Android Chrome's browser. */
 @UsedByReflection("SplitCompatApplication.java")
 public class ChromePureJavaExceptionReporter extends PureJavaExceptionReporter {
     private static final String CHROME_CRASH_PRODUCT_NAME = "Chrome_Android";
@@ -21,7 +19,7 @@ public class ChromePureJavaExceptionReporter extends PureJavaExceptionReporter {
 
     @UsedByReflection("SplitCompatApplication.java")
     public ChromePureJavaExceptionReporter() {
-        super(/*attachLogcat=*/true);
+        super(/* attachLogcat= */ true);
     }
 
     @Override

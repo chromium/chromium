@@ -7,6 +7,7 @@
 #include <limits>
 
 #include "base/check_op.h"
+#include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/event.h"
 #include "ui/gfx/x/xproto.h"
 
@@ -18,7 +19,8 @@ PropertyCache::PropertyCache(Connection* connection,
                              OnChangeCallback on_change)
     : connection_(connection),
       window_(window),
-      event_selector_(window_, EventMask::PropertyChange),
+      event_selector_(
+          connection->ScopedSelectEvent(window_, EventMask::PropertyChange)),
       on_change_(std::move(on_change)) {
   connection_->AddEventObserver(this);
 

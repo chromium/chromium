@@ -60,9 +60,8 @@ class GridSubtree {
  protected:
   GridSubtree() = default;
 
-  explicit GridSubtree(GridTreePtr grid_tree, wtf_size_t subtree_root = 0)
+  explicit GridSubtree(GridTreePtr grid_tree, wtf_size_t subtree_root)
       : grid_tree_(std::move(grid_tree)), subtree_root_(subtree_root) {
-    DCHECK(grid_tree_);
     parent_end_index_ = NextSiblingIndex();
   }
 
@@ -88,7 +87,11 @@ class GridSubtree {
 
  private:
   wtf_size_t NextSiblingIndex() const {
-    return subtree_root_ + grid_tree_->SubtreeSize(subtree_root_);
+    DCHECK(grid_tree_);
+    const wtf_size_t subtree_size = grid_tree_->SubtreeSize(subtree_root_);
+
+    DCHECK_GT(subtree_size, 0u);
+    return subtree_root_ + subtree_size;
   }
 
   // Index of the next sibling of this subtree's parent; used to avoid iterating

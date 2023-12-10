@@ -1,11 +1,3 @@
 This is a testharness.js-based test.
-[PASS] local to local: no preflight required.
-[PASS] local to private: no preflight required.
-[PASS] local to public: no preflight required.
-[PASS] private to private: no preflight required.
-[PASS] private to public: no preflight required.
-[PASS] public to public: no preflight required.
-[PASS] treat-as-public-address to public: no preflight required.
-[PASS] treat-as-public-address to local: optional preflight
 Harness: the test ran to completion.
 

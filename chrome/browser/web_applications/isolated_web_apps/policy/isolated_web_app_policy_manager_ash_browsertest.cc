@@ -12,7 +12,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"

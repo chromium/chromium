@@ -1,2 +1,2 @@
-per-file *Leakage*=roagarwal@chromium.org
-per-file *IncognitoDataTestUtils*=roagarwal@chromium.org
+per-file *Leakage*=file://chrome/browser/incognito/OWNERS
+per-file *IncognitoDataTestUtils*=file://chrome/browser/incognito/OWNERS

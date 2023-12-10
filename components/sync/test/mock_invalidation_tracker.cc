@@ -23,7 +23,7 @@ MockInvalidationTracker::IssueInvalidation(int64_t version,
                                                      this, next_id_++);
 }
 
-MockInvalidationTracker::MockInvalidationTracker() : next_id_(0) {}
+MockInvalidationTracker::MockInvalidationTracker() = default;
 
 MockInvalidationTracker::~MockInvalidationTracker() = default;
 

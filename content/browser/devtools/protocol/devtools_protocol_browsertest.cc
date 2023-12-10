@@ -3237,6 +3237,31 @@ IN_PROC_BROWSER_TEST_F(DevToolsDownloadContentTest, DefaultDownloadHeadless) {
   ASSERT_EQ(download::DownloadItem::CANCELLED, download->GetState());
 }
 
+// Check that defaulting downloads cancels when there's no proxy
+// download delegate.
+IN_PROC_BROWSER_TEST_F(DevToolsDownloadContentTest,
+                       SetDownloadBehaviorAccessChecks) {
+  SetMayWriteLocalFiles(false);
+  Attach();
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+
+  base::Value::Dict params;
+  params.Set("behavior", "allow");
+  params.Set("downloadPath",
+             temp_dir.GetPath().AppendASCII("download").AsUTF8Unsafe());
+
+  SendCommandSync("Page.setDownloadBehavior", params.Clone());
+  ASSERT_TRUE(error());
+  EXPECT_EQ(*error()->FindString("message"), "Not allowed");
+  Detach();
+  SetMayWriteLocalFiles(true);
+  Attach();
+  SendCommandSync("Page.setDownloadBehavior", std::move(params));
+  EXPECT_FALSE(error());
+}
+
 // Flaky on ChromeOS https://crbug.com/860312
 // Also flaky on Wndows and other platforms: http://crbug.com/1070302
 // Check that downloading multiple (in this case, 2) files does not result in

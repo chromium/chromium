@@ -25,7 +25,7 @@ TEST(LanguagePackMetricsTest, CheckLanguageCodes) {
       "ru", "si",    "sk",    "sl",    "sr",    "sv",    "ta",  "te", "th",
       "ti", "tl",    "tr",    "uk",    "ur",    "vi",    "yue", "zh"};
 
-  absl::optional<base::HistogramEnumEntryMap> language_codes_map =
+  std::optional<base::HistogramEnumEntryMap> language_codes_map =
       base::ReadEnumFromEnumsXml("LanguagePackLanguageCodes",
                                  /*subdirectory=*/"chromeos");
   ASSERT_TRUE(language_codes_map)

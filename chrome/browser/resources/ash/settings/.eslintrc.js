@@ -27,6 +27,18 @@ module.exports = {
       },
     ],
     /**
+     * https://google.github.io/styleguide/tsguide.html#type-inference
+     */
+    '@typescript-eslint/no-inferrable-types': [
+      'error',
+      {
+        // Function parameters may have explicit types for clearer APIs.
+        ignoreParameters: true,
+        // Class properties may have explicit types for clearer APIs.
+        ignoreProperties: true,
+      },
+    ],
+    /**
      * https://google.github.io/styleguide/tsguide.html#function-expressions
      */
     'prefer-arrow-callback': 'error',

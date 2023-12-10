@@ -12,11 +12,11 @@
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/password_manager/android/jni_headers/PasswordStoreAndroidBackendReceiverBridgeImpl_jni.h"
+#include "chrome/browser/password_manager/android/protos/list_affiliated_passwords_result.pb.h"
+#include "chrome/browser/password_manager/android/protos/list_passwords_result.pb.h"
+#include "chrome/browser/password_manager/android/protos/password_with_local_data.pb.h"
+#include "chrome/browser/password_manager/android/unified_password_manager_proto_utils.h"
 #include "components/password_manager/core/browser/password_form.h"
-#include "components/password_manager/core/browser/password_store/unified_password_manager_proto_utils.h"
-#include "components/password_manager/core/browser/protos/list_affiliated_passwords_result.pb.h"
-#include "components/password_manager/core/browser/protos/list_passwords_result.pb.h"
-#include "components/password_manager/core/browser/protos/password_with_local_data.pb.h"
 
 namespace password_manager {
 
@@ -142,7 +142,7 @@ void PasswordStoreAndroidBackendReceiverBridgeImpl::OnLoginChanged(
   DCHECK(consumer_);
   // Notifying that a login changed without providing a changelist prompts the
   // caller to explicitly check the remaining logins.
-  consumer_->OnLoginsChanged(JobId(job_id), absl::nullopt);
+  consumer_->OnLoginsChanged(JobId(job_id), std::nullopt);
 }
 
 }  // namespace password_manager

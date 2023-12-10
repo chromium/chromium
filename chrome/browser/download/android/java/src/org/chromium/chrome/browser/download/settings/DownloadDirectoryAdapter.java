@@ -30,9 +30,7 @@ import java.util.List;
  * download location.
  */
 public class DownloadDirectoryAdapter extends ArrayAdapter<Object> {
-    /**
-     * Delegate to handle directory options results and observe data changes.
-     */
+    /** Delegate to handle directory options results and observe data changes. */
     public interface Delegate {
         /**
          * Called when available download directories are changed, like SD card removal. App level
@@ -40,9 +38,7 @@ public class DownloadDirectoryAdapter extends ArrayAdapter<Object> {
          */
         void onDirectoryOptionsUpdated();
 
-        /**
-         * Called after the user selected another download directory option.
-         */
+        /** Called after the user selected another download directory option. */
         void onDirectorySelectionChanged();
     }
 
@@ -94,9 +90,10 @@ public class DownloadDirectoryAdapter extends ArrayAdapter<Object> {
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-        View view = convertView != null
-                ? convertView
-                : mLayoutInflater.inflate(R.layout.download_location_spinner_item, null);
+        View view =
+                convertView != null
+                        ? convertView
+                        : mLayoutInflater.inflate(R.layout.download_location_spinner_item, null);
 
         view.setTag(position);
 
@@ -118,9 +115,11 @@ public class DownloadDirectoryAdapter extends ArrayAdapter<Object> {
     @Override
     public View getDropDownView(
             int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-        View view = convertView != null
-                ? convertView
-                : mLayoutInflater.inflate(R.layout.download_location_spinner_dropdown_item, null);
+        View view =
+                convertView != null
+                        ? convertView
+                        : mLayoutInflater.inflate(
+                                R.layout.download_location_spinner_dropdown_item, null);
 
         view.setTag(position);
 
@@ -158,7 +157,7 @@ public class DownloadDirectoryAdapter extends ArrayAdapter<Object> {
     }
 
     /**
-     * @return  ID of the directory option that matches the default download location.
+     * @return ID of the directory option that matches the default download location.
      */
     public int getSelectedItemId() {
         return mSelectedPosition;
@@ -243,17 +242,18 @@ public class DownloadDirectoryAdapter extends ArrayAdapter<Object> {
         return mErrorOptions.isEmpty();
     }
 
-    /**
-     * Update the list of items.
-     */
+    /** Update the list of items. */
     public void update() {
         mCanonicalOptions.clear();
         mAdditionalOptions.clear();
         mErrorOptions.clear();
 
         // Retrieve all download directories.
-        DownloadDirectoryProvider.getInstance().getAllDirectoriesOptions(
-                (ArrayList<DirectoryOption> dirs) -> { onDirectoryOptionsRetrieved(dirs); });
+        DownloadDirectoryProvider.getInstance()
+                .getAllDirectoriesOptions(
+                        (ArrayList<DirectoryOption> dirs) -> {
+                            onDirectoryOptionsRetrieved(dirs);
+                        });
     }
 
     private void onDirectoryOptionsRetrieved(ArrayList<DirectoryOption> dirs) {
@@ -266,10 +266,12 @@ public class DownloadDirectoryAdapter extends ArrayAdapter<Object> {
                     mCanonicalOptions.add(directory);
                     break;
                 case DirectoryOption.DownloadLocationDirectoryType.ADDITIONAL:
-                    String directoryName = (numOtherAdditionalDirectories > 0)
-                            ? mContext.getString(R.string.downloads_location_sd_card_number,
-                                    numOtherAdditionalDirectories + 1)
-                            : mContext.getString(R.string.downloads_location_sd_card);
+                    String directoryName =
+                            (numOtherAdditionalDirectories > 0)
+                                    ? mContext.getString(
+                                            R.string.downloads_location_sd_card_number,
+                                            numOtherAdditionalDirectories + 1)
+                                    : mContext.getString(R.string.downloads_location_sd_card);
                     directory.name = directoryName;
                     mAdditionalOptions.add(directory);
                     numOtherAdditionalDirectories++;
@@ -298,9 +300,13 @@ public class DownloadDirectoryAdapter extends ArrayAdapter<Object> {
         if ((mCanonicalOptions.size() + mAdditionalOptions.size()) > 0) {
             mErrorOptions.clear();
         } else {
-            mErrorOptions.add(new DirectoryOption(
-                    mContext.getString(R.string.download_location_no_available_locations), null, 0,
-                    0, DirectoryOption.DownloadLocationDirectoryType.ERROR));
+            mErrorOptions.add(
+                    new DirectoryOption(
+                            mContext.getString(R.string.download_location_no_available_locations),
+                            null,
+                            0,
+                            0,
+                            DirectoryOption.DownloadLocationDirectoryType.ERROR));
         }
     }
 }

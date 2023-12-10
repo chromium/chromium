@@ -38,6 +38,7 @@ source_set("system_web_apps") {
     "//ash/webui/shortcut_customization_ui",
     "//ash/webui/system_apps/public:system_web_app_config",
     "//ash/webui/system_apps/public:system_web_app_type",
+    "//ash/webui/vc_background_ui",
     "//base",
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/system_web_apps/types",

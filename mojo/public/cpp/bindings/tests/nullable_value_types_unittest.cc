@@ -4,6 +4,7 @@
 
 #include <utility>
 
+#include <optional>
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -13,7 +14,6 @@
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "mojo/public/interfaces/bindings/tests/nullable_value_types.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace mojo::test::nullable_value_types {
 namespace {
@@ -30,20 +30,20 @@ inline constexpr TypemappedEnum kDefaultValue<TypemappedEnum> =
     TypemappedEnum::kValueOne;
 
 template <typename T>
-std::pair<bool, T> FromOpt(const absl::optional<T>& opt) {
+std::pair<bool, T> FromOpt(const std::optional<T>& opt) {
   return opt.has_value() ? std::pair(true, opt.value())
                          : std::pair(false, kDefaultValue<T>);
 }
 
 template <typename T>
-absl::optional<T> ToOpt(bool has_value, T value) {
-  return has_value ? absl::make_optional(value) : absl::nullopt;
+std::optional<T> ToOpt(bool has_value, T value) {
+  return has_value ? std::make_optional(value) : std::nullopt;
 }
 
-absl::optional<mojom::RegularEnum> Transform(
-    absl::optional<mojom::RegularEnum> in) {
+std::optional<mojom::RegularEnum> Transform(
+    std::optional<mojom::RegularEnum> in) {
   if (!in.has_value()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   switch (in.value()) {
     case mojom::RegularEnum::kThisValue:
@@ -53,9 +53,9 @@ absl::optional<mojom::RegularEnum> Transform(
   }
 }
 
-absl::optional<TypemappedEnum> Transform(absl::optional<TypemappedEnum> in) {
+std::optional<TypemappedEnum> Transform(std::optional<TypemappedEnum> in) {
   if (!in.has_value()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   switch (in.value()) {
     case TypemappedEnum::kValueOne:
@@ -65,79 +65,79 @@ absl::optional<TypemappedEnum> Transform(absl::optional<TypemappedEnum> in) {
   }
 }
 
-absl::optional<bool> Transform(absl::optional<bool> in) {
+std::optional<bool> Transform(std::optional<bool> in) {
   if (!in.has_value()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return !in.value();
 }
 
-absl::optional<uint8_t> Transform(absl::optional<uint8_t> in) {
+std::optional<uint8_t> Transform(std::optional<uint8_t> in) {
   if (!in.has_value()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return ~in.value();
 }
 
-absl::optional<uint16_t> Transform(absl::optional<uint16_t> in) {
+std::optional<uint16_t> Transform(std::optional<uint16_t> in) {
   if (!in.has_value()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return ~in.value();
 }
 
-absl::optional<uint32_t> Transform(absl::optional<uint32_t> in) {
+std::optional<uint32_t> Transform(std::optional<uint32_t> in) {
   if (!in.has_value()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return ~in.value();
 }
 
-absl::optional<uint64_t> Transform(absl::optional<uint64_t> in) {
+std::optional<uint64_t> Transform(std::optional<uint64_t> in) {
   if (!in.has_value()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return ~in.value();
 }
 
-absl::optional<int8_t> Transform(absl::optional<int8_t> in) {
+std::optional<int8_t> Transform(std::optional<int8_t> in) {
   if (!in.has_value()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return -in.value();
 }
 
-absl::optional<int16_t> Transform(absl::optional<int16_t> in) {
+std::optional<int16_t> Transform(std::optional<int16_t> in) {
   if (!in.has_value()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return -in.value();
 }
 
-absl::optional<int32_t> Transform(absl::optional<int32_t> in) {
+std::optional<int32_t> Transform(std::optional<int32_t> in) {
   if (!in.has_value()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return -in.value();
 }
 
-absl::optional<int64_t> Transform(absl::optional<int64_t> in) {
+std::optional<int64_t> Transform(std::optional<int64_t> in) {
   if (!in.has_value()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return -in.value();
 }
 
-absl::optional<float> Transform(absl::optional<float> in) {
+std::optional<float> Transform(std::optional<float> in) {
   if (!in.has_value()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return -2 * in.value();
 }
 
-absl::optional<double> Transform(absl::optional<double> in) {
+std::optional<double> Transform(std::optional<double> in) {
   if (!in.has_value()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return -2 * in.value();
 }
@@ -285,13 +285,13 @@ class InterfaceV2Impl : public mojom::InterfaceV2 {
  public:
   explicit InterfaceV2Impl(
       PendingReceiver<mojom::InterfaceV2> receiver,
-      absl::optional<CallerVersion> caller_version = absl::nullopt)
+      std::optional<CallerVersion> caller_version = std::nullopt)
       : receiver_(this, std::move(receiver)), caller_version_(caller_version) {}
 
  private:
   // mojom::InterfaceV2 implementation:
-  void MethodWithEnums(absl::optional<mojom::RegularEnum> enum_value,
-                       absl::optional<TypemappedEnum> mapped_enum_value,
+  void MethodWithEnums(std::optional<mojom::RegularEnum> enum_value,
+                       std::optional<TypemappedEnum> mapped_enum_value,
                        MethodWithEnumsCallback callback) override {
     std::move(callback).Run(Transform(enum_value),
                             Transform(mapped_enum_value));
@@ -304,17 +304,17 @@ class InterfaceV2Impl : public mojom::InterfaceV2 {
         Transform(in->enum_value), Transform(in->mapped_enum_value)));
   }
 
-  void MethodWithNumerics(absl::optional<bool> bool_value,
-                          absl::optional<uint8_t> u8_value,
-                          absl::optional<uint16_t> u16_value,
-                          absl::optional<uint32_t> u32_value,
-                          absl::optional<uint64_t> u64_value,
-                          absl::optional<int8_t> i8_value,
-                          absl::optional<int16_t> i16_value,
-                          absl::optional<int32_t> i32_value,
-                          absl::optional<int64_t> i64_value,
-                          absl::optional<float> float_value,
-                          absl::optional<double> double_value,
+  void MethodWithNumerics(std::optional<bool> bool_value,
+                          std::optional<uint8_t> u8_value,
+                          std::optional<uint16_t> u16_value,
+                          std::optional<uint32_t> u32_value,
+                          std::optional<uint64_t> u64_value,
+                          std::optional<int8_t> i8_value,
+                          std::optional<int16_t> i16_value,
+                          std::optional<int32_t> i32_value,
+                          std::optional<int64_t> i64_value,
+                          std::optional<float> float_value,
+                          std::optional<double> double_value,
                           MethodWithNumericsCallback callback) override {
     std::move(callback).Run(
         Transform(bool_value), Transform(u8_value), Transform(u16_value),
@@ -336,37 +336,37 @@ class InterfaceV2Impl : public mojom::InterfaceV2 {
   }
 
   void MethodWithVersionedArgs(
-      absl::optional<bool> bool_value,
-      absl::optional<uint8_t> u8_value,
-      absl::optional<uint16_t> u16_value,
-      absl::optional<uint32_t> u32_value,
-      absl::optional<uint64_t> u64_value,
-      absl::optional<int8_t> i8_value,
-      absl::optional<int16_t> i16_value,
-      absl::optional<int32_t> i32_value,
-      absl::optional<int64_t> i64_value,
-      absl::optional<float> float_value,
-      absl::optional<double> double_value,
-      absl::optional<mojom::RegularEnum> enum_value,
-      absl::optional<TypemappedEnum> mapped_enum_value,
+      std::optional<bool> bool_value,
+      std::optional<uint8_t> u8_value,
+      std::optional<uint16_t> u16_value,
+      std::optional<uint32_t> u32_value,
+      std::optional<uint64_t> u64_value,
+      std::optional<int8_t> i8_value,
+      std::optional<int16_t> i16_value,
+      std::optional<int32_t> i32_value,
+      std::optional<int64_t> i64_value,
+      std::optional<float> float_value,
+      std::optional<double> double_value,
+      std::optional<mojom::RegularEnum> enum_value,
+      std::optional<TypemappedEnum> mapped_enum_value,
       MethodWithVersionedArgsCallback callback) override {
     switch (*caller_version_) {
       case CallerVersion::kV1:
         // A caller using the V1 interface will not know about the new
-        // arguments, so they should all equal absl::nullopt.
-        EXPECT_EQ(absl::nullopt, bool_value);
-        EXPECT_EQ(absl::nullopt, u8_value);
-        EXPECT_EQ(absl::nullopt, u16_value);
-        EXPECT_EQ(absl::nullopt, u32_value);
-        EXPECT_EQ(absl::nullopt, u64_value);
-        EXPECT_EQ(absl::nullopt, i8_value);
-        EXPECT_EQ(absl::nullopt, i16_value);
-        EXPECT_EQ(absl::nullopt, i32_value);
-        EXPECT_EQ(absl::nullopt, i64_value);
-        EXPECT_EQ(absl::nullopt, float_value);
-        EXPECT_EQ(absl::nullopt, double_value);
-        EXPECT_EQ(absl::nullopt, enum_value);
-        EXPECT_EQ(absl::nullopt, mapped_enum_value);
+        // arguments, so they should all equal std::nullopt.
+        EXPECT_EQ(std::nullopt, bool_value);
+        EXPECT_EQ(std::nullopt, u8_value);
+        EXPECT_EQ(std::nullopt, u16_value);
+        EXPECT_EQ(std::nullopt, u32_value);
+        EXPECT_EQ(std::nullopt, u64_value);
+        EXPECT_EQ(std::nullopt, i8_value);
+        EXPECT_EQ(std::nullopt, i16_value);
+        EXPECT_EQ(std::nullopt, i32_value);
+        EXPECT_EQ(std::nullopt, i64_value);
+        EXPECT_EQ(std::nullopt, float_value);
+        EXPECT_EQ(std::nullopt, double_value);
+        EXPECT_EQ(std::nullopt, enum_value);
+        EXPECT_EQ(std::nullopt, mapped_enum_value);
         break;
       case CallerVersion::kV2:
         EXPECT_EQ(true, bool_value);
@@ -396,20 +396,20 @@ class InterfaceV2Impl : public mojom::InterfaceV2 {
     switch (*caller_version_) {
       case CallerVersion::kV1:
         // A caller using the V1 interface will not know about the new
-        // arguments, so they should all equal absl::nullopt.
-        EXPECT_EQ(absl::nullopt, in->bool_value);
-        EXPECT_EQ(absl::nullopt, in->u8_value);
-        EXPECT_EQ(absl::nullopt, in->u16_value);
-        EXPECT_EQ(absl::nullopt, in->u32_value);
-        EXPECT_EQ(absl::nullopt, in->u64_value);
-        EXPECT_EQ(absl::nullopt, in->i8_value);
-        EXPECT_EQ(absl::nullopt, in->i16_value);
-        EXPECT_EQ(absl::nullopt, in->i32_value);
-        EXPECT_EQ(absl::nullopt, in->i64_value);
-        EXPECT_EQ(absl::nullopt, in->float_value);
-        EXPECT_EQ(absl::nullopt, in->double_value);
-        EXPECT_EQ(absl::nullopt, in->enum_value);
-        EXPECT_EQ(absl::nullopt, in->mapped_enum_value);
+        // arguments, so they should all equal std::nullopt.
+        EXPECT_EQ(std::nullopt, in->bool_value);
+        EXPECT_EQ(std::nullopt, in->u8_value);
+        EXPECT_EQ(std::nullopt, in->u16_value);
+        EXPECT_EQ(std::nullopt, in->u32_value);
+        EXPECT_EQ(std::nullopt, in->u64_value);
+        EXPECT_EQ(std::nullopt, in->i8_value);
+        EXPECT_EQ(std::nullopt, in->i16_value);
+        EXPECT_EQ(std::nullopt, in->i32_value);
+        EXPECT_EQ(std::nullopt, in->i64_value);
+        EXPECT_EQ(std::nullopt, in->float_value);
+        EXPECT_EQ(std::nullopt, in->double_value);
+        EXPECT_EQ(std::nullopt, in->enum_value);
+        EXPECT_EQ(std::nullopt, in->mapped_enum_value);
         break;
       case CallerVersion::kV2:
         EXPECT_EQ(true, in->bool_value);
@@ -434,7 +434,7 @@ class InterfaceV2Impl : public mojom::InterfaceV2 {
   }
 
   const Receiver<mojom::InterfaceV2> receiver_;
-  const absl::optional<CallerVersion> caller_version_;
+  const std::optional<CallerVersion> caller_version_;
 };
 
 class NullableValueTypes : public ::testing::Test {
@@ -444,37 +444,37 @@ class NullableValueTypes : public ::testing::Test {
 TEST_F(NullableValueTypes, StructWithEnums) {
   {
     auto input = mojom::StructWithEnums::New();
-    input->enum_value = absl::nullopt;
-    input->mapped_enum_value = absl::nullopt;
+    input->enum_value = std::nullopt;
+    input->mapped_enum_value = std::nullopt;
 
     mojom::StructWithEnumsPtr output;
     ASSERT_TRUE(SerializeAndDeserialize<mojom::StructWithEnums>(input, output));
 
-    EXPECT_EQ(absl::nullopt, output->enum_value);
-    EXPECT_EQ(absl::nullopt, output->mapped_enum_value);
+    EXPECT_EQ(std::nullopt, output->enum_value);
+    EXPECT_EQ(std::nullopt, output->mapped_enum_value);
   }
 
   {
     auto input = mojom::StructWithEnums::New();
     input->enum_value = mojom::RegularEnum::kThisValue;
-    input->mapped_enum_value = absl::nullopt;
+    input->mapped_enum_value = std::nullopt;
 
     mojom::StructWithEnumsPtr output;
     ASSERT_TRUE(SerializeAndDeserialize<mojom::StructWithEnums>(input, output));
 
     EXPECT_EQ(mojom::RegularEnum::kThisValue, output->enum_value);
-    EXPECT_EQ(absl::nullopt, output->mapped_enum_value);
+    EXPECT_EQ(std::nullopt, output->mapped_enum_value);
   }
 
   {
     auto input = mojom::StructWithEnums::New();
-    input->enum_value = absl::nullopt;
+    input->enum_value = std::nullopt;
     input->mapped_enum_value = TypemappedEnum::kValueOne;
 
     mojom::StructWithEnumsPtr output;
     ASSERT_TRUE(SerializeAndDeserialize<mojom::StructWithEnums>(input, output));
 
-    EXPECT_EQ(absl::nullopt, output->enum_value);
+    EXPECT_EQ(std::nullopt, output->enum_value);
     EXPECT_EQ(TypemappedEnum::kValueOne, output->mapped_enum_value);
   }
 
@@ -577,12 +577,12 @@ TEST_F(NullableValueTypes, MethodEnumArgsCompatibility) {
     {
       base::RunLoop loop;
       remote->MethodWithEnums(
-          absl::nullopt, absl::nullopt,
+          std::nullopt, std::nullopt,
           base::BindLambdaForTesting(
-              [&](absl::optional<mojom::RegularEnum> enum_value,
-                  absl::optional<TypemappedEnum> mapped_enum_value) {
-                EXPECT_EQ(absl::nullopt, enum_value);
-                EXPECT_EQ(absl::nullopt, mapped_enum_value);
+              [&](std::optional<mojom::RegularEnum> enum_value,
+                  std::optional<TypemappedEnum> mapped_enum_value) {
+                EXPECT_EQ(std::nullopt, enum_value);
+                EXPECT_EQ(std::nullopt, mapped_enum_value);
                 loop.Quit();
               }));
       loop.Run();
@@ -591,12 +591,12 @@ TEST_F(NullableValueTypes, MethodEnumArgsCompatibility) {
     {
       base::RunLoop loop;
       remote->MethodWithEnums(
-          mojom::RegularEnum::kThisValue, absl::nullopt,
+          mojom::RegularEnum::kThisValue, std::nullopt,
           base::BindLambdaForTesting(
-              [&](absl::optional<mojom::RegularEnum> enum_value,
-                  absl::optional<TypemappedEnum> mapped_enum_value) {
+              [&](std::optional<mojom::RegularEnum> enum_value,
+                  std::optional<TypemappedEnum> mapped_enum_value) {
                 EXPECT_EQ(mojom::RegularEnum::kThatValue, enum_value);
-                EXPECT_EQ(absl::nullopt, mapped_enum_value);
+                EXPECT_EQ(std::nullopt, mapped_enum_value);
                 loop.Quit();
               }));
       loop.Run();
@@ -605,11 +605,11 @@ TEST_F(NullableValueTypes, MethodEnumArgsCompatibility) {
     {
       base::RunLoop loop;
       remote->MethodWithEnums(
-          absl::nullopt, TypemappedEnum::kValueOne,
+          std::nullopt, TypemappedEnum::kValueOne,
           base::BindLambdaForTesting(
-              [&](absl::optional<mojom::RegularEnum> enum_value,
-                  absl::optional<TypemappedEnum> mapped_enum_value) {
-                EXPECT_EQ(absl::nullopt, enum_value);
+              [&](std::optional<mojom::RegularEnum> enum_value,
+                  std::optional<TypemappedEnum> mapped_enum_value) {
+                EXPECT_EQ(std::nullopt, enum_value);
                 EXPECT_EQ(TypemappedEnum::kValueTwo, mapped_enum_value);
                 loop.Quit();
               }));
@@ -621,8 +621,8 @@ TEST_F(NullableValueTypes, MethodEnumArgsCompatibility) {
       remote->MethodWithEnums(
           mojom::RegularEnum::kThatValue, TypemappedEnum::kValueTwo,
           base::BindLambdaForTesting(
-              [&](absl::optional<mojom::RegularEnum> enum_value,
-                  absl::optional<TypemappedEnum> mapped_enum_value) {
+              [&](std::optional<mojom::RegularEnum> enum_value,
+                  std::optional<TypemappedEnum> mapped_enum_value) {
                 EXPECT_EQ(mojom::RegularEnum::kThisValue, enum_value);
                 EXPECT_EQ(TypemappedEnum::kValueOne, mapped_enum_value);
                 loop.Quit();
@@ -715,10 +715,10 @@ TEST_F(NullableValueTypes, MethodStructWithEnumsCompatibility) {
     {
       base::RunLoop loop;
       remote->MethodWithStructWithEnums(
-          mojom::StructWithEnums::New(absl::nullopt, absl::nullopt),
+          mojom::StructWithEnums::New(std::nullopt, std::nullopt),
           base::BindLambdaForTesting([&](mojom::StructWithEnumsPtr out) {
-            EXPECT_EQ(absl::nullopt, out->enum_value);
-            EXPECT_EQ(absl::nullopt, out->mapped_enum_value);
+            EXPECT_EQ(std::nullopt, out->enum_value);
+            EXPECT_EQ(std::nullopt, out->mapped_enum_value);
             loop.Quit();
           }));
       loop.Run();
@@ -728,10 +728,10 @@ TEST_F(NullableValueTypes, MethodStructWithEnumsCompatibility) {
       base::RunLoop loop;
       remote->MethodWithStructWithEnums(
           mojom::StructWithEnums::New(mojom::RegularEnum::kThisValue,
-                                      absl::nullopt),
+                                      std::nullopt),
           base::BindLambdaForTesting([&](mojom::StructWithEnumsPtr out) {
             EXPECT_EQ(mojom::RegularEnum::kThatValue, out->enum_value);
-            EXPECT_EQ(absl::nullopt, out->mapped_enum_value);
+            EXPECT_EQ(std::nullopt, out->mapped_enum_value);
             loop.Quit();
           }));
       loop.Run();
@@ -740,9 +740,9 @@ TEST_F(NullableValueTypes, MethodStructWithEnumsCompatibility) {
     {
       base::RunLoop loop;
       remote->MethodWithStructWithEnums(
-          mojom::StructWithEnums::New(absl::nullopt, TypemappedEnum::kValueOne),
+          mojom::StructWithEnums::New(std::nullopt, TypemappedEnum::kValueOne),
           base::BindLambdaForTesting([&](mojom::StructWithEnumsPtr out) {
-            EXPECT_EQ(absl::nullopt, out->enum_value);
+            EXPECT_EQ(std::nullopt, out->enum_value);
             EXPECT_EQ(TypemappedEnum::kValueTwo, out->mapped_enum_value);
             loop.Quit();
           }));
@@ -768,15 +768,15 @@ TEST_F(NullableValueTypes, StructWithNumerics) {
   {
     auto input = mojom::StructWithNumerics::New();
     input->bool_value = true;
-    input->u8_value = absl::nullopt;
+    input->u8_value = std::nullopt;
     input->u16_value = 16;
-    input->u32_value = absl::nullopt;
+    input->u32_value = std::nullopt;
     input->u64_value = 64;
     input->i8_value = -8;
-    input->i16_value = absl::nullopt;
+    input->i16_value = std::nullopt;
     input->i32_value = -32;
-    input->i64_value = absl::nullopt;
-    input->float_value = absl::nullopt;
+    input->i64_value = std::nullopt;
+    input->float_value = std::nullopt;
     input->double_value = -64.0;
 
     mojom::StructWithNumericsPtr output;
@@ -784,47 +784,47 @@ TEST_F(NullableValueTypes, StructWithNumerics) {
         SerializeAndDeserialize<mojom::StructWithNumerics>(input, output));
 
     EXPECT_EQ(true, output->bool_value);
-    EXPECT_EQ(absl::nullopt, output->u8_value);
+    EXPECT_EQ(std::nullopt, output->u8_value);
     EXPECT_EQ(16u, output->u16_value);
-    EXPECT_EQ(absl::nullopt, output->u32_value);
+    EXPECT_EQ(std::nullopt, output->u32_value);
     EXPECT_EQ(64u, output->u64_value);
     EXPECT_EQ(-8, output->i8_value);
-    EXPECT_EQ(absl::nullopt, output->i16_value);
+    EXPECT_EQ(std::nullopt, output->i16_value);
     EXPECT_EQ(-32, output->i32_value);
-    EXPECT_EQ(absl::nullopt, output->i64_value);
-    EXPECT_EQ(absl::nullopt, output->float_value);
+    EXPECT_EQ(std::nullopt, output->i64_value);
+    EXPECT_EQ(std::nullopt, output->float_value);
     EXPECT_EQ(-64.0, output->double_value);
   }
 
   {
     auto input = mojom::StructWithNumerics::New();
-    input->bool_value = absl::nullopt;
+    input->bool_value = std::nullopt;
     input->u8_value = 8;
-    input->u16_value = absl::nullopt;
+    input->u16_value = std::nullopt;
     input->u32_value = 32;
-    input->u64_value = absl::nullopt;
-    input->i8_value = absl::nullopt;
+    input->u64_value = std::nullopt;
+    input->i8_value = std::nullopt;
     input->i16_value = -16;
-    input->i32_value = absl::nullopt;
+    input->i32_value = std::nullopt;
     input->i64_value = -64;
     input->float_value = -32.0f;
-    input->double_value = absl::nullopt;
+    input->double_value = std::nullopt;
 
     mojom::StructWithNumericsPtr output;
     ASSERT_TRUE(
         SerializeAndDeserialize<mojom::StructWithNumerics>(input, output));
 
-    EXPECT_EQ(absl::nullopt, output->bool_value);
+    EXPECT_EQ(std::nullopt, output->bool_value);
     EXPECT_EQ(8u, output->u8_value);
-    EXPECT_EQ(absl::nullopt, output->u16_value);
+    EXPECT_EQ(std::nullopt, output->u16_value);
     EXPECT_EQ(32u, output->u32_value);
-    EXPECT_EQ(absl::nullopt, output->u64_value);
-    EXPECT_EQ(absl::nullopt, output->i8_value);
+    EXPECT_EQ(std::nullopt, output->u64_value);
+    EXPECT_EQ(std::nullopt, output->i8_value);
     EXPECT_EQ(-16, output->i16_value);
-    EXPECT_EQ(absl::nullopt, output->i32_value);
+    EXPECT_EQ(std::nullopt, output->i32_value);
     EXPECT_EQ(-64, output->i64_value);
     EXPECT_EQ(-32.0f, output->float_value);
-    EXPECT_EQ(absl::nullopt, output->double_value);
+    EXPECT_EQ(std::nullopt, output->double_value);
   }
 }
 
@@ -931,33 +931,33 @@ TEST_F(NullableValueTypes, MethodNumericArgsCompatibility) {
     {
       base::RunLoop loop;
       remote->MethodWithNumerics(
-          true, absl::nullopt, uint16_t{16}, absl::nullopt, uint64_t{64},
-          int8_t{-8}, absl::nullopt, int32_t{-32}, absl::nullopt, absl::nullopt,
+          true, std::nullopt, uint16_t{16}, std::nullopt, uint64_t{64},
+          int8_t{-8}, std::nullopt, int32_t{-32}, std::nullopt, std::nullopt,
           -64.0,
-          base::BindLambdaForTesting([&](absl::optional<bool> bool_value,
-                                         absl::optional<uint8_t> u8_value,
-                                         absl::optional<uint16_t> u16_value,
-                                         absl::optional<uint32_t> u32_value,
-                                         absl::optional<uint64_t> u64_value,
-                                         absl::optional<int8_t> i8_value,
-                                         absl::optional<int16_t> i16_value,
-                                         absl::optional<int32_t> i32_value,
-                                         absl::optional<int64_t> i64_value,
-                                         absl::optional<float> float_value,
-                                         absl::optional<double> double_value) {
+          base::BindLambdaForTesting([&](std::optional<bool> bool_value,
+                                         std::optional<uint8_t> u8_value,
+                                         std::optional<uint16_t> u16_value,
+                                         std::optional<uint32_t> u32_value,
+                                         std::optional<uint64_t> u64_value,
+                                         std::optional<int8_t> i8_value,
+                                         std::optional<int16_t> i16_value,
+                                         std::optional<int32_t> i32_value,
+                                         std::optional<int64_t> i64_value,
+                                         std::optional<float> float_value,
+                                         std::optional<double> double_value) {
             EXPECT_EQ(false, bool_value);
-            EXPECT_EQ(absl::nullopt, u8_value);
+            EXPECT_EQ(std::nullopt, u8_value);
             // Note: the seemingly more obvious ~uint16_t{16} is not used
             // here because using ~ when sizeof(integer) < sizeof(int)
             // automatically promotes to an int. 🙃
             EXPECT_EQ(uint16_t{0xffef}, u16_value);
-            EXPECT_EQ(absl::nullopt, u32_value);
+            EXPECT_EQ(std::nullopt, u32_value);
             EXPECT_EQ(~uint64_t{64}, u64_value);
             EXPECT_EQ(8, i8_value);
-            EXPECT_EQ(absl::nullopt, i16_value);
+            EXPECT_EQ(std::nullopt, i16_value);
             EXPECT_EQ(32, i32_value);
-            EXPECT_EQ(absl::nullopt, i64_value);
-            EXPECT_EQ(absl::nullopt, float_value);
+            EXPECT_EQ(std::nullopt, i64_value);
+            EXPECT_EQ(std::nullopt, float_value);
             EXPECT_EQ(128.0, double_value);
             loop.Quit();
           }));
@@ -967,34 +967,34 @@ TEST_F(NullableValueTypes, MethodNumericArgsCompatibility) {
     {
       base::RunLoop loop;
       remote->MethodWithNumerics(
-          absl::nullopt, uint8_t{8}, absl::nullopt, uint32_t{32}, absl::nullopt,
-          absl::nullopt, int16_t{-16}, absl::nullopt, int64_t{-64}, -32.0f,
-          absl::nullopt,
-          base::BindLambdaForTesting([&](absl::optional<bool> bool_value,
-                                         absl::optional<uint8_t> u8_value,
-                                         absl::optional<uint16_t> u16_value,
-                                         absl::optional<uint32_t> u32_value,
-                                         absl::optional<uint64_t> u64_value,
-                                         absl::optional<int8_t> i8_value,
-                                         absl::optional<int16_t> i16_value,
-                                         absl::optional<int32_t> i32_value,
-                                         absl::optional<int64_t> i64_value,
-                                         absl::optional<float> float_value,
-                                         absl::optional<double> double_value) {
-            EXPECT_EQ(absl::nullopt, bool_value);
+          std::nullopt, uint8_t{8}, std::nullopt, uint32_t{32}, std::nullopt,
+          std::nullopt, int16_t{-16}, std::nullopt, int64_t{-64}, -32.0f,
+          std::nullopt,
+          base::BindLambdaForTesting([&](std::optional<bool> bool_value,
+                                         std::optional<uint8_t> u8_value,
+                                         std::optional<uint16_t> u16_value,
+                                         std::optional<uint32_t> u32_value,
+                                         std::optional<uint64_t> u64_value,
+                                         std::optional<int8_t> i8_value,
+                                         std::optional<int16_t> i16_value,
+                                         std::optional<int32_t> i32_value,
+                                         std::optional<int64_t> i64_value,
+                                         std::optional<float> float_value,
+                                         std::optional<double> double_value) {
+            EXPECT_EQ(std::nullopt, bool_value);
             // Note: the seemingly more obvious ~uint8_t{8} is not used
             // here because using ~ when sizeof(integer) < sizeof(int)
             // automatically promotes to an int. 🙃
             EXPECT_EQ(uint8_t{0xf7}, u8_value);
-            EXPECT_EQ(absl::nullopt, u16_value);
+            EXPECT_EQ(std::nullopt, u16_value);
             EXPECT_EQ(~uint32_t{32}, u32_value);
-            EXPECT_EQ(absl::nullopt, u64_value);
-            EXPECT_EQ(absl::nullopt, i8_value);
+            EXPECT_EQ(std::nullopt, u64_value);
+            EXPECT_EQ(std::nullopt, i8_value);
             EXPECT_EQ(16, i16_value);
-            EXPECT_EQ(absl::nullopt, i32_value);
+            EXPECT_EQ(std::nullopt, i32_value);
             EXPECT_EQ(64, i64_value);
             EXPECT_EQ(64.0, float_value);
-            EXPECT_EQ(absl::nullopt, double_value);
+            EXPECT_EQ(std::nullopt, double_value);
             loop.Quit();
           }));
       loop.Run();
@@ -1093,24 +1093,24 @@ TEST_F(NullableValueTypes, MethodStructWithNumericsCompatibility) {
     {
       base::RunLoop loop;
       remote->MethodWithStructWithNumerics(
-          mojom::StructWithNumerics::New(
-              true, absl::nullopt, uint16_t{16}, absl::nullopt, uint64_t{64},
-              int8_t{-8}, absl::nullopt, int32_t{-32}, absl::nullopt,
-              absl::nullopt, -64.0),
+          mojom::StructWithNumerics::New(true, std::nullopt, uint16_t{16},
+                                         std::nullopt, uint64_t{64}, int8_t{-8},
+                                         std::nullopt, int32_t{-32},
+                                         std::nullopt, std::nullopt, -64.0),
           base::BindLambdaForTesting([&](mojom::StructWithNumericsPtr out) {
             EXPECT_EQ(false, out->bool_value);
-            EXPECT_EQ(absl::nullopt, out->u8_value);
+            EXPECT_EQ(std::nullopt, out->u8_value);
             // Note: the seemingly more obvious ~uint16_t{16} is not used
             // here because using ~ when sizeof(integer) < sizeof(int)
             // automatically promotes to an int. 🙃
             EXPECT_EQ(uint16_t{0xffef}, out->u16_value);
-            EXPECT_EQ(absl::nullopt, out->u32_value);
+            EXPECT_EQ(std::nullopt, out->u32_value);
             EXPECT_EQ(~uint64_t{64}, out->u64_value);
             EXPECT_EQ(8, out->i8_value);
-            EXPECT_EQ(absl::nullopt, out->i16_value);
+            EXPECT_EQ(std::nullopt, out->i16_value);
             EXPECT_EQ(32, out->i32_value);
-            EXPECT_EQ(absl::nullopt, out->i64_value);
-            EXPECT_EQ(absl::nullopt, out->float_value);
+            EXPECT_EQ(std::nullopt, out->i64_value);
+            EXPECT_EQ(std::nullopt, out->float_value);
             EXPECT_EQ(128.0, out->double_value);
             loop.Quit();
           }));
@@ -1121,24 +1121,24 @@ TEST_F(NullableValueTypes, MethodStructWithNumericsCompatibility) {
       base::RunLoop loop;
       remote->MethodWithStructWithNumerics(
           mojom::StructWithNumerics::New(
-              absl::nullopt, uint8_t{8}, absl::nullopt, uint32_t{32},
-              absl::nullopt, absl::nullopt, int16_t{-16}, absl::nullopt,
-              int64_t{-64}, -32.0f, absl::nullopt),
+              std::nullopt, uint8_t{8}, std::nullopt, uint32_t{32},
+              std::nullopt, std::nullopt, int16_t{-16}, std::nullopt,
+              int64_t{-64}, -32.0f, std::nullopt),
           base::BindLambdaForTesting([&](mojom::StructWithNumericsPtr out) {
-            EXPECT_EQ(absl::nullopt, out->bool_value);
+            EXPECT_EQ(std::nullopt, out->bool_value);
             // Note: the seemingly more obvious ~uint8_t{8} is not used
             // here because using ~ when sizeof(integer) < sizeof(int)
             // automatically promotes to an int. 🙃
             EXPECT_EQ(uint8_t{0xf7}, out->u8_value);
-            EXPECT_EQ(absl::nullopt, out->u16_value);
+            EXPECT_EQ(std::nullopt, out->u16_value);
             EXPECT_EQ(~uint32_t{32}, out->u32_value);
-            EXPECT_EQ(absl::nullopt, out->u64_value);
-            EXPECT_EQ(absl::nullopt, out->i8_value);
+            EXPECT_EQ(std::nullopt, out->u64_value);
+            EXPECT_EQ(std::nullopt, out->i8_value);
             EXPECT_EQ(16, out->i16_value);
-            EXPECT_EQ(absl::nullopt, out->i32_value);
+            EXPECT_EQ(std::nullopt, out->i32_value);
             EXPECT_EQ(64, out->i64_value);
             EXPECT_EQ(64.0, out->float_value);
-            EXPECT_EQ(absl::nullopt, out->double_value);
+            EXPECT_EQ(std::nullopt, out->double_value);
             loop.Quit();
           }));
       loop.Run();
@@ -1215,35 +1215,35 @@ TEST_F(NullableValueTypes, Versioning) {
           int16_t{-32}, int32_t{-64}, int64_t{-128}, 256.0f, -512.0,
           mojom::RegularEnum::kThisValue, TypemappedEnum::kValueTwo,
           base::BindLambdaForTesting(
-              [&](absl::optional<bool> out_bool_value,
-                  absl::optional<uint8_t> out_u8_value,
-                  absl::optional<uint16_t> out_u16_value,
-                  absl::optional<uint32_t> out_u32_value,
-                  absl::optional<uint64_t> out_u64_value,
-                  absl::optional<int8_t> out_i8_value,
-                  absl::optional<int16_t> out_i16_value,
-                  absl::optional<int32_t> out_i32_value,
-                  absl::optional<int64_t> out_i64_value,
-                  absl::optional<float> out_float_value,
-                  absl::optional<double> out_double_value,
-                  absl::optional<mojom::RegularEnum> out_enum_value,
-                  absl::optional<TypemappedEnum> out_mapped_enum_value) {
+              [&](std::optional<bool> out_bool_value,
+                  std::optional<uint8_t> out_u8_value,
+                  std::optional<uint16_t> out_u16_value,
+                  std::optional<uint32_t> out_u32_value,
+                  std::optional<uint64_t> out_u64_value,
+                  std::optional<int8_t> out_i8_value,
+                  std::optional<int16_t> out_i16_value,
+                  std::optional<int32_t> out_i32_value,
+                  std::optional<int64_t> out_i64_value,
+                  std::optional<float> out_float_value,
+                  std::optional<double> out_double_value,
+                  std::optional<mojom::RegularEnum> out_enum_value,
+                  std::optional<TypemappedEnum> out_mapped_enum_value) {
                 // An implementation based on the V1 interface will not know
                 // about the new arguments, so they should all equal
-                // absl::nullopt.
-                EXPECT_EQ(absl::nullopt, out_bool_value);
-                EXPECT_EQ(absl::nullopt, out_u8_value);
-                EXPECT_EQ(absl::nullopt, out_u16_value);
-                EXPECT_EQ(absl::nullopt, out_u32_value);
-                EXPECT_EQ(absl::nullopt, out_u64_value);
-                EXPECT_EQ(absl::nullopt, out_i8_value);
-                EXPECT_EQ(absl::nullopt, out_i16_value);
-                EXPECT_EQ(absl::nullopt, out_i32_value);
-                EXPECT_EQ(absl::nullopt, out_i64_value);
-                EXPECT_EQ(absl::nullopt, out_float_value);
-                EXPECT_EQ(absl::nullopt, out_double_value);
-                EXPECT_EQ(absl::nullopt, out_enum_value);
-                EXPECT_EQ(absl::nullopt, out_mapped_enum_value);
+                // std::nullopt.
+                EXPECT_EQ(std::nullopt, out_bool_value);
+                EXPECT_EQ(std::nullopt, out_u8_value);
+                EXPECT_EQ(std::nullopt, out_u16_value);
+                EXPECT_EQ(std::nullopt, out_u32_value);
+                EXPECT_EQ(std::nullopt, out_u64_value);
+                EXPECT_EQ(std::nullopt, out_i8_value);
+                EXPECT_EQ(std::nullopt, out_i16_value);
+                EXPECT_EQ(std::nullopt, out_i32_value);
+                EXPECT_EQ(std::nullopt, out_i64_value);
+                EXPECT_EQ(std::nullopt, out_float_value);
+                EXPECT_EQ(std::nullopt, out_double_value);
+                EXPECT_EQ(std::nullopt, out_enum_value);
+                EXPECT_EQ(std::nullopt, out_mapped_enum_value);
                 loop.Quit();
               }));
       loop.Run();
@@ -1260,20 +1260,20 @@ TEST_F(NullableValueTypes, Versioning) {
           base::BindLambdaForTesting([&](mojom::VersionedStructV2Ptr out) {
             // An implementation based on the V1 interface will not know
             // about the new arguments, so they should all equal
-            // absl::nullopt.
-            EXPECT_EQ(absl::nullopt, out->bool_value);
-            EXPECT_EQ(absl::nullopt, out->u8_value);
-            EXPECT_EQ(absl::nullopt, out->u16_value);
-            EXPECT_EQ(absl::nullopt, out->u32_value);
-            EXPECT_EQ(absl::nullopt, out->u64_value);
-            EXPECT_EQ(absl::nullopt, out->i8_value);
-            EXPECT_EQ(absl::nullopt, out->i16_value);
-            EXPECT_EQ(absl::nullopt, out->i32_value);
-            EXPECT_EQ(absl::nullopt, out->i64_value);
-            EXPECT_EQ(absl::nullopt, out->float_value);
-            EXPECT_EQ(absl::nullopt, out->double_value);
-            EXPECT_EQ(absl::nullopt, out->enum_value);
-            EXPECT_EQ(absl::nullopt, out->mapped_enum_value);
+            // std::nullopt.
+            EXPECT_EQ(std::nullopt, out->bool_value);
+            EXPECT_EQ(std::nullopt, out->u8_value);
+            EXPECT_EQ(std::nullopt, out->u16_value);
+            EXPECT_EQ(std::nullopt, out->u32_value);
+            EXPECT_EQ(std::nullopt, out->u64_value);
+            EXPECT_EQ(std::nullopt, out->i8_value);
+            EXPECT_EQ(std::nullopt, out->i16_value);
+            EXPECT_EQ(std::nullopt, out->i32_value);
+            EXPECT_EQ(std::nullopt, out->i64_value);
+            EXPECT_EQ(std::nullopt, out->float_value);
+            EXPECT_EQ(std::nullopt, out->double_value);
+            EXPECT_EQ(std::nullopt, out->enum_value);
+            EXPECT_EQ(std::nullopt, out->mapped_enum_value);
             loop.Quit();
           }));
       loop.Run();
@@ -1294,19 +1294,19 @@ TEST_F(NullableValueTypes, Versioning) {
           int16_t{-32}, int32_t{-64}, int64_t{-128}, 256.0f, -512.0,
           mojom::RegularEnum::kThisValue, TypemappedEnum::kValueTwo,
           base::BindLambdaForTesting(
-              [&](absl::optional<bool> out_bool_value,
-                  absl::optional<uint8_t> out_u8_value,
-                  absl::optional<uint16_t> out_u16_value,
-                  absl::optional<uint32_t> out_u32_value,
-                  absl::optional<uint64_t> out_u64_value,
-                  absl::optional<int8_t> out_i8_value,
-                  absl::optional<int16_t> out_i16_value,
-                  absl::optional<int32_t> out_i32_value,
-                  absl::optional<int64_t> out_i64_value,
-                  absl::optional<float> out_float_value,
-                  absl::optional<double> out_double_value,
-                  absl::optional<mojom::RegularEnum> out_enum_value,
-                  absl::optional<TypemappedEnum> out_mapped_enum_value) {
+              [&](std::optional<bool> out_bool_value,
+                  std::optional<uint8_t> out_u8_value,
+                  std::optional<uint16_t> out_u16_value,
+                  std::optional<uint32_t> out_u32_value,
+                  std::optional<uint64_t> out_u64_value,
+                  std::optional<int8_t> out_i8_value,
+                  std::optional<int16_t> out_i16_value,
+                  std::optional<int32_t> out_i32_value,
+                  std::optional<int64_t> out_i64_value,
+                  std::optional<float> out_float_value,
+                  std::optional<double> out_double_value,
+                  std::optional<mojom::RegularEnum> out_enum_value,
+                  std::optional<TypemappedEnum> out_mapped_enum_value) {
                 EXPECT_EQ(false, out_bool_value);
                 EXPECT_EQ(uint8_t{128}, out_u8_value);
                 EXPECT_EQ(uint16_t{64}, out_u16_value);

@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_ASH_CROSAPI_ROOTFS_LACROS_LOADER_H_
 #define CHROME_BROWSER_ASH_CROSAPI_ROOTFS_LACROS_LOADER_H_
 
+#include <optional>
+
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -12,7 +14,6 @@
 #include "base/sequence_checker.h"
 #include "base/version.h"
 #include "chrome/browser/ash/crosapi/lacros_selection_loader.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 class UpstartClient;
@@ -60,7 +61,7 @@ class RootfsLacrosLoader : public LacrosSelectionLoader {
   // If `version_` is null, it implies the version is not yet calculated.
   // For cases where it failed to read the version, invalid `base::Version()` is
   // set.
-  absl::optional<base::Version> version_;
+  std::optional<base::Version> version_;
 
   // Pointer held to `UpstartClient` for testing purposes.
   // Otherwise, the lifetime is the same as `ash::UpstartClient::Get()`.

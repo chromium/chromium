@@ -10,6 +10,7 @@
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
 #include "base/values.h"
+#include "cc/base/features.h"
 
 namespace cc {
 
@@ -1365,6 +1366,15 @@ bool SchedulerStateMachine::ShouldTriggerBeginImplFrameDeadlineImmediately()
 
   if (active_tree_needs_first_draw_)
     return true;
+
+  if (base::FeatureList::IsEnabled(
+          features::kResetTimerWhenNoActiveTreeLikely) &&
+      !NewActiveTreeLikely() && !needs_redraw_) {
+    // Trigger deadline early if we don't expect to produce a frame soon so
+    // that display scheduler doesn't wait unnecessarily. This will send a
+    // DidNotProduceFrame ack if there's nothing to draw.
+    return true;
+  }
 
   if (!needs_redraw_)
     return false;

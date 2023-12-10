@@ -350,6 +350,11 @@ class GaiaDialog extends GaiaDialogBase {
             'authcompleted',
             {bubbles: true, composed: true, detail: e.detail}));
       },
+      'getDeviceId': (e) => {
+        sendWithPromise('getDeviceId')
+            .then(
+                deviceId => this.authenticator_.getDeviceIdResponse(deviceId));
+      },
     };
 
     for (const eventName in authenticatorEventListeners) {

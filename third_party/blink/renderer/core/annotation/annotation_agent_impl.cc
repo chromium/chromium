@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/core/scroll/scrollable_area.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 
 namespace blink {
 
@@ -202,7 +203,6 @@ void AnnotationAgentImpl::Remove() {
       frame->GetDocument()->UpdateStyleAndLayout(
           DocumentUpdateReason::kFindInPage);
 
-      // TODO(bokan): Base marker type on `type_`.
       document->Markers().RemoveMarkersInRange(
           dom_range, DocumentMarker::MarkerTypes::TextFragment());
     }
@@ -330,10 +330,7 @@ void AnnotationAgentImpl::PerformPreAttachDOMMutation() {
 
     // If the active match is hidden inside a hidden=until-found element, then
     // we should reveal it so we can scroll to it.
-    if (RuntimeEnabledFeatures::BeforeMatchEventEnabled(
-            first_node.GetExecutionContext())) {
-      DisplayLockUtilities::RevealHiddenUntilFoundAncestors(first_node);
-    }
+    DisplayLockUtilities::RevealHiddenUntilFoundAncestors(first_node);
 
     // Ensure we leave clean layout since we'll be applying markers after this.
     first_node.GetDocument().UpdateStyleAndLayout(
@@ -363,25 +360,20 @@ void AnnotationAgentImpl::ProcessAttachmentFinished() {
     Document* document = attached_range_->StartPosition().GetDocument();
     DCHECK(document);
 
-    // TODO(bokan): DocumentMarkers don't support overlapping markers. We could
-    // be smarter about how we construct markers so they don't overlap - or we
-    // could make DocumentMarkerController allow overlaps.
-    // https://crbug.com/1327370.
-    bool will_overlap_existing_marker =
-        !document->Markers()
-             .MarkersIntersectingRange(
-                 attached_range_->ToEphemeralRange(),
-                 DocumentMarker::MarkerTypes::TextFragment())
-             .empty();
-
     // TextFinder type is used only to determine whether a given text can be
     // found in the page, it should have no side-effects.
-    if (!will_overlap_existing_marker &&
-        type_ != mojom::blink::AnnotationType::kTextFinder) {
-      // TODO(bokan): Add new marker types based on `type_`.
+    if (type_ != mojom::blink::AnnotationType::kTextFinder) {
       document->Markers().AddTextFragmentMarker(dom_range);
-    } else {
-      TRACE_EVENT_INSTANT("blink", "Markers Intersect!");
+      document->Markers().MergeOverlappingMarkers(
+          DocumentMarker::kTextFragment);
+    }
+
+    if (type_ != mojom::blink::AnnotationType::kUserNote) {
+      Node* anchor_node = attached_range_->StartPosition().AnchorNode();
+      CHECK(anchor_node);
+      if (anchor_node->IsInShadowTree()) {
+        UseCounter::Count(document, WebFeature::kTextDirectiveInShadowDOM);
+      }
     }
   } else {
     TRACE_EVENT_INSTANT("blink", "NotAttached");

@@ -6,6 +6,7 @@
 
 #include <limits>
 #include <set>
+#include <string_view>
 
 #include "base/android/library_loader/anchor_functions.h"
 #include "base/debug/leak_annotations.h"
@@ -319,7 +320,7 @@ struct FrameDetails {
   // Sets Chrome's module info for the frame.
   void SetChromeModuleInfo() {
     module_base_address = executable_start_addr();
-    static const absl::optional<base::StringPiece> library_name =
+    static const absl::optional<std::string_view> library_name =
         base::debug::ReadElfLibraryName(
             reinterpret_cast<void*>(executable_start_addr()));
     static const base::NoDestructor<std::string> chrome_debug_id([] {

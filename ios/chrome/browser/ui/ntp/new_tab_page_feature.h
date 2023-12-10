@@ -38,9 +38,6 @@ BASE_DECLARE_FEATURE(kFeedHeaderSettings);
 // its own does nothing; relies on feature parameters.
 BASE_DECLARE_FEATURE(kOverrideFeedSettings);
 
-// Feature flag to enable synthentic capabilities.
-BASE_DECLARE_FEATURE(kEnableFeedSyntheticCapabilities);
-
 // Feature flag to enable sending discover feedback to an updated target
 BASE_DECLARE_FEATURE(kWebFeedFeedbackReroute);
 
@@ -117,10 +114,6 @@ bool IsStickyHeaderDisabledForFollowingFeed();
 // YES if a dot should appear to indicate that there is new content in the
 // Following feed.
 bool IsDotEnabledForNewFollowedContent();
-
-// YES if synthetic capabilities will be used to inform the server of client
-// capabilities.
-bool IsFeedSyntheticCapabilitiesEnabled();
 
 // Returns a custom height for the Following feed header if it is overridden
 // from the server, or returns the default value.

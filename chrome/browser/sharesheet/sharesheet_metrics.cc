@@ -4,7 +4,6 @@
 
 #include "chrome/browser/sharesheet/sharesheet_metrics.h"
 
-#include "ash/public/cpp/tablet_mode.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_split.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
@@ -23,24 +22,14 @@ const char kSharesheetAppCountArcResultHistogram[] =
     "ChromeOS.Sharesheet.AppCount2.Arc";
 const char kSharesheetAppCountWebResultHistogram[] =
     "ChromeOS.Sharesheet.AppCount2.Web";
-const char kSharesheetShareActionResultHistogram[] =
-    "ChromeOS.Sharesheet.ActionCount";
-const char kSharesheetFormFactorResultHistogram[] =
-    "ChromeOS.Sharesheet.FormFactor";
 const char kSharesheetLaunchSourceResultHistogram[] =
     "ChromeOS.Sharesheet.LaunchSource";
 const char kSharesheetFileCountResultHistogram[] =
     "ChromeOS.Sharesheet.FileCount";
-const char kSharesheetIsDriveFolderResultHistogram[] =
-    "ChromeOS.Sharesheet.IsDriveFolder";
-const char kSharesheetIsImagePressedResultHistogram[] =
-    "ChromeOS.Sharesheet.IsImagePreviewPressed";
 const char kSharesheetMimeTypeResultHistogram[] =
     "ChromeOS.Sharesheet.Invocation.MimeType";
 const char kSharesheetCopyToClipboardMimeTypeResultHistogram[] =
     "ChromeOS.Sharesheet.CopyToClipboard.MimeType";
-const char kSharesheetCopyToClipboardFormFactorResultHistogram[] =
-    "ChromeOS.Sharesheet.CopyToClipboard.FormFactor";
 
 SharesheetMetrics::SharesheetMetrics() = default;
 
@@ -60,19 +49,6 @@ void SharesheetMetrics::RecordSharesheetWebAppCount(const int app_count) {
   base::UmaHistogramCounts100(kSharesheetAppCountWebResultHistogram, app_count);
 }
 
-void SharesheetMetrics::RecordSharesheetShareAction(const UserAction action) {
-  DCHECK(action == UserAction::kNearbyAction ||
-         action == UserAction::kDriveAction ||
-         action == UserAction::kCopyAction);
-  base::UmaHistogramEnumeration(kSharesheetShareActionResultHistogram, action);
-}
-
-void SharesheetMetrics::RecordSharesheetFormFactor(
-    const FormFactor form_factor) {
-  base::UmaHistogramEnumeration(kSharesheetFormFactorResultHistogram,
-                                form_factor);
-}
-
 void SharesheetMetrics::RecordSharesheetLaunchSource(
     const LaunchSource source) {
   base::UmaHistogramEnumeration(kSharesheetLaunchSourceResultHistogram, source);
@@ -80,18 +56,6 @@ void SharesheetMetrics::RecordSharesheetLaunchSource(
 
 void SharesheetMetrics::RecordSharesheetFilesSharedCount(const int file_count) {
   base::UmaHistogramCounts100(kSharesheetFileCountResultHistogram, file_count);
-}
-
-void SharesheetMetrics::RecordSharesheetIsDriveFolder(
-    const bool is_drive_folder) {
-  base::UmaHistogramBoolean(kSharesheetIsDriveFolderResultHistogram,
-                            is_drive_folder);
-}
-
-void SharesheetMetrics::RecordSharesheetImagePreviewPressed(
-    const bool is_pressed) {
-  base::UmaHistogramBoolean(kSharesheetIsImagePressedResultHistogram,
-                            is_pressed);
 }
 
 void SharesheetMetrics::RecordSharesheetMimeType(const MimeType mime_type) {
@@ -102,12 +66,6 @@ void SharesheetMetrics::RecordCopyToClipboardShareActionMimeType(
     const MimeType mime_type) {
   base::UmaHistogramEnumeration(
       kSharesheetCopyToClipboardMimeTypeResultHistogram, mime_type);
-}
-
-void SharesheetMetrics::RecordCopyToClipboardShareActionFormFactor(
-    const FormFactor form_factor) {
-  base::UmaHistogramEnumeration(
-      kSharesheetCopyToClipboardFormFactorResultHistogram, form_factor);
 }
 
 SharesheetMetrics::MimeType SharesheetMetrics::ConvertMimeTypeForMetrics(
@@ -159,11 +117,6 @@ SharesheetMetrics::GetMimeTypesFromIntentForMetrics(
     }
   }
   return mime_types_to_record;
-}
-
-SharesheetMetrics::FormFactor SharesheetMetrics::GetFormFactorForMetrics() {
-  return ash::TabletMode::Get()->InTabletMode() ? FormFactor::kTablet
-                                                : FormFactor::kClamshell;
 }
 
 }  // namespace sharesheet

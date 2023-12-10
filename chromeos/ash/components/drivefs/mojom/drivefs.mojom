@@ -266,6 +266,13 @@ interface DriveFsDelegate {
   // incompleted state).
   // For more details, see: b/269694669
   OnItemProgress(ProgressEvent progress_event);
+
+  // Get an access token for `client_id` and `app_id` with access to `scopes`.
+  // `access_token` is only valid if the `status` is `kSuccess`.
+  GetAccessTokenWithExpiry(string client_id,
+    string app_id,
+    array<string> scopes) => (AccessTokenStatus status,
+                              AccessToken? access_token);
 };
 
 [Extensible]
@@ -310,6 +317,12 @@ struct DriveFsConfiguration {
   // See more: https://support.google.com/a/answer/10741897
   [MinVersion=7]
   CSESupport cse_support = kNone;
+};
+
+// The OAuth token in string form along with the time the token expires.
+struct AccessToken {
+  string token;
+  mojo_base.mojom.Time expiry_time;
 };
 
 enum AccessTokenStatus {

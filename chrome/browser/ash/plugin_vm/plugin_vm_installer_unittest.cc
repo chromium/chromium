@@ -189,9 +189,6 @@ class PluginVmInstallerTestBase : public testing::Test {
 
     fake_concierge_client_ = ash::FakeConciergeClient::Get();
 
-    ash::DlcserviceClient::InitializeFake();
-    fake_dlcservice_client_ =
-        static_cast<ash::FakeDlcserviceClient*>(ash::DlcserviceClient::Get());
     ash::FakeSpacedClient::InitializeFake();
   }
 
@@ -204,7 +201,6 @@ class PluginVmInstallerTestBase : public testing::Test {
     ash::VmPluginDispatcherClient::Shutdown();
     ash::DebugDaemonClient::Shutdown();
     ash::ConciergeClient::Shutdown();
-    ash::DlcserviceClient::Shutdown();
     ash::FakeSpacedClient::Shutdown();
   }
 
@@ -283,9 +279,7 @@ class PluginVmInstallerTestBase : public testing::Test {
   // ConciergeClient::Shutdown() is called.
   raw_ptr<ash::FakeConciergeClient, DanglingUntriaged | ExperimentalAsh>
       fake_concierge_client_;
-  // Owned by ash::DBusThreadManager
-  raw_ptr<ash::FakeDlcserviceClient, DanglingUntriaged | ExperimentalAsh>
-      fake_dlcservice_client_;
+  ash::FakeDlcserviceClient fake_dlcservice_client_;
 
  private:
   void CreateProfile() {
@@ -751,7 +745,7 @@ TEST_F(PluginVmInstallerDriveTest, CancelledDriveDownloadTest) {
 
 TEST_F(PluginVmInstallerDriveTest, SuccessfulDriveDownloadTest) {
   SetPluginVmImagePref(kDriveUrl, kHash);
-  fake_dlcservice_client_->set_install_error(dlcservice::kErrorNone);
+  fake_dlcservice_client_.set_install_error(dlcservice::kErrorNone);
 
   ExpectObserverEventsUntil(InstallingState::kImporting);
   EXPECT_CALL(*observer_, OnDownloadProgressUpdated(_, std::strlen(kContent)))
@@ -765,7 +759,7 @@ TEST_F(PluginVmInstallerDriveTest, SuccessfulDriveDownloadTest) {
 
 TEST_F(PluginVmInstallerDriveTest, InstallingPluginVmDlcNeedReboot) {
   SetPluginVmImagePref(kDriveUrl, kHash);
-  fake_dlcservice_client_->set_install_error(dlcservice::kErrorNeedReboot);
+  fake_dlcservice_client_.set_install_error(dlcservice::kErrorNeedReboot);
 
   ExpectObserverEventsUntil(InstallingState::kDownloadingDlc);
   EXPECT_CALL(*observer_, OnError(FailureReason::DLC_NEED_REBOOT));
@@ -778,7 +772,7 @@ TEST_F(PluginVmInstallerDriveTest, InstallingPluginVmDlcNeedReboot) {
 
 TEST_F(PluginVmInstallerDriveTest, InstallingPluginVmDlcNeedSpace) {
   SetPluginVmImagePref(kDriveUrl, kHash);
-  fake_dlcservice_client_->set_install_error(dlcservice::kErrorAllocation);
+  fake_dlcservice_client_.set_install_error(dlcservice::kErrorAllocation);
 
   ExpectObserverEventsUntil(InstallingState::kDownloadingDlc);
   EXPECT_CALL(*observer_, OnError(FailureReason::DLC_NEED_SPACE));
@@ -791,7 +785,7 @@ TEST_F(PluginVmInstallerDriveTest, InstallingPluginVmDlcNeedSpace) {
 
 TEST_F(PluginVmInstallerDriveTest, InstallingPluginVmDlcWhenUnsupported) {
   SetPluginVmImagePref(kDriveUrl, kHash);
-  fake_dlcservice_client_->set_install_error(dlcservice::kErrorInvalidDlc);
+  fake_dlcservice_client_.set_install_error(dlcservice::kErrorInvalidDlc);
 
   ExpectObserverEventsUntil(InstallingState::kDownloadingDlc);
   EXPECT_CALL(*observer_, OnError(FailureReason::DLC_UNSUPPORTED));
@@ -804,7 +798,7 @@ TEST_F(PluginVmInstallerDriveTest, InstallingPluginVmDlcWhenUnsupported) {
 
 TEST_F(PluginVmInstallerDriveTest, InstallingPluginVmDlcWhenNoImageFound) {
   SetPluginVmImagePref(kDriveUrl, kHash);
-  fake_dlcservice_client_->set_install_error(dlcservice::kErrorNoImageFound);
+  fake_dlcservice_client_.set_install_error(dlcservice::kErrorNoImageFound);
 
   ExpectObserverEventsUntil(InstallingState::kDownloadingDlc);
   EXPECT_CALL(*observer_, OnError(FailureReason::DLC_INTERNAL));

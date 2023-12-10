@@ -8,7 +8,6 @@
 
 #include "base/json/json_string_value_serializer.h"
 #include "base/logging.h"
-#include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "remoting/ios/persistence/remoting_keychain.h"
 

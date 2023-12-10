@@ -1,0 +1,43 @@
+This is a testharness.js-based test.
+Harness Error. harness_status.status = 1 , harness_status.message = Unhandled rejection: Failed to execute 'setLocalDescription' on 'RTCPeerConnection': Failed to parse SessionDescription.  Expect line: v=
+[FAIL] createOffer must detect InvalidStateError synchronously when chain is empty (prerequisite)
+  assert_equals: expected "InvalidStateError" but got "Error"
+[FAIL] createAnswer must detect InvalidStateError synchronously when chain is empty (prerequisite)
+  assert_equals: promise rejected on same task expected "rejected" but got "pending"
+[FAIL] SLD(rollback) must detect InvalidStateError synchronously when chain is empty
+  assert_equals: promise rejected on same task expected "rejected" but got "pending"
+[FAIL] addIceCandidate must detect InvalidStateError synchronously when chain is empty
+  assert_equals: expected "InvalidStateError" but got "Error"
+[FAIL] setParameters must detect InvalidStateError synchronously always when transceiver is stopped
+  assert_equals: promise rejected on same task expected "rejected" but got "pending"
+[FAIL] isOperationsChainEmpty detects empty in stable
+  assert_true: Empty to start expected true got false
+[FAIL] isOperationsChainEmpty detects empty in have-local-offer
+  assert_true: Empty to start expected true got false
+[FAIL] isOperationsChainEmpty detects empty in have-remote-offer
+  assert_equals: isOperationsChainEmpty is working expected "InvalidStateError" but got "Error"
+[FAIL] createAnswer uses operations chain
+  assert_equals: isOperationsChainEmpty is working expected "InvalidStateError" but got "Error"
+[FAIL] setLocalDescription uses operations chain
+  assert_true: Empty before expected true got false
+[FAIL] setRemoteDescription uses operations chain
+  assert_true: Empty before expected true got false
+[FAIL] addIceCandidate uses operations chain
+  assert_equals: isOperationsChainEmpty is working expected "InvalidStateError" but got "Error"
+[FAIL] Firing of negotiationneeded does NOT use operations chain
+  assert_true: Empty chain expected true got false
+[FAIL] replaceTrack uses operations chain
+  assert_true: Empty chain expected true got false
+[FAIL] setParameters does NOT use the operations chain
+  assert_true: Empty chain expected true got false
+[FAIL] pc.getStats does NOT use the operations chain
+  assert_true: Empty chain expected true got false
+[FAIL] sender.getStats does NOT use the operations chain
+  assert_true: Empty chain expected true got false
+[FAIL] receiver.getStats does NOT use the operations chain
+  assert_true: Empty chain expected true got false
+[FAIL] Pack operations queue with implicit offer and answer
+  promise_test: Unhandled rejection with value: object "OperationError: Failed to execute 'setLocalDescription' on 'RTCPeerConnection': Failed to parse SessionDescription.  Expect line: v="
+[TIMEOUT] Negotiate solely by operations queue and signaling state
+  Test timed out
+Harness: the test ran to completion.

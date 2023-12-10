@@ -57,16 +57,12 @@ public interface PaymentAppFactoryParams extends PaymentRequestParams {
         return null;
     }
 
-    /**
-     * @return Whether crawling the web for just-in-time installable payment handlers is enabled.
-     */
+    /** @return Whether crawling the web for just-in-time installable payment handlers is enabled. */
     default boolean getMayCrawl() {
         return false;
     }
 
-    /**
-     * @return The listener for payment method, shipping address, and shipping option change events.
-     */
+    /** @return The listener for payment method, shipping address, and shipping option change events. */
     default PaymentRequestUpdateEventListener getPaymentRequestUpdateEventListener() {
         return null;
     }

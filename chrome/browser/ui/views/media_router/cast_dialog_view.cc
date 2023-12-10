@@ -4,9 +4,12 @@
 
 #include "chrome/browser/ui/views/media_router/cast_dialog_view.h"
 
+#include <optional>
+
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/notreached.h"
 #include "base/observer_list.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -34,7 +37,6 @@
 #include "components/media_router/common/mojom/media_route_provider_id.mojom-shared.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/rect.h"
@@ -267,6 +269,8 @@ void CastDialogView::PopulateScrollView(const std::vector<UIMediaSink>& sinks) {
             profile_, sinks.at(i),
             base::BindRepeating(&CastDialogView::SinkPressed,
                                 base::Unretained(this), i),
+            base::BindRepeating(&CastDialogView::IssuePressed,
+                                base::Unretained(this), i),
             base::BindRepeating(&CastDialogView::StopPressed,
                                 base::Unretained(this), i),
             base::BindRepeating(&CastDialogView::FreezePressed,
@@ -322,16 +326,24 @@ void CastDialogView::SinkPressed(size_t index) {
   // sink() may get invalidated during CastDialogController::StartCasting()
   // due to a model update, so make a copy here.
   const UIMediaSink sink = sink_views_.at(index)->sink();
-  if (sink.route) {
-    // StopCasting() may trigger a model update and invalidate |sink|.
-    controller_->StopCasting(sink.route->media_route_id());
-  } else if (sink.issue) {
+  if (sink.issue) {
     controller_->ClearIssue(sink.issue->id());
   } else {
-    absl::optional<MediaCastMode> cast_mode = GetCastModeToUse(sink);
+    std::optional<MediaCastMode> cast_mode = GetCastModeToUse(sink);
     if (cast_mode) {
       controller_->StartCasting(sink.id, cast_mode.value());
     }
+  }
+}
+
+void CastDialogView::IssuePressed(size_t index) {
+  if (!controller_) {
+    return;
+  }
+  selected_sink_index_ = index;
+  const UIMediaSink sink = sink_views_.at(index)->sink();
+  if (sink.issue) {
+    controller_->ClearIssue(sink.issue->id());
   }
 }
 
@@ -343,6 +355,9 @@ void CastDialogView::StopPressed(size_t index) {
   const UIMediaSink sink = sink_views_.at(index)->sink();
   if (!sink.route) {
     return;
+  }
+  if (sink.issue) {
+    controller_->ClearIssue(sink.issue->id());
   }
   // StopCasting() may trigger a model update and invalidate |sink|.
   controller_->StopCasting(sink.route->media_route_id());
@@ -376,23 +391,23 @@ void CastDialogView::MaybeSizeToContents() {
     SizeToContents();
 }
 
-absl::optional<MediaCastMode> CastDialogView::GetCastModeToUse(
+std::optional<MediaCastMode> CastDialogView::GetCastModeToUse(
     const UIMediaSink& sink) const {
   // Go through cast modes in the order of preference to find one that is
   // supported and selected.
   switch (selected_source_) {
     case SourceType::kTab:
       if (base::Contains(sink.cast_modes, PRESENTATION))
-        return absl::make_optional<MediaCastMode>(PRESENTATION);
+        return std::make_optional<MediaCastMode>(PRESENTATION);
       if (base::Contains(sink.cast_modes, TAB_MIRROR))
-        return absl::make_optional<MediaCastMode>(TAB_MIRROR);
+        return std::make_optional<MediaCastMode>(TAB_MIRROR);
       break;
     case SourceType::kDesktop:
       if (base::Contains(sink.cast_modes, DESKTOP_MIRROR))
-        return absl::make_optional<MediaCastMode>(DESKTOP_MIRROR);
+        return std::make_optional<MediaCastMode>(DESKTOP_MIRROR);
       break;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void CastDialogView::DisableUnsupportedSinks() {

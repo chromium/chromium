@@ -109,9 +109,9 @@ struct StructTraits<media_router::mojom::CastMediaSinkDataView,
     return extra_data.ip_endpoint;
   }
 
-  static uint8_t capabilities(
+  static uint64_t capabilities(
       const media_router::CastSinkExtraData& extra_data) {
-    return extra_data.capabilities;
+    return extra_data.capabilities.ToEnumBitmask();
   }
 
   static int32_t cast_channel_id(
@@ -290,9 +290,9 @@ struct StructTraits<media_router::mojom::MediaRouteDataView,
     // it would be better to make the |media_source_| field on MediaRoute a
     // absl::optional<MediaSource::Id> instead so it can be returned directly
     // here.
-    return mojo::MakeOptionalAsPointer(route.media_source().id().empty()
-                                           ? nullptr
-                                           : &route.media_source().id());
+    return mojo::OptionalAsPointer(route.media_source().id().empty()
+                                       ? nullptr
+                                       : &route.media_source().id());
   }
 
   static const std::string& media_sink_id(

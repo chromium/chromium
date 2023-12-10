@@ -8,6 +8,7 @@ load("//lib/builder_config.star", "builder_config")
 load("//lib/builder_health_indicators.star", "health_spec")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
+load("//lib/gn_args.star", "gn_args")
 
 ci.defaults.set(
     executable = "recipe:angle_chromium",
@@ -61,6 +62,14 @@ ci.gpu.linux_builder(
         build_gs_bucket = "chromium-swangle-archive",
         run_tests_serially = True,
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "gpu_tests",
+            "release_try_builder",
+            "minimal_symbols",
+            "reclient",
+        ],
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "Chromium|Linux",
         short_name = "x64",
@@ -89,6 +98,14 @@ ci.gpu.linux_builder(
         ),
         build_gs_bucket = "chromium-swangle-archive",
         run_tests_serially = True,
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "gpu_tests",
+            "release_try_builder",
+            "minimal_symbols",
+            "reclient",
+        ],
     ),
     # Uncomment this entry when this experimental tester is actually in use.
     # console_view_entry = consoles.console_view_entry(
@@ -119,6 +136,16 @@ ci.gpu.linux_builder(
         build_gs_bucket = "chromium-swangle-archive",
         run_tests_serially = True,
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "angle_deqp_tests",
+            "shared",
+            "release",
+            "reclient",
+            "minimal_symbols",
+            "dcheck_always_on",
+        ],
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "ToT SwiftShader|Linux",
         short_name = "x64",
@@ -144,6 +171,16 @@ ci.gpu.linux_builder(
         build_gs_bucket = "chromium-swangle-archive",
         run_tests_serially = True,
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "angle_deqp_tests",
+            "shared",
+            "release",
+            "reclient",
+            "minimal_symbols",
+            "dcheck_always_on",
+        ],
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "DEPS|Linux",
         short_name = "x64",
@@ -168,6 +205,16 @@ ci.gpu.linux_builder(
         ),
         build_gs_bucket = "chromium-swangle-archive",
         run_tests_serially = True,
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "angle_deqp_tests",
+            "shared",
+            "release",
+            "reclient",
+            "minimal_symbols",
+            "dcheck_always_on",
+        ],
     ),
     # Uncomment this entry when this experimental tester is actually in use.
     # console_view_entry = consoles.console_view_entry(
@@ -200,6 +247,14 @@ ci.gpu.mac_builder(
         build_gs_bucket = "chromium-swangle-archive",
         run_tests_serially = True,
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "gpu_tests",
+            "release_try_builder",
+            "minimal_symbols",
+            "reclient",
+        ],
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "Chromium|Mac",
         short_name = "x64",
@@ -228,6 +283,16 @@ ci.gpu.windows_builder(
         build_gs_bucket = "chromium-swangle-archive",
         run_tests_serially = True,
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "gpu_tests",
+            "release_try_builder",
+            "minimal_symbols",
+            "reclient",
+            "x86",
+            "resource_allowlisting",
+        ],
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "Chromium|Windows",
         short_name = "x86",
@@ -254,6 +319,16 @@ ci.gpu.windows_builder(
         ),
         build_gs_bucket = "chromium-swangle-archive",
         run_tests_serially = True,
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "angle_deqp_tests",
+            "shared",
+            "release",
+            "reclient",
+            "minimal_symbols",
+            "dcheck_always_on",
+        ],
     ),
     console_view_entry = consoles.console_view_entry(
         category = "ToT SwiftShader|Windows",
@@ -282,6 +357,17 @@ ci.gpu.windows_builder(
         build_gs_bucket = "chromium-swangle-archive",
         run_tests_serially = True,
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "angle_deqp_tests",
+            "shared",
+            "release",
+            "reclient",
+            "minimal_symbols",
+            "dcheck_always_on",
+            "x86",
+        ],
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "ToT SwiftShader|Windows",
         short_name = "x86",
@@ -307,6 +393,16 @@ ci.gpu.windows_builder(
         build_gs_bucket = "chromium-swangle-archive",
         run_tests_serially = True,
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "angle_deqp_tests",
+            "shared",
+            "release",
+            "reclient",
+            "minimal_symbols",
+            "dcheck_always_on",
+        ],
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "DEPS|Windows",
         short_name = "x64",
@@ -331,6 +427,17 @@ ci.gpu.windows_builder(
         ),
         build_gs_bucket = "chromium-swangle-archive",
         run_tests_serially = True,
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "angle_deqp_tests",
+            "shared",
+            "release",
+            "reclient",
+            "minimal_symbols",
+            "dcheck_always_on",
+            "x86",
+        ],
     ),
     console_view_entry = consoles.console_view_entry(
         category = "DEPS|Windows",

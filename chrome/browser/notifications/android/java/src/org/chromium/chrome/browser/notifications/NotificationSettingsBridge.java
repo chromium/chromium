@@ -17,18 +17,16 @@ import org.chromium.chrome.browser.notifications.channels.SiteChannelsManager;
 import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
 
-/**
- * Interface for native code to interact with Android notification channels.
- */
+/** Interface for native code to interact with Android notification channels. */
 public class NotificationSettingsBridge {
     /**
-     * Creates a notification channel for the given origin, unless a channel for this origin
-     * already exists.
+     * Creates a notification channel for the given origin, unless a channel for this origin already
+     * exists.
      *
      * @param origin The site origin to be used as the channel name.
      * @param creationTime A string representing the time of channel creation.
-     * @param enabled True if the channel should be initially enabled, false if
-     *                it should start off as blocked.
+     * @param enabled True if the channel should be initially enabled, false if it should start off
+     *     as blocked.
      * @return The channel created for this origin.
      */
     @RequiresApi(Build.VERSION_CODES.O)
@@ -55,9 +53,7 @@ public class NotificationSettingsBridge {
         SiteChannelsManager.getInstance().deleteSiteChannel(channelId);
     }
 
-    /**
-     * Helper type for passing site channel objects across the JNI.
-     */
+    /** Helper type for passing site channel objects across the JNI. */
     @RequiresApi(Build.VERSION_CODES.O)
     public static class SiteChannel {
         private final String mId;
@@ -65,7 +61,10 @@ public class NotificationSettingsBridge {
         private final long mTimestamp;
         private final @NotificationChannelStatus int mStatus;
 
-        public SiteChannel(String channelId, String origin, long creationTimestamp,
+        public SiteChannel(
+                String channelId,
+                String origin,
+                long creationTimestamp,
                 @NotificationChannelStatus int status) {
             mId = channelId;
             mOrigin = origin;
@@ -94,12 +93,14 @@ public class NotificationSettingsBridge {
         }
 
         public NotificationChannel toChannel() {
-            NotificationChannel channel = new NotificationChannel(mId,
-                    UrlFormatter.formatUrlForSecurityDisplay(
-                            mOrigin, SchemeDisplay.OMIT_HTTP_AND_HTTPS),
-                    mStatus == NotificationChannelStatus.BLOCKED
-                            ? NotificationManager.IMPORTANCE_NONE
-                            : NotificationManager.IMPORTANCE_DEFAULT);
+            NotificationChannel channel =
+                    new NotificationChannel(
+                            mId,
+                            UrlFormatter.formatUrlForSecurityDisplay(
+                                    mOrigin, SchemeDisplay.OMIT_HTTP_AND_HTTPS),
+                            mStatus == NotificationChannelStatus.BLOCKED
+                                    ? NotificationManager.IMPORTANCE_NONE
+                                    : NotificationManager.IMPORTANCE_DEFAULT);
             channel.setGroup(ChromeChannelDefinitions.ChannelGroupId.SITES);
             return channel;
         }

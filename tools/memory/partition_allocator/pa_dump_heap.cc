@@ -24,6 +24,7 @@
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/memory/page_size.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/strings/stringprintf.h"
 #include "base/thread_annotations.h"
 #include "base/values.h"
@@ -414,7 +415,10 @@ class HeapDumper {
 
   char* local_root_copy_ = nullptr;
 
-  void* local_root_copy_mapping_base_ = nullptr;
+  // This field is not a raw_ptr<> because it always points to a mmap'd
+  // region of memory outside of the PA heap. Thus, there would be overhead
+  // involved with using a raw_ptr<> but no safety gains.
+  RAW_PTR_EXCLUSION void* local_root_copy_mapping_base_ = nullptr;
   size_t local_root_copy_mapping_size_ = 0;
 };
 

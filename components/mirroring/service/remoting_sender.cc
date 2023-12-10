@@ -164,9 +164,7 @@ RemotingSender::RemotingSender(
                      config,
                      std::move(pipe),
                      std::move(stream_sender),
-                     std::move(error_callback)) {
-  DCHECK(base::FeatureList::IsEnabled(media::kOpenscreenCastStreamingSession));
-}
+                     std::move(error_callback)) {}
 
 RemotingSender::RemotingSender(
     scoped_refptr<media::cast::CastEnvironment> cast_environment,

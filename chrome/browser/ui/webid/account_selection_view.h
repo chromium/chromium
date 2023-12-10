@@ -29,7 +29,7 @@ class AccountSelectionView {
     virtual void OnDismiss(
         content::IdentityRequestDialogController::DismissReason
             dismiss_reason) = 0;
-    virtual void OnSigninToIdP(const GURL& idp_login_url) = 0;
+    virtual void OnLoginToIdP(const GURL& idp_login_url) = 0;
     virtual void OnMoreDetails() = 0;
     // The web page view containing the focused field.
     virtual gfx::NativeView GetNativeView() = 0;
@@ -64,7 +64,7 @@ class AccountSelectionView {
   // OnAccountSelected() or OnDismiss() gets invoked.
   virtual void Show(
       const std::string& top_frame_for_display,
-      const absl::optional<std::string>& iframe_for_display,
+      const std::optional<std::string>& iframe_for_display,
       const std::vector<content::IdentityProviderData>& identity_provider_data,
       Account::SignInMode sign_in_mode,
       bool show_auto_reauthn_checkbox) = 0;
@@ -74,21 +74,21 @@ class AccountSelectionView {
   // signed in but not respond with any user account during browser fetches.
   virtual void ShowFailureDialog(
       const std::string& top_frame_for_display,
-      const absl::optional<std::string>& iframe_for_display,
+      const std::optional<std::string>& iframe_for_display,
       const std::string& idp_for_display,
       const blink::mojom::RpContext& rp_context,
       const content::IdentityProviderMetadata& idp_metadata) = 0;
 
   virtual void ShowErrorDialog(
       const std::string& top_frame_for_display,
-      const absl::optional<std::string>& iframe_for_display,
+      const std::optional<std::string>& iframe_for_display,
       const std::string& idp_for_display,
       const blink::mojom::RpContext& rp_context,
       const content::IdentityProviderMetadata& idp_metadata,
-      const absl::optional<TokenError>& error) = 0;
+      const std::optional<TokenError>& error) = 0;
 
   virtual std::string GetTitle() const = 0;
-  virtual absl::optional<std::string> GetSubtitle() const = 0;
+  virtual std::optional<std::string> GetSubtitle() const = 0;
 
   virtual content::WebContents* ShowModalDialog(const GURL& url) = 0;
   virtual void CloseModalDialog() = 0;

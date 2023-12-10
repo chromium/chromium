@@ -5,7 +5,9 @@
 #ifndef EXTENSIONS_BROWSER_API_POWER_ACTIVITY_REPORTER_DELEGATE_H_
 #define EXTENSIONS_BROWSER_API_POWER_ACTIVITY_REPORTER_DELEGATE_H_
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <memory>
+#include <optional>
+#include <string>
 
 namespace extensions {
 
@@ -16,7 +18,7 @@ class ActivityReporterDelegate {
   virtual ~ActivityReporterDelegate() = default;
 
   static std::unique_ptr<ActivityReporterDelegate> GetDelegate();
-  virtual absl::optional<std::string> ReportActivity() const = 0;
+  virtual std::optional<std::string> ReportActivity() const = 0;
 };
 
 }  // namespace extensions

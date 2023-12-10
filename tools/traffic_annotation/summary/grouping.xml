@@ -225,7 +225,6 @@ after discussions on the right group.
       <annotation id="quick_answers_loader"/>
       <annotation id="chrome_search_suggest_service"/>
       <annotation id="cryptauth_get_my_devices"/>
-      <annotation id="chrome_commerce_waa_fetcher"/>
       <annotation id="shopping_list_ui_image_fetcher"/>
       <annotation id="chrome_commerce_price_email_pref_fetcher"/>
       <annotation id="chrome_commerce_price_email_pref_sender"/>
@@ -300,6 +299,7 @@ after discussions on the right group.
       <annotation id="almanac_app_install"/>
       <annotation id="remoting_report_provisioning_error"/>
       <annotation id="webauthn_rp_id_check"/>
+      <annotation id="tasks_integration"/>
     </sender>
   </group>
   <group name="Admin Features" hidden="true">
@@ -310,6 +310,7 @@ after discussions on the right group.
       <annotation id="managed_acccount_signin_restrictions_secure_connect"/>
     </sender>
     <sender name="Developer Tools">
+      <annotation id="devtools_cdp_console_insights"/>
       <annotation id="devtools_handle_front_end_messages"/>
       <annotation id="devtools_hard_coded_data_source"/>
       <annotation id="devtools_http_handler"/>
@@ -582,7 +583,6 @@ after discussions on the right group.
   </group>
   <group name="PlusAddresses" hidden="true">
     <sender name="PlusAddresses">
-      <annotation id="plus_address_creation"/>
       <annotation id="get_all_plus_addresses"/>
       <annotation id="plus_address_reservation"/>
       <annotation id="plus_address_confirmation"/>

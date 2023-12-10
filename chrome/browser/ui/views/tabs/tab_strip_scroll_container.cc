@@ -110,7 +110,7 @@ TabStripScrollContainer::TabStripScrollContainer(
       std::make_unique<views::ScrollView>(
           views::ScrollView::ScrollWithLayers::kEnabled);
   scroll_view_ = scroll_view.get();
-  scroll_view->SetBackgroundColor(absl::nullopt);
+  scroll_view->SetBackgroundColor(std::nullopt);
   scroll_view->SetHorizontalScrollBarMode(
       views::ScrollView::ScrollBarMode::kHiddenButEnabled);
   scroll_view->SetTreatAllScrollEventsAsHorizontal(true);

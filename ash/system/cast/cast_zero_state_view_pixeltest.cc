@@ -24,7 +24,7 @@ class CastZeroStateViewPixelTest : public AshTestBase {
   }
 
   // AshTestBase:
-  absl::optional<pixel_test::InitParams> CreatePixelTestInitParams()
+  std::optional<pixel_test::InitParams> CreatePixelTestInitParams()
       const override {
     return pixel_test::InitParams();
   }
@@ -51,7 +51,7 @@ TEST_F(CastZeroStateViewPixelTest, Basics) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "cast_zero_state_view",
-      /*revision_number=*/8, detailed_view));
+      /*revision_number=*/12, detailed_view));
 }
 
 }  // namespace ash

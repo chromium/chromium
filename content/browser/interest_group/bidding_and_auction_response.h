@@ -12,6 +12,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
 #include "base/values.h"
+#include "content/browser/interest_group/auction_result.h"
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
@@ -49,7 +50,12 @@ struct CONTENT_EXPORT BiddingAndAuctionResponse {
     base::flat_map<std::string, GURL> beacon_urls;
   };
 
-  bool is_chaff;  // indicates this response should be ignored.
+  // This is not part of the message from the server, but is a convenient place
+  // to store the outcome if we finish parsing the response before the component
+  // auctions start the bidding phase.
+  AuctionResult result = AuctionResult::kInvalidServerResponse;
+
+  bool is_chaff = false;  // indicates this response should be ignored.
   // TODO(behamilton): Add support for creative dimensions to the response from
   // the Bidding and Auction server.
   GURL ad_render_url;
@@ -58,6 +64,7 @@ struct CONTENT_EXPORT BiddingAndAuctionResponse {
   url::Origin interest_group_owner;
   std::vector<blink::InterestGroupKey> bidding_groups;
   absl::optional<double> score, bid;
+  absl::optional<url::Origin> top_level_seller;
 
   absl::optional<std::string> error;
   absl::optional<ReportingURLs> buyer_reporting, seller_reporting;

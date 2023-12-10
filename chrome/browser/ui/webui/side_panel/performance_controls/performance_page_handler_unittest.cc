@@ -39,8 +39,9 @@ class MockEmbedder : public ui::MojoBubbleWebUIController::Embedder {
 
 class MockPerformanceSidePanelUI : public PerformanceSidePanelUI {
  public:
-  explicit MockPerformanceSidePanelUI(content::WebUI* test_web_ui)
-      : PerformanceSidePanelUI(test_web_ui) {}
+  explicit MockPerformanceSidePanelUI(content::WebUI* test_web_ui,
+                                      const GURL& url)
+      : PerformanceSidePanelUI(test_web_ui, url) {}
 };
 
 class TestPerformancePageHandler : public PerformancePageHandler {
@@ -61,8 +62,8 @@ class PerformancePageHandlerTest : public BrowserWithTestWindowTest {
         content::WebContents::CreateParams(profile()));
     test_web_ui_ = std::make_unique<content::TestWebUI>();
     test_web_ui_->set_web_contents(web_contents_.get());
-    performance_side_panel_ui_ =
-        std::make_unique<MockPerformanceSidePanelUI>(test_web_ui_.get());
+    performance_side_panel_ui_ = std::make_unique<MockPerformanceSidePanelUI>(
+        test_web_ui_.get(), GURL(chrome::kChromeUIPerformanceSidePanelURL));
     handler_ = std::make_unique<TestPerformancePageHandler>(
         performance_side_panel_ui_.get());
 

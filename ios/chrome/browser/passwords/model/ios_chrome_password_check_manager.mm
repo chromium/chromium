@@ -11,9 +11,9 @@
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/password_manager/core/browser/ui/credential_utils.h"
-#import "components/password_manager/core/common/password_manager_features.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"
 #import "components/prefs/pref_service.h"
+#import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_account_password_store_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_affiliation_service_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_bulk_leak_check_service_factory.h"
@@ -28,8 +28,6 @@ using State = password_manager::BulkLeakCheckServiceInterface::State;
 
 // Key used to attach UserData to a LeakCheckCredential.
 constexpr char kPasswordCheckDataKey[] = "password-check-manager-data-key";
-// Minimum time the check should be running.
-constexpr base::TimeDelta kDelay = base::Seconds(3);
 
 // Class which ensures that IOSChromePasswordCheckManager will stay alive
 // until password check is completed even if class what initially created
@@ -113,15 +111,13 @@ void IOSChromePasswordCheckManager::StartPasswordCheck() {
     bulk_leak_check_service_adapter_.StartBulkLeakCheck(kPasswordCheckDataKey,
                                                         &data);
 
-    if (password_manager::features::IsPasswordCheckupEnabled()) {
-      insecure_credentials_manager_.StartWeakCheck(base::BindOnce(
-          &IOSChromePasswordCheckManager::OnWeakOrReuseCheckFinished,
-          weak_ptr_factory_.GetWeakPtr()));
+    insecure_credentials_manager_.StartWeakCheck(base::BindOnce(
+        &IOSChromePasswordCheckManager::OnWeakOrReuseCheckFinished,
+        weak_ptr_factory_.GetWeakPtr()));
 
-      insecure_credentials_manager_.StartReuseCheck(base::BindOnce(
-          &IOSChromePasswordCheckManager::OnWeakOrReuseCheckFinished,
-          weak_ptr_factory_.GetWeakPtr()));
-    }
+    insecure_credentials_manager_.StartReuseCheck(base::BindOnce(
+        &IOSChromePasswordCheckManager::OnWeakOrReuseCheckFinished,
+        weak_ptr_factory_.GetWeakPtr()));
 
     is_check_running_ = true;
     start_time_ = base::Time::Now();
@@ -144,7 +140,7 @@ PasswordCheckState IOSChromePasswordCheckManager::GetPasswordCheckState()
       bulk_leak_check_service_adapter_.GetBulkLeakCheckState());
 }
 
-absl::optional<base::Time>
+std::optional<base::Time>
 IOSChromePasswordCheckManager::GetLastPasswordCheckTime() const {
   if (!user_prefs_->HasPrefPath(
           password_manager::prefs::kLastTimePasswordCheckCompleted)) {
@@ -199,13 +195,15 @@ void IOSChromePasswordCheckManager::OnStateChanged(State state) {
     // If check was running
     if (is_check_running_) {
       const base::TimeDelta elapsed = base::Time::Now() - start_time_;
-      if (elapsed < kDelay) {
+      const base::TimeDelta minimum_duration =
+          tests_hook::PasswordCheckMinimumDuration();
+      if (elapsed < minimum_duration) {
         base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
             FROM_HERE,
             base::BindOnce(&IOSChromePasswordCheckManager::
                                NotifyPasswordCheckStatusChanged,
                            weak_ptr_factory_.GetWeakPtr()),
-            kDelay - elapsed);
+            minimum_duration - elapsed);
         is_check_running_ = false;
         return;
       }

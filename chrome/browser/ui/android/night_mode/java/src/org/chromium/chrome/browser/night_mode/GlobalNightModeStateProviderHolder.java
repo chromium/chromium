@@ -19,9 +19,7 @@ import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 public class GlobalNightModeStateProviderHolder {
     private static NightModeStateProvider sInstance;
 
-    /**
-     * Created when night mode is not available or not supported.
-     */
+    /** Created when night mode is not available or not supported. */
     private static class PlaceholderNightModeStateProvider implements NightModeStateProvider {
         final boolean mIsNightModeForceEnabled;
 
@@ -30,7 +28,8 @@ public class GlobalNightModeStateProviderHolder {
                     CommandLine.getInstance().hasSwitch(ChromeSwitches.FORCE_ENABLE_NIGHT_MODE);
             // Always stay in night mode if night mode is force enabled, and always stay in light
             // mode if night mode is not available.
-            AppCompatDelegate.setDefaultNightMode(mIsNightModeForceEnabled
+            AppCompatDelegate.setDefaultNightMode(
+                    mIsNightModeForceEnabled
                             ? AppCompatDelegate.MODE_NIGHT_YES
                             : AppCompatDelegate.MODE_NIGHT_NO);
         }
@@ -59,9 +58,11 @@ public class GlobalNightModeStateProviderHolder {
                     || !NightModeUtils.isNightModeSupported()) {
                 sInstance = new PlaceholderNightModeStateProvider();
             } else {
-                sInstance = new GlobalNightModeStateController(SystemNightModeMonitor.getInstance(),
-                        PowerSavingModeMonitor.getInstance(),
-                        ChromeSharedPreferences.getInstance());
+                sInstance =
+                        new GlobalNightModeStateController(
+                                SystemNightModeMonitor.getInstance(),
+                                PowerSavingModeMonitor.getInstance(),
+                                ChromeSharedPreferences.getInstance());
             }
             // Do not cache the singleton between tests since the creation logic depends on flags.
             ResettersForTesting.register(() -> sInstance = null);

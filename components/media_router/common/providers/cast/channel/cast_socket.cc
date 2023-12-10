@@ -164,8 +164,8 @@ bool CastSocketImpl::audio_only() const {
 
 bool CastSocketImpl::VerifyChannelPolicy(const AuthResult& result) {
   audio_only_ = (result.channel_policies & AuthResult::POLICY_AUDIO_ONLY) != 0;
-  if (audio_only_ && (open_params_.device_capabilities &
-                      CastDeviceCapability::VIDEO_OUT) != 0) {
+  if (audio_only_ &&
+      open_params_.device_capabilities.Has(CastDeviceCapability::kVideoOut)) {
     LOG_WITH_CONNECTION(ERROR)
         << "Audio only channel policy enforced for video out capable device";
     return false;
@@ -692,15 +692,14 @@ void CastSocketImpl::CastSocketMessageDelegate::Start() {}
 
 CastSocketOpenParams::CastSocketOpenParams(const net::IPEndPoint& ip_endpoint,
                                            base::TimeDelta connect_timeout)
-    : ip_endpoint(ip_endpoint),
-      connect_timeout(connect_timeout),
-      device_capabilities(cast_channel::CastDeviceCapability::NONE) {}
+    : ip_endpoint(ip_endpoint), connect_timeout(connect_timeout) {}
 
-CastSocketOpenParams::CastSocketOpenParams(const net::IPEndPoint& ip_endpoint,
-                                           base::TimeDelta connect_timeout,
-                                           base::TimeDelta liveness_timeout,
-                                           base::TimeDelta ping_interval,
-                                           uint64_t device_capabilities)
+CastSocketOpenParams::CastSocketOpenParams(
+    const net::IPEndPoint& ip_endpoint,
+    base::TimeDelta connect_timeout,
+    base::TimeDelta liveness_timeout,
+    base::TimeDelta ping_interval,
+    CastDeviceCapabilitySet device_capabilities)
     : ip_endpoint(ip_endpoint),
       connect_timeout(connect_timeout),
       liveness_timeout(liveness_timeout),

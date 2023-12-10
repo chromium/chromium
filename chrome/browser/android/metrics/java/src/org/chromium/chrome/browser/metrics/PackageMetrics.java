@@ -23,9 +23,7 @@ import org.chromium.components.browser_ui.util.ConversionUtils;
 import java.io.IOException;
 import java.util.UUID;
 
-/**
- * Records UMA about the size of data, cache, and code size on disk for Android.
- */
+/** Records UMA about the size of data, cache, and code size on disk for Android. */
 public class PackageMetrics {
     private static final String TAG = "PackageMetrics";
 
@@ -62,8 +60,9 @@ public class PackageMetrics {
                 if (uuid == null) continue;
 
                 try {
-                    StorageStats storageStats = storageStatsManager.queryStatsForPackage(
-                            uuid, packageName, Process.myUserHandle());
+                    StorageStats storageStats =
+                            storageStatsManager.queryStatsForPackage(
+                                    uuid, packageName, Process.myUserHandle());
                     pmd.codeSize += storageStats.getAppBytes();
                     pmd.dataSize += (storageStats.getDataBytes() - storageStats.getCacheBytes());
                     pmd.cacheSize += storageStats.getCacheBytes();
@@ -84,11 +83,20 @@ public class PackageMetrics {
 
         PackageMetricsData data = getPackageStatsForAndroidO();
         if (data != null) {
-            RecordHistogram.recordCustomCountHistogram("Android.PackageStats.DataSize",
-                    (int) ConversionUtils.bytesToMegabytes(data.dataSize), 1, 10000, 50);
-            RecordHistogram.recordCustomCountHistogram("Android.PackageStats.CacheSize",
-                    (int) ConversionUtils.bytesToMegabytes(data.cacheSize), 1, 10000, 50);
-            RecordHistogram.recordSparseHistogram("Android.PackageStats.CodeSize",
+            RecordHistogram.recordCustomCountHistogram(
+                    "Android.PackageStats.DataSize",
+                    (int) ConversionUtils.bytesToMegabytes(data.dataSize),
+                    1,
+                    10000,
+                    50);
+            RecordHistogram.recordCustomCountHistogram(
+                    "Android.PackageStats.CacheSize",
+                    (int) ConversionUtils.bytesToMegabytes(data.cacheSize),
+                    1,
+                    10000,
+                    50);
+            RecordHistogram.recordSparseHistogram(
+                    "Android.PackageStats.CodeSize",
                     (int) ConversionUtils.bytesToMegabytes(data.codeSize));
         }
     }

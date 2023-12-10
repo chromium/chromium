@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/canvas.h"
 #include "ui/views/view.h"
 
@@ -14,6 +15,8 @@ namespace ash {
 
 // The white handler bar in the middle of the divider.
 class SplitViewDividerHandlerView : public views::View {
+  METADATA_HEADER(SplitViewDividerHandlerView, views::View)
+
  public:
   SplitViewDividerHandlerView();
 

@@ -2,14 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/**
- * @fileoverview
- * This file is checked via TS, so we suppress Closure checks.
- * @suppress {checkTypes}
- */
-
 import {str, strf} from '../../../../common/js/translations.js';
-import {VolumeManagerCommon} from '../../../../common/js/volume_manager_types.js';
+import {RootType, VolumeType} from '../../../../common/js/volume_manager_types.js';
 
 import {getTemplate} from './drive_out_of_organization_space_banner.html.js';
 import {WarningBanner} from './warning_banner.js';
@@ -43,8 +37,8 @@ export class DriveOutOfOrganizationSpaceBanner extends WarningBanner {
    */
   override allowedVolumes() {
     return [{
-      type: VolumeManagerCommon.VolumeType.DRIVE,
-      root: VolumeManagerCommon.RootType.DRIVE,
+      type: VolumeType.DRIVE,
+      root: RootType.DRIVE,
     }];
   }
 

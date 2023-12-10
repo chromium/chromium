@@ -4,7 +4,7 @@
 
 import {stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
 
-import {PageCallbackRouter, PageHandlerFactory, PageHandlerRemote, ProfileData, SwitchToTabInfo, Tab, TabOrganizationSession} from './tab_search.mojom-webui.js';
+import {PageCallbackRouter, PageHandlerFactory, PageHandlerRemote, ProfileData, SwitchToTabInfo, Tab, TabOrganizationSession, UserFeedback} from './tab_search.mojom-webui.js';
 
 /**
  * These values are persisted to logs and should not be renumbered or re-used.
@@ -33,15 +33,33 @@ export interface TabSearchApiProxy {
 
   requestTabOrganization(): void;
 
+  resetSession(): void;
+
   switchToTab(info: SwitchToTabInfo): void;
 
   getCallbackRouter(): PageCallbackRouter;
+
+  removeTabFromOrganization(
+      sessionId: number, organizationId: number, tab: Tab): void;
 
   saveRecentlyClosedExpandedPref(expanded: boolean): void;
 
   setTabIndex(index: number): void;
 
   startTabGroupTutorial(): void;
+
+  triggerFeedback(sessionId: number): void;
+
+  triggerSync(): void;
+
+  triggerSignIn(): void;
+
+  openHelpPage(): void;
+
+  openSyncSettings(): void;
+
+  setUserFeedback(
+      sessionId: number, organizationId: number, feedback: UserFeedback): void;
 
   showUi(): void;
 }
@@ -99,12 +117,21 @@ export class TabSearchApiProxyImpl implements TabSearchApiProxy {
     this.handler.requestTabOrganization();
   }
 
+  resetSession() {
+    this.handler.resetSession();
+  }
+
   switchToTab(info: SwitchToTabInfo) {
     this.handler.switchToTab(info);
   }
 
   getCallbackRouter() {
     return this.callbackRouter;
+  }
+
+  removeTabFromOrganization(
+      sessionId: number, organizationId: number, tab: Tab) {
+    this.handler.removeTabFromOrganization(sessionId, organizationId, tab);
   }
 
   saveRecentlyClosedExpandedPref(expanded: boolean) {
@@ -117,6 +144,31 @@ export class TabSearchApiProxyImpl implements TabSearchApiProxy {
 
   startTabGroupTutorial() {
     this.handler.startTabGroupTutorial();
+  }
+
+  triggerFeedback(sessionId: number) {
+    this.handler.triggerFeedback(sessionId);
+  }
+
+  triggerSync() {
+    this.handler.triggerSync();
+  }
+
+  triggerSignIn() {
+    this.handler.triggerSignIn();
+  }
+
+  openHelpPage() {
+    this.handler.openHelpPage();
+  }
+
+  openSyncSettings() {
+    this.handler.openSyncSettings();
+  }
+
+  setUserFeedback(
+      sessionId: number, organizationId: number, feedback: UserFeedback) {
+    this.handler.setUserFeedback(sessionId, organizationId, feedback);
   }
 
   showUi() {

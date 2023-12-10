@@ -2,20 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/allocator/partition_allocator/src/partition_alloc/gwp_asan_support.h"
+#include "partition_alloc/gwp_asan_support.h"
 
 #if BUILDFLAG(ENABLE_GWP_ASAN_SUPPORT)
 
-#include "base/allocator/partition_allocator/src/partition_alloc/freeslot_bitmap_constants.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/page_allocator_constants.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/no_destructor.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_check.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_bucket.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_lock.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_page.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_ref_count.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_root.h"
 #include "build/build_config.h"
+#include "partition_alloc/freeslot_bitmap_constants.h"
+#include "partition_alloc/page_allocator_constants.h"
+#include "partition_alloc/partition_alloc_base/no_destructor.h"
+#include "partition_alloc/partition_alloc_check.h"
+#include "partition_alloc/partition_bucket.h"
+#include "partition_alloc/partition_lock.h"
+#include "partition_alloc/partition_page.h"
+#include "partition_alloc/partition_ref_count.h"
+#include "partition_alloc/partition_root.h"
 
 namespace partition_alloc {
 
@@ -24,9 +24,11 @@ void* GwpAsanSupport::MapRegion(size_t slot_count,
                                 std::vector<uint16_t>& free_list) {
   PA_CHECK(slot_count > 0);
 
-  constexpr PartitionOptions kConfig{
-      .backup_ref_ptr = PartitionOptions::kEnabled,
-  };
+  constexpr PartitionOptions kConfig = []() {
+    PartitionOptions opts;
+    opts.backup_ref_ptr = PartitionOptions::kEnabled;
+    return opts;
+  }();
   static internal::base::NoDestructor<PartitionRoot> root(kConfig);
 
   const size_t kSlotSize = 2 * internal::SystemPageSize();

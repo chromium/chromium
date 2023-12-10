@@ -124,7 +124,7 @@ public class LauncherShortcutTest {
 
         Assert.assertTrue(
                 "Tab should be an NTP. Tab url: " + ChromeTabUtils.getUrlOnUiThread(activityTab),
-                UrlUtilities.isNTPUrl(ChromeTabUtils.getUrlOnUiThread(activityTab)));
+                UrlUtilities.isNtpUrl(ChromeTabUtils.getUrlOnUiThread(activityTab)));
 
         // Verify tab model.
         Assert.assertEquals(
@@ -183,7 +183,7 @@ public class LauncherShortcutTest {
 
         Assert.assertTrue(
                 "Tab should have the NTP tab url: " + ChromeTabUtils.getUrlOnUiThread(activityTab),
-                UrlUtilities.isNTPUrl(ChromeTabUtils.getUrlOnUiThread(activityTab)));
+                UrlUtilities.isNtpUrl(ChromeTabUtils.getUrlOnUiThread(activityTab)));
 
         // Verify the tab model.
         Assert.assertEquals(

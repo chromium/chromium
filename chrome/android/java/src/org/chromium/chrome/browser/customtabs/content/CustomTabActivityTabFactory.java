@@ -60,8 +60,7 @@ public class CustomTabActivityTabFactory {
 
     private final Lazy<AsyncTabParamsManager> mAsyncTabParamsManager;
 
-    @Nullable
-    private CustomTabsTabModelOrchestrator mTabModelOrchestrator;
+    @Nullable private CustomTabsTabModelOrchestrator mTabModelOrchestrator;
 
     @Inject
     public CustomTabActivityTabFactory(
@@ -103,8 +102,12 @@ public class CustomTabActivityTabFactory {
 
     /** Calls the {@link TabModelOrchestrator} to create TabModels and TabPersistentStore. */
     public void createTabModels() {
-        mTabModelOrchestrator.createTabModels(mActivityWindowAndroid::get, mTabCreatorManager,
-                mTabModelFilterFactory, mPersistencePolicy, mAsyncTabParamsManager.get());
+        mTabModelOrchestrator.createTabModels(
+                mProfileProviderSupplier,
+                mTabCreatorManager,
+                mTabModelFilterFactory,
+                mPersistencePolicy,
+                mAsyncTabParamsManager.get());
     }
 
     /** Returns the previously created {@link TabModelSelector}. */

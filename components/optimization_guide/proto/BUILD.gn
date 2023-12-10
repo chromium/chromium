@@ -36,6 +36,14 @@ proto_library("optimization_guide_proto") {
     "salient_image_metadata.proto",
     "visual_search_model_metadata.proto",
   ]
+
+  # Python stubs are needed at runtime for model validation tests.
+  generate_py_runtime = true
+
+  # These are required to import system_profile.proto in
+  # model_quality_metadata.proto.
+  proto_deps = [ "//third_party/metrics_proto:metrics_proto" ]
+  import_dirs = [ "//third_party/metrics_proto/" ]
 }
 
 if (is_android) {
@@ -49,4 +57,14 @@ if (is_android) {
       "push_notification.proto",
     ]
   }
+}
+
+proto_library("compose_proto_descriptor") {
+  proto_in_dir = "//"
+  proto_out_dir = "components/optimization_guide/proto"
+  sources = [ "features/compose.proto" ]
+  generate_cc = false
+  generate_python = false
+  generate_descriptor = "compose.descriptor"
+  proto_deps = [ ":optimization_guide_proto" ]
 }

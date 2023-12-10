@@ -279,7 +279,7 @@ TEST(U2fParsingUtils, CreateSHA256Hash) {
 
 TEST(U2fParsingUtils, ConvertSpanToStringPiece) {
   constexpr uint8_t kTestAsciiAbcd[] = {'a', 'b', 'c', 'd'};
-  EXPECT_EQ("abcd", ConvertToStringPiece(kTestAsciiAbcd));
+  EXPECT_EQ("abcd", ConvertToStringView(kTestAsciiAbcd));
 }
 
 }  // namespace fido_parsing_utils

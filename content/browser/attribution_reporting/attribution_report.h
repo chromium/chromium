@@ -15,7 +15,7 @@
 #include "base/types/strong_alias.h"
 #include "base/uuid.h"
 #include "base/values.h"
-#include "components/attribution_reporting/source_registration_time_config.mojom.h"
+#include "components/attribution_reporting/aggregatable_trigger_config.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
 #include "content/browser/attribution_reporting/aggregatable_histogram_contribution.h"
@@ -44,9 +44,7 @@ class CONTENT_EXPORT AttributionReport {
 
   // Struct that contains the data specific to the event-level report.
   struct CONTENT_EXPORT EventLevelData {
-    EventLevelData(uint64_t trigger_data,
-                   int64_t priority,
-                   StoredSource);
+    EventLevelData(uint32_t trigger_data, int64_t priority, StoredSource);
     EventLevelData(const EventLevelData&);
     EventLevelData& operator=(const EventLevelData&);
     EventLevelData(EventLevelData&&);
@@ -56,7 +54,7 @@ class CONTENT_EXPORT AttributionReport {
     // Data provided at trigger time by the attribution destination. Depending
     // on the source type, this contains the associated data in the trigger
     // redirect.
-    uint64_t trigger_data;
+    uint32_t trigger_data;
 
     // Priority specified in conversion redirect.
     int64_t priority;
@@ -68,11 +66,10 @@ class CONTENT_EXPORT AttributionReport {
   };
 
   struct CONTENT_EXPORT CommonAggregatableData {
-    CommonAggregatableData(
-        absl::optional<attribution_reporting::SuitableOrigin>
-            aggregation_coordinator_origin,
-        absl::optional<std::string> verification_token,
-        attribution_reporting::mojom::SourceRegistrationTimeConfig);
+    CommonAggregatableData(absl::optional<attribution_reporting::SuitableOrigin>
+                               aggregation_coordinator_origin,
+                           absl::optional<std::string> verification_token,
+                           attribution_reporting::AggregatableTriggerConfig);
     CommonAggregatableData();
     CommonAggregatableData(const CommonAggregatableData&);
     CommonAggregatableData(CommonAggregatableData&&);
@@ -98,9 +95,8 @@ class CONTENT_EXPORT AttributionReport {
     // verification.
     absl::optional<std::string> verification_token;
 
-    attribution_reporting::mojom::SourceRegistrationTimeConfig
-        source_registration_time_config = attribution_reporting::mojom::
-            SourceRegistrationTimeConfig::kInclude;
+    attribution_reporting::AggregatableTriggerConfig
+        aggregatable_trigger_config;
 
     // When adding new members, the corresponding `operator==()` definition in
     // `attribution_test_utils.h` should also be updated.

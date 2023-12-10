@@ -287,8 +287,8 @@ using FormatSpec = str_format_internal::FormatSpecTemplate<
 // Example:
 //
 //   // Verified at compile time.
-//   absl::ParsedFormat<'s', 'd'> formatString("Welcome to %s, Number %d!");
-//   absl::StrFormat(formatString, "TheVillage", 6);
+//   absl::ParsedFormat<'s', 'd'> format_string("Welcome to %s, Number %d!");
+//   absl::StrFormat(format_string, "TheVillage", 6);
 //
 //   // Verified at runtime.
 //   auto format_runtime = absl::ParsedFormat<'d'>::New(format_string);

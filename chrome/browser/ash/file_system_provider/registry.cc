@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/file_system_provider/registry.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/files/file_path.h"
@@ -22,7 +23,6 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "storage/browser/file_system/external_mount_points.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 namespace file_system_provider {
@@ -144,10 +144,10 @@ std::unique_ptr<Registry::RestoredFileSystems> Registry::RestoreFileSystems(
         file_system.FindString(kPrefKeyFileSystemId);
     const std::string* display_name =
         file_system.FindString(kPrefKeyDisplayName);
-    absl::optional<bool> writable = file_system.FindBool(kPrefKeyWritable);
-    absl::optional<bool> supports_notify_tag =
+    std::optional<bool> writable = file_system.FindBool(kPrefKeyWritable);
+    std::optional<bool> supports_notify_tag =
         file_system.FindBool(kPrefKeySupportsNotifyTag);
-    absl::optional<int> opened_files_limit =
+    std::optional<int> opened_files_limit =
         file_system.FindInt(kPrefKeyOpenedFilesLimit);
 
     // TODO(mtomasz): Move opened files limit to the mandatory list above in
@@ -186,7 +186,7 @@ std::unique_ptr<Registry::RestoredFileSystems> Registry::RestoreFileSystems(
 
         const std::string* entry_path =
             watcher.FindString(kPrefKeyWatcherEntryPath);
-        absl::optional<bool> recursive =
+        std::optional<bool> recursive =
             watcher.FindBool(kPrefKeyWatcherRecursive);
         const std::string* last_tag =
             watcher.FindString(kPrefKeyWatcherLastTag);

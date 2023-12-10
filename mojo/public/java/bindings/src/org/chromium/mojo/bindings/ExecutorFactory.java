@@ -40,36 +40,30 @@ public class ExecutorFactory {
      */
     private static class PipedExecutor implements Executor, Callback {
 
-        /**
-         * The handle which is written to. Access to this object must be protected with |mLock|.
-         */
+        /** The handle which is written to. Access to this object must be protected with |mLock|. */
         private final MessagePipeHandle mWriteHandle;
-        /**
-         * The handle which is read from.
-         */
+
+        /** The handle which is read from. */
         private final MessagePipeHandle mReadHandle;
+
         /**
          * The list of actions left to be run. Access to this object must be protected with |mLock|.
          */
         private final List<Runnable> mPendingActions;
-        /**
-         * Lock protecting access to |mWriteHandle| and |mPendingActions|.
-         */
+
+        /** Lock protecting access to |mWriteHandle| and |mPendingActions|. */
         private final Object mLock;
-        /**
-         * The {@link Watcher} to get notified of new message availability on |mReadHandle|.
-         */
+
+        /** The {@link Watcher} to get notified of new message availability on |mReadHandle|. */
         private final Watcher mWatcher;
 
-        /**
-         * Constructor.
-         */
+        /** Constructor. */
         public PipedExecutor(Core core) {
             mWatcher = core.getWatcher();
             assert mWatcher != null;
             mLock = new Object();
-            Pair<MessagePipeHandle, MessagePipeHandle> handles = core.createMessagePipe(
-                    new MessagePipeHandle.CreateOptions());
+            Pair<MessagePipeHandle, MessagePipeHandle> handles =
+                    core.createMessagePipe(new MessagePipeHandle.CreateOptions());
             mReadHandle = handles.first;
             mWriteHandle = handles.second;
             mPendingActions = new ArrayList<Runnable>();
@@ -88,9 +82,7 @@ public class ExecutorFactory {
             }
         }
 
-        /**
-         * Close the handles. Should only be called on the executor thread.
-         */
+        /** Close the handles. Should only be called on the executor thread. */
         private void close() {
             synchronized (mLock) {
                 mWriteHandle.close();
@@ -118,9 +110,7 @@ public class ExecutorFactory {
             return false;
         }
 
-        /**
-         * Run the next action in the |mPendingActions| queue.
-         */
+        /** Run the next action in the |mPendingActions| queue. */
         private void runNextAction() {
             Runnable toRun = null;
             synchronized (mLock) {
@@ -149,14 +139,10 @@ public class ExecutorFactory {
         }
     }
 
-    /**
-     * Keep one executor per executor thread.
-     */
+    /** Keep one executor per executor thread. */
     private static final ThreadLocal<Executor> EXECUTORS = new ThreadLocal<Executor>();
 
-    /**
-     * Returns an {@link Executor} that will run all of its actions in the current thread.
-     */
+    /** Returns an {@link Executor} that will run all of its actions in the current thread. */
     public static Executor getExecutorForCurrentThread(Core core) {
         Executor executor = EXECUTORS.get();
         if (executor == null) {

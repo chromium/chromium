@@ -660,19 +660,18 @@ TEST_F(PriceTrackingUtilsTest, TestSubscriptionForClusterIdCreation) {
   ASSERT_EQ(sub.type, SubscriptionType::kPriceTrack);
 }
 
-TEST_F(PriceTrackingUtilsTest, TestGetBookmarkParentNameOrDefault) {
+TEST_F(PriceTrackingUtilsTest, TestGetBookmarkParentName) {
   const GURL url = GURL("https://www.foo.com");
 
-  ASSERT_EQ(
-      bookmark_model_->other_node()->GetTitle(),
-      commerce::GetBookmarkParentNameOrDefault(bookmark_model_.get(), url));
+  ASSERT_FALSE(
+      commerce::GetBookmarkParentName(bookmark_model_.get(), url).has_value());
 
   bookmark_model_->AddURL(bookmark_model_->mobile_node(), 0, u"test", url,
                           nullptr, absl::nullopt, absl::nullopt, true);
 
   ASSERT_EQ(
       bookmark_model_->mobile_node()->GetTitle(),
-      commerce::GetBookmarkParentNameOrDefault(bookmark_model_.get(), url));
+      commerce::GetBookmarkParentName(bookmark_model_.get(), url).value());
 }
 
 // Ensure the utility to get the shopping collection knows when to create or
@@ -716,6 +715,21 @@ TEST_F(PriceTrackingUtilsTest, GetShoppingCollection_InvalidParams) {
       GetShoppingCollectionBookmarkFolder(nullptr);
 
   ASSERT_EQ(collection, nullptr);
+}
+
+TEST_F(PriceTrackingUtilsTest, GetProductClusterIdFromBookmark) {
+  const GURL product_url = GURL("https://example.com/product");
+  const GURL non_product_url = GURL("https://example.com/");
+  const uint64_t cluster_id = 12345L;
+  AddProductBookmark(bookmark_model_.get(), u"product", product_url, cluster_id,
+                     true);
+
+  ASSERT_EQ(GetProductClusterIdFromBookmark(product_url, bookmark_model_.get())
+                .value(),
+            cluster_id);
+  ASSERT_FALSE(
+      GetProductClusterIdFromBookmark(non_product_url, bookmark_model_.get())
+          .has_value());
 }
 
 }  // namespace

@@ -22,6 +22,8 @@
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/notreached.h"
+#include "chromeos/ash/services/assistant/public/cpp/assistant_enums.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
@@ -266,8 +268,17 @@ void ContentsView::ShowSearchResults(bool show) {
 
   // SetVisible() only when showing search results, the search results page will
   // be hidden at the end of its own bounds animation.
-  if (show)
+  if (show) {
     search_result_page_view()->SetVisible(true);
+
+    // Always to hide `assistant_page_view_` in case it is visible.
+    assistant_page_view_->SetVisible(false);
+
+    // `page_before_search_` could be invisible when showing
+    // `assistant_page_view_`.
+    GetPageView(page_before_search_)->SetVisible(true);
+  }
+
   SetActiveStateInternal(show ? search_page : page_before_search_,
                          true /*animate*/);
   if (show)
@@ -461,6 +472,8 @@ bool ContentsView::Back() {
       ShowSearchResults(false);
       break;
     case AppListState::kStateEmbeddedAssistant:
+      GetAppListMainView()->view_delegate()->EndAssistant(
+          assistant::AssistantExitPoint::kBackInLauncher);
       ShowEmbeddedAssistantUI(false);
       break;
     case AppListState::kStateStart_DEPRECATED:
@@ -490,10 +503,6 @@ void ContentsView::Layout() {
 
   // Reset the transform which can be set through animation
   search_box->layer()->SetTransform(gfx::Transform());
-}
-
-const char* ContentsView::GetClassName() const {
-  return "ContentsView";
 }
 
 void ContentsView::TotalPagesChanged(int previous_page_count,
@@ -605,5 +614,8 @@ gfx::Rect ContentsView::ConvertRectToWidgetWithoutTransform(
   }
   return widget_rect;
 }
+
+BEGIN_METADATA(ContentsView)
+END_METADATA
 
 }  // namespace ash

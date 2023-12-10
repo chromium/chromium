@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "base/memory/scoped_refptr.h"
 
+#include <memory>
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -41,6 +43,7 @@
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
+#include "ui/base/text/bytes_formatting.h"
 #include "ui/gfx/scrollbar_size.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
@@ -164,9 +167,10 @@ TEST_F(BrowserViewTest, BrowserView) {
       kActionSidePanelShowCustomizeChrome, browser_actions->root_action_item());
   EXPECT_EQ(customize_chrome_action->GetText(),
             l10n_util::GetStringUTF16(IDS_SIDE_PANEL_CUSTOMIZE_CHROME_TITLE));
-  EXPECT_EQ(customize_chrome_action->GetImage(),
-            ui::ImageModel::FromVectorIcon(
-                vector_icons::kEditIcon, ui::kColorIcon, side_panel_icon_size));
+  EXPECT_EQ(
+      customize_chrome_action->GetImage(),
+      ui::ImageModel::FromVectorIcon(vector_icons::kEditChromeRefreshIcon,
+                                     ui::kColorIcon, side_panel_icon_size));
   EXPECT_EQ(customize_chrome_action->GetEnabled(), true);
   browser()->RemoveUserData(BrowserActions::UserDataKey());
 
@@ -460,6 +464,36 @@ TEST_F(BrowserViewTest, DISABLED_AccessibleWindowTitle) {
           TestingProfile::Builder().BuildIncognito(profile)));
 }
 
+TEST_F(BrowserViewTest, WindowTitleOmitsLowMemoryUsage) {
+  scoped_refptr<performance_manager::user_tuning::UserPerformanceTuningManager::
+                    TabResourceUsage>
+      tab_resource_usage_ = base::MakeRefCounted<
+          performance_manager::user_tuning::UserPerformanceTuningManager::
+              TabResourceUsage>();
+  tab_resource_usage_->set_memory_usage_in_bytes(100);
+
+  TabRendererData memory_usage;
+  memory_usage.tab_resource_usage = tab_resource_usage_;
+
+  AddTab(browser(), GURL("about:blank"));
+  Tab* tab = browser_view()->tabstrip()->tab_at(0);
+  tab->SetData(std::move(memory_usage));
+
+  // Expect that low memory usage isn't in the window title.
+  EXPECT_EQ(SubBrowserName("about:blank - %s"),
+            browser_view()->GetAccessibleWindowTitle());
+  uint64_t memory_used =
+      static_cast<uint64_t>(
+          performance_manager::features::
+              kMemoryUsageInHovercardsHighThresholdBytes.Get()) +
+      1;
+  tab_resource_usage_->set_memory_usage_in_bytes(memory_used);
+
+  // Expect that high memory usage is in the window title.
+  EXPECT_TRUE(browser_view()->GetAccessibleWindowTitle().find(
+                  u"High memory usage") != std::string::npos);
+}
+
 #if BUILDFLAG(IS_MAC)
 // Tests that audio playing state is reflected in the "Window" menu on Mac.
 TEST_F(BrowserViewTest, TitleAudioIndicators) {
@@ -536,60 +570,6 @@ TEST_F(BrowserViewTest, CanFullscreenPolicyWatcher) {
   browser_view()->GetProfile()->GetPrefs()->SetBoolean(fullscreen_pref_path,
                                                        true);
   EXPECT_TRUE(browser_view()->CanFullscreen());
-}
-
-TEST_F(BrowserViewTest, SetCanResizeFromWebAPI) {
-  NavigateParams params(browser_view()->browser(), GURL("about:blank"),
-                        ui::PAGE_TRANSITION_TYPED);
-  params.disposition = WindowOpenDisposition::CURRENT_TAB;
-  Navigate(&params);
-  CommitPendingLoad(&params.navigated_or_inserted_contents->GetController());
-
-  // Mark the underlying widget as resizable without Web API signals.
-  browser_view()->GetWidget()->widget_delegate()->SetCanResize(true);
-
-  auto CheckCanResize = [&](bool browser_view_can_resize_expected,
-                            absl::optional<bool> web_api_can_resize_expected) {
-    EXPECT_EQ(browser_view()->CanResize(), browser_view_can_resize_expected);
-    EXPECT_EQ(browser_view()->GetCanResizeFromWebAPI(),
-              web_api_can_resize_expected);
-
-#if defined(USE_AURA)
-    EXPECT_EQ(browser_view()->GetWidget()->GetNativeWindow()->GetProperty(
-                  aura::client::kResizeBehaviorKey) &
-                  aura::client::kResizeBehaviorCanResize,
-              browser_view_can_resize_expected);
-#endif
-  };
-
-  // Defaults to `absl::nullopt` -> Returns "fallback".
-  CheckCanResize(true, absl::nullopt);
-
-  // Explicitly set to `absl::nullopt` -> Returns "fallback".
-  browser_view()->SetCanResizeFromWebAPI(absl::nullopt);
-  CheckCanResize(true, absl::nullopt);
-
-  // Explicitly set to false -> Returns false.
-  browser_view()->SetCanResizeFromWebAPI(false);
-  CheckCanResize(false, false);
-
-  // Explicitly set to true -> Returns true.
-  browser_view()->SetCanResizeFromWebAPI(true);
-  CheckCanResize(true, true);
-
-  // `window.setResizable()` API can only alter the resizability of widget which
-  // `can_resize` is true. If it's false, then `SetCanResizeFromWebAPI`
-  // cannot override it.
-  browser_view()->SetCanResize(false);
-
-  browser_view()->SetCanResizeFromWebAPI(absl::nullopt);
-  CheckCanResize(false, absl::nullopt);
-
-  browser_view()->SetCanResizeFromWebAPI(false);
-  CheckCanResize(false, false);
-
-  browser_view()->SetCanResizeFromWebAPI(true);
-  CheckCanResize(false, true);
 }
 
 class BrowserViewPipTest : public TestWithBrowserView {

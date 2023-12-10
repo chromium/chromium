@@ -351,7 +351,7 @@ class DragStartWaiter : public aura::client::DragDropClient {
   // parameters with data that would have been passed to the OS). If the caller
   // is not interested in this data, then the corresponding argument can be
   // null.
-  void WaitUntilDragStart(absl::optional<url::Origin>* source_origin,
+  void WaitUntilDragStart(std::optional<url::Origin>* source_origin,
                           std::string* text,
                           std::string* html,
                           int* operation,
@@ -460,7 +460,7 @@ class DragStartWaiter : public aura::client::DragDropClient {
 
   // Data captured during the first intercepted StartDragAndDrop call.
   bool drag_started_;
-  absl::optional<url::Origin> source_origin_;
+  std::optional<url::Origin> source_origin_;
   std::string text_;
   std::string html_;
   int operation_;
@@ -1247,14 +1247,7 @@ IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, DropForbiddenUrlFromOutside) {
 
 // Scenario: starting a drag in left frame
 // Test coverage: dragstart DOM event, dragstart data passed to the OS.
-//
-// TODO(https://crbug.com/1444100): Re-enable the test once fixed.
-#if BUILDFLAG(IS_CHROMEOS_LACROS) && defined(ADDRESS_SANITIZER)
-#define MAYBE_DragStartInFrame DISABLED_DragStartInFrame
-#else
-#define MAYBE_DragStartInFrame DragStartInFrame
-#endif
-IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, MAYBE_DragStartInFrame) {
+IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, DragStartInFrame) {
   std::string frame_site = use_cross_site_subframe() ? "b.test" : "a.test";
   ASSERT_TRUE(NavigateToTestPage("a.test"));
   ASSERT_TRUE(NavigateLeftFrame(frame_site, "image_source.html"));
@@ -1296,7 +1289,7 @@ IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, MAYBE_DragStartInFrame) {
 
   // Verify data being passed to the OS.
   {
-    absl::optional<url::Origin> source_origin;
+    std::optional<url::Origin> source_origin;
     std::string text;
     std::string html;
     int operation = 0;
@@ -1515,10 +1508,10 @@ void DragAndDropBrowserTest::DragImageBetweenFrames_Step2(
     // implementation of ash::DragDropController::DragUpdate for details.
   }
 
-  // Move the mouse twice in the right frame.  The 1st move will ensure that
+  // Move the mouse twice in the right frame. The 1st move will ensure that
   // allowed operations communicated by the renderer will be stored in
-  // WebContentsViewAura::current_drag_op_.  The 2nd move will ensure that this
-  // gets be copied into DesktopDragDropClientAuraX11::negotiated_operation_.
+  // WebContentsViewAura::current_drag_data_. The 2nd move will ensure that this
+  // gets copied into DesktopDragDropClientAuraX11::negotiated_operation_.
   for (int i = 0; i < 2; i++) {
     DOMDragEventWaiter dragover_event_waiter("dragover", GetRightFrame());
     ASSERT_TRUE(SimulateMouseMoveToRightFrame());
@@ -1704,10 +1697,10 @@ void DragAndDropBrowserTest::DragImageFromDisappearingFrame_Step2(
     // implementation of ash::DragDropController::DragUpdate for details.
   }
 
-  // Move the mouse twice in the right frame.  The 1st move will ensure that
+  // Move the mouse twice in the right frame. The 1st move will ensure that
   // allowed operations communicated by the renderer will be stored in
-  // WebContentsViewAura::current_drag_op_.  The 2nd move will ensure that this
-  // gets be copied into DesktopDragDropClientAuraX11::negotiated_operation_.
+  // WebContentsViewAura::current_drag_data_. The 2nd move will ensure that this
+  // gets copied into DesktopDragDropClientAuraX11::negotiated_operation_.
   for (int i = 0; i < 2; i++) {
     DOMDragEventWaiter dragover_event_waiter("dragover", GetRightFrame());
     ASSERT_TRUE(SimulateMouseMoveToRightFrame());
@@ -2098,10 +2091,10 @@ void DragAndDropBrowserTest::CrossTabDrag_Step2(
     // implementation of ash::DragDropController::DragUpdate for details.
   }
 
-  // Move the mouse twice in the right frame.  The 1st move will ensure that
+  // Move the mouse twice in the right frame. The 1st move will ensure that
   // allowed operations communicated by the renderer will be stored in
-  // WebContentsViewAura::current_drag_op_.  The 2nd move will ensure that this
-  // gets be copied into DesktopDragDropClientAuraX11::negotiated_operation_.
+  // WebContentsViewAura::current_drag_data_. The 2nd move will ensure that this
+  // gets copied into DesktopDragDropClientAuraX11::negotiated_operation_.
   for (int i = 0; i < 2; i++) {
     DOMDragEventWaiter dragover_event_waiter("dragover", GetRightFrame());
     ASSERT_TRUE(SimulateMouseMoveToRightFrame());
@@ -2322,187 +2315,5 @@ IN_PROC_BROWSER_TEST_F(DragAndDropBrowserTestNoParam, CloseTabDuringDrag) {
   EXPECT_EQ(1, browser()->tab_strip_model()->count());
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-class DragAndDropWithPortalsBrowserTest : public DragAndDropBrowserTest {
- public:
-  DragAndDropWithPortalsBrowserTest() {
-    scoped_feature_list_.InitWithFeatures({blink::features::kPortals}, {});
-  }
-  ~DragAndDropWithPortalsBrowserTest() override = default;
-
-  struct CrossSiteAcrossActivationDrag_TestState;
-  void CrossSiteAcrossActivationDrag_Step2(
-      CrossSiteAcrossActivationDrag_TestState*);
-  void CrossSiteAcrossActivationDrag_Step3(
-      CrossSiteAcrossActivationDrag_TestState*);
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-struct DragAndDropWithPortalsBrowserTest::
-    CrossSiteAcrossActivationDrag_TestState {
-  std::unique_ptr<DOMDragEventWaiter> dragstart_event_waiter;
-  std::unique_ptr<DOMDragEventCounter> left_frame_events_counter;
-  std::unique_ptr<DOMDragEventCounter> right_frame_events_counter;
-  std::unique_ptr<DOMDragEventCounter> portal_frame_events_counter;
-};
-
-// There is no known way to execute test-controlled tasks during
-// a drag-and-drop loop run by Windows OS.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_CrossSiteAcrossActivationDrag \
-  DISABLED_CrossSiteAcrossActivationDrag
-#else
-#define MAYBE_CrossSiteAcrossActivationDrag CrossSiteAcrossActivationDrag
-#endif
-// Tests a scenario where a drag is initiated from a cross-site subframe inside
-// a page with a portal, and continued after the portal is activated and the
-// predecessor is reactivated. The drag completes at the right-subframe, but no
-// events should be received by the right subframe.
-IN_PROC_BROWSER_TEST_P(DragAndDropWithPortalsBrowserTest,
-                       MAYBE_CrossSiteAcrossActivationDrag) {
-  ASSERT_TRUE(NavigateToTestPage("a.test"));
-  // Note: The left subframe should be cross-site from the right frame.
-  ASSERT_TRUE(NavigateLeftFrame("b.test", "image_source.html"));
-  ASSERT_TRUE(NavigateRightFrame("a.test", "drop_target.html"));
-
-  const GURL portal_url = https_test_server()->GetURL("a.test", "/title1.html");
-  ASSERT_TRUE(content::ExecJs(web_contents()->GetPrimaryMainFrame(),
-                              content::JsReplace(R"(
-    const portal = document.createElement('portal');
-    portal.style = 'display:none;';
-    portal.src = $1;
-    document.body.appendChild(portal);
-    new Promise(resolve => {
-      portal.onload = resolve;
-    });
-  )",
-                                                 portal_url)));
-  std::vector<content::WebContents*> inner_web_contents =
-      web_contents()->GetInnerWebContents();
-  ASSERT_EQ(inner_web_contents.size(), 1u);
-  content::WebContents* portal_contents = inner_web_contents[0];
-  ASSERT_EQ(portal_contents->GetPrimaryMainFrame()->GetLastCommittedURL(),
-            portal_url);
-
-  DragAndDropWithPortalsBrowserTest::CrossSiteAcrossActivationDrag_TestState
-      state;
-  state.dragstart_event_waiter = std::make_unique<DOMDragEventWaiter>(
-      "dragstart", GetLeftFrame(web_contents()));
-  state.left_frame_events_counter =
-      std::make_unique<DOMDragEventCounter>(GetLeftFrame(web_contents()));
-  state.right_frame_events_counter =
-      std::make_unique<DOMDragEventCounter>(GetRightFrame(web_contents()));
-  state.portal_frame_events_counter = std::make_unique<DOMDragEventCounter>(
-      portal_contents->GetPrimaryMainFrame());
-
-  DragStartWaiter drag_start_waiter(web_contents());
-  drag_start_waiter.PostTaskWhenDragStarts(base::BindOnce(
-      &DragAndDropWithPortalsBrowserTest::CrossSiteAcrossActivationDrag_Step2,
-      base::Unretained(this), base::Unretained(&state)));
-  // Starts a drag from the left subframe.
-  ASSERT_TRUE(SimulateMouseDownAndDragStartInLeftFrame());
-  // Note: This starts a nested RunLoop. The test continues in
-  // CrossSiteAcrossActivationDrag_Step2.
-  drag_start_waiter.WaitUntilDragStart(nullptr, nullptr, nullptr, nullptr,
-                                       nullptr);
-
-  CrossSiteAcrossActivationDrag_Step3(&state);
-}
-
-void DragAndDropWithPortalsBrowserTest::CrossSiteAcrossActivationDrag_Step2(
-    DragAndDropWithPortalsBrowserTest::CrossSiteAcrossActivationDrag_TestState*
-        state) {
-  content::WebContents* predecessor_contents = web_contents();
-  content::WebContents* portal_contents =
-      (web_contents()->GetInnerWebContents())[0];
-  EXPECT_TRUE(portal_contents->IsPortal());
-  {
-    std::string dragstart_event;
-    EXPECT_TRUE(state->dragstart_event_waiter->WaitForNextMatchingEvent(
-        &dragstart_event));
-    state->dragstart_event_waiter.reset();
-
-    // Only a single "dragstart" should have fired in the left frame since the
-    // start of the test.
-    EXPECT_EQ(1, state->left_frame_events_counter->GetNumberOfReceivedEvents(
-                     "dragstart"));
-    EXPECT_EQ(0, state->left_frame_events_counter->GetNumberOfReceivedEvents(
-                     {"dragleave", "dragenter", "drop", "dragend"}));
-    // No drag events should have been received by the portal frame.
-    EXPECT_EQ(0,
-              state->portal_frame_events_counter->GetNumberOfReceivedEvents(
-                  {"dragstart", "dragleave", "dragenter", "drop", "dragend"}));
-  }
-
-  std::string activate_script = "document.querySelector('portal').activate();";
-  std::string adoption_script = R"(
-    window.onportalactivate = e => {
-      const portal = e.adoptPredecessor();
-      portal.style = 'display:none;';
-      document.body.appendChild(portal);
-    };
-  )";
-  // Activate the portal and adopt the predecessor.
-  EXPECT_TRUE(ExecJs(portal_contents, adoption_script));
-  EXPECT_TRUE(ExecJs(web_contents(), activate_script));
-  EXPECT_EQ(web_contents(), portal_contents);
-  EXPECT_TRUE(predecessor_contents->IsPortal());
-
-  // Reactivate the predecessor.
-  EXPECT_TRUE(ExecJs(predecessor_contents, adoption_script));
-  EXPECT_TRUE(ExecJs(portal_contents, activate_script));
-  EXPECT_EQ(web_contents(), predecessor_contents);
-
-  for (int i = 0; i < 3; i++) {
-    content::DOMMessageQueue dom_message_queue(web_contents());
-    ASSERT_TRUE(SimulateMouseMoveToRightFrame());
-
-    // No events are expected from the right frame, so we can't wait for a
-    // dragover event here.  Still - we do want to wait until the right frame
-    // has had a chance to process any previous browser IPCs, so that in case
-    // there *is* a bug and a dragover event *does* happen, we won't terminate
-    // the test before the event has had a chance to be reported back to the
-    // browser.
-    std::string expected_response = base::StringPrintf("\"i%d\"", i);
-    GetRightFrame()->ExecuteJavaScriptWithUserGestureForTests(
-        base::UTF8ToUTF16(base::StringPrintf(
-            "domAutomationController.send(%s);", expected_response.c_str())),
-        base::NullCallback());
-
-    // Wait until our response comes back (it might be mixed with responses
-    // carrying events that are sent by event_monitoring.js).
-    std::string actual_response;
-    do {
-      ASSERT_TRUE(dom_message_queue.WaitForMessage(&actual_response));
-    } while (actual_response != expected_response);
-  }
-
-  // Release the mouse button to end the drag.
-  SimulateMouseUp();
-
-  // The test will continue in CrossSiteAcrossActivationDrag_Step3.
-}
-
-void DragAndDropWithPortalsBrowserTest::CrossSiteAcrossActivationDrag_Step3(
-    DragAndDropWithPortalsBrowserTest::CrossSiteAcrossActivationDrag_TestState*
-        state) {
-  EXPECT_EQ(1, state->left_frame_events_counter->GetNumberOfReceivedEvents(
-                   "dragstart"));
-  // No drag events should have been received by the portal frame.
-  EXPECT_EQ(0, state->portal_frame_events_counter->GetNumberOfReceivedEvents(
-                   {"dragstart", "dragleave", "dragenter", "drop", "dragend"}));
-  // No drag events should have been received by the right subframe (because it
-  // is cross-site).
-  EXPECT_EQ(0, state->right_frame_events_counter->GetNumberOfReceivedEvents(
-                   {"dragenter", "dragover", "dragend", "drop", "dragleave"}));
-}
-
-INSTANTIATE_TEST_SUITE_P(
-    CrossSiteSubframe,
-    DragAndDropWithPortalsBrowserTest,
-    ::testing::Combine(::testing::Values(true),
-                       ::testing::ValuesIn(ui_scaling_factors)));
 
 }  // namespace chrome

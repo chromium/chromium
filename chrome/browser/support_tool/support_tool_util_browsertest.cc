@@ -121,7 +121,8 @@ IN_PROC_BROWSER_TEST_F(SupportToolUtilLoginScreenTest, GetSupportToolHandler) {
   // These data collectors shouldn't be included on login screen because they
   // depend on data from user session.
   std::set<support_tool::DataCollectorType> excluded_data_collectors = {
-      support_tool::DataCollectorType::CHROMEOS_CHROME_USER_LOGS};
+      support_tool::DataCollectorType::CHROMEOS_CHROME_USER_LOGS,
+      support_tool::DataCollectorType::SIGN_IN_STATE};
 
   std::unique_ptr<SupportToolHandler> handler = GetSupportToolHandler(
       kCaseId, kEmail, kIssueDescription, signin_profile,

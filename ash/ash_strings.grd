@@ -300,20 +300,15 @@ Style notes:
         <ph name="battery">$2<ex>Battery is full.</ex></ph>
         <ph name="channel">$3<ex>Stable Channel</ex></ph>
         <ph name="network">$4<ex>Connected to Wifi.</ex></ph>,
-        <ph name="privacy">$5<ex>Camera in use</ex></ph>,
-        <ph name="managed">$6<ex>This account is managed by Family Link</ex></ph>
-        <ph name="notification">$7<ex>1 notification</ex></ph>,
-        <ph name="ime">$8<ex>Using US keyboard</ex></ph>
-        <ph name="locale">$9<ex>Using English</ex></ph>
+        <ph name="managed">$5<ex>This account is managed by Family Link</ex></ph>
+        <ph name="ime">$6<ex>Using US keyboard</ex></ph>
+        <ph name="locale">$7<ex>Using English</ex></ph>
       </message>
       <message name="IDS_ASH_STATUS_TRAY_NETWORK_ACCESSIBLE_DESCRIPTION" is_accessibility_with_no_ui="true" desc="The accessible description of hotspot and network in the status tray and the information on it.">
         <ph name="hotspot">$1<ex>Hotspot on, no devices connected</ex></ph>,
         <ph name="network">$2<ex>Connected to Google-A, Median signal</ex></ph>
       </message>
       <message name="IDS_ASH_QUICK_SETTINGS_BUBBLE_ACCESSIBLE_DESCRIPTION" desc="The accessible description of the quick settings bubble and the information in it.">
-        Quick Settings, Press search + left to access the notification center.
-      </message>
-      <message name="IDS_ASH_REVAMPED_QUICK_SETTINGS_BUBBLE_ACCESSIBLE_DESCRIPTION" desc="The accessible description of the revamped quick settings bubble and the information in it.">
         Quick Settings
       </message>
       <message name="IDS_ASH_QUICK_SETTINGS_BUBBLE_A11Y_SETTINGS_ACCESSIBLE_DESCRIPTION" desc="The accessible description for accessibility settings accessed through the accessibility feature pod.">
@@ -457,6 +452,9 @@ Style notes:
       <message name="IDS_ASH_STATUS_TRAY_NEARBY_SHARE_TILE_LABEL" desc="The shorter label used for the feature tile in the status tray to toggle Nearby Share high visibility mode, which makes the device visible to all nearby devices for file sharing.">
         Nearby Share
       </message>
+      <message name="IDS_ASH_STATUS_TRAY_NEARBY_SHARE_TILE_LABEL_PH" desc="Feature name placeholder: The shorter label used for the feature tile in the status tray to toggle Nearby Share high visibility mode, which makes the device visible to all nearby devices for file sharing.">
+        <ph name="FEATURE_NAME">$1<ex>Nearby Share</ex></ph>
+      </message>
       <message name="IDS_ASH_STATUS_TRAY_NEARBY_SHARE_OFF_STATE" desc="Sub-label for the Nearby Share system tray button." meaning="Nearby Share high visibility mode is currently inactive. [CHAR_LIMIT=14]">
         Off
       </message>
@@ -475,11 +473,11 @@ Style notes:
       <message name="IDS_ASH_STATUS_TRAY_NEARBY_SHARE_REMAINING_SECONDS" desc="A short string showing the nearest number of whole seconds until Nearby Share high visibility turns off. To be used with IDS_ASH_STATUS_TRAY_NEARBY_SHARE_ON_STATE. [CHAR_LIMIT=7]">
         <ph name="SECONDS">$1<ex>40</ex></ph> sec
       </message>
-      <message name="IDS_ASH_STATUS_TRAY_NEARBY_SHARE_SETTINGS_TOOLTIP" desc="Tooltip text for the status tray button that shows settings for the Nearby Share feature.">
-        Show Nearby Share settings
-      </message>
       <message name="IDS_ASH_STATUS_TRAY_NEARBY_SHARE_TOGGLE_TOOLTIP" desc="Tooltip text used for the Nearby Share status tray button, which toggles Nearby Share high visibility mode on/off.">
         Toggle Nearby Share high visibility
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_NEARBY_SHARE_TOGGLE_TOOLTIP_PH" desc="Feature name placeholder: Tooltip text used for the Nearby Share status tray button, which toggles Nearby Share high visibility mode on/off.">
+        Toggle <ph name="FEATURE_NAME">$1<ex>Nearby Share</ex></ph> high visibility
       </message>
       <message name="IDS_ASH_STATUS_TRAY_NIGHT_LIGHT_BUTTON_LABEL" desc="The shorter label used for the button in the status tray to toggle the Night Light feature (which controls the color temperature of the screen) on or off. [CHAR_LIMIT=14]">
         Night Light
@@ -772,8 +770,8 @@ Style notes:
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE" translateable="false" desc="The label used as the header in the focus mode panel.">
         Focus
       </message>
-      <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_TIME_SUBLABEL" translateable="false" desc="The text used for the subtext of the quick settings pod for an expected session duration.">
-        <ph name="MINUTES_VALUE">$1<ex>30</ex></ph> min
+      <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_TIME_SUBLABEL" translateable="false" desc="The text used for the subtext of the quick settings pod for remaining time in an active session.">
+        <ph name="REMAINING_TIME">$1<ex>1 hr, 4 min</ex></ph> left
       </message>
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_TIMER_SUBHEADER" translateable="false" desc="The text used for the subheader of the timer section of the focus mode detailed view.">
         Timer
@@ -789,6 +787,18 @@ Style notes:
       </message>
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_TIMER_DECREMENT_BUTTON" translateable="false" desc="The accessible name for the button that the user can press to decrease focus session duration.">
         Decrease focus session duration
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_TASK_SUBHEADER" translateable="false" desc="The text used for the subheader of the task section of the focus mode detailed view.">
+        Task to focus on
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_TASK_TEXTFIELD_PLACEHOLDER" translateable="false" desc="The text used for the placeholder for the textfield in the task section of the focus mode detailed view.">
+        What would you like to focus on?
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_TASK_RADIO_BUTTON" translateable="false" desc="The text used for the radio button accessible name for a selected task view.">
+        Mark completed
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_TASK_DESELECT_BUTTON" translateable="false" desc="The text used for the deselect button accessible name for a selected task view.">
+        Remove task
       </message>
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_DO_NOT_DISTURB" translateable="false" desc="The label text shown on the left side of do not disturb button in Focus mode settings panel.">
         Do not disturb while in Focus
@@ -807,6 +817,24 @@ Style notes:
       </message>
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_TOGGLE_END_BUTTON" translateable="false" desc="The text used for the label of the toggle button in the focus mode detailed view and countdown view for when focus mode is active.">
         End Focus
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_FIRST_TIME_SUBLABEL" translateable="false" desc="The text used for the sublabel of the detailed view toggle row for when a user has never used focus mode before.">
+        Set a timer and task to focus
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_FEEDBACK_BUTTON" translateable="false" desc="The text used for the feedback button.">
+        Send feedback
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_ENDING_MOMENT_TITLE" translateable="false" desc="The title for the ending moment panel.">
+        You are an inspiration!
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_ENDING_MOMENT_BODY" translateable="false" desc="The message for the ending moment panel.">
+        Congratulations on another productive session!
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_ENDING_MOMENT_BODY_WITH_TASK" translateable="false" desc="The message for the ending moment panel if the user has an unfinished task.">
+        Congratulations on another productive session! Check off your task if it's done!
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_ENDING_MOMENT_DONE_BUTTON" translateable="false" desc="The text for the button that dismisses the ending moment panel.">
+        Done
       </message>
 
       <message name="IDS_ASH_STATUS_TRAY_UPDATE" desc="The label used in the tray popup to notify that the user should restart to get system updates.">
@@ -829,6 +857,14 @@ Style notes:
       </message>
       <message name="IDS_ROLLBACK_OVERDUE_NOTIFICATION_TITLE" desc="The title of the notification to notify that the user should restart to roll back the device and the admin recommended to restart.">
         Device change to previous version is overdue
+      </message>
+
+      <!-- `FeatureTile` downloading states -->
+      <message name="IDS_ASH_FEATURE_TILE_DOWNLOAD_PENDING_TITLE" desc="The title of a feature tile that currently has a download that has not yet started.">
+        Download pending
+      </message>
+      <message name="IDS_ASH_FEATURE_TILE_DOWNLOAD_IN_PROGRESS_TITLE" desc="The title of a feature tile that currently has an in-progress download.">
+        Downloading <ph name="DOWNLOAD_PERCENT">$1<ex>7</ex></ph>%
       </message>
 
       <!-- Upgrade notifications -->
@@ -1126,6 +1162,9 @@ Style notes:
       <message name="IDS_ASH_STATUS_TRAY_ACCESSIBILITY_DICTATION" desc="The label used in the accessibility menu of the system tray to toggle on/off the speak to type feature.">
         Dictation
       </message>
+      <message name="IDS_ASH_STATUS_TRAY_ACCESSIBILITY_FACEGAZE" desc="The label used in the accessibility menu of the system tray to toggle on/off the FaceGaze feature.">
+        Face control
+      </message>
       <message name="IDS_ASH_STATUS_TRAY_ACCESSIBILITY_COLOR_CORRECTION" desc="The label used in the accessibility menu of the system tray to toggle on/off the color correction feature.">
         Color correction
       </message>
@@ -1390,9 +1429,6 @@ Style notes:
       </message>
       <message name="IDS_ASH_STATUS_TRAY_HELP" desc="The accessible text for the help button.">
         Help
-      </message>
-      <message name="IDS_ASH_STATUS_TRAY_DATE" desc="The date displayed on ash system bubble, Depending on launguage, please choose the best separator(eg ',') between abbreviated weekday and date">
-        <ph name="short_weekday">$1<ex>Fri</ex></ph>, <ph name="date">$2<ex>Aug 31, 2012</ex></ph>
       </message>
       <message name="IDS_ASH_STATUS_TRAY_DATE_TIME" desc="The time displayed on ash system tray, Depending on launguage, please choose the best separator(eg ',') between abbreviated date and time">
         <ph name="date">$1<ex>Aug 31</ex></ph>, <ph name="time">$2<ex>03:00</ex></ph>
@@ -2263,23 +2299,14 @@ Style notes:
       <message name="IDS_ASH_SEARCH_RESULT_CATEGORY_LABEL_IMAGES" desc="Category title for the list of image results shown in launcher search relevant to the query in the search box.">
         Images
       </message>
-      <message name="IDS_ASH_SEARCH_RESULT_IMAGE_FILE_SIZE" desc="The title for the file size of the image file search result, where the information is listed beside the launcher image result.">
-        Size
-      </message>
-      <message name="IDS_ASH_SEARCH_RESULT_IMAGE_DATE_MODIFIED" desc="The title for the last modified date of the image file search result, where the information is listed beside the launcher image result.">
-        Date modified
+      <message name="IDS_ASH_SEARCH_RESULT_IMAGE_LAST_MODIFIED_STRING" desc="The last modified date and time of the image file displayed in launcher search results. This string will be used along with the formatted date and time variable.">
+        Modified <ph name="date_and_time">$1<ex>Today 4:00 PM</ex></ph>
       </message>
       <message name="IDS_ASH_SEARCH_RESULT_IMAGE_LAST_MODIFIED_DATE_AND_TIME" desc="The last modified date and time of the image file displayed in launcher search results. Depending on launguage, please choose the best separator(eg ',') between abbreviated date and time">
         <ph name="date">$1<ex>May 23, 2023</ex></ph>, <ph name="time">$2<ex>11:28 AM</ex></ph>
       </message>
       <message name="IDS_ASH_SEARCH_RESULT_IMAGE_LAST_MODIFIED_RELATIVE_DATE_AND_TIME" desc="The last modified date and time of the image file displayed in launcher search results, where the relative date (today, yesterday) is used and the date string is already translated. Depending on launguage, please choose the best separator(eg ',') between abbreviated date and time">
         <ph name="relative_date">$1<ex>Today</ex></ph> <ph name="time">$2<ex>4:00 PM</ex></ph>
-      </message>
-      <message name="IDS_ASH_SEARCH_RESULT_IMAGE_FILE_TYPE" desc="The title for the file type of the image file search result, where the information is listed beside the launcher image result.">
-        Type
-      </message>
-      <message name="IDS_ASH_SEARCH_RESULT_IMAGE_FILE_LOCATION" desc="The title for the file location of the image file search result, where the information is listed beside the launcher image result.">
-        Location
       </message>
       <message name="IDS_ASH_SEARCH_BOX_FILTER_BUTTON_TOOLTIP" desc="The tooltip text of the filter button in the search box, which is used to open a menu to filter the search results by their categories.">
         Toggle search result categories
@@ -2310,15 +2337,6 @@ Style notes:
       </message>
       <message name="IDS_ASH_SEARCH_CATEGORY_FILTER_MENU_WEBSITES_TOOLTIP" desc="The tooltip text of the website menu item in the search category filter menu that shows what search results the category includes.">
         Websites including pages you've visited and open pages
-      </message>
-      <message name="IDS_ASH_SEARCH_IMAGE_SEARCH_PRIVACY_NOTICE_TITLE" desc="The title of the search privacy notice that guides users to search their image files by the content of the image.">
-        Find your images by the content
-      </message>
-      <message name="IDS_ASH_SEARCH_IMAGE_SEARCH_PRIVACY_NOTICE_CONTENT" desc="The content of the search privacy notice that guides users to search their image files by the content of the image. Sunset and tree are two of the examples for users to try.">
-        Try searching "sunset" or "tree" instead of the file name. You can turn off image search in the search bar.
-      </message>
-      <message name="IDS_ASH_SEARCH_IMAGE_SEARCH_PRIVACY_NOTICE_ACCESSIBILITY_GUIDANCE" desc="The accessibility guidance in the launcher search to guide users to move focus to the search privacy notice.">
-        Press shift plus tab to learn more
       </message>
       <message name="IDS_ASH_SEARCH_RESULT_SEPARATOR" desc="Separator between the title and details text in ash search result view.">
         ''' - '''
@@ -2493,12 +2511,6 @@ Style notes:
       <message name="IDS_ASH_DESKS_TEMPLATES_MANAGEMENT_STATUS_DESCRIPTION" desc="The text of the description under template item if the desks templates is shared by the administrator.">
         Shared by your administrator
       </message>
-      <message name="IDS_ASH_DESKS_TEMPLATES_LIBRARY_TEMPLATES_GRID_LABEL" desc="The label visible above template items in the saved desk library.">
-        Templates
-      </message>
-      <message name="IDS_ASH_DESKS_TEMPLATES_LIBRARY_SAVE_AND_RECALL_GRID_LABEL" desc="The label visible above the save and recall items in the saved desk library.">
-        Saved for later
-      </message>
       <message name="IDS_ASH_DESKS_TEMPLATES_LIBRARY_NO_TEMPLATES_OR_DESKS_LABEL" desc="The text that shows in the saved desk library when there are no saved desks or templates.">
         No saved desks or templates
       </message>
@@ -2599,6 +2611,9 @@ Style notes:
       </message>
       <message name="IDS_ASH_DESKS_CLOSE_ALL_DESCRIPTION" desc="The tooltip and context menu text that describes the action of closing a desk and all of its windows.">
         Close desk and windows
+      </message>
+      <message name="IDS_ASH_DESKS_OPEN_PROFILE_MANAGER" desc="The tooltip and context menu text that describes the action of open the profile manager.">
+        Manage profiles
       </message>
       <message name="IDS_ASH_DESKS_CLOSE_ALL_TOAST_TEXT" desc="Text provided in toast that notifies user that they have closed a desk and all of its windows.">
         Desk and windows have been closed
@@ -3744,9 +3759,16 @@ Some features are limited to increase battery life.
       <message name="IDS_SHORTCUT_SHOW_SHORTCUT_VIEWER_NEW" desc="the new shortcut to open the shortcut viewer app.">
         ctrl+search+s
       </message>
+      <message name="IDS_SHORTCUT_OPEN_GET_HELP_NEW" desc="the new shortcut to open help in explore app.">
+        search+h
+      </message>
       <message name="IDS_DEPRECATED_SHOW_SHORTCUT_VIEWER_MSG"
                desc="Notification message to tell users about the deprecation of Ctrl+Alt+/ shortcut to show the shortcut viewer app.">
         Open Key Shortcuts app with "<ph name="NEW_SHORTCUT">$1<ex>ctrl + search + s</ex></ph>".
+      </message>
+      <message name="IDS_DEPRECATED_OPEN_GET_HELP_MSG"
+               desc="Notification message to tell users about the deprecation of Ctrl+/ shortcut to open help in explore app.">
+        Open "Help" in Explore app with "<ph name="NEW_SHORTCUT">$1<ex>search + h</ex></ph>".
       </message>
       <message name="IDS_DEPRECATED_SHOW_IME_BUBBLE_MSG"
                desc="Notification message to tell users about the deprecation of Alt+Shift+K shortcut to show the input options menu bubble in the shelf.">
@@ -4797,6 +4819,9 @@ Some features are limited to increase battery life.
       <message name="IDS_ASH_LOGIN_LOCAL_AUTHENTICATION_REQUEST_DESCRIPTION" desc="Description shown on the local authentication input dialog. Explains local authentication credentials should be used to unlock the device.">
         Enter device password for <ph name="EMAIL">$1<ex>john.doe@example.com</ex></ph>
       </message>
+      <message name="IDS_ASH_LOGIN_LOCAL_AUTHENTICATION_CLOSE_DIALOG_BUTTON" desc="The close button of the local authentication input dialog.">
+        Close dialog
+      </message>
       <message name="IDS_ASH_LOGIN_SECURITY_TOKEN_REQUEST_DIALOG_TITLE" desc="Title of the PIN dialog to unlock the device with a smart card.">
         Smart card PIN
       </message>
@@ -4848,7 +4873,7 @@ Some features are limited to increase battery life.
         <ph name="NAME">$1<ex>Pixel Buds</ex></ph> connected
       </message>
       <message name="IDS_FAST_PAIR_DOWNLOAD_NOTIFICATION_APP_MESSAGE" desc="Notification message shown to direct users to download companion app on Fast Pair device">
-        Customize this device in app
+        Install app to customize this device
       </message>
       <message name="IDS_FAST_PAIR_DOWNLOAD_APP_BUTTON" desc="Button title shown to direct users to app store to download companion app on Fast Pair device">
         Install app
@@ -5071,15 +5096,6 @@ Some features are limited to increase battery life.
       <message name="IDS_ASH_MESSAGE_CENTER_FOOTER_LOCKSCREEN" desc="The label in the footer of the message center on lock screen">
         Unlock device to view your notifications
       </message>
-      <message name="IDS_ASH_MESSAGE_CENTER_LOCKSCREEN_UNIFIED" desc="The label in the message center area on lock screen.">
-        Notifications are hidden.
-      </message>
-      <message name="IDS_ASH_MESSAGE_CENTER_LOCKSCREEN_CHANGE" desc="The label in the button in the message center area on lock screen. This button is to open the setting of the lock scren notification.">
-        Change
-      </message>
-      <message name="IDS_ASH_MESSAGE_CENTER_LOCKSCREEN_CHANGE_TOOLTIP" desc="The tooltip text for Change button to open the setting of lock screen notification.">
-        Change the lock-screen notification settings
-      </message>
       <message name="IDS_ASH_MESSAGE_CENTER_NO_MESSAGES" desc="The message displayed in the message center when there are no notifications.">
         All done
       </message>
@@ -5178,10 +5194,6 @@ Some features are limited to increase battery life.
       <!-- Calendar  -->
       <message name="IDS_ASH_CALENDAR_BUBBLE_ACCESSIBLE_DESCRIPTION" desc="The accessible description of the calendar bubble and the information in it.">
         Calendar, <ph name="current_month_year">$1<ex>Wednesday, August 17, 2022</ex></ph>
-      </message>
-
-      <message name="IDS_ASH_CALENDAR_ENTRY_ACCESSIBLE_DESCRIPTION" desc="The accessible description of the calendar entry button.">
-       <ph name="current_time">$1<ex>Tuesday, August 31, 2021 at 11:25:12 AM</ex></ph>, Press enter key to open Calendar view
       </message>
 
       <message name="IDS_ASH_CALENDAR_TITLE" desc="The label used as the title of the unified system tray calendar view.">
@@ -5687,9 +5699,6 @@ Here are some things you can try to get started.
       <message name="IDS_ASH_MESSAGE_CENTER_UNLOCK_TO_PERFORM_ACTION_WITH_USER_ID" desc="The short message to encourage user to unlock the device so that ChromeOS can perform the notification action selected by user after unlocking.">
         Unlock device as <ph name="login_id">$1<ex>example@gmail.com</ex></ph> to perform the notification action
       </message>
-      <message name="IDS_ASH_MESSAGE_CENTER_UNLOCK_TO_CHANGE_SETTING" desc="The short message to encourage user to unlock the device to change the lock screen notification setting, so that ChromeOS can show the setting window after unlocking.">
-        To see notifications on your lock screen, unlock to change the setting
-      </message>
 
       <!-- Media Notification -->
       <message name="IDS_ASH_MEDIA_NOTIFICATION_ACTION_PREVIOUS_TRACK" desc="The button to trigger media playback to go to the previous track.">
@@ -6144,6 +6153,18 @@ Here are some things you can try to get started.
       </message>
       <message name="IDS_ASH_GAME_CAPTURE_START_RECORDING_BUTTON" desc="The label of the start recording button inside the game capture bar.">
         Start recording
+      </message>
+      <message name="IDS_ASH_SCREEN_CAPTURE_EDUCATION_NUDGE_LABEL" desc="The label of the Screen Capture Education shortcut nudge (Arm 1) for using the screenshot accelerator.">
+        To take a screenshot, press
+      </message>
+      <message name="IDS_ASH_SCREEN_CAPTURE_EDUCATION_NUDGE_BUTTON" desc="The label of the button in the Screen Capture Education shortcut nudge (Arm 2).">
+        Show me how
+      </message>
+      <message name="IDS_ASH_SCREEN_CAPTURE_EDUCATION_TUTORIAL_TITLE" desc="The title of the tutorial dialog for Screen Capture Education (Arm 2).">
+        Press the screenshot shortcut
+      </message>
+      <message name="IDS_ASH_SCREEN_CAPTURE_EDUCATION_SETTINGS_NUDGE_LABEL" desc="The label of the Screen Capture Education settings nudge (Arm 3) for using the quick settings menu.">
+        Use the screen capture tool in quick settings to take screenshots
       </message>
 
       <!-- Snap Group -->
@@ -7211,19 +7232,21 @@ To shut down the device, press and hold the power button on the device again.
         Keys, buttons, and more
       </message>
 
-      <!-- TODO(b/286930911): Translate strings for input device settings notifications. -->
       <!-- Input device settings notifications -->
       <message name="IDS_ASH_DEVICE_SETTINGS_NOTIFICATIONS_ALT_RIGHT_CLICK" desc="The message shown to notify a user that the shortcut used to simulate a right-click using touchpad and keyboard has changed.">
         The right-click shortcut is updated to <ph name="LAUNCHER_KEY_NAME">$1<ex>launcher</ex></ph> key + click from alt + click
       </message>
-      <message name="IDS_ASH_DEVICE_SETTINGS_NOTIFICATIONS_PERIPHERAL_CUSTOMIZATION_TITLE" translateable="false" desc="Notification title to tell users that the peripheral is customizable.">
+      <message name="IDS_ASH_DEVICE_SETTINGS_NOTIFICATIONS_PERIPHERAL_CUSTOMIZATION_TITLE" desc="Notification title to tell users that the peripheral is customizable.">
         Customize your <ph name="PERIPHERAL_NAME">$1<ex>MX Anywhere</ex></ph>
       </message>
-      <message name="IDS_ASH_DEVICE_SETTINGS_NOTIFICATIONS_MOUSE_CUSTOMIZATION" translateable="false" desc="The message shown to notify a user that the mouse is customizable in settings.">
+      <message name="IDS_ASH_DEVICE_SETTINGS_NOTIFICATIONS_MOUSE_CUSTOMIZATION" desc="The message shown to notify a user that the mouse is customizable in settings.">
         <ph name="PERIPHERAL_NAME">$1<ex>MX Anywhere</ex></ph> is connected and ready to use. You can customize your mouse in Settings.
       </message>
-      <message name="IDS_ASH_DEVICE_SETTINGS_NOTIFICATIONS_GRAPHICS_TABLET_CUSTOMIZATION" translateable="false" desc="The message shown to notify a user that the graphics tablet is customizable in settings.">
+      <message name="IDS_ASH_DEVICE_SETTINGS_NOTIFICATIONS_GRAPHICS_TABLET_CUSTOMIZATION" desc="The message shown to notify a user that the graphics tablet is customizable in settings.">
         <ph name="PERIPHERAL_NAME">$1<ex>MX Anywhere</ex></ph> is connected and ready to use. You can customize your graphics tablet in Settings.
+      </message>
+      <message name="IDS_ASH_DEVICE_SETTINGS_NOTIFICATIONS_OPEN_SETTINGS_BUTTON" desc="Notification button text, if the user clicks on the button it will redirect them to the Settings App.">
+        Open Settings
       </message>
       <message name="IDS_ASH_DEVICE_SETTINGS_NOTIFICATIONS_LAUNCHER_RIGHT_CLICK" desc="The message shown to notify a user that the shortcut used to simulate a right-click using touchpad and keyboard has changed.">
         The right-click shortcut is updated to alt + click from <ph name="LAUNCHER_KEY_NAME">$1<ex>launcher</ex></ph> key + click

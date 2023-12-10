@@ -7,8 +7,13 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/views/permissions/embedded_permission_prompt_base_view.h"
+#include "chrome/browser/ui/views/permissions/embedded_permission_prompt_view_delegate.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_desktop.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/permission_prompt.h"
+#include "components/permissions/permission_request.h"
+#include "components/permissions/request_type.h"
+#include "ui/views/widget/unique_widget_ptr.h"
 
 class Browser;
 
@@ -16,9 +21,8 @@ namespace content {
 class WebContents;
 }
 
-class EmbeddedPermissionPrompt
-    : public PermissionPromptDesktop,
-      public EmbeddedPermissionPromptBaseView::Delegate {
+class EmbeddedPermissionPrompt : public PermissionPromptDesktop,
+                                 public EmbeddedPermissionPromptViewDelegate {
  public:
   EmbeddedPermissionPrompt(Browser* browser,
                            content::WebContents* web_contents,
@@ -56,7 +60,6 @@ class EmbeddedPermissionPrompt
 
   void CloseCurrentViewAndMaybeShowNext(bool first_prompt);
 
-  void CloseView();
 
   // permissions::PermissionPrompt:
   TabSwitchingBehavior GetTabSwitchingBehavior() override;
@@ -71,8 +74,10 @@ class EmbeddedPermissionPrompt
   void Acknowledge() override;
   void StopAllowing() override;
   void ShowSystemSettings() override;
+  void DismissScrim() override;
   base::WeakPtr<permissions::PermissionPrompt::Delegate>
   GetPermissionPromptDelegate() const override;
+  const std::vector<permissions::PermissionRequest*>& Requests() const override;
 
  private:
   static Variant DeterminePromptVariant(
@@ -80,10 +85,31 @@ class EmbeddedPermissionPrompt
       const content_settings::SettingInfo& info,
       ContentSettingsType type);
 
+  void PrioritizeAndMergeNewVariant(Variant new_variant,
+                                    ContentSettingsType type);
+
+  void RebuildRequests();
+
+  void PromptForOsPermission();
+
+#if BUILDFLAG(IS_MAC)
+  void OnRequestSystemMediaPermissionResponse(
+      const ContentSettingsType request_type,
+      bool grouped_permissions);
+  void RequestMacOSMediaSystemPermission(const ContentSettingsType request_type,
+                                         bool grouped_permissions);
+#endif
+
+  void CloseView();
+
   Variant embedded_prompt_variant_ = Variant::kUninitialized;
-  raw_ptr<EmbeddedPermissionPromptBaseView> prompt_view_;
+  views::UniqueWidgetPtr content_scrim_widget_;
+  views::ViewTracker prompt_view_tracker_;
 
   raw_ptr<permissions::PermissionPrompt::Delegate> delegate_;
+
+  std::set<ContentSettingsType> prompt_types_;
+  std::vector<permissions::PermissionRequest*> requests_;
 
   base::WeakPtrFactory<EmbeddedPermissionPrompt> weak_factory_{this};
 };

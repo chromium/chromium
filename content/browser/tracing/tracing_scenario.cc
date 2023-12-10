@@ -44,10 +44,11 @@ void TracingScenario::TracingSessionDeleter::operator()(
 class TracingScenario::TraceReader
     : public base::RefCountedThreadSafe<TraceReader> {
  public:
-  explicit TraceReader(TracingSession tracing_session)
-      : tracing_session(std::move(tracing_session)) {}
+  explicit TraceReader(TracingSession tracing_session, base::Token trace_uuid)
+      : tracing_session(std::move(tracing_session)), trace_uuid(trace_uuid) {}
 
   TracingSession tracing_session;
+  base::Token trace_uuid;
   std::string serialized_trace;
 
  private:
@@ -536,7 +537,8 @@ void TracingScenario::OnTracingStop() {
     return;
   }
   DCHECK(triggered_rule_);
-  auto reader = base::MakeRefCounted<TraceReader>(std::move(tracing_session));
+  auto reader = base::MakeRefCounted<TraceReader>(std::move(tracing_session),
+                                                  session_id_);
   reader->tracing_session->ReadTrace(
       [task_runner = task_runner_, weak_ptr = GetWeakPtr(), reader,
        triggered_rule = std::move(triggered_rule_).get()](
@@ -546,23 +548,24 @@ void TracingScenario::OnTracingStop() {
         }
         if (!args.has_more) {
           task_runner->PostTask(
-              FROM_HERE,
-              base::BindOnce(&TracingScenario::OnFinalizingDone, weak_ptr,
-                             std::move(reader->serialized_trace),
-                             std::move(reader->tracing_session),
-                             triggered_rule));
+              FROM_HERE, base::BindOnce(&TracingScenario::OnFinalizingDone,
+                                        weak_ptr, reader->trace_uuid,
+                                        std::move(reader->serialized_trace),
+                                        std::move(reader->tracing_session),
+                                        triggered_rule));
         }
       });
 }
 
 void TracingScenario::OnFinalizingDone(
+    base::Token trace_uuid,
     std::string&& serialized_trace,
     TracingSession tracing_session,
     const BackgroundTracingRule* triggered_rule) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   tracing_session.reset();
-  scenario_delegate_->SaveTrace(this, triggered_rule,
+  scenario_delegate_->SaveTrace(this, trace_uuid, triggered_rule,
                                 std::move(serialized_trace));
 }
 

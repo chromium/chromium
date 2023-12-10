@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/companion/core/features.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
@@ -25,6 +26,7 @@ class MockReadAnythingCoordinatorObserver
     : public ReadAnythingCoordinator::Observer {
  public:
   MOCK_METHOD(void, Activate, (bool active), (override));
+  MOCK_METHOD(void, OnActivePageDistillable, (bool distillable), (override));
   MOCK_METHOD(void, OnCoordinatorDestroyed, (), (override));
 };
 
@@ -32,7 +34,8 @@ class ReadAnythingCoordinatorTest : public TestWithBrowserView {
  public:
   void SetUp() override {
     base::test::ScopedFeatureList features;
-    scoped_feature_list_.InitWithFeatures({features::kReadAnything}, {});
+    scoped_feature_list_.InitWithFeatures(
+        {features::kReadAnything, features::kReadAnythingLocalSidePanel}, {});
     TestWithBrowserView::SetUp();
 
     side_panel_coordinator_ =
@@ -42,14 +45,14 @@ class ReadAnythingCoordinatorTest : public TestWithBrowserView {
 
     // Ensure a kReadAnything entry is added to the contextual registry for the
     // first tab.
-    AddTab(browser_view()->browser(), GURL("http://foo1.com"));
+    AddTabToBrowser(GURL("http://foo1.com"));
     auto* tab_one_registry =
         SidePanelRegistry::Get(browser_view()->GetActiveWebContents());
     contextual_registries_.push_back(tab_one_registry);
 
     // Ensure a kReadAnything entry is added to the contextual registry for the
     // second tab.
-    AddTab(browser_view()->browser(), GURL("http://foo2.com"));
+    AddTabToBrowser(GURL("http://foo2.com"));
     auto* tab_two_registry =
         SidePanelRegistry::Get(browser_view()->GetActiveWebContents());
     contextual_registries_.push_back(tab_two_registry);
@@ -86,9 +89,29 @@ class ReadAnythingCoordinatorTest : public TestWithBrowserView {
   void RemoveObserver(ReadAnythingCoordinator::Observer* observer) {
     read_anything_coordinator_->RemoveObserver(observer);
   }
+  std::unique_ptr<views::View> CreateContainerView() {
+    return read_anything_coordinator_->CreateContainerView();
+  }
 
   void OnBrowserSetLastActive(Browser* browser) {
     read_anything_coordinator_->OnBrowserSetLastActive(browser);
+  }
+
+  void ActivePageDistillable() {
+    read_anything_coordinator_->ActivePageDistillable();
+  }
+
+  void ActivePageNotDistillable() {
+    read_anything_coordinator_->ActivePageNotDistillable();
+  }
+
+  void AddTabToBrowser(const GURL& tab_url) {
+    AddTab(browser_view()->browser(), tab_url);
+    // Remove the companion entry if it present.
+    auto* registry =
+        SidePanelRegistry::Get(browser_view()->GetActiveWebContents());
+    registry->Deregister(
+        SidePanelEntry::Key(SidePanelEntry::Id::kSearchCompanion));
   }
 
  protected:
@@ -121,6 +144,12 @@ TEST_F(ReadAnythingCoordinatorTest, ModelAndControllerPersist) {
   side_panel_coordinator_->Close();
   EXPECT_NE(nullptr, GetModel());
   EXPECT_NE(nullptr, GetController());
+}
+
+TEST_F(ReadAnythingCoordinatorTest, ContainerViewsAreUnique) {
+  auto view1 = CreateContainerView();
+  auto view2 = CreateContainerView();
+  EXPECT_NE(view1, view2);
 }
 
 TEST_F(ReadAnythingCoordinatorTest, OnCoordinatorDestroyedCalled) {
@@ -158,6 +187,17 @@ TEST_F(ReadAnythingCoordinatorTest,
   OnBrowserSetLastActive(browser);
 
   EXPECT_FALSE(side_panel_coordinator_->IsSidePanelShowing());
+}
+
+TEST_F(ReadAnythingCoordinatorTest, OnActivePageDistillableCalled) {
+  AddObserver(&coordinator_observer_);
+
+  EXPECT_CALL(coordinator_observer_, OnActivePageDistillable(true)).Times(1);
+  // Called once when calling ActivePageDistillable and once on destruction.
+  EXPECT_CALL(coordinator_observer_, OnActivePageDistillable(false)).Times(2);
+
+  ActivePageDistillable();
+  ActivePageNotDistillable();
 }
 
 class ReadAnythingCoordinatorScreen2xDataCollectionModeTest

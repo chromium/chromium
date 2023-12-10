@@ -38,4 +38,4 @@ class FastCheckoutTriggerValidator {
   FastCheckoutTriggerValidator() = default;
 };
 
-#endif
+#endif  // CHROME_BROWSER_FAST_CHECKOUT_FAST_CHECKOUT_TRIGGER_VALIDATOR_H_

@@ -301,7 +301,7 @@ TEST_F(ImageSanitizerTest, DontHoldOnToCallbacksOnSuccess) {
 TEST_F(ImageSanitizerTest, DataDecoderServiceCrashes) {
   constexpr base::FilePath::CharType kGoodPngName[] =
       FILE_PATH_LITERAL("good.png");
-  in_process_data_decoder().service().SimulateImageDecoderCrashForTesting(true);
+  in_process_data_decoder().SimulateImageDecoderCrash(true);
   CreateValidImage(kGoodPngName);
   base::FilePath good_png(kGoodPngName);
   CreateAndStartSanitizer({good_png});

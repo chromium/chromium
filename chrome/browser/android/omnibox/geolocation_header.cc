@@ -17,8 +17,8 @@ bool HasGeolocationPermission() {
   return Java_GeolocationHeader_hasGeolocationPermission(env);
 }
 
-absl::optional<std::string> GetGeolocationHeaderIfAllowed(const GURL& url,
-                                                          Profile* profile) {
+std::optional<std::string> GetGeolocationHeaderIfAllowed(const GURL& url,
+                                                         Profile* profile) {
   JNIEnv* env = base::android::AttachCurrentThread();
   ProfileAndroid* profile_android = ProfileAndroid::FromProfile(profile);
   DCHECK(profile_android);
@@ -33,7 +33,7 @@ absl::optional<std::string> GetGeolocationHeaderIfAllowed(const GURL& url,
           j_profile_android);
 
   if (!geo_header)
-    return absl::nullopt;
+    return std::nullopt;
 
   return base::android::ConvertJavaStringToUTF8(env, geo_header);
 }

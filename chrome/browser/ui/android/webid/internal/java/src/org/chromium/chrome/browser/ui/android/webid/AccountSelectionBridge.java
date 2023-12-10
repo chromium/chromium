@@ -41,7 +41,10 @@ class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
     private long mNativeView;
     private final AccountSelectionComponent mAccountSelectionComponent;
 
-    private AccountSelectionBridge(long nativeView, Tab tab, WindowAndroid windowAndroid,
+    private AccountSelectionBridge(
+            long nativeView,
+            Tab tab,
+            WindowAndroid windowAndroid,
             BottomSheetController bottomSheetController) {
         mNativeView = nativeView;
         mAccountSelectionComponent =
@@ -61,8 +64,9 @@ class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
     @CalledByNative
     static int getBrandIconIdealSize() {
         Resources resources = ContextUtils.getApplicationContext().getResources();
-        return Math.round(resources.getDimension(R.dimen.account_selection_sheet_icon_size)
-                / MASKABLE_ICON_SAFE_ZONE_DIAMETER_RATIO);
+        return Math.round(
+                resources.getDimension(R.dimen.account_selection_sheet_icon_size)
+                        / MASKABLE_ICON_SAFE_ZONE_DIAMETER_RATIO);
     }
 
     @CalledByNative
@@ -95,12 +99,25 @@ class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
      *         the FedCM prompt: "signin", "continue", etc.
      */
     @CalledByNative
-    private void showAccounts(String topFrameForDisplay, String iframeForDisplay,
-            String idpForDisplay, Account[] accounts, IdentityProviderMetadata idpMetadata,
-            ClientIdMetadata clientIdMetadata, boolean isAutoReauthn, String rpContext) {
+    private void showAccounts(
+            String topFrameForDisplay,
+            String iframeForDisplay,
+            String idpForDisplay,
+            Account[] accounts,
+            IdentityProviderMetadata idpMetadata,
+            ClientIdMetadata clientIdMetadata,
+            boolean isAutoReauthn,
+            String rpContext) {
         assert accounts != null && accounts.length > 0;
-        mAccountSelectionComponent.showAccounts(topFrameForDisplay, iframeForDisplay, idpForDisplay,
-                Arrays.asList(accounts), idpMetadata, clientIdMetadata, isAutoReauthn, rpContext);
+        mAccountSelectionComponent.showAccounts(
+                topFrameForDisplay,
+                iframeForDisplay,
+                idpForDisplay,
+                Arrays.asList(accounts),
+                idpMetadata,
+                clientIdMetadata,
+                isAutoReauthn,
+                rpContext);
     }
 
     /**
@@ -115,8 +132,12 @@ class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
      *         the FedCM prompt: "signin", "continue", etc.
      */
     @CalledByNative
-    private void showFailureDialog(String topFrameForDisplay, String iframeForDisplay,
-            String idpForDisplay, IdentityProviderMetadata idpMetadata, String rpContext) {
+    private void showFailureDialog(
+            String topFrameForDisplay,
+            String iframeForDisplay,
+            String idpForDisplay,
+            IdentityProviderMetadata idpMetadata,
+            String rpContext) {
         mAccountSelectionComponent.showFailureDialog(
                 topFrameForDisplay, iframeForDisplay, idpForDisplay, idpMetadata, rpContext);
     }
@@ -135,8 +156,12 @@ class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
      *         FedCM prompt.
      */
     @CalledByNative
-    private void showErrorDialog(String topFrameForDisplay, String iframeForDisplay,
-            String idpForDisplay, IdentityProviderMetadata idpMetadata, String rpContext,
+    private void showErrorDialog(
+            String topFrameForDisplay,
+            String iframeForDisplay,
+            String idpForDisplay,
+            IdentityProviderMetadata idpMetadata,
+            String rpContext,
             IdentityCredentialTokenError error) {
         mAccountSelectionComponent.showErrorDialog(
                 topFrameForDisplay, iframeForDisplay, idpForDisplay, idpMetadata, rpContext, error);
@@ -175,15 +200,20 @@ class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
             // This call passes the account fields directly as String and GURL parameters as an
             // optimization to avoid needing multiple JNI getters on the Account class on for each
             // field.
-            AccountSelectionBridgeJni.get().onAccountSelected(mNativeView, idpConfigUrl,
-                    account.getStringFields(), account.getPictureUrl(), account.isSignIn());
+            AccountSelectionBridgeJni.get()
+                    .onAccountSelected(
+                            mNativeView,
+                            idpConfigUrl,
+                            account.getStringFields(),
+                            account.getPictureUrl(),
+                            account.isSignIn());
         }
     }
 
     @Override
-    public void onSignInToIdp(GURL idpLoginUrl) {
+    public void onLoginToIdP(GURL idpLoginUrl) {
         if (mNativeView != 0) {
-            AccountSelectionBridgeJni.get().onSignInToIdp(mNativeView, idpLoginUrl);
+            AccountSelectionBridgeJni.get().onLoginToIdP(mNativeView, idpLoginUrl);
         }
     }
 
@@ -201,12 +231,18 @@ class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
 
     @NativeMethods
     interface Natives {
-        void onAccountSelected(long nativeAccountSelectionViewAndroid, GURL idpConfigUrl,
-                String[] accountFields, GURL accountPictureUrl, boolean isSignedIn);
-        void onDismiss(long nativeAccountSelectionViewAndroid,
+        void onAccountSelected(
+                long nativeAccountSelectionViewAndroid,
+                GURL idpConfigUrl,
+                String[] accountFields,
+                GURL accountPictureUrl,
+                boolean isSignedIn);
+
+        void onDismiss(
+                long nativeAccountSelectionViewAndroid,
                 @IdentityRequestDialogDismissReason int dismissReason);
 
-        void onSignInToIdp(long nativeAccountSelectionViewAndroid, GURL idpLoginUrl);
+        void onLoginToIdP(long nativeAccountSelectionViewAndroid, GURL idpLoginUrl);
 
         void onMoreDetails(long nativeAccountSelectionViewAndroid);
     }

@@ -137,16 +137,31 @@ bool WebDialogDelegate::HandleShouldOverrideWebContentsCreation() {
 }
 
 std::vector<Accelerator> WebDialogDelegate::GetAccelerators() {
-  return std::vector<Accelerator>();
+  std::vector<Accelerator> result;
+  for (const auto& entry : accelerators_) {
+    result.push_back(entry.first);
+  }
+  return result;
 }
 
 bool WebDialogDelegate::AcceleratorPressed(const Accelerator& accelerator) {
-  return false;
+  auto it = accelerators_.find(accelerator);
+  if (it != accelerators_.end()) {
+    return it->second.Run(*this, accelerator);
+  } else {
+    return false;
+  }
+}
+
+void WebDialogDelegate::RegisterAccelerator(Accelerator accelerator,
+                                            AcceleratorHandler handler) {
+  CHECK(!accelerators_.contains(accelerator));
+  accelerators_.insert(std::make_pair(accelerator, handler));
 }
 
 bool WebDialogDelegate::CheckMediaAccessPermission(
     content::RenderFrameHost* render_frame_host,
-    const GURL& security_origin,
+    const url::Origin& security_origin,
     blink::mojom::MediaStreamType type) {
   return false;
 }

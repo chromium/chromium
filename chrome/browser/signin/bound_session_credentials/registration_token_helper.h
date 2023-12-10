@@ -11,7 +11,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "components/unexportable_keys/service_error.h"
 #include "components/unexportable_keys/unexportable_key_id.h"
 #include "crypto/signature_verifier.h"

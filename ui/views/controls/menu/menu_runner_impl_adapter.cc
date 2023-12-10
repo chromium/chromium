@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/menu_model_adapter.h"
 #include "ui/views/controls/menu/menu_runner_impl.h"
 
@@ -35,7 +36,8 @@ void MenuRunnerImplAdapter::RunMenuAt(
     MenuAnchorPosition anchor,
     int32_t types,
     gfx::NativeView native_view_for_gestures,
-    absl::optional<gfx::RoundedCornersF> corners) {
+    absl::optional<gfx::RoundedCornersF> corners,
+    absl::optional<std::string> show_menu_host_duration_histogram) {
   impl_->RunMenuAt(parent, button_controller, bounds, anchor, types,
                    native_view_for_gestures);
 }

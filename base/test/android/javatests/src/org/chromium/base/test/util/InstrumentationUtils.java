@@ -10,16 +10,13 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
 
-/**
- * Utility methods built around the android.app.Instrumentation class.
- */
+/** Utility methods built around the android.app.Instrumentation class. */
 public final class InstrumentationUtils {
 
-    private InstrumentationUtils() {
-    }
+    private InstrumentationUtils() {}
 
-    public static <R> R runOnMainSyncAndGetResult(Instrumentation instrumentation,
-            Callable<R> callable) throws Throwable {
+    public static <R> R runOnMainSyncAndGetResult(
+            Instrumentation instrumentation, Callable<R> callable) throws Throwable {
         FutureTask<R> task = new FutureTask<R>(callable);
         instrumentation.runOnMainSync(task);
         try {

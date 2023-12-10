@@ -205,7 +205,6 @@ class MockClientSocket : public StreamSocket {
   const NetLogWithSource& NetLog() const override { return net_log_; }
 
   bool WasEverUsed() const override { return was_used_to_convey_data_; }
-  bool WasAlpnNegotiated() const override { return false; }
   NextProto GetNegotiatedProtocol() const override { return kProtoUnknown; }
   bool GetSSLInfo(SSLInfo* ssl_info) override { return false; }
   int64_t GetTotalReceivedBytes() const override {
@@ -709,7 +708,10 @@ class ClientSocketPoolBaseTest : public TestWithTaskEnvironment {
       /*network_quality_estimator=*/nullptr,
       NetLog::Get(),
       /*websocket_endpoint_lock_manager=*/nullptr,
-      /*http_server_properties=*/nullptr};
+      /*http_server_properties=*/nullptr,
+      /*alpn_protos=*/nullptr,
+      /*application_settings=*/nullptr,
+      /*ignore_certificate_errors=*/nullptr};
   bool connect_backup_jobs_enabled_;
   MockClientSocketFactory client_socket_factory_;
   RecordingNetLogObserver net_log_observer_;
@@ -5936,11 +5938,17 @@ TEST_P(ClientSocketPoolBaseRefreshTest,
 }
 
 TEST_F(ClientSocketPoolBaseTest, RefreshProxyRefreshesAllGroups) {
+  // Create a proxy chain containing `myproxy` (which is refreshed) and
+  // nonrefreshedproxy (which is not), verifying that if any proxy in a chain is
+  // refreshed, all groups are refreshed.
+  ProxyChain proxy_chain({
+      PacResultElementToProxyServer("HTTPS myproxy:70"),
+      PacResultElementToProxyServer("HTTPS nonrefreshedproxy:70"),
+  });
   CreatePoolWithIdleTimeouts(kDefaultMaxSockets, kDefaultMaxSocketsPerGroup,
                              kUnusedIdleSocketTimeout,
                              ClientSocketPool::used_idle_socket_timeout(),
-                             false /* no backup connect jobs */,
-                             PacResultElementToProxyChain("HTTPS myproxy:70"));
+                             false /* no backup connect jobs */, proxy_chain);
 
   const ClientSocketPool::GroupId kGroupId1 =
       TestGroupId("a", 443, url::kHttpsScheme);

@@ -18,6 +18,7 @@
 #include "components/services/storage/public/mojom/local_storage_control.mojom-forward.h"
 #include "content/common/content_export.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/public/mojom/cert_verifier_service.mojom-forward.h"
 #include "services/network/public/mojom/cookie_manager.mojom-forward.h"
 #include "services/network/public/mojom/restricted_cookie_manager.mojom-forward.h"
 #include "services/network/public/mojom/trust_tokens.mojom-forward.h"
@@ -95,14 +96,17 @@ class NavigationRequest;
 class CONTENT_EXPORT StoragePartition {
  public:
   // Returns the StoragePartitionConfig that represents this StoragePartition.
-  virtual const StoragePartitionConfig& GetConfig() = 0;
+  virtual const StoragePartitionConfig& GetConfig() const = 0;
 
-  virtual base::FilePath GetPath() = 0;
+  virtual const base::FilePath& GetPath() const = 0;
 
   // Returns a raw mojom::NetworkContext pointer. When network service crashes
   // or restarts, the raw pointer will not be valid or safe to use. Therefore,
   // caller should not hold onto this pointer beyond the same message loop task.
   virtual network::mojom::NetworkContext* GetNetworkContext() = 0;
+
+  virtual cert_verifier::mojom::CertVerifierServiceUpdater*
+  GetCertVerifierServiceUpdater() = 0;
 
   // Returns the SharedStorageManager for the StoragePartition, or nullptr if it
   // doesn't exist because the feature is disabled.
@@ -341,6 +345,10 @@ class CONTENT_EXPORT StoragePartition {
   // Call |FlushForTesting()| on Network Service related interfaces. For test
   // use only.
   virtual void FlushNetworkInterfaceForTesting() = 0;
+
+  // Call |FlushForTesting()| on Cert Verifier Service related interfaces. For
+  // test use only.
+  virtual void FlushCertVerifierInterfaceForTesting() = 0;
 
   // Wait until all deletions tasks are finished. For test use only.
   virtual void WaitForDeletionTasksForTesting() = 0;

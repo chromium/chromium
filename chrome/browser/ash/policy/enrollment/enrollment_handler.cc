@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/policy/enrollment/enrollment_handler.h"
 
+#include <optional>
 #include <utility>
 
 #include "ash/constants/ash_features.h"
@@ -46,7 +47,6 @@
 #include "google_apis/gaia/gaia_urls.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace policy {
 
@@ -125,8 +125,8 @@ em::DeviceRegisterRequest::Flavor EnrollmentModeToRegistrationFlavor(
 // Returns the PSM protocol execution result if prefs::kEnrollmentPsmResult is
 // set, and its value is within the
 // em::DeviceRegisterRequest::PsmExecutionResult enum range. Otherwise,
-// absl::nullopt.
-absl::optional<PsmExecutionResult> GetPsmExecutionResult(
+// std::nullopt.
+std::optional<PsmExecutionResult> GetPsmExecutionResult(
     const PrefService& local_state) {
   const PrefService::Preference* has_psm_execution_result_pref =
       local_state.FindPreference(prefs::kEnrollmentPsmResult);
@@ -134,7 +134,7 @@ absl::optional<PsmExecutionResult> GetPsmExecutionResult(
   if (!has_psm_execution_result_pref ||
       has_psm_execution_result_pref->IsDefaultValue() ||
       !has_psm_execution_result_pref->GetValue()->is_int()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   int psm_execution_result =
@@ -144,7 +144,7 @@ absl::optional<PsmExecutionResult> GetPsmExecutionResult(
   // em::DeviceRegisterRequest::PsmExecutionResult enum.
   if (!em::DeviceRegisterRequest::PsmExecutionResult_IsValid(
           psm_execution_result))
-    return absl::nullopt;
+    return std::nullopt;
 
   // Cast the psm_execution_result integer value to its corresponding enum
   // entry.
@@ -152,15 +152,15 @@ absl::optional<PsmExecutionResult> GetPsmExecutionResult(
 }
 
 // Returns the PSM determination timestamp in ms if
-// prefs::kEnrollmentPsmDeterminationTime is set. Otherwise, absl::nullopt.
-absl::optional<int64_t> GetPsmDeterminationTimestamp(
+// prefs::kEnrollmentPsmDeterminationTime is set. Otherwise, std::nullopt.
+std::optional<int64_t> GetPsmDeterminationTimestamp(
     const PrefService& local_state) {
   const PrefService::Preference* has_psm_determination_timestamp_pref =
       local_state.FindPreference(prefs::kEnrollmentPsmDeterminationTime);
 
   if (!has_psm_determination_timestamp_pref ||
       has_psm_determination_timestamp_pref->IsDefaultValue()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   const base::Time psm_determination_timestamp =
@@ -490,7 +490,7 @@ void EnrollmentHandler::OnGetFeaturesReady(
       /*force_new_key=*/true,
       /*key_crypto_type=*/key_crypto_type,
       /*key_name=*/ash::attestation::kEnterpriseEnrollmentKey,
-      /*profile_specific_data=*/absl::nullopt,
+      /*profile_specific_data=*/std::nullopt,
       /*callback=*/std::move(callback));
 }
 
@@ -559,7 +559,7 @@ void EnrollmentHandler::OnDeviceAccountTokenFetched(bool empty_token) {
 }
 
 void EnrollmentHandler::OnDeviceAccountTokenFetchError(
-    absl::optional<DeviceManagementStatus> dm_status) {
+    std::optional<DeviceManagementStatus> dm_status) {
   CHECK_EQ(enrollment_step_, STEP_ROBOT_AUTH_FETCH);
   if (dm_status.has_value()) {
     ReportResult(EnrollmentStatus::ForRobotAuthFetchError(dm_status.value()));
@@ -618,8 +618,7 @@ void EnrollmentHandler::SetFirmwareManagementParametersData() {
 }
 
 void EnrollmentHandler::OnFirmwareManagementParametersDataSet(
-    absl::optional<user_data_auth::SetFirmwareManagementParametersReply>
-        reply) {
+    std::optional<user_data_auth::SetFirmwareManagementParametersReply> reply) {
   DCHECK_EQ(STEP_SET_FWMP_DATA, enrollment_step_);
   if (!reply.has_value()) {
     LOG(ERROR) << "Failed to update firmware management parameters in TPM due "

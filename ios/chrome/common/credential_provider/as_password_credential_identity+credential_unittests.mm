@@ -17,7 +17,7 @@ using ASPasswordCredentialIdentity_CredentialTest = PlatformTest;
 TEST_F(ASPasswordCredentialIdentity_CredentialTest, create) {
   ArchivableCredential* credential =
       [[ArchivableCredential alloc] initWithFavicon:@"favicon"
-                                 keychainIdentifier:@"keychainIdentifier"
+                                           password:@"qwerty!"
                                                rank:5
                                    recordIdentifier:@"recordIdentifier"
                                   serviceIdentifier:@"serviceIdentifier"

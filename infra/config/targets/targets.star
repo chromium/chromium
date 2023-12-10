@@ -239,6 +239,11 @@ targets.console_test_launcher(
     label = "//third_party/blink/renderer/controller:blink_unittests",
 )
 
+targets.console_test_launcher(
+    name = "blink_unittests_v2",
+    label = "//third_party/blink/renderer/controller:blink_unittests_v2",
+)
+
 targets.generated_script(
     name = "blink_web_tests",
     label = "//:blink_web_tests",
@@ -556,7 +561,20 @@ targets.script(
         "../../testing/scripts/run_chromedriver_tests.py",
         "../../chrome/test/chromedriver/test/run_py_tests.py",
         "--chromedriver=chromedriver",
-        "--log-path=${ISOLATED_OUTDIR}/chromedriver.log",
+        "--log-path=${ISOLATED_OUTDIR}/chrome.chromedriver.log",
+        "--browser-name=chrome",
+    ],
+)
+
+targets.script(
+    name = "chromedriver_py_tests_headless_shell",
+    label = "//chrome/test/chromedriver:chromedriver_py_tests_headless_shell",
+    script = "//testing/scripts/run_chromedriver_tests.py",
+    args = [
+        "../../chrome/test/chromedriver/test/run_py_tests.py",
+        "--chromedriver=chromedriver",
+        "--log-path=${ISOLATED_OUTDIR}/chrome-headless-shell.chromedriver.log",
+        "--browser-name=chrome-headless-shell",
     ],
 )
 
@@ -815,6 +833,11 @@ targets.console_test_launcher(
 targets.generated_script(
     name = "cronet_sizes",
     label = "//components/cronet/android:cronet_sizes",
+)
+
+targets.console_test_launcher(
+    name = "cronet_smoketests_apk",
+    label = "//components/cronet/android:cronet_smoketests_apk",
 )
 
 targets.console_test_launcher(
@@ -1238,14 +1261,6 @@ targets.generated_script(
     ],
 )
 
-targets.generated_script(
-    name = "lacros_all_tast_tests_informational",
-    label = "//chromeos/lacros:lacros_all_tast_tests_informational",
-    args = [
-        "--logs-dir=${ISOLATED_OUTDIR}",
-    ],
-)
-
 targets.windowed_test_launcher(
     name = "lacros_chrome_browsertests",
     label = "//chrome/test:lacros_chrome_browsertests",
@@ -1262,14 +1277,6 @@ targets.console_test_launcher(
 targets.generated_script(
     name = "lacros_cq_tast_tests_eve",
     label = "//chromeos/lacros:lacros_cq_tast_tests_eve",
-    args = [
-        "--logs-dir=${ISOLATED_OUTDIR}",
-    ],
-)
-
-targets.generated_script(
-    name = "lacros_fyi_tast_tests",
-    label = "//chromeos/lacros:lacros_fyi_tast_tests",
     args = [
         "--logs-dir=${ISOLATED_OUTDIR}",
     ],
@@ -1524,6 +1531,16 @@ targets.console_test_launcher(
 targets.windowed_test_launcher(
     name = "notification_helper_unittests",
     label = "//chrome/notification_helper:notification_helper_unittests",
+)
+
+targets.compile_target(
+    name = "ondevice_model_benchmark",
+    label = "//components/optimization_guide/internal:ondevice_model_benchmark",
+)
+
+targets.compile_target(
+    name = "ondevice_model_example",
+    label = "//components/optimization_guide/internal:ondevice_model_example",
 )
 
 targets.console_test_launcher(
@@ -2027,7 +2044,7 @@ targets.script(
 
 targets.generated_script(
     name = "touch_to_fill_junit_tests",
-    label = "//chrome/browser/touch_to_fill/android:touch_to_fill_junit_tests",
+    label = "//chrome/browser/touch_to_fill/password_manager/android:touch_to_fill_junit_tests",
 )
 
 targets.compile_target(
@@ -2076,7 +2093,7 @@ targets.windowed_test_launcher(
 
 targets.generated_script(
     name = "ui_junit_tests",
-    label = "//ui/android:ui_junit_tests",
+    label = "//ui:ui_junit_tests",
 )
 
 targets.windowed_test_launcher(

@@ -13,9 +13,9 @@ if (is_android) {
 
     deps = [
       "//base:base_java",
-      "//base:jni_java",
       "//build/android:build_java",
       "//components/prefs/android:java",
+      "//third_party/jni_zero:jni_zero_java",
     ]
 
     srcjar_deps = [ ":supervised_user_preferences_jni_headers" ]

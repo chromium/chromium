@@ -86,6 +86,5 @@ void MediaItemUICastFooterView::StopCasting() {
   stop_casting_callback_.Run();
 }
 
-BEGIN_METADATA(MediaItemUICastFooterView,
-               global_media_controls::MediaItemUIFooter)
+BEGIN_METADATA(MediaItemUICastFooterView)
 END_METADATA

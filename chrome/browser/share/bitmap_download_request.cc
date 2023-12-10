@@ -16,6 +16,7 @@
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/gfx/android/java_bitmap.h"
 
+using base::android::ConvertJavaStringToUTF16;
 using base::android::JavaParamRef;
 
 static void JNI_BitmapDownloadRequest_DownloadBitmap(

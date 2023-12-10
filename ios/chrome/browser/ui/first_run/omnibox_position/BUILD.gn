@@ -1,0 +1,72 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("omnibox_position") {
+  sources = [
+    "omnibox_position_choice_coordinator.h",
+    "omnibox_position_choice_coordinator.mm",
+    "omnibox_position_choice_mediator.h",
+    "omnibox_position_choice_mediator.mm",
+  ]
+  deps = [
+    ":omnibox_position_ui",
+    "//components/prefs",
+    "//ios/chrome/browser/first_run/model",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/ui/first_run:interruptible_chrome_coordinator",
+    "//ios/chrome/browser/ui/first_run:screen_delegate",
+    "//ios/chrome/browser/ui/promos_manager:promos",
+  ]
+}
+
+source_set("omnibox_position_ui") {
+  sources = [
+    "omnibox_position_choice_consumer.h",
+    "omnibox_position_choice_mutator.h",
+    "omnibox_position_choice_util.h",
+    "omnibox_position_choice_util.mm",
+    "omnibox_position_choice_view_controller.h",
+    "omnibox_position_choice_view_controller.mm",
+  ]
+  deps = [
+    "//components/prefs",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/ui/first_run:constants",
+    "//ios/chrome/browser/ui/settings/address_bar_preference/cells",
+    "//ios/chrome/browser/ui/toolbar/public",
+    "//ios/chrome/common/ui/promo_style",
+    "//ios/chrome/common/ui/util",
+    "//ui/base",
+  ]
+}
+
+source_set("eg2_tests") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [ "omnibox_position_egtest.mm" ]
+  deps = [
+    "//base",
+    "//build:branding_buildflags",
+    "//components/search_engines",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/promos_manager:features",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/ui/authentication:eg_test_support+eg2",
+    "//ios/chrome/browser/ui/first_run:constants",
+    "//ios/chrome/common/ui/promo_style:constants",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/chrome/test/earl_grey:switches",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}

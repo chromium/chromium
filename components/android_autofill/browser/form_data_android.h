@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/android/scoped_java_ref.h"
+#include "base/types/strong_alias.h"
 #include "components/autofill/core/common/form_data.h"
 
 namespace autofill {
@@ -18,11 +19,13 @@ class FormDataAndroidBridge;
 class FormFieldDataAndroid;
 class FormStructure;
 
+using SessionId = base::StrongAlias<class SessionIdTag, int>;
+
 // This class is the native peer of `FormData.java` to make
 // `autofill::FormData` available in Java.
 class FormDataAndroid {
  public:
-  explicit FormDataAndroid(const FormData& form);
+  FormDataAndroid(const FormData& form, SessionId session_id);
   FormDataAndroid(const FormDataAndroid&) = delete;
   FormDataAndroid& operator=(const FormDataAndroid&) = delete;
 
@@ -66,7 +69,13 @@ class FormDataAndroid {
 
   const FormData& form() const { return form_; }
 
+  SessionId session_id() const { return session_id_; }
+
  private:
+  // The session id of this form. It is used to generate virtual view ids for
+  // the `ViewStructure` shared with the Android AutofillManager framework.
+  const SessionId session_id_;
+
   // A copy of the form passed in through the constructor.
   FormData form_;
   std::vector<std::unique_ptr<FormFieldDataAndroid>> fields_;

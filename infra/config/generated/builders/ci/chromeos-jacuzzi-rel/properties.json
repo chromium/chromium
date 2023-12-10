@@ -1,6 +1,9 @@
 {
   "$build/chromium_tests_builder_config": {
     "builder_config": {
+      "additional_exclusions": [
+        "infra/config/generated/builders/ci/chromeos-jacuzzi-rel/gn-args.json"
+      ],
       "builder_db": {
         "entries": [
           {
@@ -28,7 +31,7 @@
               },
               "legacy_gclient_config": {
                 "apply_configs": [
-                  "arm",
+                  "arm64",
                   "chromeos"
                 ],
                 "config": "chromium"

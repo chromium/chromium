@@ -246,7 +246,7 @@ class MacNotificationServiceUNTest : public testing::Test {
         notification_id, mojom::ProfileIdentifier::New(profile_id, incognito));
     auto meta = mojom::NotificationMetadata::New(
         std::move(notification_identifier), /*type=*/0, /*origin_url=*/GURL(),
-        /*creator_pid=*/0);
+        /*user_data_dir=*/"");
     std::vector<mac_notifications::mojom::NotificationActionButtonPtr> buttons;
 
     return mac_notifications::mojom::Notification::New(

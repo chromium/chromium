@@ -1171,8 +1171,8 @@ TEST_P(SignatureValidationNativeExtensionBindingsSystemUnittest,
                             ->request_handler()
                             ->has_response_validator_for_testing());
 
-  absl::optional<std::string> validation_failure_method_name;
-  absl::optional<std::string> validation_failure_error;
+  std::optional<std::string> validation_failure_method_name;
+  std::optional<std::string> validation_failure_error;
 
   auto on_validation_failure =
       [&validation_failure_method_name, &validation_failure_error](
@@ -1247,8 +1247,8 @@ TEST_P(SignatureValidationNativeExtensionBindingsSystemUnittest,
                             ->request_handler()
                             ->has_response_validator_for_testing());
 
-  absl::optional<std::string> validation_failure_method_name;
-  absl::optional<std::string> validation_failure_error;
+  std::optional<std::string> validation_failure_method_name;
+  std::optional<std::string> validation_failure_error;
 
   auto on_validation_failure =
       [&validation_failure_method_name, &validation_failure_error](

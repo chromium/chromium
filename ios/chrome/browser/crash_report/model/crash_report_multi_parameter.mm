@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/crash_report/model/crash_report_multi_parameter.h"
 
 #import <memory>
+#import <optional>
 
 #import "base/check.h"
 #import "base/json/json_writer.h"
@@ -13,7 +14,6 @@
 #import "base/values.h"
 #import "components/previous_session_info/previous_session_info.h"
 #import "ios/chrome/browser/crash_report/model/crash_helper.h"
-#import "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 // The maximum size of the multi parameter key.
@@ -51,7 +51,7 @@ const int kMaximumMultiParameterValueSize = 256;
 }
 
 - (void)decrementValue:(base::StringPiece)key {
-  const absl::optional<int> maybe_value = _dictionary.FindInt(key);
+  const std::optional<int> maybe_value = _dictionary.FindInt(key);
   if (maybe_value.has_value()) {
     const int value = maybe_value.value();
     if (value <= 1) {

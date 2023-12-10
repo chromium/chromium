@@ -9,43 +9,43 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_node_data.h"
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_layout_input_node.h"
+#include "third_party/blink/renderer/core/layout/layout_input_node.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_character_data.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 
+class BreakToken;
+class ColumnSpannerPath;
+class ConstraintSpace;
 class InlineChildLayoutContext;
-class NGBreakToken;
-class NGColumnSpannerPath;
-class NGConstraintSpace;
-class NGLayoutResult;
+class LayoutResult;
 class OffsetMapping;
 struct InlineItemsData;
 struct SvgTextContentRange;
 
 // Represents an anonymous block box to be laid out, that contains consecutive
 // inline nodes and their descendants.
-class CORE_EXPORT InlineNode : public NGLayoutInputNode {
+class CORE_EXPORT InlineNode : public LayoutInputNode {
  public:
   explicit InlineNode(LayoutBlockFlow*);
-  explicit InlineNode(std::nullptr_t) : NGLayoutInputNode(nullptr) {}
+  explicit InlineNode(std::nullptr_t) : LayoutInputNode(nullptr) {}
 
   LayoutBlockFlow* GetLayoutBlockFlow() const {
     return To<LayoutBlockFlow>(box_.Get());
   }
 
-  const NGLayoutResult* Layout(const NGConstraintSpace&,
-                               const NGBreakToken*,
-                               const NGColumnSpannerPath*,
-                               InlineChildLayoutContext* context) const;
+  const LayoutResult* Layout(const ConstraintSpace&,
+                             const BreakToken*,
+                             const ColumnSpannerPath*,
+                             InlineChildLayoutContext* context) const;
 
   // Computes the value of min-content and max-content for this anonymous block
   // box. min-content is the inline size when lines wrap at every break
   // opportunity, and max-content is when lines do not wrap at all.
   MinMaxSizesResult ComputeMinMaxSizes(WritingMode container_writing_mode,
-                                       const NGConstraintSpace&,
+                                       const ConstraintSpace&,
                                        const MinMaxSizesFloatInput&) const;
 
   // Instruct to re-compute |PrepareLayout| on the next layout.
@@ -105,7 +105,7 @@ class CORE_EXPORT InlineNode : public NGLayoutInputNode {
   bool IsBisectLineBreakDisabled() const {
     return Data().IsBisectLineBreakDisabled();
   }
-  // True if this node can't use the `NGScorehLineBreaker`, that can be
+  // True if this node can't use the `ScoreLineBreaker`, that can be
   // determined by `CollectInlines`. Conditions that can change without
   // `CollectInlines` are in `LineBreaker::ShouldDisableScoreLineBreak()`.
   bool IsScoreLineBreakDisabled() const {
@@ -185,8 +185,8 @@ class CORE_EXPORT InlineNode : public NGLayoutInputNode {
     return To<LayoutBlockFlow>(box_.Get())->GetInlineNodeData();
   }
   const InlineNodeData& Data() const {
-    DCHECK(IsPrepareLayoutFinished() &&
-           !GetLayoutBlockFlow()->NeedsCollectInlines());
+    DCHECK(IsPrepareLayoutFinished());
+    DCHECK(!GetLayoutBlockFlow()->NeedsCollectInlines());
     return *To<LayoutBlockFlow>(box_.Get())->GetInlineNodeData();
   }
   // Same as |Data()| but can access even when |NeedsCollectInlines()| is set.
@@ -216,9 +216,7 @@ inline bool InlineNode::IsStickyImagesQuirkForContentSize() const {
 
 template <>
 struct DowncastTraits<InlineNode> {
-  static bool AllowFrom(const NGLayoutInputNode& node) {
-    return node.IsInline();
-  }
+  static bool AllowFrom(const LayoutInputNode& node) { return node.IsInline(); }
 };
 
 }  // namespace blink

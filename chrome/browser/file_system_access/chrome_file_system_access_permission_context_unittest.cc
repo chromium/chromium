@@ -9,6 +9,7 @@
 
 #include "base/base_paths.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/json/values_util.h"
 #include "base/strings/strcat.h"
@@ -73,6 +74,8 @@ using PermissionRequestOutcome =
     content::FileSystemAccessPermissionGrant::PermissionRequestOutcome;
 using PermissionStatus =
     content::FileSystemAccessPermissionGrant::PermissionStatus;
+using RestorePermissionPromptOutcome =
+    ChromeFileSystemAccessPermissionContext::RestorePermissionPromptOutcome;
 using SensitiveDirectoryResult =
     ChromeFileSystemAccessPermissionContext::SensitiveEntryResult;
 using UserActivationState =
@@ -94,6 +97,8 @@ class TestFileSystemAccessPermissionContext
 
 class ChromeFileSystemAccessPermissionContextTest : public testing::Test {
  public:
+  // TODO(crbug.com/1467574): Remove `kFileSystemAccessPersistentPermissions`
+  // flag after FSA Persistent Permissions feature launch.
   ChromeFileSystemAccessPermissionContextTest() {
     scoped_feature_list_.InitWithFeatures(
         {features::kFileSystemAccessPersistentPermissions,
@@ -204,6 +209,9 @@ class ChromeFileSystemAccessPermissionContextTest : public testing::Test {
                               future.GetCallback());
     auto result = future.Get();
     if (result == PermissionRequestOutcome::kGrantedByRestorePrompt) {
+      histograms.ExpectBucketCount(
+          "Storage.FileSystemAccess.RestorePermissionPromptOutcome",
+          RestorePermissionPromptOutcome::kAllowed, 1);
       EXPECT_EQ(grant1->GetStatus(), PermissionStatus::GRANTED);
       EXPECT_EQ(grant2->GetStatus(), PermissionStatus::GRANTED);
     } else {
@@ -267,6 +275,8 @@ class ChromeFileSystemAccessPermissionContextTest : public testing::Test {
 class ChromeFileSystemAccessPermissionContextNoPersistenceTest
     : public ChromeFileSystemAccessPermissionContextTest {
  public:
+  // TODO(crbug.com/1467574): Remove `kFileSystemAccessPersistentPermissions`
+  // flag after FSA Persistent Permissions feature launch.
   ChromeFileSystemAccessPermissionContextNoPersistenceTest() {
     scoped_feature_list_.InitAndDisableFeature(
         features::kFileSystemAccessPersistentPermissions);
@@ -613,38 +623,70 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
 }
 #endif
 
+#if BUILDFLAG(IS_POSIX)
+// Test enabled on POSIX, as `base::CreateSymbolicLink()` is currently only
+// supported on POSIX. This should be enabled on Windows once supported.
+TEST_F(ChromeFileSystemAccessPermissionContextTest,
+       ConfirmSensitiveEntryAccess_ResolveSymbolicLink) {
+  if (!base::FeatureList::IsEnabled(
+          features::kFileSystemAccessSymbolicLinkCheck)) {
+    return;
+  }
+
+  base::FilePath symlink1 = temp_dir_.GetPath().AppendASCII("symlink1");
+  base::FilePath app_dir = temp_dir_.GetPath().AppendASCII("app");
+  base::ScopedPathOverride app_override(base::DIR_EXE, app_dir, true, true);
+  ASSERT_TRUE(base::CreateSymbolicLink(app_dir, symlink1));
+  EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
+                permission_context(), PathType::kLocal, symlink1,
+                HandleType::kFile, UserAction::kOpen),
+            SensitiveDirectoryResult::kAbort);
+
+  base::FilePath symlink2 = temp_dir_.GetPath().AppendASCII("symlink2");
+  base::FilePath allowed_file = temp_dir_.GetPath().AppendASCII("foo");
+  ASSERT_TRUE(base::CreateSymbolicLink(allowed_file, symlink2));
+  EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
+                permission_context(), PathType::kLocal, symlink2,
+                HandleType::kFile, UserAction::kOpen),
+            SensitiveDirectoryResult::kAllowed);
+}
+#endif
+
 TEST_F(ChromeFileSystemAccessPermissionContextTest,
        ConfirmSensitiveEntryAccess_DangerousFile) {
+  base::FilePath home_dir = temp_dir_.GetPath().AppendASCII("home");
+  base::ScopedPathOverride home_override(base::DIR_HOME, home_dir, true, true);
+
   // Saving files with a harmless extension should be allowed.
-  EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
-                permission_context(), PathType::kLocal,
-                temp_dir_.GetPath().AppendASCII("test.txt"), HandleType::kFile,
-                UserAction::kSave),
-            SensitiveDirectoryResult::kAllowed);
+  EXPECT_EQ(
+      ConfirmSensitiveEntryAccessSync(permission_context(), PathType::kLocal,
+                                      home_dir.AppendASCII("test.txt"),
+                                      HandleType::kFile, UserAction::kSave),
+      SensitiveDirectoryResult::kAllowed);
   // Saving files with a dangerous extension should show a prompt.
-  EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
-                permission_context(), PathType::kLocal,
-                temp_dir_.GetPath().AppendASCII("test.swf"), HandleType::kFile,
-                UserAction::kSave),
-            SensitiveDirectoryResult::kAbort);
+  EXPECT_EQ(
+      ConfirmSensitiveEntryAccessSync(permission_context(), PathType::kLocal,
+                                      home_dir.AppendASCII("test.swf"),
+                                      HandleType::kFile, UserAction::kSave),
+      SensitiveDirectoryResult::kAbort);
   // Files with a dangerous extension from no user action should be allowed.
-  EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
-                permission_context(), PathType::kLocal,
-                temp_dir_.GetPath().AppendASCII("test.swf"), HandleType::kFile,
-                UserAction::kNone),
-            SensitiveDirectoryResult::kAllowed);
+  EXPECT_EQ(
+      ConfirmSensitiveEntryAccessSync(permission_context(), PathType::kLocal,
+                                      home_dir.AppendASCII("test.swf"),
+                                      HandleType::kFile, UserAction::kNone),
+      SensitiveDirectoryResult::kAllowed);
   // Opening files with a dangerous extension should be allowed.
-  EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
-                permission_context(), PathType::kLocal,
-                temp_dir_.GetPath().AppendASCII("test.swf"), HandleType::kFile,
-                UserAction::kOpen),
-            SensitiveDirectoryResult::kAllowed);
+  EXPECT_EQ(
+      ConfirmSensitiveEntryAccessSync(permission_context(), PathType::kLocal,
+                                      home_dir.AppendASCII("test.swf"),
+                                      HandleType::kFile, UserAction::kOpen),
+      SensitiveDirectoryResult::kAllowed);
   // Opening files with a dangerous compound extension should show a prompt.
-  EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
-                permission_context(), PathType::kLocal,
-                temp_dir_.GetPath().AppendASCII("test.txt.swf"),
-                HandleType::kFile, UserAction::kSave),
-            SensitiveDirectoryResult::kAbort);
+  EXPECT_EQ(
+      ConfirmSensitiveEntryAccessSync(permission_context(), PathType::kLocal,
+                                      home_dir.AppendASCII("test.txt.swf"),
+                                      HandleType::kFile, UserAction::kSave),
+      SensitiveDirectoryResult::kAbort);
 }
 
 TEST_F(ChromeFileSystemAccessPermissionContextTest,
@@ -1470,6 +1512,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
 
 TEST_F(ChromeFileSystemAccessPermissionContextTest,
        RestorePermissionPrompt_AllowOnce) {
+  base::HistogramTester histograms;
   FileSystemAccessPermissionRequestManager::FromWebContents(web_contents())
       ->set_auto_response_for_test(PermissionAction::GRANTED_ONCE);
   auto grant1 = permission_context()->GetReadPermissionGrant(
@@ -1493,6 +1536,9 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   grant1->RequestPermission(frame_id(), UserActivationState::kNotRequired,
                             future.GetCallback());
   EXPECT_EQ(future.Get(), PermissionRequestOutcome::kGrantedByRestorePrompt);
+  histograms.ExpectBucketCount(
+      "Storage.FileSystemAccess.RestorePermissionPromptOutcome",
+      RestorePermissionPromptOutcome::kAllowedOnce, 1);
   EXPECT_NE(permission_context()->content_settings()->GetContentSetting(
                 kTestOrigin.GetURL(), kTestOrigin.GetURL(),
                 ContentSettingsType::FILE_SYSTEM_ACCESS_EXTENDED_PERMISSION),
@@ -1510,10 +1556,14 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
 
 TEST_F(ChromeFileSystemAccessPermissionContextTest,
        RestorePermissionPrompt_Denied) {
+  base::HistogramTester histograms;
   FileSystemAccessPermissionRequestManager::FromWebContents(web_contents())
       ->set_auto_response_for_test(PermissionAction::DENIED);
   EXPECT_EQ(TriggerRestorePermissionPromptAfterBeingBackgrounded(kTestOrigin),
             PermissionRequestOutcome::kUserDenied);
+  histograms.ExpectBucketCount(
+      "Storage.FileSystemAccess.RestorePermissionPromptOutcome",
+      RestorePermissionPromptOutcome::kRejected, 1);
 
   // Persisted grants are cleared as a result of restore prompt rejection, when
   // Extended Permissions is not enabled.
@@ -1689,10 +1739,14 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
 
 TEST_F(ChromeFileSystemAccessPermissionContextTest,
        RestorePermissionPrompt_Ignored) {
+  base::HistogramTester histograms;
   FileSystemAccessPermissionRequestManager::FromWebContents(web_contents())
       ->set_auto_response_for_test(PermissionAction::IGNORED);
   auto result =
       TriggerRestorePermissionPromptAfterBeingBackgrounded(kTestOrigin);
+  histograms.ExpectBucketCount(
+      "Storage.FileSystemAccess.RestorePermissionPromptOutcome",
+      RestorePermissionPromptOutcome::kIgnored, 1);
   EXPECT_EQ(result, PermissionRequestOutcome::kRequestAborted);
 
   // Persisted grants are cleared by ignoring the restore prompt.
@@ -2138,6 +2192,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
 
 TEST_F(ChromeFileSystemAccessPermissionContextTest,
        RequestPermission_Dismissed) {
+  base::HistogramTester histograms;
   FileSystemAccessPermissionRequestManager::FromWebContents(web_contents())
       ->set_auto_response_for_test(PermissionAction::DISMISSED);
   content::RenderFrameHostTester::For(web_contents_->GetPrimaryMainFrame())
@@ -2145,11 +2200,13 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
 
   auto grant = permission_context()->GetWritePermissionGrant(
       kTestOrigin, kTestPath, HandleType::kFile, UserAction::kOpen);
+  auto result =
+      TriggerRestorePermissionPromptAfterBeingBackgrounded(kTestOrigin);
+  EXPECT_EQ(result, PermissionRequestOutcome::kUserDismissed);
+  histograms.ExpectBucketCount(
+      "Storage.FileSystemAccess.RestorePermissionPromptOutcome",
+      RestorePermissionPromptOutcome::kDismissed, 1);
 
-  base::test::TestFuture<PermissionRequestOutcome> future;
-  grant->RequestPermission(frame_id(), UserActivationState::kRequired,
-                           future.GetCallback());
-  EXPECT_EQ(future.Get(), PermissionRequestOutcome::kUserDismissed);
   // The grant status should change as a result of dismissal.
   EXPECT_EQ(grant->GetStatus(), PermissionStatus::ASK);
   EXPECT_FALSE(permission_context()->HasExtendedPermissionForTesting(

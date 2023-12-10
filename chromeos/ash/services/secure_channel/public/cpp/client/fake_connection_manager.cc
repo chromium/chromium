@@ -55,8 +55,8 @@ void FakeConnectionManager::RegisterPayloadFile(
 }
 
 void FakeConnectionManager::GetHostLastSeenTimestamp(
-    base::OnceCallback<void(absl::optional<base::Time>)> callback) {
-  std::move(callback).Run(absl::nullopt);
+    base::OnceCallback<void(std::optional<base::Time>)> callback) {
+  std::move(callback).Run(std::nullopt);
 }
 
 void FakeConnectionManager::SendFileTransferUpdate(

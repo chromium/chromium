@@ -797,7 +797,7 @@ class TestExpectationsCache:
         self._cache: Dict[Tuple[str, Optional[str]], TestExpectations] = {}
 
     def load(self, port: 'Port') -> TestExpectations:
-        cache_key = port.port_name, port.get_option('flag_specific')
+        cache_key = port.name(), port.get_option('flag_specific')
         expectations = self._cache.get(cache_key)
         if not expectations:
             self._cache[cache_key] = expectations = TestExpectations(port)

@@ -8,10 +8,9 @@ import android.webkit.WebView;
 
 import java.lang.reflect.InvocationHandler;
 
-/**
- * Boundary interface for WebViewRendererClient.
- */
+/** Boundary interface for WebViewRendererClient. */
 public interface WebViewRendererClientBoundaryInterface extends FeatureFlagHolderBoundaryInterface {
     void onRendererUnresponsive(WebView view, /* WebViewRenderer */ InvocationHandler renderer);
+
     void onRendererResponsive(WebView view, /* WebViewRenderer */ InvocationHandler renderer);
 }

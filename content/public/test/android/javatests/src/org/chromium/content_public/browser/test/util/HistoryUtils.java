@@ -31,7 +31,8 @@ public class HistoryUtils {
     public static boolean canGoBackOnUiThread(
             Instrumentation instrumentation, final WebContents webContents) throws Throwable {
         return InstrumentationUtils.runOnMainSyncAndGetResult(
-                instrumentation, new Callable<Boolean>() {
+                instrumentation,
+                new Callable<Boolean>() {
                     @Override
                     public Boolean call() {
                         return webContents.getNavigationController().canGoBack();
@@ -49,10 +50,12 @@ public class HistoryUtils {
      * @return result of {@link NavigationController#canGoToOffset(int)}
      * @throws Throwable
      */
-    public static boolean canGoToOffsetOnUiThread(Instrumentation instrumentation,
-            final WebContents webContents, final int offset) throws Throwable {
+    public static boolean canGoToOffsetOnUiThread(
+            Instrumentation instrumentation, final WebContents webContents, final int offset)
+            throws Throwable {
         return InstrumentationUtils.runOnMainSyncAndGetResult(
-                instrumentation, new Callable<Boolean>() {
+                instrumentation,
+                new Callable<Boolean>() {
                     @Override
                     public Boolean call() {
                         return webContents.getNavigationController().canGoToOffset(offset);
@@ -71,7 +74,8 @@ public class HistoryUtils {
     public static boolean canGoForwardOnUiThread(
             Instrumentation instrumentation, final WebContents webContents) throws Throwable {
         return InstrumentationUtils.runOnMainSyncAndGetResult(
-                instrumentation, new Callable<Boolean>() {
+                instrumentation,
+                new Callable<Boolean>() {
                     @Override
                     public Boolean call() {
                         return webContents.getNavigationController().canGoForward();
@@ -87,12 +91,13 @@ public class HistoryUtils {
      */
     public static void clearHistoryOnUiThread(
             Instrumentation instrumentation, final WebContents webContents) {
-        instrumentation.runOnMainSync(new Runnable() {
-            @Override
-            public void run() {
-                webContents.getNavigationController().clearHistory();
-            }
-        });
+        instrumentation.runOnMainSync(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        webContents.getNavigationController().clearHistory();
+                    }
+                });
     }
 
     /**
@@ -106,7 +111,8 @@ public class HistoryUtils {
     public static String getUrlOnUiThread(
             Instrumentation instrumentation, final WebContents webContents) throws Throwable {
         return InstrumentationUtils.runOnMainSyncAndGetResult(
-                instrumentation, new Callable<String>() {
+                instrumentation,
+                new Callable<String>() {
                     @Override
                     public String call() {
                         return webContents.getLastCommittedUrl().getSpec();
@@ -124,15 +130,19 @@ public class HistoryUtils {
      *                             callback of webContents.
      * @throws Throwable
      */
-    public static void goBackSync(Instrumentation instrumentation, final WebContents webContents,
-            CallbackHelper onPageFinishedHelper) throws Throwable {
+    public static void goBackSync(
+            Instrumentation instrumentation,
+            final WebContents webContents,
+            CallbackHelper onPageFinishedHelper)
+            throws Throwable {
         int currentCallCount = onPageFinishedHelper.getCallCount();
-        instrumentation.runOnMainSync(new Runnable() {
-            @Override
-            public void run() {
-                webContents.getNavigationController().goBack();
-            }
-        });
+        instrumentation.runOnMainSync(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        webContents.getNavigationController().goBack();
+                    }
+                });
 
         onPageFinishedHelper.waitForCallback(
                 currentCallCount, 1, WAIT_TIMEOUT_SECONDS, TimeUnit.SECONDS);
@@ -146,15 +156,19 @@ public class HistoryUtils {
      * @param webContents a WebContents instance.
      * @throws Throwable
      */
-    public static void goForwardSync(Instrumentation instrumentation, final WebContents webContents,
-            CallbackHelper onPageFinishedHelper) throws Throwable {
+    public static void goForwardSync(
+            Instrumentation instrumentation,
+            final WebContents webContents,
+            CallbackHelper onPageFinishedHelper)
+            throws Throwable {
         int currentCallCount = onPageFinishedHelper.getCallCount();
-        instrumentation.runOnMainSync(new Runnable() {
-            @Override
-            public void run() {
-                webContents.getNavigationController().goForward();
-            }
-        });
+        instrumentation.runOnMainSync(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        webContents.getNavigationController().goForward();
+                    }
+                });
 
         onPageFinishedHelper.waitForCallback(
                 currentCallCount, 1, WAIT_TIMEOUT_SECONDS, TimeUnit.SECONDS);

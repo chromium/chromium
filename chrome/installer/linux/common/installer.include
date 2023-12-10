@@ -266,34 +266,17 @@ stage_install_common() {
     install -m ${SHLIB_PERMS} -s "${OUTPUTDIR}/lib/libc++.so" "${STAGEDIR}/${INSTALLDIR}/lib/"
   fi
 
-  # nacl_helper and nacl_helper_bootstrap
-  # Don't use "-s" (strip) because this runs binutils "strip", which
-  # mangles the special ELF program headers of nacl_helper_bootstrap.
-  # Explicitly use eu-strip instead, because it doesn't have that problem.
-  for file in nacl_helper nacl_helper_bootstrap; do
-    buildfile="${OUTPUTDIR}/${file}"
-    if [ -f "${buildfile}" ]; then
-      strippedfile="${buildfile}.stripped"
-      install -m 755 "${strippedfile}" "${STAGEDIR}/${INSTALLDIR}/${file}"
-    fi
-  done
-  # Don't use "-s" (strip) because this would use the Linux toolchain to
-  # strip the NaCl binary, which has the potential to break it.  It
-  # certainly resets the OSABI and ABIVERSION fields to non-NaCl values,
-  # although the NaCl IRT loader doesn't care about these fields.  In any
-  # case, the IRT binaries are already stripped by NaCl's build process.
-  for filename in ${OUTPUTDIR}/nacl_irt_*.nexe; do
-    # Re-check the filename in case globbing matched nothing.
-    if [ -f "$filename" ]; then
-      install -m 644 "$filename" "${STAGEDIR}/${INSTALLDIR}/`basename "$filename"`"
-    fi
-  done
-
   # default apps
   if [ -d "${OUTPUTDIR}/default_apps" ]; then
     cp -a "${OUTPUTDIR}/default_apps" "${STAGEDIR}/${INSTALLDIR}/"
     find "${STAGEDIR}/${INSTALLDIR}/default_apps" -type d -exec chmod 755 '{}' \;
     find "${STAGEDIR}/${INSTALLDIR}/default_apps" -type f -exec chmod 644 '{}' \;
+  fi
+
+  # CHROME_VERSION_EXTRA file containing the channel
+  if [ "$BRANDING" = "google_chrome" ]; then
+    echo "$CHANNEL" > "${STAGEDIR}/${INSTALLDIR}/CHROME_VERSION_EXTRA"
+    chmod 644 "${STAGEDIR}${INSTALLDIR}/CHROME_VERSION_EXTRA"
   fi
 
   # launcher script and symlink
@@ -334,7 +317,7 @@ stage_install_common() {
   install -m 755 "${OUTPUTDIR}/xdg-mime" "${STAGEDIR}${INSTALLDIR}/"
   install -m 755 "${OUTPUTDIR}/xdg-settings" "${STAGEDIR}${INSTALLDIR}/"
 
-  if [ ${PACKAGE:0:6} = google ]; then
+  if [ "$BRANDING" = "google_chrome" ]; then
     process_template "${OUTPUTDIR}/installer/common/google-chrome.appdata.xml.template" \
       "${STAGEDIR}/usr/share/appdata/${PACKAGE}.appdata.xml"
     chmod 644 "${STAGEDIR}/usr/share/appdata/${PACKAGE}.appdata.xml"
@@ -423,8 +406,6 @@ stage_install_common() {
       local expected_perms=755
     elif [ "${base_name}" = "chrome-sandbox" ]; then
       local expected_perms=4755
-    elif [[ "${base_name}" = "nacl_irt_"*".nexe" ]]; then
-      local expected_perms=644
     elif [[ "${file_type}" = *"shell script"* ]]; then
       local expected_perms=755
     elif [[ "${file_type}" = ELF* ]]; then

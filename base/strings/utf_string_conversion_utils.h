@@ -70,13 +70,13 @@ BASE_EXPORT bool ReadUnicodeCharacter(const char16_t* src,
                                       size_t* char_index,
                                       base_icu::UChar32* code_point);
 
-#if defined(WCHAR_T_IS_UTF32)
+#if defined(WCHAR_T_IS_32_BIT)
 // Reads UTF-32 character. The usage is the same as the 8-bit version above.
 BASE_EXPORT bool ReadUnicodeCharacter(const wchar_t* src,
                                       size_t src_len,
                                       size_t* char_index,
                                       base_icu::UChar32* code_point);
-#endif  // defined(WCHAR_T_IS_UTF32)
+#endif  // defined(WCHAR_T_IS_32_BIT)
 
 // WriteUnicodeCharacter -------------------------------------------------------
 
@@ -90,7 +90,7 @@ BASE_EXPORT size_t WriteUnicodeCharacter(base_icu::UChar32 code_point,
 BASE_EXPORT size_t WriteUnicodeCharacter(base_icu::UChar32 code_point,
                                          std::u16string* output);
 
-#if defined(WCHAR_T_IS_UTF32)
+#if defined(WCHAR_T_IS_32_BIT)
 // Appends the given UTF-32 character to the given 32-bit string.  Returns the
 // number of 32-bit values written.
 inline size_t WriteUnicodeCharacter(base_icu::UChar32 code_point,
@@ -99,7 +99,7 @@ inline size_t WriteUnicodeCharacter(base_icu::UChar32 code_point,
   output->push_back(static_cast<wchar_t>(code_point));
   return 1;
 }
-#endif  // defined(WCHAR_T_IS_UTF32)
+#endif  // defined(WCHAR_T_IS_32_BIT)
 
 // Generalized Unicode converter -----------------------------------------------
 

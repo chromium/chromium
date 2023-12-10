@@ -177,10 +177,9 @@ bool StructTraits<
     return false;
   if (!data.ReadValue(&out->value))
     return false;
-  uint32_t max_length = out->value.length();
-  out->selection_end = std::min(data.selection_end(), max_length);
-  out->selection_start = std::min(data.selection_start(), out->selection_end);
-  DCHECK_LE(out->selection_start, out->selection_end);
+  if (!data.ReadSelectedText(&out->selected_text)) {
+    return false;
+  }
 
   if (!data.ReadFormControlType(&out->form_control_type))
     return false;
@@ -318,6 +317,9 @@ bool StructTraits<autofill::mojom::FormFieldDataPredictionsDataView,
     return false;
   if (!data.ReadServerType(&out->server_type))
     return false;
+  if (!data.ReadHtmlType(&out->html_type)) {
+    return false;
+  }
   if (!data.ReadOverallType(&out->overall_type))
     return false;
   if (!data.ReadParseableName(&out->parseable_name))
@@ -412,6 +414,7 @@ bool StructTraits<autofill::mojom::PasswordGenerationUIDataDataView,
   out->max_length = data.max_length();
   out->is_generation_element_password_type =
       data.is_generation_element_password_type();
+  out->input_field_empty = data.input_field_empty();
 
   return data.ReadGenerationElementId(&out->generation_element_id) &&
          data.ReadGenerationElement(&out->generation_element) &&

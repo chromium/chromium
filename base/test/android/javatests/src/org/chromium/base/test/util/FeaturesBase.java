@@ -124,8 +124,8 @@ public class FeaturesBase {
 
         @Override
         protected void before() {
-            assert sInstance
-                    != null : "Classes extending BaseProcessor need to create an instance.";
+            assert sInstance != null
+                    : "Classes extending BaseProcessor need to create an instance.";
             collectFeatures();
             applyFeatures();
         }

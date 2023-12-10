@@ -4,13 +4,14 @@
 
 #include "chrome/browser/ui/webui/print_preview/parse_data_path.h"
 
+#include <optional>
+
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace printing {
 
 TEST(ParseDataPathTest, ParseDataPath) {
-  absl::optional<PrintPreviewIdAndPageIndex> parsed =
+  std::optional<PrintPreviewIdAndPageIndex> parsed =
       ParseDataPath("3/4/print.pdf");
   ASSERT_TRUE(parsed);
 
@@ -19,7 +20,7 @@ TEST(ParseDataPathTest, ParseDataPath) {
 }
 
 TEST(ParseDataPathTest, ParseDataPathTest) {
-  absl::optional<PrintPreviewIdAndPageIndex> parsed =
+  std::optional<PrintPreviewIdAndPageIndex> parsed =
       ParseDataPath("1/1/test.pdf");
   ASSERT_TRUE(parsed);
 

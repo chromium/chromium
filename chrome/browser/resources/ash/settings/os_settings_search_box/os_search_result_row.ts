@@ -17,10 +17,12 @@ import {FocusRowMixin} from 'chrome://resources/cr_elements/focus_row_mixin.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {isRevampWayfindingEnabled} from '../common/load_time_booleans.js';
 import {SearchResult as PersonalizationSearchResult} from '../mojom-webui/personalization_search.mojom-webui.js';
 import {Section, Subpage} from '../mojom-webui/routes.mojom-webui.js';
 import {SearchResult as SettingsSearchResult, SearchResultIdentifier, SearchResultType} from '../mojom-webui/search.mojom-webui.js';
@@ -79,7 +81,7 @@ function isPersonalizationSearchResult(result: SearchResult):
  * Used to locate matches such that the query text omits a hyphen when the
  * matching result text contains a hyphen.
  */
-const DELOCALIZED_HYPHEN: string = '-';
+const DELOCALIZED_HYPHEN = '-';
 
 /**
  * A list of hyphens in all languages that will be ignored during the
@@ -98,7 +100,7 @@ const HYPHENS: string[] = [
 /**
  * String form of the regexp expressing hyphen chars.
  */
-const HYPHENS_REGEX_STR: string = `[${HYPHENS.join('')}]`;
+const HYPHENS_REGEX_STR = `[${HYPHENS.join('')}]`;
 
 /**
  * Regexp expressing hyphen chars.
@@ -214,7 +216,7 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
   private computeResultText_(): string {
     // The C++ layer stores the text result as an array of 16 bit char codes,
     // so it must be converted to a JS String.
-    return String.fromCharCode.apply(null, this.searchResult.text.data);
+    return mojoString16ToString(this.searchResult.text);
   }
 
   /**
@@ -663,14 +665,17 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
    * @return The name of the icon to use.
    */
   private getResultIcon_(): string {
+    const isRevampEnabled = isRevampWayfindingEnabled();
     if (isPersonalizationSearchResult(this.searchResult)) {
-      return 'os-settings:paint-brush';
+      return isRevampEnabled ? 'os-settings:personalization-revamp' :
+                               'os-settings:paint-brush';
     }
 
     const settingsSearchResult = this.searchResult as SettingsSearchResult;
     switch (settingsSearchResult.icon) {
       case SearchResultIcon.kA11y:
-        return 'os-settings:accessibility';
+        return isRevampEnabled ? 'os-settings:accessibility-revamp' :
+                                 'os-settings:accessibility';
       case SearchResultIcon.kAndroid:
         return 'os-settings:android';
       case SearchResultIcon.kAppsGrid:
@@ -678,7 +683,8 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
       case SearchResultIcon.kAssistant:
         return 'os-settings:assistant';
       case SearchResultIcon.kAudio:
-        return 'os-settings:audio';
+        return isRevampEnabled ? 'os-settings:device-audio' :
+                                 'os-settings:audio';
       case SearchResultIcon.kAuthKey:
         return 'os-settings:auth-key';
       case SearchResultIcon.kAutoclick:
@@ -686,63 +692,80 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
       case SearchResultIcon.kSwitchAccess:
         return 'os-settings:switch-access';
       case SearchResultIcon.kAvatar:
-        return 'cr:person';
+        return isRevampEnabled ? 'os-settings:privacy-manage-people' :
+                                 'cr:person';
       case SearchResultIcon.kBluetooth:
         return 'cr:bluetooth';
       case SearchResultIcon.kCamera:
         return 'os-settings:camera';
       case SearchResultIcon.kCellular:
         return 'os-settings:cellular';
+      case SearchResultIcon.kCheckForUpdate:
+        return 'os-settings:about-update-complete';
       case SearchResultIcon.kChrome:
         return 'os-settings:chrome';
-      case SearchResultIcon.kChromeVox:
-        return 'os-settings:chromevox';
       case SearchResultIcon.kClock:
-        return 'os-settings:access-time';
+        return 'os-settings:clock';
       case SearchResultIcon.kContrast:
         return 'os-settings:contrast';
+      case SearchResultIcon.kCursorClick:
+        return 'os-settings:cursor-click';
+      case SearchResultIcon.kDetailedBuild:
+        return 'os-settings:about-additional-details';
       case SearchResultIcon.kDeveloperTags:
         return 'os-settings:developer-tags';
+      case SearchResultIcon.kDiagnostics:
+        return 'os-settings:about-diagnostics';
       case SearchResultIcon.kDictation:
         return 'os-settings:dictation';
       case SearchResultIcon.kDisplay:
-        return 'os-settings:display';
+        return isRevampEnabled ? 'os-settings:device-display' :
+                                 'os-settings:display';
       case SearchResultIcon.kDockedMagnifier:
         return 'os-settings:docked-magnifier';
-      case SearchResultIcon.kDrive:
-        return 'os-settings:google-drive';
       case SearchResultIcon.kEthernet:
         return 'os-settings:settings-ethernet';
       case SearchResultIcon.kFingerprint:
         return 'os-settings:fingerprint';
+      case SearchResultIcon.kFirmwareUpdates:
+        return 'os-settings:about-firmware-updates';
       case SearchResultIcon.kFolder:
         return 'os-settings:folder-outline';
+      case SearchResultIcon.kFolderShared:
+        return 'os-settings:folder-shared';
       case SearchResultIcon.kFullscreenMagnifier:
         return 'os-settings:fullscreen-magnifier';
       case SearchResultIcon.kGeolocation:
         return 'os-settings:geolocation';
-      case SearchResultIcon.kGlobe:
-        return 'os-settings:language';
+      case SearchResultIcon.kGoogleDrive:
+        return isRevampEnabled ? 'os-settings:google-drive-revamp' :
+                                 'os-settings:google-drive';
       case SearchResultIcon.kGooglePlay:
-        return 'os-settings:google-play';
-      case SearchResultIcon.kHardDrive:
-        return 'os-settings:hard-drive';
+        return isRevampEnabled ? 'os-settings:google-play-revamp' :
+                                 'os-settings:google-play';
+      case SearchResultIcon.kHearing:
+        return 'os-settings:a11y-hearing';
+      case SearchResultIcon.kHelp:
+        return 'os-settings:about-help';
       case SearchResultIcon.kHotspot:
         return 'os-settings:hotspot';
       case SearchResultIcon.kInstantTethering:
         return 'os-settings:magic-tethering';
       case SearchResultIcon.kKeyboard:
-        return 'os-settings:keyboard';
+        return isRevampEnabled ? 'os-settings:device-keyboard' :
+                                 'os-settings:keyboard';
+      case SearchResultIcon.kLanguage:
+        return isRevampEnabled ? 'os-settings:language-revamp' :
+                                 'os-settings:language';
       case SearchResultIcon.kLaptop:
         return 'os-settings:laptop-chromebook';
       case SearchResultIcon.kLock:
-        return 'os-settings:lock';
-      case SearchResultIcon.kMagnifyingGlass:
-        return 'cr:search';
+        return isRevampEnabled ? 'os-settings:lock-revamp' : 'os-settings:lock';
       case SearchResultIcon.kMicrophone:
         return 'os-settings:microphone';
       case SearchResultIcon.kMouse:
-        return 'os-settings:mouse';
+        return isRevampEnabled ? 'os-settings:device-mouse' :
+                                 'os-settings:mouse';
       case SearchResultIcon.kNearbyShare:
         // <if expr="_google_chrome">
         if (loadTimeData.getBoolean('isNameEnabled')) {
@@ -750,38 +773,65 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
         }
         // </if>
         return 'os-settings:nearby-share';
+      case SearchResultIcon.kNotifications:
+        return 'os-settings:apps-notifications';
       case SearchResultIcon.kOnScreenKeyboard:
         return 'os-settings:on-screen-keyboard';
       case SearchResultIcon.kPaintbrush:
-        return 'os-settings:paint-brush';
+        return isRevampEnabled ? 'os-settings:personalization-revamp' :
+                                 'os-settings:paint-brush';
       case SearchResultIcon.kPenguin:
         return 'os-settings:crostini-mascot';
       case SearchResultIcon.kPhone:
-        return 'os-settings:multidevice-better-together-suite';
+        return isRevampEnabled ?
+            'os-settings:connected-devices-android-phone' :
+            'os-settings:multidevice-better-together-suite';
       case SearchResultIcon.kPluginVm:
         return 'os-settings:plugin-vm';
+      case SearchResultIcon.kPointingStick:
+        return 'os-settings:device-pointing-stick';
       case SearchResultIcon.kPower:
         return 'os-settings:power';
       case SearchResultIcon.kPrinter:
-        return 'os-settings:print';
+        return isRevampEnabled ? 'os-settings:device-print' :
+                                 'os-settings:print';
+      case SearchResultIcon.kPrivacyControls:
+        return 'os-settings:privacy-controls';
+      case SearchResultIcon.kReleaseNotes:
+        return 'os-settings:about-release-notes';
       case SearchResultIcon.kReset:
-        return 'os-settings:restore';
+        return isRevampEnabled ? 'os-settings:startup' : 'os-settings:restore';
+      case SearchResultIcon.kRestore:
+        return isRevampEnabled ? 'os-settings:restore-revamp' :
+                                 'os-settings:startup';
+      case SearchResultIcon.kScanner:
+        return 'os-settings:device-scan';
+      case SearchResultIcon.kSearch:
+        return isRevampEnabled ? 'os-settings:explore' : 'cr:search';
       case SearchResultIcon.kSelectToSpeak:
         return 'os-settings:select-to-speak';
       case SearchResultIcon.kShield:
         return 'cr:security';
-      case SearchResultIcon.kStartup:
-        return 'os-settings:startup';
+      case SearchResultIcon.kStorage:
+        return isRevampEnabled ? 'os-settings:storage' :
+                                 'os-settings:hard-drive';
       case SearchResultIcon.kStylus:
-        return 'os-settings:stylus';
+        return isRevampEnabled ? 'os-settings:device-stylus' :
+                                 'os-settings:stylus';
       case SearchResultIcon.kSync:
-        return 'os-settings:sync';
+        return isRevampEnabled ? 'os-settings:sync-revamp' : 'os-settings:sync';
       case SearchResultIcon.kSystemPreferences:
         return 'os-settings:system-preferences';
+      case SearchResultIcon.kTextToSpeech:
+        return 'os-settings:text-to-speech';
+      case SearchResultIcon.kTouchpad:
+        return 'os-settings:device-touchpad';
       case SearchResultIcon.kWallpaper:
         return 'os-settings:wallpaper';
       case SearchResultIcon.kWifi:
         return 'os-settings:network-wifi';
+      case SearchResultIcon.kZoomIn:
+        return 'os-settings:zoom-in';
       default:
         return 'os-settings:settings-general';
     }

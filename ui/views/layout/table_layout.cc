@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/notreached.h"
@@ -579,40 +580,26 @@ gfx::Size TableLayout::SizeRowsAndColumns(const SizeBounds& bounds) const {
 }
 
 void TableLayout::DistributeRemainingHeight(ViewState& view_state) const {
-  int height = view_state.remaining_height;
-  if (height <= 0)
+  if (view_state.remaining_height <= 0) {
     return;
+  }
 
   // Determine the number of resizable rows the view touches.
-  size_t start_row = view_state.start_row;
-  size_t max_row = view_state.start_row + view_state.row_span;
-  const ptrdiff_t resizable_rows =
-      std::count_if(rows_.cbegin() + static_cast<ptrdiff_t>(start_row),
-                    rows_.cbegin() + static_cast<ptrdiff_t>(max_row),
-                    [](const auto& row) { return row.resizable(); });
-
-  const auto adjust_row = [&height](Row& row, int delta) {
-    height -= delta;
-    // If there is slop, we're on the last row; give it all the slop.
-    if (height < delta)
-      delta += height;
-    row.set_size(row.size() + delta);
-  };
-
-  if (resizable_rows > 0) {
-    // There are resizable rows, give the remaining height to them.
-    int row_delta = height / static_cast<int>(resizable_rows);
-    for (size_t i = start_row; i < max_row; ++i) {
-      if (rows_[i].resizable())
-        adjust_row(rows_[i], row_delta);
+  const base::span<Row> rows_to_resize = base::make_span(
+      rows_.begin() + static_cast<ptrdiff_t>(view_state.start_row),
+      view_state.row_span);
+  const auto resizable_rows = static_cast<size_t>(
+      base::ranges::count_if(rows_to_resize, &Row::resizable));
+  size_t remaining_rows =
+      resizable_rows ? resizable_rows : rows_to_resize.size();
+  for (Row& row : rows_to_resize) {
+    if (!resizable_rows || row.resizable()) {
+      const int delta = base::ClampRound(
+          static_cast<float>(view_state.remaining_height) / remaining_rows);
+      row.set_size(row.size() + delta);
+      view_state.remaining_height -= delta;
+      --remaining_rows;
     }
-  } else {
-    // None of the rows are resizable, divvy the remaining height up equally
-    // among all rows the view touches.
-    int row_delta = height / static_cast<int>(view_state.row_span);
-    for (size_t i = start_row; i < max_row; ++i)
-      adjust_row(rows_[i], row_delta);
-    view_state.remaining_height = 0;
   }
 }
 

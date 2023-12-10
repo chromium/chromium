@@ -21,25 +21,27 @@
 #include "ash/style/typography.h"
 #include "ash/system/power/adaptive_charging_controller.h"
 #include "ash/system/tray/tray_popup_utils.h"
-#include "ash/system/unified/buttons.h"
 #include "ash/system/unified/detailed_view_controller.h"
 #include "ash/system/unified/power_button.h"
 #include "ash/system/unified/quick_settings_metrics_util.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
 #include "ash/system/unified/user_chooser_detailed_view_controller.h"
+#include "ash/system/unified/user_chooser_view.h"
 #include "ash/system/user/login_status.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/vector_icons/vector_icons.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/controls/button/button.h"
+#include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/fill_layout.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 
@@ -70,7 +72,7 @@ bool ShouldShowSignOutButton() {
     return false;
   }
 
-  absl::optional<int> number_of_users_that_could_be_logged_in =
+  std::optional<int> number_of_users_that_could_be_logged_in =
       session_controller->GetExistingUsersCount();
   const bool multiple_past_accounts =
       number_of_users_that_could_be_logged_in.has_value() &&
@@ -88,6 +90,32 @@ bool ShouldShowAvatar() {
              LoginStatus::NOT_LOGGED_IN &&
          Shell::Get()->session_controller()->NumberOfLoggedInUsers() > 1;
 }
+
+// The avatar button shows in the quick setting bubble.
+class UserAvatarButton : public views::Button {
+ public:
+  METADATA_HEADER(UserAvatarButton);
+
+  explicit UserAvatarButton(PressedCallback callback)
+      : views::Button(std::move(callback)) {
+    SetLayoutManager(std::make_unique<views::FillLayout>());
+    SetBorder(views::CreateEmptyBorder(gfx::Insets(0)));
+    AddChildView(CreateUserAvatarView(/*user_index=*/0));
+    SetTooltipText(GetUserItemAccessibleString(/*user_index=*/0));
+    SetInstallFocusRingOnFocus(true);
+    views::FocusRing::Get(this)->SetColorId(cros_tokens::kCrosSysFocusRing);
+    views::InstallCircleHighlightPathGenerator(this);
+  }
+
+  UserAvatarButton(const UserAvatarButton&) = delete;
+
+  UserAvatarButton& operator=(const UserAvatarButton&) = delete;
+
+  ~UserAvatarButton() override = default;
+};
+
+BEGIN_METADATA(UserAvatarButton, views::Button)
+END_METADATA
 
 }  // namespace
 
@@ -109,12 +137,8 @@ QsBatteryInfoViewBase::QsBatteryInfoViewBase(
                  kPaddingReduction) {
   PowerStatus::Get()->AddObserver(this);
   SetImageLabelSpacing(kImageLabelSpacing);
-  if (chromeos::features::IsJellyEnabled()) {
-    TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton2,
-                                          *label());
-    return;
-  }
-  SetUseDefaultLabelFont();
+  TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton2,
+                                        *label());
 }
 
 QsBatteryInfoViewBase::~QsBatteryInfoViewBase() {
@@ -169,10 +193,10 @@ void QsBatteryInfoViewBase::ConfigureIcon(bool bsm_active) {
   const SkColor battery_icon_color = GetColorProvider()->GetColor(
       bsm_active ? cros_tokens::kCrosSysSystemOnWarningContainer
                  : cros_tokens::kCrosSysOnPositiveContainer);
-  const absl::optional<SkColor> battery_badge_color =
-      bsm_active ? absl::optional<SkColor>(GetColorProvider()->GetColor(
+  const std::optional<SkColor> battery_badge_color =
+      bsm_active ? std::optional<SkColor>(GetColorProvider()->GetColor(
                        cros_tokens::kCrosSysSystemWarningContainer))
-                 : absl::nullopt;
+                 : std::nullopt;
 
   PowerStatus::BatteryImageInfo info =
       PowerStatus::Get()->GenerateBatteryImageInfo(battery_icon_color,

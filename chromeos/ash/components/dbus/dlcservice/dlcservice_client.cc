@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <deque>
 #include <map>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -32,7 +33,6 @@
 #include "dbus/message.h"
 #include "dbus/object_path.h"
 #include "dbus/object_proxy.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace ash {

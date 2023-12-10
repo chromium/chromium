@@ -11,7 +11,7 @@
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/overloaded.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"

@@ -1,0 +1,10 @@
+This is a testharness.js-based test.
+[FAIL] Request Picture-in-Picture rejects if disablePictureInPicture becomes true before promise resolves.
+  promise_rejects_dom: function "function() { throw e }" threw object "NotSupportedError: Picture-in-Picture is not available." that is not a DOMException InvalidStateError: property "code" is equal to 9, expected 11
+[FAIL] pictureInPictureElement is unset if disablePictureInPicture becomes true
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Picture-in-Picture is not available."
+[FAIL] pictureInPictureElement is unchanged if disablePictureInPicture becomes false
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Picture-in-Picture is not available."
+[FAIL] pictureInPictureElement is unchanged if disablePictureInPicture becomes true for another video
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Picture-in-Picture is not available."
+Harness: the test ran to completion.

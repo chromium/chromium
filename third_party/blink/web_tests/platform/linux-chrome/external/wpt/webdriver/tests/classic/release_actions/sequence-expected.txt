@@ -1,7 +1,4 @@
 This is a wdspec test.
-[PASS] test_release_no_actions_sends_no_events
-[PASS] test_release_char_sequence_sends_keyup_events_in_reverse
-[PASS] test_release_mouse_sequence_resets_dblclick_state
 [FAIL] test_no_release_mouse_sequence_keeps_dblclick_state
   AssertionError: assert [{'type': 'mousedown', 'button': 0}, {'type': 'mouseup', 'button': 0}, {'type': 'click', 'button': 0}, {'type': 'mousedown', 'button': 0}, {'type': 'mouseup', 'button': 0}, {'type': 'click', 'button': 0}, {'type': 'dblclick', 'button': 0}] == [{'type': 'mousedown', 'button': 0}, {'type': 'mouseup', 'button': 0}, {'type': 'click', 'button': 0}, {'type': 'mousedown', 'button': 0}, {'type': 'mouseup', 'button': 0}, {'type': 'click', 'button': 0}]
 Harness: the test ran to completion.

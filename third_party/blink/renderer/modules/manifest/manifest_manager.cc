@@ -232,6 +232,10 @@ void ManifestManager::OnManifestFetchComplete(const KURL& document_url,
 }
 
 void ManifestManager::RecordMetrics(const mojom::blink::Manifest& manifest) {
+  if (manifest.has_custom_id) {
+    UseCounter::Count(GetSupplementable(), WebFeature::kWebAppManifestIdField);
+  }
+
   if (manifest.capture_links != mojom::blink::CaptureLinks::kUndefined) {
     UseCounter::Count(GetSupplementable(),
                       WebFeature::kWebAppManifestCaptureLinks);

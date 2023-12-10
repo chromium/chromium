@@ -11,7 +11,6 @@ source_set("cells") {
   ]
   deps = [
     "//base",
-    "//ios/chrome/browser/ntp:features",
     "//ios/chrome/browser/shared/ui/table_view:styler",
     "//ios/chrome/browser/shared/ui/table_view/cells",
     "//ios/chrome/browser/ui/popup_menu/public:ui_constants",

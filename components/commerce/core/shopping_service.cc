@@ -20,6 +20,7 @@
 #include "base/values.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/commerce/core/bookmark_update_manager.h"
+#include "components/commerce/core/commerce_constants.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/commerce_utils.h"
 #include "components/commerce/core/discounts_storage.h"
@@ -61,18 +62,6 @@
 #include "url/url_constants.h"
 
 namespace commerce {
-
-// Open graph keys.
-const char kOgImage[] = "image";
-const char kOgPriceAmount[] = "price:amount";
-const char kOgPriceCurrency[] = "price:currency";
-const char kOgProductLink[] = "product_link";
-const char kOgTitle[] = "title";
-const char kOgType[] = "type";
-
-// Specific open graph values we're interested in.
-const char kOgTypeOgProduct[] = "product";
-const char kOgTypeProductItem[] = "product.item";
 
 const long kToMicroCurrency = 1e6;
 
@@ -331,12 +320,29 @@ void ShoppingService::TryRunningLocalExtractionForProductInfo(
     return;
   }
 
+  IsShoppingPage(
+      web->GetLastCommittedURL(),
+      base::BindOnce(
+          &ShoppingService::RunLocalExtractionForProductInfoForShoppingPage,
+          weak_ptr_factory_.GetWeakPtr(), web));
+}
+
+void ShoppingService::RunLocalExtractionForProductInfoForShoppingPage(
+    base::WeakPtr<WebWrapper> web,
+    const GURL& url,
+    absl::optional<bool> is_shopping_page) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!is_shopping_page.has_value() || !is_shopping_page.value()) {
+    return;
+  }
+
+  auto it = product_info_cache_.find(url.spec());
 
   // If there is both an entry in the cache and the local extraction fallback
   // needs to run, run it.
   if (it != product_info_cache_.end() &&
-      it->second->needs_local_extraction_run && web_extractor_) {
+      it->second->needs_local_extraction_run && web_extractor_ && web.get()) {
     // Since we're about to run the JS, flip the flag in the cache.
     it->second->needs_local_extraction_run = false;
 
@@ -346,18 +352,24 @@ void ShoppingService::TryRunningLocalExtractionForProductInfo(
         web.get(),
         base::BindOnce(&ShoppingService::OnProductInfoLocalExtractionResult,
                        weak_ptr_factory_.GetWeakPtr(),
-                       GURL(web->GetLastCommittedURL())));
+                       GURL(web->GetLastCommittedURL()),
+                       web.get()->GetPageUkmSourceId()));
   }
 }
 
-void ShoppingService::OnProductInfoLocalExtractionResult(const GURL url,
-                                                         base::Value result) {
-  // We should only ever get a string result from the script execution.
-  if (!result.is_string()) {
+void ShoppingService::OnProductInfoLocalExtractionResult(
+    const GURL url,
+    ukm::SourceId source_id,
+    base::Value result) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // We should only ever get a dict result from the script execution.
+  if (!result.is_dict() || result.GetDict().empty()) {
     return;
   }
 
-  // Look up the entry again in case it was deleted (ex. by navigation).
+  // If there was no entry, do nothing. Most likely this means the page
+  // navigated before the script finished running.
   auto it = product_info_cache_.find(url.spec());
   if (it == product_info_cache_.end()) {
     return;
@@ -366,28 +378,6 @@ void ShoppingService::OnProductInfoLocalExtractionResult(const GURL url,
   base::UmaHistogramTimes(
       kProductInfoLocalExtractionTime,
       base::Time::Now() - it->second->local_extraction_execution_start_time);
-
-  data_decoder::DataDecoder::ParseJsonIsolated(
-      result.GetString(),
-      base::BindOnce(&ShoppingService::OnProductInfoJsonSanitizationCompleted,
-                     weak_ptr_factory_.GetWeakPtr(), url));
-}
-
-void ShoppingService::OnProductInfoJsonSanitizationCompleted(
-    const GURL url,
-    data_decoder::DataDecoder::ValueOrError result) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (!result.has_value() || !result.value().is_dict())
-    return;
-
-  auto it = product_info_cache_.find(url.spec());
-
-  // If there was no entry, do nothing. Most likely this means the page
-  // navigated before the script finished running.
-  if (it == product_info_cache_.end()) {
-    return;
-  }
 
   ProductInfo* cached_info = it->second->product_info.get();
 
@@ -398,16 +388,17 @@ void ShoppingService::OnProductInfoJsonSanitizationCompleted(
   // that the server didn't detect the page as a PDP, so we should try to
   // determine whether it is using the meta extracted from the page. This will
   // only happen if the |kCommerceLocalPDPDetection| flag is enabled.
-  pdp_detected_by_client = CheckIsPDPFromMetaOnly(result.value().GetDict());
+  pdp_detected_by_client = CheckIsPDPFromMetaOnly(result.GetDict());
+
   if (cached_info) {
     pdp_detected_by_server = true;
 
-    MergeProductInfoData(cached_info, result.value().GetDict());
+    MergeProductInfoData(cached_info, result.GetDict());
   }
 
   if (base::FeatureList::IsEnabled(kCommerceLocalPDPDetection)) {
     metrics::RecordPDPStateWithLocalMeta(pdp_detected_by_server,
-                                         pdp_detected_by_client);
+                                         pdp_detected_by_client, source_id);
   }
 }
 
@@ -780,11 +771,9 @@ bool ShoppingService::IsShoppingPageTypesApiEnabled() {
 }
 
 bool ShoppingService::IsDiscountInfoApiEnabled() {
-  return IsRegionLockedFeatureEnabled(
-             kShowDiscountOnNavigation, kShowDiscountOnNavigationRegionLaunched,
-             country_on_startup_, locale_on_startup_) ||
-         base::FeatureList::IsEnabled(
-             ntp_features::kNtpHistoryClustersModuleDiscounts);
+  return IsRegionLockedFeatureEnabled(kEnableDiscountInfoApi,
+                                      kEnableDiscountInfoApiRegionLaunched,
+                                      country_on_startup_, locale_on_startup_);
 }
 
 void ShoppingService::HandleOptGuideProductInfoResponse(
@@ -1526,18 +1515,12 @@ bool ShoppingService::IsShoppingListEligible(AccountChecker* account_checker,
   if (!prefs || !IsShoppingListAllowedForEnterprise(prefs))
     return false;
 
-  bool blocked_by_waa =
-      !account_checker || !account_checker->IsWebAndAppActivityEnabled();
-  if (base::FeatureList::IsEnabled(kShoppingListWAARestrictionRemoval)) {
-    blocked_by_waa = false;
-  }
-
   // Make sure the user allows subscriptions to be made and that we can fetch
   // store data.
   if (!account_checker || !account_checker->IsSignedIn() ||
       !account_checker->IsSyncingBookmarks() ||
       !account_checker->IsAnonymizedUrlDataCollectionEnabled() ||
-      blocked_by_waa || account_checker->IsSubjectToParentalControls()) {
+      account_checker->IsSubjectToParentalControls()) {
     return false;
   }
 

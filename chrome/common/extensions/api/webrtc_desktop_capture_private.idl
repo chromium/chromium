@@ -23,6 +23,7 @@ namespace webrtcDesktopCapturePrivate {
 
   interface Functions {
     // Shows desktop media picker UI with the specified set of sources.
+    [doesNotSupportPromises="Synchronous return and callback crbug.com/1143032"]
     static long chooseDesktopMedia(DesktopCaptureSourceType[] sources,
                                    RequestInfo request,
                                    chooseDesktopMediaCallback callback);

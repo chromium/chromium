@@ -16,6 +16,7 @@
 #import "base/metrics/histogram_macros.h"
 #import "base/notreached.h"
 #import "base/task/bind_post_task.h"
+#import "components/enterprise/idle/idle_features.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "components/metrics/metrics_service.h"
@@ -24,17 +25,16 @@
 #import "ios/chrome/app/application_delegate/memory_warning_helper.h"
 #import "ios/chrome/app/application_delegate/metrics_mediator.h"
 #import "ios/chrome/app/application_delegate/startup_information.h"
-#import "ios/chrome/app/application_delegate/user_activity_handler.h"
 #import "ios/chrome/app/deferred_initialization_runner.h"
 #import "ios/chrome/browser/browsing_data/model/sessions_storage_util.h"
 #import "ios/chrome/browser/crash_report/model/crash_helper.h"
 #import "ios/chrome/browser/crash_report/model/crash_keys_helper.h"
 #import "ios/chrome/browser/crash_report/model/crash_loop_detection_util.h"
 #import "ios/chrome/browser/crash_report/model/features.h"
-#import "ios/chrome/browser/device_sharing/device_sharing_manager.h"
+#import "ios/chrome/browser/device_sharing/model/device_sharing_manager.h"
+#import "ios/chrome/browser/enterprise/model/idle/idle_service_factory.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/metrics/model/web_state_list_metrics_browser_agent.h"
-#import "ios/chrome/browser/ntp/home/features.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_delegate.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -45,9 +45,10 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
-#import "ios/chrome/browser/signin/authentication_service.h"
-#import "ios/chrome/browser/signin/authentication_service_factory.h"
-#import "ios/chrome/browser/signin/system_identity_manager.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/system_identity_manager.h"
 #import "ios/chrome/browser/web_state_list/model/session_metrics.h"
 #import "ios/net/cookies/cookie_store_ios.h"
 #import "ios/public/provider/chrome/browser/app_distribution/app_distribution_api.h"
@@ -164,6 +165,14 @@ void FlushCookieStoreOnIOThread(
                name:UISceneWillConnectNotification
              object:nil];
 
+    // Observe the status of VoiceOver for crash logging.
+    [[NSNotificationCenter defaultCenter]
+        addObserver:self
+           selector:@selector(voiceOverStatusDidChange:)
+               name:UIAccessibilityVoiceOverStatusDidChangeNotification
+             object:nil];
+    crash_keys::SetVoiceOverRunning(UIAccessibilityIsVoiceOverRunning());
+
     [self addObserver:self];
   }
   return self;
@@ -246,6 +255,15 @@ void FlushCookieStoreOnIOThread(
     return;
   }
 
+  // mainBrowserState may be empty in tests e.g.
+  // `AppStateTest.applicationWillEnterForeground`.
+  if (self.mainBrowserState &&
+      base::FeatureList::IsEnabled(enterprise_idle::kIdleTimeout)) {
+    enterprise_idle::IdleServiceFactory::GetForBrowserState(
+        self.mainBrowserState)
+        ->OnApplicationWillEnterBackground();
+  }
+
   [MetricsMediator
       applicationDidEnterBackground:[memoryHelper
                                         foregroundMemoryWarningCount]];
@@ -320,6 +338,11 @@ void FlushCookieStoreOnIOThread(
   if (self.mainBrowserState) {
     AuthenticationServiceFactory::GetForBrowserState(self.mainBrowserState)
         ->OnApplicationWillEnterForeground();
+    if (base::FeatureList::IsEnabled(enterprise_idle::kIdleTimeout)) {
+      enterprise_idle::IdleServiceFactory::GetForBrowserState(
+          self.mainBrowserState)
+          ->OnApplicationWillEnterForeground();
+    }
   }
 
   crash_keys::SetCurrentlyInBackground(false);
@@ -642,6 +665,12 @@ void FlushCookieStoreOnIOThread(
 
   [self.observers appState:self sceneConnected:sceneState];
   crash_keys::SetConnectedScenesCount([self connectedScenes].count);
+}
+
+#pragma mark - Voice Over lifecycle
+
+- (void)voiceOverStatusDidChange:(NSNotification*)notification {
+  crash_keys::SetVoiceOverRunning(UIAccessibilityIsVoiceOverRunning());
 }
 
 #pragma mark - AppStateObserver

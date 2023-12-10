@@ -5,7 +5,6 @@
 <translation id="1076394037877376434">Eliminar páxina <ph name="PAGE_NUMBER" /></translation>
 <translation id="1113173431709655881">Modo de cámara</translation>
 <translation id="1153190633558910465">Sen grade</translation>
-<translation id="1175958423215084756">Detectouse unha ligazón. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213">Eliminouse a páxina <ph name="PAGE_NUMBER" /></translation>
 <translation id="1258009455399840361">Xirar 90 graos cara á dereita</translation>
 <translation id="1417314334557041815">Editar páxina <ph name="INDEX" /></translation>
@@ -60,14 +59,12 @@
 <translation id="3642192109456033823">Procesando vídeo...</translation>
 <translation id="3789724198583203151">Xirar 90 graos cara á esquerda</translation>
 <translation id="3810838688059735925">Vídeo</translation>
-<translation id="3892148308691398805">Copiar texto</translation>
 <translation id="4060608699153044055">Non podes realizar gravacións porque tes pouco espazo de almacenamento no dispositivo. Para comezar a gravar, terás que liberar espazo.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> Mpx</translation>
 <translation id="4118525110028899586">Pór gravación en pausa</translation>
 <translation id="4121305183798804752">Detectouse un documento</translation>
 <translation id="414641094616694804">Esta cámara non pode cambiar a resolución</translation>
 <translation id="4176463684765177261">Desactivado</translation>
-<translation id="4269820728363426813">Copiar enderezo da ligazón</translation>
 <translation id="428234092390943511">Miniatura da páxina</translation>
 <translation id="4349714250734879769">Axustar fotogramas con Chrome</translation>
 <translation id="4383571725254449280">Rexistros de rendemento de impresión</translation>
@@ -144,7 +141,6 @@ Se está relacionado coa calidade da imaxe ou do vídeo, anexa unha foto ou un v
 <translation id="7726641833034062494">Gravar vídeo normal</translation>
 <translation id="7748344063862150053">Esquina superior dereita do documento</translation>
 <translation id="7933675232020478311">Desprazándose cara abaixo e á dereita</translation>
-<translation id="7983668134180549431">Detectouse texto.</translation>
 <translation id="8079255378695216066">Non se puido iniciar a gravación</translation>
 <translation id="8120146556401698679">Panorámica, inclinación e zoom</translation>
 <translation id="8131740175452115882">Confirmar</translation>
@@ -163,6 +159,7 @@ Se está relacionado coa calidade da imaxe ou do vídeo, anexa unha foto ou un v
 <translation id="8870695351537079478">Non se puido iniciar a gravación</translation>
 <translation id="8880167521484863515">4 a 3</translation>
 <translation id="8903921497873541725">Achegar</translation>
+<translation id="8926890870105777777">Unirse á rede <ph name="WIFINAME" /></translation>
 <translation id="9045010116236796332">Coloca todos os bordos do documento dentro do marco</translation>
 <translation id="9045155556724273246">10 segundos</translation>
 <translation id="906331135292332864">Procesando imaxe…</translation>

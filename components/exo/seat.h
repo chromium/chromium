@@ -75,6 +75,9 @@ class Seat : public aura::client::FocusChangeObserver,
     return 0 <= priority && priority <= kMaxObserverPriority;
   }
 
+  // Nontify observers when a new surface is created.
+  void NotifySurfaceCreated(Surface* surface);
+
   // Notify observers about pointer capture state changes.
   void NotifyPointerCaptureEnabled(Pointer* pointer,
                                    aura::Window* capture_window);

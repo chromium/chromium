@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="nl">
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> van je tabbladen zijn niet recent gebruikt. Wil je ze sluiten?</translation>
+<translation id="1155815720264022949">Wil je oude tabbladen sluiten?</translation>
 <translation id="1215127405478249895">Tabbladen checken</translation>
 <translation id="125153950246128346">Tik om nog een tabblad te bekijken</translation>
 <translation id="1499635324672558517">Alle incognitotabbladen sluiten?</translation>
@@ -46,9 +47,11 @@
 <translation id="5073204694187207510">Raster op volledig scherm verbergen</translation>
 <translation id="5076161749301278626">Winkelreviews bekijken?</translation>
 <translation id="5082793167783849073">Vergelijk pagina's snel door een groep te maken. Tik op een link en houd deze vast om te beginnen.</translation>
+<translation id="5303274951032363933">{TABS_COUNT,plural, =1{Je hebt <ph name="TABS_COUNT_ONE" /> tabblad dat je niet recent hebt gebruikt}other{Je hebt <ph name="TABS_COUNT_MANY" /> tabbladen die je niet recent hebt gebruikt}}</translation>
 <translation id="5339733443032484186">Je laatste tabblad</translation>
 <translation id="5490235265819901748">Tabbladgroep uitgevouwen</translation>
 <translation id="5494920125229734069">Alles selecteren</translation>
+<translation id="5545379293264651575">Sluiten zonder te beoordelen</translation>
 <translation id="5556417849629758491">Winkelinformatie bekijken, optie beschikbaar bovenaan het scherm</translation>
 <translation id="5558362125926932819">Tabbladgroep met <ph name="NUMBER_OF_TABS" /> tabbladen sluiten</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" /> tabbladen gegroepeerd</translation>
@@ -85,7 +88,6 @@
 <translation id="7885132941432959125">Tabblad naar rechts verplaatsen</translation>
 <translation id="7966321538264951561">Sluit de suggesties.</translation>
 <translation id="8029301326595421733">Informatie over deze winkel is op volledige hoogte geopend</translation>
-<translation id="814503310257431685">Alles bekijken</translation>
 <translation id="8205266828577616993">Tabblad omhoog verplaatsen</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> geselecteerd tabblad sluiten}other{<ph name="TABS_COUNT_MANY" /> geselecteerde tabbladen sluiten}}</translation>
 <translation id="8398929769197326728">Nieuwe map - <ph name="CURRENT_TIMESTAMP_MS" /></translation>

@@ -40,6 +40,11 @@ void FakeServiceClient::BindTts(
   tts_receivers_.Add(this, std::move(tts_receiver));
 }
 
+void FakeServiceClient::BindUserInput(
+    mojo::PendingReceiver<mojom::UserInput> ui_receiver) {
+  ui_receivers_.Add(this, std::move(ui_receiver));
+}
+
 void FakeServiceClient::BindUserInterface(
     mojo::PendingReceiver<mojom::UserInterface> ux_receiver) {
   ux_receivers_.Add(this, std::move(ux_receiver));
@@ -60,7 +65,14 @@ void FakeServiceClient::Start(ax::mojom::StartOptionsPtr options,
                               StartCallback callback) {
   auto info = mojom::SpeechRecognitionStartInfo::New();
   info->type = mojom::SpeechRecognitionType::kNetwork;
-  info->observer = sr_event_observer_.BindNewPipeAndPassReceiver();
+  if (speech_recognition_start_error_.has_value()) {
+    info->observer_or_error = mojom::ObserverOrError::NewError(
+        speech_recognition_start_error_.value());
+  } else {
+    info->observer_or_error = mojom::ObserverOrError::NewObserver(
+        sr_event_observer_.BindNewPipeAndPassReceiver());
+  }
+
   std::move(callback).Run(std::move(info));
   if (speech_recognition_start_callback_) {
     speech_recognition_start_callback_.Run();
@@ -69,7 +81,7 @@ void FakeServiceClient::Start(ax::mojom::StartOptionsPtr options,
 
 void FakeServiceClient::Stop(ax::mojom::StopOptionsPtr options,
                              StopCallback callback) {
-  std::move(callback).Run();
+  std::move(callback).Run(speech_recognition_stop_error_);
 }
 
 void FakeServiceClient::BindAccessibilityFileLoader(
@@ -155,6 +167,14 @@ void FakeServiceClient::GetVoices(GetVoicesCallback callback) {
   voices.emplace_back(std::move(first_voice));
   voices.emplace_back(std::move(second_voice));
   std::move(callback).Run(std::move(voices));
+}
+
+void FakeServiceClient::SendSyntheticKeyEventForShortcutOrNavigation(
+    mojom::SyntheticKeyEventPtr key_event) {
+  key_events_.emplace_back(std::move(key_event));
+  if (synthetic_key_event_callback_) {
+    synthetic_key_event_callback_.Run();
+  }
 }
 
 void FakeServiceClient::DarkenScreen(bool darken) {
@@ -248,6 +268,16 @@ void FakeServiceClient::SendSpeechRecognitionErrorEvent() {
   sr_event_observer_->OnError(std::move(event));
 }
 
+void FakeServiceClient::SetSpeechRecognitionStartError(
+    const std::string& error) {
+  speech_recognition_start_error_ = error;
+}
+
+void FakeServiceClient::SetSpeechRecognitionStopError(
+    const std::string& error) {
+  speech_recognition_stop_error_ = error;
+}
+
 void FakeServiceClient::SetTtsSpeakCallback(
     base::RepeatingCallback<void(const std::string&, mojom::TtsOptionsPtr)>
         callback) {
@@ -257,6 +287,16 @@ void FakeServiceClient::SetTtsSpeakCallback(
 void FakeServiceClient::SendTtsUtteranceEvent(mojom::TtsEventPtr tts_event) {
   CHECK(tts_utterance_client_.is_bound());
   tts_utterance_client_->OnEvent(std::move(tts_event));
+}
+
+void FakeServiceClient::SetSyntheticKeyEventCallback(
+    base::RepeatingCallback<void()> callback) {
+  synthetic_key_event_callback_ = std::move(callback);
+}
+
+const std::vector<mojom::SyntheticKeyEventPtr>&
+FakeServiceClient::GetKeyEvents() const {
+  return key_events_;
 }
 
 void FakeServiceClient::SetDarkenScreenCallback(

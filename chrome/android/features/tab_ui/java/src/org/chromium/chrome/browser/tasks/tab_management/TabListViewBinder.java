@@ -25,9 +25,7 @@ import org.chromium.chrome.tab_ui.R;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
-/**
- * {@link org.chromium.ui.modelutil.SimpleRecyclerViewMcp.ViewBinder} for tab List.
- */
+/** {@link org.chromium.ui.modelutil.SimpleRecyclerViewMcp.ViewBinder} for tab List. */
 class TabListViewBinder {
     // TODO(1023557): Merge with TabGridViewBinder for shared properties.
     private static void bindListTab(
@@ -42,22 +40,26 @@ class TabListViewBinder {
                 setFavicon(view, null);
                 return;
             }
-            fetcher.fetch(tabFavicon -> {
-                if (fetcher != model.get(TabProperties.FAVICON_FETCHER)) return;
+            fetcher.fetch(
+                    tabFavicon -> {
+                        if (fetcher != model.get(TabProperties.FAVICON_FETCHER)) return;
 
-                setFavicon(view, tabFavicon.getDefaultDrawable());
-            });
+                        setFavicon(view, tabFavicon.getDefaultDrawable());
+                    });
         } else if (TabProperties.IS_SELECTED == propertyKey) {
             int selectedTabBackground =
                     model.get(TabProperties.SELECTED_TAB_BACKGROUND_DRAWABLE_ID);
             Resources res = view.getResources();
             Resources.Theme theme = view.getContext().getTheme();
-            Drawable drawable = new InsetDrawable(
-                    ResourcesCompat.getDrawable(res, selectedTabBackground, theme),
-                    (int) res.getDimension(R.dimen.tab_list_selected_inset_low_end));
+            Drawable drawable =
+                    new InsetDrawable(
+                            ResourcesCompat.getDrawable(res, selectedTabBackground, theme),
+                            (int) res.getDimension(R.dimen.tab_list_selected_inset_low_end));
             view.setForeground(model.get(TabProperties.IS_SELECTED) ? drawable : null);
         } else if (TabProperties.IS_INCOGNITO == propertyKey) {
-            updateColors(view, model.get(TabProperties.IS_INCOGNITO),
+            updateColors(
+                    view,
+                    model.get(TabProperties.IS_INCOGNITO),
                     model.get(TabProperties.IS_SELECTED));
         } else if (TabProperties.URL_DOMAIN == propertyKey) {
             String domain = model.get(TabProperties.URL_DOMAIN);
@@ -77,9 +79,12 @@ class TabListViewBinder {
 
         if (TabProperties.IS_INCOGNITO == propertyKey) {
             ImageView closeButton = (ImageView) view.findViewById(R.id.end_button);
-            ImageViewCompat.setImageTintList(closeButton,
-                    TabUiThemeProvider.getActionButtonTintList(view.getContext(),
-                            model.get(TabProperties.IS_INCOGNITO), /*isSelected=*/false));
+            ImageViewCompat.setImageTintList(
+                    closeButton,
+                    TabUiThemeProvider.getActionButtonTintList(
+                            view.getContext(),
+                            model.get(TabProperties.IS_INCOGNITO),
+                            /* isSelected= */ false));
         } else if (TabProperties.CLOSE_BUTTON_DESCRIPTION_STRING == propertyKey) {
             view.findViewById(R.id.end_button)
                     .setContentDescription(
@@ -88,19 +93,22 @@ class TabListViewBinder {
             if (model.get(TabProperties.TAB_SELECTED_LISTENER) == null) {
                 view.setOnClickListener(null);
             } else {
-                view.setOnClickListener(v -> {
-                    int tabId = model.get(TabProperties.TAB_ID);
-                    model.get(TabProperties.TAB_SELECTED_LISTENER).run(tabId);
-                });
+                view.setOnClickListener(
+                        v -> {
+                            int tabId = model.get(TabProperties.TAB_ID);
+                            model.get(TabProperties.TAB_SELECTED_LISTENER).run(tabId);
+                        });
             }
         } else if (TabProperties.TAB_CLOSED_LISTENER == propertyKey) {
             if (model.get(TabProperties.TAB_CLOSED_LISTENER) == null) {
                 view.findViewById(R.id.end_button).setOnClickListener(null);
             } else {
-                view.findViewById(R.id.end_button).setOnClickListener(v -> {
-                    int tabId = model.get(TabProperties.TAB_ID);
-                    model.get(TabProperties.TAB_CLOSED_LISTENER).run(tabId);
-                });
+                view.findViewById(R.id.end_button)
+                        .setOnClickListener(
+                                v -> {
+                                    int tabId = model.get(TabProperties.TAB_ID);
+                                    model.get(TabProperties.TAB_CLOSED_LISTENER).run(tabId);
+                                });
             }
         }
     }
@@ -117,12 +125,14 @@ class TabListViewBinder {
 
         View cardView = view.findViewById(R.id.content_view);
         cardView.getBackground().mutate();
-        final @ColorInt int backgroundColor = TabUiThemeProvider.getCardViewBackgroundColor(
-                view.getContext(), isIncognito, /*isSelected=*/false);
+        final @ColorInt int backgroundColor =
+                TabUiThemeProvider.getCardViewBackgroundColor(
+                        view.getContext(), isIncognito, /* isSelected= */ false);
         ViewCompat.setBackgroundTintList(cardView, ColorStateList.valueOf(backgroundColor));
 
-        final @ColorInt int textColor = TabUiThemeProvider.getTitleTextColor(
-                view.getContext(), isIncognito, /*isSelected=*/false);
+        final @ColorInt int textColor =
+                TabUiThemeProvider.getTitleTextColor(
+                        view.getContext(), isIncognito, /* isSelected= */ false);
         TextView titleView = (TextView) view.findViewById(R.id.title);
         TextView descriptionView = (TextView) view.findViewById(R.id.description);
         titleView.setTextColor(textColor);
@@ -135,7 +145,7 @@ class TabListViewBinder {
         faviconView.getBackground().mutate();
         final @ColorInt int faviconBackgroundColor =
                 TabUiThemeProvider.getMiniThumbnailPlaceholderColor(
-                        view.getContext(), isIncognito, /*isSelected=*/false);
+                        view.getContext(), isIncognito, /* isSelected= */ false);
         ViewCompat.setBackgroundTintList(
                 faviconView, ColorStateList.valueOf(faviconBackgroundColor));
     }
@@ -157,14 +167,16 @@ class TabListViewBinder {
         SelectableTabGridView selectableTabListView = view.findViewById(R.id.content_view);
 
         if (TabProperties.SELECTABLE_TAB_CLICKED_LISTENER == propertyKey) {
-            View.OnClickListener onClickListener = v -> {
-                model.get(TabProperties.SELECTABLE_TAB_CLICKED_LISTENER).run(tabId);
-                selectableTabListView.onClick();
-            };
-            View.OnLongClickListener onLongClickListener = v -> {
-                model.get(TabProperties.SELECTABLE_TAB_CLICKED_LISTENER).run(tabId);
-                return selectableTabListView.onLongClick(selectableTabListView);
-            };
+            View.OnClickListener onClickListener =
+                    v -> {
+                        model.get(TabProperties.SELECTABLE_TAB_CLICKED_LISTENER).run(tabId);
+                        selectableTabListView.onClick();
+                    };
+            View.OnLongClickListener onLongClickListener =
+                    v -> {
+                        model.get(TabProperties.SELECTABLE_TAB_CLICKED_LISTENER).run(tabId);
+                        return selectableTabListView.onLongClick(selectableTabListView);
+                    };
             selectableTabListView.setOnClickListener(onClickListener);
             selectableTabListView.setOnLongClickListener(onLongClickListener);
 
@@ -182,14 +194,17 @@ class TabListViewBinder {
             boolean isSelected = model.get(TabProperties.IS_SELECTED);
             ImageView actionButton = (ImageView) view.findViewById(R.id.end_button);
             actionButton.getBackground().setLevel(isSelected ? selectedLevel : defaultLevel);
-            DrawableCompat.setTintList(actionButton.getBackground().mutate(),
-                    isSelected ? model.get(
-                            TabProperties.SELECTABLE_TAB_ACTION_BUTTON_SELECTED_BACKGROUND)
-                               : model.get(TabProperties.SELECTABLE_TAB_ACTION_BUTTON_BACKGROUND));
+            DrawableCompat.setTintList(
+                    actionButton.getBackground().mutate(),
+                    isSelected
+                            ? model.get(
+                                    TabProperties.SELECTABLE_TAB_ACTION_BUTTON_SELECTED_BACKGROUND)
+                            : model.get(TabProperties.SELECTABLE_TAB_ACTION_BUTTON_BACKGROUND));
 
             // The check should be invisible if not selected.
             actionButton.getDrawable().setAlpha(isSelected ? 255 : 0);
-            ImageViewCompat.setImageTintList(actionButton,
+            ImageViewCompat.setImageTintList(
+                    actionButton,
                     isSelected ? model.get(TabProperties.CHECKED_DRAWABLE_STATE_LIST) : null);
             if (isSelected) ((AnimatedVectorDrawableCompat) actionButton.getDrawable()).start();
         }

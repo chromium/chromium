@@ -22,6 +22,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/tab/TabHidingType.java",
     "java/src/org/chromium/chrome/browser/tab/TabIdManager.java",
     "java/src/org/chromium/chrome/browser/tab/TabLifecycle.java",
+    "java/src/org/chromium/chrome/browser/tab/TabLoadIfNeededCaller.java",
     "java/src/org/chromium/chrome/browser/tab/TabObscuringHandler.java",
     "java/src/org/chromium/chrome/browser/tab/TabObscuringHandlerSupplier.java",
     "java/src/org/chromium/chrome/browser/tab/TabObserver.java",
@@ -53,6 +54,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/tab/state/PriceDropMetricsLogger.java",
     "java/src/org/chromium/chrome/browser/tab/state/Serializer.java",
     "java/src/org/chromium/chrome/browser/tab/state/ShoppingPersistedTabData.java",
+    "java/src/org/chromium/chrome/browser/tab/state/ShoppingPersistedTabDataService.java",
   ]
 
   srcjar_deps = [

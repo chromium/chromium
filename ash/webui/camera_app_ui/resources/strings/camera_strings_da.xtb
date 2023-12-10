@@ -5,7 +5,6 @@
 <translation id="1076394037877376434">Slet side <ph name="PAGE_NUMBER" /></translation>
 <translation id="1113173431709655881">Kameratilstand</translation>
 <translation id="1153190633558910465">Ingen gitterlinjer</translation>
-<translation id="1175958423215084756">Link registreret. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213">Side <ph name="PAGE_NUMBER" /> blev slettet</translation>
 <translation id="1258009455399840361">Roter 90 grader med uret</translation>
 <translation id="1417314334557041815">Rediger side <ph name="INDEX" /></translation>
@@ -60,14 +59,12 @@
 <translation id="3642192109456033823">Videoen behandles…</translation>
 <translation id="3789724198583203151">Roter 90 grader mod uret</translation>
 <translation id="3810838688059735925">Video</translation>
-<translation id="3892148308691398805">Kopiér tekst</translation>
 <translation id="4060608699153044055">Du kan ikke optage, da der mangler lagerplads på enheden. Frigør plads på din enhed for at starte optagelsen.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
 <translation id="4118525110028899586">Sæt optagelsen på pause</translation>
 <translation id="4121305183798804752">Et dokument blev registreret</translation>
 <translation id="414641094616694804">Dette kamera kan ikke ændre opløsning</translation>
 <translation id="4176463684765177261">Deaktiveret</translation>
-<translation id="4269820728363426813">Kopiér linkadresse</translation>
 <translation id="428234092390943511">Miniature for side</translation>
 <translation id="4349714250734879769">Skaler rammer i Chrome</translation>
 <translation id="4383571725254449280">Effektivitetslogfiler for udskrivning</translation>
@@ -145,7 +142,6 @@ Hvis din feedback omhandler billed- eller videokvalitet, bedes du vedhæfte et b
 <translation id="7726641833034062494">Optag normal video</translation>
 <translation id="7748344063862150053">Dokumentets øverste højre hjørne</translation>
 <translation id="7933675232020478311">Flyttes nedad og mod højre</translation>
-<translation id="7983668134180549431">Tekst er registreret.</translation>
 <translation id="8079255378695216066">Optagelsen kan ikke startes</translation>
 <translation id="8120146556401698679">Panorer drej zoom</translation>
 <translation id="8131740175452115882">Bekræft</translation>
@@ -164,6 +160,7 @@ Hvis din feedback omhandler billed- eller videokvalitet, bedes du vedhæfte et b
 <translation id="8870695351537079478">Det er ikke muligt at starte en optagelse</translation>
 <translation id="8880167521484863515">4 til 3</translation>
 <translation id="8903921497873541725">Zoom ind</translation>
+<translation id="8926890870105777777">Opret forbindelse til netværket "<ph name="WIFINAME" />"</translation>
 <translation id="9045010116236796332">Sørg for, at alle dokumentets kanter er inden for rammen</translation>
 <translation id="9045155556724273246">10 sekunder</translation>
 <translation id="906331135292332864">Billedet behandles…</translation>

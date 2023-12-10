@@ -23,6 +23,7 @@
 <translation id="1415402041810619267">ตัด URL ให้สั้นลงแล้ว</translation>
 <translation id="1426410128494586442">ยอมรับ</translation>
 <translation id="1448064542941920355">ลดการซูม</translation>
+<translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> เว็บไซต์}other{<ph name="SITE_COUNT" /> เว็บไซต์}}</translation>
 <translation id="1510341833810331442">ไม่อนุญาตให้เว็บไซต์บันทึกข้อมูลในอุปกรณ์ของคุณ</translation>
 <translation id="1547123415014299762">อนุญาตคุกกี้ของบุคคลที่สาม</translation>
 <translation id="1568470248891039841">เว็บไซต์ที่คุณเข้าชมสามารถฝังเนื้อหาจากเว็บไซต์อื่นๆ เช่น รูปภาพ โฆษณา และข้อความ เว็บไซต์อื่นๆ เหล่านี้สามารถขอสิทธิ์ใช้ข้อมูลที่บันทึกไว้เกี่ยวกับตัวคุณขณะที่เรียกดูเว็บไซต์ <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติมเกี่ยวกับเนื้อหาที่ฝัง<ph name="END_LINK" /></translation>
@@ -31,6 +32,7 @@
 <translation id="1633720957382884102">เว็บไซต์ที่เกี่ยวข้อง</translation>
 <translation id="1644574205037202324">ประวัติการเข้าชม</translation>
 <translation id="1647582022260550163">คุณแน่ใจไหมว่าต้องการรีเซ็ตสิทธิ์ รวมถึงล้างคุกกี้และข้อมูลเว็บไซต์</translation>
+<translation id="1652197001188145583">เมื่อเปิด เว็บไซต์จะขอใช้อุปกรณ์ NFC ได้ เมื่อปิด เว็บไซต์จะใช้อุปกรณ์ NFC ไม่ได้</translation>
 <translation id="1660204651932907780">อนุญาตให้เว็บไซต์เล่นเสียง (แนะนำ)</translation>
 <translation id="1677097821151855053">ระบบใช้คุกกี้และข้อมูลของเว็บไซต์ในการจดจำคุณ เช่น เพื่อลงชื่อเข้าใช้ให้คุณหรือปรับโฆษณาตามโปรไฟล์ของคุณ ดู<ph name="BEGIN_LINK" />การตั้งค่า<ph name="END_LINK" />เพื่อจัดการคุกกี้สำหรับทุกเว็บไซต์</translation>
 <translation id="169515064810179024">บล็อกไม่ให้เว็บไซต์เข้าถึงเซ็นเซอร์ตรวจจับการเคลื่อนไหว</translation>
@@ -39,13 +41,13 @@
 <translation id="1779089405699405702">ตัวถอดรหัสรูปภาพ</translation>
 <translation id="1785415724048343560">แนะนำเพื่อประสบการณ์การใช้งานที่ดีที่สุด</translation>
 <translation id="1818308510395330587">หากต้องการอนุญาตให้ <ph name="APP_NAME" /> ใช้ AR ให้เปิดใช้กล้องใน<ph name="BEGIN_LINK" />การตั้งค่า Android<ph name="END_LINK" /> ด้วย</translation>
-<translation id="187227595286001730">เว็บไซต์ที่เกี่ยวข้องสามารถดูกิจกรรมของคุณในกลุ่มได้</translation>
 <translation id="1887786770086287077">ตอนนี้ตำแหน่งสำหรับอุปกรณ์เครื่องนี้ปิดอยู่ เปิดตำแหน่งได้ใน<ph name="BEGIN_LINK" />การตั้งค่า Android<ph name="END_LINK" /></translation>
 <translation id="1915307458270490472">วางซ้อนไว้ด้านบน</translation>
 <translation id="1919950603503897840">เลือกรายชื่อติดต่อ</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" />/<ph name="FILE_SIZE_WITH_UNITS" /></translation>
 <translation id="1979673356880165407">ทำให้ข้อความและรูปภาพมีขนาดใหญ่ขึ้นหรือเล็กลงสำหรับทุกเว็บไซต์ที่คุณเข้าชม</translation>
 <translation id="1984937141057606926">อนุญาต ยกเว้นบุคคลที่สาม</translation>
+<translation id="1985247341569771101">เมื่อเปิด เว็บไซต์จะใช้เซ็นเซอร์ตรวจจับการเคลื่อนไหวของอุปกรณ์ได้ เมื่อปิด เว็บไซต์จะใช้เซ็นเซอร์ตรวจจับการเคลื่อนไหวไม่ได้</translation>
 <translation id="1989112275319619282">เปิดดู</translation>
 <translation id="1994173015038366702">URL ของเว็บไซต์</translation>
 <translation id="2004697686368036666">ฟีเจอร์ในบางเว็บไซต์อาจใช้งานไม่ได้</translation>
@@ -61,7 +63,6 @@
 <translation id="2182457891543959921">ถามก่อนที่จะอนุญาตให้เว็บไซต์สร้างแผนที่ 3 มิติของสิ่งที่อยู่รอบตัวคุณหรือติดตามตำแหน่งของกล้อง (แนะนำ)</translation>
 <translation id="2185965788978862351">การดำเนินการนี้จะลบข้อมูลและคุกกี้ที่เว็บไซต์หรือแอปต่างๆ ในหน้าจอหลักจัดเก็บไว้รวมทั้งสิ้น <ph name="DATASIZE" /></translation>
 <translation id="2194856509914051091">สิ่งที่ควรพิจารณา</translation>
-<translation id="2212565012507486665">อนุญาตคุกกี้</translation>
 <translation id="2228071138934252756">หากต้องการอนุญาตให้ <ph name="APP_NAME" /> เข้าถึงกล้องถ่ายรูป ให้เปิดใช้กล้องใน<ph name="BEGIN_LINK" />การตั้งค่า Android<ph name="END_LINK" /> ด้วย</translation>
 <translation id="2235344399760031203">บล็อกคุกกี้ของบุคคลที่สามอยู่</translation>
 <translation id="2238944249568001759">การค้นหาที่แนะนําโดยอิงจากแท็บล่าสุด</translation>
@@ -80,6 +81,7 @@
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{อนุญาตให้เข้าถึง<ph name="PERMISSION_1" /> <ph name="PERMISSION_2" /> และอีก <ph name="NUM_MORE" /> รายการ}other{อนุญาตให้เข้าถึง<ph name="PERMISSION_1" /> <ph name="PERMISSION_2" /> และอีก <ph name="NUM_MORE" /> รายการ}}</translation>
 <translation id="2410940059315936967">เว็บไซต์ที่คุณเข้าชมสามารถฝังเนื้อหาจากเว็บไซต์อื่นๆ เช่น รูปภาพ โฆษณา และข้อความ เราเรียกคุกกี้ที่เว็บไซต์อื่นๆ ตั้งค่าไว้ว่าคุกกี้ของบุคคลที่สาม</translation>
 <translation id="2434158240863470628">ดาวน์โหลดเสร็จสมบูรณ์ <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
+<translation id="2438120137003069591">คุณได้อนุญาตให้เว็บไซต์นี้ใช้คุกกี้ของบุคคลที่สามเป็นการชั่วคราว ซึ่งหมายความว่าจะมีการป้องกันขณะท่องเว็บน้อยลง แต่ฟีเจอร์ของเว็บไซต์จะทำงานตามที่คาดไว้ได้มากขึ้น <ph name="BEGIN_LINK" />ส่งความคิดเห็น<ph name="END_LINK" /></translation>
 <translation id="244264527810019436">ฟีเจอร์บนเว็บไซต์บางแห่งอาจใช้งานในโหมดไม่ระบุตัวตนไม่ได้</translation>
 <translation id="2442870161001914531">ขอเว็บไซต์เวอร์ชันเดสก์ท็อปเสมอ</translation>
 <translation id="2469312991797799607">การดำเนินการนี้จะลบข้อมูลและคุกกี้ทั้งหมดของ <ph name="ORIGIN" /> รวมถึงทุกเว็บไซต์จากต้นทางนี้</translation>
@@ -101,10 +103,10 @@
 <translation id="2677748264148917807">ออก</translation>
 <translation id="2678468611080193228">ลองอนุญาตคุกกี้ของบุคคลที่สามชั่วคราว ซึ่งหมายความว่าการปกป้องจะลดลง แต่ฟีเจอร์ของเว็บไซต์มีแนวโน้มที่จะทํางานได้มากกว่า</translation>
 <translation id="2683434792633810741">ลบและรีเซ็ตใช่ไหม</translation>
-<translation id="2687403674020088961">บล็อกคุกกี้ทั้งหมด (ไม่แนะนำ)</translation>
 <translation id="2713106313042589954">ปิดกล้อง</translation>
 <translation id="2717722538473713889">อีเมล</translation>
 <translation id="2750481671343847896">เว็บไซต์สามารถแสดงข้อความแจ้งให้ลงชื่อเข้าใช้จากบริการระบุตัวตนได้</translation>
+<translation id="2790501146643349491">เมื่อเปิด เว็บไซต์ที่เพิ่งปิดจะส่งและรับข้อมูลจนเสร็จสิ้นได้ เมื่อปิด เว็บไซต์ที่เพิ่งปิดจะส่งหรือรับข้อมูลจนเสร็จสิ้นไม่ได้</translation>
 <translation id="2822354292072154809">แน่ใจไหมว่าต้องการรีเซ็ตสิทธิ์ทั้งหมดของเว็บไซต์สำหรับ <ph name="CHOSEN_OBJECT_NAME" /></translation>
 <translation id="2850913818900871965">ขอมุมมองบนอุปกรณ์เคลื่อนที่</translation>
 <translation id="2870560284913253234">เว็บไซต์</translation>
@@ -113,6 +115,7 @@
 <translation id="2903493209154104877">ที่อยู่</translation>
 <translation id="2910701580606108292">ถามก่อนอนุญาตให้เว็บไซต์เล่นเนื้อหาที่ได้รับความคุ้มครอง</translation>
 <translation id="2932883381142163287">รายงานการละเมิด</translation>
+<translation id="2939338015096024043">เมื่อเปิด เว็บไซต์จะขอติดตามตำแหน่งของกล้องและเรียนรู้เกี่ยวกับสิ่งที่อยู่รอบตัวคุณได้ เมื่อปิด เว็บไซต์จะติดตามตำแหน่งของกล้องหรือเรียนรู้เกี่ยวกับสิ่งที่อยู่รอบตัวคุณไม่ได้</translation>
 <translation id="2968755619301702150">เครื่องมือดูใบรับรอง</translation>
 <translation id="2979365474350987274">มีการจำกัดคุกกี้ของบุคคลที่สาม</translation>
 <translation id="3008272652534848354">รีเซ็ตสิทธิ์</translation>
@@ -131,6 +134,7 @@
 <translation id="3198916472715691905">ข้อมูลที่จัดเก็บมี <ph name="STORAGE_AMOUNT" /></translation>
 <translation id="321187648315454507">หากต้องการอนุญาตให้ <ph name="APP_NAME" /> ส่งการแจ้งเตือนให้คุณ ให้เปิดใช้การแจ้งเตือนใน<ph name="BEGIN_LINK" />การตั้งค่า Android<ph name="END_LINK" /> ด้วย</translation>
 <translation id="3227137524299004712">ไมโครโฟน</translation>
+<translation id="3242646949159196181">เมื่อเปิด เว็บไซต์จะเล่นเสียงได้ เมื่อปิด เว็บไซต์จะเล่นเสียงไม่ได้</translation>
 <translation id="3277252321222022663">อนุญาตให้เว็บไซต์เข้าถึงเซ็นเซอร์ (แนะนำ)</translation>
 <translation id="3285500645985761267">อนุญาตให้เว็บไซต์ที่เกี่ยวข้องดูกิจกรรมของคุณในกลุ่ม</translation>
 <translation id="3295019059349372795">บทที่ 11: เมืองมรกตมหัศจรรย์แห่งออซ</translation>
@@ -141,6 +145,7 @@
 <translation id="3386292677130313581">ถามก่อนอนุญาตให้เว็บไซต์ทราบตำแหน่งของคุณ (แนะนำ)</translation>
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="344449859752187052">บล็อกคุกกี้ของบุคคลที่สามแล้ว</translation>
+<translation id="3448554387819310837">เมื่อเปิด เว็บไซต์จะขอใช้กล้องของคุณได้ เมื่อปิด เว็บไซต์จะใช้กล้องของคุณไม่ได้</translation>
 <translation id="3465378418721443318">{DAYS,plural, =1{Chrome จะบล็อกคุกกี้อีกครั้งในวันพรุ่งนี้}other{อีก # วัน Chrome จะบล็อกคุกกี้อีกครั้ง}}</translation>
 <translation id="3521663503435878242">เว็บไซต์ภายใต้ <ph name="DOMAIN" /></translation>
 <translation id="3538390592868664640">บล็อกไม่ให้เว็บไซต์สร้างแผนที่ 3 มิติของสิ่งที่อยู่รอบตัวคุณหรือติดตามตำแหน่งของกล้อง</translation>
@@ -149,10 +154,10 @@
 <translation id="3586500876634962664">การใช้กล้องและไมโครโฟน</translation>
 <translation id="358794129225322306">อนุญาตให้เว็บไซต์ดาวน์โหลดไฟล์หลายไฟล์โดยอัตโนมัติ</translation>
 <translation id="3594780231884063836">ปิดเสียงวิดีโอ</translation>
-<translation id="3596414637720633074">บล็อกคุกกี้ของบุคคลที่สามในโหมดไม่ระบุตัวตน</translation>
 <translation id="3600792891314830896">ปิดเสียงเว็บไซต์ที่เล่นเสียง</translation>
 <translation id="3602290021589620013">ดูตัวอย่าง</translation>
 <translation id="3628308229821498208">การค้นหาที่แนะนำ</translation>
+<translation id="3697164069658504920">เมื่อเปิด เว็บไซต์จะขอใช้อุปกรณ์ USB ได้ เมื่อปิด เว็บไซต์จะใช้อุปกรณ์ USB ไม่ได้</translation>
 <translation id="3707034683772193706">เว็บไซต์ที่เข้าชมสามารถบันทึกข้อมูลบางส่วนไว้กับ Chrome ได้ โดยส่วนใหญ่จะใช้เพื่อตรวจสอบว่าคุณไม่ใช่บ็อต</translation>
 <translation id="3721953990244350188">ปิดและแสดงการดำเนินการถัดไปที่พร้อมใช้งาน</translation>
 <translation id="3744111561329211289">ซิงค์ในแบ็กกราวด์</translation>
@@ -176,9 +181,7 @@
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" />/?</translation>
 <translation id="3992684624889376114">เกี่ยวกับหน้านี้</translation>
 <translation id="4002066346123236978">ชื่อ</translation>
-<translation id="4008040567710660924">อนุญาตคุกกี้ของเว็บไซต์ที่เจาะจง</translation>
 <translation id="4046123991198612571">แทร็กถัดไป</translation>
-<translation id="4053720452172726777">กำหนดค่าและควบคุม Google Chrome</translation>
 <translation id="4149890623864272035">แน่ใจไหมว่าต้องการลบข้อมูลในเครื่องและคุกกี้ทั้งหมด รวมถึงรีเซ็ตสิทธิ์ทั้งหมดสำหรับเว็บไซต์นี้</translation>
 <translation id="4149994727733219643">มุมมองอย่างง่ายสำหรับหน้าเว็บ</translation>
 <translation id="4151930093518524179">การซูมเริ่มต้น</translation>
@@ -191,6 +194,7 @@
 <translation id="4278390842282768270">อนุญาตแล้ว</translation>
 <translation id="429312253194641664">เว็บไซต์กำลังเล่นสื่อ</translation>
 <translation id="42981349822642051">ขยาย</translation>
+<translation id="4336566011000459927">Chrome จะจำกัดคุกกี้อีกครั้งในวันนี้</translation>
 <translation id="4338831206024587507">ทุกเว็บไซต์ในโดเมน <ph name="DOMAIN" /></translation>
 <translation id="4402755511846832236">บล็อกเว็บไซต์ไม่ให้ทราบเวลาที่คุณใช้งานอุปกรณ์นี้อยู่</translation>
 <translation id="4412992751769744546">อนุญาตคุกกี้ของบุคคลที่สาม</translation>
@@ -209,13 +213,14 @@
 <translation id="4645575059429386691">มีการจัดการโดยผู้ปกครอง</translation>
 <translation id="4670064810192446073">Virtual Reality</translation>
 <translation id="4751476147751820511">เซ็นเซอร์จับความเคลื่อนไหวหรือเซ็นเซอร์แสง</translation>
+<translation id="4755971844837804407">เมื่อเปิด เว็บไซต์จะแสดงโฆษณาต่อคุณได้ เมื่อปิด เว็บไซต์จะไม่แสดงโฆษณาที่รบกวนหรือทำให้เข้าใจผิด</translation>
 <translation id="4779083564647765204">ซูม</translation>
 <translation id="4811450222531576619">ดูข้อมูลเกี่ยวกับแหล่งที่มาและหัวข้อ</translation>
 <translation id="4836046166855586901">ถามเมื่อเว็บไซต์ต้องการทราบเวลาที่คุณใช้งานอุปกรณ์นี้อยู่</translation>
 <translation id="483914009762354899">รวมเว็บไซต์ทั้งหมดภายใต้โดเมนนี้</translation>
 <translation id="4883854917563148705">รีเซ็ตการตั้งค่าที่มีการจัดการไม่ได้</translation>
 <translation id="4887024562049524730">ถามก่อนที่จะอนุญาตให้เว็บไซต์ใช้อุปกรณ์และข้อมูล Virtual Reality ของคุณ (แนะนำ)</translation>
-<translation id="4955223779495905865">เว็บไซต์ที่คุณเข้าชมสามารถฝังเนื้อหาจากเว็บไซต์อื่นๆ เช่น รูปภาพ โฆษณา และข้อความ เว็บไซต์เหล่านี้อาจบันทึกคุกกี้และข้อมูลอื่นๆ เพื่อปรับประสบการณ์การใช้งานให้เหมาะกับคุณ</translation>
+<translation id="4953688446973710931">เมื่อเปิด เว็บไซต์จะขอดาวน์โหลดไฟล์หลายไฟล์โดยอัตโนมัติได้ เมื่อปิด เว็บไซต์จะดาวน์โหลดไฟล์หลายไฟล์โดยอัตโนมัติไม่ได้</translation>
 <translation id="4962975101802056554">เพิกถอนสิทธิ์ทั้งหมดสำหรับอุปกรณ์</translation>
 <translation id="497421865427891073">ไปข้างหน้า</translation>
 <translation id="4976702386844183910">เข้าชมล่าสุด <ph name="DATE" /></translation>
@@ -229,6 +234,7 @@
 <translation id="5063480226653192405">การใช้</translation>
 <translation id="5091013926750941408">เว็บไซต์ในอุปกรณ์เคลื่อนที่</translation>
 <translation id="509133520954049755">ขอมุมมองบนเดสก์ท็อป</translation>
+<translation id="5091663350197390230">เมื่อเปิด เว็บไซต์จะใช้ JavaScript ได้ เมื่อปิด เว็บไซต์จะใช้ JavaScript ไม่ได้</translation>
 <translation id="5099358668261120049">การดำเนินการนี้จะลบข้อมูลและคุกกี้ทั้งหมดที่ <ph name="ORIGIN" /> หรือแอปที่อยู่ในหน้าจอหลักจัดเก็บไว้</translation>
 <translation id="5100237604440890931">ยุบ - คลิกเพื่อขยาย</translation>
 <translation id="5123685120097942451">แท็บที่ไม่ระบุตัวตน</translation>
@@ -240,6 +246,7 @@
 <translation id="5246825184569358663">การดำเนินการนี้จะลบข้อมูลในเครื่องและคุกกี้ทั้งหมด รวมถึงรีเซ็ตสิทธิ์ทั้งหมดสำหรับ <ph name="DOMAIN" /> และเว็บไซต์ทั้งหมดที่อยู่ภายใต้โดเมนนี้</translation>
 <translation id="5264323282659631142">นำ "<ph name="CHIP_LABEL" />" ออก</translation>
 <translation id="528192093759286357">ลากจากด้านบน แล้วแตะปุ่มกลับเพื่อออกจากโหมดเต็มหน้าจอ</translation>
+<translation id="5295729974480418933">เมื่อเปิด เว็บไซต์จะขอใช้ข้อมูลเกี่ยวกับคุณที่บันทึกไว้ได้ เมื่อปิด เว็บไซต์จะขอใช้ข้อมูลเกี่ยวกับคุณที่บันทึกไว้ไม่ได้</translation>
 <translation id="5300589172476337783">แสดง</translation>
 <translation id="5301954838959518834">ตกลง เข้าใจแล้ว</translation>
 <translation id="5317780077021120954">บันทึก</translation>
@@ -250,6 +257,7 @@
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(อีก 1 รายการ)}other{(อีก # รายการ)}}</translation>
 <translation id="5403592356182871684">ชื่อ</translation>
 <translation id="5438097262470833822">ตัวเลือกนี้จะรีเซ็ตสิทธิ์ของ <ph name="WEBSITE" /></translation>
+<translation id="5459413148890178711">เมื่อเปิด เว็บไซต์จะขอทราบตำแหน่งของคุณได้ หากปิด เว็บไซต์จะไม่เห็นตำแหน่งของคุณ</translation>
 <translation id="5489227211564503167">เวลาผ่านไป <ph name="ELAPSED_TIME" /> จาก <ph name="TOTAL_TIME" /></translation>
 <translation id="5502860503640766021">อนุญาตให้เข้าถึง<ph name="PERMISSION_1" /> บล็อก<ph name="PERMISSION_2" /></translation>
 <translation id="5505264765875738116">เว็บไซต์ขออนุญาตเพื่อส่งการแจ้งเตือนไม่ได้</translation>
@@ -264,12 +272,15 @@
 <translation id="5677928146339483299">ถูกบล็อก</translation>
 <translation id="5689516760719285838">ตำแหน่ง</translation>
 <translation id="5690795753582697420">กล้องปิดอยู่ในการตั้งค่า Android</translation>
+<translation id="5691080386278724773"><ph name="SITE" /> ใช้ข้อมูลของคุณได้ในขณะที่คุณเรียกดู</translation>
 <translation id="5700761515355162635">อนุญาตคุกกี้ของบุคคลที่สามแล้ว</translation>
 <translation id="5706552988683188916">การดำเนินการนี้จะลบคุกกี้และข้อมูลเว็บไซต์อื่นๆ ของ <ph name="WEBSITE" /></translation>
 <translation id="5723967018671998714">บล็อกคุกกี้ของบุคคลที่สามในโหมดไม่ระบุตัวตนอยู่</translation>
 <translation id="5740126560802162366">เว็บไซต์สามารถบันทึกข้อมูลในอุปกรณ์ของคุณได้</translation>
 <translation id="5771720122942595109">บล็อก<ph name="PERMISSION_1" /></translation>
 <translation id="5804241973901381774">การอนุญาต</translation>
+<translation id="5844448279347999754">เมื่อเปิด เว็บไซต์จะขอดูข้อความและรูปภาพที่บันทึกไว้ในคลิปบอร์ดได้ เมื่อปิด เว็บไซต์จะดูข้อความหรือรูปภาพที่บันทึกไว้ในคลิปบอร์ดไม่ได้</translation>
+<translation id="5853982612236235577">เมื่อเปิด เว็บไซต์จะขอส่งการแจ้งเตือนได้ เมื่อปิด เว็บไซต์จะส่งการแจ้งเตือนไม่ได้</translation>
 <translation id="5860033963881614850">ปิด</translation>
 <translation id="5876056640971328065">หยุดวิดีโอชั่วคราว</translation>
 <translation id="5884085660368669834">ค่ากำหนดสำหรับเว็บไซต์</translation>
@@ -288,21 +299,24 @@
 <translation id="6042308850641462728">แสดงเพิ่ม</translation>
 <translation id="6064125863973209585">การดาวน์โหลดที่เสร็จสมบูรณ์แล้ว</translation>
 <translation id="6071501408666570960">ระบบอาจนำคุณออกจากระบบเว็บไซต์นี้</translation>
+<translation id="6120483543004435978">เมื่อเปิด เว็บไซต์จะขอทราบเวลาที่คุณใช้งานอุปกรณ์อยู่ได้ เมื่อปิด เว็บไซต์จะไม่ทราบเวลาที่คุณใช้งานอุปกรณ์อยู่</translation>
 <translation id="6165508094623778733">ดูข้อมูลเพิ่มเติม</translation>
+<translation id="6171020522141473435">เมื่อเปิด เว็บไซต์จะขอใช้อุปกรณ์บลูทูธได้ เมื่อปิด เว็บไซต์จะใช้อุปกรณ์บลูทูธไม่ได้</translation>
 <translation id="6177111841848151710">ถูกบล็อกสำหรับเครื่องมือค้นหาปัจจุบัน</translation>
 <translation id="6177128806592000436">การเชื่อมต่อกับเว็บไซต์นี้ไม่ปลอดภัย</translation>
 <translation id="6181444274883918285">เพิ่มข้อยกเว้นของเว็บไซต์</translation>
 <translation id="6192792657125177640">ข้อยกเว้น</translation>
+<translation id="6194967801833346599">{DAYS,plural, =1{Chrome จะบล็อกคุกกี้อีกครั้งในวันพรุ่งนี้}other{คุกกี้จะถูกบล็อกอีกครั้งในอีก # วัน}}</translation>
 <translation id="6195163219142236913">จำกัดคุกกี้ของบุคคลที่สาม</translation>
 <translation id="6196640612572343990">บล็อกคุกกี้ของบุคคลที่สาม</translation>
 <translation id="6205314730813004066">ความเป็นส่วนตัวเกี่ยวกับโฆษณา</translation>
 <translation id="6207207788774442484">ลบข้อมูลและรีเซ็ตสิทธิ์</translation>
-<translation id="6216432067784365534">ตัวเลือกสำหรับ<ph name="NAME_OF_LIST_ITEM" /></translation>
 <translation id="6231752747840485235">ถอนการติดตั้ง "<ph name="APP_NAME" />" ไหม</translation>
 <translation id="6262191102408817757">อิงจากแท็บล่าสุด</translation>
 <translation id="6262279340360821358">บล็อก<ph name="PERMISSION_1" />และ<ph name="PERMISSION_2" /></translation>
 <translation id="6270391203985052864">เว็บไซต์ขออนุญาตเพื่อส่งการแจ้งเตือนได้</translation>
 <translation id="6295158916970320988">เว็บไซต์ทั้งหมด</translation>
+<translation id="6304434827459067558"><ph name="SITE" /> ถูกบล็อกไม่ให้ใช้ข้อมูลของคุณใน</translation>
 <translation id="6320088164292336938">สั่น</translation>
 <translation id="6344622098450209924">การป้องกันการติดตาม</translation>
 <translation id="6367753977865761591">บล็อกการลงชื่อเข้าใช้ของบุคคลที่สามสำหรับบางเว็บไซต์</translation>
@@ -314,6 +328,7 @@
 <translation id="6500423977866688905">เมื่อใช้หน้าต่างที่แคบ ให้ขอมุมมองบนอุปกรณ์เคลื่อนที่</translation>
 <translation id="6527303717912515753">แชร์</translation>
 <translation id="652937045869844725">ลองอนุญาตคุกกี้ของบุคคลที่สาม ซึ่งหมายความว่าการปกป้องจะลดลง แต่ฟีเจอร์ของเว็บไซต์มีแนวโน้มที่จะทำงานได้มากกว่า</translation>
+<translation id="6530703012083415527">เมื่อเปิด เว็บไซต์จะใช้ป๊อปอัปและการเปลี่ยนเส้นทางได้ เมื่อปิด เว็บไซต์จะใช้ป๊อปอัปและการเปลี่ยนเส้นทางไม่ได้</translation>
 <translation id="6545864417968258051">การสแกนหาบลูทูธ</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{บล็อกการเข้าถึง<ph name="PERMISSION_1" /> <ph name="PERMISSION_2" /> และอีก <ph name="NUM_MORE" /> รายการไว้}other{บล็อกการเข้าถึง<ph name="PERMISSION_1" /> <ph name="PERMISSION_2" /> และอีก <ph name="NUM_MORE" /> รายการไว้}}</translation>
 <translation id="6554732001434021288">เข้าชมล่าสุด <ph name="NUM_DAYS" /> วันที่ผ่านมา</translation>
@@ -345,6 +360,7 @@
 <translation id="7053983685419859001">บล็อก</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{เลือก 1 รายการ}other{เลือก # รายการ}}</translation>
 <translation id="7087918508125750058">เลือกไว้ <ph name="ITEM_COUNT" /> รายการ ตัวเลือกอยู่ตรงบริเวณด้านบนของหน้าจอ</translation>
+<translation id="7137403271056944713">การควบคุม / การตั้งโปรแกรมใหม่อุปกรณ์ MIDI</translation>
 <translation id="7141896414559753902">บล็อกเว็บไซต์ไม่ให้แสดงป๊อปอัปและการเปลี่ยนเส้นทาง (แนะนำ)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="7180611975245234373">รีเฟรช</translation>
@@ -356,6 +372,7 @@
 <translation id="7243308994586599757">มีตัวเลือกอยู่ทางด้านล่างของหน้าจอ</translation>
 <translation id="7250468141469952378">เลือกไว้ <ph name="ITEM_COUNT" /> รายการ</translation>
 <translation id="7260727271532453612">อนุญาตให้เข้าถึง<ph name="PERMISSION_1" />และ<ph name="PERMISSION_2" /></translation>
+<translation id="7276071417425470385">เมื่อเปิด เว็บไซต์จะขอใช้อุปกรณ์เทคโนโลยีความจริงเสมือน (VR) ได้ เมื่อปิด เว็บไซต์จะใช้อุปกรณ์เทคโนโลยีความจริงเสมือน (VR) ไม่ได้</translation>
 <translation id="7284451015630589124">คุณบล็อกเว็บไซต์ไม่ให้ใช้คุกกี้ของบุคคลที่สามเพื่อติดตามคุณขณะท่องเว็บ ไปที่การตั้งค่าเพื่อ<ph name="BEGIN_LINK" />จัดการการป้องกันการติดตาม<ph name="END_LINK" /></translation>
 <translation id="7302486331832100261">คุณมักจะบล็อกการแจ้งเตือน หากต้องการอนุญาต ให้แตะ "รายละเอียด"</translation>
 <translation id="7366415735885268578">เพิ่มเว็บไซต์</translation>
@@ -365,7 +382,9 @@
 <translation id="7423098979219808738">ถามก่อน</translation>
 <translation id="7423538860840206698">บล็อกไม่ให้อ่านคลิปบอร์ด</translation>
 <translation id="7425915948813553151">ธีมมืดสำหรับเว็บไซต์</translation>
+<translation id="7474522811371247902">Chrome จำกัดไม่ให้เว็บไซต์ส่วนใหญ่ใช้คุกกี้ของบุคคลที่สาม แต่อนุญาตคุกกี้ของบุคคลที่สามในเว็บไซต์นี้เนื่องจากต้องใช้คุกกี้ดังกล่าวในการให้บริการขั้นพื้นฐาน\n\nไปที่การตั้งค่าเพื่อ<ph name="BEGIN_LINK" />จัดการการป้องกันการติดตาม<ph name="END_LINK" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>
+<translation id="7547989957535180761">เมื่อเปิด เว็บไซต์จะแสดงข้อความแจ้งให้ลงชื่อเข้าใช้ได้ เมื่อปิด เว็บไซต์จะแสดงข้อความแจ้งให้ลงชื่อเข้าใช้ไม่ได้</translation>
 <translation id="7554752735887601236">มีเว็บไซต์กำลังใช้ไมโครโฟน</translation>
 <translation id="7561196759112975576">ทุกครั้ง</translation>
 <translation id="757524316907819857">บล็อกไม่ให้เว็บไซต์เล่นเนื้อหาที่ได้รับความคุ้มครอง</translation>
@@ -381,6 +400,7 @@
 <translation id="780301667611848630">ไม่ ขอบคุณ</translation>
 <translation id="7804248752222191302">มีเว็บไซต์กำลังใช้กล้อง</translation>
 <translation id="7807060072011926525">ให้บริการโดย Google</translation>
+<translation id="7822573154188733812">Chrome บล็อกเว็บไซต์ไม่ให้ใช้คุกกี้ของบุคคลที่สามเพื่อติดตามคุณในขณะที่ท่องเว็บ ไปที่การตั้งค่าเพื่อ<ph name="BEGIN_LINK" />จัดการการป้องกันการติดตาม<ph name="END_LINK" /></translation>
 <translation id="7835852323729233924">กำลังเล่นสื่อ</translation>
 <translation id="783819812427904514">เปิดเสียงวิดีโอ</translation>
 <translation id="7846076177841592234">ยกเลิกการเลือก</translation>
@@ -389,6 +409,7 @@
 <translation id="7940722705963108451">เตือนฉัน</translation>
 <translation id="7974024493641668069">{COUNT,plural, =1{เว็บไซต์ <ph name="FPS_MEMBERS_COUNT" /> รายการในกลุ่มเว็บไซต์ของ <ph name="FPS_OWNER" /> ที่ดูกิจกรรมของคุณในกลุ่มได้}other{เว็บไซต์ <ph name="FPS_MEMBERS_COUNT" /> รายการในกลุ่มเว็บไซต์ของ <ph name="FPS_OWNER" /> ที่ดูกิจกรรมของคุณในกลุ่มได้}}</translation>
 <translation id="7986741934819883144">เลือกรายชื่อติดต่อ</translation>
+<translation id="7990211076305263060">เมื่อเปิด เว็บไซต์จะขอใช้ไมโครโฟนของคุณได้ เมื่อปิด เว็บไซต์จะใช้ไมโครโฟนไม่ได้</translation>
 <translation id="8007176423574883786">ปิดสำหรับอุปกรณ์นี้</translation>
 <translation id="802154636333426148">การดาวน์โหลดล้มเหลว</translation>
 <translation id="8042586301629853791">จัดเรียงตาม</translation>
@@ -397,10 +418,11 @@
 <translation id="8077120325605624147">เว็บไซต์ที่คุณเข้าชมจะแสดงโฆษณาต่อคุณได้</translation>
 <translation id="8087000398470557479">เนื้อหานี้มาจาก <ph name="DOMAIN_NAME" /> และนำส่งโดย Google</translation>
 <translation id="8088603949666785339">ตัวเลือกเพิ่มเติมใน <ph name="BANNER_TITLE" /></translation>
+<translation id="8113501330600751161">{DAYS,plural, =1{Chrome จะจำกัดคุกกี้อีกครั้งในวันพรุ่งนี้}other{Chrome จะจำกัดคุกกี้อีกครั้งในอีก # วัน}}</translation>
 <translation id="8116925261070264013">ปิดเสียง</translation>
+<translation id="8117244575099414087">เมื่อเปิด เว็บไซต์จะใช้เซ็นเซอร์ของอุปกรณ์ได้ เมื่อปิด เว็บไซต์จะใช้เซ็นเซอร์ไม่ได้</translation>
 <translation id="813082847718468539">ดูข้อมูลเว็บไซต์</translation>
 <translation id="8131740175452115882">ยืนยัน</translation>
-<translation id="8154912474061769055">ฟีเจอร์ในหลายเว็บไซต์อาจใช้งานไม่ได้</translation>
 <translation id="8168435359814927499">เนื้อหา</translation>
 <translation id="8186479265534291036">หากเว็บไซต์ไม่ทำงาน แสดงว่ามีการบล็อกคุกกี้ของบุคคลที่สาม</translation>
 <translation id="8197286292360124385">อนุญาตให้เข้าถึง<ph name="PERMISSION_1" /></translation>
@@ -414,7 +436,6 @@
 <translation id="8324158725704657629">ไม่ต้องถามอีก</translation>
 <translation id="8362795839483915693">คุณซูมเข้าหรือออกในเว็บไซต์ที่เข้าชมได้</translation>
 <translation id="8372893542064058268">อนุญาตให้ใช้การซิงค์ในแบ็กกราวด์สำหรับเว็บไซต์ที่เจาะจง</translation>
-<translation id="8376384591331888629">รวมคุกกี้ของบุคคลที่สามในเว็บไซต์นี้</translation>
 <translation id="83792324527827022">มีเว็บไซต์กำลังใช้กล้องถ่ายรูปและไมโครโฟน</translation>
 <translation id="8380167699614421159">เว็บไซต์นี้แสดงโฆษณาที่แทรกหรือทำให้เข้าใจผิด</translation>
 <translation id="8394832520002899662">แตะเพื่อกลับไปที่เว็บไซต์</translation>
@@ -435,12 +456,14 @@
 <translation id="8564613706851221529">{COUNT,plural, =1{อนุญาตคุกกี้สำหรับเว็บไซต์ <ph name="FPS_OWNER" /> แล้ว <ph name="FPS_MEMBERS_COUNT" /> รายการ}other{อนุญาตคุกกี้สำหรับเว็บไซต์ <ph name="FPS_OWNER" /> แล้ว <ph name="FPS_MEMBERS_COUNT" /> รายการ}}</translation>
 <translation id="857943718398505171">อนุญาตแล้ว (แนะนำ)</translation>
 <translation id="8609465669617005112">เลื่อนขึ้น</translation>
+<translation id="8617611086246832542">เมื่อเปิด เว็บไซต์จะแสดงในมุมมองบนเดสก์ท็อป เมื่อปิด เว็บไซต์จะแสดงในมุมมองบนอุปกรณ์เคลื่อนที่</translation>
 <translation id="8649036394979866943">Chrome จำกัดไม่ให้เว็บไซต์ส่วนใหญ่ใช้คุกกี้ของบุคคลที่สามเพื่อติดตามคุณขณะท่องเว็บ ไปที่การตั้งค่าเพื่อ<ph name="BEGIN_LINK" />จัดการการป้องกันการติดตาม<ph name="END_LINK" /></translation>
 <translation id="8676374126336081632">ล้างข้อมูลที่ป้อน</translation>
 <translation id="8681886425883659911">โฆษณาถูกบล็อกในเว็บไซต์ที่ทราบว่าแสดงโฆษณาที่รบกวนหรือทำให้เข้าใจผิด</translation>
 <translation id="868929229000858085">ค้นหารายชื่อติดต่อ</translation>
 <translation id="8712637175834984815">รับทราบ</translation>
 <translation id="8719283222052720129">เปิดการใช้สิทธิ์สำหรับ <ph name="APP_NAME" /> ใน<ph name="BEGIN_LINK" />การตั้งค่า Android<ph name="END_LINK" /></translation>
+<translation id="8721719390026067591">เมื่อเปิด เว็บไซต์จะขอค้นหาอุปกรณ์บลูทูธได้ เมื่อปิด เว็บไซต์จะค้นหาอุปกรณ์บลูทูธไม่ได้</translation>
 <translation id="8725066075913043281">ลองอีกครั้ง</translation>
 <translation id="8730621377337864115">เสร็จสิ้น</translation>
 <translation id="8736193154595564524">{NUM_SELECTED,plural, =1{มี 1 เว็บไซต์ที่อนุญาต}other{มี # เว็บไซต์ที่อนุญาต}}</translation>
@@ -450,8 +473,8 @@
 <translation id="8803526663383843427">เมื่อเปิด</translation>
 <translation id="8805385115381080995">การท่องเว็บจะรวดเร็วขึ้นเนื่องจากเว็บไซต์อาจขอให้ยืนยันว่าคุณเป็นคนจริงๆ น้อยลง</translation>
 <translation id="8816026460808729765">บล็อกไม่ให้เว็บไซต์เข้าถึงเซ็นเซอร์</translation>
-<translation id="8823559166155093873">บล็อกคุกกี้</translation>
 <translation id="8847988622838149491">USB</translation>
+<translation id="8874790741333031443">ลองอนุญาตคุกกี้ของบุคคลที่สามชั่วคราว ซึ่งหมายความว่าการปกป้องขณะท่องเว็บจะลดลง แต่ฟีเจอร์ของเว็บไซต์มีแนวโน้มที่จะทํางานตามที่คาดได้มากกว่า</translation>
 <translation id="8889294078294184559">ขณะท่องเว็บ เว็บไซต์ต่างๆ สามารถตรวจสอบกับ Chrome และยืนยันด้วยเว็บไซต์ที่เข้าชมก่อนหน้าได้ว่าคุณเป็นคนจริงๆ</translation>
 <translation id="8899807382908246773">โฆษณาที่รบกวน</translation>
 <translation id="8903921497873541725">ขยาย</translation>
@@ -459,10 +482,10 @@
 <translation id="8926666909099850184">NFC ในอุปกรณ์นี้ปิดอยู่ เปิดได้ใน<ph name="BEGIN_LINK" />การตั้งค่า Android<ph name="END_LINK" /></translation>
 <translation id="8928445016601307354">บล็อกเว็บไซต์ไม่ให้ดูและเปลี่ยนแปลงข้อมูลในอุปกรณ์ NFC</translation>
 <translation id="8944485226638699751">จำกัด</translation>
-<translation id="8958424370300090006">บล็อกคุกกี้ของเว็บไซต์ที่เจาะจง</translation>
 <translation id="8959122750345127698">ไม่สามารถเข้าถึงการนำทางได้: <ph name="URL" /></translation>
 <translation id="8986362086234534611">เลิกจำ</translation>
 <translation id="8990043154272859344">คุณจะออกจากระบบของเว็บไซต์ทั้งหมด</translation>
+<translation id="9002538116239926534">เมื่อเปิด เว็บไซต์จะบันทึกข้อมูลลงในอุปกรณ์ของคุณได้ เมื่อปิด เว็บไซต์จะบันทึกข้อมูลลงในอุปกรณ์ของคุณไม่ได้</translation>
 <translation id="9011903857143958461">อนุญาตให้เข้าถึง <ph name="SITE_NAME" /> ได้</translation>
 <translation id="9019902583201351841">มีการจัดการโดยผู้ปกครอง</translation>
 <translation id="9039697262778250930">คุณอาจออกจากระบบเว็บไซต์เหล่านี้</translation>

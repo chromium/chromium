@@ -35,6 +35,7 @@ class CONTENT_EXPORT FakeIdentityRequestDialogController
       IdentityRequestAccount::SignInMode sign_in_mode,
       bool show_auto_reauthn_checkbox,
       AccountSelectionCallback on_selected,
+      LoginToIdPCallback on_add_account,
       DismissCallback dismmiss_callback) override;
 
   void ShowFailureDialog(const std::string& top_frame_for_display,
@@ -43,7 +44,7 @@ class CONTENT_EXPORT FakeIdentityRequestDialogController
                          const blink::mojom::RpContext& rp_context,
                          const IdentityProviderMetadata& idp_metadata,
                          DismissCallback dismiss_callback,
-                         SigninToIdPCallback signin_callback) override;
+                         LoginToIdPCallback login_callback) override;
 
   void ShowErrorDialog(const std::string& top_frame_for_display,
                        const absl::optional<std::string>& iframe_for_display,

@@ -4,6 +4,7 @@
 
 #include "extensions/renderer/api/messaging/gin_port.h"
 
+#include <optional>
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -17,7 +18,6 @@
 #include "gin/data_object_builder.h"
 #include "gin/handle.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 
@@ -53,11 +53,11 @@ class TestPortDelegate : public GinPort::Delegate {
     last_message_.reset();
   }
 
-  const absl::optional<PortId>& last_port_id() const { return last_port_id_; }
+  const std::optional<PortId>& last_port_id() const { return last_port_id_; }
   const Message* last_message() const { return last_message_.get(); }
 
  private:
-  absl::optional<PortId> last_port_id_;
+  std::optional<PortId> last_port_id_;
   std::unique_ptr<Message> last_message_;
 };
 
@@ -174,8 +174,8 @@ TEST_F(GinPortTest, TestPostMessage) {
 
   auto test_post_message = [this, port_obj, context](
                                base::StringPiece function,
-                               absl::optional<PortId> expected_port_id,
-                               absl::optional<Message> expected_message) {
+                               std::optional<PortId> expected_port_id,
+                               std::optional<Message> expected_message) {
     SCOPED_TRACE(function);
     ASSERT_EQ(!!expected_port_id, !!expected_message)
         << "Cannot expect a port id with no message";
@@ -246,7 +246,7 @@ TEST_F(GinPortTest, TestPostMessage) {
              message.bar = message;
              port.postMessage(message);
            }))";
-    test_post_message(kFunction, absl::nullopt, absl::nullopt);
+    test_post_message(kFunction, std::nullopt, std::nullopt);
   }
 
   {

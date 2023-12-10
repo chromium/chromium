@@ -17,7 +17,6 @@
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
 #import "ios/chrome/browser/passwords/model/metrics/ios_password_manager_metrics.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
-#import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
@@ -28,6 +27,7 @@
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_handler.h"
 #import "ios/chrome/browser/ui/settings/password/password_manager_ui_features.h"
+#import "ios/chrome/browser/ui/settings/password/password_sharing/password_sharing_metrics.h"
 #import "ios/chrome/test/app/mock_reauthentication_module.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
@@ -84,8 +84,13 @@ class PasswordDetailsCoordinatorTest : public PlatformTest {
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
                               base::BindRepeating(&CreateMockSyncService));
 
+    // Create scene state for reauthentication coordinator.
+    scene_state_ = [[SceneState alloc] initWithAppState:nil];
+    scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+
     browser_state_ = builder.Build();
-    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+    browser_ =
+        std::make_unique<TestBrowser>(browser_state_.get(), scene_state_);
 
     CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();
     // Mock ApplicationCommands. Since ApplicationCommands conforms to
@@ -101,11 +106,6 @@ class PasswordDetailsCoordinatorTest : public PlatformTest {
     // coordinator. Needed for verifying behavior when auth is required.
     mock_reauth_module_.shouldReturnSynchronously = NO;
     mock_reauth_module_.expectedResult = ReauthenticationResult::kSuccess;
-
-    // Create scene state for reauthentication coordinator.
-    scene_state_ = [[SceneState alloc] initWithAppState:nil];
-    scene_state_.activationLevel = SceneActivationLevelForegroundActive;
-    SceneStateBrowserAgent::CreateForBrowser(browser_.get(), scene_state_);
 
     UINavigationController* navigation_controller =
         [[UINavigationController alloc] init];
@@ -207,4 +207,18 @@ TEST_F(PasswordDetailsCoordinatorTest, VisitMetricsAreLoggedOnlyOnce) {
 
   // Validate no new visits were logged.
   CheckPasswordDetailsVisitMetricsCount(1, histogram_tester);
+}
+
+// Tests that onShareButtonPressed will result in metrics logged.
+TEST_F(PasswordDetailsCoordinatorTest, OnShareButtonPressedMetricsLogged) {
+  base::HistogramTester histogram_tester;
+
+  // Call the tested function.
+  ASSERT_TRUE(
+      [coordinator_ conformsToProtocol:@protocol(PasswordDetailsHandler)]);
+  [(id<PasswordDetailsHandler>)coordinator_ onShareButtonPressed];
+
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.PasswordSharingIOS.UserAction",
+      PasswordSharingInteraction::kPasswordDetailsShareButtonClicked, 1);
 }

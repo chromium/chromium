@@ -44,9 +44,9 @@ source_set("affiliation") {
     "//base",
     "//components/keyed_service/core",
     "//components/password_manager/core/browser:password_form",
-    "//components/password_manager/core/browser:password_store_interface",
     "//components/password_manager/core/browser:sql_builder",
     "//components/password_manager/core/browser/features:password_features",
+    "//components/password_manager/core/browser/password_store:password_store_interface",
     "//components/prefs",
     "//components/url_formatter",
     "//components/variations/net",
@@ -73,6 +73,9 @@ source_set("affiliation_fetching") {
     "//net",
     "//url",
   ]
+  if (!is_ios && !is_android) {
+    deps += [ "//components/webauthn/core/browser" ]
+  }
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
@@ -132,7 +135,7 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//components/password_manager/core/browser:password_form",
-    "//components/password_manager/core/browser:password_store_interface",
+    "//components/password_manager/core/browser/password_store:password_store_interface",
     "//components/password_manager/core/common",
     "//components/password_manager/core/common:features",
     "//components/variations:test_support",
@@ -160,6 +163,10 @@ source_set("affiliation_fetching_unittests") {
     "//testing/gmock",
     "//testing/gtest",
   ]
+
+  if (!is_android && !is_ios) {
+    deps += [ "//components/webauthn/core/browser:test_support" ]
+  }
 }
 
 if (use_fuzzing_engine_with_lpm) {

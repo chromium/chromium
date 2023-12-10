@@ -85,8 +85,7 @@ std::unique_ptr<HttpResponse> ServeResponseForSubPaths(
     const std::string& content,
     const HttpRequest& request) {
   if (request.GetURL().path() != expected_path &&
-      !base::StartsWith(request.GetURL().path(), expected_path + "/",
-                        base::CompareCase::SENSITIVE)) {
+      !request.GetURL().path().starts_with(expected_path + "/")) {
     return nullptr;
   }
 
@@ -455,6 +454,10 @@ bool EmbeddedTestServer::GenerateCertAndKey() {
     leaf->SetKeyUsages(cert_config_.key_usages);
   }
 
+  if (!cert_config_.embedded_scts.empty()) {
+    leaf->SetSctConfig(cert_config_.embedded_scts);
+  }
+
   const std::string leaf_serial_text =
       base::NumberToString(leaf->GetSerialNumber());
   const std::string intermediate_serial_text =
@@ -581,6 +584,21 @@ bool EmbeddedTestServer::InitializeSSLServerContext() {
           std::vector<uint8_t>(
               serialized_frame.data(),
               serialized_frame.data() + serialized_frame.size());
+
+      ssl_config_.client_hello_callback_for_testing =
+          base::BindRepeating([](const SSL_CLIENT_HELLO* client_hello) {
+            // Configure the server to use the ALPS codepoint that the client
+            // offered.
+            const uint8_t* unused_extension_bytes;
+            size_t unused_extension_len;
+            int use_alps_new_codepoint = SSL_early_callback_ctx_extension_get(
+                client_hello, TLSEXT_TYPE_application_settings,
+                &unused_extension_bytes, &unused_extension_len);
+            // Make sure we use the right ALPS codepoint.
+            SSL_set_alps_use_new_codepoint(client_hello->ssl,
+                                           use_alps_new_codepoint);
+            return true;
+          });
     }
   }
 
@@ -682,8 +700,7 @@ void EmbeddedTestServer::HandleRequest(
 
 GURL EmbeddedTestServer::GetURL(base::StringPiece relative_url) const {
   DCHECK(Started()) << "You must start the server first.";
-  DCHECK(base::StartsWith(relative_url, "/", base::CompareCase::SENSITIVE))
-      << relative_url;
+  DCHECK(relative_url.starts_with("/")) << relative_url;
   return base_url_.Resolve(relative_url);
 }
 

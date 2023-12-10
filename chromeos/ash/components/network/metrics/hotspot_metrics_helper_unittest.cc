@@ -22,6 +22,8 @@
 #include "chromeos/ash/components/network/metrics/hotspot_feature_usage_metrics.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_state_test_helper.h"
+#include "chromeos/dbus/power/fake_power_manager_client.h"
+#include "chromeos/dbus/power/power_policy_controller.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
@@ -43,6 +45,10 @@ class HotspotMetricsHelperTest : public testing::Test {
 
   void SetUp() override {
     LoginState::Initialize();
+
+    chromeos::PowerManagerClient::InitializeFake();
+    chromeos::PowerPolicyController::Initialize(
+        chromeos::FakePowerManagerClient::Get());
 
     enterprise_managed_metadata_store_ =
         std::make_unique<EnterpriseManagedMetadataStore>();
@@ -68,7 +74,7 @@ class HotspotMetricsHelperTest : public testing::Test {
                               technology_state_controller_.get());
     hotspot_configuration_handler_ =
         std::make_unique<HotspotConfigurationHandler>();
-    hotspot_configuration_handler_->Init(hotspot_controller_.get());
+    hotspot_configuration_handler_->Init();
     hotspot_enabled_state_notifier_ =
         std::make_unique<HotspotEnabledStateNotifier>();
     hotspot_enabled_state_notifier_->Init(hotspot_state_handler_.get(),

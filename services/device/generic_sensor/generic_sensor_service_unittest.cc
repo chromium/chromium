@@ -167,16 +167,13 @@ class GenericSensorServiceTest : public DeviceServiceTestBase {
  protected:
   mojom::CreateVirtualSensorResult CreateVirtualSensorSync(SensorType type) {
     auto metadata = mojom::VirtualSensorMetadata::New();
-    metadata->maximum_frequency =
-        mojom::NullableDouble::New(kMaximumPlatformFrequency);
-    metadata->minimum_frequency =
-        mojom::NullableDouble::New(kMinimumPlatformFrequency);
+    metadata->maximum_frequency = kMaximumPlatformFrequency;
+    metadata->minimum_frequency = kMinimumPlatformFrequency;
 
     // Make all sensor types have the same reporting mode for the tests to work
     // as expected here (i.e. TestSensorClient::SensorReadingChanged() works
     // reliably).
-    metadata->reporting_mode =
-        mojom::NullableReportingMode::New(mojom::ReportingMode::ON_CHANGE);
+    metadata->reporting_mode = mojom::ReportingMode::ON_CHANGE;
 
     base::test::TestFuture<mojom::CreateVirtualSensorResult> future;
     sensor_provider_->CreateVirtualSensor(type, std::move(metadata),

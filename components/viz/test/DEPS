@@ -30,10 +30,10 @@ include_rules = [
   "+third_party/khronos/GLES2/gl2.h",
   "+third_party/khronos/GLES2/gl2ext.h",
   "+third_party/skia/include",
+  "+ui/base/ozone_buildflags.h",
   "+ui/events",
   "+ui/gl",
   "+ui/latency",
-  "+ui/ozone/buildflags.h",
   "+ui/ozone/public",
 ]
 

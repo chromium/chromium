@@ -1,0 +1,27 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="cs">
+<translation id="1220509181886849806">Použít uložené heslo?</translation>
+<translation id="1435940442311036198">Použití přístupového klíče na jiném zařízení</translation>
+<translation id="1717486229951421299">Seznam identifikačních údajů k vyplnění při klepnutí je otevřený na polovinu výšky.</translation>
+<translation id="2359808026110333948">Pokračovat</translation>
+<translation id="2364266287022099258">Použít uložený přístupový klíč?</translation>
+<translation id="3399357656427473483">Seznam identifikačních údajů k vyplnění při klepnutí.</translation>
+<translation id="3653689374478248324">Budete přihlášeni na web <ph name="SITE_NAME" /></translation>
+<translation id="3950820424414687140">Přihlaste se</translation>
+<translation id="4553044860350038560">Další přístupové klíče</translation>
+<translation id="4598345735110653698">Spravovat přístupové klíče</translation>
+<translation id="4722735765955348426">Heslo uživatele <ph name="USERNAME" /></translation>
+<translation id="4907224763885298217">Použít zámek obrazovky</translation>
+<translation id="5012523644916800014">Spravovat hesla a přístupové klíče</translation>
+<translation id="5441504010984421144">Seznam identifikačních údajů k vyplnění při klepnutí je otevřený na celou výšku.</translation>
+<translation id="5591247451101092906">Použít uložené heslo nebo přístupový klíč?</translation>
+<translation id="5624120631404540903">Spravovat hesla</translation>
+<translation id="6560306912274274630">Přístupový klíč pro uživatele <ph name="USERNAME" />, použijte zámek obrazovky.</translation>
+<translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{Nové heslo pro tento web}few{Nová hesla pro tento web}many{Nová hesla pro tento web}other{Nová hesla pro tento web}}</translation>
+<translation id="7286867818472074330">Vybrat přístupový klíč</translation>
+<translation id="7669320311687290322"><ph name="ITEM_LABEL" />, <ph name="ITEM_POSITION" /> z <ph name="ITEMS_TOTAL" />.</translation>
+<translation id="7738288782501322815">Obdrželi jste hesla pro web <ph name="SITE_NAME" /></translation>
+<translation id="8614995815226664591"><ph name="SENDER_NAME" /> s vámi sdílí heslo pro web <ph name="SITE_NAME" /></translation>
+<translation id="8891372124884726271">Seznam identifikačních údajů je zavřený.</translation>
+</translationbundle>

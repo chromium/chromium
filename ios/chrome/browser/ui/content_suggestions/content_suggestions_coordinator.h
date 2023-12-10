@@ -17,6 +17,7 @@ class WebState;
 @protocol NewTabPageControllerDelegate;
 @protocol NewTabPageDelegate;
 @protocol NewTabPageMetricsDelegate;
+@protocol NewTabPageViewDelegate;
 
 // Coordinator to manage the Suggestions UI via a
 // ContentSuggestionsViewController.
@@ -48,6 +49,9 @@ class WebState;
 // Delegate for reporting content suggestions actions to the NTP metrics
 // recorder.
 @property(nonatomic, weak) id<NewTabPageMetricsDelegate> NTPMetricsDelegate;
+
+// Delegate for getting information about NTP views.
+@property(nonatomic, weak) id<NewTabPageViewDelegate> NTPViewDelegate;
 
 // Configure Content Suggestions if showing the Start Surface. NOTE: this should
 // only be called once for every Start configuration. Calling it multiple times

@@ -54,6 +54,7 @@ set(ABSL_INTERNAL_DLL_FILES
   "base/log_severity.cc"
   "base/log_severity.h"
   "base/macros.h"
+  "base/no_destructor.h"
   "base/nullability.h"
   "base/optimization.h"
   "base/options.h"

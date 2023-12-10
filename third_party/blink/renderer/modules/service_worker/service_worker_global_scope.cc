@@ -2594,7 +2594,8 @@ void ServiceWorkerGlobalScope::ExecuteScriptForTest(
     if (try_catch.Message().IsEmpty() || try_catch.Message()->Get().IsEmpty()) {
       exception_string = "Unknown exception while executing script.";
     } else {
-      exception_string = ToCoreStringWithNullCheck(try_catch.Message()->Get());
+      exception_string =
+          ToCoreStringWithNullCheck(isolate, try_catch.Message()->Get());
     }
     std::move(callback).Run(base::Value(), std::move(exception_string));
     return;

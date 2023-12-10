@@ -4,7 +4,7 @@
 
 // Tests a variety of basic API definition features.
 
-[internal, modernised_enums] namespace idl_basics {
+[internal] namespace idl_basics {
   // Enum description
   enum EnumType {
     // comment1

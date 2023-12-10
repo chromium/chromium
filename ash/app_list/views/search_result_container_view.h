@@ -18,6 +18,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_multi_source_observation.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 #include "ui/views/view_observer.h"
 
@@ -31,6 +32,8 @@ namespace ash {
 class ASH_EXPORT SearchResultContainerView : public views::View,
                                              public views::ViewObserver,
                                              public ui::ListModelObserver {
+  METADATA_HEADER(SearchResultContainerView, views::View)
+
  public:
   class Delegate {
    public:
@@ -107,7 +110,7 @@ class ASH_EXPORT SearchResultContainerView : public views::View,
   // search result containers that appear in the search results UI before this
   // container.
   // Returns the animation info for this container.
-  virtual absl::optional<ResultsAnimationInfo> ScheduleResultAnimations(
+  virtual std::optional<ResultsAnimationInfo> ScheduleResultAnimations(
       const ResultsAnimationInfo& aggregate_animation_info);
 
   // Appends search result IDs of the search results shown by the container
@@ -133,9 +136,6 @@ class ASH_EXPORT SearchResultContainerView : public views::View,
 
   // Returns whether an update is currently scheduled for this container.
   bool UpdateScheduled();
-
-  // Overridden from views::View:
-  const char* GetClassName() const override;
 
   // Functions to allow derivative classes to add/remove observed result views.
   void AddObservedResultView(SearchResultBaseView* result_view);

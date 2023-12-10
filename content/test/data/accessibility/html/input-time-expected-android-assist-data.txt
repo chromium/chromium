@@ -1,0 +1,8 @@
+WebView textSize:16.00 style:0 bundle:[display="", htmlTag="#document"]
+++View textSize:16.00 style:0 bundle:[display="block", htmlTag="body"]
+++++Spinner text:"00:00:00" textSize:13.33 style:0 bgColor:-1052689 bundle:[display="inline-flex", htmlTag="input", type="time", value="00:00:00"]
+++++++View textSize:13.33 style:0 bundle:[display="block", htmlTag="div", pseudo="-webkit-date-and-time-value"]
+++++++++TextView text:"12:00 AM" textSize:13.33 style:0 bundle:[display="", htmlTag=""]
+++++Spinner text:"Breakfast" textSize:13.33 style:0 bgColor:-1052689 bundle:[aria-label="Breakfast", display="inline-flex", htmlTag="input", type="time", value="00:00:00"]
+++++++View textSize:13.33 style:0 bundle:[display="block", htmlTag="div", pseudo="-webkit-date-and-time-value"]
+++++++++TextView text:"12:00 AM" textSize:13.33 style:0 bundle:[display="", htmlTag=""]

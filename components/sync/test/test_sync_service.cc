@@ -353,10 +353,6 @@ void TestSyncService::RecordReasonIfWaitingForUpdates(
 
 void TestSyncService::SetInvalidationsForSessionsEnabled(bool enabled) {}
 
-bool TestSyncService::IsSyncFeatureConsideredRequested() const {
-  return HasSyncConsent();
-}
-
 void TestSyncService::Shutdown() {
   for (SyncServiceObserver& observer : observers_)
     observer.OnSyncShutdown(this);
@@ -367,8 +363,9 @@ void TestSyncService::SetTypesWithUnsyncedData(const ModelTypeSet& types) {
 }
 
 void TestSyncService::GetTypesWithUnsyncedData(
+    ModelTypeSet requested_types,
     base::OnceCallback<void(ModelTypeSet)> cb) const {
-  std::move(cb).Run(unsynced_types_);
+  std::move(cb).Run(base::Intersection(requested_types, unsynced_types_));
 }
 
 void TestSyncService::SetLocalDataDescriptions(

@@ -55,6 +55,10 @@ std::unique_ptr<AddressComponent> BuildTreeNode(
       return std::make_unique<ApartmentNode>(std::move(children));
     case ADDRESS_HOME_BETWEEN_STREETS:
       return std::make_unique<BetweenStreetsNode>(std::move(children));
+    case ADDRESS_HOME_BETWEEN_STREETS_1:
+      return std::make_unique<BetweenStreets1Node>(std::move(children));
+    case ADDRESS_HOME_BETWEEN_STREETS_2:
+      return std::make_unique<BetweenStreets2Node>(std::move(children));
     case ADDRESS_HOME_CITY:
       return std::make_unique<CityNode>(std::move(children));
     case ADDRESS_HOME_COUNTRY:
@@ -81,16 +85,19 @@ std::unique_ptr<AddressComponent> BuildTreeNode(
       return std::make_unique<SubPremiseNode>(std::move(children));
     case ADDRESS_HOME_ZIP:
       return std::make_unique<PostalCodeNode>(std::move(children));
+    case ADDRESS_HOME_OVERFLOW:
+      return std::make_unique<AddressOverflowNode>(std::move(children));
+    case ADDRESS_HOME_OVERFLOW_AND_LANDMARK:
+      return std::make_unique<AddressOverflowAndLandmarkNode>(
+          std::move(children));
+    case ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK:
+      return std::make_unique<BetweenStreetsOrLandmarkNode>(
+          std::move(children));
     case ADDRESS_HOME_LINE1:
     case ADDRESS_HOME_LINE2:
     case ADDRESS_HOME_LINE3:
     case ADDRESS_HOME_APT:
     case ADDRESS_HOME_APT_TYPE:
-    case ADDRESS_HOME_OVERFLOW:
-    case ADDRESS_HOME_OVERFLOW_AND_LANDMARK:
-    case ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK:
-    case ADDRESS_HOME_BETWEEN_STREETS_1:
-    case ADDRESS_HOME_BETWEEN_STREETS_2:
     case ADDRESS_HOME_OTHER_SUBUNIT:
     case ADDRESS_HOME_ADDRESS_WITH_NAME:
     case COMPANY_NAME:
@@ -159,6 +166,7 @@ std::unique_ptr<AddressComponent> BuildTreeNode(
     case NUMERIC_QUANTITY:
     case ONE_TIME_CODE:
     case SINGLE_USERNAME_FORGOT_PASSWORD:
+    case SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES:
     case MAX_VALID_FIELD_TYPE:
       return nullptr;
   }
@@ -222,7 +230,8 @@ std::unique_ptr<AddressComponent> CreateAddressComponentModel(
 
 std::u16string GetFormattingExpression(ServerFieldType field_type,
                                        AddressCountryCode country_code) {
-  if (base::FeatureList::IsEnabled(features::kAutofillUseI18nAddressModel)) {
+  if (base::FeatureList::IsEnabled(features::kAutofillUseI18nAddressModel) &&
+      GroupTypeOfServerFieldType(field_type) == FieldTypeGroup::kAddress) {
     // If `country_code` is specified, return the corresponding formatting
     // expression if they exist. Note that it should not fallback to a legacy
     // expression, as these ones refer to a different hierarchy.
@@ -252,6 +261,7 @@ i18n_model_definition::ValueParsingResults ParseValueByI18nRegularExpression(
     std::string_view value,
     ServerFieldType field_type,
     AddressCountryCode country_code) {
+  CHECK(GroupTypeOfServerFieldType(field_type) == FieldTypeGroup::kAddress);
   // If `country_code` is specified, attempt to parse the `value` using a
   // custom parsing structure (if exist).
   // Otherwise try using a legacy parsing expression (if exist).

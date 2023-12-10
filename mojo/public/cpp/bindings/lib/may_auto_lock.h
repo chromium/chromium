@@ -5,10 +5,10 @@
 #ifndef MOJO_PUBLIC_CPP_BINDINGS_LIB_MAY_AUTO_LOCK_H_
 #define MOJO_PUBLIC_CPP_BINDINGS_LIB_MAY_AUTO_LOCK_H_
 
+#include <optional>
 #include "base/component_export.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/synchronization/lock.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace mojo {
 namespace internal {
@@ -17,7 +17,7 @@ namespace internal {
 // the constructor is null.
 class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) MayAutoLock {
  public:
-  explicit MayAutoLock(absl::optional<base::Lock>* lock)
+  explicit MayAutoLock(std::optional<base::Lock>* lock)
       : lock_(lock->has_value() ? &lock->value() : nullptr) {
     if (lock_)
       lock_->Acquire();
@@ -43,7 +43,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) MayAutoLock {
 // into the constructor is null.
 class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) MayAutoUnlock {
  public:
-  explicit MayAutoUnlock(absl::optional<base::Lock>* lock)
+  explicit MayAutoUnlock(std::optional<base::Lock>* lock)
       : lock_(lock->has_value() ? &lock->value() : nullptr) {
     if (lock_) {
       lock_->AssertAcquired();

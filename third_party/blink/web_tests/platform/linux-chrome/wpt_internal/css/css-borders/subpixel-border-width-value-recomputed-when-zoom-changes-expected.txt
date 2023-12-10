@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+[FAIL] Border width responsive to zoom changes
+  testRunner is not defined
+Harness: the test ran to completion.

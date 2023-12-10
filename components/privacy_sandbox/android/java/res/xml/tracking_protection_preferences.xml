@@ -9,11 +9,6 @@ found in the LICENSE file.
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <org.chromium.components.browser_ui.settings.CardPreference
-        android:key="offboarding_notice"
-        app:allowDividerBelow="false"
-        app:isPreferenceVisible="false"/>
-
     <org.chromium.components.browser_ui.settings.TextMessagePreference
         android:summary="@string/privacy_sandbox_tracking_protection_description"
         app:allowDividerBelow="false" />

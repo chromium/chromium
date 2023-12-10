@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+[FAIL] Check http://web-platform.test:8001/html/syntax/charset/after-head-after-1kb-crlf.html
+  assert_not_equals: Check characterSet got disallowed value "windows-1251"
+Harness: the test ran to completion.

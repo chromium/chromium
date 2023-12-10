@@ -43,26 +43,30 @@ public class LocationProviderAdapter {
      */
     @CalledByNative
     public void start(final boolean enableHighAccuracy) {
-        FutureTask<Void> task = new FutureTask<Void>(new Runnable() {
-            @Override
-            public void run() {
-                mImpl.start(enableHighAccuracy);
-            }
-        }, null);
+        FutureTask<Void> task =
+                new FutureTask<Void>(
+                        new Runnable() {
+                            @Override
+                            public void run() {
+                                mImpl.start(enableHighAccuracy);
+                            }
+                        },
+                        null);
         ThreadUtils.runOnUiThread(task);
     }
 
-    /**
-     * Stop listening for location updates. May be called in any thread.
-     */
+    /** Stop listening for location updates. May be called in any thread. */
     @CalledByNative
     public void stop() {
-        FutureTask<Void> task = new FutureTask<Void>(new Runnable() {
-            @Override
-            public void run() {
-                mImpl.stop();
-            }
-        }, null);
+        FutureTask<Void> task =
+                new FutureTask<Void>(
+                        new Runnable() {
+                            @Override
+                            public void run() {
+                                mImpl.stop();
+                            }
+                        },
+                        null);
         ThreadUtils.runOnUiThread(task);
     }
 
@@ -76,11 +80,19 @@ public class LocationProviderAdapter {
     }
 
     public static void onNewLocationAvailable(Location location) {
-        LocationProviderAdapterJni.get().newLocationAvailable(location.getLatitude(),
-                location.getLongitude(), location.getTime() / 1000.0, location.hasAltitude(),
-                location.getAltitude(), location.hasAccuracy(), location.getAccuracy(),
-                location.hasBearing(), location.getBearing(), location.hasSpeed(),
-                location.getSpeed());
+        LocationProviderAdapterJni.get()
+                .newLocationAvailable(
+                        location.getLatitude(),
+                        location.getLongitude(),
+                        location.getTime() / 1000.0,
+                        location.hasAltitude(),
+                        location.getAltitude(),
+                        location.hasAccuracy(),
+                        location.getAccuracy(),
+                        location.hasBearing(),
+                        location.getBearing(),
+                        location.hasSpeed(),
+                        location.getSpeed());
     }
 
     public static void newErrorAvailable(String message) {
@@ -90,9 +102,18 @@ public class LocationProviderAdapter {
 
     @NativeMethods
     interface Natives {
-        void newLocationAvailable(double latitude, double longitude, double timeStamp,
-                boolean hasAltitude, double altitude, boolean hasAccuracy, double accuracy,
-                boolean hasHeading, double heading, boolean hasSpeed, double speed);
+        void newLocationAvailable(
+                double latitude,
+                double longitude,
+                double timeStamp,
+                boolean hasAltitude,
+                double altitude,
+                boolean hasAccuracy,
+                double accuracy,
+                boolean hasHeading,
+                double heading,
+                boolean hasSpeed,
+                double speed);
 
         void newErrorAvailable(String message);
     }

@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="lt">
 <translation id="1075622780330595106">Pastaruoju metu nebuvo naudojama tiek skirtukų: <ph name="NUMBER_OF_TABS" />. Uždaryti juos?</translation>
+<translation id="1155815720264022949">Norite uždaryti senus skirtukus?</translation>
 <translation id="1215127405478249895">Skirtukų peržiūra</translation>
 <translation id="125153950246128346">Palieskite, kad peržiūrėtumėte kitą skirtuką</translation>
 <translation id="1499635324672558517">Uždaryti visus inkognito skirtukus?</translation>
@@ -46,9 +47,11 @@
 <translation id="5073204694187207510">Slėpti viso ekrano tinklelį</translation>
 <translation id="5076161749301278626">Peržiūrėti parduotuvės apžvalgas?</translation>
 <translation id="5082793167783849073">Sparčiai palyginkite puslapius sukūrę grupę. Jei norite pradėti, palieskite ir palaikykite nuorodą.</translation>
+<translation id="5303274951032363933">{TABS_COUNT,plural, =1{Yra <ph name="TABS_COUNT_ONE" /> skirtukas, kurio pastaruoju metu nenaudojote}one{Yra <ph name="TABS_COUNT_MANY" /> skirtukas, kurio pastaruoju metu nenaudojote}few{Yra <ph name="TABS_COUNT_MANY" /> skirtukai, kurių pastaruoju metu nenaudojote}many{Yra <ph name="TABS_COUNT_MANY" /> skirtuko, kurių pastaruoju metu nenaudojote}other{Yra <ph name="TABS_COUNT_MANY" /> skirtukų, kurių pastaruoju metu nenaudojote}}</translation>
 <translation id="5339733443032484186">Jūsų paskutinis skirtukas</translation>
 <translation id="5490235265819901748">Skirtukų grupė išskleista</translation>
 <translation id="5494920125229734069">Pasirinkti viską</translation>
+<translation id="5545379293264651575">Uždaryti neperžiūrėjus</translation>
 <translation id="5556417849629758491">Peržiūrėkite parduotuvės informaciją; parinktis pasiekiama ekrano viršuje</translation>
 <translation id="5558362125926932819">Uždaryti skirtukų grupę, kurioje yra tiek skirtukų: <ph name="NUMBER_OF_TABS" /></translation>
 <translation id="5580090775658607195">Sugrupuota tiek skirtukų: <ph name="TAB_COUNT" /></translation>
@@ -85,7 +88,6 @@
 <translation id="7885132941432959125">Perkelti skirtuką į dešinę</translation>
 <translation id="7966321538264951561">Atsisakyti pasiūlymo.</translation>
 <translation id="8029301326595421733">Informacija apie šią parduotuvę atidaryta per visą ekrano aukštį</translation>
-<translation id="814503310257431685">Rodyti visus</translation>
 <translation id="8205266828577616993">Perkelti skirtuką į viršų</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Uždaryti <ph name="TABS_COUNT_ONE" /> pasirinktą skirtuką}one{Uždaryti <ph name="TABS_COUNT_MANY" /> pasirinktą skirtuką}few{Uždaryti <ph name="TABS_COUNT_MANY" /> pasirinktus skirtukus}many{Uždaryti <ph name="TABS_COUNT_MANY" /> pasirinkto skirtuko}other{Uždaryti <ph name="TABS_COUNT_MANY" /> pasirinktų skirtukų}}</translation>
 <translation id="8398929769197326728">Naujas aplankas – <ph name="CURRENT_TIMESTAMP_MS" /></translation>

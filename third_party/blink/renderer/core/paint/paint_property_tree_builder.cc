@@ -24,7 +24,9 @@
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/core/html/forms/text_control_element.h"
 #include "third_party/blink/renderer/core/layout/anchor_position_scroll_data.h"
+#include "third_party/blink/renderer/core/layout/block_break_token.h"
 #include "third_party/blink/renderer/core/layout/fragmentainer_iterator.h"
+#include "third_party/blink/renderer/core/layout/fragmentation_utils.h"
 #include "third_party/blink/renderer/core/layout/geometry/transform_state.h"
 #include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
 #include "third_party/blink/renderer/core/layout/inline/fragment_item.h"
@@ -35,9 +37,7 @@
 #include "third_party/blink/renderer/core/layout/layout_replaced.h"
 #include "third_party/blink/renderer/core/layout/layout_video.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_block_break_token.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_fragmentation_utils.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
+#include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_clipper.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_root.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_viewport_container.h"
@@ -116,7 +116,8 @@ PaintPropertyTreeBuilderContext::PaintPropertyTreeBuilderContext()
       was_layout_shift_root(false),
       global_main_thread_scrolling_reasons(0),
       composited_scrolling_preference(
-          static_cast<unsigned>(CompositedScrollingPreference::kDefault)) {}
+          static_cast<unsigned>(CompositedScrollingPreference::kDefault)),
+      transform_or_clip_added_or_removed(false) {}
 
 void VisualViewportPaintPropertyTreeBuilder::Update(
     LocalFrameView& main_frame_view,
@@ -185,7 +186,7 @@ class FragmentPaintPropertyTreeBuilder {
  public:
   FragmentPaintPropertyTreeBuilder(
       const LayoutObject& object,
-      NGPrePaintInfo* pre_paint_info,
+      PrePaintInfo* pre_paint_info,
       PaintPropertyTreeBuilderContext& full_context,
       FragmentData& fragment_data)
       : object_(object),
@@ -229,7 +230,7 @@ class FragmentPaintPropertyTreeBuilder {
   ALWAYS_INLINE void UpdatePaintOffsetTranslation(
       const absl::optional<gfx::Vector2d>&);
   ALWAYS_INLINE void SetNeedsPaintPropertyUpdateIfNeeded();
-  ALWAYS_INLINE void UpdateForObjectLocationAndSize(
+  ALWAYS_INLINE void UpdateForObjectLocation(
       absl::optional<gfx::Vector2d>& paint_offset_translation);
   ALWAYS_INLINE void UpdateStickyTranslation();
   ALWAYS_INLINE void UpdateAnchorPositionScrollTranslation();
@@ -287,7 +288,7 @@ class FragmentPaintPropertyTreeBuilder {
            full_context_.force_subtree_update_reasons;
   }
 
-  const NGPhysicalBoxFragment& BoxFragment() const {
+  const PhysicalBoxFragment& BoxFragment() const {
     const auto& box = To<LayoutBox>(object_);
     if (pre_paint_info_) {
       if (pre_paint_info_->box_fragment) {
@@ -397,7 +398,7 @@ class FragmentPaintPropertyTreeBuilder {
   MainThreadScrollingReasons GetMainThreadScrollingReasons() const;
 
   const LayoutObject& object_;
-  NGPrePaintInfo* pre_paint_info_;
+  PrePaintInfo* pre_paint_info_;
   // The tree builder context for the whole object.
   PaintPropertyTreeBuilderContext& full_context_;
   // The tree builder context for the current fragment, which is one of the
@@ -1204,7 +1205,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateIndividualTransform(
         }
 
         // TODO(crbug.com/1185254): Make this work correctly for block
-        // fragmentation. It's the size of each individual NGPhysicalBoxFragment
+        // fragmentation. It's the size of each individual PhysicalBoxFragment
         // that's interesting, not the total LayoutBox size.
         state.flags.animation_is_axis_aligned =
             UpdateBoxSizeAndCheckActiveAnimationAxisAlignment(
@@ -1722,14 +1723,15 @@ void FragmentPaintPropertyTreeBuilder::UpdateElementCaptureEffect() {
   // If we have the correct compositing reason, we should be associated with a
   // node. In the case we are not, the effect is no longer valid.
   auto* element = DynamicTo<Element>(object_.GetNode());
-  CHECK(element && element->GetRegionCaptureCropId());
+  CHECK(element);
+  CHECK(element->GetRestrictionTargetId());
   CHECK(context_.current.clip);
   CHECK(context_.current.transform);
   EffectPaintPropertyNode::State state;
   state.direct_compositing_reasons = CompositingReason::kElementCapture;
   state.local_transform_space = context_.current.transform;
   state.output_clip = context_.current.clip;
-  state.element_capture_id = *element->GetRegionCaptureCropId();
+  state.restriction_target_id = *element->GetRestrictionTargetId();
   state.compositor_element_id = CompositorElementIdFromUniqueObjectId(
       object_.UniqueId(), CompositorElementIdNamespace::kElementCapture);
 
@@ -2354,7 +2356,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateOverflowClip() {
         // the first parameter?
         state.SetClipRect(clip_rect.Rect(), clip_rect);
       } else if (object_.IsBox()) {
-        const NGPhysicalBoxFragment& box_fragment = BoxFragment();
+        const PhysicalBoxFragment& box_fragment = BoxFragment();
         PhysicalRect clip_rect =
             box_fragment.OverflowClipRect(context_.current.paint_offset,
                                           FindPreviousBreakToken(box_fragment));
@@ -2586,14 +2588,19 @@ void FragmentPaintPropertyTreeBuilder::UpdateScrollAndScrollTranslation() {
             if (needs_effect_node) {
               EffectPaintPropertyNode::State effect_state;
               effect_state.local_transform_space = context_.current.transform;
-              if (properties_->OverflowClip()) {
-                // Scrollbars are not clipped by OverflowClip, so the output
-                // clip should be the parent of the overflow clip.
-                DCHECK_EQ(context_.current.clip, properties_->OverflowClip());
-                effect_state.output_clip = context_.current.clip->Parent();
+
+              // Scrollbars are not clipped by InnerBorderRadiusClip or
+              // OverflowClip, so the output clip should skip them.
+              auto* clip_to_skip = properties_->InnerBorderRadiusClip();
+              if (!clip_to_skip) {
+                clip_to_skip = properties_->OverflowClip();
+              }
+              if (clip_to_skip) {
+                effect_state.output_clip = clip_to_skip->Parent();
               } else {
                 effect_state.output_clip = context_.current.clip;
               }
+
               effect_state.compositor_element_id =
                   scrollable_area->GetScrollbarElementId(orientation);
 
@@ -2970,7 +2977,7 @@ void FragmentPaintPropertyTreeBuilder::SetNeedsPaintPropertyUpdateIfNeeded() {
   }
 }
 
-void FragmentPaintPropertyTreeBuilder::UpdateForObjectLocationAndSize(
+void FragmentPaintPropertyTreeBuilder::UpdateForObjectLocation(
     absl::optional<gfx::Vector2d>& paint_offset_translation) {
   context_.old_paint_offset = fragment_data_.PaintOffset();
   UpdatePaintOffset();
@@ -2993,8 +3000,10 @@ void FragmentPaintPropertyTreeBuilder::UpdateForObjectLocationAndSize(
       if (auto* scrollable_area = To<LayoutBox>(object_).GetScrollableArea())
         scrollable_area->PositionOverflowControls();
     }
-
-    object_.GetMutableForPainting().InvalidateIntersectionObserverCachedRects();
+    if (!RuntimeEnabledFeatures::IntersectionOptimizationEnabled()) {
+      object_.GetMutableForPainting()
+          .InvalidateIntersectionObserverCachedRects();
+    }
   }
 
   if (paint_offset_translation)
@@ -3050,7 +3059,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateForSelf() {
   // This is not in FindObjectPropertiesNeedingUpdateScope because paint offset
   // can change without NeedsPaintPropertyUpdate.
   absl::optional<gfx::Vector2d> paint_offset_translation;
-  UpdateForObjectLocationAndSize(paint_offset_translation);
+  UpdateForObjectLocation(paint_offset_translation);
   if (&fragment_data_ == &object_.FirstFragment())
     SetNeedsPaintPropertyUpdateIfNeeded();
 
@@ -3302,12 +3311,19 @@ void PaintPropertyTreeBuilder::UpdateFragmentData() {
         pre_paint_info_->fragmentainer_idx;
   } else {
     DCHECK_EQ(&fragment, &object_.FirstFragment());
+    const FragmentDataList& fragment_list =
+        object_.GetMutableForPainting().FragmentList();
+    wtf_size_t old_fragment_count = fragment_list.size();
     object_.GetMutableForPainting().FragmentList().Shrink(1);
 
     if (context_.fragment_context.current.fragmentainer_idx == WTF::kNotFound) {
       // We're not fragmented, but we may have been previously. Reset the
       // fragmentainer index.
       fragment.SetFragmentID(0);
+
+      if (old_fragment_count > 1u) {
+        object_.GetMutableForPainting().FragmentCountChanged();
+      }
     } else {
       // We're inside monolithic content, but further out there's a
       // fragmentation context. Keep the fragmentainer index, so that the
@@ -3379,10 +3395,21 @@ void PaintPropertyTreeBuilder::UpdateForSelf() {
                                            GetFragmentData());
   builder.UpdateForSelf();
   properties_changed_.Merge(builder.PropertiesChanged());
+  context_.transform_or_clip_added_or_removed |=
+      properties_changed_.TransformOrClipAddedOrRemoved();
 
   if (!PrePaintDisableSideEffectsScope::IsDisabled()) {
     object_.GetMutableForPainting()
         .SetShouldAssumePaintOffsetTranslationForLayoutShiftTracking(false);
+
+    if (RuntimeEnabledFeatures::IntersectionOptimizationEnabled() &&
+        context_.transform_or_clip_added_or_removed) {
+      // Some of such changes can't be captured by IntersectionObservation::
+      // InvalidateCachedRectsIfNeeded(), e.g. when if LocalBorderBoxProperties
+      // now points to the parent of a removed paint property.
+      object_.GetMutableForPainting()
+          .InvalidateIntersectionObserverCachedRects();
+    }
   }
 }
 
@@ -3467,6 +3494,10 @@ void PaintPropertyTreeBuilder::UpdateForChildren() {
   if (is_isolated) {
     context_.force_subtree_update_reasons &=
         ~PaintPropertyTreeBuilderContext::kSubtreeUpdateIsolationBlocked;
+    context_.transform_or_clip_added_or_removed = false;
+  } else {
+    context_.transform_or_clip_added_or_removed |=
+        properties_changed_.TransformOrClipAddedOrRemoved();
   }
 }
 

@@ -6,9 +6,7 @@ package org.chromium.components.media_router;
 
 import java.util.List;
 
-/**
- * An interface provided to DiscoveryCallback in order to receive sinks.
- */
+/** An interface provided to DiscoveryCallback in order to receive sinks. */
 public interface DiscoveryDelegate {
     /**
      * Called when a new information about sinks availability becomes known.

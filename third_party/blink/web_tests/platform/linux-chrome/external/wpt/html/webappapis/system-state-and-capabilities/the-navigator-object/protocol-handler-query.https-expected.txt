@@ -1,0 +1,3 @@
+This is a testharness.js-based test.
+Harness Error. harness_status.status = 1 , harness_status.message = TypeError: test_driver.set_rph_registration_mode is not a function
+Harness: the test ran to completion.

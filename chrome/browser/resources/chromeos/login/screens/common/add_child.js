@@ -27,6 +27,8 @@ import {OobeModalDialog} from '../../components/dialogs/oobe_modal_dialog.js';
 import {OOBE_UI_STATE} from '../../components/display_manager_types.js';
 import {Oobe} from '../../cr_ui.js';
 
+import {getTemplate} from './add_child.html.js';
+
 
 /**
  * @constructor
@@ -83,7 +85,7 @@ class AddChildScreen extends AddChildScreenElementBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

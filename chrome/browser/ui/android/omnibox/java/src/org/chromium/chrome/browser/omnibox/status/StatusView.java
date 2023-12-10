@@ -246,8 +246,7 @@ public class StatusView extends LinearLayout {
                     .withEndAction(
                             () -> {
                                 // Set StatusIcon visibility and check whether we should set hover
-                                // action on
-                                // StatusView.
+                                // action on StatusView.
                                 setStatusIconVisibility(View.GONE);
 
                                 mIconView.setAlpha(1f);

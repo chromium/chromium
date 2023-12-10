@@ -6,10 +6,10 @@
 #define CHROME_BROWSER_ASH_LOGIN_OOBE_QUICK_START_CONNECTIVITY_ADVERTISING_ID_H_
 
 #include <array>
+#include <optional>
 #include <ostream>
 
 #include "base/containers/span.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::quick_start {
 
@@ -23,7 +23,7 @@ class AdvertisingId {
 
   // Attempts to decode bytes from a Base64-encoded string. If the decoding is
   // successful, it returns a new AdvertisingId containing those bytes.
-  static absl::optional<AdvertisingId> ParseFromBase64(
+  static std::optional<AdvertisingId> ParseFromBase64(
       const std::string& encoded_advertising_id);
 
   AdvertisingId();

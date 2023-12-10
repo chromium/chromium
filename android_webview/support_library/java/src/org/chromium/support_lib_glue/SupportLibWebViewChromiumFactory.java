@@ -30,175 +30,178 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-/**
- * Support library glue version of WebViewChromiumFactoryProvider.
- */
+/** Support library glue version of WebViewChromiumFactoryProvider. */
 class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryBoundaryInterface {
     // SupportLibWebkitToCompatConverterAdapter
     private final InvocationHandler mCompatConverterAdapter;
     private final WebViewChromiumAwInit mAwInit;
     private final String[] mWebViewSupportedFeatures =
             new String[] {
-                    Features.VISUAL_STATE_CALLBACK,
-                    Features.OFF_SCREEN_PRERASTER,
-                    Features.SAFE_BROWSING_ENABLE,
-                    Features.DISABLED_ACTION_MODE_MENU_ITEMS,
-                    Features.START_SAFE_BROWSING,
-                    Features.SAFE_BROWSING_ALLOWLIST,
-                    Features.SAFE_BROWSING_WHITELIST,
-                    Features.SAFE_BROWSING_PRIVACY_POLICY_URL,
-                    Features.SERVICE_WORKER_BASIC_USAGE,
-                    Features.SERVICE_WORKER_CACHE_MODE,
-                    Features.SERVICE_WORKER_CONTENT_ACCESS,
-                    Features.SERVICE_WORKER_FILE_ACCESS,
-                    Features.SERVICE_WORKER_BLOCK_NETWORK_LOADS,
-                    Features.SERVICE_WORKER_SHOULD_INTERCEPT_REQUEST,
-                    Features.RECEIVE_WEB_RESOURCE_ERROR,
-                    Features.RECEIVE_HTTP_ERROR,
-                    Features.SAFE_BROWSING_HIT,
-                    Features.SHOULD_OVERRIDE_WITH_REDIRECTS,
-                    Features.WEB_RESOURCE_REQUEST_IS_REDIRECT,
-                    Features.WEB_RESOURCE_ERROR_GET_DESCRIPTION,
-                    Features.WEB_RESOURCE_ERROR_GET_CODE,
-                    Features.SAFE_BROWSING_RESPONSE_BACK_TO_SAFETY,
-                    Features.SAFE_BROWSING_RESPONSE_PROCEED,
-                    Features.SAFE_BROWSING_RESPONSE_SHOW_INTERSTITIAL,
-                    Features.WEB_MESSAGE_PORT_POST_MESSAGE,
-                    Features.WEB_MESSAGE_PORT_CLOSE,
-                    Features.WEB_MESSAGE_PORT_SET_MESSAGE_CALLBACK,
-                    Features.CREATE_WEB_MESSAGE_CHANNEL,
-                    Features.POST_WEB_MESSAGE,
-                    Features.WEB_MESSAGE_CALLBACK_ON_MESSAGE,
-                    Features.GET_WEB_VIEW_CLIENT,
-                    Features.GET_WEB_CHROME_CLIENT,
-                    Features.PROXY_OVERRIDE,
-                    Features.SUPPRESS_ERROR_PAGE + Features.DEV_SUFFIX,
-                    Features.GET_WEB_VIEW_RENDERER,
-                    Features.WEB_VIEW_RENDERER_TERMINATE,
-                    Features.TRACING_CONTROLLER_BASIC_USAGE,
-                    Features.WEB_VIEW_RENDERER_CLIENT_BASIC_USAGE,
-                    Features.MULTI_PROCESS_QUERY,
-                    Features.FORCE_DARK,
-                    Features.FORCE_DARK_BEHAVIOR,
-                    Features.WEB_MESSAGE_LISTENER,
-                    Features.DOCUMENT_START_SCRIPT,
-                    Features.PROXY_OVERRIDE_REVERSE_BYPASS,
-                    Features.GET_VARIATIONS_HEADER,
-                    Features.ALGORITHMIC_DARKENING,
-                    Features.ENTERPRISE_AUTHENTICATION_APP_LINK_POLICY,
-                    Features.GET_COOKIE_INFO,
-                    Features.WEB_MESSAGE_ARRAY_BUFFER,
-                    Features.REQUESTED_WITH_HEADER_ALLOW_LIST,
-                    Features.IMAGE_DRAG_DROP,
-                    Features.USER_AGENT_METADATA,
-                    Features.MULTI_PROFILE,
-                    Features.ATTRIBUTION_BEHAVIOR,
-                    // Add new features above. New features must include `+ Features.DEV_SUFFIX`
-                    // when they're initially added (this can be removed in a future CL). The final
-                    // feature should have a trailing comma for cleaner diffs.
+                Features.VISUAL_STATE_CALLBACK,
+                Features.OFF_SCREEN_PRERASTER,
+                Features.SAFE_BROWSING_ENABLE,
+                Features.DISABLED_ACTION_MODE_MENU_ITEMS,
+                Features.START_SAFE_BROWSING,
+                Features.SAFE_BROWSING_ALLOWLIST,
+                Features.SAFE_BROWSING_WHITELIST,
+                Features.SAFE_BROWSING_PRIVACY_POLICY_URL,
+                Features.SERVICE_WORKER_BASIC_USAGE,
+                Features.SERVICE_WORKER_CACHE_MODE,
+                Features.SERVICE_WORKER_CONTENT_ACCESS,
+                Features.SERVICE_WORKER_FILE_ACCESS,
+                Features.SERVICE_WORKER_BLOCK_NETWORK_LOADS,
+                Features.SERVICE_WORKER_SHOULD_INTERCEPT_REQUEST,
+                Features.RECEIVE_WEB_RESOURCE_ERROR,
+                Features.RECEIVE_HTTP_ERROR,
+                Features.SAFE_BROWSING_HIT,
+                Features.SHOULD_OVERRIDE_WITH_REDIRECTS,
+                Features.WEB_RESOURCE_REQUEST_IS_REDIRECT,
+                Features.WEB_RESOURCE_ERROR_GET_DESCRIPTION,
+                Features.WEB_RESOURCE_ERROR_GET_CODE,
+                Features.SAFE_BROWSING_RESPONSE_BACK_TO_SAFETY,
+                Features.SAFE_BROWSING_RESPONSE_PROCEED,
+                Features.SAFE_BROWSING_RESPONSE_SHOW_INTERSTITIAL,
+                Features.WEB_MESSAGE_PORT_POST_MESSAGE,
+                Features.WEB_MESSAGE_PORT_CLOSE,
+                Features.WEB_MESSAGE_PORT_SET_MESSAGE_CALLBACK,
+                Features.CREATE_WEB_MESSAGE_CHANNEL,
+                Features.POST_WEB_MESSAGE,
+                Features.WEB_MESSAGE_CALLBACK_ON_MESSAGE,
+                Features.GET_WEB_VIEW_CLIENT,
+                Features.GET_WEB_CHROME_CLIENT,
+                Features.PROXY_OVERRIDE,
+                Features.SUPPRESS_ERROR_PAGE + Features.DEV_SUFFIX,
+                Features.GET_WEB_VIEW_RENDERER,
+                Features.WEB_VIEW_RENDERER_TERMINATE,
+                Features.TRACING_CONTROLLER_BASIC_USAGE,
+                Features.WEB_VIEW_RENDERER_CLIENT_BASIC_USAGE,
+                Features.MULTI_PROCESS_QUERY,
+                Features.FORCE_DARK,
+                Features.FORCE_DARK_BEHAVIOR,
+                Features.WEB_MESSAGE_LISTENER,
+                Features.DOCUMENT_START_SCRIPT,
+                Features.PROXY_OVERRIDE_REVERSE_BYPASS,
+                Features.GET_VARIATIONS_HEADER,
+                Features.ALGORITHMIC_DARKENING,
+                Features.ENTERPRISE_AUTHENTICATION_APP_LINK_POLICY,
+                Features.GET_COOKIE_INFO,
+                Features.WEB_MESSAGE_ARRAY_BUFFER,
+                Features.REQUESTED_WITH_HEADER_ALLOW_LIST,
+                Features.IMAGE_DRAG_DROP,
+                Features.USER_AGENT_METADATA,
+                Features.MULTI_PROFILE,
+                Features.ATTRIBUTION_BEHAVIOR,
+                Features.WEBVIEW_MEDIA_INTEGRITY_API_STATUS,
+                // Add new features above. New features must include `+ Features.DEV_SUFFIX`
+                // when they're initially added (this can be removed in a future CL). The final
+                // feature should have a trailing comma for cleaner diffs.
             };
 
     // These values are persisted to logs. Entries should not be renumbered and
     // numeric values should never be reused.
-    @IntDef({ApiCall.ADD_WEB_MESSAGE_LISTENER,
-            ApiCall.CLEAR_PROXY_OVERRIDE,
-            ApiCall.GET_PROXY_CONTROLLER,
-            ApiCall.GET_SAFE_BROWSING_PRIVACY_POLICY_URL,
-            ApiCall.GET_SERVICE_WORKER_CONTROLLER,
-            ApiCall.GET_SERVICE_WORKER_WEB_SETTINGS,
-            ApiCall.GET_TRACING_CONTROLLER,
-            ApiCall.GET_WEBCHROME_CLIENT,
-            ApiCall.GET_WEBVIEW_CLIENT,
-            ApiCall.GET_WEBVIEW_RENDERER,
-            ApiCall.GET_WEBVIEW_RENDERER_CLIENT,
-            ApiCall.INIT_SAFE_BROWSING,
-            ApiCall.INSERT_VISUAL_STATE_CALLBACK,
-            ApiCall.IS_MULTI_PROCESS_ENABLED,
-            ApiCall.JS_REPLY_POST_MESSAGE,
-            ApiCall.POST_MESSAGE_TO_MAIN_FRAME,
-            ApiCall.REMOVE_WEB_MESSAGE_LISTENER,
-            ApiCall.SERVICE_WORKER_SETTINGS_GET_ALLOW_CONTENT_ACCESS,
-            ApiCall.SERVICE_WORKER_SETTINGS_GET_ALLOW_FILE_ACCESS,
-            ApiCall.SERVICE_WORKER_SETTINGS_GET_BLOCK_NETWORK_LOADS,
-            ApiCall.SERVICE_WORKER_SETTINGS_GET_CACHE_MODE,
-            ApiCall.SERVICE_WORKER_SETTINGS_SET_ALLOW_CONTENT_ACCESS,
-            ApiCall.SERVICE_WORKER_SETTINGS_SET_ALLOW_FILE_ACCESS,
-            ApiCall.SERVICE_WORKER_SETTINGS_SET_BLOCK_NETWORK_LOADS,
-            ApiCall.SERVICE_WORKER_SETTINGS_SET_CACHE_MODE,
-            ApiCall.SET_PROXY_OVERRIDE,
-            ApiCall.SET_SAFE_BROWSING_ALLOWLIST_DEPRECATED_NAME,
-            ApiCall.SET_SERVICE_WORKER_CLIENT,
-            ApiCall.SET_WEBVIEW_RENDERER_CLIENT,
-            ApiCall.TRACING_CONTROLLER_IS_TRACING,
-            ApiCall.TRACING_CONTROLLER_START,
-            ApiCall.TRACING_CONTROLLER_STOP,
-            ApiCall.WEB_MESSAGE_GET_DATA,
-            ApiCall.WEB_MESSAGE_GET_PORTS,
-            ApiCall.WEB_MESSAGE_PORT_CLOSE,
-            ApiCall.WEB_MESSAGE_PORT_POST_MESSAGE,
-            ApiCall.WEB_MESSAGE_PORT_SET_CALLBACK,
-            ApiCall.WEB_MESSAGE_PORT_SET_CALLBACK_WITH_HANDLER,
-            ApiCall.WEB_RESOURCE_REQUEST_IS_REDIRECT,
-            ApiCall.WEB_SETTINGS_GET_DISABLED_ACTION_MODE_MENU_ITEMS,
-            ApiCall.WEB_SETTINGS_GET_FORCE_DARK,
-            ApiCall.WEB_SETTINGS_GET_FORCE_DARK_BEHAVIOR,
-            ApiCall.WEB_SETTINGS_GET_OFFSCREEN_PRE_RASTER,
-            ApiCall.WEB_SETTINGS_GET_SAFE_BROWSING_ENABLED,
-            ApiCall.WEB_SETTINGS_GET_WILL_SUPPRESS_ERROR_PAGE,
-            ApiCall.WEB_SETTINGS_SET_DISABLED_ACTION_MODE_MENU_ITEMS,
-            ApiCall.WEB_SETTINGS_SET_FORCE_DARK,
-            ApiCall.WEB_SETTINGS_SET_FORCE_DARK_BEHAVIOR,
-            ApiCall.WEB_SETTINGS_SET_OFFSCREEN_PRE_RASTER,
-            ApiCall.WEB_SETTINGS_SET_SAFE_BROWSING_ENABLED,
-            ApiCall.WEB_SETTINGS_SET_WILL_SUPPRESS_ERROR_PAGE,
-            ApiCall.WEBVIEW_RENDERER_TERMINATE,
-            ApiCall.ADD_DOCUMENT_START_SCRIPT,
-            ApiCall.REMOVE_DOCUMENT_START_SCRIPT,
-            ApiCall.SET_SAFE_BROWSING_ALLOWLIST,
-            ApiCall.SET_PROXY_OVERRIDE_REVERSE_BYPASS,
-            ApiCall.WEB_SETTINGS_SET_REQUESTED_WITH_HEADER_MODE,
-            ApiCall.WEB_SETTINGS_GET_REQUESTED_WITH_HEADER_MODE,
-            ApiCall.SERVICE_WORKER_SETTINGS_SET_REQUESTED_WITH_HEADER_MODE,
-            ApiCall.SERVICE_WORKER_SETTINGS_GET_REQUESTED_WITH_HEADER_MODE,
-            ApiCall.GET_VARIATIONS_HEADER,
-            ApiCall.WEB_SETTINGS_GET_ENTERPRISE_AUTHENTICATION_APP_LINK_POLICY_ENABLED,
-            ApiCall.WEB_SETTINGS_SET_ENTERPRISE_AUTHENTICATION_APP_LINK_POLICY_ENABLED,
-            ApiCall.COOKIE_MANAGER_GET_COOKIE_INFO,
-            ApiCall.WEB_MESSAGE_GET_MESSAGE_PAYLOAD,
-            ApiCall.WEB_MESSAGE_PAYLOAD_GET_TYPE,
-            ApiCall.WEB_MESSAGE_PAYLOAD_GET_AS_STRING,
-            ApiCall.WEB_MESSAGE_PAYLOAD_GET_AS_ARRAY_BUFFER,
-            ApiCall.WEB_SETTINGS_SET_REQUESTED_WITH_HEADER_ORIGIN_ALLOWLIST,
-            ApiCall.WEB_SETTINGS_GET_REQUESTED_WITH_HEADER_ORIGIN_ALLOWLIST,
-            ApiCall.SERVICE_WORKER_SETTINGS_SET_REQUESTED_WITH_HEADER_ORIGIN_ALLOWLIST,
-            ApiCall.SERVICE_WORKER_SETTINGS_GET_REQUESTED_WITH_HEADER_ORIGIN_ALLOWLIST,
-            ApiCall.GET_IMAGE_DRAG_DROP_IMPLEMENTATION,
-            ApiCall.JS_REPLY_POST_MESSAGE_WITH_PAYLOAD,
-            ApiCall.WEB_SETTINGS_SET_USER_AGENT_METADATA,
-            ApiCall.WEB_SETTINGS_GET_USER_AGENT_METADATA,
-            ApiCall.SERVICE_WORKER_CLIENT_SHOULD_INTERCEPT_REQUEST,
-            ApiCall.WEB_SETTINGS_SET_ALGORITHMIC_DARKENING_ALLOWED,
-            ApiCall.WEB_SETTINGS_IS_ALGORITHMIC_DARKENING_ALLOWED,
-            ApiCall.CREATE_WEB_MESSAGE_CHANNEL,
-            ApiCall.CREATE_WEBVIEW,
-            ApiCall.GET_STATICS,
-            ApiCall.GET_PROFILE_STORE,
-            ApiCall.GET_OR_CREATE_PROFILE,
-            ApiCall.GET_PROFILE,
-            ApiCall.GET_ALL_PROFILE_NAMES,
-            ApiCall.DELETE_PROFILE,
-            ApiCall.GET_PROFILE_NAME,
-            ApiCall.GET_PROFILE_COOKIE_MANAGER,
-            ApiCall.GET_PROFILE_WEB_STORAGE,
-            ApiCall.GET_PROFILE_GEO_LOCATION_PERMISSIONS,
-            ApiCall.GET_PROFILE_SERVICE_WORKER_CONTROLLER,
-            ApiCall.SET_WEBVIEW_PROFILE,
-            ApiCall.GET_WEBVIEW_PROFILE,
-            ApiCall.SET_ATTRIBUTION_BEHAVIOR,
-            ApiCall.GET_ATTRIBUTION_BEHAVIOR,
-            // Add new constants above. The final constant should have a trailing comma for cleaner
-            // diffs.
-            ApiCall.COUNT, // Added to suppress WrongConstant in #recordApiCall
+    @IntDef({
+        ApiCall.ADD_WEB_MESSAGE_LISTENER,
+        ApiCall.CLEAR_PROXY_OVERRIDE,
+        ApiCall.GET_PROXY_CONTROLLER,
+        ApiCall.GET_SAFE_BROWSING_PRIVACY_POLICY_URL,
+        ApiCall.GET_SERVICE_WORKER_CONTROLLER,
+        ApiCall.GET_SERVICE_WORKER_WEB_SETTINGS,
+        ApiCall.GET_TRACING_CONTROLLER,
+        ApiCall.GET_WEBCHROME_CLIENT,
+        ApiCall.GET_WEBVIEW_CLIENT,
+        ApiCall.GET_WEBVIEW_RENDERER,
+        ApiCall.GET_WEBVIEW_RENDERER_CLIENT,
+        ApiCall.INIT_SAFE_BROWSING,
+        ApiCall.INSERT_VISUAL_STATE_CALLBACK,
+        ApiCall.IS_MULTI_PROCESS_ENABLED,
+        ApiCall.JS_REPLY_POST_MESSAGE,
+        ApiCall.POST_MESSAGE_TO_MAIN_FRAME,
+        ApiCall.REMOVE_WEB_MESSAGE_LISTENER,
+        ApiCall.SERVICE_WORKER_SETTINGS_GET_ALLOW_CONTENT_ACCESS,
+        ApiCall.SERVICE_WORKER_SETTINGS_GET_ALLOW_FILE_ACCESS,
+        ApiCall.SERVICE_WORKER_SETTINGS_GET_BLOCK_NETWORK_LOADS,
+        ApiCall.SERVICE_WORKER_SETTINGS_GET_CACHE_MODE,
+        ApiCall.SERVICE_WORKER_SETTINGS_SET_ALLOW_CONTENT_ACCESS,
+        ApiCall.SERVICE_WORKER_SETTINGS_SET_ALLOW_FILE_ACCESS,
+        ApiCall.SERVICE_WORKER_SETTINGS_SET_BLOCK_NETWORK_LOADS,
+        ApiCall.SERVICE_WORKER_SETTINGS_SET_CACHE_MODE,
+        ApiCall.SET_PROXY_OVERRIDE,
+        ApiCall.SET_SAFE_BROWSING_ALLOWLIST_DEPRECATED_NAME,
+        ApiCall.SET_SERVICE_WORKER_CLIENT,
+        ApiCall.SET_WEBVIEW_RENDERER_CLIENT,
+        ApiCall.TRACING_CONTROLLER_IS_TRACING,
+        ApiCall.TRACING_CONTROLLER_START,
+        ApiCall.TRACING_CONTROLLER_STOP,
+        ApiCall.WEB_MESSAGE_GET_DATA,
+        ApiCall.WEB_MESSAGE_GET_PORTS,
+        ApiCall.WEB_MESSAGE_PORT_CLOSE,
+        ApiCall.WEB_MESSAGE_PORT_POST_MESSAGE,
+        ApiCall.WEB_MESSAGE_PORT_SET_CALLBACK,
+        ApiCall.WEB_MESSAGE_PORT_SET_CALLBACK_WITH_HANDLER,
+        ApiCall.WEB_RESOURCE_REQUEST_IS_REDIRECT,
+        ApiCall.WEB_SETTINGS_GET_DISABLED_ACTION_MODE_MENU_ITEMS,
+        ApiCall.WEB_SETTINGS_GET_FORCE_DARK,
+        ApiCall.WEB_SETTINGS_GET_FORCE_DARK_BEHAVIOR,
+        ApiCall.WEB_SETTINGS_GET_OFFSCREEN_PRE_RASTER,
+        ApiCall.WEB_SETTINGS_GET_SAFE_BROWSING_ENABLED,
+        ApiCall.WEB_SETTINGS_GET_WILL_SUPPRESS_ERROR_PAGE,
+        ApiCall.WEB_SETTINGS_SET_DISABLED_ACTION_MODE_MENU_ITEMS,
+        ApiCall.WEB_SETTINGS_SET_FORCE_DARK,
+        ApiCall.WEB_SETTINGS_SET_FORCE_DARK_BEHAVIOR,
+        ApiCall.WEB_SETTINGS_SET_OFFSCREEN_PRE_RASTER,
+        ApiCall.WEB_SETTINGS_SET_SAFE_BROWSING_ENABLED,
+        ApiCall.WEB_SETTINGS_SET_WILL_SUPPRESS_ERROR_PAGE,
+        ApiCall.WEBVIEW_RENDERER_TERMINATE,
+        ApiCall.ADD_DOCUMENT_START_SCRIPT,
+        ApiCall.REMOVE_DOCUMENT_START_SCRIPT,
+        ApiCall.SET_SAFE_BROWSING_ALLOWLIST,
+        ApiCall.SET_PROXY_OVERRIDE_REVERSE_BYPASS,
+        ApiCall.WEB_SETTINGS_SET_REQUESTED_WITH_HEADER_MODE,
+        ApiCall.WEB_SETTINGS_GET_REQUESTED_WITH_HEADER_MODE,
+        ApiCall.SERVICE_WORKER_SETTINGS_SET_REQUESTED_WITH_HEADER_MODE,
+        ApiCall.SERVICE_WORKER_SETTINGS_GET_REQUESTED_WITH_HEADER_MODE,
+        ApiCall.GET_VARIATIONS_HEADER,
+        ApiCall.WEB_SETTINGS_GET_ENTERPRISE_AUTHENTICATION_APP_LINK_POLICY_ENABLED,
+        ApiCall.WEB_SETTINGS_SET_ENTERPRISE_AUTHENTICATION_APP_LINK_POLICY_ENABLED,
+        ApiCall.COOKIE_MANAGER_GET_COOKIE_INFO,
+        ApiCall.WEB_MESSAGE_GET_MESSAGE_PAYLOAD,
+        ApiCall.WEB_MESSAGE_PAYLOAD_GET_TYPE,
+        ApiCall.WEB_MESSAGE_PAYLOAD_GET_AS_STRING,
+        ApiCall.WEB_MESSAGE_PAYLOAD_GET_AS_ARRAY_BUFFER,
+        ApiCall.WEB_SETTINGS_SET_REQUESTED_WITH_HEADER_ORIGIN_ALLOWLIST,
+        ApiCall.WEB_SETTINGS_GET_REQUESTED_WITH_HEADER_ORIGIN_ALLOWLIST,
+        ApiCall.SERVICE_WORKER_SETTINGS_SET_REQUESTED_WITH_HEADER_ORIGIN_ALLOWLIST,
+        ApiCall.SERVICE_WORKER_SETTINGS_GET_REQUESTED_WITH_HEADER_ORIGIN_ALLOWLIST,
+        ApiCall.GET_IMAGE_DRAG_DROP_IMPLEMENTATION,
+        ApiCall.JS_REPLY_POST_MESSAGE_WITH_PAYLOAD,
+        ApiCall.WEB_SETTINGS_SET_USER_AGENT_METADATA,
+        ApiCall.WEB_SETTINGS_GET_USER_AGENT_METADATA,
+        ApiCall.SERVICE_WORKER_CLIENT_SHOULD_INTERCEPT_REQUEST,
+        ApiCall.WEB_SETTINGS_SET_ALGORITHMIC_DARKENING_ALLOWED,
+        ApiCall.WEB_SETTINGS_IS_ALGORITHMIC_DARKENING_ALLOWED,
+        ApiCall.CREATE_WEB_MESSAGE_CHANNEL,
+        ApiCall.CREATE_WEBVIEW,
+        ApiCall.GET_STATICS,
+        ApiCall.GET_PROFILE_STORE,
+        ApiCall.GET_OR_CREATE_PROFILE,
+        ApiCall.GET_PROFILE,
+        ApiCall.GET_ALL_PROFILE_NAMES,
+        ApiCall.DELETE_PROFILE,
+        ApiCall.GET_PROFILE_NAME,
+        ApiCall.GET_PROFILE_COOKIE_MANAGER,
+        ApiCall.GET_PROFILE_WEB_STORAGE,
+        ApiCall.GET_PROFILE_GEO_LOCATION_PERMISSIONS,
+        ApiCall.GET_PROFILE_SERVICE_WORKER_CONTROLLER,
+        ApiCall.SET_WEBVIEW_PROFILE,
+        ApiCall.GET_WEBVIEW_PROFILE,
+        ApiCall.SET_ATTRIBUTION_BEHAVIOR,
+        ApiCall.GET_ATTRIBUTION_BEHAVIOR,
+        ApiCall.GET_WEBVIEW_MEDIA_INTEGRITY_API_DEFAULT_STATUS,
+        ApiCall.GET_WEBVIEW_MEDIA_INTEGRITY_API_OVERRIDE_RULES,
+        ApiCall.SET_WEBVIEW_MEDIA_INTEGRITY_API_STATUS,
+        // Add new constants above. The final constant should have a trailing comma for cleaner
+        // diffs.
+        ApiCall.COUNT, // Added to suppress WrongConstant in #recordApiCall
     })
     public @interface ApiCall {
         int ADD_WEB_MESSAGE_LISTENER = 0;
@@ -257,14 +260,10 @@ class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryBoundary
         int REMOVE_DOCUMENT_START_SCRIPT = 53;
         int SET_SAFE_BROWSING_ALLOWLIST = 54;
         int SET_PROXY_OVERRIDE_REVERSE_BYPASS = 55;
-        @Deprecated
-        int WEB_SETTINGS_SET_REQUESTED_WITH_HEADER_MODE = 56;
-        @Deprecated
-        int WEB_SETTINGS_GET_REQUESTED_WITH_HEADER_MODE = 57;
-        @Deprecated
-        int SERVICE_WORKER_SETTINGS_SET_REQUESTED_WITH_HEADER_MODE = 58;
-        @Deprecated
-        int SERVICE_WORKER_SETTINGS_GET_REQUESTED_WITH_HEADER_MODE = 59;
+        @Deprecated int WEB_SETTINGS_SET_REQUESTED_WITH_HEADER_MODE = 56;
+        @Deprecated int WEB_SETTINGS_GET_REQUESTED_WITH_HEADER_MODE = 57;
+        @Deprecated int SERVICE_WORKER_SETTINGS_SET_REQUESTED_WITH_HEADER_MODE = 58;
+        @Deprecated int SERVICE_WORKER_SETTINGS_GET_REQUESTED_WITH_HEADER_MODE = 59;
         int GET_VARIATIONS_HEADER = 60;
         int WEB_SETTINGS_GET_ENTERPRISE_AUTHENTICATION_APP_LINK_POLICY_ENABLED = 61;
         int WEB_SETTINGS_SET_ENTERPRISE_AUTHENTICATION_APP_LINK_POLICY_ENABLED = 62;
@@ -278,8 +277,7 @@ class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryBoundary
         int SERVICE_WORKER_SETTINGS_SET_REQUESTED_WITH_HEADER_ORIGIN_ALLOWLIST = 70;
         int SERVICE_WORKER_SETTINGS_GET_REQUESTED_WITH_HEADER_ORIGIN_ALLOWLIST = 71;
         int GET_IMAGE_DRAG_DROP_IMPLEMENTATION = 72;
-        @Deprecated
-        int RESTRICT_SENSITIVE_WEB_CONTENT = 73;
+        @Deprecated int RESTRICT_SENSITIVE_WEB_CONTENT = 73;
         int JS_REPLY_POST_MESSAGE_WITH_PAYLOAD = 74;
         int WEB_SETTINGS_SET_USER_AGENT_METADATA = 75;
         int WEB_SETTINGS_GET_USER_AGENT_METADATA = 76;
@@ -304,8 +302,11 @@ class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryBoundary
         int GET_WEBVIEW_PROFILE = 94;
         int SET_ATTRIBUTION_BEHAVIOR = 95;
         int GET_ATTRIBUTION_BEHAVIOR = 96;
+        int GET_WEBVIEW_MEDIA_INTEGRITY_API_DEFAULT_STATUS = 97;
+        int GET_WEBVIEW_MEDIA_INTEGRITY_API_OVERRIDE_RULES = 98;
+        int SET_WEBVIEW_MEDIA_INTEGRITY_API_STATUS = 99;
         // Remember to update AndroidXWebkitApiCall in enums.xml when adding new values here
-        int COUNT = 97;
+        int COUNT = 100;
     }
 
     public static void recordApiCall(@ApiCall int apiCall) {
@@ -322,8 +323,9 @@ class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryBoundary
     private InvocationHandler mProfileStore;
 
     public SupportLibWebViewChromiumFactory() {
-        mCompatConverterAdapter = BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
-                new SupportLibWebkitToCompatConverterAdapter());
+        mCompatConverterAdapter =
+                BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
+                        new SupportLibWebkitToCompatConverterAdapter());
         mAwInit = WebkitToSharedGlueConverter.getGlobalAwInit();
     }
 
@@ -351,7 +353,7 @@ class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryBoundary
         @Override
         public void initSafeBrowsing(Context context, ValueCallback<Boolean> callback) {
             try (TraceEvent event =
-                            TraceEvent.scoped("WebView.APICall.AndroidX.INIT_SAFE_BROWSING")) {
+                    TraceEvent.scoped("WebView.APICall.AndroidX.INIT_SAFE_BROWSING")) {
                 recordApiCall(ApiCall.INIT_SAFE_BROWSING);
                 mSharedStatics.initSafeBrowsing(
                         context, CallbackConverter.fromValueCallback(callback));
@@ -360,8 +362,8 @@ class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryBoundary
 
         @Override
         public void setSafeBrowsingAllowlist(Set<String> hosts, ValueCallback<Boolean> callback) {
-            try (TraceEvent event = TraceEvent.scoped(
-                         "WebView.APICall.AndroidX.SET_SAFE_BROWSING_ALLOWLIST")) {
+            try (TraceEvent event =
+                    TraceEvent.scoped("WebView.APICall.AndroidX.SET_SAFE_BROWSING_ALLOWLIST")) {
                 recordApiCall(ApiCall.SET_SAFE_BROWSING_ALLOWLIST);
                 mSharedStatics.setSafeBrowsingAllowlist(
                         new ArrayList<>(hosts), CallbackConverter.fromValueCallback(callback));
@@ -370,8 +372,9 @@ class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryBoundary
 
         @Override
         public void setSafeBrowsingWhitelist(List<String> hosts, ValueCallback<Boolean> callback) {
-            try (TraceEvent event = TraceEvent.scoped(
-                         "WebView.APICall.AndroidX.SET_SAFE_BROWSING_ALLOWLIST_DEPRECATED_NAME")) {
+            try (TraceEvent event =
+                    TraceEvent.scoped(
+                            "WebView.APICall.AndroidX.SET_SAFE_BROWSING_ALLOWLIST_DEPRECATED_NAME")) {
                 recordApiCall(ApiCall.SET_SAFE_BROWSING_ALLOWLIST_DEPRECATED_NAME);
                 mSharedStatics.setSafeBrowsingAllowlist(
                         hosts, CallbackConverter.fromValueCallback(callback));
@@ -380,8 +383,9 @@ class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryBoundary
 
         @Override
         public Uri getSafeBrowsingPrivacyPolicyUrl() {
-            try (TraceEvent event = TraceEvent.scoped(
-                         "WebView.APICall.AndroidX.GET_SAFE_BROWSING_PRIVACY_POLICY_URL")) {
+            try (TraceEvent event =
+                    TraceEvent.scoped(
+                            "WebView.APICall.AndroidX.GET_SAFE_BROWSING_PRIVACY_POLICY_URL")) {
                 recordApiCall(ApiCall.GET_SAFE_BROWSING_PRIVACY_POLICY_URL);
                 return mSharedStatics.getSafeBrowsingPrivacyPolicyUrl();
             }
@@ -389,8 +393,8 @@ class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryBoundary
 
         @Override
         public boolean isMultiProcessEnabled() {
-            try (TraceEvent event = TraceEvent.scoped(
-                         "WebView.APICall.AndroidX.IS_MULTI_PROCESS_ENABLED")) {
+            try (TraceEvent event =
+                    TraceEvent.scoped("WebView.APICall.AndroidX.IS_MULTI_PROCESS_ENABLED")) {
                 recordApiCall(ApiCall.IS_MULTI_PROCESS_ENABLED);
                 return mSharedStatics.isMultiProcessEnabled();
             }
@@ -399,7 +403,7 @@ class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryBoundary
         @Override
         public String getVariationsHeader() {
             try (TraceEvent event =
-                            TraceEvent.scoped("WebView.APICall.AndroidX.GET_VARIATIONS_HEADER")) {
+                    TraceEvent.scoped("WebView.APICall.AndroidX.GET_VARIATIONS_HEADER")) {
                 recordApiCall(ApiCall.GET_VARIATIONS_HEADER);
                 return mSharedStatics.getVariationsHeader();
             }
@@ -412,9 +416,11 @@ class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryBoundary
             recordApiCall(ApiCall.GET_STATICS);
             synchronized (mAwInit.getLock()) {
                 if (mStatics == null) {
-                    mStatics = BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
-                            new StaticsAdapter(
-                                    WebkitToSharedGlueConverter.getGlobalAwInit().getStatics()));
+                    mStatics =
+                            BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
+                                    new StaticsAdapter(
+                                            WebkitToSharedGlueConverter.getGlobalAwInit()
+                                                    .getStatics()));
                 }
             }
             return mStatics;
@@ -428,8 +434,8 @@ class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryBoundary
 
     @Override
     public InvocationHandler getServiceWorkerController() {
-        try (TraceEvent event = TraceEvent.scoped(
-                     "WebView.APICall.AndroidX.GET_SERVICE_WORKER_CONTROLLER")) {
+        try (TraceEvent event =
+                TraceEvent.scoped("WebView.APICall.AndroidX.GET_SERVICE_WORKER_CONTROLLER")) {
             recordApiCall(ApiCall.GET_SERVICE_WORKER_CONTROLLER);
             synchronized (mAwInit.getLock()) {
                 if (mServiceWorkerController == null) {
@@ -446,14 +452,16 @@ class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryBoundary
     @Override
     public InvocationHandler getTracingController() {
         try (TraceEvent event =
-                        TraceEvent.scoped("WebView.APICall.AndroidX.GET_TRACING_CONTROLLER")) {
+                TraceEvent.scoped("WebView.APICall.AndroidX.GET_TRACING_CONTROLLER")) {
             recordApiCall(ApiCall.GET_TRACING_CONTROLLER);
             synchronized (mAwInit.getLock()) {
                 if (mTracingController == null) {
-                    mTracingController = BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
-                            new SupportLibTracingControllerAdapter(
-                                    new SharedTracingControllerAdapter(mAwInit.getRunQueue(),
-                                            mAwInit.getAwTracingController())));
+                    mTracingController =
+                            BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
+                                    new SupportLibTracingControllerAdapter(
+                                            new SharedTracingControllerAdapter(
+                                                    mAwInit.getRunQueue(),
+                                                    mAwInit.getAwTracingController())));
                 }
             }
             return mTracingController;
@@ -463,13 +471,14 @@ class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryBoundary
     @Override
     public InvocationHandler getProxyController() {
         try (TraceEvent event =
-                        TraceEvent.scoped("WebView.APICall.AndroidX.GET_PROXY_CONTROLLER")) {
+                TraceEvent.scoped("WebView.APICall.AndroidX.GET_PROXY_CONTROLLER")) {
             recordApiCall(ApiCall.GET_PROXY_CONTROLLER);
             synchronized (mAwInit.getLock()) {
                 if (mProxyController == null) {
-                    mProxyController = BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
-                            new SupportLibProxyControllerAdapter(
-                                    mAwInit.getRunQueue(), mAwInit.getAwProxyController()));
+                    mProxyController =
+                            BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
+                                    new SupportLibProxyControllerAdapter(
+                                            mAwInit.getRunQueue(), mAwInit.getAwProxyController()));
                 }
             }
             return mProxyController;
@@ -478,13 +487,14 @@ class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryBoundary
 
     @Override
     public InvocationHandler getDropDataProvider() {
-        try (TraceEvent event = TraceEvent.scoped(
-                     "WebView.APICall.AndroidX.GET_IMAGE_DRAG_DROP_IMPLEMENTATION")) {
+        try (TraceEvent event =
+                TraceEvent.scoped("WebView.APICall.AndroidX.GET_IMAGE_DRAG_DROP_IMPLEMENTATION")) {
             recordApiCall(ApiCall.GET_IMAGE_DRAG_DROP_IMPLEMENTATION);
             synchronized (mAwInit.getLock()) {
                 if (mDropDataProvider == null) {
-                    mDropDataProvider = BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
-                            new SupportLibDropDataContentProviderAdapter());
+                    mDropDataProvider =
+                            BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
+                                    new SupportLibDropDataContentProviderAdapter());
                 }
             }
             return mDropDataProvider;
@@ -497,8 +507,9 @@ class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryBoundary
             recordApiCall(ApiCall.GET_PROFILE_STORE);
             synchronized (mAwInit.getLock()) {
                 if (mProfileStore == null) {
-                    mProfileStore = BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
-                            new SupportLibProfileStore(ProfileStore.getInstance()));
+                    mProfileStore =
+                            BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
+                                    new SupportLibProfileStore(ProfileStore.getInstance()));
                 }
             }
             return mProfileStore;

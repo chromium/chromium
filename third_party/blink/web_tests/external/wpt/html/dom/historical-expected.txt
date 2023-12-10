@@ -1,17 +1,7 @@
 This is a testharness.js-based test.
-[PASS] document.applets is always empty
-[PASS] <attachment> is HTMLUnknownElement
-[PASS] <applet> is HTMLUnknownElement
 [FAIL] <layer> is HTMLUnknownElement
   assert_true: expected true got false
 [FAIL] <nolayer> is HTMLUnknownElement
   assert_true: expected true got false
-[PASS] HTMLAppletElement is no more
-[PASS] document.all cannot find applet
-[PASS] document cannot find applet
-[PASS] window cannot find applet
-[PASS] applet is not styled
-[PASS] HTMLTableDataCellElement interface is removed
-[PASS] HTMLTableHeaderCellElement interface is removed
 Harness: the test ran to completion.
 

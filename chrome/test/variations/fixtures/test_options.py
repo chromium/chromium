@@ -20,7 +20,7 @@ def pytest_addoption(parser):
                    default=test_utils.get_hosted_platform(),
                    dest='target_platform',
                    choices=['linux', 'win', 'mac', 'android', 'webview',
-                            'cros', 'lacros'],
+                            'android_webview', 'cros', 'lacros'],
                    help='If present, run for the target platform, '
                    'defaults to the host platform.')
 

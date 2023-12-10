@@ -71,9 +71,7 @@ std::string CreateBootstrapToken(const std::string& passphrase,
   std::string encrypted_key;
   EXPECT_TRUE(OSCrypt::EncryptString(serialized_key, &encrypted_key));
 
-  std::string encoded_key;
-  base::Base64Encode(encrypted_key, &encoded_key);
-  return encoded_key;
+  return base::Base64Encode(encrypted_key);
 }
 
 MATCHER(IsScryptKeyDerivationParams, "") {

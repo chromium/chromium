@@ -1,11 +1,14 @@
 # Quick Start Guide to Using Cronet
 Cronet is the networking stack of Chromium put into a library for use on
-mobile. This is the same networking stack that is used in the Chrome browser
+Android. This is the same networking stack that is used in the Chrome browser
 by over a billion people. It offers an easy-to-use, high performance,
-standards-compliant, and secure way to perform HTTP requests. Cronet has support
-for both Android and iOS. On Android, Cronet offers its own Java asynchronous
-API as well as support for the [java.net.HttpURLConnection] API.
-This document gives a brief introduction to using these two Java APIs.
+standards-compliant, and secure way to perform HTTP requests.Cronet offers its
+own Java asynchronous API as well as support for the
+[java.net.HttpURLConnection] API. This document gives a brief introduction to
+using these two Java APIs.
+
+*Cronet dropped its best-effort iOS implementation as of version M108. QUIC is
+available natively in iOS 15+.*
 
 For instructions on checking out and building Cronet see
 [Cronet build instructions](build_instructions.md).

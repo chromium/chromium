@@ -31,12 +31,30 @@
 #include "third_party/blink/public/resources/grit/blink_image_resources.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/layout/intrinsic_sizing_info.h"
 #include "third_party/blink/renderer/core/layout/layout_image.h"
 #include "third_party/blink/renderer/core/svg/graphics/svg_image_for_container.h"
 #include "third_party/blink/renderer/platform/graphics/placeholder_image.h"
 #include "ui/base/resource/resource_scale_factor.h"
 
 namespace blink {
+
+namespace {
+
+gfx::SizeF ApplyClampedZoom(gfx::SizeF size, float multiplier) {
+  // Don't let images that have a width/height >= 1 shrink below 1 when zoomed.
+  gfx::SizeF minimum_size(size.width() > 0 ? 1 : 0, size.height() > 0 ? 1 : 0);
+  size.Scale(multiplier);
+  if (size.width() < minimum_size.width()) {
+    size.set_width(minimum_size.width());
+  }
+  if (size.height() < minimum_size.height()) {
+    size.set_height(minimum_size.height());
+  }
+  return size;
+}
+
+}  // namespace
 
 LayoutImageResource::LayoutImageResource()
     : layout_object_(nullptr), cached_image_(nullptr) {}
@@ -110,37 +128,54 @@ RespectImageOrientationEnum LayoutImageResource::ImageOrientation() const {
   DCHECK(cached_image_);
   // Always respect the orientation of opaque origin images to avoid leaking
   // image data. Otherwise pull orientation from the layout object's style.
-  RespectImageOrientationEnum respect_orientation =
-      LayoutObject::ShouldRespectImageOrientation(layout_object_);
-  return cached_image_->ForceOrientationIfNecessary(respect_orientation);
+  return cached_image_->ForceOrientationIfNecessary(
+      layout_object_->StyleRef().ImageOrientation());
+}
+
+IntrinsicSizingInfo LayoutImageResource::GetNaturalDimensions(
+    float multiplier) const {
+  if (!cached_image_ || !cached_image_->IsSizeAvailable() ||
+      !cached_image_->HasImage()) {
+    return IntrinsicSizingInfo::None();
+  }
+  IntrinsicSizingInfo sizing_info;
+  Image& image = *cached_image_->GetImage();
+  if (auto* svg_image = DynamicTo<SVGImage>(image)) {
+    if (!svg_image->GetIntrinsicSizingInfo(sizing_info)) {
+      sizing_info = IntrinsicSizingInfo::None();
+    }
+  } else {
+    sizing_info.size = gfx::SizeF(image.Size(ImageOrientation()));
+    sizing_info.aspect_ratio = sizing_info.size;
+  }
+  if (multiplier != 1 && HasIntrinsicSize()) {
+    sizing_info.size = ApplyClampedZoom(sizing_info.size, multiplier);
+  }
+  if (auto* layout_image = DynamicTo<LayoutImage>(*layout_object_)) {
+    sizing_info.size.Scale(layout_image->ImageDevicePixelRatio());
+  }
+  return sizing_info;
 }
 
 gfx::SizeF LayoutImageResource::ImageSize(float multiplier) const {
   if (!cached_image_)
     return gfx::SizeF();
   gfx::SizeF size(cached_image_->IntrinsicSize(
-      LayoutObject::ShouldRespectImageOrientation(layout_object_)));
+      layout_object_->StyleRef().ImageOrientation()));
   if (multiplier != 1 && HasIntrinsicSize()) {
-    // Don't let images that have a width/height >= 1 shrink below 1 when
-    // zoomed.
-    gfx::SizeF minimum_size(size.width() > 0 ? 1 : 0,
-                            size.height() > 0 ? 1 : 0);
-    size.Scale(multiplier);
-    if (size.width() < minimum_size.width())
-      size.set_width(minimum_size.width());
-    if (size.height() < minimum_size.height())
-      size.set_height(minimum_size.height());
+    size = ApplyClampedZoom(size, multiplier);
   }
-  if (layout_object_ && layout_object_->IsLayoutImage() && size.width() &&
-      size.height())
-    size.Scale(To<LayoutImage>(layout_object_.Get())->ImageDevicePixelRatio());
+  if (auto* layout_image = DynamicTo<LayoutImage>(*layout_object_)) {
+    size.Scale(layout_image->ImageDevicePixelRatio());
+  }
   return size;
 }
 
-gfx::SizeF LayoutImageResource::ImageSizeWithDefaultSize(
+gfx::SizeF LayoutImageResource::ConcreteObjectSize(
     float multiplier,
-    const gfx::SizeF&) const {
-  return ImageSize(multiplier);
+    const gfx::SizeF& default_object_size) const {
+  IntrinsicSizingInfo sizing_info = GetNaturalDimensions(multiplier);
+  return blink::ConcreteObjectSize(sizing_info, default_object_size);
 }
 
 Image* LayoutImageResource::BrokenImage(double device_pixel_ratio) {

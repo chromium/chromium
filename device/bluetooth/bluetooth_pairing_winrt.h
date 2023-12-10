@@ -9,10 +9,11 @@
 #include <windows.foundation.h>
 #include <wrl/client.h>
 
+#include <string_view>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "base/strings/string_piece_forward.h"
 #include "device/bluetooth/bluetooth_device.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -49,7 +50,7 @@ class BluetoothPairingWinrt {
   bool ExpectingPinCode() const;
 
   // Sends the PIN code |pin_code| to the remote device during pairing.
-  void SetPinCode(base::StringPiece pin_code);
+  void SetPinCode(std::string_view pin_code);
 
   // User consented to continue pairing the remote device.
   void ConfirmPairing();

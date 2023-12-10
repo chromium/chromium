@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <optional>
 #include "base/at_exit.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
@@ -12,21 +13,20 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
-absl::optional<int> FindNonTrivialFactor(int n) {
+std::optional<int> FindNonTrivialFactor(int n) {
   // Really naive algorithm.
   for (int i = 2; i < n; ++i) {
     if (n % i == 0) {
       return i;
     }
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-void FindNonTrivialFactorHelper(int n, absl::optional<int>* result) {
+void FindNonTrivialFactorHelper(int n, std::optional<int>* result) {
   *result = FindNonTrivialFactor(n);
 }
 
@@ -66,7 +66,7 @@ int main(int argc, char* argv[]) {
 
   base::RunLoop run_loop;
 
-  absl::optional<int> result;
+  std::optional<int> result;
   // Notice that we're posting the long-running factoring operation to
   // `base::ThreadPool` to avoid blocking the main thread.
   //

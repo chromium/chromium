@@ -6,38 +6,46 @@
 #define CHROME_BROWSER_UI_TABS_ORGANIZATION_TAB_ORGANIZATION_SESSION_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "chrome/browser/ui/tabs/organization/tab_organization.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_request.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 class Browser;
-class TabOrganizationService;
 
-class TabOrganizationSession {
+class TabOrganizationSession : public TabOrganization::Observer {
  public:
   // TODO(dpenning): make this a base::Token.
   using ID = int;
   using TabOrganizations = std::vector<std::unique_ptr<TabOrganization>>;
 
+  class Observer {
+   public:
+    virtual ~Observer() = default;
+
+    virtual void OnTabOrganizationSessionUpdated(
+        const TabOrganizationSession* session) {}
+    virtual void OnTabOrganizationSessionDestroyed(
+        TabOrganizationSession::ID session_id) {}
+  };
+
   TabOrganizationSession();
   explicit TabOrganizationSession(
-      const TabOrganizationService* service,
       std::unique_ptr<TabOrganizationRequest> request);
-  ~TabOrganizationSession();
+  ~TabOrganizationSession() override;
 
   const TabOrganizationRequest* request() const { return request_.get(); }
   const TabOrganizations& tab_organizations() const {
     return tab_organizations_;
   }
   ID session_id() const { return session_id_; }
+  std::u16string feedback_id() const { return feedback_id_; }
 
   static std::unique_ptr<TabOrganizationSession> CreateSessionForBrowser(
-      const Browser* browser,
-      const TabOrganizationService* service);
+      const Browser* browser);
 
   const TabOrganization* GetNextTabOrganization() const;
   TabOrganization* GetNextTabOrganization();
@@ -53,18 +61,34 @@ class TabOrganizationSession {
   // that need to be taken on organizations.
   bool IsComplete() const;
 
+  void AddObserver(Observer* new_observer);
+  void RemoveObserver(Observer* new_observer);
+
+  // TabOrganization::Observer
+  void OnTabOrganizationUpdated(const TabOrganization* organization) override;
+  void OnTabOrganizationDestroyed(TabOrganization::ID organization_id) override;
+
  private:
+  // Notifies observers of the tab data that it has been updated.
+  void NotifyObserversOfUpdate();
+
+  // Checks whether there is a response, and if so calls Populate functions.
+  // Notifies observers that the session has been updated.
+  void OnRequestResponse(TabOrganizationResponse* response);
+
   // TODO: Remove once the full UI flow is implemented.
-  void PopulateAndCreate(const TabOrganizationResponse* response);
+  void PopulateAndCreate(TabOrganizationResponse* response);
 
   // Fills in the organizations from the request. Called when the request
   // completes.
-  void PopulateOrganizations(const TabOrganizationResponse* response);
+  void PopulateOrganizations(TabOrganizationResponse* response);
 
-  raw_ptr<const TabOrganizationService> service_;
   std::unique_ptr<TabOrganizationRequest> request_;
   TabOrganizations tab_organizations_;
   ID session_id_;
+  std::u16string feedback_id_;
+
+  base::ObserverList<Observer>::Unchecked observers_;
 };
 
 #endif  // CHROME_BROWSER_UI_TABS_ORGANIZATION_TAB_ORGANIZATION_SESSION_H_

@@ -67,7 +67,10 @@ public class SplitCompatCustomTabsService extends CustomTabsService {
     }
 
     @Override
-    protected boolean mayLaunchUrl(CustomTabsSessionToken sessionToken, Uri url, Bundle extras,
+    protected boolean mayLaunchUrl(
+            CustomTabsSessionToken sessionToken,
+            Uri url,
+            Bundle extras,
             List<Bundle> otherLikelyBundles) {
         return mImpl.mayLaunchUrl(sessionToken, url, extras, otherLikelyBundles);
     }
@@ -91,8 +94,11 @@ public class SplitCompatCustomTabsService extends CustomTabsService {
     }
 
     @Override
-    protected boolean requestPostMessageChannel(CustomTabsSessionToken sessionToken,
-            Uri postMessageSourceOrigin, Uri postMessageTargetOrigin, Bundle extras) {
+    protected boolean requestPostMessageChannel(
+            CustomTabsSessionToken sessionToken,
+            Uri postMessageSourceOrigin,
+            Uri postMessageTargetOrigin,
+            Bundle extras) {
         RecordHistogram.recordBooleanHistogram(
                 "CustomTabs.PostMessage.RequestPostMessageChannelWithTargetOrigin", true);
         return mImpl.requestPostMessageChannel(
@@ -129,8 +135,10 @@ public class SplitCompatCustomTabsService extends CustomTabsService {
     }
 
     @Override
-    protected boolean setEngagementSignalsCallback(CustomTabsSessionToken sessionToken,
-            EngagementSignalsCallback callback, Bundle extras) {
+    protected boolean setEngagementSignalsCallback(
+            CustomTabsSessionToken sessionToken,
+            EngagementSignalsCallback callback,
+            Bundle extras) {
         return mImpl.setEngagementSignalsCallback(sessionToken, callback, extras);
     }
 
@@ -158,24 +166,42 @@ public class SplitCompatCustomTabsService extends CustomTabsService {
         }
 
         protected abstract void cleanUpSession(CustomTabsSessionToken sessionToken);
+
         protected abstract boolean warmup(long flags);
+
         protected abstract boolean newSession(CustomTabsSessionToken sessionToken);
-        protected abstract boolean mayLaunchUrl(CustomTabsSessionToken sessionToken, Uri url,
-                Bundle extras, List<Bundle> otherLikelyBundles);
+
+        protected abstract boolean mayLaunchUrl(
+                CustomTabsSessionToken sessionToken,
+                Uri url,
+                Bundle extras,
+                List<Bundle> otherLikelyBundles);
+
         protected abstract Bundle extraCommand(String commandName, Bundle args);
+
         protected abstract boolean updateVisuals(
                 CustomTabsSessionToken sessionToken, Bundle bundle);
-        protected abstract boolean requestPostMessageChannel(CustomTabsSessionToken sessionToken,
-                Uri postMessageOrigin, Uri postMessageTargetOrigin);
+
+        protected abstract boolean requestPostMessageChannel(
+                CustomTabsSessionToken sessionToken,
+                Uri postMessageOrigin,
+                Uri postMessageTargetOrigin);
+
         protected abstract int postMessage(
                 CustomTabsSessionToken sessionToken, String message, Bundle extras);
+
         protected abstract boolean validateRelationship(
                 CustomTabsSessionToken sessionToken, int relation, Uri originAsUri, Bundle extras);
+
         protected abstract boolean receiveFile(
                 CustomTabsSessionToken sessionToken, Uri uri, int purpose, Bundle extras);
+
         protected abstract boolean isEngagementSignalsApiAvailable(
                 CustomTabsSessionToken sessionToken, Bundle extras);
-        protected abstract boolean setEngagementSignalsCallback(CustomTabsSessionToken sessionToken,
-                EngagementSignalsCallback callback, Bundle extras);
+
+        protected abstract boolean setEngagementSignalsCallback(
+                CustomTabsSessionToken sessionToken,
+                EngagementSignalsCallback callback,
+                Bundle extras);
     }
 }

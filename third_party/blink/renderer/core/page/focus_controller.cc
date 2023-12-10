@@ -50,6 +50,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/remote_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
+#include "third_party/blink/renderer/core/html/fenced_frame/html_fenced_frame_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_control_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
@@ -58,7 +59,6 @@
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
 #include "third_party/blink/renderer/core/html/html_plugin_element.h"
 #include "third_party/blink/renderer/core/html/html_slot_element.h"
-#include "third_party/blink/renderer/core/html/portal/html_portal_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
@@ -499,10 +499,21 @@ inline bool IsShadowHostWithoutCustomFocusLogic(const Element& element) {
 }
 
 inline bool IsNonKeyboardFocusableShadowHost(const Element& element) {
-  return IsShadowHostWithoutCustomFocusLogic(element) &&
-         !(element.GetShadowRoot()
-               ? (element.IsFocusable() || element.DelegatesFocus())
-               : element.IsKeyboardFocusable());
+  if (!IsShadowHostWithoutCustomFocusLogic(element) ||
+      element.DelegatesFocus()) {
+    return false;
+  }
+  if (!element.IsFocusable()) {
+    return true;
+  }
+  if (element.IsKeyboardFocusable()) {
+    return false;
+  }
+  // This host supports focus, but cannot be keyboard focused. For example:
+  // - Tabindex is negative
+  // - It is a scroller with focusable children
+  // When tabindex is negative, we should not visit the host.
+  return !(element.GetIntegralAttribute(html_names::kTabindexAttr, 0) < 0);
 }
 
 inline bool IsKeyboardFocusableShadowHost(const Element& element) {
@@ -516,6 +527,9 @@ inline bool IsNonFocusableFocusScopeOwner(Element& element) {
 }
 
 inline bool ShouldVisit(Element& element) {
+  DCHECK(!element.IsKeyboardFocusable() ||
+         FocusController::AdjustedTabIndex(element) >= 0)
+      << "Keyboard focusable element with negative tabindex" << element;
   return element.IsKeyboardFocusable() || element.DelegatesFocus() ||
          IsNonFocusableFocusScopeOwner(element);
 }
@@ -870,6 +884,22 @@ void FocusController::SetFocusedFrame(Frame* frame, bool notify_embedder) {
 
   is_changing_focused_frame_ = true;
 
+  // Fenced frames will try to pass focus to a dummy frame that represents the
+  // inner frame tree. We instead want to give focus to the outer
+  // HTMLFencedFrameElement. This will allow methods like document.activeElement
+  // and document.hasFocus() to properly handle when a fenced frame has focus.
+  if (frame && IsA<HTMLFrameOwnerElement>(frame->Owner())) {
+    auto* fenced_frame = DynamicTo<HTMLFencedFrameElement>(
+        To<HTMLFrameOwnerElement>(frame->Owner()));
+    if (fenced_frame) {
+      // SetFocusedElement will call back to FocusController::SetFocusedFrame.
+      // However, `is_changing_focused_frame_` will be true when it is called,
+      // causing the function to early return, so we still need the rest of this
+      // invocation of the function to run.
+      SetFocusedElement(fenced_frame, frame);
+    }
+  }
+
   auto* old_frame = DynamicTo<LocalFrame>(focused_frame_.Get());
   auto* new_frame = DynamicTo<LocalFrame>(frame);
 
@@ -969,11 +999,28 @@ HTMLFrameOwnerElement* FocusController::FocusedFrameOwnerElement(
 }
 
 bool FocusController::IsDocumentFocused(const Document& document) const {
-  if (!IsActive() || !IsFocused())
+  if (!IsActive()) {
     return false;
+  }
 
-  return focused_frame_ &&
-         focused_frame_->Tree().IsDescendantOf(document.GetFrame());
+  if (!focused_frame_) {
+    return false;
+  }
+
+  if (IsA<HTMLFrameOwnerElement>(focused_frame_->Owner())) {
+    auto* fenced_frame = DynamicTo<HTMLFencedFrameElement>(
+        To<HTMLFrameOwnerElement>(focused_frame_->Owner()));
+    if (fenced_frame == document.ActiveElement()) {
+      return fenced_frame->GetDocument().GetFrame()->Tree().IsDescendantOf(
+          document.GetFrame());
+    }
+  }
+
+  if (!IsFocused()) {
+    return false;
+  }
+
+  return focused_frame_->Tree().IsDescendantOf(document.GetFrame());
 }
 
 void FocusController::FocusHasChanged() {
@@ -1187,20 +1234,11 @@ bool FocusController::AdvanceFocusInDocumentOrder(
   auto* owner = DynamicTo<HTMLFrameOwnerElement>(element);
   bool has_remote_frame =
       owner && owner->ContentFrame() && owner->ContentFrame()->IsRemoteFrame();
-  // Portals do not currently allow input events, so we block focus from
-  // advancing into the portal's content frame.
-  bool is_portal = IsA<HTMLPortalElement>(owner);
-  if (owner && !is_portal &&
-      (has_remote_frame || !IsA<HTMLPlugInElement>(*element) ||
-       !element->IsKeyboardFocusable())) {
+  if (owner && (has_remote_frame || !IsA<HTMLPlugInElement>(*element) ||
+                !element->IsKeyboardFocusable())) {
     // FIXME: We should not focus frames that have no scrollbars, as focusing
     // them isn't useful to the user.
     if (!owner->ContentFrame()) {
-      // TODO (liviutinta) remove TRACE after fixing crbug.com/1063548
-      TRACE_EVENT_INSTANT1(
-          "input", "FocusController::AdvanceFocusInDocumentOrder",
-          TRACE_EVENT_SCOPE_THREAD, "reason_for_no_focus_element",
-          "portal blocks focus");
       return false;
     }
 

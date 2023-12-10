@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+[FAIL] \n    Test that NEL reports are sent for redirects\n  
+  assert_true: receive report about redirected resource expected true got false
+Harness: the test ran to completion.

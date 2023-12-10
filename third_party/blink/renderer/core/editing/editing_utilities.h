@@ -177,7 +177,7 @@ bool IsListItem(const Node*);
 bool IsListItemTag(const Node*);
 bool IsListElementTag(const Node*);
 bool IsPresentationalHTMLElement(const Node*);
-bool IsRenderedAsNonInlineTableImageOrHR(const Node*);
+CORE_EXPORT bool IsRenderedAsNonInlineTableImageOrHR(const Node*);
 bool IsNonTableCellHTMLBlockElement(const Node*);
 bool IsBlockFlowElement(const Node&);
 bool IsInPasswordField(const Position&);

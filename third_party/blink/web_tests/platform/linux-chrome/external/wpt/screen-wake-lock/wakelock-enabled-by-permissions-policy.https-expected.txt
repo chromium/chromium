@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+[FAIL] Permissions-Policy header "screen-wake-lock=*" allows same-origin iframes.
+  assert_true: navigator.wakeLock.request("screen") expected true got false
+[FAIL] Permissions-Policy header "screen-wake-lock=*" allows cross-origin iframes.
+  assert_true: navigator.wakeLock.request("screen") expected true got false
+Harness: the test ran to completion.

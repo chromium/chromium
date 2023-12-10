@@ -4,7 +4,6 @@
 
 #include <string>
 
-#include "ash/constants/ash_features.h"
 #include "ash/system/tray/tray_detailed_view.h"
 #include "ash/system/unified/quick_settings_view.h"
 #include "ash/system/unified/unified_system_tray.h"
@@ -14,11 +13,9 @@
 #include "ash/test/ash_test_helper.h"
 #include "ash/test/pixel/ash_pixel_differ.h"
 #include "ash/test/pixel/ash_pixel_test_init_params.h"
-#include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/services/bluetooth_config/fake_device_cache.h"
 #include "chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
 #include "chromeos/ash/services/bluetooth_config/scoped_bluetooth_config_test_helper.h"
-#include "chromeos/constants/chromeos_features.h"
 
 namespace ash {
 namespace {
@@ -44,12 +41,10 @@ PairedBluetoothDevicePropertiesPtr CreatePairedDevice(
 // Pixel tests for the quick settings Bluetooth detailed view.
 class BluetoothDetailedViewImplPixelTest : public AshTestBase {
  public:
-  BluetoothDetailedViewImplPixelTest() {
-    feature_list_.InitWithFeatures({chromeos::features::kJelly}, {});
-  }
+  BluetoothDetailedViewImplPixelTest() = default;
 
   // AshTestBase:
-  absl::optional<pixel_test::InitParams> CreatePixelTestInitParams()
+  std::optional<pixel_test::InitParams> CreatePixelTestInitParams()
       const override {
     return pixel_test::InitParams();
   }
@@ -62,9 +57,6 @@ class BluetoothDetailedViewImplPixelTest : public AshTestBase {
         ->fake_device_cache()
         ->SetPairedDevices(std::move(paired_devices));
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(BluetoothDetailedViewImplPixelTest, Basics) {
@@ -94,7 +86,7 @@ TEST_F(BluetoothDetailedViewImplPixelTest, Basics) {
   // Compare pixels.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "check_view",
-      /*revision_number=*/5, detailed_view));
+      /*revision_number=*/9, detailed_view));
 }
 
 }  // namespace

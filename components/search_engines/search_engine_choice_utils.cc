@@ -3,12 +3,16 @@
 // found in the LICENSE file.
 
 #include "components/search_engines/search_engine_choice_utils.h"
+#include <string>
 
 #include "base/check_deref.h"
+#include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
+#include "base/json/json_reader.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/values.h"
+#include "base/version.h"
 #include "components/country_codes/country_codes.h"
 #include "components/policy/core/common/policy_service.h"
 #include "components/policy/policy_constants.h"
@@ -17,9 +21,28 @@
 #include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/signin/public/base/signin_switches.h"
+#include "components/strings/grit/components_strings.h"
+#include "components/version_info/version_info.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace search_engines {
 namespace {
+
+// Logs the outcome of a reprompt attempt for a specific key (either a specific
+// country or the wildcard).
+void LogSearchRepromptKeyHistograms(RepromptResult result, bool is_wildcard) {
+  // `RepromptResult::kInvalidDictionary` is recorded separately.
+  CHECK_NE(result, RepromptResult::kInvalidDictionary);
+
+  base::UmaHistogramEnumeration(kSearchEngineChoiceRepromptHistogram, result);
+  if (is_wildcard) {
+    base::UmaHistogramEnumeration(kSearchEngineChoiceRepromptWildcardHistogram,
+                                  result);
+  } else {
+    base::UmaHistogramEnumeration(
+        kSearchEngineChoiceRepromptSpecificCountryHistogram, result);
+  }
+}
 
 // The choice screen should be shown if the `DefaultSearchProviderEnabled`
 // policy is not set, or set to true and the
@@ -47,7 +70,7 @@ bool IsSearchEngineChoiceScreenAllowedByPolicy(
   return false;
 }
 
-const base::flat_set<int> GetEeaChoiceCountries() {
+base::flat_set<int> GetEeaChoiceCountries() {
   using country_codes::CountryCharsToCountryID;
 
   // Google-internal reference: http://go/geoscope-comparisons.
@@ -112,6 +135,30 @@ SearchEngineType GetDefaultSearchEngineType(
                                : SEARCH_ENGINE_OTHER;
 }
 
+// Returns true if all search engine choice prefs are set.
+bool IsSearchEngineChoiceCompleted(const PrefService& prefs) {
+  return prefs.HasPrefPath(
+             prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp) &&
+         prefs.HasPrefPath(
+             prefs::kDefaultSearchProviderChoiceScreenCompletionVersion);
+}
+
+// Returns true if the version is valid and can be compared to the current
+// Chrome version.
+bool IsValidVersionFormat(const base::Version& version) {
+  if (!version.IsValid()) {
+    return false;
+  }
+
+  // The version should have the same number of components as the current Chrome
+  // version.
+  if (version.components().size() !=
+      version_info::GetVersion().components().size()) {
+    return false;
+  }
+  return true;
+}
+
 }  // namespace
 
 const char kSearchEngineChoiceScreenNavigationConditionsHistogram[] =
@@ -123,15 +170,38 @@ const char kSearchEngineChoiceScreenProfileInitConditionsHistogram[] =
 const char kSearchEngineChoiceScreenEventsHistogram[] =
     "Search.ChoiceScreenEvents";
 
-const char kDefaultSearchEngineChoiceLocationHistogram[] =
-    "Search.DefaultSearchEngineChoiceLocation";
-
 const char kSearchEngineChoiceScreenDefaultSearchEngineTypeHistogram[] =
     "Search.ChoiceScreenDefaultSearchEngineType";
+
+const char kSearchEngineChoiceWipeReasonHistogram[] = "Search.ChoiceWipeReason";
+
+const char kSearchEngineChoiceRepromptHistogram[] = "Search.ChoiceReprompt";
+
+const char kSearchEngineChoiceRepromptWildcardHistogram[] =
+    "Search.ChoiceReprompt.Wildcard";
+
+const char kSearchEngineChoiceRepromptSpecificCountryHistogram[] =
+    "Search.ChoiceReprompt.SpecificCountry";
 
 // Returns whether the choice screen flag is generally enabled for the specific
 // user flow.
 bool IsChoiceScreenFlagEnabled(ChoicePromo promo) {
+  if (base::FeatureList::IsEnabled(switches::kSearchEngineChoiceTrigger)) {
+#if BUILDFLAG(IS_IOS)
+    // Chrome on iOS does not tag profiles, so this param instead determines
+    // whether we show the choice screen outside of the FRE or not.
+    if (switches::kSearchEngineChoiceTriggerForTaggedProfilesOnly.Get() &&
+        promo == ChoicePromo::kDialog) {
+      return false;
+    }
+#endif
+
+    // This flag is a coordinating flag, which supersedes the flags below that
+    // are guarding individual screens making up the feature.
+    // TODO(b/310593464): Remove checks for the other flags.
+    return true;
+  }
+
   switch (promo) {
     case ChoicePromo::kAny:
       return base::FeatureList::IsEnabled(switches::kSearchEngineChoice) ||
@@ -151,6 +221,7 @@ bool ShouldShowUpdatedSettings(PrefService& profile_prefs) {
 bool ShouldShowChoiceScreen(const policy::PolicyService& policy_service,
                             const ProfileProperties& profile_properties,
                             TemplateURLService* template_url_service) {
+  PreprocessPrefsForReprompt(*profile_properties.pref_service);
   auto condition = GetStaticChoiceScreenConditions(
       policy_service, profile_properties, CHECK_DEREF(template_url_service));
 
@@ -169,6 +240,12 @@ SearchEngineChoiceScreenConditions GetStaticChoiceScreenConditions(
     const TemplateURLService& template_url_service) {
   if (!IsChoiceScreenFlagEnabled(ChoicePromo::kAny)) {
     return SearchEngineChoiceScreenConditions::kFeatureSuppressed;
+  }
+
+  PrefService& prefs = CHECK_DEREF(profile_properties.pref_service.get());
+  if (switches::kSearchEngineChoiceTriggerForTaggedProfilesOnly.Get() &&
+      !prefs.GetBoolean(prefs::kDefaultSearchProviderChoicePending)) {
+    return SearchEngineChoiceScreenConditions::kProfileOutOfScope;
   }
 
   if (!profile_properties.is_regular_profile) {
@@ -191,16 +268,14 @@ SearchEngineChoiceScreenConditions GetStaticChoiceScreenConditions(
     return SearchEngineChoiceScreenConditions::kEligible;
   }
 
-  PrefService& prefs = CHECK_DEREF(profile_properties.pref_service.get());
-
-  // The timestamp indicates that the user has already made a search engine
-  // choice in the choice screen.
-  if (prefs.HasPrefPath(
-          prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp)) {
+  if (IsSearchEngineChoiceCompleted(prefs)) {
     return SearchEngineChoiceScreenConditions::kAlreadyCompleted;
   }
 
-  if (!IsEeaChoiceCountry(GetSearchEngineChoiceCountryId(&prefs))) {
+  int country_id = GetSearchEngineChoiceCountryId(&prefs);
+  DVLOG(1) << "Checking country for choice screen, found: "
+           << country_codes::CountryIDToCountryString(country_id);
+  if (!IsEeaChoiceCountry(country_id)) {
     return SearchEngineChoiceScreenConditions::kNotInRegionalScope;
   }
 
@@ -222,8 +297,7 @@ SearchEngineChoiceScreenConditions GetDynamicChoiceScreenConditions(
     const TemplateURLService& template_url_service) {
   // Don't show the dialog if the default search engine is set by an extension.
   if (template_url_service.IsExtensionControlledDefaultSearch()) {
-    return search_engines::SearchEngineChoiceScreenConditions::
-        kExtensionControlled;
+    return SearchEngineChoiceScreenConditions::kExtensionControlled;
   }
 
   // Don't show the dialog if the user has a custom search engine set as
@@ -231,7 +305,7 @@ SearchEngineChoiceScreenConditions GetDynamicChoiceScreenConditions(
   const TemplateURL* default_search_engine =
       template_url_service.GetDefaultSearchProvider();
   if (default_search_engine &&
-      !template_url_service.IsPrepopulatedOrCreatedByPolicy(
+      !template_url_service.IsPrepopulatedOrDefaultProviderByPolicy(
           default_search_engine)) {
     return SearchEngineChoiceScreenConditions::kHasCustomSearchEngine;
   }
@@ -246,10 +320,8 @@ SearchEngineChoiceScreenConditions GetDynamicChoiceScreenConditions(
     return SearchEngineChoiceScreenConditions::kEligible;
   }
 
-  if (profile_prefs.HasPrefPath(
-          prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp)) {
-    return search_engines::SearchEngineChoiceScreenConditions::
-        kAlreadyCompleted;
+  if (IsSearchEngineChoiceCompleted(profile_prefs)) {
+    return SearchEngineChoiceScreenConditions::kAlreadyCompleted;
   }
 
   return SearchEngineChoiceScreenConditions::kEligible;
@@ -263,6 +335,14 @@ int GetSearchEngineChoiceCountryId(PrefService* profile_prefs) {
     return command_line_country;
   }
 
+  bool force_eea_country =
+      switches::kSearchEngineChoiceTriggerWithForceEeaCountry.Get();
+  if (force_eea_country) {
+    // `kSearchEngineChoiceTriggerWithForceEeaCountry` forces the search engine
+    // choice country to Belgium.
+    return country_codes::CountryStringToCountryID("BE");
+  }
+
   return country_codes::GetCountryIDFromPrefs(profile_prefs);
 }
 
@@ -273,13 +353,12 @@ bool IsEeaChoiceCountry(int country_id) {
 void RecordChoiceScreenProfileInitCondition(
     SearchEngineChoiceScreenConditions condition) {
   base::UmaHistogramEnumeration(
-      search_engines::kSearchEngineChoiceScreenProfileInitConditionsHistogram,
-      condition);
+      kSearchEngineChoiceScreenProfileInitConditionsHistogram, condition);
 }
 
 void RecordChoiceScreenEvent(SearchEngineChoiceScreenEvents event) {
-  base::UmaHistogramEnumeration(
-      search_engines::kSearchEngineChoiceScreenEventsHistogram, event);
+  base::UmaHistogramEnumeration(kSearchEngineChoiceScreenEventsHistogram,
+                                event);
 }
 
 void RecordChoiceScreenDefaultSearchProviderType(SearchEngineType engine_type) {
@@ -291,32 +370,138 @@ void RecordChoiceScreenDefaultSearchProviderType(SearchEngineType engine_type) {
 void RecordChoiceMade(PrefService* profile_prefs,
                       ChoiceMadeLocation choice_location,
                       TemplateURLService* template_url_service) {
-  // Record the histogram even if the feature is not enabled.
-  base::UmaHistogramEnumeration(
-      search_engines::kDefaultSearchEngineChoiceLocationHistogram,
-      choice_location);
-
   if (!IsChoiceScreenFlagEnabled(ChoicePromo::kAny)) {
     return;
   }
 
   // Don't modify the pref if the user is not in the EEA region.
-  if (!search_engines::IsEeaChoiceCountry(
-          search_engines::GetSearchEngineChoiceCountryId(profile_prefs))) {
+  if (!IsEeaChoiceCountry(GetSearchEngineChoiceCountryId(profile_prefs))) {
     return;
   }
 
-  // Don't modify the pref if it was already set.
-  if (profile_prefs->HasPrefPath(
-          prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp)) {
+  // Don't modify the prefs if they were already set.
+  if (IsSearchEngineChoiceCompleted(*profile_prefs)) {
     return;
   }
 
-  search_engines::RecordChoiceScreenDefaultSearchProviderType(
+  RecordChoiceScreenDefaultSearchProviderType(
       GetDefaultSearchEngineType(CHECK_DEREF(template_url_service)));
   profile_prefs->SetInt64(
       prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp,
       base::Time::Now().ToDeltaSinceWindowsEpoch().InSeconds());
+  profile_prefs->SetString(
+      prefs::kDefaultSearchProviderChoiceScreenCompletionVersion,
+      version_info::GetVersionNumber());
+
+  if (profile_prefs->HasPrefPath(prefs::kDefaultSearchProviderChoicePending)) {
+    DVLOG(1) << "Choice made, removing profile tag.";
+    profile_prefs->ClearPref(prefs::kDefaultSearchProviderChoicePending);
+  }
+}
+
+void WipeSearchEngineChoicePrefs(PrefService& profile_prefs,
+                                 WipeSearchEngineChoiceReason reason) {
+  if (IsChoiceScreenFlagEnabled(ChoicePromo::kAny)) {
+    base::UmaHistogramEnumeration(kSearchEngineChoiceWipeReasonHistogram,
+                                  reason);
+    profile_prefs.ClearPref(
+        prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp);
+    profile_prefs.ClearPref(
+        prefs::kDefaultSearchProviderChoiceScreenCompletionVersion);
+  }
+}
+
+#if !BUILDFLAG(IS_ANDROID)
+std::u16string GetMarketingSnippetString(
+    const TemplateURLData& template_url_data) {
+  int snippet_resource_id =
+      GetMarketingSnippetResourceId(template_url_data.keyword());
+
+  return snippet_resource_id == -1
+             ? l10n_util::GetStringFUTF16(
+                   IDS_SEARCH_ENGINE_FALLBACK_MARKETING_SNIPPET,
+                   template_url_data.short_name())
+             : l10n_util::GetStringUTF16(snippet_resource_id);
+}
+#endif
+
+void PreprocessPrefsForReprompt(PrefService& profile_prefs) {
+  if (!IsChoiceScreenFlagEnabled(ChoicePromo::kAny)) {
+    return;
+  }
+
+  // If existing prefs are missing or have a wrong format, force a reprompt.
+  if (!profile_prefs.HasPrefPath(
+          prefs::kDefaultSearchProviderChoiceScreenCompletionVersion)) {
+    WipeSearchEngineChoicePrefs(
+        profile_prefs, WipeSearchEngineChoiceReason::kMissingChoiceVersion);
+    return;
+  }
+
+  base::Version choice_version(profile_prefs.GetString(
+      prefs::kDefaultSearchProviderChoiceScreenCompletionVersion));
+  if (!IsValidVersionFormat(choice_version)) {
+    WipeSearchEngineChoicePrefs(
+        profile_prefs, WipeSearchEngineChoiceReason::kInvalidChoiceVersion);
+    return;
+  }
+
+  // Check parameters from `switches::kSearchEngineChoiceTriggerRepromptParams`.
+  absl::optional<base::Value::Dict> reprompt_params =
+      base::JSONReader::ReadDict(
+          switches::kSearchEngineChoiceTriggerRepromptParams.Get());
+  if (!reprompt_params) {
+    // No valid reprompt parameters.
+    base::UmaHistogramEnumeration(kSearchEngineChoiceRepromptHistogram,
+                                  RepromptResult::kInvalidDictionary);
+    return;
+  }
+
+  const base::Version& current_version = version_info::GetVersion();
+  int country_id = GetSearchEngineChoiceCountryId(&profile_prefs);
+  const std::string wildcard_string("*");
+  // Explicit country key takes precedence over the wildcard.
+  for (const std::string& key :
+       {country_codes::CountryIDToCountryString(country_id), wildcard_string}) {
+    bool is_wildcard = key == wildcard_string;
+    const std::string* reprompt_version_string =
+        reprompt_params->FindString(key);
+    if (!reprompt_version_string) {
+      // No version string for this country. Fallback to the wildcard.
+      LogSearchRepromptKeyHistograms(RepromptResult::kNoDictionaryKey,
+                                     is_wildcard);
+      continue;
+    }
+
+    base::Version reprompt_version(*reprompt_version_string);
+    if (!IsValidVersionFormat(reprompt_version)) {
+      // The version is ill-formatted.
+      LogSearchRepromptKeyHistograms(RepromptResult::kInvalidVersion,
+                                     is_wildcard);
+      break;
+    }
+
+    // Do not reprompt if the current version is too old, to avoid endless
+    // reprompts.
+    if (current_version < reprompt_version) {
+      LogSearchRepromptKeyHistograms(RepromptResult::kChromeTooOld,
+                                     is_wildcard);
+      break;
+    }
+
+    if (choice_version >= reprompt_version) {
+      // No need to reprompt, the choice is recent enough.
+      LogSearchRepromptKeyHistograms(RepromptResult::kRecentChoice,
+                                     is_wildcard);
+      break;
+    }
+
+    // Wipe the choice to force a reprompt.
+    LogSearchRepromptKeyHistograms(RepromptResult::kReprompt, is_wildcard);
+    WipeSearchEngineChoicePrefs(profile_prefs,
+                                WipeSearchEngineChoiceReason::kReprompt);
+    return;
+  }
 }
 
 }  // namespace search_engines

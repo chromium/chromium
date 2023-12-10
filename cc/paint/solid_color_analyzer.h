@@ -7,9 +7,9 @@
 
 #include <vector>
 
+#include <optional>
 #include "cc/paint/paint_export.h"
 #include "cc/paint/paint_flags.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 
@@ -20,7 +20,7 @@ class CC_PAINT_EXPORT SolidColorAnalyzer {
  public:
   SolidColorAnalyzer() = delete;
 
-  static absl::optional<SkColor4f> DetermineIfSolidColor(
+  static std::optional<SkColor4f> DetermineIfSolidColor(
       const PaintOpBuffer& buffer,
       const gfx::Rect& rect,
       int max_ops_to_analyze,

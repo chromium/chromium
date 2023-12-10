@@ -177,6 +177,10 @@ void EmbeddedA11yManagerLacros::SpeakSelectedText() {
   }
 }
 
+bool EmbeddedA11yManagerLacros::IsSelectToSpeakEnabled() {
+  return select_to_speak_enabled_;
+}
+
 void EmbeddedA11yManagerLacros::AddExtensionChangedCallbackForTest(
     base::RepeatingClosure callback) {
   extension_installation_changed_callback_for_test_ = std::move(callback);
@@ -288,8 +292,8 @@ void EmbeddedA11yManagerLacros::OnFocusHighlightEnabledChanged(
 }
 
 void EmbeddedA11yManagerLacros::OnPdfOcrAlwaysActiveChanged(base::Value value) {
-  // TODO(b/289009784): Add browser test to ensure the pref is synced on all
-  // profiles.
+  // TODO(crbug.com/1443346): Add browser test to ensure the pref is synced on
+  // all profiles.
   CHECK(value.is_bool());
   pdf_ocr_always_active_enabled_ = value.GetBool();
   UpdateAllProfiles();

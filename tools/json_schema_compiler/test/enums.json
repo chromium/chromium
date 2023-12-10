@@ -2,9 +2,6 @@
   {
     "namespace": "enums",
     "description": "The enums API.",
-    "compiler_options": {
-      "modernised_enums": true
-    },
     "types": [
       {
         "id": "Enumeration",
@@ -68,6 +65,7 @@
                 "sixth-entry-example",
                 "Seventh_entry86_64_example",
                 "Eighth_entry86_ARCH_example",
+                "kNinthEntryExample",
                 ""]
       }
     ],

@@ -9,15 +9,19 @@
 #include <vector>
 
 #include "ash/ash_export.h"
-#include "ash/public/cpp/tablet_mode_observer.h"
 #include "ash/wm/overview/overview_observer.h"
 #include "ash/wm/wm_metrics.h"
 #include "base/containers/flat_map.h"
 #include "base/observer_list.h"
+#include "ui/display/display_observer.h"
 
 namespace aura {
 class Window;
 }  // namespace aura
+
+namespace display {
+enum class TabletState;
+}  // namespace display
 
 namespace ash {
 
@@ -27,7 +31,7 @@ class SnapGroup;
 // of this class will be created and owned by `Shell`. It controls the creation
 // and destruction of the `SnapGroup`.
 class ASH_EXPORT SnapGroupController : public OverviewObserver,
-                                       public TabletModeObserver {
+                                       public display::DisplayObserver {
  public:
   class Observer : public base::CheckedObserver {
    public:
@@ -87,16 +91,6 @@ class ASH_EXPORT SnapGroupController : public OverviewObserver,
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
-  // Returns true if the feature flag `kSnapGroup` is enabled and the feature
-  // param `kAutomaticallyLockGroup` is true, i.e. a snap group will be created
-  // automatically on two windows snapped.
-  bool IsArm1AutomaticallyLockEnabled() const;
-
-  // Returns true if the feature flag `kSnapGroup` is enabled and the feature
-  // param `kAutomaticallyLockGroup` is false, i.e. the user has to explicitly
-  // create the snap group when the lock option shows up on two windows snapped.
-  bool IsArm2ManuallyLockEnabled() const;
-
   // Minimizes the most recently used and unminimized snap groups.
   void MinimizeTopMostSnapGroup();
 
@@ -111,8 +105,8 @@ class ASH_EXPORT SnapGroupController : public OverviewObserver,
   // OverviewObserver:
   void OnOverviewModeEnded() override;
 
-  // TabletModeObserver:
-  void OnTabletModeEnding() override;
+  // display::DisplayObserver:
+  void OnDisplayTabletStateChanged(display::TabletState state) override;
 
   const SnapGroups& snap_groups_for_testing() const { return snap_groups_; }
   const WindowToSnapGroupMap& window_to_snap_group_map_for_testing() const {
@@ -148,6 +142,8 @@ class ASH_EXPORT SnapGroupController : public OverviewObserver,
   WindowToSnapGroupMap window_to_snap_group_map_;
 
   base::ObserverList<Observer> observers_;
+
+  display::ScopedDisplayObserver display_observer_{this};
 
   // If false, overview will not be allowed to show on the other side of the
   // screen on one window snapped, which is an instant way to snap window when

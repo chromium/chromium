@@ -13,6 +13,7 @@
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
@@ -273,11 +274,10 @@ void SupervisedUserExtensionsManager::RefreshApprovedExtensionsFromPrefs() {
 }
 
 void SupervisedUserExtensionsManager::SetActiveForSupervisedUsers() {
-  supervised_user::SupervisedUserService* supervised_user_service =
-      SupervisedUserServiceFactory::GetForBrowserContext(context_);
+  auto* profile = Profile::FromBrowserContext(context_);
   is_active_policy_for_supervised_users_ =
-      supervised_user_service &&
-      supervised_user_service->AreExtensionsPermissionsEnabled();
+      profile &&
+      supervised_user::AreExtensionsPermissionsEnabled(*profile->GetPrefs());
 }
 
 void SupervisedUserExtensionsManager::

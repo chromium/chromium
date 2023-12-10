@@ -82,7 +82,7 @@ void UnifiedMediaControlsController::MediaSessionInfoChanged(
 }
 
 void UnifiedMediaControlsController::MediaSessionMetadataChanged(
-    const absl::optional<media_session::MediaMetadata>& metadata) {
+    const std::optional<media_session::MediaMetadata>& metadata) {
   pending_metadata_ = metadata.value_or(media_session::MediaMetadata());
   if (freeze_session_timer_->IsRunning())
     return;
@@ -111,7 +111,7 @@ void UnifiedMediaControlsController::MediaSessionActionsChanged(
 }
 
 void UnifiedMediaControlsController::MediaSessionChanged(
-    const absl::optional<base::UnguessableToken>& request_id) {
+    const std::optional<base::UnguessableToken>& request_id) {
   // If previous session resumes, stop freeze timer if necessary and discard
   // any pending data.
   if (request_id == media_session_id_) {
@@ -162,8 +162,9 @@ void UnifiedMediaControlsController::MediaControllerImageChanged(
 void UnifiedMediaControlsController::UpdateSession() {
   media_session_id_ = pending_session_id_;
 
-  if (media_session_id_ == absl::nullopt)
+  if (media_session_id_ == std::nullopt) {
     ResetPendingData();
+  }
 
   if (pending_session_info_.has_value()) {
     media_controls_->SetIsPlaying(
@@ -226,7 +227,7 @@ void UnifiedMediaControlsController::UpdateArtwork(
     return;
 
   if (!should_start_hide_timer) {
-    media_controls_->SetArtwork(absl::nullopt);
+    media_controls_->SetArtwork(std::nullopt);
     return;
   }
 
@@ -236,7 +237,7 @@ void UnifiedMediaControlsController::UpdateArtwork(
     hide_artwork_timer_->Start(
         FROM_HERE, kHideArtworkDelay,
         base::BindOnce(&UnifiedMediaControlsView::SetArtwork,
-                       base::Unretained(media_controls_), absl::nullopt));
+                       base::Unretained(media_controls_), std::nullopt));
   }
 }
 

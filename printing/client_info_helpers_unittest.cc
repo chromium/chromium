@@ -6,12 +6,12 @@
 
 #include <string>
 
+#include <optional>
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "printing/mojom/print.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace printing {
 
@@ -28,8 +28,8 @@ TEST(ClientInfoHelpersTest, ValidateClientInfoItemValidWithAllFields) {
 TEST(ClientInfoHelpersTest, ValidateClientInfoItemValidWithMissingFields) {
   mojom::IppClientInfo::ClientType type =
       mojom::IppClientInfo::ClientType::kApplication;
-  mojom::IppClientInfo client_info(type, "a-", absl::nullopt, "1.",
-                                   absl::nullopt);
+  mojom::IppClientInfo client_info(type, "a-", std::nullopt, "1.",
+                                   std::nullopt);
 
   EXPECT_TRUE(ValidateClientInfoItem(client_info));
 }
@@ -37,7 +37,7 @@ TEST(ClientInfoHelpersTest, ValidateClientInfoItemValidWithMissingFields) {
 TEST(ClientInfoHelpersTest, ValidateClientInfoItemInvalidChars) {
   mojom::IppClientInfo valid_client_info(
       mojom::IppClientInfo::ClientType::kOther, "name", "patch", "version",
-      absl::nullopt);
+      std::nullopt);
 
   mojom::IppClientInfo client_info;
 
@@ -61,7 +61,7 @@ TEST(ClientInfoHelpersTest, ValidateClientInfoItemInvalidChars) {
 TEST(ClientInfoHelpersTest, ValidateClientInfoItemInvalidRange) {
   mojom::IppClientInfo valid_client_info(
       mojom::IppClientInfo::ClientType::kOther, "name", "patch", "version",
-      absl::nullopt);
+      std::nullopt);
 
   mojom::IppClientInfo client_info;
 

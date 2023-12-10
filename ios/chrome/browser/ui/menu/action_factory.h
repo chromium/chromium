@@ -8,10 +8,10 @@
 #import <UIKit/UIKit.h>
 
 #import "base/ios/block_types.h"
-#import "ios/chrome/browser/ui/menu/menu_action_type.h"
+
 #import "ios/chrome/browser/ui/menu/menu_histograms.h"
 
-class GURL;
+@class CrURL;
 
 // Factory providing methods to create UIActions with consistent titles, images
 // and metrics structure. When using any action from this class, an histogram
@@ -21,11 +21,11 @@ class GURL;
 // Initializes a factory instance to create action instances for the given
 // `scenario`. `scenario` is used to choose the histogram in which to record the
 // actions.
-- (instancetype)initWithScenario:(MenuScenarioHistogram)scenario;
+- (instancetype)initWithScenario:(enum MenuScenarioHistogram)scenario;
 
 // Creates a UIAction instance configured to copy the given `URL` to the
 // pasteboard.
-- (UIAction*)actionToCopyURL:(const GURL)URL;
+- (UIAction*)actionToCopyURL:(CrURL*)URL;
 
 // Creates a UIAction instance configured for sharing which will invoke
 // the given `block` upon execution.
@@ -96,6 +96,9 @@ class GURL;
 
 // Creates a UIAction instance for closing a pinned tab.
 - (UIAction*)actionToClosePinnedTabWithBlock:(ProceduralBlock)block;
+
+// Creates a UIAction instance for closing all the other tabs.
+- (UIAction*)actionToCloseAllOtherTabsWithBlock:(ProceduralBlock)block;
 
 // Creates a UIAction instance for saving an image.
 - (UIAction*)actionSaveImageWithBlock:(ProceduralBlock)block;

@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/containers/contains.h"
+#include "base/files/file_path.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/pickle.h"
@@ -25,6 +26,7 @@
 #include "skia/ext/skia_utils_base.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/mojom/tokens/tokens.mojom-forward.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/clipboard/clipboard.h"
@@ -91,16 +93,17 @@ class PolicyControllerTest : public ui::DataTransferPolicyController {
                     base::optional_ref<const ui::DataTransferEndpoint> data_dst,
                     const absl::optional<size_t> size));
 
-  MOCK_METHOD5(PasteIfAllowed,
-               void(const ui::DataTransferEndpoint* const data_src,
-                    const ui::DataTransferEndpoint* const data_dst,
-                    const absl::optional<size_t> size,
-                    content::RenderFrameHost* rfh,
-                    base::OnceCallback<void(bool)> callback));
+  MOCK_METHOD5(
+      PasteIfAllowed,
+      void(base::optional_ref<const ui::DataTransferEndpoint> data_src,
+           base::optional_ref<const ui::DataTransferEndpoint> data_dst,
+           absl::variant<size_t, std::vector<base::FilePath>> pasted_content,
+           content::RenderFrameHost* rfh,
+           base::OnceCallback<void(bool)> callback));
 
   MOCK_METHOD3(DropIfAllowed,
                void(const ui::OSExchangeData* drag_data,
-                    const ui::DataTransferEndpoint* data_dst,
+                    base::optional_ref<const ui::DataTransferEndpoint> data_dst,
                     base::OnceClosure drop_cb));
 };
 
@@ -489,9 +492,10 @@ TEST_F(ClipboardHostImplScanTest, IsPastePolicyAllowed_NotAllowed) {
   PolicyControllerTest policy_controller;
   EXPECT_CALL(policy_controller, PasteIfAllowed)
       .WillOnce(testing::Invoke(
-          [](const ui::DataTransferEndpoint* const data_src,
-             const ui::DataTransferEndpoint* const data_dst,
-             const absl::optional<size_t> size, content::RenderFrameHost* rfh,
+          [](base::optional_ref<const ui::DataTransferEndpoint> data_src,
+             base::optional_ref<const ui::DataTransferEndpoint> data_dst,
+             absl::variant<size_t, std::vector<base::FilePath>> pasted_content,
+             content::RenderFrameHost* rfh,
              base::OnceCallback<void(bool)> callback) {
             std::move(callback).Run(false);
           }));
@@ -522,9 +526,10 @@ TEST_F(ClipboardHostImplScanTest, IsPastePolicyAllowed_Allowed) {
   PolicyControllerTest policy_controller;
   EXPECT_CALL(policy_controller, PasteIfAllowed)
       .WillOnce(testing::Invoke(
-          [](const ui::DataTransferEndpoint* const data_src,
-             const ui::DataTransferEndpoint* const data_dst,
-             const absl::optional<size_t> size, content::RenderFrameHost* rfh,
+          [](base::optional_ref<const ui::DataTransferEndpoint> data_src,
+             base::optional_ref<const ui::DataTransferEndpoint> data_dst,
+             absl::variant<size_t, std::vector<base::FilePath>> pasted_content,
+             content::RenderFrameHost* rfh,
              base::OnceCallback<void(bool)> callback) {
             std::move(callback).Run(true);
           }));
@@ -579,12 +584,13 @@ TEST_F(ClipboardHostImplScanTest, MainFrameURL) {
   PolicyControllerTest policy_controller;
   EXPECT_CALL(policy_controller, PasteIfAllowed)
       .WillOnce(testing::Invoke(
-          [&gurl1](const ui::DataTransferEndpoint* const data_src,
-                   const ui::DataTransferEndpoint* const data_dst,
-                   const absl::optional<size_t> size,
-                   content::RenderFrameHost* rfh,
-                   base::OnceCallback<void(bool)> callback) {
-            ASSERT_TRUE(data_dst);
+          [&gurl1](
+              base::optional_ref<const ui::DataTransferEndpoint> data_src,
+              base::optional_ref<const ui::DataTransferEndpoint> data_dst,
+              absl::variant<size_t, std::vector<base::FilePath>> pasted_content,
+              content::RenderFrameHost* rfh,
+              base::OnceCallback<void(bool)> callback) {
+            ASSERT_TRUE(data_dst.has_value());
             EXPECT_EQ(*data_dst->GetURL(), gurl1);
             std::move(callback).Run(true);
           }));

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_APPS_APP_SERVICE_METRICS_APP_DISCOVERY_METRICS_H_
 
 #include <map>
+#include <optional>
 #include <set>
 
 #include "base/memory/raw_ptr.h"
@@ -13,9 +14,9 @@
 #include "base/unguessable_token.h"
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/prefs/pref_registry_simple.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/instance_registry.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace apps {
 
@@ -35,9 +36,12 @@ class AppDiscoveryMetrics : public AppPlatformMetrics::Observer,
                             InstanceRegistry::Observer {
  public:
   AppDiscoveryMetrics(Profile* profile,
+                      const apps::AppRegistryCache& app_registry_cache,
                       InstanceRegistry& instance_registry,
                       AppPlatformMetrics* app_platform_metrics);
   ~AppDiscoveryMetrics() override;
+
+  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
   // AppPlatformMetrics::Observer
   void OnAppInstalled(const std::string& app_id,
@@ -58,15 +62,16 @@ class AppDiscoveryMetrics : public AppPlatformMetrics::Observer,
   void OnInstanceRegistryWillBeDestroyed(InstanceRegistry* cache) override;
 
  private:
-  // Returns whether app sync is enabled for |profile_|.
-  bool IsAppSyncEnabled();
+  // Returns whether app sync is enabled for |profile_| and it's allowed to
+  // record UKM for |app_id|.
+  bool ShouldRecordUkmForAppId(const std::string& app_id);
 
   // Returns true if there is an active instance of an app other than
   // |exclude_instance_id|. If |exclude_instance_id| is nullopt, then all
   // instances will be checked.
-  bool IsAnyAppInstanceActive(const std::string& app_id,
-                              absl::optional<base::UnguessableToken>
-                                  exclude_instance_id = absl::nullopt);
+  bool IsAnyAppInstanceActive(
+      const std::string& app_id,
+      std::optional<base::UnguessableToken> exclude_instance_id = std::nullopt);
 
   // Records app state metrics if there has been a change.
   void RecordAppState(const InstanceUpdate& instance_update);
@@ -96,6 +101,26 @@ class AppDiscoveryMetrics : public AppPlatformMetrics::Observer,
   void RecordAppInactive(const InstanceUpdate& instance_update);
   void RecordAppClosed(const InstanceUpdate& instance_update);
 
+  // Adds an app based on |id| to the install list of apps.
+  //
+  // Returns true if the |id| was not previously in the install set and has been
+  // added.
+  bool AddAppInstall(const std::string& id);
+
+  // Removes an app based on |id| to the install list of apps.
+  //
+  // Returns true if the |id| was in the install set and has been removed.
+  bool RemoveAppInstall(const std::string& id);
+
+  // Returns true if app |id| is in |app_installed_|.
+  bool IsAppInstalled(const std::string& id);
+
+  // Returns true if the list of apps that are tracked is at capacity.
+  bool IsAppListAtCapacity();
+
+  // Builds a list based on current |app_installed_|.
+  base::Value::List BuildAppInstalledList();
+
   // Returns the string identifier to be logged for the given |profile_| and
   // |hashed_app_id|.
   //
@@ -111,11 +136,16 @@ class AppDiscoveryMetrics : public AppPlatformMetrics::Observer,
   // Profile for which apps discovery metrics are being recorded for.
   raw_ptr<Profile, ExperimentalAsh> profile_;
 
+  const raw_ref<const AppRegistryCache> app_registry_cache_;
+
   // Instance of AppPlatformMetrics |this| is observing.
   raw_ptr<AppPlatformMetrics, ExperimentalAsh> app_platform_metrics_ = nullptr;
 
   // Map associating instance_ids to current state.
   std::map<base::UnguessableToken, InstanceState> instance_to_state_;
+
+  // A set of installed events by |profile_|.
+  std::set<std::string> apps_installed_;
 
   // Map associating app_ids to instance_ids.
   std::map<std::string, std::set<base::UnguessableToken>>

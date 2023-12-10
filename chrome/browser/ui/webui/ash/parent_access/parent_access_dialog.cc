@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/ash/parent_access/parent_access_dialog.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "ash/public/cpp/shell_window_ids.h"
@@ -18,7 +19,6 @@
 #include "chrome/browser/ui/webui/ash/system_web_dialog_delegate.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -33,7 +33,7 @@ constexpr float kDimmerOpacity = 0.7f;
 
 void RecordParentAccessWidgetShowDialogError(
     ParentAccessDialogProvider::ShowErrorType error_type,
-    absl::optional<parent_access_ui::mojom::ParentAccessParams::FlowType>
+    std::optional<parent_access_ui::mojom::ParentAccessParams::FlowType>
         flow_type) {
   base::UmaHistogramEnumeration(
       parent_access::GetHistogramTitleForFlowType(
@@ -45,7 +45,7 @@ void RecordParentAccessWidgetShowDialogError(
   base::UmaHistogramEnumeration(
       parent_access::GetHistogramTitleForFlowType(
           parent_access::kParentAccessWidgetShowDialogErrorHistogramBase,
-          absl::nullopt),
+          std::nullopt),
       error_type);
 }
 

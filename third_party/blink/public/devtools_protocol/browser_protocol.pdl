@@ -554,6 +554,7 @@ experimental domain Audits
       Script
       ServiceWorker
       SharedWorker
+      SpeculationRules
       Stylesheet
       Track
       Video
@@ -1847,6 +1848,8 @@ experimental domain CSS
     properties
       # Font's family name reported by platform.
       string familyName
+      # Font's PostScript name reported by platform.
+      string postScriptName
       # Indicates if the font was downloaded or resolved locally.
       boolean isCustomFont
       # Amount of glyphs that were rendered with this font.
@@ -1925,6 +1928,19 @@ experimental domain CSS
       boolean inherits
       string syntax
 
+
+  # CSS font-palette-values rule representation.
+  type CSSFontPaletteValuesRule extends object
+    properties
+      # The css style sheet identifier (absent for user agent stylesheet and user-specified
+      # stylesheet rules) this rule came from.
+      optional StyleSheetId styleSheetId
+      # Parent stylesheet's origin.
+      StyleSheetOrigin origin
+      # Associated font palette name.
+      Value fontPaletteName
+      # Associated style declaration.
+      CSSStyle style
 
   # CSS property at-rule representation.
   type CSSPropertyRule extends object
@@ -2070,6 +2086,8 @@ experimental domain CSS
       optional array of CSSPropertyRule cssPropertyRules
       # A list of CSS property registrations matching this node.
       optional array of CSSPropertyRegistration cssPropertyRegistrations
+      # A font-palette-values rule matching this node.
+      optional CSSFontPaletteValuesRule cssFontPaletteValuesRule
       # Id of the first parent element that does not have display: contents.
       experimental optional DOM.NodeId parentLayoutNodeId
 
@@ -3899,6 +3917,13 @@ domain Emulation
       # A display feature that only splits content will have a 0 mask_length.
       integer maskLength
 
+  type DevicePosture extends object
+    properties
+      # Current posture of the device
+      enum type
+        continuous
+        folded
+
   type MediaFeature extends object
     properties
       string name
@@ -4056,6 +4081,9 @@ domain Emulation
       # If set, the display feature of a multi-segment screen. If not set, multi-segment support
       # is turned-off.
       experimental optional DisplayFeature displayFeature
+      # If set, the posture of a foldable device. If not set the posture is set
+      # to continuous.
+      experimental optional DevicePosture devicePosture
 
   experimental command setScrollbarsHidden
     parameters
@@ -4235,7 +4263,7 @@ domain Emulation
     parameters
       # User agent to use.
       string userAgent
-      # Browser langugage to emulate.
+      # Browser language to emulate.
       optional string acceptLanguage
       # The platform navigator.platform should return.
       optional string platform
@@ -5662,6 +5690,10 @@ domain Network
       # This value is used when the reason is unknown.
       unspecifiedReason
 
+  experimental type ServiceWorkerRouterInfo extends object
+    properties
+      integer ruleIdMatched
+
   # HTTP response data.
   type Response extends object
     properties
@@ -5695,6 +5727,8 @@ domain Network
       optional boolean fromServiceWorker
       # Specifies that the request was served from the prefetch cache.
       optional boolean fromPrefetchCache
+      # Infomation about how Service Worker Static Router was used.
+      experimental optional ServiceWorkerRouterInfo serviceWorkerRouterInfo
       # Total number of bytes received for this request so far.
       number encodedDataLength
       # Timing information for the given request.
@@ -5810,7 +5844,7 @@ domain Network
       # Cookie Priority
       experimental CookiePriority priority
       # True if cookie is SameParty.
-      experimental boolean sameParty
+      experimental deprecated boolean sameParty
       # Cookie source scheme type.
       experimental CookieSourceScheme sourceScheme
       # Cookie source port. Valid values are {-1, [1, 65535]}, -1 indicates an unspecified port.
@@ -6412,7 +6446,7 @@ domain Network
     parameters
       # User agent to use.
       string userAgent
-      # Browser langugage to emulate.
+      # Browser language to emulate.
       optional string acceptLanguage
       # The platform navigator.platform should return.
       optional string platform
@@ -6431,6 +6465,18 @@ domain Network
       integer dataLength
       # Actual bytes received (might be less than dataLength for compressed encodings).
       integer encodedDataLength
+      # Data that was received.
+      experimental optional binary data
+
+  # Enables streaming of the response for the given requestId.
+  # If enabled, the dataReceived event contains the data that was received during streaming.
+  experimental command streamResourceContent
+    parameters
+      # Identifier of the request to stream.
+      RequestId requestId
+    returns
+      # Data that has been buffered until streaming is enabled.
+      binary bufferedData
 
   # Fired when EventSource message is received.
   event eventSourceMessageReceived
@@ -7628,6 +7674,7 @@ domain Page
       sync-xhr
       unload
       usb
+      usb-unrestricted
       vertical-scroll
       web-printing
       web-share
@@ -8138,16 +8185,6 @@ domain Page
       # as an ad. Only sent if frame is labelled as an ad and id is available.
       optional AdScriptId adScriptId
 
-  # Returns all browser cookies for the page and all of its subframes. Depending
-  # on the backend support, will return detailed cookie information in the
-  # `cookies` field.
-  experimental deprecated command getCookies
-    # Use 'Network.getCookies' instead
-    redirect Network
-    returns
-      # Array of cookie objects.
-      array of Network.Cookie cookies
-
   # Returns present frame tree structure.
   command getFrameTree
     returns
@@ -8290,6 +8327,8 @@ domain Page
         ReturnAsStream
       # Whether or not to generate tagged (accessible) PDF. Defaults to embedder choice.
       experimental optional boolean generateTaggedPDF
+      # Whether or not to embed the document outline into the PDF.
+      experimental optional boolean generateDocumentOutline
     returns
       # Base64-encoded pdf data. Empty if |returnAsStream| is specified.
       binary data
@@ -8852,6 +8891,7 @@ domain Page
       WebRTCSticky
       WebTransportSticky
       WebSocketSticky
+      SmartCard
       # Disabled for RenderFrameHost reasons
       # See content/browser/renderer_host/back_forward_cache_disable.h for explanations.
       ContentSecurityHandler
@@ -9931,6 +9971,13 @@ experimental domain Storage
       # duration in seconds
       array of integer ends
 
+  experimental type AttributionReportingTriggerSpec extends object
+    properties
+      # number instead of integer because not all uint32 can be represented by
+      # int
+      array of number triggerData
+      AttributionReportingEventReportWindows eventReportWindows
+
   experimental type AttributionReportingTriggerDataMatching extends string
     enum
       exact
@@ -9941,7 +9988,7 @@ experimental domain Storage
       Network.TimeSinceEpoch time
       # duration in seconds
       integer expiry
-      AttributionReportingEventReportWindows eventReportWindows
+      array of AttributionReportingTriggerSpec triggerSpecs
       # duration in seconds
       integer aggregatableReportWindow
       AttributionReportingSourceType type
@@ -11080,6 +11127,14 @@ experimental domain WebAuthn
       # Sets whether User Verification succeeds or fails for an authenticator.
       # Defaults to false.
       optional boolean isUserVerified
+      # Credentials created by this authenticator will have the backup
+      # eligibility (BE) flag set to this value. Defaults to false.
+      # https://w3c.github.io/webauthn/#sctn-credential-backup
+      optional boolean defaultBackupEligibility
+      # Credentials created by this authenticator will have the backup state
+      # (BS) flag set to this value. Defaults to false.
+      # https://w3c.github.io/webauthn/#sctn-credential-backup
+      optional boolean defaultBackupState
 
   type Credential extends object
     properties
@@ -11535,7 +11590,8 @@ experimental domain Preload
       PrefetchFailedNetError
       PrefetchFailedNon2XX
       PrefetchFailedPerPageLimitExceeded
-      PrefetchEvicted
+      PrefetchEvictedAfterCandidateRemoved
+      PrefetchEvictedForNewerPrefetch
       PrefetchHeldback
       # A previous prefetch to the origin got a HTTP 503 response with an
       # Retry-After header that has no elapsed yet.
@@ -11608,12 +11664,20 @@ experimental domain FedCm
       SignIn
       SignUp
 
-  # Whether the dialog shown is an account chooser or an auto re-authentication dialog.
+  # The types of FedCM dialogs.
   type DialogType extends string
     enum
       AccountChooser
       AutoReauthn
       ConfirmIdpLogin
+      Error
+
+  # The buttons on the FedCM dialog.
+  type DialogButton extends string
+    enum
+      ConfirmIdpLoginContinue
+      ErrorGotIt
+      ErrorMoreDetails
 
   # Corresponds to IdentityRequestAccount
   type Account extends object
@@ -11640,6 +11704,12 @@ experimental domain FedCm
       string title
       optional string subtitle
 
+  # Triggered when a dialog is closed, either by user action, JS abort,
+  # or a command below.
+  event dialogClosed
+    parameters
+      string dialogId
+
   command enable
     parameters
       # Allows callers to disable the promise rejection delay that would
@@ -11654,11 +11724,10 @@ experimental domain FedCm
       string dialogId
       integer accountIndex
 
-  # Only valid if the dialog type is ConfirmIdpLogin. Acts as if the user had
-  # clicked the continue button.
-  command confirmIdpLogin
+  command clickDialogButton
     parameters
       string dialogId
+      DialogButton dialogButton
 
   command dismissDialog
     parameters

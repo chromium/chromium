@@ -80,13 +80,13 @@ TEST_F(DeclarativeNetRequestPrefsHelperTest, UpdateStaticRulesTest) {
   // Updating disabled rule ids with empty set doesn't make any change.
   {
     RuleIdsToUpdate ids_to_update(std::vector<int>() /* ids_to_disable */,
-                                  absl::nullopt /* ids_to_enable */);
+                                  std::nullopt /* ids_to_enable */);
     EXPECT_TRUE(ids_to_update.Empty());
 
     auto result = UpdateDisabledStaticRules(ruleset1, ids_to_update);
     EXPECT_FALSE(result.changed);
     EXPECT_THAT(result.disabled_rule_ids_after_update, testing::IsEmpty());
-    EXPECT_EQ(absl::nullopt, result.error);
+    EXPECT_EQ(std::nullopt, result.error);
   }
   EXPECT_THAT(GetDisabledRuleIds(ruleset1), testing::IsEmpty());
   EXPECT_THAT(GetDisabledRuleIds(ruleset2), testing::IsEmpty());
@@ -96,14 +96,14 @@ TEST_F(DeclarativeNetRequestPrefsHelperTest, UpdateStaticRulesTest) {
   {
     RuleIdsToUpdate ids_to_update(
         std::vector<int>({1, 2, 3}) /* ids_to_disable */,
-        absl::nullopt /* ids_to_enable */);
+        std::nullopt /* ids_to_enable */);
     EXPECT_FALSE(ids_to_update.Empty());
 
     auto result = UpdateDisabledStaticRules(ruleset1, ids_to_update);
     EXPECT_TRUE(result.changed);
     EXPECT_THAT(result.disabled_rule_ids_after_update,
                 UnorderedElementsAre(1, 2, 3));
-    EXPECT_EQ(absl::nullopt, result.error);
+    EXPECT_EQ(std::nullopt, result.error);
   }
   EXPECT_THAT(GetDisabledRuleIds(ruleset1), UnorderedElementsAre(1, 2, 3));
   EXPECT_THAT(GetDisabledRuleIds(ruleset2), testing::IsEmpty());
@@ -113,14 +113,14 @@ TEST_F(DeclarativeNetRequestPrefsHelperTest, UpdateStaticRulesTest) {
   {
     RuleIdsToUpdate ids_to_update(
         std::vector<int>({3, 4, 5}) /* ids_to_disable */,
-        absl::nullopt /* ids_to_enable */);
+        std::nullopt /* ids_to_enable */);
     EXPECT_FALSE(ids_to_update.Empty());
 
     auto result = UpdateDisabledStaticRules(ruleset2, ids_to_update);
     EXPECT_TRUE(result.changed);
     EXPECT_THAT(result.disabled_rule_ids_after_update,
                 UnorderedElementsAre(3, 4, 5));
-    EXPECT_EQ(absl::nullopt, result.error);
+    EXPECT_EQ(std::nullopt, result.error);
   }
 
   EXPECT_THAT(GetDisabledRuleIds(ruleset1), UnorderedElementsAre(1, 2, 3));
@@ -129,14 +129,14 @@ TEST_F(DeclarativeNetRequestPrefsHelperTest, UpdateStaticRulesTest) {
 
   // Updating disabled rule ids with null set doesn't make any change.
   {
-    RuleIdsToUpdate ids_to_update(absl::nullopt /* ids_to_disable */,
-                                  absl::nullopt /* ids_to_enable */);
+    RuleIdsToUpdate ids_to_update(std::nullopt /* ids_to_disable */,
+                                  std::nullopt /* ids_to_enable */);
     EXPECT_TRUE(ids_to_update.Empty());
 
     auto result = UpdateDisabledStaticRules(ruleset2, ids_to_update);
     EXPECT_FALSE(result.changed);
     EXPECT_THAT(result.disabled_rule_ids_after_update, testing::IsEmpty());
-    EXPECT_EQ(absl::nullopt, result.error);
+    EXPECT_EQ(std::nullopt, result.error);
   }
   EXPECT_THAT(GetDisabledRuleIds(ruleset1), UnorderedElementsAre(1, 2, 3));
   EXPECT_THAT(GetDisabledRuleIds(ruleset2), UnorderedElementsAre(3, 4, 5));
@@ -153,7 +153,7 @@ TEST_F(DeclarativeNetRequestPrefsHelperTest, UpdateStaticRulesTest) {
     auto result = UpdateDisabledStaticRules(ruleset2, ids_to_update);
     EXPECT_FALSE(result.changed);
     EXPECT_THAT(result.disabled_rule_ids_after_update, testing::IsEmpty());
-    EXPECT_EQ(absl::nullopt, result.error);
+    EXPECT_EQ(std::nullopt, result.error);
   }
   EXPECT_THAT(GetDisabledRuleIds(ruleset1), UnorderedElementsAre(1, 2, 3));
   EXPECT_THAT(GetDisabledRuleIds(ruleset2), UnorderedElementsAre(3, 4, 5));
@@ -172,7 +172,7 @@ TEST_F(DeclarativeNetRequestPrefsHelperTest, UpdateStaticRulesTest) {
     EXPECT_TRUE(result.changed);
     EXPECT_THAT(result.disabled_rule_ids_after_update,
                 UnorderedElementsAre(3, 5, 6, 7));
-    EXPECT_EQ(absl::nullopt, result.error);
+    EXPECT_EQ(std::nullopt, result.error);
   }
   EXPECT_THAT(GetDisabledRuleIds(ruleset1), UnorderedElementsAre(1, 2, 3));
   EXPECT_THAT(GetDisabledRuleIds(ruleset2), UnorderedElementsAre(3, 5, 6, 7));
@@ -200,14 +200,14 @@ TEST_F(DeclarativeNetRequestPrefsHelperTest, UpdateStaticRulesTest) {
   // doesn't make any change since rule 4 is not disabled.
   {
     RuleIdsToUpdate ids_to_update(
-        absl::nullopt /* ids_to_disable */,
+        std::nullopt /* ids_to_disable */,
         std::vector<int>({1, 2, 3, 4}) /* ids_to_enable */);
     EXPECT_FALSE(ids_to_update.Empty());
 
     auto result = UpdateDisabledStaticRules(ruleset1, ids_to_update);
     EXPECT_TRUE(result.changed);
     EXPECT_THAT(result.disabled_rule_ids_after_update, testing::IsEmpty());
-    EXPECT_EQ(absl::nullopt, result.error);
+    EXPECT_EQ(std::nullopt, result.error);
   }
   EXPECT_THAT(GetDisabledRuleIds(ruleset1), testing::IsEmpty());
   EXPECT_THAT(GetDisabledRuleIds(ruleset2), UnorderedElementsAre(3, 5, 6, 7));
@@ -217,14 +217,14 @@ TEST_F(DeclarativeNetRequestPrefsHelperTest, UpdateStaticRulesTest) {
   // rule 4 doesn't make any change since rule 4 is not disabled.
   {
     RuleIdsToUpdate ids_to_update(
-        absl::nullopt /* ids_to_disable */,
+        std::nullopt /* ids_to_disable */,
         std::vector<int>({3, 4, 5, 6, 7}) /* ids_to_enable */);
     EXPECT_FALSE(ids_to_update.Empty());
 
     auto result = UpdateDisabledStaticRules(ruleset2, ids_to_update);
     EXPECT_TRUE(result.changed);
     EXPECT_THAT(result.disabled_rule_ids_after_update, testing::IsEmpty());
-    EXPECT_EQ(absl::nullopt, result.error);
+    EXPECT_EQ(std::nullopt, result.error);
   }
   EXPECT_THAT(GetDisabledRuleIds(ruleset1), testing::IsEmpty());
   EXPECT_THAT(GetDisabledRuleIds(ruleset2), testing::IsEmpty());
@@ -234,14 +234,14 @@ TEST_F(DeclarativeNetRequestPrefsHelperTest, UpdateStaticRulesTest) {
   // since there is no disabled rules.
   {
     RuleIdsToUpdate ids_to_update(
-        absl::nullopt /* ids_to_disable */,
+        std::nullopt /* ids_to_disable */,
         std::vector<int>({3, 4, 5}) /* ids_to_enable */);
     EXPECT_FALSE(ids_to_update.Empty());
 
     auto result = UpdateDisabledStaticRules(ruleset2, ids_to_update);
     EXPECT_FALSE(result.changed);
     EXPECT_THAT(result.disabled_rule_ids_after_update, testing::IsEmpty());
-    EXPECT_EQ(absl::nullopt, result.error);
+    EXPECT_EQ(std::nullopt, result.error);
   }
   EXPECT_THAT(GetDisabledRuleIds(ruleset1), testing::IsEmpty());
   EXPECT_THAT(GetDisabledRuleIds(ruleset2), testing::IsEmpty());

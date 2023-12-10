@@ -57,15 +57,15 @@ namespace {
 using ::content::BrowserContext;
 
 // Returns the current activation sequence of |extension| if the extension is
-// Service Worker-based, otherwise returns absl::nullopt.
-absl::optional<base::UnguessableToken> GetWorkerActivationToken(
+// Service Worker-based, otherwise returns std::nullopt.
+std::optional<base::UnguessableToken> GetWorkerActivationToken(
     BrowserContext* browser_context,
     const Extension& extension) {
   if (BackgroundInfo::IsServiceWorkerBased(&extension)) {
     return ServiceWorkerTaskQueue::Get(browser_context)
         ->GetCurrentActivationToken(extension.id());
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 PermissionSet CreatePermissionSet(const PermissionSet& set) {
@@ -364,7 +364,7 @@ void RendererStartupHelper::OnDeveloperModeChanged(bool in_developer_mode) {
 
 void RendererStartupHelper::SetUserScriptWorldProperties(
     const Extension& extension,
-    absl::optional<std::string> csp,
+    std::optional<std::string> csp,
     bool enable_messaging) {
   mojom::UserScriptWorldInfoPtr info = mojom::UserScriptWorldInfo::New(
       extension.id(), std::move(csp), enable_messaging);

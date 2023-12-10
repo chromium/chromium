@@ -63,12 +63,10 @@ device::mojom::blink::VirtualSensorMetadataPtr ToMojoSensorMetadata(
   auto metadata = device::mojom::blink::VirtualSensorMetadata::New();
   metadata->available = options->connected();
   if (options->hasMinSamplingFrequency()) {
-    metadata->minimum_frequency = device::mojom::blink::NullableDouble::New(
-        options->minSamplingFrequency().value());
+    metadata->minimum_frequency = options->minSamplingFrequency().value();
   }
   if (options->hasMaxSamplingFrequency()) {
-    metadata->maximum_frequency = device::mojom::blink::NullableDouble::New(
-        options->maxSamplingFrequency().value());
+    metadata->maximum_frequency = options->maxSamplingFrequency().value();
   }
   return metadata;
 }

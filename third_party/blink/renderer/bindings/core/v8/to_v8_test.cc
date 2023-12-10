@@ -2,14 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/bindings/core/v8/to_v8_for_core.h"
-
 #include <limits>
+
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/bindings/core/v8/to_v8_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/core/testing/garbage_collected_script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -33,7 +34,8 @@ void TestToV8(V8TestingScope* scope,
     return;
   }
   String actual_string =
-      ToCoreString(actual->ToString(scope->GetContext()).ToLocalChecked());
+      ToCoreString(scope->GetIsolate(),
+                   actual->ToString(scope->GetContext()).ToLocalChecked());
   if (String(expected) != actual_string) {
     ADD_FAILURE_AT(path, line_number)
         << "toV8 returns an incorrect value.\n  Actual: "
@@ -68,6 +70,7 @@ class OffHeapGarbageCollectedHolder {
 };
 
 TEST(ToV8Test, garbageCollectedScriptWrappable) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   GarbageCollectedScriptWrappable* object =
       MakeGarbageCollected<GarbageCollectedScriptWrappable>("world");
@@ -88,6 +91,7 @@ TEST(ToV8Test, garbageCollectedScriptWrappable) {
 }
 
 TEST(ToV8Test, string) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   char array_string[] = "arrayString";
   const char kConstArrayString[] = "constArrayString";
@@ -106,6 +110,7 @@ TEST(ToV8Test, string) {
 }
 
 TEST(ToV8Test, numeric) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   TEST_TOV8("0", static_cast<int32_t>(0));
   TEST_TOV8("1", static_cast<int32_t>(1));
@@ -131,12 +136,14 @@ TEST(ToV8Test, numeric) {
 }
 
 TEST(ToV8Test, boolean) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   TEST_TOV8("true", true);
   TEST_TOV8("false", false);
 }
 
 TEST(ToV8Test, v8Value) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   v8::Local<v8::Value> local_value(v8::Number::New(scope.GetIsolate(), 1234));
   v8::Local<v8::Value> handle_value(v8::Number::New(scope.GetIsolate(), 5678));
@@ -146,11 +153,13 @@ TEST(ToV8Test, v8Value) {
 }
 
 TEST(ToV8Test, undefinedType) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   TEST_TOV8("undefined", ToV8UndefinedGenerator());
 }
 
 TEST(ToV8Test, scriptValue) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   ScriptValue value(scope.GetIsolate(),
                     v8::Number::New(scope.GetIsolate(), 1234));
@@ -159,6 +168,7 @@ TEST(ToV8Test, scriptValue) {
 }
 
 TEST(ToV8Test, stringVectors) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   Vector<String> string_vector;
   string_vector.push_back("foo");
@@ -172,6 +182,7 @@ TEST(ToV8Test, stringVectors) {
 }
 
 TEST(ToV8Test, basicTypeVectors) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   Vector<int32_t> int32_vector;
   int32_vector.push_back(42);
@@ -211,6 +222,7 @@ TEST(ToV8Test, basicTypeVectors) {
 }
 
 TEST(ToV8Test, pairVector) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   Vector<std::pair<String, int>> pair_vector;
   pair_vector.push_back(std::make_pair("one", 1));
@@ -232,6 +244,7 @@ TEST(ToV8Test, pairVector) {
 }
 
 TEST(ToV8Test, pairHeapVector) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   HeapVector<std::pair<String, Member<GarbageCollectedScriptWrappable>>>
       pair_heap_vector;
@@ -250,16 +263,19 @@ TEST(ToV8Test, pairHeapVector) {
           .ToLocalChecked();
   EXPECT_TRUE(one->IsObject());
   EXPECT_EQ(String("foo"),
-            ToCoreString(one->ToString(context).ToLocalChecked()));
+            ToCoreString(scope.GetIsolate(),
+                         one->ToString(context).ToLocalChecked()));
   v8::Local<v8::Value> two =
       result->Get(context, V8String(scope.GetIsolate(), "two"))
           .ToLocalChecked();
   EXPECT_TRUE(two->IsObject());
   EXPECT_EQ(String("bar"),
-            ToCoreString(two->ToString(context).ToLocalChecked()));
+            ToCoreString(scope.GetIsolate(),
+                         two->ToString(context).ToLocalChecked()));
 }
 
 TEST(ToV8Test, stringVectorVector) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
 
   Vector<String> string_vector1;
@@ -289,6 +305,7 @@ TEST(ToV8Test, stringVectorVector) {
 }
 
 TEST(ToV8Test, heapVector) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   HeapVector<Member<GarbageCollectedScriptWrappable>> v;
   v.push_back(MakeGarbageCollected<GarbageCollectedScriptWrappable>("hoge"));
@@ -299,6 +316,7 @@ TEST(ToV8Test, heapVector) {
 }
 
 TEST(ToV8Test, withScriptState) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   ScriptValue value(scope.GetIsolate(),
                     v8::Number::New(scope.GetIsolate(), 1234.0));
@@ -311,6 +329,7 @@ TEST(ToV8Test, withScriptState) {
 }
 
 TEST(ToV8Test, nullableDouble) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   v8::Local<v8::Object> global = scope.GetContext()->Global();
   v8::Isolate* isolate = scope.GetIsolate();

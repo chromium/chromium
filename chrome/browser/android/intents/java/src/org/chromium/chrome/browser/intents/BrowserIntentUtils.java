@@ -8,19 +8,13 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.SystemClock;
 
-/**
- * Modularized Intent utilities for use by other feature modules and chrome_java.
- */
+/** Modularized Intent utilities for use by other feature modules and chrome_java. */
 public class BrowserIntentUtils {
-    /**
-     * Key to associate a startup timestamp in the uptimeMillis timebase with an intent.
-     */
+    /** Key to associate a startup timestamp in the uptimeMillis timebase with an intent. */
     public static final String EXTRA_STARTUP_UPTIME_MS =
             "org.chromium.chrome.browser.startup.uptime";
 
-    /**
-     * Key to associate a startup timestamp in the elapsedRealtime timebase with an intent.
-     */
+    /** Key to associate a startup timestamp in the elapsedRealtime timebase with an intent. */
     public static final String EXTRA_STARTUP_REALTIME_MS =
             "org.chromium.chrome.browser.startup.realtime";
 

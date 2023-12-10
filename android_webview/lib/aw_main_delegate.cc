@@ -47,10 +47,8 @@
 #include "components/safe_browsing/android/safe_browsing_api_handler_bridge.h"
 #include "components/services/heap_profiling/public/cpp/profiling_client.h"
 #include "components/spellcheck/spellcheck_buildflags.h"
-#include "components/translate/core/common/translate_util.h"
 #include "components/variations/variations_ids_provider.h"
 #include "components/version_info/android/channel_getter.h"
-#include "components/viz/common/features.h"
 #include "content/public/app/initialize_mojo_core.h"
 #include "content/public/browser/android/media_url_interceptor_register.h"
 #include "content/public/browser/browser_main_runner.h"
@@ -65,10 +63,8 @@
 #include "gin/v8_initializer.h"
 #include "gpu/command_buffer/service/gpu_switches.h"
 #include "gpu/config/gpu_finch_features.h"
-#include "media/base/media_switches.h"
 #include "media/media_buildflags.h"
 #include "net/base/features.h"
-#include "services/network/public/cpp/features.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/switches.h"
@@ -88,7 +84,7 @@ AwMainDelegate::AwMainDelegate() = default;
 
 AwMainDelegate::~AwMainDelegate() = default;
 
-absl::optional<int> AwMainDelegate::BasicStartupComplete() {
+std::optional<int> AwMainDelegate::BasicStartupComplete() {
   TRACE_EVENT0("startup", "AwMainDelegate::BasicStartupComplete");
   base::CommandLine* cl = base::CommandLine::ForCurrentProcess();
 
@@ -198,10 +194,7 @@ absl::optional<int> AwMainDelegate::BasicStartupComplete() {
     // to the new mechanism in android_webview/browser/aw_field_trials.cc.
     base::ScopedAddFeatureFlags features(cl);
 
-    if (base::android::BuildInfo::GetInstance()->sdk_int() >=
-        base::android::SDK_VERSION_OREO) {
-      features.EnableIfNotSet(autofill::features::kAutofillExtractAllDatalists);
-    }
+    features.EnableIfNotSet(autofill::features::kAutofillExtractAllDatalists);
 
     if (cl->HasSwitch(switches::kWebViewLogJsConsoleMessages)) {
       features.EnableIfNotSet(::features::kLogJsConsoleMessages);
@@ -222,73 +215,10 @@ absl::optional<int> AwMainDelegate::BasicStartupComplete() {
       features.EnableIfNotSet(::features::kPrivacySandboxAdsAPIsOverride);
     }
 
-    // WebView uses kWebViewVulkan to control vulkan. Pre-emptively disable
-    // kVulkan in case it becomes enabled by default.
-    features.DisableIfNotSet(::features::kVulkan);
-
-    features.DisableIfNotSet(::features::kWebPayments);
-    features.DisableIfNotSet(::features::kServiceWorkerPaymentApps);
-
-    // WebView does not support overlay fullscreen yet for video overlays.
-    features.DisableIfNotSet(media::kOverlayFullscreenVideo);
-
-    // WebView does not support EME persistent license yet, because it's not
-    // clear on how user can remove persistent media licenses from UI.
-    features.DisableIfNotSet(media::kMediaDrmPersistentLicense);
-
-    features.DisableIfNotSet(::features::kBackgroundFetch);
-
-    // SurfaceControl is controlled by kWebViewSurfaceControl flag.
-    features.DisableIfNotSet(::features::kAndroidSurfaceControl);
-
-    // TODO(https://crbug.com/963653): WebOTP is not yet supported on
-    // WebView.
-    features.DisableIfNotSet(::features::kWebOTP);
-
-    // TODO(https://crbug.com/1012899): WebXR is not yet supported on WebView.
-    features.DisableIfNotSet(::features::kWebXr);
-
-    // TODO(https://crbug.com/1312827): Digital Goods API is not yet supported
-    // on WebView.
-    features.DisableIfNotSet(::features::kDigitalGoodsApi);
-
-    features.DisableIfNotSet(::features::kDynamicColorGamut);
-
-    // COOP is not supported on WebView yet. See:
-    // https://groups.google.com/a/chromium.org/forum/#!topic/blink-dev/XBKAGb2_7uAi.
-    features.DisableIfNotSet(network::features::kCrossOriginOpenerPolicy);
-
-    features.DisableIfNotSet(::features::kInstalledApp);
-
     features.EnableIfNotSet(metrics::kRecordLastUnsentLogMetadataMetrics);
-
-    features.DisableIfNotSet(::features::kPeriodicBackgroundSync);
-
-    // Disabled until viz scheduling can be improved.
-    features.DisableIfNotSet(::features::kUseSurfaceLayerForVideoDefault);
 
     // Enabled by default for webview.
     features.EnableIfNotSet(::features::kWebViewThreadSafeMediaDefault);
-
-    // Disable dr-dc on webview.
-    features.DisableIfNotSet(::features::kEnableDrDc);
-
-    // TODO(crbug.com/1100993): Web Bluetooth is not yet supported on WebView.
-    features.DisableIfNotSet(::features::kWebBluetooth);
-
-    // TODO(crbug.com/933055): WebUSB is not yet supported on WebView.
-    features.DisableIfNotSet(::features::kWebUsb);
-
-    // Disable TFLite based language detection on webview until webview supports
-    // ML model delivery via Optimization Guide component.
-    // TODO(crbug.com/1292622): Enable the feature on Webview.
-    features.DisableIfNotSet(::translate::kTFLiteLanguageDetectionEnabled);
-
-    // Disable key pinning enforcement on webview.
-    features.DisableIfNotSet(net::features::kStaticKeyPinningEnforcement);
-
-    // FedCM is not yet supported on WebView.
-    features.DisableIfNotSet(::features::kFedCm);
   }
 
   android_webview::RegisterPathProvider();
@@ -313,7 +243,7 @@ absl::optional<int> AwMainDelegate::BasicStartupComplete() {
   // renderer processes. See also: switches::kInProcessGPU above.
   content::ForceInProcessNetworkService();
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void AwMainDelegate::PreSandboxStartup() {
@@ -394,7 +324,7 @@ AwMainDelegate::CreateVariationsIdsProvider() {
       variations::VariationsIdsProvider::Mode::kDontSendSignedInVariations);
 }
 
-absl::optional<int> AwMainDelegate::PostEarlyInitialization(
+std::optional<int> AwMainDelegate::PostEarlyInitialization(
     InvokedIn invoked_in) {
   const bool is_browser_process =
       absl::holds_alternative<InvokedInBrowserProcess>(invoked_in);
@@ -406,7 +336,7 @@ absl::optional<int> AwMainDelegate::PostEarlyInitialization(
 
   InitializeMemorySystem(is_browser_process);
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 content::ContentClient* AwMainDelegate::CreateContentClient() {

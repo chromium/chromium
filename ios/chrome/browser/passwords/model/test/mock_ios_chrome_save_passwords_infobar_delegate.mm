@@ -4,12 +4,13 @@
 
 #import "ios/chrome/browser/passwords/model/test/mock_ios_chrome_save_passwords_infobar_delegate.h"
 
+#import <optional>
+
 #import "base/memory/ptr_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/password_manager/core/browser/mock_password_form_manager_for_ui.h"
 #import "components/password_manager/core/browser/password_manager_metrics_util.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
-#import "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 std::unique_ptr<password_manager::PasswordFormManagerForUI> CreateFormManager(
@@ -35,7 +36,7 @@ MockIOSChromeSavePasswordInfoBarDelegate::Create(
     NSString* username,
     NSString* password,
     const GURL& url,
-    absl::optional<std::string> account_to_store_password) {
+    std::optional<std::string> account_to_store_password) {
   std::unique_ptr<password_manager::PasswordForm> form =
       std::make_unique<password_manager::PasswordForm>();
   form->username_value = base::SysNSStringToUTF16(username);
@@ -48,7 +49,7 @@ MockIOSChromeSavePasswordInfoBarDelegate::
     MockIOSChromeSavePasswordInfoBarDelegate(
         std::unique_ptr<password_manager::PasswordForm> form,
         std::unique_ptr<GURL> url,
-        absl::optional<std::string> account_to_store_password)
+        std::optional<std::string> account_to_store_password)
     : IOSChromeSavePasswordInfoBarDelegate(
           account_to_store_password,
           /*password_update=*/false,

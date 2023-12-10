@@ -91,6 +91,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.chrome.browser.signin.LegacySyncPromoView;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.signin.SyncPromoController.SyncPromoState;
@@ -103,6 +104,7 @@ import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.MenuUtils;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.bookmarks.BookmarkType;
@@ -418,6 +420,26 @@ public class BookmarkTest {
         assertEquals("Bookmarks", mToolbar.getTitle());
         assertEquals(NavigationButton.NONE, mToolbar.getNavigationButtonForTests());
         assertFalse(mToolbar.getMenu().findItem(R.id.edit_menu_id).isVisible());
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS})
+    public void testEmptyBookmarkFolder() throws InterruptedException {
+        openBookmarkManager();
+        BookmarkTestUtil.openMobileBookmarks(mItemsContainer, mDelegate, mBookmarkModel);
+        BookmarkTestUtil.waitForBookmarkModelLoaded();
+        onView(withText("You'll find your bookmarks here"));
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS})
+    public void testEmptyReadingListFolder() throws InterruptedException {
+        openBookmarkManager();
+        BookmarkTestUtil.openReadingList(mItemsContainer, mDelegate, mBookmarkModel);
+        BookmarkTestUtil.waitForBookmarkModelLoaded();
+        onView(withText("You'll find your reading list here"));
     }
 
     // TODO(twellington): Write a folder navigation test for tablets that waits for the Tab hosting
@@ -1432,7 +1454,6 @@ public class BookmarkTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/1369091")
     public void testShowInFolder_NoScroll() throws Exception {
         addFolder(TEST_FOLDER_TITLE);
         BookmarkPromoHeader.forcePromoStateForTesting(
@@ -1444,9 +1465,17 @@ public class BookmarkTest {
         enterSearch();
 
         // Click "Show in folder".
-        View testFolder = getBookmarkFolderRow(0);
         clickMoreButtonOnFirstItem(TEST_FOLDER_TITLE);
         onView(withText("Show in folder")).perform(click());
+
+        // Find the test folder view, which is the second view in the list, the first view is promo.
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    View promo = getViewHolder(0).itemView;
+                    return promo instanceof LegacySyncPromoView;
+                },
+                "The promo is never shown up");
+        View testFolder = getBookmarkFolderRow(1);
 
         // Assert that the view pulses.
         assertTrue(
@@ -1463,6 +1492,14 @@ public class BookmarkTest {
         // Click "Show in folder" again.
         clickMoreButtonOnFirstItem(TEST_FOLDER_TITLE);
         onView(withText("Show in folder")).perform(click());
+
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    View promo = getViewHolder(0).itemView;
+                    return promo instanceof LegacySyncPromoView;
+                },
+                "The promo is never shown up");
+        testFolder = getBookmarkFolderRow(1);
         assertTrue(
                 "Expected bookmark row to pulse after clicking \"show in folder\" a 2nd time!",
                 checkHighlightPulse(testFolder));
@@ -1470,7 +1507,6 @@ public class BookmarkTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/1434777")
     public void testShowInFolder_Scroll() throws Exception {
         addFolder(TEST_FOLDER_TITLE); // Index 8
         addBookmark(TEST_TITLE_A, mTestUrlA);
@@ -1509,7 +1545,6 @@ public class BookmarkTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/1434777")
     public void testShowInFolder_OpenOtherFolder() throws Exception {
         BookmarkId testId = addFolder(TEST_FOLDER_TITLE);
         runOnUiThreadBlocking(() -> mBookmarkModel.addBookmark(testId, 0, TEST_TITLE_A, mTestUrlA));
@@ -1537,7 +1572,12 @@ public class BookmarkTest {
                 checkHighlightPulse(itemA));
 
         // Open mobile bookmarks folder, then go back to the subfolder.
-        openFolder(mBookmarkModel.getMobileFolderId());
+        BookmarkId mobileFolderId =
+                runOnUiThreadBlocking(
+                        () -> {
+                            return mBookmarkModel.getMobileFolderId();
+                        });
+        openFolder(mobileFolderId);
         openFolder(testId);
 
         BookmarkItemRow itemASecondView = getBookmarkItemRow(1);

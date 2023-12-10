@@ -8,6 +8,7 @@
 <translation id="1420684932347524586">Ajjaj! Nem sikerült a véletlenszerű RSA privát kulcs generálása.</translation>
 <translation id="1445572445564823378">Ez a bővítmény lassítja a <ph name="PRODUCT_NAME" /> működését. Kapcsolja ki a <ph name="PRODUCT_NAME" /> teljesítményének visszaállításához.</translation>
 <translation id="1468038450257740950">A WebGL nem támogatott.</translation>
+<translation id="1610570795592207282">A(z) „<ph name="RELATIVE_PATH" />” css nem tölthető be a szkripthez.</translation>
 <translation id="1803557475693955505">Nem lehet betölteni a(z) '<ph name="BACKGROUND_PAGE" />' háttéroldalt.</translation>
 <translation id="2159915644201199628">Nem sikerült dekódolni a képet: „<ph name="IMAGE_NAME" />”</translation>
 <translation id="2350172092385603347">Fordítás használatban, de a default_locale (alapértelmezett nyelv- és országkód) nincs megadva a jegyzékfájlban.</translation>
@@ -18,14 +19,12 @@
 <translation id="3115238746683532089">Ismeretlen termék (<ph name="PRODUCT_ID" />) <ph name="VENDOR_ID" /> szolgáltatótól (sorozatszám: <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">Nem sikerült lecserélni a crx-fájlt. Ellenőrizze, hogy nincs-e használatban a fájl.</translation>
 <translation id="3163201441334626963">Ismeretlen termék (<ph name="PRODUCT_ID" />) a következő forgalmazótól: <ph name="VENDOR_ID" /></translation>
-<translation id="3302709122321372472">A(z) '<ph name="RELATIVE_PATH" />' css nem tölthető be a tartalomszkripthez.</translation>
 <translation id="3369521687965833290">Nem lehet kicsomagolni a bővítményt. A bővítmények biztonságos kicsomagolásához kell lennie egy olyan elérési útnak a profilkönyvtárban, amely egy meghajtó betűjelével kezdődik, és nem tartalmaz közvetett hivatkozást (junction vagy symlink) vagy csatolási pontot. Ilyen elérési út nem létezik a profiljában.</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (sorozatszám: <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> termék a következő forgalmazótól: <ph name="VENDOR_ID" /> (sorozatszám: <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">A privát kulcs beviteli értékéhez érvényes útvonalat kell megadnia.</translation>
 <translation id="388442998277590542">Nem lehet betölteni a(z) "<ph name="OPTIONS_PAGE" />" opcióoldalt.</translation>
 <translation id="3984413272403535372">Hiba történt a bővítmények aláírása során.</translation>
-<translation id="39964277676607559">A(z) '<ph name="RELATIVE_PATH" />' javascript nem tölthető be a tartalomszkripthez.</translation>
 <translation id="4115165561519362854">A gép rendszergazdája előírta, hogy a(z) <ph name="EXTENSION_NAME" /> bővítmény verziója legalább <ph name="EXTENSION_VERSION" /> legyen. Nem kapcsolható be addig, amíg nincs frissítve erre a verzióra (vagy újabbra).</translation>
 <translation id="4233778200880751280">A(z) „<ph name="ABOUT_PAGE" />” névjegyoldal betöltése sikertelen volt.</translation>
 <translation id="471800408830181311">Nem sikerült a privát kulcs kiírása.</translation>
@@ -33,6 +32,7 @@
 <translation id="4988792151665380515">Nem sikerült a nyilvános kulcs exportálása.</translation>
 <translation id="5026754133087629784">Webview: <ph name="WEBVIEW_TAG_NAME" /></translation>
 <translation id="5098647635849512368">Nem található a csomagolni kívánt könyvtár abszolút elérési útvonala.</translation>
+<translation id="5160071981665899014">A(z) „<ph name="RELATIVE_PATH" />” javascript nem tölthető be a szkripthez.</translation>
 <translation id="5356315618422219272">Alkalmazásnézet: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5436430103864390185">A formázott ablakok nem támogatottak.</translation>
 <translation id="5456409301717116725">Ez a bővítmény a(z) "<ph name="KEY_PATH" />" kulcsfájlt tartalmazza. Ezt Ön valószínűleg nem szeretné.</translation>

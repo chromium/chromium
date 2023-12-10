@@ -55,7 +55,7 @@ class ScreenAILibraryWrapper {
   void EnableDebugMode();
   bool InitLayoutExtraction();
 
-  bool InitOCR(const base::FilePath& models_folder);
+  bool InitOCR();
   bool InitMainContentExtraction();
 
   absl::optional<chrome_screen_ai::VisualAnnotation> ExtractLayout(
@@ -96,10 +96,7 @@ class ScreenAILibraryWrapper {
   InitLayoutExtractionFn init_layout_extraction_ = nullptr;
 
   // Initializes the pipeline for OCR.
-  // |models_folder| is a null terminated string pointing to the
-  // folder that includes model files for OCR.
-  // TODO(b/297824387): Remove |models_folder|.
-  typedef bool (*InitOCRFn)(const char* /*models_folder*/);
+  typedef bool (*InitOCRFn)();
   InitOCRFn init_ocr_ = nullptr;
 
   // Initializes the pipeline for main content extraction.

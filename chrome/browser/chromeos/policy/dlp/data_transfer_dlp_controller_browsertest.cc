@@ -79,7 +79,7 @@ class FakeClipboardNotifier : public DlpClipboardNotifier {
 
   void ProceedPressed(std::unique_ptr<ui::ClipboardData> data,
                       const ui::DataTransferEndpoint& data_dst,
-                      base::RepeatingCallback<void()> reporting_cb) {
+                      base::OnceClosure reporting_cb) {
     DlpClipboardNotifier::ProceedPressed(std::move(data), data_dst,
                                          std::move(reporting_cb), GetWidget());
   }
@@ -110,28 +110,29 @@ class FakeDlpController : public DataTransferDlpController,
   }
 
   void NotifyBlockedPaste(
-      const ui::DataTransferEndpoint* const data_src,
-      const ui::DataTransferEndpoint* const data_dst) override {
+      base::optional_ref<const ui::DataTransferEndpoint> data_src,
+      base::optional_ref<const ui::DataTransferEndpoint> data_dst) override {
     helper_->NotifyBlockedAction(data_src, data_dst);
   }
 
-  void WarnOnPaste(const ui::DataTransferEndpoint* const data_src,
-                   const ui::DataTransferEndpoint* const data_dst,
-                   base::RepeatingCallback<void()> reporting_cb) override {
+  void WarnOnPaste(base::optional_ref<const ui::DataTransferEndpoint> data_src,
+                   base::optional_ref<const ui::DataTransferEndpoint> data_dst,
+                   base::OnceClosure reporting_cb) override {
     helper_->WarnOnPaste(data_src, data_dst, std::move(reporting_cb));
   }
 
-  void WarnOnBlinkPaste(const ui::DataTransferEndpoint* const data_src,
-                        const ui::DataTransferEndpoint* const data_dst,
-                        content::WebContents* web_contents,
-                        base::OnceCallback<void(bool)> paste_cb) override {
+  void WarnOnBlinkPaste(
+      base::optional_ref<const ui::DataTransferEndpoint> data_src,
+      base::optional_ref<const ui::DataTransferEndpoint> data_dst,
+      content::WebContents* web_contents,
+      base::OnceCallback<void(bool)> paste_cb) override {
     blink_data_dst_.emplace(*data_dst);
     helper_->WarnOnBlinkPaste(data_src, data_dst, web_contents,
                               std::move(paste_cb));
   }
 
   bool ShouldPasteOnWarn(
-      const ui::DataTransferEndpoint* const data_dst) override {
+      base::optional_ref<const ui::DataTransferEndpoint> data_dst) override {
     if (force_paste_on_warn_) {
       return true;
     }
@@ -148,15 +149,15 @@ class FakeDlpController : public DataTransferDlpController,
   }
 
   void ReportWarningProceededEvent(
-      const ui::DataTransferEndpoint* const data_src,
-      const ui::DataTransferEndpoint* const data_dst,
+      base::optional_ref<const ui::DataTransferEndpoint> data_src,
+      base::optional_ref<const ui::DataTransferEndpoint> data_dst,
       const std::string& src_pattern,
       const std::string& dst_pattern,
       const DlpRulesManager::RuleMetadata& rule_metadata,
       bool is_clipboard_event) {
     DataTransferDlpController::ReportWarningProceededEvent(
-        base::OptionalFromPtr(data_src), base::OptionalFromPtr(data_dst),
-        src_pattern, dst_pattern, is_clipboard_event, rule_metadata);
+        data_src, data_dst, src_pattern, dst_pattern, is_clipboard_event,
+        rule_metadata);
   }
 
   raw_ptr<FakeClipboardNotifier> helper_ = nullptr;
@@ -374,8 +375,8 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpBrowserTest, BlockDestination) {
   FlushMessageLoop();
 }
 
-// TODO(b/293442668): Enable on Lacros.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
+// TODO(b/278719678): Enable on Lacros.
+#if BUILDFLAG(IS_CHROMEOS_LACROS) && !BUILDFLAG(IS_CHROMEOS_DEVICE)
 #define MAYBE_WarnDestination DISABLED_WarnDestination
 #else
 #define MAYBE_WarnDestination WarnDestination
@@ -428,10 +429,10 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpBrowserTest, MAYBE_WarnDestination) {
     ui::DataTransferEndpoint default_endpoint(ui::EndpointType::kDefault);
     auto data_src =
         std::make_unique<ui::DataTransferEndpoint>((GURL(kMailUrl)));
-    auto reporting_cb = base::BindRepeating(
-        &FakeDlpController::ReportWarningProceededEvent,
-        base::Unretained(dlp_controller_.get()), data_src.get(),
-        &default_endpoint, kMailUrl, "*", kRuleMetadata1, true);
+    auto reporting_cb =
+        base::BindOnce(&FakeDlpController::ReportWarningProceededEvent,
+                       base::Unretained(dlp_controller_.get()), data_src.get(),
+                       &default_endpoint, kMailUrl, "*", kRuleMetadata1, true);
     auto data = std::make_unique<ui::ClipboardData>();
     data->set_text(base::UTF16ToUTF8(std::u16string(kClipboardText116)));
     helper_.ProceedPressed(std::move(data), default_endpoint,

@@ -2,11 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
+
 import {ConfirmationPageElement} from 'chrome://os-feedback/confirmation_page.js';
 import {FakeFeedbackServiceProvider} from 'chrome://os-feedback/fake_feedback_service_provider.js';
 import {FeedbackFlowState} from 'chrome://os-feedback/feedback_flow.js';
-import {FeedbackAppPostSubmitAction, SendReportStatus} from 'chrome://os-feedback/feedback_types.js';
 import {setFeedbackServiceProviderForTesting} from 'chrome://os-feedback/mojo_interface_provider.js';
+import {FeedbackAppPostSubmitAction, SendReportStatus} from 'chrome://os-feedback/os_feedback_ui.mojom-webui.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -30,7 +32,7 @@ const OFFLINE_MESSAGE =
     'experience and will be reviewed by our team. Because of the large ' +
     'number of reports, we won’t be able to send a reply.';
 
-export function confirmationPageTest() {
+suite('confirmationPageTest', () => {
   /** @type {?ConfirmationPageElement} */
   let page = null;
 
@@ -389,4 +391,4 @@ export function confirmationPageTest() {
     verifyRecordPostSubmitActionCalled(
         false, FeedbackAppPostSubmitAction.kOpenDiagnosticsApp);
   });
-}
+});

@@ -9,7 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
-#include "ios/chrome/browser/omaha/omaha_service.h"
+#include "ios/chrome/browser/omaha/model/omaha_service.h"
 #include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #include "ios/chrome/grit/ios_resources.h"

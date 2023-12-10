@@ -172,19 +172,19 @@ void WebEngineIntegrationTestBase::GrantPermission(
 
 std::string WebEngineIntegrationTestBase::ExecuteJavaScriptWithStringResult(
     base::StringPiece script) {
-  absl::optional<base::Value> value = ExecuteJavaScript(frame_.get(), script);
+  std::optional<base::Value> value = ExecuteJavaScript(frame_.get(), script);
   return value ? value->GetString() : std::string();
 }
 
 double WebEngineIntegrationTestBase::ExecuteJavaScriptWithDoubleResult(
     base::StringPiece script) {
-  absl::optional<base::Value> value = ExecuteJavaScript(frame_.get(), script);
+  std::optional<base::Value> value = ExecuteJavaScript(frame_.get(), script);
   return value ? value->GetDouble() : 0.0;
 }
 
 bool WebEngineIntegrationTestBase::ExecuteJavaScriptWithBoolResult(
     base::StringPiece script) {
-  absl::optional<base::Value> value = ExecuteJavaScript(frame_.get(), script);
+  std::optional<base::Value> value = ExecuteJavaScript(frame_.get(), script);
   return value ? value->GetBool() : false;
 }
 

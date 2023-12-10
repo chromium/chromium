@@ -18,6 +18,10 @@
 - (void)pageChanged:(TabGridPage)currentPage
         interaction:(TabSwitcherPageChangeInteraction)interaction;
 
+// Notify the model that a drag and drop session started or ended.
+- (void)dragAndDropSessionStarted;
+- (void)dragAndDropSessionEnded;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_TAB_GRID_MUTATOR_H_

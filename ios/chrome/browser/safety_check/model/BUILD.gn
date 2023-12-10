@@ -21,7 +21,7 @@ source_set("model") {
     "//components/password_manager/core/browser",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//components/version_info",
-    "//ios/chrome/browser/omaha",
+    "//ios/chrome/browser/omaha/model",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/ui/content_suggestions:constants",
     "//ios/chrome/browser/ui/ntp/metrics:home_metrics",
@@ -57,10 +57,7 @@ source_set("constants") {
     "ios_chrome_safety_check_manager_constants.cc",
     "ios_chrome_safety_check_manager_constants.h",
   ]
-  public_deps = [
-    "//base",
-    "//third_party/abseil-cpp:absl",
-  ]
+  public_deps = [ "//base" ]
 }
 
 source_set("utils") {
@@ -72,7 +69,6 @@ source_set("utils") {
   deps = [
     ":constants",
     "//base",
-    "//components/password_manager/core/common:features",
     "//ios/chrome/browser/passwords/model",
     "//ios/chrome/browser/passwords/model:password_checkup_utils",
   ]
@@ -89,7 +85,6 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/password_manager/core/browser",
     "//components/password_manager/core/browser:test_support",
-    "//components/password_manager/core/common:features",
     "//components/prefs",
     "//components/prefs:test_support",
     "//components/safe_browsing/core/common:safe_browsing_prefs",

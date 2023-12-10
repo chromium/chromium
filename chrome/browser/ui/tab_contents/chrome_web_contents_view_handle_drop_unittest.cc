@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 
@@ -31,7 +32,6 @@
 #include "content/public/common/drop_data.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class DragDropTestContentAnalysisDelegate
     : public enterprise_connectors::test::FakeContentAnalysisDelegate {
@@ -212,7 +212,7 @@ class ChromeWebContentsViewDelegateHandleOnPerformingDrop
         contents(), data,
         base::BindLambdaForTesting(
             [&data, &successful_text_scan, &successful_file_paths,
-             quit_closure](absl::optional<content::DropData> result_data) {
+             quit_closure](std::optional<content::DropData> result_data) {
               if (successful_text_scan || !successful_file_paths.empty()) {
                 EXPECT_TRUE(result_data.has_value());
                 EXPECT_EQ(result_data->filenames.size(),

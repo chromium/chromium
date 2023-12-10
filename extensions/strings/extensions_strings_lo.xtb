@@ -8,6 +8,7 @@
 <translation id="1420684932347524586">ຢະ! ສ້າງລະຫັດສ່ວນຕົວ RSA ​ແບບສຸ່ມບໍ່ສໍາເລັດ.</translation>
 <translation id="1445572445564823378">ສ່ວນຂະຫຍາຍນີ້ກໍາລັງຊ້າລົງ <ph name="PRODUCT_NAME" />. ທ່ານຄວນຈະປິດໃຊ້ງານມັນ​ເພື່ອ​ກູ້​ຄືນ​ການ​ໃຊ້​ງານ​ຂອງ <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1468038450257740950">WebGL ບໍ່ຮອງຮັບ.</translation>
+<translation id="1610570795592207282">ບໍ່ສາມາດໂຫຼດ css '<ph name="RELATIVE_PATH" />' ສໍາລັບສະຄຣິບໄດ້.</translation>
 <translation id="1803557475693955505">ບໍ່ສາມາດໂຫຼດໜ້າພື້ນຫຼັງໄດ້ '<ph name="BACKGROUND_PAGE" />'.</translation>
 <translation id="2159915644201199628">ບໍ່ສາມາດຖອດລະຫັດຮູບໄດ້: '<ph name="IMAGE_NAME" />'</translation>
 <translation id="2350172092385603347">ໃຊ້ການຈໍາກັດແລ້ວ, ແຕ່ default_locale ບໍ່ໄດ້ກໍານົດຢູ່ໃນໃບລາຍການ.</translation>
@@ -18,14 +19,12 @@
 <translation id="3115238746683532089">ຜະ​ລິດ​ຕະ​ພັນ​ບໍ່​ຮູ້​ຈັກ <ph name="PRODUCT_ID" /> ຈາກຜູ້​ຂາຍ <ph name="VENDOR_ID" /> (ເລກ​ລຳ​ດັບ <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">ປ່ຽນແທນໄຟລ໌ crx ບໍ່ໄດ້. ກວດກາເບິ່ງວ່າ ໄຟລ໌ໃຊ້ງານຢູ່ຫຼືບໍ່.</translation>
 <translation id="3163201441334626963">ຜະ​ລິດ​ຕະ​ພັນ​ບໍ່​ຮູ້​ຈັກ <ph name="PRODUCT_ID" /> ຈາກ​ຜູ້​ຂາຍ <ph name="VENDOR_ID" /></translation>
-<translation id="3302709122321372472">ບໍ່​ສາ​ມາດ​ໂຫຼດ css '<ph name="RELATIVE_PATH" />' ສໍາລັບຕົວໜັງສືເນື້ອໃນໄດ້.</translation>
 <translation id="3369521687965833290">ບໍ່ສາມາດແກະກ່ອງສ່ວນຂະຫຍາຍໄດ້. ເພື່ອແກະກ່ັງສ່ວນຂະຫຍາຍຢ່າງປອດໄພ, ຕ້ອງມີຊ່ອງທາງໃຫ້ກັບໄດເຣັກຕໍຣີໂປຣໄຟລ໌ຂອງທ່ານທີ່ເລີ່ມຕົ້ນກັບໜັງສືດຣ້າຍ ແລະບໍ່ມີບ່ອນຕໍ່ກັນ, ຈຸດຕໍ່, ຫຼືຊິມລິ້ງ (symlink). ບໍ່ມີຊ່ອງທາງດັ່ງກ່າວຢູ່ສໍາລັບໂປຣໄຟລ໌ຂອງທ່ານ.</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (ເລກ​ລຳ​ດັບ <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> ຈາກຜູ້​ຂາຍ <ph name="VENDOR_ID" /> (ເລກ​ລຳ​ດັບ <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">ຄ່າປ້ອນເຂົ້າສໍາລັບປຸ່ມສ່ວນຕົວຕ້ອງເປັນຊ່ອງທາງທີ່ຖືກຕ້ອງ.</translation>
 <translation id="388442998277590542">ບໍ່ສາມາດໂຫຼດໜ້າທາງເລືອກ '<ph name="OPTIONS_PAGE" />' ໄດ້.</translation>
 <translation id="3984413272403535372">ຜິດພາດໃນຂະນະທີ່ກໍາລັງເຊັນສ່ວນຂະຫຍາຍ.</translation>
-<translation id="39964277676607559">ບໍ່ສາມາດໂຫຼດ javascript '<ph name="RELATIVE_PATH" />' ສໍາລັບຕົວໜັງສືເນື້ອໃນໄດ້.</translation>
 <translation id="4115165561519362854">ຜູ້​ຄວບ​ຄຸມ​ເຄື່ອງ​ຈັກ​ນີ້​ຕອງ​ການ <ph name="EXTENSION_NAME" /> ໃຫ້​ມີ <ph name="EXTENSION_VERSION" /> ເວີ​ຊັນ​ຕ່ຳ​ສຸດ. ມັນ​ບໍ່​ສາ​ມາດ​ເປີດ​ໃຊ້​ງານ​ໄດ້ ຈົນ​ກວ່າ​ມັນ​ໄດ້​ອັບ​ເດດ​ເປັນ​ເວີ​ຊັນ​ນັ້ນ (ຫຼື​ສູງກວ່າ).</translation>
 <translation id="4233778200880751280">ບໍ່​ສາ​ມາດ​ໂຫຼດ​ກ່ຽວ​ກັບ​ຫນ້າ​ " <ph name="ABOUT_PAGE" /> .</translation>
 <translation id="471800408830181311">ສົ່ງປຸ່ມສ່ວນຕົວອອກມາບໍ່ໄດ້.</translation>
@@ -33,6 +32,7 @@
 <translation id="4988792151665380515">ສົ່ງປຸ່ມທົ່ວໄປອອກບໍ່ສໍາເລັດ.</translation>
 <translation id="5026754133087629784">ມຸມມອງເວັບ: <ph name="WEBVIEW_TAG_NAME" /></translation>
 <translation id="5098647635849512368">ບໍ່ສາມາດຊອກຫາຊ່ອງທາງສົມບູນໄປຫາບັນຊີລາຍຊື່ໄປຫາກ່ອງໄດ້.</translation>
+<translation id="5160071981665899014">ບໍ່ສາມາດໂຫຼດ javascript '<ph name="RELATIVE_PATH" />' ສຳລັບສະຄຣິບໄດ້.</translation>
 <translation id="5356315618422219272">Appview: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5436430103864390185">ໜ້າຕ່າງທີ່ຈັດຮູບຮ່າງແລ້ວບໍ່ຮອງຮັບ.</translation>
 <translation id="5456409301717116725">ສ່ວນຂະຫຍາຍນີ້ລວມມີໄຟລ໌ລະຫັດ <ph name="KEY_PATH" /> . ທ່ານ​ອາດ​ຈະ​ບໍ່​ຕ້ອງ​ການ​ທີ່​ຈະ​ເຮັດ​ແນວ​ນັ້ນ​.</translation>

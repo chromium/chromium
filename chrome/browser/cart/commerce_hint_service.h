@@ -40,7 +40,7 @@ class CommerceHintService
 
   // Testing-only. Used to initialize commerce heuristics data in browser
   // process for testing.
-  bool InitializeCommerceHeuristicsForTesting(
+  static bool InitializeCommerceHeuristicsForTesting(
       base::Version version,
       const std::string& hint_json_data,
       const std::string& global_json_data,

@@ -9,7 +9,7 @@ import org.chromium.ui.base.PhotoPickerDelegate;
 /**
  * A shared base implementation of {@link PhotoPickerDelegate}.
  *
- * Routes queries, of which flavor of the Media Picker to run, to the feature flag params.
+ * <p>Routes queries, of which flavor of the Media Picker to run, to the feature flag params.
  */
 public abstract class PhotoPickerDelegateBase implements PhotoPickerDelegate {
     protected PhotoPickerDelegateBase() {}

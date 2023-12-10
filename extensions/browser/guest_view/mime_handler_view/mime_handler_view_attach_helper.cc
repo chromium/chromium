@@ -15,7 +15,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
 #include "base/strings/stringprintf.h"
-#include "base/unguessable_token.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
@@ -107,8 +106,8 @@ std::string MimeHandlerViewAttachHelper::OverrideBodyForInterceptedResponse(
     const GURL& resource_url,
     const std::string& mime_type,
     const std::string& stream_id,
+    const std::string& internal_id,
     base::OnceClosure resume_load) {
-  std::string internal_id = base::UnguessableToken::Create().ToString();
   content::GetUIThreadTaskRunner({})->PostTaskAndReply(
       FROM_HERE,
       base::BindOnce(CreateFullPageMimeHandlerView,

@@ -30,8 +30,6 @@ class VP9Delegate : public VP9Decoder::VP9Accelerator {
                       const Vp9LoopFilterParams& lf_params,
                       const Vp9ReferenceFrameVector& reference_frames) override;
   bool OutputPicture(scoped_refptr<VP9Picture> pic) override;
-  bool GetFrameContext(scoped_refptr<VP9Picture> pic,
-                       Vp9FrameContext* frame_ctx) override;
   bool NeedsCompressedHeaderParsed() const override;
 
  private:

@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/login/screens/update_screen.h"
 
 #include <memory>
+#include <optional>
 
 #include "ash/constants/ash_features.h"
 #include "base/functional/callback_forward.h"
@@ -36,7 +37,6 @@
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "content/public/test/browser_test.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace ash {
@@ -273,7 +273,7 @@ class UpdateScreenTest : public OobeBaseTest,
 
   base::HistogramTester histogram_tester_;
 
-  absl::optional<UpdateScreen::Result> last_screen_result_;
+  std::optional<UpdateScreen::Result> last_screen_result_;
 
  private:
   void HandleScreenExit(UpdateScreen::Result result) {
@@ -991,7 +991,7 @@ IN_PROC_BROWSER_TEST_P(UpdateScreenTest,
   ASSERT_EQ(update_engine_client()->reboot_after_update_call_count(), 1);
 
   // Simulate the situation where reboot does not happen in time.
-  ASSERT_TRUE(version_updater_->GetRebootTimerForTesting()->IsRunning());
+  ASSERT_TRUE(version_updater_->get_reboot_timer_for_testing()->IsRunning());
   mocked_task_runner->FastForwardBy(kTimeDefaultWaiting);
 
   test::OobeJS().ExpectHiddenPath(kRestartingDialog);
@@ -1091,7 +1091,7 @@ IN_PROC_BROWSER_TEST_P(UpdateScreenTest, DISABLED_UpdateScreenSteps) {
   ASSERT_EQ(update_engine_client()->reboot_after_update_call_count(), 1);
 
   // Simulate the situation where reboot does not happen in time.
-  ASSERT_TRUE(version_updater_->GetRebootTimerForTesting()->IsRunning());
+  ASSERT_TRUE(version_updater_->get_reboot_timer_for_testing()->IsRunning());
   mocked_task_runner->FastForwardBy(kTimeDefaultWaiting);
 
   test::OobeJS().ExpectHiddenPath(kBetterUpdateCheckingForUpdatesDialog);

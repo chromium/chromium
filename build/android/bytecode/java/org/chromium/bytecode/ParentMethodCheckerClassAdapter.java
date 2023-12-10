@@ -36,7 +36,12 @@ class ParentMethodCheckerClassAdapter extends ClassVisitor {
     }
 
     @Override
-    public void visit(int version, int access, String name, String signature, String superName,
+    public void visit(
+            int version,
+            int access,
+            String name,
+            String signature,
+            String superName,
             String[] interfaces) {
         super.visit(version, access, name, signature, superName, interfaces);
 
@@ -56,7 +61,8 @@ class ParentMethodCheckerClassAdapter extends ClassVisitor {
         }
 
         for (MethodDescription methodToCheck : mMethodsToCheck) {
-            if (methodToCheck.shouldCreateOverride != null || !methodToCheck.methodName.equals(name)
+            if (methodToCheck.shouldCreateOverride != null
+                    || !methodToCheck.methodName.equals(name)
                     || !methodToCheck.description.equals(descriptor)) {
                 continue;
             }

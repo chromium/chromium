@@ -24,14 +24,14 @@
 // Display WhatsNew as a promo.
 - (void)showWhatsNewPromo;
 
-// Display the choice screen as a promo.
-- (void)showChoicePromo;
-
 // Display default browser promo.
 - (void)maybeDisplayDefaultBrowserPromo;
 
 // Display the default browser promo after the user tapped Remind Me Later.
 - (void)displayDefaultBrowserPromoAfterRemindMeLater;
+
+// Display the omnibox position choice screen as a promo.
+- (void)showOmniboxPositionChoicePromo;
 
 @end
 

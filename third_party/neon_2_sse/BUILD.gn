@@ -10,6 +10,9 @@ config("neon_2_sse_include") {
 config("neon_2_sse_flags") {
   if (target_cpu == "x64") {
     cflags = [ "-Wno-deprecated-declarations" ]
+    if (is_clang) {
+      cflags += [ "-Wno-gnu-inline-cpp-without-extern" ]
+    }
   }
 }
 

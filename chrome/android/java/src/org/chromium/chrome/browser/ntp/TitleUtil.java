@@ -10,9 +10,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.url.GURL;
 
-/**
- * Provides functions for working with link titles.
- */
+/** Provides functions for working with link titles. */
 public final class TitleUtil {
     private TitleUtil() {}
 

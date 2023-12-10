@@ -35,12 +35,12 @@ std::string QuickStartScreen::GetResultString(Result result) {
       return "CancelAndReturnToWelcome";
     case Result::CANCEL_AND_RETURN_TO_NETWORK:
       return "CancelAndReturnToNetwork";
+    case Result::CANCEL_AND_RETURN_TO_GAIA_INFO:
+      return "CancelAndReturnToGaiaInfo";
     case Result::CANCEL_AND_RETURN_TO_SIGNIN:
       return "CancelAndReturnToSignin";
     case Result::WIFI_CREDENTIALS_RECEIVED:
       return "WifiCredentialsReceived";
-    case Result::WIFI_CONNECTED:
-      return "WifiConnected";
   }
 }
 
@@ -83,7 +83,8 @@ void QuickStartScreen::OnUserAction(const base::Value::List& args) {
   const std::string& action_id = args[0].GetString();
   if (action_id == kUserActionCancelClicked) {
     controller_->DetachFrontend(this);
-    controller_->AbortFlow();
+    controller_->AbortFlow(quick_start::QuickStartController::AbortFlowReason::
+                               USER_CLICKED_CANCEL);
     ExitScreen();
   } else {
     BaseScreen::OnUserAction(args);
@@ -138,6 +139,9 @@ void QuickStartScreen::ExitScreen() {
       return;
     case ash::quick_start::QuickStartController::EntryPoint::NETWORK_SCREEN:
       exit_callback_.Run(Result::CANCEL_AND_RETURN_TO_NETWORK);
+      return;
+    case ash::quick_start::QuickStartController::EntryPoint::GAIA_INFO_SCREEN:
+      exit_callback_.Run(Result::CANCEL_AND_RETURN_TO_GAIA_INFO);
       return;
     case ash::quick_start::QuickStartController::EntryPoint::GAIA_SCREEN:
       exit_callback_.Run(Result::CANCEL_AND_RETURN_TO_SIGNIN);

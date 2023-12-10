@@ -76,19 +76,19 @@ constexpr base::TimeDelta kLoadTimeout = base::Seconds(3);
 // Gets the list from the given `dictionary` by given `key`, and returns it as a
 // string with all list values joined by ','. Returns nullopt if `key` is not
 // found.
-absl::optional<std::string> JoinListValuesToString(
+std::optional<std::string> JoinListValuesToString(
     const base::Value::Dict& dictionary,
     base::StringPiece key) {
   const base::Value::List* list_value = dictionary.FindList(key);
   if (list_value == nullptr)
-    return absl::nullopt;
+    return std::nullopt;
 
   std::string buffer;
   bool first = true;
   for (const auto& v : *list_value) {
     const std::string* value = v.GetIfString();
     if (!value)
-      return absl::nullopt;
+      return std::nullopt;
 
     if (first)
       first = false;
@@ -103,49 +103,49 @@ absl::optional<std::string> JoinListValuesToString(
 
 // Gets the list from the given `dictionary` by given `key`, and returns the
 // first value of the list as string. Returns nullopt if `key` is not found.
-absl::optional<std::string> GetFirstListValueAsString(
+std::optional<std::string> GetFirstListValueAsString(
     const base::Value::Dict& dictionary,
     base::StringPiece key) {
   const base::Value::List* list_value = dictionary.FindList(key);
   if (list_value == nullptr || list_value->empty()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   const std::string* value = list_value->begin()->GetIfString();
   if (value == nullptr)
-    return absl::nullopt;
+    return std::nullopt;
 
   return *value;
 }
 
-absl::optional<std::string> GetKeyboardLayoutFromRegionalData(
+std::optional<std::string> GetKeyboardLayoutFromRegionalData(
     const base::Value::Dict& region_dict) {
   return JoinListValuesToString(region_dict, kKeyboardsPath);
 }
 
-absl::optional<std::string> GetKeyboardMechanicalLayoutFromRegionalData(
+std::optional<std::string> GetKeyboardMechanicalLayoutFromRegionalData(
     const base::Value::Dict& region_dict) {
   const std::string* value =
       region_dict.FindString(kKeyboardMechanicalLayoutPath);
   if (value == nullptr)
-    return absl::nullopt;
+    return std::nullopt;
 
   return *value;
 }
 
-absl::optional<std::string> GetInitialTimezoneFromRegionalData(
+std::optional<std::string> GetInitialTimezoneFromRegionalData(
     const base::Value::Dict& region_dict) {
   return GetFirstListValueAsString(region_dict, kTimeZonesPath);
 }
 
-absl::optional<std::string> GetInitialLocaleFromRegionalData(
+std::optional<std::string> GetInitialLocaleFromRegionalData(
     const base::Value::Dict& region_dict) {
   return JoinListValuesToString(region_dict, kLocalesPath);
 }
 
 // Array mapping region keys to their extracting functions.
 constexpr std::pair<const char*,
-                    absl::optional<std::string> (*)(const base::Value::Dict&)>
+                    std::optional<std::string> (*)(const base::Value::Dict&)>
     kRegionKeysToExtractors[] = {
         {kInitialLocaleKey, &GetInitialLocaleFromRegionalData},
         {kKeyboardLayoutKey, &GetKeyboardLayoutFromRegionalData},
@@ -301,27 +301,28 @@ void StatisticsProviderImpl::ScheduleOnMachineStatisticsLoaded(
                                                            std::move(callback));
 }
 
-absl::optional<base::StringPiece> StatisticsProviderImpl::GetMachineStatistic(
+std::optional<base::StringPiece> StatisticsProviderImpl::GetMachineStatistic(
     base::StringPiece name) {
   VLOG(1) << "Machine Statistic requested: " << name;
   if (!WaitForStatisticsLoaded()) {
     LOG(ERROR) << "GetMachineStatistic called before load started: " << name;
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Test region should override any other value.
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kCrosRegion)) {
-    if (const absl::optional<base::StringPiece> region_result =
-            GetRegionalInformation(name))
+    if (const std::optional<base::StringPiece> region_result =
+            GetRegionalInformation(name)) {
       return region_result;
+    }
   }
 
   if (const auto iter = machine_info_.find(name); iter != machine_info_.end()) {
     return base::StringPiece(iter->second);
   }
 
-  if (const absl::optional<base::StringPiece> region_result =
+  if (const std::optional<base::StringPiece> region_result =
           GetRegionalInformation(name)) {
     return region_result;
   }
@@ -331,7 +332,7 @@ absl::optional<base::StringPiece> StatisticsProviderImpl::GetMachineStatistic(
     VLOG(1) << "Requested statistic not found: " << name;
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 StatisticsProviderImpl::FlagValue StatisticsProviderImpl::GetMachineFlag(
@@ -651,17 +652,17 @@ void StatisticsProviderImpl::LoadRegionsFile(const base::FilePath& filename,
   }
 }
 
-absl::optional<base::StringPiece>
-StatisticsProviderImpl::GetRegionalInformation(base::StringPiece name) const {
+std::optional<base::StringPiece> StatisticsProviderImpl::GetRegionalInformation(
+    base::StringPiece name) const {
   if (!base::Contains(machine_info_, kRegionKey)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (const auto iter = region_info_.find(name); iter != region_info_.end()) {
     return base::StringPiece(iter->second);
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 }  // namespace ash::system

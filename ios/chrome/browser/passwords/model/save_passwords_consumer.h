@@ -10,7 +10,7 @@
 #include <memory>
 #include <vector>
 
-#include "components/password_manager/core/browser/password_store_consumer.h"
+#include "components/password_manager/core/browser/password_store/password_store_consumer.h"
 
 @protocol SavePasswordsConsumerDelegate
 

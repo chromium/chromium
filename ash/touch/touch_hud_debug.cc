@@ -15,6 +15,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/aura/window_event_dispatcher.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/display.h"
 #include "ui/display/manager/display_manager.h"
@@ -170,6 +172,8 @@ class TouchLog {
 
 // TouchHudCanvas draws touch traces in |FULLSCREEN| and |REDUCED_SCALE| modes.
 class TouchHudCanvas : public views::View {
+  METADATA_HEADER(TouchHudCanvas, views::View)
+
  public:
   explicit TouchHudCanvas(const TouchLog& touch_log)
       : touch_log_(touch_log), scale_(1) {
@@ -250,6 +254,9 @@ class TouchHudCanvas : public views::View {
 
   int scale_;
 };
+
+BEGIN_METADATA(TouchHudCanvas)
+END_METADATA
 
 TouchHudDebug::TouchHudDebug(aura::Window* initial_root)
     : TouchObserverHud(initial_root, "TouchHudDebug"),

@@ -22,15 +22,15 @@ TEST(JsonSchemaCompilerAdditionalPropertiesTest,
     type_value.Set("string", "value");
     type_value.Set("other", 9);
     type_value.Set("another", std::move(list_value));
-    ap::AdditionalPropertiesType type;
-    ASSERT_TRUE(ap::AdditionalPropertiesType::Populate(type_value, type));
-    EXPECT_EQ(type.additional_properties, type_value);
+    auto type = ap::AdditionalPropertiesType::FromValue(type_value);
+    ASSERT_TRUE(type);
+    EXPECT_EQ(type->additional_properties, type_value);
   }
   {
     base::Value::Dict type_dict;
     type_dict.Set("string", 3);
-    ap::AdditionalPropertiesType type;
-    EXPECT_FALSE(ap::AdditionalPropertiesType::Populate(type_dict, type));
+    auto type = ap::AdditionalPropertiesType::FromValue(type_dict);
+    EXPECT_FALSE(type);
   }
 }
 
@@ -42,7 +42,7 @@ TEST(JsonSchemaCompilerAdditionalPropertiesTest,
   base::Value param_object_value(std::move(param_object_dict));
   base::Value::List params_value;
   params_value.Append(param_object_value.Clone());
-  absl::optional<ap::AdditionalProperties::Params> params(
+  std::optional<ap::AdditionalProperties::Params> params(
       ap::AdditionalProperties::Params::Create(params_value));
   EXPECT_TRUE(params.has_value());
   EXPECT_EQ(params->param_object.additional_properties, param_object_value);

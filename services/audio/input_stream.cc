@@ -10,7 +10,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/trace_event.h"
@@ -269,7 +268,7 @@ void InputStream::OnError(InputController::ErrorCode error_code) {
   OnStreamError(InputErrorToDisconnectReason(error_code));
 }
 
-void InputStream::OnLog(base::StringPiece message) {
+void InputStream::OnLog(std::string_view message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
   if (log_)
     log_->OnLogMessage(std::string(message) + " [id=" + id_.ToString() + "]");

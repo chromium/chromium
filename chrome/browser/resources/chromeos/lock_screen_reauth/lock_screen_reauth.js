@@ -23,6 +23,7 @@ import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 
 import {assert} from 'chrome://resources/ash/common/assert.js';
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
+import {sendWithPromise} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -169,6 +170,17 @@ class LockReauth extends LockReauthBase {
      * @private
      */
     this.signinFrame_ = undefined;
+
+    /**
+     * Gaia path which can serve as a fallback in reloading scenarios. Expected
+     * to correspond to editable Gaia username page.
+     * TODO(b/259181755): this should no longer be needed once we change the
+     * implementation of the "Enter Google Account info" button to fully reload
+     * the flow through cpp code.
+     * @type {string}
+     * @private
+     */
+    this.fallbackGaiaPath_ = '';
   }
 
   /** @override */
@@ -183,6 +195,10 @@ class LockReauth extends LockReauthBase {
         'authCompleted', (e) => void this.onAuthCompletedMessage_(e));
     this.authenticator_.addEventListener(
         'loadAbort', (e) => void this.onLoadAbortMessage_(e.detail));
+    this.authenticator_.addEventListener('getDeviceId', (e) => {
+      sendWithPromise('getDeviceId')
+          .then(deviceId => this.authenticator_.getDeviceIdResponse(deviceId));
+    });
     chrome.send('initialize');
   }
 
@@ -223,12 +239,15 @@ class LockReauth extends LockReauthBase {
   /**
    * Loads the authentication parameters.
    * @param {!Object} data authenticator parameters bag.
+   * @suppress {missingProperties}
    */
   loadAuthenticator(data) {
     assert(
         'webviewPartitionName' in data,
         'ERROR: missing webview partition name');
     this.authenticator_.setWebviewPartition(data.webviewPartitionName);
+    this.fallbackGaiaPath_ = data.fallbackGaiaPath;
+
     const params = {};
     SUPPORTED_PARAMS.forEach(name => {
       if (data.hasOwnProperty(name)) {
@@ -430,6 +449,11 @@ class LockReauth extends LockReauthBase {
     this.authenticatorParams_.doSamlRedirect = false;
     this.authenticatorParams_.enableGaiaActionButtons = true;
     this.isDefaultSsoProvider = false;
+    // Replace Gaia path with a fallback path to land on Gaia username page.
+    assert(
+        this.fallbackGaiaPath_,
+        'fallback Gaia path needed when trying to switch from SAML to Gaia');
+    this.authenticatorParams_.gaiaPath = this.fallbackGaiaPath_;
     this.authenticator_.load(
         AuthMode.DEFAULT,
         /** @type {AuthParams} */ (this.authenticatorParams_));

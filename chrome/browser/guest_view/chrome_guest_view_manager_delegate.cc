@@ -9,9 +9,9 @@
 #include "chrome/browser/task_manager/web_contents_tags.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
+#include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_system_session.h"
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace extensions {
 
@@ -32,11 +32,22 @@ void ChromeGuestViewManagerDelegate::OnGuestAdded(
   // Notifies kiosk system session about the added guest.
   // TODO(b/233167287): Implement guest view handling for Lacros.
   ash::KioskSystemSession* session =
-      ash::KioskAppManager::Get()->kiosk_system_session();
+      ash::KioskChromeAppManager::Get()->kiosk_system_session();
   if (session) {
     session->OnGuestAdded(guest_web_contents);
   }
 #endif
+}
+
+// ExtensionsGuestViewManagerDelegate::IsGuestAvailableToContextWithFeature()
+// will check for the availability of the feature provided by |guest|. If the
+// API feature provided is "controlledFrameInternal", the controlled_frame.cc's
+// AvailabilityCheck will be run to verify the associated RenderFrameHost is
+// isolated and that it's only exposed in the expected schemes / feature modes.
+bool ChromeGuestViewManagerDelegate::IsOwnedByControlledFrameEmbedder(
+    const guest_view::GuestViewBase* guest) {
+  return ExtensionsGuestViewManagerDelegate::
+      IsGuestAvailableToContextWithFeature(guest, "controlledFrameInternal");
 }
 
 }  // namespace extensions

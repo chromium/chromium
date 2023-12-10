@@ -112,6 +112,10 @@ struct App {
   // The amount of storage (in bytes) used by the app's data.
   [MinVersion=21]
   uint64? data_size_in_bytes@31;
+
+  [MinVersion=22]
+  // Whether the app publisher allows the app to be closed.
+  OptionalBool allow_close@32;
 };
 
 // The types of apps available in the registry.
@@ -473,6 +477,7 @@ enum LaunchSource {
   [MinVersion=10] kFromProtocolHandler,          // Protocol handler.
   [MinVersion=10] kFromUrlHandler,               // Url handler.
   [MinVersion=11] kFromSysTrayCalendar,          // System Tray Calendar.
+  [MinVersion=12] kFromInstaller,                // Installation UI.
 };
 
 [Stable, Extensible]
@@ -583,6 +588,9 @@ struct AppShortcut {
   // Represents what icon should be loaded for this shortcut, icon key will
   // change if the icon has been updated from the publisher.
   IconKey? icon_key@3;
+
+  // Whether the shortcut publisher allows the shortcut to be removed by user.
+  [MinVersion=1] bool? allow_removal@4;
 };
 
 // DEPRECATED
@@ -596,4 +604,33 @@ struct REMOVED_01 {
 
   // DEPRECATED
   uint8 position@2;
+};
+
+// Controller registration result in App Service.
+[Stable, Extensible]
+enum ControllerRegistrationResult {
+  [Default] kSuccess              = 0,
+  kFailed                         = 1,
+};
+
+
+// Represents parameters for installing an app.
+[Stable]
+struct InstallAppParams {
+  // Represents the origin of the installation.
+  [Stable, Extensible]
+  enum Surface {
+    [Default] kUnknown = 0,
+    kAppInstallNavigationThrottle = 1,
+  };
+  Surface surface@0;
+
+  // Represents which package_id to fetch from Almanac to be installed.
+  string? package_id@1;
+};
+
+// Represents the result of an InstallApp() request.
+// Currently empty but will be extended with fields as needed.
+[Stable]
+struct AppInstallResult {
 };

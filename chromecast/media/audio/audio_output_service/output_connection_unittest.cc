@@ -146,7 +146,10 @@ TEST_F(OutputConnectionTest, ConnectSucceed) {
 
 TEST_F(OutputConnectionTest, ConnectFail) {
   EXPECT_CALL(*audio_socket_broker_, GetSocketDescriptor(_))
-      .WillRepeatedly(RunOnceCallback<0>(mojo::PlatformHandle()));
+      .WillRepeatedly(
+          [](mojom::AudioSocketBroker::GetSocketDescriptorCallback callback) {
+            std::move(callback).Run(mojo::PlatformHandle());
+          });
   EXPECT_CALL(*output_connection_, OnConnected(_)).Times(0);
   EXPECT_CALL(*output_connection_, OnConnectionFailed()).Times(1);
 

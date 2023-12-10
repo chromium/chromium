@@ -217,7 +217,7 @@ infobars::InfoBar* TabSharingInfoBarDelegate::Create(
     const std::u16string& capturer_name,
     bool shared_tab,
     ButtonState share_this_tab_instead_button_state,
-    absl::optional<FocusTarget> focus_target,
+    std::optional<FocusTarget> focus_target,
     TabSharingUI* ui,
     TabShareType capture_type,
     bool favicons_used_for_switch_to_tab_button) {
@@ -234,7 +234,7 @@ TabSharingInfoBarDelegate::TabSharingInfoBarDelegate(
     std::u16string capturer_name,
     bool shared_tab,
     ButtonState share_this_tab_instead_button_state,
-    absl::optional<FocusTarget> focus_target,
+    std::optional<FocusTarget> focus_target,
     TabSharingUI* ui,
     TabShareType capture_type,
     bool favicons_used_for_switch_to_tab_button)

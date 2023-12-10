@@ -10,7 +10,6 @@
 #include "ash/ash_export.h"
 #include "ash/public/cpp/keyboard/keyboard_controller_observer.h"
 #include "ash/public/cpp/session/session_observer.h"
-#include "ash/public/cpp/tablet_mode_observer.h"
 #include "ash/shelf/shelf_observer.h"
 #include "ash/shell_observer.h"
 #include "ash/system/eche/eche_icon_loading_indicator_view.h"
@@ -24,10 +23,15 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
+#include "ui/display/display_observer.h"
 #include "ui/events/event_handler.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/controls/button/button.h"
 #include "url/gurl.h"
+
+namespace display {
+enum class TabletState;
+}  // namespace display
 
 namespace views {
 
@@ -55,7 +59,6 @@ namespace ash {
 
 class AshWebView;
 class PhoneHubTray;
-class TabletModeController;
 class TrayBubbleView;
 class TrayBubbleWrapper;
 class SessionControllerImpl;
@@ -70,7 +73,7 @@ class ASH_EXPORT EcheTray
       public ScreenLayoutObserver,
       public ShelfObserver,
       public SystemTrayObserver,
-      public TabletModeObserver,
+      public display::DisplayObserver,
       public KeyboardControllerObserver,
       public ShellObserver,
       public eche_app::EcheConnectionStatusHandler::Observer {
@@ -316,13 +319,15 @@ class ASH_EXPORT EcheTray
   // ShelfObserver:
   void OnAutoHideStateChanged(ShelfAutoHideState new_state) override;
 
-  // TabletModeObserver:
-  void OnTabletModeStarted() override;
-  void OnTabletModeEnded() override;
+  // display::DisplayObserver:
+  void OnDisplayTabletStateChanged(display::TabletState state) override;
 
   // ShellObserver:
   void OnShelfAlignmentChanged(aura::Window* root_window,
                                ShelfAlignment old_alignment) override;
+
+  // Called when the display tablet state is changed to kInTabletMode.
+  void OnTabletModeStarted();
 
   // Processes the accelerator keys and returns true if the accelerator was
   // processed completely in this method and no further processing is needed.
@@ -380,7 +385,7 @@ class ASH_EXPORT EcheTray
 
   // The time a stream is initializing. Used to record the elapsed time from
   // when the stream is initializing to when the stream is closed by user.
-  absl::optional<base::TimeTicks> init_stream_timestamp_;
+  std::optional<base::TimeTicks> init_stream_timestamp_;
 
   // The orientation of the stream (portrait vs landscape). The default
   // orientation is portrait.
@@ -393,12 +398,11 @@ class ASH_EXPORT EcheTray
   base::ScopedObservation<SessionControllerImpl, SessionObserver>
       observed_session_{this};
   base::ScopedObservation<Shelf, ShelfObserver> shelf_observation_{this};
-  base::ScopedObservation<TabletModeController, TabletModeObserver>
-      tablet_mode_observation_{this};
   base::ScopedObservation<Shell, ShellObserver> shell_observer_{this};
   base::ScopedObservation<keyboard::KeyboardUIController,
                           KeyboardControllerObserver>
       keyboard_observation_{this};
+  display::ScopedDisplayObserver display_observer_{this};
 
   base::WeakPtrFactory<EcheTray> weak_factory_{this};
 };

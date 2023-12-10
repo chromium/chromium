@@ -428,10 +428,10 @@ base::Value::List GetCurrentImageSetAsListValue() {
   return image_urls;
 }
 
-absl::optional<DeprecatedSourceInfo> GetDeprecatedDefaultImageSourceInfo(
+std::optional<DeprecatedSourceInfo> GetDeprecatedDefaultImageSourceInfo(
     size_t index) {
   if (index >= std::size(kDefaultImageSourceInfoIds)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   const auto& source_info_ids = kDefaultImageSourceInfoIds[index];

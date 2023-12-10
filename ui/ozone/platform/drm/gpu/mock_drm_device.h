@@ -341,9 +341,8 @@ class MockDrmDevice : public DrmDevice {
   bool MapDumbBuffer(uint32_t handle, size_t size, void** pixels) override;
   bool UnmapDumbBuffer(void* pixels, size_t size) override;
   bool CloseBufferHandle(uint32_t handle) override;
-  bool SetGammaRamp(
-      uint32_t crtc_id,
-      const std::vector<display::GammaRampRGBEntry>& lut) override;
+  bool SetGammaRamp(uint32_t crtc_id,
+                    const display::GammaCurve& curve) override;
   bool SetCapability(uint64_t capability, uint64_t value) override;
   absl::optional<std::string> GetDriverName() const override;
   void SetDriverName(absl::optional<std::string> name);

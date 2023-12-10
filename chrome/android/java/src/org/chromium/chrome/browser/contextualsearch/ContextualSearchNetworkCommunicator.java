@@ -32,9 +32,7 @@ interface ContextualSearchNetworkCommunicator {
      */
     void handleSearchTermResolutionResponse(ResolvedSearchTerm resolvedSearchTerm);
 
-    /**
-     * Stops any navigation in the overlay panel's {@code WebContents}.
-     */
+    /** Stops any navigation in the overlay panel's {@code WebContents}. */
     void stopPanelContentsNavigation();
 
     // --------------------------------------------------------------------------------------------

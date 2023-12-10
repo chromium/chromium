@@ -4,8 +4,8 @@
 
 #include "third_party/blink/renderer/core/layout/inline/inline_child_layout_context.h"
 
-#include "third_party/blink/renderer/core/layout/ng/ng_block_break_token.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_box_fragment_builder.h"
+#include "third_party/blink/renderer/core/layout/block_break_token.h"
+#include "third_party/blink/renderer/core/layout/box_fragment_builder.h"
 
 namespace blink {
 
@@ -20,7 +20,7 @@ struct SameSizeAsInlineChildLayoutContext {
   absl::optional<LayoutUnit> optional_layout_unit;
   void* pointers[5];
   unsigned number;
-  HeapVector<Member<const NGBlockBreakToken>> tokens_;
+  HeapVector<Member<const BlockBreakToken>> tokens_;
 };
 
 static_assert(
@@ -34,8 +34,8 @@ static_assert(
 // block-size would be unconstrained). This information will be used to
 // determine whether it's reasonable to pre-allocate a buffer for all the
 // estimated fragment items inside the node.
-bool IsBlockFragmented(const NGBoxFragmentBuilder& fragment_builder) {
-  const NGConstraintSpace& space = fragment_builder.ConstraintSpace();
+bool IsBlockFragmented(const BoxFragmentBuilder& fragment_builder) {
+  const ConstraintSpace& space = fragment_builder.GetConstraintSpace();
   return space.HasBlockFragmentation() &&
          space.HasKnownFragmentainerBlockSize();
 }
@@ -44,7 +44,7 @@ bool IsBlockFragmented(const NGBoxFragmentBuilder& fragment_builder) {
 
 InlineChildLayoutContext::InlineChildLayoutContext(
     const InlineNode& node,
-    NGBoxFragmentBuilder* container_builder,
+    BoxFragmentBuilder* container_builder,
     LineInfo* line_info)
     : container_builder_(container_builder),
       items_builder_(node,
@@ -56,7 +56,7 @@ InlineChildLayoutContext::InlineChildLayoutContext(
 
 InlineChildLayoutContext::InlineChildLayoutContext(
     const InlineNode& node,
-    NGBoxFragmentBuilder* container_builder,
+    BoxFragmentBuilder* container_builder,
     ScoreLineBreakContext* score_line_break_context)
     : container_builder_(container_builder),
       items_builder_(node,
@@ -84,7 +84,7 @@ void InlineChildLayoutContext::ClearParallelFlowBreakTokens() {
 }
 
 void InlineChildLayoutContext::PropagateParallelFlowBreakToken(
-    const NGBreakToken* token) {
+    const BreakToken* token) {
   parallel_flow_break_tokens_.push_back(token);
 }
 

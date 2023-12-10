@@ -66,9 +66,10 @@ int ExtensionIconSet::GetIconSizeFromPath(base::StringPiece path) const {
   DCHECK_NE(path[0], '/') <<
       "ExtensionIconSet stores icon paths without leading slash.";
 
-  for (auto iter = map_.cbegin(); iter != map_.cend(); ++iter) {
-    if (iter->second == path)
-      return iter->first;
+  for (const auto& entry : map_) {
+    if (entry.second == path) {
+      return entry.first;
+    }
   }
 
   return 0;

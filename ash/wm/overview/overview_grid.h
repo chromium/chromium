@@ -241,13 +241,17 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   // Called when overview starting animation completes.
   void OnStartingAnimationComplete(bool canceled);
 
-  // Calculates |should_animate_when_entering_| and
-  // |should_animate_when_exiting_| of the overview items based on where
-  // the first MRU window covering the available workspace is found.
-  // |selected_item| is not nullptr if |selected_item| is the selected item when
-  // exiting overview mode. |target_bounds| are the bounds that the items will
-  // be in overview. If |tranisition| is exit, |target_bounds| should be empty
-  // and the overview bounds should be queried from |window_list_|.
+  // Calculates `should_animate_when_entering_` and
+  // `should_animate_when_exiting_` of overview items. This to animate only what
+  // is necessary for performance reasons. A window will not be animated if
+  // both its source and target bounds are covered by another window higher in
+  // z-order. For example, if the MRU window is maximized and we have no floated
+  // or always on top windows, that window will be the only animated window
+  // entering or exiting overview. `selected_item` is the selected item when
+  // exiting overview mode, null otherwise. `target_bounds` are the bounds that
+  // the items will be in overview. If `tranisition` is exit, `target_bounds`
+  // should be empty and the overview bounds should be queried from
+  // `item_list_`.
   void CalculateWindowListAnimationStates(
       OverviewItemBase* selected_item,
       OverviewTransition transition,
@@ -261,9 +265,9 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   // reset at the end of animation.
   void SetWindowListNotAnimatedWhenExiting();
 
-  // Starts a nudge, with |item| being the item that may be deleted. This method
-  // calculates which items in |window_list_| are to be updated, and their
-  // destination bounds and fills |nudge_data_| accordingly.
+  // Starts a nudge, with `item` being the item that may be deleted. This method
+  // calculates which items in `item_list_` are to be updated, and their
+  // destination bounds and fills `nudge_data_` accordingly.
   void StartNudge(OverviewItemBase* item);
 
   // Moves items in |nudge_data_| towards their destination bounds based on
@@ -311,16 +315,6 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   bool MaybeDropItemOnDeskMiniViewOrNewDeskButton(
       const gfx::Point& screen_location,
       OverviewItemBase* dragged_item);
-
-  // Transforms `desks_bar_view_` from zero state to expanded state. Called when
-  // a normal drag starts to enable user dragging a window and dropping it to
-  // the new desk. `screen_location` is the center point of the window being
-  // dragged.
-  void MaybeExpandDesksBarView(const gfx::PointF& screen_location);
-
-  // Transforms `desks_bar_view_` from expanded state to zero state. Called when
-  // a normal drag is completed.
-  void MaybeShrinkDesksBarView();
 
   // Prepares the |scroll_offset_min_| as a limit for |scroll_offset| from
   // scrolling or positioning windows too far offscreen.
@@ -389,14 +383,20 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   bool IsSaveDeskAsTemplateButtonVisible() const;
   bool IsSaveDeskForLaterButtonVisible() const;
 
+  // This is different from `item_list_.size()` which contains the drop target
+  // if it exists, and if two windows are in a snap group, they are a single
+  // item.
+  size_t GetNumWindows() const;
+
   // Returns the save desk as template button if available, otherwise null.
-  SavedDeskSaveDeskButton* GetSaveDeskAsTemplateButton() const;
+  SavedDeskSaveDeskButton* GetSaveDeskAsTemplateButton();
 
   // Returns the save desk for later button if available, otherwise null.
-  SavedDeskSaveDeskButton* GetSaveDeskForLaterButton() const;
+  SavedDeskSaveDeskButton* GetSaveDeskForLaterButton();
 
   // Returns the save button container if available, otherwise null.
-  SavedDeskSaveDeskButtonContainer* GetSaveDeskButtonContainer() const;
+  SavedDeskSaveDeskButtonContainer* GetSaveDeskButtonContainer();
+  const SavedDeskSaveDeskButtonContainer* GetSaveDeskButtonContainer() const;
 
   // SplitViewObserver:
   void OnSplitViewStateChanged(SplitViewController::State previous_state,
@@ -417,15 +417,13 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
                                       bool reposition) override;
 
   // Returns the saved desk library view, or nullptr.
-  SavedDeskLibraryView* GetSavedDeskLibraryView() const;
+  SavedDeskLibraryView* GetSavedDeskLibraryView();
+  const SavedDeskLibraryView* GetSavedDeskLibraryView() const;
 
-  // Returns true if the grid has no more windows.
-  bool empty() const { return window_list_.empty(); }
+  // Returns true if the grid has no more items.
+  bool empty() const { return item_list_.empty(); }
 
-  // Returns how many overview items are in the grid.
-  size_t size() const { return window_list_.size(); }
-
-  OverviewDropTarget* drop_target() { return drop_target_; }
+  const OverviewDropTarget* drop_target() const { return drop_target_; }
 
   // Returns the root window in which the grid displays the windows.
   aura::Window* root_window() { return root_window_; }
@@ -433,12 +431,12 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   OverviewSession* overview_session() { return overview_session_; }
 
   const std::vector<std::unique_ptr<OverviewItemBase>>& window_list() const {
-    return window_list_;
+    return item_list_;
   }
 
   RoundedLabelWidget* no_windows_widget() { return no_windows_widget_.get(); }
 
-  SplitViewDragIndicators* split_view_drag_indicators() {
+  const SplitViewDragIndicators* split_view_drag_indicators() const {
     return split_view_drag_indicators_.get();
   }
 
@@ -533,12 +531,12 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
       int* out_min_right,
       int* out_max_right);
 
-  // Returns the index of |item| in |window_list_|.
+  // Returns the index of `item` in `item_list_`.
   size_t GetOverviewItemIndex(OverviewItemBase* item) const;
 
-  // Returns the index where |window| can be inserted into |window_list_| based
+  // Returns the index where `window` can be inserted into `item_list_` based
   // on MRU order.
-  size_t FindInsertionIndex(const aura::Window* window);
+  size_t FindInsertionIndex(const aura::Window* window) const;
 
   // Adds the |dragged_window| into overview on drag ended. Might need to update
   // the window's bounds if it has been resized.
@@ -577,7 +575,7 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   bool ShouldUseScrollingLayout(size_t ignored_items_size) const;
 
   // Creates the drop target, which lets users know where `dragged_item` will
-  // land. Adds the drop target to `window_list_` at `position` (which is
+  // land. Adds the drop target to `item_list_` at `position` (which is
   // usually the index of `dragged_item`), and calls `PositionWindows()`.
   void AddDropTargetImpl(OverviewItemBase* dragged_item,
                          size_t position,
@@ -588,7 +586,7 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   // target is hidden when a snap preview area is shown. You can drop a window
   // into overview by dragging to the drop target or by dragging to almost
   // anywhere while the drop target is shown. The drop target is owned by
-  // `window_list_`; this is just a convenience pointer.
+  // `item_list_`; this is just a convenience pointer.
   raw_ptr<OverviewDropTarget> drop_target_ = nullptr;
 
   // Root window the grid is in.
@@ -597,8 +595,8 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   // Pointer to the OverviewSession that spawned this grid.
   raw_ptr<OverviewSession, ExperimentalAsh> overview_session_;
 
-  // Vector containing all the windows in this grid.
-  std::vector<std::unique_ptr<OverviewItemBase>> window_list_;
+  // Vector containing all the items in this grid.
+  std::vector<std::unique_ptr<OverviewItemBase>> item_list_;
 
   // A widget that is shown if we entered overview without any windows opened.
   std::unique_ptr<RoundedLabelWidget> no_windows_widget_;
@@ -610,6 +608,7 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   // Widget that contains the DeskBarView contents when the Virtual Desks
   // feature is enabled.
   std::unique_ptr<views::Widget> desks_widget_;
+
   // The contents view of the above |desks_widget_| if created.
   raw_ptr<LegacyDeskBarView, DanglingUntriaged | ExperimentalAsh>
       desks_bar_view_ = nullptr;

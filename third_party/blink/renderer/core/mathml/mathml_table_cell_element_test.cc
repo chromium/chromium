@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/testing/null_execution_context.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
@@ -17,6 +18,7 @@ namespace blink {
 // TODO(crbug.com/1371806: Convert this to a WPT test when MathML has an IDL
 // for that. See https://github.com/w3c/mathml-core/issues/166
 TEST(MathMLTableCellElementTest, colSpan_parsing) {
+  test::TaskEnvironment task_environment;
   ScopedNullExecutionContext execution_context;
   auto* document =
       Document::CreateForTest(execution_context.GetExecutionContext());
@@ -50,6 +52,7 @@ TEST(MathMLTableCellElementTest, colSpan_parsing) {
 // TODO(crbug.com/1371806: Convert this to a WPT test when MathML has an IDL
 // for that. See https://github.com/w3c/mathml-core/issues/166
 TEST(MathMLTableCellElementTest, rowspan_parsing) {
+  test::TaskEnvironment task_environment;
   ScopedNullExecutionContext execution_context;
   auto* document =
       Document::CreateForTest(execution_context.GetExecutionContext());

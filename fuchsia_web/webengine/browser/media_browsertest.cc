@@ -6,6 +6,7 @@
 
 #include <fuchsia/mediacodec/cpp/fidl_test_base.h>
 
+#include <optional>
 #include "base/files/file_path.h"
 #include "base/fuchsia/scoped_service_binding.h"
 #include "base/fuchsia/test_component_context_for_process.h"
@@ -17,7 +18,6 @@
 #include "fuchsia_web/webengine/features.h"
 #include "fuchsia_web/webengine/test/test_data.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -84,7 +84,7 @@ class SoftwareOnlyDecodersDisabledAndHardwareDecoderFailureTest
   }
 
   // Used to disconnect fuchsia.mediacodec.CodecFactory.
-  absl::optional<base::TestComponentContextForProcess> component_context_;
+  std::optional<base::TestComponentContextForProcess> component_context_;
 };
 
 // Verify that a codec only supported by a software decoder is reported as

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<body>
+<p>Test behavior of sync XHR during pagehide when the pagehide handler is attached
+   to a child iframe from the parent (crbug.com/1044348).</p>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+var t = async_test();
+
+onload = () => {
+  t.step_timeout(() => {
+    var iframe = document.getElementById("ifr");
+    iframe.contentWindow.onpagehide = t.step_func(() => {
+      try {
+        console.log("trying the synx xhr");
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", "resources/1251.html", false);
+        xhr.send(null);
+        assert_unreached('Sync XHR must throw during an pagehide event');
+      } catch (e) {
+        t.done();
+      }
+    });
+    iframe.src = "about:blank";
+  }, 1000);
+};
+
+</script>
+<iframe id="ifr" name="ifr" src="resources/test.html"></iframe>
+</body>
+</html>

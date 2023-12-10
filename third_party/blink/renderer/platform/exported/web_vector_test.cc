@@ -66,7 +66,7 @@ TEST(WebVectorTest, Swap) {
   WebVector<int> second(kSecondData, kSecondDataLength);
   ASSERT_EQ(kFirstDataLength, first.size());
   ASSERT_EQ(kSecondDataLength, second.size());
-  first.Swap(second);
+  first.swap(second);
   ASSERT_EQ(kSecondDataLength, first.size());
   ASSERT_EQ(kFirstDataLength, second.size());
   for (size_t i = 0; i < first.size(); ++i)

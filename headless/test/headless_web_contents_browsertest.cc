@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 
+#include <optional>
 #include "base/base64.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
@@ -31,7 +32,6 @@
 #include "headless/test/test_network_interceptor.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/switches.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"

@@ -57,11 +57,6 @@ class BaseState : public WindowState::State {
   void UpdateMinimizedState(WindowState* window_state,
                             chromeos::WindowStateType previous_state_type);
 
-  // Returns the window bounds for snapped window state.
-  gfx::Rect GetSnappedWindowBoundsInParent(
-      aura::Window* window,
-      const chromeos::WindowStateType state_type);
-
   // Returns the window bounds for snapped window state for given `snap_ratio`.
   // Note that even when `snap_ratio` is provided, it might get ignored to meet
   // the window's minimum size requirement.

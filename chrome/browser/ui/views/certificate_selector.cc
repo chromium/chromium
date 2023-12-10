@@ -242,7 +242,7 @@ ui::TableModel* CertificateSelector::table_model_for_testing() const {
 }
 
 net::ClientCertIdentity* CertificateSelector::GetSelectedCert() const {
-  const absl::optional<size_t> selected = table_->GetFirstSelectedRow();
+  const std::optional<size_t> selected = table_->GetFirstSelectedRow();
   if (!selected.has_value())
     return nullptr;
   DCHECK_LT(selected.value(), identities_.size());
@@ -250,7 +250,7 @@ net::ClientCertIdentity* CertificateSelector::GetSelectedCert() const {
 }
 
 bool CertificateSelector::Accept() {
-  const absl::optional<size_t> selected = table_->GetFirstSelectedRow();
+  const std::optional<size_t> selected = table_->GetFirstSelectedRow();
   if (!selected.has_value())
     return false;
 

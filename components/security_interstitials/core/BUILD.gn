@@ -95,12 +95,24 @@ static_library("unsafe_resource") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "ssl_error_options_mask_unittest.cc" ]
+  sources = [
+    "insecure_form_util_unittest.cc",
+    "ssl_error_options_mask_unittest.cc",
+  ]
 
   deps = [
     ":core",
+    ":insecure_form_util",
     "//base",
     "//net",
     "//testing/gtest",
   ]
+}
+
+source_set("insecure_form_util") {
+  sources = [
+    "insecure_form_util.cc",
+    "insecure_form_util.h",
+  ]
+  deps = [ "//services/network/public/cpp:cpp" ]
 }

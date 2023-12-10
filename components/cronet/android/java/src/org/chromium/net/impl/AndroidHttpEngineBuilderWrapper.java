@@ -4,9 +4,12 @@
 
 package org.chromium.net.impl;
 
+import static org.chromium.net.impl.HttpEngineNativeProvider.EXT_API_LEVEL;
+import static org.chromium.net.impl.HttpEngineNativeProvider.EXT_VERSION;
+
 import android.net.http.HttpEngine;
 
-import androidx.annotation.RequiresApi;
+import androidx.annotation.RequiresExtension;
 
 import org.chromium.base.Log;
 import org.chromium.net.CronetEngine;
@@ -16,7 +19,7 @@ import org.chromium.net.ICronetEngineBuilder;
 import java.util.Date;
 import java.util.Set;
 
-@RequiresApi(api = 34)
+@RequiresExtension(extension = EXT_API_LEVEL, version = EXT_VERSION)
 class AndroidHttpEngineBuilderWrapper extends ICronetEngineBuilder {
     private static final String TAG = "HttpEngBuilderWrap";
 
@@ -45,7 +48,8 @@ class AndroidHttpEngineBuilderWrapper extends ICronetEngineBuilder {
 
     @Override
     public ICronetEngineBuilder setLibraryLoader(CronetEngine.Builder.LibraryLoader loader) {
-        Log.w(TAG,
+        Log.w(
+                TAG,
                 "Custom library loader isn't supported when using the platform Cronet provider."
                         + " Ignoring...");
         return this;
@@ -95,8 +99,11 @@ class AndroidHttpEngineBuilderWrapper extends ICronetEngineBuilder {
     }
 
     @Override
-    public ICronetEngineBuilder addPublicKeyPins(String hostName, Set<byte[]> pinsSha256,
-            boolean includeSubdomains, Date expirationDate) {
+    public ICronetEngineBuilder addPublicKeyPins(
+            String hostName,
+            Set<byte[]> pinsSha256,
+            boolean includeSubdomains,
+            Date expirationDate) {
         mBackend.addPublicKeyPins(
                 hostName, pinsSha256, includeSubdomains, expirationDate.toInstant());
         return this;

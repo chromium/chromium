@@ -5,10 +5,10 @@
 #include <stddef.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
-
 #include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -44,7 +44,6 @@
 #include "extensions/common/manifest_url_handlers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -59,7 +58,7 @@ class FakeUpdateClient : public update_client::UpdateClient {
 
   // Returns the data we've gotten from the CrxDataCallback for ids passed to
   // the Update function.
-  std::vector<absl::optional<update_client::CrxComponent>>* data() {
+  std::vector<std::optional<update_client::CrxComponent>>* data() {
     return &data_;
   }
 
@@ -220,7 +219,7 @@ class FakeUpdateClient : public update_client::UpdateClient {
     Finish(request);
   }
 
-  std::vector<absl::optional<update_client::CrxComponent>> data_;
+  std::vector<std::optional<update_client::CrxComponent>> data_;
   std::vector<UninstallPing> uninstall_pings_;
   std::vector<Observer*> observers_;
 
@@ -238,11 +237,11 @@ void FakeUpdateClient::Update(const std::vector<std::string>& ids,
                               bool is_foreground,
                               update_client::Callback callback) {
   std::move(crx_data_callback)
-      .Run(ids, base::BindLambdaForTesting(
-                    [&](const std::vector<
-                        absl::optional<update_client::CrxComponent>>& output) {
-                      data_ = output;
-                    }));
+      .Run(
+          ids,
+          base::BindLambdaForTesting(
+              [&](const std::vector<std::optional<update_client::CrxComponent>>&
+                      output) { data_ = output; }));
 
   UpdateRequest request{ids, crx_state_change_callback, std::move(callback)};
 
@@ -310,7 +309,7 @@ class FakeExtensionSystem : public MockExtensionSystem {
     if (!next_install_callback_.is_null()) {
       std::move(next_install_callback_).Run();
     }
-    std::move(install_update_callback).Run(absl::nullopt);
+    std::move(install_update_callback).Run(std::nullopt);
   }
 
   void PerformActionBasedOnOmahaAttributes(
@@ -326,7 +325,7 @@ class FakeExtensionSystem : public MockExtensionSystem {
       registry->AddEnabled(extension);
     }
 
-    const absl::optional<bool> maybe_allowlisted =
+    const std::optional<bool> maybe_allowlisted =
         attributes.FindBool("_esbAllowlist");
     if (maybe_allowlisted) {
       extension_allowlist_states_[extension_id] =

@@ -8,6 +8,7 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/views/animation/animation_builder.h"
 #include "ui/views/controls/label.h"
@@ -79,7 +80,7 @@ void SearchResultContainerView::ResetAndHide() {
   num_results_ = 0;
 }
 
-absl::optional<SearchResultContainerView::ResultsAnimationInfo>
+std::optional<SearchResultContainerView::ResultsAnimationInfo>
 SearchResultContainerView::ScheduleResultAnimations(
     const ResultsAnimationInfo& aggregate_animation_info) {
   // Collect current container animation info.
@@ -181,10 +182,6 @@ bool SearchResultContainerView::UpdateScheduled() {
   return update_factory_.HasWeakPtrs();
 }
 
-const char* SearchResultContainerView::GetClassName() const {
-  return "SearchResultContainerView";
-}
-
 void SearchResultContainerView::AddObservedResultView(
     SearchResultBaseView* result_view) {
   result_view_observations_.AddObservation(result_view);
@@ -282,5 +279,8 @@ void SearchResultContainerView::ScheduleUpdate() {
                                   update_factory_.GetWeakPtr()));
   }
 }
+
+BEGIN_METADATA(SearchResultContainerView)
+END_METADATA
 
 }  // namespace ash

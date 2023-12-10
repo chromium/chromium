@@ -37,8 +37,10 @@ public class SearchBoxCoordinator {
         mMediator = new SearchBoxMediator(context, mModel, mView);
     }
 
-    public void initialize(ActivityLifecycleDispatcher activityLifecycleDispatcher,
-            boolean isIncognito, WindowAndroid windowAndroid) {
+    public void initialize(
+            ActivityLifecycleDispatcher activityLifecycleDispatcher,
+            boolean isIncognito,
+            WindowAndroid windowAndroid) {
         mMediator.initialize(activityLifecycleDispatcher);
         mIsIncognito = isIncognito;
         mWindowAndroid = windowAndroid;
@@ -144,7 +146,6 @@ public class SearchBoxCoordinator {
     public void setSearchTextSize(float textSize) {
         mModel.set(SearchBoxProperties.SEARCH_BOX_TEXT_SIZE, textSize);
     }
-
 
     public boolean getIncognitoModeForTesting() {
         return mIsIncognito;

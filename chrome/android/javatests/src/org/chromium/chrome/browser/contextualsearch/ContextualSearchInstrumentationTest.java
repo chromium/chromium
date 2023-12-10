@@ -115,9 +115,7 @@ public class ContextualSearchInstrumentationTest extends ContextualSearchInstrum
     public void testNonResolveCaption(@EnabledFeature int enabledFeature) throws Exception {
         // Simulate a non-resolve search and make sure a Caption is shown if appropriate.
         simulateNonResolveSearch(SEARCH_NODE);
-        Assert.assertEquals(
-                ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXTUAL_SEARCH_FORCE_CAPTION),
-                mPanel.getSearchBarControl().getCaptionVisible());
+        Assert.assertTrue(mPanel.getSearchBarControl().getCaptionVisible());
         closePanel();
     }
 }

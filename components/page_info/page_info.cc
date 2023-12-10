@@ -276,7 +276,6 @@ PageInfo::PageInfo(std::unique_ptr<PageInfoDelegate> delegate,
   if (web_contents) {
     controller_ = delegate_->CreateCookieControlsController();
     observation_.Observe(controller_.get());
-    old_observation_.Observe(controller_.get());
 
     // TODO(crbug.com/1430440): SetCookieInfo is called twice, once from here
     // and once from InitializeUiState. This should be cleaned up.
@@ -325,22 +324,6 @@ PageInfo::~PageInfo() {
 
   base::RecordAction(base::UserMetricsAction("PageInfo.Closed"));
 }
-
-void PageInfo::OnStatusChanged(CookieControlsStatus status,
-                               CookieControlsEnforcement enforcement,
-                               int allowed_cookies,
-                               int blocked_cookies) {
-  if (status != status_ || enforcement != enforcement_) {
-    status_ = status;
-    enforcement_ = enforcement;
-    PresentSiteData(base::DoNothing());
-  }
-}
-
-void PageInfo::OnCookiesCountChanged(int allowed_cookies, int blocked_cookies) {
-}
-
-void PageInfo::OnStatefulBounceCountChanged(int bounce_count) {}
 
 void PageInfo::OnStatusChanged(CookieControlsStatus status,
                                CookieControlsEnforcement enforcement,
@@ -1159,9 +1142,8 @@ void PageInfo::ComputeUIInputs(const GURL& url) {
   // revocation button for HTTP allowlist entries added because HTTPS was
   // enforced by HTTPS-First Mode.
   bool is_https_enforced =
-      delegate->IsHttpsEnforcedForHost(
-          url.host(),
-          web_contents_->GetPrimaryMainFrame()->GetStoragePartition()) ||
+      delegate->IsHttpsEnforcedForUrl(
+          url, web_contents_->GetPrimaryMainFrame()->GetStoragePartition()) ||
       delegate_->IsHttpsFirstModeEnabled();
 
   bool has_warning_bypass_exception =
@@ -1334,8 +1316,7 @@ bool PageInfo::ShouldShowPermission(
     return true;
   }
 
-  if (base::FeatureList::IsEnabled(
-          permissions::features::kBlockMidiByDefault)) {
+  if (base::FeatureList::IsEnabled(features::kBlockMidiByDefault)) {
     ContentSetting midi_sysex_setting = GetContentSettings()->GetContentSetting(
         site_url_, site_url_, ContentSettingsType::MIDI_SYSEX);
     // At most one of MIDI and MIDI-SysEx should be displayed in the page info

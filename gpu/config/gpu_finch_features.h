@@ -27,7 +27,6 @@ GPU_EXPORT BASE_DECLARE_FEATURE(kUseGles2ForOopR);
 GPU_EXPORT BASE_DECLARE_FEATURE(kAndroidSurfaceControl);
 GPU_EXPORT BASE_DECLARE_FEATURE(kWebViewSurfaceControl);
 GPU_EXPORT BASE_DECLARE_FEATURE(kAImageReader);
-GPU_EXPORT BASE_DECLARE_FEATURE(kWebViewVulkan);
 GPU_EXPORT BASE_DECLARE_FEATURE(kLimitAImageReaderMaxSizeToOne);
 GPU_EXPORT BASE_DECLARE_FEATURE(kWebViewThreadSafeMediaDefault);
 GPU_EXPORT BASE_DECLARE_FEATURE(kIncreaseBufferCountForHighFrameRate);
@@ -38,6 +37,7 @@ GPU_EXPORT BASE_DECLARE_FEATURE(kAggressiveSkiaGpuResourcePurge);
 GPU_EXPORT BASE_DECLARE_FEATURE(kDefaultEnableGpuRasterization);
 
 GPU_EXPORT BASE_DECLARE_FEATURE(kCanvasOopRasterization);
+GPU_EXPORT BASE_DECLARE_FEATURE(kCanvasOopWithoutGpuTileRaster);
 
 #if BUILDFLAG(IS_OZONE)
 GPU_EXPORT BASE_DECLARE_FEATURE(kEnablePerContextGLTextureCache);
@@ -63,6 +63,8 @@ GPU_EXPORT BASE_DECLARE_FEATURE(kDCompPresenter);
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_IOS)
 GPU_EXPORT BASE_DECLARE_FEATURE(kAdjustGpuProcessPriority);
 #endif
+
+GPU_EXPORT BASE_DECLARE_FEATURE(kGenGpuDiskCacheKeyPrefixInGpuService);
 
 GPU_EXPORT BASE_DECLARE_FEATURE(kSharedImageManager);
 
@@ -97,6 +99,10 @@ GPU_EXPORT BASE_DECLARE_FEATURE(kForceGpuMainThreadToNormalPriorityDrDc);
 
 GPU_EXPORT BASE_DECLARE_FEATURE(kForceRestartGpuKillSwitch);
 
+GPU_EXPORT BASE_DECLARE_FEATURE(kPruneOldTransferCacheEntries);
+
+GPU_EXPORT BASE_DECLARE_FEATURE(kPurgeOldCacheEntriesOnTimer);
+
 GPU_EXPORT BASE_DECLARE_FEATURE(kUseGpuSchedulerDfs);
 
 GPU_EXPORT BASE_DECLARE_FEATURE(kUseClientGmbInterface);
@@ -127,6 +133,8 @@ GPU_EXPORT bool IsGpuMainThreadForcedToNormalPriorityDrDc();
 GPU_EXPORT bool NeedThreadSafeAndroidMedia();
 GPU_EXPORT bool IsANGLEValidationEnabled();
 GPU_EXPORT bool IsSkiaGraphiteEnabled(const base::CommandLine* command_line);
+GPU_EXPORT bool EnablePurgeGpuImageDecodeCache();
+GPU_EXPORT bool EnablePruneOldTransferCacheEntries();
 
 #if BUILDFLAG(IS_ANDROID)
 GPU_EXPORT bool IsAImageReaderEnabled();

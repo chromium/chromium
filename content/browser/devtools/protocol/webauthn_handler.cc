@@ -238,6 +238,10 @@ Response WebAuthnHandler::AddVirtualAuthenticator(
       virt_auth_options->has_cred_blob = has_cred_blob;
       virt_auth_options->has_min_pin_length = has_min_pin_length;
       virt_auth_options->has_prf = has_prf;
+      virt_auth_options->default_backup_eligibility =
+          options->GetDefaultBackupEligibility(/*defaultValue=*/false);
+      virt_auth_options->default_backup_state =
+          options->GetDefaultBackupState(/*defaultValue=*/false);
       break;
     case device::ProtocolVersion::kUnknown:
       NOTREACHED();

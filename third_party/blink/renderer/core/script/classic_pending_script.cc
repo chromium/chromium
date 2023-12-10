@@ -292,6 +292,15 @@ bool ClassicPendingScript::IsEligibleForLowPriorityAsyncScriptExecution()
     }
   }
 
+  static const bool disable_when_lcp_not_in_html =
+      features::kLowPriorityAsyncScriptExecutionDisableWhenLcpNotInHtmlParam
+          .Get();
+  if (disable_when_lcp_not_in_html && !top_document.IsLcpElementFoundInHtml()) {
+    // If LCP element isn't found in main document HTML during preload scanning,
+    // disable delaying.
+    return false;
+  }
+
   static const bool cross_site_only =
       features::kLowPriorityAsyncScriptExecutionCrossSiteOnlyParam.Get();
   if (cross_site_only && GetResource() &&

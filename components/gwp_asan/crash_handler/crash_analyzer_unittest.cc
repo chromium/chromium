@@ -101,8 +101,8 @@ class BaseCrashAnalyzerTest : public testing::Test {
                                       LightweightDetectorMode::kOff) {
     gpa_.Init(1, 1, 1, base::DoNothing(), is_partition_alloc);
     if (lightweight_detector_enabled_) {
-      PoisonMetadataRecorder::ResetForTesting();
-      PoisonMetadataRecorder::Init(lightweight_detector_mode, 1);
+      lud::PoisonMetadataRecorder::ResetForTesting();
+      lud::PoisonMetadataRecorder::Init(lightweight_detector_mode, 1);
     }
   }
 
@@ -122,7 +122,7 @@ class BaseCrashAnalyzerTest : public testing::Test {
         gpa_.GetCrashKey());
     if (lightweight_detector_enabled_) {
       append_annotation(kLightweightDetectorCrashKey,
-                        PoisonMetadataRecorder::Get()->GetCrashKey());
+                        lud::PoisonMetadataRecorder::Get()->GetCrashKey());
     }
 
     auto module = std::make_unique<crashpad::test::TestModuleSnapshot>();
@@ -266,8 +266,8 @@ class LightweightDetectorAnalyzerTest : public BaseCrashAnalyzerTest {
 
 TEST_F(LightweightDetectorAnalyzerTest, UseAfterFree) {
   uint64_t alloc;
-  ASSERT_TRUE(PoisonMetadataRecorder::Get());
-  PoisonMetadataRecorder::Get()->RecordDeallocation(&alloc, sizeof(alloc));
+  ASSERT_TRUE(lud::PoisonMetadataRecorder::Get());
+  lud::PoisonMetadataRecorder::Get()->RecordAndZap(&alloc, sizeof(alloc));
   InitializeSnapshot(alloc);
 
   base::HistogramTester histogram_tester;
@@ -291,11 +291,11 @@ TEST_F(LightweightDetectorAnalyzerTest, UseAfterFree) {
 
 TEST_F(LightweightDetectorAnalyzerTest, InternalError) {
   uint64_t alloc;
-  PoisonMetadataRecorder::Get()->RecordDeallocation(&alloc, sizeof(alloc));
+  lud::PoisonMetadataRecorder::Get()->RecordAndZap(&alloc, sizeof(alloc));
   InitializeSnapshot(alloc);
 
   // Corrupt the metadata ID.
-  ++PoisonMetadataRecorder::Get()->metadata_[0].id;
+  ++lud::PoisonMetadataRecorder::Get()->metadata_[0].id;
 
   base::HistogramTester histogram_tester;
   gwp_asan::Crash proto;

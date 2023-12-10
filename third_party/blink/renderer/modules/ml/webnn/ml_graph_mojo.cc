@@ -127,6 +127,15 @@ void MLGraphMojo::ValidateAndBuildAsync(MLContextMojo* context,
   graph->BuildAsync(named_outputs, resolver);
 }
 
+// static
+MLGraph* MLGraphMojo::ValidateAndBuildSync(ScriptState* script_state,
+                                           MLContextMojo* context,
+                                           const MLNamedOperands& named_outputs,
+                                           ExceptionState& exception_state) {
+  auto* graph = MakeGarbageCollected<MLGraphMojo>(script_state, context);
+  return graph->BuildSync(script_state, named_outputs, exception_state);
+}
+
 MLGraphMojo::MLGraphMojo(ScriptState* script_state, MLContextMojo* context)
     : MLGraph(context),
       ml_context_mojo_(context),
@@ -156,14 +165,38 @@ void MLGraphMojo::BuildAsyncImpl(const MLNamedOperands& outputs,
                     WrapPersistent(resolver)));
 }
 
-MLGraph* MLGraphMojo::BuildSyncImpl(const MLNamedOperands& named_outputs,
+MLGraph* MLGraphMojo::BuildSyncImpl(ScriptState* script_state,
+                                    const MLNamedOperands& outputs,
                                     ExceptionState& exception_state) {
-  // TODO(crbug.com/1273291): Support sync build that is only exposed to
-  // dedicated worker.
-  NOTIMPLEMENTED();
-  exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
-                                    "Sync build not implemented.");
-  return nullptr;
+  // Ensures that this sync method is only called from worker threads.
+  CHECK(!IsMainThread());
+  auto graph_info = BuildWebNNGraphInfo(outputs);
+  if (!graph_info.has_value()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kDataError,
+        "Failed to build graph: " + graph_info.error());
+    return nullptr;
+  }
+
+  blink_mojom::CreateGraphResultPtr result;
+  if (!ml_context_mojo_->CreateWebNNGraphSync(std::move(graph_info.value()),
+                                              &result)) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kOperationError,
+                                      "Failed to build graph.");
+  }
+  if (result->is_error()) {
+    const auto& create_graph_error = result->get_error();
+    exception_state.ThrowDOMException(
+        ConvertWebNNErrorCodeToDOMExceptionCode(create_graph_error->error_code),
+        create_graph_error->error_message);
+    return nullptr;
+  }
+
+  auto* execution_context = ExecutionContext::From(script_state);
+  remote_graph_.Bind(
+      std::move(result->get_graph_remote()),
+      execution_context->GetTaskRunner(TaskType::kInternalDefault));
+  return this;
 }
 
 void MLGraphMojo::ComputeAsyncImpl(const MLNamedArrayBufferViews& inputs,

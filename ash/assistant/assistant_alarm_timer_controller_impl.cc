@@ -341,18 +341,18 @@ void AssistantAlarmTimerControllerImpl::OnDeepLinkReceived(
   if (type != DeepLinkType::kAlarmTimer)
     return;
 
-  const absl::optional<AlarmTimerAction>& action =
+  const std::optional<AlarmTimerAction>& action =
       assistant::util::GetDeepLinkParamAsAlarmTimerAction(params);
   if (!action.has_value())
     return;
 
-  const absl::optional<std::string>& alarm_timer_id =
+  const std::optional<std::string>& alarm_timer_id =
       assistant::util::GetDeepLinkParam(params, DeepLinkParam::kId);
   if (!alarm_timer_id.has_value())
     return;
 
   // Duration is optional. Only used for adding time to timer.
-  const absl::optional<base::TimeDelta>& duration =
+  const std::optional<base::TimeDelta>& duration =
       assistant::util::GetDeepLinkParamAsTimeDelta(params,
                                                    DeepLinkParam::kDurationMs);
 
@@ -409,7 +409,7 @@ void AssistantAlarmTimerControllerImpl::OnTimerRemoved(
 void AssistantAlarmTimerControllerImpl::PerformAlarmTimerAction(
     const AlarmTimerAction& action,
     const std::string& alarm_timer_id,
-    const absl::optional<base::TimeDelta>& duration) {
+    const std::optional<base::TimeDelta>& duration) {
   DCHECK(assistant_);
 
   switch (action) {

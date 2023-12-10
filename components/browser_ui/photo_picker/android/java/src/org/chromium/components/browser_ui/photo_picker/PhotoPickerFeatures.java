@@ -11,9 +11,7 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Features;
 
-/**
- * Provides an API for querying the status of Photo Picker features.
- */
+/** Provides an API for querying the status of Photo Picker features. */
 @JNINamespace("photo_picker::features")
 public class PhotoPickerFeatures extends Features {
     public static final String MEDIA_PICKER_ADOPTION_NAME = "MediaPickerAdoption";

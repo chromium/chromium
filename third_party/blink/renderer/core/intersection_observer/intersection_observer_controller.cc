@@ -60,20 +60,18 @@ void IntersectionObserverController::DeliverNotifications(
   }
 }
 
-IntersectionUpdateResult IntersectionObserverController::ComputeIntersections(
+bool IntersectionObserverController::ComputeIntersections(
     unsigned flags,
     LocalFrameUkmAggregator* metrics_aggregator,
-    absl::optional<base::TimeTicks>& monotonic_time) {
+    absl::optional<base::TimeTicks>& monotonic_time,
+    gfx::Vector2dF accumulated_scroll_delta_since_last_update) {
   needs_occlusion_tracking_ = false;
   if (!GetExecutionContext()) {
-    return IntersectionUpdateResult();
+    return false;
   }
   TRACE_EVENT0("blink,devtools.timeline",
                "IntersectionObserverController::"
                "computeIntersections");
-  bool has_implicit_root_observer_with_margin = false;
-  gfx::Vector2dF min_scroll_delta_to_update =
-      IntersectionGeometry::kInfiniteScrollDelta;
   HeapVector<Member<IntersectionObserver>> observers_to_process(
       tracked_explicit_root_observers_);
   HeapVector<Member<IntersectionObservation>> observations_to_process(
@@ -89,13 +87,13 @@ IntersectionUpdateResult IntersectionObserverController::ComputeIntersections(
       if (observer->HasObservations()) {
         if (metrics_timer)
           metrics_timer->StartInterval(observer->GetUkmMetricId());
-        int64_t count = observer->ComputeIntersections(flags, monotonic_time);
+        int64_t count = observer->ComputeIntersections(
+            flags, monotonic_time, accumulated_scroll_delta_since_last_update);
         if (observer->IsInternal())
           internal_observation_count += count;
         else
           javascript_observation_count += count;
         needs_occlusion_tracking_ |= observer->trackVisibility();
-        min_scroll_delta_to_update.SetToMin(observer->MinScrollDeltaToUpdate());
       } else {
         tracked_explicit_root_observers_.erase(observer);
       }
@@ -104,18 +102,14 @@ IntersectionUpdateResult IntersectionObserverController::ComputeIntersections(
       if (metrics_timer)
         metrics_timer->StartInterval(observation->Observer()->GetUkmMetricId());
       absl::optional<IntersectionGeometry::RootGeometry> root_geometry;
-      int64_t count = observation->ComputeIntersection(flags, monotonic_time,
-                                                       root_geometry);
+      int64_t count = observation->ComputeIntersection(
+          flags, accumulated_scroll_delta_since_last_update, monotonic_time,
+          root_geometry);
       if (observation->Observer()->IsInternal())
         internal_observation_count += count;
       else
         javascript_observation_count += count;
       needs_occlusion_tracking_ |= observation->Observer()->trackVisibility();
-      has_implicit_root_observer_with_margin |=
-          observation->Observer()->RootIsImplicit() &&
-          observation->Observer()->HasRootMargin();
-      min_scroll_delta_to_update.SetToMin(
-          observation->MinScrollDeltaToUpdate());
     }
   }
 
@@ -128,9 +122,7 @@ IntersectionUpdateResult IntersectionObserverController::ComputeIntersections(
         javascript_observation_count);
   }
 
-  return IntersectionUpdateResult{needs_occlusion_tracking_,
-                                  has_implicit_root_observer_with_margin,
-                                  min_scroll_delta_to_update};
+  return needs_occlusion_tracking_;
 }
 
 void IntersectionObserverController::AddTrackedObserver(
@@ -188,6 +180,27 @@ void IntersectionObserverController::RemoveTrackedObservation(
   if (!observer->RootIsImplicit())
     return;
   tracked_implicit_root_observations_.erase(&observation);
+}
+
+bool IntersectionObserverController::InvalidateCachedRectsIfNeeded() {
+  if (!RuntimeEnabledFeatures::IntersectionOptimizationEnabled()) {
+    return false;
+  }
+  bool invalidated_cached_rects = false;
+  for (auto& observer : tracked_explicit_root_observers_) {
+    if (observer->NeedsOcclusionTracking()) {
+      invalidated_cached_rects = true;
+    } else {
+      for (auto& observation : observer->Observations()) {
+        invalidated_cached_rects |=
+            observation->InvalidateCachedRectsIfNeeded();
+      }
+    }
+  }
+  for (auto& observation : tracked_implicit_root_observations_) {
+    invalidated_cached_rects |= observation->InvalidateCachedRectsIfNeeded();
+  }
+  return invalidated_cached_rects;
 }
 
 void IntersectionObserverController::Trace(Visitor* visitor) const {

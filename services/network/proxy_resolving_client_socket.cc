@@ -176,12 +176,6 @@ bool ProxyResolvingClientSocket::WasEverUsed() const {
   return false;
 }
 
-bool ProxyResolvingClientSocket::WasAlpnNegotiated() const {
-  if (socket_)
-    return socket_->WasAlpnNegotiated();
-  return false;
-}
-
 net::NextProto ProxyResolvingClientSocket::GetNegotiatedProtocol() const {
   if (socket_)
     return socket_->GetNegotiatedProtocol();
@@ -358,7 +352,7 @@ int ProxyResolvingClientSocket::ReconsiderProxyAfterError(int error) {
   DCHECK_NE(error, net::ERR_IO_PENDING);
 
   // Check if the error was a proxy failure.
-  if (!net::CanFalloverToNextProxy(proxy_info_.proxy_server(), error, &error,
+  if (!net::CanFalloverToNextProxy(proxy_info_.proxy_chain(), error, &error,
                                    proxy_info_.is_for_ip_protection())) {
     return error;
   }

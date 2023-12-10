@@ -5,26 +5,25 @@
 #ifndef EXTENSIONS_COMMON_MANIFEST_HANDLERS_KIOSK_MODE_INFO_H_
 #define EXTENSIONS_COMMON_MANIFEST_HANDLERS_KIOSK_MODE_INFO_H_
 
+#include <optional>
 #include <string>
 #include <vector>
-
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_handler.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 
 struct SecondaryKioskAppInfo {
   SecondaryKioskAppInfo() = delete;
   SecondaryKioskAppInfo(const extensions::ExtensionId& id,
-                        const absl::optional<bool>& enabled_on_launch);
+                        const std::optional<bool>& enabled_on_launch);
   SecondaryKioskAppInfo(const SecondaryKioskAppInfo& other);
   ~SecondaryKioskAppInfo();
 
   const extensions::ExtensionId id;
-  const absl::optional<bool> enabled_on_launch;
+  const std::optional<bool> enabled_on_launch;
 };
 
 struct KioskModeInfo : public Extension::ManifestData {

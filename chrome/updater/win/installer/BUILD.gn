@@ -35,13 +35,17 @@ shared_library("msi_custom_action") {
 }
 
 source_set("lib") {
+  visibility = [
+    ":lib_with_resources",
+    "//chrome/updater:updater_test_sources",
+    "//chrome/updater/test/test_installer:test_meta_installer",
+  ]
   sources = [
     "configuration.cc",
     "configuration.h",
     "exit_code.h",
     "installer.cc",
     "installer.h",
-    "installer.rc",
     "installer_constants.cc",
     "installer_constants.h",
     "installer_resource.h",
@@ -61,6 +65,12 @@ source_set("lib") {
     "//chrome/updater:tagging",
     "//third_party/abseil-cpp:absl",
   ]
+}
+
+source_set("lib_with_resources") {
+  visibility = [ ":*" ]
+  sources = [ "installer.rc" ]
+  public_deps = [ ":lib" ]
 }
 
 process_version_rc_template("version") {
@@ -143,7 +153,7 @@ template("generate_installer") {
 
     deps = [
              ":$archive_name",
-             ":lib",
+             ":lib_with_resources",
              ":version",
              "//build/win:default_exe_manifest",
              "//chrome/updater:base",

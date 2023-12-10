@@ -65,6 +65,8 @@ class LoopbackCrosapiAppServiceProxy : public crosapi::mojom::AppServiceProxy,
   void SetSupportedLinksPreference(const std::string& app_id) override;
   void UninstallSilently(const std::string& app_id,
                          apps::UninstallSource uninstall_source) override;
+  void InstallApp(crosapi::mojom::InstallAppParamsPtr params,
+                  InstallAppCallback callback) override;
 
   // crosapi::mojom::AppPublisher:
   void OnApps(std::vector<apps::AppPtr> deltas) override;

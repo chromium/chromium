@@ -28,7 +28,7 @@ struct CONTENT_EXPORT MediaStreamRequest {
   MediaStreamRequest(int render_process_id,
                      int render_frame_id,
                      int page_request_id,
-                     const GURL& security_origin,
+                     const url::Origin& url_origin,
                      bool user_gesture,
                      blink::MediaStreamRequestType request_type,
                      const std::string& requested_audio_device_id,
@@ -56,8 +56,12 @@ struct CONTENT_EXPORT MediaStreamRequest {
   // identifying this request. This is used for cancelling request.
   int page_request_id;
 
+  // TODO(crbug.com/1503955): Remove security_origin.
   // The WebKit security origin for the current request (e.g. "html5rocks.com").
   GURL security_origin;
+
+  // The Origin of the current request.
+  url::Origin url_origin;
 
   // Set to true if the call was made in the context of a user gesture.
   bool user_gesture;

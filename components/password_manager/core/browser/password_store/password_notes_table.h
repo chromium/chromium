@@ -10,7 +10,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "components/password_manager/core/browser/password_form.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace sql {
 class Database;

@@ -6,11 +6,11 @@
 #define COMPONENTS_METRICS_STRUCTURED_TEST_TEST_KEY_DATA_PROVIDER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/functional/callback_forward.h"
 #include "components/metrics/structured/key_data_provider.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class FilePath;
@@ -34,8 +34,8 @@ class TestKeyDataProvider : public KeyDataProvider, KeyDataProvider::Observer {
 
   // KeyDataProvider:
   bool IsReady() override;
-  absl::optional<uint64_t> GetId(const std::string& project_name) override;
-  absl::optional<uint64_t> GetSecondaryId(
+  std::optional<uint64_t> GetId(const std::string& project_name) override;
+  std::optional<uint64_t> GetSecondaryId(
       const std::string& project_name) override;
   KeyData* GetKeyData(const std::string& project_name) override;
   void OnProfileAdded(const base::FilePath& profile_path) override;

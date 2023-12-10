@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "base/sequence_checker.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/threading/sequence_bound.h"
 #include "base/time/time.h"
 #include "base/types/pass_key.h"

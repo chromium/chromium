@@ -47,14 +47,14 @@ constexpr gfx::Rect kTabTitleMaxRect(kFaviconRect.right() + kPadding,
 constexpr base::TimeDelta kUpdatePeriodMs = base::Milliseconds(250);
 
 void HandleCapturedBitmap(
-    base::OnceCallback<void(uint32_t, const absl::optional<gfx::ImageSkia>&)>
+    base::OnceCallback<void(uint32_t, const std::optional<gfx::ImageSkia>&)>
         reply,
-    absl::optional<uint32_t> last_hash,
+    std::optional<uint32_t> last_hash,
     gfx::Size thumbnail_size,
     const SkBitmap& bitmap) {
   CHECK(!thumbnail_size.IsEmpty());
 
-  absl::optional<gfx::ImageSkia> image;
+  std::optional<gfx::ImageSkia> image;
 
   // Only scale and update if the frame appears to be new.
   const uint32_t hash = base::FastHash(base::make_span(
@@ -169,7 +169,7 @@ void ShareThisTabSourceView::Refresh() {
 
 void ShareThisTabSourceView::OnCaptureHandled(
     uint32_t hash,
-    const absl::optional<gfx::ImageSkia>& image) {
+    const std::optional<gfx::ImageSkia>& image) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   CHECK((hash != last_hash_) == image.has_value());  // Only new frames passed.
 
@@ -177,7 +177,7 @@ void ShareThisTabSourceView::OnCaptureHandled(
 
   if (hash != last_hash_) {
     last_hash_ = hash;
-    image_view_->SetImage(image.value());
+    image_view_->SetImage(ui::ImageModel::FromImageSkia(image.value()));
   }
 
   content::GetUIThreadTaskRunner({})->PostDelayedTask(

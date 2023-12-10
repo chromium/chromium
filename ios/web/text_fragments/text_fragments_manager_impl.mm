@@ -144,7 +144,7 @@ void TextFragmentsManagerImpl::WebStateDestroyed(WebState* web_state) {
 
 #pragma mark - Private Methods
 
-absl::optional<TextFragmentsManagerImpl::TextFragmentProcessingParams>
+std::optional<TextFragmentsManagerImpl::TextFragmentProcessingParams>
 TextFragmentsManagerImpl::ProcessTextFragments(
     const web::NavigationContext* context,
     const web::Referrer& referrer) {
@@ -179,7 +179,7 @@ TextFragmentsManagerImpl::ProcessTextFragments(
         ToHexStringRGB(shared_highlighting::kFragmentTextForegroundColorARGB);
   }
 
-  return absl::optional<TextFragmentProcessingParams>(
+  return std::optional<TextFragmentProcessingParams>(
       {std::move(parsed_fragments), bg_color, fg_color});
 }
 

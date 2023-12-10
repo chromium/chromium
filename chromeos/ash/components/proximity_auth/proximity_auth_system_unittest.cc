@@ -115,7 +115,7 @@ class TestableProximityAuthSystem : public ProximityAuthSystem {
  private:
   std::unique_ptr<RemoteDeviceLifeCycle> CreateRemoteDeviceLifeCycle(
       ash::multidevice::RemoteDeviceRef remote_device,
-      absl::optional<ash::multidevice::RemoteDeviceRef> local_device) override {
+      std::optional<ash::multidevice::RemoteDeviceRef> local_device) override {
     std::unique_ptr<FakeRemoteDeviceLifeCycle> life_cycle(
         new FakeRemoteDeviceLifeCycle(remote_device, local_device));
     life_cycle_ = life_cycle.get();

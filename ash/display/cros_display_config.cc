@@ -4,6 +4,7 @@
 
 #include "ash/display/cros_display_config.h"
 
+#include <optional>
 #include <utility>
 
 #include "ash/constants/ash_features.h"
@@ -26,7 +27,6 @@
 #include "components/device_event_log/device_event_log.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/display/display.h"
 #include "ui/display/display_layout.h"
 #include "ui/display/display_layout_builder.h"
@@ -174,7 +174,7 @@ crosapi::mojom::DisplayConfigResult SetDisplayLayoutMode(
   if (info.layout_mode == crosapi::mojom::DisplayLayoutMode::kNormal) {
     display_manager->SetDefaultMultiDisplayModeForCurrentDisplays(
         display::DisplayManager::EXTENDED);
-    display_manager->SetMirrorMode(display::MirrorMode::kOff, absl::nullopt);
+    display_manager->SetMirrorMode(display::MirrorMode::kOff, std::nullopt);
     return crosapi::mojom::DisplayConfigResult::kSuccess;
   }
 
@@ -184,7 +184,7 @@ crosapi::mojom::DisplayConfigResult SetDisplayLayoutMode(
     }
     display_manager->SetDefaultMultiDisplayModeForCurrentDisplays(
         display::DisplayManager::UNIFIED);
-    display_manager->SetMirrorMode(display::MirrorMode::kOff, absl::nullopt);
+    display_manager->SetMirrorMode(display::MirrorMode::kOff, std::nullopt);
     return crosapi::mojom::DisplayConfigResult::kSuccess;
   }
 
@@ -192,7 +192,7 @@ crosapi::mojom::DisplayConfigResult SetDisplayLayoutMode(
 
   // 'Normal' mirror mode.
   if (!info.mirror_source_id) {
-    display_manager->SetMirrorMode(display::MirrorMode::kNormal, absl::nullopt);
+    display_manager->SetMirrorMode(display::MirrorMode::kNormal, std::nullopt);
     return crosapi::mojom::DisplayConfigResult::kSuccess;
   }
 
@@ -217,8 +217,8 @@ crosapi::mojom::DisplayConfigResult SetDisplayLayoutMode(
       destination_ids.emplace_back(display.id());
     }
   }
-  absl::optional<display::MixedMirrorModeParams> mixed_params(
-      absl::in_place, source.id(), destination_ids);
+  std::optional<display::MixedMirrorModeParams> mixed_params(
+      std::in_place, source.id(), destination_ids);
   const display::MixedMirrorModeParamsErrors error_type =
       display::ValidateParamsForMixedMirrorMode(
           display_manager->GetConnectedDisplayIdList(), *mixed_params);
@@ -850,7 +850,7 @@ void CrosDisplayConfig::SetUnifiedDesktopEnabled(bool enabled) {
 void CrosDisplayConfig::OverscanCalibration(
     const std::string& display_id,
     crosapi::mojom::DisplayConfigOperation op,
-    const absl::optional<gfx::Insets>& delta,
+    const std::optional<gfx::Insets>& delta,
     OverscanCalibrationCallback callback) {
   display::Display display = GetDisplay(display_id);
   if (display.id() == display::kInvalidDisplayId) {
@@ -969,7 +969,7 @@ void CrosDisplayConfig::TouchCalibration(
 
   if (op == crosapi::mojom::DisplayConfigOperation::kReset) {
     Shell::Get()->display_manager()->ClearTouchCalibrationData(display.id(),
-                                                               absl::nullopt);
+                                                               std::nullopt);
     std::move(callback).Run(crosapi::mojom::DisplayConfigResult::kSuccess);
     return;
   }

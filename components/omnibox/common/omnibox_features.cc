@@ -74,13 +74,6 @@ BASE_FEATURE(kPreferNonShortcutMatchesWhenDeduping,
              "OmniboxPreferNonShortcutMatchesWhenDeduping",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// When disabled, when providers update their matches, the new set of matches
-// are sorted and culled, then merged with the old matches, then sorted and
-// culled again. When enabled, the first sort and cull is skipped.
-BASE_FEATURE(kSingleSortAndCullPass,
-             "OmniboxSingleSortAndCullPass",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Feature used to cap max zero suggestions shown according to the param
 // OmniboxMaxZeroSuggestMatches. If omitted,
 // OmniboxUIExperimentMaxAutocompleteMatches will be used instead. If present,
@@ -238,7 +231,7 @@ BASE_FEATURE(kDocumentProvider,
 // suggestions are available to all clients who meet the other requirements.
 BASE_FEATURE(kDocumentProviderNoSetting,
              "OmniboxDocumentProviderNoSetting",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, the requirement to be in an active Sync state is removed and
 // Drive suggestions are available to all clients who meet the other
@@ -272,12 +265,6 @@ BASE_FEATURE(kAdaptiveSuggestionsCount,
 BASE_FEATURE(kClipboardSuggestionContentHidden,
              "ClipboardSuggestionContentHidden",
              enabled_by_default_android_only);
-
-// If enabled, clipboard suggestion for distinct clip data will not show after
-// first use.
-BASE_FEATURE(kSuppressClipboardSuggestionAfterFirstUsed,
-             "SuppressClipboardSuggestionAfterFirstUsed",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If enabled, company entity icons may be replaced by a search loupe.
 BASE_FEATURE(kCompanyEntityIconAdjustment,
@@ -475,18 +462,6 @@ BASE_FEATURE(kDefaultTypedNavigationsToHttps,
 // - Otherwise, a new navigation to the the fallback HTTP URL is started.
 const char kDefaultTypedNavigationsToHttpsTimeoutParam[] = "timeout";
 
-// If enabled, Omnibox reports the Assisted Query Stats in the aqs= param in the
-// Search Results Page URL.
-BASE_FEATURE(kReportAssistedQueryStats,
-             "OmniboxReportAssistedQueryStats",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// If enabled, Omnibox reports the Searchbox Stats in the gs_lcrp= param in the
-// Search Results Page URL.
-BASE_FEATURE(kReportSearchboxStats,
-             "OmniboxReportSearchboxStats",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // If enabled, logs Omnibox URL scoring signals to OmniboxEventProto for
 // training the ML scoring models.
 BASE_FEATURE(kLogUrlScoringSignals,
@@ -497,14 +472,14 @@ BASE_FEATURE(kLogUrlScoringSignals,
 // URL suggestions and reranks them.
 BASE_FEATURE(kMlUrlScoring, "MlUrlScoring", base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, appends additional Trending and Recent Search Related Queries to
-// the suggestion list on the NTP and SRP.
-BASE_FEATURE(kInspireMe, "OmniboxInspireMe", enabled_by_default_android_only);
-
 // If enabled, creates Omnibox autocompete URL scoring model.
 BASE_FEATURE(kUrlScoringModel,
              "UrlScoringModel",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// If enabled, appends additional Trending and Recent Search Related Queries to
+// the suggestion list on the NTP and SRP.
+BASE_FEATURE(kInspireMe, "OmniboxInspireMe", enabled_by_default_android_only);
 
 // Actions in Suggest is a data-driven feature; it's considered enabled when the
 // data is available.

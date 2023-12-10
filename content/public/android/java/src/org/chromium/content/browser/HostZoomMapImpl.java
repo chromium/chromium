@@ -24,9 +24,7 @@ import org.chromium.content_public.browser.WebContents;
 
 import java.util.HashMap;
 
-/**
- * Implementations of {@link HostZoomMap}
- */
+/** Implementations of {@link HostZoomMap} */
 @JNINamespace("content")
 public class HostZoomMapImpl {
     // Private constructor to prevent unwanted construction.
@@ -130,9 +128,11 @@ public class HostZoomMapImpl {
      * @return bool True if zoom should be adjusted.
      */
     public static boolean shouldAdjustForOSLevel() {
-        return ContentFeatureMap.getInstance().getFieldTrialParamByFeatureAsBoolean(
-                ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM,
-                ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM_PARAM, true);
+        return ContentFeatureMap.getInstance()
+                .getFieldTrialParamByFeatureAsBoolean(
+                        ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM,
+                        ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM_PARAM,
+                        true);
     }
 
     /**
@@ -160,8 +160,10 @@ public class HostZoomMapImpl {
         // (130%) and the desktop site zoom scale is 110%, then we want to continue to display 150%
         // to the user but actually render 1.5 * 1.3 * 1.1 = 2.145 (~214%) zoom. We must apply this
         // at the zoom level (not factor) to compensate for logarithmic scale.
-        double adjustedLevel = systemFontScale * Math.pow(TEXT_SIZE_MULTIPLIER_RATIO, zoomLevel)
-                * desktopSiteZoomScale;
+        double adjustedLevel =
+                systemFontScale
+                        * Math.pow(TEXT_SIZE_MULTIPLIER_RATIO, zoomLevel)
+                        * desktopSiteZoomScale;
 
         // We do not pass levels to the backend, but factors. So convert back and round.
         double adjustedFactor = Math.log10(adjustedLevel) / Math.log10(TEXT_SIZE_MULTIPLIER_RATIO);
@@ -178,11 +180,17 @@ public class HostZoomMapImpl {
     @NativeMethods
     public interface Natives {
         void setZoomLevel(WebContents webContents, double newZoomLevel, double adjustedZoomLevel);
+
         double getZoomLevel(WebContents webContents);
+
         void setDefaultZoomLevel(BrowserContextHandle context, double newDefaultZoomLevel);
+
         double getDefaultZoomLevel(BrowserContextHandle context);
+
         double getDesktopSiteZoomScale(WebContents webContents);
+
         SiteZoomInfo[] getAllHostZoomLevels(BrowserContextHandle context);
+
         void setZoomLevelForHost(BrowserContextHandle context, String host, double level);
     }
 }

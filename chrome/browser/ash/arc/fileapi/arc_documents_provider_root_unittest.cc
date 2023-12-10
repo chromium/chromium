@@ -180,10 +180,10 @@ constexpr DocumentSpec kRoDirSpec{"ro-dir-id", kRootSpec.document_id,
                                   -1,          56,
                                   false,       false,
                                   false,       false};
-constexpr int kAllMetadataFields =
-    storage::FileSystemOperation::GET_METADATA_FIELD_IS_DIRECTORY |
-    storage::FileSystemOperation::GET_METADATA_FIELD_SIZE |
-    storage::FileSystemOperation::GET_METADATA_FIELD_LAST_MODIFIED;
+constexpr storage::FileSystemOperation::GetMetadataFieldSet kAllMetadataFields =
+    {storage::FileSystemOperation::GetMetadataField::kIsDirectory,
+     storage::FileSystemOperation::GetMetadataField::kSize,
+     storage::FileSystemOperation::GetMetadataField::kLastModified};
 
 // RootSpecs
 constexpr RootSpec kRegularRootSpec{"root", kRootSpec.document_id, "root1", 100,
@@ -778,6 +778,40 @@ TEST_F(ArcDocumentsProviderRootTest, DeleteFile) {
       base::FilePath(FILE_PATH_LITERAL("dir/photo.jpg"))));
 }
 
+TEST_F(ArcDocumentsProviderRootTest, DeleteFileThenGetMetadataClearsCache) {
+  // Make sure that dir/photo.jpg exists.
+  ASSERT_TRUE(fake_file_system_.DocumentExists(
+      kAuthority, kRootSpec.document_id,
+      base::FilePath(FILE_PATH_LITERAL("dir/photo.jpg"))));
+
+  {
+    base::RunLoop run_loop;
+    root_->DeleteFile(base::FilePath(FILE_PATH_LITERAL("dir/photo.jpg")),
+                      base::BindOnce(
+                          [](base::RunLoop* run_loop, base::File::Error error) {
+                            run_loop->Quit();
+                            EXPECT_EQ(base::File::FILE_OK, error);
+                          },
+                          &run_loop));
+    run_loop.Run();
+  }
+
+  // dir/photo.jpg should have been removed.
+  {
+    base::RunLoop run_loop;
+    root_->GetExtraFileMetadata(
+        base::FilePath(FILE_PATH_LITERAL("dir/photo.jpg")),
+        base::BindOnce(
+            [](base::RunLoop* run_loop, base::File::Error error,
+               const ArcDocumentsProviderRoot::ExtraFileMetadata& metadata) {
+              run_loop->Quit();
+              EXPECT_EQ(base::File::FILE_ERROR_NOT_FOUND, error);
+            },
+            &run_loop));
+    run_loop.Run();
+  }
+}
+
 TEST_F(ArcDocumentsProviderRootTest, DeleteFileNonExist) {
   base::RunLoop run_loop;
   root_->DeleteFile(base::FilePath(FILE_PATH_LITERAL("dir/non_exist.jpg")),
@@ -1103,6 +1137,52 @@ TEST_F(ArcDocumentsProviderRootTest, CopyFile) {
       base::FilePath(FILE_PATH_LITERAL("dir/photo.jpg"))));
 }
 
+TEST_F(ArcDocumentsProviderRootTest, CopyFileThenGetMetadataClearsCache) {
+  {
+    base::RunLoop run_loop;
+    root_->CopyFileLocal(
+        base::FilePath(FILE_PATH_LITERAL("dir/photo.jpg")),
+        base::FilePath(FILE_PATH_LITERAL("dir/photo2.jpg")),
+        base::BindOnce(
+            [](base::RunLoop* run_loop, base::File::Error error) {
+              run_loop->Quit();
+              EXPECT_EQ(base::File::FILE_OK, error);
+            },
+            &run_loop));
+    run_loop.Run();
+  }
+
+  // dir/photo2.jpg should be created by the copy.
+  {
+    base::RunLoop run_loop;
+    root_->GetExtraFileMetadata(
+        base::FilePath(FILE_PATH_LITERAL("dir/photo2.jpg")),
+        base::BindOnce(
+            [](base::RunLoop* run_loop, base::File::Error error,
+               const ArcDocumentsProviderRoot::ExtraFileMetadata& metadata) {
+              run_loop->Quit();
+              EXPECT_EQ(base::File::FILE_OK, error);
+            },
+            &run_loop));
+    run_loop.Run();
+  }
+
+  // The source file should still be there.
+  {
+    base::RunLoop run_loop;
+    root_->GetExtraFileMetadata(
+        base::FilePath(FILE_PATH_LITERAL("dir/photo.jpg")),
+        base::BindOnce(
+            [](base::RunLoop* run_loop, base::File::Error error,
+               const ArcDocumentsProviderRoot::ExtraFileMetadata& metadata) {
+              run_loop->Quit();
+              EXPECT_EQ(base::File::FILE_OK, error);
+            },
+            &run_loop));
+    run_loop.Run();
+  }
+}
+
 TEST_F(ArcDocumentsProviderRootTest, CopyFileToDifferentDirectory) {
   base::RunLoop run_loop;
   root_->CopyFileLocal(
@@ -1206,6 +1286,52 @@ TEST_F(ArcDocumentsProviderRootTest, RenameFile) {
           .document_id);
 }
 
+TEST_F(ArcDocumentsProviderRootTest, RenameFileThenGetMetadataClearsCache) {
+  {
+    base::RunLoop run_loop;
+    root_->MoveFileLocal(
+        base::FilePath(FILE_PATH_LITERAL("dir/photo.jpg")),
+        base::FilePath(FILE_PATH_LITERAL("dir/photo2.jpg")),
+        base::BindOnce(
+            [](base::RunLoop* run_loop, base::File::Error error) {
+              run_loop->Quit();
+              EXPECT_EQ(base::File::FILE_OK, error);
+            },
+            &run_loop));
+    run_loop.Run();
+  }
+
+  // There should be dir/photo2.jpg which was renamed from dir/photo.jpg.
+  {
+    base::RunLoop run_loop;
+    root_->GetExtraFileMetadata(
+        base::FilePath(FILE_PATH_LITERAL("dir/photo2.jpg")),
+        base::BindOnce(
+            [](base::RunLoop* run_loop, base::File::Error error,
+               const ArcDocumentsProviderRoot::ExtraFileMetadata& metadata) {
+              run_loop->Quit();
+              EXPECT_EQ(base::File::FILE_OK, error);
+            },
+            &run_loop));
+    run_loop.Run();
+  }
+
+  // The source file should be gone by rename.
+  {
+    base::RunLoop run_loop;
+    root_->GetExtraFileMetadata(
+        base::FilePath(FILE_PATH_LITERAL("dir/photo.jpg")),
+        base::BindOnce(
+            [](base::RunLoop* run_loop, base::File::Error error,
+               const ArcDocumentsProviderRoot::ExtraFileMetadata& metadata) {
+              run_loop->Quit();
+              EXPECT_EQ(base::File::FILE_ERROR_NOT_FOUND, error);
+            },
+            &run_loop));
+    run_loop.Run();
+  }
+}
+
 TEST_F(ArcDocumentsProviderRootTest, RenameFileNotRenamable) {
   base::RunLoop run_loop;
   root_->MoveFileLocal(
@@ -1282,6 +1408,52 @@ TEST_F(ArcDocumentsProviderRootTest, MoveFile) {
                 .GetDocument(kAuthority, kRootSpec.document_id,
                              base::FilePath(FILE_PATH_LITERAL("photo.jpg")))
                 .document_id);
+}
+
+TEST_F(ArcDocumentsProviderRootTest, MoveFileThenGetMetadataClearsCache) {
+  {
+    base::RunLoop run_loop;
+    root_->MoveFileLocal(
+        base::FilePath(FILE_PATH_LITERAL("dir/photo.jpg")),
+        base::FilePath(FILE_PATH_LITERAL("photo.jpg")),
+        base::BindOnce(
+            [](base::RunLoop* run_loop, base::File::Error error) {
+              run_loop->Quit();
+              EXPECT_EQ(base::File::FILE_OK, error);
+            },
+            &run_loop));
+    run_loop.Run();
+  }
+
+  // There should be photo.jpg which was moved from dir/photo.jpg.
+  {
+    base::RunLoop run_loop;
+    root_->GetExtraFileMetadata(
+        base::FilePath(FILE_PATH_LITERAL("photo.jpg")),
+        base::BindOnce(
+            [](base::RunLoop* run_loop, base::File::Error error,
+               const ArcDocumentsProviderRoot::ExtraFileMetadata& metadata) {
+              run_loop->Quit();
+              EXPECT_EQ(base::File::FILE_OK, error);
+            },
+            &run_loop));
+    run_loop.Run();
+  }
+
+  // The source file should be gone by move.
+  {
+    base::RunLoop run_loop;
+    root_->GetExtraFileMetadata(
+        base::FilePath(FILE_PATH_LITERAL("dir/photo.jpg")),
+        base::BindOnce(
+            [](base::RunLoop* run_loop, base::File::Error error,
+               const ArcDocumentsProviderRoot::ExtraFileMetadata& metadata) {
+              run_loop->Quit();
+              EXPECT_EQ(base::File::FILE_ERROR_NOT_FOUND, error);
+            },
+            &run_loop));
+    run_loop.Run();
+  }
 }
 
 TEST_F(ArcDocumentsProviderRootTest, MoveFileWithDifferentName) {

@@ -685,7 +685,7 @@ IN_PROC_BROWSER_TEST_F(PageInfoChangedWithin1mUmaTest,
               GetLocationBarView()->GetWebContents()->GetBrowserContext());
 
   // Get recorded entry and manually change its time to 2 minutes ago.
-  absl::optional<permissions::PermissionActionTime> record =
+  std::optional<permissions::PermissionActionTime> record =
       permission_action_service->GetLastActionEntry(
           origin, ContentSettingsType::NOTIFICATIONS);
   EXPECT_TRUE(record.has_value());
@@ -748,8 +748,8 @@ class QuietChipAutoPopupBubbleInteractiveTest
   using QuietUiReason = permissions::PermissionUiSelector::QuietUiReason;
   using WarningReason = permissions::PermissionUiSelector::WarningReason;
 
-  void SetCannedUiDecision(absl::optional<QuietUiReason> quiet_ui_reason,
-                           absl::optional<WarningReason> warning_reason) {
+  void SetCannedUiDecision(std::optional<QuietUiReason> quiet_ui_reason,
+                           std::optional<WarningReason> warning_reason) {
     test_api_->manager()->set_permission_ui_selector_for_testing(
         std::make_unique<TestQuietNotificationPermissionUiSelector>(
             permissions::PermissionUiSelector::Decision(quiet_ui_reason,
@@ -850,7 +850,7 @@ IN_PROC_BROWSER_TEST_F(QuietChipAutoPopupBubbleInteractiveTest,
   for (QuietUiReason reason :
        {QuietUiReason::kEnabledInPrefs,
         QuietUiReason::kServicePredictedVeryUnlikelyGrant}) {
-    SetCannedUiDecision(reason, absl::nullopt);
+    SetCannedUiDecision(reason, std::nullopt);
 
     RequestPermission(permissions::RequestType::kNotifications);
 
@@ -883,7 +883,7 @@ IN_PROC_BROWSER_TEST_F(QuietChipAutoPopupBubbleInteractiveTest,
   for (QuietUiReason reason :
        {QuietUiReason::kEnabledInPrefs,
         QuietUiReason::kServicePredictedVeryUnlikelyGrant}) {
-    SetCannedUiDecision(reason, absl::nullopt);
+    SetCannedUiDecision(reason, std::nullopt);
 
     RequestPermission(permissions::RequestType::kNotifications);
 
@@ -925,7 +925,7 @@ IN_PROC_BROWSER_TEST_F(QuietChipAutoPopupBubbleInteractiveTest,
   for (QuietUiReason reason : {QuietUiReason::kTriggeredByCrowdDeny,
                                QuietUiReason::kTriggeredDueToAbusiveRequests,
                                QuietUiReason::kTriggeredDueToAbusiveContent}) {
-    SetCannedUiDecision(reason, absl::nullopt);
+    SetCannedUiDecision(reason, std::nullopt);
 
     RequestPermission(permissions::RequestType::kNotifications);
 
@@ -960,7 +960,7 @@ IN_PROC_BROWSER_TEST_F(QuietChipAutoPopupBubbleInteractiveTest,
   for (QuietUiReason reason : {QuietUiReason::kTriggeredByCrowdDeny,
                                QuietUiReason::kTriggeredDueToAbusiveRequests,
                                QuietUiReason::kTriggeredDueToAbusiveContent}) {
-    SetCannedUiDecision(reason, absl::nullopt);
+    SetCannedUiDecision(reason, std::nullopt);
 
     RequestPermission(permissions::RequestType::kNotifications);
 
@@ -989,7 +989,7 @@ IN_PROC_BROWSER_TEST_F(QuietChipAutoPopupBubbleInteractiveTest,
   for (QuietUiReason reason : {QuietUiReason::kTriggeredByCrowdDeny,
                                QuietUiReason::kTriggeredDueToAbusiveRequests,
                                QuietUiReason::kTriggeredDueToAbusiveContent}) {
-    SetCannedUiDecision(reason, absl::nullopt);
+    SetCannedUiDecision(reason, std::nullopt);
 
     RequestPermission(permissions::RequestType::kNotifications);
 
@@ -1018,7 +1018,7 @@ IN_PROC_BROWSER_TEST_F(QuietChipAutoPopupBubbleInteractiveTest,
   for (QuietUiReason reason : {QuietUiReason::kTriggeredByCrowdDeny,
                                QuietUiReason::kTriggeredDueToAbusiveRequests,
                                QuietUiReason::kTriggeredDueToAbusiveContent}) {
-    SetCannedUiDecision(reason, absl::nullopt);
+    SetCannedUiDecision(reason, std::nullopt);
 
     RequestPermission(permissions::RequestType::kNotifications);
 
@@ -1047,7 +1047,7 @@ IN_PROC_BROWSER_TEST_F(QuietChipAutoPopupBubbleInteractiveTest,
   for (QuietUiReason reason : {QuietUiReason::kTriggeredByCrowdDeny,
                                QuietUiReason::kTriggeredDueToAbusiveRequests,
                                QuietUiReason::kTriggeredDueToAbusiveContent}) {
-    SetCannedUiDecision(reason, absl::nullopt);
+    SetCannedUiDecision(reason, std::nullopt);
 
     RequestPermission(permissions::RequestType::kNotifications);
 
@@ -1076,7 +1076,7 @@ IN_PROC_BROWSER_TEST_F(QuietChipAutoPopupBubbleInteractiveTest,
   for (QuietUiReason reason : {QuietUiReason::kTriggeredByCrowdDeny,
                                QuietUiReason::kTriggeredDueToAbusiveRequests,
                                QuietUiReason::kTriggeredDueToAbusiveContent}) {
-    SetCannedUiDecision(reason, absl::nullopt);
+    SetCannedUiDecision(reason, std::nullopt);
 
     RequestPermission(permissions::RequestType::kNotifications);
 
@@ -1119,7 +1119,7 @@ IN_PROC_BROWSER_TEST_F(QuietChipAutoPopupBubbleInteractiveTest,
       base::FeatureList::IsEnabled(features::kQuietNotificationPrompts));
 
   SetCannedUiDecision(QuietUiReason::kTriggeredDueToAbusiveContent,
-                      absl::nullopt);
+                      std::nullopt);
 
   RequestPermission(permissions::RequestType::kGeolocation);
 
@@ -1162,8 +1162,8 @@ class QuietChipFailFastInteractiveTest : public PermissionChipInteractiveTest {
   using QuietUiReason = permissions::PermissionUiSelector::QuietUiReason;
   using WarningReason = permissions::PermissionUiSelector::WarningReason;
 
-  void SetCannedUiDecision(absl::optional<QuietUiReason> quiet_ui_reason,
-                           absl::optional<WarningReason> warning_reason) {
+  void SetCannedUiDecision(std::optional<QuietUiReason> quiet_ui_reason,
+                           std::optional<WarningReason> warning_reason) {
     test_api_->manager()->set_permission_ui_selector_for_testing(
         std::make_unique<TestQuietNotificationPermissionUiSelector>(
             permissions::PermissionUiSelector::Decision(quiet_ui_reason,
@@ -1533,7 +1533,7 @@ IN_PROC_BROWSER_TEST_F(PermissionChipInteractiveTest,
 
     EXPECT_TRUE(manager->IsRequestInProgress());
     EXPECT_FALSE(permissions::PermissionUtil::HasUserGesture(manager));
-    absl::optional<permissions::PermissionPromptDisposition> disposition =
+    std::optional<permissions::PermissionPromptDisposition> disposition =
         manager->current_request_prompt_disposition_for_testing();
 
     ASSERT_TRUE(disposition.has_value());
@@ -1555,7 +1555,7 @@ IN_PROC_BROWSER_TEST_F(PermissionChipInteractiveTest,
 
     EXPECT_TRUE(manager->IsRequestInProgress());
     EXPECT_TRUE(permissions::PermissionUtil::HasUserGesture(manager));
-    absl::optional<permissions::PermissionPromptDisposition> disposition =
+    std::optional<permissions::PermissionPromptDisposition> disposition =
         manager->current_request_prompt_disposition_for_testing();
 
     ASSERT_TRUE(disposition.has_value());

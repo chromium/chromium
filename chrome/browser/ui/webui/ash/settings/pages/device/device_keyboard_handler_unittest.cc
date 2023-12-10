@@ -198,8 +198,8 @@ TEST_F(KeyboardHandlerTest, ExternalKeyboard) {
       base::FilePath("/devices/platform/i8042/serio0/input/input1"), 1, 1,
       0xab41);
   fake_udev->AddFakeDevice(internal_kbd.name, internal_kbd.sys_path.value(),
-                           /*subsystem=*/"input", /*devnode=*/absl::nullopt,
-                           /*devtype=*/absl::nullopt, /*sysattrs=*/{},
+                           /*subsystem=*/"input", /*devnode=*/std::nullopt,
+                           /*devtype=*/std::nullopt, /*sysattrs=*/{},
                            /*properties=*/{});
   // Generic external USB keyboard.
   const ui::KeyboardDevice external_generic_kbd(
@@ -210,8 +210,8 @@ TEST_F(KeyboardHandlerTest, ExternalKeyboard) {
       0x046d, 0xc31c, 0x0111);
   fake_udev->AddFakeDevice(external_generic_kbd.name,
                            external_generic_kbd.sys_path.value(),
-                           /*subsystem=*/"input", /*devnode=*/absl::nullopt,
-                           /*devtype=*/absl::nullopt, /*sysattrs=*/{},
+                           /*subsystem=*/"input", /*devnode=*/std::nullopt,
+                           /*devtype=*/std::nullopt, /*sysattrs=*/{},
                            /*properties=*/{});
   // Apple keyboard.
   const ui::KeyboardDevice external_apple_kbd(
@@ -221,8 +221,8 @@ TEST_F(KeyboardHandlerTest, ExternalKeyboard) {
       0x05ac, 0x026c, 0x0111);
   fake_udev->AddFakeDevice(external_apple_kbd.name,
                            external_apple_kbd.sys_path.value(),
-                           /*subsystem=*/"input", /*devnode=*/absl::nullopt,
-                           /*devtype=*/absl::nullopt, /*sysattrs=*/{},
+                           /*subsystem=*/"input", /*devnode=*/std::nullopt,
+                           /*devtype=*/std::nullopt, /*sysattrs=*/{},
                            /*properties=*/{});
   // Chrome OS external USB keyboard.
   const ui::KeyboardDevice external_chromeos_kbd(
@@ -232,8 +232,8 @@ TEST_F(KeyboardHandlerTest, ExternalKeyboard) {
       0x04ca, 0x0082, 0x0111);
   fake_udev->AddFakeDevice(
       external_chromeos_kbd.name, external_chromeos_kbd.sys_path.value(),
-      /*subsystem=*/"input", /*devnode=*/absl::nullopt,
-      /*devtype=*/absl::nullopt, /*sysattrs=*/{},
+      /*subsystem=*/"input", /*devnode=*/std::nullopt,
+      /*devtype=*/std::nullopt, /*sysattrs=*/{},
       /*properties=*/{{"CROS_KEYBOARD_TOP_ROW_LAYOUT", "1"}});
 
   // Chrome OS external Bluetooth keyboard.
@@ -244,8 +244,8 @@ TEST_F(KeyboardHandlerTest, ExternalKeyboard) {
       0x04ca, 0x0082, 0x0111);
   fake_udev->AddFakeDevice(
       external_bt_chromeos_kbd.name, external_bt_chromeos_kbd.sys_path.value(),
-      /*subsystem=*/"input", /*devnode=*/absl::nullopt,
-      /*devtype=*/absl::nullopt, /*sysattrs=*/{},
+      /*subsystem=*/"input", /*devnode=*/std::nullopt,
+      /*devtype=*/std::nullopt, /*sysattrs=*/{},
       /*properties=*/{{"CROS_KEYBOARD_TOP_ROW_LAYOUT", "1"}});
 
   // An internal keyboard shouldn't change the defaults.

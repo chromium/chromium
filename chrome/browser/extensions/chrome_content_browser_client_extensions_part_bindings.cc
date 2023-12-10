@@ -24,18 +24,17 @@ void ChromeContentBrowserClientExtensionsPart::ExposeInterfacesToRenderer(
     service_manager::BinderRegistry* registry,
     blink::AssociatedInterfaceRegistry* associated_registry,
     content::RenderProcessHost* host) {
-  associated_registry->AddInterface<mojom::EventRouter>(
-      base::BindRepeating(&EventRouter::BindForRenderer, host->GetID()));
   associated_registry->AddInterface<mojom::RendererHost>(base::BindRepeating(
       &RendererStartupHelper::BindForRenderer, host->GetID()));
 #if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
+  associated_registry->AddInterface<mojom::EventRouter>(
+      base::BindRepeating(&EventRouter::BindForRenderer, host->GetID()));
   associated_registry->AddInterface<mojom::ServiceWorkerHost>(
       base::BindRepeating(&ServiceWorkerHost::BindReceiver, host->GetID()));
+  associated_registry->AddInterface<mojom::RendererAutomationRegistry>(
+      base::BindRepeating(&AutomationEventRouter::BindForRenderer,
+                          host->GetID()));
 #endif
-  associated_registry
-      ->AddInterface<extensions::mojom::RendererAutomationRegistry>(
-          base::BindRepeating(&AutomationEventRouter::BindForRenderer,
-                              host->GetID()));
 }
 
 void ChromeContentBrowserClientExtensionsPart::
@@ -52,10 +51,9 @@ void ChromeContentBrowserClientExtensionsPart::
   associated_registry.AddInterface<mojom::ServiceWorkerHost>(
       base::BindRepeating(&ServiceWorkerHost::BindReceiver,
                           service_worker_version_info.process_id));
-  associated_registry
-      .AddInterface<extensions::mojom::RendererAutomationRegistry>(
-          base::BindRepeating(&AutomationEventRouter::BindForRenderer,
-                              service_worker_version_info.process_id));
+  associated_registry.AddInterface<mojom::RendererAutomationRegistry>(
+      base::BindRepeating(&AutomationEventRouter::BindForRenderer,
+                          service_worker_version_info.process_id));
   associated_registry.AddInterface<mojom::EventRouter>(base::BindRepeating(
       &EventRouter::BindForRenderer, service_worker_version_info.process_id));
 #endif
@@ -65,9 +63,14 @@ void ChromeContentBrowserClientExtensionsPart::
     ExposeInterfacesToRendererForRenderFrameHost(
         content::RenderFrameHost& frame_host,
         blink::AssociatedInterfaceRegistry& associated_registry) {
-  associated_registry.AddInterface<mojom::RendererHost>(
-      base::BindRepeating(&RendererStartupHelper::BindForRenderer,
-                          frame_host.GetProcess()->GetID()));
+  int render_process_id = frame_host.GetProcess()->GetID();
+  associated_registry.AddInterface<mojom::RendererHost>(base::BindRepeating(
+      &RendererStartupHelper::BindForRenderer, render_process_id));
+  associated_registry.AddInterface<mojom::RendererAutomationRegistry>(
+      base::BindRepeating(&AutomationEventRouter::BindForRenderer,
+                          render_process_id));
+  associated_registry.AddInterface<mojom::EventRouter>(
+      base::BindRepeating(&EventRouter::BindForRenderer, render_process_id));
   associated_registry.AddInterface<guest_view::mojom::GuestViewHost>(
       base::BindRepeating(&ExtensionsGuestView::CreateForComponents,
                           frame_host.GetGlobalId()));

@@ -200,7 +200,7 @@ void AsyncLayerTreeFrameSink::SubmitCompositorFrame(
               frame.size_in_pixels().width());
   }
 
-  absl::optional<viz::HitTestRegionList> hit_test_region_list =
+  std::optional<viz::HitTestRegionList> hit_test_region_list =
       client_->BuildHitTestData();
 
   // If |hit_test_data_changed| was set or local_surface_id has been updated,
@@ -214,7 +214,7 @@ void AsyncLayerTreeFrameSink::SubmitCompositorFrame(
                                         last_hit_test_data_)) {
       DCHECK(!viz::HitTestRegionList::IsEqual(*hit_test_region_list,
                                               viz::HitTestRegionList()));
-      hit_test_region_list = absl::nullopt;
+      hit_test_region_list = std::nullopt;
     } else {
       last_hit_test_data_ = *hit_test_region_list;
     }
@@ -366,6 +366,11 @@ void AsyncLayerTreeFrameSink::ReclaimResources(
 void AsyncLayerTreeFrameSink::OnCompositorFrameTransitionDirectiveProcessed(
     uint32_t sequence_id) {
   client_->OnCompositorFrameTransitionDirectiveProcessed(sequence_id);
+}
+
+void AsyncLayerTreeFrameSink::OnSurfaceEvicted(
+    const viz::LocalSurfaceId& local_surface_id) {
+  client_->OnSurfaceEvicted(local_surface_id);
 }
 
 void AsyncLayerTreeFrameSink::OnNeedsBeginFrames(bool needs_begin_frames) {

@@ -11,9 +11,7 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.content_public.browser.WebContents;
 
-/**
- * Centralizes metrics data collection for Page Zoom.
- */
+/** Centralizes metrics data collection for Page Zoom. */
 @JNINamespace("browser_ui")
 public class PageZoomMetrics {
     /**

@@ -390,12 +390,12 @@ FrameTreeNode* FrameTree::AddFrame(
     blink::FrameOwnerElementType owner_type,
     bool is_dummy_frame_for_inner_tree) {
   CHECK_NE(new_routing_id, MSG_ROUTING_NONE);
-  // Normally this path is for blink adding a child local frame. But both
-  // portals and fenced frames add a dummy child frame that never gets a
-  // corresponding RenderFrameImpl in any renderer process, and therefore its
-  // `frame_remote` is invalid. Also its RenderFrameHostImpl is exempt from
-  // having `RenderFrameCreated()` called on it (see later in this method, as
-  // well as `WebContentsObserverConsistencyChecker::RenderFrameHostChanged()`).
+  // Normally this path is for blink adding a child local frame. But fenced
+  // frames add a dummy child frame that never gets a corresponding
+  // RenderFrameImpl in any renderer process, and therefore its `frame_remote`
+  // is invalid. Also its RenderFrameHostImpl is exempt from having
+  // `RenderFrameCreated()` called on it (see later in this method, as well as
+  // `WebContentsObserverConsistencyChecker::RenderFrameHostChanged()`).
   DCHECK_NE(frame_remote.is_valid(), is_dummy_frame_for_inner_tree);
   DCHECK_NE(browser_interface_broker_receiver.is_valid(),
             is_dummy_frame_for_inner_tree);
@@ -465,8 +465,8 @@ FrameTreeNode* FrameTree::AddFrame(
   // For consistency with navigating to a new RenderFrameHost case, we dispatch
   // RenderFrameCreated before RenderFrameHostChanged.
   if (!is_dummy_frame_for_inner_tree) {
-    // The outer dummy FrameTreeNode for both portals and fenced frames does not
-    // have a live RenderFrame in the renderer process.
+    // The outer dummy FrameTreeNode for fenced frames does not have a live
+    // RenderFrame in the renderer process.
     added_node->current_frame_host()->RenderFrameCreated();
   }
 
@@ -678,21 +678,22 @@ void FrameTree::SetFocusedFrame(FrameTreeNode* node,
 }
 
 scoped_refptr<RenderViewHostImpl> FrameTree::CreateRenderViewHost(
-    SiteInstanceImpl* site_instance,
+    SiteInstanceGroup* site_instance_group,
     int32_t main_frame_routing_id,
     bool renderer_initiated_creation,
     scoped_refptr<BrowsingContextState> main_browsing_context_state,
-    CreateRenderViewHostCase create_case) {
+    CreateRenderViewHostCase create_case,
+    absl::optional<viz::FrameSinkId> frame_sink_id) {
   if (main_browsing_context_state) {
     DCHECK(main_browsing_context_state->is_main_frame());
   }
   RenderViewHostImpl* rvh =
       static_cast<RenderViewHostImpl*>(RenderViewHostFactory::Create(
-          this, site_instance->group(),
-          site_instance->GetStoragePartitionConfig(), render_view_delegate_,
-          render_widget_delegate_, main_frame_routing_id,
+          this, site_instance_group,
+          site_instance_group->GetStoragePartitionConfig(),
+          render_view_delegate_, render_widget_delegate_, main_frame_routing_id,
           renderer_initiated_creation, std::move(main_browsing_context_state),
-          create_case));
+          create_case, frame_sink_id));
 
   if (ShouldCreateNewHostForAllFrames() &&
       create_case == CreateRenderViewHostCase::kSpeculative) {
@@ -811,15 +812,8 @@ void FrameTree::ReplicatePageFocus(bool is_focused) {
     SetPageFocus(group, is_focused);
 }
 
-bool FrameTree::IsPortal() {
-  return delegate_->IsPortal();
-}
-
 void FrameTree::SetPageFocus(SiteInstanceGroup* group, bool is_focused) {
   RenderFrameHostManager* root_manager = root_.render_manager();
-
-  // Portal frame tree should not get page focus.
-  DCHECK(!IsPortal() || !is_focused);
 
   // This is only used to set page-level focus in cross-process subframes, and
   // requests to set focus in main frame's SiteInstanceGroup are ignored.

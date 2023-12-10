@@ -8,9 +8,7 @@ import android.view.View;
 
 import androidx.annotation.NonNull;
 
-/**
- * This class handles snap scroll for the search box on a {@link NewTabPage}.
- */
+/** This class handles snap scroll for the search box on a {@link NewTabPage}. */
 public interface SnapScrollHelper {
     /** @param view The view on which this class needs to handle snap scroll. */
     void setView(@NonNull View view);

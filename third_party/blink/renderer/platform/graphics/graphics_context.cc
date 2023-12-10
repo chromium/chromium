@@ -549,13 +549,12 @@ void GraphicsContext::DrawLineForText(const gfx::PointF& pt,
   }
 }
 
-template <typename TextPaintInfo>
-void GraphicsContext::DrawTextInternal(const Font& font,
-                                       const TextPaintInfo& text_info,
-                                       const gfx::PointF& point,
-                                       const cc::PaintFlags& flags,
-                                       DOMNodeId node_id,
-                                       const AutoDarkMode& auto_dark_mode) {
+void GraphicsContext::DrawText(const Font& font,
+                               const TextFragmentPaintInfo& text_info,
+                               const gfx::PointF& point,
+                               const cc::PaintFlags& flags,
+                               DOMNodeId node_id,
+                               const AutoDarkMode& auto_dark_mode) {
   DarkModeFlags dark_mode_flags(this, auto_dark_mode, flags);
   if (sk_sp<SkTextBlob> text_blob = paint_controller_->CachedTextBlob()) {
     canvas_->drawTextBlob(text_blob, point.x(), point.y(), node_id,
@@ -567,27 +566,8 @@ void GraphicsContext::DrawTextInternal(const Font& font,
                           : Font::DrawType::kGlyphsOnly);
 }
 
-void GraphicsContext::DrawText(const Font& font,
-                               const TextRunPaintInfo& text_info,
-                               const gfx::PointF& point,
-                               const cc::PaintFlags& flags,
-                               DOMNodeId node_id,
-                               const AutoDarkMode& auto_dark_mode) {
-  DrawTextInternal(font, text_info, point, flags, node_id, auto_dark_mode);
-}
-
-void GraphicsContext::DrawText(const Font& font,
-                               const NGTextFragmentPaintInfo& text_info,
-                               const gfx::PointF& point,
-                               const cc::PaintFlags& flags,
-                               DOMNodeId node_id,
-                               const AutoDarkMode& auto_dark_mode) {
-  DrawTextInternal(font, text_info, point, flags, node_id, auto_dark_mode);
-}
-
 template <typename DrawTextFunc>
-void GraphicsContext::DrawTextPasses(const AutoDarkMode& auto_dark_mode,
-                                     const DrawTextFunc& draw_text) {
+void GraphicsContext::DrawTextPasses(const DrawTextFunc& draw_text) {
   TextDrawingModeFlags mode_flags = TextDrawingMode();
 
   if (mode_flags & kTextModeFill) {
@@ -606,22 +586,12 @@ void GraphicsContext::DrawTextPasses(const AutoDarkMode& auto_dark_mode,
 }
 
 void GraphicsContext::DrawText(const Font& font,
-                               const TextRunPaintInfo& text_info,
+                               const TextFragmentPaintInfo& text_info,
                                const gfx::PointF& point,
                                DOMNodeId node_id,
                                const AutoDarkMode& auto_dark_mode) {
-  DrawTextPasses(auto_dark_mode, [&](const cc::PaintFlags& flags) {
-    DrawTextInternal(font, text_info, point, flags, node_id, auto_dark_mode);
-  });
-}
-
-void GraphicsContext::DrawText(const Font& font,
-                               const NGTextFragmentPaintInfo& text_info,
-                               const gfx::PointF& point,
-                               DOMNodeId node_id,
-                               const AutoDarkMode& auto_dark_mode) {
-  DrawTextPasses(auto_dark_mode, [&](const cc::PaintFlags& flags) {
-    DrawTextInternal(font, text_info, point, flags, node_id, auto_dark_mode);
+  DrawTextPasses([&](const cc::PaintFlags& flags) {
+    DrawText(font, text_info, point, flags, node_id, auto_dark_mode);
   });
 }
 
@@ -632,9 +602,9 @@ void GraphicsContext::DrawEmphasisMarksInternal(
     const AtomicString& mark,
     const gfx::PointF& point,
     const AutoDarkMode& auto_dark_mode) {
-  DrawTextPasses(auto_dark_mode, [&font, &text_info, &mark, &point,
-                                  this](const cc::PaintFlags& flags) {
-    font.DrawEmphasisMarks(canvas_, text_info, mark, point, flags);
+  DrawTextPasses([&](const cc::PaintFlags& flags) {
+    font.DrawEmphasisMarks(canvas_, text_info, mark, point,
+                           DarkModeFlags(this, auto_dark_mode, flags));
   });
 }
 
@@ -646,12 +616,11 @@ void GraphicsContext::DrawEmphasisMarks(const Font& font,
   DrawEmphasisMarksInternal(font, text_info, mark, point, auto_dark_mode);
 }
 
-void GraphicsContext::DrawEmphasisMarks(
-    const Font& font,
-    const NGTextFragmentPaintInfo& text_info,
-    const AtomicString& mark,
-    const gfx::PointF& point,
-    const AutoDarkMode& auto_dark_mode) {
+void GraphicsContext::DrawEmphasisMarks(const Font& font,
+                                        const TextFragmentPaintInfo& text_info,
+                                        const AtomicString& mark,
+                                        const gfx::PointF& point,
+                                        const AutoDarkMode& auto_dark_mode) {
   DrawEmphasisMarksInternal(font, text_info, mark, point, auto_dark_mode);
 }
 
@@ -661,28 +630,15 @@ void GraphicsContext::DrawBidiText(
     const gfx::PointF& point,
     const AutoDarkMode& auto_dark_mode,
     Font::CustomFontNotReadyAction custom_font_not_ready_action) {
-  DrawTextPasses(
-      auto_dark_mode, [&font, &run_info, &point, custom_font_not_ready_action,
-                       this](const cc::PaintFlags& flags) {
-        if (font.DrawBidiText(canvas_, run_info, point,
-                              custom_font_not_ready_action, flags,
-                              printing_ ? Font::DrawType::kGlyphsAndClusters
-                                        : Font::DrawType::kGlyphsOnly)) {
-          paint_controller_->SetTextPainted();
-        }
-      });
-}
-
-void GraphicsContext::DrawHighlightForText(const Font& font,
-                                           const TextRun& run,
-                                           const gfx::PointF& point,
-                                           int h,
-                                           const Color& background_color,
-                                           const AutoDarkMode& auto_dark_mode,
-                                           int from,
-                                           int to) {
-  FillRect(font.SelectionRectForText(run, point, h, from, to), background_color,
-           auto_dark_mode);
+  DrawTextPasses([&](const cc::PaintFlags& flags) {
+    if (font.DrawBidiText(canvas_, run_info, point,
+                          custom_font_not_ready_action,
+                          DarkModeFlags(this, auto_dark_mode, flags),
+                          printing_ ? Font::DrawType::kGlyphsAndClusters
+                                    : Font::DrawType::kGlyphsOnly)) {
+      paint_controller_->SetTextPainted();
+    }
+  });
 }
 
 void GraphicsContext::DrawImage(

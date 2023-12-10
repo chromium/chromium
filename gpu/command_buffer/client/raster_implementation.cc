@@ -150,8 +150,8 @@ class ScopedSharedMemoryPtr {
   }
 
  private:
-  absl::optional<ScopedMappedMemoryPtr> scoped_mapped_ptr_;
-  absl::optional<ScopedTransferBufferPtr> scoped_transfer_ptr_;
+  std::optional<ScopedMappedMemoryPtr> scoped_mapped_ptr_;
+  std::optional<ScopedTransferBufferPtr> scoped_transfer_ptr_;
 };
 
 }  // namespace
@@ -1106,7 +1106,7 @@ void* RasterImplementation::MapRasterCHROMIUM(uint32_t size,
   raster_mapped_buffer_.emplace(size, helper_, transfer_buffer_);
   if (!raster_mapped_buffer_->valid()) {
     SetGLError(GL_INVALID_OPERATION, "glMapRasterCHROMIUM", "size too big");
-    raster_mapped_buffer_ = absl::nullopt;
+    raster_mapped_buffer_ = std::nullopt;
     return nullptr;
   }
   *size_allocated = raster_mapped_buffer_->size();
@@ -1128,7 +1128,7 @@ void* RasterImplementation::MapFontBuffer(uint32_t size) {
   font_mapped_buffer_.emplace(size, helper_, mapped_memory_.get());
   if (!font_mapped_buffer_->valid()) {
     SetGLError(GL_INVALID_OPERATION, "glMapFontBufferCHROMIUM", "size too big");
-    font_mapped_buffer_ = absl::nullopt;
+    font_mapped_buffer_ = std::nullopt;
     return nullptr;
   }
   return font_mapped_buffer_->address();
@@ -1143,7 +1143,7 @@ void RasterImplementation::UnmapRasterCHROMIUM(uint32_t raster_written_size,
   DCHECK(raster_mapped_buffer_->valid());
   if (total_written_size == 0) {
     raster_mapped_buffer_->Discard();
-    raster_mapped_buffer_ = absl::nullopt;
+    raster_mapped_buffer_ = std::nullopt;
     return;
   }
   raster_mapped_buffer_->Shrink(total_written_size);
@@ -1163,8 +1163,8 @@ void RasterImplementation::UnmapRasterCHROMIUM(uint32_t raster_written_size,
         raster_written_size, font_shm_id, font_shm_offset, font_shm_size);
   }
 
-  raster_mapped_buffer_ = absl::nullopt;
-  font_mapped_buffer_ = absl::nullopt;
+  raster_mapped_buffer_ = std::nullopt;
+  font_mapped_buffer_ = std::nullopt;
   CheckGLError();
 }
 
@@ -1855,6 +1855,12 @@ void RasterImplementation::IssueImageDecodeCacheEntryCreation(
 
 GLuint RasterImplementation::CreateAndConsumeForGpuRaster(
     const gpu::Mailbox& mailbox) {
+  NOTREACHED();
+  return 0;
+}
+
+GLuint RasterImplementation::CreateAndConsumeForGpuRaster(
+    const scoped_refptr<gpu::ClientSharedImage>& shared_image) {
   NOTREACHED();
   return 0;
 }

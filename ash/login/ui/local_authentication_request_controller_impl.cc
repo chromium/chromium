@@ -31,7 +31,7 @@ LocalAuthenticationRequestControllerImpl::
 void LocalAuthenticationRequestControllerImpl::OnClose() {}
 
 bool LocalAuthenticationRequestControllerImpl::ShowWidget(
-    OnLocalAuthenticationCompleted on_local_authentication_completed,
+    LocalAuthenticationCallback local_authentication_callback,
     std::unique_ptr<UserContext> user_context) {
   if (LocalAuthenticationRequestWidget::Get()) {
     LOG(ERROR) << "LocalAuthenticationRequestWidget is already shown.";
@@ -47,7 +47,7 @@ bool LocalAuthenticationRequestControllerImpl::ShowWidget(
       base::UTF8ToUTF16(user_email));
 
   LocalAuthenticationRequestWidget::Show(
-      std::move(on_local_authentication_completed),
+      std::move(local_authentication_callback),
       l10n_util::GetStringUTF16(
           IDS_ASH_LOGIN_LOCAL_AUTHENTICATION_REQUEST_TITLE),
       desc, this, std::move(user_context));

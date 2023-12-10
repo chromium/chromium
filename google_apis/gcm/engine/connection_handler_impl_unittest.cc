@@ -262,8 +262,8 @@ void GCMConnectionHandlerImplTest::BuildSocket(const ReadList& read_list,
       mojo_socket_remote_.BindNewPipeAndPassReceiver(),
       mojo::NullRemote() /* observer */,
       base::BindLambdaForTesting(
-          [&](int result, const absl::optional<net::IPEndPoint>& local_addr,
-              const absl::optional<net::IPEndPoint>& peer_addr,
+          [&](int result, const std::optional<net::IPEndPoint>& local_addr,
+              const std::optional<net::IPEndPoint>& peer_addr,
               mojo::ScopedDataPipeConsumerHandle receive_pipe_handle,
               mojo::ScopedDataPipeProducerHandle send_pipe_handle) {
             net_error = result;

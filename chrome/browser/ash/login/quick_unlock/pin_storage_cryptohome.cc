@@ -35,27 +35,10 @@ namespace {
 
 using ::cryptohome::KeyLabel;
 
-template <typename ReplyType>
-void OnCryptohomeCallComplete(std::unique_ptr<UserContext> context,
-                              AuthOperationCallback callback,
-                              absl::optional<ReplyType> reply) {
-  const bool success =
-      reply->error() ==
-      user_data_auth::CryptohomeErrorCode::CRYPTOHOME_ERROR_NOT_SET;
-
-  if (!success) {
-    std::move(callback).Run(std::move(context),
-                            AuthenticationError(reply->error()));
-    return;
-  }
-
-  std::move(callback).Run(std::move(context), absl::nullopt);
-}
-
 void CheckCryptohomePinFactor(PinStorageCryptohome::BoolCallback callback,
                               bool require_unlocked,
                               std::unique_ptr<UserContext> user_context,
-                              absl::optional<AuthenticationError> error) {
+                              std::optional<AuthenticationError> error) {
   if (error.has_value()) {
     std::move(callback).Run(false);
     return;
@@ -81,7 +64,7 @@ void CheckCryptohomePinFactor(PinStorageCryptohome::BoolCallback callback,
 // cryptohome supports low entropy credentials (ie, PIN).
 void OnGetSupportedKeyPolicies(
     PinStorageCryptohome::BoolCallback callback,
-    absl::optional<user_data_auth::GetSupportedKeyPoliciesReply> reply) {
+    std::optional<user_data_auth::GetSupportedKeyPoliciesReply> reply) {
   if (!reply) {
     std::move(callback).Run(false);
     return;
@@ -150,7 +133,7 @@ void PinStorageCryptohome::IsSupported(BoolCallback result) {
 }
 
 // static
-absl::optional<Key> PinStorageCryptohome::TransformPinKey(
+std::optional<Key> PinStorageCryptohome::TransformPinKey(
     const PinSaltStorage* pin_salt_storage,
     const AccountId& account_id,
     const Key& key) {
@@ -159,11 +142,11 @@ absl::optional<Key> PinStorageCryptohome::TransformPinKey(
 
   DCHECK(key.GetKeyType() == Key::KEY_TYPE_PASSWORD_PLAIN);
   if (key.GetKeyType() != Key::KEY_TYPE_PASSWORD_PLAIN)
-    return absl::nullopt;
+    return std::nullopt;
 
   const std::string salt = pin_salt_storage->GetSalt(account_id);
   if (salt.empty())
-    return absl::nullopt;
+    return std::nullopt;
 
   result.Transform(Key::KEY_TYPE_SALTED_PBKDF2_AES256_1234, salt);
   return result;
@@ -190,7 +173,7 @@ void PinStorageCryptohome::IsPinSetInCryptohome(
 
 void PinStorageCryptohome::SetPin(std::unique_ptr<UserContext> user_context,
                                   const std::string& pin,
-                                  const absl::optional<std::string>& pin_salt,
+                                  const std::optional<std::string>& pin_salt,
                                   AuthOperationCallback callback) {
   // Rerun this method only after we have system salt.
   if (!salt_obtained_) {
@@ -283,30 +266,8 @@ void PinStorageCryptohome::TryAuthenticate(
     std::move(callback).Run(std::move(user_context), std::move(error));
     return;
   }
-
-  if (purpose == Purpose::kWebAuthn) {
-    // Legacy implementation using CheckKey.
-
-    const std::string secret = PinBackend::ComputeSecret(
-        key.GetSecret(),
-        pin_salt_storage_->GetSalt(user_context->GetAccountId()),
-        key.GetKeyType());
-    ::user_data_auth::CheckKeyRequest request;
-    *request.mutable_account_id() = CreateAccountIdentifierFromIdentification(
-        cryptohome::Identification(user_context->GetAccountId()));
-    *request.mutable_authorization_request() =
-        cryptohome::CreateAuthorizationRequest(KeyLabel(kCryptohomePinLabel),
-                                               secret);
-    if (purpose == Purpose::kWebAuthn) {
-      request.set_unlock_webauthn_secret(true);
-    }
-
-    UserDataAuthClient::Get()->CheckKey(
-        request, base::BindOnce(
-                     &OnCryptohomeCallComplete<::user_data_auth::CheckKeyReply>,
-                     std::move(user_context), std::move(callback)));
-    return;
-  }
+  CHECK_NE(purpose, Purpose::kWebAuthn)
+      << "Webauth dialog uses direct interaction with cryptohome";
 
   if (!user_context->GetAuthSessionId().empty()) {
     NOTREACHED() << "TryAuthenticate called with existing auth session";
@@ -339,7 +300,7 @@ void PinStorageCryptohome::SetPinSaltStorageForTesting(
 void PinStorageCryptohome::OnAuthFactorsEdit(
     AuthOperationCallback callback,
     std::unique_ptr<UserContext> user_context,
-    absl::optional<AuthenticationError> error) {
+    std::optional<AuthenticationError> error) {
   if (error.has_value()) {
     LOG(ERROR) << "Failed to edit pin, code " << error->get_cryptohome_code();
     std::move(callback).Run(std::move(user_context), std::move(error));
@@ -355,7 +316,7 @@ void PinStorageCryptohome::TryAuthenticateWithAuthSession(
     AuthOperationCallback callback,
     bool user_exists,
     std::unique_ptr<UserContext> user_context,
-    absl::optional<AuthenticationError> error) {
+    std::optional<AuthenticationError> error) {
   DCHECK_EQ(key.GetKeyType(), Key::KEY_TYPE_PASSWORD_PLAIN);
   DCHECK(user_exists);
 

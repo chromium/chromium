@@ -1,51 +1,10 @@
 This is a wdspec test.
-[PASS] test_null_parameter_value
-[PASS] test_no_top_browsing_context
 [FAIL] test_no_browsing_context
   AssertionError: assert 'no such element' == 'no such window'
 [FAIL] test_no_such_element_with_shadow_root
   assert 200 == 404
-[PASS] test_no_such_element_with_unknown_selector[not-existent]
-[PASS] test_no_such_element_with_unknown_selector[existent-other-frame]
-[PASS] test_no_such_element_with_unknown_selector[existent-inside-shadow-root]
 [FAIL] test_no_such_element_with_startnode_from_other_window_handle
   AssertionError: assert 'stale element reference' == 'no such element'
 [FAIL] test_no_such_element_with_startnode_from_other_frame
   AssertionError: assert 'stale element reference' == 'no such element'
-[PASS] test_stale_element_reference[top_context]
-[PASS] test_stale_element_reference[child_context]
-[PASS] test_invalid_using_argument[a]
-[PASS] test_invalid_using_argument[True]
-[PASS] test_invalid_using_argument[None]
-[PASS] test_invalid_using_argument[1]
-[PASS] test_invalid_using_argument[using4]
-[PASS] test_invalid_using_argument[using5]
-[PASS] test_invalid_selector_argument[None]
-[PASS] test_invalid_selector_argument[value1]
-[PASS] test_invalid_selector_argument[value2]
-[PASS] test_find_element[css selector-#linkText]
-[PASS] test_find_element[link text-full link text]
-[PASS] test_find_element[partial link text-link text]
-[PASS] test_find_element[tag name-a]
-[PASS] test_find_element[xpath-//a]
-[PASS] test_find_element_link_text[<a href=#>link text</a>-link text]
-[PASS] test_find_element_link_text[<a href=#>&nbsp;link text&nbsp;</a>-link text]
-[PASS] test_find_element_link_text[<a href=#>link<br>text</a>-link\ntext]
-[PASS] test_find_element_link_text[<a href=#>link&amp;text</a>-link&text]
-[PASS] test_find_element_link_text[<a href=#>LINK TEXT</a>-LINK TEXT]
-[PASS] test_find_element_link_text[<a href=# style='text-transform: uppercase'>link text</a>-LINK TEXT]
-[PASS] test_find_element_partial_link_text[<a href=#>partial link text</a>-link]
-[PASS] test_find_element_partial_link_text[<a href=#>&nbsp;partial link text&nbsp;</a>-link]
-[PASS] test_find_element_partial_link_text[<a href=#>partial link text</a>-k t]
-[PASS] test_find_element_partial_link_text[<a href=#>partial link<br>text</a>-k\nt]
-[PASS] test_find_element_partial_link_text[<a href=#>partial link&amp;text</a>-k&t]
-[PASS] test_find_element_partial_link_text[<a href=#>PARTIAL LINK TEXT</a>-LINK]
-[PASS] test_find_element_partial_link_text[<a href=# style='text-transform: uppercase'>partial link text</a>-LINK]
-[PASS] test_xhtml_namespace[css selector-#linkText]
-[PASS] test_xhtml_namespace[link text-full link text]
-[PASS] test_xhtml_namespace[partial link text-link text]
-[PASS] test_xhtml_namespace[tag name-a]
-[PASS] test_xhtml_namespace[xpath-//*[name()='a']]
-[PASS] test_parent_htmldocument
-[PASS] test_parent_of_document_node_errors
 Harness: the test ran to completion.

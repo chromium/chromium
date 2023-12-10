@@ -69,8 +69,8 @@
 #include "content/browser/compositor/viz_process_transport_factory.h"
 #include "content/browser/download/save_file_manager.h"
 #include "content/browser/field_trial_synchronizer.h"
+#include "content/browser/first_party_sets/first_party_set_parser.h"
 #include "content/browser/first_party_sets/first_party_sets_handler_impl.h"
-#include "content/browser/first_party_sets/local_set_declaration.h"
 #include "content/browser/gpu/browser_gpu_channel_host_factory.h"
 #include "content/browser/gpu/browser_gpu_client_delegate.h"
 #include "content/browser/gpu/compositor_util.h"
@@ -147,6 +147,7 @@
 #include "services/network/public/cpp/network_switches.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "services/network/transitional_url_loader_factory_owner.h"
+#include "services/video_capture/public/cpp/features.h"
 #include "skia/ext/event_tracer_impl.h"
 #include "skia/ext/skia_memory_dump_provider.h"
 #include "sql/sql_memory_dump_provider.h"
@@ -1007,7 +1008,8 @@ int BrowserMainLoop::PreMainMessageLoopRun() {
   if (result_code_ == RESULT_CODE_NORMAL_EXIT) {
     FirstPartySetsHandlerImpl::GetInstance()->Init(
         GetContentClient()->browser()->GetFirstPartySetsDirectory(),
-        LocalSetDeclaration(GetRelatedWebsiteSetSwitch()));
+        FirstPartySetParser::ParseFromCommandLine(
+            GetRelatedWebsiteSetSwitch()));
   }
 
   variations::MaybeScheduleFakeCrash();
@@ -1384,9 +1386,14 @@ void BrowserMainLoop::PostCreateThreadsImpl() {
 #elif (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && defined(USE_UDEV)
   device_monitor_linux_ = std::make_unique<media::DeviceMonitorLinux>();
 #elif BUILDFLAG(IS_MAC)
-  device_monitor_mac_ = std::make_unique<media::DeviceMonitorMac>(
-      base::ThreadPool::CreateSingleThreadTaskRunner(
-          {base::TaskPriority::USER_VISIBLE}));
+  // TODO(crbug.com/1448798): Clean up |device_monitor_mac_| in BrowserMainLoop
+  // once |kCameraMonitoringInVideoCaptureService| is fully launched.
+  if (!base::FeatureList::IsEnabled(
+          video_capture::features::kCameraMonitoringInVideoCaptureService)) {
+    device_monitor_mac_ = std::make_unique<media::DeviceMonitorMac>(
+        base::ThreadPool::CreateSingleThreadTaskRunner(
+            {base::TaskPriority::USER_VISIBLE}));
+  }
 #endif
 
   // Instantiated once using CreateSingletonInstance(), and accessed only using

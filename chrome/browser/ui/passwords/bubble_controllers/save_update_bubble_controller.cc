@@ -21,8 +21,8 @@
 #include "components/password_manager/core/browser/manage_passwords_referrer.h"
 #include "components/password_manager/core/browser/password_feature_manager.h"
 #include "components/password_manager/core/browser/password_form_metrics_recorder.h"
+#include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/browser/password_store/smart_bubble_stats_store.h"
-#include "components/password_manager/core/browser/password_store_interface.h"
 #include "components/password_manager/core/browser/password_sync_util.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -104,6 +104,7 @@ SaveUpdateBubbleController::SaveUpdateBubbleController(
           ComputeDisplayDisposition(display_reason, delegate->GetState())),
       clock_(base::DefaultClock::GetInstance()) {
   existing_credentials_ = DeepCopyForms(delegate_->GetCurrentForms());
+  original_username_ = GetPendingPassword().username_value;
   // The condition for the password reauth:
   // If the bubble opened after successful submission -> no reauth because it's
   // a temporary state and we should not complicate that UX flow.
@@ -170,6 +171,16 @@ void SaveUpdateBubbleController::OnNeverForThisSiteClicked() {
 bool SaveUpdateBubbleController::IsCurrentStateUpdate() const {
   CHECK(GetState() == password_manager::ui::PENDING_PASSWORD_UPDATE_STATE ||
         GetState() == password_manager::ui::PENDING_PASSWORD_STATE);
+  // If the username didn't change use the `delegate_->GetState()` to determine
+  // whether the operation will save a new credential or update existing. This
+  // is because in some cases PSL matches might be updated depending on a
+  // context. For example, if PSL password is filled on change password flow
+  // together with a new password, we should update existing credential. On the
+  // other hand if PSL matched credential is filled on sign-in page and password
+  // is updated by user we want to save a new password instead.
+  if (original_username_ == GetPendingPassword().username_value) {
+    return GetState() == password_manager::ui::PENDING_PASSWORD_UPDATE_STATE;
+  }
   return base::Contains(existing_credentials_,
                         GetPendingPassword().username_value,
                         &password_manager::PasswordForm::username_value);
@@ -329,8 +340,8 @@ void SaveUpdateBubbleController::ReportInteractions() {
   if (GetState() == password_manager::ui::PENDING_PASSWORD_UPDATE_STATE) {
     metrics_util::LogUpdateUIDismissalReason(GetDismissalReason());
   } else if (GetState() == password_manager::ui::PENDING_PASSWORD_STATE) {
-    absl::optional<features_util::PasswordAccountStorageUserState> user_state =
-        absl::nullopt;
+    std::optional<features_util::PasswordAccountStorageUserState> user_state =
+        std::nullopt;
     Profile* profile = GetProfile();
     if (profile) {
       user_state = password_manager::features_util::

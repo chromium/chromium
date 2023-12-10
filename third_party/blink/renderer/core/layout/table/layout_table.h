@@ -103,6 +103,7 @@ class CORE_EXPORT LayoutTable : public LayoutBlock {
 
   void Trace(Visitor*) const override;
 
+  static bool ShouldCreateInlineAnonymous(const LayoutObject& parent);
   static LayoutTable* CreateAnonymousWithParent(const LayoutObject&);
 
   bool IsFirstCell(const LayoutTableCell&) const;
@@ -221,7 +222,7 @@ class CORE_EXPORT LayoutTable : public LayoutBlock {
   // Table borders are cached because computing collapsed borders is expensive.
   Member<const TableBorders> cached_table_borders_;
 
-  // Table columns do not depend on any outside data (e.g. NGConstraintSpace).
+  // Table columns do not depend on any outside data (e.g. ConstraintSpace).
   // They are cached because computing them is expensive.
   scoped_refptr<const TableTypes::Columns> cached_table_columns_;
 };

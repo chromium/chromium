@@ -98,15 +98,6 @@ BASE_DECLARE_FEATURE(kClientAutomatedTest);
 
 class UploadEncryptedReportingRequestBuilder {
  public:
-  // SequenceInformationDictionaryBuilder strings
-  static constexpr char kSequencingId[] = "sequencingId";
-  static constexpr char kGenerationId[] = "generationId";
-  static constexpr char kPriority[] = "priority";
-  static constexpr char kGenerationGuid[] = "generationGuid";
-
-  // RequestId key used to build UploadEncryptedReportingRequest
-  static constexpr char kRequestId[] = "requestId";
-
   // The default values signal the server that it shouldn't attach the
   // encryption settings and that the config_file_version hasn't been set by
   // `RecordHandlerImpl`.

@@ -13,14 +13,14 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
-#include "clipboard_portal.h"
+#include "remoting/host/linux/clipboard_portal.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_options.h"
-#include "third_party/webrtc/modules/desktop_capture/linux/wayland/portal_request_response.h"
-#include "third_party/webrtc/modules/desktop_capture/linux/wayland/scoped_glib.h"
 #include "third_party/webrtc/modules/desktop_capture/linux/wayland/screen_capture_portal_interface.h"
 #include "third_party/webrtc/modules/desktop_capture/linux/wayland/screencast_portal.h"
-#include "third_party/webrtc/modules/desktop_capture/linux/wayland/xdg_desktop_portal_utils.h"
-#include "third_party/webrtc/modules/desktop_capture/linux/wayland/xdg_session_details.h"
+#include "third_party/webrtc/modules/portal/portal_request_response.h"
+#include "third_party/webrtc/modules/portal/scoped_glib.h"
+#include "third_party/webrtc/modules/portal/xdg_desktop_portal_utils.h"
+#include "third_party/webrtc/modules/portal/xdg_session_details.h"
 
 namespace remoting::xdg_portal {
 

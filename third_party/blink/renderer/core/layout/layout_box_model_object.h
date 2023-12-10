@@ -162,10 +162,6 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
 
   virtual void UpdateFromStyle();
 
-  // This will work on inlines to return the bounding box of all of the lines'
-  // border boxes.
-  virtual gfx::Rect BorderBoundingBox() const = 0;
-
   virtual PhysicalRect VisualOverflowRect() const = 0;
 
   // Returns the visual overflow rect, expanded to the area affected by any
@@ -408,7 +404,10 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
 
   void AddOutlineRectsForNormalChildren(OutlineRectCollector&,
                                         const PhysicalOffset& additional_offset,
-                                        NGOutlineType) const;
+                                        OutlineType) const;
+
+  void UpdateCanCompositeBackgroundAttachmentFixed(
+      bool enable_composited_background_attachment_fixed);
 
  protected:
   void WillBeDestroyed() override;
@@ -425,7 +424,7 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
   void AddOutlineRectsForDescendant(const LayoutObject& descendant,
                                     OutlineRectCollector&,
                                     const PhysicalOffset& additional_offset,
-                                    NGOutlineType) const;
+                                    OutlineType) const;
 
   void StyleWillChange(StyleDifference,
                        const ComputedStyle& new_style) override;

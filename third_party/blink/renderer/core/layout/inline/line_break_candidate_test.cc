@@ -18,7 +18,7 @@ class LineBreakCandidateTest : public RenderingTest {
   bool ComputeCandidates(const InlineNode& node,
                          LayoutUnit available_width,
                          LineBreakCandidates& candidates) {
-    NGConstraintSpace space = ConstraintSpaceForAvailableSize(available_width);
+    ConstraintSpace space = ConstraintSpaceForAvailableSize(available_width);
     ExclusionSpace exclusion_space;
     LeadingFloats leading_floats;
     LineLayoutOpportunity line_opportunity(available_width);
@@ -39,7 +39,7 @@ class LineBreakCandidateTest : public RenderingTest {
       if (!context.AppendLine(line_info, line_breaker)) {
         return false;
       }
-      break_token = line_info.BreakToken();
+      break_token = line_info.GetBreakToken();
     } while (break_token);
     context.EnsureLastSentinel(line_info);
     return true;

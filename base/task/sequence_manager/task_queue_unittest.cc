@@ -103,67 +103,43 @@ TEST(TaskQueueTest, ShutdownQueueBeforeDisabledVoterDeleted) {
   voter.reset();
 }
 
-class ScopedNoWakeUpsForCanceledTasks {
- public:
-  explicit ScopedNoWakeUpsForCanceledTasks(bool feature_enabled) {
-    scoped_feature_list_.InitWithFeatureState(kRemoveCanceledTasksInTaskQueue,
-                                              feature_enabled);
-    TaskQueueImpl::ApplyRemoveCanceledTasksInTaskQueue();
-  }
+TEST(TaskQueueTest, CanceledTaskRemoved) {
+  auto sequence_manager = CreateSequenceManagerOnCurrentThreadWithPump(
+      MessagePump::Create(MessagePumpType::DEFAULT));
+  auto queue =
+      sequence_manager->CreateTaskQueue(TaskQueue::Spec(QueueName::TEST_TQ));
 
-  ~ScopedNoWakeUpsForCanceledTasks() {
-    TaskQueueImpl::ResetRemoveCanceledTasksInTaskQueueForTesting();
-  }
+  // Get the default task runner.
+  auto task_runner = queue->task_runner();
+  EXPECT_EQ(queue->GetNumberOfPendingTasks(), 0u);
 
- private:
-  test::ScopedFeatureList scoped_feature_list_;
-};
+  bool task_ran = false;
+  DelayedTaskHandle delayed_task_handle =
+      task_runner->PostCancelableDelayedTask(
+          subtle::PostDelayedTaskPassKeyForTesting(), FROM_HERE,
+          BindLambdaForTesting([&task_ran]() { task_ran = true; }),
+          Seconds(20));
+  EXPECT_EQ(queue->GetNumberOfPendingTasks(), 1u);
 
-TEST(TaskQueueTest, CanceledTaskRemovedIfFeatureEnabled) {
-  for (bool feature_enabled : {false, true}) {
-    ScopedNoWakeUpsForCanceledTasks scoped_no_wake_ups_for_canceled_tasks(
-        feature_enabled);
+  // The task is only removed from the queue if the feature is enabled.
+  delayed_task_handle.CancelTask();
+  EXPECT_EQ(queue->GetNumberOfPendingTasks(), 0u);
 
-    auto sequence_manager = CreateSequenceManagerOnCurrentThreadWithPump(
-        MessagePump::Create(MessagePumpType::DEFAULT));
-    auto queue =
-        sequence_manager->CreateTaskQueue(TaskQueue::Spec(QueueName::TEST_TQ));
-
-    // Get the default task runner.
-    auto task_runner = queue->task_runner();
-    EXPECT_EQ(queue->GetNumberOfPendingTasks(), 0u);
-
-    bool task_ran = false;
-    DelayedTaskHandle delayed_task_handle =
-        task_runner->PostCancelableDelayedTask(
-            subtle::PostDelayedTaskPassKeyForTesting(), FROM_HERE,
-            BindLambdaForTesting([&task_ran]() { task_ran = true; }),
-            Seconds(20));
-    EXPECT_EQ(queue->GetNumberOfPendingTasks(), 1u);
-
-    // The task is only removed from the queue if the feature is enabled.
-    delayed_task_handle.CancelTask();
-    EXPECT_EQ(queue->GetNumberOfPendingTasks(), feature_enabled ? 0u : 1u);
-
-    // In any case, the task never actually ran.
-    EXPECT_FALSE(task_ran);
-  }
+  // In any case, the task never actually ran.
+  EXPECT_FALSE(task_ran);
 }
 
-// Tests that a task posted through `PostCancelableDelayedTask()`, while the
-// RemoveCanceledDelayedTasksInTaskQueue feature is enabled, is not considered
-// canceled once it has reached the |delayed_work_queue| and is therefore
-// not removed.
+// Tests that a task posted through `PostCancelableDelayedTask()` is not
+// considered canceled once it has reached the |delayed_work_queue| and is
+// therefore not removed.
 //
-// This is a regression test for a bug in `Task::IsCanceled()`
-// (see https://crbug.com/1288882). Note that this function is only called on
-// tasks inside the |delayed_work_queue|, and not for tasks in the
+// This is a regression test for a bug in `Task::IsCanceled()` (see
+// https://crbug.com/1288882). Note that this function is only called on tasks
+// inside the |delayed_work_queue|, and not for tasks in the
 // |delayed_incoming_queue|. This is because a task posted through
 // `PostCancelableDelayedTask()` is always valid while it is in the
 // |delayed_incoming_queue|, since canceling it would remove it from the queue.
 TEST(TaskQueueTest, ValidCancelableTaskIsNotCanceled) {
-  ScopedNoWakeUpsForCanceledTasks scoped_no_wake_ups_for_canceled_tasks(true);
-
   auto sequence_manager = CreateSequenceManagerOnCurrentThreadWithPump(
       MessagePump::Create(MessagePumpType::DEFAULT));
   auto queue =

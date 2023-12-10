@@ -47,7 +47,7 @@ AccountInfo FillAccountInfo(const CoreAccountInfo& core_info,
 AccountInfo SignInWithAccount(
     signin::IdentityTestEnvironment& identity_test_env,
     AccountManagementStatus management_status,
-    absl::optional<signin::ConsentLevel> consent_level) {
+    std::optional<signin::ConsentLevel> consent_level) {
   auto* identity_manager = identity_test_env.identity_manager();
 
   const std::string email =

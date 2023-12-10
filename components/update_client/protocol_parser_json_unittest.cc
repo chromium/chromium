@@ -324,7 +324,7 @@ const char* kJSONUpdateCheckStatusErrorWithRunAction = R"()]}'
    ]
   }})";
 
-// Includes four app objects with status different than 'ok'.
+// Includes nine app objects with status different than 'ok'.
 const char* kJSONAppsStatusError = R"()]}'
   {"response":{
    "protocol":"3.1",
@@ -342,6 +342,26 @@ const char* kJSONAppsStatusError = R"()]}'
      "updatecheck":{"status":"error-internal"}
     },
     {"appid":"dddddddd",
+     "status":"error-osnotsupported",
+     "updatecheck":{"status":"error-internal"}
+    },
+    {"appid":"eeeeeeee",
+     "status":"error-hwnotsupported",
+     "updatecheck":{"status":"error-internal"}
+    },
+    {"appid":"ffffffff",
+     "status":"error-hash",
+     "updatecheck":{"status":"error-internal"}
+    },
+    {"appid":"gggggggg",
+     "status":"error-unsupportedprotocol",
+     "updatecheck":{"status":"error-internal"}
+    },
+    {"appid":"hhhhhhhh",
+     "status":"error-internal",
+     "updatecheck":{"status":"error-internal"}
+    },
+    {"appid":"iiiiiiii",
      "status":"foobar",
      "updatecheck":{"status":"error-internal"}
     }
@@ -563,19 +583,23 @@ TEST(UpdateClientProtocolParserJSONTest, Parse) {
   {
     EXPECT_TRUE(parser->Parse(kJSONAppsStatusError));
     EXPECT_STREQ("Unknown app status", parser->errors().c_str());
-    EXPECT_EQ(3u, parser->results().list.size());
-    const auto* first_result = &parser->results().list[0];
-    EXPECT_EQ(first_result->extension_id, "aaaaaaaa");
-    EXPECT_STREQ("error-unknownApplication", first_result->status.c_str());
-    EXPECT_TRUE(first_result->manifest.version.empty());
-    const auto* second_result = &parser->results().list[1];
-    EXPECT_EQ(second_result->extension_id, "bbbbbbbb");
-    EXPECT_STREQ("restricted", second_result->status.c_str());
-    EXPECT_TRUE(second_result->manifest.version.empty());
-    const auto* third_result = &parser->results().list[2];
-    EXPECT_EQ(third_result->extension_id, "cccccccc");
-    EXPECT_STREQ("error-invalidAppId", third_result->status.c_str());
-    EXPECT_TRUE(third_result->manifest.version.empty());
+    EXPECT_EQ(8u, parser->results().list.size());
+    size_t index = 0;
+    for (const std::string expected_status : {
+             "error-unknownApplication",
+             "restricted",
+             "error-invalidAppId",
+             "error-osnotsupported",
+             "error-hwnotsupported",
+             "error-hash",
+             "error-unsupportedprotocol",
+             "error-internal",
+         }) {
+      const auto* result = &parser->results().list[index];
+      EXPECT_EQ(result->extension_id, std::string(8, 'a' + index++));
+      EXPECT_EQ(expected_status, result->status);
+      EXPECT_TRUE(result->manifest.version.empty());
+    }
   }
   {
     EXPECT_TRUE(parser->Parse(kJSONManifestRun));

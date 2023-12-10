@@ -319,7 +319,7 @@ gfx::Insets MessageBoxView::GetHorizontalInsets(
   return horizontal_insets;
 }
 
-BEGIN_METADATA(MessageBoxView, View)
+BEGIN_METADATA(MessageBoxView)
 END_METADATA
 
 }  // namespace views

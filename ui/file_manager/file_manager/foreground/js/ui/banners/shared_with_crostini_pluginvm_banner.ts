@@ -2,14 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/**
- * @fileoverview
- * This file is checked via TS, so we suppress Closure checks.
- * @suppress {checkTypes}
- */
-
 import {str} from '../../../../common/js/translations.js';
-import {VolumeManagerCommon} from '../../../../common/js/volume_manager_types.js';
+import {RootType} from '../../../../common/js/volume_manager_types.js';
 import {constants} from '../../constants.js';
 
 import {getTemplate} from './shared_with_crostini_pluginvm_banner.html.js';
@@ -43,18 +37,18 @@ export class SharedWithCrostiniPluginVmBanner extends StateBanner {
    */
   override allowedVolumes() {
     return [
-      {root: VolumeManagerCommon.RootType.DOWNLOADS},
-      {root: VolumeManagerCommon.RootType.REMOVABLE},
-      {root: VolumeManagerCommon.RootType.ANDROID_FILES},
-      {root: VolumeManagerCommon.RootType.COMPUTERS_GRAND_ROOT},
-      {root: VolumeManagerCommon.RootType.COMPUTER},
-      {root: VolumeManagerCommon.RootType.DRIVE},
-      {root: VolumeManagerCommon.RootType.SHARED_DRIVES_GRAND_ROOT},
-      {root: VolumeManagerCommon.RootType.SHARED_DRIVE},
-      {root: VolumeManagerCommon.RootType.DRIVE_SHARED_WITH_ME},
-      {root: VolumeManagerCommon.RootType.CROSTINI},
-      {root: VolumeManagerCommon.RootType.ARCHIVE},
-      {root: VolumeManagerCommon.RootType.SMB},
+      {root: RootType.DOWNLOADS},
+      {root: RootType.REMOVABLE},
+      {root: RootType.ANDROID_FILES},
+      {root: RootType.COMPUTERS_GRAND_ROOT},
+      {root: RootType.COMPUTER},
+      {root: RootType.DRIVE},
+      {root: RootType.SHARED_DRIVES_GRAND_ROOT},
+      {root: RootType.SHARED_DRIVE},
+      {root: RootType.DRIVE_SHARED_WITH_ME},
+      {root: RootType.CROSTINI},
+      {root: RootType.ARCHIVE},
+      {root: RootType.SMB},
     ];
   }
 

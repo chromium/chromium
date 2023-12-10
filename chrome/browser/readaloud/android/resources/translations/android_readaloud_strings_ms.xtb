@@ -2,11 +2,14 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ms">
 <translation id="1178581264944972037">Jeda</translation>
-<translation id="2558806128245168542">Navigasi kembali</translation>
-<translation id="3523426587027570423">Ketik untuk menutup “Dengar halaman ini”.</translation>
+<translation id="1921351128855867012">Mundar laju <ph name="NUMBER_OF_SECONDS" /> saat</translation>
+<translation id="1984328900355667246">Main balik tidak tersedia</translation>
+<translation id="3023502830214299618">Dukacita dimaklumkan, main balik tidak tersedia untuk halaman ini pada masa ini. Sila cuba sebentar lagi.</translation>
+<translation id="3807208219231826020">Seret Main Balik</translation>
+<translation id="385051799172605136">Kembali</translation>
 <translation id="4431240646217225907">Serlahkan teks &amp; penatalan automatik</translation>
 <translation id="4654641641922242357">Pemain “Dengar halaman ini”.</translation>
-<translation id="4731877163452936634">Kelajuan main balik: <ph name="PLAYBACK_SPEED" />. Klik untuk menukar.</translation>
+<translation id="4872475766448853257">Mandir <ph name="NUMBER_OF_SECONDS" /> saat</translation>
 <translation id="5234971936051226002">Pemain “Dengar halaman ini” diminumkan.</translation>
 <translation id="5596627076506792578">Lagi pilihan</translation>
 <translation id="6315170314923504164">Suara</translation>
@@ -15,8 +18,8 @@
 <translation id="6831043979455480757">Terjemah</translation>
 <translation id="6846298663435243399">Memuatkan…</translation>
 <translation id="7587250070160020374">Chrome sedang dimainkan</translation>
-<translation id="7945822420239537236">Main <ph name="NUMBER_OF_SECONDS" /> saat ke hadapan</translation>
-<translation id="7972866381678406344">Main <ph name="NUMBER_OF_SECONDS" /> ke belakang</translation>
 <translation id="8136852699834914183">Main balik tidak tersedia untuk halaman ini.</translation>
+<translation id="8264989794233974275">Tingkatkan/Kurangkan kelajuan <ph name="PLAYBACK_SPEED" />x.</translation>
+<translation id="8407011429883244666">Tutup pemain.</translation>
 <translation id="8953618380150219653">Pemain “Dengar halaman ini” dibuka pada ketinggian penuh.</translation>
 </translationbundle>

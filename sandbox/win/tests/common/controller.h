@@ -109,9 +109,6 @@ class TestRunner {
   // succeeds.
   bool AllowFileAccess(FileSemantics semantics, const wchar_t* pattern);
 
-  // Adds rules to allow named pipes matching pattern.
-  bool AllowNamedPipes(const wchar_t* pattern);
-
   // Starts a child process in the sandbox and ask it to run |command|. Returns
   // a SboxTestResult. By default, the test runs AFTER_REVERT.
   int RunTest(const wchar_t* command);

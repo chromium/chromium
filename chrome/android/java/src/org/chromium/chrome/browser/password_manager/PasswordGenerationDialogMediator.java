@@ -52,16 +52,25 @@ public class PasswordGenerationDialogMediator {
         Resources resources = customView.getResources();
         PropertyModel.Builder builder =
                 new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
-                        .with(ModalDialogProperties.CONTROLLER,
+                        .with(
+                                ModalDialogProperties.CONTROLLER,
                                 new DialogController(onPasswordAcceptedOrRejected))
                         .with(ModalDialogProperties.CUSTOM_VIEW, customView)
-                        .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, resources,
+                        .with(
+                                ModalDialogProperties.POSITIVE_BUTTON_TEXT,
+                                resources,
                                 R.string.password_generation_dialog_use_password_button)
-                        .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, resources,
+                        .with(
+                                ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
+                                resources,
                                 R.string.password_generation_dialog_cancel_button)
-                        .with(ModalDialogProperties.TITLE_ICON, customView.getContext(),
+                        .with(
+                                ModalDialogProperties.TITLE_ICON,
+                                customView.getContext(),
                                 new PasswordManagerResourceProviderImpl().getPasswordManagerIcon())
-                        .with(ModalDialogProperties.TITLE, resources,
+                        .with(
+                                ModalDialogProperties.TITLE,
+                                resources,
                                 R.string.password_generation_dialog_title);
         return builder;
     }

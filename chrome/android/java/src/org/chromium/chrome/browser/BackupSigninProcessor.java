@@ -40,8 +40,9 @@ public final class BackupSigninProcessor {
         // Warning, another layer relies on SigninManager being instantiated at this moment, don't
         // move this call around.
         // TODO(crbug.com/1336196): Delete comment above once the dependency is gone.
-        SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(
-                Profile.getLastUsedRegularProfile());
+        SigninManager signinManager =
+                IdentityServicesProvider.get()
+                        .getSigninManager(Profile.getLastUsedRegularProfile());
         final String accountEmail = getBackupFlowSigninAccountEmail();
         if (!signinManager.isSyncOptInAllowed() || TextUtils.isEmpty(accountEmail)) {
             setBackupFlowSigninComplete();
@@ -113,12 +114,10 @@ public final class BackupSigninProcessor {
                 });
     }
 
-    /**
-     * Marks the backup flow sign-in as complete (whether sign-in was indeed performed or not).
-     */
+    /** Marks the backup flow sign-in as complete (whether sign-in was indeed performed or not). */
     private static void setBackupFlowSigninComplete() {
-        ChromeSharedPreferences.getInstance().removeKey(
-                ChromePreferenceKeys.BACKUP_FLOW_SIGNIN_ACCOUNT_NAME);
+        ChromeSharedPreferences.getInstance()
+                .removeKey(ChromePreferenceKeys.BACKUP_FLOW_SIGNIN_ACCOUNT_NAME);
     }
 
     /**

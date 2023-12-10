@@ -507,6 +507,41 @@ TEST_F(
   ASSERT_EQ(1, CloudOpenMetricsTest::number_of_dump_calls());
 }
 
+// Tests that the UploadResult companion metric is set correctly when
+// TransferRequired is logged as kCopy and TaskResult is
+// kFileAlreadyBeingUploaded and it is logged consistently.
+TEST_F(
+    CloudOpenMetricsTest,
+    MetricsConsistentWhenTransferRequiredIsCopyAndTaskResultIsFileAlreadyBeingUploaded) {
+  {
+    CloudOpenMetrics cloud_open_metrics(CloudProvider::kOneDrive,
+                                        /*file_count=*/1);
+    cloud_open_metrics.LogTransferRequired(OfficeFilesTransferRequired::kCopy);
+    cloud_open_metrics.LogTaskResult(
+        OfficeTaskResult::kFileAlreadyBeingUploaded);
+  }
+  histogram_.ExpectUniqueSample(kOneDriveUploadResultMetricStateMetricName,
+                                MetricState::kCorrectlyNotLogged, 1);
+}
+
+// Tests that the UploadResult companion metric is set correctly when
+// TransferRequired is logged as kCopy and TaskResult is
+// kFileAlreadyBeingUploaded and it is logged inconsistently.
+TEST_F(
+    CloudOpenMetricsTest,
+    MetricsInconsistentWhenTransferRequiredIsCopyAndTaskResultIsFileAlreadyBeingUploaded) {
+  {
+    CloudOpenMetrics cloud_open_metrics(CloudProvider::kOneDrive,
+                                        /*file_count=*/1);
+    cloud_open_metrics.LogTransferRequired(OfficeFilesTransferRequired::kCopy);
+    cloud_open_metrics.LogTaskResult(
+        OfficeTaskResult::kFileAlreadyBeingUploaded);
+    cloud_open_metrics.LogUploadResult(OfficeFilesUploadResult::kSuccess);
+  }
+  histogram_.ExpectUniqueSample(kOneDriveUploadResultMetricStateMetricName,
+                                MetricState::kIncorrectlyLogged, 1);
+}
+
 // Tests that the CopyError companion metric is set correctly when UploadResult
 // is logged as kCopyOperationError and CopyError is logged consistently.
 TEST_F(CloudOpenMetricsTest,
@@ -573,6 +608,56 @@ TEST_F(CloudOpenMetricsTest, NoDumpWhenAllMetricsAreConsistentForOpenFlow) {
                                         /*file_count=*/1);
     cloud_open_metrics.LogSourceVolume(
         OfficeFilesSourceVolume::kMicrosoftOneDrive);
+    cloud_open_metrics.LogTransferRequired(
+        OfficeFilesTransferRequired::kNotRequired);
+    cloud_open_metrics.LogTaskResult(OfficeTaskResult::kOpened);
+    cloud_open_metrics.LogOneDriveOpenError(OfficeOneDriveOpenErrors::kSuccess);
+  }
+  histogram_.ExpectUniqueSample(kOneDriveCopyErrorMetricStateMetricName,
+                                MetricState::kCorrectlyNotLogged, 1);
+  histogram_.ExpectUniqueSample(kOneDriveMoveErrorMetricStateMetricName,
+                                MetricState::kCorrectlyNotLogged, 1);
+  histogram_.ExpectUniqueSample(kOneDriveErrorMetricStateMetricName,
+                                MetricState::kCorrectlyLogged, 1);
+  histogram_.ExpectUniqueSample(kOneDriveOpenSourceVolumeMetricStateMetric,
+                                MetricState::kCorrectlyLogged, 1);
+  histogram_.ExpectUniqueSample(kOneDriveTaskResultMetricStateMetricName,
+                                MetricState::kCorrectlyLogged, 1);
+  histogram_.ExpectUniqueSample(kOneDriveTransferRequiredMetricStateMetric,
+                                MetricState::kCorrectlyLogged, 1);
+  histogram_.ExpectUniqueSample(kOneDriveUploadResultMetricStateMetricName,
+                                MetricState::kCorrectlyNotLogged, 1);
+
+  // No Google Drive metrics should be logged.
+  histogram_.ExpectUniqueSample(kGoogleDriveCopyErrorMetricStateMetricName,
+                                MetricState::kCorrectlyNotLogged, 1);
+  histogram_.ExpectUniqueSample(kGoogleDriveMoveErrorMetricStateMetricName,
+                                MetricState::kCorrectlyNotLogged, 1);
+  histogram_.ExpectUniqueSample(kDriveErrorMetricStateMetricName,
+                                MetricState::kCorrectlyNotLogged, 1);
+  histogram_.ExpectUniqueSample(kDriveOpenSourceVolumeMetricStateMetric,
+                                MetricState::kCorrectlyNotLogged, 1);
+  histogram_.ExpectUniqueSample(kGoogleDriveTaskResultMetricStateMetricName,
+                                MetricState::kCorrectlyNotLogged, 1);
+  histogram_.ExpectUniqueSample(kDriveTransferRequiredMetricStateMetric,
+                                MetricState::kCorrectlyNotLogged, 1);
+  histogram_.ExpectUniqueSample(kGoogleDriveUploadResultMetricStateMetricName,
+                                MetricState::kCorrectlyNotLogged, 1);
+
+  ASSERT_EQ(0, CloudOpenMetricsTest::number_of_dump_calls());
+}
+
+// Tests that the SourceVolume companion metric is set correctly when
+// TransferRequired is logged as kNotRequired and the file is opened from
+// Android Documents Provider with M365.
+TEST_F(
+    CloudOpenMetricsTest,
+    NoDumpWhenAllMetricsAreConsistentForOpenFlowFromAndroidDocumentsProvider) {
+  {
+    CloudOpenMetrics cloud_open_metrics(CloudProvider::kOneDrive,
+                                        /*file_count=*/1);
+    cloud_open_metrics.LogSourceVolume(
+        OfficeFilesSourceVolume::kAndroidOneDriveDocumentsProvider);
     cloud_open_metrics.LogTransferRequired(
         OfficeFilesTransferRequired::kNotRequired);
     cloud_open_metrics.LogTaskResult(OfficeTaskResult::kOpened);

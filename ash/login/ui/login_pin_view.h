@@ -13,6 +13,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 namespace base {
@@ -50,6 +51,8 @@ namespace ash {
 // The submit button is optional.
 //
 class ASH_EXPORT LoginPinView : public NonAccessibleView {
+  METADATA_HEADER(LoginPinView, NonAccessibleView)
+
  public:
   // Visual style of PIN keyboard.
   enum class Style {

@@ -75,8 +75,7 @@ void SocketDataPump::ReceiveMore() {
       return;
   }
   uint32_t num_bytes = pending_receive_buffer->size();
-  scoped_refptr<net::IOBuffer> buf =
-      base::MakeRefCounted<NetToMojoIOBuffer>(pending_receive_buffer.get());
+  auto buf = base::MakeRefCounted<NetToMojoIOBuffer>(pending_receive_buffer);
   // Use WeakPtr here because |this| doesn't outlive |socket_|.
   int read_result = socket_->ReadIfReady(
       buf.get(), base::saturated_cast<int>(num_bytes),

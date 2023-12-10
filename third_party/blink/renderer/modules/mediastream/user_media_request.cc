@@ -413,12 +413,31 @@ UserMediaRequest* UserMediaRequest::Create(
           "At least one of audio and video must be requested");
       return nullptr;
     } else if (!video.IsNull()) {
-      if (video.Basic().pan.HasMandatory() ||
-          video.Basic().tilt.HasMandatory() ||
-          video.Basic().zoom.HasMandatory()) {
-        exception_state.ThrowTypeError(
-            "Mandatory pan-tilt-zoom constraints are not supported");
-        return nullptr;
+      auto& video_basic = video.MutableBasic();
+      const BaseConstraint* constraints[] = {
+          &video_basic.pan,
+          &video_basic.tilt,
+          &video_basic.zoom,
+          &video_basic.background_blur,
+      };
+      for (const BaseConstraint* constraint : constraints) {
+        if (constraint->HasMandatory()) {
+          exception_state.ThrowTypeError(
+              String::Format("Mandatory %s constraints are not supported",
+                             constraint->GetName()));
+          return nullptr;
+        }
+      }
+      BaseConstraint* compatibility_constraints[] = {
+          &video_basic.torch,
+      };
+      for (BaseConstraint* constraint : compatibility_constraints) {
+        if (constraint->HasMandatory()) {
+          // This should throw a TypeError, but that cannot be done due
+          // to backward compatibility.
+          // Thus instead of that, let's ignore the constraint.
+          constraint->ResetToUnconstrained();
+        }
       }
     }
   } else if (media_type == UserMediaRequestType::kDisplayMedia ||

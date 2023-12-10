@@ -4,13 +4,13 @@
 
 #include "extensions/renderer/bindings/api_last_error.h"
 
+#include <optional>
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "extensions/renderer/bindings/api_binding_test.h"
 #include "extensions/renderer/bindings/api_binding_test_util.h"
 #include "gin/converter.h"
 #include "gin/public/context_holder.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 
@@ -77,7 +77,7 @@ TEST_F(APILastErrorTest, TestLastError) {
   EXPECT_TRUE(last_error.HasError(context));
   EXPECT_EQ(R"("Some last error")",
             GetLastErrorMessage(parent_object, context));
-  absl::optional<std::string> error_message =
+  std::optional<std::string> error_message =
       last_error.GetErrorMessage(context);
   EXPECT_TRUE(error_message);
   EXPECT_EQ("Some last error", error_message);
@@ -97,8 +97,8 @@ TEST_F(APILastErrorTest, ReportIfUnchecked) {
   v8::Local<v8::Context> context = MainContext();
   v8::Local<v8::Object> parent_object = v8::Object::New(isolate());
 
-  absl::optional<std::string> console_error;
-  auto log_error = [](absl::optional<std::string>* console_error,
+  std::optional<std::string> console_error;
+  auto log_error = [](std::optional<std::string>* console_error,
                       v8::Local<v8::Context> context,
                       const std::string& error) { *console_error = error; };
 
@@ -158,7 +158,7 @@ TEST_F(APILastErrorTest, ReportIfUnchecked) {
     v8::TryCatch try_catch(isolate());
     last_error.SetError(context, "A last error");
     // Access through the internal GetErrorMessage() should not count as access.
-    absl::optional<std::string> error_message =
+    std::optional<std::string> error_message =
         last_error.GetErrorMessage(context);
     EXPECT_TRUE(error_message);
     EXPECT_EQ("A last error", error_message);
@@ -174,8 +174,8 @@ TEST_F(APILastErrorTest, ReportUncheckedError) {
   v8::Local<v8::Context> context = MainContext();
   v8::Local<v8::Object> parent_object = v8::Object::New(isolate());
 
-  absl::optional<std::string> console_error;
-  auto log_error = [](absl::optional<std::string>* console_error,
+  std::optional<std::string> console_error;
+  auto log_error = [](std::optional<std::string>* console_error,
                       v8::Local<v8::Context> context,
                       const std::string& error) { *console_error = error; };
 
@@ -291,8 +291,8 @@ TEST_F(APILastErrorTest, SecondaryParent) {
     return primary_parent;
   };
 
-  absl::optional<std::string> console_error;
-  auto log_error = [](absl::optional<std::string>* console_error,
+  std::optional<std::string> console_error;
+  auto log_error = [](std::optional<std::string>* console_error,
                       v8::Local<v8::Context> context,
                       const std::string& error) { *console_error = error; };
 

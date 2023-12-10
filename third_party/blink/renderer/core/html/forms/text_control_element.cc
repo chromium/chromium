@@ -50,6 +50,7 @@
 #include "third_party/blink/renderer/core/editing/visible_position.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_text_area_element.h"
 #include "third_party/blink/renderer/core/html/forms/text_control_inner_elements.h"
 #include "third_party/blink/renderer/core/html/html_br_element.h"
 #include "third_party/blink/renderer/core/html/html_div_element.h"
@@ -131,7 +132,9 @@ void TextControlElement::DefaultEventHandler(Event& event) {
   if (event.type() == event_type_names::kWebkitEditableContentChanged &&
       GetLayoutObject() && GetLayoutObject()->IsTextControl()) {
     last_change_was_user_edit_ = !GetDocument().IsRunningExecCommand();
-    user_has_edited_the_field_ |= last_change_was_user_edit_;
+    if (last_change_was_user_edit_) {
+      SetUserHasEditedTheField();
+    }
 
     if (IsFocused()) {
       // Updating the cache in SelectionChanged() isn't enough because
@@ -288,11 +291,15 @@ void TextControlElement::SetFocused(bool flag,
 }
 
 void TextControlElement::DispatchFormControlChangeEvent() {
+  if (UserHasEditedTheField()) {
+    // If the user has edited the field, then at this point we should also start
+    // matching :user-valid/:user-invalid.
+    SetUserHasEditedTheFieldAndBlurred();
+  }
   if (!value_before_first_user_edit_.IsNull() &&
       !EqualIgnoringNullity(value_before_first_user_edit_, Value())) {
     ClearValueBeforeFirstUserEdit();
     DispatchChangeEvent();
-    SetInteractedSinceLastFormSubmit(true);
   } else {
     ClearValueBeforeFirstUserEdit();
   }
@@ -1083,7 +1090,7 @@ void TextControlElement::CloneNonAttributePropertiesFrom(
   const TextControlElement& source_element =
       static_cast<const TextControlElement&>(source);
   last_change_was_user_edit_ = source_element.last_change_was_user_edit_;
-  user_has_edited_the_field_ = source_element.user_has_edited_the_field_;
+  interacted_state_ = source_element.interacted_state_;
   HTMLFormControlElement::CloneNonAttributePropertiesFrom(source, data);
 }
 

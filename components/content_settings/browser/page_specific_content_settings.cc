@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/functional/overloaded.h"
 #include "base/lazy_instance.h"
 #include "base/memory/ptr_util.h"
 #include "base/observer_list.h"
@@ -33,7 +34,6 @@
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/content_settings/core/common/features.h"
-#include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/canonical_topic.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "content/public/browser/browser_thread.h"
@@ -50,6 +50,7 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "content/public/common/content_constants.h"
+#include "content/public/common/content_features.h"
 #include "net/base/schemeful_site.h"
 #include "services/network/public/mojom/shared_dictionary_access_observer.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -395,13 +396,13 @@ void WebContentsHandler::ReadyToCommitNavigation(
   RendererContentSettingRules rules;
   content_settings::GetRendererContentSettingRules(map_, &rules);
   delegate()->SetDefaultRendererContentSettingRules(rfh, &rules);
-  // This logic should use top frame, not parent frame.
-  // https://crbug.com/1493239.
   const GURL& primary_url =
       navigation_handle->GetParentFrameOrOuterDocument()
           ? navigation_handle->GetParentFrameOrOuterDocument()
+                ->GetOutermostMainFrame()
                 ->GetLastCommittedURL()
           : navigation_handle->GetURL();
+
   rules.FilterRulesByOutermostMainFrameURL(primary_url);
 
   mojo::AssociatedRemote<content_settings::mojom::ContentSettingsAgent> agent;
@@ -423,12 +424,7 @@ void WebContentsHandler::ReadyToCommitNavigation(
       map_->GetContentSetting(primary_url, secondary_url,
                               ContentSettingsType::POPUPS) ==
       CONTENT_SETTING_ALLOW;
-#if BUILDFLAG(IS_ANDROID)
-  content_settings->allow_auto_dark =
-      map_->GetContentSetting(primary_url, secondary_url,
-                              ContentSettingsType::AUTO_DARK_WEB_CONTENT) ==
-      CONTENT_SETTING_ALLOW;
-#else
+#if !BUILDFLAG(IS_ANDROID)
   content_settings->allow_image =
       map_->GetContentSetting(primary_url, secondary_url,
                               ContentSettingsType::IMAGES) ==
@@ -667,16 +663,25 @@ PageSpecificContentSettings::GetDelegateForWebContents(
 // static
 void PageSpecificContentSettings::StorageAccessed(
     StorageType storage_type,
-    int render_process_id,
-    int render_frame_id,
+    absl::variant<content::GlobalRenderFrameHostToken,
+                  content::GlobalRenderFrameHostId> frame_id,
     const blink::StorageKey& storage_key,
     bool blocked_by_policy) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  content::RenderFrameHost* rfh =
-      content::RenderFrameHost::FromID(render_process_id, render_frame_id);
+  content::RenderFrameHost* rfh = absl::visit(
+      base::Overloaded{
+          [](const content::GlobalRenderFrameHostToken& frame_token) {
+            return content::RenderFrameHost::FromFrameToken(frame_token);
+          },
+          [](const content::GlobalRenderFrameHostId& id) {
+            return content::RenderFrameHost::FromID(id);
+          },
+      },
+      frame_id);
+
   if (DelayUntilCommitIfNecessary(
           rfh, &PageSpecificContentSettings::StorageAccessed, storage_type,
-          render_process_id, render_frame_id, storage_key, blocked_by_policy)) {
+          frame_id, storage_key, blocked_by_policy)) {
     return;
   }
   PageSpecificContentSettings* settings = GetForFrame(rfh);
@@ -735,14 +740,14 @@ void PageSpecificContentSettings::BrowsingDataAccessed(
 }
 
 // static
-void PageSpecificContentSettings::ContentBlocked(int render_process_id,
-                                                 int render_frame_id,
-                                                 ContentSettingsType type) {
+void PageSpecificContentSettings::ContentBlocked(
+    const content::GlobalRenderFrameHostToken& frame_token,
+    ContentSettingsType type) {
   content::RenderFrameHost* rfh =
-      content::RenderFrameHost::FromID(render_process_id, render_frame_id);
+      content::RenderFrameHost::FromFrameToken(frame_token);
   if (DelayUntilCommitIfNecessary(rfh,
                                   &PageSpecificContentSettings::ContentBlocked,
-                                  render_process_id, render_frame_id, type)) {
+                                  frame_token, type)) {
     return;
   }
   PageSpecificContentSettings* settings = GetForFrame(rfh);
@@ -824,6 +829,8 @@ bool PageSpecificContentSettings::IsContentBlocked(
       content_type == ContentSettingsType::MIXEDSCRIPT ||
       content_type == ContentSettingsType::MEDIASTREAM_MIC ||
       content_type == ContentSettingsType::MEDIASTREAM_CAMERA ||
+      (base::FeatureList::IsEnabled(::features::kBlockMidiByDefault) &&
+       content_type == ContentSettingsType::MIDI) ||
       content_type == ContentSettingsType::MIDI_SYSEX ||
       content_type == ContentSettingsType::ADS ||
       content_type == ContentSettingsType::SOUND ||
@@ -851,6 +858,8 @@ bool PageSpecificContentSettings::IsContentAllowed(
   if (content_type != ContentSettingsType::COOKIES &&
       content_type != ContentSettingsType::MEDIASTREAM_MIC &&
       content_type != ContentSettingsType::MEDIASTREAM_CAMERA &&
+      (!base::FeatureList::IsEnabled(::features::kBlockMidiByDefault) ||
+       content_type != ContentSettingsType::MIDI) &&
       content_type != ContentSettingsType::MIDI_SYSEX &&
       content_type != ContentSettingsType::CLIPBOARD_READ_WRITE &&
       content_type != ContentSettingsType::SENSORS &&
@@ -1192,8 +1201,10 @@ void PageSpecificContentSettings::OnBrowsingDataAccessed(
     // related to cookies, as that is the icon that is displayed.
     // TODO(crbug.com/1456641): When the COOKIES content setting Omnibox entry
     // correctly reflects site data, reconsider limiting the types.
+    // This logic will not show a site being blocked for partitioned storage,
+    // reconsider the usage of this method in this context.
     if (blocked_browsing_data_model_->IsBlockedByThirdPartyCookieBlocking(
-            storage_type)) {
+            data_key, storage_type)) {
       OnContentBlocked(ContentSettingsType::COOKIES);
     }
   } else {
@@ -1254,24 +1265,16 @@ bool PageSpecificContentSettings::IsMicrophoneCameraStateChanged() const {
     return true;
   }
 
-  return delegate_->IsMicrophoneCameraStateChanged(
-      microphone_camera_state_, media_stream_selected_audio_device(),
-      media_stream_selected_video_device());
+  return false;
 }
 
 void PageSpecificContentSettings::OnMediaStreamPermissionSet(
     const GURL& request_origin,
-    MicrophoneCameraState new_microphone_camera_state,
-    const std::string& media_stream_selected_audio_device,
-    const std::string& media_stream_selected_video_device,
-    const std::string& media_stream_requested_audio_device,
-    const std::string& media_stream_requested_video_device) {
+    MicrophoneCameraState new_microphone_camera_state) {
   DCHECK(!IsEmbeddedPage());
   media_stream_access_origin_ = request_origin;
 
   if (new_microphone_camera_state.Has(kMicrophoneAccessed)) {
-    media_stream_requested_audio_device_ = media_stream_requested_audio_device;
-    media_stream_selected_audio_device_ = media_stream_selected_audio_device;
     bool mic_blocked = new_microphone_camera_state.Has(kMicrophoneBlocked);
     ContentSettingsStatus& status =
         content_settings_status_[ContentSettingsType::MEDIASTREAM_MIC];
@@ -1284,8 +1287,6 @@ void PageSpecificContentSettings::OnMediaStreamPermissionSet(
   }
 
   if (new_microphone_camera_state.Has(kCameraAccessed)) {
-    media_stream_requested_video_device_ = media_stream_requested_video_device;
-    media_stream_selected_video_device_ = media_stream_selected_video_device;
     bool cam_blocked = new_microphone_camera_state.Has(kCameraBlocked);
     ContentSettingsStatus& status =
         content_settings_status_[ContentSettingsType::MEDIASTREAM_CAMERA];
@@ -1302,12 +1303,8 @@ void PageSpecificContentSettings::OnMediaStreamPermissionSet(
     if (!is_updating_synced_pscs_) {
       base::AutoReset<bool> auto_reset(&is_updating_synced_pscs_, true);
       if (auto* synced_pccs = MaybeGetSyncedSettingsForPictureInPicture()) {
-        synced_pccs->OnMediaStreamPermissionSet(
-            request_origin, new_microphone_camera_state,
-            media_stream_selected_audio_device,
-            media_stream_selected_video_device,
-            media_stream_requested_audio_device,
-            media_stream_requested_video_device);
+        synced_pccs->OnMediaStreamPermissionSet(request_origin,
+                                                new_microphone_camera_state);
       }
     }
     MaybeUpdateLocationBar();
@@ -1408,6 +1405,7 @@ void PageSpecificContentSettings::OnContentSettingChanged(
     case ContentSettingsType::COOKIES:
     case ContentSettingsType::POPUPS:
     case ContentSettingsType::MIXEDSCRIPT:
+    case ContentSettingsType::MIDI:
     case ContentSettingsType::MIDI_SYSEX:
     case ContentSettingsType::ADS:
     case ContentSettingsType::SOUND:
@@ -1470,8 +1468,7 @@ void PageSpecificContentSettings::BlockAllContentForTesting() {
   MicrophoneCameraState media_blocked{kMicrophoneAccessed, kMicrophoneBlocked,
                                       kCameraAccessed, kCameraBlocked};
   OnMediaStreamPermissionSet(page().GetMainDocument().GetLastCommittedURL(),
-                             media_blocked, std::string(), std::string(),
-                             std::string(), std::string());
+                             media_blocked);
 }
 
 void PageSpecificContentSettings::ContentSettingChangedViaPageInfo(
@@ -1492,10 +1489,7 @@ bool PageSpecificContentSettings::HasAccessedTopics() const {
 std::vector<privacy_sandbox::CanonicalTopic>
 PageSpecificContentSettings::GetAccessedTopics() const {
   if (accessed_topics_.empty() &&
-      (privacy_sandbox::kPrivacySandboxSettings3ShowSampleDataForTesting
-           .Get() ||
-       privacy_sandbox::kPrivacySandboxSettings4ShowSampleDataForTesting
-           .Get()) &&
+      privacy_sandbox::kPrivacySandboxSettings4ShowSampleDataForTesting.Get() &&
       page().GetMainDocument().GetLastCommittedURL().host() == "example.com") {
     // TODO(crbug.com/1286276): Remove sample topic when API is ready.
     return {privacy_sandbox::CanonicalTopic(browsing_topics::Topic(3),

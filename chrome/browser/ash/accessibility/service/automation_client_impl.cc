@@ -82,7 +82,7 @@ void AutomationClientImpl::DispatchActionResult(
 
 void AutomationClientImpl::DispatchGetTextLocationDataResult(
     const ui::AXActionData& data,
-    const absl::optional<gfx::Rect>& rect) {
+    const std::optional<gfx::Rect>& rect) {
   // TODO(crbug.com/1355633): Send to AccessibilityService.
   // for (auto& remote : automation_remotes_) {
   //   remote->DispatchGetTextLocationDataResult(data, rect);

@@ -7,12 +7,14 @@
 
 #include <cstdint>
 
+#include "base/memory/weak_ptr.h"
 #include "base/threading/sequence_bound.h"
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
 #include "chromeos/ash/services/recording/gif_encoding_types.h"
 #include "chromeos/ash/services/recording/gif_file_writer.h"
 #include "chromeos/ash/services/recording/lzw_pixel_color_indices_writer.h"
+#include "chromeos/ash/services/recording/octree_color_quantizer.h"
 #include "chromeos/ash/services/recording/recording_encoder.h"
 
 namespace recording {
@@ -110,9 +112,33 @@ class GifEncoder : public RecordingEncoder {
   // implementation.
   void WriteColorPalette(uint8_t color_bit_depth);
 
+  // Moves the given `new_color_quantizer` into `color_quantizer_` and extracts
+  // a new color palette from it into `color_palette_`.
+  void SetQuantizer(OctreeColorQuantizer&& new_color_quantizer);
+
+  // The thread pool task runner on which the color palettes are built every
+  // `kMinNumberOfFramesBetweenPaletteRebuilds` frames except for the very first
+  // frame (in which case, the palette is built synchronously on the same
+  // sequence of the encoder).
+  // This is needed because building a new color palette is a costly operation.
+  // If we do it on the same sequence of the encoder, we will block it for a
+  // long time, resulting in video frames backing up, and filling the in-flight
+  // video frame pool (see `FrameSinkVideoCapturerImpl::kFramePoolCapacity`).
+  // This would cause the resulting GIF to be janky as many frames would be
+  // dropped.
+  scoped_refptr<base::SequencedTaskRunner> color_palette_task_runner_;
+
+  // The number of frames received so far.
+  size_t frame_count_ = 0;
+
   // The presentation time of the most recent video frame prior to the one being
   // encoded at the moment.
   base::TimeTicks last_frame_time_;
+
+  // The color quantizer which we use to build the color palette and find the
+  // indices of the closest colors in that palette for each pixel in the video
+  // frames we're encoding.
+  OctreeColorQuantizer color_quantizer_;
 
   // The list of colors (up to 256 colors) that will be written to the GIF file
   // as the color table. These colors are extracted from each received frame
@@ -132,6 +158,8 @@ class GifEncoder : public RecordingEncoder {
   // Variable-Length-Code LZW compression algorithm and writing the output
   // stream to the GIF file.
   LzwPixelColorIndicesWriter lzw_encoder_;
+
+  base::WeakPtrFactory<GifEncoder> weak_ptr_factory_{this};
 };
 
 }  // namespace recording

@@ -2,11 +2,14 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="zu">
 <translation id="1178581264944972037">Misa isikhashana</translation>
-<translation id="2558806128245168542">Iya emuva</translation>
-<translation id="3523426587027570423">Thepha ukuze uvale okuthi “Lalela leli khasi”.</translation>
+<translation id="1921351128855867012">Dlulisela phambili ngemizuzwana engu-<ph name="NUMBER_OF_SECONDS" /></translation>
+<translation id="1984328900355667246">Ukudlala futhi akutholakali</translation>
+<translation id="3023502830214299618">Ngeshwa, ukudlala futhi akutholakali kuleli khasi okwamanje. Sicela uzame futhi kamuva.</translation>
+<translation id="3807208219231826020">Khuhla Ukudlala</translation>
+<translation id="385051799172605136">Emuva</translation>
 <translation id="4431240646217225907">Gqamisa umbhalo nokuskrola okuzenzakalelayo</translation>
 <translation id="4654641641922242357">“Lalela leli khasi” umdlali.</translation>
-<translation id="4731877163452936634">Isivinini sokudlala: <ph name="PLAYBACK_SPEED" />. . Chofoza ukuze ushintshe.</translation>
+<translation id="4872475766448853257">Buyela emuva ngemizuzwana engu-<ph name="NUMBER_OF_SECONDS" /></translation>
 <translation id="5234971936051226002">“Lalela leli khasi” umdlali ulisithezile.</translation>
 <translation id="5596627076506792578">Izinketho eziningi</translation>
 <translation id="6315170314923504164">Izwi</translation>
@@ -15,8 +18,8 @@
 <translation id="6831043979455480757">Humusha</translation>
 <translation id="6846298663435243399">Iyalayisha…</translation>
 <translation id="7587250070160020374">I-Chrome iyadlala manje</translation>
-<translation id="7945822420239537236">Dlulisela phambili ngemizuzwana engu-<ph name="NUMBER_OF_SECONDS" /></translation>
-<translation id="7972866381678406344">Buyela emuva ngemizuzwana engu-<ph name="NUMBER_OF_SECONDS" /></translation>
 <translation id="8136852699834914183">Okudlalwayo akutholakali kuleli khasi.</translation>
+<translation id="8264989794233974275">Khulisa/nciphisa isivinini ngo-<ph name="PLAYBACK_SPEED" />x.</translation>
+<translation id="8407011429883244666">Vala isidlali.</translation>
 <translation id="8953618380150219653">“Lalela leli khasi” umdlali ulivule ngobude balo.</translation>
 </translationbundle>

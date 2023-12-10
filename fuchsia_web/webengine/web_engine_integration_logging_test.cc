@@ -6,6 +6,7 @@
 
 #include <cstring>
 
+#include <optional>
 #include "base/containers/contains.h"
 #include "base/fuchsia/test_log_listener_safe.h"
 #include "base/strings/string_piece.h"
@@ -14,7 +15,6 @@
 #include "fuchsia_web/webengine/test/context_provider_for_test.h"
 #include "fuchsia_web/webengine/test/isolated_archivist.h"
 #include "fuchsia_web/webengine/web_engine_integration_test_base.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -67,7 +67,7 @@ class WebEngineIntegrationLoggingTest : public WebEngineIntegrationTestBase {
   fidl::Client<fuchsia_logger::Log>& log() { return isolated_archivist_.log(); }
 
   IsolatedArchivist isolated_archivist_;
-  absl::optional<ContextProviderForTest> context_provider_;
+  std::optional<ContextProviderForTest> context_provider_;
 };
 
 // Verifies that calling messages from console.debug() calls go to the Fuchsia
@@ -91,7 +91,7 @@ TEST_F(WebEngineIntegrationLoggingTest, SetJavaScriptLogLevel_DEBUG) {
   navigation_listener()->RunUntilTitleEquals("ended");
 
   // Run until the message passed to console.debug() is received.
-  absl::optional<fuchsia_logger::LogMessage> logged_message =
+  std::optional<fuchsia_logger::LogMessage> logged_message =
       log_listener.RunUntilMessageReceived(kLogTestPageDebugMessage);
 
   ASSERT_TRUE(logged_message.has_value());

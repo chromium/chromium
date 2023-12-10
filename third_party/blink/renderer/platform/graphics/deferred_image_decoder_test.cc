@@ -41,6 +41,7 @@
 #include "third_party/blink/renderer/platform/graphics/test/mock_image_decoder.h"
 #include "third_party/blink/renderer/platform/scheduler/public/non_main_thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_skia.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
@@ -143,6 +144,7 @@ class DeferredImageDecoderTest : public testing::Test,
         MockImageDecoderFactory::Create(this, decoded_size_));
   }
 
+  test::TaskEnvironment task_environment_;
   // Don't own this but saves the pointer to query states.
   PaintImage::Id paint_image_id_;
   raw_ptr<MockImageDecoder, ExperimentalRenderer> actual_decoder_;

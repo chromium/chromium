@@ -9,11 +9,14 @@ import androidx.annotation.IntDef;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-/**
- * Status of a download item.
- */
-@IntDef({DownloadStatus.IN_PROGRESS, DownloadStatus.COMPLETE, DownloadStatus.FAILED,
-        DownloadStatus.CANCELLED, DownloadStatus.INTERRUPTED})
+/** Status of a download item. */
+@IntDef({
+    DownloadStatus.IN_PROGRESS,
+    DownloadStatus.COMPLETE,
+    DownloadStatus.FAILED,
+    DownloadStatus.CANCELLED,
+    DownloadStatus.INTERRUPTED
+})
 @Retention(RetentionPolicy.SOURCE)
 public @interface DownloadStatus {
     int IN_PROGRESS = 0;

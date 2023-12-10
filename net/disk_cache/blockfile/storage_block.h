@@ -102,7 +102,6 @@ class StorageBlock : public FileBlock {
   bool modified_ = false;
   // Is data_ owned by this object or shared with someone else.
   bool own_data_ = false;
-  bool extended_ = false;  // Used to store an entry of more than one block.
 };
 
 }  // namespace disk_cache

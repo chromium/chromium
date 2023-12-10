@@ -69,7 +69,7 @@ class CrostiniSharedDevices : public KeyedService,
       const guest_os::GuestId container_id,
       base::Value::Dict next_shared_devices,
       ResultCallback callback,
-      absl::optional<vm_tools::cicerone::UpdateContainerDevicesResponse>
+      std::optional<vm_tools::cicerone::UpdateContainerDevicesResponse>
           response);
 
   raw_ptr<Profile, ExperimentalAsh> profile_;

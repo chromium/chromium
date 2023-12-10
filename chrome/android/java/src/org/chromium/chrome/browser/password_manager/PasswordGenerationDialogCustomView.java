@@ -14,17 +14,13 @@ import androidx.annotation.Nullable;
 
 import org.chromium.chrome.R;
 
-/**
- * The dialog content view for password generation dialog.
- */
+/** The dialog content view for password generation dialog. */
 public class PasswordGenerationDialogCustomView extends LinearLayout {
     // TODO(crbug.com/835234): Make the generated password editable.
     private TextView mGeneratedPasswordTextView;
     private TextView mSaveExplantaionTextView;
 
-    /**
-     * Constructor for inflating from XML.
-     */
+    /** Constructor for inflating from XML. */
     public PasswordGenerationDialogCustomView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
     }
@@ -39,9 +35,10 @@ public class PasswordGenerationDialogCustomView extends LinearLayout {
 
     public void setGeneratedPassword(String generatedPassword) {
         mGeneratedPasswordTextView.setText(generatedPassword);
-        mGeneratedPasswordTextView.setInputType(InputType.TYPE_CLASS_TEXT
-                | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
-                | InputType.TYPE_TEXT_FLAG_MULTI_LINE);
+        mGeneratedPasswordTextView.setInputType(
+                InputType.TYPE_CLASS_TEXT
+                        | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
+                        | InputType.TYPE_TEXT_FLAG_MULTI_LINE);
     }
 
     public void setSaveExplanationText(String saveExplanationText) {

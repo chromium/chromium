@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_CUSTOM_LAYOUT_CUSTOM_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_CUSTOM_LAYOUT_CUSTOM_H_
 
-#include "third_party/blink/renderer/core/layout/ng/layout_ng_block_flow.h"
+#include "third_party/blink/renderer/core/layout/layout_ng_block_flow.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {

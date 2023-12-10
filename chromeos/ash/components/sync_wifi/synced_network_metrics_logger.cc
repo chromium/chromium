@@ -229,7 +229,7 @@ bool SyncedNetworkMetricsLogger::IsEligible(const NetworkState* network) {
 void SyncedNetworkMetricsLogger::OnConnectErrorGetProperties(
     const std::string& error_name,
     const std::string& service_path,
-    absl::optional<base::Value::Dict> shill_properties) {
+    std::optional<base::Value::Dict> shill_properties) {
   if (!shill_properties) {
     base::UmaHistogramBoolean(kConnectionResultManualHistogram, false);
     base::UmaHistogramEnumeration(kConnectionFailureReasonManualHistogram,

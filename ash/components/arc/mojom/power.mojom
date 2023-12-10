@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Next MinVersion: 10
+// Next MinVersion: 11
 
 module arc.mojom;
 
@@ -59,6 +59,17 @@ enum WakefulnessMode {
   DOZING
 };
 
+// Enumerates the types of idle states.
+[Extensible]
+enum IdleState {
+  // Device is active.
+  [Default] ACTIVE = 0,
+  // Device is inactive.
+  INACTIVE = 1,
+  // Device is force-inactive.
+  FORCE_INACTIVE = 2
+};
+
 // Details about the current state of battery saver mode.
 // This struct is a subset of BatterySaverModeState in
 // system_api/dbus/power_manager/battery_saver.proto.
@@ -94,14 +105,14 @@ interface PowerHost {
   [MinVersion=9] GetBatterySaverModeState@8() => (BatterySaverModeState state);
 };
 
-// Deprecated method IDs: 0
-// Next method ID: 10
+// Deprecated method IDs: 0, 1
+// Next method ID: 11
 interface PowerInstance {
   // Establishes full-duplex communication with the host.
   [MinVersion=4] Init@5(pending_remote<PowerHost> host_remote) => ();
 
-  // Alerts the instance to a change in interactive state.
-  [MinVersion=1] SetInteractive@1(bool enabled);
+  // DEPRECATED: Use SetIdleState@10 instead.
+  [MinVersion=1] SetInteractiveDeprecated@1(bool enabled);
 
   // Called when the system is about to suspend. The callback will be invoked
   // when pre-suspend work is complete.
@@ -129,4 +140,7 @@ interface PowerInstance {
 
   // Notifies that the state of ChromeOS battery saver mode is changed.
   [MinVersion=9] OnBatterySaverModeStateChanged@9(BatterySaverModeState state);
+
+  // Set the idle state to the instance when host interactive status change.
+  [MinVersion=10] SetIdleState@10(IdleState state);
 };

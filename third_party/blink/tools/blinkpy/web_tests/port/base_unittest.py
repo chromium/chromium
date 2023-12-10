@@ -1935,7 +1935,7 @@ class PortTest(LoggingTestCase):
                 '--disable-threaded-animation',
                 '--trace-startup=*,-blink',
                 '--trace-startup-duration=0',
-                '--trace-startup-file=trace_layout_test_non_virtual_TIME.json',
+                '--trace-startup-file=trace_layout_test_non_virtual_TIME.pftrace',
             ], port.args_for_test('non/virtual'))
 
     def test_all_systems(self):

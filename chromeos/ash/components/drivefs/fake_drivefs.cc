@@ -366,7 +366,7 @@ void FakeDriveFs::SetMetadata(const FakeMetadata& metadata) {
         drivefs::mojom::ShortcutDetails::LookupStatus::kOk;
     if (!metadata.shortcut_target_path.empty()) {
       shortcut_details.target_path =
-          absl::make_optional<base::FilePath>(metadata.shortcut_target_path);
+          std::make_optional<base::FilePath>(metadata.shortcut_target_path);
     }
     stored_metadata.shortcut_details = std::move(shortcut_details);
   }
@@ -381,22 +381,22 @@ void FakeDriveFs::DisplayConfirmDialog(
   delegate_->DisplayConfirmDialog(std::move(reason), std::move(callback));
 }
 
-absl::optional<bool> FakeDriveFs::IsItemPinned(const std::string& path) {
+std::optional<bool> FakeDriveFs::IsItemPinned(const std::string& path) {
   for (const auto& metadata : metadata_) {
     if (metadata.first.value() == path) {
       return metadata.second.pinned;
     }
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-absl::optional<bool> FakeDriveFs::IsItemDirty(const std::string& path) {
+std::optional<bool> FakeDriveFs::IsItemDirty(const std::string& path) {
   for (const auto& metadata : metadata_) {
     if (metadata.first.value() == path) {
       return metadata.second.dirty;
     }
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 bool FakeDriveFs::SetCanPin(const std::string& path, bool can_pin) {
@@ -409,11 +409,11 @@ bool FakeDriveFs::SetCanPin(const std::string& path, bool can_pin) {
   return false;
 }
 
-absl::optional<FakeDriveFs::FileMetadata> FakeDriveFs::GetItemMetadata(
+std::optional<FakeDriveFs::FileMetadata> FakeDriveFs::GetItemMetadata(
     const base::FilePath& path) {
   const auto& metadata = metadata_.find(path);
   if (metadata == metadata_.end()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   if (metadata->second.stable_id == 0) {
     metadata->second.stable_id = next_stable_id_++;
@@ -523,7 +523,7 @@ void FakeDriveFs::ResetCache(ResetCacheCallback callback) {
 void FakeDriveFs::GetThumbnail(const base::FilePath& path,
                                bool crop_to_square,
                                GetThumbnailCallback callback) {
-  std::move(callback).Run(absl::nullopt);
+  std::move(callback).Run(std::nullopt);
 }
 
 void FakeDriveFs::CopyFile(const base::FilePath& source,

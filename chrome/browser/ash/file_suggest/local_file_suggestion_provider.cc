@@ -116,7 +116,7 @@ bool LocalFileSuggestionProvider::IsInitialized() const {
 void LocalFileSuggestionProvider::GetSuggestFileData(
     GetSuggestFileDataCallback callback) {
   if (!files_ranker_ || !files_ranker_->initialized()) {
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
 

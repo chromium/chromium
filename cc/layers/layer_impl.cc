@@ -60,27 +60,11 @@ LayerImpl::LayerImpl(LayerTreeImpl* tree_impl,
     : layer_id_(id),
       layer_tree_impl_(tree_impl),
       will_always_push_properties_(will_always_push_properties),
-      scrollable_(false),
-      layer_property_changed_not_from_property_trees_(false),
-      layer_property_changed_from_property_trees_(false),
-      may_contain_video_(false),
-      contents_opaque_(false),
-      contents_opaque_for_text_(false),
-      should_check_backface_visibility_(false),
-      draws_content_(false),
-      contributes_to_drawn_render_surface_(false),
-      is_inner_viewport_scroll_layer_(false),
-      background_color_(SkColors::kTransparent),
-      safe_opaque_background_color_(SkColors::kTransparent),
       transform_tree_index_(kInvalidPropertyNodeId),
       effect_tree_index_(kInvalidPropertyNodeId),
       clip_tree_index_(kInvalidPropertyNodeId),
       scroll_tree_index_(kInvalidPropertyNodeId),
-      current_draw_mode_(DRAW_MODE_NONE),
-      needs_push_properties_(false),
-      needs_show_scrollbars_(false),
-      raster_even_if_not_drawn_(false),
-      has_transform_node_(false) {
+      current_draw_mode_(DRAW_MODE_NONE) {
   DCHECK_GT(layer_id_, 0);
 
   DCHECK(layer_tree_impl_);
@@ -146,7 +130,7 @@ void LayerImpl::SetScrollTreeIndex(int index) {
 void LayerImpl::PopulateSharedQuadState(viz::SharedQuadState* state,
                                         bool contents_opaque) const {
   EffectNode* effect_node = GetEffectTree().Node(effect_tree_index_);
-  absl::optional<gfx::Rect> clip_rect;
+  std::optional<gfx::Rect> clip_rect;
   if (draw_properties_.is_clipped) {
     clip_rect = draw_properties_.clip_rect;
   }
@@ -184,7 +168,7 @@ void LayerImpl::PopulateScaledSharedQuadStateWithContentRects(
       GetScaledDrawTransform(layer_to_content_scale);
 
   EffectNode* effect_node = GetEffectTree().Node(effect_tree_index_);
-  absl::optional<gfx::Rect> clip_rect;
+  std::optional<gfx::Rect> clip_rect;
   if (draw_properties().is_clipped) {
     clip_rect = draw_properties().clip_rect;
   }
@@ -325,6 +309,8 @@ void LayerImpl::UpdateScrollable() {
       return;
   }
 
+  const bool container_bounds_changed =
+      scrollable_ && scroll_node->container_bounds != scroll_container_bounds_;
   scroll_container_bounds_ =
       scrollable_ ? scroll_node->container_bounds : gfx::Size();
   scroll_contents_bounds_ = scrollable_ ? scroll_node->bounds : gfx::Size();
@@ -334,7 +320,13 @@ void LayerImpl::UpdateScrollable() {
 
   if (layer_tree_impl()->settings().scrollbar_animator ==
       LayerTreeSettings::AURA_OVERLAY) {
-    set_needs_show_scrollbars(scrollable_);
+    if (layer_tree_impl()->settings().enable_fluent_overlay_scrollbar) {
+      // Show scrollbars when resizing scrollable areas and
+      // not when the inside content gets expanded.
+      set_needs_show_scrollbars(scrollable_ && container_bounds_changed);
+    } else {
+      set_needs_show_scrollbars(scrollable_);
+    }
   }
 
   NoteLayerPropertyChanged();
@@ -832,7 +824,7 @@ const RenderSurfaceImpl* LayerImpl::render_target() const {
 
 gfx::Vector2dF LayerImpl::GetIdealContentsScale() const {
   const auto& transform = ScreenSpaceTransform();
-  absl::optional<gfx::Vector2dF> transform_scales =
+  std::optional<gfx::Vector2dF> transform_scales =
       gfx::TryComputeTransform2dScaleComponents(transform);
   if (transform_scales) {
     // TODO(crbug.com/1196414): Remove this scale cap.

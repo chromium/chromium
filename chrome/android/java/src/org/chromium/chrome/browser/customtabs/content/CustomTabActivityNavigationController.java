@@ -19,6 +19,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityOptionsCompat;
 
+import dagger.Lazy;
+
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
@@ -55,16 +57,16 @@ import java.util.function.Predicate;
 
 import javax.inject.Inject;
 
-import dagger.Lazy;
-
-/**
- * Responsible for navigating to new pages and going back to previous pages.
- */
+/** Responsible for navigating to new pages and going back to previous pages. */
 @ActivityScope
 public class CustomTabActivityNavigationController
         implements StartStopWithNativeObserver, BackPressHandler {
-    @IntDef({FinishReason.USER_NAVIGATION, FinishReason.REPARENTING, FinishReason.OTHER,
-            FinishReason.OPEN_IN_BROWSER})
+    @IntDef({
+        FinishReason.USER_NAVIGATION,
+        FinishReason.REPARENTING,
+        FinishReason.OTHER,
+        FinishReason.OPEN_IN_BROWSER
+    })
     @Retention(RetentionPolicy.SOURCE)
     public @interface FinishReason {
         int USER_NAVIGATION = 0;
@@ -112,11 +114,9 @@ public class CustomTabActivityNavigationController
     private final ObservableSupplierImpl<Boolean> mBackPressStateSupplier =
             new ObservableSupplierImpl<>(false);
 
-    @Nullable
-    private ToolbarManager mToolbarManager;
+    @Nullable private ToolbarManager mToolbarManager;
 
-    @Nullable
-    private FinishHandler mFinishHandler;
+    @Nullable private FinishHandler mFinishHandler;
 
     private boolean mIsFinishing;
 
@@ -149,11 +149,15 @@ public class CustomTabActivityNavigationController
             };
 
     @Inject
-    public CustomTabActivityNavigationController(CustomTabActivityTabController tabController,
+    public CustomTabActivityNavigationController(
+            CustomTabActivityTabController tabController,
             CustomTabActivityTabProvider tabProvider,
-            BrowserServicesIntentDataProvider intentDataProvider, CustomTabsConnection connection,
-            Lazy<CustomTabObserver> customTabObserver, CloseButtonNavigator closeButtonNavigator,
-            ChromeBrowserInitializer chromeBrowserInitializer, Activity activity,
+            BrowserServicesIntentDataProvider intentDataProvider,
+            CustomTabsConnection connection,
+            Lazy<CustomTabObserver> customTabObserver,
+            CloseButtonNavigator closeButtonNavigator,
+            ChromeBrowserInitializer chromeBrowserInitializer,
+            Activity activity,
             ActivityLifecycleDispatcher lifecycleDispatcher,
             DefaultBrowserProvider customTabsDefaultBrowserProvider) {
         mTabController = tabController;
@@ -169,7 +173,9 @@ public class CustomTabActivityNavigationController
         lifecycleDispatcher.register(this);
         mTabProvider.addObserver(mTabObserver);
         mChromeBrowserInitializer.runNowOrAfterFullBrowserStarted(
-                () -> { mBackPressStateSupplier.set(mTabProvider.getTab() != null); });
+                () -> {
+                    mBackPressStateSupplier.set(mTabProvider.getTab() != null);
+                });
     }
 
     /**
@@ -217,8 +223,9 @@ public class CustomTabActivityNavigationController
             transition = PageTransition.LINK | PageTransition.FROM_API;
         }
 
-        params.setTransitionType(IntentHandler.getTransitionTypeFromIntent(
-                mIntentDataProvider.getIntent(), transition));
+        params.setTransitionType(
+                IntentHandler.getTransitionTypeFromIntent(
+                        mIntentDataProvider.getIntent(), transition));
 
         // The sender of an intent can't be trusted, so we navigate from an opaque Origin to
         // avoid sending same-site cookies.
@@ -227,9 +234,7 @@ public class CustomTabActivityNavigationController
         tab.loadUrl(params);
     }
 
-    /**
-     * Handles back button navigation.
-     */
+    /** Handles back button navigation. */
     public boolean navigateOnBack() {
         if (!mChromeBrowserInitializer.isFullBrowserInitialized()) return false;
 
@@ -289,9 +294,7 @@ public class CustomTabActivityNavigationController
         return mBackPressStateSupplier;
     }
 
-    /**
-     * Handles close button navigation.
-     */
+    /** Handles close button navigation. */
     public void navigateOnClose() {
         mIsHandlingUserNavigation = true;
         mCloseButtonNavigator.navigateOnClose();
@@ -330,14 +333,17 @@ public class CustomTabActivityNavigationController
 
         // If the tab is opened by TWA or Webapp, do not reparent and finish the Custom Tab
         // activity because we still want to keep the app alive.
-        boolean canFinishActivity = !mIntentDataProvider.isTrustedWebActivity()
-                && !mIntentDataProvider.isWebappOrWebApkActivity();
+        boolean canFinishActivity =
+                !mIntentDataProvider.isTrustedWebActivity()
+                        && !mIntentDataProvider.isWebappOrWebApkActivity();
 
         willChromeHandleIntent |=
                 ExternalNavigationDelegateImpl.willChromeHandleIntent(intent, true);
 
-        Bundle startActivityOptions = ActivityOptionsCompat.makeCustomAnimation(
-                mActivity, R.anim.abc_fade_in, R.anim.abc_fade_out).toBundle();
+        Bundle startActivityOptions =
+                ActivityOptionsCompat.makeCustomAnimation(
+                                mActivity, R.anim.abc_fade_in, R.anim.abc_fade_out)
+                        .toBundle();
 
         if (canFinishActivity && willChromeHandleIntent) {
             // Remove observer to not trigger finishing in onAllTabsClosed() callback - we'll use
@@ -385,12 +391,10 @@ public class CustomTabActivityNavigationController
         return mFinishReason;
     }
 
-    /**
-     * Sets a {@link FinishHandler} to be notified when the custom tab is being closed.
-     */
+    /** Sets a {@link FinishHandler} to be notified when the custom tab is being closed. */
     public void setFinishHandler(FinishHandler finishHandler) {
-        assert mFinishHandler == null :
-                "Multiple FinishedHandlers not supported, replace with ObserverList if necessary";
+        assert mFinishHandler == null
+                : "Multiple FinishedHandlers not supported, replace with ObserverList if necessary";
         mFinishHandler = finishHandler;
     }
 

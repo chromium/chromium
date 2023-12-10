@@ -10,13 +10,13 @@
 #include <string>
 #include <vector>
 
+#include <optional>
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "pdf/page_orientation.h"
 #include "pdf/pdf_engine.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/pdfium/public/cpp/fpdf_scopers.h"
 #include "third_party/pdfium/public/fpdf_doc.h"
 #include "third_party/pdfium/public/fpdf_formfill.h"
@@ -69,7 +69,7 @@ class PDFiumPage {
   FPDF_TEXTPAGE GetTextPage();
 
   // See definition of PDFEngine::GetTextRunInfo().
-  absl::optional<AccessibilityTextRunInfo> GetTextRunInfo(int start_char_index);
+  std::optional<AccessibilityTextRunInfo> GetTextRunInfo(int start_char_index);
 
   // Get a unicode character from the page.
   uint32_t GetCharUnicode(int char_index);
@@ -135,10 +135,10 @@ class PDFiumPage {
     // Valid for DOCLINK_AREA only.
     int page;
     // Valid for DOCLINK_AREA only. From the top-left of the page.
-    absl::optional<float> x_in_pixels;
-    absl::optional<float> y_in_pixels;
+    std::optional<float> x_in_pixels;
+    std::optional<float> y_in_pixels;
     // Valid for DOCLINK_AREA only.
-    absl::optional<float> zoom;
+    std::optional<float> zoom;
   };
 
   // Given a `link_index`, returns the type of underlying area and the link
@@ -153,9 +153,9 @@ class PDFiumPage {
   // Fills the output params with the in-page coordinates and the zoom value of
   // the destination.
   void GetPageDestinationTarget(FPDF_DEST destination,
-                                absl::optional<float>* dest_x,
-                                absl::optional<float>* dest_y,
-                                absl::optional<float>* zoom_value);
+                                std::optional<float>* dest_x,
+                                std::optional<float>* dest_y,
+                                std::optional<float>* zoom_value);
 
   // For a named destination with "XYZ" view fit type, pre-processes the in-page
   // x/y coordinate in case it's out of the range of the page dimension. Then

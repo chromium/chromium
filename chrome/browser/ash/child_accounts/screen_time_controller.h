@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_CHILD_ACCOUNTS_SCREEN_TIME_CONTROLLER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
@@ -22,7 +23,6 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/session_manager/core/session_manager_observer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefRegistrySimple;
 class PrefService;
@@ -123,7 +123,7 @@ class ScreenTimeController
 
   // Get the last calculated |state| from |prefs::kScreenTimeLastState|, if it
   // exists.
-  absl::optional<usage_time_limit::State> GetLastStateFromPref();
+  std::optional<usage_time_limit::State> GetLastStateFromPref();
 
   // Called when the usage time limit is |kUsageTimeLimitWarningTime| or less to
   // finish. It should call the method UsageTimeLimitWarning for each observer.
@@ -131,12 +131,12 @@ class ScreenTimeController
 
   // Converts a usage_time_limit::PolicyType to its TimeLimitNotifier::LimitType
   // equivalent.
-  absl::optional<TimeLimitNotifier::LimitType> ConvertPolicyType(
+  std::optional<TimeLimitNotifier::LimitType> ConvertPolicyType(
       usage_time_limit::PolicyType policy_type);
 
   // parent_access::ParentAccessService::Observer:
   void OnAccessCodeValidation(ParentCodeValidationResult result,
-                              absl::optional<AccountId> account_id) override;
+                              std::optional<AccountId> account_id) override;
 
   // session_manager::SessionManagerObserver:
   void OnSessionStateChanged() override;

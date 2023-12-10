@@ -6,8 +6,15 @@
 
 namespace autofill {
 
+bool operator==(const PaymentInstrument& a, const PaymentInstrument& b) {
+  return a.instrument_id() == b.instrument_id() &&
+         a.nickname() == b.nickname() &&
+         a.display_icon_url() == b.display_icon_url() &&
+         a.supported_rails() == b.supported_rails();
+}
+
 PaymentInstrument::PaymentInstrument(int64_t instrument_id,
-                                     Nickname nickname,
+                                     std::u16string_view nickname,
                                      const GURL& display_icon_url)
     : instrument_id_(instrument_id),
       nickname_(nickname),
@@ -15,7 +22,8 @@ PaymentInstrument::PaymentInstrument(int64_t instrument_id,
 
 PaymentInstrument::PaymentInstrument(
     const PaymentInstrument& payment_instrument) = default;
-
+PaymentInstrument& PaymentInstrument::operator=(
+    const PaymentInstrument& other) = default;
 PaymentInstrument::~PaymentInstrument() = default;
 
 void PaymentInstrument::AddPaymentRail(PaymentRail payment_rail) {

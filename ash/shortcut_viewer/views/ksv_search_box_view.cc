@@ -15,6 +15,7 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
@@ -96,9 +97,10 @@ void KSVSearchBoxView::OnKeyEvent(ui::KeyEvent* event) {
 void KSVSearchBoxView::OnThemeChanged() {
   ash::SearchBoxViewBase::OnThemeChanged();
 
-  close_button()->SetImage(
+  close_button()->SetImageModel(
       views::ImageButton::STATE_NORMAL,
-      gfx::CreateVectorIcon(ash::kKsvSearchCloseIcon, GetCloseButtonColor()));
+      ui::ImageModel::FromVectorIcon(ash::kKsvSearchCloseIcon,
+                                     GetCloseButtonColor()));
   search_box()->SetBackgroundColor(SK_ColorTRANSPARENT);
   search_box()->SetColor(GetPrimaryTextColor());
   search_box()->set_placeholder_text_color(GetPlaceholderTextColor());
@@ -194,5 +196,8 @@ bool KSVSearchBoxView::ShouldUseFocusedColors() {
 bool KSVSearchBoxView::ShouldUseDarkThemeColors() {
   return ash::DarkLightModeControllerImpl::Get()->IsDarkModeEnabled();
 }
+
+BEGIN_METADATA(KSVSearchBoxView)
+END_METADATA
 
 }  // namespace keyboard_shortcut_viewer

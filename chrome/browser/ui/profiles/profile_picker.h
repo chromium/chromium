@@ -5,15 +5,16 @@
 #ifndef CHROME_BROWSER_UI_PROFILES_PROFILE_PICKER_H_
 #define CHROME_BROWSER_UI_PROFILES_PROFILE_PICKER_H_
 
+#include <optional>
+
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
+#include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
 #include "base/time/time.h"
 #include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/ui/webui/signin/enterprise_profile_welcome_ui.h"
 #include "components/signin/public/base/signin_buildflags.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "url/gurl.h"
 
@@ -218,7 +219,7 @@ class ProfilePicker {
   // `switch_finished_callback` gets informed whether the creation of the new
   // profile succeeded and the sign-in page gets displayed.
   static void SwitchToDiceSignIn(
-      absl::optional<SkColor> profile_color,
+      std::optional<SkColor> profile_color,
       base::OnceCallback<void(bool)> switch_finished_callback);
 
   // Starts the reauth for the existing primary account in the given `profile`.
@@ -237,7 +238,7 @@ class ProfilePicker {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // Starts the flow to set-up a signed-in profile. `signed_in_profile` must
   // have an unconsented primary account.
-  static void SwitchToSignedInFlow(absl::optional<SkColor> profile_color,
+  static void SwitchToSignedInFlow(std::optional<SkColor> profile_color,
                                    Profile* signed_in_profile);
 #endif
 

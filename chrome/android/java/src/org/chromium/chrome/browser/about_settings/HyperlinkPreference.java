@@ -15,9 +15,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.ui.base.LocalizationUtils;
 
-/**
- * A preference that navigates to an URL.
- */
+/** A preference that navigates to an URL. */
 public class HyperlinkPreference extends Preference {
     private final int mUrlResId;
 
@@ -31,7 +29,8 @@ public class HyperlinkPreference extends Preference {
 
     @Override
     protected void onClick() {
-        CustomTabActivity.showInfoPage(ContextUtils.activityFromContext(getContext()),
+        CustomTabActivity.showInfoPage(
+                ContextUtils.activityFromContext(getContext()),
                 LocalizationUtils.substituteLocalePlaceholder(getContext().getString(mUrlResId)));
     }
 }

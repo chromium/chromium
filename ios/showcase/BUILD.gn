@@ -33,6 +33,7 @@ group("features") {
     "//ios/showcase/alert",
     "//ios/showcase/badges",
     "//ios/showcase/bubble",
+    "//ios/showcase/content_notification",
     "//ios/showcase/credential_provider",
     "//ios/showcase/default_browser",
     "//ios/showcase/discover_feed_preview",
@@ -84,6 +85,7 @@ ios_eg2_test("ios_showcase_eg2tests_module") {
   deps = [
     "//ios/showcase/badges:eg2_tests",
     "//ios/showcase/bubble:eg2_tests",
+    "//ios/showcase/content_notification:eg2_tests",
     "//ios/showcase/core:eg2_tests",
     "//ios/showcase/credential_provider:eg2_tests",
     "//ios/showcase/default_browser:eg2_tests",

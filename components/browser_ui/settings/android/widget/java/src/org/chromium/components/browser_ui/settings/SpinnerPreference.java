@@ -16,18 +16,14 @@ import android.widget.TextView;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
 
-/**
- * A preference that takes value from a specified list of objects, presented as a dropdown.
- */
+/** A preference that takes value from a specified list of objects, presented as a dropdown. */
 public class SpinnerPreference extends Preference {
     private Spinner mSpinner;
     private ArrayAdapter<Object> mAdapter;
     private int mSelectedIndex;
     private final boolean mSingleLine;
 
-    /**
-     * Constructor for inflating from XML.
-     */
+    /** Constructor for inflating from XML. */
     public SpinnerPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.SpinnerPreference);
@@ -59,9 +55,7 @@ public class SpinnerPreference extends Preference {
         mSelectedIndex = selectedIndex;
     }
 
-    /**
-     * Returns the Spinner instance for introspection during tests.
-     */
+    /** Returns the Spinner instance for introspection during tests. */
     public Spinner getSpinnerForTesting() {
         return mSpinner;
     }
@@ -80,9 +74,7 @@ public class SpinnerPreference extends Preference {
         mSelectedIndex = selectedIndex;
     }
 
-    /**
-     * @return The currently selected option.
-     */
+    /** @return The currently selected option. */
     public Object getSelectedOption() {
         if (mSpinner == null) {
             // Use the adapter directly if the view hasn't been created yet.
@@ -97,21 +89,24 @@ public class SpinnerPreference extends Preference {
 
         ((TextView) holder.findViewById(R.id.title)).setText(getTitle());
         mSpinner = (Spinner) holder.findViewById(R.id.spinner);
-        mSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                mSelectedIndex = position;
-                if (getOnPreferenceChangeListener() != null) {
-                    getOnPreferenceChangeListener().onPreferenceChange(
-                            SpinnerPreference.this, getSelectedOption());
-                }
-            }
+        mSpinner.setOnItemSelectedListener(
+                new AdapterView.OnItemSelectedListener() {
+                    @Override
+                    public void onItemSelected(
+                            AdapterView<?> parent, View view, int position, long id) {
+                        mSelectedIndex = position;
+                        if (getOnPreferenceChangeListener() != null) {
+                            getOnPreferenceChangeListener()
+                                    .onPreferenceChange(
+                                            SpinnerPreference.this, getSelectedOption());
+                        }
+                    }
 
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-                // No callback. Only update listeners when an actual option is selected.
-            }
-        });
+                    @Override
+                    public void onNothingSelected(AdapterView<?> parent) {
+                        // No callback. Only update listeners when an actual option is selected.
+                    }
+                });
 
         // Screen readers notice the setAdapter() call and announce it. We do not want the spinner
         // to be announced every time the view is bound (e.g. when the user scrolls away from it

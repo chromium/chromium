@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/win/async_operation.h"
@@ -56,7 +55,7 @@ using Microsoft::WRL::Make;
 FakeGattDeviceServiceWinrt::FakeGattDeviceServiceWinrt(
     BluetoothTestWinrt* bluetooth_test_winrt,
     ComPtr<FakeBluetoothLEDeviceWinrt> fake_device,
-    base::StringPiece uuid,
+    std::string_view uuid,
     uint16_t attribute_handle,
     bool allowed)
     : bluetooth_test_winrt_(bluetooth_test_winrt),
@@ -200,7 +199,7 @@ FakeGattDeviceServiceWinrt::GetIncludedServicesForUuidWithCacheModeAsync(
 }
 
 void FakeGattDeviceServiceWinrt::SimulateGattCharacteristic(
-    base::StringPiece uuid,
+    std::string_view uuid,
     int properties) {
   // In order to ensure attribute handles are unique across the Gatt Server
   // we reserve sufficient address space for descriptors for each

@@ -27,6 +27,7 @@ PASS childWindow.location.search is ''
 PASS childWindow.locationbar.visible is false
 PASS childWindow.menubar.visible is false
 PASS childWindow.name is ''
+PASS childWindow.navigation.activation is null
 PASS childWindow.navigation.canGoBack is false
 PASS childWindow.navigation.canGoForward is false
 PASS childWindow.navigation.currentEntry is null
@@ -155,6 +156,7 @@ PASS childWindow.onselectionchange is null
 PASS childWindow.onselectstart is null
 PASS childWindow.onslotchange is null
 PASS childWindow.onsnapchanged is null
+PASS childWindow.onsnapchanging is null
 PASS childWindow.onstalled is null
 PASS childWindow.onstorage is null
 PASS childWindow.onsubmit is null

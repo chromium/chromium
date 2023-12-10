@@ -31,9 +31,8 @@ FirstPartySetEntry::SiteIndex::SiteIndex() = default;
 
 FirstPartySetEntry::SiteIndex::SiteIndex(uint32_t value) : value_(value) {}
 
-bool FirstPartySetEntry::SiteIndex::operator==(const SiteIndex& other) const {
-  return value_ == other.value_;
-}
+bool FirstPartySetEntry::SiteIndex::operator==(const SiteIndex& other) const =
+    default;
 
 FirstPartySetEntry::FirstPartySetEntry() = default;
 
@@ -69,14 +68,11 @@ FirstPartySetEntry& FirstPartySetEntry::operator=(FirstPartySetEntry&&) =
 
 FirstPartySetEntry::~FirstPartySetEntry() = default;
 
-bool FirstPartySetEntry::operator==(const FirstPartySetEntry& other) const {
-  return std::tie(primary_, site_type_, site_index_) ==
-         std::tie(other.primary_, other.site_type_, other.site_index_);
-}
+bool FirstPartySetEntry::operator==(const FirstPartySetEntry& other) const =
+    default;
 
-bool FirstPartySetEntry::operator!=(const FirstPartySetEntry& other) const {
-  return !(*this == other);
-}
+bool FirstPartySetEntry::operator!=(const FirstPartySetEntry& other) const =
+    default;
 
 // static
 absl::optional<net::SiteType> FirstPartySetEntry::DeserializeSiteType(

@@ -12,6 +12,7 @@
 #include <process.h>
 #include <stdint.h>
 
+#include <optional>
 #include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/win/access_token.h"
@@ -26,7 +27,6 @@
 #include "sandbox/win/src/sandbox_nt_util.h"
 #include "sandbox/win/src/sandbox_types.h"
 #include "sandbox/win/src/sharedmem_ipc_client.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace sandbox {
 namespace {
@@ -115,13 +115,13 @@ bool WarmupWindowsLocales() {
 }
 
 bool SetProcessIntegrityLevel(IntegrityLevel integrity_level) {
-  absl::optional<DWORD> rid = GetIntegrityLevelRid(integrity_level);
+  std::optional<DWORD> rid = GetIntegrityLevelRid(integrity_level);
   if (!rid) {
     // No mandatory level specified, we don't change it.
     return true;
   }
 
-  absl::optional<base::win::AccessToken> token =
+  std::optional<base::win::AccessToken> token =
       base::win::AccessToken::FromCurrentProcess(/*impersonation=*/false,
                                                  TOKEN_ADJUST_DEFAULT);
   if (!token) {
@@ -149,8 +149,7 @@ ResultCode TargetServicesBase::Init() {
   return SBOX_ALL_OK;
 }
 
-absl::optional<base::span<const uint8_t>>
-TargetServicesBase::GetDelegateData() {
+std::optional<base::span<const uint8_t>> TargetServicesBase::GetDelegateData() {
   CHECK(process_state_.InitCalled());
   return sandbox::GetGlobalDelegateData();
 }

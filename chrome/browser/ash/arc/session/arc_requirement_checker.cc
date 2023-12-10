@@ -39,7 +39,7 @@ bool g_ui_enabled = true;
 // tests, even when the tests are set to skip creating UI.
 bool g_enable_arc_terms_of_service_oobe_negotiator_in_tests = false;
 
-absl::optional<bool> g_enable_check_android_management_in_tests;
+std::optional<bool> g_enable_check_android_management_in_tests;
 
 policy::DeviceManagementService* GetDeviceManagementService() {
   policy::BrowserPolicyConnectorAsh* const connector =

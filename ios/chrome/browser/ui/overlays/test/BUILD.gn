@@ -19,7 +19,7 @@ source_set("test") {
 
   deps = [
     "//base",
-    "//ios/chrome/browser/overlays",
+    "//ios/chrome/browser/overlays/model",
     "//ios/chrome/browser/ui/overlays",
     "//ios/chrome/browser/ui/overlays:coordinators",
     "//ios/chrome/browser/ui/overlays/test_modality",

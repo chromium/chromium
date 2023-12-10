@@ -154,7 +154,7 @@ const AtomicString& PointerEventFactory::PointerTypeNameForWebPointPointerType(
     case WebPointerProperties::PointerType::kMouse:
       return pointer_type_names::kMouse;
     default:
-      NOTREACHED();
+      DUMP_WILL_BE_NOTREACHED_NORETURN();
       return g_empty_atom;
   }
 }

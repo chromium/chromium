@@ -1,4 +1,9 @@
-<style include="settings-shared"></style>
+<style include="settings-shared">
+  :host-context(body.revamp-wayfinding-enabled) settings-toggle-button {
+    --cr-icon-button-margin-end: 16px;
+    --iron-icon-fill-color: var(--cros-sys-primary);
+  }
+</style>
 
 <settings-card header-text="$i18n{osSearchPageTitle}">
   <!-- Search -->
@@ -10,6 +15,7 @@
   <template is="dom-if" if="[[shouldShowQuickAnswersSettings_]]">
     <cr-link-row
         id="searchRow"
+        start-icon="[[rowIcons_.searchEngine]]"
         label="$i18n{searchSubpageTitle}"
         on-click="onSearchClick_"
         role-description="$i18n{subpageArrowRoleDescription}">
@@ -20,6 +26,7 @@
   <template is="dom-if" if="[[isAssistantAllowed_]]">
     <cr-link-row
         id="assistantRow"
+        start-icon="[[rowIcons_.assistant]]"
         class="hr"
         label="$i18n{searchGoogleAssistant}"
         sub-label="[[getAssistantEnabledDisabledLabel_(
@@ -31,6 +38,7 @@
   <template is="dom-if" if="[[isRevampWayfindingEnabled_]]">
     <settings-toggle-button id="contentRecommendationsToggle"
         class="hr"
+        icon="[[rowIcons_.contentRecommendations]]"
         pref="{{prefs.settings.suggested_content_enabled}}"
         label="$i18n{enableSuggestedContent}"
         sub-label="$i18n{enableSuggestedContentDesc}"

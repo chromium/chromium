@@ -119,9 +119,6 @@ class LockScreenMediaControlsViewTest : public LoginTestBase {
   void SetUp() override {
     set_start_session(true);
 
-    // Enable media controls.
-    feature_list.InitAndEnableFeature(features::kLockScreenMediaControls);
-
     LoginTestBase::SetUp();
 
     lock_contents_view_ = new LockContentsView(
@@ -480,7 +477,7 @@ TEST_F(LockScreenMediaControlsViewTest, ProgressBarVisibility) {
   EXPECT_TRUE(progress_view()->GetVisible());
 
   // Simulate position turning null.
-  media_controls_view_->MediaSessionPositionChanged(absl::nullopt);
+  media_controls_view_->MediaSessionPositionChanged(std::nullopt);
 
   // Verify that the progress is hidden again.
   EXPECT_FALSE(progress_view()->GetVisible());

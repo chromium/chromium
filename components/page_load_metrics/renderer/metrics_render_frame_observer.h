@@ -35,6 +35,31 @@ struct SoftNavigationMetrics;
 
 namespace page_load_metrics {
 
+namespace internal {
+const char kPageLoadInternalSoftNavigationFromStartInvalidTiming[] =
+    "PageLoad.Internal.SoftNavigationFromStartInvalidTiming";
+
+// These values are recorded into a UMA histogram as scenarios where the start
+// time of soft navigation ends up being 0. These entries
+// should not be renumbered and the numeric values should not be reused. These
+// entries should be kept in sync with the definition in
+// tools/metrics/histograms/enums.xml
+// TODO(crbug.com/1489583): Remove the code here and related code once the bug
+// is resolved.
+enum class SoftNavigationFromStartInvalidTimingReasons {
+  kSoftNavStartTimeIsZeroAndLtNavStart = 0,
+  kSoftNavStartTimeIsZeroAndEqNavStart = 1,
+  kSoftNavStartTimeIsNonZeroAndEqNavStart = 2,
+  kSoftNavStartTimeIsNonZeroAndLtNavStart = 3,
+  kMaxValue = kSoftNavStartTimeIsNonZeroAndLtNavStart,
+};
+
+void RecordUmaForkPageLoadInternalSoftNavigationFromStartInvalidTiming(
+    base::TimeDelta start_time_relative_to_reference,
+    double nav_start_to_reference);
+
+}  // namespace internal
+
 class PageTimingMetricsSender;
 class PageTimingSender;
 
@@ -58,10 +83,10 @@ class MetricsRenderFrameObserver
 
   // RenderFrameObserver implementation
   void DidChangePerformanceTiming() override;
-  void DidObserveUserInteraction(
-      base::TimeTicks max_event_start,
-      base::TimeTicks max_event_end,
-      blink::UserInteractionType interaction_type) override;
+  void DidObserveUserInteraction(base::TimeTicks max_event_start,
+                                 base::TimeTicks max_event_end,
+                                 blink::UserInteractionType interaction_type,
+                                 uint64_t interaction_offset) override;
   void DidChangeCpuTiming(base::TimeDelta time) override;
   void DidObserveLoadingBehavior(blink::LoadingBehaviorFlag behavior) override;
   void DidObserveJavaScriptFrameworks(
@@ -102,7 +127,7 @@ class MetricsRenderFrameObserver
 
   // Invoked when a frame is going away. This is our last chance to send IPCs
   // before being destroyed.
-  void WillDetach() override;
+  void WillDetach(blink::DetachReason detach_reason) override;
 
   // Set the ad resource tracker that |this| observes.
   void SetAdResourceTracker(
@@ -148,10 +173,6 @@ class MetricsRenderFrameObserver
   // ad.
   void UpdateResourceMetadata(int request_id);
 
-  // Called on the completion of a resource from network or cache to determine
-  // if it completed before FCP.
-  void MaybeSetCompletedBeforeFCP(int request_id);
-
   void SendMetrics();
   void OnMetricsSenderCreated();
   virtual Timing GetTiming() const;
@@ -175,9 +196,6 @@ class MetricsRenderFrameObserver
 
   // Set containing all request ids that were reported as ads from the renderer.
   std::set<int> ad_request_ids_;
-
-  // Set containing all request ids that were reported as completing before FCP.
-  std::set<int> before_fcp_request_ids_;
 
   // Handle to the shared memory for transporting smoothness related ukm data.
   base::ReadOnlySharedMemoryRegion ukm_smoothness_data_;

@@ -10,14 +10,13 @@
 #include "chrome/common/url_constants.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
-#include "extensions/common/identifiability_metrics.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handlers/icons_handler.h"
 #include "extensions/common/manifest_handlers/web_accessible_resources_info.h"
 #include "extensions/common/manifest_handlers/webview_info.h"
 #include "extensions/renderer/dispatcher.h"
 #include "extensions/renderer/renderer_extension_registry.h"
-#include "services/metrics/public/cpp/ukm_source_id.h"
+#include "pdf/buildflags.h"
 #include "third_party/blink/public/platform/url_conversion.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url.h"
@@ -27,6 +26,11 @@
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+
+#if BUILDFLAG(ENABLE_PDF)
+#include "base/feature_list.h"
+#include "pdf/pdf_features.h"
+#endif  // BUILDFLAG(ENABLE_PDF)
 
 namespace extensions {
 
@@ -123,6 +127,26 @@ bool ResourceRequestPolicy::CanRequestResource(
   if (frame_url == content::kUnreachableWebDataURL)
     return true;
 
+#if BUILDFLAG(ENABLE_PDF)
+  // Handle specific cases for the PDF viewer.
+  if (base::FeatureList::IsEnabled(chrome_pdf::features::kPdfOopif) &&
+      extension_origin.scheme() == kExtensionScheme &&
+      extension_origin.host() == extension_misc::kPdfExtensionId) {
+    // For OOPIF PDF viewer, `page_origin` doesn't match the `extension_origin`,
+    // but the PDF extension frame should still be able to request resources
+    // from itself. The PDF content frame should also be able to request
+    // resources from the PDF extension. For both cases, the parent origin of
+    // the current frame matches the extension origin.
+    blink::WebFrame* parent = frame->Parent();
+    if (parent) {
+      GURL parent_origin = url::Origin(parent->GetSecurityOrigin()).GetURL();
+      if (parent_origin == extension_origin) {
+        return true;
+      }
+    }
+  }
+#endif  // BUILDFLAG(ENABLE_PDF)
+
   bool is_dev_tools = page_origin.SchemeIs(content::kChromeDevToolsScheme);
   // Note: we check |web_accessible_ids_| (rather than first looking up the
   // extension in the registry and checking that) to be more resistant against
@@ -132,11 +156,6 @@ bool ResourceRequestPolicy::CanRequestResource(
   // extensions with web accessible resources, since those are inherently
   // identifiable.
   if (!is_dev_tools && !IsWebAccessibleHost(extension_origin.host())) {
-    // Failures are recorded here, successes will be in the browser.
-    RecordExtensionResourceAccessResult(
-        ukm::SourceIdObj::FromInt64(frame->GetDocument().GetUkmSourceId()),
-        resource_url, ExtensionResourceAccessResult::kFailure);
-
     return false;
   }
 
@@ -170,9 +189,6 @@ bool ResourceRequestPolicy::CanRequestResource(
           .ContainsPath(resource_root_relative_path)) {
     LOG(ERROR) << "Denying load of " << resource_url.spec() << " from "
                << "hosted app.";
-    RecordExtensionResourceAccessResult(
-        ukm::SourceIdObj::FromInt64(frame->GetDocument().GetUkmSourceId()),
-        resource_url, ExtensionResourceAccessResult::kFailure);
     return false;
   }
 
@@ -192,9 +208,6 @@ bool ResourceRequestPolicy::CanRequestResource(
     frame->AddMessageToConsole(
         blink::WebConsoleMessage(blink::mojom::ConsoleMessageLevel::kError,
                                  blink::WebString::FromUTF8(message)));
-    RecordExtensionResourceAccessResult(
-        ukm::SourceIdObj::FromInt64(frame->GetDocument().GetUkmSourceId()),
-        resource_url, ExtensionResourceAccessResult::kFailure);
     return false;
   }
 

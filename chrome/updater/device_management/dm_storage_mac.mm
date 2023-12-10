@@ -6,6 +6,7 @@
 
 #import <Foundation/Foundation.h>
 
+#include <optional>
 #include <string>
 
 #include "base/apple/foundation_util.h"
@@ -189,7 +190,7 @@ DMStorage::DMStorage(const base::FilePath& policy_cache_root,
                                                dm_token_path)) {}
 
 scoped_refptr<DMStorage> GetDefaultDMStorage() {
-  absl::optional<base::FilePath> keystone_path =
+  std::optional<base::FilePath> keystone_path =
       GetKeystoneFolderPath(UpdaterScope::kSystem);
   return keystone_path ? base::MakeRefCounted<DMStorage>(
                              keystone_path->AppendASCII("DeviceManagement"))

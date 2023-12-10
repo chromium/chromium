@@ -17,9 +17,7 @@ import org.chromium.components.metrics.SystemProfileProtos.SystemProfileProto.Me
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * Applies metrics filtering before forwarding to the base log uploader.
- */
+/** Applies metrics filtering before forwarding to the base log uploader. */
 public class MetricsFilteringDecorator implements AndroidMetricsLogConsumer {
     private static final String TAG = "MetricsFiltering";
     private final AndroidMetricsLogConsumer mLogUploader;
@@ -42,9 +40,10 @@ public class MetricsFilteringDecorator implements AndroidMetricsLogConsumer {
     }
 
     private boolean shouldApplyMetricsFiltering(ChromeUserMetricsExtension proto) {
-        return proto.hasSystemProfile() && proto.getSystemProfile().hasMetricsFilteringStatus()
+        return proto.hasSystemProfile()
+                && proto.getSystemProfile().hasMetricsFilteringStatus()
                 && proto.getSystemProfile().getMetricsFilteringStatus()
-                == MetricsFilteringStatus.METRICS_ONLY_CRITICAL;
+                        == MetricsFilteringStatus.METRICS_ONLY_CRITICAL;
     }
 
     private byte[] applyMetricsFilteringIfNeeded(byte[] data) {
@@ -62,13 +61,13 @@ public class MetricsFilteringDecorator implements AndroidMetricsLogConsumer {
             ChromeUserMetricsExtension proto = ChromeUserMetricsExtension.parseFrom(data);
             if (shouldApplyMetricsFiltering(proto)) {
                 List<HistogramEventProto> filteredHistograms =
-                        proto.getHistogramEventList()
-                                .stream()
+                        proto.getHistogramEventList().stream()
                                 .filter(mHistogramsAllowlist::contains)
                                 .collect(Collectors.toList());
                 ChromeUserMetricsExtension.Builder builder = proto.toBuilder();
-                builder.clearUserActionEvent().clearHistogramEvent().addAllHistogramEvent(
-                        filteredHistograms);
+                builder.clearUserActionEvent()
+                        .clearHistogramEvent()
+                        .addAllHistogramEvent(filteredHistograms);
                 return builder.build().toByteArray();
             }
             return data;

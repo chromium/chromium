@@ -23,6 +23,12 @@
 #include "ui/accessibility/platform/automation/automation_v8_bindings.h"
 #include "ui/accessibility/platform/automation/automation_v8_router.h"
 
+namespace v8 {
+template <typename T>
+class Local;
+class ObjectTemplate;
+}  // namespace v8
+
 namespace gin {
 class Arguments;
 }  // namespace gin
@@ -97,18 +103,6 @@ class AutomationInternalBindings : public ui::AutomationTreeManagerOwner,
 
  private:
   friend class AutomationInternalBindingsTest;
-
-  // TODO(crbug.com/1355633): Remove these and implement them in
-  // ui::AutomationTreeManagerOwner:
-  void DispatchAccessibilityEvents(
-      const ui::AXTreeID& tree_id,
-      const std::vector<ui::AXTreeUpdate>& updates,
-      const gfx::Point& mouse_location,
-      const std::vector<ui::AXEvent>& events) override;
-  void DispatchAccessibilityLocationChange(
-      const ui::AXTreeID& tree_id,
-      int node_id,
-      const ui::AXRelativeBounds& bounds) override;
 
   // Used during object template creation.
   raw_ptr<v8::Local<v8::ObjectTemplate>, ExperimentalAsh> template_;

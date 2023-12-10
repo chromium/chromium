@@ -42,10 +42,11 @@ PaintFlags::PaintFlags() {
   bitfields_.cap_type_ = SkPaint::kDefault_Cap;
   bitfields_.join_type_ = SkPaint::kDefault_Join;
   bitfields_.style_ = SkPaint::kFill_Style;
+  bitfields_.blend_mode_ = static_cast<int>(SkBlendMode::kSrcOver);
   bitfields_.filter_quality_ =
       static_cast<int>(PaintFlags::FilterQuality::kNone);
-  bitfields_.dynamic_range_limit_ =
-      static_cast<int>(PaintFlags::DynamicRangeLimit::kHigh);
+  bitfields_.dynamic_range_limit_standard_mix_ = 0;
+  bitfields_.dynamic_range_limit_constrained_high_mix_ = 0;
 
   static_assert(sizeof(bitfields_) <= sizeof(bitfields_uint_),
                 "Too many bitfields");
@@ -59,7 +60,7 @@ PaintFlags::~PaintFlags() {
   // TODO(enne): non-default dtor to investigate http://crbug.com/790915
 
   // Sanity check accessing this object doesn't crash.
-  blend_mode_ = static_cast<uint32_t>(SkBlendMode::kLastMode);
+  bitfields_.blend_mode_ = static_cast<uint32_t>(SkBlendMode::kLastMode);
 
   // Free refcounted objects one by one.
   path_effect_.reset();

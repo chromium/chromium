@@ -27,7 +27,7 @@ bool ScriptWrappableIsActive(const ActiveScriptWrappableBase& asw) {
   if (asw.IsContextDestroyed())
     return false;
 
-  return asw.DispatchHasPendingActivity();
+  return asw.HasPendingActivity();
 }
 
 }  // namespace

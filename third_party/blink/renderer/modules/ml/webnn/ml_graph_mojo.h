@@ -23,11 +23,16 @@ class MODULES_EXPORT MLGraphMojo final : public MLGraph {
  public:
   // Create and build an MLGraphMojo object. Resolve the promise with
   // this concrete object if the graph builds successfully out of renderer
-  // process. Launch WebNN service and bind `WebNNContext` mojo interface
-  // to create `WebNNGraph` message pipe if needed.
+  // process.
   static void ValidateAndBuildAsync(MLContextMojo* context,
                                     const MLNamedOperands& named_outputs,
                                     ScriptPromiseResolver* resolver);
+
+  // Create and build an MLGraphMojo object.
+  static MLGraph* ValidateAndBuildSync(ScriptState* script_state,
+                                       MLContextMojo* context,
+                                       const MLNamedOperands& named_outputs,
+                                       ExceptionState& exception_state);
 
   MLGraphMojo(ScriptState* script_state, MLContextMojo* context);
   ~MLGraphMojo() override;
@@ -41,7 +46,8 @@ class MODULES_EXPORT MLGraphMojo final : public MLGraph {
   void BuildAsyncImpl(const MLNamedOperands& outputs,
                       ScriptPromiseResolver* resolver) override;
 
-  MLGraph* BuildSyncImpl(const MLNamedOperands& named_outputs,
+  MLGraph* BuildSyncImpl(ScriptState* script_state,
+                         const MLNamedOperands& named_outputs,
                          ExceptionState& exception_state) override;
 
   void ComputeAsyncImpl(const MLNamedArrayBufferViews& inputs,

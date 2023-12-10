@@ -136,8 +136,6 @@ const gpu::GpuPreferences GetGpuPreferencesFromCommandLine() {
 #if BUILDFLAG(USE_VAAPI)
       true;
 #else
-      !command_line->HasSwitch(
-          switches::kPlatformDisallowsChromeOSDirectVideoDecoder) &&
       base::FeatureList::IsEnabled(media::kUseChromeOSDirectVideoDecoder);
 #endif  // BUILDFLAG(USE_VAAPI)
 

@@ -33,6 +33,7 @@ non_web_component_files = [
   "js/search/fake_shortcut_search_handler.ts",
   "js/search/search_result_bolding.ts",
   "js/search/shortcut_search_handler.ts",
+  "js/shortcut_input_mojo_interface_provider.ts",
   "js/shortcut_types.ts",
   "js/shortcut_utils.ts",
 ]
@@ -44,11 +45,9 @@ web_component_files = [
   "js/accelerator_subsection.ts",
   "js/accelerator_view.ts",
   "js/bottom_nav_content.ts",
-  "js/input_key.ts",
   "js/search/search_box.ts",
   "js/search/search_result_row.ts",
   "js/shortcut_customization_app.ts",
-  "js/shortcut_input.ts",
   "js/shortcuts_page.ts",
   "js/text_accelerator.ts",
 ]
@@ -165,6 +164,39 @@ copy_generated_mojo("copy_accelerator_keys_mojo") {
   mojo_files = [ "accelerator_keys.mojom-webui.ts" ]
 }
 
+copy_generated_mojo("copy_input_device_settings_mojo") {
+  deps = [ "//ash/public/mojom:input_device_settings_ts__generator" ]
+  in_dir = "ash/public/mojom"
+  out_dir = ""
+  mojo_files = [ "input_device_settings.mojom-webui.ts" ]
+}
+
+copy_generated_mojo("copy_shortcut_input_provider_mojo") {
+  deps = [ "//ash/webui/common/mojom:shortcut_input_provider_ts__generator" ]
+  in_dir = "ash/webui/common/mojom"
+  out_dir = ""
+  mojo_files = [ "shortcut_input_provider.mojom-webui.ts" ]
+}
+
+copy_generated_mojo("copy_accelerator_actions_mojo") {
+  deps = [ "//ash/public/mojom:accelerator_actions_ts__generator" ]
+  in_dir = "ash/public/mojom"
+  out_dir = ""
+  mojo_files = [ "accelerator_actions.mojom-webui.ts" ]
+}
+
+copy_generated_mojo("copy_events_mojo") {
+  deps = [ "//ui/events/ash/mojom:mojom_ts__generator" ]
+  in_dir = "ui/events/ash/mojom"
+  out_dir = ""
+  mojo_files = [
+    "extended_fkeys_modifier.mojom-webui.ts",
+    "modifier_key.mojom-webui.ts",
+    "simulate_right_click_modifier.mojom-webui.ts",
+    "six_pack_shortcut_modifier.mojom-webui.ts",
+  ]
+}
+
 ts_library("build_ts") {
   composite = true
   root_dir = "$target_gen_dir/$preprocess_folder"
@@ -186,6 +218,18 @@ ts_library("build_ts") {
                   root_build_dir) +
       rebase_path(get_target_outputs(":copy_accelerator_keys_mojo"),
                   root_dir,
+                  root_build_dir) +
+      rebase_path(get_target_outputs(":copy_shortcut_input_provider_mojo"),
+                  root_dir,
+                  root_build_dir) +
+      rebase_path(get_target_outputs(":copy_input_device_settings_mojo"),
+                  root_dir,
+                  root_build_dir) +
+      rebase_path(get_target_outputs(":copy_accelerator_actions_mojo"),
+                  root_dir,
+                  root_build_dir) +
+      rebase_path(get_target_outputs(":copy_events_mojo"),
+                  root_dir,
                   root_build_dir)
 
   deps = [
@@ -198,9 +242,13 @@ ts_library("build_ts") {
   ]
 
   extra_deps = [
+    ":copy_accelerator_actions_mojo",
     ":copy_accelerator_configuration_mojo",
     ":copy_accelerator_info_mojo",
     ":copy_accelerator_keys_mojo",
+    ":copy_events_mojo",
+    ":copy_input_device_settings_mojo",
+    ":copy_shortcut_input_provider_mojo",
     ":copy_shortcuts_mojo",
     ":copy_shortcuts_search_mojo",
     ":preprocess",
@@ -224,20 +272,31 @@ generate_grd("build_grd") {
 
 generate_grd("build_mojo_grdp") {
   deps = [
+    "//ash/public/mojom:accelerator_actions_ts__generator",
     "//ash/public/mojom:accelerator_configuration_ts__generator",
     "//ash/public/mojom:accelerator_info_ts__generator",
     "//ash/public/mojom:accelerator_keys_ts__generator",
+    "//ash/public/mojom:input_device_settings_ts__generator",
+    "//ash/webui/common/mojom:shortcut_input_provider_ts__generator",
     "//ash/webui/shortcut_customization_ui/backend/search:mojo_bindings_ts__generator",
     "//ash/webui/shortcut_customization_ui/mojom:mojom_ts__generator",
+    "//ui/events/ash/mojom:mojom_ts__generator",
   ]
 
   input_files_base_dir = rebase_path("$root_gen_dir/", root_build_dir)
   input_files = [
+    "mojom-webui/ash/public/mojom/accelerator_actions.mojom-webui.ts",
     "mojom-webui/ash/public/mojom/accelerator_configuration.mojom-webui.ts",
     "mojom-webui/ash/public/mojom/accelerator_info.mojom-webui.ts",
     "mojom-webui/ash/public/mojom/accelerator_keys.mojom-webui.ts",
+    "mojom-webui/ash/public/mojom/input_device_settings.mojom-webui.ts",
     "mojom-webui/ash/webui/shortcut_customization_ui/backend/search/search.mojom-webui.ts",
     "mojom-webui/ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom-webui.ts",
+    "mojom-webui/ash/webui/common/mojom/shortcut_input_provider.mojom-webui.ts",
+    "mojom-webui/ui/events/ash/mojom/extended_fkeys_modifier.mojom-webui.ts",
+    "mojom-webui/ui/events/ash/mojom/modifier_key.mojom-webui.ts",
+    "mojom-webui/ui/events/ash/mojom/simulate_right_click_modifier.mojom-webui.ts",
+    "mojom-webui/ui/events/ash/mojom/six_pack_shortcut_modifier.mojom-webui.ts",
   ]
 
   grd_prefix = "ash_shortcut_customization_app_mojo"

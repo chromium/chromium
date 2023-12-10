@@ -17,7 +17,7 @@
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "cc/paint/paint_image.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
@@ -801,7 +801,7 @@ class PdfViewWebPlugin final : public PDFEngine::Client,
   std::vector<int> pages_to_print_;
 
   // Assigned a value only between `PrintBegin()` and `PrintEnd()` calls.
-  absl::optional<blink::WebPrintParams> print_params_;
+  std::optional<blink::WebPrintParams> print_params_;
 
   // For identifying actual print operations to avoid double logging of UMA.
   bool print_pages_called_;

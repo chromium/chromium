@@ -17,6 +17,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
+#include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/permissions/test/mock_permission_prompt_factory.h"
 #include "components/policy/core/common/policy_map.h"
@@ -56,7 +57,8 @@ class EnabledPolicyBrowsertest
       : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
     std::vector<base::test::FeatureRef> enabled_features = {
         blink::features::kStorageAccessAPI};
-    std::vector<base::test::FeatureRef> disabled_features;
+    std::vector<base::test::FeatureRef> disabled_features = {
+        content_settings::features::kTrackingProtection3pcd};
     if (IsFeatureEnabled()) {
       enabled_features.emplace_back(features::kFirstPartySets);
     } else {

@@ -28,10 +28,10 @@ Polymer({
     delegate: Object,
 
     /**
-     * Title of the flow, shown at the top of the dialog. No title shown if the
-     * string is empty.
+     * Banner used in pSIM flow to show carrier network name. No banner
+     * shown if the string is empty.
      */
-    flowTitle: {
+    flowPsimBanner: {
       type: String,
       notify: true,
       value: '',
@@ -110,7 +110,7 @@ Polymer({
   /** @private */
   onPageChange_() {
     if (this.currentPage_) {
-      this.flowTitle = '';
+      this.flowPsimBanner = '';
       this.currentPage_.initSubflow();
     }
   },

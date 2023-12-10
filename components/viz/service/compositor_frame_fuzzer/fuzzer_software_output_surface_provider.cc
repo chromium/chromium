@@ -105,4 +105,15 @@ FuzzerSoftwareOutputSurfaceProvider::CreateOutputSurface(
   return std::make_unique<SoftwareOutputSurface>(
       std::move(software_output_device));
 }
+
+gpu::SharedImageManager*
+FuzzerSoftwareOutputSurfaceProvider::GetSharedImageManager() {
+  return nullptr;
+}
+
+gpu::SyncPointManager*
+FuzzerSoftwareOutputSurfaceProvider::GetSyncPointManager() {
+  return nullptr;
+}
+
 }  // namespace viz

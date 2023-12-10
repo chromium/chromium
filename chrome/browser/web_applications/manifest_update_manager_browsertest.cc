@@ -460,7 +460,7 @@ class ManifestUpdateManagerBrowserTest : public WebAppControllerBrowserTest {
             return nullptr;
           auto http_response =
               std::make_unique<net::test_server::BasicHttpResponse>();
-          http_response->set_code(net::HTTP_FOUND);
+          http_response->set_code(net::HTTP_OK);
           http_response->set_content(content);
           return std::move(http_response);
         });

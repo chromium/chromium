@@ -1,4 +1,0 @@
-monorail: {
-  component: "UI>Settings>Metrics"
-}
-team_email: "chrome-privacy-controls@google.com"

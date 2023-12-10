@@ -24,7 +24,7 @@ CryptAuthDeviceSyncResult::ResultType CryptAuthDeviceSyncResult::GetResultType(
 CryptAuthDeviceSyncResult::CryptAuthDeviceSyncResult(
     ResultCode result_code,
     bool did_device_registry_change,
-    const absl::optional<cryptauthv2::ClientDirective>& client_directive)
+    const std::optional<cryptauthv2::ClientDirective>& client_directive)
     : result_code_(result_code),
       did_device_registry_change_(did_device_registry_change),
       client_directive_(client_directive) {}

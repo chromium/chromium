@@ -44,10 +44,15 @@
 #include "third_party/blink/public/web/web_frame.h"
 #include "v8/include/v8-initialization.h"
 
+#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && \
+    (defined(ARCH_CPU_X86_64) || defined(ARCH_CPU_ARM64))
+#define ENABLE_WEB_ASSEMBLY_TRAP_HANDLER_LINUX
+#endif
+
 #if BUILDFLAG(IS_WIN)
 #include "base/win/win_util.h"
 #endif
-#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && defined(ARCH_CPU_X86_64)
+#ifdef ENABLE_WEB_ASSEMBLY_TRAP_HANDLER_LINUX
 #include "v8/include/v8-wasm-trap-handler-posix.h"
 #endif
 
@@ -224,7 +229,7 @@ RenderProcessImpl::RenderProcessImpl()
     v8::V8::SetFlagsFromString(kSABPerContextFlag, sizeof(kSABPerContextFlag));
   }
 
-#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && defined(ARCH_CPU_X86_64)
+#ifdef ENABLE_WEB_ASSEMBLY_TRAP_HANDLER_LINUX
   if (base::FeatureList::IsEnabled(features::kWebAssemblyTrapHandler)) {
     base::CommandLine* const command_line =
         base::CommandLine::ForCurrentProcess();

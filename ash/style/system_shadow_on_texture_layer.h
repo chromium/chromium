@@ -39,6 +39,7 @@ class SystemShadowOnTextureLayer : public SystemShadow,
   void SetType(SystemShadow::Type type) override;
   void SetContentBounds(const gfx::Rect& bounds) override;
   void SetRoundedCornerRadius(int corner_radius) override;
+  void SetRoundedCorners(const gfx::RoundedCornersF& rounded_corners) override;
   const gfx::Rect& GetContentBounds() override;
   ui::Layer* GetLayer() override;
   ui::Layer* GetNinePatchLayer() override;
@@ -69,7 +70,7 @@ class SystemShadowOnTextureLayer : public SystemShadow,
   gfx::ShadowValues shadow_values_;
   // The bounds of the content area.
   gfx::Rect content_bounds_;
-  int corner_radius_ = 0;
+  gfx::RoundedCornersF rounded_corners_;
   // The shadow colors map.
   ui::Shadow::ElevationToColorsMap colors_map_;
 };

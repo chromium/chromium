@@ -97,8 +97,8 @@ public class EmptyTabObserver implements TabObserver {
     public void onUpdateUrl(Tab tab, GURL url) {}
 
     @Override
-    public void onDidStartNavigationInPrimaryMainFrame(Tab tab, NavigationHandle navigationHandle) {
-    }
+    public void onDidStartNavigationInPrimaryMainFrame(
+            Tab tab, NavigationHandle navigationHandle) {}
 
     @Override
     public void onDidRedirectNavigation(Tab tab, NavigationHandle navigationHandle) {}
@@ -138,8 +138,12 @@ public class EmptyTabObserver implements TabObserver {
     public void onFindMatchRectsAvailable(FindMatchRectsDetails result) {}
 
     @Override
-    public void onBrowserControlsOffsetChanged(Tab tab, int topControlsOffsetY,
-            int bottomControlsOffsetY, int contentOffsetY, int topControlsMinHeightOffsetY,
+    public void onBrowserControlsOffsetChanged(
+            Tab tab,
+            int topControlsOffsetY,
+            int bottomControlsOffsetY,
+            int contentOffsetY,
+            int topControlsMinHeightOffsetY,
             int bottomControlsMinHeightOffsetY) {}
 
     @Override

@@ -45,12 +45,17 @@ public class TestPartnerBrowserCustomizationsDelayedProvider
     }
 
     @Override
-    public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs,
+    public Cursor query(
+            Uri uri,
+            String[] projection,
+            String selection,
+            String[] selectionArgs,
             String sortOrder) {
         try {
             List<String> pathSegments = uri.getPathSegments();
             if (sUriPathToDelay == null
-                    || (pathSegments != null && !pathSegments.isEmpty()
+                    || (pathSegments != null
+                            && !pathSegments.isEmpty()
                             && TextUtils.equals(pathSegments.get(0), sUriPathToDelay))) {
                 sLatch.await();
             }

@@ -491,16 +491,16 @@ void VideoEncoderClient::CreateEncoderTask(const RawVideo* video,
 
   video_ = video;
 
-  const VideoEncodeAccelerator::Config config(
+  VideoEncodeAccelerator::Config config(
       video_->PixelFormat(), encoder_client_config_.output_resolution,
       encoder_client_config_.output_profile,
-      encoder_client_config_.bitrate_allocation.GetSumBitrate(),
-      encoder_client_config_.framerate, absl::nullopt /* gop_length */,
-      absl::nullopt /* h264_output_level*/, false /* is_constrained_h264 */,
-      encoder_client_config_.input_storage_type,
-      VideoEncodeAccelerator::Config::ContentType::kCamera,
-      encoder_client_config_.spatial_layers,
-      encoder_client_config_.inter_layer_pred_mode);
+      encoder_client_config_.bitrate_allocation.GetSumBitrate());
+
+  config.initial_framerate = encoder_client_config_.framerate;
+  config.storage_type = encoder_client_config_.input_storage_type;
+  config.content_type = VideoEncodeAccelerator::Config::ContentType::kCamera;
+  config.spatial_layers = encoder_client_config_.spatial_layers;
+  config.inter_layer_pred = encoder_client_config_.inter_layer_pred_mode;
 
   encoder_ = GpuVideoEncodeAcceleratorFactory::CreateVEA(
       config, this, gpu::GpuPreferences(), gpu::GpuDriverBugWorkarounds(),
@@ -609,7 +609,7 @@ void VideoEncoderClient::UpdateBitrateTask(
   DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_client_sequence_checker_);
   DVLOGF(4);
   aligned_data_helper_->UpdateFrameRate(framerate);
-  encoder_->RequestEncodingParametersChange(bitrate, framerate);
+  encoder_->RequestEncodingParametersChange(bitrate, framerate, absl::nullopt);
   base::AutoLock auto_lcok(stats_lock_);
   current_stats_.framerate = framerate;
 }

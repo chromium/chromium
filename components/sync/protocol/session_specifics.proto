@@ -35,12 +35,13 @@ message SessionHeader {
   repeated SessionWindow window = 2;
   // A non-unique but human-readable name to describe this client.
   optional string client_name = 3;
+  // The form factor of device.
+  optional SyncEnums.DeviceFormFactor device_form_factor = 5;
+
   // The type of device.
   // Mandatory until M115. Replaced by device_form_factor afterwards, but still
   // populated for backward compatibility.
   optional SyncEnums.DeviceType device_type = 4 [deprecated = true];
-  // The form factor of device.
-  optional SyncEnums.DeviceFormFactor device_form_factor = 5;
 }
 
 message SessionWindow {
@@ -72,6 +73,12 @@ message SessionTab {
   // Tabs are navigated, and the navigation data is here.
   repeated TabNavigation navigation = 7;
 
+  optional SyncEnums.BrowserType browser_type = 13;
+
+  // Timestamp for when this tab was last activated.
+  // Corresponds to WebContents::GetLastActiveTime().
+  optional int64 last_active_time_unix_epoch_millis = 14;
+
   // The favicon for the current url the tab is displaying. Either empty
   // or a valid PNG encoded favicon.
   optional bytes favicon = 8 [deprecated = true];
@@ -82,12 +89,6 @@ message SessionTab {
   optional string favicon_source = 11 [deprecated = true];
   // Ids of the currently assigned variations which should be sent to sync.
   repeated uint64 variation_id = 12 [deprecated = true];
-
-  optional SyncEnums.BrowserType browser_type = 13;
-
-  // Timestamp for when this tab was last activated.
-  // Corresponds to WebContents::GetLastActiveTime().
-  optional int64 last_active_time_unix_epoch_millis = 14;
 }
 
 message TabNavigation {
@@ -113,39 +114,15 @@ message TabNavigation {
   optional bool navigation_from_address_bar = 11;
   // User is navigating to the home page.
   optional bool navigation_home_page = 12;
-  // The start/end of a redirect chain. Deprecated because they were always
-  // set to false in practice, and don't make sense in the first place - this
-  // message corresponds to a complete chain.
-  optional bool navigation_chain_start = 13 [deprecated = true];
-  optional bool navigation_chain_end = 14 [deprecated = true];
   // The id for this navigation, which is globally unique with high
   // probability.
   optional int64 global_id = 15;
-  // Search terms extracted from the URL.
-  optional string search_terms = 16 [deprecated = true];
   // The favicon url associated with this page.
   optional string favicon_url = 17;
-  enum BlockedState {
-    STATE_ALLOWED = 1;
-    STATE_BLOCKED = 2;
-  }
-  // Whether access to the URL was allowed or blocked.
-  optional BlockedState blocked_state = 18 [default = STATE_ALLOWED];
-  reserved 19;
-  reserved "content_pack_categories";
+
   // The status code from the last navigation.
   optional int32 http_status_code = 20;
 
-  // Referrer policy. Old, broken value. Deprecated in M61.
-  optional int32 obsolete_referrer_policy = 21 [deprecated = true];
-  // True if created from restored navigation entry that hasn't been loaded.
-  optional bool is_restored = 22;
-  // The chain of redirections for this navigation, from the original URL
-  // through the last URL that redirected.
-  repeated NavigationRedirect navigation_redirect = 23;
-  // Normally not present.
-  // The last URL traversed when different from the virtual_url.
-  optional string last_navigation_redirect_url = 24;
   // Correct referrer policy. Valid enums are defined in
   // third_party/WebKit/public/platform/WebReferrerPolicy.h.
   optional int32 correct_referrer_policy = 25 [default = 1];
@@ -153,32 +130,54 @@ message TabNavigation {
   // Whether the Password Manager saw a password field on the page.
   optional SyncEnums.PasswordState password_state = 26;
 
+  // The start/end of a redirect chain. Deprecated in M108 because they were
+  // always set to false in practice, and don't make sense in the first place -
+  // this message corresponds to a complete chain.
+  optional bool navigation_chain_start = 13 [deprecated = true];
+  optional bool navigation_chain_end = 14 [deprecated = true];
+  // Search terms extracted from the URL. Deprecated in M64.
+  optional string search_terms = 16 [deprecated = true];
+  enum BlockedState {
+    STATE_ALLOWED = 1;
+    STATE_BLOCKED = 2;
+  }
+  // Whether access to the URL was allowed or blocked. Deprecated in M121
+  // because it was unused.
+  optional BlockedState blocked_state = 18
+      [deprecated = true, default = STATE_ALLOWED];
+  // Referrer policy. Old, broken value. Deprecated in M61.
+  optional int32 obsolete_referrer_policy = 21 [deprecated = true];
+  // True if created from restored navigation entry that hasn't been loaded.
+  // Deprecated in M121 because it was unused.
+  optional bool is_restored = 22 [deprecated = true];
+  // The chain of redirections for this navigation, from the original URL
+  // through the last URL that redirected. Deprecated in M121 because it was
+  // unused.
+  repeated NavigationRedirect navigation_redirect = 23 [deprecated = true];
+  // The last URL traversed when different from the virtual_url. Deprecated in
+  // M121 because it was unused.
+  optional string last_navigation_redirect_url = 24 [deprecated = true];
   // The id for the task associated with this navigation, which is globally
-  // unique with high probability.
-  // Similar with global_id, but used to identify a navigation in Chrome Tasks,
-  // so navigations of a page have the same task_id if one is the first visit of
-  // the page, and others are its back/forward visits.
-  optional int64 task_id = 27;
+  // unique with high probability. Deprecated in M121 because it was unused.
+  optional int64 task_id = 27 [deprecated = true];
   // Task ids of all ancestor navigations, which can be from other tabs, from
-  // root to parent. We define navigation A is parent of navigation B if page of
-  // B is got by clicking a link on page of A. This relationship is used to
-  // define a Chrome Task as a tree rooted by a navigation.
-  repeated int64 ancestor_task_id = 28;
-
+  // root to parent. Deprecated in M121 because it was unused.
+  repeated int64 ancestor_task_id = 28 [deprecated = true];
   // When a history entry is replaced (e.g. history.replaceState()), this
-  // contains some information about the entry prior to being replaced. Even if
-  // an entry is replaced multiple times, it represents data prior to the
-  // *first* replace.
-  optional ReplacedNavigation replaced_navigation = 29;
-
+  // contained some information about the entry prior to being replaced.
+  // Deprecated in M121 because it was unused.
+  optional ReplacedNavigation replaced_navigation = 29 [deprecated = true];
   // The page language as determined by its textual content. An ISO 639 language
   // code (two letters, except for Chinese where a localization is necessary).
-  optional string page_language = 30;
+  // Deprecated in M121 because it was unused.
+  optional string page_language = 30 [deprecated = true];
 
   reserved 1;
   reserved "index";
   reserved 5;
   reserved "state";
+  reserved 19;
+  reserved "content_pack_categories";
 }
 
 // Navigation information for a single redirection within a single navigation.

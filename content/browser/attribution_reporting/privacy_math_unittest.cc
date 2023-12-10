@@ -13,7 +13,6 @@
 
 #include "base/containers/flat_map.h"
 #include "base/time/time.h"
-#include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/event_report_windows.h"
 #include "components/attribution_reporting/max_event_level_reports.h"
 #include "components/attribution_reporting/source_type.mojom.h"
@@ -366,16 +365,14 @@ TEST(PrivacyMathTest, GetFakeReportsForSequenceIndex) {
   };
 
   for (const auto& test_case : kTestCases) {
-    int trigger_data_cardinality =
-        attribution_reporting::DefaultTriggerDataCardinality(
-            test_case.source_type);
-    int max_reports = test_case.source_type == SourceType::kEvent ? 1 : 3;
     EXPECT_EQ(test_case.expected,
               internal::GetFakeReportsForSequenceIndex(
-                  trigger_data_cardinality,
-                  *EventReportWindows::FromDefaults(base::Days(30),
-                                                    test_case.source_type),
-                  max_reports, test_case.sequence_index))
+                  attribution_reporting::TriggerSpecs::Default(
+                      test_case.source_type,
+                      *EventReportWindows::FromDefaults(base::Days(30),
+                                                        test_case.source_type)),
+                  MaxEventLevelReports(test_case.source_type),
+                  test_case.sequence_index))
         << test_case.sequence_index;
   }
 }
@@ -561,6 +558,70 @@ TEST(PrivacyMathTest, NumStatesForTriggerSpecs_UniqueSampling) {
     }
     EXPECT_EQ(static_cast<size_t>(test_case.expected_num_states),
               seen_outputs.size());
+  }
+}
+
+// Regression test for http://crbug.com/1503728 in which the optimized
+// randomized-response incorrectly returned the trigger data *index* rather than
+// the trigger data *value* in the fake reports.
+TEST(PrivacyMathTest, NonDefaultTriggerDataForSingleSharedSpec) {
+  // Note that the trigger data does not start at 0.
+  const auto kSpecs = attribution_reporting::TriggerSpecs::CreateForTesting(
+      {{/*trigger_data=*/123, /*index=*/0}},
+      {attribution_reporting::TriggerSpec()});
+
+  ASSERT_TRUE(kSpecs.SingleSharedSpec());
+
+  // There are only 2 states (0 reports or 1 report with trigger data 123), so
+  // loop until we hit the non-empty case.
+
+  RandomizedResponse response;
+  do {
+    internal::StateMap map;
+
+    response =
+        internal::DoRandomizedResponseWithCache(kSpecs, /*max_reports=*/1,
+                                                /*epsilon=*/0, map)
+            .response();
+  } while (!response.has_value() || response->empty());
+
+  ASSERT_EQ(uint64_t{123u}, response->front().trigger_data);
+}
+
+// Regression test for http://crbug.com/1504144 in which empty specs cause an
+// invalid iterator dereference and thus a crash.
+TEST(PrivacyMathTest, UnaryChannel) {
+  const struct {
+    const char* desc;
+    attribution_reporting::TriggerSpecs trigger_specs;
+    MaxEventLevelReports max_event_level_reports;
+  } kTestCases[] = {
+      {
+          .desc = "empty-specs",
+          .trigger_specs = attribution_reporting::TriggerSpecs(),
+          .max_event_level_reports = MaxEventLevelReports(20),
+      },
+      {
+          .desc = "zero-max-reports",
+          .trigger_specs = attribution_reporting::TriggerSpecs::Default(
+              SourceType::kNavigation, EventReportWindows()),
+          .max_event_level_reports = MaxEventLevelReports(0),
+      },
+  };
+
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.desc);
+
+    EXPECT_EQ(1, GetNumStates(test_case.trigger_specs,
+                              test_case.max_event_level_reports));
+
+    EXPECT_EQ(RandomizedResponseData(
+                  /*rate=*/1,
+                  /*channel_capacity=*/0,
+                  /*response=*/std::vector<FakeEventLevelReport>()),
+              DoRandomizedResponse(test_case.trigger_specs,
+                                   test_case.max_event_level_reports,
+                                   /*epsilon=*/0));
   }
 }
 

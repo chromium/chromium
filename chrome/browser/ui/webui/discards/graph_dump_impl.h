@@ -106,7 +106,7 @@ class DiscardsGraphDumpImpl : public discards::mojom::GraphDump,
   // Ignored.
   void OnIsAudibleChanged(
       const performance_manager::FrameNode* frame_node) override {}
-  void OnIsCapturingVideoStreamChanged(
+  void OnIsCapturingMediaStreamChanged(
       const performance_manager::FrameNode* frame_node) override {}
   // Ignored.
   void OnFirstContentfulPaint(
@@ -181,7 +181,7 @@ class DiscardsGraphDumpImpl : public discards::mojom::GraphDump,
   // Ignored.
   void OnFreezingVoteChanged(
       const performance_manager::PageNode* page_node,
-      absl::optional<performance_manager::freezing::FreezingVote>) override {}
+      std::optional<performance_manager::freezing::FreezingVote>) override {}
   // Ignored.
   void OnPageStateChanged(
       const performance_manager::PageNode* page_node,

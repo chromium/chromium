@@ -121,6 +121,10 @@
 #include "content/common/pepper_plugin.mojom.h"
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
+#include "content/common/gin_java_bridge.mojom.h"
+#endif
+
 namespace blink {
 namespace scheduler {
 class WebAgentGroupScheduler;
@@ -240,7 +244,8 @@ class CONTENT_EXPORT RenderFrameImpl
       blink::mojom::FrameOwnerPropertiesPtr frame_owner_properties,
       bool is_on_initial_empty_document,
       const blink::DocumentToken& document_token,
-      blink::mojom::PolicyContainerPtr policy_container);
+      blink::mojom::PolicyContainerPtr policy_container,
+      bool is_for_nested_main_frame);
 
   // Returns the RenderFrameImpl for the given routing ID.
   static RenderFrameImpl* FromRoutingID(int routing_id);
@@ -258,7 +263,8 @@ class CONTENT_EXPORT RenderFrameImpl
             browser_interface_broker,
         mojo::PendingAssociatedRemote<blink::mojom::AssociatedInterfaceProvider>
             associated_interface_provider,
-        const base::UnguessableToken& devtools_frame_token);
+        const base::UnguessableToken& devtools_frame_token,
+        bool is_for_nested_main_frame);
     ~CreateParams();
 
     CreateParams(CreateParams&&);
@@ -272,6 +278,7 @@ class CONTENT_EXPORT RenderFrameImpl
     mojo::PendingAssociatedRemote<blink::mojom::AssociatedInterfaceProvider>
         associated_interface_provider;
     base::UnguessableToken devtools_frame_token;
+    bool is_for_nested_main_frame;
   };
 
   using CreateRenderFrameImplFunction = RenderFrameImpl* (*)(CreateParams);
@@ -531,8 +538,7 @@ class CONTENT_EXPORT RenderFrameImpl
   void DidCreateFencedFrame(
       const blink::RemoteFrameToken& frame_token) override;
   blink::WebFrame* FindFrame(const blink::WebString& name) override;
-  void WillSwap() override;
-  void WillDetach() override;
+  void WillDetach(blink::DetachReason detach_reason) override;
   void FrameDetached() override;
   void DidChangeName(const blink::WebString& name) override;
   void DidMatchCSS(
@@ -598,10 +604,10 @@ class CONTENT_EXPORT RenderFrameImpl
       const blink::WebURLRequest& request,
       const blink::WebURLResponse& response) override;
   void DidChangePerformanceTiming() override;
-  void DidObserveUserInteraction(
-      base::TimeTicks max_event_start,
-      base::TimeTicks max_event_end,
-      blink::UserInteractionType interaction_type) override;
+  void DidObserveUserInteraction(base::TimeTicks max_event_start,
+                                 base::TimeTicks max_event_end,
+                                 blink::UserInteractionType interaction_type,
+                                 uint64_t interaction_offset) override;
   void DidChangeCpuTiming(base::TimeDelta time) override;
   void DidObserveLoadingBehavior(blink::LoadingBehaviorFlag behavior) override;
   void DidObserveJavaScriptFrameworks(
@@ -701,6 +707,11 @@ class CONTENT_EXPORT RenderFrameImpl
   // Binds to the MHTML file generation service in the browser.
   void BindMhtmlFileWriter(
       mojo::PendingAssociatedReceiver<mojom::MhtmlFileWriter> receiver);
+
+#if BUILDFLAG(IS_ANDROID)
+  void BindGinJavaBridge(
+      mojo::PendingAssociatedReceiver<mojom::GinJavaBridge> receiver);
+#endif
 
   // Binds to the autoplay configuration service in the browser.
   void BindAutoplayConfiguration(
@@ -852,7 +863,8 @@ class CONTENT_EXPORT RenderFrameImpl
           browser_interface_broker,
       mojo::PendingAssociatedRemote<blink::mojom::AssociatedInterfaceProvider>
           associated_interface_provider,
-      const base::UnguessableToken& devtools_frame_token);
+      const base::UnguessableToken& devtools_frame_token,
+      bool is_for_nested_main_frame);
 
   // Functions to add and remove observers for this object.
   void AddObserver(RenderFrameObserver* observer);
@@ -943,6 +955,21 @@ class CONTENT_EXPORT RenderFrameImpl
   void UpdateEncoding(blink::WebFrame* frame, const std::string& encoding_name);
 
   void InitializeMediaStreamDeviceObserver();
+
+  // Called when the RenderFrameImpl is created. This creates and initializes
+  // the WebFrameWidget unless this is a LocalFrame<->LocalFrame swap. Widget
+  // creation maybe deferred until commit for this case.
+  void MaybeInitializeWidget(mojom::CreateFrameWidgetParamsPtr widget_params);
+
+  // Called during a LocalFrame<->LocalFrame swap. This creates and initializes
+  // the WebFrameWidget if it was deferred when the RenderFrameImpl was created,
+  // see `MaybeInitializeWidget()` above.
+  void EnsureWidgetInitialized();
+
+  // Returns the widget whose compositor should be reused for this widget if
+  // a non-null `previous_frame_token` is provided.
+  blink::WebFrameWidget* PreviousWidgetForLazyCompositorInitialization(
+      const absl::optional<blink::FrameToken>& previous_frame_token) const;
 
   // Sends a FrameHostMsg_BeginNavigation to the browser
   void BeginNavigationInternal(std::unique_ptr<blink::WebNavigationInfo> info,
@@ -1574,6 +1601,13 @@ class CONTENT_EXPORT RenderFrameImpl
   // part of the IPC that created this frame) are cached until commit to lazily
   // create the WebFrameWidget.
   mojom::CreateFrameWidgetParamsPtr widget_params_for_lazy_widget_creation_;
+
+  // Set when this RenderFrame is being swapped for
+  // `provisional_frame_for_local_root_swap_`.
+  raw_ptr<RenderFrameImpl> provisional_frame_for_local_root_swap_ = nullptr;
+
+  // Set if this RenderFrameImpl is for a main frame which is not top-level.
+  const bool is_for_nested_main_frame_;
 
   base::WeakPtrFactory<RenderFrameImpl> weak_factory_{this};
 };

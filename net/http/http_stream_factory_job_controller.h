@@ -42,8 +42,7 @@ class HttpStreamFactory::JobController
                 bool enable_ip_based_pooling,
                 bool enable_alternative_services,
                 bool delay_main_job_with_available_spdy_session,
-                const SSLConfig& server_ssl_config,
-                const SSLConfig& base_proxy_ssl_config);
+                const SSLConfig& server_ssl_config);
 
   ~JobController() override;
 
@@ -371,7 +370,6 @@ class HttpStreamFactory::JobController
   const HttpRequestInfo request_info_;
   ProxyInfo proxy_info_;
   const SSLConfig server_ssl_config_;
-  const SSLConfig base_proxy_ssl_config_;
   int num_streams_ = 0;
   HttpStreamRequest::StreamType stream_type_;
   RequestPriority priority_ = IDLE;

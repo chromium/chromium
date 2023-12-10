@@ -30,6 +30,7 @@
 <translation id="2226276347425096477">ଦୟାକରି ଏହି ଟେକ୍ସଟ୍‍କୁ <ph name="MAX_CHARACTERS" />ଟି କିମ୍ବା ତା'ଠାରୁ କମ୍ ଅକ୍ଷର ପର୍ଯ୍ୟନ୍ତ ଛୋଟ କରନ୍ତୁ (ବର୍ତ୍ତମାନ ଆପଣ <ph name="CURRENT_LENGTH" />ଟି ଅକ୍ଷର ବ୍ୟବହାର କରୁଛନ୍ତି)।</translation>
 <translation id="2247351761944213033"><ph name="WEEKNUMBER" /> ସପ୍ତାହ, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">ଟ୍ରାକ୍ <ph name="NUMBER" /></translation>
+<translation id="2353297238722298836">କ୍ୟାମେରା ଏବଂ ମାଇକ୍ରୋଫୋନ୍ ବ୍ୟବହାର କରିପାରିବେ</translation>
 <translation id="2393030564806080191">ହେକ୍ସାଡେସିମାଲ୍ ରଙ୍ଗର ମୂଲ୍ୟ</translation>
 <translation id="2398813069815436052">ଡାଏଲଗ୍ ଖୋଲା ଅଛି।</translation>
 <translation id="245932805758469625">ସେକେଣ୍ଡର ଭିଡିଓ ବାକି ରହିଛି</translation>
@@ -60,10 +61,12 @@
 <translation id="3822383571486410024">ଦୟାକରି ଏହି ଟେକ୍ସଟ୍‍କୁ <ph name="MIN_CHARACTERS" />ଟି କିମ୍ବା ଅଧିକ ଅକ୍ଷର ପର୍ଯ୍ୟନ୍ତ ଲମ୍ବା କରନ୍ତୁ (ବର୍ତ୍ତମାନ ଆପଣ <ph name="CURRENT_LENGTH" />ଟି ଅକ୍ଷର ବ୍ୟବହାର କରୁଛନ୍ତି)।</translation>
 <translation id="383465348367842624">'<ph name="ATSIGN" />' ପରେ ଆସୁଥିବା ଅଂଶରେ '<ph name="INVALIDCHARACTER" />' ଚିହ୍ନ ରହିବା ଉଚିତ ନୁହେଁ।</translation>
 <translation id="3846214748874656680">ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନ୍‌ରୁ ପ୍ରସ୍ଥାନ କରନ୍ତୁ</translation>
+<translation id="4031179711345676612">ମାଇକ୍ରୋଫୋନ୍‌କୁ ଅନୁମତି ଦିଆଯାଇଛି</translation>
 <translation id="4103419683916926126">ମିଲିସେକେଣ୍ଡ</translation>
 <translation id="4201051445878709314">ପୂର୍ବ ମାସ ଦେଖାନ୍ତୁ</translation>
 <translation id="4360991593054037559">ଦୟାକରି, ଏକ ବୈଧ ମୂଲ୍ୟ ଲେଖନ୍ତୁ ଦୁଇଟି ନିକଟସ୍ଥ ବୈଧ ମାନ <ph name="VALID_VALUE_LOW" /> ଏବଂ <ph name="VALID_VALUE_HIGHER" />ଅଟେ।</translation>
 <translation id="4522570452068850558">ବିବରଣୀ</translation>
+<translation id="4663373278480897665">କ୍ୟାମେରା ଅନୁମୋଦିତ ଅଟେ</translation>
 <translation id="4664250907885839816">'<ph name="ATSIGN" />' ପରେ ଆସୁଥିବା ଅଂଶରେ '<ph name="INVALIDCHARACTER" />' ଚିହ୍ନ ରହିବା ଉଚିତ ନୁହେଁ।</translation>
 <translation id="4718048029184481307">ପିକଚର୍-ଇନ୍-ପିକଚର୍‌ରେ ଚାଲୁଛି</translation>
 <translation id="4748357248530471599">ପ୍ରଦର୍ଶନ ଫଳକ ପୂର୍ଣ୍ଣସ୍କ୍ରିନ୍‌କୁ ଟୋଗଲ୍ କରନ୍ତୁ</translation>
@@ -137,6 +140,7 @@
 <translation id="6941933287844615239">ମିଡିଆ ଡାଉନ୍‍‍ଲୋଡ୍ କରନ୍ତୁ</translation>
 <translation id="698788488269350478">ବିସ୍ତାରିତ ହୋଇଛି।</translation>
 <translation id="6989848892321993519">ଦୟାକରି ଏହି ଟେକ୍ସଟ୍‍କୁ <ph name="MIN_CHARACTERS" />ଟି କିମ୍ବା ଅଧିକ ଅକ୍ଷର ପର୍ଯ୍ୟନ୍ତ ଲମ୍ବା କରନ୍ତୁ।(ବର୍ତ୍ତମାନ ଆପଣ 1ଟି ଅକ୍ଷର ବ୍ୟବହାର କରୁଛନ୍ତି)।</translation>
+<translation id="7080893216867146095">ଲୋକେସନ ସେୟାର କରିବାକୁ ଅନୁମତି ଦିଆଯାଇଛି</translation>
 <translation id="709897737746224366">ଦୟାକରି ଅନୁରୋଧ କରାଯାଇଥିବା ଫର୍ମାଟ୍ ମେଳ କରନ୍ତୁ।</translation>
 <translation id="7102274145889307184">ବର୍ତ୍ତମାନର ଲୋକେସନ୍</translation>
 <translation id="7263440858009898357">ଦୟାକରି ତାଲିକାରେ ଏକ ଆଇଟମ୍ ଚୟନ କରନ୍ତୁ।</translation>

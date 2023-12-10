@@ -6,12 +6,15 @@
 
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/ranges/algorithm.h"
 #include "base/uuid.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/mediastream/media_devices.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_metric_builder.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
@@ -62,6 +65,15 @@
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
+
+BASE_FEATURE(kEnumerateDevicesRequestAudioCapabilities,
+             "EnumerateDevicesRequestAudioCapabilities",
+#if BUILDFLAG(IS_MAC)
+             base::FEATURE_DISABLED_BY_DEFAULT
+#else
+             base::FEATURE_ENABLED_BY_DEFAULT
+#endif
+);
 
 namespace {
 
@@ -355,6 +367,12 @@ MediaStreamConstraints* ToMediaStreamConstraints(
   return constraints;
 }
 
+bool EqualDeviceForDeviceChange(const WebMediaDeviceInfo& lhs,
+                                const WebMediaDeviceInfo& rhs) {
+  return lhs.device_id == rhs.device_id && lhs.label == rhs.label &&
+         lhs.group_id == rhs.group_id && lhs.IsAvailable() == rhs.IsAvailable();
+}
+
 }  // namespace
 
 const char MediaDevices::kSupplementName[] = "MediaDevices";
@@ -401,7 +419,8 @@ ScriptPromise MediaDevices::enumerateDevices(ScriptState* script_state,
       /*request_audio_input=*/true, /*request_video_input=*/true,
       /*request_audio_output=*/true,
       /*request_video_input_capabilities=*/true,
-      /*request_audio_input_capabilities=*/true,
+      /*request_audio_input_capabilities=*/
+      base::FeatureList::IsEnabled(kEnumerateDevicesRequestAudioCapabilities),
       WTF::BindOnce(&MediaDevices::DevicesEnumerated, WrapPersistent(this),
                     WrapPersistent(result_tracker)));
   return promise;
@@ -850,7 +869,8 @@ void MediaDevices::OnDevicesChanged(
     const Vector<WebMediaDeviceInfo>& device_infos) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(GetExecutionContext());
-  if (current_device_infos_[static_cast<wtf_size_t>(type)] == device_infos) {
+  if (base::ranges::equal(current_device_infos_[static_cast<wtf_size_t>(type)],
+                          device_infos, EqualDeviceForDeviceChange)) {
     return;
   }
 

@@ -163,7 +163,7 @@ ProgrammaticScriptInjector::GetCssSources(
 }
 
 void ProgrammaticScriptInjector::OnInjectionComplete(
-    absl::optional<base::Value> execution_result,
+    std::optional<base::Value> execution_result,
     mojom::RunLocation run_location) {
   DCHECK(!result_.has_value());
   result_ = std::move(execution_result);

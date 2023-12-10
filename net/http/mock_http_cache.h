@@ -345,6 +345,8 @@ class MockHttpCache {
   int GetCountDoneHeadersQueue(const std::string& key);
   int GetCountWriterTransactions(const std::string& key);
 
+  base::WeakPtr<HttpCache> GetWeakPtr();
+
  private:
   HttpCache http_cache_;
 };

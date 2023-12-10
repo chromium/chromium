@@ -104,8 +104,6 @@ void RegisterVariationIds(const Study::Experiment& experiment,
 void ApplyUIStringOverrides(
     const Study::Experiment& experiment,
     const VariationsSeedProcessor::UIStringOverrideCallback& callback) {
-  UMA_HISTOGRAM_COUNTS_100("Variations.StringsOverridden",
-                           experiment.override_ui_string_size());
   for (int i = 0; i < experiment.override_ui_string_size(); ++i) {
     const Study::Experiment::OverrideUIString& override =
         experiment.override_ui_string(i);

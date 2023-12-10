@@ -12,9 +12,8 @@
 #import "components/segmentation_platform/public/features.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/drag_and_drop/model/url_drag_drop_handler.h"
-#import "ios/chrome/browser/ntp/home/features.h"
-#import "ios/chrome/browser/ntp/set_up_list_item.h"
-#import "ios/chrome/browser/ntp/set_up_list_item_type.h"
+#import "ios/chrome/browser/ntp/model/set_up_list_item.h"
+#import "ios/chrome/browser/ntp/model/set_up_list_item_type.h"
 #import "ios/chrome/browser/parcel_tracking/parcel_tracking_util.h"
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_constants.h"
 #import "ios/chrome/browser/shared/public/commands/parcel_tracking_opt_in_commands.h"
@@ -56,6 +55,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/tab_resumption/tab_resumption_view.h"
 #import "ios/chrome/browser/ui/content_suggestions/tab_resumption/tab_resumption_view_delegate.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_header_constants.h"
+#import "ios/chrome/browser/ui/ntp/new_tab_page_view_delegate.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_features.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_utils.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
@@ -64,7 +64,6 @@
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/favicon/favicon_view.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
-#import "third_party/abseil-cpp/absl/types/optional.h"
 #import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "url/gurl.h"
@@ -185,6 +184,8 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
   NSMutableArray<SetUpListItemView*>* _compactedSetUpListViews;
   TabResumptionView* _tabResumptionView;
   NSMutableArray<MagicStackModuleContainer*>* _parcelTrackingModuleContainers;
+  NSLayoutConstraint* _mostVisitedTilesStackviewHeightAnchor;
+  NSLayoutConstraint* _shortcutsStackviewHeightAnchor;
 }
 
 - (instancetype)init {
@@ -263,10 +264,11 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
       CGFloat height =
           MostVisitedCellSize(self.traitCollection.preferredContentSizeCategory)
               .height;
+      _shortcutsStackviewHeightAnchor = [self.shortcutsStackView.heightAnchor
+          constraintGreaterThanOrEqualToConstant:height];
       [NSLayoutConstraint activateConstraints:@[
         [self.shortcutsStackView.widthAnchor constraintEqualToConstant:width],
-        [self.shortcutsStackView.heightAnchor
-            constraintGreaterThanOrEqualToConstant:height]
+        _shortcutsStackviewHeightAnchor
       ]];
     }
   }
@@ -764,31 +766,7 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
     }
   }];
 
-  __block NSUInteger safetyCheckModuleIndex = NSNotFound;
-
-  if (self.safetyCheckModuleContainer) {
-    // If there's an existing Safety Check module, find its current index.
-    [_magicStack.arrangedSubviews
-        enumerateObjectsUsingBlock:^(MagicStackModuleContainer* moduleContainer,
-                                     NSUInteger idx, BOOL* stop) {
-          if (moduleContainer.type ==
-                  ContentSuggestionsModuleType::kSafetyCheck ||
-              moduleContainer.type ==
-                  ContentSuggestionsModuleType::kSafetyCheckMultiRow ||
-              moduleContainer.type ==
-                  ContentSuggestionsModuleType::kSafetyCheckMultiRowOverflow) {
-            safetyCheckModuleIndex = idx;
-
-            *stop = YES;
-          }
-        }];
-
-    // Assert the updated Safety Check module will be replaced at the same index
-    // as the current module.
-    CHECK_EQ(safetyCheckModuleOrderIndex, safetyCheckModuleIndex);
-
-    [self.safetyCheckModuleContainer removeFromSuperview];
-  }
+  [self.safetyCheckModuleContainer removeFromSuperview];
 
   [self createSafetyCheck:state];
 
@@ -803,34 +781,6 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
 
     [self insertModuleIntoMagicStack:self.safetyCheckModuleContainer];
   }
-}
-
-- (CGFloat)contentSuggestionsHeight {
-  CGFloat height = 0;
-  if ([self.mostVisitedViews count] > 0 &&
-      !ShouldPutMostVisitedSitesInMagicStack()) {
-    height += MostVisitedCellSize(
-                  UIApplication.sharedApplication.preferredContentSizeCategory)
-                  .height +
-              kMostVisitedBottomMargin;
-  }
-  if (IsMagicStackEnabled()) {
-    height += _magicStackScrollView.contentSize.height;
-  } else {
-    if ([self.shortcutsViews count] > 0) {
-      height +=
-          MostVisitedCellSize(
-              UIApplication.sharedApplication.preferredContentSizeCategory)
-              .height;
-    }
-  }
-  if (self.returnToRecentTabTile) {
-    height += ReturnToRecentTabHeight();
-  }
-  if (self.setUpListView && !self.setUpListView.isHidden) {
-    height += self.setUpListView.frame.size.height;
-  }
-  return height;
 }
 
 - (void)showTabResumptionWithItem:(TabResumptionItem*)item {
@@ -989,6 +939,17 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
 
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
+
+  if (previousTraitCollection.preferredContentSizeCategory !=
+          self.traitCollection.preferredContentSizeCategory &&
+      !IsMagicStackEnabled()) {
+    CGFloat height =
+        MostVisitedCellSize(self.traitCollection.preferredContentSizeCategory)
+            .height;
+    _mostVisitedTilesStackviewHeightAnchor.constant = height;
+    _shortcutsStackviewHeightAnchor.constant = height;
+  }
+
   if (content_suggestions::ShouldShowWiderMagicStackLayer(self.traitCollection,
                                                           self.view.window)) {
     if (_returnToRecentTabWidthAnchor) {
@@ -1142,6 +1103,21 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
                         atIndex:insertionIndex];
       [self.verticalStackView setCustomSpacing:kMostVisitedBottomMargin
                                      afterView:self.mostVisitedModuleContainer];
+      // When feed containment is enabled, the module on top of the magic stack
+      // should match the width of the feed module.
+      if (IsFeedContainmentEnabled()) {
+        [NSLayoutConstraint activateConstraints:@[
+          [self.mostVisitedModuleContainer.widthAnchor
+              constraintEqualToConstant:self.view.frame.size.width -
+                                        [self.NTPViewDelegate
+                                                homeModulePadding]],
+          [self.mostVisitedModuleContainer.centerXAnchor
+              constraintEqualToAnchor:self.view.centerXAnchor],
+          [self.mostVisitedStackView.centerXAnchor
+              constraintEqualToAnchor:self.mostVisitedModuleContainer
+                                          .centerXAnchor],
+        ]];
+      }
     }
   } else {
     [self.verticalStackView insertArrangedSubview:self.mostVisitedStackView
@@ -1152,10 +1128,12 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
         MostVisitedTilesContentHorizontalSpace(self.traitCollection);
     CGSize size =
         MostVisitedCellSize(self.traitCollection.preferredContentSizeCategory);
+    _mostVisitedTilesStackviewHeightAnchor =
+        [self.mostVisitedStackView.heightAnchor
+            constraintEqualToConstant:size.height];
     [NSLayoutConstraint activateConstraints:@[
       [self.mostVisitedStackView.widthAnchor constraintEqualToConstant:width],
-      [self.mostVisitedStackView.heightAnchor
-          constraintEqualToConstant:size.height]
+      _mostVisitedTilesStackviewHeightAnchor
     ]];
   }
 }
@@ -1263,25 +1241,38 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
   [_magicStackScrollView addSubview:_magicStack];
 
   AddSameConstraints(_magicStack, _magicStackScrollView);
-  // Define width of ScrollView. Instrinsic content height of the
-  // StackView within the ScrollView will define the height of the
+
+  // Defines height, ensuring only horizontal scrolling. Instrinsic content
+  // height of the StackView within the ScrollView will define the height of the
   // ScrollView.
-  CGFloat width = [MagicStackModuleContainer
-      moduleWidthForHorizontalTraitCollection:self.traitCollection];
-  // Magic Stack has a wider width for wider screens so that clipToBounds can be
-  // YES with a peeking module still visible.
-  if (content_suggestions::ShouldShowWiderMagicStackLayer(self.traitCollection,
-                                                          self.view.window)) {
-    width = kMagicStackWideWidth;
-  }
-  _magicStackScrollViewWidthAnchor =
-      [_magicStackScrollView.widthAnchor constraintEqualToConstant:width];
   [NSLayoutConstraint activateConstraints:@[
-    // Ensures only horizontal scrolling
     [_magicStack.heightAnchor
         constraintEqualToAnchor:_magicStackScrollView.heightAnchor],
-    _magicStackScrollViewWidthAnchor
   ]];
+  // Define width of ScrollView.
+  // With feed containment enabled, the magic stack should be left aligned with
+  // the other modules.
+  if (IsFeedContainmentEnabled()) {
+    [NSLayoutConstraint activateConstraints:@[
+      [_magicStackScrollView.trailingAnchor
+          constraintEqualToAnchor:self.view.trailingAnchor
+                         constant:-([self.NTPViewDelegate homeModulePadding] /
+                                    2)],
+    ]];
+  } else {
+    CGFloat width = [MagicStackModuleContainer
+        moduleWidthForHorizontalTraitCollection:self.traitCollection];
+    // Magic Stack has a wider width for wider screens so that clipToBounds can
+    // be YES with a peeking module still visible.
+    if (content_suggestions::ShouldShowWiderMagicStackLayer(
+            self.traitCollection, self.view.window)) {
+      width = kMagicStackWideWidth;
+    }
+    _magicStackScrollViewWidthAnchor =
+        [_magicStackScrollView.widthAnchor constraintEqualToConstant:width];
+    [NSLayoutConstraint
+        activateConstraints:@[ _magicStackScrollViewWidthAnchor ]];
+  }
 }
 
 // Resets and fills the Magic Stack with modules using `_magicStackModuleOrder`.

@@ -52,7 +52,7 @@ class TestPersonalDataManager : public PersonalDataManager {
   void RemoveByGUID(const std::string& guid) override;
   bool IsEligibleForAddressAccountStorage() const override;
   void AddCreditCard(const CreditCard& credit_card) override;
-  std::string AddIban(const Iban iban) override;
+  std::string AddAsLocalIban(const Iban iban) override;
   std::string UpdateIban(const Iban& iban) override;
   void DeleteLocalCreditCards(const std::vector<CreditCard>& cards) override;
   void UpdateCreditCard(const CreditCard& credit_card) override;

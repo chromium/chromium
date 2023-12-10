@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/fuchsia/gn_configs.gni")
+import("gn_sdk_configs.gni")
 
 # Declares a source_set for the coding tables of a FIDL library.
 #
@@ -74,7 +75,7 @@ template("fidl_base_library") {
   tables_file = "${fidl_gen_dir}/${library_name}.fidl-tables.c"
 
   action("${target_name}_response_file") {
-    script = "//third_party/fuchsia-gn-sdk/src/gen_fidl_response_file.py"
+    script = gn_sdk_root + "/gen_fidl_response_file.py"
 
     forward_variables_from(invoker,
                            [
@@ -172,7 +173,7 @@ template("fidl_base_library") {
 
     deps = [ ":${invoker.target_name}_response_file" ]
 
-    script = "//third_party/fuchsia-gn-sdk/src/gn_run_binary.py"
+    script = gn_sdk_root + "/gn_run_binary.py"
 
     inputs = [
       # Depend on the SDK hash, to ensure rebuild if the SDK tools change.
@@ -252,7 +253,7 @@ template("fidl_cpp_codegen") {
       }
     }
 
-    script = "//third_party/fuchsia-gn-sdk/src/gn_run_binary.py"
+    script = gn_sdk_root + "/gn_run_binary.py"
     args = [
       rebase_path(invoker.fidlgen_tool, root_build_dir),
       "--json",
@@ -626,6 +627,13 @@ template("fidl_library") {
         "cpp_wire",
       ]
       public_deps = [ "${fuchsia_sdk}/pkg/fidl_cpp_v2" ]
+    },
+
+    {
+      layer = "cpp_testing"
+      headers = [ "fidl/${library_name}/cpp/test_base.h" ]
+      layer_deps = [ "cpp" ]
+      testonly = true
     },
 
     {

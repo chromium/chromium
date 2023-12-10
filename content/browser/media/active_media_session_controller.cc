@@ -9,6 +9,7 @@
 
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/unguessable_token.h"
 #include "content/browser/browser_main_loop.h"
 #include "content/browser/media/media_keys_listener_manager_impl.h"
 #include "content/public/browser/media_keys_listener_manager.h"
@@ -21,15 +22,26 @@ namespace content {
 
 using media_session::mojom::MediaSessionAction;
 
-ActiveMediaSessionController::ActiveMediaSessionController() {
+ActiveMediaSessionController::ActiveMediaSessionController(
+    base::UnguessableToken request_id)
+    : request_id_(request_id) {
   // Connect to the MediaControllerManager and create a MediaController that
-  // controls the active session.
-  mojo::Remote<media_session::mojom::MediaControllerManager>
-      controller_manager_remote;
+  // controls the session given by `request_id`.
   GetMediaSessionService().BindMediaControllerManager(
-      controller_manager_remote.BindNewPipeAndPassReceiver());
-  controller_manager_remote->CreateActiveMediaController(
-      media_controller_remote_.BindNewPipeAndPassReceiver());
+      controller_manager_remote_.BindNewPipeAndPassReceiver());
+
+  if (request_id == base::UnguessableToken::Null()) {
+    // ID is null for all scenarios where kWebAppSystemMediaControlsWin is not
+    // supported. ie. Mac, Linux, Windows with the feature flag off.
+    // Create a media controller that follows the active session for this case.
+    controller_manager_remote_->CreateActiveMediaController(
+        media_controller_remote_.BindNewPipeAndPassReceiver());
+  } else {
+    // Create a media controller tied to |request_id| when
+    // kWebAppSystemMediaControlsWin is enabled (on Windows OS).
+    controller_manager_remote_->CreateMediaControllerForSession(
+        media_controller_remote_.BindNewPipeAndPassReceiver(), request_id);
+  }
 
   // Observe the active media controller for changes to playback state and
   // supported actions.
@@ -38,6 +50,22 @@ ActiveMediaSessionController::ActiveMediaSessionController() {
 }
 
 ActiveMediaSessionController::~ActiveMediaSessionController() = default;
+
+void ActiveMediaSessionController::RebindMojoForNewID(
+    base::UnguessableToken request_id) {
+  media_controller_remote_.reset();
+  media_controller_observer_receiver_.reset();
+
+  // Don't think this is necessary for browser as we pass it to
+  // Start/StopWatchingMediaKey which only uses it for PWAs, but probably good
+  // to keep it up to date.
+  request_id_ = request_id;
+
+  controller_manager_remote_->CreateMediaControllerForSession(
+      media_controller_remote_.BindNewPipeAndPassReceiver(), request_id);
+  media_controller_remote_->AddObserver(
+      media_controller_observer_receiver_.BindNewPipeAndPassRemote());
+}
 
 void ActiveMediaSessionController::MediaSessionInfoChanged(
     media_session::mojom::MediaSessionInfoPtr session_info) {
@@ -59,13 +87,16 @@ void ActiveMediaSessionController::MediaSessionActionsChanged(
 
   // Stop listening to any keys that are currently being watched, but aren't in
   // |actions|.
+  // This loop is what tells SMTC to stop watching next/previous when a new tab
+  // is active because next/previous are in actions_ but NOT in actions
   for (const MediaSessionAction& action : actions_) {
     absl::optional<ui::KeyboardCode> action_key_code =
         MediaSessionActionToKeyCode(action);
     if (!action_key_code.has_value())
       continue;
     if (!base::Contains(actions, action))
-      media_keys_listener_manager->StopWatchingMediaKey(*action_key_code, this);
+      media_keys_listener_manager->StopWatchingMediaKey(*action_key_code, this,
+                                                        request_id_);
   }
 
   // Populate |actions_| with the new MediaSessionActions and start listening
@@ -77,8 +108,8 @@ void ActiveMediaSessionController::MediaSessionActionsChanged(
     if (action_key_code.has_value()) {
       // It's okay to call this even on keys we're already listening to, since
       // it's a no-op in that case.
-      if (media_keys_listener_manager->StartWatchingMediaKey(*action_key_code,
-                                                             this)) {
+      if (media_keys_listener_manager->StartWatchingMediaKey(
+              *action_key_code, this, request_id_)) {
         actions_.insert(action);
       }
     } else {

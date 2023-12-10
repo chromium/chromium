@@ -90,6 +90,7 @@ mojom("media_router") {
 
       traits_public_deps = [
         "//components/media_router/common",
+        "//components/media_router/common/providers/cast/channel:capability",
         "//net",
       ]
       traits_deps = [
@@ -113,6 +114,5 @@ mojom("route_request_result_code") {
   sources = [ "route_request_result_code.mojom" ]
 
   webui_module_path = "/"
-  use_typescript_sources = true
   generate_legacy_js_bindings = enable_mojom_fuzzer
 }

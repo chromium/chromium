@@ -15,9 +15,7 @@ import org.chromium.chrome.browser.back_press.SecondaryActivityBackPressUma.Seco
 import org.chromium.chrome.browser.history_clusters.HistoryClustersConstants;
 import org.chromium.chrome.browser.profiles.Profile;
 
-/**
- * Activity for displaying the browsing history manager.
- */
+/** Activity for displaying the browsing history manager. */
 public class HistoryActivity extends SnackbarActivity {
     private HistoryManager mHistoryManager;
 
@@ -25,24 +23,36 @@ public class HistoryActivity extends SnackbarActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        boolean isIncognito = IntentUtils.safeGetBooleanExtra(
-                getIntent(), IntentHandler.EXTRA_INCOGNITO_MODE, false);
-        boolean showHistoryClustersImmediately = IntentUtils.safeGetBooleanExtra(
-                getIntent(), HistoryClustersConstants.EXTRA_SHOW_HISTORY_CLUSTERS, false);
-        String historyClustersQuery = IntentUtils.safeGetStringExtra(
-                getIntent(), HistoryClustersConstants.EXTRA_HISTORY_CLUSTERS_QUERY);
+        boolean isIncognito =
+                IntentUtils.safeGetBooleanExtra(
+                        getIntent(), IntentHandler.EXTRA_INCOGNITO_MODE, false);
+        boolean showHistoryClustersImmediately =
+                IntentUtils.safeGetBooleanExtra(
+                        getIntent(), HistoryClustersConstants.EXTRA_SHOW_HISTORY_CLUSTERS, false);
+        String historyClustersQuery =
+                IntentUtils.safeGetStringExtra(
+                        getIntent(), HistoryClustersConstants.EXTRA_HISTORY_CLUSTERS_QUERY);
         Profile profile = Profile.getLastUsedRegularProfile();
-        mHistoryManager = new HistoryManager(this, true, getSnackbarManager(),
-                isIncognito ? profile.getPrimaryOTRProfile(true) : profile,
-                /* Supplier<Tab>= */ null, showHistoryClustersImmediately, historyClustersQuery,
-                new BrowsingHistoryBridge(profile));
+        mHistoryManager =
+                new HistoryManager(
+                        this,
+                        true,
+                        getSnackbarManager(),
+                        isIncognito ? profile.getPrimaryOTRProfile(true) : profile,
+                        /* Supplier<Tab>= */ null,
+                        showHistoryClustersImmediately,
+                        historyClustersQuery,
+                        new BrowsingHistoryBridge(profile));
         setContentView(mHistoryManager.getView());
         if (BackPressManager.isSecondaryActivityEnabled()) {
             BackPressHelper.create(
                     this, getOnBackPressedDispatcher(), mHistoryManager, SecondaryActivity.HISTORY);
         } else {
-            BackPressHelper.create(this, getOnBackPressedDispatcher(),
-                    mHistoryManager::onBackPressed, SecondaryActivity.HISTORY);
+            BackPressHelper.create(
+                    this,
+                    getOnBackPressedDispatcher(),
+                    mHistoryManager::onBackPressed,
+                    SecondaryActivity.HISTORY);
         }
     }
 

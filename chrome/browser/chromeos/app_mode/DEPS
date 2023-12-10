@@ -1,6 +1,6 @@
 specific_include_rules = {
   "chrome_kiosk_app_launcher\.cc": [
-    "+chrome/browser/ash/app_mode/kiosk_app_manager.h",
+    "+chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h",
   ],
   "chrome_kiosk_app_launcher_unittest.cc": [
     "+ash/test/ash_test_helper.h",
@@ -20,9 +20,14 @@ specific_include_rules = {
     "+ash/shell.h",
     "+ash/test/ash_test_helper.h",
     "+ash/wm/overview/overview_controller.h",
+    "+chrome/browser/ash/app_mode/kiosk_app_types.h",
+    "+chrome/browser/ash/login/users/fake_chrome_user_manager.h",
     "+chrome/browser/ash/system_web_apps/system_web_app_manager.h",
     "+chrome/browser/ash/system_web_apps/test_support/test_system_web_app_installation.h",
     "+chrome/browser/ash/system_web_apps/test_support/test_system_web_app_manager.h",
     "+chrome/browser/ash/system_web_apps/types/system_web_app_delegate_map.h",
+  ],
+  "kiosk_browser_window_handler.cc": [
+    "+chrome/browser/ash/crosapi/browser_util.h",
   ],
 }

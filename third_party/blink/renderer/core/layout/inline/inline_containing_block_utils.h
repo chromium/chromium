@@ -13,9 +13,9 @@
 
 namespace blink {
 
+class BoxFragmentBuilder;
 class LayoutBox;
 class LayoutObject;
-class NGBoxFragmentBuilder;
 
 class InlineContainingBlockUtils {
   STATIC_ONLY(InlineContainingBlockUtils);
@@ -45,7 +45,7 @@ class InlineContainingBlockUtils {
   // is the builder of the containing block of the inline containers.
   static void ComputeInlineContainerGeometry(
       InlineContainingBlockMap* inline_containing_block_map,
-      NGBoxFragmentBuilder* container_builder);
+      BoxFragmentBuilder* container_builder);
 
   // Computes the geometry required for any inline containing blocks inside a
   // fragmentation context. |box| is the containing block the inline containers

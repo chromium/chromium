@@ -1,25 +1,21 @@
 <style include="cr-shared-style settings-shared">
   :host {
+    background-color: var(--cros-sys-app_base);
+    box-shadow: var(--cr-card-shadow);
     box-sizing: border-box;
     display: block;
     left: 0;
-    /* Do not shorten '0px' below to '0' as the calc function requires
-     * units. */
-    min-height: calc(100vh - var(--cr-toolbar-height) -
-        var(--cr-toolbar-padding-top, 0));
+    min-height: calc(100vh - var(--settings-toolbar-height));
     padding-bottom: 60px;
     position: absolute;
     right: 0;
     top: 0;
   }
 
-  :host(:not(.multi-card)) {
-    background-color: var(--cr-card-background-color);
-    box-shadow: var(--cr-card-shadow);
-  }
-
-  :host-context(body.jelly-enabled):host {
-    background-color: var(--cros-sys-app_base);
+  :host-context(body.revamp-wayfinding-enabled):host {
+    border-start-start-radius: 16px;
+    border-start-end-radius: 16px;
+    box-shadow: none;
   }
 
   #headerLine {
@@ -39,7 +35,7 @@
     width: var(--cr-icon-ripple-size);
   }
 
-  :host-context(body.jelly-enabled) #title {
+  #title {
     font: var(--cros-button-1-font);
   }
 

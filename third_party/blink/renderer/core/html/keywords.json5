@@ -80,6 +80,15 @@
     "open",
     // invokeaction for input and select
     "showPicker",
+    // invokeaction for fullscreen
+    "toggleFullscreen",
+    "requestFullscreen",
+    "exitFullscreen",
+    // invokeaction for audio and video
+    "playpause",
+    "pause",
+    "play",
+    "toggleMuted",
 
     // loading attribute
     // https://github.com/scott-little/lazyload#ways-the-loading-attribute-can-be-used

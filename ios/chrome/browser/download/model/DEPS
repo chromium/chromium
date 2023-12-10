@@ -1,7 +1,7 @@
 include_rules = [
   "+ios/chrome/browser/prerender/model",
-  "+ios/chrome/browser/overlays/public",
-  "+ios/chrome/browser/optimization_guide",
+  "+ios/chrome/browser/overlays/model/public",
+  "+ios/chrome/browser/optimization_guide/model",
 ]
 
 specific_include_rules = {

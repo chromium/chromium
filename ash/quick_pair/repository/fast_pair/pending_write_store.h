@@ -5,12 +5,12 @@
 #ifndef ASH_QUICK_PAIR_REPOSITORY_FAST_PAIR_PENDING_WRITE_STORE_H_
 #define ASH_QUICK_PAIR_REPOSITORY_FAST_PAIR_PENDING_WRITE_STORE_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "ash/quick_pair/proto/fastpair_data.pb.h"
 #include "base/values.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefRegistrySimple;
 

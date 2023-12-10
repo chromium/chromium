@@ -113,8 +113,6 @@ message AutofillProfileSpecifics {
   optional string address_home_state = 10;
   optional string address_home_zip = 11;
   optional string address_home_country = 12;
-  optional string address_home_landmark = 67;
-  optional string address_home_between_streets = 69;
   optional string address_home_admin_level_2 = 71;
 
   // Additional address fields for i18n.
@@ -126,8 +124,38 @@ message AutofillProfileSpecifics {
   optional string address_home_thoroughfare_number = 39;
   optional string address_home_street_location = 73;
   optional string address_home_subpremise_name = 42;
+  // All the information related to the apartment. Normally a combination of the
+  // apartment type (address_home_apt_type) and number (address_home_apt_num).
+  // E.g. "Apt 5".
+  optional string address_home_apt = 85;
+  // The raw number (or identifier) of an apartment (e.g. "5") but without a
+  // prefix. The value "apt 5" would correspond to the address_home_apt.
   optional string address_home_apt_num = 56;
+  // Information describing the type of apartment (e.g. Apt, Apartamento, Sala,
+  // Departamento).
+  optional string address_home_apt_type = 87;
   optional string address_home_floor = 57;
+  optional string address_home_landmark = 67;
+  // The type indicates that the address is at the intersection between two
+  // streets. This is a common way of writing addresses in Mexico.
+  optional string address_home_between_streets = 69;
+  // The meaning of the field is similar to address_home_between_streets. The
+  // type should be used for "Entre calle 1" in MX addresses which also
+  // contain the "Entre calle 2" field.
+  optional string address_home_between_streets_1 = 77;
+  // The meaning of the field is similar to address_home_between_streets. The
+  // type should be used for "Entre calle 2" in MX addresses which also
+  // contain the "Entre calle 1" field.
+  optional string address_home_between_streets_2 = 79;
+  optional string address_home_overflow = 75;
+  // Combination of types address_home_between_streets or address_home_landmark.
+  // Note that some address forms require the combination of both in a single
+  // field as opposed to each one separately.
+  optional string address_home_between_streets_or_landmark = 81;
+  // Combination of types address_home_overflow and address_home_landmark.
+  // Note that some address forms require the combination of both in a single
+  // field as opposed to each one separately.
+  optional string address_home_overflow_and_landmark = 83;
 
   // Validation status records for address fields.
   optional VerificationStatus address_home_city_status = 43;
@@ -136,7 +164,13 @@ message AutofillProfileSpecifics {
   optional VerificationStatus address_home_country_status = 46;
   optional VerificationStatus address_home_landmark_status = 68;
   optional VerificationStatus address_home_between_streets_status = 70;
+  optional VerificationStatus address_home_between_streets_1_status = 78;
+  optional VerificationStatus address_home_between_streets_2_status = 80;
   optional VerificationStatus address_home_admin_level_2_status = 72;
+  optional VerificationStatus address_home_overflow_status = 76;
+  optional VerificationStatus address_home_between_streets_or_landmark_status =
+      82;
+  optional VerificationStatus address_home_overflow_and_landmark_status = 84;
   optional VerificationStatus address_home_street_address_status = 47;
   optional VerificationStatus address_home_sorting_code_status = 48;
   optional VerificationStatus address_home_dependent_locality_status = 49;
@@ -145,7 +179,9 @@ message AutofillProfileSpecifics {
   optional VerificationStatus address_home_thoroughfare_number_status = 52;
   optional VerificationStatus address_home_street_location_status = 74;
   optional VerificationStatus address_home_subpremise_name_status = 55;
+  optional VerificationStatus address_home_apt_status = 86;
   optional VerificationStatus address_home_apt_num_status = 58;
+  optional VerificationStatus address_home_apt_type_status = 88;
   optional VerificationStatus address_home_floor_status = 59;
 
   // Phone.
@@ -215,6 +251,53 @@ message CloudTokenData {
   // Opaque identifier for the cloud token associated with the payment
   // instrument.
   optional string instrument_token = 5;
+}
+
+message CardBenefit {
+  // The benefit description (Engligh only currently) to be shown in the UI.
+  optional string benefit_description = 1;
+
+  // When the benefit should be displayed, in UTC time.
+  optional int64 start_time_unix_epoch_nanos = 2;
+  optional int64 end_time_unix_epoch_nanos = 3;
+
+  // Proto containing data specific to a flat rate benefit. Empty as flat rate
+  // benefits don't have unique fields. The actual benefit (e.g. "2% cash back")
+  // is already included in the `benefit_description`.
+  message FlatRateBenefit {}
+
+  // For category benefits, represents the category of purchases that the
+  // benefit can be applied to.
+  enum CategoryBenefitType {
+    CATEGORY_BENEFIT_TYPE_UNKNOWN = 0;
+    SUBSCRIPTION = 1;
+    FLIGHTS = 2;
+    DINING = 3;
+    ENTERTAINMENT = 4;
+    STREAMING = 5;
+    GROCERY_STORES = 6;
+  }
+
+  // Proto containing data specific to a category benefit.
+  message CategoryBenefit {
+    // The type of category purchases the benefit is eligible on.
+    optional CategoryBenefitType category_benefit_type = 1;
+  }
+
+  // Proto containing data specific to a merchant benefit.
+  message MerchantBenefit {
+    // The merchant domain that the benefit is eligible on.
+    // Example: https://www.acme.com
+    repeated string merchant_domain = 1;
+  }
+
+  // Proto data representing the actual data of the credit card benefit,
+  // depending on the benefit type.
+  oneof DomainSpecificBenefit {
+    FlatRateBenefit flat_rate_benefit = 4;
+    CategoryBenefit category_benefit = 5;
+    MerchantBenefit merchant_benefit = 6;
+  }
 }
 
 message CardIssuer {
@@ -324,8 +407,19 @@ message WalletMaskedCreditCard {
   // The type of virtual card enrollment. kTypeUnspecified indicates that the
   // card is unenrolled.
   optional VirtualCardEnrollmentType virtual_card_enrollment_type = 19;
+
+  // The benefits (e.g. points or discounts) associated with purchases made
+  // with the card.
+  repeated CardBenefit card_benefit = 20;
+
+  // Separate link from the card issuer which provides additional context or
+  // terms and conditions regarding the credit card product and its benefits.
+  optional string product_terms_url = 21;
 }
 
+// Unused by the client since M121.
+// TODO(crbug.com/1457187): Some server-side code still relies on this message.
+// To keep the protos in sync, it is kept until that code is cleaned up.
 // Different than an AutofillProfile because this represents some known address
 // on the server that is pulled down rather than synced between Chromes.
 message WalletPostalAddress {
@@ -429,6 +523,24 @@ message PaymentInstrument {
   }
 }
 
+// Contains information of server IBAN (International Bank Account Number).
+message WalletMaskedIban {
+  // Opaque identifier for the account stored in Payments Platform.
+  optional string instrument_id = 1;
+
+  // Prefix of the full IBAN value, if available.
+  optional string prefix = 2;
+
+  // Suffix of the full IBAN value, if available.
+  optional string suffix = 3;
+
+  // Length of the full IBAN value, if available.
+  optional int32 length = 4;
+
+  // Nickname for the IBAN, if available.
+  optional string nickname = 5;
+}
+
 // Details of a bank account required to show it in the payment instrument
 // selector.
 message BankAccountDetails {
@@ -455,10 +567,12 @@ message AutofillWalletSpecifics {
   enum WalletInfoType {
     UNKNOWN = 0;
     MASKED_CREDIT_CARD = 1;
+    // POSTAL_ADDRESS is unused by the client since M121.
     POSTAL_ADDRESS = 2;
     CUSTOMER_DATA = 3;
     CREDIT_CARD_CLOUD_TOKEN_DATA = 4;
     PAYMENT_INSTRUMENT = 5;
+    MASKED_IBAN = 6;
   }
 
   optional WalletInfoType type = 1;
@@ -467,7 +581,10 @@ message AutofillWalletSpecifics {
   // MASKED_CREDIT_CARD.
   optional WalletMaskedCreditCard masked_card = 2;
 
-  // This field exists if and only if the "type" field equals to ADDRESS.
+  // Unused by the client since M121.
+  // This field exists if and only if the `type` equals POSTAL_ADDRESS.
+  // TODO(crbug.com/1457187): Some server-side code still relies on this field.
+  // To keep the protos in sync, it is kept until that code is cleaned up.
   optional WalletPostalAddress address = 3;
 
   // This field exists if and only if the "type" field equals to CUSTOMER_DATA.
@@ -480,36 +597,31 @@ message AutofillWalletSpecifics {
   // This field exists if and only if the "type" field equals to
   // PAYMENT_INSTRUMENT.
   optional PaymentInstrument payment_instrument = 6;
+
+  // This field exists if and only if the `type` field equals to
+  // MASKED_IBAN.
+  optional WalletMaskedIban masked_iban = 7;
 }
 
-// Wallet card and address usage information that can be synced.
+// Wallet card usage information that can be synced.
 message WalletMetadataSpecifics {
   enum Type {
     UNKNOWN = 0;
     CARD = 1;
+    // Unused by the client since M121.
+    // TODO(crbug.com/1457187): Some server-side code still relies on this.
+    // To keep the protos in sync, it is kept until that code is cleaned up.
     ADDRESS = 2;
+    IBAN = 3;
   }
 
   // The type of the Wallet metadata.
   optional Type type = 1;
 
-  // Base64 encoding of the unique ID string of the corresponding Wallet data.
-  // For Wallet cards, this value is server generated and opaque to Chrome.
-  // For Wallet addresses, this is a SHA1 hash of the following fields:
-  //
-  // - First name
-  // - Middle name
-  // - Last name
-  // - Company name
-  // - Street address
-  // - Dependent locality
-  // - City
-  // - State
-  // - Zip code
-  // - Sorting code
-  // - Country
-  // - Phone number
-  // - Language code
+  // Base64 encoding of the unique ID string of the corresponding
+  // AutofillMetadata.
+  // For Wallet cards, this value is WalletMaskedCreditCard::id.
+  // For Wallet IBANs, this value is WalletMaskedIban::instrument_id.
   optional string id = 2;
 
   // The number of times that this Wallet card or address was used.
@@ -523,6 +635,8 @@ message WalletMetadataSpecifics {
   // Wallet card.
   optional string card_billing_address_id = 5;
 
-  // Whether this Wallet address has been converted to a local autofill profile.
+  // Unused by the client since M121.
+  // TODO(crbug.com/1457187): Some server-side code still relies on this field.
+  // To keep the protos in sync, it is kept until that code is cleaned up.
   optional bool address_has_converted = 6;
 }

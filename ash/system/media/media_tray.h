@@ -11,6 +11,7 @@
 #include "ash/system/media/media_notification_provider_observer.h"
 #include "ash/system/tray/tray_background_view.h"
 #include "base/memory/raw_ptr.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 
 class PrefChangeRegistrar;
 class PrefRegistrySimple;
@@ -31,6 +32,8 @@ class TrayBubbleWrapper;
 class ASH_EXPORT MediaTray : public MediaNotificationProviderObserver,
                              public TrayBackgroundView,
                              public SessionObserver {
+  METADATA_HEADER(MediaTray, TrayBackgroundView)
+
  public:
   // Register `prefs::kGlobalMediaControlsPinned`.
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
@@ -44,6 +47,8 @@ class ASH_EXPORT MediaTray : public MediaNotificationProviderObserver,
   // Pin button shown in `GlobalMediaControlsTitleView` and
   // `UnifiedMediaControlsDetailedView`.
   class PinButton : public IconButton {
+    METADATA_HEADER(PinButton, IconButton)
+
    public:
     PinButton();
     PinButton(const PinButton&) = delete;

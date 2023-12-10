@@ -70,8 +70,11 @@ public class TwaSplashController implements SplashDelegate {
     private final BrowserServicesIntentDataProvider mIntentDataProvider;
 
     @Inject
-    public TwaSplashController(SplashController splashController, Activity activity,
-            ActivityWindowAndroid activityWindowAndroid, SplashImageHolder splashImageCache,
+    public TwaSplashController(
+            SplashController splashController,
+            Activity activity,
+            ActivityWindowAndroid activityWindowAndroid,
+            SplashImageHolder splashImageCache,
             BrowserServicesIntentDataProvider intentDataProvider) {
         mSplashController = splashController;
         mActivity = activity;
@@ -79,8 +82,10 @@ public class TwaSplashController implements SplashDelegate {
         mIntentDataProvider = intentDataProvider;
 
         long splashHideAnimationDurationMs =
-                IntentUtils.safeGetInt(getSplashScreenParamsFromIntent(),
-                        SplashScreenParamKey.KEY_FADE_OUT_DURATION_MS, 0);
+                IntentUtils.safeGetInt(
+                        getSplashScreenParamsFromIntent(),
+                        SplashScreenParamKey.KEY_FADE_OUT_DURATION_MS,
+                        0);
         mSplashController.setConfig(this, splashHideAnimationDurationMs);
     }
 
@@ -108,8 +113,9 @@ public class TwaSplashController implements SplashDelegate {
     private void applyCustomizationsToSplashScreenView(ImageView imageView) {
         Bundle params = getSplashScreenParamsFromIntent();
 
-        int backgroundColor = IntentUtils.safeGetInt(
-                params, SplashScreenParamKey.KEY_BACKGROUND_COLOR, Color.WHITE);
+        int backgroundColor =
+                IntentUtils.safeGetInt(
+                        params, SplashScreenParamKey.KEY_BACKGROUND_COLOR, Color.WHITE);
         imageView.setBackgroundColor(ColorUtils.getOpaqueColor(backgroundColor));
 
         int scaleTypeOrdinal =
@@ -124,8 +130,9 @@ public class TwaSplashController implements SplashDelegate {
         imageView.setScaleType(scaleType);
 
         if (scaleType != ImageView.ScaleType.MATRIX) return;
-        float[] matrixValues = IntentUtils.safeGetFloatArray(
-                params, SplashScreenParamKey.KEY_IMAGE_TRANSFORMATION_MATRIX);
+        float[] matrixValues =
+                IntentUtils.safeGetFloatArray(
+                        params, SplashScreenParamKey.KEY_IMAGE_TRANSFORMATION_MATRIX);
         if (matrixValues == null || matrixValues.length != 9) return;
         Matrix matrix = new Matrix();
         matrix.setValues(matrixValues);
@@ -136,12 +143,11 @@ public class TwaSplashController implements SplashDelegate {
         return mIntentDataProvider.getIntent().getBundleExtra(EXTRA_SPLASH_SCREEN_PARAMS);
     }
 
-    /**
-     * Returns true if the intent corresponds to a TWA with a splash screen.
-     */
+    /** Returns true if the intent corresponds to a TWA with a splash screen. */
     public static boolean intentIsForTwaWithSplashScreen(Intent intent) {
-        boolean isTrustedWebActivity = IntentUtils.safeGetBooleanExtra(
-                intent, TrustedWebUtils.EXTRA_LAUNCH_AS_TRUSTED_WEB_ACTIVITY, false);
+        boolean isTrustedWebActivity =
+                IntentUtils.safeGetBooleanExtra(
+                        intent, TrustedWebUtils.EXTRA_LAUNCH_AS_TRUSTED_WEB_ACTIVITY, false);
         boolean requestsSplashScreen =
                 IntentUtils.safeGetParcelableExtra(intent, EXTRA_SPLASH_SCREEN_PARAMS) != null;
         return isTrustedWebActivity && requestsSplashScreen;
@@ -156,8 +162,9 @@ public class TwaSplashController implements SplashDelegate {
     public static boolean handleIntent(Activity activity, Intent intent) {
         if (!intentIsForTwaWithSplashScreen(intent)) return false;
 
-        Bundle params = IntentUtils.safeGetBundleExtra(
-                intent, TrustedWebActivityIntentBuilder.EXTRA_SPLASH_SCREEN_PARAMS);
+        Bundle params =
+                IntentUtils.safeGetBundleExtra(
+                        intent, TrustedWebActivityIntentBuilder.EXTRA_SPLASH_SCREEN_PARAMS);
         boolean shownInClient = IntentUtils.safeGetBoolean(params, KEY_SHOWN_IN_CLIENT, true);
         // shownInClient is "true" by default for the following reasons:
         // - For compatibility with older clients which don't use this bundle key.

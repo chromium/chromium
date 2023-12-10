@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
+#include "chrome/browser/ui/page_info/chrome_page_info_ui_delegate.h"
 #include "chrome/browser/ui/search/ntp_test_utils.h"
 #include "chrome/browser/ui/singleton_tabs.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
@@ -262,8 +263,8 @@ Browser* BrowserNavigatorTest::NavigateHelper(const GURL& url,
     EXPECT_FALSE(expected_contents);
     expected_contents = browser->tab_strip_model()->GetActiveWebContents();
   }
-  absl::optional<content::CreateAndLoadWebContentsObserver> new_tab_observer;
-  absl::optional<content::LoadStopObserver> load_stop_observer;
+  std::optional<content::CreateAndLoadWebContentsObserver> new_tab_observer;
+  std::optional<content::LoadStopObserver> load_stop_observer;
   if (wait_for_navigation) {
     if (expected_contents)
       load_stop_observer.emplace(expected_contents);
@@ -645,6 +646,33 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
                   ->is_captive_portal_window());
 }
 #endif
+
+// This test verifies that navigating with WindowOpenDisposition = NEW_POPUP
+// and is_tab_modal_popup = true results in a new WebContents that is a popup
+// and behaves like a tab modal.
+IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, Disposition_NewPopupTabModal) {
+  NavigateParams params(MakeNavigateParams());
+  params.disposition = WindowOpenDisposition::NEW_POPUP;
+  params.is_tab_modal_popup = true;
+  params.window_features.bounds = gfx::Rect(0, 0, 200, 200);
+  // Wait for new popup to to load and gain focus.
+  ui_test_utils::NavigateToURL(&params);
+
+  // Add a new tab.
+  chrome::AddTabAt(browser(), GURL("about:blank"), -1, true);
+
+  // Switch to the new tab.
+  browser()->tab_strip_model()->ActivateTabAt(1);
+
+  // Verify the popup window is hidden.
+  EXPECT_FALSE(params.browser->window()->IsVisible());
+
+  // Switch back to the original tab.
+  browser()->tab_strip_model()->ActivateTabAt(0);
+
+  // Verify the popup window is visible again.
+  EXPECT_TRUE(params.browser->window()->IsVisible());
+}
 
 // This test verifies that navigating with WindowOpenDisposition = NEW_WINDOW
 // always opens a new window.
@@ -1539,6 +1567,35 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
             browser()->tab_strip_model()->GetActiveWebContents()->GetURL());
 }
 
+// TODO(crbug.com/1504185): Enable this test on Ash prior to the full
+// feature launch of File System Access Persistent Permissions.
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
+                       NavigateFromPageInfoToSiteSettingsFileSystemInNewTab) {
+  // Initial navigation.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetGoogleURL()));
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  // Simulate navigation event to the file system site settings subpage for the
+  // given URL.
+  ChromePageInfoUiDelegate delegate(web_contents,
+                                    web_contents->GetVisibleURL());
+  delegate.OpenSiteSettingsFileSystem();
+
+  content::WebContents* updated_web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::LoadStopObserver observer(updated_web_contents);
+  observer.Wait();
+
+  // The file system site settings page opens in a new tab.
+  EXPECT_EQ(2, browser()->tab_strip_model()->count());
+  EXPECT_EQ(
+      chrome::GetSettingsUrl(chrome::kFileSystemSubpage),
+      browser()->tab_strip_model()->GetActiveWebContents()->GetVisibleURL());
+}
+#endif
+
 IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
                        NavigateFromOtherTabToSingletonOptions) {
   {
@@ -2012,7 +2069,7 @@ class MockScreen : public display::ScreenBase {
   }
 
  private:
-  absl::optional<display::Display> display_nearest_window_;
+  std::optional<display::Display> display_nearest_window_;
 };
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 

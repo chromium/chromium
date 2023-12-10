@@ -120,6 +120,7 @@ source_set("base") {
     ":buildflags",
     ":logging",
     ":protobuf_http_client_messages_proto",
+    ":remoting_base_version",
     "//base/third_party/dynamic_annotations",
     "//build:chromeos_buildflags",
     "//google_apis",

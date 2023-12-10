@@ -16,6 +16,7 @@
 <translation id="1513122820609681462">Chromium ကို မူရင်းဘရောင်ဇာအဖြစ် သတ်မှတ်ရန်</translation>
 <translation id="1531155317299575425">Chromium သို့ လက်မှတ်ထိုးဝင်ရန် အတည်ပြုခြင်းစနစ်များ ပြသည်။</translation>
 <translation id="1591119736686995611">Chromium တဘ်ဇယားကွက် ဖွင့်ရန်။</translation>
+<translation id="1611584326765829247">Chromium အား သင့်ပက်ကေ့ဂျ်များကို ခြေရာခံခွင့်ပြုပါ</translation>
 <translation id="1617663976202781617">Chromium စင့်ခ်လုပ်ခြင်းမှ ဒေတာ</translation>
 <translation id="1647558790457890304">Chromium ဆက်တင်များ</translation>
 <translation id="164952285225495380">ဤပက်ကေ့ဂျ်ကို Chromium တွင် ခြေရာခံပြီးဖြစ်သည်။</translation>
@@ -87,6 +88,7 @@
 <translation id="4195557071150719219">Chromium လတ်တလော တဘ်များ ကြည့်ရန်</translation>
 <translation id="4408912345039114853">Chromium လုံခြုံရေး စစ်ဆေးမှု လုပ်ဆောင်ရန်</translation>
 <translation id="4432744876818348753">Chromium ကို အကောင်းဆုံးသုံးနိုင်ရန် လက်မှတ်ထိုးဝင်ပါ။</translation>
+<translation id="4498832288620833153">ထည့်သွင်းထားသော URL များကို Chromium ရှိ ဖတ်ရန် စာရင်းသို့ ထည့်ရန်။</translation>
 <translation id="452436063477828504">သင့် Google Account တွင် Chromium ဒေတာများ အမြဲသုံးနိုင်ကြောင်း သေချာပါစေ</translation>
 <translation id="4555020257205549924">ဤဝန်ဆောင်မှုကို ဖွင့်ထားသည့်အခါ Chromium သည် Google Translate အားအသုံးပြုပြီး အခြားဘာသာစကားများဖြင့် ရေးသားထားသည့် စာမျက်နှာများကို ဘာသာပြန်ဆိုရန် ကမ်းလှမ်းပါလိမ့်မည်။ <ph name="BEGIN_LINK" />ပိုမိုလေ့လာရန်<ph name="END_LINK" /></translation>
 <translation id="4576283463017113841">Chromium တွင် ငွေပေးချေနည်းလမ်း ဆက်တင်စာမျက်နှာ ဖွင့်ရန်။</translation>
@@ -107,6 +109,7 @@
 <translation id="5048795749726991615">အခြားအက်ပ်များတွင် သိမ်းထားသော သင်၏စကားဝှက်များ အလွယ်တကူရယူရန် ‘အော်တိုဖြည့်’ အတွက် Chromium သုံးပါ</translation>
 <translation id="5076601183701536878">Chromium ၌ ဖွင့်ကြည့်ထားသည့်မှတ်တမ်းဒေတာကို ရှင်းရန်</translation>
 <translation id="5131565040785979529">သင့်အဖွဲ့အစည်းဖြစ်သည့် <ph name="DOMAIN" /> သည် သင်လက်မှတ်ထိုးဝင်ထားသော အကောင့်နှင့် Chromium အား အသုံးပြုပုံကို စီမံခန့်ခွဲသည်။</translation>
+<translation id="5146749061471423558">Chromium တွင် Bookmarks ထည့်ရန်</translation>
 <translation id="5171868502429358653">Chromium တွင် လက်မှတ်ထိုးဝင်ရန်</translation>
 <translation id="5213683223491576284">Chromium တွင် Password Manager ဖွင့်သည်။</translation>
 <translation id="5224391634244552924">သိမ်းထားသော စကားဝှက် မရှိပါ။ သင်စကားဝှက်များကို သိမ်းသည့်အခါ Chromium က ၎င်းတို့ကို စစ်ဆေးနိုင်သည်။</translation>
@@ -114,6 +117,7 @@
 
         မထွက်မီ မိနစ်အနည်းငယ် စောင့်ပေးပါ။ ယခု ထွက်သွားပါက ဤဒေတာကို ဖျက်ပါမည်။</translation>
 <translation id="5308226104666789935">Chromium က အပ်ဒိတ်များကို စစ်ဆေး၍မရပါ</translation>
+<translation id="5311557153294205270">ထည့်သွင်းထားသော URL များကို Chromium ရှိ သင့်လိပ်စာများသို့ ထည့်ရန်။</translation>
 <translation id="5396916991083608703">Chromium ကို မူရင်းအဖြစ် သတ်မှတ်မလား။</translation>
 <translation id="5453478652154926037">Chromium သည် သင့်စကားဝှက်များကို စစ်ဆေး၍မရပါ။</translation>
 <translation id="5521125884468363740">Chromium အသုံးပြုသည့် နေရာမှန်သမျှမှ သင့်တဘ်များကိုကြည့်ရန် လက်မှတ်ထိုးဝင်ပြီး စင့်ခ်လုပ်ခြင်းကိုဖွင့်ပါ</translation>
@@ -165,7 +169,6 @@
 <translation id="6911341667534646387">သင့် Google Account တွင် Chromium ဒေတာများ ဆက်သုံးပါ</translation>
 <translation id="7006920032187763988">သင့် iPad ၏ အခြားအက်ပ်များရှိ ‘စကားဝှက်မန်နေဂျာ’ တွင် သိမ်းထားသော စကားဝှက်များကို သုံးနိုင်သည်။</translation>
 <translation id="7018284295775193585">Chromium က အပ်ဒိတ်မလုပ်နိုင်ပါ</translation>
-<translation id="7025471822960602362">Chromium တွက် တွေ့ရှိထားသည့် ပက်ကေ့ဂျ်များကို စောင့်ကြည့်ခြင်း</translation>
 <translation id="7045244423563602563">Chromium ကို သင့်စိတ်ကြိုက်ပြင်ဆင်လိုက်ပါ</translation>
 <translation id="7055269218854630176">သင့်အဖွဲ့အစည်းဖြစ်သည့် <ph name="DOMAIN" /> သည် သင်လက်မှတ်ထိုးဝင်နေသော အကောင့်နှင့် Chromium အား အသုံးပြုနိုင်ပုံကို စီမံခန့်ခွဲသည်။ သင့်စီမံခန့်ခွဲသူသည် အင်္ဂါရပ်အချို့ကို စနစ်ထည့်သွင်းခြင်း (သို့) ကန့်သတ်ခြင်း ပြုလုပ်နိုင်သည်။ှ</translation>
 <translation id="7099326575020694068">မျက်နှာပြင်ခွဲခြမ်းပြသသည့်မုဒ်တွင် Chromium သည် သင့်ကင်မရာကို အသုံးပြု၍ မရပါ</translation>
@@ -195,6 +198,7 @@
 <translation id="7928628054454574139">အခြားအက်ပ်များတွင် လင့်ခ်များကိုတို့ပြီး Chromium ကို အချိန်မရွေး ဖွင့်နိုင်သည်</translation>
 <translation id="7931842119211730154">Chrome ကို ပိတ်သည့်အခါ ရုပ်ဖျက်တဘ်များကို လော့ခ်ချရန်</translation>
 <translation id="7934404985878918282">‘Chromium ဖတ်ရန်စာရင်း‘ ကိုကြည့်ရန်</translation>
+<translation id="7971753607796745700">Chromium တွင် ဖတ်ရန် စာရင်းသို့ လင့်ခ်ထည့်ရန်</translation>
 <translation id="7980860476903281594">Chromium သည် သင်၏တည်နေရာကို သင်ခွင့်ပြုသော ဝဘ်ဆိုက်များအား မျှဝေသည်။</translation>
 <translation id="7995166854192397899">အကြံပြုချက်များကို သင်၏ အခြားစက်များရှိ ကြည့်ရှုခြင်းများပေါ် အခြေခံထားသည်။ အကြံပြုချက်များ ရယူရန် သင့်စက်အားလုံးတွင် Chromium သို့ လက်မှတ်ထိုးဝင်ပါ။</translation>
 <translation id="800195749539500647">Chromium ကို အကောင်းဆုံးအသုံးချပါ</translation>

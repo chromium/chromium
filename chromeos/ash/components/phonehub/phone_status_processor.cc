@@ -342,9 +342,9 @@ void PhoneStatusProcessor::SetReceivedPhoneStatusModelStates(
 }
 
 void PhoneStatusProcessor::MaybeSetPhoneModelName(
-    const absl::optional<multidevice::RemoteDeviceRef>& remote_device) {
+    const std::optional<multidevice::RemoteDeviceRef>& remote_device) {
   if (!remote_device.has_value()) {
-    phone_model_->SetPhoneName(absl::nullopt);
+    phone_model_->SetPhoneName(std::nullopt);
     return;
   }
 
@@ -387,7 +387,7 @@ void PhoneStatusProcessor::OnFeatureStatusChanged() {
   // Reset phone model instance when but still keep the phone's name.
   if (feature_status_provider_->GetStatus() !=
       FeatureStatus::kEnabledAndConnected) {
-    phone_model_->SetPhoneStatusModel(absl::nullopt);
+    phone_model_->SetPhoneStatusModel(std::nullopt);
     notification_processor_->ClearNotificationsAndPendingUpdates();
   }
 }
@@ -507,8 +507,8 @@ void PhoneStatusProcessor::GenerateAppListWithIcons(
     apps_list.emplace_back(Notification::AppMetadata(
         base::UTF8ToUTF16(app.visible_name()), app.package_name(),
         /* color_icon= */ image,
-        /* monochrome_icon_mask= */ absl::nullopt,
-        /* icon_color = */ absl::nullopt,
+        /* monochrome_icon_mask= */ std::nullopt,
+        /* icon_color = */ std::nullopt,
         /* icon_is_monochrome = */ false, app.user_id(),
         app.app_streamability_status()));
     std::string key = app.package_name() + base::NumberToString(app.user_id());

@@ -195,11 +195,11 @@ bool ChromeEnterpriseRealTimeUrlLookupService::ShouldIncludeCredentials()
   return false;
 }
 
-double ChromeEnterpriseRealTimeUrlLookupService::
+base::Time ChromeEnterpriseRealTimeUrlLookupService::
     GetMinAllowedTimestampForReferrerChains() const {
   // Enterprise URL lookup is enabled at startup and managed by the admin, so
   // all referrer URLs should be included in the referrer chain.
-  return 0;
+  return base::Time();
 }
 
 bool ChromeEnterpriseRealTimeUrlLookupService::CanSendRTSampleRequest() const {

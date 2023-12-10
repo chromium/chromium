@@ -118,7 +118,7 @@ void VirtualKeyboardController::UpdateDevices() {
     if ((type == ui::InputDeviceType::INPUT_DEVICE_USB ||
          (type == ui::InputDeviceType::INPUT_DEVICE_BLUETOOTH &&
           bluetooth_devices_observer_->IsConnectedBluetoothDevice(device))) &&
-        !device.suspected_imposter) {
+        !device.suspected_keyboard_imposter) {
       external_keyboards_.push_back(device);
     }
   }
@@ -191,7 +191,7 @@ void VirtualKeyboardController::OnBluetoothAdapterOrDeviceChanged(
   }
 }
 
-const absl::optional<std::string>&
+const std::optional<std::string>&
 VirtualKeyboardController::GetInternalKeyboardName() const {
   return internal_keyboard_name_;
 }

@@ -45,9 +45,7 @@ public class AccessorySheetCoordinator {
          */
         void onChangeAccessorySheet(int sheetIndex);
 
-        /**
-         * Called when the sheet needs to be hidden.
-         */
+        /** Called when the sheet needs to be hidden. */
         void onCloseAccessorySheet();
     }
 
@@ -58,7 +56,8 @@ public class AccessorySheetCoordinator {
      */
     public AccessorySheetCoordinator(
             AsyncViewStub sheetStub, SheetVisibilityDelegate sheetVisibilityDelegate) {
-        this(AsyncViewProvider.of(sheetStub, R.id.keyboard_accessory_sheet_container),
+        this(
+                AsyncViewProvider.of(sheetStub, R.id.keyboard_accessory_sheet_container),
                 sheetVisibilityDelegate);
     }
 
@@ -67,7 +66,8 @@ public class AccessorySheetCoordinator {
      * @param viewProvider A provider for the accessory.
      */
     @VisibleForTesting
-    AccessorySheetCoordinator(ViewProvider<AccessorySheetView> viewProvider,
+    AccessorySheetCoordinator(
+            ViewProvider<AccessorySheetView> viewProvider,
             SheetVisibilityDelegate sheetVisibilityDelegate) {
         PropertyModel model = AccessorySheetProperties.defaultPropertyModel().build();
 
@@ -125,18 +125,14 @@ public class AccessorySheetCoordinator {
         return mMediator.getHeight();
     }
 
-    /**
-     * Shows the Accessory Sheet.
-     */
+    /** Shows the Accessory Sheet. */
     public void show() {
         TraceEvent.begin("AccessorySheetCoordinator#show");
         mMediator.show();
         TraceEvent.end("AccessorySheetCoordinator#show");
     }
 
-    /**
-     * Hides the Accessory Sheet.
-     */
+    /** Hides the Accessory Sheet. */
     public void hide() {
         mMediator.hide();
     }

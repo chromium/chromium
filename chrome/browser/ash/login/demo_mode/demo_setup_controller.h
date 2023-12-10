@@ -240,6 +240,8 @@ class DemoSetupController
   void SetCrOSComponentLoadErrorForTest(
       component_updater::CrOSComponentManager::Error error);
 
+  void EnableLoadRealComponentsForTest();
+
  private:
   // Attempts to load the demo SWA and demo resources ChromeOS components  for
   // online enrollment and pass the results to OnDemoComponentsLoaded().
@@ -305,6 +307,8 @@ class DemoSetupController
 
   // The Demo Mode Resources ChromeOS Component downloaded for online Demo Mode.
   std::unique_ptr<DemoComponents> demo_components_;
+
+  bool load_real_components_for_test_ = false;
 
   base::WeakPtrFactory<DemoSetupController> weak_ptr_factory_{this};
 };

@@ -14,9 +14,7 @@ import org.jni_zero.NativeMethods;
 import org.chromium.url.GURL;
 import org.chromium.url.Origin;
 
-/**
- * Wrapper for utilities in url_formatter.
- */
+/** Wrapper for utilities in url_formatter. */
 @JNINamespace("url_formatter::android")
 public final class UrlFormatter {
     /**
@@ -237,14 +235,23 @@ public final class UrlFormatter {
     @NativeMethods
     public interface Natives {
         GURL fixupUrl(String url);
+
         String formatUrlForDisplayOmitScheme(String url);
+
         String formatUrlForDisplayOmitHTTPScheme(String url);
+
         String formatUrlForDisplayOmitSchemeOmitTrivialSubdomains(String url);
+
         String formatUrlForDisplayOmitSchemePathAndTrivialSubdomains(GURL url);
+
         String formatUrlForDisplayOmitUsernamePassword(String url);
+
         String formatUrlForCopy(String url);
+
         String formatUrlForSecurityDisplay(GURL url, @SchemeDisplay int schemeDisplay);
+
         String formatOriginForSecurityDisplay(Origin origin, @SchemeDisplay int schemeDisplay);
+
         String formatStringUrlForSecurityDisplay(String url, @SchemeDisplay int schemeDisplay);
     }
 }

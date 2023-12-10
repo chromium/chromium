@@ -6,7 +6,6 @@
 
 #include <memory>
 #include <optional>
-#include <string>
 #include <utility>
 
 #include "base/check_op.h"
@@ -14,35 +13,31 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
-#include "base/notreached.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller.h"
 #include "chrome/browser/ui/user_education/scoped_new_badge_tracker.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_cell_utils.h"
-#include "chrome/browser/ui/views/autofill/popup/popup_cell_view.h"
-#include "chrome/browser/ui/views/autofill/popup/popup_row_strategy.h"
+#include "chrome/browser/ui/views/autofill/popup/popup_row_content_view.h"
+#include "chrome/browser/ui/views/autofill/popup/popup_row_factory_utils.h"
+#include "chrome/browser/ui/views/autofill/popup/popup_row_with_button_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_view_utils.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_view_views.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/common/autofill_features.h"
-#include "components/compose/core/browser/compose_features.h"
-#include "components/feature_engagement/public/feature_list.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/events/event_handler.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/insets.h"
-#include "ui/gfx/geometry/insets_outsets_base.h"
 #include "ui/gfx/geometry/outsets_f.h"
+#include "ui/gfx/geometry/rect_f.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/layout/box_layout.h"
-#include "ui/views/metadata/type_conversion.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 
@@ -156,6 +151,9 @@ void PopupRowView::ExpandChildSuggestionsView::SetChecked(bool checked) {
                            /*send_native_event=*/true);
 }
 
+BEGIN_METADATA(PopupRowView, ExpandChildSuggestionsView, views::View)
+END_METADATA
+
 PopupRowView::ScopedNewBadgeTrackerWithAcceptAction::
     ScopedNewBadgeTrackerWithAcceptAction(
         std::unique_ptr<ScopedNewBadgeTracker> tracker,
@@ -180,69 +178,16 @@ void PopupRowView::ScopedNewBadgeTrackerWithAcceptAction::
   tracker_->ActionPerformed(action_name_);
 }
 
-// static
-std::unique_ptr<PopupRowView> PopupRowView::Create(PopupViewViews& popup_view,
-                                                   int line_number) {
-  base::WeakPtr<AutofillPopupController> controller = popup_view.controller();
-  CHECK(controller);
-
-  PopupItemId popup_item_id =
-      controller->GetSuggestionAt(line_number).popup_item_id;
-  std::optional<ScopedNewBadgeTrackerWithAcceptAction> new_badge_tracker;
-  std::unique_ptr<PopupRowStrategy> strategy;
-  switch (popup_item_id) {
-    // These `popup_item_id` should never be displayed in a `PopupRowView`.
-    case PopupItemId::kSeparator:
-    case PopupItemId::kMixedFormMessage:
-    case PopupItemId::kInsecureContextPaymentDisabledMessage:
-      NOTREACHED_NORETURN();
-    case PopupItemId::kUsernameEntry:
-    case PopupItemId::kPasswordEntry:
-    case PopupItemId::kAccountStorageUsernameEntry:
-    case PopupItemId::kAccountStoragePasswordEntry:
-      strategy = std::make_unique<PopupPasswordSuggestionStrategy>(controller,
-                                                                   line_number);
-      break;
-    case PopupItemId::kCompose: {
-      auto tracker = std::make_unique<ScopedNewBadgeTracker>(
-          controller->GetWebContents()->GetBrowserContext());
-      strategy = std::make_unique<PopupComposeSuggestionStrategy>(
-          controller, line_number,
-          tracker->TryShowNewBadge(
-              feature_engagement::kIPHComposeNewBadgeFeature,
-              &compose::features::kEnableCompose));
-      new_badge_tracker.emplace(std::move(tracker),
-                                /*action_name=*/"compose_activated");
-    } break;
-    default:
-      if (IsFooterPopupItemId(popup_item_id)) {
-        strategy =
-            std::make_unique<PopupFooterStrategy>(controller, line_number);
-      } else {
-        strategy =
-            std::make_unique<PopupSuggestionStrategy>(controller, line_number);
-      }
-      break;
-  }
-
-  return std::make_unique<PopupRowView>(
-      /*a11y_selection_delegate=*/popup_view, /*selection_delegate=*/popup_view,
-      controller, line_number, strategy->CreateContent(),
-      std::move(new_badge_tracker));
-}
-
 PopupRowView::PopupRowView(
     AccessibilitySelectionDelegate& a11y_selection_delegate,
     SelectionDelegate& selection_delegate,
     base::WeakPtr<AutofillPopupController> controller,
     int line_number,
-    std::unique_ptr<PopupCellView> content_view,
-    std::optional<ScopedNewBadgeTrackerWithAcceptAction> new_badge_tracker)
+    std::unique_ptr<PopupRowContentView> content_view)
     : a11y_selection_delegate_(a11y_selection_delegate),
       selection_delegate_(selection_delegate),
       controller_(controller),
       line_number_(line_number),
-      new_badge_tracker_(std::move(new_badge_tracker)),
       should_ignore_mouse_observed_outside_item_bounds_check_(
           controller &&
           controller->ShouldIgnoreMouseObservedOutsideItemBoundsCheck()) {
@@ -281,7 +226,7 @@ PopupRowView::PopupRowView(
             this, type),
         /*exit_callback=*/base::BindRepeating(
             &SelectionDelegate::SetSelectedCell,
-            base::Unretained(&selection_delegate), absl::nullopt,
+            base::Unretained(&selection_delegate), std::nullopt,
             PopupCellSelectionSource::kMouse));
     // Setting this handler on the cell view removes its original event handler
     // (i.e. overridden methods like OnMouse*). Make sure the root view doesn't
@@ -383,17 +328,17 @@ void PopupRowView::OnViewFocused(views::View* view) {
       PopupCellSelectionSource::kKeyboard);
 }
 
-void PopupRowView::SetSelectedCell(absl::optional<CellType> new_cell) {
+void PopupRowView::SetSelectedCell(std::optional<CellType> new_cell) {
   if (new_cell == selected_cell_) {
     return;
   }
 
   // If the previous cell was content, set it as unselected.
   if (selected_cell_ == CellType::kContent) {
-    content_view_->SetSelected(false);
+    content_view_->UpdateStyle(/*selected=*/false);
     content_view_->GetViewAccessibility().OverrideIsSelected(false);
     if (controller_) {
-      controller_->SelectSuggestion(absl::nullopt);
+      controller_->SelectSuggestion(std::nullopt);
     }
   }
 
@@ -401,7 +346,7 @@ void PopupRowView::SetSelectedCell(absl::optional<CellType> new_cell) {
     if (controller_) {
       controller_->SelectSuggestion(line_number_);
     }
-    content_view_->SetSelected(true);
+    content_view_->UpdateStyle(/*selected=*/true);
     content_view_->GetViewAccessibility().OverrideIsSelected(true);
     GetA11ySelectionDelegate().NotifyAXSelection(*content_view_);
     NotifyAccessibilityEvent(ax::mojom::Event::kSelectedChildrenChanged, true);
@@ -415,8 +360,8 @@ void PopupRowView::SetSelectedCell(absl::optional<CellType> new_cell) {
   } else {
     // Set the selected cell to none in case an invalid choice was made (e.g.
     // selecting a control cell when none exists) or the cell was reset
-    // explicitly with `absl::nullopt`.
-    selected_cell_ = absl::nullopt;
+    // explicitly with `std::nullopt`.
+    selected_cell_ = std::nullopt;
   }
 
   UpdateBackground();
@@ -454,13 +399,6 @@ bool PopupRowView::HandleKeyPressEvent(
     const content::NativeWebKeyboardEvent& event) {
   // Some cells may want to define their own behavior.
   CHECK(GetSelectedCell());
-
-  // TODO(1491373): Temporary left over for PopupCellWithButtonView, remove when
-  // it gets reworked as a row.
-  if (*GetSelectedCell() == CellType::kContent &&
-      content_view_->HandleKeyPressEvent(event)) {
-    return true;
-  }
 
   switch (event.windows_key_code) {
     case ui::VKEY_RETURN:
@@ -507,8 +445,8 @@ void PopupRowView::UpdateBackground() {
                               views::Emphasis::kMedium)));
 }
 
-BEGIN_METADATA(PopupRowView, views::View)
-ADD_PROPERTY_METADATA(absl::optional<PopupRowView::CellType>, SelectedCell)
+BEGIN_METADATA(PopupRowView)
+ADD_PROPERTY_METADATA(std::optional<PopupRowView::CellType>, SelectedCell)
 END_METADATA
 
 }  // namespace autofill

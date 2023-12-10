@@ -4,9 +4,11 @@
 
 #include "chrome/browser/hid/hid_chooser_context.h"
 
+#include <set>
 #include <utility>
 
 #include "base/containers/contains.h"
+#include "base/containers/map_util.h"
 #include "base/observer_list.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -431,23 +433,24 @@ void HidChooserContext::RevokeEphemeralDevicePermission(
     const url::Origin& origin,
     const device::mojom::HidDeviceInfo& device) {
   auto it = ephemeral_devices_.find(origin);
-  if (it != ephemeral_devices_.end()) {
-    std::set<std::string>& devices = it->second;
-    for (auto guid = devices.begin(); guid != devices.end();) {
-      auto device_it = devices_.find(*guid);
-      if (device_it == devices_.end()) {
-        continue;
-      }
-      if (device_it->second->physical_device_id != device.physical_device_id) {
-        ++guid;
-        continue;
-      }
+  if (it == ephemeral_devices_.end()) {
+    return;
+  }
 
-      guid = devices.erase(guid);
-      if (devices.empty())
-        ephemeral_devices_.erase(it);
-      NotifyPermissionRevoked(origin);
-    }
+  std::set<std::string>& device_guids = it->second;
+  bool revoked_permission =
+      std::erase_if(device_guids, [&](const auto& guid) {
+        auto* device_ptr = base::FindPtrOrNull(devices_, guid);
+        return device_ptr &&
+               device_ptr->physical_device_id == device.physical_device_id;
+      }) > 0;
+
+  if (device_guids.empty()) {
+    ephemeral_devices_.erase(it);
+  }
+
+  if (revoked_permission) {
+    NotifyPermissionRevoked(origin);
   }
 }
 

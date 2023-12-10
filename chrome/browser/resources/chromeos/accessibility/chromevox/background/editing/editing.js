@@ -628,7 +628,7 @@ export class AutomationRichEditableText extends AutomationEditableText {
   changed(evt) {
     // This path does not use the Output module to synthesize speech.
     Output.forceModeForNextSpeechUtterance(undefined);
-    ChromeVoxEditableTextBase.prototype.changed.call(this, evt);
+    AutomationEditableText.prototype.changed.call(this, evt);
   }
 
   /**
@@ -685,9 +685,16 @@ export class AutomationRichEditableText extends AutomationEditableText {
  * table output when over email or url text fields.
  * @implements {ChromeVoxRangeObserver}
  */
-class EditingRangeObserver {
+export class EditingRangeObserver {
   constructor() {
     ChromeVoxState.ready().then(() => ChromeVoxRange.addObserver(this));
+  }
+
+  static init() {
+    if (EditingRangeObserver.instance) {
+      throw new Error('Cannot call EditingRangeObserver.init more than once');
+    }
+    EditingRangeObserver.instance = new EditingRangeObserver();
   }
 
   /**
@@ -708,4 +715,4 @@ class EditingRangeObserver {
 }
 
 /** @type {ChromeVoxRangeObserver} */
-EditingRangeObserver.instance = new EditingRangeObserver();
+EditingRangeObserver.instance;

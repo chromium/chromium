@@ -58,10 +58,6 @@ bool UsageReportsBufferBackend::Init() {
   }
   CHECK(db_);
 
-  UMA_HISTOGRAM_COUNTS_1M(
-      "Search.HistoryReport.UsageReportsBuffer.LevelDBEntries",
-      usage_report_util::DatabaseEntries(db_.get()));
-
   return true;
 }
 

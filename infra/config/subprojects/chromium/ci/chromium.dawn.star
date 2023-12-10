@@ -9,6 +9,7 @@ load("//lib/builder_health_indicators.star", "health_spec")
 load("//lib/builders.star", "reclient", "sheriff_rotations")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
+load("//lib/gn_args.star", "gn_args")
 
 ci.defaults.set(
     executable = ci.DEFAULT_EXECUTABLE,
@@ -67,6 +68,14 @@ ci.gpu.linux_builder(
         build_gs_bucket = "chromium-dawn-archive",
         run_tests_serially = True,
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "dawn_enable_opengles",
+            "release_try_builder",
+            "minimal_symbols",
+            "reclient",
+        ],
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "ToT|Linux|Builder",
         short_name = "x64",
@@ -94,6 +103,14 @@ ci.gpu.linux_builder(
         build_gs_bucket = "chromium-dawn-archive",
         run_tests_serially = True,
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "dawn_enable_opengles",
+            "release_try_builder",
+            "minimal_symbols",
+            "reclient",
+        ],
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "DEPS|Linux|Builder",
         short_name = "x64",
@@ -119,6 +136,14 @@ ci.gpu.linux_builder(
         ),
         build_gs_bucket = "chromium-dawn-archive",
         run_tests_serially = True,
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "android_builder",
+            "release_try_builder",
+            "minimal_symbols",
+            "reclient",
+        ],
     ),
     console_view_entry = consoles.console_view_entry(
         category = "DEPS|Android|Builder",
@@ -199,6 +224,15 @@ ci.gpu.linux_builder(
         ),
         build_gs_bucket = "chromium-dawn-archive",
         run_tests_serially = True,
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "android_builder",
+            "arm64",
+            "release_try_builder",
+            "minimal_symbols",
+            "reclient",
+        ],
     ),
     console_view_entry = consoles.console_view_entry(
         category = "DEPS|Android",
@@ -284,6 +318,15 @@ ci.gpu.linux_builder(
         build_gs_bucket = "chromium-dawn-archive",
         run_tests_serially = True,
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "dawn_enable_opengles",
+            "tsan",
+            "release_try_builder",
+            "minimal_symbols",
+            "reclient",
+        ],
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "ToT|Linux|TSAN",
         short_name = "x64",
@@ -313,6 +356,14 @@ ci.gpu.linux_builder(
         ),
         build_gs_bucket = "chromium-dawn-archive",
         run_tests_serially = True,
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "android_builder",
+            "release_try_builder",
+            "minimal_symbols",
+            "reclient",
+        ],
     ),
     console_view_entry = consoles.console_view_entry(
         category = "ToT|Android|Builder",
@@ -397,6 +448,15 @@ ci.gpu.linux_builder(
         build_gs_bucket = "chromium-dawn-archive",
         run_tests_serially = True,
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "android_builder",
+            "arm64",
+            "release_try_builder",
+            "minimal_symbols",
+            "reclient",
+        ],
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "ToT|Android",
         short_name = "p6",
@@ -458,6 +518,7 @@ ci.thin_tester(
 
 ci.gpu.mac_builder(
     name = "Dawn Mac arm64 DEPS Release (Apple M2)",
+    branch_selector = branches.selector.MAC_BRANCHES,
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -474,6 +535,15 @@ ci.gpu.mac_builder(
         ),
         build_gs_bucket = "chromium-dawn-archive",
         run_tests_serially = True,
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "dawn_enable_opengles",
+            "release_try_builder",
+            "minimal_symbols",
+            "reclient",
+            "arm64",
+        ],
     ),
     console_view_entry = consoles.console_view_entry(
         category = "DEPS|Mac",
@@ -503,6 +573,15 @@ ci.gpu.mac_builder(
         build_gs_bucket = "chromium-dawn-archive",
         run_tests_serially = True,
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "dawn_enable_opengles",
+            "release_try_builder",
+            "minimal_symbols",
+            "reclient",
+            "arm64",
+        ],
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "ToT|Mac",
         short_name = "arm64",
@@ -524,11 +603,21 @@ ci.gpu.mac_builder(
                 "mb",
             ],
             build_config = builder_config.build_config.RELEASE,
+            target_arch = builder_config.target_arch.INTEL,
             target_bits = 64,
             target_platform = builder_config.target_platform.MAC,
         ),
         build_gs_bucket = "chromium-dawn-archive",
         run_tests_serially = True,
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "dawn_enable_opengles",
+            "release_try_builder",
+            "minimal_symbols",
+            "reclient",
+            "x64",
+        ],
     ),
     console_view_entry = consoles.console_view_entry(
         category = "ToT|Mac|Builder",
@@ -549,11 +638,21 @@ ci.gpu.mac_builder(
                 "mb",
             ],
             build_config = builder_config.build_config.RELEASE,
+            target_arch = builder_config.target_arch.INTEL,
             target_bits = 64,
             target_platform = builder_config.target_platform.MAC,
         ),
         build_gs_bucket = "chromium-dawn-archive",
         run_tests_serially = True,
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "dawn_enable_opengles",
+            "release_try_builder",
+            "minimal_symbols",
+            "reclient",
+            "x64",
+        ],
     ),
     console_view_entry = consoles.console_view_entry(
         category = "DEPS|Mac|Builder",
@@ -579,6 +678,7 @@ ci.thin_tester(
                 "mb",
             ],
             build_config = builder_config.build_config.RELEASE,
+            target_arch = builder_config.target_arch.INTEL,
             target_bits = 64,
             target_platform = builder_config.target_platform.MAC,
         ),
@@ -607,6 +707,7 @@ ci.thin_tester(
                 "mb",
             ],
             build_config = builder_config.build_config.RELEASE,
+            target_arch = builder_config.target_arch.INTEL,
             target_bits = 64,
             target_platform = builder_config.target_platform.MAC,
         ),
@@ -634,6 +735,7 @@ ci.thin_tester(
                 "mb",
             ],
             build_config = builder_config.build_config.RELEASE,
+            target_arch = builder_config.target_arch.INTEL,
             target_bits = 64,
             target_platform = builder_config.target_platform.MAC,
         ),
@@ -662,6 +764,7 @@ ci.thin_tester(
                 "mb",
             ],
             build_config = builder_config.build_config.RELEASE,
+            target_arch = builder_config.target_arch.INTEL,
             target_bits = 64,
             target_platform = builder_config.target_platform.MAC,
         ),
@@ -690,6 +793,7 @@ ci.thin_tester(
                 "mb",
             ],
             build_config = builder_config.build_config.RELEASE,
+            target_arch = builder_config.target_arch.INTEL,
             target_bits = 64,
             target_platform = builder_config.target_platform.MAC,
         ),
@@ -716,6 +820,7 @@ ci.thin_tester(
                 "mb",
             ],
             build_config = builder_config.build_config.RELEASE,
+            target_arch = builder_config.target_arch.INTEL,
             target_bits = 64,
             target_platform = builder_config.target_platform.MAC,
         ),
@@ -749,6 +854,16 @@ ci.gpu.windows_builder(
             target_platform = builder_config.target_platform.WIN,
         ),
         build_gs_bucket = "chromium-dawn-archive",
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "dawn_use_built_dxc",
+            "dawn_enable_opengles",
+            "asan",
+            "release_try_builder",
+            "minimal_symbols",
+            "reclient",
+        ],
     ),
     console_view_entry = consoles.console_view_entry(
         category = "ToT|Windows|ASAN|Builder",
@@ -842,6 +957,15 @@ ci.gpu.windows_builder(
         build_gs_bucket = "chromium-dawn-archive",
         run_tests_serially = True,
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "dawn_use_built_dxc",
+            "dawn_enable_opengles",
+            "release_try_builder",
+            "minimal_symbols",
+            "reclient",
+        ],
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "ToT|Windows|Builder",
         short_name = "x64",
@@ -867,6 +991,15 @@ ci.gpu.windows_builder(
         ),
         build_gs_bucket = "chromium-dawn-archive",
         run_tests_serially = True,
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "dawn_use_built_dxc",
+            "dawn_enable_opengles",
+            "release_try_builder",
+            "minimal_symbols",
+            "reclient",
+        ],
     ),
     console_view_entry = consoles.console_view_entry(
         category = "DEPS|Windows|Builder",
@@ -1035,6 +1168,15 @@ ci.gpu.windows_builder(
         build_gs_bucket = "chromium-dawn-archive",
         run_tests_serially = True,
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "dawn_enable_opengles",
+            "release_try_builder",
+            "minimal_symbols",
+            "reclient",
+            "x86",
+        ],
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "ToT|Windows|Builder",
         short_name = "x86",
@@ -1060,6 +1202,15 @@ ci.gpu.windows_builder(
         ),
         build_gs_bucket = "chromium-dawn-archive",
         run_tests_serially = True,
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "dawn_enable_opengles",
+            "release_try_builder",
+            "minimal_symbols",
+            "reclient",
+            "x86",
+        ],
     ),
     console_view_entry = consoles.console_view_entry(
         category = "DEPS|Windows|Builder",

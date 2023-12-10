@@ -40,8 +40,11 @@ public abstract class PictureInPicture {
         try (TraceEvent e = TraceEvent.scoped("PictureInPicture::isEnabled")) {
             final AppOpsManager appOpsManager =
                     (AppOpsManager) context.getSystemService(Context.APP_OPS_SERVICE);
-            final int status = appOpsManager.checkOpNoThrow(AppOpsManager.OPSTR_PICTURE_IN_PICTURE,
-                    context.getApplicationInfo().uid, context.getPackageName());
+            final int status =
+                    appOpsManager.checkOpNoThrow(
+                            AppOpsManager.OPSTR_PICTURE_IN_PICTURE,
+                            context.getApplicationInfo().uid,
+                            context.getPackageName());
 
             return (status == AppOpsManager.MODE_ALLOWED);
         }

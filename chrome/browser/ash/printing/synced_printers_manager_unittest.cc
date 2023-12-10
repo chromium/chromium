@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/debug/dump_without_crashing.h"
@@ -25,7 +26,6 @@
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 

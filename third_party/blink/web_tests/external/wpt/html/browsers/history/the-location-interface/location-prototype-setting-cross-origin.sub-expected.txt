@@ -1,14 +1,10 @@
 This is a testharness.js-based test.
-[PASS] Cross-origin: the prototype is null
 [FAIL] Cross-origin: setting the prototype to an empty object via Object.setPrototypeOf should throw a TypeError
   assert_throws_js: function "() => {\n      Object.setPrototypeOf(target, newValue);\n    }" threw object "SecurityError: Blocked a frame with origin "http://web-platform.test:8001" from accessing a cross-origin frame." ("SecurityError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
-[PASS] Cross-origin: setting the prototype to an empty object via __proto__ should throw a "SecurityError" DOMException
 [FAIL] Cross-origin: setting the prototype to an empty object via Reflect.setPrototypeOf should return false
   Blocked a frame with origin "http://web-platform.test:8001" from accessing a cross-origin frame.
-[PASS] Cross-origin: the prototype must still be null
 [FAIL] Cross-origin: setting the prototype to null via Object.setPrototypeOf should not throw
   Blocked a frame with origin "http://web-platform.test:8001" from accessing a cross-origin frame.
-[PASS] Cross-origin: setting the prototype to null via __proto__ should throw a "SecurityError" since it ends up in CrossOriginGetOwnProperty
 [FAIL] Cross-origin: setting the prototype to null via Reflect.setPrototypeOf should return true
   Blocked a frame with origin "http://web-platform.test:8001" from accessing a cross-origin frame.
 Harness: the test ran to completion.

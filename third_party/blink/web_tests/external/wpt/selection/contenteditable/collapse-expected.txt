@@ -1,5 +1,4 @@
 This is a testharness.js-based test.
-[PASS] Selection.collapse() must succeed across siblings
 [FAIL] Selection.collapse() must succeed for the ancestor
   assert_equals: expected Element node <div contenteditable="" id="host3">\n  <div contenteditabl... but got Element node <div contenteditable="" id="host4"></div>
 [FAIL] Selection.collapse() must succeed for the descendant

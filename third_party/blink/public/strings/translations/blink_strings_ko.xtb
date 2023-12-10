@@ -30,6 +30,7 @@
 <translation id="2226276347425096477">이 텍스트를 <ph name="MAX_CHARACTERS" />자 이하로 줄이세요(현재 <ph name="CURRENT_LENGTH" />자 사용 중).</translation>
 <translation id="2247351761944213033"><ph name="YEAR" />, <ph name="WEEKNUMBER" />번째 주</translation>
 <translation id="2277199496770840904"><ph name="NUMBER" />번 트랙</translation>
+<translation id="2353297238722298836">카메라 및 마이크 허용됨</translation>
 <translation id="2393030564806080191">16진수 색상 값</translation>
 <translation id="2398813069815436052">대화상자가 열렸습니다.</translation>
 <translation id="245932805758469625">동영상 남은 시간</translation>
@@ -60,10 +61,12 @@
 <translation id="3822383571486410024">이 텍스트를 <ph name="MIN_CHARACTERS" />자 이상으로 늘리세요(현재 <ph name="CURRENT_LENGTH" />자 사용 중).</translation>
 <translation id="383465348367842624">'<ph name="ATSIGN" />' 앞 부분에 '<ph name="INVALIDCHARACTER" />' 기호가 포함되면 안됩니다.</translation>
 <translation id="3846214748874656680">전체화면 종료</translation>
+<translation id="4031179711345676612">마이크 허용됨</translation>
 <translation id="4103419683916926126">밀리초</translation>
 <translation id="4201051445878709314">이전 달 표시</translation>
 <translation id="4360991593054037559">유효한 값을 입력해 주세요. 가장 근접한 유효 값 2개는 <ph name="VALID_VALUE_LOW" /> 및 <ph name="VALID_VALUE_HIGHER" />입니다.</translation>
 <translation id="4522570452068850558">세부정보</translation>
+<translation id="4663373278480897665">카메라 허용됨</translation>
 <translation id="4664250907885839816">'<ph name="ATSIGN" />' 다음 부분에 '<ph name="INVALIDCHARACTER" />' 기호가 포함되면 안됩니다.</translation>
 <translation id="4718048029184481307">PIP 모드에서 재생</translation>
 <translation id="4748357248530471599">디스플레이 컷아웃을 전체화면으로 전환</translation>
@@ -137,6 +140,7 @@
 <translation id="6941933287844615239">미디어 다운로드</translation>
 <translation id="698788488269350478">펼쳐졌습니다.</translation>
 <translation id="6989848892321993519">이 텍스트를 <ph name="MIN_CHARACTERS" />자 이상으로 늘리세요(현재 1자 사용 중).</translation>
+<translation id="7080893216867146095">위치 공유 허용됨</translation>
 <translation id="709897737746224366">요청한 형식과 일치시키세요.</translation>
 <translation id="7102274145889307184">현재 위치</translation>
 <translation id="7263440858009898357">목록에서 항목을 선택하세요.</translation>

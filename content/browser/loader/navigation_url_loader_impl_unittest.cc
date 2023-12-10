@@ -139,8 +139,7 @@ class TestNavigationLoaderInterceptor : public NavigationLoaderInterceptor {
       mojo::PendingRemote<network::mojom::URLLoader>* loader,
       mojo::PendingReceiver<network::mojom::URLLoaderClient>* client_receiver,
       blink::ThrottlingURLLoader* url_loader,
-      bool* skip_other_interceptors,
-      bool* will_return_unsafe_redirect) override {
+      bool* skip_other_interceptors) override {
     return false;
   }
 
@@ -216,7 +215,8 @@ class NavigationURLLoaderImplTest : public testing::Test {
       blink::NavigationDownloadPolicy download_policy =
           blink::NavigationDownloadPolicy(),
       bool is_main_frame = true,
-      bool upgrade_if_insecure = false) {
+      bool upgrade_if_insecure = false,
+      bool is_ad_tagged = false) {
     // NavigationURLLoader assumes that the corresponding FrameTreeNode has an
     // associated NavigationRequest.
     pending_navigation_ = NavigationSimulator::CreateBrowserInitiated(
@@ -283,7 +283,8 @@ class NavigationURLLoaderImplTest : public testing::Test {
             GlobalRenderFrameHostId() /* previous_render_frame_host_id */,
             nullptr /* serving_page_metrics_container */,
             false /* allow_cookies_from_browser */, 0 /* navigation_id */,
-            false /* shared_storage_writable */));
+            false /* shared_storage_writable */,
+            is_ad_tagged /* is_ad_tagged */));
     std::vector<std::unique_ptr<NavigationLoaderInterceptor>> interceptors;
     most_recent_resource_request_ = absl::nullopt;
     interceptors.push_back(std::make_unique<TestNavigationLoaderInterceptor>(
@@ -682,6 +683,24 @@ TEST_F(NavigationURLLoaderImplTest, OnAcceptCHFrameReceivedUKM) {
                 i);
     }
   }
+}
+
+TEST_F(NavigationURLLoaderImplTest, AdTaggedNavigation) {
+  ASSERT_TRUE(http_test_server_.Start());
+
+  const GURL redirect_url = http_test_server_.GetURL("/foo");
+
+  TestNavigationURLLoaderDelegate delegate;
+  std::unique_ptr<NavigationURLLoader> loader = CreateTestLoader(
+      redirect_url, "", "GET", &delegate, blink::NavigationDownloadPolicy(),
+      /*is_main_frame=*/true,
+      /*upgrade_if_insecure=*/false,
+      /*is_ad_tagged=*/true);
+  loader->Start();
+  delegate.WaitForResponseStarted();
+
+  ASSERT_TRUE(most_recent_resource_request_);
+  EXPECT_TRUE(most_recent_resource_request_->is_ad_tagged);
 }
 
 }  // namespace content

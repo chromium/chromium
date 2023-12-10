@@ -8,6 +8,7 @@
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
 #include "components/global_media_controls/public/constants.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/layout/fill_layout.h"
 
 namespace ash {
@@ -41,5 +42,8 @@ int QuickSettingsMediaViewContainer::GetExpandedHeight() const {
 gfx::Size QuickSettingsMediaViewContainer::CalculatePreferredSize() const {
   return gfx::Size(kTrayMenuWidth, GetExpandedHeight());
 }
+
+BEGIN_METADATA(QuickSettingsMediaViewContainer)
+END_METADATA
 
 }  // namespace ash

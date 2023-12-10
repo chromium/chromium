@@ -1,6 +1,9 @@
 {
   "$build/chromium_tests_builder_config": {
     "builder_config": {
+      "additional_exclusions": [
+        "infra/config/generated/builders/ci/GPU Win x64 Builder/gn-args.json"
+      ],
       "builder_db": {
         "entries": [
           {
@@ -81,10 +84,6 @@
       "mirroring_builder_group_and_names": [
         {
           "builder": "win-rel",
-          "group": "tryserver.chromium.win"
-        },
-        {
-          "builder": "win-siso-rel",
           "group": "tryserver.chromium.win"
         }
       ]

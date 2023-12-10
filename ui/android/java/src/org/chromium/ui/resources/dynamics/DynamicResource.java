@@ -28,8 +28,6 @@ public interface DynamicResource {
      */
     void addOnResourceReadyCallback(Callback<Resource> onResourceReady);
 
-    /**
-     * Removes a resource ready callback to stop listening for updates to the resource.
-     */
+    /** Removes a resource ready callback to stop listening for updates to the resource. */
     void removeOnResourceReadyCallback(Callback<Resource> onResourceReady);
 }

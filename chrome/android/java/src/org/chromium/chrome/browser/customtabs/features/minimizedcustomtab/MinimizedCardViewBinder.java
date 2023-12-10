@@ -19,9 +19,7 @@ import org.chromium.ui.UiUtils;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
-/**
- * View binder for the minimized card.
- */
+/** View binder for the minimized card. */
 public class MinimizedCardViewBinder {
     public static void bind(PropertyModel model, View view, PropertyKey key) {
         if (TITLE == key) {

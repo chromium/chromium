@@ -35,10 +35,10 @@ std::string GetTimeOfFirstInteractionPrefName(
                        ".first_time"});
 }
 
-absl::optional<base::Time> GetTimePrefIfSet(PrefService* prefs,
-                                            const char* pref_name) {
+std::optional<base::Time> GetTimePrefIfSet(PrefService* prefs,
+                                           const char* pref_name) {
   auto* pref = prefs->FindPreference(pref_name);
-  return pref->IsDefaultValue() ? absl::nullopt
+  return pref->IsDefaultValue() ? std::nullopt
                                 : base::ValueToTime(pref->GetValue());
 }
 
@@ -46,17 +46,17 @@ absl::optional<base::Time> GetTimePrefIfSet(PrefService* prefs,
 
 // Utilities -------------------------------------------------------------------
 
-absl::optional<base::Time> GetTimeOfFirstTourCompletion(PrefService* prefs) {
+std::optional<base::Time> GetTimeOfFirstTourCompletion(PrefService* prefs) {
   CHECK(features::IsWelcomeTourEnabled());
   return GetTimePrefIfSet(prefs, kTimeOfFirstTourCompletion);
 }
 
-absl::optional<base::Time> GetTimeOfFirstTourPrevention(PrefService* prefs) {
+std::optional<base::Time> GetTimeOfFirstTourPrevention(PrefService* prefs) {
   CHECK(features::IsWelcomeTourEnabled());
   return GetTimePrefIfSet(prefs, kTimeOfFirstTourPrevention);
 }
 
-absl::optional<welcome_tour_metrics::PreventedReason>
+std::optional<welcome_tour_metrics::PreventedReason>
 GetReasonForFirstTourPrevention(PrefService* prefs) {
   using welcome_tour_metrics::PreventedReason;
 
@@ -64,7 +64,7 @@ GetReasonForFirstTourPrevention(PrefService* prefs) {
 
   auto* pref = prefs->FindPreference(kReasonForFirstTourPrevention);
   if (!pref || pref->IsDefaultValue() || !pref->GetValue()->is_int()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   auto reason = static_cast<PreventedReason>(pref->GetValue()->GetInt());

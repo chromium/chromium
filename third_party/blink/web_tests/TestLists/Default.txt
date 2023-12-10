@@ -77,8 +77,6 @@ dom/document_type/previous-element-sibling.html
 dom/document_type/remove.html
 dom/domparsing/domparser-assign-variable.html
 dom/domparsing/xhtml-serialize.html
-dom/legacy_dom_conformance/svg/level3/xpath/XPathResult_booleanValue_false.svg
-dom/legacy_dom_conformance/xhtml/level1/core/hc_elementgettagname.xhtml
 dom/node/normalize-with-cdata.html
 dom/parent_node/append.html
 dom/text/normalize-crash-in-spell-checker.html
@@ -830,7 +828,6 @@ paint/roundedrects/degenerate-radius-assert.html
 paint/selection/selection-drag-image-in-iframe.html
 payments/payment-request-in-iframe-allowed.html
 permissionclient/storage-permission.html
-plugins/instance-available-before-stylesheets-loaded.html
 pointer-lock/lock-already-locked.html
 pointer-lock/mouse-event-api.html
 pointer-lock/pointerlockelement-null-when-pending.html

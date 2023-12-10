@@ -10,9 +10,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Maintains the pagination info for the group cards to be shown.
- */
+/** Maintains the pagination info for the group cards to be shown. */
 public class CardPaginator {
     private static final int ITEM_COUNT_PER_PAGE = 3;
 
@@ -53,16 +51,15 @@ public class CardPaginator {
         return ITEM_COUNT_PER_PAGE;
     }
 
-    /**
-     * Called to reset the item count on the card.
-     */
+    /** Called to reset the item count on the card. */
     public void reset() {
         mPageCountForCard.clear();
     }
 
     /** @return The number of pages currently being displayed. Default is 1.*/
     private int getCurrentPageCount(Pair<Date, String> dateAndDomain) {
-        return mPageCountForCard.containsKey(dateAndDomain) ? mPageCountForCard.get(dateAndDomain)
-                                                            : 1;
+        return mPageCountForCard.containsKey(dateAndDomain)
+                ? mPageCountForCard.get(dateAndDomain)
+                : 1;
     }
 }

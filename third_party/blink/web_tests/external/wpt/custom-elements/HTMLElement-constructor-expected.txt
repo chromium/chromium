@@ -1,12 +1,4 @@
 This is a testharness.js-based test.
-[PASS] HTMLElement constructor must throw a TypeError when NewTarget is equal to itself
-[PASS] HTMLElement constructor must throw a TypeError when NewTarget is equal to itself via a Proxy object
-[PASS] HTMLElement constructor must throw TypeError when it has not been defined by customElements.define
-[PASS] Custom element constructor must throw TypeError when it does not extend HTMLElement
-[PASS] Custom element constructor must throw TypeError when it does not extend the proper element interface
-[PASS] HTMLElement constructor must infer the tag name from the element interface
-[PASS] HTMLElement constructor must allow subclassing a custom element
-[PASS] HTMLElement constructor must allow subclassing an user-defined subclass of HTMLElement
 [FAIL] HTMLElement constructor must only get .prototype once, calling proxy constructor directly
   assert_equals: Should have gotten .prototype once expected 1 but got 2
 [FAIL] HTMLElement constructor must only get .prototype once, calling proxy constructor via Reflect

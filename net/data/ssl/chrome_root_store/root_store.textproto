@@ -8,7 +8,7 @@
 
 # Version # should always be incremented up whenever this (or any pem file that
 # it references) is changed.
-version_major: 12
+version_major: 14
 
 # CN=Actalis Authentication Root CA, O=Actalis S.p.A./03358520967, L=Milan, C=IT
 # https://ssltest-a.actalis.it:8443
@@ -28,13 +28,6 @@ trust_anchors {
 # https://good.sca2a.amazontrust.com/
 trust_anchors {
   sha256_hex: "1ba5b2aa8c65401a82960118f80bec4f62304d83cec4713a19c39c011ea46db4"
-  ev_policy_oids: "2.23.140.1.1"
-}
-
-# CN=Starfield Services Root Certificate Authority - G2, O=Starfield Technologies, Inc., L=Scottsdale, ST=Arizona, C=US
-# https://valid.sfsg2.catest.starfieldtech.com/
-trust_anchors {
-  sha256_hex: "568d6905a2c88708a4b3025190edcfedb1974a606a13c6e5290fcb2ae63edab5"
   ev_policy_oids: "2.23.140.1.1"
 }
 
@@ -126,6 +119,8 @@ trust_anchors {
 # https://certdemo-ev-valid.ssl.d-trust.net/
 trust_anchors {
   sha256_hex: "eec5496b988ce98625b934092eec2908bed0b0f316c2d4730c84eaf1f3d34881"
+  # TODO(cclements,hchao): remove non-CABF OID once it is not used anymore.
+  ev_policy_oids: "1.3.6.1.4.1.4788.2.202.1"
   ev_policy_oids: "2.23.140.1.1"
 }
 
@@ -521,6 +516,8 @@ trust_anchors {
 # https://www.secomtrust.net/contact/form.html
 trust_anchors {
   sha256_hex: "513b2cecb810d4cde5dd85391adfc6c2dd60d87bb736d2b521484aa47a0ebef6"
+  # TODO(cclements,hchao): remove non-CABF OID once it is not used anymore.
+  ev_policy_oids: "1.2.392.200091.100.721.1"
   ev_policy_oids: "2.23.140.1.1"
 }
 
@@ -805,4 +802,18 @@ trust_anchors {
 # C=DE, O=Atos, CN=Atos TrustedRoot Root CA RSA TLS 2021
 trust_anchors {
   sha256_hex: "81a9088ea59fb364c548a6f85559099b6f0405efbf18e5324ec9f457ba00112f"
+}
+
+# CN=Sectigo Public Server Authentication Root E46, O=Sectigo Limited, C=GB
+# https://sectigopublicserverauthenticationroote46-ev.sectigo.com/
+trust_anchors {
+  sha256_hex: "c90f26f0fb1b4018b22227519b5ca2b53e2ca5b3be5cf18efe1bef47380c5383"
+  ev_policy_oids: "2.23.140.1.1"
+}
+
+# CN=Sectigo Public Server Authentication Root R46, O=Sectigo Limited, C=GB
+# https://sectigopublicserverauthenticationrootr46-ev.sectigo.com/
+trust_anchors {
+  sha256_hex: "7bb647a62aeeac88bf257aa522d01ffea395e0ab45c73f93f65654ec38f25a06"
+  ev_policy_oids: "2.23.140.1.1"
 }

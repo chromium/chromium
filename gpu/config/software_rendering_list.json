@@ -13,7 +13,7 @@
       "multi_gpu_category": "any",
       "features": [
         "accelerated_webgl",
-        "gpu_rasterization"
+        "gpu_tile_rasterization"
       ]
     },
     {
@@ -61,7 +61,7 @@
       "multi_gpu_category": "any",
       "features": [
         "accelerated_webgl",
-        "gpu_rasterization"
+        "gpu_tile_rasterization"
       ]
     },
     {
@@ -351,30 +351,11 @@
       ]
     },
     {
-      "id": 64,
-      "description": "Hardware video decode is only supported in win7+",
-      "cr_bugs": [159458],
-      "os": {
-        "type": "win",
-        "version": {
-          "op": "<",
-          "value": "6.1"
-        }
-      },
-      "features": [
-        "accelerated_video_decode"
-      ]
-    },
-    {
       "id": 68,
-      "description": "VMware Fusion 4 has corrupt rendering with Win Vista+",
+      "description": "VMware Fusion 4 has corrupt rendering on Windows",
       "cr_bugs": [169470],
       "os": {
-        "type": "win",
-        "version": {
-          "op": ">=",
-          "value": "6.0"
-        }
+        "type": "win"
       },
       "vendor_id": "0x15ad",
       "driver_version": {
@@ -454,21 +435,6 @@
       },
       "features": [
         "accelerated_video_decode"
-      ]
-    },
-    {
-      "id": 79,
-      "description": "Disable GPU on all Windows versions prior to and including Vista",
-      "cr_bugs": [315199],
-      "os": {
-        "type": "win",
-        "version": {
-          "op": "<=",
-          "value": "6.0"
-        }
-      },
-      "features": [
-        "all"
       ]
     },
     {
@@ -614,11 +580,7 @@
         },
         {
           "os": {
-            "type": "android",
-            "version": {
-              "op": ">=",
-              "value": "4.4"
-            }
+            "type": "android"
           },
           "gl_renderer": "Mali-4.*"
         },
@@ -630,11 +592,7 @@
         },
         {
           "os": {
-            "type": "android",
-            "version": {
-              "op": ">=",
-              "value": "4.4"
-            }
+            "type": "android"
           },
           "gl_type": "gles",
           "gl_version": {
@@ -656,7 +614,7 @@
         }
       ],
       "features": [
-        "gpu_rasterization",
+        "gpu_tile_rasterization",
         "accelerated_2d_canvas"
       ]
     },
@@ -669,7 +627,7 @@
       },
       "gl_renderer": ".*Mali-T604.*",
       "features": [
-        "gpu_rasterization",
+        "gpu_tile_rasterization",
         "accelerated_2d_canvas"
       ]
     },
@@ -683,7 +641,7 @@
       "gl_renderer": "PowerVR SGX 540",
       "features": [
         "accelerated_2d_canvas",
-        "gpu_rasterization"
+        "gpu_tile_rasterization"
       ]
     },
     {
@@ -700,7 +658,7 @@
       },
       "features": [
         "accelerated_2d_canvas",
-        "gpu_rasterization"
+        "gpu_tile_rasterization"
       ]
     },
     {
@@ -713,7 +671,7 @@
       "gl_renderer": "PowerVR SGX \\d+",
       "features": [
         "accelerated_2d_canvas",
-        "gpu_rasterization"
+        "gpu_tile_rasterization"
       ]
     },
     {
@@ -730,7 +688,7 @@
       },
       "features": [
         "accelerated_2d_canvas",
-        "gpu_rasterization"
+        "gpu_tile_rasterization"
       ]
     },
     {
@@ -760,7 +718,7 @@
       },
       "gl_renderer": ".*Vivante.*",
       "features": [
-        "gpu_rasterization",
+        "gpu_tile_rasterization",
         "accelerated_2d_canvas"
       ]
     },
@@ -803,7 +761,7 @@
                     "0x2a02", "0x27a2", "0x2a42"],
       "multi_gpu_category": "any",
       "features": [
-        "gpu_rasterization"
+        "gpu_tile_rasterization"
       ]
     },
     {
@@ -845,7 +803,7 @@
                     "0x0fd1", "0x0dfa"],
       "multi_gpu_category": "any",
       "features": [
-        "gpu_rasterization"
+        "gpu_tile_rasterization"
       ]
     },
     {
@@ -867,7 +825,7 @@
                     "0x68c1"],
       "multi_gpu_category": "any",
       "features": [
-        "gpu_rasterization"
+        "gpu_tile_rasterization"
       ]
     },
     {
@@ -880,22 +838,7 @@
       "vendor_id": "0x80ee",
       "multi_gpu_category": "any",
       "features": [
-        "gpu_rasterization"
-      ]
-    },
-    {
-      "id": 119,
-      "description": "There are display issues with GPU Raster on OSX 10.9",
-      "cr_bugs": [611310],
-      "os": {
-        "type": "macosx",
-        "version": {
-          "op": "<=",
-          "value": "10.9"
-        }
-      },
-      "features": [
-        "gpu_rasterization"
+        "gpu_tile_rasterization"
       ]
     },
     {
@@ -906,7 +849,7 @@
         "type": "win"
       },
       "features": [
-        "gpu_rasterization"
+        "gpu_tile_rasterization"
       ],
       "exceptions": [
         {
@@ -988,7 +931,7 @@
         }
       ],
       "features": [
-        "gpu_rasterization"
+        "gpu_tile_rasterization"
       ]
     },
     {
@@ -1122,7 +1065,7 @@
                     "0x1051", "0x1052", "0x1054", "0x1055", "0x1056", "0x1057",
                     "0x1058", "0x1059", "0x105a", "0x107d", "0x1140"],
       "features": [
-        "gpu_rasterization"
+        "gpu_tile_rasterization"
       ]
     },
     {
@@ -1133,7 +1076,7 @@
         "type": "chromeos"
       },
       "features": [
-        "gpu_rasterization"
+        "gpu_tile_rasterization"
       ],
       "exceptions": [
         { "vendor_id": "0x8086" },
@@ -1164,7 +1107,7 @@
         "value2": "8.17.10.1433"
       },
       "features": [
-        "gpu_rasterization"
+        "gpu_tile_rasterization"
       ]
     },
     {
@@ -1178,20 +1121,6 @@
         "version": {
           "op": "<",
           "value": "9.0"
-        }
-      },
-      "features": [
-        "accelerated_webgl2"
-      ]
-    },
-    {
-      "id": 141,
-      "description": "Disable use of D3D11/WebGL2 on Windows Vista and lower",
-      "os": {
-        "type": "win",
-        "version": {
-          "op": "<=",
-          "value": "6.0"
         }
       },
       "features": [
@@ -1257,106 +1186,6 @@
       },
       "features": [
         "accelerated_webgl2"
-      ]
-    },
-    {
-      "id": 146,
-      "description": "Disable D3D11/WebGL2 on AMD switchable graphics",
-      "cr_bugs": [451420, 721121, 755722],
-      "os": {
-        "type": "win",
-        "version": {
-          "op": "<",
-          "value": "10"
-        }
-      },
-      "vendor_id": "0x1002",
-      "driver_version": {
-        "op": "<",
-        "value": "20.19.0.32837"
-      },
-      "multi_gpu_style": "amd_switchable",
-      "features": [
-        "accelerated_webgl2"
-      ]
-    },
-    {
-      "id": 148,
-      "description": "VideoCore V has corrupt rendering with GPU Rasterization on Android versions below N.",
-      "cr_bugs": [710273],
-      "os": {
-        "type": "android",
-        "version": {
-          "op": "<",
-          "value": "7.0"
-        }
-      },
-      "gl_renderer": ".*VideoCore V HW.*",
-      "features": [
-        "gpu_rasterization"
-      ]
-    },
-    {
-      "id": 149,
-      "description": "Adreno 420 support for EXT_multisampled_render_to_texture is buggy on Android < 5.1",
-      "comment": "Corresponds to GPU driver bug #116",
-      "cr_bugs": [490379, 767913],
-      "os": {
-        "type": "android",
-        "version": {
-          "op": "<",
-          "value": "5.1"
-        }
-      },
-      "gl_renderer": "Adreno \\(TM\\) 4.*",
-      "features": [
-        "accelerated_webgl2"
-      ]
-    },
-    {
-      "id": 150,
-      "description": "Macs with NVidia GPUs experience rendering issues on High Sierra until 10.13.4",
-      "cr_bugs": [773705],
-      "os": {
-        "type": "macosx",
-        "version": {
-          "op": ">=",
-          "value": "10.13"
-        }
-      },
-      "exceptions": [
-        {
-          "os": {
-            "type": "macosx",
-            "version": {
-              "op": ">=",
-              "value": "10.13.4"
-            }
-          }
-        }
-      ],
-      "vendor_id": "0x10de",
-      "multi_gpu_category": "any",
-      "features": [
-        "gpu_rasterization"
-      ]
-    },
-    {
-      "id": 151,
-      "description": "Rendering artifacts on older macOS releases and Intel GPUs",
-      "cr_bugs": [794819],
-      "os": {
-        "type": "macosx",
-        "version": {
-          "op": "<=",
-          "value": "10.11"
-        }
-      },
-      "vendor_id": "0x8086",
-      "multi_gpu_category": "any",
-      "features": [
-        "accelerated_2d_canvas",
-        "gpu_rasterization"
       ]
     },
     {
@@ -1533,44 +1362,6 @@
       ]
     },
     {
-      "id": 168,
-      "description": "PowerVR Driver crashes with ANGLE",
-      "cr_bugs": [1203652,1221321],
-      "os": {
-        "type": "android",
-        "version": {
-          "op": "<=",
-          "value": "5.1.1"
-        }
-      },
-      "gl_renderer": "ANGLE \\(Imagination Technologies, PowerVR .*",
-      "features": [
-        "all"
-      ]
-    },
-    {
-      "id": 169,
-      "description": "Many crashes with the old Intel Haswell driver on Windows 8.1.",
-      "driver_update_url": "https://www.intel.com/content/www/us/en/download-center/home.html",
-      "cr_bugs": [620885],
-      "os": {
-        "type": "win",
-        "version": {
-          "op": "=",
-          "value": "8.1"
-        }
-      },
-      "vendor_id": "0x0806",
-      "device_id": ["0x0a16"],
-      "driver_version": {
-        "op": "=",
-        "value": "10.18.10.3496"
-      },
-      "features": [
-        "all"
-      ]
-    },
-    {
       "id": 170,
       "description": "Disable hardware MFT video encoder on older Intel drivers",
       "cr_bugs": [1251071],
@@ -1714,6 +1505,22 @@
       "gl_vendor": "Intel.*",
       "features": [
         "accelerated_video_decode"
+      ]
+    },
+    {
+      "id": 179,
+      "cr_bugs": [1253962],
+      "description": "Older Adreno 4xx drivers drop draws sometimes with oop-c",
+      "os": {
+        "type" : "android"
+      },
+      "driver_version": {
+        "op": "<",
+        "value": "145"
+      },
+      "gl_renderer": ".*Adreno \\(TM\\) 4.*",
+      "features": [
+        "accelerated_2d_canvas"
       ]
     }
   ]

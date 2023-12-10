@@ -40,12 +40,18 @@ public final class DeveloperModeContentProvider extends ContentProvider {
     }
 
     @Override
-    public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs,
+    public Cursor query(
+            Uri uri,
+            String[] projection,
+            String selection,
+            String[] selectionArgs,
             String sortOrder) {
         if (DeveloperModeUtils.FLAG_OVERRIDE_URI_PATH.equals(uri.getPath())) {
             Map<String, Boolean> flagOverrides = DeveloperUiService.getFlagOverrides();
-            final String[] columns = {DeveloperModeUtils.FLAG_OVERRIDE_NAME_COLUMN,
-                    DeveloperModeUtils.FLAG_OVERRIDE_STATE_COLUMN};
+            final String[] columns = {
+                DeveloperModeUtils.FLAG_OVERRIDE_NAME_COLUMN,
+                DeveloperModeUtils.FLAG_OVERRIDE_STATE_COLUMN
+            };
             MatrixCursor cursor = new MatrixCursor(columns, flagOverrides.size());
             for (Map.Entry<String, Boolean> entry : flagOverrides.entrySet()) {
                 String flagName = entry.getKey();

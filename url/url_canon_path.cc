@@ -4,9 +4,9 @@
 
 #include <limits.h>
 
+#include <optional>
 #include "base/check.h"
 #include "base/check_op.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/url_canon.h"
 #include "url/url_canon_internal.h"
 #include "url/url_features.h"
@@ -40,9 +40,8 @@ enum CharacterFlags {
 // only flag that may be combined with others.
 //
 // This table was used to be designed to match exactly what IE did with the
-// characters, however, which doesn't comply with the URL Standard as of Jun
-// 2023. See http://crbug.com/1400251 and http://crbug.com/1252531 for efforts
-// to comply with the URL Standard.
+// characters, however, which doesn't comply with the URL Standard as of Dec
+// 2023. See https://crbug.com/1509295.
 //
 // Dot is even more special, and the escaped version is handled specially by
 // IsDot. Therefore, we don't need the "escape" flag. We just need the "special"
@@ -109,7 +108,7 @@ DotDisposition ClassifyAfterDot(const CHAR* spec,
     *consumed_len = 0;
     return DIRECTORY_CUR;
   }
-  if (IsURLSlash(spec[after_dot])) {
+  if (IsSlashOrBackslash(spec[after_dot])) {
     // Single dot followed by a slash.
     *consumed_len = 1;  // Consume the slash
     return DIRECTORY_CUR;
@@ -123,7 +122,7 @@ DotDisposition ClassifyAfterDot(const CHAR* spec,
       *consumed_len = second_dot_len;
       return DIRECTORY_UP;
     }
-    if (IsURLSlash(spec[after_second_dot])) {
+    if (IsSlashOrBackslash(spec[after_second_dot])) {
       // Double dot followed by a slash.
       *consumed_len = second_dot_len + 1;
       return DIRECTORY_UP;
@@ -297,8 +296,9 @@ bool DoPath(const CHAR* spec,
     // and then canonicalize it, it will of course have a slash already. This
     // check is for the replacement and relative URL resolving cases of file
     // URLs.
-    if (!IsURLSlash(spec[path.begin]))
+    if (!IsSlashOrBackslash(spec[path.begin])) {
       output->push_back('/');
+    }
 
     success =
         DoPartialPathInternal<CHAR, UCHAR>(spec, path, out_path->begin, output);

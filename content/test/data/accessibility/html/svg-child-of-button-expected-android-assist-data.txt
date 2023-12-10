@@ -1,0 +1,4 @@
+WebView textSize:16.00 style:0 bundle:[display="", htmlTag="#document"]
+++View textSize:16.00 style:0 bundle:[display="block", htmlTag="body"]
+++++Button text:"Search" textSize:13.33 style:0 bgColor:-1052689 bundle:[aria-label="Search", display="inline-block", htmlTag="button"]
+++++++Image textSize:13.33 style:0 bundle:[class="button-child-icon", display="inline", height="24px", htmlTag="svg", viewbox="0 0 24 24", width="24px", xmlns="http://www.w3.org/2000/svg"]

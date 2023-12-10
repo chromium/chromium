@@ -30,6 +30,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
+#include "base/types/pass_key.h"
 #include "base/unguessable_token.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/features.h"
@@ -142,6 +143,22 @@ PublicURLManager::PublicURLManager(ExecutionContext* execution_context)
         frame_url_store_.BindNewEndpointAndPassReceiver(
             execution_context->GetTaskRunner(TaskType::kFileReading)));
   }
+}
+
+PublicURLManager::PublicURLManager(
+    base::PassKey<StorageAccessHandle>,
+    ExecutionContext* execution_context,
+    mojo::PendingAssociatedRemote<mojom::blink::BlobURLStore>
+        frame_url_store_remote)
+    : ExecutionContextLifecycleObserver(execution_context),
+      frame_url_store_(execution_context),
+      worker_url_store_(execution_context) {
+  if (base::FeatureList::IsEnabled(net::features::kSupportPartitionedBlobUrl)) {
+    execution_context_type_ = ExecutionContextIdForHistogram::kFrame;
+  }
+  frame_url_store_.Bind(
+      std::move(frame_url_store_remote),
+      execution_context->GetTaskRunner(TaskType::kFileReading));
 }
 
 mojom::blink::BlobURLStore& PublicURLManager::GetBlobURLStore() {

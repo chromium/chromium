@@ -19,6 +19,7 @@
 #include "base/threading/thread.h"
 #include "build/build_config.h"
 #include "components/variations/child_process_field_trial_syncer.h"
+#include "content/child/child_process_synthetic_trial_syncer.h"
 #include "content/common/associated_interfaces.mojom.h"
 #include "content/common/child_process.mojom.h"
 #include "content/public/child/child_thread.h"
@@ -45,6 +46,7 @@
 namespace IPC {
 class SyncChannel;
 class SyncMessageFilter;
+class UrgentMessageObserver;
 }  // namespace IPC
 
 namespace mojo {
@@ -262,6 +264,7 @@ struct ChildThreadImpl::Options {
   scoped_refptr<base::SingleThreadTaskRunner> browser_process_io_runner;
   raw_ptr<mojo::OutgoingInvitation> mojo_invitation = nullptr;
   scoped_refptr<base::SingleThreadTaskRunner> ipc_task_runner;
+  raw_ptr<IPC::UrgentMessageObserver> urgent_message_observer = nullptr;
 
   // Indicates that this child process exposes one or more Mojo interfaces to
   // the browser process. Subclasses which initialize this to |true| must
@@ -291,6 +294,7 @@ class ChildThreadImpl::Options::Builder {
       scoped_refptr<base::SingleThreadTaskRunner> ipc_task_runner);
   Builder& ServiceBinder(ServiceBinder binder);
   Builder& ExposesInterfacesToBrowser();
+  Builder& SetUrgentMessageObserver(IPC::UrgentMessageObserver* observer);
 
   Options Build();
 

@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/components/dbus/oobe_config/fake_oobe_configuration_client.h"
 
+#include <optional>
 #include <string>
 
 #include "base/command_line.h"
@@ -13,7 +14,6 @@
 #include "base/logging.h"
 #include "base/task/thread_pool.h"
 #include "chromeos/dbus/constants/dbus_switches.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 

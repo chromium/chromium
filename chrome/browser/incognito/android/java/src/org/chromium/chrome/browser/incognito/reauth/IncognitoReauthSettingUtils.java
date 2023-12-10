@@ -18,9 +18,7 @@ import org.chromium.chrome.browser.incognito.R;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.text.SpanApplier;
 
-/**
- * A utility class to provide helper methods for the Incognito re-authentication lock setting.
- */
+/** A utility class to provide helper methods for the Incognito re-authentication lock setting. */
 public class IncognitoReauthSettingUtils {
     private static Boolean sIsDeviceScreenLockEnabledForTesting;
 
@@ -33,8 +31,9 @@ public class IncognitoReauthSettingUtils {
         }
 
         KeyguardManager keyguardManager =
-                ((KeyguardManager) ContextUtils.getApplicationContext().getSystemService(
-                        Context.KEYGUARD_SERVICE));
+                ((KeyguardManager)
+                        ContextUtils.getApplicationContext()
+                                .getSystemService(Context.KEYGUARD_SERVICE));
         assert keyguardManager != null;
         return keyguardManager.isDeviceSecure();
     }
@@ -48,9 +47,10 @@ public class IncognitoReauthSettingUtils {
      * @return A {@link CharSequence} containing the summary string for the Incognito lock setting.
      */
     public static CharSequence getSummaryString(Activity activity) {
-        return (isDeviceScreenLockEnabled()) ? activity.getString(
-                       R.string.settings_incognito_tab_lock_summary_android_setting_on)
-                                             : buildLinkToAndroidScreenLockSettings(activity);
+        return (isDeviceScreenLockEnabled())
+                ? activity.getString(
+                        R.string.settings_incognito_tab_lock_summary_android_setting_on)
+                : buildLinkToAndroidScreenLockSettings(activity);
     }
 
     /**

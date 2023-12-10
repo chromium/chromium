@@ -114,29 +114,50 @@ public class DateOrderedListCoordinator implements ToolbarCoordinator.ToolbarLis
      * @param discardableReferencePool  A {@linK DiscardableReferencePool} reference to use for
      *                                  large objects (e.g. bitmaps) in the UI.
      */
-    public DateOrderedListCoordinator(Context context, DownloadManagerUiConfig config,
-            Supplier<Boolean> exploreOfflineTabVisibilitySupplier, OfflineContentProvider provider,
-            DeleteController deleteController, SelectionDelegate<ListItem> selectionDelegate,
+    public DateOrderedListCoordinator(
+            Context context,
+            DownloadManagerUiConfig config,
+            Supplier<Boolean> exploreOfflineTabVisibilitySupplier,
+            OfflineContentProvider provider,
+            DeleteController deleteController,
+            SelectionDelegate<ListItem> selectionDelegate,
             FilterCoordinator.Observer filterObserver,
-            DateOrderedListObserver dateOrderedListObserver, ModalDialogManager modalDialogManager,
-            FaviconProvider faviconProvider, DiscardableReferencePool discardableReferencePool) {
+            DateOrderedListObserver dateOrderedListObserver,
+            ModalDialogManager modalDialogManager,
+            FaviconProvider faviconProvider,
+            DiscardableReferencePool discardableReferencePool) {
         mContext = context;
 
         ListItemModel model = new ListItemModel();
         DecoratedListItemModel decoratedModel = new DecoratedListItemModel(model);
-        mListView = new DateOrderedListView(context, config, decoratedModel,
-                dateOrderedListObserver, this::onConfigurationChangedCallback);
+        mListView =
+                new DateOrderedListView(
+                        context,
+                        config,
+                        decoratedModel,
+                        dateOrderedListObserver,
+                        this::onConfigurationChangedCallback);
         mRenameDialogManager = new RenameDialogManager(context, modalDialogManager);
-        mMediator = new DateOrderedListMediator(provider, faviconProvider, this::startShareIntent,
-                deleteController, this::startRename, selectionDelegate, config,
-                dateOrderedListObserver, model, discardableReferencePool);
+        mMediator =
+                new DateOrderedListMediator(
+                        provider,
+                        faviconProvider,
+                        this::startShareIntent,
+                        deleteController,
+                        this::startRename,
+                        selectionDelegate,
+                        config,
+                        dateOrderedListObserver,
+                        model,
+                        discardableReferencePool);
 
         mEmptyCoordinator = new EmptyCoordinator(context, mMediator.getEmptySource());
 
         mStorageCoordinator = new StorageCoordinator(context, mMediator.getFilterSource());
 
-        mFilterCoordinator = new FilterCoordinator(
-                context, mMediator.getFilterSource(), exploreOfflineTabVisibilitySupplier);
+        mFilterCoordinator =
+                new FilterCoordinator(
+                        context, mMediator.getFilterSource(), exploreOfflineTabVisibilitySupplier);
         mFilterCoordinator.addObserver(mMediator::onFilterTypeSelected);
         mFilterCoordinator.addObserver(filterObserver);
         mFilterCoordinator.addObserver(mEmptyCoordinator);
@@ -147,10 +168,13 @@ public class DateOrderedListCoordinator implements ToolbarCoordinator.ToolbarLis
                 new ViewListItem(StableIds.FILTERS_HEADER, mFilterCoordinator.getView()));
         mWindowHeight = getWindowHeight();
 
-        mDownloadStorageSummaryHeightPx = (int) (mContext.getResources().getDimensionPixelSize(
-                R.dimen.download_storage_summary_height));
-        mSelectableListToolbarHeightPx = mContext.getResources().getDimensionPixelSize(
-                R.dimen.selectable_list_toolbar_height);
+        mDownloadStorageSummaryHeightPx =
+                (int)
+                        (mContext.getResources()
+                                .getDimensionPixelSize(R.dimen.download_storage_summary_height));
+        mSelectableListToolbarHeightPx =
+                mContext.getResources()
+                        .getDimensionPixelSize(R.dimen.selectable_list_toolbar_height);
         initializeView(context);
     }
 
@@ -186,8 +210,11 @@ public class DateOrderedListCoordinator implements ToolbarCoordinator.ToolbarLis
         int bottomMargin = mDownloadStorageSummaryHeightPx;
 
         // Height from the toolbar to the bottom of empty view.
-        int maxEmptyHeight = ((ScrollView) emptyScrollView).getChildAt(0).getHeight()
-                + mSelectableListToolbarHeightPx + bottomMargin + topMargin;
+        int maxEmptyHeight =
+                ((ScrollView) emptyScrollView).getChildAt(0).getHeight()
+                        + mSelectableListToolbarHeightPx
+                        + bottomMargin
+                        + topMargin;
 
         if (mWindowHeight <= maxEmptyHeight) {
             layoutParams.setMargins(0, topMargin, 0, 0);
@@ -209,26 +236,32 @@ public class DateOrderedListCoordinator implements ToolbarCoordinator.ToolbarLis
         mMainView = new FrameLayout(context);
         mEmptyView = mEmptyCoordinator.getView();
         FrameLayout.LayoutParams emptyViewParams;
-        emptyViewParams = new FrameLayout.LayoutParams(
-                FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);
+        emptyViewParams =
+                new FrameLayout.LayoutParams(
+                        FrameLayout.LayoutParams.WRAP_CONTENT,
+                        FrameLayout.LayoutParams.WRAP_CONTENT);
         emptyViewParams.gravity = Gravity.CENTER;
 
         // Handle empty view position in the first run.
-        mEmptyView.getViewTreeObserver().addOnGlobalLayoutListener(
-                new ViewTreeObserver.OnGlobalLayoutListener() {
-                    @Override
-                    public void onGlobalLayout() {
-                        // Add margin depends on screen orientation.
-                        addMarginOnConfigurationChanged();
+        mEmptyView
+                .getViewTreeObserver()
+                .addOnGlobalLayoutListener(
+                        new ViewTreeObserver.OnGlobalLayoutListener() {
+                            @Override
+                            public void onGlobalLayout() {
+                                // Add margin depends on screen orientation.
+                                addMarginOnConfigurationChanged();
 
-                        // remove onGlobalLayout listener.
-                        mEmptyView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                    }
-                });
+                                // remove onGlobalLayout listener.
+                                mEmptyView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                            }
+                        });
         mMainView.addView(mEmptyView, emptyViewParams);
 
-        FrameLayout.LayoutParams listParams = new FrameLayout.LayoutParams(
-                FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
+        FrameLayout.LayoutParams listParams =
+                new FrameLayout.LayoutParams(
+                        FrameLayout.LayoutParams.MATCH_PARENT,
+                        FrameLayout.LayoutParams.MATCH_PARENT);
         mMainView.addView(mListView.getView(), listParams);
 
         // Bring to front to make empty view scrollable.
@@ -287,8 +320,9 @@ public class DateOrderedListCoordinator implements ToolbarCoordinator.ToolbarLis
 
     private void startShareIntent(Intent intent) {
         try {
-            mContext.startActivity(Intent.createChooser(
-                    intent, mContext.getString(R.string.share_link_chooser_title)));
+            mContext.startActivity(
+                    Intent.createChooser(
+                            intent, mContext.getString(R.string.share_link_chooser_title)));
         } catch (ActivityNotFoundException e) {
             Log.e(TAG, "Cannot find activity for sharing");
         } catch (Exception e) {

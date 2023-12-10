@@ -42,6 +42,9 @@ void MovePasswordToAccountStoreHelper::OnFetchCompleted() {
   save_manager->CreatePendingCredentials(form_, {}, {}, /*is_http_auth=*/false,
                                          /*is_credential_api_save=*/false);
   save_manager->MoveCredentialsToAccountStore(trigger_);
+  // `form_fetcher_` will be destroyed when `done_callback_` is run below but
+  // must outlive `save_manager`. So destroy `save_manager` now.
+  save_manager.reset();
   std::move(done_callback_).Run();
   // |this| might be deleted now!
 }

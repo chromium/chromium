@@ -62,17 +62,17 @@ class ReportingCollector {
         }
         synchronized (mReceivedReports) {
             assertThat(mReceivedReports)
-                    .comparingElementsUsing(Correspondence.from(
-                            (BinaryPredicate<JSONObject, JSONObject>) (actual, expected)
-                                    -> isJSONObjectSubset(expected, actual),
-                            "is a subset of"))
+                    .comparingElementsUsing(
+                            Correspondence.from(
+                                    (BinaryPredicate<JSONObject, JSONObject>)
+                                            (actual, expected) ->
+                                                    isJSONObjectSubset(expected, actual),
+                                    "is a subset of"))
                     .contains(expectedJson);
         }
     }
 
-    /**
-     * Waits until the requested number of reports have been received, with a 5-second timeout.
-     */
+    /** Waits until the requested number of reports have been received, with a 5-second timeout. */
     public void waitForReports(int reportCount) {
         final int timeoutSeconds = 5;
         try {
@@ -111,4 +111,5 @@ class ReportingCollector {
         }
         return true;
     }
-};
+}
+;

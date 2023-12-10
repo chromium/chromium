@@ -43,6 +43,9 @@ inline constexpr char kFencedFrameTopNavigationHistogram[] =
 inline constexpr char kAutomaticBeaconOutcomeHistogram[] =
     "Navigation.AutomaticBeaconOutcome";
 
+inline constexpr char kAutomaticBeaconEventTypeHistogram[] =
+    "Navigation.FencedFrameAutomaticBeaconEventType";
+
 // Corresponds to the "FencedFrameCreationOutcome" histogram enumeration type in
 // tools/metrics/histograms/enums.xml.
 //
@@ -67,8 +70,8 @@ enum class FencedFrameCreationOutcome {
 enum class AutomaticBeaconOutcome {
   kSuccess = 0,
   kNoUserActivation,
-  kNotSameOrigin,
-  kMaxValue = kNotSameOrigin,
+  kNotSameOriginNotOptedIn,
+  kMaxValue = kNotSameOriginNotOptedIn,
 };
 
 // Corresponds to the "FencedFrameNavigationState" histogram enumeration type in

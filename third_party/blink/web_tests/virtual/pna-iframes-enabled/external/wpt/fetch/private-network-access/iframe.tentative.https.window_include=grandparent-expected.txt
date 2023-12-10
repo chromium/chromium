@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-[PASS] local to local, grandparent navigates: no preflight required.
-[PASS] local to local (same-origin), grandparent navigates: no preflight required.
-[PASS] public to local, grandparent navigates: failure.
-[PASS] public to local, grandparent navigates: success.
-Harness: the test ran to completion.
-

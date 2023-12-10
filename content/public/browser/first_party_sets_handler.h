@@ -71,10 +71,7 @@ class CONTENT_EXPORT FirstPartySetsHandler {
     ~IssueWithMetadata() = default;
     IssueWithMetadata(const IssueWithMetadata<T>&) = default;
 
-    bool operator==(const IssueWithMetadata<T>& other) const {
-      return std::tie(issue_type_, issue_path_) ==
-             std::tie(other.issue_type_, other.issue_path_);
-    }
+    bool operator==(const IssueWithMetadata<T>& other) const = default;
 
     // Inserts path_prefix at the beginning of the path stored for this issue.
     void PrependPath(

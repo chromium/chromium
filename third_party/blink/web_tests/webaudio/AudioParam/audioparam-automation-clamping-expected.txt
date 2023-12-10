@@ -1,13 +1,4 @@
 CONSOLE WARNING: BiquadFilter.frequency.linearRampToValueAtTime value -1000 outside nominal range [0, 24000]; value will be clamped.
 This is a testharness.js-based test.
-[PASS] # AUDIT TASK RUNNER STARTED.
-[PASS] Executing "clamp"
-[PASS] Audit report
-[PASS] > [clamp] 
-[PASS]   Clamped signal in frame range [5618, 18382] equals [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0...] with an element-wise tolerance of {"absoluteThreshold":0,"relativeThreshold":0}.
-[PASS]   Actual Clamp start is less than or equal to 5618.
-[PASS]   Actual Clamp end is greater than or equal to 18382.
-[PASS] < [clamp] All assertions passed. (total 3 assertions)
-[PASS] # AUDIT TASK RUNNER FINISHED: 1 tasks ran successfully.
 Harness: the test ran to completion.
 

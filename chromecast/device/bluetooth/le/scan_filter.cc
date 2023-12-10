@@ -29,7 +29,7 @@ bool ScanFilter::Matches(const LeScanResult& scan_result) const {
   }
 
   if (service_uuid) {
-    absl::optional<LeScanResult::UuidList> all_uuids =
+    std::optional<LeScanResult::UuidList> all_uuids =
         scan_result.AllServiceUuids();
     if (!all_uuids) {
       return false;
@@ -41,7 +41,7 @@ bool ScanFilter::Matches(const LeScanResult& scan_result) const {
   }
 
   if (!name && regex_name) {
-    absl::optional<std::string> scan_name = scan_result.Name();
+    std::optional<std::string> scan_name = scan_result.Name();
     if (!scan_name || !RE2::PartialMatch(*scan_name, *regex_name)) {
       return false;
     }

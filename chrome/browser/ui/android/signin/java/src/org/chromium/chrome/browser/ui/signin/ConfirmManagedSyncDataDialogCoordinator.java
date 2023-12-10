@@ -48,30 +48,37 @@ public class ConfirmManagedSyncDataDialogCoordinator {
      * @param managedDomain   The domain of the managed account.
      */
     @MainThread
-    public ConfirmManagedSyncDataDialogCoordinator(Context context,
-            ModalDialogManager dialogManager, Listener listener, String managedDomain) {
+    public ConfirmManagedSyncDataDialogCoordinator(
+            Context context,
+            ModalDialogManager dialogManager,
+            Listener listener,
+            String managedDomain) {
         mListener = listener;
-        mModel = new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
-                         .with(ModalDialogProperties.TITLE,
-                                 context.getString(R.string.sign_in_managed_account))
-                         .with(ModalDialogProperties.MESSAGE_PARAGRAPH_1,
-                                 context.getString(R.string.sign_in_managed_account_description,
-                                         managedDomain))
-                         .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, true)
-                         .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT,
-                                 context.getString(R.string.policy_dialog_proceed))
-                         .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
-                                 context.getString(R.string.cancel))
-                         .with(ModalDialogProperties.CONTROLLER, createController())
-                         .build();
+        mModel =
+                new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
+                        .with(
+                                ModalDialogProperties.TITLE,
+                                context.getString(R.string.sign_in_managed_account))
+                        .with(
+                                ModalDialogProperties.MESSAGE_PARAGRAPH_1,
+                                context.getString(
+                                        R.string.sign_in_managed_account_description,
+                                        managedDomain))
+                        .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, true)
+                        .with(
+                                ModalDialogProperties.POSITIVE_BUTTON_TEXT,
+                                context.getString(R.string.policy_dialog_proceed))
+                        .with(
+                                ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
+                                context.getString(R.string.cancel))
+                        .with(ModalDialogProperties.CONTROLLER, createController())
+                        .build();
         mDialogManager = dialogManager;
 
         mDialogManager.showDialog(mModel, ModalDialogType.APP);
     }
 
-    /**
-     * Dismisses confirm managed sync data dialog.
-     */
+    /** Dismisses confirm managed sync data dialog. */
     @MainThread
     public void dismissDialog() {
         mDialogManager.dismissDialog(mModel, DialogDismissalCause.UNKNOWN);

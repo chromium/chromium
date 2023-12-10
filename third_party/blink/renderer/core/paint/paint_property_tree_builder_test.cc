@@ -16,7 +16,7 @@
 #include "third_party/blink/renderer/core/layout/layout_image.h"
 #include "third_party/blink/renderer/core/layout/layout_multi_column_flow_thread.h"
 #include "third_party/blink/renderer/core/layout/layout_tree_as_text.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
+#include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_root.h"
 #include "third_party/blink/renderer/core/paint/fragment_data_iterator.h"
 #include "third_party/blink/renderer/core/paint/object_paint_properties.h"
@@ -4308,7 +4308,7 @@ TEST_P(PaintPropertyTreeBuilderTest,
 }
 
 TEST_P(PaintPropertyTreeBuilderTest,
-       PaintOffsetsUnderMultiColumnWithLayoutOverflow) {
+       PaintOffsetsUnderMultiColumnWithScrollableOverflow) {
   SetBodyInnerHTML(R"HTML(
     <div style='columns: 2; width: 300px; column-gap: 0; height: 100px'>
       <div id='parent' style='outline: 2px solid black;
@@ -4320,21 +4320,21 @@ TEST_P(PaintPropertyTreeBuilderTest,
 
   const LayoutBox* parent = GetLayoutBoxByElementId("parent");
 
-    // The parent will need to generate 2 fragments, to hold child fragments
-    // that contribute to layout overflow.
-    ASSERT_EQ(2u, NumFragments(parent));
-    EXPECT_EQ(PhysicalOffset(158, 8), FragmentAt(parent, 1).PaintOffset());
-    // But since the #parent doesn't take up any space on its own in the second
-    // fragment, the block-size should be 0.
-    ASSERT_EQ(2u, parent->PhysicalFragmentCount());
-    EXPECT_EQ(LayoutUnit(100), parent->GetPhysicalFragment(0)->Size().height);
-    EXPECT_EQ(LayoutUnit(), parent->GetPhysicalFragment(1)->Size().height);
-    EXPECT_EQ(PhysicalOffset(8, 8), FragmentAt(parent, 0).PaintOffset());
+  // The parent will need to generate 2 fragments, to hold child fragments
+  // that contribute to scrollable overflow.
+  ASSERT_EQ(2u, NumFragments(parent));
+  EXPECT_EQ(PhysicalOffset(158, 8), FragmentAt(parent, 1).PaintOffset());
+  // But since the #parent doesn't take up any space on its own in the second
+  // fragment, the block-size should be 0.
+  ASSERT_EQ(2u, parent->PhysicalFragmentCount());
+  EXPECT_EQ(LayoutUnit(100), parent->GetPhysicalFragment(0)->Size().height);
+  EXPECT_EQ(LayoutUnit(), parent->GetPhysicalFragment(1)->Size().height);
+  EXPECT_EQ(PhysicalOffset(8, 8), FragmentAt(parent, 0).PaintOffset());
 
-    LayoutObject* child = GetLayoutObjectByElementId("child");
-    ASSERT_EQ(2u, NumFragments(child));
-    EXPECT_EQ(PhysicalOffset(8, 8), FragmentAt(child, 0).PaintOffset());
-    EXPECT_EQ(PhysicalOffset(158, 8), FragmentAt(child, 1).PaintOffset());
+  LayoutObject* child = GetLayoutObjectByElementId("child");
+  ASSERT_EQ(2u, NumFragments(child));
+  EXPECT_EQ(PhysicalOffset(8, 8), FragmentAt(child, 0).PaintOffset());
+  EXPECT_EQ(PhysicalOffset(158, 8), FragmentAt(child, 1).PaintOffset());
 }
 
 TEST_P(PaintPropertyTreeBuilderTest, SpanFragmentsLimitedToSize) {
@@ -5571,14 +5571,11 @@ TEST_P(PaintPropertyTreeBuilderTest, SVGRootWithCSSMask) {
   EXPECT_TRUE(root.FirstFragment().PaintProperties()->Mask());
 }
 
-// This test has been disabled because the Element Capture pipeline is in the
-// process of being converted from using a CropTarget to a RestrictionTarget.
-// This is done over a chain of CLs. A later CL in the chain will re-enable
-// this test and removes this comment. All of these CLs will be landed together.
-// TODO(crbug.com/1418194): Re-enable this test.
-TEST_P(PaintPropertyTreeBuilderTest, DISABLED_ElementCaptureEffectNode) {
+TEST_P(PaintPropertyTreeBuilderTest, ElementCaptureEffectNode) {
+  ScopedElementCaptureForTest scoped_element_capture(true);
+
   // This test makes sure that an ElementCaptureEffect node is properly added
-  // when an element has a crop ID.
+  // when an element has a restriction ID.
   SetBodyInnerHTML(R"HTML(
     <body id="body1">
       <div id="div1" width="640" height="480"/>
@@ -5595,21 +5592,15 @@ TEST_P(PaintPropertyTreeBuilderTest, DISABLED_ElementCaptureEffectNode) {
       std::make_unique<RestrictionTargetId>(base::Token::CreateRandom()));
   UpdateAllLifecyclePhasesForTest();
 
-  // The element should now have a proper stacking context, assuming element
-  // capture is enabled.
-  if (RuntimeEnabledFeatures::ElementCaptureEnabled()) {
-    EXPECT_TRUE(element->GetLayoutObject()->HasLayer());
-    EXPECT_TRUE(element->GetLayoutObject()->IsStackingContext());
-  }
+  // The element should now have a proper stacking context.
+  EXPECT_TRUE(element->GetLayoutObject()->HasLayer());
+  EXPECT_TRUE(element->GetLayoutObject()->IsStackingContext());
 
-  // If the feature is enabled, now that the div has a crop ID, it should have
-  // an element capture effect node. If the feature is not enabled, this element
-  // shouldn't have an element capture effect (and may or may not have paint
-  // properties at all).
+  // Now that the div has a restriction ID, it should have an element capture
+  // effect node.
   const ObjectPaintProperties* paint_properties =
       element->GetLayoutObject()->FirstFragment().PaintProperties();
-  EXPECT_EQ(RuntimeEnabledFeatures::ElementCaptureEnabled(),
-            paint_properties && paint_properties->ElementCaptureEffect());
+  EXPECT_TRUE(paint_properties && paint_properties->ElementCaptureEffect());
 
   // NOTE: we don't currently have a teardown path for element capture. Once an
   // element is marked for capture it is marked for the rest of its lifetime.
@@ -7301,6 +7292,25 @@ TEST_P(PaintPropertyTreeBuilderTest, OverlayScrollbarEffects) {
   EXPECT_FALSE(properties->HorizontalScrollbarEffect());
   ASSERT_TRUE(properties->VerticalScrollbarEffect());
   EXPECT_EQ(properties->OverflowClip()->Parent(),
+            properties->VerticalScrollbarEffect()->OutputClip());
+}
+
+TEST_P(PaintPropertyTreeBuilderTest, OverlayScrollbarEffectsWithRadius) {
+  SetBodyInnerHTML(R"HTML(
+    <div id="target" style="width: 100px; height: 100px; border-radius: 10px;
+                            overflow: scroll">
+      <div style="height: 300px"></div>
+    </div>
+  )HTML");
+  CHECK(GetDocument().GetPage()->GetScrollbarTheme().UsesOverlayScrollbars());
+
+  auto* properties = PaintPropertiesForElement("target");
+  ASSERT_TRUE(properties);
+  ASSERT_TRUE(properties->OverflowClip());
+  ASSERT_TRUE(properties->InnerBorderRadiusClip());
+  EXPECT_FALSE(properties->HorizontalScrollbarEffect());
+  ASSERT_TRUE(properties->VerticalScrollbarEffect());
+  EXPECT_EQ(properties->InnerBorderRadiusClip()->Parent(),
             properties->VerticalScrollbarEffect()->OutputClip());
 }
 

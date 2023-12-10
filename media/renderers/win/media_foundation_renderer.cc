@@ -91,6 +91,8 @@ const std::string GetErrorReasonString(
     STRINGIFY(kFailedToCreateMediaEngine);
     STRINGIFY(kFailedToCreateDCompTextureWrapper);
     STRINGIFY(kFailedToInitDCompTextureWrapper);
+    STRINGIFY(kFailedToSetPlaybackRate);
+    STRINGIFY(kFailedToGetMediaEngineEx);
   }
 #undef STRINGIFY
 }
@@ -248,6 +250,8 @@ HRESULT MediaFoundationRenderer::CreateMediaEngine(
           base::BindRepeating(&MediaFoundationRenderer::OnPlaying, weak_this)),
       base::BindPostTaskToCurrentDefault(
           base::BindRepeating(&MediaFoundationRenderer::OnWaiting, weak_this)),
+      base::BindPostTaskToCurrentDefault(base::BindRepeating(
+          &MediaFoundationRenderer::OnFrameStepCompleted, weak_this)),
       base::BindPostTaskToCurrentDefault(base::BindRepeating(
           &MediaFoundationRenderer::OnTimeUpdate, weak_this))));
 
@@ -591,8 +595,14 @@ void MediaFoundationRenderer::SetPlaybackRate(double playback_rate) {
   DVLOG_FUNC(2) << "playback_rate=" << playback_rate;
 
   HRESULT hr = mf_media_engine_->SetPlaybackRate(playback_rate);
-  // Ignore error so that the media continues to play rather than stopped.
-  DVLOG_IF(1, FAILED(hr)) << "Failed to set playback rate: " << PrintHr(hr);
+
+  if (SUCCEEDED(hr)) {
+    playback_rate_ = playback_rate;
+  } else {
+    DVLOG_IF(1, FAILED(hr)) << "Failed to set playback rate: " << PrintHr(hr);
+    OnError(PIPELINE_ERROR_COULD_NOT_RENDER,
+            ErrorReason::kFailedToSetPlaybackRate, hr);
+  }
 }
 
 void MediaFoundationRenderer::GetDCompSurface(GetDCompSurfaceCB callback) {
@@ -882,6 +892,22 @@ void MediaFoundationRenderer::OnLoadedData() {
 void MediaFoundationRenderer::OnCanPlayThrough() {
   DVLOG_FUNC(2);
 
+  // If the playback rate in Media Foundations is 0, the video renderer would
+  // not pre-roll and request frames. Use Frame Step function to force
+  // pre-rolling
+  if (playback_rate_ == 0) {
+    ComPtr<IMFMediaEngineEx> mf_media_engine_ex;
+
+    HRESULT hr = mf_media_engine_.As(&mf_media_engine_ex);
+    if (SUCCEEDED(hr)) {
+      mf_media_engine_ex->FrameStep(/*Forward=*/true);
+    } else {
+      OnError(PIPELINE_ERROR_COULD_NOT_RENDER,
+              ErrorReason::kFailedToGetMediaEngineEx, hr);
+      return;
+    }
+  }
+
   // According to HTML5 <video> spec, on "canplaythrough", the video could be
   // rendered at the current playback rate all the way to its end, and it's
   // the time to report BUFFERING_HAVE_ENOUGH.
@@ -920,6 +946,27 @@ void MediaFoundationRenderer::OnWaiting() {
 void MediaFoundationRenderer::OnTimeUpdate() {
   DVLOG_FUNC(3);
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
+}
+
+void MediaFoundationRenderer::OnFrameStepCompleted() {
+  DVLOG_FUNC(2);
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+
+  // Frame-Stepping causes Media engine to be in a paused state after finishing.
+  // Thus play and set playback rate is needed to change the state to be
+  // playing.
+
+  // Set playback rate is call again because on start, if SetPlaybackRate of 0
+  // is called before pipeline topology is setup, the playback rate of Media
+  // Engine will be defaulted to 1 as setting playback rate is ignored until
+  // topology is set. Thus, when frame step is finished, setting the playback
+  // rate again ensures consistency.
+  HRESULT hr = mf_media_engine_->Play();
+  if (FAILED(hr)) {
+    OnError(PIPELINE_ERROR_COULD_NOT_RENDER, ErrorReason::kFailedToPlay, hr);
+    return;
+  }
+  SetPlaybackRate(playback_rate_);
 }
 
 void MediaFoundationRenderer::OnProtectionManagerWaiting(WaitingReason reason) {

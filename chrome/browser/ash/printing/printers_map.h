@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_PRINTING_PRINTERS_MAP_H_
 #define CHROME_BROWSER_ASH_PRINTING_PRINTERS_MAP_H_
 
+#include <optional>
 #include <set>
 #include <string>
 #include <unordered_map>
@@ -13,7 +14,6 @@
 #include "base/containers/flat_map.h"
 #include "chromeos/printing/cups_printer_status.h"
 #include "chromeos/printing/printer_configuration.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -28,11 +28,11 @@ class PrintersMap {
   ~PrintersMap();
 
   // Returns printer matching |printer_id| if found in any PrinterClass.
-  absl::optional<chromeos::Printer> Get(const std::string& printer_id) const;
+  std::optional<chromeos::Printer> Get(const std::string& printer_id) const;
 
   // Returns printer matching |printer_id| in |printer_class|.
-  absl::optional<chromeos::Printer> Get(chromeos::PrinterClass printer_class,
-                                        const std::string& printer_id) const;
+  std::optional<chromeos::Printer> Get(chromeos::PrinterClass printer_class,
+                                       const std::string& printer_id) const;
 
   // Returns all printers across all classes.
   std::vector<chromeos::Printer> Get() const;

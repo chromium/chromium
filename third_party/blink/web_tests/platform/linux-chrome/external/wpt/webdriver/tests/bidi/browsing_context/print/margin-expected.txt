@@ -7,16 +7,4 @@ This is a wdspec test.
   assert False == True
 [FAIL] test_margin_default[bottom]
   assert False == True
-[PASS] test_margin_same_as_page_dimension[top]
-[PASS] test_margin_same_as_page_dimension[left]
-[PASS] test_margin_same_as_page_dimension[right]
-[PASS] test_margin_same_as_page_dimension[bottom]
-[PASS] test_margin_same_as_page_dimension[all]
-[PASS] test_margin_minimum_page_size[top]
-[PASS] test_margin_minimum_page_size[left]
-[PASS] test_margin_minimum_page_size[right]
-[PASS] test_margin_minimum_page_size[bottom]
-[PASS] test_margin_does_not_affect_page_size[default]
-[PASS] test_margin_does_not_affect_page_size[0]
-[PASS] test_margin_does_not_affect_page_size[2]
 Harness: the test ran to completion.

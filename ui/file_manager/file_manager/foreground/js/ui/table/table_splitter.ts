@@ -13,7 +13,6 @@
 import {dispatchSimpleEvent} from 'chrome://resources/ash/common/cr_deprecated.js';
 
 import {jsSetter} from '../../../../common/js/cr_ui.js';
-import {isJellyEnabled} from '../../../../common/js/flags.js';
 import {FileTableColumnModel} from '../file_table.js';
 import {Splitter} from '../splitter.js';
 
@@ -41,11 +40,8 @@ export class TableSplitter extends Splitter {
     this.table_ = table;
 
     const icon = document.createElement('cr-icon-button');
-    if (isJellyEnabled()) {
-      icon.setAttribute('iron-icon', 'files32:bar-dragger');
-    } else {
-      icon.setAttribute('iron-icon', 'files32:small-dragger');
-    }
+    icon.setAttribute('iron-icon', 'files32:bar-dragger');
+
     icon.setAttribute('tabindex', '-1');
     icon.setAttribute('aria-hidden', 'true');
     icon.classList.add('splitter-icon');

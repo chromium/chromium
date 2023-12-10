@@ -6,9 +6,13 @@
 
 #include <windows.h>
 
+#include <utility>
+
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/synchronization/waitable_event.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/threading/thread_restrictions.h"
 
 namespace base {
 namespace win {
@@ -40,13 +44,24 @@ bool ObjectWatcher::StopWatching() {
   // Make sure ObjectWatcher is used in a sequenced fashion.
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
-  // Blocking call to cancel the wait. Any callbacks already in progress will
-  // finish before we return from this call.
-  if (!UnregisterWaitEx(wait_object_, INVALID_HANDLE_VALUE)) {
-    DPLOG(FATAL) << "UnregisterWaitEx failed";
-    return false;
-  }
+  // Allow blocking calls for historical reasons; see https://crbug.com/700335.
+  base::ScopedAllowBaseSyncPrimitivesOutsideBlockingScope allow_blocking;
 
+  // Cancel the wait; blocking on it being unregistered. Note that passing
+  // INVALID_HANDLE_VALUE to wait on all callback functions seemlingly waits
+  // on other callbacks in the threadpool; not just callbacks from
+  // RegisterWaitForSingleObject.
+  WaitableEvent event;
+  if (!UnregisterWaitEx(wait_object_, event.handle())) {
+    // ERROR_IO_PENDING is not a fatal error; see
+    // https://learn.microsoft.com/en-us/windows/win32/sync/unregisterwaitex.
+    if (const auto error = ::GetLastError(); error != ERROR_IO_PENDING) {
+      DPLOG(FATAL) << "UnregisterWaitEx failed";
+      return false;
+    }
+  }
+  // Wait for unregistration to complete.
+  event.Wait();
   Reset();
   return true;
 }
@@ -66,9 +81,15 @@ void CALLBACK ObjectWatcher::DoneWaiting(void* param, BOOLEAN timed_out) {
   // The destructor blocks on any callbacks that are in flight, so we know that
   // that is always a pointer to a valid ObjectWater.
   ObjectWatcher* that = static_cast<ObjectWatcher*>(param);
-  that->task_runner_->PostTask(that->location_, that->callback_);
-  if (that->run_once_)
-    that->callback_.Reset();
+
+  // `that` must not be touched once `PostTask` returns since the callback
+  // could delete the instance on another thread.
+  SequencedTaskRunner* const task_runner = that->task_runner_.get();
+  if (that->run_once_) {
+    task_runner->PostTask(that->location_, std::move(that->callback_));
+  } else {
+    task_runner->PostTask(that->location_, that->callback_);
+  }
 }
 
 bool ObjectWatcher::StartWatchingInternal(HANDLE object,

@@ -6,7 +6,7 @@
 
 #include "base/time/time.h"
 #include "extensions/renderer/v8_helpers.h"
-#include "net/http/http_response_info.h"
+#include "net/http/http_connection_info.h"
 #include "third_party/blink/public/platform/web_url_response.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_navigation_type.h"
@@ -86,6 +86,7 @@ class LoadTimesExtensionWrapper : public v8::Extension {
       case blink::kWebNavigationTypeFormSubmitted:
         return "FormSubmitted";
       case blink::kWebNavigationTypeBackForward:
+      case blink::kWebNavigationTypeRestore:
         return "BackForward";
       case blink::kWebNavigationTypeReload:
         return "Reload";
@@ -106,6 +107,7 @@ class LoadTimesExtensionWrapper : public v8::Extension {
       case blink::kWebNavigationTypeFormResubmittedReload:
         return kTransitionLink;
       case blink::kWebNavigationTypeBackForward:
+      case blink::kWebNavigationTypeRestore:
         return kTransitionForwardBack;
       case blink::kWebNavigationTypeReload:
         return kTransitionReload;
@@ -180,8 +182,8 @@ class LoadTimesExtensionWrapper : public v8::Extension {
         response.AlpnNegotiatedProtocol().Utf8();
     bool was_alternate_protocol_available =
         response.WasAlternateProtocolAvailable();
-    std::string connection_info = net::HttpResponseInfo::ConnectionInfoToString(
-        response.ConnectionInfo());
+    std::string_view connection_info =
+        net::HttpConnectionInfoToString(response.ConnectionInfo());
 
     // Important: |frame| and |document_loader| should not be
     // referred to below this line, as JS setters below can invalidate these
@@ -323,7 +325,9 @@ class LoadTimesExtensionWrapper : public v8::Extension {
                      isolate, "connectionInfo",
                      v8::NewStringType::kInternalized),
                  LoadtimesGetter, nullptr,
-                 v8::String::NewFromUtf8(isolate, connection_info.c_str())
+                 v8::String::NewFromUtf8(isolate, connection_info.data(),
+                                         v8::NewStringType::kNormal,
+                                         connection_info.length())
                      .ToLocalChecked())
              .FromMaybe(false)) {
       return;

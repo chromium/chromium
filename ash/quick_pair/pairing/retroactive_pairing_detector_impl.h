@@ -5,10 +5,8 @@
 #ifndef ASH_QUICK_PAIR_PAIRING_RETROACTIVE_PAIRING_DETECTOR_IMPL_H_
 #define ASH_QUICK_PAIR_PAIRING_RETROACTIVE_PAIRING_DETECTOR_IMPL_H_
 
+#include <optional>
 #include <string>
-
-#include "ash/quick_pair/pairing/retroactive_pairing_detector.h"
-#include "base/memory/raw_ptr.h"
 
 #include "ash/public/cpp/session/session_controller.h"
 #include "ash/public/cpp/session/session_observer.h"
@@ -18,17 +16,18 @@
 #include "ash/quick_pair/message_stream/message_stream.h"
 #include "ash/quick_pair/message_stream/message_stream_lookup.h"
 #include "ash/quick_pair/pairing/pairer_broker.h"
+#include "ash/quick_pair/pairing/retroactive_pairing_detector.h"
 #include "ash/quick_pair/proto/fastpair.pb.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "device/bluetooth/bluetooth_adapter.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 class BluetoothDevice;
@@ -86,7 +85,7 @@ class RetroactivePairingDetectorImpl final
   // PairerBroker::Observer
   void OnDevicePaired(scoped_refptr<Device> device) override;
   void OnAccountKeyWrite(scoped_refptr<Device> device,
-                         absl::optional<AccountKeyFailure> error) override;
+                         std::optional<AccountKeyFailure> error) override;
   void OnPairFailure(scoped_refptr<Device> device,
                      PairFailure failure) override;
 
@@ -157,6 +156,19 @@ class RetroactivePairingDetectorImpl final
   // removes an observer for a corresponding MessageStream and from
   // |message_streams_| if a MessageStream exists for the device.
   void RemoveExpiredDevicesFromStoredDeviceData();
+
+  // Gets or creates a Gatt connection to |device|.
+  void CreateGattConnection(device::BluetoothDevice* device);
+
+  // Internal method called when creating a FastPairGattServiceClient.
+  void OnGattClientInitializedCallback(device::BluetoothDevice* device,
+                                       std::optional<PairFailure> failure);
+
+  // Internal method called to retrieve the model ID of a device.
+  void OnReadModelId(
+      const std::string& address,
+      std::optional<device::BluetoothGattService::GattErrorCode> error_code,
+      const std::vector<uint8_t>& value);
 
   // The classic pairing addresses of potential Retroactive Pair supported
   // devices that are found in the adapter. We have to store them and wait for a

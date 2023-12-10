@@ -9,6 +9,7 @@
 
 #import "ios/chrome/browser/ui/ntp/new_tab_page_consumer.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_header_view_controller_delegate.h"
+#import "ios/chrome/browser/ui/ntp/new_tab_page_view_delegate.h"
 
 @class BubblePresenter;
 @class ContentSuggestionsViewController;
@@ -25,6 +26,7 @@
 @interface NewTabPageViewController
     : UIViewController <NewTabPageConsumer,
                         NewTabPageHeaderViewControllerDelegate,
+                        NewTabPageViewDelegate,
                         UIScrollViewDelegate>
 
 // View controller wrapping the feed.

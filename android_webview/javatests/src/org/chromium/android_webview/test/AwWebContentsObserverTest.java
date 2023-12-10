@@ -25,14 +25,11 @@ import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer
 import org.chromium.ui.base.PageTransition;
 import org.chromium.url.GURL;
 
-/**
- * Tests for the AwWebContentsObserver class.
- */
+/** Tests for the AwWebContentsObserver class. */
 @RunWith(Parameterized.class)
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
 public class AwWebContentsObserverTest extends AwParameterizedTest {
-    @Rule
-    public AwActivityTestRule mActivityTestRule;
+    @Rule public AwActivityTestRule mActivityTestRule;
 
     private TestAwContentsClient mContentsClient;
     private AwTestContainerView mTestContainerView;

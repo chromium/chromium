@@ -182,12 +182,6 @@ void URLRequest::Delegate::OnResponseStarted(URLRequest* request,
 URLRequest::~URLRequest() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  // Log the redirect count during destruction, to ensure that it is only
-  // recorded at the end of following all redirect chains.
-  UMA_HISTOGRAM_EXACT_LINEAR("Net.RedirectChainLength",
-                             kMaxRedirects - redirect_limit_,
-                             kMaxRedirects + 1);
-
   Cancel();
 
   if (network_delegate()) {
@@ -984,8 +978,8 @@ void URLRequest::Redirect(
   referrer_ = redirect_info.new_referrer;
   referrer_policy_ = redirect_info.new_referrer_policy;
   site_for_cookies_ = redirect_info.new_site_for_cookies;
-  isolation_info_ = isolation_info_.CreateForRedirect(
-      url::Origin::Create(redirect_info.new_url));
+  set_isolation_info(isolation_info_.CreateForRedirect(
+      url::Origin::Create(redirect_info.new_url)));
 
   if ((load_flags_ & LOAD_CAN_USE_SHARED_DICTIONARY) &&
       (load_flags_ &

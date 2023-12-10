@@ -32,9 +32,7 @@ public class WebappDirectoryManager {
     /** Whether or not the class has already started trying to clean up obsolete directories. */
     private static final AtomicBoolean sMustCleanUpOldDirectories = new AtomicBoolean(true);
 
-    /**
-     * Deletes web app directories with stale data.
-     */
+    /** Deletes web app directories with stale data. */
     public static void cleanUpDirectories() {
         if (!sMustCleanUpOldDirectories.getAndSet(false)) return;
 

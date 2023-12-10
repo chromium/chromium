@@ -43,4 +43,14 @@ const char kUTMCampaignValueForDiscounts[] =
 
 const char kUTMPrefix[] = "utm_";
 
+const char kOgImage[] = "image";
+const char kOgPriceAmount[] = "price:amount";
+const char kOgPriceCurrency[] = "price:currency";
+const char kOgProductLink[] = "product_link";
+const char kOgTitle[] = "title";
+const char kOgType[] = "type";
+
+const char kOgTypeOgProduct[] = "product";
+const char kOgTypeProductItem[] = "product.item";
+
 }  // namespace commerce

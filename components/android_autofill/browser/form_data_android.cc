@@ -8,16 +8,21 @@
 #include <string_view>
 #include <tuple>
 
+#include "base/containers/flat_map.h"
 #include "components/android_autofill/browser/android_autofill_bridge_factory.h"
 #include "components/android_autofill/browser/form_data_android_bridge.h"
 #include "components/android_autofill/browser/form_field_data_android.h"
+#include "components/autofill/core/browser/autofill_field.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/common/form_field_data.h"
+#include "components/autofill/core/common/unique_ids.h"
 
 namespace autofill {
 
-FormDataAndroid::FormDataAndroid(const FormData& form)
-    : form_(form),
+FormDataAndroid::FormDataAndroid(const FormData& form, SessionId session_id)
+    : session_id_(session_id),
+      form_(form),
       bridge_(AndroidAutofillBridgeFactory::GetInstance()
                   .CreateFormDataAndroidBridge()) {
   fields_.reserve(form_.fields.size());
@@ -29,7 +34,7 @@ FormDataAndroid::FormDataAndroid(const FormData& form)
 FormDataAndroid::~FormDataAndroid() = default;
 
 base::android::ScopedJavaLocalRef<jobject> FormDataAndroid::GetJavaPeer() {
-  return bridge_->GetOrCreateJavaPeer(form_, fields_);
+  return bridge_->GetOrCreateJavaPeer(form_, session_id_, fields_);
 }
 
 void FormDataAndroid::UpdateFromJava() {
@@ -86,25 +91,27 @@ bool FormDataAndroid::SimilarFormAs(const FormData& form) const {
 }
 
 void FormDataAndroid::UpdateFieldTypes(const FormStructure& form_structure) {
-  // This form has been changed after the query starts. Ignore this response,
-  // a new one is on the way.
-  if (form_structure.field_count() != fields_.size())
-    return;
-  auto form_field_data_android = fields_.begin();
-  for (const auto& autofill_field : form_structure) {
-    DCHECK(form_field_data_android->get()->SimilarFieldAs(*autofill_field));
-    std::vector<AutofillType> server_predictions;
-    for (const auto& prediction : autofill_field->server_predictions()) {
-      server_predictions.emplace_back(
-          static_cast<ServerFieldType>(prediction.type()));
+  // Map FieldGlobalId's to their respective AutofillField, this way we can
+  // quickly ignore below FormFieldDataAndroid's with no matching AutofillField.
+  auto autofill_fields = base::MakeFlatMap<FieldGlobalId, const AutofillField*>(
+      form_structure, {}, [](const auto& field) {
+        return std::make_pair(field->global_id(), field.get());
+      });
+  for (auto& form_field_data_android : fields_) {
+    if (auto it = autofill_fields.find(form_field_data_android->global_id());
+        it != autofill_fields.end()) {
+      const AutofillField* autofill_field = it->second;
+      std::vector<AutofillType> server_predictions;
+      for (const auto& prediction : autofill_field->server_predictions()) {
+        server_predictions.emplace_back(
+            ToSafeServerFieldType(prediction.type(), NO_SERVER_DATA));
+      }
+      form_field_data_android->UpdateAutofillTypes(
+          FormFieldDataAndroid::FieldTypes(
+              AutofillType(autofill_field->heuristic_type()),
+              AutofillType(autofill_field->server_type()),
+              autofill_field->ComputedType(), std::move(server_predictions)));
     }
-    form_field_data_android->get()->UpdateAutofillTypes(
-        FormFieldDataAndroid::FieldTypes(
-            AutofillType(autofill_field->heuristic_type()),
-            AutofillType(autofill_field->server_type()),
-            autofill_field->ComputedType(), std::move(server_predictions)));
-    if (++form_field_data_android == fields_.end())
-      break;
   }
 }
 

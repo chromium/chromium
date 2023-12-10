@@ -42,8 +42,12 @@ public class DeleteUndoCoordinator {
     public void showSnackbar(Collection<OfflineItem> itemsSelected, Callback<Boolean> callback) {
         assert !itemsSelected.isEmpty();
 
-        Snackbar snackbar = Snackbar.make(UndoUiUtils.getTitleFor(itemsSelected), mController,
-                Snackbar.TYPE_ACTION, Snackbar.UMA_DOWNLOAD_DELETE_UNDO);
+        Snackbar snackbar =
+                Snackbar.make(
+                        UndoUiUtils.getTitleFor(itemsSelected),
+                        mController,
+                        Snackbar.TYPE_ACTION,
+                        Snackbar.UMA_DOWNLOAD_DELETE_UNDO);
         snackbar.setAction(ContextUtils.getApplicationContext().getString(R.string.undo), callback);
         snackbar.setTemplateText(UndoUiUtils.getTemplateTextFor(itemsSelected));
         snackbar.setActionAccessibilityAnnouncement(

@@ -40,7 +40,7 @@ class IconImageRequest : public ImageDecoder::ImageRequest {
     LOG(ERROR) << "Failed to decode icon image.";
     content::GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE, base::BindOnce(std::move(result_callback_),
-                                  absl::optional<gfx::ImageSkia>()));
+                                  std::optional<gfx::ImageSkia>()));
     delete this;
   }
 
@@ -60,7 +60,7 @@ void LoadOnBlockingPool(
     LOG(ERROR) << "Failed to read icon file.";
     content::GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE, base::BindOnce(std::move(result_callback),
-                                  absl::optional<gfx::ImageSkia>()));
+                                  std::optional<gfx::ImageSkia>()));
     return;
   }
 
@@ -88,7 +88,7 @@ void KioskAppIconLoader::Start(const base::FilePath& icon_path) {
 }
 
 void KioskAppIconLoader::OnImageDecodingFinished(
-    absl::optional<gfx::ImageSkia> result) {
+    std::optional<gfx::ImageSkia> result) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   std::move(callback_).Run(result);

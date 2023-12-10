@@ -54,6 +54,10 @@ using InstallError = update_client::InstallError;
 
 ComponentInstallerPolicy::~ComponentInstallerPolicy() = default;
 
+bool ComponentInstallerPolicy::AllowCachedCopies() const {
+  return true;
+}
+
 ComponentInstaller::RegistrationInfo::RegistrationInfo()
     : version(kNullVersion) {}
 
@@ -513,8 +517,8 @@ void ComponentInstaller::FinishRegistration(
                current_fingerprint_,
                installer_policy_->GetInstallerAttributes(), action_handler_,
                this, installer_policy_->RequiresNetworkEncryption(),
-               installer_policy_
-                   ->SupportsGroupPolicyEnabledComponentUpdates()))) {
+               installer_policy_->SupportsGroupPolicyEnabledComponentUpdates(),
+               installer_policy_->AllowCachedCopies()))) {
     VLOG(0) << "Component registration failed for "
             << installer_policy_->GetName();
     if (!callback.is_null())

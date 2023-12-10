@@ -812,6 +812,36 @@ TEST_F(SearchControllerTest, InvokeResult) {
   ExpectIdOrder({"a", "c", "d"});
 }
 
+TEST_F(SearchControllerTest, ResultWithSameScore) {
+  auto results_1 = MakeListResults(
+      {"d", "c", "b", "a"},
+      {Category::kWeb, Category::kWeb, Category::kWeb, Category::kWeb},
+      {-1, -1, -1, -1}, {0.4, 0.4, 0.4, 0.4});
+
+  search_controller_->StartSearch(u"abc");
+  search_controller_->SetResults(SimpleProvider(Result::kOmnibox),
+                                 std::move(results_1));
+  WaitInMilliseconds();
+  // Results from same category with the same display score will be sorted in
+  // alphabet order to avoid flipping.
+  ExpectIdOrder({"a", "b", "c", "d"});
+
+  auto results_2 = MakeFileResults(
+      {"d", "c", "b", "a"}, {"file.txt", "file.txt", "file.txt", "file.txt"},
+      {"dir_d/", "dir_c/", "dir_b/", "dir_a/"},
+      {DisplayType::kImage, DisplayType::kImage, DisplayType::kImage,
+       DisplayType::kImage},
+      {-1, -1, -1, -1}, {0.4, 0.4, 0.4, 0.4});
+
+  search_controller_->StartSearch(u"abc");
+  search_controller_->SetResults(SimpleProvider(Result::kImageSearch),
+                                 std::move(results_2));
+  WaitInMilliseconds();
+  // File results from same display types with the same display score will be
+  // sorted in order of file path to avoid flipping.
+  ExpectIdOrder({"a", "b", "c", "d"});
+}
+
 TEST_F(SearchControllerTest, Train) {
   auto results_1 = MakeListResults(
       {"a", "b", "c", "d"},

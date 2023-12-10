@@ -8,6 +8,7 @@
 <translation id="1420684932347524586">अरेरे! यादृच्छिक RSA खासगी की व्युत्पन्न करण्यात अयशस्वी.</translation>
 <translation id="1445572445564823378">हे एक्स्टेंशन <ph name="PRODUCT_NAME" /> हळू चालत आहे. <ph name="PRODUCT_NAME" /> चे काम रिस्टोअर करण्‍यासाठी तुम्ही ते ‍अक्षम करणे आवश्‍यक आहे.</translation>
 <translation id="1468038450257740950">WebGL ला सपोर्ट नाही.</translation>
+<translation id="1610570795592207282">स्क्रिप्टसाठी CSS '<ph name="RELATIVE_PATH" />' लोड करता आले नाही.</translation>
 <translation id="1803557475693955505">'बॅकग्राउंड पेज '<ph name="BACKGROUND_PAGE" />'  लोड करता आले नाही.</translation>
 <translation id="2159915644201199628">इमेज डीकोड करणे शक्य झाले नाही: '<ph name="IMAGE_NAME" />'</translation>
 <translation id="2350172092385603347">भाषांतर वापरले, परंतु मॅनिफेस्टमध्ये डीफॉल्ट_लोकॅल नमूद नाही.</translation>
@@ -18,14 +19,12 @@
 <translation id="3115238746683532089"><ph name="VENDOR_ID" /> विक्रेत्याकडील <ph name="PRODUCT_ID" /> अज्ञात उत्पादन (सिरीअल नंबर <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">crx फाइल पुनर्स्थित करण्यात अयशस्वी. फाइल वापरात आहे किंवा नाही हे पाहण्यासाठी तपासा.</translation>
 <translation id="3163201441334626963"><ph name="VENDOR_ID" /> विक्रेत्याकडील <ph name="PRODUCT_ID" /> अज्ञात उत्पादन</translation>
-<translation id="3302709122321372472">आशय स्क्रिप्टसाठी css '<ph name="RELATIVE_PATH" />' लोड करणे शक्य नाही.</translation>
 <translation id="3369521687965833290">एक्स्टेंशन अनपॅक करणे शक्य नाही. एक्स्टेंशन सुरक्षितपणे अनपॅक करण्यासाठी, तुमच्या प्रोफाइल डिरेक्टरीत ड्राइव्ह अक्षरासह सुरुवात होणारा पाथ असणे आणि जंक्शन, माउंट पॉइंट किंवा सिमलिंक नसणे आवश्यक आहे. तुमच्या प्रोफाइलसाठी असा कोणताही पाथ सद्य नाही.</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (सिरीअल नंबर <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="VENDOR_ID" /> विक्रेत्याकडील <ph name="PRODUCT_NAME" /> (सिरीअल नंबर <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">खासगी की साठी इनपुट मूल्य वैध पथ असावा.</translation>
 <translation id="388442998277590542">पर्याय पेज '<ph name="OPTIONS_PAGE" />' लोड करणे शक्य नाही.</translation>
 <translation id="3984413272403535372">एक्स्टेंशनमध्ये साइन करताना एरर.</translation>
-<translation id="39964277676607559">आशय स्क्रिप्टसाठी javascript '<ph name="RELATIVE_PATH" />' लोड करणे शक्य नाही.</translation>
 <translation id="4115165561519362854">या मशीनच्या ॲडमिनिस्ट्रेटरला <ph name="EXTENSION_NAME" /> कडे <ph name="EXTENSION_VERSION" /> ची किमान आवृत्ती असणे आवश्यक आहे. ही त्या आवृत्तीवर (किंवा उच्च) अपडेट करेपर्यंत हे सक्षम होऊ शकत नाही.</translation>
 <translation id="4233778200880751280">'<ph name="ABOUT_PAGE" />' पृष्ठाविषयी लोड करू शकलो नाही.</translation>
 <translation id="471800408830181311">खासगी की आउटपुट करण्यात अयशस्वी.</translation>
@@ -33,6 +32,7 @@
 <translation id="4988792151665380515">सार्वजनिक की एक्सपोर्ट करण्यात अयशस्वी.</translation>
 <translation id="5026754133087629784">वेबदृश्य: <ph name="WEBVIEW_TAG_NAME" /></translation>
 <translation id="5098647635849512368">पॅक करण्यासाठी डिरेक्टरीमध्ये अचूक पाथ शोधू शकत नाही</translation>
+<translation id="5160071981665899014">स्क्रिप्टसाठी JavaScript '<ph name="RELATIVE_PATH" />' लोड करता आले नाही.</translation>
 <translation id="5356315618422219272">ॲपदृश्य: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5436430103864390185">आकार असलेल्या विंडोना सपोर्ट नाही.</translation>
 <translation id="5456409301717116725">हे एक्स्टेंशन की फाइल '<ph name="KEY_PATH" />' चा समावेश करतात. तुम्हाला कदाचित ते करणे आवश्यक नाही.</translation>

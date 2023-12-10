@@ -1,0 +1,15 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//ios/web/public/js_messaging/optimize_ts.gni")
+
+source_set("java_script_console") {
+  sources = [
+    "java_script_console_feature.h",
+    "java_script_console_feature_delegate.h",
+    "java_script_console_feature_factory.h",
+    "java_script_console_message.h",
+  ]
+  public_deps = [ "//ios/chrome/browser/web/java_script_console" ]
+}

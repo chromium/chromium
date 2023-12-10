@@ -73,6 +73,7 @@ class MockMessagePumpDelegate : public MessagePump::Delegate {
   MockMessagePumpDelegate& operator=(const MockMessagePumpDelegate&) = delete;
 
   void BeforeWait() override {}
+  void BeginNativeWorkBeforeDoWork() override {}
   MOCK_METHOD0(DoWork, MessagePump::Delegate::NextWorkInfo());
   MOCK_METHOD0(DoIdleWork, bool());
 

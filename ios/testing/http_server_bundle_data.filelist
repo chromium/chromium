@@ -34,6 +34,7 @@ data/http_server_files/opensearch.xml
 data/http_server_files/permissions/camera_and_microphone.html
 data/http_server_files/permissions/camera_only.html
 data/http_server_files/permissions/microphone_only.html
+data/http_server_files/email_signup_form.html
 data/http_server_files/pony.html
 data/http_server_files/profile_form.html
 data/http_server_files/readonly_form.html
@@ -43,6 +44,7 @@ data/http_server_files/sample.ics
 data/http_server_files/sample.mobileconfig
 data/http_server_files/semi_bundle.pkpasses
 data/http_server_files/simple_login_form.html
+data/http_server_files/simple_login_form_empty.html
 data/http_server_files/simple_signup_form.html
 data/http_server_files/single_page_wide.pdf
 data/http_server_files/state_operations.html

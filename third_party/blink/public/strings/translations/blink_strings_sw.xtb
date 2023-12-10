@@ -30,6 +30,7 @@
 <translation id="2226276347425096477">Tafadhali fupisha maandishi haya hadi vibambo <ph name="MAX_CHARACTERS" /> au chini (kwa sasa unatumia vibambo <ph name="CURRENT_LENGTH" /> ).</translation>
 <translation id="2247351761944213033">Wiki <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Wimbo wa <ph name="NUMBER" /></translation>
+<translation id="2353297238722298836">Kamera na maikrofoni zimeruhusiwa</translation>
 <translation id="2393030564806080191">Nambari ya rangi ya heksadesimali</translation>
 <translation id="2398813069815436052">kidirisha kimefunguliwa.</translation>
 <translation id="245932805758469625">idadi ya sekunde za video zilizosalia</translation>
@@ -60,10 +61,12 @@
 <translation id="3822383571486410024">Tafadhali refusha maandishi haya hadi herufi <ph name="MIN_CHARACTERS" /> au zaidi (kwa sasa unatumia herufi <ph name="CURRENT_LENGTH" />).</translation>
 <translation id="383465348367842624">Sehemu inayofuatwa na '<ph name="ATSIGN" />' haipaswi kuwa na alama ya '<ph name="INVALIDCHARACTER" />'.</translation>
 <translation id="3846214748874656680">Ondoka kwenye skrini nzima</translation>
+<translation id="4031179711345676612">Maikrofoni imeruhusiwa</translation>
 <translation id="4103419683916926126">nukta</translation>
 <translation id="4201051445878709314">Onyesha mwezi uliotangulia</translation>
 <translation id="4360991593054037559">Tafadhali ingiza thamani halali. Thamani mbili halali za karibu ni <ph name="VALID_VALUE_LOW" /> na <ph name="VALID_VALUE_HIGHER" />.</translation>
 <translation id="4522570452068850558">Maelezo</translation>
+<translation id="4663373278480897665">Kamera imeruhusiwa</translation>
 <translation id="4664250907885839816">Sehemu inayofuata '<ph name="ATSIGN" />' haipaswi kuwa na alama ya '<ph name="INVALIDCHARACTER" />'.</translation>
 <translation id="4718048029184481307">Inacheza katika hali ya picha ndani ya picha</translation>
 <translation id="4748357248530471599">tumia mkato kwenye skrini nzima</translation>
@@ -137,6 +140,7 @@
 <translation id="6941933287844615239">pakua maudhui</translation>
 <translation id="698788488269350478">imepanuliwa.</translation>
 <translation id="6989848892321993519">Tafadhali refusha maandishi haya hadi herufi <ph name="MIN_CHARACTERS" /> au zaidi (kwa sasa unatumia herufi 1).</translation>
+<translation id="7080893216867146095">Umeruhusu kushiriki maelezo ya mahali ulipo</translation>
 <translation id="709897737746224366">Tafadhali linganisha umbizo lililoombwa.</translation>
 <translation id="7102274145889307184">mahali ulipo sasa</translation>
 <translation id="7263440858009898357">Tafadhali chagua kipengee katika orodha.</translation>

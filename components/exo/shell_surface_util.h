@@ -79,7 +79,7 @@ Surface* GetShellRootSurface(const aura::Window* window);
 
 // Returns the ShellSurfaceBase for the given |window|, or nullptr if no such
 // surface exists.
-ShellSurfaceBase* GetShellSurfaceBaseForWindow(aura::Window* window);
+ShellSurfaceBase* GetShellSurfaceBaseForWindow(const aura::Window* window);
 
 // Returns the target surface for the located event |event|.  If an
 // event handling is grabbed by an window, it'll first examine that
@@ -108,7 +108,7 @@ void RevokePermissionToActivate(aura::Window* window);
 bool HasPermissionToActivate(aura::Window* window);
 
 // Returns true if event is/will be consumed by IME.
-bool ConsumedByIme(aura::Window* window, const ui::KeyEvent& event);
+bool ConsumedByIme(const ui::KeyEvent& event);
 
 // Set aura::client::kSkipImeProcessing to all Surface descendants.
 void SetSkipImeProcessingToDescendentSurfaces(aura::Window* window, bool value);

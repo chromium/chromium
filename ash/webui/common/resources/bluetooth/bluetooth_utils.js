@@ -88,7 +88,7 @@ export function hasAnyDetailedBatteryInfo(device) {
  * @return {boolean}
  */
 export function hasDefaultImage(device) {
-  return !!device.imageInfo && !!device.imageInfo.defaultImageUrl &&
+  return !!device && !!device.imageInfo && !!device.imageInfo.defaultImageUrl &&
       !!device.imageInfo.defaultImageUrl.url;
 }
 

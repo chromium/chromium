@@ -12,6 +12,7 @@
 #include "base/task/cancelable_task_tracker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "components/webapps/browser/android/add_to_homescreen_params.h"
 #include "components/webapps/browser/android/shortcut_info.h"
 #include "components/webapps/browser/installable/installable_logging.h"
 #include "components/webapps/common/web_page_metadata_agent.mojom.h"
@@ -45,6 +46,7 @@ class AddToHomescreenDataFetcher {
     virtual void OnDataAvailable(
         const ShortcutInfo& info,
         const SkBitmap& primary_icon,
+        AddToHomescreenParams::AppType app_type,
         const InstallableStatusCode installable_status) = 0;
 
    protected:

@@ -514,7 +514,8 @@ void FuchsiaVideoEncodeAccelerator::Encode(scoped_refptr<VideoFrame> frame,
 
 void FuchsiaVideoEncodeAccelerator::RequestEncodingParametersChange(
     const Bitrate& bitrate,
-    uint32_t framerate) {
+    uint32_t framerate,
+    const absl::optional<gfx::Size>& size) {
   // TODO(crbug.com/1373298): Implement RequestEncodingParameterChange.
   NOTIMPLEMENTED();
 }

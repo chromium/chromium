@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/policy/enrollment/psm/rlwe_dmserver_client_impl.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -25,7 +26,6 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/private_membership/src/internal/testing/regression_test_data/regression_test_data.pb.h"
 #include "third_party/private_membership/src/private_membership_rlwe.pb.h"
 #include "third_party/private_membership/src/private_membership_rlwe_client.h"

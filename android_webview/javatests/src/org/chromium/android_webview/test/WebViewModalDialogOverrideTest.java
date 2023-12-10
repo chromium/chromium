@@ -31,8 +31,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @RunWith(Parameterized.class)
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
 public class WebViewModalDialogOverrideTest extends AwParameterizedTest {
-    @Rule
-    public AwActivityTestRule mActivityTestRule;
+    @Rule public AwActivityTestRule mActivityTestRule;
 
     private static final String EMPTY_PAGE =
             "<!doctype html>" + "<title>Modal Dialog Test</title><p>Testcase.</p>";

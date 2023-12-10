@@ -75,9 +75,15 @@
       <include name="IDS_READING_MODE_YELLOW_PNG" file="side_panel/read_anything/images/read_anything_yellow.png" type="BINDATA" />
       <include name="IDS_READING_MODE_BLUE_PNG" file="side_panel/read_anything/images/read_anything_blue.png" type="BINDATA" />
     </includes>
+
+    <!-- Game Controls lottie json files -->
     <structures>
-      <structure type="lottie" name="IDS_ARC_INPUT_OVERLAY_ONBOARDING_ILLUSTRATION_DARK_JSON" file="chromeos/arc_input_overlay/onboarding_illustration_dark.json" compress="gzip" />
-      <structure type="lottie" name="IDS_ARC_INPUT_OVERLAY_ONBOARDING_ILLUSTRATION_LIGHT_JSON" file="chromeos/arc_input_overlay/onboarding_illustration_light.json" compress="gzip" />
+      <if expr="chromeos_ash">
+        <structure type="lottie" name="IDR_ARC_INPUT_OVERLAY_ONBOARDING_ILLUSTRATION_DARK_JSON" file="chromeos/arc_input_overlay/onboarding_illustration_dark.json" compress="gzip" />
+        <structure type="lottie" name="IDR_ARC_INPUT_OVERLAY_ONBOARDING_ILLUSTRATION_LIGHT_JSON" file="chromeos/arc_input_overlay/onboarding_illustration_light.json" compress="gzip" />
+        <structure type="lottie" name="IDR_ARC_INPUT_OVERLAY_KEY_EDIT_NUDGE_JSON" file="chromeos/arc_input_overlay/key_edit_nudge.json" compress="gzip" />
+        <structure type="lottie" name="IDR_ARC_INPUT_OVERLAY_BUTTON_PLACEMENT_MODE_NUDGE_JSON" file="chromeos/arc_input_overlay/button_placement_mode_nudge.json" compress="gzip" />
+      </if>
     </structures>
   </release>
 </grit>

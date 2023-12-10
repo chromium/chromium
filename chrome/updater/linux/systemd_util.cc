@@ -8,6 +8,8 @@
 #include <sys/un.h>
 #include <systemd/sd-daemon.h>
 #include <unistd.h>
+
+#include <optional>
 #include <utility>
 
 #include "base/base_paths.h"
@@ -58,17 +60,17 @@ constexpr char kUpdaterSocketDefinitionTemplate[] =
     "WantedBy=sockets.target";
 
 // Returns the path to the systemd unit directory for the given scope.
-absl::optional<base::FilePath> GetUnitDirectory(UpdaterScope scope) {
+std::optional<base::FilePath> GetUnitDirectory(UpdaterScope scope) {
   base::FilePath unit_dir;
   switch (scope) {
     case UpdaterScope::kUser:
       if (!base::PathService::Get(base::DIR_HOME, &unit_dir)) {
-        return absl::nullopt;
+        return std::nullopt;
       }
       unit_dir = unit_dir.Append(kUserUnitRelativeDirectory);
 
       if (!base::CreateDirectory(unit_dir)) {
-        return absl::nullopt;
+        return std::nullopt;
       }
       break;
     case UpdaterScope::kSystem:
@@ -182,9 +184,9 @@ void SystemdService::OnSocketReadable() {
 }
 
 bool InstallSystemdUnits(UpdaterScope scope) {
-  absl::optional<base::FilePath> launcher_path =
+  std::optional<base::FilePath> launcher_path =
       GetUpdateServiceLauncherPath(scope);
-  absl::optional<base::FilePath> unit_dir = GetUnitDirectory(scope);
+  std::optional<base::FilePath> unit_dir = GetUnitDirectory(scope);
   if (!launcher_path || !unit_dir) {
     return false;
   }
@@ -215,7 +217,7 @@ bool InstallSystemdUnits(UpdaterScope scope) {
 }
 
 bool UninstallSystemdUnits(UpdaterScope scope) {
-  absl::optional<base::FilePath> unit_dir = GetUnitDirectory(scope);
+  std::optional<base::FilePath> unit_dir = GetUnitDirectory(scope);
   if (!unit_dir) {
     return false;
   }
@@ -231,7 +233,7 @@ bool UninstallSystemdUnits(UpdaterScope scope) {
 }
 
 bool SystemdUnitsInstalled(UpdaterScope scope) {
-  absl::optional<base::FilePath> unit_dir = GetUnitDirectory(scope);
+  std::optional<base::FilePath> unit_dir = GetUnitDirectory(scope);
   if (!unit_dir) {
     return false;
   }

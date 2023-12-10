@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
 #include "third_party/blink/renderer/platform/testing/io_task_runner_testing_platform_support.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
@@ -151,8 +152,8 @@ class MediaStreamVideoTrackTest
     const bool enabled = true;
     WebMediaStreamTrack track = MediaStreamVideoTrack::CreateVideoTrack(
         mock_source_, adapter_settings, absl::optional<bool>(), false, 0.0,
-        absl::nullopt, absl::nullopt, absl::nullopt, false,
-        WebPlatformMediaStreamSource::ConstraintsOnceCallback(), enabled);
+        nullptr, false, WebPlatformMediaStreamSource::ConstraintsOnceCallback(),
+        enabled);
     if (!source_started_) {
       mock_source_->StartMockedSource();
       source_started_ = true;
@@ -186,6 +187,7 @@ class MediaStreamVideoTrackTest
   MediaStreamSource* stream_source() const { return source_; }
 
  private:
+  test::TaskEnvironment task_environment_;
   ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform_;
   Persistent<MediaStreamSource> source_;
   // |mock_source_| is owned by |source_|.

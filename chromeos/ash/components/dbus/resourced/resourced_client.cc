@@ -282,7 +282,7 @@ void ResourcedClientImpl::HandleSetGameModeWithTimeoutResponse(
   dbus::MessageReader reader(response);
   uint8_t previous;
   if (!reader.PopByte(&previous)) {
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
   std::move(callback).Run(static_cast<GameMode>(previous));

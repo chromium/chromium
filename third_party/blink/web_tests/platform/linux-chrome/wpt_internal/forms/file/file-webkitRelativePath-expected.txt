@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+[FAIL] webkitRelativePath is relative from the to the parent of the chosen non-root directory
+  promise_test: Unhandled rejection with value: object "ReferenceError: internals is not defined"
+Harness: the test ran to completion.

@@ -48,6 +48,20 @@ export class LanguageSettingsCardElement extends
       languageHelper: Object,
 
       isRevampWayfindingEnabled_: Boolean,
+
+      rowIcons_: {
+        type: Object,
+        value() {
+          if (isRevampWayfindingEnabled()) {
+            return {
+              languages: 'os-settings:language-revamp',
+            };
+          }
+          return {
+            languages: '',
+          };
+        },
+      },
     };
   }
 
@@ -61,6 +75,7 @@ export class LanguageSettingsCardElement extends
 
   // Internal state.
   private isRevampWayfindingEnabled_ = isRevampWayfindingEnabled();
+  private rowIcons_: Record<string, string>;
 
   // Internal properties for mixins.
   // From RouteOriginMixin. This needs to be defined after

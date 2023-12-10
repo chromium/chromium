@@ -12,9 +12,7 @@ import android.os.Bundle;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
-/**
- * An interface for the implementations of {@link ExportFlow}.
- */
+/** An interface for the implementations of {@link ExportFlow}. */
 public interface ExportFlowInterface {
     /** The delegate to provide ExportFlow with essential information from the owning fragment. */
     public interface Delegate {
@@ -43,7 +41,7 @@ public interface ExportFlowInterface {
         /**
          * Performs the actions that should happen after the export flow has successfully finished.
          */
-        default void onExportFlowSucceeded(){};
+        default void onExportFlowSucceeded() {}
     }
 
     /**
@@ -58,9 +56,7 @@ public interface ExportFlowInterface {
      */
     public void onCreate(Bundle savedInstanceState, Delegate delegate, String callerMetricsId);
 
-    /**
-     * Starts the password export flow.
-     */
+    /** Starts the password export flow. */
     public void startExporting();
 
     /**
@@ -69,9 +65,7 @@ public interface ExportFlowInterface {
      */
     public void onResume();
 
-    /**
-     * Continues the export flow when password list is available.
-     */
+    /** Continues the export flow when password list is available. */
     public void passwordsAvailable();
 
     /**

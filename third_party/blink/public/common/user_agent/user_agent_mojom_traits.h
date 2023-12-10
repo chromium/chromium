@@ -76,7 +76,7 @@ struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::UserAgentMetadataDataView,
     return data.wow64;
   }
 
-  static const std::string& form_factor(
+  static const std::vector<std::string>& form_factor(
       const ::blink::UserAgentMetadata& data) {
     return data.form_factor;
   }

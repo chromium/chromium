@@ -26,9 +26,9 @@ class WrappingURLLoaderThrottleProvider
     virtual ~Client();
 
     // Returns the UrlRewriteRulesProvider associated with RenderFrame with id
-    // |render_frame_id|, or nullptr if no such provider exists.
+    // `frame_token`, or nullptr if no such provider exists.
     virtual UrlRewriteRulesProvider* GetUrlRewriteRulesProvider(
-        int render_frame_id) = 0;
+        const blink::LocalFrameToken& frame_token) = 0;
 
     // Returns whether |header| is a cors exempt header.
     virtual bool IsCorsExemptHeader(base::StringPiece header) = 0;
@@ -53,7 +53,7 @@ class WrappingURLLoaderThrottleProvider
   // blink::URLLoaderThrottleProvider implementation.
   std::unique_ptr<blink::URLLoaderThrottleProvider> Clone() override;
   blink::WebVector<std::unique_ptr<blink::URLLoaderThrottle>> CreateThrottles(
-      int render_frame_id,
+      base::optional_ref<const blink::LocalFrameToken> local_frame_token,
       const blink::WebURLRequest& request) override;
   void SetOnline(bool is_online) override;
 

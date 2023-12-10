@@ -9,7 +9,7 @@
 #include "chrome/browser/ui/webui/ash/settings/pages/device/display_settings/display_settings_provider.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
-#include "ui/display/display_observer.h"
+#include "ui/display/manager/display_manager_observer.h"
 
 namespace ash::settings {
 
@@ -17,13 +17,18 @@ namespace ash::settings {
 // process. Called by the OS settings app.
 class DisplaySettingsProvider : public mojom::DisplaySettingsProvider,
                                 public TabletModeObserver,
-                                public display::DisplayObserver {
+                                public display::DisplayManagerObserver {
  public:
   DisplaySettingsProvider();
   ~DisplaySettingsProvider() override;
   DisplaySettingsProvider(const DisplaySettingsProvider& other) = delete;
   DisplaySettingsProvider& operator=(const DisplaySettingsProvider& other) =
       delete;
+
+  static constexpr char kInternalDisplaySettingsHistogramName[] =
+      "ChromeOS.Settings.Display.Internal";
+  static constexpr char kExternalDisplaySettingsHistogramName[] =
+      "ChromeOS.Settings.Display.External";
 
   void BindInterface(
       mojo::PendingReceiver<mojom::DisplaySettingsProvider> receiver);
@@ -37,11 +42,16 @@ class DisplaySettingsProvider : public mojom::DisplaySettingsProvider,
       mojo::PendingRemote<mojom::DisplayConfigurationObserver> observer)
       override;
 
+  void RecordChangingDisplaySettings(
+      mojom::DisplaySettingsType type,
+      mojom::DisplaySettingsValuePtr value) override;
+
   // TabletModeObserver:
   void OnTabletModeEventsBlockingChanged() override;
 
-  // display::DisplayObserver:
-  void OnDidProcessDisplayChanges() override;
+  // display::DisplayManagerObserver:
+  void OnDidProcessDisplayChanges(
+      const DisplayConfigurationChange& configuration_change) override;
 
  private:
   mojo::RemoteSet<mojom::TabletModeObserver> tablet_mode_observers_;

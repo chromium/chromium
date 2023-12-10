@@ -17,8 +17,8 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/password_manager/core/browser/password_form.h"
-#include "components/password_manager/core/browser/password_store_consumer.h"
-#include "components/password_manager/core/browser/password_store_interface.h"
+#include "components/password_manager/core/browser/password_store/password_store_consumer.h"
+#include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/reading_list/core/dual_reading_list_model.h"
 #include "components/sync/base/data_type_histogram.h"
 #include "components/sync/service/local_data_description.h"
@@ -297,8 +297,8 @@ class LocalDataMigrationHelper::LocalDataMigrationRequest
   // This runs the query for the requested data types.
   void Run() {
     for (syncer::ModelType type : types_) {
-      base::UmaHistogramEnumeration("Sync.BatchUpload.Requests",
-                                    syncer::ModelTypeForHistograms(type));
+      base::UmaHistogramEnumeration("Sync.BatchUpload.Requests2",
+                                    syncer::ModelTypeHistogramValue(type));
     }
 
     if (types_.Has(syncer::PASSWORDS)) {
@@ -322,7 +322,7 @@ class LocalDataMigrationHelper::LocalDataMigrationRequest
           .Merge();
       // Remove all bookmarks from the local model.
       helper_->local_bookmark_sync_service_->bookmark_model_view()
-          ->RemoveAllUserBookmarks();
+          ->RemoveAllSyncableNodes();
     }
     if (types_.Has(syncer::READING_LIST)) {
       CHECK(helper_->dual_reading_list_model_);

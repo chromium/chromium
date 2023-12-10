@@ -53,23 +53,6 @@ chromium-metrics-reviews@google.com.
   <variant name=".TopControlsMoved" summary="Top controls changed."/>
 </variants>
 
-<histogram name="Event.AggregatedLatency.Renderer2" units="microseconds"
-    expires_after="2022-04-24">
-  <owner>flackr@chromium.org</owner>
-  <summary>
-    Time between initiation of any input event and the renderer receiving and
-    starting to process it.
-
-    Team: input-dev@chromium.org.
-
-    Warning: This metric may include reports from clients with low-resolution
-    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
-    will cause this metric to have an abnormal distribution. When considering
-    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
-    solution.
-  </summary>
-</histogram>
-
 <histogram name="Event.AndroidActionDown.ToolType" enum="MotionEventToolType"
     expires_after="never">
 <!-- expires-never: Needed for long-term usage tracking for different types of
@@ -83,18 +66,6 @@ chromium-metrics-reviews@google.com.
     finger, mouse or stylus).
 
     Team: input-dev@chromium.org.
-  </summary>
-</histogram>
-
-<histogram name="Event.BrowserVerifiedUserActivation" enum="BooleanSuccess"
-    expires_after="2021-10-17">
-  <owner>liviutinta@chromium.org</owner>
-  <owner>mustaq@chromium.org</owner>
-  <owner>input-dev@chromium.org</owner>
-  <summary>
-    Records whether Browser User Activation Verification is successful or not.
-    We are interested in how many times the Browser User Activation Verification
-    fails vs how many times it succeeds.
   </summary>
 </histogram>
 
@@ -117,7 +88,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Event.GestureCreated" enum="UIEventType"
-    expires_after="2024-04-01">
+    expires_after="2024-06-02">
   <owner>kuscher@google.com</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>
@@ -130,7 +101,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Event.InputEventPrediction.Scroll.Frame{ScoreType}"
-    units="pixels" expires_after="2024-03-13">
+    units="pixels" expires_after="2024-05-12">
   <owner>flackr@chromium.org</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>
@@ -179,7 +150,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Event.InputEventPrediction.Scroll.{ScoreType}" units="pixels"
-    expires_after="2024-03-13">
+    expires_after="2024-05-12">
   <owner>flackr@chromium.org</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>
@@ -244,7 +215,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Event.Jank.PredictorJankyFramePercentage" units="%"
-    expires_after="2024-03-20">
+    expires_after="2024-05-19">
   <owner>mekk@google.com</owner>
   <owner>woa-performance@google.com</owner>
   <summary>
@@ -263,7 +234,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Event.Jank.PredictorJankyFramePercentage2" units="%"
-    expires_after="2024-03-20">
+    expires_after="2024-05-26">
   <owner>mekk@google.com</owner>
   <owner>woa-performance@google.com</owner>
   <summary>
@@ -313,7 +284,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Event.Jank.ScrollUpdate.{ScrollSpeed}.{VsyncStatus}.FrameAboveJankyThreshold2"
-    units="ratio * 100" expires_after="2024-03-20">
+    units="ratio * 100" expires_after="2024-05-19">
   <owner>mekk@google.com</owner>
   <owner>woa-performance@google.com</owner>
   <summary>
@@ -581,31 +552,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="Event.Latency.ScrollInertial.Touch.TimeToScrollUpdateSwapBegin4"
-    units="microseconds" expires_after="2022-07-31">
-  <obsolete>
-    Removed in 2022-09. Replaced by
-    EventLatency.InertialGestureScrollUpdate.Touchscreen.TotalLatency.
-  </obsolete>
-  <owner>flackr@chromium.org</owner>
-  <owner>input-dev@chromium.org</owner>
-  <summary>
-    Time between initial creation of a ScrollUpdate gesture event generated from
-    a touchscreen fling and the start of the frame swap on the GPU service
-    caused by the generated ScrollUpdate gesture event. If no swap was induced
-    by the event, no recording is made.
-
-    Team: input-dev@chromium.org.
-
-    Warning: This metric may include reports from clients with low-resolution
-    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
-    will cause this metric to have an abnormal distribution. When considering
-    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
-    solution.
-  </summary>
-</histogram>
-
 <histogram name="Event.Latency.ScrollJank" enum="Boolean"
     expires_after="2024-04-28">
   <owner>ddrone@google.com</owner>
@@ -677,7 +623,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Event.Latency.ScrollUpdate.TimeToScrollUpdateSwapBegin2"
-    units="microseconds" expires_after="2024-03-17">
+    units="microseconds" expires_after="2024-05-19">
   <owner>nzolghadr@chromium.org</owner>
   <summary>
     NOTE: This metric is deprecated in favor of
@@ -704,7 +650,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Event.Latency.ScrollUpdate.TotalEvents" units="counts"
-    expires_after="2024-03-17">
+    expires_after="2024-05-19">
   <owner>ddrone@google.com</owner>
   <owner>chrometto-team@google.com</owner>
   <summary>
@@ -945,7 +891,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Event.PassiveListeners" enum="EventResultType"
-    expires_after="2024-03-17">
+    expires_after="2024-05-19">
   <owner>dtapuska@chromium.org</owner>
   <summary>
     The result of handling of MouseWheel, TouchStart, TouchMove, TouchEnd events
@@ -956,7 +902,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Event.ScrollJank.DelayedFramesPercentage.FixedWindow"
-    units="%" expires_after="2024-03-20">
+    units="%" expires_after="2024-05-19">
   <owner>kartarsingh@google.com</owner>
   <owner>mekk@google.com</owner>
   <owner>woa-performance-team@google.com</owner>
@@ -976,7 +922,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Event.ScrollJank.DelayedFramesPercentage.PerScroll{Length}"
-    units="%" expires_after="2024-03-20">
+    units="%" expires_after="2024-05-19">
   <owner>kartarsingh@google.com</owner>
   <owner>mekk@google.com</owner>
   <owner>woa-performance-team@google.com</owner>
@@ -997,7 +943,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Event.ScrollJank.MissedVsyncs.PerFrame" units="counts"
-    expires_after="2024-03-20">
+    expires_after="2024-05-19">
   <owner>kartarsingh@google.com</owner>
   <owner>mekk@google.com</owner>
   <owner>woa-performance-team@google.com</owner>
@@ -1021,7 +967,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Event.ScrollJank.MissedVsyncsPercentage.FixedWindow" units="%"
-    expires_after="2024-03-20">
+    expires_after="2024-05-19">
   <owner>mekk@google.com</owner>
   <owner>woa-performance-team@google.com</owner>
   <summary>
@@ -1043,7 +989,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Event.ScrollJank.MissedVsyncsPercentage.PerScroll{Length}"
-    units="counts" expires_after="2024-03-20">
+    units="%" expires_after="2024-05-19">
   <owner>kartarsingh@google.com</owner>
   <owner>mekk@google.com</owner>
   <owner>woa-performance-team@google.com</owner>
@@ -1068,7 +1014,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Event.ScrollJank.MissedVsyncs{Operator}.FixedWindow"
-    units="counts" expires_after="2024-03-20">
+    units="counts" expires_after="2024-05-19">
   <owner>kartarsingh@google.com</owner>
   <owner>mekk@google.com</owner>
   <owner>woa-performance-team@google.com</owner>
@@ -1093,7 +1039,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Event.ScrollJank.MissedVsyncs{Operator}.FixedWindow2"
-    units="counts" expires_after="2024-03-20">
+    units="counts" expires_after="2024-05-19">
   <owner>mekk@google.com</owner>
   <owner>woa-performance-team@google.com</owner>
   <summary>
@@ -1117,7 +1063,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Event.ScrollJank.MissedVsyncs{Operator}.PerScroll{Length}"
-    units="counts" expires_after="2024-03-20">
+    units="counts" expires_after="2024-05-19">
   <owner>kartarsingh@google.com</owner>
   <owner>mekk@google.com</owner>
   <owner>woa-performance-team@google.com</owner>
@@ -1155,32 +1101,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Event.Touch.FilteredAtPassthroughQueue"
-    enum="EventPreFilterResult" expires_after="2020-03-22">
-  <owner>charliea@chromium.org</owner>
-  <owner>nzolghadr@chromium.org</owner>
-  <summary>
-    Whether a given touch event is filtered by the passthrough touch event queue
-    or not. If the event was filtered, a reason is given. Potential reasons for
-    filtering include the page not having any registered touch handlers and the
-    renderer process not responding to previous touch events.
-
-    Team: input-dev@chromium.org
-  </summary>
-</histogram>
-
-<histogram name="Event.Touch.GestureTarget" enum="BrowserGestureActionType"
-    expires_after="2020-06-28">
-  <owner>kuscher@google.com</owner>
-  <owner>rbyers@chromium.org</owner>
-  <summary>
-    The gesture-events recognized and dispatched for UI components owned by the
-    browser. This histogram was created as part of separating gesture events
-    between the browser and Ash (crbug.com/826476). The enums are extracted from
-    Ash.GestureTarget.
-  </summary>
-</histogram>
-
 <histogram name="Event.Touch.TimedOutOnDesktopSite" enum="BooleanTimedOut"
     expires_after="2023-10-31">
   <owner>flackr@chromium.org</owner>
@@ -1213,36 +1133,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Event.TouchSelection.Duration" units="ms" expires_after="M77">
-  <owner>nzolghadr@chromium.org</owner>
-  <summary>
-    Duration of touch selection sequence which finished with the user selecting
-    one of the text manipulation actions, such as copy, cut, or paste. The
-    duration is measured from the moment the text selection handles are shown,
-    and until the action is executed.
-  </summary>
-</histogram>
-
-<histogram name="Event.TouchSelection.EndedWithAction" enum="BooleanSuccess"
-    expires_after="M77">
-  <owner>nzolghadr@chromium.org</owner>
-  <summary>
-    Whether the touch selection sequence ended with the user selecting one of
-    the text manipulation actions, such as copy, cut, or paste. after startup).
-    Sequences ending with such action are considered successful.
-  </summary>
-</histogram>
-
-<histogram name="Event.TouchSelection.WasDraggedDuration" units="ms"
-    expires_after="M81">
-  <owner>nzolghadr@chromium.org</owner>
-  <summary>
-    Duration of touch selection sequence which involved dragging a text
-    selection handle. The duration is measured from the moment the text
-    selection handles are shown, and until they are dismissed.
-  </summary>
-</histogram>
-
 <histogram name="Event.UserActivation.TriggerFor{ActivationGatedApiType}"
     enum="UserActivationTriggerEnum" expires_after="2023-09-30">
   <owner>mustaq@chromium.org</owner>
@@ -1257,16 +1147,6 @@ chromium-metrics-reviews@google.com.
     <variant name="Sticky"/>
     <variant name="Transient"/>
   </token>
-</histogram>
-
-<histogram name="Event.WaylandDragDrop.IncomingDataTransferTime" units="ms"
-    expires_after="M90">
-  <owner>rjkroege@chromium.org</owner>
-  <owner>adunaev@igalia.com</owner>
-  <summary>
-    Delay between the drag coming into the window and the window is actually
-    notified.
-  </summary>
 </histogram>
 
 <histogram name="EventLatency.GestureScrollUpdate.Touchscreen.TotalLatency"
@@ -1293,7 +1173,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="EventLatency.GestureScrollUpdate.Touchscreen.TotalLatency2"
-    units="microseconds" expires_after="2024-03-17">
+    units="microseconds" expires_after="2024-05-19">
   <owner>jonross@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
@@ -1315,7 +1195,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="EventLatency.GestureScrollUpdate.{NonTouchscreenScrollInputType}.TotalLatency{Version}"
-    units="microseconds" expires_after="2024-03-17">
+    units="microseconds" expires_after="2024-05-19">
   <owner>jonross@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
@@ -1339,7 +1219,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="EventLatency.TotalLatency" units="microseconds"
-    expires_after="2024-03-17">
+    expires_after="2024-05-19">
   <owner>jonross@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
@@ -1353,7 +1233,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="EventLatency.{NonGsuScrollEventType}.{ScrollInputType}.TotalLatency{Version}"
-    units="microseconds" expires_after="2024-03-17">
+    units="microseconds" expires_after="2024-05-19">
   <owner>jonross@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
@@ -1392,7 +1272,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="EventLatency.{NonScrollPinchEventType}.TotalLatency"
-    units="microseconds" expires_after="2024-03-17">
+    units="microseconds" expires_after="2024-05-19">
   <owner>jonross@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
@@ -1428,7 +1308,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="EventLatency.{PinchEventType}.{PinchInputType}.TotalLatency"
-    units="microseconds" expires_after="2024-03-17">
+    units="microseconds" expires_after="2024-05-19">
   <owner>jonross@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
@@ -1479,7 +1359,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="EventLatency.{ScrollEventType}.TotalLatency{Version}"
-    units="microseconds" expires_after="2024-03-17">
+    units="microseconds" expires_after="2024-05-19">
   <owner>jonross@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>

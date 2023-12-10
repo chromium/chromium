@@ -30,8 +30,12 @@ public final class ApiHelperForN {
     private ApiHelperForN() {}
 
     /** See {@link View#startDragAndDrop(ClipData, DragShadowBuilder, Object, int)}. */
-    public static boolean startDragAndDrop(View view, ClipData data,
-            DragShadowBuilder shadowBuilder, Object myLocalState, int flags) {
+    public static boolean startDragAndDrop(
+            View view,
+            ClipData data,
+            DragShadowBuilder shadowBuilder,
+            Object myLocalState,
+            int flags) {
         return view.startDragAndDrop(data, shadowBuilder, myLocalState, flags);
     }
 
@@ -41,8 +45,9 @@ public final class ApiHelperForN {
     }
 
     /** See {@link Activity#setVrModeEnabled(boolean, ComponentName)}. */
-    public static void setVrModeEnabled(Activity activity, boolean enabled,
-            ComponentName requestedComponent) throws PackageManager.NameNotFoundException {
+    public static void setVrModeEnabled(
+            Activity activity, boolean enabled, ComponentName requestedComponent)
+            throws PackageManager.NameNotFoundException {
         activity.setVrModeEnabled(enabled, requestedComponent);
     }
 

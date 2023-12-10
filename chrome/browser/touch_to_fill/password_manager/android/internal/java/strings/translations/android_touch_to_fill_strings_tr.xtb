@@ -1,0 +1,27 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="tr">
+<translation id="1220509181886849806">Kaydedilen şifre kullanılsın mı?</translation>
+<translation id="1435940442311036198">Farklı bir cihazdaki geçiş anahtarını kullanın</translation>
+<translation id="1717486229951421299">Dokunarak doldurulacak kimlik bilgisi listesi ekranın yarısında açıldı.</translation>
+<translation id="2359808026110333948">Devam et</translation>
+<translation id="2364266287022099258">Kayıtlı geçiş anahtarı kullanılsın mı?</translation>
+<translation id="3399357656427473483">Dokunarak doldurulacak kimlik bilgisi listesi.</translation>
+<translation id="3653689374478248324"><ph name="SITE_NAME" /> sitesinde oturum açacaksınız</translation>
+<translation id="3950820424414687140">Oturum açın</translation>
+<translation id="4553044860350038560">Diğer geçiş anahtarları</translation>
+<translation id="4598345735110653698">Geçiş anahtarlarını yönet</translation>
+<translation id="4722735765955348426"><ph name="USERNAME" /> için şifre</translation>
+<translation id="4907224763885298217">Ekran kilidinizi kullanın</translation>
+<translation id="5012523644916800014">Şifreleri ve geçiş anahtarlarını yönet</translation>
+<translation id="5441504010984421144">Dokunarak doldurulacak kimlik bilgisi listesi tam ekranda açıldı.</translation>
+<translation id="5591247451101092906">Kayıtlı şifre veya geçiş anahtarı kullanılsın mı?</translation>
+<translation id="5624120631404540903">Şifreleri yönet</translation>
+<translation id="6560306912274274630"><ph name="USERNAME" /> için geçiş anahtarı, ekran kilidinizi kullanın</translation>
+<translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{Bu site için yeni şifre mevcut}other{Bu site için yeni şifreler mevcut}}</translation>
+<translation id="7286867818472074330">Geçiş anahtarı seç</translation>
+<translation id="7669320311687290322"><ph name="ITEM_LABEL" />, <ph name="ITEM_POSITION" />/<ph name="ITEMS_TOTAL" />.</translation>
+<translation id="7738288782501322815"><ph name="SITE_NAME" /> için birden fazla şifre aldınız</translation>
+<translation id="8614995815226664591"><ph name="SENDER_NAME" /> sizinle <ph name="SITE_NAME" /> için bir şifre paylaştı</translation>
+<translation id="8891372124884726271">Kimlik bilgisi listesi kapatıldı.</translation>
+</translationbundle>

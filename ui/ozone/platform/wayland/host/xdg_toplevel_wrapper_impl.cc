@@ -212,7 +212,19 @@ void XDGToplevelWrapperImpl::SetTopInset(int height) {
     zaura_toplevel_set_top_inset(aura_toplevel_.get(), height);
   }
 }
-#endif
+
+void XDGToplevelWrapperImpl::SetShadowCornersRadii(
+    const gfx::RoundedCornersF& radii) {
+  if (aura_toplevel_ &&
+      zaura_toplevel_get_version(aura_toplevel_.get()) >=
+          ZAURA_TOPLEVEL_SET_SHADOW_CORNER_RADII_SINCE_VERSION) {
+    zaura_toplevel_set_shadow_corner_radii(
+        aura_toplevel_.get(), radii.upper_left(), radii.upper_right(),
+        radii.lower_right(), radii.lower_left());
+  }
+}
+
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 void XDGToplevelWrapperImpl::UnSetFullscreen() {
   DCHECK(xdg_toplevel_);
@@ -430,6 +442,16 @@ void XDGToplevelWrapperImpl::OnRotateFocus(void* data,
   toplevel_window->OnRotateFocus(serial, direction, restart);
 }
 
+// static
+void XDGToplevelWrapperImpl::OnOverviewChange(void* data,
+                                              zaura_toplevel* aura_toplevel,
+                                              uint32_t in_overview_as_uint) {
+  auto* self = static_cast<XDGToplevelWrapperImpl*>(data);
+  CHECK(self);
+  self->wayland_window_->AsWaylandToplevelWindow()->OnOverviewChange(
+      in_overview_as_uint);
+}
+
 void XDGToplevelWrapperImpl::SetTopLevelDecorationMode(
     DecorationMode requested_mode) {
   if (!zxdg_toplevel_decoration_ || requested_mode == decoration_mode_)
@@ -565,7 +587,8 @@ void XDGToplevelWrapperImpl::EnableScreenCoordinates() {
       .configure = &OnAuraToplevelConfigure,
       .origin_change = &OnOriginChange,
       .configure_raster_scale = &OnConfigureRasterScale,
-      .rotate_focus = &OnRotateFocus};
+      .rotate_focus = &OnRotateFocus,
+      .overview_change = &OnOverviewChange};
   zaura_toplevel_add_listener(aura_toplevel_.get(), &kAuraToplevelListener,
                               this);
 }

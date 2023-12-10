@@ -72,7 +72,15 @@ class NATIVE_THEME_EXPORT NativeThemeWin : public NativeTheme,
   gfx::Size GetNinePatchCanvasSize(Part part) const override;
   gfx::Rect GetNinePatchAperture(Part part) const override;
   bool ShouldUseDarkColors() const override;
+
+  // On Windows, we look at the high contrast setting to calculate the color
+  // scheme. If high contrast is enabled, the preferred color scheme calculation
+  // will ignore the state of dark mode. Instead, preferred color scheme will be
+  // light or dark depending on the OS high contrast theme. If high contrast is
+  // off, the preferred color scheme calculation will be based of the state of
+  // dark mode.
   PreferredColorScheme CalculatePreferredColorScheme() const override;
+
   PreferredContrast CalculatePreferredContrast() const override;
   ColorScheme GetDefaultSystemColorScheme() const override;
 
@@ -81,9 +89,9 @@ class NATIVE_THEME_EXPORT NativeThemeWin : public NativeTheme,
   friend class base::NoDestructor<NativeThemeWin>;
 
   // NativeTheme:
-  void ConfigureWebInstance() override;
 
-  NativeThemeWin(bool configure_web_instance, bool should_only_use_dark_colors);
+  NativeThemeWin(bool should_only_use_dark_colors,
+                 NativeTheme* theme_to_update = nullptr);
   ~NativeThemeWin() override;
 
  private:
@@ -216,11 +224,6 @@ class NATIVE_THEME_EXPORT NativeThemeWin : public NativeTheme,
 
   // The system color change listener and the updated cache of system colors.
   gfx::ScopedSysColorChangeListener color_change_listener_;
-
-  // Used to notify the web native theme of changes to dark mode, high
-  // contrast, preferred color scheme, and preferred contrast.
-  std::unique_ptr<NativeTheme::ColorSchemeNativeThemeObserver>
-      color_scheme_observer_;
 };
 
 }  // namespace ui

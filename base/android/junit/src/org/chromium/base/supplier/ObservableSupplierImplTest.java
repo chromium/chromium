@@ -76,7 +76,6 @@ public class ObservableSupplierImplTest {
                 "Incorrect call count after setting a different but equal string.", 1, mCallCount);
     }
 
-
     @Test
     public void testObserverNotification_RemoveObserver() {
         Callback<String> supplierObserver =

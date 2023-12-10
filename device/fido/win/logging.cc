@@ -5,9 +5,9 @@
 #include "device/fido/win/logging.h"
 
 #include <string>
+#include <string_view>
 
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece_forward.h"
 #include "base/strings/string_util.h"
 #include "components/device_event_log/device_event_log.h"
 
@@ -17,14 +17,14 @@ constexpr char kSep[] = ", ";
 
 // Quoted wraps |in| in double quotes and backslash-escapes all other double
 // quote characters.
-std::string Quoted(base::StringPiece in) {
+std::string Quoted(std::string_view in) {
   std::string result;
   base::ReplaceChars(in, "\\", "\\\\", &result);
   base::ReplaceChars(result, "\"", "\\\"", &result);
   return "\"" + result + "\"";
 }
 
-std::wstring Quoted(base::WStringPiece in) {
+std::wstring Quoted(std::wstring_view in) {
   std::wstring result;
   base::ReplaceChars(in, L"\\", L"\\\\", &result);
   base::ReplaceChars(result, L"\"", L"\\\"", &result);
@@ -32,7 +32,7 @@ std::wstring Quoted(base::WStringPiece in) {
 }
 
 std::wstring Quoted(const wchar_t* in) {
-  return Quoted(base::WStringPiece(in ? in : L""));
+  return Quoted(std::wstring_view(in ? in : L""));
 }
 
 }  // namespace

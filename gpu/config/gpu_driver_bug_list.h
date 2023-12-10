@@ -9,6 +9,7 @@
 #include <set>
 
 #include "base/command_line.h"
+#include "base/containers/span.h"
 #include "gpu/config/gpu_control_list.h"
 #include "gpu/gpu_export.h"
 
@@ -23,7 +24,7 @@ class GPU_EXPORT GpuDriverBugList : public GpuControlList {
 
   static std::unique_ptr<GpuDriverBugList> Create();
   static std::unique_ptr<GpuDriverBugList> Create(
-      const GpuControlListData& data);
+      base::span<const GpuControlList::Entry> data);
 
   // Append |workarounds| with these passed in through the
   // |command_line|.
@@ -39,7 +40,7 @@ class GPU_EXPORT GpuDriverBugList : public GpuControlList {
   static bool AreEntryIndicesValid(const std::vector<uint32_t>& entry_indices);
 
  private:
-  explicit GpuDriverBugList(const GpuControlListData& data);
+  explicit GpuDriverBugList(base::span<const GpuControlList::Entry> data);
 };
 
 }  // namespace gpu

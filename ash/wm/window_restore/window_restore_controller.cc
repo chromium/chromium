@@ -19,6 +19,7 @@
 #include "ash/wm/desks/templates/saved_desk_util.h"
 #include "ash/wm/float/float_controller.h"
 #include "ash/wm/mru_window_tracker.h"
+#include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/window_positioning_utils.h"
 #include "ash/wm/window_restore/informed_restore_dialog.h"
 #include "ash/wm/window_restore/window_restore_util.h"
@@ -37,6 +38,7 @@
 #include "ui/aura/window.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
+#include "ui/display/tablet_state.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
@@ -104,7 +106,15 @@ void MaybeRestoreOutOfBoundsWindows(aura::Window* window) {
   if (display_area.Contains(current_bounds))
     return;
 
-  AdjustBoundsToEnsureMinimumWindowVisibility(display_area, &current_bounds);
+  // Adjust the bounds so that at least 30% of the window bounds is visible.
+  auto get_minimum_length = [](int length) -> int {
+    return std::max(
+        kMinimumOnScreenArea,
+        static_cast<int>(std::round(length * kMinimumPercentOnScreenArea)));
+  };
+  AdjustBoundsToEnsureWindowVisibility(
+      display_area, get_minimum_length(current_bounds.width()),
+      get_minimum_length(current_bounds.height()), &current_bounds);
 
   auto* window_state = WindowState::Get(window);
   if (window_state->HasRestoreBounds()) {
@@ -150,7 +160,6 @@ WindowRestoreController::WindowRestoreController() {
   DCHECK_EQ(nullptr, g_instance);
   g_instance = this;
 
-  tablet_mode_observation_.Observe(Shell::Get()->tablet_mode_controller());
   app_restore_info_observation_.Observe(
       app_restore::AppRestoreInfo::GetInstance());
 }
@@ -201,9 +210,9 @@ bool WindowRestoreController::CanActivateRestoredWindow(
 
 // static
 bool WindowRestoreController::CanActivateAppList(const aura::Window* window) {
-  auto* tablet_mode_controller = Shell::Get()->tablet_mode_controller();
-  if (!tablet_mode_controller || !tablet_mode_controller->InTabletMode())
+  if (!display::Screen::GetScreen()->InTabletMode()) {
     return true;
+  }
 
   auto* app_list_controller = Shell::Get()->app_list_controller();
   if (!app_list_controller || app_list_controller->GetWindow() != window)
@@ -270,7 +279,7 @@ WindowRestoreController::GetWindowToInsertBefore(
 }
 
 void WindowRestoreController::SaveWindow(WindowState* window_state) {
-  SaveWindowImpl(window_state, /*activation_index=*/absl::nullopt);
+  SaveWindowImpl(window_state, /*activation_index=*/std::nullopt);
 }
 
 void WindowRestoreController::SaveAllWindows() {
@@ -289,16 +298,14 @@ void WindowRestoreController::OnWindowActivated(aura::Window* gained_active) {
   SaveAllWindows();
 }
 
-void WindowRestoreController::OnTabletModeStarted() {
-  SaveAllWindows();
-}
+void WindowRestoreController::OnDisplayTabletStateChanged(
+    display::TabletState state) {
+  if (display::IsTabletStateChanging(state)) {
+    // Do nothing if the tablet state is still in the process of transition.
+    return;
+  }
 
-void WindowRestoreController::OnTabletModeEnded() {
   SaveAllWindows();
-}
-
-void WindowRestoreController::OnTabletControllerDestroyed() {
-  tablet_mode_observation_.Reset();
 }
 
 void WindowRestoreController::OnRestorePrefChanged(const AccountId& account_id,
@@ -326,20 +333,26 @@ void WindowRestoreController::OnAppLaunched(aura::Window* window) {
 }
 
 void WindowRestoreController::OnWidgetInitialized(views::Widget* widget) {
-  DCHECK(widget);
+  CHECK(widget);
 
   aura::Window* window = widget->GetNativeWindow();
-  if (window->GetProperty(app_restore::kParentToHiddenContainerKey))
+  if (window->GetProperty(app_restore::kParentToHiddenContainerKey)) {
     return;
+  }
+
+  // Windows with restore window key less than -1 are launched from desk
+  // templates or saved desks; we want to stay in overview for these. Windows
+  // with restore window key more than -1 are launched from full restore and we
+  // want to end overview for these.
+  if (window->GetProperty(app_restore::kRestoreWindowIdKey) > -1) {
+    OverviewController::Get()->EndOverview(OverviewEndAction::kFullRestore);
+  }
 
   UpdateAndObserveWindow(window);
 
   // If the restored bounds are out of the screen, move the window to the bounds
   // manually as most widget types force windows to be within the work area on
   // creation.
-  // TODO(sammiequon): The Files app uses async Mojo calls to activate
-  // and set its bounds, making this approach not work. In the future, we'll
-  // need to address the Files app.
   MaybeRestoreOutOfBoundsWindows(window);
 }
 
@@ -511,7 +524,7 @@ void WindowRestoreController::MaybeStartInformedRestore() {
 
 void WindowRestoreController::SaveWindowImpl(
     WindowState* window_state,
-    absl::optional<int> activation_index) {
+    std::optional<int> activation_index) {
   DCHECK(window_state);
   aura::Window* window = window_state->window();
 

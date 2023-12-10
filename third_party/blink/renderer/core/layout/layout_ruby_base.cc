@@ -69,7 +69,8 @@ void LayoutRubyBase::MoveInlineChildrenTo(LayoutRubyBase& to_base,
     }
   }
   // Move our inline children into the target block we determined above.
-  MoveChildrenTo(to_block, FirstChild(), before_child);
+  MoveChildrenTo(to_block, FirstChild(), before_child,
+                 RuntimeEnabledFeatures::RubySimplePairingEnabled());
 }
 
 void LayoutRubyBase::MoveBlockChildrenTo(LayoutRubyBase& to_base,
@@ -110,10 +111,21 @@ void LayoutRubyBase::MoveBlockChildrenTo(LayoutRubyBase& to_base,
     // using |full_remove_insert| can prevent inconsistent LayoutObject tree
     // that leads to CHECK failures.
     full_remove_insert |= ChildrenInline();
+    full_remove_insert |= RuntimeEnabledFeatures::RubySimplePairingEnabled();
     MoveAllChildrenIncludingFloatsTo(&to_base, full_remove_insert);
   } else {
-    MoveChildrenTo(&to_base, FirstChild(), before_child);
+    MoveChildrenTo(&to_base, FirstChild(), before_child,
+                   RuntimeEnabledFeatures::RubySimplePairingEnabled());
   }
+}
+
+bool LayoutRubyBase::IsPlaceholder() const {
+  NOT_DESTROYED();
+  return is_placeholder_;
+}
+void LayoutRubyBase::SetPlaceholder() {
+  NOT_DESTROYED();
+  is_placeholder_ = true;
 }
 
 }  // namespace blink

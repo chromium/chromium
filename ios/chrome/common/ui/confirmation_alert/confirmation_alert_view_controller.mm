@@ -338,18 +338,18 @@ const CGFloat kFaviconBadgeSideLength = 24;
   // Update fonts for specific content sizes.
   if (previousTraitCollection.preferredContentSizeCategory !=
       self.traitCollection.preferredContentSizeCategory) {
-    self.primaryActionButton.titleLabel.font =
-        PreferredFontForTextStyleWithMaxCategory(
-            UIFontTextStyleHeadline,
-            self.traitCollection.preferredContentSizeCategory,
-            UIContentSizeCategoryExtraExtraExtraLarge);
+    SetConfigurationFont(self.primaryActionButton,
+                         PreferredFontForTextStyleWithMaxCategory(
+                             UIFontTextStyleHeadline,
+                             self.traitCollection.preferredContentSizeCategory,
+                             UIContentSizeCategoryExtraExtraExtraLarge));
+
+    UIFont* newFont = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
     if (self.secondaryActionString) {
-      self.secondaryActionButton.titleLabel.font =
-          [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
+      SetConfigurationFont(self.secondaryActionButton, newFont);
     }
     if (self.tertiaryActionString) {
-      self.tertiaryActionButton.titleLabel.font =
-          [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
+      SetConfigurationFont(self.tertiaryActionButton, newFont);
     }
   }
 
@@ -376,16 +376,17 @@ const CGFloat kFaviconBadgeSideLength = 24;
 }
 
 - (void)updateViewConstraints {
-  BOOL isVerticalCompact =
-      self.traitCollection.verticalSizeClass == UIUserInterfaceSizeClassCompact;
+  BOOL showImageView =
+      self.alwaysShowImage || (self.traitCollection.verticalSizeClass !=
+                               UIUserInterfaceSizeClassCompact);
 
   // Hiding the image causes the UIStackView to change the image's height to 0.
   // Because its width and height are related, if the aspect ratio constraint
   // is active, the image's width also goes to 0, which causes the stack view
   // width to become 0 too.
-  [self.imageView setHidden:isVerticalCompact];
-  [self.imageContainerView setHidden:isVerticalCompact];
-  self.imageViewAspectRatioConstraint.active = !isVerticalCompact;
+  [self.imageView setHidden:!showImageView];
+  [self.imageContainerView setHidden:!showImageView];
+  self.imageViewAspectRatioConstraint.active = showImageView;
 
   // Allow the navigation bar to update its height based on new layout.
   [self.navigationBar invalidateIntrinsicContentSize];
@@ -699,6 +700,7 @@ const CGFloat kFaviconBadgeSideLength = 24;
   title.adjustsFontForContentSizeCategory = YES;
   title.accessibilityIdentifier =
       kConfirmationAlertTitleAccessibilityIdentifier;
+  title.accessibilityTraits = UIAccessibilityTraitHeader;
   return title;
 }
 
@@ -807,11 +809,9 @@ const CGFloat kFaviconBadgeSideLength = 24;
   [primaryActionButton addTarget:self
                           action:@selector(didTapPrimaryActionButton)
                 forControlEvents:UIControlEventTouchUpInside];
-  [primaryActionButton setTitle:self.primaryActionString
-                       forState:UIControlStateNormal];
+  SetConfigurationTitle(primaryActionButton, self.primaryActionString);
   primaryActionButton.accessibilityIdentifier =
       kConfirmationAlertPrimaryActionAccessibilityIdentifier;
-  primaryActionButton.titleLabel.adjustsFontSizeToFitWidth = YES;
 
   return primaryActionButton;
 }
@@ -824,14 +824,6 @@ const CGFloat kFaviconBadgeSideLength = 24;
   [secondaryActionButton addTarget:self
                             action:@selector(didTapSecondaryActionButton)
                   forControlEvents:UIControlEventTouchUpInside];
-  [secondaryActionButton setTitle:self.secondaryActionString
-                         forState:UIControlStateNormal];
-  [secondaryActionButton setBackgroundColor:[UIColor clearColor]];
-  UIColor* titleColor = [UIColor colorNamed:self.secondaryActionTextColor
-                                                ? self.secondaryActionTextColor
-                                                : kBlueColor];
-  [secondaryActionButton setTitleColor:titleColor
-                              forState:UIControlStateNormal];
 
   UIButtonConfiguration* buttonConfiguration =
       secondaryActionButton.configuration
@@ -844,16 +836,24 @@ const CGFloat kFaviconBadgeSideLength = 24;
     buttonConfiguration.image = self.secondaryActionImage;
     buttonConfiguration.imagePadding = kActionButtonImageInsets;
   }
+
+  UIFont* font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
+  NSDictionary* attributes = @{NSFontAttributeName : font};
+  NSMutableAttributedString* string = [[NSMutableAttributedString alloc]
+      initWithString:self.secondaryActionString];
+  [string addAttributes:attributes range:NSMakeRange(0, string.length)];
+  buttonConfiguration.attributedTitle = string;
+
+  UIColor* titleColor = [UIColor colorNamed:self.secondaryActionTextColor
+                                                ? self.secondaryActionTextColor
+                                                : kBlueColor];
+  buttonConfiguration.baseForegroundColor = titleColor;
+  buttonConfiguration.background.backgroundColor = [UIColor clearColor];
   secondaryActionButton.configuration = buttonConfiguration;
 
-  secondaryActionButton.titleLabel.font =
-      [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
-  secondaryActionButton.titleLabel.adjustsFontForContentSizeCategory = NO;
   secondaryActionButton.translatesAutoresizingMaskIntoConstraints = NO;
   secondaryActionButton.accessibilityIdentifier =
       kConfirmationAlertSecondaryActionAccessibilityIdentifier;
-  secondaryActionButton.titleLabel.adjustsFontSizeToFitWidth = YES;
-
   secondaryActionButton.pointerInteractionEnabled = YES;
   secondaryActionButton.pointerStyleProvider =
       CreateOpaqueButtonPointerStyleProvider();
@@ -867,25 +867,26 @@ const CGFloat kFaviconBadgeSideLength = 24;
   [tertiaryActionButton addTarget:self
                            action:@selector(didTapTertiaryActionButton)
                  forControlEvents:UIControlEventTouchUpInside];
-  [tertiaryActionButton setTitle:self.tertiaryActionString
-                        forState:UIControlStateNormal];
 
-  // TODO(crbug.com/1418068): Replace with UIButtonConfiguration when min
-  // deployment target is iOS 15.
-  UIEdgeInsets contentInsets =
-      UIEdgeInsetsMake(kButtonVerticalInsets, 0, kButtonVerticalInsets, 0);
-  SetContentEdgeInsets(tertiaryActionButton, contentInsets);
+  UIButtonConfiguration* buttonConfiguration =
+      [UIButtonConfiguration plainButtonConfiguration];
+  buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
+      kButtonVerticalInsets, 0, kButtonVerticalInsets, 0);
+  buttonConfiguration.background.backgroundColor = [UIColor clearColor];
+  buttonConfiguration.baseForegroundColor = [UIColor colorNamed:kBlueColor];
 
-  [tertiaryActionButton setBackgroundColor:[UIColor clearColor]];
-  UIColor* titleColor = [UIColor colorNamed:kBlueColor];
-  [tertiaryActionButton setTitleColor:titleColor forState:UIControlStateNormal];
-  tertiaryActionButton.titleLabel.font =
-      [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
-  tertiaryActionButton.titleLabel.adjustsFontForContentSizeCategory = NO;
+  // Customize title string.
+  UIFont* font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
+  NSDictionary* attributes = @{NSFontAttributeName : font};
+  NSMutableAttributedString* string = [[NSMutableAttributedString alloc]
+      initWithString:self.tertiaryActionString];
+  [string addAttributes:attributes range:NSMakeRange(0, string.length)];
+  buttonConfiguration.attributedTitle = string;
+  tertiaryActionButton.configuration = buttonConfiguration;
+
   tertiaryActionButton.translatesAutoresizingMaskIntoConstraints = NO;
   tertiaryActionButton.accessibilityIdentifier =
       kConfirmationAlertTertiaryActionAccessibilityIdentifier;
-
   tertiaryActionButton.pointerInteractionEnabled = YES;
   tertiaryActionButton.pointerStyleProvider =
       CreateOpaqueButtonPointerStyleProvider();

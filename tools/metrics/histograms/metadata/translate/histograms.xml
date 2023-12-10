@@ -303,7 +303,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Translate.PageLoad.InitialSourceLanguage"
-    enum="LocaleCodeISO639" expires_after="2024-03-10">
+    enum="LocaleCodeISO639" expires_after="2024-05-12">
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -683,19 +683,6 @@ chromium-metrics-reviews@google.com.
 
     This is recorded every time the user interacts with the Translate UI on all
     platforms.
-  </summary>
-</histogram>
-
-<histogram name="Translate.UnsupportedLanguageAtInitiation" enum="LanguageName"
-    expires_after="M81">
-  <owner>megjablon@google.com</owner>
-  <owner>chrome-language@google.com</owner>
-  <summary>
-    Logs an unsupported source language detected during initiation of the
-    Translate feature. This is reported when the language detector successfully
-    detects the language of the webpage, but the language is not supported by
-    the translation server because it is too minor. This metric allows us to
-    assess how important the unsupported language is for Google translate.
   </summary>
 </histogram>
 

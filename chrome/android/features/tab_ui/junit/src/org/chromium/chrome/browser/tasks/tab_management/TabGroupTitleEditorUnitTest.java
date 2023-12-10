@@ -10,10 +10,13 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -26,13 +29,12 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabImpl;
 import org.chromium.chrome.browser.tabmodel.TabModel;
-import org.chromium.chrome.browser.tabmodel.TabModelFilterProvider;
+import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
-import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.util.browser.Features;
@@ -62,16 +64,18 @@ public class TabGroupTitleEditorUnitTest {
     private static final int TAB4_ID = 357;
 
     @Mock TabModel mTabModel;
-    @Mock TabModelSelector mTabModelSelector;
     @Mock TabGroupModelFilter mTabGroupModelFilter;
-    @Mock TabModelFilterProvider mTabModelFilterProvider;
+    @Mock TabModel mIncognitoTabModel;
+    @Mock TabGroupModelFilter mIncognitoTabGroupModelFilter;
     @Captor ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
     @Captor ArgumentCaptor<TabGroupModelFilter.Observer> mTabGroupModelFilterObserverCaptor;
 
-    private TabImpl mTab1;
-    private TabImpl mTab2;
-    private TabImpl mTab3;
-    private TabImpl mTab4;
+    private final ObservableSupplierImpl<TabModelFilter> mTabModelFilterSupplier =
+            new ObservableSupplierImpl<>();
+    private Tab mTab1;
+    private Tab mTab2;
+    private Tab mTab3;
+    private Tab mTab4;
     private Map<String, String> mStorage;
     private TabGroupTitleEditor mTabGroupTitleEditor;
 
@@ -84,20 +88,16 @@ public class TabGroupTitleEditorUnitTest {
         mTab2 = TabUiUnitTestUtils.prepareTab(TAB2_ID, TAB2_TITLE);
         mTab3 = TabUiUnitTestUtils.prepareTab(TAB3_ID, TAB3_TITLE);
         mTab4 = TabUiUnitTestUtils.prepareTab(TAB4_ID, TAB4_TITLE);
-        doReturn(mTabModel).when(mTabModelSelector).getCurrentModel();
-        doReturn(mTabModelFilterProvider).when(mTabModelSelector).getTabModelFilterProvider();
-        doReturn(mTabGroupModelFilter).when(mTabModelFilterProvider).getCurrentTabModelFilter();
-        doReturn(mTabGroupModelFilter).when(mTabModelFilterProvider).getTabModelFilter(true);
-        doReturn(mTabGroupModelFilter).when(mTabModelFilterProvider).getTabModelFilter(false);
-        doNothing()
-                .when(mTabModelFilterProvider)
-                .addTabModelFilterObserver(mTabModelObserverCaptor.capture());
+        doReturn(mTabModel).when(mTabGroupModelFilter).getTabModel();
+        doReturn(mIncognitoTabModel).when(mIncognitoTabGroupModelFilter).getTabModel();
+        mTabModelFilterSupplier.set(mTabGroupModelFilter);
+        doNothing().when(mTabGroupModelFilter).addObserver(mTabModelObserverCaptor.capture());
         doNothing()
                 .when(mTabGroupModelFilter)
                 .addTabGroupObserver(mTabGroupModelFilterObserverCaptor.capture());
 
         mTabGroupTitleEditor =
-                new TabGroupTitleEditor(RuntimeEnvironment.application, mTabModelSelector) {
+                new TabGroupTitleEditor(RuntimeEnvironment.application, mTabModelFilterSupplier) {
                     @Override
                     protected void updateTabGroupTitle(Tab tab, String title) {}
 
@@ -117,6 +117,24 @@ public class TabGroupTitleEditorUnitTest {
                     }
                 };
         mStorage = new HashMap<>();
+        assertTrue(mTabModelFilterSupplier.hasObservers());
+    }
+
+    @After
+    public void tearDown() {
+        mTabGroupTitleEditor.destroy();
+        assertFalse(mTabModelFilterSupplier.hasObservers());
+    }
+
+    @Test
+    public void testChangeModels() {
+        verify(mTabGroupModelFilter).addObserver(any());
+        verify(mTabGroupModelFilter).addTabGroupObserver(any());
+        mTabModelFilterSupplier.set(mIncognitoTabGroupModelFilter);
+        verify(mIncognitoTabGroupModelFilter).addObserver(any());
+        verify(mIncognitoTabGroupModelFilter).addTabGroupObserver(any());
+        verify(mTabGroupModelFilter).removeObserver(any());
+        verify(mTabGroupModelFilter).removeTabGroupObserver(any());
     }
 
     @Test
@@ -126,7 +144,7 @@ public class TabGroupTitleEditorUnitTest {
         assertThat(mStorage.size(), equalTo(1));
 
         // Mock that tab1, tab2, new tab are in the same group and group root id is TAB1_ID.
-        TabImpl newTab = TabUiUnitTestUtils.prepareTab(TAB3_ID, TAB3_TITLE);
+        Tab newTab = TabUiUnitTestUtils.prepareTab(TAB3_ID, TAB3_TITLE);
         List<Tab> tabs = new ArrayList<>(Arrays.asList(mTab1, mTab2, newTab));
         createTabGroup(tabs, TAB1_ID);
 
@@ -145,7 +163,7 @@ public class TabGroupTitleEditorUnitTest {
         mTabGroupTitleEditor.storeTabGroupTitle(TAB1_ID, CUSTOMIZED_TITLE1);
 
         // Mock that tab1, tab2, new tab are in the same group and group root id is TAB1_ID.
-        TabImpl newTab = TabUiUnitTestUtils.prepareTab(TAB3_ID, TAB3_TITLE);
+        Tab newTab = TabUiUnitTestUtils.prepareTab(TAB3_ID, TAB3_TITLE);
         List<Tab> groupBeforeClosure = new ArrayList<>(Arrays.asList(mTab1, mTab2, newTab));
         createTabGroup(groupBeforeClosure, TAB1_ID);
 
@@ -247,7 +265,7 @@ public class TabGroupTitleEditorUnitTest {
         mTabGroupTitleEditor.storeTabGroupTitle(TAB1_ID, CUSTOMIZED_TITLE1);
 
         // Mock that tab1, tab2 and newTab are in the same group and group root id is TAB1_ID.
-        TabImpl newTab = TabUiUnitTestUtils.prepareTab(TAB3_ID, TAB3_TITLE);
+        Tab newTab = TabUiUnitTestUtils.prepareTab(TAB3_ID, TAB3_TITLE);
         List<Tab> tabs = new ArrayList<>(Arrays.asList(mTab1, mTab2, newTab));
         createTabGroup(tabs, TAB1_ID);
 

@@ -62,6 +62,7 @@ class NotificationPlatformBridgeWin : public NotificationPlatformBridge {
   struct NotificationKeyType {
     std::string profile_id;
     std::string notification_id;
+    std::wstring app_user_model_id;  // Either browser aumi or web app aumi.
 
     bool operator<(const NotificationKeyType& key) const {
       return profile_id < key.profile_id ||
@@ -79,6 +80,8 @@ class NotificationPlatformBridgeWin : public NotificationPlatformBridge {
   FRIEND_TEST_ALL_PREFIXES(NotificationPlatformBridgeWinUITest, HandleSettings);
   FRIEND_TEST_ALL_PREFIXES(NotificationPlatformBridgeWinUITest,
                            DisplayWithFakeAC);
+  FRIEND_TEST_ALL_PREFIXES(NotificationPlatformBridgeWinUITest,
+                           DisplayWebAppNotificationWithFakeAC);
   FRIEND_TEST_ALL_PREFIXES(NotificationPlatformBridgeWinUITest,
                            SynchronizeNotifications);
   FRIEND_TEST_ALL_PREFIXES(NotificationPlatformBridgeWinUITest,
@@ -120,6 +123,7 @@ class NotificationPlatformBridgeWin : public NotificationPlatformBridge {
       const message_center::Notification& notification,
       const std::wstring& xml_template,
       const std::string& profile_id,
+      const std::wstring& app_user_model_id,
       bool incognito);
 
   scoped_refptr<NotificationPlatformBridgeWinImpl> impl_;

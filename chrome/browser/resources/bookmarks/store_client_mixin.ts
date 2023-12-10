@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {makeStoreClientMixin, StoreClientInterface} from 'chrome://resources/cr_elements/store_client/store_client.js';
-import {Action} from 'chrome://resources/js/store_ts.js';
+import {Action} from 'chrome://resources/js/store.js';
 
 import {Store} from './store.js';
 import {BookmarksPageState} from './types.js';

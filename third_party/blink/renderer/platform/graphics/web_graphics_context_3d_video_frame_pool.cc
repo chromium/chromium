@@ -75,9 +75,11 @@ class Context : public media::RenderableGpuMemoryBufferVideoFramePool::Context {
     auto* sii = SharedImageInterface();
     if (!sii || !gmb_manager_)
       return;
-    mailbox = sii->CreateSharedImage(
+    auto client_shared_image = sii->CreateSharedImage(
         gpu_memory_buffer, gmb_manager_, plane, color_space, surface_origin,
         alpha_type, usage, "WebGraphicsContext2DVideoFramePool");
+    CHECK(client_shared_image);
+    mailbox = client_shared_image->mailbox();
     sync_token = sii->GenVerifiedSyncToken();
   }
 

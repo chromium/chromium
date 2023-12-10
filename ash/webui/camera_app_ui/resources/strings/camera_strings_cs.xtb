@@ -5,7 +5,6 @@
 <translation id="1076394037877376434">Smazat stránku <ph name="PAGE_NUMBER" /></translation>
 <translation id="1113173431709655881">Režim fotoaparátu</translation>
 <translation id="1153190633558910465">Mřížka vypnuta</translation>
-<translation id="1175958423215084756">Byl zjištěn odkaz. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213">Stránka <ph name="PAGE_NUMBER" /> byla smazána</translation>
 <translation id="1258009455399840361">Otočit o 90 stupňů ve směru hodinových ručiček</translation>
 <translation id="1417314334557041815">Upravit stránku <ph name="INDEX" /></translation>
@@ -60,14 +59,12 @@
 <translation id="3642192109456033823">Zpracovávání videa…</translation>
 <translation id="3789724198583203151">Otočit o 90 stupňů proti směru hodinových ručiček</translation>
 <translation id="3810838688059735925">Video</translation>
-<translation id="3892148308691398805">Kopírovat text</translation>
 <translation id="4060608699153044055">Nahrávat nelze kvůli nedostatku místa v úložišti. Nejprve je třeba v zařízení uvolnit místo.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> Mpx</translation>
 <translation id="4118525110028899586">Pozastavit nahrávání</translation>
 <translation id="4121305183798804752">Byl zjištěn dokument</translation>
 <translation id="414641094616694804">Rozlišení této kamery nelze změnit</translation>
 <translation id="4176463684765177261">Vypnuto</translation>
-<translation id="4269820728363426813">Zkopírovat adresu odkazu</translation>
 <translation id="428234092390943511">Miniatura stránky</translation>
 <translation id="4349714250734879769">Upravovat měřítko snímků pomocí Chromu</translation>
 <translation id="4383571725254449280">Vytisknout protokoly výkonu</translation>
@@ -144,7 +141,6 @@ Pokud se zpětná vazba týká kvality fotek nebo videí, připojte ukázkovou f
 <translation id="7726641833034062494">Nahrát běžné video</translation>
 <translation id="7748344063862150053">Pravý horní roh dokumentu</translation>
 <translation id="7933675232020478311">Pohyb doprava dolů</translation>
-<translation id="7983668134180549431">Byl zjištěn text.</translation>
 <translation id="8079255378695216066">Nahrávání nelze zahájit</translation>
 <translation id="8120146556401698679">Posunutí, náklon, přiblížení</translation>
 <translation id="8131740175452115882">Potvrdit</translation>
@@ -163,6 +159,7 @@ Pokud se zpětná vazba týká kvality fotek nebo videí, připojte ukázkovou f
 <translation id="8870695351537079478">Nahrávání se nepodařilo zahájit</translation>
 <translation id="8880167521484863515">4 : 3</translation>
 <translation id="8903921497873541725">Přiblížit</translation>
+<translation id="8926890870105777777">Připojte se k síti <ph name="WIFINAME" /></translation>
 <translation id="9045010116236796332">Umístěte všechny okraje dokumentu do rámečku.</translation>
 <translation id="9045155556724273246">10 sekund</translation>
 <translation id="906331135292332864">Zpracování obrázku…</translation>

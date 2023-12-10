@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <tuple>
 #include <vector>
@@ -29,7 +30,6 @@
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
@@ -83,7 +83,6 @@
 #include "google_apis/gaia/gaia_urls.h"
 #include "net/http/http_status_code.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // TODO(b/254819616): Replace base::RunLoop().RunUntilIdle() with
 // task_environment_.RunUntilIdle() or Run() & Quit() to make the tests less
@@ -126,7 +125,7 @@ class FileExpansionObserver : public ArcSessionManagerObserver {
   FileExpansionObserver(const FileExpansionObserver&) = delete;
   FileExpansionObserver& operator=(const FileExpansionObserver&) = delete;
 
-  const absl::optional<bool>& property_files_expansion_result() const {
+  const std::optional<bool>& property_files_expansion_result() const {
     return property_files_expansion_result_;
   }
 
@@ -136,7 +135,7 @@ class FileExpansionObserver : public ArcSessionManagerObserver {
   }
 
  private:
-  absl::optional<bool> property_files_expansion_result_;
+  std::optional<bool> property_files_expansion_result_;
 };
 
 class ShowErrorObserver : public ArcSessionManagerObserver {
@@ -151,7 +150,7 @@ class ShowErrorObserver : public ArcSessionManagerObserver {
 
   ~ShowErrorObserver() override { session_manager_->RemoveObserver(this); }
 
-  const absl::optional<ArcSupportHost::ErrorInfo> error_info() const {
+  const std::optional<ArcSupportHost::ErrorInfo> error_info() const {
     return error_info_;
   }
 
@@ -160,7 +159,7 @@ class ShowErrorObserver : public ArcSessionManagerObserver {
   }
 
  private:
-  absl::optional<ArcSupportHost::ErrorInfo> error_info_;
+  std::optional<ArcSupportHost::ErrorInfo> error_info_;
   const raw_ptr<ArcSessionManager, ExperimentalAsh> session_manager_;
 };
 
@@ -444,8 +443,6 @@ TEST_F(ArcSessionManagerTest, BaseWorkflow) {
 }
 
 TEST_F(ArcSessionManagerTest, SignedInWorkflow) {
-  base::HistogramTester histogram_tester;
-
   PrefService* const prefs = profile()->GetPrefs();
   prefs->SetBoolean(prefs::kArcTermsAccepted, true);
   prefs->SetBoolean(prefs::kArcSignedIn, true);
@@ -458,14 +455,10 @@ TEST_F(ArcSessionManagerTest, SignedInWorkflow) {
 
   // When signed-in, enabling ARC results in the ACTIVE state.
   arc_session_manager()->RequestEnable();
-  histogram_tester.ExpectUniqueSample(
-      "Arc.DelayedActivation.ActivationIsDelayed", false, 1);
   ASSERT_EQ(ArcSessionManager::State::ACTIVE, arc_session_manager()->state());
 }
 
 TEST_F(ArcSessionManagerTest, SignedInWorkflowWithArcOnDemand) {
-  base::HistogramTester histogram_tester;
-
   // Enable ARC on Demand feature.
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(kArcOnDemandFeature);
@@ -490,18 +483,11 @@ TEST_F(ArcSessionManagerTest, SignedInWorkflowWithArcOnDemand) {
   // When signed-in, enabling ARC results in the READY state.
   arc_session_manager()->RequestEnable();
   ASSERT_EQ(ArcSessionManager::State::READY, arc_session_manager()->state());
-  histogram_tester.ExpectUniqueSample(
-      "Arc.DelayedActivation.ActivationIsDelayed", true, 1);
   ASSERT_TRUE(arc_session_manager()->IsActivationDelayed());
-
-  constexpr auto kDelay = base::Minutes(10);
-  task_environment().FastForwardBy(kDelay);
 
   // ARC starts after calling AllowActivation().
   arc_session_manager()->AllowActivation();
   ASSERT_EQ(ArcSessionManager::State::ACTIVE, arc_session_manager()->state());
-  histogram_tester.ExpectUniqueTimeSample("Arc.DelayedActivation.Delay", kDelay,
-                                          1);
 }
 
 TEST_F(ArcSessionManagerTest, SignedInWorkflow_ActivationIsAlreadyAllowed) {
@@ -1007,7 +993,7 @@ TEST_F(ArcSessionManagerTest, ArcVmDataMigrationNecessityChecker_Undetermined) {
   SetArcVmDataMigrationStatus(profile()->GetPrefs(),
                               ArcVmDataMigrationStatus::kUnnotified);
   ash::FakeArcVmDataMigratorClient::Get()->set_has_data_to_migrate(
-      absl::nullopt);
+      std::nullopt);
 
   arc_session_manager()->SetProfile(profile());
   arc_session_manager()->Initialize();
@@ -1042,6 +1028,53 @@ TEST_F(ArcSessionManagerTest, RegularToChildTransition) {
   EXPECT_EQ(ArcSessionManager::State::CHECKING_REQUIREMENTS,
             arc_session_manager()->state());
 
+  arc_session_manager()->Shutdown();
+}
+
+TEST_F(ArcSessionManagerTest, SetArcSignedIn) {
+  PrefService* const prefs = profile()->GetPrefs();
+  ASSERT_TRUE(prefs);
+  prefs->SetBoolean(prefs::kArcTermsAccepted, true);
+  prefs->SetBoolean(prefs::kArcSignedIn, true);
+
+  arc_session_manager()->SetProfile(profile());
+  arc_session_manager()->Initialize();
+
+  // By default ARC is not enabled.
+  EXPECT_EQ(ArcSessionManager::State::STOPPED, arc_session_manager()->state());
+
+  // When signed-in, enabling ARC results in the ACTIVE state.
+  arc_session_manager()->RequestEnable();
+  base::RunLoop().RunUntilIdle();
+  ASSERT_EQ(ArcSessionManager::State::ACTIVE, arc_session_manager()->state());
+
+  EXPECT_TRUE(prefs->GetBoolean(prefs::kArcSignedIn));
+  EXPECT_TRUE(
+      arc_session_manager()->GetArcSessionRunnerForTesting()->arc_signed_in());
+
+  // Correctly stop service.
+  arc_session_manager()->Shutdown();
+}
+
+TEST_F(ArcSessionManagerTest, ClearArcSignedIn) {
+  // Start ARC.
+  arc_session_manager()->SetProfile(profile());
+  arc_session_manager()->Initialize();
+  arc_session_manager()->RequestEnable();
+  base::RunLoop().RunUntilIdle();
+  ASSERT_EQ(ArcSessionManager::State::CHECKING_REQUIREMENTS,
+            arc_session_manager()->state());
+
+  // Disable ARC.
+  arc_session_manager()->RequestDisable();
+
+  PrefService* const prefs = profile()->GetPrefs();
+  ASSERT_TRUE(prefs);
+  EXPECT_FALSE(prefs->GetBoolean(prefs::kArcSignedIn));
+  EXPECT_FALSE(
+      arc_session_manager()->GetArcSessionRunnerForTesting()->arc_signed_in());
+
+  // Correctly stop service.
   arc_session_manager()->Shutdown();
 }
 
@@ -1382,7 +1415,7 @@ struct ProvisioningErrorDisplayTestParam {
   ArcSupportHost::Error message;
 
   // The error code sent to arc support host.
-  absl::optional<int> arg;
+  std::optional<int> arg;
 };
 
 constexpr ProvisioningErrorDisplayTestParam

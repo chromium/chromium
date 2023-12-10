@@ -14,132 +14,47 @@ image_loader_static_js_files = [
 image_loader_ts = [ "image_loader/background.ts" ]
 
 static_js_files = [
-  # Background:
-  "file_manager/background/js/file_manager_base.js",
-  "file_manager/background/js/file_operation_manager.js",
-  "file_manager/background/js/file_operation_util.js",
-
-  "file_manager/background/js/progress_center.js",
-  "file_manager/background/js/runtime_loaded_test_util.js",
-  "file_manager/background/js/test_util.js",
-  "file_manager/background/js/test_util_base.js",
-  "file_manager/background/js/volume_manager_util.js",
-
   # Files Common:
-  "file_manager/common/js/array_data_model.js",
-  "file_manager/common/js/async_util.js",
-  "file_manager/common/js/error_counter.js",
-  "file_manager/common/js/glitch.js",
-  "file_manager/common/js/file_type.js",
-  "file_manager/common/js/files_app_entry_types.js",
-
-  "file_manager/common/js/filtered_volume_manager.js",
-  "file_manager/common/js/mock_chrome.js",
-  "file_manager/common/js/mock_entry.js",
-  "file_manager/common/js/notifications.js",
-  "file_manager/common/js/progress_center_common.js",
-  "file_manager/common/js/recent_date_bucket.js",
-  "file_manager/common/js/storage.js",
-  "file_manager/common/js/ui.js",
-  "file_manager/common/js/url_constants.js",
-  "file_manager/common/js/volume_manager_types.js",
 
   # Externs:
   "file_manager/externs/background/crostini.js",
   "file_manager/externs/background/drive_sync_handler.js",
-  "file_manager/externs/background/file_manager_base.js",
-  "file_manager/externs/background/file_operation_manager.js",
   "file_manager/externs/background/progress_center.js",
   "file_manager/externs/command_handler_deps.js",
-  "file_manager/externs/directory_change_event.js",
   "file_manager/externs/entry_location.js",
   "file_manager/externs/exif_entry.js",
-  "file_manager/externs/files_app_entry_interfaces.js",
-  "file_manager/externs/foreground_window.js",
   "file_manager/externs/metadata_model.js",
-  "file_manager/externs/metadata_worker_window.js",
   "file_manager/externs/progress_center_panel.js",
-  "file_manager/externs/volume_info_list.js",
-  "file_manager/externs/volume_manager.js",
   "file_manager/externs/ts/state.js",
   "file_manager/externs/ts/store.js",
 
   # Files app Foreground:
-  "file_manager/foreground/js/actions_controller.js",
-  "file_manager/foreground/js/actions_model.js",
-  "file_manager/foreground/js/android_app_list_model.js",
   "file_manager/foreground/js/app_state_controller.js",
   "file_manager/foreground/js/constants.js",
-  "file_manager/foreground/js/crossover_search_utils.js",
   "file_manager/foreground/js/crostini_controller.js",
-  "file_manager/foreground/js/deferred_elements.js",
-  "file_manager/foreground/js/dialog_action_controller.js",
-  "file_manager/foreground/js/directory_contents.js",
-  "file_manager/foreground/js/directory_model.js",
   "file_manager/foreground/js/directory_tree_naming_controller.js",
   "file_manager/foreground/js/elements_importer.js",
-  "file_manager/foreground/js/empty_folder_controller.js",
-  "file_manager/foreground/js/fake_android_app_list_model.js",
   "file_manager/foreground/js/fake_file_selection_handler.js",
-  "file_manager/foreground/js/file_list_model.js",
   "file_manager/foreground/js/file_manager.js",
   "file_manager/foreground/js/file_manager_commands.js",
-  "file_manager/foreground/js/file_selection.js",
-  "file_manager/foreground/js/file_type_filters_controller.js",
-  "file_manager/foreground/js/file_watcher.js",
-  "file_manager/foreground/js/folder_shortcuts_data_model.js",
   "file_manager/foreground/js/gear_menu_controller.js",
-  "file_manager/foreground/js/guest_os_controller.js",
   "file_manager/foreground/js/holding_space_util.js",
-  "file_manager/foreground/js/launch_param.js",
-  "file_manager/foreground/js/list_thumbnail_loader.js",
-  "file_manager/foreground/js/main_window_component.js",
   "file_manager/foreground/js/metadata_update_controller.js",
   "file_manager/foreground/js/metrics_start.js",
-  "file_manager/foreground/js/mock_actions_model.js",
-  "file_manager/foreground/js/mock_directory_model.js",
-  "file_manager/foreground/js/mock_folder_shortcut_data_model.js",
   "file_manager/foreground/js/mock_navigation_list_model.js",
-  "file_manager/foreground/js/mock_thumbnail_loader.js",
   "file_manager/foreground/js/naming_controller.js",
-  "file_manager/foreground/js/file_rename.js",
   "file_manager/foreground/js/navigation_list_model.js",
-  "file_manager/foreground/js/navigation_uma.js",
-  "file_manager/foreground/js/path_component.js",
-  "file_manager/foreground/js/providers_model.js",
-  "file_manager/foreground/js/scan_controller.js",
   "file_manager/foreground/js/selection_menu_controller.js",
-  "file_manager/foreground/js/sort_menu_controller.js",
-  "file_manager/foreground/js/spinner_controller.js",
   "file_manager/foreground/js/task_history.js",
-  "file_manager/foreground/js/thumbnail_loader.js",
-  "file_manager/foreground/js/toolbar_controller.js",
 
   # Metadata:
-  "file_manager/foreground/js/metadata/content_metadata_provider.js",
-  "file_manager/foreground/js/metadata/dlp_metadata_provider.js",
-  "file_manager/foreground/js/metadata/exif_parser.js",
-  "file_manager/foreground/js/metadata/external_metadata_provider.js",
-  "file_manager/foreground/js/metadata/function_parallel.js",
-  "file_manager/foreground/js/metadata/function_sequence.js",
-  "file_manager/foreground/js/metadata/id3_parser.js",
-  "file_manager/foreground/js/metadata/image_parsers.js",
-  "file_manager/foreground/js/metadata/metadata_cache_item.js",
-  "file_manager/foreground/js/metadata/metadata_cache_set.js",
   "file_manager/foreground/js/metadata/metadata_dispatcher.js",
-  "file_manager/foreground/js/metadata/metadata_model.js",
-  "file_manager/foreground/js/metadata/metadata_parser.js",
-  "file_manager/foreground/js/metadata/mock_metadata.js",
-  "file_manager/foreground/js/metadata/mpeg_parser.js",
-  "file_manager/foreground/js/metadata/multi_metadata_provider.js",
-  "file_manager/foreground/js/metadata/thumbnail_model.js",
 
   # Files app UI:
   "file_manager/foreground/js/ui/a11y_announce.js",
   "file_manager/foreground/js/ui/action_model_ui.js",
   "file_manager/foreground/js/ui/actions_submenu.js",
   "file_manager/foreground/js/ui/combobutton.js",
-  "file_manager/foreground/js/ui/command.js",
   "file_manager/foreground/js/ui/commandbutton.js",
   "file_manager/foreground/js/ui/context_menu_handler.js",
   "file_manager/foreground/js/ui/default_task_dialog.js",
@@ -147,11 +62,8 @@ static_js_files = [
   "file_manager/foreground/js/ui/dialogs.js",
   "file_manager/foreground/js/ui/directory_tree.js",
   "file_manager/foreground/js/ui/drag_selector.js",
-  "file_manager/foreground/js/ui/file_list_selection_model.js",
   "file_manager/foreground/js/ui/file_manager_dialog_base.js",
-  "file_manager/foreground/js/ui/file_manager_ui.js",
   "file_manager/foreground/js/ui/file_metadata_formatter.js",
-  "file_manager/foreground/js/ui/file_table.js",
   "file_manager/foreground/js/ui/file_tap_handler.js",
   "file_manager/foreground/js/ui/files_alert_dialog.js",
   "file_manager/foreground/js/ui/files_confirm_dialog.js",
@@ -159,16 +71,7 @@ static_js_files = [
   "file_manager/foreground/js/ui/gear_menu.js",
   "file_manager/foreground/js/ui/import_crostini_image_dialog.js",
   "file_manager/foreground/js/ui/install_linux_package_dialog.js",
-  "file_manager/foreground/js/ui/list_container.js",
-  "file_manager/foreground/js/ui/list_selection_model.js",
-  "file_manager/foreground/js/ui/list_single_selection_model.js",
-  "file_manager/foreground/js/ui/menu.js",
-  "file_manager/foreground/js/ui/menu_button.js",
-  "file_manager/foreground/js/ui/menu_item.js",
-  "file_manager/foreground/js/ui/multi_menu.js",
-  "file_manager/foreground/js/ui/multi_menu_button.js",
   "file_manager/foreground/js/ui/position_util.js",
-  "file_manager/foreground/js/ui/progress_center_panel.js",
   "file_manager/foreground/js/ui/providers_menu.js",
   "file_manager/foreground/js/ui/tree.js",
 ]
@@ -176,41 +79,70 @@ static_js_files = [
 # END: static_js_files.
 
 ts_files = [
-  "file_manager/foreground/elements/files_spinner.ts",
-  "file_manager/foreground/elements/xf_button.ts",
-  "file_manager/foreground/elements/xf_circular_progress.ts",
-
+  # 3-line header to avoid conflict.
+  # Don't remove this.
+  # These lines will be removed at the end of the TS migration.
   # Common.
   "file_manager/common/js/api.ts",
   "file_manager/common/js/app_util.ts",
+  "file_manager/common/js/array_data_model.ts",
+  "file_manager/common/js/async_util.ts",
   "file_manager/common/js/cr_ui.ts",
-  "file_manager/common/js/files_app_state.ts",
-  "file_manager/common/js/dom_utils.ts",
   "file_manager/common/js/dialog_type.ts",
+  "file_manager/common/js/dom_utils.ts",
   "file_manager/common/js/entry_utils.ts",
+  "file_manager/common/js/error_counter.ts",
   "file_manager/common/js/file_tasks.ts",
+  "file_manager/common/js/file_type.ts",
   "file_manager/common/js/file_types_base.ts",
+  "file_manager/common/js/files_app_entry_types.ts",
+  "file_manager/common/js/files_app_state.ts",
+  "file_manager/common/js/files_event_target.ts",
+  "file_manager/common/js/filtered_volume_manager.ts",
   "file_manager/common/js/flags.ts",
+  "file_manager/common/js/glitch.ts",
   "file_manager/common/js/icon_util.ts",
-  "file_manager/common/js/metrics.ts",
   "file_manager/common/js/lru_cache.ts",
+  "file_manager/common/js/metrics.ts",
+  "file_manager/common/js/mock_chrome.ts",
+  "file_manager/common/js/mock_entry.ts",
+  "file_manager/common/js/progress_center_common.ts",
+  "file_manager/common/js/recent_date_bucket.ts",
   "file_manager/common/js/script_loader.ts",
+  "file_manager/common/js/storage.ts",
   "file_manager/common/js/translations.ts",
   "file_manager/common/js/trash.ts",
   "file_manager/common/js/trusted_script_url_policy_util.ts",
   "file_manager/common/js/tslib_shim.ts",
+  "file_manager/common/js/url_constants.ts",
   "file_manager/common/js/util.ts",
+  "file_manager/common/js/volume_manager_types.ts",
 
+  # 3-line header to avoid conflict.
+  # Don't remove this.
+  # These lines will be removed at the end of the TS migration.
+  # Externs:
+  "file_manager/externs/files_app_entry_interfaces.ts",
+
+  # 3-line header to avoid conflict.
+  # Don't remove this.
+  # These lines will be removed at the end of the TS migration.
   # Lib.
   "file_manager/lib/actions_producer.ts",
   "file_manager/lib/base_store.ts",
   "file_manager/lib/concurrency_models.ts",
   "file_manager/lib/selector.ts",
 
+  # 3-line header to avoid conflict.
+  # Don't remove this.
+  # These lines will be removed at the end of the TS migration.
   # State.
   "file_manager/state/file_key.ts",
   "file_manager/state/store.ts",
 
+  # 3-line header to avoid conflict.
+  # Don't remove this.
+  # These lines will be removed at the end of the TS migration.
   # Ducks.
   "file_manager/state/ducks/all_entries.ts",
   "file_manager/state/ducks/android_apps.ts",
@@ -219,12 +151,16 @@ ts_files = [
   "file_manager/state/ducks/drive.ts",
   "file_manager/state/ducks/current_directory.ts",
   "file_manager/state/ducks/folder_shortcuts.ts",
+  "file_manager/state/ducks/launch_params.ts",
   "file_manager/state/ducks/navigation.ts",
   "file_manager/state/ducks/preferences.ts",
   "file_manager/state/ducks/search.ts",
   "file_manager/state/ducks/ui_entries.ts",
   "file_manager/state/ducks/volumes.ts",
 
+  # 3-line header to avoid conflict.
+  # Don't remove this.
+  # These lines will be removed at the end of the TS migration.
   # Containers.
   "file_manager/containers/breadcrumb_container.ts",
   "file_manager/containers/cloud_panel_container.ts",
@@ -232,6 +168,9 @@ ts_files = [
   "file_manager/containers/search_container.ts",
   "file_manager/containers/directory_tree_container.ts",
 
+  # 3-line header to avoid conflict.
+  # Don't remove this.
+  # These lines will be removed at the end of the TS migration.
   # Widgets.
   "file_manager/widgets/xf_base.ts",
   "file_manager/widgets/xf_breadcrumb.ts",
@@ -251,13 +190,29 @@ ts_files = [
   "file_manager/widgets/xf_tree_item.ts",
   "file_manager/widgets/xf_password_dialog.ts",
 
+  # 3-line header to avoid conflict.
+  # Don't remove this.
+  # These lines will be removed at the end of the TS migration.
   # Foreground UI.
+  "file_manager/foreground/js/ui/command.ts",
+  "file_manager/foreground/js/deferred_elements.ts",
   "file_manager/foreground/js/ui/file_grid.ts",
+  "file_manager/foreground/js/ui/file_list_selection_model.ts",
+  "file_manager/foreground/js/ui/file_manager_ui.ts",
+  "file_manager/foreground/js/ui/file_table.ts",
   "file_manager/foreground/js/ui/file_table_list.ts",
   "file_manager/foreground/js/ui/grid.ts",
   "file_manager/foreground/js/ui/list.ts",
+  "file_manager/foreground/js/ui/list_container.ts",
   "file_manager/foreground/js/ui/list_item.ts",
+  "file_manager/foreground/js/ui/list_single_selection_model.ts",
   "file_manager/foreground/js/ui/list_selection_controller.ts",
+  "file_manager/foreground/js/ui/list_selection_model.ts",
+  "file_manager/foreground/js/ui/menu.ts",
+  "file_manager/foreground/js/ui/menu_item.ts",
+  "file_manager/foreground/js/ui/multi_menu.ts",
+  "file_manager/foreground/js/ui/multi_menu_button.ts",
+  "file_manager/foreground/js/ui/progress_center_panel.ts",
   "file_manager/foreground/js/ui/splitter.ts",
   "file_manager/foreground/js/ui/table/table_column.ts",
   "file_manager/foreground/js/ui/table/table_column_model.ts",
@@ -266,6 +221,9 @@ ts_files = [
   "file_manager/foreground/js/ui/table/table.ts",
   "file_manager/foreground/js/ui/table/table_splitter.ts",
 
+  # 3-line header to avoid conflict.
+  # Don't remove this.
+  # These lines will be removed at the end of the TS migration.
   # Banners.
   "file_manager/foreground/js/ui/banners/drive_bulk_pinning_banner.ts",
   "file_manager/foreground/js/ui/banners/drive_low_individual_space_banner.ts",
@@ -288,47 +246,125 @@ ts_files = [
   "file_manager/foreground/js/ui/banners/dlp_restricted_banner.ts",
   "file_manager/foreground/js/ui/banners/types.ts",
 
+  # 3-line header to avoid conflict.
+  # Don't remove this.
+  # These lines will be removed at the end of the TS migration.
   # Background.
   "file_manager/background/js/app_window_wrapper.ts",
   "file_manager/background/js/crostini.ts",
   "file_manager/background/js/drive_sync_handler.ts",
   "file_manager/background/js/entry_location_impl.ts",
+  "file_manager/background/js/file_manager_base.ts",
   "file_manager/background/js/file_operation_handler.ts",
-  "file_manager/background/js/launcher.ts",
+  "file_manager/foreground/js/folder_shortcuts_data_model.ts",
   "file_manager/background/js/metrics_start.ts",
   "file_manager/background/js/mock_crostini.ts",
   "file_manager/background/js/mock_progress_center.ts",
+  "file_manager/background/js/mock_volume_manager.ts",
+  "file_manager/foreground/js/path_component.ts",
+  "file_manager/background/js/progress_center.ts",
+  "file_manager/background/js/runtime_loaded_test_util.ts",
+  "file_manager/background/js/test_util.ts",
+  "file_manager/background/js/test_util_base.ts",
   "file_manager/background/js/volume_info_impl.ts",
   "file_manager/background/js/volume_info_list_impl.ts",
   "file_manager/background/js/volume_manager_factory.ts",
   "file_manager/background/js/volume_manager_impl.ts",
 
+  # 3-line header to avoid conflict.
+  # Don't remove this.
+  # These lines will be removed at the end of the TS migration.
   # Foreground.
-  "file_manager/foreground/js/file_transfer_controller.ts",
+  "file_manager/foreground/js/actions_model.ts",
+  "file_manager/foreground/js/actions_controller.ts",
+  "file_manager/foreground/js/android_app_list_model.ts",
   "file_manager/foreground/js/banner_controller.ts",
+  "file_manager/foreground/js/command_handler.ts",
+  "file_manager/foreground/js/crossover_search_utils.ts",
+  "file_manager/foreground/js/dialog_action_controller.ts",
+  "file_manager/foreground/js/directory_contents.ts",
+  "file_manager/foreground/js/directory_model.ts",
+  "file_manager/foreground/js/empty_folder_controller.ts",
+  "file_manager/foreground/js/fake_android_app_list_model.ts",
+  "file_manager/foreground/js/file_list_model.ts",
+  "file_manager/foreground/js/file_manager_commands_util.ts",
+  "file_manager/foreground/js/file_rename.ts",
+  "file_manager/foreground/js/file_selection.ts",
   "file_manager/foreground/js/file_tasks.ts",
+  "file_manager/foreground/js/file_transfer_controller.ts",
+  "file_manager/foreground/js/file_type_filters_controller.ts",
+  "file_manager/foreground/js/file_watcher.ts",
+  "file_manager/foreground/js/guest_os_controller.ts",
   "file_manager/foreground/js/last_modified_controller.ts",
+  "file_manager/foreground/js/list_thumbnail_loader.ts",
+  "file_manager/foreground/js/launch_param.ts",
   "file_manager/foreground/js/main.ts",
+  "file_manager/foreground/js/main_window_component.ts",
   "file_manager/foreground/js/metadata_box_controller.ts",
+  "file_manager/foreground/js/mock_actions_model.ts",
+  "file_manager/foreground/js/mock_directory_model.ts",
+  "file_manager/foreground/js/mock_folder_shortcut_data_model.ts",
+  "file_manager/foreground/js/mock_thumbnail_loader.ts",
+  "file_manager/foreground/js/navigation_uma.ts",
+  "file_manager/foreground/js/providers_model.ts",
   "file_manager/foreground/js/quick_view_controller.ts",
   "file_manager/foreground/js/quick_view_model.ts",
   "file_manager/foreground/js/quick_view_uma.ts",
+  "file_manager/foreground/js/scan_controller.ts",
+  "file_manager/foreground/js/sort_menu_controller.ts",
+  "file_manager/foreground/js/spinner_controller.ts",
   "file_manager/foreground/js/task_controller.ts",
+  "file_manager/foreground/js/thumbnail_loader.ts",
+  "file_manager/foreground/js/toolbar_controller.ts",
   "file_manager/foreground/js/uma_enums.gen.ts",
 
+  # 3-line header to avoid conflict.
+  # Don't remove this.
+  # These lines will be removed at the end of the TS migration.
+  # Elements.
+  "file_manager/foreground/elements/files_spinner.ts",
+  "file_manager/foreground/elements/xf_button.ts",
+  "file_manager/foreground/elements/xf_circular_progress.ts",
+  "file_manager/foreground/elements/xf_display_panel.ts",
+  "file_manager/foreground/elements/xf_panel_item.ts",
+
+  # 3-line header to avoid conflict.
+  # Don't remove this.
+  # These lines will be removed at the end of the TS migration.
   # Util.
   "file_manager/widgets/xf_tree_util.ts",
 
+  # 3-line header to avoid conflict.
+  # Don't remove this.
+  # These lines will be removed at the end of the TS migration.
   # Definitions.
   "file_manager/definitions/file_manager_private.ts",
 
+  # 3-line header to avoid conflict.
+  # Don't remove this.
+  # These lines will be removed at the end of the TS migration.
   # Metadata:
   "file_manager/foreground/js/metadata/byte_reader.ts",
+  "file_manager/foreground/js/metadata/content_metadata_provider.ts",
+  "file_manager/foreground/js/metadata/dlp_metadata_provider.ts",
   "file_manager/foreground/js/metadata/exif_constants.ts",
+  "file_manager/foreground/js/metadata/exif_parser.ts",
+  "file_manager/foreground/js/metadata/external_metadata_provider.ts",
   "file_manager/foreground/js/metadata/file_system_metadata_provider.ts",
+  "file_manager/foreground/js/metadata/function_parallel.ts",
+  "file_manager/foreground/js/metadata/function_sequence.ts",
+  "file_manager/foreground/js/metadata/id3_parser.ts",
+  "file_manager/foreground/js/metadata/image_parsers.ts",
+  "file_manager/foreground/js/metadata/metadata_cache_item.ts",
+  "file_manager/foreground/js/metadata/metadata_cache_set.ts",
   "file_manager/foreground/js/metadata/metadata_item.ts",
+  "file_manager/foreground/js/metadata/metadata_model.ts",
+  "file_manager/foreground/js/metadata/metadata_parser.ts",
   "file_manager/foreground/js/metadata/metadata_provider.ts",
   "file_manager/foreground/js/metadata/metadata_request.ts",
+  "file_manager/foreground/js/metadata/mpeg_parser.ts",
+  "file_manager/foreground/js/metadata/multi_metadata_provider.ts",
+  "file_manager/foreground/js/metadata/thumbnail_model.ts",
 ]
 
 # Isolate Polymer TS to avoid sending them to Closure via the rule `js_from_ts`.
@@ -349,6 +385,8 @@ ts_templates = [
   "file_manager/foreground/elements/files_spinner.html",
   "file_manager/foreground/elements/xf_button.html",
   "file_manager/foreground/elements/xf_circular_progress.html",
+  "file_manager/foreground/elements/xf_display_panel.html",
+  "file_manager/foreground/elements/xf_panel_item.html",
   "file_manager/widgets/xf_conflict_dialog.html",
   "file_manager/widgets/xf_dlp_restriction_details_dialog.html",
   "file_manager/widgets/xf_nudge.html",
@@ -376,14 +414,27 @@ ts_templates = [
 ]
 
 ts_test_files = [
+  # 3-line header to avoid conflict.
+  # Don't remove this.
+  # These lines will be removed at the end of the TS migration.
   # Common.
+  "file_manager/common/js/array_data_model_unittest.ts",
+  "file_manager/common/js/async_util_unittest.ts",
   "file_manager/common/js/entry_utils_unittest.ts",
+  "file_manager/common/js/file_type_unittest.ts",
   "file_manager/common/js/file_types_base_unittest.ts",
+  "file_manager/common/js/filtered_volume_manager_unittest.ts",
   "file_manager/common/js/lru_cache_unittest.ts",
+  "file_manager/common/js/recent_date_bucket_unittest.ts",
+  "file_manager/common/js/storage_unittest.ts",
   "file_manager/common/js/translations_unittest.ts",
-  "file_manager/common/js/volume_manager_types_unittest.ts",
+  "file_manager/common/js/unittest_util.ts",
   "file_manager/common/js/util_unittest.ts",
+  "file_manager/common/js/volume_manager_types_unittest.ts",
 
+  # 3-line header to avoid conflict.
+  # Don't remove this.
+  # These lines will be removed at the end of the TS migration.
   # Containers
   "file_manager/containers/breadcrumb_container_unittest.ts",
   "file_manager/containers/cloud_panel_container_unittest.ts",
@@ -391,15 +442,24 @@ ts_test_files = [
   "file_manager/containers/nudge_container_unittest.ts",
   "file_manager/containers/search_container_unittest.ts",
 
+  # 3-line header to avoid conflict.
+  # Don't remove this.
+  # These lines will be removed at the end of the TS migration.
   # Lib:
   "file_manager/lib/actions_producer_unittest.ts",
   "file_manager/lib/base_store_unittest.ts",
   "file_manager/lib/for_tests.ts",
   "file_manager/lib/selector_unittest.ts",
 
+  # 3-line header to avoid conflict.
+  # Don't remove this.
+  # These lines will be removed at the end of the TS migration.
   # Reducers:
   "file_manager/state/for_tests.ts",
 
+  # 3-line header to avoid conflict.
+  # Don't remove this.
+  # These lines will be removed at the end of the TS migration.
   # Ducks:
   "file_manager/state/ducks/all_entries_unittest.ts",
   "file_manager/state/ducks/android_apps_unittest.ts",
@@ -408,12 +468,16 @@ ts_test_files = [
   "file_manager/state/ducks/drive_unittest.ts",
   "file_manager/state/ducks/current_directory_unittest.ts",
   "file_manager/state/ducks/folder_shortcuts_unittest.ts",
+  "file_manager/state/ducks/launch_params_unittest.ts",
   "file_manager/state/ducks/navigation_unittest.ts",
   "file_manager/state/ducks/preferences_unittest.ts",
   "file_manager/state/ducks/search_unittest.ts",
   "file_manager/state/ducks/ui_entries_unittest.ts",
   "file_manager/state/ducks/volumes_unittest.ts",
 
+  # 3-line header to avoid conflict.
+  # Don't remove this.
+  # These lines will be removed at the end of the TS migration.
   # Widgets:
   "file_manager/widgets/xf_breadcrumb_unittest.ts",
   "file_manager/widgets/xf_bulk_pinning_dialog_unittest.ts",
@@ -429,25 +493,54 @@ ts_test_files = [
   "file_manager/widgets/xf_tree_unittest.ts",
   "file_manager/widgets/xf_tree_item_unittest.ts",
 
+  # 3-line header to avoid conflict.
+  # Don't remove this.
+  # These lines will be removed at the end of the TS migration.
   # Background:
   "file_manager/background/js/crostini_unittest.ts",
   "file_manager/background/js/drive_sync_handler_unittest.ts",
+  "file_manager/background/js/volume_manager_unittest.ts",
 
+  # 3-line header to avoid conflict.
+  # Don't remove this.
+  # These lines will be removed at the end of the TS migration.
   # Foreground:
   "file_manager/foreground/elements/files_tooltip_unittest.ts",
   "file_manager/foreground/elements/files_toast_unittest.ts",
+  "file_manager/foreground/elements/files_xf_elements_unittest.ts",
+  "file_manager/foreground/js/actions_model_unittest.ts",
   "file_manager/foreground/js/banner_controller_unittest.ts",
   "file_manager/foreground/js/banner_util_unittest.ts",
   "file_manager/foreground/js/directory_contents_unittest.ts",
+  "file_manager/foreground/js/directory_model_unittest.ts",
+  "file_manager/foreground/js/empty_folder_controller_unittest.ts",
+  "file_manager/foreground/js/file_list_model_unittest.ts",
   "file_manager/foreground/js/file_tasks_unittest.ts",
   "file_manager/foreground/js/file_transfer_controller_unittest.ts",
+  "file_manager/foreground/js/file_type_filters_controller_unittest.ts",
+  "file_manager/foreground/js/list_thumbnail_loader_unittest.ts",
+  "file_manager/foreground/js/path_component_unittest.ts",
   "file_manager/foreground/js/task_controller_unittest.ts",
   "file_manager/foreground/js/metadata/dlp_metadata_provider_unittest.ts",
+  "file_manager/foreground/js/providers_model_unittest.ts",
+  "file_manager/foreground/js/spinner_controller_unittest.ts",
+  "file_manager/foreground/js/thumbnail_loader_unittest.ts",
 
+  # 3-line header to avoid conflict.
+  # Don't remove this.
+  # These lines will be removed at the end of the TS migration.
   # UI:
+  "file_manager/foreground/js/ui/command_unittest.ts",
   "file_manager/foreground/js/ui/file_grid_unittest.ts",
+  "file_manager/foreground/js/ui/file_list_selection_model_unittest.ts",
   "file_manager/foreground/js/ui/file_table_list_unittest.ts",
+  "file_manager/foreground/js/ui/file_table_unittest.ts",
   "file_manager/foreground/js/ui/grid_unittest.ts",
+  "file_manager/foreground/js/ui/menu_unittest.ts",
+  "file_manager/foreground/js/ui/multi_menu_unittest.ts",
+  "file_manager/foreground/js/ui/list_single_selection_model_unittest.ts",
+  "file_manager/foreground/js/ui/list_selection_model_test_util.ts",
+  "file_manager/foreground/js/ui/list_selection_model_unittest.ts",
   "file_manager/foreground/js/ui/list_unittest.ts",
   "file_manager/foreground/js/ui/banners/drive_bulk_pinning_banner_unittest.ts",
   "file_manager/foreground/js/ui/banners/state_banner_unittest.ts",
@@ -456,8 +549,20 @@ ts_test_files = [
   "file_manager/foreground/js/ui/banners/dlp_restricted_banner_unittest.ts",
   "file_manager/foreground/js/ui/splitter_unittest.ts",
 
+  # 3-line header to avoid conflict.
+  # Don't remove this.
+  # These lines will be removed at the end of the TS migration.
   # Metadata:
+  "file_manager/foreground/js/metadata/content_metadata_provider_unittest.ts",
+  "file_manager/foreground/js/metadata/exif_parser_unittest.ts",
+  "file_manager/foreground/js/metadata/external_metadata_provider_unittest.ts",
   "file_manager/foreground/js/metadata/file_system_metadata_provider_unittest.ts",
+  "file_manager/foreground/js/metadata/metadata_cache_item_unittest.ts",
+  "file_manager/foreground/js/metadata/metadata_cache_set_unittest.ts",
+  "file_manager/foreground/js/metadata/metadata_model_unittest.ts",
+  "file_manager/foreground/js/metadata/mock_metadata.ts",
+  "file_manager/foreground/js/metadata/multi_metadata_provider_unittest.ts",
+  "file_manager/foreground/js/metadata/thumbnail_model_unittest.ts",
 ]
 
 ts_generated_templates = []
@@ -479,31 +584,36 @@ ts_generated_templates += [
 
 # d.ts. files that are automatically generated from the JS file.
 generate_definitions_js_files = [
-  "file_manager/common/js/volume_manager_types.js",
-  "file_manager/externs/files_app_entry_interfaces.js",
   "file_manager/externs/search_item.js",
   "file_manager/externs/quick_view.js",
 ]
 
 # d.ts. files that are manually created and checked-in in the repo.
 checked_in_dts_files = [
+  "file_manager/definitions/context_menu_handler_events.d.ts",
   "file_manager/definitions/file_error.d.ts",
   "file_manager/definitions/file_manager.d.ts",
   "file_manager/externs/volume_info.d.ts",
+  "file_manager/externs/volume_info_list.d.ts",
+  "file_manager/externs/volume_manager.d.ts",
   "file_manager/definitions/navigator_connection.d.ts",
-  "file_manager/foreground/js/ui/command.d.ts",
-  "file_manager/foreground/js/ui/menu_item.d.ts",
-  "file_manager/foreground/js/ui/multi_menu_button.d.ts",
   "file_manager/foreground/js/ui/tree.d.ts",
+]
+
+other_dts_files = [
+  # Enable this when we convert remote_call.js to TS.
+  # "//tools/typescript/definitions/command_line_private.d.ts",
+  "//tools/typescript/definitions/chrome_event.d.ts",
+  "//tools/typescript/definitions/chrome_test.d.ts",
+  "//tools/typescript/definitions/metrics_private.d.ts",
+  "//tools/typescript/definitions/runtime.d.ts",
+  "//tools/typescript/definitions/tabs.d.ts",
+  "//tools/typescript/definitions/webview_tag.d.ts",
 ]
 
 generated_js_files = [
   # Common:
   "file_manager/common/js/file_types_data.js",
-
-  # Elements:
-  "file_manager/foreground/elements/xf_display_panel.js",
-  "file_manager/foreground/elements/xf_panel_item.js",
 ]
 
 # END: generated_js_files.
@@ -511,60 +621,21 @@ generated_js_files = [
 # Test files:
 unittest_files = [
   # Common:
-  "file_manager/common/js/array_data_model_unittest.js",
-  "file_manager/common/js/async_util_unittest.js",
-  "file_manager/common/js/file_type_unittest.js",
   "file_manager/common/js/files_app_entry_types_unittest.js",
-  "file_manager/common/js/filtered_volume_manager_unittest.js",
-  "file_manager/common/js/recent_date_bucket_unittest.js",
-  "file_manager/common/js/storage_unittest.js",
   "file_manager/common/js/test_error_reporting.js",
-  "file_manager/common/js/unittest_util.js",
 
   # Background:
-  "file_manager/background/js/file_operation_manager_unittest.js",
-  "file_manager/background/js/mock_file_operation_manager.js",
-  "file_manager/background/js/mock_volume_manager.js",
-  "file_manager/background/js/volume_manager_unittest.js",
 
   # Foreground:
-  "file_manager/foreground/elements/files_xf_elements_unittest.js",
-  "file_manager/foreground/js/metadata/metadata_cache_item_unittest.js",
-  "file_manager/foreground/js/metadata/exif_parser_unittest.js",
-  "file_manager/foreground/js/metadata/thumbnail_model_unittest.js",
-  "file_manager/foreground/js/metadata/metadata_model_unittest.js",
-  "file_manager/foreground/js/metadata/content_metadata_provider_unittest.js",
-  "file_manager/foreground/js/metadata/external_metadata_provider_unittest.js",
-  "file_manager/foreground/js/metadata/metadata_cache_set_unittest.js",
-  "file_manager/foreground/js/metadata/multi_metadata_provider_unittest.js",
   "file_manager/foreground/js/file_manager_commands_unittest.js",
-  "file_manager/foreground/js/thumbnail_loader_unittest.js",
-  "file_manager/foreground/js/file_list_model_unittest.js",
-  "file_manager/foreground/js/providers_model_unittest.js",
-  "file_manager/foreground/js/spinner_controller_unittest.js",
-  "file_manager/foreground/js/list_thumbnail_loader_unittest.js",
-  "file_manager/foreground/js/file_type_filters_controller_unittest.js",
-  "file_manager/foreground/js/path_component_unittest.js",
-  "file_manager/foreground/js/actions_model_unittest.js",
-  "file_manager/foreground/js/empty_folder_controller_unittest.js",
   "file_manager/foreground/js/ui/file_manager_dialog_base_unittest.js",
   "file_manager/foreground/js/ui/actions_submenu_unittest.js",
-  "file_manager/foreground/js/ui/command_unittest.js",
   "file_manager/foreground/js/ui/context_menu_handler_unittest.js",
-  "file_manager/foreground/js/ui/file_table_unittest.js",
   "file_manager/foreground/js/ui/file_tap_handler_unittest.js",
   "file_manager/foreground/js/ui/install_linux_package_dialog_unittest.js",
-  "file_manager/foreground/js/ui/list_selection_model_test_util.js",
-  "file_manager/foreground/js/ui/list_selection_model_unittest.js",
-  "file_manager/foreground/js/ui/list_single_selection_model_unittest.js",
-  "file_manager/foreground/js/ui/menu_unittest.js",
-  "file_manager/foreground/js/ui/menu_button_unittest.js",
-  "file_manager/foreground/js/ui/multi_menu_unittest.js",
   "file_manager/foreground/js/ui/position_util_unittest.js",
-  "file_manager/foreground/js/ui/file_list_selection_model_unittest.js",
   "file_manager/foreground/js/ui/directory_tree_unittest.js",
   "file_manager/foreground/js/navigation_list_model_unittest.js",
-  "file_manager/foreground/js/directory_model_unittest.js",
 
   # Image Loader:
   "image_loader/scheduler_unittest.js",

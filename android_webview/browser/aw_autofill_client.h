@@ -47,11 +47,10 @@ namespace android_webview {
 
 // Manager delegate for the autofill functionality.
 //
-// Android O and beyond shall use `AndroidAutofillManager` (and
-// `AutofillProvider`), whereas earlier versions use a `BrowserAutofillManager`.
-// This is determined by the `use_android_autofill_manager` parameters below.
+// Android O and beyond uses `AndroidAutofillManager`, unlike Chrome, which
+// uses `BrowserAutofillManager`.
 //
-// Android webview supports enabling autocomplete feature for each webview
+// Android WebView supports enabling Autofill feature for each webview
 // instance (different than the browser which supports enabling/disabling for a
 // profile). Since there is only one pref service for a given browser context,
 // we cannot enable this feature via UserPrefs. Rather, we always keep the
@@ -59,30 +58,17 @@ namespace android_webview {
 // Lifetime: WebView
 class AwAutofillClient : public autofill::ContentAutofillClient {
  public:
-  static AwAutofillClient* FromWebContents(content::WebContents* web_contents) {
-    return static_cast<AwAutofillClient*>(
-        ContentAutofillClient::FromWebContents(web_contents));
-  }
-
-  // The `use_android_autofill_manager` parameter determines which
-  // DriverInitCallback to use:
-  // - autofill::BrowserDriverInitHook() (to be used before Android O) or
-  // - android_webview::AndroidDriverInitHook() (to be used as of Android O).
-  static void CreateForWebContents(content::WebContents* contents,
-                                   bool use_android_autofill_manager);
+  static void CreateForWebContents(content::WebContents* contents);
 
   AwAutofillClient(const AwAutofillClient&) = delete;
   AwAutofillClient& operator=(const AwAutofillClient&) = delete;
 
   ~AwAutofillClient() override;
 
-  void SetSaveFormData(bool enabled);
-  bool GetSaveFormData() const;
-
   // AutofillClient:
   bool IsOffTheRecord() override;
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
-  autofill::AutofillDownloadManager* GetDownloadManager() override;
+  autofill::AutofillCrowdsourcingManager* GetCrowdsourcingManager() override;
   autofill::PersonalDataManager* GetPersonalDataManager() override;
   autofill::AutocompleteHistoryManager* GetAutocompleteHistoryManager()
       override;
@@ -91,7 +77,8 @@ class AwAutofillClient : public autofill::ContentAutofillClient {
   syncer::SyncService* GetSyncService() override;
   signin::IdentityManager* GetIdentityManager() override;
   autofill::FormDataImporter* GetFormDataImporter() override;
-  autofill::payments::PaymentsClient* GetPaymentsClient() override;
+  autofill::payments::PaymentsNetworkInterface* GetPaymentsNetworkInterface()
+      override;
   autofill::StrikeDatabase* GetStrikeDatabase() override;
   ukm::UkmRecorder* GetUkmRecorder() override;
   ukm::SourceId GetUkmSourceId() override;
@@ -145,7 +132,6 @@ class AwAutofillClient : public autofill::ContentAutofillClient {
   void DidFillOrPreviewField(const std::u16string& autofilled_value,
                              const std::u16string& profile_full_name) override;
   bool IsContextSecure() const override;
-  void OpenPromoCodeOfferDetailsURL(const GURL& url) override;
   autofill::FormInteractionsFlowId GetCurrentFormInteractionsFlowId() override;
 
   // RiskDataLoader:
@@ -158,12 +144,9 @@ class AwAutofillClient : public autofill::ContentAutofillClient {
                           jint position);
 
  private:
-  // `use_android_autofill_manager` determines which DriverInitCallback to use
-  // for the ContentAutofillDriverFactory: autofill::BrowserDriverInitHook() or
-  // android_webview::AndroidDriverInitHook().
-  AwAutofillClient(content::WebContents* web_contents,
-                   bool use_android_autofill_manager);
   friend class content::WebContentsUserData<AwAutofillClient>;
+
+  explicit AwAutofillClient(content::WebContents* web_contents);
 
   void ShowAutofillPopupImpl(
       const gfx::RectF& element_bounds,
@@ -172,7 +155,6 @@ class AwAutofillClient : public autofill::ContentAutofillClient {
 
   content::WebContents& GetWebContents() const;
 
-  bool save_form_data_ = false;
   JavaObjectWeakGlobalRef java_ref_;
 
   ui::ViewAndroid::ScopedAnchorView anchor_view_;
@@ -180,7 +162,8 @@ class AwAutofillClient : public autofill::ContentAutofillClient {
   // The current Autofill query values.
   std::vector<autofill::Suggestion> suggestions_;
   base::WeakPtr<autofill::AutofillPopupDelegate> delegate_;
-  std::unique_ptr<autofill::AutofillDownloadManager> download_manager_;
+  std::unique_ptr<autofill::AutofillCrowdsourcingManager>
+      crowdsourcing_manager_;
 
 #if DCHECK_IS_ON()
   bool use_android_autofill_manager_;

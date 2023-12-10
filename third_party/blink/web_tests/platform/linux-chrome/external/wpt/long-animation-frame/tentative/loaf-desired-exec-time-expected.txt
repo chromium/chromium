@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+[FAIL] event-listener entries desiredExecutionStart is the eventTimestamp
+  promise_test: Unhandled rejection with value: object "Error: Tried to run in a non-testharness window without a call to set_test_context"
+Harness: the test ran to completion.

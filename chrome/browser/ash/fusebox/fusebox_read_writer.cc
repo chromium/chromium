@@ -296,7 +296,7 @@ void ReadWriter::Read(scoped_refptr<storage::FileSystemContext> fs_context,
 
   constexpr int64_t min_length = 256;
   constexpr int64_t max_length = 262144;  // 256 KiB.
-  scoped_refptr<net::IOBuffer> buffer = base::MakeRefCounted<net::IOBuffer>(
+  auto buffer = base::MakeRefCounted<net::IOBufferWithSize>(
       std::max(min_length, std::min(max_length, length)));
 
   // Save the pointer before we std::move fs_reader into a base::OnceCallback.

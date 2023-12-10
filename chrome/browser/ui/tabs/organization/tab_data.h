@@ -8,16 +8,18 @@
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "url/gurl.h"
 
 class TabStripModel;
 
 namespace content {
+class NavigationHandle;
 class WebContents;
 }  // namespace content
 
-class TabData : public TabStripModelObserver {
+class TabData : public TabStripModelObserver,
+                public content::WebContentsObserver {
  public:
   // TODO(1476012) replace with opaque tab handle
   using TabID = int;
@@ -56,6 +58,10 @@ class TabData : public TabStripModelObserver {
       const TabStripModelChange& change,
       const TabStripSelectionChange& selection) override;
 
+  // content::WebContentsObserver
+  void DidFinishNavigation(
+      content::NavigationHandle* navigation_handle) override;
+
  private:
   // Notifies observers of the tab data that it has been updated.
   void NotifyObserversOfUpdate();
@@ -68,4 +74,4 @@ class TabData : public TabStripModelObserver {
   base::ObserverList<Observer>::Unchecked observers_;
 };
 
-#endif  // CHROME_BROWSER_UI_TABS_ORGANIZATION_METRICS_H_
+#endif  // CHROME_BROWSER_UI_TABS_ORGANIZATION_TAB_DATA_H_

@@ -9,6 +9,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -25,7 +26,6 @@
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/mojom/input_service.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -78,7 +78,7 @@ class HIDDetectionScreen : public BaseScreen,
           hid_detection_manager);
 
   void InputDeviceAddedForTesting(InputDeviceInfoPtr info);
-  const absl::optional<Result>& get_exit_result_for_testing() const {
+  const std::optional<Result>& get_exit_result_for_testing() const {
     return exit_result_for_testing_;
   }
 
@@ -200,7 +200,7 @@ class HIDDetectionScreen : public BaseScreen,
       const std::string& address,
       device::BluetoothDeviceType device_type,
       uint16_t device_id,
-      absl::optional<device::BluetoothDevice::ConnectErrorCode> error_code);
+      std::optional<device::BluetoothDevice::ConnectErrorCode> error_code);
 
   // Sends a notification to the Web UI of the status of available Bluetooth/USB
   // pointing device.
@@ -225,7 +225,7 @@ class HIDDetectionScreen : public BaseScreen,
   base::WeakPtr<HIDDetectionView> view_;
 
   const ScreenExitCallback exit_callback_;
-  absl::optional<Result> exit_result_for_testing_;
+  std::optional<Result> exit_result_for_testing_;
 
   // Default bluetooth adapter, used for all operations.
   scoped_refptr<device::BluetoothAdapter> adapter_;

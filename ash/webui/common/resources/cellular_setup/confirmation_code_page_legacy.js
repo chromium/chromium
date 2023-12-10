@@ -14,6 +14,7 @@ import './base_page.js';
 
 import {I18nBehavior} from '//resources/ash/common/i18n_behavior.js';
 import {Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
 import {ESimProfileProperties, ESimProfileRemote} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js';
 
 import {getTemplate} from './confirmation_code_page_legacy.html.js';
@@ -107,7 +108,7 @@ Polymer({
     if (!this.profileProperties_) {
       return '';
     }
-    return String.fromCharCode(...this.profileProperties_.name.data);
+    return mojoString16ToString(this.profileProperties_.name);
   },
 
   /**

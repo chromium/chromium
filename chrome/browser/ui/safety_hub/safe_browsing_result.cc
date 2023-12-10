@@ -26,7 +26,7 @@ SafetyHubSafeBrowsingResult& SafetyHubSafeBrowsingResult::operator=(
 SafetyHubSafeBrowsingResult::~SafetyHubSafeBrowsingResult() = default;
 
 // static
-absl::optional<std::unique_ptr<SafetyHubService::Result>>
+std::optional<std::unique_ptr<SafetyHubService::Result>>
 SafetyHubSafeBrowsingResult::GetResult(const PrefService* pref_service) {
   if (safe_browsing::IsEnhancedProtectionEnabled(*pref_service)) {
     return std::make_unique<SafetyHubSafeBrowsingResult>(

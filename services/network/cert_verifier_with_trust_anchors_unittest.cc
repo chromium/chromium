@@ -16,14 +16,10 @@
 #include "base/test/task_environment.h"
 #include "crypto/nss_util_internal.h"
 #include "net/base/test_completion_callback.h"
-#include "net/cert/caching_cert_verifier.h"
 #include "net/cert/cert_net_fetcher.h"
 #include "net/cert/cert_verify_proc.h"
-#include "net/cert/cert_verify_proc_builtin.h"
 #include "net/cert/cert_verify_result.h"
-#include "net/cert/coalescing_cert_verifier.h"
 #include "net/cert/mock_cert_verifier.h"
-#include "net/cert/multi_threaded_cert_verifier.h"
 #include "net/cert/x509_certificate.h"
 #include "net/log/net_log_with_source.h"
 #include "net/test/cert_test_util.h"
@@ -31,58 +27,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace network {
-
-// Wraps a net::MockCertVerifier. When SetConfig() is called with trust anchors,
-// this sets |server_cert_| to pass cert verification using an additional trust
-// anchor. Otherwise |server_cert_| wil fail cert verification with
-// net::ERR_CERT_AUTHORITY_INVALID.
-class WrappedMockCertVerifier : public net::CertVerifier {
- public:
-  explicit WrappedMockCertVerifier(
-      scoped_refptr<net::X509Certificate> server_cert)
-      : server_cert_(std::move(server_cert)) {
-    mock_cert_verifier_.set_async(true);
-  }
-
-  // net::CertVerifier implementation:
-  int Verify(const RequestParams& params,
-             net::CertVerifyResult* verify_result,
-             net::CompletionOnceCallback callback,
-             std::unique_ptr<Request>* out_req,
-             const net::NetLogWithSource& net_log) override {
-    return mock_cert_verifier_.Verify(params, verify_result,
-                                      std::move(callback), out_req, net_log);
-  }
-  void SetConfig(const Config& config) override {
-    mock_cert_verifier_.ClearRules();
-
-    int net_err;
-    net::CertVerifyResult verify_result;
-    if (config.additional_trust_anchors.empty()) {
-      net_err = net::ERR_CERT_AUTHORITY_INVALID;
-    } else {
-      net_err = net::OK;
-      verify_result.is_issued_by_additional_trust_anchor = true;
-    }
-
-    verify_result.verified_cert = server_cert_;
-    verify_result.cert_status = net::MapNetErrorToCertStatus(net_err);
-
-    mock_cert_verifier_.AddResultForCert(server_cert_, verify_result, net_err);
-
-    mock_cert_verifier_.SetConfig(config);
-  }
-  void AddObserver(Observer* observer) override {
-    mock_cert_verifier_.AddObserver(observer);
-  }
-  void RemoveObserver(Observer* observer) override {
-    mock_cert_verifier_.RemoveObserver(observer);
-  }
-
- private:
-  scoped_refptr<net::X509Certificate> server_cert_;
-  net::MockCertVerifier mock_cert_verifier_;
-};
 
 class CertVerifierWithTrustAnchorsTest : public testing::Test {
  public:
@@ -105,13 +49,15 @@ class CertVerifierWithTrustAnchorsTest : public testing::Test {
             &CertVerifierWithTrustAnchorsTest::OnTrustAnchorUsed,
             base::Unretained(this)));
 
-    cert_verifier_->InitializeOnIOThread(
-        std::make_unique<net::CachingCertVerifier>(
-            std::make_unique<net::CoalescingCertVerifier>(
-                std::make_unique<WrappedMockCertVerifier>(test_server_cert_))));
+    auto mock_cert_verifier = std::make_unique<net::MockCertVerifier>();
+    mock_cert_verifier_ = mock_cert_verifier.get();
+    mock_cert_verifier_->set_async(true);
+    mock_cert_verifier_->set_default_result(net::ERR_CERT_AUTHORITY_INVALID);
+    cert_verifier_->InitializeOnIOThread(std::move(mock_cert_verifier));
   }
 
   void TearDown() override {
+    mock_cert_verifier_ = nullptr;
     // Destroy |cert_verifier_| before destroying the TaskEnvironment, otherwise
     // BrowserThread::CurrentlyOn checks fail.
     cert_verifier_.reset();
@@ -145,7 +91,7 @@ class CertVerifierWithTrustAnchorsTest : public testing::Test {
   scoped_refptr<net::X509Certificate> test_server_cert_;
   net::CertificateList test_ca_cert_list_;
   std::unique_ptr<network::CertVerifierWithTrustAnchors> cert_verifier_;
-  scoped_refptr<net::CertVerifyProc> cert_verify_proc_;
+  raw_ptr<net::MockCertVerifier> mock_cert_verifier_;
 
  private:
   void OnTrustAnchorUsed() { trust_anchor_used_ = true; }
@@ -173,10 +119,14 @@ TEST_F(CertVerifierWithTrustAnchorsTest, VerifyUsingAdditionalTrustAnchor) {
   }
   EXPECT_FALSE(WasTrustAnchorUsedAndReset());
 
-  // Verify() again with the additional trust anchors.
-  cert_verifier_->SetAdditionalCerts(test_ca_cert_list_,
-                                     net::CertificateList());
+  // Verify() again with the cert configured as non-policy provided trust
+  // anchor.
   {
+    net::CertVerifyResult mock_verify_result;
+    mock_verify_result.is_issued_by_additional_trust_anchor = false;
+    mock_verify_result.verified_cert = test_server_cert_;
+    mock_cert_verifier_->AddResultForCert(test_server_cert_, mock_verify_result,
+                                          net::OK);
     net::CertVerifyResult verify_result;
     net::TestCompletionCallback callback;
     std::unique_ptr<net::CertVerifier::Request> request;
@@ -186,80 +136,17 @@ TEST_F(CertVerifierWithTrustAnchorsTest, VerifyUsingAdditionalTrustAnchor) {
     EXPECT_TRUE(request);
     error = callback.WaitForResult();
     EXPECT_EQ(net::OK, error);
-  }
-  EXPECT_TRUE(WasTrustAnchorUsedAndReset());
-
-  // Verify() again with the additional trust anchors will hit the cache.
-  cert_verifier_->SetAdditionalCerts(test_ca_cert_list_,
-                                     net::CertificateList());
-  {
-    net::CertVerifyResult verify_result;
-    net::TestCompletionCallback callback;
-    std::unique_ptr<net::CertVerifier::Request> request;
-    int error =
-        VerifyTestServerCert(callback.callback(), &verify_result, &request);
-    EXPECT_EQ(net::OK, error);
-  }
-  EXPECT_TRUE(WasTrustAnchorUsedAndReset());
-
-  // Verifying after removing the trust anchors should now fail.
-  cert_verifier_->SetAdditionalCerts(net::CertificateList(),
-                                     net::CertificateList());
-  {
-    net::CertVerifyResult verify_result;
-    net::TestCompletionCallback callback;
-    std::unique_ptr<net::CertVerifier::Request> request;
-    int error =
-        VerifyTestServerCert(callback.callback(), &verify_result, &request);
-    // Note: Changing the trust anchors should flush the cache.
-    ASSERT_EQ(net::ERR_IO_PENDING, error);
-    EXPECT_TRUE(request);
-    error = callback.WaitForResult();
-    EXPECT_EQ(net::ERR_CERT_AUTHORITY_INVALID, error);
-  }
-  // The additional trust anchors were reset, thus |cert_verifier_| should not
-  // signal it's usage anymore.
-  EXPECT_FALSE(WasTrustAnchorUsedAndReset());
-}
-
-TEST_F(CertVerifierWithTrustAnchorsTest,
-       VerifyUsesAdditionalTrustAnchorsAfterConfigChange) {
-  // |test_server_cert_| is untrusted, so Verify() fails.
-  {
-    net::CertVerifyResult verify_result;
-    net::TestCompletionCallback callback;
-    std::unique_ptr<net::CertVerifier::Request> request;
-    int error =
-        VerifyTestServerCert(callback.callback(), &verify_result, &request);
-    ASSERT_EQ(net::ERR_IO_PENDING, error);
-    EXPECT_TRUE(request);
-    error = callback.WaitForResult();
-    EXPECT_EQ(net::ERR_CERT_AUTHORITY_INVALID, error);
   }
   EXPECT_FALSE(WasTrustAnchorUsedAndReset());
 
-  // Verify() again with the additional trust anchors.
-  cert_verifier_->SetAdditionalCerts(test_ca_cert_list_,
-                                     net::CertificateList());
+  // Verify() again with the cert configured as an additional trust anchor.
   {
-    net::CertVerifyResult verify_result;
-    net::TestCompletionCallback callback;
-    std::unique_ptr<net::CertVerifier::Request> request;
-    int error =
-        VerifyTestServerCert(callback.callback(), &verify_result, &request);
-    ASSERT_EQ(net::ERR_IO_PENDING, error);
-    EXPECT_TRUE(request);
-    error = callback.WaitForResult();
-    EXPECT_EQ(net::OK, error);
-  }
-  EXPECT_TRUE(WasTrustAnchorUsedAndReset());
-
-  // Change the configuration to enable SHA-1, which should still use the
-  // additional trust anchors.
-  net::CertVerifier::Config config;
-  config.enable_sha1_local_anchors = true;
-  cert_verifier_->SetConfig(config);
-  {
+    net::CertVerifyResult mock_verify_result;
+    mock_verify_result.is_issued_by_additional_trust_anchor = true;
+    mock_verify_result.verified_cert = test_server_cert_;
+    mock_cert_verifier_->ClearRules();
+    mock_cert_verifier_->AddResultForCert(test_server_cert_, mock_verify_result,
+                                          net::OK);
     net::CertVerifyResult verify_result;
     net::TestCompletionCallback callback;
     std::unique_ptr<net::CertVerifier::Request> request;

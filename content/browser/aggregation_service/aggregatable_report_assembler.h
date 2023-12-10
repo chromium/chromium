@@ -8,8 +8,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <array>
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/containers/flat_map.h"
@@ -18,7 +18,6 @@
 #include "content/browser/aggregation_service/aggregation_service_key_fetcher.h"
 #include "content/browser/aggregation_service/public_key.h"
 #include "content/common/content_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 template <class T>
 class scoped_refptr;
@@ -55,7 +54,7 @@ class CONTENT_EXPORT AggregatableReportAssembler {
 
   using AssemblyCallback =
       base::OnceCallback<void(AggregatableReportRequest,
-                              absl::optional<AggregatableReport>,
+                              std::optional<AggregatableReport>,
                               AssemblyStatus)>;
 
   // While we shouldn't hit these limits in typical usage, we protect against
@@ -114,9 +113,9 @@ class CONTENT_EXPORT AggregatableReportAssembler {
 
     // The PublicKey returned for each key fetch request. Indices correspond to
     // the ordering of `report_request.processing_urls`. Each element is
-    // `absl::nullopt` if that key fetch either has not yet returned or has
+    // `std::nullopt` if that key fetch either has not yet returned or has
     // returned an error.
-    std::vector<absl::optional<PublicKey>> processing_url_keys;
+    std::vector<std::optional<PublicKey>> processing_url_keys;
   };
 
   AggregatableReportAssembler(
@@ -131,7 +130,7 @@ class CONTENT_EXPORT AggregatableReportAssembler {
   void OnPublicKeyFetched(
       int64_t report_id,
       size_t processing_url_index,
-      absl::optional<PublicKey> key,
+      std::optional<PublicKey> key,
       AggregationServiceKeyFetcher::PublicKeyFetchStatus status);
 
   // Call when all results have been returned from the key fetcher. Handles

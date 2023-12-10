@@ -40,6 +40,7 @@
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/trace_event/trace_event.h"
+#include "base/trace_event/typed_macros.h"
 #include "build/build_config.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -146,6 +147,11 @@ BASE_FEATURE(kOneCopyCanvasCapture,
              base::FEATURE_DISABLED_BY_DEFAULT
 #endif
 );
+
+// Kill switch for not requesting continuous begin frame for low latency canvas.
+BASE_FEATURE(kLowLatencyCanvasNoBeginFrameKillSwitch,
+             "LowLatencyCanvasNoBeginFrameKillSwitch",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // These values come from the WhatWG spec.
 constexpr int kDefaultCanvasWidth = 300;
@@ -519,9 +525,13 @@ CanvasRenderingContext* HTMLCanvasElement::GetCanvasRenderingContextInternal(
         surface_layer_bridge_->GetFrameSinkId().client_id(),
         surface_layer_bridge_->GetFrameSinkId().sink_id(),
         CanvasResourceDispatcher::kInvalidPlaceholderCanvasId, Size());
-    // We don't actually need the begin frame signal when in low latency mode,
-    // but we need to subscribe to it or else dispatching frames will not work.
-    frame_dispatcher_->SetNeedsBeginFrame(IsPageVisible());
+    if (!base::FeatureList::IsEnabled(
+            kLowLatencyCanvasNoBeginFrameKillSwitch)) {
+      // We don't actually need the begin frame signal when in low latency mode,
+      // but we need to subscribe to it or else dispatching frames will not
+      // work.
+      frame_dispatcher_->SetNeedsBeginFrame(IsPageVisible());
+    }
 
     UseCounter::Count(GetDocument(), WebFeature::kHTMLCanvasElementLowLatency);
   }
@@ -1208,7 +1218,11 @@ String HTMLCanvasElement::toDataURL(const String& mime_type,
     if (v8_value->IsNumber())
       quality = v8_value.As<v8::Number>()->Value();
   }
-  return ToDataURLInternal(mime_type, quality, kBackBuffer);
+  String data = ToDataURLInternal(mime_type, quality, kBackBuffer);
+  TRACE_EVENT_INSTANT(
+      TRACE_DISABLED_BY_DEFAULT("identifiability.high_entropy_api"),
+      "CanvasReadback", "data_url", data.Utf8());
+  return data;
 }
 
 void HTMLCanvasElement::toBlob(V8BlobCallback* callback,
@@ -1483,6 +1497,7 @@ void HTMLCanvasElement::SetResourceProviderForTesting(
 
 void HTMLCanvasElement::DiscardResourceProvider() {
   canvas2d_bridge_.reset();
+  ResetLayer();
   CanvasResourceHost::DiscardResourceProvider();
   dirty_rect_ = gfx::RectF();
 }
@@ -1829,6 +1844,7 @@ void HTMLCanvasElement::ReplaceExisting2dLayerBridge(
     // assigning the new canvas layer bridge.
     old_layer_bridge->SetCanvasResourceHost(nullptr);
   }
+  ResetLayer();
   ReplaceResourceProvider(nullptr);
   canvas2d_bridge_ = std::move(new_layer_bridge);
   canvas2d_bridge_->SetCanvasResourceHost(this);
@@ -1912,7 +1928,7 @@ RespectImageOrientationEnum HTMLCanvasElement::RespectImageOrientation() const {
         this, DocumentUpdateReason::kCanvas);
     const_cast<HTMLCanvasElement*>(this)->EnsureComputedStyle();
   }
-  return LayoutObject::ShouldRespectImageOrientation(GetLayoutObject());
+  return LayoutObject::GetImageOrientation(GetLayoutObject());
 }
 
 // Temporary plumbing

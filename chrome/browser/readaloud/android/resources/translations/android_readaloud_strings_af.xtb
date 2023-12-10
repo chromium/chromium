@@ -2,11 +2,14 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="af">
 <translation id="1178581264944972037">Laat wag</translation>
-<translation id="2558806128245168542">Gaan terug</translation>
-<translation id="3523426587027570423">Tik om “Luister na hierdie bladsy” toe te maak.</translation>
+<translation id="1921351128855867012">Spoel <ph name="NUMBER_OF_SECONDS" /> sekondes vinnig vorentoe</translation>
+<translation id="1984328900355667246">Terugspeel is nie beskikbaar nie</translation>
+<translation id="3023502830214299618">Ongelukkig is terugspeel nie tans vir hierdie bladsy beskikbaar nie. Probeer later weer.</translation>
+<translation id="3807208219231826020">Soekbalkterugspeel</translation>
+<translation id="385051799172605136">Terug</translation>
 <translation id="4431240646217225907">Merk teks en outorollees</translation>
 <translation id="4654641641922242357">“Luister na hierdie bladsy”-speler.</translation>
-<translation id="4731877163452936634">Terugspeelspoed: <ph name="PLAYBACK_SPEED" />. Klik om te verander.</translation>
+<translation id="4872475766448853257">Gaan <ph name="NUMBER_OF_SECONDS" /> sekondes terug</translation>
 <translation id="5234971936051226002">“Luister na hierdie bladsy”-speler is geminimeer.</translation>
 <translation id="5596627076506792578">Meer opsies</translation>
 <translation id="6315170314923504164">Stem</translation>
@@ -15,8 +18,8 @@
 <translation id="6831043979455480757">Vertaal</translation>
 <translation id="6846298663435243399">Laai tans …</translation>
 <translation id="7587250070160020374">Chrome speel tans</translation>
-<translation id="7945822420239537236">Spoel <ph name="NUMBER_OF_SECONDS" /> sekondes vorentoe</translation>
-<translation id="7972866381678406344">Gaan <ph name="NUMBER_OF_SECONDS" /> sekondes terug</translation>
 <translation id="8136852699834914183">Terugspeel is nie vir hierdie bladsy beskikbaar nie.</translation>
+<translation id="8264989794233974275"><ph name="PLAYBACK_SPEED" />x verhoog/verminder spoed.</translation>
+<translation id="8407011429883244666">Maak speler toe.</translation>
 <translation id="8953618380150219653">“Luister na hierdie bladsy”-speler het teen volle hoogte oopgemaak.</translation>
 </translationbundle>

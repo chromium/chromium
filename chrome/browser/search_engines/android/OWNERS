@@ -1,0 +1,4 @@
+file://components/search_engines/OWNERS
+
+# For choice screen changes only
+bsazonov@chromium.org #{LAST_RESORT_SUGGESTION}

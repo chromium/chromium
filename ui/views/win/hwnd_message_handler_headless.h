@@ -95,6 +95,8 @@ class VIEWS_EXPORT HWNDMessageHandlerHeadless : public HWNDMessageHandler {
   void SetBoundsInternal(const gfx::Rect& bounds_in_pixels,
                          bool force_size_changed) override;
 
+  void RestoreBounds();
+
  private:
   // Sets headless window bounds which may be different from the platform window
   // bounds and updates Aura window property that stores headless window bounds

@@ -277,6 +277,7 @@ void PrivacyHubNotificationController::UpdateSoftwareSwitchNotification(
   }
 }
 
+// TODO(janlanik): Does this support geolocation?
 bool PrivacyHubNotificationController::
     IsSoftwareSwitchNotificationDisplayedForSensor(Sensor sensor) {
   return combined_notification_->IsShown() && sensors_.Has(sensor);
@@ -373,24 +374,27 @@ void PrivacyHubNotificationController::
     return;
   }
 
-  const char* pref_name = nullptr;
   switch (sensor) {
     case Sensor::kCamera: {
-      pref_name = prefs::kUserCameraAllowed;
+      pref_service->SetBoolean(prefs::kUserCameraAllowed, enabled);
       break;
     }
     case Sensor::kMicrophone: {
-      pref_name = prefs::kUserMicrophoneAllowed;
+      pref_service->SetBoolean(prefs::kUserMicrophoneAllowed, enabled);
       break;
     }
     case Sensor::kLocation: {
-      pref_name = prefs::kUserGeolocationAllowed;
+      // Geolocation notification asks user to allow geolocation for everything
+      // (not only system services).
+      if (enabled) {
+        pref_service->SetInteger(
+            prefs::kUserGeolocationAccessLevel,
+            static_cast<int>(GeolocationAccessLevel::kAllowed));
+      }
       break;
     }
   }
-  CHECK(pref_name);
 
-  pref_service->SetBoolean(pref_name, enabled);
   privacy_hub_metrics::LogSensorEnabledFromNotification(sensor, enabled);
 }
 

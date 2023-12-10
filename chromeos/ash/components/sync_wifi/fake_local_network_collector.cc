@@ -27,10 +27,10 @@ void FakeLocalNetworkCollector::GetSyncableNetwork(const std::string& guid,
     }
   }
 
-  std::move(callback).Run(absl::nullopt);
+  std::move(callback).Run(std::nullopt);
 }
 
-absl::optional<NetworkIdentifier>
+std::optional<NetworkIdentifier>
 FakeLocalNetworkCollector::GetNetworkIdentifierFromGuid(
     const std::string& guid) {
   for (sync_pb::WifiConfigurationSpecifics proto : networks_) {
@@ -39,7 +39,7 @@ FakeLocalNetworkCollector::GetNetworkIdentifierFromGuid(
       return id;
     }
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void FakeLocalNetworkCollector::AddNetwork(

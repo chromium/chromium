@@ -4,8 +4,6 @@
 
 import {NativeEventTarget as EventTarget} from 'chrome://resources/ash/common/event_target.js';
 
-import {VolumeManager} from '../../externs/volume_manager.js';
-
 import {NavigationModelItem, NavigationModelVolumeItem} from './navigation_list_model.js';
 
 /**
@@ -35,7 +33,8 @@ class MockNavigationListItem {
  */
 export class MockNavigationListModel extends EventTarget {
   /**
-   * @param {VolumeManager} volumeManager A volume manager.
+   * @param {import('../../externs/volume_manager.js').VolumeManager}
+   *     volumeManager A volume manager.
    */
   constructor(volumeManager) {
     super();

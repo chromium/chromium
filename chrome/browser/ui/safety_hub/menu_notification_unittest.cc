@@ -57,10 +57,8 @@ class SafetyHubMenuNotificationTest : public testing::Test {
     // the correct permission types.
     auto* registry = content_settings::ContentSettingsRegistry::GetInstance();
     registry->ResetForTest();
-    HostContentSettingsMap* hcsm =
-        HostContentSettingsMapFactory::GetForProfile(profile());
     service_ = std::make_unique<UnusedSitePermissionsService>(
-        hcsm, profile()->GetPrefs());
+        profile(), profile()->GetPrefs());
   }
 
  protected:
@@ -82,7 +80,8 @@ class SafetyHubMenuNotificationTest : public testing::Test {
 TEST_F(SafetyHubMenuNotificationTest, ToFromDictValue) {
   // Creating a mock menu notification.
   base::Time last = kPastTime + base::Days(30);
-  auto notification = std::make_unique<SafetyHubMenuNotification>();
+  auto notification = std::make_unique<SafetyHubMenuNotification>(
+      safety_hub::SafetyHubModuleType::UNUSED_SITE_PERMISSIONS);
   notification->is_currently_active_ = true;
   notification->impression_count_ = 42;
   notification->first_impression_time_ = kPastTime;
@@ -134,7 +133,8 @@ TEST_F(SafetyHubMenuNotificationTest, ToFromDictValue) {
 
 TEST_F(SafetyHubMenuNotificationTest, ShouldBeShown) {
   base::TimeDelta interval = base::Days(30);
-  auto notification = std::make_unique<SafetyHubMenuNotification>();
+  auto notification = std::make_unique<SafetyHubMenuNotification>(
+      safety_hub::SafetyHubModuleType::UNUSED_SITE_PERMISSIONS);
 
   // No result associated with notification, so should not be shown.
   ASSERT_FALSE(notification->ShouldBeShown(interval));
@@ -199,7 +199,8 @@ TEST_F(SafetyHubMenuNotificationTest, ShouldBeShown) {
   // Create new notification and new associated result to test passing time but
   // not the count.
   result = CreateUnusedSitePermissionsResult(base::Value::List().Append(kUrl1));
-  auto other_notification = std::make_unique<SafetyHubMenuNotification>();
+  auto other_notification = std::make_unique<SafetyHubMenuNotification>(
+      safety_hub::SafetyHubModuleType::UNUSED_SITE_PERMISSIONS);
   other_notification->UpdateResult(std::move(result));
   other_notification->Show();
 
@@ -219,7 +220,8 @@ TEST_F(SafetyHubMenuNotificationTest, ShouldBeShown) {
 }
 
 TEST_F(SafetyHubMenuNotificationTest, IsCurrentlyActive) {
-  auto notification = std::make_unique<SafetyHubMenuNotification>();
+  auto notification = std::make_unique<SafetyHubMenuNotification>(
+      safety_hub::SafetyHubModuleType::UNUSED_SITE_PERMISSIONS);
 
   // A notification is not active when it new or when it has not been shown yet.
   ASSERT_FALSE(notification->IsCurrentlyActive());

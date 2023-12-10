@@ -94,9 +94,9 @@ bool SystemWebAppDelegate::ShouldHandleFileOpenIntents() const {
   return ShouldShowInLauncher();
 }
 
-absl::optional<SystemWebAppBackgroundTaskInfo>
+std::optional<SystemWebAppBackgroundTaskInfo>
 SystemWebAppDelegate::GetTimerInfo() const {
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 bool SystemWebAppDelegate::IsAppEnabled() const {

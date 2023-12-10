@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_SIGNIN_BOUND_SESSION_CREDENTIALS_BOUND_SESSION_COOKIE_CONTROLLER_H_
 
 #include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
@@ -64,6 +65,7 @@ class BoundSessionCookieController {
   base::Time min_cookie_expiration_time();
   chrome::mojom::BoundSessionThrottlerParamsPtr
   bound_session_throttler_params();
+  base::flat_set<std::string> bound_cookie_names() const;
 
  protected:
   const GURL url_;

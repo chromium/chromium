@@ -4,15 +4,16 @@
 
 #include "chrome/browser/apps/link_capturing/link_capturing_feature_test_support.h"
 
+#include <optional>
+
 #include "base/check_is_test.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/types/expected.h"
 #include "build/build_config.h"
+#include "chrome/browser/apps/link_capturing/link_capturing_features.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_features.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/apps/intent_helper/preferred_apps_test_util.h"
@@ -22,16 +23,16 @@
 namespace apps::test {
 
 std::vector<base::test::FeatureRefAndParams> GetFeaturesToEnableLinkCapturingUX(
-    absl::optional<bool> override_captures_by_default) {
+    std::optional<bool> override_captures_by_default) {
   CHECK_IS_TEST();
 #if BUILDFLAG(IS_CHROMEOS)
   CHECK(!override_captures_by_default || !override_captures_by_default.value());
   return {{::apps::features::kLinkCapturingUiUpdate, {}}};
 #else
-  return {{features::kDesktopPWAsLinkCapturing,
-           {{features::kLinksCapturedByDefault.name,
+  return {{::features::kDesktopPWAsLinkCapturing,
+           {{::features::kLinksCapturedByDefault.name,
              std::string(override_captures_by_default.value_or(
-                             features::kLinksCapturedByDefault.default_value)
+                             ::features::kLinksCapturedByDefault.default_value)
                              ? "true"
                              : "false")}}}};
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -41,7 +42,7 @@ std::vector<base::test::FeatureRef> GetFeaturesToDisableLinkCapturingUX() {
 #if BUILDFLAG(IS_CHROMEOS)
   return {::apps::features::kLinkCapturingUiUpdate};
 #else
-  return {features::kDesktopPWAsLinkCapturing};
+  return {::features::kDesktopPWAsLinkCapturing};
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 

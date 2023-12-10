@@ -8,12 +8,12 @@
 
 #include <utility>
 
+#include <optional>
 #include "base/feature_list.h"
 #include "build/build_config.h"
 #include "pdf/pdf_engine.h"
 #include "pdf/pdf_features.h"
 #include "pdf/pdf_init.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size_f.h"
 
@@ -21,7 +21,7 @@ namespace chrome_pdf {
 
 namespace {
 
-absl::optional<bool> g_use_skia_renderer_enabled_by_policy;
+std::optional<bool> g_use_skia_renderer_enabled_by_policy;
 
 class ScopedSdkInitializer {
  public:
@@ -98,7 +98,7 @@ bool GetPDFDocInfo(base::span<const uint8_t> pdf_buffer,
   return engine_exports->GetPDFDocInfo(pdf_buffer, page_count, max_page_width);
 }
 
-absl::optional<bool> IsPDFDocTagged(base::span<const uint8_t> pdf_buffer) {
+std::optional<bool> IsPDFDocTagged(base::span<const uint8_t> pdf_buffer) {
   ScopedSdkInitializer scoped_sdk_initializer(/*enable_v8=*/true);
   PDFEngineExports* engine_exports = PDFEngineExports::Get();
   return engine_exports->IsPDFDocTagged(pdf_buffer);
@@ -111,7 +111,13 @@ base::Value GetPDFStructTreeForPage(base::span<const uint8_t> pdf_buffer,
   return engine_exports->GetPDFStructTreeForPage(pdf_buffer, page_index);
 }
 
-absl::optional<gfx::SizeF> GetPDFPageSizeByIndex(
+std::optional<bool> PDFDocHasOutline(base::span<const uint8_t> pdf_buffer) {
+  ScopedSdkInitializer scoped_sdk_initializer(/*enable_v8=*/true);
+  PDFEngineExports* engine_exports = PDFEngineExports::Get();
+  return engine_exports->PDFDocHasOutline(pdf_buffer);
+}
+
+std::optional<gfx::SizeF> GetPDFPageSizeByIndex(
     base::span<const uint8_t> pdf_buffer,
     int page_index) {
   ScopedSdkInitializer scoped_sdk_initializer(/*enable_v8=*/true);

@@ -34,6 +34,7 @@
 #include "extensions/browser/network_permissions_updater.h"
 #include "extensions/browser/permissions_manager.h"
 #include "extensions/browser/renderer_startup_helper.h"
+#include "extensions/browser/script_injection_tracker.h"
 #include "extensions/common/cors_util.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_features.h"
@@ -671,6 +672,12 @@ void PermissionsUpdater::NotifyPermissionsUpdated(
             permissions_data->policy_blocked_hosts(),
             permissions_data->policy_allowed_hosts(),
             permissions_data->UsesDefaultPolicyHostRestrictions());
+
+        // Notify ScriptInjectionTracker when host permissions change.
+        if (!changed->effective_hosts().is_empty()) {
+          ScriptInjectionTracker::DidUpdatePermissionsInRenderer(
+              base::PassKey<PermissionsUpdater>(), *extension, *host);
+        }
       }
     }
   }

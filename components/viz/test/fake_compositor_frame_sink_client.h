@@ -38,6 +38,7 @@ class FakeCompositorFrameSinkClient : public mojom::CompositorFrameSinkClient {
   void OnBeginFramePausedChanged(bool paused) override;
   void OnCompositorFrameTransitionDirectiveProcessed(
       uint32_t sequence_id) override {}
+  void OnSurfaceEvicted(const LocalSurfaceId& local_surface_id) override {}
 
   void clear_returned_resources() { returned_resources_.clear(); }
   const std::vector<ReturnedResource>& returned_resources() const {

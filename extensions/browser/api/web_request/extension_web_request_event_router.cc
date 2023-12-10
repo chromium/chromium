@@ -36,7 +36,6 @@
 #include "extensions/browser/process_map.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/extension_features.h"
-#include "extensions/common/identifiability_metrics.h"
 #include "extensions/common/mojom/event_dispatcher.mojom.h"
 
 using content::BrowserThread;
@@ -275,8 +274,8 @@ void SendOnMessageEventOnUI(
 
   auto event = std::make_unique<Event>(
       histogram_value, event_name, std::move(event_args), browser_context,
-      GURL(), EventRouter::USER_GESTURE_UNKNOWN,
-      std::move(event_filtering_info));
+      /*restrict_to_context_type=*/absl::nullopt, GURL(),
+      EventRouter::USER_GESTURE_UNKNOWN, std::move(event_filtering_info));
   event_router->DispatchEventToExtension(extension_id, std::move(event));
 }
 
@@ -991,16 +990,12 @@ int WebRequestEventRouter::OnBeforeRequest(
           ClearPendingCallbacks(browser_context, *request);
           DCHECK_EQ(1u, actions.size());
           OnDNRActionMatched(browser_context, *request, action);
-          RecordNetworkRequestBlocked(request->ukm_source_id,
-                                      action.extension_id);
           return net::ERR_BLOCKED_BY_CLIENT;
         case DNRRequestAction::Type::COLLAPSE:
           ClearPendingCallbacks(browser_context, *request);
           DCHECK_EQ(1u, actions.size());
           OnDNRActionMatched(browser_context, *request, action);
           *should_collapse_initiator = true;
-          RecordNetworkRequestBlocked(request->ukm_source_id,
-                                      action.extension_id);
           return net::ERR_BLOCKED_BY_CLIENT;
         case DNRRequestAction::Type::ALLOW:
         case DNRRequestAction::Type::ALLOW_ALL_REQUESTS:
@@ -1709,8 +1704,8 @@ WebRequestEventRouter::RemoveMatchingListener(
     Listeners& listeners,
     const ExtensionId& extension_id,
     const std::string& sub_event_name,
-    absl::optional<int> worker_thread_id,
-    absl::optional<int64_t> service_worker_version_id,
+    std::optional<int> worker_thread_id,
+    std::optional<int64_t> service_worker_version_id,
     BrowserContextID browser_context_id) {
   Listeners removed_listeners;
   for (auto iter = listeners.begin(); iter != listeners.end();) {
@@ -1757,9 +1752,9 @@ void WebRequestEventRouter::RemoveLazyListener(
   auto check_list = [&removed_listeners, extension_id, sub_event_name](
                         Listeners& listeners,
                         BrowserContextID browser_context_id) {
-    auto listener = RemoveMatchingListener(listeners, extension_id,
-                                           sub_event_name, absl::nullopt,
-                                           absl::nullopt, browser_context_id);
+    auto listener =
+        RemoveMatchingListener(listeners, extension_id, sub_event_name,
+                               std::nullopt, std::nullopt, browser_context_id);
     if (listener) {
       removed_listeners.push_back(std::move(listener));
     }
@@ -2286,7 +2281,7 @@ int WebRequestEventRouter::ExecuteDeltas(
 
   deltas.sort(&helpers::InDecreasingExtensionInstallationTimeOrder);
 
-  absl::optional<ExtensionId> canceled_by_extension;
+  std::optional<ExtensionId> canceled_by_extension;
   helpers::MergeCancelOfResponses(blocked_request.response_deltas,
                                   &canceled_by_extension);
 
@@ -2365,8 +2360,6 @@ int WebRequestEventRouter::ExecuteDeltas(
   int rv = net::OK;
   if (canceled_by_extension) {
     rv = net::ERR_BLOCKED_BY_CLIENT;
-    RecordNetworkRequestBlocked(request->ukm_source_id,
-                                canceled_by_extension.value());
     TRACE_EVENT2("extensions", "NetworkRequestBlockedByClient", "extension",
                  canceled_by_extension.value(), "id", request->id);
   }

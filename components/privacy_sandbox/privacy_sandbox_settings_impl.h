@@ -68,7 +68,8 @@ class PrivacySandboxSettingsImpl : public PrivacySandboxSettings,
       content::RenderFrameHost* console_frame = nullptr) const override;
   bool IsAttributionReportingTransitionalDebuggingAllowed(
       const url::Origin& top_frame_origin,
-      const url::Origin& reporting_origin) const override;
+      const url::Origin& reporting_origin,
+      bool& can_bypass) const override;
   void SetFledgeJoiningAllowed(const std::string& top_frame_etld_plus1,
                                bool allowed) override;
   void ClearFledgeJoiningAllowedSettings(base::Time start_time,
@@ -132,15 +133,6 @@ class PrivacySandboxSettingsImpl : public PrivacySandboxSettings,
                            FledgeJoinSettingTimeRangeDeletion);
   // Called when the Related Website Sets enabled preference is changed.
   void OnRelatedWebsiteSetsEnabledPrefChanged();
-
-  // Determines based on the current features, preferences and provided
-  // |cookie_settings| whether Privacy Sandbox APIs are generally allowable for
-  // |url| on |top_frame_origin|. Individual APIs may perform additional checks
-  // for allowability (such as incognito) on top of this. |cookie_settings| is
-  // provided as a parameter to allow callers to cache it between calls.
-  bool IsPrivacySandboxEnabledForContext(
-      const absl::optional<url::Origin>& top_frame_origin,
-      const GURL& url) const;
 
   void SetTopicsDataAccessibleFromNow() const;
 

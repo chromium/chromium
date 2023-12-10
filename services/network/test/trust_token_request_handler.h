@@ -7,8 +7,8 @@
 
 #include <set>
 #include <string>
+#include <string_view>
 
-#include "base/strings/string_piece.h"
 #include "base/synchronization/lock.h"
 #include "base/time/time.h"
 #include "net/http/http_request_headers.h"
@@ -102,12 +102,12 @@ class TrustTokenRequestHandler {
 
   // Given a base64-encoded issuance request, processes the
   // request and returns either nullopt (on error) or a base64-encoded response.
-  absl::optional<std::string> Issue(base::StringPiece issuance_request);
+  absl::optional<std::string> Issue(std::string_view issuance_request);
 
   // Given a base64-encoded redemption request, processes the
   // request and returns either nullopt (on error) or a string containing
   // the metadata values.
-  absl::optional<std::string> Redeem(base::StringPiece redemption_request);
+  absl::optional<std::string> Redeem(std::string_view redemption_request);
 
   // Stores a representation of a signed request with the given destination and
   // headers in a manner that can be retrieved for inspection by calling

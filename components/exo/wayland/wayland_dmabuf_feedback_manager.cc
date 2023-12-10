@@ -382,18 +382,16 @@ WaylandDmabufFeedbackManager::WaylandDmabufFeedbackManager(Display* display)
     return;
   }
 
-  struct stat device_stat;
   if (!base::FeatureList::IsEnabled(ash::features::kExoLinuxDmabufV4) ||
-      caps.drm_render_node.empty() ||
-      stat(caps.drm_render_node.c_str(), &device_stat) != 0) {
+      !caps.drm_device_id) {
     version_ = ZWP_LINUX_DMABUF_V1_MODIFIER_SINCE_VERSION;
     return;
   }
 
   auto tranche = std::make_unique<WaylandDmabufFeedbackTranche>(
-      device_stat.st_rdev, TrancheFlags::kNone, drm_formats_and_modifiers_);
+      caps.drm_device_id, TrancheFlags::kNone, drm_formats_and_modifiers_);
   default_feedback_ = std::make_unique<WaylandDmabufFeedback>(
-      device_stat.st_rdev, std::move(tranche));
+      caps.drm_device_id, std::move(tranche));
 
   size_t size = sizeof(WaylandDmabufFeedbackFormat) * format_table_index;
   base::MappedReadOnlyRegion mapped_region =

@@ -17,9 +17,7 @@ import java.lang.reflect.Field;
 import java.util.List;
 import java.util.regex.Pattern;
 
-/**
- * Test utility methods.
- */
+/** Test utility methods. */
 public final class TestUtils {
     /**
      * Stub the findObject(s) methods of device and node.
@@ -30,8 +28,12 @@ public final class TestUtils {
      * @param result Return value when findObject is called with the selector.
      * @param results Return value when findObjects is called with the selector.
      */
-    public static void stubMocks(UiDevice device, UiObject2 root, BySelector selector,
-            UiObject2 result, List<UiObject2> results) {
+    public static void stubMocks(
+            UiDevice device,
+            UiObject2 root,
+            BySelector selector,
+            UiObject2 result,
+            List<UiObject2> results) {
         when(device.findObject(selector)).thenReturn(result);
         when(device.findObjects(selector)).thenReturn(results);
         when(root.findObject(selector)).thenReturn(result);
@@ -47,8 +49,12 @@ public final class TestUtils {
      * @param result Expected result of the locateOne methods.
      * @param results Expected result of the locateAll methods.
      */
-    public static void assertLocatorResults(UiDevice device, UiObject2 root, IUi2Locator locator,
-            UiObject2 result, List<UiObject2> results) {
+    public static void assertLocatorResults(
+            UiDevice device,
+            UiObject2 root,
+            IUi2Locator locator,
+            UiObject2 result,
+            List<UiObject2> results) {
         assertEquals(result, locator.locateOne(device));
         assertEquals(results, locator.locateAll(device));
         assertEquals(result, locator.locateOne(root));

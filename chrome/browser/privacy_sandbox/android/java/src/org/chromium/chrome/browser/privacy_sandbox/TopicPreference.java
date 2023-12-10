@@ -10,9 +10,7 @@ import androidx.annotation.NonNull;
 
 import org.chromium.components.browser_ui.settings.ImageButtonPreference;
 
-/**
- * A Preference to represent a Topic.
- */
+/** A Preference to represent a Topic. */
 public class TopicPreference extends ImageButtonPreference {
     private final @NonNull Topic mTopic;
 

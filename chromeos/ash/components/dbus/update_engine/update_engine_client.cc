@@ -501,7 +501,7 @@ class UpdateEngineClientImpl : public UpdateEngineClient {
     if (!response) {
       LOG(ERROR) << update_engine::kIsFeatureEnabled
                  << " call failed for feature " << feature;
-      std::move(callback).Run(absl::nullopt);
+      std::move(callback).Run(std::nullopt);
       return;
     }
 
@@ -509,7 +509,7 @@ class UpdateEngineClientImpl : public UpdateEngineClient {
     bool enabled;
     if (!reader.PopBool(&enabled)) {
       LOG(ERROR) << "Bad response: " << response->ToString();
-      std::move(callback).Run(absl::nullopt);
+      std::move(callback).Run(std::nullopt);
       return;
     }
 
@@ -693,7 +693,7 @@ class UpdateEngineClientDesktopFake : public UpdateEngineClient {
   void IsFeatureEnabled(const std::string& feature,
                         IsFeatureEnabledCallback callback) override {
     VLOG(1) << "Requesting to get " << feature;
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
   }
 
   void ApplyDeferredUpdate(bool shutdown_after_update,

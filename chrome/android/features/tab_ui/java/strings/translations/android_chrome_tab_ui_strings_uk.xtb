@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="uk">
 <translation id="1075622780330595106">Ви давно не переходили на кілька вкладок (<ph name="NUMBER_OF_TABS" />). Закрити їх?</translation>
+<translation id="1155815720264022949">Закрити старі вкладки?</translation>
 <translation id="1215127405478249895">Переглянути вкладки</translation>
 <translation id="125153950246128346">Натисніть, щоб побачити іншу вкладку</translation>
 <translation id="1499635324672558517">Закрити всі анонімні вкладки?</translation>
@@ -46,9 +47,11 @@
 <translation id="5073204694187207510">Сховати повноекранну сітку</translation>
 <translation id="5076161749301278626">Показати відгуки про магазин?</translation>
 <translation id="5082793167783849073">Швидко порівнюйте сторінки, створивши групу. Щоб почати, натисніть і втримуйте посилання.</translation>
+<translation id="5303274951032363933">{TABS_COUNT,plural, =1{У вас є <ph name="TABS_COUNT_ONE" /> вкладка, яку ви давно не відкривали}one{У вас є <ph name="TABS_COUNT_MANY" /> вкладка, яку ви давно не відкривали}few{У вас є <ph name="TABS_COUNT_MANY" /> вкладки, які ви давно не відкривали}many{У вас є <ph name="TABS_COUNT_MANY" /> вкладок, які ви давно не відкривали}other{У вас є <ph name="TABS_COUNT_MANY" /> вкладки, які ви давно не відкривали}}</translation>
 <translation id="5339733443032484186">Остання вкладка</translation>
 <translation id="5490235265819901748">Групу вкладок розгорнуто</translation>
 <translation id="5494920125229734069">Вибрати все</translation>
+<translation id="5545379293264651575">Закрити без перевірки</translation>
 <translation id="5556417849629758491">Переглянути інформацію про магазин. Опція доступна вгорі екрана.</translation>
 <translation id="5558362125926932819">Закрити групу зі стількома вкладками: <ph name="NUMBER_OF_TABS" /></translation>
 <translation id="5580090775658607195">Згруповано стільки вкладок: <ph name="TAB_COUNT" /></translation>
@@ -85,7 +88,6 @@
 <translation id="7885132941432959125">Перемістити вкладку праворуч</translation>
 <translation id="7966321538264951561">Закрити пропозицію.</translation>
 <translation id="8029301326595421733">Інформацію про цей магазин відкрито на всю висоту</translation>
-<translation id="814503310257431685">Переглянути все</translation>
 <translation id="8205266828577616993">Перемістити вкладку вгору</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Закрити <ph name="TABS_COUNT_ONE" /> вибрану вкладку}one{Закрити <ph name="TABS_COUNT_MANY" /> вибрану вкладку}few{Закрити <ph name="TABS_COUNT_MANY" /> вибрані вкладки}many{Закрити <ph name="TABS_COUNT_MANY" /> вибраних вкладок}other{Закрити <ph name="TABS_COUNT_MANY" /> вибраної вкладки}}</translation>
 <translation id="8398929769197326728">Нова папка – <ph name="CURRENT_TIMESTAMP_MS" /></translation>

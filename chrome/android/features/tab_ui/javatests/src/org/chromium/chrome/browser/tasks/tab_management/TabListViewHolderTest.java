@@ -27,6 +27,7 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.VectorDrawable;
 import android.util.Size;
 import android.view.View;
 import android.view.ViewGroup;
@@ -489,13 +490,13 @@ public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
         mGridModel.set(TabProperties.GRID_CARD_SIZE, new Size(100, 500));
         mGridModel.set(TabProperties.THUMBNAIL_FETCHER, mMockThumbnailProvider);
         TabThumbnailView thumbnail = mTabGridView.findViewById(R.id.tab_thumbnail);
-        assertNull("Thumbnail should be set to no drawable.", thumbnail.getDrawable());
         assertNotNull("Thumbnail should have a background drawable.", thumbnail.getBackground());
         assertTrue("Thumbnail should be set to a place holder.", thumbnail.isPlaceholder());
         mGridModel.set(TabProperties.THUMBNAIL_FETCHER, null);
-        Assert.assertNull(
-                "Thumbnail should be release when thumbnail fetcher is set to null.",
-                thumbnail.getDrawable());
+        assertThat(thumbnail.getDrawable(), instanceOf(VectorDrawable.class));
+        assertTrue(
+                "Thumbnail placeholder should be used when the thumbnail fetcher is null.",
+                thumbnail.isPlaceholder());
 
         mShouldReturnBitmap = true;
         mGridModel.set(TabProperties.THUMBNAIL_FETCHER, mMockThumbnailProvider);
@@ -514,13 +515,11 @@ public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
     public void testThumbnailGridCardSize() {
         mGridModel.set(TabProperties.THUMBNAIL_FETCHER, mMockThumbnailProvider);
         TabThumbnailView thumbnail = mTabGridView.findViewById(R.id.tab_thumbnail);
-        assertNull("Thumbnail should be set to no drawable.", thumbnail.getDrawable());
         assertNotNull("Thumbnail should have a background drawable.", thumbnail.getBackground());
         assertTrue("Thumbnail should be set to a place holder.", thumbnail.isPlaceholder());
 
         mShouldReturnBitmap = true;
         mGridModel.set(TabProperties.THUMBNAIL_FETCHER, mMockThumbnailProvider);
-        assertNull("Thumbnail should be set to no drawable.", thumbnail.getDrawable());
         assertNotNull("Thumbnail should have a background drawable.", thumbnail.getBackground());
         assertTrue("Thumbnail should be set to a place holder.", thumbnail.isPlaceholder());
         mGridModel.set(TabProperties.GRID_CARD_SIZE, new Size(100, 500));
@@ -602,7 +601,7 @@ public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
     @MediumTest
     @UiThreadTest
     public void testHiddenGC() {
-        ImageView thumbnail = mTabGridView.findViewById(R.id.tab_thumbnail);
+        TabThumbnailView thumbnail = mTabGridView.findViewById(R.id.tab_thumbnail);
         mShouldReturnBitmap = true;
         mGridModel.set(TabProperties.GRID_CARD_SIZE, new Size(100, 500));
         mGridModel.set(TabProperties.THUMBNAIL_FETCHER, mMockThumbnailProvider);
@@ -615,9 +614,10 @@ public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
 
         mGridModel.set(TabProperties.THUMBNAIL_FETCHER, null);
         Assert.assertTrue(canBeGarbageCollected(ref));
-        Assert.assertNull(
-                "Thumbnail should be release when thumbnail fetcher is set to null.",
-                thumbnail.getDrawable());
+        assertThat(thumbnail.getDrawable(), instanceOf(VectorDrawable.class));
+        assertTrue(
+                "Thumbnail placeholder should be used when the thumbnail fetcher is null.",
+                thumbnail.isPlaceholder());
         Assert.assertEquals(1, mThumbnailFetchedCount.get());
     }
 
@@ -625,7 +625,7 @@ public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
     @MediumTest
     @UiThreadTest
     public void testHiddenThenShow() {
-        ImageView thumbnail = mTabGridView.findViewById(R.id.tab_thumbnail);
+        TabThumbnailView thumbnail = mTabGridView.findViewById(R.id.tab_thumbnail);
         mShouldReturnBitmap = true;
         mGridModel.set(TabProperties.GRID_CARD_SIZE, new Size(100, 500));
         mGridModel.set(TabProperties.THUMBNAIL_FETCHER, mMockThumbnailProvider);
@@ -633,9 +633,10 @@ public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
         Assert.assertEquals(1, mThumbnailFetchedCount.get());
 
         mGridModel.set(TabProperties.THUMBNAIL_FETCHER, null);
-        Assert.assertNull(
-                "Thumbnail should be release when thumbnail fetcher is set to null.",
-                thumbnail.getDrawable());
+        assertThat(thumbnail.getDrawable(), instanceOf(VectorDrawable.class));
+        assertTrue(
+                "Thumbnail placeholder should be used when the thumbnail fetcher is null.",
+                thumbnail.isPlaceholder());
         Assert.assertEquals(1, mThumbnailFetchedCount.get());
 
         mGridModel.set(TabProperties.THUMBNAIL_FETCHER, mMockThumbnailProvider);
@@ -969,6 +970,7 @@ public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
 
     @Test
     @MediumTest
+    @Features.DisableFeatures({ChromeFeatureList.PRICE_CHANGE_MODULE})
     public void testPriceDropEndToEnd() {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {

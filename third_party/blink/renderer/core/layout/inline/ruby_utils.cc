@@ -9,7 +9,7 @@
 #include "third_party/blink/renderer/core/layout/inline/inline_item_result.h"
 #include "third_party/blink/renderer/core/layout/inline/line_info.h"
 #include "third_party/blink/renderer/core/layout/inline/logical_line_item.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
+#include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/platform/fonts/font_height.h"
 
 namespace blink {
@@ -101,11 +101,11 @@ AnnotationOverhang GetOverhang(const InlineItemResult& item) {
   if (!item.layout_result)
     return overhang;
 
-  const auto& column_fragment = item.layout_result->PhysicalFragment();
+  const auto& column_fragment = item.layout_result->GetPhysicalFragment();
 
   const ComputedStyle* ruby_text_style = nullptr;
   for (const auto& child_link : column_fragment.PostLayoutChildren()) {
-    const NGPhysicalFragment& child_fragment = *child_link.get();
+    const PhysicalFragment& child_fragment = *child_link.get();
     const LayoutObject* layout_object = child_fragment.GetLayoutObject();
     if (!layout_object)
       continue;
@@ -124,20 +124,20 @@ AnnotationOverhang GetOverhang(const InlineItemResult& item) {
   LayoutUnit end_overhang = half_width_of_ruby_font;
   bool found_line = false;
   for (const auto& child_link : column_fragment.PostLayoutChildren()) {
-    const NGPhysicalFragment& child_fragment = *child_link.get();
+    const PhysicalFragment& child_fragment = *child_link.get();
     const LayoutObject* layout_object = child_fragment.GetLayoutObject();
     if (!layout_object->IsRubyBase())
       continue;
     const ComputedStyle& base_style = child_fragment.Style();
     const auto writing_direction = base_style.GetWritingDirection();
     const LayoutUnit base_inline_size =
-        NGFragment(writing_direction, child_fragment).InlineSize();
+        LogicalFragment(writing_direction, child_fragment).InlineSize();
     // RubyBase's inline_size is always same as RubyColumn's inline_size.
     // Overhang values are offsets from RubyBase's inline edges to
     // the outmost text.
     for (const auto& base_child_link : child_fragment.PostLayoutChildren()) {
       const LayoutUnit line_inline_size =
-          NGFragment(writing_direction, *base_child_link).InlineSize();
+          LogicalFragment(writing_direction, *base_child_link).InlineSize();
       if (line_inline_size == LayoutUnit())
         continue;
       found_line = true;
@@ -208,7 +208,7 @@ LayoutUnit CommitPendingEndOverhang(LineInfo* line_info) {
       return LayoutUnit();
   }
   InlineItemResult& atomic_inline_item = (*items)[i];
-  if (!atomic_inline_item.layout_result->PhysicalFragment().IsRubyColumn()) {
+  if (!atomic_inline_item.layout_result->GetPhysicalFragment().IsRubyColumn()) {
     return LayoutUnit();
   }
   if (atomic_inline_item.pending_end_overhang <= LayoutUnit())
@@ -258,11 +258,10 @@ AnnotationMetrics ComputeAnnotationOverflow(
             item_over, item_under, *style, *item.shape_result);
       }
     } else {
-      const auto* fragment = item.PhysicalFragment();
+      const auto* fragment = item.GetPhysicalFragment();
       if (fragment && fragment->IsRubyColumn()) {
         PhysicalRect rect =
-            To<NGPhysicalBoxFragment>(fragment)->ScrollableOverflow(
-                NGPhysicalFragment::kEmHeight);
+            To<PhysicalBoxFragment>(fragment)->ComputeRubyEmHeightBox();
         LayoutUnit block_size;
         if (IsHorizontalWritingMode(line_style.GetWritingMode())) {
           item_under = item_over + rect.Bottom();

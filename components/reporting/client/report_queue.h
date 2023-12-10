@@ -115,9 +115,22 @@ class ReportQueue {
   // A FlushCallback is called on the completion of |Flush| call.
   using FlushCallback = base::OnceCallback<void(Status)>;
 
-  // Enqueue metrics name
+  // Speculative report queue config settings used during its instantiation.
+  struct SpeculativeConfigSettings {
+    Destination destination = Destination::UNDEFINED_DESTINATION;
+  };
+
+  // Enqueue metrics name.
   static constexpr char kEnqueueMetricsName[] =
       "Browser.ERP.EventEnqueueResult";
+
+  // Enqueue failed reporting destination metrics name.
+  static constexpr char kEnqueueFailedDestinationMetricsName[] =
+      "Browser.ERP.EnqueueFailureDestination";
+
+  // Enqueue success reporting destination metrics name.
+  static constexpr char kEnqueueSuccessDestinationMetricsName[] =
+      "Browser.ERP.EnqueueSuccessDestination";
 
   virtual ~ReportQueue();
 
@@ -160,6 +173,9 @@ class ReportQueue {
   [[nodiscard]] virtual base::OnceCallback<
       void(StatusOr<std::unique_ptr<ReportQueue>>)>
   PrepareToAttachActualQueue() const = 0;
+
+  // Returns the reporting destination used to configure the report queue.
+  virtual Destination GetDestination() const = 0;
 
  private:
   // Allow SpeculativeReportQueue access to |AddProducedRecord|.

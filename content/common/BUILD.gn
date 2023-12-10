@@ -7,6 +7,7 @@ import("//build/config/features.gni")
 import("//build/config/ui.gni")
 import("//content/public/common/zygote/features.gni")
 import("//ipc/features.gni")
+import("//media/media_options.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//ppapi/buildflags/buildflags.gni")
 import("//sandbox/features.gni")
@@ -28,6 +29,7 @@ buildflag_header("buildflags") {
     "ENABLE_SCREEN_CAPTURE=$enable_screen_capture",
     "MBI_MODE_PER_RENDER_PROCESS_HOST=$_mbi_mode_per_render_process_host",
     "MBI_MODE_PER_SITE_INSTANCE=$_mbi_mode_per_site_instance",
+    "CONTENT_ENABLE_LEGACY_IPC=$content_enable_legacy_ipc",
   ]
 }
 
@@ -112,29 +114,65 @@ source_set("common") {
     "input/actions_parser.cc",
     "input/actions_parser.h",
     "input/event_with_latency_info.h",
+    "input/fling_controller.cc",
+    "input/fling_controller.h",
+    "input/fling_scheduler_base.h",
+    "input/gesture_event_queue.cc",
+    "input/gesture_event_queue.h",
     "input/gesture_event_stream_validator.cc",
     "input/gesture_event_stream_validator.h",
     "input/input_event_ack_state.cc",
     "input/input_event_stream_validator.cc",
     "input/input_event_stream_validator.h",
+    "input/synthetic_gesture.cc",
+    "input/synthetic_gesture.h",
+    "input/synthetic_gesture_controller.cc",
+    "input/synthetic_gesture_controller.h",
     "input/synthetic_gesture_params.cc",
     "input/synthetic_gesture_params.h",
+    "input/synthetic_gesture_target.h",
+    "input/synthetic_mouse_driver.cc",
+    "input/synthetic_mouse_driver.h",
+    "input/synthetic_pen_driver.cc",
+    "input/synthetic_pen_driver.h",
+    "input/synthetic_pinch_gesture.cc",
+    "input/synthetic_pinch_gesture.h",
     "input/synthetic_pinch_gesture_params.cc",
     "input/synthetic_pinch_gesture_params.h",
+    "input/synthetic_pointer_action.cc",
+    "input/synthetic_pointer_action.h",
     "input/synthetic_pointer_action_list_params.cc",
     "input/synthetic_pointer_action_list_params.h",
     "input/synthetic_pointer_action_params.cc",
     "input/synthetic_pointer_action_params.h",
+    "input/synthetic_pointer_driver.cc",
+    "input/synthetic_pointer_driver.h",
+    "input/synthetic_smooth_drag_gesture.cc",
+    "input/synthetic_smooth_drag_gesture.h",
     "input/synthetic_smooth_drag_gesture_params.cc",
     "input/synthetic_smooth_drag_gesture_params.h",
+    "input/synthetic_smooth_move_gesture.cc",
+    "input/synthetic_smooth_move_gesture.h",
+    "input/synthetic_smooth_scroll_gesture.cc",
+    "input/synthetic_smooth_scroll_gesture.h",
     "input/synthetic_smooth_scroll_gesture_params.cc",
     "input/synthetic_smooth_scroll_gesture_params.h",
+    "input/synthetic_tap_gesture.cc",
+    "input/synthetic_tap_gesture.h",
     "input/synthetic_tap_gesture_params.cc",
     "input/synthetic_tap_gesture_params.h",
+    "input/synthetic_touch_driver.cc",
+    "input/synthetic_touch_driver.h",
+    "input/synthetic_touchpad_pinch_gesture.cc",
+    "input/synthetic_touchpad_pinch_gesture.h",
+    "input/synthetic_touchscreen_pinch_gesture.cc",
+    "input/synthetic_touchscreen_pinch_gesture.h",
     "input/tap_suppression_controller.cc",
     "input/tap_suppression_controller.h",
     "input/touch_event_stream_validator.cc",
     "input/touch_event_stream_validator.h",
+    "input/touchpad_pinch_event_queue.cc",
+    "input/touchpad_pinch_event_queue.h",
     "input/touchpad_tap_suppression_controller.cc",
     "input/touchpad_tap_suppression_controller.h",
     "input/touchscreen_tap_suppression_controller.cc",
@@ -198,6 +236,7 @@ source_set("common") {
     "//ui/accessibility",
     "//ui/accessibility/mojom",
     "//ui/base/cursor",
+    "//ui/events/gestures/blink",
     "//ui/events/ipc",
   ]
   deps = [
@@ -253,6 +292,7 @@ source_set("common") {
     "//ui/base",
     "//ui/base/cursor/mojom:cursor_type",
     "//ui/base/ime",
+    "//ui/color",
     "//ui/display",
     "//ui/events/blink",
     "//ui/gfx",
@@ -367,11 +407,23 @@ source_set("common") {
   }
 
   if (is_linux || is_chromeos) {
+    sources += [
+      "gpu_pre_sandbox_hook_linux.cc",
+      "gpu_pre_sandbox_hook_linux.h",
+    ]
+    public_deps += [ "//sandbox/policy" ]
     deps += [
       ":sandbox_support_linux",
       ":set_process_title_linux",
+      "//media/gpu:buildflags",
+      "//sandbox/linux:sandbox_services",
+      "//sandbox/linux:seccomp_bpf",
+      "//sandbox/policy:chromecast_sandbox_allowlist_buildflags",
       "//third_party/fontconfig",
     ]
+    if (use_v4l2_codec) {
+      deps += [ "//media/gpu/v4l2" ]
+    }
   }
 
   if (use_zygote) {
@@ -476,6 +528,7 @@ mojom("mojo_bindings") {
     "renderer.mojom",
     "renderer_host.mojom",
     "renderer_variations_configuration.mojom",
+    "synthetic_trial_configuration.mojom",
     "web_ui.mojom",
   ]
 

@@ -1,5 +1,4 @@
 CONSOLE ERROR: Access to script at 'http://localhost:8000/security/resources/cors-script.php?cors=false&value=ran2' from origin 'http://127.0.0.1:8000' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.
 This is a testharness.js-based test.
-[PASS] SRI on cross origin CORS disabled script, with bad integrity
 Harness: the test ran to completion.
 

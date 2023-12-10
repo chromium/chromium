@@ -130,7 +130,9 @@ base::Value::Dict ConvertPermissionToDict(const PermissionPtr& permission) {
 
 PermissionPtr ConvertDictToPermission(const base::Value::Dict& dict) {
   absl::optional<int> permission_type = dict.FindInt(kPermissionTypeKey);
-  if (!permission_type.has_value()) {
+  if (!permission_type.has_value() ||
+      permission_type.value() < static_cast<int>(PermissionType::kUnknown) ||
+      permission_type.value() > static_cast<int>(PermissionType::kMaxValue)) {
     return nullptr;
   }
 
@@ -140,7 +142,9 @@ PermissionPtr ConvertDictToPermission(const base::Value::Dict& dict) {
     permission_value = value.value();
   } else {
     absl::optional<int> tri_state = dict.FindInt(kValueKey);
-    if (tri_state.has_value()) {
+    if (tri_state.has_value() &&
+        tri_state.value() >= static_cast<int>(TriState::kAllow) &&
+        tri_state.value() <= static_cast<int>(TriState::kMaxValue)) {
       permission_value = static_cast<TriState>(tri_state.value());
     } else {
       return nullptr;

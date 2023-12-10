@@ -115,8 +115,8 @@ void ExtensionsClient::AddOriginAccessPermissions(
     bool is_extension_active,
     std::vector<network::mojom::CorsOriginPatternPtr>* origin_patterns) const {}
 
-absl::optional<int> ExtensionsClient::GetExtensionExtendedErrorCode() const {
-  return absl::nullopt;
+std::optional<int> ExtensionsClient::GetExtensionExtendedErrorCode() const {
+  return std::nullopt;
 }
 
 void ExtensionsClient::DoInitialize() {

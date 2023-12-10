@@ -20,9 +20,9 @@ namespace views {
 // multiple lines. Connected `LinkFragment`s adjust their style if any single
 // one of them is hovered over of focused.
 class VIEWS_EXPORT LinkFragment : public Link {
- public:
-  METADATA_HEADER(LinkFragment);
+  METADATA_HEADER(LinkFragment, Link)
 
+ public:
   explicit LinkFragment(const std::u16string& title = std::u16string(),
                         int text_context = style::CONTEXT_LABEL,
                         int text_style = style::STYLE_LINK,

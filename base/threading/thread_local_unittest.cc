@@ -126,7 +126,7 @@ TEST(ThreadLocalTest, ThreadLocalOwnedPointerCleansUpMainThreadOnDestruction) {
 }
 
 TEST(ThreadLocalTest, ThreadLocalOwnedPointerDeathIfDestroyedWithActiveThread) {
-  testing::FLAGS_gtest_death_test_style = "threadsafe";
+  GTEST_FLAG_SET(death_test_style, "threadsafe");
 
   absl::optional<ThreadLocalOwnedPointer<int>> tls_owned_pointer(
       absl::in_place);

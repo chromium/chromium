@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
@@ -31,7 +32,7 @@ class PageTimelineCPUMonitor : public ProcessNode::ObserverDefaultImpl {
  public:
   // A shim to request CPU measurements for a process. A new
   // CPUMeasurementDelegate object will be created for each ProcessNode to be
-  // measured. Can be overridden for testing by passing a factory callback to
+  // measured. Can be overridden for testing by passing a factory to
   // SetCPUMeasurementDelegateFactoryForTesting().
   using CPUMeasurementDelegate = resource_attribution::CPUMeasurementDelegate;
 
@@ -54,11 +55,11 @@ class PageTimelineCPUMonitor : public ProcessNode::ObserverDefaultImpl {
   PageTimelineCPUMonitor(const PageTimelineCPUMonitor& other) = delete;
   PageTimelineCPUMonitor& operator=(const PageTimelineCPUMonitor&) = delete;
 
-  // The given `factory_callback` will be called to create a
-  // CPUMeasurementDelegate for each ProcessNode in `graph` to be measured.
+  // The given `factory` will be used to create a CPUMeasurementDelegate for
+  // each ProcessNode in `graph` to be measured.
   void SetCPUMeasurementDelegateFactoryForTesting(
       Graph* graph,
-      CPUMeasurementDelegate::FactoryCallback factory_callback);
+      CPUMeasurementDelegate::Factory* factory);
 
   // Starts monitoring CPU usage for all renderer ProcessNode's in `graph`.
   void StartMonitoring(Graph* graph);
@@ -143,9 +144,9 @@ class PageTimelineCPUMonitor : public ProcessNode::ObserverDefaultImpl {
   // a measurement interval).
   base::TimeTicks last_measurement_time_ GUARDED_BY_CONTEXT(sequence_checker_);
 
-  // Callback that will be invoked to create CPUMeasurementDelegate objects for
-  // each ProcessNode being measured.
-  CPUMeasurementDelegate::FactoryCallback cpu_measurement_delegate_factory_
+  // Factory that creates CPUMeasurementDelegate objects for each ProcessNode
+  // being measured.
+  raw_ptr<CPUMeasurementDelegate::Factory> cpu_measurement_delegate_factory_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   // If the kUseResourceAttributionCPUMonitor feature parameter is enabled,
@@ -157,9 +158,8 @@ class PageTimelineCPUMonitor : public ProcessNode::ObserverDefaultImpl {
   // If the kUseResourceAttributionCPUMonitor feature parameter is enabled, this
   // will cache the measurements of each page when UpdateCPUMeasurements is
   // called. Otherwise it's unused.
-  std::map<resource_attribution::ResourceContext,
-           resource_attribution::CPUTimeResult>
-      cached_cpu_measurements_ GUARDED_BY_CONTEXT(sequence_checker_);
+  resource_attribution::QueryResultMap cached_cpu_measurements_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   base::WeakPtrFactory<PageTimelineCPUMonitor> weak_factory_{this};
 };

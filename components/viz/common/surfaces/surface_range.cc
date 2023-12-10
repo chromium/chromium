@@ -24,18 +24,6 @@ SurfaceRange::SurfaceRange(const SurfaceRange& other) = default;
 
 SurfaceRange& SurfaceRange::operator=(const SurfaceRange& other) = default;
 
-bool SurfaceRange::operator==(const SurfaceRange& other) const {
-  return start_ == other.start() && end_ == other.end();
-}
-
-bool SurfaceRange::operator!=(const SurfaceRange& other) const {
-  return !(*this == other);
-}
-
-bool SurfaceRange::operator<(const SurfaceRange& other) const {
-  return std::tie(end_, start_) < std::tie(other.end(), other.start());
-}
-
 bool SurfaceRange::IsInRangeExclusive(const SurfaceId& surface_id) const {
   if (!start_)
     return end_.IsNewerThan(surface_id);

@@ -9,13 +9,15 @@ import android.webkit.GeolocationPermissions;
 import android.webkit.ServiceWorkerController;
 import android.webkit.WebStorage;
 
-/**
- * Boundary interface for Profile.
- */
+/** Boundary interface for Profile. */
 public interface ProfileBoundaryInterface {
     String getName();
+
     CookieManager getCookieManager();
+
     WebStorage getWebStorage();
+
     GeolocationPermissions getGeoLocationPermissions();
+
     ServiceWorkerController getServiceWorkerController();
 }

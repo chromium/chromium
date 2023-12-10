@@ -5,14 +5,13 @@
 <translation id="1076394037877376434">Excluir página <ph name="PAGE_NUMBER" /></translation>
 <translation id="1113173431709655881">Modo da câmera</translation>
 <translation id="1153190633558910465">Grade desativada</translation>
-<translation id="1175958423215084756">Link detectado. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213">Página <ph name="PAGE_NUMBER" /> excluída</translation>
 <translation id="1258009455399840361">Girar 90 graus no sentido horário</translation>
 <translation id="1417314334557041815">Editar página <ph name="INDEX" /></translation>
 <translation id="1467231725790366244">A <ph name="CAMERA" /> foi desconectada.</translation>
 <translation id="1473110567575736769">Timer de 3 segundos</translation>
 <translation id="148783771699678004">Movendo para o canto direito de cima</translation>
-<translation id="1545749641540134597">Ler código QR</translation>
+<translation id="1545749641540134597">Ler QR code</translation>
 <translation id="1560052704389894104">GIF</translation>
 <translation id="1588438908519853928">Normal</translation>
 <translation id="1620510694547887537">Câmera</translation>
@@ -30,7 +29,7 @@
 <translation id="2064538373111010176"><ph name="CAMERA" /> ativa</translation>
 <translation id="2134029355740465625">Configurações de vídeo</translation>
 <translation id="2144806332417375165">Parâmetros de vídeo personalizados</translation>
-<translation id="2175927920773552910">Código QR</translation>
+<translation id="2175927920773552910">QR code</translation>
 <translation id="2244252133441425811">Ativar o seletor de QPS de vídeo</translation>
 <translation id="2271433936731426666">Ativar a síntese do desempenho do vídeo no tamanho original</translation>
 <translation id="2320741269052147773">Movimentar para a esquerda</translation>
@@ -60,14 +59,12 @@
 <translation id="3642192109456033823">Processando vídeo…</translation>
 <translation id="3789724198583203151">Girar 90 graus no sentido anti-horário</translation>
 <translation id="3810838688059735925">Vídeo</translation>
-<translation id="3892148308691398805">Copiar texto</translation>
 <translation id="4060608699153044055">Não é possível gravar porque há pouco espaço de armazenamento no dispositivo. Libere espaço para começar a gravar.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
 <translation id="4118525110028899586">Pausar gravação</translation>
 <translation id="4121305183798804752">Documento detectado</translation>
 <translation id="414641094616694804">Esta câmera não pode mudar de resolução</translation>
 <translation id="4176463684765177261">Desativado</translation>
-<translation id="4269820728363426813">Copiar endereço do link</translation>
 <translation id="428234092390943511">Miniatura da página</translation>
 <translation id="4349714250734879769">Dimensionar frames pelo Chrome</translation>
 <translation id="4383571725254449280">Registros de desempenho de impressão</translation>
@@ -144,7 +141,6 @@ Caso seu feedback seja sobre a qualidade da imagem ou do vídeo, adicione uma fo
 <translation id="7726641833034062494">Gravar um vídeo normal</translation>
 <translation id="7748344063862150053">Canto superior direito do documento</translation>
 <translation id="7933675232020478311">Movendo para o canto direito de baixo</translation>
-<translation id="7983668134180549431">Texto detectado.</translation>
 <translation id="8079255378695216066">Não é possível iniciar a gravação</translation>
 <translation id="8120146556401698679">Panorâmica, inclinação, zoom</translation>
 <translation id="8131740175452115882">Confirmar</translation>
@@ -163,6 +159,7 @@ Caso seu feedback seja sobre a qualidade da imagem ou do vídeo, adicione uma fo
 <translation id="8870695351537079478">Não foi possível começar a gravação</translation>
 <translation id="8880167521484863515">4 por 3</translation>
 <translation id="8903921497873541725">Aumentar zoom</translation>
+<translation id="8926890870105777777">Entrar na rede "<ph name="WIFINAME" />"</translation>
 <translation id="9045010116236796332">Posicione todas as bordas do documento dentro do quadro</translation>
 <translation id="9045155556724273246">10 segundos</translation>
 <translation id="906331135292332864">Processando imagem…</translation>

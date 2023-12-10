@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://webui-test/mojo_webui_test_support.js';
+import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 import 'chrome://scanning/scanning_app.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 
@@ -27,7 +27,7 @@ import {MAX_NUM_SAVED_SCANNERS, ScannerCapabilitiesResponse, ScannerSetting, Sca
 import {getColorModeString, getPageSizeString, tokenToString} from 'chrome://scanning/scanning_app_util.js';
 import {ScanningBrowserProxyImpl} from 'chrome://scanning/scanning_browser_proxy.js';
 import {assertArrayEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
-import {isVisible} from 'chrome://webui-test/chromeos/test_util.js';
+import {eventToPromise, isVisible} from 'chrome://webui-test/chromeos/test_util.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 import {changeSelectedIndex, changeSelectedValue, createScanner, createScannerSource} from './scanning_app_test_utils.js';
@@ -469,14 +469,14 @@ suite('scanningAppTest', function() {
   /**
    * Fetches capabilities then waits for app to change to READY state.
    */
-  function getScannerCapabilities(): Promise<void> {
-    return fakeScanService.whenCalled('getScannerCapabilities')
-        .then(() => waitAfterNextRender(scanningApp!))
-        // Need to wait for the app to render again when the Source type is
-        // selected from saved scan settings.
-        .then(() => {
-          waitAfterNextRender(scanningApp!);
-        });
+  async function getScannerCapabilities(): Promise<void> {
+    // On AppState === READY, the last step is to set the scanner select element
+    // as focused. Use focus event to ensure setup steps have completed before
+    // continuing with test.
+    const onReadyFocus =
+        eventToPromise('focus', getSettingSelect('#scannerSelect'));
+    await fakeScanService.whenCalled('getScannerCapabilities');
+    return onReadyFocus;
   }
 
   /**
@@ -1652,6 +1652,8 @@ suite('scanningAppTest', function() {
     await getScannerCapabilities();
 
     strictQuery('#scanButton', scanningApp.shadowRoot, HTMLElement).click();
+    await testBrowserProxy.whenCalled('recordNumScanSettingChanges');
+
     const numScanSettingChanges =
         testBrowserProxy.getArgs('recordNumScanSettingChanges')[0];
     assertEquals(0, numScanSettingChanges);
@@ -1670,6 +1672,8 @@ suite('scanningAppTest', function() {
     await changeSelectedValue(getSettingSelect('#resolutionSelect'), '75');
 
     strictQuery('#scanButton', scanningApp.shadowRoot, HTMLElement).click();
+    await testBrowserProxy.whenCalled('recordNumScanSettingChanges');
+
     const numScanSettingChanges =
         testBrowserProxy.getArgs('recordNumScanSettingChanges')[0];
     assertEquals(2, numScanSettingChanges);
@@ -2173,12 +2177,14 @@ suite('scanningAppTest', function() {
     await initializeScanningApp(expectedScanners, capabilities);
     assert(scanningApp);
     await getScannerCapabilities();
-    await flushTasks();
+    await waitAfterNextRender(scanningApp);
     strictQuery('#scanButton', scanningApp.shadowRoot, CrButtonElement).click();
-    await flushTasks();
+    const saveScanSettingsFn = 'saveScanSettings';
+    await testBrowserProxy.whenCalled(saveScanSettingsFn);
 
+    assertEquals(1, testBrowserProxy.getCallCount(saveScanSettingsFn));
     const actualSavedScanSettings =
-        JSON.parse(testBrowserProxy.getArgs('saveScanSettings')[0]);
+        JSON.parse(testBrowserProxy.getArgs(saveScanSettingsFn)[0]);
     assertEquals(
         MAX_NUM_SAVED_SCANNERS, actualSavedScanSettings.scanners.length);
     compareSavedScanSettings(savedScanSettings, actualSavedScanSettings);
@@ -2226,9 +2232,15 @@ suite('scanningAppTest', function() {
     await initializeScanningApp(expectedScanners, capabilities);
     assert(scanningApp);
     await getScannerCapabilities();
-    await changeSelectedValue(getSettingSelect('#sourceSelect'), PLATEN);
-    await changeSelectedValue(
-        getSettingSelect('#fileTypeSelect'), FileType.kPdf.toString());
+    await waitAfterNextRender(scanningApp);
+    const sourceSelect = getSettingSelect('#sourceSelect');
+    const sourceChange = eventToPromise('change', sourceSelect);
+    await changeSelectedValue(sourceSelect, PLATEN);
+    await sourceChange;
+    const fileSelect = getSettingSelect('#fileTypeSelect');
+    const fileChange = eventToPromise('change', fileSelect);
+    await changeSelectedValue(fileSelect, FileType.kPdf.toString());
+    await fileChange;
     await ensureMultiPageScanCheckboxChecked(/*checked=*/ true);
 
     const scanButton =
@@ -2253,6 +2265,7 @@ suite('scanningAppTest', function() {
     await initializeScanningApp(expectedScanners, capabilities);
     assert(scanningApp);
     await getScannerCapabilities();
+    await waitAfterNextRender(scanningApp);
     await changeSelectedValue(getSettingSelect('#sourceSelect'), PLATEN);
     await changeSelectedValue(
         getSettingSelect('#fileTypeSelect'), FileType.kPdf.toString());

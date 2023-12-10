@@ -21,8 +21,8 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller_constants.h"
-#import "ios/chrome/browser/signin/fake_system_identity.h"
-#import "ios/chrome/browser/signin/test_constants.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity.h"
+#import "ios/chrome/browser/signin/model/test_constants.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
@@ -495,8 +495,9 @@ GURL TestPageURL() {
   // Set the policy and dismiss the bottom sheet that it causes.
   policy_test_utils::SetPolicy(true, policy::key::kSyncDisabled);
   [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
-                                   IDS_IOS_SYNC_SYNC_DISABLED_CONTINUE))]
+      selectElementWithMatcher:
+          chrome_test_util::StaticTextWithAccessibilityLabel(
+              l10n_util::GetNSString(IDS_IOS_SYNC_SYNC_DISABLED_CONTINUE))]
       performAction:grey_tap()];
 
   OpenRecentTabsPanel();
@@ -520,9 +521,9 @@ GURL TestPageURL() {
                                           grey_sufficientlyVisible(), nil)]
       performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
 
-  [SigninEarlGreyUI
-      verifySigninPromoVisibleWithMode:SigninPromoViewModeSyncWithPrimaryAccount
-                           closeButton:NO];
+  [SigninEarlGreyUI verifySigninPromoVisibleWithMode:
+                        SigninPromoViewModeSignedInWithPrimaryAccount
+                                         closeButton:NO];
 
   // Accept the promo.
   [[EarlGrey selectElementWithMatcher:PrimarySignInButton()]
@@ -692,8 +693,9 @@ GURL TestPageURL() {
   // Set the policy and dismiss the bottom sheet that it causes.
   policy_test_utils::SetPolicy(true, policy::key::kSyncDisabled);
   [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
-                                   IDS_IOS_SYNC_SYNC_DISABLED_CONTINUE))]
+      selectElementWithMatcher:
+          chrome_test_util::StaticTextWithAccessibilityLabel(
+              l10n_util::GetNSString(IDS_IOS_SYNC_SYNC_DISABLED_CONTINUE))]
       performAction:grey_tap()];
 
   [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]

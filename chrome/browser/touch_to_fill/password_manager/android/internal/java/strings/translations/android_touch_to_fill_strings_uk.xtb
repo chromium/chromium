@@ -1,0 +1,27 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="uk">
+<translation id="1220509181886849806">Використати збережений пароль?</translation>
+<translation id="1435940442311036198">Використати ключ доступу на іншому пристрої</translation>
+<translation id="1717486229951421299">Список облікових даних, які вставляються дотиком, відкрито на половину висоти екрана.</translation>
+<translation id="2359808026110333948">Продовжити</translation>
+<translation id="2364266287022099258">Використати збережений ключ доступу?</translation>
+<translation id="3399357656427473483">Список облікових даних, які вставляються дотиком.</translation>
+<translation id="3653689374478248324">Ви ввійдете на сайт <ph name="SITE_NAME" /></translation>
+<translation id="3950820424414687140">Вхід</translation>
+<translation id="4553044860350038560">Інші ключі доступу</translation>
+<translation id="4598345735110653698">Керувати ключами доступу</translation>
+<translation id="4722735765955348426">Пароль користувача <ph name="USERNAME" /></translation>
+<translation id="4907224763885298217">Скористайтеся функцією розблокування екрана</translation>
+<translation id="5012523644916800014">Керувати паролями та ключами доступу</translation>
+<translation id="5441504010984421144">Список облікових даних, які вставляються дотиком, відкрито на всю висоту екрана.</translation>
+<translation id="5591247451101092906">Використати збережений пароль або ключ доступу?</translation>
+<translation id="5624120631404540903">Керувати паролями</translation>
+<translation id="6560306912274274630">Ключ доступу для користувача <ph name="USERNAME" />, застосуйте функцію блокування екрана</translation>
+<translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{Новий пароль для цього сайту}one{Нові паролі для цього сайту}few{Нові паролі для цього сайту}many{Нові паролі для цього сайту}other{Нові паролі для цього сайту}}</translation>
+<translation id="7286867818472074330">Вибрати ключ доступу</translation>
+<translation id="7669320311687290322"><ph name="ITEM_LABEL" />, <ph name="ITEM_POSITION" /> з <ph name="ITEMS_TOTAL" />.</translation>
+<translation id="7738288782501322815">Ви отримали паролі для сайту <ph name="SITE_NAME" /></translation>
+<translation id="8614995815226664591"><ph name="SENDER_NAME" /> надає вам доступ до пароля для сайту <ph name="SITE_NAME" /></translation>
+<translation id="8891372124884726271">Список облікових даних закрито.</translation>
+</translationbundle>

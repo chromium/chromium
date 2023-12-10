@@ -26,6 +26,7 @@
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/color/color_id.h"
@@ -62,6 +63,8 @@ namespace {
 // Draws the blue-ish highlight border to the parent view according to the
 // highlight path.
 class HighlightBorder : public views::View {
+  METADATA_HEADER(HighlightBorder, views::View)
+
  public:
   HighlightBorder() = default;
   HighlightBorder(const HighlightBorder&) = delete;
@@ -101,6 +104,9 @@ class HighlightBorder : public views::View {
     canvas->DrawRoundRect(rect, (*rrect).GetSimpleRadius(), flags);
   }
 };
+
+BEGIN_METADATA(HighlightBorder)
+END_METADATA
 
 }  // namespace
 

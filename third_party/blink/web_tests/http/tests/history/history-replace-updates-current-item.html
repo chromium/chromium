@@ -1,3 +1,4 @@
+<script src="/resources/prevent-bfcache.js"></script>
 <script>
 if (window.testRunner) {
     testRunner.dumpAsText();
@@ -5,25 +6,23 @@ if (window.testRunner) {
     testRunner.waitUntilDone();
 }
 
-onunload = function() {
-    // no page cache
-}
 
 onload = function() {
-    setTimeout(function() {
+    setTimeout(async function () {
+        await preventBFCache();
         // This code inserts a new history item using pushState, and then it
         // replaces that history item with a navigation to a page that just
         // navigates us back to this page.  However, before that, we replace
         // the URL of the initial page to point at the "done" page such that
         // navigating back takes us to that document instead.
-        // 
+        //
         // This test ensures that we do not treat the initial document and the
         // document created by the location.replace command as the same
         // document when navigating back.  If we treat them the same, then we
         // will fail to load the "done" page.
 
         history.replaceState(null, null, 'resources/history-replace-updates-current-item-done.html');
-        
+
         history.pushState(null, null, '?dummystate');
         location.replace('history-replace-updates-current-item-goback.html');
     }, 0);

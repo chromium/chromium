@@ -6,7 +6,7 @@
 
 #include "base/notreached.h"
 #include "extensions/common/features/feature.h"
-#include "extensions/common/mojom/frame.mojom.h"
+#include "extensions/common/mojom/context_type.mojom.h"
 
 namespace extensions {
 

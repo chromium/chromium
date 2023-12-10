@@ -23,7 +23,15 @@ void IOBuffer::AssertValidBufferSize(size_t size) {
 
 IOBuffer::IOBuffer() = default;
 
-IOBuffer::IOBuffer(size_t buffer_size) {
+IOBuffer::IOBuffer(char* data, size_t size) : data_(data), size_(size) {
+  AssertValidBufferSize(size);
+}
+
+IOBuffer::~IOBuffer() = default;
+
+IOBufferWithSize::IOBufferWithSize() = default;
+
+IOBufferWithSize::IOBufferWithSize(size_t buffer_size) {
   AssertValidBufferSize(buffer_size);
   if (buffer_size) {
     size_ = buffer_size;
@@ -31,22 +39,9 @@ IOBuffer::IOBuffer(size_t buffer_size) {
   }
 }
 
-IOBuffer::IOBuffer(char* data, size_t size) : data_(data), size_(size) {
-  AssertValidBufferSize(size);
-}
-
-IOBuffer::~IOBuffer() {
+IOBufferWithSize::~IOBufferWithSize() {
   data_.ClearAndDeleteArray();
 }
-
-IOBufferWithSize::IOBufferWithSize() = default;
-
-IOBufferWithSize::IOBufferWithSize(size_t size) : IOBuffer(size) {}
-
-IOBufferWithSize::IOBufferWithSize(char* data, size_t size)
-    : IOBuffer(data, size) {}
-
-IOBufferWithSize::~IOBufferWithSize() = default;
 
 StringIOBuffer::StringIOBuffer(std::string s) : string_data_(std::move(s)) {
   // Can't pass `s.data()` directly to IOBuffer constructor since moving
@@ -59,8 +54,7 @@ StringIOBuffer::StringIOBuffer(std::string s) : string_data_(std::move(s)) {
 }
 
 StringIOBuffer::~StringIOBuffer() {
-  // We haven't allocated the buffer, so remove it before the base class
-  // destructor tries to delete[] it.
+  // Clear pointer before this destructor makes it dangle.
   data_ = nullptr;
 }
 
@@ -88,7 +82,8 @@ void DrainableIOBuffer::SetOffset(int bytes) {
 }
 
 DrainableIOBuffer::~DrainableIOBuffer() {
-  // The buffer is owned by the |base_| instance.
+  // Clear ptr before this destructor destroys the |base_| instance,
+  // making it dangle.
   data_ = nullptr;
 }
 
@@ -138,14 +133,13 @@ void PickledIOBuffer::Done() {
 }
 
 PickledIOBuffer::~PickledIOBuffer() {
+  // Avoid dangling ptr when this destructor destroys the pickle.
   data_ = nullptr;
 }
 
 WrappedIOBuffer::WrappedIOBuffer(const char* data, size_t size)
     : IOBuffer(const_cast<char*>(data), size) {}
 
-WrappedIOBuffer::~WrappedIOBuffer() {
-  data_ = nullptr;
-}
+WrappedIOBuffer::~WrappedIOBuffer() = default;
 
 }  // namespace net

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_POWER_AUTO_SCREEN_BRIGHTNESS_LIGHT_PROVIDER_MOJO_H_
 
 #include <map>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -17,7 +18,6 @@
 #include "chromeos/components/sensors/mojom/sensor.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 namespace power {
@@ -58,8 +58,8 @@ class LightProviderMojo
     // Something wrong with attributes of this light sensor or simply not needed
     // if true.
     bool ignored = false;
-    absl::optional<std::string> name;
-    absl::optional<bool> on_lid;
+    std::optional<std::string> name;
+    std::optional<bool> on_lid;
 
     // Temporarily stores the remote, waiting for its attributes information.
     // It'll be passed to LightProviderMojo' constructor as an argument after
@@ -96,7 +96,7 @@ class LightProviderMojo
   void RegisterLightWithId(int32_t id);
   void GetNameLocationCallback(
       int32_t id,
-      const std::vector<absl::optional<std::string>>& values);
+      const std::vector<std::optional<std::string>>& values);
 
   // Ignores the light with |id| due to some errors of it's attributes.
   void IgnoreLight(int32_t id);
@@ -127,7 +127,7 @@ class LightProviderMojo
 
   bool als_init_status_set_ = false;
   // The device id of light to be used.
-  absl::optional<int32_t> light_device_id_;
+  std::optional<int32_t> light_device_id_;
 
   // The observer that waits for the wanted light sensor's samples and sends
   // them to |als_reader_|.

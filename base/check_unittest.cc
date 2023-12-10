@@ -5,10 +5,13 @@
 #include <tuple>
 
 #include "base/check_deref.h"
+#include "base/check_version_internal.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/features.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
+#include "base/macros/concat.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/gtest_util.h"
@@ -18,6 +21,29 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
+
+int g_dump_without_crashing_count = 0;
+
+constexpr base::NotFatalUntil kNextMilestone =
+    BASE_CONCAT(base::NotFatalUntil::M, BASE_CHECK_NEXT_VERSION_INTERNAL);
+constexpr base::NotFatalUntil kCurrentMilestone =
+    BASE_CONCAT(base::NotFatalUntil::M, BASE_CHECK_VERSION_INTERNAL);
+
+class ScopedExpectDumpWithoutCrashing {
+ public:
+  ScopedExpectDumpWithoutCrashing() {
+    g_dump_without_crashing_count = 0;
+    base::debug::SetDumpWithoutCrashingFunction(&DumpWithoutCrashing);
+  }
+
+  ~ScopedExpectDumpWithoutCrashing() {
+    EXPECT_EQ(1, g_dump_without_crashing_count);
+    base::debug::SetDumpWithoutCrashingFunction(nullptr);
+  }
+
+ private:
+  static void DumpWithoutCrashing() { ++g_dump_without_crashing_count; }
+};
 
 MATCHER_P2(LogErrorMatches, line, expected_msg, "") {
   EXPECT_THAT(arg, testing::HasSubstr(
@@ -59,12 +85,13 @@ MATCHER_P2(LogErrorMatches, line, expected_msg, "") {
 // Macro which expects a DCHECK to fire if DCHECKs are enabled.
 //
 // Note: Please use the `CheckDeathTest` fixture when using this check.
-// TODO(pbos): Try to update this macro to detect that non-fatal DCHECKs do
-// upload crash dumps without crashing.
 #define EXPECT_DCHECK(msg, check_expr)                                         \
   do {                                                                         \
     if (DCHECK_IS_ON() && logging::LOGGING_DCHECK == logging::LOGGING_FATAL) { \
       EXPECT_DEATH_IF_SUPPORTED(check_expr, CHECK_MATCHER(__LINE__, msg));     \
+    } else if (DCHECK_IS_ON()) {                                               \
+      ScopedExpectDumpWithoutCrashing expect_dump;                             \
+      check_expr;                                                              \
     } else {                                                                   \
       check_expr;                                                              \
     }                                                                          \
@@ -114,11 +141,13 @@ MATCHER_P2(LogErrorMatches, line, expected_msg, "") {
 #if DCHECK_IS_ON()
 #define EXPECT_DUMP_WILL_BE_CHECK EXPECT_DCHECK
 #else
-// TODO(pbos): Update this to expect a crash dump outside DCHECK builds.
-#define EXPECT_DUMP_WILL_BE_CHECK(expected_string, statement)             \
-  EXPECT_LOG_ERROR_WITH_FILENAME(base::Location::Current().file_name(),   \
-                                 base::Location::Current().line_number(), \
-                                 statement, expected_string "\n")
+#define EXPECT_DUMP_WILL_BE_CHECK(expected_string, statement)               \
+  do {                                                                      \
+    ScopedExpectDumpWithoutCrashing expect_dump;                            \
+    EXPECT_LOG_ERROR_WITH_FILENAME(base::Location::Current().file_name(),   \
+                                   base::Location::Current().line_number(), \
+                                   statement, expected_string "\n");        \
+  } while (0)
 #endif  // DCHECK_IS_ON()
 
 TEST(CheckDeathTest, Basics) {
@@ -165,7 +194,7 @@ TEST(CheckDeathTest, PCheck) {
 }
 
 TEST(CheckDeathTest, CheckOp) {
-  int a = 1, b = 2;
+  const int a = 1, b = 2;
   // clang-format off
   EXPECT_CHECK("Check failed: a == b (1 vs. 2)", CHECK_EQ(a, b));
   EXPECT_CHECK("Check failed: a != a (1 vs. 1)", CHECK_NE(a, a));
@@ -250,13 +279,7 @@ class ScopedDcheckSeverity {
 };
 #endif  // BUILDFLAG(DCHECK_IS_CONFIGURABLE)
 
-// https://crbug.com/709067 tracks test flakiness on iOS.
-#if BUILDFLAG(IS_IOS)
-#define MAYBE_Dcheck DISABLED_Dcheck
-#else
-#define MAYBE_Dcheck Dcheck
-#endif
-TEST(CheckDeathTest, MAYBE_Dcheck) {
+TEST(CheckDeathTest, Dcheck) {
 #if BUILDFLAG(DCHECK_IS_CONFIGURABLE)
   // DCHECKs are enabled, and LOGGING_DCHECK is mutable, but defaults to
   // non-fatal. Set it to LOGGING_FATAL to get the expected behavior from the
@@ -380,7 +403,7 @@ TEST(CheckDeathTest, ConfigurableDCheck) {
   DCHECK(false);
 
   // Verify that DCHECK* aren't hard-wired to crash on failure.
-  logging::LOGGING_DCHECK = logging::LOG_INFO;
+  logging::LOGGING_DCHECK = logging::LOG_ERROR;
   DCHECK(false);
   DCHECK_EQ(1, 2);
 
@@ -539,9 +562,11 @@ TEST(CheckDeathTest, DumpWillBeNotReachedNoreturn) {
                             DUMP_WILL_BE_NOTREACHED_NORETURN() << "foo");
 }
 
+static const std::string kNotImplementedMessage = "Not implemented reached in ";
+
 TEST(CheckTest, NotImplemented) {
   static const std::string expected_msg =
-      std::string("Not implemented reached in ") + __PRETTY_FUNCTION__;
+      kNotImplementedMessage + __PRETTY_FUNCTION__;
 
 #if DCHECK_IS_ON()
   // Expect LOG(ERROR) with streamed params intact.
@@ -561,7 +586,7 @@ void NiLogOnce() {
 
 TEST(CheckTest, NotImplementedLogOnce) {
   static const std::string expected_msg =
-      "Not implemented reached in void (anonymous namespace)::NiLogOnce()\n";
+      kNotImplementedMessage + "void (anonymous namespace)::NiLogOnce()\n";
 
 #if DCHECK_IS_ON()
   EXPECT_LOG_ERROR_WITH_FILENAME(base::Location::Current().file_name(),
@@ -571,6 +596,37 @@ TEST(CheckTest, NotImplementedLogOnce) {
 #else
   EXPECT_NO_LOG(NiLogOnce());
   EXPECT_NO_LOG(NiLogOnce());
+#endif
+}
+
+void NiLogTenTimesWithStream() {
+  for (int i = 0; i < 10; ++i) {
+    NOTIMPLEMENTED_LOG_ONCE() << " iteration: " << i;
+  }
+}
+
+TEST(CheckTest, NotImplementedLogOnceWithStreamedParams) {
+  static const std::string expected_msg1 =
+      kNotImplementedMessage +
+      "void (anonymous namespace)::NiLogTenTimesWithStream() iteration: 0\n";
+
+#if DCHECK_IS_ON()
+  // Expect LOG(ERROR) with streamed params intact, exactly once.
+  EXPECT_LOG_ERROR_WITH_FILENAME(base::Location::Current().file_name(),
+                                 base::Location::Current().line_number() - 13,
+                                 NiLogTenTimesWithStream(), expected_msg1);
+  // A different NOTIMPLEMENTED_LOG_ONCE() call is still logged.
+  static const std::string expected_msg2 =
+      kNotImplementedMessage + __PRETTY_FUNCTION__ + "tree fish\n";
+  EXPECT_LOG_ERROR_WITH_FILENAME(base::Location::Current().file_name(),
+                                 base::Location::Current().line_number(),
+                                 NOTIMPLEMENTED_LOG_ONCE() << "tree fish",
+                                 expected_msg2);
+
+#else
+  // Expect nothing.
+  EXPECT_NO_LOG(NiLogTenTimesWithStream());
+  EXPECT_NO_LOG(NOTIMPLEMENTED_LOG_ONCE() << "tree fish");
 #endif
 }
 
@@ -608,6 +664,78 @@ TEST(CheckDeathTest, CheckDerefOfConstNullPointer) {
   std::string* const_null_pointer = nullptr;
   EXPECT_CHECK("Check failed: const_null_pointer != nullptr. ",
                CHECK_DEREF(const_null_pointer));
+}
+
+TEST(CheckDeathTest, CheckNotFatalUntil) {
+#if BUILDFLAG(DCHECK_IS_CONFIGURABLE)
+  // This specific death test relies on LOGGING_DCHECK not being FATAL, even
+  // when run as part of a death test, as CHECK with a milestone acts like a
+  // DCHECK.
+  ScopedDcheckSeverity dcheck_severity(logging::LOGGING_ERROR);
+#endif
+
+  // Next milestone not yet fatal.
+  EXPECT_DUMP_WILL_BE_CHECK("Check failed: false. foo",
+                            CHECK(false, kNextMilestone) << "foo");
+
+  // Fatal in current major version.
+  EXPECT_CHECK("Check failed: false. foo", CHECK(false, kCurrentMilestone)
+                                               << "foo");
+}
+
+TEST(CheckDeathTest, CheckOpNotFatalUntil) {
+#if BUILDFLAG(DCHECK_IS_CONFIGURABLE)
+  // This specific death test relies on LOGGING_DCHECK not being FATAL, even
+  // when run as part of a death test, as CHECK with a milestone acts like a
+  // DCHECK.
+  ScopedDcheckSeverity dcheck_severity(logging::LOGGING_ERROR);
+#endif
+  const int a = 1, b = 2;
+
+  // Next milestone not yet fatal.
+  EXPECT_DUMP_WILL_BE_CHECK("Check failed: a == b (1 vs. 2)",
+                            CHECK_EQ(a, b, kNextMilestone));
+  EXPECT_DUMP_WILL_BE_CHECK("Check failed: a != a (1 vs. 1)",
+                            CHECK_NE(a, a, kNextMilestone));
+  EXPECT_DUMP_WILL_BE_CHECK("Check failed: b <= a (2 vs. 1)",
+                            CHECK_LE(b, a, kNextMilestone));
+  EXPECT_DUMP_WILL_BE_CHECK("Check failed: b < a (2 vs. 1)",
+                            CHECK_LT(b, a, kNextMilestone));
+  EXPECT_DUMP_WILL_BE_CHECK("Check failed: a >= b (1 vs. 2)",
+                            CHECK_GE(a, b, kNextMilestone));
+  EXPECT_DUMP_WILL_BE_CHECK("Check failed: a > b (1 vs. 2)",
+                            CHECK_GT(a, b, kNextMilestone));
+
+  // Fatal in current major version.
+  EXPECT_CHECK("Check failed: a == b (1 vs. 2)",
+               CHECK_EQ(a, b, kCurrentMilestone));
+  EXPECT_CHECK("Check failed: a != a (1 vs. 1)",
+               CHECK_NE(a, a, kCurrentMilestone));
+  EXPECT_CHECK("Check failed: b <= a (2 vs. 1)",
+               CHECK_LE(b, a, kCurrentMilestone));
+  EXPECT_CHECK("Check failed: b < a (2 vs. 1)",
+               CHECK_LT(b, a, kCurrentMilestone));
+  EXPECT_CHECK("Check failed: a >= b (1 vs. 2)",
+               CHECK_GE(a, b, kCurrentMilestone));
+  EXPECT_CHECK("Check failed: a > b (1 vs. 2)",
+               CHECK_GT(a, b, kCurrentMilestone));
+}
+
+TEST(CheckDeathTest, NotReachedNotFatalUntil) {
+#if BUILDFLAG(DCHECK_IS_CONFIGURABLE)
+  // This specific death test relies on LOGGING_DCHECK not being FATAL, even
+  // when run as part of a death test, as CHECK with a milestone acts like a
+  // DCHECK.
+  ScopedDcheckSeverity dcheck_severity(logging::LOGGING_ERROR);
+#endif
+
+  // Next milestone not yet fatal.
+  EXPECT_DUMP_WILL_BE_CHECK("Check failed: false. foo",
+                            NOTREACHED(kNextMilestone) << "foo");
+
+  // Fatal in current major version.
+  EXPECT_CHECK("Check failed: false. foo", NOTREACHED(kCurrentMilestone)
+                                               << "foo");
 }
 
 }  // namespace

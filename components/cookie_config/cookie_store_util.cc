@@ -4,6 +4,7 @@
 
 #include "components/cookie_config/cookie_store_util.h"
 
+#include "base/functional/callback.h"
 #include "base/lazy_instance.h"
 #include "build/build_config.h"
 #include "components/os_crypt/sync/os_crypt.h"
@@ -20,11 +21,16 @@ namespace {
 // because ChromeOS and Android already protect the entire profile contents.
 class CookieOSCryptoDelegate : public net::CookieCryptoDelegate {
  public:
+  void Init(base::OnceClosure callback) override;
   bool EncryptString(const std::string& plaintext,
                      std::string* ciphertext) override;
   bool DecryptString(const std::string& ciphertext,
                      std::string* plaintext) override;
 };
+
+void CookieOSCryptoDelegate::Init(base::OnceClosure callback) {
+  std::move(callback).Run();
+}
 
 bool CookieOSCryptoDelegate::EncryptString(const std::string& plaintext,
                                            std::string* ciphertext) {

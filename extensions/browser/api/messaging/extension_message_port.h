@@ -7,21 +7,21 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
-
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/pass_key.h"
 #include "base/uuid.h"
+#include "content/public/browser/global_routing_id.h"
 #include "extensions/browser/api/messaging/message_port.h"
 #include "extensions/browser/service_worker/worker_id.h"
 #include "extensions/common/api/messaging/port_id.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/mojom/message_port.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 class GURL;
@@ -84,19 +84,20 @@ class ExtensionMessagePort : public MessagePort {
 
   // MessagePort:
   void RemoveCommonFrames(const MessagePort& port) override;
-  bool HasFrame(content::RenderFrameHost* render_frame_host) const override;
+  bool HasFrame(
+      const content::GlobalRenderFrameHostToken& frame_token) const override;
   bool IsValidPort() override;
   void RevalidatePort() override;
   void DispatchOnConnect(mojom::ChannelType channel_type,
                          const std::string& channel_name,
-                         absl::optional<base::Value::Dict> source_tab,
+                         std::optional<base::Value::Dict> source_tab,
                          const ExtensionApiFrameIdMap::FrameData& source_frame,
                          int guest_process_id,
                          int guest_render_frame_routing_id,
                          const MessagingEndpoint& source_endpoint,
                          const std::string& target_extension_id,
                          const GURL& source_url,
-                         absl::optional<url::Origin> source_origin) override;
+                         std::optional<url::Origin> source_origin) override;
   void DispatchOnDisconnect(const std::string& error_message) override;
   void DispatchOnMessage(const Message& message) override;
   void IncrementLazyKeepaliveCount(Activity::Type activity_type) override;
@@ -115,6 +116,7 @@ class ExtensionMessagePort : public MessagePort {
   // Unregisters a frame as a receiver / sender. When there are no registered
   // frames any more, the port closes via CloseChannel().
   bool UnregisterFrame(content::RenderFrameHost* render_frame_host);
+  bool UnregisterFrame(const content::GlobalRenderFrameHostToken& frame_token);
 
   // Unregisters all the frames whose outermost main frame is `main_frame`. When
   // there are no registered frames any more, the port closes via
@@ -150,7 +152,7 @@ class ExtensionMessagePort : public MessagePort {
       const MessagingEndpoint& source_endpoint,
       const std::string& target_extension_id,
       const GURL& source_url,
-      absl::optional<url::Origin> source_origin,
+      std::optional<url::Origin> source_origin,
       const IPCTarget& target);
   std::unique_ptr<IPC::Message> BuildDispatchOnDisconnectIPC(
       const std::string& error_message,
@@ -185,7 +187,7 @@ class ExtensionMessagePort : public MessagePort {
   // This map is populated before the first message is sent to the destination,
   // and shrinks over time when the port is rejected by the recipient frame, or
   // when the frame is removed or unloaded.
-  std::map<content::RenderFrameHost*,
+  std::map<content::GlobalRenderFrameHostToken,
            mojo::AssociatedRemote<mojom::MessagePort>>
       frames_;
 
@@ -195,7 +197,7 @@ class ExtensionMessagePort : public MessagePort {
 
   // The set of frames and workers that have not been connected yet. These
   // should only have items during connection setup time.
-  std::set<content::RenderFrameHost*> pending_frames_;
+  std::set<content::GlobalRenderFrameHostToken> pending_frames_;
   std::set<WorkerId> pending_service_workers_;
 
   // GUIDs of Service Workers that have pending keepalive requests inflight.

@@ -6,9 +6,7 @@ package org.chromium.support_lib_boundary;
 
 import java.util.Set;
 
-/**
- * Boundary interface for ServiceWorkerWebSettings.
- */
+/** Boundary interface for ServiceWorkerWebSettings. */
 public interface ServiceWorkerWebSettingsBoundaryInterface {
     void setCacheMode(int mode);
 

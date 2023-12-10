@@ -7,7 +7,7 @@
 
 #include "base/containers/circular_deque.h"
 #include "base/gtest_prod_util.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/media_router/common/mojom/logger.mojom.h"

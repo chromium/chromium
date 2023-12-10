@@ -1182,6 +1182,11 @@ POSIX platforms, they will additionally lchown the existence checker path
 registered by the application to be owned by the root user. User-scope updaters
 use this as a signal that the application is managed by a system-scope updater.
 
+For backwards compatibility with third party software, on Windows, after a
+successful registration and on each update, the updater will set
+[HKCU or HKLM]\SOFTWARE\{Company}\Update\ClientState\{AppID} → pv to the
+version of the application.
+
 ### App Activity Reporting
 Applications can report whether they are actively used or not through the
 updater. Update servers can then aggregate this information to produce user
@@ -1431,8 +1436,8 @@ checker and no file at that path exists, the updater considers the application
 uninstalled, sends the ping, and stops trying to keep it up to date. User-scope
 updaters will also do this if the file is owned by the root user.
 
-On Windows, if the ClientState entry for for the application is deleted, the
-app is considered uninstalled.
+On Windows, if the Clients entry for for the application is deleted, the app is
+considered uninstalled.
 
 On Windows, the updater registers a "UninstallCmdLine" under the `Software\
 {Company}\Updater` key. This command line can be invoked by application

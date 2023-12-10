@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/css/style_engine.h"
 
+#include <algorithm>
 #include <limits>
 #include <memory>
 
@@ -4983,6 +4984,74 @@ TEST_F(StyleEngineTest, NestingUseCount) {
   EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kCSSNesting));
 }
 
+TEST_F(StyleEngineTest, NestingUseCountUnsupportedDeclaration) {
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+      body { unsupported: 100px; }
+    </style>
+  )HTML");
+  UpdateAllLifecyclePhases();
+  EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kCSSNesting));
+}
+
+TEST_F(StyleEngineTest, NestingUseCountSupportedDeclaration) {
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+      body { width: 100px; }
+    </style>
+  )HTML");
+  UpdateAllLifecyclePhases();
+  EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kCSSNesting));
+}
+
+TEST_F(StyleEngineTest, NestingUseCountDimensionToken) {
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+      body { 500px: 300px; }
+    </style>
+  )HTML");
+  UpdateAllLifecyclePhases();
+  EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kCSSNesting));
+}
+
+TEST_F(StyleEngineTest, NestingUseCountInvalidSelector) {
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+      body { & !!! { color: fuchsia; } }
+    </style>
+  )HTML");
+  UpdateAllLifecyclePhases();
+  EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kCSSNesting));
+}
+
+TEST_F(StyleEngineTest, NestingUseCountUnknownAtRule) {
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+      body {
+        @unsupported {
+          color: fuchsia;
+        }
+      }
+    </style>
+  )HTML");
+  UpdateAllLifecyclePhases();
+  EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kCSSNesting));
+}
+
+TEST_F(StyleEngineTest, NestingUseCountAtRule) {
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+      body {
+        @media {
+          color: fuchsia;
+        }
+      }
+    </style>
+  )HTML");
+  UpdateAllLifecyclePhases();
+  EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kCSSNesting));
+}
+
 TEST_F(StyleEngineTest, NestingUseCountNotStartingWithAmpersand) {
   GetDocument().body()->setInnerHTML(R"HTML(
     <style>
@@ -6960,6 +7029,50 @@ TEST_F(StyleEngineTest, UseCountCSSDeclarationAfterNestedRule) {
     </style>
   )HTML");
   EXPECT_TRUE(IsUseCounted(WebFeature::kCSSDeclarationAfterNestedRule));
+}
+
+TEST_F(StyleEngineTest, EnsureAppRegionTriggersRelayout) {
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <head>
+    <style>
+      .drag {
+        app-region: drag
+      }
+      .no-drag {
+        app-region: no-drag
+      }
+    </style>
+    </head>
+    <body>
+       <div id="drag-region"></div>
+    </body>
+  )HTML");
+
+  Element* drag_element =
+      GetDocument().getElementById(AtomicString("drag-region"));
+
+  auto regions = GetDocument().AnnotatedRegions();
+  auto* it =
+      std::find_if(regions.begin(), regions.end(),
+                   [](blink::AnnotatedRegionValue s) { return s.draggable; });
+  EXPECT_EQ(it, regions.end()) << "There should be no drag regions";
+
+  drag_element->classList().Add(AtomicString("drag"));
+  UpdateAllLifecyclePhases();
+
+  regions = GetDocument().AnnotatedRegions();
+  it = std::find_if(regions.begin(), regions.end(),
+                    [](blink::AnnotatedRegionValue s) { return s.draggable; });
+  EXPECT_NE(it, regions.end()) << "There should be one drag region";
+
+  drag_element->classList().Add(AtomicString("no-drag"));
+  UpdateAllLifecyclePhases();
+
+  regions = GetDocument().AnnotatedRegions();
+  it = std::find_if(regions.begin(), regions.end(),
+                    [](blink::AnnotatedRegionValue s) { return s.draggable; });
+
+  EXPECT_EQ(it, regions.end()) << "There should be no drag regions";
 }
 
 }  // namespace blink

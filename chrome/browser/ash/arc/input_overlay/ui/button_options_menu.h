@@ -16,6 +16,10 @@ namespace ash {
 class IconButton;
 }  // namespace ash
 
+namespace views {
+class Label;
+}  // namespace views
+
 namespace arc::input_overlay {
 
 class Action;
@@ -31,13 +35,14 @@ class DisplayOverlayController;
 // +----------------------------------+
 // ||"Button options"|          |icon||
 // |----------------------------------|
-// ||"Key assignment"|                |
-// |----------------------------------|
-// |  |feature_tile|  |feature_title| |
-// |  |            |  |             | |
+// ||"Buttons let..."|                |
 // |----------------------------------|
 // ||"Selected key"       |key labels||
 // ||"key"                            |
+// |----------------------------------|
+// |  |"Choose your button type:"   | |
+// |  |feature_tile|  |feature_title| |
+// |  |            |  |             | |
 // |----------------------------------|
 // -----------------------------------|
 // ||         Delete button          ||
@@ -49,6 +54,8 @@ class ButtonOptionsMenu : public ArrowContainer, public TouchInjectorObserver {
   ButtonOptionsMenu(const ButtonOptionsMenu&) = delete;
   ButtonOptionsMenu& operator=(const ButtonOptionsMenu&) = delete;
   ~ButtonOptionsMenu() override;
+
+  void UpdateWidget();
 
   Action* action() const { return action_; }
 
@@ -85,6 +92,7 @@ class ButtonOptionsMenu : public ArrowContainer, public TouchInjectorObserver {
   raw_ptr<ash::IconButton> done_button_ = nullptr;
   raw_ptr<ActionTypeButtonGroup> button_group_ = nullptr;
   raw_ptr<ActionEditView, DisableDanglingPtrDetection> action_edit_ = nullptr;
+  raw_ptr<views::Label> action_name_label_ = nullptr;
 };
 
 }  // namespace arc::input_overlay

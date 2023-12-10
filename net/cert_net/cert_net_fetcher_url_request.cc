@@ -479,7 +479,7 @@ void Job::StartURLRequest(URLRequestContext* context) {
   }
 
   // Start the URLRequest.
-  read_buffer_ = base::MakeRefCounted<IOBuffer>(kReadBufferSizeInBytes);
+  read_buffer_ = base::MakeRefCounted<IOBufferWithSize>(kReadBufferSizeInBytes);
   NetworkTrafficAnnotationTag traffic_annotation =
       DefineNetworkTrafficAnnotation("certificate_verifier_url_request",
                                      R"(

@@ -46,8 +46,12 @@ public class InfoBarCompactLayout extends LinearLayout implements View.OnClickLi
      */
     // TODO(crbug/1056346): ctor is made public to allow access from InfoBar. Once
     // InfoBar is modularized, restore access to package private.
-    public InfoBarCompactLayout(Context context, InfoBarInteractionHandler infoBar,
-            int iconResourceId, @ColorRes int iconTintId, Bitmap iconBitmap) {
+    public InfoBarCompactLayout(
+            Context context,
+            InfoBarInteractionHandler infoBar,
+            int iconResourceId,
+            @ColorRes int iconTintId,
+            Bitmap iconBitmap) {
         super(context);
         mInfoBar = infoBar;
         mCompactInfoBarSize =
@@ -149,7 +153,10 @@ public class InfoBarCompactLayout extends LinearLayout implements View.OnClickLi
 
             final Context context = mLayout.getContext();
             SpannableString link = new SpannableString(label);
-            link.setSpan(new NoUnderlineClickableSpan(context, onTapCallback), 0, label.length(),
+            link.setSpan(
+                    new NoUnderlineClickableSpan(context, onTapCallback),
+                    0,
+                    label.length(),
                     Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
             mLink = link;
 
@@ -182,8 +189,10 @@ public class InfoBarCompactLayout extends LinearLayout implements View.OnClickLi
 
             assert mMessage != null;
 
-            final int messagePadding = mLayout.getResources().getDimensionPixelOffset(
-                    R.dimen.infobar_compact_message_vertical_padding);
+            final int messagePadding =
+                    mLayout.getResources()
+                            .getDimensionPixelOffset(
+                                    R.dimen.infobar_compact_message_vertical_padding);
 
             SpannableStringBuilder builder = new SpannableStringBuilder();
             builder.append(mMessage);

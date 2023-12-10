@@ -201,10 +201,10 @@ ScriptPromise BuildSimpleGraph(V8TestingScope& scope,
   }
 
   auto* lhs_operand =
-      BuildInput(builder, "lhs", {3, 4, 5}, V8MLOperandType::Enum::kFloat32,
+      BuildInput(builder, "lhs", {3, 4, 5}, V8MLOperandDataType::Enum::kFloat32,
                  scope.GetExceptionState());
   auto* rhs_operand =
-      BuildInput(builder, "rhs", {3, 4, 5}, V8MLOperandType::Enum::kFloat32,
+      BuildInput(builder, "rhs", {3, 4, 5}, V8MLOperandDataType::Enum::kFloat32,
                  scope.GetExceptionState());
   auto* output =
       builder->add(lhs_operand, rhs_operand, scope.GetExceptionState());
@@ -214,7 +214,7 @@ ScriptPromise BuildSimpleGraph(V8TestingScope& scope,
 }
 
 struct OperandInfoMojo {
-  blink_mojom::Operand::DataType type;
+  blink_mojom::Operand::DataType data_type;
   Vector<uint32_t> dimensions;
 };
 
@@ -275,8 +275,9 @@ struct ClampTester {
             V8TestingScope& scope,
             MLGraphBuilder* builder) {
     // Build the graph.
-    auto* input_operand = BuildInput(builder, "input", input.dimensions,
-                                     input.type, scope.GetExceptionState());
+    auto* input_operand =
+        BuildInput(builder, "input", input.dimensions, input.data_type,
+                   scope.GetExceptionState());
     MLClampOptions* ml_clamp_options = MLClampOptions::Create();
     if (options.min_value) {
       ml_clamp_options->setMinValue(options.min_value.value());
@@ -303,7 +304,8 @@ struct ClampTester {
     auto output_operand_iter =
         graph_info->id_to_operand_map.find(output_operand_id);
     ASSERT_TRUE(output_operand_iter != graph_info->id_to_operand_map.end());
-    EXPECT_EQ(output_operand_iter->value->data_type, expected_operand.type);
+    EXPECT_EQ(output_operand_iter->value->data_type,
+              expected_operand.data_type);
     EXPECT_EQ(output_operand_iter->value->dimensions,
               expected_operand.dimensions);
   }
@@ -325,9 +327,10 @@ TEST_P(MLGraphTestMojo, ClampTest) {
     // Test clamp operator with default options that no minimum and maximum
     // values are defined.
     ClampTester{
-        .input = {.type = V8MLOperandType::Enum::kFloat32,
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                   .dimensions = {1, 2, 2, 1}},
-        .expected_operand = {.type = blink_mojom::Operand::DataType::kFloat32,
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat32,
                              .dimensions = {1, 2, 2, 1}},
         .expected_attributes = {.min_value =
                                     -std::numeric_limits<float>::infinity(),
@@ -338,10 +341,11 @@ TEST_P(MLGraphTestMojo, ClampTest) {
   {
     // Test clamp operator with the minimum value defined.
     ClampTester{
-        .input = {.type = V8MLOperandType::Enum::kFloat16,
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat16,
                   .dimensions = {2, 4}},
         .options = {0.0, absl::nullopt},
-        .expected_operand = {.type = blink_mojom::Operand::DataType::kFloat16,
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat16,
                              .dimensions = {2, 4}},
         .expected_attributes = {.min_value = 0.0,
                                 .max_value =
@@ -351,10 +355,11 @@ TEST_P(MLGraphTestMojo, ClampTest) {
   {
     // Test clamp operator with the maximum value defined.
     ClampTester{
-        .input = {.type = V8MLOperandType::Enum::kInt32,
+        .input = {.data_type = V8MLOperandDataType::Enum::kInt32,
                   .dimensions = {3, 1, 6}},
         .options = {absl::nullopt, 6.0},
-        .expected_operand = {.type = blink_mojom::Operand::DataType::kInt32,
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kInt32,
                              .dimensions = {3, 1, 6}},
         .expected_attributes = {.min_value =
                                     -std::numeric_limits<float>::infinity(),
@@ -363,12 +368,24 @@ TEST_P(MLGraphTestMojo, ClampTest) {
   }
   {
     // Test clamp operator with both the minimum and maximum values defined.
-    ClampTester{
-        .input = {.type = V8MLOperandType::Enum::kUint8, .dimensions = {7}},
-        .options = {0.0, 6.0},
-        .expected_operand = {.type = blink_mojom::Operand::DataType::kUint8,
-                             .dimensions = {7}},
-        .expected_attributes = {.min_value = 0.0, .max_value = 6.0}}
+    ClampTester{.input = {.data_type = V8MLOperandDataType::Enum::kUint8,
+                          .dimensions = {7}},
+                .options = {0.0, 6.0},
+                .expected_operand = {.data_type =
+                                         blink_mojom::Operand::DataType::kUint8,
+                                     .dimensions = {7}},
+                .expected_attributes = {.min_value = 0.0, .max_value = 6.0}}
+        .Test(*this, scope, builder);
+  }
+  {
+    // Test clamp operator with scalar.
+    ClampTester{.input = {.data_type = V8MLOperandDataType::Enum::kUint8,
+                          .dimensions = {}},
+                .options = {0.0, 6.0},
+                .expected_operand = {.data_type =
+                                         blink_mojom::Operand::DataType::kUint8,
+                                     .dimensions = {}},
+                .expected_attributes = {.min_value = 0.0, .max_value = 6.0}}
         .Test(*this, scope, builder);
   }
 }
@@ -385,9 +402,9 @@ struct ConcatTester {
     HeapVector<Member<MLOperand>> input_operands;
     input_operands.reserve(inputs.size());
     for (wtf_size_t i = 0; i < inputs.size(); ++i) {
-      input_operands.push_back(BuildInput(builder, String::Format("input%u", i),
-                                          inputs[i].dimensions, inputs[i].type,
-                                          scope.GetExceptionState()));
+      input_operands.push_back(BuildInput(
+          builder, String::Format("input%u", i), inputs[i].dimensions,
+          inputs[i].data_type, scope.GetExceptionState()));
     }
     auto* output_operand =
         builder->concat(input_operands, axis, scope.GetExceptionState());
@@ -411,7 +428,8 @@ struct ConcatTester {
       auto input_operand_iter =
           graph_info->id_to_operand_map.find(input_operand_id);
       ASSERT_TRUE(input_operand_iter != graph_info->id_to_operand_map.end());
-      EXPECT_EQ(input_operand_iter->value->data_type, expected_operand.type);
+      EXPECT_EQ(input_operand_iter->value->data_type,
+                expected_operand.data_type);
       EXPECT_EQ(input_operand_iter->value->dimensions, inputs[i].dimensions);
     }
 
@@ -421,7 +439,8 @@ struct ConcatTester {
     auto output_operand_iter =
         graph_info->id_to_operand_map.find(output_operand_id);
     ASSERT_TRUE(output_operand_iter != graph_info->id_to_operand_map.end());
-    EXPECT_EQ(output_operand_iter->value->data_type, expected_operand.type);
+    EXPECT_EQ(output_operand_iter->value->data_type,
+              expected_operand.data_type);
     EXPECT_EQ(output_operand_iter->value->dimensions,
               expected_operand.dimensions);
   }
@@ -441,46 +460,51 @@ TEST_P(MLGraphTestMojo, ConcatTest) {
   {
     // Test concat operator with one input.
     ConcatTester{
-        .inputs = {{.type = V8MLOperandType::Enum::kFloat32,
+        .inputs = {{.data_type = V8MLOperandDataType::Enum::kFloat32,
                     .dimensions = {3, 1, 5, 6}}},
         .axis = 2,
-        .expected_operand = {.type = blink_mojom::Operand::DataType::kFloat32,
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat32,
                              .dimensions = {3, 1, 5, 6}}}
         .Test(*this, scope, builder);
   }
   {
     // Test concat operator with two inputs.
     ConcatTester{
-        .inputs = {{.type = V8MLOperandType::Enum::kFloat16,
+        .inputs = {{.data_type = V8MLOperandDataType::Enum::kFloat16,
                     .dimensions = {3, 1, 5, 6}},
-                   {.type = V8MLOperandType::Enum::kFloat16,
+                   {.data_type = V8MLOperandDataType::Enum::kFloat16,
                     .dimensions = {3, 2, 5, 6}}},
         .axis = 1,
-        .expected_operand = {.type = blink_mojom::Operand::DataType::kFloat16,
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat16,
                              .dimensions = {3, 3, 5, 6}}}
         .Test(*this, scope, builder);
   }
   {
     // Test concat operator with three inputs.
     ConcatTester{
-        .inputs = {{.type = V8MLOperandType::Enum::kInt32,
+        .inputs = {{.data_type = V8MLOperandDataType::Enum::kInt32,
                     .dimensions = {3, 4, 1, 5}},
-                   {.type = V8MLOperandType::Enum::kInt32,
+                   {.data_type = V8MLOperandDataType::Enum::kInt32,
                     .dimensions = {3, 4, 2, 5}},
-                   {.type = V8MLOperandType::Enum::kInt32,
+                   {.data_type = V8MLOperandDataType::Enum::kInt32,
                     .dimensions = {3, 4, 3, 5}}},
         .axis = 2,
-        .expected_operand = {.type = blink_mojom::Operand::DataType::kInt32,
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kInt32,
                              .dimensions = {3, 4, 6, 5}}}
         .Test(*this, scope, builder);
   }
   {
     // Test concat operator with two 1-D inputs.
     ConcatTester{
-        .inputs = {{.type = V8MLOperandType::Enum::kInt8, .dimensions = {1}},
-                   {.type = V8MLOperandType::Enum::kInt8, .dimensions = {1}}},
+        .inputs = {{.data_type = V8MLOperandDataType::Enum::kInt8,
+                    .dimensions = {1}},
+                   {.data_type = V8MLOperandDataType::Enum::kInt8,
+                    .dimensions = {1}}},
         .axis = 0,
-        .expected_operand = {.type = blink_mojom::Operand::DataType::kInt8,
+        .expected_operand = {.data_type = blink_mojom::Operand::DataType::kInt8,
                              .dimensions = {2}}}
         .Test(*this, scope, builder);
   }
@@ -492,6 +516,528 @@ struct Activation {
   absl::optional<float> elu_alpha;
   absl::optional<float> leaky_relu_alpha;
 };
+
+MLActivation* CreateActivation(V8TestingScope& scope,
+                               MLGraphBuilder* builder,
+                               const Activation& activation) {
+  switch (activation.kind) {
+    case MLOperator::OperatorKind::kClamp: {
+      auto* clamp_options = MLClampOptions::Create();
+      CHECK(clamp_options);
+      clamp_options->setMinValue(activation.clamp_options->min_value.value());
+      clamp_options->setMaxValue(activation.clamp_options->max_value.value());
+      return builder->clamp(clamp_options, scope.GetExceptionState());
+    }
+    case MLOperator::OperatorKind::kElu: {
+      auto* elu_options = MLEluOptions::Create();
+      CHECK(elu_options);
+      if (activation.elu_alpha.has_value()) {
+        elu_options->setAlpha(activation.elu_alpha.value());
+      }
+      return builder->elu(elu_options, scope.GetExceptionState());
+    }
+    case MLOperator::OperatorKind::kLeakyRelu: {
+      auto* leaky_relu_options = MLLeakyReluOptions::Create();
+      CHECK(leaky_relu_options);
+      if (activation.leaky_relu_alpha.has_value()) {
+        leaky_relu_options->setAlpha(activation.leaky_relu_alpha.value());
+      }
+      return builder->leakyRelu(leaky_relu_options, scope.GetExceptionState());
+    }
+    case MLOperator::OperatorKind::kRelu:
+      return builder->relu(scope.GetExceptionState());
+    case MLOperator::OperatorKind::kSigmoid:
+      return builder->sigmoid(scope.GetExceptionState());
+    case MLOperator::OperatorKind::kSoftmax:
+      return builder->softmax(scope.GetExceptionState());
+    case MLOperator::OperatorKind::kTanh:
+      return builder->tanh(scope.GetExceptionState());
+    default:
+      NOTREACHED_NORETURN();
+  }
+}
+
+void CheckActivation(const webnn::mojom::blink::ActivationPtr& mojom_activation,
+                     const Activation& expected_activation) {
+  switch (expected_activation.kind) {
+    case MLOperator::OperatorKind::kClamp: {
+      ASSERT_TRUE(mojom_activation->is_clamp());
+      auto& clamp = mojom_activation->get_clamp();
+      CHECK(clamp);
+      auto& clamp_options = expected_activation.clamp_options;
+      CHECK(clamp_options);
+      EXPECT_EQ(clamp->min_value, clamp_options->min_value);
+      EXPECT_EQ(clamp->max_value, clamp_options->max_value);
+      break;
+    }
+    case MLOperator::OperatorKind::kElu: {
+      ASSERT_TRUE(mojom_activation->is_elu());
+      auto& elu = mojom_activation->get_elu();
+      CHECK(elu);
+      CHECK(expected_activation.elu_alpha.has_value());
+      EXPECT_EQ(elu->alpha, expected_activation.elu_alpha.value());
+      break;
+    }
+    case MLOperator::OperatorKind::kLeakyRelu: {
+      ASSERT_TRUE(mojom_activation->is_leaky_relu());
+      auto& leaky_relu = mojom_activation->get_leaky_relu();
+      CHECK(leaky_relu);
+      CHECK(expected_activation.leaky_relu_alpha.has_value());
+      EXPECT_EQ(leaky_relu->alpha,
+                expected_activation.leaky_relu_alpha.value());
+      break;
+    }
+    case MLOperator::OperatorKind::kRelu:
+      EXPECT_TRUE(mojom_activation->is_relu());
+      break;
+    case MLOperator::OperatorKind::kSigmoid:
+      EXPECT_TRUE(mojom_activation->is_sigmoid());
+      break;
+    case MLOperator::OperatorKind::kSoftmax:
+      EXPECT_TRUE(mojom_activation->is_softmax());
+      break;
+    case MLOperator::OperatorKind::kTanh:
+      EXPECT_TRUE(mojom_activation->is_tanh());
+      break;
+    default:
+      NOTREACHED_NORETURN();
+  }
+}
+
+struct BatchNormalizationTester {
+  OperandInfoBlink input;
+  OperandInfoBlink mean;
+  OperandInfoBlink variance;
+  struct BatchNormalizationOptions {
+    absl::optional<OperandInfoBlink> scale;
+    absl::optional<OperandInfoBlink> bias;
+    absl::optional<uint32_t> axis;
+    absl::optional<float> epsilon;
+    absl::optional<Activation> activation;
+  };
+  struct BatchNormalizationAttributes {
+    absl::optional<OperandInfoMojo> scale;
+    absl::optional<OperandInfoMojo> bias;
+    uint32_t axis = 1;
+    float epsilon = 1e-5;
+    absl::optional<Activation> activation;
+  };
+  BatchNormalizationOptions options;
+  OperandInfoMojo expected_operand;
+  BatchNormalizationAttributes expected_attributes;
+
+  void Test(MLGraphTestMojo& helper,
+            V8TestingScope& scope,
+            MLGraphBuilder* builder) {
+    // Build the graph.
+    auto* input_operand =
+        BuildInput(builder, "input", input.dimensions, input.data_type,
+                   scope.GetExceptionState());
+    auto* mean_operand = BuildInput(builder, "mean", mean.dimensions,
+                                    mean.data_type, scope.GetExceptionState());
+    auto* variance_operand =
+        BuildInput(builder, "variance", variance.dimensions, variance.data_type,
+                   scope.GetExceptionState());
+    MLBatchNormalizationOptions* batch_normalization_options =
+        MLBatchNormalizationOptions::Create();
+    if (options.scale) {
+      batch_normalization_options->setScale(
+          BuildInput(builder, "scale", options.scale->dimensions,
+                     options.scale->data_type, scope.GetExceptionState()));
+    }
+    if (options.bias) {
+      batch_normalization_options->setBias(
+          BuildInput(builder, "bias", options.bias->dimensions,
+                     options.bias->data_type, scope.GetExceptionState()));
+    }
+    if (options.axis) {
+      batch_normalization_options->setAxis(options.axis.value());
+    }
+    if (options.epsilon) {
+      batch_normalization_options->setEpsilon(options.epsilon.value());
+    }
+    if (options.activation) {
+      auto* activation =
+          CreateActivation(scope, builder, options.activation.value());
+      CHECK(activation);
+      batch_normalization_options->setActivation(activation);
+    }
+
+    auto* output_operand = builder->batchNormalization(
+        input_operand, mean_operand, variance_operand,
+        batch_normalization_options, scope.GetExceptionState());
+    auto [graph, build_exception] =
+        helper.BuildGraph(scope, builder, {{"output", output_operand}});
+    ASSERT_NE(graph, nullptr);
+
+    auto graph_info = helper.GetGraphInfo();
+    // Verify the graph information of mojo are as expected.
+    ASSERT_EQ(graph_info->operations.size(), 1u);
+    auto& operation = graph_info->operations[0];
+    EXPECT_EQ(operation->is_batch_normalization(), true);
+    auto& batch_normalization = operation->get_batch_normalization();
+    EXPECT_EQ(batch_normalization->axis, expected_attributes.axis);
+    EXPECT_FLOAT_EQ(batch_normalization->epsilon, expected_attributes.epsilon);
+    if (options.scale) {
+      auto scale_operand_iter = graph_info->id_to_operand_map.find(
+          batch_normalization->scale_operand_id.value());
+      ASSERT_TRUE(scale_operand_iter != graph_info->id_to_operand_map.end());
+      EXPECT_EQ(scale_operand_iter->value->data_type,
+                expected_attributes.scale->data_type);
+      EXPECT_EQ(scale_operand_iter->value->dimensions,
+                expected_attributes.scale->dimensions);
+    }
+    if (options.bias) {
+      auto bias_operand_iter = graph_info->id_to_operand_map.find(
+          batch_normalization->bias_operand_id.value());
+      ASSERT_TRUE(bias_operand_iter != graph_info->id_to_operand_map.end());
+      EXPECT_EQ(bias_operand_iter->value->data_type,
+                expected_attributes.bias->data_type);
+      EXPECT_EQ(bias_operand_iter->value->dimensions,
+                expected_attributes.bias->dimensions);
+    }
+    if (options.activation) {
+      CHECK(expected_attributes.activation);
+      CheckActivation(batch_normalization->activation,
+                      expected_attributes.activation.value());
+    }
+    EXPECT_EQ(graph_info->output_operands.size(), 1u);
+    auto output_operand_id = graph_info->output_operands[0];
+    auto output_operand_iter =
+        graph_info->id_to_operand_map.find(output_operand_id);
+    ASSERT_TRUE(output_operand_iter != graph_info->id_to_operand_map.end());
+    EXPECT_EQ(output_operand_iter->value->data_type,
+              expected_operand.data_type);
+    EXPECT_EQ(output_operand_iter->value->dimensions,
+              expected_operand.dimensions);
+  }
+};
+
+TEST_P(MLGraphTestMojo, BatchNormalizationTest) {
+  V8TestingScope scope;
+  // Bind fake WebNN Context in the service for testing.
+  ScopedWebNNServiceBinder scoped_setup_binder(*this, scope);
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      webnn::features::kEnableMachineLearningNeuralNetworkService);
+  auto* options = MLContextOptions::Create();
+  // Create WebNN Context with GPU device type.
+  options->setDeviceType(V8MLDeviceType::Enum::kGpu);
+  auto* builder = CreateGraphBuilder(scope, options);
+  ASSERT_NE(builder, nullptr);
+  {
+    // Test batchNormalization with default options.
+    BatchNormalizationTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                  .dimensions = {1, 3, 5, 5}},
+        .mean = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                 .dimensions = {3}},
+        .variance = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                     .dimensions = {3}},
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat32,
+                             .dimensions = {1, 3, 5, 5}},
+        .expected_attributes = {.scale = absl::nullopt,
+                                .bias = absl::nullopt,
+                                .axis = 1,
+                                .epsilon = 1e-5,
+                                .activation = absl::nullopt}}
+        .Test(*this, scope, builder);
+  }
+  {
+    // Test batchnormalization with axis = 3.
+    BatchNormalizationTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                  .dimensions = {1, 3, 4, 5}},
+        .mean = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                 .dimensions = {5}},
+        .variance = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                     .dimensions = {5}},
+        .options = {.axis = 3},
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat32,
+                             .dimensions = {1, 3, 4, 5}},
+        .expected_attributes = {.scale = absl::nullopt,
+                                .bias = absl::nullopt,
+                                .axis = 3,
+                                .epsilon = 1e-5,
+                                .activation = absl::nullopt}}
+        .Test(*this, scope, builder);
+  }
+  {
+    // Test batchnormalization with epsilon = 0.01.
+    BatchNormalizationTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                  .dimensions = {1, 3, 4, 5}},
+        .mean = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                 .dimensions = {3}},
+        .variance = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                     .dimensions = {3}},
+        .options = {.epsilon = 0.01},
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat32,
+                             .dimensions = {1, 3, 4, 5}},
+        .expected_attributes = {.scale = absl::nullopt,
+                                .bias = absl::nullopt,
+                                .axis = 1,
+                                .epsilon = 0.01,
+                                .activation = absl::nullopt}}
+        .Test(*this, scope, builder);
+  }
+  {
+    // Test batchnormalization with scale and bias.
+    BatchNormalizationTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                  .dimensions = {1, 3, 5, 5}},
+        .mean = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                 .dimensions = {3}},
+        .variance = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                     .dimensions = {3}},
+        .options = {.scale =
+                        OperandInfoBlink{
+                            .data_type = V8MLOperandDataType::Enum::kFloat32,
+                            .dimensions = {3}},
+                    .bias =
+                        OperandInfoBlink{
+                            .data_type = V8MLOperandDataType::Enum::kFloat32,
+                            .dimensions = {3}}},
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat32,
+                             .dimensions = {1, 3, 5, 5}},
+        .expected_attributes =
+            {.scale =
+                 OperandInfoMojo{
+                     .data_type = blink_mojom::Operand::DataType::kFloat32,
+                     .dimensions = {3}},
+             .bias =
+                 OperandInfoMojo{
+                     .data_type = blink_mojom::Operand::DataType::kFloat32,
+                     .dimensions = {3}},
+             .axis = 1,
+             .epsilon = 1e-5,
+             .activation = absl::nullopt}}
+        .Test(*this, scope, builder);
+  }
+  {
+    // Test batchNormalization with clamp activation.
+    BatchNormalizationTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                  .dimensions = {1, 3, 5, 5}},
+        .mean = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                 .dimensions = {3}},
+        .variance = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                     .dimensions = {3}},
+        .options = {.activation =
+                        Activation{
+                            .kind = MLOperator::OperatorKind::kClamp,
+                            .clamp_options =
+                                ClampTester::ClampOptions{.min_value = 1.0,
+                                                          .max_value = 6.0}}},
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat32,
+                             .dimensions = {1, 3, 5, 5}},
+        .expected_attributes =
+            {.scale = absl::nullopt,
+             .bias = absl::nullopt,
+             .axis = 1,
+             .epsilon = 1e-5,
+             .activation =
+                 Activation{.kind = MLOperator::OperatorKind::kClamp,
+                            .clamp_options =
+                                ClampTester::ClampOptions{.min_value = 1.0,
+                                                          .max_value = 6.0}}}}
+        .Test(*this, scope, builder);
+  }
+  {
+    // Test batchNormalization with elu activation with default options.
+    BatchNormalizationTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                  .dimensions = {1, 3, 5, 5}},
+        .mean = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                 .dimensions = {3}},
+        .variance = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                     .dimensions = {3}},
+        .options = {.activation =
+                        Activation{.kind = MLOperator::OperatorKind::kElu}},
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat32,
+                             .dimensions = {1, 3, 5, 5}},
+        .expected_attributes = {.scale = absl::nullopt,
+                                .bias = absl::nullopt,
+                                .axis = 1,
+                                .epsilon = 1e-5,
+                                .activation =
+                                    Activation{
+                                        .kind = MLOperator::OperatorKind::kElu,
+                                        .elu_alpha = 1.0}}}
+        .Test(*this, scope, builder);
+  }
+  {
+    // Test batchNormalization with elu activation with given options.
+    BatchNormalizationTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                  .dimensions = {1, 3, 5, 5}},
+        .mean = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                 .dimensions = {3}},
+        .variance = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                     .dimensions = {3}},
+        .options = {.activation =
+                        Activation{.kind = MLOperator::OperatorKind::kElu,
+                                   .elu_alpha = 0.5}},
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat32,
+                             .dimensions = {1, 3, 5, 5}},
+        .expected_attributes = {.scale = absl::nullopt,
+                                .bias = absl::nullopt,
+                                .axis = 1,
+                                .epsilon = 1e-5,
+                                .activation =
+                                    Activation{
+                                        .kind = MLOperator::OperatorKind::kElu,
+                                        .elu_alpha = 0.5}}}
+        .Test(*this, scope, builder);
+  }
+  {
+    // Test batchNormalization with leaky relu activation with default options.
+    BatchNormalizationTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                  .dimensions = {1, 3, 5, 5}},
+        .mean = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                 .dimensions = {3}},
+        .variance = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                     .dimensions = {3}},
+        .options = {.activation =
+                        Activation{.kind =
+                                       MLOperator::OperatorKind::kLeakyRelu}},
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat32,
+                             .dimensions = {1, 3, 5, 5}},
+        .expected_attributes =
+            {.scale = absl::nullopt,
+             .bias = absl::nullopt,
+             .axis = 1,
+             .epsilon = 1e-5,
+             .activation =
+                 Activation{.kind = MLOperator::OperatorKind::kLeakyRelu,
+                            .leaky_relu_alpha = 0.01}}}
+        .Test(*this, scope, builder);
+  }
+  {
+    // Test batchNormalization with leaky relu activation with given options.
+    BatchNormalizationTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                  .dimensions = {1, 3, 5, 5}},
+        .mean = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                 .dimensions = {3}},
+        .variance = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                     .dimensions = {3}},
+        .options = {.activation =
+                        Activation{.kind = MLOperator::OperatorKind::kLeakyRelu,
+                                   .leaky_relu_alpha = 0.02}},
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat32,
+                             .dimensions = {1, 3, 5, 5}},
+        .expected_attributes =
+            {.scale = absl::nullopt,
+             .bias = absl::nullopt,
+             .axis = 1,
+             .epsilon = 1e-5,
+             .activation =
+                 Activation{.kind = MLOperator::OperatorKind::kLeakyRelu,
+                            .leaky_relu_alpha = 0.02}}}
+        .Test(*this, scope, builder);
+  }
+  {
+    // Test batchNormalization with relu activation.
+    BatchNormalizationTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                  .dimensions = {1, 3, 5, 5}},
+        .mean = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                 .dimensions = {3}},
+        .variance = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                     .dimensions = {3}},
+        .options = {.activation =
+                        Activation{.kind = MLOperator::OperatorKind::kRelu}},
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat32,
+                             .dimensions = {1, 3, 5, 5}},
+        .expected_attributes =
+            {.scale = absl::nullopt,
+             .bias = absl::nullopt,
+             .axis = 1,
+             .epsilon = 1e-5,
+             .activation = Activation{.kind = MLOperator::OperatorKind::kRelu}}}
+        .Test(*this, scope, builder);
+  }
+  {
+    // Test batchNormalization with sigmoid activation.
+    BatchNormalizationTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                  .dimensions = {1, 3, 5, 5}},
+        .mean = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                 .dimensions = {3}},
+        .variance = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                     .dimensions = {3}},
+        .options = {.activation =
+                        Activation{.kind = MLOperator::OperatorKind::kSigmoid}},
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat32,
+                             .dimensions = {1, 3, 5, 5}},
+        .expected_attributes =
+            {.scale = absl::nullopt,
+             .bias = absl::nullopt,
+             .axis = 1,
+             .epsilon = 1e-5,
+             .activation =
+                 Activation{.kind = MLOperator::OperatorKind::kSigmoid}}}
+        .Test(*this, scope, builder);
+  }
+  {
+    // Test batchNormalization with softmax activation.
+    BatchNormalizationTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                  .dimensions = {1, 3, 5, 5}},
+        .mean = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                 .dimensions = {3}},
+        .variance = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                     .dimensions = {3}},
+        .options = {.activation =
+                        Activation{.kind = MLOperator::OperatorKind::kSoftmax}},
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat32,
+                             .dimensions = {1, 3, 5, 5}},
+        .expected_attributes =
+            {.scale = absl::nullopt,
+             .bias = absl::nullopt,
+             .axis = 1,
+             .epsilon = 1e-5,
+             .activation =
+                 Activation{.kind = MLOperator::OperatorKind::kSoftmax}}}
+        .Test(*this, scope, builder);
+  }
+  {
+    // Test batchNormalization with tanh activation.
+    BatchNormalizationTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                  .dimensions = {1, 3, 5, 5}},
+        .mean = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                 .dimensions = {3}},
+        .variance = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                     .dimensions = {3}},
+        .options = {.activation =
+                        Activation{.kind = MLOperator::OperatorKind::kTanh}},
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat32,
+                             .dimensions = {1, 3, 5, 5}},
+        .expected_attributes =
+            {.scale = absl::nullopt,
+             .bias = absl::nullopt,
+             .axis = 1,
+             .epsilon = 1e-5,
+             .activation = Activation{.kind = MLOperator::OperatorKind::kTanh}}}
+        .Test(*this, scope, builder);
+  }
+}
 
 struct Conv2dTester {
   OperandInfoBlink input;
@@ -515,8 +1061,7 @@ struct Conv2dTester {
     blink_mojom::InputOperandLayout input_layout =
         blink_mojom::InputOperandLayout::kChannelsFirst;
     absl::optional<OperandInfoMojo> bias;
-    absl::optional<float> elu_alpha;
-    absl::optional<float> leaky_relu_alpha;
+    absl::optional<Activation> activation;
   };
   Conv2dOptions options;
   OperandInfoMojo expected_operand;
@@ -526,10 +1071,12 @@ struct Conv2dTester {
             V8TestingScope& scope,
             MLGraphBuilder* builder) {
     // Build the graph.
-    auto* input_operand = BuildInput(builder, "input", input.dimensions,
-                                     input.type, scope.GetExceptionState());
-    auto* filter_operand = BuildInput(builder, "filter", filter.dimensions,
-                                      filter.type, scope.GetExceptionState());
+    auto* input_operand =
+        BuildInput(builder, "input", input.dimensions, input.data_type,
+                   scope.GetExceptionState());
+    auto* filter_operand =
+        BuildInput(builder, "filter", filter.dimensions, filter.data_type,
+                   scope.GetExceptionState());
     MLConv2dOptions* ml_conv2d_options = MLConv2dOptions::Create();
     if (options.padding) {
       ml_conv2d_options->setPadding(options.padding.value());
@@ -555,58 +1102,13 @@ struct Conv2dTester {
     if (options.bias) {
       ml_conv2d_options->setBias(
           BuildInput(builder, "bias", options.bias->dimensions,
-                     options.bias->type, scope.GetExceptionState()));
+                     options.bias->data_type, scope.GetExceptionState()));
     }
     if (options.activation) {
-      switch (options.activation->kind) {
-        case MLOperator::OperatorKind::kClamp: {
-          auto* clamp_options = MLClampOptions::Create();
-          clamp_options->setMinValue(
-              options.activation->clamp_options->min_value.value());
-          clamp_options->setMaxValue(
-              options.activation->clamp_options->max_value.value());
-          ml_conv2d_options->setActivation(
-              builder->clamp(clamp_options, scope.GetExceptionState()));
-          break;
-        }
-        case MLOperator::OperatorKind::kElu: {
-          auto* elu_options = MLEluOptions::Create();
-          if (options.activation->elu_alpha.has_value()) {
-            elu_options->setAlpha(options.activation->elu_alpha.value());
-          }
-          ml_conv2d_options->setActivation(
-              builder->elu(elu_options, scope.GetExceptionState()));
-          break;
-        }
-        case MLOperator::OperatorKind::kLeakyRelu: {
-          auto* leaky_relu_options = MLLeakyReluOptions::Create();
-          if (options.activation->leaky_relu_alpha.has_value()) {
-            leaky_relu_options->setAlpha(
-                options.activation->leaky_relu_alpha.value());
-          }
-          ml_conv2d_options->setActivation(builder->leakyRelu(
-              leaky_relu_options, scope.GetExceptionState()));
-          break;
-        }
-        case MLOperator::OperatorKind::kRelu:
-          ml_conv2d_options->setActivation(
-              builder->relu(scope.GetExceptionState()));
-          break;
-        case MLOperator::OperatorKind::kSigmoid:
-          ml_conv2d_options->setActivation(
-              builder->sigmoid(scope.GetExceptionState()));
-          break;
-        case MLOperator::OperatorKind::kSoftmax:
-          ml_conv2d_options->setActivation(
-              builder->softmax(scope.GetExceptionState()));
-          break;
-        case MLOperator::OperatorKind::kTanh:
-          ml_conv2d_options->setActivation(
-              builder->tanh(scope.GetExceptionState()));
-          break;
-        default:
-          NOTREACHED_NORETURN();
-      }
+      auto* activation =
+          CreateActivation(scope, builder, options.activation.value());
+      CHECK(activation);
+      ml_conv2d_options->setActivation(activation);
     }
     auto* output_operand =
         builder->conv2d(input_operand, filter_operand, ml_conv2d_options,
@@ -640,61 +1142,22 @@ struct Conv2dTester {
           graph_info->id_to_operand_map.find(conv2d->bias_operand_id.value());
       ASSERT_TRUE(bias_operand_iter != graph_info->id_to_operand_map.end());
       EXPECT_EQ(bias_operand_iter->value->data_type,
-                expected_attributes.bias->type);
+                expected_attributes.bias->data_type);
       EXPECT_EQ(bias_operand_iter->value->dimensions,
                 expected_attributes.bias->dimensions);
     }
     if (options.activation) {
-      switch (options.activation->kind) {
-        case MLOperator::OperatorKind::kClamp: {
-          ASSERT_TRUE(conv2d->activation->is_clamp());
-          auto& clamp = conv2d->activation->get_clamp();
-          CHECK(clamp);
-          auto& clamp_options = options.activation->clamp_options;
-          CHECK(clamp_options);
-          EXPECT_EQ(clamp->min_value, clamp_options->min_value);
-          EXPECT_EQ(clamp->max_value, clamp_options->max_value);
-          break;
-        }
-        case MLOperator::OperatorKind::kElu: {
-          ASSERT_TRUE(conv2d->activation->is_elu());
-          auto& elu = conv2d->activation->get_elu();
-          CHECK(elu);
-          CHECK(expected_attributes.elu_alpha.has_value());
-          EXPECT_EQ(elu->alpha, expected_attributes.elu_alpha.value());
-          break;
-        }
-        case MLOperator::OperatorKind::kLeakyRelu: {
-          ASSERT_TRUE(conv2d->activation->is_leaky_relu());
-          auto& leaky_relu = conv2d->activation->get_leaky_relu();
-          CHECK(leaky_relu);
-          CHECK(expected_attributes.leaky_relu_alpha.has_value());
-          EXPECT_EQ(leaky_relu->alpha,
-                    expected_attributes.leaky_relu_alpha.value());
-          break;
-        }
-        case MLOperator::OperatorKind::kRelu:
-          EXPECT_TRUE(conv2d->activation->is_relu());
-          break;
-        case MLOperator::OperatorKind::kSigmoid:
-          EXPECT_TRUE(conv2d->activation->is_sigmoid());
-          break;
-        case MLOperator::OperatorKind::kSoftmax:
-          EXPECT_TRUE(conv2d->activation->is_softmax());
-          break;
-        case MLOperator::OperatorKind::kTanh:
-          EXPECT_TRUE(conv2d->activation->is_tanh());
-          break;
-        default:
-          NOTREACHED_NORETURN();
-      }
+      CHECK(expected_attributes.activation);
+      CheckActivation(conv2d->activation,
+                      expected_attributes.activation.value());
     }
     EXPECT_EQ(graph_info->output_operands.size(), 1u);
     auto output_operand_id = graph_info->output_operands[0];
     auto output_operand_iter =
         graph_info->id_to_operand_map.find(output_operand_id);
     ASSERT_TRUE(output_operand_iter != graph_info->id_to_operand_map.end());
-    EXPECT_EQ(output_operand_iter->value->data_type, expected_operand.type);
+    EXPECT_EQ(output_operand_iter->value->data_type,
+              expected_operand.data_type);
     EXPECT_EQ(output_operand_iter->value->dimensions,
               expected_operand.dimensions);
   }
@@ -715,11 +1178,12 @@ TEST_P(MLGraphTestMojo, Conv2dTest) {
   {
     // Test conv2d with default options.
     Conv2dTester{
-        .input = {.type = V8MLOperandType::Enum::kFloat32,
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                   .dimensions = {1, 1, 5, 5}},
-        .filter = {.type = V8MLOperandType::Enum::kFloat32,
+        .filter = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                    .dimensions = {1, 1, 3, 3}},
-        .expected_operand = {.type = blink_mojom::Operand::DataType::kFloat32,
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat32,
                              .dimensions = {1, 1, 3, 3}},
         .expected_attributes = {.padding = {0, 0, 0, 0},
                                 .strides = {1, 1},
@@ -730,12 +1194,13 @@ TEST_P(MLGraphTestMojo, Conv2dTest) {
   {
     // Test conv2d with autoPad="same-upper".
     Conv2dTester{
-        .input = {.type = V8MLOperandType::Enum::kFloat32,
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                   .dimensions = {1, 1, 5, 5}},
-        .filter = {.type = V8MLOperandType::Enum::kFloat32,
+        .filter = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                    .dimensions = {1, 1, 3, 3}},
         .options = {.auto_pad = V8MLAutoPad::Enum::kSameUpper},
-        .expected_operand = {.type = blink_mojom::Operand::DataType::kFloat32,
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat32,
                              .dimensions = {1, 1, 5, 5}},
         .expected_attributes = {.padding = {1, 1, 1, 1},
                                 .strides = {1, 1},
@@ -746,12 +1211,13 @@ TEST_P(MLGraphTestMojo, Conv2dTest) {
   {
     // Test conv2d with autoPad="same-lower".
     Conv2dTester{
-        .input = {.type = V8MLOperandType::Enum::kFloat32,
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                   .dimensions = {1, 1, 5, 5}},
-        .filter = {.type = V8MLOperandType::Enum::kFloat32,
+        .filter = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                    .dimensions = {1, 1, 3, 3}},
         .options = {.auto_pad = V8MLAutoPad::Enum::kSameLower},
-        .expected_operand = {.type = blink_mojom::Operand::DataType::kFloat32,
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat32,
                              .dimensions = {1, 1, 5, 5}},
         .expected_attributes = {.padding = {1, 1, 1, 1},
                                 .strides = {1, 1},
@@ -762,13 +1228,14 @@ TEST_P(MLGraphTestMojo, Conv2dTest) {
   {
     // Test conv2d with strides=2 and padding=1.
     Conv2dTester{
-        .input = {.type = V8MLOperandType::Enum::kFloat32,
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                   .dimensions = {1, 1, 5, 5}},
-        .filter = {.type = V8MLOperandType::Enum::kFloat32,
+        .filter = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                    .dimensions = {1, 1, 3, 3}},
         .options = {.padding = Vector<uint32_t>({1, 1, 1, 1}),
                     .strides = Vector<uint32_t>({2, 2})},
-        .expected_operand = {.type = blink_mojom::Operand::DataType::kFloat32,
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat32,
                              .dimensions = {1, 1, 3, 3}},
         .expected_attributes = {.padding = {1, 1, 1, 1},
                                 .strides = {2, 2},
@@ -779,12 +1246,13 @@ TEST_P(MLGraphTestMojo, Conv2dTest) {
   {
     // Test depthwise conv2d by setting groups to input channels.
     Conv2dTester{
-        .input = {.type = V8MLOperandType::Enum::kFloat32,
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                   .dimensions = {1, 4, 2, 2}},
-        .filter = {.type = V8MLOperandType::Enum::kFloat32,
+        .filter = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                    .dimensions = {4, 1, 2, 2}},
         .options = {.groups = 4},
-        .expected_operand = {.type = blink_mojom::Operand::DataType::kFloat32,
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat32,
                              .dimensions = {1, 4, 1, 1}},
         .expected_attributes = {.padding = {0, 0, 0, 0},
                                 .strides = {1, 1},
@@ -795,9 +1263,9 @@ TEST_P(MLGraphTestMojo, Conv2dTest) {
   {
     // Test conv2d with clamp activation.
     Conv2dTester{
-        .input = {.type = V8MLOperandType::Enum::kFloat32,
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                   .dimensions = {1, 1, 5, 5}},
-        .filter = {.type = V8MLOperandType::Enum::kFloat32,
+        .filter = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                    .dimensions = {1, 1, 3, 3}},
         .options = {.activation =
                         Activation{
@@ -805,155 +1273,192 @@ TEST_P(MLGraphTestMojo, Conv2dTest) {
                             .clamp_options =
                                 ClampTester::ClampOptions{.min_value = 1.0,
                                                           .max_value = 6.0}}},
-        .expected_operand = {.type = blink_mojom::Operand::DataType::kFloat32,
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat32,
                              .dimensions = {1, 1, 3, 3}},
-        .expected_attributes = {.padding = Vector<uint32_t>({0, 0, 0, 0}),
-                                .strides = Vector<uint32_t>({1, 1}),
-                                .dilations = Vector<uint32_t>({1, 1}),
-                                .groups = 1}}
+        .expected_attributes =
+            {.padding = Vector<uint32_t>({0, 0, 0, 0}),
+             .strides = Vector<uint32_t>({1, 1}),
+             .dilations = Vector<uint32_t>({1, 1}),
+             .groups = 1,
+             .activation =
+                 Activation{.kind = MLOperator::OperatorKind::kClamp,
+                            .clamp_options =
+                                ClampTester::ClampOptions{.min_value = 1.0,
+                                                          .max_value = 6.0}}}}
         .Test(*this, scope, builder);
   }
   {
     // Test conv2d with elu activation with default options.
     Conv2dTester{
-        .input = {.type = V8MLOperandType::Enum::kFloat32,
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                   .dimensions = {1, 1, 5, 5}},
-        .filter = {.type = V8MLOperandType::Enum::kFloat32,
+        .filter = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                    .dimensions = {1, 1, 3, 3}},
         .options = {.activation =
                         Activation{.kind = MLOperator::OperatorKind::kElu}},
-        .expected_operand = {.type = blink_mojom::Operand::DataType::kFloat32,
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat32,
                              .dimensions = {1, 1, 3, 3}},
         .expected_attributes = {.padding = Vector<uint32_t>({0, 0, 0, 0}),
                                 .strides = Vector<uint32_t>({1, 1}),
                                 .dilations = Vector<uint32_t>({1, 1}),
                                 .groups = 1,
-                                .elu_alpha = 1.0}}
+                                .activation =
+                                    Activation{
+                                        .kind = MLOperator::OperatorKind::kElu,
+                                        .elu_alpha = 1.0}}}
         .Test(*this, scope, builder);
   }
   {
     // Test conv2d with elu activation with given alpha.
     Conv2dTester{
-        .input = {.type = V8MLOperandType::Enum::kFloat32,
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                   .dimensions = {1, 1, 5, 5}},
-        .filter = {.type = V8MLOperandType::Enum::kFloat32,
+        .filter = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                    .dimensions = {1, 1, 3, 3}},
         .options = {.activation =
                         Activation{.kind = MLOperator::OperatorKind::kElu,
                                    .elu_alpha = 0.5}},
-        .expected_operand = {.type = blink_mojom::Operand::DataType::kFloat32,
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat32,
                              .dimensions = {1, 1, 3, 3}},
         .expected_attributes = {.padding = Vector<uint32_t>({0, 0, 0, 0}),
                                 .strides = Vector<uint32_t>({1, 1}),
                                 .dilations = Vector<uint32_t>({1, 1}),
                                 .groups = 1,
-                                .elu_alpha = 0.5}}
+                                .activation =
+                                    Activation{
+                                        .kind = MLOperator::OperatorKind::kElu,
+                                        .elu_alpha = 0.5}}}
         .Test(*this, scope, builder);
   }
   {
     // Test conv2d with leaky relu activation with default options.
     Conv2dTester{
-        .input = {.type = V8MLOperandType::Enum::kFloat32,
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                   .dimensions = {1, 1, 5, 5}},
-        .filter = {.type = V8MLOperandType::Enum::kFloat32,
+        .filter = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                    .dimensions = {1, 1, 3, 3}},
         .options = {.activation =
                         Activation{.kind =
                                        MLOperator::OperatorKind::kLeakyRelu}},
-        .expected_operand = {.type = blink_mojom::Operand::DataType::kFloat32,
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat32,
                              .dimensions = {1, 1, 3, 3}},
-        .expected_attributes = {.padding = Vector<uint32_t>({0, 0, 0, 0}),
-                                .strides = Vector<uint32_t>({1, 1}),
-                                .dilations = Vector<uint32_t>({1, 1}),
-                                .groups = 1,
-                                .leaky_relu_alpha = 0.01}}
+        .expected_attributes =
+            {.padding = Vector<uint32_t>({0, 0, 0, 0}),
+             .strides = Vector<uint32_t>({1, 1}),
+             .dilations = Vector<uint32_t>({1, 1}),
+             .groups = 1,
+             .activation =
+                 Activation{.kind = MLOperator::OperatorKind::kLeakyRelu,
+                            .leaky_relu_alpha = 0.01}}}
         .Test(*this, scope, builder);
   }
   {
     // Test conv2d with leaky relu activation with given alpha.
     Conv2dTester{
-        .input = {.type = V8MLOperandType::Enum::kFloat32,
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                   .dimensions = {1, 1, 5, 5}},
-        .filter = {.type = V8MLOperandType::Enum::kFloat32,
+        .filter = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                    .dimensions = {1, 1, 3, 3}},
         .options = {.activation =
                         Activation{.kind = MLOperator::OperatorKind::kLeakyRelu,
                                    .leaky_relu_alpha = 0.02}},
-        .expected_operand = {.type = blink_mojom::Operand::DataType::kFloat32,
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat32,
                              .dimensions = {1, 1, 3, 3}},
-        .expected_attributes = {.padding = Vector<uint32_t>({0, 0, 0, 0}),
-                                .strides = Vector<uint32_t>({1, 1}),
-                                .dilations = Vector<uint32_t>({1, 1}),
-                                .groups = 1,
-                                .leaky_relu_alpha = 0.02}}
+        .expected_attributes =
+            {.padding = Vector<uint32_t>({0, 0, 0, 0}),
+             .strides = Vector<uint32_t>({1, 1}),
+             .dilations = Vector<uint32_t>({1, 1}),
+             .groups = 1,
+             .activation =
+                 Activation{.kind = MLOperator::OperatorKind::kLeakyRelu,
+                            .leaky_relu_alpha = 0.02}}}
         .Test(*this, scope, builder);
   }
   {
     // Test conv2d with relu activation.
     Conv2dTester{
-        .input = {.type = V8MLOperandType::Enum::kFloat32,
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                   .dimensions = {1, 1, 5, 5}},
-        .filter = {.type = V8MLOperandType::Enum::kFloat32,
+        .filter = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                    .dimensions = {1, 1, 3, 3}},
         .options = {.activation =
                         Activation{.kind = MLOperator::OperatorKind::kRelu}},
-        .expected_operand = {.type = blink_mojom::Operand::DataType::kFloat32,
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat32,
                              .dimensions = {1, 1, 3, 3}},
-        .expected_attributes = {.padding = Vector<uint32_t>({0, 0, 0, 0}),
-                                .strides = Vector<uint32_t>({1, 1}),
-                                .dilations = Vector<uint32_t>({1, 1}),
-                                .groups = 1}}
+        .expected_attributes =
+            {.padding = Vector<uint32_t>({0, 0, 0, 0}),
+             .strides = Vector<uint32_t>({1, 1}),
+             .dilations = Vector<uint32_t>({1, 1}),
+             .groups = 1,
+             .activation = Activation{.kind = MLOperator::OperatorKind::kRelu}}}
         .Test(*this, scope, builder);
   }
   {
     // Test conv2d with sigmoid activation.
     Conv2dTester{
-        .input = {.type = V8MLOperandType::Enum::kFloat32,
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                   .dimensions = {1, 1, 5, 5}},
-        .filter = {.type = V8MLOperandType::Enum::kFloat32,
+        .filter = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                    .dimensions = {1, 1, 3, 3}},
         .options = {.activation =
                         Activation{.kind = MLOperator::OperatorKind::kSigmoid}},
-        .expected_operand = {.type = blink_mojom::Operand::DataType::kFloat32,
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat32,
                              .dimensions = {1, 1, 3, 3}},
-        .expected_attributes = {.padding = Vector<uint32_t>({0, 0, 0, 0}),
-                                .strides = Vector<uint32_t>({1, 1}),
-                                .dilations = Vector<uint32_t>({1, 1}),
-                                .groups = 1}}
+        .expected_attributes =
+            {.padding = Vector<uint32_t>({0, 0, 0, 0}),
+             .strides = Vector<uint32_t>({1, 1}),
+             .dilations = Vector<uint32_t>({1, 1}),
+             .groups = 1,
+             .activation =
+                 Activation{.kind = MLOperator::OperatorKind::kSigmoid}}}
         .Test(*this, scope, builder);
   }
   {
     // Test conv2d with softmax activation.
     Conv2dTester{
-        .input = {.type = V8MLOperandType::Enum::kFloat16,
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat16,
                   .dimensions = {1, 1, 5, 5}},
-        .filter = {.type = V8MLOperandType::Enum::kFloat16,
+        .filter = {.data_type = V8MLOperandDataType::Enum::kFloat16,
                    .dimensions = {1, 1, 3, 3}},
         .options = {.activation =
                         Activation{.kind = MLOperator::OperatorKind::kSoftmax}},
-        .expected_operand = {.type = blink_mojom::Operand::DataType::kFloat16,
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat16,
                              .dimensions = {1, 1, 3, 3}},
-        .expected_attributes = {.padding = Vector<uint32_t>({0, 0, 0, 0}),
-                                .strides = Vector<uint32_t>({1, 1}),
-                                .dilations = Vector<uint32_t>({1, 1}),
-                                .groups = 1}}
+        .expected_attributes =
+            {.padding = Vector<uint32_t>({0, 0, 0, 0}),
+             .strides = Vector<uint32_t>({1, 1}),
+             .dilations = Vector<uint32_t>({1, 1}),
+             .groups = 1,
+             .activation =
+                 Activation{.kind = MLOperator::OperatorKind::kSoftmax}}}
         .Test(*this, scope, builder);
   }
   {
     // Test conv2d with tanh activation.
     Conv2dTester{
-        .input = {.type = V8MLOperandType::Enum::kFloat32,
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                   .dimensions = {1, 1, 5, 5}},
-        .filter = {.type = V8MLOperandType::Enum::kFloat32,
+        .filter = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                    .dimensions = {1, 1, 3, 3}},
         .options = {.activation =
                         Activation{.kind = MLOperator::OperatorKind::kTanh}},
-        .expected_operand = {.type = blink_mojom::Operand::DataType::kFloat32,
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat32,
                              .dimensions = {1, 1, 3, 3}},
-        .expected_attributes = {.padding = Vector<uint32_t>({0, 0, 0, 0}),
-                                .strides = Vector<uint32_t>({1, 1}),
-                                .dilations = Vector<uint32_t>({1, 1}),
-                                .groups = 1}}
+        .expected_attributes =
+            {.padding = Vector<uint32_t>({0, 0, 0, 0}),
+             .strides = Vector<uint32_t>({1, 1}),
+             .dilations = Vector<uint32_t>({1, 1}),
+             .groups = 1,
+             .activation = Activation{.kind = MLOperator::OperatorKind::kTanh}}}
         .Test(*this, scope, builder);
   }
 }
@@ -961,7 +1466,10 @@ TEST_P(MLGraphTestMojo, Conv2dTest) {
 struct ElementWiseBinaryTester {
   OperandInfoBlink lhs;
   OperandInfoBlink rhs;
-  OperandInfoMojo expected;
+  OperandInfoMojo expected_in;
+  // If expected_out is not explicitly defined in the initializer, the output is
+  // expected to the be same as the input.
+  OperandInfoMojo expected_out = expected_in;
 
   void Test(MLGraphTestMojo& helper,
             V8TestingScope& scope,
@@ -975,15 +1483,23 @@ struct ElementWiseBinaryTester {
     Test(helper, scope, builder, ElementWiseBinaryKind::kPow);
   }
 
+  void TestLogicalComparison(MLGraphTestMojo& helper,
+                             V8TestingScope& scope,
+                             MLGraphBuilder* builder) {
+    Test(helper, scope, builder, ElementWiseBinaryKind::kEqual);
+    Test(helper, scope, builder, ElementWiseBinaryKind::kGreater);
+    Test(helper, scope, builder, ElementWiseBinaryKind::kLesser);
+  }
+
   void Test(MLGraphTestMojo& helper,
             V8TestingScope& scope,
             MLGraphBuilder* builder,
             ElementWiseBinaryKind kind) {
     // Build the graph.
-    auto* lhs_operand = BuildInput(builder, "lhs", lhs.dimensions, lhs.type,
-                                   scope.GetExceptionState());
-    auto* rhs_operand = BuildInput(builder, "rhs", rhs.dimensions, rhs.type,
-                                   scope.GetExceptionState());
+    auto* lhs_operand = BuildInput(builder, "lhs", lhs.dimensions,
+                                   lhs.data_type, scope.GetExceptionState());
+    auto* rhs_operand = BuildInput(builder, "rhs", rhs.dimensions,
+                                   rhs.data_type, scope.GetExceptionState());
     auto* output_operand =
         BuildElementWiseBinary(scope, builder, kind, lhs_operand, rhs_operand);
     auto [graph, build_exception] =
@@ -1000,7 +1516,7 @@ struct ElementWiseBinaryTester {
     ASSERT_TRUE(lhs_operand_iter != graph_info->id_to_operand_map.end());
     EXPECT_EQ(lhs_operand_iter->value->kind,
               blink_mojom::Operand::Kind::kInput);
-    EXPECT_EQ(lhs_operand_iter->value->data_type, expected.type);
+    EXPECT_EQ(lhs_operand_iter->value->data_type, expected_in.data_type);
     EXPECT_EQ(lhs_operand_iter->value->dimensions, lhs.dimensions);
     EXPECT_EQ(lhs_operand_iter->value->name, "lhs");
     // Verify the right `mojo::Operand`.
@@ -1009,7 +1525,7 @@ struct ElementWiseBinaryTester {
     ASSERT_TRUE(rhs_operand_iter != graph_info->id_to_operand_map.end());
     EXPECT_EQ(rhs_operand_iter->value->kind,
               blink_mojom::Operand::Kind::kInput);
-    EXPECT_EQ(rhs_operand_iter->value->data_type, expected.type);
+    EXPECT_EQ(rhs_operand_iter->value->data_type, expected_in.data_type);
     EXPECT_EQ(rhs_operand_iter->value->dimensions, rhs.dimensions);
     EXPECT_EQ(rhs_operand_iter->value->name, "rhs");
     // Verify the output `mojo::Operand`.
@@ -1019,8 +1535,8 @@ struct ElementWiseBinaryTester {
     ASSERT_TRUE(output_operand_iter != graph_info->id_to_operand_map.end());
     EXPECT_EQ(output_operand_iter->value->kind,
               blink_mojom::Operand::Kind::kOutput);
-    EXPECT_EQ(output_operand_iter->value->data_type, expected.type);
-    EXPECT_EQ(output_operand_iter->value->dimensions, expected.dimensions);
+    EXPECT_EQ(output_operand_iter->value->data_type, expected_out.data_type);
+    EXPECT_EQ(output_operand_iter->value->dimensions, expected_out.dimensions);
     EXPECT_EQ(output_operand_iter->value->name, "output");
     // Verify the `mojo::Operator`.
     ASSERT_EQ(graph_info->operations.size(), 1u);
@@ -1051,6 +1567,15 @@ struct ElementWiseBinaryTester {
       case ElementWiseBinaryKind::kPow:
         binary_kind = blink_mojom::ElementWiseBinary::Kind::kPow;
         break;
+      case ElementWiseBinaryKind::kEqual:
+        binary_kind = blink_mojom::ElementWiseBinary::Kind::kEqual;
+        break;
+      case ElementWiseBinaryKind::kGreater:
+        binary_kind = blink_mojom::ElementWiseBinary::Kind::kGreater;
+        break;
+      case ElementWiseBinaryKind::kLesser:
+        binary_kind = blink_mojom::ElementWiseBinary::Kind::kLesser;
+        break;
     }
     EXPECT_EQ(binary_mojo->kind, binary_kind);
     EXPECT_EQ(binary_mojo->lhs_operand, lhs_operand_id);
@@ -1072,50 +1597,128 @@ TEST_P(MLGraphTestMojo, ElementWiseBinaryTest) {
   auto* builder = CreateGraphBuilder(scope, options);
   ASSERT_NE(builder, nullptr);
   {
-    // Test element-wise add operator for two 1-D tensors.
+    // Test element-wise operators for two 0-D scalars.
     ElementWiseBinaryTester{
-        .lhs = {.type = V8MLOperandType::Enum::kFloat32, .dimensions = {2}},
-        .rhs = {.type = V8MLOperandType::Enum::kFloat32, .dimensions = {2}},
-        .expected = {.type = blink_mojom::Operand::DataType::kFloat32,
-                     .dimensions = {2}}}
+        .lhs = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                .dimensions = {}},
+        .rhs = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                .dimensions = {}},
+        .expected_in = {.data_type = blink_mojom::Operand::DataType::kFloat32,
+                        .dimensions = {}}}
         .Test(*this, scope, builder);
+    ElementWiseBinaryTester{
+        .lhs = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                .dimensions = {}},
+        .rhs = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                .dimensions = {}},
+        .expected_in = {.data_type = blink_mojom::Operand::DataType::kFloat32,
+                        .dimensions = {}},
+        .expected_out = {.data_type = blink_mojom::Operand::DataType::kUint8,
+                         .dimensions = {}}}
+        .TestLogicalComparison(*this, scope, builder);
   }
   {
-    // Test element-wise add operator for two 2-D tensors.
+    // Test element-wise operators for two 1-D tensors.
     ElementWiseBinaryTester{
-        .lhs = {.type = V8MLOperandType::Enum::kFloat16, .dimensions = {3, 7}},
-        .rhs = {.type = V8MLOperandType::Enum::kFloat16, .dimensions = {3, 7}},
-        .expected = {.type = blink_mojom::Operand::DataType::kFloat16,
-                     .dimensions = {3, 7}}}
+        .lhs = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                .dimensions = {2}},
+        .rhs = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                .dimensions = {2}},
+        .expected_in = {.data_type = blink_mojom::Operand::DataType::kFloat32,
+                        .dimensions = {2}}}
         .Test(*this, scope, builder);
+    ElementWiseBinaryTester{
+        .lhs = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                .dimensions = {2}},
+        .rhs = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                .dimensions = {2}},
+        .expected_in = {.data_type = blink_mojom::Operand::DataType::kFloat32,
+                        .dimensions = {2}},
+        .expected_out = {.data_type = blink_mojom::Operand::DataType::kUint8,
+                         .dimensions = {2}}}
+        .TestLogicalComparison(*this, scope, builder);
   }
   {
-    // Test element-wise add operator for broadcasting to 2-D tensor.
+    // Test element-wise operators for two 2-D tensors.
     ElementWiseBinaryTester{
-        .lhs = {.type = V8MLOperandType::Enum::kInt32, .dimensions = {5, 3}},
-        .rhs = {.type = V8MLOperandType::Enum::kInt32, .dimensions = {5, 1}},
-        .expected = {.type = blink_mojom::Operand::DataType::kInt32,
-                     .dimensions = {5, 3}}}
+        .lhs = {.data_type = V8MLOperandDataType::Enum::kFloat16,
+                .dimensions = {3, 7}},
+        .rhs = {.data_type = V8MLOperandDataType::Enum::kFloat16,
+                .dimensions = {3, 7}},
+        .expected_in = {.data_type = blink_mojom::Operand::DataType::kFloat16,
+                        .dimensions = {3, 7}}}
         .Test(*this, scope, builder);
+    ElementWiseBinaryTester{
+        .lhs = {.data_type = V8MLOperandDataType::Enum::kFloat16,
+                .dimensions = {3, 7}},
+        .rhs = {.data_type = V8MLOperandDataType::Enum::kFloat16,
+                .dimensions = {3, 7}},
+        .expected_in = {.data_type = blink_mojom::Operand::DataType::kFloat16,
+                        .dimensions = {3, 7}},
+        .expected_out = {.data_type = blink_mojom::Operand::DataType::kUint8,
+                         .dimensions = {3, 7}}}
+        .TestLogicalComparison(*this, scope, builder);
   }
   {
-    // Test element-wise add operator for broadcasting to 3-D tensor.
+    // Test element-wise operators for broadcasting to 2-D tensor.
     ElementWiseBinaryTester{
-        .lhs = {.type = V8MLOperandType::Enum::kInt8, .dimensions = {4, 2, 1}},
-        .rhs = {.type = V8MLOperandType::Enum::kInt8, .dimensions = {4}},
-        .expected = {.type = blink_mojom::Operand::DataType::kInt8,
-                     .dimensions = {4, 2, 4}}}
+        .lhs = {.data_type = V8MLOperandDataType::Enum::kInt32,
+                .dimensions = {5, 3}},
+        .rhs = {.data_type = V8MLOperandDataType::Enum::kInt32,
+                .dimensions = {5, 1}},
+        .expected_in = {.data_type = blink_mojom::Operand::DataType::kInt32,
+                        .dimensions = {5, 3}}}
         .Test(*this, scope, builder);
+    ElementWiseBinaryTester{
+        .lhs = {.data_type = V8MLOperandDataType::Enum::kInt32,
+                .dimensions = {5, 3}},
+        .rhs = {.data_type = V8MLOperandDataType::Enum::kInt32,
+                .dimensions = {5, 1}},
+        .expected_in = {.data_type = blink_mojom::Operand::DataType::kInt32,
+                        .dimensions = {5, 3}},
+        .expected_out = {.data_type = blink_mojom::Operand::DataType::kUint8,
+                         .dimensions = {5, 3}}}
+        .TestLogicalComparison(*this, scope, builder);
   }
   {
-    // Test element-wise add operator for broadcasting to 4-D tensors.
+    // Test element-wise operators for broadcasting to 3-D tensor.
     ElementWiseBinaryTester{
-        .lhs = {.type = V8MLOperandType::Enum::kUint8,
+        .lhs = {.data_type = V8MLOperandDataType::Enum::kInt8,
+                .dimensions = {4, 2, 1}},
+        .rhs = {.data_type = V8MLOperandDataType::Enum::kInt8,
+                .dimensions = {4}},
+        .expected_in = {.data_type = blink_mojom::Operand::DataType::kInt8,
+                        .dimensions = {4, 2, 4}}}
+        .Test(*this, scope, builder);
+    ElementWiseBinaryTester{
+        .lhs = {.data_type = V8MLOperandDataType::Enum::kInt8,
+                .dimensions = {4, 2, 1}},
+        .rhs = {.data_type = V8MLOperandDataType::Enum::kInt8,
+                .dimensions = {4}},
+        .expected_in = {.data_type = blink_mojom::Operand::DataType::kInt8,
+                        .dimensions = {4, 2, 4}},
+        .expected_out = {.data_type = blink_mojom::Operand::DataType::kUint8,
+                         .dimensions = {4, 2, 4}}}
+        .TestLogicalComparison(*this, scope, builder);
+  }
+  {
+    // Test element-wise operators for broadcasting to 4-D tensors.
+    ElementWiseBinaryTester{
+        .lhs = {.data_type = V8MLOperandDataType::Enum::kUint8,
                 .dimensions = {8, 1, 6, 1}},
-        .rhs = {.type = V8MLOperandType::Enum::kUint8, .dimensions = {7, 1, 5}},
-        .expected = {.type = blink_mojom::Operand::DataType::kUint8,
-                     .dimensions = {8, 7, 6, 5}}}
+        .rhs = {.data_type = V8MLOperandDataType::Enum::kUint8,
+                .dimensions = {7, 1, 5}},
+        .expected_in = {.data_type = blink_mojom::Operand::DataType::kUint8,
+                        .dimensions = {8, 7, 6, 5}}}
         .Test(*this, scope, builder);
+    ElementWiseBinaryTester{
+        .lhs = {.data_type = V8MLOperandDataType::Enum::kUint8,
+                .dimensions = {8, 1, 6, 1}},
+        .rhs = {.data_type = V8MLOperandDataType::Enum::kUint8,
+                .dimensions = {7, 1, 5}},
+        .expected_in = {.data_type = blink_mojom::Operand::DataType::kUint8,
+                        .dimensions = {8, 7, 6, 5}}}
+        .TestLogicalComparison(*this, scope, builder);
   }
 }
 
@@ -1129,8 +1732,9 @@ struct EluTester {
             V8TestingScope& scope,
             MLGraphBuilder* builder) {
     // Build the graph.
-    auto* input_operand = BuildInput(builder, "input", input.dimensions,
-                                     input.type, scope.GetExceptionState());
+    auto* input_operand =
+        BuildInput(builder, "input", input.dimensions, input.data_type,
+                   scope.GetExceptionState());
     MLEluOptions* ml_elu_options = MLEluOptions::Create();
     if (alpha) {
       ml_elu_options->setAlpha(alpha.value());
@@ -1153,7 +1757,7 @@ struct EluTester {
     ASSERT_TRUE(input_operand_iter != graph_info->id_to_operand_map.end());
     EXPECT_EQ(input_operand_iter->value->kind,
               blink_mojom::Operand::Kind::kInput);
-    EXPECT_EQ(input_operand_iter->value->data_type, expected_operand.type);
+    EXPECT_EQ(input_operand_iter->value->data_type, expected_operand.data_type);
     EXPECT_EQ(input_operand_iter->value->dimensions, input.dimensions);
     EXPECT_EQ(input_operand_iter->value->name, "input");
 
@@ -1165,7 +1769,8 @@ struct EluTester {
     ASSERT_TRUE(output_operand_iter != graph_info->id_to_operand_map.end());
     EXPECT_EQ(output_operand_iter->value->kind,
               blink_mojom::Operand::Kind::kOutput);
-    EXPECT_EQ(output_operand_iter->value->data_type, expected_operand.type);
+    EXPECT_EQ(output_operand_iter->value->data_type,
+              expected_operand.data_type);
     EXPECT_EQ(output_operand_iter->value->dimensions,
               expected_operand.dimensions);
     EXPECT_EQ(output_operand_iter->value->name, "output");
@@ -1194,44 +1799,283 @@ TEST_P(MLGraphTestMojo, EluTest) {
   auto* builder = CreateGraphBuilder(scope, options);
   ASSERT_NE(builder, nullptr);
   {
+    // Test elu operator for 0-D tensor with default options.
+    EluTester{.input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                        .dimensions = {}},
+              .expected_operand = {.data_type =
+                                       blink_mojom::Operand::DataType::kFloat32,
+                                   .dimensions = {}},
+              .expected_alpha = 1}
+        .Test(*this, scope, builder);
+  }
+  {
     // Test elu operator for 1-D tensor with default options.
-    EluTester{
-        .input = {.type = V8MLOperandType::Enum::kFloat32, .dimensions = {2}},
-        .expected_operand = {.type = blink_mojom::Operand::DataType::kFloat32,
-                             .dimensions = {2}},
-        .expected_alpha = 1}
+    EluTester{.input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                        .dimensions = {2}},
+              .expected_operand = {.data_type =
+                                       blink_mojom::Operand::DataType::kFloat32,
+                                   .dimensions = {2}},
+              .expected_alpha = 1}
         .Test(*this, scope, builder);
   }
   {
     // Test elu operator for 2-D tensor with default options.
-    EluTester{
-        .input = {.type = V8MLOperandType::Enum::kFloat16,
-                  .dimensions = {3, 7}},
-        .expected_operand = {.type = blink_mojom::Operand::DataType::kFloat16,
-                             .dimensions = {3, 7}},
-        .expected_alpha = 1}
+    EluTester{.input = {.data_type = V8MLOperandDataType::Enum::kFloat16,
+                        .dimensions = {3, 7}},
+              .expected_operand = {.data_type =
+                                       blink_mojom::Operand::DataType::kFloat16,
+                                   .dimensions = {3, 7}},
+              .expected_alpha = 1}
         .Test(*this, scope, builder);
   }
   {
     // Test elu operator for 3-D tensor with given alpha.
-    EluTester{
-        .input = {.type = V8MLOperandType::Enum::kFloat32,
-                  .dimensions = {1, 5, 3}},
-        .alpha = 0.5,
-        .expected_operand = {.type = blink_mojom::Operand::DataType::kFloat32,
-                             .dimensions = {1, 5, 3}},
-        .expected_alpha = 0.5}
+    EluTester{.input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                        .dimensions = {1, 5, 3}},
+              .alpha = 0.5,
+              .expected_operand = {.data_type =
+                                       blink_mojom::Operand::DataType::kFloat32,
+                                   .dimensions = {1, 5, 3}},
+              .expected_alpha = 0.5}
         .Test(*this, scope, builder);
   }
   {
     // Test elu operator for 4-D tensor with given alpha.
-    EluTester{
-        .input = {.type = V8MLOperandType::Enum::kFloat16,
-                  .dimensions = {1, 2, 2, 1}},
-        .alpha = 0.7,
-        .expected_operand = {.type = blink_mojom::Operand::DataType::kFloat16,
-                             .dimensions = {1, 2, 2, 1}},
-        .expected_alpha = 0.7}
+    EluTester{.input = {.data_type = V8MLOperandDataType::Enum::kFloat16,
+                        .dimensions = {1, 2, 2, 1}},
+              .alpha = 0.7,
+              .expected_operand = {.data_type =
+                                       blink_mojom::Operand::DataType::kFloat16,
+                                   .dimensions = {1, 2, 2, 1}},
+              .expected_alpha = 0.7}
+        .Test(*this, scope, builder);
+  }
+}
+
+struct ExpandTester {
+  OperandInfoBlink input;
+  Vector<uint32_t> new_shape;
+  OperandInfoMojo expected;
+
+  void Test(MLGraphTestMojo& helper,
+            V8TestingScope& scope,
+            MLGraphBuilder* builder) {
+    // Build the graph.
+    auto* input_operand =
+        BuildInput(builder, "input", input.dimensions, input.data_type,
+                   scope.GetExceptionState());
+    auto* output_operand =
+        builder->expand(input_operand, new_shape, scope.GetExceptionState());
+    auto [graph, build_exception] =
+        helper.BuildGraph(scope, builder, {{"output", output_operand}});
+    ASSERT_NE(graph, nullptr);
+
+    auto graph_info = helper.GetGraphInfo();
+    // Verify the graph information of mojo are as expected.
+    ASSERT_EQ(graph_info->operations.size(), 1u);
+    auto& operation = graph_info->operations[0];
+    EXPECT_EQ(operation->is_expand(), true);
+    EXPECT_EQ(graph_info->output_operands.size(), 1u);
+    auto output_operand_id = graph_info->output_operands[0];
+    auto output_operand_iter =
+        graph_info->id_to_operand_map.find(output_operand_id);
+    ASSERT_TRUE(output_operand_iter != graph_info->id_to_operand_map.end());
+    EXPECT_EQ(output_operand_iter->value->data_type, expected.data_type);
+    EXPECT_EQ(output_operand_iter->value->dimensions, expected.dimensions);
+  }
+};
+
+TEST_P(MLGraphTestMojo, ExpandTest) {
+  V8TestingScope scope;
+  // Bind fake WebNN Context in the service for testing.
+  ScopedWebNNServiceBinder scoped_setup_binder(*this, scope);
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      webnn::features::kEnableMachineLearningNeuralNetworkService);
+  auto* options = MLContextOptions::Create();
+  // Create WebNN Context with GPU device type.
+  options->setDeviceType(V8MLDeviceType::Enum::kGpu);
+  auto* builder = CreateGraphBuilder(scope, options);
+  ASSERT_NE(builder, nullptr);
+  {
+    // Test building expand 0-D scalar to 3-D tensor.
+    ExpandTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                  .dimensions = {}},
+        .new_shape = {3, 4, 5},
+        .expected = {.data_type = blink_mojom::Operand::DataType::kFloat32,
+                     .dimensions = {3, 4, 5}}}
+        .Test(*this, scope, builder);
+  }
+  {
+    // Test expanding the new shape that is the same as input.
+    ExpandTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                  .dimensions = {3, 2}},
+        .new_shape = {3, 2},
+        .expected = {.data_type = blink_mojom::Operand::DataType::kFloat32,
+                     .dimensions = {3, 2}}}
+        .Test(*this, scope, builder);
+  }
+  {
+    // Test expanding the new shape that are broadcastable.
+    ExpandTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat16,
+                  .dimensions = {3, 1, 5}},
+        .new_shape = {3, 4, 5},
+        .expected = {.data_type = blink_mojom::Operand::DataType::kFloat16,
+                     .dimensions = {3, 4, 5}}}
+        .Test(*this, scope, builder);
+  }
+  {
+    // Test expanding the new shape that are broadcastable and the number of new
+    // shapes larger than input.
+    ExpandTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kInt32,
+                  .dimensions = {2, 5}},
+        .new_shape = {3, 2, 5},
+        .expected = {.data_type = blink_mojom::Operand::DataType::kInt32,
+                     .dimensions = {3, 2, 5}}}
+        .Test(*this, scope, builder);
+  }
+}
+
+struct GatherTester {
+  OperandInfoBlink input;
+  OperandInfoBlink indices;
+  absl::optional<uint32_t> axis;
+  OperandInfoMojo expected_operand;
+  blink_mojom::Operand::DataType expected_indices_date_type;
+  float expected_axis;
+
+  void Test(MLGraphTestMojo& helper,
+            V8TestingScope& scope,
+            MLGraphBuilder* builder) {
+    // Build the graph.
+    auto* input_operand =
+        BuildInput(builder, "input", input.dimensions, input.data_type,
+                   scope.GetExceptionState());
+    auto* indices_operand =
+        BuildInput(builder, "indices", indices.dimensions, indices.data_type,
+                   scope.GetExceptionState());
+    MLGatherOptions* ml_gather_options = MLGatherOptions::Create();
+    if (axis) {
+      ml_gather_options->setAxis(axis.value());
+    }
+    auto* output_operand =
+        builder->gather(input_operand, indices_operand, ml_gather_options,
+                        scope.GetExceptionState());
+    auto [graph, build_exception] =
+        helper.BuildGraph(scope, builder, {{"output", output_operand}});
+    ASSERT_NE(graph, nullptr);
+
+    auto graph_info = helper.GetGraphInfo();
+    // Verify the graph information of mojo are as expected.
+    ASSERT_EQ(graph_info->id_to_operand_map.size(), 3u);
+
+    // Verify the input `mojo::Operand`.
+    ASSERT_EQ(graph_info->input_operands.size(), 2u);
+    auto input_operand_id = graph_info->input_operands[0];
+    auto input_operand_iter =
+        graph_info->id_to_operand_map.find(input_operand_id);
+    ASSERT_TRUE(input_operand_iter != graph_info->id_to_operand_map.end());
+    EXPECT_EQ(input_operand_iter->value->kind,
+              blink_mojom::Operand::Kind::kInput);
+    EXPECT_EQ(input_operand_iter->value->data_type, expected_operand.data_type);
+    EXPECT_EQ(input_operand_iter->value->dimensions, input.dimensions);
+    EXPECT_EQ(input_operand_iter->value->name, "input");
+
+    // Verify the indices `mojo::Operand`.
+    auto indices_operand_id = graph_info->input_operands[1];
+    auto indices_operand_iter =
+        graph_info->id_to_operand_map.find(indices_operand_id);
+    ASSERT_TRUE(indices_operand_iter != graph_info->id_to_operand_map.end());
+    EXPECT_EQ(indices_operand_iter->value->kind,
+              blink_mojom::Operand::Kind::kInput);
+    EXPECT_EQ(indices_operand_iter->value->data_type,
+              expected_indices_date_type);
+    EXPECT_EQ(indices_operand_iter->value->dimensions, indices.dimensions);
+    EXPECT_EQ(indices_operand_iter->value->name, "indices");
+
+    // Verify the output `mojo::Operand`.
+    ASSERT_EQ(graph_info->output_operands.size(), 1u);
+    auto output_operand_id = graph_info->output_operands[0];
+    auto output_operand_iter =
+        graph_info->id_to_operand_map.find(output_operand_id);
+    ASSERT_TRUE(output_operand_iter != graph_info->id_to_operand_map.end());
+    EXPECT_EQ(output_operand_iter->value->kind,
+              blink_mojom::Operand::Kind::kOutput);
+    EXPECT_EQ(output_operand_iter->value->data_type,
+              expected_operand.data_type);
+    EXPECT_EQ(output_operand_iter->value->dimensions,
+              expected_operand.dimensions);
+    EXPECT_EQ(output_operand_iter->value->name, "output");
+
+    // Verify the `mojo::Operator`.
+    ASSERT_EQ(graph_info->operations.size(), 1u);
+    auto& operation = graph_info->operations[0];
+    ASSERT_TRUE(operation->is_gather());
+    auto& gather = operation->get_gather();
+    EXPECT_EQ(gather->input_operand_id, input_operand_id);
+    EXPECT_EQ(gather->indices_operand_id, indices_operand_id);
+    EXPECT_EQ(gather->output_operand_id, output_operand_id);
+    EXPECT_EQ(gather->axis, expected_axis);
+  }
+};
+
+TEST_P(MLGraphTestMojo, GatherTest) {
+  V8TestingScope scope;
+  // Bind fake WebNN Context in the service for testing.
+  ScopedWebNNServiceBinder scoped_setup_binder(*this, scope);
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      webnn::features::kEnableMachineLearningNeuralNetworkService);
+  auto* options = MLContextOptions::Create();
+  // Create WebNN Context with GPU device type.
+  options->setDeviceType(V8MLDeviceType::Enum::kGpu);
+  auto* builder = CreateGraphBuilder(scope, options);
+  ASSERT_NE(builder, nullptr);
+  {
+    // Test building gather with default options.
+    GatherTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                  .dimensions = {2, 3}},
+        .indices = {.data_type = V8MLOperandDataType::Enum::kUint32,
+                    .dimensions = {4, 5}},
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat32,
+                             .dimensions = {4, 5, 3}},
+        .expected_indices_date_type = blink_mojom::Operand::DataType::kUint32,
+        .expected_axis = 0}
+        .Test(*this, scope, builder);
+  }
+  {
+    // Test building gather with axis = 2.
+    GatherTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat16,
+                  .dimensions = {1, 2, 3, 4}},
+        .indices = {.data_type = V8MLOperandDataType::Enum::kUint64,
+                    .dimensions = {6, 7, 8}},
+        .axis = 2,
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat16,
+                             .dimensions = {1, 2, 6, 7, 8, 4}},
+        .expected_indices_date_type = blink_mojom::Operand::DataType::kUint64,
+        .expected_axis = 2}
+        .Test(*this, scope, builder);
+  }
+  {
+    // Test building gather with 0-D indices.
+    GatherTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kUint32,
+                  .dimensions = {3}},
+        .indices = {.data_type = V8MLOperandDataType::Enum::kUint64,
+                    .dimensions = {}},
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kUint32,
+                             .dimensions = {}},
+        .expected_indices_date_type = blink_mojom::Operand::DataType::kUint64,
+        .expected_axis = 0}
         .Test(*this, scope, builder);
   }
 }
@@ -1261,14 +2105,14 @@ struct GemmTester {
             V8TestingScope& scope,
             MLGraphBuilder* builder) {
     // Build the graph.
-    auto* a_operand = BuildInput(builder, "a", a.dimensions, a.type,
+    auto* a_operand = BuildInput(builder, "a", a.dimensions, a.data_type,
                                  scope.GetExceptionState());
-    auto* b_operand = BuildInput(builder, "b", b.dimensions, b.type,
+    auto* b_operand = BuildInput(builder, "b", b.dimensions, b.data_type,
                                  scope.GetExceptionState());
     MLGemmOptions* ml_gemm_options = MLGemmOptions::Create();
     if (options.c) {
       ml_gemm_options->setC(BuildInput(builder, "c", options.c->dimensions,
-                                       options.c->type,
+                                       options.c->data_type,
                                        scope.GetExceptionState()));
     }
     if (options.alpha) {
@@ -1299,7 +2143,8 @@ struct GemmTester {
       auto c_operand_iter =
           graph_info->id_to_operand_map.find(gemm_mojo->c_operand_id.value());
       ASSERT_TRUE(c_operand_iter != graph_info->id_to_operand_map.end());
-      EXPECT_EQ(c_operand_iter->value->data_type, expected_attributes.c->type);
+      EXPECT_EQ(c_operand_iter->value->data_type,
+                expected_attributes.c->data_type);
       EXPECT_EQ(c_operand_iter->value->dimensions,
                 expected_attributes.c->dimensions);
     } else {
@@ -1314,7 +2159,8 @@ struct GemmTester {
     auto output_operand_iter =
         graph_info->id_to_operand_map.find(output_operand_id);
     ASSERT_TRUE(output_operand_iter != graph_info->id_to_operand_map.end());
-    EXPECT_EQ(output_operand_iter->value->data_type, expected_operand.type);
+    EXPECT_EQ(output_operand_iter->value->data_type,
+              expected_operand.data_type);
     EXPECT_EQ(output_operand_iter->value->dimensions,
               expected_operand.dimensions);
   }
@@ -1335,9 +2181,12 @@ TEST_P(MLGraphTestMojo, GemmTest) {
   {
     // Test building gemm with default option.
     GemmTester{
-        .a = {.type = V8MLOperandType::Enum::kFloat32, .dimensions = {2, 3}},
-        .b = {.type = V8MLOperandType::Enum::kFloat32, .dimensions = {3, 4}},
-        .expected_operand = {.type = blink_mojom::Operand::DataType::kFloat32,
+        .a = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+              .dimensions = {2, 3}},
+        .b = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+              .dimensions = {3, 4}},
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat32,
                              .dimensions = {2, 4}},
         .expected_attributes = {.c = absl::nullopt,
                                 .alpha = 1.0,
@@ -1351,10 +2200,13 @@ TEST_P(MLGraphTestMojo, GemmTest) {
     // Transposed a_dimensions would be {3, 2} and it's compatible with
     // b_dimensions {2, 4}.
     GemmTester{
-        .a = {.type = V8MLOperandType::Enum::kFloat32, .dimensions = {2, 3}},
-        .b = {.type = V8MLOperandType::Enum::kFloat32, .dimensions = {2, 4}},
+        .a = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+              .dimensions = {2, 3}},
+        .b = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+              .dimensions = {2, 4}},
         .options = {.a_transpose = true},
-        .expected_operand = {.type = blink_mojom::Operand::DataType::kFloat32,
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat32,
                              .dimensions = {3, 4}},
         .expected_attributes = {.c = absl::nullopt,
                                 .alpha = 1.0,
@@ -1368,10 +2220,13 @@ TEST_P(MLGraphTestMojo, GemmTest) {
     // Transposed b_dimensions would be {3, 4} and it's compatible with
     // a_dimensions {2, 3}.
     GemmTester{
-        .a = {.type = V8MLOperandType::Enum::kFloat32, .dimensions = {2, 3}},
-        .b = {.type = V8MLOperandType::Enum::kFloat32, .dimensions = {4, 3}},
+        .a = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+              .dimensions = {2, 3}},
+        .b = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+              .dimensions = {4, 3}},
         .options = {.b_transpose = true},
-        .expected_operand = {.type = blink_mojom::Operand::DataType::kFloat32,
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat32,
                              .dimensions = {2, 4}},
         .expected_attributes = {.c = absl::nullopt,
                                 .alpha = 1.0,
@@ -1385,25 +2240,274 @@ TEST_P(MLGraphTestMojo, GemmTest) {
     // The output dimensions of a * b would be {2, 4} and c_dimensions {4} is
     // able to broadcast to {2, 4}.
     GemmTester{
-        .a = {.type = V8MLOperandType::Enum::kFloat32, .dimensions = {2, 3}},
-        .b = {.type = V8MLOperandType::Enum::kFloat32, .dimensions = {3, 4}},
+        .a = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+              .dimensions = {2, 3}},
+        .b = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+              .dimensions = {3, 4}},
         .options =
             {
-                .c = OperandInfoBlink{.type = V8MLOperandType::Enum::kFloat32,
+                .c = OperandInfoBlink{.data_type =
+                                          V8MLOperandDataType::Enum::kFloat32,
                                       .dimensions = {4}},
                 .alpha = 2.0,
                 .beta = 3.0,
             },
-        .expected_operand = {.type = blink_mojom::Operand::DataType::kFloat32,
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat32,
                              .dimensions = {2, 4}},
         .expected_attributes =
-            {.c = OperandInfoMojo{.type =
+            {.c = OperandInfoMojo{.data_type =
                                       blink_mojom::Operand::DataType::kFloat32,
                                   .dimensions = {4}},
              .alpha = 2.0,
              .beta = 3.0,
              .a_transpose = false,
              .b_transpose = false}}
+        .Test(*this, scope, builder);
+  }
+  {
+    // Test building gemm with setting scalar C.
+    GemmTester{
+        .a = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+              .dimensions = {2, 3}},
+        .b = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+              .dimensions = {3, 4}},
+        .options =
+            {
+                .c = OperandInfoBlink{.data_type =
+                                          V8MLOperandDataType::Enum::kFloat32,
+                                      .dimensions = {}},
+                .alpha = 2.0,
+                .beta = 3.0,
+            },
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat32,
+                             .dimensions = {2, 4}},
+        .expected_attributes =
+            {.c = OperandInfoMojo{.data_type =
+                                      blink_mojom::Operand::DataType::kFloat32,
+                                  .dimensions = {}},
+             .alpha = 2.0,
+             .beta = 3.0,
+             .a_transpose = false,
+             .b_transpose = false}}
+        .Test(*this, scope, builder);
+  }
+}
+
+struct LayerNormalizationTester {
+  OperandInfoBlink input;
+  struct LayerNormalizationOptions {
+    absl::optional<OperandInfoBlink> scale;
+    absl::optional<OperandInfoBlink> bias;
+    absl::optional<Vector<uint32_t>> axes;
+    absl::optional<float> epsilon;
+  };
+  struct LayerNormalizationAttributes {
+    absl::optional<OperandInfoMojo> scale;
+    absl::optional<OperandInfoMojo> bias;
+    Vector<uint32_t> axes;
+    float epsilon = 1e-5;
+  };
+  LayerNormalizationOptions options;
+  OperandInfoMojo expected_operand;
+  LayerNormalizationAttributes expected_attributes;
+
+  void Test(MLGraphTestMojo& helper,
+            V8TestingScope& scope,
+            MLGraphBuilder* builder) {
+    // Build the graph.
+    auto* input_operand =
+        BuildInput(builder, "input", input.dimensions, input.data_type,
+                   scope.GetExceptionState());
+    MLLayerNormalizationOptions* layer_normalization_options =
+        MLLayerNormalizationOptions::Create();
+    if (options.scale) {
+      layer_normalization_options->setScale(
+          BuildInput(builder, "scale", options.scale->dimensions,
+                     options.scale->data_type, scope.GetExceptionState()));
+    }
+    if (options.bias) {
+      layer_normalization_options->setBias(
+          BuildInput(builder, "bias", options.bias->dimensions,
+                     options.bias->data_type, scope.GetExceptionState()));
+    }
+    if (options.axes) {
+      layer_normalization_options->setAxes(options.axes.value());
+    }
+    if (options.epsilon) {
+      layer_normalization_options->setEpsilon(options.epsilon.value());
+    }
+
+    auto* output_operand = builder->layerNormalization(
+        input_operand, layer_normalization_options, scope.GetExceptionState());
+    auto [graph, build_exception] =
+        helper.BuildGraph(scope, builder, {{"output", output_operand}});
+    ASSERT_NE(graph, nullptr);
+
+    auto graph_info = helper.GetGraphInfo();
+    // Verify the `mojo::Operator`.
+    ASSERT_EQ(graph_info->operations.size(), 1u);
+    auto& operation = graph_info->operations[0];
+    ASSERT_TRUE(operation->is_layer_normalization());
+    auto& layer_normalization = operation->get_layer_normalization();
+
+    // Verify the axes.
+    EXPECT_EQ(layer_normalization->axes, expected_attributes.axes);
+
+    // Verify the epsilon.
+    EXPECT_FLOAT_EQ(layer_normalization->epsilon, expected_attributes.epsilon);
+
+    // Verify the scale `mojo::Operand`.
+    if (expected_attributes.scale.has_value()) {
+      ASSERT_TRUE(layer_normalization->scale_operand_id.has_value());
+      auto scale_operand_id = layer_normalization->scale_operand_id.value();
+      auto scale_operand_iter =
+          graph_info->id_to_operand_map.find(scale_operand_id);
+      ASSERT_TRUE(scale_operand_iter != graph_info->id_to_operand_map.end());
+      EXPECT_EQ(scale_operand_iter->value->kind,
+                blink_mojom::Operand::Kind::kInput);
+      EXPECT_EQ(scale_operand_iter->value->data_type,
+                expected_attributes.scale->data_type);
+      EXPECT_EQ(scale_operand_iter->value->dimensions,
+                expected_attributes.scale->dimensions);
+      EXPECT_EQ(scale_operand_iter->value->name, "scale");
+    }
+
+    // Verify the bias `mojo::Operand`.
+    if (expected_attributes.bias.has_value()) {
+      ASSERT_TRUE(layer_normalization->bias_operand_id.has_value());
+      auto bias_operand_id = layer_normalization->bias_operand_id.value();
+      auto bias_operand_iter =
+          graph_info->id_to_operand_map.find(bias_operand_id);
+      ASSERT_TRUE(bias_operand_iter != graph_info->id_to_operand_map.end());
+      EXPECT_EQ(bias_operand_iter->value->kind,
+                blink_mojom::Operand::Kind::kInput);
+      EXPECT_EQ(bias_operand_iter->value->data_type,
+                expected_attributes.bias->data_type);
+      EXPECT_EQ(bias_operand_iter->value->dimensions,
+                expected_attributes.bias->dimensions);
+      EXPECT_EQ(bias_operand_iter->value->name, "bias");
+    }
+
+    // Verify the output `mojo::Operand`.
+    ASSERT_EQ(graph_info->output_operands.size(), 1u);
+    auto output_operand_id = graph_info->output_operands[0];
+    auto output_operand_iter =
+        graph_info->id_to_operand_map.find(output_operand_id);
+    ASSERT_TRUE(output_operand_iter != graph_info->id_to_operand_map.end());
+    EXPECT_EQ(output_operand_iter->value->kind,
+              blink_mojom::Operand::Kind::kOutput);
+    EXPECT_EQ(output_operand_iter->value->data_type,
+              expected_operand.data_type);
+    EXPECT_EQ(output_operand_iter->value->dimensions,
+              expected_operand.dimensions);
+    EXPECT_EQ(output_operand_iter->value->name, "output");
+  }
+};
+
+TEST_P(MLGraphTestMojo, LayerNormalizationTest) {
+  V8TestingScope scope;
+  // Bind fake WebNN Context in the service for testing.
+  ScopedWebNNServiceBinder scoped_setup_binder(*this, scope);
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      webnn::features::kEnableMachineLearningNeuralNetworkService);
+  auto* options = MLContextOptions::Create();
+  // Create WebNN Context with GPU device type.
+  options->setDeviceType(V8MLDeviceType::Enum::kGpu);
+  auto* builder = CreateGraphBuilder(scope, options);
+  ASSERT_NE(builder, nullptr);
+  {
+    // Test layerNormalization with default options for scalar input.
+    LayerNormalizationTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                  .dimensions = {}},
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat32,
+                             .dimensions = {}},
+        .expected_attributes = {.axes = {}}}
+        .Test(*this, scope, builder);
+  }
+  {
+    // Test layerNormalization with given epsilon.
+    LayerNormalizationTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                  .dimensions = {1, 2, 3}},
+        .options = {.epsilon = 5e-5},
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat32,
+                             .dimensions = {1, 2, 3}},
+        .expected_attributes = {.axes = {1, 2}, .epsilon = 5e-5}}
+        .Test(*this, scope, builder);
+  }
+  {
+    // Test layerNormalization with given axes.
+    LayerNormalizationTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                  .dimensions = {1, 3, 4, 5}},
+        .options = {.axes = Vector<uint32_t>{2, 0}},
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat32,
+                             .dimensions = {1, 3, 4, 5}},
+        .expected_attributes = {.axes = {2, 0}}}
+        .Test(*this, scope, builder);
+  }
+  {
+    // Test layerNormalization with given scale and bias.
+    LayerNormalizationTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                  .dimensions = {1, 3, 4, 5}},
+        .options = {.scale =
+                        OperandInfoBlink{
+                            .data_type = V8MLOperandDataType::Enum::kFloat32,
+                            .dimensions = {3, 4, 5}},
+                    .bias =
+                        OperandInfoBlink{
+                            .data_type = V8MLOperandDataType::Enum::kFloat32,
+                            .dimensions = {3, 4, 5}}},
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat32,
+                             .dimensions = {1, 3, 4, 5}},
+        .expected_attributes =
+            {.scale =
+                 OperandInfoMojo{
+                     .data_type = blink_mojom::Operand::DataType::kFloat32,
+                     .dimensions = {3, 4, 5}},
+             .bias =
+                 OperandInfoMojo{
+                     .data_type = blink_mojom::Operand::DataType::kFloat32,
+                     .dimensions = {3, 4, 5}},
+             .axes = {1, 2, 3}}}
+        .Test(*this, scope, builder);
+  }
+  {
+    // Test layerNormalization with given scale, bias and permuted axes.
+    LayerNormalizationTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                  .dimensions = {1, 2, 3, 4, 5, 6}},
+        .options = {.scale =
+                        OperandInfoBlink{
+                            .data_type = V8MLOperandDataType::Enum::kFloat32,
+                            .dimensions = {2, 5, 3, 6}},
+                    .bias =
+                        OperandInfoBlink{
+                            .data_type = V8MLOperandDataType::Enum::kFloat32,
+                            .dimensions = {2, 5, 3, 6}},
+                    .axes = Vector<uint32_t>{1, 4, 2, 5}},
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat32,
+                             .dimensions = {1, 2, 3, 4, 5, 6}},
+        .expected_attributes =
+            {.scale =
+                 OperandInfoMojo{
+                     .data_type = blink_mojom::Operand::DataType::kFloat32,
+                     .dimensions = {2, 5, 3, 6}},
+             .bias =
+                 OperandInfoMojo{
+                     .data_type = blink_mojom::Operand::DataType::kFloat32,
+                     .dimensions = {2, 5, 3, 6}},
+             .axes = {1, 4, 2, 5}}}
         .Test(*this, scope, builder);
   }
 }
@@ -1418,8 +2522,9 @@ struct LeakyReluTester {
             V8TestingScope& scope,
             MLGraphBuilder* builder) {
     // Build the graph.
-    auto* input_operand = BuildInput(builder, "input", input.dimensions,
-                                     input.type, scope.GetExceptionState());
+    auto* input_operand =
+        BuildInput(builder, "input", input.dimensions, input.data_type,
+                   scope.GetExceptionState());
     MLLeakyReluOptions* ml_leaky_relu_options = MLLeakyReluOptions::Create();
     if (alpha) {
       ml_leaky_relu_options->setAlpha(alpha.value());
@@ -1442,7 +2547,7 @@ struct LeakyReluTester {
     ASSERT_TRUE(input_operand_iter != graph_info->id_to_operand_map.end());
     EXPECT_EQ(input_operand_iter->value->kind,
               blink_mojom::Operand::Kind::kInput);
-    EXPECT_EQ(input_operand_iter->value->data_type, expected_operand.type);
+    EXPECT_EQ(input_operand_iter->value->data_type, expected_operand.data_type);
     EXPECT_EQ(input_operand_iter->value->dimensions, input.dimensions);
     EXPECT_EQ(input_operand_iter->value->name, "input");
 
@@ -1454,7 +2559,8 @@ struct LeakyReluTester {
     ASSERT_TRUE(output_operand_iter != graph_info->id_to_operand_map.end());
     EXPECT_EQ(output_operand_iter->value->kind,
               blink_mojom::Operand::Kind::kOutput);
-    EXPECT_EQ(output_operand_iter->value->data_type, expected_operand.type);
+    EXPECT_EQ(output_operand_iter->value->data_type,
+              expected_operand.data_type);
     EXPECT_EQ(output_operand_iter->value->dimensions,
               expected_operand.dimensions);
     EXPECT_EQ(output_operand_iter->value->name, "output");
@@ -1483,10 +2589,23 @@ TEST_P(MLGraphTestMojo, LeakyReluTest) {
   auto* builder = CreateGraphBuilder(scope, options);
   ASSERT_NE(builder, nullptr);
   {
+    // Test leaky relu operator for 0-D scalar with default options.
+    LeakyReluTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                  .dimensions = {}},
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat32,
+                             .dimensions = {}},
+        .expected_alpha = 0.01}
+        .Test(*this, scope, builder);
+  }
+  {
     // Test leaky relu operator for 1-D tensor with default options.
     LeakyReluTester{
-        .input = {.type = V8MLOperandType::Enum::kFloat32, .dimensions = {2}},
-        .expected_operand = {.type = blink_mojom::Operand::DataType::kFloat32,
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                  .dimensions = {2}},
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat32,
                              .dimensions = {2}},
         .expected_alpha = 0.01}
         .Test(*this, scope, builder);
@@ -1494,9 +2613,10 @@ TEST_P(MLGraphTestMojo, LeakyReluTest) {
   {
     // Test leaky relu operator for 2-D tensor with default options.
     LeakyReluTester{
-        .input = {.type = V8MLOperandType::Enum::kFloat16,
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat16,
                   .dimensions = {3, 7}},
-        .expected_operand = {.type = blink_mojom::Operand::DataType::kFloat16,
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat16,
                              .dimensions = {3, 7}},
         .expected_alpha = 0.01}
         .Test(*this, scope, builder);
@@ -1504,10 +2624,11 @@ TEST_P(MLGraphTestMojo, LeakyReluTest) {
   {
     // Test leaky relu operator for 3-D tensor with given alpha.
     LeakyReluTester{
-        .input = {.type = V8MLOperandType::Enum::kFloat32,
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                   .dimensions = {1, 5, 3}},
         .alpha = 0.05,
-        .expected_operand = {.type = blink_mojom::Operand::DataType::kFloat32,
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat32,
                              .dimensions = {1, 5, 3}},
         .expected_alpha = 0.05}
         .Test(*this, scope, builder);
@@ -1515,10 +2636,11 @@ TEST_P(MLGraphTestMojo, LeakyReluTest) {
   {
     // Test leaky relu operator for 4-D tensor with given alpha.
     LeakyReluTester{
-        .input = {.type = V8MLOperandType::Enum::kFloat16,
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat16,
                   .dimensions = {1, 2, 2, 1}},
         .alpha = 0.07,
-        .expected_operand = {.type = blink_mojom::Operand::DataType::kFloat16,
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat16,
                              .dimensions = {1, 2, 2, 1}},
         .expected_alpha = 0.07}
         .Test(*this, scope, builder);
@@ -1534,9 +2656,9 @@ struct MatmulTester {
             V8TestingScope& scope,
             MLGraphBuilder* builder) {
     // Build the graph.
-    auto* a_operand = BuildInput(builder, "a", a.dimensions, a.type,
+    auto* a_operand = BuildInput(builder, "a", a.dimensions, a.data_type,
                                  scope.GetExceptionState());
-    auto* b_operand = BuildInput(builder, "b", b.dimensions, b.type,
+    auto* b_operand = BuildInput(builder, "b", b.dimensions, b.data_type,
                                  scope.GetExceptionState());
     auto* output_operand =
         builder->matmul(a_operand, b_operand, scope.GetExceptionState());
@@ -1553,7 +2675,7 @@ struct MatmulTester {
     auto a_operand_iter = graph_info->id_to_operand_map.find(a_operand_id);
     ASSERT_TRUE(a_operand_iter != graph_info->id_to_operand_map.end());
     EXPECT_EQ(a_operand_iter->value->kind, blink_mojom::Operand::Kind::kInput);
-    EXPECT_EQ(a_operand_iter->value->data_type, expected_operand.type);
+    EXPECT_EQ(a_operand_iter->value->data_type, expected_operand.data_type);
     EXPECT_EQ(a_operand_iter->value->dimensions, a.dimensions);
     EXPECT_EQ(a_operand_iter->value->name, "a");
     // Verify the b `mojo::Operand`.
@@ -1561,7 +2683,7 @@ struct MatmulTester {
     auto b_operand_iter = graph_info->id_to_operand_map.find(b_operand_id);
     ASSERT_TRUE(b_operand_iter != graph_info->id_to_operand_map.end());
     EXPECT_EQ(b_operand_iter->value->kind, blink_mojom::Operand::Kind::kInput);
-    EXPECT_EQ(b_operand_iter->value->data_type, expected_operand.type);
+    EXPECT_EQ(b_operand_iter->value->data_type, expected_operand.data_type);
     EXPECT_EQ(b_operand_iter->value->dimensions, b.dimensions);
     EXPECT_EQ(b_operand_iter->value->name, "b");
     // Verify the output `mojo::Operand`.
@@ -1570,10 +2692,12 @@ struct MatmulTester {
     auto output_operand_iter =
         graph_info->id_to_operand_map.find(output_operand_id);
     ASSERT_TRUE(output_operand_iter != graph_info->id_to_operand_map.end());
-    EXPECT_EQ(output_operand_iter->value->data_type, expected_operand.type);
+    EXPECT_EQ(output_operand_iter->value->data_type,
+              expected_operand.data_type);
     EXPECT_EQ(output_operand_iter->value->dimensions,
               expected_operand.dimensions);
-    EXPECT_EQ(output_operand_iter->value->data_type, expected_operand.type);
+    EXPECT_EQ(output_operand_iter->value->data_type,
+              expected_operand.data_type);
     EXPECT_EQ(output_operand_iter->value->name, "output");
     // Verify the `mojo::Operator`.
     ASSERT_EQ(graph_info->operations.size(), 1u);
@@ -1597,19 +2721,24 @@ TEST_P(MLGraphTestMojo, MatmulTest) {
   {
     // Test building matmul with 2-D * 2-D.
     MatmulTester{
-        .a = {.type = V8MLOperandType::Enum::kFloat32, .dimensions = {2, 3}},
-        .b = {.type = V8MLOperandType::Enum::kFloat32, .dimensions = {3, 4}},
-        .expected_operand = {.type = blink_mojom::Operand::DataType::kFloat32,
+        .a = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+              .dimensions = {2, 3}},
+        .b = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+              .dimensions = {3, 4}},
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat32,
                              .dimensions = {2, 4}}}
         .Test(*this, scope, builder);
   }
   {
     // Test building matmul with 3-D * 4-D using broadcasting.
     MatmulTester{
-        .a = {.type = V8MLOperandType::Enum::kFloat16, .dimensions = {2, 2, 3}},
-        .b = {.type = V8MLOperandType::Enum::kFloat16,
+        .a = {.data_type = V8MLOperandDataType::Enum::kFloat16,
+              .dimensions = {2, 2, 3}},
+        .b = {.data_type = V8MLOperandDataType::Enum::kFloat16,
               .dimensions = {3, 1, 3, 4}},
-        .expected_operand = {.type = blink_mojom::Operand::DataType::kFloat16,
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat16,
                              .dimensions = {3, 2, 2, 4}}}
         .Test(*this, scope, builder);
   }
@@ -1634,8 +2763,9 @@ struct PadTester {
             V8TestingScope& scope,
             MLGraphBuilder* builder) {
     // Build the graph.
-    auto* input_operand = BuildInput(builder, "input", input.dimensions,
-                                     input.type, scope.GetExceptionState());
+    auto* input_operand =
+        BuildInput(builder, "input", input.dimensions, input.data_type,
+                   scope.GetExceptionState());
     MLPadOptions* ml_pad_options = MLPadOptions::Create();
     if (options.mode) {
       ml_pad_options->setMode(options.mode.value());
@@ -1674,7 +2804,8 @@ struct PadTester {
     auto output_operand_iter =
         graph_info->id_to_operand_map.find(output_operand_id);
     ASSERT_TRUE(output_operand_iter != graph_info->id_to_operand_map.end());
-    EXPECT_EQ(output_operand_iter->value->data_type, expected_operand.type);
+    EXPECT_EQ(output_operand_iter->value->data_type,
+              expected_operand.data_type);
     EXPECT_EQ(output_operand_iter->value->dimensions,
               expected_operand.dimensions);
   }
@@ -1695,70 +2826,70 @@ TEST_P(MLGraphTestMojo, PadTest) {
   {
     // Test pad with default options, beginningPadding = {1, 2} and
     // endingPadding = {1, 2}.
-    PadTester{
-        .input = {.type = V8MLOperandType::Enum::kFloat32,
-                  .dimensions = {2, 3}},
-        .beginning_padding = {1, 2},
-        .ending_padding = {1, 2},
-        .expected_operand = {.type = blink_mojom::Operand::DataType::kFloat32,
-                             .dimensions = {4, 7}}}
+    PadTester{.input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                        .dimensions = {2, 3}},
+              .beginning_padding = {1, 2},
+              .ending_padding = {1, 2},
+              .expected_operand = {.data_type =
+                                       blink_mojom::Operand::DataType::kFloat32,
+                                   .dimensions = {4, 7}}}
         .Test(*this, scope, builder);
   }
   {
     // Test pad with mode = "constant", value = 1, beginningPadding = {1, 2} and
     // endingPadding = {1, 2}.
-    PadTester{
-        .input = {.type = V8MLOperandType::Enum::kFloat32,
-                  .dimensions = {2, 3}},
-        .beginning_padding = {1, 2},
-        .ending_padding = {1, 2},
-        .options = {.mode = V8MLPaddingMode::Enum::kConstant, .value = 1},
-        .expected_mode = blink_mojom::PaddingMode::Tag::kConstant,
-        .expected_value = 1,
-        .expected_operand = {.type = blink_mojom::Operand::DataType::kFloat32,
-                             .dimensions = {4, 7}}}
+    PadTester{.input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                        .dimensions = {2, 3}},
+              .beginning_padding = {1, 2},
+              .ending_padding = {1, 2},
+              .options = {.mode = V8MLPaddingMode::Enum::kConstant, .value = 1},
+              .expected_mode = blink_mojom::PaddingMode::Tag::kConstant,
+              .expected_value = 1,
+              .expected_operand = {.data_type =
+                                       blink_mojom::Operand::DataType::kFloat32,
+                                   .dimensions = {4, 7}}}
         .Test(*this, scope, builder);
   }
   {
     // Test pad with mode = "edge", beginningPadding = {1, 2} and
     // endingPadding = {1, 2}.
-    PadTester{
-        .input = {.type = V8MLOperandType::Enum::kFloat32,
-                  .dimensions = {2, 3}},
-        .beginning_padding = {1, 2},
-        .ending_padding = {1, 2},
-        .options = {.mode = V8MLPaddingMode::Enum::kEdge},
-        .expected_mode = blink_mojom::PaddingMode::Tag::kEdge,
-        .expected_operand = {.type = blink_mojom::Operand::DataType::kFloat32,
-                             .dimensions = {4, 7}}}
+    PadTester{.input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                        .dimensions = {2, 3}},
+              .beginning_padding = {1, 2},
+              .ending_padding = {1, 2},
+              .options = {.mode = V8MLPaddingMode::Enum::kEdge},
+              .expected_mode = blink_mojom::PaddingMode::Tag::kEdge,
+              .expected_operand = {.data_type =
+                                       blink_mojom::Operand::DataType::kFloat32,
+                                   .dimensions = {4, 7}}}
         .Test(*this, scope, builder);
   }
   {
     // Test pad with mode = "reflection", beginningPadding = {1, 2} and
     // endingPadding = {1, 2}.
-    PadTester{
-        .input = {.type = V8MLOperandType::Enum::kFloat32,
-                  .dimensions = {2, 3}},
-        .beginning_padding = {1, 2},
-        .ending_padding = {1, 2},
-        .options = {.mode = V8MLPaddingMode::Enum::kReflection},
-        .expected_mode = blink_mojom::PaddingMode::Tag::kReflection,
-        .expected_operand = {.type = blink_mojom::Operand::DataType::kFloat32,
-                             .dimensions = {4, 7}}}
+    PadTester{.input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                        .dimensions = {2, 3}},
+              .beginning_padding = {1, 2},
+              .ending_padding = {1, 2},
+              .options = {.mode = V8MLPaddingMode::Enum::kReflection},
+              .expected_mode = blink_mojom::PaddingMode::Tag::kReflection,
+              .expected_operand = {.data_type =
+                                       blink_mojom::Operand::DataType::kFloat32,
+                                   .dimensions = {4, 7}}}
         .Test(*this, scope, builder);
   }
   {
     // Test pad with mode = "symmetric", beginningPadding = {1, 2} and
     // endingPadding = {1, 2}.
-    PadTester{
-        .input = {.type = V8MLOperandType::Enum::kFloat32,
-                  .dimensions = {2, 3}},
-        .beginning_padding = {1, 2},
-        .ending_padding = {1, 2},
-        .options = {.mode = V8MLPaddingMode::Enum::kSymmetric},
-        .expected_mode = blink_mojom::PaddingMode::Tag::kSymmetric,
-        .expected_operand = {.type = blink_mojom::Operand::DataType::kFloat32,
-                             .dimensions = {4, 7}}}
+    PadTester{.input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                        .dimensions = {2, 3}},
+              .beginning_padding = {1, 2},
+              .ending_padding = {1, 2},
+              .options = {.mode = V8MLPaddingMode::Enum::kSymmetric},
+              .expected_mode = blink_mojom::PaddingMode::Tag::kSymmetric,
+              .expected_operand = {.data_type =
+                                       blink_mojom::Operand::DataType::kFloat32,
+                                   .dimensions = {4, 7}}}
         .Test(*this, scope, builder);
   }
 }
@@ -1799,8 +2930,9 @@ struct Pool2dTester {
             MLGraphBuilder* builder,
             Pool2dKind kind) {
     // Build the graph.
-    auto* input_operand = BuildInput(builder, "input", input.dimensions,
-                                     input.type, scope.GetExceptionState());
+    auto* input_operand =
+        BuildInput(builder, "input", input.dimensions, input.data_type,
+                   scope.GetExceptionState());
     MLPool2dOptions* ml_pool2d_options = MLPool2dOptions::Create();
     if (options.window_dimensions) {
       ml_pool2d_options->setWindowDimensions(options.window_dimensions.value());
@@ -1871,7 +3003,8 @@ struct Pool2dTester {
     auto output_operand_iter =
         graph_info->id_to_operand_map.find(output_operand_id);
     ASSERT_TRUE(output_operand_iter != graph_info->id_to_operand_map.end());
-    EXPECT_EQ(output_operand_iter->value->data_type, expected_operand.type);
+    EXPECT_EQ(output_operand_iter->value->data_type,
+              expected_operand.data_type);
     EXPECT_EQ(output_operand_iter->value->dimensions,
               expected_operand.dimensions);
   }
@@ -1892,9 +3025,10 @@ TEST_P(MLGraphTestMojo, Pool2dTest) {
   {
     // Test pool2d with default options.
     Pool2dTester{
-        .input = {.type = V8MLOperandType::Enum::kFloat32,
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                   .dimensions = {1, 3, 4, 4}},
-        .expected_operand = {.type = blink_mojom::Operand::DataType::kFloat32,
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat32,
                              .dimensions = {1, 3, 1, 1}},
         .expected_attributes = {.window_dimensions = {4, 4},
                                 .strides = {1, 1},
@@ -1904,10 +3038,11 @@ TEST_P(MLGraphTestMojo, Pool2dTest) {
   {
     // Test pool2d without padding.
     Pool2dTester{
-        .input = {.type = V8MLOperandType::Enum::kFloat32,
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                   .dimensions = {1, 3, 4, 4}},
         .options = {.window_dimensions = Vector<uint32_t>({3, 3})},
-        .expected_operand = {.type = blink_mojom::Operand::DataType::kFloat32,
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat32,
                              .dimensions = {1, 3, 2, 2}},
         .expected_attributes = {.window_dimensions = {3, 3},
                                 .padding = {0, 0, 0, 0},
@@ -1918,11 +3053,12 @@ TEST_P(MLGraphTestMojo, Pool2dTest) {
   {
     // Test pool2d with autoPad="same-upper".
     Pool2dTester{
-        .input = {.type = V8MLOperandType::Enum::kFloat32,
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                   .dimensions = {1, 3, 5, 5}},
         .options = {.window_dimensions = Vector<uint32_t>({5, 5}),
                     .auto_pad = V8MLAutoPad::Enum::kSameUpper},
-        .expected_operand = {.type = blink_mojom::Operand::DataType::kFloat32,
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat32,
                              .dimensions = {1, 3, 5, 5}},
         .expected_attributes = {.window_dimensions = {5, 5},
                                 .padding = {2, 2, 2, 2},
@@ -1933,11 +3069,12 @@ TEST_P(MLGraphTestMojo, Pool2dTest) {
   {
     // Test pool2d with autoPad="same-lower".
     Pool2dTester{
-        .input = {.type = V8MLOperandType::Enum::kFloat32,
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                   .dimensions = {1, 3, 5, 5}},
         .options = {.window_dimensions = Vector<uint32_t>({5, 5}),
                     .auto_pad = V8MLAutoPad::Enum::kSameLower},
-        .expected_operand = {.type = blink_mojom::Operand::DataType::kFloat32,
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat32,
                              .dimensions = {1, 3, 5, 5}},
         .expected_attributes = {.window_dimensions = {5, 5},
                                 .padding = {2, 2, 2, 2},
@@ -1948,13 +3085,14 @@ TEST_P(MLGraphTestMojo, Pool2dTest) {
   {
     // Test pool2d with strides=2, padding=1 and roundingType="floor".
     Pool2dTester{
-        .input = {.type = V8MLOperandType::Enum::kFloat32,
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                   .dimensions = {1, 3, 7, 7}},
         .options = {.window_dimensions = Vector<uint32_t>({4, 4}),
                     .padding = Vector<uint32_t>({1, 1, 1, 1}),
                     .strides = Vector<uint32_t>({2, 2}),
                     .rounding_type = V8MLRoundingType::Enum::kFloor},
-        .expected_operand = {.type = blink_mojom::Operand::DataType::kFloat32,
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat32,
                              .dimensions = {1, 3, 3, 3}},
         .expected_attributes = {.window_dimensions = {4, 4},
                                 .padding = {1, 1, 1, 1},
@@ -1965,13 +3103,14 @@ TEST_P(MLGraphTestMojo, Pool2dTest) {
   {
     // Test pool2d with strides=2, padding=1 and roundingType="ceil".
     Pool2dTester{
-        .input = {.type = V8MLOperandType::Enum::kFloat32,
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                   .dimensions = {1, 3, 7, 7}},
         .options = {.window_dimensions = Vector<uint32_t>({4, 4}),
                     .padding = Vector<uint32_t>({1, 1, 1, 1}),
                     .strides = Vector<uint32_t>({2, 2}),
                     .rounding_type = V8MLRoundingType::Enum::kCeil},
-        .expected_operand = {.type = blink_mojom::Operand::DataType::kFloat32,
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat32,
                              .dimensions = {1, 3, 4, 4}},
         .expected_attributes = {.window_dimensions = {4, 4},
                                 .padding = {1, 1, 1, 1},
@@ -1984,14 +3123,15 @@ TEST_P(MLGraphTestMojo, Pool2dTest) {
     // When the output sizes are explicitly specified, the
     // options.roundingType is ignored.
     Pool2dTester{
-        .input = {.type = V8MLOperandType::Enum::kFloat32,
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                   .dimensions = {1, 3, 7, 7}},
         .options = {.window_dimensions = Vector<uint32_t>({4, 4}),
                     .padding = Vector<uint32_t>({1, 1, 1, 1}),
                     .strides = Vector<uint32_t>({2, 2}),
                     .rounding_type = V8MLRoundingType::Enum::kCeil,
                     .output_sizes = Vector<uint32_t>({3, 3})},
-        .expected_operand = {.type = blink_mojom::Operand::DataType::kFloat32,
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat32,
                              .dimensions = {1, 3, 3, 3}},
         .expected_attributes = {.window_dimensions = {4, 4},
                                 .padding = {1, 1, 1, 1},
@@ -2002,7 +3142,7 @@ TEST_P(MLGraphTestMojo, Pool2dTest) {
   {
     // Test pool2d with layout="nhwc".
     Pool2dTester{
-        .input = {.type = V8MLOperandType::Enum::kFloat32,
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                   .dimensions = {1, 7, 7, 3}},
         .options = {.window_dimensions = Vector<uint32_t>({4, 4}),
                     .padding = Vector<uint32_t>({1, 1, 1, 1}),
@@ -2010,7 +3150,8 @@ TEST_P(MLGraphTestMojo, Pool2dTest) {
                     .layout = V8MLInputOperandLayout::Enum::kNhwc,
                     .rounding_type = V8MLRoundingType::Enum::kCeil,
                     .output_sizes = Vector<uint32_t>({3, 3})},
-        .expected_operand = {.type = blink_mojom::Operand::DataType::kFloat32,
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat32,
                              .dimensions = {1, 3, 3, 3}},
         .expected_attributes =
             {.window_dimensions = {4, 4},
@@ -2031,10 +3172,12 @@ struct PreluTester {
             V8TestingScope& scope,
             MLGraphBuilder* builder) {
     // Build the graph.
-    auto* input_operand = BuildInput(builder, "input", input.dimensions,
-                                     input.type, scope.GetExceptionState());
-    auto* slope_operand = BuildInput(builder, "slope", slope.dimensions,
-                                     slope.type, scope.GetExceptionState());
+    auto* input_operand =
+        BuildInput(builder, "input", input.dimensions, input.data_type,
+                   scope.GetExceptionState());
+    auto* slope_operand =
+        BuildInput(builder, "slope", slope.dimensions, slope.data_type,
+                   scope.GetExceptionState());
     auto* output_operand =
         builder->prelu(input_operand, slope_operand, scope.GetExceptionState());
     auto [graph, build_exception] =
@@ -2056,7 +3199,7 @@ struct PreluTester {
     ASSERT_TRUE(input_operand_iter != graph_info->id_to_operand_map.end());
     EXPECT_EQ(input_operand_iter->value->kind,
               blink_mojom::Operand::Kind::kInput);
-    EXPECT_EQ(input_operand_iter->value->data_type, expected.type);
+    EXPECT_EQ(input_operand_iter->value->data_type, expected.data_type);
     EXPECT_EQ(input_operand_iter->value->dimensions, input.dimensions);
     EXPECT_EQ(input_operand_iter->value->name, "input");
     EXPECT_EQ(prelu->input_operand_id, input_operand_id);
@@ -2068,7 +3211,7 @@ struct PreluTester {
     ASSERT_TRUE(slope_operand_iter != graph_info->id_to_operand_map.end());
     EXPECT_EQ(slope_operand_iter->value->kind,
               blink_mojom::Operand::Kind::kInput);
-    EXPECT_EQ(slope_operand_iter->value->data_type, expected.type);
+    EXPECT_EQ(slope_operand_iter->value->data_type, expected.data_type);
     EXPECT_EQ(slope_operand_iter->value->dimensions, slope.dimensions);
     EXPECT_EQ(slope_operand_iter->value->name, "slope");
     EXPECT_EQ(prelu->slope_operand_id, slope_operand_id);
@@ -2081,7 +3224,7 @@ struct PreluTester {
     ASSERT_TRUE(output_operand_iter != graph_info->id_to_operand_map.end());
     EXPECT_EQ(output_operand_iter->value->kind,
               blink_mojom::Operand::Kind::kOutput);
-    EXPECT_EQ(output_operand_iter->value->data_type, expected.type);
+    EXPECT_EQ(output_operand_iter->value->data_type, expected.data_type);
     EXPECT_EQ(output_operand_iter->value->dimensions, expected.dimensions);
     EXPECT_EQ(output_operand_iter->value->name, "output");
     EXPECT_EQ(prelu->output_operand_id, output_operand_id);
@@ -2102,32 +3245,35 @@ TEST_P(MLGraphTestMojo, PreluTest) {
   ASSERT_NE(builder, nullptr);
   {
     // Test prelu operator when input shape is the same as slope shape.
-    PreluTester{.input = {.type = V8MLOperandType::Enum::kFloat32,
-                          .dimensions = {2, 3, 5}},
-                .slope = {.type = V8MLOperandType::Enum::kFloat32,
-                          .dimensions = {2, 3, 5}},
-                .expected = {.type = blink_mojom::Operand::DataType::kFloat32,
-                             .dimensions = {2, 3, 5}}}
+    PreluTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                  .dimensions = {2, 3, 5}},
+        .slope = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                  .dimensions = {2, 3, 5}},
+        .expected = {.data_type = blink_mojom::Operand::DataType::kFloat32,
+                     .dimensions = {2, 3, 5}}}
         .Test(*this, scope, builder);
   }
   {
     // Test prelu operator with input shape as {2, 3, 5} and slope shape as {3,
     // 5}.
-    PreluTester{.input = {.type = V8MLOperandType::Enum::kFloat16,
-                          .dimensions = {2, 3, 5}},
-                .slope = {.type = V8MLOperandType::Enum::kFloat16,
-                          .dimensions = {3, 5}},
-                .expected = {.type = blink_mojom::Operand::DataType::kFloat16,
-                             .dimensions = {2, 3, 5}}}
+    PreluTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat16,
+                  .dimensions = {2, 3, 5}},
+        .slope = {.data_type = V8MLOperandDataType::Enum::kFloat16,
+                  .dimensions = {3, 5}},
+        .expected = {.data_type = blink_mojom::Operand::DataType::kFloat16,
+                     .dimensions = {2, 3, 5}}}
         .Test(*this, scope, builder);
   }
   {
     // Test prelu operator with input shape as {2, 3, 5} and slope shape as {5}.
     PreluTester{
-        .input = {.type = V8MLOperandType::Enum::kFloat16,
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat16,
                   .dimensions = {2, 3, 5}},
-        .slope = {.type = V8MLOperandType::Enum::kFloat16, .dimensions = {5}},
-        .expected = {.type = blink_mojom::Operand::DataType::kFloat16,
+        .slope = {.data_type = V8MLOperandDataType::Enum::kFloat16,
+                  .dimensions = {5}},
+        .expected = {.data_type = blink_mojom::Operand::DataType::kFloat16,
                      .dimensions = {2, 3, 5}}}
         .Test(*this, scope, builder);
   }
@@ -2141,8 +3287,9 @@ struct ReluTester {
             V8TestingScope& scope,
             MLGraphBuilder* builder) {
     // Build the graph.
-    auto* input_operand = BuildInput(builder, "input", input.dimensions,
-                                     input.type, scope.GetExceptionState());
+    auto* input_operand =
+        BuildInput(builder, "input", input.dimensions, input.data_type,
+                   scope.GetExceptionState());
     auto* output_operand =
         builder->relu(input_operand, scope.GetExceptionState());
     auto [graph, build_exception] =
@@ -2160,7 +3307,7 @@ struct ReluTester {
     ASSERT_TRUE(input_operand_iter != graph_info->id_to_operand_map.end());
     EXPECT_EQ(input_operand_iter->value->kind,
               blink_mojom::Operand::Kind::kInput);
-    EXPECT_EQ(input_operand_iter->value->data_type, expected.type);
+    EXPECT_EQ(input_operand_iter->value->data_type, expected.data_type);
     EXPECT_EQ(input_operand_iter->value->dimensions, input.dimensions);
     EXPECT_EQ(input_operand_iter->value->name, "input");
     // Verify the output `mojo::Operand`.
@@ -2170,7 +3317,7 @@ struct ReluTester {
     ASSERT_TRUE(output_operand_iter != graph_info->id_to_operand_map.end());
     EXPECT_EQ(output_operand_iter->value->kind,
               blink_mojom::Operand::Kind::kOutput);
-    EXPECT_EQ(output_operand_iter->value->data_type, expected.type);
+    EXPECT_EQ(output_operand_iter->value->data_type, expected.data_type);
     EXPECT_EQ(output_operand_iter->value->dimensions, expected.dimensions);
     EXPECT_EQ(output_operand_iter->value->name, "output");
     // Verify the `mojo::Operator`.
@@ -2196,34 +3343,45 @@ TEST_P(MLGraphTestMojo, ReluTest) {
   auto* builder = CreateGraphBuilder(scope, options);
   ASSERT_NE(builder, nullptr);
   {
+    // Test relu operator for 0-D scalar.
+    ReluTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                  .dimensions = {}},
+        .expected = {.data_type = blink_mojom::Operand::DataType::kFloat32,
+                     .dimensions = {}}}
+        .Test(*this, scope, builder);
+  }
+  {
     // Test relu operator for 1-D tensor.
     ReluTester{
-        .input = {.type = V8MLOperandType::Enum::kFloat32, .dimensions = {2}},
-        .expected = {.type = blink_mojom::Operand::DataType::kFloat32,
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                  .dimensions = {2}},
+        .expected = {.data_type = blink_mojom::Operand::DataType::kFloat32,
                      .dimensions = {2}}}
         .Test(*this, scope, builder);
   }
   {
     // Test relu operator for 2-D tensor.
-    ReluTester{.input = {.type = V8MLOperandType::Enum::kFloat16,
-                         .dimensions = {3, 7}},
-               .expected = {.type = blink_mojom::Operand::DataType::kFloat16,
-                            .dimensions = {3, 7}}}
+    ReluTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat16,
+                  .dimensions = {3, 7}},
+        .expected = {.data_type = blink_mojom::Operand::DataType::kFloat16,
+                     .dimensions = {3, 7}}}
         .Test(*this, scope, builder);
   }
   {
     // Test relu operator for 3-D tensor.
-    ReluTester{.input = {.type = V8MLOperandType::Enum::kInt32,
+    ReluTester{.input = {.data_type = V8MLOperandDataType::Enum::kInt32,
                          .dimensions = {1, 5, 3}},
-               .expected = {.type = blink_mojom::Operand::DataType::kInt32,
+               .expected = {.data_type = blink_mojom::Operand::DataType::kInt32,
                             .dimensions = {1, 5, 3}}}
         .Test(*this, scope, builder);
   }
   {
     // Test relu operator for 4-D tensor.
-    ReluTester{.input = {.type = V8MLOperandType::Enum::kUint8,
+    ReluTester{.input = {.data_type = V8MLOperandDataType::Enum::kUint8,
                          .dimensions = {1, 2, 2, 1}},
-               .expected = {.type = blink_mojom::Operand::DataType::kUint8,
+               .expected = {.data_type = blink_mojom::Operand::DataType::kUint8,
                             .dimensions = {1, 2, 2, 1}}}
         .Test(*this, scope, builder);
   }
@@ -2246,8 +3404,9 @@ struct Resample2dTester {
             V8TestingScope& scope,
             MLGraphBuilder* builder) {
     // Build the graph.
-    auto* input_operand = BuildInput(builder, "input", input.dimensions,
-                                     input.type, scope.GetExceptionState());
+    auto* input_operand =
+        BuildInput(builder, "input", input.dimensions, input.data_type,
+                   scope.GetExceptionState());
     MLResample2dOptions* ml_resample2d_options = MLResample2dOptions::Create();
     if (options.mode) {
       ml_resample2d_options->setMode(options.mode.value());
@@ -2284,7 +3443,8 @@ struct Resample2dTester {
     auto output_operand_iter =
         graph_info->id_to_operand_map.find(output_operand_id);
     ASSERT_TRUE(output_operand_iter != graph_info->id_to_operand_map.end());
-    EXPECT_EQ(output_operand_iter->value->data_type, expected_operand.type);
+    EXPECT_EQ(output_operand_iter->value->data_type,
+              expected_operand.data_type);
     EXPECT_EQ(output_operand_iter->value->dimensions,
               expected_operand.dimensions);
   }
@@ -2303,19 +3463,21 @@ TEST_P(MLGraphTestMojo, Resample2dTest) {
   auto* builder = CreateGraphBuilder(scope, options);
   {
     Resample2dTester{
-        .input = {.type = V8MLOperandType::Enum::kFloat32,
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                   .dimensions = {1, 3, 4, 4}},
-        .expected_operand = {.type = blink_mojom::Operand::DataType::kFloat32,
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat32,
                              .dimensions = {1, 3, 4, 4}}}
         .Test(*this, scope, builder);
   }
   {  // Test resample2d with mode =
      // "blink::V8MLInterpolationMode::Enum::kLinear".
     Resample2dTester{
-        .input = {.type = V8MLOperandType::Enum::kFloat32,
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                   .dimensions = {1, 1, 2, 4}},
         .options = {.mode = blink::V8MLInterpolationMode::Enum::kLinear},
-        .expected_operand = {.type = blink_mojom::Operand::DataType::kFloat32,
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat32,
                              .dimensions = {1, 1, 2, 4}},
         .expected_mode = blink_mojom::Resample2d::InterpolationMode::kLinear}
         .Test(*this, scope, builder);
@@ -2323,30 +3485,33 @@ TEST_P(MLGraphTestMojo, Resample2dTest) {
   {
     // Test resample2d with scales = {2.0, 2.0}.
     Resample2dTester{
-        .input = {.type = V8MLOperandType::Enum::kFloat32,
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                   .dimensions = {1, 1, 2, 4}},
         .options = {.scales = Vector<float>{2.0, 2.0}},
-        .expected_operand = {.type = blink_mojom::Operand::DataType::kFloat32,
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat32,
                              .dimensions = {1, 1, 4, 8}}}
         .Test(*this, scope, builder);
   }
   {
     // Test resample2d with scales = {0.5, 0.5}.
     Resample2dTester{
-        .input = {.type = V8MLOperandType::Enum::kFloat32,
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                   .dimensions = {1, 1, 2, 4}},
         .options = {.scales = Vector<float>{0.5, 0.5}},
-        .expected_operand = {.type = blink_mojom::Operand::DataType::kFloat32,
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat32,
                              .dimensions = {1, 1, 1, 2}}}
         .Test(*this, scope, builder);
   }
   {
     // Test resample2d with sizes = {3, 6}.
     Resample2dTester{
-        .input = {.type = V8MLOperandType::Enum::kFloat32,
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                   .dimensions = {1, 1, 2, 4}},
         .options = {.sizes = Vector<uint32_t>{3, 6}},
-        .expected_operand = {.type = blink_mojom::Operand::DataType::kFloat32,
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat32,
                              .dimensions = {1, 1, 3, 6}}}
         .Test(*this, scope, builder);
   }
@@ -2354,44 +3519,48 @@ TEST_P(MLGraphTestMojo, Resample2dTest) {
     // Test resample2d with sizes = {3, 6} and scales = {0.5, 0.5} which should
     // be ignored.
     Resample2dTester{
-        .input = {.type = V8MLOperandType::Enum::kFloat32,
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                   .dimensions = {1, 1, 2, 4}},
         .options = {.scales = Vector<float>{0.5, 0.5},
                     .sizes = Vector<uint32_t>{3, 6}},
-        .expected_operand = {.type = blink_mojom::Operand::DataType::kFloat32,
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat32,
                              .dimensions = {1, 1, 3, 6}}}
         .Test(*this, scope, builder);
   }
   {
     // Test resample2d with scales = {1.0, 2.0} and axes = {0, 1}.
     Resample2dTester{
-        .input = {.type = V8MLOperandType::Enum::kFloat32,
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                   .dimensions = {1, 1, 2, 4}},
         .options = {.scales = Vector<float>{1.0, 2.0},
                     .axes = Vector<uint32_t>{0, 1}},
-        .expected_operand = {.type = blink_mojom::Operand::DataType::kFloat32,
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat32,
                              .dimensions = {1, 2, 2, 4}}}
         .Test(*this, scope, builder);
   }
   {
     // Test resample2d with scales = {1.0, 2.0} and axes = {1, 2}.
     Resample2dTester{
-        .input = {.type = V8MLOperandType::Enum::kFloat32,
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                   .dimensions = {1, 1, 2, 4}},
         .options = {.scales = Vector<float>{1.0, 2.0},
                     .axes = Vector<uint32_t>{1, 2}},
-        .expected_operand = {.type = blink_mojom::Operand::DataType::kFloat32,
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat32,
                              .dimensions = {1, 1, 4, 4}}}
         .Test(*this, scope, builder);
   }
   {
     // Test resample2d with scales = {1.0, 2.0} and axes = {2, 3}.
     Resample2dTester{
-        .input = {.type = V8MLOperandType::Enum::kFloat32,
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                   .dimensions = {1, 1, 2, 4}},
         .options = {.scales = Vector<float>{1.0, 2.0},
                     .axes = Vector<uint32_t>{2, 3}},
-        .expected_operand = {.type = blink_mojom::Operand::DataType::kFloat32,
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat32,
                              .dimensions = {1, 1, 2, 8}}}
         .Test(*this, scope, builder);
   }
@@ -2399,15 +3568,16 @@ TEST_P(MLGraphTestMojo, Resample2dTest) {
 
 struct ReshapeTester {
   OperandInfoBlink input;
-  Vector<absl::optional<uint32_t>> new_shape;
+  Vector<uint32_t> new_shape;
   OperandInfoMojo expected;
 
   void Test(MLGraphTestMojo& helper,
             V8TestingScope& scope,
             MLGraphBuilder* builder) {
     // Build the graph.
-    auto* input_operand = BuildInput(builder, "input", input.dimensions,
-                                     input.type, scope.GetExceptionState());
+    auto* input_operand =
+        BuildInput(builder, "input", input.dimensions, input.data_type,
+                   scope.GetExceptionState());
     auto* output_operand =
         builder->reshape(input_operand, new_shape, scope.GetExceptionState());
     auto [graph, build_exception] =
@@ -2424,7 +3594,7 @@ struct ReshapeTester {
     auto output_operand_iter =
         graph_info->id_to_operand_map.find(output_operand_id);
     ASSERT_TRUE(output_operand_iter != graph_info->id_to_operand_map.end());
-    EXPECT_EQ(output_operand_iter->value->data_type, expected.type);
+    EXPECT_EQ(output_operand_iter->value->data_type, expected.data_type);
     EXPECT_EQ(output_operand_iter->value->dimensions, expected.dimensions);
   }
 };
@@ -2442,39 +3612,43 @@ TEST_P(MLGraphTestMojo, ReshapeTest) {
   auto* builder = CreateGraphBuilder(scope, options);
   ASSERT_NE(builder, nullptr);
   {
-    // Test reshaping 2-D tensor to 1-D tensor.
-    ReshapeTester{.input = {.type = V8MLOperandType::Enum::kFloat32,
-                            .dimensions = {2, 2}},
-                  .new_shape = {4},
-                  .expected = {.type = blink_mojom::Operand::DataType::kFloat32,
-                               .dimensions = {4}}}
+    // Test reshaping 1-D tensor to 0-D scalar.
+    ReshapeTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                  .dimensions = {1}},
+        .new_shape = {},
+        .expected = {.data_type = blink_mojom::Operand::DataType::kFloat32,
+                     .dimensions = {}}}
         .Test(*this, scope, builder);
   }
   {
-    // Test reshaping from 2-D tensor to 1-D tensor with calculated dimension.
-    ReshapeTester{.input = {.type = V8MLOperandType::Enum::kFloat16,
-                            .dimensions = {2, 2}},
-                  .new_shape = {absl::nullopt},
-                  .expected = {.type = blink_mojom::Operand::DataType::kFloat16,
-                               .dimensions = {4}}}
+    // Test reshaping 0-D scalar to 1-D tensor.
+    ReshapeTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                  .dimensions = {}},
+        .new_shape = {1},
+        .expected = {.data_type = blink_mojom::Operand::DataType::kFloat32,
+                     .dimensions = {1}}}
+        .Test(*this, scope, builder);
+  }
+  {
+    // Test reshaping 2-D tensor to 1-D tensor.
+    ReshapeTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                  .dimensions = {2, 2}},
+        .new_shape = {4},
+        .expected = {.data_type = blink_mojom::Operand::DataType::kFloat32,
+                     .dimensions = {4}}}
         .Test(*this, scope, builder);
   }
   {
     // Test reshaping from 4-D tensor to 2-D tensor.
-    ReshapeTester{.input = {.type = V8MLOperandType::Enum::kInt32,
-                            .dimensions = {1, 2, 2, 1}},
-                  .new_shape = {1, 4},
-                  .expected = {.type = blink_mojom::Operand::DataType::kInt32,
-                               .dimensions = {1, 4}}}
-        .Test(*this, scope, builder);
-  }
-  {
-    // Test reshaping from 4-D tensor to 2-D tensor with calculated dimension.
-    ReshapeTester{.input = {.type = V8MLOperandType::Enum::kUint8,
-                            .dimensions = {1, 2, 2, 1}},
-                  .new_shape = {1, absl::nullopt},
-                  .expected = {.type = blink_mojom::Operand::DataType::kUint8,
-                               .dimensions = {1, 4}}}
+    ReshapeTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kInt32,
+                  .dimensions = {1, 2, 2, 1}},
+        .new_shape = {1, 4},
+        .expected = {.data_type = blink_mojom::Operand::DataType::kInt32,
+                     .dimensions = {1, 4}}}
         .Test(*this, scope, builder);
   }
 }
@@ -2497,8 +3671,9 @@ struct FloatingPointUnaryTester {
             MLGraphBuilder* builder,
             FloatingPointUnaryKind kind) {
     // Build the graph.
-    auto* input_operand = BuildInput(builder, "input", input.dimensions,
-                                     input.type, scope.GetExceptionState());
+    auto* input_operand =
+        BuildInput(builder, "input", input.dimensions, input.data_type,
+                   scope.GetExceptionState());
     MLOperand* output_operand = nullptr;
     switch (kind) {
       case FloatingPointUnaryKind::kSigmoid:
@@ -2529,7 +3704,7 @@ struct FloatingPointUnaryTester {
     ASSERT_TRUE(input_operand_iter != graph_info->id_to_operand_map.end());
     EXPECT_EQ(input_operand_iter->value->kind,
               blink_mojom::Operand::Kind::kInput);
-    EXPECT_EQ(input_operand_iter->value->data_type, expected.type);
+    EXPECT_EQ(input_operand_iter->value->data_type, expected.data_type);
     EXPECT_EQ(input_operand_iter->value->dimensions, input.dimensions);
     EXPECT_EQ(input_operand_iter->value->name, "input");
 
@@ -2540,7 +3715,7 @@ struct FloatingPointUnaryTester {
     ASSERT_TRUE(output_operand_iter != graph_info->id_to_operand_map.end());
     EXPECT_EQ(output_operand_iter->value->kind,
               blink_mojom::Operand::Kind::kOutput);
-    EXPECT_EQ(output_operand_iter->value->data_type, expected.type);
+    EXPECT_EQ(output_operand_iter->value->data_type, expected.data_type);
     EXPECT_EQ(output_operand_iter->value->dimensions, expected.dimensions);
     EXPECT_EQ(output_operand_iter->value->name, "output");
 
@@ -2578,37 +3753,47 @@ TEST_P(MLGraphTestMojo, FloatingPointUnaryTest) {
   auto* builder = CreateGraphBuilder(scope, options);
   ASSERT_NE(builder, nullptr);
   {
+    // Test unary operator for 0-D scalar.
+    FloatingPointUnaryTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                  .dimensions = {}},
+        .expected = {.data_type = blink_mojom::Operand::DataType::kFloat32,
+                     .dimensions = {}}}
+        .Test(*this, scope, builder);
+  }
+  {
     // Test unary operator for 1-D tensor.
     FloatingPointUnaryTester{
-        .input = {.type = V8MLOperandType::Enum::kFloat32, .dimensions = {2}},
-        .expected = {.type = blink_mojom::Operand::DataType::kFloat32,
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                  .dimensions = {2}},
+        .expected = {.data_type = blink_mojom::Operand::DataType::kFloat32,
                      .dimensions = {2}}}
         .Test(*this, scope, builder);
   }
   {
     // Test unary operator for 2-D tensor.
     FloatingPointUnaryTester{
-        .input = {.type = V8MLOperandType::Enum::kFloat16,
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat16,
                   .dimensions = {3, 7}},
-        .expected = {.type = blink_mojom::Operand::DataType::kFloat16,
+        .expected = {.data_type = blink_mojom::Operand::DataType::kFloat16,
                      .dimensions = {3, 7}}}
         .Test(*this, scope, builder);
   }
   {
     // Test unary operator for 3-D tensor.
     FloatingPointUnaryTester{
-        .input = {.type = V8MLOperandType::Enum::kFloat32,
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                   .dimensions = {1, 5, 3}},
-        .expected = {.type = blink_mojom::Operand::DataType::kFloat32,
+        .expected = {.data_type = blink_mojom::Operand::DataType::kFloat32,
                      .dimensions = {1, 5, 3}}}
         .Test(*this, scope, builder);
   }
   {
     // Test unary operator for 4-D tensor.
     FloatingPointUnaryTester{
-        .input = {.type = V8MLOperandType::Enum::kFloat32,
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                   .dimensions = {1, 2, 2, 1}},
-        .expected = {.type = blink_mojom::Operand::DataType::kFloat32,
+        .expected = {.data_type = blink_mojom::Operand::DataType::kFloat32,
                      .dimensions = {1, 2, 2, 1}}}
         .Test(*this, scope, builder);
   }
@@ -2627,8 +3812,9 @@ struct SliceTester {
   void Test(MLGraphTestMojo& helper,
             V8TestingScope& scope,
             MLGraphBuilder* builder) {
-    auto* input_operand = BuildInput(builder, "input", input.dimensions,
-                                     input.type, scope.GetExceptionState());
+    auto* input_operand =
+        BuildInput(builder, "input", input.dimensions, input.data_type,
+                   scope.GetExceptionState());
     auto* output_operand =
         builder->slice(input_operand, options.starts, options.sizes,
                        scope.GetExceptionState());
@@ -2655,7 +3841,8 @@ struct SliceTester {
     auto output_operand_iter =
         graph_info->id_to_operand_map.find(output_operand_id);
     ASSERT_TRUE(output_operand_iter != graph_info->id_to_operand_map.end());
-    EXPECT_EQ(output_operand_iter->value->data_type, expected_operand.type);
+    EXPECT_EQ(output_operand_iter->value->data_type,
+              expected_operand.data_type);
     EXPECT_EQ(output_operand_iter->value->dimensions,
               expected_operand.dimensions);
   }
@@ -2674,20 +3861,22 @@ TEST_P(MLGraphTestMojo, SliceTest) {
   auto* builder = CreateGraphBuilder(scope, options);
   {
     SliceTester{
-        .input = {.type = V8MLOperandType::Enum::kFloat32,
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                   .dimensions = {4, 4}},
         .options = {.starts = Vector<uint32_t>({0, 0}),
                     .sizes = Vector<uint32_t>({4, 4})},
-        .expected_operand = {.type = blink_mojom::Operand::DataType::kFloat32,
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat32,
                              .dimensions = {4, 4}},
         .expected_attributes = {.starts = {0, 0}, .sizes = {4, 4}}}
         .Test(*this, scope, builder);
     SliceTester{
-        .input = {.type = V8MLOperandType::Enum::kFloat32,
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                   .dimensions = {1, 2, 3, 4, 5}},
         .options = {.starts = Vector<uint32_t>({0, 1, 2, 3, 4}),
                     .sizes = Vector<uint32_t>({1, 1, 1, 1, 1})},
-        .expected_operand = {.type = blink_mojom::Operand::DataType::kFloat32,
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat32,
                              .dimensions = {1, 1, 1, 1, 1}},
         .expected_attributes = {.starts = {0, 1, 2, 3, 4},
                                 .sizes = {1, 1, 1, 1, 1}}}
@@ -2703,8 +3892,9 @@ struct SoftmaxTester {
             V8TestingScope& scope,
             MLGraphBuilder* builder) {
     // Build the graph.
-    auto* input_operand = BuildInput(builder, "input", input.dimensions,
-                                     input.type, scope.GetExceptionState());
+    auto* input_operand =
+        BuildInput(builder, "input", input.dimensions, input.data_type,
+                   scope.GetExceptionState());
     auto* output_operand =
         builder->softmax(input_operand, scope.GetExceptionState());
     auto [graph, build_exception] =
@@ -2721,7 +3911,7 @@ struct SoftmaxTester {
     auto output_operand_iter =
         graph_info->id_to_operand_map.find(output_operand_id);
     ASSERT_TRUE(output_operand_iter != graph_info->id_to_operand_map.end());
-    EXPECT_EQ(output_operand_iter->value->data_type, expected.type);
+    EXPECT_EQ(output_operand_iter->value->data_type, expected.data_type);
     EXPECT_EQ(output_operand_iter->value->dimensions, expected.dimensions);
   }
 };
@@ -2740,18 +3930,20 @@ TEST_P(MLGraphTestMojo, SoftmaxTest) {
   ASSERT_NE(builder, nullptr);
   {
     // Test building softmax with float32 input.
-    SoftmaxTester{.input = {.type = V8MLOperandType::Enum::kFloat32,
-                            .dimensions = {2, 4}},
-                  .expected = {.type = blink_mojom::Operand::DataType::kFloat32,
-                               .dimensions = {2, 4}}}
+    SoftmaxTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                  .dimensions = {2, 4}},
+        .expected = {.data_type = blink_mojom::Operand::DataType::kFloat32,
+                     .dimensions = {2, 4}}}
         .Test(*this, scope, builder);
   }
   {
     // Test building softmax with float16 input.
-    SoftmaxTester{.input = {.type = V8MLOperandType::Enum::kFloat16,
-                            .dimensions = {1, 5}},
-                  .expected = {.type = blink_mojom::Operand::DataType::kFloat16,
-                               .dimensions = {1, 5}}}
+    SoftmaxTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat16,
+                  .dimensions = {1, 5}},
+        .expected = {.data_type = blink_mojom::Operand::DataType::kFloat16,
+                     .dimensions = {1, 5}}}
         .Test(*this, scope, builder);
   }
 }
@@ -2766,8 +3958,9 @@ struct TransposeTester {
             V8TestingScope& scope,
             MLGraphBuilder* builder) {
     // Build the graph.
-    auto* input_operand = BuildInput(builder, "input", input.dimensions,
-                                     input.type, scope.GetExceptionState());
+    auto* input_operand =
+        BuildInput(builder, "input", input.dimensions, input.data_type,
+                   scope.GetExceptionState());
     MLTransposeOptions* options = MLTransposeOptions::Create();
     if (permutation.has_value()) {
       options->setPermutation(permutation.value());
@@ -2795,7 +3988,7 @@ struct TransposeTester {
     auto input_operand_iter =
         graph_info->id_to_operand_map.find(input_operand_id);
     ASSERT_TRUE(input_operand_iter != graph_info->id_to_operand_map.end());
-    EXPECT_EQ(input_operand_iter->value->data_type, expected_operand.type);
+    EXPECT_EQ(input_operand_iter->value->data_type, expected_operand.data_type);
     EXPECT_EQ(input_operand_iter->value->dimensions, input.dimensions);
 
     // Validate the output operand.
@@ -2805,7 +3998,8 @@ struct TransposeTester {
     auto output_operand_iter =
         graph_info->id_to_operand_map.find(output_operand_id);
     ASSERT_TRUE(output_operand_iter != graph_info->id_to_operand_map.end());
-    EXPECT_EQ(output_operand_iter->value->data_type, expected_operand.type);
+    EXPECT_EQ(output_operand_iter->value->data_type,
+              expected_operand.data_type);
     EXPECT_EQ(output_operand_iter->value->dimensions,
               expected_operand.dimensions);
   }
@@ -2825,9 +4019,10 @@ TEST_P(MLGraphTestMojo, TransposeTest) {
   {
     // Test transpose operator with default options.
     TransposeTester{
-        .input = {.type = V8MLOperandType::Enum::kFloat32,
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                   .dimensions = {1, 2, 3, 4}},
-        .expected_operand = {.type = blink_mojom::Operand::DataType::kFloat32,
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat32,
                              .dimensions = {4, 3, 2, 1}},
         .expected_permutation = {3, 2, 1, 0}}
         .Test(*this, scope, builder);
@@ -2835,12 +4030,176 @@ TEST_P(MLGraphTestMojo, TransposeTest) {
   {
     // Test transpose operator with a given permutation.
     TransposeTester{
-        .input = {.type = V8MLOperandType::Enum::kFloat16,
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat16,
                   .dimensions = {1, 2, 3, 4}},
         .permutation = Vector<uint32_t>{3, 0, 2, 1},
-        .expected_operand = {.type = blink_mojom::Operand::DataType::kFloat16,
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat16,
                              .dimensions = {4, 1, 3, 2}},
         .expected_permutation = {3, 0, 2, 1}}
+        .Test(*this, scope, builder);
+  }
+}
+
+struct WhereTester {
+  OperandInfoBlink condition;
+  OperandInfoBlink true_value;
+  OperandInfoBlink false_value;
+  OperandInfoMojo expected_operand;
+
+  void Test(MLGraphTestMojo& helper,
+            V8TestingScope& scope,
+            MLGraphBuilder* builder) {
+    // Build the graph.
+    auto* condition_operand =
+        BuildInput(builder, "condition", condition.dimensions,
+                   condition.data_type, scope.GetExceptionState());
+    auto* true_value_operand =
+        BuildInput(builder, "true_value", true_value.dimensions,
+                   true_value.data_type, scope.GetExceptionState());
+    auto* false_value_operand =
+        BuildInput(builder, "false_value", false_value.dimensions,
+                   false_value.data_type, scope.GetExceptionState());
+    auto* output_operand =
+        builder->where(condition_operand, true_value_operand,
+                       false_value_operand, scope.GetExceptionState());
+    auto [graph, build_exception] =
+        helper.BuildGraph(scope, builder, {{"output", output_operand}});
+    ASSERT_NE(graph, nullptr);
+
+    auto graph_info = helper.GetGraphInfo();
+    // Verify the graph information of mojo are as expected.
+    EXPECT_EQ(graph_info->id_to_operand_map.size(), 4u);
+    EXPECT_EQ(graph_info->input_operands.size(), 3u);
+
+    // Verify the condition `mojo::Operand`.
+    auto condition_operand_id = graph_info->input_operands[0];
+    auto condition_operand_iter =
+        graph_info->id_to_operand_map.find(condition_operand_id);
+    ASSERT_TRUE(condition_operand_iter != graph_info->id_to_operand_map.end());
+    EXPECT_EQ(condition_operand_iter->value->kind,
+              blink_mojom::Operand::Kind::kInput);
+    EXPECT_EQ(condition_operand_iter->value->data_type,
+              blink_mojom::Operand::DataType::kUint8);
+    EXPECT_EQ(condition_operand_iter->value->dimensions, condition.dimensions);
+    EXPECT_EQ(condition_operand_iter->value->name, "condition");
+
+    // Verify the true value `mojo::Operand`.
+    auto true_value_operand_id = graph_info->input_operands[1];
+    auto true_value_operand_iter =
+        graph_info->id_to_operand_map.find(true_value_operand_id);
+    ASSERT_TRUE(true_value_operand_iter != graph_info->id_to_operand_map.end());
+    EXPECT_EQ(true_value_operand_iter->value->kind,
+              blink_mojom::Operand::Kind::kInput);
+    EXPECT_EQ(true_value_operand_iter->value->data_type,
+              expected_operand.data_type);
+    EXPECT_EQ(true_value_operand_iter->value->dimensions,
+              true_value.dimensions);
+    EXPECT_EQ(true_value_operand_iter->value->name, "true_value");
+
+    // Verify the false value `mojo::Operand`.
+    auto false_value_operand_id = graph_info->input_operands[2];
+    auto false_value_operand_iter =
+        graph_info->id_to_operand_map.find(false_value_operand_id);
+    ASSERT_TRUE(false_value_operand_iter !=
+                graph_info->id_to_operand_map.end());
+    EXPECT_EQ(false_value_operand_iter->value->kind,
+              blink_mojom::Operand::Kind::kInput);
+    EXPECT_EQ(false_value_operand_iter->value->data_type,
+              expected_operand.data_type);
+    EXPECT_EQ(false_value_operand_iter->value->dimensions,
+              false_value.dimensions);
+    EXPECT_EQ(false_value_operand_iter->value->name, "false_value");
+
+    // Verify the output `mojo::Operand`.
+    ASSERT_EQ(graph_info->output_operands.size(), 1u);
+    auto output_operand_id = graph_info->output_operands[0];
+    auto output_operand_iter =
+        graph_info->id_to_operand_map.find(output_operand_id);
+    ASSERT_TRUE(output_operand_iter != graph_info->id_to_operand_map.end());
+    EXPECT_EQ(output_operand_iter->value->data_type,
+              expected_operand.data_type);
+    EXPECT_EQ(output_operand_iter->value->dimensions,
+              expected_operand.dimensions);
+    EXPECT_EQ(output_operand_iter->value->name, "output");
+
+    // Verify the `mojo::Operator`.
+    ASSERT_EQ(graph_info->operations.size(), 1u);
+    auto& operation = graph_info->operations[0];
+    EXPECT_EQ(operation->is_where(), true);
+  }
+};
+
+TEST_P(MLGraphTestMojo, WhereTest) {
+  V8TestingScope scope;
+  // Bind fake WebNN Context in the service for testing.
+  ScopedWebNNServiceBinder scoped_setup_binder(*this, scope);
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      webnn::features::kEnableMachineLearningNeuralNetworkService);
+  auto* options = MLContextOptions::Create();
+  // Create WebNN Context with GPU device type.
+  options->setDeviceType(V8MLDeviceType::Enum::kGpu);
+  auto* builder = CreateGraphBuilder(scope, options);
+  ASSERT_NE(builder, nullptr);
+  {
+    // Test building where with 2-D condition, 2-D true_value and 2-D
+    // false_value using broadcast.
+    WhereTester{
+        .condition = {.data_type = V8MLOperandDataType::Enum::kUint8,
+                      .dimensions = {2, 1}},
+        .true_value = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                       .dimensions = {2, 4}},
+        .false_value = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                        .dimensions = {2, 4}},
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat32,
+                             .dimensions = {2, 4}}}
+        .Test(*this, scope, builder);
+  }
+  {
+    // Test building where with 2-D condition, 2-D true_value and 3-D
+    // false_value using broadcast.
+    WhereTester{
+        .condition = {.data_type = V8MLOperandDataType::Enum::kUint8,
+                      .dimensions = {1, 4}},
+        .true_value = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                       .dimensions = {3, 4}},
+        .false_value = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                        .dimensions = {2, 3, 4}},
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat32,
+                             .dimensions = {2, 3, 4}}}
+        .Test(*this, scope, builder);
+  }
+  {
+    // Test building where with 3-D condition, 3-D true_value and 2-D
+    // false_value using broadcast.
+    WhereTester{
+        .condition = {.data_type = V8MLOperandDataType::Enum::kUint8,
+                      .dimensions = {2, 1, 4}},
+        .true_value = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                       .dimensions = {2, 3, 4}},
+        .false_value = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                        .dimensions = {1, 4}},
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat32,
+                             .dimensions = {2, 3, 4}}}
+        .Test(*this, scope, builder);
+  }
+  {
+    // Test building where with 4-D condition, 3-D true_value and 2-D
+    // false_value using broadcast.
+    WhereTester{
+        .condition = {.data_type = V8MLOperandDataType::Enum::kUint8,
+                      .dimensions = {2, 3, 4, 5}},
+        .true_value = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                       .dimensions = {3, 4, 5}},
+        .false_value = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                        .dimensions = {4, 5}},
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat32,
+                             .dimensions = {2, 3, 4, 5}}}
         .Test(*this, scope, builder);
   }
 }
@@ -2873,8 +4232,9 @@ struct ReduceTester {
             MLGraphBuilder* builder,
             ReduceKind kind) {
     // Build the graph.
-    auto* input_operand = BuildInput(builder, "input", input.dimensions,
-                                     input.type, scope.GetExceptionState());
+    auto* input_operand =
+        BuildInput(builder, "input", input.dimensions, input.data_type,
+                   scope.GetExceptionState());
     MLReduceOptions* options = MLReduceOptions::Create();
     if (axes.has_value()) {
       options->setAxes(axes.value());
@@ -2941,7 +4301,7 @@ struct ReduceTester {
     auto input_operand_iter =
         graph_info->id_to_operand_map.find(input_operand_id);
     ASSERT_TRUE(input_operand_iter != graph_info->id_to_operand_map.end());
-    EXPECT_EQ(input_operand_iter->value->data_type, expected_operand.type);
+    EXPECT_EQ(input_operand_iter->value->data_type, expected_operand.data_type);
     EXPECT_EQ(input_operand_iter->value->dimensions, input.dimensions);
 
     // Validate the output operand.
@@ -2951,7 +4311,8 @@ struct ReduceTester {
     auto output_operand_iter =
         graph_info->id_to_operand_map.find(output_operand_id);
     ASSERT_TRUE(output_operand_iter != graph_info->id_to_operand_map.end());
-    EXPECT_EQ(output_operand_iter->value->data_type, expected_operand.type);
+    EXPECT_EQ(output_operand_iter->value->data_type,
+              expected_operand.data_type);
     EXPECT_EQ(output_operand_iter->value->dimensions,
               expected_operand.dimensions);
   }
@@ -2972,10 +4333,11 @@ TEST_P(MLGraphTestMojo, ReduceTest) {
   {
     // Test reduce operator with default options.
     ReduceTester{
-        .input = {.type = V8MLOperandType::Enum::kFloat32,
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                   .dimensions = {1, 2, 3, 4}},
-        .expected_operand = {.type = blink_mojom::Operand::DataType::kFloat32,
-                             .dimensions = {1}},
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat32,
+                             .dimensions = {}},
         .expected_axes = {0, 1, 2, 3},
         .expected_keep_dimensions = false}
         .Test(*this, scope, builder);
@@ -2983,11 +4345,12 @@ TEST_P(MLGraphTestMojo, ReduceTest) {
   {
     // Test reduce operator with a given axes and keep_dimensions.
     ReduceTester{
-        .input = {.type = V8MLOperandType::Enum::kFloat16,
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat16,
                   .dimensions = {1, 2, 3, 4}},
         .axes = Vector<uint32_t>{1},
         .keep_dimensions = true,
-        .expected_operand = {.type = blink_mojom::Operand::DataType::kFloat16,
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat16,
                              .dimensions = {1, 1, 3, 4}},
         .expected_axes = {1},
         .expected_keep_dimensions = true}
@@ -3005,7 +4368,7 @@ struct ConstantTester {
             MLGraphBuilder* builder) {
     // Build the graph.
     auto* constant_operand =
-        BuildConstant(builder, constant.dimensions, constant.type,
+        BuildConstant(builder, constant.dimensions, constant.data_type,
                       constant.values, scope.GetExceptionState());
     auto* output_operand =
         builder->relu(constant_operand, scope.GetExceptionState());
@@ -3025,7 +4388,7 @@ struct ConstantTester {
       ASSERT_TRUE(constant_operand_iter != graph_info->id_to_operand_map.end());
       EXPECT_EQ(constant_operand_iter->value->kind,
                 blink_mojom::Operand::Kind::kConstant);
-      EXPECT_EQ(constant_operand_iter->value->data_type, expected.type);
+      EXPECT_EQ(constant_operand_iter->value->data_type, expected.data_type);
       EXPECT_EQ(constant_operand_iter->value->dimensions, expected.dimensions);
       EXPECT_EQ(constant_operand_iter->value->name.empty(), true);
       // Verify the constant data in the mojo.
@@ -3052,12 +4415,23 @@ TEST_P(MLGraphTestMojo, ConstantTest) {
   auto* builder = CreateGraphBuilder(scope, options);
   ASSERT_NE(builder, nullptr);
   {
+    // Test scalar constant operand.
+    ConstantTester<float>{
+        .constant = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                     .dimensions = {},
+                     .values = {1.0}},
+        .expected = {.data_type = blink_mojom::Operand::DataType::kFloat32,
+                     .dimensions = {}},
+        .expected_constant_data = {1.0}}
+        .Test(*this, scope, builder);
+  }
+  {
     // Test Constant operand for Float32 data type.
     ConstantTester<float>{
-        .constant = {.type = V8MLOperandType::Enum::kFloat32,
+        .constant = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                      .dimensions = {2, 3},
                      .values = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0}},
-        .expected = {.type = blink_mojom::Operand::DataType::kFloat32,
+        .expected = {.data_type = blink_mojom::Operand::DataType::kFloat32,
                      .dimensions = {2, 3}},
         .expected_constant_data = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0}}
         .Test(*this, scope, builder);
@@ -3065,10 +4439,10 @@ TEST_P(MLGraphTestMojo, ConstantTest) {
   {
     // Test Constant operand for Float16 data type.
     ConstantTester<uint16_t>{
-        .constant = {.type = V8MLOperandType::Enum::kFloat16,
+        .constant = {.data_type = V8MLOperandDataType::Enum::kFloat16,
                      .dimensions = {2, 3},
                      .values = {1, 2, 3, 4, 5, 6}},
-        .expected = {.type = blink_mojom::Operand::DataType::kFloat16,
+        .expected = {.data_type = blink_mojom::Operand::DataType::kFloat16,
                      .dimensions = {2, 3}},
         .expected_constant_data = {1, 2, 3, 4, 5, 6}}
         .Test(*this, scope, builder);
@@ -3076,10 +4450,10 @@ TEST_P(MLGraphTestMojo, ConstantTest) {
   {
     // Test Constant operand for Int32 data type.
     ConstantTester<int32_t>{
-        .constant = {.type = V8MLOperandType::Enum::kInt32,
+        .constant = {.data_type = V8MLOperandDataType::Enum::kInt32,
                      .dimensions = {2, 3},
                      .values = {1, 2, 3, 4, 5, 6}},
-        .expected = {.type = blink_mojom::Operand::DataType::kInt32,
+        .expected = {.data_type = blink_mojom::Operand::DataType::kInt32,
                      .dimensions = {2, 3}},
         .expected_constant_data = {1, 2, 3, 4, 5, 6}}
         .Test(*this, scope, builder);
@@ -3087,10 +4461,10 @@ TEST_P(MLGraphTestMojo, ConstantTest) {
   {
     // Test Constant operand for UInt32 data type.
     ConstantTester<uint32_t>{
-        .constant = {.type = V8MLOperandType::Enum::kUint32,
+        .constant = {.data_type = V8MLOperandDataType::Enum::kUint32,
                      .dimensions = {2, 3},
                      .values = {1, 2, 3, 4, 5, 6}},
-        .expected = {.type = blink_mojom::Operand::DataType::kUint32,
+        .expected = {.data_type = blink_mojom::Operand::DataType::kUint32,
                      .dimensions = {2, 3}},
         .expected_constant_data = {1, 2, 3, 4, 5, 6}}
         .Test(*this, scope, builder);
@@ -3098,10 +4472,10 @@ TEST_P(MLGraphTestMojo, ConstantTest) {
   {
     // Test Constant operand for Int8 data type.
     ConstantTester<int8_t>{
-        .constant = {.type = V8MLOperandType::Enum::kInt8,
+        .constant = {.data_type = V8MLOperandDataType::Enum::kInt8,
                      .dimensions = {2, 3},
                      .values = {1, 2, 3, 4, 5, 6}},
-        .expected = {.type = blink_mojom::Operand::DataType::kInt8,
+        .expected = {.data_type = blink_mojom::Operand::DataType::kInt8,
                      .dimensions = {2, 3}},
         .expected_constant_data = {1, 2, 3, 4, 5, 6}}
         .Test(*this, scope, builder);
@@ -3109,10 +4483,10 @@ TEST_P(MLGraphTestMojo, ConstantTest) {
   {
     // Test Constant operand for UInt8 data type.
     ConstantTester<uint8_t>{
-        .constant = {.type = V8MLOperandType::Enum::kUint8,
+        .constant = {.data_type = V8MLOperandDataType::Enum::kUint8,
                      .dimensions = {2, 3},
                      .values = {1, 2, 3, 4, 5, 6}},
-        .expected = {.type = blink_mojom::Operand::DataType::kUint8,
+        .expected = {.data_type = blink_mojom::Operand::DataType::kUint8,
                      .dimensions = {2, 3}},
         .expected_constant_data = {1, 2, 3, 4, 5, 6}}
         .Test(*this, scope, builder);
@@ -3128,8 +4502,9 @@ struct SplitTester {
   void Test(MLGraphTestMojo& helper,
             V8TestingScope& scope,
             MLGraphBuilder* builder) {
-    auto* input_operand = BuildInput(builder, "input", input.dimensions,
-                                     input.type, scope.GetExceptionState());
+    auto* input_operand =
+        BuildInput(builder, "input", input.dimensions, input.data_type,
+                   scope.GetExceptionState());
     auto* attributes = MLSplitOptions::Create();
     if (axis.has_value()) {
       attributes->setAxis(axis.value());
@@ -3164,7 +4539,7 @@ struct SplitTester {
       auto output_operand_iter =
           graph_info->id_to_operand_map.find(output_operand_id);
       ASSERT_TRUE(output_operand_iter != graph_info->id_to_operand_map.end());
-      EXPECT_EQ(output_operand_iter->value->data_type, expected[i].type);
+      EXPECT_EQ(output_operand_iter->value->data_type, expected[i].data_type);
       EXPECT_EQ(output_operand_iter->value->dimensions, expected[i].dimensions);
     }
   }
@@ -3181,29 +4556,307 @@ TEST_P(MLGraphTestMojo, SplitTest) {
   // Create WebNN Context with GPU device type.
   options->setDeviceType(V8MLDeviceType::Enum::kGpu);
   auto* builder = CreateGraphBuilder(scope, options);
-  using v8 = V8MLOperandType::Enum;
+  using v8 = V8MLOperandDataType::Enum;
   using blink = blink_mojom::Operand::DataType;
   {
-    SplitTester{.input = {.type = v8::kFloat32, .dimensions = {2, 2}},
-                .splits = 2,
-                .expected = {{.type = blink::kFloat32, .dimensions = {1, 2}},
-                             {.type = blink::kFloat32, .dimensions = {1, 2}}}}
+    SplitTester{
+        .input = {.data_type = v8::kFloat32, .dimensions = {2, 2}},
+        .splits = 2u,
+        .expected = {{.data_type = blink::kFloat32, .dimensions = {1, 2}},
+                     {.data_type = blink::kFloat32, .dimensions = {1, 2}}}}
         .Test(*this, scope, builder);
   }
   {
-    SplitTester{.input = {.type = v8::kFloat32, .dimensions = {2, 2}},
-                .splits = 2,
-                .axis = 1,
-                .expected = {{.type = blink::kFloat32, .dimensions = {2, 1}},
-                             {.type = blink::kFloat32, .dimensions = {2, 1}}}}
+    SplitTester{
+        .input = {.data_type = v8::kFloat32, .dimensions = {2, 2}},
+        .splits = 2u,
+        .axis = 1,
+        .expected = {{.data_type = blink::kFloat32, .dimensions = {2, 1}},
+                     {.data_type = blink::kFloat32, .dimensions = {2, 1}}}}
         .Test(*this, scope, builder);
   }
   {
-    SplitTester{.input = {.type = v8::kFloat32, .dimensions = {6, 2}},
-                .splits = Vector<uint32_t>{1, 2, 3},
-                .expected = {{.type = blink::kFloat32, .dimensions = {1, 2}},
-                             {.type = blink::kFloat32, .dimensions = {2, 2}},
-                             {.type = blink::kFloat32, .dimensions = {3, 2}}}}
+    SplitTester{
+        .input = {.data_type = v8::kFloat32, .dimensions = {6, 2}},
+        .splits = Vector<uint32_t>{1, 2, 3},
+        .expected = {{.data_type = blink::kFloat32, .dimensions = {1, 2}},
+                     {.data_type = blink::kFloat32, .dimensions = {2, 2}},
+                     {.data_type = blink::kFloat32, .dimensions = {3, 2}}}}
+        .Test(*this, scope, builder);
+  }
+}
+
+struct CastTester {
+  OperandInfoBlink input;
+  V8MLOperandDataType::Enum output_data_type;
+  OperandInfoMojo expected_operand;
+
+  void Test(MLGraphTestMojo& helper,
+            V8TestingScope& scope,
+            MLGraphBuilder* builder) {
+    // Build the graph.
+    auto* input_operand =
+        BuildInput(builder, "input", input.dimensions, input.data_type,
+                   scope.GetExceptionState());
+    auto* output_operand =
+        builder->cast(input_operand, V8MLOperandDataType(output_data_type),
+                      scope.GetExceptionState());
+    auto [graph, build_exception] =
+        helper.BuildGraph(scope, builder, {{"output", output_operand}});
+    ASSERT_NE(graph, nullptr);
+
+    auto graph_info = helper.GetGraphInfo();
+    // Verify the graph information of mojo are as expected.
+    ASSERT_EQ(graph_info->operations.size(), 1u);
+    auto& operation = graph_info->operations[0];
+    EXPECT_EQ(operation->is_element_wise_unary(), true);
+    webnn::mojom::blink::ElementWiseUnaryPtr& element_wise_unary =
+        operation->get_element_wise_unary();
+    EXPECT_EQ(element_wise_unary->kind,
+              blink_mojom::ElementWiseUnary::Kind::kCast);
+    EXPECT_EQ(graph_info->output_operands.size(), 1u);
+    auto output_operand_id = graph_info->output_operands[0];
+    auto output_operand_iter =
+        graph_info->id_to_operand_map.find(output_operand_id);
+    ASSERT_TRUE(output_operand_iter != graph_info->id_to_operand_map.end());
+    EXPECT_EQ(output_operand_iter->value->data_type,
+              expected_operand.data_type);
+    EXPECT_EQ(output_operand_iter->value->dimensions,
+              expected_operand.dimensions);
+  }
+};
+
+TEST_P(MLGraphTestMojo, CastTester) {
+  V8TestingScope scope;
+  // Bind fake WebNN Context in the service for testing.
+  ScopedWebNNServiceBinder scoped_setup_binder(*this, scope);
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      webnn::features::kEnableMachineLearningNeuralNetworkService);
+  auto* options = MLContextOptions::Create();
+  // Create WebNN Context with GPU device type.
+  options->setDeviceType(V8MLDeviceType::Enum::kGpu);
+  auto* builder = CreateGraphBuilder(scope, options);
+  {
+    CastTester{.input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                         .dimensions = {2, 2}},
+               .output_data_type = V8MLOperandDataType::Enum::kInt32,
+               .expected_operand = {.data_type =
+                                        blink_mojom::Operand::DataType::kInt32,
+                                    .dimensions = {2, 2}}}
+        .Test(*this, scope, builder);
+    CastTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                  .dimensions = {2, 2}},
+        .output_data_type = V8MLOperandDataType::Enum::kFloat16,
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat16,
+                             .dimensions = {2, 2}}}
+        .Test(*this, scope, builder);
+    CastTester{.input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                         .dimensions = {2, 2}},
+               .output_data_type = V8MLOperandDataType::Enum::kUint32,
+               .expected_operand = {.data_type =
+                                        blink_mojom::Operand::DataType::kUint32,
+                                    .dimensions = {2, 2}}}
+        .Test(*this, scope, builder);
+    CastTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                  .dimensions = {2, 2}},
+        .output_data_type = V8MLOperandDataType::Enum::kInt8,
+        .expected_operand = {.data_type = blink_mojom::Operand::DataType::kInt8,
+                             .dimensions = {2, 2}}}
+        .Test(*this, scope, builder);
+    CastTester{.input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                         .dimensions = {2, 2}},
+               .output_data_type = V8MLOperandDataType::Enum::kUint8,
+               .expected_operand = {.data_type =
+                                        blink_mojom::Operand::DataType::kUint8,
+                                    .dimensions = {2, 2}}}
+        .Test(*this, scope, builder);
+    CastTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat16,
+                  .dimensions = {2, 2}},
+        .output_data_type = V8MLOperandDataType::Enum::kFloat32,
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat32,
+                             .dimensions = {2, 2}}}
+        .Test(*this, scope, builder);
+    CastTester{.input = {.data_type = V8MLOperandDataType::Enum::kFloat16,
+                         .dimensions = {2, 2}},
+               .output_data_type = V8MLOperandDataType::Enum::kInt32,
+               .expected_operand = {.data_type =
+                                        blink_mojom::Operand::DataType::kInt32,
+                                    .dimensions = {2, 2}}}
+        .Test(*this, scope, builder);
+    CastTester{.input = {.data_type = V8MLOperandDataType::Enum::kFloat16,
+                         .dimensions = {2, 2}},
+               .output_data_type = V8MLOperandDataType::Enum::kUint32,
+               .expected_operand = {.data_type =
+                                        blink_mojom::Operand::DataType::kUint32,
+                                    .dimensions = {2, 2}}}
+        .Test(*this, scope, builder);
+    CastTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat16,
+                  .dimensions = {2, 2}},
+        .output_data_type = V8MLOperandDataType::Enum::kInt8,
+        .expected_operand = {.data_type = blink_mojom::Operand::DataType::kInt8,
+                             .dimensions = {2, 2}}}
+        .Test(*this, scope, builder);
+    CastTester{.input = {.data_type = V8MLOperandDataType::Enum::kFloat16,
+                         .dimensions = {2, 2}},
+               .output_data_type = V8MLOperandDataType::Enum::kUint8,
+               .expected_operand = {.data_type =
+                                        blink_mojom::Operand::DataType::kUint8,
+                                    .dimensions = {2, 2}}}
+        .Test(*this, scope, builder);
+    CastTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kInt32,
+                  .dimensions = {2, 2}},
+        .output_data_type = V8MLOperandDataType::Enum::kFloat32,
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat32,
+                             .dimensions = {2, 2}}}
+        .Test(*this, scope, builder);
+    CastTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kInt32,
+                  .dimensions = {2, 2}},
+        .output_data_type = V8MLOperandDataType::Enum::kFloat16,
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat16,
+                             .dimensions = {2, 2}}}
+        .Test(*this, scope, builder);
+    CastTester{.input = {.data_type = V8MLOperandDataType::Enum::kInt32,
+                         .dimensions = {2, 2}},
+               .output_data_type = V8MLOperandDataType::Enum::kUint32,
+               .expected_operand = {.data_type =
+                                        blink_mojom::Operand::DataType::kUint32,
+                                    .dimensions = {2, 2}}}
+        .Test(*this, scope, builder);
+    CastTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kInt32,
+                  .dimensions = {2, 2}},
+        .output_data_type = V8MLOperandDataType::Enum::kInt8,
+        .expected_operand = {.data_type = blink_mojom::Operand::DataType::kInt8,
+                             .dimensions = {2, 2}}}
+        .Test(*this, scope, builder);
+    CastTester{.input = {.data_type = V8MLOperandDataType::Enum::kInt32,
+                         .dimensions = {2, 2}},
+               .output_data_type = V8MLOperandDataType::Enum::kUint8,
+               .expected_operand = {.data_type =
+                                        blink_mojom::Operand::DataType::kUint8,
+                                    .dimensions = {2, 2}}}
+        .Test(*this, scope, builder);
+    CastTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kUint32,
+                  .dimensions = {2, 2}},
+        .output_data_type = V8MLOperandDataType::Enum::kFloat32,
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat32,
+                             .dimensions = {2, 2}}}
+        .Test(*this, scope, builder);
+    CastTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kUint32,
+                  .dimensions = {2, 2}},
+        .output_data_type = V8MLOperandDataType::Enum::kFloat16,
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat16,
+                             .dimensions = {2, 2}}}
+        .Test(*this, scope, builder);
+    CastTester{.input = {.data_type = V8MLOperandDataType::Enum::kUint32,
+                         .dimensions = {2, 2}},
+               .output_data_type = V8MLOperandDataType::Enum::kInt32,
+               .expected_operand = {.data_type =
+                                        blink_mojom::Operand::DataType::kInt32,
+                                    .dimensions = {2, 2}}}
+        .Test(*this, scope, builder);
+    CastTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kUint32,
+                  .dimensions = {2, 2}},
+        .output_data_type = V8MLOperandDataType::Enum::kInt8,
+        .expected_operand = {.data_type = blink_mojom::Operand::DataType::kInt8,
+                             .dimensions = {2, 2}}}
+        .Test(*this, scope, builder);
+    CastTester{.input = {.data_type = V8MLOperandDataType::Enum::kUint32,
+                         .dimensions = {2, 2}},
+               .output_data_type = V8MLOperandDataType::Enum::kUint8,
+               .expected_operand = {.data_type =
+                                        blink_mojom::Operand::DataType::kUint8,
+                                    .dimensions = {2, 2}}}
+        .Test(*this, scope, builder);
+    CastTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kInt8,
+                  .dimensions = {2, 2}},
+        .output_data_type = V8MLOperandDataType::Enum::kFloat32,
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat32,
+                             .dimensions = {2, 2}}}
+        .Test(*this, scope, builder);
+    CastTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kInt8,
+                  .dimensions = {2, 2}},
+        .output_data_type = V8MLOperandDataType::Enum::kFloat16,
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat16,
+                             .dimensions = {2, 2}}}
+        .Test(*this, scope, builder);
+    CastTester{.input = {.data_type = V8MLOperandDataType::Enum::kInt8,
+                         .dimensions = {2, 2}},
+               .output_data_type = V8MLOperandDataType::Enum::kUint32,
+               .expected_operand = {.data_type =
+                                        blink_mojom::Operand::DataType::kUint32,
+                                    .dimensions = {2, 2}}}
+        .Test(*this, scope, builder);
+    CastTester{.input = {.data_type = V8MLOperandDataType::Enum::kInt8,
+                         .dimensions = {2, 2}},
+               .output_data_type = V8MLOperandDataType::Enum::kUint8,
+               .expected_operand = {.data_type =
+                                        blink_mojom::Operand::DataType::kUint8,
+                                    .dimensions = {2, 2}}}
+        .Test(*this, scope, builder);
+    CastTester{.input = {.data_type = V8MLOperandDataType::Enum::kInt8,
+                         .dimensions = {2, 2}},
+               .output_data_type = V8MLOperandDataType::Enum::kInt32,
+               .expected_operand = {.data_type =
+                                        blink_mojom::Operand::DataType::kInt32,
+                                    .dimensions = {2, 2}}}
+        .Test(*this, scope, builder);
+    CastTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kUint8,
+                  .dimensions = {2, 2}},
+        .output_data_type = V8MLOperandDataType::Enum::kFloat32,
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat32,
+                             .dimensions = {2, 2}}}
+        .Test(*this, scope, builder);
+    CastTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kUint8,
+                  .dimensions = {2, 2}},
+        .output_data_type = V8MLOperandDataType::Enum::kFloat16,
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat16,
+                             .dimensions = {2, 2}}}
+        .Test(*this, scope, builder);
+    CastTester{.input = {.data_type = V8MLOperandDataType::Enum::kUint8,
+                         .dimensions = {2, 2}},
+               .output_data_type = V8MLOperandDataType::Enum::kInt32,
+               .expected_operand = {.data_type =
+                                        blink_mojom::Operand::DataType::kInt32,
+                                    .dimensions = {2, 2}}}
+        .Test(*this, scope, builder);
+    CastTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kUint8,
+                  .dimensions = {2, 2}},
+        .output_data_type = V8MLOperandDataType::Enum::kInt8,
+        .expected_operand = {.data_type = blink_mojom::Operand::DataType::kInt8,
+                             .dimensions = {2, 2}}}
+        .Test(*this, scope, builder);
+    CastTester{.input = {.data_type = V8MLOperandDataType::Enum::kUint8,
+                         .dimensions = {2, 2}},
+               .output_data_type = V8MLOperandDataType::Enum::kInt32,
+               .expected_operand = {.data_type =
+                                        blink_mojom::Operand::DataType::kInt32,
+                                    .dimensions = {2, 2}}}
         .Test(*this, scope, builder);
   }
 }
@@ -3226,10 +4879,10 @@ TEST_P(MLGraphTestMojo, WebNNGraphComputeTest) {
 
   // Build the graph.
   auto* lhs_operand =
-      BuildInput(builder, "lhs", dimensions, V8MLOperandType::Enum::kUint8,
+      BuildInput(builder, "lhs", dimensions, V8MLOperandDataType::Enum::kUint8,
                  scope.GetExceptionState());
   auto* rhs_operand =
-      BuildInput(builder, "rhs", dimensions, V8MLOperandType::Enum::kUint8,
+      BuildInput(builder, "rhs", dimensions, V8MLOperandDataType::Enum::kUint8,
                  scope.GetExceptionState());
   auto* output_operand = BuildElementWiseBinary(
       scope, builder, ElementWiseBinaryKind::kAdd, lhs_operand, rhs_operand);

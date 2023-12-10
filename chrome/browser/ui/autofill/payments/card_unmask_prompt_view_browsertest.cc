@@ -175,7 +175,7 @@ class CardUnmaskPromptViewBrowserTest : public DialogBrowserTest {
     CardUnmaskPromptOptions card_unmask_prompt_options =
         CardUnmaskPromptOptions(
             /*challenge_option=*/
-            absl::nullopt, AutofillClient::UnmaskCardReason::kAutofill);
+            std::nullopt, AutofillClient::UnmaskCardReason::kAutofill);
     controller()->ShowPrompt(base::BindOnce(&CreateCardUnmaskPromptView,
                                             base::Unretained(controller()),
                                             base::Unretained(contents())),

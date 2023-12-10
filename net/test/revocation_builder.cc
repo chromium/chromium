@@ -91,7 +91,7 @@ std::string PKeyToSPK(const EVP_PKEY* pkey) {
   // ExtractSubjectPublicKeyFromSPKI() includes the unused bit count. For this
   // application, the unused bit count must be zero, and is not included in the
   // result.
-  if (!base::StartsWith(spk, "\0")) {
+  if (spk.empty() || spk[0] != '\0') {
     ADD_FAILURE();
     return std::string();
   }

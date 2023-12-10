@@ -13,23 +13,11 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "components/sync/service/sync_prefs.h"
 #include "components/sync/test/test_sync_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace password_manager::features_util {
-namespace {
-
-#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
-base::Value::Dict CreateOptedInAccountPref() {
-  base::Value::Dict global_pref;
-  base::Value::Dict account_pref;
-  account_pref.Set("opted_in", true);
-  global_pref.Set("some_gaia_hash", std::move(account_pref));
-  return global_pref;
-}
-#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
-
-}  // namespace
 
 class PasswordManagerFeaturesUtilTestBase {
  public:
@@ -37,6 +25,11 @@ class PasswordManagerFeaturesUtilTestBase {
 #if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
     pref_service_.registry()->RegisterDictionaryPref(
         prefs::kAccountStoragePerAccountSettings);
+
+    // Passwords starts enabled default in TestSyncUserSettings, so disable it
+    // to mimic production behavior.
+    sync_service_.GetUserSettings()->SetSelectedType(
+        syncer::UserSelectableType::kPasswords, false);
 #endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
   }
 
@@ -104,10 +97,10 @@ class PasswordManagerFeaturesUtilTest
 };
 
 TEST_F(PasswordManagerFeaturesUtilWithoutAccountStorageTest,
-       AccountStoragePerAccountSettings) {
+       AccountStorageOptIn) {
   CoreAccountInfo account;
-  account.email = "first@account.com";
-  account.gaia = "first";
+  account.email = "foo@account.com";
+  account.gaia = "foo";
   account.account_id = CoreAccountId::FromGaiaId(account.gaia);
 
   // SyncService is running in transport mode with |account|.
@@ -115,145 +108,49 @@ TEST_F(PasswordManagerFeaturesUtilWithoutAccountStorageTest,
 
   // Since the account storage feature is disabled, the profile store should be
   // the default.
-  EXPECT_FALSE(IsOptedInForAccountStorage(&pref_service_, &sync_service_));
-  EXPECT_FALSE(ShouldShowAccountStorageOptIn(&pref_service_, &sync_service_));
+  EXPECT_FALSE(IsOptedInForAccountStorage(&sync_service_));
+  EXPECT_FALSE(ShouldShowAccountStorageOptIn(&sync_service_));
   EXPECT_EQ(GetDefaultPasswordStore(&pref_service_, &sync_service_),
             PasswordForm::Store::kProfileStore);
 
   // Same if the user is signed out.
   SetSyncStateNotSignedIn();
-  EXPECT_FALSE(IsOptedInForAccountStorage(&pref_service_, &sync_service_));
+  EXPECT_FALSE(IsOptedInForAccountStorage(&sync_service_));
   EXPECT_EQ(GetDefaultPasswordStore(&pref_service_, &sync_service_),
             PasswordForm::Store::kProfileStore);
 }
 
-TEST_F(PasswordManagerFeaturesUtilTest, ShowAccountStorageResignIn) {
 #if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
-  // Add an account to prefs which opted into using the account-storage.
-  pref_service_.SetDict(prefs::kAccountStoragePerAccountSettings,
-                        CreateOptedInAccountPref());
-#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
-
-  // SyncService is not running (because no user is signed-in).
-  SetSyncStateNotSignedIn();
-
-#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
-  EXPECT_TRUE(
-      ShouldShowAccountStorageReSignin(&pref_service_, &sync_service_, GURL()));
-#else
-  // The re-signin doesn't exist on mobile.
-  EXPECT_FALSE(
-      ShouldShowAccountStorageReSignin(&pref_service_, &sync_service_, GURL()));
-#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
-}
-
-TEST_F(PasswordManagerFeaturesUtilWithoutAccountStorageTest,
-       ShowAccountStorageReSignin) {
-#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
-  // Add an account to prefs which opted into using the account-storage.
-  pref_service_.SetDict(prefs::kAccountStoragePerAccountSettings,
-                        CreateOptedInAccountPref());
-#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
-
-  // SyncService is not running (because no user is signed-in).
-  SetSyncStateNotSignedIn();
-
-  EXPECT_FALSE(
-      ShouldShowAccountStorageReSignin(&pref_service_, &sync_service_, GURL()));
-}
-
-TEST_F(PasswordManagerFeaturesUtilTest,
-       DontShowAccountStorageResignIn_SyncActive) {
-#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
-  // Add an account to prefs which opted into using the account-storage.
-  pref_service_.SetDict(prefs::kAccountStoragePerAccountSettings,
-                        CreateOptedInAccountPref());
-#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
-
-  // SyncService is running (for a different signed-in user).
+TEST_F(PasswordManagerFeaturesUtilTest, AccountStorageOptIn) {
   CoreAccountInfo account;
-  account.email = "name@account.com";
-  account.gaia = "name";
+  account.email = "foo@account.com";
+  account.gaia = "foo";
   account.account_id = CoreAccountId::FromGaiaId(account.gaia);
-  SetSyncStateTransportActive(account);
-
-  EXPECT_FALSE(
-      ShouldShowAccountStorageReSignin(&pref_service_, &sync_service_, GURL()));
-}
-
-TEST_F(PasswordManagerFeaturesUtilTest,
-       DontShowAccountStorageResignIn_NoPrefs) {
-  // Pref is not set for any account.
-
-  // SyncService is not running (because no user is signed-in).
-  SetSyncStateNotSignedIn();
-
-  EXPECT_FALSE(
-      ShouldShowAccountStorageReSignin(&pref_service_, &sync_service_, GURL()));
-}
-
-#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
-TEST_F(PasswordManagerFeaturesUtilTest,
-       DontShowAccountStorageResignIn_GaiaUrl) {
-  // Add an account to prefs which opted into using the account-storage.
-  pref_service_.SetDict(prefs::kAccountStoragePerAccountSettings,
-                        CreateOptedInAccountPref());
-
-  // SyncService is not running (because no user is signed-in).
-  SetSyncStateNotSignedIn();
-
-  // The re-signin promo should show up in contexts without a URL (e.g. native
-  // UI).
-  EXPECT_TRUE(
-      ShouldShowAccountStorageReSignin(&pref_service_, &sync_service_, GURL()));
-  // The re-signin promo should show up on all regular pages.
-  EXPECT_TRUE(ShouldShowAccountStorageReSignin(&pref_service_, &sync_service_,
-                                               GURL("http://www.example.com")));
-  EXPECT_TRUE(ShouldShowAccountStorageReSignin(
-      &pref_service_, &sync_service_, GURL("https://www.example.com")));
-  // The re-signin promo should NOT show up on Google sign-in pages.
-  EXPECT_FALSE(ShouldShowAccountStorageReSignin(
-      &pref_service_, &sync_service_, GURL("https://accounts.google.com")));
-  EXPECT_FALSE(ShouldShowAccountStorageReSignin(
-      &pref_service_, &sync_service_,
-      GURL("https://accounts.google.com/some/path")));
-}
-
-TEST_F(PasswordManagerFeaturesUtilTest, AccountStoragePerAccountSettings) {
-  CoreAccountInfo first_account;
-  first_account.email = "first@account.com";
-  first_account.gaia = "first";
-  first_account.account_id = CoreAccountId::FromGaiaId(first_account.gaia);
-
-  CoreAccountInfo second_account;
-  second_account.email = "second@account.com";
-  second_account.gaia = "second";
-  second_account.account_id = CoreAccountId::FromGaiaId(second_account.gaia);
 
   SetSyncStateNotSignedIn();
 
   // Initially the user is not signed in, so everything is off/local.
-  EXPECT_FALSE(IsOptedInForAccountStorage(&pref_service_, &sync_service_));
-  EXPECT_FALSE(ShouldShowAccountStorageOptIn(&pref_service_, &sync_service_));
+  EXPECT_FALSE(IsOptedInForAccountStorage(&sync_service_));
+  EXPECT_FALSE(ShouldShowAccountStorageOptIn(&sync_service_));
   EXPECT_FALSE(
       ShouldShowAccountStorageBubbleUi(&pref_service_, &sync_service_));
   EXPECT_EQ(GetDefaultPasswordStore(&pref_service_, &sync_service_),
             PasswordForm::Store::kProfileStore);
 
-  // Now let SyncService run in transport mode with |first_account|.
-  SetSyncStateTransportActive(first_account);
+  // Now let SyncService run in transport mode with |account|.
+  SetSyncStateTransportActive(account);
 
   // By default, the user is not opted in, but eligible.
-  EXPECT_FALSE(IsOptedInForAccountStorage(&pref_service_, &sync_service_));
-  EXPECT_TRUE(ShouldShowAccountStorageOptIn(&pref_service_, &sync_service_));
+  EXPECT_FALSE(IsOptedInForAccountStorage(&sync_service_));
+  EXPECT_TRUE(ShouldShowAccountStorageOptIn(&sync_service_));
   EXPECT_FALSE(IsDefaultPasswordStoreSet(&pref_service_, &sync_service_));
   EXPECT_EQ(GetDefaultPasswordStore(&pref_service_, &sync_service_),
             PasswordForm::Store::kProfileStore);
 
   // Opt in!
   OptInToAccountStorage(&pref_service_, &sync_service_);
-  EXPECT_TRUE(IsOptedInForAccountStorage(&pref_service_, &sync_service_));
-  EXPECT_FALSE(ShouldShowAccountStorageOptIn(&pref_service_, &sync_service_));
+  EXPECT_TRUE(IsOptedInForAccountStorage(&sync_service_));
+  EXPECT_FALSE(ShouldShowAccountStorageOptIn(&sync_service_));
   // Now the default is saving to the account.
   EXPECT_FALSE(IsDefaultPasswordStoreSet(&pref_service_, &sync_service_));
   EXPECT_EQ(GetDefaultPasswordStore(&pref_service_, &sync_service_),
@@ -266,27 +163,11 @@ TEST_F(PasswordManagerFeaturesUtilTest, AccountStoragePerAccountSettings) {
   EXPECT_EQ(GetDefaultPasswordStore(&pref_service_, &sync_service_),
             PasswordForm::Store::kProfileStore);
 
-  // Change to |second_account|. The opt-in for |first_account|, and its store
-  // choice, should not apply.
-  SetSyncStateTransportActive(second_account);
-  EXPECT_FALSE(IsOptedInForAccountStorage(&pref_service_, &sync_service_));
-  EXPECT_TRUE(ShouldShowAccountStorageOptIn(&pref_service_, &sync_service_));
-  EXPECT_FALSE(IsDefaultPasswordStoreSet(&pref_service_, &sync_service_));
-
-  // Change back to |first_account|. The previous opt-in and chosen default
-  // store should now apply again.
-  SetSyncStateTransportActive(first_account);
-  EXPECT_TRUE(IsOptedInForAccountStorage(&pref_service_, &sync_service_));
-  EXPECT_FALSE(ShouldShowAccountStorageOptIn(&pref_service_, &sync_service_));
-  EXPECT_TRUE(IsDefaultPasswordStoreSet(&pref_service_, &sync_service_));
-  EXPECT_EQ(GetDefaultPasswordStore(&pref_service_, &sync_service_),
-            PasswordForm::Store::kProfileStore);
-
   // Sign out. Now the settings should have reasonable default values (not opted
   // in, save to profile store).
   SetSyncStateNotSignedIn();
-  EXPECT_FALSE(IsOptedInForAccountStorage(&pref_service_, &sync_service_));
-  EXPECT_FALSE(ShouldShowAccountStorageOptIn(&pref_service_, &sync_service_));
+  EXPECT_FALSE(IsOptedInForAccountStorage(&sync_service_));
+  EXPECT_FALSE(ShouldShowAccountStorageOptIn(&sync_service_));
   EXPECT_FALSE(IsDefaultPasswordStoreSet(&pref_service_, &sync_service_));
   EXPECT_EQ(GetDefaultPasswordStore(&pref_service_, &sync_service_),
             PasswordForm::Store::kProfileStore);
@@ -304,30 +185,40 @@ TEST_F(PasswordManagerFeaturesUtilTest,
   second_account.gaia = "second";
   second_account.account_id = CoreAccountId::FromGaiaId(second_account.gaia);
 
-  // Let SyncService run in transport mode with |first_account| and opt in.
+  // Let SyncService run in transport mode with |first_account|, opt in and
+  // set the profile store as default.
   SetSyncStateTransportActive(first_account);
   OptInToAccountStorage(&pref_service_, &sync_service_);
-  ASSERT_TRUE(IsOptedInForAccountStorage(&pref_service_, &sync_service_));
+  SetDefaultPasswordStore(&pref_service_, &sync_service_,
+                          PasswordForm::Store::kProfileStore);
+  ASSERT_EQ(GetDefaultPasswordStore(&pref_service_, &sync_service_),
+            PasswordForm::Store::kProfileStore);
 
-  // Switch to |second_account| and again opt in.
+  // Switch to |second_account| and do the same.
   SetSyncStateTransportActive(second_account);
   OptInToAccountStorage(&pref_service_, &sync_service_);
-  ASSERT_TRUE(IsOptedInForAccountStorage(&pref_service_, &sync_service_));
+  SetDefaultPasswordStore(&pref_service_, &sync_service_,
+                          PasswordForm::Store::kProfileStore);
+  ASSERT_EQ(GetDefaultPasswordStore(&pref_service_, &sync_service_),
+            PasswordForm::Store::kProfileStore);
 
-  // Sign out. The opt-in still exists, but doesn't apply anymore.
+  // Sign out. The store settings still exist, but don't apply anymore.
   SetSyncStateNotSignedIn();
-  ASSERT_FALSE(IsOptedInForAccountStorage(&pref_service_, &sync_service_));
+  ASSERT_FALSE(IsOptedInForAccountStorage(&sync_service_));
 
-  // Keep the opt-in only for |first_account| (and some unknown other user).
+  // Keep the settings only for |first_account| (and some unknown other user).
   KeepAccountStorageSettingsOnlyForUsers(&pref_service_,
                                          {first_account.gaia, "other_gaia_id"});
 
-  // The first account should still be opted in, but not the second.
+  // The first account should still have kProfileStore as the default store,
+  // but not the second.
   SetSyncStateTransportActive(first_account);
-  EXPECT_TRUE(IsOptedInForAccountStorage(&pref_service_, &sync_service_));
+  EXPECT_EQ(GetDefaultPasswordStore(&pref_service_, &sync_service_),
+            PasswordForm::Store::kProfileStore);
 
   SetSyncStateTransportActive(second_account);
-  EXPECT_FALSE(IsOptedInForAccountStorage(&pref_service_, &sync_service_));
+  EXPECT_NE(GetDefaultPasswordStore(&pref_service_, &sync_service_),
+            PasswordForm::Store::kProfileStore);
 }
 
 TEST_F(PasswordManagerFeaturesUtilTest, SyncSuppressesAccountStorageOptIn) {
@@ -341,8 +232,8 @@ TEST_F(PasswordManagerFeaturesUtilTest, SyncSuppressesAccountStorageOptIn) {
   SetSyncStateTransportActive(account);
 
   // In this state, the user could opt in to the account storage.
-  ASSERT_FALSE(IsOptedInForAccountStorage(&pref_service_, &sync_service_));
-  ASSERT_TRUE(ShouldShowAccountStorageOptIn(&pref_service_, &sync_service_));
+  ASSERT_FALSE(IsOptedInForAccountStorage(&sync_service_));
+  ASSERT_TRUE(ShouldShowAccountStorageOptIn(&sync_service_));
   ASSERT_TRUE(ShouldShowAccountStorageBubbleUi(&pref_service_, &sync_service_));
 
   // Now the user enables Sync-the-feature.
@@ -350,8 +241,8 @@ TEST_F(PasswordManagerFeaturesUtilTest, SyncSuppressesAccountStorageOptIn) {
   ASSERT_TRUE(sync_service_.IsSyncFeatureEnabled());
 
   // Now the account-storage opt-in should *not* be available anymore.
-  EXPECT_FALSE(IsOptedInForAccountStorage(&pref_service_, &sync_service_));
-  EXPECT_FALSE(ShouldShowAccountStorageOptIn(&pref_service_, &sync_service_));
+  EXPECT_FALSE(IsOptedInForAccountStorage(&sync_service_));
+  EXPECT_FALSE(ShouldShowAccountStorageOptIn(&sync_service_));
   EXPECT_FALSE(
       ShouldShowAccountStorageBubbleUi(&pref_service_, &sync_service_));
 }
@@ -366,13 +257,13 @@ TEST_F(PasswordManagerFeaturesUtilTest, AccountStorageOptInOnMobile) {
   SetSyncStateNotSignedIn();
 
   // Without a signed-in user, there can be no opt-in.
-  EXPECT_FALSE(IsOptedInForAccountStorage(&pref_service_, &sync_service_));
+  EXPECT_FALSE(IsOptedInForAccountStorage(&sync_service_));
 
   // Sign in and enable Sync-transport.
   SetSyncStateTransportActive(account);
 
   // Now the user should be considered opted-in.
-  EXPECT_TRUE(IsOptedInForAccountStorage(&pref_service_, &sync_service_));
+  EXPECT_TRUE(IsOptedInForAccountStorage(&sync_service_));
 
   // Disable the Passwords data type, which corresponds to the user opting out.
   syncer::UserSelectableTypeSet selected_types =
@@ -382,7 +273,7 @@ TEST_F(PasswordManagerFeaturesUtilTest, AccountStorageOptInOnMobile) {
                                                     selected_types);
 
   // The user should not be considered opted-in anymore.
-  EXPECT_FALSE(IsOptedInForAccountStorage(&pref_service_, &sync_service_));
+  EXPECT_FALSE(IsOptedInForAccountStorage(&sync_service_));
 }
 #endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 
@@ -392,15 +283,15 @@ TEST_F(PasswordManagerFeaturesUtilTest, SyncDisablesAccountStorage) {
   account.gaia = "name";
   account.account_id = CoreAccountId::FromGaiaId(account.gaia);
 
-  ASSERT_FALSE(IsOptedInForAccountStorage(&pref_service_, &sync_service_));
+  ASSERT_FALSE(IsOptedInForAccountStorage(&sync_service_));
 
   // The SyncService is running in transport mode.
   SetSyncStateTransportActive(account);
 
 #if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
   // The account storage is available in principle, so the opt-in will be shown.
-  ASSERT_FALSE(IsOptedInForAccountStorage(&pref_service_, &sync_service_));
-  ASSERT_TRUE(ShouldShowAccountStorageOptIn(&pref_service_, &sync_service_));
+  ASSERT_FALSE(IsOptedInForAccountStorage(&sync_service_));
+  ASSERT_TRUE(ShouldShowAccountStorageOptIn(&sync_service_));
   ASSERT_TRUE(ShouldShowAccountStorageBubbleUi(&pref_service_, &sync_service_));
   ASSERT_FALSE(IsDefaultPasswordStoreSet(&pref_service_, &sync_service_));
 
@@ -408,8 +299,8 @@ TEST_F(PasswordManagerFeaturesUtilTest, SyncDisablesAccountStorage) {
   OptInToAccountStorage(&pref_service_, &sync_service_);
 #endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 
-  ASSERT_TRUE(IsOptedInForAccountStorage(&pref_service_, &sync_service_));
-  ASSERT_FALSE(ShouldShowAccountStorageOptIn(&pref_service_, &sync_service_));
+  ASSERT_TRUE(IsOptedInForAccountStorage(&sync_service_));
+  ASSERT_FALSE(ShouldShowAccountStorageOptIn(&sync_service_));
   ASSERT_TRUE(ShouldShowAccountStorageBubbleUi(&pref_service_, &sync_service_));
   EXPECT_FALSE(IsDefaultPasswordStoreSet(&pref_service_, &sync_service_));
   EXPECT_EQ(GetDefaultPasswordStore(&pref_service_, &sync_service_),
@@ -422,8 +313,8 @@ TEST_F(PasswordManagerFeaturesUtilTest, SyncDisablesAccountStorage) {
   // On desktop, the opt-in pref wasn't actually cleared, but
   // IsOptedInForAccountStorage() must return false because the user is syncing.
   // On mobile, since no explicit opt-in exists, the (implicit) opt-in is gone.
-  EXPECT_FALSE(IsOptedInForAccountStorage(&pref_service_, &sync_service_));
-  EXPECT_FALSE(ShouldShowAccountStorageOptIn(&pref_service_, &sync_service_));
+  EXPECT_FALSE(IsOptedInForAccountStorage(&sync_service_));
+  EXPECT_FALSE(ShouldShowAccountStorageOptIn(&sync_service_));
   EXPECT_FALSE(
       ShouldShowAccountStorageBubbleUi(&pref_service_, &sync_service_));
   EXPECT_EQ(GetDefaultPasswordStore(&pref_service_, &sync_service_),
@@ -444,8 +335,8 @@ TEST_F(PasswordManagerFeaturesUtilTest, LocalSyncDisablesAccountStorage) {
   sync_service_.SetLocalSyncEnabled(true);
 
   // The account-scoped storage should be unavailable.
-  ASSERT_FALSE(IsOptedInForAccountStorage(&pref_service_, &sync_service_));
-  EXPECT_FALSE(ShouldShowAccountStorageOptIn(&pref_service_, &sync_service_));
+  ASSERT_FALSE(IsOptedInForAccountStorage(&sync_service_));
+  EXPECT_FALSE(ShouldShowAccountStorageOptIn(&sync_service_));
   EXPECT_FALSE(
       ShouldShowAccountStorageBubbleUi(&pref_service_, &sync_service_));
   EXPECT_EQ(GetDefaultPasswordStore(&pref_service_, &sync_service_),
@@ -458,8 +349,8 @@ TEST_F(PasswordManagerFeaturesUtilTest, LocalSyncDisablesAccountStorage) {
   OptInToAccountStorage(&pref_service_, &sync_service_);
   // The user is *not* considered opted in (even though the corresponding pref
   // is set) since the account storage is completely unavailable.
-  EXPECT_FALSE(IsOptedInForAccountStorage(&pref_service_, &sync_service_));
-  EXPECT_FALSE(ShouldShowAccountStorageOptIn(&pref_service_, &sync_service_));
+  EXPECT_FALSE(IsOptedInForAccountStorage(&sync_service_));
+  EXPECT_FALSE(ShouldShowAccountStorageOptIn(&sync_service_));
   EXPECT_FALSE(
       ShouldShowAccountStorageBubbleUi(&pref_service_, &sync_service_));
   EXPECT_EQ(GetDefaultPasswordStore(&pref_service_, &sync_service_),
@@ -481,7 +372,7 @@ TEST_F(PasswordManagerFeaturesUtilTest, OptOutClearsStorePreference) {
 
   // Opt in and set default store to profile.
   OptInToAccountStorage(&pref_service_, &sync_service_);
-  ASSERT_TRUE(IsOptedInForAccountStorage(&pref_service_, &sync_service_));
+  ASSERT_TRUE(IsOptedInForAccountStorage(&sync_service_));
   SetDefaultPasswordStore(&pref_service_, &sync_service_,
                           PasswordForm::Store::kProfileStore);
 
@@ -490,7 +381,7 @@ TEST_F(PasswordManagerFeaturesUtilTest, OptOutClearsStorePreference) {
 
   // The default store pref should have been erased.
   EXPECT_FALSE(IsDefaultPasswordStoreSet(&pref_service_, &sync_service_));
-  EXPECT_FALSE(IsOptedInForAccountStorage(&pref_service_, &sync_service_));
+  EXPECT_FALSE(IsOptedInForAccountStorage(&sync_service_));
   EXPECT_EQ(GetDefaultPasswordStore(&pref_service_, &sync_service_),
             PasswordForm::Store::kProfileStore);
 
@@ -500,75 +391,47 @@ TEST_F(PasswordManagerFeaturesUtilTest, OptOutClearsStorePreference) {
                                       PasswordForm::Store::kProfileStore, 1);
 }
 
-TEST_F(PasswordManagerFeaturesUtilTest, OptInOutHistograms) {
-  base::HistogramTester histogram_tester;
+TEST_F(PasswordManagerFeaturesUtilTest, MigrateOptInPrefToSyncSelectedTypes) {
+  syncer::SyncPrefs::RegisterProfilePrefs(pref_service_.registry());
+  CoreAccountInfo account1;
+  account1.gaia = "gaia1";
+  auto gaia1_hash = signin::GaiaIdHash::FromGaiaId(account1.gaia);
+  CoreAccountInfo account2;
+  account2.gaia = "gaia2";
+  auto gaia2_hash = signin::GaiaIdHash::FromGaiaId(account2.gaia);
+  pref_service_.SetDict(
+      prefs::kAccountStoragePerAccountSettings,
+      base::Value::Dict()
+          .Set(gaia1_hash.ToBase64(),
+               base::Value::Dict()
+                   .Set("opted_in", true)
+                   .Set("default_store",
+                        static_cast<int>(PasswordForm::Store::kAccountStore)))
+          .Set(gaia2_hash.ToBase64(),
+               base::Value::Dict()
+                   .Set("opted_in", true)
+                   .Set("default_store",
+                        static_cast<int>(PasswordForm::Store::kProfileStore))));
 
-  CoreAccountInfo first_account;
-  first_account.email = "first@account.com";
-  first_account.gaia = "first";
-  first_account.account_id = CoreAccountId::FromGaiaId(first_account.gaia);
+  MigrateOptInPrefToSyncSelectedTypes(&pref_service_);
 
-  CoreAccountInfo second_account;
-  second_account.email = "second@account.com";
-  second_account.gaia = "second";
-  second_account.account_id = CoreAccountId::FromGaiaId(second_account.gaia);
+  syncer::SyncPrefs sync_prefs(&pref_service_);
+  EXPECT_TRUE(sync_prefs.GetSelectedTypesForAccount(gaia1_hash)
+                  .Has(syncer::UserSelectableType::kPasswords));
+  EXPECT_TRUE(sync_prefs.GetSelectedTypesForAccount(gaia2_hash)
+                  .Has(syncer::UserSelectableType::kPasswords));
+  EXPECT_FALSE(
+      sync_prefs
+          .GetSelectedTypesForAccount(signin::GaiaIdHash::FromGaiaId("other"))
+          .Has(syncer::UserSelectableType::kPasswords));
 
-  // Opt in with the first account.
-  SetSyncStateTransportActive(first_account);
-  OptInToAccountStorage(&pref_service_, &sync_service_);
-  // There is now 1 opt-in.
-  histogram_tester.ExpectTotalCount(
-      "PasswordManager.AccountStorage.NumOptedInAccountsAfterOptIn", 1);
-  histogram_tester.ExpectBucketCount(
-      "PasswordManager.AccountStorage.NumOptedInAccountsAfterOptIn", 1, 1);
-
-  // Opt in with the second account.
-  SetSyncStateTransportActive(second_account);
-  OptInToAccountStorage(&pref_service_, &sync_service_);
-  // There are now 2 opt-ins.
-  histogram_tester.ExpectTotalCount(
-      "PasswordManager.AccountStorage.NumOptedInAccountsAfterOptIn", 2);
-  histogram_tester.ExpectBucketCount(
-      "PasswordManager.AccountStorage.NumOptedInAccountsAfterOptIn", 2, 1);
-
-  // Out out of the second account again.
-  OptOutOfAccountStorageAndClearSettings(&pref_service_, &sync_service_);
-  // The OptedIn histogram is unchanged.
-  histogram_tester.ExpectTotalCount(
-      "PasswordManager.AccountStorage.NumOptedInAccountsAfterOptIn", 2);
-  // There is now an OptedOut sample; there is 1 opt-in left.
-  histogram_tester.ExpectTotalCount(
-      "PasswordManager.AccountStorage.NumOptedInAccountsAfterOptOut", 1);
-  histogram_tester.ExpectBucketCount(
-      "PasswordManager.AccountStorage.NumOptedInAccountsAfterOptOut", 1, 1);
-
-  // Clear all remaining opt-ins (which is just one).
-  ClearAccountStorageSettingsForAllUsers(&pref_service_);
-  // The OptedIn/OptedOut histograms are unchanged.
-  histogram_tester.ExpectTotalCount(
-      "PasswordManager.AccountStorage.NumOptedInAccountsAfterOptIn", 2);
-  histogram_tester.ExpectTotalCount(
-      "PasswordManager.AccountStorage.NumOptedInAccountsAfterOptOut", 1);
-}
-
-TEST_F(PasswordManagerFeaturesUtilTest,
-       MovePasswordToAccountStoreOfferedCount) {
-  // Set up a user signed-in, not syncing and not opted-in.
-  CoreAccountInfo account;
-  account.email = "name@account.com";
-  account.gaia = "name";
-  account.account_id = CoreAccountId::FromGaiaId(account.gaia);
-  SetSyncStateTransportActive(account);
-  ASSERT_FALSE(IsOptedInForAccountStorage(&pref_service_, &sync_service_));
-
-  EXPECT_EQ(
-      0, GetMoveOfferedToNonOptedInUserCount(&pref_service_, &sync_service_));
-  RecordMoveOfferedToNonOptedInUser(&pref_service_, &sync_service_);
-  EXPECT_EQ(
-      1, GetMoveOfferedToNonOptedInUserCount(&pref_service_, &sync_service_));
-  RecordMoveOfferedToNonOptedInUser(&pref_service_, &sync_service_);
-  EXPECT_EQ(
-      2, GetMoveOfferedToNonOptedInUserCount(&pref_service_, &sync_service_));
+  // Verify the default store settings are unnaffected.
+  SetSyncStateTransportActive(account1);
+  EXPECT_EQ(GetDefaultPasswordStore(&pref_service_, &sync_service_),
+            PasswordForm::Store::kAccountStore);
+  SetSyncStateTransportActive(account2);
+  EXPECT_EQ(GetDefaultPasswordStore(&pref_service_, &sync_service_),
+            PasswordForm::Store::kProfileStore);
 }
 #endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 

@@ -68,7 +68,8 @@ class CORE_EXPORT HTMLOutputElement final : public HTMLFormControlElement {
   bool MatchesEnabledPseudoClass() const override;
   bool IsEnumeratable() const override { return true; }
   bool IsLabelable() const override { return true; }
-  bool SupportsFocus() const override;
+  bool SupportsFocus(UpdateBehavior update_behavior =
+                         UpdateBehavior::kStyleAndLayout) const override;
   void ResetImpl() override;
 
   bool is_default_value_mode_;

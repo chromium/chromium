@@ -9,6 +9,8 @@
 #include <stdint.h>
 #include <zircon/errors.h>
 
+#include <optional>
+
 #include "base/containers/flat_map.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
@@ -16,7 +18,6 @@
 #include "net/base/network_change_notifier.h"
 #include "net/base/network_interfaces.h"
 #include "net/base/network_interfaces_fuchsia.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net::internal {
 
@@ -36,7 +37,7 @@ namespace net::internal {
 // - Change/Remove an interface unknown to the cache.
 //
 // After entering error state, all subsequent write operations return
-// `absl::nullopt`, and subsequent read operations will not return a result
+// `std::nullopt`, and subsequent read operations will not return a result
 // (specifically, `GetOnlineInterfaces` returns `false`, and `GetConnectionType`
 // returns `CONNECTION_UNKNOWN`).
 class NET_EXPORT_PRIVATE NetworkInterfaceCache {
@@ -54,23 +55,23 @@ class NET_EXPORT_PRIVATE NetworkInterfaceCache {
   NetworkInterfaceCache(const NetworkInterfaceCache&) = delete;
   NetworkInterfaceCache& operator=(const NetworkInterfaceCache&) = delete;
 
-  // Returns `absl::nullopt` if any of the interfaces fail to be added. See
+  // Returns `std::nullopt` if any of the interfaces fail to be added. See
   // `AddInterface`.
-  absl::optional<ChangeBits> AddInterfaces(
+  std::optional<ChangeBits> AddInterfaces(
       std::vector<fuchsia::net::interfaces::Properties> interfaces);
 
-  // Returns `absl::nullopt` if `properties` is invalid or incomplete, or if the
+  // Returns `std::nullopt` if `properties` is invalid or incomplete, or if the
   // interface already exists in the cache.
-  absl::optional<ChangeBits> AddInterface(
+  std::optional<ChangeBits> AddInterface(
       fuchsia::net::interfaces::Properties properties);
 
-  // Returns `absl::nullopt` if `properties` is invalid or does not contain an
+  // Returns `std::nullopt` if `properties` is invalid or does not contain an
   // `id`, or if the interface does not exist in the cache.
-  absl::optional<ChangeBits> ChangeInterface(
+  std::optional<ChangeBits> ChangeInterface(
       fuchsia::net::interfaces::Properties properties);
 
-  // Returns `absl::nullopt` if `interface_id` does not exist in the cache.
-  absl::optional<ChangeBits> RemoveInterface(
+  // Returns `std::nullopt` if `interface_id` does not exist in the cache.
+  std::optional<ChangeBits> RemoveInterface(
       InterfaceProperties::InterfaceId interface_id);
 
   // Set cache to unrecoverable error state and clears the cache.
@@ -92,7 +93,7 @@ class NET_EXPORT_PRIVATE NetworkInterfaceCache {
   bool UpdateConnectionTypeWhileLocked() EXCLUSIVE_LOCKS_REQUIRED(lock_)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
-  absl::optional<ChangeBits> AddInterfaceWhileLocked(
+  std::optional<ChangeBits> AddInterfaceWhileLocked(
       fuchsia::net::interfaces::Properties properties)
       EXCLUSIVE_LOCKS_REQUIRED(lock_) VALID_CONTEXT_REQUIRED(sequence_checker_);
 

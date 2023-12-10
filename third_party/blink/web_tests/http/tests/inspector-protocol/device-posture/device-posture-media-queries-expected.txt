@@ -1,0 +1,8 @@
+Test the Device Posture API change event handler.
+Initial Device Posture Type: continuous
+matchMedia('(device-posture: continuous)').matches :
+true
+matchMedia('(device-posture: folded)').matches :
+false
+Media Query change event folded matches: true
+

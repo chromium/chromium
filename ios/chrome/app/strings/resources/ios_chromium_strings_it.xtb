@@ -16,6 +16,7 @@
 <translation id="1513122820609681462">Imposta Chromium come browser predefinito</translation>
 <translation id="1531155317299575425">Vengono mostrate richieste di accesso a Chromium.</translation>
 <translation id="1591119736686995611">Apre la griglia delle schede di Chromium.</translation>
+<translation id="1611584326765829247">Consenti a Chromium di aiutarti a monitorare i tuoi pacchi</translation>
 <translation id="1617663976202781617">Dati dalla Sincronizzazione Chromium</translation>
 <translation id="1647558790457890304">Impostazioni di Chromium</translation>
 <translation id="164952285225495380">Questo pacchetto è già stato monitorato su Chromium.</translation>
@@ -87,6 +88,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />cancella i dati di C
 <translation id="4195557071150719219">Visualizza le schede recenti di Chromium</translation>
 <translation id="4408912345039114853">Esegui il controllo di sicurezza di Chromium</translation>
 <translation id="4432744876818348753">Accedi per usare al meglio Chromium.</translation>
+<translation id="4498832288620833153">Aggiunge gli URL inseriti al tuo elenco di lettura in Chromium.</translation>
 <translation id="452436063477828504">Assicurati di poter usare sempre i dati di Chromium nel tuo Account Google</translation>
 <translation id="4555020257205549924">Quando questa funzione è attiva, Chromium si offre di tradurre le pagine scritte in altre lingue utilizzando Google Traduttore. <ph name="BEGIN_LINK" />Ulteriori informazioni<ph name="END_LINK" /></translation>
 <translation id="4576283463017113841">Apre la pagina delle impostazioni dei metodi di pagamento in Chromium.</translation>
@@ -107,6 +109,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />cancella i dati di C
 <translation id="5048795749726991615">Usa la funzionalità Compilazione automatica di Chromium per recuperare facilmente le tue password salvate nelle altre app</translation>
 <translation id="5076601183701536878">Cancella i dati di navigazione in Chromium</translation>
 <translation id="5131565040785979529">La tua organizzazione, <ph name="DOMAIN" />, gestisce l'account a cui hai eseguito l'accesso e la modalità di utilizzo di Chromium.</translation>
+<translation id="5146749061471423558">Aggiungi preferiti a Chromium</translation>
 <translation id="5171868502429358653">Accedi a Chromium</translation>
 <translation id="5213683223491576284">Apre Gestore delle password in Chromium.</translation>
 <translation id="5224391634244552924">Nessuna password salvata. Chromium può controllare le password quando le salvi.</translation>
@@ -114,6 +117,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />cancella i dati di C
 
         Prova ad attendere qualche minuto prima di uscire. Se esci ora, questi dati verranno eliminati.</translation>
 <translation id="5308226104666789935">Chromium non può controllare la disponibilità di aggiornamenti</translation>
+<translation id="5311557153294205270">Aggiunge gli URL inseriti ai preferiti in Chromium.</translation>
 <translation id="5396916991083608703">Impostare Chromium come browser predefinito?</translation>
 <translation id="5453478652154926037">Chromium non può controllare le tue password.</translation>
 <translation id="5521125884468363740">Esegui l'accesso su tutti i dispositivi su cui utilizzi Chromium e attiva la sincronizzazione per visualizzare le tue schede</translation>
@@ -165,7 +169,6 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="6911341667534646387">Continua a usare i dati di Chromium nel tuo Account Google</translation>
 <translation id="7006920032187763988">Puoi utilizzare le password salvate con Gestore delle password in altre app sull'iPad.</translation>
 <translation id="7018284295775193585">Impossibile aggiornare Chromium</translation>
-<translation id="7025471822960602362">Traccia i pacchi rilevati su Chromium</translation>
 <translation id="7045244423563602563">Personalizza Chromium</translation>
 <translation id="7055269218854630176">La tua organizzazione, <ph name="DOMAIN" />, gestisce l'account a cui stai accedendo e la modalità di utilizzo di Chromium. L'amministratore può configurare o limitare determinate funzionalità.</translation>
 <translation id="7099326575020694068">Chromium non può utilizzare la videocamera in modalità Visualizzazione divisa</translation>
@@ -195,6 +198,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="7928628054454574139">Apri Chromium ogni volta che tocchi link in altre app</translation>
 <translation id="7931842119211730154">Blocca le schede di navigazione in incognito quando chiudi Chromium</translation>
 <translation id="7934404985878918282">Visualizza l'elenco di lettura di Chromium</translation>
+<translation id="7971753607796745700">Aggiungi l'elemento dell'elenco di lettura a Chromium</translation>
 <translation id="7980860476903281594">Chromium condivide la tua posizione con i siti autorizzati da te.</translation>
 <translation id="7995166854192397899">I suggerimenti sono basati sulla tua attività di navigazione sugli altri dispositivi. Per ricevere suggerimenti, accedi a Chromium su tutti i tuoi dispositivi.</translation>
 <translation id="800195749539500647">Usa al meglio Chromium</translation>

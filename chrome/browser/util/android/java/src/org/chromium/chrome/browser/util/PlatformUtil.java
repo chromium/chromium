@@ -14,9 +14,7 @@ import org.jni_zero.CalledByNative;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 
-/**
- * Utility class for providing platform functionalities.
- */
+/** Utility class for providing platform functionalities. */
 public class PlatformUtil {
     private static final String TAG = "PlatformUtil";
 

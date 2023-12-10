@@ -5,13 +5,14 @@
 #ifndef MOJO_PUBLIC_CPP_BINDINGS_GENERIC_PENDING_RECEIVER_H_
 #define MOJO_PUBLIC_CPP_BINDINGS_GENERIC_PENDING_RECEIVER_H_
 
+#include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/component_export.h"
-#include "base/strings/string_piece.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/runtime_features.h"
 #include "mojo/public/cpp/system/message_pipe.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 
 namespace mojo {
@@ -26,7 +27,7 @@ namespace mojo {
 class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) GenericPendingReceiver {
  public:
   GenericPendingReceiver();
-  GenericPendingReceiver(base::StringPiece interface_name,
+  GenericPendingReceiver(std::string_view interface_name,
                          mojo::ScopedMessagePipeHandle receiving_pipe);
 
   template <typename Interface>
@@ -47,7 +48,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) GenericPendingReceiver {
 
   void reset();
 
-  const absl::optional<std::string>& interface_name() const {
+  const std::optional<std::string>& interface_name() const {
     return interface_name_;
   }
 
@@ -58,9 +59,13 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) GenericPendingReceiver {
   mojo::ScopedMessagePipeHandle PassPipe();
 
   // Takes ownership of the pipe, strongly typed as an |Interface| receiver, if
-  // and only if that interface's name matches the stored interface name.
+  // and only if that interface's name matches the stored interface name. May
+  // return an empty pending receiver for RuntimeFeature disabled Interfaces.
   template <typename Interface>
   mojo::PendingReceiver<Interface> As() {
+    if (!internal::GetRuntimeFeature_ExpectEnabled<Interface>()) {
+      return mojo::PendingReceiver<Interface>();
+    }
     return mojo::PendingReceiver<Interface>(PassPipeIfNameIs(Interface::Name_));
   }
 
@@ -69,7 +74,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) GenericPendingReceiver {
  private:
   mojo::ScopedMessagePipeHandle PassPipeIfNameIs(const char* interface_name);
 
-  absl::optional<std::string> interface_name_;
+  std::optional<std::string> interface_name_;
   mojo::ScopedMessagePipeHandle pipe_;
 };
 

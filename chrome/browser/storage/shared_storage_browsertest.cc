@@ -309,8 +309,6 @@ class SharedStorageChromeBrowserTestBase : public PlatformBrowserTest {
 
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{blink::features::kSharedStorageAPI,
-                              privacy_sandbox::kPrivacySandboxSettings4,
-                              privacy_sandbox::kPrivacySandboxSettings3,
                               features::kPrivacySandboxAdsAPIsOverride,
                               privacy_sandbox::
                                   kOverridePrivacySandboxSettingsLocalTesting},
@@ -388,9 +386,9 @@ class SharedStorageChromeBrowserTestBase : public PlatformBrowserTest {
                 ? content_settings::CookieControlsMode::kOff
                 : content_settings::CookieControlsMode::kBlockThirdParty));
 
-    // For `privacy_sandbox::kPrivacySandboxSettings4`, we also need to ensure
-    // the `PrivacySandboxDelegate::IsPrivacySandboxRestricted()` response
-    // returns the negation of `enable_privacy_sandbox`.
+    // We need to ensure the
+    // `PrivacySandboxDelegate::IsPrivacySandboxRestricted()` response returns
+    // the negation of `enable_privacy_sandbox`.
     auto* privacy_sandbox_settings = GetPrivacySandboxSettings();
     auto privacy_sandbox_delegate = std::make_unique<testing::NiceMock<
         privacy_sandbox_test_util::MockPrivacySandboxSettingsDelegate>>();
@@ -403,9 +401,8 @@ class SharedStorageChromeBrowserTestBase : public PlatformBrowserTest {
   }
 
   void SetThirdPartyCookieSetting(const GURL& main_url) {
-    // For `privacy_sandbox::kPrivacySandboxSettings4`, we also need to ensure
-    // the specific first-party URL `main_url` used by the test either has its
-    // third-party-cookie content setting set to
+    // We need to ensure the specific first-party URL `main_url` used by the
+    // test either has its third-party-cookie content setting set to
     // `ContentSetting::CONTENT_SETTING_ALLOW` or
     // `ContentSetting::CONTENT_SETTING_BLOCK`, according to
     // `AllowThirdPartyCookies()`.

@@ -15,8 +15,7 @@ import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarPropert
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.IDENTITY_DISC_IS_VISIBLE;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.INCOGNITO_STATE_PROVIDER;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.INCOGNITO_SWITCHER_VISIBLE;
-import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.INCOGNITO_TAB_COUNT_PROVIDER;
-import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.INCOGNITO_TAB_MODEL_SELECTOR;
+import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.INCOGNITO_TOGGLE_TAB_MODEL_SELECTOR;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.IS_NEW_TAB_ENABLED;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.IS_VISIBLE;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.MENU_IS_VISIBLE;
@@ -72,10 +71,8 @@ class StartSurfaceToolbarViewBinder {
             view.setAlpha(model.get(ALPHA));
         } else if (propertyKey == TAB_SWITCHER_BUTTON_IS_VISIBLE) {
             view.setTabSwitcherButtonVisibility(model.get(TAB_SWITCHER_BUTTON_IS_VISIBLE));
-        } else if (propertyKey == INCOGNITO_TAB_COUNT_PROVIDER) {
-            view.setTabCountProvider(model.get(INCOGNITO_TAB_COUNT_PROVIDER));
-        } else if (propertyKey == INCOGNITO_TAB_MODEL_SELECTOR) {
-            view.setTabModelSelector(model.get(INCOGNITO_TAB_MODEL_SELECTOR));
+        } else if (propertyKey == INCOGNITO_TOGGLE_TAB_MODEL_SELECTOR) {
+            view.setTabModelSelector(model.get(INCOGNITO_TOGGLE_TAB_MODEL_SELECTOR));
         } else if (propertyKey == BACKGROUND_COLOR) {
             view.setToolbarBackgroundColor(model.get(BACKGROUND_COLOR));
         }

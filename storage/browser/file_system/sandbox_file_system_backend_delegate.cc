@@ -83,7 +83,7 @@ class SandboxObfuscatedStorageKeyEnumerator
   }
   ~SandboxObfuscatedStorageKeyEnumerator() override = default;
 
-  absl::optional<blink::StorageKey> Next() override { return enum_->Next(); }
+  std::optional<blink::StorageKey> Next() override { return enum_->Next(); }
 
   bool HasFileSystemType(FileSystemType type) const override {
     return enum_->HasTypeDirectory(
@@ -355,7 +355,7 @@ SandboxFileSystemBackendDelegate::GetStorageKeysForTypeOnFileTaskRunner(
   std::unique_ptr<StorageKeyEnumerator> enumerator(
       CreateStorageKeyEnumerator());
   std::vector<blink::StorageKey> storage_keys;
-  absl::optional<blink::StorageKey> storage_key;
+  std::optional<blink::StorageKey> storage_key;
   while ((storage_key = enumerator->Next()).has_value()) {
     if (enumerator->HasFileSystemType(type))
       storage_keys.push_back(std::move(storage_key).value());
@@ -369,7 +369,7 @@ int64_t SandboxFileSystemBackendDelegate::GetStorageKeyUsageOnFileTaskRunner(
     FileSystemType type) {
   DCHECK(file_task_runner_->RunsTasksInCurrentSequence());
   return GetUsageOnFileTaskRunner(file_system_context, storage_key,
-                                  /*bucket_locator=*/absl::nullopt, type);
+                                  /*bucket_locator=*/std::nullopt, type);
 }
 
 int64_t SandboxFileSystemBackendDelegate::GetBucketUsageOnFileTaskRunner(
@@ -384,7 +384,7 @@ int64_t SandboxFileSystemBackendDelegate::GetBucketUsageOnFileTaskRunner(
 int64_t SandboxFileSystemBackendDelegate::GetUsageOnFileTaskRunner(
     FileSystemContext* file_system_context,
     const blink::StorageKey& storage_key,
-    const absl::optional<BucketLocator>& bucket_locator,
+    const std::optional<BucketLocator>& bucket_locator,
     FileSystemType type) {
   DCHECK(file_task_runner_->RunsTasksInCurrentSequence());
   DCHECK(!bucket_locator.has_value() ||
@@ -623,7 +623,7 @@ SandboxFileSystemBackendDelegate::GetUsageCachePathForBucketAndType(
 int64_t SandboxFileSystemBackendDelegate::RecalculateUsage(
     FileSystemContext* context,
     const blink::StorageKey& storage_key,
-    const absl::optional<BucketLocator>& bucket_locator,
+    const std::optional<BucketLocator>& bucket_locator,
     FileSystemType type) {
   FileSystemOperationContext operation_context(context);
   FileSystemURL url =

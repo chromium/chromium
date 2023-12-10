@@ -136,7 +136,6 @@ export class NuxNtpBackgroundElement extends NuxNtpBackgroundElementBase {
     if (id > -1) {
       this.imageIsLoading_ = true;
       const imageUrl = this.selectedBackground_!.imageUrl;
-      const beforeLoadTime = window.performance.now();
       this.ntpBackgroundProxy_.preloadImage(imageUrl).then(
           () => {
             if (this.selectedBackground_!.id === id) {
@@ -145,9 +144,6 @@ export class NuxNtpBackgroundElement extends NuxNtpBackgroundElementBase {
               this.$.backgroundPreview.style.backgroundImage =
                   `url(${imageUrl})`;
             }
-
-            this.ntpBackgroundProxy_.recordBackgroundImageLoadTime(
-                Math.floor(performance.now() - beforeLoadTime));
           },
           () => {
             this.ntpBackgroundProxy_.recordBackgroundImageFailedToLoad();

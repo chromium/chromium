@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_VIZ_COMMON_SURFACES_SURFACE_INFO_H_
 #define COMPONENTS_VIZ_COMMON_SURFACES_SURFACE_INFO_H_
 
+#include <string>
+
 #include "components/viz/common/surfaces/surface_id.h"
 #include "components/viz/common/viz_common_export.h"
 #include "ui/gfx/geometry/size.h"
@@ -36,13 +38,7 @@ class VIZ_COMMON_EXPORT SurfaceInfo {
            !size_in_pixels_.IsEmpty();
   }
 
-  bool operator==(const SurfaceInfo& info) const {
-    return id_ == info.id() &&
-           device_scale_factor_ == info.device_scale_factor() &&
-           size_in_pixels_ == info.size_in_pixels();
-  }
-
-  bool operator!=(const SurfaceInfo& info) const { return !(*this == info); }
+  friend bool operator==(const SurfaceInfo&, const SurfaceInfo&) = default;
 
   const SurfaceId& id() const { return id_; }
   float device_scale_factor() const { return device_scale_factor_; }

@@ -16,7 +16,6 @@
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
-#include "base/strings/string_piece_forward.h"
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
 #include "base/task/thread_pool.h"
@@ -298,10 +297,15 @@ bool ComponentExtensionIMEManagerDelegateImpl::ReadEngineComponent(
   if (!layouts)
     return false;
 
-  if (!layouts->empty() && layouts->front().is_string())
+  if (*engine_id == "ko-t-i0-und" &&
+      base::FeatureList::IsEnabled(
+          features::kImeKoreanOnlyModeSwitchOnRightAlt)) {
+    out->layout = "kr(cros)";
+  } else if (!layouts->empty() && layouts->front().is_string()) {
     out->layout = layouts->front().GetString();
-  else
+  } else {
     out->layout = "us";
+  }
 
   std::string url_string;
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)

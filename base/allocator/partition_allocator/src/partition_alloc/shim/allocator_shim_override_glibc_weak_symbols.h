@@ -20,13 +20,16 @@
 //     allocating via malloc() and freeing using __libc_free().
 //     See tcmalloc's libc_override_glibc.h for more context.
 
+#include "partition_alloc/partition_alloc_buildflags.h"
+
+#if BUILDFLAG(USE_ALLOCATOR_SHIM)
 #include <features.h>  // for __GLIBC__
 #include <malloc.h>
 #include <unistd.h>
 
 #include <new>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/shim/allocator_shim_internals.h"
+#include "partition_alloc/shim/allocator_shim_internals.h"
 
 // __MALLOC_HOOK_VOLATILE not defined in all Glibc headers.
 #if !defined(__MALLOC_HOOK_VOLATILE)
@@ -119,5 +122,7 @@ SHIM_ALWAYS_EXPORT int __posix_memalign(void** r, size_t a, size_t s) {
 #error The target platform does not seem to use Glibc. Disable the allocator \
 shim by setting use_allocator_shim=false in GN args.
 #endif
+
+#endif  // BUILDFLAG(USE_ALLOCATOR_SHIM)
 
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_SHIM_ALLOCATOR_SHIM_OVERRIDE_GLIBC_WEAK_SYMBOLS_H_

@@ -67,9 +67,9 @@ void PopulateLoadTimeData(content::WebUI* web_ui,
       system::StatisticsProvider::GetInstance();
   // MachineStatistics may not exist for browser tests, but it is fine for these
   // to be empty strings.
-  const absl::optional<base::StringPiece> customization_id =
+  const std::optional<base::StringPiece> customization_id =
       provider->GetMachineStatistic(system::kCustomizationIdKey);
-  const absl::optional<base::StringPiece> hwid =
+  const std::optional<base::StringPiece> hwid =
       provider->GetMachineStatistic(system::kHardwareClassKey);
   source->AddString("customizationId",
                     std::string(customization_id.value_or("")));
@@ -80,26 +80,37 @@ void PopulateLoadTimeData(content::WebUI* web_ui,
                         "device-help-content-id"));
 
   // Add any features that have been enabled.
-  source->AddBoolean("colorThemes", true);
-  source->AddBoolean("HelpAppAppsGamesBannerV2", true);
-  source->AddBoolean("HelpAppDynamicHomePageBanner", true);
-  source->AddBoolean("HelpAppReleaseNotes", true);
-  source->AddBoolean(
-      "HelpAppHomePageAppArticles",
-      base::FeatureList::IsEnabled(ash::features::kHelpAppHomePageAppArticles));
   source->AddBoolean(
       "HelpAppLauncherSearch",
       base::FeatureList::IsEnabled(features::kHelpAppLauncherSearch) &&
           base::FeatureList::IsEnabled(features::kEnableLocalSearchService));
   source->AddBoolean(
-      "HelpAppAutoTriggerInstallDialog",
-      base::FeatureList::IsEnabled(features::kHelpAppAutoTriggerInstallDialog));
-  source->AddBoolean(
       "HelpAppSearchServiceIntegration",
       base::FeatureList::IsEnabled(features::kEnableLocalSearchService));
   source->AddBoolean("isCloudGamingDevice",
                      chromeos::features::IsCloudGamingDeviceEnabled());
-  source->AddBoolean("jelly", chromeos::features::IsJellyEnabled());
+  // Features the background page does not need to query:
+  if (web_ui->GetWebContents()->GetVisibleURL().path() != "/background") {
+    // By default, querying the feature flag is what marks a Finch study as
+    // active for a client. For features that only happen when the user is
+    // actively browsing the help app (such as UI-only features), avoid querying
+    // them in the background page.
+    source->AddBoolean("HelpAppAppsGamesBannerV2", true);
+    source->AddBoolean(
+        "HelpAppAppDetailPage",
+        base::FeatureList::IsEnabled(ash::features::kHelpAppAppDetailPage));
+    source->AddBoolean("HelpAppAppsList", base::FeatureList::IsEnabled(
+                                              ash::features::kHelpAppAppsList));
+    source->AddBoolean(
+        "HelpAppCrosComponents",
+        base::FeatureList::IsEnabled(ash::features::kHelpAppCrosComponents));
+    source->AddBoolean("HelpAppHomePageAppArticles",
+                       base::FeatureList::IsEnabled(
+                           ash::features::kHelpAppHomePageAppArticles));
+    source->AddBoolean("HelpAppAutoTriggerInstallDialog",
+                       base::FeatureList::IsEnabled(
+                           features::kHelpAppAutoTriggerInstallDialog));
+  }
 
   Profile* profile = Profile::FromWebUI(web_ui);
   PrefService* pref_service = profile->GetPrefs();

@@ -644,6 +644,40 @@ TEST_F(SavedTabGroupSyncBridgeTest, UpdateGroupLocally) {
   saved_tab_group_model_.UpdateVisualData(group_guid, &visual_data);
 }
 
+// Verify duplicate tab added from sync is merged with the correct tab and not
+// added again to the model.
+TEST_F(SavedTabGroupSyncBridgeTest, AddTabFromSync) {
+  EXPECT_TRUE(saved_tab_group_model_.saved_tab_groups().empty());
+
+  SavedTabGroup group(u"Test Title", tab_groups::TabGroupColorId::kBlue, {},
+                      /*position=*/absl::nullopt);
+  SavedTabGroupTab tab_1(GURL("https://website.com"), u"Website Title",
+                         group.saved_guid(), /*position=*/absl::nullopt);
+  SavedTabGroupTab tab_2(GURL("https://google.com"), u"Google",
+                         group.saved_guid(), /*position=*/absl::nullopt);
+  SavedTabGroupTab tab_3(tab_2);
+  tab_3.SetPosition(0);
+
+  group.AddTabLocally(tab_1).AddTabLocally(tab_2);
+
+  base::Uuid group_guid = group.saved_guid();
+  base::Uuid tab_1_guid = tab_1.saved_tab_guid();
+  base::Uuid tab_2_guid = tab_2.saved_tab_guid();
+  base::Uuid tab_3_guid = tab_3.saved_tab_guid();
+  saved_tab_group_model_.Add(std::move(group));
+  EXPECT_CALL(processor_, Put(tab_3_guid.AsLowercaseString(), _, _)).Times(0);
+  EXPECT_CALL(processor_, Put(tab_1_guid.AsLowercaseString(), _, _)).Times(0);
+  EXPECT_CALL(processor_, Put(tab_2_guid.AsLowercaseString(), _, _)).Times(0);
+  EXPECT_CALL(processor_, Put(group_guid.AsLowercaseString(), _, _)).Times(0);
+
+  saved_tab_group_model_.AddTabToGroupFromSync(group_guid, tab_3);
+
+  EXPECT_EQ(tab_2_guid, tab_3_guid);
+  EXPECT_EQ(
+      saved_tab_group_model_.Get(group_guid)->GetTab(tab_2_guid)->position(),
+      saved_tab_group_model_.Get(group_guid)->GetTab(tab_3_guid)->position());
+}
+
 // Verify that locally added tabs call put on the processor.
 TEST_F(SavedTabGroupSyncBridgeTest, AddTabLocally) {
   EXPECT_TRUE(saved_tab_group_model_.saved_tab_groups().empty());
@@ -669,10 +703,6 @@ TEST_F(SavedTabGroupSyncBridgeTest, AddTabLocally) {
   EXPECT_CALL(processor_, Put(tab_2_guid.AsLowercaseString(), _, _)).Times(0);
   EXPECT_CALL(processor_, Put(group_guid.AsLowercaseString(), _, _)).Times(0);
 
-  // TODO(dljames): Because `tab_3` was added to the middle of the group, only
-  // `tab_2` will have its position updated. Once tab ordering is implemented,
-  // only the affected tabs will need to be updated. In that case, the Put()
-  // call for tab_1 can be removed.
   saved_tab_group_model_.AddTabToGroupLocally(group_guid, tab_3);
 }
 

@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -20,7 +21,6 @@
 #include "dbus/object_path.h"
 #include "dbus/values_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 using ::testing::_;

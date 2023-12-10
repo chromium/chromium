@@ -20,7 +20,7 @@ void OnOperation(base::stack<AuthOperation> operations,
                  AuthSuccessCallback success_handler,
                  AuthErrorCallback error_handler,
                  std::unique_ptr<UserContext> context,
-                 absl::optional<AuthenticationError> error) {
+                 std::optional<AuthenticationError> error) {
   if (error) {
     std::move(error_handler).Run(std::move(context), error.value());
     return;

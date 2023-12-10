@@ -16,6 +16,7 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.components.browser_ui.util.ConversionUtils;
 import org.chromium.content_public.browser.BrowserContextHandle;
+import org.chromium.net.NetworkTrafficAnnotationTag;
 import org.chromium.url.GURL;
 
 /**
@@ -36,7 +37,10 @@ public class LargeIconBridge {
         public boolean isFallbackColorDefault;
         public @IconType int iconType;
 
-        CachedFavicon(Bitmap newIcon, int newFallbackColor, boolean newIsFallbackColorDefault,
+        CachedFavicon(
+                Bitmap newIcon,
+                int newFallbackColor,
+                boolean newIsFallbackColorDefault,
                 @IconType int newIconType) {
             icon = newIcon;
             fallbackColor = newFallbackColor;
@@ -45,9 +49,7 @@ public class LargeIconBridge {
         }
     }
 
-    /**
-     * Callback for use with GetLargeIconForUrl().
-     */
+    /** Callback for use with {@link #getLargeIconForUrl()}. */
     public interface LargeIconCallback {
         /**
          * Called when the icon or fallback color is available.
@@ -59,8 +61,29 @@ public class LargeIconBridge {
          * IconType}.
          */
         @CalledByNative("LargeIconCallback")
-        void onLargeIconAvailable(@Nullable Bitmap icon, int fallbackColor,
-                boolean isFallbackColorDefault, @IconType int iconType);
+        void onLargeIconAvailable(
+                @Nullable Bitmap icon,
+                int fallbackColor,
+                boolean isFallbackColorDefault,
+                @IconType int iconType);
+    }
+
+    /**
+     * Callback for use with {@link
+     * #getLargeIconOrFallbackStyleFromGoogleServerSkippingLocalCache()}.
+     */
+    public interface GoogleFaviconServerCallback {
+
+        /**
+         * Called when the server request finishes. At this point the icon may or may not be added
+         * to the local favicon cache (if not available in google servers). To get the icon call
+         * {@link #getLargeIconForUrl()}.
+         *
+         * @param status The status of the request. On request success you may need to call {@link
+         *     #touchIconFromGoogleServer()} to avoid automatic eviction from cache.
+         */
+        @CalledByNative("GoogleFaviconServerCallback")
+        void onRequestComplete(@GoogleFaviconServerRequestStatus int status);
     }
 
     /**
@@ -92,18 +115,17 @@ public class LargeIconBridge {
     public void createCache(int cacheSizeBytes) {
         assert cacheSizeBytes > 0;
 
-        mFaviconCache = new LruCache<GURL, CachedFavicon>(cacheSizeBytes) {
-            @Override
-            protected int sizeOf(GURL key, CachedFavicon favicon) {
-                int iconBitmapSize = favicon.icon == null ? 0 : favicon.icon.getByteCount();
-                return Math.max(CACHE_ENTRY_MIN_SIZE_BYTES, iconBitmapSize);
-            }
-        };
+        mFaviconCache =
+                new LruCache<GURL, CachedFavicon>(cacheSizeBytes) {
+                    @Override
+                    protected int sizeOf(GURL key, CachedFavicon favicon) {
+                        int iconBitmapSize = favicon.icon == null ? 0 : favicon.icon.getByteCount();
+                        return Math.max(CACHE_ENTRY_MIN_SIZE_BYTES, iconBitmapSize);
+                    }
+                };
     }
 
-    /**
-     * Deletes the C++ side of this class. This must be called when this object is no longer needed.
-     */
+    /** Deletes the C++ side of this class. This must be called when this object is no longer needed. */
     public void destroy() {
         if (mNativeLargeIconBridge != 0) {
             LargeIconBridgeJni.get().destroy(mNativeLargeIconBridge);
@@ -142,41 +164,106 @@ public class LargeIconBridge {
      *                 will not be called if this method returns false.
      * @return True if a callback should be expected.
      */
-    public boolean getLargeIconForUrl(final GURL pageUrl, int minSizePx, int desiredSizePx,
+    public boolean getLargeIconForUrl(
+            final GURL pageUrl,
+            int minSizePx,
+            int desiredSizePx,
             final LargeIconCallback callback) {
         assert mNativeLargeIconBridge != 0;
         assert callback != null;
 
         if (mFaviconCache == null) {
-            return LargeIconBridgeJni.get().getLargeIconForURL(mNativeLargeIconBridge,
-                    mBrowserContextHandle, pageUrl, minSizePx, desiredSizePx, callback);
+            return LargeIconBridgeJni.get()
+                    .getLargeIconForURL(
+                            mNativeLargeIconBridge,
+                            mBrowserContextHandle,
+                            pageUrl,
+                            minSizePx,
+                            desiredSizePx,
+                            callback);
         } else {
             CachedFavicon cached = mFaviconCache.get(pageUrl);
             if (cached != null) {
-                callback.onLargeIconAvailable(cached.icon, cached.fallbackColor,
-                        cached.isFallbackColorDefault, cached.iconType);
+                callback.onLargeIconAvailable(
+                        cached.icon,
+                        cached.fallbackColor,
+                        cached.isFallbackColorDefault,
+                        cached.iconType);
                 return true;
             }
 
-            LargeIconCallback callbackWrapper = new LargeIconCallback() {
-                @Override
-                public void onLargeIconAvailable(Bitmap icon, int fallbackColor,
-                        boolean isFallbackColorDefault, @IconType int iconType) {
-                    mFaviconCache.put(pageUrl,
-                            new CachedFavicon(
-                                    icon, fallbackColor, isFallbackColorDefault, iconType));
-                    callback.onLargeIconAvailable(
-                            icon, fallbackColor, isFallbackColorDefault, iconType);
-                }
-            };
-            return LargeIconBridgeJni.get().getLargeIconForURL(mNativeLargeIconBridge,
-                    mBrowserContextHandle, pageUrl, minSizePx, desiredSizePx, callbackWrapper);
+            LargeIconCallback callbackWrapper =
+                    new LargeIconCallback() {
+                        @Override
+                        public void onLargeIconAvailable(
+                                Bitmap icon,
+                                int fallbackColor,
+                                boolean isFallbackColorDefault,
+                                @IconType int iconType) {
+                            mFaviconCache.put(
+                                    pageUrl,
+                                    new CachedFavicon(
+                                            icon, fallbackColor, isFallbackColorDefault, iconType));
+                            callback.onLargeIconAvailable(
+                                    icon, fallbackColor, isFallbackColorDefault, iconType);
+                        }
+                    };
+            return LargeIconBridgeJni.get()
+                    .getLargeIconForURL(
+                            mNativeLargeIconBridge,
+                            mBrowserContextHandle,
+                            pageUrl,
+                            minSizePx,
+                            desiredSizePx,
+                            callbackWrapper);
         }
     }
 
     /**
-     * Removes the favicon from the local cache for the given URL.
+     * Fetches the best large icon for the url and stores the result in the FaviconService cache.
+     * This will be a no-op if the local favicon cache contains an icon for url. This method doesn't
+     * return the icon fetched through the callback. Clients will need to call {@link
+     * #getLargeIconForUrl()} afterwards to get the icon.
+     *
+     * @param pageUrl The URL of the page whose icon will be fetched.
+     * @param mayPageUrlBePrivate Whether page url can be private. Unless you are sure set it to
+     *     true to avoid crawling private urls.
+     * @param shouldTrimPageUrlPath Whether to remove path from the url. The result will be stored
+     *     under the full url provided to the API.
+     * @param trafficAnnotation Traffic annotation to make the request to the server.
+     * @param callback The callback to call asynchronously when the operation finishes.
      */
+    public void getLargeIconOrFallbackStyleFromGoogleServerSkippingLocalCache(
+            GURL pageUrl,
+            boolean mayPageUrlBePrivate,
+            boolean shouldTrimPageUrlPath,
+            NetworkTrafficAnnotationTag trafficAnnotation,
+            GoogleFaviconServerCallback callback) {
+        LargeIconBridgeJni.get()
+                .getLargeIconOrFallbackStyleFromGoogleServerSkippingLocalCache(
+                        mNativeLargeIconBridge,
+                        mBrowserContextHandle,
+                        pageUrl,
+                        mayPageUrlBePrivate,
+                        shouldTrimPageUrlPath,
+                        trafficAnnotation.getHashCode(),
+                        callback);
+    }
+
+    /**
+     * Update the time that the icon at url was requested. This should be called right after
+     * obtaining an icon from {@link
+     * #getLargeIconOrFallbackStyleFromGoogleServerSkippingLocalCache()}. This postpones automatic
+     * eviction of the favicon from the cache.
+     *
+     * @param iconUrl The url representing an icon that may originate from the favicon server.
+     */
+    public void touchIconFromGoogleServer(GURL iconUrl) {
+        LargeIconBridgeJni.get()
+                .touchIconFromGoogleServer(mNativeLargeIconBridge, mBrowserContextHandle, iconUrl);
+    }
+
+    /** Removes the favicon from the local cache for the given URL. */
     public void clearFavicon(GURL url) {
         mFaviconCache.remove(url);
     }
@@ -184,9 +271,29 @@ public class LargeIconBridge {
     @NativeMethods
     public interface Natives {
         long init();
+
         void destroy(long nativeLargeIconBridge);
-        boolean getLargeIconForURL(long nativeLargeIconBridge,
-                BrowserContextHandle browserContextHandle, GURL pageUrl, int minSizePx,
-                int desiredSizePx, LargeIconCallback callback);
+
+        boolean getLargeIconForURL(
+                long nativeLargeIconBridge,
+                BrowserContextHandle browserContextHandle,
+                GURL pageUrl,
+                int minSizePx,
+                int desiredSizePx,
+                LargeIconCallback callback);
+
+        void getLargeIconOrFallbackStyleFromGoogleServerSkippingLocalCache(
+                long nativeLargeIconBridge,
+                BrowserContextHandle browserContextHandle,
+                GURL pageUrl,
+                boolean mayPageUrlBePrivate,
+                boolean shouldTrimPageUrlPath,
+                int annotationHashCode,
+                GoogleFaviconServerCallback callback);
+
+        void touchIconFromGoogleServer(
+                long nativeLargeIconBridge,
+                BrowserContextHandle browserContextHandle,
+                GURL iconUrl);
     }
 }

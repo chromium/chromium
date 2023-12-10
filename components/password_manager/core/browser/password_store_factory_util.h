@@ -26,8 +26,13 @@ class PasswordStoreInterface;
 // Creates a LoginDatabase. Looks in |db_directory| for the database file.
 // Does not call LoginDatabase::Init() -- to avoid UI jank, that needs to be
 // called by PasswordStore::Init() on the background thread.
+// If a non-null `is_empty_cb` is passed, it's called to signal whether the
+// database is empty, i.e. without any logins *or* blocklists. The call
+// happens when initializing the database and when adding/removing entries,
+// regardless of success.
 std::unique_ptr<LoginDatabase> CreateLoginDatabaseForProfileStorage(
-    const base::FilePath& db_directory);
+    const base::FilePath& db_directory,
+    const base::RepeatingCallback<void(bool)>& is_empty_cb);
 std::unique_ptr<LoginDatabase> CreateLoginDatabaseForAccountStorage(
     const base::FilePath& db_directory);
 

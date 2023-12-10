@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include <optional>
 #include "base/files/file_path.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
@@ -17,7 +18,6 @@
 #include "printing/pdf_render_settings.h"
 #include "printing/units.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/web/web_print_params.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkImage.h"
@@ -69,7 +69,7 @@ void CheckPdfDimensions(const std::vector<uint8_t>& pdf_data,
   ASSERT_EQ(expected_dimensions.size(), static_cast<size_t>(page_count));
 
   for (int i = 0; i < page_count; ++i) {
-    absl::optional<gfx::SizeF> page_size =
+    std::optional<gfx::SizeF> page_size =
         exports.GetPDFPageSizeByIndex(pdf_data, i);
     ASSERT_TRUE(page_size.has_value());
     EXPECT_EQ(expected_dimensions[i], page_size.value());

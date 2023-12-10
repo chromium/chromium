@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include <optional>
 #include "build/build_config.h"
 #include "content/public/app/content_main_delegate.h"
 #include "content/public/browser/content_browser_client.h"
@@ -15,7 +16,6 @@
 #include "headless/lib/headless_content_client.h"
 #include "headless/public/headless_browser.h"
 #include "headless/public/headless_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class CommandLine;
@@ -40,12 +40,12 @@ class HEADLESS_EXPORT HeadlessContentMainDelegate
 
  private:
   // content::ContentMainDelegate implementation:
-  absl::optional<int> BasicStartupComplete() override;
+  std::optional<int> BasicStartupComplete() override;
   void PreSandboxStartup() override;
   absl::variant<int, content::MainFunctionParams> RunProcess(
       const std::string& process_type,
       content::MainFunctionParams main_function_params) override;
-  absl::optional<int> PreBrowserMain() override;
+  std::optional<int> PreBrowserMain() override;
 #if BUILDFLAG(IS_WIN)
   bool ShouldHandleConsoleControlEvents() override;
 #endif
@@ -54,7 +54,7 @@ class HEADLESS_EXPORT HeadlessContentMainDelegate
   content::ContentUtilityClient* CreateContentUtilityClient() override;
   content::ContentRendererClient* CreateContentRendererClient() override;
 
-  absl::optional<int> PostEarlyInitialization(InvokedIn invoked_in) override;
+  std::optional<int> PostEarlyInitialization(InvokedIn invoked_in) override;
 #if BUILDFLAG(IS_MAC)
   void PlatformPreBrowserMain();
 #endif

@@ -14,6 +14,7 @@
 #include <cstdint>
 #include <cstdio>
 #include <limits>
+#include <optional>
 #include <set>
 #include <sstream>
 #include <utility>
@@ -22,6 +23,8 @@
 #include "ash/components/arc/session/arc_bridge_service.h"
 #include "ash/components/arc/session/arc_service_manager.h"
 #include "ash/constants/ash_features.h"
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
@@ -43,7 +46,7 @@
 #include "base/values.h"
 #include "base/version.h"
 #include "chrome/browser/ash/app_mode/arc/arc_kiosk_app_manager.h"
-#include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
+#include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
 #include "chrome/browser/ash/crostini/crostini_reporting_util.h"
@@ -107,7 +110,6 @@
 #include "gpu/config/gpu_info.h"
 #include "gpu/ipc/common/memory_stats.h"
 #include "storage/browser/file_system/external_mount_points.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
@@ -313,22 +315,22 @@ std::vector<em::CPUTempInfo> ReadCPUTempInfo() {
 
 // If |contents| contains |prefix| followed by a hex integer, parses the hex
 // integer of specified length and returns it.
-// Otherwise, returns absl::nullopt.
-absl::optional<int> ExtractHexIntegerAfterPrefix(std::string_view contents,
-                                                 std::string_view prefix,
-                                                 size_t hex_number_length) {
+// Otherwise, returns std::nullopt.
+std::optional<int> ExtractHexIntegerAfterPrefix(std::string_view contents,
+                                                std::string_view prefix,
+                                                size_t hex_number_length) {
   size_t prefix_position = contents.find(prefix);
   if (prefix_position == std::string::npos) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   if (prefix_position + prefix.size() + hex_number_length >= contents.size()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   int parsed_number;
   if (!base::HexStringToInt(
           contents.substr(prefix_position + prefix.size(), hex_number_length),
           &parsed_number)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return parsed_number;
 }
@@ -1536,7 +1538,7 @@ class DeviceStatusCollectorState : public StatusCollectorState {
     SetDeviceStatusReported();
   }
 
-  void OnGetRootDeviceSize(absl::optional<int64_t> root_device_size) {
+  void OnGetRootDeviceSize(std::optional<int64_t> root_device_size) {
     if (!root_device_size.has_value()) {
       DVLOG(1) << "Could not fetch root device size from spaced.";
       return;
@@ -1557,7 +1559,7 @@ class DeviceStatusCollectorState : public StatusCollectorState {
 
   void OnCrashReportInfoReceived(
       const std::vector<em::CrashReportInfo>& crash_report_infos) {
-    DCHECK(response_params_.device_status->crash_report_infos_size() == 0);
+    DCHECK_EQ(response_params_.device_status->crash_report_infos_size(), 0);
     for (const em::CrashReportInfo& info : crash_report_infos) {
       *response_params_.device_status->add_crash_report_infos() = info;
     }
@@ -2339,7 +2341,7 @@ bool DeviceStatusCollector::GetVersionInfo(
 
 bool DeviceStatusCollector::GetWriteProtectSwitch(
     em::DeviceStatusReportRequest* status) {
-  const absl::optional<std::string_view> firmware_write_protect =
+  const std::optional<std::string_view> firmware_write_protect =
       statistics_provider_->GetMachineStatistic(
           ash::system::kFirmwareWriteProtectCurrentKey);
   if (!firmware_write_protect) {
@@ -2596,16 +2598,17 @@ bool DeviceStatusCollector::GetOsUpdateStatus(
 
   std::string required_platform_version_string;
   // Can be uninitialized in tests.
-  if (ash::KioskAppManager::IsInitialized()) {
+  if (ash::KioskChromeAppManager::IsInitialized()) {
     required_platform_version_string =
-        ash::KioskAppManager::Get()->GetAutoLaunchAppRequiredPlatformVersion();
+        ash::KioskChromeAppManager::Get()
+            ->GetAutoLaunchAppRequiredPlatformVersion();
   }
   em::OsUpdateStatus* os_update_status = status->mutable_os_update_status();
 
   const update_engine::StatusResult update_engine_status =
       ash::UpdateEngineClient::Get()->GetLastStatus();
 
-  absl::optional<base::Version> required_platform_version;
+  std::optional<base::Version> required_platform_version;
 
   if (required_platform_version_string.empty()) {
     // If this is non-Kiosk session, the OS is considered as up-to-date if the
@@ -2696,8 +2699,9 @@ bool DeviceStatusCollector::GetRunningKioskApp(
       running_kiosk_app->set_extension_version(app_version);
     }
 
-    ash::KioskAppManager::App app_info;
-    if (ash::KioskAppManager::Get()->GetApp(account->kiosk_app_id, &app_info)) {
+    ash::KioskChromeAppManager::App app_info;
+    if (ash::KioskChromeAppManager::Get()->GetApp(account->kiosk_app_id,
+                                                  &app_info)) {
       running_kiosk_app->set_required_platform_version(
           app_info.required_platform_version);
     }
@@ -2714,7 +2718,7 @@ bool DeviceStatusCollector::GetRunningKioskApp(
 
 bool DeviceStatusCollector::GetDeviceBootMode(
     em::DeviceStatusReportRequest* status) {
-  absl::optional<std::string> boot_mode =
+  std::optional<std::string> boot_mode =
       StatusCollector::GetBootMode(statistics_provider_);
 
   if (boot_mode) {
@@ -3103,7 +3107,7 @@ bool DeviceStatusCollector::IsReportingAppInfoAndActivity() const {
 // TODO(https://crbug.com/1364428)
 // Make this function fallible when the optional received is empty
 void DeviceStatusCollector::OnOSVersion(
-    const absl::optional<std::string>& version) {
+    const std::optional<std::string>& version) {
   os_version_ = version.value_or("0.0.0.0");
 }
 

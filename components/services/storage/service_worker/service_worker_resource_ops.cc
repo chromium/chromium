@@ -340,8 +340,8 @@ class ServiceWorkerResourceReaderImpl::DataReader {
 
     uint32_t num_bytes = pending_buffer_->size();
     num_bytes = std::min(num_bytes, blink::BlobUtils::GetDataPipeChunkSize());
-    scoped_refptr<network::NetToMojoIOBuffer> buffer =
-        base::MakeRefCounted<network::NetToMojoIOBuffer>(pending_buffer_.get());
+    auto buffer =
+        base::MakeRefCounted<network::NetToMojoIOBuffer>(pending_buffer_);
 
     net::IOBuffer* raw_buffer = buffer.get();
     int read_bytes = owner_->entry_opener_.entry()->Read(
@@ -507,8 +507,8 @@ void ServiceWorkerResourceReaderImpl::ContinueReadResponseHead() {
     return;
   }
 
-  auto buffer =
-      base::MakeRefCounted<net::IOBuffer>(base::checked_cast<size_t>(size));
+  auto buffer = base::MakeRefCounted<net::IOBufferWithSize>(
+      base::checked_cast<size_t>(size));
   int rv = entry_opener_.entry()->Read(
       kResponseInfoIndex, /*offset=*/0, buffer.get(), size,
       base::BindOnce(&ServiceWorkerResourceReaderImpl::DidReadHttpResponseInfo,

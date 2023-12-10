@@ -33,6 +33,7 @@ void GcpUserPoliciesBaseTest::SetUp() {
   FakesForTesting fakes;
   fakes.fake_win_http_url_fetcher_creator =
       fake_http_url_fetcher_factory()->GetCreatorCallback();
+  fakes.internet_availability_checker_for_testing = fake_internet_checker();
   UserPoliciesManager::Get()->SetFakesForTesting(&fakes);
 }
 
@@ -64,6 +65,9 @@ TEST_F(GcpUserPoliciesBaseTest, NoAccessToken) {
 }
 
 TEST_F(GcpUserPoliciesBaseTest, DetectMissingAndStalePolicies) {
+  fake_internet_checker()->SetHasInternetConnection(
+      FakeInternetAvailabilityChecker::kHicForceYes);
+
   std::wstring sid = CreateUser();
   ASSERT_TRUE(UserPoliciesManager::Get()->IsUserPolicyStaleOrMissing(sid));
 
@@ -90,6 +94,14 @@ TEST_F(GcpUserPoliciesBaseTest, DetectMissingAndStalePolicies) {
   ASSERT_EQ(S_OK, SetUserProperty(sid, L"last_policy_refresh_time",
                                   fetch_time_millis));
   ASSERT_TRUE(UserPoliciesManager::Get()->IsUserPolicyStaleOrMissing(sid));
+
+  // When the internet connection doesn't exist, this will return false to avoid
+  // online reauth scenarios.
+  fake_internet_checker()->SetHasInternetConnection(
+      FakeInternetAvailabilityChecker::kHicForceNo);
+  ASSERT_TRUE(!UserPoliciesManager::Get()->IsUserPolicyStaleOrMissing(sid));
+  fake_internet_checker()->SetHasInternetConnection(
+      FakeInternetAvailabilityChecker::kHicForceYes);
 }
 
 // Tests effective user policy under various scenarios of cloud policy values.

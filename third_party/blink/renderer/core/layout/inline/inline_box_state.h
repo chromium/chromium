@@ -158,26 +158,26 @@ class CORE_EXPORT InlineLayoutStateStack {
                                     LogicalLineItems* line_box);
 
   // Push a box state stack.
-  InlineBoxState* OnOpenTag(const NGConstraintSpace&,
+  InlineBoxState* OnOpenTag(const ConstraintSpace&,
                             const InlineItem&,
                             const InlineItemResult&,
                             FontBaseline baseline_type,
                             const LogicalLineItems&);
   // This variation adds a box placeholder to |line_box|.
-  InlineBoxState* OnOpenTag(const NGConstraintSpace&,
+  InlineBoxState* OnOpenTag(const ConstraintSpace&,
                             const InlineItem&,
                             const InlineItemResult&,
                             FontBaseline baseline_type,
                             LogicalLineItems* line_box);
 
   // Pop a box state stack.
-  InlineBoxState* OnCloseTag(const NGConstraintSpace& space,
+  InlineBoxState* OnCloseTag(const ConstraintSpace& space,
                              LogicalLineItems*,
                              InlineBoxState*,
                              FontBaseline);
 
   // Compute all the pending positioning at the end of a line.
-  void OnEndPlaceItems(const NGConstraintSpace& space,
+  void OnEndPlaceItems(const ConstraintSpace& space,
                        LogicalLineItems*,
                        FontBaseline);
 
@@ -203,10 +203,10 @@ class CORE_EXPORT InlineLayoutStateStack {
                                     LayoutUnit position,
                                     bool ignore_box_margin_border_padding);
 
-  void ApplyRelativePositioning(const NGConstraintSpace&, LogicalLineItems*);
+  void ApplyRelativePositioning(const ConstraintSpace&, LogicalLineItems*);
   // Create box fragments. This function turns a flat list of children into
   // a box tree.
-  void CreateBoxFragments(const NGConstraintSpace&,
+  void CreateBoxFragments(const ConstraintSpace&,
                           LogicalLineItems*,
                           bool is_opaque);
 
@@ -217,7 +217,7 @@ class CORE_EXPORT InlineLayoutStateStack {
  private:
   // End of a box state, either explicitly by close tag, or implicitly at the
   // end of a line.
-  void EndBoxState(const NGConstraintSpace&,
+  void EndBoxState(const ConstraintSpace&,
                    InlineBoxState*,
                    LogicalLineItems*,
                    FontBaseline);
@@ -225,7 +225,7 @@ class CORE_EXPORT InlineLayoutStateStack {
   void AddBoxFragmentPlaceholder(InlineBoxState*,
                                  LogicalLineItems*,
                                  FontBaseline);
-  void AddBoxData(const NGConstraintSpace&, InlineBoxState*, LogicalLineItems*);
+  void AddBoxData(const ConstraintSpace&, InlineBoxState*, LogicalLineItems*);
 
   enum PositionPending { kPositionNotPending, kPositionPending };
 
@@ -294,9 +294,9 @@ class CORE_EXPORT InlineLayoutStateStack {
 
     void UpdateFragmentEdges(Vector<BoxData, 4>& list);
 
-    const NGLayoutResult* CreateBoxFragment(const NGConstraintSpace&,
-                                            LogicalLineItems*,
-                                            bool is_opaque = false);
+    const LayoutResult* CreateBoxFragment(const ConstraintSpace&,
+                                          LogicalLineItems*,
+                                          bool is_opaque = false);
   };
 
   // Update start/end of the first BoxData found at |index|.

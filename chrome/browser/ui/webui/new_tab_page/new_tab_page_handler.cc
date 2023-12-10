@@ -134,7 +134,7 @@ new_tab_page::mojom::ThemePtr MakeTheme(
   auto custom_background =
       ntp_custom_background_service
           ? ntp_custom_background_service->GetCustomBackground()
-          : absl::nullopt;
+          : std::nullopt;
   theme->background_color = color_provider.GetColor(kColorNewTabPageBackground);
   const bool theme_has_custom_image =
       theme_provider->HasCustomImage(IDR_THEME_NTP_BACKGROUND);
@@ -244,6 +244,9 @@ new_tab_page::mojom::ThemePtr MakeTheme(
     if (custom_background->daily_refresh_enabled) {
       image_source = new_tab_page::mojom::NtpBackgroundImageSource::
           kFirstPartyThemeWithDailyRefresh;
+    } else if (custom_background->local_background_id.has_value()) {
+      image_source =
+          new_tab_page::mojom::NtpBackgroundImageSource::kWallpaperSearch;
     } else if (custom_background->is_uploaded_image) {
       image_source =
           new_tab_page::mojom::NtpBackgroundImageSource::kUploadedImage;
@@ -933,7 +936,7 @@ void NewTabPageHandler::OnPromoDataUpdated() {
       UMA_HISTOGRAM_MEDIUM_TIMES("NewTabPage.Promos.RequestLatency2.Failure",
                                  duration);
     }
-    promo_load_start_time_ = absl::nullopt;
+    promo_load_start_time_ = std::nullopt;
   }
 
   const auto& data = promo_service_->promo_data();
@@ -963,7 +966,7 @@ void NewTabPageHandler::OnOneGoogleBarRendered(double time) {
 }
 
 void NewTabPageHandler::OnPromoRendered(double time,
-                                        const absl::optional<GURL>& log_url) {
+                                        const std::optional<GURL>& log_url) {
   logger_.LogEvent(NTP_MIDDLE_SLOT_PROMO_SHOWN,
                    base::Time::FromMillisecondsSinceUnixEpoch(time) -
                        ntp_navigation_start_time_);
@@ -1027,7 +1030,7 @@ void NewTabPageHandler::OnCustomizeDialogAction(
 
 void NewTabPageHandler::OnDoodleImageClicked(
     new_tab_page::mojom::DoodleImageType type,
-    const absl::optional<::GURL>& log_url) {
+    const std::optional<::GURL>& log_url) {
   NTPLoggingEventType event;
   switch (type) {
     case new_tab_page::mojom::DoodleImageType::kAnimation:
@@ -1073,7 +1076,7 @@ void NewTabPageHandler::OnDoodleImageRendered(
 void NewTabPageHandler::OnDoodleShared(
     new_tab_page::mojom::DoodleShareChannel channel,
     const std::string& doodle_id,
-    const absl::optional<std::string>& share_id) {
+    const std::optional<std::string>& share_id) {
   int channel_id;
   switch (channel) {
     case new_tab_page::mojom::DoodleShareChannel::kFacebook:
@@ -1248,7 +1251,7 @@ void NewTabPageHandler::FileSelectionCanceled(void* params) {
 void NewTabPageHandler::OnLogoAvailable(
     GetDoodleCallback callback,
     search_provider_logos::LogoCallbackReason type,
-    const absl::optional<search_provider_logos::EncodedLogo>& logo) {
+    const std::optional<search_provider_logos::EncodedLogo>& logo) {
   if (!logo) {
     std::move(callback).Run(nullptr);
     return;
@@ -1362,12 +1365,12 @@ void NewTabPageHandler::OnLogFetchResult(OnDoodleImageRenderedCallback callback,
                                          bool success,
                                          std::unique_ptr<std::string> body) {
   if (!success || body->size() < 4 || body->substr(0, 4) != ")]}'") {
-    std::move(callback).Run("", absl::nullopt, "");
+    std::move(callback).Run("", std::nullopt, "");
     return;
   }
   auto value = base::JSONReader::Read(body->substr(4));
   if (!value.has_value()) {
-    std::move(callback).Run("", absl::nullopt, "");
+    std::move(callback).Run("", std::nullopt, "");
     return;
   }
 
@@ -1380,12 +1383,12 @@ void NewTabPageHandler::OnLogFetchResult(OnDoodleImageRenderedCallback callback,
       dict.FindStringByDottedPath("ddllog.interaction_log_url");
   auto interaction_log_url =
       interaction_log_url_value
-          ? absl::optional<GURL>(
+          ? std::optional<GURL>(
                 GURL(TemplateURLServiceFactory::GetForProfile(profile_)
                          ->search_terms_data()
                          .GoogleBaseURLValue())
                     .Resolve(*interaction_log_url_value))
-          : absl::nullopt;
+          : std::nullopt;
   auto* encoded_ei_value = dict.FindStringByDottedPath("ddllog.encoded_ei");
   auto encoded_ei = encoded_ei_value ? *encoded_ei_value : "";
   std::move(callback).Run(target_url_params, interaction_log_url, encoded_ei);

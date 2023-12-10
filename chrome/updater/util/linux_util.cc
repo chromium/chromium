@@ -4,6 +4,8 @@
 
 #include "chrome/updater/util/linux_util.h"
 
+#include <optional>
+
 #include "base/base_paths.h"
 #include "base/files/file_path.h"
 #include "base/path_service.h"
@@ -13,7 +15,6 @@
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util/posix_util.h"
 #include "chrome/updater/util/util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
 namespace {
@@ -31,7 +32,7 @@ base::FilePath GetExecutableRelativePath() {
   return base::FilePath(base::StrCat({kExecutableName, kExecutableSuffix}));
 }
 
-absl::optional<base::FilePath> GetInstallDirectory(UpdaterScope scope) {
+std::optional<base::FilePath> GetInstallDirectory(UpdaterScope scope) {
   base::FilePath path;
   switch (scope) {
     case UpdaterScope::kUser:
@@ -43,14 +44,13 @@ absl::optional<base::FilePath> GetInstallDirectory(UpdaterScope scope) {
     case UpdaterScope::kSystem:
       return base::FilePath(kSystemDataPath).Append(GetUpdaterFolderName());
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-absl::optional<base::FilePath> GetUpdateServiceLauncherPath(
-    UpdaterScope scope) {
-  absl::optional<base::FilePath> path = GetInstallDirectory(scope);
-  return path ? absl::optional<base::FilePath>(path->AppendASCII(kLauncherName))
-              : absl::nullopt;
+std::optional<base::FilePath> GetUpdateServiceLauncherPath(UpdaterScope scope) {
+  std::optional<base::FilePath> path = GetInstallDirectory(scope);
+  return path ? std::optional<base::FilePath>(path->AppendASCII(kLauncherName))
+              : std::nullopt;
 }
 
 }  // namespace updater

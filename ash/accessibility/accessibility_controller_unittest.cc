@@ -65,7 +65,8 @@ class AccessibilityControllerTest : public AshTestBase {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{media::kLiveCaption,
                               media::kLiveCaptionSystemWideOnChromeOS,
-                              ash::features::kOnDeviceSpeechRecognition},
+                              ash::features::kOnDeviceSpeechRecognition,
+                              ::features::kAccessibilityFaceGaze},
         /*disabled_feaures=*/{
             ::features::kAccessibilityDictationKeyboardImprovements});
     AshTestBase::SetUp();
@@ -102,6 +103,7 @@ TEST_F(AccessibilityControllerTest, PrefsAreRegistered) {
       prefs->FindPreference(prefs::kAccessibilityCaretHighlightEnabled));
   EXPECT_TRUE(
       prefs->FindPreference(prefs::kAccessibilityCursorHighlightEnabled));
+  EXPECT_TRUE(prefs->FindPreference(prefs::kAccessibilityCursorColorEnabled));
   EXPECT_TRUE(prefs->FindPreference(prefs::kAccessibilityDictationEnabled));
   EXPECT_TRUE(prefs->FindPreference(prefs::kAccessibilityDictationLocale));
   EXPECT_TRUE(
@@ -180,14 +182,15 @@ TEST_F(AccessibilityControllerTest, PrefsAreRegistered) {
       prefs->FindPreference(prefs::kAccessibilityVirtualKeyboardEnabled));
   EXPECT_TRUE(prefs->FindPreference(
       prefs::kAccessibilityEnhancedNetworkVoicesInSelectToSpeakAllowed));
-    EXPECT_TRUE(
-        prefs->FindPreference(prefs::kAccessibilityColorCorrectionEnabled));
-    EXPECT_TRUE(prefs->FindPreference(
-        prefs::kAccessibilityColorCorrectionHasBeenSetup));
-    EXPECT_TRUE(
-        prefs->FindPreference(prefs::kAccessibilityColorVisionCorrectionType));
-    EXPECT_TRUE(prefs->FindPreference(
-        prefs::kAccessibilityColorVisionCorrectionAmount));
+  EXPECT_TRUE(
+      prefs->FindPreference(prefs::kAccessibilityColorCorrectionEnabled));
+  EXPECT_TRUE(
+      prefs->FindPreference(prefs::kAccessibilityColorCorrectionHasBeenSetup));
+  EXPECT_TRUE(
+      prefs->FindPreference(prefs::kAccessibilityColorVisionCorrectionType));
+  EXPECT_TRUE(
+      prefs->FindPreference(prefs::kAccessibilityColorVisionCorrectionAmount));
+  EXPECT_TRUE(prefs->FindPreference(prefs::kAccessibilityFaceGazeEnabled));
 }
 
 TEST_F(AccessibilityControllerTest, SetAutoclickEnabled) {
@@ -284,6 +287,66 @@ TEST_F(AccessibilityControllerTest, SetCursorHighlightEnabled) {
   EXPECT_EQ(2, observer.status_changed_count_);
 
   controller->RemoveObserver(&observer);
+}
+
+TEST_F(AccessibilityControllerTest, SetFaceGazeEnabled) {
+  AccessibilityControllerImpl* controller =
+      Shell::Get()->accessibility_controller();
+  EXPECT_FALSE(controller->face_gaze().enabled());
+
+  TestAccessibilityObserver observer;
+  controller->AddObserver(&observer);
+  EXPECT_EQ(0, observer.status_changed_count_);
+
+  controller->face_gaze().SetEnabled(true);
+  EXPECT_TRUE(controller->face_gaze().enabled());
+  EXPECT_EQ(1, observer.status_changed_count_);
+
+  controller->face_gaze().SetEnabled(false);
+  EXPECT_FALSE(controller->face_gaze().enabled());
+  EXPECT_EQ(2, observer.status_changed_count_);
+
+  controller->RemoveObserver(&observer);
+}
+
+TEST_F(AccessibilityControllerTest, FaceGazeTrayMenuVisibility) {
+  // Check that when the pref isn't being controlled by any policy will be
+  // visible in the accessibility tray menu despite its value.
+  PrefService* prefs =
+      Shell::Get()->session_controller()->GetLastActiveUserPrefService();
+  AccessibilityControllerImpl* controller =
+      Shell::Get()->accessibility_controller();
+
+  // Check when the value is true and not being controlled by any policy.
+  controller->face_gaze().SetEnabled(true);
+  EXPECT_FALSE(
+      prefs->IsManagedPreference(prefs::kAccessibilityFaceGazeEnabled));
+  EXPECT_TRUE(prefs->GetBoolean(prefs::kAccessibilityFaceGazeEnabled));
+  EXPECT_TRUE(controller->face_gaze().enabled());
+  EXPECT_TRUE(controller->IsFaceGazeSettingVisibleInTray());
+  // Check when the value is false and not being controlled by any policy.
+  controller->face_gaze().SetEnabled(false);
+  EXPECT_FALSE(
+      prefs->IsManagedPreference(prefs::kAccessibilityFaceGazeEnabled));
+  EXPECT_FALSE(controller->face_gaze().enabled());
+  EXPECT_TRUE(controller->IsFaceGazeSettingVisibleInTray());
+  EXPECT_FALSE(prefs->GetBoolean(prefs::kAccessibilityFaceGazeEnabled));
+
+  // Check that when the pref is managed and being forced on then it will be
+  // visible.
+  static_cast<TestingPrefServiceSimple*>(prefs)->SetManagedPref(
+      prefs::kAccessibilityFaceGazeEnabled,
+      std::make_unique<base::Value>(true));
+  EXPECT_TRUE(prefs->IsManagedPreference(prefs::kAccessibilityFaceGazeEnabled));
+  EXPECT_TRUE(controller->IsFaceGazeSettingVisibleInTray());
+  // Check that when the pref is managed and only being forced off then it will
+  // be invisible.
+  static_cast<TestingPrefServiceSimple*>(prefs)->SetManagedPref(
+      prefs::kAccessibilityFaceGazeEnabled,
+      std::make_unique<base::Value>(false));
+  EXPECT_TRUE(prefs->IsManagedPreference(prefs::kAccessibilityFaceGazeEnabled));
+  EXPECT_FALSE(controller->face_gaze().enabled());
+  EXPECT_FALSE(controller->IsFaceGazeSettingVisibleInTray());
 }
 
 TEST_F(AccessibilityControllerTest, SetFocusHighlightEnabled) {

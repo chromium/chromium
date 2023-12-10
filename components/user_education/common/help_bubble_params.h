@@ -44,9 +44,9 @@ enum class HelpBubbleArrow {
 
 struct HelpBubbleButtonParams {
   HelpBubbleButtonParams();
-  HelpBubbleButtonParams(HelpBubbleButtonParams&&);
+  HelpBubbleButtonParams(HelpBubbleButtonParams&&) noexcept;
+  HelpBubbleButtonParams& operator=(HelpBubbleButtonParams&&) noexcept;
   ~HelpBubbleButtonParams();
-  HelpBubbleButtonParams& operator=(HelpBubbleButtonParams&&);
 
   std::u16string text;
   bool is_default = false;
@@ -61,9 +61,9 @@ struct HelpBubbleParams {
    public:
     ExtendedProperties();
     ExtendedProperties(const ExtendedProperties&);
-    ExtendedProperties(ExtendedProperties&&);
+    ExtendedProperties(ExtendedProperties&&) noexcept;
     ExtendedProperties& operator=(const ExtendedProperties&);
-    ExtendedProperties& operator=(ExtendedProperties&&);
+    ExtendedProperties& operator=(ExtendedProperties&&) noexcept;
     ~ExtendedProperties();
 
     bool operator==(const ExtendedProperties&) const;
@@ -77,9 +77,9 @@ struct HelpBubbleParams {
   };
 
   HelpBubbleParams();
-  HelpBubbleParams(HelpBubbleParams&&);
+  HelpBubbleParams(HelpBubbleParams&&) noexcept;
+  HelpBubbleParams& operator=(HelpBubbleParams&&) noexcept;
   ~HelpBubbleParams();
-  HelpBubbleParams& operator=(HelpBubbleParams&&);
 
   HelpBubbleArrow arrow = HelpBubbleArrow::kTopRight;
 
@@ -88,6 +88,12 @@ struct HelpBubbleParams {
   std::u16string body_icon_alt_text;
   std::u16string body_text;
   std::u16string screenreader_text;
+
+  // Whether the bubble should receive focus when it is shown. This is a
+  // behavioral hint; how it is actually implemented will depend on the bubble
+  // implementation (for example, bubbles attached to menu items cannot take
+  // focus for system activation reasons).
+  absl::optional<bool> focus_on_show_hint;
 
   // Additional message to be read to screen reader users to aid in
   // navigation.

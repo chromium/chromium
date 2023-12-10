@@ -16,7 +16,10 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/tabs/organization/logging_util.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_request.h"
+#include "chrome/browser/ui/tabs/organization/tab_organization_session.h"
+#include "components/optimization_guide/core/model_quality/feature_type_map.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
@@ -26,7 +29,44 @@
 
 namespace {
 
+bool CanUseOptimizationGuide(Profile* profile) {
+  return OptimizationGuideKeyedServiceFactory::GetForProfile(profile) &&
+         base::FeatureList::IsEnabled(
+             optimization_guide::features::kOptimizationGuideModelExecution);
+}
+
+void OnLogResults(Profile* profile,
+                  std::unique_ptr<optimization_guide::ModelQualityLogEntry>
+                      model_quality_log_entry,
+                  const TabOrganizationSession* session) {
+  if (!model_quality_log_entry) {
+    return;
+  }
+
+  OptimizationGuideKeyedService* optimization_guide_keyed_service =
+      OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
+  if (!optimization_guide_keyed_service) {
+    return;
+  }
+
+  if (!session->request() || !session->request()->response() ||
+      session->request()->response()->organizations.size() == 0 ||
+      session->tab_organizations().size() == 0) {
+    return;
+  }
+
+  optimization_guide::proto::TabOrganizationQuality* quality =
+      model_quality_log_entry
+          ->quality_data<optimization_guide::TabOrganizationFeatureTypeMap>();
+
+  AddSessionDetailsToQuality(quality, session);
+
+  optimization_guide_keyed_service->UploadModelQualityLogs(
+      std::move(model_quality_log_entry));
+}
+
 void OnTabOrganizationModelExecutionResult(
+    Profile* profile,
     TabOrganizationRequest::BackendCompletionCallback on_completion,
     TabOrganizationRequest::BackendFailureCallback on_failure,
     optimization_guide::OptimizationGuideModelExecutionResult result,
@@ -55,8 +95,14 @@ void OnTabOrganizationModelExecutionResult(
   }
 
   if (organizations.size() > 0) {
+    const std::string server_execution_id = log_entry->log_ai_data_request()
+                                                ->mutable_model_execution_info()
+                                                ->server_execution_id();
+
     std::unique_ptr<TabOrganizationResponse> local_response =
-        std::make_unique<TabOrganizationResponse>(std::move(organizations));
+        std::make_unique<TabOrganizationResponse>(
+            std::move(organizations), base::UTF8ToUTF16(server_execution_id),
+            base::BindOnce(OnLogResults, profile, std::move(log_entry)));
 
     std::move(on_completion).Run(std::move(local_response));
   } else {
@@ -69,11 +115,8 @@ void PerformTabOrganizationExecution(
     const TabOrganizationRequest* request,
     TabOrganizationRequest::BackendCompletionCallback on_completion,
     TabOrganizationRequest::BackendFailureCallback on_failure) {
-  OptimizationGuideKeyedService* optimization_guide_keyed_service =
-      OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
-  if (!optimization_guide_keyed_service || profile->IsOffTheRecord() ||
-      !base::FeatureList::IsEnabled(
-          optimization_guide::features::kOptimizationGuideModelExecution)) {
+  if (!CanUseOptimizationGuide(profile)) {
+    std::move(on_failure).Run();
     return;
   }
 
@@ -89,11 +132,13 @@ void PerformTabOrganizationExecution(
     tab->set_url(tab_data->original_url().spec());
   }
 
+  OptimizationGuideKeyedService* optimization_guide_keyed_service =
+      OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
   optimization_guide_keyed_service->ExecuteModel(
       optimization_guide::proto::ModelExecutionFeature::
           MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION,
       tab_organization_request,
-      base::BindOnce(OnTabOrganizationModelExecutionResult,
+      base::BindOnce(OnTabOrganizationModelExecutionResult, profile,
                      std::move(on_completion), std::move(on_failure)));
 }
 
@@ -103,11 +148,8 @@ TabOrganizationRequestFactory::~TabOrganizationRequestFactory() = default;
 
 // static
 std::unique_ptr<TabOrganizationRequestFactory>
-TabOrganizationRequestFactory::Get() {
-  const base::CommandLine* const command_line =
-      base::CommandLine::ForCurrentProcess();
-  if (command_line->HasSwitch(optimization_guide::switches::
-                                  kOptimizationGuideServiceModelExecutionURL)) {
+TabOrganizationRequestFactory::GetForProfile(Profile* profile) {
+  if (CanUseOptimizationGuide(profile)) {
     return std::make_unique<OptimizationGuideTabOrganizationRequestFactory>();
   }
   return std::make_unique<TwoTabsRequestFactory>();

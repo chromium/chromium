@@ -5,6 +5,8 @@
 #import <UIKit/UIKit.h>
 #import <WebKit/WebKit.h>
 
+#import <optional>
+
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
 #import "base/run_loop.h"
@@ -24,7 +26,6 @@
 #import "ios/web/public/web_state.h"
 #import "ios/web/web_state/ui/wk_web_view_configuration_provider.h"
 #import "testing/gtest_mac.h"
-#import "third_party/abseil-cpp/absl/types/optional.h"
 
 using base::test::ios::kWaitForJSCompletionTimeout;
 using base::test::ios::kWaitForPageLoadTimeout;
@@ -613,11 +614,11 @@ TEST_F(FindInPageJsTest, HiddenMatchBecomesVisible) {
         ASSERT_TRUE(result);
         ASSERT_TRUE(result->is_dict());
         const base::Value::Dict& result_dict = result->GetDict();
-        const absl::optional<double> count =
+        const std::optional<double> count =
             result_dict.FindDouble(kSelectAndScrollResultMatches);
         ASSERT_TRUE(count);
         ASSERT_EQ(2.0, count.value());
-        const absl::optional<double> index =
+        const std::optional<double> index =
             result_dict.FindDouble(kSelectAndScrollResultIndex);
         ASSERT_TRUE(index);
         ASSERT_EQ(0.0, index.value());
@@ -663,7 +664,7 @@ TEST_F(FindInPageJsTest, MatchBecomesInvisible) {
         ASSERT_TRUE(result);
         ASSERT_TRUE(result->is_dict());
         const base::Value::Dict& result_dict = result->GetDict();
-        const absl::optional<double> index =
+        const std::optional<double> index =
             result_dict.FindDouble(kSelectAndScrollResultIndex);
         ASSERT_TRUE(index);
         EXPECT_EQ(3.0, index.value());
@@ -686,7 +687,7 @@ TEST_F(FindInPageJsTest, MatchBecomesInvisible) {
         ASSERT_TRUE(result);
         ASSERT_TRUE(result->is_dict());
         const base::Value::Dict& result_dict = result->GetDict();
-        const absl::optional<double> index =
+        const std::optional<double> index =
             result_dict.FindDouble(kSelectAndScrollResultIndex);
         ASSERT_TRUE(index);
         // Since there are only two visible matches now and this

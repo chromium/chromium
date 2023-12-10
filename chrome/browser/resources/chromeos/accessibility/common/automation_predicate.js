@@ -5,10 +5,12 @@
 /**
  * @fileoverview Predicates for the automation extension API.
  */
-
 import {constants} from './constants.js';
 
+const ActionType = chrome.automation.ActionType;
 const AutomationNode = chrome.automation.AutomationNode;
+const DefaultActionVerb = chrome.automation.DefaultActionVerb;
+const Dir = constants.Dir;
 const InvalidState = chrome.automation.InvalidState;
 const MarkerType = chrome.automation.MarkerType;
 const Restriction = chrome.automation.Restriction;
@@ -27,8 +29,7 @@ const isActionableOrHasActionableDescendant = function(
   // Static text nodes are never actionable for the purposes of navigation even
   // if they have default action verb set.
   if (node.role !== Role.STATIC_TEXT && node.defaultActionVerb &&
-      (node.defaultActionVerb !==
-           chrome.automation.DefaultActionVerb.CLICK_ANCESTOR ||
+      (node.defaultActionVerb !== DefaultActionVerb.CLICK_ANCESTOR ||
        sawClickAncestorAction)) {
     return true;
   }
@@ -38,8 +39,7 @@ const isActionableOrHasActionableDescendant = function(
   }
 
   sawClickAncestorAction = sawClickAncestorAction || !node.defaultActionVerb ||
-      node.defaultActionVerb ===
-          chrome.automation.DefaultActionVerb.CLICK_ANCESTOR;
+      node.defaultActionVerb === DefaultActionVerb.CLICK_ANCESTOR;
   for (let i = 0; i < node.children.length; i++) {
     if (isActionableOrHasActionableDescendant(
             node.children[i], sawClickAncestorAction)) {
@@ -57,8 +57,7 @@ const isActionableOrHasActionableDescendant = function(
  */
 const hasActionableDescendant = function(node) {
   const sawClickAncestorAction = !node.defaultActionVerb ||
-      node.defaultActionVerb ===
-          chrome.automation.DefaultActionVerb.CLICK_ANCESTOR;
+      node.defaultActionVerb === DefaultActionVerb.CLICK_ANCESTOR;
   for (let i = 0; i < node.children.length; i++) {
     if (isActionableOrHasActionableDescendant(
             node.children[i], sawClickAncestorAction)) {
@@ -633,7 +632,7 @@ export class AutomationPredicate {
    * Returns a predicate that will match against the directed next cell taking
    * into account the current ancestor cell's position in the table.
    * @param {AutomationNode} start
-   * @param {{dir: (constants.Dir|undefined),
+   * @param {{dir: (Dir|undefined),
    *           row: (boolean|undefined),
    *          col: (boolean|undefined)}} opts
    * |dir|, specifies direction for |row or/and |col| movement by one cell.
@@ -648,7 +647,7 @@ export class AutomationPredicate {
       throw new Error('You must set either row or col to true');
     }
 
-    const dir = opts.dir || constants.Dir.FORWARD;
+    const dir = opts.dir || Dir.FORWARD;
 
     // Compute the row/col index defaulting to 0.
     let rowIndex = 0;
@@ -676,7 +675,7 @@ export class AutomationPredicate {
         throw 'Unsupported option.';
       }
 
-      if (dir === constants.Dir.FORWARD) {
+      if (dir === Dir.FORWARD) {
         return function(node) {
           return AutomationPredicate.cellLike(node) &&
               node.tableCellColumnIndex === colIndex &&
@@ -693,10 +692,10 @@ export class AutomationPredicate {
 
     // Adjust for the next/previous row/col.
     if (opts.row) {
-      rowIndex = dir === constants.Dir.FORWARD ? rowIndex + 1 : rowIndex - 1;
+      rowIndex = dir === Dir.FORWARD ? rowIndex + 1 : rowIndex - 1;
     }
     if (opts.col) {
-      colIndex = dir === constants.Dir.FORWARD ? colIndex + 1 : colIndex - 1;
+      colIndex = dir === Dir.FORWARD ? colIndex + 1 : colIndex - 1;
     }
 
     return function(node) {
@@ -748,10 +747,8 @@ export class AutomationPredicate {
    */
   static autoScrollable(node) {
     return Boolean(node.scrollable) &&
-        (node.standardActions.includes(
-             chrome.automation.ActionType.SCROLL_FORWARD) ||
-         node.standardActions.includes(
-             chrome.automation.ActionType.SCROLL_BACKWARD)) &&
+        (node.standardActions.includes(ActionType.SCROLL_FORWARD) ||
+         node.standardActions.includes(ActionType.SCROLL_BACKWARD)) &&
         (node.role === Role.GRID || node.role === Role.LIST ||
          node.role === Role.POP_UP_BUTTON || node.role === Role.SCROLL_VIEW);
   }
@@ -952,8 +949,7 @@ AutomationPredicate.clickable = AutomationPredicate.match({
     AutomationPredicate.button,
     AutomationPredicate.link,
     node => {
-      return node.defaultActionVerb ===
-          chrome.automation.DefaultActionVerb.CLICK;
+      return node.defaultActionVerb === DefaultActionVerb.CLICK;
     },
   ],
   anyAttribute: {clickable: true},
@@ -974,6 +970,14 @@ AutomationPredicate.longClickable = AutomationPredicate.match({
   anyAttribute: {longClickable: true},
 });
 
+/**
+ * Returns if the node is a list option, either in a menu or a listbox.
+ * @param {!AutomationNode} node
+ * @return {boolean}
+ */
+AutomationPredicate.listOption =
+    AutomationPredicate.roles([Role.LIST_BOX_OPTION, Role.MENU_LIST_OPTION]);
+
 // Table related predicates.
 /**
  * Returns if the node has a cell like role.
@@ -983,6 +987,13 @@ AutomationPredicate.longClickable = AutomationPredicate.match({
 AutomationPredicate.cellLike =
     AutomationPredicate.roles([Role.CELL, Role.ROW_HEADER, Role.COLUMN_HEADER]);
 
+/**
+ * Returns if the node is a table header.
+ * @param {!AutomationNode} node
+ * @return {boolean}
+ */
+AutomationPredicate.tableHeader =
+    AutomationPredicate.roles([Role.ROW_HEADER, Role.COLUMN_HEADER]);
 
 /**
  * Matches against nodes that we may be able to retrieve image data from.

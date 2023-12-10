@@ -573,7 +573,7 @@ testcase.fileDisplayWithoutVolumesThenMountDrive = async () => {
 
   // Navigate to the Drive FakeItem.
   const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
-  await directoryTree.waitForGroupRootItemByType('drive');
+  await directoryTree.selectGroupRootItemByType('drive');
 
   // The fake Google Drive should be empty.
   await remoteCall.waitForFiles(appId, []);
@@ -618,12 +618,11 @@ testcase.fileDisplayWithoutDrive = async () => {
   await directoryTree.selectGroupRootItemByType('drive');
   await remoteCall.waitUntilCurrentDirectoryIsChanged(appId, '/Google Drive');
 
+  // Check that the scanner have finished.
+  await remoteCall.waitForElement(appId, `[scan-completed="Google Drive"]`);
+
   // Check: the fake Google Drive should be empty.
   await remoteCall.waitForFiles(appId, []);
-
-  // Check: the loading indicator should be visible.
-  await remoteCall.waitForElement(
-      appId, '#list-container .loading-indicator:not([hidden])');
 };
 
 /**

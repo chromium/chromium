@@ -215,6 +215,10 @@ class COMPONENT_EXPORT(OZONE) OzonePlatform {
     // there is a bug. Set this flag to enabled in GPU process when the
     // remaining issues are resolved.
     bool supports_out_of_window_clip_rect = false;
+
+    // Whether wayland server has the fix that applies transformations in the
+    // correct order.
+    bool has_transformation_fix = false;
   };
 
   // Corresponds to chrome_browser_main_extra_parts.h.

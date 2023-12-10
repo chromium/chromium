@@ -19,3 +19,6 @@ const char kSafetyCheckMetricsSafeBrowsing[] =
     "Settings.SafetyCheck.SafeBrowsingResult";
 
 const char kSafetyCheckInteractions[] = "Settings.SafetyCheck.Interactions";
+
+NSString* const kSafetyCheckCheckNowButtonAccessibilityID =
+    @"SafetyCheckCheckNowButtonAccessibilityID";

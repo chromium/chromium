@@ -13,6 +13,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/safe_browsing/content/common/file_type_policies_test_util.h"
 #include "components/safe_browsing/core/browser/db/fake_database_manager.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
@@ -147,6 +148,19 @@ class SafeBrowsingShareServiceBrowserTest : public ShareServiceBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(SafeBrowsingShareServiceBrowserTest,
                        PortableDocumentFile) {
+  safe_browsing::FileTypePoliciesTestOverlay policies;
+  std::unique_ptr<safe_browsing::DownloadFileTypeConfig> file_type_config =
+      std::make_unique<safe_browsing::DownloadFileTypeConfig>();
+  auto* file_type = file_type_config->mutable_default_file_type();
+  file_type->set_uma_value(-1);
+  file_type->set_ping_setting(safe_browsing::DownloadFileType::FULL_PING);
+  auto* platform_settings = file_type->add_platform_settings();
+  platform_settings->set_danger_level(
+      safe_browsing::DownloadFileType::NOT_DANGEROUS);
+  platform_settings->set_auto_open_hint(
+      safe_browsing::DownloadFileType::ALLOW_AUTO_OPEN);
+  policies.SwapConfig(file_type_config);
+
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url(embedded_test_server()->GetURL("/webshare/index.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));

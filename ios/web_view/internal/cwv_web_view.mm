@@ -321,11 +321,10 @@ WEB_STATE_USER_DATA_KEY_IMPL(WebViewHolder)
   if (!web::features::UseSessionSerializationOptimizations()) {
     if (!_cachedSessionStorage) {
       _cachedSessionStorage = [[CRWSessionStorage alloc]
-          initWithProto:_cachedProtobufStorage.storage];
+             initWithProto:_cachedProtobufStorage.storage
+          uniqueIdentifier:_cachedProtobufStorage.webStateID
+          stableIdentifier:[[NSUUID UUID] UUIDString]];
 
-      _cachedSessionStorage.stableIdentifier = [[NSUUID UUID] UUIDString];
-      _cachedSessionStorage.uniqueIdentifier =
-          _cachedProtobufStorage.webStateID;
       _cachedProtobufStorage = nil;
     }
     DCHECK(_cachedSessionStorage);
@@ -844,8 +843,7 @@ BOOL gWebInspectorEnabled = NO;
 
 - (void)webState:(web::WebState*)webState
     handlePermissions:(NSArray<NSNumber*>*)permissions
-      decisionHandler:(web::WebStatePermissionDecisionHandler)decisionHandler
-    API_AVAILABLE(ios(15.0)) {
+      decisionHandler:(web::WebStatePermissionDecisionHandler)decisionHandler {
   DCHECK(decisionHandler);
   CWVMediaCaptureType mediaCaptureType;
   BOOL cameraPermissionRequested =

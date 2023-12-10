@@ -15,10 +15,6 @@ class SingleThreadTaskRunner;
 
 namespace chromecast {
 
-namespace external_service_support {
-class ExternalConnector;
-}  // namespace external_service_support
-
 namespace media {
 class CmaBackendFactory;
 
@@ -30,8 +26,7 @@ class ReceiverInstance {
 
   static std::unique_ptr<ReceiverInstance> Create(
       CmaBackendFactory* cma_backend_factory,
-      scoped_refptr<base::SingleThreadTaskRunner> media_task_runner,
-      external_service_support::ExternalConnector* connector);
+      scoped_refptr<base::SingleThreadTaskRunner> media_task_runner);
 };
 
 }  // namespace audio_output_service

@@ -2,7 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# @generated from third_party/rust/BUILD.gn.hbs by tools/crates/gnrt.
+# @generated from third_party/rust/chromium_crates_io/BUILD.gn.hbs by
+# tools/crates/gnrt.
 # Do not edit!
 
 import("//build/rust/cargo_crate.gni")
@@ -11,23 +12,19 @@ cargo_crate("lib") {
   crate_name = "winapi_util"
   epoch = "0.1"
   crate_type = "rlib"
-
-  # Only for usage from third-party crates. Add the crate to
-  # third_party.toml to use it from first-party code.
-  visibility = [ "//third_party/rust/*" ]
-  crate_root = "crate/src/lib.rs"
+  crate_root = "//third_party/rust/chromium_crates_io/vendor/winapi-util-0.1.6/src/lib.rs"
   sources = [
-    "//third_party/rust/winapi_util/v0_1/crate/src/console.rs",
-    "//third_party/rust/winapi_util/v0_1/crate/src/file.rs",
-    "//third_party/rust/winapi_util/v0_1/crate/src/lib.rs",
-    "//third_party/rust/winapi_util/v0_1/crate/src/win.rs",
+    "//third_party/rust/chromium_crates_io/vendor/winapi-util-0.1.6/src/console.rs",
+    "//third_party/rust/chromium_crates_io/vendor/winapi-util-0.1.6/src/file.rs",
+    "//third_party/rust/chromium_crates_io/vendor/winapi-util-0.1.6/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/winapi-util-0.1.6/src/sysinfo.rs",
+    "//third_party/rust/chromium_crates_io/vendor/winapi-util-0.1.6/src/win.rs",
   ]
-  inputs = [ "//third_party/rust/winapi_util/v0_1/crate/README.md" ]
+  inputs = []
 
-  # Unit tests skipped. Generate with --with-tests to include them.
   build_native_rust_unit_tests = false
-  edition = "2018"
-  cargo_pkg_version = "0.1.5"
+  edition = "2021"
+  cargo_pkg_version = "0.1.6"
   cargo_pkg_authors = "Andrew Gallant <jamslam@gmail.com>"
   cargo_pkg_name = "winapi-util"
   cargo_pkg_description =
@@ -40,4 +37,8 @@ cargo_crate("lib") {
   if (is_win) {
     deps += [ "//third_party/rust/winapi/v0_3:lib" ]
   }
+
+  # Only for usage from third-party crates. Add the crate to
+  # third_party.toml to use it from first-party code.
+  visibility = [ "//third_party/rust/*" ]
 }

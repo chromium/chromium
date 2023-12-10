@@ -501,7 +501,7 @@ public class TabSwitcherAndStartSurfaceLayoutPerfTest {
     @CommandLineFlags.Add({BASE_PARAMS})
     @DisableFeatures(ChromeFeatureList.GRID_TAB_SWITCHER_ANDROID_ANIMATIONS)
     @DisabledTest(message = "https://crbug.com/1184787 and https://crbug.com/1363755")
-    public void testGridToTabToCurrentNTP(boolean isStartSurfaceRefactorEnabled)
+    public void testGridToTabToCurrentNtp(boolean isStartSurfaceRefactorEnabled)
             throws InterruptedException, TimeoutException {
         prepareTabs(1, NTP_URL);
         reportGridToTabPerf(false, false, "Grid-to-Tab to current NTP");
@@ -514,7 +514,7 @@ public class TabSwitcherAndStartSurfaceLayoutPerfTest {
     @CommandLineFlags.Add({BASE_PARAMS})
     @EnableFeatures(ChromeFeatureList.GRID_TAB_SWITCHER_ANDROID_ANIMATIONS)
     @DisabledTest(message = "https://crbug.com/1184787 and https://crbug.com/1363755")
-    public void testGridToTabToCurrentNTP_AndroidAnimation(boolean isStartSurfaceRefactorEnabled)
+    public void testGridToTabToCurrentNtp_AndroidAnimation(boolean isStartSurfaceRefactorEnabled)
             throws InterruptedException, TimeoutException {
         prepareTabs(1, NTP_URL);
         reportGridToTabPerf(false, false, "Grid-to-Tab to current NTP Android animation");
@@ -527,7 +527,7 @@ public class TabSwitcherAndStartSurfaceLayoutPerfTest {
     @CommandLineFlags.Add({BASE_PARAMS})
     @DisableFeatures(ChromeFeatureList.GRID_TAB_SWITCHER_ANDROID_ANIMATIONS)
     @DisabledTest(message = "crbug.com/1087608")
-    public void testGridToTabToOtherNTP(boolean isStartSurfaceRefactorEnabled)
+    public void testGridToTabToOtherNtp(boolean isStartSurfaceRefactorEnabled)
             throws InterruptedException, TimeoutException {
         prepareTabs(2, NTP_URL);
         reportGridToTabPerf(true, false, "Grid-to-Tab to other NTP");
@@ -540,7 +540,7 @@ public class TabSwitcherAndStartSurfaceLayoutPerfTest {
     @CommandLineFlags.Add({BASE_PARAMS})
     @EnableFeatures(ChromeFeatureList.GRID_TAB_SWITCHER_ANDROID_ANIMATIONS)
     @DisabledTest(message = "crbug.com/1087608")
-    public void testGridToTabToOtherNTP_AndroidAnimation(boolean isStartSurfaceRefactorEnabled)
+    public void testGridToTabToOtherNtp_AndroidAnimation(boolean isStartSurfaceRefactorEnabled)
             throws InterruptedException, TimeoutException {
         prepareTabs(2, NTP_URL);
         reportGridToTabPerf(true, false, "Grid-to-Tab to other NTP Android animation");

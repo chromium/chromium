@@ -17,6 +17,7 @@
 #include "base/functional/function_ref.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/safety_checks.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/process/kill.h"
@@ -31,8 +32,8 @@
 #include "content/public/browser/page.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/preloading.h"
+#include "content/public/browser/preloading_trigger_type.h"
 #include "content/public/browser/prerender_handle.h"
-#include "content/public/browser/prerender_trigger_type.h"
 #include "content/public/browser/save_page_type.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/common/stop_find_action.h"
@@ -133,6 +134,10 @@ class PreloadingAttempt;
 // See navigation_controller.h for more details.
 class WebContents : public PageNavigator,
                     public base::SupportsUserData {
+  // Do not remove this macro!
+  // The macro is maintained by the memory safety team.
+  ADVANCED_MEMORY_SAFETY_CHECKS();
+
  public:
   struct CONTENT_EXPORT CreateParams {
     explicit CreateParams(
@@ -275,6 +280,14 @@ class WebContents : public PageNavigator,
     // Options specific to WebContents created for picture-in-picture windows.
     absl::optional<blink::mojom::PictureInPictureWindowOptions>
         picture_in_picture_options;
+
+    // WebContentsDelegate given for the case early initialization code depends
+    // on the delegate callbacks.
+    // For instance, WebContentsDelegate::IsInPreviewMode() will be called in
+    // RenderFrameHostImpl::ctor for the initial instance that is constructed
+    // in WebContents::Create() call, and callers have no chance to set their
+    // delegates.
+    raw_ptr<WebContentsDelegate> delegate = nullptr;
   };
 
   // Token that causes input to be blocked on this WebContents for at least as
@@ -577,9 +590,9 @@ class WebContents : public PageNavigator,
   virtual void SetAlwaysSendSubresourceNotifications() = 0;
   virtual bool GetSendSubresourceNotification() = 0;
 
-  // Set the accessibility mode so that accessibility events are forwarded
-  // to each WebContentsObserver.
-  virtual void EnableWebContentsOnlyAccessibilityMode() = 0;
+  // Adds accessibility mode. If accessibility is already enabled, it will be
+  // reset, i.e., the full accessibility tree will be sent to the observers.
+  virtual void EnableAccessibilityMode(ui::AXMode mode) = 0;
 
   // Returns true only if the WebContentsObserver accessibility mode is
   // enabled.
@@ -857,15 +870,6 @@ class WebContents : public PageNavigator,
   // GetOuterWebContents instead.
   virtual bool IsInnerWebContentsForGuest() = 0;
 
-  // Returns whether this WebContents is a portal. This returns true even when
-  // this WebContents is not attached to its portal host's WebContents tree.
-  // This value may change over time due to portal activation and adoption.
-  virtual bool IsPortal() = 0;
-
-  // If |IsPortal()| is true, returns this WebContents' portal host's
-  // WebContents. Otherwise, returns nullptr.
-  virtual WebContents* GetPortalHostWebContents() = 0;
-
   // Returns the outer WebContents frame, the same frame that this WebContents
   // was attached in AttachToOuterWebContentsFrame().
   virtual RenderFrameHost* GetOuterWebContentsFrame() = 0;
@@ -892,6 +896,10 @@ class WebContents : public PageNavigator,
   // it for rendering).
   //
   // Always returns a non-null value.
+  //
+  // TODO(crbug.com/1498410): Consider replacing this with
+  // GuestViewBase::GetTopLevelWebContents, since that is now the only case
+  // where this would return a contents other than |this|.
   virtual WebContents* GetResponsibleWebContents() = 0;
 
   // Invoked when visible security state changes.
@@ -1439,7 +1447,7 @@ class WebContents : public PageNavigator,
   // used for identifying the types of embedder for metrics logging.
   virtual std::unique_ptr<PrerenderHandle> StartPrerendering(
       const GURL& prerendering_url,
-      PrerenderTriggerType trigger_type,
+      PreloadingTriggerType trigger_type,
       const std::string& embedder_histogram_suffix,
       ui::PageTransition page_transition,
       PreloadingHoldbackStatus holdback_status_override,

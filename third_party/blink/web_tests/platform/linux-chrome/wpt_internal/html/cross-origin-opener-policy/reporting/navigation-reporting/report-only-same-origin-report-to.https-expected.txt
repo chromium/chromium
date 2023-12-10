@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+[FAIL] coop reporting test reporting same origin with report-to to CROSS_ORIGIN with , , , 
+  promise_test: Unhandled rejection with value: "No report matched the expected report for endpoint: coop-report-only-endpoint, expected report: {\"body\":{\"disposition\":\"reporting\",\"effectivePolicy\":\"same-origin\",\"nextResponseURL\":\"/uuid=(uuid)$/\",\"type\":\"navigation-from-response\"},\"url\":\"https://web-platform.test:8444/wpt_internal/html/cross-origin-opener-policy/reporting/navigation-reporting/report-only-same-origin-report-to.https.html\",\"type\":\"coop\"}, within available reports: []"
+[FAIL] coop reporting test reporting same origin with report-to to CROSS_ORIGIN with , , same-origin; report-to="coop-popup-report-only-endpoint", 
+  promise_test: Unhandled rejection with value: "No report matched the expected report for endpoint: coop-report-only-endpoint, expected report: {\"body\":{\"disposition\":\"reporting\",\"effectivePolicy\":\"same-origin\",\"nextResponseURL\":\"/uuid=(uuid)$/\",\"type\":\"navigation-from-response\"},\"url\":\"https://web-platform.test:8444/wpt_internal/html/cross-origin-opener-policy/reporting/navigation-reporting/report-only-same-origin-report-to.https.html\",\"type\":\"coop\"}, within available reports: []"
+Harness: the test ran to completion.

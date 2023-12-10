@@ -8,6 +8,9 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile_manager_observer.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 
 class PrefRegistrySimple;
@@ -19,7 +22,8 @@ class Notification;
 
 // QuitWithAppsController checks whether any apps are running and shows a
 // notification to quit all of them.
-class QuitWithAppsController : public message_center::NotificationDelegate {
+class QuitWithAppsController : public message_center::NotificationDelegate,
+                               public ProfileManagerObserver {
  public:
   static const char kQuitWithAppsNotificationID[];
 
@@ -30,8 +34,11 @@ class QuitWithAppsController : public message_center::NotificationDelegate {
 
   // NotificationDelegate interface.
   void Close(bool by_user) override;
-  void Click(const absl::optional<int>& button_index,
-             const absl::optional<std::u16string>& reply) override;
+  void Click(const std::optional<int>& button_index,
+             const std::optional<std::u16string>& reply) override;
+
+  // ProfileManagerObserver:
+  void OnProfileManagerDestroying() override;
 
   // Attempt to quit Chrome. This will display a notification and return false
   // if there are apps running.
@@ -48,7 +55,10 @@ class QuitWithAppsController : public message_center::NotificationDelegate {
   // the instance here because when we want to cancel the notification we need
   // to provide the profile which was used to add the notification previously.
   // Not owned by this class.
-  raw_ptr<Profile, LeakedDanglingUntriaged> notification_profile_ = nullptr;
+  raw_ptr<Profile> notification_profile_ = nullptr;
+
+  base::ScopedObservation<ProfileManager, ProfileManagerObserver>
+      profile_manager_observation_{this};
 
   // Whether to suppress showing the notification for the rest of the session.
   bool suppress_for_session_ = false;

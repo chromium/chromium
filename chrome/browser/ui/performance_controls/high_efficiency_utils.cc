@@ -15,14 +15,14 @@ bool IsURLSupported(GURL url) {
   return !url.SchemeIs(content::kChromeUIScheme);
 }
 
-absl::optional<::mojom::LifecycleUnitDiscardReason> GetDiscardReason(
+std::optional<::mojom::LifecycleUnitDiscardReason> GetDiscardReason(
     content::WebContents* contents) {
   auto* pre_discard_resource_usage =
       performance_manager::user_tuning::UserPerformanceTuningManager::
           PreDiscardResourceUsage::FromWebContents(contents);
   return pre_discard_resource_usage == nullptr
-             ? absl::nullopt
-             : absl::make_optional<::mojom::LifecycleUnitDiscardReason>(
+             ? std::nullopt
+             : std::make_optional<::mojom::LifecycleUnitDiscardReason>(
                    pre_discard_resource_usage->discard_reason());
 }
 

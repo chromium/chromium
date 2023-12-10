@@ -52,6 +52,8 @@ class IndexedDBContextImpl;
 class IndexedDBDatabase;
 class TransactionalLevelDBDatabase;
 
+// This class has a 1:1 relationship with `IndexedDBContextImpl`.
+// TODO(crbug.com/1474996): merge with `IndexedDBContextImpl`.
 class CONTENT_EXPORT IndexedDBFactory
     : public blink::mojom::IDBFactory,
       public base::trace_event::MemoryDumpProvider {
@@ -85,9 +87,9 @@ class CONTENT_EXPORT IndexedDBFactory
                       const std::u16string& name,
                       bool force_close) override;
 
-  void HandleBackingStoreFailure(const storage::BucketLocator& bucket_locator);
-  void HandleBackingStoreCorruption(storage::BucketLocator bucket_locator,
-                                    const IndexedDBDatabaseError& error);
+  // base::trace_event::MemoryDumpProvider:
+  bool OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
+                    base::trace_event::ProcessMemoryDump* pmd) override;
 
   std::vector<IndexedDBDatabase*> GetOpenDatabasesForBucket(
       const storage::BucketLocator& bucket_locator) const;
@@ -108,23 +110,16 @@ class CONTENT_EXPORT IndexedDBFactory
   // Called by the IndexedDBContext destructor so the factory can do cleanup.
   void ContextDestroyed();
 
-  // Called by the IndexedDBActiveBlobRegistry.
-  void ReportOutstandingBlobs(const storage::BucketLocator& bucket_locator,
-                              bool blobs_outstanding);
-
-  // Called by IndexedDBBackingStore when blob files have been cleaned.
-  void BlobFilesCleaned(const storage::BucketLocator& bucket_locator);
-
+  // Used for chrome://indexeddb-internals.
   size_t GetConnectionCount(storage::BucketId bucket_id) const;
 
+  // For usage reporting.
   int64_t GetInMemoryDBSize(const storage::BucketLocator& bucket_locator) const;
 
-  base::Time GetLastModified(
-      const storage::BucketLocator& bucket_locator) const;
+  std::vector<storage::BucketId> GetOpenBucketIdsForTesting() const;
 
-  std::vector<storage::BucketId> GetOpenBuckets() const;
-
-  IndexedDBBucketContext* GetBucketContext(const storage::BucketId& id) const;
+  IndexedDBBucketContext* GetBucketContextForTesting(
+      const storage::BucketId& id) const;
 
   std::tuple<IndexedDBBucketContextHandle,
              leveldb::Status,
@@ -134,14 +129,6 @@ class CONTENT_EXPORT IndexedDBFactory
   GetOrCreateBucketContext(const storage::BucketInfo& bucket,
                            const base::FilePath& data_directory,
                            bool create_if_missing);
-
-  void OnDatabaseError(const storage::BucketLocator& bucket_locator,
-                       leveldb::Status s,
-                       const char* message);
-
-  using OnDatabaseDeletedCallback = base::RepeatingCallback<void(
-      const storage::BucketLocator& deleted_bucket_locator)>;
-  void CallOnDatabaseDeletedForTesting(OnDatabaseDeletedCallback callback);
 
  protected:
   // Used by unittests to allow subclassing of IndexedDBBackingStore.
@@ -156,17 +143,6 @@ class CONTENT_EXPORT IndexedDBFactory
       scoped_refptr<base::SequencedTaskRunner> idb_task_runner);
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(IndexedDBFactoryTest, BackingStoreNoSweeping);
-  FRIEND_TEST_ALL_PREFIXES(IndexedDBFactoryTest, DatabaseFailedOpen);
-  FRIEND_TEST_ALL_PREFIXES(IndexedDBFactoryTest,
-                           DeleteDatabaseClosesBackingStore);
-  FRIEND_TEST_ALL_PREFIXES(IndexedDBFactoryTest,
-                           ForceCloseReleasesBackingStore);
-  FRIEND_TEST_ALL_PREFIXES(IndexedDBTest,
-                           ForceCloseOpenDatabasesOnCommitFailureFirstParty);
-  FRIEND_TEST_ALL_PREFIXES(IndexedDBTest,
-                           ForceCloseOpenDatabasesOnCommitFailureThirdParty);
-
   // The data structure that stores everything bound to the receiver. This will
   // be stored together with the receiver in the `mojo::ReceiverSet`.
   struct ReceiverContext {
@@ -207,22 +183,32 @@ class CONTENT_EXPORT IndexedDBFactory
       bool is_first_attempt,
       bool create_if_missing);
 
+  void HandleBackingStoreFailure(const storage::BucketLocator& bucket_locator);
+  void HandleBackingStoreCorruption(storage::BucketLocator bucket_locator,
+                                    const IndexedDBDatabaseError& error);
+
+  //////////////////////////////////////////////////////
+  // Callbacks passed to bucket-sequence classes.
+
+  // Applies the given `callback` to all bucket contexts.
   void ForEachBucketContext(IndexedDBBucketContext::InstanceClosure callback);
 
-  // Called when the database has been deleted on disk.
+  // Used to report fatal database errors.
+  void OnDatabaseError(const storage::BucketLocator& bucket_locator,
+                       leveldb::Status s,
+                       const char* message);
+
   void OnDatabaseDeleted(const storage::BucketLocator& bucket_locator);
 
-  void MaybeRunTasksForBucket(const storage::BucketLocator& bucket_locator);
-  void RunTasksForBucket(base::WeakPtr<IndexedDBBucketContext> bucket_context);
+  // Passed to IndexedDBBackingStore when blob files have been cleaned.
+  void BlobFilesCleaned(const storage::BucketLocator& bucket_locator);
 
-  // Testing helpers, so unit tests don't need to grovel through internal state.
-  bool IsDatabaseOpen(const storage::BucketLocator& bucket_locator,
-                      const std::u16string& name) const;
-
-  bool OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
-                    base::trace_event::ProcessMemoryDump* pmd) override;
+  // Furnished to the IndexedDBActiveBlobRegistry as a callback.
+  void ReportOutstandingBlobs(const storage::BucketLocator& bucket_locator,
+                              bool blobs_outstanding);
 
   SEQUENCE_CHECKER(sequence_checker_);
+
   // This will be set to null after `ContextDestroyed` is called.
   raw_ptr<IndexedDBContextImpl> context_;
 
@@ -234,17 +220,12 @@ class CONTENT_EXPORT IndexedDBFactory
 
   std::set<storage::BucketLocator> backends_opened_since_startup_;
 
-  OnDatabaseDeletedCallback call_on_database_deleted_for_testing_;
-
   mojo::ReceiverSet<blink::mojom::IDBFactory, ReceiverContext> receivers_;
 
-  // Weak pointers from this factory are used to bind the
-  // RunTaskForBucket() function, which deletes the
-  // IndexedDBBucketContext object. This allows those weak pointers to be
-  // invalidated during force close & shutdown to prevent re-entry (see
-  // ContextDestroyed()).
-  base::WeakPtrFactory<IndexedDBFactory>
-      bucket_context_destruction_weak_factory_{this};
+  // Weak pointers from this factory are invalidated when `context_` is
+  // destroyed.
+  base::WeakPtrFactory<IndexedDBFactory> idb_context_destruction_weak_factory_{
+      this};
   base::WeakPtrFactory<IndexedDBFactory> weak_factory_{this};
 };
 

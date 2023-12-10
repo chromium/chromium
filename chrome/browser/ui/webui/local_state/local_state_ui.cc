@@ -64,7 +64,7 @@ void LocalStateUIHandler::RegisterMessages() {
 void LocalStateUIHandler::HandleRequestJson(const base::Value::List& args) {
   AllowJavascript();
 
-  absl::optional<std::string> json = local_state_utils::GetPrefsAsJson(
+  std::optional<std::string> json = local_state_utils::GetPrefsAsJson(
       g_browser_process->local_state(), accepted_pref_prefixes_);
   if (!json) {
     json = "Error loading Local State file.";

@@ -64,9 +64,6 @@ found in the LICENSE file.
     <!-- Offline indicator v2 colors -->
     <color name="offline_indicator_offline_color">@android:color/black</color>
 
-    <!-- Model selector button TSR colors -->
-    <color name="model_selector_button_icon_color">@android:color/white</color>
-
     <!-- Model selector button background TSR colors -->
     <color name="model_selector_button_bg_color">@color/default_icon_color_inverse_dark</color>
 

@@ -13,8 +13,13 @@ import org.chromium.media.MediaCodecUtil.MimeTypes;
 import java.nio.ByteBuffer;
 
 class MediaFormatBuilder {
-    public static MediaFormat createVideoDecoderFormat(String mime, int width, int height,
-            byte[][] csds, HdrMetadata hdrMetadata, boolean allowAdaptivePlayback) {
+    public static MediaFormat createVideoDecoderFormat(
+            String mime,
+            int width,
+            int height,
+            byte[][] csds,
+            HdrMetadata hdrMetadata,
+            boolean allowAdaptivePlayback) {
         MediaFormat format = MediaFormat.createVideoFormat(mime, width, height);
         if (format == null) return null;
         setCodecSpecificData(format, csds);
@@ -25,8 +30,15 @@ class MediaFormatBuilder {
         return format;
     }
 
-    public static MediaFormat createVideoEncoderFormat(String mime, int width, int height,
-            int bitrateMode, int bitRate, int frameRate, int iFrameInterval, int colorFormat,
+    public static MediaFormat createVideoEncoderFormat(
+            String mime,
+            int width,
+            int height,
+            int bitrateMode,
+            int bitRate,
+            int frameRate,
+            int iFrameInterval,
+            int colorFormat,
             boolean allowAdaptivePlayback) {
         MediaFormat format = MediaFormat.createVideoFormat(mime, width, height);
         format.setInteger(MediaFormat.KEY_BIT_RATE, bitRate);
@@ -38,8 +50,12 @@ class MediaFormatBuilder {
         return format;
     }
 
-    public static MediaFormat createAudioFormat(String mime, int sampleRate, int channelCount,
-            byte[][] csds, boolean frameHasAdtsHeader) {
+    public static MediaFormat createAudioFormat(
+            String mime,
+            int sampleRate,
+            int channelCount,
+            byte[][] csds,
+            boolean frameHasAdtsHeader) {
         MediaFormat format = MediaFormat.createAudioFormat(mime, sampleRate, channelCount);
         setCodecSpecificData(format, csds);
         if (frameHasAdtsHeader) {

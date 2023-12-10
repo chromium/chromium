@@ -53,6 +53,7 @@
 #ifndef ABSL_CONTAINER_BTREE_MAP_H_
 #define ABSL_CONTAINER_BTREE_MAP_H_
 
+#include "absl/base/attributes.h"
 #include "absl/container/internal/btree.h"  // IWYU pragma: export
 #include "absl/container/internal/btree_container.h"  // IWYU pragma: export
 
@@ -864,7 +865,8 @@ struct map_params : common_params<Key, Compare, Alloc, TargetNodeSize, IsMulti,
   using init_type = typename super_type::init_type;
 
   template <typename V>
-  static auto key(const V &value) -> decltype(value.first) {
+  static auto key(const V &value ABSL_ATTRIBUTE_LIFETIME_BOUND)
+      -> decltype((value.first)) {
     return value.first;
   }
   static const Key &key(const slot_type *s) { return slot_policy::key(s); }

@@ -133,12 +133,12 @@ void OfflineSigninLimiter::UpdateLimit() {
   const user_manager::User& user = GetUser();
   bool using_saml = user.using_saml();
 
-  const absl::optional<base::TimeDelta> offline_signin_time_limit =
+  const std::optional<base::TimeDelta> offline_signin_time_limit =
       using_saml ? GetGaiaSamlTimeLimit() : GetGaiaNoSamlTimeLimit();
   base::Time last_online_signin_time = GetLastOnlineSigninTime();
 
   if (!offline_signin_time_limit.has_value()) {
-    UpdateOnlineSigninData(last_online_signin_time, absl::nullopt);
+    UpdateOnlineSigninData(last_online_signin_time, std::nullopt);
     // If no limit is in force, return.
     return;
   }
@@ -191,12 +191,12 @@ void OfflineSigninLimiter::UpdateLockScreenLimit() {
   const user_manager::User& user = GetUser();
   bool using_saml = user.using_saml();
 
-  const absl::optional<base::TimeDelta> offline_lock_screen_signin_time_limit =
+  const std::optional<base::TimeDelta> offline_lock_screen_signin_time_limit =
       using_saml ? GetGaiaSamlLockScreenTimeLimit()
                  : GetGaiaNoSamlLockScreenTimeLimit();
 
   // This is needed to update the Local State data for the login screen.
-  const absl::optional<base::TimeDelta> offline_signin_time_limit =
+  const std::optional<base::TimeDelta> offline_signin_time_limit =
       using_saml ? GetGaiaSamlTimeLimit() : GetGaiaNoSamlTimeLimit();
 
   base::Time last_online_signin_time = GetLastOnlineSigninTime();
@@ -248,27 +248,25 @@ void OfflineSigninLimiter::UpdateLockScreenLimit() {
                      base::Unretained(this)));
 }
 
-absl::optional<base::TimeDelta> OfflineSigninLimiter::GetGaiaNoSamlTimeLimit() {
+std::optional<base::TimeDelta> OfflineSigninLimiter::GetGaiaNoSamlTimeLimit() {
   int no_saml_offline_limit =
       profile_->GetPrefs()->GetInteger(prefs::kGaiaOfflineSigninTimeLimitDays);
   if (no_saml_offline_limit <= constants::kOfflineSigninTimeLimitNotSet)
-    return absl::nullopt;
+    return std::nullopt;
 
-  return absl::make_optional<base::TimeDelta>(
-      base::Days(no_saml_offline_limit));
+  return std::make_optional<base::TimeDelta>(base::Days(no_saml_offline_limit));
 }
 
-absl::optional<base::TimeDelta> OfflineSigninLimiter::GetGaiaSamlTimeLimit() {
+std::optional<base::TimeDelta> OfflineSigninLimiter::GetGaiaSamlTimeLimit() {
   const int saml_offline_limit =
       profile_->GetPrefs()->GetInteger(prefs::kSAMLOfflineSigninTimeLimit);
   if (saml_offline_limit <= constants::kOfflineSigninTimeLimitNotSet)
-    return absl::nullopt;
+    return std::nullopt;
 
-  return absl::make_optional<base::TimeDelta>(
-      base::Seconds(saml_offline_limit));
+  return std::make_optional<base::TimeDelta>(base::Seconds(saml_offline_limit));
 }
 
-absl::optional<base::TimeDelta>
+std::optional<base::TimeDelta>
 OfflineSigninLimiter::GetGaiaNoSamlLockScreenTimeLimit() {
   int no_saml_lock_screen_offline_limit = profile_->GetPrefs()->GetInteger(
       prefs::kGaiaLockScreenOfflineSigninTimeLimitDays);
@@ -281,14 +279,14 @@ OfflineSigninLimiter::GetGaiaNoSamlLockScreenTimeLimit() {
 
   if (no_saml_lock_screen_offline_limit <=
       constants::kOfflineSigninTimeLimitNotSet) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
-  return absl::make_optional<base::TimeDelta>(
+  return std::make_optional<base::TimeDelta>(
       base::Days(no_saml_lock_screen_offline_limit));
 }
 
-absl::optional<base::TimeDelta>
+std::optional<base::TimeDelta>
 OfflineSigninLimiter::GetGaiaSamlLockScreenTimeLimit() {
   int saml_lock_screen_offline_limit = profile_->GetPrefs()->GetInteger(
       prefs::kSamlLockScreenOfflineSigninTimeLimitDays);
@@ -301,10 +299,10 @@ OfflineSigninLimiter::GetGaiaSamlLockScreenTimeLimit() {
 
   if (saml_lock_screen_offline_limit <=
       constants::kOfflineSigninTimeLimitNotSet) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
-  return absl::make_optional<base::TimeDelta>(
+  return std::make_optional<base::TimeDelta>(
       base::Days(saml_lock_screen_offline_limit));
 }
 
@@ -348,7 +346,7 @@ void OfflineSigninLimiter::ForceOnlineLockScreenReauth() {
 
 void OfflineSigninLimiter::UpdateOnlineSigninData(
     base::Time time,
-    absl::optional<base::TimeDelta> limit) {
+    std::optional<base::TimeDelta> limit) {
   const user_manager::User& user = GetUser();
 
   user_manager::KnownUser known_user(g_browser_process->local_state());

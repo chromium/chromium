@@ -3,11 +3,15 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <utility>
+
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "base/run_loop.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/login/auth/chrome_safe_mode_delegate.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
+#include "chrome/browser/ash/login/quick_unlock/quick_unlock_factory.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/ash/login/session/user_session_manager_test_api.h"
 #include "chrome/browser/ash/login/test/cryptohome_mixin.h"
@@ -24,6 +28,8 @@
 #include "chromeos/ash/components/login/auth/auth_session_authenticator.h"
 #include "chromeos/ash/components/login/auth/authenticator_builder.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
+#include "chromeos/ash/services/auth_factor_config/auth_factor_config.h"
+#include "chromeos/ash/services/auth_factor_config/in_process_instances.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
@@ -103,12 +109,21 @@ class MisconfiguredOwnerUserTest : public LoginManagerTest {
  public:
   void SetUpOnMainThread() override {
     add_auth_factor_waiter_ = std::make_unique<base::test::TestFuture<void>>();
-    user_session_manager_test_api_ =
-        std::make_unique<test::UserSessionManagerTestApi>(
-            UserSessionManager::GetInstance());
-    user_session_manager_test_api_->InjectAuthenticatorBuilder(
-        std::make_unique<FakeAuthenticatorBuilder>(
-            add_auth_factor_waiter_->GetCallback()));
+    if (ash::features::AreLocalPasswordsEnabledForConsumers()) {
+      auto test_api =
+          auth::AuthFactorConfig::TestApi(auth::GetAuthFactorConfigForTesting(
+              quick_unlock::QuickUnlockFactory::GetDelegate(),
+              g_browser_process->local_state()));
+      test_api.SetAddKnowledgeFactorCallback(
+          add_auth_factor_waiter_->GetCallback());
+    } else {
+      auto user_session_manager_test_api =
+          std::make_unique<test::UserSessionManagerTestApi>(
+              UserSessionManager::GetInstance());
+      user_session_manager_test_api->InjectAuthenticatorBuilder(
+          std::make_unique<FakeAuthenticatorBuilder>(
+              add_auth_factor_waiter_->GetCallback()));
+    }
     LoginManagerTest::SetUpOnMainThread();
   }
 
@@ -133,8 +148,6 @@ class MisconfiguredOwnerUserTest : public LoginManagerTest {
                                    nullptr,
                                    &cryptohome_mixin_};
   FakeGaiaMixin fake_gaia_mixin_{&mixin_host_};
-  std::unique_ptr<test::UserSessionManagerTestApi>
-      user_session_manager_test_api_;
   std::unique_ptr<base::test::TestFuture<void>> add_auth_factor_waiter_;
 };
 

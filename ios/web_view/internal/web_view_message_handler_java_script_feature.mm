@@ -73,7 +73,7 @@ void WebViewMessageHandlerJavaScriptFeature::UnregisterHandler(
   handlers_.erase(command);
 }
 
-absl::optional<std::string>
+std::optional<std::string>
 WebViewMessageHandlerJavaScriptFeature::GetScriptMessageHandlerName() const {
   return kWebViewMessageHandlerName;
 }

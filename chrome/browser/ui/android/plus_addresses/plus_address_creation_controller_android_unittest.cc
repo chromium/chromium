@@ -4,8 +4,10 @@
 
 #include "chrome/browser/ui/android/plus_addresses/plus_address_creation_controller_android.h"
 #include <memory>
+#include <optional>
 
 #include "base/functional/bind.h"
+#include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/plus_addresses/plus_address_service_factory.h"
@@ -18,7 +20,6 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // TODO(crbug.com/1467623): Consolidate this and the desktop version. Splitting
 // them was a mechanism to reduce dependencies during implementation, but isn't
@@ -69,12 +70,12 @@ class FakePlusAddressService : public PlusAddressService {
     on_confirmed = std::move(callback);
   }
 
-  absl::optional<PlusAddressRequestCallback> on_confirmed;
+  std::optional<PlusAddressRequestCallback> on_confirmed;
   std::string facet_ = "facet.bar";
   bool is_confirmed_ = false;
   std::string primary_email_address_ = "primary@plus.plus";
 
-  absl::optional<std::string> GetPrimaryEmail() override {
+  std::optional<std::string> GetPrimaryEmail() override {
     // Ensure the value is present without requiring identity setup.
     return primary_email_address_;
   }
@@ -262,7 +263,7 @@ TEST_F(PlusAddressCreationControllerAndroidDisabledTest, ConfirmedNullService) {
   base::test::TestFuture<const std::string&> future;
   controller->OfferCreation(url::Origin::Create(GURL("https://test.example")),
                             future.GetCallback());
-  controller->OnConfirmed();
+  EXPECT_CHECK_DEATH(controller->OnConfirmed());
   EXPECT_FALSE(future.IsReady());
 }
 

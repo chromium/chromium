@@ -106,15 +106,6 @@ content::RenderProcessHost* WebrtcLoggingPrivateFunction::RphFromRequest(
   if (request.target_webview && *request.target_webview) {
     content::RenderProcessHost* target_host = nullptr;
     int guests_found = 0;
-    auto get_guest = [](int* guests_found,
-                        content::RenderProcessHost** target_host,
-                        content::WebContents* guest_contents) {
-      *guests_found = *guests_found + 1;
-      *target_host = guest_contents->GetPrimaryMainFrame()->GetProcess();
-      // Don't short-circuit, so we can count how many other guest contents
-      // there are.
-      return false;
-    };
     auto* guest_view_manager =
         guest_view::GuestViewManager::FromBrowserContext(browser_context());
     if (!guest_view_manager) {
@@ -124,8 +115,13 @@ content::RenderProcessHost* WebrtcLoggingPrivateFunction::RphFromRequest(
       return nullptr;
     }
     guest_view_manager->ForEachGuest(
-        GetSenderWebContents(),
-        base::BindRepeating(get_guest, &guests_found, &target_host));
+        GetSenderWebContents(), [&](content::WebContents* guest_contents) {
+          ++guests_found;
+          target_host = guest_contents->GetPrimaryMainFrame()->GetProcess();
+          // Don't short-circuit, so we can count how many other guest contents
+          // there are.
+          return false;
+        });
     if (!target_host) {
       *error = "No webview render process found";
       return nullptr;

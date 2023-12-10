@@ -13,6 +13,7 @@
 #include "components/link_header_util/link_header_util.h"
 #include "content/browser/loader/cross_origin_read_blocking_checker.h"
 #include "content/browser/loader/navigation_loader_interceptor.h"
+#include "content/browser/loader/response_head_update_params.h"
 #include "content/browser/navigation_subresource_loader_params.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -524,7 +525,7 @@ class PrefetchedNavigationLoaderInterceptor
         return;
       }
     }
-    NOTREACHED();
+    DUMP_WILL_BE_NOTREACHED_NORETURN();
   }
 
   absl::optional<SubresourceLoaderParams> MaybeCreateSubresourceLoaderParams()
@@ -568,10 +569,14 @@ class PrefetchedNavigationLoaderInterceptor
     if (!results.empty()) {
       signed_exchange_utils::RecordLoadResultHistogram(
           SignedExchangeLoadResult::kHadCookieForCookielessOnlySXG);
+
+      ResponseHeadUpdateParams head_update_params;
+      head_update_params.load_timing_info =
+          this->exchange_->outer_response()->load_timing;
       std::move(fallback_callback)
           .Run(true /* reset_subresource_loader_params */,
                // TODO(crbug.com/1441384) test workerStart in SXG scenarios
-               this->exchange_->outer_response()->load_timing);
+               head_update_params);
       return;
     }
     state_ = State::kInnerResponseRequested;

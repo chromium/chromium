@@ -4,10 +4,11 @@
 
 module tabs.mojom;
 
-// Must be kept in sync with TabAlertState from
-// chrome/browser/ui/tabs/tab_utils.h
+// Must contain the same values as `TabAlertState` in
+// chrome/browser/ui/tabs/tab_enums.h. Matching order is not important.
 enum TabAlertState {
   kAudioMuting,
+  kAudioRecording,
   kAudioPlaying,
   kBluetoothConnected,
   kDesktopCapturing,
@@ -17,5 +18,6 @@ enum TabAlertState {
   kSerialConnected,
   kTabCapturing,
   kUsbConnected,
+  kVideoRecording,
   kVrPresentingInHeadset
 };

@@ -7,6 +7,7 @@
 #include <unordered_map>
 
 #include "base/check.h"
+#include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
@@ -16,7 +17,9 @@
 #include "components/commerce/core/subscriptions/commerce_subscription.h"
 #include "components/commerce/core/subscriptions/subscriptions_server_proxy.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/sync/base/features.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -275,12 +278,22 @@ SubscriptionsServerProxy::CreateEndpointFetcher(
     const std::string& http_method,
     const std::string& post_data,
     const net::NetworkTrafficAnnotationTag& annotation_tag) {
-  // TODO(crbug.com/1463438): ConsentLevel::kSync is deprecated and should be
-  //     removed. See ConsentLevel::kSync documentation for details.
+#if BUILDFLAG(IS_IOS)
+  // If ReplaceSyncPromosWithSignInPromos is enabled - ConsentLevel::kSync is no
+  // longer attainable. See crbug.com/1503156 for details.
+  signin::ConsentLevel consent_level =
+      base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)
+          ? signin::ConsentLevel::kSignin
+          : signin::ConsentLevel::kSync;
+#else
+  // TODO(crbug.com/1504089): Remove ifdefs after scope checking is disabled
+  //                          on non-iOS platforms.
+  signin::ConsentLevel consent_level = signin::ConsentLevel::kSync;
+#endif
   return std::make_unique<EndpointFetcher>(
       url_loader_factory_, kOAuthName, url, http_method, kContentType,
       std::vector<std::string>{kOAuthScope}, kTimeoutMs.Get(), post_data,
-      annotation_tag, identity_manager_, signin::ConsentLevel::kSync);
+      annotation_tag, identity_manager_, consent_level);
 }
 
 void SubscriptionsServerProxy::HandleManageSubscriptionsResponses(

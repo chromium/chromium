@@ -138,7 +138,7 @@ void AttestationCertificatesSyncerImpl::ScheduleSync() {
     cryptauth_scheduler_->RequestDeviceSync(
         cryptauthv2::ClientMetadata::InvocationReason::
             ClientMetadata_InvocationReason_FAST_PERIODIC,
-        /*session_id=*/absl::nullopt);
+        /*session_id=*/std::nullopt);
   } else {
     PA_LOG(INFO) << "Delaying new attestation certificate sync request";
     StartTimer(time_to_regeneration_threshold);

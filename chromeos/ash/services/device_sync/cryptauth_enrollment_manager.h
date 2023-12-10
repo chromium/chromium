@@ -6,12 +6,12 @@
 #define CHROMEOS_ASH_SERVICES_DEVICE_SYNC_CRYPTAUTH_ENROLLMENT_MANAGER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "chromeos/ash/services/device_sync/proto/cryptauth_api.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -61,7 +61,7 @@ class CryptAuthEnrollmentManager {
   // obsolete.
   virtual void ForceEnrollmentNow(
       cryptauth::InvocationReason invocation_reason,
-      const absl::optional<std::string>& session_id) = 0;
+      const std::optional<std::string>& session_id) = 0;
 
   // Returns true if a successful enrollment has been recorded and this
   // enrollment has not expired.

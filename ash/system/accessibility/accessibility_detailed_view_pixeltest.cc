@@ -6,7 +6,6 @@
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/system/unified/unified_system_tray_bubble.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
-#include "ash/system/unified/unified_system_tray_view.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/pixel/ash_pixel_differ.h"
 #include "ash/test/pixel/ash_pixel_test_init_params.h"
@@ -23,7 +22,7 @@ class AccessibilityDetailedViewPixelTest : public AshTestBase {
   }
 
   // AshTestBase:
-  absl::optional<pixel_test::InitParams> CreatePixelTestInitParams()
+  std::optional<pixel_test::InitParams> CreatePixelTestInitParams()
       const override {
     return pixel_test::InitParams();
   }
@@ -47,7 +46,7 @@ TEST_F(AccessibilityDetailedViewPixelTest, Basics) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "check_view",
-      /*revision_number=*/6, detailed_view_container));
+      /*revision_number=*/10, detailed_view_container));
 }
 
 }  // namespace ash

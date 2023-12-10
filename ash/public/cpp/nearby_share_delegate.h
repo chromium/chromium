@@ -59,6 +59,11 @@ class ASH_PUBLIC_EXPORT NearbyShareDelegate {
   // for when the feature is off. Caller should check if the icon is_empty
   // before using.
   virtual const gfx::VectorIcon& GetIcon(bool on_icon) const = 0;
+
+  // Returns the feature name which will be used in feature name placeholder
+  // strings, or the empty string if on a non-chrome branded build or the
+  // feature flag is disabled.
+  virtual std::u16string GetPlaceholderFeatureName() const = 0;
 };
 
 }  // namespace ash

@@ -14,9 +14,7 @@ import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.feature_engagement.FeatureConstants;
 
-/**
- * Controller to manage when and how we show multi-instance in-product help messages to users.
- */
+/** Controller to manage when and how we show multi-instance in-product help messages to users. */
 public class MultiInstanceIphController {
     /**
      * Attempts to show an IPH text bubble about the instance swicher in app menu.
@@ -30,12 +28,20 @@ public class MultiInstanceIphController {
         UserEducationHelper userEducationHelper =
                 new UserEducationHelper(activity, new Handler(Looper.getMainLooper()));
         userEducationHelper.requestShowIPH(
-                new IPHCommandBuilder(toolbarMenuButton.getContext().getResources(),
-                        FeatureConstants.INSTANCE_SWITCHER, R.string.iph_instance_switcher_text,
-                        R.string.iph_instance_switcher_text)
+                new IPHCommandBuilder(
+                                toolbarMenuButton.getContext().getResources(),
+                                FeatureConstants.INSTANCE_SWITCHER,
+                                R.string.iph_instance_switcher_text,
+                                R.string.iph_instance_switcher_text)
                         .setAnchorView(toolbarMenuButton)
-                        .setOnShowCallback(() -> { appMenuHandler.setMenuHighlight(menuId); })
-                        .setOnDismissCallback(() -> { appMenuHandler.clearMenuHighlight(); })
+                        .setOnShowCallback(
+                                () -> {
+                                    appMenuHandler.setMenuHighlight(menuId);
+                                })
+                        .setOnDismissCallback(
+                                () -> {
+                                    appMenuHandler.clearMenuHighlight();
+                                })
                         .build());
     }
 }

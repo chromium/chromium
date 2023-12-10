@@ -4,9 +4,11 @@
 
 import '../widgets/xf_nudge.js';
 
+import {isNewDirectoryTreeEnabled} from '../common/js/flags.js';
 import {storage} from '../common/js/storage.js';
 import {str} from '../common/js/translations.js';
 import {NudgeDirection, XfNudge} from '../widgets/xf_nudge.js';
+import type {XfTreeItem} from '../widgets/xf_tree_item.js';
 
 /**
  * NudgeContainer maintains the lifetime of a "nudge". A nudge refers to an
@@ -333,7 +335,6 @@ export class NudgeContainer {
 export enum NudgeType {
   TEST_NUDGE = 'test-nudge',
   MANUAL_TEST_NUDGE = 'manual-test-nudge',
-  TRASH_NUDGE = 'trash-nudge',
   ONE_DRIVE_MOVED_FILE_NUDGE = 'one-drive-moved-file-nudge',
   DRIVE_MOVED_FILE_NUDGE = 'drive-moved-file-nudge',
   SEARCH_V2_EDUCATION_NUDGE = 'search-v2-education-nudge',
@@ -385,7 +386,13 @@ function treeDismissOnKeyDownOnTreeItem(
   }
 
   // When the anchor (tree item) is selected we dismiss.
-  if (anchor?.parentElement?.parentElement?.hasAttribute('selected')) {
+  let parentTreeItem: Element|null|undefined;
+  if (isNewDirectoryTreeEnabled()) {
+    parentTreeItem = (anchor?.getRootNode() as ShadowRoot)?.host;
+  } else {
+    parentTreeItem = anchor?.parentElement?.parentElement;
+  }
+  if (parentTreeItem?.hasAttribute('selected')) {
     return true;
   }
   return false;
@@ -402,31 +409,27 @@ export const nudgeInfo: {[type in NudgeType]: NudgeInfo} = {
     direction: NudgeDirection.BOTTOM_ENDWARD,
     expiryDate: new Date(2999, 1, 1),
   },
-  // A nudge that is shown when an item is first sent to the trash.
-  [NudgeType['TRASH_NUDGE']]: {
-    anchor: () =>
-        document.querySelector<HTMLSpanElement>('span[root-type-icon="trash"]'),
-    content: () => str('TRASH_NUDGE_LABEL'),
-    direction: NudgeDirection.BOTTOM_ENDWARD,
-    // Expire this after 4 releases (expires when M112 hits Stable).
-    expiryDate: new Date(2023, 4, 6),
-  },
   [NudgeType['MANUAL_TEST_NUDGE']]: {
     anchor: () => {
-      const children = Array.from(document.querySelectorAll<HTMLElement>(
-          '.tree-item[section-start="my_files"] > .tree-children > .tree-item .entry-name'));
+      if (!isNewDirectoryTreeEnabled()) {
+        const children = Array.from(document.querySelectorAll<HTMLElement>(
+            '.tree-item[section-start="my_files"] > .tree-children > .tree-item .entry-name'));
 
-      for (const child of children) {
-        if (child.innerText !== 'Downloads') {
-          continue;
+        for (const child of children) {
+          if (child.innerText !== 'Downloads') {
+            continue;
+          }
+
+          return child.parentElement?.querySelector<HTMLSpanElement>(
+                     '.item-icon') ??
+              null;
         }
 
-        return child.parentElement?.querySelector<HTMLSpanElement>(
-                   '.item-icon') ??
-            null;
+        return null;
       }
-
-      return null;
+      const downloadsTreeItem =
+          document.querySelector<XfTreeItem>('xf-tree-item[icon="downloads"]')!;
+      return downloadsTreeItem.shadowRoot!.querySelector('xf-icon');
     },
     content: () => str('ONE_DRIVE_MOVED_FILE_NUDGE'),
     direction: NudgeDirection.TRAILING_DOWNWARD,
@@ -436,11 +439,16 @@ export const nudgeInfo: {[type in NudgeType]: NudgeInfo} = {
   },
   [NudgeType['ONE_DRIVE_MOVED_FILE_NUDGE']]: {
     anchor: () => {
-      return document
-                 .querySelector<HTMLSpanElement>(
-                     '.tree-item[one-drive] .file-row .item-icon')
-                 ?.parentElement ||
-          null;
+      if (!isNewDirectoryTreeEnabled()) {
+        return document
+                   .querySelector<HTMLSpanElement>(
+                       '.tree-item[one-drive] .file-row .item-icon')
+                   ?.parentElement ||
+            null;
+      }
+      const oneDriveTreeItem =
+          document.querySelector<XfTreeItem>('xf-tree-item[one-drive]');
+      return oneDriveTreeItem?.shadowRoot!.querySelector('.tree-row') || null;
     },
     content: () => str('ONE_DRIVE_MOVED_FILE_NUDGE'),
     direction: NudgeDirection.TRAILING_DOWNWARD,
@@ -450,11 +458,16 @@ export const nudgeInfo: {[type in NudgeType]: NudgeInfo} = {
   },
   [NudgeType['DRIVE_MOVED_FILE_NUDGE']]: {
     anchor: () => {
-      return document
-                 .querySelector<HTMLSpanElement>(
-                     '.tree-item .item-icon[volume-type-icon="drive"]')
-                 ?.parentElement ||
-          null;
+      if (!isNewDirectoryTreeEnabled()) {
+        return document
+                   .querySelector<HTMLSpanElement>(
+                       '.tree-item .item-icon[volume-type-icon="drive"]')
+                   ?.parentElement ||
+            null;
+      }
+      const driveTreeItem = document.querySelector<XfTreeItem>(
+          'xf-tree-item[icon="service_drive"]');
+      return driveTreeItem?.shadowRoot!.querySelector('.tree-row') || null;
     },
     content: () => str('DRIVE_MOVED_FILE_NUDGE'),
     direction: NudgeDirection.TRAILING_DOWNWARD,

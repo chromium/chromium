@@ -21,9 +21,7 @@ import androidx.viewpager.widget.ViewPager;
 
 import org.chromium.chrome.browser.keyboard_accessory.R;
 
-/**
- * Displays the data provided by the {@link AccessorySheetViewBinder}.
- */
+/** Displays the data provided by the {@link AccessorySheetViewBinder}. */
 class AccessorySheetView extends LinearLayout {
     private ViewPager mViewPager;
     private FrameLayout mFrameLayout;
@@ -31,9 +29,7 @@ class AccessorySheetView extends LinearLayout {
     private ImageView mKeyboardToggle;
     private TextView mSheetTitle;
 
-    /**
-     * Constructor for inflating from XML.
-     */
+    /** Constructor for inflating from XML. */
     public AccessorySheetView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }

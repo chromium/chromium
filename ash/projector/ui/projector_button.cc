@@ -4,10 +4,13 @@
 
 #include "ash/projector/ui/projector_button.h"
 
+#include <utility>
+
 #include "ash/public/cpp/style/color_provider.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/style_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -25,7 +28,7 @@ constexpr gfx::Insets kButtonPadding{0};
 
 ProjectorButton::ProjectorButton(views::Button::PressedCallback callback,
                                  const std::u16string& name)
-    : ToggleImageButton(callback), name_(name) {
+    : ToggleImageButton(std::move(callback)), name_(name) {
   SetPreferredSize(gfx::Size(kProjectorButtonSize, kProjectorButtonSize));
   SetBorder(views::CreateEmptyBorder(kButtonPadding));
 
@@ -80,5 +83,8 @@ void ProjectorButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->role = ax::mojom::Role::kButton;
   node_data->SetName(name_);
 }
+
+BEGIN_METADATA(ProjectorButton)
+END_METADATA
 
 }  // namespace ash

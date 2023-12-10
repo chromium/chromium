@@ -93,8 +93,9 @@ public class CastSessionController extends BaseSessionController {
     private void onApplicationStatusChanged() {
         updateNamespaces();
 
-        getMessageHandler().broadcastClientMessage(
-                "update_session", getMessageHandler().buildSessionMessage());
+        getMessageHandler()
+                .broadcastClientMessage(
+                        "update_session", getMessageHandler().buildSessionMessage());
     }
 
     @VisibleForTesting

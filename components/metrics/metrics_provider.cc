@@ -41,6 +41,8 @@ void MetricsProvider::OnClientStateCleared() {}
 void MetricsProvider::OnAppEnterBackground() {
 }
 
+void MetricsProvider::OnPageLoadStarted() {}
+
 bool MetricsProvider::HasIndependentMetrics() {
   return false;
 }

@@ -6,13 +6,13 @@
 
 #include <algorithm>
 
+#include <optional>
 #include "base/compiler_specific.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -99,12 +99,11 @@ void OAuthMultiloginResult::TryParseCookiesFromValue(
     const std::string* domain = cookie_dict.FindString("domain");
     const std::string* host = cookie_dict.FindString("host");
     const std::string* path = cookie_dict.FindString("path");
-    absl::optional<bool> is_secure = cookie_dict.FindBool("isSecure");
-    absl::optional<bool> is_http_only = cookie_dict.FindBool("isHttpOnly");
+    std::optional<bool> is_secure = cookie_dict.FindBool("isSecure");
+    std::optional<bool> is_http_only = cookie_dict.FindBool("isHttpOnly");
     const std::string* priority = cookie_dict.FindString("priority");
-    absl::optional<double> expiration_delta = cookie_dict.FindDouble("maxAge");
+    std::optional<double> expiration_delta = cookie_dict.FindDouble("maxAge");
     const std::string* same_site = cookie_dict.FindString("sameSite");
-    const std::string* same_party = cookie_dict.FindString("sameParty");
 
     base::Time now = base::Time::Now();
     // TODO(crbug.com/1264458) If CreateSanitizedCookie were used below, this
@@ -129,7 +128,6 @@ void OAuthMultiloginResult::TryParseCookiesFromValue(
       samesite_mode = net::StringToCookieSameSite(*same_site, &samesite_string);
     }
     net::RecordCookieSameSiteAttributeValueHistogram(samesite_string);
-    bool same_party_bool = same_party && (*same_party == "1");
     // TODO(crbug.com/1155648) Consider using CreateSanitizedCookie instead.
     std::unique_ptr<net::CanonicalCookie> new_cookie =
         net::CanonicalCookie::FromStorage(
@@ -138,8 +136,8 @@ void OAuthMultiloginResult::TryParseCookiesFromValue(
             /*last_access=*/now, /*last_update=*/now, is_secure.value_or(true),
             is_http_only.value_or(true), samesite_mode,
             net::StringToCookiePriority(priority ? *priority : "medium"),
-            same_party_bool, /*partition_key=*/absl::nullopt,
-            net::CookieSourceScheme::kUnset, url::PORT_UNSPECIFIED);
+            /*partition_key=*/std::nullopt, net::CookieSourceScheme::kUnset,
+            url::PORT_UNSPECIFIED);
     // If the unique_ptr is null, it means the cookie was not canonical.
     // FromStorage() also uses a less strict version of IsCanonical(), we need
     // to check the stricter version as well here.
@@ -154,7 +152,7 @@ void OAuthMultiloginResult::TryParseCookiesFromValue(
 OAuthMultiloginResult::OAuthMultiloginResult(const std::string& raw_data) {
   base::StringPiece data = StripXSSICharacters(raw_data);
   status_ = OAuthMultiloginResponseStatus::kUnknownStatus;
-  absl::optional<base::Value> json_data = base::JSONReader::Read(data);
+  std::optional<base::Value> json_data = base::JSONReader::Read(data);
   if (!json_data) {
     RecordMultiloginResponseStatus(status_);
     return;

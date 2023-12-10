@@ -52,7 +52,7 @@ SideSearchIconView::SideSearchIconView(
   SetPaintLabelOverSolidBackground(true);
   browser_->tab_strip_model()->AddObserver(this);
   SetAccessibilityProperties(
-      /*role*/ absl::nullopt,
+      /*role*/ std::nullopt,
       l10n_util::GetStringUTF16(
           IDS_TOOLTIP_SIDE_SEARCH_TOOLBAR_BUTTON_NOT_ACTIVATED));
 }
@@ -200,7 +200,7 @@ bool SideSearchIconView::MaybeShowPageActionLabel() {
   }
 
   should_extend_label_shown_duration_ = true;
-  AnimateIn(absl::nullopt);
+  AnimateIn(std::nullopt);
 
   // Note that `Dismiss()` in this case does not dismiss the UI. It's telling
   // the FE backend that the promo is done so that other promos can run. The

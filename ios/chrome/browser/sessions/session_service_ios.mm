@@ -36,9 +36,6 @@
 
 namespace {
 
-// Value taken from Desktop Chrome.
-constexpr base::TimeDelta kSaveDelay = base::Seconds(2.5);
-
 // Callback invoked to request saving session at path using factory.
 using SaveSessionCallback =
     base::RepeatingCallback<void(NSString*, SessionWindowIOSFactory*)>;
@@ -92,6 +89,9 @@ using SaveSessionCallback =
 
 - (instancetype)init NS_UNAVAILABLE;
 
+// Called before destroying the task runner.
+- (void)shutdown;
+
 // Schedules a new requests to save data at `path` after `delay` using
 // `factory`. Ignored if a request scheduled for `path` with a closer
 // deadline is already scheduled.
@@ -123,6 +123,11 @@ using SaveSessionCallback =
     DCHECK(!_callback.is_null());
   }
   return self;
+}
+
+- (void)shutdown {
+  _callback = base::NullCallback();
+  _timer.Stop();
 }
 
 - (void)scheduleRequestForPath:(NSString*)path
@@ -218,26 +223,7 @@ using SaveSessionCallback =
   SaveSessionRequestQueue* _pendingRequests;
 }
 
-#pragma mark - NSObject overrides
-
-- (instancetype)init {
-  scoped_refptr<base::SequencedTaskRunner> taskRunner =
-      base::ThreadPool::CreateSingleThreadTaskRunner(
-          {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
-           base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
-          base::SingleThreadTaskRunnerThreadMode::DEDICATED);
-  return [self initWithSaveDelay:kSaveDelay taskRunner:taskRunner];
-}
-
 #pragma mark - Public interface
-
-+ (SessionServiceIOS*)sharedService {
-  static SessionServiceIOS* singleton = nil;
-  if (!singleton) {
-    singleton = [[[self class] alloc] init];
-  }
-  return singleton;
-}
 
 - (instancetype)initWithSaveDelay:(base::TimeDelta)saveDelay
                        taskRunner:
@@ -259,6 +245,12 @@ using SaveSessionCallback =
         initWithCallback:base::BindRepeating(savingBlock)];
   }
   return self;
+}
+
+- (void)shutdown {
+  [_pendingRequests shutdown];
+  _pendingRequests = nil;
+  _taskRunner.reset();
 }
 
 - (void)shutdownWithClosure:(base::OnceClosure)closure {
@@ -292,19 +284,6 @@ using SaveSessionCallback =
 - (SessionWindowIOS*)loadSessionFromPath:(NSString*)sessionPath {
   return ios::sessions::ReadSessionWindow(
       base::apple::NSStringToFilePath(sessionPath));
-}
-
-- (void)deleteAllSessionFilesInDirectory:(const base::FilePath&)directory
-                              completion:(base::OnceClosure)callback {
-  NSString* sessionsDirectory =
-      base::apple::FilePathToNSString(directory.Append(kLegacySessionFilename));
-  NSArray<NSString*>* allSessionIDs = [[NSFileManager defaultManager]
-      contentsOfDirectoryAtPath:sessionsDirectory
-                          error:nil];
-
-  [self deleteSessions:allSessionIDs
-             directory:directory
-            completion:std::move(callback)];
 }
 
 - (void)deleteSessions:(NSArray<NSString*>*)sessionIDs

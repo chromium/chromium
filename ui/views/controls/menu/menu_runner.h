@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <string>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -126,7 +127,7 @@ class VIEWS_EXPORT MenuRunner {
                  base::RepeatingClosure());
 
   // Creates a runner for a custom-created toolkit-views menu.
-  MenuRunner(MenuItemView* menu, int32_t run_types);
+  MenuRunner(std::unique_ptr<MenuItemView> menu, int32_t run_types);
 
   MenuRunner(const MenuRunner&) = delete;
   MenuRunner& operator=(const MenuRunner&) = delete;
@@ -146,13 +147,19 @@ class VIEWS_EXPORT MenuRunner {
   // the context menu. This only works when using `USE_ASH_SYS_UI_LAYOUT`.
   // Note that this is a blocking call for a native menu on Mac. See
   // http://crbug.com/682544.
+  // `show_menu_host_duration_histogram` is the name of the histogram measuring
+  // time from when Widget::Show() is called to when the first frame is
+  // presented for menu. It is recorded in MenuHost and it happens only when the
+  // histogram name is non-empty.
   void RunMenuAt(Widget* parent,
                  MenuButtonController* button_controller,
                  const gfx::Rect& bounds,
                  MenuAnchorPosition anchor,
                  ui::MenuSourceType source_type,
                  gfx::NativeView native_view_for_gestures = gfx::NativeView(),
-                 absl::optional<gfx::RoundedCornersF> corners = absl::nullopt);
+                 absl::optional<gfx::RoundedCornersF> corners = absl::nullopt,
+                 absl::optional<std::string> show_menu_host_duration_histogram =
+                     absl::nullopt);
 
   // Returns true if we're in a nested run loop running the menu.
   bool IsRunning() const;

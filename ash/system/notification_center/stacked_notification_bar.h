@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/message_center/message_center_observer.h"
 #include "ui/views/view.h"
 
@@ -29,6 +30,8 @@ class NotificationCenterView;
 // are scrolled.
 class StackedNotificationBar : public views::View,
                                public message_center::MessageCenterObserver {
+  METADATA_HEADER(StackedNotificationBar, views::View)
+
  public:
   explicit StackedNotificationBar(
       NotificationCenterView* notification_center_view);
@@ -44,9 +47,6 @@ class StackedNotificationBar : public views::View,
   bool Update(int total_notification_count,
               int pinned_notification_count,
               std::vector<message_center::Notification*> stacked_notifications);
-
-  // views::View:
-  const char* GetClassName() const override;
 
   // message_center::MessageCenterObserver:
   void OnNotificationAdded(const std::string& id) override;

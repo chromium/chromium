@@ -8,11 +8,11 @@
 #include <set>
 #include <vector>
 
+#include <optional>
 #include "base/memory/raw_ptr.h"
 #include "cc/cc_export.h"
 #include "cc/tiles/picture_layer_tiling.h"
 #include "cc/tiles/prioritized_tile.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace cc {
 
@@ -73,14 +73,14 @@ class CC_EXPORT TilesWithResourceIterator {
 
   // Iterates over the tiles from the current PictureLayerTiling. If this is
   // not set, the end has been reached.
-  absl::optional<PictureLayerTiling::TileIterator> tile_iterator_;
+  std::optional<PictureLayerTiling::TileIterator> tile_iterator_;
 
   // Set of tiles that have been visited. Used to ensure the same tile isn't
   // visited more than once.
   std::set<Tile*> visited_;
 
   // Created when GetCurrentAsPrioritizedTile() is called.
-  absl::optional<PrioritizedTile> prioritized_tile_;
+  std::optional<PrioritizedTile> prioritized_tile_;
 };
 
 }  // namespace cc

@@ -56,8 +56,8 @@ MATCHER_P(CustomDataIs, string, "") {
 struct TestLeakDetectionRequest : LeakDetectionRequestInterface {
   // LeakDetectionRequestInterface:
   void LookupSingleLeak(network::mojom::URLLoaderFactory* url_loader_factory,
-                        const absl::optional<std::string>& access_token,
-                        const absl::optional<std::string>& api_key,
+                        const std::optional<std::string>& access_token,
+                        const std::optional<std::string>& api_key,
                         LookupSingleLeakPayload payload,
                         LookupSingleLeakCallback callback) override {
     EXPECT_EQ(payload.initiator,
@@ -233,7 +233,7 @@ TEST_F(BulkLeakCheckTest, CheckCredentialsAccessDoesNetworkRequest) {
   auto network_request = std::make_unique<MockLeakDetectionRequest>();
   EXPECT_CALL(*network_request,
               LookupSingleLeak(
-                  _, Optional(Eq(kAccessToken)), /*api_key=*/Eq(absl::nullopt),
+                  _, Optional(Eq(kAccessToken)), /*api_key=*/Eq(std::nullopt),
                   AllOf(Field(&LookupSingleLeakPayload::username_hash_prefix,
                               ElementsAre(0xBD, 0x74, 0xA9, 0x00)),
                         Field(&LookupSingleLeakPayload::encrypted_payload,
@@ -265,10 +265,10 @@ TEST_F(BulkLeakCheckTest, CheckCredentialsMultipleNetworkRequests) {
   auto network_request2 = std::make_unique<MockLeakDetectionRequest>();
   EXPECT_CALL(*network_request1,
               LookupSingleLeak(_, Optional(Eq(kAccessToken)),
-                               /*api_key=*/Eq(absl::nullopt), _, _));
+                               /*api_key=*/Eq(std::nullopt), _, _));
   EXPECT_CALL(*network_request2,
               LookupSingleLeak(_, Optional(Eq(kAccessToken)),
-                               /*api_key=*/Eq(absl::nullopt), _, _));
+                               /*api_key=*/Eq(std::nullopt), _, _));
   EXPECT_CALL(*request_factory(), CreateNetworkRequest)
       .WillOnce(Return(ByMove(std::move(network_request1))))
       .WillOnce(Return(ByMove(std::move(network_request2))));
@@ -299,7 +299,7 @@ TEST_F(BulkLeakCheckTest, CheckCredentialsDecryptionError) {
 
   EXPECT_CALL(delegate(), OnError(LeakDetectionError::kHashingFailure));
   std::move(payload_and_callback.callback)
-      .Run(std::move(response), absl::nullopt);
+      .Run(std::move(response), std::nullopt);
   RunUntilIdle();
   EXPECT_EQ(0u, bulk_check().GetPendingChecksCount());
 }
@@ -332,7 +332,7 @@ TEST_F(BulkLeakCheckTest, CheckCredentialsNotLeaked) {
                                     CustomDataIs("custom")),
                               IsLeaked(false)));
   std::move(payload_and_callback.callback)
-      .Run(std::move(response), absl::nullopt);
+      .Run(std::move(response), std::nullopt);
   RunUntilIdle();
   EXPECT_EQ(0u, bulk_check().GetPendingChecksCount());
 }
@@ -364,7 +364,7 @@ TEST_F(BulkLeakCheckTest, CheckCredentialsLeaked) {
                                     CustomDataIs("custom")),
                               IsLeaked(true)));
   std::move(payload_and_callback.callback)
-      .Run(std::move(response), absl::nullopt);
+      .Run(std::move(response), std::nullopt);
   RunUntilIdle();
   EXPECT_EQ(0u, bulk_check().GetPendingChecksCount());
 }

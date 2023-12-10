@@ -45,4 +45,4 @@ class MojomDevToolsAgentHostDelegate {
 };
 }  // namespace content
 
-#endif
+#endif  // CONTENT_PUBLIC_BROWSER_MOJOM_DEVTOOLS_AGENT_HOST_DELEGATE_H_

@@ -6,13 +6,13 @@
 #define EXTENSIONS_BROWSER_EXTENSION_PREFS_H_
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
-
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -32,7 +32,6 @@
 #include "extensions/common/url_pattern_set.h"
 #include "services/preferences/public/cpp/dictionary_value_update.h"
 #include "services/preferences/public/cpp/scoped_pref_update.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class ExtensionPrefValueMap;
 class PrefService;
@@ -320,7 +319,7 @@ class ExtensionPrefs : public KeyedService {
 
   void UpdateExtensionPref(const std::string& id,
                            base::StringPiece key,
-                           absl::optional<base::Value> value);
+                           std::optional<base::Value> value);
 
   void DeleteExtensionPrefs(const std::string& id);
 
@@ -581,8 +580,8 @@ class ExtensionPrefs : public KeyedService {
       bool include_component_extensions = false) const;
 
   // Returns the ExtensionInfo from the prefs for the given extension. If the
-  // extension is not present, absl::nullopt is returned.
-  absl::optional<ExtensionInfo> GetInstalledExtensionInfo(
+  // extension is not present, std::nullopt is returned.
+  std::optional<ExtensionInfo> GetInstalledExtensionInfo(
       const std::string& extension_id,
       bool include_component_extensions = false) const;
 
@@ -607,8 +606,8 @@ class ExtensionPrefs : public KeyedService {
   bool FinishDelayedInstallInfo(const std::string& extension_id);
 
   // Returns the ExtensionInfo from the prefs for delayed install information
-  // for |extension_id|, if we have any. Otherwise returns absl::nullopt.
-  absl::optional<ExtensionInfo> GetDelayedInstallInfo(
+  // for |extension_id|, if we have any. Otherwise returns std::nullopt.
+  std::optional<ExtensionInfo> GetDelayedInstallInfo(
       const std::string& extension_id) const;
 
   DelayReason GetDelayedInstallReason(const std::string& extension_id) const;
@@ -715,9 +714,9 @@ class ExtensionPrefs : public KeyedService {
   void SetDNRDynamicRulesetChecksum(const ExtensionId& extension_id,
                                     int checksum);
 
-  // Returns the set of enabled static ruleset IDs or absl::nullopt if the
+  // Returns the set of enabled static ruleset IDs or std::nullopt if the
   // extension hasn't updated the set of enabled static rulesets.
-  absl::optional<std::set<declarative_net_request::RulesetID>>
+  std::optional<std::set<declarative_net_request::RulesetID>>
   GetDNREnabledStaticRulesets(const ExtensionId& extension_id) const;
   // Updates the set of enabled static rulesets for the |extension_id|. This
   // preference gets cleared on extension update.
@@ -823,7 +822,7 @@ class ExtensionPrefs : public KeyedService {
   // Helper function used by GetInstalledExtensionInfo() and
   // GetDelayedInstallInfo() to construct an ExtensionInfo from the provided
   // |extension| dictionary.
-  absl::optional<ExtensionInfo> GetInstalledInfoHelper(
+  std::optional<ExtensionInfo> GetInstalledInfoHelper(
       const std::string& extension_id,
       const base::Value::Dict& extension,
       bool include_component_extensions) const;

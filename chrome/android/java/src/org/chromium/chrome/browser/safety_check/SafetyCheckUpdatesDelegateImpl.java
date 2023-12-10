@@ -62,16 +62,19 @@ public class SafetyCheckUpdatesDelegateImpl implements SafetyCheckUpdatesDelegat
      */
     @Override
     public void checkForUpdates(WeakReference<Callback<Integer>> statusCallback) {
-        PostTask.postTask(TaskTraits.USER_VISIBLE, () -> {
-            @UpdateStatus
-            int status = mOmaha.checkForUpdates();
-            // Post the results back to the UI thread.
-            PostTask.postTask(TaskTraits.UI_DEFAULT, () -> {
-                Callback<Integer> strongRef = statusCallback.get();
-                if (strongRef != null) {
-                    strongRef.onResult(convertOmahaUpdateStatus(status));
-                }
-            });
-        });
+        PostTask.postTask(
+                TaskTraits.USER_VISIBLE,
+                () -> {
+                    @UpdateStatus int status = mOmaha.checkForUpdates();
+                    // Post the results back to the UI thread.
+                    PostTask.postTask(
+                            TaskTraits.UI_DEFAULT,
+                            () -> {
+                                Callback<Integer> strongRef = statusCallback.get();
+                                if (strongRef != null) {
+                                    strongRef.onResult(convertOmahaUpdateStatus(status));
+                                }
+                            });
+                });
     }
 }

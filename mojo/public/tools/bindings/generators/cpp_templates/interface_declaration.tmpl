@@ -20,7 +20,9 @@ class {{export_attribute|append_space_if_nonempty}}{{interface.name}}
   static const char Name_[];
   static IPCStableHashFunction MessageToMethodInfo_(mojo::Message& message);
   static const char* MessageToMethodName_(mojo::Message& message);
-
+{%-  if interface.runtime_feature %}
+  static bool RuntimeFeature_IsEnabled_(bool expected);
+{%- endif %}
 
 {%-  if interface.uuid %}
   static constexpr base::Token Uuid_{ {{interface.uuid[0]}}ULL,

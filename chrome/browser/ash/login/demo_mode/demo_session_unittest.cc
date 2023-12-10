@@ -7,6 +7,7 @@
 #include <list>
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -41,7 +42,6 @@
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/common/extension_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 namespace {

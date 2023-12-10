@@ -18,9 +18,7 @@ import org.chromium.services.service_manager.InterfaceFactory;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.webshare.mojom.ShareService;
 
-/**
- * Factory that creates instances of ShareService.
- */
+/** Factory that creates instances of ShareService. */
 public class ShareServiceImplementationFactory implements InterfaceFactory<ShareService> {
     private final WebContents mWebContents;
     private Supplier<ShareDelegate> mShareDelegateSupplier;
@@ -35,40 +33,45 @@ public class ShareServiceImplementationFactory implements InterfaceFactory<Share
 
     @Override
     public ShareService createImpl() {
-        ShareServiceImpl.WebShareDelegate delegate = new ShareServiceImpl.WebShareDelegate() {
-            @Override
-            public boolean canShare() {
-                return getShareDelegate() != null
-                        && mWebContents.getMainFrame().isFeatureEnabled(
-                                PermissionsPolicyFeature.WEB_SHARE);
-            }
+        ShareServiceImpl.WebShareDelegate delegate =
+                new ShareServiceImpl.WebShareDelegate() {
+                    @Override
+                    public boolean canShare() {
+                        return getShareDelegate() != null
+                                && mWebContents
+                                        .getMainFrame()
+                                        .isFeatureEnabled(PermissionsPolicyFeature.WEB_SHARE);
+                    }
 
-            @Override
-            public void share(ShareParams params) {
-                getShareDelegate().share(params,
-                        new ChromeShareExtras.Builder()
-                                .setDetailedContentType(DetailedContentType.WEB_SHARE)
-                                .build(),
-                        ShareOrigin.WEBSHARE_API);
-            }
+                    @Override
+                    public void share(ShareParams params) {
+                        getShareDelegate()
+                                .share(
+                                        params,
+                                        new ChromeShareExtras.Builder()
+                                                .setDetailedContentType(
+                                                        DetailedContentType.WEB_SHARE)
+                                                .build(),
+                                        ShareOrigin.WEBSHARE_API);
+                    }
 
-            /**
-             * Returns the current {@link ShareDelegate}, and updates it when the {@link
-             * WindowAndroid} has changed.
-             *
-             * <p>The {@link WindowAndroid} changes when the theme changes, which necessitates
-             * getting a new ShareDelegate. See https://crbug.com/1322778.
-             */
-            private ShareDelegate getShareDelegate() {
-                if (mWindowAndroid.equals(mWebContents.getTopLevelNativeWindow())) {
-                    return mShareDelegateSupplier.get();
-                }
-                mWindowAndroid = mWebContents.getTopLevelNativeWindow();
-                mShareDelegateSupplier = ShareDelegateSupplier.from(mWindowAndroid);
-                assert mShareDelegateSupplier != null;
-                return mShareDelegateSupplier.get();
-            }
-        };
+                    /**
+                     * Returns the current {@link ShareDelegate}, and updates it when the {@link
+                     * WindowAndroid} has changed.
+                     *
+                     * <p>The {@link WindowAndroid} changes when the theme changes, which necessitates
+                     * getting a new ShareDelegate. See https://crbug.com/1322778.
+                     */
+                    private ShareDelegate getShareDelegate() {
+                        if (mWindowAndroid.equals(mWebContents.getTopLevelNativeWindow())) {
+                            return mShareDelegateSupplier.get();
+                        }
+                        mWindowAndroid = mWebContents.getTopLevelNativeWindow();
+                        mShareDelegateSupplier = ShareDelegateSupplier.from(mWindowAndroid);
+                        assert mShareDelegateSupplier != null;
+                        return mShareDelegateSupplier.get();
+                    }
+                };
 
         return new ShareServiceImpl(mWebContents, delegate);
     }

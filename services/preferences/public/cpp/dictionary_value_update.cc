@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/ranges/algorithm.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -26,7 +25,7 @@ DictionaryValueUpdate::DictionaryValueUpdate(UpdateCallback report_update,
 
 DictionaryValueUpdate::~DictionaryValueUpdate() = default;
 
-bool DictionaryValueUpdate::HasKey(base::StringPiece key) const {
+bool DictionaryValueUpdate::HasKey(std::string_view key) const {
   return value_->contains(key);
 }
 
@@ -42,11 +41,11 @@ void DictionaryValueUpdate::Clear() {
   if (empty())
     return;
 
-  RecordSplitPath(std::vector<base::StringPiece>());
+  RecordSplitPath(std::vector<std::string_view>());
   value_->clear();
 }
 
-void DictionaryValueUpdate::Set(base::StringPiece path, base::Value in_value) {
+void DictionaryValueUpdate::Set(std::string_view path, base::Value in_value) {
   const base::Value* old_value = value_->FindByDottedPath(path);
   if (old_value && *old_value == in_value)
     return;
@@ -55,30 +54,30 @@ void DictionaryValueUpdate::Set(base::StringPiece path, base::Value in_value) {
   value_->SetByDottedPath(path, std::move(in_value));
 }
 
-void DictionaryValueUpdate::SetBoolean(base::StringPiece path, bool in_value) {
+void DictionaryValueUpdate::SetBoolean(std::string_view path, bool in_value) {
   Set(path, base::Value(in_value));
 }
 
-void DictionaryValueUpdate::SetInteger(base::StringPiece path, int in_value) {
+void DictionaryValueUpdate::SetInteger(std::string_view path, int in_value) {
   Set(path, base::Value(in_value));
 }
 
-void DictionaryValueUpdate::SetDouble(base::StringPiece path, double in_value) {
+void DictionaryValueUpdate::SetDouble(std::string_view path, double in_value) {
   Set(path, base::Value(in_value));
 }
 
-void DictionaryValueUpdate::SetString(base::StringPiece path,
-                                      base::StringPiece in_value) {
+void DictionaryValueUpdate::SetString(std::string_view path,
+                                      std::string_view in_value) {
   Set(path, base::Value(in_value));
 }
 
-void DictionaryValueUpdate::SetString(base::StringPiece path,
+void DictionaryValueUpdate::SetString(std::string_view path,
                                       const std::u16string& in_value) {
   Set(path, base::Value(in_value));
 }
 
 std::unique_ptr<DictionaryValueUpdate> DictionaryValueUpdate::SetDictionary(
-    base::StringPiece path,
+    std::string_view path,
     base::Value::Dict in_value) {
   RecordPath(path);
   base::Value::Dict& dictionary_value =
@@ -88,7 +87,7 @@ std::unique_ptr<DictionaryValueUpdate> DictionaryValueUpdate::SetDictionary(
       report_update_, &dictionary_value, ConcatPath(path_, path));
 }
 
-base::Value* DictionaryValueUpdate::SetKey(base::StringPiece key,
+base::Value* DictionaryValueUpdate::SetKey(std::string_view key,
                                            base::Value value) {
   base::Value* found = value_->Find(key);
   if (found && *found == value)
@@ -98,7 +97,7 @@ base::Value* DictionaryValueUpdate::SetKey(base::StringPiece key,
   return value_->Set(key, std::move(value));
 }
 
-void DictionaryValueUpdate::SetWithoutPathExpansion(base::StringPiece key,
+void DictionaryValueUpdate::SetWithoutPathExpansion(std::string_view key,
                                                     base::Value in_value) {
   const base::Value* old_value = value_->Find(key);
   if (old_value && *old_value == in_value) {
@@ -110,7 +109,7 @@ void DictionaryValueUpdate::SetWithoutPathExpansion(base::StringPiece key,
 
 std::unique_ptr<DictionaryValueUpdate>
 DictionaryValueUpdate::SetDictionaryWithoutPathExpansion(
-    base::StringPiece path,
+    std::string_view path,
     base::Value::Dict in_value) {
   RecordKey(path);
   base::Value::Dict& dictionary_value =
@@ -122,7 +121,7 @@ DictionaryValueUpdate::SetDictionaryWithoutPathExpansion(
       report_update_, &dictionary_value, std::move(full_path));
 }
 
-bool DictionaryValueUpdate::GetBoolean(base::StringPiece path,
+bool DictionaryValueUpdate::GetBoolean(std::string_view path,
                                        bool* out_value) const {
   absl::optional<bool> value = value_->FindBoolByDottedPath(path);
   if (!value.has_value())
@@ -132,7 +131,7 @@ bool DictionaryValueUpdate::GetBoolean(base::StringPiece path,
   return true;
 }
 
-bool DictionaryValueUpdate::GetInteger(base::StringPiece path,
+bool DictionaryValueUpdate::GetInteger(std::string_view path,
                                        int* out_value) const {
   if (absl::optional<int> value = value_->FindIntByDottedPath(path)) {
     if (out_value) {
@@ -143,7 +142,7 @@ bool DictionaryValueUpdate::GetInteger(base::StringPiece path,
   return false;
 }
 
-bool DictionaryValueUpdate::GetDouble(base::StringPiece path,
+bool DictionaryValueUpdate::GetDouble(std::string_view path,
                                       double* out_value) const {
   if (absl::optional<double> value = value_->FindDoubleByDottedPath(path)) {
     if (out_value) {
@@ -154,7 +153,7 @@ bool DictionaryValueUpdate::GetDouble(base::StringPiece path,
   return false;
 }
 
-bool DictionaryValueUpdate::GetString(base::StringPiece path,
+bool DictionaryValueUpdate::GetString(std::string_view path,
                                       std::string* out_value) const {
   if (std::string* value = value_->FindStringByDottedPath(path)) {
     if (out_value) {
@@ -166,7 +165,7 @@ bool DictionaryValueUpdate::GetString(base::StringPiece path,
 }
 
 bool DictionaryValueUpdate::GetDictionary(
-    base::StringPiece path,
+    std::string_view path,
     const base::Value::Dict** out_value) const {
   const base::Value::Dict* dict = value_->FindDictByDottedPath(path);
   if (!dict) {
@@ -180,7 +179,7 @@ bool DictionaryValueUpdate::GetDictionary(
 }
 
 bool DictionaryValueUpdate::GetDictionary(
-    base::StringPiece path,
+    std::string_view path,
     std::unique_ptr<DictionaryValueUpdate>* out_value) {
   base::Value::Dict* dict = value_->FindDictByDottedPath(path);
   if (!dict) {
@@ -194,7 +193,7 @@ bool DictionaryValueUpdate::GetDictionary(
 }
 
 bool DictionaryValueUpdate::GetDictionaryWithoutPathExpansion(
-    base::StringPiece key,
+    std::string_view key,
     std::unique_ptr<DictionaryValueUpdate>* out_value) {
   base::Value::Dict* dictionary_value = value_->FindDict(key);
   if (!dictionary_value) {
@@ -209,7 +208,7 @@ bool DictionaryValueUpdate::GetDictionaryWithoutPathExpansion(
 }
 
 bool DictionaryValueUpdate::GetListWithoutPathExpansion(
-    base::StringPiece key,
+    std::string_view key,
     base::Value::List** out_value) {
   RecordKey(key);
   base::Value::List* list = value_->FindList(key);
@@ -222,11 +221,11 @@ bool DictionaryValueUpdate::GetListWithoutPathExpansion(
   return true;
 }
 
-bool DictionaryValueUpdate::Remove(base::StringPiece path) {
-  base::StringPiece current_path(path);
+bool DictionaryValueUpdate::Remove(std::string_view path) {
+  std::string_view current_path(path);
   base::Value::Dict* current_dictionary = value_;
   size_t delimiter_position = current_path.rfind('.');
-  if (delimiter_position != base::StringPiece::npos) {
+  if (delimiter_position != std::string_view::npos) {
     current_dictionary = value_->FindDictByDottedPath(
         current_path.substr(0, delimiter_position));
     if (!current_dictionary)
@@ -241,7 +240,7 @@ bool DictionaryValueUpdate::Remove(base::StringPiece path) {
   return true;
 }
 
-bool DictionaryValueUpdate::RemoveWithoutPathExpansion(base::StringPiece key,
+bool DictionaryValueUpdate::RemoveWithoutPathExpansion(std::string_view key,
                                                        base::Value* out_value) {
   absl::optional<base::Value> value = value_->Extract(key);
   if (!value) {
@@ -257,7 +256,7 @@ bool DictionaryValueUpdate::RemoveWithoutPathExpansion(base::StringPiece key,
 }
 
 base::Value::Dict* DictionaryValueUpdate::AsDict() {
-  RecordSplitPath(std::vector<base::StringPiece>());
+  RecordSplitPath(std::vector<std::string_view>());
   return value_;
 }
 
@@ -265,38 +264,38 @@ const base::Value::Dict* DictionaryValueUpdate::AsConstDict() const {
   return value_;
 }
 
-void DictionaryValueUpdate::RecordKey(base::StringPiece key) {
+void DictionaryValueUpdate::RecordKey(std::string_view key) {
   RecordSplitPath({key});
 }
 
-void DictionaryValueUpdate::RecordPath(base::StringPiece path) {
+void DictionaryValueUpdate::RecordPath(std::string_view path) {
   RecordSplitPath(SplitPath(path));
 }
 
 void DictionaryValueUpdate::RecordSplitPath(
-    const std::vector<base::StringPiece>& path) {
+    const std::vector<std::string_view>& path) {
   report_update_.Run(ConcatPath(path_, path));
 }
 
-std::vector<base::StringPiece> DictionaryValueUpdate::SplitPath(
-    base::StringPiece path) {
+std::vector<std::string_view> DictionaryValueUpdate::SplitPath(
+    std::string_view path) {
   return base::SplitStringPiece(path, ".", base::TRIM_WHITESPACE,
                                 base::SPLIT_WANT_NONEMPTY);
 }
 
 std::vector<std::string> DictionaryValueUpdate::ConcatPath(
     const std::vector<std::string>& base_path,
-    base::StringPiece path) {
+    std::string_view path) {
   return ConcatPath(base_path, SplitPath(path));
 }
 
 std::vector<std::string> DictionaryValueUpdate::ConcatPath(
     const std::vector<std::string>& base_path,
-    const std::vector<base::StringPiece>& path) {
+    const std::vector<std::string_view>& path) {
   std::vector<std::string> full_path = base_path;
   full_path.reserve(full_path.size() + path.size());
   base::ranges::transform(path, std::back_inserter(full_path),
-                          [](base::StringPiece s) { return std::string(s); });
+                          [](std::string_view s) { return std::string(s); });
   return full_path;
 }
 

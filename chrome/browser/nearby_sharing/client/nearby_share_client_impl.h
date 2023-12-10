@@ -52,15 +52,15 @@ class NearbyShareClientImpl : public NearbyShareClient {
   NearbyShareClientImpl& operator=(NearbyShareClientImpl&) = delete;
 
   // NearbyShareClient:
-  void UpdateDevice(const nearbyshare::proto::UpdateDeviceRequest& request,
+  void UpdateDevice(const nearby::sharing::proto::UpdateDeviceRequest& request,
                     UpdateDeviceCallback&& callback,
                     ErrorCallback&& error_callback) override;
   void ListContactPeople(
-      const nearbyshare::proto::ListContactPeopleRequest& request,
+      const nearby::sharing::proto::ListContactPeopleRequest& request,
       ListContactPeopleCallback&& callback,
       ErrorCallback&& error_callback) override;
   void ListPublicCertificates(
-      const nearbyshare::proto::ListPublicCertificatesRequest& request,
+      const nearby::sharing::proto::ListPublicCertificatesRequest& request,
       ListPublicCertificatesCallback&& callback,
       ErrorCallback&& error_callback) override;
   std::string GetAccessTokenUsed() override;

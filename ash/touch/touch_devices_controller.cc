@@ -168,7 +168,7 @@ void TouchDevicesController::UpdateTapDraggingEnabled() {
   UMA_HISTOGRAM_BOOLEAN("Touchpad.TapDragging.Changed", enabled);
 
   ui::OzonePlatform::GetInstance()->GetInputController()->SetTapDragging(
-      absl::nullopt, enabled);
+      std::nullopt, enabled);
 }
 
 void TouchDevicesController::UpdateTouchpadEnabled() {

@@ -68,8 +68,8 @@ class MockAssistantUiModelObserver : public AssistantUiModelObserver {
               OnUiVisibilityChanged,
               (AssistantVisibility new_visibility,
                AssistantVisibility old_visibility,
-               absl::optional<AssistantEntryPoint> entry_point,
-               absl::optional<AssistantExitPoint> exit_point),
+               std::optional<AssistantEntryPoint> entry_point,
+               std::optional<AssistantExitPoint> exit_point),
               (override));
 };
 
@@ -234,8 +234,8 @@ TEST_F(AssistantControllerImplTest, ClosesAssistantUiForFeedbackDeeplink) {
   EXPECT_CALL(ui_model_observer_mock, OnUiVisibilityChanged)
       .WillOnce([](AssistantVisibility new_visibility,
                    AssistantVisibility old_visibility,
-                   absl::optional<AssistantEntryPoint> entry_point,
-                   absl::optional<AssistantExitPoint> exit_point) {
+                   std::optional<AssistantEntryPoint> entry_point,
+                   std::optional<AssistantExitPoint> exit_point) {
         EXPECT_EQ(old_visibility, AssistantVisibility::kVisible);
         EXPECT_EQ(new_visibility, AssistantVisibility::kClosing);
         EXPECT_FALSE(entry_point.has_value());
@@ -244,8 +244,8 @@ TEST_F(AssistantControllerImplTest, ClosesAssistantUiForFeedbackDeeplink) {
   EXPECT_CALL(ui_model_observer_mock, OnUiVisibilityChanged)
       .WillOnce([](AssistantVisibility new_visibility,
                    AssistantVisibility old_visibility,
-                   absl::optional<AssistantEntryPoint> entry_point,
-                   absl::optional<AssistantExitPoint> exit_point) {
+                   std::optional<AssistantEntryPoint> entry_point,
+                   std::optional<AssistantExitPoint> exit_point) {
         EXPECT_EQ(old_visibility, AssistantVisibility::kClosing);
         EXPECT_EQ(new_visibility, AssistantVisibility::kClosed);
         EXPECT_FALSE(entry_point.has_value());

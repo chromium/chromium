@@ -24,9 +24,7 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 import org.chromium.url.Origin;
 
-/**
- * Bridges between the C++ and Java {@link TabModel} interfaces.
- */
+/** Bridges between the C++ and Java {@link TabModel} interfaces. */
 public abstract class TabModelJniBridge implements TabModel {
     private final Profile mProfile;
 
@@ -75,8 +73,8 @@ public abstract class TabModelJniBridge implements TabModel {
     /** Broadcast a native-side notification that all tabs are now loaded from storage. */
     public void broadcastSessionRestoreComplete() {
         assert isNativeInitialized();
-        TabModelJniBridgeJni.get().broadcastSessionRestoreComplete(
-                mNativeTabModelJniBridge, TabModelJniBridge.this);
+        TabModelJniBridgeJni.get()
+                .broadcastSessionRestoreComplete(mNativeTabModelJniBridge, TabModelJniBridge.this);
     }
 
     /**
@@ -85,8 +83,8 @@ public abstract class TabModelJniBridge implements TabModel {
      */
     protected void tabAddedToModel(Tab tab) {
         if (isNativeInitialized()) {
-            TabModelJniBridgeJni.get().tabAddedToModel(
-                    mNativeTabModelJniBridge, TabModelJniBridge.this, tab);
+            TabModelJniBridgeJni.get()
+                    .tabAddedToModel(mNativeTabModelJniBridge, TabModelJniBridge.this, tab);
         }
     }
 
@@ -135,9 +133,15 @@ public abstract class TabModelJniBridge implements TabModel {
             Tab parent, Profile profile, WebContents webContents);
 
     @CalledByNative
-    protected abstract void openNewTab(Tab parent, GURL url, @Nullable Origin initiatorOrigin,
-            String extraHeaders, ResourceRequestBody postData, int disposition,
-            boolean persistParentage, boolean isRendererInitiated);
+    protected abstract void openNewTab(
+            Tab parent,
+            GURL url,
+            @Nullable Origin initiatorOrigin,
+            String extraHeaders,
+            ResourceRequestBody postData,
+            int disposition,
+            boolean persistParentage,
+            boolean isRendererInitiated);
 
     /**
      * Creates a Tab with the given WebContents for DevTools.
@@ -145,7 +149,7 @@ public abstract class TabModelJniBridge implements TabModel {
      */
     @CalledByNative
     protected Tab createNewTabForDevTools(GURL url) {
-        return getTabCreator(/*incognito=*/false)
+        return getTabCreator(/* incognito= */ false)
                 .createNewTab(new LoadUrlParams(url), TabLaunchType.FROM_CHROME_UI, null);
     }
 
@@ -197,9 +201,12 @@ public abstract class TabModelJniBridge implements TabModel {
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public interface Natives {
         long init(TabModelJniBridge caller, Profile profile, @ActivityType int activityType);
+
         void broadcastSessionRestoreComplete(
                 long nativeTabModelJniBridge, TabModelJniBridge caller);
+
         void destroy(long nativeTabModelJniBridge, TabModelJniBridge caller);
+
         void tabAddedToModel(long nativeTabModelJniBridge, TabModelJniBridge caller, Tab tab);
     }
 }

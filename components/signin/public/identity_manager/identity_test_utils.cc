@@ -414,9 +414,8 @@ AccountInfo MakeAccountAvailable(IdentityManager* identity_manager,
     auto consent_level = options.consent_level.value();
     PrimaryAccountManager* primary_account_manager =
         identity_manager->GetPrimaryAccountManager();
-    primary_account_manager->SetPrimaryAccountInfo(
-        account_info, consent_level,
-        signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+    primary_account_manager->SetPrimaryAccountInfo(account_info, consent_level,
+                                                   options.access_point);
     CHECK_EQ(account_info.gaia,
              identity_manager->GetPrimaryAccountInfo(consent_level).gaia);
   }
@@ -520,7 +519,7 @@ void SetCookieAccounts(
   std::vector<CookieParams> gaia_cookie_accounts;
   for (const CookieParamsForTest& params : cookie_accounts) {
     gaia_cookie_accounts.push_back({params.email, params.gaia_id,
-                                    /*valid=*/true, /*signed_out=*/false,
+                                    /*valid=*/true, params.signed_out,
                                     /*verified=*/true});
   }
 

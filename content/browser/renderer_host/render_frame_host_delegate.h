@@ -278,12 +278,6 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
       const url::Origin& security_origin,
       blink::mojom::MediaStreamType type);
 
-  // Returns the ID of the default device for the given media device |type|.
-  // If the returned value is an empty string, it means that there is no
-  // default device for the given |type|.
-  virtual std::string GetDefaultMediaDeviceID(
-      blink::mojom::MediaStreamType type);
-
   // Setter for the capture handle config, which allows a captured application
   // to opt-in to exposing information to its capturer(s).
   virtual void SetCaptureHandleConfig(
@@ -334,6 +328,10 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
       RenderFrameHostImpl* rfh,
       bool is_fullscreen,
       blink::mojom::FullscreenOptionsPtr options);
+
+  // Returns whether the RFH can use Additional Windowing Controls (AWC) APIs.
+  // https://github.com/ivansandrk/additional-windowing-controls/blob/main/awc-explainer.md
+  virtual bool CanUseWindowingControls(RenderFrameHostImpl* requesting_frame);
 
   // Request to maximize window.
   virtual void Maximize() {}
@@ -487,6 +485,10 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
   virtual const blink::web_pref::WebPreferences&
   GetOrCreateWebPreferences() = 0;
 
+  // Returns the light, dark and forced color maps for the ColorProvider
+  // associated with this RenderFrameHost's WebContents.
+  virtual blink::ColorProviderColorMaps GetColorProviderColorMaps() const = 0;
+
   // Returns the visibility of the delegate.
   virtual Visibility GetVisibility();
 
@@ -506,11 +508,11 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
       RenderFrameHostImpl* host,
       blink::mojom::FrameVisibility visibility) {}
 
-  // Notifies observers if the frame has started/stopped capturing a video
-  // stream.
-  virtual void OnFrameIsCapturingVideoStreamChanged(
+  // Notifies observers if the frame has started/stopped capturing a media
+  // stream (audio or video).
+  virtual void OnFrameIsCapturingMediaStreamChanged(
       RenderFrameHostImpl* host,
-      bool is_capturing_video_stream) {}
+      bool is_capturing_media_stream) {}
 
   // Returns FrameTreeNodes that are logically owned by another frame even
   // though this relationship is not yet reflected in their frame trees. This
@@ -533,10 +535,6 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
   // Returns true if the delegate allows to go to the session history entry at
   // the given offset (ie, -1 will return the "back" item).
   virtual bool IsAllowedToGoToEntryAtOffset(int32_t offset);
-
-  virtual media::MediaMetricsProvider::RecordAggregateWatchTimeCallback
-  GetRecordAggregateWatchTimeCallback(
-      const GURL& page_main_frame_last_committed_url);
 
   // Determines if a clipboard paste using |data| of type |data_type| is allowed
   // in this renderer frame.  Possible data types supported for paste can be

@@ -22,8 +22,9 @@ import {getTemplate} from './firmware_update_dialog.html.js';
 import {DialogContent, OpenUpdateDialogEventDetail} from './firmware_update_types.js';
 import {getUpdateProvider} from './mojo_interface_provider.js';
 
+// TODO(b/308669841): Handle kWaitingForUser separately depending on v2 flag.
 const inactiveDialogStates: UpdateState[] =
-    [UpdateState.kUnknown, UpdateState.kIdle];
+    [UpdateState.kUnknown, UpdateState.kIdle, UpdateState.kWaitingForUser];
 
 const initialDialogContent: DialogContent = {
   title: '',
@@ -156,7 +157,7 @@ export class FirmwareUpdateDialogElement extends FirmwareUpdateDialogElementBase
     this.updateProgressObserverReceiver =
         new UpdateProgressObserverReceiver(this);
     assert(this.installController);
-    this.installController.addObserver(
+    this.installController.addUpdateProgressObserver(
         this.updateProgressObserverReceiver.$.bindNewPipeAndPassRemote());
 
     // Only start new updates, inflight updates will be observed instead.
@@ -197,8 +198,6 @@ export class FirmwareUpdateDialogElement extends FirmwareUpdateDialogElementBase
   }
 
   protected isUpdateInProgress(): boolean {
-    const inactiveDialogStates: UpdateState[] =
-        [UpdateState.kUnknown, UpdateState.kIdle];
     if (inactiveDialogStates.includes(this.installationProgress.state)) {
       return this.installationProgress.percentage > 0;
     }

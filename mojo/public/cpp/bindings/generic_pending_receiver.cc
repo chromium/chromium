@@ -4,7 +4,8 @@
 
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
 
-#include "base/strings/string_piece.h"
+#include <string_view>
+
 #include "base/trace_event/trace_event.h"
 
 namespace mojo {
@@ -12,7 +13,7 @@ namespace mojo {
 GenericPendingReceiver::GenericPendingReceiver() = default;
 
 GenericPendingReceiver::GenericPendingReceiver(
-    base::StringPiece interface_name,
+    std::string_view interface_name,
     mojo::ScopedMessagePipeHandle receiving_pipe)
     : interface_name_(std::string(interface_name)),
       pipe_(std::move(receiving_pipe)) {}

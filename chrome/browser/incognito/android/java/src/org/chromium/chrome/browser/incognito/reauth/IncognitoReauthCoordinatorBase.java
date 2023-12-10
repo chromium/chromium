@@ -36,8 +36,10 @@ abstract class IncognitoReauthCoordinatorBase implements IncognitoReauthCoordina
      * with the {@link PropertyModel} which got changed.
      */
     private PropertyModelChangeProcessor mModelChangeProcessor;
+
     /** The property model container for {@link IncognitoReauthProperties}. */
     private PropertyModel mPropertyModel;
+
     /** The actual underlying re-auth view.*/
     private View mIncognitoReauthView;
 
@@ -45,8 +47,7 @@ abstract class IncognitoReauthCoordinatorBase implements IncognitoReauthCoordina
      * Test-only method to ignore the assertion on null checks, and use the respective view, model
      * and processor override instead.
      */
-    @VisibleForTesting
-    protected boolean mIgnoreViewAndModelCreationForTesting;
+    @VisibleForTesting protected boolean mIgnoreViewAndModelCreationForTesting;
 
     /**
      * @param context The {@link Context} to use for inflating the re-auth view.
@@ -57,18 +58,18 @@ abstract class IncognitoReauthCoordinatorBase implements IncognitoReauthCoordina
      * @param seeOtherTabsRunnable A {@link Runnable} which is run when the user clicks on
      *                            "See other tabs" option.
      */
-    public IncognitoReauthCoordinatorBase(@NonNull Context context,
+    public IncognitoReauthCoordinatorBase(
+            @NonNull Context context,
             @NonNull IncognitoReauthManager incognitoReauthManager,
             @NonNull IncognitoReauthCallback incognitoReauthCallback,
             @NonNull Runnable seeOtherTabsRunnable) {
         mContext = context;
-        mIncognitoReauthMediator = new IncognitoReauthMediator(
-                incognitoReauthCallback, incognitoReauthManager, seeOtherTabsRunnable);
+        mIncognitoReauthMediator =
+                new IncognitoReauthMediator(
+                        incognitoReauthCallback, incognitoReauthManager, seeOtherTabsRunnable);
     }
 
-    /**
-     * A method to clean-up any unwanted resource.
-     */
+    /** A method to clean-up any unwanted resource. */
     @Override
     public void destroy() {
         assert mModelChangeProcessor != null : "Model must be created before its destroyed.";
@@ -85,37 +86,40 @@ abstract class IncognitoReauthCoordinatorBase implements IncognitoReauthCoordina
      */
     protected void prepareToshow(
             @Nullable ListMenuButtonDelegate menuButtonDelegate, boolean fullscreen) {
-        assert !fullscreen
-                || menuButtonDelegate
-                        != null : "Full screen should provide a valid menu"
-                                  + " button delegate.";
+        assert !fullscreen || menuButtonDelegate != null
+                : "Full screen should provide a valid menu" + " button delegate.";
 
         // Don't create anything below and instead simply return.
         // The client should provide the override for the same.
         if (mIgnoreViewAndModelCreationForTesting) return;
 
         assert mIncognitoReauthView == null : "Previous view was not removed.";
-        mIncognitoReauthView = LayoutInflater.from(mContext).inflate(
-                R.layout.incognito_reauth_view, /*root=*/null);
+        mIncognitoReauthView =
+                LayoutInflater.from(mContext)
+                        .inflate(R.layout.incognito_reauth_view, /* root= */ null);
 
         // When the re-auth view is shown, then own all the on touch events happening on it.
         // This prevents the touch event to propagate to other children when our re-auth view
         // is part of a ViewGroup when shown inside tab-switcher.
-        mIncognitoReauthView.setOnTouchListener((view, motionEvent) -> {
-            // Consume the click event.
-            view.performClick();
-            return true;
-        });
+        mIncognitoReauthView.setOnTouchListener(
+                (view, motionEvent) -> {
+                    // Consume the click event.
+                    view.performClick();
+                    return true;
+                });
 
         assert mPropertyModel == null : "Property model must not be reused.";
         mPropertyModel =
-                createPropertyModel(mIncognitoReauthMediator::onUnlockIncognitoButtonClicked,
-                        mIncognitoReauthMediator::onSeeOtherTabsButtonClicked, fullscreen,
+                createPropertyModel(
+                        mIncognitoReauthMediator::onUnlockIncognitoButtonClicked,
+                        mIncognitoReauthMediator::onSeeOtherTabsButtonClicked,
+                        fullscreen,
                         menuButtonDelegate);
 
         assert mModelChangeProcessor == null : "Model change processor must not be reused.";
-        mModelChangeProcessor = PropertyModelChangeProcessor.create(
-                mPropertyModel, mIncognitoReauthView, IncognitoReauthViewBinder::bind);
+        mModelChangeProcessor =
+                PropertyModelChangeProcessor.create(
+                        mPropertyModel, mIncognitoReauthView, IncognitoReauthViewBinder::bind);
     }
 
     /**
@@ -136,16 +140,12 @@ abstract class IncognitoReauthCoordinatorBase implements IncognitoReauthCoordina
         mIncognitoReauthView = incognitoReauthView;
     }
 
-    /**
-     * Test-only method to set a mock {@link PropertyModel}.
-     */
+    /** Test-only method to set a mock {@link PropertyModel}. */
     protected void setPropertyModelForTesting(PropertyModel propertyModel) {
         mPropertyModel = propertyModel;
     }
 
-    /**
-     * Test-only method to set a mock {@link PropertyModelChangeProcessor}.
-     */
+    /** Test-only method to set a mock {@link PropertyModelChangeProcessor}. */
     protected void setModelChangeProcessorForTesting(
             PropertyModelChangeProcessor modelChangeProcessor) {
         mModelChangeProcessor = modelChangeProcessor;

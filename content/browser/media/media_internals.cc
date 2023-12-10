@@ -6,12 +6,12 @@
 
 #include <stddef.h>
 
+#include <list>
 #include <string>
 #include <tuple>
 #include <utility>
 
 #include "base/containers/adapters.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -672,7 +672,7 @@ void MediaInternals::SaveEvent(int process_id,
     // Remove all events for a given player as soon as we have to remove a
     // single event for that player to avoid showing incomplete players.
     const int id_to_remove = saved_events.front().id;
-    base::EraseIf(saved_events, [&](const media::MediaLogRecord& event) {
+    std::erase_if(saved_events, [&](const media::MediaLogRecord& event) {
       return event.id == id_to_remove;
     });
   }

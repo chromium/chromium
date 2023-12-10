@@ -5,7 +5,7 @@
 #include "ash/wallpaper/wallpaper_utils/wallpaper_file_utils.h"
 
 #include "ash/public/cpp/image_util.h"
-#include "ash/public/cpp/test/in_process_image_decoder.h"
+#include "ash/public/cpp/test/in_process_data_decoder.h"
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
 #include "ash/test/ash_test_base.h"
 #include "base/files/file_path.h"
@@ -27,14 +27,6 @@ namespace ash {
 namespace {
 
 constexpr int kPixelMaxDeviation = 1;
-
-gfx::ImageSkia CreateTestImage(int width, int height) {
-  SkBitmap bitmap;
-  bitmap.allocN32Pixels(width, height);
-  bitmap.eraseColor(SK_ColorGREEN);
-  gfx::ImageSkia image = gfx::ImageSkia::CreateFrom1xBitmap(bitmap);
-  return image;
-}
 
 class ResizeAndSaveWallpaperTest : public ::testing::Test {
  protected:
@@ -59,103 +51,105 @@ class ResizeAndSaveWallpaperTest : public ::testing::Test {
   }
 
   base::test::TaskEnvironment task_environment_;
-  InProcessImageDecoder decoder_;
+  InProcessDataDecoder decoder_;
   base::ScopedTempDir scoped_temp_dir_;
 };
 
 TEST_F(ResizeAndSaveWallpaperTest, CenterCroppedNoResizing) {
   ASSERT_TRUE(ResizeAndSaveWallpaper(
-      CreateTestImage(400, 200), CreateFilePath("cached_wallpaper"),
+      gfx::test::CreateImageSkia(400, 200), CreateFilePath("cached_wallpaper"),
       WALLPAPER_LAYOUT_CENTER_CROPPED, 400, 200));
   EXPECT_TRUE(gfx::test::AreImagesClose(
       gfx::Image(DecodeImageFile("cached_wallpaper")),
-      gfx::Image(CreateTestImage(400, 200)), kPixelMaxDeviation));
+      gfx::test::CreateImage(400, 200), kPixelMaxDeviation));
 }
 
 TEST_F(ResizeAndSaveWallpaperTest, CenterCroppedScaledDownSameAspectRatio) {
   ASSERT_TRUE(ResizeAndSaveWallpaper(
-      CreateTestImage(400, 200), CreateFilePath("cached_wallpaper"),
+      gfx::test::CreateImageSkia(400, 200), CreateFilePath("cached_wallpaper"),
       WALLPAPER_LAYOUT_CENTER_CROPPED, 200, 100));
   EXPECT_TRUE(gfx::test::AreImagesClose(
       gfx::Image(DecodeImageFile("cached_wallpaper")),
-      gfx::Image(CreateTestImage(200, 100)), kPixelMaxDeviation));
+      gfx::test::CreateImage(200, 100), kPixelMaxDeviation));
 }
 
 TEST_F(ResizeAndSaveWallpaperTest, CenterCroppedLandscapeToPortrait) {
   ASSERT_TRUE(ResizeAndSaveWallpaper(
-      CreateTestImage(1000, 600), CreateFilePath("cached_wallpaper"),
+      gfx::test::CreateImageSkia(1000, 600), CreateFilePath("cached_wallpaper"),
       WALLPAPER_LAYOUT_CENTER_CROPPED, 150, 300));
   EXPECT_TRUE(gfx::test::AreImagesClose(
       gfx::Image(DecodeImageFile("cached_wallpaper")),
-      gfx::Image(CreateTestImage(500, 300)), kPixelMaxDeviation));
+      gfx::test::CreateImage(500, 300), kPixelMaxDeviation));
 }
 
 TEST_F(ResizeAndSaveWallpaperTest, CenterCroppedPortraitToLandscape) {
   ASSERT_TRUE(ResizeAndSaveWallpaper(
-      CreateTestImage(600, 1000), CreateFilePath("cached_wallpaper"),
+      gfx::test::CreateImageSkia(600, 1000), CreateFilePath("cached_wallpaper"),
       WALLPAPER_LAYOUT_CENTER_CROPPED, 300, 150));
   EXPECT_TRUE(gfx::test::AreImagesClose(
       gfx::Image(DecodeImageFile("cached_wallpaper")),
-      gfx::Image(CreateTestImage(300, 500)), kPixelMaxDeviation));
+      gfx::test::CreateImage(300, 500), kPixelMaxDeviation));
 }
 
 TEST_F(ResizeAndSaveWallpaperTest, CenterCroppedImageSmallerThanPreferred) {
   EXPECT_FALSE(ResizeAndSaveWallpaper(
-      CreateTestImage(400, 200), CreateFilePath("cached_wallpaper"),
+      gfx::test::CreateImageSkia(400, 200), CreateFilePath("cached_wallpaper"),
       WALLPAPER_LAYOUT_CENTER_CROPPED, 1000, 500));
   EXPECT_FALSE(base::PathExists(CreateFilePath("cached_wallpaper")));
 }
 
 TEST_F(ResizeAndSaveWallpaperTest, StretchLayout) {
-  ASSERT_TRUE(ResizeAndSaveWallpaper(CreateTestImage(400, 200),
+  ASSERT_TRUE(ResizeAndSaveWallpaper(gfx::test::CreateImageSkia(400, 200),
                                      CreateFilePath("cached_wallpaper"),
                                      WALLPAPER_LAYOUT_STRETCH, 100, 150));
   EXPECT_TRUE(gfx::test::AreImagesClose(
       gfx::Image(DecodeImageFile("cached_wallpaper")),
-      gfx::Image(CreateTestImage(100, 150)), kPixelMaxDeviation));
+      gfx::test::CreateImage(100, 150), kPixelMaxDeviation));
 }
 
 TEST_F(ResizeAndSaveWallpaperTest, TileLayout) {
-  ASSERT_TRUE(ResizeAndSaveWallpaper(CreateTestImage(100, 100),
+  ASSERT_TRUE(ResizeAndSaveWallpaper(gfx::test::CreateImageSkia(/*size=*/100),
                                      CreateFilePath("cached_wallpaper"),
                                      WALLPAPER_LAYOUT_TILE, 50, 25));
   EXPECT_TRUE(gfx::test::AreImagesClose(
       gfx::Image(DecodeImageFile("cached_wallpaper")),
-      gfx::Image(CreateTestImage(100, 100)), kPixelMaxDeviation));
+      gfx::test::CreateImage(/*size=*/100), kPixelMaxDeviation));
 }
 
 TEST_F(ResizeAndSaveWallpaperTest, CenterLayout) {
-  EXPECT_FALSE(ResizeAndSaveWallpaper(CreateTestImage(400, 200),
+  EXPECT_FALSE(ResizeAndSaveWallpaper(gfx::test::CreateImageSkia(400, 200),
                                       CreateFilePath("cached_wallpaper"),
                                       WALLPAPER_LAYOUT_CENTER, 400, 200));
   EXPECT_FALSE(base::PathExists(CreateFilePath("cached_wallpaper")));
 }
 
 TEST_F(ResizeAndSaveWallpaperTest, DifferentWallpapers) {
-  ASSERT_TRUE(ResizeAndSaveWallpaper(
-      CreateTestImage(400, 200), CreateFilePath("cached_wallpaper_1"),
-      WALLPAPER_LAYOUT_CENTER_CROPPED, 400, 200));
-  ASSERT_TRUE(ResizeAndSaveWallpaper(
-      CreateTestImage(600, 300), CreateFilePath("cached_wallpaper_2"),
-      WALLPAPER_LAYOUT_CENTER_CROPPED, 600, 300));
+  ASSERT_TRUE(ResizeAndSaveWallpaper(gfx::test::CreateImageSkia(400, 200),
+                                     CreateFilePath("cached_wallpaper_1"),
+                                     WALLPAPER_LAYOUT_CENTER_CROPPED, 400,
+                                     200));
+  ASSERT_TRUE(ResizeAndSaveWallpaper(gfx::test::CreateImageSkia(600, 300),
+                                     CreateFilePath("cached_wallpaper_2"),
+                                     WALLPAPER_LAYOUT_CENTER_CROPPED, 600,
+                                     300));
   EXPECT_TRUE(gfx::test::AreImagesClose(
       gfx::Image(DecodeImageFile("cached_wallpaper_1")),
-      gfx::Image(CreateTestImage(400, 200)), kPixelMaxDeviation));
+      gfx::test::CreateImage(400, 200), kPixelMaxDeviation));
   EXPECT_TRUE(gfx::test::AreImagesClose(
       gfx::Image(DecodeImageFile("cached_wallpaper_2")),
-      gfx::Image(CreateTestImage(600, 300)), kPixelMaxDeviation));
+      gfx::test::CreateImage(600, 300), kPixelMaxDeviation));
 }
 
 TEST_F(ResizeAndSaveWallpaperTest, OverwritesExistingWallpaper) {
   ASSERT_TRUE(ResizeAndSaveWallpaper(
-      CreateTestImage(400, 200), CreateFilePath("cached_wallpaper"),
+      gfx::test::CreateImageSkia(400, 200), CreateFilePath("cached_wallpaper"),
       WALLPAPER_LAYOUT_CENTER_CROPPED, 400, 200));
   ASSERT_TRUE(ResizeAndSaveWallpaper(
-      CreateTestImage(600, 300), CreateFilePath("cached_wallpaper"),
+      gfx::test::CreateImageSkia(600, 300), CreateFilePath("cached_wallpaper"),
       WALLPAPER_LAYOUT_CENTER_CROPPED, 600, 300));
   EXPECT_TRUE(gfx::test::AreImagesClose(
       gfx::Image(DecodeImageFile("cached_wallpaper")),
-      gfx::Image(CreateTestImage(600, 300)), kPixelMaxDeviation));
+      gfx::test::CreateImage(600, 300), kPixelMaxDeviation));
 }
 
 }  // namespace

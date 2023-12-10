@@ -144,11 +144,11 @@ ListIdentifier GetUrlBillingId() {
 }
 
 ListIdentifier GetUrlCsdDownloadAllowlistId() {
-  return ListIdentifier(GetCurrentPlatformType(), URL, CSD_DOWNLOAD_WHITELIST);
+  return ListIdentifier(GetCurrentPlatformType(), URL, CSD_DOWNLOAD_ALLOWLIST);
 }
 
 ListIdentifier GetUrlCsdAllowlistId() {
-  return ListIdentifier(GetCurrentPlatformType(), URL, CSD_WHITELIST);
+  return ListIdentifier(GetCurrentPlatformType(), URL, CSD_ALLOWLIST);
 }
 
 ListIdentifier GetUrlHighConfidenceAllowlistId() {

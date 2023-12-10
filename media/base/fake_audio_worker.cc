@@ -17,6 +17,7 @@
 #include "base/thread_annotations.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
+#include "base/trace_event/trace_event.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/audio_timestamp_helper.h"
 
@@ -152,6 +153,7 @@ void FakeAudioWorker::Worker::DoCancel() {
 }
 
 void FakeAudioWorker::Worker::DoRead() {
+  TRACE_EVENT_BEGIN0(TRACE_DISABLED_BY_DEFAULT("audio"), "Worker::DoRead");
   DCHECK(worker_task_runner_->RunsTasksInCurrentSequence());
 
   const base::TimeTicks read_time =
@@ -186,10 +188,17 @@ void FakeAudioWorker::Worker::DoRead() {
                                             frames_elapsed_, sample_rate_);
   }
 
+  TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("audio"), "Worker post",
+               "next_read_time",
+               (next_read_time - base::TimeTicks()).InMilliseconds());
   worker_task_runner_->PostDelayedTaskAt(base::subtle::PostDelayedTaskPassKey(),
                                          FROM_HERE, worker_task_cb_.callback(),
                                          next_read_time,
                                          base::subtle::DelayPolicy::kPrecise);
+  TRACE_EVENT_END2(TRACE_DISABLED_BY_DEFAULT("audio"), "Worker::DoRead",
+                   "read_time",
+                   (read_time - base::TimeTicks()).InMilliseconds(), "now",
+                   (now - base::TimeTicks()).InMilliseconds());
 }
 
 }  // namespace media

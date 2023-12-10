@@ -87,6 +87,7 @@
 <translation id="4195557071150719219">‏הצגת הכרטיסיות האחרונות ב-Chromium</translation>
 <translation id="4408912345039114853">‏הפעלת 'טיימר לדיווח על מצב מסוכן' ב-Chromium</translation>
 <translation id="4432744876818348753">‏כדי להפיק את המרב מ-Chromium, עליך להיכנס לחשבון.</translation>
+<translation id="4498832288620833153">‏הוספה של כתובות ה-URL שהוזנו לרשימת הקריאה ב-Chromium.</translation>
 <translation id="452436063477828504">‏כדאי לוודא שתמיד תהיה לך אפשרות להשתמש בנתוני Chromium בחשבון Google שלך</translation>
 <translation id="4555020257205549924">‏כשהתכונה הזו פועלת, Chromium יציע לתרגם באמצעות Google Translate דפים שנכתבו בשפות אחרות‏. <ph name="BEGIN_LINK" />למידע נוסף<ph name="END_LINK" /></translation>
 <translation id="4576283463017113841">‏פתיחת דף ההגדרות של אמצעי תשלום ב-Chromium.</translation>
@@ -107,6 +108,7 @@
 <translation id="5048795749726991615">‏אפשר להשתמש ב-Chromium למילוי אוטומטי כדי לגשת בקלות לסיסמאות השמורות שלך באפליקציות אחרות</translation>
 <translation id="5076601183701536878">‏ניקוי נתוני הגלישה ב-Chromium</translation>
 <translation id="5131565040785979529">‏הארגון שלך, <ph name="DOMAIN" />, מנהל את החשבון שנכנסת אליו ואת אופן השימוש ב-Chromium.</translation>
+<translation id="5146749061471423558">‏הוספת סימניות אל Chromium</translation>
 <translation id="5171868502429358653">‏כניסה אל Chromium</translation>
 <translation id="5213683223491576284">‏ייפתח שירות מנהל הסיסמאות ב-Chromium.</translation>
 <translation id="5224391634244552924">‏אין סיסמאות שמורות. Chromium יכול לבדוק את הסיסמאות שלך רק אם שמרת אותן.</translation>
@@ -114,6 +116,7 @@
 
         כדאי לחכות כמה דקות לפני היציאה מהחשבון. אם תתבצע יציאה מהחשבון, הנתונים האלה יימחקו.</translation>
 <translation id="5308226104666789935">‏Chromium לא יכול לחפש עדכונים</translation>
+<translation id="5311557153294205270">‏הוספה של כתובות ה-URL שהוזנו לסימניות ב-Chromium.</translation>
 <translation id="5396916991083608703">‏להגדיר את Chromium כדפדפן ברירת המחדל?</translation>
 <translation id="5453478652154926037">‏Chromium לא יכול לבדוק את הסיסמאות שלך.</translation>
 <translation id="5521125884468363740">‏כדי לראות את הכרטיסיות שלך מכל מקום שבו פתחת את Chromium יש להיכנס לחשבון ולהפעיל את הסנכרון</translation>
@@ -165,7 +168,6 @@
 <translation id="6911341667534646387">‏המשך השימוש בנתוני Chromium בחשבון Google שלך</translation>
 <translation id="7006920032187763988">‏יש לך אפשרות להשתמש בסיסמאות ששמרת במנהל הסיסמאות באפליקציות אחרות ב-iPad.</translation>
 <translation id="7018284295775193585">‏לא ניתן לעדכן את Chromium</translation>
-<translation id="7025471822960602362">‏מעקב אחר חבילות שזוהו ב-Chromium</translation>
 <translation id="7045244423563602563">‏אפשר להתאים אישית את Chromium בדרך שנוחה לך</translation>
 <translation id="7055269218854630176">‏הארגון שלך, <ph name="DOMAIN" />, מנהל את החשבון שבחרת להיכנס אליו ואת אופן השימוש ב-Chromium. לאדמין יש אפשרות להגדיר תכונות מסוימות או להגביל אותן.</translation>
 <translation id="7099326575020694068">‏Chromium לא יכול להשתמש במצלמה במצב תצוגה מפוצלת</translation>
@@ -195,6 +197,7 @@
 <translation id="7928628054454574139">‏Chromium ייפתח בכל פעם שתתבצע הקשה על קישור באפליקציות אחרות</translation>
 <translation id="7931842119211730154">‏כרטיסיות מצב אנונימי יינעלו כש-Chromium ייסגר</translation>
 <translation id="7934404985878918282">‏הצגה של רשימת הקריאה ב-Chromium</translation>
+<translation id="7971753607796745700">‏הוספת פריט מרשימת הקריאה ל-Chromium</translation>
 <translation id="7980860476903281594">‏המיקום שלך ישותף על ידי Chromium עם אתרים שיאושרו על ידך.</translation>
 <translation id="7995166854192397899">‏ההצעות מבוססות על פעילות הגלישה במכשירים האחרים שלך. כדי לקבל הצעות, צריך להיכנס ל-Chromium בכל המכשירים.</translation>
 <translation id="800195749539500647">‏איך ליהנות מהמיטב של Chromium</translation>

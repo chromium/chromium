@@ -25,6 +25,7 @@ extern const char kParamOAuthToken[];
 extern const char kParamPlatform[];
 extern const char kParamRequest[];
 extern const char kParamRetry[];
+extern const char kParamProfileID[];
 
 // Policy constants used in authorization header.
 extern const char kAuthHeader[];

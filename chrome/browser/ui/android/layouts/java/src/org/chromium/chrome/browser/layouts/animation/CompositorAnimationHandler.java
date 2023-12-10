@@ -60,13 +60,14 @@ public class CompositorAnimationHandler {
         // reset the value here. This prevents gaps in animations from breaking timing.
         if (getActiveAnimationCount() <= 0) mLastUpdateTimeMs = System.currentTimeMillis();
 
-        animator.addListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(Animator a) {
-                mAnimators.remove(animator);
-                animator.removeListener(this);
-            }
-        });
+        animator.addListener(
+                new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator a) {
+                        mAnimators.remove(animator);
+                        animator.removeListener(this);
+                    }
+                });
         mAnimators.add(animator);
 
         if (!mWasUpdateRequestedForAnimationStart) {
@@ -117,9 +118,7 @@ public class CompositorAnimationHandler {
         return mAnimators.isEmpty();
     }
 
-    /**
-     * Clean up this handler.
-     */
+    /** Clean up this handler. */
     public final void destroy() {
         mAnimators.clear();
     }

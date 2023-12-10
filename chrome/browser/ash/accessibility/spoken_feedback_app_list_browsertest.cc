@@ -784,9 +784,6 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackAppListTest,
 }
 
 IN_PROC_BROWSER_TEST_P(SpokenFeedbackAppListSearchTest, LauncherSearch) {
-  // Disable search notifier to simplify the test.
-  AppListTestApi().DisableSearchNotifier(true);
-
   EnableChromeVox();
   ShowAppList();
 
@@ -991,35 +988,6 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackAppListSearchTest, VocalizeResultCount) {
   sm_.Replay();
 }
 
-IN_PROC_BROWSER_TEST_P(SpokenFeedbackAppListSearchTest,
-                       SearchNotifierAnnouncement) {
-  EnableChromeVox();
-  ShowAppList();
-
-  sm_.ExpectSpeechPattern("Search your *");
-  sm_.ExpectSpeech("Edit text");
-
-  sm_.Call([this]() {
-    apps_provider_->set_best_match_count(2);
-    apps_provider_->set_count(3);
-    web_provider_->set_count(4);
-    SendKeyPress(ui::VKEY_G);
-  });
-
-  // Announce that there is a image search notifier.
-  sm_.ExpectSpeech("G");
-  sm_.ExpectSpeech("Displaying 8 results for g");
-  sm_.ExpectSpeech("Find your images by the content");
-  sm_.ExpectSpeech("Press shift plus tab to learn more");
-
-  // Verify the notifier announcement on focus.
-  sm_.Call([this]() { SendKeyPressWithShift(ui::VKEY_TAB); });
-  sm_.ExpectSpeech("Continue");
-  sm_.ExpectSpeechPattern("Try searching *");
-
-  sm_.Replay();
-}
-
 IN_PROC_BROWSER_TEST_P(SpokenFeedbackAppListSearchTest, SearchCategoryFilter) {
   EnableChromeVox();
   ShowAppList();
@@ -1036,11 +1004,6 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackAppListSearchTest, SearchCategoryFilter) {
 
   sm_.ExpectSpeech("G");
   sm_.ExpectSpeech("Displaying 8 results for g");
-
-  // Move focus to the search notifier.
-  sm_.Call([this]() { SendKeyPressWithShift(ui::VKEY_TAB); });
-  sm_.ExpectSpeech("Continue");
-  sm_.ExpectSpeechPattern("Try searching *");
 
   // Move focus to the close button.
   sm_.Call([this]() { SendKeyPress(ui::VKEY_UP); });
@@ -1071,6 +1034,7 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackAppListSearchTest, SearchCategoryFilter) {
   sm_.ExpectSpeech("Not checked");
   sm_.ExpectSpeech("Websites including pages you've visited and open pages");
 
+  sm_.Call([this]() { SendKeyPress(ui::VKEY_ESCAPE); });
   sm_.Replay();
 }
 

@@ -4,6 +4,7 @@
 
 #include "ash/app_list/app_list_presenter_impl.h"
 
+#include <optional>
 #include <utility>
 
 #include "ash/app_list/app_list_controller_impl.h"
@@ -31,7 +32,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_enums.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/client/focus_client.h"
 #include "ui/aura/window.h"
 #include "ui/compositor/animation_throughput_reporter.h"
@@ -188,7 +188,7 @@ aura::Window* AppListPresenterImpl::GetWindow() const {
 void AppListPresenterImpl::Show(AppListViewState preferred_state,
                                 int64_t display_id,
                                 base::TimeTicks event_time_stamp,
-                                absl::optional<AppListShowSource> show_source) {
+                                std::optional<AppListShowSource> show_source) {
   if (is_target_visibility_show_)
     return;
 
@@ -278,7 +278,7 @@ void AppListPresenterImpl::Show(AppListViewState preferred_state,
   auto* animation_observer = new FullscreenLauncherAnimationObserver(
       layer, std::move(animation_complete_callback));
   UpdateScaleAndOpacityForHomeLauncher(
-      1.0f, 1.0f, absl::nullopt,
+      1.0f, 1.0f, std::nullopt,
       base::BindRepeating(&UpdateTabletModeTransitionAnimationSettings,
                           animation_observer));
 
@@ -363,7 +363,7 @@ void AppListPresenterImpl::Dismiss(base::TimeTicks event_time_stamp) {
     // run dismiss animation smoothly from the aborted scale/opacity points.
     layer->GetAnimator()->AbortAllAnimations();
     UpdateScaleAndOpacityForHomeLauncher(
-        kFullscreenLauncherFadeAnimationScale, 0.0f, absl::nullopt,
+        kFullscreenLauncherFadeAnimationScale, 0.0f, std::nullopt,
         base::BindRepeating(&UpdateTabletModeTransitionAnimationSettings,
                             animation_observer));
     view_->SetState(AppListViewState::kClosed);
@@ -386,7 +386,7 @@ bool AppListPresenterImpl::HandleCloseOpenFolder() {
 }
 
 void AppListPresenterImpl::UpdateForNewSortingOrder(
-    const absl::optional<AppListSortOrder>& new_order,
+    const std::optional<AppListSortOrder>& new_order,
     bool animate,
     base::OnceClosure update_position_closure) {
   if (!view_)
@@ -444,7 +444,7 @@ bool AppListPresenterImpl::GetTargetVisibility() const {
 void AppListPresenterImpl::UpdateScaleAndOpacityForHomeLauncher(
     float scale,
     float opacity,
-    absl::optional<TabletModeAnimationTransition> transition,
+    std::optional<TabletModeAnimationTransition> transition,
     UpdateHomeLauncherAnimationSettingsCallback callback) {
   // Exiting from overview in clamshell mode should not affect the hidden
   // fullscreen launcher.
@@ -460,7 +460,7 @@ void AppListPresenterImpl::UpdateScaleAndOpacityForHomeLauncher(
     view_->ResetTransitionMetricsReporter();
   }
 
-  absl::optional<ui::ScopedLayerAnimationSettings> settings;
+  std::optional<ui::ScopedLayerAnimationSettings> settings;
   if (!callback.is_null()) {
     settings.emplace(layer->GetAnimator());
     callback.Run(&settings.value());
@@ -471,7 +471,7 @@ void AppListPresenterImpl::UpdateScaleAndOpacityForHomeLauncher(
   // reported for transform animation only.
   layer->SetOpacity(opacity);
 
-  absl::optional<ui::AnimationThroughputReporter> reporter;
+  std::optional<ui::AnimationThroughputReporter> reporter;
   if (settings.has_value() && transition.has_value()) {
     view_->OnTabletModeAnimationTransitionNotified(*transition);
     reporter.emplace(settings->GetAnimator(),

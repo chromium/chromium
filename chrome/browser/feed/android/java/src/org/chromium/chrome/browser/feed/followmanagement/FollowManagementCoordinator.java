@@ -35,13 +35,16 @@ public class FollowManagementCoordinator {
 
         SimpleRecyclerViewAdapter adapter = new SimpleRecyclerViewAdapter(listItems);
         // Register types for both the full and empty states.
-        adapter.registerType(FollowManagementItemProperties.DEFAULT_ITEM_TYPE,
+        adapter.registerType(
+                FollowManagementItemProperties.DEFAULT_ITEM_TYPE,
                 new LayoutViewBuilder<FollowManagementItemView>(R.layout.follow_management_item),
                 FollowManagementItemViewBinder::bind);
-        adapter.registerType(FollowManagementItemProperties.EMPTY_ITEM_TYPE,
+        adapter.registerType(
+                FollowManagementItemProperties.EMPTY_ITEM_TYPE,
                 new LayoutViewBuilder<LinearLayout>(R.layout.follow_management_empty_state),
                 (unusedModel, unusedView, unusedKey) -> {});
-        adapter.registerType(FollowManagementItemProperties.LOADING_ITEM_TYPE,
+        adapter.registerType(
+                FollowManagementItemProperties.LOADING_ITEM_TYPE,
                 new LayoutViewBuilder<LinearLayout>(R.layout.feed_spinner),
                 (unusedModel, unusedView, unusedKey) -> {});
 
@@ -53,8 +56,12 @@ public class FollowManagementCoordinator {
         recyclerView.setLayoutManager(manager);
         recyclerView.setAdapter(adapter);
 
-        mMediator = new FollowManagementMediator(
-                activity, listItems, new MediatorObserver(), WebFeedFaviconFetcher.createDefault());
+        mMediator =
+                new FollowManagementMediator(
+                        activity,
+                        listItems,
+                        new MediatorObserver(),
+                        WebFeedFaviconFetcher.createDefault());
     }
 
     public View getView() {
@@ -67,6 +74,7 @@ public class FollowManagementCoordinator {
             Toast.makeText(mActivity, R.string.feed_follow_no_connection_error, Toast.LENGTH_LONG)
                     .show();
         }
+
         @Override
         public void otherOperationError() {
             Toast.makeText(mActivity, R.string.feed_follow_unknown_error, Toast.LENGTH_LONG).show();

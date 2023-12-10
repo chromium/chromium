@@ -9,9 +9,9 @@
   <key>INIntentDefinitionNamespace</key>
   <string>Oi5136</string>
   <key>INIntentDefinitionSystemVersion</key>
-  <string>22G90</string>
+  <string>22G120</string>
   <key>INIntentDefinitionToolsBuildVersion</key>
-  <string>15A5195m</string>
+  <string>15A240d</string>
   <key>INIntentDefinitionToolsVersion</key>
   <string>15.0</string>
   <key>INIntents</key>
@@ -66,7 +66,7 @@
               <key>INIntentParameterPromptDialogCustom</key>
               <true/>
               <key>INIntentParameterPromptDialogFormatString</key>
-              <string>What URL?</string>
+              <string>What URL would you like to open in Chrome?</string>
               <key>INIntentParameterPromptDialogFormatStringID</key>
               <string>3PpdH5</string>
               <key>INIntentParameterPromptDialogType</key>
@@ -265,7 +265,7 @@
               <key>INIntentParameterPromptDialogCustom</key>
               <true/>
               <key>INIntentParameterPromptDialogFormatString</key>
-              <string>What URL?</string>
+              <string>What URL would you like to open in Chrome Incognito?</string>
               <key>INIntentParameterPromptDialogFormatStringID</key>
               <string>sNz7Cu</string>
               <key>INIntentParameterPromptDialogType</key>
@@ -306,6 +306,202 @@
       <string>Custom</string>
       <key>INIntentVerb</key>
       <string>Open</string>
+    </dict>
+    <dict>
+      <key>INIntentCategory</key>
+      <string>create</string>
+      <key>INIntentConfigurable</key>
+      <true/>
+      <key>INIntentDescriptionID</key>
+      <string>DMhhCH</string>
+      <key>INIntentEligibleForWidgets</key>
+      <true/>
+      <key>INIntentIneligibleForSuggestions</key>
+      <true/>
+      <key>INIntentInput</key>
+      <string>url</string>
+      <key>INIntentLastParameterTag</key>
+      <integer>3</integer>
+      <key>INIntentManagedParameterCombinations</key>
+      <dict>
+        <key>url</key>
+        <dict>
+          <key>INIntentParameterCombinationSupportsBackgroundExecution</key>
+          <true/>
+          <key>INIntentParameterCombinationTitle</key>
+          <string>Add ${url} to reading list</string>
+          <key>INIntentParameterCombinationTitleID</key>
+          <string>WT62lb</string>
+          <key>INIntentParameterCombinationUpdatesLinked</key>
+          <true/>
+        </dict>
+      </dict>
+      <key>INIntentName</key>
+      <string>AddReadingListItemToChrome</string>
+      <key>INIntentParameters</key>
+      <array>
+        <dict>
+          <key>INIntentParameterConfigurable</key>
+          <true/>
+          <key>INIntentParameterDisplayName</key>
+          <string>URL</string>
+          <key>INIntentParameterDisplayNameID</key>
+          <string>KLnTiq</string>
+          <key>INIntentParameterDisplayPriority</key>
+          <integer>1</integer>
+          <key>INIntentParameterName</key>
+          <string>url</string>
+          <key>INIntentParameterPromptDialogs</key>
+          <array>
+            <dict>
+              <key>INIntentParameterPromptDialogCustom</key>
+              <true/>
+              <key>INIntentParameterPromptDialogType</key>
+              <string>Configuration</string>
+            </dict>
+            <dict>
+              <key>INIntentParameterPromptDialogCustom</key>
+              <true/>
+              <key>INIntentParameterPromptDialogFormatString</key>
+              <string>What URL would you like to add to your reading list?</string>
+              <key>INIntentParameterPromptDialogFormatStringID</key>
+              <string>ujhmCA</string>
+              <key>INIntentParameterPromptDialogType</key>
+              <string>Primary</string>
+            </dict>
+          </array>
+          <key>INIntentParameterSupportsMultipleValues</key>
+          <true/>
+          <key>INIntentParameterSupportsResolution</key>
+          <true/>
+          <key>INIntentParameterTag</key>
+          <integer>3</integer>
+          <key>INIntentParameterType</key>
+          <string>URL</string>
+        </dict>
+      </array>
+      <key>INIntentResponse</key>
+      <dict>
+        <key>INIntentResponseCodes</key>
+        <array>
+          <dict>
+            <key>INIntentResponseCodeName</key>
+            <string>success</string>
+            <key>INIntentResponseCodeSuccess</key>
+            <true/>
+          </dict>
+          <dict>
+            <key>INIntentResponseCodeName</key>
+            <string>failure</string>
+          </dict>
+        </array>
+      </dict>
+      <key>INIntentTitle</key>
+      <string>Add Reading List Item to Chrome</string>
+      <key>INIntentTitleID</key>
+      <string>bdpqTT</string>
+      <key>INIntentType</key>
+      <string>Custom</string>
+      <key>INIntentVerb</key>
+      <string>Add</string>
+    </dict>
+    <dict>
+      <key>INIntentCategory</key>
+      <string>create</string>
+      <key>INIntentConfigurable</key>
+      <true/>
+      <key>INIntentDescriptionID</key>
+      <string>O3cebQ</string>
+      <key>INIntentEligibleForWidgets</key>
+      <true/>
+      <key>INIntentIneligibleForSuggestions</key>
+      <true/>
+      <key>INIntentInput</key>
+      <string>url</string>
+      <key>INIntentLastParameterTag</key>
+      <integer>7</integer>
+      <key>INIntentManagedParameterCombinations</key>
+      <dict>
+        <key>url</key>
+        <dict>
+          <key>INIntentParameterCombinationSupportsBackgroundExecution</key>
+          <true/>
+          <key>INIntentParameterCombinationTitle</key>
+          <string>Add ${url} to bookmarks</string>
+          <key>INIntentParameterCombinationTitleID</key>
+          <string>EbPDC3</string>
+          <key>INIntentParameterCombinationUpdatesLinked</key>
+          <true/>
+        </dict>
+      </dict>
+      <key>INIntentName</key>
+      <string>AddBookmarkToChrome</string>
+      <key>INIntentParameters</key>
+      <array>
+        <dict>
+          <key>INIntentParameterConfigurable</key>
+          <true/>
+          <key>INIntentParameterDisplayName</key>
+          <string>URL</string>
+          <key>INIntentParameterDisplayNameID</key>
+          <string>WNafUz</string>
+          <key>INIntentParameterDisplayPriority</key>
+          <integer>1</integer>
+          <key>INIntentParameterName</key>
+          <string>url</string>
+          <key>INIntentParameterPromptDialogs</key>
+          <array>
+            <dict>
+              <key>INIntentParameterPromptDialogCustom</key>
+              <true/>
+              <key>INIntentParameterPromptDialogType</key>
+              <string>Configuration</string>
+            </dict>
+            <dict>
+              <key>INIntentParameterPromptDialogCustom</key>
+              <true/>
+              <key>INIntentParameterPromptDialogFormatString</key>
+              <string>What URL would you like to bookmark?</string>
+              <key>INIntentParameterPromptDialogFormatStringID</key>
+              <string>o9kImZ</string>
+              <key>INIntentParameterPromptDialogType</key>
+              <string>Primary</string>
+            </dict>
+          </array>
+          <key>INIntentParameterSupportsMultipleValues</key>
+          <true/>
+          <key>INIntentParameterSupportsResolution</key>
+          <true/>
+          <key>INIntentParameterTag</key>
+          <integer>7</integer>
+          <key>INIntentParameterType</key>
+          <string>URL</string>
+        </dict>
+      </array>
+      <key>INIntentResponse</key>
+      <dict>
+        <key>INIntentResponseCodes</key>
+        <array>
+          <dict>
+            <key>INIntentResponseCodeName</key>
+            <string>success</string>
+            <key>INIntentResponseCodeSuccess</key>
+            <true/>
+          </dict>
+          <dict>
+            <key>INIntentResponseCodeName</key>
+            <string>failure</string>
+          </dict>
+        </array>
+      </dict>
+      <key>INIntentTitle</key>
+      <string>Add Bookmark to Chrome</string>
+      <key>INIntentTitleID</key>
+      <string>cOdzlF</string>
+      <key>INIntentType</key>
+      <string>Custom</string>
+      <key>INIntentVerb</key>
+      <string>Add</string>
     </dict>
     <dict>
       <key>INIntentCategory</key>

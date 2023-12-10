@@ -10,6 +10,7 @@
 
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/shell.h"
+#include "ash/wm/bounds_tracker/window_bounds_tracker.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/window_util.h"
 #include "base/containers/contains.h"
@@ -76,6 +77,10 @@ void HandleMoveActiveWindowBetweenDisplays() {
                               origin_display_id, display::CompareDisplayIds);
   int64_t target_display_id =
       itr == display_id_list.end() ? display_id_list[0] : *itr;
+
+  if (auto* window_bounds_tracker = Shell::Get()->window_bounds_tracker()) {
+    window_bounds_tracker->set_moving_window_between_displays(window);
+  }
   window_util::MoveWindowToDisplay(window, target_display_id);
   Shell::Get()->accessibility_controller()->TriggerAccessibilityAlert(
       AccessibilityAlert::WINDOW_MOVED_TO_ANOTHER_DISPLAY);

@@ -71,6 +71,13 @@ id<GREYMatcher> PasswordTextfieldForUsernameAndSites(NSString* username,
 id<GREYMatcher> DeleteButtonForUsernameAndSites(NSString* username,
                                                 NSString* sites);
 
+// Matcher for the Reauthentication Controller used for covered the UI until
+// Local Authentication is passed.
+id<GREYMatcher> ReauthenticationController();
+
+// Matcher for the TableView inside the Password Settings UI.
+id<GREYMatcher> PasswordSettingsTableView();
+
 // GREYElementInteraction* for the item on the password issues list
 // with the given `matcher`. It scrolls in `direction` if necessary to ensure
 // that the matched item is interactable.
@@ -91,6 +98,11 @@ GREYElementInteraction* GetInteractionForPasswordIssueEntry(
 void SavePasswordForm(NSString* password = kDefaultPassword,
                       NSString* username = kDefaultUsername,
                       NSString* origin = kDefaultSite);
+
+// Saves a password form in the account store.
+void SavePasswordFormToAccountStore(NSString* password = kDefaultPassword,
+                                    NSString* username = kDefaultUsername,
+                                    NSString* origin = kDefaultSite);
 
 // Saves a compromised password form in the store.
 void SaveCompromisedPasswordForm(NSString* password = kDefaultPassword,

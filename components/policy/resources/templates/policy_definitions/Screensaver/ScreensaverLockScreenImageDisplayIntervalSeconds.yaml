@@ -14,7 +14,6 @@ features:
   per_profile: true
 owners:
 - mpetrisor@google.com
-- eariassoto@google.com
 - imprivata-eng@google.com
 schema:
   minimum: 1

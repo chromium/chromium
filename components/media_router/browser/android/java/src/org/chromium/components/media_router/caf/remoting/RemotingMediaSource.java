@@ -22,9 +22,7 @@ import org.chromium.components.media_router.MediaSource;
 
 import java.io.UnsupportedEncodingException;
 
-/**
- * Abstracts parsing the Cast application id and other parameters from the source id.
- */
+/** Abstracts parsing the Cast application id and other parameters from the source id. */
 public class RemotingMediaSource implements MediaSource {
     private static final String TAG = "MediaRemoting";
 
@@ -39,19 +37,13 @@ public class RemotingMediaSource implements MediaSource {
     private static final String REMOTE_PLAYBACK_APP_ID_KEY =
             "org.chromium.content.browser.REMOTE_PLAYBACK_APP_ID";
 
-    /**
-     * The Cast application id.
-     */
+    /** The Cast application id. */
     private static String sApplicationId;
 
-    /**
-     * The original source URL that the {@link MediaSource} object was created from.
-     */
+    /** The original source URL that the {@link MediaSource} object was created from. */
     private final String mSourceId;
 
-    /**
-     * The URL to fling to the Cast device.
-     */
+    /** The URL to fling to the Cast device. */
     private final String mMediaUrl;
 
     /**
@@ -112,41 +104,38 @@ public class RemotingMediaSource implements MediaSource {
 
             try {
                 Context context = ContextUtils.getApplicationContext();
-                ApplicationInfo ai = context.getPackageManager().getApplicationInfo(
-                        context.getPackageName(), PackageManager.GET_META_DATA);
+                ApplicationInfo ai =
+                        context.getPackageManager()
+                                .getApplicationInfo(
+                                        context.getPackageName(), PackageManager.GET_META_DATA);
                 Bundle bundle = ai.metaData;
                 customAppId = bundle.getString(REMOTE_PLAYBACK_APP_ID_KEY);
             } catch (Exception e) {
                 // Should never happen, implies a corrupt AndroidManifest.
             }
 
-            sApplicationId = (customAppId != null && !customAppId.isEmpty())
-                    ? customAppId
-                    : CastMediaControlIntent.DEFAULT_MEDIA_RECEIVER_APPLICATION_ID;
+            sApplicationId =
+                    (customAppId != null && !customAppId.isEmpty())
+                            ? customAppId
+                            : CastMediaControlIntent.DEFAULT_MEDIA_RECEIVER_APPLICATION_ID;
         }
 
         return sApplicationId;
     }
 
-    /**
-     * @return the Cast application id corresponding to the source. Can be overridden downstream.
-     */
+    /** @return the Cast application id corresponding to the source. Can be overridden downstream. */
     @Override
     public String getApplicationId() {
         return applicationId();
     }
 
-    /**
-     * @return the id identifying the media source
-     */
+    /** @return the id identifying the media source */
     @Override
     public String getSourceId() {
         return mSourceId;
     }
 
-    /**
-     * @return the media URL to fling to the Cast device.
-     */
+    /** @return the media URL to fling to the Cast device. */
     public String getMediaUrl() {
         return mMediaUrl;
     }

@@ -5,10 +5,11 @@
 #ifndef ASH_PUBLIC_CPP_APP_LIST_APP_LIST_CONTROLLER_H_
 #define ASH_PUBLIC_CPP_APP_LIST_APP_LIST_CONTROLLER_H_
 
+#include <optional>
+
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/ash_public_export.h"
 #include "base/functional/callback_forward.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window.h"
 
 namespace ash {
@@ -72,7 +73,7 @@ class ASH_PUBLIC_EXPORT AppListController {
   // Returns whether the AppList is visible on the provided display.
   // If |display_id| is null, returns whether an app list is visible on any
   // display.
-  virtual bool IsVisible(const absl::optional<int64_t>& display_id) = 0;
+  virtual bool IsVisible(const std::optional<int64_t>& display_id) = 0;
 
   // Returns whether the AppList is visible on any display.
   virtual bool IsVisible() = 0;
@@ -85,7 +86,7 @@ class ASH_PUBLIC_EXPORT AppListController {
   // the animation to fade out the current grid completes. The closure is set
   // iff `animate` is true.
   virtual void UpdateAppListWithNewTemporarySortOrder(
-      const absl::optional<AppListSortOrder>& new_order,
+      const std::optional<AppListSortOrder>& new_order,
       bool animate,
       base::OnceClosure update_position_closure) = 0;
 

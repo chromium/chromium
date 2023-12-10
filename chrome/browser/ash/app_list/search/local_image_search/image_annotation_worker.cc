@@ -17,6 +17,7 @@
 #include "base/files/file_path_watcher.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
@@ -35,6 +36,24 @@ constexpr int kMaxFileSizeBytes = 2e+7;    // ~ 20MiB
 constexpr int kConfidenceThreshold = 128;  // 50% of 255 (max of ICA)
 constexpr int kOcrMinWordLength = 3;
 constexpr base::TimeDelta kInitialIndexingDelay = base::Seconds(1);
+constexpr base::TimeDelta kRetryDelay = base::Seconds(1);
+constexpr base::TimeDelta kMaxImageProcessingTime = base::Minutes(2);
+
+// These values persist to logs. Entries should not be renumbered and numeric
+// values should never be reused.
+enum class Status {
+  kOk = 0,
+  kFailedToInitializeIca = 1,
+  kFailedToInitializeOcr = 2,
+  kFailedToDecodeImage = 3,
+  kImageProcessingTimeOut = 4,
+  kMaxValue = kImageProcessingTimeOut,
+};
+
+void LogStatusUma(Status status) {
+  base::UmaHistogramEnumeration(
+      "Apps.AppList.AnnotationStorage.ImageAnnotationWorker.Status", status);
+}
 
 // Exclude animated WebPs.
 bool IsStaticWebp(const base::FilePath& path) {
@@ -189,18 +208,34 @@ void ImageAnnotationWorker::Initialize(AnnotationStorage* annotation_storage) {
 void ImageAnnotationWorker::OnDlcInstalled() {
   bool is_ica_dlc_installed = image_content_annotator_.IsDlcInitialized();
   bool is_ocr_dlc_installed = optical_character_recognizer_.IsServiceReady();
+
   if ((use_ocr_ && !is_ocr_dlc_installed) ||
       (use_ica_ && !is_ica_dlc_installed)) {
     DVLOG(1) << "DLCs are not ready. OCR: " << is_ocr_dlc_installed << "/"
              << use_ocr_ << " ICA: " << is_ica_dlc_installed << "/" << use_ica_
              << ". Waiting.";
+
+    if (num_retries_left_ > 0) {
+      num_retries_left_ -= 1;
+    } else {
+      if (use_ica_ && !is_ica_dlc_installed) {
+        LOG(ERROR) << "Failed to initialize ICA.";
+        LogStatusUma(Status::kFailedToInitializeIca);
+      }
+      if (use_ocr_ && !is_ocr_dlc_installed) {
+        LOG(ERROR) << "Failed to initialize OCR.";
+        LogStatusUma(Status::kFailedToInitializeOcr);
+      }
+      return;
+    }
+
     // It is expected to be ready on a first try. Also, it is not a time
     // sensitive task, so we do not need to implement a full-fledged observer.
     base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&ImageAnnotationWorker::OnDlcInstalled,
                        weak_ptr_factory_.GetWeakPtr()),
-        base::Seconds(1));
+        kRetryDelay);
     return;
   }
 
@@ -217,6 +252,7 @@ void ImageAnnotationWorker::OnDlcInstalled() {
         on_file_change_callback_);
   }
 
+  LogStatusUma(Status::kOk);
   OnFileChange(root_path_, /*error=*/false);
   FindAndRemoveDeletedFiles(annotation_storage_->GetAllFiles());
 }
@@ -353,7 +389,19 @@ void ImageAnnotationWorker::ProcessNextImage() {
 void ImageAnnotationWorker::OnDecodeImageFile(
     ImageInfo image_info,
     const gfx::ImageSkia& image_skia) {
-  DVLOG(1) << "OnDecodeImageFile. Is decoded " << !image_skia.size().IsEmpty();
+  DVLOG(1) << "OnDecodeImageFile.";
+  if (image_skia.size().IsEmpty()) {
+    LOG(ERROR) << "Failed to decode image.";
+    LogStatusUma(Status::kFailedToDecodeImage);
+    files_to_process_.pop();
+    return ProcessNextItem();
+  }
+
+  timeout_timer_.Start(
+      FROM_HERE, kMaxImageProcessingTime,
+      base::BindOnce(&ImageAnnotationWorker::OnImageProcessTimeout,
+                     weak_ptr_factory_.GetWeakPtr()));
+
   if (use_ocr_ && use_ica_) {
     optical_character_recognizer_.ReadImage(
         *image_skia.bitmap(),
@@ -407,6 +455,7 @@ void ImageAnnotationWorker::OnPerformOcr(
 
   // OCR is the first in the pipeline.
   if (!use_ica_) {
+    timeout_timer_.Stop();
     files_to_process_.pop();
     ProcessNextItem();
   }
@@ -435,6 +484,7 @@ void ImageAnnotationWorker::OnPerformIca(
   }
 
   // ICA is the last in the pipeline.
+  timeout_timer_.Stop();
   files_to_process_.pop();
   ProcessNextItem();
 }
@@ -463,6 +513,13 @@ void ImageAnnotationWorker::FindAndRemoveDeletedFiles(
                           [&](auto path) { annotation_storage->Remove(path); });
           },
           annotation_storage_));
+}
+
+void ImageAnnotationWorker::OnImageProcessTimeout() {
+  LOG(ERROR) << "Annotators timed out.";
+  LogStatusUma(Status::kImageProcessingTimeOut);
+  files_to_process_.pop();
+  ProcessNextItem();
 }
 
 void ImageAnnotationWorker::RunFakeImageAnnotator(ImageInfo image_info) {

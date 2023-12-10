@@ -32,8 +32,8 @@ TEST(SerializeRequestJSON, Serialize) {
 
   {
     auto pref = std::make_unique<TestingPrefServiceSimple>();
-    PersistedData::RegisterPrefs(pref->registry());
-    auto metadata = std::make_unique<PersistedData>(pref.get(), nullptr);
+    RegisterPersistedDataPrefs(pref->registry());
+    auto metadata = CreatePersistedData(pref.get(), nullptr);
     std::vector<std::string> items = {"id1"};
     test::SetDateLastData(metadata.get(), items, 1234);
 

@@ -13,14 +13,18 @@
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/shelf_model_observer.h"
-#include "ash/public/cpp/tablet_mode_observer.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_update.h"
+#include "ui/display/display_observer.h"
 
 class PrefChangeRegistrar;
 class PrefRegistrySimple;
+
+namespace display {
+enum class TabletState;
+}  // namespace display
 
 namespace ash {
 
@@ -29,7 +33,7 @@ class LauncherNudgeController;
 // ShelfController owns the ShelfModel and manages shelf preferences.
 // ChromeShelfController and related classes largely manage the ShelfModel.
 class ASH_EXPORT ShelfController : public SessionObserver,
-                                   public TabletModeObserver,
+                                   public display::DisplayObserver,
                                    public WindowTreeHostManager::Observer,
                                    public apps::AppRegistryCache::Observer,
                                    public ShelfModelObserver {
@@ -60,9 +64,8 @@ class ASH_EXPORT ShelfController : public SessionObserver,
   // SessionObserver:
   void OnActiveUserPrefServiceChanged(PrefService* pref_service) override;
 
-  // TabletModeObserver:
-  void OnTabletModeStarted() override;
-  void OnTabletModeEnded() override;
+  // display::DisplayObserver:
+  void OnDisplayTabletStateChanged(display::TabletState state) override;
 
   // WindowTreeHostManager::Observer:
   void OnDisplayConfigurationChanged() override;
@@ -86,7 +89,7 @@ class ASH_EXPORT ShelfController : public SessionObserver,
   std::unique_ptr<LauncherNudgeController> launcher_nudge_controller_;
 
   // Whether the pref for notification badging is enabled.
-  absl::optional<bool> notification_badging_pref_enabled_;
+  std::optional<bool> notification_badging_pref_enabled_;
 
   // Observes user profile prefs for the shelf.
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
@@ -99,6 +102,8 @@ class ASH_EXPORT ShelfController : public SessionObserver,
   base::ScopedObservation<apps::AppRegistryCache,
                           apps::AppRegistryCache::Observer>
       app_registry_cache_observer_{this};
+
+  display::ScopedDisplayObserver display_observer_{this};
 };
 
 }  // namespace ash

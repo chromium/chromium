@@ -45,7 +45,7 @@ void PostToggleProcessNodePriority(content::RenderProcessHost* rph) {
   PerformanceManager::CallOnGraph(
       FROM_HERE, base::BindLambdaForTesting([process_node]() {
         process_node->set_priority(
-            GetOppositePriority(process_node->priority()));
+            GetOppositePriority(process_node->GetPriority()));
       }));
 }
 

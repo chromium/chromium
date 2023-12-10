@@ -44,24 +44,39 @@ public class SecurePaymentConfirmationNoMatchingCredView {
      * @param responseCallback Invoked when users respond to the UI.
      * @param optOutCallback Invoked if the user elects to opt out.
      */
-    /* package */ SecurePaymentConfirmationNoMatchingCredView(Context context, String origin,
-            String rpId, boolean showOptOut, Runnable responseCallback, Runnable optOutCallback) {
-        mContentView = (RelativeLayout) LayoutInflater.from(context).inflate(
-                R.layout.secure_payment_confirmation_no_credential_match_ui, null);
+    /* package */ SecurePaymentConfirmationNoMatchingCredView(
+            Context context,
+            String origin,
+            String rpId,
+            boolean showOptOut,
+            Runnable responseCallback,
+            Runnable optOutCallback) {
+        mContentView =
+                (RelativeLayout)
+                        LayoutInflater.from(context)
+                                .inflate(
+                                        R.layout.secure_payment_confirmation_no_credential_match_ui,
+                                        null);
         mScrollView = (ScrollView) mContentView.findViewById(R.id.scroll_view);
 
         mHeaderImage =
                 (ImageView) mContentView.findViewById(R.id.secure_payment_confirmation_image);
-        mDescription = (TextView) mContentView.findViewById(
-                R.id.secure_payment_confirmation_nocredmatch_description);
+        mDescription =
+                (TextView)
+                        mContentView.findViewById(
+                                R.id.secure_payment_confirmation_nocredmatch_description);
         mOkButton = (Button) mContentView.findViewById(R.id.ok_button);
-        mOptOutText = (TextViewWithClickableSpans) mContentView.findViewById(
-                R.id.secure_payment_confirmation_nocredmatch_opt_out);
+        mOptOutText =
+                (TextViewWithClickableSpans)
+                        mContentView.findViewById(
+                                R.id.secure_payment_confirmation_nocredmatch_opt_out);
         mHeaderImage.setImageResource(R.drawable.save_card);
 
-        String formattedDescription = String.format(
-                context.getResources().getString(R.string.no_matching_credential_description),
-                origin);
+        String formattedDescription =
+                String.format(
+                        context.getResources()
+                                .getString(R.string.no_matching_credential_description),
+                        origin);
         mDescription.setText(formattedDescription);
         mOptOutText.setText(getOptOutText(context, rpId, optOutCallback));
         mOptOutText.setMovementMethod(LinkMovementMethod.getInstance());
@@ -87,11 +102,18 @@ public class SecurePaymentConfirmationNoMatchingCredView {
     }
 
     private SpannableString getOptOutText(Context context, String rpId, Runnable optOutCallback) {
-        String deviceString = context.getResources().getString(isTablet(context)
-                        ? R.string.secure_payment_confirmation_this_tablet_label
-                        : R.string.secure_payment_confirmation_this_phone_label);
-        String optOut = context.getResources().getString(
-                R.string.secure_payment_confirmation_opt_out_label, deviceString, rpId);
+        String deviceString =
+                context.getResources()
+                        .getString(
+                                isTablet(context)
+                                        ? R.string.secure_payment_confirmation_this_tablet_label
+                                        : R.string.secure_payment_confirmation_this_phone_label);
+        String optOut =
+                context.getResources()
+                        .getString(
+                                R.string.secure_payment_confirmation_opt_out_label,
+                                deviceString,
+                                rpId);
         NoUnderlineClickableSpan requestToDeleteSpan =
                 new NoUnderlineClickableSpan(context, (widget) -> optOutCallback.run());
         return SpanApplier.applySpans(

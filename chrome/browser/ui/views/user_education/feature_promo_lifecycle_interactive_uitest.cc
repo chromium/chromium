@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/containers/contains.h"
@@ -26,13 +27,13 @@
 #include "components/user_education/common/feature_promo_controller.h"
 #include "components/user_education/common/feature_promo_specification.h"
 #include "components/user_education/common/feature_promo_storage_service.h"
+#include "components/user_education/common/user_education_features.h"
 #include "components/user_education/views/help_bubble_factory_views.h"
 #include "components/user_education/views/help_bubble_view.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
@@ -44,13 +45,13 @@ using ::testing::Return;
 
 namespace {
 BASE_FEATURE(kFeaturePromoLifecycleTestPromo,
-             "FeaturePromoLifecycleTestPromo",
+             "TEST_FeaturePromoLifecycleTestPromo",
              base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kFeaturePromoLifecycleTestPromo2,
-             "FeaturePromoLifecycleTestPromo2",
+             "TEST_FeaturePromoLifecycleTestPromo2",
              base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kFeaturePromoLifecycleTestPromo3,
-             "FeaturePromoLifecycleTestPromo3",
+             "TEST_FeaturePromoLifecycleTestPromo3",
              base::FEATURE_ENABLED_BY_DEFAULT);
 }  // namespace
 
@@ -316,8 +317,8 @@ IN_PROC_BROWSER_TEST_F(FeaturePromoLifecycleUiTest, CanReSnooze) {
   data.is_dismissed = false;
   data.show_count = 1;
   data.snooze_count = 1;
-  data.last_snooze_duration = base::Hours(26);
-  data.last_snooze_time = base::Time::Now() - data.last_snooze_duration;
+  data.last_snooze_time =
+      base::Time::Now() - user_education::features::GetSnoozeDuration();
   data.last_show_time = data.last_snooze_time - base::Seconds(1);
 
   RunTestSequence(SetSnoozePrefs(data), AttemptIPH(true), SnoozeIPH(),
@@ -341,7 +342,6 @@ IN_PROC_BROWSER_TEST_F(FeaturePromoLifecycleUiTest,
   data.is_dismissed = false;
   data.show_count = 1;
   data.snooze_count = 1;
-  data.last_snooze_duration = base::Hours(26);
   data.last_snooze_time = base::Time::Now();
   data.last_show_time = data.last_snooze_time - base::Seconds(1);
 
@@ -406,8 +406,8 @@ IN_PROC_BROWSER_TEST_F(FeaturePromoLifecycleUiTest, WorkWithoutNonClickerData) {
   PromoData data;
   data.is_dismissed = false;
   data.snooze_count = 1;
-  data.last_snooze_duration = base::Hours(26);
-  data.last_snooze_time = base::Time::Now() - data.last_snooze_duration;
+  data.last_snooze_time =
+      base::Time::Now() - user_education::features::GetSnoozeDuration();
 
   // Non-clicker policy shipped pref entries that don't exist before.
   // Make sure empty entries are properly handled.

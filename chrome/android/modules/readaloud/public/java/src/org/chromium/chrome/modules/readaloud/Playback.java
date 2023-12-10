@@ -11,17 +11,22 @@ import java.lang.annotation.RetentionPolicy;
 
 /** Represents a single audio playback session. */
 public interface Playback {
-    /**
-     * Metadata describing the content of the playback
-     */
+    /** Metadata describing the content of the playback */
     interface Metadata {
         String languageCode();
+
         String title();
+
         String publisher();
+
         String author();
+
         String fullText();
+
         PlaybackTextPart[] paragraphs();
+
         long estimatedDurationSeconds();
+
         String canonicalUrl();
     }
 
@@ -32,8 +37,10 @@ public interface Playback {
     interface PlaybackTextPart {
         // The index of the text part's paragraph in the full article.
         int getParagraphIndex();
+
         // The offset of the text part in the full text.
         int getOffset();
+
         // The length of the text part, in characters.
         int getLength();
 
@@ -41,12 +48,15 @@ public interface Playback {
         int getType();
     }
 
-    /**
-     * Type of a text portion.
-     */
-    @IntDef({PlaybackTextType.TEXT_TYPE_UNSPECIFIED, PlaybackTextType.TEXT_TYPE_NORMAL,
-            PlaybackTextType.TEXT_TYPE_TITLE, PlaybackTextType.TEXT_TYPE_PUBLISHER_AND_AUTHOR,
-            PlaybackTextType.TEXT_TYPE_PUBLISHER, PlaybackTextType.TEXT_TYPE_AUTHOR})
+    /** Type of a text portion. */
+    @IntDef({
+        PlaybackTextType.TEXT_TYPE_UNSPECIFIED,
+        PlaybackTextType.TEXT_TYPE_NORMAL,
+        PlaybackTextType.TEXT_TYPE_TITLE,
+        PlaybackTextType.TEXT_TYPE_PUBLISHER_AND_AUTHOR,
+        PlaybackTextType.TEXT_TYPE_PUBLISHER,
+        PlaybackTextType.TEXT_TYPE_AUTHOR
+    })
     @Retention(RetentionPolicy.SOURCE)
     @interface PlaybackTextType {
         // Unspecified.
@@ -89,9 +99,7 @@ public interface Playback {
      */
     default void play() {}
 
-    /**
-     * Pause the media. If already paused, does nothing.
-     */
+    /** Pause the media. If already paused, does nothing. */
     default void pause() {}
 
     /**

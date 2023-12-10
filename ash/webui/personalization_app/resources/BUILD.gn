@@ -40,6 +40,7 @@ build_webui("build") {
     "images/no_google_photos_images.svg",
     "images/no_google_photos_images_dark.svg",
     "images/slideshow.png",
+    "images/sea_pen_tile.svg",
 
     "css/base.css",
   ]
@@ -84,12 +85,13 @@ build_webui("build") {
     "js/wallpaper/google_photos_zero_state_element.ts",
     "js/wallpaper/info_svg_element.ts",
     "js/wallpaper/local_images_element.ts",
-    "js/wallpaper/sea_pen/sea_pen_collection_element.ts",
     "js/wallpaper/sea_pen/sea_pen_input_query_element.ts",
     "js/wallpaper/sea_pen/sea_pen_template_query_element.ts",
     "js/wallpaper/sea_pen/sea_pen_images_element.ts",
     "js/wallpaper/sea_pen/sea_pen_recent_wallpapers_element.ts",
     "js/wallpaper/sea_pen/sea_pen_templates_element.ts",
+    "js/wallpaper/sea_pen/sparkle_placeholder_element.ts",
+    "js/wallpaper/time_of_day_wallpaper_dialog_element.ts",
     "js/wallpaper/wallpaper_collections_element.ts",
     "js/wallpaper/wallpaper_error_element.ts",
     "js/wallpaper/wallpaper_fullscreen_element.ts",
@@ -124,6 +126,9 @@ build_webui("build") {
     "js/personalization_state.ts",
     "js/personalization_store.ts",
     "js/personalization_test_api.ts",
+    "js/surface_effects/utils.ts",
+    "js/surface_effects/sparkle.ts",
+    "js/surface_effects/sparkle_shader.ts",
     "js/theme/theme_actions.ts",
     "js/theme/theme_controller.ts",
     "js/theme/theme_interface_provider.ts",
@@ -143,6 +148,11 @@ build_webui("build") {
     "js/utils.ts",
     "js/wallpaper/constants.ts",
     "js/wallpaper/google_photos_metrics_logger.ts",
+    "js/wallpaper/sea_pen/constants.ts",
+    "js/wallpaper/sea_pen/sea_pen_actions.ts",
+    "js/wallpaper/sea_pen/sea_pen_controller.ts",
+    "js/wallpaper/sea_pen/sea_pen_reducer.ts",
+    "js/wallpaper/sea_pen/sea_pen_state.ts",
     "js/wallpaper/utils.ts",
     "js/wallpaper/wallpaper_actions.ts",
     "js/wallpaper/wallpaper_controller.ts",
@@ -159,6 +169,7 @@ build_webui("build") {
   css_files = [
     "css/common.css",
     "css/cros_button_style.css",
+    "css/sea_pen.css",
     "css/wallpaper.css",
   ]
 

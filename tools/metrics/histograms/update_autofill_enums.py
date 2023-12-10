@@ -17,27 +17,44 @@ import path_util
 import update_histogram_enum
 
 FIELD_TYPES_PATH = 'components/autofill/core/browser/field_types.h'
+FIELD_PREDICTION_GROUPS_PATH = \
+    'components/autofill/core/browser/metrics/autofill_metrics.cc'
 
 
-def ReadServerFieldTypes(filename):
+def ReadEnum(filename, first_line, last_line_exclusive):
+  """Extracts an enum from a file.
+
+  Args:
+    filename: name of file to read.
+    first_line: prefix of a line where extracting values starts. Leading
+      whitespaces are ignored.
+    last_line_exclusive: prefix of a line before which extraction stops.
+      This means that the line matching this parameter is not considered
+      a valid enum entry that is returned. Leading whitespaces are ignored.
+
+  Returns:
+    Dictionary from enum ids (integers) to names (strings).
+  """
+
   # Read the enum ServerFieldType as a list of lines
   before_enum = True
   content = []
   with open(path_util.GetInputFile(filename)) as f:
     for line in f.readlines():
+      ling = line.strip()
       # Search for beginning of enum.
       if before_enum:
-        if line.startswith('enum ServerFieldType {'):
+        if line.startswith(first_line):
           before_enum = False
         continue
       # Terminate at end of enum.
-      if line.startswith('  MAX_VALID_FIELD_TYPE ='):
+      if line.startswith(last_line_exclusive):
         break
       content.append(line)
 
   ENUM_REGEX = re.compile(
-      r"""^\s+(\w+)\s+=   # capture the enum name
-          \s+(\d+),?$     # capture the id
+      r"""^(\w+)\s+=         # capture the enum name
+          \s+(\d+)(?:,.*)?$  # capture the id
           """, re.VERBOSE)
 
   enums = {}
@@ -49,6 +66,17 @@ def ReadServerFieldTypes(filename):
       enums[enum_id] = enum_name
 
   return enums
+
+
+def ReadServerFieldTypes(filename):
+  return ReadEnum(filename, 'enum ServerFieldType {', 'MAX_VALID_FIELD_TYPE =')
+
+
+def ReadFieldPredictionGroups(filename):
+  result = ReadEnum(filename, 'enum FieldTypeGroupForMetrics {',
+                    'NUM_FIELD_TYPE_GROUPS_FOR_METRICS')
+  # Strip the GROUP_ prefix because it only adds clutter.
+  return {k: v.replace('GROUP_', '') for k, v in result.items()}
 
 
 def GenerateAutofilledFieldUserEditingStatusByFieldType(server_field_types):
@@ -76,20 +104,44 @@ def GenerateAutofillPredictionsComparisonResult(server_field_types):
   return result
 
 
+def GenerateAutofillFieldPredictionQualityByFieldType():
+  groups = ReadFieldPredictionGroups(FIELD_PREDICTION_GROUPS_PATH)
+  result = {}
+  for enum_id, enum_name in groups.items():
+    result[256 * enum_id + 0] = f'{enum_name}: True Positive'
+    result[256 * enum_id + 1] = f'{enum_name}: True Negative (Ambiguous)'
+    result[256 * enum_id + 2] = f'{enum_name}: True Negative (Unknown)'
+    result[256 * enum_id + 3] = f'{enum_name}: True Negative (Empty)'
+    result[256 * enum_id + 4] = f'{enum_name}: False Positive (Mismatch)'
+    result[256 * enum_id + 5] = f'{enum_name}: False Positive (Ambiguous)'
+    result[256 * enum_id + 6] = f'{enum_name}: False Positive (Unknown)'
+    result[256 * enum_id + 7] = f'{enum_name}: False Positive (Empty)'
+    result[256 * enum_id + 8] = f'{enum_name}: False Negative (Mismatch)'
+    result[256 * enum_id + 9] = f'{enum_name}: False Negative (Unknown)'
+  return result
+
+
 if __name__ == '__main__':
   server_field_types = ReadServerFieldTypes(FIELD_TYPES_PATH)
 
-  update_histogram_enum.UpdateHistogramFromDict('AutofillServerFieldType',
-                                                server_field_types,
-                                                FIELD_TYPES_PATH,
-                                                os.path.basename(__file__))
+  update_histogram_enum.UpdateHistogramFromDict(
+      'tools/metrics/histograms/enums.xml', 'AutofillServerFieldType',
+      server_field_types, FIELD_TYPES_PATH, os.path.basename(__file__))
 
   update_histogram_enum.UpdateHistogramFromDict(
+      'tools/metrics/histograms/enums.xml',
       'AutofilledFieldUserEditingStatusByFieldType',
       GenerateAutofilledFieldUserEditingStatusByFieldType(server_field_types),
       FIELD_TYPES_PATH, os.path.basename(__file__))
 
   update_histogram_enum.UpdateHistogramFromDict(
+      'tools/metrics/histograms/enums.xml',
       'AutofillPredictionsComparisonResult',
       GenerateAutofillPredictionsComparisonResult(server_field_types),
       FIELD_TYPES_PATH, os.path.basename(__file__))
+
+  update_histogram_enum.UpdateHistogramFromDict(
+      'tools/metrics/histograms/enums.xml',
+      'AutofillFieldPredictionQualityByFieldType',
+      GenerateAutofillFieldPredictionQualityByFieldType(),
+      FIELD_PREDICTION_GROUPS_PATH, os.path.basename(__file__))

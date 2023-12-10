@@ -49,23 +49,17 @@ public class OmniboxUrlEmphasizer {
             this.hostLength = hostLength;
         }
 
-        /**
-         * @return Whether the URL has a scheme to be emphasized.
-         */
+        /** @return Whether the URL has a scheme to be emphasized. */
         public boolean hasScheme() {
             return schemeLength > 0;
         }
 
-        /**
-         * @return Whether the URL has a host to be emphasized.
-         */
+        /** @return Whether the URL has a host to be emphasized. */
         public boolean hasHost() {
             return hostLength > 0;
         }
 
-        /**
-         * @return The scheme extracted from |url|, canonicalized to lowercase.
-         */
+        /** @return The scheme extracted from |url|, canonicalized to lowercase. */
         public String extractScheme(String url) {
             if (!hasScheme()) return "";
             return url.subSequence(schemeStart, schemeStart + schemeLength)
@@ -105,9 +99,7 @@ public class OmniboxUrlEmphasizer {
             implements UrlEmphasisSpan {
         private int mEmphasisColor;
 
-        /**
-         * @param color The color to set the text.
-         */
+        /** @param color The color to set the text. */
         public UrlEmphasisColorSpan(int color) {
             super(color);
             mEmphasisColor = color;

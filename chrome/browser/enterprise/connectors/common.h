@@ -52,7 +52,6 @@ constexpr char kKeyTags[] = "tags";
 constexpr char kKeyBlockUntilVerdict[] = "block_until_verdict";
 constexpr char kKeyBlockPasswordProtected[] = "block_password_protected";
 constexpr char kKeyBlockLargeFiles[] = "block_large_files";
-constexpr char kKeyBlockUnsupportedFileTypes[] = "block_unsupported_file_types";
 constexpr char kKeyMinimumDataSize[] = "minimum_data_size";
 constexpr char kKeyEnabledEventNames[] = "enabled_event_names";
 constexpr char kKeyCustomMessages[] = "custom_messages";
@@ -160,17 +159,20 @@ enum class FinalContentAnalysisResult {
   // Show that an issue was found and that the upload is blocked.
   FAILURE = 0,
 
+  // Show that the scan failed and that the upload is blocked.
+  FAIL_CLOSED = 1,
+
   // Show that files were not uploaded since they were too large.
-  LARGE_FILES = 1,
+  LARGE_FILES = 2,
 
   // Show that files were not uploaded since they were encrypted.
-  ENCRYPTED_FILES = 2,
+  ENCRYPTED_FILES = 3,
 
   // Show that DLP checks failed, but that the user can proceed if they want.
-  WARNING = 3,
+  WARNING = 4,
 
   // Show that no issue was found and that the user may proceed.
-  SUCCESS = 4,
+  SUCCESS = 5,
 };
 
 // Result for a single request of the RequestHandler classes.
@@ -245,13 +247,18 @@ void ShowDownloadReviewDialog(const std::u16string& filename,
                               base::OnceClosure keep_closure,
                               base::OnceClosure discard_closure);
 
-// Returns true if `result` as returned by FileAnalysisRequest is considered a
+// Returns true if `result` as returned by BinaryUploadService is considered a
 // a failed result when attempting a cloud-based content analysis.
 bool CloudResultIsFailure(safe_browsing::BinaryUploadService::Result result);
 
-// Returns true if `result` as returned by FileAnalysisRequest is considered a
+// Returns true if `result` as returned by BinaryUploadService is considered a
 // a failed result when attempting a local content analysis.
 bool LocalResultIsFailure(safe_browsing::BinaryUploadService::Result result);
+
+// Returns true if `result` as returned by BinaryUploadService is considered a
+// fail-closed result, regardless of attempting a cloud-based or a local-based
+// content analysis.
+bool ResultIsFailClosed(safe_browsing::BinaryUploadService::Result result);
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 // Returns the single main profile, or nullptr if none is found.

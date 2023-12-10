@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="as">
 <translation id="1000498691615767391">খুলিবলৈ কোনো ফ’ল্ডাৰ বাছনি কৰক</translation>
+<translation id="1014208178561091457"><ph name="FILE_NAME" /> এনক্ৰিপ্ট কৰা হৈছে বাবে এইটো প্ৰতিলিপি কৰিব পৰা নগ’ল।</translation>
 <translation id="1047956942837015229"><ph name="COUNT" />টা বস্তু মচি থকা হৈছে…</translation>
 <translation id="1049926623896334335">Word দস্তাবেজ</translation>
 <translation id="1056775291175587022">নেটৱৰ্ক নাই</translation>
@@ -55,6 +56,7 @@
 <translation id="1435838927755162558">Parallels Desktopৰ জৰিয়তে ফ’ল্ডাৰটো শ্বেয়াৰ কৰক</translation>
 <translation id="1439919885608649279">ফুলৰ সৈতে ব্যক্তিৰ ছবি</translation>
 <translation id="1458457385801829801"><ph name="TARGET_NAME" />ক বাহিৰ কৰক</translation>
+<translation id="146691674290220697"><ph name="NUMBER_OF_FILES" /> টা ফাইল এনক্ৰিপ্ট কৰা হৈছে বাবে সেইসমূহ প্ৰতিলিপি কৰিব পৰা নগ’ল।</translation>
 <translation id="1471718551822868769">শ্ল’ভাক</translation>
 <translation id="1482884275703521657">ফিনিশ্ব</translation>
 <translation id="148466539719134488">ছুইচ্ছ</translation>
@@ -276,6 +278,7 @@
 <translation id="3253225298092156258">উপলব্ধ নহয়</translation>
 <translation id="3254434849914415189"><ph name="FILE_TYPE" /> ফাইলৰ বাবে ডিফ'ল্ট এপ্ বাছনি কৰক:</translation>
 <translation id="3255159654094949700">আৰবী</translation>
+<translation id="326396468955264502"><ph name="NUMBER_OF_FILES" /> টা ফাইল এনক্ৰিপ্ট কৰা হৈছে বাবে সেইসমূহ স্থানান্তৰ কৰিব পৰা নগ’ল।</translation>
 <translation id="3264582393905923483">প্ৰসংগ</translation>
 <translation id="3272909651715601089">"<ph name="PATH" />" খুলিব পৰা নগ’ল</translation>
 <translation id="3280431534455935878">সাজু কৰি থকা হৈছে</translation>
@@ -313,6 +316,7 @@
 <translation id="3523225005467146490"><ph name="VM_NAME" />ৰ সৈতে ১ টা ফ’ল্ডাৰটো শ্বেয়াৰ কৰা হৈছে</translation>
 <translation id="3524311639100184459">সাৱধান: এই ফাইলসমূহ অস্থায়ী আৰু ডিস্কত খালী ঠাই উলিয়াবলৈ এইবোৰ স্বয়ংক্ৰিয়ভাৱে মচা যাব পাৰে।  <ph name="BEGIN_LINK" />অধিক জানক<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">ফ’ল্ডাৰ</translation>
+<translation id="3529424493985988200">সবিশেষৰ বাবে আপোনাৰ প্ৰশাসকৰ সৈতে যোগাযোগ কৰক।</translation>
 <translation id="3548125359243647069">বহুবাৰ ভুল পিন দিয়া হৈছে।</translation>
 <translation id="3549797760399244642">drive.google.comলৈ যাওক...</translation>
 <translation id="3553048479571901246"><ph name="APP_NAME" />ৰ জৰিয়তে ফাইলসমূহ খুলিবলৈ প্ৰথমে সেইসমূহ Windowsৰ ফাইলসমূহৰ ফ’ল্ডাৰটোলৈ প্ৰতিলিপি কৰক।</translation>
@@ -701,6 +705,7 @@
 <translation id="637062427944097960">এই ফাইলটো বিভিন্ন ডেস্কটেপত খোলা হৈছে। ফাইলটো চাবলৈ <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) লৈ নিয়ক।</translation>
 <translation id="6394388407447716302">কেৱল পঢ়িব পৰা</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" />টা বস্তু</translation>
+<translation id="6407769893376380348"><ph name="FILE_NAME" /> এনক্ৰিপ্ট কৰা হৈছে বাবে এইটো স্থানান্তৰ কৰিব পৰা নগ’ল।</translation>
 <translation id="642282551015776456">এই নামটো ফ'ল্ডাৰ নামৰ ফাইল হিচাপে ব্যৱহাৰ কৰা নহ'ব পাৰে</translation>
 <translation id="6423031066725912715">TCVN কীব’ৰ্ডৰ সৈতে ভিয়েটনামিজ</translation>
 <translation id="6430271654280079150">আপোনাৰ ১ টা প্ৰয়াস বাকী আছে।</translation>

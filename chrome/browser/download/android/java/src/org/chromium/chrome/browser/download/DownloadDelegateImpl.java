@@ -9,9 +9,7 @@ import android.net.Uri;
 import org.chromium.components.browser_ui.util.DownloadUtils;
 import org.chromium.components.download.DownloadDelegate;
 
-/**
- * Utility class that implements DownloadDelegate.
- */
+/** Utility class that implements DownloadDelegate. */
 public class DownloadDelegateImpl extends DownloadDelegate {
     public DownloadDelegateImpl() {}
 

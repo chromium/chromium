@@ -6,6 +6,7 @@
 #define ASH_COMPONENTS_ARC_VIDEO_ACCELERATOR_GPU_ARC_VIDEO_DECODE_ACCELERATOR_H_
 
 #include <memory>
+#include <optional>
 #include <queue>
 #include <utility>
 #include <vector>
@@ -20,7 +21,6 @@
 #include "media/video/video_decode_accelerator.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace arc {
 
@@ -209,7 +209,7 @@ class GpuArcVideoDecodeAccelerator
 
   scoped_refptr<DecoderProtectedBufferManager> protected_buffer_manager_;
 
-  absl::optional<bool> secure_mode_ = absl::nullopt;
+  std::optional<bool> secure_mode_ = std::nullopt;
   size_t output_buffer_count_ = 0;
 
   // When the client resets VDA during requesting new buffers, then VDA will
@@ -229,7 +229,7 @@ class GpuArcVideoDecodeAccelerator
   // |protected_buffer_manager_|. Also, when set, we queue incoming Decode()
   // requests in |decode_requests_waiting_for_first_secure_buffer_| for later
   // use.
-  absl::optional<int32_t> first_input_waiting_on_secure_buffer_;
+  std::optional<int32_t> first_input_waiting_on_secure_buffer_;
   std::queue<std::pair<int32_t, base::OnceClosure>>
       decode_requests_waiting_for_first_secure_buffer_;
 

@@ -84,6 +84,17 @@ inline constexpr char kDeskBarExitPresentationHistogram[] =
 inline constexpr base::TimeDelta kDeskBarEnterExitPresentationMaxLatency =
     base::Seconds(2);
 
+// Constant values used by the desk button.
+inline constexpr int kDeskButtonLargeWidth = 136;
+inline constexpr int kDeskButtonSmallWidth = 96;
+inline constexpr int kDeskButtonHeight = 36;
+inline constexpr int kDeskButtonLargeDisplayThreshold = 1280;
+inline constexpr int kDeskButtonInsets = 6;
+inline constexpr int kDeskButtonCornerRadius = 12;
+inline constexpr int kDeskButtonFocusRingHaloInset = -3;
+inline constexpr int kDeskButtonSwitchButtonWidth = 20;
+inline constexpr int kDeskButtonSwitchButtonHeight = 36;
+
 }  // namespace ash
 
 #endif  // ASH_WM_DESKS_DESKS_CONSTANTS_H_

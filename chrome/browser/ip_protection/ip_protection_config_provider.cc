@@ -97,8 +97,7 @@ void IpProtectionConfigProvider::TryGetAuthTokens(
     return;
   }
 
-  // TODO(crbug.com/1491092): Pass in proxy_layer parameter.
-  RequestOAuthToken(batch_size, std::move(callback));
+  RequestOAuthToken(batch_size, proxy_layer, std::move(callback));
 }
 
 void IpProtectionConfigProvider::GetProxyList(GetProxyListCallback callback) {
@@ -114,9 +113,35 @@ void IpProtectionConfigProvider::GetProxyList(GetProxyListCallback callback) {
           std::move(callback).Run(absl::nullopt);
           return;
         }
-        std::vector<std::string> proxy_list(
-            response->first_hop_hostnames().begin(),
-            response->first_hop_hostnames().end());
+        std::vector<std::vector<std::string>> proxy_list;
+        if (net::features::kIpPrivacyUseProxyChains.Get()) {
+          for (const auto& proxy_chain : response->proxy_chain()) {
+            std::vector<std::string> proxies = {};
+            if (const std::string a_override =
+                    net::features::kIpPrivacyProxyAHostnameOverride.Get();
+                a_override != "") {
+              proxies.push_back(a_override);
+            } else {
+              proxies.push_back(proxy_chain.proxy_a());
+            }
+            if (const std::string b_override =
+                    net::features::kIpPrivacyProxyBHostnameOverride.Get();
+                b_override != "") {
+              proxies.push_back(b_override);
+            } else {
+              // TODO(crbug.com/1491092): Remove check once proxy_b is populated
+              // by Phosphor.
+              if (!proxy_chain.proxy_b().empty()) {
+                proxies.push_back(proxy_chain.proxy_b());
+              }
+            }
+            proxy_list.push_back(std::move(proxies));
+          }
+        } else {
+          for (const auto& hostname : response->first_hop_hostnames()) {
+            proxy_list.push_back({hostname});
+          }
+        }
         VLOG(2) << "IPATP::GetProxyList got proxy list of length "
                 << proxy_list.size();
         std::move(callback).Run(std::move(proxy_list));
@@ -126,6 +151,7 @@ void IpProtectionConfigProvider::GetProxyList(GetProxyListCallback callback) {
 
 void IpProtectionConfigProvider::RequestOAuthToken(
     uint32_t batch_size,
+    network::mojom::IpProtectionProxyLayer proxy_layer,
     TryGetAuthTokensCallback callback) {
   if (!identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
     TryGetAuthTokensComplete(
@@ -159,7 +185,8 @@ void IpProtectionConfigProvider::RequestOAuthToken(
   oauth_token_fetcher_ptr->Start(base::BindOnce(
       &IpProtectionConfigProvider::OnRequestOAuthTokenCompleted,
       weak_ptr_factory_.GetWeakPtr(), std::move(oauth_token_fetcher),
-      oauth_token_fetch_start_time, batch_size, std::move(callback)));
+      oauth_token_fetch_start_time, batch_size, proxy_layer,
+      std::move(callback)));
 }
 
 void IpProtectionConfigProvider::OnRequestOAuthTokenCompleted(
@@ -167,6 +194,7 @@ void IpProtectionConfigProvider::OnRequestOAuthTokenCompleted(
         oauth_token_fetcher,
     base::TimeTicks oauth_token_fetch_start_time,
     uint32_t batch_size,
+    network::mojom::IpProtectionProxyLayer proxy_layer,
     TryGetAuthTokensCallback callback,
     GoogleServiceAuthError error,
     signin::AccessTokenInfo access_token_info) {
@@ -191,17 +219,22 @@ void IpProtectionConfigProvider::OnRequestOAuthTokenCompleted(
   const base::TimeTicks current_time = base::TimeTicks::Now();
   base::UmaHistogramTimes("NetworkService.IpProtection.OAuthTokenFetchTime",
                           current_time - oauth_token_fetch_start_time);
-  FetchBlindSignedToken(access_token_info, batch_size, std::move(callback));
+  FetchBlindSignedToken(access_token_info, batch_size, proxy_layer,
+                        std::move(callback));
 }
 
-// TODO(crbug.com/1491092): Pass in proxy_layer parameter.
 void IpProtectionConfigProvider::FetchBlindSignedToken(
     signin::AccessTokenInfo access_token_info,
     uint32_t batch_size,
+    network::mojom::IpProtectionProxyLayer proxy_layer,
     TryGetAuthTokensCallback callback) {
   auto bsa_get_tokens_start_time = base::TimeTicks::Now();
+  auto quiche_proxy_layer =
+      proxy_layer == network::mojom::IpProtectionProxyLayer::kProxyA
+          ? quiche::ProxyLayer::kProxyA
+          : quiche::ProxyLayer::kProxyB;
   bsa_->GetTokens(
-      access_token_info.token, batch_size,
+      access_token_info.token, batch_size, quiche_proxy_layer,
       [weak_ptr = weak_ptr_factory_.GetWeakPtr(), bsa_get_tokens_start_time,
        callback = std::move(callback)](
           absl::StatusOr<absl::Span<quiche::BlindSignToken>> tokens) mutable {

@@ -14,19 +14,6 @@
 
 namespace content_settings {
 
-// Interface for the old CookieControls observer.
-// TODO(crbug.com/1446230): Remove and clean up after UserBypassUI is launched.
-class OldCookieControlsObserver : public base::CheckedObserver {
- public:
-  virtual void OnStatusChanged(CookieControlsStatus status,
-                               CookieControlsEnforcement enforcement,
-                               int allowed_cookies,
-                               int blocked_cookies) = 0;
-  virtual void OnCookiesCountChanged(int allowed_cookies,
-                                     int blocked_cookies) = 0;
-  virtual void OnStatefulBounceCountChanged(int bounce_count) = 0;
-};
-
 // Interface for the CookieControls observer.
 class CookieControlsObserver : public base::CheckedObserver {
  public:

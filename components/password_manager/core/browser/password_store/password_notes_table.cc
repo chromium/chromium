@@ -12,14 +12,13 @@
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
-#include "components/password_manager/core/browser/password_store/login_database.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
+#include "components/password_manager/core/browser/password_store/login_database.h"
 #include "components/password_manager/core/browser/sql_table_builder.h"
 #include "components/password_manager/core/browser/sync/password_store_sync.h"
 #include "sql/database.h"
 #include "sql/statement.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_IOS)
 #import <Security/Security.h>

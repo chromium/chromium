@@ -4,7 +4,8 @@
 
 #include "cc/input/main_thread_scrolling_reason.h"
 
-#include "base/containers/cxx20_erase.h"
+#include <string>
+
 #include "base/strings/string_util.h"
 #include "base/trace_event/traced_value.h"
 
@@ -19,7 +20,7 @@ std::string MainThreadScrollingReason::AsText(uint32_t reasons) {
   size_t array_end_pos = result.find(']');
   result =
       result.substr(array_start_pos + 1, array_end_pos - array_start_pos - 1);
-  base::Erase(result, '\"');
+  std::erase(result, '\"');
   // Add spaces after all commas.
   base::ReplaceChars(result, ",", ", ", &result);
   return result;

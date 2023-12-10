@@ -71,8 +71,8 @@ class DrivePinningBaseScreenTest : public OobeBaseTest {
         WizardController::default_controller()->GetScreen<DrivePinningScreen>();
 
     original_callback_ = drive_pining_screen->get_exit_callback_for_testing();
-    drive_pining_screen->set_exit_callback_for_testing(base::BindRepeating(
-        &DrivePinningBaseScreenTest::HandleScreenExit, base::Unretained(this)));
+    drive_pining_screen->set_exit_callback_for_testing(
+        screen_result_waiter_.GetRepeatingCallback());
   }
 
   void SetPinningManagerProgress(Progress progress) {
@@ -92,32 +92,19 @@ class DrivePinningBaseScreenTest : public OobeBaseTest {
         DrivePinningScreenView::kScreenId);
   }
 
-  void WaitForScreenExit() {
-    if (result_.has_value()) {
-      return;
-    }
-    base::test::TestFuture<void> waiter;
-    quit_closure_ = waiter.GetCallback();
-    EXPECT_TRUE(waiter.Wait());
+  DrivePinningScreen::Result WaitForScreenExitResult() {
+    DrivePinningScreen::Result result = screen_result_waiter_.Take();
+    original_callback_.Run(result);
+    return result;
   }
-
-  DrivePinningScreen::ScreenExitCallback original_callback_;
-  absl::optional<DrivePinningScreen::Result> result_;
 
  protected:
   base::test::ScopedFeatureList feature_list_;
   LoginManagerMixin login_manager_mixin_{&mixin_host_};
 
  private:
-  void HandleScreenExit(DrivePinningScreen::Result result) {
-    result_ = result;
-    original_callback_.Run(result);
-    if (quit_closure_) {
-      std::move(quit_closure_).Run();
-    }
-  }
-
-  base::OnceClosure quit_closure_;
+  base::test::TestFuture<DrivePinningScreen::Result> screen_result_waiter_;
+  DrivePinningScreen::ScreenExitCallback original_callback_;
 };
 
 class DrivePinningScreenTest
@@ -144,11 +131,11 @@ IN_PROC_BROWSER_TEST_F(DrivePinningScreenTest, Accept) {
       kSpaceInformationPath);
   test::OobeJS().TapOnPath(kNextButtonPath);
 
-  WaitForScreenExit();
+  DrivePinningScreen::Result result = WaitForScreenExitResult();
 
   EXPECT_TRUE(ProfileManager::GetPrimaryUserProfile()->GetPrefs()->GetBoolean(
       prefs::kOobeDrivePinningEnabledDeferred));
-  EXPECT_EQ(result_.value(), DrivePinningScreen::Result::NEXT);
+  EXPECT_EQ(result, DrivePinningScreen::Result::NEXT);
 }
 
 IN_PROC_BROWSER_TEST_F(DrivePinningScreenTest, Decline) {
@@ -166,11 +153,11 @@ IN_PROC_BROWSER_TEST_F(DrivePinningScreenTest, Decline) {
   test::OobeJS().TapOnPath(kToggleButtonPath);
   test::OobeJS().TapOnPath(kNextButtonPath);
 
-  WaitForScreenExit();
+  DrivePinningScreen::Result result = WaitForScreenExitResult();
 
   EXPECT_FALSE(ProfileManager::GetPrimaryUserProfile()->GetPrefs()->GetBoolean(
       prefs::kOobeDrivePinningEnabledDeferred));
-  EXPECT_EQ(result_.value(), DrivePinningScreen::Result::NEXT);
+  EXPECT_EQ(result, DrivePinningScreen::Result::NEXT);
 }
 
 IN_PROC_BROWSER_TEST_P(DrivePinningScreenTest, ScreenSkippedOnError) {
@@ -178,13 +165,18 @@ IN_PROC_BROWSER_TEST_P(DrivePinningScreenTest, ScreenSkippedOnError) {
   current_progress.stage = GetParam();
 
   SetPinningManagerProgress(current_progress);
-  ShowDrivePinningScreen();
+  LoginDisplayHost::default_host()
+      ->GetWizardContextForTesting()
+      ->skip_choobe_for_tests = true;
 
-  WaitForScreenExit();
+  LoginDisplayHost::default_host()->GetWizardContext()->is_branded_build = true;
+
+  ShowDrivePinningScreen();
+  DrivePinningScreen::Result result = WaitForScreenExitResult();
 
   EXPECT_FALSE(ProfileManager::GetPrimaryUserProfile()->GetPrefs()->GetBoolean(
       prefs::kOobeDrivePinningEnabledDeferred));
-  EXPECT_EQ(result_.value(), DrivePinningScreen::Result::NOT_APPLICABLE);
+  EXPECT_EQ(result, DrivePinningScreen::Result::NOT_APPLICABLE);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -296,8 +288,9 @@ IN_PROC_BROWSER_TEST_F(DrivePinningIntegrationServiceTest,
   test::OobeJS().ExpectVisiblePath(kDrivePinningDialoguePath);
   test::OobeJS().TapOnPath(kNextButtonPath);
 
-  WaitForScreenExit();
+  DrivePinningScreen::Result result = WaitForScreenExitResult();
 
+  EXPECT_EQ(result, DrivePinningScreen::Result::NEXT);
   histogram_tester.ExpectUniqueSample(
       "FileBrowser.GoogleDrive.BulkPinning.CHOOBEScreenInitializations", 1, 2);
 }

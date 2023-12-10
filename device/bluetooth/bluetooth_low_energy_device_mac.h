@@ -9,6 +9,7 @@
 #include <stdint.h>
 
 #include <set>
+#include <string_view>
 
 #include "build/build_config.h"
 #include "crypto/sha2.h"
@@ -111,7 +112,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothLowEnergyDeviceMac
   // http://crbug.com/507824
   static std::string GetPeripheralHashAddress(CBPeripheral* peripheral);
   static std::string GetPeripheralHashAddress(
-      base::StringPiece device_identifier);
+      std::string_view device_identifier);
 
  private:
   friend class BluetoothLowEnergyAdapterApple;

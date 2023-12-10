@@ -1,0 +1,38 @@
+This is a testharness.js-based test.
+[PRECONDITION_FAILED] Test isConfigSupported()
+  hev1.1.6.L60.90 unsupported
+[PRECONDITION_FAILED] Test isConfigSupported() with 1080p crop
+  hev1.1.6.L60.90 unsupported
+[PRECONDITION_FAILED] Test that isConfigSupported() returns a parsed configuration
+  hev1.1.6.L60.90 unsupported
+[PRECONDITION_FAILED] Test invalid configs
+  hev1.1.6.L60.90 unsupported
+[PRECONDITION_FAILED] Test configure()
+  hev1.1.6.L60.90 unsupported
+[PRECONDITION_FAILED] Decode a key frame
+  hev1.1.6.L60.90 unsupported
+[PRECONDITION_FAILED] Decode a non key frame first fails
+  hev1.1.6.L60.90 unsupported
+[PRECONDITION_FAILED] Verify reset() suppresses outputs
+  hev1.1.6.L60.90 unsupported
+[PRECONDITION_FAILED] Test unconfigured VideoDecoder operations
+  hev1.1.6.L60.90 unsupported
+[PRECONDITION_FAILED] Test closed VideoDecoder operations
+  hev1.1.6.L60.90 unsupported
+[PRECONDITION_FAILED] Decode empty frame
+  hev1.1.6.L60.90 unsupported
+[PRECONDITION_FAILED] Decode corrupt frame
+  hev1.1.6.L60.90 unsupported
+[PRECONDITION_FAILED] Close while decoding corrupt frame
+  hev1.1.6.L60.90 unsupported
+[PRECONDITION_FAILED] Test decoding after flush
+  hev1.1.6.L60.90 unsupported
+[PRECONDITION_FAILED] Test decoding a with negative timestamp
+  hev1.1.6.L60.90 unsupported
+[PRECONDITION_FAILED] Test reset during flush
+  hev1.1.6.L60.90 unsupported
+[PRECONDITION_FAILED] Test low-latency decoding
+  hev1.1.6.L60.90 unsupported
+[PRECONDITION_FAILED] VideoDecoder decodeQueueSize test
+  hev1.1.6.L60.90 unsupported
+Harness: the test ran to completion.

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="../../resources/js-test.js"></script>
+<script>
+var jsTestIsAsync = true;
+var state = "initial";
+
+function startTest() {
+    // Wait for after the load event so the frame gets a new history when navigated.
+    setTimeout(continueTest, 0);
+}
+
+function continueTest() {
+    switch (state) {
+    case "initial":
+        state = "loading-plugin";
+        var frame = document.querySelector("iframe");
+        frame.addEventListener("load", continueTest);
+        frame.src = "data:application/x-blink-test-plugin,";
+        break;
+    case "loading-plugin":
+        state = "moving-backward";
+        history.back();
+        break;
+    case "moving-backward":
+        state = "moving-forward";
+        history.forward();
+        break;
+    case "moving-forward":
+        state = "done";
+        finishJSTest();
+        break;
+    default:
+        alert('FAIL');
+        break;
+    }
+}
+</script>
+</head>
+<body onload="startTest()">
+<iframe src="data:text/html,Waiting..."></iframe>
+</body>
+</html>

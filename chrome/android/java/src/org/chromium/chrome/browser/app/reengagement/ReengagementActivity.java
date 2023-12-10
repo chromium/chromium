@@ -20,7 +20,7 @@ public class ReengagementActivity extends Activity {
         String action = getIntent().getAction();
         if (ReengagementNotificationController.LAUNCH_NTP_ACTION.equals(action)) {
             Intent intent =
-                    IntentHandler.createTrustedOpenNewTabIntent(this, /* incognito = */ false);
+                    IntentHandler.createTrustedOpenNewTabIntent(this, /* incognito= */ false);
             try (StrictModeContext ignored = StrictModeContext.allowDiskWrites()) {
                 startActivity(intent);
             }

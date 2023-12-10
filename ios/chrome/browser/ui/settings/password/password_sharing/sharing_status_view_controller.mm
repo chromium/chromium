@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/authentication/authentication_constants.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/password_sharing_constants.h"
+#import "ios/chrome/browser/ui/settings/password/password_sharing/password_sharing_metrics.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/sharing_status_view_controller_presentation_delegate.h"
 #import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -33,7 +34,6 @@ const CGFloat kProgressBarCircleSpacing = 2.0;
 const NSInteger kProgressBarCirclesAmount = 20;
 
 // Loaded images size dimensions.
-const CGFloat kProfileImageSize = 60.0;
 const CGFloat kLockSymbolPointSize = 22.0;
 const CGFloat kFaviconContainerSize = 30.0;
 const CGFloat kFaviconSize = 22.0;
@@ -313,9 +313,8 @@ NSString* const kSharingStatusSubtitleId = @"SharingStatusViewSubtitle";
 
 // Helper for creating recipient image view.
 - (UIImageView*)createRecipientImageView {
-  UIImageView* recipientImageView = [[UIImageView alloc]
-      initWithImage:CircularImageFromImage(self.recipientImage,
-                                           kProfileImageSize)];
+  UIImageView* recipientImageView =
+      [[UIImageView alloc] initWithImage:self.recipientImage];
   recipientImageView.translatesAutoresizingMaskIntoConstraints = NO;
   self.recipientImageView = recipientImageView;
   return recipientImageView;
@@ -598,9 +597,7 @@ NSString* const kSharingStatusSubtitleId = @"SharingStatusViewSubtitle";
   [doneButton addTarget:self
                  action:@selector(doneButtonTapped)
        forControlEvents:UIControlEventTouchUpInside];
-  [doneButton setTitle:l10n_util::GetNSString(IDS_DONE)
-              forState:UIControlStateNormal];
-  doneButton.titleLabel.adjustsFontSizeToFitWidth = YES;
+  SetConfigurationTitle(doneButton, l10n_util::GetNSString(IDS_DONE));
   doneButton.accessibilityIdentifier = kSharingStatusDoneButtonId;
   return doneButton;
 }
@@ -675,6 +672,9 @@ NSString* const kSharingStatusSubtitleId = @"SharingStatusViewSubtitle";
   [self.faviconAppearingAnimation stopAnimation:YES];
 
   [self.sharingCancelledAnimation startAnimation];
+
+  LogPasswordSharingInteraction(
+      PasswordSharingInteraction::kSharingConfirmationCancelClicked);
 }
 
 // Handles done buttons clicks by dismissing the view.

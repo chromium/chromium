@@ -43,7 +43,7 @@ class FedCmTracker : public DevToolsEventListener {
   const std::string& GetLastDialogType() const { return last_dialog_type_; }
 
   // To be called when the client issues one of the commands that
-  // close the dialog.
+  // close the dialog or if we get a dialogClosed event.
   void DialogClosed() {
     last_dialog_id_ = "";
     last_title_ = "";

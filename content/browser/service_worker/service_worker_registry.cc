@@ -180,13 +180,13 @@ std::string RouterRulesToString(blink::ServiceWorkerRouterRules rules) {
 // Enables merging duplicate calls of FindRegistrationForClientUrl.
 BASE_FEATURE(kServiceWorkerMergeFindRegistrationForClientUrl,
              "ServiceWorkerMergeFindRegistrationForClientUrl",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enable registration cache to skip calling FindRegistrationForClientUrl while
 // there is a live registration. (https://crbug.com/1446216)
 BASE_FEATURE(kServiceWorkerRegistrationCache,
              "ServiceWorkerRegistrationCache",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 const base::FeatureParam<int> kServiceWorkerRegistrationCacheSize{
     &kServiceWorkerRegistrationCache, "service_worker_registration_cache_size",
@@ -194,7 +194,7 @@ const base::FeatureParam<int> kServiceWorkerRegistrationCacheSize{
 
 BASE_FEATURE(kServiceWorkerScopeCacheLimit,
              "ServiceWorkerScopeCacheLimit",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // The cache size for kServiceWorkerScopeCache.
 // (https://crbug.com/1411197)

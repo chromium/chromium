@@ -301,7 +301,7 @@ IN_PROC_BROWSER_TEST_F(CompanionLiveTest, InitialNavigation) {
 
   // Navigate to nps.gov article and open side panel.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kNpsUrl)));
-  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), absl::nullopt);
+  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), std::nullopt);
 
   side_panel_coordinator()->Show(SidePanelEntry::Id::kSearchCompanion);
   EXPECT_TRUE(side_panel_coordinator()->IsSidePanelShowing());
@@ -338,7 +338,7 @@ IN_PROC_BROWSER_TEST_F(CompanionLiveTest, InitialNavigationNotOptedIn) {
 
   // Navigate to google.com and open side panel.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kNpsUrl)));
-  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), absl::nullopt);
+  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), std::nullopt);
 
   side_panel_coordinator()->Show(SidePanelEntry::Id::kSearchCompanion);
   EXPECT_TRUE(side_panel_coordinator()->IsSidePanelShowing());
@@ -361,7 +361,7 @@ IN_PROC_BROWSER_TEST_F(CompanionLiveTest, InitialNavigationLoggedOut) {
   // shown for a logged out account. Verify the sign-in promo functionality.
   EnableMsbb(false);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kNpsUrl)));
-  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), absl::nullopt);
+  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), std::nullopt);
 
   side_panel_coordinator()->Show(SidePanelEntry::Id::kSearchCompanion);
   EXPECT_TRUE(side_panel_coordinator()->IsSidePanelShowing());
@@ -421,7 +421,7 @@ IN_PROC_BROWSER_TEST_F(CompanionLiveTest, ToggleExps) {
   }
   // Open side panel and expect experiments to load.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kNpsUrl)));
-  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), absl::nullopt);
+  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), std::nullopt);
   side_panel_coordinator()->Show(SidePanelEntry::Id::kSearchCompanion);
   EXPECT_TRUE(side_panel_coordinator()->IsSidePanelShowing());
   WaitForCompanionToBeLoaded();
@@ -432,7 +432,7 @@ IN_PROC_BROWSER_TEST_F(CompanionLiveTest, ToggleExps) {
 
   // Turn off exps and expect features to not be shown.
   EnableExps(false);
-  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), absl::nullopt);
+  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), std::nullopt);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kNpsUrl)));
   side_panel_coordinator()->Show(SidePanelEntry::Id::kSearchCompanion);
   EXPECT_TRUE(side_panel_coordinator()->IsSidePanelShowing());
@@ -447,7 +447,7 @@ IN_PROC_BROWSER_TEST_F(CompanionLiveTest, ToggleExps) {
 
   // Turn exps back on and open side panel again.
   EnableExps(true);
-  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), absl::nullopt);
+  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), std::nullopt);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kNpsUrl)));
   side_panel_coordinator()->Show(SidePanelEntry::Id::kSearchCompanion);
   EXPECT_TRUE(side_panel_coordinator()->IsSidePanelShowing());

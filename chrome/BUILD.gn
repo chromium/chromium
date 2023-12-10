@@ -204,7 +204,7 @@ if (!is_android && !is_mac) {
           ":chrome_dll",
           ":chrome_exe_version",
           ":copy_first_run",
-          ":packed_resources_integrity",
+          ":packed_resources_integrity_header",
           ":visual_elements_resources",
           "//base",
           "//build:branding_buildflags",
@@ -361,10 +361,6 @@ if (!is_android && !is_mac) {
 
       if (is_chromeos_ash || is_win) {
         data_deps += [ "//mojo/core:shared_library" ]
-      }
-
-      if (is_chromeos_ash) {
-        data_deps += [ "//mojo/core:shared_libraries_for_arc" ]
       }
 
       # These files are used by the installer so we need a public dep.
@@ -955,8 +951,8 @@ if (is_win) {
       # resource bundle because that's the interface that
       # Authorization Services uses.  Also, Authorization Services
       # can't deal with .icns files.
+      "$root_gen_dir/chrome/browser/mac/install.sh",
       "app/theme/default_100_percent/$branding_path_component/product_logo_32.png",
-      "browser/mac/install.sh",
     ]
 
     outputs = [ "{{bundle_resources_dir}}/{{source_file_part}}" ]
@@ -964,6 +960,7 @@ if (is_win) {
     public_deps = [
       ":packed_resources",
       "//chrome/app_shim:app_mode_loader_plist_bundle_data",
+      "//chrome/browser/mac:install",
     ]
 
     if (is_chrome_branded) {
@@ -1032,14 +1029,6 @@ if (is_win) {
       ]
       outputs = [ "{{bundle_contents_dir}}/Libraries/{{source_file_part}}" ]
       public_deps = [ "//ui/gl:swiftshader_vk_library_copy" ]
-    }
-  }
-
-  if (enable_ml_internal) {
-    bundle_data("chrome_ml_library") {
-      sources = [ "$root_out_dir/libchrome_ml.dylib" ]
-      outputs = [ "{{bundle_contents_dir}}/Libraries/{{source_file_part}}" ]
-      public_deps = [ "//third_party/ml:chrome_ml_library_copy" ]
     }
   }
 
@@ -1262,10 +1251,6 @@ if (is_win) {
       ":widevine_cdm_library",
       "//chrome/browser/resources/media/mei_preload:component_bundle",
     ]
-
-    if (enable_ml_internal) {
-      bundle_deps += [ ":chrome_ml_library" ]
-    }
 
     if (is_chrome_branded) {
       bundle_deps += [ ":preinstalled_apps" ]
@@ -1636,6 +1621,7 @@ if (!is_android) {
       public_deps = [ ":preinstalled_apps" ]
     }
 
+    # This needs to be in-sync with //chrome/app/packed_resources_integrity.h.
     files_to_hash = [
       "resources.pak",
       "chrome_100_percent.pak",
@@ -1643,6 +1629,15 @@ if (!is_android) {
     if (enable_hidpi) {
       files_to_hash += [ "chrome_200_percent.pak" ]
     }
+  }
+
+  # This is extracted to deserialize build dependency around
+  # :packed_resources_integrity_hash and improve build parallelism.
+  source_set("packed_resources_integrity_header") {
+    sources = [ "app/packed_resources_integrity.h" ]
+
+    # chrome/app/packed_resources_integrity.cc file is generated in dependency.
+    deps = [ ":packed_resources_integrity" ]
   }
 }
 

@@ -12,9 +12,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Formatter;
 
-/**
- * Helper functions for working with hashes.
- */
+/** Helper functions for working with hashes. */
 public final class HashUtil {
     private static final String TAG = "HashUtil";
 

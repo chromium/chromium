@@ -8,17 +8,15 @@
 #include <string>
 
 #include "base/functional/callback_forward.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/types/expected.h"
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/installability_checker.h"
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_view.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "chrome/browser/web_applications/isolated_web_apps/install_isolated_web_app_command.h"
 
 class Profile;
-
-namespace base {
-class Version;
-}  // namespace base
 
 namespace views {
 class DialogDelegate;
@@ -27,13 +25,12 @@ class View;
 
 namespace web_app {
 
+class CallbackDelayer;
 class IsolatedWebAppInstallerModel;
-class SignedWebBundleMetadata;
 class WebAppProvider;
 
 class IsolatedWebAppInstallerViewController
-    : public InstallabilityChecker::Delegate,
-      public IsolatedWebAppInstallerView::Delegate {
+    : public IsolatedWebAppInstallerView::Delegate {
  public:
   IsolatedWebAppInstallerViewController(Profile* profile,
                                         WebAppProvider* web_app_provider,
@@ -47,6 +44,21 @@ class IsolatedWebAppInstallerViewController
   void SetViewForTesting(IsolatedWebAppInstallerView* view);
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(IsolatedWebAppInstallerViewControllerTest,
+                           InstallButtonLaunchesConfirmationDialog);
+  FRIEND_TEST_ALL_PREFIXES(IsolatedWebAppInstallerViewControllerTest,
+                           ConfirmationDialogMovesToInstallScreen);
+  FRIEND_TEST_ALL_PREFIXES(IsolatedWebAppInstallerViewControllerTest,
+                           SuccessfulInstallationMovesToSuccessScreen);
+  FRIEND_TEST_ALL_PREFIXES(IsolatedWebAppInstallerViewControllerTest,
+                           InstallationErrorShowsErrorDialog);
+  FRIEND_TEST_ALL_PREFIXES(IsolatedWebAppInstallerViewControllerTest,
+                           InstallationErrorRetryRestartsFlow);
+  FRIEND_TEST_ALL_PREFIXES(IsolatedWebAppInstallerViewControllerTest,
+                           CanLaunchAppAfterInstall);
+
+  struct InstallabilityCheckedVisitor;
+
   // Handles returning a default value if the controller has been deleted.
   static bool OnAcceptWrapper(
       base::WeakPtr<IsolatedWebAppInstallerViewController> controller);
@@ -55,23 +67,24 @@ class IsolatedWebAppInstallerViewController
   void OnComplete();
   void Close();
 
-  // `InstallabilityChecker::Delegate`:
-  void OnProfileShutdown() override;
-  void OnBundleInvalid(const std::string& error) override;
-  void OnBundleInstallable(const SignedWebBundleMetadata& metadata) override;
-  void OnBundleUpdatable(const SignedWebBundleMetadata& metadata,
-                         const base::Version& installed_version) override;
-  void OnBundleOutdated(const SignedWebBundleMetadata& metadata,
-                        const base::Version& installed_version) override;
+  void OnPrefChanged(bool enabled);
+  void OnGetMetadataProgressUpdated(double progress);
+  void OnInstallabilityChecked(InstallabilityChecker::Result result);
+  void OnInstallProgressUpdated(double progress);
+  void OnInstallComplete(
+      base::expected<InstallIsolatedWebAppCommandSuccess,
+                     InstallIsolatedWebAppCommandError> result);
+
+  void OnShowMetadataLearnMoreClicked();
 
   // `IsolatedWebAppInstallerView::Delegate`:
   void OnSettingsLinkClicked() override;
+  void OnManageProfilesLinkClicked() override;
+  void OnChildDialogCanceled() override;
+  void OnChildDialogAccepted() override;
 
   // Updates the View to reflect the current state of the model.
   void OnModelChanged();
-
-  void SetButtons(int close_button_label_id,
-                  absl::optional<int> accept_button_label_id);
 
   std::unique_ptr<views::DialogDelegate> CreateDialogDelegate(
       std::unique_ptr<views::View> contents_view);
@@ -82,6 +95,7 @@ class IsolatedWebAppInstallerViewController
   raw_ptr<IsolatedWebAppInstallerView> view_;
   raw_ptr<views::DialogDelegate> dialog_delegate_;
 
+  std::unique_ptr<CallbackDelayer> callback_delayer_;
   std::unique_ptr<InstallabilityChecker> installability_checker_;
 
   base::OnceClosure callback_;

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Store as CrUiStore} from 'chrome://resources/js/store_ts.js';
+import {Store as CrUiStore} from 'chrome://resources/js/store.js';
 
 import {reduceAction} from './reducers.js';
 import {BookmarksPageState} from './types.js';

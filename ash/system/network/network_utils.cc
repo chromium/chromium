@@ -24,12 +24,10 @@ using chromeos::network_config::mojom::DeviceStateProperties;
 using chromeos::network_config::mojom::InhibitReason;
 using chromeos::network_config::mojom::NetworkType;
 
-std::string GetNetworkTypeName(NetworkType network_type) {
+std::string GetNetworkTypeStringForMetrics(NetworkType network_type) {
   switch (network_type) {
     case NetworkType::kCellular:
-      [[fallthrough]];
-    case NetworkType::kTether:
-      [[fallthrough]];
+      return "Cellular";
     case NetworkType::kMobile:
       return "Mobile";
     case NetworkType::kWiFi:
@@ -96,7 +94,7 @@ void RecordDetailedViewSection(DetailedViewSection section) {
 }
 
 void RecordNetworkTypeToggled(NetworkType network_type, bool new_state) {
-  const std::string network_name = GetNetworkTypeName(network_type);
+  const std::string network_name = GetNetworkTypeStringForMetrics(network_type);
 
   DCHECK(!network_name.empty());
 
@@ -105,14 +103,14 @@ void RecordNetworkTypeToggled(NetworkType network_type, bool new_state) {
       new_state);
 }
 
-absl::optional<std::u16string> GetPortalStateSubtext(
+std::optional<std::u16string> GetPortalStateSubtext(
     const chromeos::network_config::mojom::PortalState& portal_state) {
   using chromeos::network_config::mojom::PortalState;
   switch (portal_state) {
     case PortalState::kUnknown:
       [[fallthrough]];
     case PortalState::kOnline:
-      return absl::nullopt;
+      return std::nullopt;
     case PortalState::kPortalSuspected:
       [[fallthrough]];
     case PortalState::kNoInternet:

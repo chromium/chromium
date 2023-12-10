@@ -67,7 +67,10 @@ js_library("notification_tester") {
     ":types",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
-  externs_list = [ "$externs_path/chrome_send.js" ]
+  externs_list = [
+    "$externs_path/chrome_send.js",
+    "$externs_path/pending.js",
+  ]
 }
 
 js_library("select_custom") {

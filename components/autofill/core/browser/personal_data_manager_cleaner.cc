@@ -167,21 +167,15 @@ bool PersonalDataManagerCleaner::ApplyDedupingRoutine() {
   }
 
   const std::vector<AutofillProfile*>& profiles =
-      base::FeatureList::IsEnabled(
-                  features::kAutofillAccountProfileStorage)
-          ? personal_data_manager_->GetProfiles()
-          : personal_data_manager_->GetProfilesFromSource(
-                AutofillProfile::Source::kLocalOrSyncable);
+      personal_data_manager_->GetProfiles();
 
   // No need to de-duplicate if there are less than two profiles.
   if (profiles.size() < 2) {
-    DVLOG(1) << "Autofill profile de-duplication not needed.";
     pref_service_->SetInteger(prefs::kAutofillLastVersionDeduped,
                               CHROME_VERSION_MAJOR);
     return false;
   }
 
-  DVLOG(1) << "Starting autofill profile de-duplication.";
   std::unordered_set<std::string> profiles_to_delete;
   profiles_to_delete.reserve(profiles.size());
 
@@ -318,7 +312,6 @@ bool PersonalDataManagerCleaner::DeleteDisusedAddresses() {
 
   // Early exit when there are no profiles.
   if (profiles.empty()) {
-    DVLOG(1) << "There are no profiles";
     return true;
   }
 

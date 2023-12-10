@@ -1,20 +1,22 @@
 // GENERATED CONTENT - DO NOT EDIT
 // Content was automatically extracted by Reffy into webref
 // (https://github.com/w3c/webref)
-// Source: Web Authentication: An API for accessing Public Key Credentials - Level (https://w3c.github.io/webauthn/)
+// Source: Web Authentication: An API for accessing Public Key Credentials - Level 3 (https://w3c.github.io/webauthn/)
 
 [SecureContext, Exposed=Window]
 interface PublicKeyCredential : Credential {
     [SameObject] readonly attribute ArrayBuffer              rawId;
     [SameObject] readonly attribute AuthenticatorResponse    response;
-    [SameObject] readonly attribute DOMString?               authenticatorAttachment;
+    readonly attribute DOMString?                            authenticatorAttachment;
     AuthenticationExtensionsClientOutputs getClientExtensionResults();
     static Promise<boolean> isConditionalMediationAvailable();
     PublicKeyCredentialJSON toJSON();
 };
 
 typedef DOMString Base64URLString;
-typedef (RegistrationResponseJSON or AuthenticationResponseJSON) PublicKeyCredentialJSON;
+// The structure of this object will be either
+// RegistrationResponseJSON or AuthenticationResponseJSON
+typedef object PublicKeyCredentialJSON;
 
 dictionary RegistrationResponseJSON {
     required Base64URLString id;
@@ -296,6 +298,7 @@ partial dictionary AuthenticationExtensionsClientInputs {
 
 dictionary CredentialPropertiesOutput {
     boolean rk;
+    USVString authenticatorDisplayName;
 };
 
 partial dictionary AuthenticationExtensionsClientOutputs {
@@ -361,19 +364,20 @@ partial dictionary AuthenticationExtensionsClientOutputs {
   UvmEntries uvm;
 };
 
-dictionary AuthenticationExtensionsDevicePublicKeyInputs {
-    DOMString attestation = "none";
+dictionary AuthenticationExtensionsSupplementalPubKeysInputs {
+    required sequence<DOMString> scopes;
+    DOMString attestation = "indirect";
     sequence<DOMString> attestationFormats = [];
 };
 
 partial dictionary AuthenticationExtensionsClientInputs {
-    AuthenticationExtensionsDevicePublicKeyInputs devicePubKey;
+    AuthenticationExtensionsSupplementalPubKeysInputs supplementalPubKeys;
 };
 
-dictionary AuthenticationExtensionsDevicePublicKeyOutputs {
-    ArrayBuffer signature;
+dictionary AuthenticationExtensionsSupplementalPubKeysOutputs {
+    sequence<ArrayBuffer> signatures;
 };
 
 partial dictionary AuthenticationExtensionsClientOutputs {
-    AuthenticationExtensionsDevicePublicKeyOutputs devicePubKey;
+    AuthenticationExtensionsSupplementalPubKeysOutputs supplementalPubKeys;
 };

@@ -5,7 +5,7 @@
 #ifndef REMOTING_HOST_BASE_SCREEN_CONTROLS_H_
 #define REMOTING_HOST_BASE_SCREEN_CONTROLS_H_
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
 
 namespace remoting {
@@ -34,7 +34,7 @@ class ScreenControls {
   // resized).
   virtual void SetScreenResolution(
       const ScreenResolution& resolution,
-      absl::optional<webrtc::ScreenId> screen_id) = 0;
+      std::optional<webrtc::ScreenId> screen_id) = 0;
 
   virtual void SetVideoLayout(const protocol::VideoLayout& video_layout) = 0;
 };

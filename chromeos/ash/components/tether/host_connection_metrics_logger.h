@@ -5,7 +5,6 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_TETHER_HOST_CONNECTION_METRICS_LOGGER_H_
 #define CHROMEOS_ASH_COMPONENTS_TETHER_HOST_CONNECTION_METRICS_LOGGER_H_
 
-#include <map>
 #include <string>
 
 #include "base/gtest_prod_util.h"
@@ -27,30 +26,37 @@ namespace tether {
 class HostConnectionMetricsLogger : public ActiveHost::Observer {
  public:
   enum class ConnectionToHostResult {
-    CONNECTION_RESULT_PROVISIONING_FAILED,
-    CONNECTION_RESULT_SUCCESS,
-    CONNECTION_RESULT_FAILURE_UNKNOWN_ERROR,
-    CONNECTION_RESULT_FAILURE_CLIENT_CONNECTION_TIMEOUT,
-    CONNECTION_RESULT_FAILURE_CLIENT_CONNECTION_CANCELED_BY_USER,
-    CONNECTION_RESULT_FAILURE_CLIENT_CONNECTION_INTERNAL_ERROR,
-    CONNECTION_RESULT_FAILURE_TETHERING_TIMED_OUT_FIRST_TIME_SETUP_WAS_REQUIRED,
-    CONNECTION_RESULT_FAILURE_TETHERING_TIMED_OUT_FIRST_TIME_SETUP_WAS_NOT_REQUIRED,
-    CONNECTION_RESULT_FAILURE_TETHERING_UNSUPPORTED,
-    CONNECTION_RESULT_FAILURE_NO_CELL_DATA,
-    CONNECTION_RESULT_FAILURE_ENABLING_HOTSPOT_FAILED,
-    CONNECTION_RESULT_FAILURE_ENABLING_HOTSPOT_TIMEOUT,
-    CONNECTION_RESULT_FAILURE_NO_RESPONSE,
-    CONNECTION_RESULT_FAILURE_INVALID_HOTSPOT_CREDENTIALS,
-    CONNECTION_RESULT_FAILURE_SUCCESSFUL_REQUEST_BUT_NO_RESPONSE,
-    CONNECTION_RESULT_FAILURE_UNRECOGNIZED_RESPONSE_ERROR,
-    CONNECTION_RESULT_FAILURE_INVALID_ACTIVE_EXISTING_SOFT_AP_CONFIG,
-    CONNECTION_RESULT_FAILURE_INVALID_NEW_SOFT_AP_CONFIG,
-    CONNECTION_RESULT_FAILURE_INVALID_WIFI_AP_CONFIG,
+    SUCCESS = 0,
+    INTERNAL_ERROR = 1,
+    USER_CANCELLATION = 2,
+    PROVISIONING_FAILURE = 3,
+    NO_CELLULAR_DATA = 4,
+    TETHERING_UNSUPPORTED = 5,
+    CONNECTION_TO_HOST_RESULT_MAX,
+  };
+
+  enum class ConnectionToHostInternalError {
+    UNKNOWN_ERROR,
+    CLIENT_CONNECTION_TIMEOUT,
+    CLIENT_CONNECTION_INTERNAL_ERROR,
+    TETHERING_TIMED_OUT_FIRST_TIME_SETUP_REQUIRED,
+    TETHERING_TIMED_OUT_FIRST_TIME_SETUP_NOT_REQUIRED,
+    ENABLING_HOTSPOT_FAILED,
+    ENABLING_HOTSPOT_TIMEOUT,
+    NO_RESPONSE,
+    INVALID_HOTSPOT_CREDENTIALS,
+    SUCCESSFUL_REQUEST_BUT_NO_RESPONSE,
+    UNRECOGNIZED_RESPONSE_ERROR,
+    INVALID_ACTIVE_EXISTING_SOFT_AP_CONFIG,
+    INVALID_NEW_SOFT_AP_CONFIG,
+    INVALID_WIFI_AP_CONFIG,
   };
 
   // Record the result of an attempted host connection.
-  virtual void RecordConnectionToHostResult(ConnectionToHostResult result,
-                                            const std::string& device_id);
+  virtual void RecordConnectionToHostResult(
+      ConnectionToHostResult result,
+      const std::string& device_id,
+      std::optional<ConnectionToHostInternalError> internal_error);
 
   HostConnectionMetricsLogger(ActiveHost* active_host);
 
@@ -130,6 +136,8 @@ class HostConnectionMetricsLogger : public ActiveHost::Observer {
       HostConnectionMetricsLoggerTest,
       RecordConnectionResultFailureInvalidHotspotCredentials);
 
+  void RecordInternalError(ConnectionToHostInternalError internal_error);
+
   // An Instant Tethering connection can fail for several different reasons.
   // Though traditionally success and each failure case would be logged to a
   // single enum, we have chosen to start at a top-level of view of simply
@@ -186,16 +194,6 @@ class HostConnectionMetricsLogger : public ActiveHost::Observer {
     FIRST_TIME_SETUP_WAS_NOT_REQUIRED = 1,
     FAILURE_TETHERING_TIMEOUT_MAX
   };
-
-  // Record if a host connection attempt never went through due to provisioning
-  // failure, or otherwise continued.
-  void RecordConnectionResultProvisioningFailure(
-      ConnectionToHostResult_ProvisioningFailureEventType event_type);
-
-  // Record if a host connection attempt succeeded or failed. Failure is
-  // covered by the RecordConnectionResultFailure() method.
-  void RecordConnectionResultSuccess(
-      ConnectionToHostResult_SuccessEventType event_type);
 
   // Record how a host connection attempt failed. Failure due to client error or
   // tethering timeout is covered by the

@@ -417,6 +417,56 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Nearby.Presence.Credentials.Storage.Initialization.Result"
+    enum="BooleanSuccess" expires_after="2024-07-10">
+  <owner>polner@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records the overall result of initialization of the Nearby Presence
+    Credential Storage component. Emitted after the initialization attempt
+    completes.
+  </summary>
+</histogram>
+
+<histogram
+    name="Nearby.Presence.Credentials.Storage.SaveLocalPublicCredentials.Result"
+    enum="BooleanSuccess" expires_after="2024-07-10">
+  <owner>polner@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records the result of an attempt at saving credentials to the local public
+    credential database of the Nearby Presence Credential Storage component.
+    Emitted after an attempt to save credentials to the local public credential
+    database completes.
+  </summary>
+</histogram>
+
+<histogram
+    name="Nearby.Presence.Credentials.Storage.SavePrivateCredentials.Result"
+    enum="BooleanSuccess" expires_after="2024-07-10">
+  <owner>polner@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records the result of an attempt at saving credentials to the private
+    credential database of the Nearby Presence Credential Storage component.
+    Emitted after an attempt to save credentials to the private credential
+    database completes.
+  </summary>
+</histogram>
+
+<histogram
+    name="Nearby.Presence.Credentials.Storage.SaveRemotePublicCredentials.Result"
+    enum="BooleanSuccess" expires_after="2024-07-10">
+  <owner>polner@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records the result of an attempt at saving credentials to the remote public
+    credential database of the Nearby Presence Credential Storage component.
+    Emitted after an attempt to save credentials to the remote public credential
+    database completes.
+  </summary>
+</histogram>
+
 <histogram name="Nearby.Presence.Credentials.Upload.AttemptsNeededCount"
     units="attempts" expires_after="2024-07-10">
   <owner>julietlevesque@google.com</owner>
@@ -1123,17 +1173,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Nearby.Share.Payload.FuseBox.Open.Success"
-    enum="BooleanSuccess" expires_after="2024-07-10">
-  <obsolete>
-    Removed in 10/2022. Now using
-    Nearby.Share.Payload{Operation}.Success{FilePath} to support different
-    operation and file path types.
-  </obsolete>
-  <owner>alanding@google.com</owner>
-  <owner>cros-sharesheet@google.com</owner>
-</histogram>
-
 <histogram name="Nearby.Share.Payload.Medium" enum="NearbyShareUpgradedMedium"
     expires_after="2024-07-10">
   <owner>pushi@google.com</owner>
@@ -1518,7 +1557,8 @@ chromium-metrics-reviews@google.com.
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>
     Records the time between when receiver receives the introduction frame to
-    when all files are successfully transferred.
+    when all files are successfully transferred. Note: This contains user
+    interaction so it may vary significantly.
   </summary>
 </histogram>
 

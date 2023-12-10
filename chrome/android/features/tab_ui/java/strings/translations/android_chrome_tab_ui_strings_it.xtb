@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="it">
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> delle tue schede non sono state usate ultimamente. Vuoi chiuderle?</translation>
+<translation id="1155815720264022949">Vuoi chiudere le vecchie schede?</translation>
 <translation id="1215127405478249895">Rivedi le schede</translation>
 <translation id="125153950246128346">Tocca per visualizzare un'altra scheda</translation>
 <translation id="1499635324672558517">Chiudere tutte le schede di navigazione in incognito?</translation>
@@ -46,9 +47,11 @@
 <translation id="5073204694187207510">Nascondi la griglia a schermo intero</translation>
 <translation id="5076161749301278626">Vuoi visualizzare le recensioni sul negozio?</translation>
 <translation id="5082793167783849073">Confronta rapidamente le pagine creando un gruppo. Innanzitutto, tocca e tieni premuto un link.</translation>
+<translation id="5303274951032363933">{TABS_COUNT,plural, =1{Hai <ph name="TABS_COUNT_ONE" /> scheda non utilizzata di recente}other{Hai <ph name="TABS_COUNT_MANY" /> schede non utilizzate di recente}}</translation>
 <translation id="5339733443032484186">Ultima scheda</translation>
 <translation id="5490235265819901748">Gruppo di schede espanso</translation>
 <translation id="5494920125229734069">Seleziona tutto</translation>
+<translation id="5545379293264651575">Chiudi senza rivedere</translation>
 <translation id="5556417849629758491">Visualizza informazioni sul negozio, opzione disponibile nella parte superiore dello schermo</translation>
 <translation id="5558362125926932819">Chiudi il gruppo di schede con <ph name="NUMBER_OF_TABS" /> schede</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" /> schede raggruppate</translation>
@@ -85,7 +88,6 @@
 <translation id="7885132941432959125">Sposta scheda a destra</translation>
 <translation id="7966321538264951561">Ignora i suggerimenti.</translation>
 <translation id="8029301326595421733">Informazioni su questo negozio aperte a schermo intero</translation>
-<translation id="814503310257431685">Visualizza tutti</translation>
 <translation id="8205266828577616993">Sposta scheda in alto</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Chiudi <ph name="TABS_COUNT_ONE" /> scheda selezionata}other{Chiudi <ph name="TABS_COUNT_MANY" /> schede selezionate}}</translation>
 <translation id="8398929769197326728">Nuova cartella - <ph name="CURRENT_TIMESTAMP_MS" /></translation>

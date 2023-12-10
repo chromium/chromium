@@ -12,6 +12,7 @@
 #include <set>
 #include <string>
 
+#include <optional>
 #include "base/component_export.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
@@ -28,7 +29,6 @@
 #include "components/services/storage/public/cpp/quota_error_or.h"
 #include "storage/browser/quota/quota_internals.mojom-forward.h"
 #include "storage/browser/quota/storage_directory.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom-shared.h"
 
@@ -319,7 +319,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
   static const size_t kIndexCount;
 
   // A descriptor of the last SQL statement that was executed, used for metrics.
-  absl::optional<std::string> last_operation_;
+  std::optional<std::string> last_operation_;
 
   base::RepeatingCallback<void(int)> db_error_callback_;
 };

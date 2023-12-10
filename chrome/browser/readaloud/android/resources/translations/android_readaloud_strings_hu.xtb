@@ -2,11 +2,14 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="hu">
 <translation id="1178581264944972037">Szünet</translation>
-<translation id="2558806128245168542">Vissza</translation>
-<translation id="3523426587027570423">Koppintson az „Oldal meghallgatása” lejátszó bezárásához.</translation>
+<translation id="1921351128855867012">Előretekerés <ph name="NUMBER_OF_SECONDS" /> másodperccel</translation>
+<translation id="1984328900355667246">Nem játszható le</translation>
+<translation id="3023502830214299618">Sajnos jelenleg nem lehetséges a lejátszás ezen az oldalon. Próbálja újra később.</translation>
+<translation id="3807208219231826020">Beletekerés a lejátszásba</translation>
+<translation id="385051799172605136">Vissza</translation>
 <translation id="4431240646217225907">Szöveg kiemelése és automatikus görgetés</translation>
 <translation id="4654641641922242357">Az „Oldal meghallgatása” lejátszó</translation>
-<translation id="4731877163452936634">Lejátszási sebesség: <ph name="PLAYBACK_SPEED" />. Kattintson a módosításhoz.</translation>
+<translation id="4872475766448853257">Visszatekerés <ph name="NUMBER_OF_SECONDS" /> másodperccel</translation>
 <translation id="5234971936051226002">Az „Oldal meghallgatása” lejátszó kis méretre van állítva.</translation>
 <translation id="5596627076506792578">További lehetőségek</translation>
 <translation id="6315170314923504164">Hang</translation>
@@ -15,8 +18,8 @@
 <translation id="6831043979455480757">Fordítás</translation>
 <translation id="6846298663435243399">Betöltés…</translation>
 <translation id="7587250070160020374">A Chrome itt játszik le tartalmat:</translation>
-<translation id="7945822420239537236">Előre <ph name="NUMBER_OF_SECONDS" /> másodpercet</translation>
-<translation id="7972866381678406344">Vissza <ph name="NUMBER_OF_SECONDS" /> másodpercet</translation>
 <translation id="8136852699834914183">A lejátszás nem áll rendelkezésre ehhez az oldalhoz.</translation>
+<translation id="8264989794233974275">Sebesség növelése/csökkentése: <ph name="PLAYBACK_SPEED" />×</translation>
+<translation id="8407011429883244666">Lejátszó bezárása</translation>
 <translation id="8953618380150219653">Az „Oldal meghallgatása” lejátszó teljes magasságban van megnyitva.</translation>
 </translationbundle>

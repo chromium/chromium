@@ -6,6 +6,7 @@
 
 #include "android_webview/browser/gfx/java_browser_view_renderer_helper.h"
 #include "android_webview/browser_jni_headers/AwPicture_jni.h"
+#include "base/logging.h"
 #include "third_party/skia/include/core/SkPicture.h"
 
 using base::android::JavaParamRef;

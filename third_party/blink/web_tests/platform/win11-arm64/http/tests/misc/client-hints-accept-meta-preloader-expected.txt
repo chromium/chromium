@@ -1,2 +1,0 @@
-This test checks that a meta based Accept-CH is properly parsed by the HTMLPreloadScanner.
-FAILED

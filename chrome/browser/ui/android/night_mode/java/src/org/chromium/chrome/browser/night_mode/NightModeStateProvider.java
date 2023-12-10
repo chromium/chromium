@@ -10,9 +10,7 @@ import android.content.res.Configuration;
 
 import androidx.annotation.NonNull;
 
-/**
- * An interface that provides and notifies about night mode state.
- */
+/** An interface that provides and notifies about night mode state. */
 public interface NightModeStateProvider {
     /** Observes night mode state changes. */
     interface Observer {

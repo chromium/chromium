@@ -70,14 +70,21 @@ class ASH_EXPORT InputDeviceSettingsNotificationController {
   void NotifyGraphicsTabletIsCustomizable(
       const mojom::GraphicsTablet& graphics_tablet);
 
+  // Use to display a notification when a mouse is first connected.
+  void NotifyMouseFirstTimeConnected(const mojom::Mouse& mouse);
+
+  // Use to display a notification when a graphics table is first connected.
+  void NotifyGraphicsTabletFirstTimeConnected(
+      const mojom::GraphicsTablet* graphics_tablet);
+
  private:
   void HandleRightClickNotificationClicked(const std::string& notification_id,
-                                           absl::optional<int> button_index);
+                                           std::optional<int> button_index);
 
   void HandleSixPackNotificationClicked(int device_id,
                                         const char* pref_name,
                                         const std::string& notification_id,
-                                        absl::optional<int> button_index);
+                                        std::optional<int> button_index);
   // MessageCenter for adding notifications.
   const raw_ptr<message_center::MessageCenter,
                 DanglingUntriaged | ExperimentalAsh>

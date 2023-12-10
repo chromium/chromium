@@ -23,7 +23,9 @@
 #include "components/update_client/net/network_chromium.h"
 #include "components/update_client/patch/patch_impl.h"
 #include "components/update_client/patcher.h"
+#include "components/update_client/persisted_data.h"
 #include "components/update_client/protocol_handler.h"
+#include "components/update_client/test_activity_data_service.h"
 #include "components/update_client/unzip/unzip_impl.h"
 #include "components/update_client/unzipper.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -46,6 +48,9 @@ std::vector<GURL> MakeDefaultUrls() {
 TestConfigurator::TestConfigurator(PrefService* pref_service)
     : enabled_cup_signing_(false),
       pref_service_(pref_service),
+      persisted_data_(
+          CreatePersistedData(pref_service,
+                              std::make_unique<TestActivityDataService>())),
       unzip_factory_(base::MakeRefCounted<update_client::UnzipChromiumFactory>(
           base::BindRepeating(&unzip::LaunchInProcessUnzipper))),
       patch_factory_(base::MakeRefCounted<update_client::PatchChromiumFactory>(
@@ -158,8 +163,8 @@ PrefService* TestConfigurator::GetPrefService() const {
   return pref_service_;
 }
 
-ActivityDataService* TestConfigurator::GetActivityDataService() const {
-  return nullptr;
+PersistedData* TestConfigurator::GetPersistedData() const {
+  return persisted_data_.get();
 }
 
 bool TestConfigurator::IsPerUserInstall() const {

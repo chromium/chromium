@@ -6,9 +6,7 @@ package org.chromium.components.browser_ui.site_settings;
 
 import android.content.SharedPreferences;
 
-/**
- * Constants used for {@link SingleCategorySettings}.
- */
+/** Constants used for {@link SingleCategorySettings}. */
 public class SingleCategorySettingsConstants {
     /**
      * {@link SharedPreferences} key that indicates whether the desktop site global setting was

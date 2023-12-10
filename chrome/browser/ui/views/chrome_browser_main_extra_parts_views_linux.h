@@ -41,7 +41,7 @@ class ChromeBrowserMainExtraPartsViewsLinux
   // display::DisplayObserver:
   void OnCurrentWorkspaceChanged(const std::string& new_workspace) override;
 
-  absl::optional<display::ScopedDisplayObserver> display_observer_;
+  std::optional<display::ScopedDisplayObserver> display_observer_;
 
   std::unique_ptr<ui::LinuxUiGetter> linux_ui_getter_;
 #if defined(USE_DBUS)

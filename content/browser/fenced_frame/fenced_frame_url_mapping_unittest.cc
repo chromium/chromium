@@ -143,7 +143,8 @@ class FencedFrameURLMappingTest : public RenderViewHostTestHarness {
         /*direct_seller_is_seller=*/false,
         /*private_aggregation_manager=*/nullptr,
         /*main_frame_origin=*/url::Origin(),
-        /*winner_origin=*/url::Origin());
+        /*winner_origin=*/url::Origin(),
+        /*winner_aggregation_coordinator_origin=*/absl::nullopt);
   }
 };
 

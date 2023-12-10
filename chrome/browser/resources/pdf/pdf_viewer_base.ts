@@ -54,6 +54,7 @@ export abstract class PdfViewerBaseElement extends PolymerElement {
   protected lastViewportPosition: Point|null = null;
   protected originalUrl: string = '';
   protected paramsParser: OpenPdfParamsParser|null = null;
+  protected pdfOopifEnabled: boolean = false;
   showErrorDialog: boolean;
   protected strings?: {[key: string]: string};
   protected tracker: EventTracker = new EventTracker();
@@ -117,16 +118,20 @@ export abstract class PdfViewerBaseElement extends PolymerElement {
       plugin.toggleAttribute('pdf-viewer-update-enabled', true);
     }
 
-    // PDF viewer only, as Print Preview doesn't use
-    // `chrome.mimeHandlerPrivate`.
-    if (chrome.mimeHandlerPrivate) {
-      // Pass the attributes for loading PDF plugin through the
-      // `mimeHandlerPrivate` API.
-      const attributesForLoading:
-          chrome.mimeHandlerPrivate.PdfPluginAttributes = {
-        backgroundColor: this.getBackgroundColor(),
-        allowJavascript: javascript === 'allow',
-      };
+    // Pass the attributes for loading PDF plugin through the `pdfViewerPrivate`
+    // API if OOPIF PDF is enabled, or the `mimeHandlerPrivate` API.
+    const attributesForLoading:
+        chrome.mimeHandlerPrivate.PdfPluginAttributes = {
+      backgroundColor: this.getBackgroundColor(),
+      allowJavascript: javascript === 'allow',
+    };
+
+    // PDF viewer only, as Print Preview doesn't set PDF plugin attributes.
+    if (this.pdfOopifEnabled) {
+      if (chrome.pdfViewerPrivate) {
+        chrome.pdfViewerPrivate.setPdfPluginAttributes(attributesForLoading);
+      }
+    } else if (chrome.mimeHandlerPrivate) {
       chrome.mimeHandlerPrivate.setPdfPluginAttributes(attributesForLoading);
     }
 
@@ -147,6 +152,8 @@ export abstract class PdfViewerBaseElement extends PolymerElement {
       content: HTMLElement) {
     this.browserApi = browserApi;
     this.originalUrl = this.browserApi!.getStreamInfo().originalUrl;
+    this.pdfOopifEnabled =
+        document.documentElement.hasAttribute('pdfOopifEnabled');
 
     record(UserAction.DOCUMENT_OPENED);
 

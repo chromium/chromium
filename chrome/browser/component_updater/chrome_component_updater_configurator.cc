@@ -34,6 +34,7 @@
 #include "components/update_client/crx_downloader_factory.h"
 #include "components/update_client/net/network_chromium.h"
 #include "components/update_client/patch/patch_impl.h"
+#include "components/update_client/persisted_data.h"
 #include "components/update_client/protocol_handler.h"
 #include "components/update_client/unzip/unzip_impl.h"
 #include "components/update_client/unzipper.h"
@@ -80,7 +81,7 @@ class ChromeConfigurator : public update_client::Configurator {
   bool EnabledBackgroundDownloader() const override;
   bool EnabledCupSigning() const override;
   PrefService* GetPrefService() const override;
-  update_client::ActivityDataService* GetActivityDataService() const override;
+  update_client::PersistedData* GetPersistedData() const override;
   bool IsPerUserInstall() const override;
   std::unique_ptr<update_client::ProtocolHandlerFactory>
   GetProtocolHandlerFactory() const override;
@@ -94,8 +95,8 @@ class ChromeConfigurator : public update_client::Configurator {
   absl::optional<base::FilePath> GetBackgroundDownloaderCache() const;
 
   ConfiguratorImpl configurator_impl_;
-  raw_ptr<PrefService>
-      pref_service_;  // This member is not owned by this class.
+  raw_ptr<PrefService> pref_service_;
+  std::unique_ptr<update_client::PersistedData> persisted_data_;
   scoped_refptr<update_client::NetworkFetcherFactory> network_fetcher_factory_;
   scoped_refptr<update_client::CrxDownloaderFactory> crx_downloader_factory_;
   scoped_refptr<update_client::UnzipperFactory> unzip_factory_;
@@ -111,7 +112,9 @@ ChromeConfigurator::ChromeConfigurator(const base::CommandLine* cmdline,
                                        PrefService* pref_service)
     : configurator_impl_(ComponentUpdaterCommandLineConfigPolicy(cmdline),
                          false),
-      pref_service_(pref_service) {
+      pref_service_(pref_service),
+      persisted_data_(
+          update_client::CreatePersistedData(pref_service, nullptr)) {
   DCHECK(pref_service_);
 }
 
@@ -235,9 +238,8 @@ PrefService* ChromeConfigurator::GetPrefService() const {
   return pref_service_;
 }
 
-update_client::ActivityDataService* ChromeConfigurator::GetActivityDataService()
-    const {
-  return nullptr;
+update_client::PersistedData* ChromeConfigurator::GetPersistedData() const {
+  return persisted_data_.get();
 }
 
 bool ChromeConfigurator::IsPerUserInstall() const {

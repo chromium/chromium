@@ -98,7 +98,7 @@ struct BuiltInBackendToAndroidBackendMigrator::BackendAndLoginsResults {
 
     return base::MakeFlatSet<const PasswordForm*, IsPasswordLess>(
         absl::get<LoginsResult>(logins_result), {},
-        &std::unique_ptr<PasswordForm>::get);
+        [](auto& form) { return &form; });
   }
 
   BackendAndLoginsResults(PasswordStoreBackend* backend,
@@ -313,7 +313,7 @@ void BuiltInBackendToAndroidBackendMigrator::MigrateNonSyncableData(
   for (const auto& login : absl::get<LoginsResult>(logins_or_error)) {
     callbacks_chain = base::BindOnce(
         &BuiltInBackendToAndroidBackendMigrator::UpdateLoginInBackend,
-        weak_ptr_factory_.GetWeakPtr(), target_backend, *login,
+        weak_ptr_factory_.GetWeakPtr(), target_backend, login,
         std::move(callbacks_chain));
   }
 
@@ -632,14 +632,12 @@ void BuiltInBackendToAndroidBackendMigrator::RemoveBlacklistedFormsWithValues(
     return;
   }
 
-  auto& forms = absl::get<LoginsResult>(logins_or_error);
-
   LoginsResult clean_forms;
-  clean_forms.reserve(forms.size());
+  clean_forms.reserve(absl::get<LoginsResult>(logins_or_error).size());
 
-  for (std::unique_ptr<PasswordForm>& form : forms) {
-    if (IsBlacklistedFormWithValues(*form)) {
-      RemoveLoginFromBackend(backend, *form, base::DoNothing());
+  for (auto& form : absl::get<LoginsResult>(logins_or_error)) {
+    if (IsBlacklistedFormWithValues(form)) {
+      RemoveLoginFromBackend(backend, form, base::DoNothing());
       continue;
     }
     clean_forms.push_back(std::move(form));

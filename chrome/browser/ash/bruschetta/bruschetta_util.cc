@@ -17,7 +17,7 @@
 namespace bruschetta {
 
 namespace {
-absl::optional<const base::Value::Dict*> GetConfigWithEnabledLevel(
+std::optional<const base::Value::Dict*> GetConfigWithEnabledLevel(
     const Profile* profile,
     const std::string& config_id,
     prefs::PolicyEnabledState enabled_level) {
@@ -28,7 +28,7 @@ absl::optional<const base::Value::Dict*> GetConfigWithEnabledLevel(
   // display names.
   if (!virtual_machines::AreVirtualMachinesAllowedByPolicy() &&
       enabled_level > prefs::PolicyEnabledState::BLOCKED) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   const auto* config_ptr = profile->GetPrefs()
@@ -36,7 +36,7 @@ absl::optional<const base::Value::Dict*> GetConfigWithEnabledLevel(
                                .FindDict(config_id);
   if (!config_ptr || config_ptr->FindInt(prefs::kPolicyEnabledKey) <
                          static_cast<int>(enabled_level)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return config_ptr;
@@ -73,7 +73,7 @@ guest_os::GuestId MakeBruschettaId(std::string vm_name) {
                            "penguin"};
 }
 
-absl::optional<const base::Value::Dict*> GetRunnableConfig(
+std::optional<const base::Value::Dict*> GetRunnableConfig(
     const Profile* profile,
     const std::string& config_id) {
   return GetConfigWithEnabledLevel(profile, config_id,
@@ -84,7 +84,7 @@ base::FilePath BruschettaChromeOSBaseDirectory() {
   return base::FilePath("/mnt/shared");
 }
 
-absl::optional<const base::Value::Dict*> GetInstallableConfig(
+std::optional<const base::Value::Dict*> GetInstallableConfig(
     const Profile* profile,
     const std::string& config_id) {
   return GetConfigWithEnabledLevel(profile, config_id,
@@ -127,12 +127,11 @@ bool IsInstalled(Profile* profile, const guest_os::GuestId& guest_id) {
   return value != nullptr;
 }
 
-absl::optional<RunningVmPolicy> GetLaunchPolicyForConfig(
-    Profile* profile,
-    std::string config_id) {
+std::optional<RunningVmPolicy> GetLaunchPolicyForConfig(Profile* profile,
+                                                        std::string config_id) {
   auto config_option = GetRunnableConfig(profile, config_id);
   if (!config_option.has_value()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   const auto* config = *config_option;
 
@@ -152,14 +151,14 @@ std::string GetVmUsername(const Profile* profile) {
   return username.substr(0, username.find("@"));
 }
 
-absl::optional<const base::Value::Dict*> GetConfigForGuest(
+std::optional<const base::Value::Dict*> GetConfigForGuest(
     Profile* profile,
     const guest_os::GuestId& guest_id,
     prefs::PolicyEnabledState enabled_level) {
   const auto* config_id_val = guest_os::GetContainerPrefValue(
       profile, guest_id, guest_os::prefs::kBruschettaConfigId);
   if (!config_id_val) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   const auto& config_id = config_id_val->GetString();

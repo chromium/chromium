@@ -8,6 +8,7 @@
 #include <bitset>
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
@@ -41,7 +42,6 @@
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ime/ash/input_method_manager.h"
 
 class AccountId;
@@ -52,6 +52,7 @@ class Profile;
 
 namespace user_manager {
 class User;
+class KnownUser;
 }  // namespace user_manager
 
 namespace ash {
@@ -423,6 +424,12 @@ class UserSessionManager
   void InitProfilePreferences(Profile* profile,
                               const UserContext& user_context);
 
+  // Initializes `user_context` and `known_user` with a device id. Does not
+  // overwrite the device id in `known_user` if it already exists.
+  void InitializeDeviceId(bool is_ephemeral_user,
+                          UserContext& user_context,
+                          user_manager::KnownUser& known_user);
+
   // Callback for Profile::CREATE_STATUS_INITIALIZED profile state.
   // Profile is created, extensions and promo resources are initialized.
   void UserProfileInitialized(Profile* profile, const AccountId& account_id);
@@ -466,7 +473,7 @@ class UserSessionManager
 
   // Callback to process RetrieveActiveSessions() request results.
   void OnRestoreActiveSessions(
-      absl::optional<SessionManagerClient::ActiveSessionsMap> sessions);
+      std::optional<SessionManagerClient::ActiveSessionsMap> sessions);
 
   // Called by OnRestoreActiveSessions() when there're user sessions in
   // `pending_user_sessions_` that has to be restored one by one.

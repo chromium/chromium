@@ -7,6 +7,7 @@
 
 #include "base/time/time.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
+#include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 
 class Profile;
@@ -175,6 +176,10 @@ AppTypeName GetAppTypeNameFromString(const std::string& app_type_name);
 // Returns true if we are allowed to record UKM for `profile`. Otherwise,
 // returns false.
 bool ShouldRecordUkm(Profile* profile);
+
+// Returns true if it's allowed to record UKM for `app_id`.
+bool ShouldRecordUkmForAppId(const std::string& app_id,
+                             const apps::AppRegistryCache& cache);
 
 // Due to the privacy limitation, only ARC apps, Chrome apps and web apps(PWA),
 // system web apps, builtin apps, Borealis apps, and Crostini apps are recorded

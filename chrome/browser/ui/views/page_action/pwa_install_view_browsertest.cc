@@ -29,7 +29,7 @@
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
-#include "chrome/browser/web_applications/web_app_prefs_utils.h"
+#include "chrome/browser/web_applications/web_app_pref_guardrails.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/common/chrome_switches.h"
@@ -285,7 +285,7 @@ class PwaInstallViewBrowserTest : public extensions::ExtensionBrowserTest {
 
     UninstallWebApp(app_id);
 
-    web_app::SetInstallBounceMetricTimeForTesting(absl::nullopt);
+    web_app::SetInstallBounceMetricTimeForTesting(std::nullopt);
 
     std::vector<base::Bucket> expected_buckets;
     if (expected_count > 0) {
@@ -780,11 +780,10 @@ IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest, PwaIntallIphIgnored) {
       app_url, web_app::kIphFieldTrialParamDefaultSiteEngagementThreshold + 1);
   // Manually set IPH ignored here, because the IPH demo mode only let IPH be
   // shown once in an user session.
-  web_app::RecordInstallIphIgnored(
-      profile()->GetPrefs(),
-      web_app::GenerateAppId(/*manifest_id_path=*/absl::nullopt,
-                             GetInstallableAppURL()),
-      base::Time::Now());
+  web_app::WebAppPrefGuardrails::GetForDesktopInstallIph(profile()->GetPrefs())
+      .RecordIgnore(web_app::GenerateAppId(/*manifest_id_path=*/std::nullopt,
+                                           GetInstallableAppURL()),
+                    base::Time::Now());
   bool installable = OpenTab(app_url).installable;
   ASSERT_TRUE(installable);
 

@@ -1,0 +1,20 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("fakes") {
+  testonly = true
+
+  sources = [
+    "fake_tab_grid_toolbars_mediator.h",
+    "fake_tab_grid_toolbars_mediator.mm",
+  ]
+
+  deps = [
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid:tab_grid_paging",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_toolbars_mutator",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars",
+  ]
+
+  frameworks = [ "Foundation.framework" ]
+}

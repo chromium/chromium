@@ -157,7 +157,7 @@ void ContextMenuMatcher::AppendExtensionItems(
                                       false);  // is_action_menu_top_level
     }
     if (!is_action_menu && !extension_key.extension_id.empty()) {
-      SetExtensionIcon(extension_key.extension_id);
+      SetExtensionIcon(extension_key);
     }
   }
 }
@@ -403,13 +403,14 @@ MenuItem* ContextMenuMatcher::GetExtensionMenuItem(int id) const {
   return nullptr;
 }
 
-void ContextMenuMatcher::SetExtensionIcon(const std::string& extension_id) {
+void ContextMenuMatcher::SetExtensionIcon(
+    const MenuItem::ExtensionKey& extension_key) {
   MenuManager* menu_manager = MenuManager::Get(browser_context_);
 
   size_t count = menu_model_->GetItemCount();
   DCHECK_GT(count, 0u);
 
-  gfx::Image icon = menu_manager->GetIconForExtension(extension_id);
+  gfx::Image icon = menu_manager->GetIconForExtensionKey(extension_key);
   DCHECK_EQ(gfx::kFaviconSize, icon.Width());
   DCHECK_EQ(gfx::kFaviconSize, icon.Height());
   menu_model_->SetIcon(count - 1, ui::ImageModel::FromImage(icon));

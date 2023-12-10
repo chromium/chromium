@@ -214,6 +214,17 @@ class ContentAnalysisDialogBehaviorBrowserTest
     dialog_updated_ = true;
   }
 
+  void CancelDialogAndDeleteCalled(ContentAnalysisDialog* dialog,
+                                   FinalContentAnalysisResult result) override {
+    EXPECT_EQ(dialog_, dialog);
+    EXPECT_NE(result, FinalContentAnalysisResult::FAIL_CLOSED);
+
+    if (dialog_->is_cloud()) {
+      EXPECT_FALSE(dialog_->is_failure());
+      EXPECT_FALSE(dialog_->is_warning());
+    }
+  }
+
   void DestructorCalled(ContentAnalysisDialog* dialog) override {
     dtor_called_timestamp_ = base::TimeTicks::Now();
 
@@ -956,6 +967,16 @@ IN_PROC_BROWSER_TEST_F(ContentAnalysisDialogPlainTests, TestOpenInBlockState) {
             u"This data or your device doesn’t meet some of your organization’s"
             u" security policies. Check with your admin on what needs to be "
             u"fixed.");
+}
+
+IN_PROC_BROWSER_TEST_F(ContentAnalysisDialogPlainTests,
+                       TestOpenInFailClosedState) {
+  ContentAnalysisDialog* dialog =
+      CreateContentAnalysisDialog(std::make_unique<MockDelegate>(),
+                                  FinalContentAnalysisResult::FAIL_CLOSED);
+  EXPECT_EQ(nullptr, dialog->GetSideIconSpinnerForTesting());
+  EXPECT_EQ(dialog->GetMessageForTesting()->GetText(),
+            u"Scan failed. This action is blocked by your administrator.");
 }
 
 IN_PROC_BROWSER_TEST_F(ContentAnalysisDialogPlainTests,

@@ -8,6 +8,7 @@
 
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/test/fake_os_integration_manager.h"
@@ -60,6 +61,7 @@ class InstallFromInfoCommandTest : public WebAppControllerBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(InstallFromInfoCommandTest, SuccessInstall) {
   auto info = std::make_unique<WebAppInstallInfo>();
+  base::HistogramTester tester;
   info->title = u"Test name";
   info->start_url = GURL("http://test.com/path");
 
@@ -84,6 +86,10 @@ IN_PROC_BROWSER_TEST_F(InstallFromInfoCommandTest, SuccessInstall) {
   loop.Run();
 
   EXPECT_TRUE(provider().registrar_unsafe().IsActivelyInstalled(result_app_id));
+
+  // Ensure histogram is only measured once.
+  tester.ExpectBucketCount("WebApp.Install.Result", /*sample=*/true,
+                           /*expected_count=*/1);
   EXPECT_EQ(os_integration_manager()->num_create_shortcuts_calls(), 0u);
 
   const WebApp* web_app =

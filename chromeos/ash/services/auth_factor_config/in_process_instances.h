@@ -27,6 +27,8 @@ void BindToAuthFactorConfig(
     PrefService* local_state);
 mojom::AuthFactorConfig& GetAuthFactorConfig(QuickUnlockStorageDelegate&,
                                              PrefService* local_state);
+AuthFactorConfig& GetAuthFactorConfigForTesting(QuickUnlockStorageDelegate&,
+                                                PrefService* local_state);
 
 void BindToRecoveryFactorEditor(
     mojo::PendingReceiver<mojom::RecoveryFactorEditor> receiver,

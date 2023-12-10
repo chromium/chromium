@@ -109,6 +109,16 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ClipboardMac : public Clipboard {
   void ReadPngInternal(ClipboardBuffer buffer,
                        NSPasteboard* pasteboard,
                        ReadPngCallback callback) const;
+  absl::optional<DataTransferEndpoint> GetSourceInternal(
+      ClipboardBuffer buffer,
+      NSPasteboard* pasteboard) const;
+  void ClearInternal(ClipboardBuffer buffer, NSPasteboard* pasteboard);
+  void WritePortableAndPlatformRepresentationsInternal(
+      ClipboardBuffer buffer,
+      const ObjectMap& objects,
+      std::vector<Clipboard::PlatformRepresentation> platform_representations,
+      std::unique_ptr<DataTransferEndpoint> data_src,
+      NSPasteboard* pasteboard);
 
   // Mapping of OS-provided sequence number to a unique token.
   mutable struct {

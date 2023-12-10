@@ -13,6 +13,10 @@
 #include "content/public/browser/browser_accessibility_state.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/lacros/embedded_a11y_manager_lacros.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
 namespace accessibility_state_utils {
 
 enum class OverrideStatus { kNotSet = 0, kEnabled = 1, kDisabled = 2 };
@@ -46,6 +50,18 @@ bool IsScreenReaderEnabled() {
 void OverrideIsScreenReaderEnabledForTesting(bool enabled) {
   screen_reader_enabled_override_for_testing =
       enabled ? OverrideStatus::kEnabled : OverrideStatus::kDisabled;
+}
+
+bool IsSelectToSpeakEnabled() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  return AccessibilityManager::Get() &&
+         AccessibilityManager::Get()->IsSelectToSpeakEnabled();
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  return EmbeddedA11yManagerLacros::GetInstance() &&
+         EmbeddedA11yManagerLacros::GetInstance()->IsSelectToSpeakEnabled();
+#else
+  return false;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 }  // namespace accessibility_state_utils

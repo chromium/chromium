@@ -7,12 +7,12 @@
 #include <string>
 #include <utility>
 
+#include <optional>
 #include "base/check.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/strings/string_piece.h"
 #include "base/values.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 
@@ -30,7 +30,7 @@ base::flat_map</*asset_id*/ std::string, gfx::Size> ParseImageAssetDimensions(
     base::StringPiece animation_json) {
   base::flat_map<std::string, gfx::Size> image_asset_sizes;
 
-  absl::optional<base::Value> animation_dict =
+  std::optional<base::Value> animation_dict =
       base::JSONReader::Read(animation_json);
   if (!animation_dict || !animation_dict->is_dict()) {
     LOG(ERROR) << "Failed to parse Lottie animation json";
@@ -52,8 +52,8 @@ base::flat_map</*asset_id*/ std::string, gfx::Size> ParseImageAssetDimensions(
     const base::Value::Dict& asset_dict = asset.GetDict();
 
     const std::string* id = asset_dict.FindString(kIdKey);
-    absl::optional<int> width = asset_dict.FindInt(kWidthKey);
-    absl::optional<int> height = asset_dict.FindInt(kHeightKey);
+    std::optional<int> width = asset_dict.FindInt(kWidthKey);
+    std::optional<int> height = asset_dict.FindInt(kHeightKey);
     if (id && width && height && *width > 0 && *height > 0 &&
         !image_asset_sizes.emplace(*id, gfx::Size(*width, *height)).second) {
       LOG(WARNING) << "Multiple assets found in animation with id " << *id;
@@ -116,7 +116,7 @@ sk_sp<skresources::ImageAsset> SkottieMRUResourceProvider::loadImageAsset(
     const char resource_name[],
     const char resource_id[]) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  absl::optional<gfx::Size> size;
+  std::optional<gfx::Size> size;
   if (image_asset_sizes_.contains(resource_id))
     size.emplace(image_asset_sizes_.at(resource_id));
 

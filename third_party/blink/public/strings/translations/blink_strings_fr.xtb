@@ -30,6 +30,7 @@
 <translation id="2226276347425096477">Veuillez réduire ce texte à <ph name="MAX_CHARACTERS" /> caractères maximum (il compte actuellement <ph name="CURRENT_LENGTH" /> caractères).</translation>
 <translation id="2247351761944213033">Semaine <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Piste <ph name="NUMBER" /></translation>
+<translation id="2353297238722298836">Caméra et micro autorisés</translation>
 <translation id="2393030564806080191">Valeur de couleur hexadécimale</translation>
 <translation id="2398813069815436052">boîte de dialogue ouverte.</translation>
 <translation id="245932805758469625">nombre de secondes de vidéo restantes</translation>
@@ -60,10 +61,12 @@
 <translation id="3822383571486410024">Veuillez allonger ce texte pour qu'il comporte au moins <ph name="MIN_CHARACTERS" /> caractères. Il en compte actuellement <ph name="CURRENT_LENGTH" />.</translation>
 <translation id="383465348367842624">La partie suivie du symbole "<ph name="ATSIGN" />" ne doit pas contenir le caractère "<ph name="INVALIDCHARACTER" />".</translation>
 <translation id="3846214748874656680">Quitter le mode plein écran</translation>
+<translation id="4031179711345676612">Micro autorisé</translation>
 <translation id="4103419683916926126">Millisecondes</translation>
 <translation id="4201051445878709314">Afficher le mois précédent</translation>
 <translation id="4360991593054037559">Veuillez saisir une valeur valide. Les deux valeurs valides les plus proches sont "<ph name="VALID_VALUE_LOW" />" et "<ph name="VALID_VALUE_HIGHER" />".</translation>
 <translation id="4522570452068850558">Détails</translation>
+<translation id="4663373278480897665">Caméra autorisée</translation>
 <translation id="4664250907885839816">La partie précédée du symbole "<ph name="ATSIGN" />" ne doit pas contenir le caractère "<ph name="INVALIDCHARACTER" />".</translation>
 <translation id="4718048029184481307">Lecture en mode Picture-in-picture</translation>
 <translation id="4748357248530471599">activer/désactiver plein écran en encoche</translation>
@@ -137,6 +140,7 @@
 <translation id="6941933287844615239">télécharger des contenus multimédias</translation>
 <translation id="698788488269350478">développé.</translation>
 <translation id="6989848892321993519">Veuillez allonger ce texte pour qu'il comporte au moins <ph name="MIN_CHARACTERS" /> caractères. Il en compte actuellement un seul.</translation>
+<translation id="7080893216867146095">Partage de position autorisé</translation>
 <translation id="709897737746224366">Veuillez respecter le format requis.</translation>
 <translation id="7102274145889307184">emplacement actuel</translation>
 <translation id="7263440858009898357">Sélectionnez un élément dans la liste.</translation>

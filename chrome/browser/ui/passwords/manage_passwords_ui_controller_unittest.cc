@@ -29,14 +29,14 @@
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/device_reauth/device_authenticator.h"
 #include "components/password_manager/core/browser/features/password_features.h"
-#include "components/password_manager/core/browser/interactions_stats.h"
 #include "components/password_manager/core/browser/mock_password_form_manager_for_ui.h"
-#include "components/password_manager/core/browser/mock_password_store_interface.h"
 #include "components/password_manager/core/browser/password_bubble_experiment.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_metrics_recorder.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
+#include "components/password_manager/core/browser/password_store/interactions_stats.h"
+#include "components/password_manager/core/browser/password_store/mock_password_store_interface.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
@@ -1626,8 +1626,8 @@ TEST_F(ManagePasswordsUIControllerTest, OpenSafeStateBubble) {
   EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility());
   controller()->OnBubbleHidden();
 
-  std::vector<std::unique_ptr<PasswordForm>> results;
-  results.push_back(std::make_unique<PasswordForm>(submitted_form()));
+  std::vector<PasswordForm> results;
+  results.push_back(submitted_form());
   EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility());
   post_save_helper->OnGetPasswordStoreResultsOrErrorFrom(
       client().GetProfilePasswordStore(), std::move(results));
@@ -1671,16 +1671,12 @@ TEST_F(ManagePasswordsUIControllerTest, OpenMoreToFixBubble) {
   expected_forms.at(0).password_issues.insert(
       {InsecureType::kLeaked, InsecurityMetadata()});
   expected_forms.at(1).password_issues.clear();
-  std::vector<std::unique_ptr<PasswordForm>> results;
-  for (const auto& form : expected_forms) {
-    results.push_back(std::make_unique<PasswordForm>(form));
-  }
   // The bubble gets hidden after the user clicks on save.
   EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility());
   controller()->OnBubbleHidden();
   EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility());
   post_save_helper->OnGetPasswordStoreResultsOrErrorFrom(
-      client().GetProfilePasswordStore(), std::move(results));
+      client().GetProfilePasswordStore(), expected_forms);
   WaitForPasswordStore();
 
   EXPECT_TRUE(controller()->opened_automatic_bubble());
@@ -1712,63 +1708,6 @@ TEST_F(ManagePasswordsUIControllerTest, NoMoreToFixBubbleIfPromoStillOpen) {
   WaitForPasswordStore();
 
   ExpectIconAndControllerStateIs(password_manager::ui::MANAGE_STATE);
-}
-
-TEST_F(ManagePasswordsUIControllerTest, ReauthenticateBeforeMove) {
-  std::vector<const PasswordForm*> matches = {&test_local_form()};
-  auto test_form_manager = CreateFormManagerWithBestMatches(&matches);
-  MockPasswordFormManagerForUI* form_manager = test_form_manager.get();
-
-  // A submitted form triggers the move dialog.
-  EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility())
-      .Times(AtLeast(1));
-  EXPECT_CALL(*client().GetPasswordFeatureManager(),
-              RecordMoveOfferedToNonOptedInUser);
-  controller()->OnShowMoveToAccountBubble(std::move(test_form_manager));
-  EXPECT_TRUE(controller()->opened_automatic_bubble());
-  ExpectIconAndControllerStateIs(
-      password_manager::ui::CAN_MOVE_PASSWORD_TO_ACCOUNT_STATE);
-
-  // A user confirms the move which closes the dialog but opens a reauth.
-  base::OnceCallback<void(ReauthSucceeded)> reauth_callback;
-  EXPECT_CALL(client(),
-              TriggerReauthForPrimaryAccount(
-                  signin_metrics::ReauthAccessPoint::kPasswordMoveBubble, _))
-      .WillOnce(MoveArg<1>(&reauth_callback));
-  controller()->AuthenticateUserForAccountStoreOptInAndMovePassword();
-
-  // Once the reauth finishes with a success, the passwords is moved.
-  EXPECT_CALL(*form_manager, MoveCredentialsToAccountStore);
-  std::move(reauth_callback).Run(ReauthSucceeded(true));
-  EXPECT_FALSE(controller()->opened_automatic_bubble());
-  ExpectIconAndControllerStateIs(password_manager::ui::MANAGE_STATE);
-}
-
-TEST_F(ManagePasswordsUIControllerTest, ReauthenticateFailsBeforeMove) {
-  std::vector<const PasswordForm*> matches = {&test_local_form()};
-  auto test_form_manager = CreateFormManagerWithBestMatches(&matches);
-
-  // A submitted form triggers the move dialog.
-  EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility());
-  EXPECT_CALL(*client().GetPasswordFeatureManager(),
-              RecordMoveOfferedToNonOptedInUser);
-  controller()->OnShowMoveToAccountBubble(std::move(test_form_manager));
-  EXPECT_TRUE(controller()->opened_automatic_bubble());
-  ExpectIconAndControllerStateIs(
-      password_manager::ui::CAN_MOVE_PASSWORD_TO_ACCOUNT_STATE);
-
-  // A user confirms the move which closes the dialog but opens a reauth.
-  base::OnceCallback<void(ReauthSucceeded)> reauth_callback;
-  EXPECT_CALL(client(),
-              TriggerReauthForPrimaryAccount(
-                  signin_metrics::ReauthAccessPoint::kPasswordMoveBubble, _))
-      .WillOnce(MoveArg<1>(&reauth_callback));
-  controller()->AuthenticateUserForAccountStoreOptInAndMovePassword();
-
-  // Once the reauth finishes with a failure, don't move the password.
-  std::move(reauth_callback).Run(ReauthSucceeded(false));
-  ExpectIconAndControllerStateIs(
-      password_manager::ui::CAN_MOVE_PASSWORD_TO_ACCOUNT_STATE);
 }
 
 TEST_F(ManagePasswordsUIControllerTest, UsernameAdded) {
@@ -2065,6 +2004,31 @@ TEST_F(ManagePasswordsUIControllerTest, OnBiometricAuthBeforeFillingDeclined) {
 }
 
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+
+#if BUILDFLAG(IS_MAC)
+TEST_F(ManagePasswordsUIControllerTest, OnKeychainErrorShouldShowBubble) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      password_manager::features::kRestartToGainAccessToKeychain);
+  profile()->GetPrefs()->SetInteger(
+      password_manager::prefs::kRelaunchChromeBubbleDismissedCounter, 0);
+  EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility());
+  controller()->OnKeychainError();
+  EXPECT_EQ(password_manager::ui::KEYCHAIN_ERROR_STATE,
+            controller()->GetState());
+}
+
+TEST_F(ManagePasswordsUIControllerTest, OnKeychainErrorShouldNotShowBubble) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      password_manager::features::kRestartToGainAccessToKeychain);
+  profile()->GetPrefs()->SetInteger(
+      password_manager::prefs::kRelaunchChromeBubbleDismissedCounter, 4);
+  EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility()).Times(0);
+  controller()->OnKeychainError();
+  EXPECT_EQ(password_manager::ui::INACTIVE_STATE, controller()->GetState());
+}
+#endif
 
 class ManagePasswordsUIControllerWithBrowserTest
     : public BrowserWithTestWindowTest {

@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/profiles/signin_intercept_first_run_experience_dialog.h"
 
 #include "base/check_op.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/metrics/histogram_functions.h"
@@ -26,6 +27,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_metrics.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -308,11 +310,15 @@ void SigninInterceptFirstRunExperienceDialog::DoTurnOnSync() {
   signin_metrics::LogSigninAccessPointStarted(access_point, promo_action);
   signin_metrics::RecordSigninUserActionForAccessPoint(access_point);
 
+  TurnSyncOnHelper::SigninAbortedMode abort_mode =
+      base::FeatureList::IsEnabled(switches::kUnoDesktop)
+          ? TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT_ON_WEB_ONLY
+          : TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT;
+
   // TurnSyncOnHelper deletes itself once done.
   new TurnSyncOnHelper(browser_->profile(), access_point, promo_action,
                        signin_metrics::Reason::kSigninPrimaryAccount,
-                       account_id_,
-                       TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT,
+                       account_id_, abort_mode,
                        std::make_unique<InterceptTurnSyncOnHelperDelegate>(
                            weak_ptr_factory_.GetWeakPtr()),
                        base::OnceClosure());

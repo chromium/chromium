@@ -226,6 +226,13 @@ chromium-metrics-reviews@google.com.
              child page within the feature"/>
 </enum>
 
+<enum name="PcctDeviceSpec">
+  <int value="0" label="Low-end and no Pip"/>
+  <int value="1" label="Low-end and Pip"/>
+  <int value="2" label="High-end and no Pip"/>
+  <int value="3" label="High-end and Pip"/>
+</enum>
+
 <enum name="ShareOptionLocation">
   <int value="0" label="TOOLBAR"/>
   <int value="1" label="MENU">Share option chosen to be shown in the menu.</int>
@@ -244,13 +251,6 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Fallback icon mot provided"/>
   <int value="2" label="Fallback for Status Bar"/>
   <int value="3" label="Fallback for Status Bar and content"/>
-</enum>
-
-<enum name="TrustedWebActivityPermissionChanged">
-  <int value="0" label="Null to False"/>
-  <int value="1" label="Null to True"/>
-  <int value="2" label="True to False"/>
-  <int value="3" label="False to True"/>
 </enum>
 
 <enum name="VisibleTab">

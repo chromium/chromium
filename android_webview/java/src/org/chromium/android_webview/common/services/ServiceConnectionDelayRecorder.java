@@ -15,9 +15,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.metrics.RecordHistogram;
 
-/**
- * A ServiceConnection that records a histogram for service connection delay.
- */
+/** A ServiceConnection that records a histogram for service connection delay. */
 public abstract class ServiceConnectionDelayRecorder implements ServiceConnection {
     private static final String SERVICE_CONNECTION_DELAY_HISTOGRAM_PREFIX =
             "Android.WebView.Startup.NonblockingServiceConnectionDelay.";
@@ -36,9 +34,7 @@ public abstract class ServiceConnectionDelayRecorder implements ServiceConnectio
         long uptimeMillis();
     }
 
-    /**
-     * Bind to the given service. See {@link ServiceHelper#bindService} for details.
-     */
+    /** Bind to the given service. See {@link ServiceHelper#bindService} for details. */
     public final boolean bind(Context context, Intent intent, int flags) {
         mBindTime = getClock().uptimeMillis();
         return ServiceHelper.bindService(context, intent, this, flags);
@@ -63,9 +59,7 @@ public abstract class ServiceConnectionDelayRecorder implements ServiceConnectio
         onServiceConnectedImpl(className, service);
     }
 
-    /**
-     * Overridden by tests.
-     */
+    /** Overridden by tests. */
     @VisibleForTesting
     public Clock getClock() {
         return CLOCK;

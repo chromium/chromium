@@ -36,8 +36,10 @@ public class OptionalBrowsingModeButtonController {
      * @param userEducationHelper Helper for displaying in-product help on a button.
      * @param toolbarLayout Toolbar layout where buttons will be displayed.
      */
-    OptionalBrowsingModeButtonController(List<ButtonDataProvider> buttonDataProviders,
-            UserEducationHelper userEducationHelper, ToolbarLayout toolbarLayout,
+    OptionalBrowsingModeButtonController(
+            List<ButtonDataProvider> buttonDataProviders,
+            UserEducationHelper userEducationHelper,
+            ToolbarLayout toolbarLayout,
             Supplier<Tab> tabSupplier) {
         mButtonDataProviders = buttonDataProviders;
         mUserEducationHelper = userEducationHelper;

@@ -13,6 +13,7 @@
 #include <string>
 #include <vector>
 
+#include <optional>
 #include "base/check.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
@@ -31,12 +32,12 @@
 #include "pdf/pdfium/pdfium_page.h"
 #include "pdf/pdfium/pdfium_print.h"
 #include "pdf/pdfium/pdfium_range.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/pdfium/public/cpp/fpdf_scopers.h"
 #include "third_party/pdfium/public/fpdf_formfill.h"
 #include "third_party/pdfium/public/fpdf_progressive.h"
 #include "third_party/pdfium/public/fpdfview.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -140,7 +141,7 @@ class PDFiumEngine : public PDFEngine,
   const DocumentMetadata& GetDocumentMetadata() const override;
   int GetNumberOfPages() const override;
   base::Value::List GetBookmarks() override;
-  absl::optional<PDFEngine::NamedDestination> GetNamedDestination(
+  std::optional<PDFEngine::NamedDestination> GetNamedDestination(
       const std::string& destination) override;
   int GetMostVisiblePage() override;
   gfx::Rect GetPageBoundsRect(int index) override;
@@ -151,7 +152,7 @@ class PDFiumEngine : public PDFEngine,
   int GetCharCount(int page_index) override;
   gfx::RectF GetCharBounds(int page_index, int char_index) override;
   uint32_t GetCharUnicode(int page_index, int char_index) override;
-  absl::optional<AccessibilityTextRunInfo> GetTextRunInfo(
+  std::optional<AccessibilityTextRunInfo> GetTextRunInfo(
       int page_index,
       int start_char_index) override;
   std::vector<AccessibilityLinkInfo> GetLinkInfo(
@@ -170,7 +171,7 @@ class PDFiumEngine : public PDFEngine,
   bool GetPrintScaling() override;
   int GetCopiesToPrint() override;
   printing::mojom::DuplexMode GetDuplexMode() override;
-  absl::optional<gfx::Size> GetUniformPageSizePoints() override;
+  std::optional<gfx::Size> GetUniformPageSizePoints() override;
   void AppendBlankPages(size_t num_pages) override;
   void AppendPage(PDFEngine* engine, int index) override;
   std::vector<uint8_t> GetSaveData() override;
@@ -393,9 +394,9 @@ class PDFiumEngine : public PDFEngine,
                  gfx::Rect& rect) const;
 
   // If two-up view is enabled, returns the index of the page beside
-  // `page_index` page. Returns absl::nullopt if there is no adjacent page or
+  // `page_index` page. Returns std::nullopt if there is no adjacent page or
   // if two-up view is disabled.
-  absl::optional<size_t> GetAdjacentPageIndexForTwoUpView(
+  std::optional<size_t> GetAdjacentPageIndexForTwoUpView(
       size_t page_index,
       size_t num_of_pages) const;
 
@@ -533,9 +534,7 @@ class PDFiumEngine : public PDFEngine,
   // updated to include `rect` if `rect` has not already been highlighted.
   void Highlight(const RegionData& region,
                  const gfx::Rect& rect,
-                 int color_red,
-                 int color_green,
-                 int color_blue,
+                 SkColor color,
                  std::vector<gfx::Rect>& highlighted_rects) const;
 
   // Helper function to convert a device to page coordinates.  If the page is
@@ -558,8 +557,8 @@ class PDFiumEngine : public PDFEngine,
                       const gfx::Rect& clip_rect,
                       SkBitmap& image_data);
 
-  absl::optional<RegionData> GetRegion(const gfx::Point& location,
-                                       SkBitmap& image_data) const;
+  std::optional<RegionData> GetRegion(const gfx::Point& location,
+                                      SkBitmap& image_data) const;
 
   // Called when the selection changes.
   void OnSelectionTextChanged();
@@ -680,7 +679,7 @@ class PDFiumEngine : public PDFEngine,
   // The offset of the page into the viewport.
   gfx::Vector2d page_offset_;
   // The plugin size in screen coordinates.
-  absl::optional<gfx::Size> plugin_size_;
+  std::optional<gfx::Size> plugin_size_;
   double current_zoom_ = 1.0;
   // The caret position and bound in plugin viewport coordinates.
   gfx::Rect caret_rect_;
@@ -754,9 +753,9 @@ class PDFiumEngine : public PDFEngine,
   int last_page_to_search_ = -1;
   int last_character_index_to_search_ = -1;  // -1 if search until end of page.
   // Which result the user has currently selected. (0-based)
-  absl::optional<size_t> current_find_index_;
+  std::optional<size_t> current_find_index_;
   // Where to resume searching. (0-based)
-  absl::optional<size_t> resume_find_index_;
+  std::optional<size_t> resume_find_index_;
 
   std::unique_ptr<PDFiumPermissions> permissions_;
 
@@ -797,7 +796,7 @@ class PDFiumEngine : public PDFEngine,
 
   // Holds the page index requested by PDFium while the scroll operation
   // is being handled (asynchronously).
-  absl::optional<int> in_flight_visible_page_;
+  std::optional<int> in_flight_visible_page_;
 
   // Set to true after FORM_DoDocumentJSAction/FORM_DoDocumentOpenAction have
   // been called. Only after that can we call FORM_DoPageAAction.

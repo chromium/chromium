@@ -5,7 +5,6 @@
 <translation id="1076394037877376434">صفحہ <ph name="PAGE_NUMBER" /> حذف کریں</translation>
 <translation id="1113173431709655881">کیمرا وضع</translation>
 <translation id="1153190633558910465">گرڈ آف کریں</translation>
-<translation id="1175958423215084756">لنک کا پتہ چلا۔ <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213">صفحہ <ph name="PAGE_NUMBER" /> حذف ہو گیا</translation>
 <translation id="1258009455399840361">گھڑی کی سمت 90 ڈگری پر گھمائیں</translation>
 <translation id="1417314334557041815">صفحہ <ph name="INDEX" /> میں ترمیم کریں</translation>
@@ -60,14 +59,12 @@
 <translation id="3642192109456033823">ویڈیو پر کارروائی ہو رہی ہے...</translation>
 <translation id="3789724198583203151">90 ڈگری پر خلاف گھڑی وار گھمائیں</translation>
 <translation id="3810838688059735925">ویڈیو</translation>
-<translation id="3892148308691398805">ٹیکسٹ کاپی کریں</translation>
 <translation id="4060608699153044055">آپ آلے میں اسٹوریج کی جگہ کم ہونے کی وجہ سے ریکارڈ نہیں کر سکتے۔ ریکارڈنگ شروع کرنے کے لیے آپ کو اپنے آلے پر جگہ خالی کرنے کی ضرورت ہے۔</translation>
 <translation id="4061162772429051350">‎<ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
 <translation id="4118525110028899586">ریکارڈنگ موقوف کریں</translation>
 <translation id="4121305183798804752">دستاویز کا پتہ چلا</translation>
 <translation id="414641094616694804">یہ کیمرا ریزولوشن تبدیل نہیں کر سکتا</translation>
 <translation id="4176463684765177261">غیر فعال</translation>
-<translation id="4269820728363426813">لنک کا پتہ کاپی کریں</translation>
 <translation id="428234092390943511">صفحہ کا تھمب نیل</translation>
 <translation id="4349714250734879769">‏Chrome کے زیر انتظام اسکیل فریمز</translation>
 <translation id="4383571725254449280">کارکردگی کے لاگز پرنٹ کریں</translation>
@@ -144,7 +141,6 @@
 <translation id="7726641833034062494">عام ویڈیو ریکارڈ کریں</translation>
 <translation id="7748344063862150053">دستاویز کا اوپری دایاں کونا</translation>
 <translation id="7933675232020478311">نیچے دائیں سمت میں جا رہا ہے</translation>
-<translation id="7983668134180549431">ٹیکسٹ کا پتہ چلا۔</translation>
 <translation id="8079255378695216066">ریکارڈنگ شروع نہیں کی جا سکتی</translation>
 <translation id="8120146556401698679">پین کریں جھکائیں زوم کریں</translation>
 <translation id="8131740175452115882">تصدیق کریں</translation>
@@ -163,6 +159,7 @@
 <translation id="8870695351537079478">ریکارڈنگ شروع کرنے سے قاصر</translation>
 <translation id="8880167521484863515">4 سے 3</translation>
 <translation id="8903921497873541725">زوم ان کریں</translation>
+<translation id="8926890870105777777">"<ph name="WIFINAME" />" نیٹ ورک میں شامل ہوں</translation>
 <translation id="9045010116236796332">دستاویز کے سبھی کناروں کو فریم کے اندر رکھیں</translation>
 <translation id="9045155556724273246">10 سیکنڈ</translation>
 <translation id="906331135292332864">تصویر پر کارروائی ہو رہی ہے...</translation>

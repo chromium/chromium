@@ -26,6 +26,7 @@ void FakeIdentityRequestDialogController::ShowAccountsDialog(
     IdentityRequestAccount::SignInMode sign_in_mode,
     bool show_auto_reauthn_checkbox,
     AccountSelectionCallback on_selected,
+    LoginToIdPCallback on_add_account,
     DismissCallback dismiss_callback) {
   // TODO(crbug.com/1348262): Temporarily support only the first IDP, extend to
   // support multiple IDPs.
@@ -76,7 +77,7 @@ void FakeIdentityRequestDialogController::ShowFailureDialog(
     const blink::mojom::RpContext& rp_context,
     const IdentityProviderMetadata& idp_metadata,
     DismissCallback dismiss_callback,
-    SigninToIdPCallback signin_callback) {
+    LoginToIdPCallback login_callback) {
   title_ = "Confirm IDP Login";
 }
 

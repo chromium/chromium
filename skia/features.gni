@@ -6,16 +6,18 @@ import("//build/config/features.gni")
 import("//printing/buildflags/buildflags.gni")
 
 declare_args() {
-  # Enable experimental Skia Graphite Dawn backend. Currently enabled for Mac
-  # and Windows only.
-  skia_use_dawn = is_mac || is_win
+  # Enable experimental Skia Graphite Dawn backend. Current enabled on Windows,
+  # macOS, Android, and iOS when Blink is used.
+  skia_use_dawn = is_mac || is_win ||
+                  (is_android && target_cpu != "x86" && target_cpu != "x64") ||
+                  (is_ios && use_blink)
 
   # Enable experimental Skia Graphite Metal backend. Intended only for debugging
   # on non-official developer builds.
-  skia_use_metal = is_mac && !is_official_build
+  skia_use_metal = (is_mac || (is_ios && use_blink)) && !is_official_build
 
   # Enable gtests using SkiaRenderer on Skia Graphite.
-  enable_skia_graphite_gtests = is_mac
+  enable_skia_graphite_gtests = is_mac || (is_ios && use_blink)
 }
 
 # Skia only needs to support GPU rasterization if we use the full Chromium
@@ -27,7 +29,7 @@ skia_support_gpu = use_blink
 # GPU rasterization is enabled.
 skia_use_gl = true
 
-skia_support_pdf = use_blink && (enable_printing || enable_printing_unittests)
+skia_support_pdf = use_blink && (enable_printing || enable_printing_tests)
 
 # Skottie is not used on Android. To keep apk size small the skottie library is
 # excluded from the binary. At the time this comment was written, it adds ~200KB

@@ -4,6 +4,10 @@
 
 #include "chrome/updater/util/unit_test_util.h"
 
+#include <optional>
+#include <string>
+#include <vector>
+
 #include "base/base_paths.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
@@ -24,7 +28,6 @@
 #include "chrome/updater/test/integration_tests_impl.h"
 #include "chrome/updater/test_scope.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/re2/src/re2/re2.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -130,7 +133,7 @@ TEST(UnitTestUtil, DISABLED_PrintTestTimeouts) {
 }
 
 TEST(UnitTestUtil, DeleteFileAndEmptyParentDirectories) {
-  EXPECT_FALSE(DeleteFileAndEmptyParentDirectories(absl::nullopt));
+  EXPECT_FALSE(DeleteFileAndEmptyParentDirectories(std::nullopt));
 
   const base::FilePath path_not_found(FILE_PATH_LITERAL("path-not-found"));
   EXPECT_TRUE(DeleteFileAndEmptyParentDirectories(path_not_found));
@@ -170,12 +173,12 @@ TEST(UnitTestUtil, FindProcesses) {
   const base::Process process = base::LaunchProcess(command_line, {});
   ASSERT_TRUE(process.IsValid());
 
-  EXPECT_TRUE(test::WaitFor([&]() { return process.IsRunning(); }));
+  EXPECT_TRUE(test::WaitFor([&] { return process.IsRunning(); }));
   EXPECT_EQ(test::FindProcesses(kTestProcessExecutableName).size(), 1U);
 
   event_holder.event.Signal();
 
-  EXPECT_TRUE(test::WaitFor([&]() { return !process.IsRunning(); }));
+  EXPECT_TRUE(test::WaitFor([&] { return !process.IsRunning(); }));
   EXPECT_TRUE(test::FindProcesses(kTestProcessExecutableName).empty());
 }
 #endif  // BUILDFLAG(IS_WIN)

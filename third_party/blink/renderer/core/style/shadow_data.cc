@@ -26,11 +26,6 @@
 
 namespace blink {
 
-bool ShadowData::operator==(const ShadowData& o) const {
-  return offset_ == o.offset_ && blur_ == o.blur_ && spread_ == o.spread_ &&
-         style_ == o.style_ && color_ == o.color_;
-}
-
 ShadowData ShadowData::NeutralValue() {
   return ShadowData(gfx::Vector2dF(0, 0), 0, 0, ShadowStyle::kNormal,
                     StyleColor(Color::kTransparent));

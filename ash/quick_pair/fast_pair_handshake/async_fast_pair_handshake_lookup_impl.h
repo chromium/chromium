@@ -46,7 +46,7 @@ class AsyncFastPairHandshakeLookupImpl : public FastPairHandshakeLookup {
   virtual ~AsyncFastPairHandshakeLookupImpl();
   void AttemptHandshakeWithRetries(scoped_refptr<Device> device,
                                    OnCompleteCallback on_complete_callback,
-                                   absl::optional<PairFailure> failure);
+                                   std::optional<PairFailure> failure);
 
   void OnHandshakeComplete(OnCompleteCallback on_complete_callback,
                            scoped_refptr<Device> device);

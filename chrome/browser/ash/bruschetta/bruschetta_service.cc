@@ -12,7 +12,6 @@
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "bruschetta_terminal_provider.h"
-#include "chrome/browser/ash/bruschetta/bruschetta_features.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_launcher.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_mount_provider.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_pref_names.h"
@@ -44,11 +43,6 @@ BruschettaService::VmRegistration& BruschettaService::VmRegistration::operator=(
 BruschettaService::VmRegistration::~VmRegistration() = default;
 
 BruschettaService::BruschettaService(Profile* profile) : profile_(profile) {
-  // Don't set up anything if the bruschetta flag isn't enabled.
-  if (!BruschettaFeatures::Get()->IsEnabled()) {
-    return;
-  }
-
   if (auto* concierge = ash::ConciergeClient::Get(); concierge) {
     concierge->AddVmObserver(this);
   }
@@ -99,12 +93,18 @@ BruschettaService* BruschettaService::GetForProfile(Profile* profile) {
 void BruschettaService::OnPolicyChanged() {
   for (auto guest_id :
        guest_os::GetContainers(profile_, guest_os::VmType::BRUSCHETTA)) {
-    const std::string& config_id =
-        GetContainerPrefValue(profile_, guest_id,
-                              guest_os::prefs::kBruschettaConfigId)
-            ->GetString();
+    std::string config_id;
+    const base::Value* pref_value = GetContainerPrefValue(
+        profile_, guest_id, guest_os::prefs::kBruschettaConfigId);
+    if (pref_value) {
+      config_id = pref_value->GetString();
+    } else {
+      LOG(WARNING) << "Missing container prefs for VM " << guest_id.vm_name;
+      BlockLaunch(std::move(guest_id));
+      continue;
+    }
 
-    absl::optional<const base::Value::Dict*> config_opt =
+    std::optional<const base::Value::Dict*> config_opt =
         GetRunnableConfig(profile_, config_id);
     if (!config_opt.has_value()) {
       // config is either unset or explicitly blocked from running.
@@ -202,7 +202,7 @@ void BruschettaService::StopVm(std::string vm_name) {
       request,
       base::BindOnce(
           [](std::string vm_name,
-             absl::optional<vm_tools::concierge::StopVmResponse> response) {
+             std::optional<vm_tools::concierge::StopVmResponse> response) {
             // If stopping the VM fails there's not really much we can do about
             // it, but we can log an error.
             if (!response) {

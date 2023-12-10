@@ -39,6 +39,69 @@ ShadowPredictionComparison GetBaseComparison(
   }
 }
 
+void LogRegexShadowPredictions(const AutofillField& field) {
+#if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
+  const ServerFieldTypeSet& submitted_types = field.possible_types();
+  base::UmaHistogramSparse(
+      "Autofill.ShadowPredictions.DefaultHeuristicToDefaultServer",
+      GetShadowPrediction(field.heuristic_type(), field.server_type(),
+                          submitted_types));
+
+  base::UmaHistogramSparse(
+      "Autofill.ShadowPredictions.ExperimentalToDefault",
+      GetShadowPrediction(field.heuristic_type(HeuristicSource::kDefault),
+                          field.heuristic_type(HeuristicSource::kExperimental),
+                          submitted_types));
+
+  base::UmaHistogramSparse(
+      "Autofill.ShadowPredictions.NextGenToDefault",
+      GetShadowPrediction(field.heuristic_type(HeuristicSource::kDefault),
+                          field.heuristic_type(HeuristicSource::kNextGen),
+                          submitted_types));
+
+  base::UmaHistogramSparse(
+      "Autofill.ShadowPredictions.NextGenToExperimental",
+      GetShadowPrediction(field.heuristic_type(HeuristicSource::kExperimental),
+                          field.heuristic_type(HeuristicSource::kNextGen),
+                          submitted_types));
+#endif
+}
+
+void LogMlShadowPredictions(const AutofillField& field) {
+#if !BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+  return;
+#endif
+  if (!base::FeatureList::IsEnabled(features::kAutofillModelPredictions)) {
+    return;
+  }
+  const ServerFieldTypeSet& submitted_types = field.possible_types();
+  base::UmaHistogramSparse(
+      "Autofill.ShadowPredictions.DefaultServerToMLModel",
+      GetShadowPrediction(
+          field.server_type(),
+          field.heuristic_type(HeuristicSource::kMachineLearning),
+          submitted_types));
+#if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
+  if (base::FeatureList::IsEnabled(features::kAutofillParsingPatternProvider)) {
+    base::UmaHistogramSparse(
+        "Autofill.ShadowPredictions.DefaultPatternSourceToMLModel",
+        GetShadowPrediction(
+            field.heuristic_type(HeuristicSource::kDefault),
+            field.heuristic_type(HeuristicSource::kMachineLearning),
+            submitted_types));
+    return;
+  }
+#endif
+  // In builds without internal patterns or if pattern provider is disabled,
+  // compare the the legacy heuristic type instead.
+  base::UmaHistogramSparse(
+      "Autofill.ShadowPredictions.LegacyPatternSourceToMLModel",
+      GetShadowPrediction(
+          field.heuristic_type(HeuristicSource::kLegacy),
+          field.heuristic_type(HeuristicSource::kMachineLearning),
+          submitted_types));
+}
+
 }  // namespace
 
 int GetShadowPrediction(ServerFieldType current,
@@ -61,58 +124,8 @@ int GetShadowPrediction(ServerFieldType current,
 }
 
 void LogShadowPredictionComparison(const AutofillField& field) {
-  const auto& submitted_types = field.possible_types();
-
-  base::UmaHistogramSparse(
-      "Autofill.ShadowPredictions.DefaultHeuristicToDefaultServer",
-      GetShadowPrediction(field.heuristic_type(), field.server_type(),
-                          submitted_types));
-
-#if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
-  base::UmaHistogramSparse(
-      "Autofill.ShadowPredictions.ExperimentalToDefault",
-      GetShadowPrediction(field.heuristic_type(HeuristicSource::kDefault),
-                          field.heuristic_type(HeuristicSource::kExperimental),
-                          submitted_types));
-
-  base::UmaHistogramSparse(
-      "Autofill.ShadowPredictions.NextGenToDefault",
-      GetShadowPrediction(field.heuristic_type(HeuristicSource::kDefault),
-                          field.heuristic_type(HeuristicSource::kNextGen),
-                          submitted_types));
-
-  base::UmaHistogramSparse(
-      "Autofill.ShadowPredictions.NextGenToExperimental",
-      GetShadowPrediction(field.heuristic_type(HeuristicSource::kExperimental),
-                          field.heuristic_type(HeuristicSource::kNextGen),
-                          submitted_types));
-#endif
-
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-  if (base::FeatureList::IsEnabled(features::kAutofillModelPredictions)) {
-    base::UmaHistogramSparse(
-        "Autofill.ShadowPredictions.DefaultServerToMLModel",
-        GetShadowPrediction(
-            field.server_type(),
-            field.heuristic_type(HeuristicSource::kMachineLearning),
-            submitted_types));
-#if !BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
-    base::UmaHistogramSparse(
-        "Autofill.ShadowPredictions.LegacyPatternSourceToMLModel",
-        GetShadowPrediction(
-            field.heuristic_type(HeuristicSource::kLegacy),
-            field.heuristic_type(HeuristicSource::kMachineLearning),
-            submitted_types));
-#else
-    base::UmaHistogramSparse(
-        "Autofill.ShadowPredictions.DefaultPatternSourceToMLModel",
-        GetShadowPrediction(
-            field.heuristic_type(HeuristicSource::kDefault),
-            field.heuristic_type(HeuristicSource::kMachineLearning),
-            submitted_types));
-#endif
-  }
-#endif
+  LogRegexShadowPredictions(field);
+  LogMlShadowPredictions(field);
 }
 
 }  // namespace autofill::autofill_metrics

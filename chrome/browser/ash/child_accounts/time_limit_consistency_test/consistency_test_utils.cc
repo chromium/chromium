@@ -16,7 +16,7 @@ void AddWindowLimitEntryToGoldenInput(
     time_limit_consistency::ConsistencyGoldenEffectiveDay effective_day,
     const TimeOfDay& starts_at,
     const TimeOfDay& ends_at,
-    absl::optional<int64_t> last_updated) {
+    std::optional<int64_t> last_updated) {
   time_limit_consistency::ConsistencyGoldenWindowLimitEntry* window =
       golden_input->add_window_limits();
   window->mutable_starts_at()->set_hour(starts_at.hour);
@@ -33,7 +33,7 @@ void AddUsageLimitEntryToGoldenInput(
     time_limit_consistency::ConsistencyGoldenInput* golden_input,
     time_limit_consistency::ConsistencyGoldenEffectiveDay effective_day,
     int usage_quota_mins,
-    absl::optional<int64_t> last_updated) {
+    std::optional<int64_t> last_updated) {
   time_limit_consistency::ConsistencyGoldenUsageLimitEntry* usage_limit =
       golden_input->add_usage_limits();
   usage_limit->set_usage_quota_mins(usage_quota_mins);

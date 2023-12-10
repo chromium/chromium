@@ -24,8 +24,8 @@
 #include "ui/events/test/events_test_utils_x11.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/x/atom_cache.h"
 #include "ui/gfx/x/connection.h"
-#include "ui/gfx/x/x11_atom_cache.h"
 #include "ui/gfx/x/xproto.h"
 #include "ui/ozone/test/mock_platform_window_delegate.h"
 #include "ui/platform_window/extensions/x11_extension_delegate.h"
@@ -324,7 +324,8 @@ TEST_F(X11WindowTest, DISABLED_Shape) {
     EXPECT_FALSE(ShapeRectContainsPoint(shape_rects, 205, 15));
   }
 
-  if (WmSupportsHint(x11::GetAtom("_NET_WM_STATE_MAXIMIZED_VERT"))) {
+  if (connection->WmSupportsHint(
+          x11::GetAtom("_NET_WM_STATE_MAXIMIZED_VERT"))) {
     // The shape should be changed to a rectangle which fills the entire screen
     // when |widget1| is maximized.
     {
@@ -405,10 +406,10 @@ TEST_F(X11WindowTest, DISABLED_Shape) {
 // Test that the widget reacts on changes in fullscreen state initiated by the
 // window manager (e.g. via a window manager accelerator key).
 TEST_F(X11WindowTest, MAYBE_WindowManagerTogglesFullscreen) {
-  if (!WmSupportsHint(x11::GetAtom("_NET_WM_STATE_FULLSCREEN")))
-    return;
-
   auto* connection = x11::Connection::Get();
+  if (!connection->WmSupportsHint(x11::GetAtom("_NET_WM_STATE_FULLSCREEN"))) {
+    return;
+  }
 
   TestPlatformWindowDelegate delegate;
   ShapedX11ExtensionDelegate x11_extension_delegate;
@@ -495,7 +496,7 @@ TEST_F(X11WindowTest,
 
     SendClientMessage(x11_window, GetX11RootWindow(),
                       x11::GetAtom("WM_CHANGE_STATE"),
-                      {WM_STATE_ICONIC, 0, 0, 0, 0});
+                      {x11::WM_STATE_ICONIC, 0, 0, 0, 0});
     // Wait till set.
     WMStateWaiter waiter(x11_window, "_NET_WM_STATE_HIDDEN", true);
     waiter.Wait();
@@ -507,7 +508,7 @@ TEST_F(X11WindowTest,
   {
     SendClientMessage(x11_window, GetX11RootWindow(),
                       x11::GetAtom("WM_CHANGE_STATE"),
-                      {WM_STATE_NORMAL, 0, 0, 0, 0});
+                      {x11::WM_STATE_NORMAL, 0, 0, 0, 0});
     // Wait till unset.
     WMStateWaiter waiter(x11_window, "_NET_WM_STATE_HIDDEN", false);
     waiter.Wait();

@@ -5,6 +5,7 @@
 #include "services/network/public/cpp/devtools_observer_util.h"
 
 #include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/mojom/service_worker_router_info.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
 namespace network {
@@ -17,7 +18,8 @@ mojom::URLResponseHeadDevToolsInfoPtr ExtractDevToolsInfo(
       head.was_fetched_via_service_worker, head.cache_storage_cache_name,
       head.alpn_negotiated_protocol, head.alternate_protocol_usage,
       head.was_fetched_via_spdy, head.service_worker_response_source,
-      head.ssl_info, head.remote_endpoint, head.emitted_extra_info);
+      head.service_worker_router_info.Clone(), head.ssl_info,
+      head.remote_endpoint, head.emitted_extra_info);
 }
 
 mojom::URLRequestDevToolsInfoPtr ExtractDevToolsInfo(

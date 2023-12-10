@@ -7,7 +7,7 @@
 #include <memory>
 #include <string>
 
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
@@ -22,6 +22,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using ::testing::_;
+using ::testing::Eq;
+using ::testing::Return;
 
 namespace reporting {
 namespace {
@@ -31,19 +33,16 @@ constexpr int kRateMs = 10000;
 constexpr base::TimeDelta kDefaultRate = base::Milliseconds(100);
 
 class MetricReportQueueTest : public ::testing::Test {
- public:
+ protected:
   void SetUp() override {
     priority_ = Priority::SLOW_BATCH;
     settings_ = std::make_unique<test::FakeReportingSettings>();
   }
 
- protected:
-  std::unique_ptr<test::FakeReportingSettings> settings_;
-
-  Priority priority_;
-
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  std::unique_ptr<test::FakeReportingSettings> settings_;
+  Priority priority_;
 };
 
 TEST_F(MetricReportQueueTest, ManualUpload) {
@@ -199,6 +198,20 @@ TEST_F(MetricReportQueueTest, RateControlledFlush_TimeElapsed) {
 
   EXPECT_CALL(*mock_queue_ptr, Flush(priority_, _)).Times(1);
   task_environment_.FastForwardBy(base::Milliseconds(kRateMs));
+}
+
+TEST_F(MetricReportQueueTest, GetDestination) {
+  auto mock_queue = std::unique_ptr<MockReportQueue, base::OnTaskRunnerDeleter>(
+      new MockReportQueue(),
+      base::OnTaskRunnerDeleter(
+          base::ThreadPool::CreateSequencedTaskRunner({})));
+  const auto* const mock_queue_ptr = mock_queue.get();
+  MetricReportQueue metric_report_queue(std::move(mock_queue), priority_);
+
+  // Stub mock report queue to verify retrieved destination.
+  const Destination destination = Destination::TELEMETRY_METRIC;
+  EXPECT_CALL(*mock_queue_ptr, GetDestination()).WillOnce(Return(destination));
+  EXPECT_THAT(metric_report_queue.GetDestination(), Eq(destination));
 }
 }  // namespace
 }  // namespace reporting

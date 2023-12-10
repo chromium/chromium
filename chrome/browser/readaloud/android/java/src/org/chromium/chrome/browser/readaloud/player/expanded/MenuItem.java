@@ -5,26 +5,28 @@
 package org.chromium.chrome.browser.readaloud.player.expanded;
 
 import android.content.Context;
-import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.CompoundButton;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.TextView;
 
 import androidx.annotation.IntDef;
 import androidx.appcompat.widget.SwitchCompat;
 
+import com.google.android.material.materialswitch.MaterialSwitch;
+
+import org.chromium.base.Callback;
 import org.chromium.chrome.browser.readaloud.player.R;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** MenuItem is a view that can be used for all Read Aloud player menu item variants. */
-class MenuItem extends FrameLayout {
+public class MenuItem extends FrameLayout {
     private static final String TAG = "ReadAloudMenuItem";
 
     /** Menu item actions that show up as widgets at the end. */
@@ -47,10 +49,13 @@ class MenuItem extends FrameLayout {
     private final int mId;
     private final @Action int mActionType;
     private final Menu mMenu;
+    private final LinearLayout mLayout;
+    private final ImageView mPlayButton;
+    private final ProgressBar mPlayButtonSpinner;
+    private Callback<Boolean> mToggleHandler;
 
     /**
      * @param context Context.
-     * @param attrs Attribute set (could be from parent view).
      * @param parentMenu Menu to which this item belongs.
      * @param itemId Menu item's identifying number, to be used for handling clicks.
      * @param iconId Resource ID of an icon drawable. Pass 0 to show no icon.
@@ -59,13 +64,13 @@ class MenuItem extends FrameLayout {
      */
     public MenuItem(
             Context context,
-            AttributeSet attrs,
             Menu parentMenu,
             int itemId,
             int iconId,
             String label,
-            @Action int action) {
-        super(context, attrs);
+            @Action int action,
+            String contentDescription) {
+        super(context);
         mMenu = parentMenu;
         mId = itemId;
         mActionType = action;
@@ -76,7 +81,7 @@ class MenuItem extends FrameLayout {
                 (view) -> {
                     onClick();
                 });
-
+        mLayout = layout;
         if (iconId != 0) {
             ImageView icon = layout.findViewById(R.id.icon);
             icon.setImageResource(iconId);
@@ -85,6 +90,7 @@ class MenuItem extends FrameLayout {
         }
 
         ((TextView) layout.findViewById(R.id.item_label)).setText(label);
+        layout.setContentDescription(contentDescription);
 
         switch (mActionType) {
             case Action.EXPAND:
@@ -96,7 +102,13 @@ class MenuItem extends FrameLayout {
                 break;
 
             case Action.TOGGLE:
-                setEndView(layout, inflater.inflate(R.layout.readaloud_toggle_switch, null));
+                MaterialSwitch materialSwitch =
+                        (MaterialSwitch) inflater.inflate(R.layout.readaloud_toggle_switch, null);
+                materialSwitch.setOnCheckedChangeListener(
+                        (view, value) -> {
+                            onToggle(value);
+                        });
+                setEndView(layout, materialSwitch);
                 break;
 
             case Action.RADIO:
@@ -110,27 +122,31 @@ class MenuItem extends FrameLayout {
                         });
                 setEndView(layout, radioButton);
                 break;
-
             case Action.NONE:
             default:
                 break;
         }
         addView(layout);
+
+        mPlayButton = (ImageView) findViewById(R.id.play_button);
+        mPlayButtonSpinner = (ProgressBar) findViewById(R.id.spinner);
+    }
+
+    void setToggleHandler(Callback<Boolean> handler) {
+        mToggleHandler = handler;
     }
 
     void addPlayButton() {
-        ImageView playButton = (ImageView) findViewById(R.id.play_button);
-        playButton.setVisibility(View.VISIBLE);
-        playButton.setOnClickListener(
+        mPlayButton.setVisibility(View.VISIBLE);
+        mPlayButton.setOnClickListener(
                 (view) -> {
                     mMenu.onPlayButtonClicked(mId);
                 });
     }
 
-    // If enabled=false, disappear the item.
-    // TODO gray out out and make unclickable instead?
     void setItemEnabled(boolean enabled) {
-        setVisibility(enabled ? View.VISIBLE : View.GONE);
+        mLayout.setClickable(enabled);
+        mLayout.setFocusable(enabled);
     }
 
     void setValue(boolean value) {
@@ -141,21 +157,31 @@ class MenuItem extends FrameLayout {
         }
     }
 
-    void setChangeListener(CompoundButton.OnCheckedChangeListener onChange) {
-        if (mActionType == Action.TOGGLE) {
-            getToggleSwitch().setOnCheckedChangeListener(onChange);
-        }
+    void showPlayButtonSpinner() {
+        mPlayButton.setVisibility(View.GONE);
+        mPlayButtonSpinner.setVisibility(View.VISIBLE);
+    }
+
+    void showPlayButton() {
+        mPlayButtonSpinner.setVisibility(View.GONE);
+        mPlayButton.setVisibility(View.VISIBLE);
+    }
+
+    void setPlayButtonStopped() {
+        mPlayButton.setImageResource(R.drawable.mini_play_button);
+    }
+
+    void setPlayButtonPlaying() {
+        mPlayButton.setImageResource(R.drawable.mini_pause_button);
     }
 
     private void setEndView(LinearLayout layout, View view) {
         ((FrameLayout) layout.findViewById(R.id.end_view)).addView(view);
     }
 
+    // On click won't be propagated here if the parent layout is not clickable
     private void onClick() {
-        if (mMenu == null) {
-            return;
-        }
-
+        assert mMenu != null;
         if (mActionType == Action.RADIO) {
             getRadioButton().toggle();
         } else if (mActionType == Action.TOGGLE) {
@@ -165,10 +191,14 @@ class MenuItem extends FrameLayout {
     }
 
     private void onRadioButtonSelected() {
-        if (mMenu == null) {
-            return;
-        }
+        assert mMenu != null;
         mMenu.onRadioButtonSelected(mId);
+    }
+
+    private void onToggle(boolean newValue) {
+        if (mToggleHandler != null) {
+            mToggleHandler.onResult(newValue);
+        }
     }
 
     private SwitchCompat getToggleSwitch() {

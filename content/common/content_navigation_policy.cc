@@ -204,12 +204,18 @@ bool ShouldQueueNavigationsWhenPendingCommitRFHExists() {
 }
 
 bool ShouldRestrictCanAccessDataForOriginToUIThread() {
-  // Only restrict calls to the UI thread if the feature is enabled, and if the
-  // new blob URL support is enabled.
+  // Only restrict calls to the UI thread if:
+  // - the feature is enabled
+  // - the new blob URL support is enabled
+  // - ChildProcessSecurityPolicy's requested file set is checked in
+  //   CanRequestURL() rather than CanCommitURL(). This feature is required for
+  //   some tests for pass with Citadel checks.
   return base::FeatureList::IsEnabled(
              features::kRestrictCanAccessDataForOriginToUIThread) &&
          base::FeatureList::IsEnabled(
-             net::features::kSupportPartitionedBlobUrl);
+             net::features::kSupportPartitionedBlobUrl) &&
+         base::FeatureList::IsEnabled(
+             features::kRequestFileSetCheckedInCanRequestURL);
 }
 
 bool ShouldCreateSiteInstanceForDataUrls() {

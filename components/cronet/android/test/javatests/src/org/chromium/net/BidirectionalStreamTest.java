@@ -5,11 +5,13 @@
 package org.chromium.net;
 
 import static com.google.common.truth.Truth.assertThat;
+import static com.google.common.truth.TruthJUnit.assume;
 
 import static org.junit.Assert.assertThrows;
 
 import static org.chromium.net.truth.UrlResponseInfoSubject.assertThat;
 
+import android.net.Network;
 import android.os.Build;
 import android.os.ConditionVariable;
 import android.os.Process;
@@ -29,10 +31,13 @@ import org.chromium.net.CronetTestRule.CronetImplementation;
 import org.chromium.net.CronetTestRule.IgnoreFor;
 import org.chromium.net.CronetTestRule.RequiresMinAndroidApi;
 import org.chromium.net.CronetTestRule.RequiresMinApi;
+import org.chromium.net.NetworkChangeNotifierAutoDetect.ConnectivityManagerDelegate;
 import org.chromium.net.TestBidirectionalStreamCallback.FailureType;
 import org.chromium.net.TestBidirectionalStreamCallback.ResponseStep;
 import org.chromium.net.impl.BidirectionalStreamNetworkException;
 import org.chromium.net.impl.CronetBidirectionalStream;
+import org.chromium.net.impl.CronetExceptionImpl;
+import org.chromium.net.impl.NetworkExceptionImpl;
 import org.chromium.net.impl.UrlResponseInfoImpl;
 
 import java.nio.ByteBuffer;
@@ -152,9 +157,6 @@ public class BidirectionalStreamTest {
 
     @Test
     @SmallTest
-    @IgnoreFor(
-            implementations = {CronetImplementation.AOSP_PLATFORM},
-            reason = "crbug.com/1494845")
     public void testBuilderCheck() throws Exception {
         ExperimentalCronetEngine engine = mTestRule.getTestFramework().getEngine();
         if (mTestRule.testingJavaImpl()) {
@@ -906,7 +908,14 @@ public class BidirectionalStreamTest {
         builder.addHeader("goodheader2", "headervalue");
         IllegalArgumentException e =
                 assertThrows(IllegalArgumentException.class, () -> builder.build().start());
-        assertThat(e).hasMessageThat().isEqualTo("Invalid header header:name=headervalue");
+        if (mTestRule.implementationUnderTest() == CronetImplementation.AOSP_PLATFORM) {
+            // TODO(b/307234565): Remove check once AOSP propagates this change. Not using
+            // @IgnoreFor so this test fails when the propagation happens hence, serving as a
+            // notification.
+            assertThat(e).hasMessageThat().isEqualTo("Invalid header header:name=headervalue");
+        } else {
+            assertThat(e).hasMessageThat().isEqualTo("Invalid header with headername: header:name");
+        }
     }
 
     @Test
@@ -919,7 +928,16 @@ public class BidirectionalStreamTest {
         builder.addHeader("headername", "bad header\r\nvalue");
         IllegalArgumentException e =
                 assertThrows(IllegalArgumentException.class, () -> builder.build().start());
-        assertThat(e).hasMessageThat().isEqualTo("Invalid header headername=bad header\r\nvalue");
+        if (mTestRule.implementationUnderTest() == CronetImplementation.AOSP_PLATFORM) {
+            // TODO(b/307234565): Remove check once AOSP propagates this change. Not using
+            // @IgnoreFor so this test fails when the propagation happens hence, serving as a
+            // notification.
+            assertThat(e)
+                    .hasMessageThat()
+                    .isEqualTo("Invalid header headername=bad header\r\nvalue");
+        } else {
+            assertThat(e).hasMessageThat().isEqualTo("Invalid header with headername: headername");
+        }
     }
 
     @Test
@@ -1798,6 +1816,67 @@ public class BidirectionalStreamTest {
         builder.build().start();
         callback.blockForDone();
         assertThat(CronetTestUtil.nativeGetTaggedBytes(tag)).isGreaterThan(priorBytes);
+    }
+
+    @Test
+    @RequiresMinAndroidApi(Build.VERSION_CODES.M)
+    public void testBindToInvalidNetworkFails() {
+        String url = Http2TestServer.getEchoMethodUrl();
+        TestBidirectionalStreamCallback callback = new TestBidirectionalStreamCallback();
+
+        BidirectionalStream.Builder builder =
+                mCronetEngine
+                        .newBidirectionalStreamBuilder(url, callback, callback.getExecutor())
+                        .setHttpMethod("GET");
+
+        if (mTestRule.implementationUnderTest() == CronetImplementation.AOSP_PLATFORM) {
+            // android.net.http.UrlRequestBuilder#bindToNetwork requires an android.net.Network
+            // object. So, in this case, it will be the wrapper layer that will fail to translate
+            // that to a Network, not something in net's code. Hence, the failure will manifest
+            // itself at bind time, not at request execution time.
+            // Note: this will never happen in prod, as translation failure can only happen if we're
+            // given a fake networkHandle.
+            assertThrows(
+                    IllegalArgumentException.class,
+                    () -> builder.bindToNetwork(-150 /* invalid network handle */));
+            return;
+        }
+
+        builder.bindToNetwork(-150 /* invalid network handle */);
+        BidirectionalStream stream = builder.build();
+        stream.start();
+
+        callback.blockForDone();
+
+        assertThat(callback.mError).isNotNull();
+        if (mTestRule.implementationUnderTest() == CronetImplementation.FALLBACK) {
+            assertThat(callback.mError).isInstanceOf(CronetExceptionImpl.class);
+            assertThat(callback.mError).hasCauseThat().isInstanceOf(NetworkExceptionImpl.class);
+        } else {
+            assertThat(callback.mError).isInstanceOf(NetworkExceptionImpl.class);
+        }
+    }
+
+    @Test
+    @RequiresMinAndroidApi(Build.VERSION_CODES.M)
+    public void testBindToDefaultNetworkSucceeds() {
+        ConnectivityManagerDelegate delegate =
+                new ConnectivityManagerDelegate(mTestRule.getTestFramework().getContext());
+        Network defaultNetwork = delegate.getDefaultNetwork();
+        assume().that(defaultNetwork).isNotNull();
+
+        String url = Http2TestServer.getEchoMethodUrl();
+        TestBidirectionalStreamCallback callback = new TestBidirectionalStreamCallback();
+
+        BidirectionalStream.Builder builder =
+                mCronetEngine
+                        .newBidirectionalStreamBuilder(url, callback, callback.getExecutor())
+                        .setHttpMethod("GET");
+
+        builder.bindToNetwork(defaultNetwork.getNetworkHandle());
+        builder.build().start();
+        callback.blockForDone();
+        assertThat(callback.getResponseInfoWithChecks()).hasHttpStatusCodeThat().isEqualTo(200);
     }
 
     /**

@@ -10,8 +10,8 @@
 
 namespace blink {
 
-class Element;
 class ComputedStyle;
+class Element;
 class HTMLSlotElement;
 class StyleScopeFrame;
 
@@ -96,6 +96,12 @@ class CORE_EXPORT StyleRecalcContext {
   // TODO(crbug.com/831568): Elements outside the flat tree should
   // not have a style.
   bool is_outside_flat_tree = false;
+
+  // True if we're computing the position fallback style of an element
+  // triggered by layout. Note however that try styles may still be included
+  // when this flag is false (see PositionFallbackData,
+  // "speculative @try styling").
+  bool is_position_fallback = false;
 };
 
 }  // namespace blink

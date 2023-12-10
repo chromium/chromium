@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <iostream>
 
+#include "base/version.h"
 #include "testing/libfuzzer/proto/json.pb.h"
 #include "testing/libfuzzer/proto/json_proto_converter.h"
 #include "testing/libfuzzer/proto/lpm_interface.h"
@@ -21,7 +22,8 @@ DEFINE_PROTO_FUZZER(const json_proto::JsonValue& json_value) {
     std::cout << native_input << std::endl;
 
   std::istringstream stream(native_input);
-  FirstPartySetParser::ParseSetsFromStream(stream, false, false);
+  FirstPartySetParser::ParseSetsFromStream(stream, base::Version("1.0"), false,
+                                           false);
 }
 
 }  // namespace content

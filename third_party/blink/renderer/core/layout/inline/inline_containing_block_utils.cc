@@ -4,10 +4,10 @@
 
 #include "third_party/blink/renderer/core/layout/inline/inline_containing_block_utils.h"
 
+#include "third_party/blink/renderer/core/layout/box_fragment_builder.h"
+#include "third_party/blink/renderer/core/layout/fragmentation_utils.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_box_fragment_builder.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_fragmentation_utils.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
+#include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 
 namespace blink {
@@ -46,7 +46,7 @@ void GatherInlineContainerFragmentsFromItems(
     }
 
     // We only care about inlines which have generated a box fragment.
-    const NGPhysicalBoxFragment* box = item->BoxFragment();
+    const PhysicalBoxFragment* box = item->BoxFragment();
     if (!box)
       continue;
 
@@ -105,7 +105,7 @@ void GatherInlineContainerFragmentsFromItems(
 
 void InlineContainingBlockUtils::ComputeInlineContainerGeometry(
     InlineContainingBlockMap* inline_containing_block_map,
-    NGBoxFragmentBuilder* container_builder) {
+    BoxFragmentBuilder* container_builder) {
   if (inline_containing_block_map->empty())
     return;
 
@@ -141,7 +141,7 @@ void InlineContainingBlockUtils::ComputeInlineContainerGeometry(
     if (!child.fragment->IsAnonymousBlock())
       continue;
 
-    const auto& child_fragment = To<NGPhysicalBoxFragment>(*child.fragment);
+    const auto& child_fragment = To<PhysicalBoxFragment>(*child.fragment);
     const auto* items = child_fragment.Items();
     if (!items)
       continue;
@@ -199,7 +199,7 @@ void InlineContainingBlockUtils::ComputeInlineContainerGeometryForFragmentainer(
         if (!child.fragment->IsAnonymousBlock())
           continue;
 
-        const auto& child_fragment = To<NGPhysicalBoxFragment>(*child.fragment);
+        const auto& child_fragment = To<PhysicalBoxFragment>(*child.fragment);
         if (!child_fragment.HasItems())
           continue;
 
@@ -209,8 +209,10 @@ void InlineContainingBlockUtils::ComputeInlineContainerGeometryForFragmentainer(
             &current_fragment_converter, &containing_block_converter);
       }
     }
-    if (const NGBlockBreakToken* break_token = physical_fragment.BreakToken())
+    if (const BlockBreakToken* break_token =
+            physical_fragment.GetBreakToken()) {
       current_block_offset = break_token->ConsumedBlockSize();
+    }
   }
 }
 

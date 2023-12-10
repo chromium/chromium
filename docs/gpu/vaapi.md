@@ -29,7 +29,7 @@ the actions taken and semi-disassembled parameters.
 
 [va_trace.c]: https://github.com/intel/libva/blob/64520e9ec90ed30e016d7c633d746b3bf538c702/va/va_trace.c#L59
 
-### `libva` logging
+## `libva` logging
 
 The environment variable `LIBVA_MESSAGING_LEVEL=0` (or `1` or `2`) can be used
 to configure increasing logging verbosity to stdout (see [va.c]). Chromium uses
@@ -37,7 +37,7 @@ a level `0` by default in `vaapi_wrapper.cc`.
 
 [va.c]: https://github.com/intel/libva/blob/2ece7099061ba4ea821545c8b6712b5c421c4dea/va/va.c#L194
 
-### Tracing power consumption
+## Tracing power consumption
 
 Power consumption is available on ChromeOS test/dev images via the command line
 binary [`dump_intel_rapl_consumption`]; this tool averages the power
@@ -211,43 +211,46 @@ decoding backend:
  * Scroll down to "`Player Properties`" and check the "`video_decoder`" entry:
    it should say "GpuVideoDecoder".
 
-### VaAPI on Linux
+## VaAPI on Linux
 
-This configuration is **unsupported** (see [docs/linux/hw_video_decode.md]), the
-following instructions are provided only as a reference for developers to test
-the code paths on a Linux machine.
+VA-API on Linux is not supported, but it can be enabled using the flags below,
+and it might work on certain configurations -- but there's no guarantees.
 
-* Follow the instructions under the [Linux build setup] document, adding the GN
-  argument `use_vaapi=true` in the args.gn file (please refer to the [Setting up
-  the build]) Section).
 * To support proprietary codecs such as, e.g. H264/AVC1, add the options
-  `proprietary_codecs = true` and `ffmpeg_branding = "Chrome"` to the GN args.
+  `proprietary_codecs = true` and `ffmpeg_branding = "Chrome"` to the GN args
+  (please refer to the [Setting up the build] Section).
 * Build Chromium as usual.
 
 At this point you should make sure the appropriate VA driver backend is working
 correctly; try running `vainfo` from the command line and verify no errors show
-up.
+up, see the [previous section](#verify-driver).
 
-To run Chromium using VaAPI three arguments are necessary:
-* `--enable-features=VaapiVideoDecoder`
+To run Chromium using VaAPI two arguments are necessary:
+* `--use-gl=angle`
+* `--use-angle=gl`
+
+The following two arguments are optional:
 * `--ignore-gpu-blocklist`
-* `--use-gl=desktop` or `--use-gl=egl`
+* `--disable-gpu-driver-bug-workaround`
+
+The following feature switches control video decoding and encoding (see [media
+switches](https://source.chromium.org/chromium/chromium/src/+/main:media/base/media_switches.cc)
+for more details):
+* `--enable-features=VaapiVideoDecodeLinuxGL`
+* `--enable-features=VaapiVideoEncoder`
+
+The NVIDIA VaAPI drivers are known to not support Chromium (see
+[crbug.com/1492880](https://crbug.com/1492880)). This feature switch is
+provided for developers to test VaAPI drivers on NVIDIA GPUs:
+* `--enable-features=VaapiOnNvidiaGPUs`, disabled by default
 
 ```shell
-./out/gn/chrome --ignore-gpu-blocklist --use-gl=egl
+./out/gn/chrome --use-gl=angle --use-angle=gl \
+--enable-features=VaapiVideoDecodeLinuxGL,VaapiVideoEncoder,VaapiOnNvidiaGPUs \
+--ignore-gpu-blocklist --disable-gpu-driver-bug-workaround
 ```
 
-Note that you can set the environment variable `MESA_GLSL_CACHE_DISABLE=false`
-if you want the gpu process to run in sandboxed mode, see
-[crbug.com/264818](https://crbug.com/264818). To check if the running gpu
-process is sandboxed or not, just open `chrome://gpu` and search for
-`Sandboxed` in the driver information table. In addition, passing
-`--gpu-sandbox-failures-fatal=yes` will prevent the gpu process to run in
-non-sandboxed mode.
+Refer to the [previous section](#verify-vaapi) to verify support and use of the VaAPI.
 
-Refer to the [previous section](#verify-vaapi) to verify support and use of
-the VaAPI.
-
-[docs/linux/hw_video_decode.md]: https://chromium.googlesource.com/chromium/src/+/HEAD/docs/linux/hw_video_decode.md
-[Linux build setup]: https://chromium.googlesource.com/chromium/src/+/HEAD/docs/linux/build_instructions.md
 [Setting up the build]: https://chromium.googlesource.com/chromium/src/+/HEAD/docs/linux/build_instructions.md#setting-up-the-build
+

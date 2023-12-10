@@ -8,6 +8,7 @@
 <translation id="1420684932347524586">‏אוי לא! אירע כשל ביצירת מפתח RSA פרטי אקראי.</translation>
 <translation id="1445572445564823378">תוסף זה מאט את <ph name="PRODUCT_NAME" />. עליך להשבית אותו כדי לשחזר את הביצועים של <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1468038450257740950">‏WebGL אינו נתמך.</translation>
+<translation id="1610570795592207282">‏לא ניתן לטעון את ה-CSS‏ '<ph name="RELATIVE_PATH" />' לסקריפט.</translation>
 <translation id="1803557475693955505">לא היתה אפשרות לטעון את דף הרקע '<ph name="BACKGROUND_PAGE" />'.</translation>
 <translation id="2159915644201199628">לא ניתן לפענח תמונה: '<ph name="IMAGE_NAME" />'</translation>
 <translation id="2350172092385603347">‏נעשה שימוש בהתאמה למקום, אך default_locale לא צוין במניפסט.</translation>
@@ -18,14 +19,12 @@
 <translation id="3115238746683532089">מוצר לא ידוע <ph name="PRODUCT_ID" /> מהספק <ph name="VENDOR_ID" /> (מספר סידורי <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">‏הניסיון להחליף קובץ crx נכשל. יש לבדוק אם הקובץ נמצא בשימוש.</translation>
 <translation id="3163201441334626963">מוצר לא ידוע <ph name="PRODUCT_ID" /> מהספק <ph name="VENDOR_ID" /></translation>
-<translation id="3302709122321372472">‏לא היתה אפשרות לטעון את ה-css‏ ‏'<ph name="RELATIVE_PATH" />' עבור סקריפט תוכן.</translation>
 <translation id="3369521687965833290">לא ניתן לפרוק את התוסף. כדי לפרוק תוספים בצורה בטוחה, יש צורך בנתיב לספריית הפרופילים שמתחיל באות כונן ולא מכיל צומת, נקודת טעינה או קישור סמלי. לא קיים נתיב שכזה לפרופיל שלך.</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (מספר סידורי <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> מהספק <ph name="VENDOR_ID" /> (מספר סידורי <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">ערך קלט עבור מפתח פרטי חייב להיות נתיב חוקי.</translation>
 <translation id="388442998277590542">לא היתה אפשרות לטעון את דף האפשרויות '<ph name="OPTIONS_PAGE" />'.</translation>
 <translation id="3984413272403535372">שגיאה בחתימה על התוסף.</translation>
-<translation id="39964277676607559">‏לא היתה אפשרות לטעון את ה-JavaScript‏ ‏'<ph name="RELATIVE_PATH" />' עבור סקריפט תוכן.</translation>
 <translation id="4115165561519362854">מנהל המערכת של מחשב זה דורש שהגרסה המינימלית של <ph name="EXTENSION_NAME" /> תהיה <ph name="EXTENSION_VERSION" />. ההפעלה אינה אפשרית עד לעדכון לגרסה זו (ואילך).</translation>
 <translation id="4233778200880751280">לא ניתן לטעון את דף המידע '<ph name="ABOUT_PAGE" />'.</translation>
 <translation id="471800408830181311">נכשל בפלט מפתח פרטי.</translation>
@@ -33,6 +32,7 @@
 <translation id="4988792151665380515">נכשל ייצוא מפתח ציבורי.</translation>
 <translation id="5026754133087629784">צפיות באתר: <ph name="WEBVIEW_TAG_NAME" /></translation>
 <translation id="5098647635849512368">לא ניתן למצוא את הנתיב המוחלט לספריה לאריזה.</translation>
+<translation id="5160071981665899014">‏לא ניתן לטעון את קובץ ה-JavaScript '<ph name="RELATIVE_PATH" />' לסקריפט.</translation>
 <translation id="5356315618422219272">‏Appview‏: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5436430103864390185">אין תמיכה בחלונות מעוצבים.</translation>
 <translation id="5456409301717116725">תוסף זה כולל את קובץ המפתח "<ph name="KEY_PATH" />". מומלץ לא לעשות זאת.</translation>

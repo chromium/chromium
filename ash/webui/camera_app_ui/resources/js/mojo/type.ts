@@ -57,6 +57,10 @@ export {
 export type{CameraInfo} from
     '../../mojom/media/capture/video/chromeos/mojom/camera_common.mojom-webui.js';
 export {
+  PortraitModeSegResult,
+} from
+    '../../mojom/media/capture/video/chromeos/mojom/camera_features.mojom-webui.js';
+export {
   EntryType,
 } from
     '../../mojom/media/capture/video/chromeos/mojom/camera_metadata.mojom-webui.js';

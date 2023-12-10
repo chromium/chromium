@@ -4,10 +4,11 @@
 
 #include "chrome/browser/apps/app_service/app_install/app_install_navigation_throttle.h"
 
+#include <optional>
+
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/package_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace apps {
 
@@ -15,21 +16,21 @@ class AppInstallNavigationThrottleTest : public testing::Test {
  public:
   AppInstallNavigationThrottleTest() = default;
 
-  absl::optional<PackageId> ExtractPackageId(std::string_view query) {
+  std::optional<PackageId> ExtractPackageId(std::string_view query) {
     return AppInstallNavigationThrottle::ExtractPackageId(query);
   }
 };
 
 TEST_F(AppInstallNavigationThrottleTest, ExtractPackageId) {
-  EXPECT_EQ(ExtractPackageId(""), absl::nullopt);
+  EXPECT_EQ(ExtractPackageId(""), std::nullopt);
 
-  EXPECT_EQ(ExtractPackageId("garbage"), absl::nullopt);
+  EXPECT_EQ(ExtractPackageId("garbage"), std::nullopt);
 
-  EXPECT_EQ(ExtractPackageId("package_id"), absl::nullopt);
+  EXPECT_EQ(ExtractPackageId("package_id"), std::nullopt);
 
-  EXPECT_EQ(ExtractPackageId("package_id="), absl::nullopt);
+  EXPECT_EQ(ExtractPackageId("package_id="), std::nullopt);
 
-  EXPECT_EQ(ExtractPackageId("package_id=garbage"), absl::nullopt);
+  EXPECT_EQ(ExtractPackageId("package_id=garbage"), std::nullopt);
 
   EXPECT_EQ(ExtractPackageId("package_id=web:identifier"),
             PackageId(AppType::kWeb, "identifier"));
@@ -37,7 +38,7 @@ TEST_F(AppInstallNavigationThrottleTest, ExtractPackageId) {
   EXPECT_EQ(ExtractPackageId("package_id=android:identifier"),
             PackageId(AppType::kArc, "identifier"));
 
-  EXPECT_EQ(ExtractPackageId("package_id=garbage:identifier"), absl::nullopt);
+  EXPECT_EQ(ExtractPackageId("package_id=garbage:identifier"), std::nullopt);
 
   EXPECT_EQ(ExtractPackageId("ignore&package_id=web:identifier"),
             PackageId(AppType::kWeb, "identifier"));

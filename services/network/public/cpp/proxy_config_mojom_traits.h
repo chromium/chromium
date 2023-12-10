@@ -36,7 +36,7 @@ template <>
 struct COMPONENT_EXPORT(NETWORK_CPP_PROXY_CONFIG)
     StructTraits<network::mojom::ProxyListDataView, net::ProxyList> {
  public:
-  static std::vector<std::string> proxies(const net::ProxyList& r);
+  static std::vector<std::vector<std::string>> proxies(const net::ProxyList& r);
   static bool Read(network::mojom::ProxyListDataView data,
                    net::ProxyList* out_proxy_list);
 };

@@ -6,6 +6,7 @@
 
 #include <inttypes.h>
 
+#include <bit>
 #include <type_traits>
 
 #include "base/bits.h"
@@ -62,7 +63,7 @@ class Deserializer {
  private:
   bool AlignMemory(uint32_t size, size_t alignment) {
     // Due to the math below, alignment must be a power of two.
-    DCHECK(base::bits::IsPowerOfTwo(alignment));
+    DCHECK(std::has_single_bit(alignment));
 
     size_t memory = reinterpret_cast<size_t>(memory_);
     size_t padding = base::bits::AlignUp(memory, alignment) - memory;

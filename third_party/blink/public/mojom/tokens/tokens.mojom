@@ -127,10 +127,6 @@ union ExecutionContextToken {
   ShadowRealmToken shadow_realm_token;
 };
 
-struct PortalToken {
-  mojo_base.mojom.UnguessableToken value;
-};
-
 struct V8ContextToken {
   mojo_base.mojom.UnguessableToken value;
 };

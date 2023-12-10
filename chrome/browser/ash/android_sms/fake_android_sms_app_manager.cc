@@ -12,7 +12,7 @@ FakeAndroidSmsAppManager::FakeAndroidSmsAppManager() = default;
 FakeAndroidSmsAppManager::~FakeAndroidSmsAppManager() = default;
 
 void FakeAndroidSmsAppManager::SetInstalledAppUrl(
-    const absl::optional<GURL>& url) {
+    const std::optional<GURL>& url) {
   if (url == url_)
     return;
 
@@ -20,7 +20,7 @@ void FakeAndroidSmsAppManager::SetInstalledAppUrl(
   NotifyInstalledAppUrlChanged();
 }
 
-absl::optional<GURL> FakeAndroidSmsAppManager::GetCurrentAppUrl() {
+std::optional<GURL> FakeAndroidSmsAppManager::GetCurrentAppUrl() {
   return url_;
 }
 

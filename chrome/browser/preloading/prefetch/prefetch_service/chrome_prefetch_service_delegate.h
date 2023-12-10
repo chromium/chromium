@@ -58,4 +58,4 @@ class ChromePrefetchServiceDelegate : public content::PrefetchServiceDelegate {
   std::unique_ptr<PrefetchOriginDecider> origin_decider_;
 };
 
-#endif  // CHROME_BROWSER_PRELOADING_PREFETCH_PREFETCH_PROXY_CHROME_PREFETCH_SERVICE_DELEGATE_H_
+#endif  // CHROME_BROWSER_PRELOADING_PREFETCH_PREFETCH_SERVICE_CHROME_PREFETCH_SERVICE_DELEGATE_H_

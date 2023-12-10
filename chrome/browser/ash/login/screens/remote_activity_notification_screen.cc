@@ -4,18 +4,7 @@
 
 #include "chrome/browser/ash/login/screens/remote_activity_notification_screen.h"
 
-#include "ash/constants/ash_switches.h"
-#include "base/check_op.h"
-#include "base/command_line.h"
-#include "base/logging.h"
-#include "base/strings/stringprintf.h"
-#include "chrome/browser/ash/login/login_pref_names.h"
-#include "chrome/browser/ash/login/startup_utils.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/webui/ash/login/remote_activity_notification_screen_handler.h"
-#include "chrome/common/pref_names.h"
-#include "chrome/common/url_constants.h"
-#include "components/prefs/pref_service.h"
 
 namespace ash {
 
@@ -38,6 +27,11 @@ RemoteActivityNotificationScreen::RemoteActivityNotificationScreen(
 
 RemoteActivityNotificationScreen::~RemoteActivityNotificationScreen() = default;
 
+RemoteActivityNotificationScreen::ScreenExitCallback
+RemoteActivityNotificationScreen::exit_callback() {
+  return exit_callback_;
+}
+
 void RemoteActivityNotificationScreen::ShowImpl() {
   if (!view_) {
     return;
@@ -51,7 +45,6 @@ void RemoteActivityNotificationScreen::OnUserAction(
     const base::Value::List& args) {
   const std::string& action_id = args[0].GetString();
   if (action_id == kUserActionContinueButtonClicked) {
-    // TODO(b/299143143): Set prefs::kRemoteAdminWasPresent on button click.
     exit_callback_.Run();
     return;
   }

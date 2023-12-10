@@ -67,7 +67,8 @@ void PasswordManagerClient::AutofillHttpAuth(
 void PasswordManagerClient::NotifyUserCredentialsWereLeaked(
     password_manager::CredentialLeakType leak_type,
     const GURL& origin,
-    const std::u16string& username) {}
+    const std::u16string& username,
+    bool in_account_store) {}
 
 void PasswordManagerClient::TriggerReauthForPrimaryAccount(
     signin_metrics::ReauthAccessPoint access_point,
@@ -126,8 +127,8 @@ HttpAuthManager* PasswordManagerClient::GetHttpAuthManager() {
   return nullptr;
 }
 
-autofill::AutofillDownloadManager*
-PasswordManagerClient::GetAutofillDownloadManager() {
+autofill::AutofillCrowdsourcingManager*
+PasswordManagerClient::GetAutofillCrowdsourcingManager() {
   return nullptr;
 }
 

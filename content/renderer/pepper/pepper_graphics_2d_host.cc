@@ -767,7 +767,8 @@ bool PepperGraphics2DHost::PrepareTransferableResource(
   image_data_->Unmap();
 
   *transferable_resource = viz::TransferableResource::MakeSoftware(
-      shared_bitmap->id(), pixel_image_size, viz::SinglePlaneFormat::kRGBA_8888,
+      shared_bitmap->id(), gpu::SyncToken(), pixel_image_size,
+      viz::SinglePlaneFormat::kRGBA_8888,
       viz::TransferableResource::ResourceSource::kPepperGraphics2D);
   *release_callback = base::BindOnce(
       &PepperGraphics2DHost::ReleaseSoftwareCallback, this->AsWeakPtr(),

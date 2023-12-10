@@ -46,6 +46,8 @@ class CORE_EXPORT SuggestionMarkerListImpl final : public DocumentMarkerList {
                     unsigned old_length,
                     unsigned new_length) final;
 
+  void MergeOverlappingMarkers() final {}
+
   void Trace(Visitor*) const override;
 
   // SuggestionMarkerListImpl-specific

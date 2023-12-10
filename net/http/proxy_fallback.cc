@@ -5,17 +5,25 @@
 #include "net/http/proxy_fallback.h"
 
 #include "net/base/net_errors.h"
+#include "net/base/proxy_chain.h"
 #include "net/base/proxy_server.h"
 
 namespace net {
 
-NET_EXPORT bool CanFalloverToNextProxy(const ProxyServer& proxy,
+NET_EXPORT bool CanFalloverToNextProxy(const ProxyChain& proxy_chain,
                                        int error,
                                        int* final_error,
                                        bool is_for_ip_protection) {
   *final_error = error;
 
-  if (proxy.is_quic()) {
+  if (!proxy_chain.is_direct() &&
+      proxy_chain.GetProxyServer(/*chain_index=*/0).is_quic()) {
+    // TODO(https://crbug.com/1495793): For supporting QUIC with proxy chains
+    // containing more than one proxy server it's unclear whether the proxy
+    // server at chain index 0 is really what we should be doing here. Figure
+    // that out and add tests.
+    CHECK(!proxy_chain.is_multi_proxy());
+
     switch (error) {
       case ERR_QUIC_PROTOCOL_ERROR:
       case ERR_QUIC_HANDSHAKE_FAILED:

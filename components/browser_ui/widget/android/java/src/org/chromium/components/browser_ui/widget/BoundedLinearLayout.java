@@ -23,7 +23,7 @@ import org.chromium.ui.base.ViewUtils;
  *       android:layout_width="match_parent"
  *       android:layout_height="match_parent"
  *       app:maxWidthLandscape="@dimen/modal_dialog_landscape_max_width"
-         app:maxWidthPortrait="@dimen/modal_dialog_portrait_max_width">
+ * app:maxWidthPortrait="@dimen/modal_dialog_portrait_max_width">
  *     ...
  */
 public class BoundedLinearLayout extends LinearLayout {
@@ -37,9 +37,7 @@ public class BoundedLinearLayout extends LinearLayout {
     private boolean mIgnoreWidthConstraints;
     private boolean mIgnoreHeightConstraints;
 
-    /**
-     * Constructor for inflating from XML.
-     */
+    /** Constructor for inflating from XML. */
     public BoundedLinearLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
 
@@ -91,7 +89,8 @@ public class BoundedLinearLayout extends LinearLayout {
 
         // Limit the height.
         int heightSize = MeasureSpec.getSize(heightMeasureSpec);
-        if (mMaxHeight != NOT_SPECIFIED && heightSize > mMaxHeight
+        if (mMaxHeight != NOT_SPECIFIED
+                && heightSize > mMaxHeight
                 && !areHeightConstraintsIgnored()) {
             heightMeasureSpec = makeMeasureSpec(heightMeasureSpec, mMaxHeight);
         }
@@ -104,16 +103,12 @@ public class BoundedLinearLayout extends LinearLayout {
         return MeasureSpec.makeMeasureSpec(maxPixel, mode);
     }
 
-    /**
-     * When true, {@code app:maxWidthPortrait} and {@code app:maxWidthLandscape} are ignored.
-     */
+    /** When true, {@code app:maxWidthPortrait} and {@code app:maxWidthLandscape} are ignored. */
     private boolean isWidthConstraintsIgnored() {
         return mIgnoreWidthConstraints;
     }
 
-    /**
-     * When true, {@code app:maxHeight} is ignored.
-     */
+    /** When true, {@code app:maxHeight} is ignored. */
     private boolean areHeightConstraintsIgnored() {
         return mIgnoreHeightConstraints;
     }

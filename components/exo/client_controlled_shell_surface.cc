@@ -22,6 +22,7 @@
 #include "ash/wm/client_controlled_state.h"
 #include "ash/wm/collision_detection/collision_detection_utils.h"
 #include "ash/wm/drag_details.h"
+#include "ash/wm/pip/pip_controller.h"
 #include "ash/wm/pip/pip_positioner.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/toplevel_window_event_handler.h"
@@ -38,7 +39,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
-#include "chromeos/ui/base/tablet_state.h"
 #include "chromeos/ui/base/window_pin_type.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/base/window_state_type.h"
@@ -48,7 +48,6 @@
 #include "chromeos/ui/frame/immersive/immersive_fullscreen_controller.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/exo/surface.h"
-#include "components/exo/wm_helper.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/scoped_window_event_targeting_blocker.h"
 #include "ui/aura/window.h"
@@ -883,8 +882,7 @@ void ClientControlledShellSurface::OnDisplayMetricsChanged(
   // Android has an obsolete bounds for a while and applies it incorrectly.
   // We need to ignore those bounds change until the states are completely
   // synced on both sides.
-  if (GetWindowState()->IsPip() &&
-      changed_metrics & display::DisplayObserver::DISPLAY_METRIC_ROTATION) {
+  if (GetWindowState()->IsPip() && changed_metrics & DISPLAY_METRIC_ROTATION) {
     gfx::Rect bounds_after_rotation =
         ash::PipPositioner::GetSnapFractionAppliedBounds(GetWindowState());
     display_rotating_with_pip_ =
@@ -898,10 +896,8 @@ void ClientControlledShellSurface::OnDisplayMetricsChanged(
   if (current_display.id() != new_display.id())
     return;
 
-  bool in_tablet_mode = WMHelper::GetInstance()->InTabletMode();
-
-  if (!in_tablet_mode || !widget_->IsActive() ||
-      !(changed_metrics & display::DisplayObserver::DISPLAY_METRIC_ROTATION)) {
+  if (!screen->InTabletMode() || !widget_->IsActive() ||
+      !(changed_metrics & DISPLAY_METRIC_ROTATION)) {
     return;
   }
 
@@ -986,7 +982,8 @@ void ClientControlledShellSurface::SetWidgetBounds(const gfx::Rect& bounds,
     // resting postiion. The resting position should be fully controlled by
     // chrome afterwards because Android isn't aware of Chrome OS System UI.
     bool is_resizing_without_rotation =
-        !display_rotating_with_pip_ &&
+        !display_rotating_with_pip_ && !IsDragging() &&
+        !ash::Shell::Get()->pip_controller()->is_tucked() &&
         GetWindowState()->GetCurrentBoundsInScreen().size() != bounds.size();
     if (GetWindowState()->IsPip() &&
         (!ash::PipPositioner::HasSnapFraction(GetWindowState()) ||
@@ -1485,19 +1482,19 @@ ClientControlledShellSurface::GetClientBoundsForWindowBoundsAndWindowState(
       window_state == chromeos::WindowStateType::kSecondarySnapped;
   const bool is_maximized =
       window_state == chromeos::WindowStateType::kMaximized;
-  const display::TabletState tablet_state =
-      chromeos::TabletState::Get()->state();
-  const bool is_tablet_mode = WMHelper::GetInstance()->InTabletMode();
 
-  if (is_maximized || (is_snapped && is_tablet_mode))
+  if (is_maximized ||
+      (is_snapped && display::Screen::GetScreen()->InTabletMode())) {
     return window_bounds;
+  }
 
   gfx::Rect client_bounds =
       GetFrameView()->GetFrameOverlapped()
           ? window_bounds
           : GetFrameView()->GetClientBoundsForWindowBounds(window_bounds);
 
-  if (is_snapped && tablet_state == display::TabletState::kExitingTabletMode) {
+  if (is_snapped && display::Screen::GetScreen()->GetTabletState() ==
+                        display::TabletState::kExitingTabletMode) {
     // Until the next commit, the frame view is in immersive mode, and the above
     // GetClientBoundsForWindowBounds doesn't return bounds taking the caption
     // height into account.

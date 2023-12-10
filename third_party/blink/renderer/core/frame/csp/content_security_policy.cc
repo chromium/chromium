@@ -614,6 +614,11 @@ absl::optional<CSPDirectiveName> GetDirectiveTypeFromRequestContextType(
     case mojom::blink::RequestContextType::PREFETCH:
       return CSPDirectiveName::DefaultSrc;
 
+    case mojom::blink::RequestContextType::SPECULATION_RULES:
+      // If speculation rules ever supports <script src>, then it will probably
+      // be necessary to use ScriptSrcElem in such cases.
+      return CSPDirectiveName::ScriptSrc;
+
     case mojom::blink::RequestContextType::CSP_REPORT:
     case mojom::blink::RequestContextType::DOWNLOAD:
     case mojom::blink::RequestContextType::HYPERLINK:

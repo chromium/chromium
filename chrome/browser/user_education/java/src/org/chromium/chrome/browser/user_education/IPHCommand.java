@@ -14,9 +14,7 @@ import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.Highl
 import org.chromium.ui.widget.AnchoredPopupWindow;
 import org.chromium.ui.widget.ViewRectProvider;
 
-/**
- * Class encapsulating the data needed to show in-product help (IPH).
- */
+/** Class encapsulating the data needed to show in-product help (IPH). */
 public class IPHCommand {
     private Resources mResources;
     public final String featureName;
@@ -28,21 +26,16 @@ public class IPHCommand {
     public String accessibilityText;
     public final boolean dismissOnTouch;
     public final View anchorView;
-    @Nullable
-    public final Runnable onDismissCallback;
-    @Nullable
-    public final Runnable onShowCallback;
-    @Nullable
-    public final Runnable onBlockedCallback;
+    @Nullable public final Runnable onDismissCallback;
+    @Nullable public final Runnable onShowCallback;
+    @Nullable public final Runnable onBlockedCallback;
     public Rect insetRect;
     public final long autoDismissTimeout;
     public final ViewRectProvider viewRectProvider;
-    @Nullable
-    public final HighlightParams highlightParams;
+    @Nullable public final HighlightParams highlightParams;
     public final Rect anchorRect;
     public final boolean removeArrow;
-    @AnchoredPopupWindow.VerticalOrientation
-    public final int preferredVerticalOrientation;
+    @AnchoredPopupWindow.VerticalOrientation public final int preferredVerticalOrientation;
 
     public void fetchFromResources() {
         if (contentString == null) {
@@ -71,12 +64,25 @@ public class IPHCommand {
         }
     }
 
-    IPHCommand(Resources resources, String featureName, int stringId, Object[] stringArgs,
-            int accessibilityStringId, Object[] accessibilityStringArgs, boolean dismissOnTouch,
-            View anchorView, Runnable onDismissCallback, Runnable onShowCallback,
-            Runnable onBlockedCallback, long autoDismissTimeout, ViewRectProvider viewRectProvider,
-            HighlightParams params, Rect anchorRect, boolean removeArrow,
-            @AnchoredPopupWindow.VerticalOrientation int preferredVerticalOrientation) {
+    IPHCommand(
+            Resources resources,
+            String featureName,
+            int stringId,
+            Object[] stringArgs,
+            int accessibilityStringId,
+            Object[] accessibilityStringArgs,
+            boolean dismissOnTouch,
+            View anchorView,
+            Runnable onDismissCallback,
+            Runnable onShowCallback,
+            Runnable onBlockedCallback,
+            long autoDismissTimeout,
+            ViewRectProvider viewRectProvider,
+            HighlightParams params,
+            Rect anchorRect,
+            boolean removeArrow,
+            @AnchoredPopupWindow.VerticalOrientation int preferredVerticalOrientation,
+            Rect insetRect) {
         this.mResources = resources;
         this.featureName = featureName;
         this.stringId = stringId;
@@ -94,5 +100,6 @@ public class IPHCommand {
         this.anchorRect = anchorRect;
         this.removeArrow = removeArrow;
         this.preferredVerticalOrientation = preferredVerticalOrientation;
+        this.insetRect = insetRect;
     }
 }

@@ -5,9 +5,9 @@
 #import "ios/chrome/browser/favicon/favicon_browser_agent.h"
 
 #import "base/check.h"
-#import "base/check_op.h"
 #import "components/favicon/ios/web_favicon_driver.h"
-#import "ios/chrome/browser/sessions/session_restoration_observer_helper.h"
+#import "ios/chrome/browser/sessions/session_restoration_service.h"
+#import "ios/chrome/browser/sessions/session_restoration_service_factory.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/web/public/web_state.h"
 #import "url/gurl.h"
@@ -21,20 +21,12 @@ FaviconBrowserAgent::FaviconBrowserAgent(Browser* browser) : browser_(browser) {
       << "PagePlaceholderBrowserAgent created for a Browser with a non-empty "
          "WebStateList.";
 
-  browser_->AddObserver(this);
-  AddSessionRestorationObserver(browser_.get(), this);
+  ChromeBrowserState* browser_state = browser_->GetBrowserState();
+  session_restoration_service_observation_.Observe(
+      SessionRestorationServiceFactory::GetForBrowserState(browser_state));
 }
 
 FaviconBrowserAgent::~FaviconBrowserAgent() {
-  DCHECK(!browser_);
-}
-
-#pragma mark - BrowserObserver
-
-void FaviconBrowserAgent::BrowserDestroyed(Browser* browser) {
-  DCHECK_EQ(browser_.get(), browser);
-  RemoveSessionRestorationObserver(browser_.get(), this);
-  browser_->RemoveObserver(this);
   browser_ = nullptr;
 }
 

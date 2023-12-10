@@ -5,13 +5,13 @@
 #ifndef CHROME_UPDATER_EXTERNAL_CONSTANTS_H_
 #define CHROME_UPDATER_EXTERNAL_CONSTANTS_H_
 
+#include <optional>
 #include <vector>
 
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 
@@ -65,7 +65,7 @@ class ExternalConstants : public base::RefCountedThreadSafe<ExternalConstants> {
   virtual base::TimeDelta IdleCheckPeriod() const = 0;
 
   // Overrides machine management state.
-  virtual absl::optional<bool> IsMachineManaged() const = 0;
+  virtual std::optional<bool> IsMachineManaged() const = 0;
 
   // True if the updater should request and apply diff updates.
   virtual bool EnableDiffUpdates() const = 0;

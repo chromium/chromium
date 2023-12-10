@@ -6,6 +6,7 @@
 
 #include <cstddef>
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/check.h"
@@ -39,7 +40,6 @@
 #include "components/enterprise/data_controls/dlp_histogram_helper.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/browser_context.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
@@ -58,7 +58,7 @@ constexpr char kDlpFilesNotificationId[] = "dlp_files";
 
 std::u16string GetNotificationTitle(NotificationType type,
                                     dlp::FileAction action,
-                                    absl::optional<size_t> file_count) {
+                                    std::optional<size_t> file_count) {
   switch (type) {
     case NotificationType::kError:
       CHECK(file_count.has_value());
@@ -78,7 +78,7 @@ std::u16string GetNotificationMessage(
     NotificationType type,
     size_t file_count,
     const std::u16string& first_file,
-    absl::optional<FilesPolicyDialog::BlockReason> reason) {
+    std::optional<FilesPolicyDialog::BlockReason> reason) {
   switch (type) {
     case NotificationType::kError:
       CHECK(reason.has_value());
@@ -224,17 +224,17 @@ class PolicyNotificationClickHandler
     : public message_center::NotificationDelegate {
  public:
   explicit PolicyNotificationClickHandler(
-      base::OnceCallback<void(absl::optional<int>)> callback)
+      base::OnceCallback<void(std::optional<int>)> callback)
       : callback_(std::move(callback)) {}
 
   void Close(bool by_user) override {
     // Treat any close reason as the user clicking the Cancel button.
-    Click(NotificationButton::CANCEL, /*reply=*/absl::nullopt);
+    Click(NotificationButton::CANCEL, /*reply=*/std::nullopt);
   }
 
   // message_center::NotificationDelegate overrides:
-  void Click(const absl::optional<int>& button_index,
-             const absl::optional<std::u16string>& reply) override {
+  void Click(const std::optional<int>& button_index,
+             const std::optional<std::u16string>& reply) override {
     if (!button_index.has_value()) {
       // Ignore clicks on the notification, but not on the buttons.
       return;
@@ -249,7 +249,7 @@ class PolicyNotificationClickHandler
  private:
   ~PolicyNotificationClickHandler() override = default;
 
-  base::OnceCallback<void(absl::optional<int>)> callback_;
+  base::OnceCallback<void(std::optional<int>)> callback_;
 };
 
 }  // namespace
@@ -283,7 +283,7 @@ void FilesPolicyNotificationManager::Shutdown() {
 }
 
 void FilesPolicyNotificationManager::ShowDlpBlockedFiles(
-    absl::optional<file_manager::io_task::IOTaskId> task_id,
+    std::optional<file_manager::io_task::IOTaskId> task_id,
     std::vector<base::FilePath> blocked_files,
     dlp::FileAction action) {
   data_controls::DlpHistogramEnumeration(
@@ -328,7 +328,7 @@ void FilesPolicyNotificationManager::SetConnectorsBlockedFiles(
 
 void FilesPolicyNotificationManager::ShowDlpWarning(
     WarningWithJustificationCallback callback,
-    absl::optional<file_manager::io_task::IOTaskId> task_id,
+    std::optional<file_manager::io_task::IOTaskId> task_id,
     std::vector<base::FilePath> warning_files,
     const DlpFileDestination& destination,
     dlp::FileAction action) {
@@ -405,7 +405,7 @@ void FilesPolicyNotificationManager::ShowDialog(
 
 void FilesPolicyNotificationManager::ShowDlpWarningTimeoutNotification(
     dlp::FileAction action,
-    absl::optional<std::string> notification_id) {
+    std::optional<std::string> notification_id) {
   if (!notification_id.has_value()) {
     notification_id = GetNotificationId(notification_count_++);
   }
@@ -449,7 +449,7 @@ void FilesPolicyNotificationManager::OnIOTaskResumed(
   }
 
   std::move(io_tasks_.at(task_id).GetWarningInfo()->warning_callback)
-      .Run(/*user_justification=*/absl::nullopt, /*should_proceed=*/true);
+      .Run(/*user_justification=*/std::nullopt, /*should_proceed=*/true);
   io_tasks_.at(task_id).ResetWarningInfo();
 }
 
@@ -483,7 +483,7 @@ bool FilesPolicyNotificationManager::HasWarningTimerForTesting(
 
 void FilesPolicyNotificationManager::HandleDlpWarningNotificationClick(
     std::string notification_id,
-    absl::optional<int> button_index) {
+    std::optional<int> button_index) {
   if (!button_index.has_value()) {
     return;
   }
@@ -497,7 +497,7 @@ void FilesPolicyNotificationManager::HandleDlpWarningNotificationClick(
   switch (button_index.value()) {
     case NotificationButton::CANCEL:
       std::move(warning_info->warning_callback)
-          .Run(/*user_justification=*/absl::nullopt, /*should_proceed=*/false);
+          .Run(/*user_justification=*/std::nullopt, /*should_proceed=*/false);
       non_io_tasks_.erase(notification_id);
       non_io_tasks_warning_timers_.erase(notification_id);
       break;
@@ -509,7 +509,7 @@ void FilesPolicyNotificationManager::HandleDlpWarningNotificationClick(
           !warning_info->dialog_info.HasCustomDetails()) {
         // Action anyway.
         std::move(warning_info->warning_callback)
-            .Run(/*user_justification=*/absl::nullopt, /*should_proceed=*/true);
+            .Run(/*user_justification=*/std::nullopt, /*should_proceed=*/true);
         non_io_tasks_.erase(notification_id);
         non_io_tasks_warning_timers_.erase(notification_id);
       } else {
@@ -536,7 +536,7 @@ void FilesPolicyNotificationManager::HandleDlpErrorNotificationClick(
     std::string notification_id,
     std::vector<base::FilePath> files,
     dlp::FileAction action,
-    absl::optional<int> button_index) {
+    std::optional<int> button_index) {
   if (!button_index.has_value()) {
     return;
   }
@@ -689,7 +689,7 @@ FilesPolicyNotificationManager::DialogInfo::DialogInfo(
     file_manager::io_task::IOTaskId task_id,
     base::OnceClosure timeout_callback)
     : task_id(task_id),
-      notification_id(absl::nullopt),
+      notification_id(std::nullopt),
       dialog_callback(std::move(dialog_callback)),
       timeout_callback(std::move(timeout_callback)) {}
 
@@ -697,7 +697,7 @@ FilesPolicyNotificationManager::DialogInfo::DialogInfo(
     ShowDialogCallback dialog_callback,
     std::string notification_id,
     base::OnceClosure timeout_callback)
-    : task_id(absl::nullopt),
+    : task_id(std::nullopt),
       notification_id(notification_id),
       dialog_callback(std::move(dialog_callback)),
       timeout_callback(std::move(timeout_callback)) {}
@@ -729,7 +729,7 @@ void FilesPolicyNotificationManager::ShowFilesPolicyNotification(
                                                     : NotificationType::kError;
   size_t file_count;
   std::u16string file_name;
-  absl::optional<FilesPolicyDialog::BlockReason> reason;
+  std::optional<FilesPolicyDialog::BlockReason> reason;
   FileTaskInfo& task_info = io_tasks_.at(task_id);
   bool always_show_review;
   if (HasWarning(task_id)) {
@@ -767,7 +767,7 @@ void FilesPolicyNotificationManager::ShowFilesPolicyNotification(
 void FilesPolicyNotificationManager::HandleFilesPolicyWarningNotificationClick(
     file_manager::io_task::IOTaskId task_id,
     std::string notification_id,
-    absl::optional<int> button_index) {
+    std::optional<int> button_index) {
   if (!button_index.has_value()) {
     return;
   }
@@ -806,7 +806,7 @@ void FilesPolicyNotificationManager::HandleFilesPolicyWarningNotificationClick(
 void FilesPolicyNotificationManager::HandleFilesPolicyErrorNotificationClick(
     file_manager::io_task::IOTaskId task_id,
     std::string notification_id,
-    absl::optional<int> button_index) {
+    std::optional<int> button_index) {
   if (!button_index.has_value()) {
     return;
   }
@@ -904,7 +904,7 @@ void FilesPolicyNotificationManager::ShowFilesPolicyDialog(
       info.AddWidget(FilesPolicyDialog::CreateWarnDialog(
           std::move(warning_info->dialog_callback), info.action(), modal_parent,
           std::move(warning_info->dialog_info),
-          /*destination=*/absl::nullopt));
+          /*destination=*/std::nullopt));
       return;
   }
 }
@@ -998,7 +998,7 @@ void FilesPolicyNotificationManager::OnIOTaskStatus(
                  .GetWarningInfo()
                  ->warning_callback.is_null());
       std::move(io_tasks_.at(status.task_id).GetWarningInfo()->warning_callback)
-          .Run(/*user_justification=*/absl::nullopt, /*should_proceed=*/false);
+          .Run(/*user_justification=*/std::nullopt, /*should_proceed=*/false);
       io_tasks_.at(status.task_id).ResetWarningInfo();
     }
     // Remove only if the IOTask doesn't have any blocked file.
@@ -1038,7 +1038,7 @@ bool FilesPolicyNotificationManager::HasWarning(
 void FilesPolicyNotificationManager::OnIOTaskWarningDialogClicked(
     file_manager::io_task::IOTaskId task_id,
     Policy warning_reason,
-    absl::optional<std::u16string> user_justification,
+    std::optional<std::u16string> user_justification,
     bool should_proceed) {
   if (!HasIOTask(task_id) || !HasWarning(task_id)) {
     // Task probably timed out.
@@ -1053,7 +1053,7 @@ void FilesPolicyNotificationManager::OnIOTaskWarningDialogClicked(
 
 void FilesPolicyNotificationManager::OnNonIOTaskWarningDialogClicked(
     const std::string& notification_id,
-    absl::optional<std::u16string> user_justification,
+    std::optional<std::u16string> user_justification,
     bool should_proceed) {
   if (!HasWarning(notification_id)) {
     // Task probably timed out.
@@ -1067,7 +1067,7 @@ void FilesPolicyNotificationManager::OnNonIOTaskWarningDialogClicked(
 
 void FilesPolicyNotificationManager::OnDlpLearnMoreButtonClicked(
     const std::string& notification_id,
-    absl::optional<int> button_index) {
+    std::optional<int> button_index) {
   if (!button_index || button_index.value() != 0) {
     return;
   }
@@ -1216,11 +1216,10 @@ void FilesPolicyNotificationManager::ShowDlpWarningNotification(
     auto notification = file_manager::CreateSystemNotification(
         notification_id,
         GetNotificationTitle(NotificationType::kWarning, action,
-                             /*file_count=*/absl::nullopt),
+                             /*file_count=*/std::nullopt),
         GetNotificationMessage(
             NotificationType::kWarning, warning_files.size(),
-            warning_files.begin()->BaseName().LossyDisplayName(),
-            absl::nullopt),
+            warning_files.begin()->BaseName().LossyDisplayName(), std::nullopt),
         base::MakeRefCounted<PolicyNotificationClickHandler>(base::BindOnce(
             &FilesPolicyNotificationManager::HandleDlpWarningNotificationClick,
             weak_factory_.GetWeakPtr(), notification_id)));
@@ -1259,7 +1258,7 @@ void FilesPolicyNotificationManager::PauseIOTask(
   auto* io_task_controller = GetIOTaskController(context_);
   if (!io_task_controller) {
     // Proceed because the IO task can't be paused.
-    std::move(callback).Run(/*user_justification=*/absl::nullopt,
+    std::move(callback).Run(/*user_justification=*/std::nullopt,
                             /*should_proceed=*/true);
     return;
   }
@@ -1384,7 +1383,7 @@ void FilesPolicyNotificationManager::OnNonIOTaskWarningTimedOut(
   // Run the warning callback with false.
   std::move(
       non_io_tasks_.at(notification_id).GetWarningInfo()->warning_callback)
-      .Run(/*user_justification=*/absl::nullopt, /*should_proceed=*/false);
+      .Run(/*user_justification=*/std::nullopt, /*should_proceed=*/false);
 
   ShowDlpWarningTimeoutNotification(non_io_tasks_.at(notification_id).action());
 

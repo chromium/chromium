@@ -39,14 +39,14 @@ import javax.inject.Inject;
  */
 @ActivityScope
 public class CloseButtonNavigator {
-    @Nullable
-    private Predicate<String> mLandingPagePredicate;
+    @Nullable private Predicate<String> mLandingPagePredicate;
     private final CustomTabActivityTabController mTabController;
     private final CustomTabActivityTabProvider mTabProvider;
     private final boolean mButtonClosesChildTab;
 
     @Inject
-    public CloseButtonNavigator(CustomTabActivityTabController tabController,
+    public CloseButtonNavigator(
+            CustomTabActivityTabController tabController,
             CustomTabActivityTabProvider tabProvider,
             BrowserServicesIntentDataProvider intentDataProvider) {
         mTabController = tabController;
@@ -68,9 +68,7 @@ public class CloseButtonNavigator {
         return mLandingPagePredicate != null && mLandingPagePredicate.test(url);
     }
 
-    /**
-     * Handles navigation and Tab closures that should occur when the close button is pressed.
-     */
+    /** Handles navigation and Tab closures that should occur when the close button is pressed. */
     public void navigateOnClose() {
         // If the tab is a child tab and |mButtonClosesChildTab| == true, close the child tab.
         Tab currentTab = mTabProvider.getTab();

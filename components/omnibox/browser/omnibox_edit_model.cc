@@ -22,6 +22,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/typed_macros.h"
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/dom_distiller/core/url_constants.h"
@@ -878,6 +879,20 @@ void OmniboxEditModel::OpenSelection(OmniboxPopupSelection selection,
              OmniboxPopupSelection::FOCUSED_BUTTON_REMOVE_SUGGESTION) {
     TryDeletingPopupLine(selection.line);
   } else {
+    // Mark instant keyword as used if we're in keyword mode for a
+    // starter pack keyword with its original '@' prefix intact.
+    if (OmniboxFieldTrial::IsKeywordModeRefreshEnabled() && !keyword_.empty()) {
+      PrefService* prefs = GetPrefService();
+      TemplateURL* turl = controller_->client()
+                              ->GetTemplateURLService()
+                              ->GetTemplateURLForKeyword(keyword_);
+      if (prefs && turl && turl->starter_pack_id() != 0 &&
+          turl->keyword().starts_with(u'@')) {
+        prefs->SetBoolean(omnibox::kOmniboxInstantKeywordUsed, true);
+      }
+    }
+
+    // Open the match.
     GURL alternate_nav_url = AutocompleteResult::ComputeAlternateNavUrl(
         input_, match,
         controller_->autocomplete_controller()->autocomplete_provider_client());
@@ -895,8 +910,7 @@ bool OmniboxEditModel::AcceptKeyword(
     OmniboxEventProto::KeywordModeEntryMethod entry_method) {
   TRACE_EVENT0("omnibox", "OmniboxEditModel::AcceptKeyword");
 
-  DCHECK(is_keyword_hint_ && !keyword_.empty())
-      << "is_keyword_hint_: " << is_keyword_hint_ << ", keyword_: " << keyword_;
+  DCHECK(!keyword_.empty()) << keyword_;
 
   controller_->autocomplete_controller()->Stop(false);
 
@@ -1286,6 +1300,32 @@ void OmniboxEditModel::OnTabPressed(bool shift) {
   StepPopupSelection(shift ? OmniboxPopupSelection::kBackward
                            : OmniboxPopupSelection::kForward,
                      OmniboxPopupSelection::kStateOrLine);
+}
+
+bool OmniboxEditModel::OnSpacePressed() {
+  if (!OmniboxFieldTrial::IsKeywordModeRefreshEnabled()) {
+    return false;
+  }
+  if (!GetPrefService()->GetBoolean(omnibox::kKeywordSpaceTriggeringEnabled)) {
+    return false;
+  }
+  if (!is_keyword_hint_ && keyword_.empty() &&
+      input_.cursor_position() == input_.text().length()) {
+    // Keywords can now be accessed anywhere in the match list. If one is
+    // found on an instant keyword match, select and accept it.
+    const AutocompleteResult& result = controller_->result();
+    for (size_t i = 0; i < result.size(); i++) {
+      const AutocompleteMatch& match = result.match_at(i);
+      if (input_.text() == match.keyword &&
+          match.HasInstantKeyword(
+              controller_->client()->GetTemplateURLService())) {
+        SetPopupSelection(OmniboxPopupSelection(i));
+        AcceptKeyword(metrics::OmniboxEventProto::SPACE_AT_END);
+        return true;
+      }
+    }
+  }
+  return false;
 }
 
 void OmniboxEditModel::OnNavigationLikely(
@@ -1978,6 +2018,7 @@ std::u16string OmniboxEditModel::GetPopupAccessibilityLabelForCurrentSelection(
       // In keyword mode, the match we're interested in is actually the
       // associated_keyword of the match we're on. Populate the a11y string
       // with information from the keyword match, rather than the current match.
+      CHECK(match.associated_keyword) << match.keyword;
       TemplateURL* turl = match.associated_keyword->GetTemplateURL(
           controller_->client()->GetTemplateURLService(), false);
       std::u16string replacement_string =
@@ -2113,12 +2154,20 @@ void OmniboxEditModel::StepPopupSelection(
       controller_->result(), GetPrefService(),
       controller_->client()->GetTemplateURLService(), direction, step);
   if (OmniboxFieldTrial::IsKeywordModeRefreshEnabled()) {
-    ClearKeyword();
-    SetPopupSelection(new_selection);
-    if (new_selection.state == OmniboxPopupSelection::LineState::KEYWORD_MODE) {
-      AcceptKeyword(old_selection.line == new_selection.line
-                        ? metrics::OmniboxEventProto::TAB
-                        : metrics::OmniboxEventProto::SELECT_SUGGESTION);
+    if (old_selection.IsChangeToKeyword(new_selection)) {
+      ClearKeyword();
+      SetPopupSelection(new_selection);
+    } else if (new_selection.state ==
+               OmniboxPopupSelection::LineState::KEYWORD_MODE) {
+      // Prepare for keyword mode before accepting it.
+      SetPopupSelection(OmniboxPopupSelection(
+          new_selection.line, OmniboxPopupSelection::LineState::NORMAL));
+      // Note: Popup behavior currently depends on the entry method being tab.
+      // This is not ideal for nuanced metrics, but it is how it has worked
+      // for a long time. Consider refactoring to fix this if needed.
+      AcceptKeyword(metrics::OmniboxEventProto::TAB);
+    } else {
+      SetPopupSelection(new_selection);
     }
   } else {
     if (old_selection.IsChangeToKeyword(new_selection)) {
@@ -2275,7 +2324,7 @@ void OmniboxEditModel::OpenMatch(OmniboxPopupSelection selection,
   base::TimeDelta elapsed_time_since_user_first_modified_omnibox(
       now - time_user_first_modified_omnibox_);
   controller_->autocomplete_controller()
-      ->UpdateMatchDestinationURLWithAdditionalAssistedQueryStats(
+      ->UpdateMatchDestinationURLWithAdditionalSearchboxStats(
           elapsed_time_since_user_first_modified_omnibox, &match);
 
   GURL destination_url = action ? action->getUrl() : match.destination_url;

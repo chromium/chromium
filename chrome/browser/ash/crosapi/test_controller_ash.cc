@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/crosapi/test_controller_ash.h"
 
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -33,6 +34,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/version.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/apps/almanac_api_client/almanac_api_util.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
@@ -65,7 +67,6 @@
 #include "crypto/sha2.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "printing/buildflags/buildflags.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/aura/window_tree_host.h"
@@ -428,7 +429,7 @@ void TestControllerAsh::GetWindowPositionInScreen(
     GetWindowPositionInScreenCallback cb) {
   aura::Window* window = GetShellSurfaceWindow(window_id);
   if (!window) {
-    std::move(cb).Run(absl::nullopt);
+    std::move(cb).Run(std::nullopt);
     return;
   }
   std::move(cb).Run(window->GetBoundsInScreen().origin());
@@ -780,15 +781,14 @@ void TestControllerAsh::GetSanitizedActiveUsername(
       cryptohome::CreateAccountIdentifierFromAccountId(user->GetAccountId())
           .account_id());
   ash::CryptohomeMiscClient::Get()->GetSanitizedUsername(
-      request,
-      base::BindOnce(
-          [](GetSanitizedActiveUsernameCallback callback,
-             absl::optional<::user_data_auth::GetSanitizedUsernameReply>
-                 result) {
-            CHECK(result.has_value());
-            std::move(callback).Run(result->sanitized_username());
-          },
-          std::move(callback)));
+      request, base::BindOnce(
+                   [](GetSanitizedActiveUsernameCallback callback,
+                      std::optional<::user_data_auth::GetSanitizedUsernameReply>
+                          result) {
+                     CHECK(result.has_value());
+                     std::move(callback).Run(result->sanitized_username());
+                   },
+                   std::move(callback)));
 }
 
 void TestControllerAsh::BindInputMethodTestInterface(
@@ -941,6 +941,13 @@ void TestControllerAsh::GetAllOpenTabURLs(GetAllOpenTabURLsCallback callback) {
     }
   }
   std::move(callback).Run(std::move(result));
+}
+
+void TestControllerAsh::SetAlmanacEndpointUrlForTesting(
+    const std::optional<std::string>& url_override,
+    SetAlmanacEndpointUrlForTestingCallback callback) {
+  apps::SetAlmanacEndpointUrlForTesting(url_override);
+  std::move(callback).Run();
 }
 
 void TestControllerAsh::OnAshUtteranceFinished(int utterance_id) {

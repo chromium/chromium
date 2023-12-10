@@ -298,8 +298,6 @@ class PLATFORM_EXPORT ResourceLoader final
 
   base::TimeTicks response_end_time_for_error_cases_;
 
-  base::TimeTicks request_start_time_;
-  base::TimeTicks code_cache_arrival_time_;
   int64_t received_body_length_from_service_worker_ = 0;
   CnameAliasInfoForTesting cname_alias_info_for_testing_;
 

@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<!--
+  @WAIT-FOR:done
+-->
+<body>
+  <a href="/">
+    <img src="pipe.jpg" id="img" alt="">
+  </a>
+  
+  <script async defer>
+      document.addEventListener('DOMContentLoaded', () => {
+        requestAnimationFrame(() => {
+          requestAnimationFrame(async () => {
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            document.getElementById('img').setAttribute('alt','test');
+            document.title = 'done';
+        });
+      })
+    });
+  </script>
+</body>

@@ -8,11 +8,11 @@ import android.view.autofill.AutofillId;
 
 import org.chromium.components.content_capture.PlatformSession.PlatformSessionData;
 
-/**
- * The task to notify platform of the captured content
- */
+/** The task to notify platform of the captured content */
 class ContentCapturedTask extends ProcessContentCaptureDataTask {
-    public ContentCapturedTask(FrameSession session, ContentCaptureFrame contentCaptureData,
+    public ContentCapturedTask(
+            FrameSession session,
+            ContentCaptureFrame contentCaptureData,
             PlatformSession platformSession) {
         super(session, contentCaptureData, platformSession);
     }

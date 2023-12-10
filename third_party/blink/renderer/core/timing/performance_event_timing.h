@@ -51,7 +51,10 @@ class CORE_EXPORT PerformanceEventTiming final : public PerformanceEntry {
 
   uint32_t interactionId() const;
 
-  void SetInteractionId(uint32_t interaction_id);
+  uint32_t interactionOffset() const;
+
+  void SetInteractionIdAndOffset(uint32_t interaction_id,
+                                 uint32_t interaction_offset);
 
   base::TimeTicks unsafePresentationTimestamp() const;
 
@@ -72,6 +75,7 @@ class CORE_EXPORT PerformanceEventTiming final : public PerformanceEntry {
   bool cancelable_;
   WeakMember<Node> target_;
   uint32_t interaction_id_ = 0;
+  uint32_t interaction_offset_ = 0;
 
   // This is the exact (non-rounded) monotonic timestamp for presentation, which
   // is currently only used by eventTiming trace events to report accurate

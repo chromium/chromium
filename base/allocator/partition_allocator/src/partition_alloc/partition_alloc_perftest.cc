@@ -8,20 +8,20 @@
 #include <memory>
 #include <vector>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/extended_api.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/logging.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/strings/stringprintf.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/threading/platform_thread_for_testing.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/time/time.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_check.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_constants.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_for_testing.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_root.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/thread_cache.h"
 #include "base/debug/debugging_buildflags.h"
 #include "base/timer/lap_timer.h"
 #include "build/build_config.h"
+#include "partition_alloc/extended_api.h"
+#include "partition_alloc/partition_alloc.h"
+#include "partition_alloc/partition_alloc_base/logging.h"
+#include "partition_alloc/partition_alloc_base/strings/stringprintf.h"
+#include "partition_alloc/partition_alloc_base/threading/platform_thread_for_testing.h"
+#include "partition_alloc/partition_alloc_base/time/time.h"
+#include "partition_alloc/partition_alloc_check.h"
+#include "partition_alloc/partition_alloc_constants.h"
+#include "partition_alloc/partition_alloc_for_testing.h"
+#include "partition_alloc/partition_root.h"
+#include "partition_alloc/thread_cache.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/perf/perf_result_reporter.h"
 
@@ -136,11 +136,13 @@ class PartitionAllocatorWithThreadCache : public Allocator {
   }
 
  private:
-  static constexpr partition_alloc::PartitionOptions kOpts = {
+  static constexpr partition_alloc::PartitionOptions kOpts = []() {
+    partition_alloc::PartitionOptions opts;
 #if !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-    .thread_cache = PartitionOptions::kEnabled,
+    opts.thread_cache = PartitionOptions::kEnabled;
 #endif
-  };
+    return opts;
+  }();
   PartitionAllocatorForTesting<internal::DisallowLeaks> allocator_{kOpts};
   internal::ThreadCacheProcessScopeForTesting scope_;
 };

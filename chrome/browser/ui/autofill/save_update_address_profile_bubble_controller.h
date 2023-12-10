@@ -5,8 +5,9 @@
 #ifndef CHROME_BROWSER_UI_AUTOFILL_SAVE_UPDATE_ADDRESS_PROFILE_BUBBLE_CONTROLLER_H_
 #define CHROME_BROWSER_UI_AUTOFILL_SAVE_UPDATE_ADDRESS_PROFILE_BUBBLE_CONTROLLER_H_
 
+#include <optional>
+
 #include "components/autofill/core/browser/autofill_client.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/geometry/point.h"
 
@@ -24,7 +25,7 @@ class SaveUpdateAddressProfileBubbleController {
   virtual ~SaveUpdateAddressProfileBubbleController() = default;
 
   virtual std::u16string GetWindowTitle() const = 0;
-  virtual absl::optional<HeaderImages> GetHeaderImages() const = 0;
+  virtual std::optional<HeaderImages> GetHeaderImages() const = 0;
   virtual std::u16string GetBodyText() const = 0;
   virtual std::u16string GetAddressSummary() const = 0;
   virtual std::u16string GetProfileEmail() const = 0;

@@ -4,17 +4,17 @@
 
 #include "chrome/browser/ui/webui/print_preview/parse_data_path.h"
 
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace printing {
 
-absl::optional<PrintPreviewIdAndPageIndex> ParseDataPath(
+std::optional<PrintPreviewIdAndPageIndex> ParseDataPath(
     const std::string& path) {
   PrintPreviewIdAndPageIndex parsed = {
       .ui_id = -1,
@@ -27,21 +27,21 @@ absl::optional<PrintPreviewIdAndPageIndex> ParseDataPath(
   }
 
   if (!base::EndsWith(file_path, "/print.pdf", base::CompareCase::SENSITIVE)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   std::vector<std::string> url_substr =
       base::SplitString(path, "/", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
   if (url_substr.size() != 3) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (!base::StringToInt(url_substr[0], &parsed.ui_id) || parsed.ui_id < 0) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (!base::StringToInt(url_substr[1], &parsed.page_index)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return parsed;

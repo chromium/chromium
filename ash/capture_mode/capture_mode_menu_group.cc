@@ -153,7 +153,7 @@ class CaptureModeMenuItem
   CaptureModeMenuItem(views::Button::PressedCallback callback,
                       std::u16string item_label,
                       bool indented)
-      : views::Button(callback),
+      : views::Button(std::move(callback)),
         label_view_(AddChildView(
             std::make_unique<views::Label>(std::move(item_label)))) {
     SetBorder(views::CreateEmptyBorder(indented ? kIndentedMenuItemPadding
@@ -203,7 +203,7 @@ class CaptureModeOption
                     bool checked,
                     bool enabled,
                     bool indented)
-      : views::Button(callback),
+      : views::Button(std::move(callback)),
         option_icon_(option_icon),
         option_icon_view_(
             option_icon_ ? AddChildView(std::make_unique<views::ImageView>())
@@ -423,9 +423,10 @@ void CaptureModeMenuGroup::RemoveOptionIfAny(int option_id) {
 
 void CaptureModeMenuGroup::AddMenuItem(views::Button::PressedCallback callback,
                                        std::u16string item_label) {
-  menu_items_.push_back(views::View::AddChildView(
-      std::make_unique<CaptureModeMenuItem>(callback, std::move(item_label),
-                                            /*indented=*/!!menu_header_)));
+  menu_items_.push_back(
+      views::View::AddChildView(std::make_unique<CaptureModeMenuItem>(
+          std::move(callback), std::move(item_label),
+          /*indented=*/!!menu_header_)));
 }
 
 bool CaptureModeMenuGroup::IsOptionChecked(int option_id) const {

@@ -52,10 +52,14 @@ gpu::CommandBufferStub* GetCommandBufferStub(
   if (!stub)
     return nullptr;
 
+#if !BUILDFLAG(IS_ANDROID)
   // Only allow stubs that have a ContextGroup, that is, the GLES2 ones. Later
-  // code assumes the ContextGroup is valid.
-  if (!stub->decoder_context()->GetContextGroup())
+  // code assumes the ContextGroup is valid. ContextGroup is used only by the
+  // legacy VDA implementation, which is not supported on Android.
+  if (!stub->decoder_context()->GetContextGroup()) {
     return nullptr;
+  }
+#endif
 
   return stub;
 }
@@ -153,9 +157,18 @@ VideoDecoderType GpuMojoMediaClient::GetDecoderImplementationType() {
 SupportedVideoDecoderConfigs
 GpuMojoMediaClient::GetSupportedVideoDecoderConfigs() {
   if (!supported_config_cache_) {
-    supported_config_cache_ = GetSupportedVideoDecoderConfigsStatic(
-        media_gpu_channel_manager_, gpu_preferences_, gpu_workarounds_,
-        gpu_info_);
+    // Only bother to query if accelerated video decoding is enabled.
+    // (RenderMediaClient does not know about GPU features before it asks.)
+    if (gpu_preferences_.disable_accelerated_video_decode ||
+        (gpu_feature_info_
+             .status_values[gpu::GPU_FEATURE_TYPE_ACCELERATED_VIDEO_DECODE] !=
+         gpu::kGpuFeatureStatusEnabled)) {
+      supported_config_cache_ = SupportedVideoDecoderConfigs();
+    } else {
+      supported_config_cache_ = GetSupportedVideoDecoderConfigsStatic(
+          media_gpu_channel_manager_, gpu_preferences_, gpu_workarounds_,
+          gpu_info_);
+    }
 
     // Once per GPU process record accelerator information. Profile support is
     // often just manufactured and not tested, so just record the base codec.
@@ -234,6 +247,13 @@ std::unique_ptr<VideoDecoder> GpuMojoMediaClient::CreateVideoDecoder(
     RequestOverlayInfoCB request_overlay_info_cb,
     const gfx::ColorSpace& target_color_space,
     mojo::PendingRemote<stable::mojom::StableVideoDecoder> oop_video_decoder) {
+  // Always respect GPU features.
+  if (gpu_preferences_.disable_accelerated_video_decode ||
+      (gpu_feature_info_
+           .status_values[gpu::GPU_FEATURE_TYPE_ACCELERATED_VIDEO_DECODE] !=
+       gpu::kGpuFeatureStatusEnabled)) {
+    return nullptr;
+  }
   // All implementations require a command buffer.
   if (!command_buffer_id)
     return nullptr;

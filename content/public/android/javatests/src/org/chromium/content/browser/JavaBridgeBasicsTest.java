@@ -650,8 +650,12 @@ public class JavaBridgeBasicsTest {
         Assert.assertEquals(
                 "true",
                 executeJavaScriptAndGetStringResult(
-                        "(function() { delete globalInner; gc(); return (typeof globalInner =="
-                                + " 'undefined'); })()"));
+                        """
+                        (function() {
+                                delete globalInner;
+                                gc();
+                                return (typeof globalInner == 'undefined');
+                         })()"""));
         // Force GC on the Java side again. The bridge had to release the inner object, so it must
         // be collected this time.
         Runtime.getRuntime().gc();
@@ -718,9 +722,13 @@ public class JavaBridgeBasicsTest {
         Assert.assertEquals(
                 "true",
                 executeJavaScriptAndGetStringResult(
-                        "(function() { "
-                                + "delete inner1; delete inner2; gc(); "
-                                + "return (typeof inner1 == 'undefined'); })()"));
+                        """
+                        (function() {
+                                delete inner1;
+                                delete inner2;
+                                gc();
+                                return (typeof inner1 == 'undefined');
+                        })()"""));
         // Force GC on the Java side again. The bridge had to release the inner object, so it must
         // be collected this time.
         Runtime.getRuntime().gc();
@@ -784,8 +792,8 @@ public class JavaBridgeBasicsTest {
                             // loadUrl is asynchronous, the JS code will start running on the
                             // renderer thread. As soon as we exit loadUrl, the browser UI
                             // thread will be stuck waiting on the latch. If blocking the
-                            // browser thread blocks Java Bridge,
-                            // then the call to "unlockTheLatch()" will be executed after the
+                            // browser thread blocks Java Bridge, then the call to
+                            // "unlockTheLatch()" will be executed after the
                             // waiting timeout, thus the string value will not yet be updated
                             // by the injected object.
                             mTestController.setStringValue("locked");

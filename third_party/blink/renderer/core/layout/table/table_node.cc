@@ -45,17 +45,17 @@ scoped_refptr<const TableTypes::Columns> TableNode::GetColumnConstraints(
 }
 
 LayoutUnit TableNode::ComputeTableInlineSize(
-    const NGConstraintSpace& space,
+    const ConstraintSpace& space,
     const BoxStrut& border_padding) const {
   return TableLayoutAlgorithm::ComputeTableInlineSize(*this, space,
                                                       border_padding);
 }
 
 LayoutUnit TableNode::ComputeCaptionBlockSize(
-    const NGConstraintSpace& space) const {
+    const ConstraintSpace& space) const {
   FragmentGeometry geometry =
       CalculateInitialFragmentGeometry(space, *this, /* break_token */ nullptr);
-  NGLayoutAlgorithmParams params(*this, geometry, space);
+  LayoutAlgorithmParams params(*this, geometry, space);
   TableLayoutAlgorithm algorithm(params);
   return algorithm.ComputeCaptionBlockSize();
 }

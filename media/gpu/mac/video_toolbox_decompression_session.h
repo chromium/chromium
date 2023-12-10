@@ -8,6 +8,7 @@
 #include <CoreMedia/CoreMedia.h>
 #include <VideoToolbox/VideoToolbox.h>
 
+#include <stdint.h>
 #include <memory>
 
 #include "base/apple/scoped_cftyperef.h"
@@ -36,7 +37,7 @@ class MEDIA_GPU_EXPORT VideoToolboxDecompressionSession {
   virtual void Invalidate() = 0;
   virtual bool IsValid() = 0;
   virtual bool CanAcceptFormat(CMFormatDescriptionRef format) = 0;
-  virtual bool DecodeFrame(CMSampleBufferRef sample, void* context) = 0;
+  virtual bool DecodeFrame(CMSampleBufferRef sample, uintptr_t context) = 0;
 };
 
 // Standard implementation of VideoToolboxDecompressionSession. It's not quite
@@ -46,7 +47,7 @@ class MEDIA_GPU_EXPORT VideoToolboxDecompressionSessionImpl
     : public VideoToolboxDecompressionSession {
  public:
   using OutputCB = base::RepeatingCallback<void(
-      void*,
+      uintptr_t,
       OSStatus,
       VTDecodeInfoFlags,
       base::apple::ScopedCFTypeRef<CVImageBufferRef>)>;
@@ -64,17 +65,17 @@ class MEDIA_GPU_EXPORT VideoToolboxDecompressionSessionImpl
   void Invalidate() override;
   bool IsValid() override;
   bool CanAcceptFormat(CMFormatDescriptionRef format) override;
-  bool DecodeFrame(CMSampleBufferRef sample, void* context) override;
+  bool DecodeFrame(CMSampleBufferRef sample, uintptr_t context) override;
 
   // Called by OnOutputThunk().
   void OnOutputOnAnyThread(
-      void* context,
+      uintptr_t context,
       OSStatus status,
       VTDecodeInfoFlags flags,
       base::apple::ScopedCFTypeRef<CVImageBufferRef> image);
 
  private:
-  void OnOutput(void* context,
+  void OnOutput(uintptr_t context,
                 OSStatus status,
                 VTDecodeInfoFlags flags,
                 base::apple::ScopedCFTypeRef<CVImageBufferRef> image);

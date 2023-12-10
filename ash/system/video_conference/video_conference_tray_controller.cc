@@ -612,14 +612,6 @@ void VideoConferenceTrayController::OnUserSessionAdded(
   if (!pref_service) {
     return;
   }
-
-  // If enabled, reset the prefs relevant to showing the speak-on-mute opt-in
-  // nudge, so it can be shown again for debugging purposes.
-  if (features::IsSpeakOnMuteOptInNudgePrefsResetEnabled()) {
-    pref_service->SetBoolean(prefs::kShouldShowSpeakOnMuteOptInNudge, true);
-    pref_service->SetBoolean(prefs::kUserSpeakOnMuteDetectionEnabled, false);
-    pref_service->SetInteger(prefs::kSpeakOnMuteOptInNudgeShownCount, 0);
-  }
 }
 
 void VideoConferenceTrayController::OnShellDestroying() {

@@ -8,7 +8,8 @@ import org.chromium.chrome.browser.test_dummy.TestDummy;
 import org.chromium.components.module_installer.builder.ModuleInterface;
 
 /** Provides the test dummy implementation. */
-@ModuleInterface(module = "test_dummy",
+@ModuleInterface(
+        module = "test_dummy",
         impl = "org.chromium.chrome.modules.test_dummy.TestDummyProviderImpl")
 public interface TestDummyProvider {
     TestDummy getTestDummy();

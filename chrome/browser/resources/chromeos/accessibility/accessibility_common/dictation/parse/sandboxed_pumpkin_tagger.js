@@ -133,7 +133,7 @@ class SandboxedPumpkinTagger {
     const taggerWasmJsFile = new TextDecoder().decode(taggerWasmBytes);
     // A promise that resolves once the web assembly module loads.
     const wasmLoadPromise = new Promise((resolve) => {
-      goog['global']['Module'] = {
+      globalThis['goog']['global']['Module'] = {
         onRuntimeInitialized() {
           resolve();
         },

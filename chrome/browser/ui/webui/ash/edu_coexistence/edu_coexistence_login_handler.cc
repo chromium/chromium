@@ -318,7 +318,7 @@ void EduCoexistenceLoginHandler::SendInitializeEduArgs() {
 
   ResolveJavascriptCallback(base::Value(initialize_edu_args_callback_.value()),
                             params);
-  initialize_edu_args_callback_ = absl::nullopt;
+  initialize_edu_args_callback_ = std::nullopt;
 }
 
 void EduCoexistenceLoginHandler::ConsentValid(const base::Value::List& args) {

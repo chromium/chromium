@@ -54,7 +54,7 @@ std::string ReplaceSingleQuotes(base::StringPiece str) {
 }
 
 base::Value ValueFromString(base::StringPiece str) {
-  absl::optional<base::Value> value =
+  std::optional<base::Value> value =
       base::JSONReader::Read(ReplaceSingleQuotes(str));
   if (!value) {
     ADD_FAILURE() << "Failed to parse " << str;

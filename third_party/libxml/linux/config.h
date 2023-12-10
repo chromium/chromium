@@ -171,7 +171,7 @@
 /* #undef XML_SOCKLEN_T */
 
 /* TLS specifier */
-#define XML_THREAD_LOCAL _Thread_local
+/* #undef XML_THREAD_LOCAL */
 
 /* Define for Solaris 2.5.1 so the uint32_t typedef from <sys/synch.h>,
    <pthread.h>, or <semaphore.h> is not used. If the typedef were allowed, the

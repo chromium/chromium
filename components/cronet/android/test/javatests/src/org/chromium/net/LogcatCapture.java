@@ -41,8 +41,9 @@ public final class LogcatCapture implements Closeable {
      * documentation of the {@code logcat} command for details.
      */
     LogcatCapture(List<String> additionalArgs) throws IOException {
-        List<String> args = new ArrayList<String>(
-                Arrays.asList("logcat", "-s", "-b", "main", Log.normalizeTag(TAG) + ":I"));
+        List<String> args =
+                new ArrayList<String>(
+                        Arrays.asList("logcat", "-s", "-b", "main", Log.normalizeTag(TAG) + ":I"));
         args.addAll(additionalArgs);
         mLogcat = new ProcessBuilder().command(args).start();
         mLogcat.getErrorStream().close();
@@ -54,8 +55,7 @@ public final class LogcatCapture implements Closeable {
         // useful information to a human troubleshooting the logcat output.
         String marker = UUID.randomUUID().toString();
         Log.i(TAG, "%s --- START OF LOGCAT CAPTURE --- (command: %s)", marker, args);
-        while (!readLine().contains(marker)) {
-        }
+        while (!readLine().contains(marker)) {}
     }
 
     /**
@@ -77,17 +77,15 @@ public final class LogcatCapture implements Closeable {
         if (line == null) {
             // We've reached end of stream, which means logcat unexpectedly closed its stdout
             // (most likely an error/crash). Clean up the process.
-            close(/*reachedEndOfStream=*/true); // guaranteed to throw
+            close(/* reachedEndOfStream= */ true); // guaranteed to throw
         }
         return line;
     }
 
-    /**
-     * Stops the capture.
-     */
+    /** Stops the capture. */
     @Override
     public void close() {
-        close(/*reachedEndOfStream=*/false);
+        close(/* reachedEndOfStream= */ false);
     }
 
     private void close(boolean reachedEndOfStream) {

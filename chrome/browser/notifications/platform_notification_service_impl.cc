@@ -184,14 +184,11 @@ void PlatformNotificationServiceImpl::OnContentSettingChanged(
 
   auto recorder = base::MakeRefCounted<RevokeDeleteCountRecorder>();
   profile_->ForEachLoadedStoragePartition(
-      base::BindRepeating(
-          [](scoped_refptr<RevokeDeleteCountRecorder> recorder,
-             content::StoragePartition* partition) {
-            partition->GetPlatformNotificationContext()
-                ->DeleteAllNotificationDataForBlockedOrigins(base::BindOnce(
-                    &RevokeDeleteCountRecorder::OnDeleted, recorder));
-          },
-          recorder));
+      [&](content::StoragePartition* partition) {
+        partition->GetPlatformNotificationContext()
+            ->DeleteAllNotificationDataForBlockedOrigins(base::BindOnce(
+                &RevokeDeleteCountRecorder::OnDeleted, recorder));
+      });
 }
 
 bool PlatformNotificationServiceImpl::WasClosedProgrammatically(

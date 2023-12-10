@@ -25,6 +25,7 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "gpu/command_buffer/service/dxgi_shared_handle_manager.h"
+#include "ui/gfx/win/d3d_shared_fence.h"
 #include "ui/gl/gl_angle_util_win.h"
 #endif
 
@@ -366,6 +367,28 @@ SharedImageManager::ProduceVideoDecode(VideoDecodeDevice device,
   return (*found)->ProduceVideoDecode(this, tracker, device);
 }
 
+#if BUILDFLAG(ENABLE_VULKAN)
+std::unique_ptr<VulkanImageRepresentation> SharedImageManager::ProduceVulkan(
+    const Mailbox& mailbox,
+    MemoryTypeTracker* tracker,
+    gpu::VulkanDeviceQueue* vulkan_device_queue,
+    gpu::VulkanImplementation& vulkan_impl) {
+  CALLED_ON_VALID_THREAD();
+
+  AutoLock autolock(this);
+  auto found = images_.find(mailbox);
+  if (found == images_.end()) {
+    LOG(ERROR)
+        << "SharedImageManager::ProduceVulkanImage: Trying to produce vulkan"
+           "representation from a non-existent mailbox.";
+    return nullptr;
+  }
+
+  return (*found)->ProduceVulkan(this, tracker, vulkan_device_queue,
+                                 vulkan_impl);
+}
+#endif
+
 #if BUILDFLAG(IS_ANDROID)
 std::unique_ptr<LegacyOverlayImageRepresentation>
 SharedImageManager::ProduceLegacyOverlay(const Mailbox& mailbox,
@@ -391,6 +414,24 @@ SharedImageManager::ProduceLegacyOverlay(const Mailbox& mailbox,
   }
 
   return representation;
+}
+#endif
+
+#if BUILDFLAG(IS_WIN)
+void SharedImageManager::UpdateExternalFence(
+    const Mailbox& mailbox,
+    scoped_refptr<gfx::D3DSharedFence> external_fence) {
+  CALLED_ON_VALID_THREAD();
+  AutoLock autolock(this);
+  auto found = images_.find(mailbox);
+  if (found == images_.end()) {
+    LOG(ERROR)
+        << "SharedImageManager::ProduceVideoDecode: Trying to Produce a D3D"
+           "representation from a non-existent mailbox.";
+    return;
+  }
+
+  (*found)->UpdateExternalFence(std::move(external_fence));
 }
 #endif
 

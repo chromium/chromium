@@ -40,6 +40,7 @@ class COMPONENT_EXPORT(GOOGLE_APIS) GaiaUrls {
   const GURL& embedded_setup_chromeos_kid_signin_url() const;
   const GURL& embedded_setup_windows_url() const;
   const GURL& embedded_reauth_chromeos_url() const;
+  const GURL& saml_redirect_chromeos_url() const;
   const GURL& signin_chrome_sync_dice() const;
   const GURL& reauth_chrome_dice() const;
   const GURL& signin_chrome_sync_keys_retrieval_url() const;
@@ -95,6 +96,7 @@ class COMPONENT_EXPORT(GOOGLE_APIS) GaiaUrls {
   GURL embedded_setup_chromeos_kid_signin_url_;
   GURL embedded_setup_windows_url_;
   GURL embedded_reauth_chromeos_url_;
+  GURL saml_redirect_chromeos_url_;
   GURL signin_chrome_sync_dice_;
   GURL reauth_chrome_dice_;
   GURL signin_chrome_sync_keys_retrieval_url_;

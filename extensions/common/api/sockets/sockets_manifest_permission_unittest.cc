@@ -41,7 +41,7 @@ static void AssertEmptyPermission(const SocketsManifestPermission* permission) {
 }
 
 static base::Value ParsePermissionJSON(const std::string& json) {
-  absl::optional<base::Value> result = base::JSONReader::Read(json);
+  std::optional<base::Value> result = base::JSONReader::Read(json);
   EXPECT_TRUE(result) << "Invalid JSON string: " << json;
   return std::move(result.value());
 }

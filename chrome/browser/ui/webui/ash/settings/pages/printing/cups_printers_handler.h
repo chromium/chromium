@@ -16,6 +16,7 @@
 #include "chrome/browser/ash/printing/cups_printers_manager.h"
 #include "chrome/browser/ash/printing/printer_event_tracker.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
+#include "chromeos/ash/components/dbus/printscanmgr/printscanmgr_client.h"
 #include "chromeos/printing/cups_printer_status.h"
 #include "chromeos/printing/ppd_provider.h"
 #include "chromeos/printing/printer_configuration.h"
@@ -192,10 +193,11 @@ class CupsPrintersHandler : public ::settings::SettingsPageUIHandler,
   void HandleAddDiscoveredPrinter(const base::Value::List& args);
 
   // Called when we get a response from
-  // DebugDaemonClient::CupsRetrievePrinterPpd.
-  void OnRetrieveCupsPrinterPpd(const std::string& printer_name,
-                                const std::string& eula,
-                                const std::vector<uint8_t>& data);
+  // PrintscanmgrClient::CupsRetrievePrinterPpd.
+  void OnRetrieveCupsPrinterPpd(
+      const std::string& printer_name,
+      const std::string& eula,
+      std::optional<printscanmgr::CupsRetrievePpdResponse> response);
 
   void OnRetrievePpdError(const std::string& printer_name);
   void WriteAndDisplayPpdFile(const std::string& printer_name,

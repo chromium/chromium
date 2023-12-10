@@ -2,29 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/**
- * @fileoverview
- * This file is checked via TS, so we suppress Closure checks.
- * @suppress {checkTypes|moduleLoad|lintChecks}
- */
-
 import {ImageLoaderClient} from 'chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/image_loader_client.js';
 import {LoadImageRequest, LoadImageResponse, LoadImageResponseStatus} from 'chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/load_image_request.js';
 import {assert} from 'chrome://resources/js/assert.js';
 
-import {DialogType, isModal} from '../../common/js/dialog_type.js';
+import {isModal} from '../../common/js/dialog_type.js';
 import {isSameEntry} from '../../common/js/entry_utils.js';
 import {parseActionId} from '../../common/js/file_tasks.js';
-import {FileType} from '../../common/js/file_type.js';
+import {getType} from '../../common/js/file_type.js';
 import {getEntryLabel, str} from '../../common/js/translations.js';
-import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
+import {VolumeType} from '../../common/js/volume_manager_types.js';
 import {CommandHandlerDeps} from '../../externs/command_handler_deps.js';
-import {VolumeManager} from '../../externs/volume_manager.js';
+import type {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
+import {DialogType} from '../../externs/ts/state.js';
+import type {VolumeManager} from '../../externs/volume_manager.js';
 import {FilesQuickView} from '../elements/files_quick_view.js';
 import type {FilesTooltip} from '../elements/files_tooltip.js';
 
-import {CommandHandler, DeleteCommand} from './file_manager_commands.js';
-import {FileSelectionHandler} from './file_selection.js';
+import {CommandHandler} from './command_handler.js';
+import {EventType, FileSelectionHandler} from './file_selection.js';
 import {FileTasks} from './file_tasks.js';
 import {MetadataItem} from './metadata/metadata_item.js';
 import {MetadataModel} from './metadata/metadata_model.js';
@@ -32,16 +28,13 @@ import {MetadataBoxController} from './metadata_box_controller.js';
 import {QuickViewModel} from './quick_view_model.js';
 import {QuickViewUma, WayToOpen} from './quick_view_uma.js';
 import {TaskController} from './task_controller.js';
-import {ThumbnailLoader} from './thumbnail_loader.js';
-import {Command} from './ui/command.js';
+import {THUMBNAIL_MAX_HEIGHT, THUMBNAIL_MAX_WIDTH} from './thumbnail_loader.js';
+import type {CommandEvent} from './ui/command.js';
 import {FileListSelectionModel} from './ui/file_list_selection_model.js';
 import {FilesConfirmDialog} from './ui/files_confirm_dialog.js';
 import {ListContainer} from './ui/list_container.js';
 import {MultiMenuButton} from './ui/multi_menu_button.js';
 
-type CommandEvent = Event&{
-  command: Command,
-};
 
 /**
  * Controller for QuickView.
@@ -57,7 +50,7 @@ export class QuickViewController {
   /**
    * Current selection of selectionHandler.
    */
-  private entries_: Entry[] = [];
+  private entries_: Array<Entry|FilesAppEntry> = [];
 
   /**
    * The tasks for the current entry shown in quick view.
@@ -88,34 +81,26 @@ export class QuickViewController {
       private dialogType_: DialogType, private volumeManager_: VolumeManager,
       dialogDom: HTMLElement) {
     this.selectionHandler_.addEventListener(
-        FileSelectionHandler.EventType.CHANGE,
+        EventType.CHANGE,
         this.onFileSelectionChanged_.bind(this) as EventListener);
     this.listContainer_.element.addEventListener(
         'keydown', this.onKeyDownToOpen_.bind(this));
+
+    // Selection menu command can be triggered with focus outside of file list
+    // or button e.g.: from the directory tree.
     dialogDom.addEventListener(
-        'command', ((event: CommandEvent) => {
-                     // Selection menu command can be triggered with focus
-                     // outside of file list or button e.g.: from the directory
-                     // tree.
-                     if (event.command.id === 'get-info') {
-                       event.stopPropagation();
-                       this.display_(WayToOpen.SELECTION_MENU);
-                     }
-                   }) as EventListener);
+        'command', this.onCommad_.bind(this, WayToOpen.SELECTION_MENU));
     this.listContainer_.element.addEventListener(
-        'command', ((event: CommandEvent) => {
-                     if (event.command.id === 'get-info') {
-                       event.stopPropagation();
-                       this.display_(WayToOpen.CONTEXT_MENU);
-                     }
-                   }) as EventListener);
+        'command', this.onCommad_.bind(this, WayToOpen.CONTEXT_MENU));
     selectionMenuButton.addEventListener(
-        'command', ((event: CommandEvent) => {
-                     if (event.command.id === 'get-info') {
-                       event.stopPropagation();
-                       this.display_(WayToOpen.SELECTION_MENU);
-                     }
-                   }) as EventListener);
+        'command', this.onCommad_.bind(this, WayToOpen.SELECTION_MENU));
+  }
+
+  private onCommad_(wayToOpen: WayToOpen, event: CommandEvent) {
+    if (event.detail.command.id === 'get-info') {
+      event.stopPropagation();
+      this.display_(wayToOpen);
+    }
   }
 
   /**
@@ -306,7 +291,7 @@ export class QuickViewController {
     this.checkSelectMode_ = this.fileListSelectionModel_.getCheckSelectMode();
 
     // Delete the entry if the entry can be deleted.
-    const deleteCommand = CommandHandler.getCommand('delete') as DeleteCommand;
+    const deleteCommand = CommandHandler.getCommand('delete');
     deleteCommand.deleteEntries(
         [entry!], this.fileManager_, /*permanentlyDelete=*/ false,
         this.deleteConfirmDialog_);
@@ -315,8 +300,8 @@ export class QuickViewController {
   /**
    * Returns true if the entry can be deleted.
    */
-  private async canDeleteEntry_(entry: Entry) {
-    const deleteCommand = CommandHandler.getCommand('delete') as DeleteCommand;
+  private async canDeleteEntry_(entry: Entry|FilesAppEntry) {
+    const deleteCommand = CommandHandler.getCommand('delete');
     return deleteCommand.canDeleteEntries([entry], this.fileManager_);
   }
 
@@ -428,7 +413,7 @@ export class QuickViewController {
    * metadata and tasks were being async fetched. Bail out in that case.
    */
   private async onMetadataLoaded_(
-      entry: Entry, items: MetadataItem[], fileTasks: FileTasks,
+      entry: Entry|FilesAppEntry, items: MetadataItem[], fileTasks: FileTasks,
       canDelete: boolean) {
     const tasks = fileTasks.getAnnotatedTasks();
 
@@ -462,11 +447,11 @@ export class QuickViewController {
   }
 
   private async getQuickViewParameters_(
-      entry: FileEntry|Entry, items: MetadataItem[],
+      entry: FileEntry|Entry|FilesAppEntry, items: MetadataItem[],
       tasks: chrome.fileManagerPrivate.FileTask[],
       canDelete: boolean): Promise<Partial<QuickViewParams>> {
     const firstItem = items[0];
-    const typeInfo = FileType.getType(entry, firstItem?.contentMimeType);
+    const typeInfo = getType(entry, firstItem?.contentMimeType);
     const type = typeInfo.type;
     const locationInfo = this.volumeManager_.getLocationInfo(entry);
     const label = getEntryLabel(locationInfo, entry);
@@ -669,8 +654,8 @@ export class QuickViewController {
     return new Promise((resolve, reject) => {
       entry.file(function requestFileThumbnail(file) {
         const request = LoadImageRequest.createForUrl(entry.toURL());
-        request.maxWidth = ThumbnailLoader.THUMBNAIL_MAX_WIDTH;
-        request.maxHeight = ThumbnailLoader.THUMBNAIL_MAX_HEIGHT;
+        request.maxWidth = THUMBNAIL_MAX_WIDTH;
+        request.maxHeight = THUMBNAIL_MAX_HEIGHT;
         request.timestamp = file.lastModified;
         request.cache = true;
         request.priority = 0;
@@ -693,15 +678,15 @@ export class QuickViewController {
  * Drive).
  */
 const LOCAL_VOLUME_TYPES_ = [
-  VolumeManagerCommon.VolumeType.ARCHIVE,
-  VolumeManagerCommon.VolumeType.DOWNLOADS,
-  VolumeManagerCommon.VolumeType.REMOVABLE,
-  VolumeManagerCommon.VolumeType.ANDROID_FILES,
-  VolumeManagerCommon.VolumeType.CROSTINI,
-  VolumeManagerCommon.VolumeType.GUEST_OS,
-  VolumeManagerCommon.VolumeType.MEDIA_VIEW,
-  VolumeManagerCommon.VolumeType.DOCUMENTS_PROVIDER,
-  VolumeManagerCommon.VolumeType.SMB,
+  VolumeType.ARCHIVE,
+  VolumeType.DOWNLOADS,
+  VolumeType.REMOVABLE,
+  VolumeType.ANDROID_FILES,
+  VolumeType.CROSTINI,
+  VolumeType.GUEST_OS,
+  VolumeType.MEDIA_VIEW,
+  VolumeType.DOCUMENTS_PROVIDER,
+  VolumeType.SMB,
 ];
 
 /**

@@ -49,7 +49,7 @@ void AppServiceShortcutShelfContextMenu::GetMenuModel(
   std::u16string host_app_name;
   proxy->AppRegistryCache().ForOneApp(
       shortcut->host_app_id, [&host_app_name](const apps::AppUpdate& update) {
-        host_app_name = base::UTF8ToUTF16(update.Name());
+        host_app_name = base::UTF8ToUTF16(update.ShortName());
       });
 
   std::u16string open_label = l10n_util::GetStringFUTF16(
@@ -64,9 +64,11 @@ void AppServiceShortcutShelfContextMenu::GetMenuModel(
   AddPinMenu(menu_model.get());
 
   // Remove shortcut.
-  AddContextMenuOption(menu_model.get(),
-                       static_cast<ash::CommandId>(ash::UNINSTALL),
-                       IDS_APP_LIST_REMOVE_SHORTCUT);
+  if (shortcut->allow_removal.value_or(true)) {
+    AddContextMenuOption(menu_model.get(),
+                         static_cast<ash::CommandId>(ash::UNINSTALL),
+                         IDS_APP_LIST_REMOVE_SHORTCUT);
+  }
 
   std::move(callback).Run(std::move(menu_model));
 }

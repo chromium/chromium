@@ -23,6 +23,14 @@ class FastPairGattServiceClient : public device::BluetoothAdapter::Observer {
   ~FastPairGattServiceClient() override = default;
   virtual device::BluetoothRemoteGattService* gatt_service() = 0;
 
+  // Gets ModelID from model ID characteristic. Upon successful completion
+  // |error_code| will not have a value and |value| may be used. When
+  // unsuccessful |error_code| will have a value and |value| must be ignored.
+  virtual void ReadModelIdAsync(
+      base::OnceCallback<void(
+          std::optional<device::BluetoothGattService::GattErrorCode> error_code,
+          const std::vector<uint8_t>& value)> callback) = 0;
+
   // Constructs a data vector based on the message type, flags, provider
   // address, and seekers address. Starts a notify session for key based
   // Pairing. Once the notify session has been started, the message data will be
@@ -33,8 +41,7 @@ class FastPairGattServiceClient : public device::BluetoothAdapter::Observer {
       const std::string& provider_address,
       const std::string& seekers_address,
       FastPairDataEncryptor* fast_pair_data_encryptor,
-      base::OnceCallback<void(std::vector<uint8_t>,
-                              absl::optional<PairFailure>)>
+      base::OnceCallback<void(std::vector<uint8_t>, std::optional<PairFailure>)>
           write_response_callback) = 0;
 
   // Constructs a data vector based on the message type and passkey. Starts a
@@ -44,8 +51,7 @@ class FastPairGattServiceClient : public device::BluetoothAdapter::Observer {
       uint8_t message_type,
       uint32_t passkey,
       FastPairDataEncryptor* fast_pair_data_encryptor,
-      base::OnceCallback<void(std::vector<uint8_t>,
-                              absl::optional<PairFailure>)>
+      base::OnceCallback<void(std::vector<uint8_t>, std::optional<PairFailure>)>
           write_response_callback) = 0;
 
   // Writes the account key to the account key characteristic.
@@ -53,7 +59,7 @@ class FastPairGattServiceClient : public device::BluetoothAdapter::Observer {
       std::array<uint8_t, 16> account_key,
       FastPairDataEncryptor* fast_pair_data_encryptor,
       base::OnceCallback<
-          void(absl::optional<ash::quick_pair::AccountKeyFailure>)>
+          void(std::optional<ash::quick_pair::AccountKeyFailure>)>
           write_account_key_callback) = 0;
 
   // Writes `name` to the Additional Data characteristic as a personalized name.
@@ -61,7 +67,7 @@ class FastPairGattServiceClient : public device::BluetoothAdapter::Observer {
       const std::string& name,
       const std::string& provider_address,
       FastPairDataEncryptor* fast_pair_data_encryptor,
-      base::OnceCallback<void(absl::optional<PairFailure>)>
+      base::OnceCallback<void(std::optional<PairFailure>)>
           write_additional_data_callback) = 0;
 
   // Returns whether or not this client has an active GATT connection.

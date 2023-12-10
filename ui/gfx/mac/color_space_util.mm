@@ -6,6 +6,7 @@
 
 #include <CoreMedia/CoreMedia.h>
 #include <CoreVideo/CoreVideo.h>
+#include <optional>
 
 #include "base/apple/foundation_util.h"
 #include "base/apple/scoped_cftyperef.h"

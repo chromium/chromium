@@ -36,19 +36,16 @@ namespace declarative_net_request {
 namespace {
 
 api::declarative_net_request::Rule GetAPIRule(const TestRule& rule) {
-  api::declarative_net_request::Rule result;
   std::u16string error;
-  EXPECT_TRUE(api::declarative_net_request::Rule::Populate(rule.ToValue(),
-                                                           result, error))
-      << error;
-  EXPECT_TRUE(error.empty()) << error;
-  return result;
+  auto result = api::declarative_net_request::Rule::FromValue(rule.ToValue());
+  EXPECT_TRUE(result.has_value()) << result.error();
+  return std::move(result).value_or(api::declarative_net_request::Rule());
 }
 
 struct TestLoadRulesetInfo {
   bool has_new_checksum = false;
-  absl::optional<bool> indexing_successful;
-  absl::optional<LoadRulesetResult> load_result;
+  std::optional<bool> indexing_successful;
+  std::optional<LoadRulesetResult> load_result;
 };
 
 struct TestCase {
@@ -86,13 +83,13 @@ class FileSequenceHelperTest : public ExtensionsTest {
       std::vector<api::declarative_net_request::Rule> rules_to_add,
       ReadJSONRulesResult::Status expected_read_status,
       UpdateDynamicRulesStatus expected_update_status,
-      absl::optional<std::string> expected_error,
+      std::optional<std::string> expected_error,
       bool expected_did_load_successfully) {
     base::RunLoop run_loop;
     auto add_rules_callback = base::BindOnce(
         [](base::RunLoop* run_loop, bool expected_did_load_successfully,
-           absl::optional<std::string> expected_error, LoadRequestData data,
-           absl::optional<std::string> error) {
+           std::optional<std::string> expected_error, LoadRequestData data,
+           std::optional<std::string> error) {
           EXPECT_EQ(1u, data.rulesets.size());
           EXPECT_EQ(expected_error, error) << error.value_or("no actual error");
           EXPECT_EQ(expected_did_load_successfully,
@@ -315,7 +312,7 @@ TEST_F(FileSequenceHelperTest, UpdateDynamicRules) {
     TestAddDynamicRules(source.Clone(), std::move(api_rules),
                         ReadJSONRulesResult::Status::kFileDoesNotExist,
                         UpdateDynamicRulesStatus::kSuccess,
-                        absl::nullopt /* expected_error */,
+                        std::nullopt /* expected_error */,
                         true /* expected_did_load_successfully*/);
   }
 
@@ -356,7 +353,7 @@ TEST_F(FileSequenceHelperTest, UpdateDynamicRules) {
     TestAddDynamicRules(source.Clone(), std::move(api_rules),
                         ReadJSONRulesResult::Status::kJSONParseError,
                         UpdateDynamicRulesStatus::kSuccess,
-                        absl::nullopt /* expected_error */,
+                        std::nullopt /* expected_error */,
                         true /* expected_did_load_successfully*/);
   }
 }

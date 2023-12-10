@@ -421,29 +421,29 @@ absl::optional<base::Value::Dict> CreateProxyRulesDict(
       if (!rules.single_proxies.IsEmpty()) {
         extension_proxy_rules.Set(
             field_name[SCHEME_ALL],
-            CreateProxyServerDict(rules.single_proxies.Get()));
+            CreateProxyServerDict(rules.single_proxies.First()));
       }
       break;
     case net::ProxyConfig::ProxyRules::Type::PROXY_LIST_PER_SCHEME:
       if (!rules.proxies_for_http.IsEmpty()) {
         extension_proxy_rules.Set(
             field_name[SCHEME_HTTP],
-            CreateProxyServerDict(rules.proxies_for_http.Get()));
+            CreateProxyServerDict(rules.proxies_for_http.First()));
       }
       if (!rules.proxies_for_https.IsEmpty()) {
         extension_proxy_rules.Set(
             field_name[SCHEME_HTTPS],
-            CreateProxyServerDict(rules.proxies_for_https.Get()));
+            CreateProxyServerDict(rules.proxies_for_https.First()));
       }
       if (!rules.proxies_for_ftp.IsEmpty()) {
         extension_proxy_rules.Set(
             field_name[SCHEME_FTP],
-            CreateProxyServerDict(rules.proxies_for_ftp.Get()));
+            CreateProxyServerDict(rules.proxies_for_ftp.First()));
       }
       if (!rules.fallback_proxies.IsEmpty()) {
         extension_proxy_rules.Set(
             field_name[SCHEME_FALLBACK],
-            CreateProxyServerDict(rules.fallback_proxies.Get()));
+            CreateProxyServerDict(rules.fallback_proxies.First()));
       }
       break;
   }
@@ -467,9 +467,11 @@ absl::optional<base::Value::Dict> CreateProxyRulesDict(
   return extension_proxy_rules;
 }
 
-base::Value::Dict CreateProxyServerDict(const net::ProxyServer& proxy) {
+base::Value::Dict CreateProxyServerDict(const net::ProxyChain& proxy_chain) {
   base::Value::Dict out;
   const char* scheme = nullptr;
+  CHECK(proxy_chain.is_single_proxy());
+  const net::ProxyServer& proxy = proxy_chain.GetProxyServer(/*chain_index=*/0);
   switch (proxy.scheme()) {
     case net::ProxyServer::SCHEME_HTTP:
       scheme = "http";

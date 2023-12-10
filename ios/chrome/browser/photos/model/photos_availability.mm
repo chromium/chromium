@@ -14,7 +14,7 @@
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/signin/identity_manager_factory.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "url/gurl.h"
 
 bool IsSaveToPhotosAvailable(ChromeBrowserState* browser_state) {

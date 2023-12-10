@@ -6,9 +6,7 @@ package org.chromium.ui;
 
 import org.jni_zero.CalledByNative;
 
-/**
- * Simple interface allowing customized response to an overscrolling pull input.
- */
+/** Simple interface allowing customized response to an overscrolling pull input. */
 public interface OverscrollRefreshHandler {
     /**
      * Signals the start of an overscrolling pull.
@@ -39,9 +37,7 @@ public interface OverscrollRefreshHandler {
     @CalledByNative
     public void release(boolean allowRefresh);
 
-    /**
-     * Reset the active pull state.
-     */
+    /** Reset the active pull state. */
     @CalledByNative
     public void reset();
 

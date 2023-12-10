@@ -43,15 +43,20 @@ public class FirstRunChooserView extends ScrollView {
         if (height > width) {
             // Sets the title aspect ratio to be 16:9.
             params.height = width * 9 / 16;
-            mChooserTitleView.setPadding(mChooserTitleView.getPaddingLeft(), 0,
-                    mChooserTitleView.getPaddingRight(), mChooserTitleView.getPaddingBottom());
+            mChooserTitleView.setPadding(
+                    mChooserTitleView.getPaddingLeft(),
+                    0,
+                    mChooserTitleView.getPaddingRight(),
+                    mChooserTitleView.getPaddingBottom());
         } else {
             params.height = ViewGroup.LayoutParams.WRAP_CONTENT;
 
             // Adds top padding.
-            mChooserTitleView.setPadding(mChooserTitleView.getPaddingLeft(),
+            mChooserTitleView.setPadding(
+                    mChooserTitleView.getPaddingLeft(),
                     getResources().getDimensionPixelOffset(R.dimen.signin_screen_top_padding),
-                    mChooserTitleView.getPaddingRight(), mChooserTitleView.getPaddingBottom());
+                    mChooserTitleView.getPaddingRight(),
+                    mChooserTitleView.getPaddingBottom());
         }
         mChooserTitleView.setLayoutParams(params);
 

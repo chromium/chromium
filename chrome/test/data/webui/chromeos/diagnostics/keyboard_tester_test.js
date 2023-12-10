@@ -4,7 +4,7 @@
 
 import 'chrome://diagnostics/keyboard_tester.js';
 import 'chrome://diagnostics/strings.m.js';
-import 'chrome://webui-test/mojo_webui_test_support.js';
+import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
 import {ConnectionType, MechanicalLayout, NumberPadPresence, PhysicalLayout, TopRightKey} from 'chrome://diagnostics/input.mojom-webui.js';
 import {KeyEvent, KeyEventType} from 'chrome://diagnostics/input_data_provider.mojom-webui.js';

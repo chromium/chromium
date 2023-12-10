@@ -27,24 +27,30 @@ AuthFactorConfig& GetAuthFactorConfigImpl(QuickUnlockStorageDelegate& delegate,
 RecoveryFactorEditor& GetRecoveryFactorEditorImpl(
     QuickUnlockStorageDelegate& delegate,
     PrefService* local_state) {
+  // TODO(b/271249180): cleanup remaining QuickUnlockStorageDelegate refs
+  // we don't need it anymore.
   static base::NoDestructor<RecoveryFactorEditor> recovery_factor_editor(
-      &GetAuthFactorConfigImpl(delegate, local_state), &delegate);
+      &GetAuthFactorConfigImpl(delegate, local_state));
   return *recovery_factor_editor;
 }
 
 PinFactorEditor& GetPinFactorEditorImpl(QuickUnlockStorageDelegate& storage,
                                         PrefService* local_state,
                                         PinBackendDelegate& pin_backend) {
+  // TODO(b/271249180): cleanup remaining QuickUnlockStorageDelegate refs
+  // we don't need it anymore.
   static base::NoDestructor<PinFactorEditor> pin_factor_editor(
-      &GetAuthFactorConfigImpl(storage, local_state), &pin_backend, &storage);
+      &GetAuthFactorConfigImpl(storage, local_state), &pin_backend);
   return *pin_factor_editor;
 }
 
 PasswordFactorEditor& GetPasswordFactorEditorImpl(
     QuickUnlockStorageDelegate& storage,
     PrefService* local_state) {
+  // TODO(b/271249180): cleanup remaining QuickUnlockStorageDelegate refs
+  // we don't need it anymore.
   static base::NoDestructor<PasswordFactorEditor> password_factor_editor(
-      &GetAuthFactorConfigImpl(storage, local_state), &storage);
+      &GetAuthFactorConfigImpl(storage, local_state));
   return *password_factor_editor;
 }
 
@@ -59,6 +65,14 @@ void BindToAuthFactorConfig(
 }
 
 mojom::AuthFactorConfig& GetAuthFactorConfig(
+    QuickUnlockStorageDelegate& delegate,
+    PrefService* local_state) {
+  return GetAuthFactorConfigImpl(delegate, local_state);
+}
+
+// Used to acquire a reference to the implementation of the
+// `mojom::AuthFactorConfig` for injecting callbacks in tests.
+AuthFactorConfig& GetAuthFactorConfigForTesting(  // IN-TEST
     QuickUnlockStorageDelegate& delegate,
     PrefService* local_state) {
   return GetAuthFactorConfigImpl(delegate, local_state);

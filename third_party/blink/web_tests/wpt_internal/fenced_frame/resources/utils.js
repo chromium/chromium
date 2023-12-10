@@ -141,7 +141,11 @@ async function generateURNFromFledgeRawURL(
 // Note: this function, unlike generateURL, is asynchronous and needs to be
 // called with an await operator. @param {string} href - The base url of the
 // page being navigated to @param {string list} keylist - The list of key UUIDs
-// to be used. Note that order matters when extracting the keys
+// to be used. Note that order matters when extracting the keys.
+// Warning: tests that use this function should not be run in parallel
+// because calls to navigator.joinAdInterestGroup on interest groups with the
+// same name and owner can overwrite each other, and as a result, the tests'
+// auctions may use another test's joined interest group.
 // @param {string} href - The base url of the page being navigated to
 // @param {string list} keylist - The list of key UUIDs to be used. Note that
 //                                order matters when extracting the keys
@@ -494,10 +498,12 @@ async function nextValueFromServer(key) {
   }
 }
 
-// Reads the data from the latest automatic beacon sent to the server.
-async function readAutomaticBeaconDataFromServer(expected_body) {
+// Checks the automatic beacon data server to see if it has received an
+// automatic beacon with a given event type and body.
+async function readAutomaticBeaconDataFromServer(event_type, expected_body) {
   let serverURL = `${BEACON_URL}`;
   const response = await fetch(serverURL + "?" + new URLSearchParams({
+    type: event_type,
     expected_body: expected_body,
   }));
   if (!response.ok)
@@ -511,14 +517,15 @@ async function readAutomaticBeaconDataFromServer(expected_body) {
   return { status: true, value: value };
 }
 
-
 // Convenience wrapper around the above getter that will wait until a value is
-// available on the server.
-async function nextAutomaticBeacon(expected_body) {
+// available on the server. The server uses a hash of the concatenated event
+// type and beacon data as the key when storing the beacon in the database. To
+// retrieve it, we need to supply the endpoint with both pieces of information.
+async function nextAutomaticBeacon(event_type, expected_body) {
   while (true) {
     // Fetches the test result from the server.
     const { status, value } =
-        await readAutomaticBeaconDataFromServer(expected_body);
+        await readAutomaticBeaconDataFromServer(event_type, expected_body);
     if (!status) {
       // The test result has not been stored yet. Retry after a while.
       await new Promise(resolve => setTimeout(resolve, 20));

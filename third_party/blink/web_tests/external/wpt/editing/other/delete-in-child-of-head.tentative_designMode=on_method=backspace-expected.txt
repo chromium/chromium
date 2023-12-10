@@ -1,5 +1,4 @@
 This is a testharness.js-based test.
-[PASS] delete in <div> elements in <head> should join them
 [FAIL] delete around invisible <meta> should not delete it at joining paragraphs
   assert_in_array: The <div> elements should be merged without deleting <meta> value "<head><title>iframe</title><div>abcdef</div></head><body><br></body>" not in array ["<head><title>iframe</title><div>abcdef</div><meta></head><body><br></body>", "<head><title>iframe</title><div>abcdef<br></div><meta></head><body><br></body>", "<head><title>iframe</title><meta><div>abcdef</div></head><body><br></body>", "<head><title>iframe</title><meta><div>abcdef<br></div></head><body><br></body>"]
 [FAIL] delete around invisible <title> should not delete it at joining paragraphs
@@ -25,7 +24,7 @@ This is a testharness.js-based test.
 [FAIL] delete at boundary of <style> and <div> in <head> should not join them
   assert_equals: Visible <style> and <div> shouldn't be merged expected "<head><title>iframe</title><style>abc</style><div>def</div></head><body><br></body>" but got "<head><title>iframe</title><style>abcdef</style></head><body><br></body>"
 [FAIL] delete at boundary of <title> and <div> in <head> should not join them
-  assert_equals: Visible <title> and <div> shouldn't be merged expected "<head><title>iframe</title><title>abc</title><div>def</div></head><body><br></body>" but got "<head><title>iframe</title><title title=\"display:block\">abc</title><div>def</div></head><body><br></body>"
+  assert_equals: Visible <title> and <div> shouldn't be merged expected "<head><title>iframe</title><title>abc</title><div>def</div></head><body><br></body>" but got "<head><title>iframe</title><title title=\\"display:block\\">abc</title><div>def</div></head><body><br></body>"
 [FAIL] delete at boundary of <div> and <script> in <head> should not join them
   assert_equals: <div> and visible <script> shouldn't be merged expected "<head><title>iframe</title><div>// abc</div><script>// def</script></head><body><br></body>" but got "<head><title>iframe</title><div>// abc// def</div></head><body><br></body>"
 [FAIL] delete at boundary of <div> and <style> in <head> should not join them

@@ -37,12 +37,12 @@ bool ParseNativeMessageJson(const std::string& message,
   return true;
 }
 
-absl::optional<base::Value::Dict> CreateNativeMessageResponse(
+std::optional<base::Value::Dict> CreateNativeMessageResponse(
     const base::Value::Dict& request) {
   const std::string* type = request.FindString(kMessageType);
   if (!type) {
     LOG(ERROR) << "'" << kMessageType << "' not found in request.";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   base::Value::Dict response;

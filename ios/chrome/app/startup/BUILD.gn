@@ -36,7 +36,7 @@ source_set("startup_basic") {
 
   assert_no_deps = [
     "//ios/chrome/browser/shared/model/browser_state",
-    "//ios/chrome/browser/web",
+    "//ios/chrome/browser/web/model",
   ]
 }
 
@@ -77,11 +77,12 @@ source_set("startup") {
     "//components/search_engines:search_engines",
     "//ios/chrome/app",
     "//ios/chrome/browser/default_browser/model:utils",
-    "//ios/chrome/browser/first_run",
+    "//ios/chrome/browser/first_run/model",
     "//ios/chrome/browser/net:net",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/url:constants",
-    "//ios/chrome/browser/web:web_internal",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/web/model:web_internal",
     "//ios/chrome/common",
     "//ios/chrome/common/app_group",
     "//ios/components/webui:url_constants",
@@ -101,7 +102,9 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/password_manager/core/browser",
     "//ios/chrome/app",
+    "//ios/chrome/app/startup:startup_basic",
     "//ios/chrome/browser/shared/model/url:constants",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/common/app_group",
     "//ios/components/webui:url_constants",
     "//testing/gtest",

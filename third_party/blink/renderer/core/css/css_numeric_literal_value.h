@@ -74,6 +74,7 @@ class CORE_EXPORT CSSNumericLiteralValue : public CSSPrimitiveValue {
   double ComputeInCanonicalUnit() const;
 
   int ComputeInteger() const;
+  double ComputeNumber() const;
   double ComputeLengthPx(const CSSLengthResolver&) const;
   bool AccumulateLengthArray(CSSLengthArray& length_array,
                              double multiplier) const;

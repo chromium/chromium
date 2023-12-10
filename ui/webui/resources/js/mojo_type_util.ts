@@ -5,12 +5,18 @@
 import {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
-export function stringToMojoString16(s: string): String16 {
-  return {data: Array.from(s, c => c.charCodeAt(0))};
+// Convert a javascript string into a Mojo String16.
+export function stringToMojoString16(str: string): String16 {
+  const arr: number[] = [];
+  for (let i = 0; i < str.length; i++) {
+    arr.push(str.charCodeAt(i));
+  }
+  return {data: arr};
 }
 
+// Convert a Mojo String16 into a javascript string.
 export function mojoString16ToString(str16: String16): string {
-  return str16.data.map((ch: number) => String.fromCodePoint(ch)).join('');
+  return String.fromCharCode(...str16.data);
 }
 
 // Note: This does not do any validation of the URL string.

@@ -780,10 +780,6 @@ H265Parser::Result H265Parser::ParseSPS(int* sps_id) {
     READ_BOOL_OR_RETURN(&sps->persistent_rice_adaptation_enabled_flag);
     READ_BOOL_OR_RETURN(&sps->cabac_bypass_alignment_enabled_flag);
   }
-  if (sps->sps_multilayer_extension_flag) {
-    DVLOG(1) << "HEVC multilayer extension not supported";
-    return kInvalidStream;
-  }
   if (sps->sps_3d_extension_flag) {
     DVLOG(1) << "HEVC 3D extension not supported";
     return kInvalidStream;
@@ -958,10 +954,6 @@ H265Parser::Result H265Parser::ParsePPS(const H265NALU& nalu, int* pps_id) {
     READ_UE_OR_RETURN(&pps->log2_sao_offset_scale_chroma);
     IN_RANGE_OR_RETURN(pps->log2_sao_offset_scale_chroma, 0,
                        std::max(sps->bit_depth_chroma_minus8 - 2, 0));
-  }
-  if (pps->pps_multilayer_extension_flag) {
-    DVLOG(1) << "HEVC multilayer extension not supported";
-    return kInvalidStream;
   }
   if (pps->pps_3d_extension_flag) {
     DVLOG(1) << "HEVC 3D extension not supported";

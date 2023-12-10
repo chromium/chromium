@@ -262,6 +262,7 @@ suite('<settings-internet-detail-menu>', () => {
       simAbsent: false,
       managedNetworkAvailable: false,
       serial: '',
+      isCarrierLocked: false,
     };
     assertTrue(tripleDot.disabled);
 

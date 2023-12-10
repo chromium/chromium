@@ -4,11 +4,11 @@
 
 #include "content/browser/hid/hid_service.h"
 
+#include <map>
 #include <memory>
 #include <utility>
 
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/debug/stack_trace.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -354,7 +354,7 @@ void HidService::OnWatcherRemoved(bool cleanup_watcher_ids,
   // yet, so the entry in |watcher_ids_| needs to be removed.
   if (cleanup_watcher_ids) {
     // Clean up any associated |watchers_ids_| entries.
-    base::EraseIf(watcher_ids_, [&](const auto& watcher_entry) {
+    std::erase_if(watcher_ids_, [&](const auto& watcher_entry) {
       return watcher_entry.second == watchers_.current_receiver();
     });
   }
@@ -413,7 +413,7 @@ void HidService::OnDeviceAdded(
 void HidService::OnDeviceRemoved(
     const device::mojom::HidDeviceInfo& device_info) {
   size_t watchers_removed =
-      base::EraseIf(watcher_ids_, [&](const auto& watcher_entry) {
+      std::erase_if(watcher_ids_, [&](const auto& watcher_entry) {
         if (watcher_entry.first != device_info.guid)
           return false;
 
@@ -460,7 +460,7 @@ void HidService::OnDeviceChanged(
   if (!has_device_permission || filtered_device_info->collections.empty()) {
     // Changing the device information has caused permissions to be revoked.
     size_t watchers_removed =
-        base::EraseIf(watcher_ids_, [&](const auto& watcher_entry) {
+        std::erase_if(watcher_ids_, [&](const auto& watcher_entry) {
           if (watcher_entry.first != device_info.guid)
             return false;
 
@@ -493,7 +493,7 @@ void HidService::OnPermissionRevoked(const url::Origin& origin) {
   HidDelegate* delegate = GetContentClient()->browser()->GetHidDelegate();
 
   size_t watchers_removed =
-      base::EraseIf(watcher_ids_, [&](const auto& watcher_entry) {
+      std::erase_if(watcher_ids_, [&](const auto& watcher_entry) {
         const auto* device_info =
             delegate->GetDeviceInfo(browser_context, watcher_entry.first);
         if (!device_info)

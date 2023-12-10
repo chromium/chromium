@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<link rel=author href="mailto:jarhar@chromium.org">
+<link rel=help href="https://html.spec.whatwg.org/#selector-user-valid">
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+
+<form>
+  <select required id=singleselect>
+    <option value="">placeholder</option>
+    <option>hello</option>
+  </select>
+  <input type=submit>
+</form>
+
+<form>
+  <select required multiple id=multiselect>
+    <option value="">placeholder</option>
+    <option>hello</option>
+  </select>
+  <input type=submit>
+</form>
+
+<script>
+const singleselect = document.getElementById('singleselect');
+const multiselect = document.getElementById('multiselect');
+
+[singleselect, multiselect].forEach(select => {
+  test(() => {
+    const isMultiple = select.hasAttribute('multiple');
+    if (!isMultiple && navigator.platform.includes('Mac')) {
+      // ArrowDown and ArrowUp on mac opens the native picker which we can't use
+      // from a web_test, and there is no other way to simulate the user changing
+      // the select's value on mac.
+      return;
+    }
+
+    assert_equals(select.value, '',
+      'No selection should be made at the start of the test.');
+    assert_false(select.matches(':user-valid'),
+      ':user-valid should not match at the start of the test.');
+    assert_false(select.matches(':user-invalid'),
+      ':user-invalid should not match at the start of the test.');
+
+    select.value = 'hello';
+    assert_equals(select.value, 'hello',
+      'Assigning hello to select.value should change the selects value.');
+    assert_false(select.matches(':user-valid'),
+      ':user-valid should not match after assigning the value programatically.');
+    assert_false(select.matches(':user-invalid'),
+      ':user-invalid should not match after assigning the value programatically.');
+    select.value = '';
+
+    select.focus();
+    eventSender.keyDown('ArrowDown');
+    assert_equals(select.value, 'hello',
+      'ArrowDown should have changed the selects value.');
+    assert_true(select.matches(':user-valid'),
+      ':user-valid should match after a valid selection has been made.');
+    assert_false(select.matches(':user-invalid'),
+      ':user-invalid should not match after a valid selection has been made.');
+
+    eventSender.keyDown('ArrowUp');
+    assert_equals(select.value, '',
+      'ArrowUp should have set the selects value back to the placeholder.');
+    // <select multiple> doesn't seem to have the behavior where it is invalid
+    // when an option has value="". As long as one of :user-valid or :user-invalid
+    // matches, then that's good enough for this test.
+    assert_equals(isMultiple, select.matches(':user-valid'),
+      ':user-valid after moving selection back to the placeholder.');
+    assert_equals(!isMultiple, select.matches(':user-invalid'),
+      ':user-invalid after moving selection back to the placeholder.');
+
+    select.parentNode.reset();
+    assert_equals(select.value, '',
+      'The place holder should still be selected.');
+    assert_false(select.matches(':user-valid'),
+      ':user-valid should not match after reseting the form.');
+    assert_false(select.matches(':user-invalid'),
+      ':user-invalid should not match after reseting the form.');
+
+    select.focus();
+    eventSender.keyDown('h');
+    assert_equals(select.value, 'hello',
+      'Typeahead should select the hello option.');
+    assert_true(select.matches(':user-valid'),
+      ':user-valid should match after typeahead.');
+    assert_false(select.matches(':user-invalid'),
+      ':user-invalid should not match after typeahead.');
+  }, `${select.id}: <select> should support :user-valid and :user-invalid.`);
+});
+</script>

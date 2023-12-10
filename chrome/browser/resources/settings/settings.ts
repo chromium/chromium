@@ -44,6 +44,7 @@ export {PromoteUpdaterStatus} from './about_page/about_page_browser_proxy.js';
 // </if>
 // clang-format on
 
+export {FeatureOptInState, SettingsAiPageElement, SettingsAiPageFeaturePrefName} from './ai_page/ai_page.js';
 export {AppearanceBrowserProxy, AppearanceBrowserProxyImpl} from './appearance_page/appearance_browser_proxy.js';
 export {SettingsAppearancePageElement, SystemTheme} from './appearance_page/appearance_page.js';
 export {HomeUrlInputElement} from './appearance_page/home_url_input.js';
@@ -59,7 +60,7 @@ export {SettingsDefaultBrowserPageElement} from './default_browser_page/default_
 // </if>
 export {HatsBrowserProxy, HatsBrowserProxyImpl, SafeBrowsingSetting, SecurityPageInteraction, TrustSafetyInteraction} from './hats_browser_proxy.js';
 export {loadTimeData} from './i18n_setup.js';
-export {DeleteBrowsingDataAction, MetricsBrowserProxy, MetricsBrowserProxyImpl, PrivacyElementInteractions, PrivacyGuideInteractions, PrivacyGuideSettingsStates, PrivacyGuideStepsEligibleAndReached, SafeBrowsingInteractions, SafetyCheckInteractions, SafetyCheckNotificationsModuleInteractions, SafetyCheckUnusedSitePermissionsModuleInteractions} from './metrics_browser_proxy.js';
+export {CvcDeletionUserAction, DeleteBrowsingDataAction, MetricsBrowserProxy, MetricsBrowserProxyImpl, PrivacyElementInteractions, PrivacyGuideInteractions, PrivacyGuideSettingsStates, PrivacyGuideStepsEligibleAndReached, SafeBrowsingInteractions, SafetyCheckInteractions, SafetyCheckNotificationsModuleInteractions, SafetyCheckUnusedSitePermissionsModuleInteractions, SafetyHubCardState, SafetyHubSurfaces} from './metrics_browser_proxy.js';
 export {NtpExtension, OnStartupBrowserProxy, OnStartupBrowserProxyImpl} from './on_startup_page/on_startup_browser_proxy.js';
 export {SettingsOnStartupPageElement} from './on_startup_page/on_startup_page.js';
 export {SettingsStartupUrlDialogElement} from './on_startup_page/startup_url_dialog.js';
@@ -77,12 +78,12 @@ export {PerformanceBrowserProxy, PerformanceBrowserProxyImpl} from './performanc
 export {BatterySaverModeState, HighEfficiencyModeExceptionListAction, HighEfficiencyModeState, PerformanceMetricsProxy, PerformanceMetricsProxyImpl} from './performance_page/performance_metrics_proxy.js';
 export {HIGH_EFFICIENCY_MODE_PREF, SettingsPerformancePageElement} from './performance_page/performance_page.js';
 export {SpeedPageElement} from './performance_page/speed_page.js';
-export {TabDiscardExceptionAddDialogElement} from './performance_page/tab_discard_exception_add_dialog.js';
-export {TabDiscardExceptionEditDialogElement} from './performance_page/tab_discard_exception_edit_dialog.js';
-export {TabDiscardExceptionEntryElement} from './performance_page/tab_discard_exception_entry.js';
-export {TAB_DISCARD_EXCEPTIONS_OVERFLOW_SIZE, TabDiscardExceptionListElement} from './performance_page/tab_discard_exception_list.js';
-export {TabDiscardExceptionAddDialogTabs, TabDiscardExceptionTabbedAddDialogElement} from './performance_page/tab_discard_exception_tabbed_add_dialog.js';
-export {MAX_TAB_DISCARD_EXCEPTION_RULE_LENGTH, TAB_DISCARD_EXCEPTIONS_MANAGED_PREF, TAB_DISCARD_EXCEPTIONS_PREF} from './performance_page/tab_discard_exception_validation_mixin.js';
+export {ExceptionAddDialogElement} from './performance_page/tab_discard/exception_add_dialog.js';
+export {ExceptionEditDialogElement} from './performance_page/tab_discard/exception_edit_dialog.js';
+export {ExceptionEntryElement} from './performance_page/tab_discard/exception_entry.js';
+export {ExceptionListElement, TAB_DISCARD_EXCEPTIONS_OVERFLOW_SIZE} from './performance_page/tab_discard/exception_list.js';
+export {ExceptionAddDialogTabs, ExceptionTabbedAddDialogElement} from './performance_page/tab_discard/exception_tabbed_add_dialog.js';
+export {MAX_TAB_DISCARD_EXCEPTION_RULE_LENGTH, TAB_DISCARD_EXCEPTIONS_MANAGED_PREF, TAB_DISCARD_EXCEPTIONS_PREF} from './performance_page/tab_discard/exception_validation_mixin.js';
 export {PrivacyGuideBrowserProxy, PrivacyGuideBrowserProxyImpl} from './privacy_page/privacy_guide/privacy_guide_browser_proxy.js';
 export {SettingsPrivacyPageElement} from './privacy_page/privacy_page.js';
 export {CanonicalTopic, FledgeState, PrivacySandboxBrowserProxy, PrivacySandboxBrowserProxyImpl, PrivacySandboxInterest, TopicsState} from './privacy_sandbox/privacy_sandbox_browser_proxy.js';

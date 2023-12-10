@@ -215,7 +215,7 @@ GURL CredentialUIEntry::GetURL() const {
   return facets[0].url;
 }
 
-absl::optional<GURL> CredentialUIEntry::GetChangePasswordURL() const {
+std::optional<GURL> CredentialUIEntry::GetChangePasswordURL() const {
   GURL change_password_origin;
   auto facetUri = password_manager::FacetURI::FromPotentiallyInvalidSpec(
       GetFirstSignonRealm());
@@ -231,7 +231,7 @@ absl::optional<GURL> CredentialUIEntry::GetChangePasswordURL() const {
     return password_manager::CreateChangePasswordUrl(GetURL());
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 std::vector<CredentialUIEntry::DomainInfo>

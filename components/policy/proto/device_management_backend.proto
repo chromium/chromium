@@ -82,6 +82,67 @@ enum CrdSessionAvailability {
   UNAVAILABLE_DISABLED_BY_POLICY = 5;
 }
 
+// Result code used in the response payload of the `START_CRD_SESSION` remote
+// command. This is used because it is more granular than the normal
+// `ResultType` enum used as the result code for a remote command.
+enum StartCrdSessionResultCode {
+  START_CRD_SESSION_RESULT_UNKNOWN = -1;
+  // Successfully obtained access code.
+  START_CRD_SESSION_SUCCESS = 0;
+  // Failed as required services are not launched on the device.
+  SERVICES_NOT_READY = 1;
+  // Failure as the current user type does not support remotely starting CRD.
+  FAILURE_UNSUPPORTED_USER_TYPE = 2;
+  // Failed as device is currently in use and no interruptUser flag is set.
+  FAILURE_NOT_IDLE = 3;
+  // Failed as we could not get OAuth token for whatever reason.
+  FAILURE_NO_OAUTH_TOKEN = 4;
+  // Failed as we could not get ICE configuration for whatever reason.
+  // deprecated
+  FAILURE_NO_ICE_CONFIG = 5;
+  // Failure during attempt to start CRD host and obtain CRD token.
+  FAILURE_CRD_HOST_ERROR = 6;
+  // Failure to start a curtained session as we're not in a managed environment.
+  FAILURE_UNMANAGED_ENVIRONMENT = 7;
+  // Failed because RemoteAccessHostAllowEnterpriseRemoteSupportConnections
+  // policy is disabled.
+  FAILURE_DISABLED_BY_POLICY = 8;
+}
+
+// Result code used in the response payload of the `FETCH_SUPPORT_PACKET` remote
+// command. The response payload will be a JSON string as follows:
+// {
+//   "result": <FetchSupportPacketResultCode enum>,
+//   (optional) "notes": [<FetchSupportPacketResultNote enums>]
+// }
+enum FetchSupportPacketResultCode {
+  // Unspecified result.
+  FETCH_SUPPORT_PACKET_RESULT_CODE_UNSPECIFIED = 0;
+  // Success.
+  FETCH_SUPPORT_PACKET_RESULT_SUCCESS = 1;
+  // Command is not enabled for the device or the user.
+  FAILURE_COMMAND_NOT_ENABLED = 2;
+  // Failed to create the file to upload.
+  FAILURE_EXPORTING_FILE = 3;
+  // Internal failure at reporting pipeline. LogUploadEvent can't be enqueued.
+  FAILURE_REPORTING_PIPELINE = 4;
+  // File upload to File Storage Server has failed.
+  FAILURE_LOG_UPLOAD = 5;
+}
+
+// Result payload field that will used for FETCH_SUPPORT_PACKET remote command.
+// This field represents the warnings or notes that the device sends along with
+// the command result. This enum will be used to attach optional notes to
+// successful execution. Failure details will be send to the server in
+// FetchSupportPacketResultCode enum.
+enum FetchSupportPacketResultNote {
+  FETCH_SUPPORT_PACKET_RESULT_PAYLOAD_UNSPECIFIED = 0;
+  // Warning that the requested PII is not allowed to be included in the
+  // collected logs due to privacy issues. This is not an error but a warning to
+  // the admin. The log file will be created and uploaded without PII.
+  WARNING_PII_NOT_ALLOWED = 1;
+}
+
 // Data along with a cryptographic signature verifying their authenticity.
 message SignedData {
   // The data to be signed.

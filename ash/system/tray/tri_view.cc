@@ -7,6 +7,8 @@
 #include "ash/system/tray/size_range_layout.h"
 #include "base/check.h"
 #include "base/notreached.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/border.h"
 #include "ui/views/layout/box_layout.h"
@@ -31,6 +33,8 @@ views::BoxLayout::Orientation GetOrientation(TriView::Orientation orientation) {
 
 // A View that will perform a layout if a child view's preferred size changes.
 class RelayoutView : public views::View {
+  METADATA_HEADER(RelayoutView, views::View)
+
  public:
   RelayoutView() = default;
 
@@ -40,6 +44,9 @@ class RelayoutView : public views::View {
   // views::View:
   void ChildPreferredSizeChanged(View* child) override { Layout(); }
 };
+
+BEGIN_METADATA(RelayoutView)
+END_METADATA
 
 }  // namespace
 
@@ -194,5 +201,8 @@ SizeRangeLayout* TriView::GetLayoutManager(Container container) {
   NOTREACHED();
   return nullptr;
 }
+
+BEGIN_METADATA(TriView)
+END_METADATA
 
 }  // namespace ash

@@ -119,14 +119,24 @@ void FakeFormFetcher::NotifyFetchCompleted() {
     consumer.OnFetchCompleted();
 }
 
-absl::optional<PasswordStoreBackendError>
+std::optional<PasswordStoreBackendError>
 FakeFormFetcher::GetProfileStoreBackendError() const {
   return profile_store_backend_error_;
 }
 
+absl::optional<PasswordStoreBackendError>
+FakeFormFetcher::GetAccountStoreBackendError() const {
+  return account_store_backend_error_;
+}
+
 void FakeFormFetcher::SetProfileStoreBackendError(
-    absl::optional<PasswordStoreBackendError> error) {
+    std::optional<PasswordStoreBackendError> error) {
   profile_store_backend_error_ = error;
+}
+
+void FakeFormFetcher::SetAccountStoreBackendError(
+    std::optional<PasswordStoreBackendError> error) {
+  account_store_backend_error_ = error;
 }
 
 }  // namespace password_manager

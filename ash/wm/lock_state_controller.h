@@ -6,6 +6,7 @@
 #define ASH_WM_LOCK_STATE_CONTROLLER_H_
 
 #include <memory>
+#include <optional>
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/session/session_observer.h"
@@ -20,7 +21,6 @@
 #include "base/timer/timer.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window_tree_host_observer.h"
 
 namespace ash {
@@ -192,7 +192,7 @@ class ASH_EXPORT LockStateController : public aura::WindowTreeHostObserver,
   bool shutting_down_ = false;
 
   // The reason (e.g. user action) for a pending shutdown.
-  absl::optional<ShutdownReason> shutdown_reason_;
+  std::optional<ShutdownReason> shutdown_reason_;
 
   // Indicates whether controller should proceed to (cancellable) shutdown after
   // locking.

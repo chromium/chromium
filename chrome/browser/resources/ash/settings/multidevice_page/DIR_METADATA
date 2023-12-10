@@ -1,4 +1,1 @@
-buganizer {
-  component_id: 1108889
-}
-team_email: "chromeos-cross-device-eng@google.com "
+mixins: "//chromeos/ash/components/multidevice/COMMON_METADATA"

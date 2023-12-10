@@ -7,9 +7,12 @@
 
 #include "ash/ash_export.h"
 #include "ash/system/phonehub/phone_hub_recent_app_button.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/phonehub/notification.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/image_button.h"
+#include "ui/views/view.h"
 
 namespace views {
 class LabelButton;
@@ -19,9 +22,11 @@ namespace ash {
 
 // A view contains a PhoneHubRecentAppButton and a label with app name.
 class ASH_EXPORT AppStreamLauncherItem : public views::View {
+  METADATA_HEADER(AppStreamLauncherItem, views::View)
+
  public:
   AppStreamLauncherItem(
-      views::ImageButton::PressedCallback callback,
+      base::RepeatingClosure callback,
       const phonehub::Notification::AppMetadata& app_metadata);
 
   ~AppStreamLauncherItem() override;

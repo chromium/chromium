@@ -53,8 +53,10 @@ class MockArcAppListPrefsObserver : public ArcAppListPrefs::Observer {
                void(const std::string& package_name, bool uninstalled));
   MOCK_METHOD0(OnPackageListInitialRefreshed, void());
   MOCK_METHOD1(OnInstallationStarted, void(const std::string& package_name));
-  MOCK_METHOD2(OnInstallationFinished,
-               void(const std::string& package_name, bool success));
+  MOCK_METHOD3(OnInstallationFinished,
+               void(const std::string& package_name,
+                    bool success,
+                    bool is_launchable_app));
 };
 
 }  // namespace arc

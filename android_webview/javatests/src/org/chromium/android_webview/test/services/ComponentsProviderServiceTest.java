@@ -5,8 +5,10 @@
 package org.chromium.android_webview.test.services;
 
 import android.app.job.JobScheduler;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.ParcelFileDescriptor;
 import android.os.ResultReceiver;
@@ -91,6 +93,20 @@ public class ComponentsProviderServiceTest {
 
         @After
         public void tearDown() {
+            // Reset component state back to the default.
+            final Context context = ContextUtils.getApplicationContext();
+            ComponentName safeModeComponent =
+                    new ComponentName(
+                            TEST_WEBVIEW_PACKAGE_NAME,
+                            SafeModeController.SAFE_MODE_STATE_COMPONENT);
+            context.getPackageManager()
+                    .setComponentEnabledSetting(
+                            safeModeComponent,
+                            PackageManager.COMPONENT_ENABLED_STATE_DEFAULT,
+                            PackageManager.DONT_KILL_APP);
+
+            SafeModeController.getInstance().unregisterActionsForTesting();
+
             mConnection.close();
             cleanupFiles();
             SafeModeService.clearSharedPrefsForTesting();

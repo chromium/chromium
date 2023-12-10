@@ -52,7 +52,7 @@ DeadlinePolicy DeadlinePolicy::UseInfiniteDeadline() {
 }
 
 DeadlinePolicy::DeadlinePolicy(Type policy_type,
-                               absl::optional<uint32_t> deadline_in_frames)
+                               std::optional<uint32_t> deadline_in_frames)
     : policy_type_(policy_type), deadline_in_frames_(deadline_in_frames) {}
 
 DeadlinePolicy::DeadlinePolicy(const DeadlinePolicy& other) = default;

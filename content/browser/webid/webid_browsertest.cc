@@ -275,6 +275,10 @@ class WebIdBrowserTest : public ContentBrowserTest {
            base::NumberToString(https_server().port()) + "/fedcm.json";
   }
 
+  std::string BaseRpUrl() {
+    return https_server().GetOrigin(kRpHostName).Serialize();
+  }
+
   std::string GetBasicRequestString() {
     return R"(
         (async () => {
@@ -310,7 +314,7 @@ class WebIdBrowserTest : public ContentBrowserTest {
   IdpTestServer* idp_server() { return idp_server_.get(); }
 
   void SetTestIdentityRequestDialogController(
-      const std::string& dialog_selected_account) {
+      absl::optional<std::string> dialog_selected_account) {
     auto controller = std::make_unique<FakeIdentityRequestDialogController>(
         dialog_selected_account);
     test_browser_client_->SetIdentityRequestDialogController(
@@ -401,6 +405,23 @@ class WebIdAuthzBrowserTest : public WebIdBrowserTest {
     scoped_feature_list_.InitWithFeatures(features, {});
 
     command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
+  }
+};
+
+class WebIdExemptIdpBrowserTest : public WebIdBrowserTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    std::vector<base::test::FeatureRef> features;
+    features.push_back(features::kFedCmExemptIdpWithThirdPartyCookies);
+    scoped_feature_list_.InitWithFeatures(features, {});
+
+    command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
+  }
+
+  ShellFederatedPermissionContext* sharing_context() {
+    BrowserContext* context = shell()->web_contents()->GetBrowserContext();
+    return static_cast<ShellFederatedPermissionContext*>(
+        context->GetFederatedIdentityPermissionContext());
   }
 };
 
@@ -520,6 +541,53 @@ IN_PROC_BROWSER_TEST_F(WebIdIdPRegistryBrowserTest, UnregisterIdP) {
   EXPECT_EQ(true, EvalJs(shell(), script));
 
   EXPECT_TRUE(sharing_context()->GetRegisteredIdPs().empty());
+}
+
+// Verify that an RP can request from registered IdPs.
+IN_PROC_BROWSER_TEST_F(WebIdIdPRegistryBrowserTest, UseRegistry) {
+  GURL configURL = GURL(BaseIdpUrl());
+  idp_server()->SetConfigResponseDetails(BuildValidConfigDetails());
+
+  // We navigate to the IdP's configURL so that we can run
+  // the script below with the IdP's origin as the top level
+  // first party context.
+  EXPECT_TRUE(NavigateToURL(shell(), configURL));
+
+  std::string script = R"(
+        (async () => {
+          await IdentityProvider.register(')" +
+                       configURL.spec() + R"(');
+          // The permission was accepted if the promise resolves.
+          return true;
+        }) ()
+    )";
+
+  EXPECT_EQ(true, EvalJs(shell(), script));
+
+  // Assert that the IdP was added to the Registry.
+  EXPECT_EQ(std::vector<GURL>{configURL},
+            sharing_context()->GetRegisteredIdPs());
+
+  // Navigate to the RP.
+  EXPECT_TRUE(NavigateToURL(
+      shell(), https_server().GetURL(kRpHostName, "/title1.html")));
+
+  std::string get_script = R"(
+        (async () => {
+          var {token} = await navigator.credentials.get({
+            identity: {
+              providers: [{
+                nonce: "1234",
+                clientId: "https://rp.example",
+                registered: true,
+              }]
+            }
+          });
+          return token;
+        }) ()
+    )";
+
+  EXPECT_EQ(std::string(kToken), EvalJs(shell(), get_script));
 }
 
 // Verify that IDP sign-in headers work.
@@ -787,6 +855,47 @@ IN_PROC_BROWSER_TEST_F(WebIdDigitalCredentialsBrowserTest,
   EXPECT_EQ("test-mdoc", EvalJs(shell(), script));
 }
 
+// Test that a Verifiable Credential can be requested via the alternative JS
+// API.
+IN_PROC_BROWSER_TEST_F(WebIdDigitalCredentialsBrowserTest, AlternativeJSAPI) {
+  idp_server()->SetConfigResponseDetails(BuildValidConfigDetails());
+  MockDigitalCredentialProvider* digital_credential_provider =
+      static_cast<MockDigitalCredentialProvider*>(
+          test_browser_client_->GetDigitalCredentialProviderForTests());
+
+  const char request[] = R"(
+  {
+   "providers": [ {
+     "protocol": "OpenID4VP",
+     "request": "{canBeAnything: true}",
+     "publicKey": "anything really? yeah."
+   } ]
+  }
+  )";
+
+  EXPECT_CALL(*digital_credential_provider,
+              RequestDigitalCredential(_, _, IsJson(request), _))
+      .WillOnce(WithArg<3>(
+          [](DigitalCredentialProvider::DigitalCredentialCallback callback) {
+            std::move(callback).Run("test-mdoc");
+          }));
+
+  std::string script = R"(
+        (async () => {
+          const {token} = await navigator.credentials.requestIdentity({
+            providers: [{
+              protocol: "OpenID4VP",
+              request: "{canBeAnything: true}",
+              publicKey: "anything really? yeah.",
+            }],
+          });
+          return token;
+        }) ()
+    )";
+
+  EXPECT_EQ("test-mdoc", EvalJs(shell(), script));
+}
+
 // Test that when there's a pending mdoc request, a second `get` call should be
 // rejected.
 IN_PROC_BROWSER_TEST_F(WebIdDigitalCredentialsBrowserTest,
@@ -967,7 +1076,7 @@ IN_PROC_BROWSER_TEST_F(WebIdAuthzBrowserTest, Authz_openPopUpWindow) {
           test_browser_client_->GetIdentityRequestDialogControllerForTests());
 
   // Expects the account chooser to be opened. Selects the first account.
-  EXPECT_CALL(*controller, ShowAccountsDialog(_, _, _, _, _, _, _))
+  EXPECT_CALL(*controller, ShowAccountsDialog(_, _, _, _, _, _, _, _))
       .WillOnce(::testing::WithArg<5>([&config_url](auto on_selected) {
         std::move(on_selected)
             .Run(config_url,
@@ -1061,6 +1170,26 @@ IN_PROC_BROWSER_TEST_F(WebIdErrorBrowserTest, IdentityCredentialError) {
       "a JavaScript error: \"IdentityCredentialError: Error "
       "retrieving a token.\"\n";
   EXPECT_EQ(expected_error, EvalJs(shell(), GetBasicRequestString()).error);
+}
+
+// Verify that auto re-authn can be triggered if the Rp is on the
+// approved_clients list and the IdP has third party cookies access.
+IN_PROC_BROWSER_TEST_F(WebIdExemptIdpBrowserTest,
+                       IdpHas3PCAccessAndAddsRPInApprovedClients) {
+  // Does not manually select any account. If auto re-authn is not triggered,
+  // the test will time out.
+  SetTestIdentityRequestDialogController(
+      /*dialog_selected_account=*/absl::nullopt);
+
+  // The client id `client_id_1` is on the `approved_clients` list defined in
+  // content/test/data/fedcm/accounts_endpoint.json so by exempting the IdP from
+  // the check, auto re-authn can be triggered and a token can be returned.
+  sharing_context()->SetHasThirdPartyCookiesAccessForTesting(BaseIdpUrl(),
+                                                             BaseRpUrl());
+
+  idp_server()->SetConfigResponseDetails(BuildValidConfigDetails());
+
+  EXPECT_EQ(std::string(kToken), EvalJs(shell(), GetBasicRequestString()));
 }
 
 }  // namespace content

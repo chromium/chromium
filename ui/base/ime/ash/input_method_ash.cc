@@ -172,6 +172,15 @@ ui::EventDispatchDetails InputMethodAsh::DispatchKeyEvent(ui::KeyEvent* event) {
     }
   }
 
+  // Simply forward the key event if there's no focused TextInputClient.
+  // Dead keys cannot be supported in this case because composition and commit
+  // are not supported.
+  if (base::FeatureList::IsEnabled(
+          features::kInputMethodDeadKeyFixForNoInputField) &&
+      GetTextInputClient() == nullptr) {
+    return DispatchKeyEventPostIME(event);
+  }
+
   // If |context_| is not usable, then we can only dispatch the key event as is.
   // We only dispatch the key event to input method when the |context_| is an
   // normal input field (not a password field).
@@ -377,17 +386,6 @@ void InputMethodAsh::OnFocus() {
   auto* bridge = IMEBridge::Get();
   if (bridge) {
     bridge->SetInputContextHandler(this);
-  }
-}
-
-void InputMethodAsh::OnTouch(ui::EventPointerType pointerType) {
-  TextInputClient* client = GetTextInputClient();
-  if (!client || !IsTextInputClientFocused(client)) {
-    return;
-  }
-  TextInputMethod* engine = GetEngine();
-  if (engine) {
-    engine->OnTouch(pointerType);
   }
 }
 
@@ -600,13 +598,10 @@ void InputMethodAsh::UpdateContextFocusState() {
 
   IMEBridge::Get()->SetCurrentInputContext(GetInputContext());
 
-  if (base::FeatureList::IsEnabled(
-          features::kInputMethodDeadKeyFixForTerminal)) {
-    TextInputClient* client = GetTextInputClient();
-    focused_url_ = client && !IsPasswordOrNoneInputFieldFocused()
-                       ? client->GetTextEditingContext().page_url
-                       : GURL();
-  }
+  TextInputClient* client = GetTextInputClient();
+  focused_url_ = client && !IsPasswordOrNoneInputFieldFocused()
+                     ? client->GetTextEditingContext().page_url
+                     : GURL();
 }
 
 ui::EventDispatchDetails InputMethodAsh::ProcessKeyEventPostIME(
@@ -690,10 +685,8 @@ ui::EventDispatchDetails InputMethodAsh::ProcessFilteredKeyPressEvent(
     // TODO(b/289319217): Investigate if we need to distinguish between a dead
     // key that is handled by the character composer or is handled by the input
     // method.
-    // TODO(b/289319217): Expand fix to all URLs once the fix looks stable.
-    if (base::FeatureList::IsEnabled(
-            features::kInputMethodDeadKeyFixForTerminal) &&
-        focused_url_.is_valid() && IsTerminalOrCrosh(focused_url_) &&
+    if ((base::FeatureList::IsEnabled(features::kInputMethodDeadKeyFix) ||
+         (focused_url_.is_valid() && IsTerminalOrCrosh(focused_url_))) &&
         event->GetDomKey().IsDeadKey()) {
       return DispatchKeyEventPostIME(event);
     }

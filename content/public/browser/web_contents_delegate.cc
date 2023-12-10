@@ -255,17 +255,11 @@ void WebContentsDelegate::RequestMediaAccessPermission(
 
 bool WebContentsDelegate::CheckMediaAccessPermission(
     RenderFrameHost* render_frame_host,
-    const GURL& security_origin,
+    const url::Origin& security_origin,
     blink::mojom::MediaStreamType type) {
   LOG(ERROR) << "WebContentsDelegate::CheckMediaAccessPermission: "
              << "Not supported.";
   return false;
-}
-
-std::string WebContentsDelegate::GetDefaultMediaDeviceID(
-    WebContents* web_contents,
-    blink::mojom::MediaStreamType type) {
-  return std::string();
 }
 
 std::string WebContentsDelegate::GetTitleForMediaControls(
@@ -378,12 +372,6 @@ bool WebContentsDelegate::IsBackForwardCacheSupported() {
 PreloadingEligibility WebContentsDelegate::IsPrerender2Supported(
     WebContents& web_contents) {
   return PreloadingEligibility::kPreloadingUnsupportedByWebContents;
-}
-
-std::unique_ptr<WebContents> WebContentsDelegate::ActivatePortalWebContents(
-    WebContents* predecessor_contents,
-    std::unique_ptr<WebContents> portal_contents) {
-  return portal_contents;
 }
 
 void WebContentsDelegate::UpdateInspectedWebContentsIfNecessary(

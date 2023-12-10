@@ -163,7 +163,7 @@ bool DisplaySizeScreen::ShouldBeSkipped(const WizardContext& context) const {
     ash::CrosSettings::Get()->GetDictionary(ash::kDeviceDisplayResolution,
                                             &resolution_pref);
     if (resolution_pref && !resolution_pref->empty()) {
-      const absl::optional<bool> recommended_value = resolution_pref->FindBool(
+      const std::optional<bool> recommended_value = resolution_pref->FindBool(
           ash::kDeviceDisplayResolutionKeyRecommended);
       if (!recommended_value.value_or(false)) {
         return true;

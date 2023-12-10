@@ -70,7 +70,7 @@ class ChromeSyncClient : public browser_sync::BrowserSyncClient {
   base::WeakPtr<syncer::ModelTypeControllerDelegate>
   GetControllerDelegateForModelType(syncer::ModelType type) override;
   syncer::SyncApiComponentFactory* GetSyncApiComponentFactory() override;
-  syncer::SyncTypePreferenceProvider* GetPreferenceProvider() override;
+  bool IsCustomPassphraseAllowed() override;
   void OnLocalSyncTransportDataCleared() override;
 
  private:

@@ -57,7 +57,7 @@ public abstract class OfflineItemFilter
      */
     protected void onFilterChanged() {
         Set<OfflineItem> removed = new HashSet<>();
-        for (Iterator<OfflineItem> iter = mItems.iterator(); iter.hasNext();) {
+        for (Iterator<OfflineItem> iter = mItems.iterator(); iter.hasNext(); ) {
             OfflineItem item = iter.next();
             if (isFilteredOut(item)) {
                 iter.remove();

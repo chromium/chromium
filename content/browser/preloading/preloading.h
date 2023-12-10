@@ -6,7 +6,7 @@
 #define CONTENT_BROWSER_PRELOADING_PRELOADING_H_
 
 #include "content/public/browser/preloading.h"
-#include "third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom.h"
+#include "content/public/browser/preloading_trigger_type.h"
 
 namespace content {
 
@@ -43,14 +43,20 @@ static constexpr PreloadingPredictor kSpeculationRulesFromIsolatedWorld(
     52,
     "SpeculationRulesFromIsolatedWorld");
 
+// Same with the kSpeculationRules, but the rules are injected by the browser
+// as part of the auto speculation rules feature.
+static constexpr PreloadingPredictor kSpeculationRulesFromAutoSpeculationRules(
+    53,
+    "SpeculationRulesFromAutoSpeculationRules");
+
 // TODO(crbug.com/1309934): Add more predictors as we integrate Preloading
 // logging.
 }  // namespace content_preloading_predictor
 
 CONTENT_EXPORT base::StringPiece PreloadingTypeToString(PreloadingType type);
 
-PreloadingPredictor GetPredictorForSpeculationRules(
-    blink::mojom::SpeculationInjectionWorld world);
+PreloadingPredictor GetPredictorForPreloadingTriggerType(
+    PreloadingTriggerType trigger_type);
 
 }  // namespace content
 

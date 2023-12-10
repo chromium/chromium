@@ -26,7 +26,8 @@
 // https://w3c.github.io/speech-api/#speechsynthesisvoice
 
 [
-    LegacyNoInterfaceObject
+    Exposed=Window,
+    RuntimeEnabled=ScriptedSpeechSynthesis
 ] interface SpeechSynthesisVoice {
     readonly attribute DOMString voiceURI;
     readonly attribute DOMString name;

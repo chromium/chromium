@@ -33,7 +33,8 @@ class RasterInProcessCommandBufferTest : public ::testing::Test {
   RasterInProcessCommandBufferTest() {
     // Always enable gpu and oop raster, regardless of platform and blocklist.
     auto* gpu_feature_info = gpu_thread_holder_.GetGpuFeatureInfo();
-    gpu_feature_info->status_values[gpu::GPU_FEATURE_TYPE_GPU_RASTERIZATION] =
+    gpu_feature_info
+        ->status_values[gpu::GPU_FEATURE_TYPE_GPU_TILE_RASTERIZATION] =
         gpu::kGpuFeatureStatusEnabled;
   }
 
@@ -82,7 +83,7 @@ TEST_F(RasterInProcessCommandBufferTest, AllowedBetweenBeginEndRasterCHROMIUM) {
   }
 
   // Check for GPU and driver support
-  if (!context_->GetCapabilities().supports_oop_raster) {
+  if (!context_->GetCapabilities().gpu_rasterization) {
     GTEST_SKIP();
   }
 

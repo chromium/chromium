@@ -1,14 +1,6 @@
 CONSOLE WARNING: AudioWorkletNode("noise-generator").amplitude.value 99 outside nominal range [0, 1]; value will be clamped.
-CONSOLE WARNING: AudioWorkletNode("noise-generator").amplitude.setValueAtTime value 99 outside nominal range [0, 1]; value will be clamped.
 CONSOLE WARNING: AudioWorkletNode("noise-generator").amplitude.setValueAtTime value -1 outside nominal range [0, 1]; value will be clamped.
 CONSOLE WARNING: AudioWorkletNode("noise-generator").amplitude.linearRampToValueAtTime value 5 outside nominal range [0, 1]; value will be clamped.
 This is a testharness.js-based test.
-[PASS] # AUDIT TASK RUNNER STARTED.
-[PASS] Executing "AudioWorklet AudioParam"
-[PASS] Audit report
-[PASS] > [AudioWorklet AudioParam] Generate warnings if outside nominal range
-[PASS]   Rendering succeeded is true.
-[PASS] < [AudioWorklet AudioParam] All assertions passed. (total 1 assertions)
-[PASS] # AUDIT TASK RUNNER FINISHED: 1 tasks ran successfully.
 Harness: the test ran to completion.
 

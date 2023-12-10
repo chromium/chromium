@@ -77,7 +77,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="Preloading.AnchorElementPreloader.PreloadingTriggered"
-    enum="AnchorElementPreloaderType" expires_after="2024-02-11">
+    enum="AnchorElementPreloaderType" expires_after="2024-05-12">
   <owner>spelchat@chromium.org</owner>
   <owner>curranmax@chromium.org</owner>
   <owner>chrome-brapp-loading@google.com</owner>
@@ -93,7 +93,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Preloading.Experimental.UpdateSpeculationCandidatesReason"
     enum="PreloadingUpdateSpeculationCandidatesReason"
-    expires_after="2024-03-24">
+    expires_after="2024-05-26">
   <owner>taiyo@chromium.org</owner>
   <owner>chrome-prerendering@google.com</owner>
   <summary>

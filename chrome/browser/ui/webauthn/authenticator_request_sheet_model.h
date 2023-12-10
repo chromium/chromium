@@ -5,9 +5,8 @@
 #ifndef CHROME_BROWSER_UI_WEBAUTHN_AUTHENTICATOR_REQUEST_SHEET_MODEL_H_
 #define CHROME_BROWSER_UI_WEBAUTHN_AUTHENTICATOR_REQUEST_SHEET_MODEL_H_
 
+#include <optional>
 #include <string>
-
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace gfx {
 struct VectorIcon;
@@ -69,19 +68,18 @@ class AuthenticatorRequestSheetModel {
   virtual void OnManageDevices();
 
   // Lottie illustrations are represented by their resource ID.
-  absl::optional<IllustrationPair<int>> lottie_illustrations() const {
+  std::optional<IllustrationPair<int>> lottie_illustrations() const {
     return lottie_illustrations_;
   }
 
-  absl::optional<IllustrationPair<const gfx::VectorIcon&>>
-  vector_illustrations() const {
+  std::optional<IllustrationPair<const gfx::VectorIcon&>> vector_illustrations()
+      const {
     return vector_illustrations_;
   }
 
  protected:
-  absl::optional<IllustrationPair<int>> lottie_illustrations_;
-  absl::optional<IllustrationPair<const gfx::VectorIcon&>>
-      vector_illustrations_;
+  std::optional<IllustrationPair<int>> lottie_illustrations_;
+  std::optional<IllustrationPair<const gfx::VectorIcon&>> vector_illustrations_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBAUTHN_AUTHENTICATOR_REQUEST_SHEET_MODEL_H_

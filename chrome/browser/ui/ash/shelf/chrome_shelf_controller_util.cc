@@ -63,7 +63,7 @@ AppListControllerDelegate::Pinnable GetPinnableForAppID(
   if (base::Contains(kNoPinAppIds, app_id))
     return AppListControllerDelegate::NO_PIN;
 
-  const absl::optional<std::vector<std::string>> policy_ids =
+  const std::optional<std::vector<std::string>> policy_ids =
       apps_util::GetPolicyIdsFromAppId(profile, app_id);
 
   if (!policy_ids || policy_ids->empty()) {

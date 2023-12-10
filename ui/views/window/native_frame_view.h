@@ -15,8 +15,9 @@ namespace views {
 class Widget;
 
 class VIEWS_EXPORT NativeFrameView : public NonClientFrameView {
+  METADATA_HEADER(NativeFrameView, NonClientFrameView)
+
  public:
-  METADATA_HEADER(NativeFrameView);
   explicit NativeFrameView(Widget* frame);
   NativeFrameView(const NativeFrameView&) = delete;
   NativeFrameView& operator=(const NativeFrameView&) = delete;

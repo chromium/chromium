@@ -442,7 +442,7 @@ TEST_F(StructTraitsTest, GpuFeatureInfo) {
       gpu::kGpuFeatureStatusBlocklisted;
   input.status_values[GPU_FEATURE_TYPE_ACCELERATED_WEBGL] =
       gpu::kGpuFeatureStatusUndefined;
-  input.status_values[GPU_FEATURE_TYPE_GPU_RASTERIZATION] =
+  input.status_values[GPU_FEATURE_TYPE_GPU_TILE_RASTERIZATION] =
       gpu::kGpuFeatureStatusDisabled;
 
   GpuFeatureInfo output;

@@ -47,10 +47,12 @@ enum Opaque {
 // setReportEventDataForAutomaticBeacons(), they are converted into an enum
 // and used as the key in the automatic beacon info mapping stored in the
 // browser.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum AutomaticBeaconType {
-  kDeprecatedTopNavigation,
-  kTopNavigationStart,
-  kTopNavigationCommit
+  kDeprecatedTopNavigation = 0,
+  kTopNavigationStart = 1,
+  kTopNavigationCommit = 2
 };
 
 union PotentiallyOpaqueURL {

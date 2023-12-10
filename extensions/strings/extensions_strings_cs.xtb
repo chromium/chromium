@@ -8,6 +8,7 @@
 <translation id="1420684932347524586">Nezdařilo se vytvořit náhodný soukromý klíč RSA.</translation>
 <translation id="1445572445564823378">Toto rozšíření zpomaluje prohlížeč <ph name="PRODUCT_NAME" />. Chcete-li výkon prohlížeče <ph name="PRODUCT_NAME" /> obnovit, měli byste rozšíření zakázat.</translation>
 <translation id="1468038450257740950">Rozhraní WebGL není podporováno.</translation>
+<translation id="1610570795592207282">Pro skript nelze načíst soubor CSS „<ph name="RELATIVE_PATH" />“.</translation>
 <translation id="1803557475693955505">Nelze načíst stránku pozadí „<ph name="BACKGROUND_PAGE" />“.</translation>
 <translation id="2159915644201199628">Nepodařilo se dekódovat obrázek: <ph name="IMAGE_NAME" /></translation>
 <translation id="2350172092385603347">Byla použita lokalizace, ale v manifestu nebyl zadán parametr default_locale.</translation>
@@ -18,14 +19,12 @@
 <translation id="3115238746683532089">Neznámý produkt <ph name="PRODUCT_ID" /> od dodavatele <ph name="VENDOR_ID" /> (sériové číslo <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">Nepodařilo se nahradit soubor CRX. Zkontrolujte, zda je tento soubor používán.</translation>
 <translation id="3163201441334626963">Neznámý produkt <ph name="PRODUCT_ID" /> od dodavatele <ph name="VENDOR_ID" /></translation>
-<translation id="3302709122321372472">Pro skript obsahu nelze načíst soubor CSS „<ph name="RELATIVE_PATH" />“.</translation>
 <translation id="3369521687965833290">Rozšíření nelze rozbalit. Chcete-li rozšíření rozbalit bezpečně, musíte zadat cestu k adresáři profilu, která začíná písmenem diskové jednotky a neobsahuje spojení, přípojný bod ani symbolický odkaz symlink. Ve vašem profilu taková cesta neexistuje.</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (sériové číslo <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> od dodavatele <ph name="VENDOR_ID" /> (sériové číslo <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Vstupní hodnota pro soukromý klíč musí být platná cesta.</translation>
 <translation id="388442998277590542">Nelze načíst stránku možností „<ph name="OPTIONS_PAGE" />“.</translation>
 <translation id="3984413272403535372">Při podepisování rozšíření došlo k chybě.</translation>
-<translation id="39964277676607559">Pro skript obsahu nelze načíst soubor JavaScriptu „<ph name="RELATIVE_PATH" />“.</translation>
 <translation id="4115165561519362854">Správce tohoto zařízení vyžaduje, aby rozšíření <ph name="EXTENSION_NAME" /> mělo verzi alespoň <ph name="EXTENSION_VERSION" />. Dokud nebude aktualizováno na tuto (nebo vyšší) verzi, nelze jej povolit.</translation>
 <translation id="4233778200880751280">Načtení stránky s informacemi <ph name="ABOUT_PAGE" /> se nezdařilo.</translation>
 <translation id="471800408830181311">Vytvoření soukromého klíče se nezdařilo.</translation>
@@ -33,6 +32,7 @@
 <translation id="4988792151665380515">Export veřejného klíče se nezdařil.</translation>
 <translation id="5026754133087629784">Webview: <ph name="WEBVIEW_TAG_NAME" /></translation>
 <translation id="5098647635849512368">Nelze najít absolutní cestu k adresáři, který chcete zabalit.</translation>
+<translation id="5160071981665899014">Pro skript nelze načíst soubor JavaScriptu „<ph name="RELATIVE_PATH" />“.</translation>
 <translation id="5356315618422219272">Zobrazení aplikace: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5436430103864390185">Tvarovaná okna nejsou podporována.</translation>
 <translation id="5456409301717116725">Rozšíření obsahuje soubor klíče <ph name="KEY_PATH" />. Tuto akci pravděpodobně provést nechcete.</translation>

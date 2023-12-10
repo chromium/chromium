@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_LOGIN_SCREENS_SYNC_CONSENT_SCREEN_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/auto_reset.h"
@@ -19,13 +20,13 @@
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_service_observer.h"
 #include "components/user_manager/user.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 
 namespace ash {
 
 class SyncConsentScreenView;
+class ScopedSessionRefresher;
 
 // This is Sync settings screen that is displayed as a part of user first
 // sign-in flow.
@@ -197,6 +198,9 @@ class SyncConsentScreen : public BaseScreen,
   // Manages sync service observer lifetime.
   base::ScopedObservation<syncer::SyncService, syncer::SyncServiceObserver>
       sync_service_observation_{this};
+
+  // Keeps cryptohome authsession alive.
+  std::unique_ptr<ScopedSessionRefresher> session_refresher_;
 
   // Primary user ind his Profile (if screen is shown).
   raw_ptr<const user_manager::User, ExperimentalAsh> user_ = nullptr;

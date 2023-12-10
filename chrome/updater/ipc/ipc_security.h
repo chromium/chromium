@@ -19,4 +19,4 @@ bool IsConnectionTrusted(
 
 }  // namespace updater
 
-#endif  // CHROME_UPDATER_IPC_SECURITY_H_
+#endif  // CHROME_UPDATER_IPC_IPC_SECURITY_H_

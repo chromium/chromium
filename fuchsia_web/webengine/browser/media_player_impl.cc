@@ -211,7 +211,7 @@ void MediaPlayerImpl::MediaSessionInfoChanged(
 }
 
 void MediaPlayerImpl::MediaSessionMetadataChanged(
-    const absl::optional<media_session::MediaMetadata>& metadata_mojo) {
+    const std::optional<media_session::MediaMetadata>& metadata_mojo) {
   fuchsia_media::Metadata metadata;
   if (metadata_mojo) {
     AddMetadata(fuchsia_media::kMetadataLabelTitle, metadata_mojo->title,
@@ -247,7 +247,7 @@ void MediaPlayerImpl::MediaSessionImagesChanged(
 }
 
 void MediaPlayerImpl::MediaSessionPositionChanged(
-    const absl::optional<media_session::MediaPosition>& position) {
+    const std::optional<media_session::MediaPosition>& position) {
   // TODO(https://crbug.com/879317): Implement media position changes.
   NOTIMPLEMENTED_LOG_ONCE();
 }
@@ -259,7 +259,7 @@ void MediaPlayerImpl::MaybeSendPlayerInfoDelta() {
     return;
   // std::exchange(foo, {}) returns the contents of |foo|, while ensuring that
   // |foo| is reset to the initial/empty state.
-  std::exchange(pending_info_change_callback_, absl::nullopt)
+  std::exchange(pending_info_change_callback_, std::nullopt)
       ->Reply(std::exchange(pending_info_delta_, {}));
 }
 

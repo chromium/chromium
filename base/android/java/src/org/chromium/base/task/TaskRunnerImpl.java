@@ -33,6 +33,7 @@ public class TaskRunnerImpl implements TaskRunner {
     // TaskRunnerCleaners are enqueued to this queue when their WeakReference to a TaskRunnerIml is
     // cleared.
     private static final ReferenceQueue<Object> sQueue = new ReferenceQueue<>();
+
     // Holds a strong reference to the pending TaskRunnerCleaners so they don't get GC'd before the
     // TaskRunnerImpl they're weakly referencing does.
     @GuardedBy("sCleaners")
@@ -49,11 +50,14 @@ public class TaskRunnerImpl implements TaskRunner {
     protected final Runnable mRunPreNativeTaskClosure = this::runPreNativeTask;
 
     private final Object mPreNativeTaskLock = new Object();
+
     @GuardedBy("mPreNativeTaskLock")
     private boolean mDidOneTimeInitialization;
+
     @Nullable
     @GuardedBy("mPreNativeTaskLock")
     private LinkedList<Runnable> mPreNativeTasks;
+
     @Nullable
     @GuardedBy("mPreNativeTaskLock")
     private List<Pair<Runnable, Long>> mPreNativeDelayedTasks;
@@ -144,15 +148,17 @@ public class TaskRunnerImpl implements TaskRunner {
     public void postDelayedTask(Runnable task, long delay) {
         // Lock-free path when native is initialized.
         if (mNativeTaskRunnerAndroid != 0) {
-            TaskRunnerImplJni.get().postDelayedTask(
-                    mNativeTaskRunnerAndroid, task, delay, task.getClass().getName());
+            TaskRunnerImplJni.get()
+                    .postDelayedTask(
+                            mNativeTaskRunnerAndroid, task, delay, task.getClass().getName());
             return;
         }
         synchronized (mPreNativeTaskLock) {
             oneTimeInitialization();
             if (mNativeTaskRunnerAndroid != 0) {
-                TaskRunnerImplJni.get().postDelayedTask(
-                        mNativeTaskRunnerAndroid, task, delay, task.getClass().getName());
+                TaskRunnerImplJni.get()
+                        .postDelayedTask(
+                                mNativeTaskRunnerAndroid, task, delay, task.getClass().getName());
                 return;
             }
             // We don't expect a whole lot of these, if that changes consider pooling them.
@@ -211,9 +217,7 @@ public class TaskRunnerImpl implements TaskRunner {
         return false;
     }
 
-    /**
-     * Runs a single task and returns when its finished.
-     */
+    /** Runs a single task and returns when its finished. */
     // The trace event name is derived from string literals.
     @SuppressWarnings("NoDynamicStringsInTraceEventCheck")
     protected void runPreNativeTask() {
@@ -236,15 +240,15 @@ public class TaskRunnerImpl implements TaskRunner {
                 case TaskTraits.USER_BLOCKING_MAY_BLOCK:
                     Process.setThreadPriority(Process.THREAD_PRIORITY_MORE_FAVORABLE);
                     break;
-                // We don't want to lower the Thread Priority of the UI Thread, especially
-                // pre-native, as the Thread is oversubscribed, highly latency sensitive, and
-                // there's only a single task queue so low priority tasks can run ahead of high
-                // priority tasks.
+                    // We don't want to lower the Thread Priority of the UI Thread, especially
+                    // pre-native, as the Thread is oversubscribed, highly latency sensitive, and
+                    // there's only a single task queue so low priority tasks can run ahead of high
+                    // priority tasks.
                 case TaskTraits.UI_BEST_EFFORT: // Fall-through.
                 case TaskTraits.UI_USER_VISIBLE: // Fall-through.
                 case TaskTraits.UI_USER_BLOCKING: // Fall-through.
                     break;
-                // lint ensures all cases are checked.
+                    // lint ensures all cases are checked.
             }
             task.run();
         }
@@ -259,15 +263,20 @@ public class TaskRunnerImpl implements TaskRunner {
         synchronized (mPreNativeTaskLock) {
             if (mPreNativeTasks != null) {
                 for (Runnable task : mPreNativeTasks) {
-                    TaskRunnerImplJni.get().postDelayedTask(
-                            nativeTaskRunnerAndroid, task, 0, task.getClass().getName());
+                    TaskRunnerImplJni.get()
+                            .postDelayedTask(
+                                    nativeTaskRunnerAndroid, task, 0, task.getClass().getName());
                 }
                 mPreNativeTasks = null;
             }
             if (mPreNativeDelayedTasks != null) {
                 for (Pair<Runnable, Long> task : mPreNativeDelayedTasks) {
-                    TaskRunnerImplJni.get().postDelayedTask(nativeTaskRunnerAndroid, task.first,
-                            task.second, task.getClass().getName());
+                    TaskRunnerImplJni.get()
+                            .postDelayedTask(
+                                    nativeTaskRunnerAndroid,
+                                    task.first,
+                                    task.second,
+                                    task.getClass().getName());
                 }
                 mPreNativeDelayedTasks = null;
             }
@@ -290,9 +299,12 @@ public class TaskRunnerImpl implements TaskRunner {
     @NativeMethods
     interface Natives {
         long init(@TaskRunnerType int taskRunnerType, @TaskTraits int taskTraits);
+
         void destroy(long nativeTaskRunnerAndroid);
+
         void postDelayedTask(
                 long nativeTaskRunnerAndroid, Runnable task, long delay, String runnableClassName);
+
         boolean belongsToCurrentThread(long nativeTaskRunnerAndroid);
     }
 }

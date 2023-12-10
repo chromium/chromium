@@ -29,6 +29,7 @@ class TestCertificateProvisioningBrowserProxy extends TestBrowserProxy
     super([
       'refreshCertificateProvisioningProcesses',
       'triggerCertificateProvisioningProcessUpdate',
+      'triggerCertificateProvisioningProcessReset',
     ]);
   }
 
@@ -39,6 +40,10 @@ class TestCertificateProvisioningBrowserProxy extends TestBrowserProxy
   triggerCertificateProvisioningProcessUpdate(certProfileId: string) {
     this.methodCalled(
         'triggerCertificateProvisioningProcessUpdate', certProfileId);
+  }
+  triggerCertificateProvisioningProcessReset(certProfileId: string) {
+    this.methodCalled(
+        'triggerCertificateProvisioningProcessReset', certProfileId);
   }
 }
 

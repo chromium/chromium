@@ -4,6 +4,7 @@
 
 #include "extensions/renderer/bindings/api_binding_js_util.h"
 
+#include <optional>
 #include "base/functional/bind.h"
 #include "extensions/renderer/bindings/api_binding_test_util.h"
 #include "extensions/renderer/bindings/api_bindings_system.h"
@@ -12,7 +13,6 @@
 #include "gin/arguments.h"
 #include "gin/handle.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 
@@ -324,7 +324,7 @@ TEST_F(APIBindingJSUtilUnittest, TestValidateType) {
 
   auto call_validate_type = [context, v8_util](
                                 const char* function,
-                                absl::optional<std::string> expected_error) {
+                                std::optional<std::string> expected_error) {
     v8::Local<v8::Function> v8_function = FunctionFromString(context, function);
     v8::Local<v8::Value> args[] = {v8_util};
     if (expected_error) {
@@ -340,7 +340,7 @@ TEST_F(APIBindingJSUtilUnittest, TestValidateType) {
       R"((function(util) {
            util.validateType('alpha.objRef', {prop1: 'hello'});
          }))",
-      absl::nullopt);
+      std::nullopt);
 
   // Test a failing case (prop1 is supposed to be a string).
   std::string expected_error =
@@ -384,7 +384,7 @@ TEST_F(APIBindingJSUtilUnittest, TestValidateCustomSignature) {
 
   auto call_validate_signature =
       [context, v8_util](const char* function,
-                         absl::optional<std::string> expected_error) {
+                         std::optional<std::string> expected_error) {
         v8::Local<v8::Function> v8_function =
             FunctionFromString(context, function);
         v8::Local<v8::Value> args[] = {v8_util};
@@ -401,7 +401,7 @@ TEST_F(APIBindingJSUtilUnittest, TestValidateCustomSignature) {
       R"((function(util) {
            util.validateCustomSignature('custom_signature', [1, 'foo']);
          }))",
-      absl::nullopt);
+      std::nullopt);
 
   // Test a failing case (prop1 is supposed to be a string).
   std::string expected_error =

@@ -1,0 +1,549 @@
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+
+This file describes the enumerations referenced by entries in histograms.xml for
+this directory. Some enums may instead be listed in the central enums.xml file
+at src/tools/metrics/histograms/enums.xml when multiple files use them.
+
+For best practices on writing enumerations descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md#Enum-Histograms
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<!-- Enum types -->
+
+<enums>
+
+<enum name="AllPointerTypes">
+  <int value="0" label="No pointer"/>
+  <int value="1" label="Coarse pointer only"/>
+  <int value="2" label="Fine pointer only"/>
+  <int value="3" label="Coarse and fine pointers"/>
+</enum>
+
+<enum name="IMEAssistiveDisabledReason">
+  <int value="0" label="None"/>
+  <int value="1" label="Feature flag off"/>
+  <int value="2" label="Enterprise settings off"/>
+  <int value="3" label="User settings off"/>
+  <int value="4" label="Url or App not allowed"/>
+</enum>
+
+<enum name="IMEAssistiveMultiWordSuggestionType">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Prediction"/>
+  <int value="2" label="Completion"/>
+</enum>
+
+<enum name="IMEAssistiveTextInputState">
+  <int value="0" label="None"/>
+  <int value="1" label="Feature disabled by blocklist"/>
+  <int value="2" label="Feature disabled by user pref"/>
+  <int value="3" label="Unsupported text input client"/>
+  <int value="4" label="Unsupported language"/>
+  <int value="5" label="Feature enabled"/>
+</enum>
+
+<enum name="IMEAutocorrectActions">
+  <int value="0" label="WINDOW_SHOWN"/>
+  <int value="1" label="UNDERLINED"/>
+  <int value="2" label="REVERTED"/>
+  <int value="3" label="USER_ACCEPTED_AUTOCORRECT"/>
+  <int value="4" label="USER_CLEARED_UNDERLINE"/>
+  <int value="5" label="USER_EXITED_TEXT_FIELD_WITH_UNDERLINE_PRESENT"/>
+  <int value="6" label="INVALID_RANGE"/>
+</enum>
+
+<enum name="IMEAutocorrectInternalStates">
+  <int value="0" label="HANDLE_EMPTY_RANGE"/>
+  <int value="1" label="HANDLE_UNCLEARED_RANGE"/>
+  <int value="2" label="HANDLE_NO_INPUT_CONTEXT"/>
+  <int value="3" label="HANDLE_INVALID_ARGS"/>
+  <int value="4" label="HANDLE_SET_RANGE"/>
+  <int value="5" label="UNDERLINE_SHOWN"/>
+  <int value="6" label="SUGGESTION_RESOLVED"/>
+  <int value="7" label="SUGGESTION_ACCEPTED"/>
+  <int value="8" label="NO_INPUT_CONTEXT"/>
+  <int value="9" label="ERROR_SET_RANGE"/>
+  <int value="10" label="ERROR_RANGE_NOT_VALIDATED"/>
+  <int value="11" label="ERROR_SHOW_UNDO_WINDOW"/>
+  <int value="12" label="ERROR_HIDE_UNDO_WINDOW"/>
+  <int value="13" label="SHOW_UNDO_WINDOW"/>
+  <int value="14" label="HIDE_UNDO_WINDOW"/>
+  <int value="15" label="HIGHLIGHT_UNDO_WINDOW"/>
+  <int value="16" label="ON_FOCUS_EVENT"/>
+  <int value="17" label="ON_FOCUS_EVENT_WITH_PENDING_SUGGESTION"/>
+  <int value="18" label="ON_BLUR_EVENT"/>
+  <int value="19" label="ON_BLUR_EVENT_WITH_PENDING_SUGGESTION"/>
+  <int value="20" label="TEXT_FIELD_EDITS_WITH_AT_LEAST_ONE_SUGGESTION"/>
+  <int value="21" label="COULD_TRIGGER_AUTOCORRECT"/>
+  <int value="22" label="APP_IS_IN_DENYLIST"/>
+  <int value="23" label="HANDLE_SUGGESTION_IN_DENYLISTED_APP"/>
+</enum>
+
+<enum name="IMEAutocorrectPreference">
+  <int value="0" label="DEFAULT"/>
+  <int value="1" label="ENABLED"/>
+  <int value="2" label="DISABLED"/>
+  <int value="3" label="ENABLED_BY_DEFAULT"/>
+</enum>
+
+<enum name="IMEAutocorrectPrefStateTransition">
+  <int value="0" label="UNCHANGED"/>
+  <int value="1" label="DEFAULT_TO_DISABLED"/>
+  <int value="2" label="DEFAULT_TO_ENABLED"/>
+  <int value="3" label="DISABLED_TO_ENABLED"/>
+  <int value="4" label="ENABLED_TO_DISABLED"/>
+  <int value="5" label="DEFAULT_TO_FORCE_ENABLED"/>
+  <int value="6" label="FORCE_ENABLED_TO_DISABLED"/>
+  <int value="7" label="FORCE_ENABLED_TO_DEFAULT"/>
+  <int value="8" label="FORCE_ENABLED_TO_ENABLED"/>
+</enum>
+
+<enum name="IMEAutocorrectQualityBreakdown">
+  <int value="0" label="SUGGESTION_RESOLVED"/>
+  <int value="1" label="ORIGINAL_TEXT_IS_ASCII"/>
+  <int value="2" label="SUGGESTED_TEXT_IS_ASCII"/>
+  <int value="3" label="SUGGESTION_SPLITTED_WORD"/>
+  <int value="4" label="SUGGESTION_CAPITALIZED_WORD"/>
+  <int value="5" label="SUGGESTION_LOWER_CASED_WORD"/>
+  <int value="6" label="SUGGESTION_CHANGE_LETTER_CASES"/>
+  <int value="7" label="SUGGESTION_INSERTED_LETTERS"/>
+  <int value="8" label="SUGGESTION_REMOVED_LETTERS"/>
+  <int value="9" label="SUGGESTION_MUTATED_LETTERS"/>
+  <int value="10" label="SUGGESTION_CHANGED_ACCENT"/>
+</enum>
+
+<enum name="IMEAutocorrectRejectionBreakdown">
+  <int value="0" label="SUGGESTION_REJECTED"/>
+  <int value="1" label="REJECTION_OTHER"/>
+  <int value="2" label="UNDO_WITHOUT_KEYBOARD"/>
+  <int value="3" label="UNDO_WITH_KEYBOARD"/>
+  <int value="4" label="UNDO_CTRL_Z"/>
+  <int value="5" label="REJECTED_BACKSPACE"/>
+  <int value="6" label="REJECTED_CTRL_BACKSPACE"/>
+  <int value="7" label="REJECTED_TYPING_FULL"/>
+  <int value="8" label="REJECTED_TYPING_PARTIAL"/>
+  <int value="9" label="REJECTED_TYPING_FULL_WITH_EXTERNAL"/>
+  <int value="10" label="REJECTED_TYPING_PARTIAL_WITH_EXTERNAL"/>
+  <int value="11" label="REJECTED_REMOVED_LETTERS"/>
+  <int value="12" label="REJECTED_TYPING_NO_SELECTION"/>
+  <int value="13" label="REJECTED_SELECTED_INVALID_RANGE"/>
+  <int value="14" label="CLICK_CLOSE_BUTTON"/>
+</enum>
+
+<enum name="IMEAutocorrectSuggestionProvider">
+  <int value="0" label="UNKNOWN"/>
+  <int value="1" label="US_ENGLISH_PREBUNDLED"/>
+  <int value="2" label="US_ENGLISH_DOWNLOADED"/>
+  <int value="3" label="US_ENGLISH_EN840"/>
+</enum>
+
+<enum name="IMECommitType2">
+  <int value="0" label="X -&gt; X(0)">
+    Types X, commits X as the top suggestion.
+  </int>
+  <int value="1" label="X -&gt; Y(0)">
+    Types X, commits Y as the top suggestion.
+  </int>
+  <int value="2" label="X -&gt; X(1)">
+    Types X, commits X as the 2nd suggestion.
+  </int>
+  <int value="3" label="X -&gt; Y(1)">
+    Types X, commits Y as the 2nd suggestion.
+  </int>
+  <int value="4" label="X -&gt; X(2)">
+    Types X, commits X as the 3rd/other suggestion.
+  </int>
+  <int value="5" label="X -&gt; Y(2)">
+    Types X, commits Y as the 3rd/other suggestion.
+  </int>
+  <int value="6" label="Prediction">Commits a prediction suggestion.</int>
+  <int value="7" label="Revert">
+    Reverts the previous auto-corrected and committed word.
+  </int>
+  <int value="8" label="Voice">The commit is triggered by voice input.</int>
+</enum>
+
+<enum name="IMECorrectionLevel">
+  <int value="0" label="Off"/>
+  <int value="1" label="Modest"/>
+  <int value="2" label="Aggressive"/>
+</enum>
+
+<enum name="IMEEditorStates">
+  <int value="0" label="NATIVE_UI_SHOWN_OPPORTUNITY"/>
+  <int value="1" label="NATIVE_UI_SHOWN"/>
+  <int value="2" label="NATIVE_REQUEST"/>
+  <int value="3" label="DISMISS"/>
+  <int value="4" label="REFINE_REQUEST"/>
+  <int value="5" label="SUCCESS_RESPONSE"/>
+  <int value="6" label="ERROR_RESPONSE"/>
+  <int value="7" label="THUMBS_UP"/>
+  <int value="8" label="THUMBS_DOWN"/>
+  <int value="9" label="INSERT"/>
+  <int value="10" label="CHARACTERS_INSERTED (Obsolete)"/>
+  <int value="11" label="CHARACTERS_SELECTED_FOR_INSERT (Obsolete)"/>
+  <int value="12" label="FREEFORM_CHARACTERS_FOR_INSERT (Obsolete)"/>
+  <int value="13" label="RETURN_TO_PREVIOUS_SUGGESTIONS"/>
+  <int value="14" label="CLICK_CLOSE_BUTTON"/>
+  <int value="15" label="WEBUI_REQUEST"/>
+  <int value="16" label="APPROVE_CONSENT"/>
+  <int value="17" label="DECLINE_CONSENT"/>
+</enum>
+
+<enum name="IMEGrammarActions">
+  <int value="0" label="UNDERLINED"/>
+  <int value="1" label="WINDOW_SHOWN"/>
+  <int value="2" label="ACCEPTED"/>
+  <int value="3" label="IGNORED"/>
+</enum>
+
+<enum name="ImeHandwritingActions">
+  <int value="0" label="InsertCreatedByUnknown"/>
+  <int value="1" label="InsertCreatedAfterDelete"/>
+  <int value="2" label="InsertCreatedByTouchTap"/>
+  <int value="3" label="InsertCreatedByPenTap"/>
+  <int value="4" label="InsertCreatedByUpCaret"/>
+  <int value="5" label="InsertCreatedByDownCaret"/>
+  <int value="6" label="EmptyInsertRangeClosed"/>
+  <int value="7" label="InsertRangeWithTextClosed"/>
+  <int value="8" label="DeletedSingleWord"/>
+  <int value="9" label="UndoInsertCreatedByUnknown"/>
+  <int value="10" label="UndoInsertCreatedAfterDelete"/>
+  <int value="11" label="UndoInsertCreatedByTouchTap"/>
+  <int value="12" label="UndoInsertCreatedByPenTap"/>
+  <int value="13" label="UndoInsertCreatedByUpCaret"/>
+  <int value="14" label="UndoInsertCreatedByDownCaret"/>
+  <int value="15" label="UndoDeletedSingleWord"/>
+</enum>
+
+<enum name="ImeMenuButtonType">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Emoji"/>
+  <int value="2" label="Handwriting"/>
+  <int value="3" label="Voice"/>
+</enum>
+
+<enum name="IMEMultipasteAction">
+  <int value="0" label="OpenKeyboard"/>
+  <int value="1" label="PasteItem"/>
+  <int value="2" label="SelectItem"/>
+  <int value="3" label="UnselectItem"/>
+  <int value="4" label="DeleteItem"/>
+  <int value="5" label="PasteSuggestion"/>
+</enum>
+
+<enum name="IMEPaprikaActions">
+  <int value="0" label="DELETE"/>
+  <int value="1" label="SWITCH_TO_VK"/>
+  <int value="2" label="UNDO"/>
+</enum>
+
+<enum name="IMEPKLongpressDiacriticUnicodeCharacterCode">
+<!--
+Do not add the actual diacritical or non basic ascii characters to the text of this file.
+Unsupported non-ascii characters will cause issues with xml presubmits.
+  -->
+
+  <int value="-1" label="UNKOWN CHARACTER"/>
+  <int value="192" label="Latin Capital Letter A with grave"/>
+  <int value="193" label="Latin Capital letter A with acute"/>
+  <int value="194" label="Latin Capital letter A with circumflex"/>
+  <int value="195" label="Latin Capital letter A with tilde"/>
+  <int value="196" label="Latin Capital letter A with diaeresis"/>
+  <int value="197" label="Latin Capital letter A with ring above"/>
+  <int value="198" label="Latin Capital letter AE"/>
+  <int value="199" label="Latin Capital letter C with cedilla"/>
+  <int value="200" label="Latin Capital letter E with grave"/>
+  <int value="201" label="Latin Capital letter E with acute"/>
+  <int value="202" label="Latin Capital letter E with circumflex"/>
+  <int value="203" label="Latin Capital letter E with diaeresis"/>
+  <int value="204" label="Latin Capital letter I with grave"/>
+  <int value="205" label="Latin Capital letter I with acute"/>
+  <int value="206" label="Latin Capital letter I with circumflex"/>
+  <int value="207" label="Latin Capital letter I with diaeresis"/>
+  <int value="209" label="Latin Capital letter N with tilde"/>
+  <int value="210" label="Latin Capital letter O with grave"/>
+  <int value="211" label="Latin Capital letter O with acute"/>
+  <int value="212" label="Latin Capital letter O with circumflex"/>
+  <int value="213" label="Latin Capital letter O with tilde"/>
+  <int value="214" label="Latin Capital letter O with diaeresis"/>
+  <int value="216" label="Latin Capital letter O with stroke"/>
+  <int value="217" label="Latin Capital letter U with grave"/>
+  <int value="218" label="Latin Capital letter U with acute"/>
+  <int value="219" label="Latin Capital Letter U with circumflex"/>
+  <int value="220" label="Latin Capital Letter U with diaeresis"/>
+  <int value="223" label="Latin Small Letter sharp S"/>
+  <int value="224" label="Latin Small Letter A with grave"/>
+  <int value="225" label="Latin Small Letter A with acute"/>
+  <int value="226" label="Latin Small Letter A with circumflex"/>
+  <int value="227" label="Latin Small Letter A with tilde"/>
+  <int value="228" label="Latin Small Letter A with diaeresis"/>
+  <int value="229" label="Latin Small Letter A with ring above"/>
+  <int value="230" label="Latin Small Letter AE"/>
+  <int value="231" label="Latin Small Letter C with cedilla"/>
+  <int value="232" label="Latin Small Letter E with grave"/>
+  <int value="233" label="Latin Small Letter E with acute"/>
+  <int value="234" label="Latin Small Letter E with circumflex"/>
+  <int value="235" label="Latin Small Letter E with diaeresis"/>
+  <int value="236" label="Latin Small Letter I with grave"/>
+  <int value="237" label="Latin Small Letter I with acute"/>
+  <int value="238" label="Latin Small Letter I with circumflex"/>
+  <int value="239" label="Latin Small Letter I with diaeresis"/>
+  <int value="241" label="Latin Small Letter N with tilde"/>
+  <int value="242" label="Latin Small Letter O with grave"/>
+  <int value="243" label="Latin Small Letter O with acute"/>
+  <int value="244" label="Latin Small Letter O with circumflex"/>
+  <int value="245" label="Latin Small Letter O with tilde"/>
+  <int value="246" label="Latin Small Letter O with diaeresis"/>
+  <int value="248" label="Latin Small Letter O with stroke"/>
+  <int value="249" label="Latin Small Letter U with grave"/>
+  <int value="250" label="Latin Small Letter U with acute"/>
+  <int value="251" label="Latin Small Letter U with circumflex"/>
+  <int value="252" label="Latin Small Letter U with diaeresis"/>
+  <int value="256" label="Latin Capital Letter A with macron"/>
+  <int value="257" label="Latin Small Letter A with macron"/>
+  <int value="274" label="Latin Capital Letter E with macron"/>
+  <int value="275" label="Latin Small Letter E with macron"/>
+  <int value="298" label="Latin Capital Letter I with macron"/>
+  <int value="299" label="Latin Small Letter I with macron"/>
+  <int value="332" label="Latin Capital Letter O with macron"/>
+  <int value="333" label="Latin Small Letter O with macron"/>
+  <int value="338" label="Latin Capital Ligature OE"/>
+  <int value="339" label="Latin Small Ligature OE"/>
+  <int value="362" label="Latin Capital Letter U with macron"/>
+  <int value="363" label="Latin Small Letter U with macron"/>
+  <int value="7838" label="Capital sharp s, German"/>
+</enum>
+
+<enum name="IMESwitchType">
+  <int value="0" label="By tray menu">IME switches by tray menu</int>
+  <int value="1" label="By accelerator">IME switches by accelerator</int>
+  <int value="2" label="By mode change key">
+    IME switches by mode change key
+  </int>
+</enum>
+
+<enum name="IMETextInputClient">
+  <int value="0" label="RenderWidgetHostViewAura"/>
+  <int value="1" label="ArcImeService"/>
+  <int value="2" label="Textfield"/>
+</enum>
+
+<enum name="IMEVKLayout">
+  <int value="0" label="Compact"/>
+  <int value="1" label="CompactSymbol"/>
+  <int value="2" label="CompactMore"/>
+  <int value="3" label="Full"/>
+  <int value="4" label="A11y"/>
+  <int value="5" label="Handwriting"/>
+  <int value="6" label="Emoji"/>
+  <int value="7" label="StylusHandwriting"/>
+  <int value="8" label="Multipaste"/>
+  <int value="9" label="unknown"/>
+</enum>
+
+<enum name="IMEVKMode">
+  <int value="0" label="FULL_WIDTH_MODE"/>
+  <int value="1" label="FLOATING_MODE"/>
+</enum>
+
+<enum name="InputMethodCategory">
+  <int value="0" label="Unkown"/>
+  <int value="1" label="XKB">XKeyboard</int>
+  <int value="2" label="Chinese"/>
+  <int value="3" label="Japanese"/>
+  <int value="4" label="Korean"/>
+  <int value="5" label="M17n">Multilingualization</int>
+  <int value="6" label="T13n">Transliteration</int>
+  <int value="7" label="ARC"/>
+</enum>
+
+<enum name="InputMethodDecoderEvent">
+  <int value="3" label="WordCommitted"/>
+  <int value="4" label="SuggestionPickedManually"/>
+  <int value="5" label="TextDeleteBackspace"/>
+  <int value="6" label="WordDeleteBackspace"/>
+  <int value="7" label="RevertAutoCorrect"/>
+  <int value="11" label="WordAutoCorrection"/>
+  <int value="22" label="PredictionPicked"/>
+  <int value="25" label="WordDeleted"/>
+  <int value="26" label="WordEdited"/>
+  <int value="103" label="SpaceCommitted"/>
+  <int value="104" label="SpaceDeleted"/>
+</enum>
+
+<enum name="JapaneseStartupAction">
+  <int value="0" label="Still legacy">
+    Indicates no settings migration was performed on startup, since the user is
+    still using legacy settings.
+  </int>
+  <int value="1" label="Already migrated">
+    Indicates no settings migration was performed since the user is already
+    using JP SYS PK and already migrated previously.
+  </int>
+  <int value="2" label="Perform migration">
+    Indicates migration was performed since the user has just switched to using
+    the JP SYS PK or the migration was marked as undone and was just redone.
+  </int>
+  <int value="3" label="Undo migration">
+    Indicates migration is being marked as to be undone. This could be because
+    the migration flag was enabled previously, but now the flag has been
+    disabled, so we mark the migration as incomplete, so it retriggers on
+    turning the flag back on.
+  </int>
+</enum>
+
+<enum name="KoreanAction">
+  <summary>Actions that are available on the Korean IME.</summary>
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Press Hanja key"/>
+  <int value="2" label="Press Hangeul key"/>
+  <int value="3" label="Compose out of order"/>
+</enum>
+
+<enum name="LanguagePackState">
+  <int value="0" label="Error"/>
+  <int value="1" label="Not installed"/>
+  <int value="2" label="Installing"/>
+  <int value="3" label="Installed"/>
+</enum>
+
+<enum name="MetaTagTypeEnum">
+  <int value="0" label="No viewport tag"/>
+  <int value="1" label="Viewport meta with device width"/>
+  <int value="2" label="Viewport meta with constant width"/>
+  <int value="3" label="Viewport meta other"/>
+  <int value="4" label="HandheldFriendly meta"/>
+  <int value="5" label="MobileOptimized meta"/>
+  <int value="6" label="XHTML-MP document type"/>
+</enum>
+
+<enum name="ModeChangeKeyAction">
+  <summary>Result of pressing the mode change key</summary>
+  <int value="0" label="Show indicator">
+    Showed the indicator for the current input method.
+  </int>
+  <int value="1" label="Switch to next IME">
+    Switched to the next input method.
+  </int>
+</enum>
+
+<enum name="PhysicalKeyboardShortcut">
+  <int value="0" label="zoom-in"/>
+  <int value="1" label="zoom-out"/>
+  <int value="2" label="zoom-reset"/>
+  <int value="3" label="delete-line"/>
+  <int value="4" label="page-up"/>
+  <int value="5" label="page-down"/>
+</enum>
+
+<enum name="PrimaryPointerType">
+  <int value="0" label="No pointer"/>
+  <int value="1" label="Coarse pointer"/>
+  <int value="2" label="Fine pointer"/>
+</enum>
+
+<enum name="StylusHandwritingApi">
+  <int value="0" label="Android API"/>
+  <int value="1" label="DirectWriting API"/>
+</enum>
+
+<enum name="StylusHandwritingGesture">
+  <int value="0" label="DirectWriting, Delete Text"/>
+  <int value="1" label="DirectWriting, Add Space Or Text"/>
+  <int value="2" label="DirectWriting, Remove Spaces"/>
+  <int value="3" label="DirectWriting, Split Or Merge"/>
+  <int value="4" label="Android, Select"/>
+  <int value="5" label="Android, Insert"/>
+  <int value="6" label="Android, Delete"/>
+  <int value="7" label="Android, Remove Space"/>
+  <int value="8" label="Android, Join Or Split"/>
+  <int value="9" label="Android, Select Range"/>
+  <int value="10" label="Android, Delete Range"/>
+</enum>
+
+<enum name="StylusHandwritingGestureResult">
+  <int value="0" label="Null executor or int consumer"/>
+  <int value="1" label="Success"/>
+  <int value="2" label="Unsupported"/>
+  <int value="3" label="Failed"/>
+  <int value="4" label="Cancelled"/>
+  <int value="5" label="Fallback"/>
+</enum>
+
+<enum name="TouchSelectionDragType">
+  <int value="0" label="Cursor handle drag"/>
+  <int value="1" label="Selection handle drag"/>
+  <int value="2" label="Cursor drag"/>
+  <int value="3" label="Long press drag"/>
+  <int value="4" label="Double press drag"/>
+</enum>
+
+<enum name="TouchSelectionMenuAction">
+  <int value="0" label="Cut"/>
+  <int value="1" label="Copy"/>
+  <int value="2" label="Paste"/>
+  <int value="3" label="Select all"/>
+  <int value="4" label="Select word"/>
+  <int value="5" label="Ellipsis"/>
+  <int value="6" label="Smart action"/>
+</enum>
+
+<enum name="VietnameseActions">
+  <summary>Actions that are available on the Vietnamese Telex/VNI IME.</summary>
+  <int value="0" label="Basic Escape"/>
+  <int value="1" label="Basic Assign"/>
+  <int value="2" label="Basic EraseToneMark"/>
+  <int value="3" label="Flex Escape"/>
+  <int value="4" label="Flex Assign"/>
+  <int value="5" label="Flex EraseToneMark"/>
+  <int value="6" label="Flex Fix"/>
+  <int value="7" label="Shortcut Basic AssignDoubleHorn"/>
+  <int value="8" label="Shortcut Flex AssignDoubleHorn"/>
+  <int value="9" label="Shortcut TelexWForUHorn"/>
+</enum>
+
+<enum name="VirtualKeyboardContainerType">
+  <int value="0" label="FULL_WIDTH"/>
+  <int value="1" label="FLOATING"/>
+  <int value="2" label="FULLSCREEN"/>
+</enum>
+
+<enum name="VirtualKeyboardEmojiTriggerType">
+  <int value="0" label="Base emoji from the emoji picker"/>
+  <int value="1" label="Variant emoji from the emoji picker"/>
+  <int value="2" label="Base emoji from the popup"/>
+  <int value="3" label="Variant emoji from the popup"/>
+  <int value="4" label="Base emoji from the chromium emoji picker"/>
+  <int value="5" label="Variant emoji from the chromium emoji picker"/>
+  <int value="6" label="GIF inserted from the chromium emoji picker"/>
+  <int value="7" label="GIF copied from the chromium emoji picker"/>
+</enum>
+
+<enum name="VirtualKeyboardErrorTypeHashes">
+  <int value="30998784" label="Generic Error"/>
+</enum>
+
+<enum name="VirtualKeyboardHandwritingCommitType">
+  <int value="0" label="Commit text only"/>
+  <int value="1" label="Commit text with newline"/>
+  <int value="2" label="Commit text with space"/>
+</enum>
+
+</enums>
+
+</histogram-configuration>

@@ -57,8 +57,9 @@ T CombineScrollOffsets(T x, T y) {
 }
 
 class ScrollCornerView : public View {
+  METADATA_HEADER(ScrollCornerView, View)
+
  public:
-  METADATA_HEADER(ScrollCornerView);
   ScrollCornerView() = default;
   ScrollCornerView(const ScrollCornerView&) = delete;
   ScrollCornerView& operator=(const ScrollCornerView&) = delete;
@@ -77,7 +78,7 @@ class ScrollCornerView : public View {
   }
 };
 
-BEGIN_METADATA(ScrollCornerView, View)
+BEGIN_METADATA(ScrollCornerView)
 END_METADATA
 
 // Returns true if any descendants of |view| have a layer (not including
@@ -146,8 +147,9 @@ int AdjustPosition(int current_position,
 
 // Viewport contains the contents View of the ScrollView.
 class ScrollView::Viewport : public View {
+  METADATA_HEADER(Viewport, View)
+
  public:
-  METADATA_HEADER(Viewport);
   explicit Viewport(ScrollView* scroll_view) : scroll_view_(scroll_view) {}
   Viewport(const Viewport&) = delete;
   Viewport& operator=(const Viewport&) = delete;
@@ -1384,7 +1386,7 @@ View* ScrollView::GetContentsViewportForTest() const {
   return contents_viewport_;
 }
 
-BEGIN_METADATA(ScrollView, View)
+BEGIN_METADATA(ScrollView)
 ADD_READONLY_PROPERTY_METADATA(int, MinHeight)
 ADD_READONLY_PROPERTY_METADATA(int, MaxHeight)
 ADD_PROPERTY_METADATA(bool, AllowKeyboardScrolling)

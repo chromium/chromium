@@ -22,9 +22,11 @@ static void JNI_UkmRecorder_RecordEventWithBooleanMetric(
       content::WebContents::FromJavaWebContents(j_web_contents);
   const ukm::SourceId source_id =
       web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId();
-  const std::string event_name(ConvertJavaStringToUTF8(env, j_event_name));
+  const std::string event_name(
+      base::android::ConvertJavaStringToUTF8(env, j_event_name));
   ukm::UkmEntryBuilder builder(source_id, event_name);
-  builder.SetMetric(ConvertJavaStringToUTF8(env, j_metric_name), true);
+  builder.SetMetric(base::android::ConvertJavaStringToUTF8(env, j_metric_name),
+                    true);
   builder.Record(ukm::UkmRecorder::Get());
 }
 
@@ -39,9 +41,10 @@ static void JNI_UkmRecorder_RecordEventWithIntegerMetric(
       content::WebContents::FromJavaWebContents(j_web_contents);
   const ukm::SourceId source_id =
       web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId();
-  const std::string event_name(ConvertJavaStringToUTF8(env, j_event_name));
+  const std::string event_name(
+      base::android::ConvertJavaStringToUTF8(env, j_event_name));
   ukm::UkmEntryBuilder builder(source_id, event_name);
-  builder.SetMetric(ConvertJavaStringToUTF8(env, j_metric_name),
+  builder.SetMetric(base::android::ConvertJavaStringToUTF8(env, j_metric_name),
                     j_metric_value);
   builder.Record(ukm::UkmRecorder::Get());
 }

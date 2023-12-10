@@ -33,8 +33,6 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.FileUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
-import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.IntentHandler;
@@ -50,7 +48,6 @@ import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
 import org.chromium.chrome.browser.offlinepages.downloads.OfflinePageDownloadBridge;
 import org.chromium.chrome.browser.profiles.OTRProfileID;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.profiles.ProfileKey;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -77,9 +74,7 @@ import org.chromium.url.GURL;
 
 import java.io.File;
 
-/**
- * A class containing some utility static methods.
- */
+/** A class containing some utility static methods. */
 public class DownloadUtils {
     private static final String TAG = "download";
 
@@ -99,8 +94,11 @@ public class DownloadUtils {
      * @param source The source where the user action is coming from.
      * @return Whether the UI was shown.
      */
-    public static boolean showDownloadManager(@Nullable Activity activity, @Nullable Tab tab,
-            @Nullable OTRProfileID otrProfileID, @DownloadOpenSource int source) {
+    public static boolean showDownloadManager(
+            @Nullable Activity activity,
+            @Nullable Tab tab,
+            @Nullable OTRProfileID otrProfileID,
+            @DownloadOpenSource int source) {
         return showDownloadManager(activity, tab, otrProfileID, source, false);
     }
 
@@ -116,8 +114,11 @@ public class DownloadUtils {
      * @return Whether the UI was shown.
      */
     @CalledByNative
-    public static boolean showDownloadManager(@Nullable Activity activity, @Nullable Tab tab,
-            @Nullable OTRProfileID otrProfileID, @DownloadOpenSource int source,
+    public static boolean showDownloadManager(
+            @Nullable Activity activity,
+            @Nullable Tab tab,
+            @Nullable OTRProfileID otrProfileID,
+            @DownloadOpenSource int source,
             boolean showPrefetchedContent) {
         // Figure out what tab was last being viewed by the user.
         if (activity == null) activity = ApplicationStatus.getLastTrackedFocusedActivity();
@@ -158,8 +159,9 @@ public class DownloadUtils {
 
                 // Bring Chrome to the foreground, if possible. Unless Chrome is already in the
                 // foreground, this request is most likely coming from a notification.
-                Intent intent = IntentHandler.createTrustedBringTabToFrontIntent(
-                        tab.getId(), IntentHandler.BringToFrontSource.NOTIFICATION);
+                Intent intent =
+                        IntentHandler.createTrustedBringTabToFrontIntent(
+                                tab.getId(), IntentHandler.BringToFrontSource.NOTIFICATION);
                 if (intent != null) {
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     IntentUtils.safeStartActivity(appContext, intent);
@@ -187,10 +189,12 @@ public class DownloadUtils {
         }
 
         if (BrowserStartupController.getInstance().isFullBrowserStarted()) {
-            Profile profile = otrProfileID == null
-                    ? Profile.getLastUsedRegularProfile()
-                    : Profile.getLastUsedRegularProfile().getOffTheRecordProfile(
-                            otrProfileID, /*createIfNeeded=*/true);
+            Profile profile =
+                    otrProfileID == null
+                            ? Profile.getLastUsedRegularProfile()
+                            : Profile.getLastUsedRegularProfile()
+                                    .getOffTheRecordProfile(
+                                            otrProfileID, /* createIfNeeded= */ true);
             Tracker tracker = TrackerFactory.getTrackerForProfile(profile);
             tracker.notifyEvent(EventConstants.DOWNLOAD_HOME_OPENED);
         }
@@ -264,42 +268,11 @@ public class DownloadUtils {
     }
 
     /**
-     * Records metrics related to downloading a page. Should be called after a tap on the download
-     * page button.
-     * @param tab The Tab containing the page being downloaded.
-     */
-    public static void recordDownloadPageMetrics(Tab tab) {
-        RecordHistogram.recordPercentageHistogram(
-                "OfflinePages.SavePage.PercentLoaded", Math.round(tab.getProgress() * 100));
-    }
-
-    /**
      * Shows a "Downloading..." toast. Should be called after a download has been started.
      * @param context The {@link Context} used to make the toast.
      */
     public static void showDownloadStartToast(Context context) {
         Toast.makeText(context, R.string.download_started, Toast.LENGTH_SHORT).show();
-    }
-
-    /**
-     * Issues a request to the {@link DownloadManagerService} associated to check for externally
-     * removed downloads.
-     * See {@link DownloadManagerService#checkForExternallyRemovedDownloads}.
-     * @param profileKey  The {@link ProfileKey} to check downloads of the given profile.
-     */
-    public static void checkForExternallyRemovedDownloads(ProfileKey profileKey) {
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.DOWNLOAD_OFFLINE_CONTENT_PROVIDER)) {
-            return;
-        }
-
-        if (profileKey.isOffTheRecord()) {
-            DownloadManagerService.getDownloadManagerService().checkForExternallyRemovedDownloads(
-                    profileKey);
-        }
-        DownloadManagerService.getDownloadManagerService().checkForExternallyRemovedDownloads(
-                ProfileKey.getLastUsedRegularProfileKey());
-        RecordUserAction.record(
-                "Android.DownloadManager.CheckForExternallyRemovedItems");
     }
 
     /**
@@ -313,12 +286,15 @@ public class DownloadUtils {
             // The download needs to be scheduled to happen at later time due to current network
             // error.
             final OfflinePageBridge bridge = OfflinePageBridge.getForProfile(tab.getProfile());
-            bridge.scheduleDownload(tab.getWebContents(), OfflinePageBridge.ASYNC_NAMESPACE,
-                    tab.getUrl().getSpec(), DownloadUiActionFlags.PROMPT_DUPLICATE, origin);
+            bridge.scheduleDownload(
+                    tab.getWebContents(),
+                    OfflinePageBridge.ASYNC_NAMESPACE,
+                    tab.getUrl().getSpec(),
+                    DownloadUiActionFlags.PROMPT_DUPLICATE,
+                    origin);
         } else {
             // Otherwise, the download can be started immediately.
             OfflinePageDownloadBridge.startDownload(tab, origin);
-            DownloadUtils.recordDownloadPageMetrics(tab);
         }
         Tracker tracker = TrackerFactory.getTrackerForProfile(tab.getProfile());
         tracker.notifyEvent(EventConstants.DOWNLOAD_PAGE_STARTED);
@@ -396,12 +372,16 @@ public class DownloadUtils {
      * @param otrProfileID The {@link OTRProfileID} of the download. Null if in regular mode.
      * @param source The location from which the download was opened.
      */
-    public static void openItem(ContentId contentId, OTRProfileID otrProfileID,
-            @DownloadOpenSource int source, Context context) {
+    public static void openItem(
+            ContentId contentId,
+            OTRProfileID otrProfileID,
+            @DownloadOpenSource int source,
+            Context context) {
         if (LegacyHelpers.isLegacyAndroidDownload(contentId)) {
-            ContextUtils.getApplicationContext().startActivity(
-                    new Intent(DownloadManager.ACTION_VIEW_DOWNLOADS)
-                            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+            ContextUtils.getApplicationContext()
+                    .startActivity(
+                            new Intent(DownloadManager.ACTION_VIEW_DOWNLOADS)
+                                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
         } else {
             OpenParams openParams = new OpenParams(LaunchLocation.PROGRESS_BAR);
             openParams.openInIncognito = OTRProfileID.isOffTheRecord(otrProfileID);
@@ -420,9 +400,15 @@ public class DownloadUtils {
      * @param source The source that tries to open the download file.
      * @return whether the file could successfully be opened.
      */
-    public static boolean openFile(String filePath, String mimeType, String downloadGuid,
-            OTRProfileID otrProfileID, String originalUrl, String referrer,
-            @DownloadOpenSource int source, Context context) {
+    public static boolean openFile(
+            String filePath,
+            String mimeType,
+            String downloadGuid,
+            OTRProfileID otrProfileID,
+            String originalUrl,
+            String referrer,
+            @DownloadOpenSource int source,
+            Context context) {
         DownloadMetrics.recordDownloadOpen(source, mimeType);
         DownloadManagerService service = DownloadManagerService.getDownloadManagerService();
 
@@ -711,10 +697,17 @@ public class DownloadUtils {
      * @param clickableSpan Action to perform when clicking on the file name.
      * @return message to be displayed on the infobar.
      */
-    private static CharSequence getMessageText(final String template, final String fileName,
-            boolean addSizeStringIfAvailable, long totalBytes, final ClickableSpan clickableSpan) {
+    private static CharSequence getMessageText(
+            final String template,
+            final String fileName,
+            boolean addSizeStringIfAvailable,
+            long totalBytes,
+            final ClickableSpan clickableSpan) {
         final SpannableString formattedFilePath = new SpannableString(fileName);
-        formattedFilePath.setSpan(new StyleSpan(Typeface.BOLD), 0, fileName.length(),
+        formattedFilePath.setSpan(
+                new StyleSpan(Typeface.BOLD),
+                0,
+                fileName.length(),
                 Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         formattedFilePath.setSpan(
                 clickableSpan, 0, fileName.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
@@ -724,10 +717,12 @@ public class DownloadUtils {
         } else {
             String sizeString = "";
             if (totalBytes > 0) {
-                sizeString = " ("
-                        + org.chromium.components.browser_ui.util.DownloadUtils.getStringForBytes(
-                                ContextUtils.getApplicationContext(), totalBytes)
-                        + ")";
+                sizeString =
+                        " ("
+                                + org.chromium.components.browser_ui.util.DownloadUtils
+                                        .getStringForBytes(
+                                                ContextUtils.getApplicationContext(), totalBytes)
+                                + ")";
             }
 
             return TextUtils.expandTemplate(template, formattedFilePath, sizeString);

@@ -78,13 +78,15 @@ class CC_EXPORT SnapSelectionStrategy {
   // -closest: snap search result representing closest match.
   // -covering: snap search result representing the original target if it makes
   //            a snaparea covering the snapport.
-  virtual const absl::optional<SnapSearchResult>& PickBestResult(
-      const absl::optional<SnapSearchResult>& closest,
-      const absl::optional<SnapSearchResult>& covering) const = 0;
+  virtual const std::optional<SnapSearchResult>& PickBestResult(
+      const std::optional<SnapSearchResult>& closest,
+      const std::optional<SnapSearchResult>& covering) const = 0;
 
   // Returns true when the current scroll offset is provided in fractional
   // pixels.
   virtual bool UsingFractionalOffsets() const;
+
+  virtual std::unique_ptr<SnapSelectionStrategy> Clone() const = 0;
 
  protected:
   explicit SnapSelectionStrategy(const gfx::PointF& current_position)
@@ -113,6 +115,7 @@ class EndPositionStrategy : public SnapSelectionStrategy {
         scrolled_x_(scrolled_x),
         scrolled_y_(scrolled_y),
         snap_targets_prioritization_(snap_targets_prioritization) {}
+  EndPositionStrategy(const EndPositionStrategy& other) = default;
   ~EndPositionStrategy() override = default;
 
   bool ShouldSnapOnX() const override;
@@ -125,9 +128,10 @@ class EndPositionStrategy : public SnapSelectionStrategy {
   bool HasIntendedDirection() const override;
   bool ShouldPrioritizeSnapTargets() const override;
 
-  const absl::optional<SnapSearchResult>& PickBestResult(
-      const absl::optional<SnapSearchResult>& closest,
-      const absl::optional<SnapSearchResult>& covering) const override;
+  const std::optional<SnapSearchResult>& PickBestResult(
+      const std::optional<SnapSearchResult>& closest,
+      const std::optional<SnapSearchResult>& covering) const override;
+  std::unique_ptr<SnapSelectionStrategy> Clone() const override;
 
  private:
   // Whether the x axis and y axis have been scrolled in this scroll gesture.
@@ -156,6 +160,7 @@ class DirectionStrategy : public SnapSelectionStrategy {
         step_(step),
         snap_stop_always_filter_(filter),
         use_fractional_offsets_(use_fractional_offsets) {}
+  DirectionStrategy(const DirectionStrategy& other) = default;
   ~DirectionStrategy() override = default;
 
   bool ShouldSnapOnX() const override;
@@ -168,11 +173,13 @@ class DirectionStrategy : public SnapSelectionStrategy {
   bool IsValidSnapArea(SearchAxis axis,
                        const SnapAreaData& area) const override;
 
-  const absl::optional<SnapSearchResult>& PickBestResult(
-      const absl::optional<SnapSearchResult>& closest,
-      const absl::optional<SnapSearchResult>& covering) const override;
+  const std::optional<SnapSearchResult>& PickBestResult(
+      const std::optional<SnapSearchResult>& closest,
+      const std::optional<SnapSearchResult>& covering) const override;
 
   bool UsingFractionalOffsets() const override;
+
+  std::unique_ptr<SnapSelectionStrategy> Clone() const override;
 
  private:
   // The default step for this DirectionStrategy.
@@ -199,6 +206,7 @@ class EndAndDirectionStrategy : public SnapSelectionStrategy {
       : SnapSelectionStrategy(current_position),
         displacement_(displacement),
         use_fractional_offsets_(use_fractional_offsets) {}
+  EndAndDirectionStrategy(const EndAndDirectionStrategy& other) = default;
   ~EndAndDirectionStrategy() override = default;
 
   bool ShouldSnapOnX() const override;
@@ -211,11 +219,13 @@ class EndAndDirectionStrategy : public SnapSelectionStrategy {
 
   bool ShouldRespectSnapStop() const override;
 
-  const absl::optional<SnapSearchResult>& PickBestResult(
-      const absl::optional<SnapSearchResult>& closest,
-      const absl::optional<SnapSearchResult>& covering) const override;
+  const std::optional<SnapSearchResult>& PickBestResult(
+      const std::optional<SnapSearchResult>& closest,
+      const std::optional<SnapSearchResult>& covering) const override;
 
   bool UsingFractionalOffsets() const override;
+
+  std::unique_ptr<SnapSelectionStrategy> Clone() const override;
 
  private:
   const gfx::Vector2dF displacement_;

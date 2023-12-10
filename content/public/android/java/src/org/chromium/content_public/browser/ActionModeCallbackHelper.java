@@ -43,9 +43,7 @@ public abstract class ActionModeCallbackHelper {
         return SelectionPopupControllerImpl.sanitizeQuery(query, maxLength);
     }
 
-    /**
-     * Empty {@link ActionMode.Callback} that does nothing. Used for {@link #EMPTY_CALLBACK}.
-     */
+    /** Empty {@link ActionMode.Callback} that does nothing. Used for {@link #EMPTY_CALLBACK}. */
     private static class EmptyActionCallback extends ActionModeCallback {
         @Override
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {
@@ -69,11 +67,15 @@ public abstract class ActionModeCallbackHelper {
         public void onGetContentRect(ActionMode mode, View view, Rect outRect) {}
 
         @Override
-        public boolean onDropdownItemClicked(int groupId, int id, @Nullable Intent intent,
+        public boolean onDropdownItemClicked(
+                int groupId,
+                int id,
+                @Nullable Intent intent,
                 @Nullable View.OnClickListener clickListener) {
             return false;
         }
-    };
+    }
+    ;
 
     /**
      * @return {@code true} if action mode is started and in proper working state.
@@ -86,9 +88,7 @@ public abstract class ActionModeCallbackHelper {
      */
     public abstract void finishActionMode();
 
-    /**
-     * Dismisses the menu. No matter which type (i.e. ActionMode, Dropdown) is showing.
-     */
+    /** Dismisses the menu. No matter which type (i.e. ActionMode, Dropdown) is showing. */
     public abstract void dismissMenu();
 
     /**
@@ -147,10 +147,11 @@ public abstract class ActionModeCallbackHelper {
      */
     public abstract boolean onActionItemClicked(ActionMode mode, MenuItem item);
 
-    /**
-     * Callback for when a drop-down menu item is clicked.
-     */
-    public abstract boolean onDropdownItemClicked(int groupId, int id, @Nullable Intent intent,
+    /** Callback for when a drop-down menu item is clicked. */
+    public abstract boolean onDropdownItemClicked(
+            int groupId,
+            int id,
+            @Nullable Intent intent,
             @Nullable View.OnClickListener clickListener);
 
     /**

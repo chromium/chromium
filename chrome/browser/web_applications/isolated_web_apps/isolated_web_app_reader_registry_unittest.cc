@@ -163,8 +163,8 @@ class IsolatedWebAppReaderRegistryTest : public ::testing::Test {
         CreateTemporaryFileInDir(temp_dir_.GetPath(), &web_bundle_path_));
     EXPECT_TRUE(base::WriteFile(web_bundle_path_, kResponseBody));
 
-    in_process_data_decoder_.service()
-        .SetWebBundleParserFactoryBinderForTesting(base::BindRepeating(
+    in_process_data_decoder_.SetWebBundleParserFactoryBinder(
+        base::BindRepeating(
             &web_package::MockWebBundleParserFactory::AddReceiver,
             base::Unretained(parser_factory_.get())));
   }
@@ -813,6 +813,119 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestConcurrentRequests) {
         base::BindOnce(&IsolatedWebAppResponseReader::Response::ReadBody,
                        base::Unretained(&response)));
     EXPECT_EQ(kResponseBody, response_body);
+  }
+}
+
+// Check that we can close the cached reader that keeps
+// the signed web bundle file opened.
+TEST_F(IsolatedWebAppReaderRegistryTest, Close) {
+  network::ResourceRequest resource_request;
+  resource_request.url = kUrl;
+
+  base::test::TestFuture<ReadResult> read_response_future;
+  registry_->ReadResponse(web_bundle_path_, kWebBundleId, resource_request,
+                          read_response_future.GetCallback());
+
+  FulfillIntegrityBlock();
+  FulfillMetadata();
+  FulfillResponse(resource_request);
+
+  ASSERT_OK_AND_ASSIGN(IsolatedWebAppResponseReader::Response response,
+                       read_response_future.Take());
+  EXPECT_EQ(response.head()->response_code, 200);
+
+  base::test::TestFuture<void> close_future;
+  registry_->ClearCacheForPath(web_bundle_path_, close_future.GetCallback());
+  ASSERT_TRUE(close_future.Wait());
+
+  base::test::TestFuture<net::Error> error_future;
+  ReadResponseBody(
+      response.head()->payload_length,
+      base::BindOnce(&IsolatedWebAppResponseReader::Response::ReadBody,
+                     base::Unretained(&response)),
+      error_future.GetCallback());
+  EXPECT_EQ(net::ERR_FAILED, error_future.Take());
+
+  ASSERT_TRUE(base::DeleteFile(web_bundle_path_));
+}
+
+// Check the case when the close request is coming while the reader
+// is being created.
+TEST_F(IsolatedWebAppReaderRegistryTest, CloseOnArrival) {
+  network::ResourceRequest resource_request;
+  resource_request.url = kUrl;
+
+  base::test::TestFuture<ReadResult> read_response_future;
+  registry_->ReadResponse(web_bundle_path_, kWebBundleId, resource_request,
+                          read_response_future.GetCallback());
+
+  base::test::TestFuture<void> close_future;
+  registry_->ClearCacheForPath(web_bundle_path_, close_future.GetCallback());
+  FulfillIntegrityBlock();
+  FulfillMetadata();
+
+  ReadResult result = read_response_future.Take();
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error().type, ReadResponseError::Type::kOtherError);
+  EXPECT_EQ(result.error().message, "The bundle is waiting to close");
+
+  ASSERT_TRUE(close_future.Wait());
+
+  ASSERT_TRUE(base::DeleteFile(web_bundle_path_));
+}
+
+// Closing unopened signed web bundle should not cause problems.
+TEST_F(IsolatedWebAppReaderRegistryTest, CloseEmpty) {
+  base::test::TestFuture<void> close_future;
+  registry_->ClearCacheForPath(web_bundle_path_, close_future.GetCallback());
+
+  ASSERT_TRUE(close_future.Wait());
+}
+
+// Reopen of the closed file should work.
+TEST_F(IsolatedWebAppReaderRegistryTest, OpenCloseOpen) {
+  // Open the signed web bundle for the first time.
+  {
+    network::ResourceRequest resource_request;
+    resource_request.url = kUrl;
+
+    base::test::TestFuture<ReadResult> read_response_future;
+    registry_->ReadResponse(web_bundle_path_, kWebBundleId, resource_request,
+                            read_response_future.GetCallback());
+
+    FulfillIntegrityBlock();
+    FulfillMetadata();
+    FulfillResponse(resource_request);
+
+    ASSERT_OK_AND_ASSIGN(IsolatedWebAppResponseReader::Response response,
+                         read_response_future.Take());
+    EXPECT_EQ(response.head()->response_code, 200);
+  }
+
+  // Close the file.
+  {
+    base::test::TestFuture<void> close_future;
+    registry_->ClearCacheForPath(web_bundle_path_, close_future.GetCallback());
+    ASSERT_TRUE(close_future.Wait());
+  }
+
+  // After closing we should be able to reopen the signed web bundle without any
+  // issues.
+  {
+    network::ResourceRequest new_resource_request;
+    new_resource_request.url = kUrl;
+
+    base::test::TestFuture<ReadResult> new_read_response_future;
+    registry_->ReadResponse(web_bundle_path_, kWebBundleId,
+                            new_resource_request,
+                            new_read_response_future.GetCallback());
+
+    FulfillIntegrityBlock();
+    FulfillMetadata();
+    FulfillResponse(new_resource_request);
+    ASSERT_OK_AND_ASSIGN(IsolatedWebAppResponseReader::Response new_response,
+                         new_read_response_future.Take());
+    EXPECT_EQ(new_response.head()->response_code, 200);
   }
 }
 

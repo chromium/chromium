@@ -8,7 +8,6 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/trace_event.h"
@@ -249,7 +248,7 @@ void OutputStream::OnControllerError() {
   OnError();
 }
 
-void OutputStream::OnLog(base::StringPiece message) {
+void OutputStream::OnLog(std::string_view message) {
   // No sequence check: |log_| is thread-safe.
   if (log_) {
     log_->OnLogMessage(base::StringPrintf("%s", std::string(message).c_str()));

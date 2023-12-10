@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include <optional>
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
@@ -16,7 +17,6 @@
 #include "remoting/base/is_google_email.h"
 #include "remoting/host/config_file_watcher.h"
 #include "remoting/host/host_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace remoting {
 
@@ -26,7 +26,7 @@ bool GetUsageStatsConsent(bool* allowed, bool* set_by_policy) {
 
   std::string filename = GetHostHash() + ".json";
   base::FilePath config_path = GetConfigDirectoryPath().Append(filename);
-  absl::optional<base::Value::Dict> config(HostConfigFromJsonFile(config_path));
+  std::optional<base::Value::Dict> config(HostConfigFromJsonFile(config_path));
   if (!config.has_value()) {
     LOG(ERROR) << "No host config file found.";
     return false;

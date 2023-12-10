@@ -135,6 +135,9 @@ class APP_LIST_MODEL_EXPORT AppListItem {
   // Sets the `is_new_install` metadata field and notifies observers.
   void SetIsNewInstall(bool is_new_install);
 
+  // Sets the `app_status` metadata field and notifies observers.
+  void SetAppStatus(AppStatus app_status);
+
   AppStatus app_status() const { return metadata_->app_status; }
 
   void UpdateNotificationBadgeForTesting(bool has_badge) {

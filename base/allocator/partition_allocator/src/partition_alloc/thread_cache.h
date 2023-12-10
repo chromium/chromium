@@ -10,21 +10,21 @@
 #include <limits>
 #include <memory>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc-inl.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/compiler_specific.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/component_export.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/debug/debugging_buildflags.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/thread_annotations.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/time/time.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_config.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_forward.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_bucket_lookup.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_freelist_entry.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_lock.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_stats.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_tls.h"
 #include "build/build_config.h"
+#include "partition_alloc/partition_alloc-inl.h"
+#include "partition_alloc/partition_alloc_base/compiler_specific.h"
+#include "partition_alloc/partition_alloc_base/component_export.h"
+#include "partition_alloc/partition_alloc_base/debug/debugging_buildflags.h"
+#include "partition_alloc/partition_alloc_base/thread_annotations.h"
+#include "partition_alloc/partition_alloc_base/time/time.h"
+#include "partition_alloc/partition_alloc_buildflags.h"
+#include "partition_alloc/partition_alloc_config.h"
+#include "partition_alloc/partition_alloc_forward.h"
+#include "partition_alloc/partition_bucket_lookup.h"
+#include "partition_alloc/partition_freelist_entry.h"
+#include "partition_alloc/partition_lock.h"
+#include "partition_alloc/partition_stats.h"
+#include "partition_alloc/partition_tls.h"
 
 #if defined(ARCH_CPU_X86_64) && BUILDFLAG(HAS_64_BIT_POINTERS)
 #include <algorithm>
@@ -240,7 +240,7 @@ class ReentrancyGuard {
 class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ThreadCache {
  public:
   struct Bucket {
-    internal::EncodedNextFreelistEntry* freelist_head = nullptr;
+    internal::PartitionFreelistEntry* freelist_head = nullptr;
     // Want to keep sizeof(Bucket) small, using small types.
     uint8_t count = 0;
     std::atomic<uint8_t> limit{};  // Can be changed from another thread.
@@ -422,7 +422,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ThreadCache {
   void ResetForTesting();
   // Releases the entire freelist starting at |head| to the root.
   template <bool crash_on_corruption>
-  void FreeAfter(internal::EncodedNextFreelistEntry* head, size_t slot_size);
+  void FreeAfter(internal::PartitionFreelistEntry* head, size_t slot_size);
   static void SetGlobalLimits(PartitionRoot* root, float multiplier);
 
   // On some architectures, ThreadCache::Get() can be called and return
@@ -543,7 +543,7 @@ PA_ALWAYS_INLINE uintptr_t ThreadCache::GetFromCache(size_t bucket_index,
   }
 
   PA_DCHECK(bucket.count != 0);
-  internal::EncodedNextFreelistEntry* entry = bucket.freelist_head;
+  internal::PartitionFreelistEntry* entry = bucket.freelist_head;
   // TODO(lizeb): Consider removing once crbug.com/1382658 is fixed.
 #if BUILDFLAG(IS_CHROMEOS) && defined(ARCH_CPU_X86_64) && \
     BUILDFLAG(HAS_64_BIT_POINTERS)
@@ -561,7 +561,7 @@ PA_ALWAYS_INLINE uintptr_t ThreadCache::GetFromCache(size_t bucket_index,
   // corruption, we know the bucket size that lead to the crash, helping to
   // narrow down the search for culprit. |bucket| was touched just now, so this
   // does not introduce another cache miss.
-  internal::EncodedNextFreelistEntry* next =
+  internal::PartitionFreelistEntry* next =
       entry->GetNextForThreadCache<true>(bucket.slot_size);
   PA_DCHECK(entry != next);
   bucket.count--;
@@ -632,9 +632,8 @@ PA_ALWAYS_INLINE void ThreadCache::PutInBucket(Bucket& bucket,
 #endif  // PA_CONFIG(HAS_FREELIST_SHADOW_ENTRY) && defined(ARCH_CPU_X86_64) &&
         // BUILDFLAG(HAS_64_BIT_POINTERS)
 
-  auto* entry =
-      internal::EncodedNextFreelistEntry::EmplaceAndInitForThreadCache(
-          slot_start, bucket.freelist_head);
+  auto* entry = internal::PartitionFreelistEntry::EmplaceAndInitForThreadCache(
+      slot_start, bucket.freelist_head);
   bucket.freelist_head = entry;
   bucket.count++;
 }

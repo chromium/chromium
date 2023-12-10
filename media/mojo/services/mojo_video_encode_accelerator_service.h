@@ -80,10 +80,12 @@ class MEDIA_MOJO_EXPORT MojoVideoEncodeAcceleratorService
                                 base::UnsafeSharedMemoryRegion region) override;
   void RequestEncodingParametersChangeWithBitrate(
       const media::Bitrate& bitrate_allocation,
-      uint32_t framerate) override;
+      uint32_t framerate,
+      const absl::optional<gfx::Size>& size) override;
   void RequestEncodingParametersChangeWithLayers(
       const media::VideoBitrateAllocation& bitrate_allocation,
-      uint32_t framerate) override;
+      uint32_t framerate,
+      const absl::optional<gfx::Size>& size) override;
   void IsFlushSupported(IsFlushSupportedCallback callback) override;
   void Flush(FlushCallback callback) override;
 
@@ -116,6 +118,7 @@ class MEDIA_MOJO_EXPORT MojoVideoEncodeAcceleratorService
   // Cache of parameters for sanity verification.
   size_t output_buffer_size_;
   gfx::Size input_coded_size_;
+  bool supports_frame_size_change;
 
   base::LRUCache<int64_t, base::TimeTicks> timestamps_;
 

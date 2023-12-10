@@ -107,7 +107,7 @@ class ASH_EXPORT ToastManagerImpl : public ToastManager,
   void Resume() override;
 
   // Data of the toast which is currently shown. Empty if no toast is visible.
-  absl::optional<ToastData> current_toast_data_;
+  std::optional<ToastData> current_toast_data_;
 
   // Used to destroy the currently running toast if its duration is not
   // infinite. Also allows us to persist the toast on hover by pausing this

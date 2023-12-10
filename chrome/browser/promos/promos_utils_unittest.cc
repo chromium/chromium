@@ -7,7 +7,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/branding_buildflags.h"
-#include "chrome/browser/promos/promos_features.h"
 #include "chrome/browser/promos/promos_pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/testing_pref_service.h"
@@ -44,14 +43,6 @@ class IOSPasswordPromoOnDesktopTest : public ::testing::Test {
 
   // Getter for the testing profile.
   TestingProfile* profile() { return &profile_; }
-
-  // Enables the iOS Password promo feature with a "contextual-direct" param.
-  void EnableContextualDirectFeature() {
-    features()->InitWithFeaturesAndParameters(
-        {{promos_features::kIOSPromoPasswordBubble,
-          {{"activation", "contextual-direct"}}}},
-        {/* disabled_features */});
-  }
 
  private:
   content::BrowserTaskEnvironment task_environment_{
@@ -98,18 +89,6 @@ TEST_F(
 }
 
 // Tests that RecordIOSPasswordPromoUserInteractionHistogram records the proper
-// histogram for first impression and action get started button clicked.
-TEST_F(
-    IOSPasswordPromoOnDesktopTest,
-    RecordIOSPasswordPromoUserInteractionHistogramTestFirstImpressionGetStartedClicked) {
-  promos_utils::RecordIOSPasswordPromoUserInteractionHistogram(
-      1, DesktopIOSPasswordPromoAction::kGetStartedClicked);
-  histograms()->ExpectUniqueSample(
-      "IOS.DesktopPasswordPromo.FirstImpression.Action",
-      DesktopIOSPasswordPromoAction::kGetStartedClicked, 1);
-}
-
-// Tests that RecordIOSPasswordPromoUserInteractionHistogram records the proper
 // histogram for second impression and action dismissed.
 TEST_F(
     IOSPasswordPromoOnDesktopTest,
@@ -133,60 +112,16 @@ TEST_F(
       DesktopIOSPasswordPromoAction::kExplicitlyClosed, 1);
 }
 
-// Tests that RecordIOSPasswordPromoUserInteractionHistogram records the proper
-// histogram for second impression and action get started button clicked.
-TEST_F(
-    IOSPasswordPromoOnDesktopTest,
-    RecordIOSPasswordPromoUserInteractionHistogramTestSecondImpressionGetStartedClicked) {
-  promos_utils::RecordIOSPasswordPromoUserInteractionHistogram(
-      2, DesktopIOSPasswordPromoAction::kGetStartedClicked);
-  histograms()->ExpectUniqueSample(
-      "IOS.DesktopPasswordPromo.SecondImpression.Action",
-      DesktopIOSPasswordPromoAction::kGetStartedClicked, 1);
-}
-
-// Tests that IsActivationCriteriaOverriddenIOSPasswordPromo returns true when
-// the feature flag is set to override criteria.
-TEST_F(IOSPasswordPromoOnDesktopTest,
-       IsActivationCriteriaOverriddenIOSPasswordPromoTrueTest) {
-  features()->InitWithFeaturesAndParameters(
-      {{promos_features::kIOSPromoPasswordBubble,
-        {{"activation", "always-show-indirect"}}}},
-      {/* disabled_features */});
-  EXPECT_TRUE(promos_utils::IsActivationCriteriaOverriddenIOSPasswordPromo());
-}
-
-// Tests that IsActivationCriteriaOverriddenIOSPasswordPromo returns false when
-// the feature flag is set to not override criteria.
-TEST_F(IOSPasswordPromoOnDesktopTest,
-       IsActivationCriteriaOverriddenIOSPasswordPromoFalseTest) {
-  EnableContextualDirectFeature();
-  EXPECT_FALSE(promos_utils::IsActivationCriteriaOverriddenIOSPasswordPromo());
-}
-
 // Tests that ShouldShowIOSPasswordPromo returns true when no promo has yet been
-// shown and the feature flag is set.
+// shown.
 TEST_F(IOSPasswordPromoOnDesktopTest, ShouldShowIOSPasswordPromoTestTrue) {
-  EnableContextualDirectFeature();
   EXPECT_TRUE(promos_utils::ShouldShowIOSPasswordPromo(profile()));
-}
-
-// Tests that ShouldShowIOSPasswordPromo returns false when the feature flag is
-// not properly set.
-TEST_F(IOSPasswordPromoOnDesktopTest,
-       ShouldShowIOSPasswordPromoTestFalseWrongFeatureFlag) {
-  features()->InitWithFeaturesAndParameters(
-      {{promos_features::kIOSPromoPasswordBubble,
-        {{"activation", "always-show-indirect"}}}},
-      {/* disabled_features */});
-  EXPECT_FALSE(promos_utils::ShouldShowIOSPasswordPromo(profile()));
 }
 
 // Tests that ShouldShowIOSPasswordPromo returns false when the user has already
 // seen 2 promos.
 TEST_F(IOSPasswordPromoOnDesktopTest,
        ShouldShowIOSPasswordPromoTestFalseTooManyImpressions) {
-  EnableContextualDirectFeature();
   prefs()->SetInteger(promos_prefs::kiOSPasswordPromoImpressionsCounter, 2);
   EXPECT_FALSE(promos_utils::ShouldShowIOSPasswordPromo(profile()));
 }
@@ -195,7 +130,6 @@ TEST_F(IOSPasswordPromoOnDesktopTest,
 // impression is too recent.
 TEST_F(IOSPasswordPromoOnDesktopTest,
        ShouldShowIOSPasswordPromoTestFalseLastImpressionTooRecent) {
-  EnableContextualDirectFeature();
   prefs()->SetTime(promos_prefs::kiOSPasswordPromoLastImpressionTimestamp,
                    base::Time::Now());
   EXPECT_FALSE(promos_utils::ShouldShowIOSPasswordPromo(profile()));
@@ -205,7 +139,6 @@ TEST_F(IOSPasswordPromoOnDesktopTest,
 // opted-out from the promo.
 TEST_F(IOSPasswordPromoOnDesktopTest,
        ShouldShowIOSPasswordPromoTestFalseUserOptedOut) {
-  EnableContextualDirectFeature();
   prefs()->SetBoolean(promos_prefs::kiOSPasswordPromoOptOut, true);
   EXPECT_FALSE(promos_utils::ShouldShowIOSPasswordPromo(profile()));
 }
@@ -290,56 +223,5 @@ TEST_F(IOSPasswordPromoOnDesktopTest,
   histograms()->ExpectBucketCount(
       "IOS.DesktopPasswordPromo.Shown",
       promos_utils::DesktopIOSPasswordPromoImpression::kSecondImpression, 1);
-}
-
-// Tests that IsDirectVariantIOSPasswordPromo returns true when the user is in a
-// direct variant of the feature flag.
-TEST_F(IOSPasswordPromoOnDesktopTest, IsDirectVariantIOSPasswordPromoTestTrue) {
-  EnableContextualDirectFeature();
-  EXPECT_TRUE(promos_utils::IsDirectVariantIOSPasswordPromo());
-}
-
-// Tests that IsDirectVariantIOSPasswordPromo returns true since feature is
-// enabled by default.
-TEST_F(IOSPasswordPromoOnDesktopTest,
-       IsDirectVariantIOSPasswordPromoTestFalseFeatureInactive) {
-  EXPECT_TRUE(promos_utils::IsDirectVariantIOSPasswordPromo());
-}
-
-// Tests that IsDirectVariantIOSPasswordPromo returns false when the user's
-// feature is set to an indirect variant.
-TEST_F(IOSPasswordPromoOnDesktopTest,
-       IsDirectVariantIOSPasswordPromoTestFalseIndirectActive) {
-  features()->InitWithFeaturesAndParameters(
-      {{promos_features::kIOSPromoPasswordBubble,
-        {{"activation", "always-show-indirect"}}}},
-      {/* disabled_features */});
-  EXPECT_FALSE(promos_utils::IsDirectVariantIOSPasswordPromo());
-}
-
-// Tests that IsIndirectVariantIOSPasswordPromo returns true when the user is in
-// an indirect variant of the feature flag.
-TEST_F(IOSPasswordPromoOnDesktopTest,
-       IsIndirectVariantIOSPasswordPromoTestTrue) {
-  features()->InitWithFeaturesAndParameters(
-      {{promos_features::kIOSPromoPasswordBubble,
-        {{"activation", "always-show-indirect"}}}},
-      {/* disabled_features */});
-  EXPECT_TRUE(promos_utils::IsIndirectVariantIOSPasswordPromo());
-}
-
-// Tests that IsIndirectVariantIOSPasswordPromo returns false when the feature
-// is not active.
-TEST_F(IOSPasswordPromoOnDesktopTest,
-       IsIndirectVariantIOSPasswordPromoTestFalseFeatureInactive) {
-  EXPECT_FALSE(promos_utils::IsIndirectVariantIOSPasswordPromo());
-}
-
-// Tests that IsIndirectVariantIOSPasswordPromo returns false when the user's
-// feature is set to a direct variant.
-TEST_F(IOSPasswordPromoOnDesktopTest,
-       IsIndirectVariantIOSPasswordPromoTestFalseDirectActive) {
-  EnableContextualDirectFeature();
-  EXPECT_FALSE(promos_utils::IsIndirectVariantIOSPasswordPromo());
 }
 }  // namespace promos_utils

@@ -1,0 +1,109 @@
+<style include="settings-shared shared-style">
+  [slot=header] {
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+    font-weight: 400;
+    height: 48px;
+    margin-inline-start: 24px;
+  }
+
+  .app-title {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .app-icon {
+    height: 36px;
+    width: 36px;
+    margin-inline-end: 12px;
+  }
+
+  [slot=body] {
+    display: flex;
+    flex-direction: column;
+    height: 350px;
+    overflow: auto;
+  }
+
+  cr-search-field {
+    margin-bottom: 8px;
+  }
+
+  iron-list > :not([selected]):hover {
+    background-color: var(--cros-menu-item-bg-color-focus);
+  }
+  iron-list > [selected]:not(.no-outline):focus {
+    background-color: transparent;
+  }
+
+  .label {
+    padding-bottom: 8px;
+    padding-top: 8px;
+  }
+</style>
+
+<cr-dialog id="dialog" close-text="$i18n{close}" show-on-attach>
+  <div slot="title">$i18n{appLanguageDialogTitle}</div>
+  <div slot="header">
+    <img class="app-icon" src="[[iconUrlFromApp_(app)]]"
+        alt="[[app.title]] app icon." aria-hidden="true">
+    <div class="app-title">[[app.title]]</div>
+  </div>
+  <div id="dialogBody" slot="body" scrollable>
+    <cr-search-field label="$i18n{appLanguageDialogSearchPlaceholderText}"
+        id="search"
+        clear-label="$i18n{clearSearch}" autofocus
+        on-search-changed="onSearchChanged_" on-keydown="onKeydown_">
+    </cr-search-field>
+    <template is="dom-if"
+        if="[[!isSearchQueryPresent(searchQuery_.length)]]">
+      <div class="label">
+        $i18n{appLanguageDialogSuggestedLabel}
+      </div>
+      <iron-list id="suggestedItemsList" items="[[suggestedLanguages_]]"
+          scroll-target="dialogBody">
+        <template>
+          <app-language-selection-item
+              item="[[item]]"
+              on-click="toggleSelection_"
+              tab-index="[[tabIndex]]"
+              selected$="[[isItemSelected_(item, selectedLanguage_)]]">
+          </app-language-selection-item>
+        </template>
+      </iron-list>
+    </template>
+    <template is="dom-if"
+        if="[[showFilteredLanguages(filteredLanguages_.length)]]">
+      <div class="label" hidden="[[isSearchQueryPresent(searchQuery_.length)]]">
+        $i18n{appLanguageDialogAllLanguagesLabel}
+      </div>
+      <iron-list id="filteredItemsList" items="[[filteredLanguages_]]"
+          scroll-target="dialog-body">
+        <template>
+          <app-language-selection-item
+              item="[[item]]"
+              on-click="toggleSelection_"
+              tab-index="[[tabIndex]]"
+              selected$="[[isItemSelected_(item, selectedLanguage_)]]">
+          </app-language-selection-item>
+        </template>
+      </iron-list>
+    </template>
+    <div id="noSearchResults" class="centered-message"
+        hidden="[[!isSearchResultEmpty_(searchQuery_.length)]]">
+      $i18n{noSearchResults}
+    </div>
+  </div>
+  <div slot="button-container">
+    <cr-button class="cancel-button" on-click="onCancelButtonClick_">
+      $i18n{cancel}
+    </cr-button>
+    <cr-button class="action-button"
+        disabled="[[shouldDisableActionButton_(selectedLanguage_)]]"
+        on-click="onActionButtonClick_">
+      $i18n{appLanguageDialogUpdateButtonText}
+    </cr-button>
+  </div>
+</cr-dialog>

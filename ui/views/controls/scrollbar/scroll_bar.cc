@@ -524,7 +524,7 @@ absl::optional<int> ScrollBar::GetDesiredScrollOffset(ScrollAmount amount) {
   }
 }
 
-BEGIN_METADATA(ScrollBar, View)
+BEGIN_METADATA(ScrollBar)
 ADD_READONLY_PROPERTY_METADATA(int, MaxPosition)
 ADD_READONLY_PROPERTY_METADATA(int, MinPosition)
 ADD_READONLY_PROPERTY_METADATA(int, Position)

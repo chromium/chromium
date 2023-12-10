@@ -118,12 +118,13 @@ class EduAccountLoginHandler : public content::WebUIMessageHandler,
 
   // ListFamilyMembers fetch handlers.
   void OnListFamilyMembersResponse(
-      supervised_user::ProtoFetcherStatus status,
+      const supervised_user::ProtoFetcherStatus& status,
       std::unique_ptr<kids_chrome_management::ListFamilyMembersResponse>
           response);
   void OnListFamilyMembersSuccess(
       const kids_chrome_management::ListFamilyMembersResponse& response);
-  void OnListFamilyMembersFailure(supervised_user::ProtoFetcherStatus status);
+  void OnListFamilyMembersFailure(
+      const supervised_user::ProtoFetcherStatus& status);
 
   // ProfileImageFetcher callback
   void OnParentProfileImagesFetched(

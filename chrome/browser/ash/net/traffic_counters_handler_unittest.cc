@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <optional>
 #include <string>
 
 #include "base/functional/bind.h"
@@ -24,7 +25,6 @@
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
 namespace ash {

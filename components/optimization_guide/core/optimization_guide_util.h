@@ -14,6 +14,7 @@
 #include "components/optimization_guide/core/optimization_guide_permissions_util.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/proto/common_types.pb.h"
+#include "components/optimization_guide/proto/model_execution.pb.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -39,9 +40,24 @@ namespace optimization_guide {
 
 enum class OptimizationGuideDecision;
 
+// Returns the equivalent string name for a `feature`. The returned string can
+// be used to index persistent data (e.g., prefs, histograms etc.).
+std::string_view GetStringNameForModelExecutionFeature(
+    proto::ModelExecutionFeature feature);
+
 // Returns false if the host is an IP address, localhosts, or an invalid
 // host that is not supported by the remote optimization guide.
 bool IsHostValidToFetchFromRemoteOptimizationGuide(const std::string& host);
+
+// Returns the hashed client id with the feature and day.
+int64_t GetHashedModelQualityClientId(proto::ModelExecutionFeature feature,
+                                      base::Time day,
+                                      int64_t client_id);
+
+// Creates a new client id if not persisted to prefs. Returns a different ID for
+// different `feature` for each day.
+int64_t GetOrCreateModelQualityClientId(proto::ModelExecutionFeature feature,
+                                        PrefService* pref_service);
 
 // Validates that the metadata stored in |any_metadata_| is of the same type
 // and is parseable as |T|. Will return metadata if all checks pass.

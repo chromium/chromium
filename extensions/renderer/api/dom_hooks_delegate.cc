@@ -70,8 +70,7 @@ v8::Local<v8::Value> DOMHooksDelegate::OpenOrClosedShadowRoot(
   if (shadow_root.IsNull())
     return v8::Null(script_context->isolate());
 
-  return shadow_root.ToV8Value(script_context->v8_context()->Global(),
-                               script_context->isolate());
+  return shadow_root.ToV8Value(script_context->isolate());
 }
 
 }  // namespace extensions

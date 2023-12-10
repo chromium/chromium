@@ -8,9 +8,7 @@ import android.os.Handler;
 
 import java.lang.reflect.InvocationHandler;
 
-/**
- * Boundary interface for WebMessagePort.
- */
+/** Boundary interface for WebMessagePort. */
 public interface WebMessagePortBoundaryInterface {
     void postMessage(/* WebMessage */ InvocationHandler message);
 

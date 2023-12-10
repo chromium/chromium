@@ -26,6 +26,7 @@
 #include "ash/ime/ime_controller_impl.h"
 #include "ash/keyboard/keyboard_controller_impl.h"
 #include "ash/media/media_controller_impl.h"
+#include "ash/picker/picker_controller.h"
 #include "ash/public/cpp/app_types_util.h"
 #include "ash/public/cpp/assistant/assistant_state.h"
 #include "ash/public/cpp/new_window_delegate.h"
@@ -65,6 +66,7 @@
 #include "ash/wm/screen_pinning_controller.h"
 #include "ash/wm/snap_group/snap_group.h"
 #include "ash/wm/snap_group/snap_group_controller.h"
+#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_multitask_menu_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_window_manager.h"
 #include "ash/wm/window_cycle/window_cycle_controller.h"
@@ -184,7 +186,7 @@ display::Display::Rotation GetNextRotationInTabletMode(
     int64_t display_id,
     display::Display::Rotation current) {
   Shell* shell = Shell::Get();
-  DCHECK(shell->tablet_mode_controller()->InTabletMode());
+  DCHECK(display::Screen::GetScreen()->InTabletMode());
 
   if (!display::HasInternalDisplay() ||
       display_id != display::Display::InternalDisplayId()) {
@@ -261,15 +263,14 @@ int64_t GetDisplayIdForRotation() {
 
 void RotateScreenImpl() {
   auto* shell = Shell::Get();
-  const bool in_tablet_mode =
-      Shell::Get()->tablet_mode_controller()->InTabletMode();
   const int64_t display_id = GetDisplayIdForRotation();
   const display::ManagedDisplayInfo& display_info =
       shell->display_manager()->GetDisplayInfo(display_id);
   const auto active_rotation = display_info.GetActiveRotation();
   const auto next_rotation =
-      in_tablet_mode ? GetNextRotationInTabletMode(display_id, active_rotation)
-                     : GetNextRotationInClamshell(active_rotation);
+      display::Screen::GetScreen()->InTabletMode()
+          ? GetNextRotationInTabletMode(display_id, active_rotation)
+          : GetNextRotationInClamshell(active_rotation);
   if (active_rotation == next_rotation)
     return;
 
@@ -366,22 +367,6 @@ void ShowToast(const std::string& id,
   Shell::Get()->toast_manager()->Show(std::move(toast));
 }
 
-void HandleToggleSystemTrayBubbleInternal(bool focus_message_center) {
-  aura::Window* target_root = Shell::GetRootWindowForNewWindows();
-  UnifiedSystemTray* tray = RootWindowController::ForWindow(target_root)
-                                ->GetStatusAreaWidget()
-                                ->unified_system_tray();
-  if (tray->IsBubbleShown()) {
-    tray->CloseBubble();
-  } else {
-    tray->ShowBubble();
-    tray->ActivateBubble();
-
-    if (focus_message_center)
-      tray->FocusMessageCenter(false, true);
-  }
-}
-
 // Enters capture mode image type with |source|.
 void EnterImageCaptureMode(CaptureModeSource source,
                            CaptureModeEntryType entry_type) {
@@ -459,7 +444,7 @@ bool CanCreateNewIncognitoWindow() {
   // Guest mode does not use incognito windows. The browser may have other
   // restrictions on incognito mode (e.g. enterprise policy) but those are rare.
   // For non-guest mode, consume the key and defer the decision to the browser.
-  absl::optional<user_manager::UserType> user_type =
+  std::optional<user_manager::UserType> user_type =
       Shell::Get()->session_controller()->GetUserType();
   return user_type && *user_type != user_manager::USER_TYPE_GUEST;
 }
@@ -616,7 +601,7 @@ bool CanToggleMultitaskMenu() {
   if (!window) {
     return false;
   }
-  if (Shell::Get()->tablet_mode_controller()->InTabletMode()) {
+  if (display::Screen::GetScreen()->InTabletMode()) {
     // In tablet mode, the window just has to be able to maximize.
     return WindowState::Get(window)->CanMaximize();
   }
@@ -1118,8 +1103,12 @@ void ShiftPrimaryDisplay() {
       primary_display_iter->id(), true /* throttle */);
 }
 
-void ShowEmojiPicker() {
-  ui::ShowEmojiPanel();
+void ShowEmojiPicker(const base::TimeTicks accelerator_timestamp) {
+  if (auto* picker_controller = Shell::Get()->picker_controller()) {
+    picker_controller->ToggleWidget(accelerator_timestamp);
+  } else {
+    ui::ShowEmojiPanel();
+  }
 }
 
 void ShowKeyboardShortcutViewer() {
@@ -1564,10 +1553,6 @@ void ToggleResizeLockMenu() {
 }
 
 void ToggleMessageCenterBubble() {
-  if (!features::IsQsRevampEnabled()) {
-    HandleToggleSystemTrayBubbleInternal(/*focus_message_center=*/true);
-    return;
-  }
   aura::Window* target_root = Shell::GetRootWindowForNewWindows();
   NotificationCenterTray* tray = RootWindowController::ForWindow(target_root)
                                      ->GetStatusAreaWidget()
@@ -1598,10 +1583,11 @@ void ToggleMirrorMode() {
 void ToggleMultitaskMenu() {
   aura::Window* window = GetTargetWindow();
   DCHECK(window);
-  if (auto* tablet_mode_controller = Shell::Get()->tablet_mode_controller();
-      tablet_mode_controller->InTabletMode()) {
+  if (display::Screen::GetScreen()->InTabletMode()) {
     auto* multitask_menu_controller =
-        tablet_mode_controller->tablet_mode_window_manager()
+        Shell::Get()
+            ->tablet_mode_controller()
+            ->tablet_mode_window_manager()
             ->tablet_mode_multitask_menu_controller();
     // Does nothing if the menu is already shown.
     multitask_menu_controller->ShowMultitaskMenu(window);
@@ -1651,7 +1637,16 @@ void ToggleStylusTools() {
 }
 
 void ToggleSystemTrayBubble() {
-  HandleToggleSystemTrayBubbleInternal(false /*focus_message_center*/);
+  aura::Window* target_root = Shell::GetRootWindowForNewWindows();
+  UnifiedSystemTray* tray = RootWindowController::ForWindow(target_root)
+                                ->GetStatusAreaWidget()
+                                ->unified_system_tray();
+  if (tray->IsBubbleShown()) {
+    tray->CloseBubble();
+  } else {
+    tray->ShowBubble();
+    tray->ActivateBubble();
+  }
 }
 
 void ToggleUnifiedDesktop() {
@@ -1686,24 +1681,12 @@ void UnpinWindow() {
 
 void VolumeDown() {
   auto* audio_handler = CrasAudioHandler::Get();
-  if (features::IsQsRevampEnabled()) {
-    // Only plays the audio if unmuted.
-    if (!audio_handler->IsOutputMuted()) {
-      AcceleratorController::PlayVolumeAdjustmentSound();
-    }
-    audio_handler->DecreaseOutputVolumeByOneStep(kStepPercentage);
-    return;
-  }
 
-  if (audio_handler->IsOutputMuted()) {
-    audio_handler->SetOutputVolumePercent(0);
-  } else {
-    if (audio_handler->IsOutputVolumeBelowDefaultMuteLevel())
-      audio_handler->SetOutputMute(true);
-    else
-      AcceleratorController::PlayVolumeAdjustmentSound();
-    audio_handler->DecreaseOutputVolumeByOneStep(kStepPercentage);
+  // Only plays the audio if unmuted.
+  if (!audio_handler->IsOutputMuted()) {
+    AcceleratorController::PlayVolumeAdjustmentSound();
   }
+  audio_handler->DecreaseOutputVolumeByOneStep(kStepPercentage);
 }
 
 void VolumeMute() {
@@ -1722,27 +1705,11 @@ void VolumeMuteToggle() {
 void VolumeUp() {
   auto* audio_handler = CrasAudioHandler::Get();
   bool play_sound = false;
-  if (features::IsQsRevampEnabled()) {
-    if (audio_handler->IsOutputMuted()) {
-      audio_handler->SetOutputMute(false);
-    }
-    play_sound = audio_handler->GetOutputVolumePercent() != 100;
-    audio_handler->IncreaseOutputVolumeByOneStep(kStepPercentage);
-
-    if (play_sound) {
-      AcceleratorController::PlayVolumeAdjustmentSound();
-    }
-    return;
-  }
-
   if (audio_handler->IsOutputMuted()) {
     audio_handler->SetOutputMute(false);
-    audio_handler->AdjustOutputVolumeToAudibleLevel();
-    play_sound = true;
-  } else {
-    play_sound = audio_handler->GetOutputVolumePercent() != 100;
-    audio_handler->IncreaseOutputVolumeByOneStep(kStepPercentage);
   }
+  play_sound = audio_handler->GetOutputVolumePercent() != 100;
+  audio_handler->IncreaseOutputVolumeByOneStep(kStepPercentage);
 
   if (play_sound) {
     AcceleratorController::PlayVolumeAdjustmentSound();
@@ -1755,7 +1722,7 @@ void WindowMinimize() {
 
 void WindowSnap(AcceleratorAction action) {
   Shell* shell = Shell::Get();
-  const bool in_tablet = shell->tablet_mode_controller()->InTabletMode();
+  const bool in_tablet = display::Screen::GetScreen()->InTabletMode();
   const bool in_overview = shell->overview_controller()->InOverviewSession();
   if (action == AcceleratorAction::kWindowCycleSnapLeft) {
     if (in_tablet) {

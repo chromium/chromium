@@ -24,5 +24,6 @@ public interface SurfaceScope {
     }
 
     default void replaceDataStoreEntry(String key, byte[] data) {}
+
     default void removeDataStoreEntry(String key) {}
 }

@@ -28,7 +28,9 @@ public abstract class ContentSettingsObserver {
     }
 
     @CalledByNative
-    private void onContentSettingChanged(String primaryPattern, String secondaryPattern,
+    private void onContentSettingChanged(
+            String primaryPattern,
+            String secondaryPattern,
             @ContentSettingsType int contentSettingsType) {
         onContentSettingChanged(
                 primaryPattern, secondaryPattern, new ContentSettingsTypeSet(contentSettingsType));
@@ -40,12 +42,12 @@ public abstract class ContentSettingsObserver {
      * @param secondaryPattern The secondary pattern for the changed content settings.
      * @param contentSettingsTypeSet The {@link ContentSettingsTypeSet} that is being changed.
      */
-    protected abstract void onContentSettingChanged(String primaryPattern, String secondaryPattern,
+    protected abstract void onContentSettingChanged(
+            String primaryPattern,
+            String secondaryPattern,
             ContentSettingsTypeSet contentSettingsTypeSet);
 
-    /**
-     * Destroy the linked native object and stop listen to content settings changes.
-     */
+    /** Destroy the linked native object and stop listen to content settings changes. */
     public void destroy() {
         assert !mIsDestroyed : "This observer is already destroyed.";
         mIsDestroyed = true;
@@ -55,6 +57,7 @@ public abstract class ContentSettingsObserver {
     @NativeMethods
     interface Natives {
         long init(ContentSettingsObserver caller, BrowserContextHandle contextHandle);
+
         void destroy(long nativeAndroidObserver, ContentSettingsObserver caller);
     }
 }

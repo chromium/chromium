@@ -171,4 +171,4 @@ class ProfileSelections {
   absl::optional<ProfileSelection> ash_internals_profile_selection_;
 };
 
-#endif  // !CHROME_BROWSER_PROFILES_PROFILE_SELECTIONS_H_
+#endif  // CHROME_BROWSER_PROFILES_PROFILE_SELECTIONS_H_

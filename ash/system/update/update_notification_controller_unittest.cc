@@ -4,6 +4,8 @@
 
 #include "ash/system/update/update_notification_controller.h"
 
+#include <optional>
+
 #include "ash/public/cpp/login_types.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/public/cpp/update_types.h"
@@ -23,7 +25,6 @@
 #include "build/branding_buildflags.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/vector_icons/vector_icons.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/devicetype_utils.h"

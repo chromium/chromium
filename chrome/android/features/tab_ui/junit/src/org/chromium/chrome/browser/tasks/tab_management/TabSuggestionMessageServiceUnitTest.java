@@ -20,6 +20,7 @@ import static org.chromium.chrome.browser.tasks.tab_management.suggestions.TabSu
 import static org.chromium.chrome.browser.tasks.tab_management.suggestions.TabSuggestionFeedback.TabSuggestionResponse.NOT_CONSIDERED;
 
 import android.content.Context;
+import android.view.View;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -44,7 +45,7 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
-import org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorAction.ActionDelegate;
+import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.ActionDelegate;
 import org.chromium.chrome.browser.tasks.tab_management.suggestions.TabContext;
 import org.chromium.chrome.browser.tasks.tab_management.suggestions.TabSuggestion;
 import org.chromium.chrome.browser.tasks.tab_management.suggestions.TabSuggestionFeedback;
@@ -84,11 +85,12 @@ public class TabSuggestionMessageServiceUnitTest {
     @Mock TabModel mTabModel;
     @Mock TabModelFilterProvider mTabModelFilterProvider;
     @Mock TabGroupModelFilter mTabGroupModelFilter;
-    @Mock TabSelectionEditorCoordinator.TabSelectionEditorController mTabSelectionEditorController;
+    @Mock TabListEditorCoordinator.TabListEditorController mTabListEditorController;
     @Mock Callback<TabSuggestionFeedback> mTabSuggestionFeedbackCallback;
     @Mock MessageService.MessageObserver mMessageObserver;
     @Mock SelectionDelegate<Integer> mSelectionDelegate;
     @Mock ActionDelegate mActionDelegate;
+    @Mock View mCustomCardView;
 
     @Captor ArgumentCaptor<TabSuggestionFeedback> mTabSuggestionFeedbackCallbackArgumentCaptor;
 
@@ -129,7 +131,10 @@ public class TabSuggestionMessageServiceUnitTest {
 
         mMessageService =
                 new TabSuggestionMessageService(
-                        mContext, mTabModelSelector, () -> mTabSelectionEditorController);
+                        mContext,
+                        mTabModelSelector,
+                        () -> mTabListEditorController,
+                        mCustomCardView);
         mMessageService.addObserver(mMessageObserver);
     }
 
@@ -141,15 +146,15 @@ public class TabSuggestionMessageServiceUnitTest {
                         Arrays.asList(mTab1, mTab2), TabSuggestion.TabSuggestionAction.CLOSE);
 
         mMessageService.review(tabSuggestion, mTabSuggestionFeedbackCallback);
-        verify(mTabSelectionEditorController).configureToolbarWithMenuItems(any(), any());
-        verify(mTabSelectionEditorController)
+        verify(mTabListEditorController).configureToolbarWithMenuItems(any(), any());
+        verify(mTabListEditorController)
                 .show(eq(Arrays.asList(mTab1, mTab2, mTab3)), eq(2), eq(null));
 
         tabSuggestion =
                 prepareTabSuggestion(
                         Arrays.asList(mTab1, mTab3), TabSuggestion.TabSuggestionAction.CLOSE);
         mMessageService.review(tabSuggestion, mTabSuggestionFeedbackCallback);
-        verify(mTabSelectionEditorController)
+        verify(mTabListEditorController)
                 .show(eq(Arrays.asList(mTab1, mTab3, mTab2)), eq(2), eq(null));
     }
 
@@ -166,10 +171,10 @@ public class TabSuggestionMessageServiceUnitTest {
         tabSet.add(TAB1_ID);
         tabSet.add(TAB2_ID);
         doReturn(tabSet).when(mSelectionDelegate).getSelectedItems();
-        TabSelectionEditorAction action =
+        TabListEditorAction action =
                 mMessageService.getAction(tabSuggestion, mTabSuggestionFeedbackCallback);
         action.configure(
-                mTabModelSelector,
+                () -> mTabGroupModelFilter,
                 mSelectionDelegate,
                 mActionDelegate,
                 /* editorSupportsActionOnRelatedTabs= */ false);
@@ -193,7 +198,7 @@ public class TabSuggestionMessageServiceUnitTest {
         TabSuggestion tabSuggestion =
                 prepareTabSuggestion(suggestedTabs, TabSuggestion.TabSuggestionAction.CLOSE);
 
-        TabSelectionEditorCoordinator.TabSelectionEditorNavigationProvider navigationProvider =
+        TabListEditorCoordinator.TabListEditorNavigationProvider navigationProvider =
                 mMessageService.getNavigationProvider(
                         tabSuggestion, mTabSuggestionFeedbackCallback);
         navigationProvider.goBack();
@@ -204,61 +209,6 @@ public class TabSuggestionMessageServiceUnitTest {
                 mTabSuggestionFeedbackCallbackArgumentCaptor.getValue();
         assertEquals(tabSuggestion, capturedFeedback.tabSuggestion);
         assertEquals(DISMISSED, capturedFeedback.tabSuggestionResponse);
-    }
-
-    // Tests for grouping suggestion
-    @Test
-    public void testReviewHandler_groupSuggestion() {
-        TabSuggestion tabSuggestion =
-                prepareTabSuggestion(
-                        Arrays.asList(mTab1, mTab2), TabSuggestion.TabSuggestionAction.GROUP);
-
-        mMessageService.review(tabSuggestion, mTabSuggestionFeedbackCallback);
-        verify(mTabSelectionEditorController).configureToolbarWithMenuItems(any(), any());
-        verify(mTabSelectionEditorController)
-                .show(eq(Arrays.asList(mTab1, mTab2, mTab3)), eq(2), eq(null));
-
-        tabSuggestion =
-                prepareTabSuggestion(
-                        Arrays.asList(mTab1, mTab3), TabSuggestion.TabSuggestionAction.GROUP);
-        mMessageService.review(tabSuggestion, mTabSuggestionFeedbackCallback);
-        verify(mTabSelectionEditorController)
-                .show(eq(Arrays.asList(mTab1, mTab3, mTab2)), eq(2), eq(null));
-    }
-
-    @Test
-    public void testGroupingSuggestionActionHandler() {
-        List<Tab> suggestedTabs = Arrays.asList(mTab1, mTab2);
-        List<Integer> suggestedTabIds = Arrays.asList(TAB1_ID, TAB2_ID);
-        TabSuggestion tabSuggestion =
-                prepareTabSuggestion(suggestedTabs, TabSuggestion.TabSuggestionAction.GROUP);
-
-        assertEquals(3, mTabModelSelector.getCurrentModel().getCount());
-
-        LinkedHashSet<Integer> tabSet = new LinkedHashSet<>();
-        tabSet.add(TAB1_ID);
-        tabSet.add(TAB2_ID);
-        doReturn(tabSet).when(mSelectionDelegate).getSelectedItems();
-        TabSelectionEditorAction action =
-                mMessageService.getAction(tabSuggestion, mTabSuggestionFeedbackCallback);
-        action.configure(
-                mTabModelSelector,
-                mSelectionDelegate,
-                mActionDelegate,
-                /* editorSupportsActionOnRelatedTabs= */ false);
-        action.perform();
-
-        verify(mTabSuggestionFeedbackCallback)
-                .onResult(mTabSuggestionFeedbackCallbackArgumentCaptor.capture());
-        verify(mTabGroupModelFilter)
-                .mergeListOfTabsToGroup(eq(suggestedTabs), eq(mTab2), eq(true), eq(true));
-
-        TabSuggestionFeedback capturedFeedback =
-                mTabSuggestionFeedbackCallbackArgumentCaptor.getValue();
-        assertEquals(tabSuggestion, capturedFeedback.tabSuggestion);
-        assertEquals(ACCEPTED, capturedFeedback.tabSuggestionResponse);
-        assertEquals(suggestedTabIds, capturedFeedback.selectedTabIds);
-        assertEquals(3, capturedFeedback.totalTabCount);
     }
 
     @Test
@@ -301,14 +251,10 @@ public class TabSuggestionMessageServiceUnitTest {
         TabSuggestion tabSuggestion2 =
                 prepareTabSuggestion(
                         Arrays.asList(mTab1, mTab2), TabSuggestion.TabSuggestionAction.CLOSE);
-        TabSuggestion tabSuggestion3 =
-                prepareTabSuggestion(
-                        Arrays.asList(mTab1, mTab2), TabSuggestion.TabSuggestionAction.GROUP);
 
         mMessageService.onNewSuggestion(
-                Arrays.asList(tabSuggestion, tabSuggestion2, tabSuggestion3),
-                mTabSuggestionFeedbackCallback);
-        inOrder.verify(mMessageObserver, times(3))
+                Arrays.asList(tabSuggestion, tabSuggestion2), mTabSuggestionFeedbackCallback);
+        inOrder.verify(mMessageObserver, times(2))
                 .messageReady(
                         eq(MessageService.MessageType.TAB_SUGGESTION),
                         any(TabSuggestionMessageService.TabSuggestionMessageData.class));

@@ -149,7 +149,8 @@ class VaapiVideoDecoderDelegate {
   ProtectedSessionUpdateCB on_protected_session_update_cb_;
   EncryptionScheme encryption_scheme_;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  chromeos::ChromeOsCdmContext* chromeos_cdm_context_{nullptr};  // Not owned.
+  // Not owned.
+  raw_ptr<chromeos::ChromeOsCdmContext> chromeos_cdm_context_ = nullptr;
   EncryptionScheme last_used_encryption_scheme_{EncryptionScheme::kUnencrypted};
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   ProtectedSessionState protected_session_state_;

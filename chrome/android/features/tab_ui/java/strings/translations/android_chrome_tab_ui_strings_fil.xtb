@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="fil">
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> sa iyong mga tab ang hindi nagamit nitong nakaraan. Isara ang mga ito?</translation>
+<translation id="1155815720264022949">Gustong isara ang mga lumang tab?</translation>
 <translation id="1215127405478249895">Suriin ang mga tab</translation>
 <translation id="125153950246128346">I-tap para tumingin ng iba pang tab</translation>
 <translation id="1499635324672558517">Isara ang lahat ng tab na Incognito?</translation>
@@ -46,9 +47,11 @@
 <translation id="5073204694187207510">Itago ang fullscreen grid</translation>
 <translation id="5076161749301278626">Tingnan ang mga review ng store?</translation>
 <translation id="5082793167783849073">Mabilis na paghambing-hambingin ang mga page sa pamamagitan ng paggawa ng pangkat. Para magsimula, pindutin nang matagal ang isang link.</translation>
+<translation id="5303274951032363933">{TABS_COUNT,plural, =1{Mayroon kang <ph name="TABS_COUNT_ONE" /> tab na hindi mo ginamit kamakailan}one{Mayroon kang <ph name="TABS_COUNT_MANY" /> tab na hindi mo ginamit kamakailan}other{Mayroon kang <ph name="TABS_COUNT_MANY" /> na tab na hindi mo ginamit kamakailan}}</translation>
 <translation id="5339733443032484186">Ang iyong huling tab</translation>
 <translation id="5490235265819901748">Na-expand ang grupo ng tab</translation>
 <translation id="5494920125229734069">Piliin ang lahat</translation>
+<translation id="5545379293264651575">Isara nang hindi sinusuri</translation>
 <translation id="5556417849629758491">Tingnan ang impormasyon ng store, available ang opsyon malapit sa itaas ng screen</translation>
 <translation id="5558362125926932819">Isara ang grupo ng tab na may <ph name="NUMBER_OF_TABS" /> (na) tab</translation>
 <translation id="5580090775658607195">Naigrupo ang <ph name="TAB_COUNT" /> tab</translation>
@@ -85,7 +88,6 @@
 <translation id="7885132941432959125">Ilipat ang tab sa kanan</translation>
 <translation id="7966321538264951561">I-dismiss ang mga suhestyon.</translation>
 <translation id="8029301326595421733">Binuksan ang impormasyon tungkol sa store na ito nang buo ang taas</translation>
-<translation id="814503310257431685">Tingnan lahat</translation>
 <translation id="8205266828577616993">Ilipat ang tab sa itaas</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Isara ang <ph name="TABS_COUNT_ONE" /> napiling tab}one{Isara ang <ph name="TABS_COUNT_MANY" /> napiling tab}other{Isara ang <ph name="TABS_COUNT_MANY" /> na napiling tab}}</translation>
 <translation id="8398929769197326728">Bagong Folder - <ph name="CURRENT_TIMESTAMP_MS" /></translation>

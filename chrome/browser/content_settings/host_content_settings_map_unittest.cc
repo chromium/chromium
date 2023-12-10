@@ -82,19 +82,23 @@ class MockUserModifiableProvider
     : public content_settings::UserModifiableProvider {
  public:
   ~MockUserModifiableProvider() override = default;
-  MOCK_CONST_METHOD2(
-      GetRuleIterator,
-      std::unique_ptr<content_settings::RuleIterator>(ContentSettingsType,
-                                                      bool));
+  MOCK_CONST_METHOD3(GetRuleIterator,
+                     std::unique_ptr<content_settings::RuleIterator>(
+                         ContentSettingsType,
+                         bool,
+                         const content_settings::PartitionKey&));
 
-  MOCK_METHOD5(SetWebsiteSetting,
+  MOCK_METHOD6(SetWebsiteSetting,
                bool(const ContentSettingsPattern&,
                     const ContentSettingsPattern&,
                     ContentSettingsType,
                     base::Value&&,
-                    const content_settings::ContentSettingConstraints&));
+                    const content_settings::ContentSettingConstraints&,
+                    const content_settings::PartitionKey&));
 
-  MOCK_METHOD1(ClearAllContentSettingsRules, void(ContentSettingsType));
+  MOCK_METHOD2(ClearAllContentSettingsRules,
+               void(ContentSettingsType,
+                    const content_settings::PartitionKey&));
 
   MOCK_METHOD0(ShutdownOnUIThread, void());
 

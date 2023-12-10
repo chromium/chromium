@@ -1,3 +1,0 @@
-Test	http://www.w3.org/2001/DOM-Test-Suite/level2/html/HTMLElement117
-Status	failure
-Message	classNameLink: assertEquals failed, actual , expected HEAD-class.

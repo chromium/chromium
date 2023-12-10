@@ -73,11 +73,11 @@ class CC_EXPORT SurfaceLayer : public Layer {
     return surface_range_.Read(*this).end();
   }
 
-  const absl::optional<viz::SurfaceId>& oldest_acceptable_fallback() const {
+  const std::optional<viz::SurfaceId>& oldest_acceptable_fallback() const {
     return surface_range_.Read(*this).start();
   }
 
-  absl::optional<uint32_t> deadline_in_frames() const {
+  std::optional<uint32_t> deadline_in_frames() const {
     return deadline_in_frames_.Read(*this);
   }
 
@@ -94,7 +94,7 @@ class CC_EXPORT SurfaceLayer : public Layer {
 
   ProtectedSequenceReadable<bool> may_contain_video_;
   ProtectedSequenceReadable<viz::SurfaceRange> surface_range_;
-  ProtectedSequenceWritable<absl::optional<uint32_t>> deadline_in_frames_;
+  ProtectedSequenceWritable<std::optional<uint32_t>> deadline_in_frames_;
 
   ProtectedSequenceReadable<bool> stretch_content_to_fill_bounds_;
 

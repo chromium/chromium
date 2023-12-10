@@ -8,7 +8,7 @@
 #import "ios/chrome/browser/snapshots/model/snapshot_generator_delegate.h"
 
 // Fake SnapshotGeneratorDelegate that does nothing. Can be used as a
-// base for unit test that only implement a subset of the protocol.
+// base for unit tests that only implement a subset of the protocol.
 @interface FakeSnapshotGeneratorDelegate : NSObject <SnapshotGeneratorDelegate>
 
 // The view to be snapshotted.

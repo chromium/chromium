@@ -28,6 +28,7 @@
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/view.h"
 #include "ui/views/view_utils.h"
 
 namespace ash {
@@ -63,6 +64,10 @@ void EnableSelectToSpeak(bool enabled) {
 
 void EnableDictation(bool enabled) {
   Shell::Get()->accessibility_controller()->dictation().SetEnabled(enabled);
+}
+
+void EnableFaceGaze(bool enabled) {
+  Shell::Get()->accessibility_controller()->face_gaze().SetEnabled(enabled);
 }
 
 void EnableHighContrast(bool enabled) {
@@ -150,7 +155,8 @@ class AccessibilityDetailedViewTest : public AshTestBase,
   AccessibilityDetailedViewTest() {
     scoped_feature_list_.InitWithFeatures(
         {media::kLiveCaption, media::kLiveCaptionSystemWideOnChromeOS,
-         ash::features::kOnDeviceSpeechRecognition},
+         ash::features::kOnDeviceSpeechRecognition,
+         ::features::kAccessibilityFaceGaze},
         {});
   }
   AccessibilityDetailedViewTest(const AccessibilityDetailedViewTest&) = delete;
@@ -259,6 +265,10 @@ class AccessibilityDetailedViewTest : public AshTestBase,
     ClickView(detailed_menu_->dictation_view_);
   }
 
+  void ClickFaceGazeOnDetailMenu() {
+    ClickView(detailed_menu_->facegaze_view_);
+  }
+
   void ClickColorCorrectionOnDetailMenu() {
     ClickView(detailed_menu_->color_correction_view_);
   }
@@ -273,6 +283,10 @@ class AccessibilityDetailedViewTest : public AshTestBase,
 
   bool IsDictationShownOnDetailMenu() const {
     return detailed_menu_->dictation_view_;
+  }
+
+  bool IsFaceGazeShownOnDetailMenu() const {
+    return detailed_menu_->facegaze_view_;
   }
 
   bool IsHighContrastMenuShownOnDetailMenu() const {
@@ -368,6 +382,11 @@ class AccessibilityDetailedViewTest : public AshTestBase,
   bool IsDictationEnabledOnDetailMenu() const {
     return IsEnabledOnDetailMenu(controller_->dictation().enabled(),
                                  detailed_menu_->dictation_view_);
+  }
+
+  bool IsFaceGazeEnabledOnDetailMenu() const {
+    return IsEnabledOnDetailMenu(controller_->face_gaze().enabled(),
+                                 detailed_menu_->facegaze_view_);
   }
 
   bool IsHighContrastEnabledOnDetailMenu() const {
@@ -471,6 +490,7 @@ class AccessibilityDetailedViewTest : public AshTestBase,
   views::View* dictation_view() const {
     return detailed_menu_->dictation_view_;
   }
+  views::View* facegaze_view() const { return detailed_menu_->facegaze_view_; }
   views::View* high_contrast_view() const {
     return detailed_menu_->high_contrast_view_;
   }
@@ -523,6 +543,9 @@ class AccessibilityDetailedViewTest : public AshTestBase,
   }
   HoverHighlightView* dictation_top_view() const {
     return detailed_menu_->dictation_top_view_;
+  }
+  HoverHighlightView* facegaze_top_view() const {
+    return detailed_menu_->facegaze_top_view_;
   }
   HoverHighlightView* high_contrast_top_view() const {
     return detailed_menu_->high_contrast_top_view_;
@@ -608,6 +631,7 @@ TEST_F(AccessibilityDetailedViewTest, ListItemsAreInRoundedContainer) {
   EXPECT_TRUE(has_rounded_container_parent(sticky_keys_view()));
   EXPECT_TRUE(has_rounded_container_parent(switch_access_view()));
   EXPECT_TRUE(has_rounded_container_parent(color_correction_view()));
+  EXPECT_TRUE(has_rounded_container_parent(facegaze_view()));
   CloseDetailMenu();
 }
 
@@ -648,6 +672,7 @@ TEST_F(AccessibilityDetailedViewTest, TopsViewsAreEmptyWithNoFeaturesEnabled) {
   EXPECT_FALSE(sticky_keys_top_view());
   EXPECT_FALSE(switch_access_top_view());
   EXPECT_FALSE(color_correction_top_view());
+  EXPECT_FALSE(facegaze_top_view());
 }
 
 // Verifies that pressing the tab key moves from row to row. In particular,
@@ -660,6 +685,8 @@ TEST_F(AccessibilityDetailedViewTest, TabMovesFocusBetweenRows) {
   EXPECT_TRUE(select_to_speak_view()->HasFocus());
   PressAndReleaseKey(ui::VKEY_TAB);
   EXPECT_TRUE(dictation_view()->HasFocus());
+  PressAndReleaseKey(ui::VKEY_TAB);
+  EXPECT_TRUE(facegaze_view()->HasFocus());
   PressAndReleaseKey(ui::VKEY_TAB);
   EXPECT_TRUE(color_correction_view()->HasFocus());
   PressAndReleaseKey(ui::VKEY_TAB);
@@ -727,6 +754,19 @@ TEST_F(AccessibilityDetailedViewTest, DictationTopView) {
   EXPECT_FALSE(IsSwitchToggled(dictation_top_view()));
   EXPECT_FALSE(IsCheckedForAccessibility(dictation_top_view()));
   EXPECT_FALSE(controller()->dictation().enabled());
+}
+
+TEST_F(AccessibilityDetailedViewTest, FaceGazeTopView) {
+  EnableFaceGaze(true);
+  CreateDetailedMenu();
+  ASSERT_TRUE(facegaze_top_view());
+  EXPECT_TRUE(IsSwitchToggled(facegaze_top_view()));
+  EXPECT_TRUE(IsCheckedForAccessibility(facegaze_top_view()));
+
+  ClickView(facegaze_top_view());
+  EXPECT_FALSE(IsSwitchToggled(facegaze_top_view()));
+  EXPECT_FALSE(IsCheckedForAccessibility(facegaze_top_view()));
+  EXPECT_FALSE(controller()->face_gaze().enabled());
 }
 
 TEST_F(AccessibilityDetailedViewTest, HighContrastTopView) {
@@ -942,6 +982,7 @@ TEST_F(AccessibilityDetailedViewTest, CheckMenuVisibilityOnDetailMenu) {
   EXPECT_TRUE(IsStickyKeysMenuShownOnDetailMenu());
   EXPECT_TRUE(IsSwitchAccessShownOnDetailMenu());
   EXPECT_TRUE(IsColorCorrectionShownOnDetailMenu());
+  EXPECT_TRUE(IsFaceGazeShownOnDetailMenu());
   CloseDetailMenu();
 
   // Simulate screen lock.
@@ -966,6 +1007,7 @@ TEST_F(AccessibilityDetailedViewTest, CheckMenuVisibilityOnDetailMenu) {
   EXPECT_TRUE(IsStickyKeysMenuShownOnDetailMenu());
   EXPECT_TRUE(IsSwitchAccessShownOnDetailMenu());
   EXPECT_TRUE(IsColorCorrectionShownOnDetailMenu());
+  EXPECT_TRUE(IsFaceGazeShownOnDetailMenu());
   CloseDetailMenu();
   UnblockUserSession();
 
@@ -991,6 +1033,7 @@ TEST_F(AccessibilityDetailedViewTest, CheckMenuVisibilityOnDetailMenu) {
   EXPECT_TRUE(IsStickyKeysMenuShownOnDetailMenu());
   EXPECT_TRUE(IsSwitchAccessShownOnDetailMenu());
   EXPECT_TRUE(IsColorCorrectionShownOnDetailMenu());
+  EXPECT_TRUE(IsFaceGazeShownOnDetailMenu());
   CloseDetailMenu();
   UnblockUserSession();
 }
@@ -1184,6 +1227,17 @@ TEST_F(AccessibilityDetailedViewTest, ClickDetailMenu) {
   CreateDetailedMenu();
   ClickColorCorrectionOnDetailMenu();
   EXPECT_FALSE(accessibility_controller->color_correction().enabled());
+
+  // Confirms that the check item toggles color correction.
+  EXPECT_FALSE(accessibility_controller->face_gaze().enabled());
+
+  CreateDetailedMenu();
+  ClickFaceGazeOnDetailMenu();
+  EXPECT_TRUE(accessibility_controller->face_gaze().enabled());
+
+  CreateDetailedMenu();
+  ClickFaceGazeOnDetailMenu();
+  EXPECT_FALSE(accessibility_controller->face_gaze().enabled());
 }
 
 class AccessibilityDetailedViewSodaTest
@@ -1358,6 +1412,7 @@ TEST_F(AccessibilityDetailedViewLoginScreenTest, NothingCheckedByDefault) {
   EXPECT_FALSE(IsSpokenFeedbackEnabledOnDetailMenu());
   EXPECT_FALSE(IsSelectToSpeakEnabledOnDetailMenu());
   EXPECT_FALSE(IsDictationEnabledOnDetailMenu());
+  EXPECT_FALSE(IsFaceGazeEnabledOnDetailMenu());
   EXPECT_FALSE(IsHighContrastEnabledOnDetailMenu());
   EXPECT_FALSE(IsScreenMagnifierEnabledOnDetailMenu());
   EXPECT_FALSE(IsDockedMagnifierEnabledOnDetailMenu());
@@ -1385,6 +1440,7 @@ TEST_F(AccessibilityDetailedViewLoginScreenTest, SpokenFeedback) {
   EXPECT_TRUE(IsSpokenFeedbackEnabledOnDetailMenu());
   EXPECT_FALSE(IsSelectToSpeakEnabledOnDetailMenu());
   EXPECT_FALSE(IsDictationEnabledOnDetailMenu());
+  EXPECT_FALSE(IsFaceGazeEnabledOnDetailMenu());
   EXPECT_FALSE(IsHighContrastEnabledOnDetailMenu());
   EXPECT_FALSE(IsScreenMagnifierEnabledOnDetailMenu());
   EXPECT_FALSE(IsDockedMagnifierEnabledOnDetailMenu());
@@ -1410,6 +1466,7 @@ TEST_F(AccessibilityDetailedViewLoginScreenTest, SpokenFeedback) {
   EXPECT_FALSE(IsSpokenFeedbackEnabledOnDetailMenu());
   EXPECT_FALSE(IsSelectToSpeakEnabledOnDetailMenu());
   EXPECT_FALSE(IsDictationEnabledOnDetailMenu());
+  EXPECT_FALSE(IsFaceGazeEnabledOnDetailMenu());
   EXPECT_FALSE(IsHighContrastEnabledOnDetailMenu());
   EXPECT_FALSE(IsScreenMagnifierEnabledOnDetailMenu());
   EXPECT_FALSE(IsDockedMagnifierEnabledOnDetailMenu());
@@ -1461,6 +1518,7 @@ TEST_F(AccessibilityDetailedViewLoginScreenTest, SelectToSpeak) {
   EXPECT_FALSE(IsSpokenFeedbackEnabledOnDetailMenu());
   EXPECT_TRUE(IsSelectToSpeakEnabledOnDetailMenu());
   EXPECT_FALSE(IsDictationEnabledOnDetailMenu());
+  EXPECT_FALSE(IsFaceGazeEnabledOnDetailMenu());
   EXPECT_FALSE(IsHighContrastEnabledOnDetailMenu());
   EXPECT_FALSE(IsScreenMagnifierEnabledOnDetailMenu());
   EXPECT_FALSE(IsDockedMagnifierEnabledOnDetailMenu());
@@ -1486,6 +1544,7 @@ TEST_F(AccessibilityDetailedViewLoginScreenTest, SelectToSpeak) {
   EXPECT_FALSE(IsSpokenFeedbackEnabledOnDetailMenu());
   EXPECT_FALSE(IsSelectToSpeakEnabledOnDetailMenu());
   EXPECT_FALSE(IsDictationEnabledOnDetailMenu());
+  EXPECT_FALSE(IsFaceGazeEnabledOnDetailMenu());
   EXPECT_FALSE(IsHighContrastEnabledOnDetailMenu());
   EXPECT_FALSE(IsScreenMagnifierEnabledOnDetailMenu());
   EXPECT_FALSE(IsDockedMagnifierEnabledOnDetailMenu());
@@ -1513,6 +1572,7 @@ TEST_F(AccessibilityDetailedViewLoginScreenTest, Dictation) {
   EXPECT_FALSE(IsSpokenFeedbackEnabledOnDetailMenu());
   EXPECT_FALSE(IsSelectToSpeakEnabledOnDetailMenu());
   EXPECT_TRUE(IsDictationEnabledOnDetailMenu());
+  EXPECT_FALSE(IsFaceGazeEnabledOnDetailMenu());
   EXPECT_FALSE(IsHighContrastEnabledOnDetailMenu());
   EXPECT_FALSE(IsScreenMagnifierEnabledOnDetailMenu());
   EXPECT_FALSE(IsDockedMagnifierEnabledOnDetailMenu());
@@ -1538,6 +1598,7 @@ TEST_F(AccessibilityDetailedViewLoginScreenTest, Dictation) {
   EXPECT_FALSE(IsSpokenFeedbackEnabledOnDetailMenu());
   EXPECT_FALSE(IsSelectToSpeakEnabledOnDetailMenu());
   EXPECT_FALSE(IsDictationEnabledOnDetailMenu());
+  EXPECT_FALSE(IsFaceGazeEnabledOnDetailMenu());
   EXPECT_FALSE(IsHighContrastEnabledOnDetailMenu());
   EXPECT_FALSE(IsScreenMagnifierEnabledOnDetailMenu());
   EXPECT_FALSE(IsDockedMagnifierEnabledOnDetailMenu());
@@ -1565,6 +1626,7 @@ TEST_F(AccessibilityDetailedViewLoginScreenTest, HighContrast) {
   EXPECT_FALSE(IsSpokenFeedbackEnabledOnDetailMenu());
   EXPECT_FALSE(IsSelectToSpeakEnabledOnDetailMenu());
   EXPECT_FALSE(IsDictationEnabledOnDetailMenu());
+  EXPECT_FALSE(IsFaceGazeEnabledOnDetailMenu());
   EXPECT_TRUE(IsHighContrastEnabledOnDetailMenu());
   EXPECT_FALSE(IsScreenMagnifierEnabledOnDetailMenu());
   EXPECT_FALSE(IsDockedMagnifierEnabledOnDetailMenu());
@@ -1590,6 +1652,7 @@ TEST_F(AccessibilityDetailedViewLoginScreenTest, HighContrast) {
   EXPECT_FALSE(IsSpokenFeedbackEnabledOnDetailMenu());
   EXPECT_FALSE(IsSelectToSpeakEnabledOnDetailMenu());
   EXPECT_FALSE(IsDictationEnabledOnDetailMenu());
+  EXPECT_FALSE(IsFaceGazeEnabledOnDetailMenu());
   EXPECT_FALSE(IsHighContrastEnabledOnDetailMenu());
   EXPECT_FALSE(IsScreenMagnifierEnabledOnDetailMenu());
   EXPECT_FALSE(IsDockedMagnifierEnabledOnDetailMenu());
@@ -1617,6 +1680,7 @@ TEST_F(AccessibilityDetailedViewLoginScreenTest, FullScreenMagnifier) {
   EXPECT_FALSE(IsSpokenFeedbackEnabledOnDetailMenu());
   EXPECT_FALSE(IsSelectToSpeakEnabledOnDetailMenu());
   EXPECT_FALSE(IsDictationEnabledOnDetailMenu());
+  EXPECT_FALSE(IsFaceGazeEnabledOnDetailMenu());
   EXPECT_FALSE(IsHighContrastEnabledOnDetailMenu());
   EXPECT_TRUE(IsScreenMagnifierEnabledOnDetailMenu());
   EXPECT_FALSE(IsDockedMagnifierEnabledOnDetailMenu());
@@ -1642,6 +1706,7 @@ TEST_F(AccessibilityDetailedViewLoginScreenTest, FullScreenMagnifier) {
   EXPECT_FALSE(IsSpokenFeedbackEnabledOnDetailMenu());
   EXPECT_FALSE(IsSelectToSpeakEnabledOnDetailMenu());
   EXPECT_FALSE(IsDictationEnabledOnDetailMenu());
+  EXPECT_FALSE(IsFaceGazeEnabledOnDetailMenu());
   EXPECT_FALSE(IsHighContrastEnabledOnDetailMenu());
   EXPECT_FALSE(IsScreenMagnifierEnabledOnDetailMenu());
   EXPECT_FALSE(IsDockedMagnifierEnabledOnDetailMenu());
@@ -1669,6 +1734,7 @@ TEST_F(AccessibilityDetailedViewLoginScreenTest, DockedMagnifier) {
   EXPECT_FALSE(IsSpokenFeedbackEnabledOnDetailMenu());
   EXPECT_FALSE(IsSelectToSpeakEnabledOnDetailMenu());
   EXPECT_FALSE(IsDictationEnabledOnDetailMenu());
+  EXPECT_FALSE(IsFaceGazeEnabledOnDetailMenu());
   EXPECT_FALSE(IsHighContrastEnabledOnDetailMenu());
   EXPECT_FALSE(IsScreenMagnifierEnabledOnDetailMenu());
   EXPECT_TRUE(IsDockedMagnifierEnabledOnDetailMenu());
@@ -1694,6 +1760,7 @@ TEST_F(AccessibilityDetailedViewLoginScreenTest, DockedMagnifier) {
   EXPECT_FALSE(IsSpokenFeedbackEnabledOnDetailMenu());
   EXPECT_FALSE(IsSelectToSpeakEnabledOnDetailMenu());
   EXPECT_FALSE(IsDictationEnabledOnDetailMenu());
+  EXPECT_FALSE(IsFaceGazeEnabledOnDetailMenu());
   EXPECT_FALSE(IsHighContrastEnabledOnDetailMenu());
   EXPECT_FALSE(IsScreenMagnifierEnabledOnDetailMenu());
   EXPECT_FALSE(IsDockedMagnifierEnabledOnDetailMenu());
@@ -1721,6 +1788,7 @@ TEST_F(AccessibilityDetailedViewLoginScreenTest, LargeCursor) {
   EXPECT_FALSE(IsSpokenFeedbackEnabledOnDetailMenu());
   EXPECT_FALSE(IsSelectToSpeakEnabledOnDetailMenu());
   EXPECT_FALSE(IsDictationEnabledOnDetailMenu());
+  EXPECT_FALSE(IsFaceGazeEnabledOnDetailMenu());
   EXPECT_FALSE(IsHighContrastEnabledOnDetailMenu());
   EXPECT_FALSE(IsScreenMagnifierEnabledOnDetailMenu());
   EXPECT_FALSE(IsDockedMagnifierEnabledOnDetailMenu());
@@ -1745,6 +1813,7 @@ TEST_F(AccessibilityDetailedViewLoginScreenTest, LargeCursor) {
   CreateDetailedMenu();
   EXPECT_FALSE(IsSpokenFeedbackEnabledOnDetailMenu());
   EXPECT_FALSE(IsSelectToSpeakEnabledOnDetailMenu());
+  EXPECT_FALSE(IsDictationEnabledOnDetailMenu());
   EXPECT_FALSE(IsDictationEnabledOnDetailMenu());
   EXPECT_FALSE(IsHighContrastEnabledOnDetailMenu());
   EXPECT_FALSE(IsScreenMagnifierEnabledOnDetailMenu());
@@ -1773,6 +1842,7 @@ TEST_F(AccessibilityDetailedViewLoginScreenTest, LiveCaption) {
   EXPECT_FALSE(IsSpokenFeedbackEnabledOnDetailMenu());
   EXPECT_FALSE(IsSelectToSpeakEnabledOnDetailMenu());
   EXPECT_FALSE(IsDictationEnabledOnDetailMenu());
+  EXPECT_FALSE(IsFaceGazeEnabledOnDetailMenu());
   EXPECT_FALSE(IsHighContrastEnabledOnDetailMenu());
   EXPECT_FALSE(IsScreenMagnifierEnabledOnDetailMenu());
   EXPECT_FALSE(IsDockedMagnifierEnabledOnDetailMenu());
@@ -1798,6 +1868,7 @@ TEST_F(AccessibilityDetailedViewLoginScreenTest, LiveCaption) {
   EXPECT_FALSE(IsSpokenFeedbackEnabledOnDetailMenu());
   EXPECT_FALSE(IsSelectToSpeakEnabledOnDetailMenu());
   EXPECT_FALSE(IsDictationEnabledOnDetailMenu());
+  EXPECT_FALSE(IsFaceGazeEnabledOnDetailMenu());
   EXPECT_FALSE(IsHighContrastEnabledOnDetailMenu());
   EXPECT_FALSE(IsScreenMagnifierEnabledOnDetailMenu());
   EXPECT_FALSE(IsDockedMagnifierEnabledOnDetailMenu());
@@ -1825,6 +1896,7 @@ TEST_F(AccessibilityDetailedViewLoginScreenTest, VirtualKeyboard) {
   EXPECT_FALSE(IsSpokenFeedbackEnabledOnDetailMenu());
   EXPECT_FALSE(IsSelectToSpeakEnabledOnDetailMenu());
   EXPECT_FALSE(IsDictationEnabledOnDetailMenu());
+  EXPECT_FALSE(IsFaceGazeEnabledOnDetailMenu());
   EXPECT_FALSE(IsHighContrastEnabledOnDetailMenu());
   EXPECT_FALSE(IsScreenMagnifierEnabledOnDetailMenu());
   EXPECT_FALSE(IsDockedMagnifierEnabledOnDetailMenu());
@@ -1850,6 +1922,7 @@ TEST_F(AccessibilityDetailedViewLoginScreenTest, VirtualKeyboard) {
   EXPECT_FALSE(IsSpokenFeedbackEnabledOnDetailMenu());
   EXPECT_FALSE(IsSelectToSpeakEnabledOnDetailMenu());
   EXPECT_FALSE(IsDictationEnabledOnDetailMenu());
+  EXPECT_FALSE(IsFaceGazeEnabledOnDetailMenu());
   EXPECT_FALSE(IsHighContrastEnabledOnDetailMenu());
   EXPECT_FALSE(IsScreenMagnifierEnabledOnDetailMenu());
   EXPECT_FALSE(IsDockedMagnifierEnabledOnDetailMenu());
@@ -1877,6 +1950,7 @@ TEST_F(AccessibilityDetailedViewLoginScreenTest, MonoAudio) {
   EXPECT_FALSE(IsSpokenFeedbackEnabledOnDetailMenu());
   EXPECT_FALSE(IsSelectToSpeakEnabledOnDetailMenu());
   EXPECT_FALSE(IsDictationEnabledOnDetailMenu());
+  EXPECT_FALSE(IsFaceGazeEnabledOnDetailMenu());
   EXPECT_FALSE(IsHighContrastEnabledOnDetailMenu());
   EXPECT_FALSE(IsScreenMagnifierEnabledOnDetailMenu());
   EXPECT_FALSE(IsDockedMagnifierEnabledOnDetailMenu());
@@ -1902,6 +1976,7 @@ TEST_F(AccessibilityDetailedViewLoginScreenTest, MonoAudio) {
   EXPECT_FALSE(IsSpokenFeedbackEnabledOnDetailMenu());
   EXPECT_FALSE(IsSelectToSpeakEnabledOnDetailMenu());
   EXPECT_FALSE(IsDictationEnabledOnDetailMenu());
+  EXPECT_FALSE(IsFaceGazeEnabledOnDetailMenu());
   EXPECT_FALSE(IsHighContrastEnabledOnDetailMenu());
   EXPECT_FALSE(IsScreenMagnifierEnabledOnDetailMenu());
   EXPECT_FALSE(IsDockedMagnifierEnabledOnDetailMenu());
@@ -1929,6 +2004,7 @@ TEST_F(AccessibilityDetailedViewLoginScreenTest, CaretHighlight) {
   EXPECT_FALSE(IsSpokenFeedbackEnabledOnDetailMenu());
   EXPECT_FALSE(IsSelectToSpeakEnabledOnDetailMenu());
   EXPECT_FALSE(IsDictationEnabledOnDetailMenu());
+  EXPECT_FALSE(IsFaceGazeEnabledOnDetailMenu());
   EXPECT_FALSE(IsHighContrastEnabledOnDetailMenu());
   EXPECT_FALSE(IsScreenMagnifierEnabledOnDetailMenu());
   EXPECT_FALSE(IsDockedMagnifierEnabledOnDetailMenu());
@@ -1954,6 +2030,7 @@ TEST_F(AccessibilityDetailedViewLoginScreenTest, CaretHighlight) {
   EXPECT_FALSE(IsSpokenFeedbackEnabledOnDetailMenu());
   EXPECT_FALSE(IsSelectToSpeakEnabledOnDetailMenu());
   EXPECT_FALSE(IsDictationEnabledOnDetailMenu());
+  EXPECT_FALSE(IsFaceGazeEnabledOnDetailMenu());
   EXPECT_FALSE(IsHighContrastEnabledOnDetailMenu());
   EXPECT_FALSE(IsScreenMagnifierEnabledOnDetailMenu());
   EXPECT_FALSE(IsDockedMagnifierEnabledOnDetailMenu());
@@ -1981,6 +2058,7 @@ TEST_F(AccessibilityDetailedViewLoginScreenTest, CursorHighlight) {
   EXPECT_FALSE(IsSpokenFeedbackEnabledOnDetailMenu());
   EXPECT_FALSE(IsSelectToSpeakEnabledOnDetailMenu());
   EXPECT_FALSE(IsDictationEnabledOnDetailMenu());
+  EXPECT_FALSE(IsFaceGazeEnabledOnDetailMenu());
   EXPECT_FALSE(IsHighContrastEnabledOnDetailMenu());
   EXPECT_FALSE(IsScreenMagnifierEnabledOnDetailMenu());
   EXPECT_FALSE(IsDockedMagnifierEnabledOnDetailMenu());
@@ -2006,6 +2084,7 @@ TEST_F(AccessibilityDetailedViewLoginScreenTest, CursorHighlight) {
   EXPECT_FALSE(IsSpokenFeedbackEnabledOnDetailMenu());
   EXPECT_FALSE(IsSelectToSpeakEnabledOnDetailMenu());
   EXPECT_FALSE(IsDictationEnabledOnDetailMenu());
+  EXPECT_FALSE(IsFaceGazeEnabledOnDetailMenu());
   EXPECT_FALSE(IsHighContrastEnabledOnDetailMenu());
   EXPECT_FALSE(IsScreenMagnifierEnabledOnDetailMenu());
   EXPECT_FALSE(IsDockedMagnifierEnabledOnDetailMenu());
@@ -2033,6 +2112,7 @@ TEST_F(AccessibilityDetailedViewLoginScreenTest, FocusHighlight) {
   EXPECT_FALSE(IsSpokenFeedbackEnabledOnDetailMenu());
   EXPECT_FALSE(IsSelectToSpeakEnabledOnDetailMenu());
   EXPECT_FALSE(IsDictationEnabledOnDetailMenu());
+  EXPECT_FALSE(IsFaceGazeEnabledOnDetailMenu());
   EXPECT_FALSE(IsHighContrastEnabledOnDetailMenu());
   EXPECT_FALSE(IsScreenMagnifierEnabledOnDetailMenu());
   EXPECT_FALSE(IsDockedMagnifierEnabledOnDetailMenu());
@@ -2058,6 +2138,7 @@ TEST_F(AccessibilityDetailedViewLoginScreenTest, FocusHighlight) {
   EXPECT_FALSE(IsSpokenFeedbackEnabledOnDetailMenu());
   EXPECT_FALSE(IsSelectToSpeakEnabledOnDetailMenu());
   EXPECT_FALSE(IsDictationEnabledOnDetailMenu());
+  EXPECT_FALSE(IsFaceGazeEnabledOnDetailMenu());
   EXPECT_FALSE(IsHighContrastEnabledOnDetailMenu());
   EXPECT_FALSE(IsScreenMagnifierEnabledOnDetailMenu());
   EXPECT_FALSE(IsDockedMagnifierEnabledOnDetailMenu());
@@ -2085,6 +2166,7 @@ TEST_F(AccessibilityDetailedViewLoginScreenTest, StickyKeys) {
   EXPECT_FALSE(IsSpokenFeedbackEnabledOnDetailMenu());
   EXPECT_FALSE(IsSelectToSpeakEnabledOnDetailMenu());
   EXPECT_FALSE(IsDictationEnabledOnDetailMenu());
+  EXPECT_FALSE(IsFaceGazeEnabledOnDetailMenu());
   EXPECT_FALSE(IsHighContrastEnabledOnDetailMenu());
   EXPECT_FALSE(IsScreenMagnifierEnabledOnDetailMenu());
   EXPECT_FALSE(IsDockedMagnifierEnabledOnDetailMenu());
@@ -2110,6 +2192,7 @@ TEST_F(AccessibilityDetailedViewLoginScreenTest, StickyKeys) {
   EXPECT_FALSE(IsSpokenFeedbackEnabledOnDetailMenu());
   EXPECT_FALSE(IsSelectToSpeakEnabledOnDetailMenu());
   EXPECT_FALSE(IsDictationEnabledOnDetailMenu());
+  EXPECT_FALSE(IsFaceGazeEnabledOnDetailMenu());
   EXPECT_FALSE(IsHighContrastEnabledOnDetailMenu());
   EXPECT_FALSE(IsScreenMagnifierEnabledOnDetailMenu());
   EXPECT_FALSE(IsDockedMagnifierEnabledOnDetailMenu());
@@ -2183,6 +2266,7 @@ TEST_F(AccessibilityDetailedViewLoginScreenTest, AllFeatures) {
   EnableSpokenFeedback(true);
   EnableSelectToSpeak(true);
   EnableDictation(true);
+  EnableFaceGaze(true);
   EnableHighContrast(true);
   SetScreenMagnifierEnabled(true);
   SetDockedMagnifierEnabled(true);
@@ -2200,6 +2284,7 @@ TEST_F(AccessibilityDetailedViewLoginScreenTest, AllFeatures) {
   EXPECT_TRUE(IsSpokenFeedbackEnabledOnDetailMenu());
   EXPECT_TRUE(IsSelectToSpeakEnabledOnDetailMenu());
   EXPECT_TRUE(IsDictationEnabledOnDetailMenu());
+  EXPECT_TRUE(IsFaceGazeEnabledOnDetailMenu());
   EXPECT_TRUE(IsHighContrastEnabledOnDetailMenu());
   EXPECT_TRUE(IsScreenMagnifierEnabledOnDetailMenu());
   EXPECT_TRUE(IsDockedMagnifierEnabledOnDetailMenu());
@@ -2221,6 +2306,7 @@ TEST_F(AccessibilityDetailedViewLoginScreenTest, AllFeatures) {
   EnableSpokenFeedback(false);
   EnableSelectToSpeak(false);
   EnableDictation(false);
+  EnableFaceGaze(false);
   EnableHighContrast(false);
   SetScreenMagnifierEnabled(false);
   SetDockedMagnifierEnabled(false);
@@ -2238,6 +2324,7 @@ TEST_F(AccessibilityDetailedViewLoginScreenTest, AllFeatures) {
   EXPECT_FALSE(IsSpokenFeedbackEnabledOnDetailMenu());
   EXPECT_FALSE(IsSelectToSpeakEnabledOnDetailMenu());
   EXPECT_FALSE(IsDictationEnabledOnDetailMenu());
+  EXPECT_FALSE(IsFaceGazeEnabledOnDetailMenu());
   EXPECT_FALSE(IsHighContrastEnabledOnDetailMenu());
   EXPECT_FALSE(IsScreenMagnifierEnabledOnDetailMenu());
   EXPECT_FALSE(IsDockedMagnifierEnabledOnDetailMenu());
@@ -2265,6 +2352,7 @@ TEST_F(AccessibilityDetailedViewLoginScreenTest, Autoclick) {
   EXPECT_FALSE(IsSpokenFeedbackEnabledOnDetailMenu());
   EXPECT_FALSE(IsSelectToSpeakEnabledOnDetailMenu());
   EXPECT_FALSE(IsDictationEnabledOnDetailMenu());
+  EXPECT_FALSE(IsFaceGazeEnabledOnDetailMenu());
   EXPECT_FALSE(IsHighContrastEnabledOnDetailMenu());
   EXPECT_FALSE(IsScreenMagnifierEnabledOnDetailMenu());
   EXPECT_FALSE(IsDockedMagnifierEnabledOnDetailMenu());
@@ -2290,6 +2378,61 @@ TEST_F(AccessibilityDetailedViewLoginScreenTest, Autoclick) {
   EXPECT_FALSE(IsSpokenFeedbackEnabledOnDetailMenu());
   EXPECT_FALSE(IsSelectToSpeakEnabledOnDetailMenu());
   EXPECT_FALSE(IsDictationEnabledOnDetailMenu());
+  EXPECT_FALSE(IsFaceGazeEnabledOnDetailMenu());
+  EXPECT_FALSE(IsHighContrastEnabledOnDetailMenu());
+  EXPECT_FALSE(IsScreenMagnifierEnabledOnDetailMenu());
+  EXPECT_FALSE(IsDockedMagnifierEnabledOnDetailMenu());
+  EXPECT_FALSE(IsLargeCursorEnabledOnDetailMenu());
+  EXPECT_FALSE(IsLiveCaptionEnabledOnDetailMenu());
+  EXPECT_FALSE(IsAutoclickEnabledOnDetailMenu());
+  EXPECT_FALSE(IsVirtualKeyboardEnabledOnDetailMenu());
+  EXPECT_FALSE(IsMonoAudioEnabledOnDetailMenu());
+  EXPECT_FALSE(IsCaretHighlightEnabledOnDetailMenu());
+  EXPECT_FALSE(IsHighlightMouseCursorEnabledOnDetailMenu());
+  EXPECT_FALSE(IsHighlightKeyboardFocusEnabledOnDetailMenu());
+  EXPECT_FALSE(IsStickyKeysEnabledOnDetailMenu());
+  // Switch Access is currently not available on the login screen.
+  // TODO(crbug.com/1108808): Uncomment once issue is addressed.
+  // EXPECT_FALSE(IsSwitchAccessEnabledOnDetailMenu());
+  // Color correction cannot be enabled from the login screen.
+  EXPECT_FALSE(IsColorCorrectionShownOnDetailMenu());
+  CloseDetailMenu();
+}
+
+TEST_F(AccessibilityDetailedViewLoginScreenTest, FaceGaze) {
+  // Enabling facegaze.
+  EnableFaceGaze(true);
+  CreateDetailedMenu();
+  EXPECT_TRUE(IsFaceGazeEnabledOnDetailMenu());
+  EXPECT_FALSE(IsSpokenFeedbackEnabledOnDetailMenu());
+  EXPECT_FALSE(IsSelectToSpeakEnabledOnDetailMenu());
+  EXPECT_FALSE(IsDictationEnabledOnDetailMenu());
+  EXPECT_FALSE(IsHighContrastEnabledOnDetailMenu());
+  EXPECT_FALSE(IsScreenMagnifierEnabledOnDetailMenu());
+  EXPECT_FALSE(IsDockedMagnifierEnabledOnDetailMenu());
+  EXPECT_FALSE(IsLargeCursorEnabledOnDetailMenu());
+  EXPECT_FALSE(IsLiveCaptionEnabledOnDetailMenu());
+  EXPECT_FALSE(IsAutoclickEnabledOnDetailMenu());
+  EXPECT_FALSE(IsVirtualKeyboardEnabledOnDetailMenu());
+  EXPECT_FALSE(IsMonoAudioEnabledOnDetailMenu());
+  EXPECT_FALSE(IsCaretHighlightEnabledOnDetailMenu());
+  EXPECT_FALSE(IsHighlightMouseCursorEnabledOnDetailMenu());
+  EXPECT_FALSE(IsHighlightKeyboardFocusEnabledOnDetailMenu());
+  EXPECT_FALSE(IsStickyKeysEnabledOnDetailMenu());
+  // Switch Access is currently not available on the login screen.
+  // TODO(crbug.com/1108808): Uncomment once issue is addressed.
+  // EXPECT_FALSE(IsSwitchAccessEnabledOnDetailMenu());
+  // Color correction cannot be enabled from the login screen.
+  EXPECT_FALSE(IsColorCorrectionShownOnDetailMenu());
+  CloseDetailMenu();
+
+  // Disabling facegaze.
+  EnableFaceGaze(false);
+  CreateDetailedMenu();
+  EXPECT_FALSE(IsSpokenFeedbackEnabledOnDetailMenu());
+  EXPECT_FALSE(IsSelectToSpeakEnabledOnDetailMenu());
+  EXPECT_FALSE(IsDictationEnabledOnDetailMenu());
+  EXPECT_FALSE(IsFaceGazeEnabledOnDetailMenu());
   EXPECT_FALSE(IsHighContrastEnabledOnDetailMenu());
   EXPECT_FALSE(IsScreenMagnifierEnabledOnDetailMenu());
   EXPECT_FALSE(IsDockedMagnifierEnabledOnDetailMenu());

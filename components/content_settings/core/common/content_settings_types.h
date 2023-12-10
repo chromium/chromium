@@ -11,7 +11,7 @@
 // A particular type of content to care about. We give the user various types
 // of controls over each of these.
 // When adding/removing values from this enum, be sure to update the
-// kHistogramValue array in content_settings.cc as well.
+// kHistogramValue array in c/c/c/browser/content_settings_uma_util.cc as well.
 // A Java counterpart will be generated for this enum.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.content_settings
 enum class ContentSettingsType : int32_t {
@@ -233,10 +233,7 @@ enum class ContentSettingsType : int32_t {
   // by the File System Access API.
   FILE_SYSTEM_LAST_PICKED_DIRECTORY,
 
-  // Controls access to the getDisplayMedia API when {preferCurrentTab: true}
-  // is specified.
-  // TODO(crbug.com/1150788): Also apply this when getDisplayMedia() is called
-  // without specifying {preferCurrentTab: true}.
+  // Controls access to the getDisplayMedia API.
   // No values are stored for this type, this is solely needed to be able to
   // register the PermissionContext.
   DISPLAY_CAPTURE,
@@ -274,7 +271,8 @@ enum class ContentSettingsType : int32_t {
   // a specified account. When this is present it allows access to session
   // management capabilities between the sites. This setting is associated
   // with the relying party's origin.
-  FEDERATED_IDENTITY_ACTIVE_SESSION,
+  // Obsolete on Nov 2023.
+  DEPRECATED_FEDERATED_IDENTITY_ACTIVE_SESSION,
 
   // Setting to indicate whether Chrome should automatically apply darkening to
   // web content.

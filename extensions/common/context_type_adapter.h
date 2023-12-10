@@ -6,7 +6,7 @@
 #define EXTENSIONS_COMMON_CONTEXT_TYPE_ADAPTER_H_
 
 #include "extensions/common/features/feature.h"
-#include "extensions/common/mojom/frame.mojom-forward.h"
+#include "extensions/common/mojom/context_type.mojom-forward.h"
 
 namespace extensions {
 

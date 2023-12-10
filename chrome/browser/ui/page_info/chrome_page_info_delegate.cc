@@ -26,6 +26,7 @@
 #include "chrome/browser/usb/usb_chooser_context.h"
 #include "chrome/browser/usb/usb_chooser_context_factory.h"
 #include "chrome/browser/vr/vr_tab_helper.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
@@ -179,7 +180,7 @@ std::u16string ChromePageInfoDelegate::GetWarningDetailText() {
 content::PermissionResult ChromePageInfoDelegate::GetPermissionResult(
     blink::PermissionType permission,
     const url::Origin& origin,
-    const absl::optional<url::Origin>& requesting_origin) {
+    const std::optional<url::Origin>& requesting_origin) {
   auto* controller = GetProfile()->GetPermissionController();
 
   if (requesting_origin.has_value()) {
@@ -197,7 +198,7 @@ void ChromePageInfoDelegate::FocusWebContents() {
   browser->ActivateContents(web_contents_);
 }
 
-absl::optional<std::u16string> ChromePageInfoDelegate::GetFpsOwner(
+std::optional<std::u16string> ChromePageInfoDelegate::GetFpsOwner(
     const GURL& site_url) {
   return PrivacySandboxServiceFactory::GetForProfile(GetProfile())
       ->GetFirstPartySetOwnerForDisplay(site_url);
@@ -417,7 +418,14 @@ const std::u16string ChromePageInfoDelegate::GetClientApplicationName() {
 #endif
 
 bool ChromePageInfoDelegate::IsHttpsFirstModeEnabled() {
-  return GetProfile()->GetPrefs()->GetBoolean(prefs::kHttpsOnlyModeEnabled);
+  bool https_first_mode_fully_enabled =
+      GetProfile()->GetPrefs()->GetBoolean(prefs::kHttpsOnlyModeEnabled);
+  bool https_first_mode_enabled_in_incognito =
+      base::FeatureList::IsEnabled(features::kHttpsFirstModeIncognito) &&
+      GetProfile()->GetPrefs()->GetBoolean(prefs::kHttpsFirstModeIncognito);
+  return https_first_mode_fully_enabled ||
+         (GetProfile()->IsIncognitoProfile() &&
+          https_first_mode_enabled_in_incognito);
 }
 
 void ChromePageInfoDelegate::SetSecurityStateForTests(

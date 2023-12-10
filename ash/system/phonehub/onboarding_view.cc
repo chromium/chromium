@@ -45,6 +45,8 @@ using phone_hub_metrics::Screen;
 // (Get Started and Dismiss), where user can either choose to grant permission
 // to enable this feature or dismiss the screen.
 class OnboardingMainView : public PhoneHubInterstitialView {
+  METADATA_HEADER(OnboardingMainView, PhoneHubInterstitialView)
+
  public:
   OnboardingMainView(phonehub::OnboardingUiTracker* onboarding_ui_tracker,
                      OnboardingView* parent_view,
@@ -119,11 +121,16 @@ class OnboardingMainView : public PhoneHubInterstitialView {
   const OnboardingView::OnboardingFlow onboarding_flow_;
 };
 
+BEGIN_METADATA(OnboardingMainView)
+END_METADATA
+
 // OnboardingDismissPromptView ------------------------------------------------
 // A follow-up prompt screen that pops up when the user has chosen to dismiss
 // the main onboarding screen. It should not be shown again after being
 // dismissed manually by either clicking the ack button or outside the bubble.
 class OnboardingDismissPromptView : public PhoneHubInterstitialView {
+  METADATA_HEADER(OnboardingDismissPromptView, PhoneHubInterstitialView)
+
  public:
   explicit OnboardingDismissPromptView(
       phonehub::OnboardingUiTracker* onboarding_ui_tracker)
@@ -185,6 +192,9 @@ class OnboardingDismissPromptView : public PhoneHubInterstitialView {
   raw_ptr<phonehub::OnboardingUiTracker, ExperimentalAsh>
       onboarding_ui_tracker_ = nullptr;
 };
+
+BEGIN_METADATA(OnboardingDismissPromptView)
+END_METADATA
 
 // OnboardingView -------------------------------------------------------------
 OnboardingView::OnboardingView(

@@ -104,8 +104,9 @@ class TestIPCMessageSender : public IPCMessageSender {
   MOCK_METHOD2(SendMessageResponsePending,
                void(int routing_id, const PortId& port_id));
 #endif
-  MOCK_METHOD5(SendActivityLogIPC,
-               void(const ExtensionId& extension_id,
+  MOCK_METHOD6(SendActivityLogIPC,
+               void(ScriptContext* script_context,
+                    const ExtensionId& extension_id,
                     IPCMessageSender::ActivityLogCallType call_type,
                     const std::string& call_name,
                     base::Value::List args,

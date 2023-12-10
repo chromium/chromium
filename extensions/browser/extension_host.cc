@@ -179,6 +179,16 @@ void ExtensionHost::OnBackgroundEventDispatched(
     int event_id,
     EventDispatchSource dispatch_source) {
   CHECK(IsBackgroundPage());
+  // See ExtensionHost::OnEventAck() for an explanation on the restriction to
+  // this event flow.
+  if (dispatch_source == EventDispatchSource::kDispatchEventToProcess) {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&ExtensionHost::EmitLateAckedEventTask,
+                       weak_ptr_factory_.GetWeakPtr(), event_id),
+        kEventAckMetricTimeLimit);
+  }
+
   unacked_messages_[event_id] =
       UnackedEventData{event_name, dispatch_start_time, dispatch_source};
   for (auto& observer : observer_list_)
@@ -317,7 +327,21 @@ bool ExtensionHost::OnMessageReceived(const IPC::Message& message,
 }
 #endif
 
-void ExtensionHost::OnEventAck(int event_id) {
+void ExtensionHost::EmitLateAckedEventTask(int event_id) {
+  // If the event is still present then we haven't received the ack yet in
+  // `ExtensionHost::OnEventAck()`.
+  if (unacked_messages_.contains(event_id)) {
+    // TODO(crbug.com/1470045): Update this histogram once we have a way to ack
+    // only for lazy background page events. Until then this could be slightly
+    // inaccurate and not perfectly comparable to the service worker version.
+    base::UmaHistogramBoolean(
+        "Extensions.Events.DidDispatchToAckSucceed.ExtensionPage", false);
+  }
+}
+
+void ExtensionHost::OnEventAck(
+    int event_id,
+    bool event_will_run_in_lazy_background_page_script) {
   // This should always be true since event acks are only sent by extensions
   // with lazy background pages but it doesn't hurt to be extra careful.
   const bool is_background_page = IsBackgroundPage();
@@ -352,17 +376,44 @@ void ExtensionHost::OnEventAck(int event_id) {
 
   const UnackedEventData& unacked_message_data = it->second;
 
-  // Only emit events that use the EventRouter::DispatchEventToProcess() event
-  // routing flow since EventRouter::DispatchEventToSender() uses a different
-  // flow that doesn't include dispatch start and service worker start time.
-  if (unacked_messages_[event_id].dispatch_source ==
-      EventDispatchSource::kDispatchEventToProcess) {
-    base::UmaHistogramCustomMicrosecondsTimes(
-        "Extensions.Events.DispatchToAckTime.ExtensionEventPage2",
-        /*sample=*/base::TimeTicks::Now() -
-            unacked_message_data.dispatch_start_time,
-        /*min=*/base::Microseconds(1), /*max=*/base::Minutes(5),
-        /*buckets=*/100);
+  // From the browser side, we add an in-flight event (`unacked_messages_`) for
+  // every event that goes to an extension process for an extension with a lazy
+  // background page, whether or not the event is going to be received by the
+  // background page. On the browser side, we can't easily determine if an event
+  // will be handled in the background page. Instead, here we rely on a signal
+  // from the renderer that the event ran in the background page and only emit
+  // background-related metrics if that's the case.
+  // TODO(crbug.com/1470045): Remove this condition once crbug.com/1470045
+  // allows us to only ack for lazy background page events.
+  if (event_will_run_in_lazy_background_page_script) {
+    // Only emit events that use the EventRouter::DispatchEventToProcess() event
+    // routing flow since EventRouter::DispatchEventToSender() uses a different
+    // flow that doesn't include dispatch start and service worker start time.
+    if (unacked_messages_[event_id].dispatch_source ==
+        EventDispatchSource::kDispatchEventToProcess) {
+      base::UmaHistogramCustomMicrosecondsTimes(
+          "Extensions.Events.DispatchToAckTime.ExtensionEventPage3",
+          /*sample=*/base::TimeTicks::Now() -
+              unacked_message_data.dispatch_start_time,
+          /*min=*/base::Microseconds(1), /*max=*/base::Minutes(5),
+          /*buckets=*/100);
+    }
+  }
+
+  // `DidDispatchToAckSucceed` is outside of the
+  // `event_will_run_in_lazy_background_page_script` condition because we
+  // can't exclude non-script extensions page contexts (e.g. popup scripts) yet
+  // so we have to emit this for all events to remain proportionate to the
+  // `false` emits.
+  bool late_ack =
+      (base::TimeTicks::Now() - unacked_message_data.dispatch_start_time) >
+      kEventAckMetricTimeLimit;
+  if (!late_ack) {
+    // Emit only if we're within the expected event ack time limit. We'll take
+    // care of the emit for a late ack via a delayed task we started on event
+    // dispatch.
+    base::UmaHistogramBoolean(
+        "Extensions.Events.DidDispatchToAckSucceed.ExtensionPage", true);
   }
 
   EventRouter* router = EventRouter::Get(browser_context_);
@@ -470,7 +521,7 @@ void ExtensionHost::RequestMediaAccessPermission(
 
 bool ExtensionHost::CheckMediaAccessPermission(
     content::RenderFrameHost* render_frame_host,
-    const GURL& security_origin,
+    const url::Origin& security_origin,
     blink::mojom::MediaStreamType type) {
   return delegate_->CheckMediaAccessPermission(
       render_frame_host, security_origin, type, extension());

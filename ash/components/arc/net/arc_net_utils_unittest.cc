@@ -4,6 +4,7 @@
 
 #include "ash/components/arc/net/arc_net_utils.h"
 
+#include <memory>
 #include <string>
 
 #include "base/sys_byteorder.h"
@@ -19,17 +20,19 @@ namespace {
 
 constexpr char kNetworkStatePath[] = "test_path";
 
-constexpr char kTestCellularDevicePath[] = "cellular_path";
-constexpr char kTestCellularDeviceName[] = "cellular_name";
-constexpr char kTestCellularDeviceInterface[] = "cellular_interface";
-constexpr char kTestCellularDeviceGuestInterface[] = "guest_interface";
+constexpr char kTestEthDeviceInterface[] = "eth0";
+constexpr char kTestEthDeviceGuestInterface[] = "eth0";
+constexpr char kTestWiFiDevicePath[] = "wifi_path";
+constexpr char kTestWiFiDeviceName[] = "wifi_name";
+constexpr char kTestWiFiDeviceInterface[] = "wlan0";
+constexpr char kTestWiFiDeviceGuestInterface[] = "wlan0";
 
 constexpr char kGuid[] = "guid";
 constexpr char kBssid[] = "bssid";
 constexpr char kHexSsid[] = "123456";
-constexpr char kAddress1[] = "8.8.8.8";
-constexpr char kAddress2[] = "8.8.8.9";
-constexpr char kGateway[] = "8.8.8.4";
+constexpr char kTestWiFiAddress[] = "192.168.2.1";
+constexpr char kDestinationAddress[] = "192.168.1.1";
+constexpr char kGateway[] = "192.168.0.1";
 constexpr char kNameServer1[] = "1.1.1.1";
 constexpr char kNameServer2[] = "2.2.2.2";
 constexpr char kNameServerIpv6[] = "2001:4860:4860::8888";
@@ -40,9 +43,9 @@ constexpr int kSignalStrength = 80;
 constexpr int kRssi = 50;
 constexpr int kPort1 = 20000;
 constexpr int kPort2 = 30000;
-// kAddress1 and kAddress2 converted to long.
-constexpr long kLongFormatAddress1 = 134744072L;
-constexpr long kLongFormatAddress2 = 151521288L;
+// kTestWiFiAddress and kDestinationAddress in network byte order.
+constexpr uint32_t kTestWiFiAddressNBO = 0x102A8C0u;
+constexpr uint32_t kDestinationAddressNBO = 0x101A8C0u;
 
 class ArcNetUtilsTest : public testing::Test {
  public:
@@ -67,7 +70,7 @@ class ArcNetUtilsTest : public testing::Test {
 
   std::unique_ptr<base::Value> dict;
 
-  struct in_addr StringToIPv4Address(const std::string& buf) {
+  static struct in_addr StringToIPv4Address(const std::string& buf) {
     struct in_addr addr = {};
     if (!inet_pton(AF_INET, buf.c_str(), &addr)) {
       memset(&addr, 0, sizeof(addr));
@@ -75,12 +78,28 @@ class ArcNetUtilsTest : public testing::Test {
     return addr;
   }
 
-  struct in6_addr StringToIPv6Address(const std::string& buf) {
+  static struct in6_addr StringToIPv6Address(const std::string& buf) {
     struct in6_addr addr = {};
     if (!inet_pton(AF_INET6, buf.c_str(), &addr)) {
       memset(&addr, 0, sizeof(addr));
     }
     return addr;
+  }
+
+  static patchpanel::NetworkDevice GetDevice(
+      const std::string& phys_ifname,
+      const std::string& guest_ifname,
+      std::optional<patchpanel::NetworkDevice::TechnologyType>
+          technology_type) {
+    patchpanel::NetworkDevice device;
+    // Set up test network device.
+    device.set_guest_type(patchpanel::NetworkDevice::ARC);
+    device.set_phys_ifname(phys_ifname);
+    device.set_guest_ifname(guest_ifname);
+    if (technology_type.has_value()) {
+      device.set_technology_type(technology_type.value());
+    }
+    return device;
   }
 
   base::Value::Dict GetShillDict() {
@@ -92,7 +111,7 @@ class ArcNetUtilsTest : public testing::Test {
     name_servers.Append(kNameServer2);
     name_servers.Append("0.0.0.0");
 
-    static_ip_config.Set(shill::kAddressProperty, kAddress1);
+    static_ip_config.Set(shill::kAddressProperty, kTestWiFiAddress);
     static_ip_config.Set(shill::kGatewayProperty, kGateway);
     static_ip_config.Set(shill::kPrefixlenProperty, kPrefixLen);
     static_ip_config.Set(shill::kNameServersProperty, std::move(name_servers));
@@ -106,8 +125,9 @@ class ArcNetUtilsTest : public testing::Test {
   mojom::SocketConnectionEventPtr GetMojomSocketConnectionEvent() {
     mojom::SocketConnectionEventPtr mojom =
         arc::mojom::SocketConnectionEvent::New();
-    mojom->src_addr = net::IPAddress::FromIPLiteral(kAddress1).value();
-    mojom->dst_addr = net::IPAddress::FromIPLiteral(kAddress2).value();
+    mojom->src_addr = net::IPAddress::FromIPLiteral(kTestWiFiAddress).value();
+    mojom->dst_addr =
+        net::IPAddress::FromIPLiteral(kDestinationAddress).value();
     mojom->src_port = kPort1;
     mojom->dst_port = kPort2;
     mojom->proto = arc::mojom::IpProtocol::kTcp;
@@ -118,17 +138,20 @@ class ArcNetUtilsTest : public testing::Test {
 
  private:
   void AddWifiDevice() {
-    helper_.device_test()->AddDevice(kTestCellularDevicePath, shill::kTypeWifi,
-                                     kTestCellularDeviceName);
+    helper_.device_test()->AddDevice(kTestWiFiDevicePath, shill::kTypeWifi,
+                                     kTestWiFiDeviceName);
     helper_.device_test()->SetDeviceProperty(
-        kTestCellularDevicePath, shill::kInterfaceProperty,
-        base::Value(kTestCellularDeviceInterface),
+        kTestWiFiDevicePath, shill::kInterfaceProperty,
+        base::Value(kTestWiFiDeviceInterface),
         /*notify_changed=*/false);
   }
 
   void SetUpNetworkState() {
+    network_state_->PropertyChanged(shill::kVisibleProperty, base::Value(true));
+    network_state_->PropertyChanged(shill::kStateProperty,
+                                    base::Value(shill::kStateOnline));
     network_state_->PropertyChanged(shill::kDeviceProperty,
-                                    base::Value(kTestCellularDevicePath));
+                                    base::Value(kTestWiFiDevicePath));
     network_state_->PropertyChanged(shill::kGuidProperty, base::Value(kGuid));
     network_state_->PropertyChanged(shill::kTypeProperty,
                                     base::Value(shill::kTypeWifi));
@@ -347,10 +370,11 @@ TEST_F(ArcNetUtilsTest, TranslateNetworkType) {
             net_utils::TranslateNetworkType(shill::kTypeCellular));
 }
 
-TEST_F(ArcNetUtilsTest, TranslateNetworkProperties) {
+TEST_F(ArcNetUtilsTest, FillConfigurationsFromState) {
   base::Value::Dict shill_dict = GetShillDict();
-  const arc::mojom::NetworkConfigurationPtr mojo =
-      net_utils::TranslateNetworkProperties(GetNetworkState(), &shill_dict);
+  auto mojo = arc::mojom::NetworkConfiguration::New();
+  net_utils::FillConfigurationsFromState(GetNetworkState(), &shill_dict,
+                                         mojo.get());
   base::RunLoop().RunUntilIdle();
 
   EXPECT_FALSE(mojo.is_null());
@@ -358,10 +382,10 @@ TEST_F(ArcNetUtilsTest, TranslateNetworkProperties) {
   EXPECT_EQ(kGuid, mojo->guid);
   EXPECT_EQ(arc::mojom::NetworkType::WIFI, mojo->type);
   EXPECT_EQ(true, mojo->is_metered);
-  EXPECT_EQ(kTestCellularDeviceInterface, mojo->network_interface);
+  EXPECT_EQ(kTestWiFiDeviceInterface, mojo->network_interface);
 
   EXPECT_EQ(16u, mojo->host_ipv4_prefix_length);
-  EXPECT_EQ(kAddress1, mojo->host_ipv4_address);
+  EXPECT_EQ(kTestWiFiAddress, mojo->host_ipv4_address);
   EXPECT_EQ(kGateway, mojo->host_ipv4_gateway);
   EXPECT_EQ(2u, mojo->host_dns_addresses.value().size());
   EXPECT_EQ(kNameServer1, mojo->host_dns_addresses.value()[0]);
@@ -376,16 +400,13 @@ TEST_F(ArcNetUtilsTest, TranslateNetworkProperties) {
   EXPECT_EQ(kSignalStrength, mojo->wifi->signal_strength);
 }
 
-TEST_F(ArcNetUtilsTest, TranslateNetworkStates) {
-  std::vector<patchpanel::NetworkDevice> network_devices;
-  patchpanel::NetworkDevice device;
-
-  // Set up test network device.
-  device.set_guest_type(patchpanel::NetworkDevice::ARC);
-  device.set_phys_ifname(kTestCellularDeviceInterface);
-  device.set_guest_ifname(kTestCellularDeviceGuestInterface);
-  // Set binary form of IP address.
-  device.set_ipv4_addr(StringToIPv4Address(kAddress1).s_addr);
+TEST_F(ArcNetUtilsTest, FillConfigurationsFromDevice) {
+  auto mojo = arc::mojom::NetworkConfiguration::New();
+  auto device =
+      GetDevice(kTestWiFiDeviceInterface, kTestWiFiDeviceGuestInterface,
+                patchpanel::NetworkDevice::WIFI);
+  // set IP config of device.
+  device.set_ipv4_addr(StringToIPv4Address(kTestWiFiAddress).s_addr);
   device.set_host_ipv4_addr(StringToIPv4Address(kGateway).s_addr);
   device.mutable_ipv4_subnet()->set_prefix_len(kPrefixLen);
   auto ipv4_addr = StringToIPv4Address(kNameServer1);
@@ -394,7 +415,26 @@ TEST_F(ArcNetUtilsTest, TranslateNetworkStates) {
   auto ipv6_addr = StringToIPv6Address(kNameServerIpv6);
   device.set_dns_proxy_ipv6_addr(reinterpret_cast<const char*>(&ipv6_addr),
                                  sizeof(ipv6_addr));
-  network_devices.push_back(device);
+  net_utils::FillConfigurationsFromDevice(device, mojo.get());
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(kTestWiFiDeviceGuestInterface, mojo->arc_network_interface);
+  EXPECT_EQ(kTestWiFiAddress, mojo->arc_ipv4_address);
+  EXPECT_EQ(kGateway, mojo->arc_ipv4_gateway);
+  EXPECT_EQ((uint32_t)kPrefixLen, mojo->arc_ipv4_prefix_length);
+  EXPECT_EQ(kNameServer1, mojo->dns_proxy_addresses.value()[0]);
+  EXPECT_EQ(kNameServerIpv6, mojo->dns_proxy_addresses.value()[1]);
+}
+
+TEST_F(ArcNetUtilsTest, TranslateNetworkDevices) {
+  std::vector<patchpanel::NetworkDevice> network_devices;
+
+  network_devices.emplace_back(GetDevice(kTestEthDeviceInterface,
+                                         kTestEthDeviceGuestInterface,
+                                         patchpanel::NetworkDevice::ETHERNET));
+  network_devices.emplace_back(GetDevice(kTestWiFiDeviceInterface,
+                                         kTestWiFiDeviceGuestInterface,
+                                         patchpanel::NetworkDevice::WIFI));
 
   std::map<std::string, base::Value::Dict> shill_network_properties;
   shill_network_properties[kNetworkStatePath] = GetShillDict();
@@ -402,19 +442,45 @@ TEST_F(ArcNetUtilsTest, TranslateNetworkStates) {
   ash::NetworkStateHandler::NetworkStateList network_states;
   network_states.push_back(GetNetworkState());
   std::vector<arc::mojom::NetworkConfigurationPtr> res =
+      net_utils::TranslateNetworkDevices(network_devices, /*arc_vpn_path=*/"",
+                                         network_states,
+                                         shill_network_properties);
+  base::RunLoop().RunUntilIdle();
+
+  // In TranslateNetworkDevices, A network devices without associated state is
+  // reported, so both the ethernet device and the wifi device are available.
+
+  EXPECT_EQ(2u, res.size());
+  for (const arc::mojom::NetworkConfigurationPtr& mojo : res) {
+    if (mojo->network_interface.value() == kTestWiFiDeviceInterface) {
+      EXPECT_EQ(kTestWiFiDeviceGuestInterface, mojo->arc_network_interface);
+      EXPECT_EQ(mojom::NetworkType::WIFI, mojo->type);
+      EXPECT_EQ(kGuid, mojo->guid);
+    } else if (mojo->network_interface.value() == kTestEthDeviceInterface) {
+      EXPECT_EQ(kTestEthDeviceGuestInterface, mojo->arc_network_interface);
+      EXPECT_EQ(mojom::NetworkType::ETHERNET, mojo->type);
+      EXPECT_EQ(0u, mojo->guid.length());
+    } else {
+      GTEST_FAIL() << "Unknown network interface "
+                   << mojo->network_interface.value_or("(no ifname)");
+    }
+  }
+}
+
+TEST_F(ArcNetUtilsTest, TranslateNetworkStates) {
+  std::map<std::string, base::Value::Dict> shill_network_properties;
+  shill_network_properties[kNetworkStatePath] = GetShillDict();
+
+  ash::NetworkStateHandler::NetworkStateList network_states;
+  network_states.push_back(GetNetworkState());
+  std::vector<arc::mojom::NetworkConfigurationPtr> res =
       net_utils::TranslateNetworkStates(/*arc_vpn_path=*/"", network_states,
-                                        shill_network_properties,
-                                        network_devices);
+                                        shill_network_properties);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(1u, network_states.size());
+  EXPECT_EQ(1u, res.size());
   EXPECT_EQ(kNetworkStatePath, res[0]->service_name);
-  EXPECT_EQ(kTestCellularDeviceGuestInterface, res[0]->arc_network_interface);
-  EXPECT_EQ(kAddress1, res[0]->arc_ipv4_address);
-  EXPECT_EQ(kGateway, res[0]->arc_ipv4_gateway);
-  EXPECT_EQ(16u, res[0]->arc_ipv4_prefix_length);
-  EXPECT_EQ(kNameServer1, res[0]->dns_proxy_addresses.value()[0]);
-  EXPECT_EQ(kNameServerIpv6, res[0]->dns_proxy_addresses.value()[1]);
 }
 
 TEST_F(ArcNetUtilsTest, TranslateSubjectNameMatchListToValue) {
@@ -448,10 +514,10 @@ TEST_F(ArcNetUtilsTest, TranslateSocketConnectionEvent) {
   const auto msg = net_utils::TranslateSocketConnectionEvent(mojom);
   EXPECT_NE(msg, nullptr);
   struct in_addr addr = {};
-  addr.s_addr = kLongFormatAddress1;
+  addr.s_addr = kTestWiFiAddressNBO;
   EXPECT_EQ(0,
             memcmp((void*)&addr, (void*)msg->saddr().c_str(), sizeof(in_addr)));
-  addr.s_addr = kLongFormatAddress2;
+  addr.s_addr = kDestinationAddressNBO;
   EXPECT_EQ(0,
             memcmp((void*)&addr, (void*)msg->daddr().c_str(), sizeof(in_addr)));
   EXPECT_EQ(kPort1, msg->sport());

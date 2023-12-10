@@ -13,14 +13,17 @@
 #include "base/no_destructor.h"
 #include "base/ranges/algorithm.h"
 #include "build/build_config.h"
+#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/extensions/extension_action_view_controller.h"
 #include "chrome/browser/ui/extensions/settings_api_bubble_helpers.h"
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_hover_card_types.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/desktop_capture/desktop_media_picker_views.h"
 #include "chrome/browser/ui/views/extensions/browser_action_drag_data.h"
@@ -32,6 +35,8 @@
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_action_hover_card_controller.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_actions_bar_bubble_views.h"
+#include "chrome/common/pref_names.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/event_constants.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/common/extension_features.h"
@@ -39,6 +44,7 @@
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/ui_base_features.h"
@@ -186,6 +192,27 @@ ExtensionsToolbarContainer::ExtensionsToolbarContainer(Browser* browser,
   AddMainItem(main_item);
   UpdateControlsVisibility();
 
+  // Create close side panel button.
+  if (base::FeatureList::IsEnabled(features::kSidePanelPinning)) {
+    std::unique_ptr<ToolbarButton> close_side_panel_button =
+        std::make_unique<ToolbarButton>(base::BindRepeating(
+            &ExtensionsToolbarContainer::CloseSidePanelButtonPressed,
+            base::Unretained(this)));
+    close_side_panel_button->SetTooltipText(l10n_util::GetStringUTF16(
+        IDS_EXTENSIONS_SUBMENU_CLOSE_SIDE_PANEL_ITEM));
+    close_side_panel_button->SetVisible(false);
+    close_side_panel_button->SetProperty(views::kFlexBehaviorKey,
+                                         views::FlexSpecification());
+    close_side_panel_button_ = AddChildView(std::move(close_side_panel_button));
+    UpdateCloseSidePanelButtonIcon();
+    pref_change_registrar_.Init(browser_->profile()->GetPrefs());
+    pref_change_registrar_.Add(
+        prefs::kSidePanelHorizontalAlignment,
+        base::BindRepeating(
+            &ExtensionsToolbarContainer::UpdateCloseSidePanelButtonIcon,
+            base::Unretained(this)));
+  }
+
   CreateActions();
 
   // TODO(pbos): Consider splitting out tab-strip observing into another class.
@@ -198,6 +225,8 @@ ExtensionsToolbarContainer::~ExtensionsToolbarContainer() {
   // Eliminate the hover card first to avoid order-of-operation issues (e.g.
   // avoid events during teardown).
   action_hover_card_controller_.reset();
+
+  close_side_panel_button_ = nullptr;
 
   // The child views hold pointers to the |actions_|, and thus need to be
   // destroyed before them.
@@ -222,6 +251,10 @@ void ExtensionsToolbarContainer::UpdateAllIcons() {
 
   for (const auto& action : actions_)
     action->UpdateState();
+
+  if (close_side_panel_button_) {
+    close_side_panel_button_->UpdateIcon();
+  }
 }
 
 // TODO(emiliapaz): Move this method as an accessor in the header file once the
@@ -379,35 +412,30 @@ ToolbarActionViewController* ExtensionsToolbarContainer::GetActionForId(
   return nullptr;
 }
 
-absl::optional<extensions::ExtensionId>
+std::optional<extensions::ExtensionId>
 ExtensionsToolbarContainer::GetPoppedOutActionId() const {
   return popped_out_action_;
 }
 
-void ExtensionsToolbarContainer::OnContextMenuShown(
+void ExtensionsToolbarContainer::OnContextMenuShownFromToolbar(
     const std::string& action_id) {
-  // Only update the extension's toolbar visibility if the context menu is being
-  // shown from an extension visible in the toolbar.
-  if (!IsExtensionsMenuShowing()) {
 #if BUILDFLAG(IS_MAC)
     // TODO(crbug/1065584): Remove hiding active popup here once this bug is
     // fixed.
     HideActivePopup();
 #endif
+
     extension_with_open_context_menu_id_ = action_id;
     UpdateIconVisibility(extension_with_open_context_menu_id_.value());
-  }
 }
 
-void ExtensionsToolbarContainer::OnContextMenuClosed() {
-  // |extension_with_open_context_menu_id_| does not have a value when a context
-  // menu is being shown from within the extensions menu.
-  if (extension_with_open_context_menu_id_.has_value()) {
-    absl::optional<extensions::ExtensionId> const
-        extension_with_open_context_menu = extension_with_open_context_menu_id_;
-    extension_with_open_context_menu_id_.reset();
-    UpdateIconVisibility(extension_with_open_context_menu.value());
-  }
+void ExtensionsToolbarContainer::OnContextMenuClosedFromToolbar() {
+  CHECK(extension_with_open_context_menu_id_.has_value());
+
+  extensions::ExtensionId const extension_id =
+      extension_with_open_context_menu_id_.value();
+  extension_with_open_context_menu_id_.reset();
+  UpdateIconVisibility(extension_id);
 }
 
 bool ExtensionsToolbarContainer::IsActionVisibleOnToolbar(
@@ -418,7 +446,7 @@ bool ExtensionsToolbarContainer::IsActionVisibleOnToolbar(
 void ExtensionsToolbarContainer::UndoPopOut() {
   DCHECK(popped_out_action_);
   const extensions::ExtensionId popped_out_action = popped_out_action_.value();
-  popped_out_action_ = absl::nullopt;
+  popped_out_action_ = std::nullopt;
   UpdateIconVisibility(popped_out_action);
   UpdateContainerVisibilityAfterAnimation();
 }
@@ -669,8 +697,15 @@ void ExtensionsToolbarContainer::ReorderViews() {
   if (drop_info_.get())
     ReorderChildView(GetViewForId(drop_info_->action_id), drop_info_->index);
 
-  // The extension button is always last.
-  ReorderChildView(main_item(), children().size());
+  // The extension button is always second to last if |close_side_panel_button_|
+  // exists, or last otherwise.
+  ReorderChildView(main_item(), close_side_panel_button_ ? children().size() - 1
+                                                         : children().size());
+
+  // The close side panel button is always last.
+  if (close_side_panel_button_) {
+    ReorderChildView(close_side_panel_button_, children().size());
+  }
 }
 
 void ExtensionsToolbarContainer::CreateActions() {
@@ -987,6 +1022,16 @@ void ExtensionsToolbarContainer::WindowControlsOverlayEnabledChanged(
           .WithOrder(1));
 }
 
+void ExtensionsToolbarContainer::UpdateSidePanelState(bool is_active) {
+  close_side_panel_button_->SetVisible(is_active);
+  if (is_active) {
+    close_side_panel_button_anchor_higlight_ =
+        close_side_panel_button_->AddAnchorHighlight();
+  } else {
+    close_side_panel_button_anchor_higlight_.reset();
+  }
+}
+
 void ExtensionsToolbarContainer::MovePinnedAction(
     const ToolbarActionsModel::ActionId& action_id,
     size_t index,
@@ -1055,6 +1100,10 @@ void ExtensionsToolbarContainer::MaybeShowIPH() {
   }
 }
 
+void ExtensionsToolbarContainer::CloseSidePanelButtonPressed() {
+  SidePanelUI::GetSidePanelUIForBrowser(browser_)->Close();
+}
+
 void ExtensionsToolbarContainer::UpdateToolbarActionHoverCard(
     ToolbarActionView* action_view,
     ToolbarActionHoverCardUpdateType update_type) {
@@ -1085,6 +1134,13 @@ void ExtensionsToolbarContainer::OnMouseMoved(const ui::MouseEvent& event) {
   // moving the mouse from toolbar action view to toolbar controls.
   UpdateToolbarActionHoverCard(nullptr,
                                ToolbarActionHoverCardUpdateType::kHover);
+}
+
+void ExtensionsToolbarContainer::UpdateCloseSidePanelButtonIcon() {
+  const bool is_right_aligned = browser_->profile()->GetPrefs()->GetBoolean(
+      prefs::kSidePanelHorizontalAlignment);
+  close_side_panel_button_->SetVectorIcon(
+      is_right_aligned ? kRightPanelCloseIcon : kLeftPanelCloseIcon);
 }
 
 BEGIN_METADATA(ExtensionsToolbarContainer, ToolbarIconContainerView)

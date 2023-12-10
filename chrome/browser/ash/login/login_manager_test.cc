@@ -80,17 +80,31 @@ void LoginManagerTest::RegisterUser(const AccountId& account_id) {
 
 constexpr char LoginManagerTest::kPassword[] = "password";
 
+constexpr char LoginManagerTest::kLocalPassword[] = "local-password";
+
 UserContext LoginManagerTest::CreateUserContext(const AccountId& account_id,
                                                 const std::string& password) {
   UserContext user_context(user_manager::UserType::USER_TYPE_REGULAR,
                            account_id);
   user_context.SetKey(Key(password));
+  user_context.SetGaiaPassword(GaiaPassword(password));
   user_context.SetPasswordKey(Key(password));
   if (account_id.GetUserEmail() == FakeGaiaMixin::kEnterpriseUser1) {
     user_context.SetRefreshToken(FakeGaiaMixin::kTestRefreshToken1);
   } else if (account_id.GetUserEmail() == FakeGaiaMixin::kEnterpriseUser2) {
     user_context.SetRefreshToken(FakeGaiaMixin::kTestRefreshToken2);
   }
+  return user_context;
+}
+
+UserContext LoginManagerTest::CreateUserContextWithLocalPassword(
+    const AccountId& account_id,
+    const std::string& password) {
+  UserContext user_context(user_manager::UserType::USER_TYPE_REGULAR,
+                           account_id);
+  user_context.SetKey(Key(password));
+  user_context.SetLocalPasswordInput(LocalPasswordInput(password));
+  user_context.SetPasswordKey(Key(password));
   return user_context;
 }
 
@@ -131,6 +145,13 @@ bool LoginManagerTest::AddUserToSession(const UserContext& user_context) {
 
 void LoginManagerTest::LoginUser(const AccountId& account_id) {
   const UserContext user_context = CreateUserContext(account_id, kPassword);
+  SetExpectedCredentials(user_context);
+  EXPECT_TRUE(TryToLogin(user_context));
+}
+
+void LoginManagerTest::LoginUserWithLocalPassword(const AccountId& account_id) {
+  const UserContext user_context =
+      CreateUserContextWithLocalPassword(account_id, kLocalPassword);
   SetExpectedCredentials(user_context);
   EXPECT_TRUE(TryToLogin(user_context));
 }

@@ -46,7 +46,7 @@ gfx::Rect GetBoundsIgnoringTransforms(const aura::Window* window,
 
 std::unique_ptr<app_restore::WindowInfo> BuildWindowInfo(
     aura::Window* window,
-    absl::optional<int> activation_index,
+    std::optional<int> activation_index,
     bool for_saved_desks,
     const std::vector<aura::Window*>& mru_windows) {
   auto window_info = std::make_unique<app_restore::WindowInfo>();
@@ -120,11 +120,11 @@ std::unique_ptr<app_restore::WindowInfo> BuildWindowInfo(
   if (window_state->IsSnapped()) {
     // `WindowState::snap_ratio_` is stored as a float between 0 and 1. Convert
     // it to a percentage here.
-    absl::optional<float> snap_ratio = window_state->snap_ratio();
+    std::optional<float> snap_ratio = window_state->snap_ratio();
     window_info->snap_percentage =
-        snap_ratio.has_value() ? absl::make_optional(std::round(
+        snap_ratio.has_value() ? std::make_optional(std::round(
                                      100 * window_state->snap_ratio().value()))
-                               : absl::nullopt;
+                               : std::nullopt;
   }
 
   window_info->display_id =

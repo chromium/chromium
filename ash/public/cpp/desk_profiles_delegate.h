@@ -5,6 +5,7 @@
 #ifndef ASH_PUBLIC_CPP_DESK_PROFILES_DELEGATE_H_
 #define ASH_PUBLIC_CPP_DESK_PROFILES_DELEGATE_H_
 
+#include <cstdint>
 #include <string>
 #include <vector>
 
@@ -53,6 +54,13 @@ class ASH_PUBLIC_EXPORT DeskProfilesDelegate {
 
   // Returns a snapshot of the current profiles.
   virtual std::vector<LacrosProfileSummary> GetProfilesSnapshot() const = 0;
+
+  // Returns the snapshot of profile by giving profile id.
+  virtual const LacrosProfileSummary* GetProfilesSnapshotByProfileId(
+      uint64_t profile_id) const = 0;
+
+  // Returns the primary profile ID.
+  virtual uint64_t GetPrimaryProfileId() const = 0;
 
   // Adds or removes an observer that will receive profile updates.
   virtual void AddObserver(Observer* observer) = 0;

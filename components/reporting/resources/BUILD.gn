@@ -52,6 +52,7 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//components/reporting/util:status",
+    "//components/reporting/util:status_macros",
     "//components/reporting/util:test_callbacks_support",
     "//testing/gmock",
     "//testing/gtest",

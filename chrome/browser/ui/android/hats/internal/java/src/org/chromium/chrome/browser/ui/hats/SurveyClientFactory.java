@@ -15,9 +15,7 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.profiles.Profile;
 
-/**
- * Factory class used to create SurveyClient.
- */
+/** Factory class used to create SurveyClient. */
 public class SurveyClientFactory {
     private static SurveyClientFactory sInstance;
     private static boolean sHasInstanceForTesting;
@@ -25,9 +23,10 @@ public class SurveyClientFactory {
     private final ObservableSupplier<Boolean> mCrashUploadPermissionSupplier;
 
     protected SurveyClientFactory(ObservableSupplier<Boolean> crashUploadPermissionSupplier) {
-        mCrashUploadPermissionSupplier = crashUploadPermissionSupplier != null
-                ? crashUploadPermissionSupplier
-                : new ObservableSupplierImpl<>();
+        mCrashUploadPermissionSupplier =
+                crashUploadPermissionSupplier != null
+                        ? crashUploadPermissionSupplier
+                        : new ObservableSupplierImpl<>();
     }
 
     /**
@@ -43,22 +42,19 @@ public class SurveyClientFactory {
         ResettersForTesting.register(() -> sInstance = null);
     }
 
-    /**
-     * Set a stubbed factory for testing.
-     */
+    /** Set a stubbed factory for testing. */
     public static void setInstanceForTesting(SurveyClientFactory testFactory) {
         var origin = sInstance;
         sInstance = testFactory;
         sHasInstanceForTesting = (testFactory != null);
-        ResettersForTesting.register(() -> {
-            sInstance = origin;
-            sHasInstanceForTesting = false;
-        });
+        ResettersForTesting.register(
+                () -> {
+                    sInstance = origin;
+                    sHasInstanceForTesting = false;
+                });
     }
 
-    /**
-     * Return the singleton SurveyClientFactory instance.
-     */
+    /** Return the singleton SurveyClientFactory instance. */
     public static SurveyClientFactory getInstance() {
         assert sInstance != null : "SurveyClientFactory is not initialized.";
         return sInstance;
@@ -85,9 +81,7 @@ public class SurveyClientFactory {
                 profile);
     }
 
-    /**
-     * Get the crash upload supplier initialized in this factory.
-     */
+    /** Get the crash upload supplier initialized in this factory. */
     public Supplier<Boolean> getCrashUploadPermissionSupplier() {
         return mCrashUploadPermissionSupplier;
     }

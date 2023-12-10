@@ -45,7 +45,7 @@
     [Reflect] attribute DOMString integrity;
 
     // https://html.spec.whatwg.org/multipage/scripting.html#dom-script-supports
-    [RuntimeEnabled=ScriptElementSupports, CallWith=ScriptState, Measure] static boolean supports(DOMString type);
+    [Measure] static boolean supports(DOMString type);
 
     // https://html.spec.whatwg.org/multipage/scripting.html#dom-script-blocking
     [SameObject, PutForwards=value] readonly attribute DOMTokenList blocking;

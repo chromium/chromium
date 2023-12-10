@@ -45,8 +45,8 @@ public class PrivacySandboxBridge {
     }
 
     public static void setTopicAllowed(Topic topic, boolean allowed) {
-        PrivacySandboxBridgeJni.get().setTopicAllowed(
-                topic.getTopicId(), topic.getTaxonomyVersion(), allowed);
+        PrivacySandboxBridgeJni.get()
+                .setTopicAllowed(topic.getTopicId(), topic.getTaxonomyVersion(), allowed);
     }
 
     @CalledByNative
@@ -55,7 +55,11 @@ public class PrivacySandboxBridge {
     }
 
     private static List<Topic> sortTopics(List<Topic> topics) {
-        Collections.sort(topics, (o1, o2) -> { return o1.getName().compareTo(o2.getName()); });
+        Collections.sort(
+                topics,
+                (o1, o2) -> {
+                    return o1.getName().compareTo(o2.getName());
+                });
         return topics;
     }
 
@@ -111,26 +115,50 @@ public class PrivacySandboxBridge {
         PrivacySandboxBridgeJni.get().topicsToggleChanged(newValue);
     }
 
+    public static void setAllPrivacySandboxAllowedForTesting() {
+        PrivacySandboxBridgeJni.get().setAllPrivacySandboxAllowedForTesting(); // IN-TEST
+    }
+
     @NativeMethods
     public interface Natives {
         boolean isPrivacySandboxEnabled();
+
         boolean isPrivacySandboxManaged();
+
         boolean isPrivacySandboxRestricted();
+
         boolean isRestrictedNoticeEnabled();
+
         boolean isFirstPartySetsDataAccessEnabled();
+
         boolean isFirstPartySetsDataAccessManaged();
+
         boolean isPartOfManagedFirstPartySet(String origin);
+
         void setPrivacySandboxEnabled(boolean enabled);
+
         void setFirstPartySetsDataAccessEnabled(boolean enabled);
+
         String getFirstPartySetOwner(String memberOrigin);
+
         Topic[] getCurrentTopTopics();
+
         Topic[] getBlockedTopics();
+
         void setTopicAllowed(int topicId, int taxonomyVersion, boolean allowed);
+
         void getFledgeJoiningEtldPlusOneForDisplay(Callback<String[]> callback);
+
         String[] getBlockedFledgeJoiningTopFramesForDisplay();
+
         void setFledgeJoiningAllowed(String topFrameEtldPlus1, boolean allowed);
+
         int getRequiredPromptType();
+
         void promptActionOccurred(int action);
+
         void topicsToggleChanged(boolean newValue);
+
+        void setAllPrivacySandboxAllowedForTesting(); // IN-TEST
     }
 }

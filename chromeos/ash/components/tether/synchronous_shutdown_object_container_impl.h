@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/tether/synchronous_shutdown_object_container.h"
 
 class PrefService;
@@ -27,9 +28,7 @@ class SecureChannelClient;
 }
 
 class NetworkConnect;
-class NetworkConnectionHandler;
 class NetworkStateHandler;
-class TechnologyStateController;
 
 namespace tether {
 
@@ -71,10 +70,8 @@ class SynchronousShutdownObjectContainerImpl
         GmsCoreNotificationsStateTrackerImpl*
             gms_core_notifications_state_tracker,
         PrefService* pref_service,
-        NetworkStateHandler* network_state_handler,
-        TechnologyStateController* technology_state_controller,
+        NetworkHandler* network_handler,
         NetworkConnect* network_connect,
-        NetworkConnectionHandler* network_connection_handler,
         session_manager::SessionManager* session_manager,
         device_sync::DeviceSyncClient* device_sync_client,
         secure_channel::SecureChannelClient* secure_channel_client);
@@ -87,9 +84,8 @@ class SynchronousShutdownObjectContainerImpl
         GmsCoreNotificationsStateTrackerImpl*
             gms_core_notifications_state_tracker,
         PrefService* pref_service,
-        NetworkStateHandler* network_state_handler,
+        NetworkHandler* network_handler,
         NetworkConnect* network_connect,
-        NetworkConnectionHandler* network_connection_handler,
         session_manager::SessionManager* session_manager,
         device_sync::DeviceSyncClient* device_sync_client,
         secure_channel::SecureChannelClient* secure_channel_client) = 0;
@@ -119,10 +115,8 @@ class SynchronousShutdownObjectContainerImpl
       GmsCoreNotificationsStateTrackerImpl*
           gms_core_notifications_state_tracker,
       PrefService* pref_service,
-      NetworkStateHandler* network_state_handler,
-      TechnologyStateController* technology_state_controller,
+      NetworkHandler* network_handler,
       NetworkConnect* network_connect,
-      NetworkConnectionHandler* network_connection_handler,
       session_manager::SessionManager* session_manager,
       device_sync::DeviceSyncClient* device_sync_client,
       secure_channel::SecureChannelClient* secure_channel_client);

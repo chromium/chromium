@@ -16,10 +16,10 @@ namespace autofill {
 class AutofillOfferData;
 struct ServerCvc;
 class AutofillWalletUsageData;
-class AutofillProfile;
 class AutofillTable;
 class CreditCard;
 struct CreditCardCloudTokenData;
+class Iban;
 struct PaymentsCustomerData;
 class VirtualCardUsageData;
 
@@ -32,13 +32,6 @@ std::string GetBase64DecodedId(const std::string& id);
 std::string GetStorageKeyForWalletMetadataTypeAndSpecificsId(
     sync_pb::WalletMetadataSpecifics::Type type,
     const std::string& specifics_id);
-
-// Sets the fields of the |wallet_specifics| based on the the specified
-// |address|. If |enforce_utf8|, ids are encoded into UTF-8.
-void SetAutofillWalletSpecificsFromServerProfile(
-    const AutofillProfile& address,
-    sync_pb::AutofillWalletSpecifics* wallet_specifics,
-    bool enforce_utf8 = false);
 
 // Sets the fields of the |wallet_specifics| based on the the specified |card|.
 // If |enforce_utf8|, ids are encoded into UTF-8.
@@ -57,6 +50,13 @@ void SetAutofillWalletSpecificsFromPaymentsCustomerData(
 // |cloud_token_data|. If |enforce_utf8|, ids are encoded into UTF-8.
 void SetAutofillWalletSpecificsFromCreditCardCloudTokenData(
     const CreditCardCloudTokenData& cloud_token_data,
+    sync_pb::AutofillWalletSpecifics* wallet_specifics,
+    bool enforce_utf8 = false);
+
+// Sets the field of the `wallet_specifics` based on the specified
+// `iban`. If `enforce_utf8`, ids are encoded into UTF-8.
+void SetAutofillWalletSpecificsFromMaskedIban(
+    const Iban& iban,
     sync_pb::AutofillWalletSpecifics* wallet_specifics,
     bool enforce_utf8 = false);
 
@@ -95,29 +95,25 @@ ServerCvc AutofillWalletCvcStructDataFromWalletCredentialSpecifics(
 VirtualCardUsageData VirtualCardUsageDataFromUsageSpecifics(
     const sync_pb::AutofillWalletUsageSpecifics& usage_specifics);
 
-// Creates an AutofillProfile from the specified |address| specifics.
-AutofillProfile ProfileFromSpecifics(
-    const sync_pb::WalletPostalAddress& address);
-
 // TODO(sebsg): This should probably copy the converted state for the address
 // too.
-// Copies the metadata from the local cards (if present) to the corresponding
-// server cards so that they don't get overwritten. This is because the wallet
-// data does not include those. They are handled by the
-// AutofillWalletMetadataSyncBridge.
-void CopyRelevantWalletMetadataFromDisk(
+// Copies the metadata and the CVC data from the local cards (if
+// present) to the corresponding server cards so that they don't get
+// overwritten. This is needed as the incoming wallet data does not include
+// those and for updates, we do a "Remove + Add", instead of "Update". The
+// "Remove + Add" operation is handled by the AutofillWalletMetadataSyncBridge
+// and AutofillWalletCredentialSyncBridge.
+void CopyRelevantWalletMetadataAndCvc(
     const AutofillTable& table,
     std::vector<CreditCard>* cards_from_server);
 
-// Populates the wallet datatypes from the sync data and uses the sync data to
-// link the card to its billing address. If |wallet_addresses| is a nullptr,
-// this function will not extract addresses.
+// Populates the wallet datatypes from the sync data.
 void PopulateWalletTypesFromSyncData(
     const ::syncer::EntityChangeList& entity_data,
-    std::vector<CreditCard>* wallet_cards,
-    std::vector<AutofillProfile>* wallet_addresses,
-    std::vector<PaymentsCustomerData>* customer_data,
-    std::vector<CreditCardCloudTokenData>* cloud_token_data);
+    std::vector<CreditCard>& wallet_cards,
+    std::vector<Iban>& wallet_ibans,
+    std::vector<PaymentsCustomerData>& customer_data,
+    std::vector<CreditCardCloudTokenData>& cloud_token_data);
 
 // A helper function to compare two sets of data. Returns true if there is
 // any difference. It uses the Compare() of the Item class instead of comparison

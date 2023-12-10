@@ -38,9 +38,17 @@ import org.chromium.url.GURL;
     /* package */ static final WritableObjectPropertyKey<Runnable> CLOSE_BUTTON_ON_CLICK_CALLBACK =
             new WritableObjectPropertyKey<>();
 
-    /* package */ static final PropertyKey[] ALL_KEYS = new PropertyKey[] {URL, TITLE,
-            LOAD_PROGRESS, PROGRESS_VISIBLE, SECURITY_ICON, SECURITY_ICON_CONTENT_DESCRIPTION,
-            SECURITY_ICON_ON_CLICK_CALLBACK, CLOSE_BUTTON_ON_CLICK_CALLBACK};
+    /* package */ static final PropertyKey[] ALL_KEYS =
+            new PropertyKey[] {
+                URL,
+                TITLE,
+                LOAD_PROGRESS,
+                PROGRESS_VISIBLE,
+                SECURITY_ICON,
+                SECURITY_ICON_CONTENT_DESCRIPTION,
+                SECURITY_ICON_ON_CLICK_CALLBACK,
+                CLOSE_BUTTON_ON_CLICK_CALLBACK
+            };
 
     // Prevent instantiation.
     private PaymentHandlerToolbarProperties() {}

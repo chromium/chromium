@@ -8,9 +8,11 @@
 import {AutomationPredicate} from '../../common/automation_predicate.js';
 import {AutomationUtil} from '../../common/automation_util.js';
 import {constants} from '../../common/constants.js';
+import {Cursor} from '../../common/cursors/cursor.js';
 import {CursorRange} from '../../common/cursors/range.js';
 import {BridgeConstants} from '../common/bridge_constants.js';
 import {BridgeHelper} from '../common/bridge_helper.js';
+import {EarconId} from '../common/earcon_id.js';
 import {TtsSpeechProperties} from '../common/tts_types.js';
 
 import {ChromeVox} from './chromevox.js';
@@ -69,14 +71,8 @@ export class ChromeVoxRange {
     return null;
   }
 
-  /** @return {?CursorRange} */
-  static get pageSel() {
-    return ChromeVoxRange.instance.pageSel_;
-  }
-
-  /** @param {?CursorRange} newPageSel */
-  static set pageSel(newPageSel) {
-    ChromeVoxRange.instance.pageSel_ = newPageSel;
+  static clearSelection() {
+    ChromeVoxRange.instance.pageSel_ = null;
   }
 
   /**
@@ -118,6 +114,14 @@ export class ChromeVoxRange {
    */
   static set(newRange, opt_fromEditing) {
     ChromeVoxRange.instance.set_(...arguments);
+  }
+
+  /**
+   * @return {boolean} true if the selection is toggled on, false if it is
+   * toggled off.
+   */
+  static toggleSelection() {
+    return ChromeVoxRange.instance.toggleSelection_();
   }
 
   // ================= Observer Functions =================
@@ -352,16 +356,14 @@ export class ChromeVoxRange {
     if (prevRange && prevRange.start.node && start) {
       const entered =
           AutomationUtil.getUniqueAncestors(prevRange.start.node, start);
+      const isPluginOrIframe =
+          AutomationPredicate.roles([RoleType.PLUGIN_OBJECT, RoleType.IFRAME]);
 
-      entered
-          .filter(
-              ancestor => ancestor.role === RoleType.PLUGIN_OBJECT ||
-                  ancestor.role === RoleType.IFRAME)
-          .forEach(container => {
-            if (!container.state[StateType.FOCUSED]) {
-              container.focus();
-            }
-          });
+      entered.filter(isPluginOrIframe).forEach(container => {
+        if (!container.state[StateType.FOCUSED]) {
+          container.focus();
+        }
+      });
     }
 
     if (start.state[StateType.FOCUSED] || end.state[StateType.FOCUSED]) {
@@ -404,6 +406,44 @@ export class ChromeVoxRange {
     // the next or previous focusable node from |start|.
     if (!start.state[StateType.OFFSCREEN]) {
       start.setSequentialFocusNavigationStartingPoint();
+    }
+  }
+
+  /**
+   * @return {boolean} true if the selection is toggled on, false if it is
+   * toggled off.
+   * @private
+   */
+  toggleSelection_() {
+    if (!this.pageSel_) {
+      ChromeVox.earcons.playEarcon(EarconId.SELECTION);
+      this.pageSel_ = ChromeVoxRange.current;
+      DesktopAutomationInterface.instance.ignoreDocumentSelectionFromAction(
+          true);
+      return true;
+    } else {
+      const root = this.current_.start.node.root;
+      if (root && root.selectionStartObject && root.selectionEndObject &&
+          !isNaN(Number(root.selectionStartOffset)) &&
+          !isNaN(Number(root.selectionEndOffset))) {
+        ChromeVox.earcons.playEarcon(EarconId.SELECTION_REVERSE);
+        const sel = new CursorRange(
+            new Cursor(
+                root.selectionStartObject,
+                /** @type {number} */ (root.selectionStartOffset)),
+            new Cursor(
+                root.selectionEndObject,
+                /** @type {number} */ (root.selectionEndOffset)));
+        const o =
+            new Output()
+                .format('@end_selection')
+                .withSpeechAndBraille(sel, sel, OutputCustomEvent.NAVIGATE)
+                .go();
+        DesktopAutomationInterface.instance.ignoreDocumentSelectionFromAction(
+            false);
+      }
+      this.pageSel_ = null;
+      return false;
     }
   }
 }

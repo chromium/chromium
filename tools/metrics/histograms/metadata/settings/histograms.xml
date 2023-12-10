@@ -52,22 +52,6 @@ chromium-metrics-reviews@google.com.
   <variant name="WindowPlacement"/>
 </variants>
 
-<histogram name="Settings.AdvancedSpellcheck.OnStartup" enum="BooleanEnabled"
-    expires_after="2023-05-07">
-  <obsolete>
-    Logged on profile open, including for profiles such as guest profiles that
-    do not allow modification of this setting. (This value logged on those cases
-    is the default value for the setting.) Replaced in M-110 with the histogram
-    Settings.AdvancedSpellcheck.OnStartup2, which is similar but only emitted on
-    regular profiles.
-  </obsolete>
-  <owner>harrisonsean@chromium.org</owner>
-  <owner>chrome-friendly-settings@google.com</owner>
-  <summary>
-    The state of the advanced spellcheck setting, recorded on profile open.
-  </summary>
-</histogram>
-
 <histogram name="Settings.AdvancedSpellcheck.OnStartup2" enum="BooleanEnabled"
     expires_after="2024-02-01">
   <owner>harrisonsean@chromium.org</owner>
@@ -87,22 +71,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Whether or not navigations to the All Sites page occured because the user
     was redirected from the deprecated Site Data page.
-  </summary>
-</histogram>
-
-<histogram name="Settings.AutocompleteSearches.OnStartup" enum="BooleanEnabled"
-    expires_after="2023-04-16">
-  <obsolete>
-    Logged on profile open, including for profiles such as guest profiles that
-    do not allow modification of this setting. (This value logged on those cases
-    is the default value for the setting.) Replaced in M-110 with the histogram
-    Settings.AutocompleteSearches.OnStartup2, which is similar but only emitted
-    on regular profiles.
-  </obsolete>
-  <owner>harrisonsean@chromium.org</owner>
-  <owner>chrome-friendly-settings@google.com</owner>
-  <summary>
-    The state of the autocomplete searches setting, recorded on profile open.
   </summary>
 </histogram>
 
@@ -137,32 +105,13 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.FirstPartySets.State" enum="FirstPartySetsState"
-    expires_after="2024-03-24">
+    expires_after="2024-05-26">
   <owner>alimariam@google.com</owner>
   <owner>olesiamarukhno@google.com</owner>
   <owner>sauski@google.com</owner>
   <summary>
     Records either the state of first party sets (FPS) or not relevant,
     depending on the user's cookie settings. This is logged on startup.
-  </summary>
-</histogram>
-
-<histogram name="Settings.GivenShowHomeButton_HomePageIsNewTabPage"
-    enum="Boolean" expires_after="2023-09-03">
-  <obsolete>
-    Logged on profile open, including for profiles that do not use this setting
-    (such as &quot;system&quot; profiles) and for profiles that do not allow the
-    profile-owner to configure this setting (such as &quot;guest&quot;
-    profiles). When logged in such cases, reported the default value. Replaced
-    in M-114 with the histogram
-    Settings.GivenShowHomeButton_HomePageIsNewTabPage2, which is similar only
-    emitted for regular profiles.
-  </obsolete>
-  <owner>mpearson@chromium.org</owner>
-  <owner>twellington@chromium.org</owner>
-  <summary>
-    Whether or not the home page user preference is set to the default NTP value
-    when a profile is loaded. This is only logged if the home button is shown.
   </summary>
 </histogram>
 
@@ -182,34 +131,13 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.Homepage.LocationType" enum="HomepageLocationType"
-    expires_after="2024-03-17">
+    expires_after="2024-05-19">
   <owner>bttk@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <owner>wenyufu@chromium.org</owner>
   <summary>
     The location type for the homepage if the homepage is enabled. Recorded on
     deferred startup iff the homepage is enabled. Android only.
-  </summary>
-</histogram>
-
-<histogram name="Settings.HomePageEngineType" enum="OmniboxSearchEngineType"
-    expires_after="2023-08-27">
-  <obsolete>
-    Logged on profile open, including for profiles that do not use this setting
-    (such as &quot;system&quot; profiles) and for profiles that do not allow the
-    profile-owner to configure this setting (such as &quot;guest&quot;
-    profiles). When logged in such cases, reported the default value. Replaced
-    in M-114 with the histogram Settings.HomePageEngineType2, which is similar
-    only emitted for regular profiles.
-  </obsolete>
-  <owner>mpearson@chromium.org</owner>
-  <owner>csharp@chromium.org</owner>
-  <summary>
-    Tries to pretend the home page URL is a search URL, and records the search
-    engine type of that URL by comparing the TLD+1 of the home page URL with
-    those of the different known search engines. Recorded when a profile is
-    opened, if a home page URL has been set. Note that at least one profile is
-    opened on startup.
   </summary>
 </histogram>
 
@@ -231,7 +159,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.HoverCards.ImagePreview.Enabled"
-    enum="BooleanEnabled" expires_after="2024-03-24">
+    enum="BooleanEnabled" expires_after="2024-05-26">
   <owner>charlesmeng@chromium.org</owner>
   <owner>estalin@chromium.org</owner>
   <summary>
@@ -260,7 +188,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.PinUnlockSetup" enum="LockScreenProgress"
-    expires_after="2024-02-25">
+    expires_after="2024-05-19">
   <owner>anastasiian@chromium.org</owner>
   <owner>teresachow@google.com</owner>
   <owner>cros-lurs@google.com</owner>
@@ -280,39 +208,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Settings.PreloadStatus.OnStartup" enum="BooleanEnabled"
-    expires_after="2023-04-30">
-  <obsolete>
-    Logged on profile open, including for profiles such as guest profiles that
-    do not allow modification of this setting. (This value logged on those cases
-    is the default value for the setting.) Replaced in M-110 with the histogram
-    Settings.PreloadStatus.OnStartup2, which is similar but only emitted on
-    regular profiles.
-  </obsolete>
-  <owner>harrisonsean@chromium.org</owner>
-  <owner>chrome-friendly-settings@google.com</owner>
-  <summary>
-    The status of the preload setting, recorded on profile open. Not recorded
-    for iOS where the setting does not exist.
-  </summary>
-</histogram>
-
-<histogram name="Settings.PreloadStatus.OnStartup2" enum="BooleanEnabled"
-    expires_after="2023-07-02">
-  <obsolete>
-    Replaced in M-110 with the histogram Settings.PreloadStatus.OnStartup3,
-    which records the full state of the setting (disabled, standard, and
-    extended).
-  </obsolete>
-  <owner>harrisonsean@chromium.org</owner>
-  <owner>chrome-friendly-settings@google.com</owner>
-  <summary>
-    The status of the preload setting, recorded on regular profile open (not
-    Incognito, Guest, etc.). Not recorded for iOS where the setting does not
-    exist.
-  </summary>
-</histogram>
-
 <histogram name="Settings.PreloadStatus.OnStartup3" enum="PreloadPagesState"
     expires_after="2024-04-28">
   <owner>rainhard@chromium.org</owner>
@@ -326,7 +221,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.PrivacyElementInteractions"
-    enum="SettingsPrivacyElementInteractions" expires_after="2024-03-31">
+    enum="SettingsPrivacyElementInteractions" expires_after="2024-06-02">
   <owner>harrisonsean@chromium.org</owner>
   <owner>msramek@chromium.org</owner>
   <owner>sauski@chromium.org</owner>
@@ -336,19 +231,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Settings.PrivacyGuide.CanShowNTPPromo" enum="Boolean"
-    expires_after="2024-01-31">
-  <owner>msramek@chromium.org</owner>
-  <owner>rainhard@chromium.org</owner>
-  <owner>chrome-privacy-controls@google.com</owner>
-  <summary>
-    Recorded when we attempt to show a Privacy Guide NTP promotion as instructed
-    by the server. True if the conditions to do so are met.
-  </summary>
-</histogram>
-
 <histogram name="Settings.PrivacyGuide.EntryExit"
-    enum="SettingsPrivacyGuideInteractions" expires_after="2024-03-31">
+    enum="SettingsPrivacyGuideInteractions" expires_after="2024-06-02">
   <owner>harrisonsean@chromium.org</owner>
   <owner>rainhard@chromium.org</owner>
   <owner>chrome-privacy-controls@google.com</owner>
@@ -359,7 +243,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.PrivacyGuide.FlowLength" units="steps"
-    expires_after="2024-03-31">
+    expires_after="2024-06-02">
   <owner>rainhard@chromium.org</owner>
   <owner>aisulu@chromium.org</owner>
   <owner>chrome-privacy-controls@google.com</owner>
@@ -371,7 +255,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.PrivacyGuide.NextNavigation"
-    enum="SettingsPrivacyGuideInteractions" expires_after="2024-03-31">
+    enum="SettingsPrivacyGuideInteractions" expires_after="2024-06-02">
   <owner>harrisonsean@chromium.org</owner>
   <owner>rainhard@chromium.org</owner>
   <owner>chrome-privacy-controls@google.com</owner>
@@ -394,7 +278,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Settings.PrivacyGuide.StepsEligibleAndReached"
     enum="SettingsPrivacyGuideStepsEligibleAndReached"
-    expires_after="2024-03-31">
+    expires_after="2024-06-02">
   <owner>rainhard@chromium.org</owner>
   <owner>aisulu@chromium.org</owner>
   <owner>chrome-privacy-controls@google.com</owner>
@@ -406,7 +290,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.PrivacySandbox.AdMeasurement.Enabled"
-    enum="BooleanEnabled" expires_after="2024-03-17">
+    enum="BooleanEnabled" expires_after="2024-05-19">
   <owner>sauski@google.com</owner>
   <owner>olesiamarukhno@chromium.org</owner>
   <owner>msramek@chromium.org</owner>
@@ -436,20 +320,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     In case of non normal browser(Pop up or PIP for example), Records whether
     the window width was too small to fit the notice dialog.
-  </summary>
-</histogram>
-
-<histogram name="Settings.PrivacySandbox.DeprecatedRedirect"
-    enum="BooleanRedirected" expires_after="2024-04-28">
-  <owner>olesiamarukhno@google.com</owner>
-  <owner>sauski@google.com</owner>
-  <owner>kartoffel-core-eng@google.com</owner>
-  <summary>
-    Whether or not navigations to the Privacy sandbox settings page occured
-    because the user was redirected from the old version of the page. It occurs
-    once per navigation to the privacy sandbox settings page.
-
-    Expired after M115, re-instated in M117.
   </summary>
 </histogram>
 
@@ -491,7 +361,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.PrivacySandbox.Enabled"
-    enum="SettingsPrivacySandboxEnabled" expires_after="2024-03-17">
+    enum="SettingsPrivacySandboxEnabled" expires_after="2024-05-19">
   <owner>harrisonsean@chromium.org</owner>
   <owner>msramek@chromium.org</owner>
   <owner>chrome-privacy-controls@google.com</owner>
@@ -503,7 +373,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.PrivacySandbox.Fledge.Enabled" enum="BooleanEnabled"
-    expires_after="2024-03-17">
+    expires_after="2024-05-19">
   <owner>sauski@google.com</owner>
   <owner>olesiamarukhno@chromium.org</owner>
   <owner>msramek@chromium.org</owner>
@@ -767,6 +637,106 @@ chromium-metrics-reviews@google.com.
   <summary>Resulting state of the safety check updates check.</summary>
 </histogram>
 
+<histogram name="Settings.SafetyHub.EntryPointImpression"
+    enum="SafetyHubEntryPoint" expires_after="2024-11-11">
+  <owner>sideyilmaz@chromium.org</owner>
+  <owner>tov@chromium.org</owner>
+  <owner>msramek@chromium.org</owner>
+  <summary>
+    Captures the impressions of the different entry points of Safety Hub.
+  </summary>
+</histogram>
+
+<histogram name="Settings.SafetyHub.EntryPointInteraction"
+    enum="SafetyHubEntryPoint" expires_after="2024-11-11">
+  <owner>sideyilmaz@chromium.org</owner>
+  <owner>tov@chromium.org</owner>
+  <owner>msramek@chromium.org</owner>
+  <summary>
+    Captures the interaction with an entry point of Safety Hub, that will
+    eventually lead to the Safety Check page, password manager checkup page or
+    the extensions page.
+  </summary>
+</histogram>
+
+<histogram name="Settings.SafetyHub.Impression" enum="SafetyHubSurfaces"
+    expires_after="2024-11-11">
+  <owner>sideyilmaz@chromium.org</owner>
+  <owner>tov@chromium.org</owner>
+  <owner>msramek@chromium.org</owner>
+  <summary>
+    Captures Safety Hub page visits and three dot menu impressions for any
+    Safety Hub module.
+  </summary>
+</histogram>
+
+<histogram name="Settings.SafetyHub.Interaction" enum="SafetyHubSurfaces"
+    expires_after="2024-11-11">
+  <owner>sideyilmaz@chromium.org</owner>
+  <owner>tov@chromium.org</owner>
+  <owner>msramek@chromium.org</owner>
+  <summary>
+    Captures Safety Hub page visits and three dot menu clicks for any Safety Hub
+    module.
+  </summary>
+</histogram>
+
+<histogram name="Settings.SafetyHub.MenuNotificationClicked"
+    enum="SafetyHubModuleType" expires_after="2024-11-11">
+  <owner>sideyilmaz@chromium.org</owner>
+  <owner>tov@chromium.org</owner>
+  <owner>msramek@chromium.org</owner>
+  <summary>
+    Captures the Safety Hub module of which the three-dot menu notification was
+    clicked.
+  </summary>
+</histogram>
+
+<histogram name="Settings.SafetyHub.MenuNotificationImpression"
+    enum="SafetyHubModuleType" expires_after="2024-11-11">
+  <owner>sideyilmaz@chromium.org</owner>
+  <owner>tov@chromium.org</owner>
+  <owner>msramek@chromium.org</owner>
+  <summary>
+    Captures the Safety Hub module for which a notification was shown in the
+    three-dot menu.
+  </summary>
+</histogram>
+
+<histogram name="Settings.SafetyHub.PasswordsCard.StatusOnClick"
+    enum="SafetyHubCardState" expires_after="2024-04-08">
+  <owner>sideyilmaz@chromium.org</owner>
+  <owner>aisulu@chromium.org</owner>
+  <owner>chrome-privacy-controls@google.com</owner>
+  <summary>
+    Passwords Card is located on Safety Check page in settings and can be in one
+    of the multiple states. This is the Passwords Card state recorded on click.
+  </summary>
+</histogram>
+
+<histogram name="Settings.SafetyHub.SafeBrowsingCard.StatusOnClick"
+    enum="SafetyHubCardState" expires_after="2024-04-08">
+  <owner>sideyilmaz@chromium.org</owner>
+  <owner>aisulu@chromium.org</owner>
+  <owner>chrome-privacy-controls@google.com</owner>
+  <summary>
+    Safe Browsing Card is located on Safety Check page in settings and can be in
+    one of the multiple states. This is the Safe Browsing Card state recorded on
+    click.
+  </summary>
+</histogram>
+
+<histogram name="Settings.SafetyHub.VersionCard.StatusOnClick"
+    enum="SafetyHubCardState" expires_after="2024-04-08">
+  <owner>sideyilmaz@chromium.org</owner>
+  <owner>aisulu@chromium.org</owner>
+  <owner>chrome-privacy-controls@google.com</owner>
+  <summary>
+    Version Card is located on Safety Check page in settings and can be in one
+    of the multiple states. This is the Version Card state recorded on click.
+  </summary>
+</histogram>
+
 <histogram name="Settings.SearchEngines.Interactions"
     enum="SettingsSearchEnginesInteractions" expires_after="2024-04-28">
   <owner>yoangela@chromium.org</owner>
@@ -829,24 +799,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Settings.ShowHomeButton" enum="BooleanEnabled"
-    expires_after="2023-09-10">
-  <obsolete>
-    Logged on profile open, including for profiles that do not use this setting
-    (such as &quot;system&quot; profiles) and for profiles that do not allow the
-    profile-owner to configure this setting (such as &quot;guest&quot;
-    profiles). When logged in such cases, reported the default value. Replaced
-    in M-114 with the histogram Settings.ShowHomeButton2, which is similar only
-    emitted for regular profiles.
-  </obsolete>
-  <owner>mpearson@chromium.org</owner>
-  <owner>twellington@chromium.org</owner>
-  <summary>
-    Whether or not the home button is enabled in user preferences when a profile
-    is loaded.
-  </summary>
-</histogram>
-
 <histogram name="Settings.ShowHomeButton2" enum="BooleanEnabled"
     expires_after="2024-04-30">
   <owner>mpearson@chromium.org</owner>
@@ -871,27 +823,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Settings.StartupPageEngineTypes"
-    enum="OmniboxSearchEngineType" expires_after="2023-08-08">
-  <obsolete>
-    Logged on profile open, including for profiles that do not use this setting
-    (such as &quot;system&quot; profiles) and for profiles that do not allow the
-    profile-owner to configure this setting (such as &quot;guest&quot;
-    profiles). When logged in such cases, reported the default value. Replaced
-    in M-114 with the histogram Settings.StartupPageEngineTypes2, which is
-    similar only emitted for regular profiles.
-  </obsolete>
-  <owner>mpearson@chromium.org</owner>
-  <owner>csharp@chromium.org</owner>
-  <summary>
-    Tries to pretend the startup page URLs are search URLs, and records the
-    search engine types of those URLs by comparing the TLD+1s of the URLs with
-    those of the different known search engines. Recorded when a profile is
-    opened, if startup page URLs have been set. Note that at least one profile
-    is opened on startup.
-  </summary>
-</histogram>
-
 <histogram name="Settings.StartupPageEngineTypes2"
     enum="OmniboxSearchEngineType" expires_after="2024-04-30">
   <owner>mpearson@chromium.org</owner>
@@ -907,22 +838,6 @@ chromium-metrics-reviews@google.com.
     inherits the settings from its parent profile. As such, it's not necessary
     to log the Incognito profile's settings.
   </summary>
-</histogram>
-
-<histogram name="Settings.StartupPageLoadSettings" enum="SessionStartupPref"
-    expires_after="2023-08-27">
-  <obsolete>
-    Logged on profile open, including for profiles that do not use this setting
-    (such as &quot;system&quot; profiles) and for profiles that do not allow the
-    profile-owner to configure this setting (such as &quot;guest&quot;
-    profiles). When logged in such cases, reported the default value. Replaced
-    in M-114 with the histogram Settings.StartupPageLoadSettings2, which is
-    similar only emitted for regular profiles.
-  </obsolete>
-  <owner>mpearson@chromium.org</owner>
-  <owner>tiborg@chromium.org</owner>
-  <owner>chrome-desktop-ntp@google.com</owner>
-  <summary>The startup page settings when a profile is loaded.</summary>
 </histogram>
 
 <histogram name="Settings.StartupPageLoadSettings2" enum="SessionStartupPref"
@@ -960,7 +875,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.TrackedPreferenceChanged" enum="TrackedPreference"
-    expires_after="2024-03-17">
+    expires_after="2024-05-19">
   <owner>proberge@chromium.org</owner>
   <owner>junhao.huang@microsoft.com</owner>
   <summary>

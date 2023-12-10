@@ -6,11 +6,11 @@
 #define SERVICES_TRACING_PUBLIC_CPP_PERFETTO_JAVA_HEAP_PROFILER_HPROF_PARSER_ANDROID_H_
 
 #include <string>
+#include <string_view>
 #include <unordered_map>
 
 #include "base/component_export.h"
 #include "base/gtest_prod_util.h"
-#include "base/strings/string_piece.h"
 #include "services/tracing/public/cpp/perfetto/java_heap_profiler/hprof_buffer_android.h"
 #include "services/tracing/public/cpp/perfetto/java_heap_profiler/hprof_instances_android.h"
 #include "third_party/perfetto/protos/perfetto/trace/profiling/heap_graph.pbzero.h"
@@ -183,7 +183,7 @@ class COMPONENT_EXPORT(TRACING_CPP) HprofParser {
   // Returns true after setting the position of |hprof_buffer_| to point to the
   // |field_name| in class.
   [[nodiscard]] bool SeekToFieldPosition(ClassInstance* instance,
-                                         base::StringPiece field_name);
+                                         std::string_view field_name);
 
   std::unordered_map<ObjectId, std::unique_ptr<StringReference>> strings_;
 

@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="sw">
 <translation id="1000498691615767391">Chagua folda ya kufungua</translation>
+<translation id="1014208178561091457"><ph name="FILE_NAME" /> imeshindwa kunakiliwa kwa sababu imesimbwa kwa njia fiche.</translation>
 <translation id="1047956942837015229">Inafuta vipengee <ph name="COUNT" />...</translation>
 <translation id="1049926623896334335">Hati ya Word</translation>
 <translation id="1056775291175587022">Hamna mitandao</translation>
@@ -55,6 +56,7 @@
 <translation id="1435838927755162558">Shiriki folda na Parallels Desktop</translation>
 <translation id="1439919885608649279">Mtu aliye na maua</translation>
 <translation id="1458457385801829801">Ondoa <ph name="TARGET_NAME" /></translation>
+<translation id="146691674290220697">Faili <ph name="NUMBER_OF_FILES" /> zimeshindwa kunakiliwa kwa sababu zimesimbwa kwa njia fiche.</translation>
 <translation id="1471718551822868769">Kislovakia</translation>
 <translation id="1482884275703521657">Kifini</translation>
 <translation id="148466539719134488">Kiswisi</translation>
@@ -276,6 +278,7 @@
 <translation id="3253225298092156258">Haipatikani</translation>
 <translation id="3254434849914415189">Chagua programu chaguomsingi ya faili <ph name="FILE_TYPE" />:</translation>
 <translation id="3255159654094949700">Kiarabu</translation>
+<translation id="326396468955264502">Faili <ph name="NUMBER_OF_FILES" /> zimeshindwa kuhamishwa kwa sababu zimesimbwa kwa njia fiche.</translation>
 <translation id="3264582393905923483">Muktadha</translation>
 <translation id="3272909651715601089">Imeshindwa kufungua "<ph name="PATH" />"</translation>
 <translation id="3280431534455935878">Inaandaa</translation>
@@ -313,6 +316,7 @@
 <translation id="3523225005467146490">Folda 1 imeshirikiwa na <ph name="VM_NAME" /></translation>
 <translation id="3524311639100184459">Tahadhari: Faili hizi ni za muda na huenda zikafutwa kiotomatiki ili upate nafasi zaidi ya hifadhi kwenye diski.  <ph name="BEGIN_LINK" />Pata Maelezo Zaidi<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Folda</translation>
+<translation id="3529424493985988200">Wasiliana na msimamizi wako ili upate maelezo.</translation>
 <translation id="3548125359243647069">Umeweka PIN isiyo sahihi mara nyingi mno.</translation>
 <translation id="3549797760399244642">Nenda kwenye drive.google.com...</translation>
 <translation id="3553048479571901246">Ili ufungue faili ukitumia <ph name="APP_NAME" />, zinakili kwanza kwenye folda ya faili za Windows.</translation>
@@ -701,6 +705,7 @@
 <translation id="637062427944097960">Faili hii ilifunguka kwenye eneo-kazi tofauti. Sogea kwenye <ph name="USER_NAME" /> ( <ph name="MAIL_ADDRESS" /> ) ili uione.</translation>
 <translation id="6394388407447716302">Kusoma tu</translation>
 <translation id="6395575651121294044">Faili <ph name="NUMBER_OF_FILES" /></translation>
+<translation id="6407769893376380348"><ph name="FILE_NAME" /> imeshindwa kuhamishwa kwa sababu imesimbwa kwa njia fiche.</translation>
 <translation id="642282551015776456">Jina hili halifai kutumiwe kama faili ya jina la folda</translation>
 <translation id="6423031066725912715">Kivietinamu kwenye kibodi ya TCVN</translation>
 <translation id="6430271654280079150">Umebakisha jaribio 1.</translation>

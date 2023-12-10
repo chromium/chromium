@@ -6,11 +6,11 @@
 
 #include "base/containers/cxx20_erase.h"
 #include "base/memory/raw_ptr.h"
-#include "chromeos/ui/base/tablet_state.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "chromeos/ui/frame/frame_utils.h"
 #include "ui/aura/window.h"
+#include "ui/display/screen.h"
 #include "ui/gfx/image/canvas_image_source.h"
 #include "ui/views/highlight_border.h"
 #include "ui/views/widget/widget.h"
@@ -152,8 +152,8 @@ void HighlightBorderOverlay::UpdateLayerVisibilityAndBounds() {
       window_->GetProperty(chromeos::kWindowStateTypeKey);
 
   // TabletState might be nullptr in some tests.
-  const bool in_tablet_mode = chromeos::TabletState::Get() &&
-                              chromeos::TabletState::Get()->InTabletMode();
+  const bool in_tablet_mode = display::Screen::GetScreen()->InTabletMode();
+
   if ((in_tablet_mode &&
        window_state_type != chromeos::WindowStateType::kFloated &&
        window_state_type != chromeos::WindowStateType::kPip) ||

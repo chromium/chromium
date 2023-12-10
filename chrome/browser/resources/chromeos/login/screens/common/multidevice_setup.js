@@ -23,6 +23,8 @@ import {PrivilegedHostDeviceSetter, PrivilegedHostDeviceSetterRemote} from 'chro
 import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
 import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.js';
 
+import {getTemplate} from './multidevice_setup.html.js';
+
 // OOBE screen that wraps MultiDevice setup flow when displayed during the
 // user's onboarding on this Chromebook. Note that this flow is slightly
 // different from the post-OOBE flow ( `c/b/r/chromeos/multidevice_setup/` )
@@ -93,7 +95,7 @@ class MultiDeviceSetupScreen extends MultiDeviceSetupScreenBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

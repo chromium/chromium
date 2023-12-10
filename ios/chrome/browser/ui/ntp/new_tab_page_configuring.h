@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_UI_NTP_NEW_TAB_PAGE_CONFIGURING_H_
 #define IOS_CHROME_BROWSER_UI_NTP_NEW_TAB_PAGE_CONFIGURING_H_
 
-#include "ios/chrome/browser/discover_feed/feed_constants.h"
+#include "ios/chrome/browser/discover_feed/model/feed_constants.h"
 
 // Protocol containing the properties to configure the NTP.
 @protocol NewTabPageConfiguring

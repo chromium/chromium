@@ -6,11 +6,11 @@
 #define IOS_CHROME_BROWSER_PASSWORDS_MODEL_IOS_CHROME_SAVE_PASSWORD_INFOBAR_DELEGATE_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "components/infobars/core/confirm_infobar_delegate.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_infobar_metrics_recorder.h"
 
@@ -29,7 +29,7 @@ class PasswordFormManagerForUI;
 class IOSChromeSavePasswordInfoBarDelegate : public ConfirmInfoBarDelegate {
  public:
   IOSChromeSavePasswordInfoBarDelegate(
-      absl::optional<std::string> account_to_store_password,
+      std::optional<std::string> account_to_store_password,
       bool password_update,
       password_manager::features_util::PasswordAccountStorageUserState
           account_storage_user_state,
@@ -60,9 +60,9 @@ class IOSChromeSavePasswordInfoBarDelegate : public ConfirmInfoBarDelegate {
   // Gets the command dispatcher.
   CommandDispatcher* GetDispatcher() const { return dispatcher_; }
 
-  // The account where the password will be saved, or absl::nullopt if it's
+  // The account where the password will be saved, or std::nullopt if it's
   // saved locally.
-  absl::optional<std::string> GetAccountToStorePassword() const;
+  std::optional<std::string> GetAccountToStorePassword() const;
 
   // InfoBarDelegate implementation.
   bool ShouldExpire(const NavigationDetails& details) const override;
@@ -118,9 +118,9 @@ class IOSChromeSavePasswordInfoBarDelegate : public ConfirmInfoBarDelegate {
   // The PasswordInfobarType for this delegate.
   const PasswordInfobarType infobar_type_;
 
-  // The account where the password will be stored, or absl::nullopt if the
+  // The account where the password will be stored, or std::nullopt if the
   // password will only be stored on this device.
-  const absl::optional<std::string> account_to_store_password_;
+  const std::optional<std::string> account_to_store_password_;
 
   // Used to record metrics related to passwords account storage.
   const password_manager::features_util::PasswordAccountStorageUserState

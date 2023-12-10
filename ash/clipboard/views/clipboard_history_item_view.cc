@@ -111,8 +111,9 @@ void ClipboardHistoryItemView::ContentsView::OnViewVisibilityChanged(
 class ClipboardHistoryItemView::DisplayView
     : public views::BoxLayoutView,
       public views::ViewTargeterDelegate {
+  METADATA_HEADER(DisplayView, views::BoxLayoutView)
+
  public:
-  METADATA_HEADER(DisplayView);
   explicit DisplayView(ClipboardHistoryItemView* container)
       : container_(container) {
     SetEventTargeter(std::make_unique<views::ViewTargeter>(this));

@@ -263,17 +263,17 @@ message ClientPhishingResponse {
   required bool phishy = 1;
 
   // A list of SafeBrowsing host-suffix / path-prefix expressions that
-  // are whitelisted.  The client must match the current top-level URL
-  // against these whitelisted expressions and only apply a positive
+  // are allowlisted.  The client must match the current top-level URL
+  // against these alllowlisted expressions and only apply a positive
   // phishing verdict above if the URL does not match any expression
-  // on this whitelist.  The client must not cache these whitelisted
-  // expressions.  This whitelist will be empty for the vast majority
+  // on this allowlist.  The client must not cache these allowlisted
+  // expressions.  This allowlist will be empty for the vast majority
   // of the responses but might contain up to 100 entries in emergency
   // situations.
   //
   // Marked OBSOLETE because the URL is sent for all users, so the server
-  // can do whitelist matching.
-  repeated string OBSOLETE_whitelist_expression = 2;
+  // can do allowlist matching.
+  repeated string OBSOLETE_allowlist_expression = 2;
 }
 
 // The message is used for client request to determine whether the provided URL
@@ -1502,7 +1502,7 @@ message DownloadMetadata {
 // A Detailed Safebrowsing Report from clients. Chrome safebrowsing reports are
 // only sent by Chrome users who have opted into extended Safe Browsing.
 // This proto is replacing ClientMalwareReportRequest.
-// Next tag: 33
+// Next tag: 34
 message ClientSafeBrowsingReportRequest {
   // Note: A lot of the "optional" fields would make sense to be
   // "required" instead.  However, having them as optional allows the
@@ -1530,6 +1530,7 @@ message ClientSafeBrowsingReportRequest {
     // TODO(crbug.com/1410253): Deprecate this once the experiment is complete.
     HASH_PREFIX_REAL_TIME_EXPERIMENT = 21;
     PHISHY_SITE_INTERACTIONS = 22;
+    WARNING_SHOWN = 23;
   }
 
   message HTTPHeader {
@@ -1703,7 +1704,7 @@ message ClientSafeBrowsingReportRequest {
       // Applicable actions: DISCARD, OPEN_SUBPAGE
       BUBBLE_MAINPAGE = 1;
       // Applicable actions: PROCEED, DISCARD, DISMISS, CLOSE, BACK,
-      // PROCEED_DEEP_SCAN
+      // PROCEED_DEEP_SCAN, OPEN_LEARN_MORE_LINK
       BUBBLE_SUBPAGE = 2;
       // Applicable actions: DISCARD, KEEP
       DOWNLOADS_PAGE = 3;
@@ -1736,6 +1737,8 @@ message ClientSafeBrowsingReportRequest {
       OPEN_SUBPAGE = 8;
       // The user bypassed a deep scanning prompt
       PROCEED_DEEP_SCAN = 9;
+      // The user clicks the learn more link on the bubble subpage.
+      OPEN_LEARN_MORE_LINK = 10;
     }
     optional Action action = 2;
 
@@ -1843,6 +1846,8 @@ message ClientSafeBrowsingReportRequest {
     WEB_IDENTITY = 24;
     // <link rel=dictionary>
     DICTIONARY = 25;
+    // Speculation rules (Speculation-Rules: "..." header).
+    SPECULATION_RULES = 26;
   }
 
   // Only populated for interstitial reports (URL_PHISHING, URL_MALWARE,
@@ -1924,6 +1929,27 @@ message ClientSafeBrowsingReportRequest {
 
   // Timestamp of when the warning was first shown to the user.
   optional int64 warning_shown_timestamp_msec = 32;
+
+  // Information included in WARNING_SHOWN reports.
+  message WarningShownInfo {
+    // Type of warning UX shown to the user.
+    enum WarningUXType {
+      UNKNOWN = 0;
+      PHISHING_INTERSTITIAL = 1;
+      CLIENT_SIDE_PHISHING_INTERSTITIAL = 2;
+      MALWARE_INTERSTITIAL = 3;
+      UWS_INTERSTITIAL = 4;
+      BILLING_INTERSTITIAL = 5;
+      BINARY_MALWARE_DOWNLOAD_WARNING = 6;
+    }
+    optional WarningUXType warning_type = 1;
+
+    // Data contains the hash value of the download and referrer URLs. Only set
+    // in BINARY_MALWARE_DOWNLOAD_WARNING report.
+    optional string post_data = 2;
+  }
+
+  optional WarningShownInfo warning_shown_info = 33;
 }
 
 // An HTML Element on the page (eg: iframe, div, script, etc).

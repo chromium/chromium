@@ -76,6 +76,7 @@ class CORE_EXPORT MouseEventManager final
   void Clear();
 
   void SendBoundaryEvents(EventTarget* exited_target,
+                          bool original_exited_target_removed,
                           EventTarget* entered_target,
                           const WebMouseEvent&);
 
@@ -199,6 +200,9 @@ class CORE_EXPORT MouseEventManager final
   // See
   // https://w3c.github.io/pointerevents/#dfn-tracking-the-effective-position-of-the-legacy-mouse-pointer.
   Member<Element> element_under_mouse_;
+
+  // See `PointerEventManager::original_element_under_pointer_removed_`.
+  bool original_element_under_mouse_removed_ = false;
 
   // The last mouse movement position this frame has seen in viewport
   // coordinates.

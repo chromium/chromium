@@ -570,7 +570,7 @@ WebMediaPlayerImpl::~WebMediaPlayerImpl() {
   simple_watch_timer_.Stop();
   media_log_->OnWebMediaPlayerDestroyed();
 
-  demuxer_manager_->StopAndResetClient(nullptr);
+  demuxer_manager_->StopAndResetClient();
   demuxer_manager_->InvalidateWeakPtrs();
 
   // Disconnect from the surface layer. We still preserve the `bridge_` until
@@ -1132,8 +1132,7 @@ void WebMediaPlayerImpl::SetWasPlayedWithUserActivation(
 }
 
 void WebMediaPlayerImpl::OnRequestPictureInPicture() {
-  if (!surface_layer_for_video_enabled_)
-    ActivateSurfaceLayerForVideo();
+  ActivateSurfaceLayerForVideo();
 
   DCHECK(bridge_);
   DCHECK(bridge_->GetSurfaceId().is_valid());
@@ -2008,7 +2007,10 @@ void WebMediaPlayerImpl::OnMetadata(const media::PipelineMetadata& metadata) {
 
 void WebMediaPlayerImpl::ActivateSurfaceLayerForVideo() {
   // Note that we might or might not already be in VideoLayer mode.
-  DCHECK(!bridge_);
+  if (surface_layer_for_video_enabled_) {
+    // Surface layer has already been activated.
+    return;
+  }
 
   surface_layer_for_video_enabled_ = true;
 

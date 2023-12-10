@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+[FAIL] extra ShareData field (extra field ignored)
+  promise_test: Unhandled rejection with value: object "ReferenceError: eventSender is not defined"
+[FAIL] 2 arguments (extra argument ignored)
+  promise_test: Unhandled rejection with value: object "ReferenceError: eventSender is not defined"
+Harness: the test ran to completion.

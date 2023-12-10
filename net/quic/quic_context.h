@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/containers/contains.h"
-#include "base/feature_list.h"
 #include "base/time/time.h"
 #include "net/base/features.h"
 #include "net/base/host_port_pair.h"
@@ -145,8 +144,7 @@ struct NET_EXPORT QuicParams {
   // If true, connection migration v2 will be used to migrate existing
   // sessions to network when the platform indicates that the default network
   // is changing.
-  bool migrate_sessions_on_network_change_v2 =
-      base::FeatureList::IsEnabled(features::kMigrateSessionsOnNetworkChangeV2);
+  bool migrate_sessions_on_network_change_v2 = false;
   // If true, connection migration v2 may be used to migrate active QUIC
   // sessions to alternative network if current network connectivity is poor.
   bool migrate_sessions_early_v2 = false;
@@ -205,6 +203,9 @@ struct NET_EXPORT QuicParams {
   // If true, delay main job even the request can be sent immediately on an
   // available SPDY session.
   bool delay_main_job_with_available_spdy_session = false;
+
+  // If true, ALPS uses new codepoint to negotiates application settings.
+  bool use_new_alps_codepoint = false;
 };
 
 // QuicContext contains QUIC-related variables that are shared across all of the

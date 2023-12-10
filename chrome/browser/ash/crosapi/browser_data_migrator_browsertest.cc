@@ -13,7 +13,7 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
+#include "chrome/browser/ash/app_mode/kiosk_controller.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crosapi/move_migrator.h"
 #include "chrome/browser/ash/login/app_mode/test/kiosk_base_test.h"
@@ -30,6 +30,7 @@
 #include "chromeos/ash/components/standalone_browser/lacros_availability.h"
 #include "chromeos/ash/components/standalone_browser/migrator_util.h"
 #include "chromeos/ash/components/standalone_browser/standalone_browser_features.h"
+#include "components/account_id/account_id.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_constants.h"
@@ -434,13 +435,9 @@ IN_PROC_BROWSER_TEST_F(BrowserDataMigratorForKiosk, MigrateOnKioskLaunch) {
   SetLacrosAvailability(
       ash::standalone_browser::LacrosAvailability::kUserChoice);
 
-  // Call this so that the test app is registered with `KioskAppManager` and
-  // thus the `AccountId` can be retrieved.
+  // Register app in `KioskController` so its `AccountId` can be retrieved.
   PrepareAppLaunch();
-  KioskAppManager::App app;
-  CHECK(KioskAppManager::Get());
-  CHECK(KioskAppManager::Get()->GetApp(test_app_id(), &app));
-  CreatePreferenceFileForProfile(app.account_id);
+  CreatePreferenceFileForProfile(test_kiosk_app().id().account_id);
 
   base::RunLoop run_loop;
   ScopedRestartAttemptForTesting scoped_restart_attempt(

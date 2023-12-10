@@ -821,7 +821,7 @@ enum CSSSampleId {
     kPositionFallbackBounds = 765,
     kTransitionBehavior = 766,
     kTextAutospace = 767,
-    kNavigationTrigger = 768,
+    kNavigation = 768,
     kDynamicRangeLimit = 769,
     kFieldSizing = 770,
     kTextSpacingTrim = 771,
@@ -834,6 +834,7 @@ enum CSSSampleId {
     kMaskComposite = 778,
     kMaskPosition = 779,
     kMaskMode = 780,
+    kInsetArea = 781,
 
     // 1. Add new features above this line (don't change the assigned numbers of
     //    the existing items).

@@ -5,8 +5,9 @@
 #ifndef ASH_TEST_LAYER_ANIMATION_VERIFIER_H_
 #define ASH_TEST_LAYER_ANIMATION_VERIFIER_H_
 
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/compositor/compositor_observer.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -60,11 +61,11 @@ class LayerAnimationVerifier : public ui::CompositorObserver {
   const raw_ptr<const views::View, ExperimentalAsh> observed_view_;
 
   // The screen bounds of `observed_view_` in the most recent compositor commit.
-  absl::optional<gfx::Rect> last_screen_bounds_;
+  std::optional<gfx::Rect> last_screen_bounds_;
 
   // `observed_view_`'s move direction on x-axis and y-axis respectively.
-  absl::optional<MoveDirection> x_direction_;
-  absl::optional<MoveDirection> y_direction_;
+  std::optional<MoveDirection> x_direction_;
+  std::optional<MoveDirection> y_direction_;
 
   // Indicates the number of comparisons during animation.
   int comparison_count_ = 0;

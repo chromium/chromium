@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/ntp/new_tab_page_tab_helper_delegate.h"
+#import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper_delegate.h"
 
 class ChromeBrowserState;
 @class NewTabPageCoordinator;

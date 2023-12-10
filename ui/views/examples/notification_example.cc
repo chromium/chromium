@@ -16,6 +16,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/image/image.h"
+#include "ui/gfx/image/image_unittest_util.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
@@ -32,9 +33,8 @@ namespace {
 
 gfx::Image CreateTestImage(const gfx::Size& size,
                            const ui::ColorProvider* provider) {
-  SkBitmap bitmap;
-  bitmap.allocN32Pixels(size.width(), size.height());
-  bitmap.eraseColor(SK_ColorTRANSPARENT);
+  SkBitmap bitmap =
+      gfx::test::CreateBitmap(size.width(), size.height(), SK_ColorTRANSPARENT);
   SkCanvas canvas(bitmap);
   SkScalar radius = std::min(size.width(), size.height()) * SK_ScalarHalf;
   SkPaint paint;

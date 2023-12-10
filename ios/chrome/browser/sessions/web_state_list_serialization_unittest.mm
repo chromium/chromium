@@ -5,10 +5,10 @@
 #import "ios/chrome/browser/sessions/web_state_list_serialization.h"
 
 #import <memory>
-#import <ostream>
 
 #import "base/apple/foundation_util.h"
 #import "base/functional/bind.h"
+#import "base/strings/utf_string_conversions.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "ios/chrome/browser/sessions/proto/storage.pb.h"
 #import "ios/chrome/browser/sessions/session_constants.h"
@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/web/public/session/crw_session_storage.h"
 #import "ios/web/public/session/crw_session_user_data.h"
+#import "ios/web/public/session/proto/proto_util.h"
 #import "ios/web/public/session/serializable_user_data_manager.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -96,14 +97,6 @@ std::unique_ptr<web::WebState> CreateWebStateWithPendingNavigation(
   return web_state;
 }
 
-// Creates a fake WebState on NTP. If `has_pending_load`, then the last
-// item is marked as pending.
-std::unique_ptr<web::WebState> CreateWebStateOnNTP(bool has_pending_load) {
-  return CreateWebStateWithNavigations(1, has_pending_load, false,
-                                       GURL(kChromeUINewTabURL),
-                                       web::WebStateID::NewUnique());
-}
-
 // Creates a fake WebState from `storage`.
 std::unique_ptr<web::WebState> CreateWebStateWithSessionStorage(
     CRWSessionStorage* storage) {
@@ -117,9 +110,49 @@ std::unique_ptr<web::WebState> CreateWebStateWithWebStateID(
                                        GURL(kChromeUIVersionURL), web_state_id);
 }
 
-// Returns the unique identifier for WebState at `index` in `web_state_list`.
-web::WebStateID IdentifierAt(const WebStateList& web_state_list, int index) {
-  return web_state_list.GetWebStateAt(index)->GetUniqueIdentifier();
+// Creates a fake WebState from serialized data.
+std::unique_ptr<web::WebState> CreateWebStateFromProto(
+    web::WebStateID web_state_id,
+    web::proto::WebStateMetadataStorage metadata) {
+  return CreateWebState();
+}
+
+// Creates a WebStateMetadataStorage for `web_state`.
+web::proto::WebStateMetadataStorage MetadataStorage(web::WebState* web_state) {
+  web::proto::WebStateMetadataStorage storage;
+  storage.set_navigation_item_count(web_state->GetNavigationItemCount());
+  web::SerializeTimeToProto(web_state->GetCreationTime(),
+                            *storage.mutable_creation_time());
+  web::SerializeTimeToProto(web_state->GetLastActiveTime(),
+                            *storage.mutable_last_active_time());
+
+  const std::u16string& title = web_state->GetTitle();
+  if (!title.empty()) {
+    storage.mutable_active_page()->set_page_title(base::UTF16ToUTF8(title));
+  }
+
+  const GURL& url = web_state->GetVisibleURL();
+  if (url.is_valid()) {
+    storage.mutable_active_page()->set_page_url(url.spec());
+  }
+
+  return storage;
+}
+
+// Helper wrapping SerializeWebStateList(...) with an auto-generated
+// WebStateMetadataMap.
+void SerializeWebStateList(const WebStateList& web_state_list,
+                           ios::proto::WebStateListStorage& storage) {
+  // Create a metadata map for the WebStateList.
+  WebStateMetadataMap metadata_map;
+  for (int index = 0; index < web_state_list.count(); ++index) {
+    web::WebState* const web_state = web_state_list.GetWebStateAt(index);
+    const web::WebStateID web_state_id = web_state->GetUniqueIdentifier();
+    metadata_map.insert(
+        std::make_pair(web_state_id, MetadataStorage(web_state)));
+  }
+
+  SerializeWebStateList(web_state_list, metadata_map, storage);
 }
 
 }  // namespace
@@ -558,1044 +591,234 @@ TEST_F(WebStateListSerializationTest,
       "Tabs.DroppedDuplicatesCountOnSessionSave", 0, 1);
 }
 
-// Tests deserializing into a non-empty WebStateList works when support for
-// pinned tabs is enabled and the scope includes all tabs.
+// Tests deserializing works when support for pinned tabs is enabled.
 //
 // Objective-C (legacy) variant.
-TEST_F(WebStateListSerializationTest, Deserialize_ObjC_PinnedEnabled_All) {
+TEST_F(WebStateListSerializationTest, Deserialize_ObjC_PinnedEnabled) {
   FakeWebStateListDelegate delegate;
-  WebStateList original_web_state_list(&delegate);
-  original_web_state_list.InsertWebState(
-      0, CreateWebState(),
-      WebStateList::INSERT_FORCE_INDEX | WebStateList::INSERT_PINNED,
-      WebStateOpener());
-  original_web_state_list.InsertWebState(
-      1, CreateWebState(),
-      WebStateList::INSERT_FORCE_INDEX | WebStateList::INSERT_ACTIVATE,
-      WebStateOpener(original_web_state_list.GetWebStateAt(0), 3));
-  original_web_state_list.InsertWebState(
-      2, CreateWebState(), WebStateList::INSERT_FORCE_INDEX,
-      WebStateOpener(original_web_state_list.GetWebStateAt(0), 2));
-  original_web_state_list.InsertWebState(
-      3, CreateWebState(), WebStateList::INSERT_FORCE_INDEX,
-      WebStateOpener(original_web_state_list.GetWebStateAt(1), 1));
 
-  SessionWindowIOS* session_window =
-      SerializeWebStateList(&original_web_state_list);
+  // Create a WebStateList, populate it, and save data to `session_window`.
+  SessionWindowIOS* session_window = nil;
+  {
+    WebStateList web_state_list(&delegate);
+    web_state_list.InsertWebState(
+        0, CreateWebState(),
+        WebStateList::INSERT_FORCE_INDEX | WebStateList::INSERT_PINNED,
+        WebStateOpener());
+    web_state_list.InsertWebState(
+        1, CreateWebState(),
+        WebStateList::INSERT_FORCE_INDEX | WebStateList::INSERT_ACTIVATE,
+        WebStateOpener(web_state_list.GetWebStateAt(0), 3));
+    web_state_list.InsertWebState(
+        2, CreateWebState(), WebStateList::INSERT_FORCE_INDEX,
+        WebStateOpener(web_state_list.GetWebStateAt(0), 2));
+    web_state_list.InsertWebState(
+        3, CreateWebState(), WebStateList::INSERT_FORCE_INDEX,
+        WebStateOpener(web_state_list.GetWebStateAt(1), 1));
 
-  EXPECT_EQ(session_window.sessions.count, 4u);
-  EXPECT_EQ(session_window.selectedIndex, 1u);
+    session_window = SerializeWebStateList(&web_state_list);
 
-  // Create a deserialized WebStateList and verify its contents.
-  WebStateList restored_web_state_list(&delegate);
-  restored_web_state_list.InsertWebState(
-      0, CreateWebState(),
-      WebStateList::INSERT_FORCE_INDEX | WebStateList::INSERT_ACTIVATE,
-      WebStateOpener());
-  ASSERT_EQ(restored_web_state_list.count(), 1);
+    EXPECT_EQ(session_window.sessions.count, 4u);
+    EXPECT_EQ(session_window.selectedIndex, 1u);
+  }
 
+  // Deserialize `session_window` into a new empty WebStateList.
+  WebStateList web_state_list(&delegate);
   const std::vector<web::WebState*> restored_web_states =
       DeserializeWebStateList(
-          &restored_web_state_list, session_window,
-          SessionRestorationScope::kAll,
+          &web_state_list, session_window,
           /*enable_pinned_web_states*/ true,
           base::BindRepeating(&CreateWebStateWithSessionStorage));
   EXPECT_EQ(restored_web_states.size(), 4u);
 
-  ASSERT_EQ(restored_web_state_list.count(), 5);
-  EXPECT_EQ(restored_web_state_list.active_index(), 2);
-  EXPECT_EQ(restored_web_state_list.pinned_tabs_count(), 1);
+  ASSERT_EQ(web_state_list.count(), 4);
+  EXPECT_EQ(web_state_list.active_index(), 1);
+  EXPECT_EQ(web_state_list.pinned_tabs_count(), 1);
 
   // Check the opener-opened relationship.
-  EXPECT_EQ(restored_web_state_list.GetOpenerOfWebStateAt(0), WebStateOpener());
-  EXPECT_EQ(restored_web_state_list.GetOpenerOfWebStateAt(1), WebStateOpener());
-  EXPECT_EQ(restored_web_state_list.GetOpenerOfWebStateAt(2),
-            WebStateOpener(restored_web_state_list.GetWebStateAt(0), 3));
-  EXPECT_EQ(restored_web_state_list.GetOpenerOfWebStateAt(3),
-            WebStateOpener(restored_web_state_list.GetWebStateAt(0), 2));
-  EXPECT_EQ(restored_web_state_list.GetOpenerOfWebStateAt(4),
-            WebStateOpener(restored_web_state_list.GetWebStateAt(2), 1));
+  EXPECT_EQ(web_state_list.GetOpenerOfWebStateAt(0), WebStateOpener());
+  EXPECT_EQ(web_state_list.GetOpenerOfWebStateAt(1),
+            WebStateOpener(web_state_list.GetWebStateAt(0), 3));
+  EXPECT_EQ(web_state_list.GetOpenerOfWebStateAt(2),
+            WebStateOpener(web_state_list.GetWebStateAt(0), 2));
+  EXPECT_EQ(web_state_list.GetOpenerOfWebStateAt(3),
+            WebStateOpener(web_state_list.GetWebStateAt(1), 1));
 
   // Check that the pinned tab has been restored at the correct position and
   // as pinned.
-  EXPECT_TRUE(restored_web_state_list.IsWebStatePinnedAt(0));
+  EXPECT_TRUE(web_state_list.IsWebStatePinnedAt(0));
 }
 
-// Tests deserializing into a non-empty WebStateList works when support for
-// pinned tabs is enabled and the scope includes only regular tabs.
+// Tests deserializing works when support for pinned tabs is disabled.
 //
 // Objective-C (legacy) variant.
-TEST_F(WebStateListSerializationTest,
-       Deserialize_ObjC_PinnedEnabled_RegularOnly) {
+TEST_F(WebStateListSerializationTest, Deserialize_ObjC_PinnedDisabled) {
   FakeWebStateListDelegate delegate;
-  WebStateList original_web_state_list(&delegate);
-  original_web_state_list.InsertWebState(
-      0, CreateWebState(),
-      WebStateList::INSERT_FORCE_INDEX | WebStateList::INSERT_PINNED,
-      WebStateOpener());
-  original_web_state_list.InsertWebState(
-      1, CreateWebState(),
-      WebStateList::INSERT_FORCE_INDEX | WebStateList::INSERT_ACTIVATE,
-      WebStateOpener(original_web_state_list.GetWebStateAt(0), 3));
-  original_web_state_list.InsertWebState(
-      2, CreateWebState(), WebStateList::INSERT_FORCE_INDEX,
-      WebStateOpener(original_web_state_list.GetWebStateAt(0), 2));
-  original_web_state_list.InsertWebState(
-      3, CreateWebState(), WebStateList::INSERT_FORCE_INDEX,
-      WebStateOpener(original_web_state_list.GetWebStateAt(1), 1));
 
-  SessionWindowIOS* session_window =
-      SerializeWebStateList(&original_web_state_list);
+  // Create a WebStateList, populate it, and save data to `session_window`.
+  SessionWindowIOS* session_window = nil;
+  {
+    WebStateList web_state_list(&delegate);
+    web_state_list.InsertWebState(
+        0, CreateWebState(),
+        WebStateList::INSERT_FORCE_INDEX | WebStateList::INSERT_PINNED,
+        WebStateOpener());
+    web_state_list.InsertWebState(
+        1, CreateWebState(),
+        WebStateList::INSERT_FORCE_INDEX | WebStateList::INSERT_ACTIVATE,
+        WebStateOpener(web_state_list.GetWebStateAt(0), 3));
+    web_state_list.InsertWebState(
+        2, CreateWebState(), WebStateList::INSERT_FORCE_INDEX,
+        WebStateOpener(web_state_list.GetWebStateAt(0), 2));
+    web_state_list.InsertWebState(
+        3, CreateWebState(), WebStateList::INSERT_FORCE_INDEX,
+        WebStateOpener(web_state_list.GetWebStateAt(1), 1));
 
-  EXPECT_EQ(session_window.sessions.count, 4u);
-  EXPECT_EQ(session_window.selectedIndex, 1u);
+    session_window = SerializeWebStateList(&web_state_list);
 
-  // Create a deserialized WebStateList and verify its contents.
-  WebStateList restored_web_state_list(&delegate);
-  restored_web_state_list.InsertWebState(
-      0, CreateWebState(),
-      WebStateList::INSERT_FORCE_INDEX | WebStateList::INSERT_ACTIVATE,
-      WebStateOpener());
-  ASSERT_EQ(1, restored_web_state_list.count());
+    EXPECT_EQ(session_window.sessions.count, 4u);
+    EXPECT_EQ(session_window.selectedIndex, 1u);
+  }
 
+  // Deserialize `session_window` into a new empty WebStateList.
+  WebStateList web_state_list(&delegate);
   const std::vector<web::WebState*> restored_web_states =
       DeserializeWebStateList(
-          &restored_web_state_list, session_window,
-          SessionRestorationScope::kRegularOnly,
-          /*enable_pinned_web_states*/ true,
+          &web_state_list, session_window,
+          /*enable_pinned_web_states*/ false,
           base::BindRepeating(&CreateWebStateWithSessionStorage));
-  EXPECT_EQ(restored_web_states.size(), 3u);
+  EXPECT_EQ(restored_web_states.size(), 4u);
 
-  ASSERT_EQ(restored_web_state_list.count(), 4);
-  EXPECT_EQ(restored_web_state_list.active_index(), 1);
-  EXPECT_EQ(restored_web_state_list.pinned_tabs_count(), 0);
+  ASSERT_EQ(web_state_list.count(), 4);
+  EXPECT_EQ(web_state_list.active_index(), 1);
+  EXPECT_EQ(web_state_list.pinned_tabs_count(), 0);
 
   // Check the opener-opened relationship.
-  EXPECT_EQ(restored_web_state_list.GetOpenerOfWebStateAt(0), WebStateOpener());
-  EXPECT_EQ(restored_web_state_list.GetOpenerOfWebStateAt(1), WebStateOpener());
-  EXPECT_EQ(restored_web_state_list.GetOpenerOfWebStateAt(2), WebStateOpener());
-  EXPECT_EQ(restored_web_state_list.GetOpenerOfWebStateAt(3),
-            WebStateOpener(restored_web_state_list.GetWebStateAt(1), 1));
+  EXPECT_EQ(web_state_list.GetOpenerOfWebStateAt(0), WebStateOpener());
+  EXPECT_EQ(web_state_list.GetOpenerOfWebStateAt(1),
+            WebStateOpener(web_state_list.GetWebStateAt(0), 3));
+  EXPECT_EQ(web_state_list.GetOpenerOfWebStateAt(2),
+            WebStateOpener(web_state_list.GetWebStateAt(0), 2));
+  EXPECT_EQ(web_state_list.GetOpenerOfWebStateAt(3),
+            WebStateOpener(web_state_list.GetWebStateAt(1), 1));
+
+  // Check that the pinned tab has been restored at the correct position
+  // but is no longer pinned.
+  EXPECT_FALSE(web_state_list.IsWebStatePinnedAt(0));
 }
 
-// Tests deserializing into a non-empty WebStateList works when support for
-// pinned tabs is enabled and the scope includes only pinned tabs.
+// Tests deserializing works when support for pinned tabs is enabled.
 //
-// Objective-C (legacy) variant.
-TEST_F(WebStateListSerializationTest,
-       Deserialize_ObjC_PinnedEnabled_PinnedOnly) {
+// Protobuf message variant.
+TEST_F(WebStateListSerializationTest, Deserialize_Proto_PinnedEnabled) {
   FakeWebStateListDelegate delegate;
-  WebStateList original_web_state_list(&delegate);
-  original_web_state_list.InsertWebState(
-      0, CreateWebState(),
-      WebStateList::INSERT_FORCE_INDEX | WebStateList::INSERT_PINNED,
-      WebStateOpener());
-  original_web_state_list.InsertWebState(
-      1, CreateWebState(),
-      WebStateList::INSERT_FORCE_INDEX | WebStateList::INSERT_ACTIVATE,
-      WebStateOpener(original_web_state_list.GetWebStateAt(0), 3));
-  original_web_state_list.InsertWebState(
-      2, CreateWebState(), WebStateList::INSERT_FORCE_INDEX,
-      WebStateOpener(original_web_state_list.GetWebStateAt(0), 2));
-  original_web_state_list.InsertWebState(
-      3, CreateWebState(), WebStateList::INSERT_FORCE_INDEX,
-      WebStateOpener(original_web_state_list.GetWebStateAt(1), 1));
 
-  SessionWindowIOS* session_window =
-      SerializeWebStateList(&original_web_state_list);
+  // Create a WebStateList, populate it and serialize to `storage`.
+  ios::proto::WebStateListStorage storage;
+  {
+    WebStateList web_state_list(&delegate);
+    web_state_list.InsertWebState(
+        0, CreateWebState(),
+        WebStateList::INSERT_FORCE_INDEX | WebStateList::INSERT_PINNED,
+        WebStateOpener());
+    web_state_list.InsertWebState(
+        1, CreateWebState(),
+        WebStateList::INSERT_FORCE_INDEX | WebStateList::INSERT_ACTIVATE,
+        WebStateOpener(web_state_list.GetWebStateAt(0), 3));
+    web_state_list.InsertWebState(
+        2, CreateWebState(), WebStateList::INSERT_FORCE_INDEX,
+        WebStateOpener(web_state_list.GetWebStateAt(0), 2));
+    web_state_list.InsertWebState(
+        3, CreateWebState(), WebStateList::INSERT_FORCE_INDEX,
+        WebStateOpener(web_state_list.GetWebStateAt(1), 1));
 
-  EXPECT_EQ(session_window.sessions.count, 4u);
-  EXPECT_EQ(session_window.selectedIndex, 1u);
+    SerializeWebStateList(web_state_list, storage);
 
-  // Create a deserialized WebStateList and verify its contents.
-  WebStateList restored_web_state_list(&delegate);
-  restored_web_state_list.InsertWebState(
-      0, CreateWebState(),
-      WebStateList::INSERT_FORCE_INDEX | WebStateList::INSERT_ACTIVATE,
-      WebStateOpener());
-  ASSERT_EQ(restored_web_state_list.count(), 1);
+    EXPECT_EQ(storage.items_size(), 4);
+    EXPECT_EQ(storage.active_index(), 1);
+    EXPECT_EQ(storage.pinned_item_count(), 1);
+  }
 
+  // Deserialize `storage` into a new empty WebStateList.
+  WebStateList web_state_list(&delegate);
   const std::vector<web::WebState*> restored_web_states =
-      DeserializeWebStateList(
-          &restored_web_state_list, session_window,
-          SessionRestorationScope::kPinnedOnly,
-          /*enable_pinned_web_states*/ true,
-          base::BindRepeating(&CreateWebStateWithSessionStorage));
-  EXPECT_EQ(restored_web_states.size(), 1u);
+      DeserializeWebStateList(&web_state_list, std::move(storage),
+                              /*enable_pinned_web_states*/ true,
+                              base::BindRepeating(&CreateWebStateFromProto));
+  EXPECT_EQ(restored_web_states.size(), 4u);
 
-  ASSERT_EQ(restored_web_state_list.count(), 2);
-  EXPECT_EQ(restored_web_state_list.active_index(), 1);
-  EXPECT_EQ(restored_web_state_list.pinned_tabs_count(), 1);
+  ASSERT_EQ(web_state_list.count(), 4);
+  EXPECT_EQ(web_state_list.active_index(), 1);
+  EXPECT_EQ(web_state_list.pinned_tabs_count(), 1);
 
   // Check the opener-opened relationship.
-  EXPECT_EQ(restored_web_state_list.GetOpenerOfWebStateAt(0), WebStateOpener());
-  EXPECT_EQ(restored_web_state_list.GetOpenerOfWebStateAt(1), WebStateOpener());
+  EXPECT_EQ(web_state_list.GetOpenerOfWebStateAt(0), WebStateOpener());
+  EXPECT_EQ(web_state_list.GetOpenerOfWebStateAt(1),
+            WebStateOpener(web_state_list.GetWebStateAt(0), 3));
+  EXPECT_EQ(web_state_list.GetOpenerOfWebStateAt(2),
+            WebStateOpener(web_state_list.GetWebStateAt(0), 2));
+  EXPECT_EQ(web_state_list.GetOpenerOfWebStateAt(3),
+            WebStateOpener(web_state_list.GetWebStateAt(1), 1));
 
   // Check that the pinned tab has been restored at the correct position and
   // as pinned.
-  EXPECT_TRUE(restored_web_state_list.IsWebStatePinnedAt(0));
+  EXPECT_TRUE(web_state_list.IsWebStatePinnedAt(0));
 }
 
-// Tests deserializing into a non-empty WebStateList works when support for
-// pinned tabs is disabled and the scope includes all tabs.
+// Tests deserializing works when support for pinned tabs is disabled.
 //
-// Objective-C (legacy) variant.
-TEST_F(WebStateListSerializationTest, Deserialize_ObjC_PinnedDisabled_All) {
+// Protobuf message variant.
+TEST_F(WebStateListSerializationTest, Deserialize_Proto_PinnedDisabled) {
   FakeWebStateListDelegate delegate;
-  WebStateList original_web_state_list(&delegate);
-  original_web_state_list.InsertWebState(
-      0, CreateWebState(),
-      WebStateList::INSERT_FORCE_INDEX | WebStateList::INSERT_PINNED,
-      WebStateOpener());
-  original_web_state_list.InsertWebState(
-      1, CreateWebState(),
-      WebStateList::INSERT_FORCE_INDEX | WebStateList::INSERT_ACTIVATE,
-      WebStateOpener(original_web_state_list.GetWebStateAt(0), 3));
-  original_web_state_list.InsertWebState(
-      2, CreateWebState(), WebStateList::INSERT_FORCE_INDEX,
-      WebStateOpener(original_web_state_list.GetWebStateAt(0), 2));
-  original_web_state_list.InsertWebState(
-      3, CreateWebState(), WebStateList::INSERT_FORCE_INDEX,
-      WebStateOpener(original_web_state_list.GetWebStateAt(1), 1));
 
-  SessionWindowIOS* session_window =
-      SerializeWebStateList(&original_web_state_list);
+  // Create a WebStateList, populate it and serialize to `storage`.
+  ios::proto::WebStateListStorage storage;
+  {
+    WebStateList web_state_list(&delegate);
+    web_state_list.InsertWebState(
+        0, CreateWebState(),
+        WebStateList::INSERT_FORCE_INDEX | WebStateList::INSERT_PINNED,
+        WebStateOpener());
+    web_state_list.InsertWebState(
+        1, CreateWebState(),
+        WebStateList::INSERT_FORCE_INDEX | WebStateList::INSERT_ACTIVATE,
+        WebStateOpener(web_state_list.GetWebStateAt(0), 3));
+    web_state_list.InsertWebState(
+        2, CreateWebState(), WebStateList::INSERT_FORCE_INDEX,
+        WebStateOpener(web_state_list.GetWebStateAt(0), 2));
+    web_state_list.InsertWebState(
+        3, CreateWebState(), WebStateList::INSERT_FORCE_INDEX,
+        WebStateOpener(web_state_list.GetWebStateAt(1), 1));
 
-  EXPECT_EQ(session_window.sessions.count, 4u);
-  EXPECT_EQ(session_window.selectedIndex, 1u);
+    SerializeWebStateList(web_state_list, storage);
 
-  // Create a deserialized WebStateList and verify its contents.
-  WebStateList restored_web_state_list(&delegate);
-  restored_web_state_list.InsertWebState(
-      0, CreateWebState(),
-      WebStateList::INSERT_FORCE_INDEX | WebStateList::INSERT_ACTIVATE,
-      WebStateOpener());
-  ASSERT_EQ(restored_web_state_list.count(), 1);
+    EXPECT_EQ(storage.items_size(), 4);
+    EXPECT_EQ(storage.active_index(), 1);
+    EXPECT_EQ(storage.pinned_item_count(), 1);
+  }
 
+  // Deserialize `storage` into a new empty WebStateList.
+  WebStateList web_state_list(&delegate);
   const std::vector<web::WebState*> restored_web_states =
-      DeserializeWebStateList(
-          &restored_web_state_list, session_window,
-          SessionRestorationScope::kAll,
-          /*enable_pinned_web_states*/ false,
-          base::BindRepeating(&CreateWebStateWithSessionStorage));
+      DeserializeWebStateList(&web_state_list, std::move(storage),
+                              /*enable_pinned_web_states*/ false,
+                              base::BindRepeating(&CreateWebStateFromProto));
   EXPECT_EQ(restored_web_states.size(), 4u);
 
-  ASSERT_EQ(restored_web_state_list.count(), 5);
-  EXPECT_EQ(restored_web_state_list.active_index(), 2);
-  EXPECT_EQ(restored_web_state_list.pinned_tabs_count(), 0);
+  ASSERT_EQ(web_state_list.count(), 4);
+  EXPECT_EQ(web_state_list.active_index(), 1);
+  EXPECT_EQ(web_state_list.pinned_tabs_count(), 0);
 
   // Check the opener-opened relationship.
-  EXPECT_EQ(restored_web_state_list.GetOpenerOfWebStateAt(0), WebStateOpener());
-  EXPECT_EQ(restored_web_state_list.GetOpenerOfWebStateAt(1), WebStateOpener());
-  EXPECT_EQ(restored_web_state_list.GetOpenerOfWebStateAt(2),
-            WebStateOpener(restored_web_state_list.GetWebStateAt(1), 3));
-  EXPECT_EQ(restored_web_state_list.GetOpenerOfWebStateAt(3),
-            WebStateOpener(restored_web_state_list.GetWebStateAt(1), 2));
-  EXPECT_EQ(restored_web_state_list.GetOpenerOfWebStateAt(4),
-            WebStateOpener(restored_web_state_list.GetWebStateAt(2), 1));
-}
-
-// Tests deserializing into a non-empty WebStateList works when support for
-// pinned tabs is disabled and the scope includes only regular tabs.
-//
-// Objective-C (legacy) variant.
-TEST_F(WebStateListSerializationTest,
-       Deserialize_ObjC_PinnedDisabled_RegularOnly) {
-  FakeWebStateListDelegate delegate;
-  WebStateList original_web_state_list(&delegate);
-  original_web_state_list.InsertWebState(
-      0, CreateWebState(),
-      WebStateList::INSERT_FORCE_INDEX | WebStateList::INSERT_PINNED,
-      WebStateOpener());
-  original_web_state_list.InsertWebState(
-      1, CreateWebState(),
-      WebStateList::INSERT_FORCE_INDEX | WebStateList::INSERT_ACTIVATE,
-      WebStateOpener(original_web_state_list.GetWebStateAt(0), 3));
-  original_web_state_list.InsertWebState(
-      2, CreateWebState(), WebStateList::INSERT_FORCE_INDEX,
-      WebStateOpener(original_web_state_list.GetWebStateAt(0), 2));
-  original_web_state_list.InsertWebState(
-      3, CreateWebState(), WebStateList::INSERT_FORCE_INDEX,
-      WebStateOpener(original_web_state_list.GetWebStateAt(1), 1));
-
-  SessionWindowIOS* session_window =
-      SerializeWebStateList(&original_web_state_list);
-
-  EXPECT_EQ(session_window.sessions.count, 4u);
-  EXPECT_EQ(session_window.selectedIndex, 1u);
-
-  // Create a deserialized WebStateList and verify its contents.
-  WebStateList restored_web_state_list(&delegate);
-  restored_web_state_list.InsertWebState(
-      0, CreateWebState(),
-      WebStateList::INSERT_FORCE_INDEX | WebStateList::INSERT_ACTIVATE,
-      WebStateOpener());
-  ASSERT_EQ(1, restored_web_state_list.count());
-
-  const std::vector<web::WebState*> restored_web_states =
-      DeserializeWebStateList(
-          &restored_web_state_list, session_window,
-          SessionRestorationScope::kRegularOnly,
-          /*enable_pinned_web_states*/ false,
-          base::BindRepeating(&CreateWebStateWithSessionStorage));
-  EXPECT_EQ(restored_web_states.size(), 4u);
-
-  ASSERT_EQ(restored_web_state_list.count(), 5);
-  EXPECT_EQ(restored_web_state_list.active_index(), 2);
-  EXPECT_EQ(restored_web_state_list.pinned_tabs_count(), 0);
-
-  // Check the opener-opened relationship.
-  EXPECT_EQ(restored_web_state_list.GetOpenerOfWebStateAt(0), WebStateOpener());
-  EXPECT_EQ(restored_web_state_list.GetOpenerOfWebStateAt(1), WebStateOpener());
-  EXPECT_EQ(restored_web_state_list.GetOpenerOfWebStateAt(2),
-            WebStateOpener(restored_web_state_list.GetWebStateAt(1), 3));
-  EXPECT_EQ(restored_web_state_list.GetOpenerOfWebStateAt(3),
-            WebStateOpener(restored_web_state_list.GetWebStateAt(1), 2));
-  EXPECT_EQ(restored_web_state_list.GetOpenerOfWebStateAt(4),
-            WebStateOpener(restored_web_state_list.GetWebStateAt(2), 1));
-}
-
-// Tests deserializing into a non-empty WebStateList works when support for
-// pinned tabs is disabled and the scope includes only pinned tabs.
-//
-// Objective-C (legacy) variant.
-TEST_F(WebStateListSerializationTest,
-       Deserialize_ObjC_PinnedDisabled_PinnedOnly) {
-  FakeWebStateListDelegate delegate;
-  WebStateList original_web_state_list(&delegate);
-  original_web_state_list.InsertWebState(
-      0, CreateWebState(),
-      WebStateList::INSERT_FORCE_INDEX | WebStateList::INSERT_PINNED,
-      WebStateOpener());
-  original_web_state_list.InsertWebState(
-      1, CreateWebState(),
-      WebStateList::INSERT_FORCE_INDEX | WebStateList::INSERT_ACTIVATE,
-      WebStateOpener(original_web_state_list.GetWebStateAt(0), 3));
-  original_web_state_list.InsertWebState(
-      2, CreateWebState(), WebStateList::INSERT_FORCE_INDEX,
-      WebStateOpener(original_web_state_list.GetWebStateAt(0), 2));
-  original_web_state_list.InsertWebState(
-      3, CreateWebState(), WebStateList::INSERT_FORCE_INDEX,
-      WebStateOpener(original_web_state_list.GetWebStateAt(1), 1));
-
-  SessionWindowIOS* session_window =
-      SerializeWebStateList(&original_web_state_list);
-
-  EXPECT_EQ(session_window.sessions.count, 4u);
-  EXPECT_EQ(session_window.selectedIndex, 1u);
-
-  // Create a deserialized WebStateList and verify its contents.
-  WebStateList restored_web_state_list(&delegate);
-  restored_web_state_list.InsertWebState(
-      0, CreateWebState(),
-      WebStateList::INSERT_FORCE_INDEX | WebStateList::INSERT_ACTIVATE,
-      WebStateOpener());
-  ASSERT_EQ(restored_web_state_list.count(), 1);
-
-  const std::vector<web::WebState*> restored_web_states =
-      DeserializeWebStateList(
-          &restored_web_state_list, session_window,
-          SessionRestorationScope::kPinnedOnly,
-          /*enable_pinned_web_states*/ false,
-          base::BindRepeating(&CreateWebStateWithSessionStorage));
-  EXPECT_EQ(restored_web_states.size(), 0u);
-
-  ASSERT_EQ(restored_web_state_list.count(), 1);
-  EXPECT_EQ(restored_web_state_list.active_index(), 0);
-  EXPECT_EQ(restored_web_state_list.pinned_tabs_count(), 0);
-}
-
-// Tests deserializing into a non-empty WebStateList containing a single
-// WebState displaying the NTP and without pending navigation leads to
-// closing the old NTP tab.
-//
-// Objective-C (legacy) variant.
-TEST_F(WebStateListSerializationTest, Deserialize_ObjC_SingleTabNTP) {
-  FakeWebStateListDelegate delegate;
-  WebStateList original_web_state_list(&delegate);
-  original_web_state_list.InsertWebState(
-      0, CreateWebState(), WebStateList::INSERT_ACTIVATE, WebStateOpener());
-
-  SessionWindowIOS* session_window =
-      SerializeWebStateList(&original_web_state_list);
-
-  EXPECT_EQ(session_window.sessions.count, 1u);
-  EXPECT_EQ(session_window.selectedIndex, 0u);
-
-  // Create a WebStateList with a single tab displaying NTP.
-  WebStateList restored_web_state_list(&delegate);
-  restored_web_state_list.InsertWebState(
-      0, CreateWebStateOnNTP(/*has_pending_load*/ false),
-      WebStateList::INSERT_ACTIVATE, WebStateOpener());
-  ASSERT_EQ(restored_web_state_list.count(), 1);
-
-  // Record the WebStateID of the WebState displaying the NTP.
-  const auto ntp_web_state_id = IdentifierAt(restored_web_state_list, 0);
-
-  // Check that after restoration, the old tab displaying the NTP
-  // has been closed.
-  const std::vector<web::WebState*> restored_web_states =
-      DeserializeWebStateList(
-          &restored_web_state_list, session_window,
-          SessionRestorationScope::kAll,
-          /*enable_pinned_web_states*/ true,
-          base::BindRepeating(&CreateWebStateWithSessionStorage));
-  EXPECT_EQ(restored_web_states.size(), 1u);
-
-  ASSERT_EQ(restored_web_state_list.count(), 1);
-  EXPECT_NE(IdentifierAt(restored_web_state_list, 0), ntp_web_state_id);
-}
-
-// Tests deserializing into a non-empty WebStateList containing a single
-// WebState displaying the NTP and with a pending navigation does not
-// cause the tab to be closed.
-//
-// Objective-C (legacy) variant.
-TEST_F(WebStateListSerializationTest,
-       Deserialize_ObjC_SingleTabNTP_PendingNavigation) {
-  FakeWebStateListDelegate delegate;
-  WebStateList original_web_state_list(&delegate);
-  original_web_state_list.InsertWebState(
-      0, CreateWebState(), WebStateList::INSERT_ACTIVATE, WebStateOpener());
-
-  SessionWindowIOS* session_window =
-      SerializeWebStateList(&original_web_state_list);
-
-  EXPECT_EQ(session_window.sessions.count, 1u);
-  EXPECT_EQ(session_window.selectedIndex, 0u);
-
-  // Create a WebStateList with a single tab displaying NTP.
-  WebStateList restored_web_state_list(&delegate);
-  restored_web_state_list.InsertWebState(
-      0, CreateWebStateOnNTP(/*has_pending_load*/ true),
-      WebStateList::INSERT_ACTIVATE, WebStateOpener());
-  ASSERT_EQ(restored_web_state_list.count(), 1);
-
-  // Record the WebStateID of the WebState displaying the NTP.
-  const auto ntp_web_state_id = IdentifierAt(restored_web_state_list, 0);
-
-  // Check that after restoration, the old tab displaying the NTP
-  // has been closed.
-  const std::vector<web::WebState*> restored_web_states =
-      DeserializeWebStateList(
-          &restored_web_state_list, session_window,
-          SessionRestorationScope::kAll,
-          /*enable_pinned_web_states*/ true,
-          base::BindRepeating(&CreateWebStateWithSessionStorage));
-  EXPECT_EQ(restored_web_states.size(), 1u);
-
-  ASSERT_EQ(restored_web_state_list.count(), 2);
-  EXPECT_EQ(IdentifierAt(restored_web_state_list, 0), ntp_web_state_id);
-}
-
-// Tests deserializing an empty session into a non-empty WebStateList
-// containing a single WebState displaying the NTP and without pending
-// does not cause the tab to be closed.
-//
-// Objective-C (legacy) variant.
-TEST_F(WebStateListSerializationTest,
-       Deserialize_ObjC_SingleTabNTP_EmptySession) {
-  FakeWebStateListDelegate delegate;
-  WebStateList original_web_state_list(&delegate);
-
-  SessionWindowIOS* session_window =
-      SerializeWebStateList(&original_web_state_list);
-
-  EXPECT_EQ(session_window.sessions.count, 0u);
-  EXPECT_EQ(session_window.selectedIndex, static_cast<NSUInteger>(NSNotFound));
-
-  // Create a WebStateList with a single tab displaying NTP.
-  WebStateList restored_web_state_list(&delegate);
-  restored_web_state_list.InsertWebState(
-      0, CreateWebStateOnNTP(/*has_pending_load*/ false),
-      WebStateList::INSERT_ACTIVATE, WebStateOpener());
-  ASSERT_EQ(restored_web_state_list.count(), 1);
-
-  // Record the WebStateID of the WebState displaying the NTP.
-  const auto ntp_web_state_id = IdentifierAt(restored_web_state_list, 0);
-
-  // Check that after restoration, the old tab displaying the NTP
-  // has been closed.
-  const std::vector<web::WebState*> restored_web_states =
-      DeserializeWebStateList(
-          &restored_web_state_list, session_window,
-          SessionRestorationScope::kAll,
-          /*enable_pinned_web_states*/ true,
-          base::BindRepeating(&CreateWebStateWithSessionStorage));
-  EXPECT_EQ(restored_web_states.size(), 0u);
-
-  ASSERT_EQ(restored_web_state_list.count(), 1);
-  EXPECT_EQ(IdentifierAt(restored_web_state_list, 0), ntp_web_state_id);
-}
-
-// Tests deserializing into a non-empty WebStateList containing multiple
-// WebStates does not lead to closing those tabs, even if they all display
-// the NTP and have no pending navigation.
-//
-// Objective-C (legacy) variant.
-TEST_F(WebStateListSerializationTest, Deserialize_ObjC__MultipleNTPTabs) {
-  FakeWebStateListDelegate delegate;
-  WebStateList original_web_state_list(&delegate);
-  original_web_state_list.InsertWebState(
-      0, CreateWebState(), WebStateList::INSERT_ACTIVATE, WebStateOpener());
-
-  SessionWindowIOS* session_window =
-      SerializeWebStateList(&original_web_state_list);
-
-  EXPECT_EQ(session_window.sessions.count, 1u);
-  EXPECT_EQ(session_window.selectedIndex, 0u);
-
-  // Create a WebStateList with a single tab displaying NTP.
-  WebStateList restored_web_state_list(&delegate);
-  restored_web_state_list.InsertWebState(
-      0, CreateWebStateOnNTP(/*has_pending_load*/ false),
-      WebStateList::INSERT_ACTIVATE, WebStateOpener());
-  restored_web_state_list.InsertWebState(
-      1, CreateWebStateOnNTP(/*has_pending_load*/ false),
-      WebStateList::INSERT_NO_FLAGS, WebStateOpener());
-  ASSERT_EQ(restored_web_state_list.count(), 2);
-
-  // Record the WebStateIDs of the WebStates displaying the NTP.
-  const auto ntp_web_state_id_0 = IdentifierAt(restored_web_state_list, 0);
-  const auto ntp_web_state_id_1 = IdentifierAt(restored_web_state_list, 1);
-
-  // Check that after restoration, the old tab displaying the NTP
-  // has been closed.
-  const std::vector<web::WebState*> restored_web_states =
-      DeserializeWebStateList(
-          &restored_web_state_list, session_window,
-          SessionRestorationScope::kAll,
-          /*enable_pinned_web_states*/ true,
-          base::BindRepeating(&CreateWebStateWithSessionStorage));
-  EXPECT_EQ(restored_web_states.size(), 1u);
-
-  ASSERT_EQ(restored_web_state_list.count(), 3);
-  EXPECT_EQ(IdentifierAt(restored_web_state_list, 0), ntp_web_state_id_0);
-  EXPECT_EQ(IdentifierAt(restored_web_state_list, 1), ntp_web_state_id_1);
-}
-
-// Tests deserializing into a non-empty WebStateList works when support for
-// pinned tabs is enabled and the scope includes all tabs.
-//
-// Protobuf message variant.
-TEST_F(WebStateListSerializationTest, Deserialize_Proto_PinnedEnabled_All) {
-  FakeWebStateListDelegate delegate;
-  WebStateList original_web_state_list(&delegate);
-  original_web_state_list.InsertWebState(
-      0, CreateWebState(),
-      WebStateList::INSERT_FORCE_INDEX | WebStateList::INSERT_PINNED,
-      WebStateOpener());
-  original_web_state_list.InsertWebState(
-      1, CreateWebState(),
-      WebStateList::INSERT_FORCE_INDEX | WebStateList::INSERT_ACTIVATE,
-      WebStateOpener(original_web_state_list.GetWebStateAt(0), 3));
-  original_web_state_list.InsertWebState(
-      2, CreateWebState(), WebStateList::INSERT_FORCE_INDEX,
-      WebStateOpener(original_web_state_list.GetWebStateAt(0), 2));
-  original_web_state_list.InsertWebState(
-      3, CreateWebState(), WebStateList::INSERT_FORCE_INDEX,
-      WebStateOpener(original_web_state_list.GetWebStateAt(1), 1));
-
-  ios::proto::WebStateListStorage storage;
-  SerializeWebStateList(original_web_state_list, storage);
-
-  EXPECT_EQ(storage.items_size(), 4);
-  EXPECT_EQ(storage.active_index(), 1);
-  EXPECT_EQ(storage.pinned_item_count(), 1);
-
-  // Create a deserialized WebStateList and verify its contents.
-  WebStateList restored_web_state_list(&delegate);
-  restored_web_state_list.InsertWebState(
-      0, CreateWebState(),
-      WebStateList::INSERT_FORCE_INDEX | WebStateList::INSERT_ACTIVATE,
-      WebStateOpener());
-  ASSERT_EQ(restored_web_state_list.count(), 1);
-
-  const std::vector<web::WebState*> restored_web_states =
-      DeserializeWebStateList(
-          &restored_web_state_list, std::move(storage),
-          SessionRestorationScope::kAll,
-          /*enable_pinned_web_states*/ true,
-          base::BindRepeating(&CreateWebStateWithWebStateID));
-  EXPECT_EQ(restored_web_states.size(), 4u);
-
-  ASSERT_EQ(restored_web_state_list.count(), 5);
-  EXPECT_EQ(restored_web_state_list.active_index(), 2);
-  EXPECT_EQ(restored_web_state_list.pinned_tabs_count(), 1);
-
-  // Check the opener-opened relationship.
-  EXPECT_EQ(restored_web_state_list.GetOpenerOfWebStateAt(0), WebStateOpener());
-  EXPECT_EQ(restored_web_state_list.GetOpenerOfWebStateAt(1), WebStateOpener());
-  EXPECT_EQ(restored_web_state_list.GetOpenerOfWebStateAt(2),
-            WebStateOpener(restored_web_state_list.GetWebStateAt(0), 3));
-  EXPECT_EQ(restored_web_state_list.GetOpenerOfWebStateAt(3),
-            WebStateOpener(restored_web_state_list.GetWebStateAt(0), 2));
-  EXPECT_EQ(restored_web_state_list.GetOpenerOfWebStateAt(4),
-            WebStateOpener(restored_web_state_list.GetWebStateAt(2), 1));
-
-  // Check that the pinned tab has been restored at the correct position and
-  // as pinned.
-  EXPECT_TRUE(restored_web_state_list.IsWebStatePinnedAt(0));
-}
-
-// Tests deserializing into a non-empty WebStateList works when support for
-// pinned tabs is enabled and the scope includes only regular tabs.
-//
-// Protobuf message variant.
-TEST_F(WebStateListSerializationTest,
-       Deserialize_Proto_PinnedEnabled_RegularOnly) {
-  FakeWebStateListDelegate delegate;
-  WebStateList original_web_state_list(&delegate);
-  original_web_state_list.InsertWebState(
-      0, CreateWebState(),
-      WebStateList::INSERT_FORCE_INDEX | WebStateList::INSERT_PINNED,
-      WebStateOpener());
-  original_web_state_list.InsertWebState(
-      1, CreateWebState(),
-      WebStateList::INSERT_FORCE_INDEX | WebStateList::INSERT_ACTIVATE,
-      WebStateOpener(original_web_state_list.GetWebStateAt(0), 3));
-  original_web_state_list.InsertWebState(
-      2, CreateWebState(), WebStateList::INSERT_FORCE_INDEX,
-      WebStateOpener(original_web_state_list.GetWebStateAt(0), 2));
-  original_web_state_list.InsertWebState(
-      3, CreateWebState(), WebStateList::INSERT_FORCE_INDEX,
-      WebStateOpener(original_web_state_list.GetWebStateAt(1), 1));
-
-  ios::proto::WebStateListStorage storage;
-  SerializeWebStateList(original_web_state_list, storage);
-
-  EXPECT_EQ(storage.items_size(), 4);
-  EXPECT_EQ(storage.active_index(), 1);
-  EXPECT_EQ(storage.pinned_item_count(), 1);
-
-  // Create a deserialized WebStateList and verify its contents.
-  WebStateList restored_web_state_list(&delegate);
-  restored_web_state_list.InsertWebState(
-      0, CreateWebState(),
-      WebStateList::INSERT_FORCE_INDEX | WebStateList::INSERT_ACTIVATE,
-      WebStateOpener());
-  ASSERT_EQ(restored_web_state_list.count(), 1);
-
-  const std::vector<web::WebState*> restored_web_states =
-      DeserializeWebStateList(
-          &restored_web_state_list, std::move(storage),
-          SessionRestorationScope::kRegularOnly,
-          /*enable_pinned_web_states*/ true,
-          base::BindRepeating(&CreateWebStateWithWebStateID));
-  EXPECT_EQ(restored_web_states.size(), 3u);
-
-  ASSERT_EQ(restored_web_state_list.count(), 4);
-  EXPECT_EQ(restored_web_state_list.active_index(), 1);
-  EXPECT_EQ(restored_web_state_list.pinned_tabs_count(), 0);
-
-  // Check the opener-opened relationship.
-  EXPECT_EQ(restored_web_state_list.GetOpenerOfWebStateAt(0), WebStateOpener());
-  EXPECT_EQ(restored_web_state_list.GetOpenerOfWebStateAt(1), WebStateOpener());
-  EXPECT_EQ(restored_web_state_list.GetOpenerOfWebStateAt(2), WebStateOpener());
-  EXPECT_EQ(restored_web_state_list.GetOpenerOfWebStateAt(3),
-            WebStateOpener(restored_web_state_list.GetWebStateAt(1), 1));
-}
-
-// Tests deserializing into a non-empty WebStateList works when support for
-// pinned tabs is enabled and the scope includes only pinned tabs.
-//
-// Protobuf message variant.
-TEST_F(WebStateListSerializationTest,
-       Deserialize_Proto_PinnedEnabled_PinnedOnly) {
-  FakeWebStateListDelegate delegate;
-  WebStateList original_web_state_list(&delegate);
-  original_web_state_list.InsertWebState(
-      0, CreateWebState(),
-      WebStateList::INSERT_FORCE_INDEX | WebStateList::INSERT_PINNED,
-      WebStateOpener());
-  original_web_state_list.InsertWebState(
-      1, CreateWebState(),
-      WebStateList::INSERT_FORCE_INDEX | WebStateList::INSERT_ACTIVATE,
-      WebStateOpener(original_web_state_list.GetWebStateAt(0), 3));
-  original_web_state_list.InsertWebState(
-      2, CreateWebState(), WebStateList::INSERT_FORCE_INDEX,
-      WebStateOpener(original_web_state_list.GetWebStateAt(0), 2));
-  original_web_state_list.InsertWebState(
-      3, CreateWebState(), WebStateList::INSERT_FORCE_INDEX,
-      WebStateOpener(original_web_state_list.GetWebStateAt(1), 1));
-
-  ios::proto::WebStateListStorage storage;
-  SerializeWebStateList(original_web_state_list, storage);
-
-  EXPECT_EQ(storage.items_size(), 4);
-  EXPECT_EQ(storage.active_index(), 1);
-  EXPECT_EQ(storage.pinned_item_count(), 1);
-
-  // Create a deserialized WebStateList and verify its contents.
-  WebStateList restored_web_state_list(&delegate);
-  restored_web_state_list.InsertWebState(
-      0, CreateWebState(),
-      WebStateList::INSERT_FORCE_INDEX | WebStateList::INSERT_ACTIVATE,
-      WebStateOpener());
-  ASSERT_EQ(restored_web_state_list.count(), 1);
-
-  const std::vector<web::WebState*> restored_web_states =
-      DeserializeWebStateList(
-          &restored_web_state_list, std::move(storage),
-          SessionRestorationScope::kPinnedOnly,
-          /*enable_pinned_web_states*/ true,
-          base::BindRepeating(&CreateWebStateWithWebStateID));
-  EXPECT_EQ(restored_web_states.size(), 1u);
-
-  ASSERT_EQ(restored_web_state_list.count(), 2);
-  EXPECT_EQ(restored_web_state_list.active_index(), 1);
-  EXPECT_EQ(restored_web_state_list.pinned_tabs_count(), 1);
-
-  // Check the opener-opened relationship.
-  EXPECT_EQ(restored_web_state_list.GetOpenerOfWebStateAt(0), WebStateOpener());
-  EXPECT_EQ(restored_web_state_list.GetOpenerOfWebStateAt(1), WebStateOpener());
-
-  // Check that the pinned tab has been restored at the correct position and
-  // as pinned.
-  EXPECT_TRUE(restored_web_state_list.IsWebStatePinnedAt(0));
-}
-
-// Tests deserializing into a non-empty WebStateList works when support for
-// pinned tabs is disabled and the scope includes all tabs.
-//
-// Protobuf message variant.
-TEST_F(WebStateListSerializationTest, Deserialize_Proto_PinnedDisabled_All) {
-  FakeWebStateListDelegate delegate;
-  WebStateList original_web_state_list(&delegate);
-  original_web_state_list.InsertWebState(
-      0, CreateWebState(),
-      WebStateList::INSERT_FORCE_INDEX | WebStateList::INSERT_PINNED,
-      WebStateOpener());
-  original_web_state_list.InsertWebState(
-      1, CreateWebState(),
-      WebStateList::INSERT_FORCE_INDEX | WebStateList::INSERT_ACTIVATE,
-      WebStateOpener(original_web_state_list.GetWebStateAt(0), 3));
-  original_web_state_list.InsertWebState(
-      2, CreateWebState(), WebStateList::INSERT_FORCE_INDEX,
-      WebStateOpener(original_web_state_list.GetWebStateAt(0), 2));
-  original_web_state_list.InsertWebState(
-      3, CreateWebState(), WebStateList::INSERT_FORCE_INDEX,
-      WebStateOpener(original_web_state_list.GetWebStateAt(1), 1));
-
-  ios::proto::WebStateListStorage storage;
-  SerializeWebStateList(original_web_state_list, storage);
-
-  EXPECT_EQ(storage.items_size(), 4);
-  EXPECT_EQ(storage.active_index(), 1);
-  EXPECT_EQ(storage.pinned_item_count(), 1);
-
-  // Create a deserialized WebStateList and verify its contents.
-  WebStateList restored_web_state_list(&delegate);
-  restored_web_state_list.InsertWebState(
-      0, CreateWebState(),
-      WebStateList::INSERT_FORCE_INDEX | WebStateList::INSERT_ACTIVATE,
-      WebStateOpener());
-  ASSERT_EQ(restored_web_state_list.count(), 1);
-
-  const std::vector<web::WebState*> restored_web_states =
-      DeserializeWebStateList(
-          &restored_web_state_list, std::move(storage),
-          SessionRestorationScope::kAll,
-          /*enable_pinned_web_states*/ false,
-          base::BindRepeating(&CreateWebStateWithWebStateID));
-  EXPECT_EQ(restored_web_states.size(), 4u);
-
-  ASSERT_EQ(restored_web_state_list.count(), 5);
-  EXPECT_EQ(restored_web_state_list.active_index(), 2);
-  EXPECT_EQ(restored_web_state_list.pinned_tabs_count(), 0);
-
-  // Check the opener-opened relationship.
-  EXPECT_EQ(restored_web_state_list.GetOpenerOfWebStateAt(0), WebStateOpener());
-  EXPECT_EQ(restored_web_state_list.GetOpenerOfWebStateAt(1), WebStateOpener());
-  EXPECT_EQ(restored_web_state_list.GetOpenerOfWebStateAt(2),
-            WebStateOpener(restored_web_state_list.GetWebStateAt(1), 3));
-  EXPECT_EQ(restored_web_state_list.GetOpenerOfWebStateAt(3),
-            WebStateOpener(restored_web_state_list.GetWebStateAt(1), 2));
-  EXPECT_EQ(restored_web_state_list.GetOpenerOfWebStateAt(4),
-            WebStateOpener(restored_web_state_list.GetWebStateAt(2), 1));
-}
-
-// Tests deserializing into a non-empty WebStateList works when support for
-// pinned tabs is disabled and the scope includes only regular tabs.
-//
-// Protobuf message variant.
-TEST_F(WebStateListSerializationTest,
-       Deserialize_Proto_PinnedDisabled_RegularOnly) {
-  FakeWebStateListDelegate delegate;
-  WebStateList original_web_state_list(&delegate);
-  original_web_state_list.InsertWebState(
-      0, CreateWebState(),
-      WebStateList::INSERT_FORCE_INDEX | WebStateList::INSERT_PINNED,
-      WebStateOpener());
-  original_web_state_list.InsertWebState(
-      1, CreateWebState(),
-      WebStateList::INSERT_FORCE_INDEX | WebStateList::INSERT_ACTIVATE,
-      WebStateOpener(original_web_state_list.GetWebStateAt(0), 3));
-  original_web_state_list.InsertWebState(
-      2, CreateWebState(), WebStateList::INSERT_FORCE_INDEX,
-      WebStateOpener(original_web_state_list.GetWebStateAt(0), 2));
-  original_web_state_list.InsertWebState(
-      3, CreateWebState(), WebStateList::INSERT_FORCE_INDEX,
-      WebStateOpener(original_web_state_list.GetWebStateAt(1), 1));
-
-  ios::proto::WebStateListStorage storage;
-  SerializeWebStateList(original_web_state_list, storage);
-
-  EXPECT_EQ(storage.items_size(), 4);
-  EXPECT_EQ(storage.active_index(), 1);
-  EXPECT_EQ(storage.pinned_item_count(), 1);
-
-  // Create a deserialized WebStateList and verify its contents.
-  WebStateList restored_web_state_list(&delegate);
-  restored_web_state_list.InsertWebState(
-      0, CreateWebState(),
-      WebStateList::INSERT_FORCE_INDEX | WebStateList::INSERT_ACTIVATE,
-      WebStateOpener());
-  ASSERT_EQ(restored_web_state_list.count(), 1);
-
-  const std::vector<web::WebState*> restored_web_states =
-      DeserializeWebStateList(
-          &restored_web_state_list, std::move(storage),
-          SessionRestorationScope::kRegularOnly,
-          /*enable_pinned_web_states*/ false,
-          base::BindRepeating(&CreateWebStateWithWebStateID));
-  EXPECT_EQ(restored_web_states.size(), 4u);
-
-  ASSERT_EQ(restored_web_state_list.count(), 5);
-  EXPECT_EQ(restored_web_state_list.active_index(), 2);
-  EXPECT_EQ(restored_web_state_list.pinned_tabs_count(), 0);
-
-  // Check the opener-opened relationship.
-  EXPECT_EQ(restored_web_state_list.GetOpenerOfWebStateAt(0), WebStateOpener());
-  EXPECT_EQ(restored_web_state_list.GetOpenerOfWebStateAt(1), WebStateOpener());
-  EXPECT_EQ(restored_web_state_list.GetOpenerOfWebStateAt(2),
-            WebStateOpener(restored_web_state_list.GetWebStateAt(1), 3));
-  EXPECT_EQ(restored_web_state_list.GetOpenerOfWebStateAt(3),
-            WebStateOpener(restored_web_state_list.GetWebStateAt(1), 2));
-  EXPECT_EQ(restored_web_state_list.GetOpenerOfWebStateAt(4),
-            WebStateOpener(restored_web_state_list.GetWebStateAt(2), 1));
-}
-
-// Tests deserializing into a non-empty WebStateList works when support for
-// pinned tabs is disabled and the scope includes only pinned tabs.
-//
-// Protobuf message variant.
-TEST_F(WebStateListSerializationTest,
-       Deserialize_Proto_PinnedDisabled_PinnedOnly) {
-  FakeWebStateListDelegate delegate;
-  WebStateList original_web_state_list(&delegate);
-  original_web_state_list.InsertWebState(
-      0, CreateWebState(),
-      WebStateList::INSERT_FORCE_INDEX | WebStateList::INSERT_PINNED,
-      WebStateOpener());
-  original_web_state_list.InsertWebState(
-      1, CreateWebState(),
-      WebStateList::INSERT_FORCE_INDEX | WebStateList::INSERT_ACTIVATE,
-      WebStateOpener(original_web_state_list.GetWebStateAt(0), 3));
-  original_web_state_list.InsertWebState(
-      2, CreateWebState(), WebStateList::INSERT_FORCE_INDEX,
-      WebStateOpener(original_web_state_list.GetWebStateAt(0), 2));
-  original_web_state_list.InsertWebState(
-      3, CreateWebState(), WebStateList::INSERT_FORCE_INDEX,
-      WebStateOpener(original_web_state_list.GetWebStateAt(1), 1));
-
-  ios::proto::WebStateListStorage storage;
-  SerializeWebStateList(original_web_state_list, storage);
-
-  EXPECT_EQ(storage.items_size(), 4);
-  EXPECT_EQ(storage.active_index(), 1);
-  EXPECT_EQ(storage.pinned_item_count(), 1);
-
-  // Create a deserialized WebStateList and verify its contents.
-  WebStateList restored_web_state_list(&delegate);
-  restored_web_state_list.InsertWebState(
-      0, CreateWebState(),
-      WebStateList::INSERT_FORCE_INDEX | WebStateList::INSERT_ACTIVATE,
-      WebStateOpener());
-  ASSERT_EQ(restored_web_state_list.count(), 1);
-
-  const std::vector<web::WebState*> restored_web_states =
-      DeserializeWebStateList(
-          &restored_web_state_list, std::move(storage),
-          SessionRestorationScope::kPinnedOnly,
-          /*enable_pinned_web_states*/ false,
-          base::BindRepeating(&CreateWebStateWithWebStateID));
-  EXPECT_EQ(restored_web_states.size(), 0u);
-
-  ASSERT_EQ(restored_web_state_list.count(), 1);
-  EXPECT_EQ(restored_web_state_list.active_index(), 0);
-  EXPECT_EQ(restored_web_state_list.pinned_tabs_count(), 0);
-}
-
-// Tests deserializing into a non-empty WebStateList containing a single
-// WebState displaying the NTP and without pending navigation leads to
-// closing the old NTP tab.
-//
-// Protobuf message variant.
-TEST_F(WebStateListSerializationTest, Deserialize_Proto_SingleTabNTP) {
-  FakeWebStateListDelegate delegate;
-  WebStateList original_web_state_list(&delegate);
-  original_web_state_list.InsertWebState(
-      0, CreateWebState(), WebStateList::INSERT_ACTIVATE, WebStateOpener());
-
-  ios::proto::WebStateListStorage storage;
-  SerializeWebStateList(original_web_state_list, storage);
-
-  EXPECT_EQ(storage.items_size(), 1);
-  EXPECT_EQ(storage.active_index(), 0);
-  EXPECT_EQ(storage.pinned_item_count(), 0);
-
-  // Create a WebStateList with a single tab displaying NTP.
-  WebStateList restored_web_state_list(&delegate);
-  restored_web_state_list.InsertWebState(
-      0, CreateWebStateOnNTP(/*has_pending_load*/ false),
-      WebStateList::INSERT_ACTIVATE, WebStateOpener());
-  ASSERT_EQ(restored_web_state_list.count(), 1);
-
-  // Record the WebStateID of the WebState displaying the NTP.
-  const auto ntp_web_state_id = IdentifierAt(restored_web_state_list, 0);
-
-  // Check that after restoration, the old tab displaying the NTP
-  // has been closed.
-  const std::vector<web::WebState*> restored_web_states =
-      DeserializeWebStateList(
-          &restored_web_state_list, std::move(storage),
-          SessionRestorationScope::kAll,
-          /*enable_pinned_web_states*/ true,
-          base::BindRepeating(&CreateWebStateWithWebStateID));
-  EXPECT_EQ(restored_web_states.size(), 1u);
-
-  ASSERT_EQ(restored_web_state_list.count(), 1);
-  EXPECT_NE(IdentifierAt(restored_web_state_list, 0), ntp_web_state_id);
-}
-
-// Tests deserializing into a non-empty WebStateList containing a single
-// WebState displaying the NTP and with a pending navigation does not
-// cause the tab to be closed.
-//
-// Protobuf message variant.
-TEST_F(WebStateListSerializationTest,
-       Deserialize_Proto_SingleTabNTP_PendingNavigation) {
-  FakeWebStateListDelegate delegate;
-  WebStateList original_web_state_list(&delegate);
-  original_web_state_list.InsertWebState(
-      0, CreateWebState(), WebStateList::INSERT_ACTIVATE, WebStateOpener());
-
-  ios::proto::WebStateListStorage storage;
-  SerializeWebStateList(original_web_state_list, storage);
-
-  EXPECT_EQ(storage.items_size(), 1);
-  EXPECT_EQ(storage.active_index(), 0);
-  EXPECT_EQ(storage.pinned_item_count(), 0);
-
-  // Create a WebStateList with a single tab displaying NTP.
-  WebStateList restored_web_state_list(&delegate);
-  restored_web_state_list.InsertWebState(
-      0, CreateWebStateOnNTP(/*has_pending_load*/ true),
-      WebStateList::INSERT_ACTIVATE, WebStateOpener());
-  ASSERT_EQ(restored_web_state_list.count(), 1);
-
-  // Record the WebStateID of the WebState displaying the NTP.
-  const auto ntp_web_state_id = IdentifierAt(restored_web_state_list, 0);
-
-  // Check that after restoration, the old tab displaying the NTP
-  // has been closed.
-  const std::vector<web::WebState*> restored_web_states =
-      DeserializeWebStateList(
-          &restored_web_state_list, std::move(storage),
-          SessionRestorationScope::kAll,
-          /*enable_pinned_web_states*/ true,
-          base::BindRepeating(&CreateWebStateWithWebStateID));
-  EXPECT_EQ(restored_web_states.size(), 1u);
-
-  ASSERT_EQ(restored_web_state_list.count(), 2);
-  EXPECT_EQ(IdentifierAt(restored_web_state_list, 0), ntp_web_state_id);
-}
-
-// Tests deserializing an empty session into a non-empty WebStateList
-// containing a single WebState displaying the NTP and without pending
-// does not cause the tab to be closed.
-//
-// Protobuf message variant.
-TEST_F(WebStateListSerializationTest,
-       Deserialize_Proto_SingleTabNTP_EmptySession) {
-  FakeWebStateListDelegate delegate;
-  WebStateList original_web_state_list(&delegate);
-
-  ios::proto::WebStateListStorage storage;
-  SerializeWebStateList(original_web_state_list, storage);
-
-  EXPECT_EQ(storage.items_size(), 0);
-  EXPECT_EQ(storage.active_index(), -1);
-  EXPECT_EQ(storage.pinned_item_count(), 0);
-
-  // Create a WebStateList with a single tab displaying NTP.
-  WebStateList restored_web_state_list(&delegate);
-  restored_web_state_list.InsertWebState(
-      0, CreateWebStateOnNTP(/*has_pending_load*/ false),
-      WebStateList::INSERT_ACTIVATE, WebStateOpener());
-  ASSERT_EQ(restored_web_state_list.count(), 1);
-
-  // Record the WebStateID of the WebState displaying the NTP.
-  const auto ntp_web_state_id = IdentifierAt(restored_web_state_list, 0);
-
-  // Check that after restoration, the old tab displaying the NTP
-  // has been closed.
-  const std::vector<web::WebState*> restored_web_states =
-      DeserializeWebStateList(
-          &restored_web_state_list, std::move(storage),
-          SessionRestorationScope::kAll,
-          /*enable_pinned_web_states*/ true,
-          base::BindRepeating(&CreateWebStateWithWebStateID));
-  EXPECT_EQ(restored_web_states.size(), 0u);
-
-  ASSERT_EQ(restored_web_state_list.count(), 1);
-  EXPECT_EQ(IdentifierAt(restored_web_state_list, 0), ntp_web_state_id);
-}
-
-// Tests deserializing into a non-empty WebStateList containing multiple
-// WebStates does not lead to closing those tabs, even if they all display
-// the NTP and have no pending navigation.
-//
-// Protobuf message variant.
-TEST_F(WebStateListSerializationTest, Deserialize_Proto_MultipleNTPTabs) {
-  FakeWebStateListDelegate delegate;
-  WebStateList original_web_state_list(&delegate);
-  original_web_state_list.InsertWebState(
-      0, CreateWebState(), WebStateList::INSERT_ACTIVATE, WebStateOpener());
-
-  ios::proto::WebStateListStorage storage;
-  SerializeWebStateList(original_web_state_list, storage);
-
-  EXPECT_EQ(storage.items_size(), 1);
-  EXPECT_EQ(storage.active_index(), 0);
-  EXPECT_EQ(storage.pinned_item_count(), 0);
-
-  // Create a WebStateList with a single tab displaying NTP.
-  WebStateList restored_web_state_list(&delegate);
-  restored_web_state_list.InsertWebState(
-      0, CreateWebStateOnNTP(/*has_pending_load*/ false),
-      WebStateList::INSERT_ACTIVATE, WebStateOpener());
-  restored_web_state_list.InsertWebState(
-      1, CreateWebStateOnNTP(/*has_pending_load*/ false),
-      WebStateList::INSERT_NO_FLAGS, WebStateOpener());
-  ASSERT_EQ(restored_web_state_list.count(), 2);
-
-  // Record the WebStateIDs of the WebStates displaying the NTP.
-  const auto ntp_web_state_id_0 = IdentifierAt(restored_web_state_list, 0);
-  const auto ntp_web_state_id_1 = IdentifierAt(restored_web_state_list, 1);
-
-  // Check that after restoration, the old tab displaying the NTP
-  // has been closed.
-  const std::vector<web::WebState*> restored_web_states =
-      DeserializeWebStateList(
-          &restored_web_state_list, std::move(storage),
-          SessionRestorationScope::kAll,
-          /*enable_pinned_web_states*/ true,
-          base::BindRepeating(&CreateWebStateWithWebStateID));
-  EXPECT_EQ(restored_web_states.size(), 1u);
-
-  ASSERT_EQ(restored_web_state_list.count(), 3);
-  EXPECT_EQ(IdentifierAt(restored_web_state_list, 0), ntp_web_state_id_0);
-  EXPECT_EQ(IdentifierAt(restored_web_state_list, 1), ntp_web_state_id_1);
+  EXPECT_EQ(web_state_list.GetOpenerOfWebStateAt(0), WebStateOpener());
+  EXPECT_EQ(web_state_list.GetOpenerOfWebStateAt(1),
+            WebStateOpener(web_state_list.GetWebStateAt(0), 3));
+  EXPECT_EQ(web_state_list.GetOpenerOfWebStateAt(2),
+            WebStateOpener(web_state_list.GetWebStateAt(0), 2));
+  EXPECT_EQ(web_state_list.GetOpenerOfWebStateAt(3),
+            WebStateOpener(web_state_list.GetWebStateAt(1), 1));
+
+  // Check that the pinned tab has been restored at the correct position
+  // but is no longer pinned.
+  EXPECT_FALSE(web_state_list.IsWebStatePinnedAt(0));
 }

@@ -88,7 +88,7 @@ base::Value::Dict AddressUiComponentAsValueMap(
   return info;
 }
 
-autofill::AutofillManager* GetAutofillManager(
+autofill::BrowserAutofillManager* GetBrowserAutofillManager(
     content::WebContents* web_contents) {
   if (!web_contents) {
     return nullptr;
@@ -98,7 +98,10 @@ autofill::AutofillManager* GetAutofillManager(
           ->DriverForFrame(web_contents->GetPrimaryMainFrame());
   if (!autofill_driver)
     return nullptr;
-  return &autofill_driver->GetAutofillManager();
+  // This cast is safe, since `AutofillManager` is always a
+  // `BrowserAutofillManager` apart from on WebView.
+  return static_cast<autofill::BrowserAutofillManager*>(
+      &autofill_driver->GetAutofillManager());
 }
 
 autofill::AutofillProfile CreateNewAutofillProfile(
@@ -399,6 +402,10 @@ ExtensionFunction::ResponseAction AutofillPrivateSaveCreditCardFunction::Run() {
       base::RecordAction(
           base::UserMetricsAction("AutofillCreditCardsAddedWithNickname"));
     }
+    if (!credit_card.cvc().empty()) {
+      base::RecordAction(
+          base::UserMetricsAction("AutofillCreditCardsAddedWithCvc"));
+    }
   }
   return RespondNow(NoArguments());
 }
@@ -499,7 +506,7 @@ AutofillPrivateMigrateCreditCardsFunction::Run() {
   // BrowserAutofillManager has a pointer to its AutofillClient which owns
   // FormDataImporter.
   autofill::AutofillManager* autofill_manager =
-      GetAutofillManager(GetSenderWebContents());
+      GetBrowserAutofillManager(GetSenderWebContents());
   if (!autofill_manager) {
     return RespondNow(Error(kErrorDataUnavailable));
   }
@@ -547,18 +554,37 @@ AutofillPrivateLogServerCardLinkClickedFunction::Run() {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+// AutofillPrivateLogServerIbanLinkClickedFunction
+
+ExtensionFunction::ResponseAction
+AutofillPrivateLogServerIbanLinkClickedFunction::Run() {
+  autofill::ContentAutofillClient* client =
+      autofill::ContentAutofillClient::FromWebContents(GetSenderWebContents());
+  if (!client) {
+    return RespondNow(Error(kErrorDataUnavailable));
+  }
+
+  // If `personal_data` is not available, then don't do anything.
+  autofill::PersonalDataManager* personal_data =
+      client->GetPersonalDataManager();
+
+  if (!personal_data || !personal_data->IsDataLoaded()) {
+    return RespondNow(Error(kErrorDataUnavailable));
+  }
+
+  personal_data->LogServerIbanLinkClicked();
+  return RespondNow(NoArguments());
+}
+
+////////////////////////////////////////////////////////////////////////////////
 // AutofillPrivateSetCreditCardFIDOAuthEnabledStateFunction
 
 ExtensionFunction::ResponseAction
 AutofillPrivateSetCreditCardFIDOAuthEnabledStateFunction::Run() {
   // Getting CreditCardAccessManager from WebContents.
-  autofill::AutofillManager* autofill_manager =
-      GetAutofillManager(GetSenderWebContents());
+  autofill::BrowserAutofillManager* autofill_manager =
+      GetBrowserAutofillManager(GetSenderWebContents());
   if (!autofill_manager)
-    return RespondNow(Error(kErrorDataUnavailable));
-  autofill::CreditCardAccessManager* credit_card_access_manager =
-      autofill_manager->GetCreditCardAccessManager();
-  if (!credit_card_access_manager)
     return RespondNow(Error(kErrorDataUnavailable));
 
   absl::optional<
@@ -567,7 +593,7 @@ AutofillPrivateSetCreditCardFIDOAuthEnabledStateFunction::Run() {
           Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(parameters);
 
-  credit_card_access_manager->OnSettingsPageFIDOAuthToggled(
+  autofill_manager->GetCreditCardAccessManager().OnSettingsPageFIDOAuthToggled(
       parameters->enabled);
   return RespondNow(NoArguments());
 }
@@ -616,7 +642,7 @@ ExtensionFunction::ResponseAction AutofillPrivateSaveIbanFunction::Run() {
 
   // Add a new IBAN and return if this is not an update.
   if (!existing_iban) {
-    personal_data->AddIban(iban_to_write);
+    personal_data->AddAsLocalIban(iban_to_write);
     base::RecordAction(base::UserMetricsAction("AutofillIbanAdded"));
     if (!iban_to_write.nickname().empty()) {
       base::RecordAction(
@@ -698,8 +724,8 @@ ExtensionFunction::ResponseAction AutofillPrivateAddVirtualCardFunction::Run() {
   if (!card)
     return RespondNow(Error(kErrorDataUnavailable));
 
-  autofill::AutofillManager* autofill_manager =
-      GetAutofillManager(GetSenderWebContents());
+  autofill::BrowserAutofillManager* autofill_manager =
+      GetBrowserAutofillManager(GetSenderWebContents());
   if (!autofill_manager || !autofill_manager->client().GetFormDataImporter() ||
       !autofill_manager->client()
            .GetFormDataImporter()
@@ -742,8 +768,8 @@ AutofillPrivateRemoveVirtualCardFunction::Run() {
   if (!card)
     return RespondNow(Error(kErrorDataUnavailable));
 
-  autofill::AutofillManager* autofill_manager =
-      GetAutofillManager(GetSenderWebContents());
+  autofill::BrowserAutofillManager* autofill_manager =
+      GetBrowserAutofillManager(GetSenderWebContents());
   if (!autofill_manager || !autofill_manager->client().GetFormDataImporter() ||
       !autofill_manager->client()
            .GetFormDataImporter()
@@ -940,6 +966,32 @@ AutofillPrivateCheckIfDeviceAuthAvailableFunction::Run() {
   }
 #endif  // BUILDFLAG (IS_MAC) || BUILDFLAG(IS_WIN)
   return RespondNow(Error(kErrorDeviceAuthUnavailable));
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// AutofillPrivateBulkDeleteAllCvcsFunction
+
+ExtensionFunction::ResponseAction
+AutofillPrivateBulkDeleteAllCvcsFunction::Run() {
+  autofill::ContentAutofillClient* client =
+      autofill::ContentAutofillClient::FromWebContents(GetSenderWebContents());
+  if (!client) {
+    return RespondNow(Error(kErrorDataUnavailable));
+  }
+
+  autofill::PersonalDataManager* personal_data =
+      client->GetPersonalDataManager();
+  if (!personal_data || !personal_data->IsDataLoaded()) {
+    return RespondNow(Error(kErrorDataUnavailable));
+  }
+
+  // Clear local and server CVCs from the webdata database. For server CVCs,
+  // this will also clear them from the Chrome sync server and thus other
+  // devices.
+  personal_data->ClearLocalCvcs();
+  personal_data->ClearServerCvcs();
+
+  return RespondNow(NoArguments());
 }
 
 }  // namespace extensions

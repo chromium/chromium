@@ -42,7 +42,6 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -141,8 +140,8 @@ constexpr auto kTitleRowNoMessageCollapsedPadding =
 
 constexpr auto kHeaderRowExpandedPadding = gfx::Insets::TLBR(6, 0, 8, 0);
 constexpr auto kHeaderRowCollapsedPadding = gfx::Insets::TLBR(0, 0, 8, 0);
-constexpr auto kRightContentCollapsedPadding = gfx::Insets::TLBR(12, 0, 0, 16);
-constexpr auto kRightContentExpandedPadding = gfx::Insets::TLBR(20, 0, 0, 16);
+constexpr auto kRightContentCollapsedPadding = gfx::Insets::TLBR(12, 16, 0, 0);
+constexpr auto kRightContentExpandedPadding = gfx::Insets::TLBR(20, 16, 0, 0);
 constexpr auto kTimeStampInCollapsedStatePadding =
     gfx::Insets::TLBR(0, 0, 0, 16);
 
@@ -282,8 +281,8 @@ void ScaleAndTranslateView(views::View* view,
 }
 
 // Returns the HTML snippet that contains the binary data of `bitmap`. Returns
-// `absl::nullopt` if having any error.
-absl::optional<std::u16string> GetHtmlForBitmap(const SkBitmap& bitmap) {
+// `std::nullopt` if having any error.
+std::optional<std::u16string> GetHtmlForBitmap(const SkBitmap& bitmap) {
   std::vector<unsigned char> image_data;
   if (gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, /*discard_transparency=*/false,
                                         &image_data)) {
@@ -298,7 +297,7 @@ absl::optional<std::u16string> GetHtmlForBitmap(const SkBitmap& bitmap) {
       return html_in_u16;
     }
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 }  // namespace
@@ -345,6 +344,11 @@ void AshNotificationView::GroupedNotificationsContainer::
   parent_notification_view_ = parent_notification_view;
 }
 
+BEGIN_METADATA(AshNotificationView,
+               GroupedNotificationsContainer,
+               views::BoxLayoutView)
+END_METADATA
+
 AshNotificationView::NotificationTitleRow::NotificationTitleRow(
     const std::u16string& title)
     : title_view_(AddChildView(GenerateTitleView(title))),
@@ -390,16 +394,14 @@ AshNotificationView::NotificationTitleRow::NotificationTitleRow(
   ConfigureLabelStyle(title_view_, kTitleLabelSize,
                       /*is_color_primary=*/true, gfx::Font::Weight::MEDIUM);
 
-  if (chromeos::features::IsJellyEnabled()) {
-    ash::TypographyProvider::Get()->StyleLabel(
-        ash::TypographyToken::kCrosButton2, *title_view_);
-    title_view_->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
+  ash::TypographyProvider::Get()->StyleLabel(ash::TypographyToken::kCrosButton2,
+                                             *title_view_);
+  title_view_->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
 
-    timestamp_in_collapsed_view_->SetEnabledColorId(
-        cros_tokens::kCrosSysOnSurfaceVariant);
-    ash::TypographyProvider::Get()->StyleLabel(
-        ash::TypographyToken::kCrosAnnotation1, *timestamp_in_collapsed_view_);
-  }
+  timestamp_in_collapsed_view_->SetEnabledColorId(
+      cros_tokens::kCrosSysOnSurfaceVariant);
+  ash::TypographyProvider::Get()->StyleLabel(
+      ash::TypographyToken::kCrosAnnotation1, *timestamp_in_collapsed_view_);
 }
 
 AshNotificationView::NotificationTitleRow::~NotificationTitleRow() {
@@ -470,23 +472,11 @@ gfx::Size AshNotificationView::NotificationTitleRow::CalculatePreferredSize()
 void AshNotificationView::NotificationTitleRow::OnThemeChanged() {
   views::View::OnThemeChanged();
 
-  title_view_->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kTextColorPrimary));
-
-  SkColor secondary_text_color = AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kTextColorSecondary);
-  title_row_divider_->SetEnabledColor(secondary_text_color);
-  timestamp_in_collapsed_view_->SetEnabledColor(secondary_text_color);
-
-  if (chromeos::features::IsJellyEnabled()) {
-    title_view_->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
-    timestamp_in_collapsed_view_->SetEnabledColorId(
-        cros_tokens::kCrosSysOnSurfaceVariant);
-  }
+  title_view_->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
+  title_row_divider_->SetEnabledColorId(cros_tokens::kCrosSysOnSurfaceVariant);
+  timestamp_in_collapsed_view_->SetEnabledColorId(
+      cros_tokens::kCrosSysOnSurfaceVariant);
 }
-
-// static
-const char AshNotificationView::kViewClassName[] = "AshNotificationView";
 
 AshNotificationView::AshNotificationView(
     const message_center::Notification& notification,
@@ -547,6 +537,8 @@ AshNotificationView::AshNotificationView(
                       views::Builder<views::FlexLayoutView>()
                           .SetOrientation(views::LayoutOrientation::kVertical)
                           .SetCrossAxisAlignment(views::LayoutAlignment::kEnd)
+                          .SetMinimumCrossAxisSize(
+                              kExpandAndControlButtonsContainerMinimumWidth)
                           .AddChild(
                               views::Builder<views::BoxLayoutView>()
                                   .SetMainAxisAlignment(MainAxisAlignment::kEnd)
@@ -608,13 +600,11 @@ AshNotificationView::AshNotificationView(
   ConfigureLabelStyle(message_label_in_expanded_state_, kMessageLabelSize,
                       /*is_color_primary=*/false);
 
-  if (chromeos::features::IsJellyEnabled()) {
-    message_label_in_expanded_state_->SetEnabledColorId(
-        cros_tokens::kCrosSysOnSurfaceVariant);
-    ash::TypographyProvider::Get()->StyleLabel(
-        ash::TypographyToken::kCrosAnnotation1,
-        *message_label_in_expanded_state_);
-  }
+  message_label_in_expanded_state_->SetEnabledColorId(
+      cros_tokens::kCrosSysOnSurfaceVariant);
+  ash::TypographyProvider::Get()->StyleLabel(
+      ash::TypographyToken::kCrosAnnotation1,
+      *message_label_in_expanded_state_);
 
   AddChildView(
       views::Builder<views::FlexLayoutView>()
@@ -641,7 +631,7 @@ AshNotificationView::AshNotificationView(
     AddChildView(
         views::Builder<views::ScrollView>()
             .CopyAddressTo(&grouped_notifications_scroll_view_)
-            .SetBackgroundColor(absl::nullopt)
+            .SetBackgroundColor(std::nullopt)
             .SetDrawOverflowIndicator(false)
             .ClipHeightTo(0, std::numeric_limits<int>::max())
             .SetContents(
@@ -700,9 +690,7 @@ AshNotificationView::AshNotificationView(
     layer()->SetIsFastRoundedCorner(true);
     SetBorder(std::make_unique<views::HighlightBorder>(
         kMessagePopupCornerRadius,
-        chromeos::features::IsJellyrollEnabled()
-            ? views::HighlightBorder::Type::kHighlightBorderOnShadow
-            : views::HighlightBorder::Type::kHighlightBorder1));
+        views::HighlightBorder::Type::kHighlightBorderOnShadow));
   }
 
   views::FocusRing::Get(this)->SetColorId(ui::kColorAshFocusRing);
@@ -721,6 +709,103 @@ AshNotificationView::~AshNotificationView() = default;
 void AshNotificationView::SetGroupedChildExpanded(bool expanded) {
   collapsed_summary_view_->SetVisible(!expanded);
   main_view_->SetVisible(expanded);
+}
+
+void AshNotificationView::GroupedNotificationsPreferredSizeChanged() {
+  PreferredSizeChanged();
+}
+
+std::optional<gfx::Rect> AshNotificationView::GetDragAreaBounds() const {
+  DCHECK(features::IsNotificationImageDragEnabled());
+  if (!IsDraggable()) {
+    return std::nullopt;
+  }
+
+  const views::View* large_image_view =
+      GetViewByID(message_center::NotificationViewBase::kLargeImageView);
+  gfx::RectF larget_image_bounds(large_image_view->GetLocalBounds());
+  views::View::ConvertRectToTarget(large_image_view, /*target=*/this,
+                                   &larget_image_bounds);
+  return gfx::ToEnclosedRect(larget_image_bounds);
+}
+
+std::optional<gfx::ImageSkia> AshNotificationView::GetDragImage() {
+  DCHECK(features::IsNotificationImageDragEnabled());
+  if (!IsDraggable()) {
+    return std::nullopt;
+  }
+
+  // Assume that an Ash notification has at most one large image view. Fetch the
+  // image shown in the large image view.
+  const gfx::ImageSkia& original_image =
+      static_cast<message_center::LargeImageView*>(
+          GetViewByID(message_center::NotificationViewBase::kLargeImageView))
+          ->drawn_image();
+
+  // Add the background color.
+  const std::optional<size_t> radius =
+      message_center::notification_view_util::GetLargeImageCornerRadius();
+  const gfx::ImageSkia drag_image_with_background =
+      gfx::ImageSkiaOperations::CreateImageWithRoundRectBackground(
+          gfx::SizeF{original_image.size()}, radius.value_or(0),
+          GetColorProvider()->GetColor(drag_drop::kDragImageBackgroundColor),
+          original_image);
+
+  // Add the drop shadow.
+  return gfx::ImageSkiaOperations::CreateImageWithDropShadow(
+      drag_image_with_background,
+      drag_drop::GetDragImageShadowDetails(radius).values);
+}
+
+void AshNotificationView::AttachDropData(ui::OSExchangeData* data) {
+  DCHECK(IsDraggable());
+
+  // If the notification large image is file-backed, attach the image file path
+  // to `data`; otherwise, attach the large image's binary data.
+  if (const std::optional<base::FilePath>& image_path =
+          message_center::MessageCenter::Get()
+              ->FindNotificationById(notification_id())
+              ->rich_notification_data()
+              .image_path) {
+    data->SetFilename(*image_path);
+  } else {
+    AttachBinaryImageAsDropData(data);
+  }
+}
+
+bool AshNotificationView::IsDraggable() const {
+  // A notification view is draggable only when it contains a large image.
+  DCHECK(features::IsNotificationImageDragEnabled());
+  return GetViewByID(message_center::NotificationViewBase::kLargeImageView);
+}
+
+base::TimeDelta AshNotificationView::GetBoundsAnimationDuration(
+    const message_center::Notification& notification) const {
+  // This is called after the parent gets notified of
+  // `ChildPreferredSizeChanged()`, so the current expanded state is the target
+  // state.
+  if (!notification.image().IsEmpty()) {
+    return base::Milliseconds(kLargeImageExpandAndCollapseAnimationDuration);
+  }
+
+  if (HasInlineReply(notification) || is_grouped_parent_view_) {
+    if (IsExpanded()) {
+      return base::Milliseconds(
+          kInlineReplyAndGroupedParentExpandAnimationDuration);
+    }
+    return base::Milliseconds(
+        kInlineReplyAndGroupedParentCollapseAnimationDuration);
+  }
+
+  if (inline_settings_row() && inline_settings_row()->GetVisible()) {
+    return base::Milliseconds(
+        kInlineSettingsExpandAndCollapseAnimationDuration);
+  }
+
+  if (IsExpanded()) {
+    return base::Milliseconds(kGeneralExpandAnimationDuration);
+  }
+  return base::Milliseconds(kGeneralCollapseAnimationDuration);
 }
 
 void AshNotificationView::AnimateGroupedChildExpandedCollapse(bool expanded) {
@@ -770,7 +855,6 @@ void AshNotificationView::AnimateGroupedChildExpandedCollapse(bool expanded) {
 }
 
 void AshNotificationView::AnimateSingleToGroup(
-    NotificationGroupingController* grouping_controller,
     const std::string& notification_id,
     std::string parent_id) {
   ash::message_center_utils::InitLayerForAnimations(left_content());
@@ -786,7 +870,6 @@ void AshNotificationView::AnimateSingleToGroup(
          views::View* message_label_in_expanded_state,
          views::View* image_container_view, views::View* action_buttons_row,
          AshNotificationExpandButton* expand_button,
-         NotificationGroupingController* grouping_controller,
          const std::string& notification_id, std::string parent_id) {
         if (!parent) {
           return;
@@ -804,8 +887,14 @@ void AshNotificationView::AnimateSingleToGroup(
           return;
         }
 
-        grouping_controller->ConvertFromSingleToGroupNotificationAfterAnimation(
-            notification_id, parent_id, parent_notification);
+        auto* grouping_controller =
+            message_center_utils::GetGroupingControllerForNotificationView(
+                parent.get());
+        if (grouping_controller) {
+          grouping_controller
+              ->ConvertFromSingleToGroupNotificationAfterAnimation(
+                  notification_id, parent_id, parent_notification);
+        }
 
         left_content->layer()->SetOpacity(1.0f);
         right_content->layer()->SetOpacity(1.0f);
@@ -823,8 +912,7 @@ void AshNotificationView::AnimateSingleToGroup(
       },
       weak_factory_.GetWeakPtr(), left_content_, right_content(),
       message_label_in_expanded_state_, image_container_view(),
-      action_buttons_row(), expand_button_, grouping_controller,
-      notification_id, parent_id);
+      action_buttons_row(), expand_button_, notification_id, parent_id);
 
   std::pair<base::OnceClosure, base::OnceClosure> split =
       base::SplitOnceCallback(std::move(on_animation_ended));
@@ -896,103 +984,6 @@ void AshNotificationView::ToggleExpand() {
   }
 }
 
-void AshNotificationView::GroupedNotificationsPreferredSizeChanged() {
-  PreferredSizeChanged();
-}
-
-absl::optional<gfx::Rect> AshNotificationView::GetDragAreaBounds() const {
-  DCHECK(features::IsNotificationImageDragEnabled());
-  if (!IsDraggable()) {
-    return absl::nullopt;
-  }
-
-  const views::View* large_image_view =
-      GetViewByID(message_center::NotificationViewBase::kLargeImageView);
-  gfx::RectF larget_image_bounds(large_image_view->GetLocalBounds());
-  views::View::ConvertRectToTarget(large_image_view, /*target=*/this,
-                                   &larget_image_bounds);
-  return gfx::ToEnclosedRect(larget_image_bounds);
-}
-
-absl::optional<gfx::ImageSkia> AshNotificationView::GetDragImage() {
-  DCHECK(features::IsNotificationImageDragEnabled());
-  if (!IsDraggable()) {
-    return absl::nullopt;
-  }
-
-  // Assume that an Ash notification has at most one large image view. Fetch the
-  // image shown in the large image view.
-  const gfx::ImageSkia& original_image =
-      static_cast<message_center::LargeImageView*>(
-          GetViewByID(message_center::NotificationViewBase::kLargeImageView))
-          ->drawn_image();
-
-  // Add the background color.
-  const absl::optional<size_t> radius =
-      message_center::notification_view_util::GetLargeImageCornerRadius();
-  const gfx::ImageSkia drag_image_with_background =
-      gfx::ImageSkiaOperations::CreateImageWithRoundRectBackground(
-          gfx::SizeF{original_image.size()}, radius.value_or(0),
-          GetColorProvider()->GetColor(drag_drop::kDragImageBackgroundColor),
-          original_image);
-
-  // Add the drop shadow.
-  return gfx::ImageSkiaOperations::CreateImageWithDropShadow(
-      drag_image_with_background,
-      drag_drop::GetDragImageShadowDetails(radius).values);
-}
-
-void AshNotificationView::AttachDropData(ui::OSExchangeData* data) {
-  DCHECK(IsDraggable());
-
-  // If the notification large image is file-backed, attach the image file path
-  // to `data`; otherwise, attach the large image's binary data.
-  if (const absl::optional<base::FilePath>& image_path =
-          message_center::MessageCenter::Get()
-              ->FindNotificationById(notification_id())
-              ->rich_notification_data()
-              .image_path) {
-    data->SetFilename(*image_path);
-  } else {
-    AttachBinaryImageAsDropData(data);
-  }
-}
-
-bool AshNotificationView::IsDraggable() const {
-  // A notification view is draggable only when it contains a large image.
-  DCHECK(features::IsNotificationImageDragEnabled());
-  return GetViewByID(message_center::NotificationViewBase::kLargeImageView);
-}
-
-base::TimeDelta AshNotificationView::GetBoundsAnimationDuration(
-    const message_center::Notification& notification) const {
-  // This is called after the parent gets notified of
-  // `ChildPreferredSizeChanged()`, so the current expanded state is the target
-  // state.
-  if (!notification.image().IsEmpty()) {
-    return base::Milliseconds(kLargeImageExpandAndCollapseAnimationDuration);
-  }
-
-  if (HasInlineReply(notification) || is_grouped_parent_view_) {
-    if (IsExpanded()) {
-      return base::Milliseconds(
-          kInlineReplyAndGroupedParentExpandAnimationDuration);
-    }
-    return base::Milliseconds(
-        kInlineReplyAndGroupedParentCollapseAnimationDuration);
-  }
-
-  if (inline_settings_row() && inline_settings_row()->GetVisible()) {
-    return base::Milliseconds(
-        kInlineSettingsExpandAndCollapseAnimationDuration);
-  }
-
-  if (IsExpanded()) {
-    return base::Milliseconds(kGeneralExpandAnimationDuration);
-  }
-  return base::Milliseconds(kGeneralCollapseAnimationDuration);
-}
-
 void AshNotificationView::AddGroupNotification(
     const message_center::Notification& notification) {
   DCHECK(is_grouped_parent_view_);
@@ -1032,15 +1023,10 @@ void AshNotificationView::PopulateGroupNotifications(
   for (auto* notification : notifications) {
     auto notification_view =
         MessageViewFactory::Create(*notification, /*shown_in_popup=*/false);
-    // The child can either be an AshNotificationView or an ARC custom
-    // notification view.
-    if (notification->type() != message_center::NOTIFICATION_TYPE_CUSTOM ||
-        notification->notifier_id().type !=
-            message_center::NotifierType::ARC_APPLICATION) {
-      auto* ash_notification_view =
-          static_cast<AshNotificationView*>(notification_view.get());
-      ash_notification_view->SetGroupedChildExpanded(IsExpanded());
-    }
+
+    auto* child_notification_view =
+        static_cast<message_center::MessageView*>(notification_view.get());
+    child_notification_view->SetGroupedChildExpanded(IsExpanded());
 
     if (!total_grouped_notifications_) {
       header_row()->SetTimestamp(notification->timestamp());
@@ -1144,10 +1130,6 @@ void AshNotificationView::RemoveGroupNotification(
   }
 }
 
-const char* AshNotificationView::GetClassName() const {
-  return kViewClassName;
-}
-
 void AshNotificationView::UpdateViewForExpandedState(bool expanded) {
   // Grouped parent views should always use the expanded paddings, even if they
   // are collapsed.
@@ -1229,20 +1211,10 @@ void AshNotificationView::UpdateViewForExpandedState(bool expanded) {
 
     int notification_count = 0;
     for (auto* child : grouped_notifications_container_->children()) {
-      auto* message_view = static_cast<message_center::MessageView*>(child);
-      std::string notification_id = message_view->notification_id();
-
-      message_center::Notification* notification =
-          message_center::MessageCenter::Get()->FindVisibleNotificationById(
-              notification_id);
-
-      if (notification->type() != message_center::NOTIFICATION_TYPE_CUSTOM ||
-          notification->notifier_id().type !=
-              message_center::NotifierType::ARC_APPLICATION) {
-        auto* notification_view = static_cast<AshNotificationView*>(child);
-        notification_view->AnimateGroupedChildExpandedCollapse(expanded);
-        notification_view->SetGroupedChildExpanded(expanded);
-      }
+      auto* notification_view =
+          static_cast<message_center::MessageView*>(child);
+      notification_view->AnimateGroupedChildExpandedCollapse(expanded);
+      notification_view->SetGroupedChildExpanded(expanded);
 
       notification_count++;
       if (notification_count >
@@ -1288,19 +1260,9 @@ void AshNotificationView::UpdateWithNotification(
   if (message_label()) {
     ConfigureLabelStyle(message_label(), kMessageLabelSize,
                         /*is_color_primary=*/false);
-    if (chromeos::features::IsJellyEnabled()) {
-      message_label()->SetEnabledColorId(cros_tokens::kCrosSysOnSurfaceVariant);
-      ash::TypographyProvider::Get()->StyleLabel(
-          ash::TypographyToken::kCrosAnnotation1, *message_label());
-    }
-  }
-  if (inline_reply()) {
-    if (!chromeos::features::IsJellyEnabled()) {
-      SkColor text_color = ash::AshColorProvider::Get()->GetContentLayerColor(
-          ash::AshColorProvider::ContentLayerType::kTextColorSecondary);
-      inline_reply()->textfield()->SetTextColor(text_color);
-      inline_reply()->textfield()->set_placeholder_text_color(text_color);
-    }
+    message_label()->SetEnabledColorId(cros_tokens::kCrosSysOnSurfaceVariant);
+    ash::TypographyProvider::Get()->StyleLabel(
+        ash::TypographyToken::kCrosAnnotation1, *message_label());
   }
 }
 
@@ -1470,7 +1432,7 @@ void AshNotificationView::CreateOrUpdateProgressViews(
   // bar. This is the opposite of what is required of the chrome notification.
   CreateOrUpdateProgressStatusView(notification);
   CreateOrUpdateProgressBarView(notification);
-  if (progress_bar_view() && chromeos::features::IsJellyEnabled()) {
+  if (progress_bar_view()) {
     progress_bar_view()->SetForegroundColorId(cros_tokens::kCrosSysPrimary);
     progress_bar_view()->SetBackgroundColorId(
         cros_tokens::kCrosSysHighlightShape);
@@ -1479,11 +1441,9 @@ void AshNotificationView::CreateOrUpdateProgressViews(
   if (status_view()) {
     status_view()->SetMultiLine(true);
     status_view()->SetMaxLines(message_center::kMaxLinesForStatusView);
-    if (chromeos::features::IsJellyEnabled()) {
-      status_view()->SetEnabledColorId(cros_tokens::kCrosSysOnSurfaceVariant);
-      TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosAnnotation1,
-                                            *status_view());
-    }
+    status_view()->SetEnabledColorId(cros_tokens::kCrosSysOnSurfaceVariant);
+    TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosAnnotation1,
+                                          *status_view());
   }
 }
 
@@ -1532,15 +1492,8 @@ void AshNotificationView::OnThemeChanged() {
   views::View::OnThemeChanged();
   UpdateBackground(top_radius_, bottom_radius_);
 
-  SkColor secondary_text_color = AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kTextColorSecondary);
-  header_row()->SetColor(secondary_text_color);
-
   if (message_label()) {
-    message_label()->SetEnabledColor(secondary_text_color);
-    if (chromeos::features::IsJellyEnabled()) {
-      message_label()->SetEnabledColorId(cros_tokens::kCrosSysOnSurfaceVariant);
-    }
+    message_label()->SetEnabledColorId(cros_tokens::kCrosSysOnSurfaceVariant);
   }
 
   if (control_buttons_view_) {
@@ -1550,30 +1503,20 @@ void AshNotificationView::OnThemeChanged() {
   }
 
   if (message_label_in_expanded_state_) {
-    message_label_in_expanded_state_->SetEnabledColor(secondary_text_color);
-    if (chromeos::features::IsJellyEnabled()) {
-      message_label_in_expanded_state_->SetEnabledColorId(
-          cros_tokens::kCrosSysOnSurfaceVariant);
-    }
+    message_label_in_expanded_state_->SetEnabledColorId(
+        cros_tokens::kCrosSysOnSurfaceVariant);
   }
 
   UpdateIconAndButtonsColor(
       message_center::MessageCenter::Get()->FindVisibleNotificationById(
           notification_id()));
 
-  if (inline_reply()) {
-    // For unittests, `GetColorProvider()` could be nullptr.
-    if (chromeos::features::IsJellyEnabled() && GetColorProvider()) {
-      inline_reply()->textfield()->SetTextColor(
-          GetColorProvider()->GetColor(cros_tokens::kCrosSysOnSurface));
-      inline_reply()->textfield()->set_placeholder_text_color(
-          GetColorProvider()->GetColor(cros_tokens::kCrosSysOnSurfaceVariant));
-    } else {
-      SkColor text_color = ash::AshColorProvider::Get()->GetContentLayerColor(
-          ash::AshColorProvider::ContentLayerType::kTextColorSecondary);
-      inline_reply()->textfield()->SetTextColor(text_color);
-      inline_reply()->textfield()->set_placeholder_text_color(text_color);
-    }
+  // For unittests, `GetColorProvider()` could be nullptr.
+  if (inline_reply() && GetColorProvider()) {
+    inline_reply()->textfield()->SetTextColor(
+        GetColorProvider()->GetColor(cros_tokens::kCrosSysOnSurface));
+    inline_reply()->textfield()->set_placeholder_text_color(
+        GetColorProvider()->GetColor(cros_tokens::kCrosSysOnSurfaceVariant));
   }
 
   if (icon_view() &&
@@ -1597,13 +1540,11 @@ std::unique_ptr<views::LabelButton>
 AshNotificationView::GenerateNotificationLabelButton(
     views::Button::PressedCallback callback,
     const std::u16string& label) {
-  std::unique_ptr<views::LabelButton> actions_button =
-      std::make_unique<PillButton>(
-          std::move(callback), label,
-          chromeos::features::IsJellyEnabled()
-              ? PillButton::Type::kFloatingWithoutIcon
-              : PillButton::Type::kAccentFloatingWithoutIcon,
-          /*icon=*/nullptr, kNotificationPillButtonHorizontalSpacing);
+  std::unique_ptr<PillButton> actions_button = std::make_unique<PillButton>(
+      std::move(callback), label, PillButton::Type::kFloatingWithoutIcon,
+      /*icon=*/nullptr, kNotificationPillButtonHorizontalSpacing);
+  actions_button->SetButtonTextColorId(cros_tokens::kCrosSysOnSurface);
+
   return actions_button;
 }
 
@@ -1861,7 +1802,7 @@ void AshNotificationView::UpdateAppIconView(
 
   SkColor icon_color = AshColorProvider::Get()->GetContentLayerColor(
       AshColorProvider::ContentLayerType::kInvertedButtonLabelColor);
-  if (chromeos::features::IsJellyEnabled() && GetWidget()) {
+  if (GetWidget()) {
     icon_color = GetColorProvider()->GetColor(cros_tokens::kCrosSysOnPrimary);
   }
   SkColor icon_background_color = CalculateIconAndButtonsColor(notification);
@@ -1892,7 +1833,7 @@ SkColor AshNotificationView::CalculateIconAndButtonsColor(
   }
 
   auto color_id = notification->accent_color_id();
-  absl::optional<SkColor> accent_color = notification->accent_color();
+  std::optional<SkColor> accent_color = notification->accent_color();
 
   if ((!color_id || !GetWidget()) && !accent_color.has_value()) {
     return default_color;
@@ -1921,7 +1862,7 @@ SkColor AshNotificationView::CalculateIconAndButtonsColor(
                      : gfx::kPlaceholderColor;
   return color_utils::BlendForMinContrast(
              fg_color, bg_color,
-             /*high_contrast_foreground=*/absl::nullopt, minContrastRatio)
+             /*high_contrast_foreground=*/std::nullopt, minContrastRatio)
       .color;
 }
 
@@ -2317,15 +2258,18 @@ void AshNotificationView::AttachBinaryImageAsDropData(
   DCHECK(!image.size().IsEmpty());
 
   // Resize `image` if necessary.
-  absl::optional<gfx::ImageSkia> resized_image =
+  std::optional<gfx::ImageSkia> resized_image =
       message_center_utils::ResizeImageIfExceedSizeLimit(image,
                                                          kMaxImageSizeInByte);
 
   // Add the drop data in the format of HTML.
-  if (const absl::optional<std::u16string> html_snippet = GetHtmlForBitmap(
+  if (const std::optional<std::u16string> html_snippet = GetHtmlForBitmap(
           resized_image ? *resized_image->bitmap() : *image.bitmap())) {
     data->SetHtml(*html_snippet, /*base_url=*/GURL());
   }
 }
+
+BEGIN_METADATA(AshNotificationView)
+END_METADATA
 
 }  // namespace ash

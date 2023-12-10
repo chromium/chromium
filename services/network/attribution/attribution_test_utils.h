@@ -8,8 +8,8 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <string_view>
 
-#include "base/strings/string_piece_forward.h"
 #include "services/network/attribution/attribution_verification_mediator.h"
 #include "services/network/public/mojom/trust_tokens.mojom-shared.h"
 #include "services/network/trust_tokens/trust_token_key_commitments.h"
@@ -33,12 +33,12 @@ class FakeCryptographer
   bool Initialize(
       mojom::TrustTokenProtocolVersion issuer_configured_version) override;
 
-  bool AddKey(base::StringPiece key) override;
+  bool AddKey(std::string_view key) override;
 
-  absl::optional<std::string> BeginIssuance(base::StringPiece message) override;
+  absl::optional<std::string> BeginIssuance(std::string_view message) override;
 
   absl::optional<std::string> ConfirmIssuanceAndBeginRedemption(
-      base::StringPiece response_header) override;
+      std::string_view response_header) override;
 
   //***********************
   // Helper methods below
@@ -117,7 +117,7 @@ std::unique_ptr<TrustTokenKeyCommitments> CreateTestTrustTokenKeyCommitments(
 std::string SerializeStructureHeaderListOfStrings(
     const std::vector<std::string>& strings);
 std::vector<const std::string> DeserializeStructuredHeaderListOfStrings(
-    base::StringPiece header);
+    std::string_view header);
 
 }  // namespace network
 

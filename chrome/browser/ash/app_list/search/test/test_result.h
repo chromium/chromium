@@ -48,6 +48,16 @@ class TestResult : public ChromeSearchResult {
              double normalized_relevance,
              MetricsType metrics_type = MetricsType::NO_RESULT);
 
+  // File result
+  TestResult(const std::string& id,
+             DisplayType display_type,
+             Category category,
+             const std::string& fileName,
+             const std::string& path,
+             int best_match_rank,
+             double relevance,
+             double ftrl_result_score);
+
   ~TestResult() override;
 
   // ChromeSearchResult overrides:

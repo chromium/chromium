@@ -9,16 +9,16 @@
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/editing/position_with_affinity.h"
 #include "third_party/blink/renderer/core/html/html_br_element.h"
+#include "third_party/blink/renderer/core/layout/block_break_token.h"
 #include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
-#include "third_party/blink/renderer/core/layout/layout_block_flow.h"
-#include "third_party/blink/renderer/core/layout/layout_text.h"
-#include "third_party/blink/renderer/core/layout/layout_text_combine.h"
 #include "third_party/blink/renderer/core/layout/inline/fragment_items.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_item_span.h"
 #include "third_party/blink/renderer/core/layout/inline/physical_line_box_fragment.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_block_break_token.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
-#include "third_party/blink/renderer/core/paint/ng/ng_inline_paint_context.h"
+#include "third_party/blink/renderer/core/layout/layout_block_flow.h"
+#include "third_party/blink/renderer/core/layout/layout_text.h"
+#include "third_party/blink/renderer/core/layout/layout_text_combine.h"
+#include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
+#include "third_party/blink/renderer/core/paint/inline_paint_context.h"
 
 namespace blink {
 class HTMLBRElement;
@@ -150,7 +150,7 @@ inline void InlineCursor::MoveToItem(const ItemsSpan::iterator& iter) {
   MakeNull();
 }
 
-void InlineCursor::SetRoot(const NGPhysicalBoxFragment& box_fragment,
+void InlineCursor::SetRoot(const PhysicalBoxFragment& box_fragment,
                            const FragmentItems& fragment_items,
                            ItemsSpan items) {
   DCHECK_EQ(box_fragment.Items(), &fragment_items);
@@ -162,7 +162,7 @@ void InlineCursor::SetRoot(const NGPhysicalBoxFragment& box_fragment,
   MoveToItem(items_.begin());
 }
 
-void InlineCursor::SetRoot(const NGPhysicalBoxFragment& box_fragment,
+void InlineCursor::SetRoot(const PhysicalBoxFragment& box_fragment,
                            const FragmentItems& items) {
   SetRoot(box_fragment, items, items.Items());
 }
@@ -178,7 +178,7 @@ bool InlineCursor::TrySetRootFragmentItems() {
     return false;
   }
   for (; fragment_index_ <= max_fragment_index_; IncrementFragmentIndex()) {
-    const NGPhysicalBoxFragment* fragment =
+    const PhysicalBoxFragment* fragment =
         root_block_flow_->GetPhysicalFragment(fragment_index_);
     DCHECK(fragment);
     if (const FragmentItems* items = fragment->Items()) {
@@ -210,18 +210,18 @@ InlineCursor::InlineCursor(const LayoutBlockFlow& block_flow) {
   SetRoot(block_flow);
 }
 
-InlineCursor::InlineCursor(const NGPhysicalBoxFragment& box_fragment,
+InlineCursor::InlineCursor(const PhysicalBoxFragment& box_fragment,
                            const FragmentItems& fragment_items,
                            ItemsSpan items) {
   SetRoot(box_fragment, fragment_items, items);
 }
 
-InlineCursor::InlineCursor(const NGPhysicalBoxFragment& box_fragment,
+InlineCursor::InlineCursor(const PhysicalBoxFragment& box_fragment,
                            const FragmentItems& items) {
   SetRoot(box_fragment, items);
 }
 
-InlineCursor::InlineCursor(const NGPhysicalBoxFragment& box_fragment) {
+InlineCursor::InlineCursor(const PhysicalBoxFragment& box_fragment) {
   if (const FragmentItems* items = box_fragment.Items()) {
     SetRoot(box_fragment, *items);
   }
@@ -471,7 +471,7 @@ gfx::RectF InlineCursorPosition::ObjectBoundingBox(
 
 void InlineCursorPosition::RecalcInkOverflow(
     const InlineCursor& cursor,
-    NGInlinePaintContext* inline_context) const {
+    InlinePaintContext* inline_context) const {
   DCHECK(item_);
   DCHECK_EQ(item_, cursor.Current().Item());
   PhysicalRect self_and_contents_rect;
@@ -601,7 +601,7 @@ PhysicalRect InlineCursorPosition::ConvertChildToPhysical(
 
 PositionWithAffinity InlineCursor::PositionForPointInInlineFormattingContext(
     const PhysicalOffset& point,
-    const NGPhysicalBoxFragment& container) {
+    const PhysicalBoxFragment& container) {
   DCHECK(HasRoot());
   const auto writing_direction = container.Style().GetWritingDirection();
   const PhysicalSize& container_size = container.Size();
@@ -840,8 +840,7 @@ PositionWithAffinity InlineCursor::PositionForPointInChild(
     case FragmentItem::kGeneratedText:
       break;
     case FragmentItem::kBox:
-      if (const NGPhysicalBoxFragment* box_fragment =
-              child_item.BoxFragment()) {
+      if (const PhysicalBoxFragment* box_fragment = child_item.BoxFragment()) {
         if (!box_fragment->IsInlineBox()) {
           // In case of inline block with with block formatting context that
           // has block children[1].
@@ -1672,8 +1671,9 @@ void InlineCursor::DecrementFragmentIndex() {
   // Note: |LayoutBox::GetPhysicalFragment(wtf_size_t)| is O(1).
   const auto& root_box_fragment =
       *root_block_flow_->GetPhysicalFragment(fragment_index_ - 1);
-  if (const NGBlockBreakToken* break_token = root_box_fragment.BreakToken())
+  if (const BlockBreakToken* break_token = root_box_fragment.GetBreakToken()) {
     previously_consumed_block_size_ = break_token->ConsumedBlockSize();
+  }
 }
 
 void InlineCursor::IncrementFragmentIndex() {
@@ -1681,8 +1681,10 @@ void InlineCursor::IncrementFragmentIndex() {
   fragment_index_++;
   if (!root_box_fragment_)
     return;
-  if (const NGBlockBreakToken* break_token = root_box_fragment_->BreakToken())
+  if (const BlockBreakToken* break_token =
+          root_box_fragment_->GetBreakToken()) {
     previously_consumed_block_size_ = break_token->ConsumedBlockSize();
+  }
 }
 
 void InlineCursor::MoveToIncludingCulledInline(

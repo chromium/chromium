@@ -264,15 +264,15 @@ public abstract class RequestFinishedInfo {
         public abstract Long getReceivedByteCount();
     }
 
-    /**
-     * Reason value indicating that the request succeeded. Returned from {@link #getFinishedReason}.
-     */
+    /** Reason value indicating that the request succeeded. Returned from {@link #getFinishedReason}. */
     public static final int SUCCEEDED = 0;
+
     /**
      * Reason value indicating that the request failed or returned an error. Returned from {@link
      * #getFinishedReason}.
      */
     public static final int FAILED = 1;
+
     /**
      * Reason value indicating that the request was canceled. Returned from {@link
      * #getFinishedReason}.

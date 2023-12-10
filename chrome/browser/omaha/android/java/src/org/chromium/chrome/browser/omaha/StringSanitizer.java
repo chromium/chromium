@@ -7,9 +7,7 @@ package org.chromium.chrome.browser.omaha;
 import java.util.Locale;
 import java.util.regex.PatternSyntaxException;
 
-/**
- * Sanitizes Strings sent to the Omaha server.
- */
+/** Sanitizes Strings sent to the Omaha server. */
 public class StringSanitizer {
     static final char[] CHARS_TO_REMOVE = {';', ',', '"', '\'', '\n', '\r', '\t'};
 

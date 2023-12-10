@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ml">
 <translation id="1000498691615767391">തുറക്കുന്നതിന് ഒരു ഫോള്‍ഡര്‍ തിരഞ്ഞെടുക്കുക</translation>
+<translation id="1014208178561091457"><ph name="FILE_NAME" /> എൻക്രിപ്റ്റ് ചെയ്തിരിക്കുന്നതിനാൽ അത് പകർത്താനായില്ല.</translation>
 <translation id="1047956942837015229"><ph name="COUNT" /> ഇനങ്ങൾ ഇല്ലാതാക്കുന്നു...</translation>
 <translation id="1049926623896334335">Word പ്രമാണം</translation>
 <translation id="1056775291175587022">നെറ്റ്‌വർക്കില്ല</translation>
@@ -55,6 +56,7 @@
 <translation id="1435838927755162558">Parallels Desktop ഉപയോഗിച്ച് ഫോൾഡർ പങ്കിടുക</translation>
 <translation id="1439919885608649279">പൂക്കൾ പിടിച്ചിരിക്കുന്ന വ്യക്തി</translation>
 <translation id="1458457385801829801"><ph name="TARGET_NAME" /> ഒഴിവാക്കുക</translation>
+<translation id="146691674290220697"><ph name="NUMBER_OF_FILES" /> ഫയലുകൾ എൻക്രിപ്റ്റ് ചെയ്തിരിക്കുന്നതിനാൽ അവ പകർത്താനായില്ല.</translation>
 <translation id="1471718551822868769">സ്ലോവാക്</translation>
 <translation id="1482884275703521657">ഫിന്നിഷ്</translation>
 <translation id="148466539719134488">സ്വിസ്സ്</translation>
@@ -276,6 +278,7 @@
 <translation id="3253225298092156258">ലഭ്യമല്ല</translation>
 <translation id="3254434849914415189"><ph name="FILE_TYPE" /> ഫയലുകൾക്കായി ഡിഫോൾട്ട് ആപ്പ് തിരഞ്ഞെടുക്കുക:</translation>
 <translation id="3255159654094949700">അറബിക്</translation>
+<translation id="326396468955264502"><ph name="NUMBER_OF_FILES" /> ഫയലുകൾ എൻക്രിപ്റ്റ് ചെയ്തിരിക്കുന്നതിനാൽ അവ നീക്കാനായില്ല.</translation>
 <translation id="3264582393905923483">സന്ദർഭം</translation>
 <translation id="3272909651715601089">"<ph name="PATH" />" തുറക്കാനായില്ല</translation>
 <translation id="3280431534455935878">തയ്യാറെടുക്കുന്നു</translation>
@@ -313,6 +316,7 @@
 <translation id="3523225005467146490"><ph name="VM_NAME" /> എന്നയാളുമായി ഒരു ഫോൾഡർ പങ്കിട്ടു</translation>
 <translation id="3524311639100184459">മുന്നറിയിപ്പ്: ഇവ താൽക്കാലിക ഫയലുകളാണ് ഡിസ്ക്കിൽ ഇടമുണ്ടാക്കാൻ സ്വയമേവ ഇല്ലാതാക്കിയേക്കാം.  <ph name="BEGIN_LINK" />കൂടുതലറിയുക<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">ഫോൾഡർ</translation>
+<translation id="3529424493985988200">വിശദാംശങ്ങൾക്ക് നിങ്ങളുടെ അഡ്‌മിനെ ബന്ധപ്പെടുക.</translation>
 <translation id="3548125359243647069">തെറ്റായ പിൻ നിരവധി തവണ നൽകി.</translation>
 <translation id="3549797760399244642">drive.google.com-ലേക്ക് പോകുക...</translation>
 <translation id="3553048479571901246"><ph name="APP_NAME" /> ഉപയോഗിച്ച് ഫയലുകൾ തുറക്കാൻ, ആദ്യം അവയെ Windows ഫയലുകൾ എന്ന ഫോൾഡറിലേക്ക് പകർത്തുക.</translation>
@@ -701,6 +705,7 @@
 <translation id="637062427944097960">ഈ ഫയൽ മറ്റൊരു ഡെസ്‌ക്‌ടോപ്പിലാണ് തുറന്നിരിക്കുന്നത്. അത് കാണാൻ <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) എന്നതിലേക്ക് നീക്കുക.</translation>
 <translation id="6394388407447716302">വായന മാത്രം</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> ഇനങ്ങൾ</translation>
+<translation id="6407769893376380348"><ph name="FILE_NAME" /> എൻക്രിപ്റ്റ് ചെയ്തിരിക്കുന്നതിനാൽ അത് നീക്കാനായില്ല.</translation>
 <translation id="642282551015776456">ഈ നാമം ഒരു ഫോൾഡർ നാമത്തിന്റെ ഫയൽ ആയി ഉപയോഗിക്കരുത്</translation>
 <translation id="6423031066725912715">TCVN കീബോർഡ് ഉള്ള വിയറ്റ്നാമീസ്</translation>
 <translation id="6430271654280079150">നിങ്ങൾക്ക് ഒരു ശ്രമം കൂടി ബാക്കിയുണ്ട്.</translation>

@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/printing/print_servers_manager.h"
 
 #include <map>
+#include <optional>
 #include <utility>
 
 #include "ash/public/cpp/network_config_service.h"
@@ -40,7 +41,6 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "printing/printer_query_result.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -165,7 +165,7 @@ class PrintServersManagerImpl : public PrintServersManager {
 
   ServerPrintersFetchingMode fetching_mode_;
 
-  absl::optional<std::map<std::string, PrintServer>> print_servers_;
+  std::optional<std::map<std::string, PrintServer>> print_servers_;
 
   PrintServersConfig config_;
 

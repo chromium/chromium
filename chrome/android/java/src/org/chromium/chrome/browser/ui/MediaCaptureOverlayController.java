@@ -56,8 +56,12 @@ public class MediaCaptureOverlayController implements UnownedUserData {
         }
 
         @Override
-        public void onBrowserControlsOffsetChanged(Tab tab, int topControlsOffsetY,
-                int bottomControlsOffsetY, int contentOffsetY, int topControlsMinHeightOffsetY,
+        public void onBrowserControlsOffsetChanged(
+                Tab tab,
+                int topControlsOffsetY,
+                int bottomControlsOffsetY,
+                int contentOffsetY,
+                int topControlsMinHeightOffsetY,
                 int bottomControlsMinHeightOffsetY) {
             if (tab == mVisibleTab) updateMargins();
         }
@@ -144,9 +148,7 @@ public class MediaCaptureOverlayController implements UnownedUserData {
         mOverlayView.setVisibility(View.VISIBLE);
     }
 
-    /**
-     * Mark that the current visible tab is no longer visible and immediately hide the overlay.
-     */
+    /** Mark that the current visible tab is no longer visible and immediately hide the overlay. */
     private void clearVisibleTab() {
         mOverlayView.setVisibility(View.GONE);
         mVisibleTab = null;

@@ -13,9 +13,7 @@ import org.chromium.chrome.browser.lens.LensEntryPoint;
 import org.chromium.chrome.browser.lens.LensQueryParams;
 import org.chromium.content_public.browser.WebContents;
 
-/**
- * The class to handle Lens chip data and actions.
- */
+/** The class to handle Lens chip data and actions. */
 public class LensChipDelegate implements ChipDelegate {
     private static LensController sLensController = LensController.getInstance();
     private static boolean sShouldSkipIsEnabledCheckForTesting;
@@ -32,17 +30,22 @@ public class LensChipDelegate implements ChipDelegate {
                         .build());
     }
 
-    /**
-     * Whether it should skip the Lens chip eligiblity check for testing.
-     */
+    /** Whether it should skip the Lens chip eligiblity check for testing. */
     protected static void setShouldSkipIsEnabledCheckForTesting(boolean shouldSkipIsEnabledCheck) {
         sShouldSkipIsEnabledCheckForTesting = shouldSkipIsEnabledCheck;
         ResettersForTesting.register(() -> sShouldSkipIsEnabledCheckForTesting = false);
     }
 
-    public LensChipDelegate(String pageUrl, String titleOrAltText, String srcUrl, String pageTitle,
-            boolean isIncognito, boolean isTablet, WebContents webContents,
-            ContextMenuNativeDelegate nativeDelegate, Callback<Integer> onChipClickedCallback,
+    public LensChipDelegate(
+            String pageUrl,
+            String titleOrAltText,
+            String srcUrl,
+            String pageTitle,
+            boolean isIncognito,
+            boolean isTablet,
+            WebContents webContents,
+            ContextMenuNativeDelegate nativeDelegate,
+            Callback<Integer> onChipClickedCallback,
             Callback<Integer> onChipShownCallback) {
         mIsChipSupported = sLensController.isQueryEnabled();
         if (!mIsChipSupported) {
@@ -73,25 +76,33 @@ public class LensChipDelegate implements ChipDelegate {
             return;
         }
 
-        Callback<Uri> callback = (uri) -> {
-            mLensQueryParams.setImageUri(uri);
-            sLensController.getChipRenderParams(mLensQueryParams, (chipParams) -> {
-                if (isValidChipRenderParams(chipParams)) {
-                    // A new variable to avoid infinite loop inside the merged
-                    // onClick callback.
-                    Runnable originalOnClickCallback = chipParams.onClickCallback;
-                    Runnable mergedOnClickCallback = () -> {
-                        // The onClickCallback defined in LensController.
-                        originalOnClickCallback.run();
-                        // The onClickCallback defined when initialize the LensChipDelegate.
-                        mOnChipClickedCallback.bind(chipParams.chipType).run();
-                    };
-                    chipParams.onClickCallback = mergedOnClickCallback;
-                    chipParams.onShowCallback = mOnChipShownCallback.bind(chipParams.chipType);
-                }
-                chipParamsCallback.onResult(chipParams);
-            });
-        };
+        Callback<Uri> callback =
+                (uri) -> {
+                    mLensQueryParams.setImageUri(uri);
+                    sLensController.getChipRenderParams(
+                            mLensQueryParams,
+                            (chipParams) -> {
+                                if (isValidChipRenderParams(chipParams)) {
+                                    // A new variable to avoid infinite loop inside the merged
+                                    // onClick callback.
+                                    Runnable originalOnClickCallback = chipParams.onClickCallback;
+                                    Runnable mergedOnClickCallback =
+                                            () -> {
+                                                // The onClickCallback defined in LensController.
+                                                originalOnClickCallback.run();
+                                                // The onClickCallback defined when initialize the
+                                                // LensChipDelegate.
+                                                mOnChipClickedCallback
+                                                        .bind(chipParams.chipType)
+                                                        .run();
+                                            };
+                                    chipParams.onClickCallback = mergedOnClickCallback;
+                                    chipParams.onShowCallback =
+                                            mOnChipShownCallback.bind(chipParams.chipType);
+                                }
+                                chipParamsCallback.onResult(chipParams);
+                            });
+                };
 
         // Must occur on UI thread.
         mNativeDelegate.retrieveImageForShare(ContextMenuImageFormat.ORIGINAL, callback);
@@ -105,7 +116,9 @@ public class LensChipDelegate implements ChipDelegate {
 
     @Override
     public boolean isValidChipRenderParams(ChipRenderParams chipRenderParams) {
-        return chipRenderParams != null && chipRenderParams.titleResourceId != 0
-                && chipRenderParams.onClickCallback != null && chipRenderParams.iconResourceId != 0;
+        return chipRenderParams != null
+                && chipRenderParams.titleResourceId != 0
+                && chipRenderParams.onClickCallback != null
+                && chipRenderParams.iconResourceId != 0;
     }
 }

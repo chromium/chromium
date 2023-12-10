@@ -1,6 +1,4 @@
 This is a testharness.js-based test.
-[PASS] Property column-fill value 'auto'
-[PASS] Property column-fill value 'balance'
 [FAIL] Property column-fill value 'balance-all'
   assert_true: 'balance-all' is a supported value for column-fill. expected true got false
 Harness: the test ran to completion.

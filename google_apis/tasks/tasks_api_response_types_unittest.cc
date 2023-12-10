@@ -88,7 +88,8 @@ TEST(TasksApiResponseTypesTest, CreatesTasksFromResponse) {
             "title": "Completed child task",
             "parent": "asd",
             "position": "00000000000000000000",
-            "status": "completed"
+            "status": "completed",
+            "updated": "2023-01-30T22:19:22.812Z"
           },
           {
             "id": "asd",
@@ -96,7 +97,8 @@ TEST(TasksApiResponseTypesTest, CreatesTasksFromResponse) {
             "position": "00000000000000000001",
             "status": "needsAction",
             "due": "2023-04-19T00:00:00.000Z",
-            "notes": "Lorem ipsum dolor sit amet"
+            "notes": "Lorem ipsum dolor sit amet",
+            "updated": "2022-12-21T23:38:22.590Z"
           }
         ]
       })");
@@ -114,6 +116,8 @@ TEST(TasksApiResponseTypesTest, CreatesTasksFromResponse) {
   EXPECT_EQ(tasks->items()[0]->position(), "00000000000000000000");
   EXPECT_FALSE(tasks->items()[0]->due());
   EXPECT_TRUE(tasks->items()[0]->notes().empty());
+  EXPECT_EQ(util::FormatTimeAsString(tasks->items()[0]->updated()),
+            "2023-01-30T22:19:22.812Z");
 
   EXPECT_EQ(tasks->items()[1]->id(), "asd");
   EXPECT_EQ(tasks->items()[1]->title(), "Parent task");
@@ -123,6 +127,8 @@ TEST(TasksApiResponseTypesTest, CreatesTasksFromResponse) {
   EXPECT_EQ(util::FormatTimeAsString(tasks->items()[1]->due().value()),
             "2023-04-19T00:00:00.000Z");
   EXPECT_EQ(tasks->items()[1]->notes(), "Lorem ipsum dolor sit amet");
+  EXPECT_EQ(util::FormatTimeAsString(tasks->items()[1]->updated()),
+            "2022-12-21T23:38:22.590Z");
 }
 
 TEST(TasksApiResponseTypesTest, CreatesTasksWithNextPageTokenFromResponse) {

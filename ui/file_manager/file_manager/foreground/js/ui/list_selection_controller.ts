@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {ListSelectionModel} from './list_selection_model.js';
+import {ListSingleSelectionModel} from './list_single_selection_model.js';
 
 /**
  * The selection controller that is to be used with lists. This is implemented
@@ -12,16 +13,16 @@ import {ListSelectionModel} from './list_selection_model.js';
  */
 export class ListSelectionController {
   /**
-   * @param {ListSelectionModel} selectionModel The selection model to
-   *     interact with.
+   * @param selectionModel The selection model to interact with.
    */
-  constructor(private selectionModel_: ListSelectionModel) {}
+  constructor(private selectionModel_: ListSelectionModel|
+              ListSingleSelectionModel) {}
 
 
   /**
    * The selection model we are interacting with.
    */
-  get selectionModel(): ListSelectionModel {
+  get selectionModel(): ListSelectionModel|ListSingleSelectionModel {
     return this.selectionModel_;
   }
 

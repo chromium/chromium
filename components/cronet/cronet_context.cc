@@ -200,7 +200,6 @@ CronetContext::CronetContext(
     : bidi_stream_detect_broken_connection_(
           context_config->bidi_stream_detect_broken_connection),
       heartbeat_interval_(context_config->heartbeat_interval),
-      enable_telemetry_(context_config->enable_telemetry),
       default_load_flags_(
           net::LOAD_NORMAL |
           (context_config->load_disable_cache ? net::LOAD_DISABLE_CACHE : 0)),

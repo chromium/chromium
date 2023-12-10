@@ -22,9 +22,7 @@ public class RecentTabsExpandableListView extends ExpandableListView {
     private int mSavedListPosition;
     private int mSavedListTop;
 
-    /**
-     * Constructor for inflating from XML.
-     */
+    /** Constructor for inflating from XML. */
     public RecentTabsExpandableListView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }

@@ -43,6 +43,11 @@ extern const base::FeatureParam<base::TimeDelta>
 COMPONENT_EXPORT(PLUS_ADDRESSES_FEATURES)
 extern const base::FeatureParam<std::string> kPlusAddressManagementUrl;
 
+// Used to exclude certain sites from PlusAddressService. Must be a
+// comma-separated list of site names (eTLD+1).
+COMPONENT_EXPORT(PLUS_ADDRESSES_FEATURES)
+extern const base::FeatureParam<std::string> kPlusAddressExcludedSites;
+
 }  // namespace plus_addresses
 
 #endif  // COMPONENTS_PLUS_ADDRESSES_FEATURES_H_

@@ -13,6 +13,7 @@
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
@@ -93,7 +94,7 @@ class ExternalInstallMenuAlert : public GlobalError {
 };
 
 // A global error that spawns a bubble when the menu item is clicked.
-class ExternalInstallBubbleAlert : public GlobalErrorWithStandardBubble {
+class ExternalInstallBubbleAlert final : public GlobalErrorWithStandardBubble {
  public:
   ExternalInstallBubbleAlert(ExternalInstallError* error,
                              ExtensionInstallPrompt::Prompt* prompt);
@@ -120,6 +121,7 @@ class ExternalInstallBubbleAlert : public GlobalErrorWithStandardBubble {
   void OnBubbleViewDidClose(Browser* browser) override;
   void BubbleViewAcceptButtonPressed(Browser* browser) override;
   void BubbleViewCancelButtonPressed(Browser* browser) override;
+  base::WeakPtr<GlobalErrorWithStandardBubble> AsWeakPtr() override;
 
   // The owning ExternalInstallError.
   raw_ptr<ExternalInstallError> error_;
@@ -128,6 +130,8 @@ class ExternalInstallBubbleAlert : public GlobalErrorWithStandardBubble {
   // The Prompt with all information, which we then use to populate the bubble.
   // Owned by |error|.
   raw_ptr<ExtensionInstallPrompt::Prompt> prompt_;
+
+  base::WeakPtrFactory<ExternalInstallBubbleAlert> weak_ptr_factory_{this};
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -264,6 +268,11 @@ void ExternalInstallBubbleAlert::BubbleViewCancelButtonPressed(
     Browser* browser) {
   error_->OnInstallPromptDone(ExtensionInstallPrompt::DoneCallbackPayload(
       ExtensionInstallPrompt::Result::USER_CANCELED));
+}
+
+base::WeakPtr<GlobalErrorWithStandardBubble>
+ExternalInstallBubbleAlert::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 }  // namespace

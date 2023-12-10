@@ -30,6 +30,7 @@
 <translation id="2226276347425096477">Encurte este texto para <ph name="MAX_CHARACTERS" /> caracteres ou menos (está atualmente a utilizar <ph name="CURRENT_LENGTH" /> caracteres).</translation>
 <translation id="2247351761944213033">Semana <ph name="WEEKNUMBER" />, de <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Faixa <ph name="NUMBER" /></translation>
+<translation id="2353297238722298836">Câmara e microfone permitidos</translation>
 <translation id="2393030564806080191">Valor de cor hexadecimal</translation>
 <translation id="2398813069815436052">caixa de diálogo aberta.</translation>
 <translation id="245932805758469625">segundos restantes do vídeo</translation>
@@ -60,10 +61,12 @@
 <translation id="3822383571486410024">Aumente este texto para <ph name="MIN_CHARACTERS" /> carateres ou mais (está atualmente a utilizar <ph name="CURRENT_LENGTH" /> carateres).</translation>
 <translation id="383465348367842624">Uma parte seguida de "<ph name="ATSIGN" />" não deve conter o símbolo "<ph name="INVALIDCHARACTER" />".</translation>
 <translation id="3846214748874656680">Sair do modo de ecrã inteiro</translation>
+<translation id="4031179711345676612">Microfone permitido</translation>
 <translation id="4103419683916926126">Milissegundos</translation>
 <translation id="4201051445878709314">Mostrar mês anterior</translation>
 <translation id="4360991593054037559">Introduza um valor válido. Os dois valores válidos mais próximos são <ph name="VALID_VALUE_LOW" /> e <ph name="VALID_VALUE_HIGHER" />.</translation>
 <translation id="4522570452068850558">Detalhes</translation>
+<translation id="4663373278480897665">Câmara permitida</translation>
 <translation id="4664250907885839816">Uma parte a seguir a "<ph name="ATSIGN" />" não deve conter o símbolo "<ph name="INVALIDCHARACTER" />".</translation>
 <translation id="4718048029184481307">A reproduzir em ecrã no ecrã…</translation>
 <translation id="4748357248530471599">ativar/desativar o ecrã inteiro de recorte no ecrã</translation>
@@ -137,6 +140,7 @@
 <translation id="6941933287844615239">transferir multimédia</translation>
 <translation id="698788488269350478">expandido.</translation>
 <translation id="6989848892321993519">Aumente este texto para <ph name="MIN_CHARACTERS" /> ou mais carateres (atualmente, está a utilizar 1 caráter).</translation>
+<translation id="7080893216867146095">Partilha de localização permitida</translation>
 <translation id="709897737746224366">Faça corresponder o formato pedido.</translation>
 <translation id="7102274145889307184">localização atual</translation>
 <translation id="7263440858009898357">Selecione um item na lista.</translation>

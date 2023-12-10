@@ -15,6 +15,8 @@
 #import "ui/base/clipboard/clipboard_util_mac.h"
 #import "ui/base/dragdrop/drag_drop_types.h"
 #import "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer_tree_owner.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #import "ui/views/cocoa/native_widget_mac_ns_window_host.h"
@@ -123,6 +125,8 @@ using ::ui::mojom::DragOperation;
 
 // View object that will receive and process dropped data from the test.
 class DragDropView : public View {
+  METADATA_HEADER(DragDropView, View)
+
  public:
   DragDropView() = default;
 
@@ -159,6 +163,9 @@ class DragDropView : public View {
   // Drop formats accepted by this View object.
   int formats_ = 0;
 };
+
+BEGIN_METADATA(DragDropView)
+END_METADATA
 
 class DragDropClientMacTest : public WidgetTest {
  public:

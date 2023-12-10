@@ -321,12 +321,11 @@ TEST_F(AdditionalBidsUtilTest, FailNoIGDictionary) {
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(
       "Additional bid on auction with seller 'https://seller.test' rejected "
-      "due to missing or invalid interest group info.",
+      "due to missing interest group name.",
       result.error());
 }
 
-// Missing IG name.
-TEST_F(AdditionalBidsUtilTest, FailInvalidIG) {
+TEST_F(AdditionalBidsUtilTest, FailMissingInterestGroupName) {
   base::Value::Dict additional_bid_dict = MakeMinimalValid();
   additional_bid_dict.RemoveByDottedPath("interestGroup.name");
   base::Value input(std::move(additional_bid_dict));
@@ -337,12 +336,11 @@ TEST_F(AdditionalBidsUtilTest, FailInvalidIG) {
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(
       "Additional bid on auction with seller 'https://seller.test' rejected "
-      "due to missing or invalid interest group info.",
+      "due to missing interest group name.",
       result.error());
 }
 
-// Missing IG bidding script.
-TEST_F(AdditionalBidsUtilTest, FailInvalidIG2) {
+TEST_F(AdditionalBidsUtilTest, FailMissingInterestGroupBiddingScript) {
   base::Value::Dict additional_bid_dict = MakeMinimalValid();
   additional_bid_dict.RemoveByDottedPath("interestGroup.biddingLogicURL");
   base::Value input(std::move(additional_bid_dict));
@@ -353,12 +351,11 @@ TEST_F(AdditionalBidsUtilTest, FailInvalidIG2) {
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(
       "Additional bid on auction with seller 'https://seller.test' rejected "
-      "due to missing or invalid interest group info.",
+      "due to missing interest group bidding URL.",
       result.error());
 }
 
-// Missing IG owner.
-TEST_F(AdditionalBidsUtilTest, FailInvalidIG3) {
+TEST_F(AdditionalBidsUtilTest, FailMissingInterestGroupOwner) {
   base::Value::Dict additional_bid_dict = MakeMinimalValid();
   additional_bid_dict.RemoveByDottedPath("interestGroup.owner");
   base::Value input(std::move(additional_bid_dict));
@@ -369,12 +366,11 @@ TEST_F(AdditionalBidsUtilTest, FailInvalidIG3) {
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(
       "Additional bid on auction with seller 'https://seller.test' rejected "
-      "due to missing or invalid interest group info.",
+      "due to missing interest group owner.",
       result.error());
 }
 
-// Non-https IG owner.
-TEST_F(AdditionalBidsUtilTest, FailInvalidIG4) {
+TEST_F(AdditionalBidsUtilTest, FailNonHttpsInterestGroupOwner) {
   base::Value::Dict additional_bid_dict = MakeMinimalValid();
   additional_bid_dict.SetByDottedPath("interestGroup.owner",
                                       "http://rollingstock.test/");
@@ -386,12 +382,11 @@ TEST_F(AdditionalBidsUtilTest, FailInvalidIG4) {
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(
       "Additional bid on auction with seller 'https://seller.test' rejected "
-      "due to missing or invalid interest group info.",
+      "due to non-https interest group owner URL.",
       result.error());
 }
 
-// Domain mismatch between owner and bidding script.
-TEST_F(AdditionalBidsUtilTest, FailInvalidIG5) {
+TEST_F(AdditionalBidsUtilTest, FailDomainMismatchBetweenOwnerAndBiddingScript) {
   base::Value::Dict additional_bid_dict = MakeMinimalValid();
   additional_bid_dict.SetByDottedPath("interestGroup.owner",
                                       "https://trainstuff.test/");

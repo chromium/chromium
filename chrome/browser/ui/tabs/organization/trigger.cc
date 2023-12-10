@@ -6,24 +6,24 @@
 
 #include "base/time/default_tick_clock.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/tabs/organization/tab_data.h"
 #include "chrome/browser/ui/tabs/organization/trigger_policies.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/ui_features.h"
 
 namespace {
 
 // Just counts the number of tabs in the browser.
-float MVPScoringFunction(const TabStripModel* const model) {
-  int num_tabs_not_in_group = 0;
+float MVPScoringFunction(TabStripModel* const model) {
+  int num_eligible_tabs = 0;
   for (int i = 0; i < model->count(); i++) {
-    if (model->GetTabGroupForTab(i) == absl::nullopt) {
-      num_tabs_not_in_group++;
+    if (TabData(model, model->GetWebContentsAt(i)).IsValidForOrganizing()) {
+      num_eligible_tabs++;
     }
   }
-  return num_tabs_not_in_group;
+  return num_eligible_tabs;
 }
-
-constexpr int kMinTabCount = 7;
 }  // namespace
 
 TabOrganizationTrigger::TabOrganizationTrigger(
@@ -37,7 +37,7 @@ TabOrganizationTrigger::TabOrganizationTrigger(
 TabOrganizationTrigger::~TabOrganizationTrigger() = default;
 
 bool TabOrganizationTrigger::ShouldTrigger(
-    const TabStripModel* const tab_strip_model) const {
+    TabStripModel* const tab_strip_model) const {
   const float score = scoring_function_.Run(tab_strip_model);
   if (score < score_threshold_) {
     return false;
@@ -51,17 +51,21 @@ TriggerScoringFunction GetDefaultTriggerScoringFunction() {
 }
 
 float GetDefaultTriggerScoreThreshold() {
-  return kMinTabCount;
+  return features::kTabOrganizationTriggerThreshold.Get();
 }
 
-std::unique_ptr<TriggerPolicy> GetDefaultTriggerPolicy() {
+std::unique_ptr<TriggerPolicy> GetDefaultTriggerPolicy(
+    std::unique_ptr<BackoffLevelProvider> backoff_level_provider) {
   return std::make_unique<TargetFrequencyTriggerPolicy>(
       std::make_unique<UsageTickClock>(base::DefaultTickClock::GetInstance()),
-      base::Hours(6));
+      features::kTabOrganizationTriggerPeriod.Get(),
+      features::kTabOrganizationTriggerBackoffBase.Get(),
+      std::move(backoff_level_provider));
 }
 
-std::unique_ptr<TabOrganizationTrigger> MakeMVPTrigger() {
+std::unique_ptr<TabOrganizationTrigger> MakeMVPTrigger(
+    std::unique_ptr<BackoffLevelProvider> backoff_level_provider) {
   return std::make_unique<TabOrganizationTrigger>(
       GetDefaultTriggerScoringFunction(), GetDefaultTriggerScoreThreshold(),
-      GetDefaultTriggerPolicy());
+      GetDefaultTriggerPolicy(std::move(backoff_level_provider)));
 }

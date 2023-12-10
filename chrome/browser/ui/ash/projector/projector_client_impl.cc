@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/ash/projector/projector_client_impl.h"
 
+#include <optional>
+
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/projector/projector_metrics.h"
@@ -42,7 +44,6 @@
 #include "media/audio/audio_device_description.h"
 #include "media/base/media_switches.h"
 #include "media/mojo/mojom/speech_recognition_service.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/views/controls/webview/webview.h"
@@ -275,7 +276,7 @@ void ProjectorClientImpl::ToggleFileSyncingNotificationForPaths(
 void ProjectorClientImpl::OnSpeechResult(
     const std::u16string& text,
     bool is_final,
-    const absl::optional<media::SpeechRecognitionResult>& full_result) {
+    const std::optional<media::SpeechRecognitionResult>& full_result) {
   DCHECK(full_result.has_value());
   controller_->OnTranscription(full_result.value());
 }

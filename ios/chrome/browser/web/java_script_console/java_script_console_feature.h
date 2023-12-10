@@ -33,7 +33,7 @@ class JavaScriptConsoleFeature : public KeyedService,
   JavaScriptConsoleFeature& operator=(const JavaScriptConsoleFeature&) = delete;
 
   // JavaScriptFeature:
-  absl::optional<std::string> GetScriptMessageHandlerName() const override;
+  std::optional<std::string> GetScriptMessageHandlerName() const override;
   void ScriptMessageReceived(web::WebState* web_state,
                              const web::ScriptMessage& message) override;
 

@@ -11,6 +11,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/test/task_environment.h"
 #include "components/sync/protocol/model_type_store_schema_descriptor.pb.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/leveldatabase/env_chromium.h"
 #include "third_party/leveldatabase/src/include/leveldb/db.h"
@@ -19,7 +20,7 @@
 #include "third_party/leveldatabase/src/include/leveldb/status.h"
 #include "third_party/leveldatabase/src/include/leveldb/write_batch.h"
 
-using sync_pb::ModelTypeStoreSchemaDescriptor;
+using testing::UnorderedElementsAre;
 
 namespace syncer {
 namespace {
@@ -41,7 +42,7 @@ TEST_F(ModelTypeStoreBackendTest, WriteThenRead) {
 
   scoped_refptr<ModelTypeStoreBackend> backend =
       ModelTypeStoreBackend::CreateUninitialized();
-  absl::optional<ModelError> error = backend->Init(temp_dir.GetPath());
+  absl::optional<ModelError> error = backend->Init(temp_dir.GetPath(), {});
   ASSERT_FALSE(error) << error->ToString();
 
   // Write record.
@@ -62,7 +63,7 @@ TEST_F(ModelTypeStoreBackendTest, WriteThenRead) {
   // Recreate backend and read all records with prefix.
   backend = nullptr;
   backend = ModelTypeStoreBackend::CreateUninitialized();
-  error = backend->Init(temp_dir.GetPath());
+  error = backend->Init(temp_dir.GetPath(), {});
   ASSERT_FALSE(error) << error->ToString();
 
   error = backend->ReadAllRecordsWithPrefix("prefix:", &record_list);
@@ -212,6 +213,154 @@ TEST_F(ModelTypeStoreBackendTest, MigrateWithHigherExistingVersionFails) {
   EXPECT_EQ("Schema version too high", error->message());
 }
 
+TEST_F(ModelTypeStoreBackendTest, MigrateReadingListFromLocalToAccount) {
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+
+  absl::optional<ModelError> error;
+
+  // Setup: Put some data into the persisted storage.
+  {
+    scoped_refptr<ModelTypeStoreBackend> backend =
+        ModelTypeStoreBackend::CreateUninitialized();
+    error = backend->Init(temp_dir.GetPath(),
+                          /*prefixes_to_update=*/{});
+    ASSERT_FALSE(error) << error->ToString();
+
+    auto write_batch = std::make_unique<leveldb::WriteBatch>();
+    // ReadingList data in the local store. This should be migrated.
+    write_batch->Put("reading_list-dt-id1", "rl_data1");
+    write_batch->Put("reading_list-md-id1", "rl_metadata1");
+    write_batch->Put("reading_list-GlobalMetadata", "rl_global_metadata");
+    // Some other types' data in the local and the account store. These should
+    // not be touched.
+    write_batch->Put("bookmarks-dt-id1", "bm_data1");
+    write_batch->Put("bookmarks-md-id1", "bm_metadata1");
+    write_batch->Put("bookmarks-GlobalMetadata", "bm_global_metadata");
+    write_batch->Put("A-passwords-dt-id1", "pw_data1");
+    write_batch->Put("A-passwords-md-id1", "pw_metadata1");
+    write_batch->Put("A-passwords-GlobalMetadata", "pw_global_metadata");
+    error = backend->WriteModifications(std::move(write_batch));
+    ASSERT_FALSE(error) << error->ToString();
+  }
+
+  // Recreate the backend and trigger the ReadingList migration.
+  scoped_refptr<ModelTypeStoreBackend> backend =
+      ModelTypeStoreBackend::CreateUninitialized();
+  error = backend->Init(
+      temp_dir.GetPath(),
+      /*prefixes_to_update=*/{{"reading_list", "A-reading_list"}});
+  ASSERT_FALSE(error) << error->ToString();
+
+  // Local ReadingList data should be empty now.
+  {
+    ModelTypeStore::RecordList record_list;
+    error = backend->ReadAllRecordsWithPrefix("reading_list-", &record_list);
+    ASSERT_FALSE(error) << error->ToString();
+    EXPECT_TRUE(record_list.empty());
+  }
+  // Instead, the existing ReadingList data should be in the account store.
+  {
+    ModelTypeStore::RecordList record_list;
+    error = backend->ReadAllRecordsWithPrefix("A-reading_list-", &record_list);
+    ASSERT_FALSE(error) << error->ToString();
+    EXPECT_THAT(
+        record_list,
+        UnorderedElementsAre(
+            ModelTypeStore::Record{"dt-id1", "rl_data1"},
+            ModelTypeStore::Record{"md-id1", "rl_metadata1"},
+            ModelTypeStore::Record{"GlobalMetadata", "rl_global_metadata"}));
+  }
+  // Data from other types should be unaffected.
+  {
+    ModelTypeStore::RecordList record_list;
+    error = backend->ReadAllRecordsWithPrefix("bookmarks-", &record_list);
+    ASSERT_FALSE(error) << error->ToString();
+    EXPECT_THAT(
+        record_list,
+        UnorderedElementsAre(
+            ModelTypeStore::Record{"dt-id1", "bm_data1"},
+            ModelTypeStore::Record{"md-id1", "bm_metadata1"},
+            ModelTypeStore::Record{"GlobalMetadata", "bm_global_metadata"}));
+  }
+  {
+    ModelTypeStore::RecordList record_list;
+    error = backend->ReadAllRecordsWithPrefix("A-passwords-", &record_list);
+    ASSERT_FALSE(error) << error->ToString();
+    EXPECT_THAT(
+        record_list,
+        UnorderedElementsAre(
+            ModelTypeStore::Record{"dt-id1", "pw_data1"},
+            ModelTypeStore::Record{"md-id1", "pw_metadata1"},
+            ModelTypeStore::Record{"GlobalMetadata", "pw_global_metadata"}));
+  }
+}
+
+TEST_F(ModelTypeStoreBackendTest,
+       MigrateReadingListFromLocalToAccount_Idempotent) {
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+
+  absl::optional<ModelError> error;
+
+  // Setup: Put some data into the persisted storage.
+  {
+    scoped_refptr<ModelTypeStoreBackend> backend =
+        ModelTypeStoreBackend::CreateUninitialized();
+    error = backend->Init(temp_dir.GetPath(),
+                          /*prefixes_to_update=*/{});
+    ASSERT_FALSE(error) << error->ToString();
+
+    auto write_batch = std::make_unique<leveldb::WriteBatch>();
+    // ReadingList data in the local store. This should be migrated.
+    write_batch->Put("reading_list-dt-id1", "rl_data1");
+    write_batch->Put("reading_list-md-id1", "rl_metadata1");
+    write_batch->Put("reading_list-GlobalMetadata", "rl_global_metadata");
+    error = backend->WriteModifications(std::move(write_batch));
+    ASSERT_FALSE(error) << error->ToString();
+  }
+
+  // Recreate the backend and trigger the ReadingList migration for the first
+  // time.
+  {
+    scoped_refptr<ModelTypeStoreBackend> backend =
+        ModelTypeStoreBackend::CreateUninitialized();
+    error = backend->Init(
+        temp_dir.GetPath(),
+        /*prefixes_to_update=*/{{"reading_list", "A-reading_list"}});
+    ASSERT_FALSE(error) << error->ToString();
+  }
+
+  // Recreate the backend and trigger the ReadingList migration *again*. This
+  // should have no further effect.
+  scoped_refptr<ModelTypeStoreBackend> backend =
+      ModelTypeStoreBackend::CreateUninitialized();
+  error = backend->Init(
+      temp_dir.GetPath(),
+      /*prefixes_to_update=*/{{"reading_list", "A-reading_list"}});
+  ASSERT_FALSE(error) << error->ToString();
+
+  // Local ReadingList data should be empty now.
+  {
+    ModelTypeStore::RecordList record_list;
+    error = backend->ReadAllRecordsWithPrefix("reading_list-", &record_list);
+    ASSERT_FALSE(error) << error->ToString();
+    EXPECT_TRUE(record_list.empty());
+  }
+  // Instead, the existing ReadingList data should be in the account store.
+  {
+    ModelTypeStore::RecordList record_list;
+    error = backend->ReadAllRecordsWithPrefix("A-reading_list-", &record_list);
+    ASSERT_FALSE(error) << error->ToString();
+    EXPECT_THAT(
+        record_list,
+        UnorderedElementsAre(
+            ModelTypeStore::Record{"dt-id1", "rl_data1"},
+            ModelTypeStore::Record{"md-id1", "rl_metadata1"},
+            ModelTypeStore::Record{"GlobalMetadata", "rl_global_metadata"}));
+  }
+}
+
 // Tests that initializing store after corruption triggers recovery and results
 // in successful store initialization.
 TEST_F(ModelTypeStoreBackendTest, RecoverAfterCorruption) {
@@ -226,7 +375,7 @@ TEST_F(ModelTypeStoreBackendTest, RecoverAfterCorruption) {
 
   scoped_refptr<ModelTypeStoreBackend> backend =
       ModelTypeStoreBackend::CreateUninitialized();
-  absl::optional<ModelError> error = backend->Init(temp_dir.GetPath());
+  absl::optional<ModelError> error = backend->Init(temp_dir.GetPath(), {});
   ASSERT_FALSE(error) << error->ToString();
 }
 

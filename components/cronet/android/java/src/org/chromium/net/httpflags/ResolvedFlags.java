@@ -27,7 +27,13 @@ public final class ResolvedFlags {
      * <p>This object can never hold a null flag value.
      */
     public static final class Value {
-        public static enum Type { BOOL, INT, FLOAT, STRING, BYTES }
+        public static enum Type {
+            BOOL,
+            INT,
+            FLOAT,
+            STRING,
+            BYTES
+        }
 
         private final Object mValue;
 
@@ -36,7 +42,8 @@ public final class ResolvedFlags {
             for (var constrainedValue : flagValue.getConstrainedValuesList()) {
                 if ((constrainedValue.hasAppId() && !constrainedValue.getAppId().equals(appId))
                         || (constrainedValue.hasMinVersion()
-                                && !matchesVersion(cronetVersion,
+                                && !matchesVersion(
+                                        cronetVersion,
                                         parseVersionString(constrainedValue.getMinVersion())))) {
                     continue;
                 }
@@ -83,18 +90,22 @@ public final class ResolvedFlags {
         public Value(boolean value) {
             mValue = value;
         }
+
         @VisibleForTesting
         public Value(long value) {
             mValue = value;
         }
+
         @VisibleForTesting
         public Value(float value) {
             mValue = value;
         }
+
         @VisibleForTesting
         public Value(String value) {
             mValue = value;
         }
+
         @VisibleForTesting
         public Value(ByteString value) {
             mValue = value;
@@ -120,42 +131,39 @@ public final class ResolvedFlags {
         private void checkType(Type requestedType) {
             Type actualType = getType();
             if (requestedType != actualType) {
-                throw new IllegalStateException("Attempted to access flag value as " + requestedType
-                        + ", but actual type is " + actualType);
+                throw new IllegalStateException(
+                        "Attempted to access flag value as "
+                                + requestedType
+                                + ", but actual type is "
+                                + actualType);
             }
         }
 
-        /**
-         * @throws IllegalStateException Iff {@link #getType} is not {@link Type#BOOL}
-         */
+        /** @throws IllegalStateException Iff {@link #getType} is not {@link Type#BOOL} */
         public boolean getBoolValue() {
             checkType(Type.BOOL);
             return (Boolean) mValue;
         }
-        /**
-         * @throws IllegalStateException Iff {@link #getType} is not {@link Type#INT}
-         */
+
+        /** @throws IllegalStateException Iff {@link #getType} is not {@link Type#INT} */
         public long getIntValue() {
             checkType(Type.INT);
             return (Long) mValue;
         }
-        /**
-         * @throws IllegalStateException Iff {@link #getType} is not {@link Type#FLOAT}
-         */
+
+        /** @throws IllegalStateException Iff {@link #getType} is not {@link Type#FLOAT} */
         public float getFloatValue() {
             checkType(Type.FLOAT);
             return (Float) mValue;
         }
-        /**
-         * @throws IllegalStateException Iff {@link #getType} is not {@link Type#STRING}
-         */
+
+        /** @throws IllegalStateException Iff {@link #getType} is not {@link Type#STRING} */
         public String getStringValue() {
             checkType(Type.STRING);
             return (String) mValue;
         }
-        /**
-         * @throws IllegalStateException Iff {@link #getType} is not {@link Type#BYTES}
-         */
+
+        /** @throws IllegalStateException Iff {@link #getType} is not {@link Type#BYTES} */
         public ByteString getBytesValue() {
             checkType(Type.BYTES);
             return (ByteString) mValue;

@@ -20,9 +20,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.chrome.R;
 
-/**
- * Widget that shows a preview of the user's bookmarks.
- */
+/** Widget that shows a preview of the user's bookmarks. */
 public class BookmarkWidgetProvider extends AppWidgetProvider {
     private static final String ACTION_BOOKMARK_APPWIDGET_UPDATE_SUFFIX =
             ".BOOKMARK_APPWIDGET_UPDATE";
@@ -36,11 +34,17 @@ public class BookmarkWidgetProvider extends AppWidgetProvider {
         if (getBookmarkAppWidgetUpdateAction(context).equals(action)) {
             AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
             if (intent.hasExtra(AppWidgetManager.EXTRA_APPWIDGET_ID)) {
-                performUpdate(context, appWidgetManager,
-                        new int[] {IntentUtils.safeGetIntExtra(intent,
-                                AppWidgetManager.EXTRA_APPWIDGET_ID, -1)});
+                performUpdate(
+                        context,
+                        appWidgetManager,
+                        new int[] {
+                            IntentUtils.safeGetIntExtra(
+                                    intent, AppWidgetManager.EXTRA_APPWIDGET_ID, -1)
+                        });
             } else {
-                performUpdate(context, appWidgetManager,
+                performUpdate(
+                        context,
+                        appWidgetManager,
                         appWidgetManager.getAppWidgetIds(getComponentName(context)));
             }
         } else {
@@ -55,11 +59,14 @@ public class BookmarkWidgetProvider extends AppWidgetProvider {
     }
 
     @Override
-    public void onAppWidgetOptionsChanged(Context context, AppWidgetManager appWidgetManager,
-            int appWidgetId, Bundle newOptions) {
+    public void onAppWidgetOptionsChanged(
+            Context context,
+            AppWidgetManager appWidgetManager,
+            int appWidgetId,
+            Bundle newOptions) {
         // Update the widget after it's resized in case it's crossed the threshold between icon-
         // only mode and regular mode.
-        performUpdate(context, appWidgetManager, new int[] { appWidgetId });
+        performUpdate(context, appWidgetManager, new int[] {appWidgetId});
     }
 
     @Override
@@ -77,25 +84,24 @@ public class BookmarkWidgetProvider extends AppWidgetProvider {
         removeOrphanedStates(context);
     }
 
-    /**
-     * Refreshes all Chrome Bookmark widgets.
-     */
+    /** Refreshes all Chrome Bookmark widgets. */
     public static void refreshAllWidgets() {
         Context context = ContextUtils.getApplicationContext();
         if (AppWidgetManager.getInstance(context) == null) return;
 
-        context.sendBroadcast(new Intent(
-                getBookmarkAppWidgetUpdateAction(context),
-                null, context, BookmarkThumbnailWidgetProvider.class));
+        context.sendBroadcast(
+                new Intent(
+                        getBookmarkAppWidgetUpdateAction(context),
+                        null,
+                        context,
+                        BookmarkThumbnailWidgetProvider.class));
     }
 
     static String getBookmarkAppWidgetUpdateAction(Context context) {
         return context.getPackageName() + ACTION_BOOKMARK_APPWIDGET_UPDATE_SUFFIX;
     }
 
-    /**
-     *  Checks for any states that may have not received onDeleted.
-     */
+    /** Checks for any states that may have not received onDeleted. */
     private void removeOrphanedStates(Context context) {
         AppWidgetManager wm = AppWidgetManager.getInstance(context);
         int[] ids = wm.getAppWidgetIds(getComponentName(context));
@@ -104,16 +110,17 @@ public class BookmarkWidgetProvider extends AppWidgetProvider {
         }
     }
 
-    private void performUpdate(Context context,
-            AppWidgetManager appWidgetManager, int[] appWidgetIds) {
+    private void performUpdate(
+            Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         for (int appWidgetId : appWidgetIds) {
             Intent updateIntent = new Intent(context, BookmarkWidgetService.class);
             updateIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
             updateIntent.setData(Uri.parse(updateIntent.toUri(Intent.URI_INTENT_SCHEME)));
 
-            int layoutId = shouldShowIconsOnly(appWidgetManager, appWidgetId)
-                    ? R.layout.bookmark_widget_icons_only
-                    : R.layout.bookmark_widget;
+            int layoutId =
+                    shouldShowIconsOnly(appWidgetManager, appWidgetId)
+                            ? R.layout.bookmark_widget_icons_only
+                            : R.layout.bookmark_widget;
             RemoteViews views = new RemoteViews(context.getPackageName(), layoutId);
             views.setRemoteAdapter(R.id.bookmarks_list, updateIntent);
 
@@ -121,8 +128,12 @@ public class BookmarkWidgetProvider extends AppWidgetProvider {
             Intent ic = new Intent(context, BookmarkWidgetProxy.class);
             IntentUtils.addTrustedIntentExtras(ic);
             ic.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            views.setPendingIntentTemplate(R.id.bookmarks_list,
-                    PendingIntent.getActivity(context, 0, ic,
+            views.setPendingIntentTemplate(
+                    R.id.bookmarks_list,
+                    PendingIntent.getActivity(
+                            context,
+                            0,
+                            ic,
                             PendingIntent.FLAG_UPDATE_CURRENT
                                     | IntentUtils.getPendingIntentMutabilityFlag(true)));
             appWidgetManager.updateAppWidget(appWidgetId, views);
@@ -130,8 +141,10 @@ public class BookmarkWidgetProvider extends AppWidgetProvider {
     }
 
     private boolean shouldShowIconsOnly(AppWidgetManager appWidgetManager, int appWidgetId) {
-        int widthDp = appWidgetManager.getAppWidgetOptions(appWidgetId)
-                .getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH);
+        int widthDp =
+                appWidgetManager
+                        .getAppWidgetOptions(appWidgetId)
+                        .getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH);
         return widthDp < ICONS_ONLY_THRESHOLD_WIDTH_DP;
     }
 

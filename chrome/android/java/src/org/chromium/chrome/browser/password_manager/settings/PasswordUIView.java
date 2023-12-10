@@ -55,67 +55,90 @@ public final class PasswordUIView implements PasswordManagerHandler {
 
     @Override
     public void insertPasswordEntryForTesting(String origin, String username, String password) {
-        PasswordUIViewJni.get().insertPasswordEntryForTesting(
-                mNativePasswordUIViewAndroid, origin, username, password);
+        PasswordUIViewJni.get()
+                .insertPasswordEntryForTesting(
+                        mNativePasswordUIViewAndroid, origin, username, password);
     }
 
     // Calls native to refresh password and exception lists. The native code calls back into
     // passwordListAvailable and passwordExceptionListAvailable.
     @Override
     public void updatePasswordLists() {
-        PasswordUIViewJni.get().updatePasswordLists(
-                mNativePasswordUIViewAndroid, PasswordUIView.this);
+        PasswordUIViewJni.get()
+                .updatePasswordLists(mNativePasswordUIViewAndroid, PasswordUIView.this);
     }
 
     @Override
     public SavedPasswordEntry getSavedPasswordEntry(int index) {
-        return PasswordUIViewJni.get().getSavedPasswordEntry(
-                mNativePasswordUIViewAndroid, PasswordUIView.this, index);
+        return PasswordUIViewJni.get()
+                .getSavedPasswordEntry(mNativePasswordUIViewAndroid, PasswordUIView.this, index);
     }
 
     @Override
     public String getSavedPasswordException(int index) {
-        return PasswordUIViewJni.get().getSavedPasswordException(
-                mNativePasswordUIViewAndroid, PasswordUIView.this, index);
+        return PasswordUIViewJni.get()
+                .getSavedPasswordException(
+                        mNativePasswordUIViewAndroid, PasswordUIView.this, index);
     }
 
     @Override
     public void removeSavedPasswordEntry(int index) {
-        PasswordUIViewJni.get().handleRemoveSavedPasswordEntry(
-                mNativePasswordUIViewAndroid, PasswordUIView.this, index);
+        PasswordUIViewJni.get()
+                .handleRemoveSavedPasswordEntry(
+                        mNativePasswordUIViewAndroid, PasswordUIView.this, index);
     }
 
     @Override
     public void removeSavedPasswordException(int index) {
-        PasswordUIViewJni.get().handleRemoveSavedPasswordException(
-                mNativePasswordUIViewAndroid, PasswordUIView.this, index);
+        PasswordUIViewJni.get()
+                .handleRemoveSavedPasswordException(
+                        mNativePasswordUIViewAndroid, PasswordUIView.this, index);
     }
 
     @Override
     public void serializePasswords(
             String targetPath, IntStringCallback successCallback, Callback<String> errorCallback) {
-        PasswordUIViewJni.get().handleSerializePasswords(mNativePasswordUIViewAndroid,
-                PasswordUIView.this, targetPath, successCallback, errorCallback);
+        PasswordUIViewJni.get()
+                .handleSerializePasswords(
+                        mNativePasswordUIViewAndroid,
+                        PasswordUIView.this,
+                        targetPath,
+                        successCallback,
+                        errorCallback);
     }
 
     @Override
-    public void showPasswordEntryEditingView(Context context, SettingsLauncher settingsLauncher,
-            int index, boolean isBlockedCredential) {
+    public void showPasswordEntryEditingView(
+            Context context,
+            SettingsLauncher settingsLauncher,
+            int index,
+            boolean isBlockedCredential) {
         if (isBlockedCredential) {
-            PasswordUIViewJni.get().handleShowBlockedCredentialView(mNativePasswordUIViewAndroid,
-                    context, settingsLauncher, index, PasswordUIView.this);
+            PasswordUIViewJni.get()
+                    .handleShowBlockedCredentialView(
+                            mNativePasswordUIViewAndroid,
+                            context,
+                            settingsLauncher,
+                            index,
+                            PasswordUIView.this);
             return;
         }
-        PasswordUIViewJni.get().handleShowPasswordEntryEditingView(mNativePasswordUIViewAndroid,
-                context, settingsLauncher, index, PasswordUIView.this);
+        PasswordUIViewJni.get()
+                .handleShowPasswordEntryEditingView(
+                        mNativePasswordUIViewAndroid,
+                        context,
+                        settingsLauncher,
+                        index,
+                        PasswordUIView.this);
     }
 
     @Override
     public void showMigrationWarning(
             Activity activity, BottomSheetController bottomSheetController) {
         if (mNativePasswordUIViewAndroid == 0) return;
-        PasswordUIViewJni.get().showMigrationWarning(
-                mNativePasswordUIViewAndroid, activity, bottomSheetController);
+        PasswordUIViewJni.get()
+                .showMigrationWarning(
+                        mNativePasswordUIViewAndroid, activity, bottomSheetController);
     }
 
     /**
@@ -143,13 +166,11 @@ public final class PasswordUIView implements PasswordManagerHandler {
 
     @Override
     public boolean isWaitingForPasswordStore() {
-        return PasswordUIViewJni.get().isWaitingForPasswordStore(
-                mNativePasswordUIViewAndroid, PasswordUIView.this);
+        return PasswordUIViewJni.get()
+                .isWaitingForPasswordStore(mNativePasswordUIViewAndroid, PasswordUIView.this);
     }
 
-    /**
-     * Destroy the native object.
-     */
+    /** Destroy the native object. */
     public void destroy() {
         if (mNativePasswordUIViewAndroid != 0) {
             PasswordUIViewJni.get().destroy(mNativePasswordUIViewAndroid, PasswordUIView.this);
@@ -160,30 +181,58 @@ public final class PasswordUIView implements PasswordManagerHandler {
     @NativeMethods
     interface Natives {
         long init(PasswordUIView caller);
+
         void insertPasswordEntryForTesting(
                 long nativePasswordUIViewAndroid, String origin, String username, String password);
+
         void updatePasswordLists(long nativePasswordUIViewAndroid, PasswordUIView caller);
+
         SavedPasswordEntry getSavedPasswordEntry(
                 long nativePasswordUIViewAndroid, PasswordUIView caller, int index);
+
         String getSavedPasswordException(
                 long nativePasswordUIViewAndroid, PasswordUIView caller, int index);
+
         void handleRemoveSavedPasswordEntry(
                 long nativePasswordUIViewAndroid, PasswordUIView caller, int index);
+
         void handleRemoveSavedPasswordException(
                 long nativePasswordUIViewAndroid, PasswordUIView caller, int index);
+
         String getAccountDashboardURL();
+
         String getTrustedVaultLearnMoreURL();
+
         boolean hasAccountForLeakCheckRequest();
+
         boolean isWaitingForPasswordStore(long nativePasswordUIViewAndroid, PasswordUIView caller);
+
         void destroy(long nativePasswordUIViewAndroid, PasswordUIView caller);
-        void handleSerializePasswords(long nativePasswordUIViewAndroid, PasswordUIView caller,
-                String targetPath, IntStringCallback successCallback,
+
+        void handleSerializePasswords(
+                long nativePasswordUIViewAndroid,
+                PasswordUIView caller,
+                String targetPath,
+                IntStringCallback successCallback,
                 Callback<String> errorCallback);
-        void handleShowPasswordEntryEditingView(long nativePasswordUIViewAndroid, Context context,
-                SettingsLauncher launcher, int index, PasswordUIView caller);
-        void handleShowBlockedCredentialView(long nativePasswordUIViewAndroid, Context context,
-                SettingsLauncher launcher, int index, PasswordUIView caller);
-        void showMigrationWarning(long nativePasswordUIViewAndroid, Activity activity,
+
+        void handleShowPasswordEntryEditingView(
+                long nativePasswordUIViewAndroid,
+                Context context,
+                SettingsLauncher launcher,
+                int index,
+                PasswordUIView caller);
+
+        void handleShowBlockedCredentialView(
+                long nativePasswordUIViewAndroid,
+                Context context,
+                SettingsLauncher launcher,
+                int index,
+                PasswordUIView caller);
+
+        void showMigrationWarning(
+                long nativePasswordUIViewAndroid,
+                Activity activity,
                 BottomSheetController bottomSheetController);
     }
 }

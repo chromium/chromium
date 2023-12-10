@@ -37,8 +37,7 @@ public class SecureDnsSettings extends ChromeBaseSettingsFragment {
 
     /** @return A summary for use in the Preference that opens this fragment. */
     public static String getSummary(Context context) {
-        @SecureDnsMode
-        int mode = SecureDnsBridge.getMode();
+        @SecureDnsMode int mode = SecureDnsBridge.getMode();
         if (mode == SecureDnsMode.OFF) {
             return context.getString(R.string.text_off);
         } else if (mode == SecureDnsMode.AUTOMATIC) {
@@ -65,31 +64,33 @@ public class SecureDnsSettings extends ChromeBaseSettingsFragment {
 
         // Set up preferences inside the activity.
         mSecureDnsSwitch = (ChromeSwitchPreference) findPreference(PREF_SECURE_DNS_SWITCH);
-        mSecureDnsSwitch.setManagedPreferenceDelegate(new ChromeManagedPreferenceDelegate(
-                getProfile()) {
-            @Override
-            public boolean isPreferenceControlledByPolicy(Preference preference) {
-                return SecureDnsBridge.isModeManaged();
-            }
-        });
-        mSecureDnsSwitch.setOnPreferenceChangeListener((preference, enabled) -> {
-            storePreferenceState((boolean) enabled, mSecureDnsProviderPreference.getState());
-            loadPreferenceState();
-            return true;
-        });
+        mSecureDnsSwitch.setManagedPreferenceDelegate(
+                new ChromeManagedPreferenceDelegate(getProfile()) {
+                    @Override
+                    public boolean isPreferenceControlledByPolicy(Preference preference) {
+                        return SecureDnsBridge.isModeManaged();
+                    }
+                });
+        mSecureDnsSwitch.setOnPreferenceChangeListener(
+                (preference, enabled) -> {
+                    storePreferenceState(
+                            (boolean) enabled, mSecureDnsProviderPreference.getState());
+                    loadPreferenceState();
+                    return true;
+                });
 
         if (!SecureDnsBridge.isModeManaged()) {
             // If the mode isn't managed directly, we still need to disable the controls
             // if we detect a managed system configuration, or any parental control software.
             // However, we don't want to show the managed setting icon in this case, because the
             // setting is not directly controlled by a policy.
-            @SecureDnsManagementMode
-            int managementMode = SecureDnsBridge.getManagementMode();
+            @SecureDnsManagementMode int managementMode = SecureDnsBridge.getManagementMode();
             if (managementMode != SecureDnsManagementMode.NO_OVERRIDE) {
                 mSecureDnsSwitch.setEnabled(false);
                 boolean parentalControls =
                         managementMode == SecureDnsManagementMode.DISABLED_PARENTAL_CONTROLS;
-                mSecureDnsSwitch.setSummaryOff(parentalControls
+                mSecureDnsSwitch.setSummaryOff(
+                        parentalControls
                                 ? R.string.settings_secure_dns_disabled_for_parental_control
                                 : R.string.settings_secure_dns_disabled_for_managed_environment);
             }
@@ -97,16 +98,18 @@ public class SecureDnsSettings extends ChromeBaseSettingsFragment {
 
         mSecureDnsProviderPreference =
                 (SecureDnsProviderPreference) findPreference(PREF_SECURE_DNS_PROVIDER);
-        mSecureDnsProviderPreference.setOnPreferenceChangeListener((preference, value) -> {
-            State controlState = (State) value;
-            boolean valid = storePreferenceState(mSecureDnsSwitch.isChecked(), controlState);
-            if (valid != controlState.valid) {
-                mSecureDnsProviderPreference.setState(controlState.withValid(valid));
-                // Cancel the change to controlState.
-                return false;
-            }
-            return true;
-        });
+        mSecureDnsProviderPreference.setOnPreferenceChangeListener(
+                (preference, value) -> {
+                    State controlState = (State) value;
+                    boolean valid =
+                            storePreferenceState(mSecureDnsSwitch.isChecked(), controlState);
+                    if (valid != controlState.valid) {
+                        mSecureDnsProviderPreference.setState(controlState.withValid(valid));
+                        // Cancel the change to controlState.
+                        return false;
+                    }
+                    return true;
+                });
 
         // Update preference views and state.
         loadPreferenceState();
@@ -134,11 +137,12 @@ public class SecureDnsSettings extends ChromeBaseSettingsFragment {
     }
 
     private void loadPreferenceState() {
-        @SecureDnsMode
-        int mode = SecureDnsBridge.getMode();
+        @SecureDnsMode int mode = SecureDnsBridge.getMode();
         boolean enabled = mode != SecureDnsMode.OFF;
-        boolean enforced = SecureDnsBridge.isModeManaged()
-                || SecureDnsBridge.getManagementMode() != SecureDnsManagementMode.NO_OVERRIDE;
+        boolean enforced =
+                SecureDnsBridge.isModeManaged()
+                        || SecureDnsBridge.getManagementMode()
+                                != SecureDnsManagementMode.NO_OVERRIDE;
         mSecureDnsSwitch.setChecked(enabled);
         mSecureDnsProviderPreference.setEnabled(enabled && !enforced);
 

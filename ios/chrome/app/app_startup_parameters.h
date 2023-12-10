@@ -44,6 +44,9 @@ enum TabOpeningPostOpeningAction {
   START_LENS_FROM_INTENTS,
   OPEN_CLEAR_BROWSING_DATA_DIALOG,
   TAB_OPENING_POST_OPENING_ACTION_COUNT,
+  ADD_BOOKMARKS,
+  ADD_READING_LIST_ITEMS,
+  EXTERNAL_ACTION_SHOW_BROWSER_SETTINGS,
 };
 
 class GURL;
@@ -72,6 +75,11 @@ class GURL;
 // parameters with their corresponding value.
 @property(nonatomic, assign) std::map<std::string, std::string>
     externalURLParams;
+
+// The list of inputted URLs to process. These URLs aren't automatically opened.
+// Used in the context of Siri shortcuts that allow URL inputs that are not
+// meant to be opened in new tabs automatically.
+@property(nonatomic, readwrite, strong) NSArray<NSURL*>* inputURLs;
 
 // The mode in which the tab must be opened. Defaults to UNDETERMINED.
 @property(nonatomic, assign) ApplicationModeForTabOpening applicationMode;

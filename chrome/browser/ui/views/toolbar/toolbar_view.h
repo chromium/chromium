@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_TOOLBAR_TOOLBAR_VIEW_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -25,7 +26,6 @@
 #include "chrome/browser/ui/views/toolbar/overflow_button.h"
 #include "chrome/browser/ui/views/toolbar/side_panel_toolbar_button.h"
 #include "components/prefs/pref_member.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/pointer/touch_ui_controller.h"
@@ -130,7 +130,7 @@ class ToolbarView : public views::AccessiblePaneView,
       bool show_stay_in_chrome,
       bool show_remember_selection,
       IntentPickerBubbleView::BubbleType bubble_type,
-      const absl::optional<url::Origin>& initiating_origin,
+      const std::optional<url::Origin>& initiating_origin,
       IntentPickerResponse callback);
 
   // Shows a bookmark bubble and anchors it appropriately.

@@ -68,7 +68,6 @@ export let SyncTrustedVaultKeys;
  *   password: string,
  *   usingSAML: boolean,
  *   publicSAML: boolean,
- *   chooseWhatToSync: boolean,
  *   skipForNow: boolean,
  *   sessionIndex: string,
  *   trusted: boolean,
@@ -117,14 +116,14 @@ export let AuthParams;
 
 const SIGN_IN_HEADER = 'google-accounts-signin';
 const EMBEDDED_FORM_HEADER = 'google-accounts-embedded';
-const LOCATION_HEADER = 'location';
 const SERVICE_ID = 'chromeoslogin';
-const SAML_REDIRECTION_PATH = 'samlredirect';
 const BLANK_PAGE_URL = 'about:blank';
 
 const GAIA_DONE_ELAPSED_TIME = 'ChromeOS.Gaia.Done.ElapsedTime';
 const GAIA_CREATE_ACCOUNT_FIRST_USER =
       'ChromeOS.Gaia.CreateAccount.IsFirstUser';
+const GAIA_DONE_OOBE_NEW_ACCOUNT =
+      'ChromeOS.Gaia.Done.Oobe.NewAccount';
 
 // Metric names for messages we get from Gaia.
 const GAIA_MESSAGE_SAML_USER_INFO = 'ChromeOS.Gaia.Message.Saml.UserInfo';
@@ -266,7 +265,6 @@ const messageHandlers = {
       this.password_ = msg.password;
     }
 
-    this.chooseWhatToSync_ = msg.chooseWhatToSync;
     // We need to dispatch only first event, before user enters password.
     this.dispatchEvent(new CustomEvent('attemptLogin', {detail: msg.email}));
   },
@@ -371,6 +369,9 @@ const messageHandlers = {
       this.maybeCompleteAuth_();
     }
   },
+  'getDeviceId'(msg) {
+    this.dispatchEvent(new Event('getDeviceId'));
+  },
 };
 
 /**
@@ -405,12 +406,12 @@ export class Authenticator extends EventTarget {
     this.email_ = null;
     this.password_ = null;
     this.gaiaId_ = null, this.sessionIndex_ = null;
-    this.chooseWhatToSync_ = false;
     this.skipForNow_ = false;
     /** @type {AuthMode} */
     this.authMode = AuthMode.DEFAULT;
     this.dontResizeNonEmbeddedPages = false;
     this.isFirstUser_ = false;
+    this.isNewAccount = false;
 
     /**
      * @type {!SamlHandler|undefined}
@@ -546,7 +547,6 @@ export class Authenticator extends EventTarget {
     this.gaiaId_ = null;
     this.password_ = null;
     this.readyFired_ = false;
-    this.chooseWhatToSync_ = false;
     this.skipForNow_ = false;
     this.sessionIndex_ = null;
     this.trusted_ = true;
@@ -760,6 +760,7 @@ export class Authenticator extends EventTarget {
 
     this.webview_.src = this.reloadUrl_;
     this.isLoaded_ = true;
+    this.isNewAccount = false;
   }
 
   /**
@@ -780,9 +781,20 @@ export class Authenticator extends EventTarget {
     this.sendMessageToWebview('accountsListed', accounts);
   }
 
+  /**
+   * Called in response to 'getDeviceId' event.
+   * @param {string} deviceId Device ID.
+   */
+  getDeviceIdResponse(deviceId) {
+    this.sendMessageToWebview('deviceIdFetched', deviceId);
+  }
+
   constructInitialFrameUrl_(data) {
+    assert(this.idpOrigin_ !== undefined, "this.idpOrigin_ must be defined");
+    assert(data.gaiaPath !== undefined, "data.gaiaPath must be defined");
+    let url = this.idpOrigin_ + data.gaiaPath;
+
     if (data.doSamlRedirect) {
-      let url = this.idpOrigin_ + SAML_REDIRECTION_PATH;
       url = appendParam(url, 'domain', data.enterpriseEnrollmentDomain);
       if (data.ssoProfile) {
         url = appendParam(url, 'sso_profile', data.ssoProfile);
@@ -799,10 +811,6 @@ export class Authenticator extends EventTarget {
 
       return url;
     }
-
-    assert(this.idpOrigin_ !== undefined, "this.idpOrigin_ must be defined");
-    assert(data.gaiaPath !== undefined, "data.gaiaPath must be defined");
-    let url = this.idpOrigin_ + data.gaiaPath;
 
     if (data.chromeType) {
       url = appendParam(url, 'chrometype', data.chromeType);
@@ -1009,19 +1017,13 @@ export class Authenticator extends EventTarget {
         this.setEmail_(email);
         this.gaiaId_ = signinDetails['obfuscatedid'].slice(1, -1);
         this.sessionIndex_ = signinDetails['sessionindex'];
-      } else if (headerName === LOCATION_HEADER) {
-        // If the "choose what to sync" checkbox was clicked, then the
-        // continue URL will contain a source=3 field.
-        assert(header.value !== undefined);
-        const location =
-            decodeURIComponent(/** @type {string} */ (header.value));
-        this.chooseWhatToSync_ = !!location.match(/(\?|&)source=3($|&)/);
       }
     }
   }
 
   /**
-   * Returns true if given HTML5 message is received from the webview element.
+   * Returns true if given HTML5 message is received from `this.idpOrigin_` -
+   * which is usually Gaia.
    * @param {Object} e Payload of the received HTML5 message.
    */
   isGaiaMessage_(e) {
@@ -1029,7 +1031,8 @@ export class Authenticator extends EventTarget {
       return false;
     }
 
-    // The event origin does not have a trailing slash.
+    // The event origin does not have a trailing slash, while `idpOrigin_` does.
+    // Strip the trailing slash from `idpOrigin_` before comparison.
     if (e.origin !== this.idpOrigin_.substring(0, this.idpOrigin_.length - 1)) {
       return false;
     }
@@ -1066,7 +1069,7 @@ export class Authenticator extends EventTarget {
    * Invoked to send a HTML5 message with attached data to the webview
    * element.
    * @param {string} messageType Type of the HTML5 message.
-   * @param {Object=} messageData Data to be attached to the message.
+   * @param {string|Object=} messageData Data to be attached to the message.
    */
   sendMessageToWebview(messageType, messageData = null) {
     const currentUrl = this.webview_.src;
@@ -1125,6 +1128,7 @@ export class Authenticator extends EventTarget {
 
     if (gaiaDone) {
       this.maybeRecordGaiaElapsedTime_();
+      this.maybeRecordAccountFreshnessInOobe_();
       this.maybeClearGaiaTimeout_();
     } else if (this.gaiaDoneTimer_) {
       // Early out if `gaiaDoneTimer_` is running.
@@ -1264,7 +1268,6 @@ export class Authenticator extends EventTarget {
             usingSAML: this.authFlow === AuthFlow.SAML,
             scrapedSAMLPasswords: scrapedPasswords,
             publicSAML: this.samlAclUrl_ || false,
-            chooseWhatToSync: this.chooseWhatToSync_,
             skipForNow: this.skipForNow_,
             sessionIndex: this.sessionIndex_ || '',
             trusted: this.trusted_,
@@ -1335,6 +1338,7 @@ export class Authenticator extends EventTarget {
    * @private
    */
   onSamlApiAccountCreated_(e) {
+    this.isNewAccount = true;
     this.recordAccountCreated_();
   }
 
@@ -1454,9 +1458,6 @@ export class Authenticator extends EventTarget {
    * @private
    */
   isWebviewEvent_(e) {
-    // Note: <webview> prints error message to console if |contentWindow| is
-    // not defined.
-    // TODO(dzhioev): remove the message. http://crbug.com/469522
     const webviewWindow = this.webview_.contentWindow;
     return !!webviewWindow && webviewWindow === e.source;
   }
@@ -1467,7 +1468,7 @@ export class Authenticator extends EventTarget {
    */
   onGaiaDoneTimeout_() {
     if (!this.services_) {
-      console.error('Gaia done timeout: Forcing empty services.');
+      console.warn('Gaia done timeout: Forcing empty services.');
       this.services_ = [];
       const metric = this.authFlow === AuthFlow.SAML ?
           GAIA_MESSAGE_SAML_USER_INFO :
@@ -1476,7 +1477,7 @@ export class Authenticator extends EventTarget {
     }
 
     if (!this.closeViewReceived_) {
-      console.error('Gaia done timeout: closeView was not called.');
+      console.warn('Gaia done timeout: closeView was not called.');
       this.closeViewReceived_ = true;
 
       const metric = this.authFlow === AuthFlow.SAML ?
@@ -1488,7 +1489,8 @@ export class Authenticator extends EventTarget {
     if (this.waitApiPasswordConfirm_) {
       // Log duplicates the log from the saml handler. The message is used by
       // the tast test to catch failures.
-      console.error('SamlHandler.onAPICall_: API password was not confirmed');
+      console.warn('SamlHandler.onAPICall_: API password was not confirmed');
+      this.samlHandler_.recordPasswordNotConfirmedError();
       this.waitApiPasswordConfirm_ = false;
     }
 
@@ -1509,6 +1511,26 @@ export class Authenticator extends EventTarget {
     ]);
     this.gaiaStartTime = null;
   }
+
+  /**
+   * Record if the sign-in account in Oobe is an existing account or new
+   * account.
+   * @private
+   */
+  maybeRecordAccountFreshnessInOobe_() {
+      // Record the metric if the record new account feature
+      // flag is enabled. This metric is recorded only for the sign-in
+      // event happens in Oobe.
+      if (!this.samlHandler_.shouldHandleAccountCreationMessage ||
+          !this.isFirstUser_) {
+        return;
+      }
+      chrome.send('metricsHandler:recordBooleanHistogram', [
+        GAIA_DONE_OOBE_NEW_ACCOUNT,
+        this.isNewAccount
+      ]);
+      this.isNewAccount = false;
+    }
 
   /**
    * Record new account creation.

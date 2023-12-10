@@ -34,7 +34,8 @@ BASE_FEATURE(kHandleExceptionsInJava,
 
 JavaVM* g_jvm = nullptr;
 jobject g_class_loader = nullptr;
-jmethodID g_class_loader_load_class_method_id = 0;
+jclass g_out_of_memory_error_class = nullptr;
+jmethodID g_class_loader_load_class_method_id = nullptr;
 
 ScopedJavaLocalRef<jclass> GetClassInternal(JNIEnv* env,
                                             const char* class_name,
@@ -125,6 +126,10 @@ void DetachFromVM() {
 void InitVM(JavaVM* vm) {
   DCHECK(!g_jvm || g_jvm == vm);
   g_jvm = vm;
+  JNIEnv* env = base::android::AttachCurrentThread();
+  g_out_of_memory_error_class = static_cast<jclass>(
+      env->NewGlobalRef(env->FindClass("java/lang/OutOfMemoryError")));
+  DCHECK(g_out_of_memory_error_class);
 }
 
 bool IsVMInitialized() {
@@ -284,21 +289,27 @@ void CheckException(JNIEnv* env) {
     // happen as we are careful to never throw from these methods, but we can't
     // rule it out entirely as the JVM itself may throw - think
     // OutOfMemoryError, for example.)
-    //
-    // Note that just because we LOG(FATAL) here does not mean it's over -
-    // indeed LOG(FATAL) itself may attempt to call Java methods (e.g. through
-    // GetJavaStackTraceIfPresent()), and we can't let that happen because that
-    // could lead to infinite recursion. To prevent this, we deliberately
-    // refrain from calling `env->ExceptionClear()` in this case - this way, the
-    // JVM will instantly crash if called again from this thread. Such crashes
-    // are hard to troubleshoot though, so ideally attempts to call Java methods
-    // from LOG(FATAL) should guard against HasException() to provide a better
-    // message.
-    constexpr char kMessage[] =
-        "While handling an uncaught Java exception, another Java exception was "
-        "thrown (out of memory?).";
-    base::android::SetJavaException(kMessage);
-    LOG(FATAL) << kMessage;
+    env->ExceptionDescribe();
+    jthrowable raw_throwable = env->ExceptionOccurred();
+    env->ExceptionClear();
+    jclass clazz = env->GetObjectClass(raw_throwable);
+    bool is_oom_error = env->IsSameObject(clazz, g_out_of_memory_error_class);
+    env->Throw(raw_throwable);  // Ensure we don't re-enter Java.
+
+    if (is_oom_error) {
+      constexpr char kMessage[] =
+          "While handling an uncaught Java exception, an OutOfMemoryError "
+          "occurred.";
+      base::android::SetJavaException(kMessage);
+      // Use different LOG(FATAL) statements to ensure unique stack traces.
+      LOG(FATAL) << kMessage;
+    } else {
+      constexpr char kMessage[] =
+          "While handling an uncaught Java exception, another exception "
+          "occurred.";
+      base::android::SetJavaException(kMessage);
+      LOG(FATAL) << kMessage;
+    }
   }
   g_reentering = true;
 
@@ -346,11 +357,19 @@ void CheckException(JNIEnv* env) {
   const std::string native_stack_trace = base::debug::StackTrace().ToString();
   LOG(ERROR) << "Native stack trace:" << std::endl << native_stack_trace;
 
-  Java_JniAndroid_handleException(
-      env, throwable, ConvertUTF8ToJavaString(env, native_stack_trace));
+  ScopedJavaLocalRef<jthrowable> secondary_exception =
+      Java_JniAndroid_handleException(
+          env, throwable, ConvertUTF8ToJavaString(env, native_stack_trace));
 
   // Ideally handleException() should have terminated the process and we should
-  // not get here. In the unlikely case it didn't, we need to do that ourselves.
+  // not get here. This can happen in the case of OutOfMemoryError or if the
+  // app that embedded WebView installed an exception handler that does not
+  // terminate, or itself threw an exception. We cannot be confident that
+  // JavaExceptionReporter ran, so set the java exception explicitly.
+  base::android::SetJavaException(
+      GetJavaExceptionInfo(
+          env, secondary_exception ? secondary_exception : throwable)
+          .c_str());
   LOG(FATAL)
       << "Uncaught Java exception in native code, and the Java uncaught "
          "exception handler did not terminate the process. Please include the "
@@ -361,8 +380,10 @@ std::string GetJavaExceptionInfo(JNIEnv* env,
                                  const JavaRef<jthrowable>& throwable) {
   ScopedJavaLocalRef<jstring> sanitized_exception_string =
       Java_JniAndroid_sanitizedStacktraceForUnhandledException(env, throwable);
-
-  return ConvertJavaStringToUTF8(sanitized_exception_string);
+  // Returns null when PiiElider results in an OutOfMemoryError.
+  return sanitized_exception_string
+             ? ConvertJavaStringToUTF8(sanitized_exception_string)
+             : "Unable to obtain Java stack trace due to OutOfMemoryError";
 }
 
 std::string GetJavaStackTraceIfPresent() {

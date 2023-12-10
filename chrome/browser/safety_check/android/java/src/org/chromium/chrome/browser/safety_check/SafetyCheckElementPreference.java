@@ -31,9 +31,7 @@ public class SafetyCheckElementPreference extends ChromeBasePreference {
      */
     private Callback<Void> mDelayedAction;
 
-    /**
-     * Creates a new object and sets the widget layout.
-     */
+    /** Creates a new object and sets the widget layout. */
     public SafetyCheckElementPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
         setWidgetLayoutResource(R.layout.safety_check_status);
@@ -41,9 +39,7 @@ public class SafetyCheckElementPreference extends ChromeBasePreference {
         mDelayedAction = null;
     }
 
-    /**
-     * Gets triggered when the view elements are created.
-     */
+    /** Gets triggered when the view elements are created. */
     @Override
     public void onBindViewHolder(PreferenceViewHolder holder) {
         super.onBindViewHolder(holder);
@@ -57,9 +53,7 @@ public class SafetyCheckElementPreference extends ChromeBasePreference {
         mDelayedAction = null;
     }
 
-    /**
-     * Displays the progress bar.
-     */
+    /** Displays the progress bar. */
     void showProgressBar() {
         // Delay if this gets invoked before onBindViewHolder.
         if (mStatusView == null || mProgressBar == null) {
@@ -85,9 +79,7 @@ public class SafetyCheckElementPreference extends ChromeBasePreference {
         mStatusView.setVisibility(View.VISIBLE);
     }
 
-    /**
-     * Hides anything in the status area.
-     */
+    /** Hides anything in the status area. */
     void clearStatusIndicator() {
         // Delay if this gets invoked before onBindViewHolder.
         if (mStatusView == null || mProgressBar == null) {

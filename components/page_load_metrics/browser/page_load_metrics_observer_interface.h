@@ -550,17 +550,21 @@ class PageLoadMetricsObserverInterface {
   virtual void OnSubFrameDeleted(int frame_tree_node_id) = 0;
 
   // Called when a cookie is read for a resource request or by document.cookie.
-  virtual void OnCookiesRead(const GURL& url,
-                             const GURL& first_party_url,
-                             bool blocked_by_policy,
-                             bool is_ad_tagged) = 0;
+  virtual void OnCookiesRead(
+      const GURL& url,
+      const GURL& first_party_url,
+      bool blocked_by_policy,
+      bool is_ad_tagged,
+      const net::CookieSettingOverrides& cookie_setting_overrides) = 0;
 
   // Called when a cookie is set by a header or via document.cookie.
-  virtual void OnCookieChange(const GURL& url,
-                              const GURL& first_party_url,
-                              const net::CanonicalCookie& cookie,
-                              bool blocked_by_policy,
-                              bool is_ad_tagged) = 0;
+  virtual void OnCookieChange(
+      const GURL& url,
+      const GURL& first_party_url,
+      const net::CanonicalCookie& cookie,
+      bool blocked_by_policy,
+      bool is_ad_tagged,
+      const net::CookieSettingOverrides& cookie_setting_overrides) = 0;
 
   // Called when a storage access attempt by the origin |url| to |storage_type|
   // is checked by the content settings manager. |blocked_by_policy| is false
@@ -572,10 +576,6 @@ class PageLoadMetricsObserverInterface {
 
   // Called when prefetch is likely to occur in this page load.
   virtual void OnPrefetchLikely() = 0;
-
-  // Called when the page tracked was just activated after being loaded inside a
-  // portal.
-  virtual void DidActivatePortal(base::TimeTicks activation_time) = 0;
 
   // Called when the page tracked was just activated after being prerendered.
   // |navigation_handle| is for the activation navigation.

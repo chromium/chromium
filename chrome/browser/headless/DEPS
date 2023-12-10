@@ -4,6 +4,10 @@ include_rules = [
 ]
 
 specific_include_rules = {
+  "headless_mode_browsertest\.cc": [
+    "+chrome/browser/ui/views/frame/app_menu_button.h",
+    "+chrome/browser/ui/views/frame/toolbar_button_provider.h",
+  ],
   "headless_mode_command_browsertest\.cc": [
     "+pdf",
   ],

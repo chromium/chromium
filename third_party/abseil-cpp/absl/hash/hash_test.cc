@@ -48,6 +48,10 @@
 #include "absl/types/optional.h"
 #include "absl/types/variant.h"
 
+#if ABSL_INTERNAL_CPLUSPLUS_LANG >= 201703L
+#include <filesystem>  // NOLINT
+#endif
+
 #ifdef ABSL_HAVE_STD_STRING_VIEW
 #include <string_view>
 #endif
@@ -477,6 +481,43 @@ TEST(HashValueTest, U32StringView) {
                       std::u32string_view(U"ABC"),
                       std::u32string_view(U"Some other different string_view"),
                       std::u32string_view(U"Iñtërnâtiônàlizætiøn"))));
+#endif
+}
+
+TEST(HashValueTest, StdFilesystemPath) {
+#ifndef ABSL_INTERNAL_STD_FILESYSTEM_PATH_HASH_AVAILABLE
+  GTEST_SKIP() << "std::filesystem::path is unavailable on this platform";
+#else
+  EXPECT_TRUE((is_hashable<std::filesystem::path>::value));
+
+  // clang-format off
+  const auto kTestCases = std::make_tuple(
+      std::filesystem::path(),
+      std::filesystem::path("/"),
+#ifndef __GLIBCXX__
+      // libstdc++ has a known issue normalizing "//".
+      // https://gcc.gnu.org/bugzilla/show_bug.cgi?id=106452
+      std::filesystem::path("//"),
+#endif
+      std::filesystem::path("/a/b"),
+      std::filesystem::path("/a//b"),
+      std::filesystem::path("a/b"),
+      std::filesystem::path("a/b/"),
+      std::filesystem::path("a//b"),
+      std::filesystem::path("a//b/"),
+      std::filesystem::path("c:/"),
+      std::filesystem::path("c:\\"),
+      std::filesystem::path("c:\\/"),
+      std::filesystem::path("c:\\//"),
+      std::filesystem::path("c://"),
+      std::filesystem::path("c://\\"),
+      std::filesystem::path("/e/p"),
+      std::filesystem::path("/s/../e/p"),
+      std::filesystem::path("e/p"),
+      std::filesystem::path("s/../e/p"));
+  // clang-format on
+
+  EXPECT_TRUE(absl::VerifyTypeImplementsAbslHashCorrectly(kTestCases));
 #endif
 }
 

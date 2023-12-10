@@ -10,7 +10,6 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "base/time/time.h"
 #include "chrome/browser/apps/app_service/app_shortcut_item.h"
 
 class Profile;
@@ -51,7 +50,6 @@ class ArcAppShortcutsMenuBuilder {
  private:
   // Bound by |arc_app_shortcuts_request_|'s OnGetAppShortcutItems method.
   void OnGetAppShortcutItems(
-      const base::TimeTicks& start_time,
       std::unique_ptr<ui::SimpleMenuModel> menu_model,
       GetMenuModelCallback callback,
       std::unique_ptr<apps::AppShortcutItems> app_shortcut_items);

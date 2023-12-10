@@ -11,8 +11,8 @@
 #import "base/strings/utf_string_conversions.h"
 #import "components/optimization_guide/core/optimization_metadata.h"
 #import "ios/chrome/browser/commerce/model/price_alert_util.h"
-#import "ios/chrome/browser/optimization_guide/optimization_guide_service.h"
-#import "ios/chrome/browser/optimization_guide/optimization_guide_service_factory.h"
+#import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
+#import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/web/public/navigation/navigation_context.h"
@@ -70,7 +70,7 @@ ShoppingPersistedDataTabHelper::~ShoppingPersistedDataTabHelper() {
 ShoppingPersistedDataTabHelper::PriceDrop::PriceDrop()
     : current_price(nil),
       previous_price(nil),
-      offer_id(absl::nullopt),
+      offer_id(std::nullopt),
       url(GURL(std::string())),
       timestamp(base::Time::UnixEpoch()) {}
 
@@ -232,7 +232,7 @@ ShoppingPersistedDataTabHelper::GetCurrencyFormatter(
 
 void ShoppingPersistedDataTabHelper::ParseProto(
     const GURL& url,
-    const absl::optional<commerce::PriceTrackingData>& price_metadata) {
+    const std::optional<commerce::PriceTrackingData>& price_metadata) {
   if (!price_metadata) {
     return;
   }

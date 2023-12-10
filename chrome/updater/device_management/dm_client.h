@@ -6,13 +6,13 @@
 #define CHROME_UPDATER_DEVICE_MANAGEMENT_DM_CLIENT_H_
 
 #include <memory>
+#include <optional>
 #include <ostream>
 #include <string>
 #include <vector>
 
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 
@@ -138,7 +138,7 @@ class DMClient {
 
   static std::unique_ptr<Configurator> CreateDefaultConfigurator(
       const GURL& server_url,
-      absl::optional<PolicyServiceProxyConfiguration>
+      std::optional<PolicyServiceProxyConfiguration>
           policy_service_proxy_configuration);
 };
 

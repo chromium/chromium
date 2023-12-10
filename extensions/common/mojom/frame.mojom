@@ -6,6 +6,7 @@ module extensions.mojom;
 
 import "mojo/public/mojom/base/uuid.mojom";
 import "extensions/common/mojom/code_injection.mojom";
+import "extensions/common/mojom/context_type.mojom";
 import "extensions/common/mojom/extra_response_data.mojom";
 import "extensions/common/mojom/host_id.mojom";
 import "extensions/common/mojom/injection_type.mojom";
@@ -18,21 +19,6 @@ import "mojo/public/mojom/base/values.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/url.mojom";
 import "third_party/blink/public/mojom/devtools/console_message.mojom";
-
-// The context type associated with a running JS context.
-// This should match the values in Feature::Context.
-enum ContextType {
-  kPrivilegedExtension,
-  kUnprivilegedExtension,
-  kContentScript,
-  kWebPage,
-  kPrivilegedWebPage,
-  kWebUi,
-  kUntrustedWebUi,
-  kLockscreenExtension,
-  kOffscreenExtension,
-  kUserScript,
-};
 
 // Allows an extension to execute code in a tab.
 struct ExecuteCodeParams {

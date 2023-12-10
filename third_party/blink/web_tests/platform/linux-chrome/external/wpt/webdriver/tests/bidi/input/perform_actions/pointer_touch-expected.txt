@@ -1,9 +1,4 @@
 This is a wdspec test.
-[PASS] test_touch_pointer_in_shadow_tree[outer-open]
-[PASS] test_touch_pointer_in_shadow_tree[outer-closed]
-[PASS] test_touch_pointer_in_shadow_tree[inner-open]
-[PASS] test_touch_pointer_in_shadow_tree[inner-closed]
-[PASS] test_touch_pointer_properties
 [FAIL] test_touch_pointer_properties_tilt_twist
   assert 90 == 21
 Harness: the test ran to completion.

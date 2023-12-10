@@ -9,7 +9,7 @@
 
 #include "base/functional/callback.h"
 #include "components/autofill/core/browser/autofill_client.h"
-#include "components/autofill/core/browser/payments/payments_client.h"
+#include "components/autofill/core/browser/payments/payments_network_interface.h"
 #include "components/autofill/core/browser/payments/payments_requests/payments_request.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -27,7 +27,7 @@ namespace payments {
 class UpdateVirtualCardEnrollmentRequest : public PaymentsRequest {
  public:
   UpdateVirtualCardEnrollmentRequest(
-      const PaymentsClient::UpdateVirtualCardEnrollmentRequestDetails&
+      const PaymentsNetworkInterface::UpdateVirtualCardEnrollmentRequestDetails&
           request_details,
       base::OnceCallback<void(AutofillClient::PaymentsRpcResult)> callback);
   UpdateVirtualCardEnrollmentRequest(
@@ -55,7 +55,8 @@ class UpdateVirtualCardEnrollmentRequest : public PaymentsRequest {
   // the fields needed for an Unenroll request.
   void BuildUnenrollRequestDictionary(base::Value::Dict* request_dict);
 
-  PaymentsClient::UpdateVirtualCardEnrollmentRequestDetails request_details_;
+  PaymentsNetworkInterface::UpdateVirtualCardEnrollmentRequestDetails
+      request_details_;
   base::OnceCallback<void(AutofillClient::PaymentsRpcResult)> callback_;
   absl::optional<std::string> enroll_result_;
 };

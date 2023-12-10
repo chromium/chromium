@@ -37,7 +37,7 @@ export class Options implements CameraUI {
   private readonly openPTZPanel = dom.get('#open-ptz-panel', HTMLButtonElement);
 
   private readonly switchDeviceButton =
-      dom.get('#switch-device', HTMLButtonElement);
+      dom.get('switch-device-button', HTMLElement);
 
   /**
    * CameraConfig of the camera device currently used or selected.
@@ -62,7 +62,7 @@ export class Options implements CameraUI {
       }
       const switching = this.cameraManager.switchCamera();
       if (switching !== null) {
-        animate.play(dom.get('#switch-device', HTMLElement));
+        animate.play(this.switchDeviceButton);
       }
     });
     dom.get('#open-settings', HTMLButtonElement)

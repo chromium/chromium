@@ -5,7 +5,7 @@
 #include "content/browser/aggregation_service/aggregation_service_key_fetcher.h"
 
 #include <memory>
-#include <tuple>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -22,7 +22,6 @@
 #include "content/browser/aggregation_service/public_key.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -108,7 +107,7 @@ TEST_F(AggregationServiceKeyFetcherTest, GetPublicKeysFromStorage_Succeed) {
 
   base::RunLoop run_loop;
   EXPECT_CALL(callback_,
-              Run(absl::optional<PublicKey>(std::move(expected_key)),
+              Run(std::optional<PublicKey>(std::move(expected_key)),
                   AggregationServiceKeyFetcher::PublicKeyFetchStatus::kOk))
       .WillOnce(base::test::RunOnceClosure(run_loop.QuitClosure()));
   fetcher_->GetPublicKey(url, callback_.Get());
@@ -122,8 +121,8 @@ TEST_F(AggregationServiceKeyFetcherTest, GetPublicKeysWithNoKeysForUrl_Failed) {
   EXPECT_CALL(*network_fetcher_, FetchPublicKeys(url, _))
       .WillOnce(
           testing::DoAll(base::test::RunOnceClosure(run_loop.QuitClosure()),
-                         base::test::RunOnceCallback<1>(absl::nullopt)));
-  EXPECT_CALL(callback_, Run(absl::optional<PublicKey>(absl::nullopt),
+                         base::test::RunOnceCallback<1>(std::nullopt)));
+  EXPECT_CALL(callback_, Run(std::optional<PublicKey>(std::nullopt),
                              AggregationServiceKeyFetcher::
                                  PublicKeyFetchStatus::kPublicKeyFetchFailed));
 
@@ -143,7 +142,7 @@ TEST_F(AggregationServiceKeyFetcherTest, FetchPublicKeysFromNetwork_Succeed) {
               /*keys=*/{expected_key}, /*fetch_time=*/clock().Now(),
               /*expiry_time=*/base::Time::Max()))));
   EXPECT_CALL(callback_,
-              Run(absl::optional<PublicKey>(expected_key),
+              Run(std::optional<PublicKey>(expected_key),
                   AggregationServiceKeyFetcher::PublicKeyFetchStatus::kOk));
 
   fetcher_->GetPublicKey(url, callback_.Get());
@@ -167,7 +166,7 @@ TEST_F(AggregationServiceKeyFetcherTest,
                                           /*fetch_time=*/clock().Now(),
                                           /*expiry_time=*/base::Time()))));
   EXPECT_CALL(callback_,
-              Run(absl::optional<PublicKey>(std::move(expected_key)),
+              Run(std::optional<PublicKey>(std::move(expected_key)),
                   AggregationServiceKeyFetcher::PublicKeyFetchStatus::kOk));
 
   fetcher_->GetPublicKey(url, callback_.Get());
@@ -193,8 +192,8 @@ TEST_F(AggregationServiceKeyFetcherTest,
   EXPECT_CALL(*network_fetcher_, FetchPublicKeys(url, _))
       .WillOnce(
           testing::DoAll(base::test::RunOnceClosure(run_loop.QuitClosure()),
-                         base::test::RunOnceCallback<1>(absl::nullopt)));
-  EXPECT_CALL(callback_, Run(absl::optional<PublicKey>(absl::nullopt),
+                         base::test::RunOnceCallback<1>(std::nullopt)));
+  EXPECT_CALL(callback_, Run(std::optional<PublicKey>(std::nullopt),
                              AggregationServiceKeyFetcher::
                                  PublicKeyFetchStatus::kPublicKeyFetchFailed));
 
@@ -219,7 +218,7 @@ TEST_F(AggregationServiceKeyFetcherTest,
                                           /*fetch_time=*/clock().Now(),
                                           /*expiry_time=*/base::Time::Max()))));
   EXPECT_CALL(callback_,
-              Run(absl::optional<PublicKey>(std::move(expected_key)),
+              Run(std::optional<PublicKey>(std::move(expected_key)),
                   AggregationServiceKeyFetcher::PublicKeyFetchStatus::kOk))
       .Times(10);
 
@@ -237,8 +236,8 @@ TEST_F(AggregationServiceKeyFetcherTest,
   EXPECT_CALL(*network_fetcher_, FetchPublicKeys(url, _))
       .WillOnce(
           testing::DoAll(base::test::RunOnceClosure(run_loop.QuitClosure()),
-                         base::test::RunOnceCallback<1>(absl::nullopt)));
-  EXPECT_CALL(callback_, Run(absl::optional<PublicKey>(absl::nullopt),
+                         base::test::RunOnceCallback<1>(std::nullopt)));
+  EXPECT_CALL(callback_, Run(std::optional<PublicKey>(std::nullopt),
                              AggregationServiceKeyFetcher::
                                  PublicKeyFetchStatus::kPublicKeyFetchFailed))
       .Times(10);

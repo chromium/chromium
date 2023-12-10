@@ -15,16 +15,20 @@ namespace content {
 TestStoragePartition::TestStoragePartition() {}
 TestStoragePartition::~TestStoragePartition() {}
 
-const StoragePartitionConfig& TestStoragePartition::GetConfig() {
+const StoragePartitionConfig& TestStoragePartition::GetConfig() const {
   return config_;
 }
 
-base::FilePath TestStoragePartition::GetPath() {
+const base::FilePath& TestStoragePartition::GetPath() const {
   return file_path_;
 }
 
 network::mojom::NetworkContext* TestStoragePartition::GetNetworkContext() {
   return network_context_;
+}
+cert_verifier::mojom::CertVerifierServiceUpdater*
+TestStoragePartition::GetCertVerifierServiceUpdater() {
+  return nullptr;
 }
 
 storage::SharedStorageManager* TestStoragePartition::GetSharedStorageManager() {
@@ -248,6 +252,8 @@ int TestStoragePartition::GetDataRemovalObserverCount() {
 void TestStoragePartition::ClearBluetoothAllowedDevicesMapForTesting() {}
 
 void TestStoragePartition::FlushNetworkInterfaceForTesting() {}
+
+void TestStoragePartition::FlushCertVerifierInterfaceForTesting() {}
 
 void TestStoragePartition::WaitForDeletionTasksForTesting() {}
 

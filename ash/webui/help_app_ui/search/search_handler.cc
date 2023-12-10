@@ -198,7 +198,7 @@ void SearchHandler::OnFindComplete(
     SearchCallback callback,
     uint32_t max_num_results,
     local_search_service::ResponseStatus response_status,
-    const absl::optional<std::vector<local_search_service::Result>>&
+    const std::optional<std::vector<local_search_service::Result>>&
         local_search_service_results) {
   if (response_status != local_search_service::ResponseStatus::kSuccess) {
     LogSearchResultStatus(

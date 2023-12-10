@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/containers/span.h"
 #include "base/rand_util.h"
+#include "base/ranges/algorithm.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/sync/test/integration/multi_client_status_change_checker.h"
 #include "chrome/browser/sync/test/integration/secondary_account_helper.h"
@@ -13,6 +15,7 @@
 #include "chrome/browser/sync/test/integration/webauthn_credentials_helper.h"
 #include "chrome/browser/ui/browser.h"
 #include "components/password_manager/core/browser/features/password_manager_features_util.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
@@ -23,8 +26,10 @@
 #include "components/sync/protocol/webauthn_credential_specifics.pb.h"
 #include "components/webauthn/core/browser/passkey_model.h"
 #include "components/webauthn/core/browser/passkey_model_change.h"
+#include "components/webauthn/core/browser/passkey_model_utils.h"
 #include "components/webauthn/core/browser/passkey_sync_bridge.h"
 #include "content/public/test/browser_test.h"
+#include "crypto/ec_private_key.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace {
@@ -36,6 +41,7 @@ using testing::UnorderedElementsAre;
 using webauthn_credentials_helper::EntityHasDisplayName;
 using webauthn_credentials_helper::EntityHasSyncId;
 using webauthn_credentials_helper::EntityHasUsername;
+using webauthn_credentials_helper::kTestRpId;
 using webauthn_credentials_helper::LocalPasskeysChangedChecker;
 using webauthn_credentials_helper::LocalPasskeysMatchChecker;
 using webauthn_credentials_helper::MockPasskeyModelObserver;
@@ -43,7 +49,10 @@ using webauthn_credentials_helper::NewPasskey;
 using webauthn_credentials_helper::NewShadowingPasskey;
 using webauthn_credentials_helper::PasskeyChangeObservationChecker;
 using webauthn_credentials_helper::PasskeyHasDisplayName;
+using webauthn_credentials_helper::PasskeyHasRpId;
 using webauthn_credentials_helper::PasskeyHasSyncId;
+using webauthn_credentials_helper::PasskeyHasUserId;
+using webauthn_credentials_helper::PasskeySpecificsEq;
 using webauthn_credentials_helper::PasskeySyncActiveChecker;
 using webauthn_credentials_helper::ServerPasskeysMatchChecker;
 
@@ -52,6 +61,32 @@ constexpr char kUsername1[] = "anya";
 constexpr char kDisplayName1[] = "Anya Forger";
 constexpr char kUsername2[] = "yor";
 constexpr char kDisplayName2[] = "Yor Forger";
+
+static const webauthn::PasskeyModel::UserEntity kTestUser(
+    std::vector<uint8_t>{1, 2, 3},
+    "user@example.com",
+    "Example User");
+
+constexpr std::array<uint8_t, 32> kTrustedVaultKey = {
+    0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
+    0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
+
+constexpr int32_t kTrustedVaultKeyVersion = 23;
+
+bool PublicKeyForPasskeyEquals(
+    const sync_pb::WebauthnCredentialSpecifics& passkey,
+    base::span<const uint8_t> trusted_vault_key,
+    base::span<const uint8_t> expected_spki) {
+  sync_pb::WebauthnCredentialSpecifics_Encrypted encrypted_data;
+  CHECK(webauthn::passkey_model_utils::DecryptWebauthnCredentialSpecificsData(
+      trusted_vault_key, passkey, &encrypted_data));
+  auto ec_key = crypto::ECPrivateKey::CreateFromPrivateKeyInfo(
+      base::as_bytes(base::make_span(encrypted_data.private_key())));
+  CHECK(ec_key);
+  std::vector<uint8_t> ec_key_pub;
+  CHECK(ec_key->ExportPublicKey(&ec_key_pub));
+  return base::ranges::equal(ec_key_pub, expected_spki);
+}
 
 std::unique_ptr<syncer::PersistentUniqueClientEntity>
 CreateEntityWithCustomClientTagHash(
@@ -69,7 +104,10 @@ CreateEntityWithCustomClientTagHash(
 
 class SingleClientWebAuthnCredentialsSyncTest : public SyncTest {
  public:
-  SingleClientWebAuthnCredentialsSyncTest() : SyncTest(SINGLE_CLIENT) {}
+  SingleClientWebAuthnCredentialsSyncTest() : SyncTest(SINGLE_CLIENT) {
+    feature_list_.InitAndDisableFeature(switches::kUnoDesktop);
+  }
+
   ~SingleClientWebAuthnCredentialsSyncTest() override = default;
 
   // Injects a new WEBAUTHN_CREDENTIAL type server entity and returns the
@@ -106,6 +144,9 @@ class SingleClientWebAuthnCredentialsSyncTest : public SyncTest {
   webauthn::PasskeySyncBridge& GetModel() {
     return webauthn_credentials_helper::GetModel(kSingleProfile);
   }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // Adding a local passkey should sync to the server.
@@ -117,6 +158,147 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
   EXPECT_TRUE(
       ServerPasskeysMatchChecker(UnorderedElementsAre(EntityHasSyncId(sync_id)))
           .Wait());
+
+  // The client tag hash used should follow sync's usual rules. (Android's
+  // implementation of passkeys uses a different client tag hash format.)
+  std::vector<sync_pb::SyncEntity> entities =
+      fake_server_->GetSyncEntitiesByModelType(syncer::WEBAUTHN_CREDENTIAL);
+  EXPECT_EQ(entities.size(), 1u);
+  EXPECT_EQ(entities.front().specifics().webauthn_credential().sync_id(),
+            sync_id);
+  EXPECT_EQ(entities.front().client_tag_hash(),
+            syncer::ClientTagHash::FromUnhashed(
+                syncer::WEBAUTHN_CREDENTIAL,
+                entities.front().specifics().webauthn_credential().sync_id())
+                .value());
+}
+
+// CreatePasskey should create a new passkey entity and upload it to the server.
+IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest, CreatePasskey) {
+  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+
+  std::vector<uint8_t> public_key_spki_der;
+  const sync_pb::WebauthnCredentialSpecifics passkey =
+      GetModel().CreatePasskey(kTestRpId, kTestUser, kTrustedVaultKey,
+                               kTrustedVaultKeyVersion, &public_key_spki_der);
+
+  EXPECT_TRUE(ServerPasskeysMatchChecker(
+                  UnorderedElementsAre(EntityHasSyncId(passkey.sync_id())))
+                  .Wait());
+
+  EXPECT_THAT(GetModel().GetAllPasskeys().at(0), PasskeySpecificsEq(passkey));
+
+  EXPECT_THAT(passkey, PasskeyHasRpId(kTestRpId));
+  const std::string expected_user_id(
+      reinterpret_cast<const char*>(kTestUser.id.data()), kTestUser.id.size());
+  EXPECT_THAT(passkey, PasskeyHasUserId(expected_user_id));
+  EXPECT_TRUE(PublicKeyForPasskeyEquals(passkey, kTrustedVaultKey,
+                                        public_key_spki_der));
+}
+
+// Creating a new passkey should shadow passkeys for the same (RP ID, user ID).
+IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
+                       CreatePasskeyWithShadows) {
+  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+
+  sync_pb::WebauthnCredentialSpecifics passkey1a = NewPasskey();
+  sync_pb::WebauthnCredentialSpecifics passkey1b = NewPasskey();
+  // Make 1a shadow 1b implicitly, i.e. without setting
+  // newly_shadowed_credential_ids.
+  ASSERT_EQ(passkey1a.rp_id(), passkey1b.rp_id());
+  passkey1b.set_user_id(passkey1a.user_id());
+  // Add another that shadows 1b explicitly.
+  sync_pb::WebauthnCredentialSpecifics passkey1c =
+      NewShadowingPasskey(passkey1b);
+  // These shouldn't shadow anything.
+  sync_pb::WebauthnCredentialSpecifics passkey2 = NewPasskey();
+  passkey2.set_rp_id("rpid2.com");
+  passkey2.set_user_id(passkey1a.user_id());
+  sync_pb::WebauthnCredentialSpecifics passkey3 = NewPasskey();
+
+  GetModel().AddNewPasskeyForTesting(passkey1a);
+  GetModel().AddNewPasskeyForTesting(passkey1b);
+  GetModel().AddNewPasskeyForTesting(passkey1c);
+  GetModel().AddNewPasskeyForTesting(passkey2);
+  GetModel().AddNewPasskeyForTesting(passkey3);
+
+  // Invoking CreatePasskey() for the given RP ID should shadow 1a, 1c and 1c,
+  // but not 2 or 3 (different RP or user ID).
+  auto user_id = base::as_byte_span(passkey1a.user_id());
+  sync_pb::WebauthnCredentialSpecifics new_passkey =
+      GetModel().CreatePasskey(passkey1a.rp_id(),
+                               webauthn::PasskeyModel::UserEntity(
+                                   {user_id.begin(), user_id.end()}, "", ""),
+                               kTrustedVaultKey, kTrustedVaultKeyVersion,
+                               /*public_key_spki_der_out=*/nullptr);
+
+  EXPECT_THAT(
+      new_passkey.newly_shadowed_credential_ids(),
+      UnorderedElementsAre(passkey1a.credential_id(), passkey1b.credential_id(),
+                           passkey1c.credential_id()));
+  EXPECT_THAT(GetModel().GetPasskeysForRelyingPartyId(passkey1a.rp_id()),
+              UnorderedElementsAre(PasskeyHasSyncId(passkey3.sync_id()),
+                                   PasskeyHasSyncId(new_passkey.sync_id())));
+  EXPECT_THAT(GetModel().GetPasskeysForRelyingPartyId(passkey2.rp_id()),
+              UnorderedElementsAre(PasskeyHasSyncId(passkey2.sync_id())));
+}
+
+// Tests CreatePasskey from a pre-constructed WebAuthnCredentialSpecifics.
+IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
+                       CreatePasskeyFromEntity) {
+  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+
+  sync_pb::WebauthnCredentialSpecifics passkey = NewPasskey();
+  GetModel().CreatePasskey(passkey);
+
+  EXPECT_TRUE(ServerPasskeysMatchChecker(
+                  UnorderedElementsAre(EntityHasSyncId(passkey.sync_id())))
+                  .Wait());
+  EXPECT_THAT(GetModel().GetAllPasskeys().at(0), PasskeySpecificsEq(passkey));
+  EXPECT_THAT(passkey, PasskeyHasRpId(kTestRpId));
+}
+
+// Tests CreatePasskey from a pre-constructed WebAuthnCredentialSpecifics with
+// shadow passkeys being added.
+IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
+                       CreatePasskeyFromEntityWithShadows) {
+  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+
+  sync_pb::WebauthnCredentialSpecifics passkey1a = NewPasskey();
+  sync_pb::WebauthnCredentialSpecifics passkey1b = NewPasskey();
+  // Make 1a shadow 1b implicitly, i.e. without setting
+  // newly_shadowed_credential_ids.
+  passkey1b.set_user_id(passkey1a.user_id());
+  // Add another that shadows 1b explicitly.
+  sync_pb::WebauthnCredentialSpecifics passkey1c =
+      NewShadowingPasskey(passkey1b);
+  // These shouldn't shadow anything.
+  sync_pb::WebauthnCredentialSpecifics passkey2 = NewPasskey();
+  passkey2.set_rp_id("rpid2.com");
+  passkey2.set_user_id(passkey1a.user_id());
+  sync_pb::WebauthnCredentialSpecifics passkey3 = NewPasskey();
+
+  GetModel().AddNewPasskeyForTesting(passkey1a);
+  GetModel().AddNewPasskeyForTesting(passkey1b);
+  GetModel().AddNewPasskeyForTesting(passkey1c);
+  GetModel().AddNewPasskeyForTesting(passkey2);
+  GetModel().AddNewPasskeyForTesting(passkey3);
+
+  // Invoking CreatePasskey() for the given RP ID should shadow 1a, 1b and 1c,
+  // but not 2 or 3 (different RP or user ID).
+  sync_pb::WebauthnCredentialSpecifics new_passkey = NewPasskey();
+  new_passkey.set_user_id(passkey1a.user_id());
+  GetModel().CreatePasskey(new_passkey);
+
+  EXPECT_THAT(
+      new_passkey.newly_shadowed_credential_ids(),
+      UnorderedElementsAre(passkey1a.credential_id(), passkey1b.credential_id(),
+                           passkey1c.credential_id()));
+  EXPECT_THAT(GetModel().GetPasskeysForRelyingPartyId(passkey1a.rp_id()),
+              UnorderedElementsAre(PasskeyHasSyncId(passkey3.sync_id()),
+                                   PasskeyHasSyncId(new_passkey.sync_id())));
+  EXPECT_THAT(GetModel().GetPasskeysForRelyingPartyId(passkey2.rp_id()),
+              UnorderedElementsAre(PasskeyHasSyncId(passkey2.sync_id())));
 }
 
 // Adding a remote passkey should sync to the client.

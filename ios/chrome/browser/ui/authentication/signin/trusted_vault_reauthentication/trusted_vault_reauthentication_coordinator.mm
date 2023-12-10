@@ -10,10 +10,10 @@
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/signin/authentication_service.h"
-#import "ios/chrome/browser/signin/authentication_service_factory.h"
-#import "ios/chrome/browser/signin/trusted_vault_client_backend.h"
-#import "ios/chrome/browser/signin/trusted_vault_client_backend_factory.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/trusted_vault_client_backend.h"
+#import "ios/chrome/browser/signin/model/trusted_vault_client_backend_factory.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_coordinator+protected.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -36,10 +36,13 @@ using l10n_util::GetNSStringF;
     initWithBaseViewController:(UIViewController*)viewController
                        browser:(Browser*)browser
                         intent:(SigninTrustedVaultDialogIntent)intent
-                       trigger:(syncer::TrustedVaultUserActionTriggerForUMA)
-                                   trigger {
+                       trigger:
+                           (syncer::TrustedVaultUserActionTriggerForUMA)trigger
+                   accessPoint:(signin_metrics::AccessPoint)accessPoint {
   DCHECK(!browser->GetBrowserState()->IsOffTheRecord());
-  self = [super initWithBaseViewController:viewController browser:browser];
+  self = [super initWithBaseViewController:viewController
+                                   browser:browser
+                               accessPoint:accessPoint];
   if (self) {
     _intent = intent;
     switch (intent) {

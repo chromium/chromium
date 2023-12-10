@@ -535,7 +535,7 @@ more of the stack trace and crash report logs...
 
 
 def _xcresulttool_get_side_effect(xcresult_path, ref_id=None):
-  """Side effect for _xcresulttool_get in Xcode11LogParser tested."""
+  """Side effect for _xcresulttool_get in XcodeLogParser tested."""
   if ref_id is None:
     return XCRESULT_ROOT
   if ref_id == 'testsRef':
@@ -580,29 +580,17 @@ class UtilMethodsTest(test_runner_test.TestCase):
         self.assertEqual(result.test_log, expected_failed_message)
 
 
-class XCode11LogParserTest(test_runner_test.TestCase):
-  """Test case to test Xcode11LogParser."""
+class XcodeLogParserTest(test_runner_test.TestCase):
+  """Test case to test XcodeLogParser."""
 
   def setUp(self):
-    super(XCode11LogParserTest, self).setUp()
+    super(XcodeLogParserTest, self).setUp()
     self.mock(test_runner, 'get_current_xcode_info', lambda: XCODE11_DICT)
-
-  @mock.patch('xcode_util.version', autospec=True)
-  def testGetParser(self, mock_xcode_version):
-    mock_xcode_version.return_value = ('12.0', '12A7209')
-    self.assertEqual(xcode_log_parser.get_parser().__class__.__name__,
-        'Xcode11LogParser')
-    mock_xcode_version.return_value = ('11.4', '11E146')
-    self.assertEqual(xcode_log_parser.get_parser().__class__.__name__,
-        'Xcode11LogParser')
-    mock_xcode_version.return_value = ('10.3', '10G8')
-    self.assertEqual(xcode_log_parser.get_parser().__class__.__name__,
-        'XcodeLogParser')
 
   @mock.patch('subprocess.check_output', autospec=True)
   def testXcresulttoolGetRoot(self, mock_process):
     mock_process.return_value = b'%JSON%'
-    xcode_log_parser.Xcode11LogParser()._xcresulttool_get('xcresult_path')
+    xcode_log_parser.XcodeLogParser()._xcresulttool_get('xcresult_path')
     self.assertTrue(
         os.path.join(XCODE11_DICT['path'], 'usr', 'bin') in os.environ['PATH'])
     self.assertEqual(
@@ -612,7 +600,7 @@ class XCode11LogParserTest(test_runner_test.TestCase):
   @mock.patch('subprocess.check_output', autospec=True)
   def testXcresulttoolGetRef(self, mock_process):
     mock_process.side_effect = [REF_ID, b'JSON']
-    xcode_log_parser.Xcode11LogParser()._xcresulttool_get('xcresult_path',
+    xcode_log_parser.XcodeLogParser()._xcresulttool_get('xcresult_path',
                                                           'testsRef')
     self.assertEqual(
         ['xcresulttool', 'get', '--format', 'json', '--path', 'xcresult_path'],
@@ -627,7 +615,7 @@ class XCode11LogParserTest(test_runner_test.TestCase):
         'CharacterRangeLen=0&EndingLineNumber=130&StartingLineNumber=130\n'
         'Fail. Screenshots: {\n\"Failure\": \"path.png\"\n}')
     expected = set(['PageStateTestCase/testZeroContentOffsetAfterLoad'])
-    results = xcode_log_parser.Xcode11LogParser()._list_of_failed_tests(
+    results = xcode_log_parser.XcodeLogParser()._list_of_failed_tests(
         json.loads(XCRESULT_ROOT))
     self.assertEqual(expected, results.failed_tests())
     log = results.test_results[0].test_log
@@ -635,12 +623,12 @@ class XCode11LogParserTest(test_runner_test.TestCase):
 
   def testXcresulttoolListFailedTestsExclude(self):
     excluded = set(['PageStateTestCase/testZeroContentOffsetAfterLoad'])
-    results = xcode_log_parser.Xcode11LogParser()._list_of_failed_tests(
+    results = xcode_log_parser.XcodeLogParser()._list_of_failed_tests(
         json.loads(XCRESULT_ROOT), excluded=excluded)
     self.assertEqual(set([]), results.all_test_names())
 
-  @mock.patch('xcode_log_parser.Xcode11LogParser._export_data')
-  @mock.patch('xcode_log_parser.Xcode11LogParser._xcresulttool_get')
+  @mock.patch('xcode_log_parser.XcodeLogParser._export_data')
+  @mock.patch('xcode_log_parser.XcodeLogParser._xcresulttool_get')
   def testGetTestStatuses(self, mock_xcresult, mock_export):
     mock_xcresult.side_effect = _xcresulttool_get_side_effect
     #   self.assertEqual(test_result.test_log, lo
@@ -655,7 +643,7 @@ class XCode11LogParserTest(test_runner_test.TestCase):
         'PageStateTestCase/testMethod1', 'PageStateTestCase/testMethod2',
         'PageStateTestCase/testMethod3'
     ])
-    results = xcode_log_parser.Xcode11LogParser()._get_test_statuses(
+    results = xcode_log_parser.XcodeLogParser()._get_test_statuses(
         OUTPUT_PATH)
     self.assertEqual(expected_expected_tests, results.expected_tests())
     seen_failed_test = False
@@ -687,10 +675,10 @@ class XCode11LogParserTest(test_runner_test.TestCase):
     self.assertTrue(seen_failed_test)
 
   @mock.patch('file_util.zip_and_remove_folder')
-  @mock.patch('xcode_log_parser.Xcode11LogParser._extract_artifacts_for_test')
-  @mock.patch('xcode_log_parser.Xcode11LogParser.export_diagnostic_data')
+  @mock.patch('xcode_log_parser.XcodeLogParser._extract_artifacts_for_test')
+  @mock.patch('xcode_log_parser.XcodeLogParser.export_diagnostic_data')
   @mock.patch('os.path.exists', autospec=True)
-  @mock.patch('xcode_log_parser.Xcode11LogParser._xcresulttool_get')
+  @mock.patch('xcode_log_parser.XcodeLogParser._xcresulttool_get')
   def testCollectTestTesults(self, mock_root, mock_exist_file, *args):
     expected_passed = set([
         'PageStateTestCase/testMethod1', 'PageStateTestCase/testMethod2',
@@ -700,7 +688,7 @@ class XCode11LogParserTest(test_runner_test.TestCase):
 
     mock_root.side_effect = _xcresulttool_get_side_effect
     mock_exist_file.return_value = True
-    results = xcode_log_parser.Xcode11LogParser().collect_test_results(
+    results = xcode_log_parser.XcodeLogParser().collect_test_results(
         OUTPUT_PATH, [])
 
     # Length ensures no duplicate results from |_get_test_statuses| and
@@ -715,15 +703,15 @@ class XCode11LogParserTest(test_runner_test.TestCase):
         self.assertTrue(isinstance(test.test_log, str))
 
   @mock.patch('file_util.zip_and_remove_folder')
-  @mock.patch('xcode_log_parser.Xcode11LogParser.copy_artifacts')
-  @mock.patch('xcode_log_parser.Xcode11LogParser.export_diagnostic_data')
+  @mock.patch('xcode_log_parser.XcodeLogParser.copy_artifacts')
+  @mock.patch('xcode_log_parser.XcodeLogParser.export_diagnostic_data')
   @mock.patch('os.path.exists', autospec=True)
-  @mock.patch('xcode_log_parser.Xcode11LogParser._xcresulttool_get')
+  @mock.patch('xcode_log_parser.XcodeLogParser._xcresulttool_get')
   def testCollectTestsRanZeroTests(self, mock_root, mock_exist_file, *args):
     metrics_json = '{"actions": {}}'
     mock_root.return_value = metrics_json
     mock_exist_file.return_value = True
-    results = xcode_log_parser.Xcode11LogParser().collect_test_results(
+    results = xcode_log_parser.XcodeLogParser().collect_test_results(
         OUTPUT_PATH, [])
     self.assertTrue(results.crashed)
     self.assertEqual(results.crash_message, '0 tests executed!')
@@ -732,7 +720,7 @@ class XCode11LogParserTest(test_runner_test.TestCase):
   @mock.patch('os.path.exists', autospec=True)
   def testCollectTestsDidNotRun(self, mock_exist_file):
     mock_exist_file.return_value = False
-    results = xcode_log_parser.Xcode11LogParser().collect_test_results(
+    results = xcode_log_parser.XcodeLogParser().collect_test_results(
         OUTPUT_PATH, [])
     self.assertTrue(results.crashed)
     self.assertEqual(results.crash_message,
@@ -742,7 +730,7 @@ class XCode11LogParserTest(test_runner_test.TestCase):
   @mock.patch('os.path.exists', autospec=True)
   def testCollectTestsInterruptedRun(self, mock_exist_file):
     mock_exist_file.side_effect = [True, False]
-    results = xcode_log_parser.Xcode11LogParser().collect_test_results(
+    results = xcode_log_parser.XcodeLogParser().collect_test_results(
         OUTPUT_PATH, [])
     self.assertTrue(results.crashed)
     self.assertEqual(
@@ -752,12 +740,12 @@ class XCode11LogParserTest(test_runner_test.TestCase):
 
   @mock.patch('subprocess.check_output', autospec=True)
   @mock.patch('os.path.exists', autospec=True)
-  @mock.patch('xcode_log_parser.Xcode11LogParser._xcresulttool_get')
+  @mock.patch('xcode_log_parser.XcodeLogParser._xcresulttool_get')
   def testCopyScreenshots(self, mock_xcresulttool_get, mock_path_exists,
                           mock_process):
     mock_path_exists.return_value = True
     mock_xcresulttool_get.side_effect = _xcresulttool_get_side_effect
-    xcode_log_parser.Xcode11LogParser().copy_artifacts(OUTPUT_PATH)
+    xcode_log_parser.XcodeLogParser().copy_artifacts(OUTPUT_PATH)
     mock_process.assert_any_call([
         'xcresulttool', 'export', '--type', 'file', '--id',
         'SCREENSHOT_REF_ID_IN_FAILURE_SUMMARIES', '--path', XCRESULT_PATH,
@@ -779,12 +767,12 @@ class XCode11LogParserTest(test_runner_test.TestCase):
   @mock.patch('file_util.zip_and_remove_folder')
   @mock.patch('subprocess.check_output', autospec=True)
   @mock.patch('os.path.exists', autospec=True)
-  @mock.patch('xcode_log_parser.Xcode11LogParser._xcresulttool_get')
+  @mock.patch('xcode_log_parser.XcodeLogParser._xcresulttool_get')
   def testExportDiagnosticData(self, mock_xcresulttool_get, mock_path_exists,
                                mock_process, _):
     mock_path_exists.return_value = True
     mock_xcresulttool_get.side_effect = _xcresulttool_get_side_effect
-    xcode_log_parser.Xcode11LogParser.export_diagnostic_data(OUTPUT_PATH)
+    xcode_log_parser.XcodeLogParser.export_diagnostic_data(OUTPUT_PATH)
     mock_process.assert_called_with([
         'xcresulttool', 'export', '--type', 'directory', '--id',
         'DIAGNOSTICS_REF_ID', '--path', XCRESULT_PATH, '--output-path',
@@ -795,7 +783,7 @@ class XCode11LogParserTest(test_runner_test.TestCase):
   @mock.patch('shutil.copy')
   @mock.patch('subprocess.check_output', autospec=True)
   @mock.patch('os.path.exists', autospec=True)
-  @mock.patch('xcode_log_parser.Xcode11LogParser._xcresulttool_get')
+  @mock.patch('xcode_log_parser.XcodeLogParser._xcresulttool_get')
   def testStdoutCopiedInExportDiagnosticData(self, mock_xcresulttool_get,
                                              mock_path_exists, mock_process,
                                              mock_copy, _):
@@ -803,7 +791,7 @@ class XCode11LogParserTest(test_runner_test.TestCase):
     xcresult_path_in_test = 'test_data/attempt_0.xcresult'
     mock_path_exists.return_value = True
     mock_xcresulttool_get.side_effect = _xcresulttool_get_side_effect
-    xcode_log_parser.Xcode11LogParser.export_diagnostic_data(
+    xcode_log_parser.XcodeLogParser.export_diagnostic_data(
         output_path_in_test)
     # os.walk() walks folders in unknown sequence. Use try-except blocks to
     # assert that any of the 2 assertions is true.
@@ -838,7 +826,7 @@ class XCode11LogParserTest(test_runner_test.TestCase):
         '** BUILD INTERRUPTED **',
     ]
     not_found_message = ['%s with test results does not exist.' % XCRESULT_PATH]
-    res = xcode_log_parser.Xcode11LogParser().collect_test_results(
+    res = xcode_log_parser.XcodeLogParser().collect_test_results(
         OUTPUT_PATH, output)
     self.assertTrue(res.crashed)
     self.assertEqual('\n'.join(not_found_message + output), res.crash_message)
@@ -846,17 +834,17 @@ class XCode11LogParserTest(test_runner_test.TestCase):
         set(['TestCase1/method1', 'TestCase2/method1']), res.expected_tests())
 
   @mock.patch('file_util.zip_and_remove_folder')
-  @mock.patch('xcode_log_parser.Xcode11LogParser._extract_artifacts_for_test')
-  @mock.patch('xcode_log_parser.Xcode11LogParser.export_diagnostic_data')
+  @mock.patch('xcode_log_parser.XcodeLogParser._extract_artifacts_for_test')
+  @mock.patch('xcode_log_parser.XcodeLogParser.export_diagnostic_data')
   @mock.patch('os.path.exists', autospec=True)
-  @mock.patch('xcode_log_parser.Xcode11LogParser._xcresulttool_get')
-  @mock.patch('xcode_log_parser.Xcode11LogParser._list_of_failed_tests')
+  @mock.patch('xcode_log_parser.XcodeLogParser._xcresulttool_get')
+  @mock.patch('xcode_log_parser.XcodeLogParser._list_of_failed_tests')
   def testArtifactsDiagnosticLogsExportedInCollectTestTesults(
       self, mock_get_failed_tests, mock_root, mock_exist_file,
       mock_export_diagnostic_data, mock_extract_artifacts, mock_zip):
     mock_root.side_effect = _xcresulttool_get_side_effect
     mock_exist_file.return_value = True
-    xcode_log_parser.Xcode11LogParser().collect_test_results(OUTPUT_PATH, [])
+    xcode_log_parser.XcodeLogParser().collect_test_results(OUTPUT_PATH, [])
     mock_export_diagnostic_data.assert_called_with(OUTPUT_PATH)
     mock_extract_artifacts.assert_called()
 
@@ -872,7 +860,7 @@ class XCode11LogParserTest(test_runner_test.TestCase):
         'attempt_0_simulator#0_StandardOutputAndStandardError.txt',
     ]
     app_side_failure_message = \
-      xcode_log_parser.Xcode11LogParser()._get_app_side_failure(
+      xcode_log_parser.XcodeLogParser()._get_app_side_failure(
         test_name, OUTPUT_PATH)
     self.assertEqual(app_side_failure_message, APP_SIDE_FAILURE_LOG_EXPECTED)
 

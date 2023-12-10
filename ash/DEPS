@@ -15,6 +15,7 @@ include_rules = [
   "+components/language/core/browser/pref_names.h",
   "+components/live_caption",
   "+components/media_message_center",
+  "+components/metrics/structured/structured_events.h",
   "+components/pref_registry",
   "+components/prefs",
   "+components/quirks",

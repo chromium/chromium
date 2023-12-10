@@ -84,6 +84,8 @@ std::u16string GetGhostWindowAppLaunchAodString() {
 }
 
 class Throbber : public views::View {
+  METADATA_HEADER(Throbber, views::View)
+
  public:
   explicit Throbber(uint32_t color) : color_(color) {
     start_time_ = base::TimeTicks::Now();
@@ -110,6 +112,9 @@ class Throbber : public views::View {
   base::TimeTicks start_time_;  // Time when Start was called.
   base::RepeatingTimer timer_;  // Used to schedule Run calls.
 };
+
+BEGIN_METADATA(Throbber)
+END_METADATA
 
 }  // namespace
 

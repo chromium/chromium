@@ -16,6 +16,8 @@
 #include "gpu/command_buffer/service/dxgi_shared_handle_manager.h"
 #include "gpu/command_buffer/service/mailbox_manager.h"
 #include "gpu/command_buffer/service/shared_image/d3d_image_backing.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
+#include "gpu/ipc/service/shared_image_stub.h"
 #include "media/base/media_switches.h"
 #include "media/base/win/mf_helpers.h"
 #include "media/gpu/windows/d3d11_picture_buffer.h"
@@ -273,6 +275,8 @@ DefaultTexture2DWrapper::GpuResources::GpuResources(
   }
 
   std::vector<std::unique_ptr<gpu::SharedImageBacking>> shared_image_backings;
+  auto caps =
+      helper_->GetSharedImageStub()->shared_context_state()->GetGLFormatCaps();
   if (IsMultiPlaneFormatForHardwareVideoEnabled()) {
     DCHECK_EQ(mailboxes.size(), 1u);
     // The target must be GL_TEXTURE_EXTERNAL_OES as the texture is not created
@@ -283,8 +287,8 @@ DefaultTexture2DWrapper::GpuResources::GpuResources(
         gpu::D3DImageBacking::Create(
             mailboxes[0], DXGIFormatToMultiPlanarSharedImageFormat(dxgi_format),
             size, color_space, kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
-            usage, texture, std::move(dxgi_shared_handle_state),
-            GL_TEXTURE_EXTERNAL_OES, array_slice);
+            usage, texture, std::move(dxgi_shared_handle_state), caps,
+            GL_TEXTURE_EXTERNAL_OES, array_slice, /*plane_index=*/0u);
     if (backing) {
       // Need to clear the backing since the D3D11 Video Decoder will initialize
       // the textures.
@@ -293,7 +297,7 @@ DefaultTexture2DWrapper::GpuResources::GpuResources(
     }
   } else {
     shared_image_backings = gpu::D3DImageBacking::CreateFromVideoTexture(
-        mailboxes, dxgi_format, size, usage, texture, array_slice,
+        mailboxes, dxgi_format, size, usage, array_slice, caps, texture,
         std::move(dxgi_shared_handle_state));
   }
   if (shared_image_backings.empty()) {

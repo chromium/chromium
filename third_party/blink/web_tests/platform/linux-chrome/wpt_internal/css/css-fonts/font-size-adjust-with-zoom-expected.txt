@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+[FAIL] 1ex equal to the original font-size - 200% page zoom.
+  assert_true: window.testRunner is required for this test. expected true got false
+Harness: the test ran to completion.

@@ -4,11 +4,11 @@
 
 #include "components/discardable_memory/common/discardable_shared_memory_heap.h"
 
+#include <bit>
 #include <memory>
 #include <string>
 #include <utility>
 
-#include "base/bits.h"
 #include "base/containers/contains.h"
 #include "base/format_macros.h"
 #include "base/memory/aligned_memory.h"
@@ -141,7 +141,7 @@ void DiscardableSharedMemoryHeap::ScopedMemorySegment::OnMemoryDump(
 DiscardableSharedMemoryHeap::DiscardableSharedMemoryHeap()
     : block_size_(base::GetPageSize()) {
   DCHECK_NE(block_size_, 0u);
-  DCHECK(base::bits::IsPowerOfTwo(block_size_));
+  DCHECK(std::has_single_bit(block_size_));
 }
 
 DiscardableSharedMemoryHeap::~DiscardableSharedMemoryHeap() {

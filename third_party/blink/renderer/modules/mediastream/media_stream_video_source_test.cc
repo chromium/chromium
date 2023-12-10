@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/modules/mediastream/video_track_adapter_settings.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
 #include "third_party/blink/renderer/platform/testing/io_task_runner_testing_platform_support.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -91,8 +92,7 @@ class MediaStreamVideoSourceTest : public testing::Test {
     bool enabled = true;
     return MediaStreamVideoTrack::CreateVideoTrack(
         mock_stream_video_source_, adapter_settings, noise_reduction,
-        is_screencast, min_frame_rate, absl::nullopt, absl::nullopt,
-        absl::nullopt, false,
+        is_screencast, min_frame_rate, nullptr, false,
         WTF::BindOnce(&MediaStreamVideoSourceTest::OnConstraintsApplied,
                       base::Unretained(this)),
         enabled);
@@ -284,6 +284,7 @@ class MediaStreamVideoSourceTest : public testing::Test {
       track_to_release_.Reset();
     }
   }
+  test::TaskEnvironment task_environment_;
   ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform_;
   WebMediaStreamTrack track_to_release_;
   int number_of_successful_constraints_applied_;

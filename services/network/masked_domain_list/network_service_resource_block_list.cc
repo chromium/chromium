@@ -3,21 +3,37 @@
 // found in the LICENSE file.
 
 #include "services/network/masked_domain_list/network_service_resource_block_list.h"
+#include "base/containers/contains.h"
+#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/trace_event/memory_usage_estimator.h"
 #include "components/privacy_sandbox/masked_domain_list/masked_domain_list.pb.h"
 #include "net/base/schemeful_site.h"
-#include "services/network/public/cpp/features.h"
 
 namespace network {
 
 namespace {
 
+using AntiFingerprintingBlockListResult = ::network::
+    NetworkServiceResourceBlockList::AntiFingerprintingBlockListResult;
+
 bool ResourceIsEligibleForBlockList(
     const masked_domain_list::Resource& resource) {
-  return std::find(resource.experiments().begin(), resource.experiments().end(),
-                   masked_domain_list::Resource_Experiment_EXPERIMENT_AFP) !=
-         resource.experiments().end();
+  return base::Contains(resource.experiments(),
+                        masked_domain_list::Resource_Experiment_EXPERIMENT_AFP);
+}
+
+AntiFingerprintingBlockListResult GetBlocklistResult(
+    const UrlMatcherWithBypass::MatchResult& match_result) {
+  if (match_result.is_third_party) {
+    if (match_result.matches) {
+      return AntiFingerprintingBlockListResult::kThirdPartyBlocked;
+    } else {
+      return AntiFingerprintingBlockListResult::kThirdPartyAllowed;
+    }
+  } else {
+    return AntiFingerprintingBlockListResult::kFirstPartyAllowed;
+  }
 }
 
 }  // namespace
@@ -28,8 +44,8 @@ NetworkServiceResourceBlockList::~NetworkServiceResourceBlockList() = default;
 void NetworkServiceResourceBlockList::AddDomainWithBypassForTesting(
     const std::string& domain,
     net::SchemeHostPortMatcher bypass_matcher) {
-  url_matcher_with_bypass_.AddDomainWithBypass(domain,
-                                               std::move(bypass_matcher));
+  url_matcher_with_bypass_.AddDomainWithBypass(
+      domain, std::move(bypass_matcher), /*include_subdomains=*/true);
 }
 
 size_t NetworkServiceResourceBlockList::EstimateMemoryUsage() const {
@@ -63,6 +79,11 @@ bool NetworkServiceResourceBlockList::Matches(
   UrlMatcherWithBypass::MatchResult result = url_matcher_with_bypass_.Matches(
       request_url, top_frame_site,
       isolation_info->network_anonymization_key().IsTransient());
+
+  AntiFingerprintingBlockListResult blocklist_result =
+      GetBlocklistResult(result);
+  base::UmaHistogramEnumeration("AntiFingerprintingBlockListResult",
+                                blocklist_result);
   return result.matches && result.is_third_party;
 }
 

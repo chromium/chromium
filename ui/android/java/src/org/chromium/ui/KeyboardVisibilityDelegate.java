@@ -35,9 +35,7 @@ public class KeyboardVisibilityDelegate {
     /** The delegate to determine keyboard visibility. */
     private static KeyboardVisibilityDelegate sInstance = new KeyboardVisibilityDelegate();
 
-    /**
-     * An interface to notify listeners of changes in the soft keyboard's visibility.
-     */
+    /** An interface to notify listeners of changes in the soft keyboard's visibility. */
     public interface KeyboardVisibilityListener {
         /**
          * Called whenever the keyboard might have changed.
@@ -45,10 +43,12 @@ public class KeyboardVisibilityDelegate {
          */
         void keyboardVisibilityChanged(boolean isShowing);
     }
+
     private final ObserverList<KeyboardVisibilityListener> mKeyboardVisibilityListeners =
             new ObserverList<>();
 
     protected void registerKeyboardVisibilityCallbacks() {}
+
     protected void unregisterKeyboardVisibilityCallbacks() {}
 
     /**
@@ -85,29 +85,32 @@ public class KeyboardVisibilityDelegate {
     public void showKeyboard(View view) {
         final Handler handler = new Handler();
         final AtomicInteger attempt = new AtomicInteger();
-        Runnable openRunnable = new Runnable() {
-            @Override
-            public void run() {
-                // Not passing InputMethodManager.SHOW_IMPLICIT as it does not trigger the
-                // keyboard in landscape mode.
-                InputMethodManager imm = (InputMethodManager) view.getContext().getSystemService(
-                        Context.INPUT_METHOD_SERVICE);
-                // Third-party touches disk on showSoftInput call.
-                // http://crbug.com/619824, http://crbug.com/635118
-                StrictMode.ThreadPolicy oldPolicy = StrictMode.allowThreadDiskWrites();
-                try {
-                    imm.showSoftInput(view, 0);
-                } catch (IllegalArgumentException e) {
-                    if (attempt.incrementAndGet() <= KEYBOARD_RETRY_ATTEMPTS) {
-                        handler.postDelayed(this, KEYBOARD_RETRY_DELAY_MS);
-                    } else {
-                        Log.e(TAG, "Unable to open keyboard.  Giving up.", e);
+        Runnable openRunnable =
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        // Not passing InputMethodManager.SHOW_IMPLICIT as it does not trigger the
+                        // keyboard in landscape mode.
+                        InputMethodManager imm =
+                                (InputMethodManager)
+                                        view.getContext()
+                                                .getSystemService(Context.INPUT_METHOD_SERVICE);
+                        // Third-party touches disk on showSoftInput call.
+                        // http://crbug.com/619824, http://crbug.com/635118
+                        StrictMode.ThreadPolicy oldPolicy = StrictMode.allowThreadDiskWrites();
+                        try {
+                            imm.showSoftInput(view, 0);
+                        } catch (IllegalArgumentException e) {
+                            if (attempt.incrementAndGet() <= KEYBOARD_RETRY_ATTEMPTS) {
+                                handler.postDelayed(this, KEYBOARD_RETRY_DELAY_MS);
+                            } else {
+                                Log.e(TAG, "Unable to open keyboard.  Giving up.", e);
+                            }
+                        } finally {
+                            StrictMode.setThreadPolicy(oldPolicy);
+                        }
                     }
-                } finally {
-                    StrictMode.setThreadPolicy(oldPolicy);
-                }
-            }
-        };
+                };
         openRunnable.run();
     }
 
@@ -128,8 +131,9 @@ public class KeyboardVisibilityDelegate {
      */
     protected boolean hideAndroidSoftKeyboard(View view) {
         if (!view.isAttachedToWindow()) return false;
-        InputMethodManager imm = (InputMethodManager) view.getContext().getSystemService(
-                Context.INPUT_METHOD_SERVICE);
+        InputMethodManager imm =
+                (InputMethodManager)
+                        view.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
         return imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 
@@ -141,10 +145,11 @@ public class KeyboardVisibilityDelegate {
      */
     public int calculateKeyboardHeight(View rootView) {
         try (TraceEvent te =
-                        TraceEvent.scoped("KeyboardVisibilityDelegate.calculateKeyboardHeight")) {
+                TraceEvent.scoped("KeyboardVisibilityDelegate.calculateKeyboardHeight")) {
             if (rootView == null || rootView.getRootWindowInsets() == null) return 0;
-            WindowInsetsCompat windowInsetsCompat = WindowInsetsCompat.toWindowInsetsCompat(
-                    rootView.getRootWindowInsets(), rootView);
+            WindowInsetsCompat windowInsetsCompat =
+                    WindowInsetsCompat.toWindowInsetsCompat(
+                            rootView.getRootWindowInsets(), rootView);
             int imeHeightIncludingNavigationBar =
                     windowInsetsCompat.getInsets(WindowInsetsCompat.Type.ime()).bottom;
             if (imeHeightIncludingNavigationBar == 0) return 0;

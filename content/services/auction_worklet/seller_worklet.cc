@@ -135,37 +135,64 @@ bool CanSetRequestedAdSize(
          blink::IsValidAdSize(requested_ad_size.value());
 }
 
+// Creates an AdSize object with a "width" and a "height" from a blink::AdSize.
+// Returns false on failure.
+bool CreateAdSizeObject(v8::Isolate* isolate,
+                        const blink::AdSize& ad_size,
+                        v8::Local<v8::Object>& ad_size_out) {
+  DCHECK(blink::IsValidAdSize(ad_size));
+
+  v8::Local<v8::Value> v8_width;
+  if (!gin::TryConvertToV8(
+          isolate,
+          base::StrCat({base::NumberToString(ad_size.width),
+                        blink::ConvertAdSizeUnitToString(ad_size.width_units)}),
+          &v8_width)) {
+    return false;
+  }
+
+  v8::Local<v8::Value> v8_height;
+  if (!gin::TryConvertToV8(isolate,
+                           base::StrCat({base::NumberToString(ad_size.height),
+                                         blink::ConvertAdSizeUnitToString(
+                                             ad_size.height_units)}),
+                           &v8_height)) {
+    return false;
+  }
+
+  ad_size_out = v8::Object::New(isolate);
+
+  return SetDictMember(isolate, ad_size_out, "width", v8_width) &&
+         SetDictMember(isolate, ad_size_out, "height", v8_height);
+}
+
 // Must only be called after CanSetRequestedAdSize(). The requested_ad_size is
 // optional for the auction, so if it's invalid, it just won't be passed to the
 // auction config.
 bool SetRequestedAdSize(v8::Isolate* isolate,
                         v8::Local<v8::Object> top_level_object,
                         const blink::AdSize& requested_ad_size) {
-  v8::Local<v8::Value> v8_width;
-  if (!gin::TryConvertToV8(
-          isolate,
-          base::StrCat({base::NumberToString(requested_ad_size.width),
-                        blink::ConvertAdSizeUnitToString(
-                            requested_ad_size.width_units)}),
-          &v8_width)) {
-    return false;
-  }
-
-  v8::Local<v8::Value> v8_height;
-  if (!gin::TryConvertToV8(
-          isolate,
-          base::StrCat({base::NumberToString(requested_ad_size.height),
-                        blink::ConvertAdSizeUnitToString(
-                            requested_ad_size.height_units)}),
-          &v8_height)) {
-    return false;
-  }
-
-  v8::Local<v8::Object> size_object = v8::Object::New(isolate);
-
-  return SetDictMember(isolate, size_object, "width", v8_width) &&
-         SetDictMember(isolate, size_object, "height", v8_height) &&
+  v8::Local<v8::Object> size_object;
+  return CreateAdSizeObject(isolate, requested_ad_size, size_object) &&
          SetDictMember(isolate, top_level_object, "requestedSize", size_object);
+}
+
+bool SetAllSlotsRequestedSizes(
+    v8::Isolate* isolate,
+    v8::Local<v8::Object> top_level_object,
+    const std::vector<blink::AdSize>& all_slots_requested_sizes) {
+  v8::LocalVector<v8::Value> size_vector(isolate);
+  for (const auto& slot_size : all_slots_requested_sizes) {
+    v8::Local<v8::Object> size_object;
+    if (!CreateAdSizeObject(isolate, slot_size, size_object)) {
+      return false;
+    }
+    size_vector.push_back(std::move(size_object));
+  }
+
+  return SetDictMember(
+      isolate, top_level_object, "allSlotsRequestedSizes",
+      v8::Array::New(isolate, size_vector.data(), size_vector.size()));
 }
 
 bool InsertPrioritySignals(
@@ -296,7 +323,8 @@ bool IsValidBid(double bid) {
 // }
 bool AppendAuctionConfig(AuctionV8Helper* v8_helper,
                          v8::Local<v8::Context> context,
-                         const GURL& decision_logic_url,
+                         const url::Origin& seller,
+                         const absl::optional<GURL>& decision_logic_url,
                          const absl::optional<GURL>& trusted_coding_signals_url,
                          const absl::optional<uint16_t> experiment_group_id,
                          const blink::AuctionConfig::NonSharedParams&
@@ -305,10 +333,10 @@ bool AppendAuctionConfig(AuctionV8Helper* v8_helper,
   v8::Isolate* isolate = v8_helper->isolate();
   v8::Local<v8::Object> auction_config_value = v8::Object::New(isolate);
   gin::Dictionary auction_config_dict(isolate, auction_config_value);
-  if (!auction_config_dict.Set(
-          "seller", url::Origin::Create(decision_logic_url).Serialize()) ||
-      !SetDecisionLogicUrl(isolate, auction_config_value,
-                           decision_logic_url.spec()) ||
+  if (!auction_config_dict.Set("seller", seller.Serialize()) ||
+      (decision_logic_url &&
+       !SetDecisionLogicUrl(isolate, auction_config_value,
+                            decision_logic_url->spec())) ||
       (trusted_coding_signals_url &&
        !SetTrustedScoringSignalsUrl(isolate, auction_config_value,
                                     trusted_coding_signals_url->spec()))) {
@@ -334,6 +362,21 @@ bool AppendAuctionConfig(AuctionV8Helper* v8_helper,
           context, "auctionSignals",
           *auction_ad_config_non_shared_params.auction_signals.value(),
           auction_config_value)) {
+    return false;
+  }
+
+  if (CanSetRequestedAdSize(
+          auction_ad_config_non_shared_params.requested_size) &&
+      !SetRequestedAdSize(
+          isolate, auction_config_value,
+          auction_ad_config_non_shared_params.requested_size.value())) {
+    return false;
+  }
+
+  if (auction_ad_config_non_shared_params.all_slots_requested_sizes &&
+      !SetAllSlotsRequestedSizes(
+          isolate, auction_config_value,
+          *auction_ad_config_non_shared_params.all_slots_requested_sizes)) {
     return false;
   }
 
@@ -439,11 +482,12 @@ bool AppendAuctionConfig(AuctionV8Helper* v8_helper,
   if (!component_auctions.empty()) {
     v8::LocalVector<v8::Value> component_auction_vector(isolate);
     for (const auto& component_auction : component_auctions) {
-      if (!AppendAuctionConfig(
-              v8_helper, context, *component_auction.decision_logic_url,
-              component_auction.trusted_scoring_signals_url,
-              experiment_group_id, component_auction.non_shared_params,
-              &component_auction_vector)) {
+      if (!AppendAuctionConfig(v8_helper, context, component_auction.seller,
+                               component_auction.decision_logic_url,
+                               component_auction.trusted_scoring_signals_url,
+                               experiment_group_id,
+                               component_auction.non_shared_params,
+                               &component_auction_vector)) {
         return false;
       }
     }
@@ -459,14 +503,6 @@ bool AppendAuctionConfig(AuctionV8Helper* v8_helper,
   if (experiment_group_id.has_value()) {
     auction_config_dict.Set("experimentGroupId",
                             static_cast<unsigned>(experiment_group_id.value()));
-  }
-
-  if (CanSetRequestedAdSize(
-          auction_ad_config_non_shared_params.requested_size) &&
-      !SetRequestedAdSize(
-          isolate, auction_config_value,
-          auction_ad_config_non_shared_params.requested_size.value())) {
-    return false;
   }
 
   args->push_back(std::move(auction_config_value));
@@ -594,7 +630,9 @@ SellerWorklet::SellerWorklet(
                      auction_network_events_handler_),
                  /*automatically_send_requests=*/true, top_window_origin,
                  *trusted_scoring_signals_url,
-                 /*experiment_group_id=*/experiment_group_id, v8_helper_.get())
+                 /*experiment_group_id=*/experiment_group_id,
+                 /*trusted_bidding_signals_slot_size_param=*/std::string(),
+                 v8_helper_.get())
            : nullptr);
 
   v8_state_ = std::unique_ptr<V8State, base::OnTaskRunnerDeleter>(
@@ -948,9 +986,10 @@ void SellerWorklet::V8State::ScoreAd(
 
   args.push_back(gin::ConvertToV8(isolate, bid));
 
-  if (!AppendAuctionConfig(v8_helper_.get(), context, decision_logic_url_,
-                           trusted_scoring_signals_url_, experiment_group_id_,
-                           auction_ad_config_non_shared_params, &args)) {
+  if (!AppendAuctionConfig(
+          v8_helper_.get(), context, url::Origin::Create(decision_logic_url_),
+          decision_logic_url_, trusted_scoring_signals_url_,
+          experiment_group_id_, auction_ad_config_non_shared_params, &args)) {
     PostScoreAdCallbackToUserThreadOnError(
         std::move(callback),
         /*scoring_latency=*/elapsed_timer.Elapsed(),
@@ -1216,10 +1255,12 @@ void SellerWorklet::V8State::ScoreAd(
       component_auction_modified_bid_params =
           mojom::ComponentAuctionModifiedBidParams::New();
 
+      // TODO(https://crbug.com/1506576): is this the right thing to do on
+      // timeout?
       if (!result_idl.ad.has_value() ||
-          !v8_helper_->ExtractJson(
-              context, *result_idl.ad,
-              &component_auction_modified_bid_params->ad)) {
+          v8_helper_->ExtractJson(context, *result_idl.ad,
+                                  &component_auction_modified_bid_params->ad) !=
+              AuctionV8Helper::ExtractJsonResult::kSuccess) {
         component_auction_modified_bid_params->ad = "null";
       }
 
@@ -1396,9 +1437,10 @@ void SellerWorklet::V8State::ReportResult(
   v8::Local<v8::Context> context = context_recycler_scope.GetContext();
 
   v8::LocalVector<v8::Value> args(isolate);
-  if (!AppendAuctionConfig(v8_helper_.get(), context, decision_logic_url_,
-                           trusted_scoring_signals_url_, experiment_group_id_,
-                           auction_ad_config_non_shared_params, &args)) {
+  if (!AppendAuctionConfig(
+          v8_helper_.get(), context, url::Origin::Create(decision_logic_url_),
+          decision_logic_url_, trusted_scoring_signals_url_,
+          experiment_group_id_, auction_ad_config_non_shared_params, &args)) {
     PostReportResultCallbackToUserThread(std::move(callback),
                                          /*signals_for_winner=*/absl::nullopt,
                                          /*report_url=*/absl::nullopt,
@@ -1552,9 +1594,11 @@ void SellerWorklet::V8State::ReportResult(
 
   // Consider lack of error but no return value type, or a return value that
   // can't be converted to JSON a valid result.
+  // TODO(https://crbug.com/1506576): is this the right thing to do on timeout?
   std::string signals_for_winner;
-  if (!v8_helper_->ExtractJson(context, signals_for_winner_value,
-                               &signals_for_winner)) {
+  if (v8_helper_->ExtractJson(context, signals_for_winner_value,
+                              &signals_for_winner) !=
+      AuctionV8Helper::ExtractJsonResult::kSuccess) {
     signals_for_winner = "null";
   }
 

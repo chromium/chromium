@@ -17,6 +17,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &ui::kConvertTrackpadEventsToMouse,
     &ui::kDeprecatedExternalPickerFunction,
     &ui::kReportAllAvailablePointerTypes,
+    &ui::kRequireLeadingInTextViewWithLeading,
 };
 
 // static

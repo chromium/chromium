@@ -28,7 +28,68 @@ class DocumentScanScanFunction : public ExtensionFunction {
   void OnScanCompleted(
       absl::optional<api::document_scan::ScanResults> scan_result,
       absl::optional<std::string> error);
-  DECLARE_EXTENSION_FUNCTION("documentScan.scan", DOCUMENT_SCAN_SCAN)
+  DECLARE_EXTENSION_FUNCTION("documentScan.scan", DOCUMENTSCAN_SCAN)
+};
+
+class DocumentScanGetScannerListFunction : public ExtensionFunction {
+ public:
+  DocumentScanGetScannerListFunction();
+  DocumentScanGetScannerListFunction(
+      const DocumentScanGetScannerListFunction&) = delete;
+  DocumentScanGetScannerListFunction& operator=(
+      const DocumentScanGetScannerListFunction&) = delete;
+
+ protected:
+  ~DocumentScanGetScannerListFunction() override;
+
+  // ExtensionFunction:
+  ResponseAction Run() override;
+
+ private:
+  void OnScannerListReceived(
+      api::document_scan::GetScannerListResponse response);
+  DECLARE_EXTENSION_FUNCTION("documentScan.getScannerList",
+                             DOCUMENTSCAN_GETSCANNERLIST)
+};
+
+class DocumentScanOpenScannerFunction : public ExtensionFunction {
+ public:
+  DocumentScanOpenScannerFunction();
+  DocumentScanOpenScannerFunction(const DocumentScanOpenScannerFunction&) =
+      delete;
+  DocumentScanOpenScannerFunction& operator=(
+      const DocumentScanOpenScannerFunction&) = delete;
+
+ protected:
+  ~DocumentScanOpenScannerFunction() override;
+
+  // ExtensionFunction:
+  ResponseAction Run() override;
+
+ private:
+  void OnResponseReceived(api::document_scan::OpenScannerResponse response);
+  DECLARE_EXTENSION_FUNCTION("documentScan.openScanner",
+                             DOCUMENTSCAN_OPENSCANNER)
+};
+
+class DocumentScanCloseScannerFunction : public ExtensionFunction {
+ public:
+  DocumentScanCloseScannerFunction();
+  DocumentScanCloseScannerFunction(const DocumentScanCloseScannerFunction&) =
+      delete;
+  DocumentScanCloseScannerFunction& operator=(
+      const DocumentScanCloseScannerFunction&) = delete;
+
+ protected:
+  ~DocumentScanCloseScannerFunction() override;
+
+  // ExtensionFunction:
+  ResponseAction Run() override;
+
+ private:
+  void OnResponseReceived(api::document_scan::CloseScannerResponse response);
+  DECLARE_EXTENSION_FUNCTION("documentScan.closeScanner",
+                             DOCUMENTSCAN_CLOSESCANNER)
 };
 
 }  // namespace extensions

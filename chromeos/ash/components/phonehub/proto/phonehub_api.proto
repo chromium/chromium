@@ -8,10 +8,10 @@ package ash.phonehub.proto;
 
 option optimize_for = LITE_RUNTIME;
 
-// This enum is tied directly to a UMA enum defined in
-// //tools/metrics/histograms/enums.xml, and should always reflect it (do not
-// change one without changing the other). Entries should be never modified
-// or deleted. Only additions possible.
+// This enum is tied directly to the PhoneHubMessageType enum defined in
+// //tools/metrics/histograms/metadata/phonehub/enums.xml, and should always
+// reflect it (do not change one without changing the other). Entries should be
+// never modified or deleted. Only additions possible.
 enum MessageType {
   PROVIDE_CROS_STATE = 0;
   PHONE_STATUS_SNAPSHOT = 1;

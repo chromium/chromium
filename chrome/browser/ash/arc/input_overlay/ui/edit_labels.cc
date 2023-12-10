@@ -7,12 +7,16 @@
 #include "base/check_op.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/action.h"
 #include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/button_options_menu.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/edit_label.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/editing_list.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/name_tag.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/ui_utils.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/layout/table_layout.h"
+#include "ui/views/view_utils.h"
 
 namespace arc::input_overlay {
 
@@ -52,9 +56,6 @@ void EditLabels::Init() {
   }
 
   UpdateNameTag();
-  if (should_update_title_) {
-    UpdateNameTagTitle();
-  }
 }
 
 void EditLabels::OnActionInputBindingUpdated() {
@@ -63,10 +64,6 @@ void EditLabels::OnActionInputBindingUpdated() {
   }
 
   UpdateNameTag();
-}
-
-void EditLabels::UpdateNameTagTitle() {
-  NOTIMPLEMENTED();
 }
 
 void EditLabels::SetNameTagState(bool is_error,
@@ -95,13 +92,46 @@ void EditLabels::FocusLabel() {
   labels_[0]->RequestFocus();
 }
 
-void EditLabels::ShowEduNudgeForEditingTip() {
-  size_t size = labels_.size();
-  DCHECK_GE(size, 1u);
-  // TODO(b/274690042): Replace it with localized strings.
-  controller_->AddNudgeWidget(labels_[size - 1],
-                              u"You can easily click and swap this key. To "
-                              u"edit the details, tap the row.");
+std::u16string EditLabels::CalculateActionName() {
+  std::u16string key_string = u"";
+  // Check if all labels are unassigned. The prefix for the sub-title is
+  // different if all labels are unassigned.
+  bool all_unassigned = true;
+  // If at least one label is unassigned, it needs to show error state.
+  missing_assign_ = false;
+  DCHECK_GE(labels_.size(), 1u);
+  for (auto* label : labels_) {
+    if (label->IsInputUnbound()) {
+      missing_assign_ = true;
+    } else {
+      key_string.append(label->GetText());
+      all_unassigned = false;
+    }
+  }
+  // TODO(b/274690042): Replace placeholder text with localized strings.
+  if (all_unassigned) {
+    switch (action_->GetType()) {
+      case ActionType::TAP:
+        return u"Unassigned button";
+      case ActionType::MOVE:
+        return u"Unassigned joystick";
+      default:
+        NOTREACHED();
+    }
+  }
+
+  auto* prefix_string = u"";
+  switch (action_->GetType()) {
+    case ActionType::TAP:
+      prefix_string = u"Game button ";
+      break;
+    case ActionType::MOVE:
+      prefix_string = u"Joystick ";
+      break;
+    default:
+      NOTREACHED();
+  }
+  return prefix_string + key_string;
 }
 
 void EditLabels::InitForActionTapKeyboard() {
@@ -148,30 +178,16 @@ void EditLabels::InitForActionMoveKeyboard() {
 }
 
 void EditLabels::UpdateNameTag() {
-  std::u16string key_string = u"";
-  // Check if all labels are unassigned. The prefix for the sub-title is
-  // different if all labels are unassigned.
-  bool all_unassigned = true;
   // If at least one label is unassigned, it needs to show error state.
   missing_assign_ = false;
   DCHECK_GE(labels_.size(), 1u);
   for (auto* label : labels_) {
-    key_string.append(label->GetText());
-    key_string.append(u", ");
     if (label->IsInputUnbound()) {
       missing_assign_ = true;
-    } else {
-      all_unassigned = false;
+      break;
     }
   }
-  key_string.erase(key_string.end() - 2, key_string.end());
-  // TODO(b/274690042): Replace placeholder text with localized strings.
-  if (all_unassigned) {
-    key_string = u"unassigned";
-  }
 
-  name_tag_->SetSubtitle(labels_.size() == 1 ? u"Key " + key_string
-                                             : u"Keys " + key_string);
   name_tag_->SetState(
       // The name tag is not set to be in an error state if it was newly
       // created.
@@ -179,6 +195,10 @@ void EditLabels::UpdateNameTag() {
       missing_assign_
           ? l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_EDIT_MISSING_BINDING)
           : u"");
+
+  if (should_update_title_) {
+    name_tag_->SetTitle(CalculateActionName());
+  }
 }
 
 void EditLabels::RemoveNewState() {
@@ -188,5 +208,8 @@ void EditLabels::RemoveNewState() {
 
   UpdateNameTag();
 }
+
+BEGIN_METADATA(EditLabels)
+END_METADATA
 
 }  // namespace arc::input_overlay

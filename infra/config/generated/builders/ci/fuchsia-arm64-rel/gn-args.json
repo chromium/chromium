@@ -1,0 +1,13 @@
+{
+  "gn_args": {
+    "cast_streaming_enable_remoting": true,
+    "dcheck_always_on": false,
+    "enable_cast_receiver": true,
+    "is_component_build": false,
+    "is_debug": false,
+    "target_cpu": "arm64",
+    "target_os": "fuchsia",
+    "test_host_cpu": "arm64",
+    "use_remoteexec": true
+  }
+}

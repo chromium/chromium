@@ -345,6 +345,32 @@ def get_simulator_runtime_info_by_build(runtime_build):
   return None
 
 
+def get_simulator_runtime_info_by_id(identifier):
+  """Gets runtime object based on the runtime id.
+
+  Args:
+    identifier: (str) id of the runtime, e.g. "7A46A063-35D7"
+
+  Returns:
+    a simulator runtime json object that contains all the info of an
+    iOS runtime
+    e.g.
+    {
+      "build" : "19F70",
+      "deletable" : true,
+      "identifier" : "7A46A063-35D7",
+      etc...
+    }
+    if no runtime for the corresponding id is found, then
+    return None.
+  """
+  runtimes = get_simulator_runtime_list()
+  for runtime in runtimes.values():
+    if runtime['identifier'].lower() == identifier.lower():
+      return runtime
+  return None
+
+
 def get_simulator_runtime_info(ios_version):
   """Gets runtime object based on iOS version.
 
@@ -372,7 +398,6 @@ def get_simulator_runtime_info(ios_version):
     if runtime['version'].startswith(ios_version):
       return runtime
   return None
-
 
 def is_simulator_runtime_builtin(runtime):
   if (runtime is None or runtime['kind'] not in IOS_SIM_RUNTIME_BUILTIN_STATE):
@@ -438,14 +463,15 @@ def delete_simulator_runtime(runtime_id, shoud_wait=False):
   if shoud_wait:
     # runtime takes a few seconds to delete
     time_waited = 0
+    runtime_to_delete = get_simulator_runtime_info_by_id(runtime_id)
     while (runtime_to_delete is not None):
       LOGGER.debug('Waiting for runtime to be deleted. Current state is %s' %
                    runtime_to_delete['state'])
-      runtime_to_delete = get_simulator_runtime_info(ios_version)
       time.sleep(1)
       time_waited += 1
       if (time_waited > MAX_WAIT_TIME_TO_DELETE_RUNTIME):
         raise test_runner_errors.SimRuntimeDeleteTimeoutError(ios_version)
+      runtime_to_delete = get_simulator_runtime_info_by_id(runtime_id)
     LOGGER.debug('Runtime successfully deleted!')
 
 

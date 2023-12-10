@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_return_to_recent_tab_view.h"
 
-#import "ios/chrome/browser/ntp/home/features.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_return_to_recent_tab_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"

@@ -7,12 +7,11 @@
 
 #include <stddef.h>
 
+#include <optional>
 #include <string>
-
 #include "base/synchronization/lock.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/extension_set.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 
@@ -63,8 +62,8 @@ class RendererExtensionRegistry {
   void SetWorkerActivationToken(const scoped_refptr<const Extension>& extension,
                                 base::UnguessableToken worker_activation_token);
   // Returns the current activation token for worker based extension with
-  // |extension_id|. Returns absl::nullopt otherwise.
-  absl::optional<base::UnguessableToken> GetWorkerActivationToken(
+  // |extension_id|. Returns std::nullopt otherwise.
+  std::optional<base::UnguessableToken> GetWorkerActivationToken(
       const ExtensionId& extension_id) const;
 
  private:

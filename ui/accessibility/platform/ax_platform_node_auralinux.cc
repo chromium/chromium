@@ -2697,6 +2697,7 @@ AtkRole AXPlatformNodeAuraLinux::GetAtkRole() const {
     case ax::mojom::Role::kDirectory:
       return ATK_ROLE_LIST;
     case ax::mojom::Role::kDisclosureTriangle:
+    case ax::mojom::Role::kDisclosureTriangleGrouped:
       return ATK_ROLE_TOGGLE_BUTTON;
     case ax::mojom::Role::kDocCover:
       return ATK_ROLE_IMAGE;
@@ -4013,7 +4014,6 @@ void AXPlatformNodeAuraLinux::OnAriaCurrentChanged() {
 }
 
 void AXPlatformNodeAuraLinux::OnAlertShown() {
-  DCHECK(ui::IsAlert(GetRole()));
   atk_object_notify_state_change(ATK_OBJECT(GetOrCreateAtkObject()),
                                  ATK_STATE_SHOWING, TRUE);
 }

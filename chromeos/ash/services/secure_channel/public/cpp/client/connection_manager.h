@@ -72,7 +72,7 @@ class ConnectionManager {
       base::OnceCallback<void(bool)> registration_result_callback) = 0;
 
   virtual void GetHostLastSeenTimestamp(
-      base::OnceCallback<void(absl::optional<base::Time>)> callback) = 0;
+      base::OnceCallback<void(std::optional<base::Time>)> callback) = 0;
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);

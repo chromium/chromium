@@ -103,6 +103,9 @@ class CONTENT_EXPORT FileSystemAccessLockManager {
 
   // Returns true if there is not an existing lock on `url` that is contentious
   // with `lock_type`.
+  //
+  // This may return `false` but the same arguments would succeed for `TakeLock`
+  // since `TakeLock` may evict pages to take the lock.
   bool IsContentious(const storage::FileSystemURL& url, LockType lock_type);
 
   // Creates a new shared lock type.

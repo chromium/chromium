@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//testing/libfuzzer/fuzzer_test.gni")
+import("//third_party/skia/gn/shared_sources.gni")
 
 group("fuzzers") {
 }
@@ -12,11 +13,8 @@ group("fuzzers") {
 if (is_win && use_fuzzing_engine) {
   source_set("skia_fuzzer_sources") {
     testonly = true
-    sources = [
-      "//skia/tools/fuzzers/fuzzer_environment.cc",
-      "//third_party/skia/fuzz/Fuzz.cpp",
-      "//third_party/skia/fuzz/FuzzCommon.cpp",
-    ]
+    sources =
+        [ "//skia/tools/fuzzers/fuzzer_environment.cc" ] + skia_base_fuzzer_srcs
 
     # Use public_deps and public_configs so each fuzzer_test doesn't need to
     # explicitly depend on "//skia" and "//skia:skia_library_config".
@@ -39,28 +37,25 @@ if (is_win && use_fuzzing_engine) {
   }
 
   static_library("skia_test_fonts") {
-    sources = [
-      "//third_party/skia/tools/fonts/TestFontMgr.cpp",
-      "//third_party/skia/tools/fonts/TestSVGTypeface.cpp",
-      "//third_party/skia/tools/fonts/TestTypeface.cpp",
-    ]
+    sources = skia_font_tools
     configs += [ "//skia:skia_library_config" ]
 
     public_configs = [ ":skia_test_fonts_includes_config" ]
     deps = [ "//skia" ]
+    check_includes = false  # Builds some private Skia files
   }
 
   # TODO(metzman): Enable the other fuzzers that cannot yet build in Chromium.
   fuzzer_test("skia_region_deserialize_fuzzer") {
     sources = [ "//third_party/skia/fuzz/oss_fuzz/FuzzRegionDeserialize.cpp" ]
-    defines = [ "IS_FUZZING_WITH_LIBFUZZER" ]
+    defines = [ "SK_BUILD_FOR_LIBFUZZER" ]
     deps = [ ":skia_fuzzer_sources" ]
   }
 
   fuzzer_test("skia_image_filter_deserialize_fuzzer") {
     sources =
         [ "//third_party/skia/fuzz/oss_fuzz/FuzzImageFilterDeserialize.cpp" ]
-    defines = [ "IS_FUZZING_WITH_LIBFUZZER" ]
+    defines = [ "SK_BUILD_FOR_LIBFUZZER" ]
     deps = [
       ":skia_fuzzer_sources",
       ":skia_test_fonts",
@@ -69,13 +64,13 @@ if (is_win && use_fuzzing_engine) {
 
   fuzzer_test("skia_region_set_path_fuzzer") {
     sources = [ "//third_party/skia/fuzz/oss_fuzz/FuzzRegionSetPath.cpp" ]
-    defines = [ "IS_FUZZING_WITH_LIBFUZZER" ]
+    defines = [ "SK_BUILD_FOR_LIBFUZZER" ]
     deps = [ ":skia_fuzzer_sources" ]
   }
 
   fuzzer_test("skia_textblob_deserialize_fuzzer") {
     sources = [ "//third_party/skia/fuzz/oss_fuzz/FuzzTextBlobDeserialize.cpp" ]
-    defines = [ "IS_FUZZING_WITH_LIBFUZZER" ]
+    defines = [ "SK_BUILD_FOR_LIBFUZZER" ]
     deps = [
       ":skia_fuzzer_sources",
       ":skia_test_fonts",
@@ -84,19 +79,19 @@ if (is_win && use_fuzzing_engine) {
 
   fuzzer_test("skia_path_deserialize_fuzzer") {
     sources = [ "//third_party/skia/fuzz/oss_fuzz/FuzzPathDeserialize.cpp" ]
-    defines = [ "IS_FUZZING_WITH_LIBFUZZER" ]
+    defines = [ "SK_BUILD_FOR_LIBFUZZER" ]
     deps = [ ":skia_fuzzer_sources" ]
   }
 
   fuzzer_test("skia_image_decode_fuzzer") {
     sources = [ "//third_party/skia/fuzz/oss_fuzz/FuzzImage.cpp" ]
-    defines = [ "IS_FUZZING_WITH_LIBFUZZER" ]
+    defines = [ "SK_BUILD_FOR_LIBFUZZER" ]
     deps = [ ":skia_fuzzer_sources" ]
   }
 
   fuzzer_test("skia_png_encoder_fuzzer") {
     sources = [ "//third_party/skia/fuzz/oss_fuzz/FuzzPNGEncoder.cpp" ]
-    defines = [ "IS_FUZZING_WITH_LIBFUZZER" ]
+    defines = [ "SK_BUILD_FOR_LIBFUZZER" ]
     deps = [
       ":skia_encoder_fuzzer_lib",
       ":skia_fuzzer_sources",
@@ -105,7 +100,7 @@ if (is_win && use_fuzzing_engine) {
 
   fuzzer_test("skia_jpeg_encoder_fuzzer") {
     sources = [ "//third_party/skia/fuzz/oss_fuzz/FuzzJPEGEncoder.cpp" ]
-    defines = [ "IS_FUZZING_WITH_LIBFUZZER" ]
+    defines = [ "SK_BUILD_FOR_LIBFUZZER" ]
     deps = [
       ":skia_encoder_fuzzer_lib",
       ":skia_fuzzer_sources",
@@ -114,7 +109,7 @@ if (is_win && use_fuzzing_engine) {
 
   fuzzer_test("skia_webp_encoder_fuzzer") {
     sources = [ "//third_party/skia/fuzz/oss_fuzz/FuzzWEBPEncoder.cpp" ]
-    defines = [ "IS_FUZZING_WITH_LIBFUZZER" ]
+    defines = [ "SK_BUILD_FOR_LIBFUZZER" ]
     deps = [
       ":skia_encoder_fuzzer_lib",
       ":skia_fuzzer_sources",
@@ -123,14 +118,14 @@ if (is_win && use_fuzzing_engine) {
 
   fuzzer_test("skia_skjson_fuzzer") {
     sources = [ "//third_party/skia/fuzz/oss_fuzz/FuzzJSON.cpp" ]
-    defines = [ "IS_FUZZING_WITH_LIBFUZZER" ]
+    defines = [ "SK_BUILD_FOR_LIBFUZZER" ]
     deps = [ ":skia_fuzzer_sources" ]
     check_includes = false
   }
 
   fuzzer_test("skia_image_decode_incremental_fuzzer") {
     sources = [ "//third_party/skia/fuzz/oss_fuzz/FuzzIncrementalImage.cpp" ]
-    defines = [ "IS_FUZZING_WITH_LIBFUZZER" ]
+    defines = [ "SK_BUILD_FOR_LIBFUZZER" ]
     deps = [ ":skia_fuzzer_sources" ]
   }
 }

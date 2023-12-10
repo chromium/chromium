@@ -61,10 +61,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
-#include "content/public/browser/notification_service.h"
-#include "content/public/browser/notification_types.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
@@ -91,6 +87,7 @@
 using captive_portal::CaptivePortalResult;
 using content::BrowserThread;
 using content::WebContents;
+using content::WebContentsObserver;
 
 namespace {
 
@@ -191,16 +188,39 @@ bool IsLoginTab(WebContents* web_contents) {
       ->IsLoginTab();
 }
 
+// Watch for `DidStopLoading` for one WebContents.
+struct LoadObserver : public WebContentsObserver {
+ public:
+  class Observer {
+   public:
+    virtual ~Observer() = default;
+    virtual void OnWebContentsDestroyed(WebContents*) = 0;
+    virtual void OnDidStopLoading(WebContents*) = 0;
+  };
+
+  LoadObserver(Observer* observer, WebContents* web_contents)
+      : WebContentsObserver(web_contents), observer_(observer) {}
+
+  // WebContentsObserver
+  void WebContentsDestroyed() override {
+    observer_->OnWebContentsDestroyed(web_contents());
+  }
+
+  void DidStopLoading() override {
+    observer_->OnDidStopLoading(web_contents());
+  }
+
+ private:
+  raw_ptr<Observer> observer_ = nullptr;
+};
+
 // Tracks how many times each tab has been navigated since the Observer was
 // created.  The standard TestNavigationObserver can only watch specific
 // pre-existing tabs or loads in serial for all tabs.
-class MultiNavigationObserver : public content::NotificationObserver {
+class MultiNavigationObserver : public ui_test_utils::AllTabsObserver,
+                                public LoadObserver::Observer {
  public:
   MultiNavigationObserver();
-
-  MultiNavigationObserver(const MultiNavigationObserver&) = delete;
-  MultiNavigationObserver& operator=(const MultiNavigationObserver&) = delete;
-
   ~MultiNavigationObserver() override;
 
   // Waits for exactly |num_navigations_to_wait_for| LOAD_STOP
@@ -216,52 +236,69 @@ class MultiNavigationObserver : public content::NotificationObserver {
   int num_navigations() const { return num_navigations_; }
 
  private:
-  typedef std::map<const WebContents*, int> TabNavigationMap;
+  // AllTabsObserver
+  std::unique_ptr<base::CheckedObserver> ProcessOneContents(
+      WebContents* web_contents) override;
 
-  // content::NotificationObserver:
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
+  // LoadObserver::Observer;
+  void OnWebContentsDestroyed(WebContents* web_contents) override;
+  void OnDidStopLoading(WebContents* web_contents) override;
 
-  int num_navigations_;
+  // [WebContents] == number of `DidStopLoading` events.
+  using TabNavigationMap = std::map<const WebContents*, int>;
+
+  // Total number of `DidStopLoading` calls.  Might not match the sum of the
+  // individual loading events in `tab_navigation_map_` if entries have been
+  // deleted there.
+  int num_navigations_ = 0;
 
   // Map of how many times each tab has navigated since |this| was created.
   TabNavigationMap tab_navigation_map_;
 
-  // Total number of navigations to wait for.  Value only matters when
-  // |waiting_for_navigation_| is true.
-  int num_navigations_to_wait_for_;
-
-  // True if WaitForNavigations has been called, until
-  // |num_navigations_to_wait_for_| have been observed.
-  bool waiting_for_navigation_;
-  std::unique_ptr<base::RunLoop> run_loop_;
-
-  content::NotificationRegistrar registrar_;
+  // Total number of navigations to wait for, if known.
+  std::optional<int> num_navigations_to_wait_for_;
 };
 
-MultiNavigationObserver::MultiNavigationObserver()
-    : num_navigations_(0),
-      num_navigations_to_wait_for_(0),
-      waiting_for_navigation_(false) {
-  registrar_.Add(this, content::NOTIFICATION_LOAD_STOP,
-                 content::NotificationService::AllSources());
+MultiNavigationObserver::MultiNavigationObserver() {
+  AddAllBrowsers();
 }
 
-MultiNavigationObserver::~MultiNavigationObserver() {
+MultiNavigationObserver::~MultiNavigationObserver() = default;
+
+std::unique_ptr<base::CheckedObserver>
+MultiNavigationObserver::ProcessOneContents(WebContents* web_contents) {
+  tab_navigation_map_[web_contents] = 0;
+  return std::make_unique<LoadObserver>(this, web_contents);
+}
+
+void MultiNavigationObserver::OnWebContentsDestroyed(
+    WebContents* web_contents) {
+  auto iter = tab_navigation_map_.find(web_contents);
+  CHECK(iter != tab_navigation_map_.end());
+  tab_navigation_map_.erase(iter);
+}
+
+void MultiNavigationObserver::OnDidStopLoading(WebContents* web_contents) {
+  auto iter = tab_navigation_map_.find(web_contents);
+  CHECK(iter != tab_navigation_map_.end());
+  ++(iter->second);
+  ++num_navigations_;
+
+  if (num_navigations_to_wait_for_ &&
+      *num_navigations_to_wait_for_ == num_navigations_) {
+    ConditionMet();
+  }
 }
 
 void MultiNavigationObserver::WaitForNavigations(
     int num_navigations_to_wait_for) {
-  // Shouldn't already be waiting for navigations.
-  EXPECT_FALSE(waiting_for_navigation_);
   EXPECT_LT(0, num_navigations_to_wait_for);
+  // Since we don't know how many navigations are going to be waited for, see
+  // how many we've seen so far.
   if (num_navigations_ < num_navigations_to_wait_for) {
+    // Let `OnDidStopLoading()` know when to stop waiting.
     num_navigations_to_wait_for_ = num_navigations_to_wait_for;
-    waiting_for_navigation_ = true;
-    run_loop_ = std::make_unique<base::RunLoop>();
-    run_loop_->Run();
-    EXPECT_FALSE(waiting_for_navigation_);
+    Wait();
   }
   EXPECT_EQ(num_navigations_, num_navigations_to_wait_for);
 }
@@ -269,26 +306,10 @@ void MultiNavigationObserver::WaitForNavigations(
 int MultiNavigationObserver::NumNavigationsForTab(
     WebContents* web_contents) const {
   auto tab_navigations = tab_navigation_map_.find(web_contents);
-  if (tab_navigations == tab_navigation_map_.end())
+  if (tab_navigations == tab_navigation_map_.end()) {
     return 0;
-  return tab_navigations->second;
-}
-
-void MultiNavigationObserver::Observe(
-    int type,
-    const content::NotificationSource& source,
-    const content::NotificationDetails& details) {
-  ASSERT_EQ(type, content::NOTIFICATION_LOAD_STOP);
-  content::NavigationController* controller =
-      content::Source<content::NavigationController>(source).ptr();
-  ++num_navigations_;
-  ++tab_navigation_map_[controller->DeprecatedGetWebContents()];
-  if (waiting_for_navigation_ &&
-      num_navigations_to_wait_for_ == num_navigations_) {
-    waiting_for_navigation_ = false;
-    if (run_loop_)
-      run_loop_->Quit();
   }
+  return tab_navigations->second;
 }
 
 // This observer creates a list of loading tabs, and then waits for them all
@@ -297,9 +318,9 @@ void MultiNavigationObserver::Observe(
 // This is for the specific purpose of observing tabs time out after logging in
 // to a captive portal, which will then cause them to reload.
 // MultiNavigationObserver is insufficient for this because there may or may not
-// be a LOAD_STOP event between the timeout and the reload.
+// be a DidStopLoading event between the timeout and the reload.
 // See bug http://crbug.com/133227
-class FailLoadsAfterLoginObserver : public content::NotificationObserver {
+class FailLoadsAfterLoginObserver : public LoadObserver::Observer {
  public:
   FailLoadsAfterLoginObserver();
 
@@ -311,17 +332,19 @@ class FailLoadsAfterLoginObserver : public content::NotificationObserver {
 
   void WaitForNavigations();
 
- private:
-  typedef std::set<const WebContents*> TabSet;
+  // LoadObserver::Observer;
+  void OnWebContentsDestroyed(WebContents* web_contents) override {}
+  void OnDidStopLoading(WebContents* web_contents) override;
 
-  // content::NotificationObserver:
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
+ private:
+  typedef std::set<WebContents*> TabSet;
 
   // The set of tabs that need to be navigated.  This is the set of loading
   // tabs when the observer is created.
   TabSet tabs_needing_navigation_;
+
+  // Observers for each tab we're watching.
+  std::vector<std::unique_ptr<LoadObserver>> load_observers_;
 
   // Number of tabs that have stopped navigating with the expected title.  These
   // are expected not to be navigated again.
@@ -331,22 +354,21 @@ class FailLoadsAfterLoginObserver : public content::NotificationObserver {
   // |tabs_navigated_to_final_destination_| equals |tabs_needing_navigation_|.
   bool waiting_for_navigation_;
   std::unique_ptr<base::RunLoop> run_loop_;
-
-  content::NotificationRegistrar registrar_;
 };
 
 FailLoadsAfterLoginObserver::FailLoadsAfterLoginObserver()
     : waiting_for_navigation_(false) {
-  registrar_.Add(this, content::NOTIFICATION_LOAD_STOP,
-                 content::NotificationService::AllSources());
   base::ranges::copy_if(
       AllTabContentses(),
       std::inserter(tabs_needing_navigation_, tabs_needing_navigation_.end()),
       &content::WebContents::IsLoading);
+  // Add an observer for each tab.
+  for (auto* contents : tabs_needing_navigation_) {
+    load_observers_.push_back(std::make_unique<LoadObserver>(this, contents));
+  }
 }
 
-FailLoadsAfterLoginObserver::~FailLoadsAfterLoginObserver() {
-}
+FailLoadsAfterLoginObserver::~FailLoadsAfterLoginObserver() = default;
 
 void FailLoadsAfterLoginObserver::WaitForNavigations() {
   // Shouldn't already be waiting for navigations.
@@ -362,15 +384,7 @@ void FailLoadsAfterLoginObserver::WaitForNavigations() {
             tabs_navigated_to_final_destination_.size());
 }
 
-void FailLoadsAfterLoginObserver::Observe(
-    int type,
-    const content::NotificationSource& source,
-    const content::NotificationDetails& details) {
-  ASSERT_EQ(type, content::NOTIFICATION_LOAD_STOP);
-  content::NavigationController* controller =
-      content::Source<content::NavigationController>(source).ptr();
-  WebContents* contents = controller->DeprecatedGetWebContents();
-
+void FailLoadsAfterLoginObserver::OnDidStopLoading(WebContents* contents) {
   ASSERT_EQ(1u, tabs_needing_navigation_.count(contents));
   ASSERT_EQ(0u, tabs_navigated_to_final_destination_.count(contents));
 

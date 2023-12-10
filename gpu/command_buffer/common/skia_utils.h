@@ -6,8 +6,8 @@
 #define GPU_COMMAND_BUFFER_COMMON_SKIA_UTILS_H_
 
 #include <cstdint>
+#include <optional>
 #include "gpu/raster_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GrDirectContext;
 
@@ -25,7 +25,7 @@ namespace raster {
 RASTER_EXPORT void DumpGrMemoryStatistics(
     const GrDirectContext* context,
     base::trace_event::ProcessMemoryDump* pmd,
-    absl::optional<uint64_t> tracing_guid);
+    std::optional<uint64_t> tracing_guid);
 
 // Dumps a single"skia/grpu_resources/context_0x{&context}" entry with total
 // cache usage. Designed for background dumps.

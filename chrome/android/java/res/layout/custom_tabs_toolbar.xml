@@ -52,8 +52,8 @@ found in the LICENSE file.
         <org.chromium.ui.widget.ChromeImageButton
             android:id="@+id/security_button"
             style="@style/LocationBarButton"
-            android:layout_width="@dimen/location_bar_icon_width"
-            android:layout_height="match_parent"
+            android:layout_width="@dimen/location_bar_lock_icon_width"
+            android:layout_height="@dimen/location_bar_lock_icon_height"
             android:layout_gravity="center_vertical"
             android:scaleType="center"
             android:visibility="invisible"

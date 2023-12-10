@@ -6,16 +6,16 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
+#include "third_party/blink/renderer/core/layout/block_node.h"
+#include "third_party/blink/renderer/core/layout/constraint_space_builder.h"
 #include "third_party/blink/renderer/core/layout/custom/custom_intrinsic_sizes.h"
 #include "third_party/blink/renderer/core/layout/custom/custom_layout_child.h"
 #include "third_party/blink/renderer/core/layout/custom/custom_layout_fragment.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_block_node.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_box_fragment.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_constraint_space_builder.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_layout_result.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_length_utils.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_space_utils.h"
+#include "third_party/blink/renderer/core/layout/layout_result.h"
+#include "third_party/blink/renderer/core/layout/length_utils.h"
+#include "third_party/blink/renderer/core/layout/logical_box_fragment.h"
+#include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
+#include "third_party/blink/renderer/core/layout/space_utils.h"
 
 namespace blink {
 
@@ -48,12 +48,12 @@ void CustomLayoutWorkTask::Trace(Visitor* visitor) const {
   visitor->Trace(options_);
 }
 
-void CustomLayoutWorkTask::Run(const NGConstraintSpace& parent_space,
+void CustomLayoutWorkTask::Run(const ConstraintSpace& parent_space,
                                const ComputedStyle& parent_style,
                                const LayoutUnit child_available_block_size,
                                bool* child_depends_on_block_constraints) {
   DCHECK(token_->IsValid());
-  NGLayoutInputNode child = child_->GetLayoutNode();
+  LayoutInputNode child = child_->GetLayoutNode();
 
   if (type_ == CustomLayoutWorkTask::TaskType::kIntrinsicSizes) {
     RunIntrinsicSizesTask(parent_space, parent_style,
@@ -66,15 +66,15 @@ void CustomLayoutWorkTask::Run(const NGConstraintSpace& parent_space,
 }
 
 void CustomLayoutWorkTask::RunLayoutFragmentTask(
-    const NGConstraintSpace& parent_space,
+    const ConstraintSpace& parent_space,
     const ComputedStyle& parent_style,
-    NGLayoutInputNode child) {
+    LayoutInputNode child) {
   DCHECK_EQ(type_, CustomLayoutWorkTask::TaskType::kLayoutFragment);
   DCHECK(options_ && resolver_);
 
-  NGConstraintSpaceBuilder builder(parent_space,
-                                   child.Style().GetWritingDirection(),
-                                   /* is_new_fc */ true);
+  ConstraintSpaceBuilder builder(parent_space,
+                                 child.Style().GetWritingDirection(),
+                                 /* is_new_fc */ true);
   SetOrthogonalFallbackInlineSizeIfNeeded(parent_style, child, &builder);
 
   bool is_fixed_inline_size = false;
@@ -137,11 +137,11 @@ void CustomLayoutWorkTask::RunLayoutFragmentTask(
     builder.SetCustomLayoutData(std::move(constraint_data_));
   }
   auto space = builder.ToConstraintSpace();
-  auto* result =
-      To<NGBlockNode>(child).Layout(space, nullptr /* break_token */);
+  auto* result = To<BlockNode>(child).Layout(space, nullptr /* break_token */);
 
-  NGBoxFragment fragment(parent_space.GetWritingDirection(),
-                         To<NGPhysicalBoxFragment>(result->PhysicalFragment()));
+  LogicalBoxFragment fragment(
+      parent_space.GetWritingDirection(),
+      To<PhysicalBoxFragment>(result->GetPhysicalFragment()));
 
   resolver_->Resolve(MakeGarbageCollected<CustomLayoutFragment>(
       child_, token_, std::move(result), fragment.Size(),
@@ -149,21 +149,21 @@ void CustomLayoutWorkTask::RunLayoutFragmentTask(
 }
 
 void CustomLayoutWorkTask::RunIntrinsicSizesTask(
-    const NGConstraintSpace& parent_space,
+    const ConstraintSpace& parent_space,
     const ComputedStyle& parent_style,
     const LayoutUnit child_available_block_size,
-    NGLayoutInputNode child,
+    LayoutInputNode child,
     bool* child_depends_on_block_constraints) {
   DCHECK_EQ(type_, CustomLayoutWorkTask::TaskType::kIntrinsicSizes);
   DCHECK(resolver_);
 
-  NGMinMaxConstraintSpaceBuilder builder(parent_space, parent_style, child,
-                                         /* is_new_fc */ true);
+  MinMaxConstraintSpaceBuilder builder(parent_space, parent_style, child,
+                                       /* is_new_fc */ true);
   builder.SetAvailableBlockSize(child_available_block_size);
   const auto space = builder.ToConstraintSpace();
 
   MinMaxSizesResult result = ComputeMinAndMaxContentContribution(
-      parent_style, To<NGBlockNode>(child), space);
+      parent_style, To<BlockNode>(child), space);
   resolver_->Resolve(MakeGarbageCollected<CustomIntrinsicSizes>(
       child_, token_, result.sizes.min_size, result.sizes.max_size));
 

@@ -39,10 +39,17 @@ public class TabSuggestionsOrchestrator implements TabSuggestions, DestroyObserv
     private static final String LAST_TIMESTAMP_KEY = "LastTimestamp";
     private static final String BACKOFF_COUNT_KEY = "BackoffCountKey";
     private static final String BACKOFF_IDX_KEY = "BackoffIdxKey";
-    private static final long[] BACKOFF_AMOUNTS = {TimeUnit.MINUTES.toMillis(1),
-            TimeUnit.MINUTES.toMillis(30), TimeUnit.HOURS.toMillis(1), TimeUnit.HOURS.toMillis(2),
-            TimeUnit.HOURS.toMillis(12), TimeUnit.DAYS.toMillis(1), TimeUnit.DAYS.toMillis(2),
-            TimeUnit.DAYS.toMillis(7), TimeUnit.DAYS.toMillis(10)};
+    private static final long[] BACKOFF_AMOUNTS = {
+        TimeUnit.MINUTES.toMillis(1),
+        TimeUnit.MINUTES.toMillis(30),
+        TimeUnit.HOURS.toMillis(1),
+        TimeUnit.HOURS.toMillis(2),
+        TimeUnit.HOURS.toMillis(12),
+        TimeUnit.DAYS.toMillis(1),
+        TimeUnit.DAYS.toMillis(2),
+        TimeUnit.DAYS.toMillis(7),
+        TimeUnit.DAYS.toMillis(10)
+    };
     private static final String TAG = "TabSuggestDetailed";
     private static final int MIN_CLOSE_SUGGESTIONS_THRESHOLD = 3;
     private static final String SHARED_PREFERENCES_ID = "TabsuggestionsPreferences";
@@ -61,15 +68,22 @@ public class TabSuggestionsOrchestrator implements TabSuggestions, DestroyObserv
     private long mNextPrefetchTime;
     private int mMinTimeBetweenPrefetchesMs = MIN_TIME_BETWEEN_PREFETCHES_DEFAULT_MS;
 
-    public TabSuggestionsOrchestrator(Context context, TabModelSelector selector,
+    public TabSuggestionsOrchestrator(
+            Context context,
+            TabModelSelector selector,
             ActivityLifecycleDispatcher activityLifecycleDispatcher) {
-        this(context, selector, activityLifecycleDispatcher,
-                ContextUtils.getApplicationContext().getSharedPreferences(
-                        SHARED_PREFERENCES_ID, Context.MODE_PRIVATE));
+        this(
+                context,
+                selector,
+                activityLifecycleDispatcher,
+                ContextUtils.getApplicationContext()
+                        .getSharedPreferences(SHARED_PREFERENCES_ID, Context.MODE_PRIVATE));
     }
 
     @VisibleForTesting
-    TabSuggestionsOrchestrator(Context context, TabModelSelector selector,
+    TabSuggestionsOrchestrator(
+            Context context,
+            TabModelSelector selector,
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
             SharedPreferences sharedPreferences) {
         mTabModelSelector = selector;
@@ -94,11 +108,6 @@ public class TabSuggestionsOrchestrator implements TabSuggestions, DestroyObserv
             switch (tabSuggestion.getAction()) {
                 case TabSuggestion.TabSuggestionAction.CLOSE:
                     if (tabSuggestion.getTabsInfo().size() >= MIN_CLOSE_SUGGESTIONS_THRESHOLD) {
-                        aggregated.add(tabSuggestion);
-                    }
-                    break;
-                case TabSuggestion.TabSuggestionAction.GROUP:
-                    if (!tabSuggestion.getTabsInfo().isEmpty()) {
                         aggregated.add(tabSuggestion);
                     }
                     break;
@@ -130,10 +139,12 @@ public class TabSuggestionsOrchestrator implements TabSuggestions, DestroyObserv
         if (time < mNextPrefetchTime) {
             return;
         }
-        mNextPrefetchTime = time
-                + ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
-                        ChromeFeatureList.CLOSE_TAB_SUGGESTIONS, "min_time_between_prefetches",
-                        mMinTimeBetweenPrefetchesMs);
+        mNextPrefetchTime =
+                time
+                        + ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
+                                ChromeFeatureList.ARCHIVE_TAB_SERVICE,
+                                "min_time_between_prefetches",
+                                mMinTimeBetweenPrefetchesMs);
         performPrefetch();
     }
 
@@ -192,8 +203,10 @@ public class TabSuggestionsOrchestrator implements TabSuggestions, DestroyObserv
 
     private void recordDismissalBackoff() {
         synchronized (mSharedPreferences) {
-            int backoffIdx = Math.min(
-                    mSharedPreferences.getInt(BACKOFF_IDX_KEY, 0), BACKOFF_AMOUNTS.length - 1);
+            int backoffIdx =
+                    Math.min(
+                            mSharedPreferences.getInt(BACKOFF_IDX_KEY, 0),
+                            BACKOFF_AMOUNTS.length - 1);
             Editor editor = mSharedPreferences.edit();
             editor.putLong(BACKOFF_COUNT_KEY, BACKOFF_AMOUNTS[backoffIdx]);
             editor.putInt(BACKOFF_IDX_KEY, backoffIdx + 1);
@@ -211,7 +224,8 @@ public class TabSuggestionsOrchestrator implements TabSuggestions, DestroyObserv
                 mPrefetchedResults.addAll(suggestions.tabSuggestions);
                 if (mRemainingFetchers == 0) {
                     for (TabSuggestionsObserver tabSuggestionsObserver : mTabSuggestionsObservers) {
-                        tabSuggestionsObserver.onNewSuggestion(aggregateResults(mPrefetchedResults),
+                        tabSuggestionsObserver.onNewSuggestion(
+                                aggregateResults(mPrefetchedResults),
                                 res -> onTabSuggestionFeedback(res));
                     }
                 }
@@ -239,9 +253,6 @@ public class TabSuggestionsOrchestrator implements TabSuggestions, DestroyObserv
         switch (tabSuggestionFeedback.tabSuggestion.getAction()) {
             case TabSuggestionAction.CLOSE:
                 suffix = "Closing";
-                break;
-            case TabSuggestionAction.GROUP:
-                suffix = "Grouping";
                 break;
             default:
                 assert false : "Unknown TabSuggestion action";
@@ -279,8 +290,10 @@ public class TabSuggestionsOrchestrator implements TabSuggestions, DestroyObserv
                 numSelectOutsideSuggestion++;
             }
         }
-        int numChanged = tabSuggestionFeedback.tabSuggestion.getTabsInfo().size()
-                - numSelectFromSuggestion + numSelectOutsideSuggestion;
+        int numChanged =
+                tabSuggestionFeedback.tabSuggestion.getTabsInfo().size()
+                        - numSelectFromSuggestion
+                        + numSelectOutsideSuggestion;
         // This was previously TabsSuggestions.Close.NumSuggestionsChanged.
         RecordHistogram.recordCount100Histogram(
                 "Tabs.Suggestions.NumSuggestionsChanged." + suffix, numChanged);

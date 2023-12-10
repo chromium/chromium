@@ -42,10 +42,13 @@ class DrmDisplayHost : public GpuThreadObserver {
   void SetHDCPState(display::HDCPState state,
                     display::ContentProtectionMethod protection_method,
                     display::SetHDCPStateCallback callback);
+  void SetColorTemperatureAdjustment(
+      const display::ColorTemperatureAdjustment& cta);
+  void SetColorCalibration(const display::ColorCalibration& calibration);
+  void SetGammaAdjustment(const display::GammaAdjustment& adjustment);
   void SetColorMatrix(const std::vector<float>& color_matrix);
-  void SetGammaCorrection(
-      const std::vector<display::GammaRampRGBEntry>& degamma_lut,
-      const std::vector<display::GammaRampRGBEntry>& gamma_lut);
+  void SetGammaCorrection(const display::GammaCurve& degamma,
+                          const display::GammaCurve& gamma);
   void SetPrivacyScreen(bool enabled,
                         display::SetPrivacyScreenCallback callback);
 

@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -19,7 +20,6 @@
 #include "chrome/browser/ash/policy/status_collector/managed_session_service.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/services/app_service/public/cpp/instance_registry.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 
@@ -38,7 +38,7 @@ namespace policy {
 class AppInfoGenerator : public apps::InstanceRegistry::Observer,
                          public ManagedSessionService::Observer {
  public:
-  using Result = absl::optional<std::vector<enterprise_management::AppInfo>>;
+  using Result = std::optional<std::vector<enterprise_management::AppInfo>>;
 
   explicit AppInfoGenerator(
       ManagedSessionService* managed_session_service,

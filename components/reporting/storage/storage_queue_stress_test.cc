@@ -29,6 +29,7 @@
 #include "components/reporting/resources/resource_manager.h"
 #include "components/reporting/storage/storage_configuration.h"
 #include "components/reporting/util/status.h"
+#include "components/reporting/util/status_macros.h"
 #include "components/reporting/util/statusor.h"
 #include "components/reporting/util/test_support_callbacks.h"
 #include "crypto/sha2.h"
@@ -163,9 +164,8 @@ class StorageQueueStressTest : public ::testing::TestWithParam<size_t> {
         storage_queue_create_event.cb());
     StatusOr<scoped_refptr<StorageQueue>> storage_queue_result =
         storage_queue_create_event.result();
-    ASSERT_TRUE(storage_queue_result.has_value())
-        << "Failed to create StorageQueue, error="
-        << storage_queue_result.error();
+    ASSERT_OK(storage_queue_result) << "Failed to create StorageQueue, error="
+                                    << storage_queue_result.error();
     storage_queue_ = std::move(storage_queue_result.value());
   }
 

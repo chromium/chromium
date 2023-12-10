@@ -4,16 +4,16 @@
 
 #include "base/sampling_heap_profiler/lock_free_address_hash_set.h"
 
+#include <bit>
 #include <limits>
 
-#include "base/bits.h"
 #include "base/containers/contains.h"
 
 namespace base {
 
 LockFreeAddressHashSet::LockFreeAddressHashSet(size_t buckets_count)
     : buckets_(buckets_count), bucket_mask_(buckets_count - 1) {
-  DCHECK(bits::IsPowerOfTwo(buckets_count));
+  DCHECK(std::has_single_bit(buckets_count));
   DCHECK_LE(bucket_mask_, std::numeric_limits<uint32_t>::max());
 }
 

@@ -33,7 +33,7 @@ struct CORE_EXPORT InlineNodeData final : InlineItemsData {
   bool IsBisectLineBreakDisabled() const {
     return is_bisect_line_break_disabled_;
   }
-  // True if this node can't use the `NGScorehLineBreaker`, that can be
+  // True if this node can't use the `ScoreLineBreaker`, that can be
   // determined by `CollectInlines`. Conditions that can change without
   // `CollectInlines` are in `LineBreaker::ShouldDisableScoreLineBreak()`.
   bool IsScoreLineBreakDisabled() const {
@@ -89,7 +89,7 @@ struct CORE_EXPORT InlineNodeData final : InlineItemsData {
 
   // We use this flag to determine if we have *only* floats, and OOF-positioned
   // children. If so we consider them block-level, and run the
-  // |NGBlockLayoutAlgorithm| instead of the |InlineLayoutAlgorithm|. This is
+  // |BlockLayoutAlgorithm| instead of the |InlineLayoutAlgorithm|. This is
   // done to pick up block-level static-position behaviour.
   unsigned is_block_level_ : 1;
 

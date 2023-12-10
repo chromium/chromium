@@ -14,9 +14,7 @@ import org.junit.runners.model.FrameworkMethod;
 import org.chromium.base.Log;
 import org.chromium.base.SysUtils;
 
-/**
- * Checks if any restrictions exist and skip the test if it meets those restrictions.
- */
+/** Checks if any restrictions exist and skip the test if it meets those restrictions. */
 public class RestrictionSkipCheck extends SkipCheck {
 
     private static final String TAG = "base_test";
@@ -35,13 +33,19 @@ public class RestrictionSkipCheck extends SkipCheck {
     public boolean shouldSkip(FrameworkMethod frameworkMethod) {
         if (frameworkMethod == null) return true;
 
-        for (Restriction restriction : AnnotationProcessingUtils.getAnnotations(
-                     frameworkMethod.getMethod(), Restriction.class)) {
+        for (Restriction restriction :
+                AnnotationProcessingUtils.getAnnotations(
+                        frameworkMethod.getMethod(), Restriction.class)) {
             for (String restrictionVal : restriction.value()) {
                 if (restrictionApplies(restrictionVal)) {
-                    Log.i(TAG, "Test " + frameworkMethod.getDeclaringClass().getName() + "#"
-                            + frameworkMethod.getName() + " skipped because of restriction "
-                            + restriction);
+                    Log.i(
+                            TAG,
+                            "Test "
+                                    + frameworkMethod.getDeclaringClass().getName()
+                                    + "#"
+                                    + frameworkMethod.getName()
+                                    + " skipped because of restriction "
+                                    + restriction);
                     return true;
                 }
             }
@@ -70,8 +74,8 @@ public class RestrictionSkipCheck extends SkipCheck {
     }
 
     private boolean isNetworkAvailable() {
-        final ConnectivityManager connectivityManager = (ConnectivityManager)
-                mTargetContext.getSystemService(Context.CONNECTIVITY_SERVICE);
+        final ConnectivityManager connectivityManager =
+                (ConnectivityManager) mTargetContext.getSystemService(Context.CONNECTIVITY_SERVICE);
         final NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
         return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }

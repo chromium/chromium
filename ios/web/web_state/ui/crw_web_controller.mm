@@ -361,6 +361,12 @@ char const kFullScreenStateHistogram[] = "IOS.Fullscreen.State";
 
     [_webView stopLoading];
     [_webView removeFromSuperview];
+
+    // Since the WKWebView is about to be released, the kvo for the `loading`
+    // state will not be received. Without manually setting loading to false,
+    // the tab will appear to be endlessly loading until the next page load
+    // completes.
+    self.webStateImpl->SetIsLoading(false);
   }
 
   // Set up the new web view.
@@ -1627,12 +1633,12 @@ CrFullscreenState CrFullscreenStateFromWKFullscreenState(
 }
 
 // Called when WKWebView cameraCaptureState property has changed.
-- (void)webViewCameraCaptureStateDidChange API_AVAILABLE(ios(15.0)) {
+- (void)webViewCameraCaptureStateDidChange {
   self.webStateImpl->OnStateChangedForPermission(web::PermissionCamera);
 }
 
 // Called when WKWebView microphoneCaptureState property has changed.
-- (void)webViewMicrophoneCaptureStateDidChange API_AVAILABLE(ios(15.0)) {
+- (void)webViewMicrophoneCaptureStateDidChange {
   self.webStateImpl->OnStateChangedForPermission(web::PermissionMicrophone);
 }
 
@@ -1862,8 +1868,7 @@ CrFullscreenState CrFullscreenStateFromWKFullscreenState(
 }
 
 - (void)resumeDownloadWithData:(NSData*)data
-             completionHandler:(void (^)(WKDownload*))completionHandler
-    API_AVAILABLE(ios(15)) {
+             completionHandler:(void (^)(WKDownload*))completionHandler {
   // Reports some failure to higher level code if `webView` doesn't exist
   if (!_webView) {
     completionHandler(nil);

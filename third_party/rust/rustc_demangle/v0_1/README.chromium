@@ -3,7 +3,8 @@ URL: https://crates.io/crates/rustc-demangle
 Description: Rust compiler symbol demangling.
 
 Version: 0.1.23
-Security Critical: no
+Security Critical: yes
 Shipped: no
 License: Apache 2.0
+License File: //third_party/rust/chromium_crates_io/vendor/rustc-demangle-0.1.23/LICENSE-APACHE
 Revision: af38dc6b06b5665c79a4778268e4faf5decd19df

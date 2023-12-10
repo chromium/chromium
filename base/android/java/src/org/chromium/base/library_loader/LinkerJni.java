@@ -48,12 +48,17 @@ class LinkerJni implements Linker.Natives {
     // libmonochrome.so
     private static native void nativeFindMemoryRegionAtRandomAddress(
             @NonNull Linker.LibInfo libInfo);
+
     private static native void nativeReserveMemoryForLibrary(@NonNull Linker.LibInfo libInfo);
+
     private static native boolean nativeFindRegionReservedByWebViewZygote(
             @NonNull Linker.LibInfo libInfo);
+
     private static native boolean nativeLoadLibrary(
             String libFilePath, Linker.LibInfo libInfo, boolean spawnRelroRegion);
+
     private static native boolean nativeUseRelros(
             long localLoadAddress, Linker.LibInfo remoteLibInfo);
+
     private static native int nativeGetRelroSharingResult();
 }

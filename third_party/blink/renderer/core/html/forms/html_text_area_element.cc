@@ -303,16 +303,18 @@ void HTMLTextAreaElement::AppendToFormData(FormData& form_data) {
 void HTMLTextAreaElement::ResetImpl() {
   SetNonDirtyValue(defaultValue(),
                    TextControlSetValueSelection::kSetSelectionToEnd);
+  HTMLFormControlElementWithState::ResetImpl();
 }
 
 bool HTMLTextAreaElement::HasCustomFocusLogic() const {
   return true;
 }
 
-bool HTMLTextAreaElement::IsKeyboardFocusable() const {
+bool HTMLTextAreaElement::IsKeyboardFocusable(
+    UpdateBehavior update_behavior) const {
   // If a given text area can be focused at all, then it will always be keyboard
   // focusable, unless it has a negative tabindex set.
-  return IsFocusable() && tabIndex() >= 0;
+  return IsFocusable(update_behavior) && tabIndex() >= 0;
 }
 
 bool HTMLTextAreaElement::MayTriggerVirtualKeyboard() const {

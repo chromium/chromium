@@ -39,6 +39,8 @@
 
 namespace blink {
 
+class ExecutionContext;
+
 // Allows non-Blink webcrypto threads to query for cancellation status.
 class CryptoResultCancel : public ThreadSafeRefCounted<CryptoResultCancel> {
  public:
@@ -61,6 +63,10 @@ class PLATFORM_EXPORT CryptoResult : public GarbageCollected<CryptoResult> {
   virtual void CompleteWithKey(const WebCryptoKey&) = 0;
   virtual void CompleteWithKeyPair(const WebCryptoKey& public_key,
                                    const WebCryptoKey& private_key) = 0;
+
+  virtual ExecutionContext* GetExecutionContext() = 0;
+  virtual WebCryptoWarningType GetWarning() = 0;
+  virtual void SetWarning(WebCryptoWarningType code) = 0;
 
   virtual void Trace(Visitor* visitor) const {}
 };

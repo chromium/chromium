@@ -380,6 +380,15 @@ const size_t kMaxConcurrentStreamLimit = 256;
 
 }  // namespace
 
+BASE_FEATURE(kH2InitialMaxConcurrentStreamsOverride,
+             "H2InitialMaxConcurrentStreamsOverride",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<int> kH2InitialMaxConcurrentStreams(
+    &kH2InitialMaxConcurrentStreamsOverride,
+    "initial_max_concurrent_streams",
+    kDefaultInitialMaxConcurrentStreams);
+
 SpdyProtocolErrorDetails MapFramerErrorToProtocolError(
     http2::Http2DecoderAdapter::SpdyFramerError err) {
   switch (err) {
@@ -802,7 +811,7 @@ SpdySession::SpdySession(
       greased_http2_frame_(greased_http2_frame),
       http2_end_stream_with_data_frame_(http2_end_stream_with_data_frame),
       enable_priority_update_(enable_priority_update),
-      max_concurrent_streams_(kInitialMaxConcurrentStreams),
+      max_concurrent_streams_(kH2InitialMaxConcurrentStreams.Get()),
       last_read_time_(time_func()),
       session_max_recv_window_size_(session_max_recv_window_size),
       session_max_queued_capped_frames_(session_max_queued_capped_frames),
@@ -1288,10 +1297,6 @@ base::StringPiece SpdySession::GetAcceptChViaAlps(
 
   LogSpdyAcceptChForOriginHistogram(true);
   return it->second;
-}
-
-bool SpdySession::WasAlpnNegotiated() const {
-  return socket_->WasAlpnNegotiated();
 }
 
 NextProto SpdySession::GetNegotiatedProtocol() const {
@@ -1883,7 +1888,7 @@ int SpdySession::DoRead() {
 
   CHECK(socket_);
   read_state_ = READ_STATE_DO_READ_COMPLETE;
-  read_buffer_ = base::MakeRefCounted<IOBuffer>(kReadBufferSize);
+  read_buffer_ = base::MakeRefCounted<IOBufferWithSize>(kReadBufferSize);
   int rv = socket_->ReadIfReady(
       read_buffer_.get(), kReadBufferSize,
       base::BindOnce(&SpdySession::PumpReadLoop, weak_factory_.GetWeakPtr(),
@@ -2772,6 +2777,10 @@ void SpdySession::OnDataFrameHeader(spdy::SpdyStreamId stream_id,
                                     bool fin) {
   CHECK(in_io_loop_);
 
+  net_log_.AddEvent(NetLogEventType::HTTP2_SESSION_RECV_DATA, [&] {
+    return NetLogSpdyDataParams(stream_id, length, fin);
+  });
+
   auto it = active_streams_.find(stream_id);
 
   // By the time data comes in, the stream may already be inactive.
@@ -2790,10 +2799,6 @@ void SpdySession::OnStreamFrameData(spdy::SpdyStreamId stream_id,
                                     size_t len) {
   CHECK(in_io_loop_);
   DCHECK_LT(len, 1u << 24);
-
-  net_log_.AddEvent(NetLogEventType::HTTP2_SESSION_RECV_DATA, [&] {
-    return NetLogSpdyDataParams(stream_id, len, false);
-  });
 
   // Build the buffer as early as possible so that we go through the
   // session flow control checks and update
@@ -2828,8 +2833,6 @@ void SpdySession::OnStreamFrameData(spdy::SpdyStreamId stream_id,
 
 void SpdySession::OnStreamEnd(spdy::SpdyStreamId stream_id) {
   CHECK(in_io_loop_);
-  net_log_.AddEvent(NetLogEventType::HTTP2_SESSION_RECV_DATA,
-                    [&] { return NetLogSpdyDataParams(stream_id, 0, true); });
 
   auto it = active_streams_.find(stream_id);
   // By the time data comes in, the stream may already be inactive.
@@ -2864,15 +2867,20 @@ void SpdySession::OnSettings() {
   net_log_.AddEvent(NetLogEventType::HTTP2_SESSION_RECV_SETTINGS);
   net_log_.AddEvent(NetLogEventType::HTTP2_SESSION_SEND_SETTINGS_ACK);
 
-  base::UmaHistogramCounts1000("Net.SpdySession.OnSettings.CreatedStreamCount",
-                               created_streams_.size());
-  base::UmaHistogramCounts1000("Net.SpdySession.OnSettings.ActiveStreamCount",
-                               active_streams_.size());
-  base::UmaHistogramCounts1000(
-      "Net.SpdySession.OnSettings.CreatedAndActiveStreamCount",
-      created_streams_.size() + active_streams_.size());
-  base::UmaHistogramCounts1000("Net.SpdySession.OnSettings.PendingStreamCount",
-                               GetTotalSize(pending_create_stream_queues_));
+  if (!settings_frame_received_) {
+    base::UmaHistogramCounts1000(
+        "Net.SpdySession.OnSettings.CreatedStreamCount2",
+        created_streams_.size());
+    base::UmaHistogramCounts1000(
+        "Net.SpdySession.OnSettings.ActiveStreamCount2",
+        active_streams_.size());
+    base::UmaHistogramCounts1000(
+        "Net.SpdySession.OnSettings.CreatedAndActiveStreamCount2",
+        created_streams_.size() + active_streams_.size());
+    base::UmaHistogramCounts1000(
+        "Net.SpdySession.OnSettings.PendingStreamCount2",
+        GetTotalSize(pending_create_stream_queues_));
+  }
 
   // Send an acknowledgment of the setting.
   spdy::SpdySettingsIR settings_ir;

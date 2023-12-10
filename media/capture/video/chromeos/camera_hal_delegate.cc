@@ -98,6 +98,11 @@ class LocalCameraClientObserver : public CameraClientObserver {
     camera_hal_delegate_->SetCameraModule(std::move(camera_module));
   }
 
+  bool WaitForCameraModuleReadyForTesting() override {
+    return camera_hal_delegate_
+        ->WaitForCameraModuleReadyForTesting();  // IN-TEST
+  }
+
  private:
   raw_ptr<CameraHalDelegate, ExperimentalAsh> camera_hal_delegate_;
 };
@@ -301,7 +306,22 @@ bool CameraHalDelegate::Init() {
 }
 
 CameraHalDelegate::~CameraHalDelegate() {
+  std::vector<CameraClientObserver*> observers;
+  for (auto& client_observer : local_client_observers_) {
+    observers.emplace_back(client_observer.get());
+  }
+  auto* dispatcher = CameraHalDispatcherImpl::GetInstance();
+  dispatcher->RemoveClientObservers(observers);
+  local_client_observers_.clear();
+
+  if (ipc_task_runner_) {
+    ipc_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&CameraHalDelegate::ResetMojoInterfaceOnIpcThread,
+                       base::Unretained(this)));
+  }
   camera_hal_ipc_thread_.Stop();
+
   power_manager_client_proxy_->Shutdown();
   ui_task_runner_->DeleteSoon(FROM_HERE,
                               std::move(power_manager_client_proxy_));
@@ -338,22 +358,6 @@ void CameraHalDelegate::SetCameraModule(
       FROM_HERE,
       base::BindOnce(&CameraHalDelegate::SetCameraModuleOnIpcThread,
                      base::Unretained(this), std::move(camera_module)));
-}
-
-void CameraHalDelegate::Reset() {
-  if (ipc_task_runner_) {
-    ipc_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&CameraHalDelegate::ResetMojoInterfaceOnIpcThread,
-                       base::Unretained(this)));
-  }
-  std::vector<CameraClientObserver*> observers;
-  for (auto& client_observer : local_client_observers_) {
-    observers.emplace_back(client_observer.get());
-  }
-  auto* dispatcher = CameraHalDispatcherImpl::GetInstance();
-  dispatcher->RemoveClientObservers(observers);
-  local_client_observers_.clear();
 }
 
 std::unique_ptr<VideoCaptureDevice> CameraHalDelegate::CreateDevice(
@@ -961,6 +965,13 @@ void CameraHalDelegate::TorchModeStatusChange(
     cros::mojom::TorchModeStatus new_status) {
   DCHECK(ipc_task_runner_->BelongsToCurrentThread());
   // Do nothing here as we don't care about torch mode status.
+}
+
+bool CameraHalDelegate::WaitForCameraModuleReadyForTesting() {
+  if (camera_module_has_been_set_.IsSignaled()) {
+    return true;
+  }
+  return camera_module_has_been_set_.TimedWait(base::Seconds(10));
 }
 
 }  // namespace media

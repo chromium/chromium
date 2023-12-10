@@ -12,16 +12,12 @@ package org.chromium.chrome.browser.usage_stats;
 public class TokenGenerator {
     private long mTokenCounter;
 
-    /**
-     * Default constructor for TokenGenerator.
-     */
+    /** Default constructor for TokenGenerator. */
     public TokenGenerator() {
         this(1L);
     }
 
-    /**
-     * Construct a TokenGenerator, starting the sequence of tokens at start.
-     */
+    /** Construct a TokenGenerator, starting the sequence of tokens at start. */
     public TokenGenerator(long start) {
         mTokenCounter = start;
     }

@@ -880,6 +880,9 @@ const std::string& DownloadItemImpl::GetSerializedEmbedderDownloadData() const {
 }
 
 const GURL& DownloadItemImpl::GetTabUrl() const {
+  if (IsSavePackageDownload()) {
+    return GetURL();
+  }
   return request_info_.tab_url;
 }
 
@@ -1031,6 +1034,7 @@ bool DownloadItemImpl::IsDangerous() const {
     case DOWNLOAD_DANGER_TYPE_USER_VALIDATED:
     case DOWNLOAD_DANGER_TYPE_ALLOWLISTED_BY_POLICY:
     case DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING:
+    case DOWNLOAD_DANGER_TYPE_ASYNC_LOCAL_PASSWORD_SCANNING:
     case DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_SAFE:
     case DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_FAILED:
       return false;
@@ -1165,10 +1169,6 @@ DownloadItem::DownloadCreationType DownloadItemImpl::GetDownloadCreationType()
   return download_type_;
 }
 
-bool DownloadItemImpl::IsDlpManaged() const {
-  return is_dlp_managed_;
-}
-
 ::network::mojom::CredentialsMode DownloadItemImpl::GetCredentialsMode() const {
   return request_info_.credentials_mode;
 }
@@ -1229,10 +1229,6 @@ void DownloadItemImpl::SetLastAccessTime(base::Time last_access_time) {
 
 void DownloadItemImpl::SetDisplayName(const base::FilePath& name) {
   display_name_ = name;
-}
-
-void DownloadItemImpl::SetIsDlpManaged(bool is_managed) {
-  is_dlp_managed_ = is_managed;
 }
 
 std::string DownloadItemImpl::DebugString(bool verbose) const {

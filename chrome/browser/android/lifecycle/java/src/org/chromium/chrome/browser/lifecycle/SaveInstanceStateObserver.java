@@ -11,8 +11,6 @@ import android.os.Bundle;
  * onSaveInstanceState events.
  */
 public interface SaveInstanceStateObserver extends LifecycleObserver {
-    /**
-     * Called before activity begins to stop.
-     */
+    /** Called before activity begins to stop. */
     void onSaveInstanceState(Bundle outState);
 }

@@ -23,8 +23,7 @@ import org.chromium.base.test.util.Feature;
 @RunWith(Parameterized.class)
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
 public class ClientAddMessageToConsoleTest extends AwParameterizedTest {
-    @Rule
-    public AwActivityTestRule mActivityTestRule;
+    @Rule public AwActivityTestRule mActivityTestRule;
 
     // Line number at which the console message is logged in the page returned by the
     // getLogMessageJavaScriptData method.

@@ -134,13 +134,15 @@ HostResolverMdnsTask::HostResolverMdnsTask(MDnsClient* mdns_client,
                                            std::string hostname,
                                            DnsQueryTypeSet query_types)
     : mdns_client_(mdns_client), hostname_(std::move(hostname)) {
-  DCHECK(!query_types.Empty());
+  CHECK(!query_types.Empty());
   DCHECK(!query_types.Has(DnsQueryType::UNSPECIFIED));
 
   static constexpr DnsQueryTypeSet kUnwantedQueries = {DnsQueryType::HTTPS};
 
-  for (DnsQueryType query_type : Difference(query_types, kUnwantedQueries))
+  for (DnsQueryType query_type : Difference(query_types, kUnwantedQueries)) {
     transactions_.emplace_back(query_type, this);
+  }
+  CHECK(!transactions_.empty()) << "Only unwanted query types supplied.";
 }
 
 HostResolverMdnsTask::~HostResolverMdnsTask() {

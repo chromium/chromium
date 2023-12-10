@@ -145,7 +145,7 @@ IN_PROC_BROWSER_TEST_F(WebAppPreloadInstallerBrowserTest, InstallOneOemApp) {
   ASSERT_TRUE(result.Get());
 
   auto app_id = web_app::GenerateAppId(
-      absl::nullopt, GURL("https://www.example.com/index.html"));
+      std::nullopt, GURL("https://www.example.com/index.html"));
   VerifyAppInstalled(app_id, "Example App", InstallReason::kOem);
 
   histograms.ExpectBucketCount("AppPreloadService.WebAppInstall.InstallResult",
@@ -177,7 +177,7 @@ IN_PROC_BROWSER_TEST_F(WebAppPreloadInstallerBrowserTest,
   ASSERT_TRUE(result.Get());
 
   auto app_id = web_app::GenerateAppId(
-      absl::nullopt, GURL("https://www.example.com/index.html"));
+      std::nullopt, GURL("https://www.example.com/index.html"));
   VerifyAppInstalled(app_id, "Example App", InstallReason::kDefault);
 }
 
@@ -215,11 +215,11 @@ IN_PROC_BROWSER_TEST_F(WebAppPreloadInstallerBrowserTest,
   ASSERT_TRUE(result.Get());
 
   auto app_id = web_app::GenerateAppId(
-      absl::nullopt, GURL("https://www.example.com/index.html"));
+      std::nullopt, GURL("https://www.example.com/index.html"));
   VerifyAppInstalled(app_id, "Example App", InstallReason::kOem);
 
   auto app_id2 = web_app::GenerateAppId(
-      absl::nullopt, GURL("https://www.example2.com/index.html"));
+      std::nullopt, GURL("https://www.example2.com/index.html"));
   VerifyAppInstalled(app_id2, "Example App2", InstallReason::kOem);
 
   histograms.ExpectBucketCount("AppPreloadService.WebAppInstall.InstallResult",
@@ -309,7 +309,7 @@ IN_PROC_BROWSER_TEST_F(WebAppPreloadInstallerBrowserTest,
   ASSERT_FALSE(result.Get());
 
   auto app_id = web_app::GenerateAppId(
-      absl::nullopt, GURL("https://www.example.com/index.html"));
+      std::nullopt, GURL("https://www.example.com/index.html"));
   bool found =
       app_registry_cache().ForOneApp(app_id, [](const AppUpdate& update) {});
   ASSERT_FALSE(found);
@@ -335,7 +335,7 @@ IN_PROC_BROWSER_TEST_F(WebAppPreloadInstallerBrowserTest,
   ASSERT_FALSE(result.Get());
 
   auto app_id = web_app::GenerateAppId(
-      absl::nullopt, GURL("https://www.example.com/index.html"));
+      std::nullopt, GURL("https://www.example.com/index.html"));
   bool found =
       app_registry_cache().ForOneApp(app_id, [](const AppUpdate& update) {});
   ASSERT_FALSE(found);
@@ -358,7 +358,7 @@ IN_PROC_BROWSER_TEST_F(WebAppPreloadInstallerBrowserTest,
   ASSERT_FALSE(result.Get());
 
   auto app_id = web_app::GenerateAppId(
-      absl::nullopt, GURL("https://www.example.com/index.html"));
+      std::nullopt, GURL("https://www.example.com/index.html"));
   bool found =
       app_registry_cache().ForOneApp(app_id, [](const AppUpdate& update) {});
   ASSERT_FALSE(found);

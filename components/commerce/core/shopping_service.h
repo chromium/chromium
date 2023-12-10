@@ -34,6 +34,7 @@
 #include "components/sync/service/sync_service_observer.h"
 #include "components/unified_consent/consent_throttle.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 
 class GURL;
 class PrefService;
@@ -72,18 +73,6 @@ class SyncService;
 }  // namespace syncer
 
 namespace commerce {
-
-// Open graph keys.
-extern const char kOgImage[];
-extern const char kOgPriceAmount[];
-extern const char kOgPriceCurrency[];
-extern const char kOgProductLink[];
-extern const char kOgTitle[];
-extern const char kOgType[];
-
-// Specific open graph values we're interested in.
-extern const char kOgTypeOgProduct[];
-extern const char kOgTypeProductItem[];
 
 // The conversion multiplier to go from standard currency units to
 // micro-currency units.
@@ -496,8 +485,16 @@ class ShoppingService : public KeyedService,
   // per unique navigation.
   void ScheduleProductInfoLocalExtraction(WebWrapper* web);
 
-  // Run the on-page info extraction if needed.
+  // Check conditions to decide if the on-page info extraction should be run and
+  // trigger the run if needed.
   void TryRunningLocalExtractionForProductInfo(base::WeakPtr<WebWrapper> web);
+
+  // Actually run the on-page info extraction if the page is shopping page based
+  // on `is_shopping_page`.
+  void RunLocalExtractionForProductInfoForShoppingPage(
+      base::WeakPtr<WebWrapper> web,
+      const GURL& url,
+      absl::optional<bool> is_shopping_page);
 
   // Whether APIs like |GetProductInfoForURL| are enabled and allowed to be
   // used.
@@ -541,13 +538,9 @@ class ShoppingService : public KeyedService,
 
   // Handle the result of running the local extraction fallback for product
   // info.
-  void OnProductInfoLocalExtractionResult(const GURL url, base::Value result);
-
-  // Handle the result of JSON parsing obtained from running local extraction on
-  // the product info page.
-  void OnProductInfoJsonSanitizationCompleted(
-      const GURL url,
-      data_decoder::DataDecoder::ValueOrError result);
+  void OnProductInfoLocalExtractionResult(const GURL url,
+                                          ukm::SourceId source_id,
+                                          base::Value result);
 
   // Tries to determine whether a page is a PDP only from information in meta
   // tags extracted from the page. If enough information is present to call the

@@ -1,6 +1,9 @@
 {
   "$build/chromium_tests_builder_config": {
     "builder_config": {
+      "additional_exclusions": [
+        "infra/config/generated/builders/try/ios16-sdk-simulator/gn-args.json"
+      ],
       "builder_db": {
         "entries": [
           {
@@ -53,5 +56,5 @@
   },
   "builder_group": "tryserver.chromium.mac",
   "recipe": "chromium_trybot",
-  "xcode_build_version": "15c5042i"
+  "xcode_build_version": "15c65"
 }

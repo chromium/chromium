@@ -2649,10 +2649,6 @@ static const GLEnums::EnumToString enum_to_string_table[] = {
         "GL_COMPRESSED_SRGB_ALPHA_PVRTC_4BPPV1_EXT",
     },
     {
-        0x8AF0,
-        "GL_TEXTURE_FILTERING_HINT_CHROMIUM",
-    },
-    {
         0x8AF6,
         "GL_SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM",
     },

@@ -1979,19 +1979,11 @@ TEST_F(MapCoordinatesTest, FixedPositionUnderTransformWithScrollOffset) {
                                kIgnoreScrollOffset));
 }
 
-#if BUILDFLAG(IS_FUCHSIA)
-// TODO(crbug.com/1313287): Fix this test on Fuchsia and re-enable.
-#define MAYBE_IgnoreScrollOffsetWithWritingModesAndNonOverlayScrollbar \
-  DISABLED_IgnoreScrollOffsetWithWritingModesAndNonOverlayScrollbar
-#else
-#define MAYBE_IgnoreScrollOffsetWithWritingModesAndNonOverlayScrollbar \
-  IgnoreScrollOffsetWithWritingModesAndNonOverlayScrollbar
-#endif
 // This test verifies that ignoring scroll offset works with writing modes and
 // non-overlay scrollbar.
 TEST_F(MapCoordinatesTest,
-       MAYBE_IgnoreScrollOffsetWithWritingModesAndNonOverlayScrollbar) {
-  USE_NON_OVERLAY_SCROLLBARS();
+       IgnoreScrollOffsetWithWritingModesAndNonOverlayScrollbar) {
+  USE_NON_OVERLAY_SCROLLBARS_OR_QUIT();
 
   SetBodyInnerHTML(R"HTML(
     <style>

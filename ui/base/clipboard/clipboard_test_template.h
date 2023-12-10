@@ -22,6 +22,7 @@
 #include <string>
 #include <vector>
 
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/raw_ptr.h"
@@ -37,6 +38,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkScalar.h"
@@ -113,15 +115,16 @@ class MockPolicyController : public DataTransferPolicyController {
                bool(base::optional_ref<const DataTransferEndpoint> data_src,
                     base::optional_ref<const DataTransferEndpoint> data_dst,
                     const absl::optional<size_t> size));
-  MOCK_METHOD5(PasteIfAllowed,
-               void(const DataTransferEndpoint* const data_src,
-                    const DataTransferEndpoint* const data_dst,
-                    const absl::optional<size_t> size,
-                    content::RenderFrameHost* rfh,
-                    base::OnceCallback<void(bool)> callback));
+  MOCK_METHOD5(
+      PasteIfAllowed,
+      void(base::optional_ref<const DataTransferEndpoint> data_src,
+           base::optional_ref<const DataTransferEndpoint> data_dst,
+           absl::variant<size_t, std::vector<base::FilePath>> pasted_content,
+           content::RenderFrameHost* rfh,
+           base::OnceCallback<void(bool)> callback));
   MOCK_METHOD3(DropIfAllowed,
                void(const ui::OSExchangeData* drag_data,
-                    const ui::DataTransferEndpoint* data_dst,
+                    base::optional_ref<const ui::DataTransferEndpoint> data_dst,
                     base::OnceClosure drop_cb));
 };
 
@@ -751,8 +754,7 @@ TYPED_TEST(ClipboardTest, MultiplePickleTest) {
   EXPECT_EQ(payload1, unpickled_string1);
 }
 
-// TODO(crbug.com/106449): Implement multiple custom format write on Chrome OS.
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && !(BUILDFLAG(IS_IOS) && BUILDFLAG(USE_BLINK))
+#if !(BUILDFLAG(IS_IOS) && BUILDFLAG(USE_BLINK))
 TYPED_TEST(ClipboardTest, DataTest) {
   const std::string kFormatString = "web chromium/x-test-format";
   const std::u16string kFormatString16 = u"chromium/x-test-format";

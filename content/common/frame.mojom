@@ -52,7 +52,6 @@ import "third_party/blink/public/mojom/page/page.mojom";
 import "third_party/blink/public/mojom/picture_in_picture_window_options/picture_in_picture_window_options.mojom";
 import "third_party/blink/public/mojom/widget/platform_widget.mojom";
 import "third_party/blink/public/mojom/page/widget.mojom";
-import "third_party/blink/public/mojom/portal/portal.mojom";
 import "third_party/blink/public/mojom/renderer_preferences.mojom";
 import "third_party/blink/public/mojom/service_worker/controller_service_worker.mojom";
 import "third_party/blink/public/mojom/service_worker/service_worker_container.mojom";
@@ -73,8 +72,6 @@ enum ViewWidgetType {
   kTopLevel,
   // A GuestView used to render contents inside a <webview> element.
   kGuestView,
-  // A view used to render contents inside a <portal> element.
-  kPortal,
   // A view used to render contents inside a <fencedframe> element.
   kFencedFrame
 };
@@ -83,7 +80,7 @@ enum ViewWidgetType {
 // frames, this would be the type of the HTMLFrameOwnerElement for the remote
 // child frame in the parent process. Note that only HTMLFrameOwnerElements for
 // which CreateChildFrame is used are included here. Other
-// HTMLFrameOwnerElements such as portals do not use this.
+// HTMLFrameOwnerElements such as fenced frames do not use this.
 enum ChildFrameOwnerElementType {
   kIframe,
   kObject,
@@ -160,6 +157,9 @@ struct CreateViewParams {
 
   // Base background color of this view. Only used by a local main frame.
   skia.mojom.SkColor? base_background_color;
+
+  // The ColorProviderColorMaps for this view.
+  blink.mojom.ColorProviderColorMaps color_provider_colors;
 
   // Indicates which browsing context group the page in this view belongs to.
   blink.mojom.BrowsingContextGroupInfo browsing_context_group_info;
@@ -336,6 +336,10 @@ struct CreateFrameParams {
   // request associated interfaces from its corresponding `RenderFrameHostImpl`.
   pending_associated_remote<blink.mojom.AssociatedInterfaceProvider>
       associated_interface_provider_remote;
+
+  // Set if this frame corresponds to the main frame for a non top-level
+  // FrameTree (GuestView, fenced frame etc.).
+  bool is_for_nested_main_frame;
 };
 
 // Provided with each call to Frame::GetSerializedHtmlWithLocalLinks() so that
@@ -394,6 +398,13 @@ interface Frame {
   // could proceed as expected or not. In particular, it might be necessary to
   // restart the navigation if it is no-longer same-document, which can happen
   // if the renderer committed another navigation in the meantime.
+  //
+  // The [SupportsUrgent] attribute enables marking this message as urgent by
+  // calling the method in an UrgentMessageScope. Urgent messages cause the
+  // renderer to prioritize the IPC task queue while there are urgent messages
+  // pending, which increases their priority while maintaining ordering
+  // guarantees. See also mojo/public/tools/bindings/README.md.
+  [SupportsUrgent]
   CommitSameDocumentNavigation(
       blink.mojom.CommonNavigationParams common_params,
       blink.mojom.CommitNavigationParams request_params)
@@ -668,6 +679,9 @@ struct CreateNewWindowReply {
 
   // Indicates which browsing context group the page in this view belongs to.
   blink.mojom.BrowsingContextGroupInfo browsing_context_group_info;
+
+  // The ColorProviderColorMaps for this view.
+  blink.mojom.ColorProviderColorMaps color_provider_colors;
 };
 
 // A per-navigation interface passed along with the BeginNavigation call, used
@@ -691,11 +705,11 @@ interface FrameHost {
   [Sync] CreateNewWindow(CreateNewWindowParams params)
       => (CreateNewWindowStatus status, CreateNewWindowReply? reply);
 
-  // Asynchronously creates a child frame. A routing ID must be allocated first
-  // by calling RenderMessageFilter::GenerateFrameRoutingID()
+  // Asynchronously creates a child frame. A blink.mojom.LocalFrameToken must
+  // be allocated first by calling RenderMessageFilter::GenerateFrameRoutingID()
   // Each of these messages will have a corresponding mojom::FrameHost::Detach
   // API sent when the frame is detached from the DOM.
-  CreateChildFrame(int32 child_routing_id,
+  CreateChildFrame(blink.mojom.LocalFrameToken child_frame_token,
                    pending_associated_remote<content.mojom.Frame> frame,
                    pending_receiver<blink.mojom.BrowserInterfaceBroker>
                      browser_interface_broker,

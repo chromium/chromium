@@ -9,20 +9,31 @@
 
 #include "base/check.h"
 #include "base/no_destructor.h"
+#include "net/base/proxy_server.h"
 #include "net/base/proxy_string_util.h"
 
 namespace net {
 
 ProxyChain::ProxyChain() {
-  proxy_server_list_ = absl::nullopt;
+  proxy_server_list_ = std::nullopt;
 }
 
 ProxyChain::ProxyChain(const ProxyChain& other) = default;
 ProxyChain::ProxyChain(ProxyChain&& other) noexcept = default;
 
 ProxyChain& ProxyChain::operator=(const ProxyChain& other) = default;
-ProxyChain& ProxyChain::operator=(ProxyChain&& other) noexcept = default;
-
+// Note: We define this move assignment operator explicitly to make the
+// `ForIpProtection()` method safer to use. Specifically, we want to prevent
+// moving the `proxy_server_list_` in the event that self-assignment is
+// occurring (i.e. "proxy_chain = std::move(proxy_chain).ForIpProtection()") or
+// else the list of ProxyServers will get cleared.
+ProxyChain& ProxyChain::operator=(ProxyChain&& other) noexcept {
+  if (this != &other) {
+    proxy_server_list_ = std::move(other.proxy_server_list_);
+    is_for_ip_protection_ = other.is_for_ip_protection_;
+  }
+  return *this;
+}
 ProxyChain::~ProxyChain() = default;
 
 // TODO(crbug.com/1491092): Remove is_direct() check when
@@ -39,7 +50,7 @@ ProxyChain::ProxyChain(ProxyServer::Scheme scheme,
 ProxyChain::ProxyChain(std::vector<ProxyServer> proxy_server_list)
     : proxy_server_list_(std::move(proxy_server_list)) {
   if (!IsValidInternal()) {
-    proxy_server_list_ = absl::nullopt;
+    proxy_server_list_ = std::nullopt;
   }
 }
 
@@ -64,7 +75,16 @@ const ProxyServer& ProxyChain::proxy_server() const {
                                                   HostPortPair());
     return *direct;
   }
+  CHECK_EQ(1u, proxy_server_list_->size())
+      << "Cannot call `proxy_server() on a ProxyChain with multiple proxies: "
+      << ToDebugString();
   return proxy_server_list_.value().at(0);
+}
+
+ProxyChain&& ProxyChain::ForIpProtection() && {
+  CHECK(IsValid());
+  is_for_ip_protection_ = true;
+  return std::move(*this);
 }
 
 std::string ProxyChain::ToDebugString() const {
@@ -79,7 +99,11 @@ std::string ProxyChain::ToDebugString() const {
     }
     debug_string += ProxyServerToProxyUri(proxy_server);
   }
-  return "[" + debug_string + "]";
+  debug_string = "[" + debug_string + "]";
+  if (is_for_ip_protection()) {
+    debug_string += " (IP Protection)";
+  }
+  return debug_string;
 }
 
 // TODO(crbug.com/1491092): Remove is_direct() checks when

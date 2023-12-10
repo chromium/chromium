@@ -10,6 +10,7 @@
 
 #include <array>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -35,7 +36,6 @@
 #include "chrome/updater/policy/service.h"
 #include "chrome/updater/util/util.h"
 #include "components/update_client/network.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace updater {
@@ -461,7 +461,7 @@ base::OnceClosure LibcurlNetworkFetcher::DownloadToFile(
 class NetworkFetcherFactory::Impl {};
 
 NetworkFetcherFactory::NetworkFetcherFactory(
-    absl::optional<PolicyServiceProxyConfiguration>) {}
+    std::optional<PolicyServiceProxyConfiguration>) {}
 NetworkFetcherFactory::~NetworkFetcherFactory() = default;
 
 std::unique_ptr<update_client::NetworkFetcher> NetworkFetcherFactory::Create()

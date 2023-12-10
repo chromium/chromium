@@ -9,15 +9,18 @@
 #include <vector>
 
 #include "ash/ash_export.h"
-#include "ash/public/cpp/tablet_mode_observer.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_observer.h"
 #include "ash/system/holding_space/holding_space_view_delegate.h"
 #include "ash/system/screen_layout_observer.h"
 #include "ash/system/tray/tray_bubble_wrapper.h"
-#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "ui/display/display_observer.h"
+
+namespace display {
+enum class TabletState;
+}  // namespace display
 
 namespace ash {
 
@@ -27,7 +30,7 @@ class HoldingSpaceTrayChildBubble;
 // The bubble associated with the `HoldingSpaceTray`.
 class ASH_EXPORT HoldingSpaceTrayBubble : public ScreenLayoutObserver,
                                           public ShelfObserver,
-                                          public TabletModeObserver {
+                                          public display::DisplayObserver {
  public:
   explicit HoldingSpaceTrayBubble(HoldingSpaceTray* holding_space_tray);
   HoldingSpaceTrayBubble(const HoldingSpaceTrayBubble&) = delete;
@@ -64,9 +67,8 @@ class ASH_EXPORT HoldingSpaceTrayBubble : public ScreenLayoutObserver,
   // ShelfObserver:
   void OnAutoHideStateChanged(ShelfAutoHideState new_state) override;
 
-  // TabletModeObserver:
-  void OnTabletModeStarted() override;
-  void OnTabletModeEnded() override;
+  // display::DisplayObserver:
+  void OnDisplayTabletStateChanged(display::TabletState state) override;
 
   // The owner of this class.
   const raw_ptr<HoldingSpaceTray, DanglingUntriaged | ExperimentalAsh>
@@ -86,8 +88,7 @@ class ASH_EXPORT HoldingSpaceTrayBubble : public ScreenLayoutObserver,
   std::unique_ptr<ui::EventHandler> event_handler_;
 
   base::ScopedObservation<Shelf, ShelfObserver> shelf_observation_{this};
-  base::ScopedObservation<TabletModeController, TabletModeObserver>
-      tablet_mode_observation_{this};
+  display::ScopedDisplayObserver display_observer_{this};
 };
 
 }  // namespace ash

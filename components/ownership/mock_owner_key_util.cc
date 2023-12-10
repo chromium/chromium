@@ -48,8 +48,15 @@ crypto::ScopedSECKEYPrivateKey MockOwnerKeyUtil::GenerateKeyPair(
 crypto::ScopedSECKEYPrivateKey MockOwnerKeyUtil::FindPrivateKeyInSlot(
     const std::vector<uint8_t>& key,
     PK11SlotInfo* slot) {
-  if (!private_key_)
+  if (!private_key_ || !slot) {
     return nullptr;
+  }
+
+  if (private_key_slot_id_.has_value() &&
+      (private_key_slot_id_.value() != PK11_GetSlotID(slot))) {
+    return nullptr;
+  }
+
   return crypto::ScopedSECKEYPrivateKey(
       SECKEY_CopyPrivateKey(private_key_.get()));
 }
@@ -76,16 +83,32 @@ void MockOwnerKeyUtil::ImportPrivateKeyAndSetPublicKey(
     std::unique_ptr<crypto::RSAPrivateKey> key) {
   crypto::EnsureNSSInit();
 
+  crypto::ScopedPK11Slot slot(PK11_GetInternalSlot());
+  CHECK(slot);
+  ImportPrivateKeyAndSetPublicKeyImpl(std::move(key), slot.get());
+}
+
+void MockOwnerKeyUtil::ImportPrivateKeyAndSetPublicKeyImpl(
+    std::unique_ptr<crypto::RSAPrivateKey> key,
+    PK11SlotInfo* slot) {
+  CHECK(slot);
+  crypto::EnsureNSSInit();
+
   CHECK(key->ExportPublicKey(&public_key_));
 
   std::vector<uint8_t> key_exported;
   CHECK(key->ExportPrivateKey(&key_exported));
 
-  crypto::ScopedPK11Slot slot(PK11_GetInternalSlot());
-  CHECK(slot);
   private_key_ = crypto::ImportNSSKeyFromPrivateKeyInfo(
-      slot.get(), key_exported, false /* not permanent */);
+      slot, key_exported, false /* not permanent */);
   CHECK(private_key_);
+}
+
+void MockOwnerKeyUtil::ImportPrivateKeyInSlotAndSetPublicKey(
+    std::unique_ptr<crypto::RSAPrivateKey> key,
+    PK11SlotInfo* slot) {
+  private_key_slot_id_ = PK11_GetSlotID(slot);
+  ImportPrivateKeyAndSetPublicKeyImpl(std::move(key), slot);
 }
 
 void MockOwnerKeyUtil::SimulateGenerateKeyFailure(int fail_times) {

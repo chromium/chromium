@@ -7,6 +7,7 @@
 
 #include "ash/login/ui/login_base_bubble_view.h"
 #include "ash/login/ui/login_error_bubble.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 
 namespace ash {
 
@@ -14,7 +15,9 @@ namespace ash {
 constexpr int kHorizontalPaddingAuthErrorBubbleDp = 8;
 constexpr int kVerticalPaddingAuthErrorBubbleDp = 8;
 
-class AuthErrorBubble : public LoginErrorBubble {
+class ASH_EXPORT AuthErrorBubble : public LoginErrorBubble {
+  METADATA_HEADER(AuthErrorBubble, LoginErrorBubble)
+
  public:
   AuthErrorBubble() {
     set_positioning_strategy(PositioningStrategy::kTryAfterThenBefore);

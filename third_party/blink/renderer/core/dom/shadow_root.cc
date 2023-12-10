@@ -154,7 +154,8 @@ void ShadowRoot::setInnerHTML(const String& html,
                               ExceptionState& exception_state) {
   if (DocumentFragment* fragment = CreateFragmentForInnerOuterHTML(
           html, &host(), kAllowScriptingContent,
-          /*include_shadow_roots=*/false, exception_state)) {
+          Element::IncludeShadowRoots::kDontInclude,
+          Element::ForceHtml::kDontForce, exception_state)) {
     ReplaceChildrenWithFragment(this, fragment, exception_state);
     if (auto* element = DynamicTo<HTMLElement>(host()))
       element->AdjustDirectionalityIfNeededAfterShadowRootChanged();
@@ -165,7 +166,8 @@ void ShadowRoot::setHTMLUnsafe(const String& html,
                                ExceptionState& exception_state) {
   if (DocumentFragment* fragment = CreateFragmentForInnerOuterHTML(
           html, &host(), kAllowScriptingContent,
-          /*include_shadow_roots=*/true, exception_state)) {
+          Element::IncludeShadowRoots::kInclude, Element::ForceHtml::kDontForce,
+          exception_state)) {
     ReplaceChildrenWithFragment(this, fragment, exception_state);
     if (auto* element = DynamicTo<HTMLElement>(host())) {
       element->AdjustDirectionalityIfNeededAfterShadowRootChanged();

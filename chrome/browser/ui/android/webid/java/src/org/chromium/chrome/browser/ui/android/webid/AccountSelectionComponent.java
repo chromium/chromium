@@ -37,16 +37,12 @@ public interface AccountSelectionComponent {
         void onDismissed(@IdentityRequestDialogDismissReason int dismissReason);
 
         /** Called when the user clicks on the button to sign in to the IDP. */
-        void onSignInToIdp(GURL idpLoginUrl);
+        void onLoginToIdP(GURL idpLoginUrl);
 
-        /**
-         * Called when the user clicks on the more details button in an error dialog.
-         */
+        /** Called when the user clicks on the more details button in an error dialog. */
         void onMoreDetails();
 
-        /**
-         * Called on the opener when a modal dialog that it opened has been closed.
-         */
+        /** Called on the opener when a modal dialog that it opened has been closed. */
         void onModalDialogClosed();
     }
 
@@ -61,11 +57,17 @@ public interface AccountSelectionComponent {
      * @param isAutoReauthn A {@link boolean} that represents whether this is an auto re-authn flow.
      * @param rpContext is a {@link String} representing the desired text to be used in the title of
      *         the FedCM prompt: "signin", "continue", etc.
-
+     *
      */
-    void showAccounts(String topFrameEtldPlusOne, String iframeEtldPlusOne, String idpEtldPlusOne,
-            List<Account> accounts, IdentityProviderMetadata idpMetadata,
-            ClientIdMetadata clientMetadata, boolean isAutoReauthn, String rpContext);
+    void showAccounts(
+            String topFrameEtldPlusOne,
+            String iframeEtldPlusOne,
+            String idpEtldPlusOne,
+            List<Account> accounts,
+            IdentityProviderMetadata idpMetadata,
+            ClientIdMetadata clientMetadata,
+            boolean isAutoReauthn,
+            String rpContext);
 
     /**
      * Displays a dialog telling the user that they can sign in to an IDP for the purpose of
@@ -79,8 +81,12 @@ public interface AccountSelectionComponent {
      * @param rpContext is a {@link String} representing the desired text to be used in the title of
      *         the FedCM prompt: "signin", "continue", etc.
      */
-    void showFailureDialog(String topFrameForDisplay, String iframeForDisplay, String idpForDisplay,
-            IdentityProviderMetadata idpMetadata, String rpContext);
+    void showFailureDialog(
+            String topFrameForDisplay,
+            String iframeForDisplay,
+            String idpForDisplay,
+            IdentityProviderMetadata idpMetadata,
+            String rpContext);
 
     /**
      * Displays a dialog telling the user that an error has occurred in their attempt to sign-in to
@@ -95,22 +101,21 @@ public interface AccountSelectionComponent {
      * @param IdentityCredentialTokenError is contains the error code and url to display in the
      *         FedCM prompt.
      */
-    void showErrorDialog(String topFrameForDisplay, String iframeForDisplay, String idpForDisplay,
-            IdentityProviderMetadata idpMetadata, String rpContext,
+    void showErrorDialog(
+            String topFrameForDisplay,
+            String iframeForDisplay,
+            String idpForDisplay,
+            IdentityProviderMetadata idpMetadata,
+            String rpContext,
             IdentityCredentialTokenError error);
 
-    /**
-     * Closes the outstanding bottom sheet.
-     */
+    /** Closes the outstanding bottom sheet. */
     void close();
 
-    /**
-     * Gets the sheet's title.
-     */
+    /** Gets the sheet's title. */
     String getTitle();
-    /**
-     * Gets the sheet's subtitle, if any, or null..
-     */
+
+    /** Gets the sheet's subtitle, if any, or null.. */
     String getSubtitle();
 
     /**
@@ -119,13 +124,9 @@ public interface AccountSelectionComponent {
      */
     WebContents showModalDialog(GURL url);
 
-    /**
-     * Closes a modal dialog, if one is opened.
-     */
+    /** Closes a modal dialog, if one is opened. */
     void closeModalDialog();
 
-    /**
-     * Gets notified about the modal dialog that it opened being closed.
-     */
+    /** Gets notified about the modal dialog that it opened being closed. */
     void onModalDialogClosed();
 }

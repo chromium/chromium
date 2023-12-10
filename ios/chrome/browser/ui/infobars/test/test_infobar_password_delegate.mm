@@ -13,7 +13,7 @@
 #import "components/password_manager/core/browser/password_manager_metrics_util.h"
 #import "components/password_manager/core/browser/stub_form_saver.h"
 #import "components/password_manager/core/browser/stub_password_manager_client.h"
-#import "ios/chrome/browser/infobars/infobar_utils.h"
+#import "ios/chrome/browser/infobars/model/infobar_utils.h"
 #import "testing/gmock/include/gmock/gmock.h"
 
 using password_manager::PasswordForm;

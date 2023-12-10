@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
+#include "chrome/browser/ui/views/extensions/extensions_menu_coordinator.h"
 #include "chrome/browser/ui/views/extensions/extensions_request_access_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_interactive_uitest.h"
@@ -905,6 +906,27 @@ class ExtensionsToolbarContainerFeatureUITest
         ->GetExtensionsToolbarControls()
         ->request_access_button();
   }
+
+  ExtensionsToolbarButton* extensions_toolbar_button() {
+    return GetExtensionsToolbarContainer()
+        ->GetExtensionsToolbarControls()
+        ->extensions_button();
+  }
+
+  ExtensionsMenuCoordinator* extensions_menu_coordinator() {
+    return GetExtensionsToolbarContainer()
+        ->GetExtensionsMenuCoordinatorForTesting();
+  }
+
+  extensions::ExtensionContextMenuModel* GetContextMenuForExtension(
+      const extensions::ExtensionId& extension_id) {
+    return static_cast<extensions::ExtensionContextMenuModel*>(
+        GetExtensionsToolbarContainer()
+            ->GetActionForId(extension_id)
+            ->GetContextMenu(extensions::ExtensionContextMenuModel::
+                                 ContextMenuSource::kMenuItem));
+  }
+
   content::WebContents* web_contents() { return web_contents_; }
 
  private:
@@ -1047,6 +1069,29 @@ IN_PROC_BROWSER_TEST_P(
             UserSiteAccess::kOnClick);
   EXPECT_EQ(permissions_manager->GetUserSiteAccess(*extensionC, url),
             UserSiteAccess::kOnAllSites);
+}
+
+// Tests that the extension menu (puzzle piece menu) closes alongside the
+// extensions context menu (3 dot while puzzle piece menu is open) when the side
+// panel context menu item is selected.
+IN_PROC_BROWSER_TEST_F(ExtensionsToolbarContainerFeatureUITest,
+                       SidePanelContextMenuItemClosesExtensionsMenu) {
+  scoped_refptr<const extensions::Extension> extension =
+      InstallExtension("Extension");
+
+  EXPECT_FALSE(extensions_menu_coordinator()->IsShowing());
+
+  ClickButton(extensions_toolbar_button());
+  EXPECT_TRUE(extensions_menu_coordinator()->IsShowing());
+
+  // Simulate selecting the "Open side panel" menu item.
+  extensions::ExtensionContextMenuModel* menu =
+      GetContextMenuForExtension(extension->id());
+  menu->ExecuteCommand(
+      extensions::ExtensionContextMenuModel::TOGGLE_SIDE_PANEL_VISIBILITY, 0);
+  menu->MenuClosed(menu);
+
+  EXPECT_FALSE(extensions_menu_coordinator()->IsShowing());
 }
 
 // Tests that clicking the request access button grants one time access to the

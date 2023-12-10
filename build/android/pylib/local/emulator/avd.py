@@ -556,7 +556,7 @@ class AvdConfig:
       # https://bit.ly/3agmjcM).
       # Wait for this step to complete since it can take a while for old OSs
       # like M, otherwise the avd may have "Encryption Unsuccessful" error.
-      instance.device.WaitUntilFullyBooted(decrypt=True, timeout=180, retries=0)
+      instance.device.WaitUntilFullyBooted(decrypt=True, timeout=360, retries=0)
 
       if additional_apks:
         for apk in additional_apks:

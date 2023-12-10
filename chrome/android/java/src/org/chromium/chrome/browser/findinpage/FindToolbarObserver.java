@@ -4,17 +4,11 @@
 
 package org.chromium.chrome.browser.findinpage;
 
-/**
- * Observer for find in page actions.
- */
+/** Observer for find in page actions. */
 public interface FindToolbarObserver {
-    /**
-     * Notified when the find in page toolbar has been shown.
-     */
+    /** Notified when the find in page toolbar has been shown. */
     void onFindToolbarShown();
 
-    /**
-     * Notified when the find in page toolbar has been hidden.
-     */
+    /** Notified when the find in page toolbar has been hidden. */
     void onFindToolbarHidden();
 }

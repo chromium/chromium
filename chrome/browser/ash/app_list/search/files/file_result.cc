@@ -81,10 +81,10 @@ ash::FileMetadata GetFileMetadata(base::FilePath file_path,
   base::File::Info info;
   if (base::GetFileInfo(file_path, &info)) {
     metadata.file_info = info;
-    net::GetMimeTypeFromFile(file_path, &metadata.mime_type);
   }
   metadata.file_path = file_path;
-  metadata.virtual_path = displayable_path;
+  metadata.file_name = displayable_path.BaseName();
+  metadata.displayable_folder_path = displayable_path.DirName();
 
   return metadata;
 }
@@ -138,7 +138,7 @@ void LogRelevance(ChromeSearchResult::ResultType result_type,
 
 FileResult::FileResult(const std::string& id,
                        const base::FilePath& filepath,
-                       const absl::optional<std::u16string>& details,
+                       const std::optional<std::u16string>& details,
                        ResultType result_type,
                        DisplayType display_type,
                        float relevance,
@@ -222,15 +222,15 @@ void FileResult::Open(int event_flags) {
   }
 }
 
-absl::optional<std::string> FileResult::DriveId() const {
+std::optional<std::string> FileResult::DriveId() const {
   return drive_id_;
 }
 
 // static
 double FileResult::CalculateRelevance(
-    const absl::optional<TokenizedString>& query,
+    const std::optional<TokenizedString>& query,
     const base::FilePath& filepath,
-    const absl::optional<base::Time>& last_accessed) {
+    const std::optional<base::Time>& last_accessed) {
   const std::u16string raw_title =
       base::UTF8ToUTF16(StripHostedFileExtensions(filepath.BaseName().value()));
   const TokenizedString title(raw_title, TokenizedString::Mode::kWords);

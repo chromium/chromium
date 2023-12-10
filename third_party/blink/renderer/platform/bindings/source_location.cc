@@ -51,7 +51,7 @@ std::unique_ptr<SourceLocation> SourceLocation::CaptureWithFullStackTrace() {
 // static
 std::unique_ptr<v8_inspector::V8StackTrace>
 SourceLocation::CaptureStackTraceInternal(bool full) {
-  v8::Isolate* isolate = v8::Isolate::GetCurrent();
+  v8::Isolate* isolate = v8::Isolate::TryGetCurrent();
   ThreadDebugger* debugger = ThreadDebugger::From(isolate);
   if (!debugger || !isolate->InContext())
     return nullptr;
@@ -217,12 +217,13 @@ std::unique_ptr<SourceLocation> CaptureSourceLocation() {
 }
 
 std::unique_ptr<SourceLocation> CaptureSourceLocation(
+    v8::Isolate* isolate,
     v8::Local<v8::Function> function) {
   if (!function.IsEmpty())
     return std::make_unique<SourceLocation>(
         ToCoreStringWithUndefinedOrNullCheck(
-            function->GetScriptOrigin().ResourceName()),
-        ToCoreStringWithUndefinedOrNullCheck(function->GetName()),
+            isolate, function->GetScriptOrigin().ResourceName()),
+        ToCoreStringWithUndefinedOrNullCheck(isolate, function->GetName()),
         function->GetScriptLineNumber() + 1,
         function->GetScriptColumnNumber() + 1, nullptr, function->ScriptId());
   return std::make_unique<SourceLocation>(String(), String(), 0, 0, nullptr, 0);

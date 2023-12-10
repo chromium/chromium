@@ -16,8 +16,10 @@
 #include "components/autofill/content/common/mojom/autofill_driver.mojom.h"
 #include "components/autofill/content/renderer/autofill_agent.h"
 #include "components/autofill/content/renderer/autofill_agent_test_api.h"
+#include "components/autofill/content/renderer/form_tracker.h"
 #include "components/autofill/content/renderer/password_generation_agent.h"
 #include "components/autofill/content/renderer/test_password_autofill_agent.h"
+#include "components/autofill/content/renderer/test_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
@@ -32,7 +34,9 @@
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/metrics/document_update_reason.h"
 #include "third_party/blink/public/web/web_form_control_element.h"
+#include "third_party/blink/public/web/web_frame_widget.h"
 
 using ::testing::_;
 using ::testing::AllOf;
@@ -50,6 +54,15 @@ namespace {
 
 // The throttling amount of ProcessForms().
 constexpr base::TimeDelta kFormsSeenThrottle = base::Milliseconds(100);
+
+class MockFormTracker : public FormTracker {
+ public:
+  using FormTracker::FormTracker;
+  MOCK_METHOD(void,
+              ElementDisappeared,
+              (const blink::WebElement& element),
+              (override));
+};
 
 class MockAutofillDriver : public mojom::AutofillDriver {
  public:
@@ -160,8 +173,6 @@ auto HasSingleElementWhich(Matchers... element_matchers) {
   return AllOf(SizeIs(1), ElementsAre(AllOf(element_matchers...)));
 }
 
-}  // namespace
-
 // TODO(crbug.com/63573): Add many more test cases.
 class AutofillAgentTest : public content::RenderViewTest {
  public:
@@ -183,11 +194,18 @@ class AutofillAgentTest : public content::RenderViewTest {
     autofill_agent_ = std::make_unique<AutofillAgent>(
         GetMainRenderFrame(), std::move(password_autofill_agent),
         std::move(password_generation), &associated_interfaces_);
+    autofill_agent_->set_form_tracker_for_testing(
+        std::make_unique<MockFormTracker>(GetMainRenderFrame()));
   }
 
   void TearDown() override {
     autofill_agent_.reset();
     RenderViewTest::TearDown();
+  }
+
+  MockFormTracker& form_tracker() {
+    return *static_cast<MockFormTracker*>(
+        autofill_agent_->form_tracker_for_testing());
   }
 
   // AutofillDriver::FormsSeen() is throttled indirectly because some callsites
@@ -211,7 +229,7 @@ class AutofillAgentTestWithFeatures : public AutofillAgentTest {
     scoped_features_.InitWithFeatures(
         /*enabled_features=*/
         {blink::features::kAutofillUseDomNodeIdForRendererId,
-         blink::features::kAutofillDetectRemovedFormControls,
+         features::kAutofillDetectRemovedFormControls,
          features::kAutofillContentEditables},
         /*disabled_features=*/{});
   }
@@ -234,7 +252,7 @@ TEST_F(AutofillAgentTestWithFeatures, FormsSeen_NoEmpty) {
 
 TEST_F(AutofillAgentTestWithFeatures, FormsSeen_NewFormUnowned) {
   EXPECT_CALL(autofill_driver_,
-              FormsSeen(HasSingleElementWhich(HasFormId(0), HasNumFields(1),
+              FormsSeen(HasSingleElementWhich(HasFormId(0u), HasNumFields(1),
                                               HasNumChildFrames(0)),
                         SizeIs(0)));
   LoadHTML(R"(<body> <input> </body>)");
@@ -467,13 +485,101 @@ TEST_F(AutofillAgentTest, UndoAutofillSetsLastQueriedElement) {
   EXPECT_EQ(1U, forms.size());
   FormData form;
   EXPECT_TRUE(form_util::WebFormElementToFormData(
-      forms[0], blink::WebFormControlElement(), nullptr,
+      forms[0], blink::WebFormControlElement(),
+      *base::MakeRefCounted<FieldDataManager>(),
       {form_util::ExtractOption::kValue}, &form, nullptr));
 
   ASSERT_TRUE(autofill_agent_->focused_element().IsNull());
   autofill_agent_->ApplyFormAction(mojom::ActionType::kUndo,
-                                   mojom::ActionPersistence::kFill, form);
+                                   mojom::ActionPersistence::kFill,
+                                   form.unique_renderer_id, form.fields);
   EXPECT_FALSE(autofill_agent_->focused_element().IsNull());
 }
+
+TEST_F(AutofillAgentTest, HideElementTriggersFormTracker_DisplayNone) {
+  LoadHTML(R"(
+    <form id="form_id">
+      <input id="field_id">
+    </form>
+  )");
+  blink::WebElement element =
+      GetElementById(GetMainFrame()->GetDocument(), "field_id");
+
+  EXPECT_CALL(form_tracker(), ElementDisappeared(element));
+  ExecuteJavaScriptForTests(
+      R"(document.forms[0].elements[0].style.display = 'none';)");
+  GetWebFrameWidget()->UpdateAllLifecyclePhases(
+      blink::DocumentUpdateReason::kTest);
+}
+
+TEST_F(AutofillAgentTest, HideElementTriggersFormTracker_VisibilityHidden) {
+  LoadHTML(R"(
+    <form id="form_id">
+      <input id="field_id">
+    </form>
+  )");
+  blink::WebElement element =
+      GetElementById(GetMainFrame()->GetDocument(), "field_id");
+
+  EXPECT_CALL(form_tracker(), ElementDisappeared(element));
+  ExecuteJavaScriptForTests(
+      R"(document.forms[0].elements[0].style.visibility = 'hidden';)");
+  GetWebFrameWidget()->UpdateAllLifecyclePhases(
+      blink::DocumentUpdateReason::kTest);
+}
+
+TEST_F(AutofillAgentTest, HideElementTriggersFormTracker_TypeHidden) {
+  LoadHTML(R"(
+    <form id="form_id">
+      <input id="field_id">
+    </form>
+  )");
+  blink::WebElement element =
+      GetElementById(GetMainFrame()->GetDocument(), "field_id");
+
+  EXPECT_CALL(form_tracker(), ElementDisappeared(element));
+  ExecuteJavaScriptForTests(
+      R"(document.forms[0].elements[0].setAttribute('type', 'hidden');)");
+  GetWebFrameWidget()->UpdateAllLifecyclePhases(
+      blink::DocumentUpdateReason::kTest);
+}
+
+TEST_F(AutofillAgentTest, HideElementTriggersFormTracker_HiddenTrue) {
+  LoadHTML(R"(
+    <form id="form_id">
+      <input id="field_id">
+    </form>
+  )");
+  blink::WebElement element =
+      GetElementById(GetMainFrame()->GetDocument(), "field_id");
+
+  EXPECT_CALL(form_tracker(), ElementDisappeared(element));
+  ExecuteJavaScriptForTests(
+      R"(document.forms[0].elements[0].setAttribute('hidden', 'true');)");
+  GetWebFrameWidget()->UpdateAllLifecyclePhases(
+      blink::DocumentUpdateReason::kTest);
+}
+
+TEST_F(AutofillAgentTest, HideElementTriggersFormTracker_ShadowDom) {
+  LoadHTML(R"(
+   <form id="form_id">
+    <div>
+      <template shadowrootmode="open">
+        <slot></slot>
+      </template>
+      <input id="field_id">
+    </div>
+  </form>
+  )");
+  blink::WebElement element =
+      GetElementById(GetMainFrame()->GetDocument(), "field_id");
+
+  EXPECT_CALL(form_tracker(), ElementDisappeared(element));
+  ExecuteJavaScriptForTests(R"(field_id.slot = "unknown";)");
+  GetWebFrameWidget()->UpdateAllLifecyclePhases(
+      blink::DocumentUpdateReason::kTest);
+}
+
+}  // namespace
 
 }  // namespace autofill

@@ -25,11 +25,17 @@
 namespace safe_browsing {
 namespace {
 
-content::WebContents* GetWebContentsFromID(int render_process_id,
-                                           int render_frame_id) {
+content::WebContents* GetWebContentsFromToken(
+    int render_process_id,
+    const std::optional<blink::LocalFrameToken>& frame_token) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (!frame_token) {
+    return nullptr;
+  }
   content::RenderFrameHost* render_frame_host =
-      content::RenderFrameHost::FromID(render_process_id, render_frame_id);
+      content::RenderFrameHost::FromFrameToken(
+          content::GlobalRenderFrameHostToken(render_process_id,
+                                              frame_token.value()));
   if (!render_frame_host) {
     return nullptr;
   }
@@ -132,7 +138,7 @@ void MojoSafeBrowsingImpl::MaybeCreate(
 }
 
 void MojoSafeBrowsingImpl::CreateCheckerAndCheck(
-    int32_t render_frame_id,
+    const std::optional<blink::LocalFrameToken>& frame_token,
     mojo::PendingReceiver<mojom::SafeBrowsingUrlChecker> receiver,
     const GURL& url,
     const std::string& method,
@@ -147,9 +153,13 @@ void MojoSafeBrowsingImpl::CreateCheckerAndCheck(
           ? content::BrowserThread::UI
           : content::BrowserThread::IO);
 
+  std::optional<base::UnguessableToken> sb_frame_token;
+  if (frame_token) {
+    sb_frame_token = frame_token->value();
+  }
   if (delegate_->ShouldSkipRequestCheck(
           url, content::RenderFrameHost::kNoFrameTreeNodeId, render_process_id_,
-          render_frame_id, originated_from_service_worker)) {
+          sb_frame_token, originated_from_service_worker)) {
     // Ensure that we don't destroy an uncalled CreateCheckerAndCheckCallback
     if (callback) {
       std::move(callback).Run(mojo::NullReceiver(), true /* proceed */,
@@ -170,9 +180,9 @@ void MojoSafeBrowsingImpl::CreateCheckerAndCheck(
   auto checker_impl = std::make_unique<SafeBrowsingUrlCheckerImpl>(
       headers, static_cast<int>(load_flags), request_destination,
       has_user_gesture, delegate_,
-      base::BindRepeating(&GetWebContentsFromID, render_process_id_,
-                          static_cast<int>(render_frame_id)),
-      /*weak_web_state=*/nullptr, render_process_id_, render_frame_id,
+      base::BindRepeating(&GetWebContentsFromToken, render_process_id_,
+                          frame_token),
+      /*weak_web_state=*/nullptr, render_process_id_, sb_frame_token,
       content::RenderFrameHost::kNoFrameTreeNodeId,
       /*url_real_time_lookup_enabled=*/false,
       /*can_urt_check_subresource_url=*/false,

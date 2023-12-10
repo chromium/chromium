@@ -6,10 +6,10 @@
 
 namespace blink {
 
-class NGSVGTextLayoutAlgorithmTest : public RenderingTest {};
+class SvgTextLayoutAlgorithmTest : public RenderingTest {};
 
 // We had a crash in a case where connected characters are hidden.
-TEST_F(NGSVGTextLayoutAlgorithmTest, PositionOnPathCrash) {
+TEST_F(SvgTextLayoutAlgorithmTest, PositionOnPathCrash) {
   SetBodyInnerHTML(R"HTML(
 <svg xmlns="http://www.w3.org/2000/svg" width="400" height="400">
   <path fill="transparent" id="f" d="m100 200 L 300 200"/>
@@ -24,7 +24,7 @@ TEST_F(NGSVGTextLayoutAlgorithmTest, PositionOnPathCrash) {
   // Pass if no crashes.
 }
 
-TEST_F(NGSVGTextLayoutAlgorithmTest, EmptyTextLengthCrash) {
+TEST_F(SvgTextLayoutAlgorithmTest, EmptyTextLengthCrash) {
   SetBodyInnerHTML(R"HTML(
 <svg>
 <text>
@@ -35,7 +35,7 @@ C AxBxC
   // Pass if no crashes.
 }
 
-TEST_F(NGSVGTextLayoutAlgorithmTest, EmptyTextLengthSpacingAndGlyphsCrash) {
+TEST_F(SvgTextLayoutAlgorithmTest, EmptyTextLengthSpacingAndGlyphsCrash) {
   SetBodyInnerHTML(R"HTML(
   <svg xmlns="http://www.w3.org/2000/svg">
   <text textLength="5" lengthAdjust="spacingAndGlyphs">&zwj;<!---->&zwj;</text>
@@ -44,7 +44,7 @@ TEST_F(NGSVGTextLayoutAlgorithmTest, EmptyTextLengthSpacingAndGlyphsCrash) {
   // Pass if no crashes.
 }
 
-TEST_F(NGSVGTextLayoutAlgorithmTest, HugeScaleCrash) {
+TEST_F(SvgTextLayoutAlgorithmTest, HugeScaleCrash) {
   SetBodyInnerHTML(R"HTML(
   <svg xmlns="http://www.w3.org/2000/svg" width="450" height="450">
   <style>
@@ -59,7 +59,7 @@ TEST_F(NGSVGTextLayoutAlgorithmTest, HugeScaleCrash) {
 }
 
 // crbug.com/1470433
-TEST_F(NGSVGTextLayoutAlgorithmTest, ControlCharCrash) {
+TEST_F(SvgTextLayoutAlgorithmTest, ControlCharCrash) {
   SetBodyInnerHTML(R"HTML(
 <style>text { white-space: pre; }</style>
 <svg xmlns="http://www.w3.org/2000/svg"><text>a&#xC;d</text>)HTML");

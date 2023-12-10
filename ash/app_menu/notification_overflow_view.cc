@@ -6,6 +6,8 @@
 
 #include "ash/public/cpp/app_menu_constants.h"
 #include "base/ranges/algorithm.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/menu_separator_types.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -42,6 +44,9 @@ namespace ash {
 // The icon which represents a notification.
 class NotificationOverflowImageView
     : public message_center::ProportionalImageView {
+  METADATA_HEADER(NotificationOverflowImageView,
+                  message_center::ProportionalImageView)
+
  public:
   NotificationOverflowImageView(const ui::ImageModel& image,
                                 const std::string& notification_id)
@@ -62,6 +67,9 @@ class NotificationOverflowImageView
  private:
   std::string const notification_id_;
 };
+
+BEGIN_METADATA(NotificationOverflowImageView)
+END_METADATA
 
 NotificationOverflowView::NotificationOverflowView()
     : separator_(AddChildView(std::make_unique<views::MenuSeparator>(
@@ -147,5 +155,8 @@ void NotificationOverflowView::MaybeRemoveOverflowIcon() {
 
   overflow_icon_->SetVisible(false);
 }
+
+BEGIN_METADATA(NotificationOverflowView)
+END_METADATA
 
 }  // namespace ash

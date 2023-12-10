@@ -69,7 +69,7 @@ void WebAppIconHealthChecks::RunDiagnostics() {
 
 void WebAppIconHealthChecks::SaveDiagnosticForApp(
     webapps::AppId app_id,
-    absl::optional<WebAppIconDiagnostic::Result> result) {
+    std::optional<WebAppIconDiagnostic::Result> result) {
   running_diagnostics_.erase(app_id);
   if (result)
     results_.push_back(*std::move(result));

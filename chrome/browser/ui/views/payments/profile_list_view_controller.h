@@ -99,6 +99,8 @@ class ProfileListViewController : public PaymentRequestSheetController {
   base::WeakPtr<PaymentRequestSheetController> GetWeakPtr() override;
 
  private:
+  void OnCreateNewProfileButtonClicked(const ui::Event& event);
+
   std::unique_ptr<views::Button> CreateRow(autofill::AutofillProfile* profile);
   PaymentRequestItemList list_;
 

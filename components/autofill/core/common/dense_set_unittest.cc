@@ -28,17 +28,17 @@ using DenseSetWrapper =
     DenseSet<T, DenseSetTraitsWrapper<kMinValue, kMaxValue>>;
 
 TEST(DenseSetTest, size_of) {
-  EXPECT_EQ(sizeof(DenseSetWrapper<size_t, 0, 1>), 1u);
-  EXPECT_EQ(sizeof(DenseSetWrapper<size_t, 0, 7>), 1u);
-  EXPECT_EQ(sizeof(DenseSetWrapper<size_t, 0, 8>), 2u);
-  EXPECT_EQ(sizeof(DenseSetWrapper<size_t, 0, 15>), 2u);
-  EXPECT_EQ(sizeof(DenseSetWrapper<size_t, 0, 16>), 4u);
-  EXPECT_EQ(sizeof(DenseSetWrapper<size_t, 0, 31>), 4u);
-  EXPECT_EQ(sizeof(DenseSetWrapper<size_t, 0, 32>), 8u);
-  EXPECT_EQ(sizeof(DenseSetWrapper<size_t, 0, 63>), 8u);
-  EXPECT_EQ(sizeof(DenseSetWrapper<size_t, 0, 64>), 16u);
-  EXPECT_EQ(sizeof(DenseSetWrapper<size_t, 0, 127>), 16u);
-  EXPECT_EQ(sizeof(DenseSetWrapper<size_t, 0, 255>), 32u);
+  static_assert(sizeof(DenseSetWrapper<size_t, 0, 1>) == 1u);
+  static_assert(sizeof(DenseSetWrapper<size_t, 0, 7>) == 1u);
+  static_assert(sizeof(DenseSetWrapper<size_t, 0, 8>) == 2u);
+  static_assert(sizeof(DenseSetWrapper<size_t, 0, 15>) == 2u);
+  static_assert(sizeof(DenseSetWrapper<size_t, 0, 16>) == 4u);
+  static_assert(sizeof(DenseSetWrapper<size_t, 0, 31>) == 4u);
+  static_assert(sizeof(DenseSetWrapper<size_t, 0, 32>) == 8u);
+  static_assert(sizeof(DenseSetWrapper<size_t, 0, 63>) == 8u);
+  static_assert(sizeof(DenseSetWrapper<size_t, 0, 64>) == 16u);
+  static_assert(sizeof(DenseSetWrapper<size_t, 0, 127>) == 16u);
+  static_assert(sizeof(DenseSetWrapper<size_t, 0, 255>) == 32u);
 }
 
 TEST(DenseSetTest, initialization) {
@@ -576,6 +576,16 @@ TEST(DenseSetTest, modifiers) {
   EXPECT_EQ(s, t);
   EXPECT_EQ(s.size(), 3u);
   EXPECT_EQ(t.size(), 3u);
+}
+
+TEST(DenseSetTest, intersect) {
+  constexpr uint64_t kMaxValue = 5;
+  DenseSetWrapper<uint64_t, 0, kMaxValue> s = {1, 3, 4};
+  DenseSetWrapper<uint64_t, 0, kMaxValue> t = {1, 2, 4};
+  s.intersect(t);
+  // Expect that only 1 and 4 remain.
+  t.erase(2);
+  EXPECT_EQ(s, t);
 }
 
 TEST(DenseSetTest, std_set) {

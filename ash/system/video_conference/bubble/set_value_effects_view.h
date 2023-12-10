@@ -7,6 +7,7 @@
 
 #include "ash/system/video_conference/effects/video_conference_tray_effects_manager_types.h"
 #include "base/memory/raw_ptr.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 namespace ash {
@@ -22,6 +23,8 @@ namespace video_conference {
 // and a tab slider that allows the user to select from one of several integer
 // values.
 class SetValueEffectSlider : public views::View {
+  METADATA_HEADER(SetValueEffectSlider, views::View)
+
  public:
   explicit SetValueEffectSlider(const VcHostedEffect* effect);
 
@@ -45,6 +48,8 @@ class SetValueEffectSlider : public views::View {
 // The set-value effects view that resides in the video conference bubble,
 // containing all the `SetValueEffectSlider` views in this bubble.
 class SetValueEffectsView : public views::View {
+  METADATA_HEADER(SetValueEffectsView, views::View)
+
  public:
   explicit SetValueEffectsView(VideoConferenceTrayController* controller);
   SetValueEffectsView(const SetValueEffectsView&) = delete;

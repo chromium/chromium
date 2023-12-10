@@ -4,7 +4,7 @@
 #ifndef IOS_WEB_VIEW_SHELL_SHELL_AUTH_SERVICE_H_
 #define IOS_WEB_VIEW_SHELL_SHELL_AUTH_SERVICE_H_
 
-#import "ios/web_view/shell/cwv_framework.h"
+#import <ChromeWebView/ChromeWebView.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

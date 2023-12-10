@@ -5,10 +5,6 @@ This is a testharness.js-based test.
   assert_true: expected true got false
 [FAIL] Should be known: '(navigation-controls: back-button)'
   assert_true: expected true got false
-[PASS] Should be parseable: '(navigation-controls: none back-button)'
-[PASS] Should be unknown: '(navigation-controls: none back-button)'
-[PASS] Should be parseable: '(navigation-controls: back-button/none)'
-[PASS] Should be unknown: '(navigation-controls: back-button/none)'
 [FAIL] Check that none evaluates to false in the boolean context
   assert_equals: expected true but got false
 Harness: the test ran to completion.

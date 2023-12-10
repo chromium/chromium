@@ -16,9 +16,7 @@ import org.chromium.base.Log;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-/**
- * This class provides the utility methods for dark mode.
- */
+/** This class provides the utility methods for dark mode. */
 public class DarkModeHelper {
     private static final String TAG = "DarkModeHelper";
 
@@ -117,13 +115,15 @@ public class DarkModeHelper {
     @TextLuminance
     public static int getPrimaryTextLuminace(Context context) {
         int textColor = TextLuminance.TEXT_LUMINACE_UNDEFINED;
-        TypedArray a = context.getTheme().obtainStyledAttributes(
-                new int[] {android.R.attr.textColorPrimary});
+        TypedArray a =
+                context.getTheme()
+                        .obtainStyledAttributes(new int[] {android.R.attr.textColorPrimary});
         if (a.hasValue(0)) {
             try {
-                textColor = ColorUtils.calculateLuminance(a.getColor(0, 0)) < 0.5
-                        ? TextLuminance.TEXT_LUMINACE_DARK
-                        : TextLuminance.TEXT_LUMINACE_LIGHT;
+                textColor =
+                        ColorUtils.calculateLuminance(a.getColor(0, 0)) < 0.5
+                                ? TextLuminance.TEXT_LUMINACE_DARK
+                                : TextLuminance.TEXT_LUMINACE_LIGHT;
             } catch (UnsupportedOperationException e) {
                 Log.e(TAG, "Wrong color format", e);
             }

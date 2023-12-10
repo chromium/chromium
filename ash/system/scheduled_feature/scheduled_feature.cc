@@ -21,7 +21,9 @@
 #include "base/functional/bind.h"
 #include "base/i18n/time_formatting.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -200,8 +202,26 @@ void ScheduledFeature::OnActiveUserPrefServiceChanged(
   if (pref_service == active_user_pref_service_)
     return;
 
+  // TODO(afakhry|yjliu): Remove this VLOG when https://crbug.com/1015474 is
+  // fixed.
+  auto vlog_helper = [this](const PrefService* pref_service) -> std::string {
+    if (!pref_service) {
+      return "None";
+    }
+    return base::StringPrintf(
+        "{State %s, Schedule Type: %d}",
+        pref_service->GetBoolean(prefs_path_enabled_) ? "enabled" : "disabled",
+        pref_service->GetInteger(prefs_path_schedule_type_));
+  };
+  VLOG(1) << "Switching user pref service from "
+          << vlog_helper(active_user_pref_service_) << " to "
+          << vlog_helper(pref_service) << ".";
+
   // Initial login and user switching in multi profiles.
   active_user_pref_service_ = pref_service;
+  // Give the feature a chance to do its own initialization before the first
+  // call to `RefreshFeatureState()` (made within `InitFromUserPrefs()`).
+  InitFeatureForNewActiveUser();
   InitFromUserPrefs();
 }
 
@@ -246,6 +266,10 @@ void ScheduledFeature::SetTaskRunnerForTesting(
   timer_->SetTaskRunner(std::move(task_runner));
 }
 
+const char* ScheduledFeature::GetScheduleTypeHistogramName() const {
+  return nullptr;
+}
+
 bool ScheduledFeature::MaybeRestoreSchedule() {
   DCHECK(active_user_pref_service_);
   DCHECK_NE(GetScheduleType(), ScheduleType::kNone);
@@ -281,8 +305,7 @@ void ScheduledFeature::StartWatchingPrefsChanges() {
   pref_change_registrar_->Add(
       prefs_path_schedule_type_,
       base::BindRepeating(&ScheduledFeature::OnScheduleTypePrefChanged,
-                          base::Unretained(this),
-                          /*keep_manual_toggles_during_schedules=*/false));
+                          base::Unretained(this)));
 
   if (!prefs_path_custom_start_time_.empty()) {
     pref_change_registrar_->Add(
@@ -296,12 +319,12 @@ void ScheduledFeature::StartWatchingPrefsChanges() {
         base::BindRepeating(&ScheduledFeature::OnCustomSchedulePrefsChanged,
                             base::Unretained(this)));
   }
+  ListenForPrefChanges(*pref_change_registrar_);
 }
 
 void ScheduledFeature::InitFromUserPrefs() {
   StartWatchingPrefsChanges();
-  OnScheduleTypePrefChanged(/*keep_manual_toggles_during_schedules=*/true);
-  is_first_user_init_ = false;
+  RefreshForSettingsChanged(/*keep_manual_toggles_during_schedules=*/true);
 }
 
 void ScheduledFeature::SetEnabledInternal(bool enabled, RefreshReason reason) {
@@ -324,12 +347,22 @@ void ScheduledFeature::OnEnabledPrefChanged() {
           /*keep_manual_toggles_during_schedules=*/false);
 }
 
-void ScheduledFeature::OnScheduleTypePrefChanged(
-    bool keep_manual_toggles_during_schedules) {
+void ScheduledFeature::OnScheduleTypePrefChanged() {
   const ScheduleType schedule_type = GetScheduleType();
+  VLOG(1) << "Schedule type changed. New type: "
+          << static_cast<int>(schedule_type) << ".";
+  if (const char* const schedule_type_histogram =
+          GetScheduleTypeHistogramName()) {
+    base::UmaHistogramEnumeration(schedule_type_histogram, schedule_type);
+  }
+  RefreshForSettingsChanged(/*keep_manual_toggles_during_schedules=*/false);
+}
+
+void ScheduledFeature::RefreshForSettingsChanged(
+    bool keep_manual_toggles_during_schedules) {
   // To prevent adding an observer twice in a row when switching between
   // different users, we need to check `HasObserver()`.
-  if (schedule_type == ScheduleType::kNone) {
+  if (GetScheduleType() == ScheduleType::kNone) {
     geolocation_controller_->RemoveObserver(this);
   } else if (!geolocation_controller_->HasObserver(this)) {
     geolocation_controller_->AddObserver(this);
@@ -346,8 +379,8 @@ void ScheduledFeature::OnCustomSchedulePrefsChanged() {
 
 void ScheduledFeature::Refresh(RefreshReason reason,
                                bool keep_manual_toggles_during_schedules) {
-  absl::optional<base::Time> start_time;
-  absl::optional<base::Time> end_time;
+  std::optional<base::Time> start_time;
+  std::optional<base::Time> end_time;
   const ScheduleType schedule_type = GetScheduleType();
   switch (schedule_type) {
     case ScheduleType::kNone:

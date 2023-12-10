@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+[FAIL] queryLocalFonts(): permission not given
+  promise_test: Unhandled rejection with value: object "SecurityError: User activation is required."
+Harness: the test ran to completion.

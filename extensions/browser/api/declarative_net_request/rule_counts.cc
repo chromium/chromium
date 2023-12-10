@@ -10,7 +10,7 @@ namespace extensions::declarative_net_request {
 
 RuleCounts::RuleCounts() = default;
 RuleCounts::RuleCounts(size_t rule_count,
-                       absl::optional<size_t> unsafe_rule_count,
+                       std::optional<size_t> unsafe_rule_count,
                        size_t regex_rule_count)
     : rule_count(rule_count),
       unsafe_rule_count(unsafe_rule_count),

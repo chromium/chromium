@@ -12,16 +12,12 @@ import org.jni_zero.JNINamespace;
 
 import org.chromium.base.ContextUtils;
 
-/**
- * Simple proxy for querying input device properties from C++.
- */
+/** Simple proxy for querying input device properties from C++. */
 @JNINamespace("ui")
 public class TouchDevice {
 
-    /**
-     * Static methods only so make constructor private.
-     */
-    private TouchDevice() { }
+    /** Static methods only so make constructor private. */
+    private TouchDevice() {}
 
     /**
      * @return Maximum supported touch points.
@@ -32,17 +28,21 @@ public class TouchDevice {
         // guarantees a minimum number of touch points. Be conservative and return the minimum,
         // checking membership from the highest class down.
 
-        if (ContextUtils.getApplicationContext().getPackageManager().hasSystemFeature(
-                    PackageManager.FEATURE_TOUCHSCREEN_MULTITOUCH_JAZZHAND)) {
+        if (ContextUtils.getApplicationContext()
+                .getPackageManager()
+                .hasSystemFeature(PackageManager.FEATURE_TOUCHSCREEN_MULTITOUCH_JAZZHAND)) {
             return 5;
-        } else if (ContextUtils.getApplicationContext().getPackageManager().hasSystemFeature(
-                           PackageManager.FEATURE_TOUCHSCREEN_MULTITOUCH_DISTINCT)) {
+        } else if (ContextUtils.getApplicationContext()
+                .getPackageManager()
+                .hasSystemFeature(PackageManager.FEATURE_TOUCHSCREEN_MULTITOUCH_DISTINCT)) {
             return 2;
-        } else if (ContextUtils.getApplicationContext().getPackageManager().hasSystemFeature(
-                           PackageManager.FEATURE_TOUCHSCREEN_MULTITOUCH)) {
+        } else if (ContextUtils.getApplicationContext()
+                .getPackageManager()
+                .hasSystemFeature(PackageManager.FEATURE_TOUCHSCREEN_MULTITOUCH)) {
             return 2;
-        } else if (ContextUtils.getApplicationContext().getPackageManager().hasSystemFeature(
-                           PackageManager.FEATURE_TOUCHSCREEN)) {
+        } else if (ContextUtils.getApplicationContext()
+                .getPackageManager()
+                .hasSystemFeature(PackageManager.FEATURE_TOUCHSCREEN)) {
             return 1;
         } else {
             return 0;
@@ -69,16 +69,17 @@ public class TouchDevice {
             if (inputDevice == null) continue;
 
             int sources = inputDevice.getSources();
-            boolean isFinePointer = hasSource(sources, InputDevice.SOURCE_MOUSE)
-                    || hasSource(sources, InputDevice.SOURCE_STYLUS)
-                    || hasSource(sources, InputDevice.SOURCE_TOUCHPAD)
-                    || hasSource(sources, InputDevice.SOURCE_TRACKBALL);
+            boolean isFinePointer =
+                    hasSource(sources, InputDevice.SOURCE_MOUSE)
+                            || hasSource(sources, InputDevice.SOURCE_STYLUS)
+                            || hasSource(sources, InputDevice.SOURCE_TOUCHPAD)
+                            || hasSource(sources, InputDevice.SOURCE_TRACKBALL);
             if (isFinePointer) {
                 pointerTypes |= PointerType.FINE;
             }
             if (hasSource(sources, InputDevice.SOURCE_TOUCHSCREEN)
                     && (UiAndroidFeatureMap.isEnabled(
-                                UiAndroidFeatures.REPORT_ALL_AVAILABLE_POINTER_TYPES)
+                                    UiAndroidFeatures.REPORT_ALL_AVAILABLE_POINTER_TYPES)
                             || !isFinePointer)) {
                 pointerTypes |= PointerType.COARSE;
             }

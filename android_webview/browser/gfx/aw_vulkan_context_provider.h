@@ -7,10 +7,10 @@
 
 #include <memory>
 
+#include <optional>
 #include "base/memory/raw_ptr_exclusion.h"
 #include "components/viz/common/gpu/vulkan_context_provider.h"
 #include "gpu/vulkan/vulkan_device_queue.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/gpu/GrBackendSemaphore.h"
 #include "third_party/skia/include/private/chromium/GrVkSecondaryCBDrawContext.h"
@@ -63,7 +63,7 @@ class AwVulkanContextProvider final : public viz::VulkanContextProvider {
   void EnqueueSecondaryCBSemaphores(
       std::vector<VkSemaphore> semaphores) override;
   void EnqueueSecondaryCBPostSubmitTask(base::OnceClosure closure) override;
-  absl::optional<uint32_t> GetSyncCpuMemoryLimit() const override;
+  std::optional<uint32_t> GetSyncCpuMemoryLimit() const override;
 
   VkDevice device() { return globals_->device_queue->GetVulkanDevice(); }
   VkQueue queue() { return globals_->device_queue->GetVulkanQueue(); }

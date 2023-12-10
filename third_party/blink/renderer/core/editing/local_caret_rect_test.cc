@@ -10,7 +10,7 @@
 #include "third_party/blink/renderer/core/editing/visible_position.h"
 #include "third_party/blink/renderer/core/html/forms/text_control_element.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
+#include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
@@ -910,7 +910,7 @@ TEST_F(LocalCaretRectTest, AfterTrimedLineBreak) {
   EXPECT_EQ(PhysicalRect(30, 0, 1, 10), visible_position_rect);
 }
 
-// See also NGCaretPositionTest.MultiColumnSingleText
+// See also CaretPositionTest.MultiColumnSingleText
 TEST_F(LocalCaretRectTest, MultiColumnSingleText) {
   LoadAhem();
   InsertStyleElement(
@@ -1379,7 +1379,7 @@ TEST_F(LocalCaretRectTest, TextCombineOneTextNode) {
   //         LayoutText {#text} at (5,0) size 100x100
   //           text run at (5,0) width 100: "a"
   //         LayoutInline {TCY} at (5,100) size 100x100
-  //           LayoutNGTextCombine (anonymous) at (5,100) size 100x100
+  //           LayoutTextCombine (anonymous) at (5,100) size 100x100
   //             LayoutText {#text} at (-5,0) size 110x100
   //               text run at (0,0) width 500: "01234"
   //         LayoutText {#text} at (5,200) size 100x100
@@ -1441,7 +1441,7 @@ TEST_F(LocalCaretRectTest, TextCombineTwoTextNodes) {
   //         LayoutText {#text} at (5,0) size 100x100
   //           text run at (5,0) width 100: "a"
   //         LayoutInline {TCY} at (5,100) size 100x100
-  //           LayoutNGTextCombine (anonymous) at (5,100) size 100x100
+  //           LayoutTextCombine (anonymous) at (5,100) size 100x100
   //             LayoutText {#text} at (-5,0) size 66x100
   //               text run at (0,0) width 300: "012"
   //             LayoutText {#text} at (61,0) size 44x100

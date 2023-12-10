@@ -2,36 +2,37 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/allocator/partition_allocator/src/partition_alloc/shim/allocator_shim.h"
+#include "partition_alloc/shim/allocator_shim.h"
 
 #include <errno.h>
 
 #include <atomic>
+#include <bit>
 #include <new>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/bits.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/compiler_specific.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/memory/page_size.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/notreached.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_check.h"
 #include "build/build_config.h"
+#include "partition_alloc/partition_alloc_base/bits.h"
+#include "partition_alloc/partition_alloc_base/compiler_specific.h"
+#include "partition_alloc/partition_alloc_base/memory/page_size.h"
+#include "partition_alloc/partition_alloc_base/notreached.h"
+#include "partition_alloc/partition_alloc_buildflags.h"
+#include "partition_alloc/partition_alloc_check.h"
 
 #if !BUILDFLAG(IS_WIN)
 #include <unistd.h>
 #else
-#include "base/allocator/partition_allocator/src/partition_alloc/shim/winheap_stubs_win.h"
+#include "partition_alloc/shim/winheap_stubs_win.h"
 #endif
 
 #if BUILDFLAG(IS_APPLE)
 #include <malloc/malloc.h>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/apple/mach_logging.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/shim/allocator_interception_apple.h"
+#include "partition_alloc/partition_alloc_base/apple/mach_logging.h"
+#include "partition_alloc/shim/allocator_interception_apple.h"
 #endif
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-#include "base/allocator/partition_allocator/src/partition_alloc/shim/allocator_shim_default_dispatch_to_partition_alloc.h"
+#include "partition_alloc/shim/allocator_shim_default_dispatch_to_partition_alloc.h"
 #endif
 
 // No calls to malloc / new in this file. They would would cause re-entrancy of
@@ -273,8 +274,7 @@ PA_ALWAYS_INLINE int ShimPosixMemalign(void** res,
                                        size_t size) {
   // posix_memalign is supposed to check the arguments. See tc_posix_memalign()
   // in tc_malloc.cc.
-  if (((alignment % sizeof(void*)) != 0) ||
-      !partition_alloc::internal::base::bits::IsPowerOfTwo(alignment)) {
+  if (((alignment % sizeof(void*)) != 0) || !std::has_single_bit(alignment)) {
     return EINVAL;
   }
   void* ptr = ShimMemalign(alignment, size, nullptr);
@@ -309,6 +309,11 @@ PA_ALWAYS_INLINE size_t ShimGetSizeEstimate(const void* address,
   const allocator_shim::AllocatorDispatch* const chain_head = GetChainHead();
   return chain_head->get_size_estimate_function(
       chain_head, const_cast<void*>(address), context);
+}
+
+PA_ALWAYS_INLINE size_t ShimGoodSize(size_t size, void* context) {
+  const allocator_shim::AllocatorDispatch* const chain_head = GetChainHead();
+  return chain_head->good_size_function(chain_head, size, context);
 }
 
 PA_ALWAYS_INLINE bool ShimClaimedAddress(void* address, void* context) {
@@ -393,24 +398,24 @@ PA_ALWAYS_INLINE void ShimAlignedFree(void* address, void* context) {
 // avoid crashes in case of operator new() noexcept.  Thus, operator new()
 // noexcept needs to be routed to
 // allocator_shim::internal::PartitionMallocUnchecked through the shim layer.
-#include "base/allocator/partition_allocator/src/partition_alloc/shim/allocator_shim_override_cpp_symbols.h"
+#include "partition_alloc/shim/allocator_shim_override_cpp_symbols.h"
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
 // Android does not support symbol interposition. The way malloc symbols are
 // intercepted on Android is by using link-time -wrap flags.
-#include "base/allocator/partition_allocator/src/partition_alloc/shim/allocator_shim_override_linker_wrapped_symbols.h"
+#include "partition_alloc/shim/allocator_shim_override_linker_wrapped_symbols.h"
 #elif BUILDFLAG(IS_WIN)
 // On Windows we use plain link-time overriding of the CRT symbols.
-#include "base/allocator/partition_allocator/src/partition_alloc/shim/allocator_shim_override_ucrt_symbols_win.h"
+#include "partition_alloc/shim/allocator_shim_override_ucrt_symbols_win.h"
 #elif BUILDFLAG(IS_APPLE)
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-#include "base/allocator/partition_allocator/src/partition_alloc/shim/allocator_shim_override_apple_default_zone.h"
+#include "partition_alloc/shim/allocator_shim_override_apple_default_zone.h"
 #else  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-#include "base/allocator/partition_allocator/src/partition_alloc/shim/allocator_shim_override_apple_symbols.h"
+#include "partition_alloc/shim/allocator_shim_override_apple_symbols.h"
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 #else
-#include "base/allocator/partition_allocator/src/partition_alloc/shim/allocator_shim_override_libc_symbols.h"
+#include "partition_alloc/shim/allocator_shim_override_libc_symbols.h"
 #endif
 
 // Some glibc versions (until commit 6c444ad6e953dbdf9c7be065308a0a777)
@@ -428,7 +433,7 @@ PA_ALWAYS_INLINE void ShimAlignedFree(void* address, void* context) {
 // this mechanism.
 
 #if defined(LIBC_GLIBC) && BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-#include "base/allocator/partition_allocator/src/partition_alloc/shim/allocator_shim_override_glibc_weak_symbols.h"
+#include "partition_alloc/shim/allocator_shim_override_glibc_weak_symbols.h"
 #endif
 
 #if BUILDFLAG(IS_APPLE)

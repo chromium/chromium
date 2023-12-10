@@ -6,8 +6,6 @@
 
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_number_conversions_win.h"
-#include "base/strings/string_piece.h"
-#include "base/strings/string_piece_forward.h"
 #include "sandbox/win/tests/common/controller.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

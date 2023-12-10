@@ -3,7 +3,9 @@
 # found in the LICENSE file.
 
 import("//build/config/android/rules.gni")
+import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/jni_zero/jni_zero.gni")
+import("//third_party/libprotobuf-mutator/fuzzable_proto_library.gni")
 
 java_cpp_enum("android_backend_java_enums_srcjar") {
   sources = [
@@ -27,6 +29,7 @@ source_set("backend_public") {
 
   deps = [
     ":backend",
+    ":utils",
     "//chrome/browser/autofill",
     "//chrome/browser/profiles:profile",
     "//components/keyed_service/content:content",
@@ -48,12 +51,11 @@ source_set("backend") {
   sources = [
     "built_in_backend_to_android_backend_migrator.cc",
     "built_in_backend_to_android_backend_migrator.h",
-    "password_manager_eviction_util.cc",
-    "password_manager_eviction_util.h",
     "password_manager_lifecycle_helper.cc",
     "password_manager_lifecycle_helper.h",
     "password_manager_lifecycle_helper_impl.cc",
     "password_manager_lifecycle_helper_impl.h",
+    "password_manager_util_bridge.cc",
     "password_settings_updater_android_bridge_helper.h",
     "password_settings_updater_android_bridge_helper_impl.cc",
     "password_settings_updater_android_bridge_helper_impl.h",
@@ -65,7 +67,6 @@ source_set("backend") {
     "password_settings_updater_android_receiver_bridge_impl.h",
     "password_store_android_backend.cc",
     "password_store_android_backend.h",
-    "password_store_android_backend_api_error_codes.h",
     "password_store_android_backend_bridge_helper.h",
     "password_store_android_backend_bridge_helper_impl.cc",
     "password_store_android_backend_bridge_helper_impl.h",
@@ -85,18 +86,22 @@ source_set("backend") {
     "password_sync_controller_delegate_bridge.h",
     "password_sync_controller_delegate_bridge_impl.cc",
     "password_sync_controller_delegate_bridge_impl.h",
+    "unified_password_manager_proto_utils.cc",
+    "unified_password_manager_proto_utils.h",
   ]
 
   public_deps = [ "//base" ]
 
   deps = [
     ":jni_headers",
+    ":unified_password_manager_proto",
+    ":utils",
     "//components/autofill/core/browser:browser",
     "//components/browser_ui/device_lock/android:android",
     "//components/password_manager/core/browser:browser",
     "//components/password_manager/core/browser:password_form",
-    "//components/password_manager/core/browser:unified_password_manager_proto",
     "//components/password_manager/core/browser/affiliation",
+    "//components/password_manager/core/browser/affiliation:affiliation_fetching",
     "//components/password_manager/core/browser/features:password_features",
     "//components/password_manager/core/common:common",
     "//components/password_manager/core/common:features",
@@ -154,12 +159,12 @@ android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/password_manager/ConfirmationDialogHelper.java",
     "java/src/org/chromium/chrome/browser/password_manager/OutdatedGmsCoreDialog.java",
-    "java/src/org/chromium/chrome/browser/password_manager/PasswordChangeSuccessTrackerBridge.java",
     "java/src/org/chromium/chrome/browser/password_manager/PasswordCheckupClientMetricsRecorder.java",
     "java/src/org/chromium/chrome/browser/password_manager/PasswordManagerAndroidBackendUtil.java",
     "java/src/org/chromium/chrome/browser/password_manager/PasswordManagerErrorMessageHelperBridge.java",
     "java/src/org/chromium/chrome/browser/password_manager/PasswordManagerHelper.java",
     "java/src/org/chromium/chrome/browser/password_manager/PasswordManagerLifecycleHelper.java",
+    "java/src/org/chromium/chrome/browser/password_manager/PasswordManagerUtilBridge.java",
     "java/src/org/chromium/chrome/browser/password_manager/PasswordMetricsUtil.java",
     "java/src/org/chromium/chrome/browser/password_manager/PasswordSettingsUpdaterDispatcherBridge.java",
     "java/src/org/chromium/chrome/browser/password_manager/PasswordSettingsUpdaterMetricsRecorder.java",
@@ -188,9 +193,9 @@ generate_jni("jni_headers") {
     "//chrome/browser",
   ]
   sources = [
-    "java/src/org/chromium/chrome/browser/password_manager/PasswordChangeSuccessTrackerBridge.java",
     "java/src/org/chromium/chrome/browser/password_manager/PasswordManagerErrorMessageHelperBridge.java",
     "java/src/org/chromium/chrome/browser/password_manager/PasswordManagerLifecycleHelper.java",
+    "java/src/org/chromium/chrome/browser/password_manager/PasswordManagerUtilBridge.java",
     "java/src/org/chromium/chrome/browser/password_manager/PasswordSettingsUpdaterDispatcherBridge.java",
     "java/src/org/chromium/chrome/browser/password_manager/PasswordSettingsUpdaterReceiverBridge.java",
     "java/src/org/chromium/chrome/browser/password_manager/PasswordStoreAndroidBackendDispatcherBridgeImpl.java",
@@ -206,6 +211,7 @@ robolectric_binary("password_manager_junit_tests") {
 
   sources = [
     "junit/src/org/chromium/chrome/browser/password_manager/FakeCredentialManagerLauncherTest.java",
+    "junit/src/org/chromium/chrome/browser/password_manager/FakePasswordManagerBackendSupportHelperTest.java",
     "junit/src/org/chromium/chrome/browser/password_manager/FakePasswordSettingsAccessorFactoryImplTest.java",
     "junit/src/org/chromium/chrome/browser/password_manager/FakePasswordStoreAndroidBackendTest.java",
     "junit/src/org/chromium/chrome/browser/password_manager/OutdatedGmsCoreDialogTest.java",
@@ -232,6 +238,7 @@ robolectric_binary("password_manager_junit_tests") {
     ":public_impl_java",
     ":settings_interface_java",
     ":test_support_java",
+    ":unified_password_manager_proto_java",
     "$google_play_services_package:google_play_services_base_java",
     "$google_play_services_package:google_play_services_basement_java",
     "add_username_dialog:junit",
@@ -250,7 +257,6 @@ robolectric_binary("password_manager_junit_tests") {
     "//chrome/test/android:chrome_java_unit_test_support",
     "//components/browser_ui/settings/android:java",
     "//components/password_manager/core/browser:password_manager_java_enums",
-    "//components/password_manager/core/browser:unified_password_manager_proto_java",
     "//components/prefs/android:java",
     "//components/signin/public/android:java",
     "//components/signin/public/android:signin_java_test_support",
@@ -367,6 +373,7 @@ android_library("test_support_java") {
     "test_support/java/src/org/chromium/chrome/browser/password_manager/FakeCredentialManagerLauncherFactoryImpl.java",
     "test_support/java/src/org/chromium/chrome/browser/password_manager/FakePasswordCheckupClientHelper.java",
     "test_support/java/src/org/chromium/chrome/browser/password_manager/FakePasswordCheckupClientHelperFactoryImpl.java",
+    "test_support/java/src/org/chromium/chrome/browser/password_manager/FakePasswordManagerBackendSupportHelper.java",
     "test_support/java/src/org/chromium/chrome/browser/password_manager/FakePasswordSettingsAccessor.java",
     "test_support/java/src/org/chromium/chrome/browser/password_manager/FakePasswordSettingsAccessorFactoryImpl.java",
     "test_support/java/src/org/chromium/chrome/browser/password_manager/FakePasswordStoreAndroidBackend.java",
@@ -379,11 +386,11 @@ android_library("test_support_java") {
   deps = [
     ":backend_interface_java",
     ":settings_interface_java",
+    ":unified_password_manager_proto_java",
     "//base:base_java",
     "//build/android:build_java",
     "//chrome/browser/password_manager/android:settings_interface_java",
     "//components/password_manager/core/browser:password_manager_java_enums",
-    "//components/password_manager/core/browser:unified_password_manager_proto_java",
     "//components/sync/protocol:protocol_java",
     "//content/public/android:content_main_dex_java",
     "//third_party/android_deps:protobuf_lite_runtime_java",
@@ -436,11 +443,22 @@ android_library("public_impl_java") {
   resources_package = "org.chromium.chrome.browser.password_manager"
 }
 
-source_set("password_generation_utils") {
-  deps = [ "//components/autofill/core/common" ]
+source_set("utils") {
   sources = [
     "password_generation_element_data.cc",
     "password_generation_element_data.h",
+    "password_manager_android_util.cc",
+    "password_manager_android_util.h",
+    "password_manager_eviction_util.cc",
+    "password_manager_eviction_util.h",
+    "password_store_android_backend_api_error_codes.h",
+  ]
+
+  deps = [
+    "//components/autofill/core/common",
+    "//components/password_manager/core/browser/features:password_features",
+    "//components/password_manager/core/common:common",
+    "//components/prefs:prefs",
   ]
 }
 
@@ -465,6 +483,7 @@ source_set("unit_tests") {
     "mock_password_sync_controller_delegate_bridge.h",
     "password_accessory_controller_impl_unittest.cc",
     "password_generation_controller_impl_unittest.cc",
+    "password_manager_android_util_unittest.cc",
     "password_manager_error_message_delegate_unittest.cc",
     "password_manager_eviction_util_unittest.cc",
     "password_manager_settings_service_android_impl_unittest.cc",
@@ -476,19 +495,21 @@ source_set("unit_tests") {
     "password_store_proxy_backend_unittest.cc",
     "password_sync_controller_delegate_android_unittest.cc",
     "save_update_password_message_delegate_unittest.cc",
+    "unified_password_manager_proto_utils_unittest.cc",
   ]
 
   deps = [
     ":backend",
     ":backend_public",
-    ":password_generation_utils",
+    ":unified_password_manager_proto",
+    ":utils",
     "//base/test:test_support",
     "//chrome/app:generated_resources",
     "//chrome/browser",
     "//chrome/browser/autofill",
     "//chrome/browser/password_manager/android/add_username_dialog:android",
-    "//chrome/browser/touch_to_fill/password_generation/android:public",
-    "//chrome/browser/touch_to_fill/password_generation/android:test_support",
+    "//chrome/browser/touch_to_fill/password_manager/password_generation/android:public",
+    "//chrome/browser/touch_to_fill/password_manager/password_generation/android:test_support",
     "//chrome/test:test_support",
     "//components/autofill/core/browser",
     "//components/autofill/core/common",
@@ -501,6 +522,7 @@ source_set("unit_tests") {
     "//components/password_manager/content/browser:test_support",
     "//components/password_manager/core/browser",
     "//components/password_manager/core/browser:test_support",
+    "//components/password_manager/core/browser/affiliation:affiliation_fetching",
     "//components/password_manager/core/browser/features:password_features",
     "//components/password_manager/core/common",
     "//components/safe_browsing/core/browser/password_protection:test_support",
@@ -511,7 +533,30 @@ source_set("unit_tests") {
     "//content/test:test_support",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/abseil-cpp:absl",
     "//ui/android:android",
     "//ui/base:base",
   ]
+}
+
+fuzzable_proto_library("unified_password_manager_proto") {
+  sources = [
+    "protos/list_affiliated_passwords_result.proto",
+    "protos/list_passwords_result.proto",
+    "protos/password_info.proto",
+    "protos/password_with_local_data.proto",
+  ]
+  deps = [ "//components/sync/protocol" ]
+  proto_in_dir = "//"
+}
+
+proto_java_library("unified_password_manager_proto_java") {
+  proto_path = "//"
+  sources = [
+    "protos/list_affiliated_passwords_result.proto",
+    "protos/list_passwords_result.proto",
+    "protos/password_info.proto",
+    "protos/password_with_local_data.proto",
+  ]
+  deps = [ "//components/sync/protocol:protocol_java" ]
 }

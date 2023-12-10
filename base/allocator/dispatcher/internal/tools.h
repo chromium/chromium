@@ -26,4 +26,4 @@ struct IsValidObserver {
 
 }  // namespace base::allocator::dispatcher::internal
 
-#endif  // BASE_ALLOCATOR_DISPATCHER_INTERNAL_DISPATCHER_H_
+#endif  // BASE_ALLOCATOR_DISPATCHER_INTERNAL_TOOLS_H_

@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/css/resolver/style_cascade.h"
 
+#include <bit>
+
 #include "third_party/blink/renderer/core/animation/css/css_animations.h"
 #include "third_party/blink/renderer/core/animation/css_interpolation_environment.h"
 #include "third_party/blink/renderer/core/animation/css_interpolation_types_map.h"
@@ -365,6 +367,24 @@ StyleCascade::GetCascadedValues() const {
   return result;
 }
 
+const CSSValue* StyleCascade::Resolve(StyleResolverState& state,
+                                      const CSSPropertyName& name,
+                                      const CSSValue& value) {
+  STACK_UNINITIALIZED StyleCascade cascade(state);
+
+  // Since the cascade map is empty, the CascadeResolver isn't important,
+  // as there can be no cycles in an empty map. We just instantiate it to
+  // satisfy the API.
+  CascadeResolver resolver(CascadeFilter(), /* generation */ 0);
+
+  // The origin is relevant for 'revert'. We pick kAuthor arbitrarily,
+  // but the behavior would be the same for any non-animated origin.
+  // (It always becomes 'unset').
+  CascadeOrigin origin = CascadeOrigin::kAuthor;
+
+  return cascade.Resolve(name, value, origin, resolver);
+}
+
 void StyleCascade::AnalyzeIfNeeded() {
   if (needs_match_result_analyze_) {
     AnalyzeMatchResult();
@@ -405,7 +425,8 @@ void StyleCascade::AnalyzeInterpolations() {
       auto name = active_interpolation.key.GetCSSPropertyName();
       uint32_t position = EncodeInterpolationPosition(
           name.Id(), i, active_interpolation.key.IsPresentationAttribute());
-      CascadePriority priority(entries[i].origin, false, 0, false, 0, position);
+      CascadePriority priority(entries[i].origin, false, 0, false, false, 0,
+                               position);
 
       CSSPropertyRef ref(name, GetDocument());
       DCHECK(ref.IsValid());
@@ -466,7 +487,7 @@ void StyleCascade::ApplyHighPriority(CascadeResolver& resolver) {
   uint64_t bits = map_.HighPriorityBits();
 
   while (bits) {
-    int i = base::bits::CountTrailingZeroBits(bits);
+    int i = std::countr_zero(bits);
     bits &= bits - 1;  // Clear the lowest bit.
     LookupAndApply(CSSProperty::Get(ConvertToCSSPropertyID(i)), resolver);
   }
@@ -606,7 +627,7 @@ void StyleCascade::ApplyInterpolationMap(const ActiveInterpolationsMap& map,
     auto name = entry.key.GetCSSPropertyName();
     uint32_t position = EncodeInterpolationPosition(
         name.Id(), index, entry.key.IsPresentationAttribute());
-    CascadePriority priority(origin, false, 0, false, 0, position);
+    CascadePriority priority(origin, false, 0, false, false, 0, position);
     priority = CascadePriority(priority, resolver.generation_);
 
     CSSPropertyRef ref(name, GetDocument());
@@ -857,14 +878,10 @@ void StyleCascade::TokenSequence::Append(const CSSParserToken& token,
 
 scoped_refptr<CSSVariableData>
 StyleCascade::TokenSequence::BuildVariableData() {
-  int num_tokens_for_ablation =
-      RuntimeEnabledFeatures::CSSCustomPropertiesAblationEnabled()
-          ? tokens_.size()
-          : -1;
-  return CSSVariableData::Create(
-      original_text_, num_tokens_for_ablation, is_animation_tainted_,
-      /*needs_variable_resolution=*/false, has_font_units_,
-      has_root_font_units_, has_line_height_units_);
+  return CSSVariableData::Create(original_text_, is_animation_tainted_,
+                                 /*needs_variable_resolution=*/false,
+                                 has_font_units_, has_root_font_units_,
+                                 has_line_height_units_);
 }
 
 const CSSValue* StyleCascade::Resolve(const CSSProperty& property,
@@ -880,7 +897,7 @@ const CSSValue* StyleCascade::Resolve(const CSSProperty& property,
   if (result->IsRevertValue()) {
     return ResolveRevert(property, *result, origin, resolver);
   }
-  if (result->IsRevertLayerValue()) {
+  if (result->IsRevertLayerValue() || TreatAsRevertLayer(priority)) {
     return ResolveRevertLayer(property, *result, priority, origin, resolver);
   }
 
@@ -926,8 +943,6 @@ const CSSValue* StyleCascade::ResolveCustomProperty(
   if (HasLineHeightDependency(To<CustomProperty>(property), data.get())) {
     resolver.DetectCycle(GetCSSPropertyLineHeight());
   }
-
-  state_.StyleBuilder().SetHasVariableDeclaration();
 
   if (resolver.InCycle()) {
     return CSSCyclicVariableValue::Create();
@@ -1075,7 +1090,7 @@ const CSSValue* StyleCascade::ResolvePendingSubstitution(
   builder.Append(value.CustomCSSText());
   builder.Append(")");
 
-  NOTREACHED() << builder.ToString();
+  DUMP_WILL_BE_NOTREACHED_NORETURN() << builder.ToString();
   return cssvalue::CSSUnsetValue::Create();
 }
 
@@ -1371,6 +1386,11 @@ void StyleCascade::MarkHasVariableReference(const CSSProperty& property) {
     state_.StyleBuilder().SetHasVariableReferenceFromNonInheritedProperty();
   }
   state_.StyleBuilder().SetHasVariableReference();
+}
+
+bool StyleCascade::TreatAsRevertLayer(CascadePriority priority) const {
+  return priority.IsFallbackStyle() && !ComputedStyle::HasOutOfFlowPosition(
+                                           state_.StyleBuilder().GetPosition());
 }
 
 const Document& StyleCascade::GetDocument() const {

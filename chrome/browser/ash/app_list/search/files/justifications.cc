@@ -21,7 +21,7 @@ constexpr base::TimeDelta kYesterday = base::Days(2);
 constexpr base::TimeDelta kPastWeek = base::Days(7);
 constexpr base::TimeDelta kPastMonth = base::Days(31);
 
-absl::optional<std::u16string> GetEditStringFromTime(const base::Time& time) {
+std::optional<std::u16string> GetEditStringFromTime(const base::Time& time) {
   const auto& delta = base::Time::Now() - time;
   if (delta <= kJustNow) {
     return l10n_util::GetStringUTF16(IDS_APP_LIST_CONTINUE_EDITED_JUST_NOW);
@@ -34,11 +34,11 @@ absl::optional<std::u16string> GetEditStringFromTime(const base::Time& time) {
   } else if (delta <= kPastMonth) {
     return l10n_util::GetStringUTF16(IDS_APP_LIST_CONTINUE_EDITED_PAST_MONTH);
   } else {
-    return absl::nullopt;
+    return std::nullopt;
   }
 }
 
-absl::optional<std::u16string> GetOpenStringFromTime(const base::Time& time) {
+std::optional<std::u16string> GetOpenStringFromTime(const base::Time& time) {
   const auto& delta = base::Time::Now() - time;
   if (delta <= kJustNow) {
     return l10n_util::GetStringUTF16(IDS_APP_LIST_CONTINUE_OPENED_JUST_NOW);
@@ -51,13 +51,13 @@ absl::optional<std::u16string> GetOpenStringFromTime(const base::Time& time) {
   } else if (delta <= kPastMonth) {
     return l10n_util::GetStringUTF16(IDS_APP_LIST_CONTINUE_OPENED_PAST_MONTH);
   } else {
-    return absl::nullopt;
+    return std::nullopt;
   }
 }
 
 }  // namespace
 
-absl::optional<std::u16string> GetJustificationString(
+std::optional<std::u16string> GetJustificationString(
     const base::Time& last_accessed,
     const base::Time& last_modified) {
   // t1 > t2 means t1 is more recent. When there's a tie, choose modified.

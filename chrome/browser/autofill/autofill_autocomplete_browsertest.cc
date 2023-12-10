@@ -8,6 +8,7 @@
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/mock_callback.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/autofill/autocomplete_history_manager_factory.h"
@@ -22,9 +23,10 @@
 #include "components/autofill/core/browser/autocomplete_history_manager.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/suggestions_context.h"
-#include "components/autofill/core/browser/test_autofill_async_observer.h"
 #include "components/autofill/core/browser/test_autofill_clock.h"
+#include "components/autofill/core/browser/test_autofill_manager_waiter.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
+#include "components/autofill/core/browser/ui/suggestion_test_helpers.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -39,44 +41,19 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/switches.h"
 
-using autofill::test::TestAutofillAsyncObserver;
-using base::ASCIIToUTF16;
-using testing::ElementsAre;
-using testing::Field;
-
-using NotificationType = TestAutofillAsyncObserver::NotificationType;
-
 namespace autofill {
 
 namespace {
+
+using ::base::UTF8ToUTF16;
+using ::testing::ElementsAre;
+using ::testing::Field;
+using ::testing::IsEmpty;
+
 const char kDefaultAutocompleteInputId[] = "n300";
 const char kSimpleFormFileName[] = "autocomplete_simple_form.html";
+
 }  // namespace
-
-class MockSuggestionsHandler
-    : public AutocompleteHistoryManager::SuggestionsHandler {
- public:
-  MockSuggestionsHandler() = default;
-
-  void OnSuggestionsReturned(
-      FieldGlobalId field_id,
-      AutofillSuggestionTriggerSource trigger_source,
-      const std::vector<Suggestion>& suggestions) override {
-    last_suggestions_ = suggestions;
-  }
-
-  base::WeakPtr<MockSuggestionsHandler> GetWeakPtr() {
-    return weak_ptr_factory_.GetWeakPtr();
-  }
-
-  const std::vector<Suggestion>& last_suggestions() {
-    return last_suggestions_;
-  }
-
- private:
-  std::vector<Suggestion> last_suggestions_;
-  base::WeakPtrFactory<MockSuggestionsHandler> weak_ptr_factory_{this};
-};
 
 class AutofillAutocompleteTest : public InProcessBrowserTest {
  protected:
@@ -90,6 +67,7 @@ class AutofillAutocompleteTest : public InProcessBrowserTest {
   }
 
   void TearDownOnMainThread() override {
+    base::RunLoop().RunUntilIdle();
     // Make sure to close any showing popups prior to tearing down the UI.
     content::WebContents* web_contents =
         active_browser_->tab_strip_model()->GetActiveWebContents();
@@ -133,47 +111,19 @@ class AutofillAutocompleteTest : public InProcessBrowserTest {
 
     ASSERT_TRUE(content::ExecJs(web_contents(), js));
 
-    // Set up observer for Autocomplete form submissions.
-    TestAutofillAsyncObserver observer(
-        should_skip_save ? NotificationType::AutocompleteFormSkipped
-                         : NotificationType::AutocompleteFormSubmitted,
-        /*detach_on_notify=*/true);
-    autocomplete_history_manager()->Attach(&observer);
-
     // Simulate a mouse click to submit the form because form submissions not
     // triggered by user gestures are ignored.
+    TestAutofillManagerWaiter waiter(manager(),
+                                     {AutofillManagerEvent::kFormSubmitted});
     content::SimulateMouseClick(
         active_browser_->tab_strip_model()->GetActiveWebContents(), 0,
         blink::WebMouseEvent::Button::kLeft);
-
-    // Wait for the form to be submitted.
-    observer.Wait();
+    ASSERT_TRUE(waiter.Wait(1));
 
     if (!should_skip_save) {
       // Wait for data to have been saved in the DB.
       WaitForDBTasks();
     }
-  }
-
-  // Validates that there is only one available autocomplete suggestion for the
-  // given |prefix|, and its value is equal to |expected_value|.
-  void ValidateSingleValue(const std::string& prefix,
-                           const std::string& expected_value) {
-    MockSuggestionsHandler handler;
-    GetAutocompleteSuggestions(kDefaultAutocompleteInputId, prefix, handler);
-
-    EXPECT_THAT(handler.last_suggestions(),
-                ElementsAre(Field(
-                    &Suggestion::main_text,
-                    Suggestion::Text(ASCIIToUTF16(expected_value),
-                                     Suggestion::Text::IsPrimary(true)))));
-  }
-
-  void ValidateNoValue() {
-    MockSuggestionsHandler handler;
-    GetAutocompleteSuggestions(kDefaultAutocompleteInputId, "", handler);
-
-    EXPECT_TRUE(handler.last_suggestions().empty());
   }
 
   void ReinitializeAutocompleteHistoryManager() {
@@ -200,27 +150,33 @@ class AutofillAutocompleteTest : public InProcessBrowserTest {
     run_loop.Run();
   }
 
+  AutofillManager& manager() {
+    return ContentAutofillDriverFactory::FromWebContents(web_contents())
+        ->DriverForFrame(web_contents()->GetPrimaryMainFrame())
+        ->GetAutofillManager();
+  }
+
   PrefService* pref_service() { return active_browser_->profile()->GetPrefs(); }
 
- private:
-  void GetAutocompleteSuggestions(const std::string& input_name,
-                                  const std::string& prefix,
-                                  MockSuggestionsHandler& handler) {
-    AutofillClient& autofill_client =
-        ContentAutofillDriverFactory::FromWebContents(web_contents())
-            ->DriverForFrame(web_contents()->GetPrimaryMainFrame())
-            ->GetAutofillManager()
-            .client();
+  std::vector<Suggestion> GetAutocompleteSuggestions(
+      const std::string& input_name,
+      const std::string& prefix) {
+    base::MockCallback<SingleFieldFormFiller::OnSuggestionsReturnedCallback>
+        callback;
+    std::vector<Suggestion> suggestions;
+    EXPECT_CALL(callback, Run).WillOnce(testing::SaveArg<1>(&suggestions));
     EXPECT_TRUE(autocomplete_history_manager()->OnGetSingleFieldSuggestions(
-        AutofillSuggestionTriggerSource::kFormControlElementClicked,
         test::CreateTestFormField(/*label=*/"", input_name, prefix,
                                   FormControlType::kInputText),
-        autofill_client, handler.GetWeakPtr(), SuggestionsContext()));
+        manager().client(), callback.Get(), SuggestionsContext()));
 
     // Make sure the DB task gets executed.
     WaitForDBTasks();
+
+    return suggestions;
   }
 
+ private:
   GURL GetURL(const std::string& filename) {
     return embedded_test_server()->GetURL("/autofill/" + filename);
   }
@@ -246,7 +202,9 @@ IN_PROC_BROWSER_TEST_F(AutofillAutocompleteTest, SubmitSimpleValue_Saves) {
   std::string test_value = "SomeName!";
   NavigateToFile(kSimpleFormFileName);
   FillInputAndSubmit(test_value, /*should_skip_save=*/false);
-  ValidateSingleValue(prefix, test_value);
+  EXPECT_THAT(GetAutocompleteSuggestions(kDefaultAutocompleteInputId, prefix),
+              SuggestionVectorMainTextsAre(Suggestion::Text(
+                  UTF8ToUTF16(test_value), Suggestion::Text::IsPrimary(true))));
 }
 
 // Tests that we don't save new autocomplete entries when in Incognito.
@@ -258,7 +216,8 @@ IN_PROC_BROWSER_TEST_F(AutofillAutocompleteTest,
   std::string test_value = "SomeName!";
   NavigateToFile(kSimpleFormFileName, WindowOpenDisposition::OFF_THE_RECORD);
   FillInputAndSubmit(test_value, /*should_skip_save=*/true);
-  ValidateNoValue();
+  EXPECT_THAT(GetAutocompleteSuggestions(kDefaultAutocompleteInputId, ""),
+              IsEmpty());
 }
 
 // Tests that we don't save new autocomplete entries when Autocomplete was
@@ -270,7 +229,8 @@ IN_PROC_BROWSER_TEST_F(AutofillAutocompleteTest,
   std::string test_value = "SomeName!";
   NavigateToFile(kSimpleFormFileName);
   FillInputAndSubmit(test_value, /*should_skip_save=*/true);
-  ValidateNoValue();
+  EXPECT_THAT(GetAutocompleteSuggestions(kDefaultAutocompleteInputId, ""),
+              IsEmpty());
 }
 
 // Tests that initialization of the AutocompleteHistoryManager sets the
@@ -305,23 +265,23 @@ IN_PROC_BROWSER_TEST_F(AutofillAutocompleteTest,
   std::string test_value = "SomeName!";
   NavigateToFile(kSimpleFormFileName);
   FillInputAndSubmit(test_value, /*should_skip_save=*/false);
-  ValidateSingleValue(prefix, test_value);
+  EXPECT_THAT(GetAutocompleteSuggestions(kDefaultAutocompleteInputId, prefix),
+              SuggestionVectorMainTextsAre(Suggestion::Text(
+                  UTF8ToUTF16(test_value), Suggestion::Text::IsPrimary(true))));
 
   // Come back to current time, modify the saved major version and setup our
   // observer.
   test_clock.Advance(days_delta);
   pref_service()->SetInteger(prefs::kAutocompleteLastVersionRetentionPolicy,
                              CHROME_VERSION_MAJOR - 1);
-  TestAutofillAsyncObserver observer(NotificationType::AutocompleteCleanupDone,
-                                     /*detach_on_notify=*/true);
-  autocomplete_history_manager()->Attach(&observer);
 
   // Trigger the retention policy cleanup (by reinitializing the
   // AutocompleteHistoryManager), and wait for the cleanup to complete.
   ReinitializeAutocompleteHistoryManager();
-  observer.Wait();
+  WaitForDBTasks();
 
-  ValidateNoValue();
+  EXPECT_THAT(GetAutocompleteSuggestions(kDefaultAutocompleteInputId, ""),
+              IsEmpty());
 }
 
 // Tests that the retention policy cleanup does not remove a valid entry (e.g.
@@ -339,24 +299,25 @@ IN_PROC_BROWSER_TEST_F(AutofillAutocompleteTest,
   std::string test_value = "SomeName!";
   NavigateToFile(kSimpleFormFileName);
   FillInputAndSubmit(test_value, /*should_skip_save=*/false);
-  ValidateSingleValue(prefix, test_value);
+  EXPECT_THAT(GetAutocompleteSuggestions(kDefaultAutocompleteInputId, prefix),
+              SuggestionVectorMainTextsAre(Suggestion::Text(
+                  UTF8ToUTF16(test_value), Suggestion::Text::IsPrimary(true))));
 
   // Come back to current time, modify the saved major version and setup our
   // observer.
   test_clock.Advance(days_delta);
   pref_service()->SetInteger(prefs::kAutocompleteLastVersionRetentionPolicy,
                              CHROME_VERSION_MAJOR - 1);
-  TestAutofillAsyncObserver observer(NotificationType::AutocompleteCleanupDone,
-                                     /*detach_on_notify=*/true);
-  autocomplete_history_manager()->Attach(&observer);
 
   // Trigger the retention policy cleanup (by reinitializing the
   // AutocompleteHistoryManager), and wait for the cleanup to complete.
   ReinitializeAutocompleteHistoryManager();
-  observer.Wait();
+  WaitForDBTasks();
 
   // Verify that the entry is still there.
-  ValidateSingleValue(prefix, test_value);
+  EXPECT_THAT(GetAutocompleteSuggestions(kDefaultAutocompleteInputId, prefix),
+              SuggestionVectorMainTextsAre(Suggestion::Text(
+                  UTF8ToUTF16(test_value), Suggestion::Text::IsPrimary(true))));
 }
 
 }  // namespace autofill

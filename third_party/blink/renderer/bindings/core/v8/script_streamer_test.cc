@@ -9,6 +9,7 @@
 
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -19,6 +20,8 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_code_cache.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_local_compile_hints_consumer.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_local_compile_hints_producer.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_script_runner.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
@@ -39,6 +42,7 @@
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/worker_pool.h"
 #include "third_party/blink/renderer/platform/testing/mock_context_lifecycle_notifier.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support_with_mock_scheduler.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/url_loader_mock_factory.h"
@@ -220,6 +224,7 @@ class ScriptStreamingTest : public testing::Test {
 
   void RunUntilResourceLoaded() { run_loop_.Run(); }
 
+  test::TaskEnvironment task_environment_;
   KURL url_;
 
   base::RunLoop run_loop_;
@@ -377,6 +382,52 @@ TEST_F(ScriptStreamingTest, SuppressingStreaming) {
   // the streaming and resumed the non-streaming code path for script
   // compilation.
   EXPECT_FALSE(classic_script->Streamer());
+}
+
+TEST_F(ScriptStreamingTest, ConsumeLocalCompileHints) {
+  // If we notice before streaming that there is a compile hints cache, we use
+  // it for eager compilation.
+  base::test::ScopedFeatureList flag_on(features::kLocalCompileHints);
+  V8TestingScope scope;
+
+  CachedMetadataHandler* cache_handler = resource_->CacheHandler();
+  EXPECT_TRUE(cache_handler);
+  cache_handler->DisableSendToPlatformForTesting();
+  // CodeCacheHost can be nullptr since we disabled sending data to
+  // GeneratedCodeCacheHost for testing.
+
+  // Create fake compile hints (what the real compile hints are is internal to
+  // v8).
+  std::vector<int> compile_hints = {200, 230};
+  uint64_t timestamp = V8CodeCache::GetTimestamp();
+
+  std::unique_ptr<v8::ScriptCompiler::CachedData> cached_data(
+      v8_compile_hints::V8LocalCompileHintsProducer::
+          CreateCompileHintsCachedDataForScript(compile_hints, timestamp));
+
+  cache_handler->SetCachedMetadata(
+      /*code_cache_host*/ nullptr,
+      V8CodeCache::TagForCompileHints(cache_handler), cached_data->data,
+      cached_data->length);
+
+  AppendData("/*this doesn't matter*/");
+  Finish();
+  RunUntilResourceLoaded();
+  EXPECT_TRUE(resource_client_->Finished());
+
+  ResourceScriptStreamer* resource_script_streamer =
+      std::get<0>(ResourceScriptStreamer::TakeFrom(
+          resource_, mojom::blink::ScriptType::kClassic));
+  EXPECT_TRUE(resource_script_streamer);
+
+  v8_compile_hints::V8LocalCompileHintsConsumer* local_compile_hints_consumer =
+      resource_script_streamer->GetV8LocalCompileHintsConsumer();
+  EXPECT_TRUE(local_compile_hints_consumer);
+
+  EXPECT_TRUE(local_compile_hints_consumer->GetCompileHint(200));
+  EXPECT_FALSE(local_compile_hints_consumer->GetCompileHint(210));
+  EXPECT_TRUE(local_compile_hints_consumer->GetCompileHint(230));
+  EXPECT_FALSE(local_compile_hints_consumer->GetCompileHint(240));
 }
 
 TEST_F(ScriptStreamingTest, EmptyScripts) {
@@ -587,6 +638,46 @@ TEST_P(InlineScriptStreamingTest, InlineScript) {
             ScriptEvaluationResult::ResultType::kSuccess);
   EXPECT_EQ(
       5, result.GetSuccessValue()->Int32Value(scope.GetContext()).FromJust());
+}
+
+TEST_F(ScriptStreamingTest, ProduceLocalCompileHintsForStreamedScript) {
+  // Test that we can produce local compile hints when a script is streamed.
+  base::test::ScopedFeatureList flag_on(features::kLocalCompileHints);
+  V8TestingScope scope;
+
+  AppendData("function foo() { return 5; }");
+  AppendData("foo();");
+  EXPECT_FALSE(resource_client_->Finished());
+  Finish();
+
+  // Process tasks on the main thread until the resource has notified that it
+  // has finished loading.
+  RunUntilResourceLoaded();
+  EXPECT_TRUE(resource_client_->Finished());
+  ClassicScript* classic_script = CreateClassicScript();
+  EXPECT_TRUE(classic_script->Streamer());
+  v8::TryCatch try_catch(scope.GetIsolate());
+  v8::Local<v8::Script> script;
+  v8::ScriptCompiler::CompileOptions compile_options;
+  V8CodeCache::ProduceCacheOptions produce_cache_options;
+  v8::ScriptCompiler::NoCacheReason no_cache_reason;
+  std::tie(compile_options, produce_cache_options, no_cache_reason) =
+      V8CodeCache::GetCompileOptions(mojom::blink::V8CacheOptions::kDefault,
+                                     *classic_script);
+  EXPECT_TRUE(V8ScriptRunner::CompileScript(
+                  scope.GetScriptState(), *classic_script,
+                  classic_script->CreateScriptOrigin(scope.GetIsolate()),
+                  compile_options, no_cache_reason)
+                  .ToLocal(&script));
+  EXPECT_FALSE(try_catch.HasCaught());
+
+  v8::Local<v8::Value> return_value;
+  EXPECT_TRUE(script->Run(scope.GetContext()).ToLocal(&return_value));
+
+  // Expect that we got a compile hint for the function which was run. Don't
+  // assert what it is (that's internal to V8).
+  std::vector<int> compile_hints = script->GetProducedCompileHints();
+  EXPECT_EQ(1UL, compile_hints.size());
 }
 
 INSTANTIATE_TEST_SUITE_P(

@@ -336,7 +336,7 @@ TEST_F(WebBundleManagerTest,
     req.client->RunUntilComplete();
 
     EXPECT_EQ(net::OK, req.client->completion_status().error_code);
-    EXPECT_EQ(req.client->response_head()->web_bundle_url, GURL(kBundleUrl));
+    EXPECT_TRUE(req.client->response_head()->is_web_bundle_inner_response);
     std::string body;
     EXPECT_TRUE(
         mojo::BlockingCopyToString(req.client->response_body_release(), &body));
@@ -573,7 +573,7 @@ TEST_F(WebBundleManagerTest, MemoryQuota_ProcessIsolation) {
   // Confirm that the subresource is correctly loaded.
   client1_1->RunUntilComplete();
   EXPECT_EQ(net::OK, client1_1->completion_status().error_code);
-  EXPECT_EQ(client1_1->response_head()->web_bundle_url, GURL(kBundleUrl));
+  EXPECT_TRUE(client1_1->response_head()->is_web_bundle_inner_response);
   std::string body1_1;
   EXPECT_TRUE(
       mojo::BlockingCopyToString(client1_1->response_body_release(), &body1_1));
@@ -596,7 +596,7 @@ TEST_F(WebBundleManagerTest, MemoryQuota_ProcessIsolation) {
   // Confirm that the subresource is correctly loaded.
   client1_2->RunUntilComplete();
   EXPECT_EQ(net::OK, client1_2->completion_status().error_code);
-  EXPECT_EQ(client1_2->response_head()->web_bundle_url, GURL(kBundleUrl));
+  EXPECT_TRUE(client1_2->response_head()->is_web_bundle_inner_response);
   std::string body1_2;
   EXPECT_TRUE(
       mojo::BlockingCopyToString(client1_2->response_body_release(), &body1_2));
@@ -642,7 +642,7 @@ TEST_F(WebBundleManagerTest, MemoryQuota_ProcessIsolation) {
   // Confirm that the subresource is correctly loaded.
   client2->RunUntilComplete();
   EXPECT_EQ(net::OK, client2->completion_status().error_code);
-  EXPECT_EQ(client2->response_head()->web_bundle_url, GURL(kBundleUrl));
+  EXPECT_TRUE(client2->response_head()->is_web_bundle_inner_response);
   std::string body2;
   EXPECT_TRUE(
       mojo::BlockingCopyToString(client2->response_body_release(), &body2));

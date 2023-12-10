@@ -9,9 +9,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-/**
- * Tells R8 to always inline the annotated method/constructor.
- */
+/** Tells R8 to always inline the annotated method/constructor. */
 @Target({ElementType.CONSTRUCTOR, ElementType.METHOD})
 @Retention(RetentionPolicy.CLASS)
 public @interface AlwaysInline {}

@@ -20,6 +20,7 @@ WebGPUTextureAlphaClearer::WebGPUTextureAlphaClearer(
   WGPUShaderModuleWGSLDescriptor wgsl_desc = {
       .chain = {.sType = WGPUSType_ShaderModuleWGSLDescriptor},
       .code = R"(
+    // Internal shader used to clear the alpha channel of a texture.
     @vertex fn vert_main(@builtin(vertex_index) VertexIndex : u32) -> @builtin(position) vec4<f32> {
         var pos = array<vec2<f32>, 3>(
             vec2<f32>(-1.0, -1.0),
@@ -44,16 +45,11 @@ WebGPUTextureAlphaClearer::WebGPUTextureAlphaClearer(
   };
   WGPUFragmentState fragment = {
       .module = shader_module,
-      .entryPoint = "frag_main",
       .targetCount = 1,
       .targets = &color_target,
   };
   WGPURenderPipelineDescriptor pipeline_desc = {
-      .vertex =
-          {
-              .module = shader_module,
-              .entryPoint = "vert_main",
-          },
+      .vertex = {.module = shader_module},
       .primitive = {.topology = WGPUPrimitiveTopology_TriangleList},
       .multisample = {.count = 1, .mask = 0xFFFFFFFF},
       .fragment = &fragment,

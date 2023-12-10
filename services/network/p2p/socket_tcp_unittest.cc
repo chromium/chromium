@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <string_view>
 
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -493,9 +494,9 @@ TEST(P2PSocketTcpWithPseudoTlsTest, Basic) {
   auto context = context_builder->Build();
   ProxyResolvingClientSocketFactory factory(context.get());
 
-  base::StringPiece ssl_client_hello =
+  std::string_view ssl_client_hello =
       webrtc::FakeSSLClientSocket::GetSslClientHello();
-  base::StringPiece ssl_server_hello =
+  std::string_view ssl_server_hello =
       webrtc::FakeSSLClientSocket::GetSslServerHello();
   net::MockRead reads[] = {
       net::MockRead(net::ASYNC, ssl_server_hello.data(),
@@ -551,9 +552,9 @@ TEST(P2PSocketTcpWithPseudoTlsTest, Hostname) {
   auto context = context_builder->Build();
   ProxyResolvingClientSocketFactory factory(context.get());
 
-  base::StringPiece ssl_client_hello =
+  std::string_view ssl_client_hello =
       webrtc::FakeSSLClientSocket::GetSslClientHello();
-  base::StringPiece ssl_server_hello =
+  std::string_view ssl_server_hello =
       webrtc::FakeSSLClientSocket::GetSslServerHello();
   net::MockRead reads[] = {
       net::MockRead(net::ASYNC, ssl_server_hello.data(),

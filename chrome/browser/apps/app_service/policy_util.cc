@@ -63,7 +63,8 @@ constexpr auto kSystemWebAppsMapping =
          {"os_url_handler", ash::SystemWebAppType::OS_URL_HANDLER},
          {"firmware_update", ash::SystemWebAppType::FIRMWARE_UPDATE},
          {"os_flags", ash::SystemWebAppType::OS_FLAGS},
-         {"face_ml", ash::SystemWebAppType::FACE_ML}});
+         {"face_ml", ash::SystemWebAppType::FACE_ML},
+         {"vc_background", ash::SystemWebAppType::VC_BACKGROUND}});
 
 constexpr ash::SystemWebAppType GetMaxSystemWebAppType() {
   return base::ranges::max(kSystemWebAppsMapping, base::ranges::less{},
@@ -92,10 +93,10 @@ constexpr auto kPreinstalledWebAppsMapping =
         {{"cursive", web_app::kCursiveAppId},
          {"canvas", web_app::kCanvasAppId}});
 
-absl::optional<base::flat_map<base::StringPiece, base::StringPiece>>&
+std::optional<base::flat_map<base::StringPiece, base::StringPiece>>&
 GetPreinstalledWebAppsMappingForTesting() {
   static base::NoDestructor<
-      absl::optional<base::flat_map<base::StringPiece, base::StringPiece>>>
+      std::optional<base::flat_map<base::StringPiece, base::StringPiece>>>
       preinstalled_web_apps_mapping_for_testing;
   return *preinstalled_web_apps_mapping_for_testing;
 }
@@ -134,10 +135,10 @@ bool IsFileManagerVirtualTaskPolicyId(base::StringPiece policy_id) {
   return GetVirtualTaskIdFromPolicyId(policy_id).has_value();
 }
 
-absl::optional<base::StringPiece> GetVirtualTaskIdFromPolicyId(
+std::optional<base::StringPiece> GetVirtualTaskIdFromPolicyId(
     base::StringPiece policy_id) {
   if (!base::StartsWith(policy_id, kVirtualTaskPrefix)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   static constexpr size_t kOffset =
       std::char_traits<char>::length(kVirtualTaskPrefix);
@@ -172,13 +173,13 @@ std::vector<std::string> GetAppIdsFromPolicyId(Profile* profile,
   return app_ids;
 }
 
-absl::optional<std::vector<std::string>> GetPolicyIdsFromAppId(
+std::optional<std::vector<std::string>> GetPolicyIdsFromAppId(
     Profile* profile,
     const std::string& app_id) {
   if (!apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
-  absl::optional<std::vector<std::string>> policy_ids;
+  std::optional<std::vector<std::string>> policy_ids;
   apps::AppServiceProxyFactory::GetForProfile(profile)
       ->AppRegistryCache()
       .ForOneApp(app_id, [&policy_ids](const apps::AppUpdate& update) {
@@ -188,7 +189,7 @@ absl::optional<std::vector<std::string>> GetPolicyIdsFromAppId(
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-absl::optional<base::StringPiece> GetPolicyIdForSystemWebAppType(
+std::optional<base::StringPiece> GetPolicyIdForSystemWebAppType(
     ash::SystemWebAppType swa_type) {
   for (const auto& [policy_id, mapped_swa_type] : kSystemWebAppsMapping) {
     if (mapped_swa_type == swa_type) {
@@ -199,7 +200,7 @@ absl::optional<base::StringPiece> GetPolicyIdForSystemWebAppType(
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-absl::optional<base::StringPiece> GetPolicyIdForPreinstalledWebApp(
+std::optional<base::StringPiece> GetPolicyIdForPreinstalledWebApp(
     base::StringPiece app_id) {
   if (const auto& test_mapping = GetPreinstalledWebAppsMappingForTesting()) {
     for (const auto& [policy_id, mapped_app_id] : *test_mapping) {
@@ -219,7 +220,7 @@ absl::optional<base::StringPiece> GetPolicyIdForPreinstalledWebApp(
 }
 
 void SetPreinstalledWebAppsMappingForTesting(  // IN-TEST
-    absl::optional<base::flat_map<base::StringPiece, base::StringPiece>>
+    std::optional<base::flat_map<base::StringPiece, base::StringPiece>>
         preinstalled_web_apps_mapping_for_testing) {
   GetPreinstalledWebAppsMappingForTesting() =                // IN-TEST
       std::move(preinstalled_web_apps_mapping_for_testing);  // IN-TEST

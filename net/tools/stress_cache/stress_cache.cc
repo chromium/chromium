@@ -124,7 +124,7 @@ enum Operation { NONE, OPEN, CREATE, READ, WRITE, DOOM };
 class EntryWrapper {
  public:
   EntryWrapper() {
-    buffer_ = base::MakeRefCounted<net::IOBuffer>(kBufferSize);
+    buffer_ = base::MakeRefCounted<net::IOBufferWithSize>(kBufferSize);
     memset(buffer_->data(), 'k', kBufferSize);
   }
 

@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <limits>
+#include <optional>
 #include <ostream>
 #include <string>
 #include <type_traits>
@@ -17,7 +18,6 @@
 #include "base/base64.h"
 #include "base/check.h"
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
 #include "base/debug/dump_without_crashing.h"
@@ -40,10 +40,10 @@
 #include "content/browser/aggregation_service/public_key.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/private_aggregation/aggregatable_report.mojom.h"
 #include "third_party/boringssl/src/include/openssl/hpke.h"
-#include "third_party/distributed_point_functions/code/dpf/distributed_point_function.h"
+#include "third_party/distributed_point_functions/dpf/distributed_point_function.pb.h"
+#include "third_party/distributed_point_functions/shim/distributed_point_function_shim.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -51,8 +51,6 @@ namespace content {
 
 namespace {
 
-using DistributedPointFunction =
-    distributed_point_functions::DistributedPointFunction;
 using DpfKey = distributed_point_functions::DpfKey;
 using DpfParameters = distributed_point_functions::DpfParameters;
 
@@ -62,7 +60,7 @@ constexpr char kOperationKey[] = "operation";
 
 std::vector<GURL> GetDefaultProcessingUrls(
     blink::mojom::AggregationServiceMode aggregation_mode,
-    const absl::optional<url::Origin>& aggregation_coordinator_origin) {
+    const std::optional<url::Origin>& aggregation_coordinator_origin) {
   switch (aggregation_mode) {
     case blink::mojom::AggregationServiceMode::kTeeBased:
       if (base::FeatureList::IsEnabled(
@@ -112,31 +110,22 @@ std::vector<DpfKey> GenerateDpfKeys(
             blink::mojom::AggregationServiceMode::kExperimentalPoplar);
   DCHECK_EQ(contents.contributions.size(), 1u);
 
-  // absl::StatusOr is not allowed in the codebase, but this minimal usage is
-  // necessary to interact with //third_party/distributed_point_functions/.
-  absl::StatusOr<std::unique_ptr<DistributedPointFunction>> status_or_dpf =
-      DistributedPointFunction::CreateIncremental(ConstructDpfParameters());
-  if (!status_or_dpf.ok()) {
-    return {};
-  }
-  std::unique_ptr<DistributedPointFunction> dpf =
-      std::move(status_or_dpf).value();
-
-  // We want the same beta, no matter which prefix length is used.
-  absl::StatusOr<std::pair<DpfKey, DpfKey>> status_or_dpf_keys =
-      dpf->GenerateKeysIncremental(
+  std::optional<std::pair<DpfKey, DpfKey>> maybe_dpf_keys =
+      distributed_point_functions::GenerateKeysIncremental(
+          ConstructDpfParameters(),
           /*alpha=*/contents.contributions[0].bucket,
-          /*beta=*/std::vector<absl::uint128>(
-              AggregatableReport::kBucketDomainBitLength,
-              contents.contributions[0].value));
-  if (!status_or_dpf_keys.ok()) {
+          // We want the same beta, no matter which prefix length is used.
+          /*beta=*/
+          std::vector<absl::uint128>(AggregatableReport::kBucketDomainBitLength,
+                                     contents.contributions[0].value));
+
+  if (!maybe_dpf_keys.has_value()) {
     return {};
   }
 
   std::vector<DpfKey> dpf_keys;
-  dpf_keys.push_back(std::move(status_or_dpf_keys->first));
-  dpf_keys.push_back(std::move(status_or_dpf_keys->second));
-
+  dpf_keys.push_back(std::move(maybe_dpf_keys->first));
+  dpf_keys.push_back(std::move(maybe_dpf_keys->second));
   return dpf_keys;
 }
 
@@ -163,7 +152,7 @@ ConstructUnencryptedExperimentalPoplarPayloads(
     value.emplace(kOperationKey, kHistogramValue);
     value.emplace("dpf_key", std::move(serialized_key));
 
-    absl::optional<std::vector<uint8_t>> unencrypted_payload =
+    std::optional<std::vector<uint8_t>> unencrypted_payload =
         cbor::Writer::Write(cbor::Value(std::move(value)));
 
     if (!unencrypted_payload.has_value()) {
@@ -242,7 +231,7 @@ std::vector<std::vector<uint8_t>> ConstructUnencryptedTeeBasedPayload(
 
   value.emplace("data", std::move(data));
 
-  absl::optional<std::vector<uint8_t>> unencrypted_payload =
+  std::optional<std::vector<uint8_t>> unencrypted_payload =
       cbor::Writer::Write(cbor::Value(std::move(value)));
 
   if (!unencrypted_payload.has_value()) {
@@ -302,12 +291,12 @@ std::vector<uint8_t> EncryptWithHpke(
   return payload;
 }
 
-absl::optional<AggregationServicePayloadContents>
+std::optional<AggregationServicePayloadContents>
 ConvertPayloadContentsFromProto(
     const proto::AggregationServicePayloadContents& proto) {
   if (proto.operation() !=
       proto::AggregationServicePayloadContents_Operation_HISTOGRAM) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   AggregationServicePayloadContents::Operation operation(
       AggregationServicePayloadContents::Operation::kHistogram);
@@ -332,10 +321,10 @@ ConvertPayloadContentsFromProto(
           blink::mojom::AggregationServiceMode::kExperimentalPoplar;
       break;
     default:
-      return absl::nullopt;
+      return std::nullopt;
   }
 
-  absl::optional<url::Origin> aggregation_coordinator_origin;
+  std::optional<url::Origin> aggregation_coordinator_origin;
   if (proto.has_aggregation_coordinator_origin()) {
     aggregation_coordinator_origin =
         url::Origin::Create(GURL(proto.aggregation_coordinator_origin()));
@@ -343,7 +332,7 @@ ConvertPayloadContentsFromProto(
 
   int max_contributions_allowed = proto.max_contributions_allowed();
   if (max_contributions_allowed < 0) {
-    return absl::nullopt;
+    return std::nullopt;
   } else if (max_contributions_allowed == 0) {
     // Don't pad reports stored before padding was implemented.
     max_contributions_allowed = contributions.size();
@@ -355,7 +344,7 @@ ConvertPayloadContentsFromProto(
       std::move(aggregation_coordinator_origin), max_contributions_allowed);
 }
 
-absl::optional<AggregatableReportSharedInfo> ConvertSharedInfoFromProto(
+std::optional<AggregatableReportSharedInfo> ConvertSharedInfoFromProto(
     const proto::AggregatableReportSharedInfo& proto) {
   base::Time scheduled_report_time = base::Time::FromDeltaSinceWindowsEpoch(
       base::Microseconds(proto.scheduled_report_time()));
@@ -372,7 +361,7 @@ absl::optional<AggregatableReportSharedInfo> ConvertSharedInfoFromProto(
       debug_mode = AggregatableReportSharedInfo::DebugMode::kEnabled;
       break;
     default:
-      return absl::nullopt;
+      return std::nullopt;
   }
 
   std::string api_version = proto.api_version();
@@ -388,21 +377,21 @@ absl::optional<AggregatableReportSharedInfo> ConvertSharedInfoFromProto(
       std::move(api_version), std::move(api_identifier));
 }
 
-absl::optional<AggregatableReportRequest> ConvertReportRequestFromProto(
+std::optional<AggregatableReportRequest> ConvertReportRequestFromProto(
     proto::AggregatableReportRequest request_proto) {
-  absl::optional<AggregationServicePayloadContents> payload_contents(
+  std::optional<AggregationServicePayloadContents> payload_contents(
       ConvertPayloadContentsFromProto(request_proto.payload_contents()));
   if (!payload_contents.has_value()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
-  absl::optional<AggregatableReportSharedInfo> shared_info(
+  std::optional<AggregatableReportSharedInfo> shared_info(
       ConvertSharedInfoFromProto(request_proto.shared_info()));
   if (!shared_info.has_value()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
-  absl::optional<uint64_t> debug_key;
+  std::optional<uint64_t> debug_key;
   if (request_proto.has_debug_key()) {
     debug_key = request_proto.debug_key();
   }
@@ -530,7 +519,7 @@ AggregationServicePayloadContents::AggregationServicePayloadContents(
     std::vector<blink::mojom::AggregatableReportHistogramContribution>
         contributions,
     blink::mojom::AggregationServiceMode aggregation_mode,
-    absl::optional<url::Origin> aggregation_coordinator_origin,
+    std::optional<url::Origin> aggregation_coordinator_origin,
     int max_contributions_allowed)
     : operation(operation),
       contributions(std::move(contributions)),
@@ -618,11 +607,11 @@ std::string AggregatableReportSharedInfo::SerializeAsJson() const {
 }
 
 // static
-absl::optional<AggregatableReportRequest> AggregatableReportRequest::Create(
+std::optional<AggregatableReportRequest> AggregatableReportRequest::Create(
     AggregationServicePayloadContents payload_contents,
     AggregatableReportSharedInfo shared_info,
     std::string reporting_path,
-    absl::optional<uint64_t> debug_key,
+    std::optional<uint64_t> debug_key,
     base::flat_map<std::string, std::string> additional_fields,
     int failed_send_attempts) {
   std::vector<GURL> processing_urls =
@@ -635,13 +624,13 @@ absl::optional<AggregatableReportRequest> AggregatableReportRequest::Create(
 }
 
 // static
-absl::optional<AggregatableReportRequest>
+std::optional<AggregatableReportRequest>
 AggregatableReportRequest::CreateForTesting(
     std::vector<GURL> processing_urls,
     AggregationServicePayloadContents payload_contents,
     AggregatableReportSharedInfo shared_info,
     std::string reporting_path,
-    absl::optional<uint64_t> debug_key,
+    std::optional<uint64_t> debug_key,
     base::flat_map<std::string, std::string> additional_fields,
     int failed_send_attempts) {
   return CreateInternal(std::move(processing_urls), std::move(payload_contents),
@@ -651,55 +640,55 @@ AggregatableReportRequest::CreateForTesting(
 }
 
 // static
-absl::optional<AggregatableReportRequest>
+std::optional<AggregatableReportRequest>
 AggregatableReportRequest::CreateInternal(
     std::vector<GURL> processing_urls,
     AggregationServicePayloadContents payload_contents,
     AggregatableReportSharedInfo shared_info,
     std::string reporting_path,
-    absl::optional<uint64_t> debug_key,
+    std::optional<uint64_t> debug_key,
     base::flat_map<std::string, std::string> additional_fields,
     int failed_send_attempts) {
   if (!AggregatableReport::IsNumberOfProcessingUrlsValid(
           processing_urls.size(), payload_contents.aggregation_mode)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (!base::ranges::all_of(processing_urls,
                             network::IsUrlPotentiallyTrustworthy)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (!AggregatableReport::IsNumberOfHistogramContributionsValid(
           payload_contents.contributions.size(),
           payload_contents.aggregation_mode)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (base::ranges::any_of(
           payload_contents.contributions,
           [](const blink::mojom::AggregatableReportHistogramContribution&
                  contribution) { return contribution.value < 0; })) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (!shared_info.report_id.is_valid()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (debug_key.has_value() &&
       shared_info.debug_mode ==
           AggregatableReportSharedInfo::DebugMode::kDisabled) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (failed_send_attempts < 0) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (payload_contents.max_contributions_allowed <
       static_cast<int>(payload_contents.contributions.size())) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Ensure the ordering of urls is deterministic. This is required for
@@ -717,7 +706,7 @@ AggregatableReportRequest::AggregatableReportRequest(
     AggregationServicePayloadContents payload_contents,
     AggregatableReportSharedInfo shared_info,
     std::string reporting_path,
-    absl::optional<uint64_t> debug_key,
+    std::optional<uint64_t> debug_key,
     base::flat_map<std::string, std::string> additional_fields,
     int failed_send_attempts)
     : processing_urls_(std::move(processing_urls)),
@@ -743,13 +732,12 @@ GURL AggregatableReportRequest::GetReportingUrl() const {
   return shared_info().reporting_origin.GetURL().Resolve(reporting_path_);
 }
 
-absl::optional<AggregatableReportRequest>
-AggregatableReportRequest::Deserialize(
+std::optional<AggregatableReportRequest> AggregatableReportRequest::Deserialize(
     base::span<const uint8_t> serialized_proto) {
   proto::AggregatableReportRequest request_proto;
   if (!request_proto.ParseFromArray(serialized_proto.data(),
                                     serialized_proto.size())) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return ConvertReportRequestFromProto(std::move(request_proto));
@@ -771,7 +759,7 @@ std::vector<uint8_t> AggregatableReportRequest::Serialize() {
 AggregatableReport::AggregationServicePayload::AggregationServicePayload(
     std::vector<uint8_t> payload,
     std::string key_id,
-    absl::optional<std::vector<uint8_t>> debug_cleartext_payload)
+    std::optional<std::vector<uint8_t>> debug_cleartext_payload)
     : payload(std::move(payload)),
       key_id(std::move(key_id)),
       debug_cleartext_payload(std::move(debug_cleartext_payload)) {}
@@ -792,9 +780,9 @@ AggregatableReport::AggregationServicePayload::~AggregationServicePayload() =
 AggregatableReport::AggregatableReport(
     std::vector<AggregationServicePayload> payloads,
     std::string shared_info,
-    absl::optional<uint64_t> debug_key,
+    std::optional<uint64_t> debug_key,
     base::flat_map<std::string, std::string> additional_fields,
-    absl::optional<url::Origin> aggregation_coordinator_origin)
+    std::optional<url::Origin> aggregation_coordinator_origin)
     : payloads_(std::move(payloads)),
       shared_info_(std::move(shared_info)),
       debug_key_(debug_key),
@@ -827,7 +815,7 @@ void AggregatableReport::Provider::SetDisableEncryptionForTestingTool(
 
 AggregatableReport::Provider::~Provider() = default;
 
-absl::optional<AggregatableReport>
+std::optional<AggregatableReport>
 AggregatableReport::Provider::CreateFromRequestAndPublicKeys(
     const AggregatableReportRequest& report_request,
     std::vector<PublicKey> public_keys) const {
@@ -862,7 +850,7 @@ AggregatableReport::Provider::CreateFromRequestAndPublicKeys(
   }
 
   if (unencrypted_payloads.empty()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   std::string encoded_shared_info =
@@ -885,10 +873,10 @@ AggregatableReport::Provider::CreateFromRequestAndPublicKeys(
                   /*authenticated_info=*/authenticated_info);
 
     if (encrypted_payload.empty()) {
-      return absl::nullopt;
+      return std::nullopt;
     }
 
-    absl::optional<std::vector<uint8_t>> debug_cleartext_payload;
+    std::optional<std::vector<uint8_t>> debug_cleartext_payload;
     if (report_request.shared_info().debug_mode ==
         AggregatableReportSharedInfo::DebugMode::kEnabled) {
       debug_cleartext_payload = std::move(unencrypted_payloads[i]);

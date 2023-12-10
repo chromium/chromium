@@ -175,7 +175,9 @@ class ClipboardImpl final : public Clipboard, public DataSource::Delegate {
   }
 
   // WaylandDataSource::Delegate:
-  void OnDataSourceFinish(DataSource* source, bool completed) override {
+  void OnDataSourceFinish(DataSource* source,
+                          base::TimeTicks timestamp,
+                          bool completed) override {
     if (!completed)
       Write(nullptr);
   }

@@ -8,6 +8,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 
@@ -39,7 +40,6 @@
 #include "chromeos/ash/components/network/tether_constants.h"
 #include "dbus/object_path.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 using testing::ElementsAre;
@@ -295,8 +295,8 @@ class TestObserver final : public NetworkStateHandlerObserver {
   std::map<std::string, int> device_property_updates_;
   std::map<std::string, int> connection_state_changes_;
   std::map<std::string, std::string> network_connection_state_;
-  absl::optional<base::RunLoop> run_loop_scan_started_;
-  absl::optional<base::RunLoop> run_loop_scan_completed_;
+  std::optional<base::RunLoop> run_loop_scan_started_;
+  std::optional<base::RunLoop> run_loop_scan_completed_;
   std::vector<std::pair<std::string, std::string>> service_path_transitions_;
 };
 
@@ -2830,7 +2830,7 @@ TEST_F(NetworkStateHandlerTest, RequestTrafficCounters) {
       base::BindOnce(
           [](base::Value::List* expected_traffic_counters,
              base::OnceClosure quit_closure,
-             absl::optional<base::Value> actual_traffic_counters) {
+             std::optional<base::Value> actual_traffic_counters) {
             ASSERT_TRUE(actual_traffic_counters);
             EXPECT_EQ(*expected_traffic_counters, *actual_traffic_counters);
             std::move(quit_closure).Run();
@@ -2845,7 +2845,7 @@ TEST_F(NetworkStateHandlerTest, RequestTrafficCounters) {
       base::BindOnce(
           [](base::Value::List* expected_traffic_counters,
              base::OnceClosure quit_closure,
-             absl::optional<base::Value> actual_traffic_counters) {
+             std::optional<base::Value> actual_traffic_counters) {
             ASSERT_FALSE(actual_traffic_counters);
             std::move(quit_closure).Run();
           },

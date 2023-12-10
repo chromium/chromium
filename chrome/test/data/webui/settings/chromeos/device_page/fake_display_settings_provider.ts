@@ -16,6 +16,8 @@ type TabletModeObserverInterface =
     displaySettingsProviderMojom.TabletModeObserverInterface;
 type DisplayConfigurationObserverInterface =
     displaySettingsProviderMojom.DisplayConfigurationObserverInterface;
+type DisplaySettingsType = displaySettingsProviderMojom.DisplaySettingsType;
+type DisplaySettingsValue = displaySettingsProviderMojom.DisplaySettingsValue;
 
 export class FakeDisplaySettingsProvider implements
     DisplaySettingsProviderInterface {
@@ -23,7 +25,10 @@ export class FakeDisplaySettingsProvider implements
   private displayConfigurationObservers:
       DisplayConfigurationObserverInterface[] = [];
   private isTabletMode: boolean = false;
+  private internalDisplayHistogram = new Map<DisplaySettingsType, number>();
+  private externalDisplayHistogram = new Map<DisplaySettingsType, number>();
 
+  // Implement DisplaySettingsProviderInterface.
   observeTabletMode(observer: TabletModeObserverInterface):
       Promise<{isTabletMode: boolean}> {
     this.tabletModeObservers.push(observer);
@@ -32,6 +37,7 @@ export class FakeDisplaySettingsProvider implements
     return Promise.resolve({isTabletMode: this.isTabletMode});
   }
 
+  // Implement DisplaySettingsProviderInterface.
   observeDisplayConfiguration(observer: DisplayConfigurationObserverInterface):
       Promise<void> {
     this.displayConfigurationObservers.push(observer);
@@ -52,5 +58,27 @@ export class FakeDisplaySettingsProvider implements
 
   getIsTabletMode(): boolean {
     return this.isTabletMode;
+  }
+
+  // Implement DisplaySettingsProviderInterface.
+  recordChangingDisplaySettings(
+      type: DisplaySettingsType, value: DisplaySettingsValue) {
+    if (value.isInternalDisplay === undefined) {
+      // TODO(zhangwenyu): handle settings that apply to both internal and
+      // external display, such as toggling mirror mode.
+      return;
+    }
+
+    const histogram = value.isInternalDisplay ? this.internalDisplayHistogram :
+                                                this.externalDisplayHistogram;
+    histogram.set(type, (histogram.get(type) || 0) + 1);
+  }
+
+  getInternalDisplayHistogram(): Map<DisplaySettingsType, number> {
+    return this.internalDisplayHistogram;
+  }
+
+  getExternalDisplayHistogram(): Map<DisplaySettingsType, number> {
+    return this.externalDisplayHistogram;
   }
 }

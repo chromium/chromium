@@ -128,14 +128,13 @@ struct TypeSupportsUnretained {
 //
 // TODO(https://crbug.com/1392872): Enable this on all platforms, then in
 // official builds, and then in non-test code as well.
-#if !defined(UNIT_TEST) && !defined(OFFICIAL_BUILD)
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || \
-    defined(FORCE_UNRETAINED_COMPLETENESS_CHECKS_FOR_TESTS)
+#if defined(FORCE_UNRETAINED_COMPLETENESS_CHECKS_FOR_TESTS) || \
+    (!defined(UNIT_TEST) && !defined(OFFICIAL_BUILD) &&        \
+     (BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)))
   static_assert(IsCompleteTypeV<T> ||
                     IsIncompleteTypeSafeForUnretained<std::remove_cv_t<T>>,
                 "T must be fully defined.");
 #endif
-#endif  // !defined(UNIT_TEST) && !defined(OFFICIAL_BUILD)
 
   static constexpr inline bool kValue = true;
 };

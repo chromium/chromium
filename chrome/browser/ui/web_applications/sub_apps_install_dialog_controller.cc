@@ -18,19 +18,19 @@
 
 namespace {
 
-absl::optional<web_app::SubAppsInstallDialogController::DialogActionForTesting>
+std::optional<web_app::SubAppsInstallDialogController::DialogActionForTesting>
     g_dialog_override_for_testing;
 
-}
+}  // namespace.
 
 namespace web_app {
 
 // static
 [[nodiscard]] base::AutoReset<
-    absl::optional<SubAppsInstallDialogController::DialogActionForTesting>>
+    std::optional<SubAppsInstallDialogController::DialogActionForTesting>>
 SubAppsInstallDialogController::SetAutomaticActionForTesting(
     DialogActionForTesting auto_accept) {
-  return base::AutoReset<absl::optional<DialogActionForTesting>>(
+  return base::AutoReset<std::optional<DialogActionForTesting>>(
       &g_dialog_override_for_testing, auto_accept);
 }
 
@@ -40,7 +40,6 @@ void SubAppsInstallDialogController::Init(
     base::OnceCallback<void(bool)> callback,
     const std::vector<std::unique_ptr<WebAppInstallInfo>>& sub_apps,
     const std::string& parent_app_name,
-    const std::string& parent_app_scope,
     const webapps::AppId& parent_app_id,
     Profile* profile,
     gfx::NativeWindow window) {
@@ -59,8 +58,7 @@ void SubAppsInstallDialogController::Init(
   callback_ = std::move(callback);
 
   widget_ = CreateSubAppsInstallDialogWidget(
-      base::UTF8ToUTF16(parent_app_name), base::UTF8ToUTF16(parent_app_scope),
-      sub_apps,
+      base::UTF8ToUTF16(parent_app_name), sub_apps,
       base::BindRepeating(OpenAppSettingsForParentApp, parent_app_id, profile),
       window);
   widget_observation_.Observe(widget_);

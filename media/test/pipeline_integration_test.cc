@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/command_line.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ref_counted.h"
@@ -525,7 +524,7 @@ class MSEChangeTypeTest
       std::string s = base::StrCat({std::get<0>(info.param).filename, "_AND_",
                                     std::get<1>(info.param).filename});
       // Strip out invalid param name characters.
-      base::EraseIf(s, [](char c) {
+      std::erase_if(s, [](char c) {
         return !absl::ascii_isalnum(static_cast<unsigned char>(c)) && c != '_';
       });
       return s;

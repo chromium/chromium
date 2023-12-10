@@ -34,17 +34,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * Abstract base class for building a notification. Stores all given arguments for later use.
- */
+/** Abstract base class for building a notification. Stores all given arguments for later use. */
 public abstract class NotificationBuilderBase {
     protected static class Action {
         @IntDef({Type.BUTTON, Type.TEXT})
         @Retention(RetentionPolicy.SOURCE)
         public @interface Type {
-            /**
-             * Regular action that triggers the provided intent when tapped.
-             */
+            /** Regular action that triggers the provided intent when tapped. */
             int BUTTON = 0;
 
             /**
@@ -61,19 +57,31 @@ public abstract class NotificationBuilderBase {
         public @Type int type;
         public @NotificationUmaTracker.ActionType int umaActionType;
 
-        /**
-         * If the action.type is TEXT, this corresponds to the placeholder text for the input.
-         */
+        /** If the action.type is TEXT, this corresponds to the placeholder text for the input. */
         public String placeholder;
 
-        Action(int iconId, CharSequence title, PendingIntentProvider intent, @Type int type,
+        Action(
+                int iconId,
+                CharSequence title,
+                PendingIntentProvider intent,
+                @Type int type,
                 String placeholder) {
-            this(iconId, title, intent, type, placeholder,
+            this(
+                    iconId,
+                    title,
+                    intent,
+                    type,
+                    placeholder,
                     NotificationUmaTracker.ActionType.UNKNOWN);
         }
 
-        Action(int iconId, CharSequence title, PendingIntentProvider intent, @Type int type,
-                String placeholder, @NotificationUmaTracker.ActionType int umaActionType) {
+        Action(
+                int iconId,
+                CharSequence title,
+                PendingIntentProvider intent,
+                @Type int type,
+                String placeholder,
+                @NotificationUmaTracker.ActionType int umaActionType) {
             this.iconId = iconId;
             this.title = title;
             this.intent = intent;
@@ -82,7 +90,11 @@ public abstract class NotificationBuilderBase {
             this.umaActionType = umaActionType;
         }
 
-        Action(Bitmap iconBitmap, CharSequence title, PendingIntentProvider intent, @Type int type,
+        Action(
+                Bitmap iconBitmap,
+                CharSequence title,
+                PendingIntentProvider intent,
+                @Type int type,
                 String placeholder) {
             this.iconBitmap = iconBitmap;
             this.title = title;
@@ -98,20 +110,13 @@ public abstract class NotificationBuilderBase {
      * screen sizes we display about 500 characters at most, so this is a pretty generous limit, and
      * it matches what the Notification class does.
      */
-    @VisibleForTesting
-    static final int MAX_CHARSEQUENCE_LENGTH = 5 * 1024;
+    @VisibleForTesting static final int MAX_CHARSEQUENCE_LENGTH = 5 * 1024;
 
-    /**
-     * Background color for generated notification icons.
-     */
-    @VisibleForTesting
-    static final int NOTIFICATION_ICON_BG_COLOR = 0xFF969696;
+    /** Background color for generated notification icons. */
+    @VisibleForTesting static final int NOTIFICATION_ICON_BG_COLOR = 0xFF969696;
 
-    /**
-     * Density-independent text size for generated notification icons.
-     */
-    @VisibleForTesting
-    static final int NOTIFICATION_ICON_TEXT_SIZE_DP = 28;
+    /** Density-independent text size for generated notification icons. */
+    @VisibleForTesting static final int NOTIFICATION_ICON_TEXT_SIZE_DP = 28;
 
     /**
      * The maximum number of author provided action buttons. The settings button is not part of this
@@ -131,10 +136,8 @@ public abstract class NotificationBuilderBase {
     protected Bitmap mImage;
 
     protected int mSmallIconId;
-    @Nullable
-    protected Bitmap mSmallIconBitmapForStatusBar;
-    @Nullable
-    protected Bitmap mSmallIconBitmapForContent;
+    @Nullable protected Bitmap mSmallIconBitmapForStatusBar;
+    @Nullable protected Bitmap mSmallIconBitmapForContent;
 
     protected PendingIntentProvider mContentIntent;
     protected PendingIntentProvider mDeleteIntent;
@@ -156,54 +159,40 @@ public abstract class NotificationBuilderBase {
         mIconGenerator = createIconGenerator(resources);
     }
 
-    /**
-     * Combines all of the options that have been set and returns a new Notification object.
-     */
+    /** Combines all of the options that have been set and returns a new Notification object. */
     public abstract NotificationWrapper build(NotificationMetadata metadata);
 
-    /**
-     * Sets the title text of the notification.
-     */
+    /** Sets the title text of the notification. */
     public NotificationBuilderBase setTitle(@Nullable CharSequence title) {
         mTitle = limitLength(title);
         return this;
     }
 
-    /**
-     * Sets the body text of the notification.
-     */
+    /** Sets the body text of the notification. */
     public NotificationBuilderBase setBody(@Nullable CharSequence body) {
         mBody = limitLength(body);
         return this;
     }
 
-    /**
-     * Sets the origin text of the notification.
-     */
+    /** Sets the origin text of the notification. */
     public NotificationBuilderBase setOrigin(@Nullable CharSequence origin) {
         mOrigin = limitLength(origin);
         return this;
     }
 
-    /**
-     * Sets the text that is displayed in the status bar when the notification first arrives.
-     */
+    /** Sets the text that is displayed in the status bar when the notification first arrives. */
     public NotificationBuilderBase setTicker(@Nullable CharSequence tickerText) {
         mTickerText = limitLength(tickerText);
         return this;
     }
 
-    /**
-     * Sets the content image to be prominently displayed when the notification is expanded.
-     */
+    /** Sets the content image to be prominently displayed when the notification is expanded. */
     public NotificationBuilderBase setImage(@Nullable Bitmap image) {
         mImage = image;
         return this;
     }
 
-    /**
-     * Sets the large icon that is shown in the notification.
-     */
+    /** Sets the large icon that is shown in the notification. */
     public NotificationBuilderBase setLargeIcon(@Nullable Bitmap icon) {
         mLargeIcon = icon;
         return this;
@@ -220,8 +209,8 @@ public abstract class NotificationBuilderBase {
     }
 
     /**
-     * Sets the small icon that is shown in the status bar. If the platform supports using
-     * a small icon bitmap, it will take precedence over one specified as a resource id.
+     * Sets the small icon that is shown in the status bar. If the platform supports using a small
+     * icon bitmap, it will take precedence over one specified as a resource id.
      */
     public NotificationBuilderBase setStatusBarIcon(@Nullable Bitmap iconBitmap) {
         mSmallIconBitmapForStatusBar = applyWhiteOverlay(iconBitmap);
@@ -241,15 +230,16 @@ public abstract class NotificationBuilderBase {
     private static @Nullable Bitmap applyWhiteOverlay(@Nullable Bitmap icon) {
         Bitmap whitened = null;
         if (icon != null) {
-            whitened = icon.copy(icon.getConfig(), true /* isMutable */);
+            whitened = icon.copy(icon.getConfig(), /* isMutable= */ true);
             applyWhiteOverlayToBitmap(whitened);
         }
         return whitened;
     }
 
     /**
-     * Sets the status bar icon for a notification that will be displayed by a different app.
-     * This is safe to use for any app.
+     * Sets the status bar icon for a notification that will be displayed by a different app. This
+     * is safe to use for any app.
+     *
      * @param iconId An iconId for a resource in the package that will display the notification.
      * @param iconBitmap The decoded bitmap. Depending on the device we need either id or bitmap.
      */
@@ -281,9 +271,7 @@ public abstract class NotificationBuilderBase {
         return mSmallIconBitmapForContent != null;
     }
 
-    /**
-     * Sets the PendingIntent to send when the notification is clicked.
-     */
+    /** Sets the PendingIntent to send when the notification is clicked. */
     public NotificationBuilderBase setContentIntent(@Nullable PendingIntentProvider intent) {
         mContentIntent = intent;
         return this;
@@ -298,9 +286,7 @@ public abstract class NotificationBuilderBase {
         return this;
     }
 
-    /**
-     * Sets the channel id of the notification.
-     */
+    /** Sets the channel id of the notification. */
     public NotificationBuilderBase setChannelId(String channelId) {
         mChannelId = channelId;
         return this;
@@ -310,8 +296,10 @@ public abstract class NotificationBuilderBase {
      * Adds an action to the notification, displayed as a button adjacent to the notification
      * content.
      */
-    public NotificationBuilderBase addButtonAction(@Nullable Bitmap iconBitmap,
-            @Nullable CharSequence title, PendingIntentProvider intent) {
+    public NotificationBuilderBase addButtonAction(
+            @Nullable Bitmap iconBitmap,
+            @Nullable CharSequence title,
+            PendingIntentProvider intent) {
         addAuthorProvidedAction(iconBitmap, title, intent, Action.Type.BUTTON, null);
         return this;
     }
@@ -321,14 +309,20 @@ public abstract class NotificationBuilderBase {
      * content, which when tapped will trigger a remote input. This enables Android Wear input and,
      * from Android N, displays a text box within the notification for inline replies.
      */
-    public NotificationBuilderBase addTextAction(@Nullable Bitmap iconBitmap,
-            @Nullable CharSequence title, PendingIntentProvider intent, String placeholder) {
+    public NotificationBuilderBase addTextAction(
+            @Nullable Bitmap iconBitmap,
+            @Nullable CharSequence title,
+            PendingIntentProvider intent,
+            String placeholder) {
         addAuthorProvidedAction(iconBitmap, title, intent, Action.Type.TEXT, placeholder);
         return this;
     }
 
-    private void addAuthorProvidedAction(@Nullable Bitmap iconBitmap, @Nullable CharSequence title,
-            PendingIntentProvider intent, @Action.Type int actionType,
+    private void addAuthorProvidedAction(
+            @Nullable Bitmap iconBitmap,
+            @Nullable CharSequence title,
+            PendingIntentProvider intent,
+            @Action.Type int actionType,
             @Nullable String placeholder) {
         if (mActions.size() == MAX_AUTHOR_PROVIDED_ACTION_BUTTONS) {
             throw new IllegalStateException(
@@ -340,42 +334,41 @@ public abstract class NotificationBuilderBase {
         mActions.add(new Action(iconBitmap, limitLength(title), intent, actionType, placeholder));
     }
 
-    /**
-     * Adds an action to the notification for opening the settings screen.
-     */
+    /** Adds an action to the notification for opening the settings screen. */
     public NotificationBuilderBase addSettingsAction(
             int iconId, @Nullable CharSequence title, PendingIntentProvider intent) {
-        mSettingsAction = new Action(iconId, limitLength(title), intent, Action.Type.BUTTON, null,
-                NotificationUmaTracker.ActionType.SETTINGS);
+        mSettingsAction =
+                new Action(
+                        iconId,
+                        limitLength(title),
+                        intent,
+                        Action.Type.BUTTON,
+                        null,
+                        NotificationUmaTracker.ActionType.SETTINGS);
         return this;
     }
 
     /**
      * Sets the default notification options that will be used.
-     * <p>
-     * The value should be one or more of the following fields combined with
-     * bitwise-or:
-     * {@link Notification#DEFAULT_SOUND}, {@link Notification#DEFAULT_VIBRATE},
-     * {@link Notification#DEFAULT_LIGHTS}.
-     * <p>
-     * For all default values, use {@link Notification#DEFAULT_ALL}.
+     *
+     * <p>The value should be one or more of the following fields combined with bitwise-or: {@link
+     * Notification#DEFAULT_SOUND}, {@link Notification#DEFAULT_VIBRATE}, {@link
+     * Notification#DEFAULT_LIGHTS}.
+     *
+     * <p>For all default values, use {@link Notification#DEFAULT_ALL}.
      */
     public NotificationBuilderBase setDefaults(int defaults) {
         mDefaults = defaults;
         return this;
     }
 
-    /**
-     * Sets the vibration pattern to use.
-     */
+    /** Sets the vibration pattern to use. */
     public NotificationBuilderBase setVibrate(long[] pattern) {
         mVibratePattern = Arrays.copyOf(pattern, pattern.length);
         return this;
     }
 
-    /**
-     * Sets whether this notification should be silent.
-     */
+    /** Sets whether this notification should be silent. */
     public NotificationBuilderBase setSilent(boolean silent) {
         mSilent = silent;
         return this;
@@ -390,17 +383,13 @@ public abstract class NotificationBuilderBase {
         return this;
     }
 
-    /**
-     * Sets the timestamp at which the event of the notification took place.
-     */
+    /** Sets the timestamp at which the event of the notification took place. */
     public NotificationBuilderBase setTimestamp(long timestamp) {
         mTimestamp = timestamp;
         return this;
     }
 
-    /**
-     * Sets the behavior for when the notification is replaced.
-     */
+    /** Sets the behavior for when the notification is replaced. */
     public NotificationBuilderBase setRenotify(boolean renotify) {
         mRenotify = renotify;
         return this;
@@ -409,12 +398,13 @@ public abstract class NotificationBuilderBase {
     /**
      * Gets the large icon for the notification.
      *
-     * If a large icon was supplied to the builder, returns this icon, scaled to an appropriate size
-     * if necessary.
+     * <p>If a large icon was supplied to the builder, returns this icon, scaled to an appropriate
+     * size if necessary.
      *
-     * If no large icon was supplied then returns a default icon based on the notification origin.
+     * <p>If no large icon was supplied then returns a default icon based on the notification
+     * origin.
      *
-     * See {@link NotificationBuilderBase#ensureNormalizedIcon} for more details.
+     * <p>See {@link NotificationBuilderBase#ensureNormalizedIcon} for more details.
      */
     protected Bitmap getNormalizedLargeIcon() {
         return ensureNormalizedIcon(mLargeIcon, mOrigin);
@@ -423,7 +413,7 @@ public abstract class NotificationBuilderBase {
     /**
      * Ensures the availability of an icon for the notification.
      *
-     * If |icon| is a valid, non-empty Bitmap, the bitmap will be scaled to be of an appropriate
+     * <p>If |icon| is a valid, non-empty Bitmap, the bitmap will be scaled to be of an appropriate
      * size for the current Android device. Otherwise, a default icon will be created based on the
      * origin the notification is being displayed for.
      *
@@ -434,8 +424,9 @@ public abstract class NotificationBuilderBase {
     @VisibleForTesting
     public Bitmap ensureNormalizedIcon(Bitmap icon, CharSequence origin) {
         if (icon == null || icon.getWidth() == 0) {
-            return origin != null ? mIconGenerator.generateIconForUrl(origin.toString(), true)
-                                  : null;
+            return origin != null
+                    ? mIconGenerator.generateIconForUrl(origin.toString(), true)
+                    : null;
         }
         if (icon.getWidth() > mLargeIconWidthPx || icon.getHeight() > mLargeIconHeightPx) {
             return Bitmap.createScaledBitmap(
@@ -458,8 +449,9 @@ public abstract class NotificationBuilderBase {
         // Use the badge if provided and SDK supports it, else use a generated icon.
         if (mSmallIconBitmapForStatusBar != null) {
             // The Icon class was added in Android M.
-            Bitmap publicIcon = mSmallIconBitmapForStatusBar.copy(
-                    mSmallIconBitmapForStatusBar.getConfig(), true);
+            Bitmap publicIcon =
+                    mSmallIconBitmapForStatusBar.copy(
+                            mSmallIconBitmapForStatusBar.getConfig(), true);
             builder.setSmallIcon(ApiHelperForM.createIconWithBitmap(publicIcon));
         }
         return builder.build();
@@ -478,6 +470,7 @@ public abstract class NotificationBuilderBase {
     /**
      * Sets the small icon on {@code builder} using a {@code Bitmap} if a non-null bitmap is
      * provided and the API level is high enough, otherwise the resource id is used.
+     *
      * @param iconBitmap should be used only on devices that support bitmap icons.
      */
     protected static void setStatusBarIcon(
@@ -507,15 +500,18 @@ public abstract class NotificationBuilderBase {
         if (action.umaActionType == NotificationUmaTracker.ActionType.UNKNOWN) {
             builder.addAction(actionBuilder.build());
         } else {
-            builder.addAction(actionBuilder.build(), action.intent.getFlags(), action.umaActionType,
-                    /*requestCode=*/0);
+            builder.addAction(
+                    actionBuilder.build(),
+                    action.intent.getFlags(),
+                    action.umaActionType,
+                    /* requestCode= */ 0);
         }
     }
 
     /**
-     * Sets the notification group for the builder, determined by the origin provided.
-     * Note, after this notification is built and posted, a further summary notification must be
-     * posted for notifications in the group to appear grouped in the notification shade.
+     * Sets the notification group for the builder, determined by the origin provided. Note, after
+     * this notification is built and posted, a further summary notification must be posted for
+     * notifications in the group to appear grouped in the notification shade.
      */
     static void setGroupOnBuilder(NotificationWrapperBuilder builder, CharSequence origin) {
         if (origin == null) return;
@@ -555,7 +551,11 @@ public abstract class NotificationBuilderBase {
                 resources.getDimensionPixelSize(android.R.dimen.notification_large_icon_height);
         float density = resources.getDisplayMetrics().density;
         int cornerRadiusPx = Math.min(largeIconWidthPx, largeIconHeightPx) / 2;
-        return new RoundedIconGenerator(largeIconWidthPx, largeIconHeightPx, cornerRadiusPx,
-                NOTIFICATION_ICON_BG_COLOR, NOTIFICATION_ICON_TEXT_SIZE_DP * density);
+        return new RoundedIconGenerator(
+                largeIconWidthPx,
+                largeIconHeightPx,
+                cornerRadiusPx,
+                NOTIFICATION_ICON_BG_COLOR,
+                NOTIFICATION_ICON_TEXT_SIZE_DP * density);
     }
 }

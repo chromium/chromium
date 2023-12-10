@@ -44,6 +44,7 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_AFFILIATION_AFFILIATION_UTILS_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_AFFILIATION_AFFILIATION_UTILS_H_
 
+#include <compare>
 #include <cstddef>
 #include <iosfwd>
 #include <string>
@@ -72,12 +73,6 @@ namespace password_manager {
 // parsing, everything ends up in the path component, which is not too helpful.
 class FacetURI {
  public:
-  FacetURI();
-
-  // As a light-weight std::string wrapper, allow copy and assign.
-  FacetURI(const FacetURI&) = default;
-  FacetURI& operator=(const FacetURI&) = default;
-
   // Constructs an instance to encapsulate the canonical form of |spec|.
   // If |spec| is not a valid facet URI, then an invalid instance is returned,
   // which then should be discarded.
@@ -88,13 +83,20 @@ class FacetURI {
   // the URI is valid and in canonical form.
   static FacetURI FromCanonicalSpec(const std::string& canonical_spec);
 
-  // Comparison operators so that FacetURI can be used in std::equal.
-  bool operator==(const FacetURI& other) const;
-  bool operator!=(const FacetURI& other) const;
+  FacetURI();
 
-  // Relational operators so that FacetURI can be used in sorted containers.
-  bool operator<(const FacetURI& other) const;
-  bool operator>(const FacetURI& other) const;
+  // As a light-weight std::string wrapper, allow copy and assign.
+  FacetURI(const FacetURI&) = default;
+  FacetURI& operator=(const FacetURI&) = default;
+
+  friend std::weak_ordering operator<=>(const FacetURI& lhs,
+                                        const FacetURI& rhs) {
+    return lhs.canonical_spec_ <=> rhs.canonical_spec_;
+  }
+
+  friend bool operator==(const FacetURI& lhs, const FacetURI& rhs) {
+    return lhs.canonical_spec_ == rhs.canonical_spec_;
+  }
 
   // Returns whether or not this instance represents a valid facet identifier
   // referring to a Web application.

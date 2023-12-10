@@ -5,11 +5,12 @@
 #ifndef ASH_PUBLIC_CPP_IN_SESSION_AUTH_DIALOG_CONTROLLER_H_
 #define ASH_PUBLIC_CPP_IN_SESSION_AUTH_DIALOG_CONTROLLER_H_
 
+#include <optional>
+
 #include "ash/public/cpp/ash_public_export.h"
 #include "ash/public/cpp/in_session_auth_dialog_client.h"
 #include "ash/public/cpp/in_session_auth_token_provider.h"
 #include "chromeos/ash/components/osauth/public/common_types.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -18,8 +19,8 @@ class ASH_PUBLIC_EXPORT InSessionAuthDialogController {
  public:
   enum Reason {
     kAccessPasswordManager,
-    kModifyAuthFactors,
-    kModifyAuthFactorsMultidevice
+    kAccessAuthenticationSettings,
+    kAccessMultideviceSettings,
   };
 
   // Returns the singleton instance.

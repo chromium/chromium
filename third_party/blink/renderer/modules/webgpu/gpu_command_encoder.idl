@@ -44,7 +44,8 @@
         GPUBuffer destination,
         GPUSize64 destinationOffset);
 
-   [NoAllocDirectCall, RaisesException] void writeTimestamp(GPUQuerySet querySet, GPUSize32 queryIndex);
+    [RuntimeEnabled=WebGPUDeveloperFeatures, NoAllocDirectCall, RaisesException]
+    void writeTimestamp(GPUQuerySet querySet, GPUSize32 queryIndex);
 
     [NoAllocDirectCall] void clearBuffer(
         GPUBuffer buffer,

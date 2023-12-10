@@ -90,8 +90,9 @@ interface FullscreenToast {
             if (BuildInfo.getInstance().isAutomotive) {
                 toastTextId = R.string.immersive_fullscreen_api_notification_automotive;
             }
-            mNotificationToast = Toast.makeTextWithPriority(
-                    mActivity, toastTextId, Toast.LENGTH_LONG, ToastPriority.HIGH);
+            mNotificationToast =
+                    Toast.makeTextWithPriority(
+                            mActivity, toastTextId, Toast.LENGTH_LONG, ToastPriority.HIGH);
             mNotificationToast.setGravity(Gravity.BOTTOM | Gravity.CENTER, 0, 0);
             mNotificationToast.show();
         }

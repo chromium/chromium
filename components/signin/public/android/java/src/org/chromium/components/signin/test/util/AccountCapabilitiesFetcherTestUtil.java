@@ -32,18 +32,14 @@ final class AccountCapabilitiesFetcherTestUtil {
     private Account mExpectedAccount;
     private Promise<AccountCapabilities> mCapabilitiesPromise;
 
-    /**
-     * Stubs AccountManagerFacade for native tests.
-     */
+    /** Stubs AccountManagerFacade for native tests. */
     @CalledByNative
     public AccountCapabilitiesFetcherTestUtil() {
         mMockFacade = Mockito.mock(AccountManagerFacade.class);
         AccountManagerFacadeProvider.setInstanceForTests(mMockFacade);
     }
 
-    /**
-     * Restores the global state after the test completes.
-     */
+    /** Restores the global state after the test completes. */
     @CalledByNative
     public void destroy() {
         AccountManagerFacadeProvider.resetInstanceForTests();
@@ -91,12 +87,18 @@ final class AccountCapabilitiesFetcherTestUtil {
      */
     private static void runLooperTasks() {
         AtomicBoolean called = new AtomicBoolean(false);
-        new Handler(Looper.myLooper()).post(() -> { called.set(true); });
+        new Handler(Looper.myLooper())
+                .post(
+                        () -> {
+                            called.set(true);
+                        });
 
         do {
             try {
                 LooperUtils.runSingleNestedLooperTask();
-            } catch (IllegalArgumentException | IllegalAccessException | SecurityException
+            } catch (IllegalArgumentException
+                    | IllegalAccessException
+                    | SecurityException
                     | InvocationTargetException e) {
                 throw new RuntimeException(e);
             }

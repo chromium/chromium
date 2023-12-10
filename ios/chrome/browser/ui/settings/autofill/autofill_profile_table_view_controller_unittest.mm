@@ -13,12 +13,12 @@
 #import "components/autofill/core/browser/personal_data_manager.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/autofill/personal_data_manager_factory.h"
+#import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller_test.h"
-#import "ios/chrome/browser/signin/authentication_service_factory.h"
-#import "ios/chrome/browser/signin/fake_authentication_service_delegate.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
 #import "ios/chrome/browser/ui/settings/personal_data_manager_finished_profile_tasks_waiter.h"
 #import "ios/chrome/browser/ui/settings/settings_root_table_view_controller.h"
 #import "ios/chrome/browser/webdata_services/model/web_data_service_factory.h"
@@ -78,7 +78,8 @@ class AutofillProfileTableViewControllerTest
     personal_data_manager->SetSyncServiceForTest(nullptr);
     PersonalDataManagerFinishedProfileTasksWaiter waiter(personal_data_manager);
 
-    autofill::AutofillProfile autofill_profile;
+    autofill::AutofillProfile autofill_profile(
+        autofill::i18n_model_definition::kLegacyHierarchyCountryCode);
     autofill_profile.SetRawInfo(autofill::NAME_FULL, base::ASCIIToUTF16(name));
     autofill_profile.SetRawInfo(autofill::ADDRESS_HOME_LINE1,
                                 base::ASCIIToUTF16(address));

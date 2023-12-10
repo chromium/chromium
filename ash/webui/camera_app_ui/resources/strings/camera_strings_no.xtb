@@ -5,7 +5,6 @@
 <translation id="1076394037877376434">Slett side <ph name="PAGE_NUMBER" /></translation>
 <translation id="1113173431709655881">Kameramodus</translation>
 <translation id="1153190633558910465">Rutenett av</translation>
-<translation id="1175958423215084756">Oppdaget link. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213">Side <ph name="PAGE_NUMBER" /> er slettet</translation>
 <translation id="1258009455399840361">Rotér 90 grader med klokken</translation>
 <translation id="1417314334557041815">Rediger side <ph name="INDEX" /></translation>
@@ -60,14 +59,12 @@
 <translation id="3642192109456033823">Behandler videoen …</translation>
 <translation id="3789724198583203151">Rotér 90 grader mot klokken</translation>
 <translation id="3810838688059735925">Video</translation>
-<translation id="3892148308691398805">Kopiér teksten</translation>
 <translation id="4060608699153044055">Du kan ikke ta opp på grunn av lite lagringsplass på enheten. For å starte opptaket må du frigjøre plass på enheten.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
 <translation id="4118525110028899586">Sett opptaket på pause</translation>
 <translation id="4121305183798804752">Et dokument er oppdaget</translation>
 <translation id="414641094616694804">Dette kameraet kan ikke endre oppløsning</translation>
 <translation id="4176463684765177261">Deaktivert</translation>
-<translation id="4269820728363426813">Kopiér linkadressen</translation>
 <translation id="428234092390943511">Miniatyrbilde av siden</translation>
 <translation id="4349714250734879769">Skaler rammer etter Chrome</translation>
 <translation id="4383571725254449280">Logger over utskriftsytelse</translation>
@@ -144,7 +141,6 @@ Hvis tilbakemeldingen din gjelder bilde- eller videokvalitet, ber vi deg legge v
 <translation id="7726641833034062494">Ta opp normal video</translation>
 <translation id="7748344063862150053">Dokumentets øvre høyre hjørne</translation>
 <translation id="7933675232020478311">Beveger seg nedover mot høyre</translation>
-<translation id="7983668134180549431">Oppdaget tekst.</translation>
 <translation id="8079255378695216066">Kan ikke starte opptak</translation>
 <translation id="8120146556401698679">Panorering, vipping, zooming</translation>
 <translation id="8131740175452115882">Bekreft</translation>
@@ -163,6 +159,7 @@ Hvis tilbakemeldingen din gjelder bilde- eller videokvalitet, ber vi deg legge v
 <translation id="8870695351537079478">Kan ikke starte opptak</translation>
 <translation id="8880167521484863515">4 til 3</translation>
 <translation id="8903921497873541725">Zoom inn</translation>
+<translation id="8926890870105777777">Koble til nettverket «<ph name="WIFINAME" />»</translation>
 <translation id="9045010116236796332">Plassér alle hjørnene av dokumentet innenfor rammen</translation>
 <translation id="9045155556724273246">10 sekunder</translation>
 <translation id="906331135292332864">Behandler bildet …</translation>

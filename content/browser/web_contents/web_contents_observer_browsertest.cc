@@ -385,7 +385,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsObserverBrowserTest,
                        MAYBE_CookieCallbacks_MainFrame) {
   CookieTracker cookie_tracker(web_contents());
 
-  GURL first_party_url("http://a.com/");
+  GURL first_party_url(embedded_test_server()->GetURL("a.com", "/"));
   GURL url1(
       embedded_test_server()->GetURL("a.com", "/cookies/set_cookie.html"));
   GURL url2(embedded_test_server()->GetURL("a.com", "/title1.html"));
@@ -438,7 +438,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsObserverBrowserTest,
                        MAYBE_CookieCallbacks_MainFrameRedirect) {
   CookieTracker cookie_tracker(web_contents());
 
-  GURL first_party_url("http://a.com/");
+  GURL first_party_url(embedded_test_server()->GetURL("a.com", "/"));
   GURL url1(embedded_test_server()->GetURL(
       "a.com", "/cookies/redirect_and_set_cookie.html"));
   GURL url1_after_redirect(
@@ -500,7 +500,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsObserverBrowserTest,
                        MAYBE_CookieCallbacks_Subframe) {
   CookieTracker cookie_tracker(web_contents());
 
-  GURL first_party_url("http://a.com/");
+  GURL first_party_url(embedded_test_server()->GetURL("a.com", "/"));
   GURL url1(embedded_test_server()->GetURL(
       "a.com", "/cookies/set_cookie_from_subframe.html"));
   GURL url1_subframe(
@@ -566,7 +566,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsObserverBrowserTest,
                        MAYBE_CookieCallbacks_Subresource) {
   CookieTracker cookie_tracker(web_contents());
 
-  GURL first_party_url("http://a.com/");
+  GURL first_party_url(embedded_test_server()->GetURL("a.com", "/"));
   GURL url1(embedded_test_server()->GetURL(
       "a.com", "/cookies/set_cookie_from_subresource.html"));
   GURL url1_image(embedded_test_server()->GetURL(
@@ -617,7 +617,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsObserverBrowserTest,
                        CookieCallbacks_DocumentCookie) {
   CookieTracker cookie_tracker(web_contents());
 
-  GURL first_party_url("http://a.com/");
+  GURL first_party_url(embedded_test_server()->GetURL("a.com", "/"));
   GURL url1(embedded_test_server()->GetURL("a.com", "/title1.html"));
 
   EXPECT_TRUE(NavigateToURL(web_contents(), url1));

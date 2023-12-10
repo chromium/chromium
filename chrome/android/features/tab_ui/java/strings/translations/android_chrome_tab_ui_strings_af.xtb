@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="af">
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> van jou oortjies is nie onlangs gebruik nie. Maak hulle toe?</translation>
+<translation id="1155815720264022949">Wil jy ou oortjies toemaak?</translation>
 <translation id="1215127405478249895">Gaan oortjies na</translation>
 <translation id="125153950246128346">Tik om nog 'n oortjie te sien</translation>
 <translation id="1499635324672558517">Maak alle Incognito-oortjies toe?</translation>
@@ -46,9 +47,11 @@
 <translation id="5073204694187207510">Versteek volskermrooster</translation>
 <translation id="5076161749301278626">Sien winkelresensies?</translation>
 <translation id="5082793167783849073">Vergelyk bladsye vinnig deur 'n groep te maak. Raak en hou 'n skakel om te begin.</translation>
+<translation id="5303274951032363933">{TABS_COUNT,plural, =1{Jy het <ph name="TABS_COUNT_ONE" /> oortjie wat jy nie onlangs gebruik het nie}other{Jy het <ph name="TABS_COUNT_MANY" /> oortjies wat jy nie onlangs gebruik het nie}}</translation>
 <translation id="5339733443032484186">Jou jongste oortjie</translation>
 <translation id="5490235265819901748">Oortjiegroep is uitgevou</translation>
 <translation id="5494920125229734069">Kies almal</translation>
+<translation id="5545379293264651575">Maak toe sonder om na te gaan</translation>
 <translation id="5556417849629758491">Bekyk winkelinligting; opsie beskikbaar naby bokant van die skerm</translation>
 <translation id="5558362125926932819">Maak oortjiegroep met <ph name="NUMBER_OF_TABS" /> oortjies toe</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" /> oortjies gegroepeer</translation>
@@ -85,7 +88,6 @@
 <translation id="7885132941432959125">Skuif oortjie na regs</translation>
 <translation id="7966321538264951561">Maak die voorstelle toe.</translation>
 <translation id="8029301326595421733">Inligting oor hierdie winkel is teen volle hoogte oopgemaak</translation>
-<translation id="814503310257431685">Bekyk alles</translation>
 <translation id="8205266828577616993">Skuif oortjie op</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Maak <ph name="TABS_COUNT_ONE" /> gekose oortjie toe}other{Maak <ph name="TABS_COUNT_MANY" /> gekose oortjies toe}}</translation>
 <translation id="8398929769197326728">Nuwe vouer – <ph name="CURRENT_TIMESTAMP_MS" /></translation>

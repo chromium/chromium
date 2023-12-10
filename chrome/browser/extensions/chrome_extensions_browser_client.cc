@@ -92,6 +92,7 @@
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/features/feature_channel.h"
 #include "extensions/common/permissions/permission_set.h"
+#include "ipc/ipc_message.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
@@ -538,16 +539,20 @@ void ChromeExtensionsBrowserClient::CleanUpWebView(
     int embedder_process_id,
     int view_instance_id) {
   Profile* profile = Profile::FromBrowserContext(browser_context);
-  if (extensions::ChromeContentBrowserClientExtensionsPart::
-          AreExtensionsDisabledForProfile(profile)) {
+  if (ChromeContentBrowserClientExtensionsPart::AreExtensionsDisabledForProfile(
+          profile)) {
     return;
   }
 
   // Clean up context menus for the WebView.
   auto* menu_manager = MenuManager::Get(profile);
   DCHECK(menu_manager);
-  menu_manager->RemoveAllContextItems(
-      MenuItem::ExtensionKey("", embedder_process_id, view_instance_id));
+  // The |webview_embedder_frame_id| parameter of ExtensionKey is not used to
+  // identify the context menu items that belong to a WebView so it is OK for it
+  // to be |MSG_ROUTING_NONE| here.
+  menu_manager->RemoveAllContextItems(MenuItem::ExtensionKey(
+      "", embedder_process_id, /*webview_embedder_frame_id=*/MSG_ROUTING_NONE,
+      view_instance_id));
 }
 
 void ChromeExtensionsBrowserClient::ClearBackForwardCache() {
@@ -574,7 +579,7 @@ void ChromeExtensionsBrowserClient::AttachExtensionTaskManagerTag(
     case mojom::ViewType::kTabContents:
       // Those types are tracked by other tags:
       // BACKGROUND_CONTENTS --> task_manager::BackgroundContentsTag.
-      // GUEST --> extensions::ChromeGuestViewManagerDelegate.
+      // GUEST --> ChromeGuestViewManagerDelegate.
       // PANEL --> task_manager::PanelTag.
       // TAB_CONTENTS --> task_manager::TabContentsTag.
       // These tags are created and attached to the web_contents in other
@@ -710,7 +715,7 @@ void ChromeExtensionsBrowserClient::SetLastSaveFilePath(
 bool ChromeExtensionsBrowserClient::HasIsolatedStorage(
     const std::string& extension_id,
     content::BrowserContext* context) {
-  return extensions::util::HasIsolatedStorage(extension_id, context);
+  return util::HasIsolatedStorage(extension_id, context);
 }
 
 bool ChromeExtensionsBrowserClient::IsScreenshotRestricted(
@@ -822,8 +827,7 @@ bool ChromeExtensionsBrowserClient::IsUsbDeviceAllowedByPolicy(
     const ExtensionId& extension_id,
     int vendor_id,
     int product_id) const {
-  url::Origin origin =
-      extensions::Extension::CreateOriginFromExtensionId(extension_id);
+  url::Origin origin = Extension::CreateOriginFromExtensionId(extension_id);
 
   UsbChooserContext* usb_chooser_context =
       UsbChooserContextFactory::GetForProfile(static_cast<Profile*>(context));

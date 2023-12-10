@@ -83,6 +83,7 @@ message PrintJobInfo {
     ARC = 1;
     EXTENSION = 2;
     PRINT_PREVIEW_INCOGNITO = 3;
+    ISOLATED_WEB_APP = 4;
   }
 
   enum PrintJobStatus {

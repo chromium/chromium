@@ -98,7 +98,7 @@ PersonalDataManagerAndroid::CreateJavaCreditCardFromNative(
       ConvertUTF8ToJavaString(env,
                               payment_request_data.basic_card_issuer_network),
       ResourceMapper::MapToJavaDrawableId(
-          GetIconResourceID(card.CardIconStringForAutofillSuggestion())),
+          GetIconResourceID(card.CardIconForAutofillSuggestion())),
       ConvertUTF8ToJavaString(env, card.billing_address_id()),
       ConvertUTF8ToJavaString(env, card.server_id()), card.instrument_id(),
       ConvertUTF16ToJavaString(env, card.CardNameAndLastFourDigits()),
@@ -260,8 +260,7 @@ ScopedJavaLocalRef<jstring> PersonalDataManagerAndroid::SetProfileToLocal(
   AutofillProfile profile = AutofillProfile::CreateFromJavaObject(
       jprofile, target_profile, g_browser_process->GetApplicationLocale());
 
-  if (target_profile != nullptr &&
-      target_profile->record_type() == AutofillProfile::LOCAL_PROFILE) {
+  if (target_profile != nullptr) {
     personal_data_manager_->UpdateProfile(profile);
   } else {
     personal_data_manager_->AddProfile(profile);

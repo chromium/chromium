@@ -84,9 +84,9 @@ std::vector<int> HelpAppSystemAppDelegate::GetAdditionalSearchTerms() const {
   return {IDS_GENIUS_APP_NAME, IDS_HELP_APP_PERKS, IDS_HELP_APP_OFFERS};
 }
 
-absl::optional<SystemWebAppBackgroundTaskInfo>
+std::optional<SystemWebAppBackgroundTaskInfo>
 HelpAppSystemAppDelegate::GetTimerInfo() const {
-  return SystemWebAppBackgroundTaskInfo(absl::nullopt,
+  return SystemWebAppBackgroundTaskInfo(std::nullopt,
                                         GURL("chrome://help-app/background"),
                                         /*open_immediately=*/true);
 }

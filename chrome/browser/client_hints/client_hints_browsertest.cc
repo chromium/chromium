@@ -18,6 +18,7 @@
 #include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/synchronization/lock.h"
 #include "base/test/bind.h"
@@ -48,6 +49,7 @@
 #include "components/embedder_support/switches.h"
 #include "components/embedder_support/user_agent_utils.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
+#include "components/network_session_configurator/common/network_switches.h"
 #include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_pref_names.h"
@@ -69,6 +71,7 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "content/public/test/url_loader_interceptor.h"
+#include "net/base/features.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_status_code.h"
@@ -110,6 +113,11 @@ constexpr unsigned expected_client_hints_number = 21u;
 constexpr unsigned expected_default_third_party_client_hints_number = 3u;
 constexpr unsigned expected_requested_third_party_client_hints_number = 24u;
 constexpr unsigned expected_pre_merge_third_party_client_hints_number = 16u;
+
+constexpr char kDefaultFeatures[] =
+    "UserAgentClientHint,CriticalClientHint,AcceptCHFrame,"
+    "ClientHintsFormFactor,ClientHintsPrefersReducedTransparency,"
+    "UseNewAlpsCodepointHttp2";
 
 // All of the status codes from HttpResponseHeaders::IsRedirectResponseCode.
 const net::HttpStatusCode kRedirectStatusCodes[] = {
@@ -650,10 +658,7 @@ class ClientHintsBrowserTest : public policy::PolicyTest {
     std::unique_ptr<base::FeatureList> feature_list(new base::FeatureList);
     // Force-enable the ClientHintsFormFactor feature, so that the header is
     // represented in the various header counts.
-    feature_list->InitializeFromCommandLine(
-        "UserAgentClientHint,CriticalClientHint,AcceptCHFrame,"
-        "ClientHintsFormFactor,ClientHintsPrefersReducedTransparency",
-        "");
+    feature_list->InitFromCommandLine(kDefaultFeatures, "");
     return feature_list;
   }
 
@@ -1872,7 +1877,7 @@ IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTest, UAHintsTabletMode) {
   EXPECT_EQ(main_frame_ua_platform_observed(), "\"" + ua.platform + "\"");
   EXPECT_EQ(main_frame_save_data_observed(), "");
 
-  // Second request: table override, all hints.
+  // Second request: tablet override, all hints.
   chrome::ToggleRequestTabletSite(browser());
   SetClientHintExpectationsOnMainFrame(true);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), gurl));
@@ -1883,7 +1888,7 @@ IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTest, UAHintsTabletMode) {
   EXPECT_EQ(main_frame_ua_full_version_list_observed(),
             expected_full_version_list);
   EXPECT_EQ(main_frame_ua_mobile_observed(), "?1");
-  EXPECT_EQ(main_frame_ua_form_factor_observed(), "\"Mobile\"");
+  EXPECT_EQ(main_frame_ua_form_factor_observed(), "\"Tablet\"");
   EXPECT_EQ(main_frame_ua_platform_observed(), "\"Android\"");
   EXPECT_EQ(main_frame_save_data_observed(), "");
 }
@@ -3331,7 +3336,7 @@ class ClientHintsWebHoldbackBrowserTest : public ClientHintsBrowserTest {
             ->AssociateFieldTrialParams(kTrialName, kGroupName, params));
 
     std::unique_ptr<base::FeatureList> feature_list(new base::FeatureList);
-    feature_list->InitializeFromCommandLine(
+    feature_list->InitFromCommandLine(
         "UserAgentClientHint,ClientHintsFormFactor,"
         "ClientHintsPrefersReducedTransparency",
         "");
@@ -3439,9 +3444,9 @@ class CriticalClientHintsBrowserTest : public InProcessBrowserTest {
         std::make_unique<base::FeatureList>();
     // Don't include ClientHintsDPR in the enabled features; we will verify that
     // sec-ch-dpr is not included.
-    feature_list->InitializeFromCommandLine(
+    feature_list->InitFromCommandLine(
         "UserAgentClientHint,CriticalClientHint,AcceptCHFrame",
-        "ClientHintsDPR");
+        "ClientHintsDPR,UseNewAlpsCodepointHttp2");
     scoped_feature_list_.InitWithFeatureList(std::move(feature_list));
 
     InProcessBrowserTest::SetUp();
@@ -4031,8 +4036,8 @@ class ClientHintsBrowserTestWithEmulatedMedia
   ClientHintsBrowserTestWithEmulatedMedia()
       : ClientHintsBrowserTestWithEmulatedMedia(
             "UserAgentClientHint,AcceptCHFrame,"
-            "ClientHintsPrefersReducedTransparency",
-            "") {}
+            "ClientHintsPrefersReducedTransparency,",
+            "UseNewAlpsCodepointHttp2") {}
 
   ClientHintsBrowserTestWithEmulatedMedia(const std::string& enable_features,
                                           const std::string& disable_features)
@@ -4187,8 +4192,8 @@ class UaReductionBrowserTest : public InProcessBrowserTest {
   void SetUp() override {
     std::unique_ptr<base::FeatureList> feature_list =
         std::make_unique<base::FeatureList>();
-    feature_list->InitializeFromCommandLine(
-        "CriticalClientHint,UACHOverrideBlank", "");
+    feature_list->InitFromCommandLine("CriticalClientHint,UACHOverrideBlank",
+                                      "");
     scoped_feature_list_.InitWithFeatureList(std::move(feature_list));
 
     InProcessBrowserTest::SetUp();
@@ -4820,8 +4825,7 @@ class GreaseFeatureParamOptOutTest : public ClientHintsBrowserTest {
   // the new algorithm is attained.
   std::unique_ptr<base::FeatureList> EnabledFeatures() override {
     std::unique_ptr<base::FeatureList> feature_list(new base::FeatureList);
-    feature_list->InitializeFromCommandLine(
-        "GreaseUACH:updated_algorithm/false", "");
+    feature_list->InitFromCommandLine("GreaseUACH:updated_algorithm/false", "");
     return feature_list;
   }
 };
@@ -4835,6 +4839,39 @@ IN_PROC_BROWSER_TEST_F(GreaseFeatureParamOptOutTest,
   std::string ua_ch_result = main_frame_ua_observed();
 
   ASSERT_TRUE(SawOldGrease(ua_ch_result));
+}
+
+class XRClientHintsTest : public ClientHintsBrowserTest {
+  // Enables ClientHintsXRFormFactor feature in addition to the default ones.
+  std::unique_ptr<base::FeatureList> EnabledFeatures() override {
+    std::unique_ptr<base::FeatureList> feature_list(new base::FeatureList);
+    feature_list->InitFromCommandLine(
+        base::StrCat({kDefaultFeatures, ",ClientHintsXRFormFactor"}), "");
+    return feature_list;
+  }
+};
+
+// Tests that form_factor client hints include "XR" when ClientHintsXRFormFactor
+// is enabled.
+IN_PROC_BROWSER_TEST_F(XRClientHintsTest, UAHintsXRMode) {
+  const GURL gurl = accept_ch_url();
+
+  // First request: no high-entropy hints send in the request header because we
+  // don't know server preferences.
+  SetClientHintExpectationsOnMainFrame(false);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), gurl));
+  EXPECT_TRUE(main_frame_ua_form_factor_observed().empty());
+
+  // Send request: we should expect the high-entropy client hints send in the
+  // request header.
+  SetClientHintExpectationsOnMainFrame(true);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), gurl));
+
+  auto form_factors =
+      base::SplitString(main_frame_ua_form_factor_observed(), ",",
+                        base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  EXPECT_TRUE(base::Contains(form_factors, "\"XR\""))
+      << main_frame_ua_form_factor_observed();
 }
 
 class GreaseEnterprisePolicyTest : public ClientHintsBrowserTest {
@@ -4986,4 +5023,29 @@ IN_PROC_BROWSER_TEST_F(PrefersReducedTransparencyExplicitlyDisabledBrowserTest,
   EmulateMedia(R"([{"name": "prefers-reduced-transparency", "value": ""}])");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url()));
   EXPECT_EQ(prefers_reduced_transparency_observed(), "");
+}
+
+class QUICClientHintsTest : public ClientHintsBrowserTest {
+  // Enables quic feature to make sure no crash happen.
+  std::unique_ptr<base::FeatureList> EnabledFeatures() override {
+    std::unique_ptr<base::FeatureList> feature_list(new base::FeatureList);
+    feature_list->InitFromCommandLine(
+        base::StrCat({kDefaultFeatures, ",UseNewAlpsCodepointQUIC"}), "");
+    return feature_list;
+  }
+
+  void SetUpCommandLine(base::CommandLine* cmd) override {
+    ClientHintsBrowserTest::SetUpCommandLine(cmd);
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(switches::kEnableQuic);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(QUICClientHintsTest, BasicQUICAlps) {
+  base::HistogramTester histogram_tester;
+  SetClientHintExpectationsOnMainFrame(true);
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GetHttp2Url("/blank.html")));
+  histogram_tester.ExpectBucketCount(
+      "ClientHints.AcceptCHFrame",
+      content::AcceptCHFrameRestart::kNavigationRestarted, 1);
 }

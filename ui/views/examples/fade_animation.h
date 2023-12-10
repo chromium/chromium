@@ -19,8 +19,9 @@ class BoxLayoutView;
 namespace examples {
 
 class FadingView : public View {
+  METADATA_HEADER(FadingView, View)
+
  public:
-  METADATA_HEADER(FadingView);
   FadingView();
   FadingView(const FadingView&) = delete;
   FadingView& operator=(const FadingView&) = delete;

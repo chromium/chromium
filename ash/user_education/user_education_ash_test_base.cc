@@ -6,6 +6,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 
 #include "ash/test_shell_delegate.h"
 #include "ash/user_education/mock_user_education_delegate.h"
@@ -14,7 +15,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/test/bind.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 namespace {
@@ -82,7 +82,7 @@ void UserEducationAshTestBase::SetUp() {
         ON_CALL(*user_education_delegate, AbortTutorial)
             .WillByDefault(WithArg<1>(
                 Invoke([aborted_callbacks_by_tutorial_id](
-                           absl::optional<TutorialId> tutorial_id) mutable {
+                           std::optional<TutorialId> tutorial_id) mutable {
                   auto it = aborted_callbacks_by_tutorial_id->get().begin();
                   while (it != aborted_callbacks_by_tutorial_id->get().end()) {
                     if (!tutorial_id || it->first == tutorial_id) {

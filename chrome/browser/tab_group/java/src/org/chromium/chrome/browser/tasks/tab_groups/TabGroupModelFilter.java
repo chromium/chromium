@@ -45,9 +45,7 @@ public class TabGroupModelFilter extends TabModelFilter {
     private static final String SESSIONS_COUNT_FOR_GROUP = "SessionsCountForGroup-";
     private static SharedPreferences sPref;
 
-    /**
-     * An interface to be notified about changes to a {@link TabGroupModelFilter}.
-     */
+    /** An interface to be notified about changes to a {@link TabGroupModelFilter}. */
     public interface Observer {
         /**
          * This method is called before a tab is moved to form a group or moved into an existed
@@ -104,14 +102,18 @@ public class TabGroupModelFilter extends TabModelFilter {
 
         /**
          * This method is called after a group is created manually by user. Either using the
-         * TabSelectionEditor (Group tab menu item) or using drag and drop.
+         * TabListEditor (Group tab menu item) or using drag and drop.
+         *
          * @param tabs The list of modified {@link Tab}s.
          * @param tabOriginalIndex The original tab index for each modified tab.
          * @param tabOriginalRootId The original root id for each modified tab.
          * @param destinationGroupTitle The original destination group title.
          */
-        void didCreateGroup(List<Tab> tabs, List<Integer> tabOriginalIndex,
-                List<Integer> tabOriginalRootId, String destinationGroupTitle);
+        void didCreateGroup(
+                List<Tab> tabs,
+                List<Integer> tabOriginalIndex,
+                List<Integer> tabOriginalRootId,
+                String destinationGroupTitle);
     }
 
     /**
@@ -184,6 +186,7 @@ public class TabGroupModelFilter extends TabModelFilter {
             return getTabIdList().get(index);
         }
     }
+
     private ObserverList<Observer> mGroupFilterObserver = new ObserverList<>();
     private Map<Integer, Integer> mGroupIdToGroupIndexMap = new HashMap<>();
     private Map<Integer, TabGroup> mGroupIdToGroupMap = new HashMap<>();
@@ -275,10 +278,10 @@ public class TabGroupModelFilter extends TabModelFilter {
         Tab sourceTab = TabModelUtils.getTabById(getTabModel(), sourceTabId);
         Tab destinationTab = TabModelUtils.getTabById(getTabModel(), destinationTabId);
 
-        assert sourceTab != null && destinationTab != null
-                && sourceTab.isIncognito()
-                        == destinationTab.isIncognito()
-            : "Attempting to merge groups from different model";
+        assert sourceTab != null
+                        && destinationTab != null
+                        && sourceTab.isIncognito() == destinationTab.isIncognito()
+                : "Attempting to merge groups from different model";
 
         int destinationGroupId = getRootId(destinationTab);
         List<Tab> tabsToMerge = getRelatedTabList(sourceTabId);
@@ -368,14 +371,20 @@ public class TabGroupModelFilter extends TabModelFilter {
                 // TabModelObserver#didMoveTab() and update events will not be triggered. Call the
                 // event manually.
                 int destinationIndex =
-                        MathUtils.clamp(isMergingBackward ? destinationIndexInTabModel
-                                                          : destinationIndexInTabModel++,
-                                0, getTabModel().getCount());
+                        MathUtils.clamp(
+                                isMergingBackward
+                                        ? destinationIndexInTabModel
+                                        : destinationIndexInTabModel++,
+                                0,
+                                getTabModel().getCount());
                 didMoveTab(tab, isMergingBackward ? destinationIndex - 1 : destinationIndex, index);
             } else {
-                getTabModel().moveTab(tab.getId(),
-                        isMergingBackward ? destinationIndexInTabModel
-                                          : destinationIndexInTabModel++);
+                getTabModel()
+                        .moveTab(
+                                tab.getId(),
+                                isMergingBackward
+                                        ? destinationIndexInTabModel
+                                        : destinationIndexInTabModel++);
             }
         }
 
@@ -402,8 +411,11 @@ public class TabGroupModelFilter extends TabModelFilter {
         TabGroup sourceTabGroup = mGroupIdToGroupMap.get(getRootId(sourceTab));
         int targetIndex;
         if (trailing) {
-            Tab lastTabInSourceGroup = TabModelUtils.getTabById(tabModel,
-                    sourceTabGroup.getTabIdForIndex(sourceTabGroup.getTabIdList().size() - 1));
+            Tab lastTabInSourceGroup =
+                    TabModelUtils.getTabById(
+                            tabModel,
+                            sourceTabGroup.getTabIdForIndex(
+                                    sourceTabGroup.getTabIdList().size() - 1));
             targetIndex = tabModel.indexOf(lastTabInSourceGroup);
         } else {
             Tab firstTabInSourceGroup =
@@ -466,8 +478,10 @@ public class TabGroupModelFilter extends TabModelFilter {
     private int getTabModelDestinationIndex(Tab destinationTab) {
         List<Integer> destinationGroupedTabIds =
                 mGroupIdToGroupMap.get(getRootId(destinationTab)).getTabIdList();
-        int destinationTabIndex = TabModelUtils.getTabIndexById(
-                getTabModel(), destinationGroupedTabIds.get(destinationGroupedTabIds.size() - 1));
+        int destinationTabIndex =
+                TabModelUtils.getTabIndexById(
+                        getTabModel(),
+                        destinationGroupedTabIds.get(destinationGroupedTabIds.size() - 1));
 
         return destinationTabIndex + 1;
     }
@@ -530,8 +544,9 @@ public class TabGroupModelFilter extends TabModelFilter {
 
     private SharedPreferences getSharedPreferences() {
         if (sPref == null) {
-            sPref = ContextUtils.getApplicationContext().getSharedPreferences(
-                    PREFS_FILE, Context.MODE_PRIVATE);
+            sPref =
+                    ContextUtils.getApplicationContext()
+                            .getSharedPreferences(PREFS_FILE, Context.MODE_PRIVATE);
         }
         return sPref;
     }
@@ -611,7 +626,8 @@ public class TabGroupModelFilter extends TabModelFilter {
     }
 
     private int getParentId(Tab tab) {
-        if (isTabModelRestored() && !mIsResetting
+        if (isTabModelRestored()
+                && !mIsResetting
                 && ((tab.getLaunchType() == TabLaunchType.FROM_TAB_GROUP_UI
                         || tab.getLaunchType() == TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP
                         // TODO(https://crbug.com/1194287): Investigates a better solution
@@ -687,7 +703,8 @@ public class TabGroupModelFilter extends TabModelFilter {
     @Override
     protected void closeTab(Tab tab) {
         int groupId = getRootId(tab);
-        if (tab.isIncognito() != isIncognito() || mGroupIdToGroupMap.get(groupId) == null
+        if (tab.isIncognito() != isIncognito()
+                || mGroupIdToGroupMap.get(groupId) == null
                 || !mGroupIdToGroupMap.get(groupId).contains(tab.getId())) {
             throw new IllegalStateException("Attempting to close tab in the wrong model");
         }
@@ -1066,7 +1083,8 @@ public class TabGroupModelFilter extends TabModelFilter {
 
     @Override
     public int indexOf(Tab tab) {
-        if (tab == null || tab.isIncognito() != isIncognito()
+        if (tab == null
+                || tab.isIncognito() != isIncognito()
                 || getTabModel().indexOf(tab) == TabList.INVALID_TAB_INDEX) {
             return TabList.INVALID_TAB_INDEX;
         }

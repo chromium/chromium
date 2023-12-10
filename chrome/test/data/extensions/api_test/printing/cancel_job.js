@@ -17,6 +17,10 @@ chrome.test.getConfig(function(config) {
     // passed.
     if (eventCounter == statuses.length)
       chrome.test.notifyPass();
+
+    if (status == chrome.printing.JobStatus.IN_PROGRESS) {
+      chrome.printing.cancelJob(jobId, () => {});
+    }
   });
 
   const url = 'http://localhost:' + config.testServer.port + '/pdf/test.pdf';
@@ -25,7 +29,5 @@ chrome.test.getConfig(function(config) {
     chrome.test.assertNe(undefined, response.status);
     chrome.test.assertEq(chrome.printing.SubmitJobStatus.OK, response.status);
     chrome.test.assertNe(undefined, response.jobId);
-
-    chrome.printing.cancelJob(response.jobId, () => {});
   });
 });

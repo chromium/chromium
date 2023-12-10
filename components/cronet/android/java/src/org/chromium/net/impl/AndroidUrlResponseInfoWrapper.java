@@ -4,17 +4,46 @@
 
 package org.chromium.net.impl;
 
-import androidx.annotation.RequiresApi;
+import static org.chromium.net.impl.HttpEngineNativeProvider.EXT_API_LEVEL;
+import static org.chromium.net.impl.HttpEngineNativeProvider.EXT_VERSION;
+
+import androidx.annotation.RequiresExtension;
 
 import java.util.List;
 import java.util.Map;
 
-@RequiresApi(api = 34)
+@RequiresExtension(extension = EXT_API_LEVEL, version = EXT_VERSION)
 class AndroidUrlResponseInfoWrapper extends org.chromium.net.UrlResponseInfo {
     private final android.net.http.UrlResponseInfo mBackend;
+    /* org.chromium.net.UrlRequest and org.chromium.net.BidirectionalStream map the direct or
+     * no-proxy scenarios to different values of org.chromium.net.UrlResponseInfo#getProxyServer:
+     * UrlRequest will return ":0", while BidirectionalStream will return a null string.
+     * This variable is needed to maintain compatibility with this non-documented behavior, as
+     * android.net.http.UrlResponseInfo doesn't expose a getProxyServer method.
+     * TODO(b/309121551): Clean this up.
+     */
+    private final String mProxyServerCompat;
 
-    AndroidUrlResponseInfoWrapper(android.net.http.UrlResponseInfo backend) {
+    private AndroidUrlResponseInfoWrapper(
+            android.net.http.UrlResponseInfo backend, String proxyServerCompat) {
         this.mBackend = backend;
+        this.mProxyServerCompat = proxyServerCompat;
+    }
+
+    // See mProxyServerCompat's Javadoc.
+    public static AndroidUrlResponseInfoWrapper createForUrlRequest(
+            android.net.http.UrlResponseInfo backend) {
+        // From //components/cronet/cronet_url_request.cc's GetProxy.
+        return new AndroidUrlResponseInfoWrapper(backend, ":0");
+    }
+
+    // See mProxyServerCompat's Javadoc.
+    public static AndroidUrlResponseInfoWrapper createForBidirectionalStream(
+            android.net.http.UrlResponseInfo backend) {
+        // From
+        // //components/cronet/android/java/src/org/chromium/net/impl/CronetBidirectionalStream.java
+        // prepareResponseInfoOnNetworkThread.
+        return new AndroidUrlResponseInfoWrapper(backend, null);
     }
 
     @Override
@@ -59,7 +88,7 @@ class AndroidUrlResponseInfoWrapper extends org.chromium.net.UrlResponseInfo {
 
     @Override
     public String getProxyServer() {
-        return null;
+        return mProxyServerCompat;
     }
 
     @Override

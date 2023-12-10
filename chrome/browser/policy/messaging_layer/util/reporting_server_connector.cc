@@ -16,10 +16,12 @@
 #include "base/memory/singleton.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
+#include "base/strings/strcat.h"
 #include "base/task/bind_post_task.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
@@ -38,6 +40,7 @@
 #include "components/policy/core/common/cloud/device_management_service.h"
 #include "components/policy/core/common/cloud/machine_level_user_cloud_policy_manager.h"
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
+#include "components/reporting/util/encrypted_reporting_json_keys.h"
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/status_macros.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -241,9 +244,9 @@ void ReportingServerConnector::UploadEncryptedReport(
 
   // Add context elements needed by reporting server.
   base::Value::Dict context;
-  context.SetByDottedPath("browser.userAgent",
-                          embedder_support::GetUserAgent());
-
+  context.Set(json_keys::kBrowser,
+              base::Value::Dict().Set(json_keys::kUserAgent,
+                                      embedder_support::GetUserAgent()));
   if (DeviceInfoRequiredForUpload()) {
     // Initialize the cloud policy client
     auto client_status = connector->EnsureUsableClient();
@@ -256,7 +259,9 @@ void ReportingServerConnector::UploadEncryptedReport(
           Status(error::UNAVAILABLE, "Device DM token not set")));
       return;
     }
-    context.SetByDottedPath("device.dmToken", connector->client_->dm_token());
+    context.Set(json_keys::kDevice,
+                base::Value::Dict().Set(json_keys::kDmToken,
+                                        connector->client_->dm_token()));
   }
 
   // Forward the `UploadEncryptedReport` to `encrypted_reporting_client_`.

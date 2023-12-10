@@ -7,12 +7,14 @@
 #import <UIKit/UIKit.h>
 
 #import "base/apple/foundation_util.h"
+#import "base/feature_list.h"
 #import "base/files/file_path.h"
 #import "base/files/file_util.h"
 #import "base/functional/bind.h"
 #import "base/task/thread_pool.h"
 #import "ios/chrome/browser/download/model/download_directory_util.h"
 #import "ios/chrome/browser/download/model/external_app_util.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/download/download_task.h"
 #import "net/base/net_errors.h"
@@ -86,7 +88,10 @@ void DownloadManagerMediator::UpdateConsumer() {
             weak_ptr_factory_.GetWeakPtr(), task_path));
   }
 
-  if (state == kDownloadManagerStateSucceeded && !IsGoogleDriveAppInstalled()) {
+  if (!base::FeatureList::IsEnabled(kIOSSaveToDrive) &&
+      state == kDownloadManagerStateSucceeded && !IsGoogleDriveAppInstalled() &&
+      [consumer_ respondsToSelector:@selector(setInstallDriveButtonVisible:
+                                                                  animated:)]) {
     [consumer_ setInstallDriveButtonVisible:YES animated:YES];
   }
 

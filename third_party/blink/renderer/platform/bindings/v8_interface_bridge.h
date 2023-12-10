@@ -28,6 +28,10 @@ class V8InterfaceBridge : public V8InterfaceBridgeBase {
   static T* ToWrappableUnsafe(v8::Local<v8::Object> value) {
     return ToScriptWrappable(value)->ToImpl<T>();
   }
+  static T* ToWrappableUnsafe(v8::Isolate* isolate,
+                              v8::Local<v8::Object> value) {
+    return ToScriptWrappable(isolate, value)->ToImpl<T>();
+  }
 
   static bool HasInstance(v8::Isolate* isolate, v8::Local<v8::Value> value) {
     return V8PerIsolateData::From(isolate)->HasInstance(

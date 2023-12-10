@@ -13,4 +13,5 @@ void TestSessionRestorationObserver::SessionRestorationFinished(
     Browser* browser,
     const std::vector<web::WebState*>& restored_web_states) {
   restored_web_states_count_ = static_cast<int>(restored_web_states.size());
+  session_restoration_call_count_++;
 }

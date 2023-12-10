@@ -32,8 +32,10 @@
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "ui/display/tablet_state.h"
 #include "ui/gfx/animation/slide_animation.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/insets.h"
@@ -241,6 +243,8 @@ class ScopedViewBoundsChangedObserver : public views::ViewObserver {
 class HoldingSpaceTrayBubble::ChildBubbleContainer
     : public views::View,
       public views::AnimationDelegateViews {
+  METADATA_HEADER(ChildBubbleContainer, views::View)
+
  public:
   ChildBubbleContainer()
       : views::AnimationDelegateViews(this),
@@ -408,7 +412,7 @@ class HoldingSpaceTrayBubble::ChildBubbleContainer
   mutable views::ProposedLayout target_layout_;   // Layout being animated to.
 
   std::unique_ptr<gfx::SlideAnimation> layout_animation_;
-  absl::optional<ui::ThroughputTracker> layout_animation_throughput_tracker_;
+  std::optional<ui::ThroughputTracker> layout_animation_throughput_tracker_;
 
   // Mapping of view bounds changed observers to the views which they observe.
   // This is used when UI refresh is enabled to ensure that separators are
@@ -416,6 +420,9 @@ class HoldingSpaceTrayBubble::ChildBubbleContainer
   std::map<const views::View*, ScopedViewBoundsChangedObserver>
       view_bounds_changed_observers_by_view_;
 };
+
+BEGIN_METADATA(HoldingSpaceTrayBubble, ChildBubbleContainer, views::View)
+END_METADATA
 
 // HoldingSpaceTrayBubble ------------------------------------------------------
 
@@ -497,7 +504,6 @@ void HoldingSpaceTrayBubble::Init() {
   holding_space_metrics::RecordVisibleItemCounts(visible_items);
 
   shelf_observation_.Observe(holding_space_tray_->shelf());
-  tablet_mode_observation_.Observe(Shell::Get()->tablet_mode_controller());
 }
 
 void HoldingSpaceTrayBubble::AnchorUpdated() {
@@ -562,11 +568,13 @@ void HoldingSpaceTrayBubble::OnAutoHideStateChanged(ShelfAutoHideState state) {
   UpdateBubbleBounds();
 }
 
-void HoldingSpaceTrayBubble::OnTabletModeStarted() {
-  UpdateBubbleBounds();
-}
+void HoldingSpaceTrayBubble::OnDisplayTabletStateChanged(
+    display::TabletState state) {
+  if (display::IsTabletStateChanging(state)) {
+    // Do nothing when the tablet state is still in the process of transition.
+    return;
+  }
 
-void HoldingSpaceTrayBubble::OnTabletModeEnded() {
   UpdateBubbleBounds();
 }
 

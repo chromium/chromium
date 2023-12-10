@@ -39,6 +39,7 @@ import java.util.Map;
 public abstract class FeedbackCollector<T> implements Runnable {
     /** The timeout for gathering data asynchronously. This timeout is ignored for screenshots. */
     private static final int TIMEOUT_MS = 500;
+
     private final long mStartTime = SystemClock.elapsedRealtime();
 
     private final String mCategoryTag;
@@ -46,15 +47,16 @@ public abstract class FeedbackCollector<T> implements Runnable {
     private String mAccountInUse;
 
     private List<FeedbackSource> mSynchronousSources;
-    @VisibleForTesting
-    protected List<AsyncFeedbackSource> mAsynchronousSources;
+    @VisibleForTesting protected List<AsyncFeedbackSource> mAsynchronousSources;
 
     private ScreenshotSource mScreenshotTask;
 
     /** The callback is cleared once notified so we will never notify the caller twice. */
     private Callback<FeedbackCollector> mCallback;
 
-    public FeedbackCollector(@Nullable String categoryTag, @Nullable String description,
+    public FeedbackCollector(
+            @Nullable String categoryTag,
+            @Nullable String description,
             Callback<FeedbackCollector> callback) {
         mCategoryTag = categoryTag;
         mDescription = description;
@@ -62,7 +64,10 @@ public abstract class FeedbackCollector<T> implements Runnable {
     }
 
     // Subclasses must invoke init() at construction time.
-    protected void init(Activity activity, @Nullable ScreenshotSource screenshotTask, T initParams,
+    protected void init(
+            Activity activity,
+            @Nullable ScreenshotSource screenshotTask,
+            T initParams,
             Profile profile) {
         // 1. Build all synchronous and asynchronous sources and determine the currently signed in
         //    account.
@@ -71,8 +76,9 @@ public abstract class FeedbackCollector<T> implements Runnable {
         IdentityManager identityManager =
                 IdentityServicesProvider.get().getIdentityManager(profile);
         if (identityManager != null) {
-            mAccountInUse = CoreAccountInfo.getEmailFrom(
-                    identityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN));
+            mAccountInUse =
+                    CoreAccountInfo.getEmailFrom(
+                            identityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN));
         }
 
         // Validation check in case a source is added to the wrong list.
@@ -210,7 +216,8 @@ public abstract class FeedbackCollector<T> implements Runnable {
             }
         }
 
-        RecordHistogram.recordMediumTimesHistogram("Feedback.Duration.FetchSystemInformation",
+        RecordHistogram.recordMediumTimesHistogram(
+                "Feedback.Duration.FetchSystemInformation",
                 SystemClock.elapsedRealtime() - mStartTime);
         final Callback<FeedbackCollector> callback = mCallback;
         mCallback = null;

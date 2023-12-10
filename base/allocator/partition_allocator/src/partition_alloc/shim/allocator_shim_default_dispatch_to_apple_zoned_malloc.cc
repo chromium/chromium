@@ -4,9 +4,9 @@
 
 #include <utility>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/shim/allocator_interception_apple.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/shim/allocator_shim.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/shim/malloc_zone_functions_apple.h"
+#include "partition_alloc/shim/allocator_interception_apple.h"
+#include "partition_alloc/shim/allocator_shim.h"
+#include "partition_alloc/shim/malloc_zone_functions_apple.h"
 
 namespace allocator_shim {
 namespace {
@@ -52,6 +52,15 @@ void FreeImpl(const AllocatorDispatch*, void* ptr, void* context) {
 size_t GetSizeEstimateImpl(const AllocatorDispatch*, void* ptr, void* context) {
   MallocZoneFunctions& functions = GetFunctionsForZone(context);
   return functions.size(reinterpret_cast<struct _malloc_zone_t*>(context), ptr);
+}
+
+size_t GoodSizeImpl(const AllocatorDispatch*, size_t size, void* context) {
+  // Technically, libmalloc will only call good_size() on the default zone for
+  // malloc_good_size(), but it doesn't matter that we are calling it on another
+  // one.
+  MallocZoneFunctions& functions = GetFunctionsForZone(context);
+  return functions.good_size(reinterpret_cast<struct _malloc_zone_t*>(context),
+                             size);
 }
 
 bool ClaimedAddressImpl(const AllocatorDispatch*, void* ptr, void* context) {
@@ -116,6 +125,7 @@ const AllocatorDispatch AllocatorDispatch::default_dispatch = {
     &ReallocImpl,          /* realloc_function */
     &FreeImpl,             /* free_function */
     &GetSizeEstimateImpl,  /* get_size_estimate_function */
+    &GoodSizeImpl,         /* good_size_function */
     &ClaimedAddressImpl,   /* claimed_address_function */
     &BatchMallocImpl,      /* batch_malloc_function */
     &BatchFreeImpl,        /* batch_free_function */

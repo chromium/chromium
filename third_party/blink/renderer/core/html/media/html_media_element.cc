@@ -692,29 +692,28 @@ void HTMLMediaElement::ResetMojoState() {
           this, GetExecutionContext());
 }
 
-bool HTMLMediaElement::SupportsFocus() const {
+bool HTMLMediaElement::SupportsFocus(UpdateBehavior update_behavior) const {
   // TODO(https://crbug.com/911882): Depending on result of discussion, remove.
   if (ownerDocument()->IsMediaDocument())
     return false;
 
   // If no controls specified, we should still be able to focus the element if
   // it has tabIndex.
-  return ShouldShowControls() || HTMLElement::SupportsFocus();
+  return ShouldShowControls() || HTMLElement::SupportsFocus(update_behavior);
 }
 
-bool HTMLMediaElement::IsFocusable(
-    bool disallow_layout_updates_for_accessibility_only) const {
-  if (!SupportsFocus()) {
+bool HTMLMediaElement::IsFocusable(UpdateBehavior update_behavior) const {
+  if (!SupportsFocus(update_behavior)) {
     return false;
   }
-  return !IsFullscreen() || HTMLElement::IsFocusable(
-                                disallow_layout_updates_for_accessibility_only);
+  return !IsFullscreen() || HTMLElement::IsFocusable(update_behavior);
 }
 
-bool HTMLMediaElement::IsKeyboardFocusable() const {
+bool HTMLMediaElement::IsKeyboardFocusable(
+    UpdateBehavior update_behavior) const {
   // Media elements are keyboard focusable if they are focusable at all,
   // and don't have a negative tabindex set.
-  return IsFocusable() && tabIndex() >= 0;
+  return IsFocusable(update_behavior) && tabIndex() >= 0;
 }
 
 int HTMLMediaElement::DefaultTabIndex() const {
@@ -1450,8 +1449,93 @@ LocalFrame* HTMLMediaElement::LocalFrameForPlayer() {
                           : GetDocument().GetFrame();
 }
 
+bool HTMLMediaElement::HandleInvokeInternal(HTMLElement& invoker,
+                                            AtomicString& action) {
+  if (HTMLElement::HandleInvokeInternal(invoker, action)) {
+    return true;
+  }
+
+  if (!RuntimeEnabledFeatures::HTMLInvokeActionsV2Enabled()) {
+    return false;
+  }
+
+  if (!(EqualIgnoringASCIICase(action, keywords::kPlaypause) ||
+        EqualIgnoringASCIICase(action, keywords::kPause) ||
+        EqualIgnoringASCIICase(action, keywords::kPlay) ||
+        EqualIgnoringASCIICase(action, keywords::kToggleMuted))) {
+    return false;
+  }
+  Document& document = GetDocument();
+  LocalFrame* frame = document.GetFrame();
+
+  if (EqualIgnoringASCIICase(action, keywords::kPlaypause)) {
+    if (paused_) {
+      if (LocalFrame::HasTransientUserActivation(frame)) {
+        Play();
+        return true;
+      } else {
+        String message = "Media cannot be played without a user gesture.";
+        document.AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+            mojom::ConsoleMessageSource::kJavaScript,
+            mojom::ConsoleMessageLevel::kWarning, message));
+        return false;
+      }
+    } else {
+      pause();
+      return true;
+    }
+  } else if (EqualIgnoringASCIICase(action, keywords::kPause)) {
+    if (!paused_) {
+      pause();
+    }
+    return true;
+  } else if (EqualIgnoringASCIICase(action, keywords::kPlay)) {
+    if (paused_) {
+      if (LocalFrame::HasTransientUserActivation(frame)) {
+        Play();
+      } else {
+        String message = "Media cannot be played without a user gesture.";
+        document.AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+            mojom::ConsoleMessageSource::kJavaScript,
+            mojom::ConsoleMessageLevel::kWarning, message));
+        return false;
+      }
+    }
+    return true;
+  } else {
+    CHECK(EqualIgnoringASCIICase(action, keywords::kToggleMuted));
+    // No user activation check as `setMuted` already handles the autoplay
+    // policy check.
+    setMuted(!muted_);
+    return true;
+  }
+}
+
 void HTMLMediaElement::StartPlayerLoad() {
   DCHECK(!web_media_player_);
+
+  // OOM interventions may destroy the JavaScript context while still allowing
+  // the page to operate without JavaScript. The media element is too
+  // complicated to continue running in this state, so fail.
+  // See https://crbug.com/1345473 for more information.
+  if (!GetExecutionContext() ||
+      GetDocument().domWindow()->IsContextDestroyed()) {
+    MediaLoadingFailed(
+        WebMediaPlayer::kNetworkStateFormatError,
+        BuildElementErrorMessage(
+            "Player load failure: JavaScript context destroyed"));
+    return;
+  }
+
+  // Due to Document PiP we may have a different execution context than our
+  // opener, so we also must check that the LocalFrame of the opener is valid.
+  LocalFrame* frame = LocalFrameForPlayer();
+  if (!frame) {
+    MediaLoadingFailed(
+        WebMediaPlayer::kNetworkStateFormatError,
+        BuildElementErrorMessage("Player load failure: document has no frame"));
+    return;
+  }
 
   WebMediaPlayerSource source;
   if (src_object_stream_descriptor_) {
@@ -1485,14 +1569,6 @@ void HTMLMediaElement::StartPlayerLoad() {
 
     KURL kurl(request_url);
     source = WebMediaPlayerSource(WebURL(kurl));
-  }
-
-  LocalFrame* frame = LocalFrameForPlayer();
-  if (!frame || !GetExecutionContext()) {
-    MediaLoadingFailed(
-        WebMediaPlayer::kNetworkStateFormatError,
-        BuildElementErrorMessage("Player load failure: document has no frame"));
-    return;
   }
 
   web_media_player_ =
@@ -2922,6 +2998,11 @@ void HTMLMediaElement::SetLoop(bool b) {
 }
 
 bool HTMLMediaElement::ShouldShowControls() const {
+  // If the document is not active, then we should not show controls.
+  if (!GetDocument().IsActive()) {
+    return false;
+  }
+
   Settings* settings = GetDocument().GetSettings();
   if (settings && !settings->GetMediaControlsEnabled()) {
     return false;

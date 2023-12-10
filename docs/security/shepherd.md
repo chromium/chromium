@@ -235,7 +235,8 @@ help.
   some issues reported in Chromium are already known or even fixed upstream.
 * **URL spoofing issues**, especially related to RTL or IDNs? See
   [go/url-spoofs](http://go/url-spoofs) for a guide to triaging these.
-* **SQLite bugs** can be assigned to mek@. CC drhsqlite@ for upstream issues.
+* **SQLite bugs** can be assigned to an owner from //third_party/sqlite/OWNERS.
+  CC drhsqlite@ for upstream issues.
 * **Fullscreen bugs** the Open Screen team is taking ownership of Full Screen
   issues, including security bugs. Please assign Full Screen security issues to
   takumif@chromium.org and cc: atadres@chromium.org, muyaoxu@google.com, and
@@ -395,12 +396,18 @@ explanatory text.
 
 * Reproduce using iOS device or desktop Safari.
 * Assign severity, impact, and component labels.
-* Label **ExternalDependency**.
-* Label **Hotlist-WebKit**. This label is monitored by Apple friends.
-* File a security bug at [bugs.webkit.org](https://bugs.webkit.org), and CC
-  chrome-ios-security-bugs@google.com. This alias is monitored by the iOS Chrome
-  team so they can be notified when the WebKit bug is fixed.
-* Note the WebKit bug ID in the crbug report.
+* If the issue is in WebKit:
+  * Label **ExternalDependency**.
+  * Label **Hotlist-WebKit**. This label is monitored by Apple friends.
+  * Do not fill **FoundIn**. It is applicable to Chrome versions and we can't
+    backmerge WebKit fixes.
+  * File a security bug at [bugs.webkit.org](https://bugs.webkit.org), and CC
+    chrome-ios-security-bugs@google.com. This alias is monitored by the iOS
+    Chrome team so they can be notified when the WebKit bug is fixed. Even
+    better: suggest the reporter to do it themselves and CC you. This way they
+    are getting a better visibility and credit.
+  * Note the WebKit bug ID in the crbug report.
+  * All security issues need owners, the WebKit ones can be assigned to ajuma@.
 
 ### Find An Owner To Fix The Bug
 

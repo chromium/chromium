@@ -187,11 +187,29 @@ sk_sp<PaintFilter> RenderSurfaceFilters::BuildImageFilter(
         GetContrastMatrix(op.amount(), matrix);
         image_filter = CreateMatrixImageFilter(matrix, std::move(image_filter));
         break;
-      case FilterOperation::BLUR:
-        image_filter = sk_make_sp<BlurPaintFilter>(op.amount(), op.amount(),
-                                                   op.blur_tile_mode(),
-                                                   std::move(image_filter));
+      case FilterOperation::BLUR: {
+        // SkImageFilters::Blur requires a crop rect for well-defined tiling
+        // behavior when the blur_tile_mode() is not kDecal. When that is not
+        // kDecal, setting the crop to the provided layer bounds means that
+        // tile mode will be applied to the layer's pixels inside its bounds,
+        // but pixels outside its bounds will not be read. Its output will still
+        // be cropped to the layer bounds automatically.
+        // TODO(b/1451898): The software_renderer does not calculate correct
+        // layer bounds (it's always empty), so rely on the legacy clamp
+        // handling in Skia for now. Once software_renderer does provide layer
+        // bounds, FilterOperations::MapRect could be updated to reflect this
+        // cropping, since a clamped blur doesn't actually move pixels.
+        SkRect sk_layer_bounds = gfx::RectToSkRect(layer_bounds);
+        const PaintFilter::CropRect* crop_rect = nullptr;
+        if (!sk_layer_bounds.isEmpty() &&
+            op.blur_tile_mode() != SkTileMode::kDecal) {
+          crop_rect = &sk_layer_bounds;
+        }
+        image_filter = sk_make_sp<BlurPaintFilter>(
+            op.amount(), op.amount(), op.blur_tile_mode(),
+            std::move(image_filter), crop_rect);
         break;
+      }
       case FilterOperation::DROP_SHADOW:
         image_filter = sk_make_sp<DropShadowPaintFilter>(
             SkIntToScalar(op.offset().x()), SkIntToScalar(op.offset().y()),
@@ -206,10 +224,15 @@ sk_sp<PaintFilter> RenderSurfaceFilters::BuildImageFilter(
         break;
       case FilterOperation::ZOOM: {
         DCHECK_GE(op.amount(), 1.0);
-
-        image_filter = sk_make_sp<MagnifierPaintFilter>(
-            gfx::RectToSkRect(layer_bounds), op.amount(), op.zoom_inset(),
-            std::move(image_filter));
+        // ZOOM limits its output to the layer bounds automatically, so if it's
+        // empty, then it produces nothing (regardless of prior filter ops).
+        if (layer_bounds.IsEmpty()) {
+          image_filter = nullptr;
+        } else {
+          image_filter = sk_make_sp<MagnifierPaintFilter>(
+              gfx::RectToSkRect(layer_bounds), op.amount(), op.zoom_inset(),
+              std::move(image_filter));
+        }
         break;
       }
       case FilterOperation::SATURATING_BRIGHTNESS:

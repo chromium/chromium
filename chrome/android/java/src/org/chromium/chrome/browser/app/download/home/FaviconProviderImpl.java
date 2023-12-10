@@ -37,11 +37,12 @@ class FaviconProviderImpl implements FaviconProvider {
             return;
         }
 
-        FaviconHelper.FaviconImageCallback imageCallback = (bitmap, iconUrl) -> {
-            // TODO(shaktisahu): Handle no favicon case.
-            if (bitmap != null) mFaviconCache.putFaviconImage(url, bitmap);
-            callback.onResult(bitmap);
-        };
+        FaviconHelper.FaviconImageCallback imageCallback =
+                (bitmap, iconUrl) -> {
+                    // TODO(shaktisahu): Handle no favicon case.
+                    if (bitmap != null) mFaviconCache.putFaviconImage(url, bitmap);
+                    callback.onResult(bitmap);
+                };
 
         mFaviconHelper.getLocalFaviconImageForURL(
                 mProfile, new GURL(url), faviconSizePx, imageCallback);

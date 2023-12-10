@@ -148,7 +148,7 @@ class CellularESimUninstallHandlerTest : public testing::Test {
         HermesEuiccClient::TestInterface::AddCarrierProfileBehavior::
             kAddProfileWithService);
 
-    if (ash::features::IsSmdsSupportEuiccUploadEnabled()) {
+    if (ash::features::IsSmdsSupportEnabled()) {
       // Setup as a managed profile by adding eSIM metadata to device prefs.
       managed_cellular_pref_handler_->AddESimMetadata(
           kTestCellularIccid0, kTestCellularNetworkName,
@@ -225,7 +225,7 @@ class CellularESimUninstallHandlerTest : public testing::Test {
   }
 
   bool HasESimMetadata(const std::string& iccid) {
-    if (ash::features::IsSmdsSupportEuiccUploadEnabled()) {
+    if (ash::features::IsSmdsSupportEnabled()) {
       return managed_cellular_pref_handler_->GetESimMetadata(iccid) != nullptr;
     } else {
       return managed_cellular_pref_handler_->GetSmdpAddressFromIccid(iccid);
@@ -291,9 +291,7 @@ class CellularESimUninstallHandlerTest_SmdsSupportDisabled
   CellularESimUninstallHandlerTest_SmdsSupportDisabled()
       : CellularESimUninstallHandlerTest(
             /*enabled_features=*/{},
-            /*disabled_features=*/{ash::features::kSmdsDbusMigration,
-                                   ash::features::kSmdsSupport,
-                                   ash::features::kSmdsSupportEuiccUpload}) {}
+            /*disabled_features=*/{ash::features::kSmdsSupport}) {}
   ~CellularESimUninstallHandlerTest_SmdsSupportDisabled() override = default;
 };
 
@@ -308,9 +306,7 @@ class CellularESimUninstallHandlerTest_SmdsSupportEnabled
  protected:
   CellularESimUninstallHandlerTest_SmdsSupportEnabled()
       : CellularESimUninstallHandlerTest(
-            /*enabled_features=*/{ash::features::kSmdsDbusMigration,
-                                  ash::features::kSmdsSupport,
-                                  ash::features::kSmdsSupportEuiccUpload},
+            /*enabled_features=*/{ash::features::kSmdsSupport},
             /*disabled_features=*/{}) {}
   ~CellularESimUninstallHandlerTest_SmdsSupportEnabled() override = default;
 };
@@ -332,7 +328,7 @@ TEST_F(CellularESimUninstallHandlerTest_SmdsSupportDisabled, Success) {
       HermesEuiccClient::Get()->GetProperties(
           dbus::ObjectPath(kDefaultEuiccPath));
   ASSERT_TRUE(euicc_properties);
-  EXPECT_EQ(1u, euicc_properties->installed_carrier_profiles().value().size());
+  EXPECT_EQ(1u, euicc_properties->profiles().value().size());
   EXPECT_FALSE(ESimServiceConfigExists(kTestNetworkServicePath0));
   EXPECT_TRUE(status);
   EXPECT_FALSE(HasESimMetadata(kTestCellularIccid0));
@@ -358,7 +354,7 @@ TEST_F(CellularESimUninstallHandlerTest_SmdsSupportDisabled,
       HermesEuiccClient::Get()->GetProperties(
           dbus::ObjectPath(kDefaultEuiccPath));
   ASSERT_TRUE(euicc_properties);
-  EXPECT_EQ(1u, euicc_properties->installed_carrier_profiles().value().size());
+  EXPECT_EQ(1u, euicc_properties->profiles().value().size());
   EXPECT_FALSE(ESimServiceConfigExists(kTestNetworkServicePath0));
   EXPECT_TRUE(status);
   EXPECT_FALSE(HasESimMetadata(kTestCellularIccid0));
@@ -436,7 +432,7 @@ TEST_F(CellularESimUninstallHandlerTest_SmdsSupportDisabled, MultipleRequests) {
       HermesEuiccClient::Get()->GetProperties(
           dbus::ObjectPath(kDefaultEuiccPath));
   ASSERT_TRUE(euicc_properties);
-  EXPECT_TRUE(euicc_properties->installed_carrier_profiles().value().empty());
+  EXPECT_TRUE(euicc_properties->profiles().value().empty());
   EXPECT_FALSE(ESimServiceConfigExists(kTestNetworkServicePath0));
   EXPECT_FALSE(ESimServiceConfigExists(kTestNetworkServicePath1));
   EXPECT_FALSE(HasESimMetadata(kTestCellularIccid0));
@@ -466,7 +462,7 @@ TEST_F(CellularESimUninstallHandlerTest_SmdsSupportDisabled, ResetEuiccMemory) {
       HermesEuiccClient::Get()->GetProperties(
           dbus::ObjectPath(kDefaultEuiccPath));
   ASSERT_TRUE(euicc_properties);
-  EXPECT_TRUE(euicc_properties->installed_carrier_profiles().value().empty());
+  EXPECT_TRUE(euicc_properties->profiles().value().empty());
   EXPECT_FALSE(ESimServiceConfigExists(kTestNetworkServicePath0));
   EXPECT_FALSE(ESimServiceConfigExists(kTestNetworkServicePath1));
   EXPECT_FALSE(HasESimMetadata(kTestCellularIccid0));

@@ -108,7 +108,7 @@ std::string GetIntegrityLevelInEnglish(IntegrityLevel integrity) {
 }
 
 std::wstring GetSidAsString(const base::win::Sid& sid) {
-  absl::optional<std::wstring> result = sid.ToSddlString();
+  std::optional<std::wstring> result = sid.ToSddlString();
   if (!result) {
     DCHECK(false) << "Failed to make sddl string";
     return L"";
@@ -159,8 +159,6 @@ std::string GetIpcTagAsString(IpcTag service) {
       return "NtQueryFullAttributesFile";
     case IpcTag::NTSETINFO_RENAME:
       return "NtSetInfoRename";
-    case IpcTag::CREATENAMEDPIPEW:
-      return "CreateNamedPipeW";
     case IpcTag::NTOPENTHREAD:
       return "NtOpenThread";
     case IpcTag::NTOPENPROCESSTOKENEX:

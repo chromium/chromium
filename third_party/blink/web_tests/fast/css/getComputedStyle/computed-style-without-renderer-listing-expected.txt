@@ -203,6 +203,7 @@ image-orientation: from-image
 image-rendering: auto
 initial-letter: normal
 inline-size: auto
+inset-area: none
 inset-block-end: auto
 inset-block-start: auto
 inset-inline-end: auto

@@ -9,13 +9,13 @@
 #include <psapi.h>
 
 #include <memory>
+#include <string_view>
 #include <utility>
 #include <vector>
 
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/strings/string_piece.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/win/conflicts/module_database.h"
@@ -43,7 +43,7 @@ bool GetModulePath(base::ProcessHandle process,
     temp_path.resize(2 * temp_path.size());
   }
 
-  *path = base::FilePath(base::WStringPiece(temp_path.data(), length));
+  *path = base::FilePath(std::wstring_view(temp_path.data(), length));
   return true;
 }
 

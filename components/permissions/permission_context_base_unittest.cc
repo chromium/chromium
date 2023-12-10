@@ -911,10 +911,6 @@ TEST_F(PermissionContextBaseTests, TestVirtualURLSameOrigin) {
 
 #if !BUILDFLAG(IS_ANDROID)
 TEST_F(PermissionContextBaseTests, ExpirationAllow) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {features::kRecordPermissionExpirationTimestamps}, {});
-
   base::Time now = base::Time::Now();
   TestAskAndDecide_TestContent(ContentSettingsType::GEOLOCATION,
                                CONTENT_SETTING_ALLOW);
@@ -932,10 +928,6 @@ TEST_F(PermissionContextBaseTests, ExpirationAllow) {
 }
 
 TEST_F(PermissionContextBaseTests, ExpirationBlock) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {features::kRecordPermissionExpirationTimestamps}, {});
-
   TestAskAndDecide_TestContent(ContentSettingsType::GEOLOCATION,
                                CONTENT_SETTING_BLOCK);
 

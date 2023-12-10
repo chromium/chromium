@@ -124,7 +124,7 @@ void URLLoaderPostInterceptor::Pause() {
 void URLLoaderPostInterceptor::Resume() {
   is_paused_ = false;
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindLambdaForTesting([&]() {
+      FROM_HERE, base::BindLambdaForTesting([&] {
         if (!pending_expectations_.size())
           return;
 

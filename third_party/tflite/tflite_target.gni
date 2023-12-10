@@ -36,7 +36,7 @@
 #   conditional_deps = [ ":tflite_internal" ]
 # }
 
-# Set of variables that are forwarded to the actual
+# Set of variables that are forwarded to the actual target.
 minimal_vars_to_forward_to_target = [
   "cflags",
   "configs",
@@ -94,9 +94,14 @@ template("tflite_target_gen") {
         configs += invoker.configs_to_add
       }
 
-      # Standalone targets should not depend upon base.
       if (type == "_standalone") {
+        # Standalone targets should not depend upon base.
         assert_no_deps = [ "//base" ]
+        if (defined(invoker.public_deps_for_standalone)) {
+          public_deps += invoker.public_deps_for_standalone
+        }
+      } else {
+        not_needed(invoker, [ "public_deps_for_standalone" ])
       }
     }
   }
@@ -108,6 +113,7 @@ vars_to_forward = minimal_vars_to_forward_to_target + [
                     "conditional_public_deps",
                     "configs_to_add",
                     "configs_to_remove",
+                    "public_deps_for_standalone",
                   ]
 
 template("tflite_static_library") {

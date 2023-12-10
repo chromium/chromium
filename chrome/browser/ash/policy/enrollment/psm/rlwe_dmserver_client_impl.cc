@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/policy/enrollment/psm/rlwe_dmserver_client_impl.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -20,7 +21,6 @@
 #include "components/policy/core/common/cloud/enterprise_metrics.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/private_membership/src/private_membership_rlwe.pb.h"
 #include "third_party/private_membership/src/private_membership_rlwe_client.h"
 
@@ -280,7 +280,7 @@ RlweDmserverClientImpl::CreatePsmRequestJobConfiguration(
           TYPE_PSM_HAS_DEVICE_STATE_REQUEST,
       random_device_id_,
       /*critical=*/true, DMAuth::NoAuth(),
-      /*oauth_token=*/absl::nullopt, url_loader_factory_, std::move(callback));
+      /*oauth_token=*/std::nullopt, url_loader_factory_, std::move(callback));
 }
 
 void RlweDmserverClientImpl::RecordPsmSuccessTimeHistogram() {

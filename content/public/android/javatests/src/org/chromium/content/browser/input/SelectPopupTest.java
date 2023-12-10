@@ -37,11 +37,11 @@ public class SelectPopupTest {
     private static final String SELECT_URL =
             UrlUtils.encodeHtmlDataUri(
                     "<html><head><meta name=\"viewport\"content=\"width=device-width,"
-                        + " initial-scale=1.0, maximum-scale=1.0\" /></head><body>Which animal is"
-                        + " the strongest:<br/><select id=\"select\"><option>Black"
-                        + " bear</option><option>Polar bear</option><option>Grizzly</option>"
-                        + "<option>Tiger</option><option>Lion</option><option>Gorilla</option>"
-                        + "<option>Chipmunk</option></select></body></html>");
+                            + " initial-scale=1.0, maximum-scale=1.0\" /></head><body>Which animal is"
+                            + " the strongest:<br/><select id=\"select\"><option>Black"
+                            + " bear</option><option>Polar bear</option><option>Grizzly</option>"
+                            + "<option>Tiger</option><option>Lion</option><option>Gorilla</option>"
+                            + "<option>Chipmunk</option></select></body></html>");
 
     private void verifyPopupShownState(boolean shown) {
         CriteriaHelper.pollUiThread(

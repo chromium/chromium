@@ -5,9 +5,10 @@
 #ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_ALLOC_BASE_STRINGS_SAFE_SPRINTF_H_
 #define BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_ALLOC_BASE_STRINGS_SAFE_SPRINTF_H_
 
-#include <stddef.h>
 #include <stdint.h>
 #include <stdlib.h>
+
+#include <cstddef>
 
 #include "build/build_config.h"
 
@@ -16,7 +17,7 @@
 #include <unistd.h>
 #endif
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/component_export.h"
+#include "partition_alloc/partition_alloc_base/component_export.h"
 
 namespace partition_alloc::internal::base::strings {
 
@@ -178,18 +179,20 @@ struct Arg {
     integer.width = sizeof(long long);
   }
 
-  // nullptr_t would be ambiguous between char* and const char*; to get
+  // std::nullptr_t would be ambiguous between char* and const char*; to get
   // consistent behavior with NULL, which prints with all three of %d, %p, and
   // %s, treat it as an integer zero internally.
   //
   // Warning: don't just do Arg(NULL) here because in some libcs, NULL is an
-  // alias for nullptr!
-  Arg(nullptr_t p) : type(INT) {
+  // alias for std::nullptr!
+  //
+  // NOLINTNEXTLINE(runtime/explicit)
+  Arg(std::nullptr_t p) : type(INT) {
     integer.i = 0;
     // Internally, SafeSprintf expects to represent nulls as integers whose
     // width is equal to sizeof(NULL), which is not necessarily equal to
-    // sizeof(nullptr_t) - eg, on Windows, NULL is defined to 0 (with size 4)
-    // while nullptr_t is of size 8.
+    // sizeof(std::nullptr_t) - eg, on Windows, NULL is defined to 0 (with size
+    // 4) while std::nullptr_t is of size 8.
     integer.width = sizeof(NULL);
   }
 
@@ -201,12 +204,14 @@ struct Arg {
   template <class T>
   Arg(T* p) : ptr((void*)p), type(POINTER) {}
 
+  struct Integer {
+    int64_t i;
+    unsigned char width;
+  };
+
   union {
     // An integer-like value.
-    struct {
-      int64_t i;
-      unsigned char width;
-    } integer;
+    Integer integer;
 
     // A C-style text string.
     const char* str;

@@ -57,20 +57,22 @@ public class TabGridDialogMenuCoordinator {
             Context context, View anchorView, Callback<Integer> onItemClicked) {
         mContext = context;
         mOnItemClickedCallback = onItemClicked;
-        mComponentCallbacks = new ComponentCallbacks() {
-            @Override
-            public void onConfigurationChanged(Configuration newConfig) {
-                if (mMenuWindow == null || !mMenuWindow.isShowing()) return;
-                mMenuWindow.dismiss();
-            }
+        mComponentCallbacks =
+                new ComponentCallbacks() {
+                    @Override
+                    public void onConfigurationChanged(Configuration newConfig) {
+                        if (mMenuWindow == null || !mMenuWindow.isShowing()) return;
+                        mMenuWindow.dismiss();
+                    }
 
-            @Override
-            public void onLowMemory() {}
-        };
+                    @Override
+                    public void onLowMemory() {}
+                };
         mContext.registerComponentCallbacks(mComponentCallbacks);
 
-        final View contentView = LayoutInflater.from(context).inflate(
-                R.layout.tab_switcher_action_menu_layout, null);
+        final View contentView =
+                LayoutInflater.from(context)
+                        .inflate(R.layout.tab_switcher_action_menu_layout, null);
         setupMenu(contentView, anchorView);
     }
 
@@ -90,19 +92,24 @@ public class TabGridDialogMenuCoordinator {
                 ListMenuItemType.MENU_ITEM,
                 new LayoutViewBuilder(R.layout.list_menu_item),
                 ListMenuItemViewBinder::binder);
-        listView.setOnItemClickListener((p, v, pos, id) -> {
-            if (mOnItemClickedCallback != null) {
-                mOnItemClickedCallback.onResult((int) id);
-            }
-            mMenuWindow.dismiss();
-        });
+        listView.setOnItemClickListener(
+                (p, v, pos, id) -> {
+                    if (mOnItemClickedCallback != null) {
+                        mOnItemClickedCallback.onResult((int) id);
+                    }
+                    mMenuWindow.dismiss();
+                });
 
         View decorView = ((Activity) contentView.getContext()).getWindow().getDecorView();
         ViewRectProvider rectProvider = new ViewRectProvider(anchorView);
 
-        mMenuWindow = new AnchoredPopupWindow(mContext, decorView,
-                AppCompatResources.getDrawable(mContext, R.drawable.menu_bg_tinted), contentView,
-                rectProvider);
+        mMenuWindow =
+                new AnchoredPopupWindow(
+                        mContext,
+                        decorView,
+                        AppCompatResources.getDrawable(mContext, R.drawable.menu_bg_tinted),
+                        contentView,
+                        rectProvider);
         mMenuWindow.setFocusable(true);
         mMenuWindow.setHorizontalOverlapAnchor(true);
         mMenuWindow.setVerticalOverlapAnchor(true);

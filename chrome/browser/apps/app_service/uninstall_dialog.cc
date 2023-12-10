@@ -97,15 +97,9 @@ void UninstallDialog::OnLoadIcon(IconValuePtr icon_value) {
     return;
   }
 
-  UiBase::Create(profile_, app_type_, app_id_, app_name_,
-                 icon_value->uncompressed, parent_window_,
-                 base::BindOnce(&UninstallDialog::OnUninstallDialogCreated,
-                                weak_ptr_factory_.GetWeakPtr()),
-                 this);
-}
+  widget_ = UiBase::Create(profile_, app_type_, app_id_, app_name_,
+                           icon_value->uncompressed, parent_window_, this);
 
-void UninstallDialog::OnUninstallDialogCreated(views::Widget* widget) {
-  widget_ = widget;
   if (uninstall_dialog_created_callback_) {
     std::move(uninstall_dialog_created_callback_).Run(true);
   }

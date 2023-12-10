@@ -21,9 +21,7 @@ import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
-/**
- * The coordinator handles the update and interaction of the FRE sign-in screen.
- */
+/** The coordinator handles the update and interaction of the FRE sign-in screen. */
 @MainThread
 public class SigninFirstRunCoordinator {
     /** Delegate for signin fist run MVC. */
@@ -71,9 +69,7 @@ public class SigninFirstRunCoordinator {
          */
         OneshotSupplier<Boolean> getPolicyLoadListener();
 
-        /**
-         * Returns the supplier that supplies child account status.
-         */
+        /** Returns the supplier that supplies child account status. */
         OneshotSupplier<Boolean> getChildAccountStatusSupplier();
 
         /**
@@ -99,15 +95,17 @@ public class SigninFirstRunCoordinator {
      * @param privacyPreferencesManager is used to check whether metrics and crash reporting are
      *         disabled by policy and set the footer string accordingly.
      */
-    public SigninFirstRunCoordinator(Context context, ModalDialogManager modalDialogManager,
-            Delegate delegate, PrivacyPreferencesManager privacyPreferencesManager) {
-        mMediator = new SigninFirstRunMediator(
-                context, modalDialogManager, delegate, privacyPreferencesManager);
+    public SigninFirstRunCoordinator(
+            Context context,
+            ModalDialogManager modalDialogManager,
+            Delegate delegate,
+            PrivacyPreferencesManager privacyPreferencesManager) {
+        mMediator =
+                new SigninFirstRunMediator(
+                        context, modalDialogManager, delegate, privacyPreferencesManager);
     }
 
-    /**
-     * Releases the resources used by the coordinator.
-     */
+    /** Releases the resources used by the coordinator. */
     public void destroy() {
         setView(null);
         mMediator.destroy();
@@ -135,8 +133,9 @@ public class SigninFirstRunCoordinator {
         }
 
         if (view != null) {
-            mPropertyModelChangeProcessor = PropertyModelChangeProcessor.create(
-                    mMediator.getModel(), view, SigninFirstRunViewBinder::bind);
+            mPropertyModelChangeProcessor =
+                    PropertyModelChangeProcessor.create(
+                            mMediator.getModel(), view, SigninFirstRunViewBinder::bind);
         }
     }
 
@@ -144,16 +143,12 @@ public class SigninFirstRunCoordinator {
         mMediator.onAccountSelected(accountName);
     }
 
-    /**
-     * Continue the sign-in process with the currently selected account.
-     */
+    /** Continue the sign-in process with the currently selected account. */
     public void continueSignIn() {
         mMediator.proceedWithSignIn();
     }
 
-    /**
-     * Abandon the sign-in process and dismiss the sign-in page.
-     */
+    /** Abandon the sign-in process and dismiss the sign-in page. */
     public void cancelSignInAndDismiss() {
         mMediator.dismiss();
     }

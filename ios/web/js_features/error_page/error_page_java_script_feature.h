@@ -5,6 +5,8 @@
 #ifndef IOS_WEB_JS_FEATURES_ERROR_PAGE_ERROR_PAGE_JAVA_SCRIPT_FEATURE_H_
 #define IOS_WEB_JS_FEATURES_ERROR_PAGE_ERROR_PAGE_JAVA_SCRIPT_FEATURE_H_
 
+#import <optional>
+
 #import "base/no_destructor.h"
 #import "ios/web/public/js_messaging/java_script_feature.h"
 
@@ -25,7 +27,7 @@ class ErrorPageJavaScriptFeature : public JavaScriptFeature {
   friend class base::NoDestructor<ErrorPageJavaScriptFeature>;
 
   // JavaScriptFeature overrides
-  absl::optional<std::string> GetScriptMessageHandlerName() const override;
+  std::optional<std::string> GetScriptMessageHandlerName() const override;
   void ScriptMessageReceived(WebState* web_state,
                              const ScriptMessage& script_message) override;
 

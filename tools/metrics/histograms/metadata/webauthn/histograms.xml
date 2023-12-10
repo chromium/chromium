@@ -22,18 +22,8 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
-<histogram name="WebAuthentication.Android.CredManConditionalRequests"
-    enum="CredManGetRequestEnum" expires_after="2024-01-01">
-  <owner>derinel@google.com</owner>
-  <owner>kenrb@chromium.org</owner>
-  <summary>
-    Records events for Android Credential Management getCredential API for
-    conditional UI requests.
-  </summary>
-</histogram>
-
 <histogram name="WebAuthentication.Android.CredManCreateRequest"
-    enum="CredManCreateRequestEnum" expires_after="2024-01-01">
+    enum="CredManCreateRequestEnum" expires_after="2024-05-05">
   <owner>derinel@google.com</owner>
   <owner>kenrb@chromium.org</owner>
   <summary>
@@ -53,7 +43,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAuthentication.Android.CredManPrepareRequest"
-    enum="CredManPrepareRequestEnum" expires_after="2024-01-01">
+    enum="CredManPrepareRequestEnum" expires_after="2024-05-05">
   <owner>derinel@google.com</owner>
   <owner>kenrb@chromium.org</owner>
   <summary>
@@ -62,7 +52,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAuthentication.Android.CredManPrepareRequestDuration"
-    units="ms" expires_after="2024-01-01">
+    units="ms" expires_after="2024-05-05">
   <owner>derinel@google.com</owner>
   <owner>kenrb@chromium.org</owner>
   <summary>
@@ -100,14 +90,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAuthentication.CableV2.MobileResult"
-    enum="WebAuthenticationCableV2MobileResult" expires_after="2024-03-01">
+    enum="WebAuthenticationCableV2MobileResult" expires_after="2024-05-05">
   <owner>agl@chromium.org</owner>
   <owner>martinkr@google.com</owner>
   <summary>Records the outcome of caBLEv2 transactions.</summary>
 </histogram>
 
 <histogram name="WebAuthentication.CableV2.PrelinkDataAgeDays" units="days"
-    expires_after="2024-03-01">
+    expires_after="2024-05-05">
   <owner>agl@chromium.org</owner>
   <owner>nsatragno@google.com</owner>
   <summary>
@@ -149,7 +139,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="WebAuthentication.ChromeOS.GetAssertionStatus"
     enum="WebAuthenticationChromeOSGetAssertionResult"
-    expires_after="2024-03-10">
+    expires_after="2024-05-12">
   <owner>martinkr@google.com</owner>
   <owner>hcyang@google.com</owner>
   <owner>chrome-webauthn@google.com</owner>
@@ -176,7 +166,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAuthentication.ConditionalUiPasskeyCount" units="passkeys"
-    expires_after="2024-03-17">
+    expires_after="2024-05-19">
   <owner>kenrb@chromium.org</owner>
   <owner>nsatragno@chromium.org</owner>
   <owner>chrome-webauthn@google.com</owner>
@@ -193,7 +183,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAuthentication.GetAssertionRequestTransport"
-    enum="WebAuthenticationFidoTransport" expires_after="2024-03-17">
+    enum="WebAuthenticationFidoTransport" expires_after="2024-05-19">
   <owner>kenrb@chromium.org</owner>
   <owner>martinkr@google.com</owner>
   <summary>
@@ -204,7 +194,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAuthentication.GetAssertionResponseTransport"
-    enum="WebAuthenticationFidoTransport" expires_after="2024-03-17">
+    enum="WebAuthenticationFidoTransport" expires_after="2024-05-19">
   <owner>kenrb@chromium.org</owner>
   <owner>martinkr@google.com</owner>
   <summary>
@@ -214,7 +204,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAuthentication.IsUVPlatformAuthenticatorAvailable2"
-    enum="Boolean" expires_after="2024-03-10">
+    enum="Boolean" expires_after="2024-05-12">
   <owner>kenrb@chromium.org</owner>
   <owner>martinkr@google.com</owner>
   <summary>
@@ -247,7 +237,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAuthentication.MakeCredentialResponseTransport"
-    enum="WebAuthenticationFidoTransport" expires_after="2024-03-17">
+    enum="WebAuthenticationFidoTransport" expires_after="2024-05-19">
   <owner>kenrb@chromium.org</owner>
   <owner>martinkr@google.com</owner>
   <summary>

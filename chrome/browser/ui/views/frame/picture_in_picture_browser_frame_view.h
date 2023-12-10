@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_FRAME_PICTURE_IN_PICTURE_BROWSER_FRAME_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_FRAME_PICTURE_IN_PICTURE_BROWSER_FRAME_VIEW_H_
 
+#include <optional>
+
 #include "base/containers/flat_set.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
@@ -17,7 +19,6 @@
 #include "chrome/browser/ui/views/overlay/close_image_button.h"
 #include "components/omnibox/browser/location_bar_model.h"
 #include "content/public/browser/web_contents.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/animation/multi_animation.h"
 #include "ui/gfx/animation/slide_animation.h"
@@ -28,13 +29,14 @@
 #include "ui/linux/window_frame_provider.h"
 #endif
 
-// On Windows and Linux, child dialogs don't draw outside of their parent
-// window, so to prevent cutting off important dialogs we resize the
-// picture-in-picture window to fit them. While ChromeOS also uses Aura, it does
-// not have this issue so we do not resize on ChromeOS.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+// On Windows, Linux, and Lacros, child dialogs don't draw outside of their
+// parent window, so to prevent cutting off important dialogs we resize the
+// picture-in-picture window to fit them. While ChromeOS Ash also uses Aura, it
+// does not have this issue so we do not resize on ChromeOS Ash.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #define RESIZE_DOCUMENT_PICTURE_IN_PICTURE_TO_DIALOG 1
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) ||
+        // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if RESIZE_DOCUMENT_PICTURE_IN_PICTURE_TO_DIALOG
 #include "base/scoped_multi_source_observation.h"
@@ -119,7 +121,7 @@ class PictureInPictureBrowserFrameView
   LocationBarModel* GetLocationBarModel() const override;
   ui::ImageModel GetLocationIcon(LocationIconView::Delegate::IconFetchedCallback
                                      on_icon_fetched) const override;
-  absl::optional<ui::ColorId> GetLocationIconBackgroundColorOverride()
+  std::optional<ui::ColorId> GetLocationIconBackgroundColorOverride()
       const override;
 
   // IconLabelBubbleView::Delegate:
@@ -356,7 +358,7 @@ class PictureInPictureBrowserFrameView
 
   // The foreground color given the current state of the
   // `top_bar_color_animation_`.
-  absl::optional<SkColor> current_foreground_color_;
+  std::optional<SkColor> current_foreground_color_;
 
 #if BUILDFLAG(IS_LINUX)
   // Used to draw window frame borders and shadow on Linux when GTK theme is

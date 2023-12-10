@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "ash/constants/ash_switches.h"
-#include "ash/public/cpp/tablet_mode.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -33,6 +32,7 @@
 #include "components/user_manager/user_manager.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/devicetype_utils.h"
+#include "ui/display/screen.h"
 
 namespace ash {
 
@@ -96,19 +96,10 @@ void AssistantOptInFlowScreenHandler::DeclareLocalizedValues(
                IDS_ASSISTANT_RELATED_INFO_SCREEN_RETURNED_USER_MESSAGE);
   builder->Add("assistantRelatedInfoReturnedUserMessageForChild",
                IDS_ASSISTANT_RELATED_INFO_SCREEN_RETURNED_USER_MESSAGE_CHILD);
-
-  if (assistant::features::IsRelatedInfoStringUpdateEnabled()) {
-    builder->Add("assistantRelatedInfoExample",
-                 IDS_ASSISTANT_RELATED_INFO_SCREEN_EXAMPLE_NEW);
-    builder->Add("assistantRelatedInfoExampleForChild",
-                 IDS_ASSISTANT_RELATED_INFO_SCREEN_EXAMPLE_CHILD_NEW);
-  } else {
-    builder->Add("assistantRelatedInfoExample",
-                 IDS_ASSISTANT_RELATED_INFO_SCREEN_EXAMPLE);
-    builder->Add("assistantRelatedInfoExampleForChild",
-                 IDS_ASSISTANT_RELATED_INFO_SCREEN_EXAMPLE_CHILD);
-  }
-
+  builder->Add("assistantRelatedInfoExample",
+               IDS_ASSISTANT_RELATED_INFO_SCREEN_EXAMPLE);
+  builder->Add("assistantRelatedInfoExampleForChild",
+               IDS_ASSISTANT_RELATED_INFO_SCREEN_EXAMPLE_CHILD);
   builder->Add("assistantScreenContextTitle",
                IDS_ASSISTANT_SCREEN_CONTEXT_TITLE);
   builder->Add("assistantScreenContextDesc", IDS_ASSISTANT_SCREEN_CONTEXT_DESC);
@@ -496,7 +487,7 @@ void AssistantOptInFlowScreenHandler::OnGetSettingsResponse(
   dictionary.Set("childName", GetGivenNameIfIsChild());
   dictionary.Set(
       "isTabletMode",
-      TabletMode::Get()->InTabletMode() ||
+      display::Screen::GetScreen()->InTabletMode() ||
           (is_oobe_in_progress && switches::ShouldOobeUseTabletModeFirstRun()));
   ReloadContent(std::move(dictionary));
 

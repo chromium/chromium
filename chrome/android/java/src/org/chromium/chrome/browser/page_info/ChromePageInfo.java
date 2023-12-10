@@ -22,9 +22,7 @@ import org.chromium.components.page_info.PageInfoController.OpenedFromSource;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
-/**
- * Helper class showing page info dialog for Clank.
- */
+/** Helper class showing page info dialog for Clank. */
 public class ChromePageInfo {
     private final @NonNull Supplier<ModalDialogManager> mModalDialogManagerSupplier;
     private final @Nullable String mPublisher;
@@ -41,8 +39,10 @@ public class ChromePageInfo {
      * @param ephemeralTabCoordinatorSupplier Supplier of {@link EphemeralTabCoordinator}.
      * @param tabCreator {@link TabCreator} to handle a new tab creation.
      */
-    public ChromePageInfo(@NonNull Supplier<ModalDialogManager> modalDialogManagerSupplier,
-            @Nullable String publisher, @OpenedFromSource int source,
+    public ChromePageInfo(
+            @NonNull Supplier<ModalDialogManager> modalDialogManagerSupplier,
+            @Nullable String publisher,
+            @OpenedFromSource int source,
             @Nullable Supplier<StoreInfoActionHandler> storeInfoActionHandlerSupplier,
             @Nullable Supplier<EphemeralTabCoordinator> ephemeralTabCoordinatorSupplier,
             @Nullable TabCreator tabCreator) {
@@ -64,12 +64,20 @@ public class ChromePageInfo {
         if (webContents == null || !ProfileManager.isInitialized()) return;
 
         Activity activity = TabUtils.getActivity(tab);
-        PageInfoController.show(activity, webContents, mPublisher, mSource,
-                new ChromePageInfoControllerDelegate(activity, webContents,
+        PageInfoController.show(
+                activity,
+                webContents,
+                mPublisher,
+                mSource,
+                new ChromePageInfoControllerDelegate(
+                        activity,
+                        webContents,
                         mModalDialogManagerSupplier,
                         new OfflinePageUtils.TabOfflinePageLoadUrlDelegate(tab),
-                        mStoreInfoActionHandlerSupplier, mEphemeralTabCoordinatorSupplier,
-                        pageInfoHighlight, mTabCreator),
+                        mStoreInfoActionHandlerSupplier,
+                        mEphemeralTabCoordinatorSupplier,
+                        pageInfoHighlight,
+                        mTabCreator),
                 pageInfoHighlight);
     }
 }

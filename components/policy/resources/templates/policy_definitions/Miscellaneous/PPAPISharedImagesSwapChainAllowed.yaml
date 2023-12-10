@@ -27,9 +27,6 @@ supported_on:
 - chrome_os:110-114
 deprecated: true
 device_only: false
-supported_chrome_os_management:
-- google_cloud
-- active_directory
 features:
   dynamic_refresh: true
   per_profile: false

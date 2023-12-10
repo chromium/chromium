@@ -26,13 +26,14 @@ import java.util.Locale;
 
 /** Helper class to handle converting downloads to UI strings. */
 public final class StringUtils {
-    @VisibleForTesting
-    static final String ELLIPSIS = "\u2026";
+    @VisibleForTesting static final String ELLIPSIS = "\u2026";
 
     @VisibleForTesting
     private static final int[] BYTES_AVAILABLE_STRINGS = {
-            R.string.download_manager_ui_space_free_kb, R.string.download_manager_ui_space_free_mb,
-            R.string.download_manager_ui_space_free_gb};
+        R.string.download_manager_ui_space_free_kb,
+        R.string.download_manager_ui_space_free_mb,
+        R.string.download_manager_ui_space_free_gb
+    };
 
     private StringUtils() {}
 
@@ -57,18 +58,19 @@ public final class StringUtils {
             case OfflineItemProgressUnit.BYTES:
                 String bytes = DownloadUtils.getStringForBytes(context, progress.value);
                 if (progress.isIndeterminate()) {
-                    return context.getResources().getString(
-                            R.string.download_ui_indeterminate_bytes, bytes);
+                    return context.getResources()
+                            .getString(R.string.download_ui_indeterminate_bytes, bytes);
                 } else {
                     String total = DownloadUtils.getStringForBytes(context, progress.max);
-                    return context.getResources().getString(
-                            R.string.download_ui_determinate_bytes, bytes, total);
+                    return context.getResources()
+                            .getString(R.string.download_ui_determinate_bytes, bytes, total);
                 }
             case OfflineItemProgressUnit.FILES:
                 if (progress.isIndeterminate()) {
                     int fileCount = (int) Math.min(Integer.MAX_VALUE, progress.value);
-                    return context.getResources().getQuantityString(
-                            R.plurals.download_ui_files_downloaded, fileCount, fileCount);
+                    return context.getResources()
+                            .getQuantityString(
+                                    R.plurals.download_ui_files_downloaded, fileCount, fileCount);
                 } else {
                     return filesLeftForUi(context, progress);
                 }
@@ -225,8 +227,9 @@ public final class StringUtils {
      */
     private static String filesLeftForUi(Context context, Progress progress) {
         int filesLeft = (int) (progress.max - progress.value);
-        return filesLeft == 1 ? context.getResources().getString(R.string.one_file_left)
-                              : context.getResources().getString(R.string.files_left, filesLeft);
+        return filesLeft == 1
+                ? context.getResources().getString(R.string.one_file_left)
+                : context.getResources().getString(R.string.files_left, filesLeft);
     }
 
     @NativeMethods

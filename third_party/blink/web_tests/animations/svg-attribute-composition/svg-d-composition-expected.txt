@@ -1,67 +1,25 @@
 This is a testharness.js-based test.
-[PASS] This test uses interpolation-test.js.
 [FAIL] SMIL: Interpolate attribute <d> with underlying [M 10 10 H 20] from add [M 20 30 L 40 50] to add [M 30 40 L 50 60] at (0) is [M 20 30 L 40 50]
-  assert_equals: expected "path ( \" M 20 30 L 40 50 \" ) " but got "path ( \" M 30 40 \" ) "
+  assert_equals: expected "path ( \\" M 20 30 L 40 50 \\" ) " but got "path ( \\" M 30 40 \\" ) "
 [FAIL] SMIL: Interpolate attribute <d> with underlying [M 10 10 H 20] from add [M 20 30 L 40 50] to add [M 30 40 L 50 60] at (0.2) is [M 22 32 L 42 52]
-  assert_equals: expected "path ( \" M 22 32 L 42 52 \" ) " but got "path ( \" M 32 42 \" ) "
+  assert_equals: expected "path ( \\" M 22 32 L 42 52 \\" ) " but got "path ( \\" M 32 42 \\" ) "
 [FAIL] SMIL: Interpolate attribute <d> with underlying [M 10 10 H 20] from add [M 20 30 L 40 50] to add [M 30 40 L 50 60] at (0.6) is [M 26 36 L 46 56]
-  assert_equals: expected "path ( \" M 26 36 L 46 56 \" ) " but got "path ( \" M 36 46 \" ) "
+  assert_equals: expected "path ( \\" M 26 36 L 46 56 \\" ) " but got "path ( \\" M 36 46 \\" ) "
 [FAIL] SMIL: Interpolate attribute <d> with underlying [M 10 10 H 20] from add [M 20 30 L 40 50] to add [M 30 40 L 50 60] at (1) is [M 30 40 L 50 60]
-  assert_equals: expected "path ( \" M 30 40 L 50 60 \" ) " but got "path ( \" M 40 50 \" ) "
-[PASS] Web Animations: Interpolate attribute <d> with underlying [M 10 10 H 20] from add [M 20 30 L 40 50] to add [M 30 40 L 50 60] at (-0.4) is [M 16 26 L 36 46]
-[PASS] Web Animations: Interpolate attribute <d> with underlying [M 10 10 H 20] from add [M 20 30 L 40 50] to add [M 30 40 L 50 60] at (0) is [M 20 30 L 40 50]
-[PASS] Web Animations: Interpolate attribute <d> with underlying [M 10 10 H 20] from add [M 20 30 L 40 50] to add [M 30 40 L 50 60] at (0.2) is [M 22 32 L 42 52]
-[PASS] Web Animations: Interpolate attribute <d> with underlying [M 10 10 H 20] from add [M 20 30 L 40 50] to add [M 30 40 L 50 60] at (0.6) is [M 26 36 L 46 56]
-[PASS] Web Animations: Interpolate attribute <d> with underlying [M 10 10 H 20] from add [M 20 30 L 40 50] to add [M 30 40 L 50 60] at (1) is [M 30 40 L 50 60]
-[PASS] Web Animations: Interpolate attribute <d> with underlying [M 10 10 H 20] from add [M 20 30 L 40 50] to add [M 30 40 L 50 60] at (1.4) is [M 34 44 L 54 64]
-[PASS] SMIL: Interpolate attribute <d> with underlying [M 10 10 H 20] from add [M 20 30 L 40 50] to add [M 30 40 H 50] at (0) is [M 20 30 L 40 50]
-[PASS] SMIL: Interpolate attribute <d> with underlying [M 10 10 H 20] from add [M 20 30 L 40 50] to add [M 30 40 H 50] at (0.2) is [M 20 30 L 40 50]
-[PASS] SMIL: Interpolate attribute <d> with underlying [M 10 10 H 20] from add [M 20 30 L 40 50] to add [M 30 40 H 50] at (0.6) is [M 30 40 H 50]
-[PASS] SMIL: Interpolate attribute <d> with underlying [M 10 10 H 20] from add [M 20 30 L 40 50] to add [M 30 40 H 50] at (1) is [M 30 40 H 50]
-[PASS] Web Animations: Interpolate attribute <d> with underlying [M 10 10 H 20] from add [M 20 30 L 40 50] to add [M 30 40 H 50] at (-0.4) is [M 20 30 L 40 50]
-[PASS] Web Animations: Interpolate attribute <d> with underlying [M 10 10 H 20] from add [M 20 30 L 40 50] to add [M 30 40 H 50] at (0) is [M 20 30 L 40 50]
-[PASS] Web Animations: Interpolate attribute <d> with underlying [M 10 10 H 20] from add [M 20 30 L 40 50] to add [M 30 40 H 50] at (0.2) is [M 20 30 L 40 50]
-[PASS] Web Animations: Interpolate attribute <d> with underlying [M 10 10 H 20] from add [M 20 30 L 40 50] to add [M 30 40 H 50] at (0.6) is [M 30 40 H 50]
-[PASS] Web Animations: Interpolate attribute <d> with underlying [M 10 10 H 20] from add [M 20 30 L 40 50] to add [M 30 40 H 50] at (1) is [M 30 40 H 50]
-[PASS] Web Animations: Interpolate attribute <d> with underlying [M 10 10 H 20] from add [M 20 30 L 40 50] to add [M 30 40 H 50] at (1.4) is [M 30 40 H 50]
-[PASS] Web Animations: Interpolate attribute <d> with underlying [M 10 10 H 20] from add [m 20 30 L 40 50] to replace [m 30 40 L 50 60] at (-0.4) is [m 16 26 L 36 46]
-[PASS] Web Animations: Interpolate attribute <d> with underlying [M 10 10 H 20] from add [m 20 30 L 40 50] to replace [m 30 40 L 50 60] at (0) is [m 20 30 L 40 50]
-[PASS] Web Animations: Interpolate attribute <d> with underlying [M 10 10 H 20] from add [m 20 30 L 40 50] to replace [m 30 40 L 50 60] at (0.2) is [m 22 32 L 42 52]
-[PASS] Web Animations: Interpolate attribute <d> with underlying [M 10 10 H 20] from add [m 20 30 L 40 50] to replace [m 30 40 L 50 60] at (0.6) is [m 26 36 L 46 56]
-[PASS] Web Animations: Interpolate attribute <d> with underlying [M 10 10 H 20] from add [m 20 30 L 40 50] to replace [m 30 40 L 50 60] at (1) is [m 30 40 L 50 60]
-[PASS] Web Animations: Interpolate attribute <d> with underlying [M 10 10 H 20] from add [m 20 30 L 40 50] to replace [m 30 40 L 50 60] at (1.4) is [m 34 44 L 54 64]
-[PASS] Web Animations: Interpolate attribute <d> with underlying [M 10 10 L 20 20] from neutral to replace [m 30 40 l 50 60] at (-0.4) is [m 2 -2 l -6 -10]
-[PASS] Web Animations: Interpolate attribute <d> with underlying [M 10 10 L 20 20] from neutral to replace [m 30 40 l 50 60] at (0) is [M 10 10 L 20 20]
-[PASS] Web Animations: Interpolate attribute <d> with underlying [M 10 10 L 20 20] from neutral to replace [m 30 40 l 50 60] at (0.2) is [m 14 16 l 18 20]
-[PASS] Web Animations: Interpolate attribute <d> with underlying [M 10 10 L 20 20] from neutral to replace [m 30 40 l 50 60] at (0.6) is [m 22 28 l 34 40]
-[PASS] Web Animations: Interpolate attribute <d> with underlying [M 10 10 L 20 20] from neutral to replace [m 30 40 l 50 60] at (1) is [m 30 40 l 50 60]
-[PASS] Web Animations: Interpolate attribute <d> with underlying [M 10 10 L 20 20] from neutral to replace [m 30 40 l 50 60] at (1.4) is [m 38 52 l 66 80]
+  assert_equals: expected "path ( \\" M 30 40 L 50 60 \\" ) " but got "path ( \\" M 40 50 \\" ) "
 [FAIL] SMIL: Interpolate attribute <d> with underlying [M 10 10 L 20 20] from neutral to add [m 30 40 l 50 60] at (0) is [M 10 10 L 20 20]
-  assert_equals: expected "path ( \" M 10 10 L 20 20 \" ) " but got "none "
+  assert_equals: expected "path ( \\" M 10 10 L 20 20 \\" ) " but got "none "
 [FAIL] SMIL: Interpolate attribute <d> with underlying [M 10 10 L 20 20] from neutral to add [m 30 40 l 50 60] at (0.2) is [m 14 16 l 18 20]
-  assert_equals: expected "path ( \" M 14 16 L 32 36 \" ) " but got "none "
+  assert_equals: expected "path ( \\" M 14 16 L 32 36 \\" ) " but got "none "
 [FAIL] SMIL: Interpolate attribute <d> with underlying [M 10 10 L 20 20] from neutral to add [m 30 40 l 50 60] at (0.6) is [m 22 28 l 34 40]
-  assert_equals: expected "path ( \" M 22 28 L 56 68 \" ) " but got "none "
+  assert_equals: expected "path ( \\" M 22 28 L 56 68 \\" ) " but got "none "
 [FAIL] SMIL: Interpolate attribute <d> with underlying [M 10 10 L 20 20] from neutral to add [m 30 40 l 50 60] at (1) is [m 30 40 l 50 60]
-  assert_equals: expected "path ( \" M 30 40 L 80 100 \" ) " but got "none "
-[PASS] Web Animations: Interpolate attribute <d> with underlying [M 10 10 L 20 20] from neutral to add [m 30 40 l 50 60] at (-0.4) is [m 2 -2 l -6 -10]
-[PASS] Web Animations: Interpolate attribute <d> with underlying [M 10 10 L 20 20] from neutral to add [m 30 40 l 50 60] at (0) is [M 10 10 L 20 20]
-[PASS] Web Animations: Interpolate attribute <d> with underlying [M 10 10 L 20 20] from neutral to add [m 30 40 l 50 60] at (0.2) is [m 14 16 l 18 20]
-[PASS] Web Animations: Interpolate attribute <d> with underlying [M 10 10 L 20 20] from neutral to add [m 30 40 l 50 60] at (0.6) is [m 22 28 l 34 40]
-[PASS] Web Animations: Interpolate attribute <d> with underlying [M 10 10 L 20 20] from neutral to add [m 30 40 l 50 60] at (1) is [m 30 40 l 50 60]
-[PASS] Web Animations: Interpolate attribute <d> with underlying [M 10 10 L 20 20] from neutral to add [m 30 40 l 50 60] at (1.4) is [m 38 52 l 66 80]
+  assert_equals: expected "path ( \\" M 30 40 L 80 100 \\" ) " but got "none "
 [FAIL] SMIL: Interpolate attribute <d> with underlying [m 30 40 l 50 60] from add [M 10 10 L 20 20] to neutral at (0) is [M 10 10 L 20 20]
-  assert_equals: expected "path ( \" M 10 10 L 20 20 \" ) " but got "path ( \" M 30 40 L 80 100 \" ) "
+  assert_equals: expected "path ( \\" M 10 10 L 20 20 \\" ) " but got "path ( \\" M 30 40 L 80 100 \\" ) "
 [FAIL] SMIL: Interpolate attribute <d> with underlying [m 30 40 l 50 60] from add [M 10 10 L 20 20] to neutral at (0.2) is [m 14 16 l 18 20]
-  assert_equals: expected "path ( \" M 14 16 L 32 36 \" ) " but got "path ( \" M 30 40 L 80 100 \" ) "
+  assert_equals: expected "path ( \\" M 14 16 L 32 36 \\" ) " but got "path ( \\" M 30 40 L 80 100 \\" ) "
 [FAIL] SMIL: Interpolate attribute <d> with underlying [m 30 40 l 50 60] from add [M 10 10 L 20 20] to neutral at (0.6) is [m 22 28 l 34 40]
-  assert_equals: expected "path ( \" M 22 28 L 56 68 \" ) " but got "path ( \" M 30 40 L 80 100 \" ) "
-[PASS] SMIL: Interpolate attribute <d> with underlying [m 30 40 l 50 60] from add [M 10 10 L 20 20] to neutral at (1) is [m 30 40 l 50 60]
-[PASS] Web Animations: Interpolate attribute <d> with underlying [m 30 40 l 50 60] from add [M 10 10 L 20 20] to neutral at (-0.4) is [m 2 -2 l -6 -10]
-[PASS] Web Animations: Interpolate attribute <d> with underlying [m 30 40 l 50 60] from add [M 10 10 L 20 20] to neutral at (0) is [M 10 10 L 20 20]
-[PASS] Web Animations: Interpolate attribute <d> with underlying [m 30 40 l 50 60] from add [M 10 10 L 20 20] to neutral at (0.2) is [m 14 16 l 18 20]
-[PASS] Web Animations: Interpolate attribute <d> with underlying [m 30 40 l 50 60] from add [M 10 10 L 20 20] to neutral at (0.6) is [m 22 28 l 34 40]
-[PASS] Web Animations: Interpolate attribute <d> with underlying [m 30 40 l 50 60] from add [M 10 10 L 20 20] to neutral at (1) is [m 30 40 l 50 60]
-[PASS] Web Animations: Interpolate attribute <d> with underlying [m 30 40 l 50 60] from add [M 10 10 L 20 20] to neutral at (1.4) is [m 38 52 l 66 80]
+  assert_equals: expected "path ( \\" M 22 28 L 56 68 \\" ) " but got "path ( \\" M 30 40 L 80 100 \\" ) "
 Harness: the test ran to completion.
 

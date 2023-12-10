@@ -5,14 +5,14 @@
 import {assert} from 'chrome://resources/ash/common/assert.js';
 
 import {saveAppState, updateAppState} from '../../common/js/app_util.js';
-import {DialogType} from '../../common/js/dialog_type.js';
 import {isRecentRoot} from '../../common/js/entry_utils.js';
 import {storage} from '../../common/js/storage.js';
+import {DialogType} from '../../externs/ts/state.js';
 
 import {DirectoryModel} from './directory_model.js';
 import {GROUP_BY_FIELD_DIRECTORY, GROUP_BY_FIELD_MODIFICATION_TIME} from './file_list_model.js';
 import {FileManagerUI} from './ui/file_manager_ui.js';
-import {ListContainer} from './ui/list_container.js';
+import {ListType} from './ui/list_container.js';
 
 export class AppStateController {
   /**
@@ -113,8 +113,7 @@ export class AppStateController {
         'directory-changed', this.onDirectoryChanged_.bind(this));
 
     // Restore preferences.
-    ui.setCurrentListType(
-        this.viewOptions_.listType || ListContainer.ListType.DETAIL);
+    ui.setCurrentListType(this.viewOptions_.listType || ListType.DETAIL);
     if (this.viewOptions_.sortField) {
       this.fileListSortField_ = this.viewOptions_.sortField;
     }
@@ -146,11 +145,9 @@ export class AppStateController {
       sortField: this.fileListSortField_,
       sortDirection: this.fileListSortDirection_,
       columnConfig: {},
-      // @ts-ignore: error TS2531: Object is possibly 'null'.
-      listType: this.ui_.listContainer.currentListType,
+      listType: this.ui_?.listContainer.currentListType,
       isAllAndroidFoldersVisible:
-          // @ts-ignore: error TS2531: Object is possibly 'null'.
-          this.directoryModel_.getFileFilter().isAllAndroidFoldersVisible(),
+          this.directoryModel_?.getFileFilter().isAllAndroidFoldersVisible(),
     };
     // @ts-ignore: error TS2531: Object is possibly 'null'.
     const cm = this.ui_.listContainer.table.columnModel;
@@ -219,26 +216,25 @@ export class AppStateController {
    * @private
    */
   onDirectoryChanged_(event) {
-    // @ts-ignore: error TS2339: Property 'newDirEntry' does not exist on type
-    // 'Event'.
-    if (!event.newDirEntry) {
+    const
+        customEvent = /**
+                         @type {import('./directory_model.js').DirectoryChangeEvent}
+                           */
+        (event);
+    if (!customEvent.detail.newDirEntry) {
       return;
     }
 
     // Sort the file list by:
     // 1) 'date-mofidied' and 'desc' order on Recent folder.
     // 2) preferred field and direction on other folders.
-    // @ts-ignore: error TS2339: Property 'newDirEntry' does not exist on type
-    // 'Event'.
-    const isOnRecent = isRecentRoot(event.newDirEntry);
+    const isOnRecent = isRecentRoot(customEvent.detail.newDirEntry);
     // @ts-ignore: error TS2531: Object is possibly 'null'.
     const fileListModel = this.directoryModel_.getFileList();
     // @ts-ignore: error TS2531: Object is possibly 'null'.
     this.ui_.listContainer.isOnRecent = isOnRecent;
-    const isOnRecentBefore =
-        // @ts-ignore: error TS2339: Property 'previousDirEntry' does not exist
-        // on type 'Event'.
-        event.previousDirEntry && isRecentRoot(event.previousDirEntry);
+    const isOnRecentBefore = customEvent.detail.previousDirEntry &&
+        isRecentRoot(customEvent.detail.previousDirEntry);
     if (isOnRecent != isOnRecentBefore) {
       if (isOnRecent) {
         fileListModel.groupByField = GROUP_BY_FIELD_MODIFICATION_TIME;
@@ -246,9 +242,8 @@ export class AppStateController {
             AppStateController.DEFAULT_SORT_FIELD,
             AppStateController.DEFAULT_SORT_DIRECTION);
       } else {
-        // @ts-ignore: error TS2531: Object is possibly 'null'.
-        const isGridView = this.ui_.listContainer.currentListType ===
-            ListContainer.ListType.THUMBNAIL;
+        const isGridView =
+            this.ui_?.listContainer.currentListType === ListType.THUMBNAIL;
         fileListModel.groupByField =
             isGridView ? GROUP_BY_FIELD_DIRECTORY : null;
         fileListModel.sort(

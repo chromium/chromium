@@ -6,12 +6,11 @@
 #define EXTENSIONS_BROWSER_API_DECLARATIVE_NET_REQUEST_REQUEST_ACTION_H_
 
 #include <cstdint>
+#include <optional>
 #include <vector>
-
 #include "extensions/common/api/declarative_net_request.h"
 #include "extensions/common/api/declarative_net_request/constants.h"
 #include "extensions/common/extension_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace extensions {
@@ -29,7 +28,7 @@ struct RequestAction {
   struct HeaderInfo {
     HeaderInfo(std::string header,
                api::declarative_net_request::HeaderOperation operation,
-               absl::optional<std::string> value);
+               std::optional<std::string> value);
     explicit HeaderInfo(const flat::ModifyHeaderInfo& info);
     ~HeaderInfo();
     HeaderInfo(const HeaderInfo& other);
@@ -41,7 +40,7 @@ struct RequestAction {
     std::string header;
     api::declarative_net_request::HeaderOperation operation;
     // The value for |header| to be appended or set.
-    absl::optional<std::string> value;
+    std::optional<std::string> value;
   };
 
   enum class Type {
@@ -78,7 +77,7 @@ struct RequestAction {
   Type type = Type::BLOCK;
 
   // Valid iff |IsRedirectOrUpgrade()| is true.
-  absl::optional<GURL> redirect_url;
+  std::optional<GURL> redirect_url;
 
   // The ID of the matching rule for this action.
   uint32_t rule_id;
@@ -124,9 +123,9 @@ struct RequestAction {
 bool operator<(const RequestAction& lhs, const RequestAction& rhs);
 bool operator>(const RequestAction& lhs, const RequestAction& rhs);
 
-absl::optional<RequestAction> GetMaxPriorityAction(
-    absl::optional<RequestAction> lhs,
-    absl::optional<RequestAction> rhs);
+std::optional<RequestAction> GetMaxPriorityAction(
+    std::optional<RequestAction> lhs,
+    std::optional<RequestAction> rhs);
 
 }  // namespace declarative_net_request
 }  // namespace extensions

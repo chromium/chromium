@@ -34,9 +34,7 @@ public class MultiInstanceState implements ApplicationStatus.TaskVisibilityListe
         void onMultiInstanceStateChanged(boolean inMultiInstanceMode);
     }
 
-    /**
-     * Predicate returning true if a given activity can be the base activity for Chrome task.
-     */
+    /** Predicate returning true if a given activity can be the base activity for Chrome task. */
     public interface BaseActivityName {
         boolean is(String baseActivity);
     }

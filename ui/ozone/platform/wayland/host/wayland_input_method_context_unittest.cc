@@ -240,6 +240,32 @@ class TestInputMethodContextDelegate : public LinuxInputMethodContextDelegate {
   absl::optional<gfx::Rect> virtual_keyboard_bounds_;
 };
 
+class TestKeyboardDelegate : public WaylandKeyboard::Delegate {
+ public:
+  TestKeyboardDelegate() = default;
+  TestKeyboardDelegate(const TestKeyboardDelegate&) = delete;
+  TestKeyboardDelegate& operator=(const TestKeyboardDelegate&) = delete;
+  ~TestKeyboardDelegate() override = default;
+
+  void OnKeyboardFocusChanged(WaylandWindow* window, bool focused) override {}
+  void OnKeyboardModifiersChanged(int modifiers) override {}
+  uint32_t OnKeyboardKeyEvent(EventType type,
+                              DomCode dom_code,
+                              bool repeat,
+                              absl::optional<uint32_t> serial,
+                              base::TimeTicks timestamp,
+                              int device_id,
+                              WaylandKeyboard::KeyEventKind kind) override {
+    last_event_timestamp_ = timestamp;
+    return 0;
+  }
+
+  base::TimeTicks last_event_timestamp() const { return last_event_timestamp_; }
+
+ private:
+  base::TimeTicks last_event_timestamp_;
+};
+
 class WaylandInputMethodContextTestBase : public WaylandTest {
  public:
   void SetUp() override {
@@ -266,8 +292,9 @@ class WaylandInputMethodContextTestBase : public WaylandTest {
   void SetUpInternal() {
     input_method_context_delegate_ =
         std::make_unique<TestInputMethodContextDelegate>();
+    keyboard_delegate_ = std::make_unique<TestKeyboardDelegate>();
     input_method_context_ = std::make_unique<WaylandInputMethodContext>(
-        connection_.get(), connection_->event_source(),
+        connection_.get(), keyboard_delegate_.get(),
         input_method_context_delegate_.get());
     input_method_context_->Init(true);
     connection_->Flush();
@@ -288,6 +315,7 @@ class WaylandInputMethodContextTestBase : public WaylandTest {
 
   std::unique_ptr<TestInputMethodContextDelegate>
       input_method_context_delegate_;
+  std::unique_ptr<TestKeyboardDelegate> keyboard_delegate_;
   std::unique_ptr<WaylandInputMethodContext> input_method_context_;
   raw_ptr<wl::MockZwpTextInput> zwp_text_input_ = nullptr;
   raw_ptr<wl::MockZcrExtendedTextInput> zcr_extended_text_input_ = nullptr;
@@ -1703,6 +1731,20 @@ TEST_P(WaylandInputMethodContextTest, UpdateVirtualKeyboardState) {
   });
 
   EXPECT_FALSE(input_method_context_->IsKeyboardVisible());
+}
+
+TEST_P(WaylandInputMethodContextTest, OnKeySym) {
+#if BUILDFLAG(USE_XKBCOMMON)
+  MaybeSetUpXkb();
+
+  uint32_t test_timestamp = 100;
+  input_method_context_->OnKeysym(
+      XKB_KEY_Shift_L, wl_keyboard_key_state::WL_KEYBOARD_KEY_STATE_PRESSED, 0,
+      test_timestamp);
+
+  ASSERT_EQ(wl::EventMillisecondsToTimeTicks(test_timestamp),
+            keyboard_delegate_->last_event_timestamp());
+#endif
 }
 
 class WaylandInputMethodContextNoKeyboardTest

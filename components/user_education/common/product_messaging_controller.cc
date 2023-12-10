@@ -6,6 +6,7 @@
 
 #include <sstream>
 #include <utility>
+#include <vector>
 
 #include "base/containers/contains.h"
 #include "base/functional/callback.h"
@@ -24,22 +25,22 @@ RequiredNoticePriorityHandle::RequiredNoticePriorityHandle(
     base::WeakPtr<ProductMessagingController> controller)
     : notice_id_(notice_id), controller_(controller) {}
 
-RequiredNoticePriorityHandle::~RequiredNoticePriorityHandle() {
-  Release();
-}
-
 RequiredNoticePriorityHandle::RequiredNoticePriorityHandle(
-    RequiredNoticePriorityHandle&& other)
+    RequiredNoticePriorityHandle&& other) noexcept
     : notice_id_(std::exchange(other.notice_id_, RequiredNoticeId())),
       controller_(std::move(other.controller_)) {}
 
 RequiredNoticePriorityHandle& RequiredNoticePriorityHandle::operator=(
-    RequiredNoticePriorityHandle&& other) {
+    RequiredNoticePriorityHandle&& other) noexcept {
   if (this != &other) {
     notice_id_ = std::exchange(other.notice_id_, RequiredNoticeId());
     controller_ = std::move(other.controller_);
   }
   return *this;
+}
+
+RequiredNoticePriorityHandle::~RequiredNoticePriorityHandle() {
+  Release();
 }
 
 RequiredNoticePriorityHandle::operator bool() const {
@@ -66,10 +67,10 @@ struct ProductMessagingController::RequiredNoticeData {
   RequiredNoticeData() = default;
   RequiredNoticeData(RequiredNoticeData&&) = default;
   RequiredNoticeData& operator=(RequiredNoticeData&&) = default;
-  ~RequiredNoticeData() = default;
   RequiredNoticeData(RequiredNoticeShowCallback callback_,
                      std::vector<RequiredNoticeId> show_after_)
       : callback(std::move(callback_)), show_after(std::move(show_after_)) {}
+  ~RequiredNoticeData() = default;
 
   RequiredNoticeShowCallback callback;
   std::vector<RequiredNoticeId> show_after;

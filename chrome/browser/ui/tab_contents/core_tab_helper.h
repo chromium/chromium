@@ -53,11 +53,13 @@ class CoreTabHelper : public content::WebContentsObserver,
 
   void UpdateContentRestrictions(int content_restrictions);
 
-  // Encodes the given image to proper image format and adds to |search_args|
-  // thumbnail image content data. Returns the format the image was encoded to.
+  // Encodes the given image to proper image format, adds to |search_args|
+  // thumbnail image content data, and emits the image bytes size. Also
+  // returns the format the image was encoded to.
   // Public for testing.
   static lens::mojom::ImageFormat EncodeImageIntoSearchArgs(
       const gfx::Image& image,
+      size_t& encoded_size_bytes,
       TemplateURLRef::SearchTermsArgs& search_args);
 
   // Downscales and encodes the image and sets the content type for the result
@@ -78,14 +80,10 @@ class CoreTabHelper : public content::WebContentsObserver,
                       lens::EntryPoint entry_point,
                       bool is_image_translate);
 
-  // Opens the Lens experience for an `image`. `image_original_size` is
-  // specified in case of resizing that happens prior to passing the image to
-  // `CoreTabHelper`. If the search engine supports opening requests in side
-  // panel, then the request will open in the side panel instead of a new tab.
-  void SearchWithLens(gfx::Image image,
-                      const gfx::Size& image_original_size,
-                      std::vector<lens::mojom::LatencyLogPtr> log_data,
-                      lens::EntryPoint entry_point);
+  // Opens the Lens experience for an `image`, which will be resized if needed.
+  // If the search engine supports opening requests in side panel, then the
+  // request will open in the side panel instead of a new tab.
+  void SearchWithLens(const gfx::Image& image, lens::EntryPoint entry_point);
 
   // Performs an image search for the image that triggered the context menu. The
   // `src_url` is passed to the search request and is not used directly to fetch
@@ -99,11 +97,10 @@ class CoreTabHelper : public content::WebContentsObserver,
                      const GURL& src_url,
                      bool is_image_translate);
 
-  // Performs an image search for the provided image. If the search engine
-  // supports opening requests in side panel, then the request will open in side
-  // panel instead of a new tab.
-  void SearchByImage(const gfx::Image& image,
-                     const gfx::Size& image_original_size);
+  // Performs an image search for the provided `image`, which will be resized if
+  // needed. If the search engine supports opening requests in side panel, then
+  // the request will open in side panel instead of a new tab.
+  void SearchByImage(const gfx::Image& image);
 
   void set_new_tab_start_time(const base::TimeTicks& time) {
     new_tab_start_time_ = time;
@@ -183,7 +180,7 @@ class CoreTabHelper : public content::WebContentsObserver,
   void OpenOpenURLParams(content::OpenURLParams open_url_params,
                          bool use_side_panel);
 
-  // Create a thumbnail to POST to search engine for the image that triggered
+  // Creates a thumbnail to POST to search engine for the image that triggered
   // the context menu.  The |src_url| is passed to the search request and is
   // not used directly to fetch the image resources. The
   // |additional_query_params| are also passed to the search request as part of
@@ -196,11 +193,11 @@ class CoreTabHelper : public content::WebContentsObserver,
                          const std::string& additional_query_params,
                          bool use_side_panel,
                          bool is_image_translate);
-  void SearchByImageImpl(const gfx::Image& image,
-                         const gfx::Size& image_original_size,
+
+  // Searches the `original_image`, which will be downscaled if needed.
+  void SearchByImageImpl(const gfx::Image& original_image,
                          const std::string& additional_query_params,
-                         bool use_side_panel,
-                         std::vector<lens::mojom::LatencyLogPtr> log_data);
+                         bool use_side_panel);
 
   // Sets search args used for image translation if the current page is
   // currently being translated.
@@ -234,7 +231,7 @@ class CoreTabHelper : public content::WebContentsObserver,
 
   // If sequential Lens pinging is enabled, this stores the Lens search settings
   // if a Lens search is ready before the Lens ping response was received.
-  absl::optional<LensSearchSettings> stored_lens_search_settings_;
+  std::optional<LensSearchSettings> stored_lens_search_settings_;
 
   // The time that the last Lens ping request was initiated.
   base::TimeTicks lens_ping_start_time_;

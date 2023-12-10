@@ -22,12 +22,8 @@
   }
 
   .add-manual-printer-icon {
-    --cr-icon-button-fill-color: var(--cros-button-icon-color-secondary);
-    --cr-icon-button-margin-end: 0;
-  }
-
-  :host-context(body.jelly-enabled) .add-manual-printer-icon {
     --cr-icon-button-fill-color: var(--cros-sys-primary);
+    --cr-icon-button-margin-end: 0;
   }
 
   #addManualPrinterButtonRevamp {
@@ -109,18 +105,12 @@
 
   #helpSection {
     align-items: center;
-    border: 1px solid var(--cros-separator-color);
+    background-color: var(--cros-sys-app_base_shaded);
     border-radius: 12px;
     display: flex;
     margin-bottom: 8px;
     margin-inline: -6px 14px;
     padding: 16px 12px;
-  }
-
-  /* TODO(b/276493795): Clean up post Jelly launch. */
-  :host-context(body.jelly-enabled) #helpSection {
-    background-color: var(--cros-sys-app_base_shaded);
-    border: none;
   }
 
   #helpIconSection {
@@ -135,13 +125,9 @@
   }
 
   .help-title {
-    margin-bottom: 5px;
-  }
-
-  /* TODO(b/276493795): Clean up post Jelly launch. */
-  :host-context(body.jelly-enabled) .help-title {
     color: var(--cros-text-color-primary);
     font: var(--cros-button-1-font);
+    margin-bottom: 5px;
   }
 
   #noSavedPrinters {

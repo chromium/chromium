@@ -2,166 +2,174 @@ Tests that console produces instant previews for arrays and objects.
 
 console-format-classes.js:32 Error: custom error with link www.chromium.org
     at console-format-classes.js:22:9 
-  console-message
-    source-code
-      console-message-anchor
-        devtools-link
-      console-message-text
-        object-value-error source-code
+  console-row-wrapper
+    console-message
+      source-code
+        console-message-anchor
           devtools-link
-          devtools-link
+        console-message-text
+          object-value-error source-code
+            devtools-link
+            devtools-link
 console-format-classes.js:32 (6) [1, empty × 2, 2, (...), empty] 
-  console-message
-    source-code
-      console-message-anchor
-        devtools-link
-      console-message-text
-        console-view-object-properties-section object-value-array source-code
-          tree-outline-disclosure tree-outline-disclosure-hide-overflow
-            tree-outline hide-selection-when-blurred source-code object-properties-section
-              parent object-properties-section-root-element
-                selection fill
-          console-object console-object-preview
-            object-description
-            object-properties-preview
-              object-value-number
-              object-value-undefined
-              object-value-number
-              object-value-accessor
-              object-value-undefined
-            object-state-note info-note
-              children
+  console-row-wrapper
+    console-message
+      source-code
+        console-message-anchor
+          devtools-link
+        console-message-text
+          console-view-object-properties-section object-value-array source-code
+            tree-outline-disclosure tree-outline-disclosure-hide-overflow
+              tree-outline hide-selection-when-blurred source-code object-properties-section
+                parent object-properties-section-root-element
+                  selection fill
+            console-object console-object-preview
+              object-description
+              object-properties-preview
+                object-value-number
+                object-value-undefined
+                object-value-number
+                object-value-accessor
+                object-value-undefined
+              object-state-note info-note
+                children
 console-format-classes.js:32 {a: 1} 
-  console-message
-    source-code
-      console-message-anchor
-        devtools-link
-      console-message-text
-        console-view-object-properties-section object-value-object source-code
-          tree-outline-disclosure tree-outline-disclosure-hide-overflow
-            tree-outline hide-selection-when-blurred source-code object-properties-section
-              parent object-properties-section-root-element
-                selection fill
-          console-object console-object-preview
-            object-properties-preview
-              name
-              object-value-number
-            object-state-note info-note
-              children
+  console-row-wrapper
+    console-message
+      source-code
+        console-message-anchor
+          devtools-link
+        console-message-text
+          console-view-object-properties-section object-value-object source-code
+            tree-outline-disclosure tree-outline-disclosure-hide-overflow
+              tree-outline hide-selection-when-blurred source-code object-properties-section
+                parent object-properties-section-root-element
+                  selection fill
+            console-object console-object-preview
+              object-properties-preview
+                name
+                object-value-number
+              object-state-note info-note
+                children
 console-format-classes.js:32 {str: '', nan: NaN, posInf: Infinity, negInf: -Infinity, negZero: -0} 
-  console-message
-    source-code
-      console-message-anchor
-        devtools-link
-      console-message-text
-        console-view-object-properties-section object-value-object source-code
-          tree-outline-disclosure tree-outline-disclosure-hide-overflow
-            tree-outline hide-selection-when-blurred source-code object-properties-section
-              parent object-properties-section-root-element
-                selection fill
-          console-object console-object-preview
-            object-properties-preview
-              name
-              object-value-string
-              name
-              object-value-number
-              name
-              object-value-number
-              name
-              object-value-number
-              name
-              object-value-number
-            object-state-note info-note
-              children
+  console-row-wrapper
+    console-message
+      source-code
+        console-message-anchor
+          devtools-link
+        console-message-text
+          console-view-object-properties-section object-value-object source-code
+            tree-outline-disclosure tree-outline-disclosure-hide-overflow
+              tree-outline hide-selection-when-blurred source-code object-properties-section
+                parent object-properties-section-root-element
+                  selection fill
+            console-object console-object-preview
+              object-properties-preview
+                name
+                object-value-string
+                name
+                object-value-number
+                name
+                object-value-number
+                name
+                object-value-number
+                name
+                object-value-number
+              object-state-note info-note
+                children
 console-format-classes.js:32 {null: null, undef: undefined, re: /^[regexp]$/g, constructedRe: /foo\/bar/, bool: false} 
-  console-message
-    source-code
-      console-message-anchor
-        devtools-link
-      console-message-text
-        console-view-object-properties-section object-value-object source-code
-          tree-outline-disclosure tree-outline-disclosure-hide-overflow
-            tree-outline hide-selection-when-blurred source-code object-properties-section
-              parent object-properties-section-root-element
-                selection fill
-          console-object console-object-preview
-            object-properties-preview
-              name
-              object-value-null
-              name
-              object-value-undefined
-              name
-              object-value-regexp
-              name
-              object-value-regexp
-              name
-              object-value-boolean
-            object-state-note info-note
-              children
+  console-row-wrapper
+    console-message
+      source-code
+        console-message-anchor
+          devtools-link
+        console-message-text
+          console-view-object-properties-section object-value-object source-code
+            tree-outline-disclosure tree-outline-disclosure-hide-overflow
+              tree-outline hide-selection-when-blurred source-code object-properties-section
+                parent object-properties-section-root-element
+                  selection fill
+            console-object console-object-preview
+              object-properties-preview
+                name
+                object-value-null
+                name
+                object-value-undefined
+                name
+                object-value-regexp
+                name
+                object-value-regexp
+                name
+                object-value-boolean
+              object-state-note info-note
+                children
 console-format-classes.js:32 Proxy(Object) {a: 1} 
-  console-message
-    source-code
-      console-message-anchor
-        devtools-link
-      console-message-text
-        console-view-object-properties-section object-value-proxy source-code
-          tree-outline-disclosure tree-outline-disclosure-hide-overflow
-            tree-outline hide-selection-when-blurred source-code object-properties-section
-              parent object-properties-section-root-element
-                selection fill
-          console-object console-object-preview
-            object-description
-            object-properties-preview
-              name
-              object-value-number
-            object-state-note info-note
-              children
+  console-row-wrapper
+    console-message
+      source-code
+        console-message-anchor
+          devtools-link
+        console-message-text
+          console-view-object-properties-section object-value-proxy source-code
+            tree-outline-disclosure tree-outline-disclosure-hide-overflow
+              tree-outline hide-selection-when-blurred source-code object-properties-section
+                parent object-properties-section-root-element
+                  selection fill
+            console-object console-object-preview
+              object-description
+              object-properties-preview
+                name
+                object-value-number
+              object-state-note info-note
+                children
 console-format-classes.js:32 HTMLAllCollection(4) [html, head, base, body] 
-  console-message
-    source-code
-      console-message-anchor
-        devtools-link
-      console-message-text
-        console-view-object-properties-section object-value-array source-code
-          tree-outline-disclosure tree-outline-disclosure-hide-overflow
-            tree-outline hide-selection-when-blurred source-code object-properties-section
-              parent object-properties-section-root-element
-                selection fill
-          console-object console-object-preview
-            object-description
-            object-properties-preview
-              object-value-node
-                webkit-html-tag-name
-              object-value-node
-                webkit-html-tag-name
-              object-value-node
-                webkit-html-tag-name
-              object-value-node
-                webkit-html-tag-name
-            object-state-note info-note
-              children
+  console-row-wrapper
+    console-message
+      source-code
+        console-message-anchor
+          devtools-link
+        console-message-text
+          console-view-object-properties-section object-value-array source-code
+            tree-outline-disclosure tree-outline-disclosure-hide-overflow
+              tree-outline hide-selection-when-blurred source-code object-properties-section
+                parent object-properties-section-root-element
+                  selection fill
+            console-object console-object-preview
+              object-description
+              object-properties-preview
+                object-value-node
+                  webkit-html-tag-name
+                object-value-node
+                  webkit-html-tag-name
+                object-value-node
+                  webkit-html-tag-name
+                object-value-node
+                  webkit-html-tag-name
+              object-state-note info-note
+                children
 console-format-classes.js:36 (7) [Error: custom error with link www.chromium.org
     at test://evaluations/0/console-format-classes.j…, Array(6), {…}, {…}, {…}, Proxy(Object), HTMLAllCollection(4)] 
-  console-message
-    source-code
-      console-message-anchor
-        devtools-link
-      console-message-text
-        console-view-object-properties-section object-value-array source-code
-          tree-outline-disclosure tree-outline-disclosure-hide-overflow
-            tree-outline hide-selection-when-blurred source-code object-properties-section
-              parent object-properties-section-root-element
-                selection fill
-          console-object console-object-preview
-            object-description
-            object-properties-preview
-              object-value-error
-              object-value-array
-              object-value-object
-              object-value-object
-              object-value-object
-              object-value-proxy
-              object-value-array
-            object-state-note info-note
-              children
+  console-row-wrapper
+    console-message
+      source-code
+        console-message-anchor
+          devtools-link
+        console-message-text
+          console-view-object-properties-section object-value-array source-code
+            tree-outline-disclosure tree-outline-disclosure-hide-overflow
+              tree-outline hide-selection-when-blurred source-code object-properties-section
+                parent object-properties-section-root-element
+                  selection fill
+            console-object console-object-preview
+              object-description
+              object-properties-preview
+                object-value-error
+                object-value-array
+                object-value-object
+                object-value-object
+                object-value-object
+                object-value-proxy
+                object-value-array
+              object-state-note info-note
+                children
 

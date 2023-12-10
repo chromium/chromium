@@ -1680,14 +1680,11 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
       return element.MatchesDefaultPseudoClass();
     case CSSSelector::kPseudoDisabled:
       if (auto* fieldset = DynamicTo<HTMLFieldSetElement>(element)) {
-        if (RuntimeEnabledFeatures::
-                SendMouseEventsDisabledFormControlsEnabled()) {
-          // <fieldset> should never be considered disabled, but should still
-          // match the :enabled or :disabled pseudo-classes according to whether
-          // the attribute is set or not. See here for context:
-          // https://github.com/whatwg/html/issues/5886#issuecomment-1582410112
-          return fieldset->IsActuallyDisabled();
-        }
+        // <fieldset> should never be considered disabled, but should still
+        // match the :enabled or :disabled pseudo-classes according to whether
+        // the attribute is set or not. See here for context:
+        // https://github.com/whatwg/html/issues/5886#issuecomment-1582410112
+        return fieldset->IsActuallyDisabled();
       }
       return element.IsDisabledFormControl();
     case CSSSelector::kPseudoReadOnly:
@@ -1700,13 +1697,15 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
       return element.IsRequiredFormControl();
     case CSSSelector::kPseudoUserInvalid:
       CHECK(RuntimeEnabledFeatures::UserValidUserInvalidEnabled());
-      if (auto* form_control = DynamicTo<HTMLFormControlElement>(element)) {
+      if (auto* form_control =
+              DynamicTo<HTMLFormControlElementWithState>(element)) {
         return form_control->MatchesUserInvalidPseudo();
       }
       return false;
     case CSSSelector::kPseudoUserValid:
       CHECK(RuntimeEnabledFeatures::UserValidUserInvalidEnabled());
-      if (auto* form_control = DynamicTo<HTMLFormControlElement>(element)) {
+      if (auto* form_control =
+              DynamicTo<HTMLFormControlElementWithState>(element)) {
         return form_control->MatchesUserValidPseudo();
       }
       return false;

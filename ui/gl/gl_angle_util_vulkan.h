@@ -27,4 +27,4 @@ GL_EXPORT PFN_vkGetInstanceProcAddr QueryVkGetInstanceProcAddrFromANGLE();
 
 }  // namespace gl
 
-#endif  // UI_GL_GL_ANGLE_UTIL_H_
+#endif  // UI_GL_GL_ANGLE_UTIL_VULKAN_H_

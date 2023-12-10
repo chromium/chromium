@@ -137,7 +137,7 @@ void ScreenshotCapturedBubble::Init() {
                                 .SetPreferredSize(
                                     GetImageSize() +
                                     gfx::Size(border_radius, border_radius))
-                                .SetImage(image_.ToImageSkia())
+                                .SetImage(ui::ImageModel::FromImage(image_))
                                 .SetVisible(true)
                                 .CopyAddressTo(&image_view_)));
 

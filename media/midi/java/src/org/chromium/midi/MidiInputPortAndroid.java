@@ -16,26 +16,19 @@ import java.io.IOException;
 
 // Note "InputPort" is named in the Web MIDI manner. It corresponds to MidiOutputPort class in the
 // Android API.
-/**
- * A MidiInputPortAndroid provides data to the associated midi::MidiInputPortAndroid object.
- */
+/** A MidiInputPortAndroid provides data to the associated midi::MidiInputPortAndroid object. */
 @JNINamespace("midi")
 class MidiInputPortAndroid {
-    /**
-     * The underlying port.
-     */
+    /** The underlying port. */
     private MidiOutputPort mPort;
-    /**
-     * A pointer to a midi::MidiInputPortAndroid object.
-     */
+
+    /** A pointer to a midi::MidiInputPortAndroid object. */
     private long mNativeReceiverPointer;
-    /**
-     * The device this port belongs to.
-     */
+
+    /** The device this port belongs to. */
     private final MidiDevice mDevice;
-    /**
-     * The index of the port in the associated device.
-     */
+
+    /** The index of the port in the associated device. */
     private final int mIndex;
 
     /**
@@ -64,24 +57,23 @@ class MidiInputPortAndroid {
             return false;
         }
         mNativeReceiverPointer = nativeReceiverPointer;
-        mPort.connect(new MidiReceiver() {
-            @Override
-            public void onSend(byte[] bs, int offset, int count, long timestamp) {
-                synchronized (MidiInputPortAndroid.this) {
-                    if (mPort == null) {
-                        return;
+        mPort.connect(
+                new MidiReceiver() {
+                    @Override
+                    public void onSend(byte[] bs, int offset, int count, long timestamp) {
+                        synchronized (MidiInputPortAndroid.this) {
+                            if (mPort == null) {
+                                return;
+                            }
+                            MidiInputPortAndroidJni.get()
+                                    .onData(mNativeReceiverPointer, bs, offset, count, timestamp);
+                        }
                     }
-                    MidiInputPortAndroidJni.get().onData(
-                            mNativeReceiverPointer, bs, offset, count, timestamp);
-                }
-            }
-        });
+                });
         return true;
     }
 
-    /**
-     * Closes the port.
-     */
+    /** Closes the port. */
     @CalledByNative
     synchronized void close() {
         if (mPort == null) {

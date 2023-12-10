@@ -5,8 +5,8 @@
 #ifndef EXTENSIONS_BROWSER_API_MESSAGING_MESSAGE_PORT_H_
 #define EXTENSIONS_BROWSER_API_MESSAGING_MESSAGE_PORT_H_
 
+#include <optional>
 #include <string>
-
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "extensions/browser/activity.h"
@@ -15,7 +15,6 @@
 #include "extensions/common/api/messaging/port_id.h"
 #include "extensions/common/mojom/message_port.mojom.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 class GURL;
@@ -76,7 +75,8 @@ class MessagePort
   virtual void RemoveCommonFrames(const MessagePort& port);
 
   // Checks whether the given RenderFrameHost is associated with this port.
-  virtual bool HasFrame(content::RenderFrameHost* render_frame_host) const;
+  virtual bool HasFrame(
+      const content::GlobalRenderFrameHostToken& frame_token) const;
 
   // Called right before a port is connected to a channel. If false, the port
   // is not used and the channel is closed.
@@ -91,14 +91,14 @@ class MessagePort
   virtual void DispatchOnConnect(
       mojom::ChannelType channel_type,
       const std::string& channel_name,
-      absl::optional<base::Value::Dict> source_tab,
+      std::optional<base::Value::Dict> source_tab,
       const ExtensionApiFrameIdMap::FrameData& source_frame,
       int guest_process_id,
       int guest_render_frame_routing_id,
       const MessagingEndpoint& source_endpoint,
       const std::string& target_extension_id,
       const GURL& source_url,
-      absl::optional<url::Origin> source_origin);
+      std::optional<url::Origin> source_origin);
 
   // Notifies the port that the channel has been closed. If |error_message| is
   // non-empty, it indicates an error occurred while opening the connection.

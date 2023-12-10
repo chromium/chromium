@@ -11,6 +11,7 @@
 #include <string>
 
 #include "components/autofill/core/browser/autofill_field.h"
+#include "components/autofill/core/browser/filling_product.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/unique_ids.h"
 
@@ -28,7 +29,8 @@ class FormAutofillHistory {
     FieldFillingEntry(
         std::u16string field_value,
         bool field_is_autofilled,
-        std::optional<std::string> field_autofill_source_profile_guid);
+        std::optional<std::string> field_autofill_source_profile_guid,
+        std::optional<ServerFieldType> field_autofilled_type);
 
     ~FieldFillingEntry();
     FieldFillingEntry(const FieldFillingEntry&);
@@ -51,9 +53,21 @@ class FormAutofillHistory {
     // the field doesn't track undone autofill operations, which can cause
     // problems. (see crbug.com/1491872)
     std::optional<std::string> autofill_source_profile_guid;
+
+    // Field type used to fill the field. This is stored so that after undoing
+    // an autofill operation, AutofillField does not store outdated information,
+    // especially if the field is reverted with Undo to a previous autofilled
+    // state.
+    std::optional<ServerFieldType> autofilled_type;
   };
 
-  using FormFillingEntry = std::map<FieldGlobalId, FieldFillingEntry>;
+  struct FormFillingEntry {
+    FormFillingEntry();
+    ~FormFillingEntry();
+
+    FillingProduct filling_product = FillingProduct::kNone;
+    std::map<FieldGlobalId, FieldFillingEntry> field_filling_entries = {};
+  };
 
   class FillOperation {
    public:
@@ -62,12 +76,12 @@ class FormAutofillHistory {
     // `field_id`.
     const FieldFillingEntry& GetFieldFillingEntry(FieldGlobalId field_id) const;
 
-    friend bool operator==(const FillOperation& lhs, const FillOperation& rhs) {
-      return lhs.iterator_ == rhs.iterator_;
+    FillingProduct get_filling_product() const {
+      return iterator_->filling_product;
     }
-    friend bool operator!=(const FillOperation& lhs, const FillOperation& rhs) {
-      return !(lhs == rhs);
-    }
+
+    friend bool operator==(const FillOperation& lhs,
+                           const FillOperation& rhs) = default;
 
    private:
     friend class FormAutofillHistory;
@@ -93,6 +107,7 @@ class FormAutofillHistory {
   void AddFormFillEntry(
       base::span<const FormFieldData* const> filled_fields,
       base::span<const AutofillField* const> filled_autofill_fields,
+      FillingProduct filling_product,
       bool is_refill);
 
   // Erases the history entry from the list represented by `fill_operation`.

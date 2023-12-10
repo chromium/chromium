@@ -196,6 +196,11 @@
   E_CPONLY(kColorSysStateHeaderSelect) \
   /* Effects. */ \
   E_CPONLY(kColorSysShadow) \
+  /* AI. */ \
+  E_CPONLY(kColorSysAiIllustrationShapeSurface1) \
+  E_CPONLY(kColorSysAiIllustrationShapeSurface2) \
+  E_CPONLY(kColorSysAiIllustrationShapeSurfaceGradientStart) \
+  E_CPONLY(kColorSysAiIllustrationShapeSurfaceGradientEnd) \
   /* Experimentation. */ \
   E_CPONLY(kColorSysOmniboxContainer) \
   /* Deprecated */ \
@@ -355,6 +360,7 @@
   E_CPONLY(kColorLiveCaptionBubbleForegroundSecondary) \
   E_CPONLY(kColorLiveCaptionBubbleCheckbox) \
   E_CPONLY(kColorLiveCaptionBubbleLink) \
+  E_CPONLY(kColorLoadingGradientBorder) \
   E_CPONLY(kColorLoadingGradientEnd) \
   E_CPONLY(kColorLoadingGradientMiddle) \
   E_CPONLY(kColorLoadingGradientStart) \
@@ -450,8 +456,6 @@
   E_CPONLY(kColorTableHeaderSeparator) \
   E_CPONLY(kColorSuggestionChipBorder) \
   E_CPONLY(kColorSuggestionChipIcon) \
-  E_CPONLY(kColorTabOrganizationGradient1) \
-  E_CPONLY(kColorTabOrganizationGradient2) \
   E_CPONLY(kColorTextfieldBackground) \
   E_CPONLY(kColorTextfieldBackgroundDisabled) \
   E_CPONLY(kColorTextfieldFilledBackground) \

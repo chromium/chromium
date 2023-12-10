@@ -38,7 +38,6 @@ class EventMonitorAura : public EventMonitor {
  private:
   raw_ptr<ui::EventObserver, DanglingUntriaged>
       event_observer_;  // Weak. Owned by our owner.
-  raw_ptr<ui::EventTarget, DanglingUntriaged> event_target_;  // Weak.
 };
 
 }  // namespace views

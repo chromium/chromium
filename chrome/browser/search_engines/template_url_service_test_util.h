@@ -12,6 +12,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/search_engines/enterprise_site_search_manager.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_service_observer.h"
@@ -35,6 +36,12 @@ void SetRecommendedDefaultSearchPreferences(const TemplateURLData& data,
                                             bool enabled,
                                             TestingProfile* profile);
 
+// Sets the managed preferences for site search providers.
+void SetManagedSiteSearchSettingsPreference(
+    const EnterpriseSiteSearchManager::OwnedTemplateURLDataVector&
+        site_search_engines,
+    TestingProfile* profile);
+
 // Creates a TemplateURL with some test values. The caller owns the returned
 // TemplateURL*.
 std::unique_ptr<TemplateURL> CreateTestTemplateURL(
@@ -43,7 +50,8 @@ std::unique_ptr<TemplateURL> CreateTestTemplateURL(
     const std::string& guid = std::string(),
     base::Time last_modified = base::Time::FromTimeT(100),
     bool safe_for_autoreplace = false,
-    bool created_by_policy = false,
+    TemplateURLData::CreatedByPolicy created_by_policy =
+        TemplateURLData::CreatedByPolicy::kNoPolicy,
     int prepopulate_id = 999999);
 
 class TemplateURLServiceTestUtil : public TemplateURLServiceObserver {

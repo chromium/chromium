@@ -31,9 +31,9 @@ class HighlightPathGenerator;
 // TODO(tluk): FocusRing should not be a view but instead a new concept which
 // only participates in view painting ( https://crbug.com/840796 ).
 class VIEWS_EXPORT FocusRing : public View, public ViewObserver {
- public:
-  METADATA_HEADER(FocusRing);
+  METADATA_HEADER(FocusRing, View)
 
+ public:
   static constexpr float kDefaultCornerRadiusDp = 2.0f;
 
   using ViewPredicate = base::RepeatingCallback<bool(const View* view)>;

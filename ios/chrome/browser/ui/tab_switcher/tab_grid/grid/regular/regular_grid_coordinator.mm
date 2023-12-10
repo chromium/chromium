@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/regular/regular_grid_coordinator.h"
 
 #import "ios/chrome/browser/policy/policy_util.h"
-#import "ios/chrome/browser/sessions/ios_chrome_tab_restore_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/tabs/model/features.h"
@@ -24,39 +23,14 @@
 // Redefined as readwrite.
 @property(nonatomic, readwrite, strong)
     RegularGridViewController* gridViewController;
-@property(nonatomic, readwrite, strong)
-    UIViewController* disabledViewController;
-@property(nonatomic, readwrite, strong)
-    GridContainerViewController* gridContainerViewController;
 
 @end
 
 @implementation RegularGridCoordinator {
   // Mediator of regular grid.
   RegularGridMediator* _mediator;
-  // Mutator that handles toolbars changes.
-  __weak id<GridToolbarsMutator> _toolbarsMutator;
-  // Delegate to handle presenting the action sheet.
-  __weak id<GridMediatorDelegate> _gridMediatorDelegate;
   // Mediator for pinned Tabs.
   PinnedTabsMediator* _pinnedTabsMediator;
-}
-
-- (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
-                                   browser:(Browser*)browser
-                           toolbarsMutator:
-                               (id<GridToolbarsMutator>)toolbarsMutator
-                      gridMediatorDelegate:(id<GridMediatorDelegate>)delegate {
-  CHECK(baseViewController);
-  CHECK(browser);
-  if (self = [super initWithBaseViewController:baseViewController
-                                       browser:browser]) {
-    CHECK(toolbarsMutator);
-    CHECK(delegate);
-    _toolbarsMutator = toolbarsMutator;
-    _gridMediatorDelegate = delegate;
-  }
-  return self;
 }
 
 #pragma mark - Property Implementation.
@@ -98,23 +72,15 @@
   _mediator = [[RegularGridMediator alloc] init];
   _mediator.consumer = self.gridViewController;
   _mediator.browser = self.browser;
-  _mediator.delegate = _gridMediatorDelegate;
-  _mediator.toolbarsMutator = _toolbarsMutator;
+  _mediator.delegate = self.gridMediatorDelegate;
+  _mediator.toolbarsMutator = self.toolbarsMutator;
   _mediator.actionWrangler = self.tabGridViewController;
-  _mediator.itemProvider = self.gridViewController;
-
-  // TODO(crbug.com/1457146): As browser state should never be nil, it should be
-  // safe to remove the check.
-  ChromeBrowserState* regularBrowserState = self.browser->GetBrowserState();
-  if (regularBrowserState) {
-    _mediator.tabRestoreService =
-        IOSChromeTabRestoreServiceFactory::GetForBrowserState(
-            regularBrowserState);
-  }
+  _mediator.dispatcher = self;
 
   self.tabGridViewController.regularTabsDelegate = _mediator;
   self.gridViewController.dragDropHandler = _mediator;
-  self.gridViewController.shareableItemsProvider = _mediator;
+  self.gridViewController.mutator = _mediator;
+  self.gridViewController.gridProvider = _mediator;
 
   // If regular is enabled then the grid exists and it is not disabled.
   // TODO(crbug.com/1457146): Get disabled status from the mediator.
@@ -141,16 +107,20 @@
     self.tabGridViewController.pinnedTabsDelegate = _pinnedTabsMediator;
     self.tabGridViewController.pinnedTabsDragDropHandler = _pinnedTabsMediator;
   }
+
+  [super start];
 }
 
 - (void)stop {
   [_mediator disconnect];
   _mediator = nil;
+
+  [super stop];
 }
 
 #pragma mark - Public
 
-- (void)stopChidCoordinators {
+- (void)stopChildCoordinators {
   [self.gridViewController dismissModals];
 }
 

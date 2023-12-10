@@ -57,6 +57,9 @@ class ReportQueueImpl : public ReportQueue {
   [[nodiscard]] base::OnceCallback<void(StatusOr<std::unique_ptr<ReportQueue>>)>
   PrepareToAttachActualQueue() const override;
 
+  // ReportQueue:
+  Destination GetDestination() const override;
+
  protected:
   ReportQueueImpl(std::unique_ptr<ReportQueueConfiguration> config,
                   scoped_refptr<StorageModuleInterface> storage);
@@ -74,7 +77,7 @@ class SpeculativeReportQueueImpl : public ReportQueue {
  public:
   // Factory method returns a smart pointer with on-thread deleter.
   static std::unique_ptr<SpeculativeReportQueueImpl, base::OnTaskRunnerDeleter>
-  Create();
+  Create(const SpeculativeConfigSettings& config_settings);
 
   SpeculativeReportQueueImpl(const SpeculativeReportQueueImpl& other) = delete;
   SpeculativeReportQueueImpl& operator=(
@@ -89,6 +92,9 @@ class SpeculativeReportQueueImpl : public ReportQueue {
   // queue.
   [[nodiscard]] base::OnceCallback<void(StatusOr<std::unique_ptr<ReportQueue>>)>
   PrepareToAttachActualQueue() const override;
+
+  // ReportQueue:
+  Destination GetDestination() const override;
 
  private:
   // Moveable, non-copyable struct holding a pending record producer for the
@@ -108,6 +114,7 @@ class SpeculativeReportQueueImpl : public ReportQueue {
 
   // Private constructor, used by the factory method  only.
   explicit SpeculativeReportQueueImpl(
+      const SpeculativeConfigSettings& config_settings,
       scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner);
 
   // Forwards |AddProducedRecord| to |ReportQueue|, if already created.
@@ -148,6 +155,10 @@ class SpeculativeReportQueueImpl : public ReportQueue {
   // methods.
   mutable std::queue<PendingRecordProducer> pending_record_producers_
       GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // Report queue configuration settings that are supposed to be identical to
+  // the one configured with the `actual_report_queue_`.
+  const SpeculativeConfigSettings config_settings_;
 
   // Weak pointer factory.
   base::WeakPtrFactory<SpeculativeReportQueueImpl> weak_ptr_factory_{this};

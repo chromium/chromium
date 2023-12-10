@@ -512,11 +512,18 @@ void AccountTrackerServiceTest::
         signin::Tribool expected_is_child_account) {
   base::test::ScopedFeatureList scoped_feature_list;
   if (enable_supervision_on_desktop) {
-    scoped_feature_list.InitAndEnableFeature(
-        supervised_user::kFilterWebsitesForSupervisedUsersOnDesktopAndIOS);
+    scoped_feature_list.InitWithFeatures(
+        {supervised_user::kFilterWebsitesForSupervisedUsersOnDesktopAndIOS,
+         supervised_user::kSupervisedPrefsControlledBySupervisedStore,
+         supervised_user::kEnableManagedByParentUi,
+         supervised_user::kClearingCookiesKeepsSupervisedUsersSignedIn},
+        {});
   } else {
-    scoped_feature_list.InitAndDisableFeature(
-        supervised_user::kFilterWebsitesForSupervisedUsersOnDesktopAndIOS);
+    scoped_feature_list.InitWithFeatures(
+        {}, {supervised_user::kFilterWebsitesForSupervisedUsersOnDesktopAndIOS,
+             supervised_user::kSupervisedPrefsControlledBySupervisedStore,
+             supervised_user::kEnableManagedByParentUi,
+             supervised_user::kClearingCookiesKeepsSupervisedUsersSignedIn});
   }
 
   SimulateTokenAvailable(kAccountKeyChild);

@@ -34,7 +34,7 @@ struct CC_ANIMATION_EXPORT AnimationEvent {
   // Constructs AnimationEvent of TIME_UPDATED type.
   AnimationEvent(int timeline_id,
                  int animation_id,
-                 absl::optional<base::TimeDelta> local_time);
+                 std::optional<base::TimeDelta> local_time);
 
   AnimationEvent(const AnimationEvent& other);
   AnimationEvent& operator=(const AnimationEvent& other);
@@ -55,7 +55,7 @@ struct CC_ANIMATION_EXPORT AnimationEvent {
   std::unique_ptr<gfx::AnimationCurve> curve;
 
   // Set for TIME_UPDATED events.
-  absl::optional<base::TimeDelta> local_time;
+  std::optional<base::TimeDelta> local_time;
 };
 
 class CC_ANIMATION_EXPORT AnimationEvents : public MutatorEvents {

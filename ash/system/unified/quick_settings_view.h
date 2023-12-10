@@ -100,9 +100,6 @@ class ASH_EXPORT QuickSettingsView : public views::View,
   // PaginationModelObserver:
   void TotalPagesChanged(int previous_page_count, int new_page_count) override;
 
-  // views::View:
-  void OnGestureEvent(ui::GestureEvent* event) override;
-
   FeatureTilesContainerView* feature_tiles_container() {
     return feature_tiles_container_;
   }
@@ -125,6 +122,7 @@ class ASH_EXPORT QuickSettingsView : public views::View,
   QuickSettingsMediaViewContainer* media_view_container_for_testing() {
     return media_view_container_;
   }
+  QuickSettingsHeader* header_for_testing() { return header_; }
   QuickSettingsFooter* footer_for_testing() { return footer_; }
 
  private:

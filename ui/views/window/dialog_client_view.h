@@ -39,9 +39,9 @@ class Widget;
 // //ui/views. Access it through the public interfaces on DialogDelegate. It is
 // only VIEWS_EXPORT to make it available to views_unittests.
 class VIEWS_EXPORT DialogClientView : public ClientView, public DialogObserver {
- public:
-  METADATA_HEADER(DialogClientView);
+  METADATA_HEADER(DialogClientView, ClientView)
 
+ public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kTopViewId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kOkButtonElementId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kCancelButtonElementId);

@@ -65,11 +65,10 @@ template("_androidx_prebuilt") {
       ignore_proguard_configs = true
     } else if (target_name ==
                "androidx_privacysandbox_ads_ads_adservices_java") {
-      alternative_android_sdk_dep =
-          "//third_party/android_sdk:android_privacy_sandbox_sdk_java"
-
-      # https://crbug.com/1448095
-      mergeable_android_manifests = [ "0_privacysandbox_AndroidManifest.xml" ]
+      if (!is_high_end_android) {
+        # https://crbug.com/1448095
+        mergeable_android_manifests = [ "0_privacysandbox_AndroidManifest.xml" ]
+      }
     } else if (target_name == "androidx_startup_startup_runtime_java") {
       # Keeps emoji2 code. See http://crbug.com/1205141
       ignore_proguard_configs = true

@@ -110,10 +110,6 @@ bool CurrentThread::ApplicationTasksAllowedInNativeNestedLoop() const {
   return current_->IsTaskExecutionAllowed();
 }
 
-bool CurrentThread::operator==(const CurrentThread& other) const {
-  return current_ == other.current_;
-}
-
 #if !BUILDFLAG(IS_NACL)
 
 //------------------------------------------------------------------------------

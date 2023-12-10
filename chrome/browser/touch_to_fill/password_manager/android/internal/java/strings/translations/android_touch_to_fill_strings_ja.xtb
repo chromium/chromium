@@ -1,0 +1,27 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="ja">
+<translation id="1220509181886849806">保存したパスワードを使用しますか？</translation>
+<translation id="1435940442311036198">別のデバイスのパスキーを使用する</translation>
+<translation id="1717486229951421299">タップ操作で入力する認証情報のリストが画面の下半分に表示されています。</translation>
+<translation id="2359808026110333948">続行</translation>
+<translation id="2364266287022099258">保存したパスキーを使用しますか？</translation>
+<translation id="3399357656427473483">タップ操作で入力する認証情報のリスト。</translation>
+<translation id="3653689374478248324"><ph name="SITE_NAME" /> にログインします</translation>
+<translation id="3950820424414687140">ログイン</translation>
+<translation id="4553044860350038560">その他のパスキー</translation>
+<translation id="4598345735110653698">パスキーを管理</translation>
+<translation id="4722735765955348426"><ph name="USERNAME" /> のパスワード</translation>
+<translation id="4907224763885298217">画面ロックを使用する</translation>
+<translation id="5012523644916800014">パスワードとパスキーを管理</translation>
+<translation id="5441504010984421144">タップ操作で入力する認証情報のリストが画面全体に表示されています。</translation>
+<translation id="5591247451101092906">保存したパスワードまたはパスキーを使用しますか？</translation>
+<translation id="5624120631404540903">パスワードを管理</translation>
+<translation id="6560306912274274630"><ph name="USERNAME" /> のパスキーです。画面ロックを使用してください</translation>
+<translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{このサイトの新しいパスワード}other{このサイトの新しいパスワード}}</translation>
+<translation id="7286867818472074330">パスキーを選択</translation>
+<translation id="7669320311687290322"><ph name="ITEM_LABEL" />（<ph name="ITEM_POSITION" /> / <ph name="ITEMS_TOTAL" />）</translation>
+<translation id="7738288782501322815"><ph name="SITE_NAME" /> のパスワードを受信しました</translation>
+<translation id="8614995815226664591"><ph name="SENDER_NAME" /> さんが <ph name="SITE_NAME" /> のパスワードをあなたと共有しました</translation>
+<translation id="8891372124884726271">認証情報のリストは閉じています。</translation>
+</translationbundle>

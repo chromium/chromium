@@ -82,4 +82,4 @@ base::TimeDelta GetCrashpadPollingInterval();
 #endif
 
 }  // namespace enterprise_connectors
-#endif
+#endif  // CHROME_BROWSER_ENTERPRISE_CONNECTORS_REPORTING_CRASH_REPORTING_CONTEXT_H_

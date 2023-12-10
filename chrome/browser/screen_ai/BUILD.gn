@@ -67,7 +67,8 @@ source_set("screen_ai_service_router_factory") {
     ":screen_ai_install_state",
     "//chrome/browser/profiles:profile",
     "//components/keyed_service/core",
-    "//components/services/screen_ai/public/mojom",
+    "//components/services/screen_ai/public/mojom:factory",
+    "//components/services/screen_ai/public/mojom:mojom",
     "//content/public/browser",
   ]
 

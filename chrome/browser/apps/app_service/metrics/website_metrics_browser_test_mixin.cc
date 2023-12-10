@@ -53,9 +53,9 @@ void WebsiteMetricsBrowserTestMixin::SetUpOnMainThread() {
       ::apps::AppServiceProxyFactory::GetForProfile(profile);
   CHECK(app_service_proxy);
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Instantiate website metrics service only if one does not exist already.
-  // This ensures observers continue observing the same source while retrieving
-  // the initialized website metrics component.
+  // Instantiate website metrics service and website metrics component only if
+  // one does not exist already. This ensures observers continue observing
+  // pre-existing sources.
   website_metrics_service_ = app_service_proxy->WebsiteMetricsService();
   if (!website_metrics_service_) {
     auto metrics_service =
@@ -64,11 +64,13 @@ void WebsiteMetricsBrowserTestMixin::SetUpOnMainThread() {
     app_service_proxy->SetWebsiteMetricsServiceForTesting(
         std::move(metrics_service));
   }
-  auto website_metrics =
-      std::make_unique<WebsiteMetrics>(profile,
-                                       /*user_type_by_device_type=*/0);
-  website_metrics_service_->SetWebsiteMetricsForTesting(
-      std::move(website_metrics));
+  if (!website_metrics_service_->WebsiteMetrics()) {
+    auto website_metrics =
+        std::make_unique<WebsiteMetrics>(profile,
+                                         /*user_type_by_device_type=*/0);
+    website_metrics_service_->SetWebsiteMetricsForTesting(
+        std::move(website_metrics));
+  }
   website_metrics_service_->Start();
 #else
   // Instantiate app platform metrics service only if one does not exist

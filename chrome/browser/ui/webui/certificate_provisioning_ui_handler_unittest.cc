@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -17,6 +18,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/values_test_util.h"
+#include "base/values.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/crosapi/mojom/cert_provisioning.mojom.h"
@@ -28,7 +30,6 @@
 #include "crypto/nss_util.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace chromeos::cert_provisioning {
@@ -147,8 +148,13 @@ class FakeMojoCertProvisioning : public crosapi::mojom::CertProvisioning {
 
   void UpdateOneProcess(const std::string& cert_profile_id) override {}
 
+  void ResetOneProcess(const std::string& cert_profile_id) override {
+    reset_one_process_calls_.push_back(cert_profile_id);
+  }
+
   mojo::Remote<crosapi::mojom::CertProvisioningObserver> observer_;
   std::vector<crosapi::mojom::CertProvisioningProcessStatusPtr> status_;
+  std::vector<std::string> reset_one_process_calls_;
 };
 
 class CertificateProvisioningUiHandlerTest : public ::testing::Test {
@@ -418,6 +424,15 @@ TEST_F(CertificateProvisioningUiHandlerTest, Updates) {
   EXPECT_EQ(all_processes, all_processes_2);
 }
 
+TEST_F(CertificateProvisioningUiHandlerTest, ResetsWhenSupported) {
+  const std::string kCertProvisioningProcessId = "test";
+  base::Value::List args;
+  args.Append(kCertProvisioningProcessId);
+  web_ui_.HandleReceivedMessage("triggerCertificateProvisioningProcessReset",
+                                args);
+  EXPECT_THAT(mojo_cert_provisioning_.reset_one_process_calls_,
+              ElementsAre(kCertProvisioningProcessId));
+}
 }  // namespace
 
 }  // namespace chromeos::cert_provisioning

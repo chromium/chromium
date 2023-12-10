@@ -401,9 +401,10 @@ void WaylandKeyboard::ProcessKey(uint32_t serial,
   }
 
   if (kind == KeyEventKind::kKey && !IsModifierKey(key)) {
-    auto_repeat_handler_.UpdateKeyRepeat(key, 0 /*scan_code*/, down,
-                                         /*suppress_auto_repeat=*/false,
-                                         device_id());
+    auto_repeat_handler_.UpdateKeyRepeat(
+        key, 0 /*scan_code*/, down,
+        /*suppress_auto_repeat=*/false, device_id(),
+        wl::EventMillisecondsToTimeTicks(time));
   }
 
   // Block to dispatch RELEASE wl_keyboard::key event, if
@@ -415,9 +416,9 @@ void WaylandKeyboard::ProcessKey(uint32_t serial,
     return;
   }
 
-  DispatchKey(key, 0 /*scan_code*/, down, false /*repeat*/,
-              absl::make_optional(serial), EventTimeForNow(), device_id(),
-              EF_NONE, kind);
+  DispatchKey(
+      key, 0 /*scan_code*/, down, false /*repeat*/, absl::make_optional(serial),
+      wl::EventMillisecondsToTimeTicks(time), device_id(), EF_NONE, kind);
 }
 
 void WaylandKeyboard::DispatchKey(unsigned int key,

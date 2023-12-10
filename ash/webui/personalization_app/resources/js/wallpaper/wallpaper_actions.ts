@@ -3,14 +3,13 @@
 // found in the LICENSE file.
 
 import {assert} from 'chrome://resources/js/assert.js';
-import {Action} from 'chrome://resources/js/store_ts.js';
+import {Action} from 'chrome://resources/js/store.js';
 import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
 import {CurrentAttribution, CurrentWallpaper, GooglePhotosAlbum, GooglePhotosEnablementState, GooglePhotosPhoto, WallpaperCollection, WallpaperImage} from '../../personalization_app.mojom-webui.js';
-import {SeaPenThumbnail} from '../../sea_pen.mojom-webui.js';
 
-import {DisplayableImage, SeaPenWallpaper} from './constants.js';
+import {DisplayableImage} from './constants.js';
 
 /**
  * @fileoverview Defines the actions to change wallpaper state.
@@ -21,7 +20,6 @@ export enum WallpaperActionName {
   APPEND_GOOGLE_PHOTOS_ALBUMS = 'append_google_photos_albums',
   APPEND_GOOGLE_PHOTOS_SHARED_ALBUMS = 'append_google_photos_shared_albums',
   APPEND_GOOGLE_PHOTOS_PHOTOS = 'append_google_photos_photos',
-  BEGIN_SEARCH_IMAGE_THUMBNAILS = 'begin_search_image_thumbnails',
   BEGIN_LOAD_GOOGLE_PHOTOS_ALBUM = 'begin_load_google_photos_album',
   BEGIN_LOAD_GOOGLE_PHOTOS_ALBUMS = 'begin_load_google_photos_albums',
   BEGIN_LOAD_GOOGLE_PHOTOS_SHARED_ALBUMS =
@@ -50,13 +48,13 @@ export enum WallpaperActionName {
   SET_SELECTED_IMAGE = 'set_selected_image',
   SET_UPDATED_DAILY_REFRESH_IMAGE = 'set_updated_daily_refreshed_image',
   SET_FULLSCREEN_ENABLED = 'set_fullscreen_enabled',
-  SET_IMAGE_THUMBNAILS = 'set_image_thumbnails',
-  SET_RECENT_WALLPAPER_IMAGES = 'set_recent_wallpaper_images',
+  SET_SHOULD_SHOW_TIME_OF_DAY_WALLPAPER_DIALOG =
+      'set_shoud_show_time_of_day_wallpaper_dialog',
 }
 
-export type WallpaperActions = AppendGooglePhotosAlbumAction|
-    AppendGooglePhotosAlbumsAction|AppendGooglePhotosSharedAlbumsAction|
-    AppendGooglePhotosPhotosAction|BeginSearchImageThumbnailsAction|
+export type WallpaperActions =
+    AppendGooglePhotosAlbumAction|AppendGooglePhotosAlbumsAction|
+    AppendGooglePhotosSharedAlbumsAction|AppendGooglePhotosPhotosAction|
     BeginLoadDefaultImageThumbnailAction|BeginLoadGooglePhotosAlbumAction|
     BeginLoadGooglePhotosAlbumsAction|BeginLoadGooglePhotosSharedAlbumsAction|
     BeginLoadGooglePhotosEnabledAction|BeginLoadGooglePhotosPhotosAction|
@@ -68,8 +66,7 @@ export type WallpaperActions = AppendGooglePhotosAlbumAction|
     SetGooglePhotosEnabledAction|SetImagesForCollectionAction|
     SetDefaultImageThumbnailAction|SetLocalImageDataAction|SetLocalImagesAction|
     SetUpdatedDailyRefreshImageAction|SetSelectedImageAction|
-    SetFullscreenEnabledAction|SetSeaPenThumbnailsAction|
-    SetRecentWallpaperImagesAction;
+    SetFullscreenEnabledAction|SetShouldShowTimeOfDayWallpaperDialog;
 
 export interface AppendGooglePhotosAlbumAction extends Action {
   name: WallpaperActionName.APPEND_GOOGLE_PHOTOS_ALBUM;
@@ -154,19 +151,6 @@ export function appendGooglePhotosPhotosAction(
     photos,
     resumeToken,
     name: WallpaperActionName.APPEND_GOOGLE_PHOTOS_PHOTOS,
-  };
-}
-
-export interface BeginSearchImageThumbnailsAction extends Action {
-  name: WallpaperActionName.BEGIN_SEARCH_IMAGE_THUMBNAILS;
-  query: string;
-}
-
-export function beginSearchImageThumbnailsAction(query: string):
-    BeginSearchImageThumbnailsAction {
-  return {
-    query: query,
-    name: WallpaperActionName.BEGIN_SEARCH_IMAGE_THUMBNAILS,
   };
 }
 
@@ -557,11 +541,29 @@ export function setSelectedImageAction(image: CurrentWallpaper|
 
 
 
+export interface SetShouldShowTimeOfDayWallpaperDialog extends Action {
+  name: WallpaperActionName.SET_SHOULD_SHOW_TIME_OF_DAY_WALLPAPER_DIALOG;
+  shouldShowDialog: boolean;
+}
+
+
+/**
+ * Sets the boolean that determines whether to show the time of day wallpaper
+ * dialog.
+ */
+export function setShouldShowTimeOfDayWallpaperDialog(
+    shouldShowDialog: boolean): SetShouldShowTimeOfDayWallpaperDialog {
+  assert(typeof shouldShowDialog === 'boolean');
+  return {
+    name: WallpaperActionName.SET_SHOULD_SHOW_TIME_OF_DAY_WALLPAPER_DIALOG,
+    shouldShowDialog,
+  };
+}
+
 export interface SetFullscreenEnabledAction extends Action {
   name: WallpaperActionName.SET_FULLSCREEN_ENABLED;
   enabled: boolean;
 }
-
 
 /**
  * Enables/disables the fullscreen preview mode for wallpaper.
@@ -570,37 +572,4 @@ export function setFullscreenEnabledAction(enabled: boolean):
     SetFullscreenEnabledAction {
   assert(typeof enabled === 'boolean');
   return {name: WallpaperActionName.SET_FULLSCREEN_ENABLED, enabled};
-}
-
-
-export interface SetSeaPenThumbnailsAction extends Action {
-  name: WallpaperActionName.SET_IMAGE_THUMBNAILS;
-  query: string;
-  images: SeaPenThumbnail[]|null;
-}
-
-
-/**
- * Sets the generated thumbnails for the given prompt text.
- */
-export function setSeaPenThumbnailsAction(
-    query: string, images: SeaPenThumbnail[]|null): SetSeaPenThumbnailsAction {
-  return {name: WallpaperActionName.SET_IMAGE_THUMBNAILS, query, images};
-}
-
-
-export interface SetRecentWallpaperImagesAction extends Action {
-  name: WallpaperActionName.SET_RECENT_WALLPAPER_IMAGES;
-  recentWallpapers: SeaPenWallpaper[]|null;
-}
-
-/**
- * Sets the recent search wallpapers.
- */
-export function setRecentWallpaperImagesAction(
-    recentWallpapers: SeaPenWallpaper[]|null): SetRecentWallpaperImagesAction {
-  return {
-    name: WallpaperActionName.SET_RECENT_WALLPAPER_IMAGES,
-    recentWallpapers,
-  };
 }

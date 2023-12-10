@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_LOGIN_SAML_FAKE_SAML_IDP_MIXIN_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/files/file_path.h"
@@ -14,7 +15,6 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 class FakeGaiaMixin;
@@ -131,8 +131,8 @@ class FakeSamlIdpMixin final : public InProcessBrowserTestMixin {
 
   bool device_trust_header_recieved_ = false;
   int challenge_response_count_ = 0;
-  absl::optional<std::string> challenge_response_;
-  absl::optional<std::string> error_challenge_response_;
+  std::optional<std::string> challenge_response_;
+  std::optional<std::string> error_challenge_response_;
 };
 
 }  // namespace ash

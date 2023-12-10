@@ -18,6 +18,8 @@ build_webui("build") {
     "images/ad_privacy_banner.svg",
     "images/cookies_banner_dark.svg",
     "images/cookies_banner.svg",
+    "images/cvc.svg",
+    "images/cvc_amex.svg",
     "images/googleg_standard_clr_32px.svg",
     "images/iban.svg",
     "images/password_check_neutral_dark.svg",
@@ -58,15 +60,12 @@ build_webui("build") {
     "images/privacy_guide/waa_graphic.svg",
     "images/privacy_guide/welcome_banner_dark.svg",
     "images/privacy_guide/welcome_banner.svg",
-    "images/privacy_sandbox_banner_v3_dark.svg",
-    "images/privacy_sandbox_banner_v3.svg",
     "images/safe_browsing_banner_dark.svg",
     "images/safe_browsing_banner.svg",
     "images/sync_banner_dark.svg",
     "images/sync_banner.svg",
     "images/tracking_protection_banner_dark.svg",
     "images/tracking_protection_banner.svg",
-    "privacy_sandbox/privacy_sandbox.html",
     "settings.html",
   ]
 
@@ -74,6 +73,7 @@ build_webui("build") {
   web_component_files = [
     "a11y_page/a11y_page.ts",
     "about_page/about_page.ts",
+    "ai_page/ai_page.ts",
     "appearance_page/appearance_fonts_page.ts",
     "appearance_page/appearance_page.ts",
     "appearance_page/home_url_input.ts",
@@ -102,14 +102,14 @@ build_webui("build") {
     "performance_page/battery_page.ts",
     "performance_page/performance_page.ts",
     "performance_page/speed_page.ts",
-    "performance_page/tab_discard_exception_add_dialog.ts",
-    "performance_page/tab_discard_exception_add_input.ts",
-    "performance_page/tab_discard_exception_current_sites_list.ts",
-    "performance_page/tab_discard_exception_edit_dialog.ts",
-    "performance_page/tab_discard_exception_edit_input.ts",
-    "performance_page/tab_discard_exception_entry.ts",
-    "performance_page/tab_discard_exception_list.ts",
-    "performance_page/tab_discard_exception_tabbed_add_dialog.ts",
+    "performance_page/tab_discard/exception_add_dialog.ts",
+    "performance_page/tab_discard/exception_add_input.ts",
+    "performance_page/tab_discard/exception_current_sites_list.ts",
+    "performance_page/tab_discard/exception_edit_dialog.ts",
+    "performance_page/tab_discard/exception_edit_input.ts",
+    "performance_page/tab_discard/exception_entry.ts",
+    "performance_page/tab_discard/exception_list.ts",
+    "performance_page/tab_discard/exception_tabbed_add_dialog.ts",
     "people_page/page_content_page.ts",
     "people_page/people_page.ts",
     "people_page/signout_dialog.ts",
@@ -148,8 +148,6 @@ build_webui("build") {
     "privacy_page/security_keys_phones_list.ts",
     "privacy_page/security_keys_phones_dialog.ts",
     "privacy_page/security_page.ts",
-    "privacy_sandbox/app.ts",
-    "privacy_sandbox/interest_item.ts",
     "privacy_sandbox/privacy_sandbox_ad_measurement_subpage.ts",
     "privacy_sandbox/privacy_sandbox_fledge_subpage.ts",
     "privacy_sandbox/privacy_sandbox_interest_item.ts",
@@ -297,13 +295,12 @@ build_webui("build") {
     "performance_page/discard_timer_options.ts",
     "performance_page/performance_browser_proxy.ts",
     "performance_page/performance_metrics_proxy.ts",
-    "performance_page/tab_discard_exception_validation_mixin.ts",
+    "performance_page/tab_discard/exception_validation_mixin.ts",
     "privacy_page/privacy_guide/constants.ts",
     "privacy_page/privacy_guide/privacy_guide_availability_mixin.ts",
     "privacy_page/privacy_guide/privacy_guide_browser_proxy.ts",
     "privacy_sandbox/privacy_sandbox_browser_proxy.ts",
     "privacy_page/security_keys_browser_proxy.ts",
-    "privacy_sandbox/icons.html.ts",
     "relaunch_mixin.ts",
     "reset_page/reset_browser_proxy.ts",
     "route.ts",
@@ -425,11 +422,6 @@ build_webui("build") {
     # the SplitSettings effort makes progress (unclear status as of this
     # writing, unfortunately).
     ts_extra_deps = [ "//ash/webui/common/resources:generate_definitions" ]
-  }
-
-  if (optimize_webui) {
-    extra_grdp_deps = [ "privacy_sandbox:build_grdp" ]
-    extra_grdp_files = [ "$target_gen_dir/privacy_sandbox/resources.grdp" ]
   }
 
   optimize = optimize_webui

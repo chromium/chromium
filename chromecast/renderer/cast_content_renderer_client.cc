@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include <optional>
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/strings/string_number_conversions.h"
@@ -40,7 +41,6 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/web_runtime_features.h"
 #include "third_party/blink/public/web/web_frame_widget.h"
@@ -338,7 +338,7 @@ CastContentRendererClient::CreateURLLoaderThrottleProvider(
       std::move(throttle_provider));
 }
 
-absl::optional<::media::AudioRendererAlgorithmParameters>
+std::optional<::media::AudioRendererAlgorithmParameters>
 CastContentRendererClient::GetAudioRendererAlgorithmParameters(
     ::media::AudioParameters audio_parameters) {
 #if BUILDFLAG(IS_ANDROID)
@@ -347,9 +347,9 @@ CastContentRendererClient::GetAudioRendererAlgorithmParameters(
   parameters.starting_capacity = kAudioRendererStartingCapacity;
   parameters.starting_capacity_for_encrypted =
       kAudioRendererStartingCapacityEncrypted;
-  return absl::optional<::media::AudioRendererAlgorithmParameters>(parameters);
+  return std::optional<::media::AudioRendererAlgorithmParameters>(parameters);
 #else
-  return absl::nullopt;
+  return std::nullopt;
 #endif
 }
 

@@ -31,6 +31,7 @@
 //components/test/data/viz/backdrop_filter_masked.png
 //components/test/data/viz/backdrop_filter_masked_sw.png
 //components/test/data/viz/backdrop_filter_offset.png
+//components/test/data/viz/backdrop_filter_offset_sw.png
 //components/test/data/viz/backdrop_filter_on_scaled_layer_skia_gl.png
 //components/test/data/viz/backdrop_filter_on_scaled_layer_skia_graphite.png
 //components/test/data/viz/backdrop_filter_on_scaled_layer_skia_vk.png
@@ -147,6 +148,8 @@
 //components/test/data/viz/mask_with_effect_no_content.png
 //components/test/data/viz/mask_with_non_exact_texture_size.png
 //components/test/data/viz/mirror_layer.png
+//components/test/data/viz/mixed_filters_zoom_offset_1x.png
+//components/test/data/viz/mixed_filters_zoom_offset_2x.png
 //components/test/data/viz/multi_linear_gradient_render_pass.png
 //components/test/data/viz/offset_backdrop_filter_1x.png
 //components/test/data/viz/offset_backdrop_filter_1x_sw.png

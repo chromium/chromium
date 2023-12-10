@@ -36,6 +36,7 @@
 #include "base/check_op.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
+#include "skia/ext/font_utils.h"
 #include "third_party/blink/public/platform/linux/web_sandbox_support.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/font_family_names.h"
@@ -232,7 +233,7 @@ sk_sp<SkTypeface> FontCache::CreateTypeface(
 
   // TODO(https://crbug.com/1425390: Assign FontCache::font_manager_ in the
   // ctor.
-  auto font_manager = font_manager_ ? font_manager_ : SkFontMgr::RefDefault();
+  auto font_manager = font_manager_ ? font_manager_ : skia::DefaultFontMgr();
   return sk_sp<SkTypeface>(font_manager->matchFamilyStyle(
       name.empty() ? nullptr : name.c_str(), font_description.SkiaFontStyle()));
 }

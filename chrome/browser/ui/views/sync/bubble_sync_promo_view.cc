@@ -131,7 +131,7 @@ BubbleSyncPromoView::BubbleSyncPromoView(
 BubbleSyncPromoView::~BubbleSyncPromoView() = default;
 
 void BubbleSyncPromoView::EnableSync() {
-  absl::optional<AccountInfo> account = signin_button_view_->account();
+  std::optional<AccountInfo> account = signin_button_view_->account();
   delegate_->OnEnableSync(account.value_or(AccountInfo()));
 }
 

@@ -13,12 +13,9 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.sync.SyncService;
 
-/**
- * Provides profile specific SyncService instances.
- */
+/** Provides profile specific SyncService instances. */
 public class SyncServiceFactory {
-    @Nullable
-    private static SyncService sSyncServiceForTest;
+    @Nullable private static SyncService sSyncServiceForTest;
 
     private SyncServiceFactory() {}
 

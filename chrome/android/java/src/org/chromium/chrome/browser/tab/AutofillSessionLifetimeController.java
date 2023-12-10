@@ -46,31 +46,35 @@ public class AutofillSessionLifetimeController implements DestroyObserver {
     private final ActivityTabProvider.ActivityTabTabObserver mActivityTabObserver;
 
     @RequiresApi(Build.VERSION_CODES.O)
-    public AutofillSessionLifetimeController(Activity activity,
+    public AutofillSessionLifetimeController(
+            Activity activity,
             ActivityLifecycleDispatcher lifecycleDispatcher,
             ActivityTabProvider activityTabProvider) {
         mActivity = activity;
-        mActivityTabObserver = new ActivityTabProvider.ActivityTabTabObserver(activityTabProvider) {
-            @Override
-            public void onDidStartNavigationInPrimaryMainFrame(
-                    Tab tab, NavigationHandle navigationHandle) {
-                if (!navigationHandle.isRendererInitiated()) {
-                    ApiHelperForO.cancelAutofillSession(mActivity);
-                }
-            }
+        mActivityTabObserver =
+                new ActivityTabProvider.ActivityTabTabObserver(activityTabProvider) {
+                    @Override
+                    public void onDidStartNavigationInPrimaryMainFrame(
+                            Tab tab, NavigationHandle navigationHandle) {
+                        if (!navigationHandle.isRendererInitiated()) {
+                            ApiHelperForO.cancelAutofillSession(mActivity);
+                        }
+                    }
 
-            @Override
-            public void onInteractabilityChanged(Tab tab, boolean isInteractable) {
-                // While onInteractabilityChanged is called in ChromeActivity.onStop(), the session
-                // must remain active to allow Autofill services' fullscreen authentication flows to
-                // succeed.
-                boolean isStopped = lifecycleDispatcher.getCurrentActivityState() ==
-                        ActivityLifecycleDispatcher.ActivityState.STOPPED_WITH_NATIVE;
-                if (!isInteractable && !isStopped) {
-                    ApiHelperForO.cancelAutofillSession(mActivity);
-                }
-            }
-        };
+                    @Override
+                    public void onInteractabilityChanged(Tab tab, boolean isInteractable) {
+                        // While onInteractabilityChanged is called in ChromeActivity.onStop(), the
+                        // session must remain active to allow Autofill services' fullscreen
+                        // authentication flows to succeed.
+                        boolean isStopped =
+                                lifecycleDispatcher.getCurrentActivityState()
+                                        == ActivityLifecycleDispatcher.ActivityState
+                                                .STOPPED_WITH_NATIVE;
+                        if (!isInteractable && !isStopped) {
+                            ApiHelperForO.cancelAutofillSession(mActivity);
+                        }
+                    }
+                };
         lifecycleDispatcher.register(this);
     }
 

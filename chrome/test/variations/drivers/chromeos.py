@@ -207,6 +207,9 @@ class CrOSDriverFactory(DriverFactory):
         service=service.Service(self.chromedriver_path,
                                 service_args=['--disable-build-check']),
         options=options)
+      # VM may not be fully ready before it returns, wait for window handle
+      # to double confirm.
+      self.wait_for_window(driver)
       try:
         yield driver
       finally:

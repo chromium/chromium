@@ -30,8 +30,11 @@ BASE_DECLARE_FEATURE(kDismissPromos);
 BASE_DECLARE_FEATURE(kIframeOneGoogleBar);
 BASE_DECLARE_FEATURE(kOneGoogleBarModalOverlays);
 BASE_DECLARE_FEATURE(kRealboxCr23All);
+BASE_DECLARE_FEATURE(kRealboxCr23ConsistentRowHeight);
 BASE_DECLARE_FEATURE(kRealboxCr23ExpandedStateIcons);
 BASE_DECLARE_FEATURE(kRealboxCr23ExpandedStateLayout);
+BASE_DECLARE_FEATURE(kRealboxCr23HoverFillShape);
+BASE_DECLARE_FEATURE(kRealboxCr23Theming);
 BASE_DECLARE_FEATURE(kRealboxMatchOmniboxTheme);
 BASE_DECLARE_FEATURE(kRealboxMatchSearchboxTheme);
 BASE_DECLARE_FEATURE(kRealboxUseGoogleGIcon);
@@ -181,6 +184,7 @@ extern const char kNtpHistoryClustersModuleCategoriesBoostlistParam[];
 // History Clusters Service to return.
 extern const char kNtpHistoryClustersModuleMaxClustersParam[];
 extern const char kNtpRealboxWidthBehaviorParam[];
+extern const char kNtpTabResumptionModuleDataParam[];
 
 // Returns the timeout after which the load of a module should be aborted.
 base::TimeDelta GetModulesLoadTimeout();

@@ -12,10 +12,14 @@
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(
+    EmbeddedPermissionPromptPreviouslyDeniedView,
+    kAllowThisTimeId);
+
 EmbeddedPermissionPromptPreviouslyDeniedView::
     EmbeddedPermissionPromptPreviouslyDeniedView(
         Browser* browser,
-        base::WeakPtr<Delegate> delegate)
+        base::WeakPtr<EmbeddedPermissionPromptViewDelegate> delegate)
     : EmbeddedPermissionPromptBaseView(browser, delegate) {}
 
 EmbeddedPermissionPromptPreviouslyDeniedView::
@@ -40,8 +44,7 @@ void EmbeddedPermissionPromptPreviouslyDeniedView::RunButtonCallback(
   ButtonType button = GetButtonType(button_id);
 
   if (button == ButtonType::kContinueNotAllowing) {
-    // The permission is already denied.
-    return;
+    delegate()->Acknowledge();
   }
 
   if (button == ButtonType::kAllowThisTime) {
@@ -70,11 +73,10 @@ EmbeddedPermissionPromptPreviouslyDeniedView::GetButtonsConfiguration() const {
   if (base::FeatureList::IsEnabled(permissions::features::kOneTimePermission)) {
     buttons.emplace_back(
         l10n_util::GetStringUTF16(IDS_PERMISSION_ALLOW_THIS_TIME),
-        ButtonType::kAllowThisTime, ui::ButtonStyle::kTonal);
+        ButtonType::kAllowThisTime, ui::ButtonStyle::kTonal, kAllowThisTimeId);
   } else {
-    buttons.emplace_back(
-        l10n_util::GetStringUTF16(IDS_PERMISSION_ALLOW_THIS_TIME),
-        ButtonType::kAllow, ui::ButtonStyle::kTonal);
+    buttons.emplace_back(l10n_util::GetStringUTF16(IDS_PERMISSION_ALLOW),
+                         ButtonType::kAllow, ui::ButtonStyle::kTonal);
   }
   return buttons;
 }

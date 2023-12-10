@@ -17,9 +17,9 @@
 namespace views {
 
 class VIEWS_EXPORT ImageViewBase : public View {
- public:
-  METADATA_HEADER(ImageViewBase);
+  METADATA_HEADER(ImageViewBase, View)
 
+ public:
   enum class Alignment { kLeading, kCenter, kTrailing };
 
   ImageViewBase();

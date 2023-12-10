@@ -23,18 +23,14 @@ public class ServiceWorkerControllerAdapter extends ServiceWorkerController {
         mAwServiceWorkerController = controller;
     }
 
-    /**
-     * Sets the settings for all service workers.
-     */
+    /** Sets the settings for all service workers. */
     @Override
     public ServiceWorkerWebSettings getServiceWorkerWebSettings() {
         return new ServiceWorkerSettingsAdapter(
                 mAwServiceWorkerController.getAwServiceWorkerSettings());
     }
 
-    /**
-     * Sets the client to capture service worker related callbacks.
-     */
+    /** Sets the client to capture service worker related callbacks. */
     @Override
     public void setServiceWorkerClient(@Nullable ServiceWorkerClient client) {
         mAwServiceWorkerController.setServiceWorkerClient(

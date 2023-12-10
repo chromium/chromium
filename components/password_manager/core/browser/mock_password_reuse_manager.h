@@ -20,7 +20,9 @@ class MockPasswordReuseManager : public PasswordReuseManager {
               Init,
               (PrefService * prefs,
                PasswordStoreInterface* profile_store,
-               PasswordStoreInterface* account_store),
+               PasswordStoreInterface* account_store,
+               signin::IdentityManager* identity_manager,
+               std::unique_ptr<SharedPreferencesDelegate> shared_pref_delegate),
               (override));
   MOCK_METHOD(void,
               ReportMetrics,

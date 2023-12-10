@@ -9,15 +9,52 @@ import(
 import("//chrome/test/base/ash/js2gtest.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//testing/test.gni")
-import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/typescript/ts_library.gni")
 
 assert(is_chromeos_ash)
 
+declare_args() {
+  include_mediapipe_task_vision_files_for_facegaze = false
+}
+
 accessibility_common_dir =
     "$root_out_dir/resources/chromeos/accessibility/accessibility_common"
+tsc_out_dir = "$target_gen_dir/tsc"
+common_tsc_out_dir = "$target_gen_dir/../common/tsc"
+
+# TS files to build.
+ts_modules = []
+
+# TS files needed from ../common/.
+common_ts_modules = []
+
+# JS files needed by the TS compiler.
+js_deps = []
+
+# Root dir must be the parent directory so it can reach common.
+ts_library("ts_build") {
+  root_dir = "../"
+  out_dir = tsc_out_dir
+  deps = [ "../common:ts_build" ]
+  definitions = []
+
+  in_files = []
+  foreach(_js_file, js_deps) {
+    in_files += [ "accessibility_common/" + _js_file ]
+  }
+  foreach(_ts_file, ts_modules) {
+    in_files += [ "accessibility_common/" + _ts_file ]
+  }
+
+  tsconfig_base = "../tsconfig.base.json"
+}
 
 group("build") {
   deps = [ ":accessibility_common_copied_files" ]
+
+  if (include_mediapipe_task_vision_files_for_facegaze) {
+    deps += [ ":extract_mediapipe_task_vision_files" ]
+  }
 }
 
 # Instead of setting up copy targets, use a script to copy all files.
@@ -59,10 +96,25 @@ run_jsbundler("accessibility_common_copied_files") {
     "dictation/parse/simple_parse_strategy.js",
     "dictation/parse/speech_parser.js",
     "dictation/ui_controller.js",
-    "gameface/gameface.js",
+    "facegaze/camera_stream.html",
+    "facegaze/camera_stream.js",
+    "facegaze/facegaze.js",
     "magnifier/magnifier.js",
   ]
+
+  foreach(_ts_file, ts_modules) {
+    sources += [ "$tsc_out_dir/accessibility_common/" +
+                 get_path_info(_ts_file, "dir") + "/" +
+                 get_path_info(_ts_file, "name") + ".js" ]
+  }
+  foreach(_ts_file, common_ts_modules) {
+    sources += [ "$common_tsc_out_dir/" + get_path_info(_ts_file, "dir") + "/" +
+                 get_path_info(_ts_file, "name") + ".js" ]
+  }
+
   rewrite_rules = [
+    rebase_path("$tsc_out_dir/accessibility_common", root_build_dir) + ":",
+    rebase_path(common_tsc_out_dir, root_build_dir) + ":",
     rebase_path(".", root_build_dir) + ":",
     rebase_path(closure_library_dir, root_build_dir) + ":closure",
   ]
@@ -76,6 +128,10 @@ source_set("browser_tests") {
     ":accessibility_common_extjs_tests",
     ":pumpkin_test_files",
   ]
+
+  if (include_mediapipe_task_vision_files_for_facegaze) {
+    deps += [ ":extract_mediapipe_task_vision_files" ]
+  }
 
   data = [
     "$root_out_dir/chrome_100_percent.pak",
@@ -108,6 +164,10 @@ js2gtest("accessibility_common_extjs_tests") {
     "dictation/parse/dictation_pumpkin_parse_test.js",
     "magnifier/magnifier_test.js",
   ]
+  if (include_mediapipe_task_vision_files_for_facegaze) {
+    sources += [ "facegaze/facegaze_mediapipe_test.js" ]
+  }
+
   gen_include_files = [
     "../common/rect_util.js",
     "../common/testing/accessibility_test_base.js",
@@ -133,168 +193,7 @@ js2gtest("accessibility_common_extjs_tests") {
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 }
 
-js_type_check("closure_compile") {
-  deps = [ ":accessibility_common" ]
-}
-
-js_library("accessibility_common") {
-  sources = [ "accessibility_common_loader.js" ]
-  deps = [
-    ":autoclick",
-    ":dictation",
-    ":gameface",
-    ":magnifier",
-    "../common:automation_predicate",
-    "../common:chrome_event_handler",
-    "../common:constants",
-    "../common:event_generator",
-    "../common:event_handler",
-    "../common:flags",
-    "../common:instance_checker",
-    "../common:rect_util",
-  ]
-  externs_list = [
-    "$externs_path/chrome_extensions.js",
-    "$externs_path/accessibility_features.js",
-    "$externs_path/accessibility_private.js",
-    "$externs_path/automation.js",
-    "$externs_path/command_line_private.js",
-    "$externs_path/input_method_private.js",
-    "$externs_path/metrics_private.js",
-    "$externs_path/language_settings_private.js",
-    "$externs_path/speech_recognition_private.js",
-  ]
-}
-
-js_library("autoclick") {
-  sources = [ "autoclick/autoclick.js" ]
-  deps = [ "../common:event_handler" ]
-  externs_list = [
-    "$externs_path/accessibility_private.js",
-    "$externs_path/automation.js",
-  ]
-}
-
-js_library("magnifier") {
-  sources = [ "magnifier/magnifier.js" ]
-  externs_list = [ "$externs_path/settings_private.js" ]
-}
-
-js_library("dictation") {
-  sources = [ "dictation/dictation.js" ]
-  deps = [
-    ":dictation_context_checker",
-    ":dictation_editing_util",
-    ":dictation_focus_handler",
-    ":dictation_input_controller",
-    ":dictation_locale_info",
-    ":dictation_metrics",
-    ":dictation_ui_controller",
-    ":speech_parsing",
-    "../common:flags",
-  ]
-  externs_list = [
-    "$externs_path/accessibility_private.js",
-    "$externs_path/audio.js",
-    "$externs_path/speech_recognition_private.js",
-    "dictation/parse/pumpkin/pumpkin_tagger_externs.js",
-  ]
-}
-
-js_library("dictation_input_controller") {
-  sources = [ "dictation/input_controller.js" ]
-  deps = [
-    ":dictation_editing_util",
-    ":dictation_focus_handler",
-    ":dictation_locale_info",
-  ]
-  externs_list = [
-    "$externs_path/input_method_private.js",
-    "$externs_path/language_settings_private.js",
-    "$externs_path/automation.js",
-  ]
-}
-
-js_library("dictation_ui_controller") {
-  sources = [ "dictation/ui_controller.js" ]
-  deps = [ ":dictation_locale_info" ]
-  externs_list = [ "$externs_path/accessibility_private.js" ]
-}
-
-js_library("dictation_macros") {
-  sources = [
-    "dictation/macros/delete_prev_sent_macro.js",
-    "dictation/macros/input_text_view_macro.js",
-    "dictation/macros/list_commands_macro.js",
-    "dictation/macros/macro.js",
-    "dictation/macros/macro_names.js",
-    "dictation/macros/nav_sent_macro.js",
-    "dictation/macros/repeatable_key_press_macro.js",
-    "dictation/macros/smart_delete_phrase_macro.js",
-    "dictation/macros/smart_insert_before_macro.js",
-    "dictation/macros/smart_replace_phrase_macro.js",
-    "dictation/macros/smart_select_between_macro.js",
-    "dictation/macros/stop_listening_macro.js",
-  ]
-  deps = [
-    ":dictation_context_checker",
-    ":dictation_input_controller",
-    ":dictation_locale_info",
-    "../common:event_generator",
-    "../common:key_code",
-  ]
-}
-
-js_library("speech_parsing") {
-  sources = [
-    "dictation/parse/input_text_strategy.js",
-    "dictation/parse/parse_strategy.js",
-    "dictation/parse/pumpkin/pumpkin_constants.js",
-    "dictation/parse/pumpkin_parse_strategy.js",
-    "dictation/parse/sandboxed_pumpkin_tagger.js",
-    "dictation/parse/simple_parse_strategy.js",
-    "dictation/parse/speech_parser.js",
-  ]
-  deps = [
-    ":dictation_input_controller",
-    ":dictation_locale_info",
-    ":dictation_macros",
-  ]
-  externs_list = [ "$externs_path/accessibility_private.js" ]
-}
-
-js_library("dictation_metrics") {
-  sources = [ "dictation/metrics_utils.js" ]
-  externs_list = [
-    "$externs_path/metrics_private.js",
-    "$externs_path/speech_recognition_private.js",
-  ]
-}
-
-js_library("dictation_focus_handler") {
-  sources = [ "dictation/focus_handler.js" ]
-  deps = [
-    "../common:automation_predicate",
-    "../common:constants",
-  ]
-  externs_list = [ "$externs_path/automation.js" ]
-}
-
-js_library("dictation_editing_util") {
-  sources = [ "dictation/editing_util.js" ]
-  deps = [ ":dictation_locale_info" ]
-}
-
-js_library("dictation_locale_info") {
-  sources = [ "dictation/locale_info.js" ]
-}
-
-js_library("dictation_context_checker") {
-  sources = [ "dictation/context_checker.js" ]
-}
-
-js_library("gameface") {
-  sources = [ "gameface/gameface.js" ]
+group("closure_compile") {
 }
 
 action("pumpkin_test_files") {
@@ -325,4 +224,26 @@ action("pumpkin_test_files") {
     pumpkin_output_dir,
   ]
   outputs = files_to_extract
+}
+
+if (include_mediapipe_task_vision_files_for_facegaze) {
+  action("extract_mediapipe_task_vision_files") {
+    out_dir = "$accessibility_common_dir/facegaze/mediapipe_task_vision"
+    script = "facegaze/mediapipe_task_vision/unpack.py"
+    sources = [ "facegaze/mediapipe_task_vision/mediapipe_task_vision.tar.xz" ]
+    files_to_extract = [
+      "$out_dir/face_landmarker.task",
+      "$out_dir/task_vision.js",
+      "$out_dir/vision_wasm_internal.js",
+      "$out_dir/vision_wasm_internal.wasm",
+    ]
+    args = [
+      "--dest-dir=resources/chromeos/accessibility/accessibility_common/facegaze/mediapipe_task_vision",
+      rebase_path("facegaze/mediapipe_task_vision/mediapipe_task_vision.tar.xz",
+                  root_build_dir),
+      string_join(",", files_to_extract),
+      out_dir,
+    ]
+    outputs = files_to_extract
+  }
 }

@@ -20,21 +20,21 @@ enum class Nestable : uint8_t {
   kNestable,
 };
 
-// Contains data about a pending task. Stored in TaskQueue and DelayedTaskQueue
-// for use by classes that queue and execute tasks.
-struct BASE_EXPORT PendingTask {
-  PendingTask();
-  PendingTask(const Location& posted_from,
-              OnceClosure task,
-              TimeTicks queue_time = TimeTicks(),
-              TimeTicks delayed_run_time = TimeTicks(),
-              TimeDelta leeway = TimeDelta(),
-              subtle::DelayPolicy delay_policy =
-                  subtle::DelayPolicy::kFlexibleNoSooner);
-  PendingTask(PendingTask&& other);
-  ~PendingTask();
+// Copyable data part of PendingTask.
+struct BASE_EXPORT TaskMetadata {
+  TaskMetadata();
+  explicit TaskMetadata(const Location& posted_from,
+                        TimeTicks queue_time = TimeTicks(),
+                        TimeTicks delayed_run_time = TimeTicks(),
+                        TimeDelta leeway = TimeDelta(),
+                        subtle::DelayPolicy delay_policy =
+                            subtle::DelayPolicy::kFlexibleNoSooner);
+  TaskMetadata(TaskMetadata&& other);
+  TaskMetadata(const TaskMetadata& other);
+  ~TaskMetadata();
 
-  PendingTask& operator=(PendingTask&& other);
+  TaskMetadata& operator=(TaskMetadata&& other);
+  TaskMetadata& operator=(const TaskMetadata& other);
 
   // Returns the time at which this task should run. This is |delayed_run_time|
   // for a delayed task, |queue_time| otherwise.
@@ -42,9 +42,6 @@ struct BASE_EXPORT PendingTask {
 
   TimeTicks earliest_delayed_run_time() const;
   TimeTicks latest_delayed_run_time() const;
-
-  // The task to run.
-  OnceClosure task;
 
   // The site this PendingTask was posted from.
   Location posted_from;
@@ -85,6 +82,27 @@ struct BASE_EXPORT PendingTask {
   int sequence_num = 0;
 
   bool task_backtrace_overflow = false;
+};
+
+// Contains data about a pending task. Stored in TaskQueue and DelayedTaskQueue
+// for use by classes that queue and execute tasks.
+struct BASE_EXPORT PendingTask : public TaskMetadata {
+  PendingTask();
+  PendingTask(const Location& posted_from,
+              OnceClosure task,
+              TimeTicks queue_time = TimeTicks(),
+              TimeTicks delayed_run_time = TimeTicks(),
+              TimeDelta leeway = TimeDelta(),
+              subtle::DelayPolicy delay_policy =
+                  subtle::DelayPolicy::kFlexibleNoSooner);
+  PendingTask(const TaskMetadata& metadata, OnceClosure task);
+  PendingTask(PendingTask&& other);
+  ~PendingTask();
+
+  PendingTask& operator=(PendingTask&& other);
+
+  // The task to run.
+  OnceClosure task;
 };
 
 }  // namespace base

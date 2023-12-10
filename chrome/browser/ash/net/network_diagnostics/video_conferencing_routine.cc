@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/net/network_diagnostics/video_conferencing_routine.h"
 
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -15,7 +16,6 @@
 #include "content/public/browser/storage_partition.h"
 #include "net/base/net_errors.h"
 #include "services/network/public/mojom/network_context.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 namespace network_diagnostics {
@@ -64,7 +64,7 @@ void VideoConferencingRoutine::Run() {
 }
 
 void VideoConferencingRoutine::AnalyzeResultsAndExecuteCallback() {
-  absl::optional<std::string> support_details = kSupportDetails;
+  std::optional<std::string> support_details = kSupportDetails;
   set_verdict(mojom::RoutineVerdict::kProblem);
   if (!open_udp_port_found_) {
     problems_.push_back(mojom::VideoConferencingProblem::kUdpFailure);
@@ -77,7 +77,7 @@ void VideoConferencingRoutine::AnalyzeResultsAndExecuteCallback() {
   }
   if (problems_.empty()) {
     set_verdict(mojom::RoutineVerdict::kNoProblem);
-    support_details = absl::nullopt;
+    support_details = std::nullopt;
   }
   set_problems(mojom::RoutineProblems::NewVideoConferencingProblems(problems_));
   ExecuteCallback();

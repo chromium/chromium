@@ -5,8 +5,9 @@
 #ifndef ASH_ASSISTANT_UTIL_RESOURCE_UTIL_H_
 #define ASH_ASSISTANT_UTIL_RESOURCE_UTIL_H_
 
+#include <optional>
+
 #include "base/component_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "url/gurl.h"
 
@@ -50,7 +51,7 @@ GURL AppendOrReplaceColorParam(const GURL& resource_link, SkColor color);
 // Returns a resource link for the specified icon.
 COMPONENT_EXPORT(ASSISTANT_UTIL)
 GURL CreateIconResourceLink(IconName name,
-                            absl::optional<SkColor> color = absl::nullopt);
+                            std::optional<SkColor> color = std::nullopt);
 
 // Returns an ImageSkia for the icon resource link specified by |url|. If |url|
 // is *not* an icon resource link, the return value is null. If |size| is not

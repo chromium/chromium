@@ -6,66 +6,69 @@
 
 namespace page_load_metrics {
 
-NormalizedInteractionLatencies::NormalizedInteractionLatencies() = default;
-NormalizedInteractionLatencies::~NormalizedInteractionLatencies() = default;
-
-NormalizedResponsivenessMetrics::NormalizedResponsivenessMetrics() = default;
-NormalizedResponsivenessMetrics::~NormalizedResponsivenessMetrics() = default;
-
 ResponsivenessMetricsNormalization::ResponsivenessMetricsNormalization() =
     default;
 ResponsivenessMetricsNormalization::~ResponsivenessMetricsNormalization() =
     default;
 
-// static
-base::TimeDelta ResponsivenessMetricsNormalization::ApproximateHighPercentile(
-    uint64_t num_interactions,
-    std::priority_queue<base::TimeDelta,
-                        std::vector<base::TimeDelta>,
-                        std::greater<>> worst_ten_latencies) {
-  DCHECK(num_interactions);
-  int index = std::max(0, static_cast<int>(worst_ten_latencies.size()) - 1 -
-                              static_cast<int>(num_interactions /
-                                               kHighPercentileUpdateFrequency));
-  for (; index > 0; index--) {
-    worst_ten_latencies.pop();
+absl::optional<mojom::UserInteractionLatency>
+ResponsivenessMetricsNormalization::ApproximateHighPercentile() const {
+  absl::optional<mojom::UserInteractionLatency> approximate_high_percentile;
+  if (worst_ten_latencies_.size()) {
+    uint64_t index =
+        std::min(static_cast<uint64_t>(worst_ten_latencies_.size() - 1),
+                 static_cast<uint64_t>(num_user_interactions_ /
+                                       kHighPercentileUpdateFrequency));
+    approximate_high_percentile = worst_ten_latencies_[index];
   }
+  return approximate_high_percentile;
+}
 
-  return worst_ten_latencies.top();
+absl::optional<mojom::UserInteractionLatency>
+ResponsivenessMetricsNormalization::worst_latency() const {
+  absl::optional<mojom::UserInteractionLatency> worst_latency;
+  if (worst_ten_latencies_.size()) {
+    worst_latency = worst_ten_latencies_[0];
+  }
+  return worst_latency;
 }
 
 void ResponsivenessMetricsNormalization::AddNewUserInteractionLatencies(
     uint64_t num_new_interactions,
     const mojom::UserInteractionLatencies& max_event_durations) {
-  uint64_t last_num_user_interactions =
-      normalized_responsiveness_metrics_.num_user_interactions;
-  normalized_responsiveness_metrics_.num_user_interactions +=
-      num_new_interactions;
-  DCHECK(max_event_durations.is_user_interaction_latencies() ||
-         max_event_durations.is_worst_interaction_latency());
+  num_user_interactions_ += num_new_interactions;
   // Normalize max event durations.
-  NormalizeUserInteractionLatencies(
-      max_event_durations,
-      normalized_responsiveness_metrics_.normalized_max_event_durations,
-      last_num_user_interactions,
-      normalized_responsiveness_metrics_.num_user_interactions);
+  NormalizeUserInteractionLatencies(max_event_durations);
+}
+
+void ResponsivenessMetricsNormalization::ClearAllUserInteractionLatencies() {
+  num_user_interactions_ = 0;
+  worst_ten_latencies_ = std::vector<mojom::UserInteractionLatency>();
 }
 
 void ResponsivenessMetricsNormalization::NormalizeUserInteractionLatencies(
-    const mojom::UserInteractionLatencies& user_interaction_latencies,
-    NormalizedInteractionLatencies& normalized_event_durations,
-    uint64_t last_num_user_interactions,
-    uint64_t current_num_user_interactions) {
+    const mojom::UserInteractionLatencies& user_interaction_latencies) {
   DCHECK(user_interaction_latencies.is_user_interaction_latencies());
+
+  // Insert each latency into the list if it is one of the worst ten seen so
+  // far. Use inplace_merge to keep the list sorted after appending an element.
   for (const mojom::UserInteractionLatencyPtr& user_interaction :
        user_interaction_latencies.get_user_interaction_latencies()) {
-    normalized_event_durations.worst_latency =
-        std::max(normalized_event_durations.worst_latency,
-                 user_interaction->interaction_latency);
-    normalized_event_durations.worst_ten_latencies.push(
-        user_interaction->interaction_latency);
-    if (normalized_event_durations.worst_ten_latencies.size() == 11) {
-      normalized_event_durations.worst_ten_latencies.pop();
+    if (worst_ten_latencies_.size() < 10) {
+      worst_ten_latencies_.push_back(*user_interaction);
+    } else if (user_interaction->interaction_latency >
+               worst_ten_latencies_.back().interaction_latency) {
+      worst_ten_latencies_.back() = *user_interaction;
+    } else {
+      continue;
+    }
+    if (worst_ten_latencies_.size() > 1) {
+      std::inplace_merge(
+          worst_ten_latencies_.begin(), std::prev(worst_ten_latencies_.end()),
+          worst_ten_latencies_.end(),
+          [](const auto& latency1, const auto& latency2) {
+            return latency1.interaction_latency > latency2.interaction_latency;
+          });
     }
   }
 }

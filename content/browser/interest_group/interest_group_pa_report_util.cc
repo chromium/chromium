@@ -15,8 +15,11 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/flat_map.h"
+#include "base/feature_list.h"
 #include "base/notreached.h"
 #include "base/numerics/clamped_math.h"
+#include "components/aggregation_service/aggregation_coordinator_utils.h"
+#include "components/aggregation_service/features.h"
 #include "content/browser/private_aggregation/private_aggregation_manager.h"
 #include "content/common/content_export.h"
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom.h"
@@ -24,6 +27,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/private_aggregation/aggregatable_report.mojom.h"
 #include "third_party/blink/public/mojom/private_aggregation/private_aggregation_host.mojom.h"
 #include "url/origin.h"
@@ -315,9 +319,9 @@ void SplitContributionsIntoBatchesThenSendToHost(
     std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr> requests,
     PrivateAggregationManager& pa_manager,
     const url::Origin& reporting_origin,
+    absl::optional<url::Origin> aggregation_coordinator_origin,
     const url::Origin& main_frame_origin) {
   CHECK_EQ(reporting_origin.scheme(), url::kHttpsScheme);
-  CHECK_EQ(main_frame_origin.scheme(), url::kHttpsScheme);
 
   // Split the vector of requests into those with matching debug mode details.
   std::map<
@@ -351,22 +355,36 @@ void SplitContributionsIntoBatchesThenSendToHost(
         std::move(request->contribution->get_histogram_contribution()));
   }
 
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kPrivateAggregationApiMultipleCloudProviders) ||
+      !base::FeatureList::IsEnabled(
+          aggregation_service::kAggregationServiceMultipleCloudProviders)) {
+    // Override with the default if a non-default coordinator is specified when
+    // the feature is disabled.
+    aggregation_coordinator_origin = absl::nullopt;
+  }
+
+  if (aggregation_coordinator_origin &&
+      !aggregation_service::IsAggregationCoordinatorOriginAllowed(
+          aggregation_coordinator_origin.value())) {
+    // Ignore contributions that use an invalid coordinator.
+    return;
+  }
+
   for (auto& [debug_mode_details, contributions] : contributions_map) {
     mojo::Remote<blink::mojom::PrivateAggregationHost> remote_host;
 
-    // TODO(crbug.com/1481254): Allow specifying the
-    // `aggregation_coordinator_origin`.
     bool bound = pa_manager.BindNewReceiver(
         /*worklet_origin=*/reporting_origin,
         /*top_frame_origin=*/main_frame_origin,
         PrivateAggregationBudgetKey::Api::kProtectedAudience,
         /*context_id=*/absl::nullopt,
-        /*timeout=*/absl::nullopt,
-        /*aggregation_coordinator_origin=*/absl::nullopt,
+        /*timeout=*/absl::nullopt, aggregation_coordinator_origin,
         remote_host.BindNewPipeAndPassReceiver());
 
     // The worklet origin should be potentially trustworthy (and no context ID
-    // is set), so this should always succeed.
+    // is set) and we checked the coordinator origin, so this should always
+    // succeed.
     CHECK(bound);
 
     if (debug_mode_details->is_enabled) {

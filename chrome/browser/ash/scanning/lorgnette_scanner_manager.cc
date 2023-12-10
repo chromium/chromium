@@ -33,6 +33,9 @@ namespace ash {
 
 namespace {
 
+// Used as the client ID when calling ListScanners to retrieve scanner names.
+constexpr char kListScannersDiscoveryClientId[] = "GetScannerNames";
+
 // A list of Epson models that do not rotate alternating ADF scanned pages
 // to be excluded in IsRotateAlternate().
 constexpr char kEpsonNoFlipModels[] =
@@ -176,18 +179,20 @@ class LorgnetteScannerManagerImpl final : public LorgnetteScannerManager {
   void GetScannerNames(GetScannerNamesCallback callback) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_);
     GetLorgnetteManagerClient()->ListScanners(
+        kListScannersDiscoveryClientId,
         /*local_only=*/false,
         base::BindOnce(&LorgnetteScannerManagerImpl::OnListScannerNamesResponse,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 
   // LorgnetteScannerManager:
-  void GetScannerInfoList(LocalScannerFilter local_only,
+  void GetScannerInfoList(const std::string& client_id,
+                          LocalScannerFilter local_only,
                           SecureScannerFilter secure_only,
                           GetScannerInfoListCallback callback) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_);
     GetLorgnetteManagerClient()->ListScanners(
-        (local_only == LocalScannerFilter::kLocalScannersOnly),
+        client_id, (local_only == LocalScannerFilter::kLocalScannersOnly),
         base::BindOnce(&LorgnetteScannerManagerImpl::OnListScannerInfoResponse,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback),
                        local_only, secure_only));
@@ -227,6 +232,24 @@ class LorgnetteScannerManagerImpl final : public LorgnetteScannerManager {
     GetLorgnetteManagerClient()->CloseScanner(
         request,
         base::BindOnce(&LorgnetteScannerManagerImpl::OnCloseScannerResponse,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  }
+
+  // LorgnetteScannerManager:
+  void SetOptions(const lorgnette::SetOptionsRequest& request,
+                  SetOptionsCallback callback) override {
+    GetLorgnetteManagerClient()->SetOptions(
+        request,
+        base::BindOnce(&LorgnetteScannerManagerImpl::OnSetOptionsResponse,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  }
+
+  // LorgnetteScannerManager:
+  void GetCurrentConfig(const lorgnette::GetCurrentConfigRequest& request,
+                        GetCurrentConfigCallback callback) override {
+    GetLorgnetteManagerClient()->GetCurrentConfig(
+        request,
+        base::BindOnce(&LorgnetteScannerManagerImpl::OnGetCurrentConfigResponse,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 
@@ -430,6 +453,18 @@ class LorgnetteScannerManagerImpl final : public LorgnetteScannerManager {
     std::move(callback).Run(response);
   }
 
+  void OnSetOptionsResponse(
+      SetOptionsCallback callback,
+      absl::optional<lorgnette::SetOptionsResponse> response) {
+    std::move(callback).Run(response);
+  }
+
+  void OnGetCurrentConfigResponse(
+      GetCurrentConfigCallback callback,
+      absl::optional<lorgnette::GetCurrentConfigResponse> response) {
+    std::move(callback).Run(response);
+  }
+
   void OnStartPreparedScanResponse(
       StartPreparedScanCallback callback,
       absl::optional<lorgnette::StartPreparedScanResponse> response) {
@@ -505,6 +540,7 @@ class LorgnetteScannerManagerImpl final : public LorgnetteScannerManager {
         info.set_name(device_name.device_name);
         info.set_manufacturer(scanner.manufacturer);
         info.set_model(scanner.model);
+        info.set_display_name(scanner.display_name);
         // TODO(nmuggli): See if there's a way to determine the type of scanner.
         info.set_type("multi-function peripheral");
         info.set_device_uuid(uuid);
@@ -532,6 +568,7 @@ class LorgnetteScannerManagerImpl final : public LorgnetteScannerManager {
                               const lorgnette::ListScannersResponse& response,
                               GetScannerInfoListCallback callback) {
     lorgnette::ListScannersResponse combined_results;
+    combined_results.set_result(response.result());
 
     for (const auto& scanner : response.scanners()) {
       if (ShouldIncludeScanner(scanner, local_only, secure_only)) {

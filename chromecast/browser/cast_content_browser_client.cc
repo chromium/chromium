@@ -93,7 +93,6 @@
 #include "net/ssl/ssl_cert_request_info.h"
 #include "net/ssl/ssl_private_key.h"
 #include "net/url_request/url_request_context_getter.h"
-#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/network_switches.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
@@ -281,7 +280,6 @@ CastContentBrowserClient::CreateAudioManager(
       base::BindRepeating(&CastContentBrowserClient::GetCmaBackendFactory,
                           base::Unretained(this)),
       content::GetUIThreadTaskRunner({}), GetMediaTaskRunner(),
-      browser_main_parts()->connector(),
       BUILDFLAG(ENABLE_CAST_AUDIO_MANAGER_MIXER));
 #elif BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(kEnableChromeAudioManagerAndroid)) {
@@ -294,14 +292,13 @@ CastContentBrowserClient::CreateAudioManager(
       std::move(audio_thread), audio_log_factory, cast_session_id_map,
       base::BindRepeating(&CastContentBrowserClient::GetCmaBackendFactory,
                           base::Unretained(this)),
-      GetMediaTaskRunner(), browser_main_parts()->connector());
+      GetMediaTaskRunner());
 #else
   return std::make_unique<media::CastAudioManager>(
       std::move(audio_thread), audio_log_factory, cast_session_id_map,
       base::BindRepeating(&CastContentBrowserClient::GetCmaBackendFactory,
                           base::Unretained(this)),
       content::GetUIThreadTaskRunner({}), GetMediaTaskRunner(),
-      browser_main_parts()->connector(),
       BUILDFLAG(ENABLE_CAST_AUDIO_MANAGER_MIXER));
 #endif
 }
@@ -692,14 +689,14 @@ bool CastContentBrowserClient::IsBufferingEnabled() {
   return true;
 }
 
-absl::optional<service_manager::Manifest>
+std::optional<service_manager::Manifest>
 CastContentBrowserClient::GetServiceManifestOverlay(
     base::StringPiece service_name) {
   if (service_name == ServiceManagerContext::kBrowserServiceName) {
     return GetCastContentBrowserOverlayManifest();
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 std::vector<service_manager::Manifest>
@@ -824,13 +821,12 @@ CastContentBrowserClient::CreateThrottlesForNavigation(
 
 void CastContentBrowserClient::RegisterNonNetworkNavigationURLLoaderFactories(
     int frame_tree_node_id,
-    ukm::SourceIdObj ukm_source_id,
     NonNetworkURLLoaderFactoryMap* factories) {}
 
 void CastContentBrowserClient::RegisterNonNetworkSubresourceURLLoaderFactories(
     int render_process_id,
     int render_frame_id,
-    const absl::optional<url::Origin>& request_initiator_origin,
+    const std::optional<url::Origin>& request_initiator_origin,
     NonNetworkURLLoaderFactoryMap* factories) {
   if (render_frame_id == MSG_ROUTING_NONE) {
     LOG(ERROR) << "Service worker not supported.";
@@ -940,7 +936,7 @@ void CastContentBrowserClient::BindMediaRenderer(
           GetCmaBackendFactory(), std::move(media_task_runner),
           GetVideoModeSwitcher(), GetVideoResolutionPolicy(),
           base::UnguessableToken::Create(), nullptr /* frame_interfaces */,
-          browser_main_parts()->connector(), true /* is_buffering_enabled */),
+          true /* is_buffering_enabled */),
       std::move(receiver));
 }
 

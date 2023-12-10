@@ -4,6 +4,10 @@
 
 // https://w3c.github.io/mediacapture-screen-share/#dom-capturecontroller
 
+// For APIs marked as RuntimeEnabled=CapturedSurfaceControl, see the spec at:
+// https://screen-share.github.io/captured-surface-control/
+// TODO(crbug.com/1466247): Measure these APIs.
+
 enum CaptureStartFocusBehavior {
   "focus-capturing-application",
   "focus-captured-surface",
@@ -26,4 +30,17 @@ interface CaptureController : EventTarget {
 
   // https://screen-share.github.io/mouse-events/#capture-controller-extensions
   [RuntimeEnabled=CapturedMouseEvents] attribute EventHandler oncapturedmousechange;
+
+  [RuntimeEnabled=CapturedSurfaceControl, CallWith=ScriptState]
+  Promise<undefined> sendWheel(CapturedWheelAction action);
+
+  [RuntimeEnabled=CapturedSurfaceControl] long getMinZoomLevel();
+  [RuntimeEnabled=CapturedSurfaceControl] long getMaxZoomLevel();
+
+  [RuntimeEnabled=CapturedSurfaceControl, CallWith = ScriptState] Promise<long> getZoomLevel();
+  [RuntimeEnabled=CapturedSurfaceControl]
+  Promise<undefined> setZoomLevel(long zoomLevel);
+
+  [RuntimeEnabled=CapturedSurfaceControl]
+  attribute EventHandler oncapturedzoomlevelchange;
 };

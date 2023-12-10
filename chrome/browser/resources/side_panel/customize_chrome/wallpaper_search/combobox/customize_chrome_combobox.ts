@@ -10,7 +10,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {getTemplate} from './customize_chrome_combobox.html.js';
 
 /* Selector for keyboard focusable items in the dropdown. */
-const HIGHLIGHTABLE_ITEMS_SELECTOR = '[role=group], [role=option]';
+const HIGHLIGHTABLE_ITEMS_SELECTOR = '[role=group] > label, [role=option]';
 
 /* Selector for selectable options in the dropdown. */
 const SELECTABLE_ITEMS_SELECTOR = '[role=option]';
@@ -46,6 +46,11 @@ export class CustomizeChromeCombobox extends PolymerElement {
       },
       highlightedElement_: Object,
       label: String,
+      rightAlignDropbox: {
+        type: Boolean,
+        value: false,
+        reflectToAttribute: true,
+      },
       selectedElement_: {
         type: Object,
         observer: 'onSelectedElementChanged_',
@@ -53,7 +58,7 @@ export class CustomizeChromeCombobox extends PolymerElement {
       value: {
         type: String,
         notify: true,
-        observer: 'onValueChanged_',
+        observer: 'selectItemFromValue_',
       },
     };
   }
@@ -62,6 +67,7 @@ export class CustomizeChromeCombobox extends PolymerElement {
   private highlightableElements_: HTMLElement[] = [];
   private highlightedElement_: HTMLElement|null = null;
   label: string;
+  private lastHighlightWasByKeyboard_: boolean = false;
   private domObserver_: MutationObserver|null = null;
   private selectedElement_: OptionElement|null = null;
   value: string|undefined;
@@ -98,16 +104,21 @@ export class CustomizeChromeCombobox extends PolymerElement {
     return this.label;
   }
 
-  private highlightElement_(element: HTMLElement|null) {
+  private highlightElement_(element: HTMLElement|null, byKeyboard: boolean) {
     if (this.highlightedElement_) {
       this.highlightedElement_.removeAttribute('highlighted');
     }
 
     if (element) {
       element.toggleAttribute('highlighted', true);
+
+      if (byKeyboard) {
+        element.scrollIntoView({block: 'nearest'});
+      }
     }
 
     this.highlightedElement_ = element;
+    this.lastHighlightWasByKeyboard_ = byKeyboard;
   }
 
   private onDomChange_() {
@@ -119,6 +130,10 @@ export class CustomizeChromeCombobox extends PolymerElement {
         element.id = `comboboxItem${itemCount++}`;
       }
     });
+
+    if (this.value) {
+      this.selectItemFromValue_();
+    }
   }
 
   private onDropdownClick_(event: MouseEvent) {
@@ -142,8 +157,45 @@ export class CustomizeChromeCombobox extends PolymerElement {
     e.preventDefault();
   }
 
+  private onDropdownPointerevent_(event: PointerEvent) {
+    const highlightableTarget =
+        event.composedPath().find(
+            target => target instanceof HTMLElement &&
+                target.matches(HIGHLIGHTABLE_ITEMS_SELECTOR)) as HTMLElement;
+    if (!highlightableTarget ||
+        this.highlightedElement_ === highlightableTarget) {
+      return;
+    }
+
+    this.highlightElement_(highlightableTarget, false);
+  }
+
+  private onDropdownPointermove_(event: PointerEvent) {
+    if (!this.lastHighlightWasByKeyboard_) {
+      // Ignore any pointermove events if the last highlight was done by
+      // pointer. This is to avoid re-calculating a potentially highlighted item
+      // any time the pointer moves within an item.
+      return;
+    }
+
+    this.onDropdownPointerevent_(event);
+  }
+
+  private onDropdownPointerover_(event: PointerEvent) {
+    if (this.lastHighlightWasByKeyboard_) {
+      // Ignore pointerover events if the last highlight was done by keyboard,
+      // as pointermove events should catch any pointer-related events. This
+      // also avoids cases where a pointerover event is fired when a keyboard
+      // highlight causes the dropdown to scroll, leading to the pointer
+      // being over a new element.
+      return;
+    }
+
+    this.onDropdownPointerevent_(event);
+  }
+
   private onExpandedChange_() {
-    this.highlightElement_(this.selectedElement_);
+    this.highlightElement_(this.selectedElement_, false);
   }
 
   private onInputClick_() {
@@ -185,7 +237,7 @@ export class CustomizeChromeCombobox extends PolymerElement {
     }
 
     if (elementToHighlight) {
-      this.highlightElement_(elementToHighlight);
+      this.highlightElement_(elementToHighlight, true);
     }
   }
 
@@ -237,7 +289,7 @@ export class CustomizeChromeCombobox extends PolymerElement {
       index = 0;
     }
 
-    this.highlightElement_(this.highlightableElements_[index]!);
+    this.highlightElement_(this.highlightableElements_[index]!, true);
   }
 
   private onSelectedElementChanged_() {
@@ -249,12 +301,13 @@ export class CustomizeChromeCombobox extends PolymerElement {
     this.value = this.selectedElement_.value;
   }
 
-  private onValueChanged_() {
+  private selectItemFromValue_() {
     if (!this.value) {
       return;
     }
 
-    if (this.selectedElement_ && this.selectedElement_.value === this.value) {
+    if (this.selectedElement_?.isConnected &&
+        this.selectedElement_.value === this.value) {
       // Selected element matches the value. Nothing left to do.
       return;
     }
@@ -272,6 +325,7 @@ export class CustomizeChromeCombobox extends PolymerElement {
     }
 
     if (!item.matches(SELECTABLE_ITEMS_SELECTOR)) {
+      item.click();
       return false;
     }
 

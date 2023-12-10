@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="es">
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> de las pestañas no se han usado recientemente. ¿Quieres cerrarlas?</translation>
+<translation id="1155815720264022949">¿Quieres cerrar las pestañas antiguas?</translation>
 <translation id="1215127405478249895">Revisar pestañas</translation>
 <translation id="125153950246128346">Pulsa para ver otra pestaña</translation>
 <translation id="1499635324672558517">¿Cerrar todas las pestañas de Incógnito?</translation>
@@ -46,9 +47,11 @@
 <translation id="5073204694187207510">Ocultar la cuadrícula en pantalla completa</translation>
 <translation id="5076161749301278626">¿Ver reseñas sobre la tienda?</translation>
 <translation id="5082793167783849073">Crea un grupo para comparar páginas rápidamente. Para comenzar, mantén pulsado un enlace.</translation>
+<translation id="5303274951032363933">{TABS_COUNT,plural, =1{Tienes <ph name="TABS_COUNT_ONE" /> pestaña que no has usado recientemente}other{Tienes <ph name="TABS_COUNT_MANY" /> pestañas que no has usado recientemente}}</translation>
 <translation id="5339733443032484186">Tu última pestaña</translation>
 <translation id="5490235265819901748">Grupo de pestañas desplegado</translation>
 <translation id="5494920125229734069">Seleccionar todo</translation>
+<translation id="5545379293264651575">Cerrar sin revisar</translation>
 <translation id="5556417849629758491">Ver información de la tienda, opción disponible cerca de la parte superior de la pantalla</translation>
 <translation id="5558362125926932819">Cerrar grupo de pestañas con <ph name="NUMBER_OF_TABS" /> pestañas</translation>
 <translation id="5580090775658607195">Se han agrupado <ph name="TAB_COUNT" /> pestañas</translation>
@@ -85,7 +88,6 @@
 <translation id="7885132941432959125">Mover pestaña a la derecha</translation>
 <translation id="7966321538264951561">Cerrar las sugerencias.</translation>
 <translation id="8029301326595421733">Información sobre esta tienda abierta a altura completa</translation>
-<translation id="814503310257431685">Ver todo</translation>
 <translation id="8205266828577616993">Subir pestaña</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Cerrar <ph name="TABS_COUNT_ONE" /> pestaña seleccionada}other{Cerrar <ph name="TABS_COUNT_MANY" /> pestañas seleccionadas}}</translation>
 <translation id="8398929769197326728">Nueva carpeta - <ph name="CURRENT_TIMESTAMP_MS" /></translation>

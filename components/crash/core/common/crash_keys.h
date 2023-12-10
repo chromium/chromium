@@ -38,9 +38,12 @@ void ResetCommandLineForTesting();
 
 // Sets the printer info. `data` should contain no more than 4 strings.
 // Each string might get truncated if necessary.
+// If `data` is empty then the `printer_name` will be used.  This provides some
+// minimal information when there are issues getting the printer's info.
 class ScopedPrinterInfo {
  public:
-  explicit ScopedPrinterInfo(std::vector<std::string> data);
+  ScopedPrinterInfo(const std::string& printer_name,
+                    std::vector<std::string> data);
 
   ScopedPrinterInfo(const ScopedPrinterInfo&) = delete;
   ScopedPrinterInfo& operator=(const ScopedPrinterInfo&) = delete;

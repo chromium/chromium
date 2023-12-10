@@ -4,10 +4,15 @@
 
 #include "chrome/browser/ui/tabs/organization/trigger_policies.h"
 
+#include <cmath>
 #include <numbers>
 
+#include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "chrome/browser/metrics/desktop_session_duration/desktop_session_duration_tracker.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/tabs/organization/prefs.h"
+#include "components/prefs/pref_service.h"
 
 UsageTickClock::UsageTickClock(const base::TickClock* base_clock)
     : base_clock_(base_clock), start_time_(base_clock_->NowTicks()) {
@@ -50,29 +55,59 @@ void UsageTickClock::OnSessionEnded(base::TimeDelta session_length,
   // Ignore `session_length`/`session_end`; they don't come from `base_clock_`.
   usage_time_in_completed_sessions_ +=
       base_clock_->NowTicks() - current_usage_session_start_time_.value();
-  current_usage_session_start_time_ = absl::nullopt;
+  current_usage_session_start_time_ = std::nullopt;
+}
+
+ProfilePrefBackoffLevelProvider::ProfilePrefBackoffLevelProvider(
+    content::BrowserContext* context)
+    : prefs_(Profile::FromBrowserContext(context)->GetPrefs()) {}
+
+ProfilePrefBackoffLevelProvider::~ProfilePrefBackoffLevelProvider() = default;
+
+unsigned int ProfilePrefBackoffLevelProvider::Get() const {
+  return prefs_->GetInteger(
+      tab_organization_prefs::kTabOrganizationNudgeBackoffCount);
+}
+
+void ProfilePrefBackoffLevelProvider::Increment() {
+  prefs_->SetInteger(tab_organization_prefs::kTabOrganizationNudgeBackoffCount,
+                     Get() + 1);
+}
+
+void ProfilePrefBackoffLevelProvider::Decrement() {
+  prefs_->SetInteger(tab_organization_prefs::kTabOrganizationNudgeBackoffCount,
+                     std::max(1u, Get()) - 1);
 }
 
 TargetFrequencyTriggerPolicy::TargetFrequencyTriggerPolicy(
     std::unique_ptr<base::TickClock> clock,
-    base::TimeDelta period)
+    base::TimeDelta base_period,
+    float backoff_base,
+    std::unique_ptr<BackoffLevelProvider> backoff_level_provider)
     : clock_(std::move(clock)),
-      period_(period),
+      base_period_(base_period),
+      backoff_base_(backoff_base),
+      backoff_level_provider_(std::move(backoff_level_provider)),
       cycle_start_time_(clock_->NowTicks()) {}
 
 TargetFrequencyTriggerPolicy::~TargetFrequencyTriggerPolicy() = default;
 
 bool TargetFrequencyTriggerPolicy::ShouldTrigger(float score) {
   const base::TimeTicks current_time = clock_->NowTicks();
+  const base::TimeDelta period =
+      base_period_ * std::pow(backoff_base_, backoff_level_provider_->Get());
 
   // Restart the cycle if `period_` has elapsed.
-  if (current_time > cycle_start_time_ + period_) {
-    cycle_start_time_ += period_;
-    best_score = absl::nullopt;
+  if (current_time > cycle_start_time_ + period) {
+    cycle_start_time_ += period;
+    best_score = std::nullopt;
+    base::UmaHistogramBoolean("TabOrganization.Trigger.TriggeredInPeriod",
+                              has_triggered_);
+    has_triggered_ = false;
   }
 
   // Update the best score if we're in the observation phase.
-  const base::TimeDelta observation_period = period_ / std::numbers::e_v<float>;
+  const base::TimeDelta observation_period = period / std::numbers::e_v<float>;
   if (current_time < cycle_start_time_ + observation_period) {
     best_score =
         best_score.has_value() ? std::max(best_score.value(), score) : score;
@@ -80,12 +115,21 @@ bool TargetFrequencyTriggerPolicy::ShouldTrigger(float score) {
   }
 
   // Trigger if we haven't triggered yet and have a new high score.
-  if (best_score.has_value() && score > best_score) {
-    best_score = absl::nullopt;
+  if (!has_triggered_ && best_score.has_value() && score > best_score) {
+    best_score = std::nullopt;
+    has_triggered_ = true;
     return true;
   }
 
   return false;
+}
+
+void TargetFrequencyTriggerPolicy::OnTriggerSucceeded() {
+  backoff_level_provider_->Decrement();
+}
+
+void TargetFrequencyTriggerPolicy::OnTriggerFailed() {
+  backoff_level_provider_->Increment();
 }
 
 bool GreedyTriggerPolicy::ShouldTrigger(float score) {

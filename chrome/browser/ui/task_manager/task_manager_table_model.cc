@@ -891,13 +891,13 @@ void TaskManagerTableModel::ToggleColumnVisibility(int column_id) {
   }
 }
 
-absl::optional<size_t> TaskManagerTableModel::GetRowForWebContents(
+std::optional<size_t> TaskManagerTableModel::GetRowForWebContents(
     content::WebContents* web_contents) {
   TaskId task_id =
       observed_task_manager()->GetTaskIdForWebContents(web_contents);
   auto index = base::ranges::find(tasks_, task_id);
   if (index == tasks_.end())
-    return absl::nullopt;
+    return std::nullopt;
   return static_cast<size_t>(index - tasks_.begin());
 }
 

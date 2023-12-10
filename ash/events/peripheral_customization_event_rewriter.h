@@ -8,8 +8,10 @@
 #include "ash/ash_export.h"
 #include "ash/public/mojom/input_device_settings.mojom-forward.h"
 #include "ash/public/mojom/input_device_settings.mojom.h"
+#include "ash/system/input_device_settings/input_device_settings_metrics_manager.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "ui/events/event.h"
@@ -31,6 +33,12 @@ class ASH_EXPORT PeripheralCustomizationEventRewriter
 
   enum class DeviceType { kMouse, kGraphicsTablet };
 
+  enum class PeripheralCustomizationMetricsType {
+    kMouse,
+    kGraphicsTablet,
+    kGraphicsTabletPen
+  };
+
   struct DeviceIdButton {
     int device_id;
     mojom::ButtonPtr button;
@@ -44,6 +52,16 @@ class ASH_EXPORT PeripheralCustomizationEventRewriter
                           const DeviceIdButton& right);
   };
 
+  struct RemappingActionResult {
+    raw_ref<mojom::RemappingAction> remapping_action;
+    PeripheralCustomizationMetricsType peripheral_kind;
+
+    RemappingActionResult(mojom::RemappingAction& remapping_action,
+                          PeripheralCustomizationMetricsType peripheral_kind);
+    RemappingActionResult(RemappingActionResult&& result);
+    ~RemappingActionResult();
+  };
+
   explicit PeripheralCustomizationEventRewriter(
       InputDeviceSettingsController* input_device_settings_controller);
   PeripheralCustomizationEventRewriter(
@@ -54,12 +72,16 @@ class ASH_EXPORT PeripheralCustomizationEventRewriter
 
   // Starts observing and blocking mouse events for `device_id`. Notifies
   // observers via `OnMouseButtonPressed` whenever an event
-  void StartObservingMouse(int device_id, bool can_rewrite_key_event);
+  void StartObservingMouse(
+      int device_id,
+      mojom::CustomizationRestriction customization_restriction);
 
   // Starts observing and blocking graphics tablet events for `device_id`.
   // Notifies observers via `OnGraphicsTabletButtonPressed` whenever an event is
   // received.
-  void StartObservingGraphicsTablet(int device_id);
+  void StartObservingGraphicsTablet(
+      int device_id,
+      mojom::CustomizationRestriction customization_restriction);
 
   // Stops observing for all devices of every type.
   void StopObserving();
@@ -69,11 +91,12 @@ class ASH_EXPORT PeripheralCustomizationEventRewriter
       const ui::Event& event,
       const Continuation continuation) override;
 
-  const base::flat_set<int>& mice_to_observe() { return mice_to_observe_; }
-  const base::flat_set<int>& mice_to_observe_key_events() {
-    return mice_to_observe_key_events_;
+  const base::flat_map<int, mojom::CustomizationRestriction>&
+  mice_to_observe() {
+    return mice_to_observe_;
   }
-  const base::flat_set<int>& graphics_tablets_to_observe() {
+  const base::flat_map<int, mojom::CustomizationRestriction>&
+  graphics_tablets_to_observe() {
     return graphics_tablets_to_observe_;
   }
 
@@ -99,10 +122,11 @@ class ASH_EXPORT PeripheralCustomizationEventRewriter
   ui::EventDispatchDetails RewriteKeyEvent(const ui::KeyEvent& key_event,
                                            const Continuation continuation);
 
-  absl::optional<DeviceType> GetDeviceTypeToObserve(int device_id);
+  std::optional<DeviceType> GetDeviceTypeToObserve(int device_id);
 
-  const mojom::RemappingAction* GetRemappingAction(int device_id,
-                                                   const mojom::Button& button);
+  std::optional<RemappingActionResult> GetRemappingAction(
+      int device_id,
+      const mojom::Button& button);
 
   void UpdatePressedButtonMap(
       mojom::ButtonPtr button,
@@ -118,15 +142,18 @@ class ASH_EXPORT PeripheralCustomizationEventRewriter
 
   std::unique_ptr<ui::Event> CloneEvent(const ui::Event& event);
 
-  base::flat_set<int> mice_to_observe_;
-  base::flat_set<int> mice_to_observe_key_events_;
-  base::flat_set<int> graphics_tablets_to_observe_;
+  base::flat_map<int, mojom::CustomizationRestriction> mice_to_observe_;
+  base::flat_map<int, mojom::CustomizationRestriction>
+      graphics_tablets_to_observe_;
 
   // Maintains a list of currently pressed buttons and the flags that should
   // be applied to other events processed.
   base::flat_map<DeviceIdButton, int> device_button_to_flags_;
 
   raw_ptr<InputDeviceSettingsController> input_device_settings_controller_;
+
+  // Emit all metrics.
+  std::unique_ptr<InputDeviceSettingsMetricsManager> metrics_manager_;
 };
 
 }  // namespace ash

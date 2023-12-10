@@ -8,11 +8,14 @@
 #include <memory>
 
 #include "ash/system/holding_space/holding_space_item_views_section.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 
 namespace ash {
 
 // Section for downloads in the `RecentFilesBubble`.
 class DownloadsSection : public HoldingSpaceItemViewsSection {
+  METADATA_HEADER(DownloadsSection, HoldingSpaceItemViewsSection)
+
  public:
   explicit DownloadsSection(HoldingSpaceViewDelegate* delegate);
   DownloadsSection(const DownloadsSection& other) = delete;
@@ -20,7 +23,6 @@ class DownloadsSection : public HoldingSpaceItemViewsSection {
   ~DownloadsSection() override;
 
   // HoldingSpaceItemViewsSection:
-  const char* GetClassName() const override;
   std::unique_ptr<views::View> CreateHeader() override;
   std::unique_ptr<views::View> CreateContainer() override;
   std::unique_ptr<HoldingSpaceItemView> CreateView(

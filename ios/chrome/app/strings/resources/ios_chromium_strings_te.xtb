@@ -16,6 +16,7 @@
 <translation id="1513122820609681462">Chromiumను మీ ఆటోమేటిక్ బ్రౌజర్‌గా సెట్ చేయండి</translation>
 <translation id="1531155317299575425">Chromiumకు సైన్ ఇన్ చేయడానికి ప్రాంప్ట్‌లను చూపిస్తుంది.</translation>
 <translation id="1591119736686995611">Chromium ట్యాబ్ గ్రిడ్‌ను తెరుస్తుంది.</translation>
+<translation id="1611584326765829247">మీ ప్యాకేజీలను ట్రాక్ చేయడంలో మీకు సహాయపడటానికి Chromiumను అనుమతించండి</translation>
 <translation id="1617663976202781617">Chromium సింక్ నుండి పొందే డేటా</translation>
 <translation id="1647558790457890304">Chromium సెట్టింగ్‌లు</translation>
 <translation id="164952285225495380">Chromiumలో ఈ ప్యాకేజీ ఇప్పటికే ట్రాక్ చేయబడింది.</translation>
@@ -87,6 +88,7 @@
 <translation id="4195557071150719219">Chromium ఇటీవలి ట్యాబ్‌లను చూడండి</translation>
 <translation id="4408912345039114853">Chromium సేఫ్టీ చెక్‌ను రన్ చేయండి</translation>
 <translation id="4432744876818348753">Chromium నుండి మరిన్ని ప్రయోజనాలను పొందడానికి సైన్ ఇన్ చేయండి.</translation>
+<translation id="4498832288620833153">Chromiumలో మీ చదవాల్సిన లిస్ట్‌కు ఇన్‌పుట్ చేసిన URLలను జోడిస్తుంది.</translation>
 <translation id="452436063477828504">మీరు మీ Google ఖాతాలోని Chromium డేటాను ఎల్లప్పుడూ ఉపయోగించగలరని నిర్ధారించుకోండి</translation>
 <translation id="4555020257205549924">ఈ లక్షణం ప్రారంభించినప్పుడు, Chromium ఇతర భాషల్లో రాసిన పేజీలకు Google Translate ఉపయోగించి అనువాదాన్ని ఆఫర్ చేస్తుంది. <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
 <translation id="4576283463017113841">Chromiumలో పేమెంట్ ఆప్షన్‌ల సెట్టింగ్ పేజీని తెరుస్తుంది.</translation>
@@ -107,6 +109,7 @@
 <translation id="5048795749726991615">సేవ్ చేసిన పాస్‌వర్డ్‌లను మీ ఇతర యాప్‌లలో కూడా సులభంగా పొందడానికి, Chromiumను ఉపయోగించి ఆటోఫిల్ చేయండి</translation>
 <translation id="5076601183701536878">Chromiumలో బ్రౌజింగ్ డేటాను క్లియర్ చేయండి</translation>
 <translation id="5131565040785979529">మీరు సైన్ ఇన్ చేసి ఉన్న ఖాతాను, Chromium ఎలా ఉపయోగించబడుతుంది అనే విషయాన్ని మీ సంస్థ, <ph name="DOMAIN" /> మేనేజ్ చేస్తాయి.</translation>
+<translation id="5146749061471423558">Chromiumకు బుక్‌మార్క్‌లను జోడించండి</translation>
 <translation id="5171868502429358653">Chromiumకు సైన్ ఇన్ చేయండి</translation>
 <translation id="5213683223491576284">Chromiumలో Password Managerను తెరుస్తుంది.</translation>
 <translation id="5224391634244552924">సేవ్ చేసిన పాస్‌వర్డ్‌లు లేవు. మీరు మీ పాస్‌వర్డ్‌లను సేవ్ చేసినప్పుడు Chromium వాటిని చెక్ చేయగలదు.</translation>
@@ -114,6 +117,7 @@
 
         సైన్ అవుట్ చేయడానికి ముందు, కొన్ని నిమిషాలు వేచి ఉండటానికి ట్రై చేయండి. మీరు ఇప్పుడు సైన్ అవుట్ చేస్తే, ఈ డేటా తొలగించబడుతుంది.</translation>
 <translation id="5308226104666789935">Chromium అప్‌డేట్‌లు ఏమైనా ఉన్నాయో లేదో చెక్ చేయలేదు</translation>
+<translation id="5311557153294205270">Chromiumలో మీ బుక్‌మార్క్‌లకు ఇన్‌పుట్ చేసిన URLలను జోడిస్తుంది.</translation>
 <translation id="5396916991083608703">Chromiumను ఆటోమేటిక్ సెట్టింగ్‌గా సెట్ చేయాలా?</translation>
 <translation id="5453478652154926037">Chromium మీ పాస్‌వర్డ్‌లను చెక్ చేయడం సాధ్యం కాదు.</translation>
 <translation id="5521125884468363740">మీరు Chromiumను ఎక్కడ ఉపయోగించినా, మీ ట్యాబ్‌లను చూసేందుకు, సైన్ ఇన్ చేసి సింక్‌ను ఆన్ చేయండి</translation>
@@ -165,7 +169,6 @@
 <translation id="6911341667534646387">మీ Google ఖాతాలోని Chromium డేటాను ఉపయోగించడం కొనసాగించండి</translation>
 <translation id="7006920032187763988">మీరు మీ iPadలోని ఇతర యాప్‌లలో పాస్‌వర్డ్ మేనేజర్‌లో సేవ్ చేసిన పాస్‌వర్డ్‌లను ఉపయోగించవచ్చు.</translation>
 <translation id="7018284295775193585">Chromium అప్‌డేట్ అవ్వడం సాధ్యపడలేదు</translation>
-<translation id="7025471822960602362">గుర్తించబడిన ప్యాకేజీలను Chromiumలో ట్రాక్ చేయండి</translation>
 <translation id="7045244423563602563">Chromiumను మీకు నచ్చిన విధంగా తయారు చేసుకోండి</translation>
 <translation id="7055269218854630176">మీరు సైన్ ఇన్ చేస్తున్న ఖాతాను, Chromium ఎలా ఉపయోగించబడుతుంది అనే విషయాన్ని మీ సంస్థ, <ph name="DOMAIN" /> మేనేజ్ చేస్తాయి. మీ అడ్మినిస్ట్రేటర్ నిర్దిష్ట ఫీచర్‌లను సెటప్ చేయవచ్చు లేదా పరిమితం చేయవచ్చు.</translation>
 <translation id="7099326575020694068">Chromium విభజన వీక్షణ మోడ్‌లో మీ కెమెరాను ఉపయోగించలేదు</translation>
@@ -195,6 +198,7 @@
 <translation id="7928628054454574139">ఇతర యాప్‌లలో లింక్‌లను ట్యాప్ చేయడం ద్వారా మీరు ఎప్పుడైనా Chromiumను తెరవవచ్చు</translation>
 <translation id="7931842119211730154">మీరు Chromiumను మూసివేసినప్పుడు అజ్ఞాత ట్యాబ్‌లను లాక్ చేయండి</translation>
 <translation id="7934404985878918282">Chromium చదవాల్సిన లిస్ట్‌ను చూడండి</translation>
+<translation id="7971753607796745700">Chromiumకి చదవాల్సిన లిస్ట్ ఐటెమ్‌ను జోడించండి</translation>
 <translation id="7980860476903281594">మీరు అనుమతించే సైట్‌లతో Chromium మీ లొకేషన్‌ను షేర్ చేస్తుంది.</translation>
 <translation id="7995166854192397899">మీ ఇతర పరికరాలలో మీ బ్రౌజింగ్ యాక్టివిటీ ఆధారంగా సూచనలు ఉంటాయి. సూచనలను పొందడానికి, మీ పరికరాలన్నింటిలో Chromiumకు సైన్ ఇన్ చేయండి.</translation>
 <translation id="800195749539500647">Chromium నుండి అత్యధిక ప్రయోజనాలను పొందండి</translation>

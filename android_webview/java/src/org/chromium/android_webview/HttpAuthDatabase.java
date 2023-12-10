@@ -38,9 +38,7 @@ public class HttpAuthDatabase {
 
     private static final String ID_COL = "_id";
 
-    private static final String[] ID_PROJECTION = new String[] {
-        ID_COL
-    };
+    private static final String[] ID_PROJECTION = new String[] {ID_COL};
 
     // column id strings for "httpauth" table
     private static final String HTTPAUTH_TABLE_NAME = "httpauth";
@@ -49,9 +47,7 @@ public class HttpAuthDatabase {
     private static final String HTTPAUTH_USERNAME_COL = "username";
     private static final String HTTPAUTH_PASSWORD_COL = "password";
 
-    /**
-     * Initially false until the background thread completes.
-     */
+    /** Initially false until the background thread completes. */
     private boolean mInitialized;
 
     private final Object mInitializedLock = new Object();
@@ -131,13 +127,25 @@ public class HttpAuthDatabase {
     }
 
     private void createTable() {
-        mDatabase.execSQL("CREATE TABLE " + HTTPAUTH_TABLE_NAME
-                + " (" + ID_COL + " INTEGER PRIMARY KEY, "
-                + HTTPAUTH_HOST_COL + " TEXT, " + HTTPAUTH_REALM_COL
-                + " TEXT, " + HTTPAUTH_USERNAME_COL + " TEXT, "
-                + HTTPAUTH_PASSWORD_COL + " TEXT," + " UNIQUE ("
-                + HTTPAUTH_HOST_COL + ", " + HTTPAUTH_REALM_COL
-                + ") ON CONFLICT REPLACE);");
+        mDatabase.execSQL(
+                "CREATE TABLE "
+                        + HTTPAUTH_TABLE_NAME
+                        + " ("
+                        + ID_COL
+                        + " INTEGER PRIMARY KEY, "
+                        + HTTPAUTH_HOST_COL
+                        + " TEXT, "
+                        + HTTPAUTH_REALM_COL
+                        + " TEXT, "
+                        + HTTPAUTH_USERNAME_COL
+                        + " TEXT, "
+                        + HTTPAUTH_PASSWORD_COL
+                        + " TEXT,"
+                        + " UNIQUE ("
+                        + HTTPAUTH_HOST_COL
+                        + ", "
+                        + HTTPAUTH_REALM_COL
+                        + ") ON CONFLICT REPLACE);");
 
         mDatabase.setVersion(DATABASE_VERSION);
     }
@@ -170,8 +178,8 @@ public class HttpAuthDatabase {
      * @param username the username for the password.
      * @param password the password
      */
-    public void setHttpAuthUsernamePassword(String host, String realm, String username,
-            String password) {
+    public void setHttpAuthUsernamePassword(
+            String host, String realm, String username, String password) {
         if (host == null || realm == null || !waitForInit()) {
             return;
         }
@@ -199,22 +207,28 @@ public class HttpAuthDatabase {
             return null;
         }
 
-        final String[] columns = new String[] {
-            HTTPAUTH_USERNAME_COL, HTTPAUTH_PASSWORD_COL
-        };
-        final String selection = "(" + HTTPAUTH_HOST_COL + " == ?) AND "
-                + "(" + HTTPAUTH_REALM_COL + " == ?)";
+        final String[] columns = new String[] {HTTPAUTH_USERNAME_COL, HTTPAUTH_PASSWORD_COL};
+        final String selection =
+                "(" + HTTPAUTH_HOST_COL + " == ?) AND " + "(" + HTTPAUTH_REALM_COL + " == ?)";
 
         String[] ret = null;
         Cursor cursor = null;
         try {
-            cursor = mDatabase.query(HTTPAUTH_TABLE_NAME, columns, selection,
-                    new String[] { host, realm }, null, null, null);
+            cursor =
+                    mDatabase.query(
+                            HTTPAUTH_TABLE_NAME,
+                            columns,
+                            selection,
+                            new String[] {host, realm},
+                            null,
+                            null,
+                            null);
             if (cursor.moveToFirst()) {
-                ret = new String[] {
-                        cursor.getString(cursor.getColumnIndexOrThrow(HTTPAUTH_USERNAME_COL)),
-                        cursor.getString(cursor.getColumnIndexOrThrow(HTTPAUTH_PASSWORD_COL)),
-                };
+                ret =
+                        new String[] {
+                            cursor.getString(cursor.getColumnIndexOrThrow(HTTPAUTH_USERNAME_COL)),
+                            cursor.getString(cursor.getColumnIndexOrThrow(HTTPAUTH_PASSWORD_COL)),
+                        };
             }
         } catch (IllegalStateException e) {
             Log.e(LOGTAG, "getHttpAuthUsernamePassword", e);
@@ -237,8 +251,9 @@ public class HttpAuthDatabase {
         Cursor cursor = null;
         boolean ret = false;
         try {
-            cursor = mDatabase.query(HTTPAUTH_TABLE_NAME, ID_PROJECTION, null, null, null, null,
-                    null);
+            cursor =
+                    mDatabase.query(
+                            HTTPAUTH_TABLE_NAME, ID_PROJECTION, null, null, null, null, null);
             ret = cursor.moveToFirst();
         } catch (IllegalStateException e) {
             Log.e(LOGTAG, "hasEntries", e);
@@ -248,9 +263,7 @@ public class HttpAuthDatabase {
         return ret;
     }
 
-    /**
-     * Clears the HTTP authentication password database.
-     */
+    /** Clears the HTTP authentication password database. */
     public void clearHttpAuthUsernamePassword() {
         if (!waitForInit()) {
             return;

@@ -9,12 +9,15 @@
 #include <windows.h>
 #include <wrl/client.h>
 
-#include <dawn/native/D3DBackend.h>
-#include <webgpu/webgpu_cpp.h>
-
 #include "base/containers/span.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/gl/buildflags.h"
+
+#if BUILDFLAG(USE_DAWN)
+#include <dawn/native/D3DBackend.h>
+#include <webgpu/webgpu_cpp.h>
+#endif
 
 namespace gpu {
 
@@ -22,6 +25,7 @@ bool ClearD3D11TextureToColor(
     const Microsoft::WRL::ComPtr<ID3D11Texture2D>& d3d11_texture,
     const SkColor4f& color);
 
+#if BUILDFLAG(USE_DAWN)
 std::unique_ptr<dawn::native::d3d::ExternalImageDXGI>
 CreateDawnExternalImageDXGI(
     const wgpu::Device& device,
@@ -30,6 +34,7 @@ CreateDawnExternalImageDXGI(
     absl::variant<HANDLE, Microsoft::WRL::ComPtr<ID3D11Texture2D>>
         handle_or_texture,
     base::span<wgpu::TextureFormat> view_formats);
+#endif
 
 }  // namespace gpu
 

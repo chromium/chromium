@@ -11,6 +11,7 @@
 #include "base/trace_event/trace_event.h"
 #include "cc/layers/heads_up_display_layer_impl.h"
 #include "cc/trees/layer_tree_host.h"
+#include "skia/ext/font_utils.h"
 
 namespace cc {
 
@@ -19,10 +20,10 @@ scoped_refptr<HeadsUpDisplayLayer> HeadsUpDisplayLayer::Create() {
 }
 
 HeadsUpDisplayLayer::HeadsUpDisplayLayer()
-    : typeface_(SkTypeface::MakeFromName("Arial", SkFontStyle())) {
+    : typeface_(skia::MakeTypefaceFromName("Arial", SkFontStyle())) {
   if (!typeface_.Read(*this)) {
     typeface_.Write(*this) =
-        SkTypeface::MakeFromName("monospace", SkFontStyle::Bold());
+        skia::MakeTypefaceFromName("monospace", SkFontStyle::Bold());
   }
   DCHECK(typeface_.Read(*this).get());
   SetIsDrawable(true);

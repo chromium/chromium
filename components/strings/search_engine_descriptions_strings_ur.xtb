@@ -1,0 +1,8 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<!-- This file is generated using tools/search_engine_choice/generate_search_engine_snippets.py. Do not modify it manually. -->
+<translationbundle lang="ur">
+  <translation id="IDS_BING_SEARCH_DESCRIPTION">Microsoft کی تیز، مناسب اور ذاتی تلاش</translation>
+  <translation id="IDS_GOOGLE_SEARCH_DESCRIPTION">دنیا کے سب سے زیادہ استعمال کیے جانے والے سرچ انجن کی مدد سے آپ کو جن چیزوں کی ضرورت ہے انہیں تلاش کریں۔</translation>
+  <translation id="IDS_MOJEEK_SEARCH_DESCRIPTION">آزاد ، یورپی ، کوئی ٹریکنگ سرچ انجن</translation>
+</translationbundle>

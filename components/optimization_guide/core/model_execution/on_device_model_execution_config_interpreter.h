@@ -5,6 +5,8 @@
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_ON_DEVICE_MODEL_EXECUTION_CONFIG_INTERPRETER_H_
 
 #include <memory>
+#include <optional>
+#include <string>
 
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
@@ -27,6 +29,35 @@ class OnDeviceModelExecutionConfigInterpreter {
 
   // Whether there is an on-device model execution config for `feature`.
   bool HasConfigForFeature(proto::ModelExecutionFeature feature) const;
+
+  struct InputStringConstructionResult {
+    // The input string for the feature and request. Will return
+    // std::nullopt if there is not a valid config for the feature or the
+    // request could not be fulfilled for any reason.
+    std::string input_string;
+
+    // If this is not a request for input context, this returns whether the
+    // existing input context should be ignored for the execution.
+    bool should_ignore_input_context = false;
+  };
+
+  // Constructs the input string for `feature` and `request`.
+  std::optional<InputStringConstructionResult> ConstructInputString(
+      proto::ModelExecutionFeature feature,
+      const google::protobuf::MessageLite& request,
+      bool want_input_context) const;
+
+  // Constructs the output metadata for `feature` and `output`. Will return
+  // std::nullopt if there is not a valid config for the feature or could not be
+  // fulfilled for any reason.
+  std::optional<proto::Any> ConstructOutputMetadata(
+      proto::ModelExecutionFeature feature,
+      const std::string& output) const;
+
+  void OverrideFeatureConfigForTesting(
+      const proto::OnDeviceModelExecutionFeatureConfig& config) {
+    feature_configs_[config.feature()] = config;
+  }
 
  private:
   // Populates `feature_configs_` based on `config`.

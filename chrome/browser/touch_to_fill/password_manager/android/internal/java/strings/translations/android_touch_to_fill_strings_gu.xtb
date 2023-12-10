@@ -1,0 +1,27 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="gu">
+<translation id="1220509181886849806">સાચવેલા પાસવર્ડનો ઉપયોગ કરીએ?</translation>
+<translation id="1435940442311036198">કોઈ બીજા ડિવાઇસ પર પાસકીનો ઉપયોગ કરો</translation>
+<translation id="1717486229951421299">Touch પર લૉગ ઇન વિગતો ભરવાની સૂચિ અડધી ઊંચાઈએ ખૂલી.</translation>
+<translation id="2359808026110333948">આગળ વધો</translation>
+<translation id="2364266287022099258">સાચવેલી પાસકીનો ઉપયોગ કરીએ?</translation>
+<translation id="3399357656427473483">Touch પર લૉગ ઇન વિગતો ભરવાની સૂચિ.</translation>
+<translation id="3653689374478248324">તમે <ph name="SITE_NAME" />માં સાઇન ઇન કરશો</translation>
+<translation id="3950820424414687140">સાઇન ઇન</translation>
+<translation id="4553044860350038560">વધુ પાસકી</translation>
+<translation id="4598345735110653698">પાસકી મેનેજ કરો</translation>
+<translation id="4722735765955348426"><ph name="USERNAME" /> માટેનો પાસવર્ડ</translation>
+<translation id="4907224763885298217">તમારા સ્ક્રીન લૉકનો ઉપયોગ કરો</translation>
+<translation id="5012523644916800014">પાસવર્ડ અને પાસકી મેનેજ કરો</translation>
+<translation id="5441504010984421144">Touch પર લૉગ ઇન વિગતો ભરવાની સૂચિ સંપૂર્ણ ઊંચાઈએ ખૂલી.</translation>
+<translation id="5591247451101092906">સાચવેલા પાસવર્ડ કે પાસકીનો ઉપયોગ કરીએ?</translation>
+<translation id="5624120631404540903">પાસવર્ડ્સનું સંચાલન કરો</translation>
+<translation id="6560306912274274630"><ph name="USERNAME" /> માટેની પાસકી, તમારા સ્ક્રીન લૉકનો ઉપયોગ કરો</translation>
+<translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{આ સાઇટ માટે નવો પાસવર્ડ}one{આ સાઇટ માટે નવો પાસવર્ડ}other{આ સાઇટ માટે નવા પાસવર્ડ}}</translation>
+<translation id="7286867818472074330">પાસકી પસંદ કરો</translation>
+<translation id="7669320311687290322"><ph name="ITEM_LABEL" />, <ph name="ITEMS_TOTAL" />માંથી <ph name="ITEM_POSITION" />.</translation>
+<translation id="7738288782501322815">તમે <ph name="SITE_NAME" /> માટે પાસવર્ડ પ્રાપ્ત કર્યો છે</translation>
+<translation id="8614995815226664591"><ph name="SENDER_NAME" /> દ્વારા તમારી સાથે <ph name="SITE_NAME" /> માટેનો પાસવર્ડ શેર કરવામાં આવ્યો છે</translation>
+<translation id="8891372124884726271">લૉગ ઇન વિગતોની સૂચિ બંધ છે.</translation>
+</translationbundle>

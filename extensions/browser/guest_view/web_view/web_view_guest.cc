@@ -364,7 +364,7 @@ void WebViewGuest::CreateWebContentsWithStoragePartition(
     std::unique_ptr<GuestViewBase> owned_this,
     const base::Value::Dict& create_params,
     WebContentsCreatedCallback callback,
-    absl::optional<content::StoragePartitionConfig> partition_config) {
+    std::optional<content::StoragePartitionConfig> partition_config) {
   if (!partition_config.has_value()) {
     std::move(callback).Run(std::move(owned_this), nullptr);
     return;
@@ -987,7 +987,7 @@ void WebViewGuest::OnDidAddMessageToConsole(
     const std::u16string& message,
     int32_t line_no,
     const std::u16string& source_id,
-    const absl::optional<std::u16string>& untrusted_stack_trace) {
+    const std::optional<std::u16string>& untrusted_stack_trace) {
   base::Value::Dict args;
   // Log levels are from base/logging.h: LogSeverity.
   args.Set(webview::kLevel, blink::ConsoleMessageLevelToLogSeverity(log_level));
@@ -1011,8 +1011,8 @@ void WebViewGuest::RenderFrameCreated(
 
   if (!render_frame_host->GetParentOrOuterDocument()) {
     ExtensionWebContentsObserver::GetForWebContents(web_contents())
-        ->GetLocalFrame(render_frame_host)
-        ->SetFrameName(name_);
+        ->GetLocalFrameChecked(render_frame_host)
+        .SetFrameName(name_);
     SetTransparency(render_frame_host);
   }
 }
@@ -1093,7 +1093,7 @@ void WebViewGuest::RequestMediaAccessPermission(
 
 bool WebViewGuest::CheckMediaAccessPermission(
     content::RenderFrameHost* render_frame_host,
-    const GURL& security_origin,
+    const url::Origin& security_origin,
     blink::mojom::MediaStreamType type) {
   return web_view_permission_helper_->CheckMediaAccessPermission(
       render_frame_host, security_origin, type);
@@ -1248,7 +1248,7 @@ void WebViewGuest::ApplyAttributes(const base::Value::Dict& params) {
       params.FindString(kParameterUserAgentOverride);
   SetUserAgentOverride(user_agent_override ? *user_agent_override : "");
 
-  absl::optional<bool> allow_transparency =
+  std::optional<bool> allow_transparency =
       params.FindBool(kAttributeAllowTransparency);
   if (allow_transparency) {
     // We need to set the background opaque flag after navigation to ensure that
@@ -1256,7 +1256,7 @@ void WebViewGuest::ApplyAttributes(const base::Value::Dict& params) {
     SetAllowTransparency(*allow_transparency);
   }
 
-  absl::optional<bool> allow_scaling = params.FindBool(kAttributeAllowScaling);
+  std::optional<bool> allow_scaling = params.FindBool(kAttributeAllowScaling);
   if (allow_scaling) {
     SetAllowScaling(*allow_scaling);
   }
@@ -1313,8 +1313,8 @@ void WebViewGuest::SetName(const std::string& name) {
     return;
   }
   ExtensionWebContentsObserver::GetForWebContents(web_contents())
-      ->GetLocalFrame(GetGuestMainFrame())
-      ->SetFrameName(name_);
+      ->GetLocalFrameChecked(GetGuestMainFrame())
+      .SetFrameName(name_);
 }
 
 void WebViewGuest::SetSpatialNavigationEnabled(bool enabled) {
@@ -1322,8 +1322,8 @@ void WebViewGuest::SetSpatialNavigationEnabled(bool enabled) {
     return;
   is_spatial_navigation_enabled_ = enabled;
   ExtensionWebContentsObserver::GetForWebContents(web_contents())
-      ->GetLocalFrame(web_contents()->GetPrimaryMainFrame())
-      ->SetSpatialNavigationEnabled(enabled);
+      ->GetLocalFrameChecked(web_contents()->GetPrimaryMainFrame())
+      .SetSpatialNavigationEnabled(enabled);
 }
 
 bool WebViewGuest::IsSpatialNavigationEnabled() const {

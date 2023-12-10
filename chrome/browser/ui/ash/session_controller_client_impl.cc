@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "ash/constants/ash_pref_names.h"
@@ -48,7 +49,6 @@
 #include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "components/user_manager/user_type.h"
 #include "content/public/browser/browser_context.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/chromeos/resources/grit/ui_chromeos_resources.h"
 #include "ui/gfx/image/image_skia.h"
@@ -319,15 +319,26 @@ PrefService* SessionControllerClientImpl::GetUserPrefService(
   return user_profile->GetPrefs();
 }
 
+base::FilePath SessionControllerClientImpl::GetProfilePath(
+    const AccountId& account_id) {
+  Profile* const user_profile =
+      multi_user_util::GetProfileFromAccountId(account_id);
+  if (!user_profile) {
+    return base::FilePath();
+  }
+
+  return user_profile->GetPath();
+}
+
 bool SessionControllerClientImpl::IsEnterpriseManaged() const {
   const ash::ChromeUserManager* user_manager = ash::ChromeUserManager::Get();
   return user_manager && user_manager->IsEnterpriseManaged();
 }
 
-absl::optional<int> SessionControllerClientImpl::GetExistingUsersCount() const {
+std::optional<int> SessionControllerClientImpl::GetExistingUsersCount() const {
   const ash::ChromeUserManager* user_manager = ash::ChromeUserManager::Get();
-  return !user_manager ? absl::nullopt
-                       : absl::optional<int>(user_manager->GetUsers().size());
+  return !user_manager ? std::nullopt
+                       : std::optional<int>(user_manager->GetUsers().size());
 }
 
 // static

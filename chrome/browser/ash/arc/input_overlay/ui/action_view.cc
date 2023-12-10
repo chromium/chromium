@@ -21,6 +21,7 @@
 #include "chrome/browser/ash/arc/input_overlay/util.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 
@@ -390,5 +391,8 @@ void ActionView::SetRepositionController() {
   reposition_controller_->set_key_released_callback(base::BindRepeating(
       &ActionView::OnKeyReleasedCallback, base::Unretained(this)));
 }
+
+BEGIN_METADATA(ActionView)
+END_METADATA
 
 }  // namespace arc::input_overlay

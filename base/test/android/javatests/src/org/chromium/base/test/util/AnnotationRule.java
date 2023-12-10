@@ -83,7 +83,8 @@ public abstract class AnnotationRule extends ExternalResource {
     private Description mTestDescription;
 
     @SafeVarargs
-    public AnnotationRule(Class<? extends Annotation> firstAnnotationType,
+    public AnnotationRule(
+            Class<? extends Annotation> firstAnnotationType,
             Class<? extends Annotation>... additionalTypes) {
         List<Class<? extends Annotation>> mAnnotationTypes = new ArrayList<>();
         mAnnotationTypes.add(firstAnnotationType);

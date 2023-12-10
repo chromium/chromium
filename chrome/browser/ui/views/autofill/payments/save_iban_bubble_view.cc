@@ -162,14 +162,18 @@ void SaveIbanBubbleView::CreateMainContentView() {
       l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_IBAN_LABEL),
       views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_PRIMARY));
 
-  iban_value_and_toggle_ = iban_content->AddChildView(
-      std::make_unique<ObscurableLabelWithToggleButton>(
-          controller_->GetIban().GetIdentifierStringForAutofillDisplay(
-              /*is_value_masked=*/true),
+  views::Label* iban_value =
+      iban_content->AddChildView(std::make_unique<views::Label>(
           controller_->GetIban().GetIdentifierStringForAutofillDisplay(
               /*is_value_masked=*/false),
-          l10n_util::GetStringUTF16(IDS_MANAGE_IBAN_VALUE_SHOW_VALUE),
-          l10n_util::GetStringUTF16(IDS_MANAGE_IBAN_VALUE_HIDE_VALUE)));
+          views::style::CONTEXT_LABEL, views::style::STYLE_SECONDARY));
+
+  iban_value->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
+                               views::MaximumFlexSizeRule::kScaleToMaximum));
+  iban_value->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  iban_value->SetMultiLine(true);
 
   iban_content->AddChildView(std::make_unique<views::Label>(
       l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_IBAN_PROMPT_NICKNAME),
@@ -230,11 +234,6 @@ void SaveIbanBubbleView::AssignIdsToDialogButtonsForTesting() {
   if (cancel_button) {
     cancel_button->SetID(DialogViewId::CANCEL_BUTTON);
   }
-
-  DCHECK(iban_value_and_toggle_);
-  iban_value_and_toggle_->value()->SetID(DialogViewId::IBAN_VALUE_LABEL);
-  iban_value_and_toggle_->toggle_obscured()->SetID(
-      DialogViewId::TOGGLE_IBAN_VALUE_MASKING_BUTTON);
 
   if (nickname_textfield_) {
     nickname_textfield_->SetID(DialogViewId::NICKNAME_TEXTFIELD);

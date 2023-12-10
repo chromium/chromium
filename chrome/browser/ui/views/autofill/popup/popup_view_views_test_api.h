@@ -32,7 +32,7 @@ class PopupViewViewsTestApi {
     return view_->HandleKeyPressEvent(event);
   }
 
-  absl::optional<PopupViewViews::CellIndex> GetOpenSubPopupCell() const&& {
+  std::optional<PopupViewViews::CellIndex> GetOpenSubPopupCell() const&& {
     return view_->open_sub_popup_cell_;
   }
 
@@ -50,4 +50,4 @@ inline PopupViewViewsTestApi test_api(PopupViewViews& view) {
 
 }  // namespace autofill
 
-#endif
+#endif  // CHROME_BROWSER_UI_VIEWS_AUTOFILL_POPUP_POPUP_VIEW_VIEWS_TEST_API_H_

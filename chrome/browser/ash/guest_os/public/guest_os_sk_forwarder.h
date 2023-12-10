@@ -37,4 +37,4 @@ class GuestOsSkForwarder {
 
 }  // namespace guest_os
 
-#endif
+#endif  // CHROME_BROWSER_ASH_GUEST_OS_PUBLIC_GUEST_OS_SK_FORWARDER_H_

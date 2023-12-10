@@ -795,7 +795,7 @@ TEST_F(ArcUtilTest, GetRequiredFreeDiskSpaceForArcVmDataMigrationInBytes) {
 
 // Checks that the callback is invoked with false when ARCVM is not stopped.
 TEST_F(ArcUtilTest, EnsureStaleArcVmAndArcVmUpstartJobsStopped_StopVmFailure) {
-  ash::FakeConciergeClient::Get()->set_stop_vm_response(absl::nullopt);
+  ash::FakeConciergeClient::Get()->set_stop_vm_response(std::nullopt);
   base::test::TestFuture<bool> future_no_response;
   EnsureStaleArcVmAndArcVmUpstartJobsStopped("0123456789abcdef",
                                              future_no_response.GetCallback());

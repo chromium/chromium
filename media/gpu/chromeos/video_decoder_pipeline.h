@@ -168,7 +168,8 @@ class MEDIA_GPU_EXPORT VideoDecoderPipeline : public VideoDecoder,
       std::unique_ptr<MailboxVideoFrameConverter> frame_converter,
       std::vector<Fourcc> renderable_fourccs,
       std::unique_ptr<MediaLog> media_log,
-      mojo::PendingRemote<stable::mojom::StableVideoDecoder> oop_video_decoder);
+      mojo::PendingRemote<stable::mojom::StableVideoDecoder> oop_video_decoder,
+      bool in_video_decoder_process);
 
   static std::unique_ptr<VideoDecoder> CreateForTesting(
       scoped_refptr<base::SequencedTaskRunner> client_task_runner,
@@ -247,7 +248,8 @@ class MEDIA_GPU_EXPORT VideoDecoderPipeline : public VideoDecoder,
       std::vector<Fourcc> renderable_fourccs,
       std::unique_ptr<MediaLog> media_log,
       CreateDecoderFunctionCB create_decoder_function_cb,
-      bool uses_oop_video_decoder);
+      bool uses_oop_video_decoder,
+      bool in_video_decoder_process);
 
   void InitializeTask(const VideoDecoderConfig& config,
                       bool low_delay,

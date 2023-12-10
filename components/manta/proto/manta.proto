@@ -8,10 +8,9 @@ option optimize_for = LITE_RUNTIME;
 package manta.proto;
 
 enum FeatureName {
-  reserved 1 to 4;
-  reserved 6 to 300, 303;
+  reserved 1 to 299;
 
-  IMAGE_TEST = 5;
+  CHROMEOS_VC_BACKGROUNDS = 300;
   CHROMEOS_WALLPAPER = 301;
   TEXT_TEST = 302;
 }
@@ -24,8 +23,20 @@ enum ImageResolution {
   RESOLUTION_1024 = 3;
 }
 
+message ImageDimensions {
+  optional uint32 width = 1;
+  optional uint32 height = 2;
+}
+
+enum AspectRatio {
+  ASPECT_RATIO_UNSPECIFIED = 0;  // Defaults to 1:1
+  ASPECT_RATIO_16_9 = 1;
+  ASPECT_RATIO_16_10 = 2;
+  ASPECT_RATIO_4_3 = 3;
+}
+
 message RequestConfig {
-  reserved 4;
+  reserved 4, 6;
 
   optional uint32 generation_seed = 1;
   optional ImageResolution image_resolution = 2;
@@ -43,12 +54,16 @@ message RequestConfig {
   }
 
   optional Tone tone = 5;
+
+  optional ImageDimensions image_dimensions = 7;
+
+  optional AspectRatio aspect_ratio = 8;
 }
 
 message InputData {
   reserved 2, 3;
 
-  required string text = 1;
+  optional string text = 1;
   optional string tag = 4;
 }
 

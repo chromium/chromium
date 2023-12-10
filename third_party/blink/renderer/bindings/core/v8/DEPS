@@ -13,4 +13,7 @@ specific_include_rules = {
     "+base/json/json_reader.h",
     "+third_party/re2/src/re2",
   ],
+  "v8_initializer.cc": [
+    "+net/cookies/cookie_util.h",
+  ],
 }

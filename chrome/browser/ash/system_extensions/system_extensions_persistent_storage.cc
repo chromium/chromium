@@ -55,7 +55,7 @@ void SystemExtensionsPersistentStorage::Remove(
   update->Remove(SystemExtension::IdToString(system_extension_id));
 }
 
-absl::optional<SystemExtensionPersistedInfo>
+std::optional<SystemExtensionPersistedInfo>
 SystemExtensionsPersistentStorage::Get(
     const SystemExtensionId& system_extension_id) {
   auto* prefs = profile_->GetPrefs();
@@ -66,14 +66,14 @@ SystemExtensionsPersistentStorage::Get(
       persisted_system_extensions_map.FindDict(
           SystemExtension::IdToString(system_extension_id));
   if (!persisted_system_extension)
-    return absl::nullopt;
+    return std::nullopt;
 
   const base::Value::Dict* manifest_pref =
       persisted_system_extension->FindDict(kSystemExtensionManifest);
   if (!manifest_pref)
-    return absl::nullopt;
+    return std::nullopt;
 
-  absl::optional<SystemExtensionPersistedInfo> info;
+  std::optional<SystemExtensionPersistedInfo> info;
   info.emplace();
   info->id = system_extension_id;
   info->manifest = manifest_pref->Clone();
@@ -89,11 +89,11 @@ SystemExtensionsPersistentStorage::GetAll() {
   const base::Value::Dict& persisted_system_extensions_map =
       prefs->GetDict(prefs::kPersistedSystemExtensions);
   for (const auto [id_str, _] : persisted_system_extensions_map) {
-    absl::optional<SystemExtensionId> id = SystemExtension::StringToId(id_str);
+    std::optional<SystemExtensionId> id = SystemExtension::StringToId(id_str);
     if (!id)
       continue;
 
-    absl::optional<SystemExtensionPersistedInfo> info = Get(id.value());
+    std::optional<SystemExtensionPersistedInfo> info = Get(id.value());
     if (!info)
       continue;
 

@@ -5,7 +5,6 @@
 <translation id="1076394037877376434">પેજ <ph name="PAGE_NUMBER" /> ડિલીટ કરો</translation>
 <translation id="1113173431709655881">કૅમેરા મોડ</translation>
 <translation id="1153190633558910465">ગ્રિડ બંધ કરો</translation>
-<translation id="1175958423215084756">લિંકની જાણકારી મળી. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213">પેજ <ph name="PAGE_NUMBER" /> ડિલીટ કર્યું</translation>
 <translation id="1258009455399840361">ઘડિયાળની દિશામાં 90 ડિગ્રી ફેરવો</translation>
 <translation id="1417314334557041815">પેજ <ph name="INDEX" />માં ફેરફાર કરો</translation>
@@ -60,14 +59,12 @@
 <translation id="3642192109456033823">વીડિયો પર પ્રક્રિયા કરી રહ્યાં છીએ…</translation>
 <translation id="3789724198583203151">ઘડિયાળની વિપરીત દિશામાં 90 ડિગ્રી ફેરવો</translation>
 <translation id="3810838688059735925">વીડિયો</translation>
-<translation id="3892148308691398805">ટેક્સ્ટ કૉપિ કરો</translation>
 <translation id="4060608699153044055">ડિવાઇસમાં અપર્યાપ્ત સ્ટોરેજ સ્પેસ હોવાને કારણે તમે રેકોર્ડ કરી શકશો નહીં. રેકોર્ડિંગ શરૂ કરવા માટે, તમારે તમારા ડિવાઇસમાં જગ્યા ખાલી કરવી જરૂરી છે.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
 <translation id="4118525110028899586">રેકોર્ડિંગ થોભાવો</translation>
 <translation id="4121305183798804752">દસ્તાવેજની ભાળ મળી</translation>
 <translation id="414641094616694804">આ કૅમેરા રિઝોલ્યુશનમાં ફેરફાર કરી શકતો નથી</translation>
 <translation id="4176463684765177261">અક્ષમ કરેલું</translation>
-<translation id="4269820728363426813">લિંક સરનામું કૉપિ કરો</translation>
 <translation id="428234092390943511">પેજ થંબનેલ</translation>
 <translation id="4349714250734879769">Chrome દ્વારા ફ્રેમ સ્કેલ કરો</translation>
 <translation id="4383571725254449280">કાર્યપ્રદર્શનના લૉગ પ્રિન્ટ કરો</translation>
@@ -144,7 +141,6 @@
 <translation id="7726641833034062494">સામાન્ય વીડિયો રેકોર્ડ કરો</translation>
 <translation id="7748344063862150053">દસ્તાવેજનો સૌથી ઉપરનો જમણો ખૂણો</translation>
 <translation id="7933675232020478311">સૌથી નીચે જમણી દિશામાં ખસેડી રહ્યાં છીએ</translation>
-<translation id="7983668134180549431">ટેક્સ્ટની જાણકારી મળી.</translation>
 <translation id="8079255378695216066">રેકોર્ડિંગ શરૂ કરી શકાતું નથી</translation>
 <translation id="8120146556401698679">ફેરવો ટિલ્ટ કરો નાનું-મોટું કરો</translation>
 <translation id="8131740175452115882">પુષ્ટિ કરો</translation>
@@ -163,6 +159,7 @@
 <translation id="8870695351537079478">રેકોર્ડિંગ શરૂ કરી શકતાં નથી</translation>
 <translation id="8880167521484863515">4 જેમ 3</translation>
 <translation id="8903921497873541725">ઝૂમ વધારો</translation>
+<translation id="8926890870105777777">"<ph name="WIFINAME" />" નેટવર્કમાં જોડાઓ</translation>
 <translation id="9045010116236796332">દસ્તાવેજના બધા ખૂણાઓને ફ્રેમની અંદર રાખો</translation>
 <translation id="9045155556724273246">10 સેકન્ડ</translation>
 <translation id="906331135292332864">છબી પર પ્રક્રિયા કરી રહ્યાં છીએ…</translation>

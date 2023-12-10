@@ -66,7 +66,7 @@ std::u16string LiveTranslateComboboxModel::GetItemAt(size_t index) const {
   return base::UTF8ToUTF16(languages_[index].display_name);
 }
 
-absl::optional<size_t> LiveTranslateComboboxModel::GetDefaultIndex() const {
+std::optional<size_t> LiveTranslateComboboxModel::GetDefaultIndex() const {
   std::string target_language =
       profile_->GetPrefs()->GetString(prefs::kLiveTranslateTargetLanguageCode);
   for (size_t i = 0; i < languages_.size(); i++) {

@@ -11,9 +11,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
-#include "components/password_manager/content/browser/password_change_success_tracker_factory.h"
 #include "components/password_manager/core/browser/affiliation/affiliation_service.h"
-#include "components/password_manager/core/browser/password_change_success_tracker.h"
 #include "components/password_manager/core/browser/well_known_change_password/well_known_change_password_state.h"
 #include "components/password_manager/core/browser/well_known_change_password/well_known_change_password_util.h"
 #include "content/public/browser/browser_context.h"
@@ -36,7 +34,6 @@ using content::NavigationHandle;
 using content::NavigationThrottle;
 using content::WebContents;
 using password_manager::IsWellKnownChangePasswordUrl;
-using password_manager::PasswordChangeSuccessTracker;
 using password_manager::WellKnownChangePasswordResult;
 using password_manager::WellKnownChangePasswordState;
 
@@ -176,35 +173,19 @@ void WellKnownChangePasswordNavigationThrottle::OnProcessingFinished(
     bool is_supported) {
   GURL redirect_url = affiliation_service_->GetChangePasswordURL(request_url_);
 
-  // Extend the information of precisely what kind of flow the manual
-  // password change flow is.
-  raw_ptr<PasswordChangeSuccessTracker> password_change_success_tracker =
-      password_manager::PasswordChangeSuccessTrackerFactory::
-          GetForBrowserContext(
-              navigation_handle()->GetWebContents()->GetBrowserContext());
-
   // If affiliation service returns .well-known/change-password as change
   // password url - show it even if Chrome doesn't detect it as supported.
   if (is_supported || redirect_url == request_url_) {
     RecordMetric(WellKnownChangePasswordResult::kUsedWellKnownChangePassword);
-    password_change_success_tracker->OnChangePasswordFlowModified(
-        request_url_,
-        PasswordChangeSuccessTracker::StartEvent::kManualWellKnownUrlFlow);
     Resume();
     return;
   }
 
   if (redirect_url.is_valid()) {
     RecordMetric(WellKnownChangePasswordResult::kFallbackToOverrideUrl);
-    password_change_success_tracker->OnChangePasswordFlowModified(
-        request_url_,
-        PasswordChangeSuccessTracker::StartEvent::kManualChangePasswordUrlFlow);
     Redirect(redirect_url);
   } else {
     RecordMetric(WellKnownChangePasswordResult::kFallbackToOriginUrl);
-    password_change_success_tracker->OnChangePasswordFlowModified(
-        request_url_,
-        PasswordChangeSuccessTracker::StartEvent::kManualHomepageFlow);
     Redirect(request_url_.DeprecatedGetOriginAsURL());
   }
   CancelDeferredNavigation(NavigationThrottle::CANCEL);

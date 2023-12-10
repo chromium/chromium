@@ -76,15 +76,15 @@ struct ASH_PUBLIC_EXPORT WallpaperInfo {
 
   // These fields are applicable if |type| == WallpaperType::kOnceGooglePhotos
   // or WallpaperType::kDailyGooglePhotos.
-  absl::optional<std::string> dedup_key;
+  std::optional<std::string> dedup_key;
 
   // These fields are applicable if |type| == WallpaperType::kOnline or
   // WallpaperType::kDaily.
   // TODO(b/279781227): Remove this field in favor of |unit_id|. Note: Do *not*
   // read |asset_id| to make migration easier.
-  absl::optional<uint64_t> asset_id;
+  std::optional<uint64_t> asset_id;
   std::string collection_id;
-  absl::optional<uint64_t> unit_id;
+  std::optional<uint64_t> unit_id;
   std::vector<OnlineWallpaperVariant> variants;
 
   // Not empty if type == WallpaperType::kOneShot.

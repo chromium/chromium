@@ -4,6 +4,8 @@
 
 #include "ash/style/icon_button.h"
 
+#include "ash/public/cpp/style/color_provider.h"
+#include "ash/style/blurred_background_shield.h"
 #include "ash/style/style_util.h"
 #include "base/notreached.h"
 #include "chromeos/utils/haptics_util.h"
@@ -71,7 +73,7 @@ int GetButtonSizeOnType(IconButton::Type type) {
   }
 }
 
-absl::optional<ui::ColorId> GetDefaultBackgroundColorId(IconButton::Type type) {
+std::optional<ui::ColorId> GetDefaultBackgroundColorId(IconButton::Type type) {
   switch (type) {
     case IconButton::Type::kXSmall:
     case IconButton::Type::kSmall:
@@ -85,7 +87,7 @@ absl::optional<ui::ColorId> GetDefaultBackgroundColorId(IconButton::Type type) {
       return cros_tokens::kCrosSysSystemPrimaryContainer;
     default:
       NOTREACHED() << "Floating type button does not have a background";
-      return absl::nullopt;
+      return std::nullopt;
   }
 }
 
@@ -360,6 +362,19 @@ void IconButton::SetToggled(bool toggled) {
   }
 }
 
+void IconButton::SetEnableBlurredBackgroundShield(bool enable) {
+  if (blurred_background_shield_enabled_ == enable) {
+    return;
+  }
+  blurred_background_shield_enabled_ = enable;
+  if (blurred_background_shield_enabled_) {
+    SetBackground(nullptr);
+  } else {
+    blurred_background_shield_.reset();
+  }
+  UpdateBackground();
+}
+
 void IconButton::OnFocus() {
   // Update prominent floating type button's icon color on focus.
   if (IsProminentFloatingType(type_) && !IsToggledOn()) {
@@ -427,6 +442,11 @@ void IconButton::NotifyClick(const ui::Event& event) {
 }
 
 void IconButton::UpdateBackground() {
+  if (blurred_background_shield_enabled_) {
+    UpdateBlurredBackgroundShield();
+    return;
+  }
+
   // The untoggled floating button does not have a background.
   const bool is_toggled = IsToggledOn();
   if (IsFloatingIconButton(type_) && !is_toggled) {
@@ -442,12 +462,39 @@ void IconButton::UpdateBackground() {
   }
 
   // Create a background according to the toggled state.
-  ColorVariant color =
+  ColorVariant color_variant =
       is_toggled ? background_toggled_color_ : background_color_;
-  if (absl::holds_alternative<SkColor>(color)) {
-    SetBackground(CreateSolidBackground(absl::get<SkColor>(color), type_));
+  if (absl::holds_alternative<SkColor>(color_variant)) {
+    SetBackground(CreateSolidBackground(absl::get<SkColor>(color_variant), type_));
   } else {
-    SetBackground(CreateThemedBackground(absl::get<ui::ColorId>(color), type_));
+    SetBackground(CreateThemedBackground(absl::get<ui::ColorId>(color_variant), type_));
+  }
+}
+
+void IconButton::UpdateBlurredBackgroundShield() {
+  CHECK(blurred_background_shield_enabled_);
+  const bool is_toggled = IsToggledOn();
+  if (IsFloatingIconButton(type_) && !is_toggled) {
+    blurred_background_shield_.reset();
+    return;
+  }
+
+  // Create a new blurred background shield if needed.
+  if (!blurred_background_shield_) {
+    blurred_background_shield_ = std::make_unique<BlurredBackgroundShield>(
+        this, background_color_, ColorProvider::kBackgroundBlurSigma,
+        gfx::RoundedCornersF(GetButtonSizeOnType(type_) / 2));
+  }
+
+  ColorVariant color_variant =
+      GetEnabled()
+          ? (is_toggled ? background_toggled_color_ : background_color_)
+          : ColorVariant(cros_tokens::kCrosSysDisabledContainer);
+
+  if (absl::holds_alternative<SkColor>(color_variant)) {
+    blurred_background_shield_->SetColor(absl::get<SkColor>(color_variant));
+  } else {
+    blurred_background_shield_->SetColorId(absl::get<ui::ColorId>(color_variant));
   }
 }
 
@@ -463,13 +510,13 @@ void IconButton::UpdateVectorIcon(bool color_changes_only) {
   const int icon_size = icon_size_.value_or(GetIconSizeOnType(type_));
 
   ui::ImageModel new_normal_image_model;
-  ColorVariant color = is_toggled ? icon_toggled_color_ : icon_color_;
-  if (absl::holds_alternative<SkColor>(color)) {
+  ColorVariant color_variant = is_toggled ? icon_toggled_color_ : icon_color_;
+  if (absl::holds_alternative<SkColor>(color_variant)) {
     new_normal_image_model = ui::ImageModel::FromVectorIcon(
-        *icon, absl::get<SkColor>(color), icon_size);
+        *icon, absl::get<SkColor>(color_variant), icon_size);
   } else {
     new_normal_image_model = ui::ImageModel::FromVectorIcon(
-        *icon, absl::get<ui::ColorId>(color), icon_size);
+        *icon, absl::get<ui::ColorId>(color_variant), icon_size);
   }
 
   if (GetWidget()) {

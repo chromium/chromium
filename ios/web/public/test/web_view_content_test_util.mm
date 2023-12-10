@@ -120,7 +120,7 @@ bool IsWebViewContainingTextInFrame(web::WebState* web_state,
     FindInPageJavaScriptFeature* find_in_page_feature =
         FindInPageJavaScriptFeature::GetInstance();
     find_in_page_feature->Search(
-        frame, text, base::BindOnce(^(absl::optional<int> result_matches) {
+        frame, text, base::BindOnce(^(std::optional<int> result_matches) {
           if (result_matches && result_matches.value() >= 1) {
             text_found = true;
           }

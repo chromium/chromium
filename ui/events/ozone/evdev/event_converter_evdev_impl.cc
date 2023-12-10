@@ -259,8 +259,8 @@ void EventConverterEvdevImpl::OnKeyChange(unsigned int key,
   // keyboard. Disables Imposter flag and triggers a callback which will update
   // the dispatched list of keyboards with this new information.
   if (key_state_.count() == 1 && IsValidKeyboardKeyPress(key)) {
-    bool was_suspected = IsSuspectedImposter();
-    SetSuspectedImposter(false);
+    bool was_suspected = IsSuspectedKeyboardImposter();
+    SetSuspectedKeyboardImposter(false);
     if (was_suspected && received_valid_input_callback_) {
       received_valid_input_callback_.Run(this);
     }

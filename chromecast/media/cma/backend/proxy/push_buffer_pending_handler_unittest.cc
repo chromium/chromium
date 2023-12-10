@@ -71,7 +71,7 @@ class MockHandler : public AudioChannelPushBufferHandler {
 
   MOCK_METHOD1(PushBuffer, CmaBackend::BufferStatus(const PushBufferRequest&));
   MOCK_CONST_METHOD0(HasBufferedData, bool());
-  MOCK_METHOD0(GetBufferedData, absl::optional<PushBufferRequest>());
+  MOCK_METHOD0(GetBufferedData, std::optional<PushBufferRequest>());
 };
 
 }  // namespace

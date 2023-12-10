@@ -1,8 +1,8 @@
 set noparent
 
 # Primary:
-asully@chromium.org
+estade@chromium.org
 
 # Secondary:
+asully@chromium.org   #{LAST_RESORT_SUGGESTION}
 ayui@chromium.org
-estade@chromium.org

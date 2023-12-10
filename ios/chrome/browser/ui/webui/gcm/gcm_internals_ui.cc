@@ -17,7 +17,7 @@
 #include "components/gcm_driver/gcm_internals_helper.h"
 #include "components/gcm_driver/gcm_profile_service.h"
 #include "components/grit/dev_ui_components_resources.h"
-#include "ios/chrome/browser/gcm/ios_chrome_gcm_profile_service_factory.h"
+#include "ios/chrome/browser/gcm/model/ios_chrome_gcm_profile_service_factory.h"
 #include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #include "ios/web/public/webui/web_ui_ios.h"

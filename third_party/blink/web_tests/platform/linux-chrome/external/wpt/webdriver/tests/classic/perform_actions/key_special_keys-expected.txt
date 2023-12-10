@@ -1,12 +1,6 @@
 This is a wdspec test.
-[PASS] test_codepoint_keys_behave_correctly[\U0001f604]
-[PASS] test_codepoint_keys_behave_correctly[\U0001f60d]
 [FAIL] test_codepoint_keys_behave_correctly[\u0ba8\u0bbf]
   webdriver.error.InvalidArgumentException: invalid argument (400): invalid argument
 [FAIL] test_codepoint_keys_behave_correctly[\u1100\u1161\u11a8]
   webdriver.error.InvalidArgumentException: invalid argument (400): invalid argument
-[PASS] test_invalid_multiple_codepoint_keys_fail[fa]
-[PASS] test_invalid_multiple_codepoint_keys_fail[\u0ba8\u0bbfb]
-[PASS] test_invalid_multiple_codepoint_keys_fail[\u0ba8\u0bbf\u0ba8]
-[PASS] test_invalid_multiple_codepoint_keys_fail[\u1100\u1161\u11a8c]
 Harness: the test ran to completion.

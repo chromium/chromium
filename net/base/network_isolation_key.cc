@@ -2,15 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "net/base/network_isolation_key.h"
+
 #include <cstddef>
+#include <optional>
 #include <string>
 
 #include "base/unguessable_token.h"
 #include "net/base/features.h"
-#include "net/base/network_isolation_key.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "schemeful_site.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 #include "url/url_constants.h"
@@ -19,7 +20,7 @@ namespace net {
 
 namespace {
 
-std::string GetSiteDebugString(const absl::optional<SchemefulSite>& site) {
+std::string GetSiteDebugString(const std::optional<SchemefulSite>& site) {
   return site ? site->GetDebugString() : "null";
 }
 
@@ -28,20 +29,20 @@ std::string GetSiteDebugString(const absl::optional<SchemefulSite>& site) {
 NetworkIsolationKey::NetworkIsolationKey(
     const SchemefulSite& top_frame_site,
     const SchemefulSite& frame_site,
-    const absl::optional<base::UnguessableToken>& nonce)
+    const std::optional<base::UnguessableToken>& nonce)
     : NetworkIsolationKey(SchemefulSite(top_frame_site),
                           SchemefulSite(frame_site),
-                          absl::optional<base::UnguessableToken>(nonce)) {}
+                          std::optional<base::UnguessableToken>(nonce)) {}
 
 NetworkIsolationKey::NetworkIsolationKey(
     SchemefulSite&& top_frame_site,
     SchemefulSite&& frame_site,
-    absl::optional<base::UnguessableToken>&& nonce)
+    std::optional<base::UnguessableToken>&& nonce)
     : top_frame_site_(std::move(top_frame_site)),
-      frame_site_(absl::make_optional(std::move(frame_site))),
+      frame_site_(std::make_optional(std::move(frame_site))),
       is_cross_site_((GetMode() == Mode::kCrossSiteFlagEnabled)
-                         ? absl::make_optional(*top_frame_site_ != *frame_site_)
-                         : absl::nullopt),
+                         ? std::make_optional(*top_frame_site_ != *frame_site_)
+                         : std::nullopt),
       nonce_(std::move(nonce)) {
   DCHECK(!nonce_ || !nonce_->is_empty());
 }
@@ -76,14 +77,12 @@ NetworkIsolationKey NetworkIsolationKey::CreateWithNewFrameSite(
     const SchemefulSite& new_frame_site) const {
   if (!top_frame_site_)
     return NetworkIsolationKey();
-  NetworkIsolationKey key(top_frame_site_.value(), new_frame_site);
-  key.nonce_ = nonce_;
-  return key;
+  return NetworkIsolationKey(top_frame_site_.value(), new_frame_site, nonce_);
 }
 
-absl::optional<std::string> NetworkIsolationKey::ToCacheKeyString() const {
+std::optional<std::string> NetworkIsolationKey::ToCacheKeyString() const {
   if (IsTransient())
-    return absl::nullopt;
+    return std::nullopt;
 
   std::string variable_key_piece;
   switch (GetMode()) {

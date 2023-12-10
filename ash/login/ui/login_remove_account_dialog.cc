@@ -18,6 +18,8 @@
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
@@ -75,6 +77,8 @@ class TrappedFocusSearch : public views::FocusSearch {
 
 // A system label button that dismisses its bubble dialog parent on key event.
 class RemoveUserButton : public PillButton {
+  METADATA_HEADER(RemoveUserButton, PillButton)
+
  public:
   RemoveUserButton(PressedCallback callback, LoginRemoveAccountDialog* bubble)
       : PillButton(std::move(callback),
@@ -112,6 +116,9 @@ class RemoveUserButton : public PillButton {
 
   raw_ptr<LoginRemoveAccountDialog, ExperimentalAsh> bubble_;
 };
+
+BEGIN_METADATA(RemoveUserButton)
+END_METADATA
 
 LoginRemoveAccountDialog::TestApi::TestApi(LoginRemoveAccountDialog* bubble)
     : bubble_(bubble) {}
@@ -327,5 +334,8 @@ void LoginRemoveAccountDialog::RemoveUserButtonPressed() {
     std::move(on_remove_user_requested_).Run();
   }
 }
+
+BEGIN_METADATA(LoginRemoveAccountDialog)
+END_METADATA
 
 }  // namespace ash

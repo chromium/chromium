@@ -78,17 +78,18 @@ public class JsonSanitizer {
                     case STRING:
                         writer.value(sanitizeString(reader.nextString()));
                         break;
-                    case NUMBER: {
-                        // Read the value as a string, then try to parse it first as a long, then as
-                        // a double.
-                        String value = reader.nextString();
-                        try {
-                            writer.value(Long.parseLong(value));
-                        } catch (NumberFormatException e) {
-                            writer.value(Double.parseDouble(value));
+                    case NUMBER:
+                        {
+                            // Read the value as a string, then try to parse it first as a long,
+                            // then as a double.
+                            String value = reader.nextString();
+                            try {
+                                writer.value(Long.parseLong(value));
+                            } catch (NumberFormatException e) {
+                                writer.value(Double.parseDouble(value));
+                            }
+                            break;
                         }
-                        break;
-                    }
                     case BOOLEAN:
                         writer.value(reader.nextBoolean());
                         break;
@@ -123,9 +124,7 @@ public class JsonSanitizer {
         JsonSanitizerJni.get().onSuccess(nativePtr, result);
     }
 
-    /**
-     * Helper class to check nesting depth of JSON expressions.
-     */
+    /** Helper class to check nesting depth of JSON expressions. */
     private static class StackChecker {
         private int mStackDepth;
 
@@ -186,6 +185,7 @@ public class JsonSanitizer {
     @NativeMethods
     interface Natives {
         void onSuccess(long id, String json);
+
         void onError(long id, String error);
     }
 }

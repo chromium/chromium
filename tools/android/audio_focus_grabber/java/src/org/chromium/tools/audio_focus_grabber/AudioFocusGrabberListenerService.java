@@ -19,9 +19,7 @@ import androidx.core.app.NotificationManagerCompat;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
 
-/**
- * The listener service, which listens to intents and perform audio focus actions.
- */
+/** The listener service, which listens to intents and perform audio focus actions. */
 public class AudioFocusGrabberListenerService extends Service {
     private static final String TAG = "AudioFocusGrabber";
 
@@ -40,8 +38,8 @@ public class AudioFocusGrabberListenerService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        mAudioManager = (AudioManager) getApplicationContext()
-                .getSystemService(Context.AUDIO_SERVICE);
+        mAudioManager =
+                (AudioManager) getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
     }
 
     @Override
@@ -68,8 +66,10 @@ public class AudioFocusGrabberListenerService extends Service {
 
     private void processIntent(Intent intent) {
         if (mMediaPlayer != null) {
-            Log.i(TAG, "There's already a MediaPlayer playing,"
-                    + " stopping the existing player and abandon focus");
+            Log.i(
+                    TAG,
+                    "There's already a MediaPlayer playing,"
+                            + " stopping the existing player and abandon focus");
             releaseAndAbandonAudioFocus();
         }
         String action = intent.getAction();
@@ -89,10 +89,9 @@ public class AudioFocusGrabberListenerService extends Service {
     }
 
     private void gainFocusAndPlay(int focusType) {
-        int result = mAudioManager.requestAudioFocus(
-                mOnAudioFocusChangeListener,
-                AudioManager.STREAM_MUSIC,
-                focusType);
+        int result =
+                mAudioManager.requestAudioFocus(
+                        mOnAudioFocusChangeListener, AudioManager.STREAM_MUSIC, focusType);
         if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
             playSound();
         } else {
@@ -152,21 +151,25 @@ public class AudioFocusGrabberListenerService extends Service {
             };
 
     private void showNotification() {
-        RemoteViews view = new RemoteViews(this.getPackageName(),
-                                           R.layout.audio_focus_grabber_notification_bar);
-        view.setOnClickPendingIntent(R.id.notification_button_gain,
-                createPendingIntent(ACTION_GAIN));
-        view.setOnClickPendingIntent(R.id.notification_button_transient_pause,
+        RemoteViews view =
+                new RemoteViews(
+                        this.getPackageName(), R.layout.audio_focus_grabber_notification_bar);
+        view.setOnClickPendingIntent(
+                R.id.notification_button_gain, createPendingIntent(ACTION_GAIN));
+        view.setOnClickPendingIntent(
+                R.id.notification_button_transient_pause,
                 createPendingIntent(ACTION_TRANSIENT_PAUSE));
-        view.setOnClickPendingIntent(R.id.notification_button_transient_duck,
+        view.setOnClickPendingIntent(
+                R.id.notification_button_transient_duck,
                 createPendingIntent(ACTION_TRANSIENT_DUCK));
-        view.setOnClickPendingIntent(R.id.notification_button_hide,
-                createPendingIntent(ACTION_HIDE_NOTIFICATION));
+        view.setOnClickPendingIntent(
+                R.id.notification_button_hide, createPendingIntent(ACTION_HIDE_NOTIFICATION));
 
         NotificationManagerCompat manager = NotificationManagerCompat.from(this);
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
-                .setContent(view)
-                .setSmallIcon(R.drawable.notification_icon);
+        NotificationCompat.Builder builder =
+                new NotificationCompat.Builder(this)
+                        .setContent(view)
+                        .setSmallIcon(R.drawable.notification_icon);
         manager.notify(NOTIFICATION_ID, builder.build());
     }
 
@@ -178,7 +181,10 @@ public class AudioFocusGrabberListenerService extends Service {
     private PendingIntent createPendingIntent(String action) {
         Intent i = new Intent(this, AudioFocusGrabberListenerService.class);
         i.setAction(action);
-        return PendingIntent.getService(this, 0, i,
+        return PendingIntent.getService(
+                this,
+                0,
+                i,
                 PendingIntent.FLAG_CANCEL_CURRENT
                         | IntentUtils.getPendingIntentMutabilityFlag(false));
     }

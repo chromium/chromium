@@ -4,6 +4,8 @@
 
 #include "ash/style/checkbox_group.h"
 
+#include <utility>
+
 #include "ui/base/metadata/metadata_impl_macros.h"
 
 namespace ash {
@@ -29,7 +31,7 @@ CheckboxGroup::~CheckboxGroup() = default;
 Checkbox* CheckboxGroup::AddButton(Checkbox::PressedCallback callback,
                                    const std::u16string& label) {
   auto* button = AddChildView(std::make_unique<Checkbox>(
-      group_width_ - inside_border_insets_.width(), callback, label,
+      group_width_ - inside_border_insets_.width(), std::move(callback), label,
       button_padding_, image_label_spacing_));
   button->set_delegate(this);
   buttons_.push_back(button);

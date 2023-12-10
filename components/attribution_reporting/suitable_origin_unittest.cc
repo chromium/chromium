@@ -4,7 +4,6 @@
 
 #include "components/attribution_reporting/suitable_origin.h"
 
-#include "base/strings/string_piece.h"
 #include "net/base/schemeful_site.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -65,7 +64,7 @@ TEST(SuitableOriginTest, Create) {
 
 TEST(SuitableOriginTest, Deserialize_Serialize) {
   const struct {
-    base::StringPiece str;
+    std::string_view str;
     absl::optional<url::Origin> expected;
     const char* expected_serialization;
   } kTestCases[] = {
@@ -121,13 +120,21 @@ TEST(SuitableOriginTest, Deserialize_Serialize) {
   }
 }
 
-TEST(SuitableOriginTest, OperatorLt) {
+TEST(SuitableOriginTest, Comparison) {
   const auto origin_a = SuitableOrigin::Deserialize("https://a.test");
   const auto origin_b = SuitableOrigin::Deserialize("https://b.test");
 
-  EXPECT_TRUE(origin_a < origin_b);
-  EXPECT_FALSE(origin_b < origin_a);
-  EXPECT_FALSE(origin_a < origin_a);
+  EXPECT_LT(origin_a, origin_b);
+  EXPECT_GT(origin_b, origin_a);
+
+  EXPECT_LE(origin_a, origin_b);
+  EXPECT_LE(origin_a, origin_a);
+
+  EXPECT_GE(origin_b, origin_a);
+  EXPECT_GE(origin_b, origin_b);
+
+  EXPECT_EQ(origin_a, origin_a);
+  EXPECT_NE(origin_a, origin_b);
 }
 
 TEST(SuitableOriginTest, IsSitePotentiallySuitable) {

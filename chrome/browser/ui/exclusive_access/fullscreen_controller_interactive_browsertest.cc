@@ -231,15 +231,9 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
   EXPECT_TRUE(lambda_called);
 }
 
-// Test is flaky on Lacros: https://crbug.com/1250091
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_BrowserFullscreenExit DISABLED_BrowserFullscreenExit
-#else
-#define MAYBE_BrowserFullscreenExit BrowserFullscreenExit
-#endif
 // Tests Fullscreen entered in Browser, then Tab mode, then exited via Browser.
 IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
-                       MAYBE_BrowserFullscreenExit) {
+                       BrowserFullscreenExit) {
   // Enter browser fullscreen.
   ASSERT_NO_FATAL_FAILURE(ToggleBrowserFullscreen(true));
 
@@ -253,16 +247,9 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
   ASSERT_FALSE(browser()->window()->IsFullscreen());
 }
 
-// Test is flaky on Lacros: https://crbug.com/1250092
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_BrowserFullscreenAfterTabFSExit \
-  DISABLED_BrowserFullscreenAfterTabFSExit
-#else
-#define MAYBE_BrowserFullscreenAfterTabFSExit BrowserFullscreenAfterTabFSExit
-#endif
 // Tests Browser Fullscreen remains active after Tab mode entered and exited.
 IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
-                       MAYBE_BrowserFullscreenAfterTabFSExit) {
+                       BrowserFullscreenAfterTabFSExit) {
   // Enter browser fullscreen.
   ASSERT_NO_FATAL_FAILURE(ToggleBrowserFullscreen(true));
 

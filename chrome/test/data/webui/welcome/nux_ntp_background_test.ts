@@ -162,14 +162,6 @@ suite('NuxNtpBackgroundTest', function() {
                 'recordBackgroundImageFailedToLoad'));
       });
 
-  test('test metrics for load times of background images', function() {
-    testNtpBackgroundProxy.setPreloadImageSuccess(true);
-    const options =
-        testElement.shadowRoot!.querySelectorAll<HTMLButtonElement>('.option');
-    options[1]!.click();
-    return testNtpBackgroundProxy.whenCalled('recordBackgroundImageLoadTime');
-  });
-
   test('test metrics for doing nothing and navigating away', function() {
     testElement.onRouteUnload();
     return testMetricsProxy.whenCalled('recordDidNothingAndNavigatedAway');

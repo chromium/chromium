@@ -408,7 +408,6 @@ component("base") {
       "owned_window_anchor.h",
       "pointer/pointer_device.h",
       "pointer/pointer_device_util.cc",
-      "pointer/touch_editing_controller.cc",
       "pointer/touch_editing_controller.h",
       "text/bytes_formatting.cc",
       "text/bytes_formatting.h",
@@ -492,7 +491,6 @@ component("base") {
     "//base",
     "//skia",
     "//third_party/abseil-cpp:absl",
-    "//ui/color:color_headers",
     "//ui/gfx",
     "//ui/gfx/geometry",
   ]
@@ -514,11 +512,8 @@ component("base") {
     "//ui/base:data_exchange",
     "//ui/base/clipboard:clipboard_types",
     "//ui/base/dragdrop/mojom",
-    "//ui/color",
     "//ui/display",
     "//ui/display/util:gpu_info_util",
-    "//ui/events",
-    "//ui/events/devices",
     "//ui/resources:webui_resources_grd",
     "//ui/strings",
     "//url",
@@ -547,12 +542,15 @@ component("base") {
       ":l10n_util_ios",
       "//base",
     ]
-    if (!use_blink) {
-      deps -= [
-        "//ui/events",
-        "//ui/events/devices",
-      ]
-    }
+  }
+
+  if (use_blink) {
+    deps += [
+      "//ui/color",
+      "//ui/events",
+      "//ui/events/devices",
+    ]
+    public_deps += [ "//ui/color:color_headers" ]
   }
 
   if (is_win) {
@@ -650,7 +648,6 @@ component("base") {
     sources -= [
       "l10n/l10n_font_util.cc",
       "models/button_menu_item_model.cc",
-      "pointer/touch_editing_controller.cc",
       "theme_provider.cc",
     ]
   }
@@ -985,6 +982,7 @@ source_set("run_all_unittests") {
   deps = [
     "//base",
     "//base/test:test_support",
+    "//mojo/core/embedder:embedder",
     "//skia",
     "//testing/gtest",
     "//ui/base",
@@ -1064,10 +1062,7 @@ test("ui_base_unittests") {
     "//ui/base/data_transfer_policy:unittests",
     "//ui/base/metadata:metadata_tests",
     "//ui/base/prediction:prediction",
-    "//ui/color",
     "//ui/display",
-    "//ui/events:events_base",
-    "//ui/events:test_support",
     "//ui/gfx:test_support",
     "//ui/resources",
     "//ui/resources:ui_test_pak",
@@ -1109,12 +1104,6 @@ test("ui_base_unittests") {
       "test/ios/ui_image_test_utils_unittest.mm",
     ]
     deps += [ ":l10n_util_ios" ]
-    if (!use_blink) {
-      deps -= [
-        "//ui/events:events_base",
-        "//ui/events:test_support",
-      ]
-    }
   } else {  # !is_ios
     sources += [
       "accelerators/accelerator_manager_unittest.cc",
@@ -1129,6 +1118,14 @@ test("ui_base_unittests") {
       "text/bytes_formatting_unittest.cc",
       "themed_vector_icon_unittest.cc",
       "webui/web_ui_util_unittest.cc",
+    ]
+  }
+
+  if (use_blink) {
+    deps += [
+      "//ui/color",
+      "//ui/events:events_base",
+      "//ui/events:test_support",
     ]
   }
 
@@ -1388,4 +1385,13 @@ action("locales_list_gen") {
 source_set("locales_list") {
   deps = [ ":locales_list_gen" ]
   sources = [ "$root_gen_dir/ui/base/l10n/l10n_util_locales_list.inc" ]
+}
+
+buildflag_header("ozone_buildflags") {
+  header = "ozone_buildflags.h"
+
+  flags = [
+    "IS_OZONE_WAYLAND=$ozone_platform_wayland",
+    "IS_OZONE_X11=$ozone_platform_x11",
+  ]
 }

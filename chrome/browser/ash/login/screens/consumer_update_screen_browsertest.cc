@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/login/screens/consumer_update_screen.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -47,7 +48,6 @@
 #include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_test.h"
 #include "dbus/object_path.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/devicetype_utils.h"

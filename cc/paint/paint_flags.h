@@ -56,10 +56,10 @@ class CC_PAINT_EXPORT PaintFlags {
     color_.fA = a;
   }
   ALWAYS_INLINE void setBlendMode(SkBlendMode mode) {
-    blend_mode_ = static_cast<uint32_t>(mode);
+    bitfields_.blend_mode_ = static_cast<uint32_t>(mode);
   }
   ALWAYS_INLINE SkBlendMode getBlendMode() const {
-    return static_cast<SkBlendMode>(blend_mode_);
+    return static_cast<SkBlendMode>(bitfields_.blend_mode_);
   }
   ALWAYS_INLINE bool isAntiAlias() const { return bitfields_.antialias_; }
   ALWAYS_INLINE void setAntiAlias(bool aa) { bitfields_.antialias_ = aa; }
@@ -85,11 +85,45 @@ class CC_PAINT_EXPORT PaintFlags {
     kConstrainedHigh,
     kLast = kConstrainedHigh,
   };
-  ALWAYS_INLINE void setDynamicRangeLimit(DynamicRangeLimit limit) {
-    bitfields_.dynamic_range_limit_ = static_cast<uint32_t>(limit);
+  // Represents a weighted arithmetic mean of "standard", "constrained-high" and
+  // "high" in log-luminance space (which is equivalent to a geometric mean in
+  // linear luminance).
+  struct DynamicRangeLimitMixture {
+    explicit DynamicRangeLimitMixture(DynamicRangeLimit limit) {
+      switch (limit) {
+        case DynamicRangeLimit::kStandard:
+          standard_mix = 1.f;
+          break;
+        case DynamicRangeLimit::kConstrainedHigh:
+          constrained_high_mix = 1.f;
+          break;
+        case DynamicRangeLimit::kHigh:
+          break;
+      }
+    }
+    DynamicRangeLimitMixture(float standard_mix, float constrained_high_mix)
+        : standard_mix(standard_mix),
+          constrained_high_mix(constrained_high_mix) {}
+    friend bool operator==(const DynamicRangeLimitMixture&,
+                           const DynamicRangeLimitMixture&) = default;
+    float standard_mix = 0.f;
+    float constrained_high_mix = 0.f;
+    // The weight for "high" is implicit and calculated as "one minus the
+    // others".
+  };
+  ALWAYS_INLINE void setDynamicRangeLimit(DynamicRangeLimitMixture limit) {
+    bitfields_.dynamic_range_limit_standard_mix_ =
+        static_cast<uint32_t>(.5f + ((1 << 7) - 1) * limit.standard_mix);
+    bitfields_.dynamic_range_limit_constrained_high_mix_ =
+        static_cast<uint32_t>(.5f +
+                              ((1 << 7) - 1) * limit.constrained_high_mix);
   }
-  ALWAYS_INLINE DynamicRangeLimit getDynamicRangeLimit() const {
-    return static_cast<DynamicRangeLimit>(bitfields_.dynamic_range_limit_);
+  ALWAYS_INLINE DynamicRangeLimitMixture getDynamicRangeLimit() const {
+    return DynamicRangeLimitMixture(
+        /*standard_mix=*/(1.f / ((1 << 7) - 1)) *
+            bitfields_.dynamic_range_limit_standard_mix_,
+        /*constrained_high_mix=*/(1.f / ((1 << 7) - 1)) *
+            bitfields_.dynamic_range_limit_constrained_high_mix_);
   }
   ALWAYS_INLINE bool useDarkModeForImage() const {
     return bitfields_.use_dark_mode_for_image_;
@@ -215,7 +249,6 @@ class CC_PAINT_EXPORT PaintFlags {
   SkColor4f color_ = SkColors::kBlack;
   float width_ = 0.f;
   float miter_limit_ = 4.f;
-  uint32_t blend_mode_ = static_cast<uint32_t>(SkBlendMode::kSrcOver);
 
   struct PaintFlagsBitfields {
     uint32_t antialias_ : 1;
@@ -223,8 +256,10 @@ class CC_PAINT_EXPORT PaintFlags {
     uint32_t cap_type_ : 2;
     uint32_t join_type_ : 2;
     uint32_t style_ : 2;
+    uint32_t blend_mode_ : 5;
     uint32_t filter_quality_ : 2;
-    uint32_t dynamic_range_limit_ : 2;
+    uint32_t dynamic_range_limit_standard_mix_ : 7;
+    uint32_t dynamic_range_limit_constrained_high_mix_ : 7;
     // Specifies whether the compositor should use a dark mode filter when
     // rasterizing image on the draw op with this PaintFlags.
     uint32_t use_dark_mode_for_image_ : 1;

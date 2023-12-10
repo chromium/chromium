@@ -5,9 +5,13 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_GROWTH_CAMPAIGNS_MANAGER_CLIENT_H_
 #define CHROMEOS_ASH_COMPONENTS_GROWTH_CAMPAIGNS_MANAGER_CLIENT_H_
 
+#include <map>
+#include <memory>
+#include <optional>
+
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "chromeos/ash/components/growth/action_performer.h"
 
 namespace base {
 class Version;
@@ -16,7 +20,9 @@ class Version;
 namespace growth {
 
 using CampaignComponentLoadedCallback = base::OnceCallback<void(
-    const absl::optional<const base::FilePath>& file_path)>;
+    const std::optional<const base::FilePath>& file_path)>;
+
+using ActionMap = std::map<ActionType, std::unique_ptr<ActionPerformer>>;
 
 class CampaignsManagerClient {
  public:
@@ -44,6 +50,10 @@ class CampaignsManagerClient {
 
   // Get demo mode app component version.
   virtual const base::Version& GetDemoModeAppVersion() const = 0;
+
+  // Get the implementations for the various Actions on the growth
+  // framework.
+  virtual ActionMap GetCampaignsActions() const = 0;
 };
 
 }  // namespace growth

@@ -1,4 +1,10 @@
-<style include="settings-shared"></style>
+<style include="settings-shared">
+  :host-context(body.revamp-wayfinding-enabled) settings-toggle-button {
+    --cr-icon-button-margin-end: 16px;
+    --iron-icon-fill-color: var(--cros-sys-primary);
+  }
+</style>
+
 <os-settings-animated-pages id="pages"
     current-route="{{currentRoute}}"
     section="[[section_]]">
@@ -6,6 +12,7 @@
     <settings-card header-text="$i18n{a11yPageTitle}">
       <settings-toggle-button
           id="a11yImageLabelsToggle"
+          icon="[[rowIcons_.imageDescription]]"
           hidden="[[!showAccessibilityLabelsSetting_]]"
           pref="{{prefs.settings.a11y.enable_accessibility_image_labels}}"
           on-change="onToggleAccessibilityImageLabels_"
@@ -15,6 +22,7 @@
       </settings-toggle-button>
       <div class="hr" hidden="[[!showAccessibilityLabelsSetting_]]"></div>
       <settings-toggle-button id="optionsInMenuToggle"
+          icon="[[rowIcons_.showInQuickSettings]]"
           label="$i18n{optionsInMenuLabel}"
           sub-label="$i18n{optionsInMenuDescription}"
           pref="{{prefs.settings.a11y.enable_menu}}"
@@ -22,6 +30,7 @@
       </settings-toggle-button>
       <div class="hr"></div>
       <cr-link-row id="textToSpeechSubpageTrigger"
+          start-icon="[[rowIcons_.textToSpeech]]"
           label="$i18n{textToSpeechLinkTitle}"
           on-click="onTextToSpeechClick_"
           sub-label="$i18n{textToSpeechLinkDescription}"
@@ -29,6 +38,7 @@
       </cr-link-row>
       <div class="hr"></div>
       <cr-link-row id="displayAndMagnificationPageTrigger"
+          start-icon="[[rowIcons_.displayAndMagnification]]"
           label="$i18n{displayAndMagnificationLinkTitle}"
           on-click="onDisplayAndMagnificationClick_"
           sub-label="$i18n{displayAndMagnificationLinkDescription}"
@@ -36,6 +46,7 @@
       </cr-link-row>
       <div class="hr"></div>
       <cr-link-row id="keyboardAndTextInputPageTrigger"
+          start-icon="[[rowIcons_.keyboardAndTextInput]]"
           label="$i18n{keyboardAndTextInputLinkTitle}"
           on-click="onKeyboardAndTextInputClick_"
           sub-label="$i18n{keyboardAndTextInputLinkDescription}"
@@ -43,6 +54,7 @@
       </cr-link-row>
       <div class="hr"></div>
       <cr-link-row id="cursorAndTouchpadPageTrigger"
+          start-icon="[[rowIcons_.cursorAndTouchpad]]"
           label="$i18n{cursorAndTouchpadLinkTitle}"
           on-click="onCursorAndTouchpadClick_"
           sub-label="$i18n{cursorAndTouchpadLinkDescription}"
@@ -50,6 +62,7 @@
       </cr-link-row>
       <div class="hr"></div>
       <cr-link-row id="audioAndCaptionsPageTrigger"
+          start-icon="[[rowIcons_.audioAndCaptions]]"
           label="$i18n{audioAndCaptionsLinkTitle}"
           on-click="onAudioAndCaptionsClick_"
           sub-label="$i18n{audioAndCaptionsLinkDescription}"
@@ -58,6 +71,7 @@
       <template is="dom-if" if="[[!isGuest_]]">
         <cr-link-row
             id="additionalFeaturesLink" class="hr"
+            start-icon="[[rowIcons_.findMore]]"
             label="$i18n{additionalFeaturesTitle}"
             on-click="onAdditionalFeaturesClick_"
             external>

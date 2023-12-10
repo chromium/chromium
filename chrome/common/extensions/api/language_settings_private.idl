@@ -4,7 +4,6 @@
 
 // Use the <code>chrome.languageSettingsPrivate</code> API to get or change
 // language and input method settings.
-[modernised_enums]
 namespace languageSettingsPrivate {
   enum MoveType {
     TOP,

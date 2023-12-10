@@ -8,6 +8,7 @@
 <translation id="1420684932347524586">Памылка! Не ўдалося згенерыраваць выпадковы закрыты ключ RSA.</translation>
 <translation id="1445572445564823378">Гэта пашырэнне запавольвае працу <ph name="PRODUCT_NAME" />. Выключыце пашырэнне, каб аднавіць прадукцыйнасць <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1468038450257740950">WebGL не падтрымліваецца.</translation>
+<translation id="1610570795592207282">Не ўдалося загрузіць файл CSS "<ph name="RELATIVE_PATH" />" для сцэнарыя.</translation>
 <translation id="1803557475693955505">Не ўдалося загрузіць фонавую старонку "<ph name="BACKGROUND_PAGE" />".</translation>
 <translation id="2159915644201199628">Не ўдалося дэкадаваць відарыс: "<ph name="IMAGE_NAME" />"</translation>
 <translation id="2350172092385603347">Лакалізацыя выкарыстоўваецца, але ў маніфесце не вызначаны стандартныя рэгіянальныя налады (default_locale).</translation>
@@ -18,14 +19,12 @@
 <translation id="3115238746683532089">Невядомы прадукт <ph name="PRODUCT_ID" /> ад пастаўшчыка <ph name="VENDOR_ID" /> (серыйны нумар <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">Не ўдалося замяніць файл "crx". Праверце, ці не выкарыстоўваецца гэты файл зараз.</translation>
 <translation id="3163201441334626963">Невядомы прадукт <ph name="PRODUCT_ID" /> ад пастаўшчыка <ph name="VENDOR_ID" /></translation>
-<translation id="3302709122321372472">Не ўдалося загрузіць CSS-файл "<ph name="RELATIVE_PATH" />" для сцэнарыя змесціва.</translation>
 <translation id="3369521687965833290">Не ўдалося распакаваць пашырэнне.  Для бяспечнага распакоўвання пашырэння неабходны шлях да каталога вашага профілю. Шлях павінен пачынаецца з літары дыска і не змяшчаць злучэння, пункта падключэння або сімвальнай спасылкі.  Такі шлях для вашага профілю адсутнічае.</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (серыйны нумар <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> ад пастаўшчыка "<ph name="VENDOR_ID" />" (серыйны нумар <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Значэнне ўводу для персанальнага ключа павінна быць дапушчальным шляхам.</translation>
 <translation id="388442998277590542">Не ўдалося загрузіць старонку параметраў "<ph name="OPTIONS_PAGE" />".</translation>
 <translation id="3984413272403535372">Памылка падчас подпісу пашырэння.</translation>
-<translation id="39964277676607559">Не ўдалося загрузіць javascript "<ph name="RELATIVE_PATH" />" для сцэнарыя змесціва.</translation>
 <translation id="4115165561519362854">Адміністратар гэтай прылады патрабуе, каб версія пашырэння <ph name="EXTENSION_NAME" /> была мінімум <ph name="EXTENSION_VERSION" />. Каб уключыць пашырэнне, яго трэба абнавіць да гэтай (або вышэйшай) версіі.</translation>
 <translation id="4233778200880751280">Не ўдалося загрузіць старонку "<ph name="ABOUT_PAGE" />".</translation>
 <translation id="471800408830181311">Не ўдалося вывесці закрыты ключ.</translation>
@@ -33,6 +32,7 @@
 <translation id="4988792151665380515">Не ўдалося экспартаваць адкрыты ключ.</translation>
 <translation id="5026754133087629784">WebView: <ph name="WEBVIEW_TAG_NAME" /></translation>
 <translation id="5098647635849512368">Не ўдалося знайсці поўны шлях да каталога, які трэба ўпакаваць.</translation>
+<translation id="5160071981665899014">Не ўдалося загрузіць файл JavaScript "<ph name="RELATIVE_PATH" />" для сцэнарыя.</translation>
 <translation id="5356315618422219272">Акно праграмы: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5436430103864390185">Вокны адвольнай формы не падтрымліваюцца.</translation>
 <translation id="5456409301717116725">Гэта пашырэнне змяшчае файл ключа "<ph name="KEY_PATH" />". Магчыма, вам не варта гэтага рабіць.</translation>

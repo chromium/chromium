@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/buildflag_header.gni")
-import("//build/config/chromecast_build.gni")
+import("//build/config/cast.gni")
 
 declare_args() {
   enable_media_control_logging_override = is_castos || is_cast_android

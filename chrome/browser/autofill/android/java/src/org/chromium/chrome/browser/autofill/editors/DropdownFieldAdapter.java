@@ -53,8 +53,11 @@ class DropdownFieldAdapter<T> extends ArrayAdapter<T> {
         // avoid overlaping the downward triangle.
         Rect rect = new Rect();
         parent.getBackground().getPadding(rect);
-        view.setPadding(view.getPaddingLeft() + rect.left, view.getPaddingTop(),
-                view.getPaddingRight() + rect.right, view.getPaddingBottom());
+        view.setPadding(
+                view.getPaddingLeft() + rect.left,
+                view.getPaddingTop(),
+                view.getPaddingRight() + rect.right,
+                view.getPaddingBottom());
         return view;
     }
 }

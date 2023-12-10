@@ -76,13 +76,13 @@
 #include "net/base/features.h"
 #include "net/base/filename_util.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/http/http_connection_info.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "ppapi/buildflags/buildflags.h"
-#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -194,7 +194,6 @@ class DownloadTestContentBrowserClient
 
   void RegisterNonNetworkNavigationURLLoaderFactories(
       int frame_tree_node_id,
-      ukm::SourceIdObj ukm_source_id,
       NonNetworkURLLoaderFactoryMap* factories) override {
     if (!enable_register_non_network_url_loader_)
       return;
@@ -952,8 +951,13 @@ class TestRequestPauseHandler {
 class DownloadContentTest : public ContentBrowserTest {
  public:
   DownloadContentTest() {
-    feature_list_.InitAndDisableFeature(
-        download::features::kAllowDownloadResumptionWithoutStrongValidators);
+    feature_list_.InitWithFeatures(
+        {},
+        {
+            download::features::kAllowDownloadResumptionWithoutStrongValidators,
+            // Link Preview hides alt+click. Disables it not to do so.
+            blink::features::kLinkPreview,
+        });
   }
 
  protected:
@@ -1375,7 +1379,7 @@ class ParallelDownloadTest : public DownloadContentTest {
     parameters.last_modified = std::string();
     parameters.support_partial_response = support_partial_response;
     // Needed to specify HTTP connection type to create parallel download.
-    parameters.connection_type = net::HttpResponseInfo::CONNECTION_INFO_HTTP1_1;
+    parameters.connection_type = net::HttpConnectionInfo::kHTTP1_1;
     RunResumptionTestWithParameters(received_slices, expected_request_count,
                                     parameters);
   }
@@ -1433,7 +1437,7 @@ class ParallelDownloadTest : public DownloadContentTest {
     // other tests will automatically fall back to non-parallel download even if
     // the ParallelDownloading feature is enabled based on
     // fieldtrial_testing_config.json.
-    parameters.connection_type = net::HttpResponseInfo::CONNECTION_INFO_HTTP1_1;
+    parameters.connection_type = net::HttpConnectionInfo::kHTTP1_1;
     TestRequestPauseHandler request_pause_handler;
     parameters.on_pause_handler = request_pause_handler.GetOnPauseHandler();
     // Send some data for the first request and pause it so download won't
@@ -4640,7 +4644,7 @@ IN_PROC_BROWSER_TEST_F(ParallelDownloadTest,
   TestDownloadHttpResponse::Parameters parameters;
   parameters.etag = "ABC";
   parameters.size = 3000000;
-  parameters.connection_type = net::HttpResponseInfo::CONNECTION_INFO_HTTP1_1;
+  parameters.connection_type = net::HttpConnectionInfo::kHTTP1_1;
   // The 2nd slice will fail. Once the first and the third slices
   // complete, download will resume on the 2nd slice.
   parameters.SetResponseForRangeRequest(1000000, 1010000, k404Response,
@@ -4668,7 +4672,7 @@ IN_PROC_BROWSER_TEST_F(ParallelDownloadTest, MiddleSliceDelayedError) {
   TestDownloadHttpResponse::Parameters parameters;
   parameters.etag = "ABC";
   parameters.size = kFileSize;
-  parameters.connection_type = net::HttpResponseInfo::CONNECTION_INFO_HTTP1_1;
+  parameters.connection_type = net::HttpConnectionInfo::kHTTP1_1;
   // The 2nd response will be dalyed.
   parameters.SetResponseForRangeRequest(1699000, 2000000, k404Response,
                                         true /* is_transient */,

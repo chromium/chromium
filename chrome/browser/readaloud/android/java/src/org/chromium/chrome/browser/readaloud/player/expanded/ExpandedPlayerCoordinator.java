@@ -9,6 +9,8 @@ import android.content.Context;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.chrome.browser.readaloud.player.InteractionHandler;
+import org.chromium.chrome.browser.readaloud.player.PlayerProperties;
 import org.chromium.chrome.browser.readaloud.player.VisibilityState;
 import org.chromium.chrome.modules.readaloud.Player.Delegate;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
@@ -44,7 +46,23 @@ public class ExpandedPlayerCoordinator {
                 @Override
                 public void onSheetClosed(@StateChangeReason int reason) {
                     if (mSheetContent != null) {
-                        mSheetContent.notifySheetClosed();
+                        BottomSheetContent closingSheet =
+                                mDelegate.getBottomSheetController().getCurrentSheetContent();
+                        mSheetContent.notifySheetClosed(closingSheet);
+
+                        boolean userDismissed =
+                                reason == StateChangeReason.SWIPE
+                                        || reason == StateChangeReason.BACK_PRESS
+                                        || reason == StateChangeReason.TAP_SCRIM
+                                        || reason == StateChangeReason.NAVIGATION
+                                        || reason == StateChangeReason.OMNIBOX_FOCUS;
+                        if (closingSheet == mSheetContent && userDismissed) {
+                            InteractionHandler handler =
+                                    mModel.get(PlayerProperties.INTERACTION_HANDLER);
+                            if (handler != null) {
+                                handler.onExpandedPlayerClose();
+                            }
+                        }
                     }
                 }
             };

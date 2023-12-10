@@ -328,7 +328,6 @@ class SwapChainPresenter : public base::PowerStateObserver {
 
   bool enable_vp_auto_hdr_ = false;
   bool enable_vp_super_resolution_ = false;
-  bool driver_supports_vp_auto_hdr_ = false;
 
   UINT gpu_vendor_id_ = 0;
 

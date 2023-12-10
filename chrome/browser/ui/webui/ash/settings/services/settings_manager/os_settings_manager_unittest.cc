@@ -91,7 +91,7 @@ class OsSettingsManagerTest : public testing::Test {
 };
 
 TEST_F(OsSettingsManagerTest, Initialization) {
-  absl::optional<base::HistogramEnumEntryMap> sections_enum_entry_map =
+  std::optional<base::HistogramEnumEntryMap> sections_enum_entry_map =
       base::ReadEnumFromEnumsXml("OsSettingsSection");
   ASSERT_TRUE(sections_enum_entry_map);
   for (const auto& section : AllSections()) {
@@ -108,7 +108,7 @@ TEST_F(OsSettingsManagerTest, Initialization) {
         << "Missing OsSettingsSection enums.xml entry for " << section;
   }
 
-  absl::optional<base::HistogramEnumEntryMap> subpages_enum_entry_map =
+  std::optional<base::HistogramEnumEntryMap> subpages_enum_entry_map =
       base::ReadEnumFromEnumsXml("OsSettingsSubpage");
   ASSERT_TRUE(subpages_enum_entry_map);
   for (const auto& subpage : AllSubpages()) {
@@ -122,7 +122,7 @@ TEST_F(OsSettingsManagerTest, Initialization) {
         << "Missing OsSettingsSubpage enums.xml entry for " << subpage;
   }
 
-  absl::optional<base::HistogramEnumEntryMap> settings_enum_entry_map =
+  std::optional<base::HistogramEnumEntryMap> settings_enum_entry_map =
       base::ReadEnumFromEnumsXml("OsSetting");
   ASSERT_TRUE(settings_enum_entry_map);
   for (const auto& setting : AllSettings()) {

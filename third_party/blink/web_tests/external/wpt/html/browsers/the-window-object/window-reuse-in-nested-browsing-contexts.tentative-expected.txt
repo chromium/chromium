@@ -11,6 +11,5 @@ This is a testharness.js-based test.
   assert_true: Not expecting event, but got load event expected true got false
 [FAIL] after the first iframe load event, navigate iframe with initial src == "about:blank".
   assert_true: Not expecting event, but got load event expected true got false
-[PASS] iframe with initial src == same-origin resource.
 Harness: the test ran to completion.
 

@@ -5,13 +5,13 @@
 #include "chrome/browser/ash/policy/external_data/user_cloud_external_data_manager.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/location.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/policy/core/common/cloud/cloud_external_data_store.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
 #include "components/policy/core/common/cloud/resource_cache.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace policy {
 
@@ -29,7 +29,7 @@ UserCloudExternalDataManager::UserCloudExternalDataManager(
     : CloudExternalDataManagerBase(get_policy_details, backend_task_runner),
       resource_cache_(new ResourceCache(cache_path,
                                         backend_task_runner,
-                                        /* max_cache_size */ absl::nullopt)) {
+                                        /* max_cache_size */ std::nullopt)) {
   SetPolicyStore(policy_store);
   SetExternalDataStore(std::make_unique<CloudExternalDataStore>(
       kCacheKey, backend_task_runner, resource_cache_));

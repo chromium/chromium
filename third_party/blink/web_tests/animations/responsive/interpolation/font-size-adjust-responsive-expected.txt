@@ -23,67 +23,6 @@ CONSOLE WARNING: Invalid keyframe value for property fontSizeAdjust: ic-height 1
 CONSOLE WARNING: Invalid keyframe value for property fontSizeAdjust: ic-height 1.0
 CONSOLE WARNING: Invalid keyframe value for property fontSizeAdjust: ic-height 1.0
 This is a testharness.js-based test.
-[PASS] This test uses responsive-test.js.
-[PASS] font-size-adjust interpolation responds to changes in inherited value
-[PASS] font-size-adjust interpolation responds to changes in inherited value 1
-[PASS] font-size-adjust interpolation responds to changes in inherited value 2
-[PASS] font-size-adjust interpolation responds to changes in inherited value 3
-[PASS] font-size-adjust interpolation responds to changes in inherited value 4
-[PASS] font-size-adjust interpolation responds to changes in inherited value 5
-[PASS] font-size-adjust interpolation responds to changes in inherited value 6
-[PASS] font-size-adjust interpolation responds to changes in inherited value 7
-[PASS] font-size-adjust interpolation responds to changes in inherited value 8
-[PASS] font-size-adjust interpolation responds to changes in inherited value 9
-[PASS] font-size-adjust interpolation responds to changes in inherited value 10
-[PASS] font-size-adjust interpolation responds to changes in inherited value 11
-[PASS] font-size-adjust interpolation responds to changes in inherited value 12
-[PASS] font-size-adjust interpolation responds to changes in inherited value 13
-[PASS] font-size-adjust interpolation responds to changes in inherited value 14
-[PASS] font-size-adjust interpolation responds to changes in inherited value 15
-[PASS] font-size-adjust interpolation responds to changes in inherited value 16
-[PASS] font-size-adjust interpolation responds to changes in inherited value 17
-[PASS] font-size-adjust interpolation responds to changes in inherited value 18
-[PASS] font-size-adjust interpolation responds to changes in inherited value 19
-[PASS] font-size-adjust interpolation responds to changes in inherited value 20
-[PASS] font-size-adjust interpolation responds to changes in inherited value 21
-[PASS] font-size-adjust interpolation responds to changes in inherited value 22
-[PASS] font-size-adjust interpolation responds to changes in inherited value 23
-[PASS] font-size-adjust interpolation responds to changes in inherited value 24
-[PASS] font-size-adjust interpolation responds to changes in inherited value 25
-[PASS] font-size-adjust interpolation responds to changes in inherited value 26
-[PASS] font-size-adjust interpolation responds to changes in inherited value 27
-[PASS] font-size-adjust interpolation responds to changes in inherited value 28
-[PASS] font-size-adjust interpolation responds to changes in inherited value 29
-[PASS] font-size-adjust interpolation responds to changes in inherited value 30
-[PASS] font-size-adjust interpolation responds to changes in inherited value 31
-[PASS] font-size-adjust interpolation responds to changes in inherited value 32
-[PASS] font-size-adjust interpolation responds to changes in inherited value 33
-[PASS] font-size-adjust interpolation responds to changes in inherited value 34
-[PASS] font-size-adjust interpolation responds to changes in inherited value 35
-[PASS] font-size-adjust interpolation responds to changes in inherited value 36
-[PASS] font-size-adjust interpolation responds to changes in inherited value 37
-[PASS] font-size-adjust interpolation responds to changes in inherited value 38
-[PASS] font-size-adjust interpolation responds to changes in inherited value 39
-[PASS] font-size-adjust interpolation responds to changes in inherited value 40
-[PASS] font-size-adjust interpolation responds to changes in inherited value 41
-[PASS] font-size-adjust interpolation responds to changes in inherited value 42
-[PASS] font-size-adjust interpolation responds to changes in inherited value 43
-[PASS] font-size-adjust interpolation responds to changes in inherited value 44
-[PASS] font-size-adjust interpolation responds to changes in inherited value 45
-[PASS] font-size-adjust interpolation responds to changes in inherited value 46
-[PASS] font-size-adjust interpolation responds to changes in inherited value 47
-[PASS] font-size-adjust interpolation responds to changes in inherited value 48
-[PASS] font-size-adjust interpolation responds to changes in inherited value 49
-[PASS] font-size-adjust interpolation responds to changes in inherited value 50
-[PASS] font-size-adjust interpolation responds to changes in inherited value 51
-[PASS] font-size-adjust interpolation responds to changes in inherited value 52
-[PASS] font-size-adjust interpolation responds to changes in inherited value 53
-[PASS] font-size-adjust interpolation responds to changes in inherited value 54
-[PASS] font-size-adjust interpolation responds to changes in inherited value 55
-[PASS] font-size-adjust interpolation responds to changes in inherited value 56
-[PASS] font-size-adjust interpolation responds to changes in inherited value 57
-[PASS] font-size-adjust interpolation responds to changes in inherited value 58
-[PASS] font-size-adjust interpolation responds to changes in inherited value 59
 [FAIL] font-size-adjust interpolation responds to changes in inherited value 60
   assert_true: CSS.supports font-size-adjust ic-height 0.0 expected true got false
 [FAIL] font-size-adjust interpolation responds to changes in inherited value 61
@@ -108,66 +47,6 @@ This is a testharness.js-based test.
   assert_true: CSS.supports font-size-adjust ic-height 2.0 expected true got false
 [FAIL] font-size-adjust interpolation responds to changes in inherited value 71
   assert_true: CSS.supports font-size-adjust ic-height 2.0 expected true got false
-[PASS] font-size-adjust interpolation responds to changes in inherited value 72
-[PASS] font-size-adjust interpolation responds to changes in inherited value 73
-[PASS] font-size-adjust interpolation responds to changes in inherited value 74
-[PASS] font-size-adjust interpolation responds to changes in inherited value 75
-[PASS] font-size-adjust interpolation responds to changes in inherited value 76
-[PASS] font-size-adjust interpolation responds to changes in inherited value 77
-[PASS] font-size-adjust interpolation responds to changes in inherited value 78
-[PASS] font-size-adjust interpolation responds to changes in inherited value 79
-[PASS] font-size-adjust interpolation responds to changes in inherited value 80
-[PASS] font-size-adjust interpolation responds to changes in inherited value 81
-[PASS] font-size-adjust interpolation responds to changes in inherited value 82
-[PASS] font-size-adjust interpolation responds to changes in inherited value 83
-[PASS] font-size-adjust interpolation responds to changes in inherited value 84
-[PASS] font-size-adjust interpolation responds to changes in inherited value 85
-[PASS] font-size-adjust interpolation responds to changes in inherited value 86
-[PASS] font-size-adjust interpolation responds to changes in inherited value 87
-[PASS] font-size-adjust interpolation responds to changes in inherited value 88
-[PASS] font-size-adjust interpolation responds to changes in inherited value 89
-[PASS] font-size-adjust interpolation responds to changes in inherited value 90
-[PASS] font-size-adjust interpolation responds to changes in inherited value 91
-[PASS] font-size-adjust interpolation responds to changes in inherited value 92
-[PASS] font-size-adjust interpolation responds to changes in inherited value 93
-[PASS] font-size-adjust interpolation responds to changes in inherited value 94
-[PASS] font-size-adjust interpolation responds to changes in inherited value 95
-[PASS] font-size-adjust interpolation responds to changes in inherited value 96
-[PASS] font-size-adjust interpolation responds to changes in inherited value 97
-[PASS] font-size-adjust interpolation responds to changes in inherited value 98
-[PASS] font-size-adjust interpolation responds to changes in inherited value 99
-[PASS] font-size-adjust interpolation responds to changes in inherited value 100
-[PASS] font-size-adjust interpolation responds to changes in inherited value 101
-[PASS] font-size-adjust interpolation responds to changes in inherited value 102
-[PASS] font-size-adjust interpolation responds to changes in inherited value 103
-[PASS] font-size-adjust interpolation responds to changes in inherited value 104
-[PASS] font-size-adjust interpolation responds to changes in inherited value 105
-[PASS] font-size-adjust interpolation responds to changes in inherited value 106
-[PASS] font-size-adjust interpolation responds to changes in inherited value 107
-[PASS] font-size-adjust interpolation responds to changes in inherited value 108
-[PASS] font-size-adjust interpolation responds to changes in inherited value 109
-[PASS] font-size-adjust interpolation responds to changes in inherited value 110
-[PASS] font-size-adjust interpolation responds to changes in inherited value 111
-[PASS] font-size-adjust interpolation responds to changes in inherited value 112
-[PASS] font-size-adjust interpolation responds to changes in inherited value 113
-[PASS] font-size-adjust interpolation responds to changes in inherited value 114
-[PASS] font-size-adjust interpolation responds to changes in inherited value 115
-[PASS] font-size-adjust interpolation responds to changes in inherited value 116
-[PASS] font-size-adjust interpolation responds to changes in inherited value 117
-[PASS] font-size-adjust interpolation responds to changes in inherited value 118
-[PASS] font-size-adjust interpolation responds to changes in inherited value 119
-[PASS] font-size-adjust interpolation responds to changes in inherited value 120
-[PASS] font-size-adjust interpolation responds to changes in inherited value 121
-[PASS] font-size-adjust interpolation responds to changes in inherited value 122
-[PASS] font-size-adjust interpolation responds to changes in inherited value 123
-[PASS] font-size-adjust interpolation responds to changes in inherited value 124
-[PASS] font-size-adjust interpolation responds to changes in inherited value 125
-[PASS] font-size-adjust interpolation responds to changes in inherited value 126
-[PASS] font-size-adjust interpolation responds to changes in inherited value 127
-[PASS] font-size-adjust interpolation responds to changes in inherited value 128
-[PASS] font-size-adjust interpolation responds to changes in inherited value 129
-[PASS] font-size-adjust interpolation responds to changes in inherited value 130
-[PASS] font-size-adjust interpolation responds to changes in inherited value 131
 [FAIL] font-size-adjust interpolation responds to changes in inherited value 132
   assert_true: CSS.supports font-size-adjust ic-height 0.5 expected true got false
 [FAIL] font-size-adjust interpolation responds to changes in inherited value 133
@@ -192,317 +71,53 @@ This is a testharness.js-based test.
   assert_true: CSS.supports font-size-adjust ic-height 0.0 expected true got false
 [FAIL] font-size-adjust interpolation responds to changes in inherited value 143
   assert_true: CSS.supports font-size-adjust ic-height 0.5 expected true got false
-[PASS] font-size-adjust interpolation responds to changes in inherited value 144
-[PASS] Animation on property <fontSizeAdjust> from [inherit] to [1.0] with {"inherited":"0.0"} changed to {"inherited":"0.5"} at (0.25) is [0.625]
-[PASS] font-size-adjust interpolation responds to changes in inherited value 145
-[PASS] Animation on property <fontSizeAdjust> from [inherit] to [1.0] with {"inherited":"0.0"} changed to {"inherited":"0.5"} at (0.75) is [0.875]
-[PASS] font-size-adjust interpolation responds to changes in inherited value 146
-[PASS] Animation on property <fontSizeAdjust> from [inherit] to [1.0] with {"inherited":"0.0"} changed to {"inherited":"2.0"} at (0.25) is [1.75]
-[PASS] font-size-adjust interpolation responds to changes in inherited value 147
-[PASS] Animation on property <fontSizeAdjust> from [inherit] to [1.0] with {"inherited":"0.0"} changed to {"inherited":"2.0"} at (0.75) is [1.25]
-[PASS] font-size-adjust interpolation responds to changes in inherited value 148
-[PASS] Animation on property <fontSizeAdjust> from [inherit] to [1.0] with {"inherited":"0.5"} changed to {"inherited":"0.0"} at (0.25) is [0.25]
-[PASS] font-size-adjust interpolation responds to changes in inherited value 149
-[PASS] Animation on property <fontSizeAdjust> from [inherit] to [1.0] with {"inherited":"0.5"} changed to {"inherited":"0.0"} at (0.75) is [0.75]
-[PASS] font-size-adjust interpolation responds to changes in inherited value 150
-[PASS] Animation on property <fontSizeAdjust> from [inherit] to [1.0] with {"inherited":"0.5"} changed to {"inherited":"2.0"} at (0.25) is [1.75]
-[PASS] font-size-adjust interpolation responds to changes in inherited value 151
-[PASS] Animation on property <fontSizeAdjust> from [inherit] to [1.0] with {"inherited":"0.5"} changed to {"inherited":"2.0"} at (0.75) is [1.25]
-[PASS] font-size-adjust interpolation responds to changes in inherited value 152
-[PASS] Animation on property <fontSizeAdjust> from [inherit] to [1.0] with {"inherited":"2.0"} changed to {"inherited":"0.0"} at (0.25) is [0.25]
-[PASS] font-size-adjust interpolation responds to changes in inherited value 153
-[PASS] Animation on property <fontSizeAdjust> from [inherit] to [1.0] with {"inherited":"2.0"} changed to {"inherited":"0.0"} at (0.75) is [0.75]
-[PASS] font-size-adjust interpolation responds to changes in inherited value 154
-[PASS] Animation on property <fontSizeAdjust> from [inherit] to [1.0] with {"inherited":"2.0"} changed to {"inherited":"0.5"} at (0.25) is [0.625]
-[PASS] font-size-adjust interpolation responds to changes in inherited value 155
-[PASS] Animation on property <fontSizeAdjust> from [inherit] to [1.0] with {"inherited":"2.0"} changed to {"inherited":"0.5"} at (0.75) is [0.875]
-[PASS] font-size-adjust interpolation responds to changes in inherited value 156
-[PASS] Animation on property <fontSizeAdjust> from [1.0] to [inherit] with {"inherited":"0.0"} changed to {"inherited":"0.5"} at (0.25) is [0.875]
-[PASS] font-size-adjust interpolation responds to changes in inherited value 157
-[PASS] Animation on property <fontSizeAdjust> from [1.0] to [inherit] with {"inherited":"0.0"} changed to {"inherited":"0.5"} at (0.75) is [0.625]
-[PASS] font-size-adjust interpolation responds to changes in inherited value 158
-[PASS] Animation on property <fontSizeAdjust> from [1.0] to [inherit] with {"inherited":"0.0"} changed to {"inherited":"2.0"} at (0.25) is [1.25]
-[PASS] font-size-adjust interpolation responds to changes in inherited value 159
-[PASS] Animation on property <fontSizeAdjust> from [1.0] to [inherit] with {"inherited":"0.0"} changed to {"inherited":"2.0"} at (0.75) is [1.75]
-[PASS] font-size-adjust interpolation responds to changes in inherited value 160
-[PASS] Animation on property <fontSizeAdjust> from [1.0] to [inherit] with {"inherited":"0.5"} changed to {"inherited":"0.0"} at (0.25) is [0.75]
-[PASS] font-size-adjust interpolation responds to changes in inherited value 161
-[PASS] Animation on property <fontSizeAdjust> from [1.0] to [inherit] with {"inherited":"0.5"} changed to {"inherited":"0.0"} at (0.75) is [0.25]
-[PASS] font-size-adjust interpolation responds to changes in inherited value 162
-[PASS] Animation on property <fontSizeAdjust> from [1.0] to [inherit] with {"inherited":"0.5"} changed to {"inherited":"2.0"} at (0.25) is [1.25]
-[PASS] font-size-adjust interpolation responds to changes in inherited value 163
-[PASS] Animation on property <fontSizeAdjust> from [1.0] to [inherit] with {"inherited":"0.5"} changed to {"inherited":"2.0"} at (0.75) is [1.75]
-[PASS] font-size-adjust interpolation responds to changes in inherited value 164
-[PASS] Animation on property <fontSizeAdjust> from [1.0] to [inherit] with {"inherited":"2.0"} changed to {"inherited":"0.0"} at (0.25) is [0.75]
-[PASS] font-size-adjust interpolation responds to changes in inherited value 165
-[PASS] Animation on property <fontSizeAdjust> from [1.0] to [inherit] with {"inherited":"2.0"} changed to {"inherited":"0.0"} at (0.75) is [0.25]
-[PASS] font-size-adjust interpolation responds to changes in inherited value 166
-[PASS] Animation on property <fontSizeAdjust> from [1.0] to [inherit] with {"inherited":"2.0"} changed to {"inherited":"0.5"} at (0.25) is [0.875]
-[PASS] font-size-adjust interpolation responds to changes in inherited value 167
-[PASS] Animation on property <fontSizeAdjust> from [1.0] to [inherit] with {"inherited":"2.0"} changed to {"inherited":"0.5"} at (0.75) is [0.625]
-[PASS] font-size-adjust interpolation responds to changes in inherited value 168
-[PASS] Animation on property <fontSizeAdjust> from [inherit] to [ex-height 1.0] with {"inherited":"ex-height 0.0"} changed to {"inherited":"ex-height 0.5"} at (0.25) is [0.625]
-[PASS] font-size-adjust interpolation responds to changes in inherited value 169
-[PASS] Animation on property <fontSizeAdjust> from [inherit] to [ex-height 1.0] with {"inherited":"ex-height 0.0"} changed to {"inherited":"ex-height 0.5"} at (0.75) is [0.875]
-[PASS] font-size-adjust interpolation responds to changes in inherited value 170
-[PASS] Animation on property <fontSizeAdjust> from [inherit] to [ex-height 1.0] with {"inherited":"ex-height 0.0"} changed to {"inherited":"ex-height 2.0"} at (0.25) is [1.75]
-[PASS] font-size-adjust interpolation responds to changes in inherited value 171
-[PASS] Animation on property <fontSizeAdjust> from [inherit] to [ex-height 1.0] with {"inherited":"ex-height 0.0"} changed to {"inherited":"ex-height 2.0"} at (0.75) is [1.25]
-[PASS] font-size-adjust interpolation responds to changes in inherited value 172
-[PASS] Animation on property <fontSizeAdjust> from [inherit] to [ex-height 1.0] with {"inherited":"ex-height 0.5"} changed to {"inherited":"ex-height 0.0"} at (0.25) is [0.25]
-[PASS] font-size-adjust interpolation responds to changes in inherited value 173
-[PASS] Animation on property <fontSizeAdjust> from [inherit] to [ex-height 1.0] with {"inherited":"ex-height 0.5"} changed to {"inherited":"ex-height 0.0"} at (0.75) is [0.75]
-[PASS] font-size-adjust interpolation responds to changes in inherited value 174
-[PASS] Animation on property <fontSizeAdjust> from [inherit] to [ex-height 1.0] with {"inherited":"ex-height 0.5"} changed to {"inherited":"ex-height 2.0"} at (0.25) is [1.75]
-[PASS] font-size-adjust interpolation responds to changes in inherited value 175
-[PASS] Animation on property <fontSizeAdjust> from [inherit] to [ex-height 1.0] with {"inherited":"ex-height 0.5"} changed to {"inherited":"ex-height 2.0"} at (0.75) is [1.25]
-[PASS] font-size-adjust interpolation responds to changes in inherited value 176
-[PASS] Animation on property <fontSizeAdjust> from [inherit] to [ex-height 1.0] with {"inherited":"ex-height 2.0"} changed to {"inherited":"ex-height 0.0"} at (0.25) is [0.25]
-[PASS] font-size-adjust interpolation responds to changes in inherited value 177
-[PASS] Animation on property <fontSizeAdjust> from [inherit] to [ex-height 1.0] with {"inherited":"ex-height 2.0"} changed to {"inherited":"ex-height 0.0"} at (0.75) is [0.75]
-[PASS] font-size-adjust interpolation responds to changes in inherited value 178
-[PASS] Animation on property <fontSizeAdjust> from [inherit] to [ex-height 1.0] with {"inherited":"ex-height 2.0"} changed to {"inherited":"ex-height 0.5"} at (0.25) is [0.625]
-[PASS] font-size-adjust interpolation responds to changes in inherited value 179
-[PASS] Animation on property <fontSizeAdjust> from [inherit] to [ex-height 1.0] with {"inherited":"ex-height 2.0"} changed to {"inherited":"ex-height 0.5"} at (0.75) is [0.875]
-[PASS] font-size-adjust interpolation responds to changes in inherited value 180
-[PASS] Animation on property <fontSizeAdjust> from [ex-height 1.0] to [inherit] with {"inherited":"ex-height 0.0"} changed to {"inherited":"ex-height 0.5"} at (0.25) is [0.875]
-[PASS] font-size-adjust interpolation responds to changes in inherited value 181
-[PASS] Animation on property <fontSizeAdjust> from [ex-height 1.0] to [inherit] with {"inherited":"ex-height 0.0"} changed to {"inherited":"ex-height 0.5"} at (0.75) is [0.625]
-[PASS] font-size-adjust interpolation responds to changes in inherited value 182
-[PASS] Animation on property <fontSizeAdjust> from [ex-height 1.0] to [inherit] with {"inherited":"ex-height 0.0"} changed to {"inherited":"ex-height 2.0"} at (0.25) is [1.25]
-[PASS] font-size-adjust interpolation responds to changes in inherited value 183
-[PASS] Animation on property <fontSizeAdjust> from [ex-height 1.0] to [inherit] with {"inherited":"ex-height 0.0"} changed to {"inherited":"ex-height 2.0"} at (0.75) is [1.75]
-[PASS] font-size-adjust interpolation responds to changes in inherited value 184
-[PASS] Animation on property <fontSizeAdjust> from [ex-height 1.0] to [inherit] with {"inherited":"ex-height 0.5"} changed to {"inherited":"ex-height 0.0"} at (0.25) is [0.75]
-[PASS] font-size-adjust interpolation responds to changes in inherited value 185
-[PASS] Animation on property <fontSizeAdjust> from [ex-height 1.0] to [inherit] with {"inherited":"ex-height 0.5"} changed to {"inherited":"ex-height 0.0"} at (0.75) is [0.25]
-[PASS] font-size-adjust interpolation responds to changes in inherited value 186
-[PASS] Animation on property <fontSizeAdjust> from [ex-height 1.0] to [inherit] with {"inherited":"ex-height 0.5"} changed to {"inherited":"ex-height 2.0"} at (0.25) is [1.25]
-[PASS] font-size-adjust interpolation responds to changes in inherited value 187
-[PASS] Animation on property <fontSizeAdjust> from [ex-height 1.0] to [inherit] with {"inherited":"ex-height 0.5"} changed to {"inherited":"ex-height 2.0"} at (0.75) is [1.75]
-[PASS] font-size-adjust interpolation responds to changes in inherited value 188
-[PASS] Animation on property <fontSizeAdjust> from [ex-height 1.0] to [inherit] with {"inherited":"ex-height 2.0"} changed to {"inherited":"ex-height 0.0"} at (0.25) is [0.75]
-[PASS] font-size-adjust interpolation responds to changes in inherited value 189
-[PASS] Animation on property <fontSizeAdjust> from [ex-height 1.0] to [inherit] with {"inherited":"ex-height 2.0"} changed to {"inherited":"ex-height 0.0"} at (0.75) is [0.25]
-[PASS] font-size-adjust interpolation responds to changes in inherited value 190
-[PASS] Animation on property <fontSizeAdjust> from [ex-height 1.0] to [inherit] with {"inherited":"ex-height 2.0"} changed to {"inherited":"ex-height 0.5"} at (0.25) is [0.875]
-[PASS] font-size-adjust interpolation responds to changes in inherited value 191
-[PASS] Animation on property <fontSizeAdjust> from [ex-height 1.0] to [inherit] with {"inherited":"ex-height 2.0"} changed to {"inherited":"ex-height 0.5"} at (0.75) is [0.625]
-[PASS] font-size-adjust interpolation responds to changes in inherited value 192
-[PASS] Animation on property <fontSizeAdjust> from [inherit] to [cap-height 1.0] with {"inherited":"cap-height 0.0"} changed to {"inherited":"cap-height 0.5"} at (0.25) is [cap-height 0.625]
-[PASS] font-size-adjust interpolation responds to changes in inherited value 193
-[PASS] Animation on property <fontSizeAdjust> from [inherit] to [cap-height 1.0] with {"inherited":"cap-height 0.0"} changed to {"inherited":"cap-height 0.5"} at (0.75) is [cap-height 0.875]
-[PASS] font-size-adjust interpolation responds to changes in inherited value 194
-[PASS] Animation on property <fontSizeAdjust> from [inherit] to [cap-height 1.0] with {"inherited":"cap-height 0.0"} changed to {"inherited":"cap-height 2.0"} at (0.25) is [cap-height 1.75]
-[PASS] font-size-adjust interpolation responds to changes in inherited value 195
-[PASS] Animation on property <fontSizeAdjust> from [inherit] to [cap-height 1.0] with {"inherited":"cap-height 0.0"} changed to {"inherited":"cap-height 2.0"} at (0.75) is [cap-height 1.25]
-[PASS] font-size-adjust interpolation responds to changes in inherited value 196
-[PASS] Animation on property <fontSizeAdjust> from [inherit] to [cap-height 1.0] with {"inherited":"cap-height 0.5"} changed to {"inherited":"cap-height 0.0"} at (0.25) is [cap-height 0.25]
-[PASS] font-size-adjust interpolation responds to changes in inherited value 197
-[PASS] Animation on property <fontSizeAdjust> from [inherit] to [cap-height 1.0] with {"inherited":"cap-height 0.5"} changed to {"inherited":"cap-height 0.0"} at (0.75) is [cap-height 0.75]
-[PASS] font-size-adjust interpolation responds to changes in inherited value 198
-[PASS] Animation on property <fontSizeAdjust> from [inherit] to [cap-height 1.0] with {"inherited":"cap-height 0.5"} changed to {"inherited":"cap-height 2.0"} at (0.25) is [cap-height 1.75]
-[PASS] font-size-adjust interpolation responds to changes in inherited value 199
-[PASS] Animation on property <fontSizeAdjust> from [inherit] to [cap-height 1.0] with {"inherited":"cap-height 0.5"} changed to {"inherited":"cap-height 2.0"} at (0.75) is [cap-height 1.25]
-[PASS] font-size-adjust interpolation responds to changes in inherited value 200
-[PASS] Animation on property <fontSizeAdjust> from [inherit] to [cap-height 1.0] with {"inherited":"cap-height 2.0"} changed to {"inherited":"cap-height 0.0"} at (0.25) is [cap-height 0.25]
-[PASS] font-size-adjust interpolation responds to changes in inherited value 201
-[PASS] Animation on property <fontSizeAdjust> from [inherit] to [cap-height 1.0] with {"inherited":"cap-height 2.0"} changed to {"inherited":"cap-height 0.0"} at (0.75) is [cap-height 0.75]
-[PASS] font-size-adjust interpolation responds to changes in inherited value 202
-[PASS] Animation on property <fontSizeAdjust> from [inherit] to [cap-height 1.0] with {"inherited":"cap-height 2.0"} changed to {"inherited":"cap-height 0.5"} at (0.25) is [cap-height 0.625]
-[PASS] font-size-adjust interpolation responds to changes in inherited value 203
-[PASS] Animation on property <fontSizeAdjust> from [inherit] to [cap-height 1.0] with {"inherited":"cap-height 2.0"} changed to {"inherited":"cap-height 0.5"} at (0.75) is [cap-height 0.875]
-[PASS] font-size-adjust interpolation responds to changes in inherited value 204
-[PASS] Animation on property <fontSizeAdjust> from [cap-height 1.0] to [inherit] with {"inherited":"cap-height 0.0"} changed to {"inherited":"cap-height 0.5"} at (0.25) is [cap-height 0.875]
-[PASS] font-size-adjust interpolation responds to changes in inherited value 205
-[PASS] Animation on property <fontSizeAdjust> from [cap-height 1.0] to [inherit] with {"inherited":"cap-height 0.0"} changed to {"inherited":"cap-height 0.5"} at (0.75) is [cap-height 0.625]
-[PASS] font-size-adjust interpolation responds to changes in inherited value 206
-[PASS] Animation on property <fontSizeAdjust> from [cap-height 1.0] to [inherit] with {"inherited":"cap-height 0.0"} changed to {"inherited":"cap-height 2.0"} at (0.25) is [cap-height 1.25]
-[PASS] font-size-adjust interpolation responds to changes in inherited value 207
-[PASS] Animation on property <fontSizeAdjust> from [cap-height 1.0] to [inherit] with {"inherited":"cap-height 0.0"} changed to {"inherited":"cap-height 2.0"} at (0.75) is [cap-height 1.75]
-[PASS] font-size-adjust interpolation responds to changes in inherited value 208
-[PASS] Animation on property <fontSizeAdjust> from [cap-height 1.0] to [inherit] with {"inherited":"cap-height 0.5"} changed to {"inherited":"cap-height 0.0"} at (0.25) is [cap-height 0.75]
-[PASS] font-size-adjust interpolation responds to changes in inherited value 209
-[PASS] Animation on property <fontSizeAdjust> from [cap-height 1.0] to [inherit] with {"inherited":"cap-height 0.5"} changed to {"inherited":"cap-height 0.0"} at (0.75) is [cap-height 0.25]
-[PASS] font-size-adjust interpolation responds to changes in inherited value 210
-[PASS] Animation on property <fontSizeAdjust> from [cap-height 1.0] to [inherit] with {"inherited":"cap-height 0.5"} changed to {"inherited":"cap-height 2.0"} at (0.25) is [cap-height 1.25]
-[PASS] font-size-adjust interpolation responds to changes in inherited value 211
-[PASS] Animation on property <fontSizeAdjust> from [cap-height 1.0] to [inherit] with {"inherited":"cap-height 0.5"} changed to {"inherited":"cap-height 2.0"} at (0.75) is [cap-height 1.75]
-[PASS] font-size-adjust interpolation responds to changes in inherited value 212
-[PASS] Animation on property <fontSizeAdjust> from [cap-height 1.0] to [inherit] with {"inherited":"cap-height 2.0"} changed to {"inherited":"cap-height 0.0"} at (0.25) is [cap-height 0.75]
-[PASS] font-size-adjust interpolation responds to changes in inherited value 213
-[PASS] Animation on property <fontSizeAdjust> from [cap-height 1.0] to [inherit] with {"inherited":"cap-height 2.0"} changed to {"inherited":"cap-height 0.0"} at (0.75) is [cap-height 0.25]
-[PASS] font-size-adjust interpolation responds to changes in inherited value 214
-[PASS] Animation on property <fontSizeAdjust> from [cap-height 1.0] to [inherit] with {"inherited":"cap-height 2.0"} changed to {"inherited":"cap-height 0.5"} at (0.25) is [cap-height 0.875]
-[PASS] font-size-adjust interpolation responds to changes in inherited value 215
-[PASS] Animation on property <fontSizeAdjust> from [cap-height 1.0] to [inherit] with {"inherited":"cap-height 2.0"} changed to {"inherited":"cap-height 0.5"} at (0.75) is [cap-height 0.625]
-[PASS] font-size-adjust interpolation responds to changes in inherited value 216
-[PASS] Animation on property <fontSizeAdjust> from [inherit] to [ch-width 1.0] with {"inherited":"ch-width 0.0"} changed to {"inherited":"ch-width 0.5"} at (0.25) is [ch-width 0.625]
-[PASS] font-size-adjust interpolation responds to changes in inherited value 217
-[PASS] Animation on property <fontSizeAdjust> from [inherit] to [ch-width 1.0] with {"inherited":"ch-width 0.0"} changed to {"inherited":"ch-width 0.5"} at (0.75) is [ch-width 0.875]
-[PASS] font-size-adjust interpolation responds to changes in inherited value 218
-[PASS] Animation on property <fontSizeAdjust> from [inherit] to [ch-width 1.0] with {"inherited":"ch-width 0.0"} changed to {"inherited":"ch-width 2.0"} at (0.25) is [ch-width 1.75]
-[PASS] font-size-adjust interpolation responds to changes in inherited value 219
-[PASS] Animation on property <fontSizeAdjust> from [inherit] to [ch-width 1.0] with {"inherited":"ch-width 0.0"} changed to {"inherited":"ch-width 2.0"} at (0.75) is [ch-width 1.25]
-[PASS] font-size-adjust interpolation responds to changes in inherited value 220
-[PASS] Animation on property <fontSizeAdjust> from [inherit] to [ch-width 1.0] with {"inherited":"ch-width 0.5"} changed to {"inherited":"ch-width 0.0"} at (0.25) is [ch-width 0.25]
-[PASS] font-size-adjust interpolation responds to changes in inherited value 221
-[PASS] Animation on property <fontSizeAdjust> from [inherit] to [ch-width 1.0] with {"inherited":"ch-width 0.5"} changed to {"inherited":"ch-width 0.0"} at (0.75) is [ch-width 0.75]
-[PASS] font-size-adjust interpolation responds to changes in inherited value 222
-[PASS] Animation on property <fontSizeAdjust> from [inherit] to [ch-width 1.0] with {"inherited":"ch-width 0.5"} changed to {"inherited":"ch-width 2.0"} at (0.25) is [ch-width 1.75]
-[PASS] font-size-adjust interpolation responds to changes in inherited value 223
-[PASS] Animation on property <fontSizeAdjust> from [inherit] to [ch-width 1.0] with {"inherited":"ch-width 0.5"} changed to {"inherited":"ch-width 2.0"} at (0.75) is [ch-width 1.25]
-[PASS] font-size-adjust interpolation responds to changes in inherited value 224
-[PASS] Animation on property <fontSizeAdjust> from [inherit] to [ch-width 1.0] with {"inherited":"ch-width 2.0"} changed to {"inherited":"ch-width 0.0"} at (0.25) is [ch-width 0.25]
-[PASS] font-size-adjust interpolation responds to changes in inherited value 225
-[PASS] Animation on property <fontSizeAdjust> from [inherit] to [ch-width 1.0] with {"inherited":"ch-width 2.0"} changed to {"inherited":"ch-width 0.0"} at (0.75) is [ch-width 0.75]
-[PASS] font-size-adjust interpolation responds to changes in inherited value 226
-[PASS] Animation on property <fontSizeAdjust> from [inherit] to [ch-width 1.0] with {"inherited":"ch-width 2.0"} changed to {"inherited":"ch-width 0.5"} at (0.25) is [ch-width 0.625]
-[PASS] font-size-adjust interpolation responds to changes in inherited value 227
-[PASS] Animation on property <fontSizeAdjust> from [inherit] to [ch-width 1.0] with {"inherited":"ch-width 2.0"} changed to {"inherited":"ch-width 0.5"} at (0.75) is [ch-width 0.875]
-[PASS] font-size-adjust interpolation responds to changes in inherited value 228
-[PASS] Animation on property <fontSizeAdjust> from [ch-width 1.0] to [inherit] with {"inherited":"ch-width 0.0"} changed to {"inherited":"ch-width 0.5"} at (0.25) is [ch-width 0.875]
-[PASS] font-size-adjust interpolation responds to changes in inherited value 229
-[PASS] Animation on property <fontSizeAdjust> from [ch-width 1.0] to [inherit] with {"inherited":"ch-width 0.0"} changed to {"inherited":"ch-width 0.5"} at (0.75) is [ch-width 0.625]
-[PASS] font-size-adjust interpolation responds to changes in inherited value 230
-[PASS] Animation on property <fontSizeAdjust> from [ch-width 1.0] to [inherit] with {"inherited":"ch-width 0.0"} changed to {"inherited":"ch-width 2.0"} at (0.25) is [ch-width 1.25]
-[PASS] font-size-adjust interpolation responds to changes in inherited value 231
-[PASS] Animation on property <fontSizeAdjust> from [ch-width 1.0] to [inherit] with {"inherited":"ch-width 0.0"} changed to {"inherited":"ch-width 2.0"} at (0.75) is [ch-width 1.75]
-[PASS] font-size-adjust interpolation responds to changes in inherited value 232
-[PASS] Animation on property <fontSizeAdjust> from [ch-width 1.0] to [inherit] with {"inherited":"ch-width 0.5"} changed to {"inherited":"ch-width 0.0"} at (0.25) is [ch-width 0.75]
-[PASS] font-size-adjust interpolation responds to changes in inherited value 233
-[PASS] Animation on property <fontSizeAdjust> from [ch-width 1.0] to [inherit] with {"inherited":"ch-width 0.5"} changed to {"inherited":"ch-width 0.0"} at (0.75) is [ch-width 0.25]
-[PASS] font-size-adjust interpolation responds to changes in inherited value 234
-[PASS] Animation on property <fontSizeAdjust> from [ch-width 1.0] to [inherit] with {"inherited":"ch-width 0.5"} changed to {"inherited":"ch-width 2.0"} at (0.25) is [ch-width 1.25]
-[PASS] font-size-adjust interpolation responds to changes in inherited value 235
-[PASS] Animation on property <fontSizeAdjust> from [ch-width 1.0] to [inherit] with {"inherited":"ch-width 0.5"} changed to {"inherited":"ch-width 2.0"} at (0.75) is [ch-width 1.75]
-[PASS] font-size-adjust interpolation responds to changes in inherited value 236
-[PASS] Animation on property <fontSizeAdjust> from [ch-width 1.0] to [inherit] with {"inherited":"ch-width 2.0"} changed to {"inherited":"ch-width 0.0"} at (0.25) is [ch-width 0.75]
-[PASS] font-size-adjust interpolation responds to changes in inherited value 237
-[PASS] Animation on property <fontSizeAdjust> from [ch-width 1.0] to [inherit] with {"inherited":"ch-width 2.0"} changed to {"inherited":"ch-width 0.0"} at (0.75) is [ch-width 0.25]
-[PASS] font-size-adjust interpolation responds to changes in inherited value 238
-[PASS] Animation on property <fontSizeAdjust> from [ch-width 1.0] to [inherit] with {"inherited":"ch-width 2.0"} changed to {"inherited":"ch-width 0.5"} at (0.25) is [ch-width 0.875]
-[PASS] font-size-adjust interpolation responds to changes in inherited value 239
-[PASS] Animation on property <fontSizeAdjust> from [ch-width 1.0] to [inherit] with {"inherited":"ch-width 2.0"} changed to {"inherited":"ch-width 0.5"} at (0.75) is [ch-width 0.625]
-[PASS] font-size-adjust interpolation responds to changes in inherited value 240
-[PASS] Animation on property <fontSizeAdjust> from [inherit] to [ic-width 1.0] with {"inherited":"ic-width 0.0"} changed to {"inherited":"ic-width 0.5"} at (0.25) is [ic-width 0.625]
-[PASS] font-size-adjust interpolation responds to changes in inherited value 241
-[PASS] Animation on property <fontSizeAdjust> from [inherit] to [ic-width 1.0] with {"inherited":"ic-width 0.0"} changed to {"inherited":"ic-width 0.5"} at (0.75) is [ic-width 0.875]
-[PASS] font-size-adjust interpolation responds to changes in inherited value 242
-[PASS] Animation on property <fontSizeAdjust> from [inherit] to [ic-width 1.0] with {"inherited":"ic-width 0.0"} changed to {"inherited":"ic-width 2.0"} at (0.25) is [ic-width 1.75]
-[PASS] font-size-adjust interpolation responds to changes in inherited value 243
-[PASS] Animation on property <fontSizeAdjust> from [inherit] to [ic-width 1.0] with {"inherited":"ic-width 0.0"} changed to {"inherited":"ic-width 2.0"} at (0.75) is [ic-width 1.25]
-[PASS] font-size-adjust interpolation responds to changes in inherited value 244
-[PASS] Animation on property <fontSizeAdjust> from [inherit] to [ic-width 1.0] with {"inherited":"ic-width 0.5"} changed to {"inherited":"ic-width 0.0"} at (0.25) is [ic-width 0.25]
-[PASS] font-size-adjust interpolation responds to changes in inherited value 245
-[PASS] Animation on property <fontSizeAdjust> from [inherit] to [ic-width 1.0] with {"inherited":"ic-width 0.5"} changed to {"inherited":"ic-width 0.0"} at (0.75) is [ic-width 0.75]
-[PASS] font-size-adjust interpolation responds to changes in inherited value 246
-[PASS] Animation on property <fontSizeAdjust> from [inherit] to [ic-width 1.0] with {"inherited":"ic-width 0.5"} changed to {"inherited":"ic-width 2.0"} at (0.25) is [ic-width 1.75]
-[PASS] font-size-adjust interpolation responds to changes in inherited value 247
-[PASS] Animation on property <fontSizeAdjust> from [inherit] to [ic-width 1.0] with {"inherited":"ic-width 0.5"} changed to {"inherited":"ic-width 2.0"} at (0.75) is [ic-width 1.25]
-[PASS] font-size-adjust interpolation responds to changes in inherited value 248
-[PASS] Animation on property <fontSizeAdjust> from [inherit] to [ic-width 1.0] with {"inherited":"ic-width 2.0"} changed to {"inherited":"ic-width 0.0"} at (0.25) is [ic-width 0.25]
-[PASS] font-size-adjust interpolation responds to changes in inherited value 249
-[PASS] Animation on property <fontSizeAdjust> from [inherit] to [ic-width 1.0] with {"inherited":"ic-width 2.0"} changed to {"inherited":"ic-width 0.0"} at (0.75) is [ic-width 0.75]
-[PASS] font-size-adjust interpolation responds to changes in inherited value 250
-[PASS] Animation on property <fontSizeAdjust> from [inherit] to [ic-width 1.0] with {"inherited":"ic-width 2.0"} changed to {"inherited":"ic-width 0.5"} at (0.25) is [ic-width 0.625]
-[PASS] font-size-adjust interpolation responds to changes in inherited value 251
-[PASS] Animation on property <fontSizeAdjust> from [inherit] to [ic-width 1.0] with {"inherited":"ic-width 2.0"} changed to {"inherited":"ic-width 0.5"} at (0.75) is [ic-width 0.875]
-[PASS] font-size-adjust interpolation responds to changes in inherited value 252
-[PASS] Animation on property <fontSizeAdjust> from [ic-width 1.0] to [inherit] with {"inherited":"ic-width 0.0"} changed to {"inherited":"ic-width 0.5"} at (0.25) is [ic-width 0.875]
-[PASS] font-size-adjust interpolation responds to changes in inherited value 253
-[PASS] Animation on property <fontSizeAdjust> from [ic-width 1.0] to [inherit] with {"inherited":"ic-width 0.0"} changed to {"inherited":"ic-width 0.5"} at (0.75) is [ic-width 0.625]
-[PASS] font-size-adjust interpolation responds to changes in inherited value 254
-[PASS] Animation on property <fontSizeAdjust> from [ic-width 1.0] to [inherit] with {"inherited":"ic-width 0.0"} changed to {"inherited":"ic-width 2.0"} at (0.25) is [ic-width 1.25]
-[PASS] font-size-adjust interpolation responds to changes in inherited value 255
-[PASS] Animation on property <fontSizeAdjust> from [ic-width 1.0] to [inherit] with {"inherited":"ic-width 0.0"} changed to {"inherited":"ic-width 2.0"} at (0.75) is [ic-width 1.75]
-[PASS] font-size-adjust interpolation responds to changes in inherited value 256
-[PASS] Animation on property <fontSizeAdjust> from [ic-width 1.0] to [inherit] with {"inherited":"ic-width 0.5"} changed to {"inherited":"ic-width 0.0"} at (0.25) is [ic-width 0.75]
-[PASS] font-size-adjust interpolation responds to changes in inherited value 257
-[PASS] Animation on property <fontSizeAdjust> from [ic-width 1.0] to [inherit] with {"inherited":"ic-width 0.5"} changed to {"inherited":"ic-width 0.0"} at (0.75) is [ic-width 0.25]
-[PASS] font-size-adjust interpolation responds to changes in inherited value 258
-[PASS] Animation on property <fontSizeAdjust> from [ic-width 1.0] to [inherit] with {"inherited":"ic-width 0.5"} changed to {"inherited":"ic-width 2.0"} at (0.25) is [ic-width 1.25]
-[PASS] font-size-adjust interpolation responds to changes in inherited value 259
-[PASS] Animation on property <fontSizeAdjust> from [ic-width 1.0] to [inherit] with {"inherited":"ic-width 0.5"} changed to {"inherited":"ic-width 2.0"} at (0.75) is [ic-width 1.75]
-[PASS] font-size-adjust interpolation responds to changes in inherited value 260
-[PASS] Animation on property <fontSizeAdjust> from [ic-width 1.0] to [inherit] with {"inherited":"ic-width 2.0"} changed to {"inherited":"ic-width 0.0"} at (0.25) is [ic-width 0.75]
-[PASS] font-size-adjust interpolation responds to changes in inherited value 261
-[PASS] Animation on property <fontSizeAdjust> from [ic-width 1.0] to [inherit] with {"inherited":"ic-width 2.0"} changed to {"inherited":"ic-width 0.0"} at (0.75) is [ic-width 0.25]
-[PASS] font-size-adjust interpolation responds to changes in inherited value 262
-[PASS] Animation on property <fontSizeAdjust> from [ic-width 1.0] to [inherit] with {"inherited":"ic-width 2.0"} changed to {"inherited":"ic-width 0.5"} at (0.25) is [ic-width 0.875]
-[PASS] font-size-adjust interpolation responds to changes in inherited value 263
-[PASS] Animation on property <fontSizeAdjust> from [ic-width 1.0] to [inherit] with {"inherited":"ic-width 2.0"} changed to {"inherited":"ic-width 0.5"} at (0.75) is [ic-width 0.625]
 [FAIL] font-size-adjust interpolation responds to changes in inherited value 264
   assert_true: CSS.supports font-size-adjust ic-height 0.625 expected true got false
-[PASS] Animation on property <fontSizeAdjust> from [inherit] to [ic-height 1.0] with {"inherited":"ic-height 0.0"} changed to {"inherited":"ic-height 0.5"} at (0.25) is [ic-height 0.625]
 [FAIL] font-size-adjust interpolation responds to changes in inherited value 265
   assert_true: CSS.supports font-size-adjust ic-height 0.875 expected true got false
-[PASS] Animation on property <fontSizeAdjust> from [inherit] to [ic-height 1.0] with {"inherited":"ic-height 0.0"} changed to {"inherited":"ic-height 0.5"} at (0.75) is [ic-height 0.875]
 [FAIL] font-size-adjust interpolation responds to changes in inherited value 266
   assert_true: CSS.supports font-size-adjust ic-height 1.75 expected true got false
-[PASS] Animation on property <fontSizeAdjust> from [inherit] to [ic-height 1.0] with {"inherited":"ic-height 0.0"} changed to {"inherited":"ic-height 2.0"} at (0.25) is [ic-height 1.75]
 [FAIL] font-size-adjust interpolation responds to changes in inherited value 267
   assert_true: CSS.supports font-size-adjust ic-height 1.25 expected true got false
-[PASS] Animation on property <fontSizeAdjust> from [inherit] to [ic-height 1.0] with {"inherited":"ic-height 0.0"} changed to {"inherited":"ic-height 2.0"} at (0.75) is [ic-height 1.25]
 [FAIL] font-size-adjust interpolation responds to changes in inherited value 268
   assert_true: CSS.supports font-size-adjust ic-height 0.25 expected true got false
-[PASS] Animation on property <fontSizeAdjust> from [inherit] to [ic-height 1.0] with {"inherited":"ic-height 0.5"} changed to {"inherited":"ic-height 0.0"} at (0.25) is [ic-height 0.25]
 [FAIL] font-size-adjust interpolation responds to changes in inherited value 269
   assert_true: CSS.supports font-size-adjust ic-height 0.75 expected true got false
-[PASS] Animation on property <fontSizeAdjust> from [inherit] to [ic-height 1.0] with {"inherited":"ic-height 0.5"} changed to {"inherited":"ic-height 0.0"} at (0.75) is [ic-height 0.75]
 [FAIL] font-size-adjust interpolation responds to changes in inherited value 270
   assert_true: CSS.supports font-size-adjust ic-height 1.75 expected true got false
-[PASS] Animation on property <fontSizeAdjust> from [inherit] to [ic-height 1.0] with {"inherited":"ic-height 0.5"} changed to {"inherited":"ic-height 2.0"} at (0.25) is [ic-height 1.75]
 [FAIL] font-size-adjust interpolation responds to changes in inherited value 271
   assert_true: CSS.supports font-size-adjust ic-height 1.25 expected true got false
-[PASS] Animation on property <fontSizeAdjust> from [inherit] to [ic-height 1.0] with {"inherited":"ic-height 0.5"} changed to {"inherited":"ic-height 2.0"} at (0.75) is [ic-height 1.25]
 [FAIL] font-size-adjust interpolation responds to changes in inherited value 272
   assert_true: CSS.supports font-size-adjust ic-height 0.25 expected true got false
-[PASS] Animation on property <fontSizeAdjust> from [inherit] to [ic-height 1.0] with {"inherited":"ic-height 2.0"} changed to {"inherited":"ic-height 0.0"} at (0.25) is [ic-height 0.25]
 [FAIL] font-size-adjust interpolation responds to changes in inherited value 273
   assert_true: CSS.supports font-size-adjust ic-height 0.75 expected true got false
-[PASS] Animation on property <fontSizeAdjust> from [inherit] to [ic-height 1.0] with {"inherited":"ic-height 2.0"} changed to {"inherited":"ic-height 0.0"} at (0.75) is [ic-height 0.75]
 [FAIL] font-size-adjust interpolation responds to changes in inherited value 274
   assert_true: CSS.supports font-size-adjust ic-height 0.625 expected true got false
-[PASS] Animation on property <fontSizeAdjust> from [inherit] to [ic-height 1.0] with {"inherited":"ic-height 2.0"} changed to {"inherited":"ic-height 0.5"} at (0.25) is [ic-height 0.625]
 [FAIL] font-size-adjust interpolation responds to changes in inherited value 275
   assert_true: CSS.supports font-size-adjust ic-height 0.875 expected true got false
-[PASS] Animation on property <fontSizeAdjust> from [inherit] to [ic-height 1.0] with {"inherited":"ic-height 2.0"} changed to {"inherited":"ic-height 0.5"} at (0.75) is [ic-height 0.875]
 [FAIL] font-size-adjust interpolation responds to changes in inherited value 276
   assert_true: CSS.supports font-size-adjust ic-height 0.875 expected true got false
-[PASS] Animation on property <fontSizeAdjust> from [ic-height 1.0] to [inherit] with {"inherited":"ic-height 0.0"} changed to {"inherited":"ic-height 0.5"} at (0.25) is [ic-height 0.875]
 [FAIL] font-size-adjust interpolation responds to changes in inherited value 277
   assert_true: CSS.supports font-size-adjust ic-height 0.625 expected true got false
-[PASS] Animation on property <fontSizeAdjust> from [ic-height 1.0] to [inherit] with {"inherited":"ic-height 0.0"} changed to {"inherited":"ic-height 0.5"} at (0.75) is [ic-height 0.625]
 [FAIL] font-size-adjust interpolation responds to changes in inherited value 278
   assert_true: CSS.supports font-size-adjust ic-height 1.25 expected true got false
-[PASS] Animation on property <fontSizeAdjust> from [ic-height 1.0] to [inherit] with {"inherited":"ic-height 0.0"} changed to {"inherited":"ic-height 2.0"} at (0.25) is [ic-height 1.25]
 [FAIL] font-size-adjust interpolation responds to changes in inherited value 279
   assert_true: CSS.supports font-size-adjust ic-height 1.75 expected true got false
-[PASS] Animation on property <fontSizeAdjust> from [ic-height 1.0] to [inherit] with {"inherited":"ic-height 0.0"} changed to {"inherited":"ic-height 2.0"} at (0.75) is [ic-height 1.75]
 [FAIL] font-size-adjust interpolation responds to changes in inherited value 280
   assert_true: CSS.supports font-size-adjust ic-height 0.75 expected true got false
-[PASS] Animation on property <fontSizeAdjust> from [ic-height 1.0] to [inherit] with {"inherited":"ic-height 0.5"} changed to {"inherited":"ic-height 0.0"} at (0.25) is [ic-height 0.75]
 [FAIL] font-size-adjust interpolation responds to changes in inherited value 281
   assert_true: CSS.supports font-size-adjust ic-height 0.25 expected true got false
-[PASS] Animation on property <fontSizeAdjust> from [ic-height 1.0] to [inherit] with {"inherited":"ic-height 0.5"} changed to {"inherited":"ic-height 0.0"} at (0.75) is [ic-height 0.25]
 [FAIL] font-size-adjust interpolation responds to changes in inherited value 282
   assert_true: CSS.supports font-size-adjust ic-height 1.25 expected true got false
-[PASS] Animation on property <fontSizeAdjust> from [ic-height 1.0] to [inherit] with {"inherited":"ic-height 0.5"} changed to {"inherited":"ic-height 2.0"} at (0.25) is [ic-height 1.25]
 [FAIL] font-size-adjust interpolation responds to changes in inherited value 283
   assert_true: CSS.supports font-size-adjust ic-height 1.75 expected true got false
-[PASS] Animation on property <fontSizeAdjust> from [ic-height 1.0] to [inherit] with {"inherited":"ic-height 0.5"} changed to {"inherited":"ic-height 2.0"} at (0.75) is [ic-height 1.75]
 [FAIL] font-size-adjust interpolation responds to changes in inherited value 284
   assert_true: CSS.supports font-size-adjust ic-height 0.75 expected true got false
-[PASS] Animation on property <fontSizeAdjust> from [ic-height 1.0] to [inherit] with {"inherited":"ic-height 2.0"} changed to {"inherited":"ic-height 0.0"} at (0.25) is [ic-height 0.75]
 [FAIL] font-size-adjust interpolation responds to changes in inherited value 285
   assert_true: CSS.supports font-size-adjust ic-height 0.25 expected true got false
-[PASS] Animation on property <fontSizeAdjust> from [ic-height 1.0] to [inherit] with {"inherited":"ic-height 2.0"} changed to {"inherited":"ic-height 0.0"} at (0.75) is [ic-height 0.25]
 [FAIL] font-size-adjust interpolation responds to changes in inherited value 286
   assert_true: CSS.supports font-size-adjust ic-height 0.875 expected true got false
-[PASS] Animation on property <fontSizeAdjust> from [ic-height 1.0] to [inherit] with {"inherited":"ic-height 2.0"} changed to {"inherited":"ic-height 0.5"} at (0.25) is [ic-height 0.875]
 [FAIL] font-size-adjust interpolation responds to changes in inherited value 287
   assert_true: CSS.supports font-size-adjust ic-height 0.625 expected true got false
-[PASS] Animation on property <fontSizeAdjust> from [ic-height 1.0] to [inherit] with {"inherited":"ic-height 2.0"} changed to {"inherited":"ic-height 0.5"} at (0.75) is [ic-height 0.625]
 Harness: the test ran to completion.
 

@@ -170,7 +170,7 @@ ExtensionApiFrameIdMap::DocumentId ExtensionApiFrameIdMap::DocumentIdFromString(
     return DocumentId();
   }
 
-  absl::optional<base::UnguessableToken> token =
+  std::optional<base::UnguessableToken> token =
       base::UnguessableToken::Deserialize(high, low);
   if (!token.has_value()) {
     return DocumentId();

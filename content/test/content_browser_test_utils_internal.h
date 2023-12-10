@@ -127,7 +127,9 @@ Shell* OpenWindow(WebContentsImpl* web_contents, const GURL& url);
 //             D = http://next.com/
 //
 // SiteInstances are assigned single-letter names (A, B, C) which are remembered
-// across invocations of the pretty-printer.
+// across invocations of the pretty-printer. Port numbers are excluded from the
+// descriptions by default for DepictFrameTree. Isolated sandboxed SiteInstances
+// are denoted with "(sandboxed)".
 class FrameTreeVisualizer {
  public:
   FrameTreeVisualizer();
@@ -143,6 +145,9 @@ class FrameTreeVisualizer {
  private:
   // Assign or retrive the abbreviated short name (A, B, C) for a site instance.
   std::string GetName(SiteInstance* site_instance);
+
+  // Returns an identical URL except the port, if any, has been removed.
+  GURL GetUrlWithoutPort(const GURL& url);
 
   // Elements are site instance ids. The index of the SiteInstance in the vector
   // determines the abbreviated name (0->A, 1->B) for that SiteInstance.

@@ -6,12 +6,12 @@
 #define ASH_SYSTEM_TRAY_TRAY_UTILS_H_
 
 #include <cstdint>
+#include <optional>
 
 #include "ash/ash_export.h"
 #include "ash/system/tray/tray_bubble_view.h"
 #include "ash/system/tray/tray_popup_ink_drop_style.h"
 #include "components/session_manager/session_manager_types.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/insets.h"
 
@@ -38,7 +38,7 @@ void SetupConnectedScrollListItem(HoverHighlightView* view);
 // Adds connected sub label with the device's battery percentage to the |view|
 // with appropriate style and updates accessibility label.
 void SetupConnectedScrollListItem(HoverHighlightView* view,
-                                  absl::optional<uint8_t> battery_percentage);
+                                  std::optional<uint8_t> battery_percentage);
 
 // Adds connecting sub label to the |view| with appropriate style and updates
 // accessibility label.

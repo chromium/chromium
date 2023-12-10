@@ -25,7 +25,7 @@ class AutofillVCNEnrollBottomSheetBridgeTest
     : public ChromeRenderViewHostTestHarness {
  public:
   AutofillVCNEnrollBottomSheetBridgeTest()
-      : card_art_image_(gfx::test::CreateImage().AsImageSkia()) {}
+      : card_art_image_(gfx::test::CreateImage(100, 50).AsImageSkia()) {}
   ~AutofillVCNEnrollBottomSheetBridgeTest() override = default;
 
   VirtualCardEnrollBubbleControllerImpl* BuildController() {

@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/extensions/extensions_menu_view.h"
 
 #include <algorithm>
+#include <optional>
 
 #include "base/ranges/algorithm.h"
 #include "build/build_config.h"
@@ -43,7 +44,6 @@
 #include "extensions/test/permissions_manager_waiter.h"
 #include "extensions/test/test_extension_dir.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
 #include "ui/views/layout/animating_layout_manager.h"
@@ -125,7 +125,7 @@ class ExtensionsMenuViewInteractiveUITest : public ExtensionsToolbarUITest {
       // extension, and display the "reload this page" bubble.
       EXPECT_TRUE(container->GetAnchoredWidgetForExtensionForTesting(
           extensions()[0]->id()));
-      EXPECT_EQ(absl::nullopt, container->GetPoppedOutActionId());
+      EXPECT_EQ(std::nullopt, container->GetPoppedOutActionId());
       EXPECT_FALSE(ExtensionsMenuView::IsShowing());
     } else if (ui_test_name_ == "UninstallDialog_Accept" ||
                ui_test_name_ == "UninstallDialog_Cancel" ||
@@ -321,7 +321,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest, TriggerPopup) {
   ExtensionsToolbarContainer* const extensions_container =
       GetExtensionsToolbarContainer();
 
-  EXPECT_EQ(absl::nullopt, extensions_container->GetPoppedOutActionId());
+  EXPECT_EQ(std::nullopt, extensions_container->GetPoppedOutActionId());
   EXPECT_TRUE(GetVisibleToolbarActionViews().empty());
 
   TriggerSingleExtensionButton();
@@ -329,7 +329,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest, TriggerPopup) {
   // After triggering an extension with a popup, there should a popped-out
   // action and show the view.
   auto visible_icons = GetVisibleToolbarActionViews();
-  EXPECT_NE(absl::nullopt, extensions_container->GetPoppedOutActionId());
+  EXPECT_NE(std::nullopt, extensions_container->GetPoppedOutActionId());
   EXPECT_EQ(extensions_container->GetPoppedOutActionId(),
             visible_icons[0]->view_controller()->GetId());
   EXPECT_EQ(1u, visible_icons.size());
@@ -340,7 +340,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest, TriggerPopup) {
 
   // After dismissing the popup there should no longer be a popped-out action
   // and the icon should no longer be visible in the extensions container.
-  EXPECT_EQ(absl::nullopt, extensions_container->GetPoppedOutActionId());
+  EXPECT_EQ(std::nullopt, extensions_container->GetPoppedOutActionId());
   EXPECT_TRUE(GetVisibleToolbarActionViews().empty());
 }
 
@@ -353,7 +353,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
   ExtensionsToolbarContainer* const extensions_container =
       GetExtensionsToolbarContainer();
 
-  EXPECT_EQ(absl::nullopt, extensions_container->GetPoppedOutActionId());
+  EXPECT_EQ(std::nullopt, extensions_container->GetPoppedOutActionId());
   EXPECT_TRUE(GetVisibleToolbarActionViews().empty());
 
   TriggerSingleExtensionButton();
@@ -361,10 +361,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
   // After triggering an extension with a popup, there should a popped-out
   // action and show the view.
   auto visible_icons = GetVisibleToolbarActionViews();
-  EXPECT_NE(absl::nullopt, extensions_container->GetPoppedOutActionId());
+  EXPECT_NE(std::nullopt, extensions_container->GetPoppedOutActionId());
   EXPECT_EQ(extensions_container->GetPoppedOutActionId(),
             visible_icons[0]->view_controller()->GetId());
-  EXPECT_EQ(absl::nullopt,
+  EXPECT_EQ(std::nullopt,
             extensions_container->GetExtensionWithOpenContextMenuForTesting());
   ASSERT_EQ(1u, visible_icons.size());
 
@@ -377,8 +377,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
 
   visible_icons = GetVisibleToolbarActionViews();
   ASSERT_EQ(1u, visible_icons.size());
-  EXPECT_EQ(absl::nullopt, extensions_container->GetPoppedOutActionId());
-  EXPECT_NE(absl::nullopt,
+  EXPECT_EQ(std::nullopt, extensions_container->GetPoppedOutActionId());
+  EXPECT_NE(std::nullopt,
             extensions_container->GetExtensionWithOpenContextMenuForTesting());
   EXPECT_EQ(extensions_container->GetExtensionWithOpenContextMenuForTesting(),
             visible_icons[0]->view_controller()->GetId());
@@ -395,9 +395,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
       BrowserView::GetBrowserViewForBrowser(browser())
           ->toolbar()
           ->extensions_container();
-  absl::optional<extensions::ExtensionId> action_id =
+  std::optional<extensions::ExtensionId> action_id =
       extensions_container->GetPoppedOutActionId();
-  ASSERT_NE(absl::nullopt, action_id);
+  ASSERT_NE(std::nullopt, action_id);
   ASSERT_EQ(1u, GetVisibleToolbarActionViews().size());
 
   extensions::ExtensionSystem::Get(browser()->profile())
@@ -405,7 +405,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
       ->DisableExtension(action_id.value(),
                          extensions::disable_reason::DISABLE_USER_ACTION);
 
-  EXPECT_EQ(absl::nullopt, extensions_container->GetPoppedOutActionId());
+  EXPECT_EQ(std::nullopt, extensions_container->GetPoppedOutActionId());
   EXPECT_TRUE(GetVisibleToolbarActionViews().empty());
 }
 
@@ -422,7 +422,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
       BrowserView::GetBrowserViewForBrowser(browser())
           ->toolbar()
           ->extensions_container();
-  ASSERT_NE(absl::nullopt, extensions_container->GetPoppedOutActionId());
+  ASSERT_NE(std::nullopt, extensions_container->GetPoppedOutActionId());
 
   auto* extension_service =
       extensions::ExtensionSystem::Get(browser()->profile())
@@ -433,7 +433,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
   extension_service->DisableExtension(
       id2, extensions::disable_reason::DISABLE_USER_ACTION);
 
-  EXPECT_EQ(absl::nullopt, extensions_container->GetPoppedOutActionId());
+  EXPECT_EQ(std::nullopt, extensions_container->GetPoppedOutActionId());
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
@@ -457,7 +457,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
 
   // This test should not use a popped-out action, as we want to make sure that
   // the menu closes on its own and not because a popup dialog replaces it.
-  EXPECT_EQ(absl::nullopt, extensions_container->GetPoppedOutActionId());
+  EXPECT_EQ(std::nullopt, extensions_container->GetPoppedOutActionId());
 
   EXPECT_FALSE(ExtensionsMenuView::IsShowing());
 }
@@ -539,7 +539,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
   auto visible_icons = GetVisibleToolbarActionViews();
   visible_icons = GetVisibleToolbarActionViews();
   ASSERT_EQ(1u, visible_icons.size());
-  EXPECT_EQ(absl::nullopt, extensions_container->GetPoppedOutActionId());
+  EXPECT_EQ(std::nullopt, extensions_container->GetPoppedOutActionId());
 
   // Trigger the pinned extension.
   ToolbarActionView* pinned_extension =
@@ -551,7 +551,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
   // extensions and dialogs are actually showing.
   WaitForAnimation();
 
-  EXPECT_NE(absl::nullopt, extensions_container->GetPoppedOutActionId());
+  EXPECT_NE(std::nullopt, extensions_container->GetPoppedOutActionId());
 
   // Verify the context menu option, when opened from the toolbar action, is to
   // unpin the extension.
@@ -559,7 +559,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
       extensions_container->GetActionForId(extensions()[0]->id())
           ->GetContextMenu(extensions::ExtensionContextMenuModel::
                                ContextMenuSource::kToolbarAction));
-  absl::optional<size_t> visibility_index = context_menu->GetIndexOfCommandId(
+  std::optional<size_t> visibility_index = context_menu->GetIndexOfCommandId(
       extensions::ExtensionContextMenuModel::TOGGLE_VISIBILITY);
   ASSERT_TRUE(visibility_index.has_value());
   std::u16string visibility_label =
@@ -584,7 +584,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
   // Verify extension is visible and tbere is a popped out action.
   auto visible_icons = GetVisibleToolbarActionViews();
   ASSERT_EQ(1u, visible_icons.size());
-  EXPECT_NE(absl::nullopt, extensions_container->GetPoppedOutActionId());
+  EXPECT_NE(std::nullopt, extensions_container->GetPoppedOutActionId());
 
   // Verify the context menu option, when opened from the toolbar action, is to
   // unpin the extension.
@@ -592,7 +592,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
       extensions_container->GetActionForId(extensions()[0]->id())
           ->GetContextMenu(extensions::ExtensionContextMenuModel::
                                ContextMenuSource::kToolbarAction));
-  absl::optional<size_t> visibility_index = context_menu->GetIndexOfCommandId(
+  std::optional<size_t> visibility_index = context_menu->GetIndexOfCommandId(
       extensions::ExtensionContextMenuModel::TOGGLE_VISIBILITY);
   ASSERT_TRUE(visibility_index.has_value());
   std::u16string visibility_label =

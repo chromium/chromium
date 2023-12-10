@@ -13,7 +13,6 @@
 #include "ash/shell.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/window_util.h"
-#include "base/containers/cxx20_erase_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "components/exo/buffer.h"

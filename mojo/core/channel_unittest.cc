@@ -6,6 +6,7 @@
 
 #include <atomic>
 
+#include <optional>
 #include "base/functional/bind.h"
 #include "base/memory/page_size.h"
 #include "base/memory/ptr_util.h"
@@ -22,7 +23,6 @@
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace mojo {
 namespace core {
@@ -320,7 +320,7 @@ class RejectHandlesDelegate : public Channel::Delegate {
 
  private:
   size_t num_messages_ = 0;
-  absl::optional<base::RunLoop> wait_for_error_loop_;
+  std::optional<base::RunLoop> wait_for_error_loop_;
 };
 
 TEST(ChannelTest, RejectHandles) {

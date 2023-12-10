@@ -17,8 +17,13 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "ui/display/display_observer.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/window/dialog_delegate.h"
+
+namespace display {
+enum class TabletState;
+}  // namespace display
 
 namespace views {
 class Label;
@@ -51,7 +56,7 @@ struct ASH_EXPORT PinRequest {
   // Whether the help button is displayed.
   bool help_button_enabled = false;
 
-  absl::optional<int> pin_length;
+  std::optional<int> pin_length;
 
   // When |pin_keyboard_always_enabled| is set, the PIN keyboard is displayed at
   // all times. Otherwise, it is only displayed when the device is in tablet
@@ -75,7 +80,7 @@ struct ASH_EXPORT PinRequest {
 
 // The view that allows for input of pins to authorize certain actions.
 class ASH_EXPORT PinRequestView : public views::DialogDelegateView,
-                                  public TabletModeObserver {
+                                  public display::DisplayObserver {
  public:
   enum class SubmissionResult {
     // Closes the UI and calls |on_pin_request_done_|.
@@ -134,10 +139,8 @@ class ASH_EXPORT PinRequestView : public views::DialogDelegateView,
   views::View* GetInitiallyFocusedView() override;
   std::u16string GetAccessibleWindowTitle() const override;
 
-  // TabletModeObserver:
-  void OnTabletModeStarted() override;
-  void OnTabletModeEnded() override;
-  void OnTabletControllerDestroyed() override;
+  // display::Observer:
+  void OnDisplayTabletStateChanged(display::TabletState state) override;
 
   // Sets whether the user can enter a PIN. Other buttons (back, submit etc.)
   // are unaffected.
@@ -206,8 +209,7 @@ class ASH_EXPORT PinRequestView : public views::DialogDelegateView,
 
   std::unique_ptr<SystemShadow> shadow_;
 
-  base::ScopedObservation<TabletModeController, TabletModeObserver>
-      tablet_mode_observation_{this};
+  display::ScopedDisplayObserver display_observer_{this};
 
   base::WeakPtrFactory<PinRequestView> weak_ptr_factory_{this};
 };

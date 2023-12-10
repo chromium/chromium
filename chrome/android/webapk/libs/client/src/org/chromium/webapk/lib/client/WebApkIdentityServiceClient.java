@@ -24,7 +24,7 @@ import org.chromium.webapk.lib.common.identity_service.IIdentityService;
 public class WebApkIdentityServiceClient {
     /**
      * Used to notify the consumer after checking whether the caller browser backs the WebAPK.
-     *  |browserPackageName| is the package name of the browser which backs the WebAPK.
+     * |browserPackageName| is the package name of the browser which backs the WebAPK.
      */
     public interface CheckBrowserBacksWebApkCallback {
         void onChecked(boolean doesBrowserBackWebApk, String browserPackageName);
@@ -60,25 +60,30 @@ public class WebApkIdentityServiceClient {
     }
 
     private WebApkIdentityServiceClient(@TaskTraits int uiThreadTaskTraits) {
-        mConnectionManager = new WebApkServiceConnectionManager(
-                uiThreadTaskTraits, null /* category */, ACTION_WEBAPK_IDENTITY_SERVICE);
+        mConnectionManager =
+                new WebApkServiceConnectionManager(
+                        uiThreadTaskTraits, /* category= */ null, ACTION_WEBAPK_IDENTITY_SERVICE);
     }
 
     /**
      * Checks whether a WebAPK is backed by the browser with {@link browserContext}.
+     *
      * @param browserContext The browser context.
      * @param webApkPackageName The package name of the WebAPK.
      * @param callback The callback to be called after querying the runtime host is done.
      */
-    public void checkBrowserBacksWebApkAsync(final Context browserContext,
-            final String webApkPackageName, final CheckBrowserBacksWebApkCallback callback) {
+    public void checkBrowserBacksWebApkAsync(
+            final Context browserContext,
+            final String webApkPackageName,
+            final CheckBrowserBacksWebApkCallback callback) {
         WebApkServiceConnectionManager.ConnectionCallback connectionCallback =
                 new WebApkServiceConnectionManager.ConnectionCallback() {
                     @Override
                     public void onConnected(IBinder service) {
                         String browserPackageName = browserContext.getPackageName();
                         if (service == null) {
-                            onGotWebApkRuntimeHost(browserPackageName,
+                            onGotWebApkRuntimeHost(
+                                    browserPackageName,
                                     maybeExtractRuntimeHostFromMetaData(
                                             browserContext, webApkPackageName),
                                     callback);
@@ -103,20 +108,24 @@ public class WebApkIdentityServiceClient {
 
     /**
      * Called after fetching the WebAPK's backing browser.
+     *
      * @param browserPackageName The browser's package name.
      * @param webApkBackingBrowserPackageName The package name of the WebAPK's backing browser.
      * @param callback The callback to notify whether {@link browserPackageName} backs the WebAPK.
      */
-    private static void onGotWebApkRuntimeHost(String browserPackageName,
-            String webApkBackingBrowserPackageName, CheckBrowserBacksWebApkCallback callback) {
-        callback.onChecked(TextUtils.equals(webApkBackingBrowserPackageName, browserPackageName),
+    private static void onGotWebApkRuntimeHost(
+            String browserPackageName,
+            String webApkBackingBrowserPackageName,
+            CheckBrowserBacksWebApkCallback callback) {
+        callback.onChecked(
+                TextUtils.equals(webApkBackingBrowserPackageName, browserPackageName),
                 webApkBackingBrowserPackageName);
     }
 
     /**
-     * Extracts the backing browser from the WebAPK's meta data.
-     * See {@link WebApkIdentityServiceClient#SHELL_APK_VERSION_SUPPORTING_SWITCH_RUNTIME_HOST} for
-     * more details.
+     * Extracts the backing browser from the WebAPK's meta data. See {@link
+     * WebApkIdentityServiceClient#SHELL_APK_VERSION_SUPPORTING_SWITCH_RUNTIME_HOST} for more
+     * details.
      */
     private static String maybeExtractRuntimeHostFromMetaData(
             Context context, String webApkPackageName) {
@@ -136,8 +145,9 @@ public class WebApkIdentityServiceClient {
     private static Bundle readMetaData(Context context, String packageName) {
         ApplicationInfo ai = null;
         try {
-            ai = context.getPackageManager().getApplicationInfo(
-                    packageName, PackageManager.GET_META_DATA);
+            ai =
+                    context.getPackageManager()
+                            .getApplicationInfo(packageName, PackageManager.GET_META_DATA);
         } catch (PackageManager.NameNotFoundException e) {
             return null;
         }

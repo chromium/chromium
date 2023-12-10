@@ -155,6 +155,7 @@ mojom::FetchCacheMode DetermineFrameCacheMode(Frame* frame) {
     case WebFrameLoadType::kReplaceCurrentItem:
       return mojom::FetchCacheMode::kDefault;
     case WebFrameLoadType::kBackForward:
+    case WebFrameLoadType::kRestore:
       // Mutates the policy for POST requests to avoid form resubmission.
       return mojom::FetchCacheMode::kForceCache;
     case WebFrameLoadType::kReload:

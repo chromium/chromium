@@ -16,14 +16,15 @@ namespace promos_utils {
 // numeric values should never be reused.
 
 // Enum for different action values possible used in the
-// IOS.DesktopPasswordPromo.{Impression}.Action histogram. This must
-// match enums.xml.
+// IOS.DesktopPasswordPromo.{Impression}.Action histogram.
+// LINT.IfChange
 enum class DesktopIOSPasswordPromoAction {
   kDismissed = 0,
   kExplicitlyClosed = 1,
   kGetStartedClicked = 2,
   kMaxValue = kGetStartedClicked
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/ios/enums.xml)
 
 // Enum for different impression values possible used in the
 // IOS.DesktopPasswordPromo.Shown histogram. This must match enums.xml.
@@ -46,10 +47,6 @@ void RecordIOSPasswordPromoUserInteractionHistogram(
     int impression_count,
     DesktopIOSPasswordPromoAction action);
 
-// IsActivationCriteriaOverriddenIOSPasswordPromo returns true if the activation
-// method of the flag is set to overridden (always show).
-bool IsActivationCriteriaOverriddenIOSPasswordPromo();
-
 // ShouldShowIOSPasswordPromo checks if the user should be shown the iOS
 // password promo (all criteria are met), and returns true if so.
 bool ShouldShowIOSPasswordPromo(Profile* profile);
@@ -64,14 +61,6 @@ bool UserNotClassifiedAsMobileDeviceSwitcher(
 // increments the impression counter for the iOS password promo and records the
 // necessary histogram.
 void iOSPasswordPromoShown(Profile* profile);
-
-// IsDirectVariantIOSPasswordPromo returns true if the user is in one of the
-// "direct" variant groups (QR code promo).
-bool IsDirectVariantIOSPasswordPromo();
-
-// IsIndirectVariantIOSPasswordPromo returns true if the user is in one of the
-// "indirect" variant groups (get started button).
-bool IsIndirectVariantIOSPasswordPromo();
 }  // namespace promos_utils
 
 #endif  // CHROME_BROWSER_PROMOS_PROMOS_UTILS_H_

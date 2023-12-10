@@ -119,5 +119,8 @@ source_set("generated") {
     "//v8",
   ]
 
-  public_deps = [ "//third_party/inspector_protocol:crdtp" ]
+  public_deps = [
+    "//third_party/inspector_protocol:crdtp",
+    "//v8:v8_internal_headers",
+  ]
 }

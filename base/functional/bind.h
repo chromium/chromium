@@ -55,33 +55,16 @@ namespace base {
 
 // Bind as OnceCallback.
 template <typename Functor, typename... Args>
-inline OnceCallback<internal::MakeUnboundRunType<Functor, Args...>> BindOnce(
-    Functor&& functor,
-    Args&&... args) {
-  static_assert(!internal::IsOnceCallback<std::decay_t<Functor>>() ||
-                    (std::is_rvalue_reference<Functor&&>() &&
-                     !std::is_const<std::remove_reference_t<Functor>>()),
-                "BindOnce requires non-const rvalue for OnceCallback binding."
-                " I.e.: base::BindOnce(std::move(callback)).");
-  static_assert(
-      std::conjunction_v<
-          internal::AssertBindArgIsNotBasePassed<std::decay_t<Args>>...>,
-      "Use std::move() instead of base::Passed() with base::BindOnce()");
-
-  return internal::BindImpl<OnceCallback>(std::forward<Functor>(functor),
-                                          std::forward<Args>(args)...);
+inline auto BindOnce(Functor&& functor, Args&&... args) {
+  return internal::BindOnceHelper<Functor, Args...>::BindOnce(
+      std::forward<Functor>(functor), std::forward<Args>(args)...);
 }
 
 // Bind as RepeatingCallback.
 template <typename Functor, typename... Args>
-inline RepeatingCallback<internal::MakeUnboundRunType<Functor, Args...>>
-BindRepeating(Functor&& functor, Args&&... args) {
-  static_assert(
-      !internal::IsOnceCallback<std::decay_t<Functor>>(),
-      "BindRepeating cannot bind OnceCallback. Use BindOnce with std::move().");
-
-  return internal::BindImpl<RepeatingCallback>(std::forward<Functor>(functor),
-                                               std::forward<Args>(args)...);
+inline auto BindRepeating(Functor&& functor, Args&&... args) {
+  return internal::BindRepeatingHelper<Functor, Args...>::BindRepeating(
+      std::forward<Functor>(functor), std::forward<Args>(args)...);
 }
 
 // Overloads to allow nicer compile errors when attempting to pass the address
@@ -424,8 +407,8 @@ internal::OwnedRefWrapper<std::decay_t<T>> OwnedRef(T&& t) {
 // via use of enable_if, and the second takes a T* which will not bind to T&.
 //
 // DEPRECATED - Do not use in new code. See https://crbug.com/1326449
-template <typename T,
-          std::enable_if_t<!std::is_lvalue_reference_v<T>>* = nullptr>
+template <typename T>
+  requires(!std::is_lvalue_reference_v<T>)
 inline internal::PassedWrapper<T> Passed(T&& scoper) {
   return internal::PassedWrapper<T>(std::move(scoper));
 }

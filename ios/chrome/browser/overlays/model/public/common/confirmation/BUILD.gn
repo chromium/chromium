@@ -1,0 +1,43 @@
+# Copyright 2020 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("confirmation") {
+  sources = [
+    "confirmation_overlay_response.h",
+    "confirmation_overlay_response.mm",
+  ]
+
+  deps = [
+    "//base",
+    "//ios/chrome/browser/overlays/model",
+  ]
+}
+
+source_set("util") {
+  sources = [
+    "confirmation_overlay_response_util.h",
+    "confirmation_overlay_response_util.mm",
+  ]
+
+  deps = [
+    ":confirmation",
+    "//base",
+    "//ios/chrome/browser/overlays/model",
+    "//ios/chrome/browser/overlays/model/public/web_content_area",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "confirmation_overlay_response_util_unittest.mm" ]
+
+  deps = [
+    ":confirmation",
+    ":util",
+    "//base",
+    "//ios/chrome/browser/overlays/model",
+    "//ios/chrome/browser/overlays/model/public/web_content_area",
+    "//testing/gtest",
+  ]
+}

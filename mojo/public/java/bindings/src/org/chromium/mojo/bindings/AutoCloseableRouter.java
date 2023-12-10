@@ -15,14 +15,10 @@ import java.util.concurrent.Executor;
  * mechanism, it needs to call close() explicitly.
  */
 class AutoCloseableRouter implements Router {
-    /**
-     * The underlying router.
-     */
+    /** The underlying router. */
     private final Router mRouter;
 
-    /**
-     * The executor to close the underlying router.
-     */
+    /** The executor to close the underlying router. */
     private final Executor mExecutor;
 
     /**
@@ -31,14 +27,10 @@ class AutoCloseableRouter implements Router {
      */
     private final Exception mAllocationException;
 
-    /**
-     * Flags to keep track if this router has been correctly closed.
-     */
+    /** Flags to keep track if this router has been correctly closed. */
     private boolean mClosed;
 
-    /**
-     * Constructor.
-     */
+    /** Constructor. */
     public AutoCloseableRouter(Core core, Router router) {
         mRouter = router;
         mExecutor = ExecutorFactory.getExecutorForCurrentThread(core);
@@ -75,7 +67,6 @@ class AutoCloseableRouter implements Router {
     @Override
     public boolean acceptWithResponder(Message message, MessageReceiver responder) {
         return mRouter.acceptWithResponder(message, responder);
-
     }
 
     /**
@@ -109,14 +100,16 @@ class AutoCloseableRouter implements Router {
     @Override
     protected void finalize() throws Throwable {
         if (!mClosed) {
-            mExecutor.execute(new Runnable() {
+            mExecutor.execute(
+                    new Runnable() {
 
-                @Override
-                public void run() {
-                    close();
-                }
-            });
-            throw new IllegalStateException("Warning: Router objects should be explicitly closed "
+                        @Override
+                        public void run() {
+                            close();
+                        }
+                    });
+            throw new IllegalStateException(
+                    "Warning: Router objects should be explicitly closed "
                             + "when no longer required otherwise you may leak handles.",
                     mAllocationException);
         }

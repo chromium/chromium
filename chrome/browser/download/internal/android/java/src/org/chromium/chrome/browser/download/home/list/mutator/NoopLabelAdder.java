@@ -8,9 +8,7 @@ import org.chromium.chrome.browser.download.home.list.ListItem;
 
 import java.util.List;
 
-/**
- * Implementation of {@link LabelAdder} that doesn't add any labels.
- */
+/** Implementation of {@link LabelAdder} that doesn't add any labels. */
 public class NoopLabelAdder implements ListConsumer {
     private ListConsumer mListConsumer;
 

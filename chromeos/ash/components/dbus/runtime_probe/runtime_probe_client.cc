@@ -38,7 +38,7 @@ class RuntimeProbeClientImpl : public RuntimeProbeClient {
 
     if (!writer.AppendProtoAsArrayOfBytes(request)) {
       LOG(ERROR) << "Failed to encode ProbeRequest protobuf";
-      std::move(callback).Run(absl::nullopt);
+      std::move(callback).Run(std::nullopt);
       return;
     }
     proxy_->CallMethod(
@@ -61,14 +61,14 @@ class RuntimeProbeClientImpl : public RuntimeProbeClient {
   void OnProbeCategories(RuntimeProbeCallback callback,
                          dbus::Response* response) {
     if (!response) {
-      std::move(callback).Run(absl::nullopt);
+      std::move(callback).Run(std::nullopt);
       return;
     }
     runtime_probe::ProbeResult response_proto;
     dbus::MessageReader reader(response);
     if (!reader.PopArrayOfBytesAsProto(&response_proto)) {
       LOG(ERROR) << "Failed to parse proto from " << response->GetMember();
-      std::move(callback).Run(absl::nullopt);
+      std::move(callback).Run(std::nullopt);
       return;
     }
     std::move(callback).Run(response_proto);

@@ -17,9 +17,7 @@ import org.chromium.services.service_manager.InterfaceFactory;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.Origin;
 
-/**
- * Factory class registered to create Authenticators upon request.
- */
+/** Factory class registered to create Authenticators upon request. */
 public class AuthenticatorFactory implements InterfaceFactory<Authenticator> {
     private final RenderFrameHost mRenderFrameHost;
 
@@ -50,13 +48,18 @@ public class AuthenticatorFactory implements InterfaceFactory<Authenticator> {
         if (webContents.isIncognito()
                 && DeviceFeatureMap.isEnabled(
                         DeviceFeatureList.WEBAUTHN_ANDROID_INCOGNITO_CONFIRMATION)) {
-            createConfirmationUiDelegate = (accept, reject) -> {
-                var sheet = new AuthenticatorIncognitoConfirmationBottomsheet(webContents);
-                return sheet.show(accept, reject);
-            };
+            createConfirmationUiDelegate =
+                    (accept, reject) -> {
+                        var sheet = new AuthenticatorIncognitoConfirmationBottomsheet(webContents);
+                        return sheet.show(accept, reject);
+                    };
         }
         Origin topOrigin = webContents.getMainFrame().getLastCommittedOrigin();
-        return new AuthenticatorImpl(context, new AuthenticatorImpl.WindowIntentSender(window),
-                createConfirmationUiDelegate, mRenderFrameHost, topOrigin);
+        return new AuthenticatorImpl(
+                context,
+                new AuthenticatorImpl.WindowIntentSender(window),
+                createConfirmationUiDelegate,
+                mRenderFrameHost,
+                topOrigin);
     }
 }

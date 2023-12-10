@@ -14,6 +14,7 @@
 #include <utility>
 #include <vector>
 
+#include <optional>
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
 #include "base/dcheck_is_on.h"
@@ -33,7 +34,6 @@
 #include "sql/sqlite_result_code.h"
 #include "sql/sqlite_result_code_values.h"
 #include "sql/statement_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // Forward declaration for SQLite structures. Headers in the public sql:: API
 // must NOT include sqlite3.h.
@@ -764,7 +764,7 @@ class COMPONENT_EXPORT(SQL) Database {
   // declare its blocking execution scope (see https://www.crbug/934302).
   void InitScopedBlockingCall(
       const base::Location& from_here,
-      absl::optional<base::ScopedBlockingCall>* scoped_blocking_call) const {
+      std::optional<base::ScopedBlockingCall>* scoped_blocking_call) const {
     if (!in_memory_)
       scoped_blocking_call->emplace(from_here, base::BlockingType::MAY_BLOCK);
   }
@@ -831,7 +831,7 @@ class COMPONENT_EXPORT(SQL) Database {
     // declare its blocking execution scope (see https://www.crbug/934302).
     void InitScopedBlockingCall(
         const base::Location& from_here,
-        absl::optional<base::ScopedBlockingCall>* scoped_blocking_call) const {
+        std::optional<base::ScopedBlockingCall>* scoped_blocking_call) const {
       if (database_)
         database_->InitScopedBlockingCall(from_here, scoped_blocking_call);
     }

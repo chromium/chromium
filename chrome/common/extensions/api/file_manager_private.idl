@@ -43,7 +43,7 @@
 // DirectoryEntry). Since these cannot be directly sent or received by the C++
 // code, there exists an additional layer, in file_manager_private_internal.idl,
 // that provides translation from or to W3C Entry objects.
-[modernised_enums, platforms=("chromeos"),
+[platforms=("chromeos"),
  implemented_in="chrome/browser/ash/extensions/file_manager/file_manager_private_api_functions.h"]
 namespace fileManagerPrivate {
 // Type of the mounted volume.
@@ -100,7 +100,7 @@ enum FormatFileSystemType { vfat, exfat, ntfs };
 enum TransferState { in_progress, queued, completed, failed };
 
 // The response when starting installing a Linux package.
-enum InstallLinuxPackageResponse {
+enum InstallLinuxPackageStatus {
   started,
   failed,
   install_already_active
@@ -585,6 +585,16 @@ dictionary MountPointSizeStats {
   double remainingSize;
 };
 
+dictionary SearchDriveResponse {
+  // Search results.
+  [instanceOf=Entry] object[] entries;
+
+  // ID of the feed that contains next chunk of the search result.
+  // Should be sent to the next searchDrive request to perform
+  // incremental search.
+  DOMString nextFeed;
+};
+
 // Free and total space available in Drive relative to both the user and their
 // organization, if they belong to one.
 dictionary DriveQuotaMetadata {
@@ -614,6 +624,18 @@ dictionary ProfileInfo {
   // TODO(hirono): Remove the property because of the design change of
   // multi-profile suuport.
   boolean isCurrentProfile;
+};
+
+// The return data for getProfiles() API.
+dictionary ProfilesResponse {
+  // List of profile information.
+  ProfileInfo[] profiles;
+
+  // ID of the profile that runs the application instance.
+  DOMString currentProfileId;
+
+  // ID of the profile that shows the application window.
+  DOMString displayedProfileId;
 };
 
 // Represents an icon in multiple dimensions. All are optional.
@@ -977,6 +999,14 @@ dictionary CrostiniEvent {
   [instanceOf=Entry] object[] entries;
 };
 
+dictionary CrostiniSharedPathResponse {
+  // Entries shared with crostini container.
+  [instanceOf=Entry] object[] entries;
+
+  // true the first time this is called for the session.
+  boolean firstForSession;
+};
+
 // Represents an Android app (activity).
 dictionary AndroidApp {
   // Name of the app to be shown to the user (e.g. Photos).
@@ -1201,6 +1231,10 @@ dictionary ProgressStatus {
   // The files affected by the IOTask. Currently only returned for TrashIOTask.
   [instanceOf=Entry] object[]? outputs;
 
+  // List of files skipped during the operation because we couldn't decrypt
+  // them.
+  DOMString[] skippedEncryptedFiles;
+
   // Volume id of the destination for operations that transfer files to a
   // directory (e.g. copy or move).
   DOMString destinationVolumeId;
@@ -1381,8 +1415,7 @@ callback GetPreferencesCallback = void(Preferences result);
 // |nextFeed| ID of the feed that contains next chunk of the search result.
 //     Should be sent to the next searchDrive request to perform
 //     incremental search.
-callback SearchDriveCallback =
-    void([instanceOf=Entry] object[] entries, DOMString nextFeed);
+callback SearchDriveCallback = void(SearchDriveResponse response);
 
 callback SearchDriveMetadataCallback =
     void(DriveMetadataSearchResult[] results);
@@ -1401,12 +1434,7 @@ callback GetDriveConnectionStateCallback = void(DriveConnectionState result);
 // |result| true if the length is in the valid range, false otherwise.
 callback ValidatePathNameLengthCallback = void(boolean result);
 
-// |profiles| List of profile information.
-// |runningProfile| ID of the profile that runs the application instance.
-// |showingProfile| ID of the profile that shows the application window.
-callback GetProfilesCallback = void(ProfileInfo[] profiles,
-                                    DOMString runningProfile,
-                                    DOMString displayProfile);
+callback GetProfilesCallback = void(ProfilesResponse response);
 
 // |entries| External entries.
 callback ResolveEntriesCallback =
@@ -1431,19 +1459,14 @@ callback GetRecentFilesCallback = void([instanceOf=Entry] object[] entries);
 callback GetVolumeRootCallback =
     void([instanceOf=DirectoryEntry] object rootDir);
 
-// |entries| Entries shared with crostini container.
-// |firstForSession| true the first time this is called for the session.
 callback GetCrostiniSharedPathsCallback =
-    void([instanceOf=Entry] object[] entries, boolean firstForSession);
+    void(CrostiniSharedPathResponse response);
 
 // |linux_package_info| Package info for the queried package.
 callback GetLinuxPackageInfoCallback =
     void(LinuxPackageInfo linux_package_info);
 
-// |status| Result of starting the install
-// |failure_reason| Reason for failure for a 'failed' status
-callback InstallLinuxPackageCallback = void(
-    InstallLinuxPackageResponse response, DOMString failure_reason);
+callback InstallLinuxPackageCallback = void(InstallLinuxPackageStatus status);
 
 // |apps| List of Android picker apps.
 callback GetAndroidPickerAppsCallback = void(AndroidApp[] apps);
@@ -1720,6 +1743,7 @@ interface Functions {
   // Performs drive content search.
   // |searchParams|
   // |callback|
+  [supportsPromises]
   static void searchDrive(SearchParams searchParams,
                           SearchDriveCallback callback);
 
@@ -1765,6 +1789,7 @@ interface Functions {
   static void zoom(ZoomOperationType operation);
 
   // Obtains a list of profiles that are logged-in.
+  [supportsPromises]
   static void getProfiles(GetProfilesCallback callback);
 
   // Opens inspector window.
@@ -1821,12 +1846,12 @@ interface Functions {
   // |restriction| Flag to restrict sources of recent files.
   // |fileType| Requested file type to filter recent files.
   // |query| When not empty, removes files with non-matching names.
-  // |cutoff_days| Specifies oldest modification time.
+  // |cutoffDays| Specifies oldest modification time.
   // |callback| Called with zero or more matched files.
   [nocompile, supportsPromises]
   static void getRecentFiles(SourceRestriction restriction,
                              DOMString query,
-                             long cutoff_days,
+                             long cutoffDays,
                              FileCategory fileCategory,
                              boolean invalidateCache,
                              GetRecentFilesCallback callback);
@@ -1866,7 +1891,7 @@ interface Functions {
   // |observeFirstForSession| If true, callback provides whether this is the
   // |vmName| VM to get shared paths of.
   // first time this function has been called with observeFirstForSession true.
-  [nocompile]
+  [nocompile, supportsPromises]
   static void getCrostiniSharedPaths(boolean observeFirstForSession,
                                      DOMString vmName,
                                      GetCrostiniSharedPathsCallback callback);
@@ -1877,7 +1902,7 @@ interface Functions {
                                   GetLinuxPackageInfoCallback callback);
 
   // Starts installation of a Linux package.
-  [nocompile]
+  [nocompile, supportsPromises]
   static void installLinuxPackage([instanceOf=Entry] object entry,
                                   InstallLinuxPackageCallback callback);
 

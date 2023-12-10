@@ -20,6 +20,8 @@ import {TableColumnModel} from './table_column_model.js';
 import {TableHeader} from './table_header.js';
 import {TableList} from './table_list.js';
 
+
+type RenderFunction = (item: any, table: Table) => ListItem;
 /**
  * Creates a new table element.
  */
@@ -35,11 +37,11 @@ export class Table extends HTMLDivElement {
    * The table data model.
    *
    */
-  get dataModel(): ArrayDataModel {
-    return this.list.dataModel!;
+  get dataModel(): ArrayDataModel|null {
+    return this.list.dataModel;
   }
 
-  set dataModel(dataModel: ArrayDataModel) {
+  set dataModel(dataModel: ArrayDataModel|null) {
     assert(this.list_);
     if (this.list_.dataModel !== dataModel) {
       if (this.list_.dataModel) {
@@ -137,7 +139,7 @@ export class Table extends HTMLDivElement {
    * Returns render function for row.
    * @return Render function.
    */
-  getRenderFunction(): (_: unknown, _t: Table) => HTMLElement {
+  getRenderFunction(): RenderFunction {
     return this.renderFunction_;
   }
 
@@ -158,7 +160,7 @@ export class Table extends HTMLDivElement {
       }
       cell.hidden = !cm.isVisible(i);
       cell.appendChild(
-          cm.getRenderFunction(i).call(null, dataItem, cm.getId(i), table));
+          cm.getRenderFunction(i).call(null, dataItem, cm.getId(i)!, table));
 
       listItem.appendChild(cell);
     }
@@ -169,10 +171,9 @@ export class Table extends HTMLDivElement {
 
   /**
    * Sets render function for row.
-   * @param renderFunction Render
-   *     function.
+   * @param renderFunction Render function.
    */
-  setRenderFunction(renderFunction: (_: unknown, _t: Table) => ListItem) {
+  setRenderFunction(renderFunction: RenderFunction) {
     if (renderFunction === this.renderFunction_) {
       return;
     }
@@ -192,7 +193,7 @@ export class Table extends HTMLDivElement {
   /**
    * Initializes the element.
    */
-  static decorate(element: Element) {
+  static decorate(element: Element, ..._: any[]) {
     Object.setPrototypeOf(element, Table.prototype);
     const table = element as Table;
 
@@ -327,7 +328,7 @@ export class Table extends HTMLDivElement {
       const sortDirection = sortStatus.direction == 'desc' ? 'asc' : 'desc';
       this.list.dataModel!.sort(sortStatus.field, sortDirection);
     } else {
-      this.list.dataModel!.sort(cm.getId(i), cm.getDefaultOrder(i));
+      this.list.dataModel!.sort(cm.getId(i)!, cm.getDefaultOrder(i));
     }
     if (this.selectionModel.selectedIndex == -1) {
       this.list.scrollTop = 0;
@@ -376,9 +377,11 @@ export class Table extends HTMLDivElement {
     const list = this.list;
     const listHeight = list.clientHeight;
 
-    const cm = this.columnModel_!;
+    assert(this.dataModel);
+    assert(this.columnModel_);
+    const cm = this.columnModel_;
     const dm = this.dataModel;
-    const columnId = cm.getId(index);
+    const columnId = cm.getId(index)!;
     const doc = this.ownerDocument;
     const render = cm.getRenderFunction(index);
     const table = this;
@@ -393,25 +396,22 @@ export class Table extends HTMLDivElement {
     container.style.webkitBoxOrient = 'vertical';
 
     // Ensure all needed data available.
-    dm.prepareSort(columnId, function() {
-      // Select at most MAXIMUM_ROWS_TO_MEASURE items around visible area.
-      const items = list.getItemsInViewPort(list.scrollTop, listHeight);
-      const firstIndex = Math.floor(Math.max(
-          0, (items.last + items.first - MAXIMUM_ROWS_TO_MEASURE) / 2));
-      const lastIndex =
-          Math.min(dm.length, firstIndex + MAXIMUM_ROWS_TO_MEASURE);
-      for (let i = firstIndex; i < lastIndex; i++) {
-        const item = dm.item(i);
-        const div = doc.createElement('div');
-        div.className = 'table-row-cell';
-        div.appendChild(render(item, columnId, table));
-        container.appendChild(div);
-      }
-      list.appendChild(container);
-      const width = parseFloat(window.getComputedStyle(container).width);
-      list.removeChild(container);
-      cm.setWidth(index, width);
-    });
+    // Select at most MAXIMUM_ROWS_TO_MEASURE items around visible area.
+    const items = list.getItemsInViewPort(list.scrollTop, listHeight);
+    const firstIndex = Math.floor(
+        Math.max(0, (items.last + items.first - MAXIMUM_ROWS_TO_MEASURE) / 2));
+    const lastIndex = Math.min(dm.length, firstIndex + MAXIMUM_ROWS_TO_MEASURE);
+    for (let i = firstIndex; i < lastIndex; i++) {
+      const item = dm.item(i);
+      const div = doc.createElement('div');
+      div.className = 'table-row-cell';
+      div.appendChild(render(item, columnId, table));
+      container.appendChild(div);
+    }
+    list.appendChild(container);
+    const width = parseFloat(window.getComputedStyle(container).width);
+    list.removeChild(container);
+    cm.setWidth(index, width);
   }
 
   normalizeColumns() {

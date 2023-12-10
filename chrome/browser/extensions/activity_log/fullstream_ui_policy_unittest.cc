@@ -98,11 +98,11 @@ class FullStreamUIPolicyTest : public testing::Test {
     // Submit a request to the policy to read back some data, and call the
     // checker function when results are available.  This will happen on the
     // database thread.
+    base::RunLoop run_loop;
     policy->ReadFilteredData(
         extension_id, type, api_name, page_url, arg_url, days_ago,
         base::BindOnce(&FullStreamUIPolicyTest::CheckWrapper,
-                       std::move(checker),
-                       base::RunLoop::QuitCurrentWhenIdleClosureDeprecated()));
+                       std::move(checker), run_loop.QuitClosure()));
 
     // Set up a timeout for receiving results; if we haven't received anything
     // when the timeout triggers then assume that the test is broken.
@@ -113,7 +113,7 @@ class FullStreamUIPolicyTest : public testing::Test {
 
     // Wait for results; either the checker or the timeout callbacks should
     // cause the main loop to exit.
-    base::RunLoop().Run();
+    run_loop.Run();
 
     timeout.Cancel();
   }
@@ -750,10 +750,11 @@ TEST_F(FullStreamUIPolicyTest, CapReturns) {
   }
 
   policy->Flush();
-  GetActivityLogTaskRunner()->PostTaskAndReply(
-      FROM_HERE, base::DoNothing(),
-      base::RunLoop::QuitCurrentWhenIdleClosureDeprecated());
-  base::RunLoop().Run();
+  base::RunLoop run_loop;
+  GetActivityLogTaskRunner()->PostTaskAndReply(FROM_HERE, base::DoNothing(),
+                                               run_loop.QuitClosure());
+
+  run_loop.Run();
 
   CheckReadFilteredData(
       policy, "punky", Action::ACTION_ANY, "", "", "", -1,

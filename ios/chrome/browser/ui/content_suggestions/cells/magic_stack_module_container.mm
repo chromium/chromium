@@ -6,7 +6,7 @@
 
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
-#import "ios/chrome/browser/ntp/home/features.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -67,6 +67,7 @@ const CGFloat kTitleStackViewTrailingMargin = 16.0f;
   UILabel* _title;
   UILabel* _subtitle;
   BOOL _isPlaceholder;
+  UIButton* _seeMoreButton;
 }
 
 - (instancetype)initWithType:(ContentSuggestionsModuleType)type {
@@ -124,7 +125,7 @@ const CGFloat kTitleStackViewTrailingMargin = 16.0f;
     _title.lineBreakMode = NSLineBreakByWordWrapping;
     _title.accessibilityTraits |= UIAccessibilityTraitHeader;
     _title.accessibilityIdentifier =
-        [MagicStackModuleContainer titleStringForModule:type];
+        [MagicStackModuleContainer accessibilityIdentifierForModule:type];
     [_title setContentHuggingPriority:UILayoutPriorityDefaultLow
                               forAxis:UILayoutConstraintAxisHorizontal];
     [_title
@@ -164,6 +165,8 @@ const CGFloat kTitleStackViewTrailingMargin = 16.0f;
           setContentHuggingPriority:UILayoutPriorityDefaultHigh
                             forAxis:UILayoutConstraintAxisHorizontal];
       [titleStackView addArrangedSubview:showMoreButton];
+      showMoreButton.accessibilityIdentifier = showMoreButton.titleLabel.text;
+      _seeMoreButton = showMoreButton;
     } else if ([self shouldShowSubtitle]) {
       // TODO(crbug.com/1474992): Update MagicStackModuleContainer to take an id
       // config in its initializer so the container can build itself from a
@@ -181,7 +184,7 @@ const CGFloat kTitleStackViewTrailingMargin = 16.0f;
       [_subtitle setContentHuggingPriority:UILayoutPriorityRequired
                                    forAxis:UILayoutConstraintAxisHorizontal];
       [_subtitle
-          setContentCompressionResistancePriority:UILayoutPriorityDefaultHigh
+          setContentCompressionResistancePriority:UILayoutPriorityDefaultLow
                                           forAxis:
                                               UILayoutConstraintAxisHorizontal];
       _subtitle.textAlignment =
@@ -229,9 +232,16 @@ const CGFloat kTitleStackViewTrailingMargin = 16.0f;
     }
     [stackView addArrangedSubview:contentView];
 
-    self.accessibilityElements = [self shouldShowSubtitle]
-                                     ? @[ _title, _subtitle, contentView ]
-                                     : @[ _title, contentView ];
+    NSMutableArray* accessibilityElements =
+        [[NSMutableArray alloc] initWithObjects:_title, nil];
+    if ([self shouldShowSeeMore]) {
+      [accessibilityElements addObject:_seeMoreButton];
+    }
+    [accessibilityElements addObject:contentView];
+    if ([self shouldShowSubtitle]) {
+      [accessibilityElements addObject:_subtitle];
+    }
+    self.accessibilityElements = accessibilityElements;
 
     _contentViewWidthAnchor = [contentView.widthAnchor
         constraintEqualToConstant:[self contentViewWidth]];
@@ -301,6 +311,20 @@ const CGFloat kTitleStackViewTrailingMargin = 16.0f;
     default:
       NOTREACHED();
       return @"";
+  }
+}
+
+// Returns the accessibility identifier given the Magic Stack module `type`.
++ (NSString*)accessibilityIdentifierForModule:
+    (ContentSuggestionsModuleType)type {
+  switch (type) {
+    case ContentSuggestionsModuleType::kTabResumption:
+      return kMagicStackContentSuggestionsModuleTabResumptionAccessibilityIdentifier;
+
+    default:
+      // TODO(crbug.com/1506038): the code should use constants for
+      // accessibility identifiers, and not localized strings.
+      return [self titleStringForModule:type];
   }
 }
 

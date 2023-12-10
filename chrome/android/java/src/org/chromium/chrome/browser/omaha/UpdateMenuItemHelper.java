@@ -52,11 +52,12 @@ public class UpdateMenuItemHelper {
 
     private final ObserverList<Runnable> mObservers = new ObserverList<>();
 
-    private final Callback<UpdateStatusProvider.UpdateStatus> mUpdateCallback = status -> {
-        mStatus = status;
-        handleStateChanged();
-        pingObservers();
-    };
+    private final Callback<UpdateStatusProvider.UpdateStatus> mUpdateCallback =
+            status -> {
+                mStatus = status;
+                handleStateChanged();
+                pingObservers();
+            };
 
     /**
      * The current state of updates for Chrome.  This can change during runtime and may be {@code
@@ -98,9 +99,11 @@ public class UpdateMenuItemHelper {
         if (!mObservers.addObserver(observer)) return;
 
         if (mStatus != null) {
-            PostTask.postTask(TaskTraits.UI_DEFAULT, () -> {
-                if (mObservers.hasObserver(observer)) observer.run();
-            });
+            PostTask.postTask(
+                    TaskTraits.UI_DEFAULT,
+                    () -> {
+                        if (mObservers.hasObserver(observer)) observer.run();
+                    });
             return;
         }
 
@@ -129,14 +132,14 @@ public class UpdateMenuItemHelper {
                 if (TextUtils.isEmpty(mStatus.updateUrl)) return;
 
                 try {
-                    UpdateStatusProvider.getInstance().startIntentUpdate(
-                            activity, false /* newTask */);
+                    UpdateStatusProvider.getInstance()
+                            .startIntentUpdate(activity, /* newTask= */ false);
                 } catch (ActivityNotFoundException e) {
                     Log.e(TAG, "Failed to launch Activity for: %s", mStatus.updateUrl);
                 }
                 break;
             case UpdateState.UNSUPPORTED_OS_VERSION:
-            // Intentional fall through.
+                // Intentional fall through.
             default:
                 return;
         }
@@ -144,22 +147,25 @@ public class UpdateMenuItemHelper {
         // If the update menu item is showing because it was forced on through about://flags
         // then mLatestVersion may be null.
         if (mStatus.latestVersion != null) {
-            getPrefService().setString(
-                    Pref.LATEST_VERSION_WHEN_CLICKED_UPDATE_MENU_ITEM, mStatus.latestVersion);
+            getPrefService()
+                    .setString(
+                            Pref.LATEST_VERSION_WHEN_CLICKED_UPDATE_MENU_ITEM,
+                            mStatus.latestVersion);
         }
 
         handleStateChanged();
     }
 
-    /**
-     * Called when the menu containing the update menu item is dismissed.
-     */
+    /** Called when the menu containing the update menu item is dismissed. */
     public void onMenuDismissed() {
         mMenuDismissedRunnableExecuted = false;
         // Post a task to record the item clicked histogram. Post task is used so that the runnable
         // executes after #onMenuItemClicked is called (if it's going to be called).
-        Choreographer.getInstance().postFrameCallback(
-                (long frameTimeNanos) -> { mMenuDismissedRunnableExecuted = true; });
+        Choreographer.getInstance()
+                .postFrameCallback(
+                        (long frameTimeNanos) -> {
+                            mMenuDismissedRunnableExecuted = true;
+                        });
     }
 
     /**
@@ -185,10 +191,12 @@ public class UpdateMenuItemHelper {
             case UpdateState.UPDATE_AVAILABLE:
                 // The badge is hidden if the update menu item has been clicked until there is an
                 // even newer version of Chrome available.
-                showBadge |= !TextUtils.equals(
-                        getPrefService().getString(
-                                Pref.LATEST_VERSION_WHEN_CLICKED_UPDATE_MENU_ITEM),
-                        mStatus.latestUnsupportedVersion);
+                showBadge |=
+                        !TextUtils.equals(
+                                getPrefService()
+                                        .getString(
+                                                Pref.LATEST_VERSION_WHEN_CLICKED_UPDATE_MENU_ITEM),
+                                mStatus.latestUnsupportedVersion);
 
                 if (showBadge) {
                     mMenuUiState.buttonState = new MenuButtonState();
@@ -216,8 +224,10 @@ public class UpdateMenuItemHelper {
 
                 // In case the user has been upgraded since last time they tapped the toolbar badge
                 // we should show the badge again.
-                showBadge |= !TextUtils.equals(
-                        BuildInfo.getInstance().versionName, mStatus.latestUnsupportedVersion);
+                showBadge |=
+                        !TextUtils.equals(
+                                BuildInfo.getInstance().versionName,
+                                mStatus.latestUnsupportedVersion);
 
                 if (showBadge) {
                     mMenuUiState.buttonState = new MenuButtonState();
@@ -238,7 +248,7 @@ public class UpdateMenuItemHelper {
                 mMenuUiState.itemState.enabled = false;
                 break;
             case UpdateState.NONE:
-            // Intentional fall through.
+                // Intentional fall through.
             default:
                 break;
         }

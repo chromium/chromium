@@ -89,6 +89,9 @@ class CONTENT_EXPORT ServiceWorkerFetchDispatcher {
       scoped_refptr<ServiceWorkerContextWrapper> context_wrapper,
       int frame_tree_node_id);
 
+  static void ForceDisableHighPriorityFetchResponseCallbackForTesting(
+      bool force_disable);
+
   void set_race_network_request_token(base::UnguessableToken token) {
     race_network_request_token_ = token;
   }

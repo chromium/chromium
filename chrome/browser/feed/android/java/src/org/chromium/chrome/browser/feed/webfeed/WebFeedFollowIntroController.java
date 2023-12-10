@@ -91,6 +91,7 @@ public class WebFeedFollowIntroController {
     public interface Clock {
         long currentTimeMillis();
     }
+
     private Clock mClock = System::currentTimeMillis;
 
     private final Activity mActivity;
@@ -129,72 +130,97 @@ public class WebFeedFollowIntroController {
      * @param dialogManager {@link ModalDialogManager} for managing the dialog.
      * @param snackbarManager The {@link SnackbarManager} to show snackbars.
      */
-    public WebFeedFollowIntroController(Activity activity, AppMenuHandler appMenuHandler,
-            ObservableSupplier<Tab> tabSupplier, View menuButtonAnchorView,
-            FeedLauncher feedLauncher, ModalDialogManager dialogManager,
+    public WebFeedFollowIntroController(
+            Activity activity,
+            AppMenuHandler appMenuHandler,
+            ObservableSupplier<Tab> tabSupplier,
+            View menuButtonAnchorView,
+            FeedLauncher feedLauncher,
+            ModalDialogManager dialogManager,
             SnackbarManager snackbarManager) {
         mRecommendationFollowAcceleratorController =
-                new WebFeedRecommendationFollowAcceleratorController(activity, appMenuHandler,
-                        tabSupplier, menuButtonAnchorView, feedLauncher, dialogManager,
+                new WebFeedRecommendationFollowAcceleratorController(
+                        activity,
+                        appMenuHandler,
+                        tabSupplier,
+                        menuButtonAnchorView,
+                        feedLauncher,
+                        dialogManager,
                         snackbarManager);
 
         mActivity = activity;
         mTabSupplier = tabSupplier;
         mFeatureEngagementTracker =
                 TrackerFactory.getTrackerForProfile(Profile.getLastUsedRegularProfile());
-        mWebFeedSnackbarController = new WebFeedSnackbarController(
-                activity, feedLauncher, dialogManager, snackbarManager);
-        mWebFeedFollowIntroView = new WebFeedFollowIntroView(mActivity, appMenuHandler,
-                menuButtonAnchorView, mFeatureEngagementTracker, this::introWasDismissed);
+        mWebFeedSnackbarController =
+                new WebFeedSnackbarController(
+                        activity, feedLauncher, dialogManager, snackbarManager);
+        mWebFeedFollowIntroView =
+                new WebFeedFollowIntroView(
+                        mActivity,
+                        appMenuHandler,
+                        menuButtonAnchorView,
+                        mFeatureEngagementTracker,
+                        this::introWasDismissed);
 
-        mAppearanceThresholdMillis = TimeUnit.MINUTES.toMillis(
-                ChromeFeatureList.getFieldTrialParamByFeatureAsInt(ChromeFeatureList.WEB_FEED,
-                        PARAM_APPEARANCE_THRESHOLD_MINUTES, DEFAULT_APPEARANCE_THRESHOLD_MINUTES));
+        mAppearanceThresholdMillis =
+                TimeUnit.MINUTES.toMillis(
+                        ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
+                                ChromeFeatureList.WEB_FEED,
+                                PARAM_APPEARANCE_THRESHOLD_MINUTES,
+                                DEFAULT_APPEARANCE_THRESHOLD_MINUTES));
 
-        mTabObserver = new EmptyTabObserver() {
-            @Override
-            public void onPageLoadStarted(Tab tab, GURL url) {
-                mRecommendationFetcher.abort();
-                mRecommendationFollowAcceleratorController.dismissBubble();
-                mWebFeedFollowIntroView.dismissBubble();
-            }
-
-            @Override
-            public void onDidFinishNavigationInPrimaryMainFrame(
-                    Tab tab, NavigationHandle navigationHandle) {
-                mRecommendationFollowAcceleratorController.onDidFinishNavigation(
-                        tab, navigationHandle);
-            }
-
-            @Override
-            public void didFirstVisuallyNonEmptyPaint(Tab tab) {
-                // Note that we're using didFirstVisuallyNonEmptyPaint as a proxy for a page load
-                // event because some pages never fully load even though they are perfectly
-                // interactive.
-                GURL url = tab.getUrl();
-                // TODO(crbug/1152592): Also check for certificate errors or SafeBrowser warnings.
-                if (tab.isIncognito()) {
-                    Log.i(TAG, "No intro: tab is incognito");
-                    return;
-                } else if (!(url.getScheme().equals("http") || url.getScheme().equals("https"))) {
-                    Log.i(TAG,
-                            "No intro: URL scheme is not HTTP or HTTPS: "
-                                    + url.getValidSpecOrEmpty());
-                    return;
-                }
-
-                if (mRecommendationFollowAcceleratorController.showIfPageIsFromRecommendation(
-                            tab)) {
-                    return;
-                }
-
-                mRecommendationFetcher.beginFetch(tab, url, result -> {
-                    if (result != null) {
-                        maybeShowFollowIntro(result);
+        mTabObserver =
+                new EmptyTabObserver() {
+                    @Override
+                    public void onPageLoadStarted(Tab tab, GURL url) {
+                        mRecommendationFetcher.abort();
+                        mRecommendationFollowAcceleratorController.dismissBubble();
+                        mWebFeedFollowIntroView.dismissBubble();
                     }
-                });
-            }
-        };
+
+                    @Override
+                    public void onDidFinishNavigationInPrimaryMainFrame(
+                            Tab tab, NavigationHandle navigationHandle) {
+                        mRecommendationFollowAcceleratorController.onDidFinishNavigation(
+                                tab, navigationHandle);
+                    }
+
+                    @Override
+                    public void didFirstVisuallyNonEmptyPaint(Tab tab) {
+                        // Note that we're using didFirstVisuallyNonEmptyPaint as a proxy for a page
+                        // load event because some pages never fully load even though they are
+                        // perfectly interactive.
+                        GURL url = tab.getUrl();
+                        // TODO(crbug/1152592): Also check for certificate errors or SafeBrowser
+                        // warnings.
+                        if (tab.isIncognito()) {
+                            Log.i(TAG, "No intro: tab is incognito");
+                            return;
+                        } else if (!(url.getScheme().equals("http")
+                                || url.getScheme().equals("https"))) {
+                            Log.i(
+                                    TAG,
+                                    "No intro: URL scheme is not HTTP or HTTPS: "
+                                            + url.getValidSpecOrEmpty());
+                            return;
+                        }
+
+                        if (mRecommendationFollowAcceleratorController
+                                .showIfPageIsFromRecommendation(tab)) {
+                            return;
+                        }
+
+                        mRecommendationFetcher.beginFetch(
+                                tab,
+                                url,
+                                result -> {
+                                    if (result != null) {
+                                        maybeShowFollowIntro(result);
+                                    }
+                                });
+                    }
+                };
         mCurrentTabObserver = new CurrentTabObserver(tabSupplier, mTabObserver, this::swapTabs);
     }
 
@@ -251,8 +277,8 @@ public class WebFeedFollowIntroController {
     }
 
     private boolean isIntroStyle(String style) {
-        return ChromeFeatureList
-                .getFieldTrialParamByFeature(ChromeFeatureList.WEB_FEED, PARAM_INTRO_STYLE)
+        return ChromeFeatureList.getFieldTrialParamByFeature(
+                        ChromeFeatureList.WEB_FEED, PARAM_INTRO_STYLE)
                 .equals(style);
     }
 
@@ -263,23 +289,27 @@ public class WebFeedFollowIntroController {
     }
 
     private void maybeShowAccelerator(RecommendedWebFeedInfo recommendedInfo) {
-        GestureDetector gestureDetector = new GestureDetector(
-                mActivity.getApplicationContext(), new GestureDetector.SimpleOnGestureListener() {
-                    private boolean mPressed;
-                    @Override
-                    public boolean onSingleTapUp(MotionEvent motionEvent) {
-                        if (!mPressed) {
-                            mPressed = true;
-                            performFollowWithAccelerator(recommendedInfo);
-                        }
-                        return true;
-                    }
-                });
-        View.OnTouchListener onTouchListener = (view, motionEvent) -> {
-            view.performClick();
-            gestureDetector.onTouchEvent(motionEvent);
-            return true;
-        };
+        GestureDetector gestureDetector =
+                new GestureDetector(
+                        mActivity.getApplicationContext(),
+                        new GestureDetector.SimpleOnGestureListener() {
+                            private boolean mPressed;
+
+                            @Override
+                            public boolean onSingleTapUp(MotionEvent motionEvent) {
+                                if (!mPressed) {
+                                    mPressed = true;
+                                    performFollowWithAccelerator(recommendedInfo);
+                                }
+                                return true;
+                            }
+                        });
+        View.OnTouchListener onTouchListener =
+                (view, motionEvent) -> {
+                    view.performClick();
+                    gestureDetector.onTouchEvent(motionEvent);
+                    return true;
+                };
 
         mWebFeedFollowIntroView.showAccelerator(
                 onTouchListener, () -> introWasShown(recommendedInfo), this::introWasNotShown);
@@ -295,24 +325,36 @@ public class WebFeedFollowIntroController {
         FeedServiceBridge.reportOtherUserAction(
                 StreamKind.UNKNOWN, FeedUserActionType.TAPPED_FOLLOW_ON_FOLLOW_ACCELERATOR);
         GURL url = currentTab.getUrl();
-        WebFeedBridge.followFromUrl(currentTab, url,
+        WebFeedBridge.followFromUrl(
+                currentTab,
+                url,
                 WebFeedBridge.CHANGE_REASON_WEB_PAGE_ACCELERATOR,
-                results -> mWebFeedFollowIntroView.hideLoadingUI(new LoadingView.Observer() {
-                    @Override
-                    public void onShowLoadingUIComplete() {}
+                results ->
+                        mWebFeedFollowIntroView.hideLoadingUI(
+                                new LoadingView.Observer() {
+                                    @Override
+                                    public void onShowLoadingUIComplete() {}
 
-                    @Override
-                    public void onHideLoadingUIComplete() {
-                        mWebFeedFollowIntroView.dismissBubble();
-                        if (results.requestStatus == WebFeedSubscriptionRequestStatus.SUCCESS) {
-                            mWebFeedFollowIntroView.showFollowingBubble();
-                        }
-                        byte[] followId = results.metadata != null ? results.metadata.id : null;
-                        mWebFeedSnackbarController.showPostFollowHelp(currentTab, results, followId,
-                                url, recommendedInfo.title,
-                                WebFeedBridge.CHANGE_REASON_WEB_PAGE_ACCELERATOR);
-                    }
-                }));
+                                    @Override
+                                    public void onHideLoadingUIComplete() {
+                                        mWebFeedFollowIntroView.dismissBubble();
+                                        if (results.requestStatus
+                                                == WebFeedSubscriptionRequestStatus.SUCCESS) {
+                                            mWebFeedFollowIntroView.showFollowingBubble();
+                                        }
+                                        byte[] followId =
+                                                results.metadata != null
+                                                        ? results.metadata.id
+                                                        : null;
+                                        mWebFeedSnackbarController.showPostFollowHelp(
+                                                currentTab,
+                                                results,
+                                                followId,
+                                                url,
+                                                recommendedInfo.title,
+                                                WebFeedBridge.CHANGE_REASON_WEB_PAGE_ACCELERATOR);
+                                    }
+                                }));
     }
 
     /**
@@ -330,18 +372,22 @@ public class WebFeedFollowIntroController {
         }
 
         long currentTimeMillis = mClock.currentTimeMillis();
-        long timeSinceLastShown = currentTimeMillis
-                - mSharedPreferencesManager.readLong(
-                        ChromePreferenceKeys.WEB_FEED_INTRO_LAST_SHOWN_TIME_MS);
-        long timeSinceLastShownForWebFeed = currentTimeMillis
-                - mSharedPreferencesManager.readLong(
-                        getWebFeedIntroWebFeedIdShownTimeMsKey(recommendedInfo.webFeedId));
-        long previousShowCount = mSharedPreferencesManager.readLong(
-                getWebFeedIntroWebFeedIdShownCountKey(recommendedInfo.webFeedId));
+        long timeSinceLastShown =
+                currentTimeMillis
+                        - mSharedPreferencesManager.readLong(
+                                ChromePreferenceKeys.WEB_FEED_INTRO_LAST_SHOWN_TIME_MS);
+        long timeSinceLastShownForWebFeed =
+                currentTimeMillis
+                        - mSharedPreferencesManager.readLong(
+                                getWebFeedIntroWebFeedIdShownTimeMsKey(recommendedInfo.webFeedId));
+        long previousShowCount =
+                mSharedPreferencesManager.readLong(
+                        getWebFeedIntroWebFeedIdShownCountKey(recommendedInfo.webFeedId));
         if (timeSinceLastShown < mAppearanceThresholdMillis
                 || timeSinceLastShownForWebFeed < WEB_FEED_ID_APPEARANCE_THRESHOLD_MILLIS
                 || previousShowCount >= WEB_FEED_ID_MAX_APPEARANCES) {
-            Log.i(TAG,
+            Log.i(
+                    TAG,
                     "No intro: enoughTimeSinceLastShown=%s, "
                             + "enoughTimeSinceLastShownForWebFeed=%s"
                             + "tooManyShows=%s",
@@ -367,6 +413,7 @@ public class WebFeedFollowIntroController {
     boolean getIntroShownForTesting() {
         return mIntroShownForTesting;
     }
+
     void clearIntroShownForTesting() {
         mIntroShownForTesting = false;
     }
@@ -381,7 +428,7 @@ public class WebFeedFollowIntroController {
 
     @VisibleForTesting
     WebFeedRecommendationFollowAcceleratorController
-    getRecommendationFollowAcceleratorController() {
+            getRecommendationFollowAcceleratorController() {
         return mRecommendationFollowAcceleratorController;
     }
 
@@ -390,6 +437,7 @@ public class WebFeedFollowIntroController {
         private final int mDailyVisitMin;
         private final PrefService mPrefService;
         private Request mRequest;
+
         private static class Request {
             public Tab tab;
             public GURL url;
@@ -399,10 +447,14 @@ public class WebFeedFollowIntroController {
 
         RecommendationInfoFetcher(PrefService prefService) {
             mPrefService = prefService;
-            mNumVisitMin = ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
-                    ChromeFeatureList.WEB_FEED, PARAM_NUM_VISIT_MIN, DEFAULT_NUM_VISIT_MIN);
-            mDailyVisitMin = ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
-                    ChromeFeatureList.WEB_FEED, PARAM_DAILY_VISIT_MIN, DEFAULT_DAILY_VISIT_MIN);
+            mNumVisitMin =
+                    ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
+                            ChromeFeatureList.WEB_FEED, PARAM_NUM_VISIT_MIN, DEFAULT_NUM_VISIT_MIN);
+            mDailyVisitMin =
+                    ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
+                            ChromeFeatureList.WEB_FEED,
+                            PARAM_DAILY_VISIT_MIN,
+                            DEFAULT_DAILY_VISIT_MIN);
         }
 
         /**
@@ -419,9 +471,9 @@ public class WebFeedFollowIntroController {
             request.callback = callback;
             request.fetchStartTime = System.nanoTime();
 
-            PostTask.postDelayedTask(TaskTraits.UI_DEFAULT,
-                    ()
-                            -> {
+            PostTask.postDelayedTask(
+                    TaskTraits.UI_DEFAULT,
+                    () -> {
                         // Skip visit counts check if debug mode is enabled.
                         if (mPrefService.getBoolean(Pref.ENABLE_WEB_FEED_FOLLOW_INTRO_DEBUG)) {
                             Log.i(TAG, "Intro debug mode is enabled: some checks will be skipped");
@@ -430,13 +482,13 @@ public class WebFeedFollowIntroController {
                             fetchVisitCounts(request);
                         }
                     },
-                    ChromeFeatureList.getFieldTrialParamByFeatureAsInt(ChromeFeatureList.WEB_FEED,
-                            PARAM_WAIT_TIME_MILLIS, DEFAULT_WAIT_TIME_MILLIS));
+                    ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
+                            ChromeFeatureList.WEB_FEED,
+                            PARAM_WAIT_TIME_MILLIS,
+                            DEFAULT_WAIT_TIME_MILLIS));
         }
 
-        /**
-         * Abort a previous `beginFetch()` call, its callback will not be invoked.
-         */
+        /** Abort a previous `beginFetch()` call, its callback will not be invoked. */
         void abort() {
             mRequest = null;
         }
@@ -445,19 +497,26 @@ public class WebFeedFollowIntroController {
             if (!prerequisitesMet(request)) {
                 return;
             }
-            WebFeedBridge.getVisitCountsToHost(request.url, result -> {
-                boolean meetsVisitRequirement =
-                        result.visits >= mNumVisitMin && result.dailyVisits >= mDailyVisitMin;
-                if (!meetsVisitRequirement) {
-                    Log.i(TAG,
-                            "No intro: visit requirement not met. totalVisits=%s (minToShow=%s), "
-                                    + " dailyVisits=%s (minToShow=%s)",
-                            result.visits, mNumVisitMin, result.dailyVisits, mDailyVisitMin);
-                    sendResult(request, null);
-                    return;
-                }
-                fetchWebFeedInfoIfRecommended(request);
-            });
+            WebFeedBridge.getVisitCountsToHost(
+                    request.url,
+                    result -> {
+                        boolean meetsVisitRequirement =
+                                result.visits >= mNumVisitMin
+                                        && result.dailyVisits >= mDailyVisitMin;
+                        if (!meetsVisitRequirement) {
+                            Log.i(
+                                    TAG,
+                                    "No intro: visit requirement not met. totalVisits=%s (minToShow=%s), "
+                                            + " dailyVisits=%s (minToShow=%s)",
+                                    result.visits,
+                                    mNumVisitMin,
+                                    result.dailyVisits,
+                                    mDailyVisitMin);
+                            sendResult(request, null);
+                            return;
+                        }
+                        fetchWebFeedInfoIfRecommended(request);
+                    });
         }
 
         private void fetchWebFeedInfoIfRecommended(Request request) {
@@ -466,40 +525,51 @@ public class WebFeedFollowIntroController {
                 return;
             }
 
-            Callback<WebFeedBridge.WebFeedMetadata> metadata_callback = result -> {
-                // Shouldn't be recommended if there's no metadata, ID doesn't exist, or if it is
-                // already followed.
-                if (result != null && result.id != null && result.id.length > 0
-                        && result.isRecommended
-                        && result.subscriptionStatus == WebFeedSubscriptionStatus.NOT_SUBSCRIBED) {
-                    RecommendedWebFeedInfo recommendedInfo = new RecommendedWebFeedInfo();
-                    recommendedInfo.webFeedId = result.id;
-                    recommendedInfo.title = result.title;
-                    recommendedInfo.url = request.url;
+            Callback<WebFeedBridge.WebFeedMetadata> metadata_callback =
+                    result -> {
+                        // Shouldn't be recommended if there's no metadata, ID doesn't exist, or if
+                        // it is already followed.
+                        if (result != null
+                                && result.id != null
+                                && result.id.length > 0
+                                && result.isRecommended
+                                && result.subscriptionStatus
+                                        == WebFeedSubscriptionStatus.NOT_SUBSCRIBED) {
+                            RecommendedWebFeedInfo recommendedInfo = new RecommendedWebFeedInfo();
+                            recommendedInfo.webFeedId = result.id;
+                            recommendedInfo.title = result.title;
+                            recommendedInfo.url = request.url;
 
-                    sendResult(request, recommendedInfo);
-                } else {
-                    if (result != null) {
-                        Log.i(TAG,
-                                "No intro: Web Feed exists, but not suitable. "
-                                        + "recommended=%s status=%s",
-                                result.isRecommended, result.subscriptionStatus);
-                    } else {
-                        Log.i(TAG, "No intro: No web feed metadata found");
-                    }
+                            sendResult(request, recommendedInfo);
+                        } else {
+                            if (result != null) {
+                                Log.i(
+                                        TAG,
+                                        "No intro: Web Feed exists, but not suitable. "
+                                                + "recommended=%s status=%s",
+                                        result.isRecommended,
+                                        result.subscriptionStatus);
+                            } else {
+                                Log.i(TAG, "No intro: No web feed metadata found");
+                            }
 
-                    sendResult(request, null);
-                }
-            };
+                            sendResult(request, null);
+                        }
+                    };
 
-            WebFeedBridge.getWebFeedMetadataForPage(request.tab, request.url,
-                    WebFeedPageInformationRequestReason.FOLLOW_RECOMMENDATION, metadata_callback);
+            WebFeedBridge.getWebFeedMetadataForPage(
+                    request.tab,
+                    request.url,
+                    WebFeedPageInformationRequestReason.FOLLOW_RECOMMENDATION,
+                    metadata_callback);
         }
+
         private void sendResult(Request request, RecommendedWebFeedInfo result) {
             if (mRequest == request) {
                 request.callback.onResult(prerequisitesMet(request) ? result : null);
             }
         }
+
         private boolean prerequisitesMet(Request request) {
             return mRequest == request && request.tab.getUrl().equals(request.url);
         }

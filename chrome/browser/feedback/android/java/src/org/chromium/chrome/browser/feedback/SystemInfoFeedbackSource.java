@@ -33,16 +33,22 @@ public class SystemInfoFeedbackSource extends AsyncFeedbackSourceAdapter<StatFs>
 
     @Override
     public Map<String, String> getFeedback() {
-        Map<String, String> feedback = CollectionUtil.newHashMap(
-                Pair.create(
-                        "CPU Architecture", SystemInfoFeedbackSourceJni.get().getCpuArchitecture()),
-                Pair.create("Available Memory (MB)",
-                        Integer.toString(SystemInfoFeedbackSourceJni.get().getAvailableMemoryMB())),
-                Pair.create("Total Memory (MB)",
-                        Integer.toString(SystemInfoFeedbackSourceJni.get().getTotalMemoryMB())),
-                Pair.create("GPU Vendor", SystemInfoFeedbackSourceJni.get().getGpuVendor()),
-                Pair.create("GPU Model", SystemInfoFeedbackSourceJni.get().getGpuModel()),
-                Pair.create("UI Locale", LocaleUtils.getDefaultLocaleString()));
+        Map<String, String> feedback =
+                CollectionUtil.newHashMap(
+                        Pair.create(
+                                "CPU Architecture",
+                                SystemInfoFeedbackSourceJni.get().getCpuArchitecture()),
+                        Pair.create(
+                                "Available Memory (MB)",
+                                Integer.toString(
+                                        SystemInfoFeedbackSourceJni.get().getAvailableMemoryMB())),
+                        Pair.create(
+                                "Total Memory (MB)",
+                                Integer.toString(
+                                        SystemInfoFeedbackSourceJni.get().getTotalMemoryMB())),
+                        Pair.create("GPU Vendor", SystemInfoFeedbackSourceJni.get().getGpuVendor()),
+                        Pair.create("GPU Model", SystemInfoFeedbackSourceJni.get().getGpuModel()),
+                        Pair.create("UI Locale", LocaleUtils.getDefaultLocaleString()));
 
         StatFs statFs = getResult();
         if (statFs != null) {
@@ -62,9 +68,13 @@ public class SystemInfoFeedbackSource extends AsyncFeedbackSourceAdapter<StatFs>
     @NativeMethods
     interface Natives {
         String getCpuArchitecture();
+
         String getGpuVendor();
+
         String getGpuModel();
+
         int getAvailableMemoryMB();
+
         int getTotalMemoryMB();
     }
 }

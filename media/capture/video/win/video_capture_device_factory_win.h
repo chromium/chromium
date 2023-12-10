@@ -114,6 +114,10 @@ class CAPTURE_EXPORT VideoCaptureDeviceFactoryWin
   std::vector<VideoCaptureDeviceInfo> GetDevicesInfoDirectShow(
       const std::vector<VideoCaptureDeviceInfo>& known_devices);
 
+  void UpdateDevicesInfoAvailability(
+      std::vector<VideoCaptureDeviceInfo>* devices_info);
+  void CreateUsageMonitorAndReportHandler();
+
   bool use_media_foundation_;
   bool use_d3d11_with_media_foundation_;
 
@@ -125,6 +129,11 @@ class CAPTURE_EXPORT VideoCaptureDeviceFactoryWin
   scoped_refptr<ComThreadData> com_thread_data_;
   // For hardware acceleration in MediaFoundation capture engine
   scoped_refptr<DXGIDeviceManager> dxgi_device_manager_;
+
+  class UsageReportHandler;
+  scoped_refptr<UsageReportHandler> report_handler_;
+  Microsoft::WRL::ComPtr<IMFSensorActivityMonitor> monitor_;
+
   base::WeakPtrFactory<VideoCaptureDeviceFactoryWin> weak_ptr_factory_{this};
 };
 

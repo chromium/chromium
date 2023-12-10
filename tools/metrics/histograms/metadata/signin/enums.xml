@@ -1,0 +1,763 @@
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+
+This file describes the enumerations referenced by entries in histograms.xml for
+this directory. Some enums may instead be listed in the central enums.xml file
+at src/tools/metrics/histograms/enums.xml when multiple files use them.
+
+For best practices on writing enumerations descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md#Enum-Histograms
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<!-- Enum types -->
+
+<enums>
+
+<enum name="AccountCapabilitiesFetchResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Failed to get an access token"/>
+  <int value="2" label="Failed to parse the response"/>
+  <int value="3" label="OAuth error"/>
+  <int value="4" label="Network error"/>
+  <int value="5" label="Request was cancelled"/>
+</enum>
+
+<enum name="AccountCapabilitiesGetFromSystemLibraryResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Error (Generic)"/>
+  <int value="10" label="Error (Api Request Failed)"/>
+  <int value="11" label="Error (Api Error)"/>
+  <int value="12" label="Error (Api Not Permitted)"/>
+  <int value="13" label="Error (Api Unknown Capability)"/>
+  <int value="14" label="Error (Api Failed To Sync)"/>
+  <int value="15" label="Error (Api Not Available)"/>
+  <int value="20" label="Error (Missing Capability)"/>
+  <int value="21" label="Error (Unexpected Value)"/>
+</enum>
+
+<enum name="AccountConsistencyPromoAction">
+  <int value="0" label="SuppressedNoAccounts">
+    Promo is not shown as there are no accounts on device.
+  </int>
+  <int value="1" label="DismissedBack">
+    User has dismissed the promo by tapping back button.
+  </int>
+  <int value="2" label="AddAccountStarted">
+    User has tapped |Add account to device| from expanded account list.
+  </int>
+  <int value="3" label="StartedIncognitoSession (deprecated)">
+    Deprecated 05/2021. User tapped the button from the expanded account list to
+    open the incognito interstitial then confirmed opening the page in the
+    incognito tab by tapping |Continue| in the incognito interstitial.
+  </int>
+  <int value="4" label="SignedInWithDefaultAccount">
+    User has selected the default account and signed in with it.
+  </int>
+  <int value="5" label="SignedInWithNonDefaultAccount">
+    User has selected one of the non default account and signed in with it.
+  </int>
+  <int value="6" label="Shown">The promo was shown to user.</int>
+  <int value="7" label="SuppressedSigninNotAllowed">
+    Promo is not shown due to sign-in being disallowed either by an enterprise
+    policy or by |Allow Chrome sign-in| toggle.
+  </int>
+  <int value="8" label="SignedInWithAddedAccount">
+    User has added an account and signed in with this account.
+  </int>
+  <int value="9" label="DismissedScrim">
+    User has dismissed the promo by tapping on the scrim above the bottom sheet.
+  </int>
+  <int value="10" label="DismissedSwipeDown">
+    User has dismissed the promo by swiping down the bottom sheet.
+  </int>
+  <int value="11" label="DismissedOther">
+    User has dismissed the promo by other means.
+  </int>
+  <int value="12" label="AuthErrorShown">
+    The auth error screen was shown to the user.
+  </int>
+  <int value="13" label="GenericErrorShown">
+    The generic error screen was shown to the user.
+  </int>
+  <int value="14" label="DismissedButton">
+    User has dismissed the promo by tapping on the dismissal button in the
+    bottom sheet.
+  </int>
+  <int value="15" label="AddAccountCompleted">
+    User has completed the account addition flow triggered from the bottom
+    sheet.
+  </int>
+  <int value="16" label="SuppressedConsecutiveDismissals">
+    The bottom sheet was suppressed as the user hit consecutive active dismissal
+    limit.
+  </int>
+  <int value="17" label="SigninTimeoutErrorShown">
+    The sign-in time out error was shown to the user.
+  </int>
+  <int value="18" label="SuppressedAlreadySignedIn">
+    The web sign-in is not shown because the user is already signed in.
+  </int>
+  <int value="19" label="IOSAuthFlowCancelledOrFailed">
+    The sign-in is cancelled or failed on iOS.
+  </int>
+  <int value="20" label="ShownWithNoDeviceAccount">
+    The promo was shown to a user without an existing on-device account.
+  </int>
+  <int value="21" label="AddAccountStartedWithNoDeviceAccount">
+    User has tapped |Sign In…| from the no-default-account promo, starting an
+    add-account flow.
+  </int>
+  <int value="22" label="AddAccountCompletedWithNoDeviceAccount">
+    User has added an account from a state without any on-device account.
+  </int>
+  <int value="23" label="SignedInWithNoDeviceAccount">
+    User has signed in to Chrome, from a state without any on-device account.
+  </int>
+</enum>
+
+<enum name="AccountReauthenticationEvent">
+  <int value="0" label="STARTED"/>
+  <int value="1" label="SUCCESS"/>
+  <int value="2" label="SUCCESS_RECENT_AUTHENTICATION"/>
+  <int value="3" label="REJECTED"/>
+  <int value="4" label="ERROR"/>
+</enum>
+
+<enum name="AccountRelation">
+  <int value="0" label="Empty cookie jar"/>
+  <int value="1" label="No signed in, single signed out match"/>
+  <int value="2" label="No signed in, one of multiple signed out match"/>
+  <int value="3" label="No signed in with signed out, no match"/>
+  <int value="4" label="Single signed in match, no signed out"/>
+  <int value="5" label="Signle signed in match with signed out"/>
+  <int value="6" label="One of multiple signed in match, any signed out"/>
+  <int value="7" label="With signed in, one of signed out match"/>
+  <int value="8" label="With signed in, no match"/>
+</enum>
+
+<enum name="BooleanHadSyncAccount">
+  <int value="0" label="Did not have a sync-enabled account before"/>
+  <int value="1" label="Had at least one sync-enabled account before"/>
+</enum>
+
+<enum name="BooleanIsShared">
+  <int value="0" label="Not Shared"/>
+  <int value="1" label="Is Shared"/>
+</enum>
+
+<enum name="BooleanShouldShow">
+  <int value="0" label="Should not show"/>
+  <int value="1" label="Should show"/>
+</enum>
+
+<enum name="BoundSessionCredentialsCookieRotationResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Connection error"/>
+  <int value="2" label="Server transient error"/>
+  <int value="3" label="Server persistent error"/>
+  <int value="4" label="Server unexpected response, expected cookies not set"/>
+  <int value="5" label="Challenge unexpected format"/>
+  <int value="6" label="Challenge requests limit exceeded"/>
+  <int value="7" label="Sign challenge failed"/>
+</enum>
+
+<enum name="BoundSessionCredentialsSessionRegistrationResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Failed to generate a registration token"/>
+  <int value="2" label="Network error"/>
+  <int value="3" label="Server response contained an error"/>
+  <int value="4" label="Failed to parse the server response"/>
+  <int value="5" label="Required field missing"/>
+  <int value="6" label="Invalid session parameters"/>
+  <int value="7" label="Required credential field missing"/>
+</enum>
+
+<enum name="GaiaCookieStateOnSignedInNavigation">
+  <int value="0" label="Gaia cookie is present"/>
+  <int value="1" label="Gaia cookie is missing from Google-associated domain"/>
+  <int value="2" label="Gaia cookie is missing from Add Session"/>
+  <int value="3" label="Gaia cookie is restored, Infobar shown"/>
+</enum>
+
+<enum name="GaiaRemoteConsentFlowResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Window was closed"/>
+  <int value="2" label="Failed to load the consent page"/>
+  <int value="3" label="Failed to set accounts in cookies (deprecated 07/23)"/>
+  <int value="4" label="Failed to parse the consent result"/>
+  <int value="5" label="Consent wasn't granted"/>
+  <int value="6" label="User navigated away (deprecated 07/23)"/>
+  <int value="7" label="Cannot create a window"/>
+</enum>
+
+<enum name="GetAuthTokenResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="kInvalidClientId"/>
+  <int value="2" label="kEmptyScopes"/>
+  <int value="3" label="kOAuth2InvalidScopes (deprecated 02/2021)"/>
+  <int value="4" label="kGaiaFlowAuthFailure (deprecated 02/2021)"/>
+  <int value="5" label="kMintTokenAuthFailure"/>
+  <int value="6" label="kGetAccessTokenAuthFailure"/>
+  <int value="7" label="kOAuth2Failure (deprecated 02/2021)"/>
+  <int value="8" label="kNoGrant"/>
+  <int value="9" label="kInteractionRequired"/>
+  <int value="10" label="kInteractionAlreadyRunning"/>
+  <int value="11" label="kOAuth2AccessDenied (deprecated 02/2021)"/>
+  <int value="12" label="kGaiaFlowRejected (deprecated 02/2021)"/>
+  <int value="13" label="kRemoteConsentFlowRejected"/>
+  <int value="14" label="kUserNotSignedIn"/>
+  <int value="15" label="kNotAllowlistedInPublicSession"/>
+  <int value="16" label="kSignInFailed"/>
+  <int value="17" label="kRemoteConsentUserNotSignedIn"/>
+  <int value="18" label="kUserNonPrimary"/>
+  <int value="19" label="kRemoteConsentUserNonPrimary"/>
+  <int value="20" label="kBrowserSigninNotAllowed"/>
+  <int value="21" label="kInvalidRedirect (deprecated 02/2021)"/>
+  <int value="22" label="kOffTheRecord"/>
+  <int value="23" label="kPageLoadFailure (deprecated 02/2021)"/>
+  <int value="24" label="kRemoteConsentPageLoadFailure"/>
+  <int value="25" label="kSetAccountsInCookieFailure (deprecated 07/2023)"/>
+  <int value="26" label="kInvalidConsentResult"/>
+  <int value="27" label="kCanceled"/>
+  <int value="28" label="kInteractivityDenied"/>
+  <int value="29" label="kCannotCreateWindow"/>
+</enum>
+
+<enum name="IOSDeviceRestoreSignedinState">
+  <int value="0" label="User not signed in before iOS device restore"/>
+  <int value="1"
+      label="User signed in before iOS device restore, and signed out after"/>
+  <int value="2" label="User signed in before and after iOS device restore"/>
+</enum>
+
+<enum name="LaunchWebAuthFlowResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="kOffTheRecord"/>
+  <int value="2" label="kUserRejected"/>
+  <int value="3" label="kInteractionRequired"/>
+  <int value="4" label="kPageLoadFailure"/>
+  <int value="5" label="kUnexpectedError"/>
+  <int value="6" label="kPageLoadTimedOut"/>
+  <int value="7" label="kCannotCreateWindow"/>
+  <int value="8" label="kInvalidURLScheme"/>
+</enum>
+
+<enum name="OAuth2LoginAccountRevokedMigrationState">
+  <int value="0" label="Account ID migration not started"/>
+  <int value="1" label="Account ID migration in progress"/>
+  <int value="2" label="Account ID migration done"/>
+</enum>
+
+<enum name="OAuth2MintTokenApiCallResult">
+  <int value="0" label="Mint token success"/>
+  <int value="1" label="Issue advice success (deprecated 02/2021)"/>
+  <int value="2" label="Remote consent success"/>
+  <int value="3" label="Api call failure"/>
+  <int value="4" label="Parse JSON failure"/>
+  <int value="5" label="&quot;issueAdvice&quot; key not found"/>
+  <int value="6" label="Parse mint token failure"/>
+  <int value="7" label="Parse issue advice failure (deprecated 02/2021)"/>
+  <int value="8" label="Remote consent fallback (deprecated 06/2020)"/>
+  <int value="9" label="Parse remote consent failure"/>
+  <int value="10"
+      label="Mint token success with fallback scopes (deprecated 02/2021)"/>
+  <int value="11" label="Token binding challenge success"/>
+</enum>
+
+<enum name="OAuthMultiloginResponseStatus">
+  <int value="0" label="UNKNOWN_STATUS"/>
+  <int value="1" label="OK"/>
+  <int value="2" label="RETRY"/>
+  <int value="3" label="INVALID_INPUT"/>
+  <int value="4" label="INVALID_TOKENS"/>
+  <int value="5" label="ERROR"/>
+</enum>
+
+<enum name="PAMInitializePrimaryAccountInfoState">
+  <int value="0" label="OK: Account info available"/>
+  <int value="1" label="Empty account info. Restore failed (no sync consent)."/>
+  <int value="2"
+      label="Empty account info. Restore failed (no last sync gaia ID)."/>
+  <int value="3"
+      label="Empty account info. Restore failed (no last sync email)"/>
+  <int value="4"
+      label="Empty account info. Restore failed (account id mismatch)"/>
+  <int value="5" label="Empty account info. Restore failed (feature disabled)"/>
+  <int value="6" label="Empty account info. Restore success"/>
+</enum>
+
+<enum name="PAMInitializePrimaryAccountPrefs">
+  <int value="0" label="With primary account id, no sync consent"/>
+  <int value="1" label="With primary account id, with sync consent"/>
+  <int value="2" label="Empty primary account id, no sync consent"/>
+  <int value="3" label="[Error] Empty primary accountid, with sync consent"/>
+</enum>
+
+<enum name="ResumeBlockedRequestsTrigger">
+  <int value="0" label="Cookie fresh notification"/>
+  <int value="1"
+      label="Cookie rotation success (request completed before cookie fresh
+             notification)"/>
+  <int value="2" label="Cookie rotation failure"/>
+  <int value="3" label="Network connection offline"/>
+  <int value="4" label="Timeout"/>
+  <int value="5" label="Shutdown or session termination"/>
+</enum>
+
+<enum name="SessionTerminationTrigger">
+  <int value="0" label="Cookie rotation persistent error"/>
+  <int value="1" label="Cookies cleared"/>
+  <int value="2" label="Session termination header"/>
+  <int value="3" label="Session override"/>
+</enum>
+
+<enum name="SigninAccessPoint">
+  <int value="0" label="Start page"/>
+  <int value="1" label="NTP Link"/>
+  <int value="2" label="Menu"/>
+  <int value="3" label="Settings"/>
+  <int value="4" label="Supervised user"/>
+  <int value="5" label="Extension install bubble"/>
+  <int value="6" label="Extensions"/>
+  <int value="7" label="(obsolete) Apps page link"/>
+  <int value="8" label="Bookmark bubble"/>
+  <int value="9" label="Bookmark manager"/>
+  <int value="10" label="Avatar bubble sign in"/>
+  <int value="11" label="User manager"/>
+  <int value="12" label="Devices page"/>
+  <int value="13" label="Cloud print"/>
+  <int value="14" label="Content area"/>
+  <int value="15" label="Signin promo"/>
+  <int value="16" label="Recent tabs"/>
+  <int value="17" label="Typed URL with unknown access point"/>
+  <int value="18" label="Password bubble"/>
+  <int value="19" label="Autofill dropdown"/>
+  <int value="20" label="NTP Content Suggestions"/>
+  <int value="21" label="Re-signin infobar"/>
+  <int value="22" label="Tab switcher"/>
+  <int value="23" label="(obsolete) Force signin warning"/>
+  <int value="24" label="(obsolete) Save card bubble"/>
+  <int value="25" label="(obsolete) Manage cards bubble"/>
+  <int value="26" label="Machine logon"/>
+  <int value="27" label="Sync and Google services settings"/>
+  <int value="28" label="Re-signin from sync error card in settings"/>
+  <int value="29" label="Forced sign-in"/>
+  <int value="30" label="Re-signin after an account rename"/>
+  <int value="31" label="Sign-in promo in the web sign-in flow"/>
+  <int value="32" label="Safety check settings page"/>
+  <int value="33" label="Kaleidoscope"/>
+  <int value="34" label="Enterprise sign-out coordinator"/>
+  <int value="35" label="Signin intercept first run experience"/>
+  <int value="36" label="Send-tab-to-self promo"/>
+  <int value="37" label="Sign-in promo on NTP feed top section."/>
+  <int value="38" label="Sync off settings row"/>
+  <int value="39" label="Post device restore sign-in promo"/>
+  <int value="40" label="Post device restore background sign-in"/>
+  <int value="41" label="NTP Signed-out icon"/>
+  <int value="42" label="Sign-in promo on NTP feed card menu section."/>
+  <int value="43" label="Sign-in promo on NTP feed bottom section."/>
+  <int value="44"
+      label="Automatic reset to match account cookies, on Desktop and Lacros.">
+    Used by the SigninManager when no other access point is specified.
+  </int>
+  <int value="45" label="'For You' First Run Experience on Desktop"/>
+  <int value="46" label="Creator Feed Follow Button on Android only"/>
+  <int value="47" label="Reading list"/>
+  <int value="48" label="Reauth info bar"/>
+  <int value="49" label="Account consistency service"/>
+  <int value="50" label="Search companion"/>
+  <int value="51" label="Set Up List on iOS only"/>
+  <int value="52" label="Password migration warning on Android only"/>
+  <int value="53" label="Save to photos iOS"/>
+  <int value="54" label="Chrome Sign-in intercept bubble."/>
+  <int value="55" label="Tab organization"/>
+</enum>
+
+<enum name="SigninAccountReconcilorState">
+  <int value="0" label="OK">
+    The account reconcilor has finished running and is up-to-date.
+  </int>
+  <int value="1" label="Running">
+    The account reconcilor is running and gathering informations.
+  </int>
+  <int value="2" label="Error">
+    The account reconcilor has encountered an error and stopped.
+  </int>
+  <int value="3" label="Scheduled">
+    The account reconcilor is scheduled for running soon.
+  </int>
+  <int value="4" label="Inactive">
+    The account reconcilor is inactive (uninitialized or disabled).
+  </int>
+</enum>
+
+<enum name="SigninAccountType">
+  <int value="0" label="Regular gmail account"/>
+  <int value="1" label="Managed account"/>
+</enum>
+
+<enum name="SigninAndroidAddAccountState">
+  <int value="0" label="Requested"/>
+  <int value="1" label="Started"/>
+  <int value="2" label="Succeeded"/>
+  <int value="3" label="Failed"/>
+  <int value="4" label="Cancelled"/>
+  <int value="5" label="Returned null account name"/>
+</enum>
+
+<enum name="SigninDiceResponseHeader">
+  <int value="0" label="Signin"/>
+  <int value="1" label="SignoutPrimary">
+    Signout including the Chrome primary account.
+  </int>
+  <int value="2" label="SignoutSecondary">
+    Signout not including the Chrome primary accounts.
+  </int>
+  <int value="3" label="EnableSync">Enable Sync after signin.</int>
+</enum>
+
+<enum name="SigninDiceTokenFetchResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Abort"/>
+  <int value="2" label="Failure">Failed with Gaia error.</int>
+  <int value="3" label="Timeout"/>
+</enum>
+
+<enum name="SigninGaiaCookieManagerLogout">
+  <int value="0" label="Request started"/>
+  <int value="1" label="Success"/>
+  <int value="2" label="Failure"/>
+</enum>
+
+<enum name="SigninInterceptFREDialogEvent">
+  <int value="0" label="FRE started"/>
+  <int value="1" label="Sync confirmation shown"/>
+  <int value="2" label="The user turned sync on"/>
+  <int value="3" label="The user canceled sync"/>
+  <int value="4" label="The user clicked on sync settings"/>
+  <int value="5" label="Profile customization shown"/>
+  <int value="6" label="The user completed profile customization"/>
+  <int value="7" label="The user skipped profile customization"/>
+</enum>
+
+<enum name="SigninInterceptHeuristicOutcome">
+  <int value="0" label="Intercept: profile switch"/>
+  <int value="1" label="Intercept: multi-user"/>
+  <int value="2" label="Intercept: enterprise"/>
+  <int value="3" label="Abort: Sync signin"/>
+  <int value="4" label="Abort: intercept in progress"/>
+  <int value="5" label="Abort: account not new"/>
+  <int value="6" label="Abort: single account"/>
+  <int value="7" label="Abort: account info fetch timeout"/>
+  <int value="8" label="Abort: account info not compatible"/>
+  <int value="9" label="Abort: profile creation disallowed"/>
+  <int value="10" label="Abort: shut down"/>
+  <int value="11" label="Abort: no supported browser window"/>
+  <int value="12" label="Abort: password update"/>
+  <int value="13" label="Abort: password update pending"/>
+  <int value="14" label="Abort: user declined new profile for this account"/>
+  <int value="15" label="Abort: signin interception disabled by policy"/>
+  <int value="16" label="Intercept: forced enterprise interception"/>
+  <int value="17" label="Intercept: forced enterprise profile switch"/>
+  <int value="18" label="Abort: tab closed"/>
+  <int value="19" label="Intercept: chrome sign in"/>
+  <int value="20" label="Abort: signed out during interception"/>
+  <int value="21"
+      label="Abort: not the first account but there is no primary account."/>
+</enum>
+
+<enum name="SigninInterceptResult">
+  <int value="0" label="Accepted"/>
+  <int value="1" label="Declined"/>
+  <int value="2" label="Ignored"/>
+  <int value="3" label="Not displayed"/>
+  <int value="4" label="Deprecated(10/23): Accepted with Guest"/>
+  <int value="5" label="Accepted with existing profile"/>
+</enum>
+
+<enum name="SigninInvalidGaiaCredentialsReason">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Credentials rejected by server"/>
+  <int value="2" label="Credentials rejected by client"/>
+  <int value="3" label="Credentials missing"/>
+</enum>
+
+<enum name="SigninIOSDeviceRestoreSentinelError">
+  <int value="0" label="No error"/>
+  <int value="1" label="Failed to create sentinel file"/>
+  <int value="2"
+      label="Failed to set ExcludedFromBackup flag on sentinel file"/>
+</enum>
+
+<enum name="SigninLoadTokenFromDB">
+  <int value="0" label="Loaded"/>
+  <int value="1" label="Revoked by Dice migration"/>
+  <int value="2" label="Revoked as secondary account"/>
+  <int value="3" label="Revoked on load due to cookie settings"/>
+</enum>
+
+<enum name="SigninReason">
+  <int value="0" label="Signin primary account"/>
+  <int value="1" label="Add secondary account"/>
+  <int value="2" label="Reauthentication"/>
+  <int value="3" label="Unlock profile (deprecated 03-2021)"/>
+  <int value="4" label="Typed URL with unknown reason"/>
+  <int value="5"
+      label="Signin primary account with force-sign-in policy enabled"/>
+  <int value="6"
+      label="Login and acquire a login scope token without actually signing
+             into any profiles on Chrome."/>
+</enum>
+
+<enum name="SigninReauthResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Account not signed in"/>
+  <int value="2" label="User dismissed Reauth"/>
+  <int value="3" label="Reauth page failed to load"/>
+  <int value="4" label="Reauth was cancelled"/>
+  <int value="5" label="Unexpected server response"/>
+</enum>
+
+<enum name="SigninReauthUserAction">
+  <int value="0" label="Click confirm button"/>
+  <int value="1" label="Click next button"/>
+  <int value="2" label="Click cancel button"/>
+  <int value="3" label="Close confirmation dialog"/>
+  <int value="4" label="Close Gaia dialog"/>
+  <int value="5" label="Close Gaia tab"/>
+  <int value="6" label="Pass Gaia reauth"/>
+</enum>
+
+<enum name="SigninReconcilerOperation">
+  <int value="0" label="No-op"/>
+  <int value="1" label="Logout"/>
+  <int value="2" label="Multilogin"/>
+  <int value="3" label="Throttled"/>
+</enum>
+
+<enum name="SigninReconcilerTrigger">
+  <int value="0" label="Initialized"/>
+  <int value="1" label="Tokens loaded"/>
+  <int value="2" label="Enable reconcile"/>
+  <int value="3" label="Unblock reconcile"/>
+  <int value="4" label="Token change"/>
+  <int value="5" label="Token change during reconcile"/>
+  <int value="6" label="Cookie change"/>
+  <int value="7" label="Cookie setting change"/>
+  <int value="8" label="Forced reconcile"/>
+</enum>
+
+<enum name="SigninSignoutProfile">
+  <int value="0" label="Preference changed">
+    The preference or policy controlling if signin is valid has changed.
+  </int>
+  <int value="1" label="Google service pattern changed">
+    The valid username pattern for signing in to the Google service changed.
+  </int>
+  <int value="2"
+      label="(Obsolete) Signin preference changed during signin. Deprecated as
+             of 12/2022.">
+    The preference or policy controlling if signin is valid changed during the
+    signin process.
+  </int>
+  <int value="3" label="User clicked signout from settings">
+    User clicked to signout from the settings screen.
+  </int>
+  <int value="4" label="Signin aborted">
+    The signin process was aborted, but signin had succeeded, so signout. This
+    may be due to a server response, policy definition or user action.
+  </int>
+  <int value="5" label="Server forced">
+    The sync server caused the profile to be signed out.
+  </int>
+  <int value="6"
+      label="(Obsolete) Credentials transferred. Deprecated as of 12/2022.">
+    The credentials are being transfered to a new profile, so the old one is
+    signed out.
+  </int>
+  <int value="7" label="Authentication failed with force signin">
+    Signed out because credentials are invalid and force-sign-in is enabled.
+  </int>
+  <int value="8"
+      label="(Obsolete) User turned off sync from DICE UI. Deprecated as of
+             08/2022."/>
+  <int value="9" label="Account removed from device">
+    Signout forced because account was removed from device. With M98, on iOS,
+    this value is split with &quot;Signed out forced by iOS device
+    restore&quot;.
+  </int>
+  <int value="10" label="Signout forced on profile load">
+    Signout forced when profile is loaded as browser sign-in is no longer
+    allowed.
+  </int>
+  <int value="11" label="[Tests] Force sign-out">
+    Signout is forced. Used only for tests.
+  </int>
+  <int value="12"
+      label="(Obsolete) User deleted account cookies. Deprecated in M114">
+    User cleared account cookies when there's no sync consent, which has caused
+    sign out.
+  </int>
+  <int value="13"
+      label="(Obsolete) MobileIdentityConsistency rollback. Deprecated as of
+             12/2022.">
+    Signout was forced because MobileIdentityConsistency feature is disabled
+    when there's a primary account without sync consent.
+  </int>
+  <int value="14"
+      label="(Obsolete) Force Account ID migration. Deprecated as of 12/2022.">
+    Signout was forced because account ID migration from email to Gaia ID was
+    forced.
+  </int>
+  <int value="15" label="Signed out forced by iOS device restore">
+    Sign-out forced because the account was removed from the device after a
+    device restore. iOS only.
+  </int>
+  <int value="16" label="User clicked turn off sync">
+    User clicked the 'Turn off sync' option within settings. Android only.
+  </int>
+  <int value="17" label="User clicked signout From profile menu">
+    User Clicked Signout in the profile menu.
+  </int>
+  <int value="18" label="Retriggered from web signin">
+    User retriggered signin from the Android web sign-in bottomsheet.
+  </int>
+  <int value="19" label="User clicked signout from user policy notification">
+    User clicked on sign-out from the notification dialog for User Policy. The
+    notification informs the user that from now on user policies may be
+    effective on their browser if they Sync with their managed account. The user
+    has the option to sign out to avoid user policies.
+  </int>
+  <int value="20" label="Account email updated">
+    The email of the primary account on the device was renamed (from a non-gmail
+    to gmail address), triggering an automatic signout followed by signin.
+    Android only.
+  </int>
+  <int value="21" label="User clicked signout from clear browsing data page">
+    User clicked sign-out in the clear browsing data page.
+  </int>
+  <int value="22" label="AccountReconcilor GaiaCookiesUpdated">
+    The reconcilor cleared the signin primary account on a Gaia cookie update.
+  </int>
+  <int value="23" label="AccountReconcilor Reconcile">
+    The reconcilor cleared the signin primary account during reconcilation.
+  </int>
+  <int value="24" label="SigninManager UpdateUnconsentedPrimaryAccount">
+    SigninManager decides to clear the prrimary (includes web sign out).
+  </int>
+  <int value="25" label="User deleted account cookies">
+    User cleared account cookies when there's no sync consent, which has caused
+    sign out.
+  </int>
+  <int value="26" label="User tapped on undo right after signin">
+    User tapped on the 'Undo' button in a snackbar shown right after signin
+    through promo in bookmarks and reading list page (iOS only).
+  </int>
+  <int value="27" label="User declined history sync after dedicated sign-in">
+    User has signed-in previously for the sole purpose of enabling history sync
+    (eg. using history sync promo in recent tabs), but declined history sync
+    eventually.
+  </int>
+  <int value="28" label="Device lock removed on automotive">
+    If the device lock is removed from an Android automotive device, the current
+    account is automatically signed out.
+  </int>
+  <int value="29" label="User turned off sync from the settings page">
+    User has signed-in previously and sync was turned on. This value is
+    recoreded when the user explicitly turns off sync from the settings page by
+    pressing &quot;Turn off&quot; in the &quot;Sync and Google services&quot;
+    section.
+  </int>
+  <int value="30"
+      label="User cancelled sync confirmation on web only signed in">
+    User was in the web-only signed in state in the UNO model and clicked to
+    turn on sync, but cancelled the sync confirmation dialog so they are
+    reverted to the initial state: signed out in the profile but keeping the
+    account on the web only.
+  </int>
+</enum>
+
+<enum name="SigninSSOIdentityListRequestCacheState">
+  <int value="0"
+      label="SSO identity cache is stale, M85: the identity list is
+             synchronously fetched and then returned, M86: the stale identity
+             list is returned."/>
+  <int value="1"
+      label="SSO identity cache is valid, the valid identity list is
+             returned."/>
+  <int value="2"
+      label="SSO identity cache is not populated, the identity list is
+             synchronously fetched and then returned."/>
+</enum>
+
+<enum name="SigninSSOWKWebViewGetAllCookiesRequest">
+  <int value="0" label="Started"/>
+  <int value="1" label="Finished"/>
+</enum>
+
+<enum name="SigninTokenTableReadTokenFromDBResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Decrypt failed"/>
+  <int value="2" label="Read DB failed (bad entry)"/>
+</enum>
+
+<enum name="SourceForRefreshTokenOperation">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="TokenService::LoadCredentials"/>
+  <int value="2" label="SupervisedUser::InitSync (obsolete)"/>
+  <int value="3" label="InlineLoginHandler::Signin"/>
+  <int value="4" label="PrimaryAccountManager::ClearPrimaryAccount"/>
+  <int value="5"
+      label="PrimaryAccountManager::LegacyPreDiceSigninFlow (obsolete)"/>
+  <int value="6" label="UserMenu:RemoveAccount (obsolete)"/>
+  <int value="7" label="UserMenu::SignOutAllAccounts"/>
+  <int value="8" label="Settings::Signout"/>
+  <int value="9" label="Settings::PauseSync"/>
+  <int value="10" label="AccountReconcilor::GaiaCookiesDeletedByUser"/>
+  <int value="11" label="AccountReconcilor::GaiaCookiesUpdated"/>
+  <int value="12" label="AccountReconcilor::Reconcile"/>
+  <int value="13" label="DiceResponseHandler::Signin"/>
+  <int value="14" label="DiceResponseHandler::Signout"/>
+  <int value="15" label="TurnOnSyncHelper::Abort"/>
+  <int value="16" label="MachineLogon::CredentialProvider"/>
+  <int value="17" label="TokenService::ExtractCredentials"/>
+  <int value="18"
+      label="AccountReconcilor::RevokeTokensNotInCookies (obsolete)">
+    Used for force migration to DICE. Removed in M96.
+  </int>
+  <int value="19" label="LogoutTabHelper::DidFinishNavigation"/>
+  <int value="20" label="ForceSigninReauthWithDifferentAccount"/>
+</enum>
+
+<enum name="SyncErrorPromptUIAction">
+  <int value="0" label="Shown"/>
+  <int value="1" label="Dismissed"/>
+  <int value="2" label="Button clicked"/>
+</enum>
+
+<enum name="SyncFirstSetupCompleteSource">
+  <summary>Possible flows where the FirstSetupComplete bit was set.</summary>
+  <int value="0" label="Basic Flow"/>
+  <int value="1" label="Confirm Clicked In Advanced Flow"/>
+  <int value="2" label="Sync Turned On After Interrupted Advanced Flow"/>
+  <int value="3" label="Sync Left Off After Interrupted Advanced Flow"/>
+  <int value="4" label="Engine Initialized With Auto Start"/>
+  <int value="5" label="Restored backup of a syncing device on Android"/>
+</enum>
+
+</enums>
+
+</histogram-configuration>

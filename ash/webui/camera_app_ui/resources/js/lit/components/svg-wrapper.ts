@@ -5,6 +5,7 @@
 import {
   css,
   LitElement,
+  PropertyDeclarations,
 } from 'chrome://resources/mwc/lit/index.js';
 
 import {assertExists} from '../../assert.js';
@@ -28,7 +29,7 @@ export class SvgWrapper extends LitElement {
     }
   `;
 
-  static override properties = {
+  static override properties: PropertyDeclarations = {
     name: {type: String},
   };
 
@@ -43,7 +44,7 @@ export class SvgWrapper extends LitElement {
     }
   }
 
-  override render(): unknown {
+  override render(): RenderResult {
     if (this.name === null) {
       return null;
     }

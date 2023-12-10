@@ -46,7 +46,6 @@ void FakeFlossLEScanClient::StartScan(
     uint8_t scanner_id,
     const absl::optional<ScanSettings>& scan_settings,
     const absl::optional<ScanFilter>& filters) {
-  // TODO (b/217274013): filters are currently being ignored
   scanner_ids_.insert(scanner_id);
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), BtifStatus::kSuccess));

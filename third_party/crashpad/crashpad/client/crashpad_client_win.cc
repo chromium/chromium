@@ -25,6 +25,7 @@
 #include <string.h>
 
 #include <memory>
+#include <string_view>
 
 #include "base/atomicops.h"
 #include "base/check_op.h"
@@ -520,7 +521,7 @@ bool StartHandlerProcess(
   // invalid command line where the first argument needed by rundll32 is not in
   // the correct format as required in:
   // https://support.microsoft.com/en-ca/help/164787/info-windows-rundll-and-rundll32-interface
-  const base::WStringPiece kRunDll32Exe(L"rundll32.exe");
+  const std::wstring_view kRunDll32Exe(L"rundll32.exe");
   bool is_embedded_in_dll = false;
   if (data->handler.value().size() >= kRunDll32Exe.size() &&
       _wcsicmp(data->handler.value()

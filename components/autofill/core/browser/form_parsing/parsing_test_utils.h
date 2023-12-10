@@ -77,10 +77,14 @@ class FormFieldTestBase {
 
   // Apply parsing and verify the expected types.
   // |parsed| indicates if at least one field could be parsed successfully.
-  // |page_language| the language to be used for parsing, default empty value
-  // means the language is unknown and patterns of all languages are used.
-  void ClassifyAndVerify(ParseResult parse_result = ParseResult::PARSED,
-                         const LanguageCode& page_language = LanguageCode(""));
+  // |client_country| indicates the assumed country based on the geo ip.
+  // |page_language| indicates the language to be used for parsing, default
+  // empty value means the language is unknown and patterns of all languages are
+  // used.
+  void ClassifyAndVerify(
+      ParseResult parse_result = ParseResult::PARSED,
+      const GeoIpCountryCode& client_country = GeoIpCountryCode(""),
+      const LanguageCode& page_language = LanguageCode(""));
 
   // Removes all the fields and resets the expectations.
   void ClearFieldsAndExpectations();

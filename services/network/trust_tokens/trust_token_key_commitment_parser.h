@@ -6,8 +6,8 @@
 #define SERVICES_NETWORK_TRUST_TOKENS_TRUST_TOKEN_KEY_COMMITMENT_PARSER_H_
 
 #include <memory>
+#include <string_view>
 
-#include "base/strings/string_piece_forward.h"
 #include "services/network/public/mojom/trust_tokens.mojom-forward.h"
 #include "services/network/trust_tokens/suitable_trust_token_origin.h"
 #include "services/network/trust_tokens/trust_token_key_commitment_controller.h"
@@ -48,7 +48,7 @@ class TrustTokenKeyCommitmentParser
   //
   // https://docs.google.com/document/d/1TNnya6B8pyomDK2F1R9CL3dY10OAmqWlnCxsWyOBDVQ/edit#heading=h.wkezf6pcskvh
   mojom::TrustTokenKeyCommitmentResultPtr Parse(
-      base::StringPiece response_body) override;
+      std::string_view response_body) override;
 
   // Like |Parse|, except that the input is expected to be of the form
   // { "https://some-issuer.example": <JSON in the form expected by |Parse|>
@@ -72,7 +72,7 @@ class TrustTokenKeyCommitmentParser
   // or the value fails to parse.
   std::unique_ptr<base::flat_map<SuitableTrustTokenOrigin,
                                  mojom::TrustTokenKeyCommitmentResultPtr>>
-  ParseMultipleIssuers(base::StringPiece response_body);
+  ParseMultipleIssuers(std::string_view response_body);
 };
 
 }  // namespace network

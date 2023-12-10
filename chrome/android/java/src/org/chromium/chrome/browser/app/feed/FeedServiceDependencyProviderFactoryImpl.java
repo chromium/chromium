@@ -8,9 +8,7 @@ import org.chromium.build.annotations.UsedByReflection;
 import org.chromium.chrome.browser.feed.FeedServiceDependencyProviderFactory;
 import org.chromium.chrome.browser.feed.FeedServiceUtil;
 
-/**
- * Implements the provider factory.
- */
+/** Implements the provider factory. */
 @UsedByReflection("FeedServiceBridge")
 public class FeedServiceDependencyProviderFactoryImpl
         implements FeedServiceDependencyProviderFactory {

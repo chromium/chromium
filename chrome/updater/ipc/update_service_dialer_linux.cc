@@ -6,7 +6,9 @@
 
 #include <sys/socket.h>
 #include <sys/un.h>
+
 #include <cstdio>
+#include <optional>
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -16,7 +18,6 @@
 #include "chrome/updater/linux/ipc_constants.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util/util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
 
@@ -49,7 +50,7 @@ bool DialUpdateService(UpdaterScope scope) {
 }
 
 bool DialUpdateInternalService(UpdaterScope scope) {
-  absl::optional<base::FilePath> updater = GetUpdaterExecutablePath(scope);
+  std::optional<base::FilePath> updater = GetUpdaterExecutablePath(scope);
   if (updater) {
     base::CommandLine command(*updater);
     command.AppendSwitch(kServerSwitch);

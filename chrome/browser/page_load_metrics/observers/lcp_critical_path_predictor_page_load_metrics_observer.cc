@@ -6,6 +6,7 @@
 
 #include "chrome/browser/predictors/loading_predictor.h"
 #include "chrome/browser/predictors/loading_predictor_factory.h"
+#include "chrome/browser/predictors/predictors_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
 #include "content/public/browser/navigation_handle.h"
@@ -19,8 +20,12 @@ const char kHistogramLCPPFirstContentfulPaint[] =
     HISTOGRAM_PREFIX "PaintTiming.NavigationToFirstContentfulPaint";
 const char kHistogramLCPPLargestContentfulPaint[] =
     HISTOGRAM_PREFIX "PaintTiming.NavigationToLargestContentfulPaint";
-const char kHistogramLCPPPredictSuccess[] =
-    HISTOGRAM_PREFIX "PaintTiming.PredictLCPSuccess";
+const char kHistogramLCPPPredictResult[] =
+    HISTOGRAM_PREFIX "PaintTiming.PredictLCPResult";
+const char kHistogramLCPPPredictHitIndex[] =
+    HISTOGRAM_PREFIX "PaintTiming.PredictHitIndex";
+const char kHistogramLCPPActualLCPIndex[] =
+    HISTOGRAM_PREFIX "PaintTiming.ActualLCPIndex";
 
 }  // namespace internal
 
@@ -177,11 +182,13 @@ void LcpCriticalPathPredictorPageLoadMetricsObserver::
 }
 
 void LcpCriticalPathPredictorPageLoadMetricsObserver::SetLcpElementLocator(
-    const std::string& lcp_element_locator) {
+    const std::string& lcp_element_locator,
+    absl::optional<uint32_t> predicted_lcp_index) {
   if (!lcpp_data_inputs_) {
     lcpp_data_inputs_.emplace();
   }
   lcpp_data_inputs_->lcp_element_locator = lcp_element_locator;
+  predicted_lcp_indexes_.push_back(predicted_lcp_index);
 }
 
 void LcpCriticalPathPredictorPageLoadMetricsObserver::AppendFetchedFontUrl(
@@ -219,9 +226,63 @@ void LcpCriticalPathPredictorPageLoadMetricsObserver::
   if (!hint || !hint->lcp_element_locators.size()) {
     return;
   }
-  // Predicted the most frequent LCP would be next LCP and record the
-  // actual result. see PredictLcpElementLocators() for the `hint` contents.
-  const bool predicted =
-      (hint->lcp_element_locators[0] == lcpp_data_inputs_->lcp_element_locator);
-  base::UmaHistogramBoolean(internal::kHistogramLCPPPredictSuccess, predicted);
+
+  if (predicted_lcp_indexes_.empty()) {
+    return;
+  }
+  // Then, We have a prelearn data and at least one LCP locator in current
+  // load. Let's stat it.
+
+  // This value existence indicates failure because predicted LCP should be the
+  // last.
+  absl::optional<uint32_t> first_valid_index_except_last = absl::nullopt;
+  for (size_t i = 0; i < predicted_lcp_indexes_.size() - 1; i++) {
+    const absl::optional<uint32_t>& maybe_index = predicted_lcp_indexes_[i];
+    if (maybe_index) {
+      first_valid_index_except_last = *maybe_index;
+      break;
+    }
+  }
+  const absl::optional<uint32_t>& last_lcp_index =
+      predicted_lcp_indexes_.back();
+
+  internal::LCPPPredictResult result;
+  const int max_lcpp_histogram_buckets =
+      base::GetFieldTrialParamByFeatureAsInt(
+          features::kLoadingPredictorTableConfig, "max_lcpp_histogram_buckets",
+          10) +
+      internal::kLCPIndexHistogramOffset;
+  if (first_valid_index_except_last) {
+    if (last_lcp_index) {
+      if (*first_valid_index_except_last == *last_lcp_index) {
+        // `predicted_lcp_indexes_` is like {1, 1}.
+        result = internal::LCPPPredictResult::kFailureActuallySameButLaterLCP;
+      } else {
+        //  `predicted_lcp_indexes_` is like {1,2} or {1,1,2}.
+        result = internal::LCPPPredictResult::kFailureActuallySecondaryLCP;
+      }
+    } else {
+      // `predicted_lcp_indexes_` is like {1, null}.
+      result = internal::LCPPPredictResult::kFailureActuallyUnrecordedLCP;
+    }
+  } else {
+    if (last_lcp_index) {
+      //  `predicted_lcp_indexes_` is like {null*, 1}.
+      result = internal::LCPPPredictResult::kSuccess;
+      base::UmaHistogramExactLinear(
+          internal::kHistogramLCPPPredictHitIndex,
+          *last_lcp_index + internal::kLCPIndexHistogramOffset,
+          max_lcpp_histogram_buckets);
+    } else {
+      // `predicted_lcp_indexes_` is like {null*}.
+      result = internal::LCPPPredictResult::kFailureNoHit;
+    }
+  }
+
+  base::UmaHistogramEnumeration(internal::kHistogramLCPPPredictResult, result);
+  base::UmaHistogramExactLinear(
+      internal::kHistogramLCPPActualLCPIndex,
+      last_lcp_index ? *last_lcp_index + internal::kLCPIndexHistogramOffset
+                     : max_lcpp_histogram_buckets,
+      max_lcpp_histogram_buckets);
 }

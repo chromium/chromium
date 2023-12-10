@@ -49,6 +49,7 @@
 #include "net/base/net_errors.h"
 #include "net/base/url_util.h"
 #include "net/disk_cache/disk_cache.h"
+#include "net/http/http_connection_info.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
@@ -132,96 +133,99 @@ proto::CacheResponse::ResponseType FetchResponseTypeToProtoResponseType(
 
 // Assert that ConnectionInfo does not change since we cast it to
 // an integer in order to serialize it to disk.
-static_assert(net::HttpResponseInfo::CONNECTION_INFO_UNKNOWN == 0,
+static_assert(static_cast<int>(net::HttpConnectionInfo::kUNKNOWN) == 0,
               "ConnectionInfo enum is stable");
-static_assert(net::HttpResponseInfo::CONNECTION_INFO_HTTP1_1 == 1,
+static_assert(static_cast<int>(net::HttpConnectionInfo::kHTTP1_1) == 1,
               "ConnectionInfo enum is stable");
-static_assert(net::HttpResponseInfo::CONNECTION_INFO_DEPRECATED_SPDY2 == 2,
+static_assert(static_cast<int>(net::HttpConnectionInfo::kDEPRECATED_SPDY2) == 2,
               "ConnectionInfo enum is stable");
-static_assert(net::HttpResponseInfo::CONNECTION_INFO_DEPRECATED_SPDY3 == 3,
+static_assert(static_cast<int>(net::HttpConnectionInfo::kDEPRECATED_SPDY3) == 3,
               "ConnectionInfo enum is stable");
-static_assert(net::HttpResponseInfo::CONNECTION_INFO_HTTP2 == 4,
-              "ConnectionInfo enum is stable");
-static_assert(net::HttpResponseInfo::CONNECTION_INFO_QUIC_UNKNOWN_VERSION == 5,
-              "ConnectionInfo enum is stable");
-static_assert(net::HttpResponseInfo::CONNECTION_INFO_DEPRECATED_HTTP2_14 == 6,
-              "ConnectionInfo enum is stable");
-static_assert(net::HttpResponseInfo::CONNECTION_INFO_DEPRECATED_HTTP2_15 == 7,
-              "ConnectionInfo enum is stable");
-static_assert(net::HttpResponseInfo::CONNECTION_INFO_HTTP0_9 == 8,
-              "ConnectionInfo enum is stable");
-static_assert(net::HttpResponseInfo::CONNECTION_INFO_HTTP1_0 == 9,
-              "ConnectionInfo enum is stable");
-static_assert(net::HttpResponseInfo::CONNECTION_INFO_QUIC_32 == 10,
-              "ConnectionInfo enum is stable");
-static_assert(net::HttpResponseInfo::CONNECTION_INFO_QUIC_33 == 11,
-              "ConnectionInfo enum is stable");
-static_assert(net::HttpResponseInfo::CONNECTION_INFO_QUIC_34 == 12,
-              "ConnectionInfo enum is stable");
-static_assert(net::HttpResponseInfo::CONNECTION_INFO_QUIC_35 == 13,
-              "ConnectionInfo enum is stable");
-static_assert(net::HttpResponseInfo::CONNECTION_INFO_QUIC_36 == 14,
-              "ConnectionInfo enum is stable");
-static_assert(net::HttpResponseInfo::CONNECTION_INFO_QUIC_37 == 15,
-              "ConnectionInfo enum is stable");
-static_assert(net::HttpResponseInfo::CONNECTION_INFO_QUIC_38 == 16,
-              "ConnectionInfo enum is stable");
-static_assert(net::HttpResponseInfo::CONNECTION_INFO_QUIC_39 == 17,
-              "ConnectionInfo enum is stable");
-static_assert(net::HttpResponseInfo::CONNECTION_INFO_QUIC_40 == 18,
-              "ConnectionInfo enum is stable");
-static_assert(net::HttpResponseInfo::CONNECTION_INFO_QUIC_41 == 19,
-              "ConnectionInfo enum is stable");
-static_assert(net::HttpResponseInfo::CONNECTION_INFO_QUIC_42 == 20,
-              "ConnectionInfo enum is stable");
-static_assert(net::HttpResponseInfo::CONNECTION_INFO_QUIC_43 == 21,
-              "ConnectionInfo enum is stable");
-static_assert(net::HttpResponseInfo::CONNECTION_INFO_QUIC_Q099 == 22,
-              "ConnectionInfo enum is stable");
-static_assert(net::HttpResponseInfo::CONNECTION_INFO_QUIC_44 == 23,
-              "ConnectionInfo enum is stable");
-static_assert(net::HttpResponseInfo::CONNECTION_INFO_QUIC_45 == 24,
-              "ConnectionInfo enum is stable");
-static_assert(net::HttpResponseInfo::CONNECTION_INFO_QUIC_46 == 25,
-              "ConnectionInfo enum is stable");
-static_assert(net::HttpResponseInfo::CONNECTION_INFO_QUIC_47 == 26,
-              "ConnectionInfo enum is stable");
-static_assert(net::HttpResponseInfo::CONNECTION_INFO_QUIC_999 == 27,
-              "ConnectionInfo enum is stable");
-static_assert(net::HttpResponseInfo::CONNECTION_INFO_QUIC_Q048 == 28,
-              "ConnectionInfo enum is stable");
-static_assert(net::HttpResponseInfo::CONNECTION_INFO_QUIC_Q049 == 29,
-              "ConnectionInfo enum is stable");
-static_assert(net::HttpResponseInfo::CONNECTION_INFO_QUIC_Q050 == 30,
-              "ConnectionInfo enum is stable");
-static_assert(net::HttpResponseInfo::CONNECTION_INFO_QUIC_T048 == 31,
-              "ConnectionInfo enum is stable");
-static_assert(net::HttpResponseInfo::CONNECTION_INFO_QUIC_T049 == 32,
-              "ConnectionInfo enum is stable");
-static_assert(net::HttpResponseInfo::CONNECTION_INFO_QUIC_T050 == 33,
-              "ConnectionInfo enum is stable");
-static_assert(net::HttpResponseInfo::CONNECTION_INFO_QUIC_T099 == 34,
-              "ConnectionInfo enum is stable");
-static_assert(net::HttpResponseInfo::CONNECTION_INFO_QUIC_DRAFT_25 == 35,
-              "ConnectionInfo enum is stable");
-static_assert(net::HttpResponseInfo::CONNECTION_INFO_QUIC_DRAFT_27 == 36,
-              "ConnectionInfo enum is stable");
-static_assert(net::HttpResponseInfo::CONNECTION_INFO_QUIC_DRAFT_28 == 37,
-              "ConnectionInfo enum is stable");
-static_assert(net::HttpResponseInfo::CONNECTION_INFO_QUIC_DRAFT_29 == 38,
-              "ConnectionInfo enum is stable");
-static_assert(net::HttpResponseInfo::CONNECTION_INFO_QUIC_T051 == 39,
-              "ConnectionInfo enum is stable");
-static_assert(net::HttpResponseInfo::CONNECTION_INFO_QUIC_RFC_V1 == 40,
+static_assert(static_cast<int>(net::HttpConnectionInfo::kHTTP2) == 4,
               "ConnectionInfo enum is stable");
 static_assert(
-    net::HttpResponseInfo::CONNECTION_INFO_DEPRECATED_QUIC_2_DRAFT_1 == 41,
+    static_cast<int>(net::HttpConnectionInfo::kQUIC_UNKNOWN_VERSION) == 5,
     "ConnectionInfo enum is stable");
-static_assert(net::HttpResponseInfo::CONNECTION_INFO_QUIC_2_DRAFT_8 == 42,
+static_assert(static_cast<int>(net::HttpConnectionInfo::kDEPRECATED_HTTP2_14) ==
+                  6,
+              "ConnectionInfo enum is stable");
+static_assert(static_cast<int>(net::HttpConnectionInfo::kDEPRECATED_HTTP2_15) ==
+                  7,
+              "ConnectionInfo enum is stable");
+static_assert(static_cast<int>(net::HttpConnectionInfo::kHTTP0_9) == 8,
+              "ConnectionInfo enum is stable");
+static_assert(static_cast<int>(net::HttpConnectionInfo::kHTTP1_0) == 9,
+              "ConnectionInfo enum is stable");
+static_assert(static_cast<int>(net::HttpConnectionInfo::kQUIC_32) == 10,
+              "ConnectionInfo enum is stable");
+static_assert(static_cast<int>(net::HttpConnectionInfo::kQUIC_33) == 11,
+              "ConnectionInfo enum is stable");
+static_assert(static_cast<int>(net::HttpConnectionInfo::kQUIC_34) == 12,
+              "ConnectionInfo enum is stable");
+static_assert(static_cast<int>(net::HttpConnectionInfo::kQUIC_35) == 13,
+              "ConnectionInfo enum is stable");
+static_assert(static_cast<int>(net::HttpConnectionInfo::kQUIC_36) == 14,
+              "ConnectionInfo enum is stable");
+static_assert(static_cast<int>(net::HttpConnectionInfo::kQUIC_37) == 15,
+              "ConnectionInfo enum is stable");
+static_assert(static_cast<int>(net::HttpConnectionInfo::kQUIC_38) == 16,
+              "ConnectionInfo enum is stable");
+static_assert(static_cast<int>(net::HttpConnectionInfo::kQUIC_39) == 17,
+              "ConnectionInfo enum is stable");
+static_assert(static_cast<int>(net::HttpConnectionInfo::kQUIC_40) == 18,
+              "ConnectionInfo enum is stable");
+static_assert(static_cast<int>(net::HttpConnectionInfo::kQUIC_41) == 19,
+              "ConnectionInfo enum is stable");
+static_assert(static_cast<int>(net::HttpConnectionInfo::kQUIC_42) == 20,
+              "ConnectionInfo enum is stable");
+static_assert(static_cast<int>(net::HttpConnectionInfo::kQUIC_43) == 21,
+              "ConnectionInfo enum is stable");
+static_assert(static_cast<int>(net::HttpConnectionInfo::kQUIC_Q099) == 22,
+              "ConnectionInfo enum is stable");
+static_assert(static_cast<int>(net::HttpConnectionInfo::kQUIC_44) == 23,
+              "ConnectionInfo enum is stable");
+static_assert(static_cast<int>(net::HttpConnectionInfo::kQUIC_45) == 24,
+              "ConnectionInfo enum is stable");
+static_assert(static_cast<int>(net::HttpConnectionInfo::kQUIC_46) == 25,
+              "ConnectionInfo enum is stable");
+static_assert(static_cast<int>(net::HttpConnectionInfo::kQUIC_47) == 26,
+              "ConnectionInfo enum is stable");
+static_assert(static_cast<int>(net::HttpConnectionInfo::kQUIC_999) == 27,
+              "ConnectionInfo enum is stable");
+static_assert(static_cast<int>(net::HttpConnectionInfo::kQUIC_Q048) == 28,
+              "ConnectionInfo enum is stable");
+static_assert(static_cast<int>(net::HttpConnectionInfo::kQUIC_Q049) == 29,
+              "ConnectionInfo enum is stable");
+static_assert(static_cast<int>(net::HttpConnectionInfo::kQUIC_Q050) == 30,
+              "ConnectionInfo enum is stable");
+static_assert(static_cast<int>(net::HttpConnectionInfo::kQUIC_T048) == 31,
+              "ConnectionInfo enum is stable");
+static_assert(static_cast<int>(net::HttpConnectionInfo::kQUIC_T049) == 32,
+              "ConnectionInfo enum is stable");
+static_assert(static_cast<int>(net::HttpConnectionInfo::kQUIC_T050) == 33,
+              "ConnectionInfo enum is stable");
+static_assert(static_cast<int>(net::HttpConnectionInfo::kQUIC_T099) == 34,
+              "ConnectionInfo enum is stable");
+static_assert(static_cast<int>(net::HttpConnectionInfo::kQUIC_DRAFT_25) == 35,
+              "ConnectionInfo enum is stable");
+static_assert(static_cast<int>(net::HttpConnectionInfo::kQUIC_DRAFT_27) == 36,
+              "ConnectionInfo enum is stable");
+static_assert(static_cast<int>(net::HttpConnectionInfo::kQUIC_DRAFT_28) == 37,
+              "ConnectionInfo enum is stable");
+static_assert(static_cast<int>(net::HttpConnectionInfo::kQUIC_DRAFT_29) == 38,
+              "ConnectionInfo enum is stable");
+static_assert(static_cast<int>(net::HttpConnectionInfo::kQUIC_T051) == 39,
+              "ConnectionInfo enum is stable");
+static_assert(static_cast<int>(net::HttpConnectionInfo::kQUIC_RFC_V1) == 40,
+              "ConnectionInfo enum is stable");
+static_assert(
+    static_cast<int>(net::HttpConnectionInfo::kDEPRECATED_QUIC_2_DRAFT_1) == 41,
+    "ConnectionInfo enum is stable");
+static_assert(static_cast<int>(net::HttpConnectionInfo::kQUIC_2_DRAFT_8) == 42,
               "ConnectionInfo enum is stable");
 // The following assert needs to be changed every time a new value is added.
 // It exists to prevent us from forgetting to add new values above.
-static_assert(net::HttpResponseInfo::NUM_OF_CONNECTION_INFOS == 43,
+static_assert(static_cast<int>(net::HttpConnectionInfo::kMaxValue) == 42,
               "Please add new values above and update this assert");
 
 // Copy headers out of a cache entry and into a protobuf. The callback is
@@ -503,8 +507,8 @@ blink::mojom::FetchAPIResponsePtr CreateResponse(
           metadata.response().cors_exposed_header_names().end()),
       /*side_data_blob=*/nullptr, /*side_data_blob_for_cache_put=*/nullptr,
       network::mojom::ParsedHeaders::New(),
-      // Default proto value of 0 maps to CONNECTION_INFO_UNKNOWN.
-      static_cast<net::HttpResponseInfo::ConnectionInfo>(
+      // Default proto value of 0 maps to HttpConnectionInfo::kUNKNOWN.
+      static_cast<net::HttpConnectionInfo>(
           metadata.response().connection_info()),
       alpn_negotiated_protocol, metadata.response().was_fetched_via_spdy(),
       has_range_requested, /*auth_challenge_info=*/absl::nullopt,
@@ -1922,7 +1926,7 @@ void CacheStorageCache::PutDidCreateEntry(
   for (const auto& url : put_context->response->url_list)
     response_metadata->add_url_list(url.spec());
   response_metadata->set_connection_info(
-      put_context->response->connection_info);
+      static_cast<int32_t>(put_context->response->connection_info));
   response_metadata->set_alpn_negotiated_protocol(
       put_context->response->alpn_negotiated_protocol);
   response_metadata->set_was_fetched_via_spdy(

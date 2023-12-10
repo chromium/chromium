@@ -78,6 +78,7 @@ MixedContent::ContextTypeFromRequestContext(
     case mojom::RequestContextType::SCRIPT:
     case mojom::RequestContextType::SERVICE_WORKER:
     case mojom::RequestContextType::SHARED_WORKER:
+    case mojom::RequestContextType::SPECULATION_RULES:
     case mojom::RequestContextType::STYLE:
     case mojom::RequestContextType::SUBRESOURCE:
     case mojom::RequestContextType::SUBRESOURCE_WEBBUNDLE:

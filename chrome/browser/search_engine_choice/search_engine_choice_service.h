@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_SEARCH_ENGINE_CHOICE_SEARCH_ENGINE_CHOICE_SERVICE_H_
 #define CHROME_BROWSER_SEARCH_ENGINE_CHOICE_SEARCH_ENGINE_CHOICE_SERVICE_H_
 
+#include <string>
+
 #include "base/containers/flat_map.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ref.h"
@@ -14,21 +16,36 @@
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_registry_simple.h"
+#include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_service.h"
 
 class Browser;
 class BrowserListObserver;
 
 namespace search_engines {
+
 enum class SearchEngineChoiceScreenConditions;
-}
+
+// Profile specific data related to the search engine choice.
+// `timestamp` is the search engine choice timestamp that's saved in the
+// `kDefaultSearchProviderChoiceScreenCompletionTimestamp` pref.
+// `chrome_version` is the Chrome version when the user made the choice.
+// `default_search_engine` is the profile's default search engine.
+struct ChoiceData {
+  int64_t timestamp = 0;
+  std::string chrome_version;
+  TemplateURLData default_search_engine;
+};
+
+}  // namespace search_engines
 
 // Service handling the Search Engine Choice dialog.
 class SearchEngineChoiceService : public KeyedService {
  public:
   // Specifies the view in which the choice screen UI is rendered.
   enum class EntryPoint {
-    kProfilePicker = 0,
+    kProfileCreation = 0,
+    kFirstRunExperience,
     kDialog,
   };
 
@@ -75,9 +92,6 @@ class SearchEngineChoiceService : public KeyedService {
   // pending to be shown.
   bool HasPendingDialog(Browser& browser);
 
-  // Returns whether the user has already made a choice or not.
-  bool HasUserMadeChoice() const;
-
   // Checks whether we need to display the Privacy Sandbox dialog
   // in context of the Search Engine Choice.
   // The Privacy Sandbox dialog should be delayed to the next Chrome run if the
@@ -105,6 +119,14 @@ class SearchEngineChoiceService : public KeyedService {
   // Registers the local state preferences used by the search engine choice
   // screen.
   static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
+
+  // Returns a copy of the `ChoiceData` specific to `profile`.
+  static search_engines::ChoiceData GetChoiceDataFromProfile(Profile& profile);
+
+  // Updates `profile` with the values from `choice_data`.
+  static void UpdateProfileFromChoiceData(
+      Profile& profile,
+      search_engines::ChoiceData& choice_data);
 
  private:
   // Observes the BrowserList to make sure that closed browsers are correctly
@@ -143,4 +165,4 @@ class SearchEngineChoiceService : public KeyedService {
   base::WeakPtrFactory<SearchEngineChoiceService> weak_ptr_factory_{this};
 };
 
-#endif  // CHROME_BROWSER_SEARCH_ENGINE_CHOICE_SEARCH_ENGINE_CHOICE_SERVICE_H
+#endif  // CHROME_BROWSER_SEARCH_ENGINE_CHOICE_SEARCH_ENGINE_CHOICE_SERVICE_H_

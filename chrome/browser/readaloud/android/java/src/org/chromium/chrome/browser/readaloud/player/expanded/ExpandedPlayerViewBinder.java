@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.readaloud.player.expanded;
 
 import org.chromium.chrome.browser.readaloud.player.PlayerProperties;
 import org.chromium.chrome.browser.readaloud.player.VisibilityState;
-import org.chromium.chrome.modules.readaloud.PlaybackListener;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -33,12 +32,37 @@ public class ExpandedPlayerViewBinder {
         } else if (key == PlayerProperties.PUBLISHER) {
             content.setPublisher(model.get(PlayerProperties.PUBLISHER));
         } else if (key == PlayerProperties.PLAYBACK_STATE) {
-            content.setPlaying(
-                    model.get(PlayerProperties.PLAYBACK_STATE) == PlaybackListener.State.PLAYING);
+            content.onPlaybackStateChanged(model.get(PlayerProperties.PLAYBACK_STATE));
+        } else if (key == PlayerProperties.PROGRESS) {
+            content.setProgress(model.get(PlayerProperties.PROGRESS));
         } else if (key == PlayerProperties.SPEED) {
             content.setSpeed(model.get(PlayerProperties.SPEED));
+        } else if (key == PlayerProperties.ELAPSED_NANOS) {
+            content.setElapsed(model.get(PlayerProperties.ELAPSED_NANOS));
+        } else if (key == PlayerProperties.DURATION_NANOS) {
+            content.setDuration(model.get(PlayerProperties.DURATION_NANOS));
         } else if (key == PlayerProperties.INTERACTION_HANDLER) {
             content.setInteractionHandler(model.get(PlayerProperties.INTERACTION_HANDLER));
+        } else if (key == PlayerProperties.HIGHLIGHTING_ENABLED) {
+            content.setHighlightingEnabled(model.get(PlayerProperties.HIGHLIGHTING_ENABLED));
+        } else if (key == PlayerProperties.HIGHLIGHTING_SUPPORTED) {
+            content.setHighlightingSupported(model.get(PlayerProperties.HIGHLIGHTING_SUPPORTED));
+        } else if (key == PlayerProperties.VOICES_LIST) {
+            if (content.getVoiceMenu() != null) {
+                content.getVoiceMenu().setVoices(model.get(PlayerProperties.VOICES_LIST));
+            }
+        } else if (key == PlayerProperties.SELECTED_VOICE_ID) {
+            if (content.getVoiceMenu() != null) {
+                content.getVoiceMenu()
+                        .setVoiceSelection(model.get(PlayerProperties.SELECTED_VOICE_ID));
+            }
+        } else if (key == PlayerProperties.VOICE_PREVIEW_PLAYBACK_STATE) {
+            if (content.getVoiceMenu() != null) {
+                content.getVoiceMenu()
+                        .updatePreviewButtons(
+                                model.get(PlayerProperties.PREVIEWING_VOICE_ID),
+                                model.get(PlayerProperties.VOICE_PREVIEW_PLAYBACK_STATE));
+            }
         }
     }
 }

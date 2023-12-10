@@ -140,6 +140,11 @@ void SendFeedback(content::BrowserContext* browser_context,
       feedback_info.autofill_metadata) {
     feedback_data->set_autofill_metadata(*feedback_info.autofill_metadata);
   }
+  if (feedback_info.ai_metadata.has_value()) {
+    feedback_data->set_ai_metadata(feedback_info.ai_metadata.value());
+  }
+  feedback_data->set_is_offensive_or_unsafe(
+      feedback_info.is_offensive_or_unsafe);
 
   // Note that the blob_uuids are generated in
   // renderer/resources/feedback_private_custom_bindings.js
@@ -227,7 +232,8 @@ std::unique_ptr<FeedbackInfo> FeedbackPrivateAPI::CreateFeedbackInfo(
     bool show_questionnaire,
     bool from_chrome_labs_or_kaleidoscope,
     bool from_autofill,
-    const base::Value::Dict& autofill_metadata) {
+    const base::Value::Dict& autofill_metadata,
+    const base::Value::Dict& ai_metadata) {
   auto info = std::make_unique<FeedbackInfo>();
 
   info->description = description_template;
@@ -238,7 +244,10 @@ std::unique_ptr<FeedbackInfo> FeedbackPrivateAPI::CreateFeedbackInfo(
   info->from_autofill = from_autofill;
   std::string autofill_metadata_json;
   base::JSONWriter::Write(autofill_metadata, &autofill_metadata_json);
-  info->autofill_metadata = autofill_metadata_json;
+  info->autofill_metadata = std::move(autofill_metadata_json);
+  std::string ai_metadata_json;
+  base::JSONWriter::Write(ai_metadata, &ai_metadata_json);
+  info->ai_metadata = std::move(ai_metadata_json);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   info->from_assistant = from_assistant;
   info->include_bluetooth_logs = include_bluetooth_logs;
@@ -269,6 +278,10 @@ std::unique_ptr<FeedbackInfo> FeedbackPrivateAPI::CreateFeedbackInfo(
   // a custom product ID.
   if (from_chrome_labs_or_kaleidoscope) {
     info->product_id = kChromeLabsAndKaleidoscopeProductId;
+  } else if (info->flow == FeedbackFlow::kAi) {
+    // Use Chrome browser product id for all platforms including ChromeOS in
+    // this flow.
+    info->product_id = FeedbackCommon::GetChromeBrowserProductId();
   }
 
   return info;
@@ -324,7 +337,7 @@ void FeedbackPrivateGetSystemInformationFunction::OnCompleted(
 ExtensionFunction::ResponseAction FeedbackPrivateReadLogSourceFunction::Run() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   using Params = feedback_private::ReadLogSource::Params;
-  absl::optional<Params> api_params = Params::Create(args());
+  std::optional<Params> api_params = Params::Create(args());
 
   LogSourceAccessManager* log_source_manager =
       FeedbackPrivateAPI::GetFactoryInstance()
@@ -356,7 +369,7 @@ void FeedbackPrivateReadLogSourceFunction::OnCompleted(
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 ExtensionFunction::ResponseAction FeedbackPrivateSendFeedbackFunction::Run() {
-  absl::optional<feedback_private::SendFeedback::Params> params =
+  std::optional<feedback_private::SendFeedback::Params> params =
       feedback_private::SendFeedback::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -391,7 +404,7 @@ void FeedbackPrivateSendFeedbackFunction::OnCompleted(
 }
 
 ExtensionFunction::ResponseAction FeedbackPrivateOpenFeedbackFunction::Run() {
-  absl::optional<feedback_private::OpenFeedback::Params> params =
+  std::optional<feedback_private::OpenFeedback::Params> params =
       feedback_private::OpenFeedback::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 

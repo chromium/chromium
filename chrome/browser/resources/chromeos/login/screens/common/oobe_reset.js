@@ -25,6 +25,8 @@ import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/beha
 import {OobeAdaptiveDialog} from '../../components/dialogs/oobe_adaptive_dialog.js';
 import {OobeModalDialog} from '../../components/dialogs/oobe_modal_dialog.js';
 
+import {getTemplate} from './oobe_reset.html.js';
+
 /**
  * UI state for the dialog.
  * @enum {string}
@@ -111,7 +113,7 @@ class OobeReset extends ResetScreenElementBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

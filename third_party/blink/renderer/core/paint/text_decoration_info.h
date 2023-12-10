@@ -24,11 +24,11 @@
 namespace blink {
 
 class ComputedStyle;
+class DecoratingBox;
 class Font;
-class NGDecoratingBox;
-class NGInlinePaintContext;
-class NGTextDecorationOffset;
+class InlinePaintContext;
 class SimpleFontData;
+class TextDecorationOffset;
 
 enum class ResolvedUnderlinePosition {
   kNearAlphabeticBaselineAuto,
@@ -50,7 +50,7 @@ class CORE_EXPORT TextDecorationInfo {
       LineRelativeOffset local_origin,
       LayoutUnit width,
       const ComputedStyle& target_style,
-      const NGInlinePaintContext* inline_context,
+      const InlinePaintContext* inline_context,
       const absl::optional<AppliedTextDecoration> selection_text_decoration,
       const AppliedTextDecoration* decoration_override = nullptr,
       const Font* font_override = nullptr,
@@ -101,10 +101,10 @@ class CORE_EXPORT TextDecorationInfo {
   // through. Must be called before trying to paint or compute bounds
   // for a line.
   void SetLineData(TextDecorationLine line, float line_offset);
-  void SetUnderlineLineData(const NGTextDecorationOffset& decoration_offset);
-  void SetOverlineLineData(const NGTextDecorationOffset& decoration_offset);
+  void SetUnderlineLineData(const TextDecorationOffset& decoration_offset);
+  void SetOverlineLineData(const TextDecorationOffset& decoration_offset);
   void SetLineThroughLineData();
-  void SetSpellingOrGrammarErrorLineData(const NGTextDecorationOffset&);
+  void SetSpellingOrGrammarErrorLineData(const TextDecorationOffset&);
 
   // These methods do not depend on |SetDecorationIndex|.
   LayoutUnit Width() const { return width_; }
@@ -179,8 +179,8 @@ class CORE_EXPORT TextDecorationInfo {
   const ComputedStyle* decorating_box_style_ = nullptr;
 
   // Decorating box properties for the current |decoration_index_|.
-  const NGInlinePaintContext* const inline_context_ = nullptr;
-  const NGDecoratingBox* decorating_box_ = nullptr;
+  const InlinePaintContext* const inline_context_ = nullptr;
+  const DecoratingBox* decorating_box_ = nullptr;
   const AppliedTextDecoration* applied_text_decoration_ = nullptr;
   const absl::optional<AppliedTextDecoration> selection_text_decoration_;
   const Font* font_ = nullptr;

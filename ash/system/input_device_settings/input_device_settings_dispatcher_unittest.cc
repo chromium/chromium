@@ -23,75 +23,75 @@ class MockInputController : public ui::InputController {
  public:
   MOCK_METHOD(void,
               SetTouchpadSensitivity,
-              (absl::optional<int> device_id, int value),
+              (std::optional<int> device_id, int value),
               (override));
   MOCK_METHOD(void,
               SetTouchpadScrollSensitivity,
-              (absl::optional<int> device_id, int value),
+              (std::optional<int> device_id, int value),
               (override));
   MOCK_METHOD(void,
               SetTouchpadHapticFeedback,
-              (absl::optional<int> device_id, bool enabled),
+              (std::optional<int> device_id, bool enabled),
               (override));
   MOCK_METHOD(void,
               SetTouchpadHapticClickSensitivity,
-              (absl::optional<int> device_id, int value),
+              (std::optional<int> device_id, int value),
               (override));
   MOCK_METHOD(void,
               SetTapToClick,
-              (absl::optional<int> device_id, bool enabled),
+              (std::optional<int> device_id, bool enabled),
               (override));
   MOCK_METHOD(void,
               SetTapDragging,
-              (absl::optional<int> device_id, bool enabled),
+              (std::optional<int> device_id, bool enabled),
               (override));
   MOCK_METHOD(void,
               SetNaturalScroll,
-              (absl::optional<int> device_id, bool enabled),
+              (std::optional<int> device_id, bool enabled),
               (override));
   MOCK_METHOD(void,
               SetMouseSensitivity,
-              (absl::optional<int> device_id, int value),
+              (std::optional<int> device_id, int value),
               (override));
   MOCK_METHOD(void,
               SetMouseScrollSensitivity,
-              (absl::optional<int> device_id, int value),
+              (std::optional<int> device_id, int value),
               (override));
   MOCK_METHOD(void,
               SetMouseReverseScroll,
-              (absl::optional<int> device_id, bool enabled),
+              (std::optional<int> device_id, bool enabled),
               (override));
   MOCK_METHOD(void,
               SetMouseAcceleration,
-              (absl::optional<int> device_id, bool enabled),
+              (std::optional<int> device_id, bool enabled),
               (override));
   MOCK_METHOD(void,
               SetMouseScrollAcceleration,
-              (absl::optional<int> device_id, bool enabled),
+              (std::optional<int> device_id, bool enabled),
               (override));
   MOCK_METHOD(void,
               SetPointingStickSensitivity,
-              (absl::optional<int> device_id, int value),
+              (std::optional<int> device_id, int value),
               (override));
   MOCK_METHOD(void,
               SetPointingStickAcceleration,
-              (absl::optional<int> device_id, bool enabled),
+              (std::optional<int> device_id, bool enabled),
               (override));
   MOCK_METHOD(void,
               SetTouchpadAcceleration,
-              (absl::optional<int> device_id, bool enabled),
+              (std::optional<int> device_id, bool enabled),
               (override));
   MOCK_METHOD(void,
               SetTouchpadScrollAcceleration,
-              (absl::optional<int> device_id, bool enabled),
+              (std::optional<int> device_id, bool enabled),
               (override));
   MOCK_METHOD(void,
               SetPrimaryButtonRight,
-              (absl::optional<int> device_id, bool right),
+              (std::optional<int> device_id, bool right),
               (override));
   MOCK_METHOD(void,
               SetPointingStickPrimaryButtonRight,
-              (absl::optional<int> device_id, bool right),
+              (std::optional<int> device_id, bool right),
               (override));
 
  private:
@@ -204,7 +204,7 @@ TEST_F(InputDeviceSettingsDispatcherTest, MouseTest) {
   settings.scroll_sensitivity = 3;
   settings.sensitivity = 3;
 
-  constexpr absl::optional<int> mouse_id = kMouseId;
+  constexpr std::optional<int> mouse_id = kMouseId;
   EXPECT_CALL(*controller_, SetMouseSensitivity(mouse_id, settings.sensitivity))
       .Times(2);
   EXPECT_CALL(*controller_,
@@ -237,7 +237,7 @@ TEST_F(InputDeviceSettingsDispatcherTest, PointingStickTest) {
   settings.swap_right = false;
   settings.sensitivity = 3;
 
-  constexpr absl::optional<int> pointing_stick_id = kPointingStickId;
+  constexpr std::optional<int> pointing_stick_id = kPointingStickId;
   EXPECT_CALL(*controller_, SetPointingStickSensitivity(pointing_stick_id,
                                                         settings.sensitivity))
       .Times(2);
@@ -268,7 +268,7 @@ TEST_F(InputDeviceSettingsDispatcherTest, TouchpadTest) {
   settings.tap_to_click_enabled = false;
   settings.sensitivity = 5;
 
-  constexpr absl::optional<int> touchpad_id = kTouchpadId;
+  constexpr std::optional<int> touchpad_id = kTouchpadId;
   EXPECT_CALL(*controller_,
               SetTouchpadSensitivity(touchpad_id, settings.sensitivity))
       .Times(2);

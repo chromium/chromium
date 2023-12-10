@@ -1051,10 +1051,14 @@ void CookieMonster::TrimDuplicateCookiesForKey(
 
   // Helper map we populate to find the duplicates.
   typedef std::map<CanonicalCookie::UniqueCookieKey, CookieSet> EquivalenceMap;
+  typedef std::map<CanonicalCookie::UniqueDomainCookieKey, CookieSet>
+      DomainEquivalenceMap;
   EquivalenceMap equivalent_cookies;
+  DomainEquivalenceMap equivalent_domain_cookies;
 
   // The number of duplicate cookies that have been found.
   int num_duplicates = 0;
+  int num_domain_duplicates = 0;
 
   // Iterate through all of the cookies in our range, and insert them into
   // the equivalence map.
@@ -1062,34 +1066,55 @@ void CookieMonster::TrimDuplicateCookiesForKey(
     DCHECK_EQ(key, it->first);
     CanonicalCookie* cookie = it->second.get();
 
-    CanonicalCookie::UniqueCookieKey signature(cookie->UniqueKey());
-    CookieSet& set = equivalent_cookies[signature];
+    if (cookie->IsHostCookie()) {
+      CanonicalCookie::UniqueCookieKey signature(cookie->UniqueKey());
+      CookieSet& set = equivalent_cookies[signature];
 
-    // We found a duplicate!
-    if (!set.empty())
-      num_duplicates++;
+      // We found a duplicate!
+      if (!set.empty()) {
+        num_duplicates++;
+      }
 
-    // We save the iterator into |cookies_| rather than the actual cookie
-    // pointer, since we may need to delete it later.
-    set.insert(it);
+      // We save the iterator into |cookies_| rather than the actual cookie
+      // pointer, since we may need to delete it later.
+      set.insert(it);
+    }
+    // Is a domain cookie.
+    else {
+      CanonicalCookie::UniqueDomainCookieKey signature(
+          cookie->UniqueDomainKey());
+      CookieSet& domain_set = equivalent_domain_cookies[signature];
+
+      // We found a duplicate!
+      if (!domain_set.empty()) {
+        num_domain_duplicates++;
+      }
+
+      // We save the iterator into |cookies_| rather than the actual cookie
+      // pointer, since we may need to delete it later.
+      domain_set.insert(it);
+    }
   }
 
   // If there were no duplicates, we are done!
-  if (num_duplicates == 0)
+  if (num_duplicates == 0 && num_domain_duplicates == 0) {
     return;
+  }
 
   // Make sure we find everything below that we did above.
   int num_duplicates_found = 0;
 
-  // Otherwise, delete all the duplicate cookies, both from our in-memory store
-  // and from the backing store.
+  // Otherwise, delete all the duplicate host cookies, both from our in-memory
+  // store and from the backing store.
   for (std::pair<const CanonicalCookie::UniqueCookieKey, CookieSet>&
            equivalent_cookie : equivalent_cookies) {
     const CanonicalCookie::UniqueCookieKey& signature = equivalent_cookie.first;
     CookieSet& dupes = equivalent_cookie.second;
 
-    if (dupes.size() <= 1)
+    if (dupes.size() <= 1) {
       continue;  // This cookiename/path has no duplicates.
+    }
+
     num_duplicates_found += dupes.size() - 1;
 
     // Since |dupes| is sorted by creation time (descending), the first cookie
@@ -1099,6 +1124,7 @@ void CookieMonster::TrimDuplicateCookiesForKey(
 
     // TODO(crbug.com/1225444) Include cookie partition key in this log
     // statement as well if needed.
+    // TODO(crbug.com/1170548): Include source scheme and source port.
     LOG(ERROR) << base::StringPrintf(
         "Found %d duplicate cookies for key='%s', "
         "with {name='%s', domain='%s', path='%s'}",
@@ -1120,7 +1146,59 @@ void CookieMonster::TrimDuplicateCookiesForKey(
       }
     }
   }
-  DCHECK_EQ(num_duplicates, num_duplicates_found);
+  CHECK_EQ(num_duplicates, num_duplicates_found);
+
+  // Do the same again for domain cookies.
+
+  if (num_domain_duplicates == 0) {
+    return;
+  }
+
+  int num_domain_duplicates_found = 0;
+
+  for (std::pair<const CanonicalCookie::UniqueDomainCookieKey, CookieSet>&
+           equivalent_domain_cookie : equivalent_domain_cookies) {
+    const CanonicalCookie::UniqueDomainCookieKey& signature =
+        equivalent_domain_cookie.first;
+    CookieSet& dupes = equivalent_domain_cookie.second;
+
+    if (dupes.size() <= 1) {
+      continue;
+    }
+
+    num_domain_duplicates_found += dupes.size() - 1;
+
+    // Since |dupes| is sorted by creation time (descending), the first cookie
+    // is the most recent one (or tied for it), so we will keep it. The rest are
+    // duplicates.
+    dupes.erase(dupes.begin());
+
+    // TODO(crbug.com/1225444) Include cookie partition key in this log
+    // statement as well if needed.
+    // TODO(crbug.com/1170548): Include source scheme and source port.
+    LOG(ERROR) << base::StringPrintf(
+        "Found %d duplicate domain cookies for key='%s', "
+        "with {name='%s', domain='%s', path='%s'}",
+        static_cast<int>(dupes.size()), key.c_str(),
+        std::get<1>(signature).c_str(), std::get<2>(signature).c_str(),
+        std::get<3>(signature).c_str());
+
+    // Remove all the cookies identified by |dupes|. It is valid to delete our
+    // list of iterators one at a time, since |cookies_| is a multimap (they
+    // don't invalidate existing iterators following deletion).
+    for (const CookieMap::iterator& dupe : dupes) {
+      if (cookie_partition_it) {
+        InternalDeletePartitionedCookie(
+            cookie_partition_it.value(), dupe, true,
+            DELETE_COOKIE_DUPLICATE_IN_BACKING_STORE);
+      } else {
+        InternalDeleteCookie(dupe, true,
+                             DELETE_COOKIE_DUPLICATE_IN_BACKING_STORE);
+      }
+    }
+  }
+
+  CHECK_EQ(num_domain_duplicates, num_domain_duplicates_found);
 }
 
 std::vector<CanonicalCookie*>

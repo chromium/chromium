@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {VolumeManagerCommon} from '../common/js/volume_manager_types.js';
+import type {FileSystemType, Source, VolumeType} from '../common/js/volume_manager_types.js';
 
 import {FakeEntry, FilesAppEntry} from './files_app_entry_interfaces.js';
 
@@ -11,7 +11,7 @@ import {FakeEntry, FilesAppEntry} from './files_app_entry_interfaces.js';
  * flush storage", or "mounted zip archive" etc.
  */
 export interface VolumeInfo {
-  volumeType: VolumeManagerCommon.VolumeType;
+  volumeType: VolumeType;
   volumeId: string;
   fileSystem: FileSystem;
 
@@ -105,8 +105,8 @@ export interface VolumeInfo {
    */
   watchable: boolean;
 
-  source: VolumeManagerCommon.Source;
-  diskFileSystemType: VolumeManagerCommon.FileSystemType;
+  source: Source;
+  diskFileSystemType: FileSystemType;
 
   /**
    * An entry to be used as prefix of this volume on breadcrumbs,

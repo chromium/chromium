@@ -9,7 +9,7 @@
  */
 
 import '../settings_shared.css.js';
-import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import 'chrome://resources/ash/common/bluetooth/bluetooth_icon.js';
 import 'chrome://resources/cr_elements/policy/cr_tooltip_icon.js';
 import './os_bluetooth_change_device_name_dialog.js';
 import './os_bluetooth_true_wireless_images.js';
@@ -190,11 +190,6 @@ export class SettingsBluetoothDeviceDetailSubpageElement extends
     }
     return this.device_.deviceProperties.connectionState ===
         DeviceConnectionState.kConnected;
-  }
-
-  private getBluetoothStateIcon_(): string {
-    return this.isDeviceConnected_ ? 'os-settings:bluetooth-connected' :
-                                     'os-settings:bluetooth-disabled';
   }
 
   private getBluetoothConnectDisconnectBtnLabel_(): string {

@@ -8,6 +8,7 @@
 <translation id="1420684932347524586">អីយ៉ាស! បានបរាជ័យក្នុងការបង្កើតសោឯកជនចៃដន្យ RSA។</translation>
 <translation id="1445572445564823378">កម្មវិធីបន្ថែមនេះកំពុងធ្វើឲ្យ <ph name="PRODUCT_NAME" /> យឺត។ អ្នកគួរតែបិទដំណើរការវាដើម្បីស្តារប្រតិបត្តិការ <ph name="PRODUCT_NAME" />។</translation>
 <translation id="1468038450257740950">WebGL មិនត្រូវបានគាំទ្រទេ។</translation>
+<translation id="1610570795592207282">មិនអាច​ផ្ទុក css '<ph name="RELATIVE_PATH" />' សម្រាប់​ស្គ្រីប​បានទេ។</translation>
 <translation id="1803557475693955505">មិនអាចដំណើរការទំព័រផ្ទៃខាងក្រោយ '<ph name="BACKGROUND_PAGE" />' ទេ។</translation>
 <translation id="2159915644201199628">មិនអាចបម្លែងរូបភាព '<ph name="IMAGE_NAME" />' ទេ</translation>
 <translation id="2350172092385603347">មូលដ្ឋានីយកម្មត្រូវបានប្រើប្រាស់ ប៉ុន្តែ មូលដ្ឋាន_លំនាំដើម មិនត្រូវបានបញ្ជាក់នៅក្នុងមេនីហ្វេសទេ។</translation>
@@ -18,14 +19,12 @@
 <translation id="3115238746683532089">មិនស្គាល់ផលិតផល <ph name="PRODUCT_ID" /> ពីអ្នកលក់ <ph name="VENDOR_ID" /> (លេខសេរ៊ី <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">បានបរាជ័យក្នុងការប្តូរឯកសារ crx។ ពិនិត្យដើម្បីមើលថាតើឯកសារនេះស្ថិតនៅក្នុងការប្រើប្រាស់ឬអត់។</translation>
 <translation id="3163201441334626963">មិនស្គាល់ផលិតផល <ph name="PRODUCT_ID" /> ពីអ្នកលក់ <ph name="VENDOR_ID" /></translation>
-<translation id="3302709122321372472">មិនអាចដំណើរការ css '<ph name="RELATIVE_PATH" />' សម្រាប់មាតិកាស្គ្រីបទេ។</translation>
 <translation id="3369521687965833290">មិនអាចពន្លាកម្មវិធីបន្ថែមបានទេ។ ដើម្បីពន្លាកម្មវិធីបន្ថែមដោយស្វ័យប្រវត្តិ ត្រូវមានផ្លូវមួយទៅថតឯកសាររបស់អ្នកដែលចាប់ផ្តើមជាមួយតួអក្សរដ្រាយ៍ ហើយមិនផ្ទុកចំណុចប្រសព្វ ចំណុចម៉ោន ឬតំណសញ្ញាទេ។  គ្មានផ្លូវដូចនេះដែលមានទៅលើទម្រង់របស់អ្នកទេ។</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (លេខសេរ៊ី <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> ពីអ្នកលក់ <ph name="VENDOR_ID" /> (លេខសេរ៊ី <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">តម្លៃធាតុបញ្ចូលសម្រាប់សោឯកជនត្រូវតែជាផ្លូវដែលមានសុពលភាព។</translation>
 <translation id="388442998277590542">មិនអាចដំណើរការទំព័រជម្រើស '<ph name="OPTIONS_PAGE" />' ទេ។</translation>
 <translation id="3984413272403535372">កំហុសឆ្គងខណៈពេលចុះហត្ថលេខាកម្មវិធីបន្ថែម។</translation>
-<translation id="39964277676607559">មិនអាចដំណើរការ javascript '<ph name="RELATIVE_PATH" />' សម្រាប់មាតិកាស្គ្រីបបានទេ។</translation>
 <translation id="4115165561519362854">អ្នកគ្រប់គ្រងនៃម៉ាស៊ីននេះតម្រូវឲ្យ <ph name="EXTENSION_NAME" /> មានកំណែទាបបំផុតត្រឹម <ph name="EXTENSION_VERSION" />។ វាមិនអាចបើកដំណើរការបានទេ រហូតដល់វាត្រូវបានធ្វើបច្ចុប្បន្នភាពទៅកំណែនោះ (ឬខ្ពស់ជាងនោះ)។</translation>
 <translation id="4233778200880751280">មិនអាចដំណើរការទំព័រអំពីទេ '<ph name="ABOUT_PAGE" />'។</translation>
 <translation id="471800408830181311">បានបរាជ័យក្នុងការបង្កើតសោឯកជន។</translation>
@@ -33,6 +32,7 @@
 <translation id="4988792151665380515">បានបរាជ័យក្នុងការនាំចេញសោសាធារណៈ។</translation>
 <translation id="5026754133087629784">មើលគេហទំព័រ៖ <ph name="WEBVIEW_TAG_NAME" /></translation>
 <translation id="5098647635849512368">មិនអាចស្វែងរកផ្លូវពិតប្រាកដទៅកាន់ថតឯកសារដើម្បីវិចខ្ចប់ទេ។</translation>
+<translation id="5160071981665899014">មិនអាច​ផ្ទុក javascript '<ph name="RELATIVE_PATH" />' សម្រាប់​ស្គ្រីប​បានទេ។</translation>
 <translation id="5356315618422219272">មើលកម្មវិធី៖ <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5436430103864390185">ផ្ទាំងទម្រង់មិនត្រូវបានគាំទ្រទេ។</translation>
 <translation id="5456409301717116725">កម្មវិធីបន្ថែមនេះរាប់បញ្ចូលទាំងឯកសារសោ '<ph name="KEY_PATH" />'។ អ្នកប្រហែលជាមិនចង់ធ្វើដូច្នេះទេ។</translation>

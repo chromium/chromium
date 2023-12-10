@@ -15,7 +15,6 @@
 
 #include <utility>
 
-#include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/string_number_conversions.h"
@@ -65,22 +64,7 @@ constexpr int kWinMaxChannels = 8;
 // determined from the system
 constexpr int kFallbackBufferSize = 2048;
 
-namespace {
-
-int NumberOfWaveOutBuffers() {
-  // Use the user provided buffer count if provided.
-  int buffers = 0;
-  std::string buffers_str(
-      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          switches::kWaveOutBuffers));
-  if (base::StringToInt(buffers_str, &buffers) && buffers > 0) {
-    return buffers;
-  }
-
-  return 3;
-}
-
-}  // namespace
+constexpr int kNumberOfWaveOutBuffers = 3;
 
 AudioManagerWin::AudioManagerWin(std::unique_ptr<AudioThread> audio_thread,
                                  AudioLogFactory* audio_log_factory)
@@ -234,7 +218,7 @@ AudioOutputStream* AudioManagerWin::MakeLinearOutputStream(
   if (params.channels() > kWinMaxChannels)
     return nullptr;
 
-  return new PCMWaveOutAudioOutputStream(this, params, NumberOfWaveOutBuffers(),
+  return new PCMWaveOutAudioOutputStream(this, params, kNumberOfWaveOutBuffers,
                                          WAVE_MAPPER);
 }
 
@@ -268,12 +252,6 @@ AudioOutputStream* AudioManagerWin::MakeLowLatencyOutputStream(
 
   if (params.channels() > kWinMaxChannels)
     return nullptr;
-
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kForceWaveAudio)) {
-    DLOG(WARNING) << "Forcing usage of Windows WaveXxx APIs";
-    return nullptr;
-  }
 
   // Pass an empty string to indicate that we want the default device
   // since we consistently only check for an empty string in
@@ -327,7 +305,6 @@ std::string AudioManagerWin::GetCommunicationsOutputDeviceID() {
 AudioParameters AudioManagerWin::GetPreferredOutputStreamParameters(
     const std::string& output_device_id,
     const AudioParameters& input_params) {
-  const base::CommandLine* cmd_line = base::CommandLine::ForCurrentProcess();
   ChannelLayoutConfig channel_layout_config = ChannelLayoutConfig::Stereo();
   int sample_rate = 48000;
   int buffer_size = kFallbackBufferSize;
@@ -335,17 +312,7 @@ AudioParameters AudioManagerWin::GetPreferredOutputStreamParameters(
   int min_buffer_size = 0;
   int max_buffer_size = 0;
 
-  if (cmd_line->HasSwitch(switches::kEnableExclusiveAudio)) {
-    // TODO(rtoy): tune these values for best possible WebAudio
-    // performance. WebRTC works well at 48kHz and a buffer size of 480
-    // samples will be used for this case. Note that exclusive mode is
-    // experimental. This sample rate will be combined with a buffer size of
-    // 256 samples, which corresponds to an output delay of ~5.33ms.
-    sample_rate = 48000;
-    buffer_size = 256;
-    if (input_params.IsValid())
-      channel_layout_config = input_params.channel_layout_config();
-  } else {
+  {
     AudioParameters params;
     HRESULT hr = CoreAudioUtil::GetPreferredAudioParameters(
         output_device_id.empty() ? GetDefaultOutputDeviceID()
@@ -377,11 +344,7 @@ AudioParameters AudioManagerWin::GetPreferredOutputStreamParameters(
   }
 
   if (input_params.IsValid()) {
-    // If the user has enabled checking supported channel layouts or we don't
-    // have a valid channel layout yet, try to use the input layout.  See bugs
-    // http://crbug.com/259165 and http://crbug.com/311906 for more details.
-    if (cmd_line->HasSwitch(switches::kTrySupportedChannelLayouts) ||
-        channel_layout_config.channel_layout() == CHANNEL_LAYOUT_UNSUPPORTED) {
+    if (channel_layout_config.channel_layout() == CHANNEL_LAYOUT_UNSUPPORTED) {
       // Check if it is possible to open up at the specified input channel
       // layout but avoid checking if the specified layout is the same as the
       // hardware (preferred) layout. We do this extra check to avoid the

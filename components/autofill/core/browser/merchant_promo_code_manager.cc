@@ -19,10 +19,9 @@ MerchantPromoCodeManager::MerchantPromoCodeManager() = default;
 MerchantPromoCodeManager::~MerchantPromoCodeManager() = default;
 
 bool MerchantPromoCodeManager::OnGetSingleFieldSuggestions(
-    AutofillSuggestionTriggerSource trigger_source,
     const FormFieldData& field,
     const AutofillClient& client,
-    base::WeakPtr<SuggestionsHandler> handler,
+    OnSuggestionsReturnedCallback on_suggestions_returned,
     const SuggestionsContext& context) {
   // The field is eligible only if it's focused on a merchant promo code.
   bool field_is_eligible =
@@ -38,9 +37,8 @@ bool MerchantPromoCodeManager::OnGetSingleFieldSuggestions(
         personal_data_manager_->GetActiveAutofillPromoCodeOffersForOrigin(
             context.form_structure->main_frame_origin().GetURL());
     if (!promo_code_offers.empty()) {
-      SendPromoCodeSuggestions(promo_code_offers, field.global_id(),
-                               QueryHandler(field.global_id(), trigger_source,
-                                            field.value, handler));
+      SendPromoCodeSuggestions(std::move(promo_code_offers), field,
+                               std::move(on_suggestions_returned));
       return true;
     }
   }
@@ -50,9 +48,6 @@ bool MerchantPromoCodeManager::OnGetSingleFieldSuggestions(
 void MerchantPromoCodeManager::OnWillSubmitFormWithFields(
     const std::vector<FormFieldData>& fields,
     bool is_autocomplete_enabled) {}
-
-void MerchantPromoCodeManager::CancelPendingQueries(
-    const SuggestionsHandler* handler) {}
 
 void MerchantPromoCodeManager::OnRemoveCurrentSingleFieldSuggestion(
     const std::u16string& field_name,
@@ -148,35 +143,25 @@ void MerchantPromoCodeManager::UMARecorder::OnOfferSuggestionSelected(
 }
 
 void MerchantPromoCodeManager::SendPromoCodeSuggestions(
-    const std::vector<const AutofillOfferData*>& promo_code_offers,
-    const FieldGlobalId& field_global_id,
-    const QueryHandler& query_handler) {
-  if (!query_handler.handler_) {
-    // Either the handler has been destroyed, or it is invalid.
-    return;
-  }
-
+    std::vector<const AutofillOfferData*> promo_code_offers,
+    const FormFieldData& field,
+    OnSuggestionsReturnedCallback on_suggestions_returned) {
   // If the input box content equals any of the available promo codes, then
   // assume the promo code has been filled, and don't show any suggestions.
   for (const AutofillOfferData* promo_code_offer : promo_code_offers) {
-    if (query_handler.prefix_ ==
-        base::ASCIIToUTF16(promo_code_offer->GetPromoCode())) {
-      // Return empty suggestions to query handler. This will result in no
-      // suggestions being displayed.
-      query_handler.handler_->OnSuggestionsReturned(
-          query_handler.field_id_, query_handler.trigger_source_, {});
+    if (field.value == base::ASCIIToUTF16(promo_code_offer->GetPromoCode())) {
+      std::move(on_suggestions_returned).Run(field.global_id(), {});
       return;
     }
   }
 
-  // Return suggestions to query handler.
-  query_handler.handler_->OnSuggestionsReturned(
-      query_handler.field_id_, query_handler.trigger_source_,
-      AutofillSuggestionGenerator::GetPromoCodeSuggestionsFromPromoCodeOffers(
-          promo_code_offers));
+  std::move(on_suggestions_returned)
+      .Run(field.global_id(),
+           AutofillSuggestionGenerator::
+               GetPromoCodeSuggestionsFromPromoCodeOffers(promo_code_offers));
 
   // Log that promo code autofill suggestions were shown.
-  uma_recorder_.OnOffersSuggestionsShown(field_global_id, promo_code_offers);
+  uma_recorder_.OnOffersSuggestionsShown(field.global_id(), promo_code_offers);
 }
 
 }  // namespace autofill

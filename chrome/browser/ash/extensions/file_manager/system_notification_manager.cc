@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/extensions/file_manager/system_notification_manager.h"
 
+#include <optional>
 #include <string>
 
 #include "ash/components/arc/arc_prefs.h"
@@ -38,7 +39,6 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/extension_event_histogram_value.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/strings/grit/ui_chromeos_strings.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -256,7 +256,7 @@ NotificationPtr SystemNotificationManager::CreateNotification(
 
 void SystemNotificationManager::HandleProgressClick(
     const std::string& notification_id,
-    absl::optional<int> button_index) {
+    std::optional<int> button_index) {
   if (button_index) {
     // Cancel the copy operation.
     FileSystemContextPtr file_system_context =
@@ -353,7 +353,7 @@ void SystemNotificationManager::HandleIOTaskProgressNotificationClick(
     IOTaskId task_id,
     const std::string& notification_id,
     const bool paused,
-    absl::optional<int> button_index) {
+    std::optional<int> button_index) {
   if (!button_index.has_value()) {
     return;
   }
@@ -485,9 +485,9 @@ void SystemNotificationManager::HandleBulkPinningNotificationClick() {
 NotificationPtr SystemNotificationManager::MakeBulkPinningErrorNotification(
     const Event& event) {
   // Parse the event args as a bulk-pinning progress struct.
-  fmp::BulkPinProgress progress;
   DCHECK(!event.event_args.empty());
-  if (!fmp::BulkPinProgress::Populate(event.event_args[0], progress)) {
+  auto progress = fmp::BulkPinProgress::FromValue(event.event_args[0]);
+  if (!progress) {
     LOG(ERROR) << "Cannot parse BulkPinProgress from " << event.event_args[0];
     return nullptr;
   }
@@ -495,9 +495,9 @@ NotificationPtr SystemNotificationManager::MakeBulkPinningErrorNotification(
   // Remember the bulk-pinning stage.
   using enum BulkPinStage;
   const BulkPinStage old_stage = bulk_pin_stage_;
-  bulk_pin_stage_ = progress.stage;
+  bulk_pin_stage_ = progress->stage;
 
-  if (!progress.should_pin) {
+  if (!progress->should_pin) {
     return nullptr;
   }
 
@@ -529,7 +529,7 @@ NotificationPtr SystemNotificationManager::MakeBulkPinningErrorNotification(
   int title_id, message_id;
 
   if (bulk_pin_stage_ == BulkPinStage::kNotEnoughSpace) {
-    if (progress.emptied_queue) {
+    if (progress->emptied_queue) {
       title_id = IDS_FILE_BROWSER_DRIVE_SYNC_TURNED_OFF_TITLE;
       message_id =
           IDS_FILE_BROWSER_BULK_PINNING_NOT_ENOUGH_SPACE_NOTIFICATION_2;
@@ -554,9 +554,9 @@ NotificationPtr SystemNotificationManager::MakeBulkPinningErrorNotification(
 
 NotificationPtr SystemNotificationManager::MakeDriveSyncErrorNotification(
     const Event& event) {
-  fmp::DriveSyncErrorEvent sync_error;
   DCHECK(!event.event_args.empty());
-  if (!fmp::DriveSyncErrorEvent::Populate(event.event_args[0], sync_error)) {
+  auto sync_error = fmp::DriveSyncErrorEvent::FromValue(event.event_args[0]);
+  if (!sync_error) {
     LOG(ERROR) << "Cannot parse DriveSyncErrorEvent from "
                << event.event_args[0];
     return nullptr;
@@ -564,10 +564,10 @@ NotificationPtr SystemNotificationManager::MakeDriveSyncErrorNotification(
 
   const std::u16string title =
       GetStringUTF16(IDS_FILE_BROWSER_DRIVE_DIRECTORY_LABEL);
-  const std::string id = ToString(sync_error.type);
-  const GURL file_url(sync_error.file_url);
+  const std::string id = ToString(sync_error->type);
+  const GURL file_url(sync_error->file_url);
 
-  switch (sync_error.type) {
+  switch (sync_error->type) {
     case fmp::DriveSyncErrorType::kDeleteWithoutPermission:
       return CreateNotification(
           id, title,
@@ -599,7 +599,7 @@ NotificationPtr SystemNotificationManager::MakeDriveSyncErrorNotification(
                           util::GetDisplayableFileName16(file_url)));
 
     case fmp::DriveSyncErrorType::kNoSharedDriveSpace:
-      if (!sync_error.shared_drive.has_value()) {
+      if (!sync_error->shared_drive.has_value()) {
         DLOG(WARNING) << "No shared drive provided for error notification";
         return nullptr;
       }
@@ -607,21 +607,21 @@ NotificationPtr SystemNotificationManager::MakeDriveSyncErrorNotification(
       return CreateNotification(
           id, title,
           GetStringFUTF16(IDS_FILE_BROWSER_SYNC_ERROR_SHARED_DRIVE_OUT_OF_SPACE,
-                          UTF8ToUTF16(sync_error.shared_drive.value())));
+                          UTF8ToUTF16(sync_error->shared_drive.value())));
 
     case fmp::DriveSyncErrorType::kNone:
       break;
   }
 
   LOG(ERROR) << "Unexpected Drive sync error: "
-             << base::to_underlying(sync_error.type);
+             << base::to_underlying(sync_error->type);
   return nullptr;
 }
 
 static const char kDriveDialogId[] = "swa-drive-confirm-dialog";
 
 void SystemNotificationManager::HandleDriveDialogClick(
-    absl::optional<int> button_index) {
+    std::optional<int> button_index) {
   drivefs::mojom::DialogResult result = drivefs::mojom::DialogResult::kDismiss;
   if (button_index) {
     if (button_index.value() == 1) {
@@ -641,10 +641,10 @@ void SystemNotificationManager::HandleDriveDialogClick(
 
 NotificationPtr SystemNotificationManager::MakeDriveConfirmDialogNotification(
     const Event& event) {
-  fmp::DriveConfirmDialogEvent dialog_event;
   DCHECK(!event.event_args.empty());
-  if (!fmp::DriveConfirmDialogEvent::Populate(event.event_args[0],
-                                              dialog_event)) {
+  auto dialog_event =
+      fmp::DriveConfirmDialogEvent::FromValue(event.event_args[0]);
+  if (!dialog_event) {
     LOG(ERROR) << "Cannot parse DriveConfirmDialogEvent from "
                << event.event_args[0];
     return nullptr;
@@ -667,9 +667,9 @@ NotificationPtr SystemNotificationManager::MakeDriveConfirmDialogNotification(
 
 NotificationPtr SystemNotificationManager::UpdateDriveSyncNotification(
     const Event& event) {
-  fmp::FileTransferStatus status;
   DCHECK(!event.event_args.empty());
-  if (!fmp::FileTransferStatus::Populate(event.event_args[0], status)) {
+  auto status = fmp::FileTransferStatus::FromValue(event.event_args[0]);
+  if (!status) {
     LOG(ERROR) << "Cannot parse FileTransferStatus from "
                << event.event_args[0];
     return nullptr;
@@ -683,7 +683,7 @@ NotificationPtr SystemNotificationManager::UpdateDriveSyncNotification(
   constexpr char kDrivePinId[] = "swa-drive-pin";
 
   // Close if notifications are disabled for this transfer.
-  if (!status.show_notification) {
+  if (!status->show_notification) {
     GetNotificationDisplayService()->Close(
         NotificationHandler::Type::TRANSIENT,
         is_sync_operation ? kDriveSyncId : kDrivePinId);
@@ -691,11 +691,11 @@ NotificationPtr SystemNotificationManager::UpdateDriveSyncNotification(
   }
 
   using enum fmp::TransferState;
-  if (status.transfer_state == fmp::TransferState::kCompleted ||
-      status.transfer_state == fmp::TransferState::kFailed) {
+  if (status->transfer_state == fmp::TransferState::kCompleted ||
+      status->transfer_state == fmp::TransferState::kFailed) {
     // We only close when there are no jobs left, we could have received
     // a TRANSFER_STATE_COMPLETED event when there are more jobs to run.
-    if (status.num_total_jobs == 0) {
+    if (status->num_total_jobs == 0) {
       GetNotificationDisplayService()->Close(
           NotificationHandler::Type::TRANSIENT,
           is_sync_operation ? kDriveSyncId : kDrivePinId);
@@ -705,22 +705,22 @@ NotificationPtr SystemNotificationManager::UpdateDriveSyncNotification(
   }
 
   std::u16string message =
-      status.num_total_jobs == 1
+      status->num_total_jobs == 1
           ? GetStringFUTF16(
                 is_sync_operation ? IDS_FILE_BROWSER_SYNC_FILE_NAME
                                   : IDS_FILE_BROWSER_OFFLINE_PROGRESS_MESSAGE,
-                util::GetDisplayableFileName16(GURL(status.file_url)))
+                util::GetDisplayableFileName16(GURL(status->file_url)))
           : GetStringFUTF16(
                 is_sync_operation
                     ? IDS_FILE_BROWSER_SYNC_FILE_NUMBER
                     : IDS_FILE_BROWSER_OFFLINE_PROGRESS_MESSAGE_PLURAL,
-                base::NumberToString16(status.num_total_jobs));
+                base::NumberToString16(status->num_total_jobs));
 
   return CreateProgressNotification(
       is_sync_operation ? kDriveSyncId : kDrivePinId,
       GetStringUTF16(IDS_FILE_BROWSER_GRID_VIEW_FILES_TITLE),
       std::move(message),
-      static_cast<int>((status.processed / status.total) * 100.0));
+      static_cast<int>((status->processed / status->total) * 100.0));
 }
 
 void SystemNotificationManager::HandleEvent(const Event& event) {
@@ -862,7 +862,7 @@ void SystemNotificationManager::HandleRemovableNotificationClick(
     const std::string& path,
     const std::vector<DeviceNotificationUserActionUmaType>&
         uma_types_for_buttons,
-    absl::optional<int> button_index) {
+    std::optional<int> button_index) {
   if (button_index) {
     if (button_index.value() == 0) {
       base::FilePath volume_root(path);
@@ -885,7 +885,7 @@ void SystemNotificationManager::HandleRemovableNotificationClick(
 void SystemNotificationManager::HandleDataProtectionPolicyNotificationClick(
     RepeatingClosure proceed_callback,
     RepeatingClosure cancel_callback,
-    absl::optional<int> button_index) {
+    std::optional<int> button_index) {
   if (!button_index.has_value()) {
     return;
   }

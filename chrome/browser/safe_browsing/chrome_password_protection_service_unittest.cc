@@ -35,10 +35,10 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/hash_password_manager.h"
-#include "components/password_manager/core/browser/mock_password_store_interface.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/password_reuse_detector.h"
+#include "components/password_manager/core/browser/password_store/mock_password_store_interface.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/safe_browsing/content/browser/password_protection/password_protection_commit_deferring_condition.h"
@@ -135,7 +135,7 @@ constexpr struct {
   // The enum to log in the user event for that response.
   PasswordReuseLookup::LookupResult lookup_result;
 } kTestCasesWithoutVerdict[]{
-    {RequestOutcome::MATCHED_ALLOWLIST, PasswordReuseLookup::WHITELIST_HIT},
+    {RequestOutcome::MATCHED_ALLOWLIST, PasswordReuseLookup::ALLOWLIST_HIT},
     {RequestOutcome::URL_NOT_VALID_FOR_REPUTATION_COMPUTING,
      PasswordReuseLookup::URL_UNSUPPORTED},
     {RequestOutcome::CANCELED, PasswordReuseLookup::REQUEST_FAILURE},
@@ -1529,10 +1529,19 @@ class ChromePasswordProtectionServiceWithAccountPasswordStoreTest
     : public ChromePasswordProtectionServiceTest {
  public:
   ChromePasswordProtectionServiceWithAccountPasswordStoreTest() {
+#if BUILDFLAG(IS_ANDROID)
+    // Using the account store on Android also requires UPM support for local
+    // passwords.
+    feature_list_.InitWithFeatures(
+        {password_manager::features::kEnablePasswordsAccountStorage,
+         password_manager::features::
+             kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration},
+        {});
+#else
     feature_list_.InitAndEnableFeature(
         password_manager::features::kEnablePasswordsAccountStorage);
+#endif
   }
-
  private:
   base::test::ScopedFeatureList feature_list_;
 };

@@ -1,13 +1,13 @@
 <!DOCTYPE html>
-<title>View Transitions: @view-transitions nested in a @layer rule.</title>
+<title>View Transitions: @view-transition nested in a @layer rule.</title>
 <link rel="help" href="https://drafts.csswg.org/css-view-transitions-2/">
 <link rel="author" href="mailto:bokan@chromium.org">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <style>
 @layer transition {
-  @view-transitions {
-    navigation-trigger: cross-document-same-origin;
+  @view-transition {
+    navigation: auto;
   }
 }
 </style>

@@ -60,6 +60,7 @@
 #include "third_party/blink/renderer/core/fileapi/file_list.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
+#include "third_party/blink/renderer/core/geometry/dom_rect.h"
 #include "third_party/blink/renderer/core/html/forms/color_chooser.h"
 #include "third_party/blink/renderer/core/html/forms/date_time_chooser.h"
 #include "third_party/blink/renderer/core/html/forms/email_input_type.h"
@@ -106,6 +107,8 @@ using mojom::blink::FormControlType;
 namespace {
 
 const unsigned kMaxEmailFieldLength = 254;
+
+const unsigned kMinStrongPasswordLabelWidth = 220;
 
 static bool is_default_font_prewarmed_ = false;
 
@@ -303,8 +306,9 @@ bool HTMLInputElement::HasCustomFocusLogic() const {
   return input_type_view_->HasCustomFocusLogic();
 }
 
-bool HTMLInputElement::IsKeyboardFocusable() const {
-  return input_type_->IsKeyboardFocusable();
+bool HTMLInputElement::IsKeyboardFocusable(
+    UpdateBehavior update_behavior) const {
+  return input_type_->IsKeyboardFocusable(update_behavior);
 }
 
 bool HTMLInputElement::MayTriggerVirtualKeyboard() const {
@@ -1213,6 +1217,10 @@ void HTMLInputElement::SetSuggestedValue(const String& value) {
       placeholder->classList().Remove(reveal);
     }
 
+    // Prevent fade out and displaying strong password label in narrow forms.
+    if (GetBoundingClientRect()->width() < kMinStrongPasswordLabelWidth) {
+      should_show_strong_password_label_ = false;
+    }
     const AtomicString fade_out("fade-out-password");
     if (should_show_strong_password_label_) {
       placeholder->classList().Add(fade_out);
@@ -2352,10 +2360,23 @@ bool HTMLInputElement::HandleInvokeInternal(HTMLElement& invoker,
     return true;
   }
 
+  if (!RuntimeEnabledFeatures::HTMLInvokeActionsV2Enabled()) {
+    return false;
+  }
+
+  // Step 3. If action is an ASCII case-insensitive match for showPicker ...
+  // Early return instead of doing this in step 3.
   if (!EqualIgnoringASCIICase(action, keywords::kShowPicker)) {
     return false;
   }
 
+  // Step 1. If this is not mutable, then return.
+  if (!isMutable()) {
+    return false;
+  }
+
+  // Step 2. If this's relevant settings object's origin is not same origin with
+  // this's relevant settings object's top-level origin, [...], then return.
   Document& document = GetDocument();
   LocalFrame* frame = document.GetFrame();
   if (frame && !frame->IsSameOrigin()) {
@@ -2366,10 +2387,17 @@ bool HTMLInputElement::HandleInvokeInternal(HTMLElement& invoker,
     return false;
   }
 
-  if (!isMutable()) {
+  // If this's relevant global object does not have transient
+  // activation, then return.
+  if (!LocalFrame::HasTransientUserActivation(frame)) {
+    String message = "Input cannot be invoked without a user gesture.";
+    document.AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+        mojom::ConsoleMessageSource::kJavaScript,
+        mojom::ConsoleMessageLevel::kWarning, message));
     return false;
   }
 
+  // Step 3. ... show the picker, if applicable, for this.
   input_type_view_->OpenPopupView();
 
   return true;

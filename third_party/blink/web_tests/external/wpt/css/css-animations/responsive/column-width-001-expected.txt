@@ -1,7 +1,5 @@
 This is a testharness.js-based test.
-[PASS] column-width responds to font-size changes
 [FAIL] column-width clamps to 0px
   assert_equals: expected "20px" but got "0px"
-[PASS] column-width responds to inherited changes
 Harness: the test ran to completion.
 

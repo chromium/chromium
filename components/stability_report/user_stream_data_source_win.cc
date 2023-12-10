@@ -92,7 +92,10 @@ void CollectProcessPerformanceMetrics(
 
   DWORD process_handle_count = 0;
   if (::GetProcessHandleCount(process.Handle(), &process_handle_count)) {
-    memory_state->set_process_handle_count(process_handle_count);
+    ProcessState::FileSystemState::WindowsFileSystemState* file_system_state =
+        process_state.mutable_file_system_state()
+            ->mutable_windows_file_system_state();
+    file_system_state->set_process_handle_count(process_handle_count);
   }
 }
 

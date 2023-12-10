@@ -12,6 +12,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
+#include "mojo/public/cpp/bindings/runtime_features.h"
 
 namespace mojo {
 
@@ -38,6 +39,9 @@ class SelfOwnedAssociatedReceiver {
       std::unique_ptr<Interface> impl,
       PendingAssociatedReceiver<Interface> receiver,
       scoped_refptr<base::SequencedTaskRunner> task_runner = nullptr) {
+    if (!internal::GetRuntimeFeature_ExpectEnabled<Interface>()) {
+      return nullptr;
+    }
     SelfOwnedAssociatedReceiver* self_owned = new SelfOwnedAssociatedReceiver(
         std::move(impl), std::move(receiver), std::move(task_runner));
     return self_owned->weak_factory_.GetWeakPtr();

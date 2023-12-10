@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_SELECT_FILE_DIALOG_EXTENSION_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -13,7 +14,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_file_destination.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/color/color_provider_source_observer.h"
 #include "ui/gfx/native_widget_types.h"  // gfx::NativeWindow
 #include "ui/shell_dialogs/select_file_dialog.h"
@@ -96,16 +96,16 @@ class SelectFileDialogExtension : public ui::SelectFileDialog {
     raw_ptr<aura::Window, LeakedDanglingUntriaged | ExperimentalAsh> window =
         nullptr;
     // Android task ID if the owner window is an Android app.
-    absl::optional<int> android_task_id;
+    std::optional<int> android_task_id;
     // Lacros window ID if the owner window is a Lacros browser. This field
     // can be nullopt even when is_lacros is true, for dialogs that are not
     // owned by a particular window, aka "modeless" dialog.
-    absl::optional<std::string> lacros_window_id;
+    std::optional<std::string> lacros_window_id;
     // Set to true only if SelectFileAsh opened the dialog.
     bool is_lacros = false;
     // The URL or Component type of the caller that opened the dialog (Save
     // As/File Picker).
-    absl::optional<policy::DlpFileDestination> dialog_caller;
+    std::optional<policy::DlpFileDestination> dialog_caller;
   };
   void SelectFileWithFileManagerParams(Type type,
                                        const std::u16string& title,
@@ -156,7 +156,7 @@ class SelectFileDialogExtension : public ui::SelectFileDialog {
 
   // Applies DLP policies if there's any, then notifies listeners accordingly.
   void ApplyPolicyAndNotifyListener(
-      absl::optional<policy::DlpFileDestination> dialog_caller);
+      std::optional<policy::DlpFileDestination> dialog_caller);
 
   // Invokes the appropriate file selection callback on our listener.
   void NotifyListener(std::vector<ui::SelectedFileInfo> selection_files);

@@ -128,6 +128,11 @@ absl::optional<PhysicalRect> PerformBubblingScrollIntoView(
 
   const LayoutBox* current_box = &box;
   PhysicalRect absolute_rect_to_scroll = absolute_rect;
+  const auto& box_style = box.StyleRef();
+  PhysicalBoxStrut scroll_margin(LayoutUnit(box_style.ScrollMarginTop()),
+                                 LayoutUnit(box_style.ScrollMarginRight()),
+                                 LayoutUnit(box_style.ScrollMarginBottom()),
+                                 LayoutUnit(box_style.ScrollMarginLeft()));
 
   // TODO(bokan): Temporary, to track cross-origin scroll-into-view prevalence.
   // https://crbug.com/1339003.
@@ -172,8 +177,8 @@ absl::optional<PhysicalRect> PerformBubblingScrollIntoView(
               ? area_to_scroll->GetSmoothScrollSequencer()->GetCount()
               : 0ul;
 
-      absolute_rect_to_scroll =
-          area_to_scroll->ScrollIntoView(absolute_rect_to_scroll, params);
+      absolute_rect_to_scroll = area_to_scroll->ScrollIntoView(
+          absolute_rect_to_scroll, scroll_margin, params);
 
       // TODO(bokan): Temporary, to track cross-origin scroll-into-view
       // prevalence. https://crbug.com/1339003.
@@ -224,7 +229,7 @@ absl::optional<PhysicalRect> PerformBubblingScrollIntoView(
             current_box->GetFrame()
                 ->GetPage()
                 ->GetVisualViewport()
-                .ScrollIntoView(absolute_rect_to_scroll, params);
+                .ScrollIntoView(absolute_rect_to_scroll, scroll_margin, params);
       }
 
       // TODO(bokan): To be correct we should continue to bubble the scroll

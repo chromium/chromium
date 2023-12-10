@@ -2,20 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chromeos/ash/components/nearby/common/scheduling/nearby_expiration_scheduler.h"
+
 #include <memory>
+#include <optional>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/test/task_environment.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
-#include "chromeos/ash/components/nearby/common/scheduling/nearby_expiration_scheduler.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "content/public/browser/network_service_instance.h"
 #include "services/network/test/test_network_connection_tracker.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -54,7 +55,7 @@ class NearbyExpirationSchedulerTest : public ::testing::Test {
         &pref_service_, base::DoNothing(), task_environment_.GetMockClock());
   }
 
-  absl::optional<base::Time> TestExpirationTimeFunctor() {
+  std::optional<base::Time> TestExpirationTimeFunctor() {
     return expiration_time_;
   }
 
@@ -65,7 +66,7 @@ class NearbyExpirationSchedulerTest : public ::testing::Test {
     task_environment_.FastForwardBy(delta);
   }
 
-  absl::optional<base::Time> expiration_time_;
+  std::optional<base::Time> expiration_time_;
   NearbyScheduler* scheduler() { return scheduler_.get(); }
 
  private:
@@ -106,7 +107,7 @@ TEST_F(NearbyExpirationSchedulerTest, Reschedule) {
 TEST_F(NearbyExpirationSchedulerTest, NullExpirationTime) {
   expiration_time_.reset();
   scheduler()->Start();
-  EXPECT_EQ(absl::nullopt, scheduler()->GetTimeUntilNextRequest());
+  EXPECT_EQ(std::nullopt, scheduler()->GetTimeUntilNextRequest());
 }
 
 }  // namespace ash::nearby

@@ -59,7 +59,7 @@ void FakeConnection::RemoveObserver(ConnectionObserver* observer) {
 }
 
 void FakeConnection::GetConnectionRssi(
-    base::OnceCallback<void(absl::optional<int32_t>)> callback) {
+    base::OnceCallback<void(std::optional<int32_t>)> callback) {
   std::move(callback).Run(rssi_to_return_);
 }
 

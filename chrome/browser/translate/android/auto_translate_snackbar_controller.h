@@ -22,6 +22,11 @@ namespace translate {
 
 class TranslateManager;
 
+// The AutoTranslateSnackbarController coordinates between the
+// ChromeTranslateClient and the Java SnackbarManager to show a Snackbar when
+// auto-translations occur.  An AutoTranslateSnackbarController is created the
+// first time an auto-translation is shown in a tab and destroyed when the tab
+// is destroyed.
 class AutoTranslateSnackbarController {
  public:
   AutoTranslateSnackbarController(
@@ -68,6 +73,7 @@ class AutoTranslateSnackbarController {
     virtual void ShowSnackbar(
         JNIEnv* env,
         base::android::ScopedJavaLocalRef<jstring> target_language) = 0;
+    virtual bool CanShowSnackbar() = 0;
     virtual void WasDismissed() = 0;
     virtual bool IsSnackbarShowing() = 0;
 
@@ -89,4 +95,4 @@ class AutoTranslateSnackbarController {
 
 }  // namespace translate
 
-#endif  // CHROME_BROWSER_TRANSLATE_ANDROID_AUTO_TRANSLATE_SNACKBAR_H_
+#endif  // CHROME_BROWSER_TRANSLATE_ANDROID_AUTO_TRANSLATE_SNACKBAR_CONTROLLER_H_

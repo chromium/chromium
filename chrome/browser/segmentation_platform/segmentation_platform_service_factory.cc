@@ -6,6 +6,7 @@
 #include <memory>
 
 #include "base/files/file_path.h"
+#include "base/hash/hash.h"
 #include "base/no_destructor.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
@@ -149,7 +150,10 @@ KeyedService* SegmentationPlatformServiceFactory::BuildServiceInstanceFor(
       session_sync_service, profile);
 
   auto params = std::make_unique<SegmentationPlatformServiceImpl::InitParams>();
-
+  auto profile_path = profile->GetPath().value();
+  params->profile_id = base::NumberToString(base::PersistentHash(
+      profile_path.data(),
+      profile_path.length() * sizeof(base::FilePath::CharType)));
   params->history_service = HistoryServiceFactory::GetForProfile(
       profile, ServiceAccessType::IMPLICIT_ACCESS);
   params->task_runner = base::ThreadPool::CreateSequencedTaskRunner(
@@ -161,7 +165,7 @@ KeyedService* SegmentationPlatformServiceFactory::BuildServiceInstanceFor(
   params->clock = base::DefaultClock::GetInstance();
 
   params->ukm_data_manager =
-      UkmDatabaseClient::GetInstance().GetUkmDataManager();
+      UkmDatabaseClientHolder::GetClientInstance(profile).GetUkmDataManager();
   params->profile_prefs = profile->GetPrefs();
   params->configs = GetSegmentationPlatformConfig(context);
   params->input_delegate_holder = SetUpInputDelegates(

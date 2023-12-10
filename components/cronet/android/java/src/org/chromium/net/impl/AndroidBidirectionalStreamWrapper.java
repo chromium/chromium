@@ -4,11 +4,14 @@
 
 package org.chromium.net.impl;
 
-import androidx.annotation.RequiresApi;
+import static org.chromium.net.impl.HttpEngineNativeProvider.EXT_API_LEVEL;
+import static org.chromium.net.impl.HttpEngineNativeProvider.EXT_VERSION;
+
+import androidx.annotation.RequiresExtension;
 
 import java.nio.ByteBuffer;
 
-@RequiresApi(api = 34)
+@RequiresExtension(extension = EXT_API_LEVEL, version = EXT_VERSION)
 class AndroidBidirectionalStreamWrapper extends org.chromium.net.ExperimentalBidirectionalStream {
     private final android.net.http.BidirectionalStream mBackend;
 

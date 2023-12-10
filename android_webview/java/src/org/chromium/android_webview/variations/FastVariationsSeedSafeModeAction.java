@@ -94,7 +94,8 @@ public class FastVariationsSeedSafeModeAction implements SafeModeAction {
             return parser.parseAndSaveSeedFile();
         }
         byte[] protoAsByteArray = getProtoFromServiceBlocking();
-        if (protoAsByteArray != null && protoAsByteArray.length > 0
+        if (protoAsByteArray != null
+                && protoAsByteArray.length > 0
                 && parser.parseSeedAsByteArray(protoAsByteArray)) {
             PostTask.postTask(TaskTraits.BEST_EFFORT, new SeedWriterTask(protoAsByteArray));
             return true;
@@ -137,20 +138,19 @@ public class FastVariationsSeedSafeModeAction implements SafeModeAction {
 
         public byte[] querySafeModeVariationsSeedContentProvider() {
             try {
-                Uri uri = new Uri.Builder()
-                                  .scheme(ContentResolver.SCHEME_CONTENT)
-                                  .authority(this.mWebViewPackageName + URI_SUFFIX)
-                                  .path(URI_PATH)
-                                  .build();
+                Uri uri =
+                        new Uri.Builder()
+                                .scheme(ContentResolver.SCHEME_CONTENT)
+                                .authority(this.mWebViewPackageName + URI_SUFFIX)
+                                .path(URI_PATH)
+                                .build();
                 final Context appContext = ContextUtils.getApplicationContext();
                 try (ParcelFileDescriptor pfd =
                         appContext
                                 .getContentResolver()
                                 .openFileDescriptor(uri, /* mode= */ "r", null)) {
                     if (pfd == null) {
-                        Log.e(TAG,
-                                "Failed to query SafeMode seed from: "
-                                        + "'" + uri + "'");
+                        Log.e(TAG, "Failed to query SafeMode seed from: " + "'" + uri + "'");
                         return null;
                     }
                     return readProtoFromFile(pfd);
@@ -211,8 +211,10 @@ public class FastVariationsSeedSafeModeAction implements SafeModeAction {
         }
 
         private void recordLoadSeedResult(@LoadSeedResult int result) {
-            RecordHistogram.recordEnumeratedHistogram("Variations.SafeMode.LoadSafeSeed.Result",
-                    result, LoadSeedResult.MAX_VALUE + 1);
+            RecordHistogram.recordEnumeratedHistogram(
+                    "Variations.SafeMode.LoadSafeSeed.Result",
+                    result,
+                    LoadSeedResult.MAX_VALUE + 1);
         }
     }
 

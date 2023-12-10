@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <sys/mman.h>
+#include <sys/poll.h>
 
 #include <vector>
 
@@ -11,9 +12,18 @@
 #include "base/rand_util.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "components/viz/common/resources/shared_image_format.h"
+#include "gpu/command_buffer/common/mailbox.h"
+#include "gpu/command_buffer/common/shared_image_usage.h"
+#include "gpu/command_buffer/service/shared_context_state.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_factory.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "media/gpu/chromeos/chromeos_compressed_gpu_memory_buffer_video_frame_utils.h"
 #include "media/gpu/chromeos/image_processor_factory.h"
 #include "media/gpu/chromeos/platform_video_frame_utils.h"
+#include "media/gpu/chromeos/vulkan_image_processor.h"
 #include "media/gpu/test/image.h"
 #include "media/gpu/test/video_test_environment.h"
 #include "media/gpu/video_frame_mapper_factory.h"
@@ -122,8 +132,10 @@ scoped_refptr<VideoFrame> CreateNV12Frame(const gfx::Size& size,
 
 scoped_refptr<VideoFrame> CreateRandomMM21Frame(const gfx::Size& size,
                                                 VideoFrame::StorageType type) {
-  DCHECK_EQ(size.width(), base::bits::AlignUp(size.width(), kMM21TileWidth));
-  DCHECK_EQ(size.height(), base::bits::AlignUp(size.height(), kMM21TileHeight));
+  DCHECK_EQ(size.width(), base::bits::AlignUpDeprecatedDoNotUse(
+                              size.width(), kMM21TileWidth));
+  DCHECK_EQ(size.height(), base::bits::AlignUpDeprecatedDoNotUse(
+                               size.height(), kMM21TileHeight));
 
   scoped_refptr<VideoFrame> frame = CreateNV12Frame(size, type);
   if (!frame) {
@@ -865,6 +877,119 @@ TEST_F(ImageProcessorPerfTest, LibYUVNV12UpscalingTest) {
   reporter.AddResult(".total_duration", delta_time.InMicrosecondsF());
   reporter.AddResult(".frames_per_second", fps);
 }
+
+#if BUILDFLAG(ENABLE_VULKAN)
+TEST_F(ImageProcessorPerfTest, VulkanImageProcessorPerfTest) {
+  // Initialize shared image infrastructure.
+  auto share_group = base::MakeRefCounted<gl::GLShareGroup>();
+  auto surface =
+      gl::init::CreateOffscreenGLSurface(gl::GetDefaultDisplay(), gfx::Size());
+  auto context = gl::init::CreateGLContext(share_group.get(), surface.get(),
+                                           gl::GLContextAttribs());
+  context->MakeCurrent(surface.get());
+  auto context_state = base::MakeRefCounted<gpu::SharedContextState>(
+      share_group, surface, context, false, base::DoNothing(),
+      gpu::GpuPreferences().gr_context_type);
+  gpu::SharedImageManager shared_image_manager;
+  gpu::GpuPreferences gpu_preferences;
+  gpu::GpuDriverBugWorkarounds gpu_workarounds;
+  gpu::GpuFeatureInfo gpu_info;
+  gpu::SharedImageFactory shared_image_factory(
+      gpu_preferences, gpu_workarounds, gpu_info, context_state.get(),
+      &shared_image_manager, nullptr, false);
+
+  gfx::Size test_image_size(kTestImageWidth, kTestImageHeight);
+  gfx::Size test_coded_size(base::bits::AlignUpDeprecatedDoNotUse(
+                                test_image_size.width(), kMM21TileWidth),
+                            base::bits::AlignUpDeprecatedDoNotUse(
+                                test_image_size.height(), kMM21TileHeight));
+  std::vector<scoped_refptr<VideoFrame>> input_frames(kNumberOfTestFrames);
+  std::vector<scoped_refptr<VideoFrame>> output_frames(kNumberOfTestFrames);
+  std::vector<gpu::Mailbox> input_mailboxes(kNumberOfTestFrames);
+  std::vector<gpu::Mailbox> output_mailboxes(kNumberOfTestFrames);
+
+  constexpr base::TimeDelta kNullTimestamp;
+  viz::SharedImageFormat format_nv12 = viz::SharedImageFormat::MultiPlane(
+      viz::SharedImageFormat::PlaneConfig::kY_UV,
+      viz::SharedImageFormat::Subsampling::k420,
+      viz::SharedImageFormat::ChannelFormat::k8);
+  format_nv12.SetPrefersExternalSampler();
+  for (size_t i = 0; i < kNumberOfTestFrames; i++) {
+    input_frames[i] =
+        CreateRandomMM21Frame(test_image_size, VideoFrame::STORAGE_DMABUFS);
+    input_mailboxes[i] = gpu::Mailbox::GenerateForSharedImage();
+    auto input_gmb = CreateGpuMemoryBufferHandle(input_frames[i].get());
+    shared_image_factory.CreateSharedImage(
+        input_mailboxes[i], format_nv12, test_coded_size,
+        gfx::ColorSpace::CreateSRGB(), kTopLeft_GrSurfaceOrigin,
+        kOpaque_SkAlphaType,
+        gpu::SharedImageUsage::SHARED_IMAGE_USAGE_DISPLAY_READ, "TestLabel",
+        std::move(input_gmb));
+
+    output_frames[i] = CreateGpuMemoryBufferVideoFrame(
+        VideoPixelFormat::PIXEL_FORMAT_ARGB, test_coded_size,
+        gfx::Rect(test_image_size), test_coded_size, kNullTimestamp,
+        gfx::BufferUsage::SCANOUT_CPU_READ_WRITE);
+    output_mailboxes[i] = gpu::Mailbox::GenerateForSharedImage();
+    auto output_gmb = CreateGpuMemoryBufferHandle(output_frames[i].get());
+    shared_image_factory.CreateSharedImage(
+        output_mailboxes[i], viz::SinglePlaneFormat::kRGBA_8888,
+        test_coded_size, gfx::ColorSpace::CreateSRGB(),
+        kTopLeft_GrSurfaceOrigin, kUnpremul_SkAlphaType,
+        gpu::SharedImageUsage::SHARED_IMAGE_USAGE_DISPLAY_WRITE, "TestLabel",
+        std::move(output_gmb));
+  }
+
+  auto vulkan_image_processor = VulkanImageProcessor::Create();
+  ASSERT_TRUE(vulkan_image_processor);
+
+  auto start_time = base::TimeTicks::Now();
+  for (int i = 0; i < kNumberOfTestCycles; i++) {
+    auto input_representation = shared_image_manager.ProduceVulkan(
+        input_mailboxes[i % kNumberOfTestFrames], nullptr,
+        vulkan_image_processor->GetVulkanDeviceQueue(),
+        vulkan_image_processor->GetVulkanImplementation());
+    auto output_representation = shared_image_manager.ProduceVulkan(
+        output_mailboxes[i % kNumberOfTestFrames], nullptr,
+        vulkan_image_processor->GetVulkanDeviceQueue(),
+        vulkan_image_processor->GetVulkanImplementation());
+
+    {
+      std::vector<VkSemaphore> begin_semaphores;
+      std::vector<VkSemaphore> end_semaphores;
+      auto input_access = input_representation->BeginScopedAccess(
+          gpu::RepresentationAccessMode::kRead, begin_semaphores,
+          end_semaphores);
+      auto output_access = output_representation->BeginScopedAccess(
+          gpu::RepresentationAccessMode::kWrite, begin_semaphores,
+          end_semaphores);
+
+      vulkan_image_processor->Process(
+          input_access->GetVulkanImage(), test_coded_size, test_image_size,
+          output_access->GetVulkanImage(), test_coded_size, test_image_size,
+          begin_semaphores, end_semaphores);
+    }
+  }
+  // This implicitly waits for all semaphores to signal.
+  vulkan_image_processor->GetVulkanDeviceQueue()
+      ->GetFenceHelper()
+      ->PerformImmediateCleanup();
+  auto end_time = base::TimeTicks::Now();
+
+  base::TimeDelta delta_time = end_time - start_time;
+  // Preventing integer division inaccuracies with |delta_time|.
+  const double fps = (kNumberOfTestCycles / delta_time.InSecondsF());
+  perf_test::PerfResultReporter reporter(
+      "VulkanImageProcessor", "Vulkan Detile Scale Performance Test");
+  reporter.RegisterImportantMetric(".frames_decoded", "frames");
+  reporter.RegisterImportantMetric(".total_duration", "us");
+  reporter.RegisterImportantMetric(".frames_per_second", "fps");
+  reporter.AddResult(".frames_decoded",
+                     static_cast<double>(kNumberOfTestCycles));
+  reporter.AddResult(".total_duration", delta_time.InMicrosecondsF());
+  reporter.AddResult(".frames_per_second", fps);
+}
+#endif
 
 }  // namespace
 }  // namespace media

@@ -86,6 +86,7 @@ class CONTENT_EXPORT RenderWidgetHostViewIOS
   void ClearFallbackSurfaceForCommitPending() override;
   void ResetFallbackToFirstNavigationSurface() override;
   viz::FrameSinkId GetRootFrameSinkId() override;
+  void UpdateFrameSinkIdRegistration() override;
   const viz::FrameSinkId& GetFrameSinkId() const override;
   const viz::LocalSurfaceId& GetLocalSurfaceId() const override;
   viz::SurfaceId GetCurrentSurfaceId() const override;
@@ -112,7 +113,8 @@ class CONTENT_EXPORT RenderWidgetHostViewIOS
   void CancelSuccessfulPresentationTimeRequestForHostAndDelegate() override;
   viz::ScopedSurfaceIdAllocator DidUpdateVisualProperties(
       const cc::RenderFrameMetadata& metadata) override;
-  void DidNavigateMainFramePreCommit() override;
+  void OnOldViewDidNavigatePreCommit() override;
+  void OnNewViewDidNavigatePostCommit() override;
   void DidEnterBackForwardCache() override;
   void DidNavigate() override;
   bool RequestRepaintForTesting() override;

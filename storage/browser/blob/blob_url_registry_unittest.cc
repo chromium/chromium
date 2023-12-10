@@ -142,8 +142,8 @@ TEST_P(BlobUrlRegistryTestP, URLRegistration) {
   EXPECT_EQ(2u, registry.url_count());
   EXPECT_TRUE(registry.RemoveUrlMapping(kURL2, storageKey2));
   EXPECT_FALSE(registry.IsUrlMapped(kURL2, storageKey2));
-  EXPECT_EQ(absl::nullopt, registry.GetUnsafeAgentClusterID(kURL2));
-  EXPECT_EQ(absl::nullopt, registry.GetUnsafeTopLevelSite(kURL2));
+  EXPECT_EQ(std::nullopt, registry.GetUnsafeAgentClusterID(kURL2));
+  EXPECT_EQ(std::nullopt, registry.GetUnsafeTopLevelSite(kURL2));
 
   // Both urls point to the same blob.
   EXPECT_TRUE(registry.AddUrlMapping(kURL2, blob1.Clone(), storageKey2,

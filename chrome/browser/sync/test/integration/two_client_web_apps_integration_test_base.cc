@@ -59,7 +59,7 @@ void TwoClientWebAppsIntegrationTestBase::SyncTurnOff() {
 
 void TwoClientWebAppsIntegrationTestBase::SyncTurnOn() {
   for (SyncServiceImplHarness* client : GetSyncClients()) {
-    ASSERT_TRUE(client->EnableSyncFeature());
+    ASSERT_TRUE(client->SetupSync());
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     client->service()->GetUserSettings()->SetSelectedOsTypes(
         /*sync_everything=*/false,

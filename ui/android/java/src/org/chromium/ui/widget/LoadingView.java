@@ -18,16 +18,12 @@ import org.chromium.ui.interpolators.Interpolators;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * A {@link ProgressBar} that understands the hiding/showing policy defined in Material Design.
- */
+/** A {@link ProgressBar} that understands the hiding/showing policy defined in Material Design. */
 public class LoadingView extends ProgressBar {
     private static final int LOADING_ANIMATION_DELAY_MS = 500;
     private static final int MINIMUM_ANIMATION_SHOW_TIME_MS = 500;
 
-    /**
-     * A observer interface that will be notified when the progress bar is hidden.
-     */
+    /** A observer interface that will be notified when the progress bar is hidden. */
     public interface Observer {
         /**
          * Notify the listener a call to {@link #showLoadingUI()} is complete and loading view
@@ -47,19 +43,20 @@ public class LoadingView extends ProgressBar {
 
     private final List<Observer> mObservers = new ArrayList<>();
 
-    private final Runnable mDelayedShow = new Runnable() {
-        @Override
-        public void run() {
-            if (!mShouldShow) return;
-            mStartTime = SystemClock.elapsedRealtime();
-            setVisibility(View.VISIBLE);
-            setAlpha(1.0f);
+    private final Runnable mDelayedShow =
+            new Runnable() {
+                @Override
+                public void run() {
+                    if (!mShouldShow) return;
+                    mStartTime = SystemClock.elapsedRealtime();
+                    setVisibility(View.VISIBLE);
+                    setAlpha(1.0f);
 
-            for (Observer observer : mObservers) {
-                observer.onShowLoadingUIComplete();
-            }
-        }
-    };
+                    for (Observer observer : mObservers) {
+                        observer.onShowLoadingUIComplete();
+                    }
+                }
+            };
 
     /**
      * Tracks whether the View should be displayed when {@link #mDelayedShow} is run.  Android
@@ -70,43 +67,39 @@ public class LoadingView extends ProgressBar {
 
     // Material loading design spec requires us to show progress spinner at least 500ms, so we need
     // this delayed runnable to implement that.
-    private final Runnable mDelayedHide = new Runnable() {
-        @Override
-        public void run() {
-            if (sDisableAnimationForTest) {
-                onHideLoadingFinished();
-                return;
-            }
+    private final Runnable mDelayedHide =
+            new Runnable() {
+                @Override
+                public void run() {
+                    if (sDisableAnimationForTest) {
+                        onHideLoadingFinished();
+                        return;
+                    }
 
-            animate()
-                    .alpha(0.0f)
-                    .setInterpolator(Interpolators.FAST_OUT_SLOW_IN_INTERPOLATOR)
-                    .setListener(new AnimatorListenerAdapter() {
-                        @Override
-                        public void onAnimationEnd(Animator animation) {
-                            onHideLoadingFinished();
-                        }
-                    });
-        }
-    };
+                    animate()
+                            .alpha(0.0f)
+                            .setInterpolator(Interpolators.FAST_OUT_SLOW_IN_INTERPOLATOR)
+                            .setListener(
+                                    new AnimatorListenerAdapter() {
+                                        @Override
+                                        public void onAnimationEnd(Animator animation) {
+                                            onHideLoadingFinished();
+                                        }
+                                    });
+                }
+            };
 
-    /**
-     * Constructor for creating the view programatically.
-     */
+    /** Constructor for creating the view programmatically. */
     public LoadingView(Context context) {
         super(context);
     }
 
-    /**
-     * Constructor for inflating from XML.
-     */
+    /** Constructor for inflating from XML. */
     public LoadingView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
-    /**
-     * Show loading UI. It shows the loading animation 500ms after.
-     */
+    /** Show loading UI. It shows the loading animation 500ms after. */
     public void showLoadingUI() {
         removeCallbacks(mDelayedShow);
         removeCallbacks(mDelayedHide);
@@ -126,18 +119,19 @@ public class LoadingView extends ProgressBar {
         mShouldShow = false;
 
         if (getVisibility() == VISIBLE) {
-            postDelayed(mDelayedHide,
-                    Math.max(0,
-                            mStartTime + MINIMUM_ANIMATION_SHOW_TIME_MS
+            postDelayed(
+                    mDelayedHide,
+                    Math.max(
+                            0,
+                            mStartTime
+                                    + MINIMUM_ANIMATION_SHOW_TIME_MS
                                     - SystemClock.elapsedRealtime()));
         } else {
             onHideLoadingFinished();
         }
     }
 
-    /**
-     * Remove all callbacks when this view is no longer needed.
-     */
+    /** Remove all callbacks when this view is no longer needed. */
     public void destroy() {
         removeCallbacks(mDelayedShow);
         removeCallbacks(mDelayedHide);

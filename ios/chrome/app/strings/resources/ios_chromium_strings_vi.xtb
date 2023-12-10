@@ -87,6 +87,7 @@
 <translation id="4195557071150719219">Xem các thẻ gần đây trên Chromium</translation>
 <translation id="4408912345039114853">Chạy quy trình Kiểm tra an toàn trên Chromium</translation>
 <translation id="4432744876818348753">Đăng nhập để khai thác tối đa Chromium.</translation>
+<translation id="4498832288620833153">Thêm các URL đã nhập vào danh sách đọc trong Chromium.</translation>
 <translation id="452436063477828504">Đảm bảo bạn luôn có thể sử dụng dữ liệu Chromium trong Tài khoản Google của mình</translation>
 <translation id="4555020257205549924">Khi tính năng này được bật, Chromium sẽ đề xuất sử dụng Google Dịch để dịch các trang viết bằng ngôn ngữ khác. <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
 <translation id="4576283463017113841">Mở trang Cài đặt phương thức thanh toán trên Chromium.</translation>
@@ -107,6 +108,7 @@
 <translation id="5048795749726991615">Để dễ dàng sử dụng mật khẩu đã lưu trong các ứng dụng khác, hãy dùng Chromium làm dịch vụ tự động điền</translation>
 <translation id="5076601183701536878">Xoá dữ liệu duyệt web trong Chromium</translation>
 <translation id="5131565040785979529">Tổ chức <ph name="DOMAIN" /> của bạn sẽ quản lý tài khoản bạn đăng nhập và cách sử dụng Chromium.</translation>
+<translation id="5146749061471423558">Thêm dấu trang vào Chromium</translation>
 <translation id="5171868502429358653">Đăng nhập vào Chromium</translation>
 <translation id="5213683223491576284">Mở trình quản lý mật khẩu trong Chromium.</translation>
 <translation id="5224391634244552924">Bạn chưa lưu mật khẩu nào. Chromium có thể kiểm tra các mật khẩu của bạn khi bạn lưu các mật khẩu đó.</translation>
@@ -114,6 +116,7 @@
 
         Hãy đợi một vài phút trước khi đăng xuất. Nếu bạn đăng xuất ngay, dữ liệu này sẽ bị xoá.</translation>
 <translation id="5308226104666789935">Chromium không thể kiểm tra xem có bản cập nhật mới nào không</translation>
+<translation id="5311557153294205270">Thêm các URL đã nhập vào danh sách dấu trang trong Chromium.</translation>
 <translation id="5396916991083608703">Đặt Chromium làm trình duyệt mặc định?</translation>
 <translation id="5453478652154926037">Chromium không thể kiểm tra mật khẩu của bạn.</translation>
 <translation id="5521125884468363740">Để xem các thẻ của bạn trên bất cứ thiết bị nào mà bạn có dùng Chromium, hãy đăng nhập và bật tính năng đồng bộ hóa</translation>
@@ -165,7 +168,6 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="6911341667534646387">Tiếp tục sử dụng dữ liệu Chromium trong Tài khoản Google của bạn</translation>
 <translation id="7006920032187763988">Bạn có thể sử dụng mật khẩu đã lưu vào Trình quản lý mật khẩu trong ứng dụng khác trên iPad.</translation>
 <translation id="7018284295775193585">Chromium không thể cập nhật</translation>
-<translation id="7025471822960602362">Theo dõi các gói đã phát hiện trên Chromium</translation>
 <translation id="7045244423563602563">Biến Chromium thành trình duyệt của riêng bạn</translation>
 <translation id="7055269218854630176">Tổ chức <ph name="DOMAIN" /> của bạn quản lý tài khoản mà bạn hiện đang đăng nhập và cách bạn sử dụng Chromium. Quản trị viên có thể thiết lập hoặc hạn chế một số tính năng.</translation>
 <translation id="7099326575020694068">Chromium không thể sử dụng máy ảnh của bạn ở Chế độ xem phân tách</translation>
@@ -195,6 +197,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="7928628054454574139">Mở Chromium bất cứ khi nào bạn nhấn vào đường liên kết trong các ứng dụng khác</translation>
 <translation id="7931842119211730154">Khóa các thẻ Ẩn danh khi bạn đóng Chromium</translation>
 <translation id="7934404985878918282">Xem Danh sách đọc trên Chromium</translation>
+<translation id="7971753607796745700">Thêm mục trong danh sách đọc vào Chromium</translation>
 <translation id="7980860476903281594">Chromium chia sẻ thông tin vị trí của bạn với những trang web mà bạn cho phép.</translation>
 <translation id="7995166854192397899">Các nội dung đề xuất được đưa ra dựa trên hoạt động duyệt web của bạn trên các thiết bị khác. Để nhận nội dung đề xuất, hãy đăng nhập vào Chromium trên mọi thiết bị của bạn.</translation>
 <translation id="800195749539500647">Tận dụng tối đa Chromium</translation>

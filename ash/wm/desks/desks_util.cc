@@ -5,9 +5,9 @@
 #include "ash/wm/desks/desks_util.h"
 
 #include <array>
+#include <optional>
 
 #include "ash/constants/ash_features.h"
-#include "ash/public/cpp/tablet_mode.h"
 #include "ash/shell.h"
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desks_controller.h"
@@ -19,9 +19,11 @@
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "base/containers/adapters.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/compositor/layer.h"
+#include "ui/display/screen.h"
 
 namespace ash {
 
@@ -141,6 +143,15 @@ ASH_EXPORT bool BelongsToActiveDesk(aura::Window* window) {
   return desk_container && desk_container->GetId() == active_desk_id;
 }
 
+std::optional<uint64_t> GetActiveDeskLacrosProfileId() {
+  std::optional<uint64_t> id;
+  if (auto* desk_controller = DesksController::Get();
+      desk_controller && chromeos::features::IsDeskProfilesEnabled()) {
+    id = desk_controller->active_desk()->lacros_profile_id();
+  }
+  return id;
+}
+
 aura::Window* GetDeskContainerForContext(aura::Window* context) {
   DCHECK(context);
 
@@ -172,7 +183,7 @@ const Desk* GetDeskForContext(aura::Window* context) {
 }
 
 bool ShouldDesksBarBeCreated() {
-  return !TabletMode::Get()->InTabletMode() ||
+  return !display::Screen::GetScreen()->InTabletMode() ||
          DesksController::Get()->desks().size() > 1;
 }
 
@@ -213,9 +224,8 @@ bool IsZOrderTracked(aura::Window* window) {
              ui::ZOrderLevel::kNormal;
 }
 
-absl::optional<size_t> GetWindowZOrder(
-    const std::vector<aura::Window*>& windows,
-    aura::Window* window) {
+std::optional<size_t> GetWindowZOrder(const std::vector<aura::Window*>& windows,
+                                      aura::Window* window) {
   size_t position = 0;
   for (aura::Window* w : base::Reversed(windows)) {
     if (IsZOrderTracked(w)) {
@@ -225,7 +235,7 @@ absl::optional<size_t> GetWindowZOrder(
     }
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 }  // namespace desks_util

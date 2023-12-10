@@ -44,23 +44,27 @@ public class PolicyConverter {
         assert mNativePolicyConverter != 0;
 
         if (value instanceof Boolean) {
-            PolicyConverterJni.get().setPolicyBoolean(
-                    mNativePolicyConverter, PolicyConverter.this, key, (Boolean) value);
+            PolicyConverterJni.get()
+                    .setPolicyBoolean(
+                            mNativePolicyConverter, PolicyConverter.this, key, (Boolean) value);
             return;
         }
         if (value instanceof String) {
-            PolicyConverterJni.get().setPolicyString(
-                    mNativePolicyConverter, PolicyConverter.this, key, (String) value);
+            PolicyConverterJni.get()
+                    .setPolicyString(
+                            mNativePolicyConverter, PolicyConverter.this, key, (String) value);
             return;
         }
         if (value instanceof Integer) {
-            PolicyConverterJni.get().setPolicyInteger(
-                    mNativePolicyConverter, PolicyConverter.this, key, (Integer) value);
+            PolicyConverterJni.get()
+                    .setPolicyInteger(
+                            mNativePolicyConverter, PolicyConverter.this, key, (Integer) value);
             return;
         }
         if (value instanceof String[]) {
-            PolicyConverterJni.get().setPolicyStringArray(
-                    mNativePolicyConverter, PolicyConverter.this, key, (String[]) value);
+            PolicyConverterJni.get()
+                    .setPolicyStringArray(
+                            mNativePolicyConverter, PolicyConverter.this, key, (String[]) value);
             return;
         }
         // App restrictions can only contain bundles and bundle arrays on Android M, but
@@ -70,13 +74,20 @@ public class PolicyConverter {
             // JNI can't take a Bundle argument without a lot of extra work, but the native code
             // already accepts arbitrary JSON strings, so convert to JSON.
             try {
-                PolicyConverterJni.get().setPolicyString(mNativePolicyConverter,
-                        PolicyConverter.this, key, convertBundleToJson(bundle).toString());
+                PolicyConverterJni.get()
+                        .setPolicyString(
+                                mNativePolicyConverter,
+                                PolicyConverter.this,
+                                key,
+                                convertBundleToJson(bundle).toString());
             } catch (JSONException e) {
                 // Chrome requires all policies to be expressible as JSON, so this can't be a
                 // valid policy.
-                Log.w(TAG,
-                        "Invalid bundle in app restrictions " + bundle.toString() + " for key "
+                Log.w(
+                        TAG,
+                        "Invalid bundle in app restrictions "
+                                + bundle.toString()
+                                + " for key "
                                 + key);
             }
             return;
@@ -86,15 +97,21 @@ public class PolicyConverter {
             // JNI can't take a Bundle[] argument without a lot of extra work, but the native
             // code already accepts arbitrary JSON strings, so convert to JSON.
             try {
-                PolicyConverterJni.get().setPolicyString(mNativePolicyConverter,
-                        PolicyConverter.this, key,
-                        convertBundleArrayToJson(bundleArray).toString());
+                PolicyConverterJni.get()
+                        .setPolicyString(
+                                mNativePolicyConverter,
+                                PolicyConverter.this,
+                                key,
+                                convertBundleArrayToJson(bundleArray).toString());
             } catch (JSONException e) {
                 // Chrome requires all policies to be expressible as JSON, so this can't be a
                 // valid policy.
-                Log.w(TAG,
-                        "Invalid bundle array in app restrictions " + Arrays.toString(bundleArray)
-                                + " for key " + key);
+                Log.w(
+                        TAG,
+                        "Invalid bundle array in app restrictions "
+                                + Arrays.toString(bundleArray)
+                                + " for key "
+                                + key);
             }
             return;
         }
@@ -134,13 +151,22 @@ public class PolicyConverter {
 
     @NativeMethods
     interface Natives {
-        void setPolicyBoolean(long nativePolicyConverter, PolicyConverter caller, String policyKey,
+        void setPolicyBoolean(
+                long nativePolicyConverter,
+                PolicyConverter caller,
+                String policyKey,
                 boolean value);
+
         void setPolicyInteger(
                 long nativePolicyConverter, PolicyConverter caller, String policyKey, int value);
+
         void setPolicyString(
                 long nativePolicyConverter, PolicyConverter caller, String policyKey, String value);
-        void setPolicyStringArray(long nativePolicyConverter, PolicyConverter caller,
-                String policyKey, String[] value);
+
+        void setPolicyStringArray(
+                long nativePolicyConverter,
+                PolicyConverter caller,
+                String policyKey,
+                String[] value);
     }
 }

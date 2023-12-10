@@ -1,9 +1,5 @@
 This is a testharness.js-based test.
-[PASS] setMetadata() does allow changes to frameId and dependencies without a flag
-[PASS] setMetadata() does not allow changes to fields without a flag
 [FAIL] setMetadata() allows changes when AllowRTCEncodedVideoFrameSetMetadataAllFields is enabled
   promise_test: Unhandled rejection with value: object "InvalidModificationError: Failed to execute 'setMetadata' on 'RTCEncodedVideoFrame': Invalid modification of RTCEncodedVideoFrameMetadata."
-[PASS] setMetadata() does not allow metadata with dependencies but no frameId
-[PASS] setMetadata() does allow metadata with no dependencies but a frameId
 Harness: the test ran to completion.
 

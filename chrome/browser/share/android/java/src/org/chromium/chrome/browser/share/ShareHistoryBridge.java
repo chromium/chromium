@@ -26,6 +26,7 @@ public class ShareHistoryBridge {
     @NativeMethods
     public interface Natives {
         void addShareEntry(Profile profile, String string);
+
         void clear(Profile profile);
     }
 }

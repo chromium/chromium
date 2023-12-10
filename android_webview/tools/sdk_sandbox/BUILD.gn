@@ -5,64 +5,59 @@
 import("//build/config/android/rules.gni")
 import("//testing/test.gni")
 
-# This test app requires the privacy sanbox sdk runtime,
-# which is currently only available in the tprivacysandbox
-# sdk release.
-# This check can be removed or updated once the sdk runtime
-# is more broadly available
-if (android_sdk_release == "tprivacysandbox") {
-  # Mark all targets as test only.
+# Mark all targets as test only.
+testonly = true
+
+group("sdk_sandbox") {
+  deps = [
+    ":sdk_sandbox_webview_client",
+    ":sdk_sandbox_webview_sdk",
+  ]
+}
+
+android_apk("sdk_sandbox_webview_client") {
+  apk_name = "SdkSandboxWebviewClient"
+  android_manifest = "webview_client/AndroidManifest.xml"
+  deps = [
+    ":sdk_sandbox_webview_client_java",
+    ":sdk_sandbox_webview_client_resources",
+    ":sdk_sandbox_webview_sdk",
+  ]
+}
+
+android_library("sdk_sandbox_webview_client_java") {
   testonly = true
+  sources = [ "webview_client/src/org/chromium/sdk_sandbox/webview_client/MainActivity.java" ]
+  deps = [
+    ":sdk_sandbox_webview_client_resources",
+    ":sdksandbox_aidl_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_java",
+  ]
+  resources_package = "org.chromium.sdk_sandbox.webview_client"
+}
 
-  group("sdk_sandbox") {
-    deps = [
-      ":sdk_sandbox_webview_client",
-      ":sdk_sandbox_webview_sdk",
-    ]
-  }
+android_resources("sdk_sandbox_webview_client_resources") {
+  sources = [
+    "webview_client/res/drawable-mdpi/breadcrumb_arrow_black.png",
+    "webview_client/res/layout/activity_main.xml",
+    "webview_client/res/values/strings.xml",
+  ]
+}
 
-  android_apk("sdk_sandbox_webview_client") {
-    apk_name = "SdkSandboxWebviewClient"
-    android_manifest = "webview_client/AndroidManifest.xml"
-    deps = [
-      ":sdk_sandbox_webview_client_java",
-      ":sdk_sandbox_webview_client_resources",
-      ":sdk_sandbox_webview_sdk",
-    ]
-  }
+android_apk("sdk_sandbox_webview_sdk") {
+  apk_name = "SdkSandboxWebviewSdk"
+  android_manifest = "webview_sdk/AndroidManifest.xml"
+  sources = [ "webview_sdk/src/org/chromium/sdk_sandbox/webview_sdk/WebViewSandboxedSdkProvider.java" ]
+  deps = [ ":sdksandbox_aidl_java" ]
+}
 
-  android_library("sdk_sandbox_webview_client_java") {
-    testonly = true
-    sources = [ "webview_client/src/org/chromium/sdk_sandbox/webview_client/MainActivity.java" ]
-    deps = [
-      ":sdk_sandbox_webview_client_resources",
-      ":sdksandbox_aidl_java",
-      "//third_party/androidx:androidx_annotation_annotation_java",
-      "//third_party/androidx:androidx_appcompat_appcompat_java",
-    ]
-    resources_package = "org.chromium.sdk_sandbox.webview_client"
-  }
+android_aidl("sdksandbox_aidl") {
+  sources = [
+    "webview_sdk/src/org/chromium/sdk_sandbox/webview_sdk/IWebViewSdkApi.aidl",
+  ]
+}
 
-  android_resources("sdk_sandbox_webview_client_resources") {
-    sources = [
-      "webview_client/res/drawable-mdpi/breadcrumb_arrow_black.png",
-      "webview_client/res/layout/activity_main.xml",
-      "webview_client/res/values/strings.xml",
-    ]
-  }
-
-  android_apk("sdk_sandbox_webview_sdk") {
-    apk_name = "SdkSandboxWebviewSdk"
-    android_manifest = "webview_sdk/AndroidManifest.xml"
-    sources = [ "webview_sdk/src/org/chromium/sdk_sandbox/webview_sdk/WebViewSandboxedSdkProvider.java" ]
-    deps = [ ":sdksandbox_aidl_java" ]
-  }
-
-  android_aidl("sdksandbox_aidl") {
-    sources = [ "webview_sdk/src/org/chromium/sdk_sandbox/webview_sdk/IWebViewSdkApi.aidl" ]
-  }
-
-  android_library("sdksandbox_aidl_java") {
-    srcjar_deps = [ ":sdksandbox_aidl" ]
-  }
+android_library("sdksandbox_aidl_java") {
+  srcjar_deps = [ ":sdksandbox_aidl" ]
 }

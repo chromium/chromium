@@ -574,6 +574,17 @@ void DesktopWindowTreeHostPlatform::SetShape(
   platform_window()->SetShape(std::move(native_shape), GetRootTransform());
 }
 
+void DesktopWindowTreeHostPlatform::SetParent(gfx::AcceleratedWidget parent) {
+  // TODO(crbug.com/1490267): hook parent to the accelerated widget.
+  if (window_parent_) {
+    window_parent_->window_children_.erase(this);
+  }
+  window_parent_ = DesktopWindowTreeHostPlatform::GetHostForWidget(parent);
+  if (window_parent_) {
+    window_parent_->window_children_.insert(this);
+  }
+}
+
 void DesktopWindowTreeHostPlatform::Activate() {
   platform_window()->Activate();
 }
@@ -891,6 +902,7 @@ void DesktopWindowTreeHostPlatform::OnWindowStateChanged(
   // window. (The windows code doesn't need this because their window change is
   // synchronous.)
   ScheduleRelayout();
+  GetWidget()->OnNativeWidgetWindowShowStateChanged();
 }
 
 void DesktopWindowTreeHostPlatform::OnCloseRequest() {

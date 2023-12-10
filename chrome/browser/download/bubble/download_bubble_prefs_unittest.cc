@@ -18,7 +18,6 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/prefs/pref_service.h"
-#include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
@@ -72,37 +71,18 @@ class DownloadBubblePrefsTest : public testing::Test {
   raw_ptr<TestingProfile, DanglingUntriaged> profile_;
   base::test::ScopedFeatureList feature_list_;
 
-  void ExpectFeatureFlagEnabledStatus(bool expect_enabled) {
-    bool is_enabled = IsDownloadBubbleEnabled(profile_);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    EXPECT_FALSE(is_enabled);
-#else
-    EXPECT_EQ(is_enabled, expect_enabled);
-#endif
-  }
-
-  void ExpectFeatureFlagV2EnabledStatus(bool expect_enabled) {
-    bool is_enabled = IsDownloadBubbleV2Enabled(profile_);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    EXPECT_FALSE(is_enabled);
-#else
-    EXPECT_EQ(is_enabled, expect_enabled);
-#endif
-  }
-
  private:
   content::BrowserTaskEnvironment task_environment_;
   TestingProfileManager testing_profile_manager_;
 };
 
-TEST_F(DownloadBubblePrefsTest, FeatureFlagEnabled) {
-  feature_list_.InitAndEnableFeature(safe_browsing::kDownloadBubble);
-  ExpectFeatureFlagEnabledStatus(/*expect_enabled=*/true);
-}
-
-TEST_F(DownloadBubblePrefsTest, FeatureFlagDisabled) {
-  feature_list_.InitAndDisableFeature(safe_browsing::kDownloadBubble);
-  ExpectFeatureFlagEnabledStatus(/*expect_enabled=*/false);
+TEST_F(DownloadBubblePrefsTest, IsDownloadBubbleEnabled) {
+  bool is_enabled = IsDownloadBubbleEnabled();
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  EXPECT_FALSE(is_enabled);
+#else
+  EXPECT_TRUE(is_enabled);
+#endif
 }
 
 TEST_F(DownloadBubblePrefsTest, DoesDownloadConnectorBlock) {
@@ -117,34 +97,6 @@ TEST_F(DownloadBubblePrefsTest, DoesDownloadConnectorBlock) {
           enterprise_connectors::FILE_DOWNLOADED),
       *base::JSONReader::Read(kDownloadConnectorEnabledBlockingPref));
   EXPECT_TRUE(DoesDownloadConnectorBlock(profile_, GURL()));
-}
-
-TEST_F(DownloadBubblePrefsTest, V2FeatureFlagEnabled) {
-  feature_list_.InitWithFeatures(
-      {safe_browsing::kDownloadBubble, safe_browsing::kDownloadBubbleV2}, {});
-  ExpectFeatureFlagEnabledStatus(/*expect_enabled=*/true);
-  ExpectFeatureFlagV2EnabledStatus(/*expect_enabled=*/true);
-}
-
-TEST_F(DownloadBubblePrefsTest, V2FeatureFlagDisabled_YesMVP_NoV2) {
-  feature_list_.InitWithFeatures({safe_browsing::kDownloadBubble},
-                                 {safe_browsing::kDownloadBubbleV2});
-  ExpectFeatureFlagEnabledStatus(/*expect_enabled=*/true);
-  ExpectFeatureFlagV2EnabledStatus(/*expect_enabled=*/false);
-}
-
-TEST_F(DownloadBubblePrefsTest, V2FeatureFlagDisabled_NoMVP_NoV2) {
-  feature_list_.InitWithFeatures(
-      {}, {safe_browsing::kDownloadBubble, safe_browsing::kDownloadBubbleV2});
-  ExpectFeatureFlagEnabledStatus(/*expect_enabled=*/false);
-  ExpectFeatureFlagV2EnabledStatus(/*expect_enabled=*/false);
-}
-
-TEST_F(DownloadBubblePrefsTest, V2FeatureFlagDisabled_NoMVP_YesV2) {
-  feature_list_.InitWithFeatures({safe_browsing::kDownloadBubbleV2},
-                                 {safe_browsing::kDownloadBubble});
-  ExpectFeatureFlagEnabledStatus(/*expect_enabled=*/false);
-  ExpectFeatureFlagV2EnabledStatus(/*expect_enabled=*/false);
 }
 
 TEST_F(DownloadBubblePrefsTest, ShouldSuppressIph) {

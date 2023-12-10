@@ -8,8 +8,8 @@
 
 #include "base/memory/raw_ptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/x/atom_cache.h"
 #include "ui/gfx/x/connection.h"
-#include "ui/gfx/x/x11_atom_cache.h"
 #include "ui/gfx/x/xproto.h"
 
 namespace x11 {

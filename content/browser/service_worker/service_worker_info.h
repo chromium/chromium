@@ -14,6 +14,7 @@
 #include "base/time/time.h"
 #include "content/browser/service_worker/service_worker_version.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/service_worker_client_info.h"
 #include "content/public/browser/service_worker_version_base_info.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/blink/public/common/service_worker/embedded_worker_status.h"
@@ -26,8 +27,6 @@ class StorageKey;
 }  // namespace blink
 
 namespace content {
-
-class ServiceWorkerClientInfo;
 
 struct CONTENT_EXPORT ServiceWorkerVersionInfo
     : public ServiceWorkerVersionBaseInfo {

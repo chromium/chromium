@@ -56,6 +56,12 @@ export class RealboxDropdownElement extends PolymerElement {
         value: false,
       },
 
+      expandedStateLayoutChromeRefresh: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('realboxCr23ExpandedStateLayout'),
+        reflectToAttribute: true,
+      },
+
       /**
        * Whether the secondary side was at any point available to be shown.
        */
@@ -117,6 +123,7 @@ export class RealboxDropdownElement extends PolymerElement {
   }
 
   canShowSecondarySide: boolean;
+  expandedStateLayoutChromeRefresh: boolean;
   hadSecondarySide: boolean;
   hasSecondarySide: boolean;
   result: AutocompleteResult;

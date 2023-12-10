@@ -149,7 +149,7 @@ class ScreenTimeControllerTest : public MixinBasedInProcessBrowserTest {
                                           embedded_test_server(),
                                           this,
                                           true /*should_launch_browser*/,
-                                          absl::nullopt /*account_id*/,
+                                          std::nullopt /*account_id*/,
                                           false /*include_initial_user*/};
 };
 

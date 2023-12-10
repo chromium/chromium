@@ -27,11 +27,11 @@ class WebsiteApprovalViewBinder {
             view.setDomainText(model.get(WebsiteApprovalProperties.URL));
             view.setFullUrlText(model.get(WebsiteApprovalProperties.URL));
         } else if (propertyKey == WebsiteApprovalProperties.ON_CLICK_APPROVE) {
-            view.getApproveButton().setOnClickListener(
-                    model.get(WebsiteApprovalProperties.ON_CLICK_APPROVE));
+            view.getApproveButton()
+                    .setOnClickListener(model.get(WebsiteApprovalProperties.ON_CLICK_APPROVE));
         } else if (propertyKey == WebsiteApprovalProperties.ON_CLICK_DENY) {
-            view.getDenyButton().setOnClickListener(
-                    model.get(WebsiteApprovalProperties.ON_CLICK_DENY));
+            view.getDenyButton()
+                    .setOnClickListener(model.get(WebsiteApprovalProperties.ON_CLICK_DENY));
         } else if (propertyKey == WebsiteApprovalProperties.FAVICON) {
             view.setFaviconBitmap(model.get(WebsiteApprovalProperties.FAVICON));
         } else {

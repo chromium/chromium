@@ -18,7 +18,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/sequence_checker.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/uuid.h"
 #include "fuchsia_web/webinstance_host/fuchsia_web_debug_proxy.h"
 

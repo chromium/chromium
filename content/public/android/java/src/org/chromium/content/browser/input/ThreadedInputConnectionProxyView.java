@@ -18,9 +18,7 @@ import org.chromium.base.task.TaskTraits;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
-/**
- * This is a fake View that is only exposed to InputMethodManager.
- */
+/** This is a fake View that is only exposed to InputMethodManager. */
 public class ThreadedInputConnectionProxyView extends View {
     private static final String TAG = "ImeProxyView";
     private static final boolean DEBUG_LOGS = false;
@@ -33,7 +31,10 @@ public class ThreadedInputConnectionProxyView extends View {
     private final AtomicReference<View> mRootView = new AtomicReference<>();
     private final ThreadedInputConnectionFactory mFactory;
 
-    ThreadedInputConnectionProxyView(Context context, Handler imeThreadHandler, View containerView,
+    ThreadedInputConnectionProxyView(
+            Context context,
+            Handler imeThreadHandler,
+            View containerView,
             ThreadedInputConnectionFactory factory) {
         super(context);
         mImeThreadHandler = imeThreadHandler;
@@ -91,12 +92,14 @@ public class ThreadedInputConnectionProxyView extends View {
     @Override
     public InputConnection onCreateInputConnection(final EditorInfo outAttrs) {
         if (DEBUG_LOGS) Log.w(TAG, "onCreateInputConnection");
-        return PostTask.runSynchronously(TaskTraits.UI_USER_BLOCKING, () -> {
-            mFactory.setTriggerDelayedOnCreateInputConnection(false);
-            InputConnection connection = mContainerView.onCreateInputConnection(outAttrs);
-            mFactory.setTriggerDelayedOnCreateInputConnection(true);
-            return connection;
-        });
+        return PostTask.runSynchronously(
+                TaskTraits.UI_USER_BLOCKING,
+                () -> {
+                    mFactory.setTriggerDelayedOnCreateInputConnection(false);
+                    InputConnection connection = mContainerView.onCreateInputConnection(outAttrs);
+                    mFactory.setTriggerDelayedOnCreateInputConnection(true);
+                    return connection;
+                });
     }
 
     @Override

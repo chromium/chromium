@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -28,7 +29,6 @@
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "printing/buildflags/buildflags.h"
 #include "printing/mojom/print.mojom-forward.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size.h"
@@ -136,11 +136,11 @@ class PrintPreviewUI : public ConstrainedWebDialogUI,
 
   // Determines whether to cancel a print preview request based on the request
   // id.
-  static bool ShouldCancelRequest(const absl::optional<int32_t>& preview_ui_id,
+  static bool ShouldCancelRequest(const std::optional<int32_t>& preview_ui_id,
                                   int request_id);
 
   // Returns an id to uniquely identify this PrintPreviewUI.
-  absl::optional<int32_t> GetIDForPrintPreviewUI() const;
+  std::optional<int32_t> GetIDForPrintPreviewUI() const;
 
   // Notifies the Web UI of a print preview request with |request_id|.
   virtual void OnPrintPreviewRequest(int request_id);
@@ -284,7 +284,7 @@ class PrintPreviewUI : public ConstrainedWebDialogUI,
 
   // The unique ID for this class instance. Stored here to avoid calling
   // GetIDForPrintPreviewUI() everywhere.
-  absl::optional<int32_t> id_;
+  std::optional<int32_t> id_;
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
   // This UI's client ID with the print backend service manager.

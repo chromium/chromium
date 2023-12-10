@@ -1,21 +1,8 @@
 This is a wdspec test.
-[PASS] test_null_parameter_value
-[PASS] test_null_response_value
-[PASS] test_no_top_browsing_context[None]
-[PASS] test_no_top_browsing_context[0]
-[PASS] test_no_top_browsing_context[id2]
-[PASS] test_no_browsing_context[None]
 [FAIL] test_no_browsing_context[0]
   assert 200 == 404
 [FAIL] test_no_browsing_context[id2]
   AssertionError: assert 'no such element' == 'no such window'
-[PASS] test_no_browsing_context_when_already_top_level
-[PASS] test_frame_id_invalid_types[foo]
-[PASS] test_frame_id_invalid_types[True]
-[PASS] test_frame_id_invalid_types[value2]
-[PASS] test_frame_id_invalid_types[value3]
-[PASS] test_frame_id_shadow_root
 [FAIL] test_frame_id_null
   webdriver.error.StaleElementReferenceException: stale element reference (404): stale element reference: stale element not found
-[PASS] test_find_element_while_frame_is_still_loading
 Harness: the test ran to completion.

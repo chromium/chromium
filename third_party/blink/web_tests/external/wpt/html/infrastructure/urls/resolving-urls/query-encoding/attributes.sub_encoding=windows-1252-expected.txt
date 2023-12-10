@@ -1,30 +1,5 @@
 This is a testharness.js-based test.
-[PASS] getComputedStyle <body background>
-[PASS] getComputedStyle <table background>
-[PASS] getComputedStyle <thead background>
-[PASS] getComputedStyle <tbody background>
-[PASS] getComputedStyle <tfoot background>
-[PASS] getComputedStyle <tr background>
-[PASS] getComputedStyle <td background>
-[PASS] getComputedStyle <th background>
-[PASS] Getting <iframe>.src
-[PASS] Getting <a>.href
-[PASS] Getting <area>.href
 [FAIL] Getting <base>.href
   assert_true: http://web-platform.test:8001/html/infrastructure/urls/resolving-urls/query-encoding/attributes.sub.html?%C3%BF did not end with ?%FF expected true got false
-[PASS] Getting <link>.href
-[PASS] Getting <img>.src
-[PASS] Getting <embed>.src
-[PASS] Getting <object>.data
-[PASS] Getting <track>.src
-[PASS] Getting <video>.src
-[PASS] Getting <audio>.src
-[PASS] Getting <input>.src
-[PASS] Getting <form>.action
-[PASS] Getting <input>.formAction
-[PASS] Getting <button>.formAction
-[PASS] Getting <script>.src
-[PASS] Getting <a>.ping
-[PASS] Getting <area>.ping
 Harness: the test ran to completion.
 

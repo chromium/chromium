@@ -34,6 +34,12 @@
       other {# contacts are not available. To use Nearby Share with them, add the email addresses associated with their Google Accounts to your contacts.}
     }
   </message>
+  <message name="IDS_NEARBY_CONTACT_VISIBILITY_NUM_UNREACHABLE_PH" desc="Informational message indicating that there are contacts that are not connectable for sharing with the Nearby Share feature.">
+    {COUNT, plural,
+      =1 {# contact is not available. To use <ph name="FEATURE_NAME">$2<ex>Nearby Share</ex></ph> with them, add the email address associated with their Google Account to your contacts.}
+      other {# contacts are not available. To use <ph name="FEATURE_NAME">$2<ex>Nearby Share</ex></ph> with them, add the email addresses associated with their Google Accounts to your contacts.}
+    }
+  </message>
   <message name="IDS_NEARBY_CONTACT_VISIBILITY_OWN_ALL" desc="Describes who can see the local device when the Nearby Share visibility setting is set to 'All contacts'.">
     Your contacts can share with you when they are nearby. Transfers won't start until you accept.
   </message>
@@ -291,6 +297,9 @@
   <!-- Settings Strings -->
   <message name="IDS_NEARBY_ACCOUNT_ROW_LABEL" desc="Label to describe the account row which displays the user's full name and their email which will identify them when using the Nearby Share feature." is_accessibility_with_no_ui="true">
       Nearby Share settings for <ph name="USER_NAME">$1<ex>Jane Doe</ex></ph>'s device, sharing under the account <ph name="USER_EMAIL">$2<ex>example@gmail.com</ex></ph>.
+  </message>
+  <message name="IDS_NEARBY_ACCOUNT_ROW_LABEL_PH" desc="Feature name placeholder: Label to describe the account row which displays the user's full name and their email which will identify them when using the Nearby Share feature." is_accessibility_with_no_ui="true">
+    <ph name="FEATURE_NAME">$1<ex>Nearby Share</ex></ph> settings for <ph name="USER_NAME">$2<ex>Jane Doe</ex></ph>'s device, sharing under the account <ph name="USER_EMAIL">$3<ex>example@gmail.com</ex></ph>.
   </message>
   <message name="IDS_NEARBY_SETTINGS_HELP_CAPTION_TOP" desc="Brief explanation shown at the bottom of the settings page. Meant to give context on what conditions have to be met to use Nearby Share and how to toggle the high visibility state in the system tray. Provides a link with more detailed information.">
     Nearby Share uses Bluetooth scanning to find nearby devices.

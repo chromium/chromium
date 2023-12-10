@@ -27,8 +27,8 @@
 #include "components/password_manager/core/browser/password_form_digest.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_store/password_store_backend.h"
-#include "components/password_manager/core/browser/password_store_change.h"
-#include "components/password_manager/core/browser/password_store_interface.h"
+#include "components/password_manager/core/browser/password_store/password_store_change.h"
+#include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/browser/password_store/smart_bubble_stats_store.h"
 
 class PrefService;
@@ -169,7 +169,7 @@ class PasswordStore : public PasswordStoreInterface {
   // requested and forwarded to `NotifyLoginsRetainedOnMainSequence`.
   void NotifyLoginsChangedOnMainSequence(
       LoginsChangedTrigger change_event,
-      absl::optional<PasswordStoreChangeList> changes);
+      std::optional<PasswordStoreChangeList> changes);
 
   // Notifies observers with all logins remaining after a modifying operation.
   void NotifyLoginsRetainedOnMainSequence(LoginsResultOrError result);
@@ -181,8 +181,7 @@ class PasswordStore : public PasswordStoreInterface {
   // been modified via NotifyLoginsChangedOnMainSequence(). Note that there is
   // no guarantee that the called method will actually modify the password store
   // data.
-  void UnblocklistInternal(base::OnceClosure completion,
-                           std::vector<std::unique_ptr<PasswordForm>> forms);
+  void UnblocklistInternal(base::OnceClosure completion, LoginsResult forms);
 
   // This member is called to perform the actual interaction with the storage.
   // The backend is injected via the public constructor, this member owns the
@@ -207,6 +206,8 @@ class PasswordStore : public PasswordStoreInterface {
   raw_ptr<PrefService> prefs_ = nullptr;
 
   InitStatus init_status_ = InitStatus::kUnknown;
+
+  base::Time construction_time_;
 };
 
 }  // namespace password_manager

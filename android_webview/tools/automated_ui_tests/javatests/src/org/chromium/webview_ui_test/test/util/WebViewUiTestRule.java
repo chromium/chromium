@@ -119,9 +119,13 @@ public class WebViewUiTestRule extends BaseActivityTestRule<WebViewUiTestActivit
     private boolean isActionBarDisplayedFunc() {
         if (mBaseLayerComponent == null) mBaseLayerComponent = DaggerBaseLayerComponent.create();
 
-        if (hasItem(withDecorView(withChild(allOf(withClassName(endsWith("PopupBackgroundView")),
-                            isCompletelyDisplayed()))))
-                        .matches(mBaseLayerComponent.activeRootLister().listActiveRoots())) {
+        if (hasItem(
+                        withDecorView(
+                                withChild(
+                                        allOf(
+                                                withClassName(endsWith("PopupBackgroundView")),
+                                                isCompletelyDisplayed()))))
+                .matches(mBaseLayerComponent.activeRootLister().listActiveRoots())) {
             return true;
         }
         return false;

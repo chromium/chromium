@@ -43,7 +43,7 @@ constexpr char kPaymentPortalMethodPost[] = "POST";
 
 // |dict| may be an empty value, in which case return an empty string.
 std::string GetStringFromDictionary(
-    const absl::optional<base::Value::Dict>& dict,
+    const std::optional<base::Value::Dict>& dict,
     const char* key) {
   const std::string* stringp =
       dict.has_value() ? dict->FindString(key) : nullptr;
@@ -195,7 +195,7 @@ bool NetworkState::PropertyChanged(const std::string& key,
       proxy_config_.reset();
       return true;
     }
-    absl::optional<base::Value::Dict> proxy_config =
+    std::optional<base::Value::Dict> proxy_config =
         chromeos::onc::ReadDictionaryFromJson(*proxy_config_str);
     if (!proxy_config.has_value()) {
       NET_LOG(ERROR) << "Failed to parse " << path() << "." << key;

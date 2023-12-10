@@ -4,7 +4,6 @@
 
 #include "ash/system/unified/notification_counter_view.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -17,8 +16,8 @@
 #include "ash/system/unified/notification_icons_controller.h"
 #include "base/i18n/number_formatting.h"
 #include "base/memory/raw_ptr.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/canvas.h"
@@ -62,20 +61,10 @@ ui::ColorId SeparatorIconColorId(session_manager::SessionState state) {
 // Returns true if we should show the counter view (e.g. during quiet mode,
 // screen lock, etc.).
 bool ShouldShowCounterView() {
-  SessionControllerImpl* session_controller =
-      Shell::Get()->session_controller();
-
-  if (features::IsQsRevampEnabled()) {
-    // The `NotificationCounterView` should only be hidden if the screen is not
-    // locked and quiet mode is enabled.
-    return !message_center::MessageCenter::Get()->IsQuietMode() ||
-           session_controller->IsScreenLocked();
-  }
-
-  return !message_center::MessageCenter::Get()->IsQuietMode() &&
-         session_controller->ShouldShowNotificationTray() &&
-         (!session_controller->IsScreenLocked() ||
-          AshMessageCenterLockScreenController::IsEnabled());
+  // The `NotificationCounterView` should only be hidden if the screen is not
+  // locked and quiet mode is enabled.
+  return !message_center::MessageCenter::Get()->IsQuietMode() ||
+         Shell::Get()->session_controller()->IsScreenLocked();
 }
 
 class NumberIconImageSource : public gfx::CanvasImageSource {
@@ -95,13 +84,10 @@ class NumberIconImageSource : public gfx::CanvasImageSource {
 
   void Draw(gfx::Canvas* canvas) override {
     ui::ColorId tray_icon_color_id;
-    if (chromeos::features::IsJellyEnabled()) {
-      tray_icon_color_id = notification_counter_view_->is_active()
-                               ? cros_tokens::kCrosSysSystemOnPrimaryContainer
-                               : cros_tokens::kCrosSysOnSurface;
-    } else {
-      tray_icon_color_id = kColorAshIconColorPrimary;
-    }
+    tray_icon_color_id = notification_counter_view_->is_active()
+                             ? cros_tokens::kCrosSysSystemOnPrimaryContainer
+                             : cros_tokens::kCrosSysOnSurface;
+
     const SkColor tray_icon_color =
         notification_counter_view_->GetColorProvider()->GetColor(
             tray_icon_color_id);
@@ -192,19 +178,10 @@ void NotificationCounterView::HandleLocaleChange() {
 
 void NotificationCounterView::OnThemeChanged() {
   TrayItemView::OnThemeChanged();
-  if (!chromeos::features::IsJellyEnabled()) {
-    image_view()->SetImage(
-        gfx::CanvasImageSource::MakeImageSkia<NumberIconImageSource>(
-            this, count_for_display_));
-    return;
-  }
   UpdateLabelOrImageViewColor(is_active());
 }
 
 void NotificationCounterView::UpdateLabelOrImageViewColor(bool active) {
-  if (!chromeos::features::IsJellyEnabled()) {
-    return;
-  }
   TrayItemView::UpdateLabelOrImageViewColor(active);
 
   image_view()->SetImage(
@@ -212,9 +189,8 @@ void NotificationCounterView::UpdateLabelOrImageViewColor(bool active) {
           this, count_for_display_));
 }
 
-const char* NotificationCounterView::GetClassName() const {
-  return "NotificationCounterView";
-}
+BEGIN_METADATA(NotificationCounterView)
+END_METADATA
 
 QuietModeView::QuietModeView(Shelf* shelf) : TrayItemView(shelf) {
   CreateImageView();
@@ -230,11 +206,6 @@ void QuietModeView::Update() {
       Shell::Get()->session_controller()->GetSessionState() ==
           session_manager::SessionState::ACTIVE) {
     SetVisible(true);
-    if (!chromeos::features::IsJellyEnabled()) {
-      image_view()->SetImage(ui::ImageModel::FromVectorIcon(
-          kSystemTrayDoNotDisturbIcon, kColorAshIconColorPrimary));
-      return;
-    }
     UpdateLabelOrImageViewColor(is_active());
   } else {
     SetVisible(false);
@@ -252,9 +223,6 @@ void QuietModeView::OnThemeChanged() {
 }
 
 void QuietModeView::UpdateLabelOrImageViewColor(bool active) {
-  if (!chromeos::features::IsJellyEnabled()) {
-    return;
-  }
   TrayItemView::UpdateLabelOrImageViewColor(active);
 
   image_view()->SetImage(ui::ImageModel::FromVectorIcon(
@@ -263,9 +231,8 @@ void QuietModeView::UpdateLabelOrImageViewColor(bool active) {
              : cros_tokens::kCrosSysOnSurface));
 }
 
-const char* QuietModeView::GetClassName() const {
-  return "QuietModeView";
-}
+BEGIN_METADATA(QuietModeView)
+END_METADATA
 
 SeparatorTrayItemView::SeparatorTrayItemView(Shelf* shelf)
     : TrayItemView(shelf) {
@@ -282,12 +249,11 @@ SeparatorTrayItemView::~SeparatorTrayItemView() = default;
 
 void SeparatorTrayItemView::HandleLocaleChange() {}
 
-const char* SeparatorTrayItemView::GetClassName() const {
-  return "SeparatorTrayItemView";
-}
-
 void SeparatorTrayItemView::UpdateColor(session_manager::SessionState state) {
   separator_->SetColorId(SeparatorIconColorId(state));
 }
+
+BEGIN_METADATA(SeparatorTrayItemView)
+END_METADATA
 
 }  // namespace ash

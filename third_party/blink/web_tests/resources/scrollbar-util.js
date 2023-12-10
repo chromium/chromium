@@ -272,8 +272,124 @@ function rightArrow(scroller = document.scrollingElement) {
   });
 }
 
+((exports) => {
+  let scrollbarThickness_;
+
+  exports.scrollbarThickness = () => {
+    if (scrollbarThickness_ === undefined) {
+      scrollbarThickness_ = calculateScrollbarThickness();
+    }
+    return scrollbarThickness_;
+  };
+
+  // The following methods assume both the horizontal and vertical scrollbars
+  // are visible.
+  // TODO: Consider updating the methods to relax these assumptions.
+
+  function verticalScrollbarBounds(scroller) {
+    scroller = scroller || document.scrollingElement;
+    const width = scrollbarThickness();
+    const scrollCorner = width;
+    if (isMainFrameScroller(scroller)) {
+      return {
+        'x': isVerticalScrollbarOnLeft(document.scrollingElement)
+               ? 0 : window.innerWidth - width,
+        'y': 0,
+        'width': width,
+        'height': window.innerHeight - scrollCorner
+      };
+    }
+
+    const scrollerRect = scroller.getBoundingClientRect();
+    return {
+      'x': isVerticalScrollbarOnLeft(scroller)
+             ? scrollerRect.left
+             : scrollerRect.right - scrollCorner,
+      'y': scrollerRect.top,
+      'width': width,
+      'height': scrollerRect.height - scrollCorner
+    };
+  }
+
+  function horizontalScrollbarBounds(scroller) {
+    scroller = scroller || document.scrollingElement;
+    const height = scrollbarThickness();
+    const scrollCorner = height;
+    if (isMainFrameScroller(scroller)) {
+      return {
+        x: isVerticalScrollbarOnLeft(scroller)
+               ? scrollCorner : 0,
+        y: window.innerHeight - scrollCorner,
+        width: window.innerWidth - scrollCorner,
+        height: height
+      };
+    }
+
+    const scrollerRect = scroller.getBoundingClientRect();
+    return {
+      x: isVerticalScrollbarOnLeft(scroller)
+             ? scrollerRect.left + scrollCorner
+             : scrollerRect.left,
+      y: scrollerRect.bottom - height,
+      width: scrollerRect.width - scrollCorner,
+      height: height
+    };
+  }
+
+  function position(x, y, scroller) {
+    if (isMainFrameScroller(scroller)) {
+      return { x: x, y: y };
+    }
+    return cssClientToCssVisual({ x: x, y: y });
+  }
+
+  exports.trackTop = (scroller) => {
+    const bounds = verticalScrollbarBounds(scroller);
+    const offset = scrollbarThickness() / 2;
+    let x = bounds.x + offset;
+    let y = bounds.y + offset;
+    if (hasScrollbarArrows()) {
+      y += scrollbarThickness();
+    }
+    return position(x, y, scroller);
+  };
+
+  exports.trackBottom = (scroller) => {
+    const bounds = verticalScrollbarBounds(scroller);
+    const offset = scrollbarThickness() / 2;
+    let x = bounds.x + offset;
+    let y = bounds.y + bounds.height - offset;
+    if (hasScrollbarArrows()) {
+      y -= scrollbarThickness();
+    }
+    return position(x, y, scroller);
+  };
+
+ exports.trackLeft = (scroller) => {
+    const bounds = horizontalScrollbarBounds(scroller);
+    const offset = scrollbarThickness() / 2;
+    let x = bounds.x + offset;
+    let y = bounds.y + offset;
+    if (hasScrollbarArrows()) {
+      x += scrollbarThickness();
+    }
+    return position(x, y, scroller);
+  };
+
+  exports.trackRight = (scroller) => {
+    const bounds = horizontalScrollbarBounds(scroller);
+    const offset = scrollbarThickness() / 2;
+    let x = bounds.x + bounds.width - offset;
+    let y = bounds.y + offset;
+    if (hasScrollbarArrows()) {
+      x -= scrollbarThickness();
+    }
+    return position(x, y, scroller);
+  };
+})(window);
+
 // Returns a point that falls within the given scroller's vertical thumb part.
-function verticalThumb(scroller = document.scorllingElement) {
+function verticalThumb(scroller = document.scrollingElement) {
   assert_equals(scroller.scrollTop, 0,
                 "verticalThumb() requires scroller to have scrollTop of 0");
   const TRACK_WIDTH = calculateScrollbarThickness();

@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/borealis/borealis_installer_view.h"
 
 #include <memory>
+#include <optional>
 
 #include "ash/public/cpp/ash_typography.h"
 #include "ash/public/cpp/shelf_types.h"
@@ -34,7 +35,6 @@
 #include "chrome/grit/chrome_unscaled_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/browser_thread.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/aura/window.h"

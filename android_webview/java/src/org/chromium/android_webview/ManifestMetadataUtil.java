@@ -48,9 +48,12 @@ public class ManifestMetadataUtil {
     // Do not change value, it is used by external AndroidManifest.xml files
     private static final String XRW_ALLOWLIST_METADATA_NAME =
             "REQUESTED_WITH_HEADER_ORIGIN_ALLOW_LIST";
-    private static final String XRW_PARSING_ERROR_MESSAGE = "Value of meta-data "
-            + XRW_ALLOWLIST_METADATA_NAME + " in service " + METADATA_HOLDER_SERVICE_NAME
-            + " must be a resource ID referencing a string-array resource.";
+    private static final String XRW_PARSING_ERROR_MESSAGE =
+            "Value of meta-data "
+                    + XRW_ALLOWLIST_METADATA_NAME
+                    + " in service "
+                    + METADATA_HOLDER_SERVICE_NAME
+                    + " must be a resource ID referencing a string-array resource.";
 
     /** Used in tests. */
     @Nullable private static Set<String> sXrwAllowlistForTesting;

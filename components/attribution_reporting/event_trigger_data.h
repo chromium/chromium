@@ -47,6 +47,9 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING) EventTriggerData {
                    FilterPair);
 
   base::Value::Dict ToJson() const;
+
+  friend bool operator==(const EventTriggerData&,
+                         const EventTriggerData&) = default;
 };
 
 }  // namespace attribution_reporting

@@ -15,10 +15,10 @@ namespace {
 
 const cc::DrawImageRectOp* FirstDrawImageRectOp(const cc::PaintRecord& record) {
   for (const cc::PaintOp& op : record) {
-    if (op.GetType() == cc::PaintOpType::kDrawimagerect) {
+    if (op.GetType() == cc::PaintOpType::kDrawImageRect) {
       const auto& image_op = static_cast<const cc::DrawImageRectOp&>(op);
       return &image_op;
-    } else if (op.GetType() == cc::PaintOpType::kDrawrecord) {
+    } else if (op.GetType() == cc::PaintOpType::kDrawRecord) {
       const auto& record_op = static_cast<const cc::DrawRecordOp&>(op);
       if (const auto* image_op = FirstDrawImageRectOp(record_op.record)) {
         return image_op;

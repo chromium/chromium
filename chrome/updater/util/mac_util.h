@@ -5,10 +5,10 @@
 #ifndef CHROME_UPDATER_UTIL_MAC_UTIL_H_
 #define CHROME_UPDATER_UTIL_MAC_UTIL_H_
 
+#include <optional>
 #include <string>
 
 #include "chrome/updater/updater_scope.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class FilePath;
@@ -18,23 +18,23 @@ namespace updater {
 
 // For user installations returns: the "~/Library" for the logged in user.
 // For system installations returns: "/Library".
-absl::optional<base::FilePath> GetLibraryFolderPath(UpdaterScope scope);
+std::optional<base::FilePath> GetLibraryFolderPath(UpdaterScope scope);
 
 // For user installations returns "~/Library/Application Support" for the
 // logged in user. For system installations returns
 // "/Library/Application Support".
-absl::optional<base::FilePath> GetApplicationSupportDirectory(
+std::optional<base::FilePath> GetApplicationSupportDirectory(
     UpdaterScope scope);
 
 // Returns the path to Keystone's root directory.
-absl::optional<base::FilePath> GetKeystoneFolderPath(UpdaterScope scope);
+std::optional<base::FilePath> GetKeystoneFolderPath(UpdaterScope scope);
 
 // Returns the path to ksadmin, if it is present on the system. Ksadmin may be
 // the shim installed by this updater or a Keystone ksadmin.
-absl::optional<base::FilePath> GetKSAdminPath(UpdaterScope scope);
+std::optional<base::FilePath> GetKSAdminPath(UpdaterScope scope);
 
 // Returns the path to the wake task plist.
-absl::optional<base::FilePath> GetWakeTaskPlistPath(UpdaterScope scope);
+std::optional<base::FilePath> GetWakeTaskPlistPath(UpdaterScope scope);
 
 std::string GetWakeLaunchdName(UpdaterScope scope);
 
@@ -49,8 +49,8 @@ std::string GetDomain(UpdaterScope scope);
 // Reads the value associated with `key` from the plist at `path`. Returns
 // nullopt if `path` or `key` are empty, if the plist does not contain `key`, or
 // if there are any errors.
-absl::optional<std::string> ReadValueFromPlist(const base::FilePath& path,
-                                               const std::string& key);
+std::optional<std::string> ReadValueFromPlist(const base::FilePath& path,
+                                              const std::string& key);
 
 }  // namespace updater
 

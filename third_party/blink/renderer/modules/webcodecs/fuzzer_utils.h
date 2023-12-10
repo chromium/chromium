@@ -66,7 +66,12 @@ EncodedAudioChunk* MakeEncodedAudioChunk(
     ScriptState* script_state,
     const wc_fuzzer::EncodedAudioChunk& proto);
 
-AllowSharedBufferSource* MakeAllowSharedBufferSource(
+struct BufferAndSource {
+  UntracedMember<DOMArrayBuffer> buffer;
+  UntracedMember<AllowSharedBufferSource> source;
+};
+
+BufferAndSource MakeAllowSharedBufferSource(
     const wc_fuzzer::AllowSharedBufferSource& proto);
 
 PlaneLayout* MakePlaneLayout(const wc_fuzzer::PlaneLayout& proto);

@@ -31,7 +31,11 @@ public class AnnotatedSimpleHttpClient implements ChromeHttpClient {
     }
 
     @Override
-    public void send(String url, String requestType, byte[] body, Map<String, String> headers,
+    public void send(
+            String url,
+            String requestType,
+            byte[] body,
+            Map<String, String> headers,
             HttpResponseCallback callback) {
         GURL gurl = new GURL(url);
         // Also mask network stack error codes as HTTP status code (better than
@@ -62,10 +66,11 @@ public class AnnotatedSimpleHttpClient implements ChromeHttpClient {
         // conflict with http status codes thus allow us to exfiltrate the cause
         // of the failure without the client library needing to understand our
         // error codes, or handling an extra error code.
-        int responseCode = response.mNetErrorCode != 0
-                        && response.mNetErrorCode != NetError.ERR_HTTP_RESPONSE_CODE_FAILURE
-                ? response.mNetErrorCode
-                : response.mResponseCode;
+        int responseCode =
+                response.mNetErrorCode != 0
+                                && response.mNetErrorCode != NetError.ERR_HTTP_RESPONSE_CODE_FAILURE
+                        ? response.mNetErrorCode
+                        : response.mResponseCode;
         return responseCode;
     }
 }

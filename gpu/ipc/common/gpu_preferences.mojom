@@ -110,7 +110,6 @@ struct GpuPreferences {
   DawnBackendValidationLevel enable_dawn_backend_validation;
   array<string> enabled_dawn_features_list;
   array<string> disabled_dawn_features_list;
-  bool enable_gpu_blocked_time_metric;
   bool enable_perf_data_collection;
 
   [EnableIf=use_ozone]

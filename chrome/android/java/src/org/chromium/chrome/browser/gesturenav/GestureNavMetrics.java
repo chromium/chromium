@@ -12,9 +12,7 @@ import org.chromium.base.metrics.RecordUserAction;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-/**
- * Metrics util class.
- */
+/** Metrics util class. */
 class GestureNavMetrics {
     // Should be in sync with the enum "GestureNavigationType" in
     // tools/metrics/histograms/enums.xml.

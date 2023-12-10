@@ -39,13 +39,13 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
-import org.chromium.chrome.browser.tabmodel.TabModelFilterProvider;
-import org.chromium.chrome.browser.tabmodel.TabModelSelectorImpl;
+import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
 import org.chromium.chrome.test.util.browser.Features;
@@ -55,9 +55,6 @@ import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /** Tests for {@link TabGridItemTouchHelperCallback}. */
 @SuppressWarnings("ResultOfMethodCallIgnored")
@@ -88,8 +85,6 @@ public class TabGridItemTouchHelperCallbackUnitTest {
     @Mock RecyclerView mRecyclerView;
     @Mock RecyclerView.Adapter mAdapter;
     @Mock TabModel mTabModel;
-    @Mock TabModelSelectorImpl mTabModelSelector;
-    @Mock TabModelFilterProvider mTabModelFilterProvider;
     @Mock TabListMediator.TabActionListener mTabClosedListener;
     @Mock TabGroupModelFilter mTabGroupModelFilter;
     @Mock TabListMediator.TabGridDialogHandler mTabGridDialogHandler;
@@ -99,6 +94,9 @@ public class TabGridItemTouchHelperCallbackUnitTest {
 
     @Mock
     TabGridItemTouchHelperCallback.OnLongPressTabItemEventListener mOnLongPressTabItemEventListener;
+
+    private final ObservableSupplierImpl<TabModelFilter> mTabModelFilterSupplier =
+            new ObservableSupplierImpl<>();
 
     private SimpleRecyclerViewAdapter.ViewHolder mMockViewHolder1;
     private SimpleRecyclerViewAdapter.ViewHolder mMockViewHolder2;
@@ -135,16 +133,9 @@ public class TabGridItemTouchHelperCallbackUnitTest {
         mFakeViewHolder3 = prepareFakeViewHolder(mItemView3);
         mFakeViewHolder4 = prepareFakeViewHolder(mItemView4);
 
-        List<TabModel> tabModelList = new ArrayList<>();
-        tabModelList.add(mTabModel);
-        doReturn(mTabModel).when(mTabModelSelector).getCurrentModel();
-        // Incognito model is not used. Treat the profile as the same to simplify test.
-        doReturn(mTabModel).when(mTabModelSelector).getModel(false);
-        doReturn(mTabModel).when(mTabModelSelector).getModel(true);
+        mTabModelFilterSupplier.set(mTabGroupModelFilter);
         doReturn(mProfile).when(mTabModel).getProfile();
-        doReturn(tabModelList).when(mTabModelSelector).getModels();
-        doReturn(mTabModelFilterProvider).when(mTabModelSelector).getTabModelFilterProvider();
-        doReturn(mTabGroupModelFilter).when(mTabModelFilterProvider).getCurrentTabModelFilter();
+        doReturn(mTabModel).when(mTabGroupModelFilter).getTabModel();
         doReturn(tab1).when(mTabModel).getTabAt(POSITION1);
         doReturn(tab2).when(mTabModel).getTabAt(POSITION2);
         doReturn(tab3).when(mTabModel).getTabAt(POSITION3);
@@ -190,7 +181,7 @@ public class TabGridItemTouchHelperCallbackUnitTest {
                 new TabGridItemTouchHelperCallback(
                         ContextUtils.getApplicationContext(),
                         mModel,
-                        mTabModelSelector,
+                        mTabModelFilterSupplier,
                         mTabClosedListener,
                         isDialog ? mTabGridDialogHandler : null,
                         "",
@@ -945,8 +936,8 @@ public class TabGridItemTouchHelperCallbackUnitTest {
     }
 
     @Test
-    public void onLongPress_triggerTabSelectionEditor() {
-        TabUiFeatureUtilities.setTabSelectionEditorLongPressEntryEnabledForTesting(true);
+    public void onLongPress_triggerTabListEditor() {
+        TabUiFeatureUtilities.setTabListEditorLongPressEntryEnabledForTesting(true);
 
         initAndAssertAllProperties();
 
@@ -961,8 +952,8 @@ public class TabGridItemTouchHelperCallbackUnitTest {
     }
 
     @Test
-    public void onLongPress_preventTriggerTabSelectionEditor() {
-        TabUiFeatureUtilities.setTabSelectionEditorLongPressEntryEnabledForTesting(true);
+    public void onLongPress_preventTriggerTabListEditor() {
+        TabUiFeatureUtilities.setTabListEditorLongPressEntryEnabledForTesting(true);
 
         initAndAssertAllProperties();
 

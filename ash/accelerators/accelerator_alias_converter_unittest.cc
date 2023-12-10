@@ -4,6 +4,7 @@
 
 #include "ash/accelerators/accelerator_alias_converter.h"
 
+#include <optional>
 #include <vector>
 
 #include "ash/constants/ash_features.h"
@@ -17,7 +18,6 @@
 #include "base/files/file_path.h"
 #include "base/test/scoped_feature_list.h"
 #include "device/udev_linux/fake_udev_loader.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/events/ash/keyboard_capability.h"
 #include "ui/events/ash/mojom/six_pack_shortcut_modifier.mojom-shared.h"
@@ -40,7 +40,7 @@ constexpr char kKbdTopRowLayoutDrallionTag[] = "4";
 
 struct AcceleratorAliasConverterTestData {
   ui::Accelerator accelerator_;
-  absl::optional<ui::Accelerator> expected_accelerators_;
+  std::optional<ui::Accelerator> expected_accelerators_;
 };
 
 struct TopRowAcceleratorAliasConverterTestData {
@@ -74,8 +74,8 @@ class FakeDeviceManager {
     std::map<std::string, std::string> sysfs_attributes;
     sysfs_properties[kKbdTopRowPropertyName] = layout;
     fake_udev_.AddFakeDevice(fake_keyboard.name, fake_keyboard.sys_path.value(),
-                             /*subsystem=*/"input", /*devnode=*/absl::nullopt,
-                             /*devtype=*/absl::nullopt,
+                             /*subsystem=*/"input", /*devnode=*/std::nullopt,
+                             /*devtype=*/std::nullopt,
                              std::move(sysfs_attributes),
                              std::move(sysfs_properties));
   }
@@ -624,7 +624,7 @@ class SixPackAliasTestWithExternalKeyboard
 
  protected:
   ui::Accelerator accelerator_;
-  absl::optional<ui::Accelerator> expected_accelerators_;
+  std::optional<ui::Accelerator> expected_accelerators_;
   std::unique_ptr<FakeDeviceManager> fake_keyboard_manager_;
 };
 
@@ -634,13 +634,13 @@ INSTANTIATE_TEST_SUITE_P(
     SixPackAliasTestWithExternalKeyboard,
     testing::ValuesIn(std::vector<AcceleratorAliasConverterTestData>{
         // [Search] as original modifier prevents remapping.
-        {ui::Accelerator{ui::VKEY_ZOOM, ui::EF_COMMAND_DOWN}, absl::nullopt},
+        {ui::Accelerator{ui::VKEY_ZOOM, ui::EF_COMMAND_DOWN}, std::nullopt},
         // key_code not as six pack key prevents remapping.
-        {ui::Accelerator{ui::VKEY_TAB, ui::EF_ALT_DOWN}, absl::nullopt},
+        {ui::Accelerator{ui::VKEY_TAB, ui::EF_ALT_DOWN}, std::nullopt},
         // [Shift] + [Delete] should not be remapped.
-        {ui::Accelerator{ui::VKEY_DELETE, ui::EF_SHIFT_DOWN}, absl::nullopt},
+        {ui::Accelerator{ui::VKEY_DELETE, ui::EF_SHIFT_DOWN}, std::nullopt},
         // [Shift] + [Insert] should not be remapped.
-        {ui::Accelerator{ui::VKEY_INSERT, ui::EF_SHIFT_DOWN}, absl::nullopt},
+        {ui::Accelerator{ui::VKEY_INSERT, ui::EF_SHIFT_DOWN}, std::nullopt},
         // For Insert: [modifiers] -> [Search] + [Shift] + [original_modifiers].
         {ui::Accelerator{ui::VKEY_INSERT, ui::EF_ALT_DOWN},
          ui::Accelerator{ui::VKEY_BACK, ui::EF_COMMAND_DOWN |
@@ -690,7 +690,7 @@ class SixPackAliasTestWithInternalKeyboard
 
  protected:
   ui::Accelerator accelerator_;
-  absl::optional<ui::Accelerator> expected_accelerators_;
+  std::optional<ui::Accelerator> expected_accelerators_;
   std::unique_ptr<FakeDeviceManager> fake_keyboard_manager_;
 };
 
@@ -703,13 +703,13 @@ INSTANTIATE_TEST_SUITE_P(
         // six pack key.
 
         // [Search] as original modifier prevents remapping.
-        {ui::Accelerator{ui::VKEY_ZOOM, ui::EF_COMMAND_DOWN}, absl::nullopt},
+        {ui::Accelerator{ui::VKEY_ZOOM, ui::EF_COMMAND_DOWN}, std::nullopt},
         // key_code not as six pack key prevents remapping.
-        {ui::Accelerator{ui::VKEY_TAB, ui::EF_ALT_DOWN}, absl::nullopt},
+        {ui::Accelerator{ui::VKEY_TAB, ui::EF_ALT_DOWN}, std::nullopt},
         // [Shift] + [Delete] should not be remapped.
-        {ui::Accelerator{ui::VKEY_DELETE, ui::EF_SHIFT_DOWN}, absl::nullopt},
+        {ui::Accelerator{ui::VKEY_DELETE, ui::EF_SHIFT_DOWN}, std::nullopt},
         // [Shift] + [Insert] should not be remapped.
-        {ui::Accelerator{ui::VKEY_INSERT, ui::EF_SHIFT_DOWN}, absl::nullopt},
+        {ui::Accelerator{ui::VKEY_INSERT, ui::EF_SHIFT_DOWN}, std::nullopt},
         // For Insert: [modifiers] -> [Search] + [Shift] + [original_modifiers].
         {ui::Accelerator{ui::VKEY_INSERT, ui::EF_ALT_DOWN},
          ui::Accelerator{ui::VKEY_BACK, ui::EF_COMMAND_DOWN |
@@ -766,7 +766,7 @@ class SixPackAliasAltTest
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
   ui::Accelerator accelerator_;
-  absl::optional<ui::Accelerator> expected_accelerators_;
+  std::optional<ui::Accelerator> expected_accelerators_;
   std::unique_ptr<FakeDeviceManager> fake_keyboard_manager_;
 };
 
@@ -790,6 +790,17 @@ INSTANTIATE_TEST_SUITE_P(
         {ui::Accelerator{ui::VKEY_NEXT, ui::EF_NONE},
          ui::Accelerator{ui::VKEY_DOWN, ui::EF_ALT_DOWN}},
 
+        // The following should not perform an alias since Alt is part of the
+        // original accelerator.
+        {ui::Accelerator{ui::VKEY_DELETE, ui::EF_ALT_DOWN}, absl::nullopt},
+
+        {ui::Accelerator{ui::VKEY_HOME, ui::EF_ALT_DOWN}, absl::nullopt},
+
+        {ui::Accelerator{ui::VKEY_PRIOR, ui::EF_ALT_DOWN}, absl::nullopt},
+
+        {ui::Accelerator{ui::VKEY_END, ui::EF_ALT_DOWN}, absl::nullopt},
+
+        {ui::Accelerator{ui::VKEY_NEXT, ui::EF_ALT_DOWN}, absl::nullopt},
     }));
 
 TEST_P(SixPackAliasAltTest, CheckSixPackAliasAlt) {
@@ -818,8 +829,14 @@ TEST_P(SixPackAliasAltTest, CheckSixPackAliasAlt) {
 
   std::vector<ui::Accelerator> accelerator_alias =
       accelerator_alias_converter_.CreateAcceleratorAlias(accelerator_);
-  EXPECT_EQ(1u, accelerator_alias.size());
-  EXPECT_EQ(expected_accelerators_, accelerator_alias[0]);
+
+  if (expected_accelerators_.has_value()) {
+    // Accelerator has valid a remapping.
+    EXPECT_EQ(1u, accelerator_alias.size());
+    EXPECT_EQ(expected_accelerators_, accelerator_alias[0]);
+  } else {
+    EXPECT_EQ(0u, accelerator_alias.size());
+  }
 }
 
 class SixPackAliasSearchTest
@@ -840,7 +857,7 @@ class SixPackAliasSearchTest
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
   ui::Accelerator accelerator_;
-  absl::optional<ui::Accelerator> expected_accelerators_;
+  std::optional<ui::Accelerator> expected_accelerators_;
   std::unique_ptr<FakeDeviceManager> fake_keyboard_manager_;
 };
 

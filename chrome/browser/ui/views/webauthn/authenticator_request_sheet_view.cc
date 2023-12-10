@@ -129,9 +129,10 @@ AuthenticatorRequestSheetView::CreateIllustrationWithOverlays() {
 
   if (model()->IsActivityIndicatorVisible()) {
     constexpr int kActivityIndicatorHeight = 4;
-    auto activity_indicator = std::make_unique<views::ProgressBar>(
-        kActivityIndicatorHeight, false /* allow_round_corner */);
-    activity_indicator->SetValue(-1 /* inifinite animation */);
+    auto activity_indicator = std::make_unique<views::ProgressBar>();
+    activity_indicator->SetPreferredHeight(kActivityIndicatorHeight);
+    activity_indicator->SetPreferredCornerRadii(std::nullopt);
+    activity_indicator->SetValue(-1 /* infinite animation */);
     activity_indicator->SetBackgroundColor(SK_ColorTRANSPARENT);
     activity_indicator->SetPreferredSize(
         gfx::Size(dialog_width, kActivityIndicatorHeight));
@@ -239,13 +240,13 @@ void AuthenticatorRequestSheetView::OnThemeChanged() {
 void AuthenticatorRequestSheetView::UpdateIconImageFromModel() {
   const bool is_dark = GetNativeTheme()->ShouldUseDarkColors();
   if (child_views_.step_illustration_image_) {
-    gfx::IconDescription icon_description(
-        model()->vector_illustrations()->get(is_dark));
     child_views_.step_illustration_image_->SetImage(
-        gfx::CreateVectorIcon(icon_description));
+        ui::ImageModel::FromVectorIcon(
+            model()->vector_illustrations()->get(is_dark),
+            gfx::kPlaceholderColor));
   } else if (child_views_.step_illustration_animation_) {
     const int lottie_id = model()->lottie_illustrations()->get(is_dark);
-    absl::optional<std::vector<uint8_t>> lottie_bytes =
+    std::optional<std::vector<uint8_t>> lottie_bytes =
         ui::ResourceBundle::GetSharedInstance().GetLottieData(lottie_id);
     scoped_refptr<cc::SkottieWrapper> skottie =
         cc::SkottieWrapper::CreateSerializable(std::move(*lottie_bytes));

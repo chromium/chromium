@@ -9,17 +9,16 @@ import {EntryList, FakeEntryImpl, GuestOsPlaceholder, VolumeEntry} from '../../c
 import {installMockChrome} from '../../common/js/mock_chrome.js';
 import {MockFileSystem} from '../../common/js/mock_entry.js';
 import {waitUntil} from '../../common/js/test_error_reporting.js';
-import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
+import {RootType, VolumeType} from '../../common/js/volume_manager_types.js';
 import {EntryType, FileData, State} from '../../externs/ts/state.js';
 import type {VolumeInfo} from '../../externs/volume_info.js';
 import {constants} from '../../foreground/js/constants.js';
 import {MetadataItem} from '../../foreground/js/metadata/metadata_item.js';
 import {MockMetadataModel} from '../../foreground/js/metadata/mock_metadata.js';
-import {addChildEntries} from '../ducks/all_entries.js';
 import {allEntriesSize, assertAllEntriesEqual, cd, changeSelection, createFakeVolumeMetadata, setUpFileManagerOnWindow, setupStore, updMetadata, waitDeepEquals} from '../for_tests.js';
 import {getEmptyState, type Store} from '../store.js';
 
-import {clearCachedEntries, convertEntryToFileData, getMyFiles, readSubDirectories} from './all_entries.js';
+import {addChildEntries, clearCachedEntries, convertEntryToFileData, getMyFiles, readSubDirectories, traverseAndExpandPathEntriesInternal, updateFileData} from './all_entries.js';
 import {convertVolumeInfoAndMetadataToVolume, myFilesEntryListKey} from './volumes.js';
 
 let store: Store;
@@ -35,21 +34,21 @@ export function setUp() {
 
   fileSystem = window.fileManager.volumeManager
                    .getCurrentProfileVolumeInfo(
-                       VolumeManagerCommon.VolumeType.DOWNLOADS)!.fileSystem as
-      MockFileSystem;
-  fileSystem.populate([
-    '/dir-1/',
-    '/dir-2/sub-dir/',
-    '/dir-2/file-1.txt',
-    '/dir-2/file-2.txt',
-    '/dir-3/',
-  ]);
+                       VolumeType.DOWNLOADS)!.fileSystem as MockFileSystem;
+  fileSystem.populate(
+      [
+        '/dir-1/',
+        '/dir-2/sub-dir/',
+        '/dir-2/file-1.txt',
+        '/dir-2/file-2.txt',
+        '/dir-3/',
+      ],
+      /* opt_clear= */ true);
 }
 
 /** Generate MyFiles entry with fake entry list. */
 function createMyFilesDataWithEntryList(): FileData {
-  const myFilesEntryList =
-      new EntryList('My files', VolumeManagerCommon.RootType.MY_FILES);
+  const myFilesEntryList = new EntryList('My files', RootType.MY_FILES);
   return convertEntryToFileData(myFilesEntryList);
 }
 
@@ -57,8 +56,8 @@ function createMyFilesDataWithEntryList(): FileData {
 function createMyFilesDataWithVolumeEntry():
     {fileData: FileData, volumeInfo: VolumeInfo} {
   const volumeManager = new MockVolumeManager();
-  const downloadsVolumeInfo = volumeManager.getCurrentProfileVolumeInfo(
-      VolumeManagerCommon.VolumeType.DOWNLOADS)!;
+  const downloadsVolumeInfo =
+      volumeManager.getCurrentProfileVolumeInfo(VolumeType.DOWNLOADS)!;
   const myFilesVolumeEntry = new VolumeEntry(downloadsVolumeInfo);
   const fileData = convertEntryToFileData(myFilesVolumeEntry);
   return {fileData, volumeInfo: downloadsVolumeInfo};
@@ -127,7 +126,7 @@ export function testCacheEntries() {
 
   // Cache a directory via changeDirectory.
   cd(store, dir1);
-  let resultEntry: FileData = store.getState().allEntries[dir1.toURL()];
+  let resultEntry: FileData = store.getState().allEntries[dir1.toURL()]!;
   assertTrue(!!resultEntry);
   assertEquals(resultEntry.entry, dir1);
   assertTrue(resultEntry.isDirectory);
@@ -138,7 +137,7 @@ export function testCacheEntries() {
 
   // Cache a file via changeSelection.
   changeSelection(store, [file1]);
-  resultEntry = store.getState().allEntries[file1.toURL()];
+  resultEntry = store.getState().allEntries[file1.toURL()]!;
   assertTrue(!!resultEntry);
   assertEquals(resultEntry.entry, file1);
   assertFalse(resultEntry.isDirectory);
@@ -146,10 +145,9 @@ export function testCacheEntries() {
   assertEquals(resultEntry.volumeId, fakeMyFilesVolumeId);
   assertEquals(resultEntry.type, EntryType.FS_API);
   assertTrue(!!resultEntry.metadata.isRestrictedForDestination);
-  const recentRoot =
-      new FakeEntryImpl('Recent', VolumeManagerCommon.RootType.RECENT);
+  const recentRoot = new FakeEntryImpl('Recent', RootType.RECENT);
   cd(store, recentRoot);
-  resultEntry = store.getState().allEntries[recentRoot.toURL()];
+  resultEntry = store.getState().allEntries[recentRoot.toURL()]!;
   assertTrue(!!resultEntry);
   assertEquals(resultEntry.entry, recentRoot);
   assertTrue(resultEntry.isDirectory);
@@ -159,10 +157,10 @@ export function testCacheEntries() {
 
   const volumeInfo =
       window.fileManager.volumeManager.getCurrentProfileVolumeInfo(
-          VolumeManagerCommon.VolumeType.DOWNLOADS)!;
+          VolumeType.DOWNLOADS)!;
   const volumeEntry = new VolumeEntry(volumeInfo);
   cd(store, volumeEntry);
-  resultEntry = store.getState().allEntries[volumeEntry.toURL()];
+  resultEntry = store.getState().allEntries[volumeEntry.toURL()]!;
   assertTrue(!!resultEntry);
   assertEquals(resultEntry.entry, volumeEntry);
   assertTrue(resultEntry.isDirectory);
@@ -183,14 +181,14 @@ export function testUpdateMetadata() {
   // Cache a directory via changeDirectory.
   cd(store, dir1);
   assertEquals(1, allEntriesSize(store.getState()));
-  let resultEntry: FileData = store.getState().allEntries[dir1.toURL()];
+  let resultEntry = store.getState().allEntries[dir1.toURL()]!;
   assertEquals(undefined, resultEntry.metadata.isRestrictedForDestination);
   assertEquals(undefined, resultEntry.metadata.isDlpRestricted);
 
   // Cache a file via changeSelection.
   changeSelection(store, [file1]);
   assertEquals(2, allEntriesSize(store.getState()));
-  resultEntry = store.getState().allEntries[file1.toURL()];
+  resultEntry = store.getState().allEntries[file1.toURL()]!;
   assertTrue(!!resultEntry.metadata.isRestrictedForDestination);
   assertEquals(undefined, resultEntry.metadata.isDlpRestricted);
 
@@ -200,15 +198,15 @@ export function testUpdateMetadata() {
   metadata.isDlpRestricted = true;
   updMetadata(store, [{entry: file1, metadata}, {entry: file2, metadata}]);
 
-  resultEntry = store.getState().allEntries[dir1.toURL()];
+  resultEntry = store.getState().allEntries[dir1.toURL()]!;
   assertEquals(undefined, resultEntry.metadata.isRestrictedForDestination);
   assertEquals(undefined, resultEntry.metadata.isDlpRestricted);
 
-  resultEntry = store.getState().allEntries[file1.toURL()];
+  resultEntry = store.getState().allEntries[file1.toURL()]!;
   assertTrue(!!resultEntry.metadata.isRestrictedForDestination);
   assertTrue(!!resultEntry.metadata.isDlpRestricted);
 
-  resultEntry = store.getState().allEntries[file2.toURL()];
+  resultEntry = store.getState().allEntries[file2.toURL()]!;
   assertFalse(!!resultEntry.metadata.isRestrictedForDestination);
   assertTrue(!!resultEntry.metadata.isDlpRestricted);
 }
@@ -255,12 +253,10 @@ export function testGetMyFilesCreateEntryList() {
   const currentState = getEmptyState();
   const {myFilesEntry, myFilesVolume} = getMyFiles(currentState);
   // Expect entry list is created in place.
-  const myFilesFileData: FileData =
-      currentState.allEntries[myFilesEntryListKey];
+  const myFilesFileData = currentState.allEntries[myFilesEntryListKey]!;
   assertNotEquals(undefined, myFilesFileData);
   const myFIlesEntryList = myFilesFileData.entry as EntryList;
-  assertEquals(
-      VolumeManagerCommon.RootType.MY_FILES, myFIlesEntryList.rootType);
+  assertEquals(RootType.MY_FILES, myFIlesEntryList.rootType);
   assertEquals(myFIlesEntryList, myFilesEntry);
   assertEquals(null, myFilesVolume);
 }
@@ -270,12 +266,14 @@ export async function testAddChildEntries(done: () => void) {
   const initialState = getEmptyState();
 
   // Add parent/children entries to the store.
-  fileSystem.populate([
-    '/a/',
-    '/a/1/',
-    '/a/2/',
-    '/a/2/b/',
-  ]);
+  fileSystem.populate(
+      [
+        '/a/',
+        '/a/1/',
+        '/a/2/',
+        '/a/2/b/',
+      ],
+      /* opt_clear= */ true);
   const aEntry = fileSystem.entries['/a']!;
   initialState.allEntries[aEntry.toURL()] = convertEntryToFileData(aEntry);
   // Make sure aEntry won't be cleared.
@@ -303,7 +301,7 @@ export async function testAddChildEntries(done: () => void) {
   await waitDeepEquals(store, want1, (state) => state.allEntries);
 
   // Set shouldDelayLoadingChildren=true for /a/2.
-  store.getState().allEntries[a2Entry.toURL()].shouldDelayLoadingChildren =
+  store.getState().allEntries[a2Entry.toURL()]!.shouldDelayLoadingChildren =
       true;
   // Dispatch an action to add child entries for /a/2.
   const bEntry = fileSystem.entries['/a/2/b']!;
@@ -342,8 +340,8 @@ export async function testAddChildEntries(done: () => void) {
 /** Tests converting VolumeEntry into FileData. */
 export async function testConvertVolumeEntryToFileData(done: () => void) {
   const {volumeManager} = window.fileManager;
-  const downloadsVolumeInfo = volumeManager.getCurrentProfileVolumeInfo(
-      VolumeManagerCommon.VolumeType.DOWNLOADS)!;
+  const downloadsVolumeInfo =
+      volumeManager.getCurrentProfileVolumeInfo(VolumeType.DOWNLOADS)!;
   const downloadsEntry = new VolumeEntry(downloadsVolumeInfo);
   const got = convertEntryToFileData(downloadsEntry);
   const want: FileData = {
@@ -353,7 +351,7 @@ export async function testConvertVolumeEntryToFileData(done: () => void) {
     isDirectory: true,
     label: 'Downloads',
     volumeId: fakeMyFilesVolumeId,
-    rootType: VolumeManagerCommon.RootType.DOWNLOADS,
+    rootType: RootType.DOWNLOADS,
     metadata: {} as MetadataItem,
     expanded: false,
     disabled: false,
@@ -366,7 +364,7 @@ export async function testConvertVolumeEntryToFileData(done: () => void) {
 
   // Now disabled the volume in the volume manager.
   volumeManager.isDisabled = (volumeType) =>
-      volumeType === VolumeManagerCommon.VolumeType.DOWNLOADS;
+      volumeType === VolumeType.DOWNLOADS;
   const fileData = convertEntryToFileData(downloadsEntry);
   assertEquals(true, fileData.disabled);
 
@@ -381,8 +379,7 @@ export async function testGenericIconInDocumentsProviderFileData(
     done: () => void) {
   // By default an empty IconSet is used in this mock function.
   const documentsProviderVolumeInfo = MockVolumeManager.createMockVolumeInfo(
-      VolumeManagerCommon.VolumeType.DOCUMENTS_PROVIDER, 'documentProviderId',
-      'Google Photos');
+      VolumeType.DOCUMENTS_PROVIDER, 'documentProviderId', 'Google Photos');
   const {volumeManager} = window.fileManager;
   volumeManager.volumeInfoList.add(documentsProviderVolumeInfo);
   const documentsProviderEntry = new VolumeEntry(documentsProviderVolumeInfo);
@@ -394,7 +391,7 @@ export async function testGenericIconInDocumentsProviderFileData(
     isDirectory: true,
     label: 'Google Photos',
     volumeId: 'documentProviderId',
-    rootType: VolumeManagerCommon.RootType.DOCUMENTS_PROVIDER,
+    rootType: RootType.DOCUMENTS_PROVIDER,
     metadata: {} as MetadataItem,
     expanded: false,
     disabled: false,
@@ -410,8 +407,7 @@ export async function testGenericIconInDocumentsProviderFileData(
 
 /** Tests converting EntryList into FileData. */
 export async function testConvertEntryListToFileData(done: () => void) {
-  const myFilesEntryList =
-      new EntryList('My files', VolumeManagerCommon.RootType.MY_FILES);
+  const myFilesEntryList = new EntryList('My files', RootType.MY_FILES);
   const got = convertEntryToFileData(myFilesEntryList);
   const want: FileData = {
     entry: myFilesEntryList,
@@ -420,7 +416,7 @@ export async function testConvertEntryListToFileData(done: () => void) {
     isDirectory: true,
     label: 'My files',
     volumeId: null,  // No volume info for the entry list.
-    rootType: VolumeManagerCommon.RootType.MY_FILES,
+    rootType: RootType.MY_FILES,
     metadata: {} as MetadataItem,
     expanded: false,
     disabled: false,
@@ -446,7 +442,7 @@ export async function testConvertFakeEntryToFileData(done: () => void) {
     isDirectory: true,
     label: 'Android files',
     volumeId: null,  // No volume info for the placeholder entry.
-    rootType: VolumeManagerCommon.RootType.GUEST_OS,
+    rootType: RootType.GUEST_OS,
     metadata: {} as MetadataItem,
     expanded: false,
     disabled: false,
@@ -471,7 +467,7 @@ export async function testConvertNativeFileEntryToFileData(done: () => void) {
     isDirectory: false,
     label: 'file-1.txt',
     volumeId: fakeMyFilesVolumeId,
-    rootType: VolumeManagerCommon.RootType.DOWNLOADS,
+    rootType: RootType.DOWNLOADS,
     metadata: {} as MetadataItem,
     expanded: false,
     disabled: false,
@@ -497,7 +493,7 @@ export async function testConvertNativeDirectoryEntryToFileData(
     isDirectory: true,
     label: 'dir-1',
     volumeId: fakeMyFilesVolumeId,
-    rootType: VolumeManagerCommon.RootType.DOWNLOADS,
+    rootType: RootType.DOWNLOADS,
     metadata: {} as MetadataItem,
     expanded: false,
     disabled: false,
@@ -519,15 +515,17 @@ export async function testReadSubDirectories(done: () => void) {
   const initialState = getEmptyState();
   // Populate fake entries in the file system.
   const {volumeManager} = window.fileManager;
-  const downloadsVolumeInfo = volumeManager.getCurrentProfileVolumeInfo(
-      VolumeManagerCommon.VolumeType.DOWNLOADS)!;
+  const downloadsVolumeInfo =
+      volumeManager.getCurrentProfileVolumeInfo(VolumeType.DOWNLOADS)!;
   const fakeFs = downloadsVolumeInfo.fileSystem as MockFileSystem;
-  fakeFs.populate([
-    '/Downloads/',
-    '/Downloads/c/',
-    '/Downloads/b.txt',
-    '/Downloads/a/',
-  ]);
+  fakeFs.populate(
+      [
+        '/Downloads/',
+        '/Downloads/c/',
+        '/Downloads/b.txt',
+        '/Downloads/a/',
+      ],
+      /* opt_clear= */ true);
   const downloadsEntry = fakeFs.entries['/Downloads']!;
   // The entry to be read should be in the store before reading.
   const downloadsEntryFileData = convertEntryToFileData(downloadsEntry);
@@ -547,7 +545,7 @@ export async function testReadSubDirectories(done: () => void) {
     [aDirEntry.toURL()]: convertEntryToFileData(aDirEntry),
     [cDirEntry.toURL()]: convertEntryToFileData(cDirEntry),
   };
-  want[downloadsEntry.toURL()].children =
+  want[downloadsEntry.toURL()]!.children =
       [aDirEntry.toURL(), cDirEntry.toURL()];
 
   await waitDeepEquals(store, want, (state) => state.allEntries);
@@ -563,16 +561,18 @@ export async function testReadSubDirectoriesRecursively(done: () => void) {
   const initialState = getEmptyState();
   // Populate fake entries in the file system.
   const {volumeManager} = window.fileManager;
-  const downloadsVolumeInfo = volumeManager.getCurrentProfileVolumeInfo(
-      VolumeManagerCommon.VolumeType.DOWNLOADS)!;
+  const downloadsVolumeInfo =
+      volumeManager.getCurrentProfileVolumeInfo(VolumeType.DOWNLOADS)!;
   const fakeFs = downloadsVolumeInfo.fileSystem as MockFileSystem;
-  fakeFs.populate([
-    '/Downloads/',
-    '/Downloads/a/',
-    '/Downloads/b/',
-    '/Downloads/a/111/',
-    '/Downloads/b/222/',
-  ]);
+  fakeFs.populate(
+      [
+        '/Downloads/',
+        '/Downloads/a/',
+        '/Downloads/b/',
+        '/Downloads/a/111/',
+        '/Downloads/b/222/',
+      ],
+      /* opt_clear= */ true);
   const downloadsEntry = fakeFs.entries['/Downloads']!;
   const bDirEntry = fakeFs.entries['/Downloads/b']!;
   // The entry to be read should be in the store before reading.
@@ -596,10 +596,10 @@ export async function testReadSubDirectoriesRecursively(done: () => void) {
     [dirEntry1.toURL()]: convertEntryToFileData(dirEntry1),
     [dirEntry2.toURL()]: convertEntryToFileData(dirEntry2),
   };
-  want[downloadsEntry.toURL()].children =
+  want[downloadsEntry.toURL()]!.children =
       [aDirEntry.toURL(), bDirEntry.toURL()];
-  want[aDirEntry.toURL()].children = [dirEntry1.toURL()];
-  want[bDirEntry.toURL()].children = [dirEntry2.toURL()];
+  want[aDirEntry.toURL()]!.children = [dirEntry1.toURL()];
+  want[bDirEntry.toURL()]!.children = [dirEntry2.toURL()];
 
   await waitDeepEquals(store, want, (state) => state.allEntries);
 
@@ -625,9 +625,11 @@ export async function testReadSubDirectoriesWithNonDirectoryEntry(
 
   // Populate a fake file entry in the file system.
   const fakeFs = new MockFileSystem('fake-fs');
-  fakeFs.populate([
-    '/a.txt',
-  ]);
+  fakeFs.populate(
+      [
+        '/a.txt',
+      ],
+      /* opt_clear= */ true);
 
   // Check reading non directory entry will do nothing.
   store.dispatch(readSubDirectories(fakeFs.entries['/a.txt']!));
@@ -644,8 +646,8 @@ export async function testReadSubDirectoriesWithDisabledEntry(
 
   // Make downloadsEntry as disabled.
   const {volumeManager} = window.fileManager;
-  const downloadsVolumeInfo = volumeManager.getCurrentProfileVolumeInfo(
-      VolumeManagerCommon.VolumeType.DOWNLOADS)!;
+  const downloadsVolumeInfo =
+      volumeManager.getCurrentProfileVolumeInfo(VolumeType.DOWNLOADS)!;
   const downloadsEntry = new VolumeEntry(downloadsVolumeInfo);
   downloadsEntry.disabled = true;
 
@@ -667,17 +669,16 @@ export async function testReadSubDirectoriesForFakeDriveEntry(
   // MockVolumeManager will populate Drive's /root, /team_drives, /Computers
   // automatically.
   const {volumeManager} = window.fileManager;
-  const driveVolumeInfo = volumeManager.getCurrentProfileVolumeInfo(
-      VolumeManagerCommon.VolumeType.DRIVE)!;
+  const driveVolumeInfo =
+      volumeManager.getCurrentProfileVolumeInfo(VolumeType.DRIVE)!;
   const driveFs = driveVolumeInfo.fileSystem as MockFileSystem;
 
   // Create drive root entry list and add all its children.
-  const driveRootEntryList = new EntryList(
-      'Google Drive', VolumeManagerCommon.RootType.DRIVE_FAKE_ROOT);
-  const sharedWithMeEntry = new FakeEntryImpl(
-      'Shared with me', VolumeManagerCommon.RootType.DRIVE_SHARED_WITH_ME);
-  const offlineEntry =
-      new FakeEntryImpl('Offline', VolumeManagerCommon.RootType.DRIVE_OFFLINE);
+  const driveRootEntryList =
+      new EntryList('Google Drive', RootType.DRIVE_FAKE_ROOT);
+  const sharedWithMeEntry =
+      new FakeEntryImpl('Shared with me', RootType.DRIVE_SHARED_WITH_ME);
+  const offlineEntry = new FakeEntryImpl('Offline', RootType.DRIVE_OFFLINE);
   const driveEntry = driveFs.entries['/root']!;
   const computersEntry = driveFs.entries['/Computers']!;
   driveRootEntryList.addEntry(driveEntry);
@@ -686,11 +687,13 @@ export async function testReadSubDirectoriesForFakeDriveEntry(
   driveRootEntryList.addEntry(sharedWithMeEntry);
   driveRootEntryList.addEntry(offlineEntry);
   // Add child entries.
-  driveFs.populate([
-    '/root/a/',
-    '/root/b.txt',
-    '/Computers/c.txt',
-  ]);
+  driveFs.populate(
+      [
+        '/root/a/',
+        '/root/b.txt',
+        '/Computers/c.txt',
+      ],
+      /* opt_clear= */ true);
   // Drive root entry list needs to be in the store before reading.
   const fakeDriveEntryFileData = convertEntryToFileData(driveRootEntryList);
   initialState.allEntries[driveRootEntryList.toURL()] = fakeDriveEntryFileData;
@@ -711,7 +714,7 @@ export async function testReadSubDirectoriesForFakeDriveEntry(
     [offlineEntry.toURL()]: convertEntryToFileData(offlineEntry),
     // /team_drives/ won't be here because it doesn't have children.
   };
-  want[driveRootEntryList.toURL()].children = [
+  want[driveRootEntryList.toURL()]!.children = [
     driveEntry.toURL(),
     computersEntry.toURL(),
     sharedWithMeEntry.toURL(),
@@ -720,6 +723,184 @@ export async function testReadSubDirectoriesForFakeDriveEntry(
   // /root children won't be read.
 
   await waitDeepEquals(store, want, (state) => state.allEntries);
+
+  done();
+}
+
+/**
+ * Tests that traverse path entries will read entries for each parent and
+ * expand them if the child entry could be found.
+ */
+export async function testTraverseAndExpandPathEntriesFound(
+    done: VoidCallback) {
+  const initialState = getEmptyState();
+  const {volumeManager} = window.fileManager;
+  // Populate some fake entries.
+  const downloadsVolumeInfo =
+      volumeManager.getCurrentProfileVolumeInfo(VolumeType.DOWNLOADS)!;
+  const fakeFs = downloadsVolumeInfo.fileSystem as MockFileSystem;
+  fakeFs.populate(
+      [
+        '/a/',
+        '/a/b/',
+        '/a/b/c/',
+      ],
+      /* opt_clear= */ true);
+  const volumeRootEntry = fakeFs.entries['/']!;
+  const dirA = fakeFs.entries['/a']!;
+  const dirB = fakeFs.entries['/a/b']!;
+  const dirC = fakeFs.entries['/a/b/c']!;
+
+  // Put the volume root and the last child entry in the store.
+  const volumeRootEntryFileData = convertEntryToFileData(volumeRootEntry);
+  initialState.allEntries[volumeRootEntry.toURL()] = volumeRootEntryFileData;
+  initialState.volumes[downloadsVolumeInfo.volumeId] =
+      convertVolumeInfoAndMetadataToVolume(
+          downloadsVolumeInfo, createFakeVolumeMetadata(downloadsVolumeInfo));
+  const dirCEntryFileData = convertEntryToFileData(dirC);
+  initialState.allEntries[dirC.toURL()] = dirCEntryFileData;
+
+  const store = setupStore(initialState);
+
+  // Dispatch action producer to traverse on the entry path.
+  store.dispatch(traverseAndExpandPathEntriesInternal([
+    volumeRootEntry.toURL(),
+    dirA.toURL(),
+    dirB.toURL(),
+    dirC.toURL(),
+  ]));
+
+  // Expect dirA and dirB will be in the store and expanded.
+  const want: State['allEntries'] = {
+    [volumeRootEntry.toURL()]: {
+      ...volumeRootEntryFileData,
+      expanded: true,
+      children: [dirA.toURL()],
+    },
+    [dirA.toURL()]: {
+      ...convertEntryToFileData(dirA),
+      expanded: true,
+      children: [dirB.toURL()],
+    },
+    [dirB.toURL()]: {
+      ...convertEntryToFileData(dirB),
+      expanded: true,
+      children: [dirC.toURL()],
+    },
+    [dirC.toURL()]: {
+      ...convertEntryToFileData(dirC),
+      expanded: false,
+      children: [],
+    },
+  };
+
+  await waitDeepEquals(store, want, (state) => state.allEntries);
+
+  done();
+}
+
+/**
+ * Tests that traverse path entries will read entries for each parent, it
+ * won't expand any parent entry if the child entry can not be found.
+ */
+export async function testTraverseAndExpandPathEntriesNotFound(
+    done: VoidCallback) {
+  const initialState = getEmptyState();
+  const {volumeManager} = window.fileManager;
+  // Populate some fake entries.
+  const downloadsVolumeInfo =
+      volumeManager.getCurrentProfileVolumeInfo(VolumeType.DOWNLOADS)!;
+  const fakeFs = downloadsVolumeInfo.fileSystem as MockFileSystem;
+  fakeFs.populate(
+      [
+        '/a/',
+        '/a/b/',
+        '/a/b/c/',
+      ],
+      /* opt_clear= */ true);
+  const volumeRootEntry = fakeFs.entries['/']!;
+  const dirA = fakeFs.entries['/a']!;
+  const dirB = fakeFs.entries['/a/b']!;
+  const dirC = fakeFs.entries['/a/b/c']!;
+
+  // Put the volume root and the last child entry in the store.
+  const volumeRootEntryFileData = convertEntryToFileData(volumeRootEntry);
+  initialState.allEntries[volumeRootEntry.toURL()] = volumeRootEntryFileData;
+  initialState.volumes[downloadsVolumeInfo.volumeId] =
+      convertVolumeInfoAndMetadataToVolume(
+          downloadsVolumeInfo, createFakeVolumeMetadata(downloadsVolumeInfo));
+  const dirCEntryFileData = convertEntryToFileData(dirC);
+  initialState.allEntries[dirC.toURL()] = dirCEntryFileData;
+
+  const store = setupStore(initialState);
+
+  // Dispatch action producer to traverse on the entry path.
+  store.dispatch(traverseAndExpandPathEntriesInternal([
+    volumeRootEntry.toURL(),
+    dirA.toURL(),
+    'not-exist-url',
+    dirC.toURL(),
+  ]));
+
+  // Expect dirA and dirB will be in the store but no entry is expanded.
+  const want: State['allEntries'] = {
+    [volumeRootEntry.toURL()]: {
+      ...volumeRootEntryFileData,
+      expanded: false,
+      children: [dirA.toURL()],
+    },
+    [dirA.toURL()]: {
+      ...convertEntryToFileData(dirA),
+      expanded: false,
+      children: [dirB.toURL()],
+    },
+    [dirB.toURL()]: {
+      ...convertEntryToFileData(dirB),
+      expanded: false,
+      // dirB's children is not being read because read stops when non-exist-url
+      // is encountered.
+      children: [],
+    },
+    // dirC is cleared because it's not referenced by any other entries.
+  };
+
+  await waitDeepEquals(store, want, (state) => state.allEntries);
+
+  done();
+}
+
+/** Tests that file data can be updated correctly. */
+export async function testUpdateFileData(done: () => void) {
+  const initialState = getEmptyState();
+  // Add MyFiles entry to the store.
+  const {fileData} = createMyFilesDataWithVolumeEntry();
+  const myFilesEntryKey = fileData.entry.toURL();
+  initialState.allEntries[myFilesEntryKey] = fileData;
+
+  const store = setupStore(initialState);
+
+  // Dispatch an action to update file data.
+  store.dispatch(updateFileData(
+      {key: myFilesEntryKey, partialFileData: {expanded: true}}));
+
+  // Expect MyFiles entry is expanded in the store.
+  await waitDeepEquals(
+      store, true, (state) => state.allEntries[myFilesEntryKey]?.expanded);
+
+  done();
+}
+
+/** Tests that file data won't be updated without valid file data. */
+export async function testUpdateFileDataWithoutValidFileData(done: () => void) {
+  const initialState = getEmptyState();
+  const store = setupStore(initialState);
+
+  // Dispatch an action to update an non existed file data.
+  store.dispatch(updateFileData(
+      {key: 'not-exist-key', partialFileData: {expanded: true}}));
+
+  // Check state won't be touched.
+  await waitDeepEquals(store, initialState, (state) => state);
 
   done();
 }

@@ -692,8 +692,8 @@ bool StructTraits<
       std::move(name), std::move(value), std::move(domain), std::move(path),
       std::move(creation_time), std::move(expiry_time),
       std::move(last_access_time), std::move(last_update_time), cookie.secure(),
-      cookie.httponly(), site_restrictions, priority, cookie.same_party(),
-      partition_key, source_scheme, cookie.source_port());
+      cookie.httponly(), site_restrictions, priority, partition_key,
+      source_scheme, cookie.source_port());
   if (!cc)
     return false;
   *out = *cc;

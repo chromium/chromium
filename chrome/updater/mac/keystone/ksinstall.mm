@@ -4,12 +4,11 @@
 
 #include "chrome/updater/mac/keystone/ksinstall.h"
 
-#include "base/memory/raw_ptr.h"
-
 #import <Foundation/Foundation.h>
 #import <getopt.h>
-
 #import <stdio.h>
+
+#include <optional>
 #include <string>
 
 #include "base/at_exit.h"
@@ -20,6 +19,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/task/single_thread_task_executor.h"
@@ -54,7 +54,7 @@ class KSInstallApp : public App {
 void KSInstallApp::Uninstall(base::OnceCallback<void(int)> callback) {
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()}, base::BindOnce([] {
-        const absl::optional<base::FilePath>& keystone_path =
+        const std::optional<base::FilePath>& keystone_path =
             GetKeystoneFolderPath((geteuid() == 0) ? UpdaterScope::kSystem
                                                    : UpdaterScope::kUser);
         if (!keystone_path ||

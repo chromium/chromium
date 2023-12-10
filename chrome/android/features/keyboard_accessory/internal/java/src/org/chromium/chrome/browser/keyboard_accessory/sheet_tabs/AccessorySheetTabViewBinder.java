@@ -32,9 +32,7 @@ import org.chromium.ui.modelutil.PropertyModel;
  * to the {@link RecyclerView} used as view of a tab for the accessory sheet component.
  */
 class AccessorySheetTabViewBinder {
-    /**
-     * Holds any View that represents a list entry.
-     */
+    /** Holds any View that represents a list entry. */
     abstract static class ElementViewHolder<T, V extends View> extends RecyclerView.ViewHolder {
         ElementViewHolder(ViewGroup parent, int layout) {
             super(LayoutInflater.from(parent.getContext()).inflate(layout, parent, false));
@@ -67,9 +65,7 @@ class AccessorySheetTabViewBinder {
         return null;
     }
 
-    /**
-     * Holds a Title consisting of a top divider, a text view and a bottom divider.
-     */
+    /** Holds a Title consisting of a top divider, a text view and a bottom divider. */
     static class TitleViewHolder extends ElementViewHolder<String, LinearLayout> {
         TitleViewHolder(ViewGroup parent) {
             this(parent, R.layout.keyboard_accessory_sheet_tab_legacy_title);
@@ -87,9 +83,7 @@ class AccessorySheetTabViewBinder {
         }
     }
 
-    /**
-     * Holds a clickable {@link TextView} that represents a footer command.
-     */
+    /** Holds a clickable {@link TextView} that represents a footer command. */
     static class FooterCommandViewHolder
             extends ElementViewHolder<KeyboardAccessoryData.FooterCommand, TextView> {
         FooterCommandViewHolder(ViewGroup parent) {
@@ -104,9 +98,7 @@ class AccessorySheetTabViewBinder {
         }
     }
 
-    /**
-     *  Holds a title, subtitle which shows the state of the toggle and a toggle.
-     */
+    /** Holds a title, subtitle which shows the state of the toggle and a toggle. */
     static class OptionToggleViewHolder
             extends ElementViewHolder<KeyboardAccessoryData.OptionToggle, LinearLayout> {
         OptionToggleViewHolder(ViewGroup parent) {

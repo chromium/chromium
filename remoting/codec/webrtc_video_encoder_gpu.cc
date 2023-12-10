@@ -275,7 +275,8 @@ void WebrtcVideoEncoderGpu::Core::Encode(
     uint32_t bitrate_bps =
         checked_bitrate.ValueOrDefault(std::numeric_limits<uint32_t>::max());
     video_encode_accelerator_->RequestEncodingParametersChange(
-        media::Bitrate::ConstantBitrate(bitrate_bps), params.fps);
+        media::Bitrate::ConstantBitrate(bitrate_bps), params.fps,
+        absl::nullopt);
   }
   video_encode_accelerator_->Encode(video_frame, params.key_frame);
 }

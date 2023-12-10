@@ -179,7 +179,8 @@ bool AppListMainView::HandleFocusMoveAboveSearchResults(
 }
 
 void AppListMainView::AssistantButtonPressed() {
-  delegate_->StartAssistant();
+  delegate_->StartAssistant(
+      assistant::AssistantEntryPoint::kLauncherSearchBoxIcon);
 }
 
 void AppListMainView::CloseButtonPressed() {

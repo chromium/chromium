@@ -334,8 +334,8 @@ const ParseTestCase DocumentPolicyParserTest::kCases[] = {
         },
         /* messages */
         {{mojom::blink::ConsoleMessageLevel::kWarning,
-          "Parameter for feature f-double should be Double, not "
-          "Boolean."}},
+          "Parameter for feature f-double should be double, not "
+          "boolean."}},
     },
     {
         "ParsePolicyWithWrongTypeOfParamExpectedBooleanTypeButGet"
@@ -348,8 +348,8 @@ const ParseTestCase DocumentPolicyParserTest::kCases[] = {
         },
         /* messages */
         {{mojom::blink::ConsoleMessageLevel::kWarning,
-          "Parameter for feature f-bool should be Boolean, not "
-          "Decimal."}},
+          "Parameter for feature f-bool should be boolean, not "
+          "decimal."}},
     },
     {
         "FeatureValueItemShouldNotBeEmpty",

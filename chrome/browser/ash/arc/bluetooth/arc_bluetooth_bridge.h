@@ -9,6 +9,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <unordered_map>
@@ -39,7 +40,6 @@
 #include "device/bluetooth/bluetooth_remote_gatt_service.h"
 #include "device/bluetooth/bluez/bluetooth_adapter_bluez.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class BrowserContext;
@@ -235,7 +235,7 @@ class ArcBluetoothBridge
 
   void OnSessionStarted(
       device::BluetoothLowEnergyScanSession* scan_session,
-      absl::optional<device::BluetoothLowEnergyScanSession::ErrorCode>
+      std::optional<device::BluetoothLowEnergyScanSession::ErrorCode>
           error_code) override;
 
   void OnSessionInvalidated(
@@ -434,7 +434,7 @@ class ArcBluetoothBridge
   void OnGattConnect(
       mojom::BluetoothAddressPtr addr,
       std::unique_ptr<device::BluetoothGattConnection> connection,
-      absl::optional<device::BluetoothDevice::ConnectErrorCode> error_code);
+      std::optional<device::BluetoothDevice::ConnectErrorCode> error_code);
   void OnGattDisconnected(mojom::BluetoothAddressPtr addr);
 
   void OnGattNotifyStartDone(
@@ -708,7 +708,7 @@ class ArcBluetoothBridge
   // Timer to turn adapter discoverable off.
   base::OneShotTimer discoverable_off_timer_;
   // Adapter discoverable timeout value.
-  absl::optional<uint32_t> discoverable_off_timeout_ = absl::nullopt;
+  std::optional<uint32_t> discoverable_off_timeout_ = std::nullopt;
 
   // Queue to track the powered state changes initiated by Android.
   base::queue<AdapterPowerState> remote_power_changes_;

@@ -18,15 +18,15 @@ namespace ash::fake_video_conference {
 
 SimpleToggleEffect::SimpleToggleEffect(const std::u16string& label_text)
     : SimpleToggleEffect(/*label_text=*/label_text,
-                         /*icon=*/absl::nullopt,
-                         /*accessible_name_id=*/absl::nullopt) {}
+                         /*icon=*/std::nullopt,
+                         /*accessible_name_id=*/std::nullopt) {}
 
 SimpleToggleEffect::~SimpleToggleEffect() = default;
 
 SimpleToggleEffect::SimpleToggleEffect(
     const std::u16string& label_text,
-    absl::optional<const gfx::VectorIcon*> icon,
-    absl::optional<int> accessible_name_id) {
+    std::optional<const gfx::VectorIcon*> icon,
+    std::optional<int> accessible_name_id) {
   std::unique_ptr<VcHostedEffect> effect = std::make_unique<VcHostedEffect>(
       VcEffectType::kToggle,
       base::BindRepeating(&SimpleToggleEffect::GetEffectState,
@@ -41,20 +41,20 @@ SimpleToggleEffect::SimpleToggleEffect(
       base::BindRepeating(&SimpleToggleEffect::OnEffectControlActivated,
                           weak_factory_.GetWeakPtr(),
                           /*effect_id=*/VcEffectId::kTestEffect,
-                          /*value=*/absl::nullopt));
+                          /*value=*/std::nullopt));
   effect->AddState(std::move(state));
   AddEffect(std::move(effect));
 }
 
-absl::optional<int> SimpleToggleEffect::GetEffectState(VcEffectId effect_id) {
+std::optional<int> SimpleToggleEffect::GetEffectState(VcEffectId effect_id) {
   // Subclass `SimpleToggleEffect` if a specific integer or enum value (other
-  // than 0) needs to be returned. Returning `absl::nullopt` is taken as "no
+  // than 0) needs to be returned. Returning `std::nullopt` is taken as "no
   // value could be obtained" and treated as an error condition.
   return 0;
 }
 
 void SimpleToggleEffect::OnEffectControlActivated(VcEffectId effect_id,
-                                                  absl::optional<int> state) {
+                                                  std::optional<int> state) {
   ++num_activations_for_testing_;
 }
 
@@ -115,12 +115,12 @@ ShaggyFurEffect::ShaggyFurEffect() {
 
 ShaggyFurEffect::~ShaggyFurEffect() = default;
 
-absl::optional<int> ShaggyFurEffect::GetEffectState(VcEffectId effect_id) {
+std::optional<int> ShaggyFurEffect::GetEffectState(VcEffectId effect_id) {
   return static_cast<int>(FurShagginess::kBuzzcut);
 }
 
 void ShaggyFurEffect::OnEffectControlActivated(VcEffectId effect_id,
-                                               absl::optional<int> state) {
+                                               std::optional<int> state) {
   DCHECK(state.has_value());
   DCHECK(state.value() >= 0 &&
          state.value() < static_cast<int>(FurShagginess::kMaxNumValues));
@@ -176,16 +176,16 @@ SuperCutnessEffect::SuperCutnessEffect() {
 
 SuperCutnessEffect::~SuperCutnessEffect() = default;
 
-absl::optional<int> SuperCutnessEffect::GetEffectState(VcEffectId effect_id) {
+std::optional<int> SuperCutnessEffect::GetEffectState(VcEffectId effect_id) {
   if (has_invalid_effect_state_for_testing_) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return static_cast<int>(HowCute::kTeddyBear);
 }
 
 void SuperCutnessEffect::OnEffectControlActivated(VcEffectId effect_id,
-                                                  absl::optional<int> state) {
+                                                  std::optional<int> state) {
   DCHECK(state.has_value());
   DCHECK(state.value() >= 0 &&
          state.value() < static_cast<int>(HowCute::kMaxNumValues));

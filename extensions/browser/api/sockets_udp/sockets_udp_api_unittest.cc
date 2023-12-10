@@ -40,7 +40,7 @@ TEST_F(SocketsUdpUnitTest, Create) {
   SocketsUdpCreateFunction* function = new SocketsUdpCreateFunction();
 
   // Run tests
-  absl::optional<base::Value> result = RunFunctionAndReturnValue(
+  std::optional<base::Value> result = RunFunctionAndReturnValue(
       function, "[{\"persistent\": true, \"name\": \"foo\"}]");
   ASSERT_TRUE(result);
   ASSERT_TRUE(result->is_dict());

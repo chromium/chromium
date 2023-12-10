@@ -44,6 +44,9 @@ mojom("compositing") {
   if (ozone_platform_x11) {
     enabled_features += [ "ozone_platform_x11" ]
   }
+  if (is_linux && ozone_platform_x11) {
+    enabled_features += [ "linux_x11" ]
+  }
   if (enable_cast_overlay_strategy) {
     enabled_features += [ "enable_cast_overlay_strategy" ]
   }

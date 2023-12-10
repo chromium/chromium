@@ -270,15 +270,6 @@ void CloudUploadNotificationManager::ShowUploadError(
                                            /*metadata=*/nullptr);
 }
 
-void CloudUploadNotificationManager::OnMinInProgressTimeReached() {
-  if (state_ == State::kInProgress) {
-    state_ = State::kInProgressTimedOut;
-  } else if (state_ == State::kWaitingForInProgressTimeout) {
-    state_ = State::kComplete;
-    ShowCompleteNotification();
-  }
-}
-
 void CloudUploadNotificationManager::CloseNotification() {
   GetNotificationDisplayService()->Close(NotificationHandler::Type::TRANSIENT,
                                          notification_id_);
@@ -289,8 +280,17 @@ void CloudUploadNotificationManager::CloseNotification() {
   }
 }
 
+void CloudUploadNotificationManager::OnMinInProgressTimeReached() {
+  if (state_ == State::kInProgress) {
+    state_ = State::kInProgressTimedOut;
+  } else if (state_ == State::kWaitingForInProgressTimeout) {
+    state_ = State::kComplete;
+    ShowCompleteNotification();
+  }
+}
+
 void CloudUploadNotificationManager::HandleProgressNotificationClick(
-    absl::optional<int> button_index) {
+    std::optional<int> button_index) {
   // If the "Cancel" button was pressed, rather than a click to somewhere
   // else in the notification.
   if (button_index && cancel_callback_ && CanCancel()) {
@@ -302,7 +302,7 @@ void CloudUploadNotificationManager::HandleProgressNotificationClick(
 }
 
 void CloudUploadNotificationManager::HandleErrorNotificationClick(
-    absl::optional<int> button_index) {
+    std::optional<int> button_index) {
   // If the "Sign in" button was pressed, rather than a click to somewhere
   // else in the notification.
   if (button_index) {
@@ -314,7 +314,7 @@ void CloudUploadNotificationManager::HandleErrorNotificationClick(
 }
 
 void CloudUploadNotificationManager::HandleCompleteNotificationClick(
-    absl::optional<int> button_index) {
+    std::optional<int> button_index) {
   if (callback_for_testing_) {
     std::move(callback_for_testing_).Run(destination_path_);
   } else if (button_index) {
@@ -329,10 +329,6 @@ void CloudUploadNotificationManager::HandleCompleteNotificationClick(
 bool CloudUploadNotificationManager::CanCancel() {
   return state_ == State::kUninitialized || state_ == State::kInProgress ||
          state_ == State::kInProgressTimedOut;
-}
-
-void CloudUploadNotificationManager::CloseForTest() {
-  CloseNotification();
 }
 
 }  // namespace ash::cloud_upload

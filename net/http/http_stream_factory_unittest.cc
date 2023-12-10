@@ -766,7 +766,7 @@ TEST_F(HttpStreamFactoryTest, JobNotifiesProxy) {
   StreamRequestWaiter waiter;
   std::unique_ptr<HttpStreamRequest> request(
       session->http_stream_factory()->RequestStream(
-          request_info, DEFAULT_PRIORITY, ssl_config, ssl_config, &waiter,
+          request_info, DEFAULT_PRIORITY, ssl_config, &waiter,
           /* enable_ip_based_pooling = */ true,
           /* enable_alternative_services = */ true, NetLogWithSource()));
   waiter.WaitForStream();
@@ -821,7 +821,7 @@ TEST_F(HttpStreamFactoryTest, NoProxyFallbackOnTunnelFail) {
   StreamRequestWaiter waiter;
   std::unique_ptr<HttpStreamRequest> request(
       session->http_stream_factory()->RequestStream(
-          request_info, DEFAULT_PRIORITY, ssl_config, ssl_config, &waiter,
+          request_info, DEFAULT_PRIORITY, ssl_config, &waiter,
           /* enable_ip_based_pooling = */ true,
           /* enable_alternative_services = */ true, NetLogWithSource()));
   waiter.WaitForStream();
@@ -914,7 +914,7 @@ TEST_F(HttpStreamFactoryTest, QuicProxyMarkedAsBad) {
     StreamRequestWaiter waiter;
     std::unique_ptr<HttpStreamRequest> request(
         session->http_stream_factory()->RequestStream(
-            request_info, DEFAULT_PRIORITY, ssl_config, ssl_config, &waiter,
+            request_info, DEFAULT_PRIORITY, ssl_config, &waiter,
             /* enable_ip_based_pooling = */ true,
             /* enable_alternative_services = */ true, NetLogWithSource()));
     waiter.WaitForStream();
@@ -1129,7 +1129,7 @@ TEST_F(HttpStreamFactoryTest, PrivacyModeUsesDifferentSocketPoolGroup) {
 
   std::unique_ptr<HttpStreamRequest> request1(
       session->http_stream_factory()->RequestStream(
-          request_info, DEFAULT_PRIORITY, ssl_config, ssl_config, &waiter,
+          request_info, DEFAULT_PRIORITY, ssl_config, &waiter,
           /* enable_ip_based_pooling = */ true,
           /* enable_alternative_services = */ true, NetLogWithSource()));
   waiter.WaitForStream();
@@ -1138,7 +1138,7 @@ TEST_F(HttpStreamFactoryTest, PrivacyModeUsesDifferentSocketPoolGroup) {
 
   std::unique_ptr<HttpStreamRequest> request2(
       session->http_stream_factory()->RequestStream(
-          request_info, DEFAULT_PRIORITY, ssl_config, ssl_config, &waiter,
+          request_info, DEFAULT_PRIORITY, ssl_config, &waiter,
           /* enable_ip_based_pooling = */ true,
           /* enable_alternative_services = */ true, NetLogWithSource()));
   waiter.WaitForStream();
@@ -1148,7 +1148,7 @@ TEST_F(HttpStreamFactoryTest, PrivacyModeUsesDifferentSocketPoolGroup) {
   request_info.privacy_mode = PRIVACY_MODE_ENABLED;
   std::unique_ptr<HttpStreamRequest> request3(
       session->http_stream_factory()->RequestStream(
-          request_info, DEFAULT_PRIORITY, ssl_config, ssl_config, &waiter,
+          request_info, DEFAULT_PRIORITY, ssl_config, &waiter,
           /* enable_ip_based_pooling = */ true,
           /* enable_alternative_services = */ true, NetLogWithSource()));
   waiter.WaitForStream();
@@ -1198,7 +1198,7 @@ TEST_F(HttpStreamFactoryTest, DisableSecureDnsUsesDifferentSocketPoolGroup) {
 
   std::unique_ptr<HttpStreamRequest> request1(
       session->http_stream_factory()->RequestStream(
-          request_info, DEFAULT_PRIORITY, ssl_config, ssl_config, &waiter,
+          request_info, DEFAULT_PRIORITY, ssl_config, &waiter,
           /* enable_ip_based_pooling = */ true,
           /* enable_alternative_services = */ true, NetLogWithSource()));
   waiter.WaitForStream();
@@ -1209,7 +1209,7 @@ TEST_F(HttpStreamFactoryTest, DisableSecureDnsUsesDifferentSocketPoolGroup) {
 
   std::unique_ptr<HttpStreamRequest> request2(
       session->http_stream_factory()->RequestStream(
-          request_info, DEFAULT_PRIORITY, ssl_config, ssl_config, &waiter,
+          request_info, DEFAULT_PRIORITY, ssl_config, &waiter,
           /* enable_ip_based_pooling = */ true,
           /* enable_alternative_services = */ true, NetLogWithSource()));
   waiter.WaitForStream();
@@ -1221,7 +1221,7 @@ TEST_F(HttpStreamFactoryTest, DisableSecureDnsUsesDifferentSocketPoolGroup) {
   request_info.secure_dns_policy = SecureDnsPolicy::kDisable;
   std::unique_ptr<HttpStreamRequest> request3(
       session->http_stream_factory()->RequestStream(
-          request_info, DEFAULT_PRIORITY, ssl_config, ssl_config, &waiter,
+          request_info, DEFAULT_PRIORITY, ssl_config, &waiter,
           /* enable_ip_based_pooling = */ true,
           /* enable_alternative_services = */ true, NetLogWithSource()));
   waiter.WaitForStream();
@@ -1252,7 +1252,7 @@ TEST_F(HttpStreamFactoryTest, GetLoadState) {
   StreamRequestWaiter waiter;
   std::unique_ptr<HttpStreamRequest> request(
       session->http_stream_factory()->RequestStream(
-          request_info, DEFAULT_PRIORITY, ssl_config, ssl_config, &waiter,
+          request_info, DEFAULT_PRIORITY, ssl_config, &waiter,
           /* enable_ip_based_pooling = */ true,
           /* enable_alternative_services = */ true, NetLogWithSource()));
 
@@ -1285,7 +1285,7 @@ TEST_F(HttpStreamFactoryTest, RequestHttpStream) {
   StreamRequestWaiter waiter;
   std::unique_ptr<HttpStreamRequest> request(
       session->http_stream_factory()->RequestStream(
-          request_info, DEFAULT_PRIORITY, ssl_config, ssl_config, &waiter,
+          request_info, DEFAULT_PRIORITY, ssl_config, &waiter,
           /* enable_ip_based_pooling = */ true,
           /* enable_alternative_services = */ true, NetLogWithSource()));
   waiter.WaitForStream();
@@ -1334,7 +1334,7 @@ TEST_F(HttpStreamFactoryTest, ReprioritizeAfterStreamReceived) {
   EXPECT_EQ(0, GetSpdySessionCount(session.get()));
   std::unique_ptr<HttpStreamRequest> request(
       session->http_stream_factory()->RequestStream(
-          request_info, LOWEST, ssl_config, ssl_config, &waiter,
+          request_info, LOWEST, ssl_config, &waiter,
           /* enable_ip_based_pooling = */ true,
           /* enable_alternative_services = */ true, NetLogWithSource()));
   EXPECT_FALSE(waiter.stream_done());
@@ -1382,7 +1382,7 @@ TEST_F(HttpStreamFactoryTest, RequestHttpStreamOverSSL) {
   StreamRequestWaiter waiter;
   std::unique_ptr<HttpStreamRequest> request(
       session->http_stream_factory()->RequestStream(
-          request_info, DEFAULT_PRIORITY, ssl_config, ssl_config, &waiter,
+          request_info, DEFAULT_PRIORITY, ssl_config, &waiter,
           /* enable_ip_based_pooling = */ true,
           /* enable_alternative_services = */ true, NetLogWithSource()));
   waiter.WaitForStream();
@@ -1422,7 +1422,7 @@ TEST_F(HttpStreamFactoryTest, RequestHttpStreamOverProxy) {
   StreamRequestWaiter waiter;
   std::unique_ptr<HttpStreamRequest> request(
       session->http_stream_factory()->RequestStream(
-          request_info, DEFAULT_PRIORITY, ssl_config, ssl_config, &waiter,
+          request_info, DEFAULT_PRIORITY, ssl_config, &waiter,
           /* enable_ip_based_pooling = */ true,
           /* enable_alternative_services = */ true, NetLogWithSource()));
   waiter.WaitForStream();
@@ -1473,8 +1473,7 @@ TEST_F(HttpStreamFactoryTest, RequestWebSocketBasicHandshakeStream) {
   WebSocketStreamCreateHelper create_helper;
   std::unique_ptr<HttpStreamRequest> request(
       session->http_stream_factory()->RequestWebSocketHandshakeStream(
-          request_info, DEFAULT_PRIORITY, ssl_config, ssl_config, &waiter,
-          &create_helper,
+          request_info, DEFAULT_PRIORITY, ssl_config, &waiter, &create_helper,
           /* enable_ip_based_pooling = */ true,
           /* enable_alternative_services = */ true, NetLogWithSource()));
   waiter.WaitForStream();
@@ -1518,8 +1517,7 @@ TEST_F(HttpStreamFactoryTest, RequestWebSocketBasicHandshakeStreamOverSSL) {
   WebSocketStreamCreateHelper create_helper;
   std::unique_ptr<HttpStreamRequest> request(
       session->http_stream_factory()->RequestWebSocketHandshakeStream(
-          request_info, DEFAULT_PRIORITY, ssl_config, ssl_config, &waiter,
-          &create_helper,
+          request_info, DEFAULT_PRIORITY, ssl_config, &waiter, &create_helper,
           /* enable_ip_based_pooling = */ true,
           /* enable_alternative_services = */ true, NetLogWithSource()));
   waiter.WaitForStream();
@@ -1561,8 +1559,7 @@ TEST_F(HttpStreamFactoryTest, RequestWebSocketBasicHandshakeStreamOverProxy) {
   WebSocketStreamCreateHelper create_helper;
   std::unique_ptr<HttpStreamRequest> request(
       session->http_stream_factory()->RequestWebSocketHandshakeStream(
-          request_info, DEFAULT_PRIORITY, ssl_config, ssl_config, &waiter,
-          &create_helper,
+          request_info, DEFAULT_PRIORITY, ssl_config, &waiter, &create_helper,
           /* enable_ip_based_pooling = */ true,
           /* enable_alternative_services = */ true, NetLogWithSource()));
   waiter.WaitForStream();
@@ -1615,7 +1612,7 @@ TEST_F(HttpStreamFactoryTest, RequestSpdyHttpStreamHttpsURL) {
   StreamRequestWaiter waiter;
   std::unique_ptr<HttpStreamRequest> request(
       session->http_stream_factory()->RequestStream(
-          request_info, DEFAULT_PRIORITY, ssl_config, ssl_config, &waiter,
+          request_info, DEFAULT_PRIORITY, ssl_config, &waiter,
           /* enable_ip_based_pooling = */ true,
           /* enable_alternative_services = */ true, NetLogWithSource()));
   waiter.WaitForStream();
@@ -1670,7 +1667,7 @@ TEST_F(HttpStreamFactoryTest, RequestSpdyHttpStreamHttpURL) {
   StreamRequestWaiter waiter;
   std::unique_ptr<HttpStreamRequest> request(
       session->http_stream_factory()->RequestStream(
-          request_info, DEFAULT_PRIORITY, ssl_config, ssl_config, &waiter,
+          request_info, DEFAULT_PRIORITY, ssl_config, &waiter,
           /* enable_ip_based_pooling = */ true,
           /* enable_alternative_services = */ true, NetLogWithSource()));
   waiter.WaitForStream();
@@ -1746,7 +1743,7 @@ TEST_F(HttpStreamFactoryTest,
   StreamRequestWaiter waiter;
   std::unique_ptr<HttpStreamRequest> request(
       session->http_stream_factory()->RequestStream(
-          request_info, DEFAULT_PRIORITY, ssl_config, ssl_config, &waiter,
+          request_info, DEFAULT_PRIORITY, ssl_config, &waiter,
           /* enable_ip_based_pooling = */ true,
           /* enable_alternative_services = */ true, NetLogWithSource()));
   waiter.WaitForStream();
@@ -1840,12 +1837,12 @@ TEST_F(HttpStreamFactoryTest, NewSpdySessionCloseIdleH2Sockets) {
   StreamRequestWaiter waiter2;
   std::unique_ptr<HttpStreamRequest> request1(
       session->http_stream_factory()->RequestStream(
-          request_info, DEFAULT_PRIORITY, ssl_config, ssl_config, &waiter1,
+          request_info, DEFAULT_PRIORITY, ssl_config, &waiter1,
           /* enable_ip_based_pooling = */ true,
           /* enable_alternative_services = */ true, NetLogWithSource()));
   std::unique_ptr<HttpStreamRequest> request2(
       session->http_stream_factory()->RequestStream(
-          request_info, DEFAULT_PRIORITY, ssl_config, ssl_config, &waiter2,
+          request_info, DEFAULT_PRIORITY, ssl_config, &waiter2,
           /* enable_ip_based_pooling = */ true,
           /* enable_alternative_services = */ true, NetLogWithSource()));
   waiter1.WaitForStream();
@@ -1900,14 +1897,14 @@ TEST_F(HttpStreamFactoryTest, TwoSpdyConnects) {
   StreamRequestWaiter waiter1;
   std::unique_ptr<HttpStreamRequest> request1 =
       session->http_stream_factory()->RequestStream(
-          request_info, DEFAULT_PRIORITY, ssl_config, ssl_config, &waiter1,
+          request_info, DEFAULT_PRIORITY, ssl_config, &waiter1,
           /* enable_ip_based_pooling = */ true,
           /* enable_alternative_services = */ true, NetLogWithSource());
 
   StreamRequestWaiter waiter2;
   std::unique_ptr<HttpStreamRequest> request2 =
       session->http_stream_factory()->RequestStream(
-          request_info, DEFAULT_PRIORITY, ssl_config, ssl_config, &waiter2,
+          request_info, DEFAULT_PRIORITY, ssl_config, &waiter2,
           /* enable_ip_based_pooling = */ true,
           /* enable_alternative_services = */ true, NetLogWithSource());
 
@@ -1959,7 +1956,7 @@ TEST_F(HttpStreamFactoryTest, RequestBidirectionalStreamImpl) {
   StreamRequestWaiter waiter;
   std::unique_ptr<HttpStreamRequest> request(
       session->http_stream_factory()->RequestBidirectionalStreamImpl(
-          request_info, DEFAULT_PRIORITY, ssl_config, ssl_config, &waiter,
+          request_info, DEFAULT_PRIORITY, ssl_config, &waiter,
           /* enable_ip_based_pooling = */ true,
           /* enable_alternative_services = */ true, NetLogWithSource()));
   waiter.WaitForStream();
@@ -2151,7 +2148,7 @@ TEST_P(HttpStreamFactoryBidirectionalQuicTest,
   StreamRequestWaiter waiter;
   std::unique_ptr<HttpStreamRequest> request(
       session()->http_stream_factory()->RequestBidirectionalStreamImpl(
-          request_info, DEFAULT_PRIORITY, ssl_config, ssl_config, &waiter,
+          request_info, DEFAULT_PRIORITY, ssl_config, &waiter,
           /* enable_ip_based_pooling = */ true,
           /* enable_alternative_services = */ true, NetLogWithSource()));
 
@@ -2174,7 +2171,7 @@ TEST_P(HttpStreamFactoryBidirectionalQuicTest,
                      nullptr, TRAFFIC_ANNOTATION_FOR_TESTS);
   delegate.WaitUntilDone();
 
-  scoped_refptr<IOBuffer> buffer = base::MakeRefCounted<net::IOBuffer>(1);
+  auto buffer = base::MakeRefCounted<net::IOBufferWithSize>(1);
   EXPECT_THAT(stream_impl->ReadData(buffer.get(), 1), IsOk());
   EXPECT_EQ(kProtoQUIC, stream_impl->GetProtocol());
   EXPECT_EQ("200", delegate.response_headers().find(":status")->second);
@@ -2239,7 +2236,7 @@ TEST_P(HttpStreamFactoryBidirectionalQuicTest,
   StreamRequestWaiter waiter;
   std::unique_ptr<HttpStreamRequest> request(
       session()->http_stream_factory()->RequestBidirectionalStreamImpl(
-          request_info, DEFAULT_PRIORITY, ssl_config, ssl_config, &waiter,
+          request_info, DEFAULT_PRIORITY, ssl_config, &waiter,
           /* enable_ip_based_pooling = */ true,
           /* enable_alternative_services = */ true, NetLogWithSource()));
 
@@ -2263,7 +2260,7 @@ TEST_P(HttpStreamFactoryBidirectionalQuicTest,
   delegate.WaitUntilDone();
 
   // Make sure the BidirectionalStream negotiated goes through QUIC.
-  scoped_refptr<IOBuffer> buffer = base::MakeRefCounted<net::IOBuffer>(1);
+  auto buffer = base::MakeRefCounted<net::IOBufferWithSize>(1);
   EXPECT_THAT(stream_impl->ReadData(buffer.get(), 1), IsOk());
   EXPECT_EQ(kProtoQUIC, stream_impl->GetProtocol());
   EXPECT_EQ("200", delegate.response_headers().find(":status")->second);
@@ -2305,7 +2302,7 @@ TEST_F(HttpStreamFactoryTest, RequestBidirectionalStreamImplFailure) {
   StreamRequestWaiter waiter;
   std::unique_ptr<HttpStreamRequest> request(
       session->http_stream_factory()->RequestBidirectionalStreamImpl(
-          request_info, DEFAULT_PRIORITY, ssl_config, ssl_config, &waiter,
+          request_info, DEFAULT_PRIORITY, ssl_config, &waiter,
           /* enable_ip_based_pooling = */ true,
           /* enable_alternative_services = */ true, NetLogWithSource()));
   waiter.WaitForStream();
@@ -2375,7 +2372,7 @@ TEST_F(HttpStreamFactoryTest, Tag) {
   StreamRequestWaiter waiter1;
   std::unique_ptr<HttpStreamRequest> request1(
       session->http_stream_factory()->RequestStream(
-          request_info1, DEFAULT_PRIORITY, ssl_config, ssl_config, &waiter1,
+          request_info1, DEFAULT_PRIORITY, ssl_config, &waiter1,
           /* enable_ip_based_pooling = */ true,
           /* enable_alternative_services = */ true, NetLogWithSource()));
   waiter1.WaitForStream();
@@ -2400,7 +2397,7 @@ TEST_F(HttpStreamFactoryTest, Tag) {
   StreamRequestWaiter waiter2;
   std::unique_ptr<HttpStreamRequest> request2(
       session->http_stream_factory()->RequestStream(
-          request_info2, DEFAULT_PRIORITY, ssl_config, ssl_config, &waiter2,
+          request_info2, DEFAULT_PRIORITY, ssl_config, &waiter2,
           /* enable_ip_based_pooling = */ true,
           /* enable_alternative_services = */ true, NetLogWithSource()));
   waiter2.WaitForStream();
@@ -2425,7 +2422,7 @@ TEST_F(HttpStreamFactoryTest, Tag) {
   StreamRequestWaiter waiter3;
   std::unique_ptr<HttpStreamRequest> request3(
       session->http_stream_factory()->RequestStream(
-          request_info2, DEFAULT_PRIORITY, ssl_config, ssl_config, &waiter3,
+          request_info2, DEFAULT_PRIORITY, ssl_config, &waiter3,
           /* enable_ip_based_pooling = */ true,
           /* enable_alternative_services = */ true, NetLogWithSource()));
   waiter3.WaitForStream();
@@ -2517,7 +2514,7 @@ TEST_P(HttpStreamFactoryBidirectionalQuicTest, Tag) {
   StreamRequestWaiter waiter1;
   std::unique_ptr<HttpStreamRequest> request1(
       session()->http_stream_factory()->RequestStream(
-          request_info1, DEFAULT_PRIORITY, ssl_config, ssl_config, &waiter1,
+          request_info1, DEFAULT_PRIORITY, ssl_config, &waiter1,
           /* enable_ip_based_pooling = */ true,
           /* enable_alternative_services = */ true, NetLogWithSource()));
   waiter1.WaitForStream();
@@ -2538,7 +2535,7 @@ TEST_P(HttpStreamFactoryBidirectionalQuicTest, Tag) {
   StreamRequestWaiter waiter2;
   std::unique_ptr<HttpStreamRequest> request2(
       session()->http_stream_factory()->RequestStream(
-          request_info2, DEFAULT_PRIORITY, ssl_config, ssl_config, &waiter2,
+          request_info2, DEFAULT_PRIORITY, ssl_config, &waiter2,
           /* enable_ip_based_pooling = */ true,
           /* enable_alternative_services = */ true, NetLogWithSource()));
   waiter2.WaitForStream();
@@ -2558,7 +2555,7 @@ TEST_P(HttpStreamFactoryBidirectionalQuicTest, Tag) {
   StreamRequestWaiter waiter3;
   std::unique_ptr<HttpStreamRequest> request3(
       session()->http_stream_factory()->RequestStream(
-          request_info2, DEFAULT_PRIORITY, ssl_config, ssl_config, &waiter3,
+          request_info2, DEFAULT_PRIORITY, ssl_config, &waiter3,
           /* enable_ip_based_pooling = */ true,
           /* enable_alternative_services = */ true, NetLogWithSource()));
   waiter3.WaitForStream();
@@ -2630,7 +2627,7 @@ TEST_F(HttpStreamFactoryTest, ChangeSocketTag) {
   StreamRequestWaiter waiter1;
   std::unique_ptr<HttpStreamRequest> request1(
       session->http_stream_factory()->RequestStream(
-          request_info1, DEFAULT_PRIORITY, ssl_config, ssl_config, &waiter1,
+          request_info1, DEFAULT_PRIORITY, ssl_config, &waiter1,
           /* enable_ip_based_pooling = */ true,
           /* enable_alternative_services = */ true, NetLogWithSource()));
   waiter1.WaitForStream();
@@ -2655,7 +2652,7 @@ TEST_F(HttpStreamFactoryTest, ChangeSocketTag) {
   StreamRequestWaiter waiter2;
   std::unique_ptr<HttpStreamRequest> request2(
       session->http_stream_factory()->RequestStream(
-          request_info2, DEFAULT_PRIORITY, ssl_config, ssl_config, &waiter2,
+          request_info2, DEFAULT_PRIORITY, ssl_config, &waiter2,
           /* enable_ip_based_pooling = */ true,
           /* enable_alternative_services = */ true, NetLogWithSource()));
   waiter2.WaitForStream();
@@ -2689,7 +2686,7 @@ TEST_F(HttpStreamFactoryTest, ChangeSocketTag) {
   StreamRequestWaiter waiter3;
   std::unique_ptr<HttpStreamRequest> request3(
       session->http_stream_factory()->RequestStream(
-          request_info3, DEFAULT_PRIORITY, ssl_config, ssl_config, &waiter3,
+          request_info3, DEFAULT_PRIORITY, ssl_config, &waiter3,
           /* enable_ip_based_pooling = */ true,
           /* enable_alternative_services = */ true, NetLogWithSource()));
   waiter3.WaitForStream();
@@ -2723,7 +2720,7 @@ TEST_F(HttpStreamFactoryTest, ChangeSocketTag) {
   StreamRequestWaiter waiter4;
   std::unique_ptr<HttpStreamRequest> request4(
       session->http_stream_factory()->RequestStream(
-          request_info2, DEFAULT_PRIORITY, ssl_config, ssl_config, &waiter4,
+          request_info2, DEFAULT_PRIORITY, ssl_config, &waiter4,
           /* enable_ip_based_pooling = */ true,
           /* enable_alternative_services = */ true, NetLogWithSource()));
   waiter4.WaitForStream();
@@ -2814,7 +2811,7 @@ TEST_F(HttpStreamFactoryTest, ChangeSocketTagAvoidOverwrite) {
   StreamRequestWaiter waiter1;
   std::unique_ptr<HttpStreamRequest> request1(
       session->http_stream_factory()->RequestStream(
-          request_info1, DEFAULT_PRIORITY, ssl_config, ssl_config, &waiter1,
+          request_info1, DEFAULT_PRIORITY, ssl_config, &waiter1,
           /* enable_ip_based_pooling = */ true,
           /* enable_alternative_services = */ true, NetLogWithSource()));
   waiter1.WaitForStream();
@@ -2847,7 +2844,7 @@ TEST_F(HttpStreamFactoryTest, ChangeSocketTagAvoidOverwrite) {
   StreamRequestWaiter waiter2;
   std::unique_ptr<HttpStreamRequest> request2(
       session->http_stream_factory()->RequestStream(
-          request_info2, DEFAULT_PRIORITY, ssl_config, ssl_config, &waiter2,
+          request_info2, DEFAULT_PRIORITY, ssl_config, &waiter2,
           /* enable_ip_based_pooling = */ true,
           /* enable_alternative_services = */ true, NetLogWithSource()));
   waiter2.WaitForStream();
@@ -2887,7 +2884,7 @@ TEST_F(HttpStreamFactoryTest, ChangeSocketTagAvoidOverwrite) {
   StreamRequestWaiter waiter3;
   std::unique_ptr<HttpStreamRequest> request3(
       session->http_stream_factory()->RequestStream(
-          request_info3, DEFAULT_PRIORITY, ssl_config, ssl_config, &waiter3,
+          request_info3, DEFAULT_PRIORITY, ssl_config, &waiter3,
           /* enable_ip_based_pooling = */ true,
           /* enable_alternative_services = */ true, NetLogWithSource()));
   waiter3.WaitForStream();
@@ -2916,7 +2913,7 @@ TEST_F(HttpStreamFactoryTest, ChangeSocketTagAvoidOverwrite) {
   StreamRequestWaiter waiter4;
   std::unique_ptr<HttpStreamRequest> request4(
       session->http_stream_factory()->RequestStream(
-          request_info4, DEFAULT_PRIORITY, ssl_config, ssl_config, &waiter4,
+          request_info4, DEFAULT_PRIORITY, ssl_config, &waiter4,
           /* enable_ip_based_pooling = */ true,
           /* enable_alternative_services = */ true, NetLogWithSource()));
   waiter4.WaitForStream();
@@ -2987,7 +2984,7 @@ TEST_F(HttpStreamFactoryTest, MultiIPAliases) {
   StreamRequestWaiter waiter1;
   std::unique_ptr<HttpStreamRequest> request1(
       session->http_stream_factory()->RequestStream(
-          request_info1, DEFAULT_PRIORITY, ssl_config, ssl_config, &waiter1,
+          request_info1, DEFAULT_PRIORITY, ssl_config, &waiter1,
           /* enable_ip_based_pooling = */ true,
           /* enable_alternative_services = */ true, NetLogWithSource()));
   waiter1.WaitForStream();
@@ -3008,7 +3005,7 @@ TEST_F(HttpStreamFactoryTest, MultiIPAliases) {
   StreamRequestWaiter waiter2;
   std::unique_ptr<HttpStreamRequest> request2(
       session->http_stream_factory()->RequestStream(
-          request_info2, DEFAULT_PRIORITY, ssl_config, ssl_config, &waiter2,
+          request_info2, DEFAULT_PRIORITY, ssl_config, &waiter2,
           /* enable_ip_based_pooling = */ true,
           /* enable_alternative_services = */ true, NetLogWithSource()));
   waiter2.WaitForStream();
@@ -3029,8 +3026,7 @@ TEST_F(HttpStreamFactoryTest, MultiIPAliases) {
   StreamRequestWaiter waiter3;
   std::unique_ptr<HttpStreamRequest> request3(
       session->http_stream_factory()->RequestStream(
-          request_info1_alias, DEFAULT_PRIORITY, ssl_config, ssl_config,
-          &waiter3,
+          request_info1_alias, DEFAULT_PRIORITY, ssl_config, &waiter3,
           /* enable_ip_based_pooling = */ true,
           /* enable_alternative_services = */ true, NetLogWithSource()));
   waiter3.WaitForStream();
@@ -3053,8 +3049,7 @@ TEST_F(HttpStreamFactoryTest, MultiIPAliases) {
   StreamRequestWaiter waiter4;
   std::unique_ptr<HttpStreamRequest> request4(
       session->http_stream_factory()->RequestStream(
-          request_info2_alias, DEFAULT_PRIORITY, ssl_config, ssl_config,
-          &waiter4,
+          request_info2_alias, DEFAULT_PRIORITY, ssl_config, &waiter4,
           /* enable_ip_based_pooling = */ true,
           /* enable_alternative_services = */ true, NetLogWithSource()));
   waiter4.WaitForStream();
@@ -3121,7 +3116,7 @@ TEST_F(HttpStreamFactoryTest, SpdyIPPoolingWithDnsAliases) {
   StreamRequestWaiter waiter1;
   std::unique_ptr<HttpStreamRequest> request1(
       session->http_stream_factory()->RequestStream(
-          request_info_a, DEFAULT_PRIORITY, ssl_config, ssl_config, &waiter1,
+          request_info_a, DEFAULT_PRIORITY, ssl_config, &waiter1,
           /* enable_ip_based_pooling = */ true,
           /* enable_alternative_services = */ true, NetLogWithSource()));
   waiter1.WaitForStream();
@@ -3143,7 +3138,7 @@ TEST_F(HttpStreamFactoryTest, SpdyIPPoolingWithDnsAliases) {
   StreamRequestWaiter waiter2;
   std::unique_ptr<HttpStreamRequest> request2(
       session->http_stream_factory()->RequestStream(
-          request_info_b, DEFAULT_PRIORITY, ssl_config, ssl_config, &waiter2,
+          request_info_b, DEFAULT_PRIORITY, ssl_config, &waiter2,
           /* enable_ip_based_pooling = */ true,
           /* enable_alternative_services = */ true, NetLogWithSource()));
   waiter2.WaitForStream();
@@ -3167,7 +3162,7 @@ TEST_F(HttpStreamFactoryTest, SpdyIPPoolingWithDnsAliases) {
   StreamRequestWaiter waiter3;
   std::unique_ptr<HttpStreamRequest> request3(
       session->http_stream_factory()->RequestStream(
-          request_info_c, DEFAULT_PRIORITY, ssl_config, ssl_config, &waiter3,
+          request_info_c, DEFAULT_PRIORITY, ssl_config, &waiter3,
           /* enable_ip_based_pooling = */ true,
           /* enable_alternative_services = */ true, NetLogWithSource()));
   waiter3.WaitForStream();
@@ -3195,7 +3190,7 @@ TEST_F(HttpStreamFactoryTest, SpdyIPPoolingWithDnsAliases) {
   // non-default DNS aliases.
   std::unique_ptr<HttpStreamRequest> request4(
       session->http_stream_factory()->RequestStream(
-          request_info_a, DEFAULT_PRIORITY, ssl_config, ssl_config, &waiter1,
+          request_info_a, DEFAULT_PRIORITY, ssl_config, &waiter1,
           /* enable_ip_based_pooling = */ true,
           /* enable_alternative_services = */ true, NetLogWithSource()));
   waiter1.WaitForStream();
@@ -3218,7 +3213,7 @@ TEST_F(HttpStreamFactoryTest, SpdyIPPoolingWithDnsAliases) {
   // aliases.
   std::unique_ptr<HttpStreamRequest> request5(
       session->http_stream_factory()->RequestStream(
-          request_info_b, DEFAULT_PRIORITY, ssl_config, ssl_config, &waiter2,
+          request_info_b, DEFAULT_PRIORITY, ssl_config, &waiter2,
           /* enable_ip_based_pooling = */ true,
           /* enable_alternative_services = */ true, NetLogWithSource()));
   waiter2.WaitForStream();
@@ -3242,7 +3237,7 @@ TEST_F(HttpStreamFactoryTest, SpdyIPPoolingWithDnsAliases) {
   // DNS alias (the host name).
   std::unique_ptr<HttpStreamRequest> request6(
       session->http_stream_factory()->RequestStream(
-          request_info_c, DEFAULT_PRIORITY, ssl_config, ssl_config, &waiter3,
+          request_info_c, DEFAULT_PRIORITY, ssl_config, &waiter3,
           /* enable_ip_based_pooling = */ true,
           /* enable_alternative_services = */ true, NetLogWithSource()));
   waiter3.WaitForStream();
@@ -3331,7 +3326,7 @@ TEST_P(HttpStreamFactoryBidirectionalQuicTest, QuicIPPoolingWithDnsAliases) {
   StreamRequestWaiter waiter1;
   std::unique_ptr<HttpStreamRequest> request1(
       session()->http_stream_factory()->RequestStream(
-          request_info_a, DEFAULT_PRIORITY, ssl_config, ssl_config, &waiter1,
+          request_info_a, DEFAULT_PRIORITY, ssl_config, &waiter1,
           /* enable_ip_based_pooling = */ true,
           /* enable_alternative_services = */ true, NetLogWithSource()));
   waiter1.WaitForStream();
@@ -3348,7 +3343,7 @@ TEST_P(HttpStreamFactoryBidirectionalQuicTest, QuicIPPoolingWithDnsAliases) {
   StreamRequestWaiter waiter2;
   std::unique_ptr<HttpStreamRequest> request2(
       session()->http_stream_factory()->RequestStream(
-          request_info_b, DEFAULT_PRIORITY, ssl_config, ssl_config, &waiter2,
+          request_info_b, DEFAULT_PRIORITY, ssl_config, &waiter2,
           /* enable_ip_based_pooling = */ true,
           /* enable_alternative_services = */ true, NetLogWithSource()));
   waiter2.WaitForStream();
@@ -3367,7 +3362,7 @@ TEST_P(HttpStreamFactoryBidirectionalQuicTest, QuicIPPoolingWithDnsAliases) {
   StreamRequestWaiter waiter3;
   std::unique_ptr<HttpStreamRequest> request3(
       session()->http_stream_factory()->RequestStream(
-          request_info_c, DEFAULT_PRIORITY, ssl_config, ssl_config, &waiter3,
+          request_info_c, DEFAULT_PRIORITY, ssl_config, &waiter3,
           /* enable_ip_based_pooling = */ true,
           /* enable_alternative_services = */ true, NetLogWithSource()));
   waiter3.WaitForStream();
@@ -3388,7 +3383,7 @@ TEST_P(HttpStreamFactoryBidirectionalQuicTest, QuicIPPoolingWithDnsAliases) {
   // Create a request that will reuse the first session.
   std::unique_ptr<HttpStreamRequest> request4(
       session()->http_stream_factory()->RequestStream(
-          request_info_a, DEFAULT_PRIORITY, ssl_config, ssl_config, &waiter1,
+          request_info_a, DEFAULT_PRIORITY, ssl_config, &waiter1,
           /* enable_ip_based_pooling = */ true,
           /* enable_alternative_services = */ true, NetLogWithSource()));
   waiter1.WaitForStream();
@@ -3405,7 +3400,7 @@ TEST_P(HttpStreamFactoryBidirectionalQuicTest, QuicIPPoolingWithDnsAliases) {
   // Create another request that will alias and reuse the first session.
   std::unique_ptr<HttpStreamRequest> request5(
       session()->http_stream_factory()->RequestStream(
-          request_info_b, DEFAULT_PRIORITY, ssl_config, ssl_config, &waiter2,
+          request_info_b, DEFAULT_PRIORITY, ssl_config, &waiter2,
           /* enable_ip_based_pooling = */ true,
           /* enable_alternative_services = */ true, NetLogWithSource()));
   waiter2.WaitForStream();
@@ -3423,7 +3418,7 @@ TEST_P(HttpStreamFactoryBidirectionalQuicTest, QuicIPPoolingWithDnsAliases) {
   // Create another request that will alias and reuse the first session.
   std::unique_ptr<HttpStreamRequest> request6(
       session()->http_stream_factory()->RequestStream(
-          request_info_c, DEFAULT_PRIORITY, ssl_config, ssl_config, &waiter3,
+          request_info_c, DEFAULT_PRIORITY, ssl_config, &waiter3,
           /* enable_ip_based_pooling = */ true,
           /* enable_alternative_services = */ true, NetLogWithSource()));
   waiter3.WaitForStream();

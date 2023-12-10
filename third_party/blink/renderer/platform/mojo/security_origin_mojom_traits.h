@@ -62,8 +62,7 @@ struct StructTraits<url::mojom::OriginDataView,
   }
   static mojo::OptionalAsPointer<const base::UnguessableToken> nonce_if_opaque(
       const scoped_refptr<const ::blink::SecurityOrigin>& origin) {
-    return mojo::MakeOptionalAsPointer(
-        UrlOriginAdapter::nonce_if_opaque(origin));
+    return mojo::OptionalAsPointer(UrlOriginAdapter::nonce_if_opaque(origin));
   }
   static bool Read(url::mojom::OriginDataView data,
                    scoped_refptr<const ::blink::SecurityOrigin>* out) {

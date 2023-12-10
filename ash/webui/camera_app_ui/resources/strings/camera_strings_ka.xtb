@@ -5,7 +5,6 @@
 <translation id="1076394037877376434">გვერდი <ph name="PAGE_NUMBER" />-ის წაშლა</translation>
 <translation id="1113173431709655881">კამერის რეჟიმი</translation>
 <translation id="1153190633558910465">ბადის გარეშე</translation>
-<translation id="1175958423215084756">აღმოჩენილია ბმული. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213">გვერდი <ph name="PAGE_NUMBER" /> წაიშალა</translation>
 <translation id="1258009455399840361">შეტრიალება 90 გრადუსით საათის ისრის მიმართულებით</translation>
 <translation id="1417314334557041815">გვერდი <ph name="INDEX" />-ის რედაქტირება</translation>
@@ -60,14 +59,12 @@
 <translation id="3642192109456033823">ვიდეო მუშავდება...</translation>
 <translation id="3789724198583203151">შეტრიალება 90 გრადუსით საათის ისრის საწინააღმდეგოდ</translation>
 <translation id="3810838688059735925">ვიდეო</translation>
-<translation id="3892148308691398805">ტექსტის კოპირება</translation>
 <translation id="4060608699153044055">ჩაწერა ვერ მოხერხდება მოწყობილობის საცავში არასაკმარისი მეხსიერების გამო. ჩაწერის დასაწყებად მოწყობილობაზე სივრცე უნდა გაათავისუფლოთ.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> მპ</translation>
 <translation id="4118525110028899586">ჩაწერის დაპაუზება</translation>
 <translation id="4121305183798804752">დოკუმენტი აღმოჩენილია</translation>
 <translation id="414641094616694804">ამ კამერის გარჩევადობა ვერ შეიცვლება</translation>
 <translation id="4176463684765177261">გამორთული</translation>
-<translation id="4269820728363426813">ბმულის მისამართის კოპირება</translation>
 <translation id="428234092390943511">გვერდის ესკიზი</translation>
 <translation id="4349714250734879769">ფრეიმების სკალირება Chrome-ის მიერ</translation>
 <translation id="4383571725254449280">წარმადობის ჟურნალების ბეჭდვა</translation>
@@ -144,7 +141,6 @@
 <translation id="7726641833034062494">ჩვეულებრივი ვიდეოს ჩაწერა</translation>
 <translation id="7748344063862150053">დოკუმენტის ზედა მარჯვენა კუთხე</translation>
 <translation id="7933675232020478311">გადატანა ხდება ქვედა მარჯვენა მიმართულებით</translation>
-<translation id="7983668134180549431">აღმოჩენილია ტექსტი.</translation>
 <translation id="8079255378695216066">ჩაწერის დაწყება ვერ ხერხდება</translation>
 <translation id="8120146556401698679">პანირება/გადახრა/მასშტაბირება</translation>
 <translation id="8131740175452115882">დაადასტურება</translation>
@@ -163,6 +159,7 @@
 <translation id="8870695351537079478">ჩაწერის დაწყება ვერ მოხერხდა</translation>
 <translation id="8880167521484863515">ოთხი სამზე</translation>
 <translation id="8903921497873541725">მასშტაბის გადიდება</translation>
+<translation id="8926890870105777777">ქსელში „<ph name="WIFINAME" />“ ჩართვა</translation>
 <translation id="9045010116236796332">მოათავსეთ დოკუმენტის ყველა კიდე ჩარჩოში</translation>
 <translation id="9045155556724273246">10 წამი</translation>
 <translation id="906331135292332864">მიმდინარეობს იმიჯის დამუშავება...</translation>

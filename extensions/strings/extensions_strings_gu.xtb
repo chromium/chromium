@@ -8,6 +8,7 @@
 <translation id="1420684932347524586">અરેરે! રેંડમ RSA ખાનગી કી જનરેટ કરવામાં નિષ્ફળ.</translation>
 <translation id="1445572445564823378">આ એક્સ્ટેંશન <ph name="PRODUCT_NAME" />ને ધીમુંં કરી રહ્યું છે. <ph name="PRODUCT_NAME" />ના પ્રદર્શનને પહેલાંના જેવું કરવા માટે તમારે તેને બંધ કરવું જોઈએ.</translation>
 <translation id="1468038450257740950">WebGL સમર્થિત નથી.</translation>
+<translation id="1610570795592207282">સ્ક્રિપ્ટ માટે css '<ph name="RELATIVE_PATH" />' લોડ કરી શકાયું નથી.</translation>
 <translation id="1803557475693955505">બૅકગ્રાઉન્ડ પેજ '<ph name="BACKGROUND_PAGE" />' લોડ કરી શકાયું નથી.</translation>
 <translation id="2159915644201199628">છબીને ડિકોડ કરી શક્યાં નથી: '<ph name="IMAGE_NAME" />'</translation>
 <translation id="2350172092385603347">લૉકલાઇઝેશન વપરાયુ, પરંતુ default_locale નો ઉલ્લેખ મેનિફેસ્ટમાં નહોતો.</translation>
@@ -18,14 +19,12 @@
 <translation id="3115238746683532089"><ph name="VENDOR_ID" /> વિક્રેતાનું અજાણ્યું ઉત્પાદન <ph name="PRODUCT_ID" /> (શૃંખલા ક્રમાંક <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">crx ફાઇલ બદલવામાં નિષ્ફળ થયું. ફાઇલ ઉપયોગમાં છે કે નહીં તે જોવા માટે તપાસો.</translation>
 <translation id="3163201441334626963"><ph name="VENDOR_ID" /> વિક્રેતાનું અજાણ્યું ઉત્પાદન <ph name="PRODUCT_ID" /></translation>
-<translation id="3302709122321372472">કન્ટેન્ટ સ્ક્રિપ્ટ માટે css '<ph name="RELATIVE_PATH" />'  લોડ કરી શકાયું નથી.</translation>
 <translation id="3369521687965833290">એક્સ્ટેંશન અનપૅક કરી શકાતું નથી. એક્સ્ટેંશનને સુરક્ષિત રીતે અનપૅક કરવા માટે, તમારી પ્રોફાઇલ ડિરેક્ટરીનો પાથ હોવો જોઈએ જે ડ્રાઇવ અક્ષરથી શરૂ થતો હોય અને કોઈ જંક્શન, માઉન્ટ પોઇન્ટ અથવા સિમલિંક ધરાવતો ન હોય. આવો કોઈ પાથ તમારી પ્રોફાઇલ માટે અસ્તિત્વમાં નથી.</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (શૃંખલા ક્રમાંક <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="VENDOR_ID" /> વિક્રેતા તરફથી <ph name="PRODUCT_NAME" /> (શૃંખલા ક્રમાંક <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">ખાનગી કી માટેનું ઇનપુટ મૂલ્ય એ એક માન્ય પાથ હોવો આવશ્યક છે.</translation>
 <translation id="388442998277590542">વિકલ્પોનું પેજ '<ph name="OPTIONS_PAGE" />' લોડ કરી શકાયું નથી.</translation>
 <translation id="3984413272403535372">એક્સટેંશન હસ્તાક્ષરિત કરતી વખતે ભૂલ.</translation>
-<translation id="39964277676607559">કન્ટેન્ટ સ્ક્રિપ્ટ માટે JavaScript '<ph name="RELATIVE_PATH" />'  લોડ કરી શકાયું નથી.</translation>
 <translation id="4115165561519362854">આ મશીનનાં એડમિનને <ph name="EXTENSION_VERSION" />ના ન્યૂનતમ વર્ઝન માટે <ph name="EXTENSION_NAME" />ની જરૂર છે. તે જ્યાં સુધી તે વર્ઝન (અથવા તે પછીના) પર અપડેટ ન થાય ત્યાં સુધી ચાલુ થઈ શકતું નથી.</translation>
 <translation id="4233778200880751280">'<ph name="ABOUT_PAGE" />' વિશે પેજ લોડ કરી શકાયું નથી.</translation>
 <translation id="471800408830181311">ખાનગી કી બનાવવામાં નિષ્ફળ.</translation>
@@ -33,6 +32,7 @@
 <translation id="4988792151665380515">ખાનગી કી નિકાસ કરવામાં નિષ્ફળ.</translation>
 <translation id="5026754133087629784">વેબવ્યુ: <ph name="WEBVIEW_TAG_NAME" /></translation>
 <translation id="5098647635849512368">પૅક કરવા માટે ડિરેક્ટરીનો સંપૂર્ણ પાથ શોધી શકાતો નથી.</translation>
+<translation id="5160071981665899014">સ્ક્રિપ્ટ માટે JavaScript '<ph name="RELATIVE_PATH" />' લોડ કરી શકાયું નથી.</translation>
 <translation id="5356315618422219272">Appview: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5436430103864390185">આકારિત વિંડોઝ સમર્થિત નથી.</translation>
 <translation id="5456409301717116725">આ એક્સટેન્શનમાં '<ph name="KEY_PATH" />' કી ફાઇલ શામેલ છે. તમે કદાચ એ કરવા માંગતા નથી.</translation>

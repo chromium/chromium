@@ -42,6 +42,12 @@ config("find_bad_constructs") {
       "-plugin-arg-find-bad-constructs",
       "-Xclang",
       "raw-ptr-fix-crbug-1449812",
+
+      # TODO(https://crbug.com/1504043): Remove when raw_ptr check has been enabled for the dawn repo.
+      "-Xclang",
+      "-plugin-arg-find-bad-constructs",
+      "-Xclang",
+      "raw-ptr-exclude-path=/third_party/dawn/",
     ]
 
     if (is_linux || is_chromeos || is_android || is_fuchsia) {

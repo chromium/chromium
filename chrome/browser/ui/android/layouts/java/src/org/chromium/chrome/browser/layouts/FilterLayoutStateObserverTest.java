@@ -24,7 +24,6 @@ public class FilterLayoutStateObserverTest {
     private final CallbackHelper mStartedHidingCallbackHelper = new CallbackHelper();
     private final CallbackHelper mFinishedShowingCallbackHelper = new CallbackHelper();
     private final CallbackHelper mFinishedHidingCallbackHelper = new CallbackHelper();
-    private final CallbackHelper mSelectionHintedCallbackHelper = new CallbackHelper();
 
     private LayoutStateObserver mBaseObserver;
 
@@ -52,11 +51,6 @@ public class FilterLayoutStateObserverTest {
                     @Override
                     public void onFinishedHiding(int layoutType) {
                         mFinishedHidingCallbackHelper.notifyCalled();
-                    }
-
-                    @Override
-                    public void onTabSelectionHinted(int tabId) {
-                        mSelectionHintedCallbackHelper.notifyCalled();
                     }
                 };
     }

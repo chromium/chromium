@@ -17,11 +17,14 @@ android_library("java") {
     ":java_resources",
     "//base:base_java",
     "//chrome/browser/enterprise/util:java",
+    "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/tab:java",
     "//chrome/browser/ui/android/native_page:java",
     "//components/browser_ui/widget/android:java",
     "//components/embedder_support/android:util_java",
+    "//components/prefs/android:java",
+    "//components/user_prefs/android:java",
     "//content/public/android:content_full_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//ui/android:ui_no_recycler_view_java",
@@ -31,6 +34,7 @@ android_library("java") {
 
 android_resources("java_resources") {
   sources = [
+    "java/res/drawable/enterprise_legacy_tech.xml",
     "java/res/drawable/enterprise_phone.xml",
     "java/res/drawable/enterprise_user_circle.xml",
     "java/res/layout/enterprise_management.xml",
@@ -41,5 +45,6 @@ android_resources("java_resources") {
     "//chrome/browser/ui/android/strings:ui_strings_grd",
     "//components/browser_ui/styles/android:java_resources",
     "//components/strings:components_locale_settings_grd",
+    "//components/strings:components_strings_grd",
   ]
 }

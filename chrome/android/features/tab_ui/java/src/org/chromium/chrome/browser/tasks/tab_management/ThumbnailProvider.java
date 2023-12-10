@@ -10,13 +10,16 @@ import android.util.Size;
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 
-/**
- * An interface to get the thumbnails to be shown inside the tab grid cards.
- */
+/** An interface to get the thumbnails to be shown inside the tab grid cards. */
 public interface ThumbnailProvider {
     /**
      * @see TabContentManager#getTabThumbnailWithCallback
      */
-    void getTabThumbnailWithCallback(int tabId, Size thumbnailSize, Callback<Bitmap> callback,
-            boolean forceUpdate, boolean writeToCache, boolean isSelected);
+    void getTabThumbnailWithCallback(
+            int tabId,
+            Size thumbnailSize,
+            Callback<Bitmap> callback,
+            boolean forceUpdate,
+            boolean writeToCache,
+            boolean isSelected);
 }

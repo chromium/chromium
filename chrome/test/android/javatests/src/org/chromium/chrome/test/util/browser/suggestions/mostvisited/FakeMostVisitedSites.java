@@ -116,8 +116,12 @@ public class FakeMostVisitedSites implements MostVisitedSites {
     }
 
     public static SiteSuggestion createSiteSuggestion(String title, String url) {
-        return new SiteSuggestion(title, new GURL(url), TileTitleSource.TITLE_TAG,
-                TileSource.TOP_SITES, TileSectionType.PERSONALIZED);
+        return new SiteSuggestion(
+                title,
+                new GURL(url),
+                TileTitleSource.TITLE_TAG,
+                TileSource.TOP_SITES,
+                TileSectionType.PERSONALIZED);
     }
 
     private void notifyTileSuggestionsAvailable() {

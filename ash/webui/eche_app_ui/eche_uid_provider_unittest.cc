@@ -102,7 +102,7 @@ class EcheUidProviderTest : public testing::Test {
   void GetUid() {
     uid_provider_->GetUid(base::BindOnce(&Callback::GetUidCallback));
   }
-  absl::optional<std::vector<uint8_t>> DecodeStringWithSeed(
+  std::optional<std::vector<uint8_t>> DecodeStringWithSeed(
       size_t expected_len) {
     std::string pref_seed = pref_service_.GetString(kEcheAppSeedPref);
     return uid_provider_->ConvertStringToBinary(pref_seed, expected_len);
@@ -157,13 +157,13 @@ TEST_F(EcheUidProviderTest, BindPendingReceiverCanGetUid) {
 TEST_F(EcheUidProviderTest, GetBinaryWhenSeedSizeCorrect) {
   GetUid();
 
-  EXPECT_NE(DecodeStringWithSeed(kSeedSizeInByte), absl::nullopt);
+  EXPECT_NE(DecodeStringWithSeed(kSeedSizeInByte), std::nullopt);
 }
 
 TEST_F(EcheUidProviderTest, GetNulloptWhenSeedSizeIncorrect) {
   GetUid();
 
-  EXPECT_EQ(DecodeStringWithSeed(kSeedSizeInByte - 1), absl::nullopt);
+  EXPECT_EQ(DecodeStringWithSeed(kSeedSizeInByte - 1), std::nullopt);
 }
 
 }  // namespace eche_app

@@ -75,7 +75,7 @@ class ChromeHtmlUnittest(unittest.TestCase):
         <head>
           <style>
       .image {
-        background: -webkit-image-set(url('data:image/png;base64,UE5HIERBVEE=') 1x, url('data:image/png;base64,MS40eCBQTkcgREFUQQ==') 1.4x, url('data:image/png;base64,MS44eCBQTkcgREFUQQ==') 1.8x);
+        background: image-set(url('data:image/png;base64,UE5HIERBVEE=') 1x, url('data:image/png;base64,MS40eCBQTkcgREFUQQ==') 1.4x, url('data:image/png;base64,MS44eCBQTkcgREFUQQ==') 1.8x);
       }
       </style>
         </head>
@@ -114,7 +114,7 @@ class ChromeHtmlUnittest(unittest.TestCase):
       <!DOCTYPE HTML>
       <html>
         <body>
-          <img id="foo" src="data:image/png;base64,UE5HIERBVEE=" style="content: -webkit-image-set(url('data:image/png;base64,UE5HIERBVEE=') 1x, url('data:image/png;base64,MnggUE5HIERBVEE=') 2x);">
+          <img id="foo" src="data:image/png;base64,UE5HIERBVEE=" style="content: image-set(url('data:image/png;base64,UE5HIERBVEE=') 1x, url('data:image/png;base64,MnggUE5HIERBVEE=') 2x);">
         </body>
       </html>
       '''))
@@ -144,7 +144,7 @@ class ChromeHtmlUnittest(unittest.TestCase):
     self.assertEqual(StandardizeHtml(html.GetData('en', 'utf-8')),
                          StandardizeHtml('''
       .image {
-        background: -webkit-image-set(url('test.png') 1x, url('1.4x/test.png') 1.4x, url('1.8x/test.png') 1.8x);
+        background: image-set(url('test.png') 1x, url('1.4x/test.png') 1.4x, url('1.8x/test.png') 1.8x);
       }
       '''))
     tmp_dir.CleanUp()
@@ -173,7 +173,7 @@ class ChromeHtmlUnittest(unittest.TestCase):
     self.assertEqual(StandardizeHtml(html.GetData('en', 'utf-8')),
                          StandardizeHtml('''
       .image {
-        background: -webkit-image-set(url('sub/test.png') 1x, url('sub/1.4x/test.png') 1.4x, url('sub/1.8x/test.png') 1.8x);
+        background: image-set(url('sub/test.png') 1x, url('sub/1.4x/test.png') 1.4x, url('sub/1.8x/test.png') 1.8x);
       }
       '''))
     tmp_dir.CleanUp()
@@ -203,7 +203,7 @@ class ChromeHtmlUnittest(unittest.TestCase):
     self.assertEqual(StandardizeHtml(html.GetData('en', 'utf-8')),
                          StandardizeHtml('''
       .image {
-        background: -webkit-image-set(url('test.png') 1x, url('1.4x/test.png') 1.4x, url('1.8x/test.png') 1.8x);
+        background: image-set(url('test.png') 1x, url('1.4x/test.png') 1.4x, url('1.8x/test.png') 1.8x);
       }
       '''))
     tmp_dir.CleanUp()
@@ -230,7 +230,7 @@ class ChromeHtmlUnittest(unittest.TestCase):
     self.assertEqual(StandardizeHtml(html.GetData('en', 'utf-8')),
                          StandardizeHtml('''
       .image {
-        background: -webkit-image-set(url("data:image/png;base64,UE5HIERBVEE=") 1x, url("data:image/png;base64,MnggUE5HIERBVEE=") 2x);
+        background: image-set(url("data:image/png;base64,UE5HIERBVEE=") 1x, url("data:image/png;base64,MnggUE5HIERBVEE=") 2x);
       }
       '''))
     tmp_dir.CleanUp()
@@ -257,7 +257,7 @@ class ChromeHtmlUnittest(unittest.TestCase):
     self.assertEqual(StandardizeHtml(html.GetData('en', 'utf-8')),
                          StandardizeHtml('''
       .image {
-        background: -webkit-image-set(url(data:image/png;base64,UE5HIERBVEE=) 1x, url(data:image/png;base64,MnggUE5HIERBVEE=) 2x);
+        background: image-set(url(data:image/png;base64,UE5HIERBVEE=) 1x, url(data:image/png;base64,MnggUE5HIERBVEE=) 2x);
       }
       '''))
     tmp_dir.CleanUp()
@@ -284,7 +284,7 @@ class ChromeHtmlUnittest(unittest.TestCase):
     self.assertEqual(StandardizeHtml(html.GetData('en', 'utf-8')),
                          StandardizeHtml('''
       .image {
-        background: -webkit-image-set(url('data:image/png;base64,UE5HIERBVEE=') 1x, url('data:image/png;base64,MnggUE5HIERBVEE=') 2x);
+        background: image-set(url('data:image/png;base64,UE5HIERBVEE=') 1x, url('data:image/png;base64,MnggUE5HIERBVEE=') 2x);
       }
       '''))
     tmp_dir.CleanUp()
@@ -358,7 +358,7 @@ class ChromeHtmlUnittest(unittest.TestCase):
     self.assertEqual(StandardizeHtml(html.GetData('en', 'utf-8')),
                          StandardizeHtml('''
       .image {
-        background: -webkit-image-set(url(data:image/png;base64,UE5HIERBVEE=) 1x, url(data:image/png;base64,MnggUE5HIERBVEE=) 2x), -webkit-image-set(url(data:image/png;base64,UE5HIERBVEE=) 1x, url(data:image/png;base64,MnggUE5HIERBVEE=) 2x);
+        background: image-set(url(data:image/png;base64,UE5HIERBVEE=) 1x, url(data:image/png;base64,MnggUE5HIERBVEE=) 2x), image-set(url(data:image/png;base64,UE5HIERBVEE=) 1x, url(data:image/png;base64,MnggUE5HIERBVEE=) 2x);
       }
       '''))
     tmp_dir.CleanUp()
@@ -386,8 +386,8 @@ class ChromeHtmlUnittest(unittest.TestCase):
     self.assertEqual(StandardizeHtml(html.GetData('en', 'utf-8')),
                          StandardizeHtml('''
       .image {
-        background: -webkit-image-set(url(data:image/png;base64,UE5HIERBVEE=) 1x, url(data:image/png;base64,MnggUE5HIERBVEE=) 2x),
-                    -webkit-image-set(url(data:image/png;base64,UE5HIERBVEE=) 1x, url(data:image/png;base64,MnggUE5HIERBVEE=) 2x);
+        background: image-set(url(data:image/png;base64,UE5HIERBVEE=) 1x, url(data:image/png;base64,MnggUE5HIERBVEE=) 2x),
+                    image-set(url(data:image/png;base64,UE5HIERBVEE=) 1x, url(data:image/png;base64,MnggUE5HIERBVEE=) 2x);
       }
       '''))
     tmp_dir.CleanUp()
@@ -417,8 +417,8 @@ class ChromeHtmlUnittest(unittest.TestCase):
     self.assertEqual(StandardizeHtml(html.GetData('en', 'utf-8')),
                          StandardizeHtml('''
       .image {
-        background: -webkit-image-set(url(data:image/png;base64,UE5HIERBVEE=) 1x, url(data:image/png;base64,MnggUE5HIERBVEE=) 2x),
-          -webkit-image-set(url(data:image/png;base64,UE5HIERBVEE=) 1x, url(data:image/png;base64,MnggUE5HIERBVEE=) 2x);
+        background: image-set(url(data:image/png;base64,UE5HIERBVEE=) 1x, url(data:image/png;base64,MnggUE5HIERBVEE=) 2x),
+          image-set(url(data:image/png;base64,UE5HIERBVEE=) 1x, url(data:image/png;base64,MnggUE5HIERBVEE=) 2x);
       }
       '''))
     tmp_dir.CleanUp()
@@ -446,7 +446,7 @@ class ChromeHtmlUnittest(unittest.TestCase):
     self.assertEqual(StandardizeHtml(html.GetData('en', 'utf-8')),
                          StandardizeHtml('''
       .image {
-        background: -webkit-image-set(url(data:image/png;base64,UE5HIERBVEE=) 1x, url(data:image/png;base64,MnggUE5HIERBVEE=) 2x);
+        background: image-set(url(data:image/png;base64,UE5HIERBVEE=) 1x, url(data:image/png;base64,MnggUE5HIERBVEE=) 2x);
       }
       '''))
     tmp_dir.CleanUp()
@@ -486,8 +486,8 @@ class ChromeHtmlUnittest(unittest.TestCase):
         <head>
           <style>
       .image {
-        background: -webkit-image-set(url('chrome://theme/IDR_RESOURCE_NAME') 1x, url('chrome://theme/IDR_RESOURCE_NAME@2x') 2x);
-        content: -webkit-image-set(url('chrome://theme/IDR_RESOURCE_NAME_WITH_Q?$1') 1x, url('chrome://theme/IDR_RESOURCE_NAME_WITH_Q@2x?$1') 2x);
+        background: image-set(url('chrome://theme/IDR_RESOURCE_NAME') 1x, url('chrome://theme/IDR_RESOURCE_NAME@2x') 2x);
+        content: image-set(url('chrome://theme/IDR_RESOURCE_NAME_WITH_Q?$1') 1x, url('chrome://theme/IDR_RESOURCE_NAME_WITH_Q@2x?$1') 2x);
       }
       </style>
         </head>
@@ -540,7 +540,7 @@ class ChromeHtmlUnittest(unittest.TestCase):
         <head>
           <style>
       .image {
-        background: -webkit-image-set(url('data:image/png;base64,UE5HIERBVEE=') 1x,
+        background: image-set(url('data:image/png;base64,UE5HIERBVEE=') 1x,
                                       url('data:image/png;base64,MS44eCBQTkcgREFUQQ==') 1.8x);
       }
       </style>
@@ -597,7 +597,7 @@ class ChromeHtmlUnittest(unittest.TestCase):
         <head>
           <style>
       .image {
-        background: -webkit-image-set(url('data:image/png;base64,UE5HIERBVEE=') 1x, url('data:image/png;base64,MS40eCBQTkcgREFUQQ==') 1.4x, url('data:image/png;base64,MS44eCBQTkcgREFUQQ==') 1.8x);
+        background: image-set(url('data:image/png;base64,UE5HIERBVEE=') 1x, url('data:image/png;base64,MS40eCBQTkcgREFUQQ==') 1.4x, url('data:image/png;base64,MS44eCBQTkcgREFUQQ==') 1.8x);
       }
       </style>
         </head>

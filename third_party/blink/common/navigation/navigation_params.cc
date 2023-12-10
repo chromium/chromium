@@ -29,11 +29,15 @@ mojom::CommitNavigationParamsPtr CreateCommitNavigationParams() {
 }
 
 mojom::RendererContentSettingsPtr CreateDefaultRendererContentSettings() {
-  // These defaults mirror
-  // components/content_settings/core/browser/content_settings_registry.cc.
+  // These defaults are used in exactly 2 places:
+  //   (1) A new empty window does not go through "navigation" and thus needs
+  //   default values. As this is an empty window, the values do not matter.
+  //   (2) On navigation error, the renderer sets the URL to
+  //   kUnreachableWebDataURL. This page does have script and images, which we
+  //   always want to allow regardless of the user's content settings.
   return mojom::RendererContentSettings::New(
       /*allow_script=*/true, /*allow_image=*/true, /*allow_popup=*/false,
-      /*allow_mixed_content=*/false, /*allow_auto_dark=*/true);
+      /*allow_mixed_content=*/false);
 }
 
 }  // namespace blink

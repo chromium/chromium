@@ -11,6 +11,7 @@
 #include <string>
 #include <utility>
 
+#include <optional>
 #include "base/rand_util.h"
 #include "base/values.h"
 #include "cc/base/math_util.h"
@@ -18,7 +19,6 @@
 #include "cc/layers/picture_layer.h"
 #include "cc/trees/draw_property_utils.h"
 #include "cc/trees/layer_tree_host.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace cc {

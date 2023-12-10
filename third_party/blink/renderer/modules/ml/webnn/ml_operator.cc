@@ -12,6 +12,10 @@ namespace blink {
 // static
 String MLOperator::OperatorKindToString(MLOperator::OperatorKind kind) {
   switch (kind) {
+    case MLOperator::OperatorKind::kBatchNormalization:
+      return "batchNormalization";
+    case MLOperator::OperatorKind::kCast:
+      return "cast";
     case MLOperator::OperatorKind::kClamp:
       return "clamp";
     case MLOperator::OperatorKind::kConcat:
@@ -28,22 +32,60 @@ String MLOperator::OperatorKindToString(MLOperator::OperatorKind kind) {
       return "mul";
     case MLOperator::OperatorKind::kDiv:
       return "div";
+    case MLOperator::OperatorKind::kMin:
+      return "min";
+    case MLOperator::OperatorKind::kMax:
+      return "max";
+    case MLOperator::OperatorKind::kPow:
+      return "pow";
+    case MLOperator::OperatorKind::kEqual:
+      return "equal";
+    case MLOperator::OperatorKind::kGreater:
+      return "greater";
+    case MLOperator::OperatorKind::kLesser:
+      return "lesser";
     case MLOperator::OperatorKind::kAbs:
       return "abs";
     case MLOperator::OperatorKind::kCeil:
       return "ceil";
+    case MLOperator::OperatorKind::kCos:
+      return "cos";
+    case MLOperator::OperatorKind::kExp:
+      return "exp";
     case MLOperator::OperatorKind::kFloor:
       return "floor";
+    case MLOperator::OperatorKind::kLog:
+      return "log";
     case MLOperator::OperatorKind::kNeg:
       return "neg";
+    case MLOperator::OperatorKind::kSin:
+      return "sin";
+    case MLOperator::OperatorKind::kTan:
+      return "tan";
+    case MLOperator::OperatorKind::kErf:
+      return "erf";
+    case MLOperator::OperatorKind::kIdentity:
+      return "identity";
+    case MLOperator::OperatorKind::kLogicalNot:
+      return "logicalNot";
+    case MLOperator::OperatorKind::kReciprocal:
+      return "reciprocal";
+    case MLOperator::OperatorKind::kSqrt:
+      return "sqrt";
+    case MLOperator::OperatorKind::kInstanceNormalization:
+      return "instanceNormalization";
+    case MLOperator::OperatorKind::kLayerNormalization:
+      return "layerNormalization";
     case MLOperator::OperatorKind::kLeakyRelu:
       return "leakyRelu";
-    case MLOperator::OperatorKind::kMax:
-      return "max";
-    case MLOperator::OperatorKind::kMin:
-      return "min";
+    case MLOperator::OperatorKind::kLinear:
+      return "linear";
     case MLOperator::OperatorKind::kElu:
       return "elu";
+    case MLOperator::OperatorKind::kExpand:
+      return "expand";
+    case MLOperator::OperatorKind::kGather:
+      return "gather";
     case MLOperator::OperatorKind::kGemm:
       return "gemm";
     case MLOperator::OperatorKind::kHardSwish:
@@ -56,8 +98,6 @@ String MLOperator::OperatorKindToString(MLOperator::OperatorKind kind) {
       return "matmul";
     case MLOperator::OperatorKind::kPad:
       return "pad";
-    case MLOperator::OperatorKind::kPow:
-      return "pow";
     case MLOperator::OperatorKind::kPRelu:
       return "prelu";
     case MLOperator::OperatorKind::kReduceL1:
@@ -88,6 +128,8 @@ String MLOperator::OperatorKindToString(MLOperator::OperatorKind kind) {
       return "resample2d";
     case MLOperator::OperatorKind::kSigmoid:
       return "sigmoid";
+    case MLOperator::OperatorKind::kSoftsign:
+      return "softsign";
     case MLOperator::OperatorKind::kSlice:
       return "slice";
     case MLOperator::OperatorKind::kSoftmax:
@@ -98,6 +140,8 @@ String MLOperator::OperatorKindToString(MLOperator::OperatorKind kind) {
       return "tanh";
     case MLOperator::OperatorKind::kTranspose:
       return "transpose";
+    case MLOperator::OperatorKind::kWhere:
+      return "where";
   }
 }
 

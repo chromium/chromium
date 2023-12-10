@@ -33,7 +33,11 @@ RENDERING_BENCHMARK_UMA = [
     'Memory.GPU.PeakMemoryUsage2.Scroll',
     'Memory.GPU.PeakMemoryUsage2.PageLoad',
     'Event.ScrollJank.DelayedFramesPercentage.FixedWindow',
+    'Event.ScrollJank.DelayedFramesPercentage.PerScroll',
     'Event.ScrollJank.MissedVsyncsSum.FixedWindow',
+    'Event.ScrollJank.MissedVsyncsSum.PerScroll',
+    'Event.ScrollJank.MissedVsyncsPercentage.FixedWindow',
+    'Event.ScrollJank.MissedVsyncsPercentage.PerScroll',
 ]
 
 
@@ -105,9 +109,8 @@ class _RenderingBenchmark(perf_benchmark.PerfBenchmark):
     documentation_url='https://bit.ly/rendering-benchmarks',
     component='Internals>GPU>Metrics')
 class RenderingDesktop(_RenderingBenchmark):
-  # TODO(rmhasan): Remove the SUPPORTED_PLATFORMS lists.
-  # SUPPORTED_PLATFORMS is deprecated, please put system specifier tags
-  # from expectations.config in SUPPORTED_PLATFORM_TAGS.
+  # TODO(johnchen): Remove either the SUPPORTED_PLATFORMS or
+  # SUPPORTED_PLATFORMS_TAGS lists. Only one is necessary.
   SUPPORTED_PLATFORMS = [story_module.expectations.ALL_DESKTOP]
   SUPPORTED_PLATFORM_TAGS = [core_platforms.DESKTOP]
   PLATFORM_NAME = platforms.DESKTOP
@@ -158,9 +161,8 @@ class RenderingDesktopNoTracing(RenderingDesktop):
     documentation_url='https://bit.ly/rendering-benchmarks',
     component='Internals>GPU>Metrics')
 class RenderingMobile(_RenderingBenchmark):
-  # TODO(rmhasan): Remove the SUPPORTED_PLATFORMS lists.
-  # SUPPORTED_PLATFORMS is deprecated, please put system specifier tags
-  # from expectations.config in SUPPORTED_PLATFORM_TAGS.
+  # TODO(johnchen): Remove either the SUPPORTED_PLATFORMS or
+  # SUPPORTED_PLATFORMS_TAGS lists. Only one is necessary.
   SUPPORTED_PLATFORMS = [
       story_module.expectations.ALL_MOBILE,
       story_module.expectations.FUCHSIA_ASTRO,

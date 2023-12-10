@@ -133,20 +133,6 @@ class SettingsSiteSettingsListElement extends
       });
       this.browserProxy_.observeProtocolHandlersEnabledState();
     }
-
-    // TODO(crbug.com/1378703): Remove this after the feature is launched.
-    const hasCookies = this.categoryList.some(item => {
-      return item.id === ContentSettingsTypes.COOKIES;
-    });
-    if (hasCookies && !loadTimeData.getBoolean('isPrivacySandboxSettings4') &&
-        !loadTimeData.getBoolean('is3pcdCookieSettingsRedesignEnabled')) {
-      // The cookies sub-label is provided by an update from C++.
-      this.browserProxy_.getCookieSettingDescription().then(
-          (label: string) => this.updateCookiesLabel_(label));
-      this.addWebUiListener(
-          'cookieSettingDescriptionChanged',
-          (label: string) => this.updateCookiesLabel_(label));
-    }
   }
 
   /**
@@ -311,8 +297,7 @@ class SettingsSiteSettingsListElement extends
    * Update the third-party cookies link row label when the pref changes.
    */
   private updateThirdPartyCookiesLabel_() {
-    if (!loadTimeData.getBoolean('isPrivacySandboxSettings4') ||
-        loadTimeData.getBoolean('is3pcdCookieSettingsRedesignEnabled')) {
+    if (loadTimeData.getBoolean('is3pcdCookieSettingsRedesignEnabled')) {
       return;
     }
 

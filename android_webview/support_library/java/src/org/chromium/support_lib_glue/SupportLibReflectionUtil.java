@@ -9,9 +9,7 @@ import org.chromium.support_lib_boundary.util.BoundaryInterfaceReflectionUtil;
 
 import java.lang.reflect.InvocationHandler;
 
-/**
- * Starting point for fetching WebView implementation.
- */
+/** Starting point for fetching WebView implementation. */
 @UsedByReflection("WebView Support Library")
 public class SupportLibReflectionUtil {
     /**

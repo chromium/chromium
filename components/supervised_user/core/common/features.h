@@ -35,8 +35,8 @@ bool CanDisplayFirstTimeInterstitialBanner();
 // Experiments to enable proto fetchers
 BASE_DECLARE_FEATURE(kEnableProtoApiForClassifyUrl);
 
-// Instead of manually implementing the process, use the proto_fetcher.cc's one.
-BASE_DECLARE_FEATURE(kUseBuiltInRetryingMechanismForListFamilyMembers);
+// Request priority experiment for ClassifyUrl (for critical path of rendering).
+BASE_DECLARE_FEATURE(kHighestRequestPriorityForClassifyUrl);
 
 // Enable different web sign in interception behaviour for supervised users:
 //
@@ -63,10 +63,6 @@ bool IsLocalWebApprovalsEnabled();
 
 // Returns whether the ClassifyUrl call uses proto apis.
 bool IsProtoApiForClassifyUrlEnabled();
-
-// Decides whether to use built-in configurable mechanism, instead of manually
-// programmed.
-bool IsRetryMechanismForListFamilyMembersEnabled();
 
 // Returns true if child account supervision features should be enabled for this
 // client.

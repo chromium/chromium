@@ -447,7 +447,7 @@ bool ExtensionManagement::IsPermissionSetAllowed(
     const ExtensionId& extension_id,
     const std::string& update_url,
     const PermissionSet& perms) {
-  for (const extensions::APIPermission* blocked_api :
+  for (const APIPermission* blocked_api :
        GetBlockedAPIPermissions(extension_id, update_url)) {
     if (perms.HasAPIPermission(blocked_api->id()))
       return false;
@@ -705,11 +705,6 @@ void ExtensionManagement::Refresh() {
           }
         }
       }
-    }
-    size_t force_pinned_count = GetForcePinnedList().size();
-    if (force_pinned_count > 0) {
-      base::UmaHistogramCounts100("Extensions.ForceToolbarPinnedCount2",
-                                  force_pinned_count);
     }
   }
 }

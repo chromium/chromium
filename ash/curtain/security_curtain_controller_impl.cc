@@ -15,7 +15,7 @@ SecurityCurtainControllerImpl::SecurityCurtainControllerImpl(ash::Shell* shell)
 SecurityCurtainControllerImpl::~SecurityCurtainControllerImpl() = default;
 
 void SecurityCurtainControllerImpl::Enable(InitParams params) {
-  DCHECK_EQ(session_, nullptr);
+  CHECK_EQ(session_, nullptr);
   session_ = std::make_unique<Session>(&*shell_, params);
   session_->Init();
 }

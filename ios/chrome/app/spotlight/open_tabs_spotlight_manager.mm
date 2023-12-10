@@ -326,15 +326,18 @@ using web::WebState;
   }
 }
 
-/// Stops observing all objects and resets bridges.
+/// Stops observing all objects and resets bridges and the browser list.
 - (void)shutdownAllObservation {
-  if (!self.browserList) {
+  if (!_browserList) {
     return;
   }
 
   // Stop observing all webstates.
-  for (Browser* browser : self.browserList->AllRegularBrowsers()) {
+  for (Browser* browser : _browserList->AllRegularBrowsers()) {
     WebStateList* webStateList = browser->GetWebStateList();
+    if (!webStateList) {
+      continue;
+    }
     for (int i = 0; i < webStateList->count(); i++) {
       WebState* webState = webStateList->GetWebStateAt(i);
       webState->RemoveObserver(_webStateObserverBridge.get());
@@ -352,6 +355,9 @@ using web::WebState;
   // Stop observing brower list.
   _browserList->RemoveObserver(_browserListObserverBridge.get());
   _browserListObserverBridge.reset();
+
+  // Finally, reset the browser list to make repeated calls safe.
+  _browserList = nil;
 }
 
 @end

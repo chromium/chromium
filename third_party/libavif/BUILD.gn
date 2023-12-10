@@ -21,6 +21,7 @@ component("libavif") {
     "src/src/avif.c",
     "src/src/colr.c",
     "src/src/diag.c",
+    "src/src/exif.c",
     "src/src/io.c",
     "src/src/mem.c",
     "src/src/obu.c",

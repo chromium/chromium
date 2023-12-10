@@ -75,10 +75,10 @@ class ASH_EXPORT SensorProvider
     // Sensor marked ignored will not be used anymore.
     bool ignored = false;
     mojo::Remote<chromeos::sensors::mojom::SensorDevice> remote;
-    absl::optional<SensorLocation> location;
+    std::optional<SensorLocation> location;
     // Data scale of this sensor (Used for initializing Samples_Observer,
     // range:(0, 10)). Will be 1.0 for most of the cases.
-    absl::optional<float> scale;
+    std::optional<float> scale;
 
     // SamplesObserver of this sensor.
     std::unique_ptr<ash::AccelGryoSamplesObserver> samples_observer;
@@ -170,12 +170,12 @@ class ASH_EXPORT SensorProvider
       const std::string& description);
 
   // Callback for getting lid angle value.
-  void OnLidAngleValue(const std::vector<absl::optional<std::string>>& values);
+  void OnLidAngleValue(const std::vector<std::optional<std::string>>& values);
 
   // Callback for getting sensor's location and scale attributes.
   void OnAttributes(chromeos::sensors::mojom::DeviceType device_type,
                     int32_t id,
-                    const std::vector<absl::optional<std::string>>& values);
+                    const std::vector<std::optional<std::string>>& values);
 
   // Creates the SamplesObserver for the sensor with 'id'.
   void CreateSensorSamplesObserver(

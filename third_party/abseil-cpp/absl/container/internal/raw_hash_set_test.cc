@@ -49,10 +49,8 @@
 #include "absl/container/internal/hash_policy_testing.h"
 #include "absl/container/internal/hashtable_debug.h"
 #include "absl/container/internal/test_allocator.h"
-#include "absl/functional/function_ref.h"
 #include "absl/log/log.h"
 #include "absl/strings/string_view.h"
-#include "absl/types/optional.h"
 
 namespace absl {
 ABSL_NAMESPACE_BEGIN
@@ -2493,72 +2491,6 @@ using RawHashSetAlloc = raw_hash_set<IntPolicy, hash_default_hash<int64_t>,
                                      std::equal_to<int64_t>, Alloc>;
 
 TEST(Table, AllocatorPropagation) { TestAllocPropagation<RawHashSetAlloc>(); }
-
-struct ConstructCaller {
-  explicit ConstructCaller(int v) : val(v) {}
-  ConstructCaller(int v, absl::FunctionRef<void()> func) : val(v) { func(); }
-  template <typename H>
-  friend H AbslHashValue(H h, const ConstructCaller& d) {
-    return H::combine(std::move(h), d.val);
-  }
-  bool operator==(const ConstructCaller& c) const { return val == c.val; }
-
-  int val;
-};
-
-struct DestroyCaller {
-  explicit DestroyCaller(int v) : val(v) {}
-  DestroyCaller(int v, absl::FunctionRef<void()> func)
-      : val(v), destroy_func(func) {}
-  DestroyCaller(DestroyCaller&& that)
-      : val(that.val), destroy_func(std::move(that.destroy_func)) {
-    that.Deactivate();
-  }
-  ~DestroyCaller() {
-    if (destroy_func) (*destroy_func)();
-  }
-  void Deactivate() { destroy_func = absl::nullopt; }
-
-  template <typename H>
-  friend H AbslHashValue(H h, const DestroyCaller& d) {
-    return H::combine(std::move(h), d.val);
-  }
-  bool operator==(const DestroyCaller& d) const { return val == d.val; }
-
-  int val;
-  absl::optional<absl::FunctionRef<void()>> destroy_func;
-};
-
-#if defined(ABSL_HAVE_ADDRESS_SANITIZER) || defined(ABSL_HAVE_MEMORY_SANITIZER)
-TEST(Table, ReentrantCallsFail) {
-  constexpr const char* kDeathMessage =
-      "use-after-poison|use-of-uninitialized-value";
-  {
-    ValueTable<ConstructCaller> t;
-    t.insert(ConstructCaller{0});
-    auto erase_begin = [&] { t.erase(t.begin()); };
-    EXPECT_DEATH_IF_SUPPORTED(t.emplace(1, erase_begin), kDeathMessage);
-  }
-  {
-    ValueTable<DestroyCaller> t;
-    t.insert(DestroyCaller{0});
-    auto find_0 = [&] { t.find(DestroyCaller{0}); };
-    t.insert(DestroyCaller{1, find_0});
-    for (int i = 10; i < 20; ++i) t.insert(DestroyCaller{i});
-    EXPECT_DEATH_IF_SUPPORTED(t.clear(), kDeathMessage);
-    for (auto& elem : t) elem.Deactivate();
-  }
-  {
-    ValueTable<DestroyCaller> t;
-    t.insert(DestroyCaller{0});
-    auto insert_1 = [&] { t.insert(DestroyCaller{1}); };
-    t.insert(DestroyCaller{1, insert_1});
-    for (int i = 10; i < 20; ++i) t.insert(DestroyCaller{i});
-    EXPECT_DEATH_IF_SUPPORTED(t.clear(), kDeathMessage);
-    for (auto& elem : t) elem.Deactivate();
-  }
-}
-#endif
 
 }  // namespace
 }  // namespace container_internal

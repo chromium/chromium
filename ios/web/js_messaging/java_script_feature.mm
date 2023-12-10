@@ -52,7 +52,7 @@ JavaScriptFeature::FeatureScript::CreateWithFilename(
   NSString* injection_token =
       InjectionTokenForScript(base::SysUTF8ToNSString(filename));
   return JavaScriptFeature::FeatureScript(
-      filename, /*script=*/absl::nullopt, injection_token, injection_time,
+      filename, /*script=*/std::nullopt, injection_token, injection_time,
       target_frames, reinjection_behavior, replacements_callback);
 }
 
@@ -66,13 +66,13 @@ JavaScriptFeature::FeatureScript::CreateWithString(
   NSString* unique_id = [[NSProcessInfo processInfo] globallyUniqueString];
   NSString* injection_token = InjectionTokenForScript(unique_id);
   return JavaScriptFeature::FeatureScript(
-      /*filename=*/absl::nullopt, script, injection_token, injection_time,
+      /*filename=*/std::nullopt, script, injection_token, injection_time,
       target_frames, reinjection_behavior, replacements_callback);
 }
 
 JavaScriptFeature::FeatureScript::FeatureScript(
-    absl::optional<std::string> filename,
-    absl::optional<std::string> script,
+    std::optional<std::string> filename,
+    std::optional<std::string> script,
     NSString* injection_token,
     InjectionTime injection_time,
     TargetFrames target_frames,
@@ -177,15 +177,15 @@ JavaScriptFeature::GetDependentFeatures() const {
   return dependent_features_;
 }
 
-absl::optional<std::string> JavaScriptFeature::GetScriptMessageHandlerName()
+std::optional<std::string> JavaScriptFeature::GetScriptMessageHandlerName()
     const {
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-absl::optional<JavaScriptFeature::ScriptMessageHandler>
+std::optional<JavaScriptFeature::ScriptMessageHandler>
 JavaScriptFeature::GetScriptMessageHandler() const {
   if (!GetScriptMessageHandlerName()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return base::BindRepeating(&JavaScriptFeature::ScriptMessageReceived,

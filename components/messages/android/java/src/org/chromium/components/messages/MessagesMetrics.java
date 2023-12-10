@@ -32,11 +32,17 @@ public class MessagesMetrics {
     static final String STACKING_ACTION_HISTOGRAM_PREFIX = "Android.Messages.Stacking.";
     static final String THREE_STACKED_HISTOGRAM_NAME = "Android.Messages.Stacking.ThreeStacked";
 
-    @IntDef({StackingAnimationType.SHOW_ALL, StackingAnimationType.SHOW_FRONT_ONLY,
-            StackingAnimationType.REMOVE_FRONT_AND_SHOW_BACK, StackingAnimationType.REMOVE_ALL,
-            StackingAnimationType.REMOVE_FRONT_ONLY, StackingAnimationType.REMOVE_BACK_ONLY,
-            StackingAnimationType.SHOW_BACK_ONLY, StackingAnimationType.INSERT_AT_FRONT,
-            StackingAnimationType.MAX_VALUE})
+    @IntDef({
+        StackingAnimationType.SHOW_ALL,
+        StackingAnimationType.SHOW_FRONT_ONLY,
+        StackingAnimationType.REMOVE_FRONT_AND_SHOW_BACK,
+        StackingAnimationType.REMOVE_ALL,
+        StackingAnimationType.REMOVE_FRONT_ONLY,
+        StackingAnimationType.REMOVE_BACK_ONLY,
+        StackingAnimationType.SHOW_BACK_ONLY,
+        StackingAnimationType.INSERT_AT_FRONT,
+        StackingAnimationType.MAX_VALUE
+    })
     public @interface StackingAnimationType {
         int SHOW_ALL = 0;
         int SHOW_FRONT_ONLY = 1;
@@ -49,10 +55,15 @@ public class MessagesMetrics {
         int MAX_VALUE = 8;
     }
 
-    @IntDef({StackingAnimationAction.INSERT_AT_FRONT, StackingAnimationAction.INSERT_AT_BACK,
-            StackingAnimationAction.PUSH_TO_FRONT, StackingAnimationAction.PUSH_TO_BACK,
-            StackingAnimationAction.REMOVE_FRONT, StackingAnimationAction.REMOVE_BACK,
-            StackingAnimationAction.MAX_VALUE})
+    @IntDef({
+        StackingAnimationAction.INSERT_AT_FRONT,
+        StackingAnimationAction.INSERT_AT_BACK,
+        StackingAnimationAction.PUSH_TO_FRONT,
+        StackingAnimationAction.PUSH_TO_BACK,
+        StackingAnimationAction.REMOVE_FRONT,
+        StackingAnimationAction.REMOVE_BACK,
+        StackingAnimationAction.MAX_VALUE
+    })
     public @interface StackingAnimationAction {
         int INSERT_AT_FRONT = 0;
         int INSERT_AT_BACK = 1;
@@ -63,8 +74,11 @@ public class MessagesMetrics {
         int MAX_VALUE = 6;
     }
 
-    @IntDef({ThreeStackedScenario.HIGH_PRIORITY, ThreeStackedScenario.IN_SEQUENCE,
-            ThreeStackedScenario.MAX_VALUE})
+    @IntDef({
+        ThreeStackedScenario.HIGH_PRIORITY,
+        ThreeStackedScenario.IN_SEQUENCE,
+        ThreeStackedScenario.MAX_VALUE
+    })
     public @interface ThreeStackedScenario {
         int HIGH_PRIORITY = 0;
         int IN_SEQUENCE = 1;
@@ -84,7 +98,8 @@ public class MessagesMetrics {
     }
 
     /** Records metrics when a message is hidden after being enqueued.*/
-    static void recordMessageEnqueuedHidden(@MessageIdentifier int enqueuedMessage,
+    static void recordMessageEnqueuedHidden(
+            @MessageIdentifier int enqueuedMessage,
             @MessageIdentifier int currentDisplayedMessage) {
         RecordHistogram.recordEnumeratedHistogram(
                 ENQUEUED_HIDDEN_HISTOGRAM_NAME, enqueuedMessage, MessageIdentifier.COUNT);
@@ -105,8 +120,10 @@ public class MessagesMetrics {
      * Records metrics with duration of time a message was visible before it was dismissed by a user
      * action.
      */
-    static void recordTimeToAction(@MessageIdentifier int messageIdentifier,
-            boolean messageDismissedByGesture, long durationMs) {
+    static void recordTimeToAction(
+            @MessageIdentifier int messageIdentifier,
+            boolean messageDismissedByGesture,
+            long durationMs) {
         String histogramSuffix = messageIdentifierToHistogramSuffix(messageIdentifier);
         RecordHistogram.recordMediumTimesHistogram(
                 TIME_TO_ACTION_HISTOGRAM_PREFIX + histogramSuffix, durationMs);
@@ -143,8 +160,10 @@ public class MessagesMetrics {
     static void recordStackingAnimationAction(
             @StackingAnimationAction int action, @MessageIdentifier int messageIdentifier) {
         String suffix = stackingAnimationActionToHistogramSuffix(action);
-        RecordHistogram.recordEnumeratedHistogram(STACKING_ACTION_HISTOGRAM_PREFIX + suffix,
-                messageIdentifier, MessageIdentifier.COUNT);
+        RecordHistogram.recordEnumeratedHistogram(
+                STACKING_ACTION_HISTOGRAM_PREFIX + suffix,
+                messageIdentifier,
+                MessageIdentifier.COUNT);
     }
 
     static void recordThreeStackedScenario(@ThreeStackedScenario int scenario) {

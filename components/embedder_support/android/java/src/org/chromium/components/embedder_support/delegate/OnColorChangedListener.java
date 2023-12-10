@@ -4,9 +4,7 @@
 
 package org.chromium.components.embedder_support.delegate;
 
-/**
- * The callback used to indicate the user changed the color.
- */
+/** The callback used to indicate the user changed the color. */
 public interface OnColorChangedListener {
     /**
      * Called upon a color change.

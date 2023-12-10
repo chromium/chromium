@@ -66,7 +66,7 @@ class SystemLiveCaptionService
   // SpeechRecognizerDelegate overrides:
   void OnSpeechResult(const std::u16string& text,
                       bool is_final,
-                      const absl::optional<media::SpeechRecognitionResult>&
+                      const std::optional<media::SpeechRecognitionResult>&
                           full_result) override;
   void OnSpeechSoundLevelChanged(int16_t level) override;
   void OnSpeechRecognitionStateChanged(

@@ -21,7 +21,7 @@
 #include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #include "components/password_manager/core/browser/manage_passwords_referrer.h"
 #include "components/password_manager/core/browser/password_manager.h"
-#include "components/password_manager/core/browser/password_store_backend_error.h"
+#include "components/password_manager/core/browser/password_store/password_store_backend_error.h"
 #include "components/password_manager/core/browser/webauthn_credentials_delegate.h"
 #include "components/profile_metrics/browser_profile_type.h"
 #include "components/safe_browsing/buildflags.h"
@@ -31,7 +31,7 @@
 class PrefService;
 
 namespace autofill {
-class AutofillDownloadManager;
+class AutofillCrowdsourcingManager;
 class LogManager;
 }  // namespace autofill
 
@@ -84,7 +84,6 @@ class PasswordFormManagerForUI;
 class PasswordManagerDriver;
 class PasswordManagerMetricsRecorder;
 class HttpAuthManager;
-class PasswordChangeSuccessTracker;
 class PasswordRequirementsService;
 class PasswordReuseManager;
 class PasswordStoreInterface;
@@ -253,6 +252,9 @@ class PasswordManagerClient {
   virtual void NotifyOnSuccessfulLogin(
       const std::u16string& submitted_username) {}
 
+  // Informs that that Keychain is not available.
+  virtual void NotifyKeychainError() = 0;
+
   // Informs that a credential filled by Touch To Fill can be submitted.
   // TODO(crbug.com/1299394): Remove when the TimeToSuccessfulLogin metric is
   // deprecated.
@@ -303,7 +305,8 @@ class PasswordManagerClient {
   // Informs the embedder that user credentials were leaked.
   virtual void NotifyUserCredentialsWereLeaked(CredentialLeakType leak_type,
                                                const GURL& origin,
-                                               const std::u16string& username);
+                                               const std::u16string& username,
+                                               bool in_account_store);
 
   // Requests a reauth for the primary account with |access_point| representing
   // where the reauth was triggered.
@@ -334,9 +337,6 @@ class PasswordManagerClient {
 
   // Returns the PasswordReuseManager associated with this instance.
   virtual PasswordReuseManager* GetPasswordReuseManager() const = 0;
-
-  // Returns the PasswordChangeSuccessTracker associated with this instance.
-  virtual PasswordChangeSuccessTracker* GetPasswordChangeSuccessTracker() = 0;
 
   // Reports whether and how passwords are synced in the embedder. The default
   // implementation always returns kNotSyncing.
@@ -373,8 +373,9 @@ class PasswordManagerClient {
   // Returns the HttpAuthManager associated with this client.
   virtual HttpAuthManager* GetHttpAuthManager();
 
-  // Returns the AutofillDownloadManager for votes uploading.
-  virtual autofill::AutofillDownloadManager* GetAutofillDownloadManager();
+  // Returns the AutofillCrowdsourcingManager for votes uploading.
+  virtual autofill::AutofillCrowdsourcingManager*
+  GetAutofillCrowdsourcingManager();
 
   // Returns true if the main frame URL has a secure origin.
   // The WebContents only has a primary main frame, so MainFrame here refers to

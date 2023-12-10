@@ -1,0 +1,27 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="zh-CN">
+<translation id="1220509181886849806">使用已保存的密码？</translation>
+<translation id="1435940442311036198">使用另一部设备上的通行密钥</translation>
+<translation id="1717486229951421299">轻触即可填充的凭据的列表已半屏打开。</translation>
+<translation id="2359808026110333948">继续</translation>
+<translation id="2364266287022099258">使用已保存的通行密钥？</translation>
+<translation id="3399357656427473483">轻触即可填充的凭据的列表。</translation>
+<translation id="3653689374478248324">您将登录 <ph name="SITE_NAME" /></translation>
+<translation id="3950820424414687140">登录</translation>
+<translation id="4553044860350038560">更多通行密钥</translation>
+<translation id="4598345735110653698">管理通行密钥</translation>
+<translation id="4722735765955348426"><ph name="USERNAME" /> 的密码</translation>
+<translation id="4907224763885298217">使用您的屏幕锁定解锁凭据</translation>
+<translation id="5012523644916800014">管理密码和通行密钥</translation>
+<translation id="5441504010984421144">轻触即可填充的凭据的列表已全屏打开。</translation>
+<translation id="5591247451101092906">使用已保存的密码或通行密钥？</translation>
+<translation id="5624120631404540903">管理密码</translation>
+<translation id="6560306912274274630"><ph name="USERNAME" /> 的通行密钥，请使用您的屏幕锁定设置</translation>
+<translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{用于登录此网站的新密码}other{用于登录此网站的新密码}}</translation>
+<translation id="7286867818472074330">选择通行密钥</translation>
+<translation id="7669320311687290322"><ph name="ITEM_LABEL" />，第 <ph name="ITEM_POSITION" /> 项（共 <ph name="ITEMS_TOTAL" /> 项）。</translation>
+<translation id="7738288782501322815">您收到了多个用于登录 <ph name="SITE_NAME" /> 的密码</translation>
+<translation id="8614995815226664591"><ph name="SENDER_NAME" />与您分享了一个用于登录 <ph name="SITE_NAME" /> 的密码</translation>
+<translation id="8891372124884726271">凭据列表已关闭。</translation>
+</translationbundle>

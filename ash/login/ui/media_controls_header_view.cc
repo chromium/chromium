@@ -11,6 +11,7 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -152,8 +153,12 @@ void MediaControlsHeaderView::UpdateCloseButtonVisibility() {
         close_button_, vector_icons::kCloseRoundedIcon, kCloseButtonIconSize,
         color, disabled_color);
   } else {
-    close_button_->SetImage(views::Button::ButtonState::STATE_NORMAL, nullptr);
+    close_button_->SetImageModel(views::Button::ButtonState::STATE_NORMAL,
+                                 ui::ImageModel());
   }
 }
+
+BEGIN_METADATA(MediaControlsHeaderView)
+END_METADATA
 
 }  // namespace ash

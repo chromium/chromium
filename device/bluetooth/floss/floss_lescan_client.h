@@ -36,8 +36,18 @@ const char kScannerCallbackPath[] =
 const char kScannerCallbackInterfaceName[] =
     "org.chromium.bluetooth.ScannerCallback";
 
-// TODO(b/217274013): Update structs to support filtering
-class ScanSettings {};
+// Represents type of a scan.
+enum class ScanType {
+  kActive = 0,
+  kPassive = 1,
+};
+
+// Represents scanning configurations.
+struct ScanSettings {
+  int32_t interval;
+  int32_t window;
+  ScanType scan_type;
+};
 
 struct DEVICE_BLUETOOTH_EXPORT ScanFilterPattern {
   // Specifies the starting byte position of the pattern immediately following

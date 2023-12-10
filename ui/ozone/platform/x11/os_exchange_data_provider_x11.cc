@@ -11,7 +11,7 @@
 #include "ui/base/data_transfer_policy/data_transfer_policy_controller.h"
 #include "ui/base/x/selection_utils.h"
 #include "ui/events/platform/platform_event_source.h"
-#include "ui/gfx/x/x11_atom_cache.h"
+#include "ui/gfx/x/atom_cache.h"
 #include "ui/gfx/x/xproto.h"
 
 namespace ui {

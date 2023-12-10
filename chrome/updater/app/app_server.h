@@ -75,6 +75,11 @@ class AppServer : public App {
       base::RepeatingCallback<void(const RegistrationRequest&)>
           register_callback) = 0;
 
+  // As part of initialization, the server may detect and repair problems. This
+  // is called only for the active updater instance, and while the global prefs
+  // lock is held.
+  virtual void RepairUpdater(UpdaterScope scope, bool is_internal) = 0;
+
   // Uninstalls this candidate version of the updater.
   virtual void UninstallSelf() = 0;
 

@@ -121,8 +121,10 @@ public final class ApiHelperForO {
      * ConnectivityManager#registerDefaultNetworkCallback(ConnectivityManager.NetworkCallback,
      * Handler) }.
      */
-    public static void registerDefaultNetworkCallback(ConnectivityManager connectivityManager,
-            NetworkCallback networkCallback, Handler handler) {
+    public static void registerDefaultNetworkCallback(
+            ConnectivityManager connectivityManager,
+            NetworkCallback networkCallback,
+            Handler handler) {
         connectivityManager.registerDefaultNetworkCallback(networkCallback, handler);
     }
 
@@ -134,14 +136,17 @@ public final class ApiHelperForO {
     /**
      * See {@link Context#registerReceiver(BroadcastReceiver, IntentFilter, String, Handler, int)}
      */
-    public static Intent registerReceiver(Context context, BroadcastReceiver receiver,
-            IntentFilter filter, String permission, Handler scheduler, int flags) {
+    public static Intent registerReceiver(
+            Context context,
+            BroadcastReceiver receiver,
+            IntentFilter filter,
+            String permission,
+            Handler scheduler,
+            int flags) {
         return context.registerReceiver(receiver, filter, permission, scheduler, flags);
     }
 
-    /**
-     * See {@link ClipData#addItem(ContentResolver, Item)}.
-     */
+    /** See {@link ClipData#addItem(ContentResolver, Item)}. */
     public static void addItem(ClipData clipData, ContentResolver contentResolver, Item item) {
         clipData.addItem(contentResolver, item);
     }

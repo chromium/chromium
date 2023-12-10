@@ -4,6 +4,8 @@
 
 #include "chrome/browser/apps/app_service/app_install/app_install_almanac_connector.h"
 
+#include <optional>
+
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
@@ -23,7 +25,6 @@
 #include "services/network/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace apps {
 
@@ -105,7 +106,7 @@ TEST_F(AppInstallAlmanacConnectorTest, GetAppInstallInfoSuccessfulResponse) {
       AppInstallAlmanacConnector::GetEndpointUrlForTesting().spec(),
       response.SerializeAsString());
 
-  base::test::TestFuture<absl::optional<AppInstallData>> response_future;
+  base::test::TestFuture<std::optional<AppInstallData>> response_future;
   connector_.GetAppInstallInfo(kTestPackageId, DeviceInfo(),
                                test_url_loader_factory_,
                                response_future.GetCallback());
@@ -142,7 +143,7 @@ TEST_F(AppInstallAlmanacConnectorTest, GetAppInstallInfoIncompleteResponse) {
       AppInstallAlmanacConnector::GetEndpointUrlForTesting().spec(),
       response.SerializeAsString());
 
-  base::test::TestFuture<absl::optional<AppInstallData>> response_future;
+  base::test::TestFuture<std::optional<AppInstallData>> response_future;
   connector_.GetAppInstallInfo(kTestPackageId, DeviceInfo(),
                                test_url_loader_factory_,
                                response_future.GetCallback());
@@ -154,7 +155,7 @@ TEST_F(AppInstallAlmanacConnectorTest, GetAppInstallInfoMalformedResponse) {
       AppInstallAlmanacConnector::GetEndpointUrlForTesting().spec(),
       "Not a valid proto");
 
-  base::test::TestFuture<absl::optional<AppInstallData>> response_future;
+  base::test::TestFuture<std::optional<AppInstallData>> response_future;
   connector_.GetAppInstallInfo(kTestPackageId, DeviceInfo(),
                                test_url_loader_factory_,
                                response_future.GetCallback());
@@ -166,7 +167,7 @@ TEST_F(AppInstallAlmanacConnectorTest, GetAppInstallInfoServerError) {
       AppInstallAlmanacConnector::GetEndpointUrlForTesting().spec(),
       /*content=*/"", net::HTTP_INTERNAL_SERVER_ERROR);
 
-  base::test::TestFuture<absl::optional<AppInstallData>> response_future;
+  base::test::TestFuture<std::optional<AppInstallData>> response_future;
   connector_.GetAppInstallInfo(kTestPackageId, DeviceInfo(),
                                test_url_loader_factory_,
                                response_future.GetCallback());
@@ -179,7 +180,7 @@ TEST_F(AppInstallAlmanacConnectorTest, GetAppInstallInfoNetworkError) {
       network::mojom::URLResponseHead::New(), /*content=*/"",
       network::URLLoaderCompletionStatus(net::ERR_TIMED_OUT));
 
-  base::test::TestFuture<absl::optional<AppInstallData>> response_future;
+  base::test::TestFuture<std::optional<AppInstallData>> response_future;
   connector_.GetAppInstallInfo(kTestPackageId, DeviceInfo(),
                                test_url_loader_factory_,
                                response_future.GetCallback());

@@ -9,8 +9,7 @@
  * #import=chrome://resources/cr_elements/cr_shared_style.css.js
  * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
  * #include=cr-shared-style cros-color-overrides
- * #css_wrapper_metadata_end
- */
+ * #css_wrapper_metadata_end */
 
 :host-context(body.jelly-enabled) cr-dialog::part(dialog) {
   border-radius: 20px;

@@ -15,19 +15,14 @@
 
 namespace download {
 
-bool IsDownloadBubbleEnabled(Profile* profile) {
+bool IsDownloadBubbleEnabled() {
 // Download bubble won't replace the old download notification in
 // Ash. See https://crbug.com/1323505.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   return false;
 #else
-  return base::FeatureList::IsEnabled(safe_browsing::kDownloadBubble);
+  return true;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-}
-
-bool IsDownloadBubbleV2Enabled(Profile* profile) {
-  return IsDownloadBubbleEnabled(profile) &&
-         base::FeatureList::IsEnabled(safe_browsing::kDownloadBubbleV2);
 }
 
 bool ShouldShowDownloadBubble(Profile* profile) {

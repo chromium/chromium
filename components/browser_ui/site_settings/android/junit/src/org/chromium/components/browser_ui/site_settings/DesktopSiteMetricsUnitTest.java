@@ -43,7 +43,9 @@ public class DesktopSiteMetricsUnitTest {
     @Test
     public void testRecordDesktopSiteSettingsManuallyAdded() {
         DesktopSiteMetrics.recordDesktopSiteSettingsManuallyAdded(
-                SiteSettingsCategory.Type.COOKIES, ContentSettingValues.BLOCK, "www.google.com");
+                SiteSettingsCategory.Type.THIRD_PARTY_COOKIES,
+                ContentSettingValues.BLOCK,
+                "www.google.com");
         assertEquals(
                 "Only REQUEST_DESKTOP_SITE type should be recorded.",
                 0,
@@ -101,7 +103,7 @@ public class DesktopSiteMetricsUnitTest {
         // SubDomain Setting
         when(mOrigin.getIsAnySubdomainPattern()).thenReturn(false);
         DesktopSiteMetrics.recordDesktopSiteSettingsChanged(
-                SiteSettingsCategory.Type.COOKIES, ContentSettingValues.ALLOW, mSite);
+                SiteSettingsCategory.Type.THIRD_PARTY_COOKIES, ContentSettingValues.ALLOW, mSite);
         assertEquals(
                 "Only REQUEST_DESKTOP_SITE type should be recorded.",
                 0,

@@ -25,9 +25,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.ui.modelutil.PropertyModel;
 
-/**
- * The bottom sheet content for the Restore Tabs promo.
- */
+/** The bottom sheet content for the Restore Tabs promo. */
 public class RestoreTabsPromoSheetContent implements BottomSheetContent {
     private final View mContentView;
     private final PropertyModel mModel;
@@ -46,20 +44,21 @@ public class RestoreTabsPromoSheetContent implements BottomSheetContent {
         mScrollView = mContentView.findViewById(R.id.restore_tabs_promo_sheet_scrollview);
         mRecyclerView = mContentView.findViewById(R.id.restore_tabs_detail_screen_recycler_view);
 
-        mBottomSheetOpenedObserver = new EmptyBottomSheetObserver() {
-            @Override
-            public void onSheetOpened(@BottomSheetController.StateChangeReason int reason) {
-                super.onSheetOpened(reason);
-                mBackPressStateChangedSupplier.set(true);
-            }
+        mBottomSheetOpenedObserver =
+                new EmptyBottomSheetObserver() {
+                    @Override
+                    public void onSheetOpened(@BottomSheetController.StateChangeReason int reason) {
+                        super.onSheetOpened(reason);
+                        mBackPressStateChangedSupplier.set(true);
+                    }
 
-            @Override
-            public void onSheetClosed(@BottomSheetController.StateChangeReason int reason) {
-                super.onSheetClosed(reason);
-                mBackPressStateChangedSupplier.set(false);
-                mBottomSheetController.removeObserver(mBottomSheetOpenedObserver);
-            }
-        };
+                    @Override
+                    public void onSheetClosed(@BottomSheetController.StateChangeReason int reason) {
+                        super.onSheetClosed(reason);
+                        mBackPressStateChangedSupplier.set(false);
+                        mBottomSheetController.removeObserver(mBottomSheetOpenedObserver);
+                    }
+                };
         mBottomSheetController.addObserver(mBottomSheetOpenedObserver);
     }
 

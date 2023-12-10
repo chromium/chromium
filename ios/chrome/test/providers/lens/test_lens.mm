@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #import <UIKit/UIKit.h>
+
+#import <optional>
 #import <ostream>
 
 #import "base/functional/bind.h"
@@ -44,8 +46,8 @@ bool IsLensWebResultsURL(const GURL& url) {
   return false;
 }
 
-absl::optional<LensEntrypoint> GetLensEntryPointFromURL(const GURL& url) {
-  return absl::nullopt;
+std::optional<LensEntrypoint> GetLensEntryPointFromURL(const GURL& url) {
+  return std::nullopt;
 }
 
 void GenerateLensLoadParamsAsync(LensQuery* query,

@@ -7,23 +7,11 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/image/image.h"
+#include "ui/gfx/image/image_unittest_util.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
 
 namespace ash {
-
-namespace {
-
-const gfx::Image CreateTestImage(int width,
-                                 int height,
-                                 SkColor color = SK_ColorGREEN) {
-  SkBitmap bitmap;
-  bitmap.allocN32Pixels(width, height);
-  bitmap.eraseColor(color);
-  return gfx::Image::CreateFrom1xBitmap(bitmap);
-}
-
-}  // namespace
 
 std::unique_ptr<message_center::Notification> CreateSimpleNotification(
     const std::string& id,
@@ -41,7 +29,7 @@ std::unique_ptr<message_center::Notification> CreateSimpleNotification(
       new message_center::NotificationDelegate());
 
   if (has_image) {
-    notification->set_image(CreateTestImage(320, 300));
+    notification->set_image(gfx::test::CreateImage(320, 300));
   }
   return notification;
 }

@@ -9,12 +9,12 @@
 #include "base/memory/scoped_refptr.h"
 #include "chrome/browser/vr/graphics_delegate.h"
 #include "gpu/GLES2/gl2extchromium.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "gpu/ipc/client/gpu_channel_host.h"
 #include "mojo/public/cpp/platform/platform_handle.h"
 #include "services/viz/public/cpp/gpu/context_provider_command_buffer.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/gpu_memory_buffer.h"
 
 namespace gpu {
 class SharedImageInterface;
@@ -49,10 +49,9 @@ class GraphicsDelegateWin : public GraphicsDelegate {
   raw_ptr<gpu::gles2::GLES2Interface> gl_ = nullptr;
   raw_ptr<gpu::SharedImageInterface> sii_ = nullptr;
   gfx::Size last_size_;
-  gpu::Mailbox mailbox_;  // Corresponding to our target GpuMemoryBuffer.
+  scoped_refptr<gpu::ClientSharedImage> client_shared_image_;
   GLuint dest_texture_id_ = 0;
   GLuint draw_frame_buffer_ = 0;
-  gfx::GpuMemoryBufferHandle buffer_handle_;
   // Sync point after access to the buffer is done.
   gpu::SyncToken access_done_sync_token_;
 };

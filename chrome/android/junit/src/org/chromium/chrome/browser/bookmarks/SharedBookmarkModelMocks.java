@@ -45,6 +45,8 @@ public class SharedBookmarkModelMocks {
     static final GURL URL_D = JUnitTestGURLs.BLUE_1;
     static final GURL URL_E = JUnitTestGURLs.BLUE_2;
 
+    static final BookmarkItem ROOT_BOOKMARK_ITEM =
+            makeFolderItem(ROOT_BOOKMARK_ID, "Bookmarks", ROOT_BOOKMARK_ID);
     static final BookmarkItem DESKTOP_BOOKMARK_ITEM =
             makeFolderItem(DESKTOP_BOOKMARK_ID, "Bookmarks bar", ROOT_BOOKMARK_ID);
     static final BookmarkItem OTHER_BOOKMARK_ITEM =
@@ -79,7 +81,10 @@ public class SharedBookmarkModelMocks {
         doReturn(DESKTOP_BOOKMARK_ID).when(bookmarkModel).getDesktopFolderId();
         doReturn(OTHER_BOOKMARK_ID).when(bookmarkModel).getOtherFolderId();
         doReturn(MOBILE_BOOKMARK_ID).when(bookmarkModel).getMobileFolderId();
-        doReturn(READING_LIST_BOOKMARK_ID).when(bookmarkModel).getReadingListFolder();
+        // TODO(crbug.com/1501998): Add account reading list folder support here.
+        doReturn(READING_LIST_BOOKMARK_ID)
+                .when(bookmarkModel)
+                .getLocalOrSyncableReadingListFolder();
         doReturn(PARTNER_BOOKMARK_ID).when(bookmarkModel).getPartnerFolderId();
         doReturn(
                         Arrays.asList(
@@ -91,6 +96,7 @@ public class SharedBookmarkModelMocks {
                 .when(bookmarkModel)
                 .getTopLevelFolderIds();
 
+        doReturn(ROOT_BOOKMARK_ITEM).when(bookmarkModel).getBookmarkById(ROOT_BOOKMARK_ID);
         doReturn(DESKTOP_BOOKMARK_ITEM).when(bookmarkModel).getBookmarkById(DESKTOP_BOOKMARK_ID);
         doReturn(OTHER_BOOKMARK_ITEM).when(bookmarkModel).getBookmarkById(OTHER_BOOKMARK_ID);
         doReturn(MOBILE_BOOKMARK_ITEM).when(bookmarkModel).getBookmarkById(MOBILE_BOOKMARK_ID);

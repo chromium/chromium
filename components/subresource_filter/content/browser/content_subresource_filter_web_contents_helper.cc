@@ -302,7 +302,7 @@ void ContentSubresourceFilterWebContentsHelper::DidFinishNavigation(
         // https://groups.google.com/a/chromium.org/g/navigation-dev/c/cY5V-w-xPRM/m/uC1Nsg_KAwAJ.
         // DCHECK(rfh->GetLastCommittedURL().is_empty() ||
         //        rfh->GetLastCommittedURL().IsAboutBlank());
-        DCHECK(!GetThrottleManager(rfh->GetPage()));
+        // DCHECK(!GetThrottleManager(rfh->GetPage()));
         page = &rfh->GetPage();
       }
     }

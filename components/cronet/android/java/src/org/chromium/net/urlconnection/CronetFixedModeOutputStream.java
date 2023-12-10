@@ -26,8 +26,7 @@ final class CronetFixedModeOutputStream extends CronetOutputStream {
     // to consume the data. This field is non-final, so it can be changed for tests.
     // Using 16384 bytes is because the internal read buffer is 14520 for QUIC,
     // 16384 for SPDY, and 16384 for normal HTTP/1.1 stream.
-    @VisibleForTesting
-    private static int sDefaultBufferLength = 16384;
+    @VisibleForTesting private static int sDefaultBufferLength = 16384;
     private final CronetHttpURLConnection mConnection;
     private final MessageLoop mMessageLoop;
     private final long mContentLength;
@@ -55,8 +54,8 @@ final class CronetFixedModeOutputStream extends CronetOutputStream {
      * @param contentLength The content length of the request body. Non-zero for
      *            non-chunked upload.
      */
-    CronetFixedModeOutputStream(CronetHttpURLConnection connection,
-            long contentLength, MessageLoop messageLoop) {
+    CronetFixedModeOutputStream(
+            CronetHttpURLConnection connection, long contentLength, MessageLoop messageLoop) {
         if (connection == null) {
             throw new NullPointerException();
         }
@@ -141,9 +140,11 @@ final class CronetFixedModeOutputStream extends CronetOutputStream {
      */
     private void checkNotExceedContentLength(int numBytes) throws ProtocolException {
         if (mBytesWritten + numBytes > mContentLength) {
-            throw new ProtocolException("expected "
-                    + (mContentLength - mBytesWritten) + " bytes but received "
-                    + numBytes);
+            throw new ProtocolException(
+                    "expected "
+                            + (mContentLength - mBytesWritten)
+                            + " bytes but received "
+                            + numBytes);
         }
     }
 
@@ -197,9 +198,7 @@ final class CronetFixedModeOutputStream extends CronetOutputStream {
         }
     }
 
-    /**
-     * Sets the default buffer length for use in tests.
-     */
+    /** Sets the default buffer length for use in tests. */
     static void setDefaultBufferLengthForTesting(int length) {
         sDefaultBufferLength = length;
     }

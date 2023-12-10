@@ -133,7 +133,7 @@ void BoxLayoutView::ClearFlexForView(const View* view) {
   InvalidateLayout();
 }
 
-BEGIN_METADATA(BoxLayoutView, View)
+BEGIN_METADATA(BoxLayoutView)
 ADD_PROPERTY_METADATA(BoxLayout::Orientation, Orientation)
 ADD_PROPERTY_METADATA(BoxLayout::MainAxisAlignment, MainAxisAlignment)
 ADD_PROPERTY_METADATA(BoxLayout::CrossAxisAlignment, CrossAxisAlignment)

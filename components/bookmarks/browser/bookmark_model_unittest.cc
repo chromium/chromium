@@ -2008,7 +2008,7 @@ TEST(BookmarkModelLoadTest, TitledUrlIndexPopulatedOnLoad) {
   ASSERT_TRUE(tmp_dir.CreateUniqueTempDir());
   base::test::TaskEnvironment task_environment{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  std::unique_ptr<BookmarkModel> model =
+  auto model =
       std::make_unique<BookmarkModel>(std::make_unique<TestBookmarkClient>());
   model->Load(tmp_dir.GetPath(), StorageType::kLocalOrSyncable);
   test::WaitForBookmarkModelToLoad(model.get());

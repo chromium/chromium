@@ -25,10 +25,10 @@ import java.util.concurrent.Callable;
  */
 @Lifetime.WebView
 public class AwContentsClientCallbackHelper {
-    /**
-     * Interface to tell CallbackHelper to cancel posted callbacks.
-     */
-    public static interface CancelCallbackPoller { boolean shouldCancelAllCallbacks(); }
+    /** Interface to tell CallbackHelper to cancel posted callbacks. */
+    public static interface CancelCallbackPoller {
+        boolean shouldCancelAllCallbacks();
+    }
 
     // TODO(boliu): Consider removing DownloadInfo and LoginRequestInfo by using native
     // MessageLoop to post directly to AwContents.
@@ -40,11 +40,12 @@ public class AwContentsClientCallbackHelper {
         final String mMimeType;
         final long mContentLength;
 
-        DownloadInfo(String url,
-                     String userAgent,
-                     String contentDisposition,
-                     String mimeType,
-                     long contentLength) {
+        DownloadInfo(
+                String url,
+                String userAgent,
+                String contentDisposition,
+                String mimeType,
+                long contentLength) {
             mUrl = url;
             mUserAgent = userAgent;
             mContentDisposition = contentDisposition;
@@ -69,7 +70,8 @@ public class AwContentsClientCallbackHelper {
         final AwContentsClient.AwWebResourceRequest mRequest;
         final AwContentsClient.AwWebResourceError mError;
 
-        OnReceivedErrorInfo(AwContentsClient.AwWebResourceRequest request,
+        OnReceivedErrorInfo(
+                AwContentsClient.AwWebResourceRequest request,
                 AwContentsClient.AwWebResourceError error) {
             mRequest = request;
             mError = error;
@@ -81,7 +83,9 @@ public class AwContentsClientCallbackHelper {
         final int mThreatType;
         final Callback<AwSafeBrowsingResponse> mCallback;
 
-        OnSafeBrowsingHitInfo(AwContentsClient.AwWebResourceRequest request, int threatType,
+        OnSafeBrowsingHitInfo(
+                AwContentsClient.AwWebResourceRequest request,
+                int threatType,
                 Callback<AwSafeBrowsingResponse> callback) {
             mRequest = request;
             mThreatType = threatType;
@@ -161,94 +165,115 @@ public class AwContentsClientCallbackHelper {
                 return;
             }
 
-            switch(msg.what) {
-                case MSG_ON_LOAD_RESOURCE: {
-                    final String url = (String) msg.obj;
-                    mContentsClient.onLoadResource(url);
-                    break;
-                }
-                case MSG_ON_PAGE_STARTED: {
-                    final String url = (String) msg.obj;
-                    mContentsClient.onPageStarted(url);
-                    break;
-                }
-                case MSG_ON_DOWNLOAD_START: {
-                    DownloadInfo info = (DownloadInfo) msg.obj;
-                    mContentsClient.onDownloadStart(info.mUrl, info.mUserAgent,
-                            info.mContentDisposition, info.mMimeType, info.mContentLength);
-                    break;
-                }
-                case MSG_ON_RECEIVED_LOGIN_REQUEST: {
-                    LoginRequestInfo info = (LoginRequestInfo) msg.obj;
-                    mContentsClient.onReceivedLoginRequest(info.mRealm, info.mAccount, info.mArgs);
-                    break;
-                }
-                case MSG_ON_RECEIVED_ERROR: {
-                    OnReceivedErrorInfo info = (OnReceivedErrorInfo) msg.obj;
-                    mContentsClient.onReceivedError(info.mRequest, info.mError);
-                    break;
-                }
-                case MSG_ON_SAFE_BROWSING_HIT: {
-                    OnSafeBrowsingHitInfo info = (OnSafeBrowsingHitInfo) msg.obj;
-                    mContentsClient.onSafeBrowsingHit(
-                            info.mRequest, info.mThreatType, info.mCallback);
-                    break;
-                }
-                case MSG_ON_NEW_PICTURE: {
-                    Picture picture = null;
-                    try {
-                        if (msg.obj != null) picture = (Picture) ((Callable<?>) msg.obj).call();
-                    } catch (Exception e) {
-                        throw new RuntimeException("Error getting picture", e);
+            switch (msg.what) {
+                case MSG_ON_LOAD_RESOURCE:
+                    {
+                        final String url = (String) msg.obj;
+                        mContentsClient.onLoadResource(url);
+                        break;
                     }
-                    mContentsClient.onNewPicture(picture);
-                    mLastPictureTime = SystemClock.uptimeMillis();
-                    mHasPendingOnNewPicture = false;
-                    break;
-                }
-                case MSG_ON_SCALE_CHANGED_SCALED: {
-                    float oldScale = Float.intBitsToFloat(msg.arg1);
-                    float newScale = Float.intBitsToFloat(msg.arg2);
-                    mContentsClient.onScaleChangedScaled(oldScale, newScale);
-                    break;
-                }
-                case MSG_ON_RECEIVED_HTTP_ERROR: {
-                    OnReceivedHttpErrorInfo info = (OnReceivedHttpErrorInfo) msg.obj;
-                    mContentsClient.onReceivedHttpError(info.mRequest, info.mResponse);
-                    break;
-                }
-                case MSG_ON_PAGE_FINISHED: {
-                    final String url = (String) msg.obj;
-                    mContentsClient.onPageFinished(url);
-                    break;
-                }
-                case MSG_ON_RECEIVED_TITLE: {
-                    final String title = (String) msg.obj;
-                    mContentsClient.onReceivedTitle(title);
-                    break;
-                }
-                case MSG_ON_PROGRESS_CHANGED: {
-                    mContentsClient.onProgressChanged(msg.arg1);
-                    break;
-                }
-                case MSG_SYNTHESIZE_PAGE_LOADING: {
-                    final String url = (String) msg.obj;
-                    mContentsClient.onPageStarted(url);
-                    mContentsClient.onLoadResource(url);
-                    mContentsClient.onProgressChanged(100);
-                    mContentsClient.onPageFinished(url);
-                    break;
-                }
-                case MSG_DO_UPDATE_VISITED_HISTORY: {
-                    final DoUpdateVisitedHistoryInfo info = (DoUpdateVisitedHistoryInfo) msg.obj;
-                    mContentsClient.doUpdateVisitedHistory(info.mUrl, info.mIsReload);
-                    break;
-                }
-                case MSG_ON_FORM_RESUBMISSION: {
-                    final OnFormResubmissionInfo info = (OnFormResubmissionInfo) msg.obj;
-                    mContentsClient.onFormResubmission(info.mDontResend, info.mResend);
-                    break;
-                }
+                case MSG_ON_PAGE_STARTED:
+                    {
+                        final String url = (String) msg.obj;
+                        mContentsClient.onPageStarted(url);
+                        break;
+                    }
+                case MSG_ON_DOWNLOAD_START:
+                    {
+                        DownloadInfo info = (DownloadInfo) msg.obj;
+                        mContentsClient.onDownloadStart(
+                                info.mUrl,
+                                info.mUserAgent,
+                                info.mContentDisposition,
+                                info.mMimeType,
+                                info.mContentLength);
+                        break;
+                    }
+                case MSG_ON_RECEIVED_LOGIN_REQUEST:
+                    {
+                        LoginRequestInfo info = (LoginRequestInfo) msg.obj;
+                        mContentsClient.onReceivedLoginRequest(
+                                info.mRealm, info.mAccount, info.mArgs);
+                        break;
+                    }
+                case MSG_ON_RECEIVED_ERROR:
+                    {
+                        OnReceivedErrorInfo info = (OnReceivedErrorInfo) msg.obj;
+                        mContentsClient.onReceivedError(info.mRequest, info.mError);
+                        break;
+                    }
+                case MSG_ON_SAFE_BROWSING_HIT:
+                    {
+                        OnSafeBrowsingHitInfo info = (OnSafeBrowsingHitInfo) msg.obj;
+                        mContentsClient.onSafeBrowsingHit(
+                                info.mRequest, info.mThreatType, info.mCallback);
+                        break;
+                    }
+                case MSG_ON_NEW_PICTURE:
+                    {
+                        Picture picture = null;
+                        try {
+                            if (msg.obj != null) picture = (Picture) ((Callable<?>) msg.obj).call();
+                        } catch (Exception e) {
+                            throw new RuntimeException("Error getting picture", e);
+                        }
+                        mContentsClient.onNewPicture(picture);
+                        mLastPictureTime = SystemClock.uptimeMillis();
+                        mHasPendingOnNewPicture = false;
+                        break;
+                    }
+                case MSG_ON_SCALE_CHANGED_SCALED:
+                    {
+                        float oldScale = Float.intBitsToFloat(msg.arg1);
+                        float newScale = Float.intBitsToFloat(msg.arg2);
+                        mContentsClient.onScaleChangedScaled(oldScale, newScale);
+                        break;
+                    }
+                case MSG_ON_RECEIVED_HTTP_ERROR:
+                    {
+                        OnReceivedHttpErrorInfo info = (OnReceivedHttpErrorInfo) msg.obj;
+                        mContentsClient.onReceivedHttpError(info.mRequest, info.mResponse);
+                        break;
+                    }
+                case MSG_ON_PAGE_FINISHED:
+                    {
+                        final String url = (String) msg.obj;
+                        mContentsClient.onPageFinished(url);
+                        break;
+                    }
+                case MSG_ON_RECEIVED_TITLE:
+                    {
+                        final String title = (String) msg.obj;
+                        mContentsClient.onReceivedTitle(title);
+                        break;
+                    }
+                case MSG_ON_PROGRESS_CHANGED:
+                    {
+                        mContentsClient.onProgressChanged(msg.arg1);
+                        break;
+                    }
+                case MSG_SYNTHESIZE_PAGE_LOADING:
+                    {
+                        final String url = (String) msg.obj;
+                        mContentsClient.onPageStarted(url);
+                        mContentsClient.onLoadResource(url);
+                        mContentsClient.onProgressChanged(100);
+                        mContentsClient.onPageFinished(url);
+                        break;
+                    }
+                case MSG_DO_UPDATE_VISITED_HISTORY:
+                    {
+                        final DoUpdateVisitedHistoryInfo info =
+                                (DoUpdateVisitedHistoryInfo) msg.obj;
+                        mContentsClient.doUpdateVisitedHistory(info.mUrl, info.mIsReload);
+                        break;
+                    }
+                case MSG_ON_FORM_RESUBMISSION:
+                    {
+                        final OnFormResubmissionInfo info = (OnFormResubmissionInfo) msg.obj;
+                        mContentsClient.onFormResubmission(info.mDontResend, info.mResend);
+                        break;
+                    }
                 default:
                     throw new IllegalStateException(
                             "AwContentsClientCallbackHelper: unhandled message " + msg.what);
@@ -278,10 +303,14 @@ public class AwContentsClientCallbackHelper {
         mHandler.sendMessage(mHandler.obtainMessage(MSG_ON_PAGE_STARTED, url));
     }
 
-    public void postOnDownloadStart(String url, String userAgent, String contentDisposition,
-            String mimeType, long contentLength) {
-        DownloadInfo info = new DownloadInfo(url, userAgent, contentDisposition, mimeType,
-                contentLength);
+    public void postOnDownloadStart(
+            String url,
+            String userAgent,
+            String contentDisposition,
+            String mimeType,
+            long contentLength) {
+        DownloadInfo info =
+                new DownloadInfo(url, userAgent, contentDisposition, mimeType, contentLength);
         mHandler.sendMessage(mHandler.obtainMessage(MSG_ON_DOWNLOAD_START, info));
     }
 
@@ -290,13 +319,16 @@ public class AwContentsClientCallbackHelper {
         mHandler.sendMessage(mHandler.obtainMessage(MSG_ON_RECEIVED_LOGIN_REQUEST, info));
     }
 
-    public void postOnReceivedError(AwContentsClient.AwWebResourceRequest request,
+    public void postOnReceivedError(
+            AwContentsClient.AwWebResourceRequest request,
             AwContentsClient.AwWebResourceError error) {
         OnReceivedErrorInfo info = new OnReceivedErrorInfo(request, error);
         mHandler.sendMessage(mHandler.obtainMessage(MSG_ON_RECEIVED_ERROR, info));
     }
 
-    public void postOnSafeBrowsingHit(AwContentsClient.AwWebResourceRequest request, int threatType,
+    public void postOnSafeBrowsingHit(
+            AwContentsClient.AwWebResourceRequest request,
+            int threatType,
             Callback<AwSafeBrowsingResponse> callback) {
         OnSafeBrowsingHitInfo info = new OnSafeBrowsingHitInfo(request, threatType, callback);
         mHandler.sendMessage(mHandler.obtainMessage(MSG_ON_SAFE_BROWSING_HIT, info));
@@ -305,10 +337,12 @@ public class AwContentsClientCallbackHelper {
     public void postOnNewPicture(Callable<Picture> pictureProvider) {
         if (mHasPendingOnNewPicture) return;
         mHasPendingOnNewPicture = true;
-        long pictureTime = java.lang.Math.max(mLastPictureTime + ON_NEW_PICTURE_MIN_PERIOD_MILLIS,
-                SystemClock.uptimeMillis());
-        mHandler.sendMessageAtTime(mHandler.obtainMessage(MSG_ON_NEW_PICTURE, pictureProvider),
-                pictureTime);
+        long pictureTime =
+                java.lang.Math.max(
+                        mLastPictureTime + ON_NEW_PICTURE_MIN_PERIOD_MILLIS,
+                        SystemClock.uptimeMillis());
+        mHandler.sendMessageAtTime(
+                mHandler.obtainMessage(MSG_ON_NEW_PICTURE, pictureProvider), pictureTime);
     }
 
     public void postOnScaleChangedScaled(float oldScale, float newScale) {
@@ -316,14 +350,16 @@ public class AwContentsClientCallbackHelper {
         // documentation states that intBitsToFloat(floatToIntBits(a)) == a for all values of a
         // (except for NaNs which are collapsed to a single canonical NaN, but we don't care for
         // that case).
-        mHandler.sendMessage(mHandler.obtainMessage(MSG_ON_SCALE_CHANGED_SCALED,
-                    Float.floatToIntBits(oldScale), Float.floatToIntBits(newScale)));
+        mHandler.sendMessage(
+                mHandler.obtainMessage(
+                        MSG_ON_SCALE_CHANGED_SCALED,
+                        Float.floatToIntBits(oldScale),
+                        Float.floatToIntBits(newScale)));
     }
 
     public void postOnReceivedHttpError(
             AwContentsClient.AwWebResourceRequest request, WebResourceResponseInfo response) {
-        OnReceivedHttpErrorInfo info =
-                new OnReceivedHttpErrorInfo(request, response);
+        OnReceivedHttpErrorInfo info = new OnReceivedHttpErrorInfo(request, response);
         mHandler.sendMessage(mHandler.obtainMessage(MSG_ON_RECEIVED_HTTP_ERROR, info));
     }
 

@@ -20,10 +20,10 @@ TEST_F(ChromeOsLinkCapturingDelegateTest, GetLaunchAppId_Preferred) {
   app_ids_to_launch.candidates = {"foo", "bar"};
   app_ids_to_launch.preferred = "foo";
 
-  absl::optional<std::string> launch_id =
+  std::optional<std::string> launch_id =
       ChromeOsLinkCapturingDelegate::GetLaunchAppId(
           app_ids_to_launch, /*is_navigation_from_link=*/true,
-          /*source_app_id=*/absl::nullopt);
+          /*source_app_id=*/std::nullopt);
 
   ASSERT_EQ(launch_id, "foo");
 }
@@ -32,12 +32,12 @@ TEST_F(ChromeOsLinkCapturingDelegateTest, GetLaunchAppId_NoPreferred) {
   AppIdsToLaunchForUrl app_ids_to_launch;
   app_ids_to_launch.candidates = {"foo", "bar"};
 
-  absl::optional<std::string> launch_id =
+  std::optional<std::string> launch_id =
       ChromeOsLinkCapturingDelegate::GetLaunchAppId(
           app_ids_to_launch, /*is_navigation_from_link=*/true,
-          /*source_app_id=*/absl::nullopt);
+          /*source_app_id=*/std::nullopt);
 
-  ASSERT_EQ(launch_id, absl::nullopt);
+  ASSERT_EQ(launch_id, std::nullopt);
 }
 
 TEST_F(ChromeOsLinkCapturingDelegateTest,
@@ -47,7 +47,7 @@ TEST_F(ChromeOsLinkCapturingDelegateTest,
   AppIdsToLaunchForUrl app_ids_to_launch;
   app_ids_to_launch.candidates = {"foo"};
 
-  absl::optional<std::string> launch_id =
+  std::optional<std::string> launch_id =
       ChromeOsLinkCapturingDelegate::GetLaunchAppId(
           app_ids_to_launch, /*is_navigation_from_link=*/true,
           /*source_app_id=*/"bar");
@@ -62,12 +62,12 @@ TEST_F(ChromeOsLinkCapturingDelegateTest,
   AppIdsToLaunchForUrl app_ids_to_launch;
   app_ids_to_launch.candidates = {"foo"};
 
-  absl::optional<std::string> launch_id =
+  std::optional<std::string> launch_id =
       ChromeOsLinkCapturingDelegate::GetLaunchAppId(
           app_ids_to_launch, /*is_navigation_from_link=*/true,
-          /*source_app_id=*/absl::nullopt);
+          /*source_app_id=*/std::nullopt);
 
-  ASSERT_EQ(launch_id, absl::nullopt);
+  ASSERT_EQ(launch_id, std::nullopt);
 }
 
 TEST_F(ChromeOsLinkCapturingDelegateTest,
@@ -77,12 +77,12 @@ TEST_F(ChromeOsLinkCapturingDelegateTest,
   AppIdsToLaunchForUrl app_ids_to_launch;
   app_ids_to_launch.candidates = {"foo", "bar"};
 
-  absl::optional<std::string> launch_id =
+  std::optional<std::string> launch_id =
       ChromeOsLinkCapturingDelegate::GetLaunchAppId(
           app_ids_to_launch, /*is_navigation_from_link=*/true,
           /*source_app_id=*/"baz");
 
-  ASSERT_EQ(launch_id, absl::nullopt);
+  ASSERT_EQ(launch_id, std::nullopt);
 }
 
 TEST_F(ChromeOsLinkCapturingDelegateTest,
@@ -92,7 +92,7 @@ TEST_F(ChromeOsLinkCapturingDelegateTest,
   AppIdsToLaunchForUrl app_ids_to_launch;
   app_ids_to_launch.candidates = {web_app::kGoogleDocsAppId};
 
-  absl::optional<std::string> launch_id =
+  std::optional<std::string> launch_id =
       ChromeOsLinkCapturingDelegate::GetLaunchAppId(
           app_ids_to_launch, /*is_navigation_from_link=*/true,
           /*source_app_id=*/web_app::kGoogleDriveAppId);
@@ -107,12 +107,12 @@ TEST_F(ChromeOsLinkCapturingDelegateTest,
   AppIdsToLaunchForUrl app_ids_to_launch;
   app_ids_to_launch.candidates = {web_app::kGoogleDocsAppId};
 
-  absl::optional<std::string> launch_id =
+  std::optional<std::string> launch_id =
       ChromeOsLinkCapturingDelegate::GetLaunchAppId(
           app_ids_to_launch, /*is_navigation_from_link=*/true,
           /*source_app_id=*/"nonworkspaceapp");
 
-  ASSERT_EQ(launch_id, absl::nullopt);
+  ASSERT_EQ(launch_id, std::nullopt);
 }
 
 TEST_F(
@@ -127,7 +127,7 @@ TEST_F(
   app_ids_to_launch.candidates = {"app", web_app::kGoogleDocsAppId,
                                   "anotherapp"};
 
-  absl::optional<std::string> launch_id =
+  std::optional<std::string> launch_id =
       ChromeOsLinkCapturingDelegate::GetLaunchAppId(
           app_ids_to_launch, /*is_navigation_from_link=*/true,
           /*source_app_id=*/web_app::kGoogleDriveAppId);
@@ -146,7 +146,7 @@ TEST_F(ChromeOsLinkCapturingDelegateTest,
   app_ids_to_launch.candidates = {web_app::kGoogleDocsAppId, "anotherapp"};
   app_ids_to_launch.preferred = "anotherapp";
 
-  absl::optional<std::string> launch_id =
+  std::optional<std::string> launch_id =
       ChromeOsLinkCapturingDelegate::GetLaunchAppId(
           app_ids_to_launch, /*is_navigation_from_link=*/true,
           /*source_app_id=*/web_app::kGoogleDriveAppId);

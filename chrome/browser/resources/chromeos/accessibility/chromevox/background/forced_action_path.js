@@ -37,8 +37,7 @@ const ActionType = {
  */
 export class ForcedActionPath {
   /**
-   * @param {!Array<ForcedActionPath.ActionInfo>} actionInfos A queue of
-   *     expected actions.
+   * @param {!Array<ActionInfo>} actionInfos A queue of expected actions.
    * @param {function():void} onFinishedCallback Runs once after all expected
    *     actions have been matched.
    */
@@ -49,14 +48,13 @@ export class ForcedActionPath {
 
     /** @private {number} */
     this.actionIndex_ = 0;
-    /** @private {!Array<!ForcedActionPath.Action>} */
+    /** @private {!Array<!Action>} */
     this.actions_ = [];
     /** @private {function():void} */
     this.onFinishedCallback_ = onFinishedCallback;
 
     for (let i = 0; i < actionInfos.length; ++i) {
-      this.actions_.push(
-          ForcedActionPath.Action.fromActionInfo(actionInfos[i]));
+      this.actions_.push(ForcedActionPath.createAction(actionInfos[i]));
     }
     if (this.actions_[0].beforeActionCallback) {
       this.actions_[0].beforeActionCallback();
@@ -92,6 +90,73 @@ export class ForcedActionPath {
     ForcedActionPath.instance = null;
   }
 
+  /**
+   * Constructs a new Action given an ActionInfo object.
+   * @param {!ActionInfo} info
+   * @return {!Action}
+   */
+  static createAction(info) {
+    switch (info.type) {
+      case ActionType.KEY_SEQUENCE:
+        if (typeof info.value !== 'object') {
+          throw new Error(
+              'ForcedActionPath: Must provide an object resembling a ' +
+              'KeySequence for Actions of type ActionType.KEY_SEQUENCE');
+        }
+        break;
+
+      default:
+        if (typeof info.value !== 'string') {
+          throw new Error(
+              'ForcedActionPath: Must provide a string value for Actions if ' +
+              'type is other than ActionType.KEY_SEQUENCE');
+        }
+    }
+
+    const type = info.type;
+    const value = (typeof info.value === 'string') ?
+        info.value :
+        KeySequence.deserialize(
+            /** @type {!SerializedKeySequence} */ (info.value));
+    const shouldPropagate = info.shouldPropagate;
+    const beforeActionMsg = info.beforeActionMsg;
+    const afterActionMsg = info.afterActionMsg;
+    const afterActionCmd = info.afterActionCmd;
+
+    const beforeActionCallback = () => {
+      if (!beforeActionMsg) {
+        return;
+      }
+
+      Action.output_(beforeActionMsg);
+    };
+
+    // A function that either provides output or performs a command when the
+    // action has been matched.
+    const afterActionCallback = () => {
+      if (afterActionMsg) {
+        Action.output_(afterActionMsg);
+      } else if (afterActionCmd) {
+        Action.onCommand_(afterActionCmd);
+      }
+    };
+
+    const params = {
+      type,
+      value,
+      shouldPropagate,
+      beforeActionCallback,
+      afterActionCallback,
+    };
+
+    switch (type) {
+      case ActionType.KEY_SEQUENCE:
+        return new KeySequenceAction(params);
+      default:
+        return new StringAction(params);
+    }
+  }
+
   // Public methods.
 
   /**
@@ -101,8 +166,7 @@ export class ForcedActionPath {
    * @return {boolean}
    */
   onKeySequence(actualSequence) {
-    if (actualSequence.equals(
-            ForcedActionPath.CLOSE_CHROMEVOX_KEY_SEQUENCE_)) {
+    if (actualSequence.equals(CLOSE_CHROMEVOX_KEY_SEQUENCE)) {
       ForcedActionPath.closeChromeVox_();
       return true;
     }
@@ -189,7 +253,7 @@ export class ForcedActionPath {
   }
 
   /**
-   * @return {!ForcedActionPath.Action}
+   * @return {!Action}
    * @private
    */
   getExpectedAction_() {
@@ -201,16 +265,21 @@ export class ForcedActionPath {
   }
 }
 
+/** @type {ForcedActionPath} */
+ForcedActionPath.instance;
+
+// Local to module.
+
 /**
  * The key sequence used to close ChromeVox.
  * @const {!KeySequence}
  * @private
  */
-ForcedActionPath.CLOSE_CHROMEVOX_KEY_SEQUENCE_ = KeySequence.deserialize(
+const CLOSE_CHROMEVOX_KEY_SEQUENCE = KeySequence.deserialize(
     {keys: {keyCode: [KeyCode.Z], ctrlKey: [true], altKey: [true]}});
 
 /**
- * Defines an object that is used to create a ForcedActionPath.Action.
+ * Defines an object that is used to create a ForcedActionPath Action.
  * @typedef {{
  *    type: ActionType,
  *    value: (string|Object),
@@ -220,10 +289,13 @@ ForcedActionPath.CLOSE_CHROMEVOX_KEY_SEQUENCE_ = KeySequence.deserialize(
  *    afterActionCmd: (!Command|undefined),
  * }}
  */
-ForcedActionPath.ActionInfo;
+let ActionInfo;
 
-// Represents an expected action.
-ForcedActionPath.Action = class {
+/**
+ * Represents an expected action.
+ * @abstract
+ */
+class Action {
   /**
    * Please see below for more information on arguments:
    * type: The type of action.
@@ -239,12 +311,13 @@ ForcedActionPath.Action = class {
    *  beforeActionCallback: (function(): void|undefined),
    *  afterActionCallback: (function(): void|undefined)
    * }} params
+   * @protected
    */
   constructor(params) {
     /** @type {ActionType} */
     this.type = params.type;
     /** @type {string|!KeySequence} */
-    this.value = params.value;
+    this.value = this.typedValue(params.value);
     /** @type {boolean} */
     this.shouldPropagate =
         (params.shouldPropagate !== undefined) ? params.shouldPropagate : true;
@@ -252,100 +325,22 @@ ForcedActionPath.Action = class {
     this.beforeActionCallback = params.beforeActionCallback;
     /** @type {(function():void)|undefined} */
     this.afterActionCallback = params.afterActionCallback;
-
-    switch (this.type) {
-      case ActionType.KEY_SEQUENCE:
-        if (!(this.value instanceof KeySequence)) {
-          throw new Error(
-              'ForcedActionPath: Must provide a KeySequence value for ' +
-              'Actions of type ActionType.KEY_SEQUENCE');
-        }
-        break;
-      default:
-        if (typeof this.value !== 'string') {
-          throw new Error(
-              'ForcedActionPath: Must provide a string value for Actions ' +
-              'if type is other than ActionType.KEY_SEQUENCE');
-        }
-    }
   }
 
   /**
-   * Constructs a new Action given an ActionInfo object.
-   * @param {!ForcedActionPath.ActionInfo} info
-   * @return {!ForcedActionPath.Action}
-   */
-  static fromActionInfo(info) {
-    switch (info.type) {
-      case ActionType.KEY_SEQUENCE:
-        if (typeof info.value !== 'object') {
-          throw new Error(
-              'ForcedActionPath: Must provide an object resembling a ' +
-              'KeySequence for Actions of type ActionType.KEY_SEQUENCE');
-        }
-        break;
-
-      default:
-        if (typeof info.value !== 'string') {
-          throw new Error(
-              'ForcedActionPath: Must provide a string value for Actions if ' +
-              'type is other than ActionType.KEY_SEQUENCE');
-        }
-    }
-
-    const type = info.type;
-    const value = (typeof info.value === 'string') ?
-        info.value :
-        KeySequence.deserialize(
-            /** @type {!SerializedKeySequence} */ (info.value));
-    const shouldPropagate = info.shouldPropagate;
-    const beforeActionMsg = info.beforeActionMsg;
-    const afterActionMsg = info.afterActionMsg;
-    const afterActionCmd = info.afterActionCmd;
-
-    const beforeActionCallback = () => {
-      if (!beforeActionMsg) {
-        return;
-      }
-
-      ForcedActionPath.Action.output_(beforeActionMsg);
-    };
-
-    // A function that either provides output or performs a command when the
-    // action has been matched.
-    const afterActionCallback = () => {
-      if (afterActionMsg) {
-        ForcedActionPath.Action.output_(afterActionMsg);
-      } else if (afterActionCmd) {
-        ForcedActionPath.Action.onCommand_(afterActionCmd);
-      }
-    };
-
-    return new ForcedActionPath.Action({
-      type,
-      value,
-      shouldPropagate,
-      beforeActionCallback,
-      afterActionCallback,
-    });
-  }
-
-  /**
-   * @param {!ForcedActionPath.Action} other
+   * @param {!Action} other
    * @return {boolean}
    */
   equals(other) {
-    if (this.type !== other.type) {
-      return false;
-    }
-
-    if (this.type === ActionType.KEY_SEQUENCE) {
-      // For KeySequences, use the built-in equals method.
-      return this.value.equals(/** @type {!KeySequence} */ (other.value));
-    }
-
-    return this.value === other.value;
+    return this.type === other.type;
   }
+
+  /**
+   * @param {string|Object} value
+   * @return {string|!KeySequence}
+   * @abstract
+   */
+  typedValue(value) {}
 
   // Static methods.
 
@@ -366,10 +361,41 @@ ForcedActionPath.Action = class {
   static onCommand_(command) {
     CommandHandlerInterface.instance.onCommand(command);
   }
-};
+}
 
-/** @type {ForcedActionPath} */
-ForcedActionPath.instance;
+class KeySequenceAction extends Action {
+  /** @override */
+  equals(other) {
+    return super.equals(other) &&
+        this.value.equals(/**@type {!KeySequence} */ (other.value));
+  }
+
+  /** @override */
+  typedValue(value) {
+    if (!(value instanceof KeySequence)) {
+      throw new Error(
+          'ForcedActionPath: Must provide a KeySequence value for ' +
+          'Actions of type ActionType.KEY_SEQUENCE');
+    }
+    return /** @type {!KeySequence} */ (value);
+  }
+}
+
+class StringAction extends Action {
+  /** @override */
+  equals(other) {
+    return super.equals(other) && this.value === other.value;
+  }
+
+  /** @override */
+  typedValue(value) {
+    if (typeof value !== 'string') {
+      throw new Error(`ForcedActionPath: Must provide string value for ${
+          this.type} actions`);
+    }
+    return String(value);
+  }
+}
 
 BridgeHelper.registerHandler(
     BridgeConstants.ForcedActionPath.TARGET,
@@ -382,10 +408,5 @@ BridgeHelper.registerHandler(
     () => ForcedActionPath.destroy());
 BridgeHelper.registerHandler(
     BridgeConstants.ForcedActionPath.TARGET,
-    BridgeConstants.ForcedActionPath.Action.ON_KEY_DOWN, evt => {
-      if (!ForcedActionPath.instance) {
-        // Continue propagating.
-        return true;
-      }
-      return ForcedActionPath.instance.onKeyDown(evt);
-    });
+    BridgeConstants.ForcedActionPath.Action.ON_KEY_DOWN,
+    evt => ForcedActionPath.instance?.onKeyDown(evt) ?? true);

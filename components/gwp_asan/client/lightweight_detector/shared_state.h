@@ -5,12 +5,31 @@
 #ifndef COMPONENTS_GWP_ASAN_CLIENT_LIGHTWEIGHT_DETECTOR_SHARED_STATE_H_
 #define COMPONENTS_GWP_ASAN_CLIENT_LIGHTWEIGHT_DETECTOR_SHARED_STATE_H_
 
+#include <stdint.h>
 #include <utility>
 
 #include "base/check.h"
 #include "base/compiler_specific.h"
 
-namespace gwp_asan::internal {
+namespace gwp_asan::internal::lud {
+
+template <typename T>
+class SharedState;
+
+template <typename T>
+class SharedStateHolder {
+ private:
+  static bool initialized_;
+  static uint8_t buffer_[];
+
+  friend class SharedState<T>;
+};
+
+template <typename T>
+bool SharedStateHolder<T>::initialized_ = false;
+
+template <typename T>
+alignas(T) uint8_t SharedStateHolder<T>::buffer_[sizeof(T)];
 
 // Special purpose shared state type. Uses a static buffer to reduce the number
 // of pointer dereferences, requires explicit initialization, and doesn't
@@ -20,33 +39,27 @@ class SharedState {
  public:
   template <typename... Args>
   static void Init(Args&&... args) {
-    instance_initialized_ = true;
-    new (Get()) T(std::forward<Args>(args)...);
+    DCHECK(!Holder::initialized_);
+    Holder::initialized_ = true;
+    new (Holder::buffer_) T(std::forward<Args>(args)...);
   }
 
   ALWAYS_INLINE static T* Get() {
-    DCHECK(instance_initialized_);
-    return reinterpret_cast<T*>(instance_buffer_);
+    DCHECK(Holder::initialized_);
+    return reinterpret_cast<T*>(Holder::buffer_);
   }
 
   static void ResetForTesting() {
-    if (instance_initialized_) {
+    if (Holder::initialized_) {
       Get()->~T();
-      instance_initialized_ = false;
+      Holder::initialized_ = false;
     }
   }
 
  private:
-  static bool instance_initialized_;
-  static uint8_t instance_buffer_[];
+  using Holder = SharedStateHolder<T>;
 };
 
-template <typename T>
-bool SharedState<T>::instance_initialized_ = false;
-
-template <typename T>
-alignas(T) uint8_t SharedState<T>::instance_buffer_[sizeof(T)];
-
-}  // namespace gwp_asan::internal
+}  // namespace gwp_asan::internal::lud
 
 #endif  // COMPONENTS_GWP_ASAN_CLIENT_LIGHTWEIGHT_DETECTOR_SHARED_STATE_H_

@@ -5,7 +5,6 @@
 <translation id="1076394037877376434">Eliminar página <ph name="PAGE_NUMBER" /></translation>
 <translation id="1113173431709655881">Modo de cámara</translation>
 <translation id="1153190633558910465">Cuadrícula desactivada</translation>
-<translation id="1175958423215084756">Enlace detectado. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213">Página <ph name="PAGE_NUMBER" /> eliminada</translation>
 <translation id="1258009455399840361">Girar 90 grados en el sentido de las agujas del reloj</translation>
 <translation id="1417314334557041815">Editar página <ph name="INDEX" /></translation>
@@ -60,14 +59,12 @@
 <translation id="3642192109456033823">Procesando vídeo...</translation>
 <translation id="3789724198583203151">Girar 90 grados en el sentido contrario a las agujas del reloj</translation>
 <translation id="3810838688059735925">Vídeo</translation>
-<translation id="3892148308691398805">Copiar texto</translation>
 <translation id="4060608699153044055">No puedes grabar porque hay poco espacio de almacenamiento en el dispositivo. Para empezar a grabar, debes liberar espacio en tu dispositivo.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
 <translation id="4118525110028899586">Pausar grabación</translation>
 <translation id="4121305183798804752">Documento detectado</translation>
 <translation id="414641094616694804">Esta cámara no puede cambiar de resolución</translation>
 <translation id="4176463684765177261">Inhabilitado</translation>
-<translation id="4269820728363426813">Copiar dirección del enlace</translation>
 <translation id="428234092390943511">Miniatura de la página</translation>
 <translation id="4349714250734879769">Escalar marcos con Chrome</translation>
 <translation id="4383571725254449280">Imprimir registros de rendimiento</translation>
@@ -144,7 +141,6 @@ Si tu comentario está relacionado con la calidad de imagen o de vídeo, adjunta
 <translation id="7726641833034062494">Grabar vídeo normal</translation>
 <translation id="7748344063862150053">Esquina superior derecha del documento</translation>
 <translation id="7933675232020478311">Moviendo hacia abajo a la derecha</translation>
-<translation id="7983668134180549431">Texto detectado.</translation>
 <translation id="8079255378695216066">No se puede iniciar la grabación</translation>
 <translation id="8120146556401698679">Panorámica, inclinación y zoom</translation>
 <translation id="8131740175452115882">Confirmar</translation>
@@ -163,6 +159,7 @@ Si tu comentario está relacionado con la calidad de imagen o de vídeo, adjunta
 <translation id="8870695351537079478">No se puede iniciar la grabación</translation>
 <translation id="8880167521484863515">4 a 3</translation>
 <translation id="8903921497873541725">Acercar</translation>
+<translation id="8926890870105777777">Unirse a la red <ph name="WIFINAME" /></translation>
 <translation id="9045010116236796332">Coloca todos los bordes del documento dentro del marco</translation>
 <translation id="9045155556724273246">10 segundos</translation>
 <translation id="906331135292332864">Procesando imagen...</translation>

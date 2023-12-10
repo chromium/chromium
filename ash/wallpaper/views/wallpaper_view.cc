@@ -17,6 +17,7 @@
 #include "ui/aura/window.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/display.h"
 #include "ui/display/manager/display_manager.h"
@@ -209,7 +210,7 @@ void WallpaperView::DrawWallpaper(const gfx::ImageSkia& wallpaper,
     small_canvas.DrawImageInt(wallpaper, src.x(), src.y(), src.width(),
                               src.height(), 0, 0, quality_adjusted_rect.width(),
                               quality_adjusted_rect.height(), true);
-    small_image_ = absl::make_optional(
+    small_image_ = std::make_optional(
         gfx::ImageSkia::CreateFrom1xBitmap(small_canvas.GetBitmap()));
   }
 
@@ -324,5 +325,8 @@ std::unique_ptr<views::Widget> CreateWallpaperWidget(
 
   return wallpaper_widget;
 }
+
+BEGIN_METADATA(WallpaperView)
+END_METADATA
 
 }  // namespace ash

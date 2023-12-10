@@ -408,6 +408,9 @@ shared_library("immediate_crash_test_helper") {
   # Note: the helper has a header-only dependency on //base/immediate_helper.h.
   # However, the build rule intentionally omits an explicit //base dependency
   # to avoid potential ODR violations and minimize the amount of code linked in.
+  # We do however need to depend upon a buildflag header included in
+  # base/immediate_crash.h.
+  deps = [ "//base:fuzzing_buildflags" ]
 
   # Try to minimize the risk of non-official builds generating different code.
   if (!is_official_build) {
@@ -647,6 +650,7 @@ if (is_android) {
       "android/javatests/src/org/chromium/base/test/transit/InstrumentationThreadCondition.java",
       "android/javatests/src/org/chromium/base/test/transit/PublicTransitConfig.java",
       "android/javatests/src/org/chromium/base/test/transit/StationFacility.java",
+      "android/javatests/src/org/chromium/base/test/transit/TrafficControl.java",
       "android/javatests/src/org/chromium/base/test/transit/TransitAsserts.java",
       "android/javatests/src/org/chromium/base/test/transit/TransitStation.java",
       "android/javatests/src/org/chromium/base/test/transit/Transition.java",

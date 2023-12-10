@@ -1,0 +1,2345 @@
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+
+This file describes the enumerations referenced by entries in histograms.xml for
+this directory. Some enums may instead be listed in the central enums.xml file
+at src/tools/metrics/histograms/enums.xml when multiple files use them.
+
+For best practices on writing enumerations descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md#Enum-Histograms
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<!-- Enum types -->
+
+<enums>
+
+<enum name="ActivateDeskByIndex">
+  <int value="0" label="Desk 1"/>
+  <int value="1" label="Desk 2"/>
+  <int value="2" label="Desk 3"/>
+  <int value="3" label="Desk 4"/>
+  <int value="4" label="Desk 5"/>
+  <int value="5" label="Desk 6"/>
+  <int value="6" label="Desk 7"/>
+  <int value="7" label="Desk 8"/>
+</enum>
+
+<enum name="AltTabMode">
+  <int value="0" label="All Desks"/>
+  <int value="1" label="Current Desk"/>
+</enum>
+
+<enum name="AltTabModeSwitchSource">
+  <int value="0" label="Click"/>
+  <int value="1" label="Keyboard"/>
+</enum>
+
+<enum name="AmbientModeAnimationTheme">
+  <int value="0" label="Slide Show"/>
+  <int value="1" label="Feel The Breeze"/>
+  <int value="2" label="Float On By"/>
+  <int value="3" label="Video"/>
+</enum>
+
+<enum name="AmbientModeDurationOption">
+  <int value="0" label="Forever"/>
+  <int value="1" label="For 5 minutes"/>
+  <int value="2" label="For 10 minutes"/>
+  <int value="3" label="For 30 minutes"/>
+  <int value="4" label="For 1 hour"/>
+  <int value="5" label="Error: unknown duration value"/>
+</enum>
+
+<enum name="AmbientModePhotoSource">
+  <int value="0" label="Default">
+    This is when user clicked on the top level Screen Saver toggle but did not
+    click on any of photo source categories. The system will default show Art
+    Gallery with a default list of art sub categories.
+  </int>
+  <int value="1" label="Art Gallery"/>
+  <int value="2" label="Google Photos Recent Highlights Only"/>
+  <int value="3" label="Google Photos Personal Albums Only"/>
+  <int value="4" label="Google Photos Recent Highlights plus Personal Album"/>
+  <int value="5" label="Google Photos No Albums"/>
+</enum>
+
+<enum name="AmbientModeVideo">
+  <int value="0" label="Clouds"/>
+  <int value="1" label="New Mexico"/>
+</enum>
+
+<enum name="AmbientUiMode">
+  <int value="0" label="Lock Screen"/>
+  <int value="1" label="In Session Idle"/>
+</enum>
+
+<enum name="AmbientVideoSessionStatus">
+  <int value="0" label="Success"/>
+  <int value="1" label="Failed"/>
+  <int value="2" label="Loading"/>
+</enum>
+
+<enum name="ApiErrorCode">
+<!-- google_apis/common/api_error_codes.h -->
+
+  <int value="200" label="HTTP_SUCCESS"/>
+  <int value="201" label="HTTP_CREATED"/>
+  <int value="204" label="HTTP_NO_CONTENT"/>
+  <int value="302" label="HTTP_FOUND"/>
+  <int value="304" label="HTTP_NOT_MODIFIED"/>
+  <int value="308" label="HTTP_RESUME_INCOMPLETE"/>
+  <int value="400" label="HTTP_BAD_REQUEST"/>
+  <int value="401" label="HTTP_UNAUTHORIZED"/>
+  <int value="403" label="HTTP_FORBIDDEN"/>
+  <int value="404" label="HTTP_NOT_FOUND"/>
+  <int value="409" label="HTTP_CONFLICT"/>
+  <int value="410" label="HTTP_GONE"/>
+  <int value="411" label="HTTP_LENGTH_REQUIRED"/>
+  <int value="412" label="HTTP_PRECONDITION"/>
+  <int value="500" label="HTTP_INTERNAL_SERVER_ERROR"/>
+  <int value="501" label="HTTP_NOT_IMPLEMENTED"/>
+  <int value="502" label="HTTP_BAD_GATEWAY"/>
+  <int value="503" label="HTTP_SERVICE_UNAVAILABLE"/>
+  <int value="900" label="NO_CONNECTION"/>
+  <int value="901" label="NOT_READY"/>
+  <int value="902" label="OTHER_ERROR"/>
+  <int value="903" label="CANCELLED"/>
+  <int value="904" label="PARSE_ERROR"/>
+  <int value="1000" label="DRIVE_FILE_ERROR"/>
+  <int value="1001" label="DRIVE_NO_SPACE"/>
+  <int value="1002" label="DRIVE_RESPONSE_TOO_LARGE"/>
+</enum>
+
+<enum name="AshAutoNightLightNotificationState">
+  <summary>
+    Defines the possible states of the Auto Night Light notification as a result
+    of a user's interaction with it.
+  </summary>
+  <int value="0" label="Closed by user"/>
+  <int value="1" label="Notification's body clicked"/>
+  <int value="2" label="(Obsolete) Notification's button clicked"/>
+</enum>
+
+<enum name="AshNightLightDisplayCrtcCtmSupportType">
+  <summary>
+    Defines the possible displays' color transform matrix support types
+  </summary>
+  <int value="0" label="No display support"/>
+  <int value="1" label="Mixed display support"/>
+  <int value="2" label="All displays support"/>
+</enum>
+
+<enum name="AshNightLightScheduleType">
+  <summary>Defines the possible Night Light schedule types</summary>
+  <int value="0" label="None"/>
+  <int value="1" label="Sunset to Sunrise"/>
+  <int value="2" label="Custom Schedule"/>
+</enum>
+
+<enum name="AshNightLightTemperatureRanges">
+  <summary>
+    Defines the ranges in which the value of the color temperature may reside
+  </summary>
+  <int value="0" label="[0 to 20) (coldest)"/>
+  <int value="1" label="[20 to 40)"/>
+  <int value="2" label="[40 to 60)"/>
+  <int value="3" label="[60 to 80)"/>
+  <int value="4" label="[80 to 100] (warmest)"/>
+</enum>
+
+<enum name="AshPipEvents">
+  <summary>Various individual Picture-in-picture events.</summary>
+  <int value="0" label="PIP start"/>
+  <int value="1" label="PIP end"/>
+  <int value="2" label="Android PIP start"/>
+  <int value="3" label="Android PIP end"/>
+  <int value="4" label="Chrome PIP start"/>
+  <int value="5" label="Chrome PIP end"/>
+  <int value="6" label="PIP free-resize"/>
+  <int value="7" label="Chrome PIP resize handle resize"/>
+</enum>
+
+<enum name="AudioRecordingMode">
+  <int value="0" label="No audio recording"/>
+  <int value="1" label="Recording the system audio"/>
+  <int value="2" label="Recording the microphone"/>
+  <int value="3" label="Recording the microphone and system audio together"/>
+</enum>
+
+<enum name="AuthFactorMigrationResult">
+  <int value="0" label="Skipped"/>
+  <int value="1" label="Success"/>
+  <int value="2" label="Failed"/>
+  <int value="3" label="Not run"/>
+</enum>
+
+<enum name="AuthMethod">
+  <int value="0" label="Password"/>
+  <int value="1" label="PIN"/>
+  <int value="2" label="Smartlock"/>
+  <int value="3" label="Fingerprint"/>
+  <int value="4" label="Challenge-response"/>
+  <int value="5" label="Nothing"/>
+</enum>
+
+<enum name="AuthMethodSwitchType">
+  <int value="0" label="Password to PIN"/>
+  <int value="1" label="Password to Smartlock"/>
+  <int value="2" label="PIN to Password"/>
+  <int value="3" label="PIN to Smartlock"/>
+  <int value="4" label="Smartlock to Password"/>
+  <int value="5" label="Smartlock to PIN"/>
+  <int value="6" label="Password to Fingerprint"/>
+  <int value="7" label="Pin to Fingerprint"/>
+  <int value="8" label="Smartlock to Fingerprint"/>
+  <int value="9" label="Fingerprint to Password"/>
+  <int value="10" label="Fingerprint to PIN"/>
+  <int value="11" label="Fingerprint to Smartlock"/>
+  <int value="12" label="Password to Challenge-response"/>
+  <int value="13" label="Nothing to Password"/>
+  <int value="14" label="Nothing to PIN"/>
+  <int value="15" label="Nothing to Smartlock"/>
+  <int value="16" label="Nothing to Fingerprint"/>
+  <int value="17" label="Nothing to Challenge-response"/>
+</enum>
+
+<enum name="BackGestureEndScenarioType">
+  <int value="0" label="Swiped back on non-snapped window and aborted"/>
+  <int value="1" label="Swiped back on non-snapped window and went back"/>
+  <int value="2" label="Swiped back on non-snapped window and minimized"/>
+  <int value="3" label="Swiped back on left snapped window and aborted"/>
+  <int value="4" label="Swiped back on left snapped window and went back"/>
+  <int value="5" label="Swiped back on left snapped window and minimized"/>
+  <int value="6" label="Swiped back on right snapped window and aborted"/>
+  <int value="7" label="Swiped back on right snapped window and went back"/>
+  <int value="8" label="Swiped back on right snapped window and minimized"/>
+  <int value="9" label="Swiped back on top snapped window and aborted"/>
+  <int value="10" label="Swiped back on top snapped window and went back"/>
+  <int value="11" label="Swiped back on top snapped window and minimized"/>
+  <int value="12" label="Swiped back on bottom snapped window and aborted"/>
+  <int value="13" label="Swiped back on bottom snapped window and went back"/>
+  <int value="14" label="Swiped back on bottom snapped window and minimized"/>
+  <int value="15" label="Swiped back in overview and aborted"/>
+  <int value="16" label="Swiped back in overview and went back"/>
+  <int value="17"
+      label="Swiped back to exit the underneath window's fullscreen mode"/>
+  <int value="18"
+      label="Swiped back to show the shelf and hotseat when an ARC app is in
+             fullscreen mode"/>
+</enum>
+
+<enum name="BackGestureStartScenarioType">
+  <int value="0" label="Swiping back on non-snapped window"/>
+  <int value="1" label="Swiping back on left snapped window"/>
+  <int value="2" label="Swiping back on right snapped window"/>
+  <int value="3" label="Swiping back on top snapped window"/>
+  <int value="4" label="Swiping back on bottom snapped window"/>
+  <int value="5" label="Swiping back in overview"/>
+  <int value="6" label="Swiping back in left overview"/>
+  <int value="7" label="Swiping back in right overview"/>
+  <int value="8" label="Swiping back in top overview"/>
+  <int value="9" label="Swiping back in bottom overview"/>
+</enum>
+
+<enum name="BackGestureUnderneathWindowType">
+  <int value="0" label="Swiping back on Chrome Browser"/>
+  <int value="1" label="Swiping back on ChromeOS App"/>
+  <int value="2" label="Swiping back on Arc App"/>
+  <int value="3" label="Swiping back in Overview"/>
+  <int value="4" label="Swiping back on others app"/>
+</enum>
+
+<enum name="BackgroundBlurState">
+  <int value="0" label="Off"/>
+  <int value="1" label="Lowest"/>
+  <int value="2" label="Light"/>
+  <int value="3" label="Medium"/>
+  <int value="4" label="Heavy"/>
+  <int value="5" label="Maximum"/>
+</enum>
+
+<enum name="BooleanMuted">
+  <int value="0" label="Muted"/>
+  <int value="1" label="Unmuted"/>
+</enum>
+
+<enum name="BooleanOpened">
+  <int value="0" label="Not opened"/>
+  <int value="1" label="Opened"/>
+</enum>
+
+<enum name="BrowserDataBackMigratorFinalStatus">
+  <int value="0" label="Succeeded"/>
+  <int value="1" label="PreMigrationCleanUpDeleteTmpDirFailed"/>
+  <int value="2" label="MergeSplitItemsCreateTmpDirFailed"/>
+  <int value="3" label="MergeSplitItemsCopyExtensionsFailed"/>
+  <int value="4" label="MergeSplitItemsCopyExtensionStorageFailed"/>
+  <int value="5" label="MergeSplitItemsCreateDirFailed"/>
+  <int value="6" label="MergeSplitItemsMergeIndexedDBFailed"/>
+  <int value="7" label="MergeSplitItemsMergePrefsFailed"/>
+  <int value="8" label="MergeSplitItemsMergeLocalStorageLevelDBFailed"/>
+  <int value="9" label="MergeSplitItemsMergeStateStoreLevelDBFailed"/>
+  <int value="10" label="MergeSplitItemsMergeSyncDataFailed"/>
+  <int value="11" label="DeleteAshItemsDeleteExtensionsFailed"/>
+  <int value="12" label="DeleteAshItemsDeleteLacrosItemFailed"/>
+  <int value="13" label="DeleteTmpDirDeleteFailed"/>
+  <int value="14" label="DeleteLacrosDirDeleteFailed"/>
+  <int value="15" label="MoveLacrosItemsToAshDirFailed"/>
+  <int value="16" label="MoveMergedItemsBackToAshMoveFileFailed"/>
+  <int value="17" label="MoveMergedItemsBackToAshCopyDirectoryFailed"/>
+</enum>
+
+<enum name="CalendarEventFetchApiError">
+  <int value="200" label="HTTP_SUCCESS"/>
+  <int value="201" label="HTTP_CREATED"/>
+  <int value="204" label="HTTP_NO_CONTENT"/>
+  <int value="302" label="HTTP_FOUND"/>
+  <int value="304" label="HTTP_NOT_MODIFIED"/>
+  <int value="308" label="HTTP_RESUME_INCOMPLETE"/>
+  <int value="400" label="HTTP_BAD_REQUEST"/>
+  <int value="401" label="HTTP_UNAUTHORIZED"/>
+  <int value="403" label="HTTP_FORBIDDEN"/>
+  <int value="404" label="HTTP_NOT_FOUND"/>
+  <int value="409" label="HTTP_CONFLICT"/>
+  <int value="410" label="HTTP_GONE"/>
+  <int value="411" label="HTTP_LENGTH_REQUIRED"/>
+  <int value="412" label="HTTP_PRECONDITION"/>
+  <int value="500" label="HTTP_INTERNAL_SERVER_ERROR"/>
+  <int value="501" label="HTTP_NOT_IMPLEMENTED"/>
+  <int value="502" label="HTTP_BAD_GATEWAY"/>
+  <int value="503" label="HTTP_SERVICE_UNAVAILABLE"/>
+  <int value="900" label="NO_CONNECTION"/>
+  <int value="901" label="NOT_READY"/>
+  <int value="902" label="OTHER_ERROR"/>
+  <int value="903" label="CANCELLED"/>
+  <int value="904" label="PARSE_ERROR"/>
+  <int value="1000" label="DRIVE_FILE_ERROR"/>
+  <int value="1001" label="DRIVE_NO_SPACE"/>
+  <int value="1002" label="DRIVE_RESPONSE_TOO_LARGE"/>
+</enum>
+
+<enum name="CalendarEventSource">
+  <int value="0" label="Invalid Event"/>
+  <int value="1" label="Tap"/>
+  <int value="2" label="Mouse Click"/>
+  <int value="3" label="Accelerator"/>
+  <int value="4" label="Stylus"/>
+</enum>
+
+<enum name="CalendarKeyboardNavigationSource">
+  <int value="0" label="Tab"/>
+  <int value="1" label="Arrow Keys"/>
+</enum>
+
+<enum name="CalendarViewScrollSource">
+  <int value="0" label="By Mouse Wheel"/>
+  <int value="1" label="By Gesture"/>
+  <int value="2" label="By Fling"/>
+  <int value="3" label="By Stylus"/>
+</enum>
+
+<enum name="CameraPreviewSnapPosition">
+  <int value="0" label="kTopLeft"/>
+  <int value="1" label="kBottomLeft"/>
+  <int value="2" label="kBottomRight"/>
+  <int value="3" label="kTopRight"/>
+</enum>
+
+<enum name="CameraPrivacySwitchEvent">
+  <int value="0" label="Camera privacy switch toggled on"/>
+  <int value="1" label="Camera privacy switch toggled off"/>
+  <int value="2" label="Camera privacy switch on notification shown"/>
+</enum>
+
+<enum name="CampaignsManagerError">
+  <int value="0" label="Loading campaigns component failed"/>
+  <int value="1" label="Loading campaigns file failed"/>
+  <int value="2" label="Parsing campaigns file failed"/>
+  <int value="3" label="User pref is not available at campaigns matching"/>
+  <int value="4" label="Invalid campaign"/>
+  <int value="5" label="Invalid targeting"/>
+  <int value="6" label="Invalid scheduling targeting"/>
+  <int value="7" label="Invalid scheduling"/>
+  <int value="8" label="Demo Mode app version is not available at matching"/>
+  <int value="9" label="Serializing Demo Mode payload failed"/>
+</enum>
+
+<enum name="CaptureModeBarButtonType">
+  <int value="0" label="Screen Capture Button"/>
+  <int value="1" label="Screen Record Button"/>
+  <int value="2" label="Full Button"/>
+  <int value="3" label="Region Button"/>
+  <int value="4" label="Window Button"/>
+  <int value="5" label="Exit Button"/>
+</enum>
+
+<enum name="CaptureModeCameraSize">
+  <int value="0" label="kExpanded"/>
+  <int value="1" label="kCollapsed"/>
+</enum>
+
+<enum name="CaptureModeConfiguration">
+  <int value="0" label="Fullscreen screenshot"/>
+  <int value="1" label="Region screenshot"/>
+  <int value="2" label="Window screenshot"/>
+  <int value="3" label="Fullscreen recording"/>
+  <int value="4" label="Region recording"/>
+  <int value="5" label="Window recording"/>
+  <int value="6" label="Region GIF recording"/>
+</enum>
+
+<enum name="CaptureModeEntryType">
+  <int value="0" label="Partial Screenshot Accelerator"/>
+  <int value="1" label="Window Screenshot Accelerator"/>
+  <int value="2" label="Quick Settings"/>
+  <int value="3" label="Stylus Palette"/>
+  <int value="4" label="Power Menu"/>
+  <int value="5" label="Snip Key"/>
+  <int value="6" label="Full Screenshot Accelerator"/>
+  <int value="7" label="Projector app"/>
+  <int value="8" label="Capture given window"/>
+  <int value="9" label="Game dashboard"/>
+</enum>
+
+<enum name="CaptureModeSaveToLocation">
+  <int value="0" label="Default downloads folder"/>
+  <int value="1" label="Root drive folder"/>
+  <int value="2" label="Customized folder in drive"/>
+  <int value="3" label="Local customized folder"/>
+</enum>
+
+<enum name="CaptureModeSwitchToDefaultReason">
+  <int value="0" label="Folder becomes unavailable"/>
+  <int value="1"
+      label="User selects the default downloads folder from the folder
+             selection dialog"/>
+  <int value="2"
+      label="User selects the default downloads folder from settings menu"/>
+</enum>
+
+<enum name="CaptureQuickAction">
+  <int value="0" label="Edit file in backlight"/>
+  <int value="1" label="Go to file location"/>
+  <int value="2" label="Delete file"/>
+</enum>
+
+<enum name="DataFetchEventSource">
+  <int value="0" label="PostLoginFullRestore"/>
+  <int value="1" label="Overview"/>
+  <int value="2" label="Calendar"/>
+</enum>
+
+<enum name="DeprecatedAcceleratorUsage">
+  <int value="0" label="Deprecated key accelerator is used"/>
+  <int value="1" label="New key accelerator is used"/>
+</enum>
+
+<enum name="DeskCloseType">
+  <int value="0" label="Combine desks."/>
+  <int value="1" label="Close all windows"/>
+  <int value="2" label="Close all windows and wait"/>
+</enum>
+
+<enum name="DeskModelAddOrUpdateEntryStatus">
+  <int value="0" label="Successfully added or updated"/>
+  <int value="1" label="Generic error"/>
+  <int value="2" label="Invalid argument (e.g. wrong ID format)"/>
+  <int value="3" label="Exceeed maximum number of templates"/>
+  <int value="4" label="Desk template is too large"/>
+</enum>
+
+<enum name="DesksAssignToAllDesksSource">
+  <int value="0" label="Move to desk menu"/>
+  <int value="1" label="Keyboard shortcut"/>
+</enum>
+
+<enum name="DesksCreationRemovalSource">
+  <int value="0" label="Button pressed"/>
+  <int value="1" label="Keyboard shortcut"/>
+  <int value="2" label="Desks restore on first signin"/>
+  <int value="3" label="Template Launched"/>
+  <int value="4" label="Drag and drop window on the new desk button"/>
+  <int value="5" label="Desk Save and Recall"/>
+  <int value="6" label="API invoked"/>
+  <int value="7" label="Create a new desk to ensure the default desk exists"/>
+  <int value="8" label="Desk Floating Workspace"/>
+  <int value="9" label="Button pressed on desk button desk bar"/>
+</enum>
+
+<enum name="DesksMoveWindowFromActiveDeskSource">
+  <int value="0" label="Drag and drop"/>
+  <int value="1" label="Move-window-to-desk keyboard shortcut"/>
+  <int value="2" label="Send to desk menu"/>
+  <int value="3" label="Assign to desk menu"/>
+</enum>
+
+<enum name="DesksSwitchSource">
+  <int value="0" label="New-desk keyboard shortcut"/>
+  <int value="1" label="Active desk was removed"/>
+  <int value="2" label="Desk-switch keyboard shortcut"/>
+  <int value="3" label="Mini_view button press"/>
+  <int value="4" label="Window on desk activated"/>
+  <int value="5" label="Desk-switch 4-finger touchpad swipe"/>
+  <int value="6" label="User switch in a multi-profile session"/>
+  <int value="7"
+      label="DEPRECATED: User switch through the persistent desks bar"/>
+  <int value="8" label="User switch by launching a template"/>
+  <int value="9" label="User switch via indexed keyboard shorcuts"/>
+  <int value="10" label="User switch by restoring removed desk"/>
+  <int value="11" label="Desk switch by invoking a switch desk API"/>
+  <int value="12" label="Desk switch by invoking a launch desk API"/>
+  <int value="13"
+      label="Desk switch by pressing a desk switch button on the desks button"/>
+  <int value="14"
+      label="Desk switch by removing the active desk via the desk button desk
+             bar"/>
+  <int value="15"
+      label="Desk switch by clicking on a mini view in the desk button desk
+             bar"/>
+</enum>
+
+<enum name="DockedAction">
+  <int value="0" label="None"/>
+  <int value="1" label="Dock"/>
+  <int value="2" label="Undock"/>
+  <int value="3" label="Resize"/>
+  <int value="4" label="Reorder"/>
+  <int value="5" label="Evict"/>
+  <int value="6" label="Maximize"/>
+  <int value="7" label="Minimize"/>
+  <int value="8" label="Restore"/>
+  <int value="9" label="Close"/>
+</enum>
+
+<enum name="DockedActionSource">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Mouse"/>
+  <int value="2" label="Touch"/>
+  <int value="3" label="Keyboard"/>
+</enum>
+
+<enum name="DriveFileSuggestDataValidationStatus">
+  <int value="0" label="Ok"/>
+  <int value="1" label="Drive FS not mounted"/>
+  <int value="2" label="No results"/>
+  <int value="3" label="Path location failed"/>
+  <int value="4" label="All files errored"/>
+  <int value="5" label="Drive disabled"/>
+</enum>
+
+<enum name="EffectiveResolution">
+  <summary>
+    The enum index of each resolution is the product of its dimensions. A
+    portrait dimension has 1 subtracted from the enum index to differentiate it
+    from the landscape index value.
+  </summary>
+  <int value="345599" label="480 x 720 (deprecated)"/>
+  <int value="345600" label="720 x 480 (deprecated)"/>
+  <int value="348501" label="511 x 682"/>
+  <int value="348502" label="682 x 511"/>
+  <int value="349183" label="512 x 682 (deprecated)"/>
+  <int value="349184" label="682 x 512 (deprecated)"/>
+  <int value="386416" label="491 x 787"/>
+  <int value="386417" label="787 x 491"/>
+  <int value="387203" label="492 x 787 (deprecated)"/>
+  <int value="387204" label="787 x 492 (deprecated)"/>
+  <int value="408586" label="479 x 853"/>
+  <int value="408587" label="853 x 479"/>
+  <int value="409439" label="480 x 853 (deprecated)"/>
+  <int value="409440" label="853 x 480 (deprecated)"/>
+  <int value="426399" label="533 x 800"/>
+  <int value="426400" label="800 x 533"/>
+  <int value="429939" label="518 x 830"/>
+  <int value="429940" label="830 x 518"/>
+  <int value="430769" label="519 x 830 (deprecated)"/>
+  <int value="430770" label="830 x 519 (deprecated)"/>
+  <int value="454648" label="533 x 853"/>
+  <int value="454649" label="853 x 533"/>
+  <int value="465009" label="511 x 910"/>
+  <int value="465010" label="910 x 511"/>
+  <int value="465919" label="512 x 910 (deprecated)"/>
+  <int value="465920" label="910 x 512 (deprecated)"/>
+  <int value="479036" label="519 x 923"/>
+  <int value="479037" label="923 x 519"/>
+  <int value="482797" label="566 x 853"/>
+  <int value="482798" label="853 x 566"/>
+  <int value="497663" label="576 x 864 (deprecated)"/>
+  <int value="497664" label="864 x 576 (deprecated)"/>
+  <int value="502865" label="614 x 819"/>
+  <int value="502866" label="819 x 614"/>
+  <int value="505799" label="562 x 900"/>
+  <int value="505800" label="900 x 562"/>
+  <int value="518399" label="540 x 960"/>
+  <int value="518400" label="960 x 540"/>
+  <int value="525695" label="592 x 888"/>
+  <int value="525696" label="888 x 592"/>
+  <int value="531647" label="576 x 923"/>
+  <int value="531648" label="923 x 576"/>
+  <int value="540329" label="581 x 930"/>
+  <int value="540330" label="930 x 581"/>
+  <int value="544151" label="553 x 984"/>
+  <int value="544152" label="984 x 553"/>
+  <int value="552369" label="607 x 910"/>
+  <int value="552370" label="910 x 607"/>
+  <int value="553279" label="608 x 910 (deprecated)"/>
+  <int value="553280" label="910 x 608 (deprecated)"/>
+  <int value="567644" label="615 x 923"/>
+  <int value="567645" label="923 x 615"/>
+  <int value="575999" label="600 x 960"/>
+  <int value="576000" label="960 x 600"/>
+  <int value="589823" label="576 x 1024"/>
+  <int value="589824" label="1024 x 576"/>
+  <int value="601352" label="613 x 981"/>
+  <int value="601353" label="981 x 613"/>
+  <int value="605159" label="615 x 984"/>
+  <int value="605160" label="984 x 615"/>
+  <int value="611197" label="586 x 1043"/>
+  <int value="611198" label="1043 x 586"/>
+  <int value="614399" label="640 x 960"/>
+  <int value="614400" label="960 x 640"/>
+  <int value="619499" label="590 x 1050"/>
+  <int value="619500" label="1050 x 590"/>
+  <int value="638533" label="599 x 1066"/>
+  <int value="638534" label="1066 x 599"/>
+  <int value="639599" label="600 x 1066 (deprecatd)"/>
+  <int value="639600" label="1066 x 600 (deprecated)"/>
+  <int value="641573" label="654 x 981 (deprecated)"/>
+  <int value="641574" label="981 x 654 (deprecated)"/>
+  <int value="648209" label="697 x 930"/>
+  <int value="648210" label="930 x 697"/>
+  <int value="649139" label="698 x 930 (deprecated)"/>
+  <int value="649140" label="930 x 698 (deprecated)"/>
+  <int value="655359" label="640 x 1024"/>
+  <int value="655360" label="1024 x 640"/>
+  <int value="665999" label="666 x 1000"/>
+  <int value="666000" label="1000 x 666"/>
+  <int value="669395" label="613 x 1092"/>
+  <int value="669396" label="1092 x 613"/>
+  <int value="670487" label="614 x 1092 (deprecated)"/>
+  <int value="670488" label="1092 x 614 (deprecated)"/>
+  <int value="676848" label="617 x 1097"/>
+  <int value="676849" label="1097 x 617"/>
+  <int value="678992" label="651 x 1043"/>
+  <int value="678993" label="1043 x 651"/>
+  <int value="680035" label="652 x 1043 (deprecated)"/>
+  <int value="680036" label="1043 x 652 (deprecated)"/>
+  <int value="696319" label="680 x 1024"/>
+  <int value="696320" label="1024 x 680"/>
+  <int value="696737" label="626 x 1113"/>
+  <int value="696738" label="1113 x 626"/>
+  <int value="698367" label="682 x 1024"/>
+  <int value="698368" label="1024 x 682"/>
+  <int value="699391" label="683 x 1024 (deprecated)"/>
+  <int value="699392" label="1024 x 683 (deprecated)"/>
+  <int value="709955" label="666 x 1066"/>
+  <int value="709956" label="1066 x 666"/>
+  <int value="724820" label="673 x 1077"/>
+  <int value="724821" label="1077 x 673"/>
+  <int value="727181" label="639 x 1138"/>
+  <int value="727182" label="1138 x 639"/>
+  <int value="728319" label="640 x 1138 (deprecated)"/>
+  <int value="728320" label="1138 x 640 (deprecated)"/>
+  <int value="728999" label="675 x 1080"/>
+  <int value="729000" label="1080 x 675"/>
+  <int value="736049" label="701 x 1050"/>
+  <int value="736050" label="1050 x 701"/>
+  <int value="751444" label="685 x 1097"/>
+  <int value="751445" label="1097 x 685"/>
+  <int value="760601" label="654 x 1163"/>
+  <int value="760602" label="1163 x 654"/>
+  <int value="773534" label="695 x 1113"/>
+  <int value="773535" label="1113 x 695"/>
+  <int value="777599" label="720 x 1080 (deprecated)"/>
+  <int value="777600" label="1080 x 720 (deprecated)"/>
+  <int value="782647" label="722 x 1084"/>
+  <int value="782648" label="1084 x 722"/>
+  <int value="783731" label="723 x 1084 (deprecated)"/>
+  <int value="783732" label="1084 x 723 (deprecated)"/>
+  <int value="784183" label="664 x 1181"/>
+  <int value="784184" label="1181 x 664"/>
+  <int value="786431" label="768 x 1024"/>
+  <int value="786432" label="1024 x 768"/>
+  <int value="789209" label="666 x 1185"/>
+  <int value="789210" label="1185 x 666"/>
+  <int value="791339" label="726 x 1090"/>
+  <int value="791340" label="1090 x 726"/>
+  <int value="791728" label="667 x 1187"/>
+  <int value="791729" label="1187 x 667"/>
+  <int value="792429" label="727 x 1090 (deprecated)"/>
+  <int value="792430" label="1090 x 727 (deprecated)"/>
+  <int value="796067" label="729 x 1092"/>
+  <int value="796068" label="1092 x 729"/>
+  <int value="807269" label="710 x 1137"/>
+  <int value="807270" label="1137 x 710"/>
+  <int value="808406" label="711 x 1137 (deprecated)"/>
+  <int value="808407" label="1137 x 711 (deprecated)"/>
+  <int value="809999" label="675 x 1200"/>
+  <int value="810000" label="1200 x 675"/>
+  <int value="835014" label="685 x 1219"/>
+  <int value="835015" label="1219 x 685"/>
+  <int value="844337" label="726 x 1163"/>
+  <int value="844338" label="1163 x 726"/>
+  <int value="845500" label="727 x 1163 (deprecated)"/>
+  <int value="845501" label="1163 x 727 (deprecated)"/>
+  <int value="849929" label="691 x 1230"/>
+  <int value="849930" label="1230 x 691"/>
+  <int value="851159" label="692 x 1230 (deprecated)"/>
+  <int value="851160" label="1230 x 692 (deprecated)"/>
+  <int value="863741" label="759 x 1138"/>
+  <int value="863742" label="1138 x 759"/>
+  <int value="864879" label="760 x 1138 (deprecated)"/>
+  <int value="864880" label="1138 x 760 (deprecated)"/>
+  <int value="864976" label="697 x 1241"/>
+  <int value="864977" label="1241 x 697"/>
+  <int value="866217" label="698 x 1241 (deprecated)"/>
+  <int value="866218" label="1241 x 698 (deprecated)"/>
+  <int value="871577" label="738 x 1181"/>
+  <int value="871578" label="1181 x 738"/>
+  <int value="893975" label="772 x 1158"/>
+  <int value="893976" label="1158 x 772"/>
+  <int value="897835" label="772 x 1163"/>
+  <int value="897836" label="1163 x 772"/>
+  <int value="899999" label="750 x 1200"/>
+  <int value="900000" label="1200 x 750"/>
+  <int value="905407" label="752 x 1204"/>
+  <int value="905408" label="1204 x 752"/>
+  <int value="921599" label="720 x 1280"/>
+  <int value="921600" label="1280 x 720"/>
+  <int value="927658" label="761 x 1219"/>
+  <int value="927659" label="1219 x 761"/>
+  <int value="940103" label="792 x 1187"/>
+  <int value="940104" label="1187 x 792"/>
+  <int value="941290" label="793 x 1187 (deprecated)"/>
+  <int value="941291" label="1187 x 793 (deprecated)"/>
+  <int value="948999" label="730 x 1300"/>
+  <int value="949000" label="1300 x 730"/>
+  <int value="950299" label="731 x 1300 (deprecated)"/>
+  <int value="950300" label="1300 x 731 (deprecated)"/>
+  <int value="959999" label="800 x 1200"/>
+  <int value="960000" label="1200 x 800"/>
+  <int value="968723" label="852 x 1137"/>
+  <int value="968724" label="1137 x 852"/>
+  <int value="969860" label="853 x 1137 (deprecated)"/>
+  <int value="969861" label="1137 x 853 (deprecated)"/>
+  <int value="998416" label="749 x 1333"/>
+  <int value="998417" label="1333 x 749"/>
+  <int value="999749" label="750 x 1333 (deprecated)"/>
+  <int value="999750" label="1333 x 750 (deprecated)"/>
+  <int value="1001641" label="817 x 1226"/>
+  <int value="1001642" label="1226 x 817"/>
+  <int value="1023999" label="800 x 1280"/>
+  <int value="1024000" label="1280 x 800"/>
+  <int value="1027547" label="828 x 1241"/>
+  <int value="1027548" label="1241 x 828"/>
+  <int value="1028788" label="829 x 1241 (deprecated)"/>
+  <int value="1028789" label="1241 x 829 (deprecated)"/>
+  <int value="1049087" label="768 x 1366"/>
+  <int value="1049088" label="1366 x 768"/>
+  <int value="1057040" label="771 x 1371"/>
+  <int value="1057041" label="1371 x 771"/>
+  <int value="1087761" label="782 x 1391"/>
+  <int value="1087762" label="1391 x 782"/>
+  <int value="1087999" label="850 x 1280"/>
+  <int value="1088000" label="1280 x 850"/>
+  <int value="1095859" label="785 x 1396"/>
+  <int value="1095860" label="1396 x 785"/>
+  <int value="1110388" label="833 x 1333"/>
+  <int value="1110389" label="1333 x 833"/>
+  <int value="1118922" label="793 x 1411"/>
+  <int value="1118923" label="1411 x 793"/>
+  <int value="1120333" label="794 x 1411 (deprecated)"/>
+  <int value="1120334" label="1411 x 794 (deprecated)"/>
+  <int value="1127099" label="867 x 1300"/>
+  <int value="1127100" label="1300 x 867"/>
+  <int value="1128399" label="868 x 1300 (deprecated)"/>
+  <int value="1128400" label="1300 x 868 (deprecated)"/>
+  <int value="1136177" label="799 x 1422"/>
+  <int value="1136178" label="1422 x 799"/>
+  <int value="1137599" label="800 x 1422 (deprecated)"/>
+  <int value="1137600" label="1422 x 800 (deprecated)"/>
+  <int value="1138049" label="843 x 1350"/>
+  <int value="1138050" label="1350 x 843"/>
+  <int value="1166399" label="810 x 1440"/>
+  <int value="1166400" label="1440 x 810"/>
+  <int value="1173575" label="856 x 1371"/>
+  <int value="1173576" label="1371 x 856"/>
+  <int value="1174946" label="857 x 1371 (deprecated)"/>
+  <int value="1174947" label="1371 x 857 (deprecated)"/>
+  <int value="1182815" label="888 x 1332"/>
+  <int value="1182816" label="1332 x 888"/>
+  <int value="1183703" label="888 x 1333"/>
+  <int value="1183704" label="1333 x 888"/>
+  <int value="1187917" label="817 x 1454"/>
+  <int value="1187918" label="1454 x 817"/>
+  <int value="1189371" label="818 x 1454 (deprecated)"/>
+  <int value="1189372" label="1454 x 818 (deprecated)"/>
+  <int value="1214999" label="900 x 1350 (deprecated)"/>
+  <int value="1215000" label="1350 x 900 (deprecated)"/>
+  <int value="1217311" label="872 x 1396"/>
+  <int value="1217312" label="1396 x 872"/>
+  <int value="1225079" label="830 x 1476"/>
+  <int value="1225080" label="1476 x 830"/>
+  <int value="1228799" label="960 x 1280"/>
+  <int value="1228800" label="1280 x 960"/>
+  <int value="1243090" label="881 x 1411"/>
+  <int value="1243091" label="1411 x 881"/>
+  <int value="1244501" label="882 x 1411 (deprecated)"/>
+  <int value="1244502" label="1411 x 882 (deprecated)"/>
+  <int value="1245791" label="912 x 1366"/>
+  <int value="1245792" label="1366 x 912"/>
+  <int value="1262735" label="888 x 1422"/>
+  <int value="1262736" label="1422 x 888"/>
+  <int value="1264499" label="843 x 1500"/>
+  <int value="1264500" label="1500 x 843"/>
+  <int value="1292483" label="852 x 1517"/>
+  <int value="1292484" label="1517 x 852"/>
+  <int value="1294000" label="853 x 1517 (deprecated)"/>
+  <int value="1294001" label="1517 x 853 (deprecated)"/>
+  <int value="1295999" label="900 x 1440"/>
+  <int value="1296000" label="1440 x 900"/>
+  <int value="1303687" label="856 x 1523"/>
+  <int value="1303688" label="1523 x 856"/>
+  <int value="1305210" label="857 x 1523 (deprecated)"/>
+  <int value="1305211" label="1523 x 857 (deprecated)"/>
+  <int value="1325399" label="940 x 1410"/>
+  <int value="1325400" label="1410 x 940"/>
+  <int value="1327103" label="864 x 1536"/>
+  <int value="1327104" label="1536 x 864"/>
+  <int value="1334805" label="913 x 1462"/>
+  <int value="1334806" label="1462 x 913"/>
+  <int value="1336267" label="914 x 1462 (deprecated)"/>
+  <int value="1336268" label="1462 x 914 (deprecated)"/>
+  <int value="1342367" label="944 x 1422"/>
+  <int value="1342368" label="1422 x 944"/>
+  <int value="1360871" label="922 x 1476"/>
+  <int value="1360872" label="1476 x 922"/>
+  <int value="1362347" label="923 x 1476 (deprecated)"/>
+  <int value="1362348" label="1476 x 923 (deprecated)"/>
+  <int value="1405499" label="937 x 1500"/>
+  <int value="1405500" label="1500 x 937"/>
+  <int value="1439999" label="900 x 1600"/>
+  <int value="1440000" label="1600 x 900"/>
+  <int value="1459279" label="986 x 1480"/>
+  <int value="1459280" label="1480 x 986"/>
+  <int value="1468943" label="909 x 1616"/>
+  <int value="1468944" label="1616 x 909"/>
+  <int value="1474559" label="960 x 1536"/>
+  <int value="1474560" label="1536 x 960"/>
+  <int value="1499999" label="1000 x 1500"/>
+  <int value="1500000" label="1500 x 1000"/>
+  <int value="1535203" label="1012 x 1517"/>
+  <int value="1535204" label="1517 x 1012"/>
+  <int value="1536720" label="1013 x 1517 (deprecated)"/>
+  <int value="1536721" label="1517 x 1013 (deprecated)"/>
+  <int value="1565521" label="938 x 1669"/>
+  <int value="1565522" label="1669 x 938"/>
+  <int value="1567190" label="939 x 1669 (deprecated)"/>
+  <int value="1567191" label="1669 x 939 (deprecated)"/>
+  <int value="1585175" label="1028 x 1542 (deprecated)"/>
+  <int value="1585176" label="1542 x 1028 (deprecated)"/>
+  <int value="1599999" label="1000 x 1600"/>
+  <int value="1600000" label="1600 x 1000"/>
+  <int value="1602351" label="1096 x 1462"/>
+  <int value="1602352" label="1462 x 1096"/>
+  <int value="1603813" label="1097 x 1462 (deprecated)"/>
+  <int value="1603814" label="1462 x 1097 (deprecated)"/>
+  <int value="1632159" label="1010 x 1616"/>
+  <int value="1632160" label="1616 x 1010"/>
+  <int value="1634903" label="1044 x 1566"/>
+  <int value="1634904" label="1566 x 1044"/>
+  <int value="1636053" label="959 x 1706"/>
+  <int value="1636054" label="1706 x 959"/>
+  <int value="1637759" label="960 x 1706 (deprecated)"/>
+  <int value="1637760" label="1706 x 960 (deprecated)"/>
+  <int value="1652295" label="964 x 1714"/>
+  <int value="1652296" label="1714 x 964"/>
+  <int value="1699199" label="1062 x 1600"/>
+  <int value="1699200" label="1600 x 1062"/>
+  <int value="1705599" label="1066 x 1600"/>
+  <int value="1705600" label="1600 x 1066"/>
+  <int value="1711844" label="981 x 1745"/>
+  <int value="1711845" label="1745 x 981"/>
+  <int value="1724117" label="1038 x 1661"/>
+  <int value="1724118" label="1661 x 1038"/>
+  <int value="1740766" label="1043 x 1669"/>
+  <int value="1740767" label="1669 x 1043"/>
+  <int value="1775222" label="999 x 1777"/>
+  <int value="1775223" label="1777 x 999"/>
+  <int value="1776999" label="1000 x 1777 (deprecated)"/>
+  <int value="1777000" label="1777 x 1000 (deprecated)"/>
+  <int value="1818595" label="1066 x 1706"/>
+  <int value="1818596" label="1706 x 1066"/>
+  <int value="1821599" label="1012 x 1800"/>
+  <int value="1821600" label="1800 x 1012"/>
+  <int value="1832089" label="1105 x 1658"/>
+  <int value="1832090" label="1658 x 1105"/>
+  <int value="1835693" label="1071 x 1714"/>
+  <int value="1835694" label="1714 x 1071"/>
+  <int value="1835911" label="1016 x 1807"/>
+  <int value="1835912" label="1807 x 1016"/>
+  <int value="1848149" label="1110 x 1665"/>
+  <int value="1848150" label="1665 x 1110"/>
+  <int value="1879183" label="1028 x 1828"/>
+  <int value="1879184" label="1828 x 1028"/>
+  <int value="1902049" label="1090 x 1745"/>
+  <int value="1902050" label="1745 x 1090"/>
+  <int value="1957387" label="1142 x 1714"/>
+  <int value="1957388" label="1714 x 1142"/>
+  <int value="2040102" label="1129 x 1807"/>
+  <int value="2040103" label="1807 x 1129"/>
+  <int value="2068587" label="1174 x 1762"/>
+  <int value="2068588" label="1762 x 1174"/>
+  <int value="2070349" label="1175 x 1762 (deprecated)"/>
+  <int value="2070350" label="1762 x 1175 (deprecated)"/>
+  <int value="2073599" label="1080 x 1920"/>
+  <int value="2073600" label="1920 x 1080"/>
+  <int value="2159999" label="1200 x 1800 (deprecated)"/>
+  <int value="2160000" label="1800 x 1200 (deprecated)"/>
+  <int value="2181973" label="1279 x 1706"/>
+  <int value="2181974" label="1706 x 1279"/>
+  <int value="2183679" label="1280 x 1706 (deprecated)"/>
+  <int value="2183680" label="1706 x 1280 (deprecated)"/>
+  <int value="2217363" label="1213 x 1828"/>
+  <int value="2217364" label="1828 x 1213"/>
+  <int value="2219191" label="1214 x 1828 (deprecated)"/>
+  <int value="2219192" label="1828 x 1214 (deprecated)"/>
+  <int value="2249999" label="1125 x 2000"/>
+  <int value="2250000" label="2000 x 1125"/>
+  <int value="2270579" label="1230 x 1846"/>
+  <int value="2270580" label="1846 x 1230"/>
+  <int value="2303999" label="1200 x 1920"/>
+  <int value="2304000" label="1920 x 1200"/>
+  <int value="2355639" label="1253 x 1880"/>
+  <int value="2355640" label="1880 x 1253"/>
+  <int value="2411735" label="1268 x 1902"/>
+  <int value="2411736" label="1902 x 1268"/>
+  <int value="2557466" label="1199 x 2133"/>
+  <int value="2557467" label="2133 x 1199"/>
+  <int value="2559599" label="1200 x 2133 (deprecated)"/>
+  <int value="2559600" label="2133 x 1200 (deprecated)"/>
+  <int value="2665999" label="1333 x 2000"/>
+  <int value="2666000" label="2000 x 1333"/>
+  <int value="2702787" label="1342 x 2014"/>
+  <int value="2702788" label="2014 x 1342"/>
+  <int value="2707395" label="1234 x 2194"/>
+  <int value="2707396" label="2194 x 1234"/>
+  <int value="2936224" label="1285 x 2285"/>
+  <int value="2936225" label="2285 x 1285"/>
+  <int value="3007973" label="1371 x 2194"/>
+  <int value="3007974" label="2194 x 1371"/>
+  <int value="3020327" label="1416 x 2133"/>
+  <int value="3020328" label="2133 x 1416"/>
+  <int value="3110399" label="1440 x 2160"/>
+  <int value="3110400" label="2160 x 1440"/>
+  <int value="3145727" label="1536 x 2048"/>
+  <int value="3145728" label="2048 x 1536"/>
+  <int value="3239999" label="1350 x 2400"/>
+  <int value="3240000" label="2400 x 1350"/>
+  <int value="3285599" label="1480 x 2220"/>
+  <int value="3285600" label="2220 x 1480"/>
+  <int value="3393023" label="1504 x 2256"/>
+  <int value="3393024" label="2256 x 1504"/>
+  <int value="3686399" label="1440 x 2560"/>
+  <int value="3686400" label="2560 x 1440"/>
+  <int value="3839999" label="1600 x 2400"/>
+  <int value="3840000" label="2400 x 1600"/>
+  <int value="3996333" label="1499 x 2666"/>
+  <int value="3996334" label="2666 x 1499"/>
+  <int value="3998999" label="1500 x 2666 (deprecated)"/>
+  <int value="3999000" label="2666 x 1500 (deprecated)"/>
+  <int value="4351999" label="1700 x 2560"/>
+  <int value="4352000" label="2560 x 1700"/>
+  <int value="4665599" label="1620 x 2880"/>
+  <int value="4665600" label="2880 x 1620"/>
+  <int value="5759999" label="1800 x 3200"/>
+  <int value="5760000" label="3200 x 1800"/>
+  <int value="5999999" label="2000 x 3000"/>
+  <int value="6000000" label="3000 x 2000"/>
+  <int value="8294399" label="2160 x 3840"/>
+  <int value="8294400" label="3840 x 2160"/>
+</enum>
+
+<enum name="EndRecordingReason">
+  <int value="0" label="Stop recording button"/>
+  <int value="1" label="Display or window closing"/>
+  <int value="2" label="Active user changed"/>
+  <int value="3" label="Session blocked"/>
+  <int value="4" label="Shutting down"/>
+  <int value="5" label="Imminent suspend"/>
+  <int value="6" label="Recording service disconnected"/>
+  <int value="7" label="File IO error"/>
+  <int value="8" label="Dlp interruption"/>
+  <int value="9" label="Low disk space"/>
+  <int value="10" label="HDCP interruption"/>
+  <int value="11" label="Recording service closing"/>
+  <int value="12" label="Viz video capturer disconnected"/>
+  <int value="13" label="Failed audio encoder initialization"/>
+  <int value="14" label="Failed video encoder initialization"/>
+  <int value="15" label="Audio encoding error"/>
+  <int value="16" label="Video encoding error"/>
+  <int value="17" label="Projector transcription error"/>
+  <int value="18" label="Low DriveFS free space quota"/>
+  <int value="19" label="Video encoder does not support reconfiguration"/>
+  <int value="20" label="Stop screen recording keyboard shortcut"/>
+  <int value="21" label="Game dashboard stop recording button"/>
+  <int value="22" label="Game toolbar stop recording button"/>
+</enum>
+
+<enum name="EolIncentiveButtonType">
+  <int value="0" label="Notification Offer Approaching"/>
+  <int value="1" label="Notification No Offer Approaching"/>
+  <int value="2" label="Notification AboutUpdates Approaching"/>
+  <int value="3" label="Notification Offer Recently Passed"/>
+  <int value="4" label="Notification No Offer Recently Passed"/>
+  <int value="5" label="Notification AboutUpdates Recently Passed"/>
+  <int value="6" label="Notification Original LearnMore"/>
+  <int value="7" label="Notification Original Dismiss"/>
+  <int value="8" label="Quick Settings Offer Recently Passed"/>
+  <int value="9" label="Quick Settings No Offer Recently Passed"/>
+  <int value="10" label="Quick Settings No Offer Passed"/>
+</enum>
+
+<enum name="EolIncentiveShowSource">
+  <int value="0" label="Notification Approaching"/>
+  <int value="1" label="Notification Recently Passed"/>
+  <int value="2" label="Notification Original"/>
+  <int value="3" label="Quick Settings Recently Passed"/>
+  <int value="4" label="Quick Settings Passed"/>
+</enum>
+
+<enum name="ExpandButtonClickAction">
+  <int value="0" label="Expand Individual"/>
+  <int value="1" label="Collapse Individual"/>
+  <int value="2" label="Expand Group"/>
+  <int value="3" label="Collapse Group"/>
+</enum>
+
+<enum name="FloatingWorkspaceV1RestoredSessionType">
+  <int value="0" label="Unknown browser session type"/>
+  <int value="1" label="Local browser session"/>
+  <int value="2" label="Remote browser session"/>
+</enum>
+
+<enum name="FloatingWorkspaceV2LaunchTemplateFailureType">
+  <int value="0" label="Unknown failure type"/>
+  <int value="1" label="Storage error"/>
+  <int value="2" label="The desk count requirement not met"/>
+</enum>
+
+<enum name="FloatingWorkspaceV2LaunchTemplateTimeoutType">
+  <int value="0" label="Unknown timeout type"/>
+  <int value="1" label="Passed wait period timeout"/>
+  <int value="2" label="No floating workspace template"/>
+</enum>
+
+<enum name="FloatingWorkspaceV2UploadTemplateStatusType">
+  <int value="0" label="Unknown upload status"/>
+  <int value="1" label="Success upload status"/>
+  <int value="2" label="Template size too large status"/>
+  <int value="3" label="Failure upload status"/>
+  <int value="4" label="Invalid argument upload status"/>
+  <int value="5" label="Hit maximum number of template status"/>
+</enum>
+
+<enum name="GlanceableStudentAssignmentList">
+  <int value="0" label="Assigned"/>
+  <int value="1" label="NoDueDate"/>
+  <int value="2" label="Missing"/>
+  <int value="3" label="Done"/>
+</enum>
+
+<enum name="GroupNotificationType">
+  <int value="0" label="Group Parent"/>
+  <int value="1" label="Group Child"/>
+</enum>
+
+<enum name="HotseatInAppGesture">
+  <int value="0" label="Swipe up the hotseat"/>
+  <int value="1" label="Swipe down the hotseat"/>
+  <int value="2" label="Fling up the hotseat to show homescreen"/>
+  <int value="3" label="Interact outside of shelf to hide hotseat"/>
+</enum>
+
+<enum name="LacrosLaunchMode">
+  <int value="0" label="Only Ash browser"/>
+  <int value="1" label="Ash and Lacros browser available"/>
+  <int value="2" label="Lacros browser is primary"/>
+  <int value="3" label="Only Lacros browser"/>
+</enum>
+
+<enum name="LacrosLaunchModeAndSource">
+  <int value="0" label="Default or user set, only Ash browser"/>
+  <int value="1" label="Default or user set, Ash and Lacros browser available"/>
+  <int value="2" label="Default or user set, Lacros browser is primary"/>
+  <int value="3" label="Default or user set, only Lacros browser"/>
+  <int value="4" label="User forced, only Ash browser"/>
+  <int value="5" label="User forced, Ash and Lacros browser available"/>
+  <int value="6" label="User forced, Lacros browser is primary"/>
+  <int value="7" label="User forced, only Lacros browser"/>
+  <int value="8" label="Policy forced, only Ash browser"/>
+  <int value="9" label="Policy forced, Ash and Lacros browser available"/>
+  <int value="10" label="Policy forced, Lacros browser is primary"/>
+  <int value="11" label="Policy forced, only Lacros browser"/>
+</enum>
+
+<enum name="LacrosMigrationStatus">
+  <int value="0" label="Lacros not enabled"/>
+  <int value="1" label="Uncompleted"/>
+  <int value="2" label="Skipped for new user">
+    Migration was skipped but marked as completed because new users don't
+    require migration.
+  </int>
+  <int value="3" label="Completed via copy"/>
+  <int value="4" label="Completed via move"/>
+  <int value="5" label="Reached its retry limit">
+    Migration failed or skipped more than the number of attempts allowed.
+  </int>
+</enum>
+
+<enum name="LockScreenUserClickTarget">
+  <int value="0" label="Shut down button"/>
+  <int value="1" label="Restart button"/>
+  <int value="2" label="Sign out button"/>
+  <int value="3" label="Close note button"/>
+  <int value="4" label="System tray"/>
+  <int value="5" label="Virtual keyboard tray"/>
+  <int value="6" label="IME tray"/>
+  <int value="7" label="Notification tray"/>
+  <int value="8" label="Lock screen note action button"/>
+  <int value="9" label="Parent access button"/>
+</enum>
+
+<enum name="LoginScreenUserClickTarget">
+  <int value="0" label="Shut down button"/>
+  <int value="1" label="Restart button"/>
+  <int value="2" label="BrowseAsGuest"/>
+  <int value="3" label="AddUser"/>
+  <int value="4" label="System tray"/>
+  <int value="5" label="Virtual keyboard tray"/>
+  <int value="6" label="IME tray"/>
+</enum>
+
+<enum name="MoveMigratorResumeStep">
+  <int value="0" label="Start"/>
+  <int value="1" label="MoveSplitItems"/>
+  <int value="2" label="MoveLacrosItems"/>
+  <int value="3" label="MoveTmpDir"/>
+  <int value="4" label="Completed"/>
+</enum>
+
+<enum name="MoveMigratorTaskStatus">
+  <int value="0" label="Succeeded"/>
+  <int value="1" label="Cancelled"/>
+  <int value="2" label="PreMigrationCleanUpDeleteLacrosDirFailed"/>
+  <int value="3" label="PreMigrationCleanUpDeleteTmpDirFailed"/>
+  <int value="4" label="PreMigrationCleanUpDeleteTmpSplitDirFailed"/>
+  <int value="5" label="PreMigrationCleanUpNotEnoughSpace"/>
+  <int value="6" label="SetupLacrosDirCreateTmpDirFailed"/>
+  <int value="7" label="SetupLacrosDirCreateTmpProfileDirFailed"/>
+  <int value="8" label="SetupLacrosDirCopyTargetItemsFailed"/>
+  <int value="9" label="SetupLacrosDirWriteFirstRunSentinelFileFailed"/>
+  <int value="10" label="SetupAshDirCreateSplitDirFailed"/>
+  <int value="11" label="SetupAshDirMigrateLevelDBForLocalStateFailed"/>
+  <int value="12" label="SetupAshDirMigrateLevelDBForStateFailed"/>
+  <int value="13" label="SetupAshDirMigratePreferencesFailed"/>
+  <int value="14" label="MoveLacrosItemsToNewDirNoWritePerm"/>
+  <int value="15" label="MoveLacrosItemsToNewDirMoveFailed"/>
+  <int value="16" label="MoveSplitItemsToOriginalDirMoveSplitItemsFailed"/>
+  <int value="17" label="MoveSplitItemsToOriginalDirCreateDirFailed"/>
+  <int value="18" label="MoveSplitItemsToOriginalDirMoveExtensionsFailed"/>
+  <int value="19" label="MoveSplitItemsToOriginalDirMoveIndexedDBFailed"/>
+  <int value="20" label="MoveTmpDirToLacrosDirMoveFailed"/>
+  <int value="21" label="SetupAshDirCreateDirFailed"/>
+  <int value="22" label="SetupAshDirCopyExtensionsFailed"/>
+  <int value="23" label="SetupAshDirCopyIndexedDBFailed"/>
+  <int value="24" label="SetupAshDirMigrateLevelDBForSyncDataFailed"/>
+  <int value="25" label="SetupAshDirCopyStorageFailed"/>
+  <int value="26" label="MoveSplitItemsToOriginalDirMoveStorageFailed"/>
+  <int value="27" label="MoveLacrosItemsCreateDirFailed"/>
+</enum>
+
+<enum name="MultitaskMenuActionType">
+  <int value="0" label="Half split button was pressed"/>
+  <int value="1" label="Fullscreen button was pressed"/>
+  <int value="2" label="Partial split button was pressed"/>
+  <int value="3" label="Float button was pressed"/>
+</enum>
+
+<enum name="MultitaskMenuEntryType">
+  <int value="0" label="Frame size button hover"/>
+  <int value="1" label="Frame size button long press"/>
+  <int value="2" label="Frame size button long touch"/>
+  <int value="3" label="Gesture fling"/>
+  <int value="4" label="Gesture scroll"/>
+  <int value="5" label="Accelerator"/>
+</enum>
+
+<enum name="NotificationImageDragEndState">
+<!-- Defined in ash/system/message_center/ash_notification_drag_controller.h -->
+
+  <int value="0" label="InterruptedByNewDrag"/>
+  <int value="1" label="Cancelled"/>
+  <int value="2" label="CompletedWithDrop"/>
+  <int value="3" label="CompletedWithoutDrop"/>
+</enum>
+
+<enum name="NotificationViewType">
+  <int value="0" label="Simple (no image, action buttons) and ungrouped"/>
+  <int value="1" label="Simple (no image, action buttons) and grouped"/>
+  <int value="2" label="Has image, no action buttons and ungrouped"/>
+  <int value="3" label="Has image, no action buttons and grouped"/>
+  <int value="4"
+      label="Has action buttons, no image, inline reply and ungrouped"/>
+  <int value="5"
+      label="Has action buttons, no image, inline reply and grouped"/>
+  <int value="6" label="Has inline reply, no image and ungrouped"/>
+  <int value="7" label="Has inline reply, no image and grouped"/>
+  <int value="8"
+      label="Has image and action buttons, no inline reply and ungrouped"/>
+  <int value="9"
+      label="Has image and action buttons, no inline reply and grouped"/>
+  <int value="10" label="Has image and inline reply and ungrouped"/>
+  <int value="11" label="Has image and inline reply and grouped"/>
+</enum>
+
+<enum name="NotifierCollisionSurfaceType">
+  <int value="0" label="None"/>
+  <int value="1" label="Shelf Pod Bubble"/>
+  <int value="2" label="Slider Bubble"/>
+  <int value="3" label="Extended Hotseat"/>
+  <int value="4" label="Slider Bubble And Extended Hotseat"/>
+</enum>
+
+<enum name="NudgeCatalogName">
+<!-- Defined in ash/constants/notifier_catalogs.h -->
+
+  <int value="0" label="Test Catalog Name"/>
+  <int value="1" label="Dictation"/>
+  <int value="2" label="Multipaste (deprecated 01/2023)"/>
+  <int value="3" label="Dark Light Mode (deprecated 10/2023)"/>
+  <int value="4" label="Autozoom"/>
+  <int value="5" label="Adaptive Charging (deprecated 10/2023)"/>
+  <int value="6" label="Phone Hub"/>
+  <int value="7" label="Clipboard History Zero State"/>
+  <int value="8" label="Clipboard History Onboarding"/>
+  <int value="9" label="Long press diacritics"/>
+  <int value="10" label="Clipboard History Duplicate Copy"/>
+  <int value="11" label="Video Conference Tray Speak On Mute Detected"/>
+  <int value="12"
+      label="Video Conference Tray Microphone Use While HW Disabled"/>
+  <int value="13"
+      label="Video Conference Tray Microphone Use While SW Disabled"/>
+  <int value="14" label="Video Conference Tray Camera Use While HW Disabled"/>
+  <int value="15" label="Video Conference Tray Camera Use While SW Disabled"/>
+  <int value="16" label="Video Conference Tray Speak On Mute Opt In"/>
+  <int value="17"
+      label="Video Conference Tray Speak On Mute Opt In Confirmation
+             (deprecated 09/2023)"/>
+  <int value="18" label="Scalable IPH Bubble"/>
+  <int value="19"
+      label="Video Conference Tray Camera And Microphone Use While Disabled"/>
+  <int value="20" label="Multitask Menu Clamshell"/>
+  <int value="21" label="Multitask Menu Tablet"/>
+  <int value="22" label="Capture Mode Education Shortcut Nudge"/>
+  <int value="23" label="Capture Mode Education Shortcut Tutorial"/>
+  <int value="24" label="Capture Mode Education Quick Settings Nudge"/>
+</enum>
+
+<enum name="OnDeviceToServerSpeechRecognitionFallbackReason">
+  <int value="0" label="Device does not support SODA"/>
+  <int value="1" label="User's language is not supported by SODA"/>
+  <int value="2" label="SODA binary is not installed"/>
+  <int value="3" label="SODA binary and language packs are downloading"/>
+  <int value="4" label="SODA installation failed"/>
+  <int value="5" label="SODA installation error needs reboot"/>
+  <int value="6" label="Enforced by flag for dev"/>
+</enum>
+
+<enum name="OobeUserClickTarget">
+  <int value="0" label="Shut down button"/>
+  <int value="1" label="Browse as guest button"/>
+  <int value="2" label="System tray"/>
+  <int value="3" label="Virtual keyboard tray"/>
+  <int value="4" label="IME tray"/>
+  <int value="5" label="Enterprise enrollment button"/>
+  <int value="6" label="Use as personal device button"/>
+  <int value="7" label="OsInstall button"/>
+  <int value="8" label="Unexpected click"/>
+</enum>
+
+<enum name="OverviewDragAction">
+  <summary>
+    The words clamshell and tablet here refer to the mode at the end of the drag
+    (as you can switch between those modes while dragging).
+  </summary>
+  <int value="0" label="ToGridSameDisplayClamshellMouse"/>
+  <int value="1" label="ToGridSameDisplayClamshellTouch"/>
+  <int value="2" label="ToDeskSameDisplayClamshellMouse"/>
+  <int value="3" label="ToDeskSameDisplayClamshellTouch"/>
+  <int value="4" label="ToSnapSameDisplayClamshellMouse"/>
+  <int value="5" label="ToSnapSameDisplayClamshellTouch"/>
+  <int value="6" label="SwipeToCloseSuccessfulClamshellTouch"/>
+  <int value="7" label="SwipeToCloseCanceledClamshellTouch"/>
+  <int value="8" label="FlingToCloseClamshellTouch"/>
+  <int value="9" label="ToGridOtherDisplayClamshellMouse"/>
+  <int value="10" label="ToDeskOtherDisplayClamshellMouse"/>
+  <int value="11" label="ToSnapOtherDisplayClamshellMouse"/>
+  <int value="12" label="ToGridSameDisplayTabletTouch"/>
+  <int value="13" label="ToDeskSameDisplayTabletTouch"/>
+  <int value="14" label="ToSnapSameDisplayTabletTouch"/>
+  <int value="15" label="SwipeToCloseSuccessfulTabletTouch"/>
+  <int value="16" label="SwipeToCloseCanceledTabletTouch"/>
+  <int value="17" label="FlingToCloseTabletTouch"/>
+</enum>
+
+<enum name="OverviewEndAction">
+  <int value="0"
+      label="SplitView related, e.g, both snapped, window activation"/>
+  <int value="1" label="Dragging window from shelf in tablet mode"/>
+  <int value="2" label="Exiting overview to home launcher"/>
+  <int value="3" label="Click or tap outside of the windows in overview"/>
+  <int value="4" label="Window activated in overview"/>
+  <int value="5" label="Last window in overview being removed"/>
+  <int value="6" label="Display added while in overivew"/>
+  <int value="7" label="Pressing shortcut F5"/>
+  <int value="8" label="Pressing key Escape or Back"/>
+  <int value="9" label="Desk activation"/>
+  <int value="10" label="Pressing overview button"/>
+  <int value="11" label="Long pressing overview button in split view mode"/>
+  <int value="12" label="Three fingers swiping down on the trackpad"/>
+  <int value="13" label="Enabled Docked Magnifier"/>
+  <int value="14" label="Switching user happens with multi users login"/>
+  <int value="15" label="Started window cycle"/>
+  <int value="16" label="Opened app list while in clamshell mode"/>
+  <int value="17" label="Shelf alignment changed"/>
+  <int value="18" label="Shutting down"/>
+  <int value="19" label="Exiting overview through dev tools"/>
+  <int value="20" label="Exiting overview in tests"/>
+  <int value="21" label="DEPRECATED: Showing glanceables"/>
+  <int value="22" label="Exiting overview due to window deactivation"/>
+  <int value="23" label="Window restored from previous session"/>
+</enum>
+
+<enum name="OverviewStartAction">
+  <int value="0" label="SplitView related, e.g, one window snapped"/>
+  <int value="1" label="Pressing shortcut F5"/>
+  <int value="2" label="Dragging window from shelf in tablet mode"/>
+  <int value="3" label="Going from home launcher to overview"/>
+  <int value="4" label="Pressing overview button"/>
+  <int value="5" label="Long pressing overview button in split view mode"/>
+  <int value="6" label="DEPRECATED: Going from Bento bar to overview"/>
+  <int value="7" label="Three fingers swiping up on the trackpad"/>
+  <int value="8" label="Entering overview through dev tools"/>
+  <int value="9" label="Entering overview in tests"/>
+  <int value="10"
+      label="Entering overview during a switch desk trackpad animation"/>
+  <int value="11" label="Entering overview via desk button on shelf"/>
+  <int value="12" label="Entering overview with the faster split screen setup"/>
+</enum>
+
+<enum name="PeripheralConnectivityResult">
+<!-- This must be kept current with PeripheralConnectivityResults located in
+chromeos/ash/components/peripheral_notification/peripheral_notification_manager.h
+-->
+
+  <int value="0" label="TBT-supported peripheral connected and allowed"/>
+  <int value="1" label="TBT-only peripheral connected and blocked by Pciguard"/>
+  <int value="2"
+      label="TBT-only peripheral connected and blocked due to guest session"/>
+  <int value="3" label="Alt-mode fallback due to Pciguard"/>
+  <int value="4" label="Alt-mode fallback in guest session"/>
+  <int value="5" label="Peripheral blocked"/>
+  <int value="6" label="Billboard device"/>
+  <int value="7" label="Invalid DP alternate mode cable"/>
+  <int value="8" label="USB4 device uses Thunderbolt due to the cable"/>
+  <int value="9" label="USB4 device with incompatible cable"/>
+  <int value="10" label="Thunderbolt device with incompatible cable"/>
+  <int value="11" label="USB device speed limited by the cable"/>
+</enum>
+
+<enum name="PersonalizationDynamicColorColorScheme">
+  <int value="0" label="kStatic"/>
+  <int value="1" label="kTonalSpot"/>
+  <int value="2" label="kNeutral"/>
+  <int value="3" label="kExpressive"/>
+  <int value="4" label="kVibrant"/>
+</enum>
+
+<enum name="PersonalizationDynamicColorStaticColor">
+  <int value="0" label="kUnknown"/>
+  <int value="1" label="kGoogleBlue"/>
+  <int value="2" label="kLightPink"/>
+  <int value="3" label="kDarkGreen"/>
+  <int value="4" label="kLightPurple"/>
+</enum>
+
+<enum name="PersonalizationEntryPoint">
+  <int value="0" label="Home Screen"/>
+  <int value="1" label="System Tray"/>
+  <int value="2" label="Launcher search"/>
+  <int value="3" label="Settings"/>
+  <int value="4" label="Settings search"/>
+  <int value="5" label="Keyboard brightness slider"/>
+</enum>
+
+<enum name="PersonalizationKeyboardBacklightColor">
+  <int value="0" label="kWallpaper"/>
+  <int value="1" label="kWhite"/>
+  <int value="2" label="kRed"/>
+  <int value="3" label="kYellow"/>
+  <int value="4" label="kGreen"/>
+  <int value="5" label="kBlue"/>
+  <int value="6" label="kIndigo"/>
+  <int value="7" label="kPurple"/>
+  <int value="100" label="kRainbow"/>
+</enum>
+
+<enum name="PersonalizationKeyboardBacklightDisplayType">
+  <int value="0" label="kStatic"/>
+  <int value="1" label="kMultizone"/>
+</enum>
+
+<enum name="PersonalizationPath">
+  <int value="0" label="Screensaver"/>
+  <int value="1" label="Screensaver Albums"/>
+  <int value="2" label="Wallpaper Online Collection"/>
+  <int value="3" label="Wallpaper"/>
+  <int value="4" label="Wallpaper Google Photos Collection"/>
+  <int value="5" label="Wallpaper Local Collection"/>
+  <int value="6" label="Root"/>
+  <int value="7" label="Avatar"/>
+</enum>
+
+<enum name="PersonalizationThemeColorMode">
+  <int value="0" label="Light mode"/>
+  <int value="1" label="Dark mode"/>
+  <int value="2" label="Auto mode"/>
+</enum>
+
+<enum name="PinAutosubmitBackfillEvent">
+  <summary>
+    The event generated when backfilling the user preferences for PIN auto
+    submit.
+  </summary>
+  <int value="0" label="Backfilled to enabled"/>
+  <int value="1" label="Backfilled to disabled due to policy"/>
+  <int value="2" label="Backfilled to disabled due to PIN length."/>
+</enum>
+
+<enum name="PrivacyIndicatorsSource">
+  <int value="0" label="Apps"/>
+  <int value="1" label="Linux VM"/>
+  <int value="2" label="Screen Capture"/>
+</enum>
+
+<enum name="PrivacyIndicatorsType">
+  <int value="2" label="Camera is in use"/>
+  <int value="4" label="Microphone is in use"/>
+  <int value="6" label="Microphone and Camera are in use"/>
+  <int value="8" label="Screen Sharing is in use"/>
+  <int value="10" label="Screen Sharing and Camera are in use"/>
+  <int value="12" label="Screen Sharing and Microphone are in use"/>
+  <int value="14" label="Screen Sharing, Microphone, and Camera are in use"/>
+</enum>
+
+<enum name="ProjectorCreationFlow">
+  <int value="0" label="Started new screencast session"/>
+  <int value="1" label="Started recording new screencast"/>
+  <int value="2" label="Aborted session without starting to record"/>
+  <int value="3" label="Ended recording"/>
+  <int value="4" label="Stopped new screencast session"/>
+</enum>
+
+<enum name="ProjectorCreationFlowError">
+  <int value="0" label="Can't save recording"/>
+  <int value="1" label="Can't generate transcription"/>
+  <int value="2"
+      label="Session aborted since audio capture policy is disabled"/>
+</enum>
+
+<enum name="ProjectorMarkerColor">
+  <int value="0" label="Black (Obsolete)"/>
+  <int value="1" label="White (Obsolete)"/>
+  <int value="2" label="Blue"/>
+  <int value="3" label="Red"/>
+  <int value="4" label="Yellow"/>
+  <int value="5" label="Magenta"/>
+</enum>
+
+<enum name="ProjectorToolbar">
+  <int value="0" label="Toolbar opened (Obsolete)"/>
+  <int value="1" label="Toolbar closed (Obsolete)"/>
+  <int value="2" label="Key idea (Obsolete)"/>
+  <int value="3" label="Laser pointer (Obsolete)"/>
+  <int value="4" label="Marker tool"/>
+  <int value="5" label="Expand marker tools (Obsolete)"/>
+  <int value="6" label="Collapse marker tools (Obsolete)"/>
+  <int value="7" label="Clear all markers (Obsolete)"/>
+  <int value="8" label="Start magnifier (Obsolete)"/>
+  <int value="9" label="Stop magnifier (Obsolete)"/>
+  <int value="10" label="Start selfie camera (Obsolete)"/>
+  <int value="11" label="Stop selfie camera (Obsolete)"/>
+  <int value="12" label="Start closed captions (Obsolete)"/>
+  <int value="13" label="Stop closed captions (Obsolete)"/>
+  <int value="14" label="Toggle toolbar location to bottom left (Obsolete)"/>
+  <int value="15" label="Toggle toolbar location to top left (Obsolete)"/>
+  <int value="16" label="Toggle toolbar location to top right (Obsolete)"/>
+  <int value="17" label="Toggle toolbar location to bottom right (Obsolete)"/>
+  <int value="18" label="Undo (Obsolete)"/>
+  <int value="19" label="Toggle toolbar location to top center (Obsolete)"/>
+  <int value="20" label="Toggle toolbar location to bottom center (Obsolete)"/>
+</enum>
+
+<enum name="QsButtonCatalogName">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="SignOutButton"/>
+  <int value="2" label="LockButton"/>
+  <int value="3" label="PowerButton"/>
+  <int value="4" label="SettingsButton"/>
+  <int value="5" label="DateViewButton"/>
+  <int value="6" label="BatteryButton"/>
+  <int value="7" label="ManagedButton"/>
+  <int value="8" label="AvatarButton"/>
+  <int value="9" label="CollapseButton"/>
+  <int value="10" label="FeedBackButton"/>
+  <int value="11" label="VersionButton"/>
+  <int value="12" label="PowerOffMenuButton"/>
+  <int value="13" label="PowerRestartMenuButton"/>
+  <int value="14" label="PowerSignoutMenuButton"/>
+  <int value="15" label="PowerLockMenuButton"/>
+  <int value="16" label="SupervisedButton"/>
+</enum>
+
+<enum name="QsFeatureCatalogName">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Network"/>
+  <int value="2" label="Bluetooth"/>
+  <int value="3" label="Accessibility"/>
+  <int value="4" label="QuietMode"/>
+  <int value="5" label="RotationLock"/>
+  <int value="6" label="PrivacyScreen"/>
+  <int value="7" label="CaptureMode"/>
+  <int value="8" label="NearbyShare"/>
+  <int value="9" label="NightLight"/>
+  <int value="10" label="Cast"/>
+  <int value="11" label="VPN"/>
+  <int value="12" label="IME"/>
+  <int value="13" label="Locale"/>
+  <int value="14" label="DarkMode"/>
+  <int value="15" label="ShelfParty (deprecated)"/>
+  <int value="16" label="AutoZoom"/>
+</enum>
+
+<enum name="QsSliderCatalogName">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Volume"/>
+  <int value="2" label="Brightness"/>
+  <int value="3" label="MicGain"/>
+  <int value="4" label="KeyboardBrightness"/>
+</enum>
+
+<enum name="ReportCheckMembershipResponseCases">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="CreateOprfRequestFailed"/>
+  <int value="2" label="OprfResponseBodyFailed"/>
+  <int value="3" label="NotHasRlweOprfResponse"/>
+  <int value="4" label="CreateQueryRequestFailed"/>
+  <int value="5" label="QueryResponseBodyFailed"/>
+  <int value="6" label="NotHasRlweQueryResponse"/>
+  <int value="7" label="ProcessQueryResponseFailed"/>
+  <int value="8" label="MembershipResponsesSizeIsNotOne"/>
+  <int value="9" label="IsNotPsmIdMember"/>
+  <int value="10" label="SuccessfullySetLocalState"/>
+</enum>
+
+<enum name="SavedDeskParseError">
+  <int value="0" label="No error"/>
+  <int value="1" label="Base value is not a dictionary"/>
+  <int value="2" label="Missing one or more required fields"/>
+  <int value="3" label="Invalid UUID format"/>
+  <int value="4" label="Invalid desk type"/>
+  <int value="5" label="File does not exist"/>
+  <int value="6" label="Invalid JSON format"/>
+</enum>
+
+<enum name="ScreenRotationAcceleratorAction">
+  <int value="0" label="CancelledDialog"/>
+  <int value="1" label="AcceptedDialog"/>
+  <int value="2" label="AlreadyAcceptedDialog"/>
+</enum>
+
+<enum name="SetWallpaperResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Permission Denied"/>
+  <int value="2" label="Network Error"/>
+  <int value="3" label="Decoding Error"/>
+  <int value="4" label="Invalid State"/>
+  <int value="5" label="Request Failure"/>
+  <int value="6" label="File Not Found"/>
+</enum>
+
+<enum name="ShelfAlignmentValue">
+  <summary>
+    The alignment of the shelf area (see ash/launcher/launcher_view.cc).
+  </summary>
+  <int value="0" label="Bottom"/>
+  <int value="1" label="Left"/>
+  <int value="2" label="Right"/>
+</enum>
+
+<enum name="ShelfWindowDragResult">
+  <int value="0" label="Goes to home screen after drag"/>
+  <int value="1"
+      label="Dragged window restored to its original bounds after drag"/>
+  <int value="2" label="Dragged window is dropped to overview after drag"/>
+  <int value="3" label="Enters splitview mode after drag"/>
+  <int value="4" label="Drag is canceled instead of ending normally"/>
+</enum>
+
+<enum name="ShortcutCustomizationAction">
+  <summary>
+    Customization actions that can be done in the Key Shortcuts App
+  </summary>
+  <int value="0" label="AddAccelerator"/>
+  <int value="1" label="RemoveAccelerator"/>
+  <int value="2" label="ReplaceAccelerator"/>
+  <int value="3" label="ResetAction"/>
+  <int value="4" label="ResetAll"/>
+</enum>
+
+<enum name="ShortcutCustomizationEditDialogCompletedActions">
+  <summary>Completed actions done in the accelerator edit dialog.</summary>
+  <int value="0" label="NoAction"/>
+  <int value="1" label="Add"/>
+  <int value="2" label="Edit"/>
+  <int value="3" label="EditAdd"/>
+  <int value="4" label="Remove"/>
+  <int value="5" label="RemoveAdd"/>
+  <int value="6" label="RemoveEdit"/>
+  <int value="7" label="RemoveEditAdd"/>
+  <int value="8" label="Reset"/>
+  <int value="9" label="ResetAdd"/>
+  <int value="10" label="ResetEdit"/>
+  <int value="11" label="ResetEditAdd"/>
+  <int value="12" label="ResetRemove"/>
+  <int value="13" label="ResetRemoveAdd"/>
+  <int value="14" label="ResetRemoveEdit"/>
+  <int value="15" label="ResetRemoveEditAdd"/>
+</enum>
+
+<enum name="ShortcutCustomizationMainCategory">
+  <summary>
+    The categories that are present within the Key Shortcuts app.
+  </summary>
+  <int value="0" label="General"/>
+  <int value="1" label="Device"/>
+  <int value="2" label="Browser"/>
+  <int value="3" label="Text"/>
+  <int value="4" label="WindowsAndDesks"/>
+  <int value="5" label="Accessibility"/>
+  <int value="6" label="Debug"/>
+  <int value="7" label="Developer"/>
+</enum>
+
+<enum name="ShortcutCustomizationModificationType">
+  <summary>
+    The modification actions that can be done for an accelerator action.
+  </summary>
+  <int value="0" label="Add"/>
+  <int value="1" label="Edit"/>
+  <int value="2" label="Remove"/>
+  <int value="3" label="Reset"/>
+</enum>
+
+<enum name="ShortcutCustomizationSubactions">
+  <summary>
+    The subactions that can happen within adding or editing a custom
+    accelerator. The enum names are formatted in order of actions taken place.
+    E.g. `ErrorSuccess` indicates and error has occured before the action was
+    successful.
+  </summary>
+  <int value="0" label="NoErrorCancel"/>
+  <int value="1" label="NoErrorSuccess"/>
+  <int value="2" label="ErrorCancel"/>
+  <int value="3" label="ErrorSuccess"/>
+</enum>
+
+<enum name="ShutdownConfirmationBubbleAction">
+  <int value="0" label="Opened"/>
+  <int value="1" label="Shutdown cancelled by cancel button"/>
+  <int value="2" label="Shutdown confirmed by shutdown button"/>
+  <int value="3"
+      label="Shutdown confirmation bubbble dismissed by clicking ouside"/>
+</enum>
+
+<enum name="SpeechRecognitionEndState">
+  <int value="0" label="Speech recognition successfully stopped"/>
+  <int value="1" label="Speech recognition enountered error while recognizing"/>
+  <int value="2" label="Speech recognition enountered error while stopping"/>
+  <int value="3" label="Speech recognition forced stopped"/>
+</enum>
+
+<enum name="SplitViewOverviewSessionExitPoint">
+  <int value="0"
+      label="Complete the window layout setup by activating a window in
+             partial overview"/>
+  <int value="1" label="Skip the window layout setup"/>
+  <int value="2" label="Session exit due to window destruction"/>
+  <int value="3" label="Session exit due to shutdown"/>
+  <int value="4" label="Session exit due to unspecified reasons"/>
+</enum>
+
+<enum name="SplitViewSwapWindowsSource">
+  <int value="0" label="Double tap"/>
+  <int value="1" label="Swap windows button"/>
+</enum>
+
+<enum name="SwipeHomeToOverviewResult">
+  <int value="0" label="Remained on the home screen"/>
+  <int value="1" label="Transitioned to overview"/>
+  <int value="2" label="Went back on the home screen"/>
+</enum>
+
+<enum name="ToastCatalogName">
+<!-- Defined in ash/constants/notifier_catalogs.h -->
+
+  <int value="0" label="Virtual Desks Limit Max"/>
+  <int value="1" label="Virtual Desks Limit Min"/>
+  <int value="2" label="Assistant Error"/>
+  <int value="3" label="Debug Command"/>
+  <int value="4" label="Assistant Unbound Service"/>
+  <int value="5" label="Stylus Prompt"/>
+  <int value="6" label="App Resizable"/>
+  <int value="7" label="Kiosk App Error"/>
+  <int value="8" label="Bluetooth Device Paired"/>
+  <int value="9" label="Bluetooth Device Disconnected"/>
+  <int value="10" label="Bluetooth Device Connected"/>
+  <int value="11" label="Bluetooth Adapter Discoverable"/>
+  <int value="12" label="Encourage Unlock"/>
+  <int value="13" label="Network Auto Connect"/>
+  <int value="14" label="Assistant Loading"/>
+  <int value="15" label="Test Catalog Name"/>
+  <int value="16" label="Maximum Desk Launch Template"/>
+  <int value="17" label="Enter Overview Gesture"/>
+  <int value="18" label="Exit Overview Gesture"/>
+  <int value="19" label="Next Desk Gesture"/>
+  <int value="20" label="Previous Desk Gesture"/>
+  <int value="21" label="Move Visible On All Desks Window"/>
+  <int value="22" label="App Cannot Snap"/>
+  <int value="23" label="Crostini Unsupported Virtual Keyboard"/>
+  <int value="24" label="Crostini Unsupported IME"/>
+  <int value="25" label="Copy To Clipboard Share Action"/>
+  <int value="26" label="Clipboard Blocked Action"/>
+  <int value="27" label="Clipboard Warn On Paste"/>
+  <int value="28" label="App Not Available"/>
+  <int value="29" label="Camera Privacy Switch Off"/>
+  <int value="30" label="Camera Privacy Switch On"/>
+  <int value="31" label="Extension Install Success"/>
+  <int value="32" label="Account Removed"/>
+  <int value="33" label="Desk Template Too Large"/>
+  <int value="34" label="Undo Close All"/>
+  <int value="35" label="Eche App Toast"/>
+  <int value="36" label="Deprecate Assistant Stylus"/>
+  <int value="37" label="Eche Tray Copy Paste Not Implemented"/>
+  <int value="38" label="Eche Tray Tablet Mode Not Supported"/>
+  <int value="39" label="Notification Center Tray No Notifications"/>
+  <int value="40" label="Copy to Clipboard Action (deprecated)"/>
+  <int value="41" label="Video Conference Tray Speak-On-Mute Detected"/>
+  <int value="42" label="Copy Gif To Clipboard Action"/>
+  <int value="44" label="Battery Saver Disabled"/>
+  <int value="45" label="Dictation No Focused Text Field"/>
+  <int value="46" label="Battery Saver Enabled"/>
+  <int value="47" label="Dictation Mic Muted"/>
+  <int value="48" label="Video Conference Speak On Mute Opt In Confirmation"/>
+</enum>
+
+<enum name="TrayBackgroundViewCatalogName">
+<!-- Defined in ash/constants/tray_background_view_catalog.h -->
+
+  <int value="0" label="Test Catalog Name"/>
+  <int value="1" label="Unified System Tray"/>
+  <int value="2" label="Date Tray"/>
+  <int value="3" label="Notification Tray"/>
+  <int value="4" label="Overview Button"/>
+  <int value="5" label="Ime Menu Tray"/>
+  <int value="6" label="Holding Space Tray"/>
+  <int value="7" label="Screen Capture Stop Recording Button"/>
+  <int value="8" label="Projector Annotation Tray"/>
+  <int value="9" label="Dictation Tray, Status Area"/>
+  <int value="10" label="Dictation Tray, Accessibility Window"/>
+  <int value="11" label="Select To Speak Tray, Status Area"/>
+  <int value="12" label="Select To Speak Tray, Accesibility Window"/>
+  <int value="13" label="Eche Tray"/>
+  <int value="14" label="Media Player Tray"/>
+  <int value="15" label="Palette Tray"/>
+  <int value="16" label="Phone Hub Tray"/>
+  <int value="17" label="Logout Button"/>
+  <int value="18" label="Status Area Overflow Button"/>
+  <int value="19" label="Virtual Keyboard Tray, Status Area"/>
+  <int value="20" label="Virtual Keyboard Tray, Accesibility Window"/>
+  <int value="21" label="WM Mode Button"/>
+  <int value="22" label="Video Conferencing Tray"/>
+  <int value="23" label="Focus Mode Tray"/>
+</enum>
+
+<enum name="VideoConferenceAppType">
+  <summary>
+    Possible different app types that a running media app (which the Video
+    Conference tray is keeping track) can have.
+  </summary>
+  <int value="0" label="Browser Unknown"/>
+  <int value="1" label="Chrome Tab"/>
+  <int value="2" label="Chrome Extension"/>
+  <int value="3" label="Chrome App"/>
+  <int value="4" label="Web App"/>
+  <int value="5" label="ARC App"/>
+  <int value="6" label="App Service Unknown"/>
+</enum>
+
+<enum name="WallpaperCollection">
+  <int value="-1993504462" label="Native American Artists"/>
+  <int value="-1750392449" label="Landscapes"/>
+  <int value="-1491081024" label="Togetherness"/>
+  <int value="-1479919333" label="Made by Canvas"/>
+  <int value="-1094276707" label="Element"/>
+  <int value="-917389828" label="Collage"/>
+  <int value="-622998436" label="Imaginary"/>
+  <int value="-595600233" label="Radiance"/>
+  <int value="41679711" label="Floral"/>
+  <int value="711032077" label="Cityscapes"/>
+  <int value="1129315377" label="Composition"/>
+  <int value="1541868299" label="Dawn to Dark"/>
+  <int value="1659755048" label="Illustrations"/>
+  <int value="1668389814" label="Art"/>
+  <int value="1804492839" label="Colors"/>
+  <int value="1894705443" label="Leisure"/>
+  <int value="1914850019" label="Heritage"/>
+  <int value="2026958207" label="LGBTQ Artists"/>
+  <int value="2084467495" label="Dessert time"/>
+  <int value="2094027636" label="Solid colors"/>
+</enum>
+
+<enum name="WallpaperGooglePhotosSource">
+  <int value="0" label="Photos"/>
+  <int value="1" label="Albums"/>
+  <int value="2" label="Owned Albums"/>
+  <int value="3" label="Shared Albums"/>
+</enum>
+
+<enum name="WallpaperImage">
+  <summary>
+    Enumeration for online wallpaper images. The label has the format of
+    {collection name} - {asset id}
+  </summary>
+  <int value="-2145272898" label="Art - 8080411886468030"/>
+  <int value="-2128102642" label="Leisure - 18443882334872124174"/>
+  <int value="-2115725585" label="Art - 18443991603147478767"/>
+  <int value="-2111482612" label="Solid Colors - 7593482887976204"/>
+  <int value="-2110074118" label="Togetherness - 18444149073834070778"/>
+  <int value="-2094648855" label="Solid Colors - 3931714047324649"/>
+  <int value="-2088281608" label="Heritage - 331011041221112"/>
+  <int value="-2079643564" label="Heritage - 18441528924770609236"/>
+  <int value="-2075846537" label="Composition - 18446099444287215735"/>
+  <int value="-2052639994" label="Landscapes - 3406001502368518"/>
+  <int value="-2036802440" label="Heritage - 18444825093169798264"/>
+  <int value="-2034367398" label="Landscapes - 8363308608259162"/>
+  <int value="-2028697222" label="Made by Canvas - 18438928296354023802"/>
+  <int value="-2010890067" label="Cityscapes - 18441361086107369645"/>
+  <int value="-1990378534" label="Cityscapes - 18439845065751608282"/>
+  <int value="-1986859411" label="Cityscapes - 18438879874934566509"/>
+  <int value="-1971674273" label="Leisure - 18438465517979870047"/>
+  <int value="-1953555516" label="Floral - 18439301194079738820"/>
+  <int value="-1938230489" label="Element - 18440708087942279975"/>
+  <int value="-1934316364" label="LGBTQ Artists - 3223345251527860"/>
+  <int value="-1932063213" label="Native American Artists - 4411835719028243"/>
+  <int value="-1927352346" label="LGBTQ Artists - 18438382509191262182"/>
+  <int value="-1916450445" label="Art - 18446537445211457907"/>
+  <int value="-1910580223" label="Solid Colors - 18444350009783540737"/>
+  <int value="-1890583571" label="Heritage - 8492875030461421"/>
+  <int value="-1886552792" label="Art - 8008196565073192"/>
+  <int value="-1879435782" label="Illustrations - 6677967891207674"/>
+  <int value="-1878774587" label="Landscapes - 5675002833939653"/>
+  <int value="-1862836010" label="Dessert Time - 3116877378707670"/>
+  <int value="-1853303570" label="Native American Artists - 6540610568246510"/>
+  <int value="-1851808253" label="Art - 4109856648701443"/>
+  <int value="-1848694292" label="Solid Colors - 18444545048605305324"/>
+  <int value="-1842680590" label="Illustrations - 4696317262228722"/>
+  <int value="-1834253570" label="Element - 7403164574384894"/>
+  <int value="-1763557434" label="Heritage - 18439582183915143110"/>
+  <int value="-1756893570" label="Leisure - 7392551787556478"/>
+  <int value="-1747187714" label="Landscapes - 776841872541694"/>
+  <int value="-1741914332" label="Solid Colors - 962603508334372"/>
+  <int value="-1729733169" label="Element - 3111805155433935"/>
+  <int value="-1689000484" label="Togetherness - 18439295116965570012"/>
+  <int value="-1686380267" label="Cityscapes - 1581190523642133"/>
+  <int value="-1677513839" label="Solid Colors - 3228924670847889"/>
+  <int value="-1676286713" label="Native American Artists - 6706654180926727"/>
+  <int value="-1667225463" label="Heritage - 18443680188402247817"/>
+  <int value="-1666643127" label="Art - 113140656835401"/>
+  <int value="-1665140063" label="Art - 7267821734066849"/>
+  <int value="-1639283780" label="Leisure - 18443165363585319868"/>
+  <int value="-1604960688" label="Togetherness - 18443349089435663952"/>
+  <int value="-1597919619" label="Landscapes - 18441164776450141821"/>
+  <int value="-1576508821" label="Landscapes - 18443822536594055787"/>
+  <int value="-1556767157" label="Illustrations - 18442004769015176779"/>
+  <int value="-1554550735" label="Art - 8007458162700337"/>
+  <int value="-1549066409" label="Floral - 517962916896599"/>
+  <int value="-1546696297" label="Cityscapes - 7135584104434071"/>
+  <int value="-1498619902" label="Imaginary - 18446102296722726914"/>
+  <int value="-1483370708" label="Togetherness - 18442740874943500076"/>
+  <int value="-1479093005" label="Cityscapes - 18439940792493987059"/>
+  <int value="-1468340343" label="Togetherness - 18440972443649238921"/>
+  <int value="-1462411412" label="Made by Canvas - 18444286019513966444"/>
+  <int value="-1462000503" label="Art - 18442980641514169481"/>
+  <int value="-1449953016" label="Landscapes - 968994711632136"/>
+  <int value="-1448799565" label="Togetherness - 18440821724676428467"/>
+  <int value="-1447258271" label="Imaginary - 18438478712643819361"/>
+  <int value="-1442843051" label="Cityscapes - 5832933512312405"/>
+  <int value="-1425295914" label="Element - 3960186054882774"/>
+  <int value="-1423648001" label="Floral - 18440779848770444031"/>
+  <int value="-1413440862" label="Togetherness - 18441196336054311586"/>
+  <int value="-1397020104" label="Cityscapes - 3452989100206648"/>
+  <int value="-1389216897" label="Landscapes - 3716322142862207"/>
+  <int value="-1382225891" label="Landscapes - 7848789358209053"/>
+  <int value="-1379111552" label="Heritage - 6939063748423040"/>
+  <int value="-1349646083" label="LGBTQ Artists - 18440020408432199933"/>
+  <int value="-1346329828" label="Collage - 302823912809244"/>
+  <int value="-1326684804" label="Native American Artists - 4449022151255420"/>
+  <int value="-1315221908" label="Cityscapes - 18438039904557157996"/>
+  <int value="-1308168417" label="Solid Colors - 737212648320799"/>
+  <int value="-1299269521" label="Made by Canvas - 18439947063326062703"/>
+  <int value="-1279122115" label="Art - 18440001776934593853"/>
+  <int value="-1277363172" label="Landscapes - 266677537012764"/>
+  <int value="-1274675052" label="Art - 2851414628237460"/>
+  <int value="-1215416857" label="Element - 18445289040653465063"/>
+  <int value="-1206721847" label="Made by Canvas - 18440189784905409225"/>
+  <int value="-1201999266" label="Heritage - 8821217378890334"/>
+  <int value="-1196759923" label="Collage - 18443143257831171213"/>
+  <int value="-1196759879" label="Landscapes - 998419785770169"/>
+  <int value="-1194600035" label="Landscapes - 18439590254727649693"/>
+  <int value="-1180001350" label="Floral - 18440055489894718394"/>
+  <int value="-1177726738" label="Native American Artists - 515321883349230"/>
+  <int value="-1129284398" label="Landscapes - 18444079023898262738"/>
+  <int value="-1109386329" label="Art - 18441882994254814119"/>
+  <int value="-1075740934" label="Imaginary - 18439649125963235066"/>
+  <int value="-1070106310" label="Illustrations - 5227562539645242"/>
+  <int value="-1069898232" label="Dessert Time - 5755203567134216"/>
+  <int value="-1045160112" label="Landscapes - 3899056165494608"/>
+  <int value="-1037753922" label="Solid Colors - 1440427914109374"/>
+  <int value="-1002389694" label="Illustrations - 1773605742493506"/>
+  <int value="-1000237501" label="Landscapes - 18445805326002394691"/>
+  <int value="-986918942" label="Collage - 4640844320395234"/>
+  <int value="-985367237" label="Landscapes - 7460537596411195"/>
+  <int value="-978297832" label="Collage - 434821510749208"/>
+  <int value="-970540754" label="Togetherness - 18445185798474479918"/>
+  <int value="-969194060" label="Floral - 8400843392632244"/>
+  <int value="-964600764" label="Landscapes - 18440933531749276740"/>
+  <int value="-961542052" label="Solid Colors - 1021561304778844"/>
+  <int value="-959681560" label="Cityscapes - 8002656984132584"/>
+  <int value="-938586313" label="Imaginary - 18440192284844511031"/>
+  <int value="-925586798" label="Solid Colors - 18439896069553040018"/>
+  <int value="-925172759" label="Landscapes - 18444315844304108521"/>
+  <int value="-905556178" label="Art - 6593894880268078"/>
+  <int value="-896680198" label="Colors - 18443159505992531706"/>
+  <int value="-888809973"
+      label="Native American Artists - 18446368181577963019"/>
+  <int value="-866056405"
+      label="Native American Artists - 18443882662551684907"/>
+  <int value="-859494945" label="Composition - 18445597415366272479"/>
+  <int value="-857195788" label="Art - 7186630480247540"/>
+  <int value="-838683647" label="Solid Colors - 18445581412338938881"/>
+  <int value="-833577242" label="Art - 377084410109670"/>
+  <int value="-832380336" label="Cityscapes - 7612704145728080"/>
+  <int value="-828814002" label="Floral - 7564493141396814"/>
+  <int value="-821345517" label="Cityscapes - 2974646283223827"/>
+  <int value="-773948611" label="Cityscapes - 3379210775067453"/>
+  <int value="-755562342" label="Art - 18442108141089261722"/>
+  <int value="-753216621" label="Colors - 6786829258511251"/>
+  <int value="-732111196" label="Solid Colors - 6325085935558308"/>
+  <int value="-692767506" label="LGBTQ Artists - 18440369104598938862"/>
+  <int value="-671868169" label="Art - 18441859488336321271"/>
+  <int value="-663382773" label="Landscapes - 543123721000203"/>
+  <int value="-651763227" label="LGBTQ Artists - 18444260070132212197"/>
+  <int value="-650608223" label="Composition - 1914403712172449"/>
+  <int value="-648909746" label="LGBTQ Artists - 18445559868972756046"/>
+  <int value="-646744548" label="Togetherness - 4852535008654876"/>
+  <int value="-633318279"
+      label="Native American Artists - 18444477056193418361"/>
+  <int value="-629215657" label="LGBTQ Artists - 8024729151532631"/>
+  <int value="-628255755" label="Dessert Time - 18439774784268899317"/>
+  <int value="-620910477" label="Cityscapes - 18441185517824223347"/>
+  <int value="-610816140" label="Landscapes - 8626157735358324"/>
+  <int value="-609002569" label="Landscapes - 4324915493952439"/>
+  <int value="-542665877" label="Solid Colors - 18438508417542230891"/>
+  <int value="-525590300" label="Art - 18440424187721687268"/>
+  <int value="-489912510" label="Togetherness - 18438776225985759042"/>
+  <int value="-484859913" label="Art - 18438709825796415479"/>
+  <int value="-481689207" label="Art - 18445981609158640009"/>
+  <int value="-469592977" label="Art - 18439753932361340015"/>
+  <int value="-467528800" label="Cityscapes - 5871056617345952"/>
+  <int value="-459168519" label="Colors - 3695264848258297"/>
+  <int value="-451545152" label="Element - 7889502283888576"/>
+  <int value="-448005265" label="Colors - 18439071917346126703"/>
+  <int value="-442822843" label="Art - 7783541154451269"/>
+  <int value="-437337985" label="Made by Canvas - 1673421900398719"/>
+  <int value="-435188694" label="Art - 18444631610789694506"/>
+  <int value="-387775828" label="Cityscapes - 18438479018645979820"/>
+  <int value="-359510740" label="Solid Colors - 18440625901026823468"/>
+  <int value="-353243221" label="LGBTQ Artists - 18439187396226576299"/>
+  <int value="-347674537" label="Heritage - 6951507300116567"/>
+  <int value="-344702098" label="Landscapes - 18446494149217895278"/>
+  <int value="-335909288" label="Art - 6686963096251992"/>
+  <int value="-329960828" label="Landscapes - 18445540125327045252"/>
+  <int value="-327838917" label="Colors - 5900610426999611"/>
+  <int value="-322205751" label="Floral - 18446441664740034505"/>
+  <int value="-314356085" label="Native American Artists - 5888090610814603"/>
+  <int value="-297295937" label="Cityscapes - 18438854514842247103"/>
+  <int value="-290968951" label="Art - 8975227227220617"/>
+  <int value="-288029248" label="Illustrations - 3023519249401280"/>
+  <int value="-275592484" label="Art - 18438681316012772060"/>
+  <int value="-264921592" label="Leisure - 18439547692531424776"/>
+  <int value="-250481953" label="Heritage - 18442925297777111775"/>
+  <int value="-242251369" label="Solid Colors - 2175301908924823"/>
+  <int value="-217934385" label="Togetherness - 6948539607455183"/>
+  <int value="-213086089" label="Art - 18439421351825281143"/>
+  <int value="-207369157" label="Art - 2140169111325755"/>
+  <int value="-186691484" label="Leisure - 4590813046591588"/>
+  <int value="-172685681" label="Landscapes - 5286335769544335"/>
+  <int value="-142061263" label="Collage - 18438478628049670449"/>
+  <int value="-135382394" label="Landscapes - 18438981332503509638"/>
+  <int value="-129359243" label="Landscapes - 18443902390073172597"/>
+  <int value="-121348877" label="Landscapes - 18441833920946527475"/>
+  <int value="-115294461" label="Landscapes - 805211763425027"/>
+  <int value="-101342264" label="Landscapes - 18443627490719409096"/>
+  <int value="-94450653" label="Landscapes - 5658348735089699"/>
+  <int value="-91022393" label="Togetherness - 18440444275718298567"/>
+  <int value="-83023161" label="Landscapes - 5076445102418631"/>
+  <int value="-79218029" label="Imaginary - 4122842107427475"/>
+  <int value="-53727481" label="Togetherness - 6052605298749191"/>
+  <int value="-40293301" label="Landscapes - 6678566730804299"/>
+  <int value="-34451659" label="Landscapes - 18443902699405725493"/>
+  <int value="-14900592" label="Dessert Time - 18445906920144151184"/>
+  <int value="-8722165" label="Heritage - 7157880817641739"/>
+  <int value="-3017196" label="Art - 1230422227940884"/>
+  <int value="1" label="Element - 1"/>
+  <int value="2" label="Element - 2"/>
+  <int value="3" label="Element - 3"/>
+  <int value="4" label="Element - 4"/>
+  <int value="5" label="Element - 5"/>
+  <int value="6" label="Element - 6"/>
+  <int value="7" label="Element - 7"/>
+  <int value="8" label="Element - 8"/>
+  <int value="9" label="Radiance - 9"/>
+  <int value="10" label="Radiance - 10"/>
+  <int value="11" label="Radiance - 11"/>
+  <int value="12" label="Radiance - 12"/>
+  <int value="13" label="Radiance - 13"/>
+  <int value="14" label="Radiance - 14"/>
+  <int value="15" label="Radiance - 15"/>
+  <int value="16" label="Radiance - 16"/>
+  <int value="17" label="Dawn to Dark New Mexico - 17"/>
+  <int value="18" label="Dawn to Dark Clouds - 18"/>
+  <int value="11921136" label="Art - 18441231667880650480"/>
+  <int value="21374230" label="Element - 3650936971339030"/>
+  <int value="50416017" label="Togetherness - 18439398008941529489"/>
+  <int value="58339759" label="Composition - 18438176120818512303"/>
+  <int value="70353551" label="Cityscapes - 2553010235474575"/>
+  <int value="76498078" label="Landscapes - 2385532286878878"/>
+  <int value="77221287" label="Togetherness - 18445362417167388071"/>
+  <int value="82886079" label="Imaginary - 18443185379855089087"/>
+  <int value="129511080" label="Art - 18440290163922316968"/>
+  <int value="132681327" label="Art - 918307090239087"/>
+  <int value="135378839" label="Native American Artists - 2894932646934423"/>
+  <int value="137021120" label="Cityscapes - 7148243056772800"/>
+  <int value="142294246" label="Colors - 6311854015724774"/>
+  <int value="146639624" label="Togetherness - 18439269439191747336"/>
+  <int value="206595208" label="Togetherness - 18442786888618108040"/>
+  <int value="215753161" label="Art - 18438368385186931145"/>
+  <int value="226584088" label="Art - 18438677463929284120"/>
+  <int value="238075985" label="Art - 402666306977873"/>
+  <int value="268022519" label="Cityscapes - 18444150008220070647"/>
+  <int value="284261456" label="Art - 18439588894701878352"/>
+  <int value="306978074" label="Native American Artists - 8682195091463450"/>
+  <int value="336158740" label="Togetherness - 734508463251476"/>
+  <int value="337078580" label="Landscapes - 18439369005314042164"/>
+  <int value="361333906" label="Composition - 2146414562477202"/>
+  <int value="376061409" label="Element - 2924258924314081"/>
+  <int value="380006899" label="Illustrations - 2395522684318195"/>
+  <int value="388794917" label="Element - 18445219579751598629"/>
+  <int value="391648756" label="Landscapes - 18444266200093955572"/>
+  <int value="414767910" label="Imaginary - 18446088339992402726"/>
+  <int value="419310910" label="Dessert Time - 2648504887291198"/>
+  <int value="425591336" label="Landscapes - 5270694096929320"/>
+  <int value="427770466" label="Heritage - 3541007689794146"/>
+  <int value="429463882" label="Native American Artists - 3366460220578122"/>
+  <int value="455075664" label="Native American Artists - 4825263068145488"/>
+  <int value="460520651" label="Illustrations - 3514056802761931"/>
+  <int value="473587735" label="Heritage - 18443282072844525591"/>
+  <int value="474793699" label="Art - 18446204450198308579"/>
+  <int value="481651970" label="Solid Colors - 5104143911185666"/>
+  <int value="485050488" label="Heritage - 18444694245218011256"/>
+  <int value="500548057" label="Art - 18442613054405722585"/>
+  <int value="502222590" label="Illustrations - 3440479759716094"/>
+  <int value="507283273" label="Colors - 18438533741719357257"/>
+  <int value="514704797" label="Cityscapes - 18444397372813198749"/>
+  <int value="519669485" label="Made by Canvas - 1162381878724333"/>
+  <int value="519705872" label="Cityscapes - 5269745003271440"/>
+  <int value="523171359" label="Landscapes - 456362273207839"/>
+  <int value="542400471" label="LGBTQ Artists - 8628186113138647"/>
+  <int value="582571507" label="Cityscapes - 18437958065853126131"/>
+  <int value="602985801" label="LGBTQ Artists - 18442751988110251337"/>
+  <int value="627281636" label="Cityscapes - 18443580607585029860"/>
+  <int value="631084973" label="Native American Artists - 8649446289938349"/>
+  <int value="632498960" label="Element - 18442926110408911632"/>
+  <int value="636241240" label="Imaginary - 18446507769540134232"/>
+  <int value="652440414" label="Togetherness - 18438158975903167326"/>
+  <int value="712360087" label="Solid Colors - 18444153758170857623"/>
+  <int value="723351331" label="Art - 4590504718989091"/>
+  <int value="731985139" label="Heritage - 3218288446354675"/>
+  <int value="732594745" label="Collage - 6982402080145977"/>
+  <int value="738877507" label="Leisure - 2226962756689987"/>
+  <int value="741269277" label="LGBTQ Artists - 459480637562653"/>
+  <int value="766726480" label="Leisure - 18440296559765836112"/>
+  <int value="791271562" label="Floral - 565819782846602"/>
+  <int value="810052365" label="Landscapes - 1422584172800781"/>
+  <int value="810343709" label="Cityscapes - 18441855246390844701"/>
+  <int value="824060572" label="Cityscapes - 1118277163952796"/>
+  <int value="824064889" label="Landscapes - 8554196993194873"/>
+  <int value="842359027" label="Art - 18441530534010380531"/>
+  <int value="857850226" label="Solid Colors - 18441109846274195826"/>
+  <int value="858500007" label="Art - 6573706003065767"/>
+  <int value="860118687" label="Cityscapes - 18438880564976311967"/>
+  <int value="894968490" label="Art - 18446551187623256746"/>
+  <int value="896184259" label="Made by Canvas - 6978249010360259"/>
+  <int value="897122250" label="Landscapes - 1240842718740426"/>
+  <int value="907041473" label="Colors - 18442697274825923265"/>
+  <int value="911504332" label="Cityscapes - 18443243500181156812"/>
+  <int value="911683896" label="Art - 18437782307530551608"/>
+  <int value="917718787" label="Collage - 18440065860043491075"/>
+  <int value="922726653" label="Native American Artists - 3702352926191869"/>
+  <int value="924930082" label="Illustrations - 18441525418786902050"/>
+  <int value="927358911" label="Art - 3207366539894719"/>
+  <int value="929604041" label="Cityscapes - 18439242325846172105"/>
+  <int value="957413410" label="Landscapes - 2541534969919522"/>
+  <int value="962509426" label="Solid Colors - 18444943328028834418"/>
+  <int value="971331677" label="Cityscapes - 8606754655262813"/>
+  <int value="982113383" label="Cityscapes - 7805399667956839"/>
+  <int value="993271315" label="Heritage - 2400861941931539"/>
+  <int value="995793386" label="Art - 18440963598480742890"/>
+  <int value="996011870" label="Floral - 7430096849596254"/>
+  <int value="1006682258" label="Landscapes - 18445475075089023122"/>
+  <int value="1009642791" label="Landscapes - 7427614372130087"/>
+  <int value="1013033474" label="Togetherness - 18443715353979759106"/>
+  <int value="1017556212" label="Colors - 7066360385809652"/>
+  <int value="1018875995" label="Cityscapes - 18439819238827544667"/>
+  <int value="1028241114" label="Art - 18440102882772104922"/>
+  <int value="1040676664" label="Landscapes - 858440449095480"/>
+  <int value="1123537047" label="Composition - 18445642548865650839"/>
+  <int value="1141632188" label="Cityscapes - 18443148044763131068"/>
+  <int value="1165024101" label="LGBTQ Artists - 91127486143333"/>
+  <int value="1173629942" label="Colors - 6465464552401910"/>
+  <int value="1192252038" label="Cityscapes - 6488081868804742"/>
+  <int value="1206215167" label="Art - 18445129029773517311"/>
+  <int value="1243872355" label="Heritage - 18443899384969296995"/>
+  <int value="1250920293" label="Art - 18443102780212086629"/>
+  <int value="1253859916" label="LGBTQ Artists - 7464667299209804"/>
+  <int value="1259225205" label="Composition - 18442882001721507957"/>
+  <int value="1266992153"
+      label="Native American Artists - 18446072518185108505"/>
+  <int value="1279122789" label="LGBTQ Artists - 18442382398260632933"/>
+  <int value="1280051538" label="Made by Canvas - 3143878686017874"/>
+  <int value="1305614077" label="Leisure - 4907156060116733"/>
+  <int value="1308519753" label="Art - 18438839853429714249"/>
+  <int value="1310113836" label="Landscapes - 7841254382944300"/>
+  <int value="1328848153" label="Element - 4680467709467929"/>
+  <int value="1354190091" label="Landscapes - 8257179059965195"/>
+  <int value="1358808705" label="Cityscapes - 18438573333579417217"/>
+  <int value="1361171564" label="Collage - 18446268433212494956"/>
+  <int value="1398130163" label="LGBTQ Artists - 18438014764531959283"/>
+  <int value="1404576511" label="Collage - 1050009239298815"/>
+  <int value="1414735641" label="Solid Colors - 2615791116822297"/>
+  <int value="1441082657"
+      label="Native American Artists - 18442804417614130465"/>
+  <int value="1446838327" label="LGBTQ Artists - 18441755303138361399"/>
+  <int value="1447770551" label="Composition - 18441221902560868791"/>
+  <int value="1456247150" label="Togetherness - 18444641211933036910"/>
+  <int value="1457778021" label="Cityscapes - 18438203687318056293"/>
+  <int value="1458360763" label="Solid Colors - 18446204257908347323"/>
+  <int value="1474756785" label="Solid Colors - 4529882007011505"/>
+  <int value="1485808984"
+      label="Native American Artists - 18445510006537168216"/>
+  <int value="1496125945" label="Composition - 1054403082392057"/>
+  <int value="1501185309" label="Made by Canvas - 4372527316616477"/>
+  <int value="1502745359" label="Landscapes - 18438125304209871631"/>
+  <int value="1504227783" label="Landscapes - 18444577058054517191"/>
+  <int value="1517259953" label="Illustrations - 18444680442225331377"/>
+  <int value="1520811358" label="Colors - 273157145869662"/>
+  <int value="1535000622" label="Imaginary - 1900923995439150"/>
+  <int value="1551836957" label="Heritage - 990184787093277"/>
+  <int value="1559927711" label="LGBTQ Artists - 18441607573556337567"/>
+  <int value="1561201240" label="Solid Colors - 18440201375495096920"/>
+  <int value="1567507477" label="Art - 2184344624841749"/>
+  <int value="1573305199" label="Collage - 18445466155008572271"/>
+  <int value="1581350106" label="Imaginary - 3113861460884698"/>
+  <int value="1593019616" label="Heritage - 18440281880393911520"/>
+  <int value="1596391393" label="Solid Colors - 7592202400628705"/>
+  <int value="1602775350" label="Dessert Time - 18438498829025700150"/>
+  <int value="1608128987" label="Floral - 18440852058792401371"/>
+  <int value="1617144873" label="Imaginary - 3194353478773801"/>
+  <int value="1622071983" label="Cityscapes - 18446448263754078895"/>
+  <int value="1632606350" label="Cityscapes - 1743436232235150"/>
+  <int value="1639315119" label="Cityscapes - 18446053255629108911"/>
+  <int value="1650555304" label="Cityscapes - 8018267505523112"/>
+  <int value="1679563589" label="Colors - 3148839772756805"/>
+  <int value="1693366509" label="Cityscapes - 18440922723974559981"/>
+  <int value="1694862057" label="LGBTQ Artists - 4207995903118057"/>
+  <int value="1696499200" label="Collage - 8802726148212224"/>
+  <int value="1697916989" label="Floral - 4641671638951997"/>
+  <int value="1708825347" label="Leisure - 2442472300649219"/>
+  <int value="1754103911" label="Landscapes - 18442608936785641575"/>
+  <int value="1754712639" label="Leisure - 5120320031083071"/>
+  <int value="1765179526" label="Made by Canvas - 4561510436601990"/>
+  <int value="1784820999" label="Art - 5586126444311815"/>
+  <int value="1785304411" label="Landscapes - 40005110699355"/>
+  <int value="1810781973" label="Cityscapes - 18439990153548027669"/>
+  <int value="1817841735" label="Art - 1018849664831559"/>
+  <int value="1824980809" label="Landscapes - 1364019013680969"/>
+  <int value="1827600028" label="Art - 18444590905352451740"/>
+  <int value="1828136429" label="Landscapes - 2607257430205933"/>
+  <int value="1832792896" label="LGBTQ Artists - 8351230732415808"/>
+  <int value="1840610500" label="Composition - 7377364085734596"/>
+  <int value="1873509802" label="Element - 251772856401322"/>
+  <int value="1875798627" label="Landscapes - 5124387486198371"/>
+  <int value="1876517284" label="Solid Colors - 18440249561048506788"/>
+  <int value="1884381553" label="Cityscapes - 3900850096398705"/>
+  <int value="1907520633" label="Landscapes - 189860936840313"/>
+  <int value="1916533002" label="Art - 7863176502442250"/>
+  <int value="1940503573" label="Togetherness - 7095253553757205"/>
+  <int value="1946633320" label="Composition - 18444545112530175080"/>
+  <int value="1995269325" label="Made by Canvas - 1850308266124493"/>
+  <int value="2004024197" label="Landscapes - 18444669937222089605"/>
+  <int value="2010763272" label="Native American Artists - 2496838298619912"/>
+  <int value="2013650238" label="Art - 870643424156990"/>
+  <int value="2014697963" label="Collage - 18439872076511042027"/>
+  <int value="2016734767" label="Solid Colors - 18444711048661757487"/>
+  <int value="2034977321" label="Imaginary - 4249945188813353"/>
+  <int value="2045124174" label="Togetherness - 3620388892712526"/>
+  <int value="2070005069" label="Art - 18445703289239618893"/>
+  <int value="2079176343" label="Landscapes - 5148074434213527"/>
+  <int value="2081876500" label="Made by Canvas - 18446123946938395156"/>
+  <int value="2086860149" label="Leisure - 18444981666031269237"/>
+  <int value="2088388455" label="Illustrations - 18443834613412022119"/>
+  <int value="2096017887" label="Dessert Time - 1656717010973151"/>
+  <int value="2111036570" label="Togetherness - 7655330344590490"/>
+  <int value="2111289865" label="Cityscapes - 7963176420751881"/>
+  <int value="2143896077" label="Heritage - 6067768730927629"/>
+  <int value="2145027674"
+      label="Native American Artists - 18440602976995935834"/>
+</enum>
+
+<enum name="WallpaperLayout">
+  <int value="0" label="Center"/>
+  <int value="1" label="Center Cropped"/>
+  <int value="2" label="Stretch"/>
+  <int value="3" label="Tile"/>
+</enum>
+
+<enum name="WallpaperType">
+  <int value="0" label="Daily">
+    Surprise wallpaper from the user selected collection.
+  </int>
+  <int value="1" label="Customized">
+    Selected by user from their local disk.
+  </int>
+  <int value="2" label="Default"/>
+  <int value="3" label="Unknown (unused)"/>
+  <int value="4" label="Online">
+    Wallpaper chosen by the user from the list of IMAX wallpapers.
+  </int>
+  <int value="5" label="Policy">
+    Controlled by domain policy. Cannot be changed by user.
+  </int>
+  <int value="6" label="Third party">Set by third party app or extension.</int>
+  <int value="7" label="Device policy">
+    Device controlled wallpaper shown on the login screen if the device is
+    enterprise managed.
+  </int>
+  <int value="8" label="One-shot">
+    Wallpaper shown one-time only. It does not belong to a particular user and
+    is not saved. This is used to show a white background during OOBE.
+  </int>
+  <int value="9" label="Google-Photos (deprecated)">
+    Wallpaper chosen by the user from their Google Photos collection. Replaced
+    by Once-Google-Photos.
+  </int>
+  <int value="10" label="Daily-Google-Photos">
+    Surprise wallpaper from one of the user's Google Photos albums.
+  </int>
+  <int value="11" label="Once-Google-Photos">
+    Wallpaper chosen by the user from their Google Photos collection.
+  </int>
+</enum>
+
+<enum name="WindowSnapAcceleratorAction">
+  <int value="0" label="CycleLeftSnapInClamshellNoOverview"/>
+  <int value="1" label="CycleLeftSnapInClamshellOverview"/>
+  <int value="2" label="CycleLeftSnapInTablet"/>
+  <int value="3" label="CycleRightSnapInClamshellNoOverview"/>
+  <int value="4" label="CycleRightSnapInClamshellOverview"/>
+  <int value="5" label="CycleRightSnapInTablet"/>
+</enum>
+
+<enum name="WindowSnapActionSource">
+  <int value="0" label="Not specified"/>
+  <int value="1" label="Drag window to screen edge to snap"/>
+  <int value="2" label="Use window caption button to snap"/>
+  <int value="3" label="Use keyboard shortcut to snap"/>
+  <int value="4" label="Drag or select overview window to snap"/>
+  <int value="5" label="Long press overview button to snap"/>
+  <int value="6" label="Drag up from shelf to snap"/>
+  <int value="7" label="Drag down from top to snap"/>
+  <int value="8" label="Drag a tab to snap"/>
+  <int value="9" label="Auto snapped in split screen"/>
+  <int value="10" label="Window is snapped from window state restore"/>
+  <int value="11" label="Window is snapped by the window layout menu"/>
+  <int value="12"
+      label="Window is snapped by full restore or desk template or saved desk
+             launch"/>
+  <int value="13"
+      label="Window is snapped due to tablet and clamshell transition"/>
+  <int value="14" label="Window is snapped due to desk or session change"/>
+  <int value="15"
+      label="Window is snapped when updating a window in snap group"/>
+  <int value="16" label="Window is snapped in test"/>
+</enum>
+
+<enum name="WindowSplittingDragType">
+  <int value="0" label="Incomplete drag"/>
+  <int value="1" label="No window split"/>
+  <int value="2" label="Has window split"/>
+</enum>
+
+<enum name="WindowSplittingSplitRegion">
+  <int value="0" label="No split"/>
+  <int value="1" label="Split left"/>
+  <int value="2" label="Split right"/>
+  <int value="3" label="Split top"/>
+  <int value="4" label="Split bottom"/>
+</enum>
+
+</enums>
+
+</histogram-configuration>

@@ -13,9 +13,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * Utility functions for calculating Rectangle properties (i.e. Area of a single Rect)
- */
+/** Utility functions for calculating Rectangle properties (i.e. Area of a single Rect) */
 public final class RectUtils {
     private RectUtils() {}
 
@@ -23,9 +21,7 @@ public final class RectUtils {
         return rect.width() * rect.height();
     }
 
-    /**
-     * Segment Type Constants
-     */
+    /** Segment Type Constants */
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({SegmentType.START, SegmentType.END})
     private @interface SegmentType {
@@ -148,35 +144,35 @@ public final class RectUtils {
     private static Rect sClippedRects[];
 
     /*
-        This is a 2d extension of the 1d range intersection problem.
-        In one dimension we are interested in calculating the
-        intersected set of ranges for an input. To do this we decompose
-        each input range into a start and an end position, plus whether
-        it is entering a range or leaving it. Once these decomposed
-        positions are sorted, we can compute the intersection by
-        iterating over the list and recording transitions from not being
-        in a range to being in a range, and vice versa.
+            This is a 2d extension of the 1d range intersection problem.
+            In one dimension we are interested in calculating the
+            intersected set of ranges for an input. To do this we decompose
+            each input range into a start and an end position, plus whether
+            it is entering a range or leaving it. Once these decomposed
+            positions are sorted, we can compute the intersection by
+            iterating over the list and recording transitions from not being
+            in a range to being in a range, and vice versa.
 
-        E.g. [1,4] U [2,5] U [7,9] -> [1,+1] [2,+1] [4,-1] [5,-1]
-        [7,+1] [9,-1]. Then, summing the second component as we
-        traverse, and looking for 0->1 and 1->0 transitions, we end up
-        finding the union ranges [1,5], [7,9]
+            E.g. [1,4] U [2,5] U [7,9] -> [1,+1] [2,+1] [4,-1] [5,-1]
+            [7,+1] [9,-1]. Then, summing the second component as we
+            traverse, and looking for 0->1 and 1->0 transitions, we end up
+            finding the union ranges [1,5], [7,9]
 
-        In order to extend this to 2d axis aligned rectangles, we
-        decompose rectangles into top and bottom edges that add or
-        remove a range from the 1d data data structure. Before we add or
-        remove a range to the 1d data structure we accumulate area equal
-        to the current 1d coverage multiplied by the delta-y from the
-        last point at which we updated the coverage.
+            In order to extend this to 2d axis aligned rectangles, we
+            decompose rectangles into top and bottom edges that add or
+            remove a range from the 1d data data structure. Before we add or
+            remove a range to the 1d data structure we accumulate area equal
+            to the current 1d coverage multiplied by the delta-y from the
+            last point at which we updated the coverage.
 
-1  4  7   11 14  18
-1     +------+         [4,+1], [11,-1] cov=7 area += 0
-2  +----------------+  [1,+1], [4,+1], [11,-1], [18,-1], cov=17, rea += 7*1
-3  |  |  +------+   |  [1,+1], [4,+1], [7,+1], [11,-1], [14,-1], [18,-1], cov=17 area += 17*1
-4  |  +------+  |   |  [1,+1], [7,+1], [14,-1], [18,-1], cov=17 area += 17*1
-5  +----------------+  [7,+1], [14,-1] cov=7 area += 17*1
-6        +------+      [] area += 7*1
-    */
+    1  4  7   11 14  18
+    1     +------+         [4,+1], [11,-1] cov=7 area += 0
+    2  +----------------+  [1,+1], [4,+1], [11,-1], [18,-1], cov=17, rea += 7*1
+    3  |  |  +------+   |  [1,+1], [4,+1], [7,+1], [11,-1], [14,-1], [18,-1], cov=17 area += 17*1
+    4  |  +------+  |   |  [1,+1], [7,+1], [14,-1], [18,-1], cov=17 area += 17*1
+    5  +----------------+  [7,+1], [14,-1] cov=7 area += 17*1
+    6        +------+      [] area += 7*1
+        */
 
     public static int calculatePixelsOfCoverage(Rect screenRect, List<Rect> coverageRects) {
         if (coverageRects.size() == 0) {
@@ -193,7 +189,7 @@ public final class RectUtils {
         for (int i = 0; i < coverageRects.size(); i++) {
             Rect clipRect = coverageRects.get(i);
             if (clipRect.intersect(screenRect)) { // This line may modify the value of the passed
-                                                  // in coverage rects
+                // in coverage rects
                 sClippedRects[numClippedRects++] = clipRect;
             }
         }
@@ -229,8 +225,9 @@ public final class RectUtils {
         int coveredPixels = 0;
         for (int i = 0; i < maxSegments; i++) {
             HorizontalSegment hSegment = sHorizontalSegments[i];
-            coveredPixels += getCoverageOfVerticalSegments(sVerticalSegments, numVerticalSegments)
-                    * (hSegment.mX - prev_x);
+            coveredPixels +=
+                    getCoverageOfVerticalSegments(sVerticalSegments, numVerticalSegments)
+                            * (hSegment.mX - prev_x);
             sVerticalSegment1.set(hSegment.mTop, SegmentType.START);
             sVerticalSegment2.set(hSegment.mBottom, SegmentType.END);
 

@@ -148,6 +148,11 @@ public class TabUnitTest {
         mTab =
                 new TabImpl(TAB1_ID, mProfile, null) {
                     @Override
+                    public WindowAndroid getWindowAndroid() {
+                        return mWindowAndroid;
+                    }
+
+                    @Override
                     void updateWindowAndroid(WindowAndroid windowAndroid) {}
 
                     @Override

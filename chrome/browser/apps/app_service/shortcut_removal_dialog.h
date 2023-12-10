@@ -22,6 +22,10 @@ namespace gfx {
 class ImageSkia;
 }
 
+namespace ui {
+class ImageModel;
+}
+
 namespace views {
 class NativeWindowTracker;
 }
@@ -47,7 +51,7 @@ class ShortcutRemovalDialog {
   static base::WeakPtr<views::Widget> Create(
       Profile* profile,
       const apps::ShortcutId& shortcut_id,
-      gfx::ImageSkia icon_with_badge,
+      const ui::ImageModel& icon_with_badge,
       gfx::NativeWindow parent_window,
       base::WeakPtr<apps::ShortcutRemovalDialog> shortcut_removal_dialog);
 

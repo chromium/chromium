@@ -9,7 +9,6 @@
 
 #include "base/component_export.h"
 #include "base/time/time.h"
-#include "net/base/proxy_server.h"
 #include "net/dns/public/resolve_error_info.h"
 #include "net/ssl/ssl_info.h"
 #include "services/network/public/cpp/cors/cors_error_status.h"
@@ -105,9 +104,6 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) URLLoaderCompletionStatus {
   // Set when response blocked by CORB needs to be reported to the DevTools
   // console.
   bool should_report_corb_blocking = false;
-
-  // The proxy server used for this request, if any.
-  net::ProxyServer proxy_server;
 
   // Host resolution error info for this request.
   net::ResolveErrorInfo resolve_error_info;

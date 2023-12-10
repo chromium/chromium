@@ -97,9 +97,9 @@ update [IsAllowlistedPermissionType()](https://source.chromium.org/chromium/chro
 1. In [content_settings_types.h](https://source.chromium.org/chromium/chromium/src/+/main:components/content_settings/core/common/content_settings_types.h)
 update
 [ContentSettingsType](https://source.chromium.org/chromium/chromium/src/+/main:components/content_settings/core/common/content_settings_types.h;l=17;drc=0c2e6d2e27af976e1b28eebd7dacc7a0296bb1cc)
-2. In [content_settings.cc](https://source.chromium.org/chromium/chromium/src/+/main:components/content_settings/core/common/content_settings.cc)
+2. In [content_settings_uma_util.cc](https://source.chromium.org/chromium/chromium/src/+/main:components/content_settings/core/browser/content_settings_uma_util.cc)
 update
-[kHistogramValue](https://source.chromium.org/chromium/chromium/src/+/main:components/content_settings/core/common/content_settings.cc;l=31;drc=0c2e6d2e27af976e1b28eebd7dacc7a0296bb1cc)
+[kHistogramValue](https://source.chromium.org/chromium/chromium/src/+/main:components/content_settings/core/browser/content_settings_uma_util.cc;drc=c6239d599e27bb680984bd6e86e69321b3fe5a9d;l=16)
 3. In [content_settings_registry.cc](https://source.chromium.org/chromium/chromium/src/+/main:components/content_settings/core/browser/content_settings_registry.cc)
 update method
 [ContentSettingsRegistry::Init()](https://source.chromium.org/chromium/chromium/src/+/main:components/content_settings/core/browser/content_settings_registry.cc;l=122;drc=0c2e6d2e27af976e1b28eebd7dacc7a0296bb1cc)

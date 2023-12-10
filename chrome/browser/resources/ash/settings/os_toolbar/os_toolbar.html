@@ -1,15 +1,11 @@
-<style include="cr-icons cr-hidden-style">
+<style include="cr-icons cr-hidden-style settings-shared">
   :host {
     align-items: center;
-    background-color: var(--cros-bg-color);
+    background-color: var(--cros-sys-app_base_shaded);
     color: var(--cros-text-color-secondary);
     display: flex;
-    height: var(--cr-toolbar-height);
-    padding-top: var(--cr-toolbar-padding-top);
-  }
-
-  :host-context(body.jelly-enabled):host {
-    background-color: var(--cros-sys-app_base_shaded);
+    height: var(--settings-toolbar-height);
+    padding-top: var(--settings-toolbar-padding-top);
   }
 
   h1 {
@@ -22,6 +18,11 @@
     padding-inline-end: 12px;
   }
 
+  :host-context(body.revamp-wayfinding-enabled) h1 {
+    color: var(--cros-sys-primary);
+    font: var(--cros-title-1-font);
+  }
+
   #leftContent {
     position: relative;
     transition: opacity 100ms;
@@ -31,13 +32,13 @@
     align-items: center;
     box-sizing: border-box;
     display: flex;
-    /* 8px to match #rightSpacer + 6px to align with icons in menus. */
-    padding-inline-start: 14px;
+    padding-inline-start: var(--settings-toolbar-padding-inline-start);
     width: var(--settings-menu-width);
   }
 
   :host([narrow]) #leftSpacer {
     width: 20px;
+    padding-inline-start: var(--settings-toolbar-padding-inline-start-narrow);
   }
 
   cr-icon-button {
@@ -77,18 +78,25 @@
   }
 
   :host([showing-search_][is-search-box-cutoff_]) os-settings-search-box {
-    --cr-toolbar-field-width: 80vw; /* Ensures the input is not cutoff. */
-    margin-inline-start: 48px; /* No overlap with #leftContent. */
+    --cr-toolbar-field-width: min(80vw,
+      var(--settings-toolbar-search-box-width));
+    /* No overlap with #leftContent. */
+    margin-inline-start: 48px;
+  }
+
+  :host([showing-search_][is-search-box-cutoff_][narrow]) os-settings-search-box {
+    --cr-toolbar-field-width: min(80vw,
+      var(--settings-toolbar-narrow-search-box-width));
   }
 
   :host([showing-search_][narrow]:not([is-search-box-cutoff_]))
       os-settings-search-box {
-    --cr-toolbar-field-width: 680px;
+    --cr-toolbar-field-width: var(--settings-toolbar-narrow-search-box-width);
   }
 
   :host(:not([narrow]):not([is-search-box-cutoff_]))
       os-settings-search-box {
-    --cr-toolbar-field-width: 480px;
+    --cr-toolbar-field-width: var(--settings-toolbar-search-box-width);
   }
 
   :host(:not([narrow])) #leftContent {

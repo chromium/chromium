@@ -92,11 +92,11 @@ std::string ConvertUrlToPath(const webapps::ManifestId& manifest_id) {
   return manifest_id.PathForRequest();
 }
 
-base::expected<std::vector<std::pair<webapps::ManifestId, GURL>>, std::string>
+base::expected<std::vector<SubAppInstallParams>, std::string>
 AddOptionsFromMojo(
     const url::Origin& origin,
     const std::vector<SubAppsServiceAddParametersPtr>& sub_apps_to_add_mojo) {
-  std::vector<std::pair<webapps::ManifestId, GURL>> sub_apps;
+  std::vector<SubAppInstallParams> sub_apps;
   for (const auto& sub_app : sub_apps_to_add_mojo) {
     ASSIGN_OR_RETURN(webapps::ManifestId manifest_id,
                      ConvertPathToUrl(sub_app->manifest_id_path, origin));
@@ -230,7 +230,7 @@ void SubAppsServiceImpl::Add(
   }
 
   ASSIGN_OR_RETURN(
-      (std::vector<std::pair<webapps::ManifestId, GURL>> add_options),
+      (std::vector<SubAppInstallParams> add_options),
       AddOptionsFromMojo(render_frame_host().GetLastCommittedOrigin(),
                          sub_apps_to_add),
       // Compromised renderer, bail immediately (this call deletes *this).
@@ -252,7 +252,7 @@ void SubAppsServiceImpl::Add(
 
 void SubAppsServiceImpl::CollectInstallData(
     int add_call_id,
-    std::vector<std::pair<webapps::ManifestId, GURL>> requested_installs,
+    std::vector<SubAppInstallParams> requested_installs,
     webapps::ManifestId parent_manifest_id) {
   const auto install_info_collector = base::BarrierCallback<
       std::pair<webapps::ManifestId, std::unique_ptr<WebAppInstallInfo>>>(
@@ -345,7 +345,6 @@ void SubAppsServiceImpl::FinishAddCallOrShowInstallDialog(int add_call_id) {
                      weak_ptr_factory_.GetWeakPtr(), add_call_id),
       add_call_info.install_infos,
       /*parent_app_name=*/registrar.GetAppShortName(*parent_app_id),
-      /*parent_app_scope=*/registrar.GetAppScope(*parent_app_id).spec(),
       *parent_app_id, GetProfile(render_frame_host()),
       /*window=*/
       content::WebContents::FromRenderFrameHost(&render_frame_host())
@@ -375,8 +374,7 @@ void SubAppsServiceImpl::ScheduleSubAppInstalls(int add_call_id) {
   AddCallInfo& add_call_info = add_call_info_.at(add_call_id);
 
   const auto install_results_collector =
-      base::BarrierCallback<std::tuple<webapps::ManifestId, webapps::AppId,
-                                       webapps::InstallResultCode>>(
+      base::BarrierCallback<SubAppInstallResult>(
           add_call_info.install_infos.size(),
           base::BindOnce(&SubAppsServiceImpl::FinishAddCall,
                          weak_ptr_factory_.GetWeakPtr(), add_call_id));
@@ -391,7 +389,7 @@ void SubAppsServiceImpl::ScheduleSubAppInstalls(int add_call_id) {
         base::BindOnce(
             [](webapps::ManifestId manifest_id, const webapps::AppId& app_id,
                webapps::InstallResultCode result_code) {
-              return std::tuple(manifest_id, app_id, result_code);
+              return SubAppInstallResult(manifest_id, app_id, result_code);
             },
             manifest_id)
             .Then(install_results_collector));
@@ -400,9 +398,7 @@ void SubAppsServiceImpl::ScheduleSubAppInstalls(int add_call_id) {
 
 void SubAppsServiceImpl::FinishAddCall(
     int add_call_id,
-    std::vector<std::tuple<webapps::ManifestId,
-                           webapps::AppId,
-                           webapps::InstallResultCode>> install_results) {
+    std::vector<SubAppInstallResult> install_results) {
   AddCallInfo& add_call_info = add_call_info_.at(add_call_id);
 
   for (const auto& [manifest_id, app_id, result_code] : install_results) {

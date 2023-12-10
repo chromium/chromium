@@ -46,6 +46,7 @@
 #include "third_party/blink/renderer/core/events/mouse_event.h"
 #include "third_party/blink/renderer/core/events/simulated_event_util.h"
 #include "third_party/blink/renderer/core/events/text_event.h"
+#include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/frame/ad_tracker.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -227,7 +228,10 @@ DispatchEventResult EventDispatcher::Dispatch() {
           is_click || (event_->type() == event_type_names::kKeydown);
       soft_navigation_scope = std::make_unique<SoftNavigationEventScope>(
           SoftNavigationHeuristics::From(*window), script_state,
-          is_unfocused_keyboard_event, is_new_interaction);
+          is_unfocused_keyboard_event
+              ? SoftNavigationHeuristics::EventScopeType::Keyboard
+              : SoftNavigationHeuristics::EventScopeType::Click,
+          is_new_interaction);
     }
     // A genuine mouse click cannot be triggered by script so we don't expect
     // there are any script in the stack.
@@ -269,7 +273,8 @@ DispatchEventResult EventDispatcher::Dispatch() {
 #endif
   DCHECK(event_->target());
   DEVTOOLS_TIMELINE_TRACE_EVENT("EventDispatch",
-                                inspector_event_dispatch_event::Data, *event_);
+                                inspector_event_dispatch_event::Data, *event_,
+                                document.GetAgent().isolate());
   EventDispatchHandlingState* pre_dispatch_event_handler_result = nullptr;
   if (DispatchEventPreProcess(activation_target,
                               pre_dispatch_event_handler_result) ==

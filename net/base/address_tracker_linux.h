@@ -257,12 +257,12 @@ class NET_EXPORT_PRIVATE AddressTrackerLinux : public AddressMapOwnerLinux {
 
   mutable base::Lock address_map_lock_;
   AddressMap address_map_ GUARDED_BY(address_map_lock_);
-  absl::optional<AddressMapDiff> address_map_diff_;
+  std::optional<AddressMapDiff> address_map_diff_;
 
   // Set of interface indices for links that are currently online.
   mutable base::Lock online_links_lock_ ACQUIRED_AFTER(address_map_lock_);
   std::unordered_set<int> online_links_ GUARDED_BY(online_links_lock_);
-  absl::optional<OnlineLinksDiff> online_links_diff_;
+  std::optional<OnlineLinksDiff> online_links_diff_;
 
   // Set of interface names that should be ignored.
   const std::unordered_set<std::string> ignored_interfaces_;

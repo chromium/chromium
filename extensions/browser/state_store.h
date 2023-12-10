@@ -50,7 +50,7 @@ class StateStore : public ExtensionRegistryObserver {
              bool deferred_load);
   // This variant is useful for testing (using a mock ValueStore).
   StateStore(content::BrowserContext* context,
-             absl::optional<base::Value> store);
+             std::optional<base::Value> store);
 
   StateStore(const StateStore&) = delete;
   StateStore& operator=(const StateStore&) = delete;

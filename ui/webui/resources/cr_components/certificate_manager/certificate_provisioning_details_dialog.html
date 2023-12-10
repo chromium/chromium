@@ -73,6 +73,9 @@
         [[model.lastUnsuccessfulMessage]]
       </div>
     </div>
+    <cr-button id="reset" role="button" on-click="onReset_">
+      [[i18n('certificateProvisioningReset')]]
+    </cr-button>
     <hr></hr>
     <cr-expand-button expanded="{{advancedExpanded_}}"
         aria-expanded$="[[boolToString_(advancedOpened)]]">

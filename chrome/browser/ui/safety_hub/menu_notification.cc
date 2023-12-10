@@ -11,24 +11,25 @@
 #include "base/time/time.h"
 #include "chrome/browser/ui/safety_hub/extensions_result.h"
 #include "chrome/browser/ui/safety_hub/notification_permission_review_service.h"
+#include "chrome/browser/ui/safety_hub/password_status_check_result.h"
 #include "chrome/browser/ui/safety_hub/safe_browsing_result.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_constants.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_service.h"
 #include "chrome/browser/ui/safety_hub/unused_site_permissions_service.h"
 
-SafetyHubMenuNotification::SafetyHubMenuNotification()
-    : is_currently_active_(false),
-      impression_count_(0),
-      first_impression_time_(absl::nullopt),
-      last_impression_time_(absl::nullopt),
-      show_only_after_(absl::nullopt),
-      all_time_notification_count_(0) {}
+SafetyHubMenuNotification::SafetyHubMenuNotification(
+    safety_hub::SafetyHubModuleType type)
+    : first_impression_time_(std::nullopt),
+      last_impression_time_(std::nullopt),
+      show_only_after_(std::nullopt),
+      module_type_(type) {}
 
 SafetyHubMenuNotification::~SafetyHubMenuNotification() = default;
 
 SafetyHubMenuNotification::SafetyHubMenuNotification(
     const base::Value::Dict& dict,
-    safety_hub::SafetyHubModuleType type) {
+    safety_hub::SafetyHubModuleType type)
+    : module_type_(type) {
   is_currently_active_ =
       dict.FindBool(safety_hub::kSafetyHubMenuNotificationActiveKey).value();
   impression_count_ =
@@ -93,7 +94,7 @@ void SafetyHubMenuNotification::Show() {
 void SafetyHubMenuNotification::Dismiss() {
   is_currently_active_ = false;
   impression_count_ = 0;
-  first_impression_time_ = absl::nullopt;
+  first_impression_time_ = std::nullopt;
   ++all_time_notification_count_;
 }
 
@@ -215,6 +216,12 @@ SafetyHubMenuNotification::GetResultFromDict(
       return std::make_unique<SafetyHubSafeBrowsingResult>(dict);
     case safety_hub::SafetyHubModuleType::EXTENSIONS:
       return std::make_unique<SafetyHubExtensionsResult>(dict);
+    case safety_hub::SafetyHubModuleType::PASSWORDS:
+      return std::make_unique<PasswordStatusCheckResult>(dict);
+    // No result class for version.
+    case safety_hub::SafetyHubModuleType::VERSION:
+      NOTREACHED();
+      return nullptr;
   }
 }
 
@@ -224,4 +231,9 @@ void SafetyHubMenuNotification::SetOnlyShowAfter(base::Time time) {
 
 void SafetyHubMenuNotification::ResetAllTimeNotificationCount() {
   all_time_notification_count_ = 0;
+}
+
+safety_hub::SafetyHubModuleType SafetyHubMenuNotification::GetModuleType()
+    const {
+  return module_type_;
 }

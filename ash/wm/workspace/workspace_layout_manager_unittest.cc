@@ -4,6 +4,7 @@
 
 #include "ash/wm/workspace/workspace_layout_manager.h"
 
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -64,7 +65,6 @@
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/components/audio/sounds.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/focus_client.h"
 #include "ui/aura/client/window_parenting_client.h"
@@ -1587,7 +1587,7 @@ class WorkspaceLayoutManagerBackdropTest : public AshTestBase {
   // Turn tablet mode on / off.
   void SetTabletModeEnabled(bool enabled) {
     Shell::Get()->tablet_mode_controller()->SetEnabledForTest(enabled);
-    ASSERT_EQ(enabled, Shell::Get()->tablet_mode_controller()->InTabletMode());
+    ASSERT_EQ(enabled, display::Screen::GetScreen()->InTabletMode());
   }
 
   aura::Window* CreateTestWindowInParent(aura::Window* root_window) {
@@ -1639,7 +1639,7 @@ class WorkspaceLayoutManagerBackdropTest : public AshTestBase {
   raw_ptr<aura::Window, DanglingUntriaged | ExperimentalAsh> default_container_;
 };
 
-constexpr absl::optional<Sound> kNoSoundKey = absl::nullopt;
+constexpr std::optional<Sound> kNoSoundKey = std::nullopt;
 
 }  // namespace
 
@@ -2268,8 +2268,7 @@ TEST_F(WorkspaceLayoutManagerBackdropTest, BackdropForSplitViewTest) {
   // Snap the window to left. Test that the backdrop window is still visible
   // and is the third child (split view divider as one of the children) in the
   // container. Its bounds should be the same as the snapped window's bounds.
-  split_view_controller()->SnapWindow(
-      window1.get(), SplitViewController::SnapPosition::kPrimary);
+  split_view_controller()->SnapWindow(window1.get(), SnapPosition::kPrimary);
 
   EXPECT_TRUE(OverviewController::Get()->InOverviewSession());
   // One of the windows in the default container is the overview
@@ -2297,8 +2296,7 @@ TEST_F(WorkspaceLayoutManagerBackdropTest, BackdropForSplitViewTest) {
   // visible but is now the fourth window in the container. Its bounds should
   // still be the same as the container bounds.
   std::unique_ptr<aura::Window> window2(CreateWindow(bounds));
-  split_view_controller()->SnapWindow(
-      window2.get(), SplitViewController::SnapPosition::kSecondary);
+  split_view_controller()->SnapWindow(window2.get(), SnapPosition::kSecondary);
 
   EXPECT_EQ(4U, default_container()->children().size());
   for (auto* child : default_container()->children()) {

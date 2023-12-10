@@ -11,7 +11,7 @@
 #include <stddef.h>
 #include <bitset>
 
-#include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
@@ -301,14 +301,6 @@ ChannelLayout GetChannelLayout(
 }
 
 bool IsSupportedInternal() {
-  // It is possible to force usage of WaveXxx APIs by using a command line
-  // flag.
-  const base::CommandLine* cmd_line = base::CommandLine::ForCurrentProcess();
-  if (cmd_line->HasSwitch(switches::kForceWaveAudio)) {
-    DVLOG(1) << "Forcing usage of Windows WaveXxx APIs";
-    return false;
-  }
-
   // Verify that it is possible to a create the IMMDeviceEnumerator interface.
   ComPtr<IMMDeviceEnumerator> device_enumerator =
       CreateDeviceEnumeratorInternal(false);
@@ -599,13 +591,6 @@ base::TimeDelta CoreAudioUtil::ReferenceTimeToTimeDelta(REFERENCE_TIME time) {
   return base::Microseconds(0.1 * time + 0.5);
 }
 
-AUDCLNT_SHAREMODE CoreAudioUtil::GetShareMode() {
-  const base::CommandLine* cmd_line = base::CommandLine::ForCurrentProcess();
-  if (cmd_line->HasSwitch(switches::kEnableExclusiveAudio))
-    return AUDCLNT_SHAREMODE_EXCLUSIVE;
-  return AUDCLNT_SHAREMODE_SHARED;
-}
-
 int CoreAudioUtil::NumberOfActiveDevices(EDataFlow data_flow) {
   // Create the IMMDeviceEnumerator interface.
   ComPtr<IMMDeviceEnumerator> device_enumerator = CreateDeviceEnumerator();
@@ -871,10 +856,10 @@ HRESULT CoreAudioUtil::GetSharedModeMixFormat(IAudioClient* client,
 }
 
 bool CoreAudioUtil::IsFormatSupported(IAudioClient* client,
-                                      AUDCLNT_SHAREMODE share_mode,
                                       const WaveFormatWrapper format) {
   ScopedCoMem<WAVEFORMATEX> closest_match;
-  HRESULT hr = client->IsFormatSupported(share_mode, format, &closest_match);
+  HRESULT hr = client->IsFormatSupported(AUDCLNT_SHAREMODE_SHARED, format,
+                                         &closest_match);
 
   // This log can only be triggered for shared mode.
   DLOG_IF(ERROR, hr == S_FALSE) << "Format is not supported "
@@ -935,8 +920,7 @@ bool CoreAudioUtil::IsChannelLayoutSupported(const std::string& device_id,
   // an even wider range of shared-mode formats where the installation package
   // for the audio device includes a local effects (LFX) audio processing
   // object (APO) that can handle format conversions.
-  return CoreAudioUtil::IsFormatSupported(client.Get(),
-                                          AUDCLNT_SHAREMODE_SHARED, format);
+  return CoreAudioUtil::IsFormatSupported(client.Get(), format);
 }
 
 HRESULT CoreAudioUtil::GetDevicePeriod(IAudioClient* client,

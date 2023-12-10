@@ -21,7 +21,6 @@
 #include "content/public/renderer/render_thread.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/extension_messages.h"
-#include "extensions/common/identifiability_metrics.h"
 #include "extensions/common/mojom/host_id.mojom.h"
 #include "extensions/common/mojom/injection_type.mojom-shared.h"
 #include "extensions/renderer/dom_activity_logger.h"
@@ -30,7 +29,6 @@
 #include "extensions/renderer/isolated_world_manager.h"
 #include "extensions/renderer/scripts_run_info.h"
 #include "extensions/renderer/trace_util.h"
-#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/blink/public/platform/web_isolated_world_info.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_local_frame.h"
@@ -66,7 +64,9 @@ class ScriptInjection::FrameWatcher : public content::RenderFrameObserver {
   ~FrameWatcher() override {}
 
  private:
-  void WillDetach() override { injection_->invalidate_render_frame(); }
+  void WillDetach(blink::DetachReason detach_reason) override {
+    injection_->invalidate_render_frame();
+  }
   void OnDestruct() override { injection_->invalidate_render_frame(); }
 
   raw_ptr<ScriptInjection, ExperimentalRenderer> injection_;
@@ -83,8 +83,6 @@ ScriptInjection::ScriptInjection(
       injection_host_(std::move(injection_host)),
       run_location_(run_location),
       request_id_(kInvalidRequestId),
-      ukm_source_id_(ukm::SourceIdObj::FromInt64(
-          render_frame_->GetWebFrame()->GetDocument().GetUkmSourceId())),
       complete_(false),
       did_inject_js_(false),
       log_activity_(log_activity),
@@ -217,8 +215,6 @@ ScriptInjection::InjectionResult ScriptInjection::Inject(
   complete_ = did_inject_js_ || !should_inject_js;
 
   if (complete_) {
-    if (host_id().type == mojom::HostID::HostType::kExtensions)
-      RecordContentScriptInjection(ukm_source_id_, host_id().id);
     injector_->OnInjectionComplete(std::move(execution_result_), run_location_);
   } else {
     ++scripts_run_info->num_blocking_js;
@@ -280,12 +276,12 @@ void ScriptInjection::InjectJs(std::set<std::string>* executing_scripts,
       injector_->ExpectsResults(), injector_->ShouldWaitForPromise());
 }
 
-void ScriptInjection::OnJsInjectionCompleted(absl::optional<base::Value> value,
+void ScriptInjection::OnJsInjectionCompleted(std::optional<base::Value> value,
                                              base::TimeTicks start_time) {
   DCHECK(!did_inject_js_);
 
   base::TimeTicks timestamp(base::TimeTicks::Now());
-  absl::optional<base::TimeDelta> elapsed;
+  std::optional<base::TimeDelta> elapsed;
   // If the script will never execute (such as if the context is destroyed),
   // `start_time` is null. Only log a time for execution if the script, in fact,
   // executed.
@@ -315,8 +311,6 @@ void ScriptInjection::OnJsInjectionCompleted(absl::optional<base::Value> value,
 
   execution_result_ = std::move(value);
   did_inject_js_ = true;
-  if (host_id().type == mojom::HostID::HostType::kExtensions)
-    RecordContentScriptInjection(ukm_source_id_, host_id().id);
 
   // If |async_completion_callback_| is set, it means the script finished
   // asynchronously, and we should run it.

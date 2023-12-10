@@ -249,7 +249,7 @@ void EduAccountLoginHandler::FetchReAuthProofTokenForParent(
 }
 
 void EduAccountLoginHandler::OnListFamilyMembersResponse(
-    supervised_user::ProtoFetcherStatus status,
+    const supervised_user::ProtoFetcherStatus& status,
     std::unique_ptr<kids_chrome_management::ListFamilyMembersResponse>
         response) {
   if (!status.IsOk()) {
@@ -286,7 +286,7 @@ void EduAccountLoginHandler::OnListFamilyMembersSuccess(
 }
 
 void EduAccountLoginHandler::OnListFamilyMembersFailure(
-    supervised_user::ProtoFetcherStatus status) {
+    const supervised_user::ProtoFetcherStatus& status) {
   list_family_members_fetcher_.reset();
   RejectJavascriptCallback(base::Value(get_parents_callback_id_),
                            base::Value::List());

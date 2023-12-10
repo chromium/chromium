@@ -24,29 +24,26 @@ import java.util.Map;
 @JNINamespace("hats")
 public class SurveyConfig {
     private static SurveyConfig sConfigForTesting;
-    /**
-     * Unique key associate with the config.
-     */
+
+    /** Unique key associate with the config. */
     final String mTrigger;
-    /**
-     * TriggerId used to download & present the associated survey from HaTS service.
-     */
+
+    /** TriggerId used to download & present the associated survey from HaTS service. */
     final String mTriggerId;
 
     /** Probability [0,1] of how likely a chosen user will see the survey. */
     final double mProbability;
+
     /**
      * Whether the survey will prompt every time because the user has explicitly decided to take the
      * survey e.g. clicking a link.
      */
     final boolean mUserPrompted;
-    /**
-     * Product Specific Bit Data fields which are sent with the survey response.
-     */
+
+    /** Product Specific Bit Data fields which are sent with the survey response. */
     final String[] mPsdBitDataFields;
-    /**
-     * Product Specific String Data fields which are sent with the survey response.
-     */
+
+    /** Product Specific String Data fields which are sent with the survey response. */
     final String[] mPsdStringDataFields;
 
     /**
@@ -76,8 +73,13 @@ public class SurveyConfig {
 
     /** Not generated from java. */
     @VisibleForTesting
-    SurveyConfig(String trigger, String triggerId, double probability, boolean userPrompted,
-            String[] psdBitDataFields, String[] psdStringDataFields) {
+    SurveyConfig(
+            String trigger,
+            String triggerId,
+            double probability,
+            boolean userPrompted,
+            String[] psdBitDataFields,
+            String[] psdStringDataFields) {
         mTrigger = trigger;
         mTriggerId = triggerId;
         mProbability = probability;
@@ -87,17 +89,26 @@ public class SurveyConfig {
     }
 
     @CalledByNative
-    private static void addActiveSurveyConfigToHolder(Holder holder, String trigger,
-            String triggerId, double probability, boolean userPrompted, String[] psdBitDataFields,
+    private static void addActiveSurveyConfigToHolder(
+            Holder holder,
+            String trigger,
+            String triggerId,
+            double probability,
+            boolean userPrompted,
+            String[] psdBitDataFields,
             String[] psdStringDataFields) {
-        holder.mTriggers.put(trigger,
-                new SurveyConfig(trigger, triggerId, probability, userPrompted, psdBitDataFields,
+        holder.mTriggers.put(
+                trigger,
+                new SurveyConfig(
+                        trigger,
+                        triggerId,
+                        probability,
+                        userPrompted,
+                        psdBitDataFields,
                         psdStringDataFields));
     }
 
-    /**
-     * Holder that stores all the active surveys for Android.
-     */
+    /** Holder that stores all the active surveys for Android. */
     static class Holder {
         private static Holder sInstance;
         private long mNativeInstance;
@@ -128,6 +139,7 @@ public class SurveyConfig {
     @NativeMethods
     interface Natives {
         long initHolder(Holder caller);
+
         void destroy(long nativeSurveyConfigHolder);
     }
 }

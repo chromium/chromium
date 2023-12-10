@@ -16,6 +16,8 @@ import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../component
 import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.js';
 import {OOBE_UI_STATE} from '../../components/display_manager_types.js';
 
+import {getTemplate} from './app_launch_splash.html.js';
+
 
 
 /**
@@ -64,7 +66,7 @@ class AppLaunchSplash extends AppLaunchSplashBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

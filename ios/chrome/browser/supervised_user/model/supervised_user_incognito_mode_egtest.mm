@@ -3,11 +3,9 @@
 // found in the LICENSE file.
 
 #import "base/feature_list.h"
-#import "base/strings/sys_string_conversions.h"
 #import "components/supervised_user/core/common/features.h"
 #import "ios/chrome/browser/policy/policy_earl_grey_matchers.h"
-#import "ios/chrome/browser/signin/capabilities_types.h"
-#import "ios/chrome/browser/signin/fake_system_identity.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
@@ -19,9 +17,12 @@
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/testing/earl_grey/app_launch_configuration.h"
-#import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
-#import "ui/base/l10n/l10n_util.h"
+
+using chrome_test_util::ContainsPartialText;
+using chrome_test_util::ShowTabsButton;
+using chrome_test_util::TabGridIncognitoTabsPanelButton;
+using chrome_test_util::TabGridNewIncognitoTabButton;
 
 namespace {
 
@@ -47,15 +48,6 @@ NSString* const kTestLearnMoreLabel = @"Learn more";
   return config;
 }
 
-- (void)setUp {
-  [super setUp];
-  [self signInWithSupervisedAccount];
-}
-
-- (void)tearDown {
-  [super tearDown];
-}
-
 // Signs in with a supervised account.
 - (void)signInWithSupervisedAccount {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
@@ -66,100 +58,65 @@ NSString* const kTestLearnMoreLabel = @"Learn more";
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
 }
 
-// Test that the tools menu item "New Incognito Tab" is disabled.
-- (void)testToolsMenuIncognitoDisabled {
-  [ChromeEarlGreyUI openToolsMenu];
+// Tests that the tools menu item "New Incognito Tab" is disabled on signin and
+// re-enabled on signout.
+- (void)testToolsMenuIncognito {
+  [self signInWithSupervisedAccount];
 
+  [ChromeEarlGreyUI openToolsMenu];
   policy::AssertOverflowMenuElementEnabled(kToolsMenuNewTabId);
   policy::AssertOverflowMenuElementDisabled(kToolsMenuNewIncognitoTabId);
-}
+  [ChromeEarlGreyUI closeToolsMenu];
 
-// Test that the tools menu item "New Incognito Tab" is available after signout.
-- (void)testToolsMenuIncognitoEnabledOnSignout {
-  [SigninEarlGreyUI
-      signOutWithConfirmationChoice:SignOutConfirmationChoiceNotSyncing];
-  [SigninEarlGrey verifySignedOut];
+  [SigninEarlGrey signOut];
 
   [ChromeEarlGreyUI openToolsMenu];
-
   policy::AssertOverflowMenuElementEnabled(kToolsMenuNewTabId);
   policy::AssertOverflowMenuElementEnabled(kToolsMenuNewIncognitoTabId);
 }
 
-// Test that the "New Incognito Tab" item is disabled in the popup menu
-// triggered by long-pressing the tab grid button.
-- (void)testTabGridButtonLongPressMenuIncognitoDisabled {
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabelId(
-                                   IDS_IOS_TOOLBAR_SHOW_TABS)]
-      performAction:grey_longPress()];
+// Tests that the "New Incognito Tab" item in the popup menu (long-pressing the
+// tab grid button) is disabled on signin and re-enabled on signout.
+- (void)testTabGridButtonLongPressMenuIncognito {
+  [self signInWithSupervisedAccount];
 
+  [[EarlGrey selectElementWithMatcher:ShowTabsButton()]
+      performAction:grey_longPress()];
   policy::AssertButtonInCollectionEnabled(IDS_IOS_TOOLS_MENU_NEW_TAB);
   policy::AssertButtonInCollectionDisabled(
       IDS_IOS_TOOLS_MENU_NEW_INCOGNITO_TAB);
-}
 
-// Tests that the "edit" button of the tab grid is disabled.
-- (void)testTabGridEditButtonDisabled {
-  // Sign out so it is possible to open new incognito tab.
-  [SigninEarlGreyUI
-      signOutWithConfirmationChoice:SignOutConfirmationChoiceNotSyncing];
-  [SigninEarlGrey verifySignedOut];
+  // Dismiss the popup menu by tapping anywhere.
+  [[EarlGrey selectElementWithMatcher:ShowTabsButton()]
+      performAction:grey_tap()];
 
-  // Open new incognito tab then a regular one to get back to non-incognito
-  // mode.
-  [ChromeEarlGrey openNewIncognitoTab];
-  [ChromeEarlGrey openNewTab];
+  [SigninEarlGrey signOut];
 
-  // Re-sign in.
-  [self signInWithSupervisedAccount];
-
-  // Check that the button is disabled.
-  [ChromeEarlGreyUI openTabGrid];
-
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::RegularTabGrid()]
-      performAction:grey_swipeFastInDirection(kGREYDirectionRight)];
-
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridEditButton()]
-      assertWithMatcher:grey_not(grey_enabled())];
-}
-
-// Test that the "New Incognito Tab" item is available in the popup menu
-// triggered by long-pressing the tab grid button after signout.
-- (void)testTabGridButtonLongPressMenuIncognitoEnabledOnSignout {
-  [SigninEarlGreyUI
-      signOutWithConfirmationChoice:SignOutConfirmationChoiceNotSyncing];
-  [SigninEarlGrey verifySignedOut];
-
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabelId(
-                                   IDS_IOS_TOOLBAR_SHOW_TABS)]
+  [[EarlGrey selectElementWithMatcher:ShowTabsButton()]
       performAction:grey_longPress()];
-
   policy::AssertButtonInCollectionEnabled(IDS_IOS_TOOLS_MENU_NEW_TAB);
   policy::AssertButtonInCollectionEnabled(IDS_IOS_TOOLS_MENU_NEW_INCOGNITO_TAB);
 }
 
-// Test that the disabled incognito tab grid shows a link to Family Link.
+// Tests that the disabled incognito tab grid shows a link to Family Link.
 - (void)testTabGridIncognitoDisabled {
-  [ChromeEarlGrey showTabSwitcher];
+  [self signInWithSupervisedAccount];
 
   // Open incognito tab grid.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::
-                                          TabGridIncognitoTabsPanelButton()]
+  [ChromeEarlGrey showTabSwitcher];
+  [[EarlGrey selectElementWithMatcher:TabGridIncognitoTabsPanelButton()]
       performAction:grey_tap()];
 
   // New Incognito Tab button `(+)` should be disabled.
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::TabGridNewIncognitoTabButton()]
+  [[EarlGrey selectElementWithMatcher:TabGridNewIncognitoTabButton()]
       assertWithMatcher:grey_accessibilityTrait(
                             UIAccessibilityTraitNotEnabled)];
 
   // The disabled incognito tab grid should display a message for supervised
   // users.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::ContainsPartialText(
+  [[EarlGrey selectElementWithMatcher:ContainsPartialText(
                                           kTestSupervisedIncognitoMessage)]
-      assertWithMatcher:grey_notNil()];
+      assertWithMatcher:grey_sufficientlyVisible()];
 
   // Check that the "Learn more" link works.
   [[EarlGrey
@@ -181,30 +138,80 @@ NSString* const kTestLearnMoreLabel = @"Learn more";
                   expectedHostname.c_str());
 }
 
-// Test that the incognito tab grid is available after signout.
+// Tests that the incognito tab grid is available after signout.
 - (void)testTabGridIncognitoEnabledOnSignout {
-  [SigninEarlGreyUI
-      signOutWithConfirmationChoice:SignOutConfirmationChoiceNotSyncing];
-  [SigninEarlGrey verifySignedOut];
+  [self signInWithSupervisedAccount];
+  [SigninEarlGrey signOut];
 
+  // Open the incognito tab grid.
   [ChromeEarlGrey showTabSwitcher];
-
-  // Open incognito tab grid.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::
-                                          TabGridIncognitoTabsPanelButton()]
+  [[EarlGrey selectElementWithMatcher:TabGridIncognitoTabsPanelButton()]
       performAction:grey_tap()];
 
-  // New Incognito Tab button `(+)` should be enabled.
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::TabGridNewIncognitoTabButton()]
+  // New Incognito Tab button `(+)` should be re-enabled.
+  [[EarlGrey selectElementWithMatcher:TabGridNewIncognitoTabButton()]
       assertWithMatcher:grey_not(grey_accessibilityTrait(
                             UIAccessibilityTraitNotEnabled))];
 
   // The disabled incognito tab should not display any messages from the
   // disabled incognito tab grid.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::ContainsPartialText(
+  [[EarlGrey selectElementWithMatcher:ContainsPartialText(
                                           kTestSupervisedIncognitoMessage)]
       assertWithMatcher:grey_nil()];
+}
+
+// Tests that incognito tabs are destroyed after supervised users sign in.
+- (void)testIncognitoTabsDestroyedOnSignin {
+  // Create new incognito tabs.
+  [ChromeEarlGrey openNewIncognitoTab];
+  [ChromeEarlGrey openNewIncognitoTab];
+  GREYAssertEqual(2, [ChromeEarlGrey incognitoTabCount],
+                  @"Incognito tab count should be 2");
+
+  // The latest incognito tab is displayed.
+  GREYAssertTrue([ChromeEarlGrey isIncognitoMode],
+                 @"Should stay in incognito mode");
+
+  [self signInWithSupervisedAccount];
+
+  // All incognito tabs should be destroyed.
+  GREYAssertEqual(0, [ChromeEarlGrey incognitoTabCount],
+                  @"Incognito tab count should be 0");
+
+  // If the supervised user was previously on an incognito tab, the disabled
+  // incognito tab grid should be displayed.
+  [[EarlGrey selectElementWithMatcher:ContainsPartialText(
+                                          kTestSupervisedIncognitoMessage)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Check that the edit button is disabled.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridEditButton()]
+      assertWithMatcher:grey_not(grey_enabled())];
+}
+
+// Tests that incognito tabs are destroyed while supervised users stay in
+// a regular tab.
+- (void)testIncognitoTabsDestroyedOnSigninInBackground {
+  // Create new incognito tabs.
+  [ChromeEarlGrey openNewIncognitoTab];
+  [ChromeEarlGrey openNewIncognitoTab];
+  GREYAssertEqual(2, [ChromeEarlGrey incognitoTabCount],
+                  @"Incognito tab count should be 2");
+
+  // Open a new regular tab.
+  [ChromeEarlGrey openNewTab];
+  GREYAssertFalse([ChromeEarlGrey isIncognitoMode],
+                  @"Should stay in regular tab.");
+
+  [self signInWithSupervisedAccount];
+
+  // All incognito tabs should be destroyed.
+  GREYAssertEqual(0, [ChromeEarlGrey incognitoTabCount],
+                  @"Incognito tab count should be 0");
+
+  // The user should stay on the new tab page.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::NewTabPageOmnibox()]
+      assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 @end

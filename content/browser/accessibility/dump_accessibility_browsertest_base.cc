@@ -233,8 +233,6 @@ void DumpAccessibilityTestBase::ChooseFeatures(
   // markers.
   enabled_features->emplace_back(features::kUseAXPositionForDocumentMarkers);
 
-  enabled_features->emplace_back(blink::features::kPortals);
-
   auto* vec = GetParam().second ? enabled_features : disabled_features;
   vec->emplace_back(blink::features::kSerializeAccessibilityPostLifecycle);
 }
@@ -521,15 +519,10 @@ std::map<std::string, unsigned> DumpAccessibilityTestBase::CollectAllFrameUrls(
     //
     // In this scenario, B's contentWindow.location.href matches A's url,
     // but B's url in the browser frame tree is still "about:blank".
-    //
-    // We also ignore frame tree nodes created for portals in the outer
-    // WebContents as the node doesn't have a url set.
 
     std::string url = node->current_url().spec();
     if (url != url::kAboutBlankURL && url != url::kAboutSrcdocURL &&
-        !url.empty() && !SkipUrlMatch(skip_urls, url) &&
-        node->frame_owner_element_type() !=
-            blink::FrameOwnerElementType::kPortal) {
+        !url.empty() && !SkipUrlMatch(skip_urls, url)) {
       all_frame_urls[url] += 1;
     }
   }

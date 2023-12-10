@@ -5,11 +5,12 @@
 #ifndef ASH_SHELF_SHELF_VIEW_TEST_API_H_
 #define ASH_SHELF_SHELF_VIEW_TEST_API_H_
 
+#include <optional>
 #include <string>
+
 #include "ash/public/cpp/shelf_item.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/compositor/layer_tree_owner.h"
 
@@ -126,13 +127,12 @@ class ShelfViewTestAPI {
   void SetShelfContextMenuCallback(base::RepeatingClosure closure);
 
   // Returns |separator_index_|.
-  absl::optional<size_t> GetSeparatorIndex() const;
+  std::optional<size_t> GetSeparatorIndex() const;
 
   // Checks whether the separator is visible or not.
   bool IsSeparatorVisible() const;
 
-  ui::LayerTreeOwner* GetPendingPromiseLayerForId(
-      const std::string& promise_app_id);
+  bool HasPendingPromiseAppRemoval(const std::string& promise_app_id) const;
 
  private:
   raw_ptr<ShelfView, DanglingUntriaged | ExperimentalAsh> shelf_view_;

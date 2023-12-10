@@ -53,7 +53,7 @@ struct Env {
                                     gl::kGLImplementationANGLEName);
     command_line->AppendSwitchASCII(switches::kUseANGLE,
                                     gl::kANGLEImplementationNullName);
-    base::FeatureList::InitializeInstance(std::string(), std::string());
+    base::FeatureList::InitInstance(std::string(), std::string());
     base::SingleThreadTaskExecutor io_task_executor(base::MessagePumpType::IO);
 #if BUILDFLAG(IS_OZONE)
     ui::OzonePlatform::InitializeForGPU(ui::OzonePlatform::InitParams());

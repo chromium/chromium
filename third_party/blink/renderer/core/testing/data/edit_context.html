@@ -1,0 +1,19 @@
+<div id="editContextDiv">0123456789abcdefghijklmnopqrstuvwxyz</div>
+<script>
+  const editContextDiv = document.querySelector("#editContextDiv");
+  const editContext = new EditContext();
+  editContextDiv.editContext = editContext;
+  editContext.updateText(0, editContextDiv.innerText.length, editContextDiv.innerText);
+  editContext.addEventListener("textupdate", (e) => {
+    const text = editContextDiv.innerText;
+    editContextDiv.innerText = text.substring(0, e.updateRangeStart) + e.text + text.substring(e.updateRangeEnd, text.length);
+    const selection = window.getSelection();
+    selection.setBaseAndExtent(editContextDiv.firstChild, e.selectionStart, editContextDiv.firstChild, e.selectionEnd);
+  });
+  document.addEventListener("selectionchange", (e) => {
+    const selection = window.getSelection();
+    if (selection.baseNode !== editContextDiv.firstChild || selection.extentNode !== editContextDiv.firstChild)
+      return;
+    editContext.updateSelection(selection.baseOffset, selection.extentOffset);
+  });
+</script>

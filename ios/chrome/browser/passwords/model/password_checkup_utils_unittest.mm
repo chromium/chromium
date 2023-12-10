@@ -12,7 +12,6 @@
 #import "components/password_manager/core/browser/password_form.h"
 #import "components/password_manager/core/browser/password_manager_test_utils.h"
 #import "components/password_manager/core/browser/password_store/test_password_store.h"
-#import "components/password_manager/core/common/password_manager_features.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"
 #import "components/prefs/testing_pref_service.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_affiliation_service_factory.h"
@@ -132,10 +131,6 @@ class PasswordCheckupUtilsTest : public PlatformTest {
 
 // Tests that the correct warning type is returned.
 TEST_F(PasswordCheckupUtilsTest, CheckHighestPriorityWarningType) {
-  // Enable Password Checkup feature.
-  base::test::ScopedFeatureList feature_list(
-      password_manager::features::kIOSPasswordCheckup);
-
   std::vector<CredentialUIEntry> insecure_credentials;
   // The "no insecure passwords" warning is the highest priority warning.
   EXPECT_THAT(GetWarningOfHighestPriority(insecure_credentials),
@@ -192,10 +187,6 @@ TEST_F(PasswordCheckupUtilsTest, CheckHighestPriorityWarningType) {
 // Tests that the correct number of saved passwords is returned depending on the
 // warning type of highest priority.
 TEST_F(PasswordCheckupUtilsTest, CheckPasswordCountForWarningType) {
-  // Enable Password Checkup feature.
-  base::test::ScopedFeatureList feature_list(
-      password_manager::features::kIOSPasswordCheckup);
-
   std::vector<CredentialUIEntry> insecure_credentials;
   WarningType warning_type = GetWarningOfHighestPriority(insecure_credentials);
   EXPECT_EQ(GetPasswordCountForWarningType(warning_type, insecure_credentials),
@@ -258,45 +249,8 @@ TEST_F(PasswordCheckupUtilsTest, CheckPasswordCountForWarningType) {
             4);
 }
 
-// Tests that the correct string is returned with the right timestamp when
-// kIOSPasswordCheckup feature is disabled.
-TEST_F(PasswordCheckupUtilsTest,
-       ElapsedTimeSinceLastCheckWithoutkIOSPasswordCheckup) {
-  // Disable Password Checkup feature.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      password_manager::features::kIOSPasswordCheckup);
-
-  EXPECT_NSEQ(@"Check never run.", FormatElapsedTimeSinceLastCheck(
-                                       manager().GetLastPasswordCheckTime()));
-
-  base::Time expected1 = base::Time::Now() - base::Seconds(10);
-  browser_state()->GetPrefs()->SetDouble(
-      password_manager::prefs::kLastTimePasswordCheckCompleted,
-      expected1.InSecondsFSinceUnixEpoch());
-
-  EXPECT_NSEQ(
-      @"Last checked just now.",
-      FormatElapsedTimeSinceLastCheck(manager().GetLastPasswordCheckTime()));
-
-  base::Time expected2 = base::Time::Now() - base::Minutes(5);
-  browser_state()->GetPrefs()->SetDouble(
-      password_manager::prefs::kLastTimePasswordCheckCompleted,
-      expected2.InSecondsFSinceUnixEpoch());
-
-  EXPECT_NSEQ(
-      @"Last checked 5 minutes ago.",
-      FormatElapsedTimeSinceLastCheck(manager().GetLastPasswordCheckTime()));
-}
-
-// Tests that the correct string is returned with the right timestamp when
-// kIOSPasswordCheckup feature is enabled.
-TEST_F(PasswordCheckupUtilsTest,
-       ElapsedTimeSinceLastCheckWithkIOSPasswordCheckup) {
-  // Enable Password Checkup feature.
-  base::test::ScopedFeatureList feature_list(
-      password_manager::features::kIOSPasswordCheckup);
-
+// Tests that the correct string is returned with the right timestamp.
+TEST_F(PasswordCheckupUtilsTest, ElapsedTimeSinceLastCheck) {
   EXPECT_NSEQ(@"Check never run.", FormatElapsedTimeSinceLastCheck(
                                        manager().GetLastPasswordCheckTime()));
 
@@ -318,13 +272,8 @@ TEST_F(PasswordCheckupUtilsTest,
       FormatElapsedTimeSinceLastCheck(manager().GetLastPasswordCheckTime()));
 }
 
-// Verifies the title case format of elapsed time string with the
-// kIOSPasswordCheckup feature enabled.
+// Verifies the title case format of elapsed time string.
 TEST_F(PasswordCheckupUtilsTest, ElapsedTimeSinceLastCheckInTitleCase) {
-  // Enable Password Checkup feature.
-  base::test::ScopedFeatureList feature_list(
-      password_manager::features::kIOSPasswordCheckup);
-
   base::Time expected1 = base::Time::Now() - base::Seconds(10);
   browser_state()->GetPrefs()->SetDouble(
       password_manager::prefs::kLastTimePasswordCheckCompleted,
@@ -415,10 +364,6 @@ TEST_F(PasswordCheckupUtilsTest, CheckPasswordsForWarningType) {
 // password.
 TEST_F(PasswordCheckupUtilsTest,
        CheckInsecurePasswordCountWhenOneReusedPassword) {
-  // Enable Password Checkup feature.
-  base::test::ScopedFeatureList feature_list(
-      password_manager::features::kIOSPasswordCheckup);
-
   // Add reused passwords.
   PasswordForm reused_form1 = MakeSavedPassword(kExampleCom1, kPassword116);
   PasswordForm reused_form2 = MakeSavedPassword(kExampleCom2, kPassword116);

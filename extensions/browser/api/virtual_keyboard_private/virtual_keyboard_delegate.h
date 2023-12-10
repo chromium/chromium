@@ -5,15 +5,14 @@
 #ifndef EXTENSIONS_BROWSER_API_VIRTUAL_KEYBOARD_PRIVATE_VIRTUAL_KEYBOARD_DELEGATE_H_
 #define EXTENSIONS_BROWSER_API_VIRTUAL_KEYBOARD_PRIVATE_VIRTUAL_KEYBOARD_DELEGATE_H_
 
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
-
 #include "base/functional/callback.h"
 #include "base/values.h"
 #include "extensions/common/api/virtual_keyboard.h"
 #include "extensions/common/api/virtual_keyboard_private.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace ash {
@@ -27,7 +26,7 @@ class VirtualKeyboardDelegate {
   virtual ~VirtualKeyboardDelegate() = default;
 
   using OnKeyboardSettingsCallback =
-      base::OnceCallback<void(absl::optional<base::Value::Dict> settings)>;
+      base::OnceCallback<void(std::optional<base::Value::Dict> settings)>;
 
   using OnSetModeCallback = base::OnceCallback<void(bool success)>;
 

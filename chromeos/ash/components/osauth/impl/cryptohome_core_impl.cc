@@ -4,12 +4,13 @@
 
 #include "chromeos/ash/components/osauth/impl/cryptohome_core_impl.h"
 
+#include <optional>
+
 #include "base/functional/bind.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "chromeos/ash/components/osauth/public/auth_session_storage.h"
 #include "components/user_manager/user_manager.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -97,7 +98,7 @@ void CryptohomeCoreImpl::StartAuthSession(const AuthAttemptVector& attempt,
 void CryptohomeCoreImpl::OnAuthSessionStarted(
     bool user_exists,
     std::unique_ptr<UserContext> context,
-    absl::optional<AuthenticationError> error) {
+    std::optional<AuthenticationError> error) {
   CHECK_EQ(current_stage_, Stage::kAuthSessionRequested);
   current_stage_ = Stage::kAuthSessionRequestFinished;
   if (!user_exists) {
@@ -158,7 +159,7 @@ void CryptohomeCoreImpl::EndAuthSession(Client* client) {
 
 void CryptohomeCoreImpl::OnInvalidateAuthSession(
     std::unique_ptr<UserContext> context,
-    absl::optional<AuthenticationError> error) {
+    std::optional<AuthenticationError> error) {
   if (error.has_value()) {
     LOG(ERROR) << "Error during authsession invalidation";
   }
@@ -178,7 +179,7 @@ void CryptohomeCoreImpl::EndAuthSessionImpl() {
   }
   CHECK(clients_being_removed_.empty());
   CHECK(clients_.empty());
-  current_attempt_ = absl::nullopt;
+  current_attempt_ = std::nullopt;
   was_authenticated_ = false;
 }
 

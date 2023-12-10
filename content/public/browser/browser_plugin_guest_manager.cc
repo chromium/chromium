@@ -6,8 +6,9 @@
 
 namespace content {
 
-bool BrowserPluginGuestManager::ForEachGuest(WebContents* owner_web_contents,
-                                             const GuestCallback& callback) {
+bool BrowserPluginGuestManager::ForEachGuest(
+    WebContents* owner_web_contents,
+    base::FunctionRef<bool(WebContents*)> fn) {
   return false;
 }
 

@@ -296,7 +296,7 @@ TimeTicks Sequence::GetDelayedSortKey() const {
   return TS_UNCHECKED_READ(latest_ready_time_).load(std::memory_order_relaxed);
 }
 
-Task Sequence::Clear(TaskSource::Transaction* transaction) {
+absl::optional<Task> Sequence::Clear(TaskSource::Transaction* transaction) {
   CheckedAutoLockMaybe auto_lock(transaction ? nullptr : &lock_);
   AnnotateLockAcquired annotate(lock_);
 
@@ -317,7 +317,8 @@ Task Sequence::Clear(TaskSource::Transaction* transaction) {
               delayed_queue.pop();
           },
           std::move(queue_), std::move(delayed_queue_)),
-      TimeTicks(), TimeDelta());
+      TimeTicks(), TimeDelta(), TimeDelta(),
+      static_cast<int>(reinterpret_cast<intptr_t>(this)));
 }
 
 void Sequence::ReleaseTaskRunner() {

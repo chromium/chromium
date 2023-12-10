@@ -21,11 +21,6 @@ def __step_config(ctx, step_config):
         {
             "name": "blink/generate_bindings",
             "command_prefix": platform.python_bin + " ../../third_party/blink/renderer/bindings/scripts/generate_bindings.py",
-            "inputs": [
-                # build/print_python_deps.py couldn't detect this?
-                # TODO(crbug.com/1475569): fix build/print_python_deps.py
-                "third_party/mako/mako/mako/ext/pygmentplugin.py",
-            ],
             "remote": True,
             "platform_ref": "large",
         },

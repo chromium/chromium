@@ -5,7 +5,6 @@
 package org.chromium.android_webview;
 
 import org.chromium.android_webview.autofill.AndroidAutofillSafeModeAction;
-import org.chromium.android_webview.autofill.ChromeAutocompleteSafeModeAction;
 import org.chromium.android_webview.common.Lifetime;
 import org.chromium.android_webview.common.SafeModeAction;
 import org.chromium.android_webview.common.origin_trial.DisableOriginTrialsSafeModeAction;
@@ -25,12 +24,11 @@ public final class BrowserSafeModeActionList {
      * the service) will be executed in the order listed below.
      */
     public static final SafeModeAction[] sList = {
-            new VariationsSeedSafeModeAction(),
-            new AndroidAutofillSafeModeAction(),
-            new ChromeAutocompleteSafeModeAction(),
-            new NoopSafeModeAction(),
-            new FastVariationsSeedSafeModeAction(),
-            new AwSafeBrowsingSafeModeAction(),
-            new DisableOriginTrialsSafeModeAction(),
+        new VariationsSeedSafeModeAction(),
+        new AndroidAutofillSafeModeAction(),
+        new NoopSafeModeAction(),
+        new FastVariationsSeedSafeModeAction(),
+        new AwSafeBrowsingSafeModeAction(),
+        new DisableOriginTrialsSafeModeAction(),
     };
 }

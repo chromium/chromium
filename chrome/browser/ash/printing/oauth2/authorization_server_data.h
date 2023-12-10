@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_PRINTING_OAUTH2_AUTHORIZATION_SERVER_DATA_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
@@ -13,7 +14,6 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/printing/oauth2/http_exchange.h"
 #include "chrome/browser/ash/printing/oauth2/status_code.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace network {
@@ -93,7 +93,7 @@ class AuthorizationServerData {
 
   // Basic information about the Authorization Server.
   const GURL authorization_server_uri_;
-  absl::optional<std::string> client_id_;
+  std::optional<std::string> client_id_;
 
   // Metadata read from the Authorization Server.
   GURL authorization_endpoint_uri_;

@@ -213,7 +213,7 @@ void CellularESimProfileHandler::OnInhibitedForRequestAvailableProfiles(
         << "Failed to inhibit cellular for requesting available profiles";
     CellularNetworkMetricsLogger::LogSmdsScanResult(
         info->smds_activation_codes.front(),
-        /*result=*/absl::nullopt);
+        /*result=*/std::nullopt);
     std::move(info->callback)
         .Run(cellular_setup::mojom::ESimOperationResult::kFailure,
              std::vector<CellularESimProfile>());

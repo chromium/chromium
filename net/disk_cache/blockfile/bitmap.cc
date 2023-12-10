@@ -5,8 +5,8 @@
 #include "net/disk_cache/blockfile/bitmap.h"
 
 #include <algorithm>
+#include <bit>
 
-#include "base/bits.h"
 #include "base/check_op.h"
 
 namespace {
@@ -17,7 +17,7 @@ int FindLSBNonEmpty(uint32_t word, bool value) {
   if (!value)
     word = ~word;
 
-  return base::bits::CountTrailingZeroBits(word);
+  return std::countr_zero(word);
 }
 
 }  // namespace

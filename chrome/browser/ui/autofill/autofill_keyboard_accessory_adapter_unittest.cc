@@ -58,7 +58,8 @@ class MockAccessoryView
 Suggestion createPasswordEntry(std::string password,
                                std::string username,
                                std::string psl_origin) {
-  Suggestion s(/*main_text=*/username, /*label=*/psl_origin, /*icon=*/"",
+  Suggestion s(/*main_text=*/username, /*label=*/psl_origin,
+               /*icon=*/Suggestion::Icon::kNoIcon,
                PopupItemId::kAutocompleteEntry);
   s.additional_label = ASCIIToUTF16(password);
   return s;
@@ -74,8 +75,8 @@ std::vector<Suggestion> createSuggestions() {
 
 std::vector<Suggestion> createSuggestions(int clearItemOffset) {
   std::vector<Suggestion> suggestions = createSuggestions();
-  suggestions.emplace(suggestions.begin() + clearItemOffset, "Clear", "", "",
-                      PopupItemId::kClearForm);
+  suggestions.emplace(suggestions.begin() + clearItemOffset, "Clear", "",
+                      Suggestion::Icon::kNoIcon, PopupItemId::kClearForm);
   return suggestions;
 }
 
@@ -101,20 +102,23 @@ std::string SuggestionLabelsToString(
 // Matcher returning true if suggestions have equal members.
 MATCHER_P(equalsSuggestion, other, "") {
   if (arg.popup_item_id != other.popup_item_id) {
-    *result_listener << "has popup_item_id "
-                     << base::to_underlying(arg.popup_item_id);
+    *result_listener << "has a different popup_item_id:\n"
+                     << ::testing::PrintToString(arg) << "\n";
     return false;
   }
   if (arg.main_text != other.main_text) {
-    *result_listener << "has main_text " << arg.main_text.value;
+    *result_listener << "has a different main_text:\n"
+                     << ::testing::PrintToString(arg) << "\n";
     return false;
   }
   if (arg.labels != other.labels) {
-    *result_listener << "has labels " << SuggestionLabelsToString(arg.labels);
+    *result_listener << "has different labels:\n"
+                     << SuggestionLabelsToString(arg.labels) << "\n";
     return false;
   }
   if (arg.icon != other.icon) {
-    *result_listener << "has icon " << arg.icon;
+    *result_listener << "has a different icon:\n"
+                     << ::testing::PrintToString(arg) << "\n";
     return false;
   }
   return true;
@@ -244,9 +248,14 @@ TEST_F(AutofillKeyboardAccessoryAdapterTest, RemoveAfterConfirmation) {
       .WillOnce(WithArg<2>(Invoke([&](base::OnceClosure closure) -> void {
         confirm = std::move(closure);
       })));
-  EXPECT_TRUE(adapter_as_controller()->RemoveSuggestion(0));
+  EXPECT_TRUE(adapter_as_controller()->RemoveSuggestion(
+      0, AutofillMetrics::SingleEntryRemovalMethod::kKeyboardAccessory));
 
-  EXPECT_CALL(*controller(), RemoveSuggestion(0)).WillOnce(Return(true));
+  EXPECT_CALL(
+      *controller(),
+      RemoveSuggestion(
+          0, AutofillMetrics::SingleEntryRemovalMethod::kKeyboardAccessory))
+      .WillOnce(Return(true));
   std::move(confirm).Run();
 }
 

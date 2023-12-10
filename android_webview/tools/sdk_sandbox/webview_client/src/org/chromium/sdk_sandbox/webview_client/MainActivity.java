@@ -62,6 +62,52 @@ public class MainActivity extends Activity {
     private EditText mUrlBar;
     private SurfaceView mRenderedView;
 
+    private OutcomeReceiver<SandboxedSdk, LoadSdkException> mLoadSdkReceiver =
+            new OutcomeReceiver<>() {
+                @Override
+                public void onResult(SandboxedSdk sandboxedSdk) {
+                    mSdkLoaded = true;
+                    mSandboxedSdk = sandboxedSdk;
+                    mWebViewProxy = IWebViewSdkApi.Stub.asInterface(mSandboxedSdk.getInterface());
+                    makeToast("SDK Loaded successfully!");
+                    mLoadSdkButton.setText(R.string.unload_sdk_provider);
+                }
+
+                @Override
+                public void onError(LoadSdkException error) {
+                    makeToast(
+                            String.format(
+                                    "Failed: %s. Error code %s!",
+                                    error, error.getLoadSdkErrorCode()));
+                    resetStateForLoadSdkButton();
+                }
+            };
+
+    private OutcomeReceiver<Bundle, RequestSurfacePackageException> mLoadSurfacePackageReceiver =
+            new OutcomeReceiver<Bundle, RequestSurfacePackageException>() {
+                @Override
+                public void onResult(Bundle result) {
+                    sHandler.post(
+                            () -> {
+                                SurfacePackage surfacePackage =
+                                        result.getParcelable(
+                                                EXTRA_SURFACE_PACKAGE, SurfacePackage.class);
+                                mRenderedView.setChildSurfacePackage(surfacePackage);
+                                mRenderedView.setVisibility(View.VISIBLE);
+                                mSurfacePackageLoaded = true;
+                            });
+                    makeToast("Rendered surface view");
+                }
+
+                @Override
+                public void onError(@NonNull RequestSurfacePackageException error) {
+                    makeToast(
+                            String.format(
+                                    "Failed: %s. Error code %s!",
+                                    error, error.getRequestSurfacePackageErrorCode()));
+                }
+            };
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -84,40 +130,23 @@ public class MainActivity extends Activity {
     }
 
     private void registerLoadSdkButton() {
-        mLoadSdkButton.setOnClickListener(v -> {
-            if (mSdkLoaded) {
-                resetStateForLoadSdkButton();
-                return;
-            }
+        mLoadSdkButton.setOnClickListener(
+                v -> {
+                    if (mSdkLoaded) {
+                        resetStateForLoadSdkButton();
+                        return;
+                    }
 
-            // Register for sandbox death event.
-            mSdkSandboxManager.addSdkSandboxProcessDeathCallback(
-                    Runnable::run, () -> makeToast("Sdk Sandbox process died"));
+                    // Register for sandbox death event.
+                    mSdkSandboxManager.addSdkSandboxProcessDeathCallback(
+                            Runnable::run, () -> makeToast("Sdk Sandbox process died"));
 
-            Bundle params = new Bundle();
-            OutcomeReceiver<SandboxedSdk, LoadSdkException> receiver =
-                    new OutcomeReceiver<SandboxedSdk, LoadSdkException>() {
-                        @Override
-                        public void onResult(SandboxedSdk sandboxedSdk) {
-                            mSdkLoaded = true;
-                            mSandboxedSdk = sandboxedSdk;
-                            mWebViewProxy =
-                                    IWebViewSdkApi.Stub.asInterface(mSandboxedSdk.getInterface());
-                            makeToast("SDK Loaded successfully!");
-                            mLoadSdkButton.setText(R.string.unload_sdk_provider);
-                        }
-
-                        @Override
-                        public void onError(LoadSdkException error) {
-                            makeToast(String.format("Failed: %s. Error code %s!", error,
-                                    error.getLoadSdkErrorCode()));
-                            resetStateForLoadSdkButton();
-                        }
-                    };
-
-            runOnUiThread(
-                    () -> mSdkSandboxManager.loadSdk(SDK_NAME, params, Runnable::run, receiver));
-        });
+                    Bundle params = new Bundle();
+                    runOnUiThread(
+                            () ->
+                                    mSdkSandboxManager.loadSdk(
+                                            SDK_NAME, params, Runnable::run, mLoadSdkReceiver));
+                });
     }
 
     private void resetStateForLoadSdkButton() {
@@ -133,49 +162,38 @@ public class MainActivity extends Activity {
     }
 
     private void registerLoadSurfacePackageButton() {
-        mLoadSurfacePackageButton.setOnClickListener(v -> {
-            if (mSdkLoaded) {
-                OutcomeReceiver<Bundle, RequestSurfacePackageException> receiver =
-                        new OutcomeReceiver<Bundle, RequestSurfacePackageException>() {
-                            @Override
-                            public void onResult(Bundle result) {
-                                sHandler.post(() -> {
-                                    SurfacePackage surfacePackage = result.getParcelable(
-                                            EXTRA_SURFACE_PACKAGE, SurfacePackage.class);
-                                    mRenderedView.setChildSurfacePackage(surfacePackage);
-                                    mRenderedView.setVisibility(View.VISIBLE);
-                                    mSurfacePackageLoaded = true;
+        mLoadSurfacePackageButton.setOnClickListener(
+                v -> {
+                    if (mSdkLoaded) {
+                        sHandler.post(
+                                () -> {
+                                    mSdkSandboxManager.requestSurfacePackage(
+                                            SDK_NAME,
+                                            getRequestSurfacePackageParams(),
+                                            Runnable::run,
+                                            mLoadSurfacePackageReceiver);
                                 });
-                                makeToast("Rendered surface view");
-                            }
-
-                            @Override
-                            public void onError(@NonNull RequestSurfacePackageException error) {
-                                makeToast(String.format("Failed: %s. Error code %s!", error,
-                                        error.getRequestSurfacePackageErrorCode()));
-                            }
-                        };
-
-                sHandler.post(() -> {
-                    mSdkSandboxManager.requestSurfacePackage(
-                            SDK_NAME, getRequestSurfacePackageParams(), Runnable::run, receiver);
+                    } else {
+                        makeToast("Sdk is not loaded");
+                    }
                 });
-            } else {
-                makeToast("Sdk is not loaded");
-            }
-        });
     }
 
     private void registerLoadUrlComponents() {
-        mUrlBar.setOnKeyListener((View view, int keyCode, KeyEvent event) -> {
-            if (keyCode == KeyEvent.KEYCODE_ENTER && event.getAction() == KeyEvent.ACTION_UP) {
-                loadUrl();
-                return true;
-            }
-            return false;
-        });
+        mUrlBar.setOnKeyListener(
+                (View view, int keyCode, KeyEvent event) -> {
+                    if (keyCode == KeyEvent.KEYCODE_ENTER
+                            && event.getAction() == KeyEvent.ACTION_UP) {
+                        loadUrl();
+                        return true;
+                    }
+                    return false;
+                });
 
-        mLoadUrlButton.setOnClickListener(v -> { loadUrl(); });
+        mLoadUrlButton.setOnClickListener(
+                v -> {
+                    loadUrl();
+                });
     }
 
     private void loadUrl() {
@@ -192,8 +210,9 @@ public class MainActivity extends Activity {
                     mWebViewProxy.loadUrl(url);
                     // hide keyboard
                     InputMethodManager imm =
-                            (InputMethodManager) mUrlBar.getContext().getSystemService(
-                                    Context.INPUT_METHOD_SERVICE);
+                            (InputMethodManager)
+                                    mUrlBar.getContext()
+                                            .getSystemService(Context.INPUT_METHOD_SERVICE);
                     imm.hideSoftInputFromWindow(mUrlBar.getWindowToken(), 0);
                 } catch (RemoteException e) {
                 }

@@ -18,7 +18,7 @@ namespace features {
 // Enable support for borderless printing and media type.
 BASE_FEATURE(kEnableBorderlessPrinting,
              "EnableBorderlessPrinting",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_MAC)
@@ -71,10 +71,14 @@ bool IsXpsPrintCapabilityRequired() {
 
 bool ShouldPrintUsingXps(bool source_is_pdf) {
   // Require XPS to be used out-of-process.
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
   return features::kEnableOopPrintDriversJobPrint.Get() &&
          base::FeatureList::IsEnabled(source_is_pdf
                                           ? features::kUseXpsForPrintingFromPdf
                                           : features::kUseXpsForPrinting);
+#else
+  return false;
+#endif
 }
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -86,7 +90,7 @@ BASE_FEATURE(kEnableOopPrintDrivers,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 const base::FeatureParam<bool> kEnableOopPrintDriversJobPrint{
-    &kEnableOopPrintDrivers, "JobPrint", false};
+    &kEnableOopPrintDrivers, "JobPrint", true};
 
 const base::FeatureParam<bool> kEnableOopPrintDriversSandbox{
     &kEnableOopPrintDrivers, "Sandbox", false};
@@ -95,24 +99,11 @@ const base::FeatureParam<bool> kEnableOopPrintDriversSandbox{
 const base::FeatureParam<bool> kEnableOopPrintDriversSingleProcess{
     &kEnableOopPrintDrivers, "SingleProcess", true};
 #endif
-
-bool ShouldPrintJobOop() {
-  return base::FeatureList::IsEnabled(features::kEnableOopPrintDrivers) &&
-         kEnableOopPrintDriversJobPrint.Get();
-}
-
 #endif  // BUILDFLAG(ENABLE_OOP_PRINTING)
 
 #if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
 BASE_FEATURE(kEnableCloudScanAfterPreview,
              "EnableCloudScanAfterPreview",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// The naming mismatch below is intentional to preserve compatibility while
-// making code usage clearer. This is temporary and will be removed once
-// b/216105729 is officially fixed and the local workflow is supported.
-BASE_FEATURE(kEnableLocalScanAfterPreview,
-             "EnablePrintScanAfterPreview",
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
 

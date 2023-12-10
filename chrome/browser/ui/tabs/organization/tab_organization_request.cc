@@ -12,17 +12,28 @@
 
 TabOrganizationResponse::Organization::Organization(
     std::u16string label_,
-    std::vector<TabData::TabID> tab_ids_)
-    : label(label_), tab_ids(std::move(tab_ids_)) {}
+    std::vector<TabData::TabID> tab_ids_,
+    std::optional<TabOrganization::ID> organization_id_)
+    : label(label_),
+      tab_ids(std::move(tab_ids_)),
+      organization_id(organization_id_) {}
+
 TabOrganizationResponse::Organization::Organization(
     const Organization& organization) = default;
+
 TabOrganizationResponse::Organization::Organization(
     Organization&& organization) = default;
+
 TabOrganizationResponse::Organization::~Organization() = default;
 
 TabOrganizationResponse::TabOrganizationResponse(
-    std::vector<TabOrganizationResponse::Organization> organizations_)
-    : organizations(organizations_) {}
+    std::vector<TabOrganizationResponse::Organization> organizations_,
+    std::u16string feedback_id_,
+    LogResultsCallback log_results_callback_)
+    : organizations(organizations_),
+      feedback_id(feedback_id_),
+      log_results_callback(std::move(log_results_callback_)) {}
+
 TabOrganizationResponse::~TabOrganizationResponse() = default;
 
 TabOrganizationRequest::TabOrganizationRequest(
@@ -70,7 +81,6 @@ void TabOrganizationRequest::CompleteRequest(
 
   state_ = State::COMPLETED;
   response_ = std::move(response);
-
   if (response_callback_) {
     std::move(response_callback_).Run(response_.get());
   }
@@ -79,12 +89,24 @@ void TabOrganizationRequest::CompleteRequest(
 void TabOrganizationRequest::FailRequest() {
   CHECK(state_ != State::COMPLETED);
   state_ = State::FAILED;
+  if (response_callback_) {
+    std::move(response_callback_).Run(response_.get());
+  }
 }
 
 void TabOrganizationRequest::CancelRequest() {
   CHECK(state_ == State::STARTED);
   CHECK(backend_cancel_request_lambda_);
-  state_ = State::CANCELED;
 
   std::move(backend_cancel_request_lambda_).Run(this);
+  if (response_callback_) {
+    std::move(response_callback_).Run(response_.get());
+  }
+  state_ = State::CANCELED;
+}
+
+void TabOrganizationRequest::LogResults(const TabOrganizationSession* session) {
+  if (response_ && response_->log_results_callback) {
+    std::move(response_->log_results_callback).Run(session);
+  }
 }

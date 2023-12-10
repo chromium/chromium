@@ -8,137 +8,164 @@
 namespace ash::prefs {
 // Prefs which contain lists of observed devices for a few milestones before
 // per-device settings are enabled.
-constexpr char kKeyboardObservedDevicesPref[] =
+inline constexpr char kKeyboardObservedDevicesPref[] =
     "settings.keyboard.observed_devices";
-constexpr char kMouseObservedDevicesPref[] = "settings.mouse.observed_devices";
-constexpr char kPointingStickObservedDevicesPref[] =
+inline constexpr char kMouseObservedDevicesPref[] =
+    "settings.mouse.observed_devices";
+inline constexpr char kPointingStickObservedDevicesPref[] =
     "settings.pointing_stick.observed_devices";
-constexpr char kTouchpadObservedDevicesPref[] =
+inline constexpr char kTouchpadObservedDevicesPref[] =
     "settings.touchpad.observed_devices";
 
 // Prefs which contain login screen settings for connected internal devices.
-constexpr char kKeyboardLoginScreenInternalSettingsPref[] =
+inline constexpr char kKeyboardLoginScreenInternalSettingsPref[] =
     "settings.keyboard.internal";
-constexpr char kMouseLoginScreenInternalSettingsPref[] =
+inline constexpr char kMouseLoginScreenInternalSettingsPref[] =
     "settings.mouse.internal";
-constexpr char kPointingStickLoginScreenInternalSettingsPref[] =
+inline constexpr char kPointingStickLoginScreenInternalSettingsPref[] =
     "settings.pointing_stick.internal";
-constexpr char kTouchpadLoginScreenInternalSettingsPref[] =
+inline constexpr char kTouchpadLoginScreenInternalSettingsPref[] =
     "settings.touchpad.internal";
 
+// Prefs which contain seen peripheral devices for notification use.
+inline constexpr char kPeripheralNotificationMiceSeen[] =
+    "settings.mouse.peripheral_notification_seen";
+inline constexpr char kPeripheralNotificationGraphicsTabletsSeen[] =
+    "settings.graphics_tablet.peripheral_notification_seen";
+
 // Prefs which contain login screen settings for connected external devices.
-constexpr char kKeyboardLoginScreenExternalSettingsPref[] =
+inline constexpr char kKeyboardLoginScreenExternalSettingsPref[] =
     "settings.keyboard.external";
-constexpr char kMouseLoginScreenExternalSettingsPref[] =
+inline constexpr char kMouseLoginScreenExternalSettingsPref[] =
     "settings.mouse.external";
-constexpr char kPointingStickLoginScreenExternalSettingsPref[] =
+inline constexpr char kPointingStickLoginScreenExternalSettingsPref[] =
     "settings.pointing_stick.external";
-constexpr char kTouchpadLoginScreenExternalSettingsPref[] =
+inline constexpr char kTouchpadLoginScreenExternalSettingsPref[] =
     "settings.touchpad.external";
 
 // Prefs which contain login screen button remapping list for connected graphics
 // tablet devices.
-constexpr char kGraphicsTabletLoginScreenTabletButtonRemappingListPref[] =
-    "settings.graphics_tablet.tablet_button_remappings";
-constexpr char kGraphicsTabletLoginScreenPenButtonRemappingListPref[] =
+inline constexpr char
+    kGraphicsTabletLoginScreenTabletButtonRemappingListPref[] =
+        "settings.graphics_tablet.tablet_button_remappings";
+inline constexpr char kGraphicsTabletLoginScreenPenButtonRemappingListPref[] =
     "settings.graphics_tablet.pen_button_remappings";
 
 // Prefs which contain login screen button remapping list for connected external
 // mice devices.
-constexpr char kMouseLoginScreenButtonRemappingListPref[] =
+inline constexpr char kMouseLoginScreenButtonRemappingListPref[] =
     "settings.mouse.external.button_remappings";
 
 // Prefs which contain dictionaries of settings for each connected device.
-constexpr char kKeyboardDeviceSettingsDictPref[] = "settings.keyboard.devices";
-constexpr char kMouseDeviceSettingsDictPref[] = "settings.mouse.devices";
-constexpr char kPointingStickDeviceSettingsDictPref[] =
+inline constexpr char kKeyboardDeviceSettingsDictPref[] =
+    "settings.keyboard.devices";
+inline constexpr char kMouseDeviceSettingsDictPref[] = "settings.mouse.devices";
+inline constexpr char kPointingStickDeviceSettingsDictPref[] =
     "settings.pointing_stick.devices";
-constexpr char kTouchpadDeviceSettingsDictPref[] = "settings.touchpad.devices";
+inline constexpr char kTouchpadDeviceSettingsDictPref[] =
+    "settings.touchpad.devices";
 
 // Dictionary pref containing the internal keyboard's settings.
-constexpr char kKeyboardInternalSettings[] = "settings.keyboard.internal";
+inline constexpr char kKeyboardInternalSettings[] =
+    "settings.keyboard.internal";
 
 // Pref which contains a list of previously seen imposter keyboards that we know
 // to be valid (ie false positives).
-constexpr char kKeyboardDeviceImpostersListPref[] =
+inline constexpr char kKeyboardDeviceImpostersListPref[] =
     "settings.keyboard.imposter_false_positives";
 
 // Prefs which contain dictionaries of button remappings for each connected
 // device.
-constexpr char kGraphicsTabletTabletButtonRemappingsDictPref[] =
+inline constexpr char kGraphicsTabletTabletButtonRemappingsDictPref[] =
     "settings.graphics_tablet.tablet_button_remappings";
-constexpr char kGraphicsTabletPenButtonRemappingsDictPref[] =
+inline constexpr char kGraphicsTabletPenButtonRemappingsDictPref[] =
     "settings.graphics_tablet.pen_button_remappings";
-constexpr char kMouseButtonRemappingsDictPref[] =
+inline constexpr char kMouseButtonRemappingsDictPref[] =
     "settings.mouse.button_remappings";
 
 // Keyboard settings dictionary keys.
-constexpr char kKeyboardSettingAutoRepeatDelay[] = "auto_repeat_delay";
-constexpr char kKeyboardSettingAutoRepeatEnabled[] = "auto_repeat_enabled";
-constexpr char kKeyboardSettingAutoRepeatInterval[] = "auto_repeat_interval";
-constexpr char kKeyboardSettingModifierRemappings[] = "modifier_remappings";
-constexpr char kKeyboardSettingSuppressMetaFKeyRewrites[] =
+inline constexpr char kKeyboardSettingAutoRepeatDelay[] = "auto_repeat_delay";
+inline constexpr char kKeyboardSettingAutoRepeatEnabled[] =
+    "auto_repeat_enabled";
+inline constexpr char kKeyboardSettingAutoRepeatInterval[] =
+    "auto_repeat_interval";
+inline constexpr char kKeyboardSettingModifierRemappings[] =
+    "modifier_remappings";
+inline constexpr char kKeyboardSettingSuppressMetaFKeyRewrites[] =
     "suppress_meta_fkey_rewrites";
-constexpr char kKeyboardSettingTopRowAreFKeys[] = "top_row_are_fkeys";
-constexpr char kKeyboardSettingSixPackKeyRemappings[] =
+inline constexpr char kKeyboardSettingTopRowAreFKeys[] = "top_row_are_fkeys";
+inline constexpr char kKeyboardSettingSixPackKeyRemappings[] =
     "six_pack_key_remappings";
-constexpr char kSixPackKeyPageUp[] = "page_up";
-constexpr char kSixPackKeyPageDown[] = "page_down";
-constexpr char kSixPackKeyHome[] = "home";
-constexpr char kSixPackKeyEnd[] = "end";
-constexpr char kSixPackKeyDelete[] = "delete";
-constexpr char kSixPackKeyInsert[] = "insert";
-constexpr char kKeyboardSettingF11[] = "f11";
-constexpr char kKeyboardSettingF12[] = "f12";
+inline constexpr char kSixPackKeyPageUp[] = "page_up";
+inline constexpr char kSixPackKeyPageDown[] = "page_down";
+inline constexpr char kSixPackKeyHome[] = "home";
+inline constexpr char kSixPackKeyEnd[] = "end";
+inline constexpr char kSixPackKeyDelete[] = "delete";
+inline constexpr char kSixPackKeyInsert[] = "insert";
+inline constexpr char kKeyboardSettingF11[] = "f11";
+inline constexpr char kKeyboardSettingF12[] = "f12";
 
-constexpr char kKeyboardUpdateSettingsMetricInfo[] =
+inline constexpr char kKeyboardUpdateSettingsMetricInfo[] =
     "settings.keyboard.update_settings_info";
-constexpr char kMouseUpdateSettingsMetricInfo[] =
+inline constexpr char kMouseUpdateSettingsMetricInfo[] =
     "settings.mouse.update_settings_info";
-constexpr char kTouchpadUpdateSettingsMetricInfo[] =
+inline constexpr char kTouchpadUpdateSettingsMetricInfo[] =
     "settings.touchpad.update_settings_info";
-constexpr char kPointingStickUpdateSettingsMetricInfo[] =
+inline constexpr char kPointingStickUpdateSettingsMetricInfo[] =
     "settings.pointing_stick.update_settings_info";
 
 // Mouse settings dictionary keys.
-constexpr char kMouseSettingSwapRight[] = "swap_right";
-constexpr char kMouseSettingSensitivity[] = "sensitivity";
-constexpr char kMouseSettingReverseScrolling[] = "reverse_scrolling";
-constexpr char kMouseSettingAccelerationEnabled[] = "acceleration_enabled";
-constexpr char kMouseSettingScrollSensitivity[] = "scroll_sensitivity";
-constexpr char kMouseSettingScrollAcceleration[] = "scroll_acceleration";
+inline constexpr char kMouseSettingSwapRight[] = "swap_right";
+inline constexpr char kMouseSettingSensitivity[] = "sensitivity";
+inline constexpr char kMouseSettingReverseScrolling[] = "reverse_scrolling";
+inline constexpr char kMouseSettingAccelerationEnabled[] =
+    "acceleration_enabled";
+inline constexpr char kMouseSettingScrollSensitivity[] = "scroll_sensitivity";
+inline constexpr char kMouseSettingScrollAcceleration[] = "scroll_acceleration";
 
 // Touchpad settings dictionary keys.
-constexpr char kTouchpadSettingSensitivity[] = "sensitivity";
-constexpr char kTouchpadSettingReverseScrolling[] = "reverse_scrolling";
-constexpr char kTouchpadSettingAccelerationEnabled[] = "acceleration_enabled";
-constexpr char kTouchpadSettingScrollSensitivity[] = "scroll_sensitivity";
-constexpr char kTouchpadSettingScrollAcceleration[] = "scroll_acceleration";
-constexpr char kTouchpadSettingTapToClickEnabled[] = "tap_to_click_enabled";
-constexpr char kTouchpadSettingThreeFingerClickEnabled[] =
+inline constexpr char kTouchpadSettingSensitivity[] = "sensitivity";
+inline constexpr char kTouchpadSettingReverseScrolling[] = "reverse_scrolling";
+inline constexpr char kTouchpadSettingAccelerationEnabled[] =
+    "acceleration_enabled";
+inline constexpr char kTouchpadSettingScrollSensitivity[] =
+    "scroll_sensitivity";
+inline constexpr char kTouchpadSettingScrollAcceleration[] =
+    "scroll_acceleration";
+inline constexpr char kTouchpadSettingTapToClickEnabled[] =
+    "tap_to_click_enabled";
+inline constexpr char kTouchpadSettingThreeFingerClickEnabled[] =
     "three_finger_click_enabled";
-constexpr char kTouchpadSettingTapDraggingEnabled[] = "tap_dragging_enabled";
-constexpr char kTouchpadSettingHapticSensitivity[] = "haptic_sensitivity";
-constexpr char kTouchpadSettingHapticEnabled[] = "haptic_enabled";
-constexpr char kTouchpadSettingSimulateRightClick[] = "simulate_right_click";
+inline constexpr char kTouchpadSettingTapDraggingEnabled[] =
+    "tap_dragging_enabled";
+inline constexpr char kTouchpadSettingHapticSensitivity[] =
+    "haptic_sensitivity";
+inline constexpr char kTouchpadSettingHapticEnabled[] = "haptic_enabled";
+inline constexpr char kTouchpadSettingSimulateRightClick[] =
+    "simulate_right_click";
 
 // Pointing stick settings dictionary keys.
-constexpr char kPointingStickSettingSensitivity[] = "sensitivity";
-constexpr char kPointingStickSettingSwapRight[] = "swap_right";
-constexpr char kPointingStickSettingAcceleration[] = "acceleration";
+inline constexpr char kPointingStickSettingSensitivity[] = "sensitivity";
+inline constexpr char kPointingStickSettingSwapRight[] = "swap_right";
+inline constexpr char kPointingStickSettingAcceleration[] = "acceleration";
 
 // Button Remapping dictionary keys.
-constexpr char kButtonRemappings[] = "button_remappings";
-constexpr char kButtonRemappingName[] = "name";
-constexpr char kButtonRemappingCustomizableButton[] = "customizable_button";
-constexpr char kButtonRemappingKeyboardCode[] = "vkey";
-constexpr char kButtonRemappingAcceleratorAction[] = "accelerator_action";
-constexpr char kButtonRemappingKeyEvent[] = "key_event";
-constexpr char kButtonRemappingDomCode[] = "dom_code";
-constexpr char kButtonRemappingDomKey[] = "dom_key";
-constexpr char kButtonRemappingModifiers[] = "modifiers";
-constexpr char kButtonRemappingStaticShortcutAction[] =
+inline constexpr char kButtonRemappings[] = "button_remappings";
+inline constexpr char kButtonRemappingName[] = "name";
+inline constexpr char kButtonRemappingCustomizableButton[] =
+    "customizable_button";
+inline constexpr char kButtonRemappingKeyboardCode[] = "vkey";
+inline constexpr char kButtonRemappingAcceleratorAction[] =
+    "accelerator_action";
+inline constexpr char kButtonRemappingKeyEvent[] = "key_event";
+inline constexpr char kButtonRemappingDomCode[] = "dom_code";
+inline constexpr char kButtonRemappingDomKey[] = "dom_key";
+inline constexpr char kButtonRemappingModifiers[] = "modifiers";
+inline constexpr char kButtonRemappingStaticShortcutAction[] =
     "static_shortcut_action";
+
+// Last updated dictionary keys.
+inline constexpr char kLastUpdatedKey[] = "last_updated";
 
 }  // namespace ash::prefs
 

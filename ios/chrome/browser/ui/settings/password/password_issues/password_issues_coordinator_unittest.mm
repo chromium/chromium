@@ -17,7 +17,6 @@
 #import "ios/chrome/browser/passwords/model/metrics/ios_password_manager_metrics.h"
 #import "ios/chrome/browser/passwords/model/password_checkup_utils.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
-#import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
@@ -59,8 +58,13 @@ class PasswordIssuesCoordinatorTest : public PlatformTest {
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
                               base::BindRepeating(&CreateMockSyncService));
 
+    // Create scene state for reauthentication coordinator.
+    scene_state_ = [[SceneState alloc] initWithAppState:nil];
+    scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+
     browser_state_ = builder.Build();
-    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+    browser_ =
+        std::make_unique<TestBrowser>(browser_state_.get(), scene_state_);
 
     // Keep a scoped reference to IOSChromePasswordCheckManager until the test
     // finishes, otherwise it gets destroyed as soon as PasswordIssuesMediator
@@ -98,11 +102,6 @@ class PasswordIssuesCoordinatorTest : public PlatformTest {
                          browser:browser_.get()];
 
     coordinator_.reauthModule = mock_reauth_module_;
-
-    // Create scene state for reauthentication coordinator.
-    scene_state_ = [[SceneState alloc] initWithAppState:nil];
-    scene_state_.activationLevel = SceneActivationLevelForegroundActive;
-    SceneStateBrowserAgent::CreateForBrowser(browser_.get(), scene_state_);
 
     scoped_window_.Get().rootViewController = base_navigation_controller_;
   }

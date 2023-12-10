@@ -1,3 +1,7 @@
 include_rules = [
-  "+third_party/ml",
+  "+gpu/config",
+  "+sandbox/policy/linux",
+  "+third_party/dawn/include/dawn",
+  "+components/optimization_guide/core/optimization_guide_features.h",
 ]
+

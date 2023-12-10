@@ -81,7 +81,7 @@ class ProgressIndicatorWaiter {
   // Waits for `progress_indicator` to reach the specified `progress`. If the
   // `progress_indicator` is already at `progress`, this method no-ops.
   void WaitForProgress(ProgressIndicator* progress_indicator,
-                       const absl::optional<float>& progress) {
+                       const std::optional<float>& progress) {
     if (progress_indicator->progress() == progress)
       return;
     base::RunLoop run_loop;
@@ -290,7 +290,7 @@ class DictationButtonTraySodaTest : public DictationButtonTrayTest {
 
   float GetProgressIndicatorProgress() const {
     DCHECK(GetTray()->progress_indicator_);
-    absl::optional<float> progress = GetTray()->progress_indicator_->progress();
+    std::optional<float> progress = GetTray()->progress_indicator_->progress();
     DCHECK(progress.has_value());
     return progress.value();
   }

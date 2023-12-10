@@ -1,0 +1,15 @@
+This is a testharness.js-based test.
+Harness Error. harness_status.status = 1 , harness_status.message = Uncaught SyntaxError: Unexpected token 'with'
+[NOTRUN] inline, 200, parser-inserted
+[NOTRUN] inline, 404, parser-inserted
+[FAIL] src, 200, parser-inserted
+  assert_true: Load event should be fired after script execution expected true got false
+[FAIL] src, 404, parser-inserted
+  assert_unreached: Load event should not be fired. Reached unreachable code
+[FAIL] src, 200, not parser-inserted
+  assert_true: Load event should be fired after script execution expected true got false
+[FAIL] src, 404, not parser-inserted
+  assert_unreached: Load event should not be fired. Reached unreachable code
+[NOTRUN] inline, 200, not parser-inserted
+[NOTRUN] inline, 404, not parser-inserted
+Harness: the test ran to completion.

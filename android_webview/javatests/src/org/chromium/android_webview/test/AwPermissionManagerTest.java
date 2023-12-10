@@ -35,8 +35,7 @@ import org.chromium.net.test.util.TestWebServer;
 @RunWith(Parameterized.class)
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
 public class AwPermissionManagerTest extends AwParameterizedTest {
-    @Rule
-    public AwActivityTestRule mActivityTestRule;
+    @Rule public AwActivityTestRule mActivityTestRule;
 
     private static final String REQUEST_DUPLICATE =
             "<html> <script>"
@@ -161,6 +160,93 @@ public class AwPermissionManagerTest extends AwParameterizedTest {
                         awContents.getWebContents(), ENUMERATE_DEVICES_JS);
 
         assertDeviceLabels(devices, true);
+    }
+
+    @Test
+    @Feature({"AndroidWebView"})
+    @SmallTest
+    @CommandLineFlags.Add({ContentSwitches.USE_FAKE_DEVICE_FOR_MEDIA_STREAM})
+    public void testEnumerateDevicesWithAllowFileAccessFromFileURLsFalse() throws Throwable {
+        AwContents awContents = setUpEnumerateDevicesTest(null);
+        awContents.getSettings().setAllowFileAccessFromFileURLs(false);
+        mActivityTestRule.loadDataWithBaseUrlSync(
+                awContents,
+                mContentsClient.getOnPageFinishedHelper(),
+                EMPTY_PAGE,
+                "text/html",
+                true,
+                "file:///foo.html",
+                "");
+        JavaScriptUtils.runJavascriptWithUserGestureAndAsyncResult(
+                awContents.getWebContents(), GUM_JS);
+
+        String devices =
+                JavaScriptUtils.runJavascriptWithUserGestureAndAsyncResult(
+                        awContents.getWebContents(), ENUMERATE_DEVICES_JS);
+
+        assertDeviceLabels(devices, true);
+    }
+
+    @Test
+    @Feature({"AndroidWebView"})
+    @SmallTest
+    @CommandLineFlags.Add({ContentSwitches.USE_FAKE_DEVICE_FOR_MEDIA_STREAM})
+    public void testEnumerateDevicesWithAllowFileAccessFromFileURLsTrue() throws Throwable {
+        AwContents awContents = setUpEnumerateDevicesTest(null);
+        awContents.getSettings().setAllowFileAccessFromFileURLs(true);
+        mActivityTestRule.loadDataWithBaseUrlSync(
+                awContents,
+                mContentsClient.getOnPageFinishedHelper(),
+                EMPTY_PAGE,
+                "text/html",
+                true,
+                "file:///foo.html",
+                "");
+        JavaScriptUtils.runJavascriptWithUserGestureAndAsyncResult(
+                awContents.getWebContents(), GUM_JS);
+
+        String devices =
+                JavaScriptUtils.runJavascriptWithUserGestureAndAsyncResult(
+                        awContents.getWebContents(), ENUMERATE_DEVICES_JS);
+
+        assertDeviceLabels(devices, false);
+    }
+
+    // Test that a successful getUserMedia grants enumerateDevices permission for
+    // all file:/// URLs when AllowFileAccessFromFileURLs is enabled.
+    @Test
+    @Feature({"AndroidWebView"})
+    @SmallTest
+    @CommandLineFlags.Add({ContentSwitches.USE_FAKE_DEVICE_FOR_MEDIA_STREAM})
+    public void testPermissionIsCachedAfterFileNavigation() throws Throwable {
+        AwContents awContents = setUpEnumerateDevicesTest(null);
+        awContents.getSettings().setAllowFileAccessFromFileURLs(true);
+        mActivityTestRule.loadDataWithBaseUrlSync(
+                awContents,
+                mContentsClient.getOnPageFinishedHelper(),
+                EMPTY_PAGE,
+                "text/html",
+                true,
+                "file:///foo.html",
+                "");
+        JavaScriptUtils.runJavascriptWithUserGestureAndAsyncResult(
+                awContents.getWebContents(), GUM_JS);
+
+        // Navigate to a different file URL.
+        mActivityTestRule.loadDataWithBaseUrlSync(
+                awContents,
+                mContentsClient.getOnPageFinishedHelper(),
+                EMPTY_PAGE,
+                "text/html",
+                true,
+                "file:///bar.html",
+                "");
+
+        String devices =
+                JavaScriptUtils.runJavascriptWithUserGestureAndAsyncResult(
+                        awContents.getWebContents(), ENUMERATE_DEVICES_JS);
+
+        assertDeviceLabels(devices, false);
     }
 
     @Test

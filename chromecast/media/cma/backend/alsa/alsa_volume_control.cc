@@ -341,11 +341,11 @@ bool AlsaVolumeControl::SetElementMuted(ScopedAlsaMixer* mixer, bool muted) {
   return success;
 }
 
-absl::optional<bool> AlsaVolumeControl::IsElementAllMuted(
+std::optional<bool> AlsaVolumeControl::IsElementAllMuted(
     ScopedAlsaMixer* mixer) {
   if (!mixer || !mixer->element ||
       !alsa_->MixerSelemHasPlaybackSwitch(mixer->element)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   for (int32_t channel = 0; channel <= SND_MIXER_SCHN_LAST; ++channel) {
     int channel_unmuted;
@@ -354,7 +354,7 @@ absl::optional<bool> AlsaVolumeControl::IsElementAllMuted(
         &channel_unmuted);
     if (err != 0) {
       LOG(ERROR) << "MixerSelemGetPlaybackSwitch: " << alsa_->StrError(err);
-      return absl::nullopt;
+      return std::nullopt;
     }
     if (channel_unmuted) {
       return false;

@@ -38,8 +38,9 @@ class AutofillProfileItemViewBinder {
                     view.findViewById(R.id.fast_checkout_autofill_profile_item_street_address);
             streetAddressView.setText(profile.getStreetAddress());
 
-            TextView postalCodeView = view.findViewById(
-                    R.id.fast_checkout_autofill_profile_item_city_and_postal_code);
+            TextView postalCodeView =
+                    view.findViewById(
+                            R.id.fast_checkout_autofill_profile_item_city_and_postal_code);
             postalCodeView.setText(getLocalityAndPostalCode(profile));
 
             TextView countryView =
@@ -100,9 +101,14 @@ class AutofillProfileItemViewBinder {
         builder.append(getIfNotEmpty(profile.getCountryName()));
         builder.append(getIfNotEmpty(profile.getEmailAddress()));
         builder.append(getIfNotEmpty(profile.getPhoneNumber()));
-        builder.append(view.getContext().getResources().getString(isSelected
-                        ? R.string.fast_checkout_detail_screen_selected_description
-                        : R.string.fast_checkout_detail_screen_non_selected_description));
+        builder.append(
+                view.getContext()
+                        .getResources()
+                        .getString(
+                                isSelected
+                                        ? R.string.fast_checkout_detail_screen_selected_description
+                                        : R.string
+                                                .fast_checkout_detail_screen_non_selected_description));
         view.setContentDescription(builder.toString());
     }
 

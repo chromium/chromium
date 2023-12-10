@@ -44,7 +44,8 @@ public interface LayoutProvider {
      * @return                  A {@link SceneLayer} that represents the content for this
      *                          {@link Layout}.
      */
-    SceneLayer getUpdatedActiveSceneLayer(TabContentManager tabContentManager,
+    SceneLayer getUpdatedActiveSceneLayer(
+            TabContentManager tabContentManager,
             ResourceManager resourceManager,
             BrowserControlsManager browserControlsManager);
 }

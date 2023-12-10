@@ -50,11 +50,11 @@
 #include "components/password_manager/core/browser/credential_cache.h"
 #include "components/password_manager/core/browser/credentials_filter.h"
 #include "components/password_manager/core/browser/mock_password_manager_settings_service.h"
-#include "components/password_manager/core/browser/mock_password_store_interface.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
-#include "components/password_manager/core/browser/password_store_consumer.h"
+#include "components/password_manager/core/browser/password_store/mock_password_store_interface.h"
+#include "components/password_manager/core/browser/password_store/password_store_consumer.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/sessions/content/content_record_password_state.h"
@@ -1314,8 +1314,8 @@ TEST_F(ChromePasswordManagerClientAndroidTest,
   driver->GetPasswordManager()->OnPasswordFormsParsed(driver.get(),
                                                       {observed_form_data});
 
-  std::vector<std::unique_ptr<PasswordForm>> forms;
-  forms.push_back(MakePasswordForm());
+  std::vector<PasswordForm> forms;
+  forms.push_back(*MakePasswordForm());
   store_consumer->OnGetPasswordStoreResultsOrErrorFrom(mock_store,
                                                        std::move(forms));
 

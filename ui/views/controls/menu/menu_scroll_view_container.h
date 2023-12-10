@@ -24,9 +24,9 @@ class SubmenuView;
 // and two scroll buttons. The scroll buttons are only visible and enabled if
 // the preferred height of the SubmenuView is bigger than our bounds.
 class VIEWS_EXPORT MenuScrollViewContainer : public View {
- public:
-  METADATA_HEADER(MenuScrollViewContainer);
+  METADATA_HEADER(MenuScrollViewContainer, View)
 
+ public:
   explicit MenuScrollViewContainer(SubmenuView* content_view);
 
   MenuScrollViewContainer(const MenuScrollViewContainer&) = delete;

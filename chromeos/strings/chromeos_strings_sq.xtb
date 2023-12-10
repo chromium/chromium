@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sq">
+<translation id="1003363546227723021">Kur ekrani yt është në gjendje të qetë, shfaq fotografitë, orën, motin dhe informacionet e medias</translation>
 <translation id="1014750484722996375">Tavolinat e punës</translation>
 <translation id="1018219910092211213">DNS-ja nuk mund të zgjidhet</translation>
 <translation id="1018656279737460067">Anuluar</translation>
@@ -28,6 +29,7 @@
 <translation id="1175697296044146566">Kjo pajisje <ph name="DEVICE_TYPE" /> menaxhohet nga <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Mesatar (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Hiq</translation>
+<translation id="1191518099344003522">APN-ja është aktivizuar.</translation>
 <translation id="1195447618553298278">Gabim i panjohur.</translation>
 <translation id="1196959502276349371">Versioni <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">Luaj/vendos në pauzë</translation>
@@ -79,6 +81,7 @@
 <translation id="1515129336378114413">faqja kryesore e shfletuesit</translation>
 <translation id="1526389707933164996">Animacioni i mbrojtësit të ekranit</translation>
 <translation id="152892567002884378">Rrit volumin</translation>
+<translation id="1539242642795599947">APN-ja është e llojit të parazgjedhur dhe bashkëngjitje.</translation>
 <translation id="1555130319947370107">E kaltër</translation>
 <translation id="155865706765934889">Blloku me prekje</translation>
 <translation id="1561927818299383735">ngjyra e ndriçimit të sfondit</translation>
@@ -134,6 +137,7 @@
 <translation id="1852934301711881861">Instalo Chrome OS Flex</translation>
 <translation id="1856388568474281774">Shigjeta poshtë</translation>
 <translation id="1858620243986915808">Bashkëngjit pamjen e ekranit</translation>
+<translation id="1871413952174074704">APN-ja nuk mund të ketë më shumë se <ph name="CHAR_LIMIT" /> karaktere</translation>
 <translation id="1871569928317311284">Çaktivizo temën e errët</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">Çaktivizo modalitetin e errët</translation>
@@ -255,6 +259,7 @@
 <translation id="2872961005593481000">Ndërprit punën</translation>
 <translation id="2873483161362553159">Navigimi në shfletues</translation>
 <translation id="2874939134665556319">Kënga e mëparshme</translation>
+<translation id="2875812231449496375">Aktivizoje këtë për rezultatet më të mira me këtë imazh sfondi. Mund ta çaktivizosh këtë cilësim në çdo kohë.</translation>
 <translation id="2878387241690264070">U shkarkua <ph name="RATE" /> në <ph name="NUM_SECONDS" /> sekonda.</translation>
 <translation id="2880569433548999039">Mbrojtësi i ekranit për rrjedhën e reve</translation>
 <translation id="2926057806159140518">Fut emrin e përdoruesit dhe fjalëkalimin ose skano kodin tënd QR</translation>
@@ -336,6 +341,7 @@
 <translation id="3577473026931028326">Ndodhi një gabim. Provo përsëri.</translation>
 <translation id="357889014807611375">Wi-Fi me matje</translation>
 <translation id="3583278742022654445">Fuqi e dobët e sinjalit. Provo t'i afrohesh më shumë burimit të sinjalit Wi-Fi.</translation>
+<translation id="3594280220611906414"><ph name="USER_FRIENDLY_APN_NAME" /> është emri i përshtatshëm për përdoruesin për <ph name="APN_NAME" />.</translation>
 <translation id="3595596368722241419">Bateria është plot</translation>
 <translation id="3600339377155080675">Pasqyrimi i ekranit</translation>
 <translation id="3602290021589620013">Pamje paraprake</translation>
@@ -434,7 +440,7 @@
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> imazhe</translation>
 <translation id="4333390807948134856">Tasti <ph name="KEY_NAME" /> është i shtypur</translation>
 <translation id="4354430579665871434">tast</translation>
-<translation id="435692326371619097">Menaxho cilësimet e APN-së së rrjetit. APN-të vendosin një lidhje mes një rrjeti celular dhe internetit. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
+<translation id="4361257691546579041">APN-ja është e llojit të parazgjedhur.</translation>
 <translation id="437294888293595148">Rivendos të gjitha shkurtoret</translation>
 <translation id="4378373042927530923">Nuk u ekzekutua</translation>
 <translation id="4378551569595875038">Po lidhet...</translation>
@@ -534,7 +540,6 @@
 <translation id="4999333166442584738">Fshih raportin</translation>
 <translation id="500920857929044050">Ndalo testin</translation>
 <translation id="5017508259293544172">LEAP</translation>
-<translation id="5019310272469539976">Kur ekrani yt është në gjendje joaktive, shfaq fotografitë, orën, motin dhe informacionet e medias.</translation>
 <translation id="5035083460461104704">Ngjyra e temës</translation>
 <translation id="5038292761217083259">tastiera me shumë ngjyra</translation>
 <translation id="5039804452771397117">Lejo</translation>
@@ -547,6 +552,7 @@
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
 <translation id="5137451382116112100">I plotë</translation>
 <translation id="5142961317498132443">Vërtetimi</translation>
+<translation id="5145081769226915336">Të çaktivizohet automatikisht modaliteti i errët?</translation>
 <translation id="5154917547274118687">Memoria</translation>
 <translation id="5160857336552977725">Identifikohu në <ph name="DEVICE_TYPE" /></translation>
 <translation id="5166918508782100047">Cilësimet e "Përgjigjeve të shpejta"</translation>
@@ -625,6 +631,7 @@
 <translation id="574392208103952083">Mesatar</translation>
 <translation id="5757187557809630523">pjesa tjetër muzikore</translation>
 <translation id="5760715441271661976">Gjendja e portalit</translation>
+<translation id="5763838252932650682"><ph name="APP_NAME" /> po riniset dhe po përditësohet</translation>
 <translation id="576835345334454681">Ngritja e ndriçimit të ekranit</translation>
 <translation id="57838592816432529">Hiqi zërin</translation>
 <translation id="5784136236926853061">Vonesë shumë e lartë e HTTP-së</translation>
@@ -655,6 +662,7 @@
 <translation id="5946538341867151940">Nuk je lidhur ende. Nëse operatori yt celular rekomandon një APN të personalizuar, fut informacionet e APN-së duke zgjedhur "+ APN e re"</translation>
 <translation id="5972388717451707488">Motori i përditësimit</translation>
 <translation id="5984145644188835034">Imazhi i parazgjedhur i sfondit</translation>
+<translation id="6001235009374883388">APN është e llojit bashkëngjitje.</translation>
 <translation id="6017514345406065928">E gjelbër</translation>
 <translation id="6019566113895157499">Shkurtoret e tasteve</translation>
 <translation id="6034694447310538551">Aktivizo rivendosjen mujore automatike</translation>
@@ -821,6 +829,7 @@
 <translation id="7180611975245234373">Rifresko</translation>
 <translation id="7180865173735832675">Personalizo</translation>
 <translation id="7184043045742675738">Kliko te një tast për të personalizuar butonin tënd. Ndrysho pozicionin e tastit me anë të miut ose tasteve të shigjetave.</translation>
+<translation id="7212547870105584639">Menaxho cilësimet e APN-së së rrjetit. APN-të vendosin një lidhje mes një rrjeti celular dhe internetit. <ph name="BEGIN_LINK_LEARN_MORE" />Mëso më shumë<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Përditësimet e firmuerit për pajisjet e jashtme</translation>
 <translation id="7216409898977639127">Operatori celular</translation>
 <translation id="725133483556299729">Zgjidh email-in</translation>
@@ -831,6 +840,7 @@
 <translation id="7287310195820267359">Koleksionet e imazheve të sfondit</translation>
 <translation id="7297226631177386107">Nuk mund të lidhesh me uebsajtet HTTPS nëpërmjet murit mbrojtës</translation>
 <translation id="7297726121602187087">E gjelbër e errët</translation>
+<translation id="7301262279595293068">Prit ndërkohë që ky aplikacion po përditësohet</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7308203371573257315">Pyet ekspertët në forumin e ndihmës për Chromebook</translation>
@@ -1103,4 +1113,5 @@
 <translation id="979450713603643090">Rozë e çelur</translation>
 <translation id="982713511914535780">Ekzekuto testin e shkarkimit</translation>
 <translation id="987264212798334818">Të përgjithshme</translation>
+<translation id="995062385528875723">Nuk mund të përdoren shkronjat me thekse, alfabeti jolatin ose simbolet</translation>
 </translationbundle>

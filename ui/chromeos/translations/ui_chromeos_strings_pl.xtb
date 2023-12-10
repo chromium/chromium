@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="pl">
 <translation id="1000498691615767391">Wybierz folder do otwarcia</translation>
+<translation id="1014208178561091457">Nie udało się skopiować pliku <ph name="FILE_NAME" />, bo jest on zaszyfrowany.</translation>
 <translation id="1047956942837015229">Usuwam <ph name="COUNT" /> elementy(ów)...</translation>
 <translation id="1049926623896334335">Dokument Worda</translation>
 <translation id="1056775291175587022">Brak sieci</translation>
@@ -55,6 +56,7 @@
 <translation id="1435838927755162558">Udostępnij folder aplikacji Parallels Desktop</translation>
 <translation id="1439919885608649279">Osoba z kwiatami</translation>
 <translation id="1458457385801829801">Odłącz <ph name="TARGET_NAME" /></translation>
+<translation id="146691674290220697">Nie udało się skopiować <ph name="NUMBER_OF_FILES" /> plików, bo są one zaszyfrowane.</translation>
 <translation id="1471718551822868769">Słowacki</translation>
 <translation id="1482884275703521657">Fiński</translation>
 <translation id="148466539719134488">szwajcarska klawiatura</translation>
@@ -276,6 +278,7 @@
 <translation id="3253225298092156258">Niedostępna</translation>
 <translation id="3254434849914415189">Wybierz domyślną aplikację dla plików <ph name="FILE_TYPE" />:</translation>
 <translation id="3255159654094949700">Arabski</translation>
+<translation id="326396468955264502">Nie udało się przenieść <ph name="NUMBER_OF_FILES" /> plików, bo są one zaszyfrowane.</translation>
 <translation id="3264582393905923483">Kontekst</translation>
 <translation id="3272909651715601089">Nie udało się otworzyć pliku „<ph name="PATH" />”</translation>
 <translation id="3280431534455935878">Przygotowywanie</translation>
@@ -313,6 +316,7 @@
 <translation id="3523225005467146490">Udostępniono 1 folder maszynie wirtualnej <ph name="VM_NAME" /></translation>
 <translation id="3524311639100184459">Uwaga: te pliki mają charakter tymczasowy i mogą zostać automatycznie usunięte w celu zwolnienia miejsca na dysku.  <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Folder</translation>
+<translation id="3529424493985988200">Aby uzyskać szczegółowe informacje, skontaktuj się z administratorem.</translation>
 <translation id="3548125359243647069">Zbyt wiele razy podano nieprawidłowy kod PIN.</translation>
 <translation id="3549797760399244642">Wejdź na drive.google.com...</translation>
 <translation id="3553048479571901246">Aby otworzyć pliki w aplikacji <ph name="APP_NAME" />, najpierw skopiuj je do folderu Pliki systemu Windows.</translation>
@@ -701,6 +705,7 @@
 <translation id="637062427944097960">Ten plik został otwarty na innym pulpicie. Przejdź do <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />), aby go zobaczyć.</translation>
 <translation id="6394388407447716302">Tylko do odczytu</translation>
 <translation id="6395575651121294044">Elementy: <ph name="NUMBER_OF_FILES" /></translation>
+<translation id="6407769893376380348">Nie udało się przenieść pliku <ph name="FILE_NAME" />, bo jest on zaszyfrowany.</translation>
 <translation id="642282551015776456">Tej nazwy nie można używać jako nazwy pliku ani katalogu.</translation>
 <translation id="6423031066725912715">Wietnamski z klawiaturą TCVN</translation>
 <translation id="6430271654280079150">Pozostała 1 próba.</translation>

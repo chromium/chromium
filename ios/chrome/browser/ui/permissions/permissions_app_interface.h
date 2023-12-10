@@ -7,7 +7,6 @@
 
 #import <Foundation/Foundation.h>
 
-API_AVAILABLE(ios(15.0))
 @interface PermissionsAppInterface : NSObject
 
 // Returns a dictionary of permissions and their states of the currently active

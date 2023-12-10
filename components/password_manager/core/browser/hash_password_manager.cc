@@ -96,31 +96,29 @@ bool StringToLengthAndSalt(const std::string& s,
 std::string BooleanToString(bool bool_value) {
   return bool_value ? "true" : "false";
 }
+}  // namespace
 
-// Helper function to convert a dictionary value to PasswordWordHashData.
-absl::optional<PasswordHashData> ConvertToPasswordHashData(
+std::optional<PasswordHashData> ConvertToPasswordHashData(
     const base::Value& dict) {
   PasswordHashData result;
   result.username = GetAndDecryptField(dict, kUsernameFieldKey);
   if (result.username.empty())
-    return absl::nullopt;
+    return std::nullopt;
 
   if (!base::StringToUint64(GetAndDecryptField(dict, kHashFieldKey),
                             &result.hash)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (!StringToLengthAndSalt(GetAndDecryptField(dict, kLengthAndSaltFieldKey),
                              &result.length, &result.salt)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   result.is_gaia_password = GetAndDecryptField(dict, kIsGaiaFieldKey) == "true";
 
   return result;
 }
-
-}  // namespace
 
 HashPasswordManager::HashPasswordManager(PrefService* prefs) : prefs_(prefs) {}
 HashPasswordManager::HashPasswordManager() = default;
@@ -140,7 +138,7 @@ bool HashPasswordManager::SavePasswordHash(const std::string username,
     if (AreUsernamesSame(
             GetAndDecryptField(password_hash_data, kUsernameFieldKey),
             IsGaiaPassword(password_hash_data), username, is_gaia_password)) {
-      absl::optional<PasswordHashData> existing_password_hash =
+      std::optional<PasswordHashData> existing_password_hash =
           ConvertToPasswordHashData(password_hash_data);
       if (existing_password_hash && existing_password_hash->MatchesPassword(
                                         username, password, is_gaia_password)) {
@@ -227,7 +225,7 @@ std::vector<PasswordHashData> HashPasswordManager::RetrieveAllPasswordHashes() {
       prefs_->GetList(prefs::kPasswordHashDataList);
 
   for (const base::Value& entry : hash_list) {
-    absl::optional<PasswordHashData> password_hash_data =
+    std::optional<PasswordHashData> password_hash_data =
         ConvertToPasswordHashData(entry);
     if (password_hash_data)
       result.push_back(std::move(*password_hash_data));
@@ -235,12 +233,12 @@ std::vector<PasswordHashData> HashPasswordManager::RetrieveAllPasswordHashes() {
   return result;
 }
 
-absl::optional<PasswordHashData> HashPasswordManager::RetrievePasswordHash(
+std::optional<PasswordHashData> HashPasswordManager::RetrievePasswordHash(
     const std::string& username,
     bool is_gaia_password) {
   if (!prefs_ || username.empty() ||
       !prefs_->HasPrefPath(prefs::kPasswordHashDataList)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   for (const base::Value& entry :
@@ -251,7 +249,7 @@ absl::optional<PasswordHashData> HashPasswordManager::RetrievePasswordHash(
     }
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 bool HashPasswordManager::HasPasswordHash(const std::string& username,

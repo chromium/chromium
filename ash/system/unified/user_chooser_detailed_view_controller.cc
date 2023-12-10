@@ -62,7 +62,7 @@ void UserChooserDetailedViewController::HandleUserSwitch(int user_index) {
   DCHECK_LT(user_index, controller->NumberOfLoggedInUsers());
 
   MultiProfileUMA::RecordSwitchActiveUser(
-      MultiProfileUMA::SWITCH_ACTIVE_USER_BY_TRAY);
+      MultiProfileUMA::SwitchActiveUserAction::kByTray);
   tray_controller_->CloseBubble();
   controller->SwitchActiveUser(
       controller->GetUserSession(user_index)->user_info.account_id);

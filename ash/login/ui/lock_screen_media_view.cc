@@ -18,6 +18,7 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
@@ -188,7 +189,7 @@ void LockScreenMediaView::MediaSessionInfoChanged(
 }
 
 void LockScreenMediaView::MediaSessionMetadataChanged(
-    const absl::optional<media_session::MediaMetadata>& metadata) {
+    const std::optional<media_session::MediaMetadata>& metadata) {
   if (switch_media_delay_timer_->IsRunning()) {
     return;
   }
@@ -210,7 +211,7 @@ void LockScreenMediaView::MediaSessionActionsChanged(
 }
 
 void LockScreenMediaView::MediaSessionChanged(
-    const absl::optional<base::UnguessableToken>& request_id) {
+    const std::optional<base::UnguessableToken>& request_id) {
   // Record to metric when the media view is visible to users and a non-empty
   // media session starts. This usually means the screen is locked and a playing
   // media is switching to the next media in a playlist. We need to check the
@@ -247,7 +248,7 @@ void LockScreenMediaView::MediaSessionChanged(
 }
 
 void LockScreenMediaView::MediaSessionPositionChanged(
-    const absl::optional<media_session::MediaPosition>& position) {
+    const std::optional<media_session::MediaPosition>& position) {
   if (switch_media_delay_timer_->IsRunning() || !position.has_value()) {
     return;
   }
@@ -333,5 +334,8 @@ void LockScreenMediaView::Hide() {
   media_controller_remote_->Stop();
   hide_media_view_callback_.Run();
 }
+
+BEGIN_METADATA(LockScreenMediaView)
+END_METADATA
 
 }  // namespace ash

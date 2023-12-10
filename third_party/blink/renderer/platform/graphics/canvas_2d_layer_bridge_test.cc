@@ -49,6 +49,7 @@
 #include "third_party/blink/renderer/platform/scheduler/public/main_thread_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
 
@@ -170,6 +171,8 @@ class Canvas2DLayerBridgeTest : public Test {
   }
 
  protected:
+  test::TaskEnvironment task_environment_{
+      test::TaskEnvironment::RealMainThreadScheduler{}};
   scoped_refptr<viz::TestContextProvider> test_context_provider_;
   ImageTrackingDecodeCache image_decode_cache_;
   std::unique_ptr<FakeCanvasResourceHost> host_;
@@ -872,29 +875,6 @@ TEST_F(Canvas2DLayerBridgeTest, NoResourceRecyclingWhenPageHidden) {
   // hibernated.
   std::move(callbacks[1]).Run(gpu::SyncToken(), false);
   EXPECT_EQ(test_context_provider_->TestContextGL()->NumTextures(), 1u);
-}
-
-TEST_F(Canvas2DLayerBridgeTest, ReleaseResourcesAfterBridgeDestroyed) {
-  ScopedCanvas2dImageChromiumForTest canvas_2d_image_chromium(true);
-  const_cast<gpu::Capabilities&>(SharedGpuContext::ContextProviderWrapper()
-                                     ->ContextProvider()
-                                     ->GetCapabilities())
-      .gpu_memory_buffer_formats.Put(gfx::BufferFormat::BGRA_8888);
-
-  viz::TransferableResource resource;
-  viz::ReleaseCallback release_callback;
-
-  std::unique_ptr<Canvas2DLayerBridge> bridge =
-      MakeBridge(gfx::Size(300, 150), RasterModeHint::kPreferGPU, kNonOpaque);
-  DrawSomething(bridge.get());
-  Host()->PrepareTransferableResource(nullptr, &resource, &release_callback);
-
-  // Tearing down the bridge does not destroy unreleased resources.
-  bridge.reset();
-  EXPECT_EQ(test_context_provider_->TestContextGL()->NumTextures(), 1u);
-  constexpr bool lost_resource = false;
-  std::move(release_callback).Run(gpu::SyncToken(), lost_resource);
-  EXPECT_EQ(test_context_provider_->TestContextGL()->NumTextures(), 0u);
 }
 
 TEST_F(Canvas2DLayerBridgeTest, EnsureCCImageCacheUse) {

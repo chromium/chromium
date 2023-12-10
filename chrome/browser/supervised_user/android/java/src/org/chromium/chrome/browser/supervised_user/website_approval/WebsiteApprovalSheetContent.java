@@ -23,9 +23,7 @@ import org.chromium.ui.ElidedUrlTextView;
 import org.chromium.ui.widget.ButtonCompat;
 import org.chromium.url.GURL;
 
-/**
- * Bottom sheet content for the screen which allows a parent to approve or deny a website.
- */
+/** Bottom sheet content for the screen which allows a parent to approve or deny a website. */
 class WebsiteApprovalSheetContent implements BottomSheetContent {
     private static final String ELLIPSIS = "...";
     static final int MAX_HOST_SIZE = 256;
@@ -47,8 +45,10 @@ class WebsiteApprovalSheetContent implements BottomSheetContent {
 
     public WebsiteApprovalSheetContent(Context context) {
         mContext = context;
-        mContentView = (LinearLayout) LayoutInflater.from(mContext).inflate(
-                R.layout.website_approval_bottom_sheet, null);
+        mContentView =
+                (LinearLayout)
+                        LayoutInflater.from(mContext)
+                                .inflate(R.layout.website_approval_bottom_sheet, null);
     }
 
     @Override
@@ -187,7 +187,10 @@ class WebsiteApprovalSheetContent implements BottomSheetContent {
         fullUrlView.setUrl(specs.mFormattedString, specs.mVisibleUrlLength);
 
         LinearLayout urlWrapper = mContentView.findViewById(R.id.url_container);
-        urlWrapper.setOnClickListener(v -> { fullUrlView.toggleTruncation(); });
+        urlWrapper.setOnClickListener(
+                v -> {
+                    fullUrlView.toggleTruncation();
+                });
 
         // Set for accessibility announcement.
         fullUrlView.setContentDescription(specs.mFormattedString);

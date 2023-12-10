@@ -9,9 +9,7 @@ import android.os.Bundle;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 
-/**
- * Base class for Policy providers.
- */
+/** Base class for Policy providers. */
 public abstract class PolicyProvider {
     private static final String TAG = "PolicyProvider";
 
@@ -36,9 +34,7 @@ public abstract class PolicyProvider {
      */
     public abstract void refresh();
 
-    /**
-     * Register the PolicyProvider for receiving policy changes.
-     */
+    /** Register the PolicyProvider for receiving policy changes. */
     protected void startListeningForPolicyChanges() {}
 
     /**

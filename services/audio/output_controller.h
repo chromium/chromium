@@ -8,6 +8,7 @@
 #include <stdint.h>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -15,7 +16,6 @@
 #include "base/compiler_specific.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr_exclusion.h"
-#include "base/strings/string_piece.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -67,7 +67,7 @@ class OutputController : public media::AudioOutputStream::AudioSourceCallback,
     virtual void OnControllerPlaying() = 0;
     virtual void OnControllerPaused() = 0;
     virtual void OnControllerError() = 0;
-    virtual void OnLog(base::StringPiece message) = 0;
+    virtual void OnLog(std::string_view message) = 0;
 
    protected:
     virtual ~EventHandler() {}

@@ -34,14 +34,20 @@ export class FocusOutlineManager {
   constructor(doc: Document) {
     this.classList_ = doc.documentElement.classList;
 
-    doc.addEventListener('keydown', () => this.onEvent_(true), true);
-    doc.addEventListener('mousedown', () => this.onEvent_(false), true);
+    doc.addEventListener('keydown', (e) => this.onEvent_(true, e), true);
+    doc.addEventListener('mousedown', (e) => this.onEvent_(false, e), true);
 
     this.updateVisibility();
   }
 
-  private onEvent_(focusByKeyboard: boolean) {
+  private onEvent_(focusByKeyboard: boolean, e: MouseEvent|KeyboardEvent) {
     if (this.focusByKeyboard_ === focusByKeyboard) {
+      return;
+    }
+    if (e instanceof KeyboardEvent && e.repeat) {
+      // A repeated keydown should not trigger the focus state. For example,
+      // there is a repeated ALT keydown if ALT+CLICK is used to open the
+      // context menu and ALT is not released.
       return;
     }
     this.focusByKeyboard_ = focusByKeyboard;

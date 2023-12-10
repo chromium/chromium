@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/functional/callback_forward.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "components/signin/public/base/consent_level.h"
@@ -41,6 +41,7 @@ namespace signin {
 struct CookieParamsForTest {
   std::string email;
   std::string gaia_id;
+  bool signed_out = false;
 };
 
 class IdentityManager;

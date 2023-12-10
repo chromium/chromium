@@ -64,8 +64,6 @@ class MockRenderMessageFilterImpl : public mojom::RenderMessageFilter {
 MockRenderThread::MockRenderThread()
     : next_routing_id_(kFirstGeneratedRoutingId),
       mock_render_message_filter_(new MockRenderMessageFilterImpl()) {
-  RenderThreadImpl::SetRenderMessageFilterForTesting(
-      mock_render_message_filter_.get());
 }
 
 MockRenderThread::~MockRenderThread() {
@@ -223,24 +221,24 @@ int32_t MockRenderThread::GetNextRoutingID() {
 
 mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker>
 MockRenderThread::TakeInitialBrowserInterfaceBrokerReceiverForFrame(
-    int32_t routing_id) {
+    const blink::LocalFrameToken& frame_token) {
   mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker>
       broker_from_create_child_frame_request;
-  auto it = frame_routing_id_to_initial_browser_brokers_.find(routing_id);
-  if (it != frame_routing_id_to_initial_browser_brokers_.end()) {
+  auto it = frame_token_to_initial_browser_brokers_.find(frame_token);
+  if (it != frame_token_to_initial_browser_brokers_.end()) {
     broker_from_create_child_frame_request = std::move(it->second);
-    frame_routing_id_to_initial_browser_brokers_.erase(it);
+    frame_token_to_initial_browser_brokers_.erase(it);
   }
   return broker_from_create_child_frame_request;
 }
 
 void MockRenderThread::OnCreateChildFrame(
-    int32_t child_routing_id,
+    const blink::LocalFrameToken& child_frame_token,
     mojo::PendingAssociatedRemote<mojom::Frame> frame_remote,
     mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker>
         browser_interface_broker) {
-  frame_routing_id_to_initial_browser_brokers_.emplace(
-      child_routing_id, std::move(browser_interface_broker));
+  frame_token_to_initial_browser_brokers_.emplace(
+      child_frame_token, std::move(browser_interface_broker));
 }
 
 bool MockRenderThread::OnControlMessageReceived(const IPC::Message& msg) {
@@ -263,8 +261,8 @@ void MockRenderThread::OnCreateWindow(
     mojom::CreateNewWindowReply* reply) {
   reply->frame = TestRenderFrame::CreateStubFrameReceiver();
   reply->main_frame_route_id = GetNextRoutingID();
-  frame_routing_id_to_initial_browser_brokers_.emplace(
-      reply->main_frame_route_id,
+  frame_token_to_initial_browser_brokers_.emplace(
+      reply->main_frame_token,
       reply->main_frame_interface_broker.InitWithNewPipeAndPassReceiver());
   reply->associated_interface_provider =
       TestRenderFrame::CreateStubAssociatedInterfaceProviderRemote();

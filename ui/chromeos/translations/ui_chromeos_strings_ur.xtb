@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ur">
 <translation id="1000498691615767391">کھولنے کیلئے ایک فولڈر منتخب کریں</translation>
+<translation id="1014208178561091457"><ph name="FILE_NAME" /> کو کاپی نہیں کیا جا سکا کیونکہ یہ مرموز کردہ ہے۔</translation>
 <translation id="1047956942837015229"><ph name="COUNT" /> آئٹمز حذف کیے جا رہے ہیں…</translation>
 <translation id="1049926623896334335">‏Word دستاویز</translation>
 <translation id="1056775291175587022">نیٹ ورک نہیں</translation>
@@ -55,6 +56,7 @@
 <translation id="1435838927755162558">‏Parallels ڈیسک ٹاپ کے ساتھ فولڈر کا اشتراک کریں</translation>
 <translation id="1439919885608649279">پھول لیے ہوئے شخص</translation>
 <translation id="1458457385801829801"><ph name="TARGET_NAME" /> خارج کریں</translation>
+<translation id="146691674290220697"><ph name="NUMBER_OF_FILES" /> فائلز کو کاپی نہیں کیا جا سکا کیونکہ وہ مرموز کردہ ہیں۔</translation>
 <translation id="1471718551822868769">سلاواکی</translation>
 <translation id="1482884275703521657">فنّش</translation>
 <translation id="148466539719134488">سوئس</translation>
@@ -276,6 +278,7 @@
 <translation id="3253225298092156258">دستیاب نہیں ہے</translation>
 <translation id="3254434849914415189"><ph name="FILE_TYPE" /> فائلوں کیلئے ڈیفالٹ ایپ منتخب کریں:</translation>
 <translation id="3255159654094949700">عربی</translation>
+<translation id="326396468955264502"><ph name="NUMBER_OF_FILES" /> فائلز کو منتقل نہیں کیا جا سکا کیونکہ وہ مرموز کردہ ہیں۔</translation>
 <translation id="3264582393905923483">سیاق و سباق</translation>
 <translation id="3272909651715601089">"<ph name="PATH" />" کو نہیں کھول سکے</translation>
 <translation id="3280431534455935878">تیار ہو رہی ہے</translation>
@@ -313,6 +316,7 @@
 <translation id="3523225005467146490"><ph name="VM_NAME" /> کے ساتھ 1 فولڈر کا اشتراک کیا گیا</translation>
 <translation id="3524311639100184459">احتیاط: یہ فائلز عارضی ہیں اور ڈسک میں جگہ خالی کرنے کیلئے انہیں خودکار طور پر حذف کیا جا سکتا ہے۔  <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">فولڈر</translation>
+<translation id="3529424493985988200">تفصیلات کے لیے اپنے منتظم سے رابطہ کریں۔</translation>
 <translation id="3548125359243647069">‏ایک غلط PIN کئی مرتبہ درج کیا گیا۔</translation>
 <translation id="3549797760399244642">‏drive.google.com پر جائیں…</translation>
 <translation id="3553048479571901246"><ph name="APP_NAME" /> کے ساتھ فائلز کو کھولنے کیلئے، پہلے انہیں ونڈوز فائلز فولڈر میں کاپی کریں۔</translation>
@@ -701,6 +705,7 @@
 <translation id="637062427944097960">یہ فائل ایک مختلف ڈیسک ٹاپ پر کھولی گئی ہے۔ اسے دیکھنے کیلئے <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) پر منتقل ہوں۔</translation>
 <translation id="6394388407447716302">صرف پڑھنے کے لیے</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> آئٹمز</translation>
+<translation id="6407769893376380348"><ph name="FILE_NAME" /> کو منتقل نہیں کیا جا سکا کیونکہ یہ مرموز کردہ ہے</translation>
 <translation id="642282551015776456">یہ نام کسی فائل یا فولڈر نام کے بطور استعمال نہیں کیا جا سکتا ہے</translation>
 <translation id="6423031066725912715">‏TCVN کی بورڈ کے ساتھ ویتنامی</translation>
 <translation id="6430271654280079150">آپ کے پاس 1 کوشش بچی ہے۔</translation>

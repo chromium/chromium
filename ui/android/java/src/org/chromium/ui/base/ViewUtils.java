@@ -19,9 +19,7 @@ import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory;
 
 import org.chromium.base.TraceEvent;
 
-/**
- * A utility class that has helper methods for Android view.
- */
+/** A utility class that has helper methods for Android view. */
 public final class ViewUtils {
     private static final int[] sLocationTmp = new int[2];
 
@@ -50,9 +48,7 @@ public final class ViewUtils {
         return view.isInTouchMode() ? view.isFocusableInTouchMode() : view.isFocusable();
     }
 
-    /**
-     * Invalidates a view and all of its descendants.
-     */
+    /** Invalidates a view and all of its descendants. */
     private static void recursiveInvalidate(View view) {
         view.invalidate();
         if (view instanceof ViewGroup) {
@@ -67,9 +63,7 @@ public final class ViewUtils {
         }
     }
 
-    /**
-     * Sets the enabled property of a View and all of its descendants.
-     */
+    /** Sets the enabled property of a View and all of its descendants. */
     public static void setEnabledRecursive(View view, boolean enabled) {
         view.setEnabled(enabled);
         if (view instanceof ViewGroup) {
@@ -80,9 +74,7 @@ public final class ViewUtils {
         }
     }
 
-    /**
-     * Captures a bitmap of a View and draws it to a Canvas.
-     */
+    /** Captures a bitmap of a View and draws it to a Canvas. */
     public static void captureBitmap(View view, Canvas canvas) {
         // Invalidate all the descendants of view, before calling view.draw(). Otherwise, some of
         // the descendant views may optimize away their drawing. http://crbug.com/415251
@@ -140,9 +132,12 @@ public final class ViewUtils {
      */
     public static void gatherTransparentRegionsForOpaqueView(View view, Region region) {
         view.getLocationInWindow(sLocationTmp);
-        region.op(sLocationTmp[0], sLocationTmp[1],
+        region.op(
+                sLocationTmp[0],
+                sLocationTmp[1],
                 sLocationTmp[0] + view.getRight() - view.getLeft(),
-                sLocationTmp[1] + view.getBottom() - view.getTop(), Region.Op.DIFFERENCE);
+                sLocationTmp[1] + view.getBottom() - view.getTop(),
+                Region.Op.DIFFERENCE);
     }
 
     /**

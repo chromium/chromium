@@ -104,6 +104,7 @@ source_set("app_service") {
 
     deps += [
       "//ash/webui/projector_app/public/cpp",
+      "//chrome/browser/apps/app_service/app_install:app_install_service",
       "//chromeos/constants",
       "//chromeos/crosapi/mojom",
       "//chromeos/startup",
@@ -238,7 +239,6 @@ source_set("app_service") {
       "//ash/webui/system_apps/public:system_web_app_type",
       "//chrome/browser:browser_process",
       "//chrome/browser/apps/almanac_api_client",
-      "//chrome/browser/apps/app_service/app_install:app_install_service",
       "//chrome/browser/apps/app_service/promise_apps/proto",
       "//chrome/browser/ash/crosapi",
       "//chrome/browser/ash/system_web_apps",
@@ -264,6 +264,7 @@ source_set("app_service") {
       "//components/ukm",
       "//components/webapps/browser",
       "//services/metrics/public/cpp:ukm_builders",
+      "//ui/chromeos/styles:cros_tokens_color_mappings",
     ]
 
     # TODO(crbug.com/1402145): Remove circular dependencies.
@@ -337,11 +338,7 @@ source_set("unit_tests") {
 
   sources = [
     "app_icon/app_icon_factory_unittest.cc",
-    "app_icon/app_icon_test_util.cc",
-    "app_icon/app_icon_test_util.h",
     "app_icon/chrome_apps_icon_unittest.cc",
-    "app_icon/web_app_icon_test_helper.cc",
-    "app_icon/web_app_icon_test_helper.h",
     "app_icon/web_app_icon_unittest.cc",
     "app_service_proxy_unittest.cc",
     "intent_util_unittest.cc",
@@ -466,6 +463,10 @@ source_set("test_support") {
   testonly = true
 
   sources = [
+    "app_icon/app_icon_test_util.cc",
+    "app_icon/app_icon_test_util.h",
+    "app_icon/web_app_icon_test_helper.cc",
+    "app_icon/web_app_icon_test_helper.h",
     "app_service_test.cc",
     "app_service_test.h",
   ]
@@ -474,6 +475,7 @@ source_set("test_support") {
 
   deps = [
     "//build:chromeos_buildflags",
+    "//chrome/browser/apps:icon_standardizer",
     "//chrome/test:test_support",
     "//components/services/app_service",
     "//skia",

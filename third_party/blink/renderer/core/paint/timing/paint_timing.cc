@@ -349,6 +349,9 @@ void PaintTiming::ReportFirstPaintAfterBackForwardCacheRestorePresentationTime(
 }
 
 void PaintTiming::SetFirstPaintPresentation(base::TimeTicks stamp) {
+  if (soft_navigation_fp_reported_) {
+    return;
+  }
   if (first_paints_reset_ && !soft_navigation_detected_) {
     // We're expecting a soft navigation paint, but soft navigation wasn't yet
     // detected. Avoid reporting it for now, and it'll be reported once soft
@@ -374,9 +377,15 @@ void PaintTiming::SetFirstPaintPresentation(base::TimeTicks stamp) {
         /*is_triggered_by_soft_navigation=*/first_paints_reset_);
   }
   NotifyPaintTimingChanged();
+  if (first_paints_reset_) {
+    soft_navigation_fp_reported_ = true;
+  }
 }
 
 void PaintTiming::SetFirstContentfulPaintPresentation(base::TimeTicks stamp) {
+  if (soft_navigation_fcp_reported_) {
+    return;
+  }
   if (first_paints_reset_ && !soft_navigation_detected_) {
     // We're expecting a soft navigation paint, but soft navigation wasn't yet
     // detected. Avoid reporting it for now, and it'll be reported once soft
@@ -412,6 +421,7 @@ void PaintTiming::SetFirstContentfulPaintPresentation(base::TimeTicks stamp) {
   // For soft navigations, we just want to report a performance entry, but not
   // trigger any of the other FCP observers.
   if (is_soft_navigation_fcp) {
+    soft_navigation_fcp_reported_ = true;
     return;
   }
   if (GetFrame())

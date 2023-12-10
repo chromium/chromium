@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SIGNIN_ASH_INLINE_LOGIN_HANDLER_IMPL_H_
 #define CHROME_BROWSER_UI_WEBUI_SIGNIN_ASH_INLINE_LOGIN_HANDLER_IMPL_H_
 
+#include <optional>
 #include <string>
 
 #include "base/containers/flat_set.h"
@@ -61,9 +62,16 @@ class InlineLoginHandlerImpl : public ::InlineLoginHandler {
   // Fires WebUIListener `show-signin-error-page` that would display an error
   // page informing the reason of the account not being added as a Secondary
   // account.
+  // `email` is the email of the blocked account.
+  // `hosted_domain` (optional) is the domain of the blocked account. It should
+  // be provided iff signin is blocked by policy.
   void ShowSigninErrorPage(const std::string& email,
                            const std::string& hosted_domain);
+  void GetDeviceId(const base::Value::List& args);
 
+  // Email address provided at the start of the flow. Empty optional if no email
+  // was provided.
+  std::optional<std::string> initial_email_;
   base::RepeatingClosure close_dialog_closure_;
   base::RepeatingCallback<void(const std::string&, const std::string&)>
       show_signin_error_;

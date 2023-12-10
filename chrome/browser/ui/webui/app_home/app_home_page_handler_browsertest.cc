@@ -254,16 +254,6 @@ class AppHomePageHandlerTest : public InProcessBrowserTest {
     run_loop.Run();
   }
 
-  extensions::ExtensionService* CreateTestExtensionService() {
-    auto* extension_system = static_cast<extensions::TestExtensionSystem*>(
-        extensions::ExtensionSystem::Get(profile()));
-    extensions::ExtensionService* ext_service =
-        extension_system->CreateExtensionService(
-            base::CommandLine::ForCurrentProcess(), base::FilePath(), false);
-    ext_service->Init();
-    return ext_service;
-  }
-
   content::TestWebUI test_web_ui_;
   testing::StrictMock<MockAppHomePage> page_;
 

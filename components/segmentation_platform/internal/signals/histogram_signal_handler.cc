@@ -6,7 +6,6 @@
 #include <cstdint>
 
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase_unordered_map.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/metrics_hashes.h"

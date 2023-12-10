@@ -22,12 +22,13 @@ TagsToUrlsType = Dict[TagTupleType, List[str]]
 TestToTagsType = Dict[str, TagsToUrlsType]
 AggregatedResultsType = Dict[str, TestToTagsType]
 
-# Sample:
+# Sample of AggregatedStatusResultsType:
 # {
 #   'test_suite': {
 #     'test_name': {
 #       ('typ', 'tags', 'as', 'tuple'):
-#       [ (status, url, date), (status, url, date) ],
+#       [ (status, url, date, is_slow, typ_expectations),
+#         (status, url, date, is_slow, typ_expectations) ],
 #     },
 #   },
 # }
@@ -35,6 +36,8 @@ class ResultTupleType(NamedTuple):
   status: str
   build_url: str
   date: datetime.date
+  is_slow: bool
+  typ_expectations: List[str]
 
 
 TagsToResultType = Dict[TagTupleType, List[ResultTupleType]]

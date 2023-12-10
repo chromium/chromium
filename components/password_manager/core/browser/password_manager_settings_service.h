@@ -26,4 +26,4 @@ class PasswordManagerSettingsService : public KeyedService {
   ~PasswordManagerSettingsService() override = default;
 };
 
-#endif  // COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_SETTINGS_SERVICE_H_
+#endif  // COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_MANAGER_SETTINGS_SERVICE_H_

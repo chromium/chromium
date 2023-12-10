@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/allocator/partition_allocator/src/partition_alloc/lightweight_quarantine.h"
+#include "partition_alloc/lightweight_quarantine.h"
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_for_testing.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_page.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_root.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_stats.h"
+#include "partition_alloc/partition_alloc_for_testing.h"
+#include "partition_alloc/partition_page.h"
+#include "partition_alloc/partition_root.h"
+#include "partition_alloc/partition_stats.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace partition_alloc {
@@ -21,16 +21,15 @@ size_t GetObjectSize(void* object) {
   return entry_slot_span->GetUtilizedSlotSize();
 }
 
+using QuarantineRoot = internal::LightweightQuarantineRoot;
+using QuarantineBranch = internal::LightweightQuarantineBranchForTesting;
+
 struct LightweightQuarantineTestParam {
   size_t capacity_in_bytes;
 };
-
-using QuarantineList =
-    internal::LightweightQuarantineList<internal::LightweightQuarantineEntry,
-                                        1024>;
-constexpr LightweightQuarantineTestParam kSmallQuarantineList = {
+constexpr LightweightQuarantineTestParam kSmallQuarantineBranch = {
     .capacity_in_bytes = 256};
-constexpr LightweightQuarantineTestParam kLargeQuarantineList = {
+constexpr LightweightQuarantineTestParam kLargeQuarantineBranch = {
     .capacity_in_bytes = 4096};
 
 class PartitionAllocLightweightQuarantineTest
@@ -41,8 +40,10 @@ class PartitionAllocLightweightQuarantineTest
 
     allocator_ =
         std::make_unique<PartitionAllocatorForTesting>(PartitionOptions{});
-    list_ = std::make_unique<QuarantineList>(allocator_->root(),
-                                             param.capacity_in_bytes);
+
+    root_.emplace(*allocator_->root(), param.capacity_in_bytes);
+    branch_.emplace(
+        root_->CreateBranch<QuarantineBranch::kQuarantineCapacityCount>());
 
     auto stats = GetStats();
     ASSERT_EQ(0u, stats.size_in_bytes);
@@ -53,50 +54,49 @@ class PartitionAllocLightweightQuarantineTest
 
   void TearDown() override {
     // |Purge()|d here.
-    list_ = nullptr;
+    branch_.reset();
+    root_.reset();
     allocator_ = nullptr;
   }
 
-  PartitionRoot* GetRoot() const { return allocator_->root(); }
+  PartitionRoot* GetPartitionRoot() const { return allocator_->root(); }
 
-  QuarantineList* GetList() const { return list_.get(); }
+  QuarantineRoot* GetQuarantineRoot() { return &root_.value(); }
+  QuarantineBranch* GetQuarantineBranch() { return &branch_.value(); }
 
   LightweightQuarantineStats GetStats() const {
     LightweightQuarantineStats stats{};
-    list_->AccumulateStats(stats);
+    root_->AccumulateStats(stats);
     return stats;
   }
 
   std::unique_ptr<PartitionAllocatorForTesting> allocator_;
-  std::unique_ptr<QuarantineList> list_;
+  std::optional<QuarantineRoot> root_;
+  std::optional<QuarantineBranch> branch_;
 };
 INSTANTIATE_TEST_SUITE_P(
     PartitionAllocLightweightQuarantineTestMultipleQuarantineSizeInstantiation,
     PartitionAllocLightweightQuarantineTest,
-    ::testing::Values(kSmallQuarantineList, kLargeQuarantineList));
+    ::testing::Values(kSmallQuarantineBranch, kLargeQuarantineBranch));
 
 }  // namespace
 
 TEST_P(PartitionAllocLightweightQuarantineTest, Basic) {
   constexpr size_t kObjectSize = 1;
 
-  uintptr_t slots_address = GetList()->GetSlotsAddress();
-  const size_t capacity_in_bytes = GetList()->GetCapacityInBytes();
+  const size_t capacity_in_bytes =
+      GetQuarantineBranch()->GetRoot().GetCapacityInBytes();
 
   constexpr size_t kCount = 100;
   for (size_t i = 1; i <= kCount; i++) {
-    void* object = GetRoot()->Alloc(kObjectSize);
+    void* object = GetPartitionRoot()->Alloc(kObjectSize);
     const size_t size = GetObjectSize(object);
     const size_t max_count = capacity_in_bytes / size;
 
-    auto entry = QuarantineList::Entry(object);
-    const uint32_t entry_id = GetList()->Quarantine(std::move(entry));
-    const auto* entry_ptr =
-        QuarantineList::GetEntryByID(slots_address, entry_id);
+    const bool success = GetQuarantineBranch()->Quarantine(object);
 
-    ASSERT_NE(entry_ptr, nullptr);
-    ASSERT_EQ(object, entry_ptr->GetObject());
-    ASSERT_TRUE(GetList()->IsQuarantinedForTesting(object));
+    ASSERT_TRUE(success);
+    ASSERT_TRUE(GetQuarantineBranch()->IsQuarantinedForTesting(object));
 
     const auto expected_count = std::min(i, max_count);
     auto stats = GetStats();
@@ -109,16 +109,17 @@ TEST_P(PartitionAllocLightweightQuarantineTest, Basic) {
 
 TEST_P(PartitionAllocLightweightQuarantineTest, TooLargeAllocation) {
   constexpr size_t kObjectSize = 1 << 26;  // 64 MiB.
-  const size_t capacity_in_bytes = GetList()->GetCapacityInBytes();
+  const size_t capacity_in_bytes =
+      GetQuarantineBranch()->GetRoot().GetCapacityInBytes();
 
-  void* object = GetRoot()->Alloc(kObjectSize);
+  void* object = GetPartitionRoot()->Alloc(kObjectSize);
   const size_t size = GetObjectSize(object);
   ASSERT_GT(size, capacity_in_bytes);
 
-  auto entry = QuarantineList::Entry(object);
-  GetList()->Quarantine(std::move(entry));
+  const bool success = GetQuarantineBranch()->Quarantine(object);
 
-  ASSERT_FALSE(GetList()->IsQuarantinedForTesting(object));
+  ASSERT_FALSE(success);
+  ASSERT_FALSE(GetQuarantineBranch()->IsQuarantinedForTesting(object));
 
   auto stats = GetStats();
   ASSERT_EQ(0u, stats.size_in_bytes);

@@ -53,6 +53,7 @@ class CameraAppWindowStateController
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
   void OnWidgetBoundsChanged(views::Widget* widget,
                              const gfx::Rect& new_bounds) override;
+  void OnWidgetDestroying(views::Widget* widget) override;
 
  private:
   void OnWindowStateChanged();

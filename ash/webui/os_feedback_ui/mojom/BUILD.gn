@@ -10,6 +10,9 @@ assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //ash")
 mojom("mojom") {
   sources = [ "os_feedback_ui.mojom" ]
 
+  webui_module_path = "/"
+  use_typescript_sources = false
+
   public_deps = [
     "//mojo/public/mojom/base",
     "//url/mojom:url_mojom_gurl",

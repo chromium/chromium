@@ -122,7 +122,7 @@ class MdIPHBubbleButton : public views::MdTextButton {
                     PressedCallback callback,
                     const std::u16string& text,
                     bool is_default_button)
-      : MdTextButton(callback, text),
+      : MdTextButton(std::move(callback), text),
         delegate_(delegate),
         is_default_button_(is_default_button) {
     // Prominent style gives a button hover highlight.
@@ -210,7 +210,7 @@ class ClosePromoButton : public views::ImageButton {
                    const std::u16string accessible_name,
                    PressedCallback callback)
       : delegate_(delegate) {
-    SetCallback(callback);
+    SetCallback(std::move(callback));
     views::ConfigureVectorImageButton(this);
     views::HighlightPathGenerator::Install(
         this,
@@ -627,12 +627,6 @@ HelpBubbleView::HelpBubbleView(const HelpBubbleDelegate* delegate,
   for (views::Label* label : labels_) {
     label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
     label->SetMultiLine(true);
-    // There is a problem with FlexLayout under the current layout, CloseButton
-    // cannot stretch its width to achieve kEnd alignment behavior. Let's
-    // temporarily disable the bounded layout of views::Label. Waiting for
-    // FlexLayout to be fixed.
-    // TODO(crbug.com/1495581): Remove this.
-    label->SetUseLegacyPreferredSize(true);
     label->SetElideBehavior(gfx::NO_ELIDE);
   }
 
@@ -676,8 +670,8 @@ HelpBubbleView::HelpBubbleView(const HelpBubbleDelegate* delegate,
     for (HelpBubbleButtonParams& button_params : params.buttons) {
       auto button = std::make_unique<MdIPHBubbleButton>(
           delegate,
-          base::BindRepeating(run_callback_and_close, base::Unretained(this),
-                              base::Passed(std::move(button_params.callback))),
+          base::BindOnce(run_callback_and_close, base::Unretained(this),
+                         std::move(button_params.callback)),
           button_params.text, button_params.is_default);
       button->SetMinSize(gfx::Size(0, 0));
       if (button_params.is_default) {
@@ -876,10 +870,16 @@ HelpBubbleView::HelpBubbleView(const HelpBubbleDelegate* delegate,
     frame_view->set_use_anchor_window_bounds(false);
   }
 
+  // Bubbles get a 1-dip border that's either light or dark depending on system
+  // light or dark mode, but this does not match with the help bubble (see
+  // b/303069420).
+  frame_view->bubble_border()->set_draw_border_stroke(false);
+
   SizeToContents();
 
   // Most help bubbles with buttons take focus when they show.
-  bool show_active = !params.buttons.empty();
+  bool show_active =
+      params.focus_on_show_hint.value_or(!params.buttons.empty());
   if (auto* const anchor_bubble =
           anchor_widget()->widget_delegate()->AsBubbleDialogDelegate()) {
     // Make sure that if the help bubble is attaching to a dialog, the dialog

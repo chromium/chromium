@@ -157,8 +157,7 @@ class OpenscreenSessionHostTest : public mojom::ResourceProvider,
                                   public mojom::CastMessageChannel,
                                   public ::testing::Test {
  public:
-  OpenscreenSessionHostTest()
-      : feature_list_(media::kOpenscreenCastStreamingSession) {}
+  OpenscreenSessionHostTest() = default;
 
   OpenscreenSessionHostTest(const OpenscreenSessionHostTest&) = delete;
   OpenscreenSessionHostTest& operator=(const OpenscreenSessionHostTest&) =
@@ -571,7 +570,6 @@ class OpenscreenSessionHostTest : public mojom::ResourceProvider,
   std::unique_ptr<FakeVideoCaptureHost> video_host_;
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   const net::IPEndPoint receiver_endpoint_ =

@@ -133,6 +133,7 @@ class KioskBrowserSession::AppWindowHandler
       return;
     }
 
+    LOG(WARNING) << "Last app window removed, ending kiosk session.";
     kiosk_browser_session_->Shutdown();
     window_registry_->RemoveObserver(this);
   }

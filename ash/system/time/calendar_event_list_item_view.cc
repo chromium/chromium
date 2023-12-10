@@ -22,6 +22,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "google_apis/calendar/calendar_api_response_types.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
@@ -73,6 +74,8 @@ constexpr auto kEventHexColorCodes =
 
 // Renders an Event color dot.
 class CalendarEventListItemDot : public views::View {
+  METADATA_HEADER(CalendarEventListItemDot, views::View)
+
  public:
   explicit CalendarEventListItemDot(std::string color_id) {
     DCHECK(color_id.empty() || kEventHexColorCodes.count(color_id));
@@ -110,6 +113,9 @@ class CalendarEventListItemDot : public views::View {
   // The color value of the dot.
   int color_;
 };
+
+BEGIN_METADATA(CalendarEventListItemDot)
+END_METADATA
 
 // Creates and returns a label containing the event summary.
 views::Builder<views::Label> CreateSummaryLabel(
@@ -163,7 +169,7 @@ class VIEWS_EXPORT RoundedCornerHighlightPathGenerator
       const RoundedCornerHighlightPathGenerator&) = delete;
 
   // views::HighlightPathGenerator:
-  absl::optional<gfx::RRectF> GetRoundRect(const gfx::RectF& rect) override {
+  std::optional<gfx::RRectF> GetRoundRect(const gfx::RectF& rect) override {
     return gfx::RRectF(rect, corners_);
   }
 

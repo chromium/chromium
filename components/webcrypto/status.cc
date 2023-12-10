@@ -23,6 +23,12 @@ Status Status::Success() {
   return Status(TYPE_SUCCESS);
 }
 
+Status Status::SuccessDeriveBitsTruncation() {
+  Status status(TYPE_SUCCESS);
+  status.warning_type_ = blink::kWebCryptoWarningTypeDeriveBitsTruncated;
+  return status;
+}
+
 Status Status::OperationError() {
   return Status(blink::kWebCryptoErrorTypeOperation, "");
 }

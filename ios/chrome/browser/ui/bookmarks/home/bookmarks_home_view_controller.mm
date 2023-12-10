@@ -6,7 +6,9 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/containers/contains.h"
+#import "base/i18n/message_formatter.h"
 #import "base/ios/ios_util.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/numerics/safe_conversions.h"
@@ -32,11 +34,11 @@
 #import "ios/chrome/browser/favicon/favicon_loader.h"
 #import "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/intents/intents_donation_helper.h"
-#import "ios/chrome/browser/metrics/new_tab_page_uma.h"
+#import "ios/chrome/browser/metrics/model/new_tab_page_uma.h"
+#import "ios/chrome/browser/net/crurl.h"
 #import "ios/chrome/browser/policy/policy_util.h"
 #import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
-#import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -249,13 +251,11 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
             ->AsWeakPtr();
     _localOrSyncableBookmarkModelBridge = std::make_unique<BookmarkModelBridge>(
         self, _localOrSyncableBookmarkModel.get());
-    if (base::FeatureList::IsEnabled(syncer::kEnableBookmarksAccountStorage)) {
-      _accountBookmarkModel =
-          ios::AccountBookmarkModelFactory::GetForBrowserState(_browserState)
-              ->AsWeakPtr();
-      _accountBookmarkModelBridge = std::make_unique<BookmarkModelBridge>(
-          self, _accountBookmarkModel.get());
-    }
+    _accountBookmarkModel =
+        ios::AccountBookmarkModelFactory::GetForBrowserState(_browserState)
+            ->AsWeakPtr();
+    _accountBookmarkModelBridge = std::make_unique<BookmarkModelBridge>(
+        self, _accountBookmarkModel.get());
   }
   return self;
 }
@@ -424,6 +424,11 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 
 - (void)viewWillAppear:(BOOL)animated {
   [super viewWillAppear:animated];
+
+  if (_isShutDown) {
+    // After `shutdown` is called, `_browserState` is null.
+    return;
+  }
   // Set the delegate here to make sure it is working when navigating in the
   // ViewController hierarchy (as each view controller is setting itself as
   // delegate).
@@ -666,6 +671,11 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
   [self handleSelectEditNodes:mediator.selectedNodesForEditMode];
 }
 
+- (void)showAccountSettings {
+  [self ensureBookmarksCoordinator];
+  [self.bookmarksCoordinator showAccountSettings];
+}
+
 #pragma mark - Action sheet callbacks
 
 // Returns contextual menu for a bookmark node with `nodeID` at `indexPath`.
@@ -678,10 +688,10 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
   DCHECK_EQ(bookmarkNode->type(), BookmarkNode::URL);
   GURL nodeURL = bookmarkNode->url();
   // Record that this context menu was shown to the user.
-  RecordMenuShown(MenuScenarioHistogram::kBookmarkEntry);
+  RecordMenuShown(kMenuScenarioHistogramBookmarkEntry);
   BrowserActionFactory* actionFactory = [[BrowserActionFactory alloc]
       initWithBrowser:_browser.get()
-             scenario:MenuScenarioHistogram::kBookmarkEntry];
+             scenario:kMenuScenarioHistogramBookmarkEntry];
   NSMutableArray<UIMenuElement*>* menuElements = [[NSMutableArray alloc] init];
   __weak __typeof(self) weakSelf = self;
   // Add open URL menu item.
@@ -715,7 +725,9 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
                 actionToOpenInNewWindowWithURL:nodeURL
                                 activityOrigin:WindowActivityBookmarksOrigin]];
   }
-  [menuElements addObject:[actionFactory actionToCopyURL:nodeURL]];
+  [menuElements
+      addObject:[actionFactory
+                    actionToCopyURL:[[CrURL alloc] initWithGURL:nodeURL]]];
   // Add edit menu item.
   UIAction* editAction = [actionFactory actionToEditWithBlock:^{
     __strong __typeof(weakSelf) strongSelf = weakSelf;
@@ -753,9 +765,9 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
   DCHECK_EQ(folderNode, FindNodeByNodeReference(nodeReference));
   DCHECK_EQ(folderNode->type(), BookmarkNode::FOLDER);
   // Record that this context menu was shown to the user.
-  RecordMenuShown(MenuScenarioHistogram::kBookmarkFolder);
+  RecordMenuShown(kMenuScenarioHistogramBookmarkFolder);
   ActionFactory* actionFactory = [[ActionFactory alloc]
-      initWithScenario:MenuScenarioHistogram::kBookmarkFolder];
+      initWithScenario:kMenuScenarioHistogramBookmarkFolder];
   NSMutableArray<UIMenuElement*>* menuElements = [[NSMutableArray alloc] init];
   // Add edit menu item.
   __weak __typeof(self) weakSelf = self;
@@ -884,8 +896,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
              newTab:(BOOL)newTab {
   if (inIncognito) {
     IncognitoReauthSceneAgent* reauthAgent = [IncognitoReauthSceneAgent
-        agentFromScene:SceneStateBrowserAgent::FromBrowser(_browser.get())
-                           ->GetSceneState()];
+        agentFromScene:_browser.get()->GetSceneState()];
     if (reauthAgent.authenticationRequired) {
       __weak BookmarksHomeViewController* weakSelf = self;
       [reauthAgent
@@ -903,6 +914,86 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
                                              navigationToUrls:urls
                                                   inIncognito:inIncognito
                                                        newTab:newTab];
+}
+
+- (void)showBatchUploadDialog:(CGRect)targetRect {
+  if (self.actionSheetCoordinator) {
+    return;
+  }
+  __weak BookmarksHomeViewController* weakSelf = self;
+  [self.mediator queryLocalBookmarks:^(int local_bookmarks_count,
+                                       std::string user_email) {
+    BookmarksHomeViewController* strongSelf = weakSelf;
+    if (!strongSelf) {
+      return;
+    }
+    NSString* alertTitle = l10n_util::GetPluralNSStringF(
+        IDS_IOS_BOOKMARKS_HOME_BULK_UPLOAD_ALERT_TITLE, local_bookmarks_count);
+    NSString* alertDescription = base::SysUTF16ToNSString(
+        base::i18n::MessageFormatter::FormatWithNamedArgs(
+            l10n_util::GetStringUTF16(
+                IDS_IOS_BOOKMARKS_HOME_BULK_UPLOAD_ALERT_DESCRIPTION),
+            "count", local_bookmarks_count, "email", user_email));
+    // queryLocalBookmarks() should execute the callback almost immediately.
+    // This CHECK ensures that the action sheet coordinator is never opened
+    // twice.
+    CHECK(!self.actionSheetCoordinator);
+    strongSelf.actionSheetCoordinator = [[ActionSheetCoordinator alloc]
+        initWithBaseViewController:strongSelf
+                           browser:strongSelf->_browser.get()
+                             title:alertTitle
+                           message:alertDescription
+                              rect:targetRect
+                              view:strongSelf.tableView];
+    // Create the confirm button.
+    [strongSelf.actionSheetCoordinator
+        addItemWithTitle:l10n_util::GetNSString(
+                             IDS_IOS_BOOKMARKS_HOME_BULK_UPLOAD_ALERT_BUTTON)
+                  action:^{
+                    base::RecordAction(base::UserMetricsAction(
+                        "MobileBookmarksManagerBulkSaveBookmarksToAccountDialog"
+                        "Accepted"));
+                    [weakSelf triggerBatchUploadFor:local_bookmarks_count
+                                          userEmail:std::move(user_email)];
+                  }
+                   style:UIAlertActionStyleDefault];
+
+    // Create the cancel button.
+    [strongSelf.actionSheetCoordinator
+        addItemWithTitle:l10n_util::GetNSString(
+                             IDS_IOS_BOOKMARKS_HOME_BULK_UPLOAD_ALERT_CANCEL)
+                  action:^{
+                    base::RecordAction(base::UserMetricsAction(
+                        "MobileBookmarksManagerBulkSaveBookmarksToAccountDialog"
+                        "Cancelled"));
+                    [weakSelf dismissActionSheetCoordinator];
+                  }
+                   style:UIAlertActionStyleCancel];
+
+    // Show the alert.
+    [strongSelf.actionSheetCoordinator start];
+  }];
+}
+
+- (void)triggerBatchUploadFor:(int)localBookmarksCount
+                    userEmail:(std::string)userEmail {
+  [self dismissActionSheetCoordinator];
+  [self.mediator triggerBatchUpload];
+
+  base::UmaHistogramCounts100000(
+      "IOS.Bookmarks.BulkSaveBookmarksInAccountCount", localBookmarksCount);
+
+  [self refreshContents];
+
+  NSString* snackbarMessage = base::SysUTF16ToNSString(
+      base::i18n::MessageFormatter::FormatWithNamedArgs(
+          l10n_util::GetStringUTF16(
+              IDS_IOS_BOOKMARKS_HOME_BULK_UPLOAD_SNACKBAR_MESSAGE),
+          "count", localBookmarksCount, "email", userEmail));
+  [self.snackbarCommandsHandler showSnackbarWithMessage:snackbarMessage
+                                             buttonText:nil
+                                          messageAction:nil
+                                       completionAction:nil];
 }
 
 #pragma mark - Navigation Bar Callbacks
@@ -2519,6 +2610,16 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
       }
       // Open URL. Pass this to the delegate.
       [self handleSelectUrlForNavigation:node->url()];
+    }
+  } else if (sectionIdentifier == BookmarksBatchUploadSectionIdentifier) {
+    // Open batch upload alert dialog if batch upload button clicked.
+    TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
+    if (static_cast<BookmarksHomeItemType>(item.type) ==
+        BookmarksHomeItemTypeBatchUploadButton) {
+      base::RecordAction(base::UserMetricsAction(
+          "MobileBookmarksManagerBulkSaveBookmarksToAccountButtonClicked"));
+      CGRect targetRect = [tableView rectForRowAtIndexPath:indexPath];
+      [self showBatchUploadDialog:targetRect];
     }
   }
   // Deselect row.

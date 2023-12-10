@@ -29,6 +29,7 @@
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/gfx/image/image.h"
+#include "ui/gfx/image/image_unittest_util.h"
 
 namespace ash {
 
@@ -53,14 +54,8 @@ void ResetWebContentGoBack() {
   num_web_content_go_back_calls_ = 0;
 }
 
-SkBitmap TestBitmap() {
-  SkBitmap bitmap;
-  bitmap.allocN32Pixels(30, 30);
-  return bitmap;
-}
-
 gfx::Image CreateTestImage() {
-  gfx::ImageSkia image_skia = gfx::ImageSkia::CreateFrom1xBitmap(TestBitmap());
+  gfx::ImageSkia image_skia = gfx::test::CreateImageSkia(/*size=*/30);
   image_skia.MakeThreadSafe();
   return gfx::Image(image_skia);
 }

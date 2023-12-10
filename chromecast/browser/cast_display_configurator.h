@@ -11,6 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "ui/display/display.h"
+#include "ui/display/types/display_color_management.h"
 #include "ui/display/types/display_configuration_params.h"
 #include "ui/display/types/native_display_delegate.h"
 #include "ui/display/types/native_display_observer.h"
@@ -18,7 +19,6 @@
 namespace display {
 class DisplayMode;
 class DisplaySnapshot;
-struct GammaRampRGBEntry;
 }  // namespace display
 
 namespace gfx {
@@ -63,10 +63,9 @@ class CastDisplayConfigurator : public display::NativeDisplayObserver {
   void RemoveObserver(Observer* observer);
 
   void ConfigureDisplayFromCommandLine();
-  void SetColorMatrix(const std::vector<float>& color_matrix);
-  void SetGammaCorrection(
-      const std::vector<display::GammaRampRGBEntry>& degamma_lut,
-      const std::vector<display::GammaRampRGBEntry>& gamma_lut);
+  void SetColorTemperatureAdjustment(
+      const display::ColorTemperatureAdjustment& cta);
+  void SetGammaAdjustment(const display::GammaAdjustment& adjustment);
 
  private:
   void ForceInitialConfigure();

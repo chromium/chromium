@@ -17,19 +17,15 @@
 #import "base/task/thread_pool.h"
 #import "base/threading/scoped_blocking_call.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/snapshots/model/features.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_id.h"
-#import "ui/base/device_form_factor.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_scale.h"
 
 namespace {
 
 enum ImageType {
   IMAGE_TYPE_COLOR,
   IMAGE_TYPE_GREYSCALE,
-};
-
-enum ImageScale {
-  IMAGE_SCALE_1X,
-  IMAGE_SCALE_2X,
 };
 
 const ImageType kImageTypes[] = {
@@ -52,9 +48,9 @@ const char* SuffixForImageType(ImageType image_type) {
 // Returns the suffix to append to image filename for `image_scale`.
 const char* SuffixForImageScale(ImageScale image_scale) {
   switch (image_scale) {
-    case IMAGE_SCALE_1X:
+    case kImageScale1X:
       return "";
-    case IMAGE_SCALE_2X:
+    case kImageScale2X:
       return "@2x";
   }
 }
@@ -83,30 +79,6 @@ base::FilePath LegacyImagePath(NSString* snapshot_id,
   return directory.Append(filename);
 }
 
-// Returns the image scale that used for the current device.
-ImageScale ImageScaleForDevice() {
-  // On handset, the color snapshot is used for the stack view, so the scale of
-  // the snapshot images should match the scale of the device.
-  // On tablet, the color snapshot is only used to generate the grey snapshot,
-  // which does not have to be high quality, so use scale of 1.0 on all tablets.
-  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
-    return IMAGE_SCALE_1X;
-  }
-
-  // Cap snapshot resolution to 2x to reduce the amount of memory used.
-  return [UIScreen mainScreen].scale == 1.0 ? IMAGE_SCALE_1X : IMAGE_SCALE_2X;
-}
-
-// Converts ImageScale to float.
-CGFloat ScaleFromImageScale(ImageScale image_scale) {
-  switch (image_scale) {
-    case IMAGE_SCALE_1X:
-      return 1.0;
-    case IMAGE_SCALE_2X:
-      return 2.0;
-  }
-}
-
 // Creates a directory that images are stored.
 void CreateStorageDirectory(const base::FilePath& directory,
                             const base::FilePath& legacy_directory) {
@@ -122,7 +94,7 @@ void CreateStorageDirectory(const base::FilePath& directory,
     return;
   }
 
-  if (legacy_directory.empty() || !base::DirectoryExists(legacy_directory)) {
+  if (!base::DirectoryExists(legacy_directory)) {
     return;
   }
 
@@ -130,7 +102,7 @@ void CreateStorageDirectory(const base::FilePath& directory,
   // `directory` and then delete the directory. As this function is
   // used to move snapshot file which are not stored recursively, limit
   // the enumeration to files and do not perform a recursive enumeration.
-  base::FileEnumerator iter(legacy_directory, /*recursive*/ false,
+  base::FileEnumerator iter(legacy_directory, /*recursive=*/false,
                             base::FileEnumerator::FILES);
 
   for (base::FilePath item = iter.Next(); !item.empty(); item = iter.Next()) {
@@ -158,10 +130,11 @@ UIImage* ReadImageForSnapshotIDFromDisk(SnapshotID snapshot_id,
   base::FilePath file_path =
       ImagePath(snapshot_id, image_type, image_scale, directory);
   NSString* path = base::apple::FilePathToNSString(file_path);
-  return [UIImage imageWithData:[NSData dataWithContentsOfFile:path]
-                          scale:(image_type == IMAGE_TYPE_GREYSCALE
-                                     ? 1.0
-                                     : ScaleFromImageScale(image_scale))];
+  return [UIImage
+      imageWithData:[NSData dataWithContentsOfFile:path]
+              scale:(image_type == IMAGE_TYPE_GREYSCALE
+                         ? 1.0
+                         : [SnapshotImageScale floatImageScaleForDevice])];
 }
 
 // Helper function to write an image to disk.
@@ -169,12 +142,8 @@ void WriteImageToDisk(UIImage* image, const base::FilePath& file_path) {
   if (!image) {
     return;
   }
-  if (!image.CGImage) {
-    // It's possible that CGImage doesn't exist for the chrome:// pages when
-    // it's an official build.
-    // TODO(crbug.com/1490496): Investigate why it happens and how to solve it.
-    return;
-  }
+  // CGImage should exist, otherwise UIImageJPEG(PNG)Representation returns nil.
+  CHECK(image.CGImage);
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::WILL_BLOCK);
 
@@ -230,7 +199,7 @@ void RemoveAllImages(const base::FilePath& directory) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::WILL_BLOCK);
 
-  if (directory.empty() || !base::DirectoryExists(directory)) {
+  if (!base::DirectoryExists(directory)) {
     return;
   }
 
@@ -355,6 +324,30 @@ void ConvertAndSaveGreyImage(SnapshotID snapshot_id,
   base::apple::SetBackupExclusion(image_path);
 }
 
+// Frees up disk by deleting all grey snapshots if they exist in `directory`
+// because grey snapshots are not stored anymore when
+// `kGreySnapshotOptimization` feature is enabled.
+// TODO(crbug.com/1474387): This function should be removed in a few milestones
+// after `kGreySnapshotOptimization` feature is enabled by default.
+void DeleteAllGreyImages(const base::FilePath& directory) {
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::WILL_BLOCK);
+
+  if (!base::DirectoryExists(directory)) {
+    return;
+  }
+
+  base::FileEnumerator iter(directory, /*recursive=*/false,
+                            base::FileEnumerator::FILES);
+
+  for (base::FilePath item = iter.Next(); !item.empty(); item = iter.Next()) {
+    if (item.BaseName().value().find(
+            SuffixForImageType(IMAGE_TYPE_GREYSCALE)) != std::string::npos) {
+      base::DeleteFile(item);
+    }
+  }
+}
+
 }  // anonymous namespace
 
 @implementation ImageFileManager {
@@ -379,7 +372,7 @@ void ConvertAndSaveGreyImage(SnapshotID snapshot_id,
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   if ((self = [super init])) {
     _storageDirectory = storagePath;
-    _snapshotsScale = ImageScaleForDevice();
+    _snapshotsScale = [SnapshotImageScale imageScaleForDevice];
 
     _taskRunner = base::ThreadPool::CreateSequencedTaskRunner(
         {base::MayBlock(), base::TaskPriority::USER_VISIBLE});
@@ -387,13 +380,12 @@ void ConvertAndSaveGreyImage(SnapshotID snapshot_id,
     _taskRunner->PostTask(
         FROM_HERE,
         base::BindOnce(CreateStorageDirectory, _storageDirectory, legacyPath));
+    if (base::FeatureList::IsEnabled(kGreySnapshotOptimization)) {
+      _taskRunner->PostTask(
+          FROM_HERE, base::BindOnce(DeleteAllGreyImages, _storageDirectory));
+    }
   }
   return self;
-}
-
-- (CGFloat)snapshotScaleForDevice {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-  return ScaleFromImageScale(_snapshotsScale);
 }
 
 - (void)readImageWithSnapshotID:(SnapshotID)snapshotID

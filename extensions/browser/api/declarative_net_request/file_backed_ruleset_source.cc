@@ -102,18 +102,15 @@ ReadJSONRulesResult ParseRulesFromJSON(const RulesetID& ruleset_id,
   }
 
   for (size_t i = 0; i < rules_list.size(); i++) {
-    dnr_api::Rule parsed_rule;
-    std::u16string parse_error;
-
-    if (dnr_api::Rule::Populate(rules_list[i], parsed_rule, parse_error)) {
-      DCHECK(parse_error.empty());
+    auto parsed_rule = dnr_api::Rule::FromValue(rules_list[i]);
+    if (parsed_rule.has_value()) {
       if (result.rules.size() == rule_limit) {
         result.rule_parse_warnings.push_back(
             CreateInstallWarning(json_path, kRuleCountExceeded));
         break;
       }
 
-      const bool is_regex_rule = !!parsed_rule.condition.regex_filter;
+      const bool is_regex_rule = !!parsed_rule->condition.regex_filter;
       if (is_regex_rule && ++regex_rule_count > GetRegexRuleLimit()) {
         // Only add the install warning once.
         if (!regex_rule_count_exceeded) {
@@ -125,7 +122,7 @@ ReadJSONRulesResult ParseRulesFromJSON(const RulesetID& ruleset_id,
         continue;
       }
 
-      result.rules.push_back(std::move(parsed_rule));
+      result.rules.push_back(std::move(*parsed_rule));
       continue;
     }
 
@@ -140,9 +137,9 @@ ReadJSONRulesResult ParseRulesFromJSON(const RulesetID& ruleset_id,
     }
 
     result.rule_parse_warnings.push_back(CreateInstallWarning(
-        json_path,
-        ErrorUtils::FormatErrorMessage(kRuleNotParsedWarning, rule_location,
-                                       base::UTF16ToUTF8(parse_error))));
+        json_path, ErrorUtils::FormatErrorMessage(
+                       kRuleNotParsedWarning, rule_location,
+                       base::UTF16ToUTF8(parsed_rule.error()))));
   }
 
   DCHECK_LE(result.rules.size(), rule_limit);

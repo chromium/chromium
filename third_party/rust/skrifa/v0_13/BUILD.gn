@@ -1,0 +1,52 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# @generated from third_party/rust/chromium_crates_io/BUILD.gn.hbs by
+# tools/crates/gnrt.
+# Do not edit!
+
+import("//build/rust/cargo_crate.gni")
+
+cargo_crate("lib") {
+  crate_name = "skrifa"
+  epoch = "0.13"
+  crate_type = "rlib"
+  crate_root =
+      "//third_party/rust/chromium_crates_io/vendor/skrifa-0.13.0/src/lib.rs"
+  sources = [
+    "//third_party/rust/chromium_crates_io/vendor/skrifa-0.13.0/src/attribute.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skrifa-0.13.0/src/charmap.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skrifa-0.13.0/src/font.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skrifa-0.13.0/src/instance.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skrifa-0.13.0/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skrifa-0.13.0/src/metrics.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skrifa-0.13.0/src/provider.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skrifa-0.13.0/src/scale/cff/hint.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skrifa-0.13.0/src/scale/cff/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skrifa-0.13.0/src/scale/error.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skrifa-0.13.0/src/scale/glyf/deltas.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skrifa-0.13.0/src/scale/glyf/hint.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skrifa-0.13.0/src/scale/glyf/mem.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skrifa-0.13.0/src/scale/glyf/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skrifa-0.13.0/src/scale/glyf/outline.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skrifa-0.13.0/src/scale/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skrifa-0.13.0/src/scale/scaler.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skrifa-0.13.0/src/setting.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skrifa-0.13.0/src/small_array.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skrifa-0.13.0/src/string.rs",
+    "//third_party/rust/chromium_crates_io/vendor/skrifa-0.13.0/src/variation.rs",
+  ]
+  inputs = []
+
+  build_native_rust_unit_tests = false
+  edition = "2021"
+  cargo_pkg_version = "0.13.0"
+  cargo_pkg_name = "skrifa"
+  cargo_pkg_description = "Metadata reader and glyph scaler for OpenType fonts."
+  library_configs -= [ "//build/config/compiler:chromium_code" ]
+  library_configs += [ "//build/config/compiler:no_chromium_code" ]
+  executable_configs -= [ "//build/config/compiler:chromium_code" ]
+  executable_configs += [ "//build/config/compiler:no_chromium_code" ]
+  deps = [ "//third_party/rust/read_fonts/v0_13:lib" ]
+}

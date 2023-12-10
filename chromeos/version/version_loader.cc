@@ -50,13 +50,13 @@ const char kPathFirmware[] = "/var/log/bios_info.txt";
 
 }  // namespace
 
-absl::optional<std::string> GetVersion(VersionFormat format) {
+std::optional<std::string> GetVersion(VersionFormat format) {
   std::string version;
   std::string key = (format == VERSION_FULL ? kFullVersionKey : kVersionKey);
   if (!base::SysInfo::GetLsbReleaseValue(key, &version)) {
     LOG_IF(ERROR, base::SysInfo::IsRunningOnChromeOS())
         << "No LSB version key: " << key;
-    return absl::nullopt;
+    return std::nullopt;
   }
   if (format == VERSION_SHORT_WITH_DATE) {
     version += base::UnlocalizedTimeFormatWithPattern(
@@ -76,14 +76,14 @@ std::string GetArcVersion() {
   return version;
 }
 
-absl::optional<std::string> GetArcAndroidSdkVersion() {
+std::optional<std::string> GetArcAndroidSdkVersion() {
   std::string arc_sdk_version;
 
   if (!base::SysInfo::GetLsbReleaseValue(kArcAndroidSdkVersionKey,
                                          &arc_sdk_version)) {
     LOG_IF(ERROR, base::SysInfo::IsRunningOnChromeOS())
         << "No LSB version key: " << kArcAndroidSdkVersionKey;
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return arc_sdk_version;

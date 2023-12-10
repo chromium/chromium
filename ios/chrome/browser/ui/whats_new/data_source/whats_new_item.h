@@ -54,10 +54,6 @@ class GURL;
 @property(nonatomic, copy) NSString* title;
 // What's New entry subtitle.
 @property(nonatomic, copy) NSString* subtitle;
-// What's New entry hero banner image.
-@property(nonatomic, copy) UIImage* heroBannerImage;
-// What's New entry banner image.
-@property(nonatomic, copy) UIImage* bannerImage;
 // What's New entry icon image.
 @property(nonatomic, copy) UIImage* iconImage;
 // What's New entry icon background color.

@@ -4,8 +4,8 @@
 
 #include <malloc.h>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/shim/allocator_shim.h"
 #include "build/build_config.h"
+#include "partition_alloc/shim/allocator_shim.h"
 
 // This translation unit defines a default dispatch for the allocator shim which
 // routes allocations to the original libc functions when using the link-time
@@ -74,6 +74,7 @@ const AllocatorDispatch AllocatorDispatch::default_dispatch = {
     &RealRealloc,      /* realloc_function */
     &RealFree,         /* free_function */
     &RealSizeEstimate, /* get_size_estimate_function */
+    nullptr,           /* good_size_function */
     nullptr,           /* claimed_address */
     nullptr,           /* batch_malloc_function */
     nullptr,           /* batch_free_function */

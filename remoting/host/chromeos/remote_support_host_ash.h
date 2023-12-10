@@ -6,6 +6,7 @@
 #define REMOTING_HOST_CHROMEOS_REMOTE_SUPPORT_HOST_ASH_H_
 
 #include <memory>
+#include <optional>
 #include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
@@ -14,7 +15,6 @@
 #include "remoting/host/chromeos/session_id.h"
 #include "remoting/host/it2me/it2me_native_messaging_host_ash.h"
 #include "remoting/host/mojom/remote_support.mojom-forward.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace remoting {
 
@@ -56,25 +56,32 @@ class RemoteSupportHostAsh {
   // called with the result.
   void StartSession(
       const mojom::SupportSessionParams& params,
-      const absl::optional<ChromeOsEnterpriseParams>& enterprise_params,
+      const std::optional<ChromeOsEnterpriseParams>& enterprise_params,
       StartSessionCallback callback);
 
   // Allows the caller to resume the given remote support session.
   // `callback` is called with the result.
-  void ReconnectToSession(SessionId session_id, StartSessionCallback callback);
+  void ReconnectToSession(SessionId session_id,
+                          const std::string& access_token,
+                          StartSessionCallback callback);
 
  private:
   void StartSession(
       const mojom::SupportSessionParams& params,
-      const absl::optional<ChromeOsEnterpriseParams>& enterprise_params,
-      const absl::optional<ConnectionDetails>& reconnect_params,
+      const std::optional<ChromeOsEnterpriseParams>& enterprise_params,
+      const std::optional<ReconnectParams>& reconnect_params,
       StartSessionCallback callback);
 
   void OnHostStateConnected(mojom::SupportSessionParams,
-                            absl::optional<ChromeOsEnterpriseParams>,
-                            ConnectionDetails details);
+                            std::optional<ChromeOsEnterpriseParams>,
+                            std::optional<ReconnectParams>);
   void OnHostStateDisconnected();
   void OnSessionDisconnected();
+
+  void OnSessionRetrieved(SessionId session_id,
+                          const std::string& access_token,
+                          StartSessionCallback callback,
+                          absl::optional<base::Value::Dict> session);
 
   SEQUENCE_CHECKER(sequence_checker_);
 

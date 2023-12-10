@@ -36,8 +36,8 @@ class ASH_EXPORT ManagedSimLockNotifier
 
   // message_center::NotificationObserver:
   void Close(bool by_user) override;
-  void Click(const absl::optional<int>& button_index,
-             const absl::optional<std::u16string>& reply) override;
+  void Click(const std::optional<int>& button_index,
+             const std::optional<std::u16string>& reply) override;
 
   // CrosNetworkConfigObserver:
   void OnDeviceStateListChanged() override;

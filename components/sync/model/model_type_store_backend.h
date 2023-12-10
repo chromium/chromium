@@ -7,6 +7,8 @@
 
 #include <memory>
 #include <string>
+#include <utility>
+#include <vector>
 
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
@@ -36,18 +38,24 @@ class ModelTypeStoreBackend
  public:
   static scoped_refptr<ModelTypeStoreBackend> CreateInMemoryForTest();
 
-  // Create a new and uninitialized instance of ModelTypeStoreBackend. Init()
+  // Creates a new and uninitialized instance of ModelTypeStoreBackend. Init()
   // must be called afterwards, which binds the instance to a certain sequence.
   static scoped_refptr<ModelTypeStoreBackend> CreateUninitialized();
 
   ModelTypeStoreBackend(const ModelTypeStoreBackend&) = delete;
   ModelTypeStoreBackend& operator=(const ModelTypeStoreBackend&) = delete;
 
-  // Init opens database at |path|. If database doesn't exist it creates one.
-  // It can be called from a sequence that is different to the constructing one,
-  // but from this point on the backend is bound to the current sequence, and
-  // must be used on it. May be destructed on any sequence.
-  absl::optional<ModelError> Init(const base::FilePath& path);
+  // Opens the database at `path`, creating it if it doesn't exist yet. May be
+  // called from a sequence that is different to the constructing one, but from
+  // this point on the backend is bound to the current sequence, and must be
+  // used on it. It may be destructed on any sequence though.
+  // `prefixes_to_update` contains (from->to) pairs of record key prefixes that
+  // should be updated, e.g. ("old-" -> "new-") would result in a record
+  // [old-key, value] to be moved to [new-key, value].
+  absl::optional<ModelError> Init(
+      const base::FilePath& path,
+      const std::vector<std::pair<std::string, std::string>>&
+          prefixes_to_update);
 
   // Can be called from any sequence.
   bool IsInitialized() const;
@@ -147,6 +155,12 @@ class ModelTypeStoreBackend
   // Migrates from no version record at all (version 0) to version 1 of
   // the schema, returning true on success.
   bool Migrate0To1();
+
+  // For all records whose keys start with `old_prefix`, updates their keys to
+  // start with `new_prefix` instead. Can be used to move data between
+  // StorageType::kUnspecified and StorageType::kAccount.
+  absl::optional<ModelError> UpdateDataPrefix(const std::string& old_prefix,
+                                              const std::string& new_prefix);
 
   // In some scenarios ModelTypeStoreBackend holds ownership of env. Typical
   // example is when test creates in memory environment with CreateInMemoryEnv

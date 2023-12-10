@@ -6,16 +6,14 @@
 import './jelly_colors.js';
 
 // </if>
-
+import {FeedbackBrowserProxyImpl} from './feedback_browser_proxy.js';
 import {createLogsMapTable} from './logs_map_page.js';
-
-const dialogArgs: string = chrome.getVariableValue('dialogArguments');
 
 /**
  * Builds the autofill metadata table. Constructs the map entries for the logs
  * page by parsing the input json to readable string.
  */
-function createAutofillMetadataTable() {
+function createAutofillMetadataTable(dialogArgs: string) {
   const autofillMetadata = JSON.parse(dialogArgs);
 
   const items: chrome.feedbackPrivate.LogsMapEntry[] = [];
@@ -55,9 +53,12 @@ function createAutofillMetadataTable() {
  * Initializes the page when the window is loaded.
  */
 window.onload = function() {
+  const dialogArgs =
+      FeedbackBrowserProxyImpl.getInstance().getDialogArguments();
+
   if (!dialogArgs) {
     return;
   }
 
-  createAutofillMetadataTable();
+  createAutofillMetadataTable(dialogArgs);
 };

@@ -35,8 +35,7 @@ namespace crosapi {
 
 class PersistentForcedExtensionKeepAliveTest : public testing::Test {
  public:
-  PersistentForcedExtensionKeepAliveTest()
-      : browser_manager_(std::make_unique<FakeBrowserManager>()) {
+  PersistentForcedExtensionKeepAliveTest() {
     scoped_feature_list_.InitWithFeatures(
         ash::standalone_browser::GetFeatureRefs(), {});
   }
@@ -50,10 +49,12 @@ class PersistentForcedExtensionKeepAliveTest : public testing::Test {
 
   void SetUp() override {
     fake_user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
+
     profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
-
     ASSERT_TRUE(profile_manager_->SetUp());
+
+    browser_manager_ = std::make_unique<FakeBrowserManager>();
 
     // Login a user. The "email" must match the TestingProfile's
     // GetProfileUserName() so that profile() will be the primary profile.
@@ -73,7 +74,10 @@ class PersistentForcedExtensionKeepAliveTest : public testing::Test {
   }
 
   void TearDown() override {
+    scoped_unset_all_keep_alive_.reset();
+    profile_ = nullptr;
     profile_manager_->DeleteAllTestingProfiles();
+    browser_manager_.reset();
     profile_manager_.reset();
     fake_user_manager_.Reset();
   }
@@ -103,7 +107,7 @@ class PersistentForcedExtensionKeepAliveTest : public testing::Test {
   std::unique_ptr<BrowserManager::ScopedUnsetAllKeepAliveForTesting>
       scoped_unset_all_keep_alive_;
 
-  raw_ptr<TestingProfile, DanglingUntriaged | ExperimentalAsh> profile_;
+  raw_ptr<TestingProfile, ExperimentalAsh> profile_;
 };
 
 // Test that KeepAlive is registered on session start if an extension that

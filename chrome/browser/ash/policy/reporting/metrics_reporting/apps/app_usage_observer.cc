@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/apps/app_usage_observer.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/memory/ptr_util.h"
 #include "base/time/time.h"
@@ -21,7 +22,6 @@
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/protos/app_types.pb.h"
 #include "content/public/browser/browser_thread.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace reporting {
 
@@ -146,7 +146,7 @@ void AppUsageObserver::MaybeSetAppPublisherId(
     // We are already tracking the app publisher id.
     return;
   }
-  if (const absl::optional<std::string> app_publisher_id =
+  if (const std::optional<std::string> app_publisher_id =
           GetPublisherIdForApp(usage_time.app_id, profile_.get());
       app_publisher_id.has_value()) {
     usage_time.app_publisher_id = app_publisher_id.value();

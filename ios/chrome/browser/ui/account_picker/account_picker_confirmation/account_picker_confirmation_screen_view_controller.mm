@@ -98,8 +98,9 @@ CGFloat GetPixelLength() {
   [_activityIndicatorView startAnimating];
   // Disable buttons.
   _identityButtonControl.enabled = NO;
+  _askEveryTimeSwitch.enabled = NO;
   _primaryButton.enabled = NO;
-  [_primaryButton setTitle:@"" forState:UIControlStateNormal];
+  SetConfigurationTitle(_primaryButton, @" ");
 }
 
 - (void)stopSpinner {
@@ -111,9 +112,10 @@ CGFloat GetPixelLength() {
   _identityButtonControl.hidden = NO;
   // Enable buttons.
   _identityButtonControl.enabled = YES;
+  _askEveryTimeSwitch.enabled = YES;
   _primaryButton.enabled = YES;
   DCHECK(_submitString);
-  [_primaryButton setTitle:_submitString forState:UIControlStateNormal];
+  SetConfigurationTitle(_primaryButton, _submitString);
 }
 
 #pragma mark - UIViewController
@@ -286,9 +288,11 @@ CGFloat GetPixelLength() {
 
   // Add the primary button (the "Continue as"/"Sign in" button).
   _primaryButton = PrimaryActionButton(/* pointer_interaction_enabled */ YES);
-  SetContentEdgeInsets(_primaryButton,
-                       UIEdgeInsetsMake(kPrimaryButtonVerticalInsets, 0,
-                                        kPrimaryButtonVerticalInsets, 0));
+  UIButtonConfiguration* buttonConfiguration = _primaryButton.configuration;
+  buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
+      kPrimaryButtonVerticalInsets, 0, kPrimaryButtonVerticalInsets, 0);
+  _primaryButton.configuration = buttonConfiguration;
+
   _primaryButton.accessibilityIdentifier =
       kAccountPickerPrimaryButtonAccessibilityIdentifier;
   _primaryButton.translatesAutoresizingMaskIntoConstraints = NO;
@@ -305,7 +309,7 @@ CGFloat GetPixelLength() {
   // Adjust the identity button control rounded corners to the same value than
   // the "continue as" button.
   _groupedIdentityButtonSection.layer.cornerRadius =
-      _primaryButton.layer.cornerRadius;
+      _primaryButton.configuration.background.cornerRadius;
 
   // Ensure that keyboard is hidden.
   UIResponder* firstResponder = GetFirstResponder();
@@ -379,7 +383,7 @@ CGFloat GetPixelLength() {
 
   // If spinner is active, delay UI updates until stopSpinner() is called.
   if (!_activityIndicatorView) {
-    [_primaryButton setTitle:_submitString forState:UIControlStateNormal];
+    SetConfigurationTitle(_primaryButton, _submitString);
     _identityButtonControl.hidden = NO;
   }
 }
@@ -392,8 +396,7 @@ CGFloat GetPixelLength() {
   // Hide the IdentityButtonControl, and update the primary button to serve as
   // a "Sign in…" button.
   _groupedIdentityButtonSection.hidden = YES;
-  [_primaryButton setTitle:_configuration.submitButtonTitle
-                  forState:UIControlStateNormal];
+  SetConfigurationTitle(_primaryButton, _configuration.submitButtonTitle);
 }
 
 @end

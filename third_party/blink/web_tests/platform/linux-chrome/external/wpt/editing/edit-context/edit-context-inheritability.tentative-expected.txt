@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+[FAIL] Check that child of EditContext is editable and the parent EditContext gets the events
+  promise_test: Unhandled rejection with value: "error: Action send_keys failed"
+[FAIL] Check that an contenteditable child of an EditContext is editable, but the EditContext gets the events
+  promise_test: Unhandled rejection with value: "error: Action send_keys failed"
+[FAIL] Check that for an EditContext child of an EditContext, the parent is the one that gets the events
+  promise_test: Unhandled rejection with value: "error: Action send_keys failed"
+Harness: the test ran to completion.

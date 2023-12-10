@@ -30,6 +30,7 @@
 <translation id="2226276347425096477">Длина текста не должна превышать <ph name="MAX_CHARACTERS" /> симв. (сейчас <ph name="CURRENT_LENGTH" /> симв.).</translation>
 <translation id="2247351761944213033">Неделя <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Трек <ph name="NUMBER" /></translation>
+<translation id="2353297238722298836">Доступ к камере и микрофону разрешен</translation>
 <translation id="2393030564806080191">Цвет в шестнадцатеричном формате</translation>
 <translation id="2398813069815436052">открыто диалоговое окно.</translation>
 <translation id="245932805758469625">оставшееся время до конца видео в секундах</translation>
@@ -60,10 +61,12 @@
 <translation id="3822383571486410024">Минимально допустимое количество символов: <ph name="MIN_CHARACTERS" />. Длина текста сейчас: <ph name="CURRENT_LENGTH" />.</translation>
 <translation id="383465348367842624">Часть адреса до символа "<ph name="ATSIGN" />" не должна содержать символ "<ph name="INVALIDCHARACTER" />".</translation>
 <translation id="3846214748874656680">Обычный режим</translation>
+<translation id="4031179711345676612">Доступ к микрофону разрешен</translation>
 <translation id="4103419683916926126">Миллисекунды</translation>
 <translation id="4201051445878709314">Показать предыдущий месяц</translation>
 <translation id="4360991593054037559">Введите допустимое значение. Ближайшие допустимые значения: <ph name="VALID_VALUE_LOW" /> и <ph name="VALID_VALUE_HIGHER" />.</translation>
 <translation id="4522570452068850558">Сведения</translation>
+<translation id="4663373278480897665">Доступ к камере разрешен</translation>
 <translation id="4664250907885839816">Часть адреса после символа "<ph name="ATSIGN" />" не должна содержать символ "<ph name="INVALIDCHARACTER" />".</translation>
 <translation id="4718048029184481307">Воспроизведение в режиме "Картинка в картинке"</translation>
 <translation id="4748357248530471599">Переключить вырезанную область на полный экран</translation>
@@ -137,6 +140,7 @@
 <translation id="6941933287844615239">скачать файл</translation>
 <translation id="698788488269350478">развернуто.</translation>
 <translation id="6989848892321993519">Текст должен быть не короче <ph name="MIN_CHARACTERS" /> симв. Длина текста сейчас: 1 символ.</translation>
+<translation id="7080893216867146095">Доступ к геоданным разрешен</translation>
 <translation id="709897737746224366">Введите данные в указанном формате.</translation>
 <translation id="7102274145889307184">текущее местоположение</translation>
 <translation id="7263440858009898357">Выберите один из пунктов списка.</translation>

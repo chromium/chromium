@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/tether/tether_service.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
@@ -12,7 +13,6 @@
 #include "chrome/browser/ash/tether/tether_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/network/tether_notification_presenter.h"
-#include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "chromeos/ash/components/network/device_state.h"
 #include "chromeos/ash/components/network/network_connect.h"
@@ -42,8 +42,9 @@ TetherService* TetherService::Get(Profile* profile) {
   // TetherService object should be created for secondary users. If multiple
   // instances were created for each user, inconsistencies could lead to browser
   // crashes. See https://crbug.com/809357.
-  if (!ProfileHelper::Get()->IsPrimaryProfile(profile))
+  if (!ProfileHelper::Get()->IsPrimaryProfile(profile)) {
     return nullptr;
+  }
 
   return TetherServiceFactory::GetForBrowserContext(profile);
 }
@@ -96,14 +97,13 @@ TetherService::TetherService(
     device_sync::DeviceSyncClient* device_sync_client,
     secure_channel::SecureChannelClient* secure_channel_client,
     multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client,
-    NetworkStateHandler* network_state_handler,
     session_manager::SessionManager* session_manager)
     : profile_(profile),
       power_manager_client_(power_manager_client),
       device_sync_client_(device_sync_client),
       secure_channel_client_(secure_channel_client),
       multidevice_setup_client_(multidevice_setup_client),
-      network_state_handler_(network_state_handler),
+      network_state_handler_(NetworkHandler::Get()->network_state_handler()),
       session_manager_(session_manager),
       notification_presenter_(
           std::make_unique<TetherNotificationPresenter>(profile_,
@@ -126,16 +126,18 @@ TetherService::TetherService(
       << "TetherService has started. Initial user preference value: "
       << IsEnabledByPreference();
 
-  if (device_sync_client_->is_ready())
+  if (device_sync_client_->is_ready()) {
     OnReady();
+  }
 
   // Wait for OnReady() to be called. OnReady() will indirectly
   // call OnHostStatusChanged(), which will call GetAdapter().
 }
 
 TetherService::~TetherService() {
-  if (tether_component_)
+  if (tether_component_) {
     tether_component_->RemoveObserver(this);
+  }
 }
 
 void TetherService::StartTetherIfPossible() {
@@ -145,20 +147,16 @@ void TetherService::StartTetherIfPossible() {
   }
 
   // Do not initialize the TetherComponent if it already exists.
-  if (tether_component_)
+  if (tether_component_) {
     return;
+  }
 
   PA_LOG(VERBOSE) << "Starting up TetherComponent.";
   tether_component_ = TetherComponentImpl::Factory::Create(
       device_sync_client_, secure_channel_client_, tether_host_fetcher_.get(),
       notification_presenter_.get(),
       gms_core_notifications_state_tracker_.get(), profile_->GetPrefs(),
-      network_state_handler_,
-      NetworkHandler::Get()->technology_state_controller(),
-      NetworkHandler::Get()->managed_network_configuration_handler(),
-      NetworkConnect::Get(),
-      NetworkHandler::Get()->network_connection_handler(), adapter_,
-      session_manager_);
+      NetworkHandler::Get(), NetworkConnect::Get(), adapter_, session_manager_);
 }
 
 GmsCoreNotificationsStateTracker*
@@ -218,8 +216,9 @@ void TetherService::StopTetherIfNecessary() {
 }
 
 void TetherService::Shutdown() {
-  if (shut_down_)
+  if (shut_down_) {
     return;
+  }
 
   shut_down_ = true;
 
@@ -231,8 +230,9 @@ void TetherService::Shutdown() {
   device_sync_client_->RemoveObserver(this);
   multidevice_setup_client_->RemoveObserver(this);
 
-  if (adapter_)
+  if (adapter_) {
     adapter_->RemoveObserver(this);
+  }
 
   // Shut down the feature. Note that this does not change Tether's technology
   // state in NetworkStateHandler because doing so could cause visual jank just
@@ -323,13 +323,15 @@ void TetherService::OnShutdownComplete() {
   // It is possible that the Tether TechnologyState was set to ENABLED while the
   // previous TetherComponent instance was shutting down. If that was the case,
   // restart TetherComponent.
-  if (!shut_down_)
+  if (!shut_down_) {
     StartTetherIfPossible();
+  }
 }
 
 void TetherService::OnReady() {
-  if (shut_down_)
+  if (shut_down_) {
     return;
+  }
 
   OnFeatureStatesChanged(multidevice_setup_client_->GetFeatureStates());
 }
@@ -353,10 +355,11 @@ void TetherService::OnFeatureStatesChanged(
     LogUserPreferenceChanged(false /* is_now_enabled */);
   }
 
-  if (adapter_)
+  if (adapter_) {
     UpdateTetherTechnologyState();
-  else
+  } else {
     GetBluetoothAdapter();
+  }
 }
 
 bool TetherService::HasSyncedTetherHosts() const {
@@ -364,8 +367,9 @@ bool TetherService::HasSyncedTetherHosts() const {
 }
 
 void TetherService::UpdateTetherTechnologyState() {
-  if (!adapter_)
+  if (!adapter_) {
     return;
+  }
 
   NetworkStateHandler::TechnologyState new_tether_technology_state =
       GetTetherTechnologyState();
@@ -442,8 +446,9 @@ NetworkStateHandler::TechnologyState TetherService::GetTetherTechnologyState() {
 }
 
 void TetherService::GetBluetoothAdapter() {
-  if (adapter_ || is_adapter_being_fetched_)
+  if (adapter_ || is_adapter_being_fetched_) {
     return;
+  }
 
   is_adapter_being_fetched_ = true;
 
@@ -464,8 +469,9 @@ void TetherService::OnBluetoothAdapterFetched(
     scoped_refptr<device::BluetoothAdapter> adapter) {
   is_adapter_being_fetched_ = false;
 
-  if (shut_down_)
+  if (shut_down_) {
     return;
+  }
 
   adapter_ = adapter;
   adapter_->AddObserver(this);
@@ -506,29 +512,36 @@ bool TetherService::IsEnabledByPreference() const {
 }
 
 TetherService::TetherFeatureState TetherService::GetTetherFeatureState() {
-  if (shut_down_)
+  if (shut_down_) {
     return SHUT_DOWN;
+  }
 
-  if (suspended_)
+  if (suspended_) {
     return SUSPENDED;
+  }
 
-  if (!IsBluetoothPresent())
+  if (!IsBluetoothPresent()) {
     return BLE_NOT_PRESENT;
+  }
 
-  if (!IsWifiPresent())
+  if (!IsWifiPresent()) {
     return WIFI_NOT_PRESENT;
+  }
 
-  if (!HasSyncedTetherHosts())
+  if (!HasSyncedTetherHosts()) {
     return NO_AVAILABLE_HOSTS;
+  }
 
-  // If Cellular technology is available, then Tether technology is treated
-  // as a subset of Cellular, and it should only be enabled when Cellular
-  // technology is enabled.
-  if (IsCellularAvailableButNotEnabled())
+  // Don't treat Tether as a subset of Cellular if the Instant Hotspot Rebrand
+  // feature flag is enabled.
+  if (!features::IsInstantHotspotRebrandEnabled() &&
+      IsCellularAvailableButNotEnabled()) {
     return CELLULAR_DISABLED;
+  }
 
-  if (!IsBluetoothPowered())
+  if (!IsBluetoothPowered()) {
     return BLUETOOTH_DISABLED;
+  }
 
   multidevice_setup::mojom::FeatureState tether_multidevice_state =
       multidevice_setup_client_->GetFeatureState(
@@ -579,8 +592,9 @@ void TetherService::RecordTetherFeatureState() {
   // a metric here does not provide any value since it does not indicate
   // anything about how the user utilizes Instant Tethering and would dilute the
   // contributions of meaningful states.
-  if (tether_feature_state == TetherFeatureState::SHUT_DOWN)
+  if (tether_feature_state == TetherFeatureState::SHUT_DOWN) {
     return;
+  }
 
   UMA_HISTOGRAM_ENUMERATION("InstantTethering.FeatureState",
                             tether_feature_state,
@@ -588,14 +602,16 @@ void TetherService::RecordTetherFeatureState() {
 }
 
 void TetherService::RecordTetherFeatureStateIfPossible() {
-  if (HandleFeatureStateMetricIfUninitialized())
+  if (HandleFeatureStateMetricIfUninitialized()) {
     return;
+  }
 
   // If the timer meant to record the initial
   // TetherFeatureState::BLE_NOT_PRESENT value is running, cancel it -- it is a
   // false positive report.
-  if (timer_->IsRunning())
+  if (timer_->IsRunning()) {
     timer_->Stop();
+  }
 
   RecordTetherFeatureState();
 }
@@ -624,8 +640,9 @@ bool TetherService::HandleFeatureStateMetricIfUninitialized() {
     should_start_timer = true;
   }
 
-  if (!should_start_timer)
+  if (!should_start_timer) {
     return false;
+  }
 
   // Start the timer. If it fires without being stopped, the metric will be
   // recorded. |kMetricFalsePositiveSeconds| is chosen such that it is long

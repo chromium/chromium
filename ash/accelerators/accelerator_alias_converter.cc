@@ -4,6 +4,7 @@
 
 #include "ash/accelerators/accelerator_alias_converter.h"
 
+#include <optional>
 #include <vector>
 
 #include "ash/constants/ash_features.h"
@@ -17,7 +18,6 @@
 #include "base/functional/callback_forward.h"
 #include "base/notreached.h"
 #include "components/prefs/pref_service.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/events/ash/keyboard_capability.h"
 #include "ui/events/ash/keyboard_layout_util.h"
@@ -43,8 +43,8 @@ bool IsChromeOSKeyboard(const ui::KeyboardDevice& keyboard) {
 
 // Gets the most recently plugged in external keyboard. If there are no external
 // keyboards, return the internal keyboard.
-absl::optional<ui::KeyboardDevice> GetPriorityExternalKeyboard() {
-  absl::optional<ui::KeyboardDevice> priority_keyboard;
+std::optional<ui::KeyboardDevice> GetPriorityExternalKeyboard() {
+  std::optional<ui::KeyboardDevice> priority_keyboard;
   for (const ui::KeyboardDevice& keyboard :
        ui::DeviceDataManager::GetInstance()->GetKeyboardDevices()) {
     // If the input device settings controlled does not recognize the device as
@@ -79,7 +79,7 @@ absl::optional<ui::KeyboardDevice> GetPriorityExternalKeyboard() {
   return priority_keyboard;
 }
 
-absl::optional<ui::KeyboardDevice> GetInternalKeyboard() {
+std::optional<ui::KeyboardDevice> GetInternalKeyboard() {
   for (const ui::KeyboardDevice& keyboard :
        ui::DeviceDataManager::GetInstance()->GetKeyboardDevices()) {
     // If the input device settings controlled does not recognize the device as
@@ -108,7 +108,7 @@ absl::optional<ui::KeyboardDevice> GetInternalKeyboard() {
         break;
     }
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 // Identifies media keys which exist only on external keyboards.
@@ -200,7 +200,7 @@ bool ShouldShowExternalTopRowActionKeyAlias(
 
 ui::mojom::SixPackShortcutModifier GetSixPackShortcutModifier(
     ui::KeyboardCode key_code,
-    absl::optional<int> device_id) {
+    std::optional<int> device_id) {
   if (!features::IsAltClickAndSixPackCustomizationEnabled() ||
       !device_id.has_value()) {
     return ui::mojom::SixPackShortcutModifier::kSearch;
@@ -236,9 +236,9 @@ ui::mojom::SixPackShortcutModifier GetSixPackShortcutModifier(
 
 std::vector<ui::Accelerator> AcceleratorAliasConverter::CreateAcceleratorAlias(
     const ui::Accelerator& accelerator) const {
-  absl::optional<ui::KeyboardDevice> priority_external_keyboard =
+  std::optional<ui::KeyboardDevice> priority_external_keyboard =
       GetPriorityExternalKeyboard();
-  absl::optional<ui::KeyboardDevice> internal_keyboard = GetInternalKeyboard();
+  std::optional<ui::KeyboardDevice> internal_keyboard = GetInternalKeyboard();
 
   // If the external and internal keyboards are either both non-chromeos
   // keyboards (ex ChromeOS flex devices) or if they are both ChromeOS keyboards
@@ -247,7 +247,7 @@ std::vector<ui::Accelerator> AcceleratorAliasConverter::CreateAcceleratorAlias(
   if (priority_external_keyboard && internal_keyboard &&
       (IsChromeOSKeyboard(*priority_external_keyboard) ==
        IsChromeOSKeyboard(*internal_keyboard))) {
-    internal_keyboard = absl::nullopt;
+    internal_keyboard = std::nullopt;
   }
 
   // Set is used to get rid of possible duplicate accelerators.
@@ -296,7 +296,7 @@ std::vector<ui::Accelerator> AcceleratorAliasConverter::CreateAcceleratorAlias(
   // accelerator and the remapped accelerator if applicable. Otherwise, only
   // show base accelerator.
 
-  absl::optional<int> device_id = absl::nullopt;
+  std::optional<int> device_id = std::nullopt;
   if (priority_external_keyboard.has_value()) {
     device_id = priority_external_keyboard->id;
   } else if (internal_keyboard.has_value()) {
@@ -310,7 +310,7 @@ std::vector<ui::Accelerator> AcceleratorAliasConverter::CreateAcceleratorAlias(
   return FilterAliasBySupportedKeys(aliases);
 }
 
-absl::optional<ui::Accelerator>
+std::optional<ui::Accelerator>
 AcceleratorAliasConverter::CreateFunctionKeyAliases(
     const ui::KeyboardDevice& keyboard,
     const ui::Accelerator& accelerator) const {
@@ -326,7 +326,7 @@ AcceleratorAliasConverter::CreateFunctionKeyAliases(
   }
 
   // Attempt to get the corresponding `ui::TopRowActionKey` for the given F-Key.
-  absl::optional<ui::TopRowActionKey> action_key =
+  std::optional<ui::TopRowActionKey> action_key =
       Shell::Get()->keyboard_capability()->GetCorrespondingActionKeyForFKey(
           keyboard, accelerator.key_code());
   if (!action_key) {
@@ -334,7 +334,7 @@ AcceleratorAliasConverter::CreateFunctionKeyAliases(
   }
 
   // Convert the `ui::TopRowActionKey` to the corresponding `ui::KeyboardCode`
-  absl::optional<ui::KeyboardCode> action_vkey =
+  std::optional<ui::KeyboardCode> action_vkey =
       ui::KeyboardCapability::ConvertToKeyboardCode(*action_key);
   if (!action_vkey) {
     return {};
@@ -364,7 +364,7 @@ AcceleratorAliasConverter::CreateFunctionKeyAliases(
   }
 }
 
-absl::optional<ui::Accelerator> AcceleratorAliasConverter::CreateTopRowAliases(
+std::optional<ui::Accelerator> AcceleratorAliasConverter::CreateTopRowAliases(
     const ui::KeyboardDevice& keyboard,
     const ui::Accelerator& accelerator) const {
   // Avoid remapping if [Search] is part of the original accelerator.
@@ -373,13 +373,13 @@ absl::optional<ui::Accelerator> AcceleratorAliasConverter::CreateTopRowAliases(
   }
 
   // If the accelerator is not an action key, do no aliasing.
-  absl::optional<ui::TopRowActionKey> action_key =
+  std::optional<ui::TopRowActionKey> action_key =
       ui::KeyboardCapability::ConvertToTopRowActionKey(accelerator.key_code());
   if (!action_key) {
     return {};
   }
 
-  absl::optional<ui::KeyboardCode> function_key =
+  std::optional<ui::KeyboardCode> function_key =
       Shell::Get()->keyboard_capability()->GetCorrespondingFunctionKey(
           keyboard, *action_key);
   if (!function_key.has_value()) {
@@ -417,11 +417,8 @@ absl::optional<ui::Accelerator> AcceleratorAliasConverter::CreateTopRowAliases(
 
 std::vector<ui::Accelerator> AcceleratorAliasConverter::CreateSixPackAliases(
     const ui::Accelerator& accelerator,
-    absl::optional<int> device_id) const {
-  // For all |six_pack_keys|, avoid remapping if [Search] is part of the
-  // original accelerator.
-  if (accelerator.IsCmdDown() ||
-      !::features::IsImprovedKeyboardShortcutsEnabled() ||
+    std::optional<int> device_id) const {
+  if (!::features::IsImprovedKeyboardShortcutsEnabled() ||
       !ui::KeyboardCapability::IsSixPackKey(accelerator.key_code())) {
     return std::vector<ui::Accelerator>();
   }
@@ -447,6 +444,15 @@ std::vector<ui::Accelerator> AcceleratorAliasConverter::CreateSixPackAliases(
       GetSixPackShortcutModifier(accel_key_code, device_id);
 
   if (six_pack_shortcut_modifier == ui::mojom::SixPackShortcutModifier::kNone) {
+    return std::vector<ui::Accelerator>();
+  }
+
+  // For all |six_pack_keys|, avoid remapping if the six-pack remap modifier
+  // (Search or Alt) is part of the original accelerator.
+  const bool is_search_remap =
+      six_pack_shortcut_modifier == ui::mojom::SixPackShortcutModifier::kSearch;
+  if ((is_search_remap && accelerator.IsCmdDown()) ||
+      (!is_search_remap && accelerator.IsAltDown())) {
     return std::vector<ui::Accelerator>();
   }
 
@@ -492,7 +498,7 @@ AcceleratorAliasConverter::FilterAliasBySupportedKeys(
   if (priority_keyboard && internal_keyboard &&
       (IsChromeOSKeyboard(*priority_keyboard) ==
        IsChromeOSKeyboard(*internal_keyboard))) {
-    internal_keyboard = absl::nullopt;
+    internal_keyboard = std::nullopt;
   }
 
   for (const auto& accelerator : accelerators) {

@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_RESOURCE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_RESOURCE_H_
 
+#include "third_party/blink/renderer/core/loader/resource/image_resource_observer.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_client.h"
@@ -142,7 +143,7 @@ class LocalSVGResource final : public SVGResource {
   Member<IdTargetObserver> id_observer_;
 };
 
-// External resource reference (see SVGResource.)
+// External resource reference (see SVGResource).
 class ExternalSVGResource final : public SVGResource, public ResourceClient {
  public:
   explicit ExternalSVGResource(const KURL&);
@@ -161,6 +162,31 @@ class ExternalSVGResource final : public SVGResource, public ResourceClient {
 
   Member<SVGResourceDocumentContent> document_content_;
   KURL url_;
+};
+
+// External resource reference (see SVGResource) with an ImageResourceContent
+// as the "data source".
+class ExternalSVGResourceImageContent final : public SVGResource,
+                                              public ImageResourceObserver {
+  USING_PRE_FINALIZER(ExternalSVGResourceImageContent, Prefinalize);
+
+ public:
+  ExternalSVGResourceImageContent(ImageResourceContent* image_content,
+                                  const AtomicString& fragment);
+
+  void Trace(Visitor*) const override;
+
+ private:
+  void Prefinalize();
+
+  Element* ResolveTarget();
+
+  // ImageResourceObserver overrides
+  void ImageNotifyFinished(ImageResourceContent*) override;
+  String DebugName() const override;
+
+  Member<ImageResourceContent> image_content_;
+  AtomicString fragment_;
 };
 
 }  // namespace blink

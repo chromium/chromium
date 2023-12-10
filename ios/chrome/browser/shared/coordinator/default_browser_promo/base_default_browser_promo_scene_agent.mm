@@ -5,8 +5,8 @@
 #import "ios/chrome/browser/shared/coordinator/default_browser_promo/base_default_browser_promo_scene_agent.h"
 
 #import "base/timer/timer.h"
-#import "ios/chrome/browser/overlays/public/overlay_presenter.h"
-#import "ios/chrome/browser/overlays/public/overlay_presenter_observer_bridge.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_presenter.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_presenter_observer_bridge.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser_observer_bridge.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"

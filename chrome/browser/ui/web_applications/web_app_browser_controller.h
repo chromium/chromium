@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WEB_APPLICATIONS_WEB_APP_BROWSER_CONTROLLER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/callback_list.h"
@@ -23,7 +24,6 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/webapps/common/web_app_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/liburlpattern/options.h"
 #include "third_party/liburlpattern/pattern.h"
 #include "third_party/re2/src/re2/set.h"
@@ -83,8 +83,8 @@ class WebAppBrowserController : public AppBrowserController,
   gfx::ImageSkia GetFallbackHomeTabIcon() const;
   ui::ImageModel GetWindowAppIcon() const override;
   ui::ImageModel GetWindowIcon() const override;
-  absl::optional<SkColor> GetThemeColor() const override;
-  absl::optional<SkColor> GetBackgroundColor() const override;
+  std::optional<SkColor> GetThemeColor() const override;
+  std::optional<SkColor> GetBackgroundColor() const override;
   std::u16string GetTitle() const override;
   std::u16string GetAppShortName() const override;
   std::u16string GetFormattedUrlOrigin() const override;
@@ -174,11 +174,11 @@ class WebAppBrowserController : public AppBrowserController,
 
   // Helper function to return the resolved background color from the manifest
   // given the current state of dark/light mode.
-  absl::optional<SkColor> GetResolvedManifestBackgroundColor() const;
+  std::optional<SkColor> GetResolvedManifestBackgroundColor() const;
 
   // Returns the set of scope patterns for the home tab scope of tabbed web
   // apps.
-  absl::optional<RE2::Set> GetTabbedHomeTabScope() const;
+  std::optional<RE2::Set> GetTabbedHomeTabScope() const;
 
   const raw_ref<WebAppProvider> provider_;
 
@@ -192,14 +192,14 @@ class WebAppBrowserController : public AppBrowserController,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   raw_ptr<const ash::SystemWebAppDelegate> system_app_ = nullptr;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-  mutable absl::optional<ui::ImageModel> app_icon_;
+  mutable std::optional<ui::ImageModel> app_icon_;
 
-  mutable absl::optional<RE2::Set> home_tab_scope_;
+  mutable std::optional<RE2::Set> home_tab_scope_;
 
 #if BUILDFLAG(IS_CHROMEOS)
   // The result of digital asset link verification of the web app.
   // Only used for web-only TWAs installed through the Play Store.
-  absl::optional<bool> is_verified_;
+  std::optional<bool> is_verified_;
 
   std::unique_ptr<content_relationship_verification::DigitalAssetLinksHandler>
       asset_link_handler_;

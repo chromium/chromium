@@ -61,7 +61,9 @@ build_webui("build") {
     "//chrome/browser/new_tab_page/modules/photos:mojo_bindings_ts__generator",
     "//chrome/browser/new_tab_page/modules/recipes:mojo_bindings_ts__generator",
     "//chrome/browser/new_tab_page/modules/v2/history_clusters:mojo_bindings_ts__generator",
+    "//chrome/browser/new_tab_page/modules/v2/tab_resumption:mojo_bindings_ts__generator",
     "//chrome/browser/ui/webui/new_tab_page:mojo_bindings_ts__generator",
+    "//components/history/core/browser/mojom:mojo_bindings_ts__generator",
     "//components/history_clusters/public/mojom:mojo_bindings_ts__generator",
   ]
   mojo_files = [
@@ -75,8 +77,10 @@ build_webui("build") {
     "$root_gen_dir/chrome/browser/new_tab_page/modules/history_clusters/discount/discount.mojom-webui.ts",
     "$root_gen_dir/chrome/browser/new_tab_page/modules/photos/photos.mojom-webui.ts",
     "$root_gen_dir/chrome/browser/new_tab_page/modules/recipes/recipes.mojom-webui.ts",
+    "$root_gen_dir/chrome/browser/new_tab_page/modules/v2/tab_resumption/tab_resumption.mojom-webui.ts",
     "$root_gen_dir/chrome/browser/ui/webui/new_tab_page/new_tab_page.mojom-webui.ts",
     "$root_gen_dir/components/history_clusters/public/mojom/history_cluster_types.mojom-webui.ts",
+    "$root_gen_dir/components/history/core/browser/mojom/history_types.mojom-webui.ts",
   ]
 
   if (!is_official_build) {

@@ -2,14 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/mojo/mojo/public/mojom/base/big_buffer.mojom-lite.js';
-import 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-lite.js';
+import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
 import {fakeEmptyFeedbackContext, fakeFeedbackContext, fakeInternalUserFeedbackContext, fakeLoginFlowFeedbackContext} from 'chrome://os-feedback/fake_data.js';
 import {FakeFeedbackServiceProvider} from 'chrome://os-feedback/fake_feedback_service_provider.js';
 import {FeedbackFlowState} from 'chrome://os-feedback/feedback_flow.js';
-import {FeedbackAppPreSubmitAction, FeedbackContext} from 'chrome://os-feedback/feedback_types.js';
 import {setFeedbackServiceProviderForTesting} from 'chrome://os-feedback/mojo_interface_provider.js';
+import {FeedbackAppPreSubmitAction, FeedbackContext} from 'chrome://os-feedback/os_feedback_ui.mojom-webui.js';
 import {ShareDataPageElement} from 'chrome://os-feedback/share_data_page.js';
 import {getDeepActiveElement} from 'chrome://resources/ash/common/util.js';
 import {mojoString16ToString, stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
@@ -25,7 +24,7 @@ const fakeImageUrl = 'chrome://os_feedback/app_icon_48.png';
 /**
  * @suppress {missingProperties} for test.skip is not defined in mocha-2.5.js
  */
-export function shareDataPageTestSuite() {
+suite('shareDataPageTestSuite', () => {
   /** @type {?ShareDataPageElement} */
   let page = null;
 
@@ -50,6 +49,7 @@ export function shareDataPageTestSuite() {
         /** @type {!ShareDataPageElement} */ (
             document.createElement('share-data-page'));
     assertTrue(!!page);
+    page.feedbackContext = fakeEmptyFeedbackContext;
     document.body.appendChild(page);
     return flushTasks();
   }
@@ -1279,4 +1279,4 @@ export function shareDataPageTestSuite() {
     assertFalse(requestWithoutBluetoothFlag.sendBluetoothLogs);
     assertFalse(!!requestWithoutBluetoothFlag.feedbackContext.categoryTag);
   });
-}
+});

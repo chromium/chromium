@@ -27,13 +27,13 @@ PlatformInfoSerializer& PlatformInfoSerializer::operator=(
     PlatformInfoSerializer&& other) = default;
 
 // static
-absl::optional<PlatformInfoSerializer> PlatformInfoSerializer::Deserialize(
+std::optional<PlatformInfoSerializer> PlatformInfoSerializer::Deserialize(
     base::StringPiece base64) {
-  absl::optional<cast::bindings::MediaCapabilitiesMessage> proto =
+  std::optional<cast::bindings::MediaCapabilitiesMessage> proto =
       chromecast::bindings::ProtoSerializer<
           cast::bindings::MediaCapabilitiesMessage>::Deserialize(base64);
   if (!proto) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   PlatformInfoSerializer parser;
@@ -184,82 +184,81 @@ void PlatformInfoSerializer::SetSupportedVideoCodecs(
   }
 }
 
-absl::optional<int> PlatformInfoSerializer::MaxWidth() const {
+std::optional<int> PlatformInfoSerializer::MaxWidth() const {
   return platform_info_.max_width();
 }
 
-absl::optional<int> PlatformInfoSerializer::MaxHeight() const {
+std::optional<int> PlatformInfoSerializer::MaxHeight() const {
   return platform_info_.max_height();
 }
 
-absl::optional<int> PlatformInfoSerializer::MaxFrameRate() const {
+std::optional<int> PlatformInfoSerializer::MaxFrameRate() const {
   return platform_info_.max_frame_rate();
 }
 
-absl::optional<std::string> PlatformInfoSerializer::SupportedCryptoBlockFormat()
+std::optional<std::string> PlatformInfoSerializer::SupportedCryptoBlockFormat()
     const {
   return platform_info_.supported_cryptoblock_format();
 }
 
-absl::optional<int> PlatformInfoSerializer::MaxChannels() const {
+std::optional<int> PlatformInfoSerializer::MaxChannels() const {
   return platform_info_.max_channels();
 }
 
-absl::optional<bool> PlatformInfoSerializer::PcmSurroundSoundSupported() const {
+std::optional<bool> PlatformInfoSerializer::PcmSurroundSoundSupported() const {
   return platform_info_.is_pcm_surround_sound_supported();
 }
 
-absl::optional<bool> PlatformInfoSerializer::IsPlatformDolbyVisionEnabled()
+std::optional<bool> PlatformInfoSerializer::IsPlatformDolbyVisionEnabled()
     const {
   return platform_info_.is_platform_dolby_vision_enabled();
 }
 
-absl::optional<bool> PlatformInfoSerializer::IsDolbyVisionSupported() const {
+std::optional<bool> PlatformInfoSerializer::IsDolbyVisionSupported() const {
   return platform_info_.is_dolby_vision_supported();
 }
 
-absl::optional<bool> PlatformInfoSerializer::IsDolbyVision4kP60Supported()
+std::optional<bool> PlatformInfoSerializer::IsDolbyVision4kP60Supported()
     const {
   return platform_info_.is_dolby_vision4k_p60_supported();
 }
 
-absl::optional<bool>
+std::optional<bool>
 PlatformInfoSerializer::IsDolbyVisionSupportedByCurrentHdmiMode() const {
   return platform_info_.is_dolby_vision_supported_by_current_hdmi_mode();
 }
 
-absl::optional<bool> PlatformInfoSerializer::IsHdmiVideoModeSwitchEnabled()
+std::optional<bool> PlatformInfoSerializer::IsHdmiVideoModeSwitchEnabled()
     const {
   return platform_info_.is_hdmi_video_mode_switch_enabled();
 }
 
-absl::optional<bool> PlatformInfoSerializer::IsPlatformHevcEnabled() const {
+std::optional<bool> PlatformInfoSerializer::IsPlatformHevcEnabled() const {
   return platform_info_.is_platform_hevc_enabled();
 }
 
-absl::optional<bool> PlatformInfoSerializer::IsHdmiModeHdrCheckEnforced()
-    const {
+std::optional<bool> PlatformInfoSerializer::IsHdmiModeHdrCheckEnforced() const {
   return platform_info_.is_hdmi_mode_hdr_check_enforced();
 }
 
-absl::optional<bool> PlatformInfoSerializer::IsHdrSupportedByCurrentHdmiMode()
+std::optional<bool> PlatformInfoSerializer::IsHdrSupportedByCurrentHdmiMode()
     const {
   return platform_info_.is_hdr_supported_by_current_hdmi_mode();
 }
 
-absl::optional<bool> PlatformInfoSerializer::IsSmpteSt2084Supported() const {
+std::optional<bool> PlatformInfoSerializer::IsSmpteSt2084Supported() const {
   return platform_info_.is_smpte_st2084_supported();
 }
 
-absl::optional<bool> PlatformInfoSerializer::IsHlgSupported() const {
+std::optional<bool> PlatformInfoSerializer::IsHlgSupported() const {
   return platform_info_.is_hlg_supported();
 }
 
-absl::optional<bool> PlatformInfoSerializer::IsHdrFeatureEnabled() const {
+std::optional<bool> PlatformInfoSerializer::IsHdrFeatureEnabled() const {
   return platform_info_.is_hdr_feature_enabled();
 }
 
-absl::optional<std::vector<int>>
+std::optional<std::vector<int>>
 PlatformInfoSerializer::SupportedLegacyVp9Levels() const {
   std::vector<int> levels;
   levels.reserve(platform_info_.supported_legacy_vp9_levels_size());
@@ -270,20 +269,19 @@ PlatformInfoSerializer::SupportedLegacyVp9Levels() const {
   return levels;
 }
 
-absl::optional<int> PlatformInfoSerializer::HdcpVersion() const {
+std::optional<int> PlatformInfoSerializer::HdcpVersion() const {
   return platform_info_.hdcp_version();
 }
 
-absl::optional<int> PlatformInfoSerializer::SpatialRenderingSupportMask()
-    const {
+std::optional<int> PlatformInfoSerializer::SpatialRenderingSupportMask() const {
   return platform_info_.spatial_rendering_support_mask();
 }
 
-absl::optional<int> PlatformInfoSerializer::MaxFillRate() const {
+std::optional<int> PlatformInfoSerializer::MaxFillRate() const {
   return platform_info_.max_fill_rate();
 }
 
-absl::optional<std::vector<PlatformInfoSerializer::AudioCodecInfo>>
+std::optional<std::vector<PlatformInfoSerializer::AudioCodecInfo>>
 PlatformInfoSerializer::SupportedAudioCodecs() const {
   std::vector<AudioCodecInfo> infos;
   infos.reserve(platform_info_.supported_audio_codecs_size());
@@ -311,12 +309,12 @@ PlatformInfoSerializer::SupportedAudioCodecs() const {
   }
 
   return infos.empty()
-             ? absl::nullopt
-             : absl::make_optional<
+             ? std::nullopt
+             : std::make_optional<
                    std::vector<PlatformInfoSerializer::AudioCodecInfo>>(infos);
 }
 
-absl::optional<std::vector<PlatformInfoSerializer::VideoCodecInfo>>
+std::optional<std::vector<PlatformInfoSerializer::VideoCodecInfo>>
 PlatformInfoSerializer::SupportedVideoCodecs() const {
   std::vector<VideoCodecInfo> infos;
   infos.reserve(platform_info_.supported_video_codecs_size());
@@ -340,8 +338,8 @@ PlatformInfoSerializer::SupportedVideoCodecs() const {
   }
 
   return infos.empty()
-             ? absl::nullopt
-             : absl::make_optional<
+             ? std::nullopt
+             : std::make_optional<
                    std::vector<PlatformInfoSerializer::VideoCodecInfo>>(infos);
 }
 

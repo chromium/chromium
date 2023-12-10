@@ -2,23 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/allocator/partition_allocator/src/partition_alloc/thread_cache.h"
+#include "partition_alloc/thread_cache.h"
 
 #include <algorithm>
 #include <atomic>
 #include <vector>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/extended_api.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_address_space.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/thread_annotations.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/threading/platform_thread_for_testing.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_config.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_for_testing.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_lock.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_root.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/tagging.h"
 #include "build/build_config.h"
+#include "partition_alloc/extended_api.h"
+#include "partition_alloc/partition_address_space.h"
+#include "partition_alloc/partition_alloc_base/thread_annotations.h"
+#include "partition_alloc/partition_alloc_base/threading/platform_thread_for_testing.h"
+#include "partition_alloc/partition_alloc_buildflags.h"
+#include "partition_alloc/partition_alloc_config.h"
+#include "partition_alloc/partition_alloc_for_testing.h"
+#include "partition_alloc/partition_lock.h"
+#include "partition_alloc/partition_root.h"
+#include "partition_alloc/tagging.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 // With *SAN, PartitionAlloc is replaced in partition_alloc.h by ASAN, so we
@@ -60,14 +60,14 @@ class DeltaCounter {
 
 // Forbid extras, since they make finding out which bucket is used harder.
 std::unique_ptr<PartitionAllocatorForTesting> CreateAllocator() {
-  std::unique_ptr<PartitionAllocatorForTesting> allocator =
-      std::make_unique<PartitionAllocatorForTesting>(PartitionOptions {
-        .aligned_alloc = PartitionOptions::kAllowed,
+  PartitionOptions opts;
+  opts.aligned_alloc = PartitionOptions::kAllowed;
 #if !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-        .thread_cache = PartitionOptions::kEnabled,
+  opts.thread_cache = PartitionOptions::kEnabled;
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-        .star_scan_quarantine = PartitionOptions::kAllowed,
-      });
+  opts.star_scan_quarantine = PartitionOptions::kAllowed;
+  std::unique_ptr<PartitionAllocatorForTesting> allocator =
+      std::make_unique<PartitionAllocatorForTesting>(opts);
   allocator->root()->UncapEmptySlotSpanMemoryForTesting();
 
   return allocator;
@@ -274,10 +274,10 @@ TEST_P(PartitionAllocThreadCacheTest, Purge) {
 }
 
 TEST_P(PartitionAllocThreadCacheTest, NoCrossPartitionCache) {
-  PartitionAllocatorForTesting allocator(PartitionOptions{
-      .aligned_alloc = PartitionOptions::kAllowed,
-      .star_scan_quarantine = PartitionOptions::kAllowed,
-  });
+  PartitionOptions opts;
+  opts.aligned_alloc = PartitionOptions::kAllowed;
+  opts.star_scan_quarantine = PartitionOptions::kAllowed;
+  PartitionAllocatorForTesting allocator(opts);
 
   size_t bucket_index = FillThreadCacheAndReturnIndex(kSmallSize);
   void* ptr = allocator.root()->Alloc(

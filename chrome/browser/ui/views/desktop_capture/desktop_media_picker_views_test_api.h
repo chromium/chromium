@@ -5,10 +5,11 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_DESKTOP_CAPTURE_DESKTOP_MEDIA_PICKER_VIEWS_TEST_API_H_
 #define CHROME_BROWSER_UI_VIEWS_DESKTOP_CAPTURE_DESKTOP_MEDIA_PICKER_VIEWS_TEST_API_H_
 
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/media/webrtc/desktop_media_list.h"
 #include "content/public/browser/desktop_media_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class DesktopMediaPickerViews;
 class DesktopMediaListController;
@@ -49,7 +50,7 @@ class DesktopMediaPickerViewsTestApi {
   void FocusSourceAtIndex(size_t index, bool select = true);
   void DoubleTapSourceAtIndex(size_t index);
   DesktopMediaList::Type GetSelectedSourceListType() const;
-  absl::optional<int> GetSelectedSourceId() const;
+  std::optional<int> GetSelectedSourceId() const;
   views::View* GetSelectedListView();
   DesktopMediaListController* GetSelectedController();
 

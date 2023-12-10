@@ -14,11 +14,16 @@
 // Localized string containing the reason why reauthentication is requested.
 @property(nonatomic, copy) NSString* localizedReasonForAuthentication;
 
+// Indicates whether the device is capable of reauthenticating the user with
+// Biometric auth.
+@property(nonatomic, assign) BOOL canAttemptWithBiometrics;
+
 // Indicates whether the device is capable of reauthenticating the user.
 @property(nonatomic, assign) BOOL canAttempt;
 
 // Indicates whether (mock) authentication should succeed or not. Setting
-// `shouldSucceed` to any value sets `canAttempt` to YES.
+// `shouldSucceed` to any value sets `canAttemptWithBiometrics` and `canAttempt`
+// to YES.
 @property(nonatomic, assign) ReauthenticationResult expectedResult;
 
 // Whether the mock module should return the mocked result when the

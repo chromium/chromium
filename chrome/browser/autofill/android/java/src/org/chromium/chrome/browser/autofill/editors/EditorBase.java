@@ -20,12 +20,10 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
  * @param <T> the class which extends EditableOption
  */
 public abstract class EditorBase<T extends EditableOption> {
-    @Nullable
-    protected EditorDialogView mEditorDialog;
-    @Nullable
-    protected Context mContext;
-    @Nullable
-    protected PropertyModel mEditorModel;
+    @Nullable protected EditorDialogView mEditorDialog;
+    @Nullable protected Context mContext;
+    @Nullable protected PropertyModel mEditorModel;
+
     @Nullable
     protected PropertyModelChangeProcessor<PropertyModel, EditorDialogView, PropertyKey> mEditorMCP;
 

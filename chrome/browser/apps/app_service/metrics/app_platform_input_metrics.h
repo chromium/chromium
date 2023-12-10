@@ -14,6 +14,7 @@
 #include "chrome/browser/apps/app_service/metrics/browser_to_tab_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/services/app_service/public/cpp/instance_registry.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "ui/events/event_handler.h"
 
@@ -38,7 +39,8 @@ extern const char kAppInputEventsKey[];
 
 // This class is used to record the input events for the app windows.
 class AppPlatformInputMetrics : public ui::EventHandler,
-                                public InstanceRegistry::Observer {
+                                public InstanceRegistry::Observer,
+                                public ukm::UkmRecorder::Observer {
  public:
   // For web apps and Chrome apps, there might be different app type name for
   // opening in tab or window. So record the app type name for the event count.
@@ -48,6 +50,7 @@ class AppPlatformInputMetrics : public ui::EventHandler,
   using EventSourceToCounts = base::flat_map<InputEventSource, CountPerAppType>;
 
   AppPlatformInputMetrics(Profile* profile,
+                          const apps::AppRegistryCache& app_registry_cache,
                           InstanceRegistry& instance_registry);
 
   AppPlatformInputMetrics(const AppPlatformInputMetrics&) = delete;
@@ -75,6 +78,11 @@ class AppPlatformInputMetrics : public ui::EventHandler,
   void OnInstanceUpdate(const InstanceUpdate& update) override;
   void OnInstanceRegistryWillBeDestroyed(InstanceRegistry* cache) override;
 
+  // ukm::UkmRecorder::Observer:
+  // Called only in Managed Guest Session since the observation is started only
+  // in Managed Guest Session.
+  void OnStartingShutdown() override;
+
   void SetAppInfoForActivatedWindow(AppType app_type,
                                     const std::string& app_id,
                                     aura::Window* window,
@@ -88,8 +96,10 @@ class AppPlatformInputMetrics : public ui::EventHandler,
 
   ukm::SourceId GetSourceId(const std::string& app_id);
 
-  void RecordInputEventsUkm(const std::string& app_id,
-                            const EventSourceToCounts& event_counts);
+  void RecordInputEventsUkm();
+
+  void RecordInputEventsUkmForApp(const std::string& app_id,
+                                  const EventSourceToCounts& event_counts);
 
   // Saves the input events in `app_id_to_event_count_per_two_hours_` to the
   // user pref each 2 hours. For example:
@@ -109,7 +119,12 @@ class AppPlatformInputMetrics : public ui::EventHandler,
   // Records the input events UKM saved in the user pref.
   void RecordInputEventsUkmFromPref();
 
+  // Returns true if recording is allowed for this app.
+  bool ShouldRecordUkmForApp(const std::string& app_id);
+
   raw_ptr<Profile, ExperimentalAsh> profile_;
+
+  const raw_ref<const AppRegistryCache> app_registry_cache_;
 
   BrowserToTabList browser_to_tab_list_;
 
@@ -138,6 +153,10 @@ class AppPlatformInputMetrics : public ui::EventHandler,
 
   base::ScopedObservation<InstanceRegistry, InstanceRegistry::Observer>
       instance_registry_observation_{this};
+
+  // Observes `UkmRecorder` only in Managed Guest Session.
+  base::ScopedObservation<ukm::UkmRecorder, ukm::UkmRecorder::Observer>
+      ukm_recorder_observer_{this};
 };
 
 }  // namespace apps

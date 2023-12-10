@@ -8,6 +8,7 @@
 #include "ash/style/system_textfield.h"
 #include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/auth_panel/auth_factor_store.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace ash {
@@ -18,6 +19,8 @@ class AuthFactorStore;
 // A textfield that selects all text on focus and allows to switch between
 // show/hide password modes.
 class LoginTextfield : public SystemTextfield {
+  METADATA_HEADER(LoginTextfield, SystemTextfield)
+
  public:
   explicit LoginTextfield(AuthPanelEventDispatcher* dispatcher);
   LoginTextfield(const LoginTextfield&) = delete;

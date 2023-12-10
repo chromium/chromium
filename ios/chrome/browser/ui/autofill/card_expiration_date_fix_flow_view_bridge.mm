@@ -166,7 +166,6 @@ void CardExpirationDateFixFlowViewBridge::DeleteSelf() {
   textField.delegate = self;
 
   _footerView = [[TableViewTextHeaderFooterView alloc] init];
-  _footerView.subtitleLabel.textColor = [UIColor colorNamed:kRedColor];
 
   // Set initial value.
   [self didSelectMonth:_expirationDatePicker.month
@@ -255,11 +254,13 @@ void CardExpirationDateFixFlowViewBridge::DeleteSelf() {
   if ([_expirationDateYear intValue] < currentYear ||
       ([_expirationDateYear intValue] == currentYear &&
        [_expirationDateMonth intValue] < currentMonth)) {
-    _footerView.subtitleLabel.text = base::SysUTF16ToNSString(
-        _bridge->GetController()->GetInvalidDateError());
+    [_footerView
+        setSubtitle:base::SysUTF16ToNSString(
+                        _bridge->GetController()->GetInvalidDateError())
+          withColor:[UIColor colorNamed:kRedColor]];
     _confirmButton.enabled = NO;
   } else {
-    _footerView.subtitleLabel.text = nil;
+    [_footerView setSubtitle:nil];
     _confirmButton.enabled = YES;
   }
 }

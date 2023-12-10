@@ -4,18 +4,21 @@
 
 #include "chromeos/ash/components/dbus/featured/featured_client.h"
 
+#include <memory>
 #include <string>
 
 #include "base/check_is_test.h"
 #include "base/files/dir_reader_posix.h"
 #include "base/files/file_path.h"
 #include "base/files/file_path_watcher.h"
+#include "base/files/file_util.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_split.h"
+#include "base/task/thread_pool.h"
 #include "chromeos/ash/components/dbus/featured/fake_featured_client.h"
 #include "chromeos/ash/components/dbus/featured/featured.pb.h"
 #include "dbus/bus.h"
@@ -30,21 +33,100 @@ namespace {
 
 FeaturedClient* g_instance = nullptr;
 
+struct FileWatchOptions {
+  FeaturedClient::ListenForTrialCallback listen_callback;
+  const base::FilePath expected_dir;
+};
+
+void RecordEarlyBootTrialInUMA(const std::string& trial_name,
+                               const std::string& group_name) {
+  base::FieldTrial* trial =
+      base::FieldTrialList::CreateFieldTrial(trial_name, group_name);
+  // This records the trial in UMA.
+  trial->Activate();
+}
+
+// Assumes |filename| is valid (that its directory name is correct).
+bool RecordEarlyBootTrialInChrome(
+    FeaturedClient::ListenForTrialCallback listen_callback,
+    const base::FilePath& filename) {
+  base::FieldTrial::ActiveGroup active_group;
+  if (!FeaturedClient::ParseTrialFilename(filename, active_group)) {
+    return false;
+  }
+  listen_callback.Run(active_group.trial_name, active_group.group_name);
+  return true;
+}
+
+void RecordEarlyBootTrialAfterChromeStartup(const FileWatchOptions& opts,
+                                            const base::FilePath& path,
+                                            bool error) {
+  if (error || path.DirName() != opts.expected_dir) {
+    // TODO(b/296394808): Add UMA metric if we enter this code path since it
+    // is not expected.
+    return;
+  }
+  // TODO(b/296394808): Add UMA metric if unable to record trial due to parse
+  // error.
+  RecordEarlyBootTrialInChrome(opts.listen_callback, path);
+}
+
+void ListenForActiveEarlyBootTrials(base::FilePathWatcher* watcher,
+                                    const FileWatchOptions& opts) {
+  base::FilePathWatcher::WatchOptions options = {
+      // Watches for changes in a directory.
+      .type = base::FilePathWatcher::Type::kRecursive,
+      // Reports the path of modified files in the directory.
+      .report_modified_path = true};
+
+  watcher->WatchWithOptions(
+      opts.expected_dir, options,
+      base::BindRepeating(&RecordEarlyBootTrialAfterChromeStartup, opts));
+}
+
+void ReadTrialsActivatedBeforeChromeStartup(const FileWatchOptions& opts) {
+  base::DirReaderPosix reader(opts.expected_dir.value().c_str());
+  if (!reader.IsValid()) {
+    // TODO(b/296394808): Add UMA metric if we are unable to enumerate trials
+    // activated before Chrome startup.
+    return;
+  }
+
+  while (reader.Next()) {
+    if (std::string(reader.name()) == "." ||
+        std::string(reader.name()) == "..") {
+      continue;
+    }
+    // TODO(b/296394808): Add UMA metric if unable to record trial due to
+    // parse error.
+    RecordEarlyBootTrialInChrome(opts.listen_callback,
+                                 base::FilePath(reader.name()));
+  }
+}
+
+// We need to delete the FilePathWatcher instance via a posted task since we
+// call FilePathWatche::Watch() on a posted task. The documentation states the
+// instance must be destroyed on the same sequence it watches from.
+void DeleteWatcher(std::unique_ptr<base::FilePathWatcher> watcher) {
+  watcher.reset();
+}
+
 // Production implementation of FeaturedClient.
 class FeaturedClientImpl : public FeaturedClient {
  public:
-  FeaturedClientImpl() = default;
+  FeaturedClientImpl() : watcher_(std::make_unique<base::FilePathWatcher>()) {}
 
   FeaturedClientImpl(const FeaturedClient&) = delete;
   FeaturedClientImpl operator=(const FeaturedClient&) = delete;
 
-  ~FeaturedClientImpl() override = default;
+  ~FeaturedClientImpl() override {
+    file_listener_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&DeleteWatcher, std::move(watcher_)));
+  }
 
   void Init(dbus::Bus* const bus) {
-    InitWithCallback(
-        bus, base::FilePath(feature::kActiveTrialFileDirectory),
-        base::BindRepeating(&FeaturedClientImpl::RecordEarlyBootTrialInUMA,
-                            weak_ptr_factory_.GetWeakPtr()));
+    InitWithCallback(bus, base::FilePath(feature::kActiveTrialFileDirectory),
+                     base::BindRepeating(&RecordEarlyBootTrialInUMA));
   }
 
   void InitForTesting(dbus::Bus* const bus,  // IN-TEST
@@ -90,75 +172,15 @@ class FeaturedClientImpl : public FeaturedClient {
                             dbus::ObjectPath(::featured::kFeaturedServicePath));
     expected_dir_ = expected_dir;
     listen_callback_ = callback;
-    // TODO(b/305042166): Call ListenForActiveEarlyBootTrials() once fixed.
-    ReadTrialsActivatedBeforeChromeStartup();
+    FileWatchOptions opts = {.listen_callback = callback,
+                             .expected_dir = expected_dir};
+    file_listener_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&ListenForActiveEarlyBootTrials, watcher_.get(), opts));
+    file_listener_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&ReadTrialsActivatedBeforeChromeStartup, opts));
   }
-
-  void RecordEarlyBootTrialInUMA(const std::string& trial_name,
-                                 const std::string& group_name) {
-    base::FieldTrial* trial =
-        base::FieldTrialList::CreateFieldTrial(trial_name, group_name);
-    // This records the trial in UMA.
-    trial->Activate();
-  }
-
-  // Assumes |filename| is valid (that its directory name is correct).
-  bool RecordEarlyBootTrialInChrome(const base::FilePath& filename) {
-    base::FieldTrial::ActiveGroup active_group;
-    if (!ParseTrialFilename(filename, active_group)) {
-      return false;
-    }
-    listen_callback_.Run(active_group.trial_name, active_group.group_name);
-    return true;
-  }
-
-  void RecordEarlyBootTrialAfterChromeStartup(const base::FilePath& path,
-                                              bool error) {
-    if (error || path.DirName() != expected_dir_) {
-      // TODO(b/296394808): Add UMA metric if we enter this code path since it
-      // is not expected.
-      return;
-    }
-    // TODO(b/296394808): Add UMA metric if unable to record trial due to parse
-    // error.
-    RecordEarlyBootTrialInChrome(path);
-  }
-
-  void ListenForActiveEarlyBootTrials() {
-    base::FilePathWatcher::WatchOptions options = {
-        // Watches for changes in a directory.
-        .type = base::FilePathWatcher::Type::kRecursive,
-        // Reports the path of modified files in the directory.
-        .report_modified_path = true};
-
-    watcher_.WatchWithOptions(
-        expected_dir_, options,
-        base::BindRepeating(
-            &FeaturedClientImpl::RecordEarlyBootTrialAfterChromeStartup,
-            weak_ptr_factory_.GetWeakPtr()));
-  }
-
-  void ReadTrialsActivatedBeforeChromeStartup() {
-    base::DirReaderPosix reader(expected_dir_.value().c_str());
-    if (!reader.IsValid()) {
-      // TODO(b/296394808): Add UMA metric if we are unable to enumerate trials
-      // activated before Chrome startup.
-      return;
-    }
-
-    while (reader.Next()) {
-      if (std::string(reader.name()) == "." ||
-          std::string(reader.name()) == "..") {
-        continue;
-      }
-      // TODO(b/296394808): Add UMA metric if unable to record trial due to
-      // parse error.
-      RecordEarlyBootTrialInChrome(base::FilePath(reader.name()));
-    }
-  }
-
-  // Watches for early-boot trial files written to `expected_dir_`.
-  base::FilePathWatcher watcher_;
 
   // Callback used when early-boot trial files are written to `expected_dir_`.
   FeaturedClient::ListenForTrialCallback listen_callback_;
@@ -166,7 +188,15 @@ class FeaturedClientImpl : public FeaturedClient {
   // Directory where active trial files on platform are written to.
   base::FilePath expected_dir_;
 
+  // Watches for early-boot trial files written to `expected_dir_`.
+  std::unique_ptr<base::FilePathWatcher> watcher_;
+
   raw_ptr<dbus::ObjectProxy, ExperimentalAsh> featured_service_proxy_ = nullptr;
+
+  // Sequence runner that an post tasks that may block.
+  scoped_refptr<base::SequencedTaskRunner> file_listener_task_runner_ =
+      base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.

@@ -20,6 +20,7 @@ abstract class GraphicsUtils {
     // technically true, as a way to preserve these methods and their names.
     @UsedByReflection("Android framework manual registration")
     private static native long nativeGetDrawSWFunctionTable();
+
     @UsedByReflection("Android framework manual registration")
     private static native long nativeGetDrawGLFunctionTable();
 }

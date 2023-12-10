@@ -17,7 +17,12 @@ class FakeBrowsingDataRemover : public BrowsingDataRemover {
   void Remove(browsing_data::TimePeriod time_period,
               BrowsingDataRemoveMask remove_mask,
               base::OnceClosure callback) override;
-  void RemoveSessionsData(NSArray<NSString*>* session_ids) override;
+  BrowsingDataRemoveMask GetLastUsedRemovalMask();
+  void SetFailedForTesting();
+
+ private:
+  BrowsingDataRemoveMask last_remove_mask_;
+  bool success{true};
 };
 
 #endif  // IOS_CHROME_BROWSER_BROWSING_DATA_MODEL_FAKE_BROWSING_DATA_REMOVER_H_

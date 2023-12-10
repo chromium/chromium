@@ -35,6 +35,8 @@ bundle_data("animation_files") {
   sources = [
     "default_browser_animation.json",
     "default_browser_animation_darkmode.json",
+    "default_browser_animation_rtl.json",
+    "default_browser_animation_rtl_darkmode.json",
   ]
   outputs = [ "{{bundle_resources_dir}}/{{source_file_part}}" ]
 }

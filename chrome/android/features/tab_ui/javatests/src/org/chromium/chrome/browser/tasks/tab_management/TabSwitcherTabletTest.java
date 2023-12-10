@@ -9,13 +9,11 @@ import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.Visibility.GONE;
 import static androidx.test.espresso.matcher.ViewMatchers.Visibility.VISIBLE;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static androidx.test.espresso.matcher.ViewMatchers.withClassName;
 import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withParent;
 
 import static org.hamcrest.Matchers.allOf;
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -59,8 +57,6 @@ import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
-import org.chromium.chrome.browser.toolbar.top.TabSwitcherModeTopToolbar;
-import org.chromium.chrome.browser.toolbar.top.ToolbarTablet;
 import org.chromium.chrome.features.start_surface.TabSwitcherAndStartSurfaceLayout;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -89,8 +85,7 @@ import java.util.concurrent.TimeoutException;
     ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
     "force-fieldtrials=Study/Group"
 })
-@EnableFeatures({ChromeFeatureList.TAB_STRIP_REDESIGN, ChromeFeatureList.EMPTY_STATES})
-@DisableFeatures(ChromeFeatureList.TAB_TO_GTS_ANIMATION)
+@DisableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION, ChromeFeatureList.START_SURFACE_REFACTOR})
 @Restriction({
     Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE,
     UiRestriction.RESTRICTION_TYPE_TABLET
@@ -209,51 +204,6 @@ public class TabSwitcherTabletTest {
         assertFalse(newTab.isIncognito());
 
         exitSwitcherWithTabClick(0);
-    }
-
-    @Test
-    @MediumTest
-    public void testTabSwitcherToolbar() throws Exception {
-        prepareTabs(1, 1);
-        TabUiTestHelper.enterTabSwitcher(sActivityTestRule.getActivity());
-
-        // Assert hidden views.
-        onView(
-                        allOf(
-                                withId(R.id.incognito_switch),
-                                withParent(withId(R.id.tab_switcher_switches_and_menu))))
-                .check(matches(withEffectiveVisibility(GONE)));
-        onView(allOf(withId(R.id.new_tab_button), withParent(withId(R.id.tab_switcher_toolbar))))
-                .check(matches(withEffectiveVisibility(GONE)));
-
-        // Assert visible views.
-        onView(allOf(withId(R.id.new_tab_view), withParent(withId(R.id.tab_switcher_toolbar))))
-                .check(matches(isDisplayed()));
-        onView(
-                        allOf(
-                                withId(R.id.menu_button_wrapper),
-                                withParent(withId(R.id.tab_switcher_switches_and_menu))))
-                .check(matches(isDisplayed()));
-        onView(
-                        allOf(
-                                withId(R.id.incognito_toggle_tabs),
-                                withParent(withId(R.id.tab_switcher_toolbar))))
-                .check(matches(isDisplayed()));
-        // Tablet toolbar is not hidden.
-        onView(allOf(withId(R.id.toolbar), withClassName(is(ToolbarTablet.class.getName()))))
-                .check(matches(isDisplayed()));
-
-        // Exit switcher.
-        exitSwitcherWithTabClick(0);
-
-        // Assert tablet toolbar shows and switcher toolbar is gone.
-        onView(
-                        allOf(
-                                withId(R.id.tab_switcher_toolbar),
-                                withClassName(is(TabSwitcherModeTopToolbar.class.getName()))))
-                .check(matches(withEffectiveVisibility(GONE)));
-        onView(allOf(withId(R.id.toolbar), withClassName(is(ToolbarTablet.class.getName()))))
-                .check(matches(isDisplayed()));
     }
 
     @Test

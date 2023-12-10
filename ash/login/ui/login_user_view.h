@@ -12,6 +12,7 @@
 #include "ash/public/cpp/login_types.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/display/manager/display_configurator.h"
 #include "ui/views/view.h"
 
@@ -24,6 +25,8 @@ class LoginButton;
 // various layout styles.
 class ASH_EXPORT LoginUserView : public views::View,
                                  public display::DisplayConfigurator::Observer {
+  METADATA_HEADER(LoginUserView, views::View)
+
  public:
   // TestApi is used for tests to get internal implementation details.
   class ASH_EXPORT TestApi {
@@ -90,7 +93,6 @@ class ASH_EXPORT LoginUserView : public views::View,
   LoginButton* GetDropdownButton();
 
   // views::View:
-  const char* GetClassName() const override;
   gfx::Size CalculatePreferredSize() const override;
   void Layout() override;
   void RequestFocus() override;

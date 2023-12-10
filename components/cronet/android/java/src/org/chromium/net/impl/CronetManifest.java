@@ -42,8 +42,10 @@ public final class CronetManifest {
 
     @VisibleForTesting
     static final String META_DATA_HOLDER_SERVICE_NAME = "android.net.http.MetaDataHolder";
+
     @VisibleForTesting
     static final String ENABLE_TELEMETRY_META_DATA_KEY = "android.net.http.EnableTelemetry";
+
     // DO NOT ENABLE this manifest flag in production apps. The code gated behind this flag is not
     // ready yet.
     // TODO: remove the "Experimental" prefix once the code for reading HTTP flags is ready.
@@ -56,10 +58,12 @@ public final class CronetManifest {
      * #ENABLE_TELEMETRY_META_DATA_KEY} meta-data entry in the Android manifest.
      */
     public static boolean isAppOptedInForTelemetry(Context context, CronetSource source) {
-        boolean telemetryIsDefaultEnabled = source == CronetSource.CRONET_SOURCE_PLATFORM
-                || source == CronetSource.CRONET_SOURCE_PLAY_SERVICES;
-        return getMetaData(context).getBoolean(
-                ENABLE_TELEMETRY_META_DATA_KEY, /*default*/ telemetryIsDefaultEnabled);
+        boolean telemetryIsDefaultEnabled =
+                source == CronetSource.CRONET_SOURCE_PLATFORM
+                        || source == CronetSource.CRONET_SOURCE_PLAY_SERVICES;
+        return getMetaData(context)
+                .getBoolean(
+                        ENABLE_TELEMETRY_META_DATA_KEY, /* default= */ telemetryIsDefaultEnabled);
     }
 
     /**
@@ -70,7 +74,7 @@ public final class CronetManifest {
     public static boolean shouldReadHttpFlags(Context context) {
         // TODO: switch the default to true once we confirm the HTTP flags system is working as
         // intended.
-        return getMetaData(context).getBoolean(READ_HTTP_FLAGS_META_DATA_KEY, /*default=*/false);
+        return getMetaData(context).getBoolean(READ_HTTP_FLAGS_META_DATA_KEY, /* default= */ false);
     }
 
     /**
@@ -80,11 +84,14 @@ public final class CronetManifest {
     private static Bundle getMetaData(Context context) {
         ServiceInfo serviceInfo;
         try {
-            serviceInfo = context.getPackageManager().getServiceInfo(
-                    new ComponentName(context, META_DATA_HOLDER_SERVICE_NAME),
-                    PackageManager.GET_META_DATA | PackageManager.MATCH_DISABLED_COMPONENTS
-                            | PackageManager.MATCH_DIRECT_BOOT_AWARE
-                            | PackageManager.MATCH_DIRECT_BOOT_UNAWARE);
+            serviceInfo =
+                    context.getPackageManager()
+                            .getServiceInfo(
+                                    new ComponentName(context, META_DATA_HOLDER_SERVICE_NAME),
+                                    PackageManager.GET_META_DATA
+                                            | PackageManager.MATCH_DISABLED_COMPONENTS
+                                            | PackageManager.MATCH_DIRECT_BOOT_AWARE
+                                            | PackageManager.MATCH_DIRECT_BOOT_UNAWARE);
         } catch (PackageManager.NameNotFoundException e) {
             serviceInfo = null;
         }

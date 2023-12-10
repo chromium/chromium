@@ -57,6 +57,7 @@
 #include "content/public/browser/download_manager.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
+#include "content/public/browser/notification_service.h"
 #include "content/public/browser/notification_types.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -78,6 +79,7 @@
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "third_party/blink/public/common/chrome_debug_urls.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/views/widget/widget_interactive_uitest_utils.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
@@ -196,6 +198,22 @@ class AutocompleteChangeObserver : public AutocompleteController::Observer {
   base::ScopedObservation<AutocompleteControllerEmitter,
                           AutocompleteController::Observer>
       scoped_observation_{this};
+};
+
+// Helper class to notify AllTabsObserver that a WebContents has been destroyed.
+class WebContentsDestructionObserver : public content::WebContentsObserver {
+ public:
+  WebContentsDestructionObserver(base::OnceClosure destruction_cb,
+                                 content::WebContents* web_contents)
+      : WebContentsObserver(web_contents),
+        destruction_cb_(std::move(destruction_cb)) {}
+  ~WebContentsDestructionObserver() override = default;
+
+  // WebContentsObserver
+  void WebContentsDestroyed() override { std::move(destruction_cb_).Run(); }
+
+ private:
+  base::OnceClosure destruction_cb_;
 };
 
 }  // namespace
@@ -454,6 +472,14 @@ void WaitForAutocompleteDone(Browser* browser) {
     AutocompleteChangeObserver(browser->profile()).Wait();
 }
 
+bool WaitForMinimized(Browser* browser) {
+  views::test::PropertyWaiter minimize_waiter(
+      base::BindRepeating(&BrowserWindow::IsMinimized,
+                          base::Unretained(browser->window())),
+      true);
+  return minimize_waiter.Wait();
+}
+
 void SendToOmniboxAndSubmit(Browser* browser,
                             const std::string& input,
                             base::TimeTicks match_selection_timestamp) {
@@ -506,25 +532,151 @@ void GetCookies(const GURL& url,
   }
 }
 
-UrlLoadObserver::UrlLoadObserver(const GURL& url,
-                                 const content::NotificationSource& source)
-    : WindowedNotificationObserver(content::NOTIFICATION_LOAD_STOP, source),
-      url_(url) {
+// It would be nice to `AddAllBrowsers()` here, but we have to wait until our
+// subclass is constructed to `ProcessOneBrowser()`.  We can't put it off
+// until `Wait()` since we need to watch for anything that happens between now
+// and then.
+AllTabsObserver::AllTabsObserver() = default;
+
+AllTabsObserver::~AllTabsObserver() {
+  BrowserList::RemoveObserver(this);
+  // We're tracking all browsers, so remove us from all of all of them.
+  for (Browser* browser : *BrowserList::GetInstance()) {
+    browser->tab_strip_model()->RemoveObserver(this);
+  }
 }
 
-UrlLoadObserver::~UrlLoadObserver() {}
+void AllTabsObserver::AddAllBrowsers() {
+  added_all_browsers_ = true;
+  BrowserList::AddObserver(this);
+  for (Browser* browser : *BrowserList::GetInstance()) {
+    AddBrowser(browser);
+  }
+}
 
-void UrlLoadObserver::Observe(
-    int type,
-    const content::NotificationSource& source,
-    const content::NotificationDetails& details) {
-  NavigationController* controller =
-      content::Source<NavigationController>(source).ptr();
-  NavigationEntry* entry = controller->GetVisibleEntry();
-  if (!entry || entry->GetVirtualURL() != url_)
+void AllTabsObserver::Wait() {
+  // For subclasses that can detect if their condition is met without
+  // necessarily needing to watch for transitions, we could wait until now to
+  // call `AddAllBrowsers()` if it hasn't happened yet.
+  CHECK(added_all_browsers_)
+      << "Subclasses must call `AddAllBrowsers()` during construction";
+
+  if (!condition_met_) {
+    run_loop_ = std::make_unique<base::RunLoop>();
+    run_loop_->Run();
+    run_loop_.reset();
+  }
+  EXPECT_TRUE(condition_met_);
+}
+
+// impls should call this to tell us to stop waiting.
+void AllTabsObserver::ConditionMet() {
+  condition_met_ = true;
+  if (run_loop_) {
+    run_loop_->Quit();
+  }
+}
+
+void AllTabsObserver::OnTabStripModelChanged(
+    TabStripModel* tab_strip_model,
+    const TabStripModelChange& change,
+    const TabStripSelectionChange& selection) {
+  if (change.type() != TabStripModelChange::kInserted) {
     return;
+  }
 
-  WindowedNotificationObserver::Observe(type, source, details);
+  AddWebContents(change.GetInsert()->contents[0].contents.get());
+}
+
+void AllTabsObserver::OnBrowserAdded(Browser* browser) {
+  AddBrowser(browser);
+}
+
+void AllTabsObserver::AddBrowser(const Browser* browser) {
+  browser->tab_strip_model()->AddObserver(this);
+  // Enumerate all WebContents in this browser, and add a WebContentsObserver
+  // for it.
+  for (int index = 0; index < browser->tab_strip_model()->count(); index++) {
+    auto* web_contents = browser->tab_strip_model()->GetWebContentsAt(index);
+    AddWebContents(web_contents);
+  }
+}
+
+void AllTabsObserver::AddWebContents(content::WebContents* web_contents) {
+  // If the condition is already met, then don't bother.
+  if (condition_met_) {
+    return;
+  }
+
+  auto observer = ProcessOneContents(web_contents);
+  if (observer) {
+    // Store both the subclass's observer and our own with this WebContents.
+    // We'll handle cleaning them both up on destruction.  It's okay if our
+    // subclass does not create an observer, but does notify us to stop waiting
+    // before returning.
+    tab_navigation_map_[web_contents].subclass_observer = std::move(observer);
+    tab_navigation_map_[web_contents].destruction_observer =
+        std::make_unique<WebContentsDestructionObserver>(
+            base::BindOnce(&AllTabsObserver::OnWebContentsDestroyed,
+                           base::Unretained(this),
+                           base::Unretained(web_contents)),
+            web_contents);
+  }
+}
+
+// called by our destruction observers
+void AllTabsObserver::OnWebContentsDestroyed(WebContents* web_contents) {
+  auto iter = tab_navigation_map_.find(web_contents);
+  CHECK(iter != tab_navigation_map_.end());
+  // This clears both our observer and the one created by our subclass.
+  tab_navigation_map_.erase(iter);
+}
+
+AllTabsObserver::TabNavigationMapEntry::TabNavigationMapEntry() = default;
+AllTabsObserver::TabNavigationMapEntry::~TabNavigationMapEntry() = default;
+
+UrlLoadObserver::UrlLoadObserver(const GURL& url) : url_(url) {
+  AddAllBrowsers();
+}
+
+UrlLoadObserver::UrlLoadObserver(
+    const GURL& url,
+    const content::NotificationSource& unused_source)
+    : UrlLoadObserver(url) {
+  // For whatever reason, CHECK_EQ doesn't pick up the overloaded == .
+  CHECK(unused_source == content::NotificationService::AllSources())
+      << "does not support filtering by source";
+}
+
+UrlLoadObserver::~UrlLoadObserver() = default;
+
+std::unique_ptr<base::CheckedObserver> UrlLoadObserver::ProcessOneContents(
+    WebContents* web_contents) {
+  return std::make_unique<LoadStopObserver>(this, web_contents);
+}
+
+void UrlLoadObserver::OnDidStopLoading(WebContents* web_contents) {
+  NavigationController& controller = web_contents->GetController();
+  NavigationEntry* entry = controller.GetVisibleEntry();
+  if (!entry || entry->GetVirtualURL() != url_) {
+    return;
+  }
+
+  // Record the first match.
+  if (!web_contents_) {
+    web_contents_ = web_contents;
+  }
+  ConditionMet();
+}
+
+UrlLoadObserver::LoadStopObserver::LoadStopObserver(UrlLoadObserver* owner,
+                                                    WebContents* web_contents)
+    : WebContentsObserver(web_contents), owner_(owner) {}
+
+UrlLoadObserver::LoadStopObserver::~LoadStopObserver() = default;
+
+void UrlLoadObserver::LoadStopObserver::DidStopLoading() {
+  owner_->OnDidStopLoading(web_contents());
 }
 
 HistoryEnumerator::HistoryEnumerator(Profile* profile) {

@@ -304,12 +304,9 @@ void AuctionRunner::ResolvedDirectFromSellerSignalsHeaderAdSlotPromise(
   }
 
   AdAuctionPageData* page_data = ad_auction_page_data_.get();
-  if (!page_data) {
-    // There's no page data attached so we can't find matching responses.
-    // There's no way the auction can proceed.
-    FailAuction(false);
-    return;
-  }
+  // The `page_data` shouldn't be null (since we create it before starting the
+  // auction), but if it is, the auction will just pass default-constructed
+  // signals to worklets.
 
   if (auction_id->is_main_auction()) {
     auction_.NotifyDirectFromSellerSignalsHeaderAdSlotConfig(
@@ -334,7 +331,7 @@ void AuctionRunner::ResolvedAuctionAdResponsePromise(
       LookupAuction(*owned_auction_config_, auction_id);
   if (!config) {
     mojo::ReportBadMessage(
-        "Invalid auction ID in ResolvedDirectFromSellerSignalsPromise");
+        "Invalid auction ID in ResolvedAuctionAdResponsePromise");
     return;
   }
   // If we aren't in B&A mode or we already have the response it's an error.
@@ -342,13 +339,6 @@ void AuctionRunner::ResolvedAuctionAdResponsePromise(
       (config->server_response && config->server_response->got_response)) {
     mojo::ReportBadMessage(
         "ResolvedAuctionAdResponsePromise updating non-promise");
-    return;
-  }
-  if (!auction_id->is_main_auction()) {
-    // TODO(1457241): Add support for multi-level auctions including server-side
-    // auctions.
-    mojo::ReportBadMessage(
-        "ResolvedAuctionAdResponsePromise only supported in main auction");
     return;
   }
   config->server_response->got_response = true;
@@ -360,11 +350,12 @@ void AuctionRunner::ResolvedAuctionAdResponsePromise(
     return;
   }
 
-  state_ = State::kBiddingAndScoringPhase;
-  auction_.StartFromServerResponse(
-      std::move(response), page_data,
-      base::BindOnce(&AuctionRunner::OnServerResponseAuctionComplete,
-                     base::Unretained(this), base::TimeTicks::Now()));
+  if (auction_id->is_main_auction()) {
+    auction_.HandleServerResponse(std::move(response), page_data);
+  } else {
+    auction_.HandleComponentServerResponse(auction_id->get_component_auction(),
+                                           std::move(response), page_data);
+  }
 }
 
 void AuctionRunner::ResolvedAdditionalBids(
@@ -509,8 +500,12 @@ AuctionRunner::AuctionRunner(
 
 void AuctionRunner::StartAuction() {
   if (owned_auction_config_->server_response) {
-    // Entire auction is running server-side.
-    // Wait for promise with server response to resolve.
+    // Entire auction is running server-side, so skip interest group loading.
+    state_ = State::kBiddingAndScoringPhase;
+    auction_.StartBiddingAndScoringPhase(
+        /*on_seller_receiver_callback=*/base::OnceClosure(),
+        base::BindOnce(&AuctionRunner::OnBidsGeneratedAndScored,
+                       base::Unretained(this), base::TimeTicks::Now()));
     return;
   }
   auction_.StartLoadInterestGroupsPhase(base::BindOnce(
@@ -527,11 +522,13 @@ void AuctionRunner::OnLoadInterestGroupsComplete(bool success) {
   auction_.StartBiddingAndScoringPhase(
       /*on_seller_receiver_callback=*/base::OnceClosure(),
       base::BindOnce(&AuctionRunner::OnBidsGeneratedAndScored,
-                     base::Unretained(this)));
+                     base::Unretained(this), base::TimeTicks::Now()));
 }
 
-void AuctionRunner::OnBidsGeneratedAndScored(bool success) {
+void AuctionRunner::OnBidsGeneratedAndScored(base::TimeTicks start_time,
+                                             bool success) {
   DCHECK(callback_);
+  bool is_server_auction = owned_auction_config_->server_response.has_value();
 
   blink::InterestGroupSet interest_groups_that_bid;
   auction_.GetInterestGroupsThatBidAndReportBidCounts(interest_groups_that_bid);
@@ -540,50 +537,6 @@ void AuctionRunner::OnBidsGeneratedAndScored(bool success) {
                 std::move(interest_groups_that_bid));
     return;
   }
-
-  DCHECK(auction_.top_bid()->bid->interest_group);
-  const blink::InterestGroup& winning_group =
-      *auction_.top_bid()->bid->interest_group;
-  blink::InterestGroupKey winning_group_key(
-      {winning_group.owner, winning_group.name});
-
-  UpdateInterestGroupsPostAuction();
-
-  auto errors = auction_.TakeErrors();
-
-  // Need this before `CreateReporter()` since the reporter takes over
-  // AuctonConfig.
-  auto requested_ad_size = auction_.RequestedAdSize();
-
-  std::unique_ptr<InterestGroupAuctionReporter> reporter =
-      auction_.CreateReporter(
-          browser_context_, private_aggregation_manager_, url_loader_factory_,
-          std::move(owned_auction_config_), main_frame_origin_, frame_origin_,
-          client_security_state_.Clone(), std::move(interest_groups_that_bid));
-  DCHECK(reporter);
-
-  state_ = State::kSucceeded;
-  std::move(callback_).Run(
-      this, /*aborted_by_script=*/false, std::move(winning_group_key),
-      std::move(requested_ad_size), auction_.top_bid()->bid->ad_descriptor,
-      auction_.top_bid()->bid->ad_component_descriptors, std::move(errors),
-      std::move(reporter));
-}
-
-void AuctionRunner::OnServerResponseAuctionComplete(base::TimeTicks start_time,
-                                                    bool success) {
-  DCHECK(callback_);
-
-  blink::InterestGroupSet interest_groups_that_bid;
-  auction_.GetInterestGroupsThatBidAndReportBidCounts(interest_groups_that_bid);
-  if (!success) {
-    FailAuction(/*aborted_by_script=*/false,
-                std::move(interest_groups_that_bid));
-    return;
-  }
-  base::UmaHistogramTimes(
-      "Ads.InterestGroup.Auction.ParseBaServerResponseDuration",
-      base::TimeTicks::Now() - start_time);
 
   DCHECK(auction_.top_bid()->bid->interest_group);
   const blink::InterestGroup& winning_group =
@@ -605,8 +558,11 @@ void AuctionRunner::OnServerResponseAuctionComplete(base::TimeTicks start_time,
           client_security_state_.Clone(), std::move(interest_groups_that_bid));
   DCHECK(reporter);
 
-  reporter->InitializeFromServerResponse(
-      auction_.TakeBiddingAndAuctionResponse());
+  if (is_server_auction) {
+    base::UmaHistogramTimes(
+        "Ads.InterestGroup.Auction.ParseBaServerResponseDuration",
+        base::TimeTicks::Now() - start_time);
+  }
 
   state_ = State::kSucceeded;
   std::move(callback_).Run(

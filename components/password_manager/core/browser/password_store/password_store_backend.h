@@ -5,14 +5,14 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_STORE_PASSWORD_STORE_BACKEND_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_STORE_PASSWORD_STORE_BACKEND_H_
 
+#include <optional>
 #include <vector>
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "components/password_manager/core/browser/password_form_digest.h"
-#include "components/password_manager/core/browser/password_store_consumer.h"
-#include "components/password_manager/core/browser/password_store_change.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "components/password_manager/core/browser/password_store/password_store_change.h"
+#include "components/password_manager/core/browser/password_store/password_store_consumer.h"
 
 namespace syncer {
 class ProxyModelTypeControllerDelegate;
@@ -40,7 +40,7 @@ class PasswordStoreBackend
     : public base::SupportsWeakPtr<PasswordStoreBackend> {
  public:
   using RemoteChangesReceived =
-      base::RepeatingCallback<void(absl::optional<PasswordStoreChangeList>)>;
+      base::RepeatingCallback<void(std::optional<PasswordStoreChangeList>)>;
 
   PasswordStoreBackend() = default;
   PasswordStoreBackend(const PasswordStoreBackend&) = delete;
@@ -80,7 +80,7 @@ class PasswordStoreBackend
   // called with an error result. Callback is called on the main sequence.
   // TODO(crbug.com/1315594): Clean up/refactor to avoid having methods
   // introduced for a specific backend in this interface.
-  virtual void GetAllLoginsForAccountAsync(absl::optional<std::string> account,
+  virtual void GetAllLoginsForAccountAsync(std::string account,
                                            LoginsOrErrorReply callback) = 0;
 
   // Returns all PasswordForms with the same signon_realm as a form in |forms|.

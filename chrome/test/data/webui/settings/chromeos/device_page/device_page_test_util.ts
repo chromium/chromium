@@ -4,6 +4,9 @@
 
 /** @fileoverview Utils for device page browser tests. */
 
+import {GeolocationAccessLevel} from 'chrome://os-settings/os_settings.js';
+
+
 export function getFakePrefs() {
   return {
     arc: {
@@ -46,6 +49,13 @@ export function getFakePrefs() {
           key: 'ash.night_light.custom_end_time',
           type: chrome.settingsPrivate.PrefType.NUMBER,
           value: 0,
+        },
+      },
+      user: {
+        geolocation_access_level: {
+          key: 'ash.user.geolocation_access_level',
+          type: GeolocationAccessLevel,
+          value: GeolocationAccessLevel.ALLOWED,
         },
       },
     },

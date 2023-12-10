@@ -30,9 +30,6 @@ void COMPONENT_EXPORT(CHROMEOS_NETWORK)
     LogUninstallProfileResult(HermesResponseStatus status);
 
 void COMPONENT_EXPORT(CHROMEOS_NETWORK)
-    LogRequestPendingProfilesResult(HermesResponseStatus status);
-
-void COMPONENT_EXPORT(CHROMEOS_NETWORK)
     LogRequestPendingProfilesLatency(base::TimeDelta call_latency);
 
 }  // namespace ash::hermes_metrics

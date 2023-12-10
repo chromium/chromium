@@ -205,7 +205,7 @@ beginning of stdout from an infra test shard if the above doesn't work.
 [EarlGrey]: https://github.com/google/EarlGrey/tree/earlgrey2
 [EarlGrey APIs]: https://github.com/google/EarlGrey/blob/master/docs/api.md
 [eDO]: https://github.com/google/eDistantObject
-[Example of App Interface]: https://cs.chromium.org/chromium/src/ios/chrome/browser/metrics/metrics_app_interface.h
+[Example of App Interface]: https://cs.chromium.org/chromium/src/ios/chrome/browser/metrics/model/metrics_app_interface.h
 [Example CL adding App Interface]: https://chromium-review.googlesource.com/c/chromium/src/+/1919147
 [instructions]: ./build_instructions.md
 [Running Tests and Viewing Results]: https://developer.apple.com/library/archive/documentation/DeveloperTools/Conceptual/testing_with_xcode/chapters/05-running_tests.html

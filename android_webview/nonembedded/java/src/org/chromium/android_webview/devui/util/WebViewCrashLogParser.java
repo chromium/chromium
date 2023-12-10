@@ -18,9 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-/**
- * Parses WebView crash JSON log files which contain crash info keys extracted from crash minidump.
- */
+/** Parses WebView crash JSON log files which contain crash info keys extracted from crash minidump. */
 public class WebViewCrashLogParser extends CrashInfoLoader {
     private static final String TAG = "WebViewCrashUI";
 
@@ -30,9 +28,7 @@ public class WebViewCrashLogParser extends CrashInfoLoader {
 
     private File mLogDir;
 
-    /**
-     * @param logDir the directory where WebView store crash logs.
-     */
+    /** @param logDir the directory where WebView store crash logs. */
     public WebViewCrashLogParser(File logDir) {
         mLogDir = logDir;
     }

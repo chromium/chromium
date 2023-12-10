@@ -8,7 +8,7 @@
 #include "chrome/browser/sync/test/integration/passwords_helper.h"
 #include "chrome/browser/sync/test/integration/performance/sync_timing_helper.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
-#include "components/password_manager/core/browser/password_store_interface.h"
+#include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "content/public/test/browser_test.h"
 #include "testing/perf/perf_result_reporter.h"
 

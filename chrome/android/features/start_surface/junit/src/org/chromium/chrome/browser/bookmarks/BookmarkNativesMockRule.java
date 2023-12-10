@@ -13,8 +13,8 @@ import org.mockito.Mockito;
 import org.chromium.base.test.util.JniMocker;
 
 public class BookmarkNativesMockRule implements TestRule {
-    @Rule
-    public JniMocker mJniMocker = new JniMocker();
+    @Rule public JniMocker mJniMocker = new JniMocker();
+
     @Override
     public Statement apply(Statement base, Description description) {
         return new Statement() {

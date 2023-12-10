@@ -29,6 +29,7 @@
 #include "components/viz/common/quads/draw_quad.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
 #include "components/viz/common/resources/platform_color.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "components/viz/common/viz_utils.h"
 #include "components/viz/service/display/bsp_tree.h"
@@ -38,6 +39,8 @@
 #include "components/viz/service/display/skia_output_surface.h"
 #include "gpu/command_buffer/common/capabilities.h"
 #include "media/base/video_util.h"
+#include "ui/gfx/buffer_types.h"
+#include "ui/gfx/display_color_spaces.h"
 #include "ui/gfx/geometry/quad_f.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/size.h"
@@ -219,9 +222,6 @@ void DirectRenderer::DrawFrame(
     SurfaceDamageRectList surface_damage_rect_list) {
   DCHECK(visible_);
   TRACE_EVENT0("viz,benchmark", "DirectRenderer::DrawFrame");
-  UMA_HISTOGRAM_COUNTS_1M(
-      "Renderer4.renderPassCount",
-      base::saturated_cast<int>(render_passes_in_draw_order->size()));
 
   auto* root_render_pass = render_passes_in_draw_order->back().get();
   DCHECK(root_render_pass);
@@ -1141,9 +1141,21 @@ SharedImageFormat DirectRenderer::GetColorSpaceSharedImageFormat(
     gfx::ColorSpace color_space) const {
   gpu::Capabilities caps;
   caps.texture_format_bgra8888 = SupportsBGRA();
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  auto gfx_hdr_format =
+      current_frame()->display_color_spaces.GetOutputBufferFormat(
+          gfx::ContentColorUsage::kHDR, /*needs_alpha=*/true);
+  auto viz_hdr_format = gfx_hdr_format == gfx::BufferFormat::RGBA_F16
+                            ? SinglePlaneFormat::kRGBA_F16
+                            : SinglePlaneFormat::kRGBA_1010102;
+  auto format = color_space.IsHDR()
+                    ? viz_hdr_format
+                    : PlatformColor::BestSupportedTextureFormat(caps);
+#else
   auto format = color_space.IsHDR()
                     ? SinglePlaneFormat::kRGBA_F16
                     : PlatformColor::BestSupportedTextureFormat(caps);
+#endif
   return format;
 }
 

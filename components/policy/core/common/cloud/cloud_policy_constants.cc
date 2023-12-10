@@ -27,6 +27,7 @@ const char kParamOAuthToken[] = "oauth_token";
 const char kParamPlatform[] = "platform";
 const char kParamRequest[] = "request";
 const char kParamRetry[] = "retry";
+const char kParamProfileID[] = "profileid";
 
 // Policy constants used in authorization header.
 const char kAuthHeader[] = "Authorization";

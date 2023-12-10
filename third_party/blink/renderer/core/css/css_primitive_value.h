@@ -150,6 +150,7 @@ class CORE_EXPORT CSSPrimitiveValue : public CSSValue {
     // Other units
     kFlex,
     kInteger,
+    kIdent,
 
     // This value is used to handle quirky margins in reflow roots (body, td,
     // and th) like WinIE. The basic idea is that a stylesheet can use the value
@@ -384,9 +385,11 @@ class CORE_EXPORT CSSPrimitiveValue : public CSSValue {
   }
 
   template <typename T>
-  inline T ConvertTo() const;  // Defined in CSSPrimitiveValueMappings.h
+  inline T ConvertTo(const CSSLengthResolver&)
+      const;  // Defined in CSSPrimitiveValueMappings.h
 
   int ComputeInteger(const CSSLengthResolver&) const;
+  double ComputeNumber(const CSSLengthResolver&) const;
 
   static const char* UnitTypeToString(UnitType);
   static UnitType StringToUnitType(StringView string) {
@@ -417,6 +420,12 @@ class CORE_EXPORT CSSPrimitiveValue : public CSSValue {
   static UnitType StringToUnitType(const UChar*, unsigned length);
 
   double ComputeLengthDouble(const CSSLengthResolver&) const;
+
+ protected:
+  bool IsResolvableLength() const;
+
+ private:
+  bool InvolvesPercentage() const;
 };
 
 using CSSLengthArray = CSSPrimitiveValue::CSSLengthArray;

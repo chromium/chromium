@@ -27,7 +27,7 @@ enum class IPHDismissalReasonType {
 
 // Used for the bubble's dismissal callback.
 using CallbackWithIPHDismissalReasonType =
-    void (^)(IPHDismissalReasonType dismissReason,
-             feature_engagement::Tracker::SnoozeAction snoozeAction);
+    void (^)(IPHDismissalReasonType reason,
+             feature_engagement::Tracker::SnoozeAction action);
 
 #endif  // IOS_CHROME_BROWSER_UI_BUBBLE_BUBBLE_DISMISSAL_REASON_TYPE_H_

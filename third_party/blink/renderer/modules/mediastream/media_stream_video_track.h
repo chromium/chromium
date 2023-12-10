@@ -16,6 +16,7 @@
 #include "third_party/blink/public/web/modules/mediastream/encoded_video_frame.h"
 #include "third_party/blink/public/web/modules/mediastream/media_stream_video_sink.h"
 #include "third_party/blink/public/web/modules/mediastream/media_stream_video_source.h"
+#include "third_party/blink/renderer/modules/mediastream/image_capture_device_settings.h"
 #include "third_party/blink/renderer/modules/mediastream/video_track_adapter_settings.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_track_platform.h"
@@ -47,9 +48,7 @@ class MODULES_EXPORT MediaStreamVideoTrack : public MediaStreamTrackPlatform {
       const absl::optional<bool>& noise_reduction,
       bool is_screencast,
       const absl::optional<double>& min_frame_rate,
-      const absl::optional<double>& pan,
-      const absl::optional<double>& tilt,
-      const absl::optional<double>& zoom,
+      const ImageCaptureDeviceSettings* image_capture_device_settings,
       bool pan_tilt_zoom_allowed,
       MediaStreamVideoSource::ConstraintsOnceCallback callback,
       bool enabled);
@@ -67,9 +66,7 @@ class MODULES_EXPORT MediaStreamVideoTrack : public MediaStreamTrackPlatform {
       const absl::optional<bool>& noise_reduction,
       bool is_screen_cast,
       const absl::optional<double>& min_frame_rate,
-      const absl::optional<double>& pan,
-      const absl::optional<double>& tilt,
-      const absl::optional<double>& zoom,
+      const ImageCaptureDeviceSettings* image_capture_device_settings,
       bool pan_tilt_zoom_allowed,
       MediaStreamVideoSource::ConstraintsOnceCallback callback,
       bool enabled);
@@ -140,9 +137,10 @@ class MODULES_EXPORT MediaStreamVideoTrack : public MediaStreamTrackPlatform {
   const VideoTrackAdapterSettings& adapter_settings() const {
     return adapter_settings_;
   }
-  const absl::optional<double>& pan() const { return pan_; }
-  const absl::optional<double>& tilt() const { return tilt_; }
-  const absl::optional<double>& zoom() const { return zoom_; }
+  const absl::optional<ImageCaptureDeviceSettings>&
+  image_capture_device_settings() const {
+    return image_capture_device_settings_;
+  }
   bool pan_tilt_zoom_allowed() const { return pan_tilt_zoom_allowed_; }
 
   // Setting information about the track size.
@@ -244,9 +242,7 @@ class MODULES_EXPORT MediaStreamVideoTrack : public MediaStreamTrackPlatform {
   absl::optional<bool> noise_reduction_;
   bool is_screencast_;
   absl::optional<double> min_frame_rate_;
-  absl::optional<double> pan_;
-  absl::optional<double> tilt_;
-  absl::optional<double> zoom_;
+  absl::optional<ImageCaptureDeviceSettings> image_capture_device_settings_;
   bool pan_tilt_zoom_allowed_ = false;
 
   // Weak ref to the source this tracks is connected to.

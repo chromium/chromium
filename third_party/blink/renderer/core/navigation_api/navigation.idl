@@ -11,6 +11,7 @@
   sequence<NavigationHistoryEntry> entries();
   [RaisesException, MeasureAs=AppHistory] void updateCurrentEntry(NavigationUpdateCurrentEntryOptions options);
   readonly attribute NavigationTransition? transition;
+  [RuntimeEnabled=NavigationActivation] readonly attribute NavigationActivation? activation;
 
   readonly attribute boolean canGoBack;
   readonly attribute boolean canGoForward;

@@ -8,6 +8,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "build/build_config.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/ui/extensions/extension_action_test_helper.h"
@@ -220,14 +221,28 @@ class OffscreenApiTest : public ExtensionApiTest {
 };
 
 // Tests the general flow of creating an offscreen document.
-IN_PROC_BROWSER_TEST_F(OffscreenApiTest, BasicDocumentManagement) {
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_BasicDocumentManagement DISABLED_BasicDocumentManagement
+#else
+#define MAYBE_BasicDocumentManagement BasicDocumentManagement
+#endif
+IN_PROC_BROWSER_TEST_F(OffscreenApiTest, MAYBE_BasicDocumentManagement) {
   ASSERT_TRUE(RunExtensionTest("offscreen/basic_document_management"))
       << message_;
 }
 
 // Tests creating, querying, and closing offscreen documents in an incognito
 // split mode extension.
-IN_PROC_BROWSER_TEST_F(OffscreenApiTest, IncognitoModeHandling_SplitMode) {
+// TODO(crbug.com/1484659): Disabled on ASAN due to leak caused by renderer gin
+// objects which are intended to be leaked.
+#if defined(ADDRESS_SANITIZER)
+#define MAYBE_IncognitoModeHandling_SplitMode \
+  DISABLED_IncognitoModeHandling_SplitMode
+#else
+#define MAYBE_IncognitoModeHandling_SplitMode IncognitoModeHandling_SplitMode
+#endif
+IN_PROC_BROWSER_TEST_F(OffscreenApiTest,
+                       MAYBE_IncognitoModeHandling_SplitMode) {
   // `split` incognito mode is required in order to allow the extension to
   // have a separate process in incognito.
   static constexpr char kManifest[] =
@@ -299,7 +314,17 @@ IN_PROC_BROWSER_TEST_F(OffscreenApiTest, IncognitoModeHandling_SplitMode) {
 
 // Tests creating, querying, and closing offscreen documents in an incognito
 // spanning mode extension.
-IN_PROC_BROWSER_TEST_F(OffscreenApiTest, IncognitoModeHandling_SpanningMode) {
+// TODO(crbug.com/1484659): Disabled on ASAN due to leak caused by renderer gin
+// objects which are intended to be leaked.
+#if defined(ADDRESS_SANITIZER)
+#define MAYBE_IncognitoModeHandling_SpanningMode \
+  DISABLED_IncognitoModeHandling_SpanningMode
+#else
+#define MAYBE_IncognitoModeHandling_SpanningMode \
+  IncognitoModeHandling_SpanningMode
+#endif
+IN_PROC_BROWSER_TEST_F(OffscreenApiTest,
+                       MAYBE_IncognitoModeHandling_SpanningMode) {
   static constexpr char kManifest[] =
       R"({
            "name": "Offscreen Document Test",

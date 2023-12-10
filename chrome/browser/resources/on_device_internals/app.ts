@@ -15,11 +15,12 @@ import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.m
 
 import {getTemplate} from './app.html.js';
 import {BrowserProxy} from './browser_proxy.js';
-import {OnDeviceModelRemote, PerformanceClass, SessionRemote, StreamingResponderCallbackRouter} from './on_device_model.mojom-webui.js';
+import {LoadModelResult, OnDeviceModelRemote, PerformanceClass, ResponseStatus, SessionRemote, StreamingResponderCallbackRouter} from './on_device_model.mojom-webui.js';
 
 interface Response {
   text: string;
   response: string;
+  retracted: boolean;
 }
 
 interface OnDeviceInternalsAppElement {
@@ -41,6 +42,10 @@ function getPerformanceClassText(performanceClass: PerformanceClass): string {
       return 'High';
     case PerformanceClass.kVeryHigh:
       return 'Very High';
+    case PerformanceClass.kGpuBlocked:
+      return 'GPU blocked';
+    case PerformanceClass.kFailedToLoadLibrary:
+      return 'Failed to load native library';
     default:
       return 'Error';
   }
@@ -148,11 +153,13 @@ class OnDeviceInternalsAppElement extends PolymerElement {
     // <if expr="not is_win">
     const processedPath = modelPath;
     // </if>
-    const {result} = await this.proxy_.handler.loadModel({path: processedPath});
-    if (result.error) {
-      this.error_ = result.error;
+    const newModel = new OnDeviceModelRemote();
+    const {result} = await this.proxy_.handler.loadModel(
+        {path: processedPath}, newModel.$.bindNewPipeAndPassReceiver());
+    if (result !== LoadModelResult.kSuccess) {
+      this.error_ = 'Unable to load model';
     } else {
-      this.model_ = result.model || null;
+      this.model_ = newModel;
       this.startNewSession_();
       this.modelPath_ = modelPath;
     }
@@ -162,7 +169,8 @@ class OnDeviceInternalsAppElement extends PolymerElement {
     if (this.session_ === null) {
       return;
     }
-    this.session_.addContext({text: this.contextText_});
+    this.session_.addContext(
+        {text: this.contextText_, ignoreContext: false}, null);
     this.contextLength_ += this.contextText_.split(/(\s+)/).length;
     this.contextText_ = '';
   }
@@ -197,20 +205,32 @@ class OnDeviceInternalsAppElement extends PolymerElement {
       return;
     }
     this.session_.execute(
-        {text: this.text_}, this.responseRouter_.$.bindNewPipeAndPassRemote());
+        {text: this.text_, ignoreContext: false},
+        this.responseRouter_.$.bindNewPipeAndPassRemote());
     const onResponseId =
         this.responseRouter_.onResponse.addListener((text: string) => {
           this.set(
               'currentResponse_.response',
               (this.currentResponse_?.response + text).trimStart());
         });
-    const onCompleteId = this.responseRouter_.onComplete.addListener(() => {
-      this.addResponse_();
-      this.responseRouter_.removeListener(onResponseId);
-      this.responseRouter_.removeListener(onCompleteId);
-    });
-    this.currentResponse_ = {text: this.text_, response: ''};
+    const onCompleteId = this.responseRouter_.onComplete.addListener(
+        (status: ResponseStatus) => {
+          if (status === ResponseStatus.kRetracted && this.currentResponse_) {
+            this.currentResponse_.retracted = true;
+          }
+          this.addResponse_();
+          this.responseRouter_.removeListener(onResponseId);
+          this.responseRouter_.removeListener(onCompleteId);
+        });
+    this.currentResponse_ = {text: this.text_, response: '', retracted: false};
     this.text_ = '';
+  }
+
+  private responseClass_(response: Response): string {
+    if (response.retracted) {
+      return 'response retracted';
+    }
+    return 'response';
   }
 
   private canExecute_(): boolean {

@@ -16,8 +16,8 @@
 #include "base/strings/string_util.h"
 #include "remoting/base/constants.h"
 #include "remoting/base/logging.h"
-#include "third_party/webrtc/modules/desktop_capture/linux/wayland/scoped_glib.h"
-#include "third_party/webrtc/modules/desktop_capture/linux/wayland/xdg_desktop_portal_utils.h"
+#include "third_party/webrtc/modules/portal/scoped_glib.h"
+#include "third_party/webrtc/modules/portal/xdg_desktop_portal_utils.h"
 
 namespace remoting::xdg_portal {
 namespace {

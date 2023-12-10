@@ -5,20 +5,21 @@
 #ifndef CONTENT_PUBLIC_BROWSER_SMART_CARD_DELEGATE_H_
 #define CONTENT_PUBLIC_BROWSER_SMART_CARD_DELEGATE_H_
 
-#include "base/functional/callback_forward.h"
-#include "base/observer_list.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/device/public/mojom/smart_card.mojom-forward.h"
-#include "third_party/blink/public/mojom/smart_card/smart_card.mojom-forward.h"
 
 namespace content {
 class BrowserContext;
+class RenderFrameHost;
 
 // Interface provided by the content embedder to support the Web Smart Card
 // API.
 class CONTENT_EXPORT SmartCardDelegate {
  public:
+  // Callback type to report whether the user allowed the connection request.
+  using RequestReaderPermissionCallback = base::OnceCallback<void(bool)>;
+
   SmartCardDelegate() = default;
   SmartCardDelegate(SmartCardDelegate&) = delete;
   SmartCardDelegate& operator=(SmartCardDelegate&) = delete;
@@ -26,6 +27,18 @@ class CONTENT_EXPORT SmartCardDelegate {
 
   virtual mojo::PendingRemote<device::mojom::SmartCardContextFactory>
   GetSmartCardContextFactory(BrowserContext& browser_context) = 0;
+
+  // Returns whether `origin` has permission to connect to the smart card reader
+  // names `reader_name`.
+  virtual bool HasReaderPermission(RenderFrameHost& render_frame_host,
+                                   const std::string& reader_name) = 0;
+
+  // Shows a prompt to the user requesting permission to connect to the smart
+  // card reader named `reader_name`.
+  virtual void RequestReaderPermission(
+      RenderFrameHost& render_frame_host,
+      const std::string& reader_name,
+      RequestReaderPermissionCallback callback) = 0;
 };
 
 }  // namespace content

@@ -5,10 +5,10 @@
 #ifndef ASH_PUBLIC_CPP_DEFAULT_USER_IMAGE_H_
 #define ASH_PUBLIC_CPP_DEFAULT_USER_IMAGE_H_
 
+#include <optional>
 #include <string>
 
 #include "ash/public/cpp/ash_public_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace ash::default_user_image {
@@ -38,7 +38,7 @@ struct ASH_PUBLIC_EXPORT DefaultUserImage {
   DefaultUserImage(int index,
                    std::u16string title,
                    GURL url,
-                   absl::optional<DeprecatedSourceInfo> source_info);
+                   std::optional<DeprecatedSourceInfo> source_info);
 
   DefaultUserImage(DefaultUserImage&&);
   DefaultUserImage& operator=(DefaultUserImage&&);
@@ -55,7 +55,7 @@ struct ASH_PUBLIC_EXPORT DefaultUserImage {
   GURL url;
   // Deprecated. Only used for older avatar images that users can no longer
   // select.
-  absl::optional<DeprecatedSourceInfo> source_info;
+  std::optional<DeprecatedSourceInfo> source_info;
 };
 
 }  // namespace ash::default_user_image

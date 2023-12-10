@@ -25,6 +25,7 @@ import {ChromeVoxState} from './chromevox_state.js';
 import {ClipboardHandler} from './clipboard_handler.js';
 import {DownloadHandler} from './download_handler.js';
 import {Earcons} from './earcons.js';
+import {EditingRangeObserver} from './editing/editing.js';
 import {DesktopAutomationHandler} from './event/desktop_automation_handler.js';
 import {FocusAutomationHandler} from './event/focus_automation_handler.js';
 import {MediaAutomationHandler} from './event/media_automation_handler.js';
@@ -108,6 +109,7 @@ export class Background extends ChromeVoxState {
     ClipboardHandler.init();
     CommandHandler.init();
     DownloadHandler.init();
+    EditingRangeObserver.init();
     EventSource.init();
     FindHandler.init();
     GestureCommandHandler.init();

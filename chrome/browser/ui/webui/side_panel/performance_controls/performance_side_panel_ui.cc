@@ -7,8 +7,11 @@
 #include <string>
 #include <utility>
 
+#include "base/check_op.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/webui/side_panel/performance_controls/battery_saver_card_handler.h"
+#include "chrome/browser/ui/webui/side_panel/performance_controls/memory_saver_card_handler.h"
 #include "chrome/browser/ui/webui/side_panel/performance_controls/performance_page_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
@@ -17,12 +20,14 @@
 #include "chrome/grit/side_panel_performance_resources_map.h"
 #include "chrome/grit/side_panel_shared_resources.h"
 #include "chrome/grit/side_panel_shared_resources_map.h"
+#include "components/performance_manager/public/features.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 
-PerformanceSidePanelUI::PerformanceSidePanelUI(content::WebUI* web_ui)
+PerformanceSidePanelUI::PerformanceSidePanelUI(content::WebUI* web_ui,
+                                               const GURL& url)
     : ui::MojoBubbleWebUIController(web_ui, true) {
   Profile* const profile = Profile::FromWebUI(web_ui);
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
@@ -41,6 +46,26 @@ PerformanceSidePanelUI::PerformanceSidePanelUI(content::WebUI* web_ui)
       IDR_SIDE_PANEL_PERFORMANCE_PERFORMANCE_HTML);
   source->AddResourcePaths(base::make_span(kSidePanelSharedResources,
                                            kSidePanelSharedResourcesSize));
+
+  source->AddBoolean(
+      "isPerformanceCPUInterventionEnabled",
+      base::FeatureList::IsEnabled(
+          performance_manager::features::kPerformanceCPUIntervention));
+  source->AddBoolean(
+      "isPerformanceMemoryInterventionEnabled",
+      base::FeatureList::IsEnabled(
+          performance_manager::features::kPerformanceMemoryIntervention));
+
+  url::Component query(0, static_cast<int>(url.query_piece().length()));
+  url::Component key, value;
+  while (url::ExtractQueryKeyValue(url.query_piece().data(), &query, &key,
+                                   &value)) {
+    if (url.query_piece().substr(key.begin, key.len) == "notifications") {
+      base::StringPiece value_str =
+          url.query_piece().substr(value.begin, value.len);
+      source->AddString("sidePanelNotifications", std::string{value_str});
+    }
+  }
 }
 
 PerformanceSidePanelUI::~PerformanceSidePanelUI() = default;
@@ -66,4 +91,20 @@ void PerformanceSidePanelUI::CreatePerformancePageHandler(
     mojo::PendingReceiver<side_panel::mojom::PerformancePageHandler> receiver) {
   performance_page_handler_ = std::make_unique<PerformancePageHandler>(
       std::move(receiver), std::move(page), this);
+}
+
+void PerformanceSidePanelUI::CreateBatterySaverCardHandler(
+    mojo::PendingRemote<side_panel::mojom::BatterySaverCard> battery_saver_card,
+    mojo::PendingReceiver<side_panel::mojom::BatterySaverCardHandler>
+        battery_saver_receiver) {
+  battery_saver_card_handler_ = std::make_unique<BatterySaverCardHandler>(
+      std::move(battery_saver_receiver), std::move(battery_saver_card));
+}
+
+void PerformanceSidePanelUI::CreateMemorySaverCardHandler(
+    mojo::PendingRemote<side_panel::mojom::MemorySaverCard> memory_saver_card,
+    mojo::PendingReceiver<side_panel::mojom::MemorySaverCardHandler>
+        memory_saver_receiver) {
+  memory_saver_card_handler_ = std::make_unique<MemorySaverCardHandler>(
+      std::move(memory_saver_receiver), std::move(memory_saver_card), this);
 }

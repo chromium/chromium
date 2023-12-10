@@ -28,6 +28,7 @@
 
 import collections
 import contextlib
+import hashlib
 import logging
 import uuid
 from pathlib import PurePosixPath
@@ -47,7 +48,11 @@ from urllib.parse import urlparse
 from blinkpy.common.host import Host
 from blinkpy.common.memoized import memoized
 from blinkpy.common.path_finder import PathFinder
-from blinkpy.web_tests.models.testharness_results import is_all_pass_test_result
+from blinkpy.web_tests.models.testharness_results import (
+    is_all_pass_test_result,
+    is_testharness_output,
+    is_wdspec_output,
+)
 from blinkpy.web_tests.models.test_expectations import TestExpectationsCache
 from blinkpy.web_tests.models.typ_types import ResultType
 from blinkpy.web_tests.port.base import Port
@@ -221,12 +226,12 @@ class BaselineOptimizer:
             nonvirtual_locations = [
                 self.location(path) for path in search_path
             ]
-            if not self._skips_test(port, nonvirtual_test):
+            if not self.skips_test(port, nonvirtual_test):
                 yield nonvirtual_locations
             else:
                 skipped_ports_by_test[nonvirtual_test].append(port)
             for virtual_test in virtual_tests:
-                if self._skips_test(port, virtual_test):
+                if self.skips_test(port, virtual_test):
                     skipped_ports_by_test[virtual_test].append(port)
                     continue
                 virtual_locations = [
@@ -252,7 +257,7 @@ class BaselineOptimizer:
             _log.debug('Excluding ports that skip "%s": %s', test,
                        ', '.join(port_names))
 
-    def _skips_test(self, port: Port, test: str) -> bool:
+    def skips_test(self, port: Port, test: str) -> bool:
         expectations = self._exp_cache.load(port)
         results = expectations.get_expectations(test).results
         return ResultType.Skip in results or port.skips_test(test)
@@ -467,25 +472,38 @@ class ResultDigest:
         """
         if path is None:
             return cls(cls._IMPLICIT_EXTRA_RESULT, path, is_extra_result=True)
-
-        assert fs.exists(path), path + " does not exist"
-        if path.endswith('.txt'):
-            try:
-                content = fs.read_text_file(path)
-                is_extra_result = not content or is_all_pass_test_result(
-                    content)
-            except UnicodeDecodeError as e:
-                is_extra_result = False
-            # Unfortunately, we may read the file twice, once in text mode
-            # and once in binary mode.
-            return cls(fs.sha1(path), path, is_extra_result)
-
-        if path.endswith('.png') and is_reftest:
+        assert fs.exists(path), f'{path!r} does not exist'
+        if path.endswith(f'.png') and is_reftest:
             return cls('', path, is_extra_result=True)
 
-        return cls(fs.sha1(path),
-                   path,
-                   is_extra_result=(not fs.read_binary_file(path)))
+        with fs.open_binary_file_for_reading(path) as baseline_file:
+            contents = baseline_file.read()
+
+        is_extra_result = not contents
+        if path.endswith('.txt'):
+            try:
+                contents_text = contents.decode()
+                if is_testharness_output(contents_text) or is_wdspec_output(
+                        contents_text):
+                    # Canonicalize the representation of a testharness/wdspec
+                    # baselines with insignificant whitespace.
+                    #
+                    # TODO(crbug.com/1482887): Digest the parsed testharness
+                    # results to be fully independent of formatting.
+                    #
+                    # TODO(crbug.com/1482887): Consider making the serialized
+                    # representation between `run_web_tests.py`'s
+                    # `testharnessreport.js` and `format_testharness_baseline()`
+                    # consistent.
+                    contents_text = contents_text.strip()
+                if is_all_pass_test_result(contents_text):
+                    is_extra_result = True
+                contents = contents_text.encode()
+            except UnicodeDecodeError:
+                is_extra_result = False
+
+        digest = hashlib.sha1(contents).hexdigest()
+        return cls(digest, path, is_extra_result)
 
     def __eq__(self, other):
         if other is None:

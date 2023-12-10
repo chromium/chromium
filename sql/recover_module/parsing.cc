@@ -9,12 +9,12 @@
 #include <tuple>
 #include <utility>
 
+#include <optional>
 #include "base/check.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "sql/recover_module/record.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace sql {
 namespace recover {
@@ -63,7 +63,7 @@ constexpr base::StringPiece kStrictSql("STRICT");
 constexpr base::StringPiece kNonNullSql1("NOT");
 constexpr base::StringPiece kNonNullSql2("NULL");
 
-absl::optional<ModuleColumnType> ParseColumnType(
+std::optional<ModuleColumnType> ParseColumnType(
     base::StringPiece column_type_sql) {
   if (column_type_sql == kIntegerSql)
     return ModuleColumnType::kInteger;
@@ -80,7 +80,7 @@ absl::optional<ModuleColumnType> ParseColumnType(
   if (column_type_sql == kAnySql)
     return ModuleColumnType::kAny;
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 // Returns a view into a SQL string representing the column type.
@@ -151,7 +151,7 @@ RecoveredColumnSpec ParseColumnSpec(const char* sqlite_arg) {
 
   base::StringPiece column_type_sql;
   std::tie(column_type_sql, sql) = SplitToken(sql);
-  absl::optional<ModuleColumnType> column_type =
+  std::optional<ModuleColumnType> column_type =
       ParseColumnType(column_type_sql);
   if (!column_type.has_value()) {
     // Invalid column type.

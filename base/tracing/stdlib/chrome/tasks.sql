@@ -248,24 +248,28 @@ WHERE (SELECT count()
 -- Chrome Java views. The view is considered interested if it's not a system
 -- (ContentFrameLayout) or generic library (CompositorViewHolder) views.
 --
--- @column filtered_name                Name of the view.
--- @column is_software_screenshot BOOL  Whether this slice is a part of non-accelerated
---                                      capture toolbar screenshot.
--- @column is_hardware_screenshot BOOL  Whether this slice is a part of accelerated
---                                      capture toolbar screenshot.
 -- TODO(altimin): Add "columns_from slice" annotation.
 -- TODO(altimin): convert this to EXTEND_TABLE when it becomes available.
-CREATE VIEW chrome_java_views AS
+CREATE PERFETTO VIEW chrome_java_views(
+  -- Name of the view.
+  filtered_name STRING,
+  -- Whether this slice is a part of non-accelerated capture toolbar screenshot.
+  is_software_screenshot BOOL,
+  -- Whether this slice is a part of accelerated capture toolbar screenshot.
+  is_hardware_screenshot BOOL,
+  -- Slice id.
+  slice_id INT
+) AS
 SELECT
   java_view.name AS filtered_name,
   java_view.is_software_screenshot,
   java_view.is_hardware_screenshot,
-  slice.*
+  slice.id as slice_id
 FROM internal_chrome_java_views java_view
 JOIN slice USING (id);
 
 -- A list of Choreographer tasks (Android frame generation) in Chrome.
-CREATE VIEW internal_chrome_choreographer_tasks
+CREATE PERFETTO VIEW internal_chrome_choreographer_tasks
 AS
 SELECT
   id,
@@ -315,11 +319,11 @@ WHERE
         "cc/trees/single_thread_proxy.cc:ScheduledActionSendBeginMainFrame");
 
 -- A list of Chrome tasks which were performing operations with Java views,
--- together with the names of the these views.
+-- together with the names of these views.
 -- @column id INT            Slice id.
 -- @column kind STRING       Type of the task.
 -- @column java_views STRING Concatenated names of Java views used by the task.
-CREATE VIEW internal_chrome_slices_with_java_views AS
+CREATE PERFETTO VIEW internal_chrome_slices_with_java_views AS
 WITH
   -- Select UI thread BeginMainFrames (which are Chrome scheduler tasks) and
   -- Choreographer frames (which are looper tasks).
@@ -356,23 +360,42 @@ WHERE
 ORDER BY id;
 
 -- A list of tasks executed by Chrome scheduler.
---
--- @column id                    Slice id.
--- @column name                  Name of the task.
--- @column ts                    Timestamp.
--- @column dur                   Duration.
--- @column utid                  Utid of the thread this task run on.
--- @column thread_name           Name of the thread this task run on.
--- @column upid                  Upid of the process of this task.
--- @column process_name          Name of the process of this task.
--- @column track_id              Same as slice.track_id.
--- @column depth                 Same as slice.depth.
--- @column parent_id             Same as slice.parent_id.
--- @column arg_set_id            Same as slice.arg_set_id.
--- @column thread_ts             Same as slice.thread_ts.
--- @column thread_dur            Same as slice.thread_dur.
--- @column posted_from           Source location where the PostTask was called.
-CREATE VIEW chrome_scheduler_tasks AS
+CREATE PERFETTO VIEW chrome_scheduler_tasks(
+  -- Slice id.
+  id INT,
+  -- Type.
+  type STRING,
+  -- Name of the task.
+  name STRING,
+  -- Timestamp.
+  ts INT,
+  -- Duration.
+  dur INT,
+  -- Utid of the thread this task run on.
+  utid INT,
+  -- Name of the thread this task run on.
+  thread_name STRING,
+  -- Upid of the process of this task.
+  upid INT,
+  -- Name of the process of this task.
+  process_name STRING,
+  -- Same as slice.track_id.
+  track_id INT,
+  -- Same as slice.category.
+  category STRING,
+  -- Same as slice.depth.
+  depth INT,
+  -- Same as slice.parent_id.
+  parent_id INT,
+  -- Same as slice.arg_set_id.
+  arg_set_id INT,
+  -- Same as slice.thread_ts.
+  thread_ts INT,
+  -- Same as slice.thread_dur.
+  thread_dur INT,
+  -- Source location where the PostTask was called.
+  posted_from STRING
+) AS
 SELECT
   task.id,
   "chrome_scheduler_tasks" as type,
@@ -556,24 +579,38 @@ ORDER BY id;
 -- A list of "Chrome tasks": top-level execution units (e.g. scheduler tasks /
 -- IPCs / system callbacks) run by Chrome. For a given thread, the slices
 -- corresponding to these tasks will not intersect.
---
--- @column id INT              Id for the given task, also the id of the slice this task corresponds to.
--- @column name STRING         Name for the given task.
--- @column task_type STRING    Type of the task (e.g. "scheduler").
--- @column thread_name STRING  Thread name.
--- @column utid INT            Utid.
--- @column process_name STRING Process name.
--- @column upid INT            Upid.
--- @column full_name STRING    Legacy alias for |task_name|.
--- @column ts INT              Alias of |slice.ts|.
--- @column dur INT             Alias of |slice.dur|.
--- @column track_id INT        Alias of |slice.track_id|.
--- @column category STRING     Alias of |slice.category|.
--- @column arg_set_id INT      Alias of |slice.arg_set_id|.
--- @column thread_ts INT       Alias of |slice.thread_ts|.
--- @column thread_dur INT      Alias of |slice.thread_dur|.
--- @column full_name STRING    Legacy alias for |name|.
-CREATE VIEW chrome_tasks AS
+CREATE PERFETTO VIEW chrome_tasks(
+  -- Id for the given task, also the id of the slice this task corresponds to.
+  id INT,
+  -- Name for the given task.
+  name STRING,
+  -- Type of the task (e.g. "scheduler").
+  task_type STRING,
+  -- Thread name.
+  thread_name STRING,
+  -- Utid.
+  utid INT,
+  -- Process name.
+  process_name STRING,
+  -- Upid.
+  upid INT,
+  -- Alias of |slice.ts|.
+  ts INT,
+  -- Alias of |slice.dur|.
+  dur INT,
+  -- Alias of |slice.track_id|.
+  track_id INT,
+  -- Alias of |slice.category|.
+  category INT,
+  -- Alias of |slice.arg_set_id|.
+  arg_set_id INT,
+  -- Alias of |slice.thread_ts|.
+  thread_ts INT,
+  -- Alias of |slice.thread_dur|.
+  thread_dur INT,
+  -- STRING    Legacy alias for |name|.
+  full_name STRING
+) AS
 SELECT
   cti.id,
   cti.name,

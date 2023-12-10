@@ -14,6 +14,7 @@
 #include "base/strings/string_piece.h"
 #include "base/threading/thread.h"
 #include "base/values.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/defaults.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/profiles/profile.h"
@@ -34,10 +35,12 @@
 #include "chrome/grit/downloads_resources_map.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
+#include "components/google/core/common/google_util.h"
 #include "components/history/core/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/profile_metrics/browser_profile_type.h"
 #include "components/safe_browsing/core/common/features.h"
+#include "components/strings/grit/components_strings.h"
 #include "content/public/browser/download_manager.h"
 #include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_contents.h"
@@ -50,6 +53,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/webui/web_ui_util.h"
+#include "url/gurl.h"
 
 using content::BrowserContext;
 using content::DownloadManager;
@@ -110,8 +114,9 @@ content::WebUIDataSource* CreateAndAddDownloadsUIHTMLSource(Profile* profile) {
       {"asyncScanningDownloadDesc", IDS_BLOCK_REASON_DEEP_SCANNING_UPDATED},
       {"asyncScanningDownloadDescSecond",
        IDS_BLOCK_REASON_DEEP_SCANNING_SECOND_UPDATED},
-      // TODO(crbug/1491184): Update this string for local decryption scans.
       {"promptForScanningDesc", IDS_BLOCK_REASON_PROMPT_FOR_SCANNING_UPDATED},
+      {"promptForLocalPasswordScanningDesc",
+       IDS_BLOCK_REASON_PROMPT_FOR_LOCAL_PASSWORD_SCANNING},
       {"controlDeepScan", IDS_DOWNLOAD_DEEP_SCAN_UPDATED},
       {"controlBypassDeepScan", IDS_DOWNLOAD_BYPASS_DEEP_SCAN_UPDATED},
       {"controlLocalPasswordScan", IDS_DOWNLOAD_LOCAL_PASSWORD_SCAN},
@@ -142,6 +147,14 @@ content::WebUIDataSource* CreateAndAddDownloadsUIHTMLSource(Profile* profile) {
       {"accessibleLabelInsecure", IDS_DOWNLOAD_INSECURE_ICON_ACCESSIBLE_LABEL},
       {"accessibleLabelUnverified",
        IDS_DOWNLOAD_UNVERIFIED_ICON_ACCESSIBLE_LABEL},
+
+      // Warning bypass dialog.
+      {"warningBypassDialogTitle", IDS_DOWNLOAD_WARNING_BYPASS_DIALOG_TITLE},
+      {"warningBypassDialogDescription",
+       IDS_DOWNLOAD_WARNING_BYPASS_DIALOG_DESCRIPTION},
+      {"warningBypassDialogLearnMoreLink",
+       IDS_DOWNLOAD_WARNING_BYPASS_DIALOG_LEARN_MORE_LINK},
+      {"warningBypassDialogCancel", IDS_CANCEL},
   };
   source->AddLocalizedStrings(kStrings);
 
@@ -195,6 +208,14 @@ content::WebUIDataSource* CreateAndAddDownloadsUIHTMLSource(Profile* profile) {
                          !profile->IsChild());
 
   source->AddLocalizedString("inIncognito", IDS_DOWNLOAD_IN_INCOGNITO);
+
+  // The URL to open when the user clicks on "Learn more" for a blocked
+  // dangerous file.
+  source->AddString("blockedLearnMoreUrl",
+                    google_util::AppendGoogleLocaleParam(
+                        GURL(chrome::kDownloadBlockedLearnMoreURL),
+                        g_browser_process->GetApplicationLocale())
+                        .spec());
 
   return source;
 }

@@ -143,7 +143,7 @@ content::ServiceWorkerContext* GetServiceWorkerContextForExtensionId(
 
 void SetUserScriptWorldInfo(const Extension& extension,
                             content::BrowserContext* browser_context,
-                            absl::optional<std::string> csp,
+                            std::optional<std::string> csp,
                             bool messaging) {
   // Persist world configuratation in state store.
   auto* extension_prefs = ExtensionPrefs::Get(browser_context);
@@ -171,7 +171,7 @@ mojom::UserScriptWorldInfoPtr GetUserScriptWorldInfo(
     const ExtensionId& extension_id,
     content::BrowserContext* browser_context) {
   bool enable_messaging = false;
-  absl::optional<std::string> csp = absl::nullopt;
+  std::optional<std::string> csp = std::nullopt;
 
   const base::Value::Dict* worlds_configuration =
       ExtensionPrefs::Get(browser_context)
@@ -186,7 +186,7 @@ mojom::UserScriptWorldInfoPtr GetUserScriptWorldInfo(
 
       const std::string* csp_pref =
           world_info->FindString(kUserScriptWorldCspKey);
-      csp = csp_pref ? absl::make_optional(*csp_pref) : absl::nullopt;
+      csp = csp_pref ? std::make_optional(*csp_pref) : std::nullopt;
     }
   }
 
@@ -209,7 +209,7 @@ bool MapUrlToLocalFilePath(const ExtensionSet* extensions,
   // (GetFilePath()), so that this can be called on the non blocking threads. It
   // only handles a subset of the urls.
   if (!use_blocking_api) {
-    if (file_url.SchemeIs(extensions::kExtensionScheme)) {
+    if (file_url.SchemeIs(kExtensionScheme)) {
       std::string path = file_url.path();
       base::TrimString(path, "/", &path);  // Remove first slash
       *file_path = extension->path().AppendASCII(path);

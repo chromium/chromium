@@ -20,27 +20,6 @@ BASE_DECLARE_FEATURE(kMetricsServiceAllowEarlyLogClose);
 // This can be used to disable structured metrics as a whole.
 BASE_DECLARE_FEATURE(kStructuredMetrics);
 
-#if BUILDFLAG(IS_ANDROID)
-// Determines whether to merge histograms from child processes when Chrome is
-// backgrounded/foregrounded. Only on Android.
-BASE_DECLARE_FEATURE(kMergeSubprocessMetricsOnBgAndFg);
-#endif  // BUILDFLAG(IS_ANDROID)
-
-// Determines whether to allow merging subprocess metrics asynchronously. By
-// itself, the feature does nothing. But the different params below allow
-// toggling specific async behaviours.
-BASE_DECLARE_FEATURE(kSubprocessMetricsAsync);
-// Determines whether to merge subprocess metrics asynchronously when creating
-// periodic ongoing UMA logs.
-extern const base::FeatureParam<bool> kPeriodicMergeAsync;
-// Determines whether to merge the last metrics of a subprocess that has just
-// exited asynchronously.
-extern const base::FeatureParam<bool> kDeregisterAsync;
-// Determines whether the tasks posted when deregistering a subprocess
-// asynchronously are sequenced. This param only applies when |kDeregisterAsync|
-// is true.
-extern const base::FeatureParam<bool> kDeregisterSequenced;
-
 // Determines whether to schedule a flush of persistent histogram memory
 // immediately after writing a system profile to it.
 BASE_DECLARE_FEATURE(kFlushPersistentSystemProfileOnWrite);

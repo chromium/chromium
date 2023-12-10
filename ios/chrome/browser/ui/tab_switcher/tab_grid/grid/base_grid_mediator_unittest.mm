@@ -14,15 +14,13 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_mediator_test.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/incognito/incognito_grid_mediator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/regular/regular_grid_mediator.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_configuration.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/test/fake_tab_grid_toolbars_mediator.h"
 #import "ios/chrome/browser/ui/tab_switcher/test/fake_tab_collection_consumer.h"
 #import "ios/web/public/test/fakes/fake_web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
-
-// To get access to web::features::kEnableSessionSerializationOptimizations.
-// TODO(crbug.com/1383087): remove once the feature is fully launched.
-#import "ios/web/common/features.h"
 
 namespace {
 
@@ -53,6 +51,7 @@ class BaseGridMediatorTest
     }
     mediator_.consumer = consumer_;
     mediator_.browser = browser_.get();
+    mediator_.toolbarsMutator = fake_toolbars_mediator_;
   }
 
   void TearDown() override {
@@ -75,7 +74,19 @@ class BaseGridMediatorWithPriceDropIndicatorsTest
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{commerce::kCommercePriceTracking,
           {{kPriceTrackingWithOptimizationGuideParam, "true"}}}},
-        {web::features::kEnableSessionSerializationOptimizations});
+        {});
+  }
+
+  void SetFakePriceDrop(web::WebState* web_state) {
+    ShoppingPersistedDataTabHelper::PriceDrop price_drop;
+    price_drop.current_price = @"$5";
+    price_drop.previous_price = @"$10";
+    price_drop.url = web_state->GetLastCommittedURL();
+    price_drop.timestamp = base::Time::Now();
+    ShoppingPersistedDataTabHelper::FromWebState(web_state)
+        ->SetPriceDropForTesting(
+            std::make_unique<ShoppingPersistedDataTabHelper::PriceDrop>(
+                std::move(price_drop)));
   }
 };
 
@@ -91,8 +102,7 @@ TEST_P(BaseGridMediatorTest, ConsumerPopulateItems) {
 // Tests that the consumer is notified when a web state is inserted.
 TEST_P(BaseGridMediatorTest, ConsumerInsertItem) {
   ASSERT_EQ(3UL, consumer_.items.size());
-  auto web_state = std::make_unique<web::FakeWebState>();
-  web_state->SetWebFramesManager(std::make_unique<web::FakeWebFramesManager>());
+  auto web_state = CreateFakeWebStateWithURL(GURL());
   web::WebStateID item_identifier = web_state.get()->GetUniqueIdentifier();
   browser_->GetWebStateList()->InsertWebState(1, std::move(web_state),
                                               WebStateList::INSERT_FORCE_INDEX,
@@ -128,9 +138,7 @@ TEST_P(BaseGridMediatorTest, ConsumerUpdateSelectedItem) {
 // The selected item is replaced, so the new selected item id should be the
 // id of the new item.
 TEST_P(BaseGridMediatorTest, ConsumerReplaceItem) {
-  auto new_web_state = std::make_unique<web::FakeWebState>();
-  new_web_state->SetWebFramesManager(
-      std::make_unique<web::FakeWebFramesManager>());
+  auto new_web_state = CreateFakeWebStateWithURL(GURL());
   web::WebStateID new_item_identifier = new_web_state->GetUniqueIdentifier();
   @autoreleasepool {
     browser_->GetWebStateList()->ReplaceWebStateAt(1, std::move(new_web_state));
@@ -331,9 +339,7 @@ TEST_P(BaseGridMediatorWithPriceDropIndicatorsTest,
        TestSelectItemWithNoPriceDrop) {
   web::WebState* web_state_to_select =
       browser_->GetWebStateList()->GetWebStateAt(2);
-  // No need to set a null price drop - it will be null by default. Simply
-  // need to create the helper.
-  ShoppingPersistedDataTabHelper::CreateForWebState(web_state_to_select);
+  // No need to set a null price drop - it will be null by default.
   [mediator_ selectItemWithID:web_state_to_select->GetUniqueIdentifier()];
   EXPECT_EQ(1, user_action_tester_.GetActionCount(kHasNoPriceDropUserAction));
   EXPECT_EQ(0, user_action_tester_.GetActionCount(kHasPriceDropUserAction));
@@ -343,19 +349,81 @@ TEST_P(BaseGridMediatorWithPriceDropIndicatorsTest,
        TestSelectItemWithPriceDrop) {
   web::WebState* web_state_to_select =
       browser_->GetWebStateList()->GetWebStateAt(2);
-  ShoppingPersistedDataTabHelper::CreateForWebState(web_state_to_select);
+  // Add a fake price drop.
   SetFakePriceDrop(web_state_to_select);
   [mediator_ selectItemWithID:web_state_to_select->GetUniqueIdentifier()];
   EXPECT_EQ(1, user_action_tester_.GetActionCount(kHasPriceDropUserAction));
   EXPECT_EQ(0, user_action_tester_.GetActionCount(kHasNoPriceDropUserAction));
 }
 
-TEST_P(BaseGridMediatorTest, TestSelectItemWithPriceDropExperimentOff) {
-  web::WebState* web_state_to_select =
-      browser_->GetWebStateList()->GetWebStateAt(2);
-  [mediator_ selectItemWithID:web_state_to_select->GetUniqueIdentifier()];
-  EXPECT_EQ(0, user_action_tester_.GetActionCount(kHasNoPriceDropUserAction));
-  EXPECT_EQ(0, user_action_tester_.GetActionCount(kHasPriceDropUserAction));
+// Ensures that when there is web states in normal mode, the toolbar
+// configuration is correct.
+TEST_P(BaseGridMediatorTest, TestToolbarsNormalModeWithWebstates) {
+  EXPECT_EQ(3UL, consumer_.items.size());
+  // Force the toolbar configuration by setting the view as currently selected.
+  [mediator_ currentlySelectedGrid:YES];
+  EXPECT_TRUE(fake_toolbars_mediator_.configuration.closeAllButton);
+  EXPECT_TRUE(fake_toolbars_mediator_.configuration.doneButton);
+  EXPECT_TRUE(fake_toolbars_mediator_.configuration.newTabButton);
+  EXPECT_TRUE(fake_toolbars_mediator_.configuration.searchButton);
+  EXPECT_TRUE(fake_toolbars_mediator_.configuration.selectTabsButton);
+
+  EXPECT_FALSE(fake_toolbars_mediator_.configuration.undoButton);
+  EXPECT_FALSE(fake_toolbars_mediator_.configuration.deselectAllButton);
+  EXPECT_FALSE(fake_toolbars_mediator_.configuration.selectAllButton);
+  EXPECT_FALSE(fake_toolbars_mediator_.configuration.addToButton);
+  EXPECT_FALSE(fake_toolbars_mediator_.configuration.closeSelectedTabsButton);
+  EXPECT_FALSE(fake_toolbars_mediator_.configuration.shareButton);
+  EXPECT_FALSE(fake_toolbars_mediator_.configuration.cancelSearchButton);
+}
+
+// Ensures that selection button are correctly enabled when pushing select tab
+// button.
+TEST_P(BaseGridMediatorTest, TestToolbarsSelectionModeWithoutSelection) {
+  EXPECT_EQ(3UL, consumer_.items.size());
+  [mediator_ selectTabsButtonTapped:nil];
+
+  EXPECT_TRUE(fake_toolbars_mediator_.configuration.selectAllButton);
+  EXPECT_TRUE(fake_toolbars_mediator_.configuration.doneButton);
+  EXPECT_EQ(0u, fake_toolbars_mediator_.configuration.selectedItemsCount);
+
+  EXPECT_FALSE(fake_toolbars_mediator_.configuration.closeAllButton);
+  EXPECT_FALSE(fake_toolbars_mediator_.configuration.newTabButton);
+  EXPECT_FALSE(fake_toolbars_mediator_.configuration.searchButton);
+  EXPECT_FALSE(fake_toolbars_mediator_.configuration.selectTabsButton);
+  EXPECT_FALSE(fake_toolbars_mediator_.configuration.undoButton);
+  EXPECT_FALSE(fake_toolbars_mediator_.configuration.deselectAllButton);
+  EXPECT_FALSE(fake_toolbars_mediator_.configuration.addToButton);
+  EXPECT_FALSE(fake_toolbars_mediator_.configuration.closeSelectedTabsButton);
+  EXPECT_FALSE(fake_toolbars_mediator_.configuration.shareButton);
+  EXPECT_FALSE(fake_toolbars_mediator_.configuration.cancelSearchButton);
+}
+
+// Ensures that selection button are correctly enabled when pushing select tab
+// button and the user selected one tab.
+TEST_P(BaseGridMediatorTest, TestToolbarsSelectionModeWithSelection) {
+  EXPECT_EQ(3UL, consumer_.items.size());
+  [mediator_ selectTabsButtonTapped:nil];
+
+  // Simulate a user who tapped on a tab.
+  [mediator_ userTappedOnItemID:browser_->GetWebStateList()
+                                    ->GetWebStateAt(1)
+                                    ->GetUniqueIdentifier()];
+
+  EXPECT_TRUE(fake_toolbars_mediator_.configuration.selectAllButton);
+  EXPECT_TRUE(fake_toolbars_mediator_.configuration.doneButton);
+  EXPECT_EQ(1u, fake_toolbars_mediator_.configuration.selectedItemsCount);
+  EXPECT_TRUE(fake_toolbars_mediator_.configuration.closeSelectedTabsButton);
+  EXPECT_TRUE(fake_toolbars_mediator_.configuration.shareButton);
+  EXPECT_TRUE(fake_toolbars_mediator_.configuration.addToButton);
+
+  EXPECT_FALSE(fake_toolbars_mediator_.configuration.closeAllButton);
+  EXPECT_FALSE(fake_toolbars_mediator_.configuration.newTabButton);
+  EXPECT_FALSE(fake_toolbars_mediator_.configuration.searchButton);
+  EXPECT_FALSE(fake_toolbars_mediator_.configuration.selectTabsButton);
+  EXPECT_FALSE(fake_toolbars_mediator_.configuration.undoButton);
+  EXPECT_FALSE(fake_toolbars_mediator_.configuration.deselectAllButton);
+  EXPECT_FALSE(fake_toolbars_mediator_.configuration.cancelSearchButton);
 }
 
 INSTANTIATE_TEST_SUITE_P(

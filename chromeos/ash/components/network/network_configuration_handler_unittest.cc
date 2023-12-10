@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <map>
+#include <optional>
 #include <set>
 
 #include "base/containers/contains.h"
@@ -30,7 +31,6 @@
 #include "chromeos/ash/components/network/shill_property_util.h"
 #include "chromeos/ash/components/network/tether_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace ash {
@@ -40,9 +40,9 @@ namespace {
 // Copies the result of GetProperties(). TODO: Use base::TestFuture.
 void CopyProperties(bool* called,
                     std::string* service_path_out,
-                    absl::optional<base::Value::Dict>* result_out,
+                    std::optional<base::Value::Dict>* result_out,
                     const std::string& service_path,
-                    absl::optional<base::Value::Dict> result) {
+                    std::optional<base::Value::Dict> result) {
   *called = true;
   *service_path_out = service_path;
   *result_out = std::move(result);
@@ -202,14 +202,14 @@ class NetworkConfigurationHandlerTest : public testing::Test {
   }
 
   void GetPropertiesCallback(const std::string& service_path,
-                             absl::optional<base::Value::Dict> dictionary) {
+                             std::optional<base::Value::Dict> dictionary) {
     get_properties_path_ = service_path;
     if (dictionary)
       get_properties_ = std::move(*dictionary);
   }
 
   void ManagerGetPropertiesCallback(const std::string& success_callback_name,
-                                    absl::optional<base::Value::Dict> result) {
+                                    std::optional<base::Value::Dict> result) {
     if (result)
       success_callback_name_ = success_callback_name;
     manager_get_properties_ = std::move(result);
@@ -337,8 +337,8 @@ class NetworkConfigurationHandlerTest : public testing::Test {
       base::test::SingleThreadTaskEnvironment::MainThreadType::UI};
   std::string success_callback_name_;
   std::string get_properties_path_;
-  absl::optional<base::Value::Dict> get_properties_;
-  absl::optional<base::Value::Dict> manager_get_properties_;
+  std::optional<base::Value::Dict> get_properties_;
+  std::optional<base::Value::Dict> manager_get_properties_;
   std::string create_service_path_;
 };
 
@@ -351,7 +351,7 @@ TEST_F(NetworkConfigurationHandlerTest, GetProperties) {
 
   bool success = false;
   std::string service_path;
-  absl::optional<base::Value::Dict> result;
+  std::optional<base::Value::Dict> result;
   network_configuration_handler_->GetShillProperties(
       kServicePath,
       base::BindOnce(&CopyProperties, &success, &service_path, &result));
@@ -380,7 +380,7 @@ TEST_F(NetworkConfigurationHandlerTest, GetProperties_TetherNetwork) {
 
   bool success = false;
   std::string service_path;
-  absl::optional<base::Value::Dict> result;
+  std::optional<base::Value::Dict> result;
   network_configuration_handler_->GetShillProperties(
       // Tether networks use service path and GUID interchangeably.
       kTetherGuid,
@@ -394,18 +394,18 @@ TEST_F(NetworkConfigurationHandlerTest, GetProperties_TetherNetwork) {
   const std::string* name = result->FindString(shill::kNameProperty);
   ASSERT_TRUE(name);
   EXPECT_EQ(kTetherNetworkName, *name);
-  absl::optional<int> battery_percentage =
+  std::optional<int> battery_percentage =
       result->FindInt(kTetherBatteryPercentage);
   ASSERT_TRUE(battery_percentage);
   EXPECT_EQ(kBatteryPercentage, *battery_percentage);
   const std::string* carrier = result->FindString(kTetherCarrier);
   ASSERT_TRUE(carrier);
   EXPECT_EQ(kTetherNetworkCarrier, *carrier);
-  absl::optional<bool> has_connected_to_host =
+  std::optional<bool> has_connected_to_host =
       result->FindBool(kTetherHasConnectedToHost);
   ASSERT_TRUE(has_connected_to_host);
   EXPECT_TRUE(*has_connected_to_host);
-  absl::optional<int> signal_strength = result->FindInt(kTetherSignalStrength);
+  std::optional<int> signal_strength = result->FindInt(kTetherSignalStrength);
   ASSERT_TRUE(signal_strength);
   EXPECT_EQ(kSignalStrength, *signal_strength);
 }
@@ -501,7 +501,7 @@ TEST_F(NetworkConfigurationHandlerTest, RemoveConfiguration) {
 
   TestCallback test_callback;
   network_configuration_handler_->RemoveConfiguration(
-      "/service/2", /*remove_confirmer=*/absl::nullopt,
+      "/service/2", /*remove_confirmer=*/std::nullopt,
       base::BindOnce(&TestCallback::Run, base::Unretained(&test_callback)),
       base::BindOnce(&ErrorCallback));
 
@@ -731,7 +731,7 @@ TEST_F(NetworkConfigurationHandlerTest, NetworkConfigurationObserver_Removed) {
           create_service_path_));
 
   network_configuration_handler_->RemoveConfiguration(
-      create_service_path_, /*remove_confirmer=*/absl::nullopt,
+      create_service_path_, /*remove_confirmer=*/std::nullopt,
       base::DoNothing(), base::BindOnce(&ErrorCallback));
   base::RunLoop().RunUntilIdle();
 

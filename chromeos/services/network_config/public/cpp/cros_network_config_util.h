@@ -19,8 +19,8 @@ bool GetBoolean(const base::Value::Dict* dict,
                 const char* key,
                 bool value_if_key_missing_from_dict = false);
 
-absl::optional<std::string> GetString(const base::Value::Dict* dict,
-                                      const char* key);
+std::optional<std::string> GetString(const base::Value::Dict* dict,
+                                     const char* key);
 
 const base::Value::Dict* GetDictionary(const base::Value::Dict* dict,
                                        const char* key);

@@ -11,9 +11,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-/**
- * Records user actions and histograms related to the night mode state.
- */
+/** Records user actions and histograms related to the night mode state. */
 public class NightModeMetrics {
     /**
      * Entries that navigate the user into Theme Settings.

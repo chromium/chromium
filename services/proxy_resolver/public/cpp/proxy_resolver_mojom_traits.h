@@ -15,9 +15,9 @@ namespace mojo {
 template <>
 struct COMPONENT_EXPORT(PROXY_RESOLVER_CPP)
     StructTraits<proxy_resolver::mojom::ProxyInfoDataView, net::ProxyInfo> {
-  static const std::vector<net::ProxyServer>& proxy_servers(
+  static const std::vector<net::ProxyChain>& proxy_chains(
       const net::ProxyInfo& info) {
-    return info.proxy_list().GetAll();
+    return info.proxy_list().AllChains();
   }
 
   static bool Read(proxy_resolver::mojom::ProxyInfoDataView data,

@@ -31,7 +31,7 @@ class VersionHandlerChromeOS : public VersionHandler {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   void OnOsVersion(const std::string& version);
 #endif
-  void OnPlatformVersion(const absl::optional<std::string>& version);
+  void OnPlatformVersion(const std::optional<std::string>& version);
   void OnFirmwareVersion(const std::string& version);
   void OnArcAndArcAndroidSdkVersions(const std::string& version);
 

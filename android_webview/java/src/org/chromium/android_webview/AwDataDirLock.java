@@ -11,6 +11,8 @@ import android.system.ErrnoException;
 import android.system.Os;
 import android.system.OsConstants;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.PathUtils;
@@ -35,8 +37,8 @@ abstract class AwDataDirLock {
     private static final int LOCK_RETRIES = 16;
     private static final int LOCK_SLEEP_MS = 100;
 
-    private static RandomAccessFile sLockFile;
-    private static FileLock sExclusiveFileLock;
+    private static @Nullable RandomAccessFile sLockFile;
+    private static @Nullable FileLock sExclusiveFileLock;
 
     static void lock(final Context appContext) {
         try (ScopedSysTraceEvent e1 = ScopedSysTraceEvent.scoped("AwDataDirLock.lock");
@@ -99,10 +101,12 @@ abstract class AwDataDirLock {
             // We failed to get the lock even after retrying.
             // Many existing apps rely on this even though it's known to be unsafe.
             // Make it fatal when on P for apps that target P or higher
-            ProcessInfo holder = ProcessInfo.readFromFile(sLockFile);
+            @Nullable ProcessInfo holder = ProcessInfo.readFromFile(sLockFile);
             String error = getLockFailureReason(holder);
-            boolean dieOnFailure = Build.VERSION.SDK_INT >= Build.VERSION_CODES.P
-                    && appContext.getApplicationInfo().targetSdkVersion >= Build.VERSION_CODES.P;
+            boolean dieOnFailure =
+                    Build.VERSION.SDK_INT >= Build.VERSION_CODES.P
+                            && appContext.getApplicationInfo().targetSdkVersion
+                                    >= Build.VERSION_CODES.P;
             if (dieOnFailure) {
                 throw new RuntimeException(error);
             } else {
@@ -129,7 +133,7 @@ abstract class AwDataDirLock {
             return new ProcessInfo(Process.myPid(), ContextUtils.getProcessName());
         }
 
-        static ProcessInfo readFromFile(RandomAccessFile file) {
+        static @Nullable ProcessInfo readFromFile(RandomAccessFile file) {
             try {
                 int pid = file.readInt();
                 String processName = file.readUTF();
@@ -154,10 +158,12 @@ abstract class AwDataDirLock {
         }
     }
 
-    private static String getLockFailureReason(ProcessInfo holder) {
-        final StringBuilder error = new StringBuilder("Using WebView from more than one process at "
-                + "once with the same data directory is not supported. https://crbug.com/558377 "
-                + ": Current process ");
+    private static String getLockFailureReason(@Nullable ProcessInfo holder) {
+        final StringBuilder error =
+                new StringBuilder(
+                        "Using WebView from more than one process at once with the same data"
+                                + " directory is not supported. https://crbug.com/558377 : Current"
+                                + " process ");
         error.append(ProcessInfo.current().toString());
         error.append(", lock owner ");
         if (holder != null) {

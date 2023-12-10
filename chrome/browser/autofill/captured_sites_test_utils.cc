@@ -196,24 +196,24 @@ std::vector<ExecutionCommand> ReadExecutionCommands(
         return value;
       };
 
-      if (base::StartsWith(command, "run")) {
+      if (command.starts_with("run")) {
         commands.push_back({ExecutionCommandType::kAbsoluteLimit,
                             std::numeric_limits<int>::max()});
-      } else if (base::StartsWith(command, "next")) {
+      } else if (command.starts_with("next")) {
         commands.push_back(
             {ExecutionCommandType::kRelativeLimit, GetParamOr(1)});
-      } else if (base::StartsWith(command, "skip")) {
+      } else if (command.starts_with("skip")) {
         commands.push_back({ExecutionCommandType::kSkipAction, GetParamOr(1)});
-      } else if (base::StartsWith(command, "show")) {
+      } else if (command.starts_with("show")) {
         commands.push_back({ExecutionCommandType::kShowAction, GetParamOr(1)});
-      } else if (base::StartsWith(command, "where")) {
+      } else if (command.starts_with("where")) {
         commands.push_back({ExecutionCommandType::kWhereAmI});
-      } else if (base::StartsWith(command, "failure")) {
+      } else if (command.starts_with("failure")) {
         commands.push_back({ExecutionCommandType::kRunUntilFailure});
         // also add an absolute max limit (like a" run" command).
         commands.push_back({ExecutionCommandType::kAbsoluteLimit,
                             std::numeric_limits<int>::max()});
-      } else if (base::StartsWith(command, "help")) {
+      } else if (command.starts_with("help")) {
         PrintDebugInstructions(command_file_path);
       }
     }
@@ -383,7 +383,8 @@ std::vector<CapturedSiteParams> GetCapturedSites(
     return sites;
   }
 
-  bool also_run_disabled = testing::FLAGS_gtest_also_run_disabled_tests == 1;
+  bool also_run_disabled = GTEST_FLAG_GET(also_run_disabled_tests);
+
   for (auto& item_val : *list_node) {
     if (!item_val.is_dict()) {
       continue;
@@ -781,14 +782,21 @@ bool WebPageReplayServerWrapper::RunWebPageReplayCmd(
           .AppendASCII("autofill")
           .AppendASCII("web_page_replay_support_files");
   full_command.AppendArg(base::StringPrintf(
-      "--https_cert_file=%s",
+      "--https_cert_file=%s,%s",
       FilePathToUTF8(
           web_page_replay_support_file_dir.AppendASCII("wpr_cert.pem").value())
+          .c_str(),
+      FilePathToUTF8(
+          web_page_replay_support_file_dir.AppendASCII("ecdsa_cert.pem")
+              .value())
           .c_str()));
   full_command.AppendArg(base::StringPrintf(
-      "--https_key_file=%s",
+      "--https_key_file=%s,%s",
       FilePathToUTF8(
           web_page_replay_support_file_dir.AppendASCII("wpr_key.pem").value())
+          .c_str(),
+      FilePathToUTF8(
+          web_page_replay_support_file_dir.AppendASCII("ecdsa_key.pem").value())
           .c_str()));
 
   for (const auto& arg : args)

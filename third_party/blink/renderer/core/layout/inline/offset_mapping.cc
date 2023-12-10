@@ -13,9 +13,9 @@
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
 #include "third_party/blink/renderer/core/editing/position.h"
-#include "third_party/blink/renderer/core/layout/layout_text_fragment.h"
+#include "third_party/blink/renderer/core/layout/block_node.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_node.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_block_node.h"
+#include "third_party/blink/renderer/core/layout/layout_text_fragment.h"
 #include "third_party/blink/renderer/platform/text/character.h"
 
 namespace blink {
@@ -365,7 +365,6 @@ base::span<const OffsetMappingUnit> OffsetMapping::GetMappingUnitsForNode(
     const Node& node) const {
   const auto it = ranges_.find(&node);
   if (it == ranges_.end()) {
-    NOTREACHED() << node;
     return {};
   }
   return base::make_span(units_.begin() + it->value.first,

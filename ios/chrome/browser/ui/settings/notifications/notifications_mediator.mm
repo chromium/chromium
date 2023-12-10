@@ -6,11 +6,21 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/notreached.h"
+#import "base/strings/sys_string_conversions.h"
 #import "components/prefs/pref_service.h"
-#import "ios/chrome/browser/push_notification/push_notification_client_id.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_account_context_manager.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_browser_state_service.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_browser_state_service_factory.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_service.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_util.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_icon_item.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_link_header_footer_item.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_item.h"
+#import "ios/chrome/browser/ui/settings/notifications/notifications_alert_presenter.h"
 #import "ios/chrome/browser/ui/settings/notifications/notifications_constants.h"
 #import "ios/chrome/browser/ui/settings/notifications/notifications_consumer.h"
 #import "ios/chrome/browser/ui/settings/notifications/notifications_navigation_commands.h"
@@ -23,13 +33,20 @@
 // List of items.
 typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeTrackingPrice = kItemTypeEnumZero,
+  ItemTypeContentNotifications,
+  ItemTypeContentNotificationsFooter,
 };
 
 @interface NotificationsMediator ()
 
 // All the items for the price notifications section.
 @property(nonatomic, strong, readonly) TableViewItem* priceTrackingItem;
-
+// Items for the Content Notifications settings.
+@property(nonatomic, strong, readonly)
+    TableViewSwitchItem* contentNotificationsItem;
+// Item for the Content Notifications footer.
+@property(nonatomic, strong)
+    TableViewLinkHeaderFooterItem* contentNotificationsFooterItem;
 // Pref Service object.
 @property(nonatomic, assign) PrefService* prefService;
 
@@ -41,6 +58,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 }
 
 @synthesize priceTrackingItem = _priceTrackingItem;
+@synthesize contentNotificationsItem = _contentNotificationsItem;
 
 - (instancetype)initWithPrefService:(PrefService*)prefs
                              gaiaID:(const std::string&)gaiaID {
@@ -73,12 +91,41 @@ typedef NS_ENUM(NSInteger, ItemType) {
   return _priceTrackingItem;
 }
 
+- (TableViewSwitchItem*)contentNotificationsItem {
+  if (!_contentNotificationsItem) {
+    _contentNotificationsItem =
+        [self switchItemWithType:ItemTypeContentNotifications
+                               text:@"Personalized Content"
+                             symbol:kNewspaperSFSymbol
+              symbolBackgroundColor:[UIColor colorNamed:kPink500Color]
+            accessibilityIdentifier:kSettingsNotificationsContentCellId];
+    _contentNotificationsItem.on =
+        notifications_settings::GetMobileNotificationPermissionStatusForClient(
+            PushNotificationClientId::kContent, _gaiaID);
+  }
+  return _contentNotificationsItem;
+}
+
+- (TableViewLinkHeaderFooterItem*)contentNotificationsFooterItem {
+  if (!_contentNotificationsFooterItem) {
+    _contentNotificationsFooterItem = [[TableViewLinkHeaderFooterItem alloc]
+        initWithType:ItemTypeContentNotificationsFooter];
+    _contentNotificationsFooterItem.text =
+        @"Get notified with personalized news updates and more.";
+  }
+
+  return _contentNotificationsFooterItem;
+}
+
 - (void)setConsumer:(id<NotificationsConsumer>)consumer {
   if (_consumer == consumer) {
     return;
   }
   _consumer = consumer;
   [_consumer setPriceTrackingItem:self.priceTrackingItem];
+  [_consumer setContentNotificationsItem:self.contentNotificationsItem];
+  [_consumer
+      setContentNotificationsFooterItem:self.contentNotificationsFooterItem];
 }
 
 #pragma mark - Private methods
@@ -106,6 +153,23 @@ typedef NS_ENUM(NSInteger, ItemType) {
   return detailItem;
 }
 
+- (TableViewSwitchItem*)switchItemWithType:(NSInteger)type
+                                      text:(NSString*)text
+                                    symbol:(NSString*)symbol
+                     symbolBackgroundColor:(UIColor*)backgroundColor
+                   accessibilityIdentifier:(NSString*)accessibilityIdentifier {
+  TableViewSwitchItem* switchItem =
+      [[TableViewSwitchItem alloc] initWithType:type];
+  switchItem.text = text;
+  switchItem.accessibilityIdentifier = accessibilityIdentifier;
+  switchItem.iconImage = DefaultSettingsRootSymbol(symbol);
+  switchItem.iconTintColor = UIColor.whiteColor;
+  switchItem.iconCornerRadius = kColorfulBackgroundSymbolCornerRadius;
+  switchItem.iconBackgroundColor = backgroundColor;
+
+  return switchItem;
+}
+
 // Updates the detail text for the TableViewItem located in
 // PriceNotificationsTableViewController on the previous screen to read either
 // 'On/Off' to match the change to the client's push notification permission
@@ -131,13 +195,49 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [self.consumer reconfigureCellsForItems:@[ iconItem ]];
 }
 
-#pragma mark - PriceNotificationsViewControllerDelegate
+#pragma mark - NotificationsViewControllerDelegate
+
+- (void)didToggleSwitchItem:(TableViewSwitchItem*)item withValue:(BOOL)value {
+  ItemType type = static_cast<ItemType>(item.type);
+  switch (type) {
+    case ItemTypeContentNotifications: {
+      [self setPreferenceFor:PushNotificationClientId::kContent to:value];
+      self.contentNotificationsItem.on = notifications_settings::
+          GetMobileNotificationPermissionStatusForClient(
+              PushNotificationClientId::kContent, _gaiaID);
+      if (!value) {
+        break;
+      }
+
+      __weak NotificationsMediator* weakSelf = self;
+      [PushNotificationUtil
+          requestPushNotificationPermission:^(BOOL granted, BOOL promptShown,
+                                              NSError* error) {
+            if (!error && !promptShown && !granted) {
+              // This callback can be executed on a background thread, make sure
+              // the UI is displayed on the main thread.
+              dispatch_async(dispatch_get_main_queue(), ^{
+                [weakSelf.presenter presentPushNotificationPermissionAlert];
+              });
+            }
+          }];
+
+      break;
+    }
+    default:
+      // Not a switch.
+      NOTREACHED();
+      break;
+  }
+}
 
 - (void)didSelectItem:(TableViewItem*)item {
   ItemType type = static_cast<ItemType>(item.type);
   switch (type) {
     case ItemTypeTrackingPrice:
       [self.handler showTrackingPrice];
+      break;
+    case ItemTypeContentNotifications:
       break;
     default:
       NOTREACHED();
@@ -154,7 +254,19 @@ typedef NS_ENUM(NSInteger, ItemType) {
       [self updateDetailTextForItem:_priceTrackingItem withClientID:clientID];
       break;
     }
+    // TODO(b/307593022): Move Notification popup logic here when the pref is
+    // ready.
+    case PushNotificationClientId::kContent: {
+      break;
+    }
   }
+}
+
+// Updates the current user's permission preference for the given `client_id`.
+- (void)setPreferenceFor:(PushNotificationClientId)clientID to:(BOOL)enabled {
+  PushNotificationService* service =
+      GetApplicationContext()->GetPushNotificationService();
+  service->SetPreference(base::SysUTF8ToNSString(_gaiaID), clientID, enabled);
 }
 
 @end

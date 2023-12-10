@@ -5,15 +5,16 @@
 #include "third_party/blink/renderer/core/layout/inline/inline_box_state.h"
 
 #include "base/containers/adapters.h"
+#include "third_party/blink/renderer/core/layout/box_fragment_builder.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_offset.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_size.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_item_result.h"
 #include "third_party/blink/renderer/core/layout/inline/line_box_fragment_builder.h"
 #include "third_party/blink/renderer/core/layout/inline/line_utils.h"
+#include "third_party/blink/renderer/core/layout/layout_result.h"
 #include "third_party/blink/renderer/core/layout/layout_text_combine.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_layout_result.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_relative_utils.h"
+#include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
+#include "third_party/blink/renderer/core/layout/relative_utils.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_inline_text.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/svg/svg_length_functions.h"
@@ -258,7 +259,7 @@ InlineBoxState* InlineLayoutStateStack::OnBeginPlaceItems(
 }
 
 InlineBoxState* InlineLayoutStateStack::OnOpenTag(
-    const NGConstraintSpace& space,
+    const ConstraintSpace& space,
     const InlineItem& item,
     const InlineItemResult& item_result,
     FontBaseline baseline_type,
@@ -272,7 +273,7 @@ InlineBoxState* InlineLayoutStateStack::OnOpenTag(
 }
 
 InlineBoxState* InlineLayoutStateStack::OnOpenTag(
-    const NGConstraintSpace& space,
+    const ConstraintSpace& space,
     const InlineItem& item,
     const InlineItemResult& item_result,
     FontBaseline baseline_type,
@@ -299,11 +300,10 @@ InlineBoxState* InlineLayoutStateStack::OnOpenTag(
   return box;
 }
 
-InlineBoxState* InlineLayoutStateStack::OnCloseTag(
-    const NGConstraintSpace& space,
-    LogicalLineItems* line_box,
-    InlineBoxState* box,
-    FontBaseline baseline_type) {
+InlineBoxState* InlineLayoutStateStack::OnCloseTag(const ConstraintSpace& space,
+                                                   LogicalLineItems* line_box,
+                                                   InlineBoxState* box,
+                                                   FontBaseline baseline_type) {
   DCHECK_EQ(box, &stack_.back());
   box->has_end_edge = true;
   EndBoxState(space, box, line_box, baseline_type);
@@ -314,7 +314,7 @@ InlineBoxState* InlineLayoutStateStack::OnCloseTag(
   return &stack_.back();
 }
 
-void InlineLayoutStateStack::OnEndPlaceItems(const NGConstraintSpace& space,
+void InlineLayoutStateStack::OnEndPlaceItems(const ConstraintSpace& space,
                                              LogicalLineItems* line_box,
                                              FontBaseline baseline_type) {
   for (auto& box : base::Reversed(stack_)) {
@@ -334,7 +334,7 @@ void InlineLayoutStateStack::OnEndPlaceItems(const NGConstraintSpace& space,
   }
 }
 
-void InlineLayoutStateStack::EndBoxState(const NGConstraintSpace& space,
+void InlineLayoutStateStack::EndBoxState(const ConstraintSpace& space,
                                          InlineBoxState* box,
                                          LogicalLineItems* line_box,
                                          FontBaseline baseline_type) {
@@ -410,7 +410,7 @@ void InlineLayoutStateStack::AddBoxFragmentPlaceholder(
 }
 
 // Add a |BoxData|, for each close-tag that needs a box fragment.
-void InlineLayoutStateStack::AddBoxData(const NGConstraintSpace& space,
+void InlineLayoutStateStack::AddBoxData(const ConstraintSpace& space,
                                         InlineBoxState* box,
                                         LogicalLineItems* line_box) {
   DCHECK(box->needs_box_fragment);
@@ -755,7 +755,7 @@ LayoutUnit InlineLayoutStateStack::ComputeInlinePositions(
 }
 
 void InlineLayoutStateStack::ApplyRelativePositioning(
-    const NGConstraintSpace& space,
+    const ConstraintSpace& space,
     LogicalLineItems* line_box) {
   if (box_data_list_.empty())
     return;
@@ -785,7 +785,7 @@ void InlineLayoutStateStack::ApplyRelativePositioning(
     box_data.rect.offset += accumulated_offsets[box_data.fragment_start];
 }
 
-void InlineLayoutStateStack::CreateBoxFragments(const NGConstraintSpace& space,
+void InlineLayoutStateStack::CreateBoxFragments(const ConstraintSpace& space,
                                                 LogicalLineItems* line_box,
                                                 bool is_opaque) {
   DCHECK(!box_data_list_.empty());
@@ -796,7 +796,7 @@ void InlineLayoutStateStack::CreateBoxFragments(const NGConstraintSpace& space,
     DCHECK_GT(end, start);
     LogicalLineItem* child = &(*line_box)[start];
     DCHECK(box_data.item->ShouldCreateBoxFragment());
-    const NGLayoutResult* box_fragment =
+    const LayoutResult* box_fragment =
         box_data.CreateBoxFragment(space, line_box, is_opaque);
     if (child->IsPlaceholder()) {
       child->layout_result = std::move(box_fragment);
@@ -815,8 +815,8 @@ void InlineLayoutStateStack::CreateBoxFragments(const NGConstraintSpace& space,
   box_data_list_.clear();
 }
 
-const NGLayoutResult* InlineLayoutStateStack::BoxData::CreateBoxFragment(
-    const NGConstraintSpace& space,
+const LayoutResult* InlineLayoutStateStack::BoxData::CreateBoxFragment(
+    const ConstraintSpace& space,
     LogicalLineItems* line_box,
     bool is_opaque) {
   DCHECK(item);
@@ -833,11 +833,11 @@ const NGLayoutResult* InlineLayoutStateStack::BoxData::CreateBoxFragment(
 
   // Because children are already in the visual order, use LTR for the
   // fragment builder so that it should not transform the coordinates for RTL.
-  NGBoxFragmentBuilder box(item->GetLayoutObject(), &style, space,
-                           {style.GetWritingMode(), TextDirection::kLtr});
+  BoxFragmentBuilder box(item->GetLayoutObject(), &style, space,
+                         {style.GetWritingMode(), TextDirection::kLtr});
   box.SetInitialFragmentGeometry(fragment_geometry);
-  box.SetBoxType(NGPhysicalFragment::kInlineBox);
-  box.SetStyleVariant(item->StyleVariant());
+  box.SetBoxType(PhysicalFragment::kInlineBox);
+  box.SetStyleVariant(item->GetStyleVariant());
 
   if (UNLIKELY(is_opaque)) {
     box.SetIsOpaque();
@@ -860,8 +860,7 @@ const NGLayoutResult* InlineLayoutStateStack::BoxData::CreateBoxFragment(
 
     if (child.out_of_flow_positioned_box) {
       DCHECK(item->GetLayoutObject()->IsLayoutInline());
-      NGBlockNode oof_box(
-          To<LayoutBox>(child.out_of_flow_positioned_box.Get()));
+      BlockNode oof_box(To<LayoutBox>(child.out_of_flow_positioned_box.Get()));
 
       // child.offset is the static position wrt. the linebox. As we are adding
       // this as a child of an inline level fragment, we adjust the static
@@ -876,17 +875,16 @@ const NGLayoutResult* InlineLayoutStateStack::BoxData::CreateBoxFragment(
 
     // Propagate any OOF-positioned descendants from any atomic-inlines, etc.
     if (child.layout_result) {
+      const ComputedStyle& child_style = child.GetPhysicalFragment()->Style();
       box.PropagateFromLayoutResultAndFragment(
           *child.layout_result,
           child.rect.offset - rect.offset -
-              ComputeRelativeOffsetForInline(space,
-                                             child.PhysicalFragment()->Style()),
-          ComputeRelativeOffsetForOOFInInline(
-              space, child.PhysicalFragment()->Style()));
+              ComputeRelativeOffsetForInline(space, child_style),
+          ComputeRelativeOffsetForOOFInInline(space, child_style));
     }
 
     // |FragmentItems| has a flat list of all descendants, except
-    // OOF-positioned descendants. We still create a |NGPhysicalBoxFragment|,
+    // OOF-positioned descendants. We still create a |PhysicalBoxFragment|,
     // but don't add children to it and keep them in the flat list.
   }
 

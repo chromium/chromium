@@ -26,7 +26,6 @@ import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 @Config(manifest = Config.NONE)
 @EnableFeatures({
     ChromeFeatureList.CCT_RESIZABLE_FOR_THIRD_PARTIES,
-    ChromeFeatureList.CCT_RESIZABLE_ALLOW_RESIZE_BY_USER_GESTURE
 })
 @LooperMode(Mode.PAUSED)
 public class SimpleHandleStrategyTest {

@@ -31,6 +31,7 @@ class CertProvisioningAsh : public mojom::CertProvisioning {
       mojo::PendingRemote<mojom::CertProvisioningObserver> observer) override;
   void GetStatus(GetStatusCallback callback) override;
   void UpdateOneProcess(const std::string& cert_profile_id) override;
+  void ResetOneProcess(const std::string& cert_profile_id) override;
 
   // Inject schedulers for testing. Passing nullptr simulates that a scheduler
   // is not found / available.
@@ -65,9 +66,9 @@ class CertProvisioningAsh : public mojom::CertProvisioning {
   // The observers that will receive notifications about cert changes in Ash.
   mojo::RemoteSet<mojom::CertProvisioningObserver> observers_;
 
-  absl::optional<ash::cert_provisioning::CertProvisioningScheduler*>
+  std::optional<ash::cert_provisioning::CertProvisioningScheduler*>
       user_scheduler_for_testing_;
-  absl::optional<ash::cert_provisioning::CertProvisioningScheduler*>
+  std::optional<ash::cert_provisioning::CertProvisioningScheduler*>
       device_scheduler_for_testing_;
 
   // This class supports any number of connections. This allows the client to

@@ -117,7 +117,7 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
                   ExceptionState& exception_state);
   // Pop state stack if top state was pushed by beginLayer, restore state and draw the bitmap.
   void endLayer(ExceptionState& exception_state);
-  void reset();          // Called by the javascript interface
+  virtual void reset();  // Called by the javascript interface
   void ResetInternal();  // Called from within blink
 
   void scale(double sx, double sy);
@@ -448,7 +448,7 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
 
   void WillUseCurrentFont() const;
   virtual bool WillSetFont() const;
-  virtual bool ResolveFont(const String& new_font);
+  virtual bool ResolveFont(const String& new_font) = 0;
   virtual bool CurrentFontResolvedAndUpToDate() const;
 
   explicit BaseRenderingContext2D(
@@ -695,7 +695,7 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
     return false;
   }
 
-  virtual void FlushCanvas(FlushReason) = 0;
+  virtual absl::optional<cc::PaintRecord> FlushCanvas(FlushReason) = 0;
 
   // Only call if identifiability_study_helper_.ShouldUpdateBuilder() returns
   // true.

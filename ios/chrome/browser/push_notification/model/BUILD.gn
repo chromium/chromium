@@ -1,0 +1,118 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("browser_state_service") {
+  sources = [
+    "push_notification_browser_state_service.h",
+    "push_notification_browser_state_service.mm",
+  ]
+  deps = [
+    ":push_notification_client",
+    ":push_notification_service",
+    "//base",
+    "//components/keyed_service/core",
+    "//components/prefs",
+    "//components/signin/public/identity_manager",
+    "//ios/chrome/browser/commerce/model",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/web/public/thread",
+  ]
+}
+
+source_set("browser_state_service_factory") {
+  sources = [
+    "push_notification_browser_state_service_factory.h",
+    "push_notification_browser_state_service_factory.mm",
+  ]
+
+  deps = [
+    ":browser_state_service",
+    ":push_notification_service",
+    "//base",
+    "//components/keyed_service/ios",
+    "//ios/chrome/browser/commerce/model",
+    "//ios/chrome/browser/commerce/model/push_notification",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/signin/model",
+  ]
+}
+
+source_set("push_notification_service") {
+  sources = [
+    "push_notification_account_context_manager.h",
+    "push_notification_account_context_manager.mm",
+    "push_notification_client_manager.h",
+    "push_notification_client_manager.mm",
+    "push_notification_configuration.h",
+    "push_notification_configuration.mm",
+    "push_notification_delegate.h",
+    "push_notification_delegate.mm",
+    "push_notification_service.h",
+    "push_notification_service.mm",
+    "push_notification_util.h",
+    "push_notification_util.mm",
+  ]
+  deps = [
+    ":push_notification_client",
+    "//base",
+    "//components/optimization_guide/core:features",
+    "//components/pref_registry",
+    "//components/prefs",
+    "//ios/chrome/app/application_delegate:app_state_header",
+    "//ios/chrome/app/startup:startup_basic",
+    "//ios/chrome/browser/commerce/model/push_notification",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/public/features:features",
+  ]
+}
+
+source_set("push_notification_client") {
+  sources = [
+    "push_notification_client.h",
+    "push_notification_client.mm",
+    "push_notification_client_id.h",
+  ]
+  deps = [ "//base" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "push_notification_account_context_manager+testing.h",
+    "push_notification_account_context_manager_unittest.mm",
+    "push_notification_client_manager_unittest.mm",
+    "push_notification_util+testing.h",
+    "push_notification_util_unittest.mm",
+  ]
+  deps = [
+    ":push_notification_client",
+    ":push_notification_service",
+    ":test_support",
+    "//base",
+    "//base/test:test_support",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/test:test_support",
+    "//ios/web/public/test",
+    "//testing/gtest",
+  ]
+}
+
+source_set("test_support") {
+  sources = [
+    "test_push_notification_client.h",
+    "test_push_notification_client.mm",
+  ]
+
+  deps = [
+    ":push_notification_client",
+    ":push_notification_service",
+    "//base",
+  ]
+}

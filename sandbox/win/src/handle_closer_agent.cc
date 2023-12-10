@@ -6,12 +6,12 @@
 
 #include <stddef.h>
 
+#include <optional>
 #include "base/check.h"
 #include "base/logging.h"
 #include "base/win/static_constants.h"
 #include "base/win/win_util.h"
 #include "sandbox/win/src/win_utils.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace sandbox {
 
@@ -148,7 +148,7 @@ bool HandleCloserAgent::CloseHandles() {
   if (base::win::IsAppVerifierLoaded())
     return true;
 
-  absl::optional<ProcessHandleMap> handle_map = GetCurrentProcessHandles();
+  std::optional<ProcessHandleMap> handle_map = GetCurrentProcessHandles();
   if (!handle_map)
     return false;
 

@@ -14,6 +14,7 @@
 #include "media/base/decoder_buffer.h"
 #include "media/base/encryption_scheme.h"
 #include "media/base/media_util.h"
+#include "media/base/supported_types.h"
 #include "media/base/video_aspect_ratio.h"
 #include "media/base/video_color_space.h"
 #include "media/base/video_decoder_config.h"
@@ -652,15 +653,6 @@ bool AVStreamToVideoDecoderConfig(const AVStream* stream,
       profile = ProfileIDToVideoCodecProfile(codec_context->profile);
   }
 
-  void* display_matrix =
-      av_stream_get_side_data(stream, AV_PKT_DATA_DISPLAYMATRIX, nullptr);
-
-  VideoTransformation video_transformation = VideoTransformation();
-  if (display_matrix) {
-    video_transformation = VideoTransformation::FromFFmpegDisplayMatrix(
-        static_cast<int32_t*>(display_matrix));
-  }
-
   if (!color_space.IsSpecified()) {
     // VP9 frames may have color information, but that information cannot
     // express new color spaces, like HDR. For that reason, color space
@@ -716,46 +708,105 @@ bool AVStreamToVideoDecoderConfig(const AVStream* stream,
     extra_data.assign(codec_context->extradata,
                       codec_context->extradata + codec_context->extradata_size);
   }
+
+  VideoTransformation video_transformation = VideoTransformation();
+  for (int i = 0; i < stream->codecpar->nb_coded_side_data; ++i) {
+    const auto& side_data = stream->codecpar->coded_side_data[i];
+    switch (side_data.type) {
+      case AV_PKT_DATA_DISPLAYMATRIX: {
+        CHECK_EQ(side_data.size, sizeof(int32_t) * 3 * 3);
+        video_transformation = VideoTransformation::FromFFmpegDisplayMatrix(
+            reinterpret_cast<int32_t*>(side_data.data));
+        break;
+      }
+      case AV_PKT_DATA_MASTERING_DISPLAY_METADATA: {
+        AVMasteringDisplayMetadata* mdcv =
+            reinterpret_cast<AVMasteringDisplayMetadata*>(side_data.data);
+        gfx::HdrMetadataSmpteSt2086 smpte_st_2086;
+        if (mdcv->has_primaries) {
+          smpte_st_2086.primaries = {
+              static_cast<float>(av_q2d(mdcv->display_primaries[0][0])),
+              static_cast<float>(av_q2d(mdcv->display_primaries[0][1])),
+              static_cast<float>(av_q2d(mdcv->display_primaries[1][0])),
+              static_cast<float>(av_q2d(mdcv->display_primaries[1][1])),
+              static_cast<float>(av_q2d(mdcv->display_primaries[2][0])),
+              static_cast<float>(av_q2d(mdcv->display_primaries[2][1])),
+              static_cast<float>(av_q2d(mdcv->white_point[0])),
+              static_cast<float>(av_q2d(mdcv->white_point[1])),
+          };
+        }
+        if (mdcv->has_luminance) {
+          smpte_st_2086.luminance_max = av_q2d(mdcv->max_luminance);
+          smpte_st_2086.luminance_min = av_q2d(mdcv->min_luminance);
+        }
+
+        // TODO(https://crbug.com/1446302): Consider rejecting metadata that
+        // does not specify all values.
+        if (mdcv->has_primaries || mdcv->has_luminance) {
+          hdr_metadata.smpte_st_2086 = smpte_st_2086;
+        }
+        break;
+      }
+      case AV_PKT_DATA_CONTENT_LIGHT_LEVEL: {
+        AVContentLightMetadata* clli =
+            reinterpret_cast<AVContentLightMetadata*>(side_data.data);
+        hdr_metadata.cta_861_3 =
+            gfx::HdrMetadataCta861_3(clli->MaxCLL, clli->MaxFALL);
+        break;
+      }
+#if BUILDFLAG(ENABLE_PLATFORM_DOLBY_VISION)
+      case AV_PKT_DATA_DOVI_CONF: {
+        AVDOVIDecoderConfigurationRecord* dovi =
+            reinterpret_cast<AVDOVIDecoderConfigurationRecord*>(side_data.data);
+        VideoType type;
+        type.codec = VideoCodec::kDolbyVision;
+        type.level = dovi->dv_level;
+        type.color_space = color_space;
+        type.hdr_metadata_type = gfx::HdrMetadataType::kNone;
+        switch (dovi->dv_profile) {
+          case 0:
+            type.profile = VideoCodecProfile::DOLBYVISION_PROFILE0;
+            break;
+          case 4:
+            type.profile = VideoCodecProfile::DOLBYVISION_PROFILE4;
+            break;
+          case 5:
+            type.profile = VideoCodecProfile::DOLBYVISION_PROFILE5;
+            break;
+          case 7:
+            type.profile = VideoCodecProfile::DOLBYVISION_PROFILE7;
+            break;
+          case 8:
+            type.profile = VideoCodecProfile::DOLBYVISION_PROFILE8;
+            break;
+          case 9:
+            type.profile = VideoCodecProfile::DOLBYVISION_PROFILE9;
+            break;
+          default:
+            type.profile = VideoCodecProfile::VIDEO_CODEC_PROFILE_UNKNOWN;
+            break;
+        }
+        // Treat dolby vision contents as dolby vision codec only if the
+        // device support clear DV decoding, otherwise use the original
+        // HEVC or AVC codec and profile.
+        if (media::IsSupportedVideoType(type)) {
+          codec = type.codec;
+          profile = type.profile;
+        }
+        break;
+      }
+#endif  // BUILDFLAG(ENABLE_PLATFORM_DOLBY_VISION)
+      default:
+        break;
+    }
+  }
+
   // TODO(tmathmeyer) ffmpeg can't provide us with an actual video rotation yet.
   config->Initialize(codec, profile, alpha_mode, color_space,
                      video_transformation, coded_size, visible_rect,
                      natural_size, extra_data, GetEncryptionScheme(stream));
   // Set the aspect ratio explicitly since our version hasn't been rounded.
   config->set_aspect_ratio(aspect_ratio);
-
-  if (stream->nb_side_data) {
-    for (int i = 0; i < stream->nb_side_data; ++i) {
-      AVPacketSideData side_data = stream->side_data[i];
-      if (side_data.type != AV_PKT_DATA_MASTERING_DISPLAY_METADATA)
-        continue;
-
-      AVMasteringDisplayMetadata* metadata =
-          reinterpret_cast<AVMasteringDisplayMetadata*>(side_data.data);
-      gfx::HdrMetadataSmpteSt2086 smpte_st_2086;
-      if (metadata->has_primaries) {
-        smpte_st_2086.primaries = {
-            static_cast<float>(av_q2d(metadata->display_primaries[0][0])),
-            static_cast<float>(av_q2d(metadata->display_primaries[0][1])),
-            static_cast<float>(av_q2d(metadata->display_primaries[1][0])),
-            static_cast<float>(av_q2d(metadata->display_primaries[1][1])),
-            static_cast<float>(av_q2d(metadata->display_primaries[2][0])),
-            static_cast<float>(av_q2d(metadata->display_primaries[2][1])),
-            static_cast<float>(av_q2d(metadata->white_point[0])),
-            static_cast<float>(av_q2d(metadata->white_point[1])),
-        };
-      }
-      if (metadata->has_luminance) {
-        smpte_st_2086.luminance_max = av_q2d(metadata->max_luminance);
-        smpte_st_2086.luminance_min = av_q2d(metadata->min_luminance);
-      }
-
-      // TODO(https://crbug.com/1446302): Consider rejecting metadata that does
-      // not specify all values.
-      if (metadata->has_primaries || metadata->has_luminance) {
-        hdr_metadata.smpte_st_2086 = smpte_st_2086;
-      }
-    }
-  }
 
   if (hdr_metadata.IsValid()) {
     config->set_hdr_metadata(hdr_metadata);

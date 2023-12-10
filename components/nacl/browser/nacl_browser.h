@@ -142,7 +142,7 @@ class NaClBrowser {
   // from the Browser's UI thread. It will be leaked at browser teardown.
   static void SetDelegate(std::unique_ptr<NaClBrowserDelegate> delegate);
   static NaClBrowserDelegate* GetDelegate();
-  static void ClearAndDeleteDelegateForTest();
+  static void ClearAndDeleteDelegate();
 
   // Called whenever a NaCl process exits.
   void OnProcessEnd(int process_id);

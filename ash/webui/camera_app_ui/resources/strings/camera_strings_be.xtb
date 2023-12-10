@@ -5,7 +5,6 @@
 <translation id="1076394037877376434">Выдаліць старонку <ph name="PAGE_NUMBER" /></translation>
 <translation id="1113173431709655881">Рэжым камеры</translation>
 <translation id="1153190633558910465">Сетка выключана</translation>
-<translation id="1175958423215084756">Выяўлена спасылка. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213">Старонка <ph name="PAGE_NUMBER" /> выдалена</translation>
 <translation id="1258009455399840361">Павярнуць на 90 градусаў па гадзіннікавай стрэлцы</translation>
 <translation id="1417314334557041815">Рэдагаваць старонку <ph name="INDEX" /></translation>
@@ -60,14 +59,12 @@
 <translation id="3642192109456033823">Відэа апрацоўваецца…</translation>
 <translation id="3789724198583203151">Павярнуць на 90 градусаў супраць гадзіннікавай стрэлкі</translation>
 <translation id="3810838688059735925">Відэа</translation>
-<translation id="3892148308691398805">Скапіраваць тэкст</translation>
 <translation id="4060608699153044055">Запіс немагчымы: мала месца ў сховішчы прылады. Каб пачаць запіс, вызваліце месца.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> Мпікс</translation>
 <translation id="4118525110028899586">Прыпыніць запіс</translation>
 <translation id="4121305183798804752">Выяўлены дакумент</translation>
 <translation id="414641094616694804">Гэта камера не можа змяняць раздзяляльнасць</translation>
 <translation id="4176463684765177261">Выключана</translation>
-<translation id="4269820728363426813">Капіраваць спасылку</translation>
 <translation id="428234092390943511">Мініяцюра старонкі</translation>
 <translation id="4349714250734879769">Маштабаванне кадраў Chrome</translation>
 <translation id="4383571725254449280">Журналы прадукцыйнасці друку</translation>
@@ -144,7 +141,6 @@
 <translation id="7726641833034062494">Запісаць звычайнае відэа</translation>
 <translation id="7748344063862150053">Правы верхні вугал дакумента</translation>
 <translation id="7933675232020478311">Перамяшчаецца ўправа ўніз</translation>
-<translation id="7983668134180549431">Выяўлены тэкст.</translation>
 <translation id="8079255378695216066">Не ўдалося пачаць запіс</translation>
 <translation id="8120146556401698679">Зрушыць, нахіліць, змяніць маштаб</translation>
 <translation id="8131740175452115882">Пацвердзіць</translation>
@@ -163,6 +159,7 @@
 <translation id="8870695351537079478">Не ўдалося пачаць запіс</translation>
 <translation id="8880167521484863515">4 на 3</translation>
 <translation id="8903921497873541725">Павялічыць маштаб</translation>
+<translation id="8926890870105777777">Падключыцца да сеткі "<ph name="WIFINAME" />"</translation>
 <translation id="9045010116236796332">Памясціце ўсе краі дакумента ўнутр рамкі</translation>
 <translation id="9045155556724273246">10 секунд</translation>
 <translation id="906331135292332864">Ідзе апрацоўка відарыса…</translation>

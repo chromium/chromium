@@ -82,10 +82,19 @@ public class AutofillSaveCardUiInfo {
     @CalledByNative
     @VisibleForTesting
     /** Construct the delegate given all the members. */
-    /*package*/ AutofillSaveCardUiInfo(boolean isForUpload, @DrawableRes int logoIcon,
-            @DrawableRes int issuerIcon, List<LegalMessageLine> legalMessageLines, String cardLabel,
-            String cardSubLabel, String cardDescription, String titleText, String confirmText,
-            String cancelText, boolean isGooglePayBrandingEnabled, String descriptionText) {
+    /*package*/ AutofillSaveCardUiInfo(
+            boolean isForUpload,
+            @DrawableRes int logoIcon,
+            @DrawableRes int issuerIcon,
+            List<LegalMessageLine> legalMessageLines,
+            String cardLabel,
+            String cardSubLabel,
+            String cardDescription,
+            String titleText,
+            String confirmText,
+            String cancelText,
+            boolean isGooglePayBrandingEnabled,
+            String descriptionText) {
         mIsForUpload = isForUpload;
         mLogoIcon = logoIcon;
         mIssuerIcon = issuerIcon;
@@ -102,14 +111,14 @@ public class AutofillSaveCardUiInfo {
         mIsGooglePayBrandingEnabled = isGooglePayBrandingEnabled;
         mDescriptionText = descriptionText;
     }
+
     // LINT.ThenChange(//chrome/browser/ui/android/autofill/autofill_save_card_bottom_sheet_bridge.cc)
 
     /** Builder for {@link AutofillSaveCardUiInfo} */
     @VisibleForTesting
     public static class Builder {
         private boolean mIsForUpload;
-        @DrawableRes
-        private int mLogoIcon;
+        @DrawableRes private int mLogoIcon;
         private CardDetail mCardDetail;
         private String mCardDescription;
         private ImmutableList<LegalMessageLine> mLegalMessageLines = ImmutableList.of();
@@ -169,14 +178,21 @@ public class AutofillSaveCardUiInfo {
             return this;
         }
 
-        /**
-         * Create the {@link AutofillSaveCardUiInfo} object.
-         */
+        /** Create the {@link AutofillSaveCardUiInfo} object. */
         public AutofillSaveCardUiInfo build() {
-            return new AutofillSaveCardUiInfo(mIsForUpload, mLogoIcon,
-                    mCardDetail.issuerIconDrawableId, mLegalMessageLines, mCardDetail.label,
-                    mCardDetail.subLabel, mCardDescription, mTitleText, mConfirmText, mCancelText,
-                    mIsGooglePayBrandingEnabled, mDescriptionText);
+            return new AutofillSaveCardUiInfo(
+                    mIsForUpload,
+                    mLogoIcon,
+                    mCardDetail.issuerIconDrawableId,
+                    mLegalMessageLines,
+                    mCardDetail.label,
+                    mCardDetail.subLabel,
+                    mCardDescription,
+                    mTitleText,
+                    mConfirmText,
+                    mCancelText,
+                    mIsGooglePayBrandingEnabled,
+                    mDescriptionText);
         }
     }
 }

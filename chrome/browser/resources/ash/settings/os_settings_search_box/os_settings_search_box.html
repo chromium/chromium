@@ -1,7 +1,6 @@
 <style include="settings-shared">
   :host {
-    --cr-toolbar-search-field-background:
-        var(--cros-toolbar-search-bg-color);
+    --cr-toolbar-search-field-background: var(--cros-sys-input_field_on_shaded);
     --cr-toolbar-focused-min-height: 40px;
     --cr-toolbar-icon-container-size: 32px;
     --cr-toolbar-icon-margin: 8px 16px;
@@ -17,10 +16,6 @@
     flex-basis: var(--cr-toolbar-field-width);
     transition: width 150ms cubic-bezier(0.4, 0, 0.2, 1);
     width: var(--cr-toolbar-field-width);
-  }
-
-  :host-context(body.jelly-enabled):host {
-    --cr-toolbar-search-field-background: var(--cros-sys-input_field_on_shaded);
   }
 
   @media (prefers-color-scheme: dark) {
@@ -42,7 +37,8 @@
 
   cr-toolbar-search-field {
     --cr-toolbar-search-field-term-margin: 0;
-    --cr-toolbar-search-field-border-radius: 20px;
+    --cr-toolbar-search-field-border-radius:
+        var(--settings-toolbar-search-field-border-radius);
     --cr-toolbar-search-field-paper-spinner-margin: 0 12px;
     --cr-toolbar-search-field-input-icon-color:
         var(--cros-icon-color-primary);
@@ -53,6 +49,8 @@
         var(--cros-text-color-secondary);
     --cr-toolbar-icon-button-focus-outline-color:
         var(--cros-focus-ring-color);
+    --cr-toolbar-field-max-width: var(--cr-toolbar-field-width);
+    height: var(--settings-toolbar-search-box-height);
     font-size: 13px;
   }
 
@@ -61,10 +59,10 @@
   }
 
   :host([narrow]:not([showing-search])) cr-toolbar-search-field {
-    padding-inline-end: 10px;
+    padding-inline-end: var(--settings-toolbar-padding-inline-end);
   }
 
-  :host(:focus-within[showing-search]) cr-toolbar-search-field {
+  :host([showing-search]:focus-within) cr-toolbar-search-field {
     --cr-toolbar-search-field-background: var(--cros-bg-color-elevation-3);
     box-shadow: var(--cr-elevation-1);
     min-height: var(--cr-toolbar-focused-min-height);
@@ -78,12 +76,18 @@
     --cr-toolbar-search-field-cursor: pointer;
   }
 
-  :host(:focus-within[should-show-dropdown_]) cr-toolbar-search-field {
+  :host([should-show-dropdown_]:focus-within) cr-toolbar-search-field {
     --cr-toolbar-search-field-border-radius: 20px 20px 0 0;
     box-shadow: var(--cr-elevation-3);
     height: 56px;
     margin-top: var(--separator-height);
     padding-bottom: var(--separator-height);
+  }
+
+  :host-context([chrome-refresh-2023]):host([should-show-dropdown_]:focus-within)
+      cr-toolbar-search-field {
+    --cr-toolbar-search-field-border-radius: 20px 20px 0 0;
+    outline: none;
   }
 
   iron-dropdown {
@@ -129,22 +133,14 @@
     margin-inline-start: 8px;
   }
 
-  /* The separator covers the top box shadow of the dropdown so that
-    * var(--cr-elevation-3) can be used instead of custom values. */
+  /* The separator covers the top box shadow of the dropdown. */
   .separator {
     background-color: var(--cros-bg-color-elevation-3);
-    border-bottom: none;
-    border-inline-end: none;
-    border-inline-start: none;
-    border-top: 1px solid var(--cros-separator-color);
+    border-top: 1px solid var(--cros-sys-separator);
     height: var(--separator-height);
     margin-inline-end: 0;
     margin-inline-start: 0;
     margin-top: -9px;
-  }
-
-  :host-context(body.jelly-enabled) .separator {
-    border-color: var(--cros-sys-separator);
   }
 </style>
 <cr-toolbar-search-field id="search" narrow="[[narrow]]"

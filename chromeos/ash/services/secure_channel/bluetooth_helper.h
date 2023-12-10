@@ -6,13 +6,13 @@
 #define CHROMEOS_ASH_SERVICES_SECURE_CHANNEL_BLUETOOTH_HELPER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
 #include "chromeos/ash/components/multidevice/remote_device_ref.h"
 #include "chromeos/ash/services/secure_channel/data_with_timestamp.h"
 #include "chromeos/ash/services/secure_channel/device_id_pair.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::secure_channel {
 
@@ -41,8 +41,8 @@ class BluetoothHelper {
       std::pair<multidevice::RemoteDeviceRef, bool>;
 
   // Identifies the device that produced a BLE advertisement with service data
-  // |service_data|. If no device can be identified, absl::nullopt is returned.
-  absl::optional<DeviceWithBackgroundBool> IdentifyRemoteDevice(
+  // |service_data|. If no device can be identified, std::nullopt is returned.
+  std::optional<DeviceWithBackgroundBool> IdentifyRemoteDevice(
       const std::string& service_data,
       const DeviceIdPairSet& device_id_pair_set);
 
@@ -58,7 +58,7 @@ class BluetoothHelper {
  protected:
   BluetoothHelper();
 
-  virtual absl::optional<DeviceWithBackgroundBool> PerformIdentifyRemoteDevice(
+  virtual std::optional<DeviceWithBackgroundBool> PerformIdentifyRemoteDevice(
       const std::string& service_data,
       const DeviceIdPairSet& device_id_pair_set) = 0;
 };

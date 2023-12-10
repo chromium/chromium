@@ -1,0 +1,30 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ax.mojom;
+
+import "ui/events/mojom/event.mojom";
+import "ui/events/mojom/event_constants.mojom";
+
+// Represents a synthetic key event.
+struct SyntheticKeyEvent {
+  // The type of key event, either key press or key release.
+  ui.mojom.EventType type;
+
+  // The key code for the key event.
+  ui.mojom.KeyData key_data;
+
+  // Any modifier keys that are held down.
+  int32 flags;
+};
+
+// Provides a means of synthetic user input. Implemented in the main OS browser
+// process and called from Accessibility Service javascript in V8.
+//
+// Synthetic key events are only used for simulated keyboard navigation, and
+// do not support internationalization. Any text entry should be done via IME.
+interface UserInput {
+  // Sends a synthetic key event.
+  SendSyntheticKeyEventForShortcutOrNavigation(SyntheticKeyEvent key_event);
+};

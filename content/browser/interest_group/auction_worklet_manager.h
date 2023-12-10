@@ -124,10 +124,16 @@ class CONTENT_EXPORT AuctionWorkletManager {
                const absl::optional<GURL>& wasm_url,
                const absl::optional<GURL>& signals_url,
                bool needs_cors_for_additional_bid,
-               absl::optional<uint16_t> experiment_group_id);
+               absl::optional<uint16_t> experiment_group_id,
+               const std::string& trusted_bidding_signals_slot_size_param);
     WorkletKey(const WorkletKey&);
     WorkletKey(WorkletKey&&);
     ~WorkletKey();
+
+    // Fast, non-cryptographic hash to count unique worklets for UKM.
+    size_t GetHash() const;
+
+    bool operator<(const WorkletKey& other) const;
 
     WorkletType type;
     GURL script_url;
@@ -137,12 +143,9 @@ class CONTENT_EXPORT AuctionWorkletManager {
     // `needs_cors_for_additional_bid` is set for buyer reporting for additional
     // bids; those need to perform a CORS check others don't.
     bool needs_cors_for_additional_bid;
+
     absl::optional<uint16_t> experiment_group_id;
-
-    // Fast, non-cryptographic hash to count unique worklets for UKM.
-    size_t GetHash() const;
-
-    bool operator<(const WorkletKey& other) const;
+    std::string trusted_bidding_signals_slot_size_param;
   };
 
   // Class that tracks a request for a Worklet, and helps manage the lifetime of
@@ -230,7 +233,8 @@ class CONTENT_EXPORT AuctionWorkletManager {
       const absl::optional<GURL>& wasm_url,
       const absl::optional<GURL>& trusted_bidding_signals_url,
       bool needs_cors_for_additional_bid,
-      absl::optional<uint16_t> experiment_group_id);
+      absl::optional<uint16_t> experiment_group_id,
+      const std::string& trusted_bidding_signals_slot_size_param);
 
   // Requests a worklet with the specified properties. The top frame origin and
   // debugging information are obtained from the Delegate's RenderFrameHost.
@@ -265,6 +269,7 @@ class CONTENT_EXPORT AuctionWorkletManager {
       const absl::optional<GURL>& trusted_bidding_signals_url,
       bool needs_cors_for_additional_bid,
       absl::optional<uint16_t> experiment_group_id,
+      const std::string& trusted_bidding_signals_slot_size_param,
       base::OnceClosure worklet_available_callback,
       FatalErrorCallback fatal_error_callback,
       std::unique_ptr<WorkletHandle>& out_worklet_handle);

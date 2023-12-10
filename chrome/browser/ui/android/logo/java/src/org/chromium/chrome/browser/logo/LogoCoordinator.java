@@ -42,18 +42,31 @@ public class LogoCoordinator {
      *                             it's only true on Start homepage.
      * @param visibilityObserver Observer object monitoring logo visibility.
      */
-    public LogoCoordinator(Context context, Callback<LoadUrlParams> logoClickedCallback,
-            LogoView logoView, boolean shouldFetchDoodle, Callback<Logo> onLogoAvailableCallback,
-            Runnable onCachedLogoRevalidatedRunnable, boolean isParentSurfaceShown,
+    public LogoCoordinator(
+            Context context,
+            Callback<LoadUrlParams> logoClickedCallback,
+            LogoView logoView,
+            boolean shouldFetchDoodle,
+            Callback<Logo> onLogoAvailableCallback,
+            Runnable onCachedLogoRevalidatedRunnable,
+            boolean isParentSurfaceShown,
             VisibilityObserver visibilityObserver) {
         // TODO(crbug.com/1394983): This is weird that we're passing in our view,
         //  and we have to expose our view via getView. We shouldn't only have to do one of these.
         mLogoModel = new PropertyModel(LogoProperties.ALL_KEYS);
         mLogoView = logoView;
         PropertyModelChangeProcessor.create(mLogoModel, mLogoView, new LogoViewBinder());
-        mMediator = new LogoMediator(context, logoClickedCallback, mLogoModel, shouldFetchDoodle,
-                onLogoAvailableCallback, onCachedLogoRevalidatedRunnable, isParentSurfaceShown,
-                visibilityObserver, sDefaultGoogleLogo);
+        mMediator =
+                new LogoMediator(
+                        context,
+                        logoClickedCallback,
+                        mLogoModel,
+                        shouldFetchDoodle,
+                        onLogoAvailableCallback,
+                        onCachedLogoRevalidatedRunnable,
+                        isParentSurfaceShown,
+                        visibilityObserver,
+                        sDefaultGoogleLogo);
     }
 
     /** @see LogoMediator#initWithNative */
@@ -88,7 +101,8 @@ public class LogoCoordinator {
      * given dimensions (in pixels) with MeasureSpec.EXACTLY.
      */
     public void measureExactlyLogoView(int widthPx) {
-        mLogoView.measure(MeasureSpec.makeMeasureSpec(widthPx, MeasureSpec.EXACTLY),
+        mLogoView.measure(
+                MeasureSpec.makeMeasureSpec(widthPx, MeasureSpec.EXACTLY),
                 MeasureSpec.makeMeasureSpec(mLogoView.getMeasuredHeight(), MeasureSpec.EXACTLY));
     }
 

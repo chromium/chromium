@@ -4,6 +4,7 @@
 
 #include "ash/webui/personalization_app/mojom/personalization_app_mojom_traits.h"
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -19,7 +20,6 @@
 #include "mojo/public/cpp/base/unguessable_token_mojom_traits.h"
 #include "mojo/public/cpp/bindings/enum_traits.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/gfx/image/image_skia.h"
 #include "url/gurl.h"
@@ -98,6 +98,8 @@ MojomWallpaperType EnumTraits<MojomWallpaperType, ash::WallpaperType>::ToMojom(
       return MojomWallpaperType::kOnceGooglePhotos;
     case ash::WallpaperType::kOobe:
       return MojomWallpaperType::kOobe;
+    case ash::WallpaperType::kSeaPen:
+      return MojomWallpaperType::kSeaPen;
     case ash::WallpaperType::kCount:
       NOTREACHED();
       return MojomWallpaperType::kDefault;
@@ -140,6 +142,9 @@ bool EnumTraits<MojomWallpaperType, ash::WallpaperType>::FromMojom(
       return true;
     case MojomWallpaperType::kOobe:
       *output = ash::WallpaperType::kOobe;
+      return true;
+    case MojomWallpaperType::kSeaPen:
+      *output = ash::WallpaperType::kSeaPen;
       return true;
   }
   NOTREACHED();
@@ -351,7 +356,7 @@ StructTraits<ash::personalization_app::mojom::DefaultUserImageDataView,
   return default_user_image.url;
 }
 
-const absl::optional<ash::default_user_image::DeprecatedSourceInfo>&
+const std::optional<ash::default_user_image::DeprecatedSourceInfo>&
 StructTraits<ash::personalization_app::mojom::DefaultUserImageDataView,
              ash::default_user_image::DefaultUserImage>::
     source_info(

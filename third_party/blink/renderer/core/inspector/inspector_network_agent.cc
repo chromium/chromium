@@ -67,6 +67,7 @@
 #include "third_party/blink/renderer/core/inspector/identifiers_factory.h"
 #include "third_party/blink/renderer/core/inspector/inspected_frames.h"
 #include "third_party/blink/renderer/core/inspector/network_resources_data.h"
+#include "third_party/blink/renderer/core/inspector/protocol/network.h"
 #include "third_party/blink/renderer/core/inspector/request_debug_header_scope.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/loader/frame_loader.h"
@@ -89,6 +90,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_load_timing.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
+#include "third_party/blink/renderer/platform/loader/fetch/service_worker_router_info.h"
 #include "third_party/blink/renderer/platform/loader/fetch/unique_identifier.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/url_loader_client.h"
 #include "third_party/blink/renderer/platform/network/http_header_map.h"
@@ -1061,6 +1063,13 @@ BuildObjectForResourceResponse(const ResourceResponse& response,
   if (!response.CacheStorageCacheName().empty()) {
     response_object->setCacheStorageCacheName(response.CacheStorageCacheName());
   }
+  if (response.GetServiceWorkerRouterInfo()) {
+    response_object->setServiceWorkerRouterInfo(
+        protocol::Network::ServiceWorkerRouterInfo::create()
+            .setRuleIdMatched(
+                response.GetServiceWorkerRouterInfo()->RuleIdMatched())
+            .build());
+  }
 
   response_object->setFromPrefetchCache(response.WasInPrefetchCache());
   if (response.GetResourceLoadTiming())
@@ -1403,6 +1412,7 @@ void InspectorNetworkAgent::PrepareRequest(DocumentLoader* loader,
 }
 
 void InspectorNetworkAgent::WillSendRequest(
+    ExecutionContext*,
     DocumentLoader* loader,
     const KURL& fetch_context_url,
     const ResourceRequest& request,
@@ -1474,8 +1484,8 @@ void InspectorNetworkAgent::DidReceiveResourceResponse(
                         ? IdentifiersFactory::FrameId(loader->GetFrame())
                         : "";
   String loader_id = IdentifiersFactory::LoaderId(loader);
-  resources_data_->ResponseReceived(request_id, frame_id, response);
   resources_data_->SetResourceType(request_id, type);
+  resources_data_->ResponseReceived(request_id, frame_id, response);
 
   const absl::optional<net::SSLInfo>& ssl_info = response.GetSSLInfo();
   if (ssl_info.has_value() && ssl_info->cert) {
@@ -1508,11 +1518,38 @@ static bool IsErrorStatusCode(int status_code) {
   return status_code >= 400;
 }
 
+protocol::Response InspectorNetworkAgent::streamResourceContent(
+    const String& request_id,
+    protocol::Binary* buffered_data) {
+  NetworkResourcesData::ResourceData const* resource_data =
+      resources_data_->Data(request_id);
+
+  if (!resource_data) {
+    return protocol::Response::InvalidParams(
+        "Request with the provided ID does not exists");
+  }
+
+  if (resource_data->HasContent()) {
+    return protocol::Response::InvalidParams(
+        "Request with the provided ID has already finished loading");
+  }
+
+  streaming_request_ids_.insert(request_id);
+
+  SharedBuffer* data = resource_data->Data();
+  if (data) {
+    *buffered_data =
+        protocol::Binary::fromVector(data->CopyAs<Vector<uint8_t>>());
+  }
+  return protocol::Response::Success();
+}
+
 void InspectorNetworkAgent::DidReceiveData(uint64_t identifier,
                                            DocumentLoader* loader,
                                            const char* data,
                                            uint64_t data_length) {
   String request_id = RequestId(loader, identifier);
+  Maybe<protocol::Binary> binary_data;
 
   if (data) {
     NetworkResourcesData::ResourceData const* resource_data =
@@ -1523,13 +1560,20 @@ void InspectorNetworkAgent::DidReceiveData(uint64_t identifier,
              kDoNotBufferData ||
          IsErrorStatusCode(resource_data->HttpStatusCode())))
       resources_data_->MaybeAddResourceData(request_id, data, data_length);
+
+    if (streaming_request_ids_.Contains(request_id)) {
+      binary_data =
+          protocol::Binary::fromSpan(reinterpret_cast<const uint8_t*>(data),
+                                     base::checked_cast<size_t>(data_length));
+    }
   }
 
   GetFrontend()->dataReceived(
       request_id, base::TimeTicks::Now().since_origin().InSecondsF(),
       static_cast<int>(data_length),
       static_cast<int>(
-          resources_data_->GetAndClearPendingEncodedDataLength(request_id)));
+          resources_data_->GetAndClearPendingEncodedDataLength(request_id)),
+      std::move(binary_data));
 }
 
 void InspectorNetworkAgent::DidReceiveBlob(uint64_t identifier,
@@ -1554,6 +1598,8 @@ void InspectorNetworkAgent::DidFinishLoading(
     int64_t encoded_data_length,
     int64_t decoded_body_length) {
   String request_id = RequestId(loader, identifier);
+  streaming_request_ids_.erase(request_id);
+
   NetworkResourcesData::ResourceData const* resource_data =
       resources_data_->Data(request_id);
 
@@ -1601,6 +1647,7 @@ void InspectorNetworkAgent::DidFailLoading(
     const ResourceError& error,
     const base::UnguessableToken& devtools_frame_or_worker_token) {
   String request_id = RequestId(loader, identifier);
+  streaming_request_ids_.erase(request_id);
 
   // A Trust Token redemption can be served from cache if a valid
   // Signed-Redemption-Record is present. In this case the request is aborted
@@ -1977,6 +2024,7 @@ protocol::Response InspectorNetworkAgent::disable() {
   instrumenting_agents_->RemoveInspectorNetworkAgent(this);
   agent_state_.ClearAllFields();
   resources_data_->Clear();
+  streaming_request_ids_.clear();
   clearAcceptedEncodingsOverride();
   return protocol::Response::Success();
 }
@@ -2263,14 +2311,6 @@ protocol::Response InspectorNetworkAgent::GetResponseBody(
   if (resource_data->IsContentEvicted()) {
     return protocol::Response::ServerError(
         "Request content was evicted from inspector cache");
-  }
-
-  if (resource_data->Buffer() && !resource_data->TextEncodingName().IsNull()) {
-    bool success = InspectorPageAgent::SharedBufferContent(
-        resource_data->Buffer(), resource_data->MimeType(),
-        resource_data->TextEncodingName(), content, base64_encoded);
-    DCHECK(success);
-    return protocol::Response::Success();
   }
 
   if (resource_data->CachedResource() &&

@@ -10,9 +10,7 @@ import org.chromium.base.compat.ApiHelperForM;
 
 import java.lang.ref.WeakReference;
 
-/**
- * AndroidPermissionDelegate implementation for Activity.
- */
+/** AndroidPermissionDelegate implementation for Activity. */
 public class ActivityAndroidPermissionDelegate extends AndroidPermissionDelegateWithRequester {
     private WeakReference<Activity> mActivity;
 

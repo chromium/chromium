@@ -9,6 +9,8 @@
 #include <string>
 
 #include "base/check.h"
+#include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/sync/base/model_type.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -52,13 +54,13 @@ class SyncablePrefMetadata {
         model_type_(model_type),
         pref_sensitivity_(pref_sensitivity),
         merge_behaviour_(merge_behavior) {
-    // TODO(crbug.com/1424774): Allow OS_* types only if IS_CHROMEOS_ASH is
-    // true. This isn't the case now because of an outlier entry in
-    // common_syncable_prefs_database.
-    DCHECK(model_type_ == syncer::PREFERENCES ||
-           model_type_ == syncer::PRIORITY_PREFERENCES ||
-           model_type_ == syncer::OS_PREFERENCES ||
-           model_type_ == syncer::OS_PRIORITY_PREFERENCES)
+    CHECK(model_type_ == syncer::PREFERENCES ||
+          model_type_ == syncer::PRIORITY_PREFERENCES
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+          || model_type_ == syncer::OS_PREFERENCES ||
+          model_type_ == syncer::OS_PRIORITY_PREFERENCES
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+          )
         << "Invalid type " << model_type_
         << " for syncable pref with id=" << syncable_pref_id_;
   }
@@ -92,9 +94,6 @@ class SyncablePrefMetadata {
 // PrefModelAssociatorClient uses the interface to verify if a preference is
 // syncable. Platform-specific preferences should be part of individual
 // implementations of this interface.
-// TODO(crbug.com/1401271): Consider adding more information about the listed
-// preferences, for eg. distinguishing between SYNCABLE_PREF,
-// SYNCABLE_PRIORITY_PREF, SYNCABLE_OS_PREF, and SYNCABLE_OS_PRIORITY_PREF.
 class SyncablePrefsDatabase {
  public:
   SyncablePrefsDatabase() = default;

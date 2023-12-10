@@ -197,12 +197,10 @@ void InlineLoginHandler::HandleCompleteLoginMessageWithCookies(
   }
 
   params.skip_for_now = dict.FindBool("skipForNow").value_or(false);
-  absl::optional<bool> trusted = dict.FindBool("trusted");
+  std::optional<bool> trusted = dict.FindBool("trusted");
   params.trusted_value = trusted.value_or(false);
   params.trusted_found = trusted.has_value();
 
-  params.choose_what_to_sync =
-      dict.FindBool("chooseWhatToSync").value_or(false);
   params.is_available_in_arc =
       dict.FindBool("isAvailableInArc").value_or(false);
 

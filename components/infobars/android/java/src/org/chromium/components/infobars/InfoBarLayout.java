@@ -54,9 +54,7 @@ import java.util.List;
  * InfoBarInteractionHandler.
  */
 public final class InfoBarLayout extends ViewGroup implements View.OnClickListener {
-    /**
-     * Parameters used for laying out children.
-     */
+    /** Parameters used for laying out children. */
     private static class LayoutParams extends ViewGroup.LayoutParams {
         public int startMargin;
         public int endMargin;
@@ -111,8 +109,13 @@ public final class InfoBarLayout extends ViewGroup implements View.OnClickListen
      * @param iconBitmap Bitmap for the icon to use, if the resource ID wasn't passed through.
      * @param message The message to show in the infobar.
      */
-    public InfoBarLayout(Context context, InfoBarInteractionHandler infoBar, int iconResourceId,
-            @ColorRes int iconTintId, Bitmap iconBitmap, CharSequence message) {
+    public InfoBarLayout(
+            Context context,
+            InfoBarInteractionHandler infoBar,
+            int iconResourceId,
+            @ColorRes int iconTintId,
+            Bitmap iconBitmap,
+            CharSequence message) {
         super(context);
         mControlLayouts = new ArrayList<InfoBarControlLayout>();
 
@@ -181,9 +184,7 @@ public final class InfoBarLayout extends ViewGroup implements View.OnClickListen
         mMessageTextView.setText(prepareMainMessageString());
     }
 
-    /**
-     * Appends a link to the message, if an infobar requires one (e.g. "Learn more").
-     */
+    /** Appends a link to the message, if an infobar requires one (e.g. "Learn more"). */
     public void appendMessageLinkText(String linkText) {
         mMessageLinkText = linkText;
         mMessageTextView.setText(prepareMainMessageString());
@@ -234,8 +235,9 @@ public final class InfoBarLayout extends ViewGroup implements View.OnClickListen
 
         Button secondaryButton = null;
         if (!TextUtils.isEmpty(secondaryText)) {
-            secondaryButton = DualControlLayout.createButtonForLayout(
-                    getContext(), false, secondaryText, this);
+            secondaryButton =
+                    DualControlLayout.createButtonForLayout(
+                            getContext(), false, secondaryText, this);
         }
 
         setBottomViews(
@@ -261,16 +263,15 @@ public final class InfoBarLayout extends ViewGroup implements View.OnClickListen
         assert mButtonRowLayout == null;
         mButtonRowLayout = new DualControlLayout(getContext(), null);
         mButtonRowLayout.setAlignment(alignment);
-        mButtonRowLayout.setStackedMargin(getResources().getDimensionPixelSize(
-                R.dimen.infobar_margin_between_stacked_buttons));
+        mButtonRowLayout.setStackedMargin(
+                getResources()
+                        .getDimensionPixelSize(R.dimen.infobar_margin_between_stacked_buttons));
 
         mButtonRowLayout.addView(primaryButton);
         if (secondaryView != null) mButtonRowLayout.addView(secondaryView);
     }
 
-    /**
-     * Adjusts styling to account for the big icon layout.
-     */
+    /** Adjusts styling to account for the big icon layout. */
     public void setIsUsingBigIcon() {
         if (mIconView == null) return;
 
@@ -287,25 +288,19 @@ public final class InfoBarLayout extends ViewGroup implements View.OnClickListen
         mMessageTextView.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
     }
 
-    /**
-     * Returns the primary button, or null if it doesn't exist.
-     */
+    /** Returns the primary button, or null if it doesn't exist. */
     public ButtonCompat getPrimaryButton() {
         return mButtonRowLayout == null
                 ? null
                 : (ButtonCompat) mButtonRowLayout.findViewById(R.id.button_primary);
     }
 
-    /**
-     * Returns whether or not InfoBar has a footer.
-     */
+    /** Returns whether or not InfoBar has a footer. */
     public boolean hasFooter() {
         return mFooterViewGroup != null;
     }
 
-    /**
-     * Returns the icon, or null if it doesn't exist.
-     */
+    /** Returns the icon, or null if it doesn't exist. */
     public ImageView getIcon() {
         return mIconView;
     }
@@ -380,8 +375,8 @@ public final class InfoBarLayout extends ViewGroup implements View.OnClickListen
      */
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        assert getLayoutParams().height
-                == LayoutParams.WRAP_CONTENT : "InfoBar heights cannot be constrained.";
+        assert getLayoutParams().height == LayoutParams.WRAP_CONTENT
+                : "InfoBar heights cannot be constrained.";
 
         // Apply the padding that surrounds all the infobar controls.
         final int layoutWidth = Math.max(MeasureSpec.getSize(widthMeasureSpec), mMinWidth);
@@ -420,8 +415,10 @@ public final class InfoBarLayout extends ViewGroup implements View.OnClickListen
         // Control layouts are placed below the message layout and the close button.  The icon is
         // ignored for this particular calculation because the icon enforces a left margin on all of
         // the control layouts and won't be overlapped.
-        layoutBottom += Math.max(
-                getChildHeightWithMargins(mMessageLayout), getChildHeightWithMargins(mCloseButton));
+        layoutBottom +=
+                Math.max(
+                        getChildHeightWithMargins(mMessageLayout),
+                        getChildHeightWithMargins(mCloseButton));
 
         // The other control layouts are constrained only by the icon's width.
         final int controlPaddedStart = paddedStart + iconWidth;
@@ -458,19 +455,22 @@ public final class InfoBarLayout extends ViewGroup implements View.OnClickListen
             layoutBottom += mFooterViewGroup.getMeasuredHeight();
         }
 
-        setMeasuredDimension(resolveSize(layoutWidth, widthMeasureSpec),
+        setMeasuredDimension(
+                resolveSize(layoutWidth, widthMeasureSpec),
                 resolveSize(layoutBottom, heightMeasureSpec));
     }
 
     private static int getChildWidthWithMargins(View view) {
         if (view == null) return 0;
-        return view.getMeasuredWidth() + getChildLayoutParams(view).startMargin
+        return view.getMeasuredWidth()
+                + getChildLayoutParams(view).startMargin
                 + getChildLayoutParams(view).endMargin;
     }
 
     private static int getChildHeightWithMargins(View view) {
         if (view == null) return 0;
-        return view.getMeasuredHeight() + getChildLayoutParams(view).topMargin
+        return view.getMeasuredHeight()
+                + getChildLayoutParams(view).topMargin
                 + getChildLayoutParams(view).bottomMargin;
     }
 
@@ -478,9 +478,7 @@ public final class InfoBarLayout extends ViewGroup implements View.OnClickListen
         return (LayoutParams) view.getLayoutParams();
     }
 
-    /**
-     * Measures a child for the given space, taking into account its margins.
-     */
+    /** Measures a child for the given space, taking into account its margins. */
     private void measureChildWithFixedWidth(View child, int width) {
         LayoutParams lp = getChildLayoutParams(child);
         int availableWidth = width - lp.startMargin - lp.endMargin;
@@ -522,8 +520,11 @@ public final class InfoBarLayout extends ViewGroup implements View.OnClickListen
                 assert mMessageInlineLinkRangeStart < mMessageInlineLinkRangeEnd;
                 assert mMessageInlineLinkRangeEnd < mMessageMainText.length();
 
-                spannedMessage.setSpan(createClickableSpan(), mMessageInlineLinkRangeStart,
-                        mMessageInlineLinkRangeEnd, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+                spannedMessage.setSpan(
+                        createClickableSpan(),
+                        mMessageInlineLinkRangeStart,
+                        mMessageInlineLinkRangeEnd,
+                        Spanned.SPAN_INCLUSIVE_INCLUSIVE);
             }
 
             fullString.append(spannedMessage);
@@ -535,7 +536,10 @@ public final class InfoBarLayout extends ViewGroup implements View.OnClickListen
             int spanStart = fullString.length();
 
             fullString.append(mMessageLinkText);
-            fullString.setSpan(createClickableSpan(), spanStart, fullString.length(),
+            fullString.setSpan(
+                    createClickableSpan(),
+                    spanStart,
+                    fullString.length(),
                     Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         }
 

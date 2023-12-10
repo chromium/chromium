@@ -143,7 +143,7 @@ void PasswordManagerJavaScriptFeature::FillPasswordForm(
                          base::Seconds(kJavaScriptExecutionTimeoutInSeconds));
 }
 
-absl::optional<std::string>
+std::optional<std::string>
 PasswordManagerJavaScriptFeature::GetScriptMessageHandlerName() const {
   return FormSubmittedHandlerName;
 }

@@ -2,11 +2,14 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ta">
 <translation id="1178581264944972037">இடைநிறுத்து</translation>
-<translation id="2558806128245168542">பின்செல்லும்</translation>
-<translation id="3523426587027570423">“இந்தப் பக்கத்தைப் படி” பிளேயரை மூட தட்டவும்.</translation>
+<translation id="1921351128855867012"><ph name="NUMBER_OF_SECONDS" /> வினாடிகள் முன்செல்லும்</translation>
+<translation id="1984328900355667246">பிளேபேக் இல்லை</translation>
+<translation id="3023502830214299618">இந்தப் பக்கத்திற்கான பிளேபேக் தற்சமயம் கிடைக்கவில்லை. பிறகு முயலவும்.</translation>
+<translation id="3807208219231826020">ஸ்க்ரப் பிளேபேக்</translation>
+<translation id="385051799172605136">திரும்பு</translation>
 <translation id="4431240646217225907">வார்த்தைகள் ஹைலைட் &amp; தானியங்கு ஸ்க்ரோல்</translation>
 <translation id="4654641641922242357">“இந்தப் பக்கத்தைப் படி” பிளேயர்.</translation>
-<translation id="4731877163452936634">பிளேபேக் வேகம்: <ph name="PLAYBACK_SPEED" />. மாற்ற, கிளிக் செய்யவும்.</translation>
+<translation id="4872475766448853257"><ph name="NUMBER_OF_SECONDS" /> வினாடிகள் பின்செல்லும்</translation>
 <translation id="5234971936051226002">“இந்தப் பக்கத்தைப் படி” பிளேயர் சிறிதாக்கப்பட்டது.</translation>
 <translation id="5596627076506792578">கூடுதல் விருப்பங்கள்</translation>
 <translation id="6315170314923504164">Voice</translation>
@@ -15,8 +18,8 @@
 <translation id="6831043979455480757">Translate</translation>
 <translation id="6846298663435243399">ஏற்றுகிறது...</translation>
 <translation id="7587250070160020374">Chromeமில் தற்போது படித்துக் காட்டப்படுவது:</translation>
-<translation id="7945822420239537236"><ph name="NUMBER_OF_SECONDS" /> வினாடிகள் முன்செல்லும்</translation>
-<translation id="7972866381678406344"><ph name="NUMBER_OF_SECONDS" /> வினாடிகள் பின்செல்லும்</translation>
 <translation id="8136852699834914183">இந்தப் பக்கத்தில் பிளேபேக் வசதி கிடைக்காது.</translation>
+<translation id="8264989794233974275">பிளேபேக் வேகத்தை <ph name="PLAYBACK_SPEED" /> மடங்கு அதிகரிக்கும் அல்லது குறைக்கும்.</translation>
+<translation id="8407011429883244666">பிளேயரை மூடும்.</translation>
 <translation id="8953618380150219653">“இந்தப் பக்கத்தைப் படி” பிளேயர் முழு உயரத்தில் திறக்கப்பட்டது.</translation>
 </translationbundle>

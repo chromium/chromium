@@ -171,7 +171,10 @@ void VirtualCardEnrollBubbleViews::Init() {
 
   auto* card_image =
       description_view->AddChildView(std::make_unique<views::ImageView>());
-  card_image->SetImage(virtual_card_enrollment_fields.card_art_image);
+  card_image->SetImage(ui::ImageModel::FromImageSkia(
+      virtual_card_enrollment_fields.card_art_image
+          ? *virtual_card_enrollment_fields.card_art_image
+          : gfx::ImageSkia()));
   card_image->SetTooltipText(l10n_util::GetStringUTF16(
       IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_CARD_IMAGE_TOOLTIP));
 

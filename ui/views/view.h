@@ -19,6 +19,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/safety_checks.h"
 #include "base/observer_list.h"
 #include "base/strings/string_piece.h"
 #include "build/build_config.h"
@@ -35,6 +36,7 @@
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_types.h"
+#include "ui/base/metadata/metadata_utils.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/compositor/layer_delegate.h"
 #include "ui/compositor/layer_observer.h"
@@ -50,6 +52,7 @@
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/geometry/vector2d_conversions.h"
 #include "ui/gfx/native_widget_types.h"
+#include "ui/views/action_view_interface.h"
 #include "ui/views/layout/layout_manager.h"
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/metadata/view_factory.h"
@@ -284,6 +287,10 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
                           public ui::EventHandler,
                           public ui::PropertyHandler,
                           public ui::metadata::MetaDataProvider {
+  // Do not remove this macro!
+  // The macro is maintained by the memory safety team.
+  ADVANCED_MEMORY_SAFETY_CHECKS();
+
  public:
   using Views = std::vector<View*>;
 
@@ -423,6 +430,7 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
     DCHECK(!view->owned_by_client())
         << "This should only be called if the client is passing ownership of "
            "|view| to the parent View.";
+    CHECK_CLASS_HAS_METADATA(T)
     return AddChildView<T>(view.release());
   }
   template <typename T>
@@ -430,6 +438,7 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
     DCHECK(!view->owned_by_client())
         << "This should only be called if the client is passing ownership of "
            "|view| to the parent View.";
+    CHECK_CLASS_HAS_METADATA(T)
     return AddChildViewAt<T>(view.release(), index);
   }
 
@@ -437,22 +446,26 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // for new code.
   template <typename T>
   T* AddChildView(T* view) {
+    CHECK_CLASS_HAS_METADATA(T)
     AddChildViewAtImpl(view, children_.size());
     return view;
   }
   template <typename T>
   T* AddChildViewAt(T* view, size_t index) {
+    CHECK_CLASS_HAS_METADATA(T)
     AddChildViewAtImpl(view, index);
     return view;
   }
 
   template <typename T, base::RawPtrTraits Traits = base::RawPtrTraits::kEmpty>
   T* AddChildView(raw_ptr<T, Traits> view) {
+    CHECK_CLASS_HAS_METADATA(T)
     AddChildViewAtImpl(view.get(), children_.size());
     return view;
   }
   template <typename T, base::RawPtrTraits Traits = base::RawPtrTraits::kEmpty>
   T* AddChildViewAt(raw_ptr<T, Traits> view, size_t index) {
+    CHECK_CLASS_HAS_METADATA(T)
     AddChildViewAtImpl(view.get(), index);
     return view;
   }
@@ -1577,6 +1590,8 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   void RemoveObserver(ViewObserver* observer);
   bool HasObserver(const ViewObserver* observer) const;
 
+  virtual std::unique_ptr<ActionViewInterface> GetActionViewInterface();
+
   // http://crbug.com/1162949 : Instrumentation that indicates if this is alive.
   // Callers should not depend on this as it is meant to be temporary.
   enum class LifeCycleState : uint32_t {
@@ -2209,7 +2224,7 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // Tree operations -----------------------------------------------------------
 
   // This view's parent.
-  raw_ptr<View, AcrossTasksDanglingUntriaged> parent_ = nullptr;
+  raw_ptr<View> parent_ = nullptr;
 
   // This view's children.
   Views children_;
@@ -2420,6 +2435,16 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
 
   // http://crbug.com/1162949 : Instrumentation that indicates if this is alive.
   LifeCycleState life_cycle_state_ = LifeCycleState::kAlive;
+};
+
+class VIEWS_EXPORT BaseActionViewInterface : public ActionViewInterface {
+ public:
+  explicit BaseActionViewInterface(View* action_view);
+  ~BaseActionViewInterface() override = default;
+  void ActionItemChangedImpl(actions::ActionItem* action_item) override;
+
+ private:
+  raw_ptr<View> action_view_;
 };
 
 BEGIN_VIEW_BUILDER(VIEWS_EXPORT, View, BaseView)

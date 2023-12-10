@@ -107,6 +107,7 @@ class WebStateDelegateBridge : public web::WebStateDelegate {
                                 const WebState::OpenURLParams&) override;
   void ShowRepostFormWarningDialog(
       WebState* source,
+      FormWarningType warning_type,
       base::OnceCallback<void(bool)> callback) override;
   JavaScriptDialogPresenter* GetJavaScriptDialogPresenter(
       WebState* source) override;

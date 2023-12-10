@@ -115,13 +115,15 @@ suite('ShortcutInput', function() {
 
   test('DisplayAlphaKey', async () => {
     shortcutInputElement!.startObserving();
-    shortcutInputProvider.sendKeyPressEvent({
+
+    const keyEvent = {
       vkey: VKey.kKeyA,
       domCode: 0,
       domKey: 0,
       modifiers: 0,
       keyDisplay: 'a',
-    });
+    };
+    shortcutInputProvider.sendKeyPressEvent(keyEvent, keyEvent);
     await flushTasks();
 
     const pendingKey: ShortcutInputKeyElement|null =
@@ -150,13 +152,15 @@ suite('ShortcutInput', function() {
 
   test('DisplayAlphaAndModifierKey', async () => {
     shortcutInputElement!.startObserving();
-    shortcutInputProvider.sendKeyPressEvent({
+
+    const keyEvent = {
       vkey: VKey.kKeyA,
       domCode: 0,
       domKey: 0,
       modifiers: Modifier.SHIFT,
       keyDisplay: 'a',
-    });
+    };
+    shortcutInputProvider.sendKeyPressEvent(keyEvent, keyEvent);
     await flushTasks();
 
     const pendingKey: ShortcutInputKeyElement|null =
@@ -186,14 +190,16 @@ suite('ShortcutInput', function() {
 
   test('DisplayAlphaAndAllModifierKeys', async () => {
     shortcutInputElement!.startObserving();
-    shortcutInputProvider.sendKeyPressEvent({
+
+    const keyEvent = {
       vkey: VKey.kKeyA,
       domCode: 0,
       domKey: 0,
       modifiers:
           Modifier.SHIFT | Modifier.CONTROL | Modifier.ALT | Modifier.COMMAND,
       keyDisplay: 'a',
-    });
+    };
+    shortcutInputProvider.sendKeyPressEvent(keyEvent, keyEvent);
     await flushTasks();
 
     const pendingKey: ShortcutInputKeyElement|null =
@@ -230,7 +236,7 @@ suite('ShortcutInput', function() {
       modifiers: 0,
       keyDisplay: 'a',
     };
-    shortcutInputProvider.sendKeyPressEvent(keyEvent);
+    shortcutInputProvider.sendKeyPressEvent(keyEvent, keyEvent);
     await flushTasks();
     assertEquals(0, numShortcutInputEvents);
   });
@@ -244,38 +250,65 @@ suite('ShortcutInput', function() {
       modifiers: 0,
       keyDisplay: 'a',
     };
-    shortcutInputProvider.sendKeyPressEvent(keyEvent);
-    shortcutInputProvider.sendKeyReleaseEvent(keyEvent);
+    shortcutInputProvider.sendKeyPressEvent(keyEvent, keyEvent);
+    shortcutInputProvider.sendKeyReleaseEvent(keyEvent, keyEvent);
+    await flushTasks();
+    assertEquals(1, numShortcutInputEvents);
+  });
+
+  test('EventEmittedOnKeyPressWithUpdateOnPress', async () => {
+    shortcutInputElement!.updateOnKeyPress = true;
+    shortcutInputElement!.startObserving();
+    const keyEvent = {
+      vkey: VKey.kKeyA,
+      domCode: 0,
+      domKey: 0,
+      modifiers: 0,
+      keyDisplay: 'a',
+    };
+    shortcutInputProvider.sendKeyPressEvent(keyEvent, keyEvent);
+    await flushTasks();
+    // Expect only one event to be sent.
+    assertEquals(1, numShortcutInputEvents);
+
+    // Still only expect one event to be sent.
+    shortcutInputProvider.sendKeyReleaseEvent(keyEvent, keyEvent);
     await flushTasks();
     assertEquals(1, numShortcutInputEvents);
   });
 
   test('EventNotEmittedOnModifierKeyRelease', async () => {
     shortcutInputElement!.startObserving();
-    shortcutInputProvider.sendKeyPressEvent({
+    const keyEventPressed = {
       vkey: VKey.kKeyA,
       domCode: 0,
       domKey: 0,
       modifiers: Modifier.CONTROL,
       keyDisplay: 'a',
-    });
-    shortcutInputProvider.sendKeyReleaseEvent({
+    };
+    shortcutInputProvider.sendKeyPressEvent(keyEventPressed, keyEventPressed);
+
+    const keyEventReleased = {
       vkey: VKey.kControl,
       domCode: 0,
       domKey: 0,
       modifiers: 0,
       keyDisplay: 'ctrl',
-    });
+    };
+    shortcutInputProvider.sendKeyReleaseEvent(
+        keyEventReleased, keyEventReleased);
     await flushTasks();
     assertEquals(0, numShortcutInputEvents);
 
-    shortcutInputProvider.sendKeyReleaseEvent({
+    const keyEventNoModifierReleased = {
       vkey: VKey.kKeyA,
       domCode: 0,
       domKey: 0,
       modifiers: 0,
       keyDisplay: 'a',
-    });
+    };
+    shortcutInputProvider.sendKeyReleaseEvent(
+        keyEventNoModifierReleased, keyEventNoModifierReleased);
     await flushTasks();
     assertEquals(1, numShortcutInputEvents);
   });
@@ -306,6 +339,15 @@ suite('ShortcutInput', function() {
     assertFalse(lastCaptureState);
   });
 
+  test('EventNotEmittedOnFocusLostWhileIgnoringBlur', async () => {
+    shortcutInputElement!.ignoreBlur = true;
+    shortcutInputElement!.startObserving();
+    shortcutInputElement!.blur();
+    await flushTasks();
+
+    assertEquals(1, numCaptureStateEvents);
+  });
+
   test('ConfirmViewShownWhenNotCapturing', async () => {
     shortcutInputElement!.startObserving();
     const keyEvent = {
@@ -315,8 +357,8 @@ suite('ShortcutInput', function() {
       modifiers: Modifier.SHIFT,
       keyDisplay: 'a',
     };
-    shortcutInputProvider.sendKeyPressEvent(keyEvent);
-    shortcutInputProvider.sendKeyReleaseEvent(keyEvent);
+    shortcutInputProvider.sendKeyPressEvent(keyEvent, keyEvent);
+    shortcutInputProvider.sendKeyReleaseEvent(keyEvent, keyEvent);
     shortcutInputElement!.stopObserving();
     await flushTasks();
 
@@ -340,8 +382,8 @@ suite('ShortcutInput', function() {
           Modifier.SHIFT | Modifier.CONTROL | Modifier.ALT | Modifier.COMMAND,
       keyDisplay: 'a',
     };
-    shortcutInputProvider.sendKeyPressEvent(keyEvent);
-    shortcutInputProvider.sendKeyReleaseEvent(keyEvent);
+    shortcutInputProvider.sendKeyPressEvent(keyEvent, keyEvent);
+    shortcutInputProvider.sendKeyReleaseEvent(keyEvent, keyEvent);
     shortcutInputElement!.stopObserving();
     await flushTasks();
 
@@ -366,8 +408,8 @@ suite('ShortcutInput', function() {
       modifiers: 0,
       keyDisplay: 'a',
     };
-    shortcutInputProvider.sendKeyPressEvent(keyEvent);
-    shortcutInputProvider.sendKeyReleaseEvent(keyEvent);
+    shortcutInputProvider.sendKeyPressEvent(keyEvent, keyEvent);
+    shortcutInputProvider.sendKeyReleaseEvent(keyEvent, keyEvent);
     shortcutInputElement!.stopObserving();
     await flushTasks();
 
@@ -376,5 +418,44 @@ suite('ShortcutInput', function() {
     assertEquals('a', confirmKey!.key);
     assertFalse(isVisible(getKeySeparator(shortcutInputElement)));
     assertEquals(0, shortcutInputElement!.modifiers.length);
+  });
+
+  test('ObservedPrerewrittenKeyEvent', async () => {
+    shortcutInputElement!.startObserving();
+    const prerewrittenKeyEvent = {
+      vkey: VKey.kKeyA,
+      domCode: 0,
+      domKey: 0,
+      modifiers: Modifier.CONTROL,
+      keyDisplay: 'a',
+    };
+
+    const keyEvent = {
+      vkey: VKey.kKeyB,
+      domCode: 0,
+      domKey: 0,
+      modifiers: 0,
+      keyDisplay: 'b',
+    };
+
+    shortcutInputProvider.sendKeyPressEvent(prerewrittenKeyEvent, keyEvent);
+    await flushTasks();
+    // Check that the prerewritten event was observed correctly.
+    assertEquals(
+        prerewrittenKeyEvent, shortcutInputProvider.getPrerewrittenKeyEvent());
+
+    const prerewrittenReleasedKeyEvent = {
+      vkey: VKey.kKeyA,
+      domCode: 0,
+      domKey: 0,
+      modifiers: 0,
+      keyDisplay: 'a',
+    };
+    shortcutInputProvider.sendKeyReleaseEvent(
+        prerewrittenReleasedKeyEvent, keyEvent);
+    await flushTasks();
+    assertEquals(
+        prerewrittenReleasedKeyEvent,
+        shortcutInputProvider.getPrerewrittenKeyEvent());
   });
 });

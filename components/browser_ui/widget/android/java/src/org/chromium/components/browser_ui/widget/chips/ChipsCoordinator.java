@@ -90,9 +90,7 @@ public class ChipsCoordinator {
         return new ListItem(ChipProperties.BASIC_CHIP, model);
     }
 
-    /**
-     * @see {@link #buildChipListItem(int, String, Callback, int)}
-     */
+    /** @see {@link #buildChipListItem(int, String, Callback, int)} */
     public static ListItem buildChipListItem(
             int id, String text, Callback<PropertyModel> clickHandler) {
         return buildChipListItem(id, text, clickHandler, ChipProperties.INVALID_ICON_ID);
@@ -104,9 +102,7 @@ public class ChipsCoordinator {
      */
     public void destroy() {}
 
-    /**
-     * @return The {@link View} that represents this coordinator.
-     */
+    /** @return The {@link View} that represents this coordinator. */
     public View getView() {
         return mView;
     }

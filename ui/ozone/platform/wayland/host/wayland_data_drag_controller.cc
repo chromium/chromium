@@ -21,6 +21,7 @@
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/base/dragdrop/os_exchange_data_provider_non_backed.h"
+#include "ui/events/base_event_utils.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/platform/platform_event_source.h"
 #include "ui/events/platform/scoped_event_dispatcher.h"
@@ -337,6 +338,7 @@ void WaylandDataDragController::OnDragOffer(
 
 void WaylandDataDragController::OnDragEnter(WaylandWindow* window,
                                             const gfx::PointF& location,
+                                            base::TimeTicks timestamp,
                                             uint32_t serial) {
   DCHECK(window);
   DCHECK(data_offer_);
@@ -358,7 +360,7 @@ void WaylandDataDragController::OnDragEnter(WaylandWindow* window,
     DCHECK(drag_source_.has_value());
     if (*drag_source_ == DragEventSource::kMouse) {
       pointer_delegate_->OnPointerFocusChanged(
-          window, location, wl::EventDispatchPolicy::kImmediate);
+          window, location, timestamp, wl::EventDispatchPolicy::kImmediate);
     } else {
       touch_delegate_->OnTouchFocusChanged(window);
     }
@@ -373,7 +375,7 @@ void WaylandDataDragController::OnDragEnter(WaylandWindow* window,
     // |offered_exchange_data_provider_| already holds the data to be exchanged,
     // so we don't need to read it through Wayland and can just copy it here.
     DCHECK(offered_exchange_data_provider_);
-    PropagateOnDragEnter(location,
+    PropagateOnDragEnter(location, timestamp,
                          std::make_unique<OSExchangeData>(
                              offered_exchange_data_provider_->Clone()));
   } else {
@@ -385,11 +387,12 @@ void WaylandDataDragController::OnDragEnter(WaylandWindow* window,
     received_exchange_data_provider_ =
         std::make_unique<WaylandExchangeDataProvider>();
     last_drag_location_ = location;
-    HandleUnprocessedMimeTypes(base::TimeTicks::Now());
+    HandleUnprocessedMimeTypes(timestamp);
   }
 }
 
-void WaylandDataDragController::OnDragMotion(const gfx::PointF& location) {
+void WaylandDataDragController::OnDragMotion(const gfx::PointF& location,
+                                             base::TimeTicks timestamp) {
   VLOG(2) << __FUNCTION__ << " window=" << !!window_
           << " location=" << location.ToString()
           << " transferring=" << (state_ == State::kTransferring);
@@ -411,7 +414,7 @@ void WaylandDataDragController::OnDragMotion(const gfx::PointF& location) {
   data_offer_->SetDndActions(DragOperationsToDndActions(client_operations));
 }
 
-void WaylandDataDragController::OnDragLeave() {
+void WaylandDataDragController::OnDragLeave(base::TimeTicks timestamp) {
   VLOG(2) << __FUNCTION__ << " window=" << !!window_
           << " transferring=" << (state_ == State::kTransferring);
 
@@ -430,7 +433,7 @@ void WaylandDataDragController::OnDragLeave() {
   is_leave_pending_ = false;
 }
 
-void WaylandDataDragController::OnDragDrop() {
+void WaylandDataDragController::OnDragDrop(base::TimeTicks timestamp) {
   VLOG(1) << __FUNCTION__ << " window=" << !!window_;
   if (!window_) {
     return;
@@ -446,6 +449,7 @@ void WaylandDataDragController::OnDragDrop() {
 }
 
 void WaylandDataDragController::OnDataSourceFinish(WaylandDataSource* source,
+                                                   base::TimeTicks timestamp,
                                                    bool completed) {
   CHECK_EQ(data_source_.get(), source);
   VLOG(1) << __FUNCTION__ << " window=" << !!window_
@@ -472,7 +476,7 @@ void WaylandDataDragController::OnDataSourceFinish(WaylandDataSource* source,
   // extra leave event that is dispatched if |completed| is false may cause
   // problems.
   if (pointer_grabber_for_window_drag_) {
-    DispatchPointerRelease();
+    DispatchPointerRelease(timestamp);
   }
 
   data_source_.reset();
@@ -554,7 +558,7 @@ void WaylandDataDragController::RunDataTransferredCallbackForTesting(
 }
 
 void WaylandDataDragController::OnMimeTypeDataTransferred(
-    base::TimeTicks start_time,
+    base::TimeTicks timestamp,
     PlatformClipboard::Data contents) {
   DCHECK(contents);
   std::string mime_type = unprocessed_mime_types_.front();
@@ -566,11 +570,11 @@ void WaylandDataDragController::OnMimeTypeDataTransferred(
   RunDataTransferredCallbackForTesting(mime_type);  // IN-TEST
 
   // Continue reading data for other negotiated mime types.
-  HandleUnprocessedMimeTypes(start_time);
+  HandleUnprocessedMimeTypes(timestamp);
 }
 
 void WaylandDataDragController::OnDataTransferFinished(
-    base::TimeTicks start_time,
+    base::TimeTicks timestamp,
     std::unique_ptr<OSExchangeData> received_data) {
   VLOG(1) << __FUNCTION__ << " unprocessed=" << unprocessed_mime_types_.size()
           << " leave_pending=" << is_leave_pending_ << " window=" << !!window_;
@@ -598,10 +602,8 @@ void WaylandDataDragController::OnDataTransferFinished(
     return;
   }
 
-  UMA_HISTOGRAM_TIMES("Event.WaylandDragDrop.IncomingDataTransferTime",
-                      base::TimeTicks::Now() - start_time);
-
-  PropagateOnDragEnter(last_drag_location_, std::move(received_data));
+  PropagateOnDragEnter(last_drag_location_, timestamp,
+                       std::move(received_data));
 }
 
 // Returns the next MIME type to be received from the source process, or an
@@ -621,6 +623,7 @@ std::string WaylandDataDragController::GetNextUnprocessedMimeType() {
 
 void WaylandDataDragController::PropagateOnDragEnter(
     const gfx::PointF& location,
+    base::TimeTicks timestamp,
     std::unique_ptr<OSExchangeData> data) {
   VLOG(1) << __func__ << " window=" << !!window_ << " offer=" << !!data_offer_;
 
@@ -640,7 +643,7 @@ void WaylandDataDragController::PropagateOnDragEnter(
   window_->OnDragEnter(
       location, std::move(data),
       DndActionsToDragOperations(data_offer_->source_actions()));
-  OnDragMotion(location);
+  OnDragMotion(location, timestamp);
 }
 
 absl::optional<wl::Serial>
@@ -691,11 +694,12 @@ void WaylandDataDragController::SetUpWindowDraggingSessionIfNeeded(
   pointer_grabber_for_window_drag_ = origin_window_;
 }
 
-void WaylandDataDragController::DispatchPointerRelease() {
+void WaylandDataDragController::DispatchPointerRelease(
+    base::TimeTicks timestamp) {
   DCHECK(pointer_grabber_for_window_drag_);
   pointer_delegate_->OnPointerButtonEvent(
-      ET_MOUSE_RELEASED, EF_LEFT_MOUSE_BUTTON, pointer_grabber_for_window_drag_,
-      wl::EventDispatchPolicy::kImmediate,
+      ET_MOUSE_RELEASED, EF_LEFT_MOUSE_BUTTON, timestamp,
+      pointer_grabber_for_window_drag_, wl::EventDispatchPolicy::kImmediate,
       /*allow_release_of_unpressed_button=*/true);
   pointer_grabber_for_window_drag_ = nullptr;
 }
@@ -716,7 +720,8 @@ uint32_t WaylandDataDragController::DispatchEvent(const PlatformEvent& event) {
   // that, for now, is to monitor wl_pointer events here and abort the session
   // if it comes in.
   if (event->type() == ET_MOUSE_RELEASED) {
-    OnDataSourceFinish(data_source_.get(), /*completed=*/false);
+    OnDataSourceFinish(data_source_.get(), event->time_stamp(),
+                       /*completed=*/false);
   }
 
   return POST_DISPATCH_PERFORM_DEFAULT;

@@ -122,9 +122,14 @@ long descriptions.  However, IDL is not as fully-featured as JSON in terms of
 accepted properties on different nodes.
 
 ## Promise Based Function Returns
+
 Extension functions can be made to both accept a callback as a final parameter,
-or return a promise if the callback is omitted. In IDL schemas this is achieved
-by adding the `[supportsPromises]` extended attribute in front of the function
-definition. For JSON schemas, instead of specifying the callback as a function
-at the end of the parameter list, it is explicitly defined as an asynchronous
-return using the `returns_async` key on the function itself.
+or return a promise if the callback is omitted. For JSON schemas, instead of
+specifying the callback as a function at the end of the parameter list, it is
+explicitly defined as an asynchronous return using the `returns_async` key on
+the function itself. For IDL scheamas, any function where the final argument of
+the parameters is a callback type will automatically be considered as supporting
+promises, unless the function has the [doesNotSupportPromises="crbug.com/id"]
+extended attribute. This extended attribute shouldn't be added to any new APIs
+and only exists for a few legacy APIs which can't support promises for various
+reasons.

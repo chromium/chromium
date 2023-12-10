@@ -46,6 +46,20 @@ OwnerKeyUmaEvent ConvertToUmaEvent(OwnerKeyEvent event, bool success) {
         return OwnerKeyUmaEvent::kUserNotAnOwnerBasedOnEmptyUsernameSuccess;
       case OwnerKeyEvent::kUnsureTakeOwnership:
         return OwnerKeyUmaEvent::kUnsureTakeOwnership;
+      case OwnerKeyEvent::kPrivateSlotKeyGeneration:
+        return OwnerKeyUmaEvent::kPrivateSlotKeyGenerationSuccess;
+      case OwnerKeyEvent::kPublicSlotKeyGeneration:
+        return OwnerKeyUmaEvent::kPublicSlotKeyGenerationSuccess;
+      case OwnerKeyEvent::kMigrationToPrivateSlotStarted:
+        return OwnerKeyUmaEvent::kMigrationToPrivateSlotStarted;
+      case OwnerKeyEvent::kMigrationToPublicSlotStarted:
+        return OwnerKeyUmaEvent::kMigrationToPublicSlotStarted;
+      case OwnerKeyEvent::kOwnerKeySet:
+        return OwnerKeyUmaEvent::kOwnerKeySetSuccess;
+      case OwnerKeyEvent::kOldOwnerKeyCleanUpStarted:
+        return OwnerKeyUmaEvent::kOldOwnerKeyCleanUpStarted;
+      case OwnerKeyEvent::kOwnerKeyInPublicSlot:
+        return OwnerKeyUmaEvent::kOwnerKeyInPublicSlotTrue;
     }
   } else {
     switch (event) {
@@ -83,6 +97,20 @@ OwnerKeyUmaEvent ConvertToUmaEvent(OwnerKeyEvent event, bool success) {
         return OwnerKeyUmaEvent::kUserNotAnOwnerBasedOnEmptyUsernameFail;
       case OwnerKeyEvent::kUnsureTakeOwnership:
         return OwnerKeyUmaEvent::kUnsureTakeOwnership;
+      case OwnerKeyEvent::kPrivateSlotKeyGeneration:
+        return OwnerKeyUmaEvent::kPrivateSlotKeyGenerationFail;
+      case OwnerKeyEvent::kPublicSlotKeyGeneration:
+        return OwnerKeyUmaEvent::kPublicSlotKeyGenerationFail;
+      case OwnerKeyEvent::kMigrationToPrivateSlotStarted:
+        return OwnerKeyUmaEvent::kMigrationToPrivateSlotStarted;
+      case OwnerKeyEvent::kMigrationToPublicSlotStarted:
+        return OwnerKeyUmaEvent::kMigrationToPublicSlotStarted;
+      case OwnerKeyEvent::kOwnerKeySet:
+        return OwnerKeyUmaEvent::kOwnerKeySetFail;
+      case OwnerKeyEvent::kOldOwnerKeyCleanUpStarted:
+        return OwnerKeyUmaEvent::kOldOwnerKeyCleanUpStarted;
+      case OwnerKeyEvent::kOwnerKeyInPublicSlot:
+        return OwnerKeyUmaEvent::kOwnerKeyInPublicSlotFalse;
     }
   }
 }

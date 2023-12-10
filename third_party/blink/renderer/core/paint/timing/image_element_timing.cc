@@ -140,7 +140,7 @@ void ImageElementTiming::NotifyImagePaintedInternal(
     return;
 
   RespectImageOrientationEnum respect_orientation =
-      LayoutObject::ShouldRespectImageOrientation(&layout_object);
+      layout_object.StyleRef().ImageOrientation();
 
   gfx::RectF intersection_rect = ElementTimingUtils::ComputeIntersectionRect(
       frame, image_border, current_paint_chunk_properties);

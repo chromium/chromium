@@ -578,6 +578,12 @@ Request* Request::CreateRequestWithRequestOrString(
           " in secure contexts.");
       return nullptr;
     }
+    if (origin->IsOpaque()) {
+      exception_state.ThrowTypeError(
+          "sharedStorageWritable: sharedStorage operations are not available"
+          " for opaque origins.");
+      return nullptr;
+    }
     request->SetSharedStorageWritable(init->sharedStorageWritable());
     if (init->sharedStorageWritable()) {
       UseCounter::Count(
@@ -657,7 +663,7 @@ Request* Request::CreateRequestWithRequestOrString(
     if (signal) {
       signals.push_back(signal);
     }
-    // "Set |r|'s signal to the result of creating a new  dependent abort signal
+    // "Set |r|'s signal to the result of creating a new dependent abort signal
     // from |signals|".
     request_signal = MakeGarbageCollected<AbortSignal>(script_state, signals);
   } else {

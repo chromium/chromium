@@ -20,10 +20,15 @@
 #include "base/mac/launch_application.h"
 #include "base/mac/mac_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/field_trial.h"
+#include "base/metrics/field_trial_param_associator.h"
+#include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/synchronization/waitable_event.h"
 #import "base/task/single_thread_task_runner.h"
+#include "base/task/thread_pool/thread_pool_instance.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/app_shim/app_shim_delegate.h"
 #include "chrome/app_shim/app_shim_render_widget_host_view_mac_delegate.h"
@@ -31,14 +36,18 @@
 #include "chrome/browser/ui/cocoa/chrome_command_dispatcher_delegate.h"
 #include "chrome/browser/ui/cocoa/main_menu_builder.h"
 #include "chrome/common/chrome_constants.h"
+#include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/mac/app_mode_common.h"
 #include "chrome/common/process_singleton_lock_posix.h"
 #include "chrome/grit/generated_resources.h"
 #import "chrome/services/mac_notifications/mac_notification_service_ns.h"
+#import "chrome/services/mac_notifications/mac_notification_service_un.h"
 #include "components/remote_cocoa/app_shim/application_bridge.h"
 #include "components/remote_cocoa/app_shim/native_widget_ns_window_bridge.h"
 #include "components/remote_cocoa/common/application.mojom.h"
+#include "components/variations/field_trial_config/field_trial_util.h"
+#include "components/variations/variations_switches.h"
 #include "content/public/browser/remote_cocoa.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/platform/named_platform_channel.h"
@@ -120,6 +129,42 @@ constexpr base::TimeDelta kPollTimeoutSeconds = base::Seconds(60);
 // ready.
 constexpr base::TimeDelta kPollPeriodMsec = base::Milliseconds(100);
 
+// Helper that keeps stops another sequence from executing any code while this
+// object is alive. The constructor waits for the other thread to be blocked,
+// while the destructor signals the other thread to continue running again.
+class ScopedSynchronizeThreads {
+ public:
+  explicit ScopedSynchronizeThreads(
+      scoped_refptr<base::SequencedTaskRunner> thread_runner) {
+    // This event is signalled by a task posted to the other thread as soon as
+    // it starts executing, to signal that no more code is running on that
+    // thread. The main thread only proceeds after this event is signalled.
+    base::WaitableEvent thread_blocked;
+    // Heap allocate `operation_finished` and make sure it is destroyed on the
+    // thread that waits on that event. This ensures it isn't destroyed too
+    // early.
+    auto operation_finished = std::make_unique<base::WaitableEvent>();
+    operation_finished_ = operation_finished.get();
+    thread_runner->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            [](base::WaitableEvent* thread_blocked,
+               std::unique_ptr<base::WaitableEvent> operation_finished) {
+              thread_blocked->Signal();
+              operation_finished->Wait();
+            },
+            &thread_blocked, std::move(operation_finished)));
+    thread_blocked.Wait();
+  }
+
+  ~ScopedSynchronizeThreads() { operation_finished_->Signal(); }
+
+ private:
+  // This event is signalled by the main thread to indicate that all the work is
+  // done, allowing the other thread to be unblocked again.
+  raw_ptr<base::WaitableEvent> operation_finished_;
+};
+
 }  // namespace
 
 AppShimController::Params::Params() = default;
@@ -142,6 +187,104 @@ AppShimController::~AppShimController() {
   NSApp.delegate = nil;
   [profile_menu_target_ clearController];
   [application_dock_menu_target_ clearController];
+}
+
+// static
+void AppShimController::PreInitFeatureState(
+    const base::CommandLine& command_line) {
+  new base::FieldTrialList();
+
+  auto feature_list = std::make_unique<base::FeatureList>();
+  base::FeatureList::FailOnFeatureAccessWithoutFeatureList();
+
+  // App shims can generally be launched in one of two ways:
+  // - By chrome itself, in which case the full feature and field trial state
+  //   is passed on the command line, and any state stored in user_data_dir is
+  //   ignored. In this case we could avoid re-initializing feature and field
+  //   trial state in FinalizeFeatureState entirely, but since this is the case
+  //   with by far the most test coverage, doing so would make it much more
+  //   likely that some change accidentally slips in that would breaks with the
+  //   early access and reinitialization behavior.
+  // - By the OS or user directly. In which case a (possibly outdated) state is
+  //   loaded from user_data_dir, but we do allow explicit feature and/or field
+  //   trial overrides on the command line to help with manual
+  //   testing/development.
+  //
+  // In both cases the state initialized here is only used during startup, and
+  // as soon as a mojo connection has been established with Chrome the final
+  // feature state is passed to FinalizeFeatureState below.
+  //
+  // Several integration tests launch app shims with somewhat of a mix of these
+  // two options. Where tests try to simulate an app shim being launched by the
+  // OS we still pass switches such as the kLaunchedByChromeProcessId (to ensure
+  // the app shim communicates with the correct test instance), but don't pass
+  // the full feature state on the command line, so having
+  // kLaunchedByChromeProcessId be present does not guarantee that feature state
+  // is passed on the command line as well.
+
+  // Add command line overrides. These will always be set if this app shim is
+  // launched by chrome, but for development/testing purposes can also be used
+  // to override state found in the user_data_dir file if the launch was not
+  // triggered by chrome. In either case, FinalizeFeatureState will reset all
+  // feature and field trial state to match the state of the running Chrome
+  // instance.
+  variations::VariationsCommandLine::GetForCommandLine(command_line)
+      .ApplyToFeatureAndFieldTrialList(feature_list.get());
+
+  // If the shim was launched by chrome, we're done. However if the shim was
+  // launched directly by the user/OS the command line parameters were merely
+  // optional overrides, so read state from the file in user_data_dir to get the
+  // correct feature and field trial state for features and field trials that
+  // have not already been explicitly overridden.
+  if (!command_line.HasSwitch(app_mode::kLaunchedByChromeProcessId)) {
+    auto file_state = variations::VariationsCommandLine::ReadFromFile(
+        base::PathService::CheckedGet(chrome::DIR_USER_DATA)
+            .Append(app_mode::kFeatureStateFileName));
+    if (file_state.has_value()) {
+      file_state->ApplyToFeatureAndFieldTrialList(feature_list.get());
+    }
+  }
+
+  // Until FinalizeFeatureState() is called, only features whose name is in the
+  // below list are allowed to be passed to base::FeatureList::IsEnabled().
+  // Attempts to check the state of any other feature will behave as if no
+  // FeatureList was set yet at all (i.e. check-fail).
+  base::FeatureList::SetEarlyAccessInstance(
+      std::move(feature_list),
+      {"DcheckIsFatal", "MojoBindingsInlineSLS", "MojoInlineMessagePayloads",
+       "MojoIpcz", "MojoTaskPerMessage", "StandardCompliantHostCharacters"});
+}
+
+// static
+void AppShimController::FinalizeFeatureState(
+    const variations::VariationsCommandLine& feature_state,
+    const scoped_refptr<base::SequencedTaskRunner>& io_thread_runner) {
+  // This code assumes no other threads are running. So make sure there is no
+  // started ThreadPoolInstance, and block the IO thread for the duration of
+  // this method.
+  CHECK(!base::ThreadPoolInstance::Get() ||
+        !base::ThreadPoolInstance::Get()->WasStarted());
+  ScopedSynchronizeThreads block_io_thread(io_thread_runner);
+
+  // Recreate FieldTrialList.
+  std::unique_ptr<base::FieldTrialList> old_field_trial_list(
+      base::FieldTrialList::ResetInstance());
+  CHECK(old_field_trial_list);
+  // This is intentionally leaked since it needs to live for the duration of
+  // the app shim process and there's no benefit in cleaning it up at exit.
+  auto* field_trial_list = new base::FieldTrialList();
+  ANNOTATE_LEAKING_OBJECT_PTR(field_trial_list);
+  std::ignore = field_trial_list;
+
+  // Reset FieldTrial parameter cache.
+  base::FieldTrialParamAssociator::GetInstance()->ClearAllCachedParams({});
+
+  // Create a new FeatureList and field trial state using what was passed by the
+  // browser process.
+  auto feature_list = std::make_unique<base::FeatureList>();
+  feature_state.ApplyToFeatureAndFieldTrialList(feature_list.get());
+
+  base::FeatureList::SetInstance(std::move(feature_list));
 }
 
 void AppShimController::OnAppFinishedLaunching() {
@@ -215,15 +358,18 @@ bool AppShimController::FindOrLaunchChrome() {
   base::CommandLine browser_command_line(base::CommandLine::NO_PROGRAM);
   browser_command_line.AppendSwitchPath(switches::kUserDataDir,
                                         params_.user_data_dir);
-  if (app_command_line->HasSwitch(switches::kEnableFeatures)) {
-    browser_command_line.AppendSwitchASCII(
-        switches::kEnableFeatures,
-        app_command_line->GetSwitchValueASCII(switches::kEnableFeatures));
-  }
-  if (app_command_line->HasSwitch(switches::kDisableFeatures)) {
-    browser_command_line.AppendSwitchASCII(
-        switches::kDisableFeatures,
-        app_command_line->GetSwitchValueASCII(switches::kDisableFeatures));
+
+  // Forward feature and field trial related switches to Chrome to aid in
+  // testing and development with custom feature or field trial configurations.
+  static constexpr const char* switches_to_forward[] = {
+      switches::kEnableFeatures, switches::kDisableFeatures,
+      switches::kForceFieldTrials,
+      variations::switches::kForceFieldTrialParams};
+  for (const char* switch_name : switches_to_forward) {
+    if (app_command_line->HasSwitch(switch_name)) {
+      browser_command_line.AppendSwitchASCII(
+          switch_name, app_command_line->GetSwitchValueASCII(switch_name));
+    }
   }
 
   base::mac::LaunchApplication(
@@ -378,8 +524,6 @@ void AppShimController::SendBootstrapOnShimConnected(
   DCHECK_EQ(init_state_, InitState::kWaitingForChromeReady);
   init_state_ = InitState::kHasSentOnShimConnected;
 
-  SetUpMenu();
-
   // Chrome will relaunch shims when relaunching apps.
   [NSApp disableRelaunchOnLogin];
   CHECK(!params_.user_data_dir.empty());
@@ -449,10 +593,17 @@ void AppShimController::ChannelError(uint32_t custom_reason,
 
 void AppShimController::OnShimConnectedResponse(
     chrome::mojom::AppShimLaunchResult result,
+    variations::VariationsCommandLine feature_state,
     mojo::PendingReceiver<chrome::mojom::AppShim> app_shim_receiver) {
   LOG(INFO) << "Received OnShimConnected.";
   DCHECK_EQ(init_state_, InitState::kHasSentOnShimConnected);
   init_state_ = InitState::kHasReceivedOnShimConnectedResponse;
+
+  // Finalize feature state and finish up initialization that was deferred for
+  // feature state to be fully setup.
+  FinalizeFeatureState(feature_state, params_.io_thread_runner);
+  base::ThreadPoolInstance::Get()->StartWithDefaultParams();
+  SetUpMenu();
 
   if (result != chrome::mojom::AppShimLaunchResult::kSuccess) {
     switch (result) {
@@ -586,12 +737,21 @@ void AppShimController::BindNotificationService(
     mojo::PendingRemote<mac_notifications::mojom::MacNotificationActionHandler>
         handler) {
   DCHECK(!notification_service_);
-  // TODO(mek): When app shims switch to being ad-hoc signed, switch this to use
-  // the UNUserNotification API rather than the NSUserNotification API.
-  notification_service_ =
-      std::make_unique<mac_notifications::MacNotificationServiceNS>(
-          std::move(service), std::move(handler),
-          [NSUserNotificationCenter defaultUserNotificationCenter]);
+  // TODO(https://crbug.com/938661): Once ad-hoc signed app shims become the
+  // default on supported platforms, change this to always use the
+  // UNUserNotification API (and not support notification attribution on other
+  // platforms at all).
+  if (app_mode::UseAdHocSigningForWebAppShims()) {
+    notification_service_ =
+        std::make_unique<mac_notifications::MacNotificationServiceUN>(
+            std::move(service), std::move(handler),
+            UNUserNotificationCenter.currentNotificationCenter);
+  } else {
+    notification_service_ =
+        std::make_unique<mac_notifications::MacNotificationServiceNS>(
+            std::move(service), std::move(handler),
+            [NSUserNotificationCenter defaultUserNotificationCenter]);
+  }
 }
 
 void AppShimController::SetUserAttention(

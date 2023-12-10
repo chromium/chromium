@@ -10,7 +10,6 @@
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/ash/bruschetta/bruschetta_features.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_util.h"
 #include "chrome/browser/ash/crostini/crostini_disk.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"
@@ -255,12 +254,11 @@ CrostiniSection::CrostiniSection(Profile* profile,
 CrostiniSection::~CrostiniSection() = default;
 
 bool CrostiniSection::ShouldShowBruschetta(Profile* profile) {
-  const bool bru_enabled = bruschetta::BruschettaFeatures::Get()->IsEnabled();
   const bool bru_installable =
       !bruschetta::GetInstallableConfigs(profile).empty();
   const bool bru_installed =
       !guest_os::GetContainers(profile, guest_os::VmType::BRUSCHETTA).empty();
-  return bru_enabled && (bru_installable || bru_installed);
+  return bru_installable || bru_installed;
 }
 
 void CrostiniSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
@@ -426,7 +424,7 @@ void CrostiniSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   html_source->AddString(
       "crostiniContainerUpgrade",
       l10n_util::GetStringUTF16(
-          IDS_SETTINGS_CROSTINI_CONTAINER_UPGRADE_BULLSEYE_MESSAGE));
+          IDS_OS_SETTINGS_CROSTINI_CONTAINER_UPGRADE_BOOKWORM_MESSAGE));
 
   if (auto* pretty_name_value = guest_os::GetContainerPrefValue(
           profile_, crostini::DefaultContainerId(),
@@ -566,11 +564,8 @@ void CrostiniSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
 }
 
 void CrostiniSection::AddHandlers(content::WebUI* web_ui) {
-  if (crostini::CrostiniFeatures::Get()->CouldBeAllowed(profile_) ||
-      bruschetta::BruschettaFeatures::Get()->IsEnabled()) {
-    web_ui->AddMessageHandler(std::make_unique<GuestOsHandler>(profile_));
-    web_ui->AddMessageHandler(std::make_unique<CrostiniHandler>(profile_));
-  }
+  web_ui->AddMessageHandler(std::make_unique<GuestOsHandler>(profile_));
+  web_ui->AddMessageHandler(std::make_unique<CrostiniHandler>(profile_));
 }
 
 int CrostiniSection::GetSectionNameMessageId() const {

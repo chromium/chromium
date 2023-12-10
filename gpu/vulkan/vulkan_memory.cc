@@ -6,16 +6,16 @@
 
 #include <vulkan/vulkan.h>
 
+#include <optional>
 #include "base/logging.h"
 #include "build/build_config.h"
 #include "gpu/vulkan/vulkan_device_queue.h"
 #include "gpu/vulkan/vulkan_function_pointers.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace gpu {
 namespace {
 
-absl::optional<uint32_t> FindMemoryTypeIndex(
+std::optional<uint32_t> FindMemoryTypeIndex(
     VkPhysicalDevice physical_device,
     const VkMemoryRequirements* requirements,
     VkMemoryPropertyFlags flags) {
@@ -32,7 +32,7 @@ absl::optional<uint32_t> FindMemoryTypeIndex(
     return i;
   }
   NOTREACHED();
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 }  // namespace

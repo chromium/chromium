@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/messaging/blink_transferable_message.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/core/testing/wait_for_event.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 namespace {
@@ -28,6 +29,7 @@ BlinkTransferableMessage MakeNullMessage() {
 }
 
 TEST(MessagePortTest, DispatchMessageEvent) {
+  test::TaskEnvironment task_environment;
   DummyPageHolder holder;
   LocalDOMWindow* window = holder.GetFrame().DomWindow();
 
@@ -48,6 +50,7 @@ TEST(MessagePortTest, DispatchMessageEvent) {
 }
 
 TEST(MessagePortTest, DispatchMessageErrorEvent_LockedAgentCluster) {
+  test::TaskEnvironment task_environment;
   DummyPageHolder holder;
   LocalDOMWindow* window = holder.GetFrame().DomWindow();
 
@@ -70,6 +73,7 @@ TEST(MessagePortTest, DispatchMessageErrorEvent_LockedAgentCluster) {
 }
 
 TEST(MessagePortTest, DispatchMessageErrorEvent_CannotDeserialize) {
+  test::TaskEnvironment task_environment;
   DummyPageHolder holder;
   LocalDOMWindow* window = holder.GetFrame().DomWindow();
   MessagePort* port = MakeGarbageCollected<MessagePort>(*window);

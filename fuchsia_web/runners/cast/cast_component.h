@@ -13,6 +13,7 @@
 #include <utility>
 #include <vector>
 
+#include <optional>
 #include "base/fuchsia/startup_context.h"
 #include "base/gtest_prod_util.h"
 #include "base/message_loop/message_pump_for_io.h"
@@ -21,7 +22,6 @@
 #include "fuchsia_web/runners/cast/application_controller_impl.h"
 #include "fuchsia_web/runners/cast/named_message_port_connector_fuchsia.h"
 #include "fuchsia_web/runners/common/web_component.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 FORWARD_DECLARE_TEST(HeadlessCastRunnerIntegrationTest, Headless);
 
@@ -53,9 +53,9 @@ class CastComponent final
     std::unique_ptr<ApiBindingsClient> api_bindings_client;
     chromium::cast::ApplicationConfig application_config;
     fidl::ClientEnd<chromium_cast::ApplicationContext> application_context;
-    absl::optional<std::vector<fuchsia::web::UrlRequestRewriteRule>>
+    std::optional<std::vector<fuchsia::web::UrlRequestRewriteRule>>
         initial_url_rewrite_rules;
-    absl::optional<fuchsia::web::FrameMediaSettings> media_settings;
+    std::optional<fuchsia::web::FrameMediaSettings> media_settings;
 
     // ID of flow used in the with the Fuchsia Trace API to trace the
     // application lifetime.

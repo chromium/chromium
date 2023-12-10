@@ -38,6 +38,7 @@ extern "C" typedef const struct _GLcolorSpace* GLcolorSpace;
 
 namespace gpu {
 
+class ClientSharedImage;
 struct Mailbox;
 
 namespace raster {
@@ -206,6 +207,9 @@ class RasterInterface : public InterfaceBase {
 
   // Raster via GrContext.
   virtual GLuint CreateAndConsumeForGpuRaster(const gpu::Mailbox& mailbox) = 0;
+  virtual GLuint CreateAndConsumeForGpuRaster(
+      const scoped_refptr<gpu::ClientSharedImage>& shared_image) = 0;
+
   virtual void DeleteGpuRasterTexture(GLuint texture) = 0;
   virtual void BeginGpuRaster() = 0;
   virtual void EndGpuRaster() = 0;

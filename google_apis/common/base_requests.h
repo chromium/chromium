@@ -57,7 +57,7 @@ enum class HttpRequestMethod { kGet, kPost, kPut, kPatch, kDelete };
 std::unique_ptr<base::Value> ParseJson(const std::string& json);
 
 // Maps the error body to reason and logs the error code.
-absl::optional<std::string> MapJsonErrorToReason(const std::string& error_body);
+std::optional<std::string> MapJsonErrorToReason(const std::string& error_body);
 
 // Stringifies `HttpRequestMethod` enum value.
 std::string HttpRequestMethodToString(HttpRequestMethod method);
@@ -268,7 +268,7 @@ class UrlFetchRequestBase : public AuthenticatedRequestInterface,
   int re_authenticate_count_;
   std::unique_ptr<network::SimpleURLLoader> url_loader_;
   raw_ptr<RequestSender> sender_;
-  absl::optional<ApiErrorCode> error_code_;
+  std::optional<ApiErrorCode> error_code_;
   const ProgressCallback upload_progress_callback_;
   const ProgressCallback download_progress_callback_;
   std::unique_ptr<DownloadData> download_data_;

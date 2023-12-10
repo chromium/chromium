@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] Clients.matchAll() returns uncontrolled windows in focus order.  Case 1.
+  assert_equals: expected URL index 0 expected "https://web-platform.test:8444/service-workers/service-worker/clients-matchall-order.https.html" but got "https://web-platform.test:8444/service-workers/service-worker/resources/empty.html?name=focus-uncontrolled-windows-1&q=2"
+[FAIL] Clients.matchAll() returns uncontrolled windows in focus order.  Case 2.
+  assert_equals: expected URL index 0 expected "https://web-platform.test:8444/service-workers/service-worker/clients-matchall-order.https.html" but got "https://web-platform.test:8444/service-workers/service-worker/resources/empty.html?name=focus-uncontrolled-windows-2&q=0"
+[FAIL] Clients.matchAll() returns controlled windows and frames in focus order.
+  assert_equals: expected URL index 1 expected "https://web-platform.test:8444/service-workers/service-worker/resources/empty.html?name=focus-controlled-nested-windows&q=1" but got "https://web-platform.test:8444/service-workers/service-worker/resources/empty.html?name=focus-controlled-nested-windows&q=1&nested=true"
+Harness: the test ran to completion.
+

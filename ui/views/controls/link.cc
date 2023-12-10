@@ -241,7 +241,7 @@ void Link::ConfigureFocus() {
   }
 }
 
-BEGIN_METADATA(Link, Label)
+BEGIN_METADATA(Link)
 ADD_READONLY_PROPERTY_METADATA(SkColor, Color, ui::metadata::SkColorConverter)
 ADD_PROPERTY_METADATA(bool, ForceUnderline)
 END_METADATA

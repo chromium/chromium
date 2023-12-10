@@ -82,6 +82,7 @@ static_library("router") {
     "//components/keyed_service/content",
     "//components/keyed_service/core",
     "//components/media_router/common/providers/cast/channel",
+    "//components/media_router/common/providers/cast/channel:capability",
     "//components/openscreen_platform",
     "//content/public/browser",
     "//content/public/common",
@@ -225,6 +226,7 @@ if (!is_android) {
       "//components/media_router/common/mojom:media_router",
       "//components/media_router/common/mojom:media_router_test_interfaces",
       "//components/media_router/common/providers/cast/channel",
+      "//components/media_router/common/providers/cast/channel:capability",
       "//components/media_router/common/providers/cast/channel:test_support",
       "//testing/gmock",
     ]
@@ -268,6 +270,7 @@ source_set("unittests") {
     "//components/media_router/browser:test_support",
     "//components/media_router/common:test_support",
     "//components/media_router/common/providers/cast/channel",
+    "//components/media_router/common/providers/cast/channel:capability",
     "//components/media_router/common/providers/cast/channel:test_support",
     "//components/webapps/common",
     "//content/test:test_support",

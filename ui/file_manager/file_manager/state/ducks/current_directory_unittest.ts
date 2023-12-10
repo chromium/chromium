@@ -6,7 +6,7 @@ import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {fakeMyFilesVolumeId} from '../../background/js/mock_volume_manager.js';
 import {MockFileSystem} from '../../common/js/mock_entry.js';
-import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
+import {RootType, VolumeType} from '../../common/js/volume_manager_types.js';
 import {CurrentDirectory, FileTasks, PropStatus} from '../../externs/ts/state.js';
 import {FakeFileSelectionHandler} from '../../foreground/js/fake_file_selection_handler.js';
 import {MetadataItem} from '../../foreground/js/metadata/metadata_item.js';
@@ -25,10 +25,9 @@ export function setUp() {
   setUpFileManagerOnWindow();
   window.fileManager.selectionHandler = new FakeFileSelectionHandler();
 
-  fileSystem =
-      window.fileManager.volumeManager.getCurrentProfileVolumeInfo(
-                                          'downloads')!.fileSystem as
-      MockFileSystem;
+  fileSystem = window.fileManager.volumeManager
+                   .getCurrentProfileVolumeInfo(
+                       VolumeType.DOWNLOADS)!.fileSystem as MockFileSystem;
   fileSystem.populate([
     '/dir-1/',
     '/dir-2/sub-dir/',
@@ -70,7 +69,7 @@ export function testChangeDirectoryFromEmpty() {
       dirCount: 0,
       fileCount: 0,
       hostedCount: undefined,
-      offlineCachedCount: undefined,
+      offlineCachedCount: 0,
       fileTasks: {
         policyDefaultHandlerStatus: undefined,
         defaultTask: undefined,
@@ -88,7 +87,7 @@ export function testChangeDirectoryFromEmpty() {
 
   want.status = PropStatus.SUCCESS;
   want.key = dir1.toURL();
-  want.rootType = VolumeManagerCommon.RootType.DOWNLOADS;
+  want.rootType = RootType.DOWNLOADS;
   want.pathComponents = [
     {name: 'Downloads', label: 'Downloads', key: fileSystem.root.toURL()},
     {name: dir1.name, label: dir1.name, key: dir1.toURL()},
@@ -108,7 +107,7 @@ export function testChangeDirectoryTwice() {
   const want: CurrentDirectory = {
     key: dir1.toURL(),
     status: PropStatus.SUCCESS,
-    rootType: VolumeManagerCommon.RootType.DOWNLOADS,
+    rootType: RootType.DOWNLOADS,
     pathComponents: [
       {name: 'Downloads', label: 'Downloads', key: fileSystem.root.toURL()},
       {name: dir1.name, label: dir1.name, key: dir1.toURL()},
@@ -121,7 +120,7 @@ export function testChangeDirectoryTwice() {
       dirCount: 0,
       fileCount: 0,
       hostedCount: undefined,
-      offlineCachedCount: undefined,
+      offlineCachedCount: 0,
       fileTasks: {
         policyDefaultHandlerStatus: undefined,
         defaultTask: undefined,
@@ -147,7 +146,7 @@ export function testChangeSelection() {
   const want: CurrentDirectory = {
     key: dir2.toURL(),
     status: PropStatus.SUCCESS,
-    rootType: VolumeManagerCommon.RootType.DOWNLOADS,
+    rootType: RootType.DOWNLOADS,
     pathComponents: [
       {name: 'Downloads', label: 'Downloads', key: fileSystem.root.toURL()},
       {name: dir2.name, label: dir2.name, key: dir2.toURL()},
@@ -160,7 +159,7 @@ export function testChangeSelection() {
       dirCount: 1,
       fileCount: 0,
       hostedCount: undefined,
-      offlineCachedCount: undefined,
+      offlineCachedCount: 1,
       fileTasks: {
         policyDefaultHandlerStatus: undefined,
         defaultTask: undefined,
@@ -184,6 +183,7 @@ export function testChangeSelection() {
   want.selection.keys = [file.toURL(), subDir.toURL()];
   want.selection.dirCount = 1;
   want.selection.fileCount = 1;
+  want.selection.offlineCachedCount = 2;
   assertStateEquals(want, store.getState().currentDirectory);
 }
 
@@ -197,7 +197,7 @@ export function testChangeDirectoryContent() {
   const want: CurrentDirectory = {
     key: dir2.toURL(),
     status: PropStatus.SUCCESS,
-    rootType: VolumeManagerCommon.RootType.DOWNLOADS,
+    rootType: RootType.DOWNLOADS,
     pathComponents: [
       {name: 'Downloads', label: 'Downloads', key: fileSystem.root.toURL()},
       {name: dir2.name, label: dir2.name, key: dir2.toURL()},
@@ -210,7 +210,7 @@ export function testChangeDirectoryContent() {
       dirCount: 0,
       fileCount: 0,
       hostedCount: undefined,
-      offlineCachedCount: undefined,
+      offlineCachedCount: 0,
       fileTasks: {
         policyDefaultHandlerStatus: undefined,
         defaultTask: undefined,
@@ -272,7 +272,7 @@ export function testComputeHasDlpDisabledFiles() {
   const want: CurrentDirectory = {
     key: dir2.toURL(),
     status: PropStatus.SUCCESS,
-    rootType: VolumeManagerCommon.RootType.DOWNLOADS,
+    rootType: RootType.DOWNLOADS,
     pathComponents: [
       {name: 'Downloads', label: 'Downloads', key: fileSystem.root.toURL()},
       {name: dir2.name, label: dir2.name, key: dir2.toURL()},
@@ -285,7 +285,7 @@ export function testComputeHasDlpDisabledFiles() {
       dirCount: 0,
       fileCount: 0,
       hostedCount: undefined,
-      offlineCachedCount: undefined,
+      offlineCachedCount: 0,
       fileTasks: {
         policyDefaultHandlerStatus: undefined,
         defaultTask: undefined,

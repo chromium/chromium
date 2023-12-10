@@ -54,10 +54,10 @@ void RecordMemoryUsageAndCountsHistogramsHelperOnModelThread(
   delegate->RecordMemoryUsageAndCountsHistograms();
 }
 
-void ClearMetadataWhileStoppedHelperOnModelThread(
+void ClearMetadataIfStoppedHelperOnModelThread(
     base::WeakPtr<ModelTypeControllerDelegate> delegate) {
   DCHECK(delegate);
-  delegate->ClearMetadataWhileStopped();
+  delegate->ClearMetadataIfStopped();
 }
 
 // Rurns some task on the destination task runner (backend sequence), first
@@ -120,9 +120,9 @@ void ProxyModelTypeControllerDelegate::RecordMemoryUsageAndCountsHistograms() {
       base::BindOnce(&RecordMemoryUsageAndCountsHistogramsHelperOnModelThread));
 }
 
-void ProxyModelTypeControllerDelegate::ClearMetadataWhileStopped() {
+void ProxyModelTypeControllerDelegate::ClearMetadataIfStopped() {
   PostTask(FROM_HERE,
-           base::BindOnce(&ClearMetadataWhileStoppedHelperOnModelThread));
+           base::BindOnce(&ClearMetadataIfStoppedHelperOnModelThread));
 }
 
 void ProxyModelTypeControllerDelegate::PostTask(

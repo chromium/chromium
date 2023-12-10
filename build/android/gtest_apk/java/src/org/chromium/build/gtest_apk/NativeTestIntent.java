@@ -4,9 +4,7 @@
 
 package org.chromium.build.gtest_apk;
 
-/**
- * Extras for intent sent by NativeTestInstrumentationTestRunner.
- */
+/** Extras for intent sent by NativeTestInstrumentationTestRunner. */
 public class NativeTestIntent {
     public static final String EXTRA_COMMAND_LINE_FILE =
             "org.chromium.native_test.NativeTest.CommandLineFile";

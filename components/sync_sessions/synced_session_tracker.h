@@ -67,16 +67,12 @@ class SyncedSessionTracker {
   // session having tag |session_tag|.
   std::set<int> LookupTabNodeIds(const std::string& session_tag) const;
 
-  // Attempts to look up the session windows associatd with the session given
-  // by |session_tag|. Ownership of SessionWindows stays within the
+  // Returns the session windows associated with the session given
+  // by |session_tag|. Returns an empty vector if there are no windows for
+  // `session_tag`. Ownership of SessionWindows stays within the
   // SyncedSessionTracker.
-  // If lookup succeeds:
-  // - Fills windows with the SessionWindow pointers, returns true.
-  // Else
-  // - Returns false.
-  bool LookupSessionWindows(
-      const std::string& session_tag,
-      std::vector<const sessions::SessionWindow*>* windows) const;
+  std::vector<const sessions::SessionWindow*> LookupSessionWindows(
+      const std::string& session_tag) const;
 
   // Attempts to look up the tab associated with the given tag and tab id.
   // Ownership of the SessionTab remains within the SyncedSessionTracker.

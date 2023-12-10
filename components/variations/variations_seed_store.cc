@@ -515,11 +515,26 @@ void VariationsSeedStore::ImportInitialSeed(
 }
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
+// static
+std::optional<std::string> VariationsSeedStore::SeedBytesToCompressedBase64Seed(
+    const std::string& seed_bytes) {
+  if (seed_bytes.empty()) {
+    return std::nullopt;
+  }
+
+  std::string compressed_seed_data;
+  if (!compression::GzipCompress(seed_bytes, &compressed_seed_data)) {
+    return std::nullopt;
+  }
+
+  return base::Base64Encode(compressed_seed_data);
+}
+
 LoadSeedResult VariationsSeedStore::VerifyAndParseSeed(
     VariationsSeed* seed,
     const std::string& seed_data,
     const std::string& base64_seed_signature,
-    absl::optional<VerifySignatureResult>* verify_signature_result) {
+    std::optional<VerifySignatureResult>* verify_signature_result) {
   // TODO(crbug/1335082): get rid of |signature_verification_enabled_| and only
   // support switches::kAcceptEmptySeedSignatureForTesting.
   if (signature_verification_enabled_ &&
@@ -555,7 +570,7 @@ LoadSeedResult VariationsSeedStore::LoadSeedImpl(
     *base64_seed_signature = safe_seed_store_->GetSignature();
   }
 
-  absl::optional<VerifySignatureResult> verify_signature_result;
+  std::optional<VerifySignatureResult> verify_signature_result;
   LoadSeedResult result = VerifyAndParseSeed(
       seed, *seed_data, *base64_seed_signature, &verify_signature_result);
   if (verify_signature_result.has_value()) {
@@ -854,11 +869,12 @@ StoreSeedResult VariationsSeedStore::ValidateSeedBytes(
       return StoreSeedResult::kFailedSignature;
   }
 
-  std::string compressed_seed_data;
-  if (!compression::GzipCompress(seed_bytes, &compressed_seed_data))
+  std::optional<std::string> base64_seed_data =
+      SeedBytesToCompressedBase64Seed(seed_bytes);
+  if (!base64_seed_data.has_value()) {
     return StoreSeedResult::kFailedGzip;
-
-  base::Base64Encode(compressed_seed_data, &result->base64_seed_data);
+  }
+  result->base64_seed_data = base64_seed_data.value();
   result->base64_seed_signature = base64_seed_signature;
   result->parsed.Swap(&seed);
   return StoreSeedResult::kSuccess;

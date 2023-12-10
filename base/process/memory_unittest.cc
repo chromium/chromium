@@ -101,11 +101,10 @@ TEST(ProcessMemoryTest, MacTerminateOnHeapCorruption) {
 
 #endif  // BUILDFLAG(IS_MAC)
 
+#if BUILDFLAG(USE_ALLOCATOR_SHIM)
 TEST(MemoryTest, AllocatorShimWorking) {
 #if BUILDFLAG(IS_MAC)
-#if BUILDFLAG(USE_ALLOCATOR_SHIM)
   allocator_shim::InitializeAllocatorShim();
-#endif
   allocator_shim::InterceptAllocationsMac();
 #endif
   ASSERT_TRUE(base::allocator::IsAllocatorInitialized());
@@ -114,6 +113,7 @@ TEST(MemoryTest, AllocatorShimWorking) {
   allocator_shim::UninterceptMallocZonesForTesting();
 #endif
 }
+#endif  // BUILDFLAG(USE_ALLOCATOR_SHIM)
 
 // OpenBSD does not support these tests. Don't test these on ASan/TSan/MSan
 // configurations: only test the real allocator.

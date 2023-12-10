@@ -17,19 +17,33 @@ class SessionImpl : public OnDeviceModel::Session {
   SessionImpl(const SessionImpl&) = delete;
   SessionImpl& operator=(const SessionImpl&) = delete;
 
-  void AddContext(mojom::InputOptionsPtr input) override {
-    context_.push_back(input->text);
+  void AddContext(mojom::InputOptionsPtr input,
+                  mojo::PendingRemote<mojom::ContextClient> client) override {
+    std::string text = input->text;
+    if (input->token_offset) {
+      text.erase(text.begin(), text.begin() + *input->token_offset);
+    }
+    if (input->max_tokens && *input->max_tokens < text.size()) {
+      text.resize(*input->max_tokens);
+    }
+    context_.push_back(text);
+    if (client) {
+      mojo::Remote<mojom::ContextClient> remote(std::move(client));
+      remote->OnComplete(text.size());
+    }
   }
 
   void Execute(
       mojom::InputOptionsPtr input,
       mojo::PendingRemote<mojom::StreamingResponder> response) override {
     mojo::Remote<mojom::StreamingResponder> remote(std::move(response));
-    for (const std::string& context : context_) {
-      remote->OnResponse("Context: " + context + "\n");
+    if (!input->ignore_context) {
+      for (const std::string& context : context_) {
+        remote->OnResponse("Context: " + context + "\n");
+      }
     }
     remote->OnResponse("Input: " + input->text + "\n");
-    remote->OnComplete();
+    remote->OnComplete(mojom::ResponseStatus::kOk);
   }
 
  private:
@@ -52,14 +66,15 @@ class OnDeviceModelImpl : public OnDeviceModel {
 }  // namespace
 
 // static
-std::unique_ptr<OnDeviceModel> OnDeviceModelService::CreateModel(
-    ModelAssets assets) {
-  return std::make_unique<OnDeviceModelImpl>();
+base::expected<std::unique_ptr<OnDeviceModel>, mojom::LoadModelResult>
+OnDeviceModelService::CreateModel(mojom::LoadModelParamsPtr params) {
+  return base::ok<std::unique_ptr<OnDeviceModel>>(
+      std::make_unique<OnDeviceModelImpl>());
 }
 
 // static
 mojom::PerformanceClass OnDeviceModelService::GetEstimatedPerformanceClass() {
-  return mojom::PerformanceClass::kError;
+  return mojom::PerformanceClass::kFailedToLoadLibrary;
 }
 
 }  // namespace on_device_model

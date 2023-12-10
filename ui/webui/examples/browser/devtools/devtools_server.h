@@ -17,4 +17,4 @@ int GetHttpHandlerPort();
 
 }  // namespace webui_examples::devtools
 
-#endif  // UI_WEBUI_EXAMPLES_BROWSER_DEVTOOLS_DEVTOOLS_MANAGER_DELEGATE_H_
+#endif  // UI_WEBUI_EXAMPLES_BROWSER_DEVTOOLS_DEVTOOLS_SERVER_H_

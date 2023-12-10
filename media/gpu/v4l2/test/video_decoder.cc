@@ -268,7 +268,7 @@ std::vector<uint8_t> VideoDecoder::ConvertYUVToPNG(uint8_t* y_plane,
 
   size_t u_plane_padded_width, v_plane_padded_width;
   u_plane_padded_width = v_plane_padded_width =
-      base::bits::AlignUp(size.width(), 2) / 2;
+      base::bits::AlignUpDeprecatedDoNotUse(size.width(), 2) / 2;
 
   // Note that we use J420ToARGB instead of I420ToARGB so that the
   // kYuvJPEGConstants YUV-to-RGB conversion matrix is used.

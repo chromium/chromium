@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/webui/shimless_rma/backend/shimless_rma_service.h"
-
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
 #include "ash/webui/shimless_rma/3p_diagnostics/external_app_dialog.h"
 #include "ash/webui/shimless_rma/backend/fake_shimless_rma_delegate.h"
+#include "ash/webui/shimless_rma/backend/shimless_rma_service.h"
 #include "ash/webui/shimless_rma/mojom/shimless_rma.mojom-shared.h"
 #include "ash/webui/shimless_rma/mojom/shimless_rma.mojom.h"
 #include "base/functional/callback.h"
@@ -26,7 +26,6 @@
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::shimless_rma {
 namespace {
@@ -95,7 +94,7 @@ TEST_F(ShimlessRmaService3pDiagTest, Get3pDiagnosticsProvider) {
   SetFakeCrosHealthdOemName("TestOEMName");
   fake_shimless_rma_delegate_->set_is_chromeos_system_extension_provider(true);
 
-  base::test::TestFuture<const absl::optional<std::string>&> future;
+  base::test::TestFuture<const std::optional<std::string>&> future;
   shimless_rma_provider_->Get3pDiagnosticsProvider(future.GetCallback());
   EXPECT_EQ(future.Get(), "TestOEMName");
 }
@@ -105,9 +104,9 @@ TEST_F(ShimlessRmaService3pDiagTest,
   SetFakeCrosHealthdOemName("TestOEMName");
   fake_shimless_rma_delegate_->set_is_chromeos_system_extension_provider(false);
 
-  base::test::TestFuture<const absl::optional<std::string>&> future;
+  base::test::TestFuture<const std::optional<std::string>&> future;
   shimless_rma_provider_->Get3pDiagnosticsProvider(future.GetCallback());
-  EXPECT_EQ(future.Get(), absl::nullopt);
+  EXPECT_EQ(future.Get(), std::nullopt);
 }
 
 TEST_F(ShimlessRmaService3pDiagTest,
@@ -117,9 +116,9 @@ TEST_F(ShimlessRmaService3pDiagTest,
   cros_healthd::FakeCrosHealthd::Get()->SetProbeTelemetryInfoResponseForTesting(
       info);
 
-  base::test::TestFuture<const absl::optional<std::string>&> future;
+  base::test::TestFuture<const std::optional<std::string>&> future;
   shimless_rma_provider_->Get3pDiagnosticsProvider(future.GetCallback());
-  EXPECT_EQ(future.Get(), absl::nullopt);
+  EXPECT_EQ(future.Get(), std::nullopt);
 }
 
 TEST_F(ShimlessRmaService3pDiagTest, Show3pDiagnosticsAppNotInstalled) {
@@ -177,10 +176,10 @@ TEST_F(ShimlessRmaService3pDiagTest, Show3pDiagnosticsAppInstalled) {
 }
 
 TEST_F(ShimlessRmaService3pDiagTest, NoInstallable3pDiagApp) {
-  base::test::TestFuture<const absl::optional<base::FilePath>&> future;
+  base::test::TestFuture<const std::optional<base::FilePath>&> future;
   shimless_rma_provider_->GetInstallable3pDiagnosticsAppPath(
       future.GetCallback());
-  EXPECT_EQ(future.Get(), absl::nullopt);
+  EXPECT_EQ(future.Get(), std::nullopt);
 }
 
 TEST_F(ShimlessRmaService3pDiagTest, FoundInstallable3pDiagAppAndInstallIt) {
@@ -191,7 +190,7 @@ TEST_F(ShimlessRmaService3pDiagTest, FoundInstallable3pDiagAppAndInstallIt) {
       base::ok(fake_prepare_result));
 
   {
-    base::test::TestFuture<const absl::optional<base::FilePath>&> future;
+    base::test::TestFuture<const std::optional<base::FilePath>&> future;
     shimless_rma_provider_->GetInstallable3pDiagnosticsAppPath(
         future.GetCallback());
     EXPECT_EQ(future.Get(), base::FilePath{"/fake/external/diag/app.swbn"});
@@ -240,7 +239,7 @@ TEST_F(ShimlessRmaService3pDiagTest,
       base::ok(fake_prepare_result));
 
   {
-    base::test::TestFuture<const absl::optional<base::FilePath>&> future;
+    base::test::TestFuture<const std::optional<base::FilePath>&> future;
     shimless_rma_provider_->GetInstallable3pDiagnosticsAppPath(
         future.GetCallback());
     EXPECT_EQ(future.Get(), base::FilePath{"/fake/external/diag/app.swbn"});

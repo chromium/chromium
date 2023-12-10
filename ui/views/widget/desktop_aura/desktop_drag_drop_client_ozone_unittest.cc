@@ -5,8 +5,11 @@
 #include "ui/views/widget/desktop_aura/desktop_drag_drop_client_ozone.h"
 
 #include <memory>
+#include <string>
 #include <utility>
+#include <vector>
 
+#include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
@@ -14,6 +17,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/aura/client/drag_drop_delegate.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
@@ -479,15 +483,16 @@ class MockDataTransferPolicyController
                bool(base::optional_ref<const ui::DataTransferEndpoint> data_src,
                     base::optional_ref<const ui::DataTransferEndpoint> data_dst,
                     const absl::optional<size_t> size));
-  MOCK_METHOD5(PasteIfAllowed,
-               void(const ui::DataTransferEndpoint* const data_src,
-                    const ui::DataTransferEndpoint* const data_dst,
-                    const absl::optional<size_t> size,
-                    content::RenderFrameHost* rfh,
-                    base::OnceCallback<void(bool)> callback));
+  MOCK_METHOD5(
+      PasteIfAllowed,
+      void(base::optional_ref<const ui::DataTransferEndpoint> data_src,
+           base::optional_ref<const ui::DataTransferEndpoint> data_dst,
+           absl::variant<size_t, std::vector<base::FilePath>> pasted_content,
+           content::RenderFrameHost* rfh,
+           base::OnceCallback<void(bool)> callback));
   MOCK_METHOD3(DropIfAllowed,
                void(const ui::OSExchangeData* drag_data,
-                    const ui::DataTransferEndpoint* data_dst,
+                    base::optional_ref<const ui::DataTransferEndpoint> data_dst,
                     base::OnceClosure drop_cb));
 };
 
@@ -499,7 +504,7 @@ TEST_F(DesktopDragDropClientOzoneTest, DataLeakPreventionAllowDrop) {
   // Data Leak Prevention stack allows the drop.
   EXPECT_CALL(dtp_controller, DropIfAllowed(testing::_, testing::_, testing::_))
       .WillOnce([&](const ui::OSExchangeData* drag_data,
-                    const ui::DataTransferEndpoint* data_dst,
+                    base::optional_ref<const ui::DataTransferEndpoint> data_dst,
                     base::OnceClosure drop_cb) { std::move(drop_cb).Run(); });
 
   // Set the operation which the destination can accept.

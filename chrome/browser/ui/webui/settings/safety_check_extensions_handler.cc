@@ -53,13 +53,14 @@ bool SafetyCheckExtensionsHandler::CheckExtensionForTrigger(
   bool warning_acked = false;
   extension_prefs->ReadPrefAsBoolean(
       extension.id(), kPrefAcknowledgeSafetyCheckWarning, &warning_acked);
+  bool is_extension = extension.is_extension() || extension.is_shared_module();
   // If the user has previously acknowledged the warning on this
   // extension and chosen to keep it, we will not show an additional
-  // safety hub warning.
-  if (warning_acked) {
+  // safety hub warning. We also will not show warnings on Chrome apps.
+  if (warning_acked || !is_extension) {
     return false;
   }
-  absl::optional<extensions::CWSInfoService::CWSInfo> extension_info =
+  std::optional<extensions::CWSInfoService::CWSInfo> extension_info =
       cws_info_service_->GetCWSInfo(extension);
   if (extension_info.has_value() && extension_info->is_present) {
     switch (extension_info->violation_type) {

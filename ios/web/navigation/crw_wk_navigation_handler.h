@@ -78,8 +78,7 @@ class WKBackForwardListItemHolder;
 
 // Resumes download using `webView`
 - (void)resumeDownloadWithData:(NSData*)data
-             completionHandler:(void (^)(WKDownload*))completionHandler
-    API_AVAILABLE(ios(15));
+             completionHandler:(void (^)(WKDownload*))completionHandler;
 
 @end
 

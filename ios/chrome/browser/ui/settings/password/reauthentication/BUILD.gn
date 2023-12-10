@@ -9,9 +9,11 @@ source_set("reauthentication") {
   ]
 
   deps = [
+    ":reauthentication_constants",
     ":reauthentication_ui",
     "//base",
     "//components/strings",
+    "//ios/chrome/app/application_delegate:app_state_header",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/coordinator/alert",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
@@ -22,6 +24,7 @@ source_set("reauthentication") {
     "//ios/chrome/browser/ui/settings/password:features",
     "//ios/chrome/browser/ui/settings/utils",
     "//ios/chrome/common/ui/reauthentication",
+    "//ios/public/provider/chrome/browser/passcode_settings:passcode_settings_api",
     "//ui/base",
   ]
 
@@ -51,6 +54,13 @@ source_set("reauthentication_constants") {
     "reauthentication_constants.h",
     "reauthentication_constants.mm",
   ]
+  frameworks = [ "Foundation.framework" ]
+}
+
+source_set("reauthentication_delegate") {
+  sources = [ "password_manager_reauthentication_delegate.h" ]
+
+  frameworks = [ "Foundation.framework" ]
 }
 
 source_set("unit_tests") {

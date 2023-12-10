@@ -9,13 +9,13 @@
 #include "third_party/blink/renderer/core/layout/geometry/logical_rect.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
+#include "third_party/blink/renderer/core/layout/ink_overflow.h"
 #include "third_party/blink/renderer/core/layout/inline/fragment_item.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_node_data.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_ink_overflow.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
+#include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
+#include "third_party/blink/renderer/core/paint/inline_paint_context.h"
 #include "third_party/blink/renderer/core/paint/line_relative_rect.h"
-#include "third_party/blink/renderer/core/paint/ng/ng_inline_paint_context.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
@@ -149,7 +149,7 @@ PhysicalRect LayoutTextCombine::ComputeTextBoundsRectForHitTest(
     const FragmentItem& text_item,
     const PhysicalOffset& inline_root_offset) const {
   DCHECK(text_item.IsText()) << text_item;
-  PhysicalRect rect = text_item.SelfInkOverflow();
+  PhysicalRect rect = text_item.SelfInkOverflowRect();
   rect.Move(text_item.OffsetInContainerFragment());
   rect = AdjustRectForBoundingBox(rect);
   rect.Move(inline_root_offset);
@@ -241,16 +241,15 @@ PhysicalRect LayoutTextCombine::RecalcContentsInkOverflow(
   if (style.HasAppliedTextDecorations()) {
     // |LayoutTextCombine| does not support decorating box, as it is not
     // supported in vertical flow and text-combine is only for vertical flow.
-    const LogicalRect decoration_rect =
-        NGInkOverflow::ComputeDecorationOverflow(
-            cursor, style, style.GetFont(),
-            /* offset_in_container */ PhysicalOffset(), ink_overflow,
-            /* inline_context */ nullptr);
+    const LogicalRect decoration_rect = InkOverflow::ComputeDecorationOverflow(
+        cursor, style, style.GetFont(),
+        /* offset_in_container */ PhysicalOffset(), ink_overflow,
+        /* inline_context */ nullptr);
     ink_overflow.Unite(decoration_rect);
   }
 
   if (style.GetTextEmphasisMark() != TextEmphasisMark::kNone) {
-    ink_overflow = NGInkOverflow::ComputeEmphasisMarkOverflow(
+    ink_overflow = InkOverflow::ComputeEmphasisMarkOverflow(
         style, text_rect.size, ink_overflow);
   }
 
@@ -265,7 +264,7 @@ PhysicalRect LayoutTextCombine::RecalcContentsInkOverflow(
 gfx::Rect LayoutTextCombine::VisualRectForPaint(
     const PhysicalOffset& paint_offset) const {
   DCHECK_EQ(PhysicalFragmentCount(), 1u);
-  PhysicalRect ink_overflow = GetPhysicalFragment(0)->InkOverflow();
+  PhysicalRect ink_overflow = GetPhysicalFragment(0)->InkOverflowRect();
   ink_overflow.Move(paint_offset);
   return ToEnclosingRect(ink_overflow);
 }

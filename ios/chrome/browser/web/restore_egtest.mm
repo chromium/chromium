@@ -11,7 +11,6 @@
 #import "base/test/ios/wait_util.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_features.h"
-#import "ios/chrome/browser/web/features.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
@@ -367,7 +366,8 @@ std::unique_ptr<net::test_server::HttpResponse> CountResponse(
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
-  config.features_disabled.push_back(web::kRestoreSessionFromCache);
+  config.features_disabled.push_back(
+      web::features::kForceSynthesizedRestoreSession);
   return config;
 }
 

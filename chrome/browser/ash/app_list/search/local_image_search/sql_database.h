@@ -49,6 +49,8 @@ class SqlDatabase {
       const sql::StatementID& sql_from_here,
       const char* query);
 
+  base::FilePath GetPathToDb() const;
+
  private:
   void OnErrorCallback(int error, sql::Statement* stmt);
   bool MigrateDatabaseSchema();

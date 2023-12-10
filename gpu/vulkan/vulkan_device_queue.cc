@@ -4,12 +4,12 @@
 
 #include "gpu/vulkan/vulkan_device_queue.h"
 
+#include <bit>
 #include <cstring>
 #include <unordered_set>
 #include <utility>
 #include <vector>
 
-#include "base/bits.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/ranges/algorithm.h"
@@ -50,7 +50,7 @@ namespace {
 VkDeviceSize GetPreferredVMALargeHeapBlockSize() {
   const VkDeviceSize block_size =
       ::features::kVulkanVMALargeHeapBlockSize.Get();
-  DCHECK(base::bits::IsPowerOfTwo(block_size));
+  DCHECK(std::has_single_bit(block_size));
   return block_size;
 }
 }  // anonymous namespace
@@ -182,6 +182,7 @@ bool VulkanDeviceQueue::Initialize(
   vk_physical_device_properties_ = physical_device_info.properties;
   vk_physical_device_driver_properties_ =
       physical_device_info.driver_properties;
+  drm_device_id_ = physical_device_info.drm_device_id;
   vk_queue_index_ = queue_index;
 
   float queue_priority = 0.0f;

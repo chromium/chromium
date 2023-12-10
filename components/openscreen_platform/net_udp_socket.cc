@@ -34,7 +34,7 @@ NetUdpSocket::NetUdpSocket(openscreen::UdpSocket::Client* client,
       udp_socket_(net::DatagramSocket::DEFAULT_BIND,
                   nullptr /* net_log */,
                   net::NetLogSource()),
-      read_buffer_(base::MakeRefCounted<net::IOBuffer>(
+      read_buffer_(base::MakeRefCounted<net::IOBufferWithSize>(
           openscreen::UdpPacket::kUdpMaxPacketSize)) {
   DVLOG(1) << __func__;
   DCHECK(client_);
@@ -174,7 +174,7 @@ void NetUdpSocket::SendMessage(const void* data,
     return;
   }
 
-  auto buffer = base::MakeRefCounted<net::IOBuffer>(length);
+  auto buffer = base::MakeRefCounted<net::IOBufferWithSize>(length);
   memcpy(buffer->data(), data, length);
 
   const int result = udp_socket_.SendTo(

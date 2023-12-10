@@ -26,7 +26,6 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.browser.download.DownloadManagerServiceTest.MockDownloadNotifier.MethodID;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.browser.Features;
@@ -225,10 +224,7 @@ public class DownloadManagerServiceTest {
         }
 
         @Override
-        protected void init() {}
-
-        @Override
-        public void resumeDownload(ContentId id, DownloadItem item, boolean hasUserGesture) {
+        public void resumeDownload(ContentId id, DownloadItem item) {
             mResumed = true;
         }
 
@@ -246,10 +242,6 @@ public class DownloadManagerServiceTest {
     @After
     public void tearDown() {
         mService = null;
-    }
-
-    private static boolean useDownloadOfflineContentProvider() {
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.DOWNLOAD_OFFLINE_CONTENT_PROVIDER);
     }
 
     private static Handler getTestHandler() {
@@ -344,32 +336,6 @@ public class DownloadManagerServiceTest {
         Thread.sleep(DELAY_BETWEEN_CALLS);
         mService.onDownloadUpdated(update3);
         Thread.sleep(DELAY_BETWEEN_CALLS);
-        notifier.waitTillExpectedCallsComplete();
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"Download"})
-    public void testDownloadCompletedIsCalled() throws InterruptedException {
-        if (useDownloadOfflineContentProvider()) return;
-        MockDownloadNotifier notifier = new MockDownloadNotifier();
-        createDownloadManagerService(notifier, UPDATE_DELAY_FOR_TEST);
-        TestThreadUtils.runOnUiThreadBlocking(
-                (Runnable) () -> DownloadManagerService.setDownloadManagerService(mService));
-        // Try calling download completed directly.
-        DownloadInfo successful = getDownloadInfo();
-        notifier.expect(MethodID.DOWNLOAD_SUCCESSFUL, successful);
-
-        mService.onDownloadCompleted(successful);
-        notifier.waitTillExpectedCallsComplete();
-
-        // Now check that a successful notification appears after a download progress.
-        DownloadInfo progress = getDownloadInfo();
-        notifier.expect(MethodID.DOWNLOAD_PROGRESS, progress)
-                .andThen(MethodID.DOWNLOAD_SUCCESSFUL, progress);
-        mService.onDownloadUpdated(progress);
-        Thread.sleep(DELAY_BETWEEN_CALLS);
-        mService.onDownloadCompleted(progress);
         notifier.waitTillExpectedCallsComplete();
     }
 

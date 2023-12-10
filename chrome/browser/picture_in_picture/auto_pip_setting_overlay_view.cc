@@ -52,27 +52,22 @@ AutoPipSettingOverlayView::AutoPipSettingOverlayView(
   FadeInLayer(background_->layer());
 }
 
-void AutoPipSettingOverlayView::ShowBubble(gfx::NativeView parent,
-                                           PipWindowType pip_window_type) {
+void AutoPipSettingOverlayView::ShowBubble(gfx::NativeView parent) {
   DCHECK(parent);
   init_.auto_pip_setting_view_->set_parent_window(parent);
   auto_pip_setting_view_ = init_.auto_pip_setting_view_.get();
   widget_ = views::BubbleDialogDelegate::CreateBubble(
       std::move(init_.auto_pip_setting_view_));
 
-  // Delay showing the bubble, for document pip, until after the scrim animation
-  // completes.
-  if (pip_window_type == PipWindowType::kDocumentPip) {
-    show_timer_->Start(
-        FROM_HERE, base::Milliseconds(kFadeInDurationMs),
-        base::BindOnce(
-            &views::Widget::ShowInactive,
-            // base::Unretained() is safe since the timer is cancelled if the
-            // WidgetObserver notices that the widget is being destroyed.
-            base::Unretained(widget_)));
-  } else {
-    widget_->ShowInactive();
-  }
+  // Delay showing the bubble, for both document and video pip, until after the
+  // scrim animation completes.
+  show_timer_->Start(
+      FROM_HERE, base::Milliseconds(kFadeInDurationMs),
+      base::BindOnce(
+          &views::Widget::ShowInactive,
+          // base::Unretained() is safe since the timer is cancelled if the
+          // WidgetObserver notices that the widget is being destroyed.
+          base::Unretained(widget_)));
 
   bubble_size_ = widget_->GetWindowBoundsInScreen().size();
   widget_->AddObserver(this);
@@ -81,6 +76,8 @@ void AutoPipSettingOverlayView::ShowBubble(gfx::NativeView parent,
 void AutoPipSettingOverlayView::OnHideView() {
   // Hide the semi-opaque background layer.
   SetVisible(false);
+
+  NotifyAutoPipSettingOverlayViewHidden();
 }
 
 gfx::Size AutoPipSettingOverlayView::GetBubbleSize() const {
@@ -101,7 +98,23 @@ bool AutoPipSettingOverlayView::WantsEvent(const gfx::Point& point) {
     return false;
   }
 
+  // If the show timer is running, we do not want the auto pip setting overlay
+  // to consume the event. This is done to allow dragging the video pip window
+  // and prevent interacting with controls while the overlay view is pending to
+  // be shown.
+  if (IsShowTimerRunning()) {
+    return false;
+  }
+
   return auto_pip_setting_view_->WantsEvent(point);
+}
+
+bool AutoPipSettingOverlayView::IsShowTimerRunning() {
+  if (show_timer_ == nullptr) {
+    return false;
+  }
+
+  return show_timer_->IsRunning();
 }
 
 AutoPipSettingOverlayView::~AutoPipSettingOverlayView() {
@@ -121,6 +134,12 @@ void AutoPipSettingOverlayView::OnWidgetDestroying(views::Widget*) {
   auto_pip_setting_view_ = nullptr;
   widget_->RemoveObserver(this);
   widget_ = nullptr;
+}
+
+void AutoPipSettingOverlayView::NotifyAutoPipSettingOverlayViewHidden() {
+  for (AutoPipSettingOverlayViewObserver& obs : observers_) {
+    obs.OnAutoPipSettingOverlayViewHidden();
+  }
 }
 
 BEGIN_METADATA(AutoPipSettingOverlayView, views::View)

@@ -4,6 +4,7 @@
 
 #include "ash/keyboard/keyboard_controller_impl.h"
 
+#include <optional>
 #include <utility>
 
 #include "ash/constants/ash_constants.h"
@@ -31,7 +32,6 @@
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window_delegate.h"
 #include "ui/base/ui_base_features.h"
@@ -63,12 +63,12 @@ const char kSpellCheckEnabledKey[] = "spell_check_enabled";
 // enabled.
 const char kVoiceInputEnabledKey[] = "voice_input_enabled";
 
-absl::optional<display::Display> GetFirstTouchDisplay() {
+std::optional<display::Display> GetFirstTouchDisplay() {
   for (const auto& display : display::Screen::GetScreen()->GetAllDisplays()) {
     if (display.touch_support() == display::Display::TouchSupport::AVAILABLE)
       return display;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 bool GetVirtualKeyboardFeatureValue(PrefService* prefs,
@@ -285,10 +285,10 @@ void KeyboardControllerImpl::RemoveObserver(
   observers_.RemoveObserver(observer);
 }
 
-absl::optional<KeyRepeatSettings>
+std::optional<KeyRepeatSettings>
 KeyboardControllerImpl::GetKeyRepeatSettings() {
   if (!pref_change_registrar_)
-    return absl::nullopt;
+    return std::nullopt;
   PrefService* prefs = pref_change_registrar_->prefs();
   bool enabled = prefs->GetBoolean(ash::prefs::kXkbAutoRepeatEnabled);
   int delay_in_ms = prefs->GetInteger(ash::prefs::kXkbAutoRepeatDelay);
@@ -426,7 +426,7 @@ aura::Window* KeyboardControllerImpl::GetContainerForDisplay(
 
 aura::Window* KeyboardControllerImpl::GetContainerForDefaultDisplay() {
   const display::Screen* screen = display::Screen::GetScreen();
-  const absl::optional<display::Display> first_touch_display =
+  const std::optional<display::Display> first_touch_display =
       GetFirstTouchDisplay();
   const bool has_touch_display = first_touch_display.has_value();
 

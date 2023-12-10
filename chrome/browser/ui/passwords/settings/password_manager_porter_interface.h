@@ -23,7 +23,7 @@ class PasswordManagerPorterInterface {
   virtual ~PasswordManagerPorterInterface() = default;
 
   // Triggers passwords export flow for the given |web_contents|.
-  virtual bool Export(content::WebContents* web_contents) = 0;
+  virtual bool Export(base::WeakPtr<content::WebContents> web_contents) = 0;
 
   virtual void CancelExport() = 0;
 

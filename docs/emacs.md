@@ -178,6 +178,24 @@ be enabled with:
 
     (load-file "src/tools/emacs/gn.el")
 
+## Mojom IDL (.mojom files)
+
+[Mojom](/mojo/public/tools/bindings/README.md)
+files are supported by mojom-mode, which can be enabled with:
+
+```el
+(load-file "/<path/to/chromium>/src/tools/emacs/mojom-mode.el")
+```
+
+Alternatively, you can `require` the feature.
+(See emacs documentation on
+[Named Features](https://www.gnu.org/software/emacs/manual/html_node/elisp/Named-Features.html).)
+
+```el
+(add-to-list 'load-path "/<path/to/chromium>/src/tools/emacs/")
+(require 'mojom-mode)
+```
+
 ## Highlight long lines
 
 One nice way to highlight long lines and other style issues:

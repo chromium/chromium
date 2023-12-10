@@ -26,6 +26,21 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
+<enum name="HoldingSpaceWallpaperNudgeInteraction">
+  <int value="0" label="kDroppedFileOnHoldingSpace"/>
+  <int value="1" label="kDroppedFileOnWallpaper"/>
+  <int value="2" label="kDraggedFileOverWallpaper"/>
+  <int value="3" label="kOpenedHoldingSpace"/>
+  <int value="4" label="kPinnedFileFromAnySource"/>
+  <int value="5" label="kPinnedFileFromContextMenu"/>
+  <int value="6" label="kPinnedFileFromFilesApp"/>
+  <int value="7" label="kPinnedFileFromHoldingSpaceDrop"/>
+  <int value="8" label="kPinnedFileFromPinButton"/>
+  <int value="9" label="kPinnedFileFromWallpaperDrop"/>
+  <int value="10" label="kUsedOtherItem"/>
+  <int value="11" label="kUsedPinnedItem"/>
+</enum>
+
 <enum name="WelcomeTourAbortedReason">
   <int value="0" label="kUnknown"/>
   <int value="1" label="kAccelerator"/>
@@ -65,6 +80,16 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="kSettingsApp"/>
   <int value="6" label="kShelf"/>
   <int value="7" label="kStatusArea"/>
+</enum>
+
+<enum name="WelcomeTourTimeBucket">
+  <int value="0" label="kOneMinute"/>
+  <int value="1" label="kTenMinutes"/>
+  <int value="2" label="kOneHour"/>
+  <int value="3" label="kOneDay"/>
+  <int value="4" label="kOneWeek"/>
+  <int value="5" label="kTwoWeeks"/>
+  <int value="6" label="kOverTwoWeeks"/>
 </enum>
 
 </enums>

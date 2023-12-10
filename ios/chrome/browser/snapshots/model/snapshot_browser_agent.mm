@@ -89,18 +89,16 @@ void SnapshotBrowserAgent::BatchOperationEnded(WebStateList* web_state_list) {
   }
 }
 
-void SnapshotBrowserAgent::SetSessionID(NSString* session_identifier) {
+void SnapshotBrowserAgent::SetSessionID(const std::string& identifier) {
   // It is incorrect to call this method twice.
   DCHECK(!snapshot_storage_);
-  DCHECK(session_identifier.length != 0);
-
-  const std::string identifier = base::SysNSStringToUTF8(session_identifier);
+  DCHECK(!identifier.empty());
 
   const base::FilePath& browser_state_path =
       browser_->GetBrowserState()->GetStatePath();
 
   // The snapshots are stored in a sub-directory of the session storage.
-  // TODO(crbug.com/1383087): change this before launching the optimised
+  // TODO(crbug.com/1501850): change this before launching the optimised
   // session storage as the session directory will be renamed.
   const base::FilePath legacy_path =
       browser_state_path.Append(FILE_PATH_LITERAL("Sessions"))

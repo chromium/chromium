@@ -22,13 +22,13 @@
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate_mock.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/password_manager/core/browser/interactions_stats.h"
 #include "components/password_manager/core/browser/mock_password_feature_manager.h"
-#include "components/password_manager/core/browser/mock_password_store_interface.h"
-#include "components/password_manager/core/browser/mock_smart_bubble_stats_store.h"
 #include "components/password_manager/core/browser/password_form_metrics_recorder.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
+#include "components/password_manager/core/browser/password_store/interactions_stats.h"
+#include "components/password_manager/core/browser/password_store/mock_password_store_interface.h"
+#include "components/password_manager/core/browser/password_store/mock_smart_bubble_stats_store.h"
 #include "components/password_manager/core/common/credential_manager_types.h"
 #include "components/password_manager/core/common/password_manager_ui.h"
 #include "components/sync/test/test_sync_service.h"
@@ -91,6 +91,13 @@ class SaveUpdateBubbleControllerTest : public ::testing::Test {
     profile_builder.AddTestingFactory(
         SyncServiceFactory::GetInstance(),
         base::BindRepeating(&BuildTestSyncService));
+    profile_builder.AddTestingFactory(
+        ProfilePasswordStoreFactory::GetInstance(),
+        base::BindRepeating(
+            &password_manager::BuildPasswordStoreInterface<
+                content::BrowserContext,
+                testing::StrictMock<
+                    password_manager::MockPasswordStoreInterface>>));
     profile_ = profile_builder.Build();
 
     test_web_contents_ = content::WebContentsTester::CreateTestWebContents(
@@ -102,12 +109,6 @@ class SaveUpdateBubbleControllerTest : public ::testing::Test {
         .WillByDefault(Return(&password_feature_manager_));
     ON_CALL(*mock_delegate_, GetPasswordFormMetricsRecorder())
         .WillByDefault(Return(nullptr));
-    ProfilePasswordStoreFactory::GetInstance()->SetTestingFactoryAndUse(
-        profile(), base::BindRepeating(
-                       &password_manager::BuildPasswordStoreInterface<
-                           content::BrowserContext,
-                           testing::StrictMock<
-                               password_manager::MockPasswordStoreInterface>>));
     EXPECT_CALL(*GetStore(), GetSmartBubbleStatsStore)
         .WillRepeatedly(Return(&mock_smart_bubble_stats_store_));
     pending_password_.url = GURL(kSiteOrigin);
@@ -771,4 +772,18 @@ TEST_F(SaveUpdateBubbleControllerTest, NullDelegate) {
 
   EXPECT_FALSE(
       controller.IsCurrentStateAffectingPasswordsStoredInTheGoogleAccount());
+}
+
+TEST_F(SaveUpdateBubbleControllerTest, ShowsUpdateEvenIfNoExistingCredential) {
+  EXPECT_CALL(*delegate(), GetPendingPassword())
+      .WillOnce(ReturnRef(pending_password()));
+  std::vector<std::unique_ptr<password_manager::PasswordForm>> empty_list;
+
+  // PSL matches aren't included in GetCurrentForms(), return empty list to
+  // emulate this.
+  EXPECT_CALL(*delegate(), GetCurrentForms()).WillOnce(ReturnRef(empty_list));
+  SetUpWithState(password_manager::ui::PENDING_PASSWORD_UPDATE_STATE,
+                 PasswordBubbleControllerBase::DisplayReason::kAutomatic);
+
+  EXPECT_TRUE(controller()->IsCurrentStateUpdate());
 }

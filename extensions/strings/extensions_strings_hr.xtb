@@ -8,6 +8,7 @@
 <translation id="1420684932347524586">Šteta! Nije uspjelo generiranje nasumičnog RSA osobnog ključa.</translation>
 <translation id="1445572445564823378">Ovo proširenje usporava uslugu <ph name="PRODUCT_NAME" />. Trebali biste ga onemogućiti da biste vratili uspješan rad usluge <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1468038450257740950">WebGL nije podržan.</translation>
+<translation id="1610570795592207282">Nije uspjelo učitavanje CSS-a <ph name="RELATIVE_PATH" /> za skriptu.</translation>
 <translation id="1803557475693955505">Nije uspjelo učitavanje pozadinske stranice "<ph name="BACKGROUND_PAGE" />".</translation>
 <translation id="2159915644201199628">Nije uspjelo dekodiranje slike: "<ph name="IMAGE_NAME" />"</translation>
 <translation id="2350172092385603347">Lokalizacija je korištena, ali default_locale nije naveden u manifestu.</translation>
@@ -18,14 +19,12 @@
 <translation id="3115238746683532089">Nepoznati proizvod <ph name="PRODUCT_ID" /> dobavljača <ph name="VENDOR_ID" /> (serijski broj <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">Zamjena CRX datoteke nije uspjela. Provjerite je li datoteka u upotrebi.</translation>
 <translation id="3163201441334626963">Nepoznati proizvod <ph name="PRODUCT_ID" /> dobavljača <ph name="VENDOR_ID" /></translation>
-<translation id="3302709122321372472">Nije uspjelo učitavanje CSS-a "<ph name="RELATIVE_PATH" />" za sadržajnu skriptu.</translation>
 <translation id="3369521687965833290">Ne mogu otpakirati proširenje. Kako biste sigurno otpakirali proširenje, mora postojati putanja do direktorija vašeg profila koja počinje slovom pogona i ne sadrži spoj, točku povezivanja ili simboličku vezu. Za vaš profil ne postoji takva putanja.</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (serijski broj <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> dobavljača <ph name="VENDOR_ID" /> (serijski broj <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Vrijednost unosa osobnog ključa mora biti valjana putanja.</translation>
 <translation id="388442998277590542">Nije uspjelo učitavanje stranice opcija "<ph name="OPTIONS_PAGE" />".</translation>
 <translation id="3984413272403535372">Došlo je do pogreške tijekom potpisivanja proširenja.</translation>
-<translation id="39964277676607559">Nije uspjelo učitavanje javascripta "<ph name="RELATIVE_PATH" />" za sadržajnu skriptu.</translation>
 <translation id="4115165561519362854">Administrator ovog uređaja zahtijeva da <ph name="EXTENSION_NAME" /> ima minimalnu verziju <ph name="EXTENSION_VERSION" />. Ne može se omogućiti dok se ne ažurira na tu ili višu verziju.</translation>
 <translation id="4233778200880751280">Nije uspjelo učitavanje stranice s informacijama "<ph name="ABOUT_PAGE" />".</translation>
 <translation id="471800408830181311">Izvoz osobnog ključa nije uspio.</translation>
@@ -33,6 +32,7 @@
 <translation id="4988792151665380515">Izvoz javnog ključa nije uspio.</translation>
 <translation id="5026754133087629784">Prikaz web-lokacije: <ph name="WEBVIEW_TAG_NAME" /></translation>
 <translation id="5098647635849512368">Nije moguće pronaći apsolutni put prema direktoriju za pakiranje.</translation>
+<translation id="5160071981665899014">Nije uspjelo učitavanje JavaScripta <ph name="RELATIVE_PATH" /> za skriptu.</translation>
 <translation id="5356315618422219272">Appview: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5436430103864390185">Oblikovani prozori nisu podržani.</translation>
 <translation id="5456409301717116725">To proširenje uključuje ključnu datoteku "<ph name="KEY_PATH" />". Vjerojatno ne želite to učiniti.</translation>

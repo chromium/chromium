@@ -1,7 +1,4 @@
 This is a testharness.js-based test.
-[PASS] left < right
-[PASS] no overflow
-[PASS] same widths
 [FAIL] zero width
   assert_equals: expected 0 but got 200
 [FAIL] same heights

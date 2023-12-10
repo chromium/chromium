@@ -11,9 +11,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.profile_metrics.BrowserProfileType;
 
-/**
- * Records download related metrics on Android.
- */
+/** Records download related metrics on Android. */
 public class DownloadMetrics {
     /**
      * Records download open source.
@@ -21,17 +19,22 @@ public class DownloadMetrics {
      * @param mimeType The mime type of the download.
      */
     public static void recordDownloadOpen(@DownloadOpenSource int source, String mimeType) {
-        @DownloadFilter.Type
-        int type = DownloadFilter.fromMimeType(mimeType);
+        @DownloadFilter.Type int type = DownloadFilter.fromMimeType(mimeType);
         if (type == DownloadFilter.Type.VIDEO) {
-            RecordHistogram.recordEnumeratedHistogram("Android.DownloadManager.OpenSource.Video",
-                    source, DownloadOpenSource.MAX_VALUE);
+            RecordHistogram.recordEnumeratedHistogram(
+                    "Android.DownloadManager.OpenSource.Video",
+                    source,
+                    DownloadOpenSource.MAX_VALUE);
         } else if (type == DownloadFilter.Type.AUDIO) {
-            RecordHistogram.recordEnumeratedHistogram("Android.DownloadManager.OpenSource.Audio",
-                    source, DownloadOpenSource.MAX_VALUE);
+            RecordHistogram.recordEnumeratedHistogram(
+                    "Android.DownloadManager.OpenSource.Audio",
+                    source,
+                    DownloadOpenSource.MAX_VALUE);
         } else {
-            RecordHistogram.recordEnumeratedHistogram("Android.DownloadManager.OpenSource.Other",
-                    source, DownloadOpenSource.MAX_VALUE);
+            RecordHistogram.recordEnumeratedHistogram(
+                    "Android.DownloadManager.OpenSource.Other",
+                    source,
+                    DownloadOpenSource.MAX_VALUE);
         }
     }
 
@@ -48,13 +51,13 @@ public class DownloadMetrics {
         if (tab == null) return;
 
         Profile profile = tab.getProfile();
-        @BrowserProfileType
-        int type = Profile.getBrowserProfileTypeFromProfile(profile);
+        @BrowserProfileType int type = Profile.getBrowserProfileTypeFromProfile(profile);
         RecordHistogram.recordEnumeratedHistogram(
                 "Download.OpenDownloads.PerProfileType", type, BrowserProfileType.MAX_VALUE + 1);
         if (source == DownloadOpenSource.MENU) {
             RecordHistogram.recordEnumeratedHistogram(
-                    "Download.OpenDownloadsFromMenu.PerProfileType", type,
+                    "Download.OpenDownloadsFromMenu.PerProfileType",
+                    type,
                     BrowserProfileType.MAX_VALUE + 1);
         }
     }

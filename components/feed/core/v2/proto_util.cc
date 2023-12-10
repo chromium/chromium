@@ -189,6 +189,10 @@ feedwire::Request CreateFeedQueryRequest(
     feed_request.add_client_capability(Capability::SPORTS_IN_GAME_UPDATE);
   }
 
+  if (base::FeatureList::IsEnabled(kFeedDynamicColors)) {
+    feed_request.add_client_capability(Capability::DYNAMIC_COLORS);
+  }
+
   switch (request_metadata.tab_group_enabled_state) {
     case TabGroupEnabledState::kNone:
       feed_request.add_client_capability(Capability::OPEN_IN_TAB);

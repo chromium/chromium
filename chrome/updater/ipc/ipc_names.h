@@ -18,4 +18,4 @@ mojo::NamedPlatformChannel::ServerName GetUpdateServiceServerName(
 
 }  // namespace updater
 
-#endif  // CHROME_UPDATER_IPC_NAMES_H_
+#endif  // CHROME_UPDATER_IPC_IPC_NAMES_H_

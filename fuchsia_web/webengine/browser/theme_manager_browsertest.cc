@@ -4,6 +4,7 @@
 
 #include <fuchsia/settings/cpp/fidl_test_base.h>
 
+#include <optional>
 #include "base/fuchsia/scoped_service_binding.h"
 #include "base/fuchsia/test_component_context_for_process.h"
 #include "base/json/json_writer.h"
@@ -19,7 +20,6 @@
 #include "fuchsia_web/webengine/test/test_data.h"
 #include "fuchsia_web/webengine/test/web_engine_browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -80,7 +80,7 @@ class ThemeManagerTest : public WebEngineBrowserTest,
     theme.set_theme_type(theme_type);
     settings.set_theme(std::move(theme));
     (*watch_callback_)(std::move(settings));
-    watch_callback_ = absl::nullopt;
+    watch_callback_ = std::nullopt;
     base::RunLoop().RunUntilIdle();
   }
 
@@ -127,13 +127,13 @@ class ThemeManagerTest : public WebEngineBrowserTest,
     ADD_FAILURE() << "Unexpected call: " << name;
   }
 
-  absl::optional<base::TestComponentContextForProcess> component_context_;
-  absl::optional<base::ScopedServiceBinding<fuchsia::settings::Display>>
+  std::optional<base::TestComponentContextForProcess> component_context_;
+  std::optional<base::ScopedServiceBinding<fuchsia::settings::Display>>
       display_binding_;
   FrameForTest frame_;
 
   base::OnceClosure on_watch_closure_;
-  absl::optional<WatchCallback> watch_callback_;
+  std::optional<WatchCallback> watch_callback_;
 };
 
 IN_PROC_BROWSER_TEST_F(ThemeManagerTest, Default) {
@@ -166,7 +166,7 @@ IN_PROC_BROWSER_TEST_F(ThemeManagerTest, DISABLED_DefaultWithMissingService) {
 
   ASSERT_TRUE(display_binding_->has_clients());
 
-  display_binding_ = absl::nullopt;
+  display_binding_ = std::nullopt;
   base::RunLoop().RunUntilIdle();
 
   ASSERT_FALSE(display_binding_);

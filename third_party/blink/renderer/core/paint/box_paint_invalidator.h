@@ -31,12 +31,12 @@ class CORE_EXPORT BoxPaintInvalidator {
   friend class BoxPaintInvalidatorTest;
 
   bool HasEffectiveBackground();
-  bool BackgroundGeometryDependsOnLayoutOverflowRect();
+  bool BackgroundGeometryDependsOnScrollableOverflowRect();
   bool BackgroundPaintsInContentsSpace();
   bool BackgroundPaintsInBorderBoxSpace();
-  bool ShouldFullyInvalidateBackgroundOnLayoutOverflowChange(
-      const PhysicalRect& old_layout_overflow,
-      const PhysicalRect& new_layout_overflow);
+  bool ShouldFullyInvalidateBackgroundOnScrollableOverflowChange(
+      const PhysicalRect& old_scrollable_overflow,
+      const PhysicalRect& new_scrollable_overflow);
 
   enum class BackgroundInvalidationType { kNone = 0, kIncremental, kFull };
   BackgroundInvalidationType ComputeViewBackgroundInvalidation();

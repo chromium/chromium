@@ -1,0 +1,20 @@
+This is a testharness.js-based test.
+[FAIL] share with user cancellation
+  promise_test: Unhandled rejection with value: object "ReferenceError: eventSender is not defined"
+[FAIL] share with internal error
+  promise_test: Unhandled rejection with value: object "ReferenceError: eventSender is not defined"
+[FAIL] share with data url
+  promise_test: Unhandled rejection with value: object "ReferenceError: eventSender is not defined"
+[FAIL] share consumes user activation
+  promise_test: Unhandled rejection with value: object "ReferenceError: eventSender is not defined"
+[FAIL] only one share at a time
+  promise_test: Unhandled rejection with value: object "ReferenceError: eventSender is not defined"
+[FAIL] Failed file share does not lead to InvalidStateError
+  promise_test: Unhandled rejection with value: object "ReferenceError: eventSender is not defined"
+[FAIL] share with excessive title
+  promise_test: Unhandled rejection with value: object "ReferenceError: eventSender is not defined"
+[FAIL] share with excessive text
+  promise_test: Unhandled rejection with value: object "ReferenceError: eventSender is not defined"
+[FAIL] share with excessive url
+  promise_test: Unhandled rejection with value: object "ReferenceError: eventSender is not defined"
+Harness: the test ran to completion.

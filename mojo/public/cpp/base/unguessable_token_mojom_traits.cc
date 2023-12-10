@@ -17,7 +17,7 @@ bool StructTraits<mojo_base::mojom::UnguessableTokenDataView,
   // This is not mapped as nullable_is_same_type, so any UnguessableToken
   // deserialized by the traits should always yield a non-empty token.
   // If deserialization results in an empty token, the data is malformed.
-  absl::optional<base::UnguessableToken> token =
+  std::optional<base::UnguessableToken> token =
       base::UnguessableToken::Deserialize(high, low);
   if (!token.has_value()) {
     return false;

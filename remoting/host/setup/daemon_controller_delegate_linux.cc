@@ -7,6 +7,7 @@
 #include <unistd.h>
 #include <utility>
 
+#include <optional>
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/environment.h"
@@ -27,7 +28,6 @@
 #include "remoting/base/file_path_util_linux.h"
 #include "remoting/host/host_config.h"
 #include "remoting/host/usage_stats_consent.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace remoting {
 
@@ -144,11 +144,11 @@ DaemonController::State DaemonControllerDelegateLinux::GetState() {
   }
 }
 
-absl::optional<base::Value::Dict> DaemonControllerDelegateLinux::GetConfig() {
-  absl::optional<base::Value::Dict> host_config(
+std::optional<base::Value::Dict> DaemonControllerDelegateLinux::GetConfig() {
+  std::optional<base::Value::Dict> host_config(
       HostConfigFromJsonFile(GetConfigPath()));
   if (!host_config.has_value()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   base::Value::Dict result;
@@ -218,7 +218,7 @@ void DaemonControllerDelegateLinux::SetConfigAndStart(
 void DaemonControllerDelegateLinux::UpdateConfig(
     base::Value::Dict config,
     DaemonController::CompletionCallback done) {
-  absl::optional<base::Value::Dict> new_config(
+  std::optional<base::Value::Dict> new_config(
       HostConfigFromJsonFile(GetConfigPath()));
   if (!new_config.has_value()) {
     LOG(ERROR) << "Failed to read existing config file.";

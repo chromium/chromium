@@ -39,6 +39,7 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
+#include "chrome/browser/search/search.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
@@ -50,9 +51,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "components/infobars/content/content_infobar_manager.h"
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "components/metrics/structured/structured_events.h"
-#endif
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -114,11 +113,6 @@ const char kFrontendHostMethod[] = "method";
 const char kFrontendHostParams[] = "params";
 const char kTitleFormat[] = "DevTools - %s";
 
-const char kRemotePageActionInspect[] = "inspect";
-const char kRemotePageActionReload[] = "reload";
-const char kRemotePageActionActivate[] = "activate";
-const char kRemotePageActionClose[] = "close";
-
 const char kConfigDiscoverUsbDevices[] = "discoverUsbDevices";
 const char kConfigPortForwardingEnabled[] = "portForwardingEnabled";
 const char kConfigPortForwardingConfig[] = "portForwardingConfig";
@@ -177,6 +171,10 @@ class DefaultBindingsDelegate : public DevToolsUIBindings::Delegate {
   infobars::ContentInfoBarManager* GetInfoBarManager() override;
   void RenderProcessGone(bool crashed) override {}
   void ShowCertificateViewer(const std::string& cert_chain) override {}
+
+  int GetDockStateForLogging() override { return 0; }
+  int GetOpenedByForLogging() override { return 0; }
+  int GetClosedByForLogging() override { return 0; }
   content::WebContents* web_contents_;
 };
 
@@ -360,11 +358,17 @@ std::string SanitizeFrontendQueryParam(
     return value;
   }
 
-#if defined(AIDA_SCOPE)
-  if (key == "enableAida" && value == "true") {
-    return value;
+  if (base::FeatureList::IsEnabled(::features::kDevToolsConsoleInsights)) {
+    if (key == "enableAida" && value == "true") {
+      return value;
+    }
+    if (key == "aidaApiKey") {
+      return value;
+    }
+    if (key == "aidaTemperature") {
+      return value;
+    }
   }
-#endif
 
   return std::string();
 }
@@ -665,8 +669,7 @@ DevToolsUIBindings::DevToolsUIBindings(content::WebContents* web_contents)
       delegate_(new DefaultBindingsDelegate(web_contents_)),
       devices_updates_enabled_(false),
       frontend_loaded_(false),
-      settings_(profile_),
-      last_action_time_(base::TimeTicks::Now()) {
+      settings_(profile_) {
   DevToolsUIBindings::GetDevToolsUIBindings().push_back(this);
   frontend_contents_observer_ =
       std::make_unique<FrontendWebContentsObserver>(this);
@@ -681,6 +684,14 @@ DevToolsUIBindings::DevToolsUIBindings(content::WebContents* web_contents)
 }
 
 DevToolsUIBindings::~DevToolsUIBindings() {
+  if (base::FeatureList::IsEnabled(::features::kDevToolsVeLogging) &&
+      !session_id_for_logging_.is_empty()) {
+    metrics::structured::events::v2::dev_tools::SessionEnd()
+        .SetTrigger(delegate_->GetClosedByForLogging())
+        .SetTimeSinceLastAction(GetTimeSinceLastAction().InMilliseconds())
+        .SetSessionId(session_id_for_logging_.GetLowForSerialization())
+        .Record();
+  }
   if (agent_host_.get())
     agent_host_->DetachClient(this);
 
@@ -762,6 +773,15 @@ void DevToolsUIBindings::AgentHostClosed(
   delegate_->InspectedContentsClosing();
 }
 
+bool DevToolsUIBindings::MayWriteLocalFiles() {
+  // Do not allow local file system access via the front-end on Chrome OS.
+#if BUILDFLAG(IS_CHROMEOS)
+  return false;
+#else
+  return true;
+#endif
+}
+
 void DevToolsUIBindings::SendMessageAck(int request_id,
                                         const base::Value* arg) {
   if (arg) {
@@ -803,8 +823,7 @@ void DevToolsUIBindings::SetIsDocked(DispatchCallback callback,
   std::move(callback).Run(nullptr);
 }
 
-#if defined(AIDA_SCOPE)
-void DevToolsUIBindings::OnAidaConverstaionResponse(
+void DevToolsUIBindings::OnAidaConversationResponse(
     DispatchCallback callback,
     const std::string& response) {
   base::Value::Dict response_dict;
@@ -812,7 +831,6 @@ void DevToolsUIBindings::OnAidaConverstaionResponse(
   auto response_value = base::Value(std::move(response_dict));
   std::move(callback).Run(&response_value);
 }
-#endif
 
 void DevToolsUIBindings::InspectElementCompleted() {
   delegate_->InspectElementCompleted();
@@ -1211,24 +1229,6 @@ void DevToolsUIBindings::SetDevicesUpdatesEnabled(bool enabled) {
   }
 }
 
-void DevToolsUIBindings::PerformActionOnRemotePage(const std::string& page_id,
-                                                   const std::string& action) {
-  if (!remote_targets_handler_)
-    return;
-  scoped_refptr<content::DevToolsAgentHost> host =
-      remote_targets_handler_->GetTarget(page_id);
-  if (!host)
-    return;
-  if (action == kRemotePageActionInspect)
-    delegate_->Inspect(host);
-  else if (action == kRemotePageActionReload)
-    host->Reload();
-  else if (action == kRemotePageActionActivate)
-    host->Activate();
-  else if (action == kRemotePageActionClose)
-    host->Close();
-}
-
 void DevToolsUIBindings::OpenRemotePage(const std::string& browser_id,
                                         const std::string& url) {
   if (!remote_targets_handler_)
@@ -1412,6 +1412,22 @@ void DevToolsUIBindings::RecordUserMetricsAction(const std::string& name) {
   base::RecordComputedAction(name);
 }
 
+bool DevToolsUIBindings::MaybeStartLogging() {
+  if (!base::FeatureList::IsEnabled(::features::kDevToolsVeLogging)) {
+    return false;
+  }
+  if (session_id_for_logging_.is_empty()) {
+    session_id_for_logging_ = base::UnguessableToken::Create();
+    last_action_time_ = base::TimeTicks::Now();
+    metrics::structured::events::v2::dev_tools::SessionStart()
+        .SetTrigger(delegate_->GetOpenedByForLogging())
+        .SetDockSide(delegate_->GetDockStateForLogging())
+        .SetSessionId(session_id_for_logging_.GetLowForSerialization())
+        .Record();
+  }
+  return true;
+}
+
 base::TimeDelta DevToolsUIBindings::GetTimeSinceLastAction() {
   base::TimeTicks now = base::TimeTicks::Now();
   base::TimeDelta time_since_last_action = (now - last_action_time_);
@@ -1420,10 +1436,9 @@ base::TimeDelta DevToolsUIBindings::GetTimeSinceLastAction() {
 }
 
 void DevToolsUIBindings::RecordImpression(const ImpressionEvent& event) {
-  if (!base::FeatureList::IsEnabled(::features::kDevToolsVeLogging)) {
+  if (!MaybeStartLogging()) {
     return;
   }
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   for (const auto& ve : event.impressions) {
     metrics::structured::events::v2::dev_tools::Impression()
         .SetVeId(ve.id)
@@ -1431,49 +1446,72 @@ void DevToolsUIBindings::RecordImpression(const ImpressionEvent& event) {
         .SetVeParent(ve.parent)
         .SetVeContext(ve.context)
         .SetTimeSinceLastAction(GetTimeSinceLastAction().InMilliseconds())
+        .SetSessionId(session_id_for_logging_.GetLowForSerialization())
         .Record();
   }
-#endif
 }
 
 void DevToolsUIBindings::RecordClick(const ClickEvent& event) {
-  if (!base::FeatureList::IsEnabled(::features::kDevToolsVeLogging)) {
+  if (!MaybeStartLogging()) {
     return;
   }
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   metrics::structured::events::v2::dev_tools::Click()
       .SetVeId(event.veid)
       .SetMouseButton(event.mouse_button)
       .SetContext(event.context)
       .SetTimeSinceLastAction(GetTimeSinceLastAction().InMilliseconds())
+      .SetSessionId(session_id_for_logging_.GetLowForSerialization())
       .Record();
-#endif
+}
+
+void DevToolsUIBindings::RecordHover(const HoverEvent& event) {
+  if (!MaybeStartLogging()) {
+    return;
+  }
+  metrics::structured::events::v2::dev_tools::Hover()
+      .SetVeId(event.veid)
+      .SetTime(event.time)
+      .SetContext(event.context)
+      .SetTimeSinceLastAction(GetTimeSinceLastAction().InMilliseconds())
+      .SetSessionId(session_id_for_logging_.GetLowForSerialization())
+      .Record();
+}
+
+void DevToolsUIBindings::RecordDrag(const DragEvent& event) {
+  if (!MaybeStartLogging()) {
+    return;
+  }
+  metrics::structured::events::v2::dev_tools::Drag()
+      .SetVeId(event.veid)
+      .SetDistance(event.distance)
+      .SetContext(event.context)
+      .SetTimeSinceLastAction(GetTimeSinceLastAction().InMilliseconds())
+      .SetSessionId(session_id_for_logging_.GetLowForSerialization())
+      .Record();
 }
 
 void DevToolsUIBindings::RecordChange(const ChangeEvent& event) {
-  if (!base::FeatureList::IsEnabled(::features::kDevToolsVeLogging)) {
+  if (!MaybeStartLogging()) {
     return;
   }
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   metrics::structured::events::v2::dev_tools::Change()
       .SetVeId(event.veid)
       .SetContext(event.context)
       .SetTimeSinceLastAction(GetTimeSinceLastAction().InMilliseconds())
+      .SetSessionId(session_id_for_logging_.GetLowForSerialization())
       .Record();
-#endif
 }
 
 void DevToolsUIBindings::RecordKeyDown(const KeyDownEvent& event) {
-  if (!base::FeatureList::IsEnabled(::features::kDevToolsVeLogging)) {
+  if (!MaybeStartLogging()) {
     return;
   }
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   metrics::structured::events::v2::dev_tools::KeyDown()
       .SetVeId(event.veid)
       .SetContext(event.context)
       .SetTimeSinceLastAction(GetTimeSinceLastAction().InMilliseconds())
+      .SetSessionId(session_id_for_logging_.GetLowForSerialization())
       .Record();
-#endif
 }
 
 void DevToolsUIBindings::SendJsonRequest(DispatchCallback callback,
@@ -1630,15 +1668,17 @@ void DevToolsUIBindings::AddDevToolsExtensionsToClient() {
     return;
 
   base::Value::List results;
-  base::Value::List component_extension_origins;
+  base::Value::List forbidden_origins;
   bool have_user_installed_devtools_extensions = false;
   extensions::ExtensionManagement* management =
       extensions::ExtensionManagementFactory::GetForBrowserContext(
           web_contents_->GetBrowserContext());
+  forbidden_origins.Append(
+      url::Origin::Create(search::GetNewTabPageURL(profile_)).Serialize());
   for (const scoped_refptr<const extensions::Extension>& extension :
        registry->enabled_extensions()) {
     if (extensions::Manifest::IsComponentLocation(extension->location())) {
-      component_extension_origins.Append(extension->origin().Serialize());
+      forbidden_origins.Append(extension->origin().Serialize());
     }
     if (extensions::chrome_manifest_urls::GetDevToolsPage(extension.get())
             .is_empty()) {
@@ -1699,7 +1739,7 @@ void DevToolsUIBindings::AddDevToolsExtensionsToClient() {
   }
 
   CallClientMethod("DevToolsAPI", "setOriginsForbiddenForExtensions",
-                   base::Value(std::move(component_extension_origins)));
+                   base::Value(std::move(forbidden_origins)));
   CallClientMethod("DevToolsAPI", "addExtensions",
                    base::Value(std::move(results)));
 }
@@ -1748,9 +1788,11 @@ void DevToolsUIBindings::CanShowSurvey(DispatchCallback callback,
   std::move(callback).Run(&response);
 }
 
-#if defined(AIDA_SCOPE)
 void DevToolsUIBindings::DoAidaConversation(DispatchCallback callback,
                                             const std::string& request) {
+  if (!base::FeatureList::IsEnabled(::features::kDevToolsConsoleInsights)) {
+    return;
+  }
   if (!aida_client_) {
     aida_client_ = std::make_unique<AidaClient>(
         profile_, DevToolsWindow::AsDevToolsWindow(web_contents_)
@@ -1760,10 +1802,9 @@ void DevToolsUIBindings::DoAidaConversation(DispatchCallback callback,
                       ->GetURLLoaderFactoryForBrowserProcess());
   }
   aida_client_->DoConversation(
-      request, base::BindOnce(&DevToolsUIBindings::OnAidaConverstaionResponse,
+      request, base::BindOnce(&DevToolsUIBindings::OnAidaConversationResponse,
                               base::Unretained(this), std::move(callback)));
 }
-#endif
 
 void DevToolsUIBindings::SetDelegate(Delegate* delegate) {
   delegate_.reset(delegate);

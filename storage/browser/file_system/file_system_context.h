@@ -240,7 +240,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemContext
   // Provide a non-null BucketLocator to override the default storage bucket
   // for the root URL (which will be propagated to child URLs).
   void OpenFileSystem(const blink::StorageKey& storage_key,
-                      const absl::optional<storage::BucketLocator>& bucket,
+                      const std::optional<storage::BucketLocator>& bucket,
                       FileSystemType type,
                       OpenFileSystemMode mode,
                       OpenFileSystemCallback callback);
@@ -339,7 +339,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemContext
 
   void ResolveURLOnOpenFileSystemForTesting(
       const blink::StorageKey& storage_key,
-      const absl::optional<storage::BucketLocator>& bucket,
+      const std::optional<storage::BucketLocator>& bucket,
       FileSystemType type,
       OpenFileSystemMode mode,
       OpenFileSystemCallback callback) {
@@ -416,7 +416,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemContext
   // `bucket` will be populated if the non-default storage bucket was used.
   void ResolveURLOnOpenFileSystem(
       const blink::StorageKey& storage_key,
-      const absl::optional<storage::BucketLocator>& bucket,
+      const std::optional<storage::BucketLocator>& bucket,
       FileSystemType type,
       OpenFileSystemMode mode,
       OpenFileSystemCallback callback);

@@ -100,7 +100,7 @@ class ProfileMenuView : public ProfileMenuViewBase {
 #if !BUILDFLAG(IS_CHROMEOS)
   // A profile switcher object needed if the user triggers opening other
   // profile in a web app.
-  absl::optional<WebAppProfileSwitcher> app_profile_switcher_;
+  std::optional<WebAppProfileSwitcher> app_profile_switcher_;
 #endif
 };
 

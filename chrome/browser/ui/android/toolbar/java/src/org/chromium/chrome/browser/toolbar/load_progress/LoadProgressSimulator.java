@@ -21,8 +21,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 class LoadProgressSimulator {
     private static final int MSG_ID_UPDATE_PROGRESS = 1;
     private static final int PROGRESS_INCREMENT_DELAY_MS = 10;
-    @VisibleForTesting
-    static final float PROGRESS_INCREMENT = 0.1f;
+    @VisibleForTesting static final float PROGRESS_INCREMENT = 0.1f;
 
     private final PropertyModel mModel;
     private final Handler mHandler;
@@ -31,39 +30,40 @@ class LoadProgressSimulator {
 
     public LoadProgressSimulator(PropertyModel model) {
         mModel = model;
-        mHandler = new Handler(Looper.getMainLooper()) {
-            @Override
-            public void handleMessage(Message msg) {
-                assert msg.what == MSG_ID_UPDATE_PROGRESS;
-                mProgress = Math.min(1, mProgress += PROGRESS_INCREMENT);
-                mModel.set(LoadProgressProperties.PROGRESS, mProgress);
+        mHandler =
+                new Handler(Looper.getMainLooper()) {
+                    @Override
+                    public void handleMessage(Message msg) {
+                        assert msg.what == MSG_ID_UPDATE_PROGRESS;
+                        mProgress = Math.min(1, mProgress += PROGRESS_INCREMENT);
+                        mModel.set(LoadProgressProperties.PROGRESS, mProgress);
 
-                if (MathUtils.areFloatsEqual(mProgress, 1.0f)) {
-                    mModel.set(LoadProgressProperties.COMPLETION_STATE,
-                            LoadProgressProperties.CompletionState.FINISHED_DO_ANIMATE);
-                    return;
-                }
-                sendEmptyMessageDelayed(MSG_ID_UPDATE_PROGRESS, PROGRESS_INCREMENT_DELAY_MS);
-            }
-        };
+                        if (MathUtils.areFloatsEqual(mProgress, 1.0f)) {
+                            mModel.set(
+                                    LoadProgressProperties.COMPLETION_STATE,
+                                    LoadProgressProperties.CompletionState.FINISHED_DO_ANIMATE);
+                            return;
+                        }
+                        sendEmptyMessageDelayed(
+                                MSG_ID_UPDATE_PROGRESS, PROGRESS_INCREMENT_DELAY_MS);
+                    }
+                };
     }
 
-    /**
-     * Start simulating load progress from a baseline of 0.
-     */
+    /** Start simulating load progress from a baseline of 0. */
     public void start() {
         mProgress = 0.0f;
-        mModel.set(LoadProgressProperties.COMPLETION_STATE,
+        mModel.set(
+                LoadProgressProperties.COMPLETION_STATE,
                 LoadProgressProperties.CompletionState.UNFINISHED);
         mModel.set(LoadProgressProperties.PROGRESS, mProgress);
         mHandler.sendEmptyMessage(MSG_ID_UPDATE_PROGRESS);
     }
 
-    /**
-     * Cancels simulating load progress.
-     */
+    /** Cancels simulating load progress. */
     public void cancel() {
-        mModel.set(LoadProgressProperties.COMPLETION_STATE,
+        mModel.set(
+                LoadProgressProperties.COMPLETION_STATE,
                 LoadProgressProperties.CompletionState.FINISHED_DONT_ANIMATE);
         mHandler.removeMessages(MSG_ID_UPDATE_PROGRESS);
     }

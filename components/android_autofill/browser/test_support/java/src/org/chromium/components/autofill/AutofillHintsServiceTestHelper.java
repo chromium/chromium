@@ -13,27 +13,26 @@ import org.chromium.components.autofill_public.ViewType;
 
 import java.util.List;
 
-/**
- * This class implements and registers IViewTypeCallback for testing.
- */
+/** This class implements and registers IViewTypeCallback for testing. */
 public class AutofillHintsServiceTestHelper {
     public void registerViewTypeService(IBinder binder) throws Exception {
         IAutofillHintsService.Stub.asInterface(binder).registerViewTypeCallback(getBinder());
     }
 
-    private IViewTypeCallback.Stub mBinder = new IViewTypeCallback.Stub() {
-        @Override
-        public void onViewTypeAvailable(List<ViewType> viewTypeList) {
-            mViewTypeList = viewTypeList;
-            mCallbackHelper.notifyCalled();
-        }
+    private IViewTypeCallback.Stub mBinder =
+            new IViewTypeCallback.Stub() {
+                @Override
+                public void onViewTypeAvailable(List<ViewType> viewTypeList) {
+                    mViewTypeList = viewTypeList;
+                    mCallbackHelper.notifyCalled();
+                }
 
-        @Override
-        public void onQueryFailed() {
-            mQueryFailed = true;
-            mCallbackHelper.notifyCalled();
-        }
-    };
+                @Override
+                public void onQueryFailed() {
+                    mQueryFailed = true;
+                    mCallbackHelper.notifyCalled();
+                }
+            };
 
     private List<ViewType> mViewTypeList;
     private boolean mQueryFailed;

@@ -1,6 +1,18 @@
 Need tests for (likely not a complete list):
 
 * directFromSellerSignals.
+    * The expected order when both responses use the same ad slot is currently
+        undefined. However, we are in the process of resolving this matter by
+        implementing a LIFO approach, as outlined in progress at
+        crrev.com/c/4930438. Once this solution is in place, a test case will be
+        created by fetching two different URLs with signals that share the same
+        ad slot.
+    * After adding new test cases for the component auction, test the
+        directFromSellerSignals function with component auctions. Consider to
+        set up one auction in the top frame and two component auctions. Send
+        three fetch requests to retrieve three different AdAuctionSignals
+        headers. Ensure that you use three different seller origins for the
+        auctions and a different one for the buyer origin.
 * All generateBid() and scoreAd() input parameters.
 * All interest group fields (passed to auction, have effect on auction).
     Very few fields covered.

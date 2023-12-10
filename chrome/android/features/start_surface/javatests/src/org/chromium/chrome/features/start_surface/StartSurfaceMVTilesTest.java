@@ -62,6 +62,7 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.suggestions.SuggestionsDependenciesRule;
 import org.chromium.chrome.test.util.browser.suggestions.mostvisited.FakeMostVisitedSites;
@@ -85,8 +86,8 @@ import java.util.concurrent.TimeoutException;
 })
 @EnableFeatures({
     ChromeFeatureList.START_SURFACE_ANDROID + "<Study",
-    ChromeFeatureList.EMPTY_STATES
 })
+@DisableFeatures({ChromeFeatureList.SHOW_NTP_AT_STARTUP_ANDROID})
 @DoNotBatch(reason = "StartSurface*Test tests startup behaviours and thus can't be batched.")
 @CommandLineFlags.Add({
     ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,

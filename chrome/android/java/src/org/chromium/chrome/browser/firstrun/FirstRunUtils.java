@@ -63,8 +63,8 @@ public class FirstRunUtils {
     public static boolean didAcceptTermsOfService() {
         // Note: Does not check FirstRunUtils.isFirstRunEulaAccepted() because this may be called
         // before native is initialized.
-        return ChromeSharedPreferences.getInstance().readBoolean(
-                ChromePreferenceKeys.FIRST_RUN_CACHED_TOS_ACCEPTED, false);
+        return ChromeSharedPreferences.getInstance()
+                .readBoolean(ChromePreferenceKeys.FIRST_RUN_CACHED_TOS_ACCEPTED, false);
     }
 
     /**
@@ -75,8 +75,8 @@ public class FirstRunUtils {
     static void acceptTermsOfService(boolean allowMetricsAndCrashUploading) {
         UmaSessionStats.changeMetricsReportingConsent(
                 allowMetricsAndCrashUploading, ChangeMetricsReportingStateCalledFrom.UI_FIRST_RUN);
-        ChromeSharedPreferences.getInstance().writeBoolean(
-                ChromePreferenceKeys.FIRST_RUN_CACHED_TOS_ACCEPTED, true);
+        ChromeSharedPreferences.getInstance()
+                .writeBoolean(ChromePreferenceKeys.FIRST_RUN_CACHED_TOS_ACCEPTED, true);
         setEulaAccepted();
     }
 
@@ -111,8 +111,9 @@ public class FirstRunUtils {
 
     @SuppressLint("InlinedApi")
     private static boolean hasSyncPermissions() {
-        UserManager manager = (UserManager) ContextUtils.getApplicationContext().getSystemService(
-                Context.USER_SERVICE);
+        UserManager manager =
+                (UserManager)
+                        ContextUtils.getApplicationContext().getSystemService(Context.USER_SERVICE);
         Bundle userRestrictions = manager.getUserRestrictions();
         return !userRestrictions.getBoolean(UserManager.DISALLOW_MODIFY_ACCOUNTS, false);
     }
@@ -124,9 +125,7 @@ public class FirstRunUtils {
         return FirstRunUtilsJni.get().getFirstRunEulaAccepted();
     }
 
-    /**
-     * Sets the preference that signals when the user has accepted the EULA.
-     */
+    /** Sets the preference that signals when the user has accepted the EULA. */
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public static void setEulaAccepted() {
         FirstRunUtilsJni.get().setEulaAccepted();
@@ -162,7 +161,9 @@ public class FirstRunUtils {
     @NativeMethods
     public interface Natives {
         boolean getFirstRunEulaAccepted();
+
         void setEulaAccepted();
+
         boolean getCctTosDialogEnabled();
     }
 }

@@ -4,6 +4,8 @@
 
 #include "chrome/updater/cleanup_task.h"
 
+#include <optional>
+
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -18,7 +20,6 @@
 #include "chrome/updater/app/app_uninstall.h"
 #include "chrome/updater/updater_version.h"
 #include "chrome/updater/util/util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "chrome/updater/util/win_util.h"
@@ -30,6 +31,15 @@ namespace {
 
 // Versions up to this version will be uninstalled.
 constexpr char kCleanupVersionMax[] = "117.0.5859.0";
+
+// TODO(crbug/5002644): we should remove this once we believe the cache has
+// been deleted by the majority of clients.
+void TempCleanupCache(UpdaterScope scope) {
+  std::optional<base::FilePath> cache_dir = GetCrxDiffCacheDirectory(scope);
+  if (cache_dir.has_value()) {
+    base::DeletePathRecursively(cache_dir.value());
+  }
+}
 
 void CleanupGoogleUpdate(UpdaterScope scope) {
 #if BUILDFLAG(IS_WIN)
@@ -44,7 +54,7 @@ void CleanupOldUpdaterVersions(UpdaterScope scope) {
   CHECK(base::Version(kCleanupVersionMax).IsValid());
   CHECK(base::Version(kUpdaterVersion)
             .CompareTo(base::Version(kCleanupVersionMax)) > 0);
-  absl::optional<base::FilePath> dir = GetInstallDirectory(scope);
+  std::optional<base::FilePath> dir = GetInstallDirectory(scope);
   if (!dir) {
     return;
   }
@@ -86,6 +96,7 @@ void CleanupTask::Run(base::OnceClosure callback) {
           [](UpdaterScope scope) {
             CleanupGoogleUpdate(scope);
             CleanupOldUpdaterVersions(scope);
+            TempCleanupCache(scope);
           },
           scope_),
       std::move(callback));

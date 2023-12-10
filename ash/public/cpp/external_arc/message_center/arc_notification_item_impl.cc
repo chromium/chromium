@@ -120,11 +120,8 @@ void ArcNotificationItemImpl::OnUpdatedFromAndroid(
         message_center::SettingsButtonHandler::NONE;
   }
 
-  bool is_snooze_supported =
-      (data->flags && (data->flags->value &
-                       arc::mojom::ArcNotificationFlags::SUPPORT_SNOOZE) != 0);
-  rich_data.should_show_snooze_button =
-      is_snooze_supported && !is_setting_shown;
+  // TODO(b/313723218): Enable snooze on Chrome rendered ARC notifications.
+  rich_data.should_show_snooze_button = false;
 
   message_center::NotifierId notifier_id(
       message_center::NotifierType::ARC_APPLICATION,

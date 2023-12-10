@@ -16,8 +16,8 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/win/scoped_pdh_query.h"
 #include "chrome/browser/performance_manager/metrics/cpu_probe/pressure_sample.h"
-#include "chrome/browser/performance_manager/metrics/cpu_probe/scoped_pdh_query.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace performance_manager::metrics {
@@ -34,7 +34,9 @@ constexpr wchar_t kProcessorCounter[] =
 
 // Helper class that performs the actual I/O. It must run on a
 // SequencedTaskRunner that is properly configured for blocking I/O
-// operations.
+// operations, and uses CONTINUE_ON_SHUTDOWN since Pdh functions can hang (see
+// https://crbug.com/1499644). This means it must not use any globals that
+// are deleted on browser shutdown.
 class CpuProbeWin::BlockingTaskRunnerHelper final {
  public:
   BlockingTaskRunnerHelper();
@@ -49,7 +51,7 @@ class CpuProbeWin::BlockingTaskRunnerHelper final {
   SEQUENCE_CHECKER(sequence_checker_);
 
   // Used to derive CPU utilization.
-  ScopedPdhQuery cpu_query_ GUARDED_BY_CONTEXT(sequence_checker_);
+  base::win::ScopedPdhQuery cpu_query_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // This "handle" doesn't need to be freed but its lifetime is associated
   // with cpu_query_.
@@ -77,7 +79,7 @@ absl::optional<PressureSample> CpuProbeWin::BlockingTaskRunnerHelper::Update() {
   PDH_STATUS pdh_status;
 
   if (!cpu_query_.is_valid()) {
-    cpu_query_ = ScopedPdhQuery::Create();
+    cpu_query_ = base::win::ScopedPdhQuery::Create();
     if (!cpu_query_.is_valid()) {
       return absl::nullopt;
     }
@@ -146,7 +148,7 @@ CpuProbeWin::CpuProbeWin() {
   helper_ = base::SequenceBound<BlockingTaskRunnerHelper>(
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
-           base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN}));
+           base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN}));
 }
 
 CpuProbeWin::~CpuProbeWin() {

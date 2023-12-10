@@ -87,10 +87,6 @@ void BookmarkModelView::Remove(const bookmarks::BookmarkNode* node) {
   bookmark_model_->Remove(node, bookmarks::metrics::BookmarkEditSource::kOther);
 }
 
-void BookmarkModelView::RemoveAllUserBookmarks() {
-  bookmark_model_->RemoveAllUserBookmarks();
-}
-
 void BookmarkModelView::Move(const bookmarks::BookmarkNode* node,
                              const bookmarks::BookmarkNode* new_parent,
                              size_t index) {
@@ -181,6 +177,39 @@ BookmarkModelViewUsingLocalOrSyncableNodes::other_node() const {
 const bookmarks::BookmarkNode*
 BookmarkModelViewUsingLocalOrSyncableNodes::mobile_node() const {
   return underlying_model()->mobile_node();
+}
+
+void BookmarkModelViewUsingLocalOrSyncableNodes::RemoveAllSyncableNodes() {
+  // Relevant on iOS only, to delete all account bookmarks in a dedicated
+  // BookmarkModel instance.
+  underlying_model()->RemoveAllUserBookmarks();
+}
+
+BookmarkModelViewUsingAccountNodes::BookmarkModelViewUsingAccountNodes(
+    bookmarks::BookmarkModel* bookmark_model)
+    : BookmarkModelView(bookmark_model) {}
+
+BookmarkModelViewUsingAccountNodes::~BookmarkModelViewUsingAccountNodes() =
+    default;
+
+const bookmarks::BookmarkNode*
+BookmarkModelViewUsingAccountNodes::bookmark_bar_node() const {
+  return underlying_model()->account_bookmark_bar_node();
+}
+
+const bookmarks::BookmarkNode* BookmarkModelViewUsingAccountNodes::other_node()
+    const {
+  return underlying_model()->account_other_node();
+}
+
+const bookmarks::BookmarkNode* BookmarkModelViewUsingAccountNodes::mobile_node()
+    const {
+  return underlying_model()->account_mobile_node();
+}
+
+void BookmarkModelViewUsingAccountNodes::RemoveAllSyncableNodes() {
+  // TODO(crbug.com/1494120): Implement deletion properly.
+  NOTIMPLEMENTED();
 }
 
 }  // namespace sync_bookmarks

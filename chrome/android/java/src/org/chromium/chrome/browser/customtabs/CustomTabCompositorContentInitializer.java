@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.customtabs;
 import android.app.Activity;
 import android.view.ViewGroup;
 
+import dagger.Lazy;
+
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
@@ -21,8 +23,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
-
-import dagger.Lazy;
 
 /**
  * Initializes the compositor content (calls {@link ChromeActivity#initializeCompositorContent}).
@@ -41,8 +41,10 @@ public class CustomTabCompositorContentInitializer implements NativeInitObserver
     private boolean mInitialized;
 
     @Inject
-    public CustomTabCompositorContentInitializer(ActivityLifecycleDispatcher lifecycleDispatcher,
-            Activity activity, Lazy<CompositorViewHolder> compositorViewHolder,
+    public CustomTabCompositorContentInitializer(
+            ActivityLifecycleDispatcher lifecycleDispatcher,
+            Activity activity,
+            Lazy<CompositorViewHolder> compositorViewHolder,
             ObservableSupplier<TabContentManager> tabContentManagerSupplier,
             CompositorViewHolder.Initializer compositorViewHolderInitializer,
             TopUiThemeColorProvider topUiThemeColorProvider) {
@@ -71,12 +73,17 @@ public class CustomTabCompositorContentInitializer implements NativeInitObserver
     @Override
     public void onFinishNativeInitialization() {
         ViewGroup contentContainer = mActivity.findViewById(android.R.id.content);
-        LayoutManagerImpl layoutDriver = new LayoutManagerImpl(mCompositorViewHolder.get(),
-                contentContainer, mTabContentManagerSupplier,
-            () -> mTopUiThemeColorProvider);
+        LayoutManagerImpl layoutDriver =
+                new LayoutManagerImpl(
+                        mCompositorViewHolder.get(),
+                        contentContainer,
+                        mTabContentManagerSupplier,
+                        () -> mTopUiThemeColorProvider);
 
-        mCompositorViewHolderInitializer.initializeCompositorContent(layoutDriver,
-                mActivity.findViewById(org.chromium.chrome.R.id.url_bar), contentContainer,
+        mCompositorViewHolderInitializer.initializeCompositorContent(
+                layoutDriver,
+                mActivity.findViewById(org.chromium.chrome.R.id.url_bar),
+                contentContainer,
                 mActivity.findViewById(org.chromium.chrome.R.id.control_container));
 
         for (Callback<LayoutManagerImpl> listener : mListeners) {

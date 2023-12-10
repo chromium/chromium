@@ -4,9 +4,7 @@
 
 package org.chromium.components.content_settings;
 
-/**
- * Java counter part of content_settings::ContentSettingsTypeSet.
- */
+/** Java counter part of content_settings::ContentSettingsTypeSet. */
 public final class ContentSettingsTypeSet {
     private final @ContentSettingsType int mType;
 

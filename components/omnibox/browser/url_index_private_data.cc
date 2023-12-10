@@ -812,6 +812,7 @@ void URLIndexPrivateData::AddRowWordsToIndex(const history::URLRow& row,
   HistoryID history_id = static_cast<HistoryID>(row.id());
   // Split URL into individual, unique words then add in the title words.
   const GURL& gurl(row.url());
+  DCHECK(gurl.is_valid());
   const std::u16string& url = bookmarks::CleanUpUrlForMatching(gurl, nullptr);
   String16Set url_words = String16SetFromString16(
       url, word_starts ? &word_starts->url_word_starts_ : nullptr);

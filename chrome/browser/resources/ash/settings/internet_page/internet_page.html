@@ -131,6 +131,7 @@
           <cr-button id="createCustomApnButton"
               on-click="onCreateCustomApnClicked_"
               class="cancel-button"
+              deep-link-focus-id$="[[Setting.kCellularAddApn]]"
               disabled="[[isCreateCustomApnButtonDisabled_]]">
             <iron-icon icon="cr:add" slot="prefix-icon"></iron-icon>
             $i18n{apnPageAddNewApn}
@@ -158,6 +159,17 @@
           slot="subpage-title-extra"
           device-state="[[getDeviceState_(subpageType_, deviceStates)]]">
       </settings-internet-subpage-menu>
+      <template is="dom-if"
+          if="[[isProviderLocked_(subpageType_)]]">
+        <!-- Carrier locked network. -->
+        <div class="settings-box first">
+          <div class="settings-box-text">
+            <localized-link
+                localized-string="[[i18nAdvanced('cellularSubpageSubtitle')]]">
+            </localized-link>
+          </div>
+        </div>
+      </template>
       <settings-internet-subpage
           default-network="[[defaultNetwork]]"
           device-state="[[getDeviceState_(subpageType_, deviceStates)]]"

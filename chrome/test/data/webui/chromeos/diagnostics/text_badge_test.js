@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import 'chrome://diagnostics/text_badge.js';
-import 'chrome://webui-test/mojo_webui_test_support.js';
+import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
 import {BadgeType, TextBadgeElement} from 'chrome://diagnostics/text_badge.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';

@@ -33,20 +33,17 @@ public class AwContentsLifecycleNotifier {
         static final AwContentsLifecycleNotifier sInstance = new AwContentsLifecycleNotifier();
     }
 
-    /**
-     * @return the singleton AwContentsLifecycleNotifier.
-     */
+    /** @return the singleton AwContentsLifecycleNotifier. */
     @CalledByNative
     public static AwContentsLifecycleNotifier getInstance() {
         ThreadUtils.assertOnUiThread();
         return LazyHolder.sInstance;
     }
 
-    /**
-     * Observer interface to be implemented by deriving webview lifecycle observers.
-     */
+    /** Observer interface to be implemented by deriving webview lifecycle observers. */
     public static interface Observer {
         public void onFirstWebViewCreated();
+
         public void onLastWebViewDestroyed();
     }
 
@@ -54,6 +51,7 @@ public class AwContentsLifecycleNotifier {
     private volatile @AppState int mAppState = AppState.DESTROYED;
 
     private final ObserverList<Observer> mLifecycleObservers = new ObserverList<Observer>();
+
     private AwContentsLifecycleNotifier() {}
 
     public void addObserver(Observer observer) {

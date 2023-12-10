@@ -17,9 +17,7 @@ import org.chromium.base.Log;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsAccessibility;
 
-/**
- * Provides a fullscreen overlay for immersive AR mode.
- */
+/** Provides a fullscreen overlay for immersive AR mode. */
 public class ArOverlayDelegate implements XrImmersiveOverlay.Delegate {
     private static final String TAG = "ArOverlayDelegate";
     private static final boolean DEBUG_LOGS = false;

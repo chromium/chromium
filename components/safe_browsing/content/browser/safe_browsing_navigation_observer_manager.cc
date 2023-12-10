@@ -701,22 +701,14 @@ void SafeBrowsingNavigationObserverManager::RecordNewWebContents(
                 ->GetLastCommittedURL());
   }
 
-  // TODO(crbug.com/1254770) Non-MPArch portals cause issues for the outermost
-  // main frame logic. Since they do not create navigation events for
-  // activation, there is a an unaccounted-for shift in outermost main frame at
-  // that point. For now, we will not set outermost main frame ids for portals
-  // so they will continue to match. In future, once portals have been converted
-  // to MPArch, this will not be necessary.
-  if (!target_web_contents->IsPortal()) {
-    if (source_render_frame_host) {
-      nav_event->initiator_outermost_main_frame_id =
-          source_render_frame_host->GetOutermostMainFrame()->GetGlobalId();
-    }
-    nav_event->outermost_main_frame_id =
-        target_web_contents->GetPrimaryMainFrame()
-            ->GetOutermostMainFrame()
-            ->GetGlobalId();
+  if (source_render_frame_host) {
+    nav_event->initiator_outermost_main_frame_id =
+        source_render_frame_host->GetOutermostMainFrame()->GetGlobalId();
   }
+  nav_event->outermost_main_frame_id =
+      target_web_contents->GetPrimaryMainFrame()
+          ->GetOutermostMainFrame()
+          ->GetGlobalId();
 
   nav_event->source_tab_id =
       sessions::SessionTabHelper::IdForTab(source_web_contents);

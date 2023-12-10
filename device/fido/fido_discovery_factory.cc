@@ -183,9 +183,15 @@ void FidoDiscoveryFactory::set_hid_ignore_list(
   hid_ignore_list_ = std::move(hid_ignore_list);
 }
 
-void FidoDiscoveryFactory::SetEnclavePasskeys(
+void FidoDiscoveryFactory::set_enclave_passkeys(
     std::vector<sync_pb::WebauthnCredentialSpecifics> passkeys) {
   enclave_passkeys_ = std::move(passkeys);
+}
+
+void FidoDiscoveryFactory::set_enclave_passkey_creation_callback(
+    base::RepeatingCallback<void(sync_pb::WebauthnCredentialSpecifics)>
+        callback) {
+  enclave_passkey_creation_callback_ = callback;
 }
 
 // static
@@ -236,15 +242,11 @@ FidoDiscoveryFactory::MaybeCreatePlatformDiscovery() const {
 #if BUILDFLAG(IS_CHROMEOS)
 std::vector<std::unique_ptr<FidoDiscoveryBase>>
 FidoDiscoveryFactory::MaybeCreatePlatformDiscovery() const {
-  if (base::FeatureList::IsEnabled(kWebAuthCrosPlatformAuthenticator)) {
-    auto discovery = std::make_unique<FidoChromeOSDiscovery>(
-        generate_request_id_callback_,
-        std::move(get_assertion_request_for_legacy_credential_check_));
-    discovery->set_require_power_button_mode(
-        require_legacy_cros_authenticator_);
-    return SingleDiscovery(std::move(discovery));
-  }
-  return {};
+  auto discovery = std::make_unique<FidoChromeOSDiscovery>(
+      generate_request_id_callback_,
+      std::move(get_assertion_request_for_legacy_credential_check_));
+  discovery->set_require_power_button_mode(require_legacy_cros_authenticator_);
+  return SingleDiscovery(std::move(discovery));
 }
 
 void FidoDiscoveryFactory::set_generate_request_id_callback(
@@ -271,7 +273,8 @@ void FidoDiscoveryFactory::MaybeCreateEnclaveDiscovery(
   }
   discoveries.emplace_back(
       std::make_unique<enclave::EnclaveAuthenticatorDiscovery>(
-          std::move(enclave_passkeys_), network_context_));
+          std::move(enclave_passkeys_),
+          std::move(enclave_passkey_creation_callback_), network_context_));
 }
 #endif
 

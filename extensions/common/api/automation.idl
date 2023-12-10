@@ -7,7 +7,7 @@
 // tree, but only exposes the <em>semantic</em> structure of a page. It can be
 // used to programmatically interact with a page by examining names, roles, and
 // states, listening for events, and performing actions on nodes.
-[nocompile, modernised_enums] namespace automation {
+[nocompile] namespace automation {
   // Keep the following enums in sync with 'ui/accessibility/ax_enums.mojom'.
   // They are kept here purely for extension docs generation.
 
@@ -177,6 +177,7 @@
     dialog,
     directory,
     disclosureTriangle,
+    disclosureTriangleGrouped,
     // --------------------------------------------------------------
     // DPub Roles:
     // https://www.w3.org/TR/dpub-aam-1.0/#mapping_role_table
@@ -1547,11 +1548,13 @@ enum PositionType {
     // listen to changes across all trees. Pass a filter to determine what
     // specific tree changes to listen to, and note that listnening to all
     // tree changes can be expensive.
-    [nocompile] static void addTreeChangeObserver(
+    [nocompile, doesNotSupportPromises="Event callback"]
+    static void addTreeChangeObserver(
         TreeChangeObserverFilter filter, TreeChangeObserver observer);
 
     // Remove a tree change observer.
-    [nocompile] static void removeTreeChangeObserver(
+    [nocompile, doesNotSupportPromises="Event callback"]
+    static void removeTreeChangeObserver(
         TreeChangeObserver observer);
 
     // Sets the selection in a tree. This creates a selection in a single

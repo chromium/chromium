@@ -106,7 +106,7 @@ class PrintersSyncBridge::StoreProxy {
 
  private:
   // Callback for ModelTypeStore initialization.
-  void OnStoreCreated(const absl::optional<syncer::ModelError>& error,
+  void OnStoreCreated(const std::optional<syncer::ModelError>& error,
                       std::unique_ptr<ModelTypeStore> store) {
     if (error) {
       owner_->change_processor()->ReportError(*error);
@@ -118,7 +118,7 @@ class PrintersSyncBridge::StoreProxy {
                                        weak_ptr_factory_.GetWeakPtr()));
   }
 
-  void OnReadAllData(const absl::optional<syncer::ModelError>& error,
+  void OnReadAllData(const std::optional<syncer::ModelError>& error,
                      std::unique_ptr<ModelTypeStore::RecordList> record_list) {
     if (error) {
       owner_->change_processor()->ReportError(*error);
@@ -152,7 +152,7 @@ class PrintersSyncBridge::StoreProxy {
   }
 
   // Callback to handle commit errors.
-  void OnCommit(const absl::optional<syncer::ModelError>& error) {
+  void OnCommit(const std::optional<syncer::ModelError>& error) {
     if (error) {
       LOG(WARNING) << "Failed to commit operation to store";
       owner_->change_processor()->ReportError(*error);
@@ -161,7 +161,7 @@ class PrintersSyncBridge::StoreProxy {
   }
 
   void OnReadAllMetadata(
-      const absl::optional<syncer::ModelError>& error,
+      const std::optional<syncer::ModelError>& error,
       std::unique_ptr<syncer::MetadataBatch> metadata_batch) {
     TRACE_EVENT0(
         "ui",
@@ -196,7 +196,7 @@ PrintersSyncBridge::CreateMetadataChangeList() {
   return ModelTypeStore::WriteBatch::CreateMetadataChangeList();
 }
 
-absl::optional<syncer::ModelError> PrintersSyncBridge::MergeFullSyncData(
+std::optional<syncer::ModelError> PrintersSyncBridge::MergeFullSyncData(
     std::unique_ptr<MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_data) {
   DCHECK(change_processor()->IsTrackingMetadata());
@@ -247,7 +247,7 @@ absl::optional<syncer::ModelError> PrintersSyncBridge::MergeFullSyncData(
   return {};
 }
 
-absl::optional<syncer::ModelError>
+std::optional<syncer::ModelError>
 PrintersSyncBridge::ApplyIncrementalSyncChanges(
     std::unique_ptr<MetadataChangeList> metadata_change_list,
     EntityChangeList entity_changes) {
@@ -415,7 +415,7 @@ std::vector<sync_pb::PrinterSpecifics> PrintersSyncBridge::GetAllPrinters()
   return printers;
 }
 
-absl::optional<sync_pb::PrinterSpecifics> PrintersSyncBridge::GetPrinter(
+std::optional<sync_pb::PrinterSpecifics> PrintersSyncBridge::GetPrinter(
     const std::string& id) const {
   base::AutoLock lock(data_lock_);
   auto iter = all_data_.find(id);

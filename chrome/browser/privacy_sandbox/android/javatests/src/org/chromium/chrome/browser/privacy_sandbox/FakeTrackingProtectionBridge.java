@@ -9,6 +9,8 @@ public class FakeTrackingProtectionBridge implements TrackingProtectionBridge.Na
     private Integer mLastNoticeAction;
     private boolean mNoticeShown;
 
+    private boolean mIsOffboarded;
+
     private @NoticeType int mNoticeType;
 
     @Override
@@ -28,7 +30,7 @@ public class FakeTrackingProtectionBridge implements TrackingProtectionBridge.Na
 
     @Override
     public boolean isOffboarded() {
-        return false;
+        return mIsOffboarded;
     }
 
     public void setRequiredNotice(@NoticeType int noticeType) {
@@ -41,5 +43,9 @@ public class FakeTrackingProtectionBridge implements TrackingProtectionBridge.Na
 
     public Integer getLastNoticeAction() {
         return mLastNoticeAction;
+    }
+
+    public void setIsOffboarded(boolean isOffboarded) {
+        mIsOffboarded = isOffboarded;
     }
 }

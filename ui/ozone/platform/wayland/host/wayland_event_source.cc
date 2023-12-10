@@ -162,6 +162,11 @@ void WaylandEventSource::PointerScrollData::DumpState(std::ostream& out) const {
   if (axis_source) {
     out << "axis_source=" << *axis_source;
   }
+  if (timestamp) {
+    out << ", timestamp=" << *timestamp;
+  } else {
+    out << ", no timestamp";
+  }
   out << ", d=(" << dx << ", " << dy << "), dt=" << dt
       << ", is_axis_stop=" << ToBoolString(is_axis_stop);
 }
@@ -299,6 +304,7 @@ uint32_t WaylandEventSource::OnKeyboardKeyEvent(
 void WaylandEventSource::OnPointerFocusChanged(
     WaylandWindow* window,
     const gfx::PointF& location,
+    base::TimeTicks timestamp,
     wl::EventDispatchPolicy dispatch_policy) {
   bool focused = !!window;
   if (focused) {
@@ -317,8 +323,8 @@ void WaylandEventSource::OnPointerFocusChanged(
   auto* target = window_manager_->GetCurrentPointerFocusedWindow();
   if (target) {
     EventType type = focused ? ET_MOUSE_ENTERED : ET_MOUSE_EXITED;
-    MouseEvent event(type, pointer_location_, pointer_location_,
-                     EventTimeForNow(), pointer_flags_, 0);
+    MouseEvent event(type, pointer_location_, pointer_location_, timestamp,
+                     pointer_flags_, 0);
     if (dispatch_policy == wl::EventDispatchPolicy::kImmediate) {
       SetTargetAndDispatchEvent(&event, target);
     } else {
@@ -335,14 +341,17 @@ void WaylandEventSource::OnPointerFocusChanged(
 void WaylandEventSource::OnPointerButtonEvent(
     EventType type,
     int changed_button,
+    base::TimeTicks timestamp,
     WaylandWindow* window,
     wl::EventDispatchPolicy dispatch_policy) {
-  OnPointerButtonEvent(type, changed_button, window, dispatch_policy, false);
+  OnPointerButtonEvent(type, changed_button, timestamp, window, dispatch_policy,
+                       false);
 }
 
 void WaylandEventSource::OnPointerButtonEvent(
     EventType type,
     int changed_button,
+    base::TimeTicks timestamp,
     WaylandWindow* window,
     wl::EventDispatchPolicy dispatch_policy,
     bool allow_release_of_unpressed_button) {
@@ -375,8 +384,8 @@ void WaylandEventSource::OnPointerButtonEvent(
   if (target) {
     // MouseEvent's flags should contain the button that was released too.
     int flags = pointer_flags_ | keyboard_modifiers_ | changed_button;
-    MouseEvent event(type, pointer_location_, pointer_location_,
-                     EventTimeForNow(), flags, changed_button);
+    MouseEvent event(type, pointer_location_, pointer_location_, timestamp,
+                     flags, changed_button);
     if (dispatch_policy == wl::EventDispatchPolicy::kImmediate) {
       SetTargetAndDispatchEvent(&event, target);
     } else {
@@ -401,12 +410,13 @@ void WaylandEventSource::OnPointerButtonEventInternal(WaylandWindow* window,
 
 void WaylandEventSource::OnPointerMotionEvent(
     const gfx::PointF& location,
+    base::TimeTicks timestamp,
     wl::EventDispatchPolicy dispatch_policy) {
   pointer_location_ = location;
 
   int flags = pointer_flags_ | keyboard_modifiers_;
   MouseEvent event(ET_MOUSE_MOVED, pointer_location_, pointer_location_,
-                   EventTimeForNow(), flags, 0);
+                   timestamp, flags, 0);
   auto* target = window_manager_->GetCurrentPointerFocusedWindow();
 
   // A window may be deleted when the event arrived from the server.
@@ -421,9 +431,11 @@ void WaylandEventSource::OnPointerMotionEvent(
   }
 }
 
-void WaylandEventSource::OnPointerAxisEvent(const gfx::Vector2dF& offset) {
-  EnsurePointerScrollData().dx += offset.x();
-  EnsurePointerScrollData().dy += offset.y();
+void WaylandEventSource::OnPointerAxisEvent(const gfx::Vector2dF& offset,
+                                            base::TimeTicks timestamp) {
+  EnsurePointerScrollData(timestamp);
+  pointer_scroll_data_->dx += offset.x();
+  pointer_scroll_data_->dy += offset.y();
 }
 
 void WaylandEventSource::OnResetPointerFlags() {
@@ -509,16 +521,19 @@ void WaylandEventSource::OnPointerFrameEvent() {
 }
 
 void WaylandEventSource::OnPointerAxisSourceEvent(uint32_t axis_source) {
-  EnsurePointerScrollData().axis_source = axis_source;
+  EnsurePointerScrollData(/*timestamp*/ absl::nullopt);
+  pointer_scroll_data_->axis_source = axis_source;
 }
 
-void WaylandEventSource::OnPointerAxisStopEvent(uint32_t axis) {
+void WaylandEventSource::OnPointerAxisStopEvent(uint32_t axis,
+                                                base::TimeTicks timestamp) {
+  EnsurePointerScrollData(timestamp);
   if (axis == WL_POINTER_AXIS_VERTICAL_SCROLL) {
-    EnsurePointerScrollData().dy = 0;
+    pointer_scroll_data_->dy = 0;
   } else if (axis == WL_POINTER_AXIS_HORIZONTAL_SCROLL) {
-    EnsurePointerScrollData().dx = 0;
+    pointer_scroll_data_->dx = 0;
   }
-  EnsurePointerScrollData().is_axis_stop = true;
+  pointer_scroll_data_->is_axis_stop = true;
 }
 
 void WaylandEventSource::OnTouchPressEvent(
@@ -794,8 +809,8 @@ void WaylandEventSource::OnHoldEvent(EventType event_type,
   pointer_scroll_data_set_.clear();
 
   ScrollEvent event(ET_SCROLL_FLING_CANCEL, pointer_location_,
-                    pointer_location_, EventTimeForNow(), pointer_flags_, 0, 0,
-                    0, 0, finger_count);
+                    pointer_location_, timestamp, pointer_flags_, 0, 0, 0, 0,
+                    finger_count);
 
   auto* target = window_manager_->GetCurrentPointerFocusedWindow();
 
@@ -814,12 +829,13 @@ void WaylandEventSource::SetRelativePointerMotionEnabled(bool enabled) {
     relative_pointer_location_.reset();
 }
 
-void WaylandEventSource::OnRelativePointerMotion(const gfx::Vector2dF& delta) {
+void WaylandEventSource::OnRelativePointerMotion(const gfx::Vector2dF& delta,
+                                                 base::TimeTicks timestamp) {
   DCHECK(relative_pointer_location_.has_value());
   // TODO(oshima): Investigate if we need to scale the delta
   // when surface_submission_in_pixel_coordinates is on.
   relative_pointer_location_ = *relative_pointer_location_ + delta;
-  OnPointerMotionEvent(*relative_pointer_location_,
+  OnPointerMotionEvent(*relative_pointer_location_, timestamp,
                        wl::EventDispatchPolicy::kImmediate);
 }
 
@@ -1020,12 +1036,13 @@ absl::optional<PointerDetails> WaylandEventSource::AmendStylusData(
                         it->second->tilt.y());
 }
 
-WaylandEventSource::PointerScrollData&
-WaylandEventSource::EnsurePointerScrollData() {
+void WaylandEventSource::EnsurePointerScrollData(
+    const absl::optional<base::TimeTicks>& timestamp) {
   if (!pointer_scroll_data_)
     pointer_scroll_data_ = PointerScrollData();
-
-  return *pointer_scroll_data_;
+  if (!pointer_scroll_data_->timestamp && timestamp) {
+    pointer_scroll_data_->timestamp = *timestamp;
+  }
 }
 
 // This method behaves differently in Exo than in other window managers.
@@ -1037,6 +1054,15 @@ WaylandEventSource::EnsurePointerScrollData() {
 // arrive.
 void WaylandEventSource::ProcessPointerScrollData() {
   DCHECK(pointer_scroll_data_);
+  // While it does not make sense for a server to send axis source only,
+  // the protocol does not explicitly specify it's illegal. Just skip if
+  // that happens.
+  if (!pointer_scroll_data_->timestamp) {
+    pointer_scroll_data_.reset();
+    return;
+  }
+  base::TimeTicks& timestamp = *pointer_scroll_data_->timestamp;
+
   int flags = pointer_flags_ | keyboard_modifiers_;
   // Dispatch Fling event if pointer.axis_stop is notified and the recent
   // pointer.axis events meets the criteria to start fling scroll.
@@ -1052,14 +1078,14 @@ void WaylandEventSource::ProcessPointerScrollData() {
     ScrollEvent event(pointer_scroll_data_->is_axis_stop
                           ? ET_SCROLL_FLING_START
                           : ET_SCROLL_FLING_CANCEL,
-                      pointer_location_, pointer_location_, EventTimeForNow(),
-                      flags, vx, vy, vx, vy, kGestureScrollFingerCount);
+                      pointer_location_, pointer_location_, timestamp, flags,
+                      vx, vy, vx, vy, kGestureScrollFingerCount);
 #else
     // In Linux there is no axis event with 0 delta when start scrolling.
     // A fling is therefore always started at this point.
     ScrollEvent event(ET_SCROLL_FLING_START, pointer_location_,
-                      pointer_location_, EventTimeForNow(), flags, vx, vy, vx,
-                      vy, kGestureScrollFingerCount);
+                      pointer_location_, timestamp, flags, vx, vy, vx, vy,
+                      kGestureScrollFingerCount);
     is_fling_active_ = true;
 #endif
     pointer_frames_.push_back(
@@ -1070,7 +1096,7 @@ void WaylandEventSource::ProcessPointerScrollData() {
             WL_POINTER_AXIS_SOURCE_WHEEL_TILT) {
       MouseWheelEvent event(
           gfx::Vector2d(pointer_scroll_data_->dx, pointer_scroll_data_->dy),
-          pointer_location_, pointer_location_, EventTimeForNow(), flags, 0);
+          pointer_location_, pointer_location_, timestamp, flags, 0);
       pointer_frames_.push_back(
           std::make_unique<FrameData>(event, base::NullCallback()));
     } else if (*pointer_scroll_data_->axis_source ==
@@ -1082,15 +1108,15 @@ void WaylandEventSource::ProcessPointerScrollData() {
       // From Wayland 1.23 this will be done through hold event.
       if (is_fling_active_) {
         is_fling_active_ = false;
-        ScrollEvent stop_fling_event(
-            ET_SCROLL_FLING_CANCEL, pointer_location_, pointer_location_,
-            EventTimeForNow(), flags, 0, 0, 0, 0, kGestureScrollFingerCount);
+        ScrollEvent stop_fling_event(ET_SCROLL_FLING_CANCEL, pointer_location_,
+                                     pointer_location_, timestamp, flags, 0, 0,
+                                     0, 0, kGestureScrollFingerCount);
         pointer_frames_.push_back(std::make_unique<FrameData>(
             stop_fling_event, base::NullCallback()));
       }
 #endif
       ScrollEvent event(ET_SCROLL, pointer_location_, pointer_location_,
-                        EventTimeForNow(), flags, pointer_scroll_data_->dx,
+                        timestamp, flags, pointer_scroll_data_->dx,
                         pointer_scroll_data_->dy, pointer_scroll_data_->dx,
                         pointer_scroll_data_->dy, kGestureScrollFingerCount);
       pointer_frames_.push_back(

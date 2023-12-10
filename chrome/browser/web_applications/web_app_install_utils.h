@@ -7,7 +7,7 @@
 
 #include <vector>
 
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"

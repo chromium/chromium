@@ -1,0 +1,8 @@
+WebView textSize:16.00 style:0 bundle:[display="", htmlTag="#document"]
+++View textSize:16.00 style:0 bundle:[display="block", htmlTag="body"]
+++++EditText text:"1" textSize:13.33 style:0 bundle:[display="inline-block", htmlTag="input", type="number", value="1"]
+++++++View textSize:13.33 style:0 bundle:[display="flow-root", htmlTag="div"]
+++++++++TextView text:"1" textSize:13.33 style:0 bundle:[display="", htmlTag=""]
+++++EditText text:"6" textSize:13.33 style:0 bundle:[display="inline-block", htmlTag="input", max="10", min="5", type="number", value="6"]
+++++++View textSize:13.33 style:0 bundle:[display="flow-root", htmlTag="div"]
+++++++++TextView text:"6" textSize:13.33 style:0 bundle:[display="", htmlTag=""]

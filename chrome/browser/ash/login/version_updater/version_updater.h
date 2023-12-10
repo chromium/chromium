@@ -36,6 +36,7 @@ class VersionUpdater : public UpdateEngineClient::Observer,
     UPDATE_ERROR,
     UPDATE_SKIPPED,
     UPDATE_OPT_OUT_INFO_SHOWN,
+    UPDATE_CHECK_TIMEOUT,
   };
 
   enum class State {
@@ -145,11 +146,22 @@ class VersionUpdater : public UpdateEngineClient::Observer,
     wait_for_reboot_time_ = wait_for_reboot_time;
   }
 
-  base::OneShotTimer* GetRebootTimerForTesting();
+  base::OneShotTimer* get_retry_check_timer_for_testing() {
+    return &retry_check_timer_;
+  }
+
+  bool get_non_idle_status_received_for_testing() {
+    return non_idle_status_received_;
+  }
+
+  base::OneShotTimer* get_reboot_timer_for_testing() { return &reboot_timer_; }
+
   void UpdateStatusChangedForTesting(const update_engine::StatusResult& status);
 
  private:
   void RequestUpdateCheck();
+  void TriggerUpdateCheck();
+  void OnRetryCheckElapsed();
 
   void OnGetEolInfo(EolInfoCallback cb, UpdateEngineClient::EolInfo info);
 
@@ -195,6 +207,18 @@ class VersionUpdater : public UpdateEngineClient::Observer,
   // been in-progress when our update was sent, and we should resend the update.
   // Once we have received a non-IDLE, then IDLE means we can exit.
   bool non_idle_status_received_ = false;
+
+  // Timer for the interval to wait trying reaching to the update screen before
+  // exiting the screen.
+  base::OneShotTimer retry_check_timer_;
+
+  // Time to retry reaching to update_engine before exit.
+  base::TimeDelta retry_check_timeout_ = base::Seconds(180);
+
+  // Current count of retiries to request `checking of update`.
+  int num_retries_ = 0;
+
+  base::TimeTicks checking_for_update_start_;
 
   // Stores information about current downloading process, update progress and
   // state. It is sent to Delegate on each UpdateInfoChanged call, and also can

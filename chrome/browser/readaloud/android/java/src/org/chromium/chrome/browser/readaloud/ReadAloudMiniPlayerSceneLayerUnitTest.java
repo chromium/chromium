@@ -67,11 +67,10 @@ public class ReadAloudMiniPlayerSceneLayerUnitTest {
         verify(mSceneLayerJni)
                 .updateReadAloudMiniPlayerLayer(
                         /* nativeReadAloudMiniPlayerSceneLayer= */ eq(PTR),
-                        /* colorRgba= */ anyInt(),
-                        /* x= */ eq(0),
-                        /* y= */ eq((int) VIEWPORT.height() - layerHeight),
+                        /* colorArgb= */ anyInt(),
                         /* width= */ eq((int) VIEWPORT.width()),
-                        /* height= */ eq(layerHeight),
+                        /* viewportHeight= */ eq((int) VIEWPORT.height()),
+                        /* containerHeight= */ eq(layerHeight),
                         /* bottomOffset= */ eq(bottomControlsMinHeightOffset));
     }
 
@@ -91,11 +90,10 @@ public class ReadAloudMiniPlayerSceneLayerUnitTest {
         verify(mSceneLayerJni)
                 .updateReadAloudMiniPlayerLayer(
                         /* nativeReadAloudMiniPlayerSceneLayer= */ eq(PTR),
-                        /* colorRgba= */ eq(0xAABBCCFF),
-                        /* x= */ anyInt(),
-                        /* y= */ anyInt(),
+                        /* colorArgb= */ eq(0xAABBCCFF),
                         /* width= */ anyInt(),
-                        /* height= */ anyInt(),
+                        /* viewportHeight= */ anyInt(),
+                        /* containerHeight= */ anyInt(),
                         /* bottomOffset= */ anyInt());
     }
 

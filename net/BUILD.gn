@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/buildflag_header.gni")
-import("//build/config/chromecast_build.gni")
+import("//build/config/cast.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/compiler/compiler.gni")
 import("//build/config/cronet/config.gni")
@@ -463,8 +463,8 @@ component("net") {
     "disk_cache/memory/mem_entry_impl.h",
     "disk_cache/net_log_parameters.cc",
     "disk_cache/net_log_parameters.h",
-    "disk_cache/simple/post_doom_waiter.cc",
-    "disk_cache/simple/post_doom_waiter.h",
+    "disk_cache/simple/post_operation_waiter.cc",
+    "disk_cache/simple/post_operation_waiter.h",
     "disk_cache/simple/simple_backend_impl.cc",
     "disk_cache/simple/simple_backend_impl.h",
     "disk_cache/simple/simple_backend_version.h",
@@ -515,6 +515,10 @@ component("net") {
     "first_party_sets/first_party_sets_context_config.h",
     "first_party_sets/global_first_party_sets.cc",
     "first_party_sets/global_first_party_sets.h",
+    "first_party_sets/local_set_declaration.cc",
+    "first_party_sets/local_set_declaration.h",
+    "first_party_sets/sets_mutation.cc",
+    "first_party_sets/sets_mutation.h",
     "http/alternative_service.cc",
     "http/alternative_service.h",
     "http/bidirectional_stream.cc",
@@ -566,6 +570,8 @@ component("net") {
     "http/http_cache_writers.h",
     "http/http_chunked_decoder.cc",
     "http/http_chunked_decoder.h",
+    "http/http_connection_info.cc",
+    "http/http_connection_info.h",
     "http/http_content_disposition.cc",
     "http/http_content_disposition.h",
     "http/http_log_util.cc",
@@ -2561,6 +2567,8 @@ test("net_unittests") {
     "first_party_sets/first_party_sets_cache_filter_unittest.cc",
     "first_party_sets/first_party_sets_context_config_unittest.cc",
     "first_party_sets/global_first_party_sets_unittest.cc",
+    "first_party_sets/local_set_declaration_unittest.cc",
+    "first_party_sets/sets_mutation_unittest.cc",
     "http/alternative_service_unittest.cc",
     "http/bidirectional_stream_unittest.cc",
     "http/broken_alternative_services_unittest.cc",
@@ -2602,6 +2610,7 @@ test("net_unittests") {
     "http/http_stream_factory_unittest.cc",
     "http/http_stream_parser_unittest.cc",
     "http/http_stream_request_unittest.cc",
+    "http/http_transaction_test_util_unittest.cc",
     "http/http_util_unittest.cc",
     "http/http_vary_data_unittest.cc",
     "http/mock_allow_http_auth_preferences.cc",

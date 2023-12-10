@@ -29,18 +29,18 @@ import java.io.File;
 @RunWith(Parameterized.class)
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
 public class OnDiskFileTest extends AwParameterizedTest {
-    @Rule
-    public AwActivityTestRule mActivityTestRule;
+    @Rule public AwActivityTestRule mActivityTestRule;
 
     public OnDiskFileTest(AwSettingsMutation param) {
-        mActivityTestRule = new AwActivityTestRule(param.getMutation()) {
-            @Override
-            public boolean needsBrowserProcessStarted() {
-                // We need to control when the browser process starts, so that we can delete the
-                // file-under-test before the test starts up.
-                return false;
-            }
-        };
+        mActivityTestRule =
+                new AwActivityTestRule(param.getMutation()) {
+                    @Override
+                    public boolean needsBrowserProcessStarted() {
+                        // We need to control when the browser process starts, so that we can delete
+                        // the file-under-test before the test starts up.
+                        return false;
+                    }
+                };
     }
 
     @Test

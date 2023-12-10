@@ -7,10 +7,10 @@
 
 #include <string>
 
+#include <optional>
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "headless/public/headless_browser.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/font_render_params.h"
 
 namespace headless {
@@ -61,16 +61,16 @@ class HeadlessBrowserContextOptions {
 
   raw_ptr<HeadlessBrowser::Options> browser_options_;
 
-  absl::optional<std::string> accept_language_;
-  absl::optional<std::string> user_agent_;
+  std::optional<std::string> accept_language_;
+  std::optional<std::string> user_agent_;
   std::unique_ptr<net::ProxyConfig> proxy_config_;
-  absl::optional<gfx::Size> window_size_;
-  absl::optional<base::FilePath> user_data_dir_;
-  absl::optional<base::FilePath> disk_cache_dir_;
-  absl::optional<bool> incognito_mode_;
-  absl::optional<bool> block_new_web_contents_;
+  std::optional<gfx::Size> window_size_;
+  std::optional<base::FilePath> user_data_dir_;
+  std::optional<base::FilePath> disk_cache_dir_;
+  std::optional<bool> incognito_mode_;
+  std::optional<bool> block_new_web_contents_;
 
-  absl::optional<gfx::FontRenderParams::Hinting> font_render_hinting_;
+  std::optional<gfx::FontRenderParams::Hinting> font_render_hinting_;
 };
 
 }  // namespace headless

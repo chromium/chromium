@@ -34,18 +34,14 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
-/**
- * Properties defined here reflect the visible state of the {@link EditorDialog}.
- */
+/** Properties defined here reflect the visible state of the {@link EditorDialog}. */
 public class EditorProperties {
-    /**
-     * Contains information needed by {@link EditorDialogView} to display fields.
-     */
+    /** Contains information needed by {@link EditorDialogView} to display fields. */
     public static class FieldItem extends ListItem {
         public final boolean isFullLine;
 
         public FieldItem(int type, PropertyModel model) {
-            this(type, model, /*isFullLine=*/false);
+            this(type, model, /* isFullLine= */ false);
         }
 
         public FieldItem(int type, PropertyModel model, boolean isFullLine) {
@@ -86,10 +82,21 @@ public class EditorProperties {
     public static final WritableBooleanPropertyKey VISIBLE =
             new WritableBooleanPropertyKey("visible");
 
-    public static final PropertyKey[] ALL_KEYS = {EDITOR_TITLE, CUSTOM_DONE_BUTTON_TEXT,
-            FOOTER_MESSAGE, DELETE_CONFIRMATION_TITLE, DELETE_CONFIRMATION_TEXT,
-            SHOW_REQUIRED_INDICATOR, EDITOR_FIELDS, DONE_RUNNABLE, CANCEL_RUNNABLE, ALLOW_DELETE,
-            DELETE_RUNNABLE, VALIDATE_ON_SHOW, VISIBLE};
+    public static final PropertyKey[] ALL_KEYS = {
+        EDITOR_TITLE,
+        CUSTOM_DONE_BUTTON_TEXT,
+        FOOTER_MESSAGE,
+        DELETE_CONFIRMATION_TITLE,
+        DELETE_CONFIRMATION_TEXT,
+        SHOW_REQUIRED_INDICATOR,
+        EDITOR_FIELDS,
+        DONE_RUNNABLE,
+        CANCEL_RUNNABLE,
+        ALLOW_DELETE,
+        DELETE_RUNNABLE,
+        VALIDATE_ON_SHOW,
+        VISIBLE
+    };
 
     private EditorProperties() {}
 
@@ -105,9 +112,7 @@ public class EditorProperties {
         int TEXT_INPUT = 2;
     }
 
-    /**
-     * A convenience class for displaying keyed values in a dropdown.
-     */
+    /** A convenience class for displaying keyed values in a dropdown. */
     public static class DropdownKeyValue extends Pair<String, String> {
         public DropdownKeyValue(String key, String value) {
             super(key, value);
@@ -129,15 +134,12 @@ public class EditorProperties {
         }
     }
 
-    /**
-     * Field properties common to every field.
-     */
+    /** Field properties common to every field. */
     public static class FieldProperties {
         public static final WritableObjectPropertyKey<String> LABEL =
                 new WritableObjectPropertyKey<>("label");
-        public static final PropertyModel
-                .WritableObjectPropertyKey<EditorFieldValidator> VALIDATOR =
-                new WritableObjectPropertyKey<>("validator");
+        public static final PropertyModel.WritableObjectPropertyKey<EditorFieldValidator>
+                VALIDATOR = new WritableObjectPropertyKey<>("validator");
         public static final WritableObjectPropertyKey<String> ERROR_MESSAGE =
                 new WritableObjectPropertyKey<>("error_message");
         // TODO(crbug.com/1435314): make this field read-only.
@@ -150,12 +152,11 @@ public class EditorProperties {
                 new WritableObjectPropertyKey<>("value");
 
         public static final PropertyKey[] FIELD_ALL_KEYS = {
-                LABEL, VALIDATOR, IS_REQUIRED, ERROR_MESSAGE, FOCUSED, VALUE};
+            LABEL, VALIDATOR, IS_REQUIRED, ERROR_MESSAGE, FOCUSED, VALUE
+        };
     }
 
-    /**
-     * Properties specific for the dropdown fields.
-     */
+    /** Properties specific for the dropdown fields. */
     public static class DropdownFieldProperties {
         public static final ReadableObjectPropertyKey<List<DropdownKeyValue>>
                 DROPDOWN_KEY_VALUE_LIST = new ReadableObjectPropertyKey<>("key_value_list");
@@ -165,17 +166,17 @@ public class EditorProperties {
                 new ReadableObjectPropertyKey<>("hint");
 
         public static final PropertyKey[] DROPDOWN_SPECIFIC_KEYS = {
-                DROPDOWN_KEY_VALUE_LIST, DROPDOWN_CALLBACK, DROPDOWN_HINT};
+            DROPDOWN_KEY_VALUE_LIST, DROPDOWN_CALLBACK, DROPDOWN_HINT
+        };
 
         public static final PropertyKey[] DROPDOWN_ALL_KEYS =
-                Stream.concat(Arrays.stream(FieldProperties.FIELD_ALL_KEYS),
-                              Arrays.stream(DROPDOWN_SPECIFIC_KEYS))
-                        .toArray(PropertyKey[] ::new);
+                Stream.concat(
+                                Arrays.stream(FieldProperties.FIELD_ALL_KEYS),
+                                Arrays.stream(DROPDOWN_SPECIFIC_KEYS))
+                        .toArray(PropertyKey[]::new);
     }
 
-    /**
-     * Properties specific for the text fields.
-     */
+    /** Properties specific for the text fields. */
     public static class TextFieldProperties {
         public static final ReadableIntPropertyKey TEXT_FIELD_TYPE =
                 new ReadableIntPropertyKey("field_type");
@@ -185,15 +186,14 @@ public class EditorProperties {
                 new ReadableObjectPropertyKey<>("formatter");
 
         public static final PropertyKey[] TEXT_SPECIFIC_KEYS = {
-                TEXT_FIELD_TYPE,
-                TEXT_SUGGESTIONS,
-                TEXT_FORMATTER,
+            TEXT_FIELD_TYPE, TEXT_SUGGESTIONS, TEXT_FORMATTER,
         };
 
         public static final PropertyKey[] TEXT_ALL_KEYS =
-                Stream.concat(Arrays.stream(FieldProperties.FIELD_ALL_KEYS),
-                              Arrays.stream(TEXT_SPECIFIC_KEYS))
-                        .toArray(PropertyKey[] ::new);
+                Stream.concat(
+                                Arrays.stream(FieldProperties.FIELD_ALL_KEYS),
+                                Arrays.stream(TEXT_SPECIFIC_KEYS))
+                        .toArray(PropertyKey[]::new);
     }
 
     public static boolean isDropdownField(ListItem fieldItem) {
@@ -202,18 +202,22 @@ public class EditorProperties {
 
     public static @Nullable String getDropdownKeyByValue(
             PropertyModel dropdownField, String value) {
-        return dropdownField.get(DropdownFieldProperties.DROPDOWN_KEY_VALUE_LIST)
-                .stream()
-                .filter(keyValue -> { return keyValue.getValue().equals(value); })
+        return dropdownField.get(DropdownFieldProperties.DROPDOWN_KEY_VALUE_LIST).stream()
+                .filter(
+                        keyValue -> {
+                            return keyValue.getValue().equals(value);
+                        })
                 .map(DropdownKeyValue::getKey)
                 .findAny()
                 .orElse(null);
     }
 
     public static @Nullable String getDropdownValueByKey(PropertyModel dropdownField, String key) {
-        return dropdownField.get(DropdownFieldProperties.DROPDOWN_KEY_VALUE_LIST)
-                .stream()
-                .filter(keyValue -> { return keyValue.getKey().equals(key); })
+        return dropdownField.get(DropdownFieldProperties.DROPDOWN_KEY_VALUE_LIST).stream()
+                .filter(
+                        keyValue -> {
+                            return keyValue.getKey().equals(key);
+                        })
                 .map(DropdownKeyValue::getValue)
                 .findAny()
                 .orElse(null);

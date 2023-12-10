@@ -13,6 +13,7 @@
 
 #import "base/apple/scoped_cftyperef.h"
 #import "base/check_op.h"
+#import "base/feature_list.h"
 #import "base/functional/bind.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
@@ -27,9 +28,9 @@
 #import "ios/chrome/browser/download/model/download_manager_tab_helper.h"
 #import "ios/chrome/browser/download/model/external_app_util.h"
 #import "ios/chrome/browser/download/model/installation_notifier.h"
-#import "ios/chrome/browser/overlays/public/common/confirmation/confirmation_overlay_response.h"
-#import "ios/chrome/browser/overlays/public/overlay_callback_manager.h"
-#import "ios/chrome/browser/overlays/public/overlay_request_queue.h"
+#import "ios/chrome/browser/overlays/model/public/common/confirmation/confirmation_overlay_response.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_callback_manager.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_request_queue.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
@@ -37,11 +38,15 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/store_kit/model/store_kit_coordinator.h"
 #import "ios/chrome/browser/store_kit/model/store_kit_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/download/activities/open_downloads_folder_activity.h"
 #import "ios/chrome/browser/ui/download/download_manager_mediator.h"
 #import "ios/chrome/browser/ui/download/download_manager_view_controller.h"
+#import "ios/chrome/browser/ui/download/download_manager_view_controller_delegate.h"
+#import "ios/chrome/browser/ui/download/download_manager_view_controller_protocol.h"
+#import "ios/chrome/browser/ui/download/legacy_download_manager_view_controller.h"
 #import "ios/chrome/browser/ui/download/unopened_downloads_tracker.h"
 #import "ios/chrome/browser/ui/presenters/contained_presenter.h"
 #import "ios/chrome/browser/ui/presenters/contained_presenter_delegate.h"
@@ -56,7 +61,8 @@
                                           DownloadManagerViewControllerDelegate,
                                           StoreKitCoordinatorDelegate> {
   // View controller for presenting Download Manager UI.
-  DownloadManagerViewController* _viewController;
+  UIViewController<DownloadManagerConsumer,
+                   DownloadManagerViewControllerProtocol>* _viewController;
   // View controller for presenting "Open In.." dialog.
   UIActivityViewController* _openInController;
   DownloadManagerMediator _mediator;
@@ -84,7 +90,9 @@
                       object:nil];
 
   BOOL isIncognito = self.browser->GetBrowserState()->IsOffTheRecord();
-  _viewController = [[DownloadManagerViewController alloc] init];
+  _viewController = base::FeatureList::IsEnabled(kIOSSaveToDrive)
+                        ? [[DownloadManagerViewController alloc] init]
+                        : [[LegacyDownloadManagerViewController alloc] init];
   _viewController.delegate = self;
   _viewController.layoutGuideCenter = LayoutGuideCenterForBrowser(self.browser);
   _viewController.incognito = isIncognito;
@@ -215,8 +223,7 @@
 
 #pragma mark - DownloadManagerViewControllerDelegate
 
-- (void)downloadManagerViewControllerDidClose:
-    (DownloadManagerViewController*)controller {
+- (void)downloadManagerViewControllerDidClose:(UIViewController*)controller {
   if (_downloadTask->GetState() != web::DownloadTask::State::kInProgress) {
     base::UmaHistogramEnumeration("Download.IOSDownloadFileResult",
                                   DownloadFileResult::NotStarted,
@@ -249,13 +256,13 @@
 }
 
 - (void)installDriveForDownloadManagerViewController:
-    (DownloadManagerViewController*)controller {
+    (UIViewController*)controller {
   base::RecordAction(base::UserMetricsAction("IOSDownloadInstallGoogleDrive"));
   [self presentStoreKitForGoogleDriveApp];
 }
 
 - (void)downloadManagerViewControllerDidStartDownload:
-    (DownloadManagerViewController*)controller {
+    (UIViewController*)controller {
   if (_downloadTask->GetErrorCode() != net::OK) {
     base::RecordAction(base::UserMetricsAction("MobileDownloadRetryDownload"));
   } else {
@@ -266,7 +273,7 @@
 }
 
 - (void)presentOpenInForDownloadManagerViewController:
-    (DownloadManagerViewController*)controller {
+    (UIViewController*)controller {
   base::RecordAction(base::UserMetricsAction("IOSDownloadOpenIn"));
   base::FilePath path = _mediator.GetDownloadPath();
   NSURL* URL = [NSURL fileURLWithPath:base::SysUTF8ToNSString(path.value())];
@@ -289,9 +296,9 @@
 
   // UIActivityViewController is presented in a popover on iPad.
   _openInController.popoverPresentationController.sourceView =
-      _viewController.actionButton;
+      _viewController.openInSourceView;
   _openInController.popoverPresentationController.sourceRect =
-      _viewController.actionButton.bounds;
+      _viewController.openInSourceView.bounds;
   [_viewController presentViewController:_openInController
                                 animated:YES
                               completion:nil];
@@ -347,7 +354,11 @@
     };
   }
   [_storeKitCoordinator start];
-  [_viewController setInstallDriveButtonVisible:NO animated:YES];
+  if (!base::FeatureList::IsEnabled(kIOSSaveToDrive) &&
+      [_viewController respondsToSelector:@selector
+                       (setInstallDriveButtonVisible:animated:)]) {
+    [_viewController setInstallDriveButtonVisible:NO animated:YES];
+  }
 
   [[InstallationNotifier sharedInstance]
       registerForInstallationNotifications:self

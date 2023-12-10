@@ -9,9 +9,7 @@ import org.chromium.url.GURL;
 
 import java.io.Serializable;
 
-/**
- * Used by {@link WebsiteRowPreference} to display various information about one or multiple sites.
- */
+/** Used by {@link WebsiteRowPreference} to display various information about one or multiple sites. */
 public interface WebsiteEntry extends Serializable {
     /** @return the title to display in a {@link WebsiteRowPreference}. */
     String getTitleForPreferenceRow();

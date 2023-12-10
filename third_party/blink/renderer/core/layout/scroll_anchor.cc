@@ -20,8 +20,8 @@
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
-#include "third_party/blink/renderer/core/layout/ng/layout_ng_block_flow.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
+#include "third_party/blink/renderer/core/layout/layout_ng_block_flow.h"
+#include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/platform/instrumentation/histogram.h"
@@ -104,11 +104,11 @@ static PhysicalRect RelativeBounds(const LayoutObject* layout_object,
   if (const auto* box = DynamicTo<LayoutBox>(layout_object)) {
     local_bounds = box->PhysicalBorderBoxRect();
     // If we clip overflow then we can use the `PhysicalBorderBoxRect()`
-    // as our bounds. If not, we expand the bounds by the layout overflow.
+    // as our bounds. If not, we expand the bounds by the scrollable overflow.
     if (!layout_object->ShouldClipOverflowAlongEitherAxis()) {
       // BorderBoxRect doesn't include overflow content and floats.
       LayoutUnit max_y = std::max(local_bounds.Bottom(),
-                                  box->PhysicalLayoutOverflowRect().Bottom());
+                                  box->ScrollableOverflowRect().Bottom());
       local_bounds.ShiftBottomEdgeTo(max_y);
     }
   } else if (layout_object->IsText()) {
@@ -484,13 +484,13 @@ ScrollAnchor::WalkStatus ScrollAnchor::FindAnchorInOOFs(
   // need to check for that.
   bool is_block_fragmentation_context_root =
       IsNGBlockFragmentationRoot(DynamicTo<LayoutNGBlockFlow>(layout_block));
-  for (const NGPhysicalBoxFragment& fragment :
+  for (const PhysicalBoxFragment& fragment :
        layout_block->PhysicalFragments()) {
     if (!fragment.HasOutOfFlowFragmentChild() &&
         !is_block_fragmentation_context_root)
       continue;
 
-    for (const NGLink& child : fragment.Children()) {
+    for (const PhysicalFragmentLink& child : fragment.Children()) {
       if (child->IsOutOfFlowPositioned()) {
         LayoutObject* layout_object = child->GetMutableLayoutObject();
         if (layout_object && layout_object->Parent() != candidate) {
@@ -505,7 +505,7 @@ ScrollAnchor::WalkStatus ScrollAnchor::FindAnchorInOOFs(
         continue;
 
       // Look for OOFs inside a fragmentainer.
-      for (const NGLink& grandchild : child->Children()) {
+      for (const PhysicalFragmentLink& grandchild : child->Children()) {
         if (!grandchild->IsOutOfFlowPositioned())
           continue;
         LayoutObject* layout_object = grandchild->GetMutableLayoutObject();

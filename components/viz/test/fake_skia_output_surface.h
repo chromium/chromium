@@ -70,7 +70,7 @@ class FakeSkiaOutputSurface : public SkiaOutputSurface {
                                  const gfx::Size& surface_size,
                                  SharedImageFormat format,
                                  RenderPassAlphaType alpha_type,
-                                 bool mipmap,
+                                 skgpu::Mipmapped mipmap,
                                  bool scanout_dcomp_surface,
                                  sk_sp<SkColorSpace> color_space,
                                  bool is_overlay,
@@ -173,9 +173,10 @@ class FakeSkiaOutputSurface : public SkiaOutputSurface {
   void SwapBuffersAck();
 
   // Provided as a release callback for CopyOutputRequest.
-  void DestroyCopyOutputTexture(const gpu::Mailbox& mailbox,
-                                const gpu::SyncToken& sync_token,
-                                bool is_lost);
+  void DestroyCopyOutputTexture(
+      scoped_refptr<gpu::ClientSharedImage> shared_image,
+      const gpu::SyncToken& sync_token,
+      bool is_lost);
 
   scoped_refptr<ContextProvider> context_provider_;
   raw_ptr<OutputSurfaceClient> client_ = nullptr;

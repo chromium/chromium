@@ -26,7 +26,6 @@
 #include "chrome/test/base/fake_gaia_mixin.h"
 #include "components/account_id/account_id.h"
 #include "content/public/test/browser_test.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 namespace {
@@ -44,7 +43,7 @@ bool IsInlineLoginDialogShown() {
 
 class EduCoexistenceLoginBrowserTest : public OobeBaseTest {
  public:
-  EduCoexistenceLoginBrowserTest();
+  EduCoexistenceLoginBrowserTest() = default;
   ~EduCoexistenceLoginBrowserTest() override = default;
 
   EduCoexistenceLoginBrowserTest(const EduCoexistenceLoginBrowserTest&) =
@@ -52,15 +51,24 @@ class EduCoexistenceLoginBrowserTest : public OobeBaseTest {
   EduCoexistenceLoginBrowserTest& operator=(
       const EduCoexistenceLoginBrowserTest&) = delete;
 
-  void SetUpOnMainThread() override;
+  void SetUpOnMainThread() override {
+    EduCoexistenceLoginScreen* screen = GetEduCoexistenceLoginScreen();
+    original_callback_ = screen->get_exit_callback_for_testing();
+    screen->set_exit_callback_for_testing(
+        screen_result_waiter_.GetRepeatingCallback());
+    OobeBaseTest::SetUpOnMainThread();
+  }
 
  protected:
-  void WaitForScreenExit();
+  EduCoexistenceLoginScreen::Result WaitForScreenExitResult() {
+    EduCoexistenceLoginScreen::Result result = screen_result_waiter_.Take();
+    original_callback_.Run(result);
+    return result;
+  }
 
-  EduCoexistenceLoginScreen* GetEduCoexistenceLoginScreen();
-
-  const absl::optional<EduCoexistenceLoginScreen::Result>& result() {
-    return result_;
+  EduCoexistenceLoginScreen* GetEduCoexistenceLoginScreen() {
+    return EduCoexistenceLoginScreen::Get(
+        WizardController::default_controller()->screen_manager());
   }
 
   LoginManagerMixin& login_manager_mixin() { return login_manager_mixin_; }
@@ -68,11 +76,8 @@ class EduCoexistenceLoginBrowserTest : public OobeBaseTest {
   base::HistogramTester& histogram_tester() { return histogram_tester_; }
 
  private:
-  void HandleScreenExit(EduCoexistenceLoginScreen::Result result);
-
-  base::OnceCallback<void()> quit_closure_;
-
-  absl::optional<EduCoexistenceLoginScreen::Result> result_;
+  base::test::TestFuture<EduCoexistenceLoginScreen::Result>
+      screen_result_waiter_;
 
   EduCoexistenceLoginScreen::ScreenExitCallback original_callback_;
 
@@ -83,46 +88,13 @@ class EduCoexistenceLoginBrowserTest : public OobeBaseTest {
   LoginManagerMixin login_manager_mixin_{&mixin_host_, {}, &fake_gaia_};
 };
 
-EduCoexistenceLoginBrowserTest::EduCoexistenceLoginBrowserTest() {}
-
-void EduCoexistenceLoginBrowserTest::SetUpOnMainThread() {
-  EduCoexistenceLoginScreen* screen = GetEduCoexistenceLoginScreen();
-  original_callback_ = screen->get_exit_callback_for_test();
-  screen->set_exit_callback_for_test(
-      base::BindRepeating(&EduCoexistenceLoginBrowserTest::HandleScreenExit,
-                          base::Unretained(this)));
-  OobeBaseTest::SetUpOnMainThread();
-}
-
-void EduCoexistenceLoginBrowserTest::HandleScreenExit(
-    EduCoexistenceLoginScreen::Result result) {
-  result_ = result;
-  original_callback_.Run(result);
-  if (quit_closure_)
-    std::move(quit_closure_).Run();
-}
-
-void EduCoexistenceLoginBrowserTest::WaitForScreenExit() {
-  if (result_.has_value()) {
-    return;
-  }
-  base::test::TestFuture<void> waiter;
-  quit_closure_ = waiter.GetCallback();
-  EXPECT_TRUE(waiter.Wait());
-}
-
-EduCoexistenceLoginScreen*
-EduCoexistenceLoginBrowserTest::GetEduCoexistenceLoginScreen() {
-  return EduCoexistenceLoginScreen::Get(
-      WizardController::default_controller()->screen_manager());
-}
 
 IN_PROC_BROWSER_TEST_F(EduCoexistenceLoginBrowserTest, RegularUserLogin) {
   login_manager_mixin().LoginAsNewRegularUser();
-  WaitForScreenExit();
+  EduCoexistenceLoginScreen::Result result = WaitForScreenExitResult();
 
   // Regular user login shouldn't show the EduCoexistenceLoginScreen.
-  EXPECT_EQ(result().value(), EduCoexistenceLoginScreen::Result::SKIPPED);
+  EXPECT_EQ(result, EduCoexistenceLoginScreen::Result::SKIPPED);
 
   histogram_tester().ExpectTotalCount(
       "OOBE.StepCompletionTimeByExitReason.Edu-coexistence-login.Done", 0);
@@ -182,7 +154,9 @@ IN_PROC_BROWSER_TEST_F(EduCoexistenceLoginChildBrowserTest, ChildUserLogin) {
 
   // Dialog got closed.
   GetInlineLoginDialog()->Close();
-  WaitForScreenExit();
+  EduCoexistenceLoginScreen::Result result = WaitForScreenExitResult();
+
+  EXPECT_EQ(result, EduCoexistenceLoginScreen::Result::DONE);
 
   histogram_tester().ExpectTotalCount(
       "OOBE.StepCompletionTimeByExitReason.Edu-coexistence-login.Done", 1);

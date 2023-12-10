@@ -39,8 +39,9 @@ public class TabListSceneLayer extends SceneLayer {
 
     public void init(TabContentManager tabContentManager, ResourceManager resourceManager) {
         if (mNativePtr == 0 || mIsInitialized) return;
-        TabListSceneLayerJni.get().setDependencies(
-                mNativePtr, TabListSceneLayer.this, tabContentManager, resourceManager);
+        TabListSceneLayerJni.get()
+                .setDependencies(
+                        mNativePtr, TabListSceneLayer.this, tabContentManager, resourceManager);
         mIsInitialized = true;
     }
 
@@ -62,10 +63,17 @@ public class TabListSceneLayer extends SceneLayer {
      * @param backgroundTopOffset The top offset of the background. Only used in GridTabSwitcher.
      *
      */
-    public void pushLayers(Context context, RectF viewport, RectF contentViewport, Layout layout,
-            TabContentManager tabContentManager, ResourceManager resourceManager,
-            BrowserControlsStateProvider browserControls, int backgroundResourceId,
-            float backgroundAlpha, int backgroundTopOffset) {
+    public void pushLayers(
+            Context context,
+            RectF viewport,
+            RectF contentViewport,
+            Layout layout,
+            TabContentManager tabContentManager,
+            ResourceManager resourceManager,
+            BrowserControlsStateProvider browserControls,
+            int backgroundResourceId,
+            float backgroundAlpha,
+            int backgroundTopOffset) {
         if (mNativePtr == 0) return;
 
         Resources res = context.getResources();
@@ -83,17 +91,30 @@ public class TabListSceneLayer extends SceneLayer {
 
         // TODO(crbug.com/1070281): Use Supplier to get viewport and forward it to native, then
         // updateLayer can become obsolete.
-        TabListSceneLayerJni.get().updateLayer(mNativePtr, TabListSceneLayer.this, tabListBgColor,
-                viewport.left, viewport.top, viewport.width(), viewport.height());
+        TabListSceneLayerJni.get()
+                .updateLayer(
+                        mNativePtr,
+                        TabListSceneLayer.this,
+                        tabListBgColor,
+                        viewport.left,
+                        viewport.top,
+                        viewport.width(),
+                        viewport.height());
 
         if (backgroundResourceId != INVALID_RESOURCE_ID) {
-            TabListSceneLayerJni.get().putBackgroundLayer(mNativePtr, TabListSceneLayer.this,
-                    backgroundResourceId, backgroundAlpha, backgroundTopOffset);
+            TabListSceneLayerJni.get()
+                    .putBackgroundLayer(
+                            mNativePtr,
+                            TabListSceneLayer.this,
+                            backgroundResourceId,
+                            backgroundAlpha,
+                            backgroundTopOffset);
         }
 
-        final float shadowAlpha = ColorUtils.shouldUseLightForegroundOnBackground(tabListBgColor)
-                ? LayoutTab.SHADOW_ALPHA_ON_DARK_BG
-                : LayoutTab.SHADOW_ALPHA_ON_LIGHT_BG;
+        final float shadowAlpha =
+                ColorUtils.shouldUseLightForegroundOnBackground(tabListBgColor)
+                        ? LayoutTab.SHADOW_ALPHA_ON_DARK_BG
+                        : LayoutTab.SHADOW_ALPHA_ON_LIGHT_BG;
 
         int contentOffset = browserControls != null ? browserControls.getContentOffset() : 0;
         final int urlBarBackgroundId = R.drawable.modern_location_bar;
@@ -161,9 +182,7 @@ public class TabListSceneLayer extends SceneLayer {
         assert mNativePtr != 0;
     }
 
-    /**
-     * Destroys this object and the corresponding native component.
-     */
+    /** Destroys this object and the corresponding native component. */
     @Override
     public void destroy() {
         super.destroy();
@@ -173,12 +192,24 @@ public class TabListSceneLayer extends SceneLayer {
     @NativeMethods
     interface Natives {
         long init(TabListSceneLayer caller);
+
         void beginBuildingFrame(long nativeTabListSceneLayer, TabListSceneLayer caller);
+
         void finishBuildingFrame(long nativeTabListSceneLayer, TabListSceneLayer caller);
-        void setDependencies(long nativeTabListSceneLayer, TabListSceneLayer caller,
-                TabContentManager tabContentManager, ResourceManager resourceManager);
-        void updateLayer(long nativeTabListSceneLayer, TabListSceneLayer caller,
-                int backgroundColor, float viewportX, float viewportY, float viewportWidth,
+
+        void setDependencies(
+                long nativeTabListSceneLayer,
+                TabListSceneLayer caller,
+                TabContentManager tabContentManager,
+                ResourceManager resourceManager);
+
+        void updateLayer(
+                long nativeTabListSceneLayer,
+                TabListSceneLayer caller,
+                int backgroundColor,
+                float viewportX,
+                float viewportY,
+                float viewportWidth,
                 float viewportHeight);
 
         // TODO(meiliang): Need to provide a resource that indicates the selected tab on the layer.
@@ -218,7 +249,11 @@ public class TabListSceneLayer extends SceneLayer {
                 int toolbarTextBoxBackgroundColor,
                 float contentOffset);
 
-        void putBackgroundLayer(long nativeTabListSceneLayer, TabListSceneLayer caller,
-                int resourceId, float alpha, int topOffset);
+        void putBackgroundLayer(
+                long nativeTabListSceneLayer,
+                TabListSceneLayer caller,
+                int resourceId,
+                float alpha,
+                int topOffset);
     }
 }

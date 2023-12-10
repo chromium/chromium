@@ -4,7 +4,7 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/css/css-contain/container-queries/support/cq-testcommon.js"></script>
-<div style="container-name:name;container-type:snap">
+<div style="container-name:name;container-type:scroll-state">
   <main id="main"></main>
 </div>
 <script>
@@ -61,18 +61,18 @@
     test_condition_valid(condition, true /* unknown */);
   }
 
-  test_condition_known('state(snapped)');
-  test_condition_known('state(snapped: none)');
-  test_condition_known('state(snapped: block)');
-  test_condition_known('state(snapped: inline)');
-  test_condition_known('(state(snapped: block))');
-  test_condition_known('state((snapped: inline))');
-  test_condition_known('state(not ((snapped: inline) and (snapped: block)))');
-  test_condition_known('state((snapped: block) or (snapped: inline))');
+  test_condition_known('scroll-state(snapped)');
+  test_condition_known('scroll-state(snapped: none)');
+  test_condition_known('scroll-state(snapped: block)');
+  test_condition_known('scroll-state(snapped: inline)');
+  test_condition_known('(scroll-state(snapped: block))');
+  test_condition_known('scroll-state((snapped: inline))');
+  test_condition_known('scroll-state(not ((snapped: inline) and (snapped: block)))');
+  test_condition_known('scroll-state((snapped: block) or (snapped: inline))');
 
-  test_condition_unknown('state(snapped: auto)');
-  test_condition_unknown('state(snapped: true)');
-  test_condition_unknown('state(style(snapped: inline))');
-  test_condition_unknown('style(state(snapped: inline))');
-  test_condition_unknown('state(snapped:)');
+  test_condition_unknown('scroll-state(snapped: auto)');
+  test_condition_unknown('scroll-state(snapped: true)');
+  test_condition_unknown('scroll-state(style(snapped: inline))');
+  test_condition_unknown('style(scroll-state(snapped: inline))');
+  test_condition_unknown('scroll-state(snapped:)');
 </script>

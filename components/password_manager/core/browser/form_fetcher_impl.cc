@@ -17,15 +17,15 @@
 #include "components/autofill/core/common/save_password_progress_logger.h"
 #include "components/password_manager/core/browser/browser_save_password_progress_logger.h"
 #include "components/password_manager/core/browser/credentials_filter.h"
-#include "components/password_manager/core/browser/interactions_stats.h"
 #include "components/password_manager/core/browser/password_feature_manager.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
+#include "components/password_manager/core/browser/password_store/interactions_stats.h"
+#include "components/password_manager/core/browser/password_store/password_store_interface.h"
+#include "components/password_manager/core/browser/password_store/password_store_util.h"
 #include "components/password_manager/core/browser/password_store/psl_matching_helper.h"
 #include "components/password_manager/core/browser/password_store/smart_bubble_stats_store.h"
-#include "components/password_manager/core/browser/password_store_interface.h"
-#include "components/password_manager/core/browser/password_store_util.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 
 using Logger = autofill::SavePasswordProgressLogger;
@@ -34,6 +34,16 @@ using password_manager_util::GetMatchType;
 namespace password_manager {
 
 namespace {
+
+std::vector<std::unique_ptr<PasswordForm>> ConvertToUniquePtr(
+    std::vector<PasswordForm> forms) {
+  std::vector<std::unique_ptr<PasswordForm>> result;
+  result.reserve(forms.size());
+  for (auto& form : forms) {
+    result.push_back(std::make_unique<PasswordForm>(std::move(form)));
+  }
+  return result;
+}
 
 // Create a vector of const PasswordForm from a vector of
 // unique_ptr<PasswordForm> by applying get() item-wise.
@@ -241,9 +251,14 @@ std::unique_ptr<FormFetcher> FormFetcherImpl::Clone() {
   return result;
 }
 
-absl::optional<PasswordStoreBackendError>
+std::optional<PasswordStoreBackendError>
 FormFetcherImpl::GetProfileStoreBackendError() const {
   return profile_store_backend_error_;
+}
+
+std::optional<PasswordStoreBackendError>
+FormFetcherImpl::GetAccountStoreBackendError() const {
+  return account_store_backend_error_;
 }
 
 void FormFetcherImpl::FindMatchesAndNotifyConsumers(
@@ -315,9 +330,15 @@ void FormFetcherImpl::OnGetPasswordStoreResultsOrErrorFrom(
       profile_store_backend_error_ =
           absl::get<PasswordStoreBackendError>(results_or_error);
     }
+  } else if (store == client_->GetAccountPasswordStore()) {
+    account_store_backend_error_.reset();
+    if (absl::holds_alternative<PasswordStoreBackendError>(results_or_error)) {
+      account_store_backend_error_ =
+          absl::get<PasswordStoreBackendError>(results_or_error);
+    }
   }
 
-  std::vector<std::unique_ptr<PasswordForm>> results =
+  std::vector<PasswordForm> results =
       GetLoginsOrEmptyListOnFailure(std::move(results_or_error));
 
   DCHECK_EQ(State::WAITING, state_);
@@ -332,7 +353,7 @@ void FormFetcherImpl::OnGetPasswordStoreResultsOrErrorFrom(
     return;
   }
 
-  AggregatePasswordStoreResults(std::move(results));
+  AggregatePasswordStoreResults(ConvertToUniquePtr(std::move(results)));
 }
 
 void FormFetcherImpl::AggregatePasswordStoreResults(

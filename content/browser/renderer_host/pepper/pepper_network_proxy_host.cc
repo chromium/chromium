@@ -175,6 +175,9 @@ void PepperNetworkProxyHost::OnResolveProxyCompleted(
     // really no action a plugin can take, so there's no need to distinguish
     // which error occurred.
     context.params.set_result(PP_ERROR_FAILED);
+  } else if (proxy_info->ContainsMultiProxyChain()) {
+    // Multi-proxy chains cannot be represented as a PAC string.
+    context.params.set_result(PP_ERROR_FAILED);
   } else {
     pac_string = proxy_info->ToPacString();
   }

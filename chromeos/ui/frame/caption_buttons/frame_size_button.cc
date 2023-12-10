@@ -9,19 +9,22 @@
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/user_metrics.h"
-#include "chromeos/ui/base/tablet_state.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/frame/caption_buttons/snap_controller.h"
 #include "chromeos/ui/frame/frame_utils.h"
 #include "chromeos/ui/frame/multitask_menu/multitask_menu.h"
 #include "chromeos/ui/frame/multitask_menu/multitask_menu_nudge_controller.h"
+#include "chromeos/utils/haptics_util.h"
 #include "ui/aura/client/cursor_client.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
 #include "ui/base/hit_test.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "ui/display/screen.h"
 #include "ui/display/tablet_state.h"
+#include "ui/events/devices/haptic_touchpad_effects.h"
 #include "ui/gfx/animation/animation_delegate.h"
 #include "ui/gfx/animation/slide_animation.h"
 #include "ui/gfx/canvas.h"
@@ -94,6 +97,8 @@ SnapDirection GetSnapDirection(const views::FrameCaptionButton* to_hover) {
 // long press or long hover will end.
 class FrameSizeButton::PieAnimationView : public views::View,
                                           public views::AnimationDelegateViews {
+  METADATA_HEADER(PieAnimationView, views::View)
+
  public:
   explicit PieAnimationView(FrameSizeButton* button)
       : views::AnimationDelegateViews(this), button_(button) {
@@ -134,6 +139,10 @@ class FrameSizeButton::PieAnimationView : public views::View,
 
   // views::View:
   void OnPaint(gfx::Canvas* canvas) override {
+    if (!GetWidget()) {
+      return;
+    }
+
     const double animation_value = animation_.GetCurrentValue();
     if (animation_value == 0.0) {
       return;
@@ -178,8 +187,11 @@ class FrameSizeButton::PieAnimationView : public views::View,
       MultitaskMenuEntryType::kFrameSizeButtonHover;
 
   // The button `this` is associated with. Unowned.
-  raw_ptr<FrameSizeButton> button_;
+  const raw_ptr<FrameSizeButton> button_;
 };
+
+BEGIN_METADATA(FrameSizeButton, PieAnimationView, views::View)
+END_METADATA
 
 // The class to observe the to-be-snapped window during the waiting-for-snap
 // mode. If the window's window state is changed or the window is put in
@@ -246,7 +258,7 @@ bool FrameSizeButton::IsMultitaskMenuShown() const {
 }
 
 void FrameSizeButton::ShowMultitaskMenu(MultitaskMenuEntryType entry_type) {
-  CHECK(!chromeos::TabletState::Get()->InTabletMode());
+  CHECK(!display::Screen::GetScreen()->InTabletMode());
   RecordMultitaskMenuEntryType(entry_type);
   // Owned by the bubble which contains this view. If there is an existing
   // bubble, it will be deactivated and then close and destroy itself.
@@ -260,10 +272,14 @@ void FrameSizeButton::ShowMultitaskMenu(MultitaskMenuEntryType entry_type) {
   multitask_menu_widget_->Show();
   delegate_->GetMultitaskMenuNudgeController()->OnMenuOpened(
       /*tablet_mode=*/false);
+
+  haptics_util::PlayHapticTouchpadEffect(
+      ui::HapticTouchpadEffect::kSnap,
+      ui::HapticTouchpadEffectStrength::kMedium);
 }
 
 void FrameSizeButton::ToggleMultitaskMenu() {
-  CHECK(!chromeos::TabletState::Get()->InTabletMode());
+  CHECK(!display::Screen::GetScreen()->InTabletMode());
   if (!multitask_menu_widget_) {
     ShowMultitaskMenu(MultitaskMenuEntryType::kAccel);
   } else {
@@ -305,9 +321,7 @@ void FrameSizeButton::OnMouseReleased(const ui::MouseEvent& event) {
     }
   }
 
-  if (pie_animation_view_) {
-    pie_animation_view_->Stop();
-  }
+  pie_animation_view_->Stop();
 
   views::FrameCaptionButton::OnMouseReleased(event);
 }
@@ -329,7 +343,7 @@ void FrameSizeButton::OnGestureEvent(ui::GestureEvent* event) {
     return;
   }
   if (event->type() == ui::ET_GESTURE_TAP_DOWN && delegate_->CanSnap() &&
-      !TabletState::Get()->InTabletMode()) {
+      !display::Screen::GetScreen()->InTabletMode()) {
     StartLongTapDelayTimer(*event);
 
     // Go through FrameCaptionButton's handling so that the button gets pressed.
@@ -354,7 +368,7 @@ void FrameSizeButton::OnGestureEvent(ui::GestureEvent* event) {
       event->type() == ui::ET_GESTURE_SCROLL_END ||
       event->type() == ui::ET_SCROLL_FLING_START ||
       event->type() == ui::ET_GESTURE_END) {
-    if (multitask_menu_ &&
+    if (multitask_menu_ && !multitask_menu_->GetWidget()->IsClosed() &&
         multitask_menu_->multitask_menu_view()->OnSizeButtonRelease(
             views::View::ConvertPointToScreen(this, event->location()))) {
       event->SetHandled();
@@ -393,27 +407,22 @@ void FrameSizeButton::StateChanged(views::Button::ButtonState old_state) {
              GetState() != views::Button::STATE_PRESSED) {
     // We want to continue the animation if the button was pressed while it was
     // already hovered, so only stop in other instances.
-    DCHECK(pie_animation_view_);
     pie_animation_view_->Stop();
   }
 }
 
 void FrameSizeButton::Layout() {
-  if (pie_animation_view_) {
-    // Use the bounds of the inkdrop.
-    gfx::Rect bounds = GetLocalBounds();
-    bounds.Inset(GetInkdropInsets(bounds.size()));
-    pie_animation_view_->SetBoundsRect(bounds);
-  }
+  // Use the bounds of the inkdrop for the pie animation.
+  gfx::Rect bounds = GetLocalBounds();
+  bounds.Inset(GetInkdropInsets(bounds.size()));
+  pie_animation_view_->SetBoundsRect(bounds);
 
   views::FrameCaptionButton::Layout();
 }
 
 void FrameSizeButton::OnDisplayTabletStateChanged(display::TabletState state) {
   if (state == display::TabletState::kEnteringTabletMode) {
-    if (pie_animation_view_) {
-      pie_animation_view_->Stop();
-    }
+    pie_animation_view_->Stop();
     long_tap_delay_timer_.Stop();
   }
 }
@@ -432,11 +441,10 @@ void FrameSizeButton::StartLongTapDelayTimer(const ui::LocatedEvent& event) {
 
 void FrameSizeButton::StartPieAnimation(base::TimeDelta duration,
                                         MultitaskMenuEntryType entry_type) {
-  if (chromeos::TabletState::Get()->InTabletMode() || IsMultitaskMenuShown()) {
+  if (display::Screen::GetScreen()->InTabletMode() || IsMultitaskMenuShown()) {
     return;
   }
 
-  CHECK(pie_animation_view_);
   pie_animation_view_->Start(duration, entry_type);
 }
 
@@ -450,7 +458,7 @@ void FrameSizeButton::AnimateButtonsToSnapMode() {
 
 void FrameSizeButton::SetButtonsToSnapMode(
     FrameSizeButtonDelegate::Animate animate) {
-  DCHECK(!chromeos::TabletState::Get()->InTabletMode());
+  DCHECK(!display::Screen::GetScreen()->InTabletMode());
   in_snap_mode_ = true;
 
   // When using a right-to-left layout the close button is left of the size
@@ -547,9 +555,7 @@ void FrameSizeButton::CancelSnap() {
 void FrameSizeButton::SetButtonsToNormalMode(
     FrameSizeButtonDelegate::Animate animate) {
   in_snap_mode_ = false;
-  if (pie_animation_view_) {
-    pie_animation_view_->Stop();
-  }
+  pie_animation_view_->Stop();
   long_tap_delay_timer_.Stop();
   delegate_->SetButtonsToNormal(animate);
 }

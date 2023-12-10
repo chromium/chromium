@@ -40,6 +40,12 @@
 #include "ui/ozone/public/ozone_platform.h"
 #endif
 
+#if BUILDFLAG(USE_DAWN) || BUILDFLAG(SKIA_USE_DAWN)
+#include <dawn/dawn_proc.h>
+#include <dawn/dawn_thread_dispatch_proc.h>
+#include <dawn/native/DawnNative.h>
+#endif
+
 namespace viz {
 
 namespace {
@@ -179,6 +185,16 @@ TestGpuServiceHolder::TestGpuServiceHolder(
         "been started.");
   }
 
+#if BUILDFLAG(USE_DAWN) || BUILDFLAG(SKIA_USE_DAWN)
+  // The test will run both service and client in the same process, so we need
+  // to set dawn procs for both.
+  dawnProcSetProcs(&dawnThreadDispatchProcTable);
+
+  // Use the native procs as default procs for all threads. It will be used
+  // for GPU service side threads.
+  dawnProcSetDefaultThreadProcs(&dawn::native::GetProcs());
+#endif
+
   base::Thread::Options gpu_thread_options;
 #if BUILDFLAG(IS_OZONE)
   gpu_thread_options.message_pump_type = ui::OzonePlatform::GetInstance()
@@ -285,7 +301,7 @@ void TestGpuServiceHolder::InitializeOnGpuThread(
   gpu::GpuFeatureInfo gpu_feature_info = gpu::ComputeGpuFeatureInfo(
       gpu_info, gpu_preferences, base::CommandLine::ForCurrentProcess(),
       /*needs_more_info=*/nullptr);
-  gpu_feature_info.status_values[gpu::GPU_FEATURE_TYPE_GPU_RASTERIZATION] =
+  gpu_feature_info.status_values[gpu::GPU_FEATURE_TYPE_GPU_TILE_RASTERIZATION] =
       gpu::kGpuFeatureStatusEnabled;
 
   // On MacOS, the default texture target for native GpuMemoryBuffers is

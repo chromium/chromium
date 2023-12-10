@@ -9,7 +9,6 @@
 
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/ash_color_id.h"
 #include "ash/style/typography.h"
 #include "ash/system/bluetooth/bluetooth_device_list_item_battery_view.h"
 #include "ash/system/bluetooth/bluetooth_device_list_item_multiple_battery_view.h"
@@ -19,7 +18,6 @@
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "chromeos/ash/services/bluetooth_config/public/cpp/cros_bluetooth_config_util.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "mojo/public/cpp/bindings/clone_traits.h"
@@ -194,32 +192,24 @@ void BluetoothDeviceListItemView::UpdateDeviceProperties(
   const DeviceType& device_type =
       device_properties_->device_properties->device_type;
 
-  AddIconAndLabel(
-      ui::ImageModel::FromVectorIcon(
-          GetDeviceIcon(device_type),
-          chromeos::features::IsJellyEnabled()
-              ? static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurface)
-              : kColorAshIconColorPrimary),
-      GetPairedDeviceName(device_properties_));
-  if (chromeos::features::IsJellyEnabled()) {
-    text_label()->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
-    TypographyProvider::Get()->StyleLabel(ash::TypographyToken::kCrosButton2,
-                                          *text_label());
-  }
+  AddIconAndLabel(ui::ImageModel::FromVectorIcon(
+                      GetDeviceIcon(device_type),
+                      static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurface)),
+                  GetPairedDeviceName(device_properties_));
+  text_label()->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
+  TypographyProvider::Get()->StyleLabel(ash::TypographyToken::kCrosButton2,
+                                        *text_label());
 
   UpdateAccessibleName(device_index, total_device_count);
 
   // Adds an icon to indicate that the device supports profiles or services that
   // are disabled or blocked by enterprise policy.
   if (device_properties->device_properties->is_blocked_by_policy) {
-    AddRightIcon(
-        ui::ImageModel::FromVectorIcon(
-            chromeos::kEnterpriseIcon,
-            chromeos::features::IsJellyEnabled()
-                ? static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurface)
-                : kColorAshIconColorBlocked,
-            kEnterpriseManagedIconSizeDip),
-        /*icon_size=*/kEnterpriseManagedIconSizeDip);
+    AddRightIcon(ui::ImageModel::FromVectorIcon(
+                     chromeos::kEnterpriseIcon,
+                     static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurface),
+                     kEnterpriseManagedIconSizeDip),
+                 /*icon_size=*/kEnterpriseManagedIconSizeDip);
   }
 
   const DeviceConnectionState& connection_state =

@@ -29,8 +29,11 @@ public interface SegmentationPlatformService {
      * @param inputContext (Optional) Instance of InputContext with input signals to model.
      * @param callback Callback containing the classification result.
      */
-    void getClassificationResult(String segmentationKey, PredictionOptions predictionOptions,
-            InputContext inputContext, Callback<ClassificationResult> callback);
+    void getClassificationResult(
+            String segmentationKey,
+            PredictionOptions predictionOptions,
+            InputContext inputContext,
+            Callback<ClassificationResult> callback);
 
     /**
      * Called to get the segment selection result synchronously from the backend.

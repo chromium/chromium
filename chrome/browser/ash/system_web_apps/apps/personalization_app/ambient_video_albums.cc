@@ -58,13 +58,13 @@ void AppendAmbientVideoAlbums(AmbientVideo currently_selected_video,
   }
 }
 
-absl::optional<AmbientVideo> FindAmbientVideoByAlbumId(base::StringPiece id) {
+std::optional<AmbientVideo> FindAmbientVideoByAlbumId(base::StringPiece id) {
   for (const VideoAlbumInfo& album_info : kAllVideoAlbumInfo) {
     if (album_info.id == id) {
       return album_info.video;
     }
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 }  // namespace ash::personalization_app

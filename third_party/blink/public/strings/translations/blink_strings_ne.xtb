@@ -30,6 +30,7 @@
 <translation id="2226276347425096477">कृपया यस टेक्स्टलाई <ph name="MAX_CHARACTERS" /> वर्णहरू वा कम गर्नुहोस् (तपाईंले हाल <ph name="CURRENT_LENGTH" /> वर्णहरू प्रयोग गरिरहनुभएको छ)।</translation>
 <translation id="2247351761944213033">हप्ता <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">ट्र्याक <ph name="NUMBER" /></translation>
+<translation id="2353297238722298836">क्यामेरा तथा माइक्रोफोन प्रयोग गर्ने अनुमति छ</translation>
 <translation id="2393030564806080191">रङको हेक्साडेसिमल मान</translation>
 <translation id="2398813069815436052">डायलग खोलिएको छ।</translation>
 <translation id="245932805758469625">भिडियोको बाँकी सेकेन्डको अवधि</translation>
@@ -60,10 +61,12 @@
 <translation id="3822383571486410024">कृपया यो पाठलाई <ph name="MIN_CHARACTERS" /> अक्षर वा थप (तपाईं हालमा प्रयोग गरिरहेको <ph name="CURRENT_LENGTH" /> अक्षर) सम्म लम्ब्याउनुहोस्।</translation>
 <translation id="383465348367842624">त्यसको पछाडि '<ph name="ATSIGN" />' आउने भागमा '<ph name="INVALIDCHARACTER" />' सङ्केत हुनुहुँदैन।</translation>
 <translation id="3846214748874656680">पूर्ण स्क्रिनबाट निस्कनुहोस्</translation>
+<translation id="4031179711345676612">माइक्रोफोन प्रयोग गर्ने अनुमति छ</translation>
 <translation id="4103419683916926126">मिलिसेकेन्ड</translation>
 <translation id="4201051445878709314">अघिल्लो महिना देखाउनुहोस्</translation>
 <translation id="4360991593054037559">कृपया एउटा वैध मान प्रविष्टि गर्नुहोस्। दुईवा सबैभण्दा नजिकका वैध मानहरू <ph name="VALID_VALUE_LOW" /> र <ph name="VALID_VALUE_HIGHER" /> हुन्।</translation>
 <translation id="4522570452068850558">विवरणहरू</translation>
+<translation id="4663373278480897665">क्यामेरा प्रयोग गर्ने अनुमति छ</translation>
 <translation id="4664250907885839816">'<ph name="ATSIGN" />' पछ्याउने भागले '<ph name="INVALIDCHARACTER" />' चिन्ह समावेश गर्नु हुँदैन।</translation>
 <translation id="4718048029184481307">picture-in-picture मा प्ले गर्दै</translation>
 <translation id="4748357248530471599">प्रदर्शनसम्बन्धी कटआउटलाई टगल गरी पूर्णस्क्रिन बनाउनुहोस्</translation>
@@ -137,6 +140,7 @@
 <translation id="6941933287844615239">मिडिया डाउनलोड गर्नुहोस्</translation>
 <translation id="698788488269350478">विस्तृत गरियो।</translation>
 <translation id="6989848892321993519">कृपया यो पाठलाई <ph name="MIN_CHARACTERS" /> वर्ण वा अझ बढीमा लम्ब्याउनुहोस् (तपाईं हाल १ वर्ण प्रयोग गर्दै हुनुहुन्छ )।</translation>
+<translation id="7080893216867146095">लोकेसन सेयर गर्ने अनुमति दिइएको छैन</translation>
 <translation id="709897737746224366">कृपया अनुरोध गरिएको ढाँचासँग मिलाउनुहोस्।</translation>
 <translation id="7102274145889307184">हालको स्थान</translation>
 <translation id="7263440858009898357">कृपया सूचीमा एक वस्तु चयन गर्नुहोस्।</translation>

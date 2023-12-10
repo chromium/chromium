@@ -84,7 +84,7 @@ bool MigrateDeviceIdInSettings(base::Value::Dict* settings,
   DCHECK_EQ(2, device.stable_device_id_version);
 
   std::string old_device_id = GetVersionedDeviceIdString(device, 1);
-  absl::optional<base::Value> value = settings->Extract(old_device_id);
+  std::optional<base::Value> value = settings->Extract(old_device_id);
   if (!value)
     return false;
 
@@ -208,7 +208,7 @@ bool AudioDevicesPrefHandlerImpl::GetDeviceActive(const AudioDevice& device,
     return false;
   }
 
-  absl::optional<bool> active_opt = dict->FindBool(kActiveKey);
+  std::optional<bool> active_opt = dict->FindBool(kActiveKey);
   if (!active_opt.has_value()) {
     LOG(ERROR) << "Could not get active value for device:" << device.ToString();
     return false;
@@ -218,8 +218,7 @@ bool AudioDevicesPrefHandlerImpl::GetDeviceActive(const AudioDevice& device,
   if (!*active)
     return true;
 
-  absl::optional<bool> activate_by_user_opt =
-      dict->FindBool(kActivateByUserKey);
+  std::optional<bool> activate_by_user_opt = dict->FindBool(kActivateByUserKey);
   if (!activate_by_user_opt.has_value()) {
     LOG(ERROR) << "Could not get activate_by_user value for previously "
                   "active device:"

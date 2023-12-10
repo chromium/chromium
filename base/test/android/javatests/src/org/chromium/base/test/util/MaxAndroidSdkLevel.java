@@ -10,9 +10,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-/**
- * Skips the annotated test when the device's API level is higher than {@code value()}.
- */
+/** Skips the annotated test when the device's API level is higher than {@code value()}. */
 @Inherited
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD, ElementType.TYPE})

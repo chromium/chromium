@@ -51,8 +51,10 @@ public class ScreenshotOnFailureStatement extends Statement {
         String screenshotFilePath =
                 InstrumentationRegistry.getArguments().getString(EXTRA_SCREENSHOT_FILE);
         if (screenshotFilePath == null) {
-            Log.d(TAG,
-                    String.format("Did not save screenshot of failure. Must specify %s "
+            Log.d(
+                    TAG,
+                    String.format(
+                            "Did not save screenshot of failure. Must specify %s "
                                     + "instrumentation argument to enable this feature.",
                             EXTRA_SCREENSHOT_FILE));
             return;
@@ -61,7 +63,8 @@ public class ScreenshotOnFailureStatement extends Statement {
         File screenshotFile = new File(screenshotFilePath);
         File screenshotDir = screenshotFile.getParentFile();
         if (screenshotDir == null) {
-            Log.d(TAG,
+            Log.d(
+                    TAG,
                     String.format(
                             "Failed to create parent directory for %s. Can't save screenshot.",
                             screenshotFile));
@@ -70,7 +73,8 @@ public class ScreenshotOnFailureStatement extends Statement {
         try (StrictModeContext ignored = StrictModeContext.allowAllThreadPolicies()) {
             if (!screenshotDir.exists()) {
                 if (!screenshotDir.mkdirs()) {
-                    Log.d(TAG,
+                    Log.d(
+                            TAG,
                             String.format(
                                     "Failed to create %s. Can't save screenshot.", screenshotDir));
                     return;
@@ -102,8 +106,10 @@ public class ScreenshotOnFailureStatement extends Statement {
         screenshotIntent.putExtra("command", "IMAGE");
         screenshotIntent.putExtra("quality", 100);
         screenshotIntent.putExtra("path", screenshotFile.toString());
-        screenshotIntent.setComponent(new ComponentName(
-                "com.google.vr.vrcore", "com.google.vr.vrcore.capture.record.RecorderService"));
+        screenshotIntent.setComponent(
+                new ComponentName(
+                        "com.google.vr.vrcore",
+                        "com.google.vr.vrcore.capture.record.RecorderService"));
         Log.d(TAG, String.format("Saving VR screenshot of test failure, %s", screenshotFile));
         InstrumentationRegistry.getContext().startService(screenshotIntent);
         // The screenshot taking is asynchronous, so wait until it actually gets taken before

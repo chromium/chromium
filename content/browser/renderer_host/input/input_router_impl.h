@@ -16,16 +16,15 @@
 #include "base/task/sequenced_task_runner.h"
 #include "cc/input/touch_action.h"
 #include "content/browser/renderer_host/input/fling_scheduler.h"
-#include "content/browser/renderer_host/input/gesture_event_queue.h"
 #include "content/browser/renderer_host/input/input_router.h"
 #include "content/browser/renderer_host/input/input_router_client.h"
 #include "content/browser/renderer_host/input/mouse_wheel_event_queue.h"
 #include "content/browser/renderer_host/input/passthrough_touch_event_queue.h"
 #include "content/browser/renderer_host/input/touch_action_filter.h"
-#include "content/browser/renderer_host/input/touchpad_pinch_event_queue.h"
-#include "content/browser/renderer_host/render_widget_host_view_base.h"
 #include "content/common/content_export.h"
+#include "content/common/input/gesture_event_queue.h"
 #include "content/common/input/input_event_stream_validator.h"
+#include "content/common/input/touchpad_pinch_event_queue.h"
 #include "content/public/common/input/native_web_keyboard_event.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -42,6 +41,14 @@ class InputDispositionHandler;
 
 class MockRenderWidgetHost;
 
+class StylusInterface {
+ public:
+  virtual ~StylusInterface() = default;
+
+  virtual bool RequestStartStylusWriting() = 0;
+  virtual void NotifyHoverActionStylusWritable(bool stylus_writable) = 0;
+};
+
 class CONTENT_EXPORT InputRouterImplClient : public InputRouterClient {
  public:
   virtual blink::mojom::WidgetInputHandler* GetWidgetInputHandler() = 0;
@@ -50,7 +57,7 @@ class CONTENT_EXPORT InputRouterImplClient : public InputRouterClient {
       const gfx::Range& range,
       const absl::optional<std::vector<gfx::Rect>>& character_bounds,
       const absl::optional<std::vector<gfx::Rect>>& line_bounds) = 0;
-  virtual RenderWidgetHostViewBase* GetRenderWidgetHostViewBase() = 0;
+  virtual StylusInterface* GetStylusInterface() = 0;
   virtual void OnStartStylusWriting() = 0;
 };
 

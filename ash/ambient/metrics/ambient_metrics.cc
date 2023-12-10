@@ -4,6 +4,7 @@
 
 #include "ash/ambient/metrics/ambient_metrics.h"
 
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -26,7 +27,6 @@
 #include "base/values.h"
 #include "net/base/url_util.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
@@ -131,7 +131,7 @@ void GetAmbientVideoPlaybackMetrics(
 
 AmbientVideoSessionStatus ParseAmbientVideoSessionStatus(
     const base::Value::Dict& playback_metrics) {
-  absl::optional<bool> playback_started =
+  std::optional<bool> playback_started =
       playback_metrics.FindBool(kVideoFieldPlaybackStarted);
   if (playback_started.has_value()) {
     return *playback_started ? AmbientVideoSessionStatus::kSuccess
@@ -177,11 +177,11 @@ void RecordAmbientModeVideoSmoothnessInternal(
     // `RecordAmbientModeVideoSessionStatus()` should cover that.
     return;
   }
-  absl::optional<int> dropped_frames =
+  std::optional<int> dropped_frames =
       playback_metrics.FindInt(kVideoFieldDroppedFrames);
   // Assuming 24 fps, the ambient session would have to last ~2.83 years before
   // the int overflows. For all intensive purposes, this should not happen.
-  absl::optional<int> expected_frames =
+  std::optional<int> expected_frames =
       playback_metrics.FindInt(kVideoFieldTotalFrames);
   if (!dropped_frames || !expected_frames) {
     LOG(ERROR) << "Received invalid metrics dictionary: " << playback_metrics;

@@ -4,6 +4,8 @@
 
 #include "chrome/updater/app/app_uninstall.h"
 
+#include <optional>
+
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/test/task_environment.h"
@@ -16,7 +18,6 @@
 #include "chrome/updater/util/util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
 
@@ -47,7 +48,7 @@ TEST_F(AppUninstallTest, GetVersionExecutablePaths) {
 
   ASSERT_EQ(GetVersionExecutablePaths(GetTestScope()).size(), 3u);
 
-  const absl::optional<base::FilePath> path =
+  const std::optional<base::FilePath> path =
       GetInstallDirectory(GetTestScope());
   ASSERT_TRUE(path);
   ASSERT_TRUE(base::DeletePathRecursively(*path));

@@ -24,6 +24,7 @@ import androidx.annotation.RequiresApi;
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
+import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.SequencedTaskRunner;
 import org.chromium.base.task.TaskTraits;
@@ -46,8 +47,12 @@ public class HardwareDraw implements CaptureMechanism {
     // future requests return the current Bitmap to prevent us blocking but send a new request
     // and move into RUNNING which prevents future requests from being queued. Once the request
     // is finished we move back to UPDATED and repeat.
-    @IntDef({ImageReaderStatus.NEW, ImageReaderStatus.INITIALIZING, ImageReaderStatus.UPDATED,
-            ImageReaderStatus.RUNNING})
+    @IntDef({
+        ImageReaderStatus.NEW,
+        ImageReaderStatus.INITIALIZING,
+        ImageReaderStatus.UPDATED,
+        ImageReaderStatus.RUNNING
+    })
     @Retention(RetentionPolicy.SOURCE)
     private @interface ImageReaderStatus {
         int NEW = 0;
@@ -72,6 +77,7 @@ public class HardwareDraw implements CaptureMechanism {
             this.scale = scale;
             this.onBitmapCapture = onBitmapCapture;
         }
+
         public static RequestState next(
                 View view, float scale, Callback<Bitmap> onBitmapCapture, RequestState previous) {
             int nextId = previous == null ? 1 : previous.requestId + 1;
@@ -135,8 +141,9 @@ public class HardwareDraw implements CaptureMechanism {
                     // Keep this in sync with other restrictions in captureWithHardwareDraw().
                     return;
                 }
-                mReaderDelegate = ImageReader.newInstance(
-                        width, height, PixelFormat.RGBA_8888, maxBitmapsToAcquire);
+                mReaderDelegate =
+                        ImageReader.newInstance(
+                                width, height, PixelFormat.RGBA_8888, maxBitmapsToAcquire);
                 mReaderDelegate.setOnImageAvailableListener(this, sHandler);
                 mState = new State(0, 0, 0, null);
             }
@@ -145,7 +152,10 @@ public class HardwareDraw implements CaptureMechanism {
         private void onLayoutChange(int width, int height) {
             // We want to prevent destroying mReaderDelegate if its going to be used so we use our
             // sequenced TaskRunner which will run after we finish with it.
-            mTaskRunner.postTask(() -> { init(width, height); });
+            mTaskRunner.postTask(
+                    () -> {
+                        init(width, height);
+                    });
         }
 
         private @ImageReaderStatus int currentStatus() {
@@ -175,18 +185,21 @@ public class HardwareDraw implements CaptureMechanism {
             }
 
             assert renderNode != null;
-            mTaskRunner.postTask(() -> {
-                HardwareRenderer mRenderer = new HardwareRenderer();
-                try (TraceEvent e = TraceEvent.scoped("AcceleratedImageReader::requestDraw")) {
-                    mCurrentRequestState =
-                            RequestState.next(view, scale, onBitmapCapture, mCurrentRequestState);
-                    Surface s = mReaderDelegate.getSurface();
-                    mRenderer.setContentRoot(renderNode);
-                    mRenderer.setSurface(s);
-                    mRenderer.createRenderRequest().syncAndDraw();
-                    mRenderer.destroy();
-                }
-            });
+            mTaskRunner.postTask(
+                    () -> {
+                        HardwareRenderer mRenderer = new HardwareRenderer();
+                        try (TraceEvent e =
+                                TraceEvent.scoped("AcceleratedImageReader::requestDraw")) {
+                            mCurrentRequestState =
+                                    RequestState.next(
+                                            view, scale, onBitmapCapture, mCurrentRequestState);
+                            Surface s = mReaderDelegate.getSurface();
+                            mRenderer.setContentRoot(renderNode);
+                            mRenderer.setSurface(s);
+                            mRenderer.createRenderRequest().syncAndDraw();
+                            mRenderer.destroy();
+                        }
+                    });
         }
 
         // This method is run on the sHandler.
@@ -219,39 +232,48 @@ public class HardwareDraw implements CaptureMechanism {
                 assert planes.length != 0;
                 ByteBuffer buffer = planes[0].getBuffer();
                 assert buffer != null;
+                var asyncTask =
+                        new AsyncTask<State>() {
+                            @Override
+                            protected State doInBackground() {
+                                try (TraceEvent e2 =
+                                        TraceEvent.scoped(
+                                                "AcceleratedImageReader::onImageAvailable::postTask")) {
+                                    final int width = image.getWidth();
+                                    final int height = image.getHeight();
+                                    final int pixelStride = planes[0].getPixelStride();
+                                    final int rowPaddingInBytes =
+                                            planes[0].getRowStride() - pixelStride * width;
+                                    final int rowPaddingInPixels = rowPaddingInBytes / pixelStride;
+                                    // Set |mHardwareBitmap| to use the correct padding so it will
+                                    // copy
+                                    // from the buffer.
+                                    Bitmap snapshot =
+                                            CaptureUtils.createBitmap(
+                                                    width + rowPaddingInPixels, height);
+                                    snapshot.copyPixelsFromBuffer(buffer);
+                                    image.close();
 
-                mTaskRunner.postTask(() -> {
-                    try (TraceEvent e2 = TraceEvent.scoped(
-                                 "AcceleratedImageReader::onImageAvailable::postTask")) {
-                        final int width = image.getWidth();
-                        final int height = image.getHeight();
-                        final int pixelStride = planes[0].getPixelStride();
-                        final int rowPaddingInBytes =
-                                planes[0].getRowStride() - pixelStride * width;
-                        final int rowPaddingInPixels = rowPaddingInBytes / pixelStride;
-                        // Set |mHardwareBitmap| to use the correct padding so it will copy from the
-                        // buffer.
-                        Bitmap snapshot =
-                                CaptureUtils.createBitmap(width + rowPaddingInPixels, height);
-                        snapshot.copyPixelsFromBuffer(buffer);
-                        image.close();
-
-                        requestState.view.getHandler().post(() -> {
-                            final State currentState =
-                                    new State(width, height, rowPaddingInPixels, snapshot);
-                            mState = currentState;
-                            int scaledWidth =
-                                    (int) (requestState.view.getWidth() * requestState.scale);
-                            int scaledHeight =
-                                    (int) (requestState.view.getHeight() * requestState.scale);
-                            if (mReader.validateCurrentBitmap(
-                                        currentState, scaledWidth, scaledHeight)
-                                    && currentState.mHardwareBitmap != null) {
-                                requestState.onBitmapCapture.onResult(currentState.mHardwareBitmap);
+                                    return new State(width, height, rowPaddingInPixels, snapshot);
+                                }
                             }
-                        });
-                    }
-                });
+
+                            @Override
+                            protected void onPostExecute(State currentState) {
+                                mState = currentState;
+                                int scaledWidth =
+                                        (int) (requestState.view.getWidth() * requestState.scale);
+                                int scaledHeight =
+                                        (int) (requestState.view.getHeight() * requestState.scale);
+                                if (mReader.validateCurrentBitmap(
+                                                currentState, scaledWidth, scaledHeight)
+                                        && currentState.mHardwareBitmap != null) {
+                                    requestState.onBitmapCapture.onResult(
+                                            currentState.mHardwareBitmap);
+                                }
+                            }
+                        };
+                asyncTask.executeOnTaskRunner(mTaskRunner);
             }
         }
 
@@ -286,8 +308,7 @@ public class HardwareDraw implements CaptureMechanism {
 
     private final ThreadUtils.ThreadChecker mThreadChecker = new ThreadUtils.ThreadChecker();
 
-    @Nullable
-    private AcceleratedImageReader mReader;
+    @Nullable private AcceleratedImageReader mReader;
     private boolean mDebugViewAttachedToWindowListenerAdded;
     // Set each time we enqueue a Hardware drawn Bitmap.
     private RequestState mCurrentRequestState;
@@ -307,29 +328,40 @@ public class HardwareDraw implements CaptureMechanism {
         // its first layout yet and image reader needs to know the width and the height.
     }
 
-    private boolean captureHardware(Canvas canvas, View view, Rect dirtyRect, float scale,
-            boolean drawWhileDetached, CaptureObserver observer) {
-        if (CaptureUtils.captureCommon(canvas, view, dirtyRect, scale,
-                    /*drawWhileDetached*/ drawWhileDetached, observer)) {
+    private boolean captureHardware(
+            Canvas canvas,
+            View view,
+            Rect dirtyRect,
+            float scale,
+            boolean drawWhileDetached,
+            CaptureObserver observer) {
+        if (CaptureUtils.captureCommon(
+                canvas,
+                view,
+                dirtyRect,
+                scale,
+                /* drawWhileDetached= */ drawWhileDetached,
+                observer)) {
             return true;
         }
         // TODO(https://crbug/1318009): Remove this code or promote it to default once we determine
         TraceEvent.instant("HardwareDraw::DrawAttemptedWhileDetached");
         if (!mDebugViewAttachedToWindowListenerAdded) {
             mDebugViewAttachedToWindowListenerAdded = true;
-            view.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
-                @Override
-                public void onViewAttachedToWindow(View view) {
-                    TraceEvent.instant("HardwareDraw::ViewAttachedToWindow");
-                    view.removeOnAttachStateChangeListener(this);
-                    mDebugViewAttachedToWindowListenerAdded = false;
-                }
+            view.addOnAttachStateChangeListener(
+                    new View.OnAttachStateChangeListener() {
+                        @Override
+                        public void onViewAttachedToWindow(View view) {
+                            TraceEvent.instant("HardwareDraw::ViewAttachedToWindow");
+                            view.removeOnAttachStateChangeListener(this);
+                            mDebugViewAttachedToWindowListenerAdded = false;
+                        }
 
-                @Override
-                public void onViewDetachedFromWindow(View view) {
-                    TraceEvent.instant("HardwareDraw::ViewDetachedFromWindow");
-                }
-            });
+                        @Override
+                        public void onViewDetachedFromWindow(View view) {
+                            TraceEvent.instant("HardwareDraw::ViewDetachedFromWindow");
+                        }
+                    });
         }
         return false;
     }
@@ -338,10 +370,15 @@ public class HardwareDraw implements CaptureMechanism {
      * This uses a RecordingNode to store all the required draw instructions without doing them
      * upfront. And then on a threadpool task we grab a hardware canvas (required to use a
      * RenderNode) and draw it using the hardware accelerated canvas.
+     *
      * @return If draw instructions were recorded and the dirty rect can be reset.
      */
-    private boolean captureWithHardwareDraw(View view, Rect dirtyRect, float scale,
-            CaptureObserver observer, Callback<Bitmap> onBitmapCapture) {
+    private boolean captureWithHardwareDraw(
+            View view,
+            Rect dirtyRect,
+            float scale,
+            CaptureObserver observer,
+            Callback<Bitmap> onBitmapCapture) {
         try (TraceEvent e = TraceEvent.scoped("HardwareDraw:captureWithHardwareDraw")) {
             if (view.getWidth() == 0 || view.getHeight() == 0) {
                 // We haven't actually laid out this view yet no point in requesting a screenshot.
@@ -369,8 +406,14 @@ public class HardwareDraw implements CaptureMechanism {
                 renderNode.setPosition(0, 0, view.getWidth(), view.getHeight());
 
                 Canvas canvas = renderNode.beginRecording();
-                boolean captureSuccess = captureHardware(
-                        canvas, view, dirtyRect, scale, /*drawWhileDetached*/ false, observer);
+                boolean captureSuccess =
+                        captureHardware(
+                                canvas,
+                                view,
+                                dirtyRect,
+                                scale,
+                                /* drawWhileDetached= */ false,
+                                observer);
                 renderNode.endRecording();
                 if (captureSuccess) {
                     onDrawInstructionsAvailable(
@@ -383,8 +426,11 @@ public class HardwareDraw implements CaptureMechanism {
     }
 
     @SuppressWarnings("NewApi")
-    private void onDrawInstructionsAvailable(RenderNode renderNode,
-            AcceleratedImageReader.State currentState, View view, float scale,
+    private void onDrawInstructionsAvailable(
+            RenderNode renderNode,
+            AcceleratedImageReader.State currentState,
+            View view,
+            float scale,
             Callback<Bitmap> onBitmapCapture) {
         currentState.mRequestNewDraw = false;
         mReader.requestDraw(renderNode, view, scale, onBitmapCapture);
@@ -415,8 +461,12 @@ public class HardwareDraw implements CaptureMechanism {
     }
 
     @Override
-    public boolean startBitmapCapture(View view, Rect dirtyRect, float scale,
-            CaptureObserver observer, Callback<Bitmap> onBitmapCapture) {
+    public boolean startBitmapCapture(
+            View view,
+            Rect dirtyRect,
+            float scale,
+            CaptureObserver observer,
+            Callback<Bitmap> onBitmapCapture) {
         try (TraceEvent e = TraceEvent.scoped("HardwareDraw:syncCaptureBitmap")) {
             return captureWithHardwareDraw(view, dirtyRect, scale, observer, onBitmapCapture);
         }

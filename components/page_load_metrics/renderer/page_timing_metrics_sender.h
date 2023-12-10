@@ -89,7 +89,8 @@ class PageTimingMetricsSender {
 
   void DidObserveUserInteraction(base::TimeTicks max_event_start,
                                  base::TimeTicks max_event_end,
-                                 blink::UserInteractionType interaction_type);
+                                 blink::UserInteractionType interaction_type,
+                                 uint64_t interaction_offset);
   // Updates the timing information. Buffers |timing| to be sent over mojo
   // sometime 'soon'.
   void Update(
@@ -104,8 +105,7 @@ class PageTimingMetricsSender {
 
   void UpdateResourceMetadata(int resource_id,
                               bool is_ad_resource,
-                              bool is_main_frame_resource,
-                              bool completed_before_fcp);
+                              bool is_main_frame_resource);
   void SetUpSmoothnessReporting(base::ReadOnlySharedMemoryRegion shared_memory);
   void InitiateUserInteractionTiming();
   mojom::SoftNavigationMetricsPtr GetSoftNavigationMetrics() {
@@ -121,7 +121,11 @@ class PageTimingMetricsSender {
  private:
   void EnsureSendTimer(bool urgent = false);
   void SendNow();
-  void InsertPageResourceDataUse(std::unique_ptr<PageResourceDataUse> data);
+
+  // Inserts a `PageResourceDataUse` with `resource_id` in
+  // `page_resource_data_use_` if none exists. Returns a pointer to the inserted
+  // entry or to the existing one.
+  PageResourceDataUse* FindOrInsertPageResourceDataUse(int resource_id);
 
   std::unique_ptr<PageTimingSender> sender_;
   std::unique_ptr<base::OneShotTimer> timer_;

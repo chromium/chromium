@@ -13,8 +13,11 @@
 #include "ash/system/power/power_button_controller.h"
 #include "ash/system/privacy_hub/camera_privacy_switch_controller.h"
 #include "base/check_deref.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/scoped_observation.h"
+#include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 
 namespace ash::curtain {
@@ -121,14 +124,18 @@ Session::Session(Shell* shell,
       init_params_(init_params),
       root_windows_observer_(
           std::make_unique<RootWindowsObserver>(this, shell)) {
-  if (init_params.mute_audio_output) {
-    scoped_audio_output_muter_ = std::make_unique<ScopedAudioOutputMuter>();
-  }
   if (init_params.mute_audio_input) {
     scoped_audio_input_muter_ = std::make_unique<ScopedAudioInputMuter>();
   }
   if (init_params.disable_camera_access && CanDisableCamera()) {
     scoped_camera_disabler_ = std::make_unique<ScopedCameraDisabler>();
+  }
+  if (!init_params.mute_audio_output_after.is_max()) {
+    audio_output_mute_timer_.Start(
+        FROM_HERE, init_params.mute_audio_output_after,
+        base::BindOnce(&Session::MuteAudioOutput,
+                       // Safe because `this` owns `audio_output_mute_timer_`.
+                       base::Unretained(this)));
   }
 
   CurtainOffAllRootWindows();
@@ -190,6 +197,10 @@ void Session::RemoveCurtainOfRootWindow(const aura::Window* root_window) {
   DCHECK(controller);
 
   controller->ClearSecurityCurtainWidgetController();
+}
+
+void Session::MuteAudioOutput() {
+  scoped_audio_output_muter_ = std::make_unique<ScopedAudioOutputMuter>();
 }
 
 }  // namespace ash::curtain

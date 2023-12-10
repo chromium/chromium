@@ -5,8 +5,10 @@
 #include "ash/glanceables/tasks/glanceables_task_view.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 
+#include "ash/api/tasks/tasks_client.h"
 #include "ash/api/tasks/tasks_types.h"
 #include "ash/constants/ash_features.h"
 #include "ash/glanceables/common/glanceables_view_id.h"
@@ -20,7 +22,6 @@
 #include "base/time/time_override.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "chromeos/ash/components/settings/scoped_timezone_settings.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/views/controls/button/image_button.h"
@@ -64,7 +65,8 @@ TEST_F(GlanceablesTaskViewTest, FormatsDueDate) {
     const auto task = api::Task("task-id", "Task title", /*completed=*/false,
                                 /*due=*/due,
                                 /*has_subtasks=*/false,
-                                /*has_email_link=*/false, /*has_notes=*/false);
+                                /*has_email_link=*/false, /*has_notes=*/false,
+                                /*updated=*/due);
     const auto view = GlanceablesTaskView(
         &task, /*mark_as_completed_callback=*/base::DoNothing(),
         /*save_callback=*/base::DoNothing());
@@ -83,9 +85,9 @@ TEST_F(GlanceablesTaskViewTest, EntersAndExitsEditState) {
       features::kGlanceablesTimeManagementStableLaunch};
 
   const auto task = api::Task("task-id", "Task title", /*completed=*/false,
-                              /*due=*/absl::nullopt,
+                              /*due=*/std::nullopt,
                               /*has_subtasks=*/false, /*has_email_link=*/false,
-                              /*has_notes=*/false);
+                              /*has_notes=*/false, /*updated=*/base::Time());
 
   const auto widget = CreateFramelessTestWidget();
   widget->SetFullscreen(true);
@@ -146,9 +148,9 @@ TEST_F(GlanceablesTaskViewTest, EntersAndExitsEditState) {
 TEST_F(GlanceablesTaskViewTest,
        AppliesStrikeThroughStyleAfterMarkingAsComplete) {
   const auto task = api::Task("task-id", "Task title", /*completed=*/false,
-                              /*due=*/absl::nullopt,
+                              /*due=*/std::nullopt,
                               /*has_subtasks=*/false, /*has_email_link=*/false,
-                              /*has_notes=*/false);
+                              /*has_notes=*/false, /*updated=*/base::Time());
 
   const auto widget = CreateFramelessTestWidget();
   widget->SetFullscreen(true);
@@ -181,9 +183,9 @@ TEST_F(GlanceablesTaskViewTest,
 
 TEST_F(GlanceablesTaskViewTest, InvokesMarkAsCompletedCallback) {
   const auto task = api::Task("task-id", "Task title", /*completed=*/false,
-                              /*due=*/absl::nullopt,
+                              /*due=*/std::nullopt,
                               /*has_subtasks=*/false, /*has_email_link=*/false,
-                              /*has_notes=*/false);
+                              /*has_notes=*/false, /*updated=*/base::Time());
 
   base::test::TestFuture<const std::string&, bool> future;
 
@@ -220,7 +222,9 @@ TEST_F(GlanceablesTaskViewTest, InvokesMarkAsCompletedCallback) {
 }
 
 TEST_F(GlanceablesTaskViewTest, InvokesSaveCallbackAfterAdding) {
-  base::test::TestFuture<const std::string&, const std::string&> future;
+  base::test::TestFuture<const std::string&, const std::string&,
+                         api::TasksClient::OnTaskSavedCallback>
+      future;
 
   const auto widget = CreateFramelessTestWidget();
   widget->SetFullscreen(true);
@@ -237,18 +241,20 @@ TEST_F(GlanceablesTaskViewTest, InvokesSaveCallbackAfterAdding) {
   PressAndReleaseKey(ui::VKEY_W);
   PressAndReleaseKey(ui::VKEY_ESCAPE);
 
-  const auto [task_id, title] = future.Take();
+  const auto [task_id, title, callback] = future.Take();
   EXPECT_TRUE(task_id.empty());
   EXPECT_EQ(title, "New");
 }
 
 TEST_F(GlanceablesTaskViewTest, InvokesSaveCallbackAfterEditing) {
   const auto task = api::Task("task-id", "Task title", /*completed=*/false,
-                              /*due=*/absl::nullopt,
+                              /*due=*/std::nullopt,
                               /*has_subtasks=*/false, /*has_email_link=*/false,
-                              /*has_notes=*/false);
+                              /*has_notes=*/false, /*updated=*/base::Time());
 
-  base::test::TestFuture<const std::string&, const std::string&> future;
+  base::test::TestFuture<const std::string&, const std::string&,
+                         api::TasksClient::OnTaskSavedCallback>
+      future;
 
   const auto widget = CreateFramelessTestWidget();
   widget->SetFullscreen(true);
@@ -266,9 +272,59 @@ TEST_F(GlanceablesTaskViewTest, InvokesSaveCallbackAfterEditing) {
   PressAndReleaseKey(ui::VKEY_D);
   PressAndReleaseKey(ui::VKEY_ESCAPE);
 
-  const auto [task_id, title] = future.Take();
+  const auto [task_id, title, callback] = future.Take();
   EXPECT_EQ(task_id, "task-id");
   EXPECT_EQ(title, "Task title upd");
+}
+
+TEST_F(GlanceablesTaskViewTest, SupportsEditingRightAfterAdding) {
+  base::test::TestFuture<const std::string&, const std::string&,
+                         api::TasksClient::OnTaskSavedCallback>
+      future;
+
+  const auto widget = CreateFramelessTestWidget();
+  widget->SetFullscreen(true);
+  auto* const view =
+      widget->SetContentsView(std::make_unique<GlanceablesTaskView>(
+          /*task=*/nullptr, /*mark_as_completed_callback=*/base::DoNothing(),
+          /*save_callback=*/future.GetRepeatingCallback()));
+  ASSERT_TRUE(view);
+
+  {
+    view->UpdateTaskTitleViewForState(
+        GlanceablesTaskView::TaskTitleViewState::kEdit);
+    PressAndReleaseKey(ui::VKEY_N, ui::EF_SHIFT_DOWN);
+    PressAndReleaseKey(ui::VKEY_E);
+    PressAndReleaseKey(ui::VKEY_W);
+    PressAndReleaseKey(ui::VKEY_ESCAPE);
+
+    // Verify that `task_id` is empty after adding a task.
+    auto [task_id, title, callback] = future.Take();
+    EXPECT_TRUE(task_id.empty());
+    EXPECT_EQ(title, "New");
+
+    // Simulate reply, the view should update itself with the new task id.
+    const auto created_task =
+        api::Task("task-id", "New", /*completed=*/false,
+                  /*due=*/absl::nullopt,
+                  /*has_subtasks=*/false,
+                  /*has_email_link=*/false, /*has_notes=*/false,
+                  /*updated=*/base::Time::Now());
+    std::move(callback).Run(&created_task);
+  }
+
+  {
+    view->UpdateTaskTitleViewForState(
+        GlanceablesTaskView::TaskTitleViewState::kEdit);
+    PressAndReleaseKey(ui::VKEY_SPACE);
+    PressAndReleaseKey(ui::VKEY_1);
+    PressAndReleaseKey(ui::VKEY_ESCAPE);
+
+    // Verify that `task_id` equals to "task-id" after editing the same task.
+    const auto [task_id, title, callback] = future.Take();
+    EXPECT_EQ(task_id, "task-id");
+    EXPECT_EQ(title, "New 1");
+  }
 }
 
 }  // namespace ash

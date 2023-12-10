@@ -7,7 +7,6 @@
  */
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
 import {AmbientModeAlbum, BacklightColor, BLUE_COLOR, GooglePhotosAlbum, GREEN_COLOR, INDIGO_COLOR, PURPLE_COLOR, RED_COLOR, WHITE_COLOR, YELLOW_COLOR} from './../personalization_app.mojom-webui.js';
@@ -88,11 +87,6 @@ export function isNonEmptyString(maybeString: unknown): maybeString is string {
 export function inBetween(
     num: number, minVal: number, maxVal: number): boolean {
   return minVal <= num && num <= maxVal;
-}
-
-/** Converts a String16 to a JavaScript String. */
-export function decodeString16(str: String16|null): string {
-  return str ? str.data.map(ch => String.fromCodePoint(ch)).join('') : '';
 }
 
 export function isImageDataUrl(maybeDataUrl: Url|null|

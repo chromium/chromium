@@ -22,7 +22,6 @@
 #include "base/threading/thread_checker.h"
 #include "base/values.h"
 #include "chromeos/ash/components/dbus/patchpanel/patchpanel_client.h"
-#include "chromeos/ash/components/dbus/patchpanel/patchpanel_service.pb.h"
 #include "chromeos/ash/components/network/network_connection_observer.h"
 #include "chromeos/ash/components/network/network_profile_handler.h"
 #include "chromeos/ash/components/network/network_state_handler_observer.h"
@@ -123,7 +122,7 @@ class ArcNetHostImpl : public KeyedService,
 
  private:
   const ash::NetworkState* GetDefaultNetworkFromChrome();
-  void UpdateActiveNetworks(
+  void UpdateHostNetworks(
       const std::vector<patchpanel::NetworkDevice>& devices);
 
   // Due to a race in Chrome, GetNetworkStateFromGuid() might not know about
@@ -184,8 +183,8 @@ class ArcNetHostImpl : public KeyedService,
   void TranslateEapCredentialsToShillDictWithCertID(
       mojom::EapCredentialsPtr cred,
       base::OnceCallback<void(base::Value::Dict)> callback,
-      const absl::optional<std::string>& cert_id,
-      const absl::optional<int>& slot_id);
+      const std::optional<std::string>& cert_id,
+      const std::optional<int>& slot_id);
 
   // Synchronously translate EAP credentials to base::Value dictionary in ONC
   // with empty or imported certificate and slot ID. |callback| is then run
@@ -194,8 +193,8 @@ class ArcNetHostImpl : public KeyedService,
   void TranslateEapCredentialsToOncDictWithCertID(
       const mojom::EapCredentialsPtr& eap,
       base::OnceCallback<void(base::Value::Dict)> callback,
-      const absl::optional<std::string>& cert_id,
-      const absl::optional<int>& slot_id);
+      const std::optional<std::string>& cert_id,
+      const std::optional<int>& slot_id);
 
   // Translate EAP credentials to base::Value dictionary. If it is
   // necessary to import certificates this method will asynchronously
@@ -252,7 +251,7 @@ class ArcNetHostImpl : public KeyedService,
   // Callback for ash::NetworkHandler::GetShillProperties
   void ReceiveShillProperties(
       const std::string& service_path,
-      absl::optional<base::Value::Dict> shill_properties);
+      std::optional<base::Value::Dict> shill_properties);
 
   // PatchPanelClient::Observer implementation:
   void NetworkConfigurationChanged() override;

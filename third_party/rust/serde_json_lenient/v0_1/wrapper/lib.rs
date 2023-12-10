@@ -14,10 +14,6 @@ use std::pin::Pin;
 const UTF8_BOM: [u8; 3] = [0xef, 0xbb, 0xbf];
 
 /// C++ bindings
-// Requires this allow since cxx generates unsafe code.
-//
-// TODO(crbug.com/1422745): patch upstream cxx to generate compatible code.
-#[allow(unsafe_op_in_unsafe_fn)]
 #[cxx::bridge(namespace=serde_json_lenient)]
 mod ffi {
     // From the `wrapper_functions` target.
@@ -64,7 +60,7 @@ mod ffi {
         fn decode_json(
             json: &[u8],
             options: &JsonOptions,
-            functions: &Functions,
+            functions: &'static Functions,
             ctx: Pin<&mut ContextPointer>,
             error: Pin<&mut DecodeError>,
         ) -> bool;
@@ -126,7 +122,7 @@ pub type ContextPointer = ffi::ContextPointer;
 pub fn decode_json(
     json: &[u8],
     options: &JsonOptions,
-    functions: &Functions,
+    functions: &'static Functions,
     // TODO(danakj): Use std::ptr::NonNull when the binding generator supports it.
     ctx: Pin<&mut ContextPointer>,
     // TODO(danakj): Return `Result<(), DecodeError>` once the binding generator supports it.

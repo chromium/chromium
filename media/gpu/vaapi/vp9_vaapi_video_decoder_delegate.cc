@@ -302,14 +302,6 @@ bool VP9VaapiVideoDecoderDelegate::NeedsCompressedHeaderParsed() const {
   return false;
 }
 
-bool VP9VaapiVideoDecoderDelegate::GetFrameContext(
-    scoped_refptr<VP9Picture> pic,
-    Vp9FrameContext* frame_ctx) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  NOTIMPLEMENTED() << "Frame context update not supported";
-  return false;
-}
-
 void VP9VaapiVideoDecoderDelegate::OnVAContextDestructionSoon() {
   // Destroy the member ScopedVABuffers below since they refer to a VAContextID
   // that will be destroyed soon.

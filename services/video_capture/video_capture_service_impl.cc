@@ -24,6 +24,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/video_capture/device_factory_impl.h"
+#include "services/video_capture/public/cpp/features.h"
 #include "services/video_capture/testing_controls_impl.h"
 #include "services/video_capture/video_source_provider_impl.h"
 #include "services/video_capture/virtual_device_enabled_device_factory.h"
@@ -182,7 +183,6 @@ class VideoCaptureServiceImpl::VizGpuContextProvider
             gpu::SchedulingPriority::kNormal, gpu::kNullSurfaceHandle,
             GURL(std::string("chrome://gpu/VideoCapture")),
             false /* automatic flushes */, false /* support locking */,
-            false /* support grcontext */,
             gpu::SharedMemoryLimits::ForMailboxContext(),
             gpu::ContextCreationAttribs(),
             viz::command_buffer_metrics::ContextType::VIDEO_CAPTURE);
@@ -230,9 +230,20 @@ bool ShouldUseVCDFromAsh() {
 
 VideoCaptureServiceImpl::VideoCaptureServiceImpl(
     mojo::PendingReceiver<mojom::VideoCaptureService> receiver,
-    scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner)
+    scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
+    bool create_system_monitor)
     : receiver_(this, std::move(receiver)),
-      ui_task_runner_(std::move(ui_task_runner)) {}
+      ui_task_runner_(std::move(ui_task_runner)) {
+  if (create_system_monitor && !base::SystemMonitor::Get()) {
+    system_monitor_ = std::make_unique<base::SystemMonitor>();
+  }
+#if BUILDFLAG(IS_MAC)
+  if (base::FeatureList::IsEnabled(
+          features::kCameraMonitoringInVideoCaptureService)) {
+    InitializeDeviceMonitor();
+  }
+#endif
+}
 
 VideoCaptureServiceImpl::~VideoCaptureServiceImpl() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -375,6 +386,20 @@ void VideoCaptureServiceImpl::LazyInitializeVideoSourceProvider() {
 
 void VideoCaptureServiceImpl::OnLastSourceProviderClientDisconnected() {
   video_source_provider_.reset();
+}
+
+void VideoCaptureServiceImpl::InitializeDeviceMonitor() {
+#if BUILDFLAG(IS_MAC)
+  CHECK(base::FeatureList::IsEnabled(
+      features::kCameraMonitoringInVideoCaptureService));
+  if (video_capture_device_monitor_mac_) {
+    return;
+  }
+  video_capture_device_monitor_mac_ = std::make_unique<media::DeviceMonitorMac>(
+      base::ThreadPool::CreateSingleThreadTaskRunner(
+          {base::TaskPriority::USER_VISIBLE}));
+  video_capture_device_monitor_mac_->StartMonitoring();
+#endif
 }
 
 #if BUILDFLAG(IS_WIN)

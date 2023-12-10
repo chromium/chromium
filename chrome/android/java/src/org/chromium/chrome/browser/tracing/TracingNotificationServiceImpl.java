@@ -15,9 +15,7 @@ import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.tracing.settings.TracingSettings;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 
-/**
- * Service that handles the actions on tracing notifications.
- */
+/** Service that handles the actions on tracing notifications. */
 public class TracingNotificationServiceImpl extends TracingNotificationService.Impl {
     private static final String ACTION_STOP_RECORDING =
             "org.chromium.chrome.browser.tracing.STOP_RECORDING";
@@ -34,7 +32,10 @@ public class TracingNotificationServiceImpl extends TracingNotificationService.I
     public static PendingIntent getStopRecordingIntent(Context context) {
         Intent intent = new Intent(context, TracingNotificationService.class);
         intent.setAction(ACTION_STOP_RECORDING);
-        return PendingIntent.getService(context, 0, intent,
+        return PendingIntent.getService(
+                context,
+                0,
+                intent,
                 PendingIntent.FLAG_UPDATE_CURRENT
                         | IntentUtils.getPendingIntentMutabilityFlag(false));
     }
@@ -48,7 +49,10 @@ public class TracingNotificationServiceImpl extends TracingNotificationService.I
     public static PendingIntent getDiscardTraceIntent(Context context) {
         Intent intent = new Intent(context, TracingNotificationService.class);
         intent.setAction(ACTION_DISCARD_TRACE);
-        return PendingIntent.getService(context, 0, intent,
+        return PendingIntent.getService(
+                context,
+                0,
+                intent,
                 PendingIntent.FLAG_UPDATE_CURRENT
                         | IntentUtils.getPendingIntentMutabilityFlag(false));
     }
@@ -61,27 +65,34 @@ public class TracingNotificationServiceImpl extends TracingNotificationService.I
      */
     public static PendingIntent getOpenSettingsIntent(Context context) {
         SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
-        Intent intent = settingsLauncher.createSettingsActivityIntent(
-                context, TracingSettings.class.getName());
-        return PendingIntent.getActivity(context, 0, intent,
+        Intent intent =
+                settingsLauncher.createSettingsActivityIntent(
+                        context, TracingSettings.class.getName());
+        return PendingIntent.getActivity(
+                context,
+                0,
+                intent,
                 PendingIntent.FLAG_UPDATE_CURRENT
                         | IntentUtils.getPendingIntentMutabilityFlag(false));
     }
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        PostTask.runSynchronously(TaskTraits.UI_DEFAULT, () -> {
-            // Clear the notification but don't do anything else if the TracingController went away.
-            if (!TracingController.isInitialized()) {
-                TracingNotificationManager.dismissNotification();
-                return;
-            }
+        PostTask.runSynchronously(
+                TaskTraits.UI_DEFAULT,
+                () -> {
+                    // Clear the notification but don't do anything else if the TracingController
+                    // went away.
+                    if (!TracingController.isInitialized()) {
+                        TracingNotificationManager.dismissNotification();
+                        return;
+                    }
 
-            if (ACTION_STOP_RECORDING.equals(intent.getAction())) {
-                TracingController.getInstance().stopRecording();
-            } else if (ACTION_DISCARD_TRACE.equals(intent.getAction())) {
-                TracingController.getInstance().discardTrace();
-            }
-        });
+                    if (ACTION_STOP_RECORDING.equals(intent.getAction())) {
+                        TracingController.getInstance().stopRecording();
+                    } else if (ACTION_DISCARD_TRACE.equals(intent.getAction())) {
+                        TracingController.getInstance().discardTrace();
+                    }
+                });
     }
 }

@@ -12,16 +12,12 @@ import android.widget.TextView;
 
 import androidx.preference.PreferenceViewHolder;
 
-/**
- * A preference that displays informational text, and a summary which can contain a link.
- */
+/** A preference that displays informational text, and a summary which can contain a link. */
 public class TextMessagePreference extends ChromeBasePreference {
     private TextView mSummaryView;
     private MovementMethod mMovementMethod = LinkMovementMethod.getInstance();
 
-    /**
-     * Constructor for inflating from XML.
-     */
+    /** Constructor for inflating from XML. */
     public TextMessagePreference(Context context, AttributeSet attrs) {
         super(context, attrs);
         setSelectable(false);
@@ -36,9 +32,7 @@ public class TextMessagePreference extends ChromeBasePreference {
         setSummaryMovementMethod(mMovementMethod);
     }
 
-    /**
-     * @param movementMethod Set the movement method of the summary TextView.
-     */
+    /** @param movementMethod Set the movement method of the summary TextView. */
     public void setSummaryMovementMethod(MovementMethod movementMethod) {
         mMovementMethod = movementMethod;
         if (mSummaryView != null) {

@@ -5,6 +5,8 @@
 #ifndef ASH_SYSTEM_KEYBOARD_BRIGHTNESS_KEYBOARD_BACKLIGHT_COLOR_CONTROLLER_H_
 #define ASH_SYSTEM_KEYBOARD_BRIGHTNESS_KEYBOARD_BACKLIGHT_COLOR_CONTROLLER_H_
 
+#include <optional>
+
 #include "ash/ash_export.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/public/cpp/wallpaper/wallpaper_controller.h"
@@ -17,7 +19,6 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/session_manager_types.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 
 class PrefRegistrySimple;
@@ -142,7 +143,7 @@ class ASH_EXPORT KeyboardBacklightColorController
   void MaybeToggleOnKeyboardBrightness();
 
   // Callbacks:
-  void KeyboardBrightnessPercentReceived(absl::optional<double> percentage);
+  void KeyboardBrightnessPercentReceived(std::optional<double> percentage);
 
   // Returns the current wallpaper extracted color.
   SkColor GetCurrentWallpaperColor();

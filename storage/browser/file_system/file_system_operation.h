@@ -197,22 +197,28 @@ class FileSystemOperation {
                                             CopyOrMoveOption::kFirst,
                                             CopyOrMoveOption::kLast>;
 
-  // Fields requested for the GetMetadata method. Used as a bitmask.
-  enum GetMetadataField {
-    GET_METADATA_FIELD_NONE = 0,
+  // Fields requested for the GetMetadata method. Used as an EnumSet to allow
+  // multiple fields to be specified.
+  enum class GetMetadataField {
+    // Returns the size of the target. Undefined for directories. See also
+    // kRecursiveSize.
+    kSize,
 
-    // Returns the size of the target. Undefined for directories.
-    // See also GET_METADATA_FIELD_TOTAL_SIZE.
-    GET_METADATA_FIELD_SIZE = 1 << 0,
+    kIsDirectory,
 
-    GET_METADATA_FIELD_IS_DIRECTORY = 1 << 1,
-
-    GET_METADATA_FIELD_LAST_MODIFIED = 1 << 2,
+    kLastModified,
 
     // If the target is directory, then total size of directory contents
-    // is returned, otherwise it's identical to GET_METADATA_FIELD_SIZE.
-    GET_METADATA_FIELD_TOTAL_SIZE = 1 << 3,
+    // is returned, otherwise it's identical to kSize.
+    kRecursiveSize,
+
+    kFirst = kSize,
+    kLast = kRecursiveSize
   };
+
+  using GetMetadataFieldSet = base::EnumSet<GetMetadataField,
+                                            GetMetadataField::kFirst,
+                                            GetMetadataField::kLast>;
 
   // Used for Write().
   using WriteCallback = base::RepeatingCallback<
@@ -299,7 +305,7 @@ class FileSystemOperation {
 
   // Gets the metadata of a file or directory at |path|.
   virtual void GetMetadata(const FileSystemURL& path,
-                           int fields,
+                           GetMetadataFieldSet fields,
                            GetMetadataCallback callback) = 0;
 
   // Reads contents of a directory at |path|.

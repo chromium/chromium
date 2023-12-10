@@ -25,7 +25,6 @@ import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.toolbar.IncognitoToggleTabLayout;
 import org.chromium.chrome.browser.toolbar.NewTabButton;
 import org.chromium.chrome.browser.toolbar.R;
-import org.chromium.chrome.browser.toolbar.TabCountProvider;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButton;
 import org.chromium.chrome.browser.toolbar.top.TopToolbarCoordinator.ToolbarAlphaInOverviewObserver;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
@@ -46,7 +45,6 @@ public class TabSwitcherModeTopToolbar extends OptimizedFrameLayout
         implements View.OnClickListener, IncognitoStateProvider.IncognitoStateObserver {
     private View.OnClickListener mNewTabListener;
 
-    private TabCountProvider mTabCountProvider;
     private TabModelSelector mTabModelSelector;
     private IncognitoStateProvider mIncognitoStateProvider;
     private BooleanSupplier mIsIncognitoModeEnabledSupplier;
@@ -93,7 +91,9 @@ public class TabSwitcherModeTopToolbar extends OptimizedFrameLayout
         mNewTabViewButton.setOnClickListener(this);
     }
 
-    void initialize(boolean isFullscreenToolbar, boolean isTabToGtsAnimationEnabled,
+    void initialize(
+            boolean isFullscreenToolbar,
+            boolean isTabToGtsAnimationEnabled,
             BooleanSupplier isIncognitoModeEnabledSupplier,
             ToolbarColorObserverManager toolbarColorObserverManager) {
         mIsFullscreenToolbar = isFullscreenToolbar;
@@ -114,9 +114,7 @@ public class TabSwitcherModeTopToolbar extends OptimizedFrameLayout
         }
     }
 
-    /**
-     * Cleans up any code and removes observers as necessary.
-     */
+    /** Cleans up any code and removes observers as necessary. */
     void destroy() {
         if (mIncognitoStateProvider != null) {
             mIncognitoStateProvider.removeObserver(this);
@@ -159,9 +157,10 @@ public class TabSwitcherModeTopToolbar extends OptimizedFrameLayout
         // TODO(twellington): Handle interrupted animations to avoid jumps to 1.0 or 0.f.
         setAlpha(inTabSwitcherMode ? 0.0f : 1.0f);
 
-        long duration = mShowZoomingAnimation
-                ? TopToolbarCoordinator.TAB_SWITCHER_MODE_GTS_ANIMATION_DURATION_MS
-                : TopToolbarCoordinator.TAB_SWITCHER_MODE_NORMAL_ANIMATION_DURATION_MS;
+        long duration =
+                mShowZoomingAnimation
+                        ? TopToolbarCoordinator.TAB_SWITCHER_MODE_GTS_ANIMATION_DURATION_MS
+                        : TopToolbarCoordinator.TAB_SWITCHER_MODE_NORMAL_ANIMATION_DURATION_MS;
 
         mVisiblityAnimator =
                 ObjectAnimator.ofFloat(this, View.ALPHA, inTabSwitcherMode ? 1.0f : 0.0f);
@@ -169,32 +168,35 @@ public class TabSwitcherModeTopToolbar extends OptimizedFrameLayout
         if (mShowZoomingAnimation && inTabSwitcherMode) mVisiblityAnimator.setStartDelay(duration);
         mVisiblityAnimator.setInterpolator(Interpolators.LINEAR_INTERPOLATOR);
 
-        mVisiblityAnimator.addListener(new CancelAwareAnimatorListener() {
-            @Override
-            public void onEnd(Animator animation) {
-                setAlpha(1.0f);
+        mVisiblityAnimator.addListener(
+                new CancelAwareAnimatorListener() {
+                    @Override
+                    public void onEnd(Animator animation) {
+                        setAlpha(1.0f);
 
-                if (!inTabSwitcherMode) {
-                    setVisibility(View.GONE);
-                }
+                        if (!inTabSwitcherMode) {
+                            setVisibility(View.GONE);
+                        }
 
-                if (mIncognitoToggleTabLayout != null) {
-                    mIncognitoToggleTabLayout.setClickable(true);
-                }
+                        if (mIncognitoToggleTabLayout != null) {
+                            mIncognitoToggleTabLayout.setClickable(true);
+                        }
 
-                mVisiblityAnimator = null;
-            }
-        });
+                        mVisiblityAnimator = null;
+                    }
+                });
         // Notify the observer that the toolbar alpha value is changed and pass the rendering
         // toolbar alpha value to the observer.
         if (OmniboxFeatures.shouldMatchToolbarAndStatusBarColor()) {
-            mVisiblityAnimator.addUpdateListener(animation -> {
-                Object alphaValue = animation.getAnimatedValue();
-                if (mToolbarAlphaInOverviewObserver != null && alphaValue instanceof Float) {
-                    mToolbarAlphaInOverviewObserver.onToolbarAlphaInOverviewChanged(
-                            (Float) alphaValue);
-                }
-            });
+            mVisiblityAnimator.addUpdateListener(
+                    animation -> {
+                        Object alphaValue = animation.getAnimatedValue();
+                        if (mToolbarAlphaInOverviewObserver != null
+                                && alphaValue instanceof Float) {
+                            mToolbarAlphaInOverviewObserver.onToolbarAlphaInOverviewChanged(
+                                    (Float) alphaValue);
+                        }
+                    });
         }
 
         mVisiblityAnimator.start();
@@ -215,23 +217,10 @@ public class TabSwitcherModeTopToolbar extends OptimizedFrameLayout
         mNewTabListener = listener;
     }
 
-    /**
-     * A method to toggle the enabled state of the new tab view button.
-     */
+    /** A method to toggle the enabled state of the new tab view button. */
     void setNewTabButtonEnabled(boolean enabled) {
         mNewTabViewButton.setEnabled(enabled);
         mNewTabImageButton.setEnabled(enabled);
-    }
-
-    /**
-     * @param tabCountProvider The {@link TabCountProvider} used to observe the number of tabs in
-     *                         the current model.
-     */
-    void setTabCountProvider(TabCountProvider tabCountProvider) {
-        mTabCountProvider = tabCountProvider;
-        if (mIncognitoToggleTabLayout != null) {
-            mIncognitoToggleTabLayout.setTabCountProvider(tabCountProvider);
-        }
     }
 
     /**
@@ -309,8 +298,7 @@ public class TabSwitcherModeTopToolbar extends OptimizedFrameLayout
             setBackgroundColor(primaryColor);
         }
 
-        @BrandedColorScheme
-        int brandedColorScheme;
+        @BrandedColorScheme int brandedColorScheme;
         if (primaryColor == Color.TRANSPARENT) {
             // If the toolbar is transparent, the icon tint will depend on the background color of
             // the tab switcher, which is the standard mode background. Note that horizontal tab
@@ -318,8 +306,9 @@ public class TabSwitcherModeTopToolbar extends OptimizedFrameLayout
             // and incognito mode.
             brandedColorScheme = BrandedColorScheme.APP_DEFAULT;
         } else {
-            brandedColorScheme = OmniboxResourceProvider.getBrandedColorScheme(
-                    getContext(), mIsIncognito, primaryColor);
+            brandedColorScheme =
+                    OmniboxResourceProvider.getBrandedColorScheme(
+                            getContext(), mIsIncognito, primaryColor);
         }
 
         if (mBrandedColorScheme == brandedColorScheme) return;
@@ -348,10 +337,6 @@ public class TabSwitcherModeTopToolbar extends OptimizedFrameLayout
     private void inflateIncognitoToggle() {
         ViewStub incognitoToggleTabsStub = findViewById(R.id.incognito_tabs_stub);
         mIncognitoToggleTabLayout = (IncognitoToggleTabLayout) incognitoToggleTabsStub.inflate();
-
-        if (mTabCountProvider != null) {
-            mIncognitoToggleTabLayout.setTabCountProvider(mTabCountProvider);
-        }
 
         if (mTabModelSelector != null) {
             mIncognitoToggleTabLayout.setTabModelSelector(mTabModelSelector);

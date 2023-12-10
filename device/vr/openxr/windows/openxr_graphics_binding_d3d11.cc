@@ -181,13 +181,6 @@ void OpenXrGraphicsBindingD3D11::CreateSharedImages(
     // cause errors in rendering.
     gfx::Size buffer_size =
         gfx::Size(texture2d_desc.Width, texture2d_desc.Height);
-
-    std::unique_ptr<gpu::GpuMemoryBufferImplDXGI> gpu_memory_buffer =
-        gpu::GpuMemoryBufferImplDXGI::CreateFromHandle(
-            std::move(gpu_memory_buffer_handle), buffer_size,
-            gfx::BufferFormat::RGBA_8888, gfx::BufferUsage::GPU_READ,
-            base::DoNothing(), nullptr, nullptr);
-
     const uint32_t shared_image_usage = gpu::SHARED_IMAGE_USAGE_SCANOUT |
                                         gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
                                         gpu::SHARED_IMAGE_USAGE_GLES2;
@@ -198,7 +191,7 @@ void OpenXrGraphicsBindingD3D11::CreateSharedImages(
         gfx::ColorSpace(gfx::ColorSpace::PrimaryID::BT709,
                         gfx::ColorSpace::TransferID::LINEAR),
         kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, shared_image_usage,
-        "OpenXrSwapChain", gpu_memory_buffer->CloneHandle());
+        "OpenXrSwapChain", std::move(gpu_memory_buffer_handle));
     CHECK(client_shared_image);
     mailbox_holder.mailbox = client_shared_image->mailbox();
     mailbox_holder.sync_token = sii->GenVerifiedSyncToken();

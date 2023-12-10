@@ -13,9 +13,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-/**
- * Test utilities for interacting with the Android Looper.
- */
+/** Test utilities for interacting with the Android Looper. */
 public class LooperUtils {
     private static final Method sNextMethod = getMethod(MessageQueue.class, "next");
     private static final Field sMessageTargetField = getField(Message.class, "target");
@@ -43,12 +41,12 @@ public class LooperUtils {
         return m;
     }
 
-    /**
-     * Runs a single nested task on the current Looper.
-     */
-    public static void runSingleNestedLooperTask() throws IllegalArgumentException,
-                                                          IllegalAccessException, SecurityException,
-                                                          InvocationTargetException {
+    /** Runs a single nested task on the current Looper. */
+    public static void runSingleNestedLooperTask()
+            throws IllegalArgumentException,
+                    IllegalAccessException,
+                    SecurityException,
+                    InvocationTargetException {
         MessageQueue queue = Looper.myQueue();
         // This call will block if there are no messages in the queue. It will
         // also run or more pending C++ tasks as a side effect before returning

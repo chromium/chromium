@@ -48,21 +48,26 @@ public class FieldTrials {
             // "Trial1.Group1:param1/value1/param2/value2".
             int separatorIndex = fieldTrialParam.indexOf(".");
             if (separatorIndex == -1) {
-                throw new Exception("The trial name and group name should be"
-                        + " separated by a '.'.");
+                throw new Exception(
+                        "The trial name and group name should be" + " separated by a '.'.");
             }
 
             String trialName = fieldTrialParam.substring(0, separatorIndex);
             String[] groupParamPairs = fieldTrialParam.substring(separatorIndex + 1).split(":");
             if (groupParamPairs.length != 2) {
-                throw new Exception("The group name and field trial parameters"
-                        + " should be separated by a ':'.");
+                throw new Exception(
+                        "The group name and field trial parameters"
+                                + " should be separated by a ':'.");
             }
 
             String[] paramValuePair = groupParamPairs[1].split("/");
             if (paramValuePair.length % 2 != 0) {
-                throw new Exception("The param and value of the field trial group:" + trialName
-                        + "." + groupParamPairs[0] + " isn't paired up!");
+                throw new Exception(
+                        "The param and value of the field trial group:"
+                                + trialName
+                                + "."
+                                + groupParamPairs[0]
+                                + " isn't paired up!");
             }
 
             Map<String, String> paramValueMap = mTrialToParamValueMap.get(trialName);
@@ -146,11 +151,22 @@ public class FieldTrials {
                 }
             }
         } catch (Exception e) {
-            assert false : e.toString() + "\n"
-                    + "The format of field trials parameters declared isn't correct:"
-                    + BaseSwitches.FORCE_FIELD_TRIALS + "=" + forceFieldTrials + ", "
-                    + BaseSwitches.FORCE_FIELD_TRIAL_PARAMS + "=" + forceFieldTrialParams + ", "
-                    + BaseSwitches.ENABLE_FEATURES + "=" + enableFeatures + ".";
+            assert false
+                    : e.toString()
+                            + "\n"
+                            + "The format of field trials parameters declared isn't correct:"
+                            + BaseSwitches.FORCE_FIELD_TRIALS
+                            + "="
+                            + forceFieldTrials
+                            + ", "
+                            + BaseSwitches.FORCE_FIELD_TRIAL_PARAMS
+                            + "="
+                            + forceFieldTrialParams
+                            + ", "
+                            + BaseSwitches.ENABLE_FEATURES
+                            + "="
+                            + enableFeatures
+                            + ".";
         }
     }
 

@@ -1,0 +1,148 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# @generated from third_party/rust/chromium_crates_io/BUILD.gn.hbs by
+# tools/crates/gnrt.
+# Do not edit!
+
+import("//build/rust/cargo_crate.gni")
+
+{{#each rules}}
+cargo_crate("{{this.name}}") {
+  {{#with this.detail}}
+  {{#if crate_name}}
+  crate_name = "{{crate_name}}"
+  {{/if}}
+  {{#if epoch}}
+  epoch = "{{epoch}}"
+  {{/if}}
+  crate_type = "{{crate_type}}"
+  crate_root = "{{crate_root}}"
+  sources = [
+    {{#each sources}}
+    "{{this}}",
+    {{/each}}
+  ]
+  inputs = [
+    {{#each inputs}}
+    "{{this}}",
+    {{/each}}
+  ]
+
+  build_native_rust_unit_tests = false
+  edition = "{{edition}}"
+  cargo_pkg_version = "{{cargo_pkg_version}}"
+  {{#with cargo_pkg_authors}}
+  cargo_pkg_authors = "{{this}}"
+  {{/with}}
+  cargo_pkg_name = "{{cargo_pkg_name}}"
+  {{#with cargo_pkg_description}}
+  cargo_pkg_description = "{{gn_escape this}}"
+  {{/with}}
+  library_configs -= [ "//build/config/compiler:chromium_code" ]
+  library_configs += [ "//build/config/compiler:no_chromium_code" ]
+  executable_configs -= [ "//build/config/compiler:chromium_code" ]
+  executable_configs += [ "//build/config/compiler:no_chromium_code" ]
+  {{#each deps}}
+  {{#if @first}}
+  deps = [
+    {{#if ../dep_on_lib}}
+    ":lib",
+    {{/if}}
+    {{#each this.packages}}
+      "//third_party/rust/{{this.name}}/{{this.epoch}}:lib",
+    {{/each}}
+  ]
+  {{else}}
+  if ({{this.cond}}) {
+    deps += [
+      {{#each this.packages}}
+      "//third_party/rust/{{this.name}}/{{this.epoch}}:lib",
+      {{/each}}
+    ]
+  }
+  {{/if}}
+  {{/each}}
+  {{#if aliased_deps}}
+  aliased_deps = {
+    {{#each aliased_deps}}
+    {{this.0}} = "{{this.1}}"
+    {{/each}}
+  }
+  {{/if}}
+  {{#each build_deps}}
+  {{#if @first}}
+  build_deps = [
+    {{#each this.packages}}
+      "//third_party/rust/{{this.name}}/{{this.epoch}}:buildrs_support",
+    {{/each}}
+  ]
+  {{else}}
+  if ({{this.cond}}) {
+    build_deps += [
+    {{#each this.packages}}
+      "//third_party/rust/{{this.name}}/{{this.epoch}}:buildrs_support",
+    {{/each}}
+    ]
+  }
+  {{/if}}
+  {{/each}}
+  {{#if features}}
+  features = [
+    {{#each features}}
+    "{{this}}",
+    {{/each}}
+  ]
+  {{/if}}
+  {{#if build_root}}
+  build_root = "{{build_root}}"
+  build_sources = [
+    {{#each build_script_sources}}
+    "{{this}}",
+    {{/each}}
+  ]
+  {{#with build_script_inputs}}
+  build_script_inputs = [
+    {{#each this}}
+    "{{this}}",
+    {{/each}}
+  ]
+  {{/with}}
+  {{#with build_script_outputs}}
+  build_script_outputs = [
+    {{#each this}}
+    "{{this}}",
+    {{/each}}
+  ]
+  {{/with}}
+  {{/if}}
+  {{#if rustenv}}
+  rustenv = [
+    {{#each rustenv}}
+    "{{this}}",
+    {{/each}}
+  ]
+  {{/if}}
+  {{#if rustflags}}
+  rustflags = [
+    {{#each rustflags}}
+    "{{this}}",
+    {{/each}}
+  ]
+  {{/if}}
+  {{#if output_dir}}
+  output_dir = "{{output_dir}}"
+  {{/if}}
+  {{/with}}
+  {{#unless this.gn_visibility.public}}
+
+  # Only for usage from third-party crates. Add the crate to
+  # third_party.toml to use it from first-party code.
+  visibility = [ "//third_party/rust/*" ]
+  {{/unless}}
+  {{#if this.gn_visibility.testonly}}
+  testonly = true
+  {{/if}}
+}
+{{/each}}

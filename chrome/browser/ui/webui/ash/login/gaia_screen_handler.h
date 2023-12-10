@@ -175,7 +175,7 @@ class GaiaScreenHandler
       bool enable_user_input,
       chromeos::security_token_pin::ErrorLabel error_label,
       int attempts_left,
-      const absl::optional<AccountId>& authenticating_user_account_id,
+      const std::optional<AccountId>& authenticating_user_account_id,
       SecurityTokenPinEnteredCallback pin_entered_callback,
       SecurityTokenPinDialogClosedCallback pin_dialog_closed_callback) override;
   void CloseSecurityTokenPinDialog() override;
@@ -208,9 +208,6 @@ class GaiaScreenHandler
 
  private:
   void LoadGaia(const login::GaiaContext& context);
-
-  // Resets the internal state and invokes the UserAllowListCheckScreen
-  void ShowAllowlistCheckFailedError();
 
   // Callback that loads GAIA after version and stat consent information has
   // been retrieved.
@@ -267,6 +264,11 @@ class GaiaScreenHandler
   // TODO(b/292242156) - Move to OnlineAuthenticationScreen
   void CompleteAuthentication(ash::login::OnlineSigninArtifacts artifacts);
 
+  // Utility method gathering all the metrics that are being recorded when Gaia
+  // sends 'completeAuthentication'.
+  void RecordCompleteAuthenticationMetrics(
+      const ash::login::OnlineSigninArtifacts& artifacts);
+
   void HandleCompleteLogin(const std::string& gaia_id,
                            const std::string& typed_email,
                            const std::string& password,
@@ -306,6 +308,9 @@ class GaiaScreenHandler
 
   void HandleShowLoadingTimeoutError();
 
+  // Called when Gaia sends us a "getDeviceId" message.
+  void HandleGetDeviceId(const std::string& callback_id);
+
   // Really handles the complete login message.
   void DoCompleteLogin(const std::string& gaia_id,
                        const std::string& typed_email,
@@ -328,7 +333,10 @@ class GaiaScreenHandler
   void SetSAMLPrincipalsAPIUsed(bool is_third_party_idp, bool is_api_used);
 
   void RecordScrapedPasswordCount(int password_count);
-  bool IsSamlUserPasswordless();
+
+  // True when client certificates were used during authentication. This is only
+  // used for SmartCards and only when using SAML.
+  bool ClientCertificatesWereUsed();
 
   // Shows signin screen after dns cache and cookie cleanup operations finish.
   void ShowGaiaScreenIfReady();
@@ -376,9 +384,6 @@ class GaiaScreenHandler
   // Assigns new SamlChallengeKeyHandler object or an object for testing to
   // `saml_challenge_key_handler_`.
   void CreateSamlChallengeKeyHandler();
-
-  void SAMLConfirmPassword(::login::StringList scraped_saml_passwords,
-                           std::unique_ptr<UserContext> user_context);
 
   // Current state of Gaia frame.
   FrameState frame_state_ = FRAME_STATE_UNKNOWN;

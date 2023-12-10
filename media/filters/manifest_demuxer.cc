@@ -67,6 +67,7 @@ ManifestDemuxer::~ManifestDemuxer() {
   DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
   impl_->Stop();
   impl_.reset();
+  streams_.clear();
   chunk_demuxer_.reset();
 }
 
@@ -223,6 +224,7 @@ void ManifestDemuxer::Stop() {
   cancelable_next_event_.Cancel();
   impl_->Stop();
   chunk_demuxer_->Stop();
+  host_ = nullptr;
 }
 
 base::TimeDelta ManifestDemuxer::GetStartTime() const {

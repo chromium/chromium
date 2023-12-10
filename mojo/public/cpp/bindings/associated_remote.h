@@ -17,6 +17,7 @@
 #include "mojo/public/cpp/bindings/lib/associated_interface_ptr_state.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
+#include "mojo/public/cpp/bindings/runtime_features.h"
 #include "mojo/public/cpp/bindings/scoped_interface_endpoint_handle.h"
 
 namespace mojo {
@@ -185,7 +186,9 @@ class AssociatedRemote {
       scoped_refptr<base::SequencedTaskRunner> task_runner = nullptr) {
     DCHECK(!is_bound()) << "AssociatedRemote for " << Interface::Name_
                         << " is already bound";
-
+    if (!internal::GetRuntimeFeature_ExpectEnabled<Interface>()) {
+      return PendingAssociatedReceiver<Interface>();
+    }
     ScopedInterfaceEndpointHandle remote_handle;
     ScopedInterfaceEndpointHandle receiver_handle;
     ScopedInterfaceEndpointHandle::CreatePairPendingAssociation(
@@ -206,6 +209,10 @@ class AssociatedRemote {
                         << " is already bound";
 
     if (!pending_remote) {
+      reset();
+      return;
+    }
+    if (!internal::GetRuntimeFeature_ExpectEnabled<Interface>()) {
       reset();
       return;
     }
@@ -238,7 +245,9 @@ class AssociatedRemote {
 
     PendingAssociatedReceiver<Interface> receiver =
         BindNewEndpointAndPassReceiver();
-    receiver.EnableUnassociatedUsage();
+    if (receiver) {
+      receiver.EnableUnassociatedUsage();
+    }
     return receiver;
   }
 

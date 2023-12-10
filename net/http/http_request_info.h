@@ -28,7 +28,12 @@ class UploadDataStream;
 
 struct NET_EXPORT HttpRequestInfo {
   HttpRequestInfo();
+
   HttpRequestInfo(const HttpRequestInfo& other);
+  HttpRequestInfo& operator=(const HttpRequestInfo& other);
+  HttpRequestInfo(HttpRequestInfo&& other);
+  HttpRequestInfo& operator=(HttpRequestInfo&& other);
+
   ~HttpRequestInfo();
 
   bool IsConsistent() const;

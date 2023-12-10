@@ -27,10 +27,11 @@ public class MockPaymentUiServiceBuilder {
                 .when(mPaymentUiService)
                 .buildPaymentRequestUI(
                         Mockito.anyBoolean(), Mockito.any(), Mockito.any(), Mockito.any());
-        Mockito.doAnswer((args) -> {
-                   mPaymentApps.addAll(args.getArgument(0));
-                   return null;
-               })
+        Mockito.doAnswer(
+                        (args) -> {
+                            mPaymentApps.addAll(args.getArgument(0));
+                            return null;
+                        })
                 .when(mPaymentUiService)
                 .setPaymentApps(Mockito.any());
         Mockito.doAnswer((args) -> mPaymentApps.size() > 0)

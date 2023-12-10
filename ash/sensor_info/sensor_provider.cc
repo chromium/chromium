@@ -413,7 +413,7 @@ bool SensorProvider::CheckSensorSamplesObserver() {
 void SensorProvider::OnAttributes(
     DeviceType device_type,
     int32_t id,
-    const std::vector<absl::optional<std::string>>& values) {
+    const std::vector<std::optional<std::string>>& values) {
   auto& sensor = sensors_[id][device_type];
   DCHECK(sensor.remote.is_bound());
   auto val_it = values.begin();
@@ -539,7 +539,7 @@ void SensorProvider::OnSampleUpdatedCallback(DeviceType device_type,
 }
 
 void SensorProvider::OnLidAngleValue(
-    const std::vector<absl::optional<std::string>>& values) {
+    const std::vector<std::optional<std::string>>& values) {
   if (values[0].has_value()) {
     int angle;
     if (base::StringToInt(values[0].value(), &angle)) {

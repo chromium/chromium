@@ -309,6 +309,12 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, Basic) {
   EXPECT_EQ(closed_tab_index, browser()->tab_strip_model()->active_index());
   EXPECT_EQ(url1_,
             browser()->tab_strip_model()->GetActiveWebContents()->GetURL());
+  // Make sure that the navigation type reported is "back_forward" on the
+  // duplicated tab.
+  EXPECT_EQ(
+      "back_forward",
+      content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                      "performance.getEntriesByType('navigation')[0].type"));
 }
 
 // Close a tab not at the end of the current window, then restore it. The tab

@@ -27,6 +27,10 @@ std::string DeviceInfoToStableId(const blink::WebMediaDeviceInfo& device_info) {
   return device_info.label;
 }
 
+std::string DeviceInfoToStableId(const blink::MediaStreamDevice& device_info) {
+  return device_info.name;
+}
+
 std::string DeviceInfoToStableId(
     const media::AudioDeviceDescription& device_info) {
   return device_info.device_name;
@@ -39,6 +43,10 @@ std::string DeviceInfoToUniqueId(
 
 std::string DeviceInfoToUniqueId(const blink::WebMediaDeviceInfo& device_info) {
   return device_info.device_id;
+}
+
+std::string DeviceInfoToUniqueId(const blink::MediaStreamDevice& device_info) {
+  return device_info.id;
 }
 
 std::string DeviceInfoToUniqueId(

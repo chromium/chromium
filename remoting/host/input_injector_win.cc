@@ -12,6 +12,7 @@
 #include <utility>
 #include <vector>
 
+#include <optional>
 #include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -24,7 +25,6 @@
 #include "remoting/host/clipboard.h"
 #include "remoting/host/touch_injector_win.h"
 #include "remoting/proto/event.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
 
 namespace remoting {
@@ -168,8 +168,8 @@ bool IsLockKey(int scancode) {
 }
 
 // Sets the keyboard lock states to those provided.
-void SetLockStates(absl::optional<bool> caps_lock,
-                   absl::optional<bool> num_lock) {
+void SetLockStates(std::optional<bool> caps_lock,
+                   std::optional<bool> num_lock) {
   if (caps_lock) {
     bool client_capslock_state = *caps_lock;
     bool host_capslock_state = (GetKeyState(VK_CAPITAL) & 1) != 0;
@@ -393,8 +393,8 @@ void InputInjectorWin::Core::HandleKey(const KeyEvent& event) {
   }
 
   if (event.pressed() && !IsLockKey(scancode)) {
-    absl::optional<bool> caps_lock;
-    absl::optional<bool> num_lock;
+    std::optional<bool> caps_lock;
+    std::optional<bool> num_lock;
 
     // For caps lock, check both the new caps_lock field and the old lock_states
     // field.

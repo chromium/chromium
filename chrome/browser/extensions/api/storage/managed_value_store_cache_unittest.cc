@@ -97,9 +97,11 @@ class FakeSettingsObserver {
   FakeSettingsObserver& operator=(const FakeSettingsObserver&) = delete;
   ~FakeSettingsObserver() = default;
 
-  void OnSettingsChanged(const std::string& extension_id,
-                         StorageAreaNamespace storage_area,
-                         base::Value changes) {
+  void OnSettingsChanged(
+      const std::string& extension_id,
+      StorageAreaNamespace storage_area,
+      absl::optional<api::storage::AccessLevel> session_access_level,
+      base::Value changes) {
     future_.AddValue(extension_id);
   }
 

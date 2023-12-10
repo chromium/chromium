@@ -13,6 +13,7 @@
 #include <string>
 #include <vector>
 
+#include <optional>
 #include "base/clang_profiling_buildflags.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
@@ -22,7 +23,6 @@
 #include "gpu/config/dx_diag_node.h"
 #include "gpu/gpu_export.h"
 #include "gpu/vulkan/buildflags.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/gpu_preference.h"
@@ -495,7 +495,7 @@ struct GPU_EXPORT GPUInfo {
   uint32_t visibility_callback_call_count = 0;
 
 #if BUILDFLAG(ENABLE_VULKAN)
-  absl::optional<VulkanInfo> vulkan_info;
+  std::optional<VulkanInfo> vulkan_info;
 #endif
 
   // Note: when adding new members, please remember to update EnumerateFields

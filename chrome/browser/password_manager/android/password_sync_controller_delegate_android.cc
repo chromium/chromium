@@ -188,7 +188,7 @@ PasswordSyncControllerDelegateAndroid::GetWeakPtrToBaseClass() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-void PasswordSyncControllerDelegateAndroid::ClearMetadataWhileStopped() {
+void PasswordSyncControllerDelegateAndroid::ClearMetadataIfStopped() {
   // If this method is being called, this means sync was permanently disabled,
   // either fully or specifically for passwords. This also includes more
   // advanced cases like the user having cleared all sync data in the dashboard

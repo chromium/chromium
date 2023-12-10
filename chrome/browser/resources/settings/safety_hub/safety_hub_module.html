@@ -1,20 +1,21 @@
 <style include="cr-shared-style settings-shared">
   :host {
     display: block;
-    padding: 8px 16px;
 
     --separator-line-height: 16px;
+    --cr-icon-button-margin-end: 0;
   }
 
   #header-wrapper {
     align-items: center;
     display: flex;
+    flex: 1;
   }
 
   #header-text-wrapper {
     flex-direction: column;
     flex: 1;
-    margin-inline-end: 16px;
+    margin-inline-end: 24px;
   }
 
   #header, #subheader, .display-name {
@@ -56,8 +57,6 @@
   }
 
   .list-item {
-    --cr-icon-button-margin-end: initial;
-
     /**
      * As the animation decreases max-height of rows, it can push content out
      * of the bounding box of the item, which will appear as a quick flash
@@ -81,10 +80,6 @@
     height: var(--separator-line-height);
     border-bottom: 1px solid var(--google-grey-300);
     flex: 1;
-  }
-
-  .link a[href] {
-    text-decoration: none;
   }
 
   paper-tooltip {

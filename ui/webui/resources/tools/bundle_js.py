@@ -129,18 +129,15 @@ def _generate_manifest_file(out_dir, bundled_paths, bundle_dir_path,
     f.write(json.dumps(manifest))
 
 
-def _bundle(out_folder, in_path, manifest_out_path, args, excludes,
-            external_paths):
-  bundle_dir_path = os.path.dirname(args.js_module_in_files[0])
+def _bundle(out_folder, in_path, manifest_out_path, js_module_in_files,
+            rollup_config_file):
+  bundle_dir_path = os.path.dirname(js_module_in_files[0])
   out_dir = out_folder if not bundle_dir_path else os.path.join(
       out_folder, bundle_dir_path)
   if not os.path.exists(out_dir):
     os.makedirs(out_dir)
 
-  rollup_config_file = _generate_rollup_config(out_folder, in_path,
-                                               bundle_dir_path, args.host_url,
-                                               excludes, external_paths)
-  rollup_args = [os.path.join(in_path, f) for f in args.js_module_in_files]
+  rollup_args = [os.path.join(in_path, f) for f in js_module_in_files]
 
   # Confirm names are as expected. This is necessary to avoid having to replace
   # import statements in the generated output files.
@@ -149,9 +146,9 @@ def _bundle(out_folder, in_path, manifest_out_path, args, excludes,
   bundled_paths = []
   bundle_names = []
 
-  assert len(args.js_module_in_files) < 3, '3+ input files not supported'
+  assert len(js_module_in_files) < 3, '3+ input files not supported'
 
-  for index, js_file in enumerate(args.js_module_in_files):
+  for index, js_file in enumerate(js_module_in_files):
     bundle_name = '%s.rollup.js' % js_file[:-len('.js')]
     assert os.path.dirname(js_file) == bundle_dir_path, \
            'All input files must be in the same directory.'
@@ -162,7 +159,7 @@ def _bundle(out_folder, in_path, manifest_out_path, args, excludes,
   # well as one file per module. Set its name using --chunkFileNames. Note:
   # Currently, this only supports 2 entry points, which generate 2 corresponding
   # outputs and 1 shared output.
-  if (len(args.js_module_in_files) == 2):
+  if (len(js_module_in_files) == 2):
     shared_file_name = 'shared.rollup.js'
     rollup_args += ['--chunkFileNames', shared_file_name]
     bundled_paths.append(os.path.join(out_dir, shared_file_name))
@@ -214,8 +211,18 @@ def _optimize(in_folder, args):
 
   external_paths = args.external_paths or []
 
-  js_module_out_files = _bundle(out_path, in_path, manifest_out_path, args,
-                                excludes, external_paths)
+  if args.rollup_config:
+    # Use configuration provided from the caller.
+    rollup_config_file = args.rollup_config
+  else:
+    # Use default configuration.
+    bundle_dir_path = os.path.dirname(args.js_module_in_files[0])
+    rollup_config_file = _generate_rollup_config(out_path, in_path,
+                                                 bundle_dir_path, args.host_url,
+                                                 excludes, external_paths)
+
+  js_module_out_files = _bundle(out_path, in_path, manifest_out_path,
+                                args.js_module_in_files, rollup_config_file)
   return {
       'manifest_out_path': manifest_out_path,
       'js_module_out_files': js_module_out_files,
@@ -233,6 +240,7 @@ def main(argv):
   parser.add_argument('--out_folder', required=True)
   parser.add_argument('--js_module_in_files', nargs='*', required=True)
   parser.add_argument('--out-manifest')
+  parser.add_argument('--rollup_config')
   args = parser.parse_args(argv)
 
   # NOTE(dbeam): on Windows, GN can send dirs/like/this. When joined, you might

@@ -27,6 +27,7 @@
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "pdf/pdf_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "ui/gfx/geometry/point.h"
@@ -91,18 +92,16 @@ bool PDFExtensionTestBase::PdfIsExpectedToLoad(const std::string& pdf_file) {
 // there, since the PdfScriptingApi relies on doing this as well.
 testing::AssertionResult PDFExtensionTestBase::LoadPdf(const GURL& url) {
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-  WebContents* web_contents = GetActiveWebContents();
-  return pdf_extension_test_util::EnsurePDFHasLoaded(web_contents);
+  return EnsurePDFHasLoadedWithValidFrameTree();
 }
 
 // Same as LoadPDF(), but loads into a new tab.
 testing::AssertionResult PDFExtensionTestBase::LoadPdfInNewTab(
     const GURL& url) {
-  ui_test_utils::NavigateToURLWithDisposition(
+  EXPECT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
       browser(), url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
-  WebContents* web_contents = GetActiveWebContents();
-  return pdf_extension_test_util::EnsurePDFHasLoaded(web_contents);
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  return EnsurePDFHasLoadedWithValidFrameTree();
 }
 
 // Same as LoadPdf(), but also returns a pointer to the `MimeHandlerViewGuest`
@@ -180,22 +179,63 @@ void PDFExtensionTestBase::SimulateMouseClickAt(
     int modifiers,
     blink::WebMouseEvent::Button button,
     const gfx::Point& point_in_guest) {
-  auto* guest_main_frame = guest->GetGuestMainFrame();
-  content::WaitForHitTestData(guest_main_frame);
+  SimulateMouseClickAt(guest->GetGuestMainFrame(),
+                       guest->embedder_web_contents(), modifiers, button,
+                       point_in_guest);
+}
+
+void PDFExtensionTestBase::SimulateMouseClickAt(
+    content::RenderFrameHost* extension_host,
+    content::WebContents* contents,
+    int modifiers,
+    blink::WebMouseEvent::Button button,
+    const gfx::Point& point_in_extension) {
+  content::WaitForHitTestData(extension_host);
 
   const gfx::Point point_in_root_coords =
-      guest_main_frame->GetView()->TransformPointToRootCoordSpace(
-          point_in_guest);
-  content::SimulateMouseClickAt(guest->embedder_web_contents(), modifiers,
-                                button, point_in_root_coords);
+      extension_host->GetView()->TransformPointToRootCoordSpace(
+          point_in_extension);
+  content::SimulateMouseClickAt(contents, modifiers, button,
+                                point_in_root_coords);
+}
+
+bool PDFExtensionTestBase::UseOopif() const {
+  return false;
 }
 
 std::vector<base::test::FeatureRef> PDFExtensionTestBase::GetEnabledFeatures()
     const {
-  return {};
+  std::vector<base::test::FeatureRef> enabled;
+  if (UseOopif()) {
+    enabled.push_back(chrome_pdf::features::kPdfOopif);
+  }
+  return enabled;
 }
 
 std::vector<base::test::FeatureRef> PDFExtensionTestBase::GetDisabledFeatures()
     const {
-  return {};
+  std::vector<base::test::FeatureRef> disabled;
+  if (!UseOopif()) {
+    disabled.push_back(chrome_pdf::features::kPdfOopif);
+  }
+  return disabled;
+}
+
+testing::AssertionResult
+PDFExtensionTestBase::EnsurePDFHasLoadedWithValidFrameTree() {
+  content::WebContents* contents = GetActiveWebContents();
+  testing::AssertionResult result =
+      pdf_extension_test_util::EnsurePDFHasLoaded(contents);
+
+  // Ensure the frame tree contains a PDF extension host and a PDF plugin frame.
+  EXPECT_TRUE(pdf_extension_test_util::GetOnlyPdfExtensionHost(contents));
+  EXPECT_TRUE(pdf_extension_test_util::GetOnlyPdfPluginFrame(contents));
+
+  // For GuestView PDF viewer, ensure there's an
+  // `extensions::MimeHandlerViewGuest`.
+  if (!UseOopif()) {
+    EXPECT_TRUE(GetOnlyMimeHandlerView(contents));
+  }
+
+  return result;
 }

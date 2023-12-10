@@ -4,8 +4,11 @@
 
 #include "chrome/browser/ash/app_list/search/local_image_search/sql_database.h"
 
+#include <string>
+
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "sql/error_delegate_util.h"
 #include "sql/statement.h"
 
@@ -13,6 +16,23 @@ namespace app_list {
 namespace {
 
 constexpr int kUninitializedDbVersionNumber = 1;
+
+// These values persist to logs. Entries should not be renumbered and numeric
+// values should never be reused.
+enum class Status {
+  kOk = 0,
+  kFailedToCreatDirectory = 1,
+  kFailedToOpenDb = 2,
+  kFailedToInitializeMetaTable = 3,
+  kFailedToSetVersionNumber = 4,
+  kFailedToMigrateSchema = 5,
+
+  kMaxValue = kFailedToMigrateSchema,
+};
+
+void LogStatusUma(const std::string& name, Status status) {
+  base::UmaHistogramEnumeration(name, status);
+}
 
 }  // namespace
 
@@ -44,13 +64,15 @@ bool SqlDatabase::Initialize() {
   const base::FilePath dir = path_to_db_.DirName();
   if (!base::PathExists(dir) && !base::CreateDirectory(dir)) {
     LOG(ERROR) << "Could not create a directory to the new database.";
+    LogStatusUma(histogram_tag_, Status::kFailedToCreatDirectory);
     return false;
   }
 
   db_.set_histogram_tag(histogram_tag_);
 
   if (!db_.Open(path_to_db_)) {
-    LOG(ERROR) << "Unable to open " << histogram_tag_ << " DB.";
+    LOG(ERROR) << "Unable to open " << path_to_db_;
+    LogStatusUma(histogram_tag_, Status::kFailedToOpenDb);
     RazeDb();
     return false;
   }
@@ -58,11 +80,13 @@ bool SqlDatabase::Initialize() {
   // Either initializes a new meta table or loads it from the db if exists.
   if (!meta_table_.Init(&db_, kUninitializedDbVersionNumber,
                         kUninitializedDbVersionNumber)) {
+    LogStatusUma(histogram_tag_, Status::kFailedToInitializeMetaTable);
     RazeDb();
     return false;
   }
 
   if (meta_table_.GetVersionNumber() == current_version_number_) {
+    LogStatusUma(histogram_tag_, Status::kOk);
     return true;
   }
 
@@ -72,14 +96,17 @@ bool SqlDatabase::Initialize() {
 
     if (!meta_table_.SetVersionNumber(new_version_number) ||
         !meta_table_.SetCompatibleVersionNumber(new_version_number)) {
+      LogStatusUma(histogram_tag_, Status::kFailedToSetVersionNumber);
       RazeDb();
       return false;
     }
+    LogStatusUma(histogram_tag_, Status::kOk);
     return true;
   }
 
   if (!MigrateDatabaseSchema()) {
-    LOG(ERROR) << "Unable to migrate the schema for " << histogram_tag_;
+    LOG(ERROR) << "Unable to migrate the schema";
+    LogStatusUma(histogram_tag_, Status::kFailedToMigrateSchema);
     RazeDb();
     return false;
   }
@@ -88,6 +115,7 @@ bool SqlDatabase::Initialize() {
   // if `this` destroyed then `db_` is destroyed, as well.
   db_.set_error_callback(base::BindRepeating(&SqlDatabase::OnErrorCallback,
                                              base::Unretained(this)));
+  LogStatusUma(histogram_tag_, Status::kOk);
   return true;
 }
 
@@ -95,14 +123,14 @@ bool SqlDatabase::MigrateDatabaseSchema() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // May happen if the code migrated from dev to stable channel.
   if (meta_table_.GetVersionNumber() > current_version_number_) {
-    LOG(ERROR) << histogram_tag_ << " database is too new. Deleting db.";
+    LOG(ERROR) << "Database is too new. Deleting the db.";
     Close();
     return sql::Database::Delete(path_to_db_) && Initialize();
   }
 
   if (migrate_table_schema_.Run(this, meta_table_.GetVersionNumber()) <
       meta_table_.GetVersionNumber()) {
-    LOG(ERROR) << "Failed to migrate the schema. Deleting db.";
+    LOG(ERROR) << "Failed to migrate the schema. Deleting the db.";
     RazeDb();
     return false;
   }
@@ -155,6 +183,10 @@ bool SqlDatabase::RazeDb() {
     }
   }
   return true;
+}
+
+base::FilePath SqlDatabase::GetPathToDb() const {
+  return path_to_db_;
 }
 
 }  // namespace app_list

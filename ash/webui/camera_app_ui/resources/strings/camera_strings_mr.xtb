@@ -5,7 +5,6 @@
 <translation id="1076394037877376434"><ph name="PAGE_NUMBER" /> पेज हटवा</translation>
 <translation id="1113173431709655881">कॅमेरा मोड</translation>
 <translation id="1153190633558910465">ग्रिड बंद करा</translation>
-<translation id="1175958423215084756">लिंक डिटेक्ट केली. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213"><ph name="PAGE_NUMBER" /> पेज हटवले</translation>
 <translation id="1258009455399840361">घड्याळाच्या काट्याच्या दिशेने ९० अंशात फिरवा</translation>
 <translation id="1417314334557041815"><ph name="INDEX" /> पेज संपादित करा</translation>
@@ -60,14 +59,12 @@
 <translation id="3642192109456033823">व्हिडिओवर प्रक्रिया करत आहे...</translation>
 <translation id="3789724198583203151">घड्याळाच्‍या काट्याच्या उलट दिशेने ९० अंश फिरवा</translation>
 <translation id="3810838688059735925">व्हिडिओ</translation>
-<translation id="3892148308691398805">मजकूर कॉपी करा</translation>
 <translation id="4060608699153044055">कमी डिव्हाइस स्टोरेज जागेमुळे तुम्ही रेकॉर्ड करू शकत नाही. रेकॉर्डिंग सुरू करण्यासाठी, तुम्हाला तुमच्या डिव्हाइसवरील जागा मोकळी करावी लागेल.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
 <translation id="4118525110028899586">रेकॉर्डिंग थांबवा</translation>
 <translation id="4121305183798804752">दस्तऐवज डिटेक्ट केले</translation>
 <translation id="414641094616694804">हा कॅमेरा रेझोल्यूशन बदलू शकत नाही</translation>
 <translation id="4176463684765177261">अक्षम केले</translation>
-<translation id="4269820728363426813">लिंकचा पत्ता कॉपी करा</translation>
 <translation id="428234092390943511">पेज थंबनेल</translation>
 <translation id="4349714250734879769">Chrome द्वारे फ्रेम स्केल करा</translation>
 <translation id="4383571725254449280">परफॉर्मन्स लॉग प्रिंट करा</translation>
@@ -144,7 +141,6 @@
 <translation id="7726641833034062494">साधारण व्हिडिओ रेकॉर्ड करा</translation>
 <translation id="7748344063862150053">दस्तऐवजाचा सर्वात वरील उजवीकडील कोपरा</translation>
 <translation id="7933675232020478311">तळाशी उजव्या दिशेने हलत आहे</translation>
-<translation id="7983668134180549431">मजकूर डिटेक्ट केला.</translation>
 <translation id="8079255378695216066">रेकॉर्डिंग सुरू करू शकत नाही</translation>
 <translation id="8120146556401698679">पॅन टिल्ट झूम</translation>
 <translation id="8131740175452115882">पुष्टी करा</translation>
@@ -163,6 +159,7 @@
 <translation id="8870695351537079478">रेकॉर्डिंग सुरू करता आले नाही</translation>
 <translation id="8880167521484863515">चारास तीन</translation>
 <translation id="8903921497873541725">झूम इन करा</translation>
+<translation id="8926890870105777777">"<ph name="WIFINAME" />" नेटवर्क मध्ये सामील व्हा</translation>
 <translation id="9045010116236796332">दस्तऐवजाच्या सर्व कडा फ्रेमच्या आत ठेवा</translation>
 <translation id="9045155556724273246">१० सेकंद</translation>
 <translation id="906331135292332864">इमेजवर प्रक्रिया करत आहे...</translation>

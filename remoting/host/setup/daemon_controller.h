@@ -8,11 +8,11 @@
 #include <memory>
 #include <string>
 
+#include <optional>
 #include "base/containers/queue.h"
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/values.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class SingleThreadTaskRunner;
@@ -66,7 +66,7 @@ class DaemonController : public base::RefCountedThreadSafe<DaemonController> {
   // is returned containing host_id and service_account, with security-sensitive
   // fields filtered out. An empty dictionary is returned if the host is not
   // configured, and nullptr if the configuration is corrupt or cannot be read.
-  typedef base::OnceCallback<void(absl::optional<base::Value::Dict> config)>
+  typedef base::OnceCallback<void(std::optional<base::Value::Dict> config)>
       GetConfigCallback;
 
   // Callback used for asynchronous operations, e.g. when
@@ -110,7 +110,7 @@ class DaemonController : public base::RefCountedThreadSafe<DaemonController> {
 
     // Queries current host configuration. Any values that might be security
     // sensitive have been filtered out.
-    virtual absl::optional<base::Value::Dict> GetConfig() = 0;
+    virtual std::optional<base::Value::Dict> GetConfig() = 0;
 
     // Checks to verify that the required OS permissions have been granted to
     // the host process, querying the user if necessary. Notifies the callback
@@ -218,7 +218,7 @@ class DaemonController : public base::RefCountedThreadSafe<DaemonController> {
                                                AsyncResult result);
   void InvokeConfigCallbackAndScheduleNext(
       GetConfigCallback done,
-      absl::optional<base::Value::Dict> config);
+      std::optional<base::Value::Dict> config);
   void InvokeConsentCallbackAndScheduleNext(GetUsageStatsConsentCallback done,
                                             const UsageStatsConsent& consent);
 

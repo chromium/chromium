@@ -4,31 +4,21 @@
 
 package org.chromium.components.media_router;
 
-/**
- * Contains all the info about the media route created by any {@link MediaRouteProvider}.
- */
+/** Contains all the info about the media route created by any {@link MediaRouteProvider}. */
 public class MediaRoute {
     private static final String MEDIA_ROUTE_ID_PREFIX = "route:";
     private static final String MEDIA_ROUTE_ID_SEPARATOR = "/";
 
-    /**
-     * The unique id of the route, assigned by the {@link BrowserMediaRouter}.
-     */
+    /** The unique id of the route, assigned by the {@link BrowserMediaRouter}. */
     public final String id;
 
-    /**
-     * The {@link MediaRouteProvider} unique id of the sink the route was created for.
-     */
+    /** The {@link MediaRouteProvider} unique id of the sink the route was created for. */
     public final String sinkId;
 
-    /**
-     * The URL or URN that the route is casting.
-     */
+    /** The URL or URN that the route is casting. */
     private String mSourceId;
 
-    /**
-     * The presentation id that was assigned to the route.
-     */
+    /** The presentation id that was assigned to the route. */
     public final String presentationId;
 
     public MediaRoute(String sinkId, String sourceId, String presentationId) {

@@ -84,6 +84,7 @@
 #include "third_party/blink/renderer/platform/fonts/font_palette.h"
 #include "third_party/blink/renderer/platform/fonts/opentype/open_type_math_support.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
+#include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -159,6 +160,30 @@ scoped_refptr<StyleReflection> StyleBuilderConverter::ConvertBoxReflect(
   }
 
   return reflection;
+}
+
+DynamicRangeLimit StyleBuilderConverter::ConvertDynamicRangeLimit(
+    StyleResolverState& state,
+    const CSSValue& value) {
+  return StyleBuilderConverterBase::ConvertDynamicRangeLimit(value);
+}
+
+DynamicRangeLimit StyleBuilderConverterBase::ConvertDynamicRangeLimit(
+    const CSSValue& value) {
+  if (auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
+    switch (identifier_value->GetValueID()) {
+      case CSSValueID::kHigh:
+        return DynamicRangeLimit(cc::PaintFlags::DynamicRangeLimit::kHigh);
+      case CSSValueID::kConstrainedHigh:
+        return DynamicRangeLimit(
+            cc::PaintFlags::DynamicRangeLimit::kConstrainedHigh);
+      case CSSValueID::kStandard:
+        return DynamicRangeLimit(cc::PaintFlags::DynamicRangeLimit::kStandard);
+      default:
+        break;
+    }
+  }
+  return DynamicRangeLimit(cc::PaintFlags::DynamicRangeLimit::kHigh);
 }
 
 StyleSVGResource* StyleBuilderConverter::ConvertElementReference(
@@ -1443,16 +1468,14 @@ void StyleBuilderConverter::ConvertGridTrackList(
   auto* curr_value = values.begin();
   bool is_subgrid = false;
 
-  if (RuntimeEnabledFeatures::LayoutNGSubgridEnabled()) {
-    auto* identifier_value = DynamicTo<CSSIdentifierValue>(curr_value->Get());
-    if (identifier_value &&
-        identifier_value->GetValueID() == CSSValueID::kSubgrid) {
-      state.GetDocument().CountUse(WebFeature::kCSSSubgridLayout);
-      computed_grid_track_list.axis_type = GridAxisType::kSubgriddedAxis;
-      track_list.SetAxisType(GridAxisType::kSubgriddedAxis);
-      is_subgrid = true;
-      ++curr_value;
-    }
+  auto* identifier_value = DynamicTo<CSSIdentifierValue>(curr_value->Get());
+  if (identifier_value &&
+      identifier_value->GetValueID() == CSSValueID::kSubgrid) {
+    state.GetDocument().CountUse(WebFeature::kCSSSubgridLayout);
+    computed_grid_track_list.axis_type = GridAxisType::kSubgriddedAxis;
+    track_list.SetAxisType(GridAxisType::kSubgriddedAxis);
+    is_subgrid = true;
+    ++curr_value;
   }
 
   for (; curr_value != values.end(); ++curr_value) {
@@ -2252,25 +2275,11 @@ StyleAutoColor StyleBuilderConverter::ConvertStyleAutoColor(
     const CSSValue& value,
     bool for_visited_link) {
   if (auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
-    CSSValueID value_id = identifier_value->GetValueID();
-    if (value_id == CSSValueID::kCurrentcolor) {
-      return StyleAutoColor::CurrentColor();
-    }
-    if (value_id == CSSValueID::kAuto) {
+    if (identifier_value->GetValueID() == CSSValueID::kAuto) {
       return StyleAutoColor::AutoColor();
     }
-    if (StyleColor::IsSystemColorIncludingDeprecated(value_id)) {
-      return StyleAutoColor(
-          state.GetDocument().GetTextLinkColors().ColorFromCSSValue(
-              value, Color(), state.StyleBuilder().UsedColorScheme(),
-              for_visited_link),
-          value_id);
-    }
   }
-  return StyleAutoColor(
-      state.GetDocument().GetTextLinkColors().ColorFromCSSValue(
-          value, Color(), state.StyleBuilder().UsedColorScheme(),
-          for_visited_link));
+  return StyleAutoColor(ConvertStyleColor(state, value, for_visited_link));
 }
 
 SVGPaint StyleBuilderConverter::ConvertSVGPaint(StyleResolverState& state,
@@ -2558,9 +2567,8 @@ scoped_refptr<ScaleTransformOperation> StyleBuilderConverter::ConvertScale(
 RespectImageOrientationEnum StyleBuilderConverter::ConvertImageOrientation(
     StyleResolverState& state,
     const CSSValue& value) {
-  // The default is kFromImage, so branch on the only other valid value, kNone
-  auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
-  return identifier_value && identifier_value->GetValueID() == CSSValueID::kNone
+  // The default is kFromImage, so branch on the only other valid value, kNone.
+  return To<CSSIdentifierValue>(value).GetValueID() == CSSValueID::kNone
              ? kDoNotRespectImageOrientation
              : kRespectImageOrientation;
 }
@@ -3113,6 +3121,44 @@ ScopedCSSNameList* StyleBuilderConverter::ConvertTimelineScope(
     names.push_back(ConvertCustomIdent(state, *item));
   }
   return MakeGarbageCollected<ScopedCSSNameList>(std::move(names));
+}
+
+InsetArea StyleBuilderConverter::ConvertInsetArea(StyleResolverState& state,
+                                                  const CSSValue& value) {
+  if (value.IsIdentifierValue()) {
+    DCHECK_EQ(CSSValueID::kNone, To<CSSIdentifierValue>(value).GetValueID());
+    return InsetArea();
+  }
+
+  auto extract_inset_area_span =
+      [](const CSSValue& span) -> std::pair<InsetAreaRegion, InsetAreaRegion> {
+    InsetAreaRegion start = InsetAreaRegion::kNone;
+    InsetAreaRegion end = InsetAreaRegion::kNone;
+    if (const auto* all = DynamicTo<CSSIdentifierValue>(span)) {
+      DCHECK(all->GetValueID() == CSSValueID::kAll);
+      start = InsetAreaRegion::kAll;
+      end = InsetAreaRegion::kAll;
+    } else {
+      const auto& span_list = To<CSSValueList>(span);
+      CHECK_GT(span_list.length(), 0u);
+      start = To<CSSIdentifierValue>(span_list.First())
+                  .ConvertTo<InsetAreaRegion>();
+      end =
+          To<CSSIdentifierValue>(span_list.Last()).ConvertTo<InsetAreaRegion>();
+    }
+    return std::make_pair(start, end);
+  };
+  const CSSValueList& span_list = To<CSSValueList>(value);
+  InsetAreaRegion start1 = InsetAreaRegion::kAll;
+  InsetAreaRegion end1 = InsetAreaRegion::kAll;
+  InsetAreaRegion start2 = InsetAreaRegion::kAll;
+  InsetAreaRegion end2 = InsetAreaRegion::kAll;
+  CHECK_GT(span_list.length(), 0u);
+  std::tie(start1, end1) = extract_inset_area_span(span_list.Item(0));
+  if (span_list.length() == 2) {
+    std::tie(start2, end2) = extract_inset_area_span(span_list.Item(1));
+  }
+  return InsetArea(start1, end1, start2, end2);
 }
 
 }  // namespace blink

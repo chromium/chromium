@@ -29,7 +29,7 @@ namespace {
 bool IsReadOnlyFile(base::File& file) {
   bool is_readonly = true;
 #if BUILDFLAG(IS_WIN)
-  absl::optional<ACCESS_MASK> flags =
+  std::optional<ACCESS_MASK> flags =
       base::win::GetGrantedAccess(file.GetPlatformFile());
   if (!flags.has_value()) {
     return false;

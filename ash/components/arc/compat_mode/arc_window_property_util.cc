@@ -13,12 +13,12 @@
 
 namespace arc {
 
-absl::optional<std::string> GetAppId(const aura::Window* window) {
+std::optional<std::string> GetAppId(const aura::Window* window) {
   const std::string* app_id = window->GetProperty(ash::kAppIDKey);
   return base::OptionalFromPtr(app_id);
 }
 
-absl::optional<std::string> GetAppId(const views::Widget* widget) {
+std::optional<std::string> GetAppId(const views::Widget* widget) {
   return GetAppId(widget->GetNativeWindow());
 }
 

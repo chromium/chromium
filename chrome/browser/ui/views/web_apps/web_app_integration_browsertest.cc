@@ -250,6 +250,32 @@ IN_PROC_BROWSER_TEST_F(WebAppIntegration, NewAppTab) {
   helper_.CheckAppTabIsSite(Site::kTabbed, Number::kOne);
 }
 
+IN_PROC_BROWSER_TEST_F(WebAppIntegration, CheckSiteHandlesFile) {
+  helper_.InstallMenuOption(InstallableSite::kFileHandler);
+  helper_.CheckSiteHandlesFile(Site::kFileHandler, FileExtension::kFoo);
+  helper_.CheckSiteHandlesFile(Site::kFileHandler, FileExtension::kBar);
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppIntegration, CheckSiteNotHandlesFile) {
+  helper_.InstallMenuOption(InstallableSite::kStandalone);
+  helper_.CheckSiteNotHandlesFile(Site::kStandalone, FileExtension::kFoo);
+  helper_.CheckSiteNotHandlesFile(Site::kStandalone, FileExtension::kBar);
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppIntegration, DisableEnableFileHandling) {
+  helper_.InstallMenuOption(InstallableSite::kMinimalUi);
+  helper_.CheckSiteHandlesFile(Site::kMinimalUi, FileExtension::kFoo);
+  helper_.CheckSiteHandlesFile(Site::kMinimalUi, FileExtension::kBar);
+
+  helper_.DisableFileHandling(Site::kMinimalUi);
+  helper_.CheckSiteNotHandlesFile(Site::kMinimalUi, FileExtension::kFoo);
+  helper_.CheckSiteNotHandlesFile(Site::kMinimalUi, FileExtension::kBar);
+
+  helper_.EnableFileHandling(Site::kMinimalUi);
+  helper_.CheckSiteHandlesFile(Site::kMinimalUi, FileExtension::kFoo);
+  helper_.CheckSiteHandlesFile(Site::kMinimalUi, FileExtension::kBar);
+}
+
 // Generated tests:
 
 IN_PROC_BROWSER_TEST_F(

@@ -21,8 +21,8 @@
 #include "chrome/browser/sync/test/integration/sync_datatype_helper.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
-#include "components/password_manager/core/browser/password_store_consumer.h"
-#include "components/password_manager/core/browser/password_store_interface.h"
+#include "components/password_manager/core/browser/password_store/password_store_consumer.h"
+#include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/browser/sync/password_proto_utils.h"
 #include "components/sync/engine/loopback_server/persistent_unique_client_entity.h"
 #include "components/sync/engine/nigori/key_derivation_params.h"
@@ -288,10 +288,21 @@ void InjectKeystoreEncryptedServerPassword(
 PasswordSyncActiveChecker::PasswordSyncActiveChecker(
     syncer::SyncServiceImpl* service)
     : SingleClientStatusChangeChecker(service) {}
+
 PasswordSyncActiveChecker::~PasswordSyncActiveChecker() = default;
 
 bool PasswordSyncActiveChecker::IsExitConditionSatisfied(std::ostream* os) {
   return service()->GetActiveDataTypes().Has(syncer::PASSWORDS);
+}
+
+PasswordSyncInactiveChecker::PasswordSyncInactiveChecker(
+    syncer::SyncServiceImpl* service)
+    : SingleClientStatusChangeChecker(service) {}
+
+PasswordSyncInactiveChecker::~PasswordSyncInactiveChecker() = default;
+
+bool PasswordSyncInactiveChecker::IsExitConditionSatisfied(std::ostream* os) {
+  return !service()->GetActiveDataTypes().Has(syncer::PASSWORDS);
 }
 
 SamePasswordFormsChecker::SamePasswordFormsChecker(PasswordForm::Store store)
@@ -338,9 +349,7 @@ bool SamePasswordFormsChecker::IsExitConditionSatisfied(std::ostream* os) {
 SamePasswordFormsAsVerifierChecker::SamePasswordFormsAsVerifierChecker(int i)
     : SingleClientStatusChangeChecker(
           sync_datatype_helper::test()->GetSyncService(i)),
-      index_(i),
-      in_progress_(false),
-      needs_recheck_(false) {}
+      index_(i) {}
 
 // This method uses the same re-entrancy prevention trick as
 // the SamePasswordFormsChecker.
@@ -371,9 +380,7 @@ PasswordFormsChecker::PasswordFormsChecker(
     const std::vector<password_manager::PasswordForm>& expected_forms)
     : SingleClientStatusChangeChecker(
           sync_datatype_helper::test()->GetSyncService(index)),
-      index_(index),
-      in_progress_(false),
-      needs_recheck_(false) {
+      index_(index) {
   for (const password_manager::PasswordForm& password_form : expected_forms) {
     expected_forms_.push_back(
         std::make_unique<password_manager::PasswordForm>(password_form));

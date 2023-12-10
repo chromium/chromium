@@ -29,7 +29,7 @@ public class DetailScreenScrollListener extends RecyclerView.OnScrollListener {
         super.onScrolled(recyclerView, dx, dy);
         mY = recyclerView.computeVerticalScrollOffset();
         if (isScrolledToTop() && mBottomSheetController.getSheetState() == HALF) {
-            recyclerView.suppressLayout(/*suppress=*/true);
+            recyclerView.suppressLayout(/* suppress= */ true);
         }
     }
 

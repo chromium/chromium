@@ -40,9 +40,9 @@ namespace views {
 /////////////////////////////////////////////////////////////////////////////
 class VIEWS_EXPORT AnimatedImageView : public ImageViewBase,
                                        public ui::CompositorAnimationObserver {
- public:
-  METADATA_HEADER(AnimatedImageView);
+  METADATA_HEADER(AnimatedImageView, ImageViewBase)
 
+ public:
   enum class State {
     kPlaying,  // The animation is currently playing.
     kStopped   // The animation is stopped and paint will raster the first

@@ -301,7 +301,7 @@ class ExportDelegate {
   }
 
   exportClipboard() {
-    navigator.clipboard.writeText(JSON.stringify(this.exportData, null, 2))
+    navigator.clipboard.writeText(ExportDelegate.jsonStringify(this.exportData))
         .catch(error => console.error('unable to export to clipboard:', error));
   }
 
@@ -318,18 +318,25 @@ class ExportDelegate {
       versionDetails: ExportDelegate.getVersionDetails(),
       queryInputs: this.omniboxInput_.queryInputs,
       displayInputs: this.omniboxInput_.displayInputs,
-      responsesHistory: this.omniboxOutput_.responsesHistory,
+      // 20 entries will be about 7mb and 180k lines. That's small enough to
+      // attach to bugs.chromium.org which has a 10mb limit.
+      responsesHistory: this.omniboxOutput_.responsesHistory.slice(-20),
     };
   }
 
   private static download(object: Object, fileName: string) {
-    const content = JSON.stringify(object, null, 2);
+    const content = ExportDelegate.jsonStringify(object);
     const blob = new Blob([content], {type: 'application/json'});
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
     a.download = fileName;
     a.click();
+  }
+
+  private static jsonStringify(data: Object): string {
+    return JSON.stringify(data, (_, value) =>
+        typeof value === 'bigint' ? value.toString() : value, 2);
   }
 
   /**

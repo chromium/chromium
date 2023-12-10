@@ -4,24 +4,17 @@
 
 source_set("bubble") {
   sources = [
-    "bubble_dismissal_reason_type.h",
     "bubble_presenter.h",
     "bubble_presenter.mm",
     "bubble_presenter_delegate.h",
-    "bubble_util.h",
-    "bubble_util.mm",
-    "bubble_view.h",
-    "bubble_view.mm",
-    "bubble_view_controller.h",
-    "bubble_view_controller.mm",
     "bubble_view_controller_presenter+private.h",
     "bubble_view_controller_presenter.h",
     "bubble_view_controller_presenter.mm",
   ]
   public_deps = [ ":constants" ]
   deps = [
+    ":bubble_view",
     "//base",
-    "//base:i18n",
     "//components/content_settings/core/browser",
     "//components/feature_engagement/public",
     "//components/omnibox/browser",
@@ -31,8 +24,8 @@ source_set("bubble") {
     "//ios/chrome/browser/feature_engagement/model",
     "//ios/chrome/browser/flags:system_flags",
     "//ios/chrome/browser/iph_for_new_chrome_user/model",
-    "//ios/chrome/browser/segmentation_platform",
-    "//ios/chrome/browser/shared/coordinator/scene:scene_state_browser_agent",
+    "//ios/chrome/browser/ntp/model:util",
+    "//ios/chrome/browser/segmentation_platform/model",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
@@ -42,15 +35,40 @@ source_set("bubble") {
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/public/features:system_flags",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/ui/bubble/side_swipe_bubble",
+    "//ios/chrome/browser/url_loading/model",
+    "//ios/chrome/common/ui/util",
+    "//net",
+    "//ui/base",
+  ]
+}
+
+source_set("bubble_view") {
+  sources = [
+    "bubble_dismissal_reason_type.h",
+    "bubble_util.h",
+    "bubble_util.mm",
+    "bubble_view.h",
+    "bubble_view.mm",
+    "bubble_view_controller.h",
+    "bubble_view_controller.mm",
+  ]
+  deps = [
+    ":constants",
+    "//base",
+    "//base:i18n",
+    "//components/content_settings/core/browser",
+    "//components/feature_engagement/public",
+    "//components/omnibox/browser",
+    "//components/prefs",
+    "//components/segmentation_platform/embedder/default_model",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util",
-    "//ios/chrome/browser/url_loading/model",
-    "//ios/chrome/common",
-    "//ios/chrome/common:button_config",
+    "//ios/chrome/common:timing",
     "//ios/chrome/common/ui/colors",
-    "//ios/chrome/common/ui/util",
     "//ios/third_party/material_components_ios",
-    "//net",
     "//ui/base",
   ]
   frameworks = [ "UIKit.framework" ]
@@ -75,6 +93,7 @@ source_set("unit_tests") {
   ]
   deps = [
     ":bubble",
+    ":bubble_view",
     "//base",
     "//base:i18n",
     "//testing/gtest",

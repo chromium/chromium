@@ -8,13 +8,9 @@ import android.graphics.drawable.Icon;
 
 import java.util.List;
 
-/**
- * Helper class used to deliver custom action to {@link ShareHelper}.
- */
+/** Helper class used to deliver custom action to {@link ShareHelper}. */
 public class ChromeCustomShareAction {
-    /**
-     * Provider interface that wants to provide Share Actions.
-     */
+    /** Provider interface that wants to provide Share Actions. */
     public interface Provider {
         /**
          * Get a map of actions to the parcel to be used as custom actions sent to Android share
@@ -26,21 +22,16 @@ public class ChromeCustomShareAction {
         List<ChromeCustomShareAction> getCustomActions();
     }
 
-    /**
-     * Identifier for the custom action.
-     */
+    /** Identifier for the custom action. */
     public final String key;
-    /**
-     * Icon used for the custom action.
-     */
+
+    /** Icon used for the custom action. */
     public final Icon icon;
-    /**
-     * Label used below the icon for custom actions.
-     */
+
+    /** Label used below the icon for custom actions. */
     public final String label;
-    /**
-     * Action when custom action is selected.
-     */
+
+    /** Action when custom action is selected. */
     public final Runnable runnable;
 
     /**

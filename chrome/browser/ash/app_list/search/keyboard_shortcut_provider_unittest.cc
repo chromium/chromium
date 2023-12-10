@@ -358,29 +358,14 @@ TEST_F(CustomizableKeyboardShortcutProviderTest,
   }
 }
 
-// Test that disabled shortcuts will be filtered out.
+// Test that disabled shortcuts are kept. Specifically, a disabled shortcut
+// should still appear in the search results with a "No shortcut assigned"
+// message.
 TEST_F(CustomizableKeyboardShortcutProviderTest,
        DisabledShortcutsWillBeRemoved) {
   auto search_results = CreateFakeSearchResultsWithSpecifiedStates(
-      {AcceleratorState::kDisabledByConflict,
-       AcceleratorState::kDisabledByConflict,
-       AcceleratorState::kDisabledByUnavailableKeys,
+      {AcceleratorState::kDisabledByConflict, AcceleratorState::kEnabled,
        AcceleratorState::kDisabledByUser});
-  search_handler_->SetSearchResults(std::move(search_results));
-
-  provider_->Start(u"fake query");
-  Wait();
-
-  const size_t results_count = 0;
-  EXPECT_EQ(results_count, results().size());
-}
-
-// Test that enabled shortcuts are kept.
-TEST_F(CustomizableKeyboardShortcutProviderTest,
-       EnabledShortcutsWillBeKeptUpToThree) {
-  auto search_results = CreateFakeSearchResultsWithSpecifiedStates(
-      {AcceleratorState::kEnabled, AcceleratorState::kEnabled,
-       AcceleratorState::kEnabled, AcceleratorState::kEnabled});
   search_handler_->SetSearchResults(std::move(search_results));
 
   provider_->Start(u"fake query");

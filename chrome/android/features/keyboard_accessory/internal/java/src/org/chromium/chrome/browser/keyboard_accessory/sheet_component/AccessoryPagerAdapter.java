@@ -44,8 +44,10 @@ class AccessoryPagerAdapter extends PagerAdapter
         Tab tab = mTabList.get(position);
         ViewGroup layout = mViews.get(tab);
         if (layout == null) {
-            layout = (ViewGroup) LayoutInflater.from(container.getContext())
-                             .inflate(tab.getTabLayout(), container, false);
+            layout =
+                    (ViewGroup)
+                            LayoutInflater.from(container.getContext())
+                                    .inflate(tab.getTabLayout(), container, false);
             mViews.put(tab, layout);
             if (container.indexOfChild(layout) == -1) container.addView(layout);
             if (tab.getListener() != null) {

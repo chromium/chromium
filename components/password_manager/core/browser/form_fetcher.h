@@ -11,7 +11,7 @@
 
 #include "base/observer_list_types.h"
 #include "components/password_manager/core/browser/password_form.h"
-#include "components/password_manager/core/browser/password_store_util.h"
+#include "components/password_manager/core/browser/password_store/password_store_util.h"
 #include "components/signin/public/base/gaia_id_hash.h"
 
 namespace password_manager {
@@ -110,8 +110,13 @@ class FormFetcher {
 
   // Returns an error if it occurred during login retrieval from the
   // profile store.
-  virtual absl::optional<PasswordStoreBackendError>
-  GetProfileStoreBackendError() const = 0;
+  virtual std::optional<PasswordStoreBackendError> GetProfileStoreBackendError()
+      const = 0;
+
+  // Returns an error if it occurred during login retrieval from the
+  // account store.
+  virtual std::optional<PasswordStoreBackendError> GetAccountStoreBackendError()
+      const = 0;
 };
 
 }  // namespace password_manager

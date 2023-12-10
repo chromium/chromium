@@ -18,7 +18,7 @@ bool AcceleratorId::operator<(const AcceleratorId& other) const {
 KeyboardShortcutItem::KeyboardShortcutItem(
     const std::vector<ShortcutCategory>& categories,
     int description_message_id,
-    absl::optional<int> shortcut_message_id,
+    std::optional<int> shortcut_message_id,
     const std::vector<AcceleratorId>& accelerator_ids,
     const std::vector<ui::KeyboardCode>& shortcut_key_codes)
     : categories(categories),

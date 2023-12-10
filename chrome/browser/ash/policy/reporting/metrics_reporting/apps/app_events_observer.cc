@@ -6,6 +6,7 @@
 
 #include <cstddef>
 #include <memory>
+#include <optional>
 #include <string_view>
 
 #include "base/check.h"
@@ -30,7 +31,6 @@
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/protos/app_types.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace reporting {
 namespace {
@@ -182,7 +182,7 @@ void AppEventsObserver::OnAppInstalled(const std::string& app_id,
                                      ->mutable_app_telemetry()
                                      ->mutable_app_install_data();
   auto public_app_id = app_id;
-  if (const absl::optional<std::string> app_publisher_id =
+  if (const std::optional<std::string> app_publisher_id =
           GetPublisherIdForApp(app_id, profile_.get());
       app_publisher_id.has_value()) {
     public_app_id = app_publisher_id.value();
@@ -221,7 +221,7 @@ void AppEventsObserver::OnAppLaunched(const std::string& app_id,
                                     ->mutable_app_telemetry()
                                     ->mutable_app_launch_data();
   auto public_app_id = app_id;
-  if (const absl::optional<std::string> app_publisher_id =
+  if (const std::optional<std::string> app_publisher_id =
           GetPublisherIdForApp(app_id, profile_.get());
       app_publisher_id.has_value()) {
     public_app_id = app_publisher_id.value();
@@ -263,7 +263,7 @@ void AppEventsObserver::OnAppUninstalled(
                                        ->mutable_app_telemetry()
                                        ->mutable_app_uninstall_data();
   auto public_app_id = app_id;
-  if (const absl::optional<std::string> app_publisher_id =
+  if (const std::optional<std::string> app_publisher_id =
           GetPublisherIdForApp(app_id, profile_.get());
       app_publisher_id.has_value()) {
     public_app_id = app_publisher_id.value();

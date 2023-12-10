@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -179,10 +178,6 @@ void NotificationManager::DisplayPersistentNotification(
   // an indication that something has gone wrong.
   size_t author_data_size =
       notification_data->data.has_value() ? notification_data->data->size() : 0;
-
-  base::UmaHistogramCounts1000(
-      "Notifications.AuthorDataSize",
-      base::saturated_cast<base::HistogramBase::Sample>(author_data_size));
 
   if (author_data_size >
       mojom::blink::NotificationData::kMaximumDeveloperDataSize) {

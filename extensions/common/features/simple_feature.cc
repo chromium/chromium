@@ -676,10 +676,21 @@ Feature::Availability SimpleFeature::GetEnvironmentAvailability(
   if (!MatchesSessionTypes(session_type))
     return CreateAvailability(INVALID_SESSION_TYPE, session_type);
 
-  if (check_developer_mode &&
-      base::FeatureList::IsEnabled(
-          extensions_features::kRestrictDeveloperModeAPIs) &&
-      developer_mode_only_ && !GetCurrentDeveloperMode(context_id)) {
+  // Check developer mode only if the corresponding feature is enabled.
+  // There's a chance this can be hit before the feature list is instantiated
+  // if the user appended the --pack-extension switch. In this case, use the
+  // feature's default value.
+  // TODO(https://crbug.com/1506254): Remove this handling and rely on
+  // the FeatureList being initialized.
+  bool dev_mode_feature_is_enabled =
+      base::FeatureList::GetInstance()
+          ? base::FeatureList::IsEnabled(
+                extensions_features::kRestrictDeveloperModeAPIs)
+          : extensions_features::kRestrictDeveloperModeAPIs.default_state ==
+                base::FEATURE_ENABLED_BY_DEFAULT;
+  check_developer_mode &= dev_mode_feature_is_enabled;
+  if (check_developer_mode && developer_mode_only_ &&
+      !GetCurrentDeveloperMode(context_id)) {
     return CreateAvailability(REQUIRES_DEVELOPER_MODE);
   }
 

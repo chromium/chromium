@@ -49,10 +49,10 @@ VIEWS_EXPORT std::vector<int> CalculateTableColumnSizes(
 // Converts a TableColumn::Alignment to the alignment for drawing the string.
 int TableColumnAlignmentToCanvasAlignment(ui::TableColumn::Alignment alignment);
 
-// Returns the index of the closest visible column index to |x|. Return value is
-// in terms of table->visible_columns(). Returns nullopt if there are no visible
-// columns.
-absl::optional<size_t> GetClosestVisibleColumnIndex(const TableView* table,
+// Returns the index of the closest visible column index to `x`. Return value is
+// in terms of `table.visible_columns()`. Returns nullopt if there are no
+// visible columns.
+absl::optional<size_t> GetClosestVisibleColumnIndex(const TableView& table,
                                                     int x);
 
 // Returns the mirror of the table column alignment if the layout is

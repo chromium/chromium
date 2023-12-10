@@ -57,11 +57,11 @@ void AppServicePromiseAppModelBuilder::OnPromiseAppUpdate(
       RemoveApp(update.PackageId().ToString(), false);
     }
   } else if (show) {
-    absl::optional<app_list::AppListSyncableService::LinkedPromiseAppSyncItem>
+    std::optional<app_list::AppListSyncableService::LinkedPromiseAppSyncItem>
         linked_sync_item =
             service() ? service()->CreateLinkedPromiseSyncItemIfAvailable(
                             update.PackageId().ToString())
-                      : absl::nullopt;
+                      : std::nullopt;
     if (linked_sync_item) {
       InsertApp(std::make_unique<AppServicePromiseAppItem>(
           profile(), model_updater(), update, linked_sync_item->linked_item_id,

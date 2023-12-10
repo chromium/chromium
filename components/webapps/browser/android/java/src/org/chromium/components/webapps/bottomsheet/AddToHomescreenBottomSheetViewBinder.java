@@ -11,9 +11,7 @@ import org.chromium.components.webapps.AddToHomescreenProperties;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
-/**
- * Binds an add-to-homescreen {@link PropertyModel} with a {@link PwaInstallBottomSheetContent}.
- */
+/** Binds an add-to-homescreen {@link PropertyModel} with a {@link PwaInstallBottomSheetContent}. */
 class AddToHomescreenBottomSheetViewBinder {
     static void bind(PropertyModel model, PwaInstallBottomSheetView view, PropertyKey propertyKey) {
         if (propertyKey.equals(AddToHomescreenProperties.TITLE)) {

@@ -11,7 +11,7 @@ namespace device_sync {
 CryptAuthKeyCreator::CreateKeyData::CreateKeyData(
     CryptAuthKey::Status status,
     cryptauthv2::KeyType type,
-    absl::optional<std::string> handle)
+    std::optional<std::string> handle)
     : status(status), type(type), handle(handle) {}
 
 CryptAuthKeyCreator::CreateKeyData::CreateKeyData(

@@ -8,6 +8,7 @@ load("//lib/builder_config.star", "builder_config")
 load("//lib/builders.star", "os", "reclient")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
+load("//lib/gn_args.star", "gn_args")
 
 ci.defaults.set(
     executable = ci.DEFAULT_EXECUTABLE,
@@ -44,6 +45,15 @@ ci.builder(
             target_platform = builder_config.target_platform.FUCHSIA,
         ),
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "release_builder",
+            "reclient",
+            "fuchsia",
+            "blink_symbol",
+            "minimal_symbols",
+        ],
+    ),
     console_view_entry = [
         consoles.console_view_entry(
             category = "rel",
@@ -70,6 +80,13 @@ ci.builder(
             build_config = builder_config.build_config.RELEASE,
             target_bits = 64,
         ),
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "release_builder_blink",
+            "reclient",
+            "dcheck_always_on",
+        ],
     ),
     console_view_entry = consoles.console_view_entry(
         category = "rel",

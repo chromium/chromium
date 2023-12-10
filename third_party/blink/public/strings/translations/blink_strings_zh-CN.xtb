@@ -30,6 +30,7 @@
 <translation id="2226276347425096477">请将该文本减少为 <ph name="MAX_CHARACTERS" /> 个字符或更少（您当前使用了 <ph name="CURRENT_LENGTH" /> 个字符）。</translation>
 <translation id="2247351761944213033"><ph name="YEAR" /> 年第 <ph name="WEEKNUMBER" /> 周</translation>
 <translation id="2277199496770840904">字幕轨 <ph name="NUMBER" /></translation>
+<translation id="2353297238722298836">已允许使用摄像头和麦克风</translation>
 <translation id="2393030564806080191">十六进制颜色值</translation>
 <translation id="2398813069815436052">对话框已打开。</translation>
 <translation id="245932805758469625">视频剩余时间（以秒为单位）</translation>
@@ -60,10 +61,12 @@
 <translation id="3822383571486410024">请将该文本增加为 <ph name="MIN_CHARACTERS" /> 个字符或更多（您当前使用的是 <ph name="CURRENT_LENGTH" /> 个字符）。</translation>
 <translation id="383465348367842624">“<ph name="ATSIGN" />”前面的内容不应包含符号“<ph name="INVALIDCHARACTER" />”。</translation>
 <translation id="3846214748874656680">退出全屏模式</translation>
+<translation id="4031179711345676612">已允许使用麦克风</translation>
 <translation id="4103419683916926126">毫秒</translation>
 <translation id="4201051445878709314">显示上一个月</translation>
 <translation id="4360991593054037559">请输入有效值。两个最接近的有效值分别为<ph name="VALID_VALUE_LOW" />和<ph name="VALID_VALUE_HIGHER" />。</translation>
 <translation id="4522570452068850558">详情</translation>
+<translation id="4663373278480897665">已允许使用摄像头</translation>
 <translation id="4664250907885839816">“<ph name="ATSIGN" />”后面的内容不应包含符号“<ph name="INVALIDCHARACTER" />”。</translation>
 <translation id="4718048029184481307">以“画中画”模式播放</translation>
 <translation id="4748357248530471599">开启/关闭全屏模式中的刘海屏</translation>
@@ -137,6 +140,7 @@
 <translation id="6941933287844615239">下载媒体</translation>
 <translation id="698788488269350478">已展开。</translation>
 <translation id="6989848892321993519">请将该内容增加到 <ph name="MIN_CHARACTERS" /> 个或更多字符（目前您使用了 1 个字符）。</translation>
+<translation id="7080893216867146095">已允许分享位置信息</translation>
 <translation id="709897737746224366">请与所请求的格式保持一致。</translation>
 <translation id="7102274145889307184">当前位置</translation>
 <translation id="7263440858009898357">请在列表中选择一项。</translation>

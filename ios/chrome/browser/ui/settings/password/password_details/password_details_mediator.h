@@ -25,6 +25,13 @@ class ChromeBrowserState;
 @interface PasswordDetailsMediator
     : NSObject <PasswordDetailsTableViewControllerDelegate>
 
+// Consumer of this mediator.
+@property(nonatomic, weak) id<PasswordDetailsConsumer> consumer;
+
+// The credentials to be displayed in the page.
+@property(nonatomic, assign) std::vector<password_manager::CredentialUIEntry>
+    credentials;
+
 // Vector of CredentialUIEntry is converted to an array of PasswordDetails and
 // passed to a consumer with the display name (title) for the Password Details
 // view.
@@ -36,11 +43,7 @@ class ChromeBrowserState;
                           context:(DetailsContext)context
                          delegate:(id<PasswordDetailsMediatorDelegate>)delegate
     NS_DESIGNATED_INITIALIZER;
-
 - (instancetype)init NS_UNAVAILABLE;
-
-// Consumer of this mediator.
-@property(nonatomic, weak) id<PasswordDetailsConsumer> consumer;
 
 // Disconnects the mediator from all observers.
 - (void)disconnect;

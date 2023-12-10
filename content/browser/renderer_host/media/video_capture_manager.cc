@@ -453,7 +453,7 @@ void VideoCaptureManager::ConnectClient(
     EmitLogMessage(string_stream.str(), 1);
     mojo::PendingRemote<video_capture::mojom::VideoEffectsManager>
         video_effects_manager;
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_FUCHSIA)
     if (base::FeatureList::IsEnabled(media::kCameraMicEffects)) {
       auto* content_client = GetContentClient();
       if (browser_context && content_client && content_client->browser()) {
@@ -627,7 +627,7 @@ VideoCaptureManager::GetDeviceFormatInUse(
   return device_in_use ? device_in_use->GetVideoCaptureFormat() : absl::nullopt;
 }
 
-GlobalRoutingID VideoCaptureManager::GetGlobalRoutingID(
+GlobalRenderFrameHostId VideoCaptureManager::GetGlobalRenderFrameHostId(
     const base::UnguessableToken& session_id) const {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
@@ -635,7 +635,7 @@ GlobalRoutingID VideoCaptureManager::GetGlobalRoutingID(
       LookupControllerBySessionId(session_id);
   if (!controller || !controller->IsDeviceAlive() ||
       !blink::IsVideoDesktopCaptureMediaType(controller->stream_type())) {
-    return GlobalRoutingID();
+    return GlobalRenderFrameHostId();
   }
 
   const DesktopMediaID desktop_media_id =
@@ -643,11 +643,12 @@ GlobalRoutingID VideoCaptureManager::GetGlobalRoutingID(
 
   if (desktop_media_id.type != DesktopMediaID::Type::TYPE_WEB_CONTENTS ||
       desktop_media_id.web_contents_id.is_null()) {
-    return GlobalRoutingID();
+    return GlobalRenderFrameHostId();
   }
 
-  return GlobalRoutingID(desktop_media_id.web_contents_id.render_process_id,
-                         desktop_media_id.web_contents_id.main_render_frame_id);
+  return GlobalRenderFrameHostId(
+      desktop_media_id.web_contents_id.render_process_id,
+      desktop_media_id.web_contents_id.main_render_frame_id);
 }
 
 void VideoCaptureManager::SetDesktopCaptureWindowId(

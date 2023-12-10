@@ -25,6 +25,8 @@ import {OobeDialogHostBehavior} from '../../components/behaviors/oobe_dialog_hos
 import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.js';
 import {OobeContentDialog} from '../../components/dialogs/oobe_content_dialog.js';
 
+import {getTemplate} from './offline_login.html.js';
+
 
 const DEFAULT_EMAIL_DOMAIN = '@gmail.com';
 const INPUT_EMAIL_PATTERN =
@@ -74,7 +76,7 @@ class OfflineLogin extends OfflineLoginBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

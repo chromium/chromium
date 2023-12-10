@@ -608,24 +608,24 @@ bool VideoCaptureImpl::VideoFrameBufferPreparer::BindVideoFrameOnMediaThread(
 #endif
       CHECK_EQ(gpu_memory_buffer_->GetFormat(),
                gfx::BufferFormat::YUV_420_BIPLANAR);
+      scoped_refptr<gpu::ClientSharedImage> client_shared_image;
       if (create_multiplanar_image) {
-        auto client_shared_image = sii->CreateSharedImage(
+        client_shared_image = sii->CreateSharedImage(
             multiplanar_si_format, gpu_memory_buffer_->GetSize(),
             frame_info_->color_space, kTopLeft_GrSurfaceOrigin,
             kPremul_SkAlphaType, usage, "VideoCaptureFrameBuffer",
             gpu_memory_buffer_->CloneHandle());
-        CHECK(client_shared_image);
-        buffer_context_->gmb_resources()->mailboxes[plane] =
-            client_shared_image->mailbox();
+
       } else {
-        buffer_context_->gmb_resources()->mailboxes[plane] =
-            sii->CreateSharedImage(
-                gpu_memory_buffer_.get(),
-                buffer_context_->gpu_factories()->GpuMemoryBufferManager(),
-                planes[plane], frame_info_->color_space,
-                kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage,
-                "VideoCaptureFrameBuffer");
+        client_shared_image = sii->CreateSharedImage(
+            gpu_memory_buffer_.get(),
+            buffer_context_->gpu_factories()->GpuMemoryBufferManager(),
+            planes[plane], frame_info_->color_space, kTopLeft_GrSurfaceOrigin,
+            kPremul_SkAlphaType, usage, "VideoCaptureFrameBuffer");
       }
+      CHECK(client_shared_image);
+      buffer_context_->gmb_resources()->mailboxes[plane] =
+          client_shared_image->mailbox();
     } else {
       sii->UpdateSharedImage(
           buffer_context_->gmb_resources()->release_sync_token,

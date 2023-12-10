@@ -24,6 +24,7 @@ struct FormFieldDataPredictions {
   std::string signature;
   std::string heuristic_type;
   std::string server_type;
+  std::string html_type;
   std::string overall_type;
   std::string parseable_name;
   std::string section;

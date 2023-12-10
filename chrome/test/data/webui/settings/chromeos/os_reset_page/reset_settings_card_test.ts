@@ -89,10 +89,7 @@ suite('<reset-settings-card>', () => {
     });
 
     closeButtonFn(dialog).click();
-    await Promise.all([
-      onDialogClosedPromise,
-      resetPageBrowserProxy.whenCalled('onPowerwashDialogShow'),
-    ]);
+    await onDialogClosedPromise;
   }
 
   async function openDialogWithESimWarning(): Promise<void> {

@@ -118,7 +118,6 @@ class TestLoaderTestCase(unittest.TestCase):
                 This is a testharness.js-based test.
                 CONSOLE WARNING: warning
                 Harness Error. harness_status.status = 1 , harness_status.message = Uncaught ReferenceError: AriaUtils is not defined
-                [PASS] subtest1
                 [FAIL] subtest2
                   assert_unreached:\\n  message 2
                 [NOTRUN] sub\\n  test3
@@ -152,6 +151,21 @@ class TestLoaderTestCase(unittest.TestCase):
         self.assertFalse(subtest.disabled)
         self.assertEqual(subtest.get('expected-fail-message'),
                          'promise_rejects_dom: message\n  3')
+
+    def test_load_variant_one_skipped(self):
+        self.fs.write_text_file(
+            self.finder.path_from_web_tests('TestExpectations'),
+            textwrap.dedent("""\
+                # results: [ Failure Skip ]
+                external/wpt/variant.html?foo=bar/abc [ Failure ]
+                external/wpt/variant.html?foo=baz [ Failure Skip ]
+                """))
+        test_file = self._load_metadata('variant.html')
+        test = test_file.get_test('variant.html?foo=bar/abc')
+        self.assertEqual(test.expected, 'OK')
+        self.assertEqual(test.known_intermittent,
+                         ['ERROR', 'PRECONDITION_FAILED'])
+        self.assertIsNone(test_file.get_test('variant.html?foo=baz'))
 
     def test_load_baseline_precondition_failed(self):
         self.fs.write_text_file(
@@ -236,7 +250,6 @@ class TestLoaderTestCase(unittest.TestCase):
                 This is a testharness.js-based test.
                 [FAIL] subtest1
                   assert_equals: message
-                [PASS] subtest2
                 Harness: the test ran to completion.
 
                 """))

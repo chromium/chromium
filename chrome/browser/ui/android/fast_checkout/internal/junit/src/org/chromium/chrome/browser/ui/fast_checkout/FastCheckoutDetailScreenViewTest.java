@@ -54,6 +54,7 @@ import org.chromium.chrome.browser.ui.fast_checkout.detail_screen.AutofillProfil
 import org.chromium.chrome.browser.ui.fast_checkout.detail_screen.CreditCardItemProperties;
 import org.chromium.chrome.browser.ui.fast_checkout.detail_screen.DetailScreenCoordinator;
 import org.chromium.chrome.browser.ui.fast_checkout.detail_screen.FooterItemProperties;
+import org.chromium.chrome.browser.ui.suggestion.Icon;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.base.TestActivity;
@@ -110,7 +111,7 @@ public class FastCheckoutDetailScreenViewTest {
                     /* obfuscatedNumber= */ "5656",
                     /* month= */ "05",
                     /* year= */ "2031",
-                    /* issuerIconString= */ "visaCC");
+                    /* issuerIcon= */ Icon.CARD_VISA);
 
     private static final FastCheckoutCreditCard sSampleCard2 =
             FastCheckoutTestUtils.createDetailedLocalCreditCard(
@@ -121,7 +122,7 @@ public class FastCheckoutDetailScreenViewTest {
                     /* obfuscatedNumber= */ "1234",
                     /* month= */ "10",
                     /* year= */ "2025",
-                    /* issuerIconString= */ "dinersCC");
+                    /* issuerIcon= */ Icon.CARD_DINERS);
 
     @Before
     public void setUp() {
@@ -277,7 +278,7 @@ public class FastCheckoutDetailScreenViewTest {
                         /* obfuscatedNumber= */ "34326",
                         /* month= */ "05",
                         /* year= */ "2035",
-                        /* issuerIconString= */ "visaCC");
+                        /* issuerIcon= */ Icon.CARD_VISA);
         FastCheckoutCreditCard sampleCardEmptyFields =
                 FastCheckoutTestUtils.createDetailedLocalCreditCard(
                         /* guid= */ "7534",
@@ -287,7 +288,7 @@ public class FastCheckoutDetailScreenViewTest {
                         /* obfuscatedNumber= */ "",
                         /* month= */ "05",
                         /* year= */ "2035",
-                        /* issuerIconString= */ "visaCC");
+                        /* issuerIcon= */ Icon.CARD_VISA);
 
         models.add(
                 new ListItem(

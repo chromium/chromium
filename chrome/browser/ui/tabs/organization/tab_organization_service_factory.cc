@@ -7,6 +7,7 @@
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_service.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 TabOrganizationServiceFactory::TabOrganizationServiceFactory()
@@ -28,6 +29,7 @@ TabOrganizationServiceFactory::BuildServiceInstanceForBrowserContext(
 
 // static
 TabOrganizationServiceFactory* TabOrganizationServiceFactory::GetInstance() {
+  CHECK(base::FeatureList::IsEnabled(features::kTabOrganization));
   static base::NoDestructor<TabOrganizationServiceFactory> instance;
   return instance.get();
 }

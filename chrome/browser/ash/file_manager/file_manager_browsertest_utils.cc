@@ -26,6 +26,16 @@ TestCase& TestCase::TabletMode() {
   return *this;
 }
 
+TestCase& TestCase::SetLocale(const std::string& locale) {
+  options.locale = locale;
+  return *this;
+}
+
+TestCase& TestCase::SetCountry(const std::string& country) {
+  options.country = country;
+  return *this;
+}
+
 TestCase& TestCase::EnableGenericDocumentsProvider() {
   options.arc = true;
   options.generic_documents_provider = true;
@@ -174,6 +184,11 @@ TestCase& TestCase::EnableGoogleOneOfferFilesBanner() {
   return *this;
 }
 
+TestCase& TestCase::DisableGoogleOneOfferFilesBanner() {
+  options.enable_google_one_offer_files_banner = false;
+  return *this;
+}
+
 TestCase& TestCase::FeatureIds(const std::vector<std::string>& ids) {
   options.feature_ids = ids;
   return *this;
@@ -217,6 +232,17 @@ std::string TestCase::GetFullName() const {
 
   if (options.tablet_mode) {
     full_name += "_TabletMode";
+  }
+
+  if (!options.locale.empty()) {
+    // You cannot use `-` in a test case name.
+    std::string locale_for_name;
+    base::ReplaceChars(options.locale, "-", "_", &locale_for_name);
+    full_name += "_" + locale_for_name;
+  }
+
+  if (!options.country.empty()) {
+    full_name += "_" + options.country;
   }
 
   if (options.offline) {

@@ -25,9 +25,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-/**
- * The class that manages Chrome-managed price drop subscriptions.
- */
+/** The class that manages Chrome-managed price drop subscriptions. */
 public class ImplicitPriceDropSubscriptionsManager {
     private final TabModelSelector mTabModelSelector;
     private final TabModelObserver mTabModelObserver;
@@ -37,24 +35,25 @@ public class ImplicitPriceDropSubscriptionsManager {
             TabModelSelector tabModelSelector, ShoppingService shoppingService) {
         mShoppingService = shoppingService;
         mTabModelSelector = tabModelSelector;
-        mTabModelObserver = new TabModelObserver() {
-            @Override
-            public void tabClosureCommitted(Tab tab) {
-                unsubscribe(tab);
-            }
+        mTabModelObserver =
+                new TabModelObserver() {
+                    @Override
+                    public void tabClosureCommitted(Tab tab) {
+                        unsubscribe(tab);
+                    }
 
-            @Override
-            public void tabRemoved(Tab tab) {
-                unsubscribe(tab);
-            }
+                    @Override
+                    public void tabRemoved(Tab tab) {
+                        unsubscribe(tab);
+                    }
 
-            // TODO(crbug.com/1289031): Unsubscribe when user navigates away instead of once
-            // selecting the tab.
-            @Override
-            public void didSelectTab(Tab tab, int type, int lastId) {
-                unsubscribe(tab);
-            }
-        };
+                    // TODO(crbug.com/1289031): Unsubscribe when user navigates away instead of once
+                    // selecting the tab.
+                    @Override
+                    public void didSelectTab(Tab tab, int type, int lastId) {
+                        unsubscribe(tab);
+                    }
+                };
         mTabModelSelector.getModel(false).addObserver(mTabModelObserver);
     }
 
@@ -72,56 +71,74 @@ public class ImplicitPriceDropSubscriptionsManager {
         return true;
     }
 
-    /**
-     * Initialize the chrome-managed subscriptions.
-     */
+    /** Initialize the chrome-managed subscriptions. */
     void initializeSubscriptions() {
         // Store previously eligible urls to avoid duplicate subscriptions.
         Set<String> urlSet = new HashSet<>();
         TabModel normalTabModel = mTabModelSelector.getModel(false);
         for (int index = 0; index < normalTabModel.getCount(); index++) {
             Tab tab = normalTabModel.getTabAt(index);
-            fetchOfferId(tab, (offerId) -> {
-                boolean tabEligible = (offerId != null) && isStaleTab(tab);
-                RecordHistogram.recordBooleanHistogram(
-                        "Commerce.Subscriptions.TabEligible", tabEligible);
-                if (!tabEligible) return;
-                String url = tab.getOriginalUrl().getSpec();
-                if (urlSet.contains(url)) return;
-                urlSet.add(url);
-                CommerceSubscription subscription = new CommerceSubscription(
-                        SubscriptionType.PRICE_TRACK, IdentifierType.OFFER_ID, offerId,
-                        ManagementType.CHROME_MANAGED, null);
-                mShoppingService.subscribe(subscription, (status) -> {
-                    // TODO: Add histograms for implicit tabs creation.
-                    assert status;
-                });
-            });
+            fetchOfferId(
+                    tab,
+                    (offerId) -> {
+                        boolean tabEligible = (offerId != null) && isStaleTab(tab);
+                        RecordHistogram.recordBooleanHistogram(
+                                "Commerce.Subscriptions.TabEligible", tabEligible);
+                        if (!tabEligible) return;
+                        String url = tab.getOriginalUrl().getSpec();
+                        if (urlSet.contains(url)) return;
+                        urlSet.add(url);
+                        CommerceSubscription subscription =
+                                new CommerceSubscription(
+                                        SubscriptionType.PRICE_TRACK,
+                                        IdentifierType.OFFER_ID,
+                                        offerId,
+                                        ManagementType.CHROME_MANAGED,
+                                        null);
+                        mShoppingService.subscribe(
+                                subscription,
+                                (status) -> {
+                                    // TODO: Add histograms for implicit tabs creation.
+                                    assert status;
+                                });
+                    });
         }
     }
 
     private void unsubscribe(Tab tab) {
         if (!isUniqueTab(tab)) return;
 
-        fetchOfferId(tab, (offerId) -> {
-            if (offerId == null) return;
-            CommerceSubscription subscription =
-                    new CommerceSubscription(SubscriptionType.PRICE_TRACK, IdentifierType.OFFER_ID,
-                            offerId, ManagementType.CHROME_MANAGED, null);
-            mShoppingService.unsubscribe(subscription, (status) -> { assert status; });
-        });
+        fetchOfferId(
+                tab,
+                (offerId) -> {
+                    if (offerId == null) return;
+                    CommerceSubscription subscription =
+                            new CommerceSubscription(
+                                    SubscriptionType.PRICE_TRACK,
+                                    IdentifierType.OFFER_ID,
+                                    offerId,
+                                    ManagementType.CHROME_MANAGED,
+                                    null);
+                    mShoppingService.unsubscribe(
+                            subscription,
+                            (status) -> {
+                                assert status;
+                            });
+                });
     }
 
     @VisibleForTesting
     protected void fetchOfferId(Tab tab, Callback<String> callback) {
         // Asynchronously fetch the tab's offer id.
-        ShoppingPersistedTabData.from(tab, (tabData) -> {
-            if (tabData == null || TextUtils.isEmpty(tabData.getMainOfferId())) {
-                callback.onResult(null);
-            } else {
-                callback.onResult(tabData.getMainOfferId());
-            }
-        });
+        ShoppingPersistedTabData.from(
+                tab,
+                (tabData) -> {
+                    if (tabData == null || TextUtils.isEmpty(tabData.getMainOfferId())) {
+                        callback.onResult(null);
+                    } else {
+                        callback.onResult(tabData.getMainOfferId());
+                    }
+                });
     }
 
     // TODO(crbug.com/1186450): Extract this method to a utility class. Also, make the one-day time
@@ -130,14 +147,14 @@ public class ImplicitPriceDropSubscriptionsManager {
         long timeSinceLastOpened = System.currentTimeMillis() - tab.getTimestampMillis();
 
         return timeSinceLastOpened
-                <= TimeUnit.SECONDS.toMillis(ShoppingPersistedTabData.getStaleTabThresholdSeconds())
-                && timeSinceLastOpened >= TimeUnit.SECONDS.toMillis(
-                           CommerceSubscriptionsServiceConfig.getStaleTabLowerBoundSeconds());
+                        <= TimeUnit.SECONDS.toMillis(
+                                ShoppingPersistedTabData.getStaleTabThresholdSeconds())
+                && timeSinceLastOpened
+                        >= TimeUnit.SECONDS.toMillis(
+                                CommerceSubscriptionsServiceConfig.getStaleTabLowerBoundSeconds());
     }
 
-    /**
-     * Destroy any members that need clean up.
-     */
+    /** Destroy any members that need clean up. */
     public void destroy() {
         mTabModelSelector.getModel(false).removeObserver(mTabModelObserver);
     }

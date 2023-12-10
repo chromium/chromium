@@ -19,7 +19,7 @@ nearby::fastpair::FastPairInfo BuildFastPairInfo(
     const std::string& hex_model_id,
     const std::vector<uint8_t>& account_key,
     const std::string& mac_address,
-    const absl::optional<std::string>& display_name,
+    const std::optional<std::string>& display_name,
     DeviceMetadata* device_metadata) {
   nearby::fastpair::FastPairInfo proto;
   auto* device = proto.mutable_device();

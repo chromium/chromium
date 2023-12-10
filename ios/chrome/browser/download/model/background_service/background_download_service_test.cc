@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/files/file_util.h"
@@ -16,7 +17,6 @@
 #include "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using ::testing::NiceMock;
 
@@ -41,7 +41,7 @@ class FakeClient : public download::test::MockClient {
     return completion_info_.get();
   }
 
-  const absl::optional<FailureReason>& failure_reason() const {
+  const std::optional<FailureReason>& failure_reason() const {
     return failure_reason_;
   }
 
@@ -78,7 +78,7 @@ class FakeClient : public download::test::MockClient {
   std::vector<download::DownloadMetaData> metadata_;
   std::string download_guid_;
   std::unique_ptr<download::CompletionInfo> completion_info_;
-  absl::optional<FailureReason> failure_reason_;
+  std::optional<FailureReason> failure_reason_;
 };
 
 }  // namespace

@@ -9,11 +9,15 @@ import {
   assertInstanceof,
 } from '../assert.js';
 import {queuedAsyncCallback} from '../async_job_queue.js';
+import * as barcodeChip from '../barcode_chip.js';
 import * as dom from '../dom.js';
 import {reportError} from '../error.js';
 import * as expert from '../expert.js';
 import {FaceOverlay} from '../face.js';
+import {Flag} from '../flag.js';
 import {Point} from '../geometry.js';
+import {BarcodeScanner} from '../models/barcode.js';
+import * as loadTimeData from '../models/load_time_data.js';
 import {DeviceOperator, parseMetadata} from '../mojo/device_operator.js';
 import {
   AndroidControlAeAntibandingMode,
@@ -40,6 +44,7 @@ import {
   ErrorType,
   Facing,
   getVideoTrackSettings,
+  Mode,
   PreviewVideo,
   Resolution,
 } from '../type.js';
@@ -59,6 +64,11 @@ export class Preview {
    * Video element to capture the stream.
    */
   private video = dom.get('#preview-video', HTMLVideoElement);
+
+  /**
+   * A barcode scanner to detect barcodes. Only used in Photo mode.
+   */
+  private barcodeScanner: BarcodeScanner|null = null;
 
   /**
    * The observer endpoint for preview metadata.
@@ -110,6 +120,8 @@ export class Preview {
 
   private enableFaceOverlay = false;
 
+  private readonly autoQRFlag = loadTimeData.getChromeFlag(Flag.AUTO_QR);
+
   /**
    * @param onNewStreamNeeded Callback to request new stream.
    */
@@ -117,6 +129,14 @@ export class Preview {
     expert.addObserver(
         expert.ExpertOption.SHOW_METADATA,
         queuedAsyncCallback('keepLatest', () => this.updateShowMetadata()));
+
+    // Reset the auto QR code scanner timer after taking a photo
+    state.addObserver(state.State.TAKING, (taking, _) => {
+      if (!state.get(Mode.PHOTO) || taking) {
+        return;
+      }
+      this.barcodeScanner?.resetTimer();
+    });
   }
 
   getVideo(): PreviewVideo {
@@ -358,6 +378,15 @@ export class Preview {
           this.onPreviewExpired === null || this.onPreviewExpired.isSignaled());
       this.onPreviewExpired = new WaitableEvent();
       state.set(state.State.STREAMING, true);
+
+      // Enable auto QR code scanner in Photo mode preview
+      if (state.get(Mode.PHOTO) && this.autoQRFlag) {
+        this.barcodeScanner = new BarcodeScanner(this.video, (value) => {
+          barcodeChip.show(value);
+        });
+
+        this.barcodeScanner?.resetTimer();
+      }
     } catch (e) {
       await this.close();
       throw e;
@@ -369,6 +398,9 @@ export class Preview {
    * Closes the preview.
    */
   async close(): Promise<void> {
+    this.barcodeScanner?.stop();
+    this.barcodeScanner = null;
+
     this.clearWatchdog();
     // Pause video element to avoid black frames during transition.
     this.video.pause();
@@ -378,6 +410,7 @@ export class Preview {
       const track = this.getVideoTrack();
       const {deviceId} = getVideoTrackSettings(track);
       track.stop();
+      this.streamInternal.getAudioTracks()[0]?.stop();
       const deviceOperator = DeviceOperator.getInstance();
       await deviceOperator?.dropConnection(deviceId);
       assert(this.onPreviewExpired !== null);

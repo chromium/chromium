@@ -6,13 +6,13 @@ package org.chromium.chrome.browser.logo;
 
 import android.graphics.Bitmap;
 
+import jp.tomorrowkey.android.gifplayer.BaseGifImage;
+
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableFloatPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
-
-import jp.tomorrowkey.android.gifplayer.BaseGifImage;
 
 /** The properties required to build the logo on start surface or ntp.*/
 interface LogoProperties {
@@ -23,7 +23,7 @@ interface LogoProperties {
     WritableIntPropertyKey LOGO_TOP_MARGIN = new WritableIntPropertyKey();
     WritableIntPropertyKey LOGO_BOTTOM_MARGIN = new WritableIntPropertyKey();
     WritableObjectPropertyKey<Boolean> SET_END_FADE_ANIMATION =
-            new WritableObjectPropertyKey<>(true /* skipEquality */);
+            new WritableObjectPropertyKey<>(/* skipEquality= */ true);
     // TODO(crbug.com/1394983): Change the VISIBILITY properties to some sort of state
     //  enum if possible.
     WritableBooleanPropertyKey VISIBILITY = new WritableBooleanPropertyKey();
@@ -31,18 +31,29 @@ interface LogoProperties {
     WritableObjectPropertyKey<LogoView.ClickHandler> LOGO_CLICK_HANDLER =
             new WritableObjectPropertyKey<>();
     WritableObjectPropertyKey<Boolean> SHOW_SEARCH_PROVIDER_INITIAL_VIEW =
-            new WritableObjectPropertyKey<>(true /* skipEquality */);
+            new WritableObjectPropertyKey<>(/* skipEquality= */ true);
     // TODO(crbug.com/1394983): Generate the LOGO, DEFAULT_GOOGLE_LOGO and ANIMATED_LOGO properties
     //  into one property that takes an object generic/powerful enough to represent all three of
     //  these if possible.
     WritableObjectPropertyKey<LogoBridge.Logo> LOGO = new WritableObjectPropertyKey<>();
     WritableObjectPropertyKey<Bitmap> DEFAULT_GOOGLE_LOGO = new WritableObjectPropertyKey<>();
     WritableObjectPropertyKey<Boolean> SHOW_LOADING_VIEW =
-            new WritableObjectPropertyKey<>(true /* skipEquality */);
+            new WritableObjectPropertyKey<>(/* skipEquality= */ true);
     WritableObjectPropertyKey<BaseGifImage> ANIMATED_LOGO = new WritableObjectPropertyKey<>();
 
-    PropertyKey[] ALL_KEYS = new PropertyKey[] {ALPHA, LOGO_TOP_MARGIN, LOGO_BOTTOM_MARGIN,
-            SET_END_FADE_ANIMATION, VISIBILITY, ANIMATION_ENABLED, LOGO_CLICK_HANDLER,
-            SHOW_SEARCH_PROVIDER_INITIAL_VIEW, LOGO, DEFAULT_GOOGLE_LOGO, SHOW_LOADING_VIEW,
-            ANIMATED_LOGO};
+    PropertyKey[] ALL_KEYS =
+            new PropertyKey[] {
+                ALPHA,
+                LOGO_TOP_MARGIN,
+                LOGO_BOTTOM_MARGIN,
+                SET_END_FADE_ANIMATION,
+                VISIBILITY,
+                ANIMATION_ENABLED,
+                LOGO_CLICK_HANDLER,
+                SHOW_SEARCH_PROVIDER_INITIAL_VIEW,
+                LOGO,
+                DEFAULT_GOOGLE_LOGO,
+                SHOW_LOADING_VIEW,
+                ANIMATED_LOGO
+            };
 }

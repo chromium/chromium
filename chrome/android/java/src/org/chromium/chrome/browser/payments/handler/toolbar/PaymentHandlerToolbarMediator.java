@@ -24,6 +24,7 @@ import org.chromium.url.GURL;
 /* package */ class PaymentHandlerToolbarMediator extends WebContentsObserver {
     /** The delay (four video frames - for 60Hz) after which the hide progress will be hidden. */
     private static final long HIDE_PROGRESS_BAR_DELAY_MS = (1000 / 60) * 4;
+
     /**
      * The minimum load progress that can be shown when a page is loading. This is not 0 so that
      * it's obvious to the user that something is attempting to load.
@@ -31,10 +32,13 @@ import org.chromium.url.GURL;
     /* package */ static final float MINIMUM_LOAD_PROGRESS = 0.05f;
 
     private final PropertyModel mModel;
+
     /** The handler to delay hiding the progress bar. */
     private Handler mHideProgressBarHandler;
+
     /** Postfix with "Ref" to distinguish from mWebContent in WebContentsObserver. */
     private final WebContents mWebContentsRef;
+
     private final PaymentHandlerToolbarMediatorDelegate mDelegate;
 
     /** The delegate of PaymentHandlerToolbarMediator. */
@@ -63,7 +67,9 @@ import org.chromium.url.GURL;
      * @param webContents The web-contents that loads the payment app.
      * @param delegate The delegate of this class.
      */
-    /* package */ PaymentHandlerToolbarMediator(PropertyModel model, WebContents webContents,
+    /* package */ PaymentHandlerToolbarMediator(
+            PropertyModel model,
+            WebContents webContents,
             PaymentHandlerToolbarMediatorDelegate delegate) {
         super(webContents);
         mWebContentsRef = webContents;
@@ -73,20 +79,28 @@ import org.chromium.url.GURL;
 
     // WebContentsObserver:
     @Override
-    public void didFinishLoadInPrimaryMainFrame(GlobalRenderFrameHostId rfhId, GURL url,
-            boolean isKnownValid, @LifecycleState int rfhLifecycleState) {
+    public void didFinishLoadInPrimaryMainFrame(
+            GlobalRenderFrameHostId rfhId,
+            GURL url,
+            boolean isKnownValid,
+            @LifecycleState int rfhLifecycleState) {
         if (rfhLifecycleState != LifecycleState.ACTIVE) return;
         // Hides the Progress Bar after a delay to make sure it is rendered for at least
         // a few frames, otherwise its completion won't be visually noticeable.
         mHideProgressBarHandler = new Handler();
-        mHideProgressBarHandler.postDelayed(() -> {
-            mModel.set(PaymentHandlerToolbarProperties.PROGRESS_VISIBLE, false);
-            mHideProgressBarHandler = null;
-        }, HIDE_PROGRESS_BAR_DELAY_MS);
+        mHideProgressBarHandler.postDelayed(
+                () -> {
+                    mModel.set(PaymentHandlerToolbarProperties.PROGRESS_VISIBLE, false);
+                    mHideProgressBarHandler = null;
+                },
+                HIDE_PROGRESS_BAR_DELAY_MS);
     }
 
     @Override
-    public void didFailLoad(boolean isInPrimaryMainFrame, int errorCode, GURL failingUrl,
+    public void didFailLoad(
+            boolean isInPrimaryMainFrame,
+            int errorCode,
+            GURL failingUrl,
             @LifecycleState int frameLifecycleState) {
         if (frameLifecycleState != LifecycleState.ACTIVE) return;
         mModel.set(PaymentHandlerToolbarProperties.PROGRESS_VISIBLE, false);
@@ -121,16 +135,17 @@ import org.chromium.url.GURL;
             mHideProgressBarHandler = null;
         }
         mModel.set(PaymentHandlerToolbarProperties.PROGRESS_VISIBLE, true);
-        mModel.set(PaymentHandlerToolbarProperties.LOAD_PROGRESS,
+        mModel.set(
+                PaymentHandlerToolbarProperties.LOAD_PROGRESS,
                 Math.max(progress, MINIMUM_LOAD_PROGRESS));
     }
 
     private void setSecurityState(@ConnectionSecurityLevel int securityLevel) {
-        @DrawableRes
-        int iconRes = mDelegate.getSecurityIconResource(securityLevel);
+        @DrawableRes int iconRes = mDelegate.getSecurityIconResource(securityLevel);
         mModel.set(PaymentHandlerToolbarProperties.SECURITY_ICON, iconRes);
         String contentDescription = mDelegate.getSecurityIconContentDescription(securityLevel);
-        mModel.set(PaymentHandlerToolbarProperties.SECURITY_ICON_CONTENT_DESCRIPTION,
+        mModel.set(
+                PaymentHandlerToolbarProperties.SECURITY_ICON_CONTENT_DESCRIPTION,
                 contentDescription);
     }
 

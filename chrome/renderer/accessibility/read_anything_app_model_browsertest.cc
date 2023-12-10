@@ -40,6 +40,33 @@ class ReadAnythingAppModelTest : public ChromeRenderViewTest {
     Reset({});
   }
 
+  ui::AXTreeID SetUpPdfTrees() {
+    SetIsPdf(GURL("http://www.google.com/foo/bar.pdf"));
+
+    // PDF set up required for formatting checks.
+    ui::AXTreeID pdf_iframe_tree_id = ui::AXTreeID::CreateNewAXTreeID();
+    ui::AXTreeID pdf_web_contents_tree_id = ui::AXTreeID::CreateNewAXTreeID();
+
+    // Send update for main web content with child tree (pdf web contents).
+    ui::AXTreeUpdate main_web_contents_update;
+    SetUpdateTreeID(&main_web_contents_update);
+    main_web_contents_update.nodes.resize(1);
+    main_web_contents_update.nodes[0].id = 1;
+    main_web_contents_update.nodes[0].AddChildTreeId(pdf_web_contents_tree_id);
+    AccessibilityEventReceived({main_web_contents_update});
+
+    // Send update for pdf web contents with child tree (iframe).
+    ui::AXTreeUpdate pdf_web_contents_update;
+    pdf_web_contents_update.nodes.resize(1);
+    pdf_web_contents_update.root_id = 1;
+    pdf_web_contents_update.nodes[0].id = 1;
+    pdf_web_contents_update.nodes[0].AddChildTreeId(pdf_iframe_tree_id);
+    SetUpdateTreeID(&pdf_web_contents_update, pdf_web_contents_tree_id);
+    AccessibilityEventReceived({pdf_web_contents_update});
+
+    return pdf_iframe_tree_id;
+  }
+
   void SetUpdateTreeID(ui::AXTreeUpdate* update) {
     SetUpdateTreeID(update, tree_id_);
   }
@@ -172,6 +199,8 @@ class ReadAnythingAppModelTest : public ChromeRenderViewTest {
 
   bool ProcessSelection() { return model_->PostProcessSelection(); }
 
+  bool RequiresDistillation() { return model_->requires_distillation(); }
+
   bool RequiresPostProcessSelection() {
     return model_->requires_post_process_selection();
   }
@@ -263,6 +292,39 @@ TEST_F(ReadAnythingAppModelTest,
   EXPECT_EQ(true, IsNodeIgnoredForReadAnything(2));
   EXPECT_EQ(false, IsNodeIgnoredForReadAnything(3));
   EXPECT_EQ(false, IsNodeIgnoredForReadAnything(4));
+}
+
+TEST_F(ReadAnythingAppModelTest,
+       IsNodeIgnoredForReadAnything_InaccessiblePDFPageNodes) {
+  ui::AXTreeID pdf_iframe_tree_id = SetUpPdfTrees();
+
+  // PDF OCR output contains kBanner and kContentInfo (each with a static text
+  // node child) to mark page start/end.
+  ui::AXTreeUpdate update;
+  SetUpdateTreeID(&update, pdf_iframe_tree_id);
+  update.root_id = 1;
+  update.nodes.resize(5);
+  update.nodes[0].id = 1;
+  update.nodes[0].child_ids = {2, 4};
+  update.nodes[1].id = 2;
+  update.nodes[2].id = 3;
+  update.nodes[3].id = 4;
+  update.nodes[4].id = 5;
+  update.nodes[1].child_ids = {3};
+  update.nodes[3].child_ids = {5};
+  update.nodes[0].role = ax::mojom::Role::kPdfRoot;
+  update.nodes[1].role = ax::mojom::Role::kBanner;
+  update.nodes[2].role = ax::mojom::Role::kStaticText;
+  update.nodes[2].SetNameChecked(string_constants::kPDFPageStart);
+  update.nodes[3].role = ax::mojom::Role::kContentInfo;
+  update.nodes[4].role = ax::mojom::Role::kStaticText;
+  update.nodes[4].SetNameChecked(string_constants::kPDFPageEnd);
+
+  AccessibilityEventReceived({update});
+  EXPECT_EQ(true, IsNodeIgnoredForReadAnything(2));
+  EXPECT_EQ(true, IsNodeIgnoredForReadAnything(3));
+  EXPECT_EQ(false, IsNodeIgnoredForReadAnything(4));
+  EXPECT_EQ(true, IsNodeIgnoredForReadAnything(5));
 }
 
 TEST_F(ReadAnythingAppModelTest, ModelUpdatesTreeState) {
@@ -372,8 +434,7 @@ TEST_F(ReadAnythingAppModelTest,
     child_ids.push_back(id);
     initial_update.nodes[i].id = id;
     initial_update.nodes[i].role = ax::mojom::Role::kStaticText;
-    initial_update.nodes[i].SetName(base::NumberToString(id));
-    initial_update.nodes[i].SetNameFrom(ax::mojom::NameFrom::kContents);
+    initial_update.nodes[i].SetNameChecked(base::NumberToString(id));
   }
   AccessibilityEventReceived({initial_update});
 
@@ -390,8 +451,7 @@ TEST_F(ReadAnythingAppModelTest,
     update.nodes[0].child_ids = child_ids;
     update.nodes[1].id = id;
     update.nodes[1].role = ax::mojom::Role::kStaticText;
-    update.nodes[1].SetName(base::NumberToString(id));
-    update.nodes[1].SetNameFrom(ax::mojom::NameFrom::kContents);
+    update.nodes[1].SetNameChecked(base::NumberToString(id));
     updates.push_back(update);
   }
 
@@ -427,8 +487,7 @@ TEST_F(ReadAnythingAppModelTest, OnTreeErased_ClearsPendingUpdates) {
     child_ids.push_back(id);
     initial_update.nodes[i].id = id;
     initial_update.nodes[i].role = ax::mojom::Role::kStaticText;
-    initial_update.nodes[i].SetName(base::NumberToString(id));
-    initial_update.nodes[i].SetNameFrom(ax::mojom::NameFrom::kContents);
+    initial_update.nodes[i].SetNameChecked(base::NumberToString(id));
   }
   AccessibilityEventReceived({initial_update});
 
@@ -445,8 +504,7 @@ TEST_F(ReadAnythingAppModelTest, OnTreeErased_ClearsPendingUpdates) {
     update.nodes[0].child_ids = child_ids;
     update.nodes[1].id = id;
     update.nodes[1].role = ax::mojom::Role::kStaticText;
-    update.nodes[1].SetName(base::NumberToString(id));
-    update.nodes[1].SetNameFrom(ax::mojom::NameFrom::kContents);
+    update.nodes[1].SetNameChecked(base::NumberToString(id));
     updates.push_back(update);
   }
 
@@ -479,8 +537,7 @@ TEST_F(ReadAnythingAppModelTest,
     child_ids.push_back(id);
     initial_update.nodes[i].id = id;
     initial_update.nodes[i].role = ax::mojom::Role::kStaticText;
-    initial_update.nodes[i].SetName(base::NumberToString(id));
-    initial_update.nodes[i].SetNameFrom(ax::mojom::NameFrom::kContents);
+    initial_update.nodes[i].SetNameChecked(base::NumberToString(id));
   }
   AccessibilityEventReceived({initial_update});
 
@@ -497,8 +554,7 @@ TEST_F(ReadAnythingAppModelTest,
     update.nodes[0].child_ids = child_ids;
     update.nodes[1].id = id;
     update.nodes[1].role = ax::mojom::Role::kStaticText;
-    update.nodes[1].SetName(base::NumberToString(id));
-    update.nodes[1].SetNameFrom(ax::mojom::NameFrom::kContents);
+    update.nodes[1].SetNameChecked(base::NumberToString(id));
     updates.push_back(update);
   }
 
@@ -542,8 +598,7 @@ TEST_F(ReadAnythingAppModelTest, ClearPendingUpdates_DeletesPendingUpdates) {
     update.nodes[0].child_ids = child_ids;
     update.nodes[1].id = id;
     update.nodes[1].role = ax::mojom::Role::kStaticText;
-    update.nodes[1].SetName(base::NumberToString(id));
-    update.nodes[1].SetNameFrom(ax::mojom::NameFrom::kContents);
+    update.nodes[1].SetNameChecked(base::NumberToString(id));
     updates.push_back(update);
   }
 
@@ -579,8 +634,7 @@ TEST_F(ReadAnythingAppModelTest, ChangeActiveTreeWithPendingUpdates_UnknownID) {
     update.nodes[0].child_ids = child_ids;
     update.nodes[1].id = id;
     update.nodes[1].role = ax::mojom::Role::kStaticText;
-    update.nodes[1].SetName(base::NumberToString(id));
-    update.nodes[1].SetNameFrom(ax::mojom::NameFrom::kContents);
+    update.nodes[1].SetNameChecked(base::NumberToString(id));
     updates.push_back(update);
   }
 
@@ -1058,8 +1112,8 @@ TEST_F(ReadAnythingAppModelTest,
   // English
   SetLanguageCode("en");
   std::vector<std::string> expectedFonts = {
-      "Poppins",     "Sans-serif",  "Serif",        "Comic Neue",
-      "Lexend Deca", "EB Garamond", "STIX Two Text"};
+      "Poppins",     "Sans-serif",  "Serif",         "Comic Neue",
+      "Lexend Deca", "EB Garamond", "STIX Two Text", "Andika"};
   std::vector<std::string> fonts = GetSupportedFonts();
 
   EXPECT_EQ(fonts.size(), expectedFonts.size());
@@ -1069,7 +1123,8 @@ TEST_F(ReadAnythingAppModelTest,
 
   // Bulgarian
   SetLanguageCode("bg");
-  expectedFonts = {"Sans-serif", "Serif", "EB Garamond", "STIX Two Text"};
+  expectedFonts = {"Sans-serif", "Serif", "EB Garamond", "STIX Two Text",
+                   "Andika"};
   fonts = GetSupportedFonts();
 
   EXPECT_EQ(fonts.size(), expectedFonts.size());
@@ -1158,4 +1213,69 @@ TEST_F(ReadAnythingAppModelTest, InvalidPDFFormat) {
   AccessibilityEventReceived({pdf_web_contents_update});
 
   ASSERT_FALSE(IsPDFFormatted());
+}
+
+TEST_F(ReadAnythingAppModelTest, PdfEvents_SetRequiresDistillation) {
+  SetIsPdf(GURL("http://www.google.com/foo/bar.pdf"));
+
+  ui::AXTreeUpdate initial_update;
+  SetUpdateTreeID(&initial_update);
+  initial_update.root_id = 1;
+  initial_update.nodes.resize(2);
+  initial_update.nodes[0].id = 1;
+  initial_update.nodes[1].id = 2;
+  initial_update.nodes[0].role = ax::mojom::Role::kPdfRoot;
+  initial_update.nodes[1].role = ax::mojom::Role::kEmbeddedObject;
+  initial_update.nodes[0].child_ids = {2};
+  AccessibilityEventReceived({initial_update});
+
+  // Update with no new nodes added to the tree.
+  ui::AXTreeUpdate update;
+  SetUpdateTreeID(&update);
+  update.root_id = 1;
+  update.nodes.resize(1);
+  update.nodes[0].id = 1;
+  update.nodes[0].role = ax::mojom::Role::kPdfRoot;
+  update.nodes[0].SetNameChecked("example.pdf");
+  AccessibilityEventReceived({update});
+  ASSERT_FALSE(RequiresDistillation());
+
+  // Tree update with PDF contents (new nodes added).
+  ui::AXTreeUpdate update2;
+  SetUpdateTreeID(&update2);
+  update2.root_id = 1;
+  update2.nodes.resize(3);
+  update2.nodes[0].id = 1;
+  update2.nodes[1].id = 2;
+  update2.nodes[2].id = 3;
+  update2.nodes[0].role = ax::mojom::Role::kStaticText;
+  update2.nodes[1].role = ax::mojom::Role::kEmbeddedObject;
+  update2.nodes[2].role = ax::mojom::Role::kStaticText;
+  update2.nodes[0].child_ids = {2};
+  update2.nodes[1].child_ids = {3};
+  AccessibilityEventReceived({update2});
+  ASSERT_TRUE(RequiresDistillation());
+}
+
+TEST_F(ReadAnythingAppModelTest, PdfEvents_DontSetRequiresDistillation) {
+  SetIsPdf(GURL("http://www.google.com/foo/bar.pdf"));
+
+  ui::AXTreeUpdate initial_update;
+  SetUpdateTreeID(&initial_update);
+  initial_update.root_id = 1;
+  initial_update.nodes.resize(1);
+  initial_update.nodes[0].id = 1;
+  initial_update.nodes[0].role = ax::mojom::Role::kPdfRoot;
+  AccessibilityEventReceived({initial_update});
+
+  // Updates that don't create a new subtree, for example, a role change, should
+  // not set requires_distillation_.
+  ui::AXTreeUpdate update;
+  SetUpdateTreeID(&update);
+  update.root_id = 1;
+  update.nodes.resize(1);
+  update.nodes[0].id = 1;
+  update.nodes[0].role = ax::mojom::Role::kStaticText;
+  AccessibilityEventReceived({update});
+  ASSERT_FALSE(RequiresDistillation());
 }

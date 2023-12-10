@@ -54,7 +54,7 @@ WebPerformanceMetricsJavaScriptFeature::GetInstance() {
   return instance.get();
 }
 
-absl::optional<std::string>
+std::optional<std::string>
 WebPerformanceMetricsJavaScriptFeature::GetScriptMessageHandlerName() const {
   return kWebPerformanceMetricsScriptName;
 }
@@ -76,13 +76,13 @@ void WebPerformanceMetricsJavaScriptFeature::ScriptMessageReceived(
     return;
   }
 
-  absl::optional<double> value = body_dict.FindDouble("value");
+  std::optional<double> value = body_dict.FindDouble("value");
   if (!value) {
     return;
   }
 
   if (*metric == "FirstContentfulPaint") {
-    absl::optional<double> frame_navigation_start_time =
+    std::optional<double> frame_navigation_start_time =
         body_dict.FindDouble("frameNavigationStartTime");
     if (!frame_navigation_start_time) {
       return;
@@ -93,7 +93,7 @@ void WebPerformanceMetricsJavaScriptFeature::ScriptMessageReceived(
                                      frame_navigation_start_time.value(),
                                      value.value(), message.is_main_frame());
   } else if (*metric == "FirstInputDelay") {
-    absl::optional<bool> loaded_from_cache = body_dict.FindBool("cached");
+    std::optional<bool> loaded_from_cache = body_dict.FindBool("cached");
     if (!loaded_from_cache.has_value()) {
       return;
     }
@@ -164,19 +164,13 @@ void WebPerformanceMetricsJavaScriptFeature::LogRelativeFirstInputDelay(
     bool loaded_from_cache) {
   base::TimeDelta delta = base::Milliseconds(value);
 
-  // WebKit does not reliably support pageshow events
-  // on version iOS 14 and below.
-  // TODO(crbug.com/1276537)
-  const bool page_show_reliably_supported =
-      base::ios::IsRunningOnIOS15OrLater();
-
   if (is_main_frame) {
     if (!loaded_from_cache) {
       UmaHistogramCustomTimes("IOS.Frame.FirstInputDelay.MainFrame2", delta,
                               kTimeRangeInputDelayHistogramMin,
                               kTimeRangeInputDelayHistogramMax,
                               kTimeRangeInputDelayHistogramBucketCount);
-    } else if (loaded_from_cache && page_show_reliably_supported) {
+    } else if (loaded_from_cache) {
       UmaHistogramCustomTimes(
           "IOS.Frame.FirstInputDelay.MainFrame.AfterBackForwardCacheRestore2",
           delta, kTimeRangeInputDelayHistogramMin,
@@ -189,7 +183,7 @@ void WebPerformanceMetricsJavaScriptFeature::LogRelativeFirstInputDelay(
                               kTimeRangeInputDelayHistogramMin,
                               kTimeRangeInputDelayHistogramMax,
                               kTimeRangeInputDelayHistogramBucketCount);
-    } else if (loaded_from_cache && page_show_reliably_supported) {
+    } else if (loaded_from_cache) {
       UmaHistogramCustomTimes(
           "IOS.Frame.FirstInputDelay.SubFrame.AfterBackForwardCacheRestore2",
           delta, kTimeRangeInputDelayHistogramMin,

@@ -1,7 +1,7 @@
 include_rules = [
-  "+ios/chrome/browser/history",
-  "+ios/chrome/browser/infobars",
-  "+ios/chrome/browser/signin",
+  "+ios/chrome/browser/history/model",
+  "+ios/chrome/browser/infobars/model",
+  "+ios/chrome/browser/signin/model",
   "+ios/chrome/browser/sync/model",
   "+ios/chrome/browser/passwords/model",
   "+ios/chrome/browser/prerender/model",

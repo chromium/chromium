@@ -15,8 +15,8 @@ example_value: 4
 features:
   dynamic_refresh: true
 owners:
-- file://components/policy/OWNERS
-- rsorokin@chromium.org
+- mpolzer@google.com
+- chromeos-commercial-remote-management@google.com
 schema:
   maximum: 4
   minimum: 0

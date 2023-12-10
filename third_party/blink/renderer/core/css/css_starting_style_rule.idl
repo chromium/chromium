@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 [
-  Exposed=Window,
-  RuntimeEnabled=CSSStartingStyle
+  Exposed=Window
 ] interface CSSStartingStyleRule : CSSGroupingRule {
 };

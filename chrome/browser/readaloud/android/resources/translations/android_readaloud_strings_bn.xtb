@@ -2,11 +2,14 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="bn">
 <translation id="1178581264944972037">বিরতি</translation>
-<translation id="2558806128245168542">নেভিগেট করে পিছনে যান</translation>
-<translation id="3523426587027570423">“এই পৃষ্ঠা শুনুন” বন্ধ করতে ট্যাপ করুন।</translation>
+<translation id="1921351128855867012"><ph name="NUMBER_OF_SECONDS" /> সেকেন্ড ফাস্ট ফরওয়ার্ড করুন</translation>
+<translation id="1984328900355667246">প্লেব্যাক উপলভ্য নেই</translation>
+<translation id="3023502830214299618">এই সময়ে, এই পৃষ্ঠার জন্য প্লেব্যাক উপলভ্য নেই। পরে আবার চেষ্টা করে দেখুন।</translation>
+<translation id="3807208219231826020">প্লেব্যাক স্ক্রাব করুন</translation>
+<translation id="385051799172605136">ফিরুন</translation>
 <translation id="4431240646217225907">টেক্সট হাইলাইট ও অটোমেটিক স্ক্রল করুন</translation>
 <translation id="4654641641922242357">“এই পৃষ্ঠা শুনুন” প্লেয়ার।</translation>
-<translation id="4731877163452936634">প্লেব্যাক স্পিড: <ph name="PLAYBACK_SPEED" />. পরিবর্তন করতে ক্লিক করুন।</translation>
+<translation id="4872475766448853257"><ph name="NUMBER_OF_SECONDS" /> সেকেন্ড পিছনে যান</translation>
 <translation id="5234971936051226002">“এই পৃষ্ঠা শুনুন” প্লেয়ার মিনিমাইজ করা হয়েছে।</translation>
 <translation id="5596627076506792578">আরও বিকল্পগুলি</translation>
 <translation id="6315170314923504164">ভয়েস</translation>
@@ -15,8 +18,8 @@
 <translation id="6831043979455480757">অনুবাদ</translation>
 <translation id="6846298663435243399">লোড হচ্ছে...</translation>
 <translation id="7587250070160020374">Chrome এখন চলছে</translation>
-<translation id="7945822420239537236"><ph name="NUMBER_OF_SECONDS" /> সেকেন্ড ফরওয়ার্ড করুন</translation>
-<translation id="7972866381678406344"><ph name="NUMBER_OF_SECONDS" /> সেকেন্ড পিছনে যান</translation>
 <translation id="8136852699834914183">এই পৃষ্ঠায় প্লেব্যাকের সুবিধা উপলভ্য নেই।</translation>
+<translation id="8264989794233974275">গতি <ph name="PLAYBACK_SPEED" />গুণ বাড়ান/কমান।</translation>
+<translation id="8407011429883244666">প্লেয়ার বন্ধ করুন।</translation>
 <translation id="8953618380150219653">“এই পৃষ্ঠা শুনুন” প্লেয়ার সম্পূর্ণ স্ক্রিন জুড়ে খোলা হয়েছে।</translation>
 </translationbundle>

@@ -70,3 +70,22 @@ TEST_F(DiskCacheTest, StorageBlock_SetModified) {
   EXPECT_TRUE(entry2.Load());
   EXPECT_TRUE(0x45687912 == entry2.Data()->hash);
 }
+
+TEST_F(DiskCacheTest, StorageBlock_DifferentNumBuffers) {
+  base::FilePath filename = cache_path_.AppendASCII("a_test");
+  auto file = base::MakeRefCounted<disk_cache::MappedFile>();
+  ASSERT_TRUE(CreateCacheTestFile(filename));
+  ASSERT_TRUE(file->Init(filename, 8192));
+
+  // 2 buffers at index 1.
+  CacheEntryBlock entry1(file.get(), disk_cache::Addr(0xa1010001));
+  EXPECT_TRUE(entry1.Load());
+
+  // 1 buffer at index 3.
+  CacheEntryBlock entry2(file.get(), disk_cache::Addr(0xa0010003));
+  EXPECT_TRUE(entry2.Load());
+
+  // Now specify 2 buffers at index 1.
+  entry2.CopyFrom(&entry1);
+  EXPECT_TRUE(entry2.Load());
+}

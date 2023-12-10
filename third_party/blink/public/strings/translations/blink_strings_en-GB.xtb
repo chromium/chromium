@@ -30,6 +30,7 @@
 <translation id="2226276347425096477">Please shorten this text to <ph name="MAX_CHARACTERS" /> characters or less (you are currently using <ph name="CURRENT_LENGTH" /> characters).</translation>
 <translation id="2247351761944213033">Week <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Track <ph name="NUMBER" /></translation>
+<translation id="2353297238722298836">Camera and microphone allowed</translation>
 <translation id="2393030564806080191">Hexadecimal colour value</translation>
 <translation id="2398813069815436052">dialogue opened.</translation>
 <translation id="245932805758469625">number of seconds of video remaining</translation>
@@ -60,10 +61,12 @@
 <translation id="3822383571486410024">Please lengthen this text to <ph name="MIN_CHARACTERS" /> characters or more (you are currently using <ph name="CURRENT_LENGTH" /> characters).</translation>
 <translation id="383465348367842624">A part followed by '<ph name="ATSIGN" />' should not contain the symbol '<ph name="INVALIDCHARACTER" />'.</translation>
 <translation id="3846214748874656680">Exit full screen</translation>
+<translation id="4031179711345676612">Microphone allowed</translation>
 <translation id="4103419683916926126">Milliseconds</translation>
 <translation id="4201051445878709314">Show previous month</translation>
 <translation id="4360991593054037559">Please enter a valid value. The two nearest valid values are <ph name="VALID_VALUE_LOW" /> and <ph name="VALID_VALUE_HIGHER" />.</translation>
 <translation id="4522570452068850558">Details</translation>
+<translation id="4663373278480897665">Camera allowed</translation>
 <translation id="4664250907885839816">A part following '<ph name="ATSIGN" />' should not contain the symbol '<ph name="INVALIDCHARACTER" />'.</translation>
 <translation id="4718048029184481307">Playing in picture-in-picture</translation>
 <translation id="4748357248530471599">toggle display cutout full screen</translation>
@@ -137,6 +140,7 @@
 <translation id="6941933287844615239">download media</translation>
 <translation id="698788488269350478">expanded.</translation>
 <translation id="6989848892321993519">Please lengthen this text to <ph name="MIN_CHARACTERS" /> characters or more (you are currently using 1 character).</translation>
+<translation id="7080893216867146095">Sharing location allowed</translation>
 <translation id="709897737746224366">Please match the format requested.</translation>
 <translation id="7102274145889307184">current location</translation>
 <translation id="7263440858009898357">Please select an item in the list.</translation>

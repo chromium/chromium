@@ -30,6 +30,7 @@ enum class CalculationOperator {
   kHypot,
   kAbs,
   kSign,
+  kProgress,
   kInvalid
 };
 
@@ -52,6 +53,7 @@ class PLATFORM_EXPORT CalculationExpressionNode
   bool HasAutoAnchorPositioning() const { return has_auto_anchor_positioning_; }
 
   virtual bool IsNumber() const { return false; }
+  virtual bool IsIdentifier() const { return false; }
   virtual bool IsPixelsAndPercent() const { return false; }
   virtual bool IsOperation() const { return false; }
   virtual bool IsAnchorQuery() const { return false; }
@@ -62,7 +64,7 @@ class PLATFORM_EXPORT CalculationExpressionNode
   virtual ~CalculationExpressionNode() = default;
 
 #if DCHECK_IS_ON()
-  enum class ResultType { kInvalid, kNumber, kPixelsAndPercent };
+  enum class ResultType { kInvalid, kNumber, kPixelsAndPercent, kIdent };
 
   virtual ResultType ResolvedResultType() const = 0;
 
@@ -108,6 +110,48 @@ template <>
 struct DowncastTraits<CalculationExpressionNumberNode> {
   static bool AllowFrom(const CalculationExpressionNode& node) {
     return node.IsNumber();
+  }
+};
+
+class PLATFORM_EXPORT CalculationExpressionIdentifierNode final
+    : public CalculationExpressionNode {
+ public:
+  explicit CalculationExpressionIdentifierNode(AtomicString identifier)
+      : identifier_(std::move(identifier)) {
+#if DCHECK_IS_ON()
+    result_type_ = ResultType::kIdent;
+#endif
+  }
+
+  const AtomicString& Value() const { return identifier_; }
+
+  // Implement |CalculationExpressionNode|:
+  float Evaluate(float max_value, const Length::AnchorEvaluator*) const final {
+    return 0.0f;
+  }
+  bool Equals(const CalculationExpressionNode& other) const final {
+    return other.IsIdentifier() &&
+           DynamicTo<CalculationExpressionIdentifierNode>(other)->Value() ==
+               Value();
+  }
+  scoped_refptr<const CalculationExpressionNode> Zoom(
+      double factor) const final {
+    return this;
+  }
+  bool IsIdentifier() const final { return true; }
+
+#if DCHECK_IS_ON()
+  ResultType ResolvedResultType() const final { return ResultType::kIdent; }
+#endif
+
+ private:
+  AtomicString identifier_;
+};
+
+template <>
+struct DowncastTraits<CalculationExpressionIdentifierNode> {
+  static bool AllowFrom(const CalculationExpressionNode& node) {
+    return node.IsIdentifier();
   }
 };
 

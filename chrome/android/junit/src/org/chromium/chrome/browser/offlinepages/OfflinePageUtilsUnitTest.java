@@ -32,7 +32,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileJni;
-import org.chromium.chrome.browser.tab.TabImpl;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.test.util.SadTabRule;
 import org.chromium.components.bookmarks.BookmarkId;
@@ -51,7 +51,7 @@ public class OfflinePageUtilsUnitTest {
     @Mock public Profile.Natives mMockProfileNatives;
 
     @Mock private File mMockDataDirectory;
-    @Mock private TabImpl mTab;
+    @Mock private Tab mTab;
     @Mock private WebContents mWebContents;
     @Mock private OfflinePageBridge mOfflinePageBridge;
     @Mock private OfflinePageUtils.Internal mOfflinePageUtils;

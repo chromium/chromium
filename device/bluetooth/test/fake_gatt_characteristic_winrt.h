@@ -12,11 +12,11 @@
 
 #include <stdint.h>
 
+#include <string_view>
 #include <vector>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "base/strings/string_piece_forward.h"
 #include "device/bluetooth/bluetooth_gatt_service.h"
 
 namespace device {
@@ -35,7 +35,7 @@ class FakeGattCharacteristicWinrt
  public:
   FakeGattCharacteristicWinrt(BluetoothTestWinrt* bluetooth_test_winrt,
                               int properties,
-                              base::StringPiece uuid,
+                              std::string_view uuid,
                               uint16_t attribute_handle);
 
   FakeGattCharacteristicWinrt(const FakeGattCharacteristicWinrt&) = delete;
@@ -157,7 +157,7 @@ class FakeGattCharacteristicWinrt
   void SimulateGattCharacteristicWrite();
   void SimulateGattCharacteristicWriteError(
       BluetoothGattService::GattErrorCode error_code);
-  void SimulateGattDescriptor(base::StringPiece uuid);
+  void SimulateGattDescriptor(std::string_view uuid);
   void SimulateGattNotifySessionStarted();
   void SimulateGattNotifySessionStartError(
       BluetoothGattService::GattErrorCode error_code);

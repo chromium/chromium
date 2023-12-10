@@ -264,5 +264,4 @@ public class MinidumpUploadServiceTest {
             return JobScheduler.RESULT_SUCCESS;
         }
     }
-    ;
 }

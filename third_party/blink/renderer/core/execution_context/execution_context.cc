@@ -599,10 +599,6 @@ bool ExecutionContext::IsFeatureEnabled(
 bool ExecutionContext::IsFeatureEnabled(
     mojom::blink::DocumentPolicyFeature feature,
     PolicyValue threshold_value) const {
-  // The default value for any feature should be true unless restricted by
-  // document policy
-  if (!RuntimeEnabledFeatures::DocumentPolicyEnabled())
-    return true;
   return security_context_.IsFeatureEnabled(feature, threshold_value).enabled;
 }
 
@@ -623,11 +619,6 @@ bool ExecutionContext::IsFeatureEnabled(
     ReportOptions report_option,
     const String& message,
     const String& source_file) {
-  // The default value for any feature should be true unless restricted by
-  // document policy
-  if (!RuntimeEnabledFeatures::DocumentPolicyEnabled())
-    return true;
-
   SecurityContext::FeatureStatus status =
       security_context_.IsFeatureEnabled(feature, threshold_value);
   if (status.should_report &&

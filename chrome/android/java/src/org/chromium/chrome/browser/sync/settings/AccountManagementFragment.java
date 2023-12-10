@@ -139,31 +139,34 @@ public class AccountManagementFragment extends ChromeBaseSettingsFragment
 
         if (getPreferenceScreen() != null) getPreferenceScreen().removeAll();
 
-        String signedInAccountEmail =
-                CoreAccountInfo.getEmailFrom(IdentityServicesProvider.get()
-                                                     .getIdentityManager(getProfile())
-                                                     .getPrimaryAccountInfo(ConsentLevel.SIGNIN));
-        List<CoreAccountInfo> coreAccountInfos = AccountUtils.getCoreAccountInfosIfFulfilledOrEmpty(
-                AccountManagerFacadeProvider.getInstance().getCoreAccountInfos());
-        if (signedInAccountEmail == null || coreAccountInfos.isEmpty()) {
+        mSignedInCoreAccountInfo =
+                IdentityServicesProvider.get()
+                        .getIdentityManager(getProfile())
+                        .getPrimaryAccountInfo(ConsentLevel.SIGNIN);
+        List<CoreAccountInfo> coreAccountInfos =
+                AccountUtils.getCoreAccountInfosIfFulfilledOrEmpty(
+                        AccountManagerFacadeProvider.getInstance().getCoreAccountInfos());
+        if (mSignedInCoreAccountInfo == null || coreAccountInfos.isEmpty()) {
             // The AccountManagementFragment can only be shown when the user is signed in. If the
             // user is signed out, exit the fragment.
             getActivity().finish();
             return;
         }
-        mSignedInCoreAccountInfo =
-                AccountUtils.findCoreAccountInfoByEmail(coreAccountInfos, signedInAccountEmail);
-        assert mSignedInCoreAccountInfo != null;
 
         DisplayableProfileData profileData =
                 mProfileDataCache.getProfileDataOrDefault(mSignedInCoreAccountInfo.getEmail());
-        getActivity().setTitle(SyncSettingsUtils.getDisplayableFullNameOrEmailWithPreference(
-                profileData, getContext(), SyncSettingsUtils.TitlePreference.FULL_NAME));
+        getActivity()
+                .setTitle(
+                        SyncSettingsUtils.getDisplayableFullNameOrEmailWithPreference(
+                                profileData,
+                                getContext(),
+                                SyncSettingsUtils.TitlePreference.FULL_NAME));
         addPreferencesFromResource(R.xml.account_management_preferences);
         configureSignOutSwitch();
         configureChildAccountPreferences();
-        AccountManagerFacadeProvider.getInstance().getCoreAccountInfos().then(
-                this::updateAccountsList);
+        AccountManagerFacadeProvider.getInstance()
+                .getCoreAccountInfos()
+                .then(this::updateAccountsList);
     }
 
     /**
@@ -188,32 +191,40 @@ public class AccountManagementFragment extends ChromeBaseSettingsFragment
         } else {
             signOutPreference.setLayoutResource(R.layout.account_management_account_row);
             signOutPreference.setIcon(R.drawable.ic_signout_40dp);
-            signOutPreference.setTitle(IdentityServicesProvider.get()
-                                               .getIdentityManager(getProfile())
-                                               .hasPrimaryAccount(ConsentLevel.SYNC)
+            signOutPreference.setTitle(
+                    IdentityServicesProvider.get()
+                                    .getIdentityManager(getProfile())
+                                    .hasPrimaryAccount(ConsentLevel.SYNC)
                             ? R.string.sign_out_and_turn_off_sync
                             : R.string.sign_out);
-            signOutPreference.setOnPreferenceClickListener(preference -> {
-                if (!isVisible() || !isResumed() || mSignedInCoreAccountInfo == null) {
-                    return false;
-                }
+            signOutPreference.setOnPreferenceClickListener(
+                    preference -> {
+                        if (!isVisible() || !isResumed() || mSignedInCoreAccountInfo == null) {
+                            return false;
+                        }
 
-                if (IdentityServicesProvider.get()
-                                .getIdentityManager(getProfile())
-                                .getPrimaryAccountInfo(ConsentLevel.SYNC)
-                        != null) {
-                    // Only show the sign-out dialog if the user has given sync consent.
-                    SignOutDialogCoordinator.show(requireContext(),
-                            ((ModalDialogManagerHolder) getActivity()).getModalDialogManager(),
-                            this, SignOutDialogCoordinator.ActionType.CLEAR_PRIMARY_ACCOUNT,
-                            mGaiaServiceType);
-                } else {
-                    IdentityServicesProvider.get()
-                            .getSigninManager(getProfile())
-                            .signOut(SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS, null, false);
-                }
-                return true;
-            });
+                        if (IdentityServicesProvider.get()
+                                        .getIdentityManager(getProfile())
+                                        .getPrimaryAccountInfo(ConsentLevel.SYNC)
+                                != null) {
+                            // Only show the sign-out dialog if the user has given sync consent.
+                            SignOutDialogCoordinator.show(
+                                    requireContext(),
+                                    ((ModalDialogManagerHolder) getActivity())
+                                            .getModalDialogManager(),
+                                    this,
+                                    SignOutDialogCoordinator.ActionType.CLEAR_PRIMARY_ACCOUNT,
+                                    mGaiaServiceType);
+                        } else {
+                            IdentityServicesProvider.get()
+                                    .getSigninManager(getProfile())
+                                    .signOut(
+                                            SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS,
+                                            null,
+                                            false);
+                        }
+                        return true;
+                    });
         }
     }
 
@@ -228,8 +239,11 @@ public class AccountManagementFragment extends ChromeBaseSettingsFragment
             final String parentText;
 
             if (!secondParent.isEmpty()) {
-                parentText = getString(R.string.account_management_header_two_parent_names,
-                        firstParent, secondParent);
+                parentText =
+                        getString(
+                                R.string.account_management_header_two_parent_names,
+                                firstParent,
+                                secondParent);
             } else if (!firstParent.isEmpty()) {
                 parentText =
                         getString(R.string.account_management_header_one_parent_name, firstParent);
@@ -278,14 +292,17 @@ public class AccountManagementFragment extends ChromeBaseSettingsFragment
 
         DisplayableProfileData profileData =
                 mProfileDataCache.getProfileDataOrDefault(coreAccountInfo.getEmail());
-        accountPreference.setTitle(SyncSettingsUtils.getDisplayableFullNameOrEmailWithPreference(
-                profileData, getContext(), SyncSettingsUtils.TitlePreference.EMAIL));
+        accountPreference.setTitle(
+                SyncSettingsUtils.getDisplayableFullNameOrEmailWithPreference(
+                        profileData, getContext(), SyncSettingsUtils.TitlePreference.EMAIL));
         accountPreference.setIcon(profileData.getImage());
 
-        accountPreference.setOnPreferenceClickListener(SyncSettingsUtils.toOnClickListener(this,
-                ()
-                        -> SigninUtils.openSettingsForAccount(
-                                getActivity(), coreAccountInfo.getEmail())));
+        accountPreference.setOnPreferenceClickListener(
+                SyncSettingsUtils.toOnClickListener(
+                        this,
+                        () ->
+                                SigninUtils.openSettingsForAccount(
+                                        getActivity(), coreAccountInfo.getEmail())));
 
         return accountPreference;
     }
@@ -297,12 +314,14 @@ public class AccountManagementFragment extends ChromeBaseSettingsFragment
         manageYourGoogleAccountPreference.setTitle(R.string.manage_your_google_account);
         manageYourGoogleAccountPreference.setIcon(R.drawable.ic_google_services_48dp);
         manageYourGoogleAccountPreference.setOnPreferenceClickListener(
-                SyncSettingsUtils.toOnClickListener(this, () -> {
-                    assert IdentityServicesProvider.get()
-                            .getIdentityManager(getProfile())
-                            .hasPrimaryAccount(ConsentLevel.SIGNIN);
-                    SyncSettingsUtils.openGoogleMyAccount(getActivity());
-                }));
+                SyncSettingsUtils.toOnClickListener(
+                        this,
+                        () -> {
+                            assert IdentityServicesProvider.get()
+                                    .getIdentityManager(getProfile())
+                                    .hasPrimaryAccount(ConsentLevel.SIGNIN);
+                            SyncSettingsUtils.openGoogleMyAccount(getActivity());
+                        }));
 
         return manageYourGoogleAccountPreference;
     }
@@ -319,28 +338,31 @@ public class AccountManagementFragment extends ChromeBaseSettingsFragment
         addAccountPreference.setLayoutResource(R.layout.account_management_account_row);
         addAccountPreference.setIcon(R.drawable.ic_person_add_40dp);
         addAccountPreference.setTitle(R.string.signin_add_account_to_device);
-        addAccountPreference.setOnPreferenceClickListener(preference -> {
-            if (!isVisible() || !isResumed()) return false;
+        addAccountPreference.setOnPreferenceClickListener(
+                preference -> {
+                    if (!isVisible() || !isResumed()) return false;
 
-            AccountManagerFacade accountManagerFacade = AccountManagerFacadeProvider.getInstance();
-            accountManagerFacade.createAddAccountIntent((@Nullable Intent intent) -> {
-                if (!isVisible() || !isResumed()) return;
+                    AccountManagerFacade accountManagerFacade =
+                            AccountManagerFacadeProvider.getInstance();
+                    accountManagerFacade.createAddAccountIntent(
+                            (@Nullable Intent intent) -> {
+                                if (!isVisible() || !isResumed()) return;
 
-                if (intent != null) {
-                    startActivity(intent);
-                } else {
-                    // AccountManagerFacade couldn't create intent, use SigninUtils to open
-                    // settings instead.
-                    SigninUtils.openSettingsForAllAccounts(getActivity());
-                }
+                                if (intent != null) {
+                                    startActivity(intent);
+                                } else {
+                                    // AccountManagerFacade couldn't create intent, use SigninUtils
+                                    // to open settings instead.
+                                    SigninUtils.openSettingsForAllAccounts(getActivity());
+                                }
 
-                // Return to the last opened tab if triggered from the content area.
-                if (mGaiaServiceType != GAIAServiceType.GAIA_SERVICE_TYPE_NONE) {
-                    if (isAdded()) getActivity().finish();
-                }
-            });
-            return true;
-        });
+                                // Return to the last opened tab if triggered from the content area.
+                                if (mGaiaServiceType != GAIAServiceType.GAIA_SERVICE_TYPE_NONE) {
+                                    if (isAdded()) getActivity().finish();
+                                }
+                            });
+                    return true;
+                });
         addAccountPreference.setManagedPreferenceDelegate(
                 new ChromeManagedPreferenceDelegate(getProfile()) {
                     @Override
@@ -358,21 +380,24 @@ public class AccountManagementFragment extends ChromeBaseSettingsFragment
     private void setAccountBadges(List<CoreAccountInfo> coreAccountInfos) {
         for (CoreAccountInfo coreAccountInfo : coreAccountInfos) {
             Account account = CoreAccountInfo.getAndroidAccountFrom(coreAccountInfo);
-            AccountManagerFacadeProvider.getInstance().checkChildAccountStatus(
-                    account, (isChild, childAccount) -> {
-                        if (isChild) {
-                            mProfileDataCache.setBadge(
-                                    childAccount.name, R.drawable.ic_account_child_20dp);
-                        }
-                    });
+            AccountManagerFacadeProvider.getInstance()
+                    .checkChildAccountStatus(
+                            account,
+                            (isChild, childAccount) -> {
+                                if (isChild) {
+                                    mProfileDataCache.setBadge(
+                                            childAccount.name, R.drawable.ic_account_child_20dp);
+                                }
+                            });
         }
     }
 
     // ProfileDataCache.Observer implementation:
     @Override
     public void onProfileDataUpdated(String accountEmail) {
-        AccountManagerFacadeProvider.getInstance().getCoreAccountInfos().then(
-                this::updateAccountsList);
+        AccountManagerFacadeProvider.getInstance()
+                .getCoreAccountInfos()
+                .then(this::updateAccountsList);
     }
 
     // SignOutDialogListener implementation:
@@ -381,14 +406,15 @@ public class AccountManagementFragment extends ChromeBaseSettingsFragment
         // In case the user reached this fragment without being signed in, we guard the sign out so
         // we do not hit a native crash.
         if (!IdentityServicesProvider.get()
-                        .getIdentityManager(getProfile())
-                        .hasPrimaryAccount(ConsentLevel.SIGNIN)) {
+                .getIdentityManager(getProfile())
+                .hasPrimaryAccount(ConsentLevel.SIGNIN)) {
             return;
         }
         final DialogFragment clearDataProgressDialog = new ClearDataProgressDialog();
         IdentityServicesProvider.get()
                 .getSigninManager(getProfile())
-                .signOut(SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS,
+                .signOut(
+                        SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS,
                         new SigninManager.SignOutCallback() {
                             @Override
                             public void preWipeData() {

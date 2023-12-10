@@ -29,6 +29,7 @@
 #include "android_webview/browser/gfx/scoped_app_gl_state_restore.h"
 #include "android_webview/browser/js_java_interaction/aw_web_message_host_factory.h"
 #include "android_webview/browser/lifecycle/aw_contents_lifecycle_notifier.h"
+#include "android_webview/browser/metrics/aw_metrics_service_client.h"
 #include "android_webview/browser/page_load_metrics/page_load_metrics_initialize.h"
 #include "android_webview/browser/permission/aw_permission_request.h"
 #include "android_webview/browser/permission/permission_request_handler.h"
@@ -64,6 +65,7 @@
 #include "base/trace_event/typed_macros.h"
 #include "components/android_autofill/browser/android_autofill_manager.h"
 #include "components/android_autofill/browser/autofill_provider_android.h"
+#include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/autofill/core/browser/autofill_client.h"
@@ -107,13 +109,14 @@
 
 struct AwDrawSWFunctionTable;
 
-using autofill::ContentAutofillDriverFactory;
+using base::android::AppendJavaStringArrayToStringVector;
 using base::android::AttachCurrentThread;
 using base::android::ConvertJavaStringToUTF16;
 using base::android::ConvertJavaStringToUTF8;
 using base::android::ConvertUTF16ToJavaString;
 using base::android::ConvertUTF8ToJavaString;
 using base::android::HasException;
+using base::android::JavaIntArrayToIntVector;
 using base::android::JavaParamRef;
 using base::android::JavaRef;
 using base::android::ScopedJavaGlobalRef;
@@ -249,16 +252,12 @@ AwContents::AwContents(std::unique_ptr<WebContents> web_contents)
       std::make_unique<AwRenderViewHostExt>(this, web_contents_.get());
 
   InitializePageLoadMetricsForWebContents(web_contents_.get());
+  AwMetricsServiceClient::GetInstance()->OnWebContentsCreated(
+      web_contents_.get());
 
   permission_request_handler_ =
       std::make_unique<PermissionRequestHandler>(this, web_contents_.get());
 
-  AwAutofillClient* browser_autofill_manager_delegate =
-      AwAutofillClient::FromWebContents(web_contents_.get());
-  if (browser_autofill_manager_delegate) {
-    InitAutofillIfNecessary(
-        browser_autofill_manager_delegate->GetSaveFormData());
-  }
   content::SynchronousCompositor::SetClientForWebContents(
       web_contents_.get(), &browser_view_renderer_);
   AwContentsLifecycleNotifier::GetInstance().OnWebViewCreated(this);
@@ -294,51 +293,22 @@ void AwContents::SetJavaPeers(
 }
 
 void AwContents::InitializeAndroidAutofill(JNIEnv* env) {
-  // Initialize Android Autofill, this method shall only be called in Android O
-  // and beyond.
-  // AutofillProvider shall already be created for |web_contents_| from
-  // AutofillProvider java.
   DCHECK(autofill::AutofillProvider::FromWebContents(web_contents_.get()));
-  // Autocomplete is only supported for Android pre-O, disable it if Android
-  // autofill is enabled.
-  InitAutofillIfNecessary(/*autocomplete_enabled=*/false);
-}
-
-void AwContents::SetSaveFormData(bool enabled) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  InitAutofillIfNecessary(enabled);
-  // We need to check for the existence, since browser_autofill_manager_delegate
-  // may not be created when the setting is false.
-  if (AwAutofillClient::FromWebContents(web_contents_.get())) {
-    AwAutofillClient::FromWebContents(web_contents_.get())
-        ->SetSaveFormData(enabled);
+  if (autofill::ContentAutofillClient::FromWebContents(web_contents_.get())) {
+    return;
   }
-}
-
-void AwContents::InitAutofillIfNecessary(bool autocomplete_enabled) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  // This method initializes either Android autofill or Chrome autocomplete:
-  // - If autofill_provider is available, Android autofill shall be initialized.
-  // - Otherwise, initialize Chrome autocomplete if autocomplete_enabled.
-
-  // Check if the autofill driver factory already exists.
-  content::WebContents* web_contents = web_contents_.get();
-  if (ContentAutofillDriverFactory::FromWebContents(web_contents))
+  // The AutofillProvider object is already created by the AutofillProvider
+  // Java object, except in tests.
+  if (!autofill::AutofillProvider::FromWebContents(web_contents_.get())) {
     return;
+  }
+  AwAutofillClient::CreateForWebContents(web_contents_.get());
 
-  // The autofill_provider object is already created by the AutofillProvider
-  // Java object in Android O and beyond.
-  auto* autofill_provider =
-      autofill::AutofillProvider::FromWebContents(web_contents);
-
-  // Just return, if the app neither runs on O sdk nor enables autocomplete.
-  if (!autofill_provider && !autocomplete_enabled)
-    return;
-
-  // WebView browser tests use BrowserAutofillManager if `!autofill_provider`.
-  AwAutofillClient::CreateForWebContents(
-      web_contents,
-      /*use_android_autofill_manager=*/!!autofill_provider);
+  // We need to initialize the keyboard suppressor before creating any
+  // AutofillManagers and after the autofill client is available.
+  autofill::AutofillProvider::FromWebContents(web_contents_.get())
+      ->MaybeInitKeyboardSuppressor();
 }
 
 void AwContents::SetAwAutofillClient(const JavaRef<jobject>& client) {
@@ -560,8 +530,8 @@ void AwContents::AddVisitedLinks(
     const JavaParamRef<jobjectArray>& jvisited_links) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   std::vector<std::u16string> visited_link_strings;
-  base::android::AppendJavaStringArrayToStringVector(env, jvisited_links,
-                                                     &visited_link_strings);
+  AppendJavaStringArrayToStringVector(env, jvisited_links,
+                                      &visited_link_strings);
 
   std::vector<GURL> visited_link_gurls;
   std::vector<std::u16string>::const_iterator itr;
@@ -1150,8 +1120,8 @@ gfx::Point AwContents::GetLocationOnScreen() {
   if (!obj)
     return gfx::Point();
   std::vector<int> location;
-  base::android::JavaIntArrayToIntVector(
-      env, Java_AwContents_getLocationOnScreen(env, obj), &location);
+  JavaIntArrayToIntVector(env, Java_AwContents_getLocationOnScreen(env, obj),
+                          &location);
   return gfx::Point(location[0], location[1]);
 }
 

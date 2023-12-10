@@ -49,7 +49,7 @@ void JniNotificationPresenter::Destroy(JNIEnv* env) {
 }
 
 void JniNotificationPresenter::OnNotificationFetched(
-    absl::optional<NotificationMessage> notification) {
+    std::optional<NotificationMessage> notification) {
   DCHECK(sequence_->RunsTasksInCurrentSequence());
   JNIEnv* env = base::android::AttachCurrentThread();
   auto java_presenter = java_presenter_.get(env);

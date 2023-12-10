@@ -5,6 +5,7 @@
 #include "chrome/updater/update_usage_stats_task.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -28,7 +29,6 @@
 
 #if BUILDFLAG(IS_MAC)
 #include "chrome/updater/util/mac_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #elif BUILDFLAG(IS_WIN)
 #include "base/strings/sys_string_conversions.h"
 #include "base/win/registry.h"
@@ -43,7 +43,7 @@ namespace {
 
 #if BUILDFLAG(IS_MAC)
 base::FilePath AppIDToPath(const std::string& app_id) {
-  absl::optional<base::FilePath> application_support_dir =
+  std::optional<base::FilePath> application_support_dir =
       GetApplicationSupportDirectory(UpdaterScope::kUser);
   EXPECT_TRUE(application_support_dir);
   return (*application_support_dir)

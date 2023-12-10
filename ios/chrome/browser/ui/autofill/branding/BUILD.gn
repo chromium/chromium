@@ -2,12 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-declare_args() {
-  # Name of the target that define the autofill fullcolor branding icon to use.
-  ios_image_autofill_branding_icon_fullcolor =
-      "//ios/chrome/browser/ui/autofill/resources:fullcolor_branding_icon"
-}
-
 source_set("branding") {
   sources = [
     "branding_coordinator.h",
@@ -34,9 +28,9 @@ source_set("branding_ui") {
   deps = [
     "//base",
     "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/common/ui/util",
-    ios_image_autofill_branding_icon_fullcolor,
   ]
   frameworks = [ "UIKit.framework" ]
 }

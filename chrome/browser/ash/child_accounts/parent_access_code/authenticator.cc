@@ -30,23 +30,23 @@ constexpr char kClockDriftDictKey[] = "clock_drift_tolerance";
 }  // namespace
 
 // static
-absl::optional<AccessCodeConfig> AccessCodeConfig::FromDictionary(
+std::optional<AccessCodeConfig> AccessCodeConfig::FromDictionary(
     const base::Value::Dict& dict) {
   const std::string* secret = dict.FindString(kSharedSecretDictKey);
   if (!secret || secret->empty())
-    return absl::nullopt;
+    return std::nullopt;
 
-  absl::optional<int> validity = dict.FindInt(kCodeValidityDictKey);
+  std::optional<int> validity = dict.FindInt(kCodeValidityDictKey);
   if (!(validity.has_value() && *validity >= kMinCodeValidity.InSeconds() &&
         *validity <= kMaxCodeValidity.InSeconds())) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
-  absl::optional<int> clock_drift = dict.FindInt(kClockDriftDictKey);
+  std::optional<int> clock_drift = dict.FindInt(kClockDriftDictKey);
   if (!(clock_drift.has_value() &&
         *clock_drift >= kMinClockDriftTolerance.InSeconds() &&
         *clock_drift <= kMaxClockDriftTolerance.InSeconds())) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return AccessCodeConfig(*secret, base::Seconds(*validity),
@@ -122,7 +122,7 @@ Authenticator::Authenticator(AccessCodeConfig config)
 
 Authenticator::~Authenticator() = default;
 
-absl::optional<AccessCode> Authenticator::Generate(base::Time timestamp) const {
+std::optional<AccessCode> Authenticator::Generate(base::Time timestamp) const {
   DCHECK_LE(base::Time::UnixEpoch(), timestamp);
 
   // We find the beginning of the interval for the given timestamp and adjust by
@@ -142,7 +142,7 @@ absl::optional<AccessCode> Authenticator::Generate(base::Time timestamp) const {
   std::vector<uint8_t> digest(hmac_.DigestLength());
   if (!hmac_.Sign(big_endian_timestamp, &digest[0], digest.size())) {
     LOG(ERROR) << "Signing HMAC data to generate Parent Access Code failed";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Read 4 bytes in Big-endian order starting from |offset|.
@@ -160,8 +160,8 @@ absl::optional<AccessCode> Authenticator::Generate(base::Time timestamp) const {
                     valid_from + config_.code_validity());
 }
 
-absl::optional<AccessCode> Authenticator::Validate(const std::string& code,
-                                                   base::Time timestamp) const {
+std::optional<AccessCode> Authenticator::Validate(const std::string& code,
+                                                  base::Time timestamp) const {
   DCHECK_LE(base::Time::UnixEpoch(), timestamp);
 
   base::Time valid_from = timestamp - config_.clock_drift_tolerance();
@@ -171,7 +171,7 @@ absl::optional<AccessCode> Authenticator::Validate(const std::string& code,
                          timestamp + config_.clock_drift_tolerance());
 }
 
-absl::optional<AccessCode> Authenticator::ValidateInRange(
+std::optional<AccessCode> Authenticator::ValidateInRange(
     const std::string& code,
     base::Time valid_from,
     base::Time valid_to) const {
@@ -186,11 +186,11 @@ absl::optional<AccessCode> Authenticator::ValidateInRange(
     const base::Time generation_timestamp =
         base::Time::FromMillisecondsSinceUnixEpoch(
             i * kAccessCodeGranularity.InMilliseconds());
-    absl::optional<AccessCode> pac = Generate(generation_timestamp);
+    std::optional<AccessCode> pac = Generate(generation_timestamp);
     if (pac.has_value() && pac->code() == code)
       return pac;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 }  // namespace parent_access

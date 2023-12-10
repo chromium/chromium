@@ -106,9 +106,7 @@ public class WebViewBrowserFragment extends Fragment {
     private View mFullscreenView;
     private ActivityResultRegistry mActivityResultRegistry;
     private final OnBackInvokedCallback mOnBackInvokedCallback =
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU ? ()
-            -> mWebView.goBack()
-            : null;
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU ? () -> mWebView.goBack() : null;
 
     // Each time we make a request, store it here with an int key. onRequestPermissionsResult will
     // look up the request in order to grant the approprate permissions.
@@ -128,11 +126,13 @@ public class WebViewBrowserFragment extends Fragment {
     public void setFilePathCallback(ValueCallback<Uri[]> inCallback) {
         mFilePathCallback = inCallback;
     }
+
     public void setActivityResultRegistry(ActivityResultRegistry activityResultRegistry) {
         mActivityResultRegistry = activityResultRegistry;
     }
 
     public WebViewBrowserFragment() {}
+
     // Work around our wonky API by wrapping a geo permission prompt inside a regular
     // PermissionRequest.
     private static class GeoPermissionRequest extends PermissionRequest {
@@ -212,20 +212,25 @@ public class WebViewBrowserFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         WebView.setWebContentsDebuggingEnabled(true);
         mUrlBar = view.findViewById(R.id.url_field);
-        mUrlBar.setOnKeyListener((View view1, int keyCode, KeyEvent event) -> {
-            if (keyCode == KeyEvent.KEYCODE_ENTER && event.getAction() == KeyEvent.ACTION_UP) {
-                loadUrlFromUrlBar(view1);
-                return true;
-            }
-            return false;
-        });
+        mUrlBar.setOnKeyListener(
+                (View view1, int keyCode, KeyEvent event) -> {
+                    if (keyCode == KeyEvent.KEYCODE_ENTER
+                            && event.getAction() == KeyEvent.ACTION_UP) {
+                        loadUrlFromUrlBar(view1);
+                        return true;
+                    }
+                    return false;
+                });
         ApiCompatibilityUtils.clearHandwritingBoundsOffsetBottom(mUrlBar);
         view.findViewById(R.id.btn_load_url)
                 .setOnClickListener((view1) -> loadUrlFromUrlBar(view1));
 
         createAndInitializeWebView();
-        mFileContents = registerForActivityResult(mMultiFileSelector, mActivityResultRegistry,
-                result -> mFilePathCallback.onReceiveValue(result));
+        mFileContents =
+                registerForActivityResult(
+                        mMultiFileSelector,
+                        mActivityResultRegistry,
+                        result -> mFilePathCallback.onReceiveValue(result));
 
         String url = getUrlFromIntent(requireActivity().getIntent());
         if (url == null) {
@@ -276,8 +281,11 @@ public class WebViewBrowserFragment extends Fragment {
         byte[] webViewState = savedInstanceState.getByteArray(SAVE_RESTORE_STATE_KEY);
         if (webViewState != null && webViewState.length > MAX_STATE_LENGTH) {
             savedInstanceState.remove(SAVE_RESTORE_STATE_KEY);
-            String message = String.format(
-                    Locale.US, "Can't save state: %dkb is too long", webViewState.length / 1024);
+            String message =
+                    String.format(
+                            Locale.US,
+                            "Can't save state: %dkb is too long",
+                            webViewState.length / 1024);
             Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show();
         }
     }
@@ -320,111 +328,127 @@ public class WebViewBrowserFragment extends Fragment {
         // turn them on for consistency with normal browsers.
         CookieManager.getInstance().setAcceptThirdPartyCookies(webview, true);
 
-        webview.setWebViewClient(new WebViewClientCompat() {
-            @Override
-            public void onPageStarted(WebView view, String url, Bitmap favicon) {
-                setUrlFail(false);
-                setUrlBarText(url);
-            }
-
-            @Override
-            public void onPageFinished(WebView view, String url) {
-                setUrlBarText(url);
-            }
-
-            @SuppressWarnings("deprecation") // because we support api level 19 and up.
-            @Override
-            public boolean shouldOverrideUrlLoading(WebView webView, String url) {
-                // Treat some URLs as internal, always open them in the WebView:
-                // * about: scheme URIs
-                // * chrome:// scheme URIs
-                // * file:///android_asset/ or file:///android_res/ URIs
-                if (url.startsWith("about:") || url.startsWith("chrome://")
-                        || FILE_ANDROID_ASSET_PATTERN.matcher(url).matches()) {
-                    return false;
-                }
-                return startBrowsingIntent(requireContext(), url);
-            }
-
-            @SuppressWarnings("deprecation") // because we support api level 19 and up.
-            @Override
-            public void onReceivedError(
-                    WebView view, int errorCode, String description, String failingUrl) {
-                setUrlFail(true);
-            }
-
-            @Override
-            public void doUpdateVisitedHistory(WebView view, String url, boolean isReload) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                    if (view.canGoBack()) {
-                        requireActivity()
-                                .getOnBackInvokedDispatcher()
-                                .registerOnBackInvokedCallback(
-                                        OnBackInvokedDispatcher.PRIORITY_DEFAULT,
-                                        mOnBackInvokedCallback);
-                    } else if (!view.canGoBack()) {
-                        requireActivity()
-                                .getOnBackInvokedDispatcher()
-                                .unregisterOnBackInvokedCallback(mOnBackInvokedCallback);
+        webview.setWebViewClient(
+                new WebViewClientCompat() {
+                    @Override
+                    public void onPageStarted(WebView view, String url, Bitmap favicon) {
+                        setUrlFail(false);
+                        setUrlBarText(url);
                     }
-                }
-            }
-        });
 
-        webview.setWebChromeClient(new WebChromeClient() {
-            @Override
-            public Bitmap getDefaultVideoPoster() {
-                return Bitmap.createBitmap(
-                        new int[] {Color.TRANSPARENT}, 1, 1, Bitmap.Config.ARGB_8888);
-            }
+                    @Override
+                    public void onPageFinished(WebView view, String url) {
+                        setUrlBarText(url);
+                    }
 
-            @Override
-            public void onGeolocationPermissionsShowPrompt(
-                    String origin, GeolocationPermissions.Callback callback) {
-                onPermissionRequest(new GeoPermissionRequest(origin, callback));
-            }
+                    @SuppressWarnings("deprecation") // because we support api level 19 and up.
+                    @Override
+                    public boolean shouldOverrideUrlLoading(WebView webView, String url) {
+                        // Treat some URLs as internal, always open them in the WebView:
+                        // * about: scheme URIs
+                        // * chrome:// scheme URIs
+                        // * file:///android_asset/ or file:///android_res/ URIs
+                        if (url.startsWith("about:")
+                                || url.startsWith("chrome://")
+                                || FILE_ANDROID_ASSET_PATTERN.matcher(url).matches()) {
+                            return false;
+                        }
+                        return startBrowsingIntent(requireContext(), url);
+                    }
 
-            @Override
-            public void onPermissionRequest(PermissionRequest request) {
-                requestPermissionsForPage(request);
-            }
+                    @SuppressWarnings("deprecation") // because we support api level 19 and up.
+                    @Override
+                    public void onReceivedError(
+                            WebView view, int errorCode, String description, String failingUrl) {
+                        setUrlFail(true);
+                    }
 
-            @Override
-            public void onShowCustomView(View view, WebChromeClient.CustomViewCallback callback) {
-                if (mFullscreenView != null) {
-                    ((ViewGroup) mFullscreenView.getParent()).removeView(mFullscreenView);
-                }
-                mFullscreenView = view;
-                requireActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-                requireActivity().getWindow().addContentView(mFullscreenView,
-                        new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                                ViewGroup.LayoutParams.MATCH_PARENT, Gravity.CENTER));
-            }
+                    @Override
+                    public void doUpdateVisitedHistory(WebView view, String url, boolean isReload) {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                            if (view.canGoBack()) {
+                                requireActivity()
+                                        .getOnBackInvokedDispatcher()
+                                        .registerOnBackInvokedCallback(
+                                                OnBackInvokedDispatcher.PRIORITY_DEFAULT,
+                                                mOnBackInvokedCallback);
+                            } else if (!view.canGoBack()) {
+                                requireActivity()
+                                        .getOnBackInvokedDispatcher()
+                                        .unregisterOnBackInvokedCallback(mOnBackInvokedCallback);
+                            }
+                        }
+                    }
+                });
 
-            @Override
-            public void onHideCustomView() {
-                if (mFullscreenView == null) {
-                    return;
-                }
-                requireActivity().getWindow().clearFlags(
-                        WindowManager.LayoutParams.FLAG_FULLSCREEN);
-                ((ViewGroup) mFullscreenView.getParent()).removeView(mFullscreenView);
-                mFullscreenView = null;
-            }
+        webview.setWebChromeClient(
+                new WebChromeClient() {
+                    @Override
+                    public Bitmap getDefaultVideoPoster() {
+                        return Bitmap.createBitmap(
+                                new int[] {Color.TRANSPARENT}, 1, 1, Bitmap.Config.ARGB_8888);
+                    }
 
-            @Override
-            public boolean onShowFileChooser(WebView webView, ValueCallback<Uri[]> filePathCallback,
-                    WebChromeClient.FileChooserParams fileChooserParams) {
-                setFilePathCallback(filePathCallback);
-                mMultiFileSelector.setFileChooserParams(fileChooserParams);
-                mFileContents.launch(null);
-                return true;
-            }
-        });
+                    @Override
+                    public void onGeolocationPermissionsShowPrompt(
+                            String origin, GeolocationPermissions.Callback callback) {
+                        onPermissionRequest(new GeoPermissionRequest(origin, callback));
+                    }
+
+                    @Override
+                    public void onPermissionRequest(PermissionRequest request) {
+                        requestPermissionsForPage(request);
+                    }
+
+                    @Override
+                    public void onShowCustomView(
+                            View view, WebChromeClient.CustomViewCallback callback) {
+                        if (mFullscreenView != null) {
+                            ((ViewGroup) mFullscreenView.getParent()).removeView(mFullscreenView);
+                        }
+                        mFullscreenView = view;
+                        requireActivity()
+                                .getWindow()
+                                .addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+                        requireActivity()
+                                .getWindow()
+                                .addContentView(
+                                        mFullscreenView,
+                                        new FrameLayout.LayoutParams(
+                                                ViewGroup.LayoutParams.MATCH_PARENT,
+                                                ViewGroup.LayoutParams.MATCH_PARENT,
+                                                Gravity.CENTER));
+                    }
+
+                    @Override
+                    public void onHideCustomView() {
+                        if (mFullscreenView == null) {
+                            return;
+                        }
+                        requireActivity()
+                                .getWindow()
+                                .clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+                        ((ViewGroup) mFullscreenView.getParent()).removeView(mFullscreenView);
+                        mFullscreenView = null;
+                    }
+
+                    @Override
+                    public boolean onShowFileChooser(
+                            WebView webView,
+                            ValueCallback<Uri[]> filePathCallback,
+                            WebChromeClient.FileChooserParams fileChooserParams) {
+                        setFilePathCallback(filePathCallback);
+                        mMultiFileSelector.setFileChooserParams(fileChooserParams);
+                        mFileContents.launch(null);
+                        return true;
+                    }
+                });
 
         mWebView = webview;
-        getContainer().addView(
-                webview, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+        getContainer()
+                .addView(
+                        webview,
+                        new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
         setUrlBarText("");
     }
 
@@ -554,8 +578,8 @@ public class WebViewBrowserFragment extends Fragment {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
                 && "file".equals(Uri.parse(url).getScheme())) {
             if (PackageManager.PERMISSION_DENIED
-                    == requireContext().checkSelfPermission(
-                            Manifest.permission.READ_EXTERNAL_STORAGE)) {
+                    == requireContext()
+                            .checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE)) {
                 requestPermissionsForPage(new FilePermissionRequest(url));
             }
         }
@@ -587,8 +611,9 @@ public class WebViewBrowserFragment extends Fragment {
      * @return Whether the keyboard was visible before.
      */
     private static boolean hideKeyboard(View view) {
-        InputMethodManager imm = (InputMethodManager) view.getContext().getSystemService(
-                Context.INPUT_METHOD_SERVICE);
+        InputMethodManager imm =
+                (InputMethodManager)
+                        view.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
         return imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 
@@ -597,12 +622,13 @@ public class WebViewBrowserFragment extends Fragment {
     }
 
     static final Pattern BROWSER_URI_SCHEMA =
-            Pattern.compile("(?i)" // switch on case insensitive matching
-                    + "(" // begin group for schema
-                    + "(?:http|https|file):\\/\\/"
-                    + "|(?:inline|data|about|chrome|javascript):"
-                    + ")"
-                    + "(.*)");
+            Pattern.compile(
+                    "(?i)" // switch on case insensitive matching
+                            + "(" // begin group for schema
+                            + "(?:http|https|file):\\/\\/"
+                            + "|(?:inline|data|about|chrome|javascript):"
+                            + ")"
+                            + "(.*)");
 
     private static boolean startBrowsingIntent(Context context, String url) {
         Intent intent;
@@ -648,12 +674,11 @@ public class WebViewBrowserFragment extends Fragment {
         return false;
     }
 
-    /**
-     * Search for intent handlers that are specific to the scheme of the URL in the intent.
-     */
+    /** Search for intent handlers that are specific to the scheme of the URL in the intent. */
     private static boolean isSpecializedHandlerAvailable(Intent intent) {
-        List<ResolveInfo> handlers = PackageManagerUtils.queryIntentActivities(
-                intent, PackageManager.GET_RESOLVED_FILTER);
+        List<ResolveInfo> handlers =
+                PackageManagerUtils.queryIntentActivities(
+                        intent, PackageManager.GET_RESOLVED_FILTER);
         if (handlers == null || handlers.size() == 0) {
             return false;
         }

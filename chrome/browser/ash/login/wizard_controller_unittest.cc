@@ -11,7 +11,7 @@
 #include "base/functional/callback.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
+#include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/ash/input_method/input_method_configuration.h"
 #include "chrome/browser/ash/login/enrollment/mock_enrollment_launcher.h"
 #include "chrome/browser/ash/login/startup_utils.h"
@@ -284,7 +284,7 @@ class WizardControllerTestBase : public ::testing::Test {
   std::unique_ptr<ChromeKeyboardControllerClientTestHelper>
       chrome_keyboard_controller_client_test_helper_;
   ScopedTestingCrosSettings settings_;
-  KioskAppManager kiosk_app_manager_;
+  KioskChromeAppManager kiosk_chrome_app_manager_;
   ScopedStubInstallAttributes scoped_stub_install_attributes_;
   ash::ScopedDeviceSettingsTestHelper device_settings_test_helper_;
   ash::system::ScopedFakeStatisticsProvider statistics_provider_;

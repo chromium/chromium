@@ -5,7 +5,6 @@
 <translation id="1076394037877376434">Izbriši stranicu <ph name="PAGE_NUMBER" /></translation>
 <translation id="1113173431709655881">Način kamere</translation>
 <translation id="1153190633558910465">Isključi rešetku</translation>
-<translation id="1175958423215084756">Veza je prepoznata. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213">Stranica <ph name="PAGE_NUMBER" /> je izbrisana</translation>
 <translation id="1258009455399840361">Zakreni za 90 stupnjeva u smjeru kazaljke na satu</translation>
 <translation id="1417314334557041815">Uredi stranicu <ph name="INDEX" /></translation>
@@ -60,14 +59,12 @@
 <translation id="3642192109456033823">Obrada videozapisa...</translation>
 <translation id="3789724198583203151">Zakreni za 90 stupnjeva suprotno od smjera kazaljke na satu</translation>
 <translation id="3810838688059735925">Video</translation>
-<translation id="3892148308691398805">Kopiranje teksta</translation>
 <translation id="4060608699153044055">Ne možete snimati zbog male količine prostora za pohranu na uređaju. Da biste počeli snimati, morate osloboditi prostor na uređaju.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
 <translation id="4118525110028899586">Pauziraj snimanje</translation>
 <translation id="4121305183798804752">Otkriven je dokument</translation>
 <translation id="414641094616694804">Za ovu se kameru ne može promijeniti razlučivost</translation>
 <translation id="4176463684765177261">Onemogućeno</translation>
-<translation id="4269820728363426813">Kopiraj adresu veze</translation>
 <translation id="428234092390943511">Minijatura stranice</translation>
 <translation id="4349714250734879769">Neka Chrome skalira okvire</translation>
 <translation id="4383571725254449280">Ispis zapisnika o izvedbi</translation>
@@ -144,7 +141,6 @@ Ako su vaše povratne informacije o kvaliteti slika ili videozapisa, priložite 
 <translation id="7726641833034062494">Snimite normalan videozapis</translation>
 <translation id="7748344063862150053">Gornji desni kut dokumenta</translation>
 <translation id="7933675232020478311">Kreće se prema dolje udesno</translation>
-<translation id="7983668134180549431">Tekst je prepoznat.</translation>
 <translation id="8079255378695216066">Nije moguće započeti snimanje</translation>
 <translation id="8120146556401698679">Pomicanje, naginjanje, zumiranje</translation>
 <translation id="8131740175452115882">Potvrdi</translation>
@@ -163,6 +159,7 @@ Ako su vaše povratne informacije o kvaliteti slika ili videozapisa, priložite 
 <translation id="8870695351537079478">Pokretanje snimanja nije uspjelo</translation>
 <translation id="8880167521484863515">4 naprema 3</translation>
 <translation id="8903921497873541725">Povećaj</translation>
+<translation id="8926890870105777777">Pridruživanje mreži <ph name="WIFINAME" /></translation>
 <translation id="9045010116236796332">Postavite sve rubove dokumenta unutar okvira</translation>
 <translation id="9045155556724273246">Deset sekundi</translation>
 <translation id="906331135292332864">Obrada slike...</translation>

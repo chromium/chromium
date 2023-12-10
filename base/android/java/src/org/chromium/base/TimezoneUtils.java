@@ -13,10 +13,7 @@ import java.util.TimeZone;
 
 @JNINamespace("base::android")
 class TimezoneUtils {
-    /**
-     * Guards this class from being instantiated.
-     */
-
+    /** Guards this class from being instantiated. */
     private TimezoneUtils() {}
 
     /**

@@ -38,6 +38,8 @@ import java.io.File;
 public class AwComponentUpdateService extends JobService {
     private static final String TAG = "AwCUS";
 
+    private static SharedPreferences sSharedPreferences;
+
     private ResultReceiver mFinishCallback;
 
     // Histogram names.
@@ -56,8 +58,11 @@ public class AwComponentUpdateService extends JobService {
     private static final int DIRECTORY_SIZE_MIN_BUCKET = 100;
     private static final int DIRECTORY_SIZE_MAX_BUCKET = 500000;
     private static final int DIRECTORY_SIZE_NUM_BUCKETS = 50;
-    private static final String SHARED_PREFERENCES_NAME = "AwComponentUpdateServicePreferences";
-    private static final String KEY_UNEXPECTED_EXIT = "UnexpectedExit";
+
+    @VisibleForTesting
+    public static final String SHARED_PREFERENCES_NAME = "AwComponentUpdateServicePreferences";
+
+    @VisibleForTesting public static final String KEY_UNEXPECTED_EXIT = "UnexpectedExit";
 
     /**
      * The service can be both started by {@link android.app.job.JobScheduler} as a {@link
@@ -80,7 +85,7 @@ public class AwComponentUpdateService extends JobService {
     public boolean onStartJob(JobParameters params) {
         assert mJobParameters == null;
         mJobParameters = params;
-        return maybeStartUpdates(/*onDemandUpdate=*/false);
+        return maybeStartUpdates(/* onDemandUpdate= */ false);
     }
 
     // Called by JobScheduler.
@@ -97,7 +102,8 @@ public class AwComponentUpdateService extends JobService {
 
         // This should only be called if the service needs to be shut down before we've called
         // jobFinished. Request reschedule so we can finish downloading component updates.
-        return /*reschedule= */ true;
+        return
+        /* reschedule= */ true;
     }
 
     /**
@@ -113,10 +119,12 @@ public class AwComponentUpdateService extends JobService {
         // Always keep the most recent startId as this is the one that should be used to stop
         // the service.
         mServiceStartedId = startId;
-        mFinishCallback = IntentUtils.safeGetParcelableExtra(
-                intent, ComponentsListFragment.SERVICE_FINISH_CALLBACK);
-        boolean onDemandUpdate = IntentUtils.safeGetBooleanExtra(
-                intent, ComponentsListFragment.ON_DEMAND_UPDATE_REQUEST, false);
+        mFinishCallback =
+                IntentUtils.safeGetParcelableExtra(
+                        intent, ComponentsListFragment.SERVICE_FINISH_CALLBACK);
+        boolean onDemandUpdate =
+                IntentUtils.safeGetBooleanExtra(
+                        intent, ComponentsListFragment.ON_DEMAND_UPDATE_REQUEST, false);
         if (!maybeStartUpdates(onDemandUpdate)) {
             stopSelf(startId);
             mServiceStartedId = 0;
@@ -136,8 +144,8 @@ public class AwComponentUpdateService extends JobService {
             return true;
         }
 
-        if (ComponentUpdaterSafeModeUtils.executeSafeModeIfEnabled(new File(
-                    ComponentsProviderPathUtil.getComponentUpdateServiceDirectoryPath()))) {
+        if (ComponentUpdaterSafeModeUtils.executeSafeModeIfEnabled(
+                new File(ComponentsProviderPathUtil.getComponentUpdateServiceDirectoryPath()))) {
             return false;
         }
 
@@ -150,13 +158,16 @@ public class AwComponentUpdateService extends JobService {
             mIsUpdating = true;
             final long startTime = SystemClock.uptimeMillis();
             // TODO(crbug.com/1171817) Once we can log UMA from native, remove the count parameter.
-            AwComponentUpdateServiceJni.get().startComponentUpdateService((count) -> {
-                recordJobDuration(SystemClock.uptimeMillis() - startTime);
-                recordFilesChanged(count);
-                recordDirectorySize();
-                setUnexpectedExit(false);
-                stopService();
-            }, onDemandUpdate);
+            AwComponentUpdateServiceJni.get()
+                    .startComponentUpdateService(
+                            (count) -> {
+                                recordJobDuration(SystemClock.uptimeMillis() - startTime);
+                                recordFilesChanged(count);
+                                recordDirectorySize();
+                                setUnexpectedExit(false);
+                                stopService();
+                            },
+                            onDemandUpdate);
             return true;
         }
         Log.e(TAG, "couldn't init native, aborting starting AwComponentUpdaterService");
@@ -185,18 +196,26 @@ public class AwComponentUpdateService extends JobService {
     }
 
     private void recordDirectorySize() {
-        final long cpsSize = FileUtils.getFileSizeBytes(
-                new File(ComponentsProviderPathUtil.getComponentsServingDirectoryPath()));
-        final long cusSize = FileUtils.getFileSizeBytes(
-                new File(ComponentsProviderPathUtil.getComponentUpdateServiceDirectoryPath()));
+        final long cpsSize =
+                FileUtils.getFileSizeBytes(
+                        new File(ComponentsProviderPathUtil.getComponentsServingDirectoryPath()));
+        final long cusSize =
+                FileUtils.getFileSizeBytes(
+                        new File(
+                                ComponentsProviderPathUtil
+                                        .getComponentUpdateServiceDirectoryPath()));
         recordDirectorySize(HISTOGRAM_COMPONENT_UPDATER_CPS_DIRECTORY_SIZE, cpsSize);
         recordDirectorySize(HISTOGRAM_COMPONENT_UPDATER_CUS_DIRECTORY_SIZE, cusSize);
     }
 
     private void recordDirectorySize(String histogramName, long sizeBytes) {
-        UmaRecorderHolder.get().recordExponentialHistogram(histogramName,
-                (int) (sizeBytes / BYTES_PER_KILOBYTE), DIRECTORY_SIZE_MIN_BUCKET,
-                DIRECTORY_SIZE_MAX_BUCKET, DIRECTORY_SIZE_NUM_BUCKETS);
+        UmaRecorderHolder.get()
+                .recordExponentialHistogram(
+                        histogramName,
+                        (int) (sizeBytes / BYTES_PER_KILOBYTE),
+                        DIRECTORY_SIZE_MIN_BUCKET,
+                        DIRECTORY_SIZE_MAX_BUCKET,
+                        DIRECTORY_SIZE_NUM_BUCKETS);
     }
 
     private void recordJobDuration(long duration) {
@@ -211,17 +230,27 @@ public class AwComponentUpdateService extends JobService {
 
     private void maybeRecordUnexpectedExit() {
         final SharedPreferences sharedPreferences =
-                getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
+                sSharedPreferences != null
+                        ? sSharedPreferences
+                        : getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
         if (sharedPreferences.contains(KEY_UNEXPECTED_EXIT)) {
-            RecordHistogram.recordBooleanHistogram(HISTOGRAM_COMPONENT_UPDATER_UNEXPECTED_EXIT,
+            RecordHistogram.recordBooleanHistogram(
+                    HISTOGRAM_COMPONENT_UPDATER_UNEXPECTED_EXIT,
                     sharedPreferences.getBoolean(KEY_UNEXPECTED_EXIT, false));
         }
     }
 
     private void setUnexpectedExit(boolean unfinished) {
         final SharedPreferences sharedPreferences =
-                getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
+                sSharedPreferences != null
+                        ? sSharedPreferences
+                        : getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
         sharedPreferences.edit().putBoolean(KEY_UNEXPECTED_EXIT, unfinished).apply();
+    }
+
+    @VisibleForTesting
+    public static void setSharedPreferences(SharedPreferences sharedPreferences) {
+        sSharedPreferences = sharedPreferences;
     }
 
     @NativeMethods

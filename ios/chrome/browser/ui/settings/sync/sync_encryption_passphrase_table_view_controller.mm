@@ -20,7 +20,6 @@
 #import "ios/chrome/browser/net/crurl.h"
 #import "ios/chrome/browser/settings/model/sync/utils/sync_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
-#import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
@@ -30,10 +29,10 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/signin/authentication_service.h"
-#import "ios/chrome/browser/signin/authentication_service_factory.h"
-#import "ios/chrome/browser/signin/identity_manager_factory.h"
-#import "ios/chrome/browser/signin/system_identity.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
+#import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/ui/scoped_ui_blocker/scoped_ui_blocker.h"
 #import "ios/chrome/browser/ui/settings/cells/byo_textfield_item.h"
@@ -159,8 +158,7 @@ const CGFloat kSpinnerButtonPadding = 18;
   [self loadModel];
   [self setRightNavBarItem];
 
-  SceneState* sceneState =
-      SceneStateBrowserAgent::FromBrowser(self.browser)->GetSceneState();
+  SceneState* sceneState = self.browser->GetSceneState();
   _uiBlocker = std::make_unique<ScopedUIBlocker>(sceneState);
 }
 

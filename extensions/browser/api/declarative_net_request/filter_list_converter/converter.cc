@@ -75,16 +75,16 @@ class ProtoToJSONRuleConverter {
     }
 
     // Sanity check that we can parse this rule.
-    std::u16string err;
-    dnr_api::Rule rule;
     base::Value json_rule(std::move(json_rule_));
-    CHECK(dnr_api::Rule::Populate(json_rule, rule, err) && err.empty())
-        << "Converted rule can't be parsed " << json_rule;
+    auto rule = dnr_api::Rule::FromValue(json_rule);
+    CHECK(rule.has_value())
+        << "Converted rule can't be parsed. Error: " << rule.error()
+        << json_rule;
 
     IndexedRule indexed_rule;
-    ParseResult result =
-        IndexedRule::CreateIndexedRule(std::move(rule), GURL() /* base_url */,
-                                       kMinValidStaticRulesetID, &indexed_rule);
+    ParseResult result = IndexedRule::CreateIndexedRule(
+        std::move(rule).value(), GURL() /* base_url */,
+        kMinValidStaticRulesetID, &indexed_rule);
 
     auto get_non_ascii_error = [this](const std::string& context) {
       return base::StringPrintf(

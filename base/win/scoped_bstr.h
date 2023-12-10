@@ -10,9 +10,10 @@
 #include <oleauto.h>
 #include <stddef.h>
 
+#include <string_view>
+
 #include "base/base_export.h"
 #include "base/check.h"
-#include "base/strings/string_piece.h"
 
 namespace base {
 namespace win {
@@ -27,7 +28,7 @@ class BASE_EXPORT ScopedBstr {
   //
   // NOTE: Do not pass a BSTR to this constructor expecting ownership to
   // be transferred - even though it compiles! ;-)
-  explicit ScopedBstr(WStringPiece non_bstr);
+  explicit ScopedBstr(std::wstring_view non_bstr);
 
   ScopedBstr(const ScopedBstr&) = delete;
   ScopedBstr& operator=(const ScopedBstr&) = delete;
@@ -49,7 +50,7 @@ class BASE_EXPORT ScopedBstr {
   // ScopedBstr instance, call |reset| instead.
   //
   // Returns a pointer to the new BSTR.
-  BSTR Allocate(WStringPiece str);
+  BSTR Allocate(std::wstring_view str);
 
   // Allocates a new BSTR with the specified number of bytes.
   // Returns a pointer to the new BSTR.

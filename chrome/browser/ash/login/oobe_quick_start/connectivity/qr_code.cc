@@ -48,8 +48,7 @@ void QRCode::GeneratePixelData() {
 
 std::vector<uint8_t> QRCode::GetQRCodeData() {
   std::string shared_secret_str(shared_secret_.begin(), shared_secret_.end());
-  std::string shared_secret_base64;
-  base::Base64Encode(shared_secret_str, &shared_secret_base64);
+  std::string shared_secret_base64 = base::Base64Encode(shared_secret_str);
   url::RawCanonOutputT<char> shared_secret_base64_uriencoded;
   url::EncodeURIComponent(shared_secret_base64,
                           &shared_secret_base64_uriencoded);

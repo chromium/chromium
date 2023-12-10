@@ -6,11 +6,11 @@
 
 #include <algorithm>
 #include <memory>
+#include <string_view>
 
 #include "base/files/file_path.h"
 #include "base/lazy_instance.h"
 #include "base/strings/escape.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -152,7 +152,7 @@ bool GetNetworkListImpl(NetworkInterfaceList* networks,
       continue;
     }
 
-    absl::optional<Eui48MacAddress> mac_address;
+    std::optional<Eui48MacAddress> mac_address;
     mac_address.emplace();
     if (adapter->PhysicalAddressLength == mac_address->size()) {
       std::copy_n(reinterpret_cast<const uint8_t*>(adapter->PhysicalAddress),

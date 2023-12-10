@@ -416,14 +416,14 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveUITest,
   browser()->set_update_ui_immediately_for_testing();
   content::WebContents* unfocused_tab =
       browser()->tab_strip_model()->GetWebContentsAt(0);
-  content::TitleWatcher title_watcher(unfocused_tab, u"Updated Title");
+  std::u16string updated_title = u"Updated Title";
+  content::TitleWatcher title_watcher(unfocused_tab, updated_title);
   ASSERT_TRUE(
       content::ExecJs(unfocused_tab, "document.title = 'Updated Title';"));
-  // TODO: handle return value.
-  std::ignore = title_watcher.WaitAndGetTitle();
-  // The browser UI is updated by a PostTask() with a delay of zero seconds.
-  // However, the update will be visible when the run loop next idles after the
-  // title is updated. To ensure it's ran, lets wait until its idle.
+  ASSERT_EQ(title_watcher.WaitAndGetTitle(), updated_title);
+  // The browser UI is updated by a PostTask() with a delay of zero
+  // seconds. However, the update will be visible when the run loop next
+  // idles after the title is updated. To ensure it ran, wait until it's idle.
   base::RunLoop().RunUntilIdle();
 
   // Verify extensions menu content wasn't affected by checking the site

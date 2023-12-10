@@ -108,13 +108,13 @@ std::u16string ChromePageInfoUiDelegate::GetAutomaticallyBlockedReason(
 }
 
 #if !BUILDFLAG(IS_ANDROID)
-absl::optional<page_info::proto::SiteInfo>
+std::optional<page_info::proto::SiteInfo>
 ChromePageInfoUiDelegate::GetAboutThisSiteInfo() {
   Browser* browser = chrome::FindBrowserWithTab(web_contents_);
   if (!browser || !browser->is_type_normal()) {
     // TODO(crbug.com/1435450): SidePanel is not available. Evaluate if we can
     //                          show ATP in a different way.
-    return absl::nullopt;
+    return std::nullopt;
   }
   if (auto* service =
           AboutThisSiteServiceFactory::GetForProfile(GetProfile())) {
@@ -123,7 +123,7 @@ ChromePageInfoUiDelegate::GetAboutThisSiteInfo() {
         AboutThisSiteTabHelper::FromWebContents(web_contents_));
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void ChromePageInfoUiDelegate::OpenMoreAboutThisPageUrl(
@@ -178,9 +178,8 @@ bool ChromePageInfoUiDelegate::IsMultipleTabsOpen() {
   return count > 1;
 }
 
-void ChromePageInfoUiDelegate::ShowPrivacySandboxAdPersonalization() {
-  Browser* browser = chrome::FindBrowserWithTab(web_contents_);
-  chrome::ShowPrivacySandboxAdPersonalization(browser);
+void ChromePageInfoUiDelegate::OpenSiteSettingsFileSystem() {
+  chrome::ShowSiteSettingsFileSystem(GetProfile(), site_url_);
 }
 
 void ChromePageInfoUiDelegate::ShowPrivacySandboxSettings() {
@@ -217,7 +216,7 @@ bool ChromePageInfoUiDelegate::IsTrackingProtection3pcdEnabled() {
       ->IsTrackingProtection3pcdEnabled();
 }
 
-absl::optional<content::PermissionResult>
+std::optional<content::PermissionResult>
 ChromePageInfoUiDelegate::GetEmbargoResult(ContentSettingsType type) {
   return permissions::PermissionsClient::Get()
       ->GetPermissionDecisionAutoBlocker(GetProfile())

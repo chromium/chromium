@@ -6,9 +6,7 @@ package org.chromium.base.test.util;
 
 import android.os.Debug;
 
-/**
- * Encapsulates timeout logic, and disables timeouts when debugger is attached.
- */
+/** Encapsulates timeout logic, and disables timeouts when debugger is attached. */
 public class TimeoutTimer {
     private static final boolean IS_REAL_ANDROID =
             System.getProperty("java.class.path").endsWith(".apk");

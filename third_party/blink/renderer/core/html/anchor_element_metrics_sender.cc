@@ -114,6 +114,7 @@ void AnchorElementMetricsSender::AddAnchorElement(HTMLAnchorElement& element) {
   // Add this element to the set of elements that we will try to report after
   // the next layout.
   anchor_elements_to_report_.insert(&element);
+  RegisterForLifecycleNotifications();
 }
 
 void AnchorElementMetricsSender::Trace(Visitor* visitor) const {
@@ -137,6 +138,11 @@ bool AnchorElementMetricsSender::AssociateInterface() {
       metrics_host_.BindNewPipeAndPassReceiver(
           document->GetExecutionContext()->GetTaskRunner(
               TaskType::kInternalDefault)));
+
+  metrics_host_->ShouldSkipUpdateDelays(
+      WTF::BindOnce(&AnchorElementMetricsSender::SetShouldSkipUpdateDelays,
+                    WrapWeakPersistent(this)));
+
   return true;
 }
 
@@ -152,14 +158,19 @@ AnchorElementMetricsSender::AnchorElementMetricsSender(Document& document)
   DCHECK(document.IsInOutermostMainFrame());
   DCHECK(clock_);
 
-  document.View()->RegisterForLifecycleNotifications(this);
   intersection_observer_ = IntersectionObserver::Create(
-      {}, {INTERSECTION_RATIO_THRESHOLD}, &document,
+      /* (root) margin */ Vector<Length>(),
+      /* scroll_margin */ Vector<Length>(),
+      /* thresholds */ {INTERSECTION_RATIO_THRESHOLD},
+      /* document */ &document,
+      /* callback */
       WTF::BindRepeating(&AnchorElementMetricsSender::UpdateVisibleAnchors,
                          WrapWeakPersistent(this)),
+      /* ukm_metric_id */
       LocalFrameUkmAggregator::kAnchorElementMetricsIntersectionObserver,
-      IntersectionObserver::kDeliverDuringPostLifecycleSteps,
-      IntersectionObserver::kFractionOfTarget, 100 /* delay in ms */);
+      /* behavior */ IntersectionObserver::kDeliverDuringPostLifecycleSteps,
+      /* semantics */ IntersectionObserver::kFractionOfTarget,
+      /* delay */ 100);
 }
 
 void AnchorElementMetricsSender::SetNowAsNavigationStartForTesting() {
@@ -178,6 +189,20 @@ void AnchorElementMetricsSender::FireUpdateTimerForTesting() {
   UpdateMetrics(&update_timer_);
 }
 
+void AnchorElementMetricsSender::SetShouldSkipUpdateDelays(
+    bool should_skip_for_testing) {
+  if (!should_skip_for_testing) {
+    return;
+  }
+
+  should_skip_update_delays_for_testing_ = true;
+
+  if (update_timer_.IsActive()) {
+    update_timer_.Stop();
+  }
+  UpdateMetrics(&update_timer_);
+}
+
 void AnchorElementMetricsSender::UpdateVisibleAnchors(
     const HeapVector<Member<IntersectionObserverEntry>>& entries) {
   DCHECK(base::FeatureList::IsEnabled(features::kNavigationPredictor));
@@ -186,8 +211,8 @@ void AnchorElementMetricsSender::UpdateVisibleAnchors(
     return;
   }
 
-  for (auto entry : entries) {
-    Element* element = entry->target();
+  for (const auto& entry : entries) {
+    const Element* element = entry->target();
     const HTMLAnchorElement& anchor_element =
         IsA<HTMLAreaElement>(*element) ? To<HTMLAreaElement>(*element)
                                        : To<HTMLAnchorElement>(*element);
@@ -195,10 +220,12 @@ void AnchorElementMetricsSender::UpdateVisibleAnchors(
       // The anchor is leaving the viewport.
       EnqueueLeftViewport(anchor_element);
     } else {
-      //  The anchor is visible.
+      // The anchor is visible.
       EnqueueEnteredViewport(anchor_element);
     }
   }
+
+  RegisterForLifecycleNotifications();
 }
 
 base::TimeTicks AnchorElementMetricsSender::NavigationStart(
@@ -327,6 +354,17 @@ void AnchorElementMetricsSender::EnqueueEnteredViewport(
   entered_viewport_messages_.push_back(std::move(msg));
 }
 
+void AnchorElementMetricsSender::RegisterForLifecycleNotifications() {
+  if (is_registered_for_lifecycle_notifications_) {
+    return;
+  }
+
+  if (LocalFrameView* view = GetSupplementable()->View()) {
+    view->RegisterForLifecycleNotifications(this);
+    is_registered_for_lifecycle_notifications_ = true;
+  }
+}
+
 void AnchorElementMetricsSender::DidFinishLifecycleUpdate(
     const LocalFrameView& local_frame_view) {
   // Check that layout is stable. If it is, we can report pending
@@ -389,11 +427,19 @@ void AnchorElementMetricsSender::DidFinishLifecycleUpdate(
   // into the DOM later or if they enter the viewport.
   anchor_elements_to_report_.clear();
   MaybeUpdateMetrics();
+
+  DCHECK_EQ(&local_frame_view, GetSupplementable()->View());
+  DCHECK(is_registered_for_lifecycle_notifications_);
+  GetSupplementable()->View()->UnregisterFromLifecycleNotifications(this);
+  is_registered_for_lifecycle_notifications_ = false;
 }
 
 void AnchorElementMetricsSender::MaybeUpdateMetrics() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!update_timer_.IsActive()) {
+  if (should_skip_update_delays_for_testing_) {
+    DCHECK(!update_timer_.IsActive());
+    UpdateMetrics(&update_timer_);
+  } else if (!update_timer_.IsActive()) {
     update_timer_.StartOneShot(kUpdateMetricsTimeGap, FROM_HERE);
   }
 }

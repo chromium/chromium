@@ -56,11 +56,25 @@ public class NoteTemplateConversionBridge {
     }
 
     @CalledByNative
-    private static TextStyle createTextStyle(String fontName, @ColorInt int fontColor, int weight,
-            boolean allCaps, int alignment, int minTextSizeSP, int maxTextSizeSP,
-            @ColorInt int highlightColor, int highlightStyle) {
-        return new TextStyle(fontName, fontColor, weight, allCaps,
-                TextAlignment.fromInteger(alignment), minTextSizeSP, maxTextSizeSP, highlightColor,
+    private static TextStyle createTextStyle(
+            String fontName,
+            @ColorInt int fontColor,
+            int weight,
+            boolean allCaps,
+            int alignment,
+            int minTextSizeSP,
+            int maxTextSizeSP,
+            @ColorInt int highlightColor,
+            int highlightStyle) {
+        return new TextStyle(
+                fontName,
+                fontColor,
+                weight,
+                allCaps,
+                TextAlignment.fromInteger(alignment),
+                minTextSizeSP,
+                maxTextSizeSP,
+                highlightColor,
                 HighlightStyle.fromInteger(highlightStyle));
     }
 
@@ -75,11 +89,22 @@ public class NoteTemplateConversionBridge {
      * @return the {@link NoteTemplate} instance.
      */
     @CalledByNative
-    private static NoteTemplate createTemplateAndMaybeAddToList(@Nullable List<NoteTemplate> list,
-            int id, String localizedName, Background mainBackground, Background contentBackground,
-            TextStyle textStyle, FooterStyle footerStyle) {
-        NoteTemplate template = new NoteTemplate(
-                id, localizedName, mainBackground, contentBackground, textStyle, footerStyle);
+    private static NoteTemplate createTemplateAndMaybeAddToList(
+            @Nullable List<NoteTemplate> list,
+            int id,
+            String localizedName,
+            Background mainBackground,
+            Background contentBackground,
+            TextStyle textStyle,
+            FooterStyle footerStyle) {
+        NoteTemplate template =
+                new NoteTemplate(
+                        id,
+                        localizedName,
+                        mainBackground,
+                        contentBackground,
+                        textStyle,
+                        footerStyle);
 
         if (list != null) {
             list.add(template);

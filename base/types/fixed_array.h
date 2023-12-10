@@ -23,8 +23,7 @@ namespace base {
 // Trivially-default-constructible case: no-value constructor should init
 template <typename T,
           size_t N = absl::kFixedArrayUseDefault,
-          typename A = std::allocator<T>,
-          typename = void>
+          typename A = std::allocator<T>>
 class FixedArray : public absl::FixedArray<T, N, A> {
  public:
   using absl::FixedArray<T, N, A>::FixedArray;
@@ -36,12 +35,8 @@ class FixedArray : public absl::FixedArray<T, N, A> {
 
 // Non-trivially-default-constructible case: Pass through all constructors
 template <typename T, size_t N, typename A>
-struct FixedArray<
-    T,
-    N,
-    A,
-    std::enable_if_t<!std::is_trivially_default_constructible_v<T>>>
-    : public absl::FixedArray<T, N, A> {
+  requires(!std::is_trivially_default_constructible_v<T>)
+struct FixedArray<T, N, A> : public absl::FixedArray<T, N, A> {
   using absl::FixedArray<T, N, A>::FixedArray;
 };
 

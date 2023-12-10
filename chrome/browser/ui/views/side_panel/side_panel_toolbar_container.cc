@@ -162,7 +162,7 @@ SidePanelToolbarContainer::SidePanelToolbarContainer(BrowserView* browser_view)
 SidePanelToolbarContainer::~SidePanelToolbarContainer() {}
 
 bool SidePanelToolbarContainer::IsActiveEntryPinnedAndVisible() {
-  absl::optional<SidePanelEntry::Id> active_id =
+  std::optional<SidePanelEntry::Id> active_id =
       GetSidePanelCoordinator()->GetCurrentEntryId();
   for (auto* pinned_button : pinned_entry_buttons_) {
     if (pinned_button->id() == active_id) {
@@ -278,7 +278,7 @@ bool SidePanelToolbarContainer::IsPinned(SidePanelEntry::Id id) {
 void SidePanelToolbarContainer::UpdateSidePanelContainerButtonsState() {
   bool side_panel_visible = browser_view_->unified_side_panel()->GetVisible();
   bool side_panel_button_highlighted = side_panel_visible;
-  absl::optional<SidePanelEntry::Id> current_active_id =
+  std::optional<SidePanelEntry::Id> current_active_id =
       GetSidePanelCoordinator()->GetCurrentEntryId();
   for (PinnedSidePanelToolbarButton* pinned_button : pinned_entry_buttons_) {
     if (browser_view_->unified_side_panel()->GetVisible() &&

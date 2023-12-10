@@ -50,60 +50,6 @@ class CompatibleUtilsTest(unittest.TestCase):
             new_stat = os.stat(f.name).st_mode
             self.assertTrue(new_stat & stat.S_IXUSR)
 
-    # pylint: disable=no-self-use
-    def test_pave_adds_exec_to_binary_files(self) -> None:
-        """Test |pave| calls |add_exec_to_file| on necessary files."""
-        with mock.patch('os.path.exists', return_value=True), \
-                mock.patch('compatible_utils.add_exec_to_file') as mock_exec, \
-                mock.patch('platform.machine', return_value='x86_64'), \
-                mock.patch('subprocess.run'):
-            compatible_utils.pave('some/path/to/dir', 'some-target')
-
-            mock_exec.assert_has_calls([
-                mock.call('some/path/to/dir/pave.sh'),
-                mock.call('some/path/to/dir/host_x64/bootserver')
-            ],
-                                       any_order=True)
-
-    def test_pave_adds_exec_to_binary_files_if_pb_set_not_found(self) -> None:
-        """Test |pave| calls |add_exec_to_file| on necessary files.
-
-        Checks if current product-bundle files exist. If not, defaults to
-        prebuilt-images set.
-        """
-        with mock.patch('os.path.exists', return_value=False), \
-                mock.patch('compatible_utils.add_exec_to_file') as mock_exec, \
-                mock.patch('platform.machine', return_value='x86_64'), \
-                mock.patch('subprocess.run'):
-            compatible_utils.pave('some/path/to/dir', 'some-target')
-
-            mock_exec.assert_has_calls([
-                mock.call('some/path/to/dir/pave.sh'),
-                mock.call('some/path/to/dir/bootserver.exe.linux-x64')
-            ],
-                                       any_order=True)
-
-    def test_pave_adds_target_id_if_given(self) -> None:
-        """Test |pave| adds target-id to the arguments."""
-        with mock.patch('os.path.exists', return_value=False), \
-                mock.patch('compatible_utils.add_exec_to_file'), \
-                mock.patch('platform.machine', return_value='x86_64'), \
-                mock.patch('compatible_utils.get_ssh_keys',
-                           return_value='authorized-keys-file'), \
-                mock.patch('subprocess.run') as mock_subproc:
-            mock_subproc.reset_mock()
-            compatible_utils.pave('some/path/to/dir', 'some-target')
-
-            mock_subproc.assert_called_once_with([
-                'some/path/to/dir/pave.sh', '--authorized-keys',
-                'authorized-keys-file', '-1', '-n', 'some-target'
-            ],
-                                                 check=True,
-                                                 text=True,
-                                                 timeout=300)
-
-    # pylint: disable=no-self-use
-
     def test_parse_host_port_splits_address_and_strips_brackets(self) -> None:
         """Test |parse_host_port| splits ipv4 and ipv6 addresses correctly."""
         self.assertEqual(compatible_utils.parse_host_port('hostname:55'),
@@ -191,21 +137,19 @@ universe_package_labels += []
                 self.assertRaises(compatible_utils.VersionNotFoundError):
             compatible_utils.get_sdk_hash('some/dir')
 
-    def trim_noop_prefixes(self, path):
-        """Helper function to trim no-op path name prefixes that are
-        introduced by os.path.realpath on some platforms. These break
-        the unit tests, but have no actual effect on behavior."""
-        # These must all end in the path separator character for the
-        # string length computation to be correct on all platforms.
-        noop_prefixes = ['/private/']
-        for prefix in noop_prefixes:
-            if path.startswith(prefix):
-                return path[len(prefix) - 1:]
-        return path
-
     def test_install_symbols(self):
-
         """Test |install_symbols|."""
+        def trim_noop_prefixes(path):
+            """Helper function to trim no-op path name prefixes that are
+            introduced by os.path.realpath on some platforms. These break
+            the unit tests, but have no actual effect on behavior."""
+            # These must all end in the path separator character for the
+            # string length computation to be correct on all platforms.
+            noop_prefixes = ['/private/']
+            for prefix in noop_prefixes:
+                if path.startswith(prefix):
+                    return path[len(prefix) - 1:]
+            return path
 
         with tempfile.TemporaryDirectory() as fuchsia_out_dir:
             build_id = 'test_build_id'
@@ -219,7 +163,7 @@ universe_package_labels += []
                 compatible_utils.install_symbols([id_path], fuchsia_out_dir)
                 self.assertTrue(os.path.islink(symbol_file))
                 self.assertEqual(
-                    self.trim_noop_prefixes(os.path.realpath(symbol_file)),
+                    trim_noop_prefixes(os.path.realpath(symbol_file)),
                     os.path.join(fuchsia_out_dir, binary_relpath))
 
                 new_binary_relpath = 'path/to/new/binary'
@@ -228,10 +172,15 @@ universe_package_labels += []
                 compatible_utils.install_symbols([id_path], fuchsia_out_dir)
                 self.assertTrue(os.path.islink(symbol_file))
                 self.assertEqual(
-                    self.trim_noop_prefixes(os.path.realpath(symbol_file)),
+                    trim_noop_prefixes(os.path.realpath(symbol_file)),
                     os.path.join(fuchsia_out_dir, new_binary_relpath))
             finally:
                 os.remove(id_path)
+
+
+    def test_ssh_keys(self):
+        """Ensures the get_ssh_keys won't return a None."""
+        self.assertIsNotNone(compatible_utils.get_ssh_keys())
 
 
 if __name__ == '__main__':

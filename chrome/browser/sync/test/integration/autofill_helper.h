@@ -15,7 +15,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace autofill {
-class AutocompleteEntry;
 class AutocompleteKey;
 class AutofillProfile;
 class AutofillType;
@@ -48,7 +47,7 @@ void RemoveKey(int profile, const autofill::AutocompleteKey& key);
 void RemoveKeys(int profile);
 
 // Gets all the form fields in the WebDataService of sync profile |profile|.
-[[nodiscard]] std::set<autofill::AutocompleteEntry> GetAllKeys(int profile);
+[[nodiscard]] std::set<autofill::AutocompleteKey> GetAllKeys(int profile);
 
 // Compares the form fields in the WebDataServices of sync profiles
 // |profile_a| and |profile_b|. Returns true if they match.

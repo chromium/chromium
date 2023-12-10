@@ -8,12 +8,9 @@ import android.app.Notification;
 
 import androidx.annotation.Nullable;
 
-/**
- * A wrapper class of {@link Notification}, which also contains the notification id and tag, etc.
- */
+/** A wrapper class of {@link Notification}, which also contains the notification id and tag, etc. */
 public class NotificationWrapper {
-    @Nullable
-    private final Notification mNotification;
+    @Nullable private final Notification mNotification;
     private final NotificationMetadata mNotificationMetadata;
 
     public NotificationWrapper(@Nullable Notification notification, NotificationMetadata metadata) {
@@ -22,9 +19,7 @@ public class NotificationWrapper {
         mNotificationMetadata = metadata;
     }
 
-    /**
-     * Returns the {@link Notification}.
-     */
+    /** Returns the {@link Notification}. */
     public Notification getNotification() {
         return mNotification;
     }

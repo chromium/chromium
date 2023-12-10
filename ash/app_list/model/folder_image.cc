@@ -199,9 +199,8 @@ std::vector<gfx::Rect> FolderImage::GetTopIconsBounds(
   // Steps 2 - 4 are done using |scale_and_translate_bounds|.
   const int item_icon_dimension =
       base_config.item_icon_in_folder_icon_dimension();
-  const int unclipped_icon_dimension = base_config.unclipped_icon_dimension();
-  gfx::Point icon_center(unclipped_icon_dimension / 2,
-                         unclipped_icon_dimension / 2);
+  const int folder_icon_dimension = base_config.folder_icon_dimension();
+  gfx::Point icon_center(folder_icon_dimension / 2, folder_icon_dimension / 2);
   const gfx::Rect center_rect(icon_center.x() - item_icon_dimension / 2,
                               icon_center.y() - item_icon_dimension / 2,
                               item_icon_dimension, item_icon_dimension);
@@ -209,17 +208,16 @@ std::vector<gfx::Rect> FolderImage::GetTopIconsBounds(
   const int origin_offset =
       (item_icon_dimension + base_config.item_icon_in_folder_icon_margin()) / 2;
 
-  const int scaled_unclipped_icon_dimension =
-      app_list_config.unclipped_icon_dimension();
+  const int scaled_folder_icon_dimension =
+      app_list_config.folder_icon_dimension();
   auto scale_and_translate_bounds =
-      [folder_icon_bounds, unclipped_icon_dimension,
-       scaled_unclipped_icon_dimension](const gfx::Rect& original) {
-        const float scale =
-            static_cast<float>(scaled_unclipped_icon_dimension) /
-            unclipped_icon_dimension;
+      [folder_icon_bounds, folder_icon_dimension,
+       scaled_folder_icon_dimension](const gfx::Rect& original) {
+        const float scale = static_cast<float>(scaled_folder_icon_dimension) /
+                            folder_icon_dimension;
         gfx::Rect bounds = gfx::ScaleToRoundedRect(original, scale, scale);
         const int clipped_image_offset =
-            (scaled_unclipped_icon_dimension - folder_icon_bounds.width()) / 2;
+            (scaled_folder_icon_dimension - folder_icon_bounds.width()) / 2;
         bounds.Offset(-clipped_image_offset, -clipped_image_offset);
         bounds.Offset(folder_icon_bounds.x(), folder_icon_bounds.y());
         return bounds;
@@ -346,7 +344,7 @@ void FolderImage::RedrawIconAndNotify() {
   FolderImageSource::Icons top_icons;
   for (const auto* item : top_items_)
     top_icons.push_back(item->GetIcon(app_list_config_->type()));
-  const gfx::Size icon_size = app_list_config_->unclipped_icon_size();
+  const gfx::Size icon_size = app_list_config_->folder_icon_size();
   icon_ = gfx::ImageSkia(std::make_unique<FolderImageSource>(
                              *app_list_config_, top_icons, icon_size),
                          icon_size);

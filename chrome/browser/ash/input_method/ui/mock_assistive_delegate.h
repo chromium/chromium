@@ -20,4 +20,4 @@ class MockAssistiveDelegate : public AssistiveDelegate {
 };
 }  // namespace ui::ime
 
-#endif
+#endif  // CHROME_BROWSER_ASH_INPUT_METHOD_UI_MOCK_ASSISTIVE_DELEGATE_H_

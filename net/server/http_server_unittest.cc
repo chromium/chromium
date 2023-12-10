@@ -350,8 +350,7 @@ TEST_F(HttpServerTest, Request) {
   ASSERT_EQ("/test", request.info.path);
   ASSERT_EQ("", request.info.data);
   ASSERT_EQ(0u, request.info.headers.size());
-  ASSERT_TRUE(base::StartsWith(request.info.peer.ToString(), "127.0.0.1",
-                               base::CompareCase::SENSITIVE));
+  ASSERT_TRUE(request.info.peer.ToString().starts_with("127.0.0.1"));
 }
 
 TEST_F(HttpServerTest, RequestBrokenTermination) {
@@ -899,10 +898,8 @@ TEST_F(HttpServerTest, Send200) {
 
   std::string response;
   ASSERT_TRUE(client.ReadResponse(&response));
-  ASSERT_TRUE(base::StartsWith(response, "HTTP/1.1 200 OK",
-                               base::CompareCase::SENSITIVE));
-  ASSERT_TRUE(
-      base::EndsWith(response, "Response!", base::CompareCase::SENSITIVE));
+  ASSERT_TRUE(response.starts_with("HTTP/1.1 200 OK"));
+  ASSERT_TRUE(response.ends_with("Response!"));
 }
 
 TEST_F(HttpServerTest, SendRaw) {
@@ -978,7 +975,6 @@ class MockStreamSocket : public StreamSocket {
   }
   const NetLogWithSource& NetLog() const override { return net_log_; }
   bool WasEverUsed() const override { return true; }
-  bool WasAlpnNegotiated() const override { return false; }
   NextProto GetNegotiatedProtocol() const override { return kProtoUnknown; }
   bool GetSSLInfo(SSLInfo* ssl_info) override { return false; }
   int64_t GetTotalReceivedBytes() const override {
@@ -1076,10 +1072,8 @@ TEST_F(HttpServerTest, MultipleRequestsOnSameConnection) {
                    TRAFFIC_ANNOTATION_FOR_TESTS);
   std::string response1;
   ASSERT_TRUE(client.ReadResponse(&response1));
-  ASSERT_TRUE(base::StartsWith(response1, "HTTP/1.1 200 OK",
-                               base::CompareCase::SENSITIVE));
-  ASSERT_TRUE(base::EndsWith(response1, "Content for /test",
-                             base::CompareCase::SENSITIVE));
+  ASSERT_TRUE(response1.starts_with("HTTP/1.1 200 OK"));
+  ASSERT_TRUE(response1.ends_with("Content for /test"));
 
   client.Send("GET /test2 HTTP/1.1\r\n\r\n");
   auto second_request = WaitForRequest();
@@ -1089,8 +1083,7 @@ TEST_F(HttpServerTest, MultipleRequestsOnSameConnection) {
   server_->Send404(client_connection_id, TRAFFIC_ANNOTATION_FOR_TESTS);
   std::string response2;
   ASSERT_TRUE(client.ReadResponse(&response2));
-  ASSERT_TRUE(base::StartsWith(response2, "HTTP/1.1 404 Not Found",
-                               base::CompareCase::SENSITIVE));
+  ASSERT_TRUE(response2.starts_with("HTTP/1.1 404 Not Found"));
 
   client.Send("GET /test3 HTTP/1.1\r\n\r\n");
   auto third_request = WaitForRequest();
@@ -1101,10 +1094,8 @@ TEST_F(HttpServerTest, MultipleRequestsOnSameConnection) {
                    TRAFFIC_ANNOTATION_FOR_TESTS);
   std::string response3;
   ASSERT_TRUE(client.ReadResponse(&response3));
-  ASSERT_TRUE(base::StartsWith(response3, "HTTP/1.1 200 OK",
-                               base::CompareCase::SENSITIVE));
-  ASSERT_TRUE(base::EndsWith(response3, "Content for /test3",
-                             base::CompareCase::SENSITIVE));
+  ASSERT_TRUE(response3.starts_with("HTTP/1.1 200 OK"));
+  ASSERT_TRUE(response3.ends_with("Content for /test3"));
 }
 
 class CloseOnConnectHttpServerTest : public HttpServerTest {

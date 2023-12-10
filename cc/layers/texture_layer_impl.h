@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include <optional>
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
@@ -17,7 +18,6 @@
 #include "cc/resources/cross_thread_shared_bitmap.h"
 #include "components/viz/common/resources/release_callback.h"
 #include "components/viz/common/resources/transferable_resource.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/hdr_metadata.h"
 
 namespace cc {
@@ -82,6 +82,7 @@ class CC_EXPORT TextureLayerImpl : public LayerImpl {
 
   const char* LayerTypeAsString() const override;
   void FreeTransferableResource();
+  void OnResourceEvicted();
 
   bool premultiplied_alpha_ = true;
   bool blend_background_color_ = false;

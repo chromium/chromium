@@ -9,13 +9,13 @@
 #include "ash/system/unified/glanceable_tray_child_bubble.h"
 #include "base/scoped_observation.h"
 #include "ui/base/metadata/metadata_header_macros.h"
-#include "ui/views/layout/flex_layout.h"
 #include "ui/views/view_observer.h"
 
 class GURL;
 
 namespace views {
 class FlexLayout;
+class FlexLayoutView;
 class Label;
 }
 
@@ -36,8 +36,8 @@ class ASH_EXPORT ClassroomBubbleBaseView : public GlanceableTrayChildBubble,
   METADATA_HEADER(ClassroomBubbleBaseView);
 
   // TODO(b:283370907): Add classroom glanceable contents.
-  ClassroomBubbleBaseView(DetailedViewDelegate* delegate,
-                          std::unique_ptr<ui::ComboboxModel> combobox_model);
+  explicit ClassroomBubbleBaseView(
+      std::unique_ptr<ui::ComboboxModel> combobox_model);
   ClassroomBubbleBaseView(const ClassroomBubbleBaseView&) = delete;
   ClassroomBubbleBaseView& operator=(const ClassroomBubbleBaseView&) = delete;
   ~ClassroomBubbleBaseView() override;
@@ -100,7 +100,7 @@ class ASH_EXPORT ClassroomBubbleBaseView : public GlanceableTrayChildBubble,
   base::TimeTicks assignments_requested_time_;
 
   // The start time that a selected assignment list is shown.
-  absl::optional<base::TimeTicks> list_shown_start_time_;
+  std::optional<base::TimeTicks> list_shown_start_time_;
 
   // Whether the first assignment list has been shown in this view's lifetime.
   bool first_assignment_list_shown_ = false;

@@ -14,9 +14,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
-/**
- * Tracker class for various feed surfaces.
- */
+/** Tracker class for various feed surfaces. */
 public class FeedSurfaceTracker implements SurfaceCoordinator.Observer {
     /** Feed surface tracker observer. */
     public interface Observer {
@@ -33,8 +31,7 @@ public class FeedSurfaceTracker implements SurfaceCoordinator.Observer {
     private ObserverList<Observer> mObservers = new ObserverList<>();
 
     // Tracks all the instances of FeedSurfaceCoordinator.
-    @VisibleForTesting
-    HashSet<SurfaceCoordinator> mCoordinators;
+    @VisibleForTesting HashSet<SurfaceCoordinator> mCoordinators;
 
     public static FeedSurfaceTracker getInstance() {
         if (sSurfaceTracker == null) {

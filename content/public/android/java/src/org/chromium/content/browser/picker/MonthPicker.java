@@ -15,9 +15,7 @@ import java.util.Calendar;
 import java.util.Locale;
 import java.util.TimeZone;
 
-/**
- * A month picker.
- */
+/** A month picker. */
 // TODO(crbug.com/635567): Fix this properly.
 @SuppressLint("DefaultLocale")
 public class MonthPicker extends TwoFieldDatePicker {
@@ -28,12 +26,12 @@ public class MonthPicker extends TwoFieldDatePicker {
     public MonthPicker(Context context, double minValue, double maxValue) {
         super(context, minValue, maxValue);
 
-        getPositionInYearSpinner().setContentDescription(
-                getResources().getString(R.string.accessibility_date_picker_month));
+        getPositionInYearSpinner()
+                .setContentDescription(
+                        getResources().getString(R.string.accessibility_date_picker_month));
 
         // initialization based on locale
-        mShortMonths =
-                DateFormatSymbols.getInstance(Locale.getDefault()).getShortMonths();
+        mShortMonths = DateFormatSymbols.getInstance(Locale.getDefault()).getShortMonths();
 
         // logic duplicated from android.widget.DatePicker
         if (usingNumericMonths()) {
@@ -57,9 +55,7 @@ public class MonthPicker extends TwoFieldDatePicker {
         return Character.isDigit(mShortMonths[Calendar.JANUARY].charAt(0));
     }
 
-    /**
-     * Creates a date object from the |value| which is months since epoch.
-     */
+    /** Creates a date object from the |value| which is months since epoch. */
     public static Calendar createDateFromValue(double value) {
         int year = (int) Math.min(value / 12 + 1970, Integer.MAX_VALUE);
         int month = (int) (value % 12);
@@ -93,9 +89,11 @@ public class MonthPicker extends TwoFieldDatePicker {
 
         // make sure the month names are a zero based array
         // with the months in the month spinner
-        String[] displayedValues = Arrays.copyOfRange(mShortMonths,
-                getPositionInYearSpinner().getMinValue(),
-                getPositionInYearSpinner().getMaxValue() + 1);
+        String[] displayedValues =
+                Arrays.copyOfRange(
+                        mShortMonths,
+                        getPositionInYearSpinner().getMinValue(),
+                        getPositionInYearSpinner().getMaxValue() + 1);
         getPositionInYearSpinner().setDisplayedValues(displayedValues);
     }
 
@@ -120,7 +118,6 @@ public class MonthPicker extends TwoFieldDatePicker {
     protected int getMinYear() {
         return getMinDate().get(Calendar.YEAR);
     }
-
 
     @Override
     protected int getMaxPositionInYear(int year) {

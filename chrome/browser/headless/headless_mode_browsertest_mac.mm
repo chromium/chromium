@@ -10,8 +10,23 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/native_widget_types.h"
+#include "ui/views/widget/widget.h"
 
 namespace headless {
+
+// static
+bool HeadlessModeBrowserTest::IsPlatformWindowVisible(views::Widget* widget) {
+  CHECK(widget);
+
+  gfx::NativeWindow native_window = widget->GetNativeWindow();
+  CHECK(native_window);
+
+  NSWindow* ns_window = native_window.GetNativeNSWindow();
+  CHECK(ns_window);
+
+  return ns_window.visible;
+}
 
 namespace {
 

@@ -14,3 +14,15 @@ class FlagsUiBrowserTest : public WebUIMochaBrowserTest {
 IN_PROC_BROWSER_TEST_F(FlagsUiBrowserTest, App) {
   RunTest("flags/app_test.js", "mocha.run()");
 }
+
+IN_PROC_BROWSER_TEST_F(FlagsUiBrowserTest, Experiment) {
+  RunTest("flags/experiment_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(FlagsUiBrowserTest, Url) {
+  // Invoke the test from a URL with an experiment reference tag, i.e.,
+  // chrome://flags/#test-feature.
+  set_test_loader_host(std::string(chrome::kChromeUIFlagsHost) +
+                       "/#test-feature");
+  RunTestWithoutTestLoader("flags/url_test.js", "mocha.run()");
+}

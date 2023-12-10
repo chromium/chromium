@@ -5,6 +5,7 @@
 #include "components/commerce/core/shopping_service_test_base.h"
 
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/ref_counted.h"
 #include "base/notreached.h"
@@ -18,6 +19,7 @@
 #include "components/commerce/core/proto/merchant_trust.pb.h"
 #include "components/commerce/core/proto/price_insights.pb.h"
 #include "components/commerce/core/proto/price_tracking.pb.h"
+#include "components/commerce/core/proto/shopping_page_types.pb.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/proto/common_types.pb.h"
 #include "components/optimization_guide/proto/hints.pb.h"
@@ -52,6 +54,22 @@ void MockOptGuideDecider::CanApplyOptimization(
     const GURL& url,
     OptimizationType optimization_type,
     OptimizationGuideDecisionCallback callback) {
+  if (optimization_type == OptimizationType::SHOPPING_PAGE_TYPES &&
+      default_shopping_page_) {
+    OptimizationMetadata meta;
+    ShoppingPageTypes data;
+    data.add_shopping_page_types(commerce::ShoppingPageTypes::SHOPPING_PAGE);
+    data.add_shopping_page_types(
+        commerce::ShoppingPageTypes::MERCHANT_DOMAIN_PAGE);
+    Any any;
+    any.set_type_url(data.GetTypeName());
+    data.SerializeToString(any.mutable_value());
+    meta.set_any_metadata(any);
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback),
+                                  OptimizationGuideDecision::kTrue, meta));
+    return;
+  }
   bool type_matches = optimization_type_.has_value() &&
                       optimization_type_.value() == optimization_type;
   bool url_matches = response_url_.has_value() && url == response_url_.value();
@@ -273,8 +291,7 @@ OptimizationMetadata MockOptGuideDecider::BuildDiscountsResponse(
 
   std::vector<DiscountClusterType> checked_cluster_types;
   for (const auto& info_to_check : infos) {
-    if (std::find(checked_cluster_types.begin(), checked_cluster_types.end(),
-                  info_to_check.cluster_type) != checked_cluster_types.end()) {
+    if (base::Contains(checked_cluster_types, info_to_check.cluster_type)) {
       continue;
     }
     checked_cluster_types.push_back(info_to_check.cluster_type);
@@ -329,6 +346,10 @@ OptimizationMetadata MockOptGuideDecider::BuildDiscountsResponse(
   return meta;
 }
 
+void MockOptGuideDecider::SetDefaultShoppingPage(bool default_shopping_page) {
+  default_shopping_page_ = default_shopping_page;
+}
+
 MockWebWrapper::MockWebWrapper(const GURL& last_committed_url,
                                bool is_off_the_record)
     : MockWebWrapper(last_committed_url, is_off_the_record, nullptr) {}
@@ -369,6 +390,11 @@ void MockWebWrapper::RunJavascript(
 
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), mock_js_result_->Clone()));
+}
+
+ukm::SourceId MockWebWrapper::GetPageUkmSourceId() {
+  // Return a UKM source ID that is valid.
+  return 0x1234;
 }
 
 base::Value* MockWebWrapper::GetMockExtractionResult() {

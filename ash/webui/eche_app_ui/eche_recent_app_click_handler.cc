@@ -89,7 +89,7 @@ void EcheRecentAppClickHandler::OnRecentAppClicked(
       to_stream_apps_.emplace_back(app_metadata);
       apps_launch_info_provider_->SetAppLaunchInfo(entrypoint);
       launch_app_helper_->LaunchEcheApp(
-          /*notification_id=*/absl::nullopt, app_metadata.package_name,
+          /*notification_id=*/std::nullopt, app_metadata.package_name,
           app_metadata.visible_app_name, app_metadata.user_id,
           app_metadata.color_icon,
           phone_hub_manager_->GetPhoneModel()->phone_name().value_or(
@@ -99,7 +99,7 @@ void EcheRecentAppClickHandler::OnRecentAppClicked(
     case LaunchAppHelper::AppLaunchProhibitedReason::kDisabledByScreenLock:
       launch_app_helper_->ShowNotification(
           /* title= */ app_metadata.visible_app_name,
-          /* message= */ absl::nullopt,
+          /* message= */ std::nullopt,
           std::make_unique<LaunchAppHelper::NotificationInfo>(
               LaunchAppHelper::NotificationInfo::Category::kNative,
               LaunchAppHelper::NotificationInfo::NotificationType::

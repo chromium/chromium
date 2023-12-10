@@ -8,11 +8,11 @@ import android.app.Activity;
 import android.view.View;
 
 import androidx.annotation.Px;
+import androidx.browser.customtabs.CustomTabsCallback;
 import androidx.browser.customtabs.CustomTabsSessionToken;
 
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
-import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.ActivityLayoutState;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
 import org.chromium.chrome.browser.findinpage.FindToolbarObserver;
@@ -22,9 +22,7 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.widget.TouchEventProvider;
 
-/**
- * The default strategy for setting the height of the custom tab.
- */
+/** The default strategy for setting the height of the custom tab. */
 public class CustomTabHeightStrategy implements FindToolbarObserver {
     /** A callback to be called once the Custom Tab has been resized. */
     interface OnResizedCallback {
@@ -36,32 +34,55 @@ public class CustomTabHeightStrategy implements FindToolbarObserver {
     interface OnActivityLayoutCallback {
         /** The Custom Tab's layout has changed. */
         void onActivityLayout(
-                int left, int top, int right, int bottom, @ActivityLayoutState int state);
+                int left,
+                int top,
+                int right,
+                int bottom,
+                @CustomTabsCallback.ActivityLayoutState int state);
     }
 
-    public static CustomTabHeightStrategy createStrategy(Activity activity,
+    public static CustomTabHeightStrategy createStrategy(
+            Activity activity,
             BrowserServicesIntentDataProvider intentData,
-            Supplier<TouchEventProvider> touchEventProvider, Supplier<Tab> tab,
+            Supplier<TouchEventProvider> touchEventProvider,
+            Supplier<Tab> tab,
             CustomTabsConnection connection,
-            ActivityLifecycleDispatcher lifecycleDispatcher, FullscreenManager fullscreenManager,
+            ActivityLifecycleDispatcher lifecycleDispatcher,
+            FullscreenManager fullscreenManager,
             boolean isTablet) {
         if (!intentData.isPartialCustomTab()) {
             return new CustomTabHeightStrategy();
         }
 
         CustomTabsSessionToken session = intentData.getSession();
-        OnResizedCallback resizeCallback = (height, width)
-                -> connection.onResized(session, height, width);
-        OnActivityLayoutCallback layoutCallback = (left, top, right, bottom, state)
-                -> connection.onActivityLayout(session, left, top, right, bottom, state);
+        OnResizedCallback resizeCallback =
+                (height, width) -> connection.onResized(session, height, width);
+        OnActivityLayoutCallback layoutCallback =
+                (left, top, right, bottom, state) ->
+                        connection.onActivityLayout(session, left, top, right, bottom, state);
         if (ChromeFeatureList.sCctResizableSideSheet.isEnabled()) {
-            return new PartialCustomTabDisplayManager(activity, intentData, touchEventProvider, tab,
-                    resizeCallback, layoutCallback, lifecycleDispatcher, fullscreenManager,
+            return new PartialCustomTabDisplayManager(
+                    activity,
+                    intentData,
+                    touchEventProvider,
+                    tab,
+                    resizeCallback,
+                    layoutCallback,
+                    lifecycleDispatcher,
+                    fullscreenManager,
                     isTablet);
         } else {
-            return new PartialCustomTabBottomSheetStrategy(activity, intentData,
-                    touchEventProvider, tab, resizeCallback, layoutCallback,
-                    lifecycleDispatcher, fullscreenManager, isTablet, /*startMaximized=*/false,
+            return new PartialCustomTabBottomSheetStrategy(
+                    activity,
+                    intentData,
+                    touchEventProvider,
+                    tab,
+                    resizeCallback,
+                    layoutCallback,
+                    lifecycleDispatcher,
+                    fullscreenManager,
+                    isTablet,
+                    /* startMaximized= */ false,
                     new PartialCustomTabHandleStrategyFactory());
         }
     }
@@ -71,9 +92,7 @@ public class CustomTabHeightStrategy implements FindToolbarObserver {
      */
     public void onPostInflationStartup() {}
 
-    /**
-     * Returns false if we didn't change the Window background color, true otherwise.
-     */
+    /** Returns false if we didn't change the Window background color, true otherwise. */
     public boolean changeBackgroundColorForResizing() {
         return false;
     }
@@ -112,8 +131,6 @@ public class CustomTabHeightStrategy implements FindToolbarObserver {
     @Override
     public void onFindToolbarHidden() {}
 
-    /**
-     * Destroy the height strategy object.
-     */
+    /** Destroy the height strategy object. */
     public void destroy() {}
 }

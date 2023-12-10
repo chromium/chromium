@@ -197,6 +197,10 @@ bool TestDevToolsProtocolClient::MayReadLocalFiles() {
   return may_read_local_files_;
 }
 
+bool TestDevToolsProtocolClient::MayWriteLocalFiles() {
+  return may_write_local_files_;
+}
+
 absl::optional<url::Origin>
 TestDevToolsProtocolClient::GetNavigationInitiatorOrigin() {
   return navigation_initiator_origin_;

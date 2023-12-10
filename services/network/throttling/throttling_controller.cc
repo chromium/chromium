@@ -4,6 +4,8 @@
 
 #include "services/network/throttling/throttling_controller.h"
 
+#include <memory>
+
 #include "base/no_destructor.h"
 #include "net/http/http_request_info.h"
 #include "services/network/throttling/network_conditions.h"
@@ -78,16 +80,14 @@ void ThrottlingController::SetNetworkConditions(
       return;
     std::unique_ptr<ThrottlingNetworkInterceptor> new_interceptor(
         new ThrottlingNetworkInterceptor());
-    new_interceptor->UpdateConditions(std::move(conditions));
+    new_interceptor->UpdateConditions(*conditions);
     interceptors_[throttling_profile_id] = std::move(new_interceptor);
   } else {
     if (!conditions) {
-      std::unique_ptr<NetworkConditions> online_conditions(
-          new NetworkConditions());
-      it->second->UpdateConditions(std::move(online_conditions));
+      it->second->UpdateConditions(NetworkConditions{});
       interceptors_.erase(throttling_profile_id);
     } else {
-      it->second->UpdateConditions(std::move(conditions));
+      it->second->UpdateConditions(*conditions);
     }
   }
 }

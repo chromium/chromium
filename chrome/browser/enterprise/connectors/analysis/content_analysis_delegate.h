@@ -299,6 +299,14 @@ class ContentAnalysisDelegate : public ContentAnalysisDelegateBase {
   // background, and "kComplete" if data uploading is finished.
   UploadDataStatus UploadData();
 
+  // Helper function to evaluate if fail-closed conditions are met.
+  bool IsFailClosed(UploadDataStatus upload_data_status,
+                    bool should_allow_by_default);
+
+  // Helper function to decide if fail-closed settings should be applied when
+  // LCAC cannot establish connection with local client.
+  bool ShouldFailOpenWithoutLocalClient(bool should_allow_by_default);
+
   // Prepares an upload request for the text in `data_`. If `data_.text` is
   // empty, this method does nothing.
   // TODO(crbug.com/1324892): Move to TextRequestHandler.

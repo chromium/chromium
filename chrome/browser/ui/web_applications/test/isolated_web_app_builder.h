@@ -106,9 +106,9 @@ class TestSignedWebBundleBuilder {
     web_package::WebBundleSigner::KeyPair key_pair_;
     base::Version version_;
     std::string app_name_;
-    absl::optional<GURL> primary_url_;
-    absl::optional<GURL> base_url_;
-    absl::optional<base::StringPiece> index_html_content_;
+    std::optional<GURL> primary_url_;
+    std::optional<GURL> base_url_;
+    std::optional<base::StringPiece> index_html_content_;
     web_package::WebBundleSigner::ErrorsForTesting errors_for_testing_;
   };
 

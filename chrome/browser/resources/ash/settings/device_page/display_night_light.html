@@ -11,6 +11,10 @@
     pointer-events: none;
   }
 
+  #NightLightLabelDiv {
+    align-self: start;
+  }
+
   .text-area {
     margin: 10px 0;
   }
@@ -18,6 +22,12 @@
   #nightLightSlider {
     flex-grow: 1;
     margin-top: 20px;
+  }
+
+  #nightLightDropDownDiv {
+    width: 200px;
+    text-align: right;
+    margin-top: 8px;
   }
 
   iron-collapse {
@@ -53,7 +63,7 @@
   </div>
   <!-- Schedule settings -->
   <div class="settings-box indented">
-    <div class="start text-area" aria-hidden="true">
+    <div id="NightLightLabelDiv" class="start text-area" aria-hidden="true">
       <div id="nightLightScheduleLabel" class="label">
         $i18n{displayNightLightScheduleLabel}
       </div>
@@ -62,14 +72,25 @@
         [[nightLightScheduleSubLabel_]]
       </div>
     </div>
-    <settings-dropdown-menu
-        id="nightLightScheduleTypeDropDown"
-        class="cr-row-gap"
-        label="$i18n{displayNightLightScheduleLabel}"
-        aria-describedby="nightLightScheduleSubLabel"
-        pref="{{prefs.ash.night_light.schedule_type}}"
-        menu-options="[[scheduleTypesList_]]">
-    </settings-dropdown-menu>
+    <div id="nightLightDropDownDiv"
+        class="cr-row-gap">
+      <settings-dropdown-menu
+          id="nightLightScheduleTypeDropDown"
+          label="$i18n{displayNightLightScheduleLabel}"
+          aria-describedby="nightLightScheduleSubLabel"
+          pref="{{prefs.ash.night_light.schedule_type}}"
+          menu-options="[[scheduleTypesList_]]">
+      </settings-dropdown-menu>
+      <template is="dom-if" if="[[shouldShowGeolocationWarningText_]]"
+          restamp>
+        <settings-privacy-hub-geolocation-warning-text
+            id="warningText"
+            warning-text-with-anchor=
+                "$i18n{displayNightLightGeolocationWarningText}"
+            on-link-clicked="openGeolocationDialog_">
+        </settings-privacy-hub-geolocation-warning-text>
+      </template>
+    </div>
   </div>
   <!-- Custom schedule slider -->
   <iron-collapse id="nightLightCustomScheduleCollapse"
@@ -86,3 +107,11 @@
     </div>
   </iron-collapse>
 </div>
+
+<!-- System geolocation dialog, letting users enable location permission -->
+<template is="dom-if" if="[[shouldShowGeolocationDialog_]]" restamp>
+  <settings-privacy-hub-geolocation-dialog id="geolocationDialog"
+      on-close="onGeolocationDialogClose_"
+      prefs="{{prefs}}">
+  </settings-privacy-hub-geolocation-dialog>
+</template>

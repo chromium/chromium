@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+[PRECONDITION_FAILED] Eligibility (in-flight fetch): Header and body received when in BFCache
+  Could have been BFCached but actually wasn't
+[PRECONDITION_FAILED] Eligibility (in-flight fetch): Header received when in BFCache and body received after BFCache
+  Could have been BFCached but actually wasn't
+[PRECONDITION_FAILED] Eligibility (in-flight fetch): Header and body received after BFCache
+  Could have been BFCached but actually wasn't
+Harness: the test ran to completion.

@@ -67,6 +67,11 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaSquigglyProgressView
   // Fires an accessibility event if the progress has changed.
   void MaybeNotifyAccessibilityValueChanged();
 
+  // Handles the event when user drags the progress line using a mouse or
+  // gesture on a tablet.
+  void OnProgressDragStarted();
+  void OnProgressDragEnded();
+
   // Handles the event when user seeks to a new location on the progress view.
   void HandleSeeking(double location);
 

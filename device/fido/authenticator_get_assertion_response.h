@@ -88,11 +88,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) AuthenticatorGetAssertionResponse {
   // The transport used to generate this response. This is unknown when using
   // the Windows WebAuthn API.
   absl::optional<FidoTransportProtocol> transport_used;
-
-  // device_public_key_signature contains the optional signature from the
-  // device-bound key. See
-  // https://github.com/fido-alliance/fido-2-specs/pull/1346
-  absl::optional<std::vector<uint8_t>> device_public_key_signature;
 };
 
 }  // namespace device

@@ -8,6 +8,7 @@
 #include "components/media_control/renderer/media_playback_options.h"
 #include "components/on_load_script_injector/renderer/on_load_script_injector.h"
 #include "content/public/renderer/render_frame.h"
+#include "third_party/blink/public/web/web_local_frame.h"
 
 namespace cast_receiver {
 
@@ -39,7 +40,7 @@ void ContentRendererClientMixinsImpl::RenderFrameCreated(
 
   // Create the new UrlRewriteRulesProvider.
   url_rewrite_rules_providers_.emplace(
-      render_frame.GetRoutingID(),
+      render_frame.GetWebFrame()->GetLocalFrameToken(),
       std::make_unique<UrlRewriteRulesProvider>(
           &render_frame,
           base::BindOnce(&ContentRendererClientMixinsImpl::OnRenderFrameRemoved,
@@ -77,19 +78,19 @@ ContentRendererClientMixinsImpl::ExtendURLLoaderThrottleProvider(
 }
 
 void ContentRendererClientMixinsImpl::OnRenderFrameRemoved(
-    int render_frame_id) {
-  size_t result = url_rewrite_rules_providers_.erase(render_frame_id);
+    const blink::LocalFrameToken& frame_token) {
+  size_t result = url_rewrite_rules_providers_.erase(frame_token);
   if (result != 1U) {
     LOG(WARNING)
         << "Can't find the URL rewrite rules provider for render frame: "
-        << render_frame_id;
+        << frame_token;
   }
 }
 
 UrlRewriteRulesProvider*
 ContentRendererClientMixinsImpl::GetUrlRewriteRulesProvider(
-    int render_frame_id) {
-  auto rules_it = url_rewrite_rules_providers_.find(render_frame_id);
+    const blink::LocalFrameToken& frame_token) {
+  auto rules_it = url_rewrite_rules_providers_.find(frame_token);
   return rules_it == url_rewrite_rules_providers_.end()
              ? nullptr
              : rules_it->second.get();

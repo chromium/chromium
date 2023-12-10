@@ -116,7 +116,7 @@ std::map<std::string, std::string> BrowserLiveTabContext::GetExtraDataForTab(
 
 #if defined(TOOLKIT_VIEWS)
   if (IsSideSearchEnabled(browser_->profile())) {
-    absl::optional<std::pair<std::string, std::string>> side_search_data =
+    std::optional<std::pair<std::string, std::string>> side_search_data =
         side_search::MaybeGetSideSearchTabRestoreData(
             browser_->tab_strip_model()->GetWebContentsAt(index));
     if (side_search_data.has_value())
@@ -132,7 +132,7 @@ BrowserLiveTabContext::GetExtraDataForWindow() const {
   return std::map<std::string, std::string>();
 }
 
-absl::optional<tab_groups::TabGroupId> BrowserLiveTabContext::GetTabGroupForTab(
+std::optional<tab_groups::TabGroupId> BrowserLiveTabContext::GetTabGroupForTab(
     int index) const {
   return browser_->tab_strip_model()->GetTabGroupForTab(index);
 }
@@ -174,7 +174,7 @@ sessions::LiveTab* BrowserLiveTabContext::AddRestoredTab(
     int tab_index,
     int selected_navigation,
     const std::string& extension_app_id,
-    absl::optional<tab_groups::TabGroupId> group,
+    std::optional<tab_groups::TabGroupId> group,
     const tab_groups::TabGroupVisualData& group_visual_data,
     bool select,
     bool pin,
@@ -258,7 +258,7 @@ sessions::LiveTab* BrowserLiveTabContext::AddRestoredTab(
 
 sessions::LiveTab* BrowserLiveTabContext::ReplaceRestoredTab(
     const std::vector<sessions::SerializedNavigationEntry>& navigations,
-    absl::optional<tab_groups::TabGroupId> group,
+    std::optional<tab_groups::TabGroupId> group,
     int selected_navigation,
     const std::string& extension_app_id,
     const sessions::PlatformSpecificTabData* tab_platform_data,

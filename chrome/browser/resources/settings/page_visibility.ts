@@ -10,6 +10,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 export interface PageVisibility {
   a11y?: boolean;
   advancedSettings?: boolean;
+  ai?: boolean;
   appearance?: boolean|AppearancePageVisibility;
   autofill?: boolean;
   defaultBrowser?: boolean;
@@ -53,6 +54,7 @@ if (loadTimeData.getBoolean('isGuest')) {
   pageVisibility = {
     a11y: false,
     advancedSettings: false,
+    ai: false,
     appearance: false,
     autofill: false,
     defaultBrowser: false,
@@ -72,6 +74,7 @@ if (loadTimeData.getBoolean('isGuest')) {
   // </if>
   // <if expr="is_chromeos">
   pageVisibility = {
+    ai: false,
     autofill: false,
     people: false,
     onStartup: false,

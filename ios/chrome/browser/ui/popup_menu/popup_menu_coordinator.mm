@@ -16,10 +16,9 @@
 #import "ios/chrome/browser/bookmarks/model/account_bookmark_model_factory.h"
 #import "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_model_factory.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
-#import "ios/chrome/browser/follow/follow_action_state.h"
-#import "ios/chrome/browser/follow/follow_browser_agent.h"
-#import "ios/chrome/browser/ntp/features.h"
-#import "ios/chrome/browser/overlays/public/overlay_presenter.h"
+#import "ios/chrome/browser/follow/model/follow_action_state.h"
+#import "ios/chrome/browser/follow/model/follow_browser_agent.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_presenter.h"
 #import "ios/chrome/browser/promos_manager/promos_manager_factory.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_browser_agent.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_model_factory.h"
@@ -27,7 +26,6 @@
 #import "ios/chrome/browser/shared/coordinator/default_browser_promo/non_modal_default_browser_promo_scheduler_scene_agent.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
-#import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
@@ -39,6 +37,7 @@
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/find_in_page_commands.h"
+#import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
 #import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
 #import "ios/chrome/browser/shared/public/commands/overflow_menu_customization_commands.h"
@@ -48,11 +47,12 @@
 #import "ios/chrome/browser/shared/public/commands/qr_scanner_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/commands/text_zoom_commands.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
-#import "ios/chrome/browser/signin/authentication_service.h"
-#import "ios/chrome/browser/signin/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/supervised_user/model/supervised_user_service_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/ui/browser_container/browser_container_mediator.h"
@@ -73,7 +73,7 @@
 #import "ios/chrome/browser/ui/popup_menu/public/popup_menu_table_view_controller.h"
 #import "ios/chrome/browser/ui/presenters/contained_presenter_delegate.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
-#import "ios/chrome/browser/web/web_navigation_browser_agent.h"
+#import "ios/chrome/browser/web/model/web_navigation_browser_agent.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/web_state.h"
@@ -211,8 +211,7 @@ using base::UserMetricsAction;
   // Dismiss Find in Page focus.
   [findInPageCommandsHandler defocusFindInPage];
 
-  SceneState* sceneState =
-      SceneStateBrowserAgent::FromBrowser(self.browser)->GetSceneState();
+  SceneState* sceneState = self.browser->GetSceneState();
   NonModalDefaultBrowserPromoSchedulerSceneAgent* nonModalPromoScheduler =
       [NonModalDefaultBrowserPromoSchedulerSceneAgent
           agentFromScene:sceneState];
@@ -314,9 +313,6 @@ using base::UserMetricsAction;
           GetApplicationContext()->GetBrowserPolicyConnector();
       mediator.syncService = SyncServiceFactory::GetForBrowserState(
           self.browser->GetBrowserState());
-      mediator.supervisedUserService =
-          SupervisedUserServiceFactory::GetForBrowserState(
-              self.browser->GetBrowserState());
       mediator.promosManager = PromosManagerFactory::GetForBrowserState(
           self.browser->GetBrowserState());
       mediator.readingListBrowserAgent =
@@ -330,6 +326,8 @@ using base::UserMetricsAction;
       mediator.authenticationService =
           AuthenticationServiceFactory::GetForBrowserState(
               self.browser->GetBrowserState()->GetOriginalChromeBrowserState());
+      mediator.helpHandler = HandlerForProtocol(
+          self.browser->GetCommandDispatcher(), HelpCommands);
 
       self.contentBlockerMediator.consumer = mediator;
 
@@ -661,8 +659,7 @@ using base::UserMetricsAction;
 #pragma mark - UISheetPresentationControllerDelegate
 
 - (void)sheetPresentationControllerDidChangeSelectedDetentIdentifier:
-    (UISheetPresentationController*)sheetPresentationController
-    API_AVAILABLE(ios(15)) {
+    (UISheetPresentationController*)sheetPresentationController {
   [self popupMenuScrolledVertically];
 }
 

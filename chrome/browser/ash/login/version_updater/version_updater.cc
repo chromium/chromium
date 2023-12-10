@@ -11,6 +11,7 @@
 
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/login/version_updater/update_time_estimator.h"
@@ -46,6 +47,31 @@ const int kDownloadProgressIncrement = 60;
 
 // Period of time between planned updates.
 constexpr const base::TimeDelta kUpdateTime = base::Seconds(1);
+
+void RecordUpdateCheckRetryCountForVersionUpdater(int num_retries) {
+  base::UmaHistogramCounts100("OOBE.VersionUpdater.UpdateCheckRetriesCount",
+                              num_retries);
+}
+
+void RecordVersionUpdaterUpdateEngineOperation(
+    const update_engine::StatusResult& status) {
+  if (status.is_install()) {
+    base::UmaHistogramExactLinear(
+        "OOBE.VersionUpdater.UpdateEngineOperation.DLCInstall",
+        static_cast<int>(status.current_operation()),
+        update_engine::Operation_ARRAYSIZE);
+  } else {
+    base::UmaHistogramExactLinear(
+        "OOBE.VersionUpdater.UpdateEngineOperation.Update",
+        static_cast<int>(status.current_operation()),
+        update_engine::Operation_ARRAYSIZE);
+  }
+}
+
+void RecordCheckingForUpdateTime(const base::TimeDelta duration) {
+  base::UmaHistogramLongTimes("OOBE.VersionUpdater.UpdateCheckDuration",
+                              duration);
+}
 
 }  // anonymous namespace
 
@@ -94,6 +120,9 @@ void VersionUpdater::StartNetworkCheck() {
 
 void VersionUpdater::StartUpdateCheck() {
   delegate_->PrepareForUpdateCheck();
+  retry_check_timer_.Start(FROM_HERE, retry_check_timeout_,
+                           base::BindOnce(&VersionUpdater::OnRetryCheckElapsed,
+                                          weak_ptr_factory_.GetWeakPtr()));
   RequestUpdateCheck();
 }
 
@@ -130,10 +159,7 @@ void VersionUpdater::StartExitUpdate(Result result) {
   // Reset internal state, because in case of error user may make another
   // update attempt.
   Init();
-}
-
-base::OneShotTimer* VersionUpdater::GetRebootTimerForTesting() {
-  return &reboot_timer_;
+  RecordUpdateCheckRetryCountForVersionUpdater(num_retries_);
 }
 
 void VersionUpdater::GetEolInfo(EolInfoCallback callback) {
@@ -166,12 +192,30 @@ void VersionUpdater::RequestUpdateCheck() {
     UpdateEngineClient::Get()->AddObserver(this);
   }
   VLOG(1) << "Initiate update check";
+  checking_for_update_start_ = tick_clock_->NowTicks();
+  TriggerUpdateCheck();
+}
+
+void VersionUpdater::TriggerUpdateCheck() {
+  num_retries_++;
   UpdateEngineClient::Get()->RequestUpdateCheck(base::BindOnce(
       &VersionUpdater::OnUpdateCheckStarted, weak_ptr_factory_.GetWeakPtr()));
 }
 
 void VersionUpdater::UpdateStatusChanged(
     const update_engine::StatusResult& status) {
+  RecordVersionUpdaterUpdateEngineOperation(status);
+  // If the status change is for an installation, this means that DLCs are being
+  // installed and has nothing to do with the OS. Ignore this status change.
+  // Do not ignore update_engine::Operation::IDLE even if is_install is true,
+  // because install stays true on status changes after a DLC install, even if
+  // no DLC install is in progress anymore.
+  if (status.is_install() &&
+      status.current_operation() != update_engine::Operation::IDLE) {
+    LOG(WARNING) << "Ignoring update status change related to DLC install.";
+    return;
+  }
+
   update_info_.status = status;
 
   if (update_info_.is_checking_for_update &&
@@ -185,6 +229,8 @@ void VersionUpdater::UpdateStatusChanged(
   if (!non_idle_status_received_ &&
       status.current_operation() > update_engine::Operation::IDLE) {
     non_idle_status_received_ = true;
+    RecordCheckingForUpdateTime(tick_clock_->NowTicks() -
+                                checking_for_update_start_);
   }
 
   time_estimator_.Update(status);
@@ -247,9 +293,7 @@ void VersionUpdater::UpdateStatusChanged(
       if (non_idle_status_received_) {
         exit_update = true;
       } else {
-        UpdateEngineClient::Get()->RequestUpdateCheck(
-            base::BindOnce(&VersionUpdater::OnUpdateCheckStarted,
-                           weak_ptr_factory_.GetWeakPtr()));
+        TriggerUpdateCheck();
       }
       break;
     case update_engine::Operation::CLEANUP_PREVIOUS_UPDATE:
@@ -329,6 +373,14 @@ void VersionUpdater::PortalStateChanged(const NetworkState* network,
         delegate_->ShowErrorMessage();
       }
     }
+  }
+}
+
+void VersionUpdater::OnRetryCheckElapsed() {
+  // If update_engine didn't handle our request, exit with update_not_requiered.
+  if (!non_idle_status_received_) {
+    LOG(WARNING) << "Exiting update after retry check timout.";
+    StartExitUpdate(Result::UPDATE_CHECK_TIMEOUT);
   }
 }
 

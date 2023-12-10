@@ -65,6 +65,8 @@ std::string ResultTypeToString(const ash::AppListSearchResultType result_type) {
       return "System info";
     case ash::AppListSearchResultType::kDesksAdminTemplate:
       return "Desks Admin template";
+    case ash::AppListSearchResultType::kAppShortcutV2:
+      return "App shortcut V2";
   }
   NOTREACHED();
 }
@@ -183,6 +185,8 @@ std::string MetricsTypeToString(const ash::SearchResultType metrics_type) {
       return "IMAGE_SEARCH";
     case ash::SearchResultType::DESKS_ADMIN_TEMPLATE:
       return "DESKS_ADMIN_TEMPLATE";
+    case ash::SearchResultType::APP_SHORTCUTS_V2:
+      return "APP_SHORTCUTS_V2";
   }
   NOTREACHED();
 }

@@ -9,7 +9,9 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="15dp">
+    android:paddingStart="15dp"
+    android:paddingEnd="15dp"
+    android:paddingTop="15dp">
 
     <ScrollView
         android:layout_width="match_parent"

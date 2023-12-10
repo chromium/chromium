@@ -227,7 +227,7 @@ TEST_F(DeviceChooserContentViewTest, SelectAndDeselectAnOption) {
   EXPECT_TRUE(IsDeviceSelected());
   EXPECT_EQ(0u, table_view()->GetFirstSelectedRow());
 
-  table_view()->Select(absl::nullopt);
+  table_view()->Select(std::nullopt);
   EXPECT_FALSE(IsDeviceSelected());
   EXPECT_FALSE(table_view()->GetFirstSelectedRow().has_value());
 }

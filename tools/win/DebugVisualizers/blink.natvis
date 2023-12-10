@@ -17,12 +17,12 @@
     </Expand>
   </Type>
   <Type Name="cppgc::internal::BasicPersistent&lt;*&gt;">
-    <SmartPointer Usage="Minimal">($T1*)raw_.ptr_</SmartPointer>
-    <DisplayString Condition="raw_.ptr_ == 0">null</DisplayString>
-    <DisplayString>{*($T1*)raw_.ptr_}</DisplayString>
+    <SmartPointer Usage="Minimal">($T1*)raw_</SmartPointer>
+    <DisplayString Condition="raw_ == 0">null</DisplayString>
+    <DisplayString>{*($T1*)raw_}</DisplayString>
     <Expand>
-      <Item Name="Raw">($T1*)raw_.ptr_</Item>
-      <ExpandedItem Condition="raw_.ptr_ != 0">($T1*)raw_.ptr_</ExpandedItem>
+      <Item Name="Raw">($T1*)raw_</Item>
+      <ExpandedItem Condition="raw_ != 0">($T1*)raw_</ExpandedItem>
     </Expand>
   </Type>
   <!--

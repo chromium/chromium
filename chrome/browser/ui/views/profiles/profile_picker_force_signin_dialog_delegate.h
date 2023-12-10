@@ -69,6 +69,8 @@ class ProfilePickerForceSigninDialogDelegate
   void AddObserver(web_modal::ModalDialogHostObserver* observer) override;
   void RemoveObserver(web_modal::ModalDialogHostObserver* observer) override;
 
+  content::WebContents* GetWebContentsForTesting() const;
+
  private:
   // Before its destruction, tells its parent container to reset its reference
   // to the ProfilePickerForceSigninDialogDelegate.

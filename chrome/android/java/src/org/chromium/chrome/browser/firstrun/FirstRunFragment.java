@@ -8,9 +8,7 @@ import android.app.Activity;
 
 import androidx.annotation.Nullable;
 
-/**
- * This interface is implemented by FRE fragments.
- */
+/** This interface is implemented by FRE fragments. */
 public interface FirstRunFragment {
     /**
      * Notifies that the object returned by {@link #getPageDelegate()} and its dependencies have

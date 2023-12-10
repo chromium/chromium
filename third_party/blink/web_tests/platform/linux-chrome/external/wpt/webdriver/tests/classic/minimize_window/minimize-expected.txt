@@ -1,6 +1,4 @@
 This is a wdspec test.
-[PASS] test_no_top_browsing_context
-[PASS] test_no_browsing_context
 [FAIL] test_response_payload
   assert False
 [FAIL] test_restore_from_fullscreen

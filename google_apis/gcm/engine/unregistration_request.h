@@ -101,9 +101,6 @@ class GCM_EXPORT UnregistrationRequest {
     // Parses the HTTP response. It is called after
     // UnregistrationRequest::ParseResponse to proceed the parsing.
     virtual Status ParseResponse(const std::string& response) = 0;
-
-    // Reports UMAs.
-    virtual void ReportUMAs(Status status) = 0;
   };
 
   // Creates an instance of UnregistrationRequest. |callback| will be called

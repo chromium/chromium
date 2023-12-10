@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.page_insights;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -59,6 +60,8 @@ public class PageInsightsDataLoaderTest {
 
     private final GURL mUrl2 = JUnitTestGURLs.GOOGLE_URL;
 
+    private OptimizationGuideBridge.OnDemandOptimizationGuideCallback mOptimizationGuideCallback;
+
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
@@ -80,6 +83,29 @@ public class PageInsightsDataLoaderTest {
                 (data) -> {
                     assertEquals(data, mPageInsightsMetadata);
                 });
+    }
+
+    @Test
+    public void testLoadInsightsData_cancelCallback_callbackNotExecuted() {
+        mockOptimizationGuideResponse(
+                mUrl,
+                anyPageInsights(mPageInsightsMetadata),
+                OptimizationGuideDecision.TRUE,
+                /* shouldRunCallbackImmediately= */ false);
+        mPageInsightsDataLoader.clearCacheForTesting();
+
+        mPageInsightsDataLoader.loadInsightsData(
+                mUrl,
+                /* shouldAttachGaiaToRequest= */ true,
+                (data) -> {
+                    fail("Callback should not have been called after cancelled.");
+                });
+        mPageInsightsDataLoader.cancelCallback();
+        mOptimizationGuideCallback.onOnDemandOptimizationGuideDecision(
+                mUrl,
+                HintsProto.OptimizationType.PAGE_INSIGHTS,
+                OptimizationGuideDecision.TRUE,
+                anyPageInsights(mPageInsightsMetadata));
     }
 
     @Test
@@ -187,18 +213,29 @@ public class PageInsightsDataLoaderTest {
 
     private void mockOptimizationGuideResponse(
             GURL url, CommonTypesProto.Any metadata, int decision) {
+        mockOptimizationGuideResponse(
+                url, metadata, decision, /* shouldRunCallbackImmediately= */ true);
+    }
+
+    private void mockOptimizationGuideResponse(
+            GURL url,
+            CommonTypesProto.Any metadata,
+            int decision,
+            boolean shouldRunCallbackImmediately) {
         doAnswer(
                         new Answer<Void>() {
                             @Override
                             public Void answer(InvocationOnMock invocation) {
-                                OptimizationGuideBridge.OnDemandOptimizationGuideCallback callback =
+                                mOptimizationGuideCallback =
                                         (OptimizationGuideBridge.OnDemandOptimizationGuideCallback)
                                                 invocation.getArguments()[4];
-                                callback.onOnDemandOptimizationGuideDecision(
-                                        url,
-                                        HintsProto.OptimizationType.PAGE_INSIGHTS,
-                                        decision,
-                                        metadata);
+                                if (shouldRunCallbackImmediately) {
+                                    mOptimizationGuideCallback.onOnDemandOptimizationGuideDecision(
+                                            url,
+                                            HintsProto.OptimizationType.PAGE_INSIGHTS,
+                                            decision,
+                                            metadata);
+                                }
                                 return null;
                             }
                         })

@@ -110,7 +110,8 @@ using DeleteCookiesCallback = Network::Backend::DeleteCookiesCallback;
 using ClearBrowserCookiesCallback =
     Network::Backend::ClearBrowserCookiesCallback;
 
-const char kInvalidCookieFields[] = "Invalid cookie fields";
+static constexpr char kInvalidCookieFields[] = "Invalid cookie fields";
+static constexpr char kNotAllowedError[] = "Not allowed";
 
 Network::CertificateTransparencyCompliance SerializeCTPolicyCompliance(
     net::ct::CTPolicyCompliance ct_compliance) {
@@ -185,7 +186,7 @@ std::unique_ptr<Network::Cookie> BuildCookie(
           .SetSecure(cookie.IsSecure())
           .SetSession(!cookie.IsPersistent())
           .SetPriority(BuildCookiePriority(cookie.Priority()))
-          .SetSameParty(cookie.IsSameParty())
+          .SetSameParty(false)
           .SetSourceScheme(BuildCookieSourceScheme(cookie.SourceScheme()))
           .SetSourcePort(cookie.SourcePort())
           .Build();
@@ -245,9 +246,17 @@ class CookieRetrieverNetworkService
                   const net::CookieAccessResultList& excluded_cookies) {
     for (const auto& cookie_with_access_result : cookies) {
       const net::CanonicalCookie& cookie = cookie_with_access_result.cookie;
+      std::string serialized_partition_key;
+      // We could be missing cookies that have unserializable partition key.
+      // Reference the CookiePartitionKey::IsSerializable docs for more details.
+      if (!net::CookiePartitionKey::Serialize(cookie.PartitionKey(),
+                                              serialized_partition_key)) {
+        serialized_partition_key = "invalid";
+      }
       std::string key = base::StringPrintf(
-          "%s::%s::%s::%d", cookie.Name().c_str(), cookie.Domain().c_str(),
-          cookie.Path().c_str(), cookie.IsSecure());
+          "%s::%s::%s::%d::%s", cookie.Name().c_str(), cookie.Domain().c_str(),
+          cookie.Path().c_str(), cookie.IsSecure(),
+          serialized_partition_key.c_str());
       all_cookies_.emplace(std::move(key), cookie);
     }
   }
@@ -340,7 +349,6 @@ MakeCookieFromProtocolValues(const std::string& name,
                              const std::string& same_site,
                              double expires,
                              const std::string& priority,
-                             bool same_party,
                              const Maybe<std::string>& source_scheme,
                              const Maybe<int>& source_port,
                              const Maybe<std::string>& partition_key) {
@@ -415,7 +423,7 @@ MakeCookieFromProtocolValues(const std::string& name,
   std::unique_ptr<net::CanonicalCookie> cookie =
       net::CanonicalCookie::CreateSanitizedCookie(
           url, name, value, normalized_domain, path, base::Time(),
-          expiration_date, base::Time(), secure, http_only, css, cp, same_party,
+          expiration_date, base::Time(), secure, http_only, css, cp,
           deserialized_partition_key);
 
   if (!cookie)
@@ -551,15 +559,17 @@ String securityState(const GURL& url, const net::CertStatus& cert_status) {
   return Security::SecurityStateEnum::Secure;
 }
 
-DevToolsURLLoaderInterceptor::InterceptionStage ToInterceptorStage(
+absl::optional<DevToolsURLLoaderInterceptor::InterceptionStage>
+ToInterceptorStage(
     const protocol::Network::InterceptionStage& interceptor_stage) {
-  if (interceptor_stage == protocol::Network::InterceptionStageEnum::Request)
+  if (interceptor_stage == protocol::Network::InterceptionStageEnum::Request) {
     return DevToolsURLLoaderInterceptor::REQUEST;
+  }
   if (interceptor_stage ==
-      protocol::Network::InterceptionStageEnum::HeadersReceived)
+      protocol::Network::InterceptionStageEnum::HeadersReceived) {
     return DevToolsURLLoaderInterceptor::RESPONSE;
-  NOTREACHED();
-  return DevToolsURLLoaderInterceptor::REQUEST;
+  }
+  return absl::nullopt;
 }
 
 double timeDelta(base::TimeTicks time,
@@ -1038,11 +1048,14 @@ NetworkHandler::NetworkHandler(
     const base::UnguessableToken& devtools_token,
     DevToolsIOContext* io_context,
     base::RepeatingClosure update_loader_factories_callback,
-    bool allow_file_access)
+    bool allow_file_access,
+    bool client_is_trusted)
     : DevToolsDomainHandler(Network::Metainfo::domainName),
       host_id_(host_id),
       devtools_token_(devtools_token),
       io_context_(io_context),
+      allow_file_access_(allow_file_access),
+      client_is_trusted_(client_is_trusted),
       browser_context_(nullptr),
       storage_partition_(nullptr),
       host_(nullptr),
@@ -1053,8 +1066,7 @@ NetworkHandler::NetworkHandler(
       bypass_service_worker_(false),
       cache_disabled_(false),
       update_loader_factories_callback_(
-          std::move(update_loader_factories_callback)),
-      allow_file_access_(allow_file_access) {
+          std::move(update_loader_factories_callback)) {
   DCHECK(io_context_);
   static bool have_configured_service_worker_context = false;
   if (have_configured_service_worker_context)
@@ -1516,6 +1528,9 @@ void NetworkHandler::GetCookies(Maybe<Array<String>> protocol_urls,
 
 void NetworkHandler::GetAllCookies(
     std::unique_ptr<GetAllCookiesCallback> callback) {
+  if (!client_is_trusted_) {
+    callback->sendFailure(Response::ServerError(kNotAllowedError));
+  }
   if (!storage_partition_) {
     callback->sendFailure(Response::InternalError());
     return;
@@ -1552,8 +1567,8 @@ void NetworkHandler::SetCookie(const std::string& name,
   auto cookie_or_error = MakeCookieFromProtocolValues(
       name, value, url.value_or(""), domain.value_or(""), path.value_or(""),
       secure.value_or(false), http_only.value_or(false), same_site.value_or(""),
-      expires.value_or(-1), priority.value_or(""), same_party.value_or(false),
-      source_scheme, source_port, partition_key);
+      expires.value_or(-1), priority.value_or(""), source_scheme, source_port,
+      partition_key);
 
   if (absl::holds_alternative<Response>(cookie_or_error)) {
     callback->sendFailure(absl::get<Response>(std::move(cookie_or_error)));
@@ -1601,8 +1616,8 @@ void NetworkHandler::SetCookies(
         cookie->GetName(), cookie->GetValue(), cookie->GetUrl(""),
         cookie->GetDomain(""), cookie->GetPath(""), cookie->GetSecure(false),
         cookie->GetHttpOnly(false), cookie->GetSameSite(""),
-        cookie->GetExpires(-1), cookie->GetPriority(""),
-        cookie->GetSameParty(false), source_scheme, source_port, partition_key);
+        cookie->GetExpires(-1), cookie->GetPriority(""), source_scheme,
+        source_port, partition_key);
     if (absl::holds_alternative<Response>(net_cookie_or_error)) {
       // TODO: Investiage whether we can report the error as a protocol error
       // (this might be a breaking CDP change).
@@ -1955,6 +1970,12 @@ std::unique_ptr<Network::Response> BuildResponse(
   if (!info.cache_storage_cache_name.empty()) {
     response->SetCacheStorageCacheName(info.cache_storage_cache_name);
   }
+  if (!info.service_worker_router_info.is_null()) {
+    response->SetServiceWorkerRouterInfo(
+        protocol::Network::ServiceWorkerRouterInfo::Create()
+            .SetRuleIdMatched(info.service_worker_router_info->rule_id_matched)
+            .Build());
+  }
 
   response->SetProtocol(GetProtocol(url, info));
   if (info.alternate_protocol_usage !=
@@ -1970,6 +1991,20 @@ std::unique_ptr<Network::Response> BuildResponse(
     response->SetSecurityDetails(BuildSecurityDetails(*info.ssl_info));
 
   return response;
+}
+
+std::unique_ptr<Network::Response> BuildRedirectResponse(
+    absl::optional<std::pair<
+        const GURL&,
+        const network::mojom::URLResponseHeadDevToolsInfo&>> redirect_info,
+    bool& redirect_emitted_extra_info) {
+  std::unique_ptr<Network::Response> redirect_response;
+  if (redirect_info) {
+    const auto& [previous_url, head] = *redirect_info;
+    redirect_emitted_extra_info = head.emitted_extra_info;
+    redirect_response = BuildResponse(previous_url, head);
+  }
+  return redirect_response;
 }
 
 String blockedReason(blink::ResourceRequestBlockedReason reason) {
@@ -2119,12 +2154,8 @@ void NetworkHandler::PrefetchRequestWillBeSent(
           .Build();
 
   bool redirect_emitted_extra_info = false;
-  std::unique_ptr<Network::Response> redirect_response;
-  if (redirect_info) {
-    const auto& [previous_url, head] = *redirect_info;
-    redirect_emitted_extra_info = head.emitted_extra_info;
-    redirect_response = BuildResponse(previous_url, head);
-  }
+  std::unique_ptr<Network::Response> redirect_response =
+      BuildRedirectResponse(redirect_info, redirect_emitted_extra_info);
 
   auto request_info =
       Network::Request::Create()
@@ -2449,6 +2480,53 @@ void NetworkHandler::LoadingComplete(
       status.encoded_data_length);
 }
 
+void NetworkHandler::FetchKeepAliveRequestWillBeSent(
+    const std::string& request_id,
+    const network::ResourceRequest& request,
+    const GURL& initiator_url,
+    Maybe<std::string> frame_token,
+    base::TimeTicks timestamp,
+    absl::optional<
+        std::pair<const GURL&,
+                  const network::mojom::URLResponseHeadDevToolsInfo&>>
+        redirect_info) {
+  if (!enabled_) {
+    return;
+  }
+
+  std::string url = request.url.is_valid() ? request.url.spec() : "";
+  double current_ticks = timestamp.since_origin().InSecondsF();
+  double current_wall_time = base::Time::Now().InSecondsFSinceUnixEpoch();
+  auto initiator =
+      Network::Initiator::Create()
+          .SetType(Network::Initiator::TypeEnum::Script)
+          .SetUrl(initiator_url.is_valid() ? initiator_url.spec() : "")
+          .Build();
+
+  bool redirect_emitted_extra_info = false;
+  std::unique_ptr<Network::Response> redirect_response =
+      BuildRedirectResponse(redirect_info, redirect_emitted_extra_info);
+
+  auto request_info =
+      Network::Request::Create()
+          .SetUrl(url)
+          .SetMethod(request.method)
+          .SetHeaders(BuildRequestHeaders(request.headers, request.referrer))
+          .SetInitialPriority(resourcePriority(request.priority))
+          .SetReferrerPolicy(referrerPolicy(request.referrer_policy))
+          // A fetch keepalive request is categorized as blockable.
+          // https://www.w3.org/TR/mixed-content/#category-blockable
+          .SetMixedContentType(Security::MixedContentTypeEnum::Blockable)
+          .Build();
+
+  frontend_->RequestWillBeSent(
+      request_id, request_id, url, std::move(request_info), current_ticks,
+      current_wall_time, std::move(initiator), redirect_emitted_extra_info,
+      std::move(redirect_response),
+      std::string(Network::ResourceTypeEnum::Fetch), std::move(frame_token),
+      request.has_user_gesture);
+}
+
 void NetworkHandler::OnSignedExchangeReceived(
     absl::optional<const base::UnguessableToken> devtools_navigation_token,
     const GURL& outer_request_url,
@@ -2548,10 +2626,15 @@ DispatchResponse NetworkHandler::SetRequestInterception(
             "Cannot intercept resources of type '%s'", resource_type.c_str()));
       }
     }
-    interceptor_patterns.emplace_back(
-        pattern->GetUrlPattern("*"), std::move(resource_types),
-        ToInterceptorStage(pattern->GetInterceptionStage(
-            protocol::Network::InterceptionStageEnum::Request)));
+    auto interception_stage = pattern->GetInterceptionStage(
+        protocol::Network::InterceptionStageEnum::Request);
+    auto stage = ToInterceptorStage(interception_stage);
+    if (!stage.has_value()) {
+      return Response::InvalidParams(base::StringPrintf(
+          "Unsupported interception stage '%s'", interception_stage.c_str()));
+    }
+    interceptor_patterns.emplace_back(pattern->GetUrlPattern("*"),
+                                      std::move(resource_types), stage.value());
   }
 
   if (!host_)

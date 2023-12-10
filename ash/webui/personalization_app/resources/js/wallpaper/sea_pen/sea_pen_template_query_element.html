@@ -1,1 +1,120 @@
-<div>This is template query.</div>
+<style include="common cros-button-style">
+  .main {
+    height: 100%;
+    margin-inline-start: 8px;
+  }
+
+  #placeholder {
+    height: 40px;
+  }
+
+  #template {
+    align-items: center;
+    color: var(--cros-text-color-primary);
+    display: flex;
+    font: var(--cros-display-6_regular-font);
+    gap: 4px;
+    height: 40%;
+    justify-content: center;
+  }
+
+  #template .unselected {
+    color: var(--cros-text-color-disabled);
+  }
+
+  .clickable.selected {
+    border-bottom: 2px dotted var(--cros-text-color-primary);
+  }
+
+  .clickable.unselected {
+    border-bottom: 2px dotted var(--cros-text-color-disabled);
+  }
+
+  #options {
+    display: flex;
+    height: 30%;
+    justify-content: center;
+  }
+
+  /* This makes the options scrollable. */
+  #optionSubcontainer {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+  }
+
+  #searchButtons {
+    height: 30%;
+    display: flex;
+    justify-content: center;
+  }
+
+  #searchButtons cr-button {
+    margin: 0 4px;
+  }
+
+  cr-button[aria-pressed='false'] iron-icon {
+    display: none;
+  }
+
+  cr-button[aria-pressed='true'] iron-icon {
+    --iron-icon-height: 20px;
+    --iron-icon-width: 20px;
+    display: block;
+  }
+
+  cr-button {
+    font: var(--cros-button-2-font);
+  }
+
+  #options cr-button.unselected-option {
+    background-color: var(--cros-sys-system_on_base);
+    color: var(--cros-sys-on_surface);
+  }
+</style>
+<div class="main">
+  <div id="template">
+    <template is="dom-repeat" items="[[templateTokens_]]" as="token">
+      <div>
+        <template is="dom-if" if="[[isChip_(token)]]">
+          <div class$="[[getChipClassName_(token, selectedChip_)]]"
+              on-click="onClickChip_">
+            [[token.translation]]
+          </div>
+        </template>
+        <template is="dom-if" if="[[!isChip_(token)]]">
+          <div class$="[[getTextClassName_(selectedChip_)]]">
+            [[token]]
+          </div>
+        </template>
+      </div>
+    </template>
+  </div>
+  <div id="options">
+    <div id="optionSubcontainer">
+      <template is="dom-repeat" items="[[options_]]" as="option">
+        <cr-button
+            class$="[[getOptionClass_(option, selectedChip_.translation)]]"
+            on-click="onClickOption_"
+            aria-pressed$="[[isOptionSelected_(option, selectedChip_.translation)]]">
+          <iron-icon icon="personalization:circle_checkmark" slot="prefix-icon"></iron-icon>
+          [[option.translation]]
+        </cr-button>
+      </template>
+    </div>
+  </div>
+  <div id="searchButtons">
+    <cr-button id="inspire" on-click="onClickInspire_">
+      <iron-icon icon="sea-pen:inspire" slot="prefix-icon"></iron-icon>
+      <!-- TODO(b/308200616) Add finalized text. -->
+      Inspire me
+    </cr-button>
+    <cr-button
+        id="searchButton"
+        class="action-button"
+        on-click="onClickSearchButton_">
+      <iron-icon icon$="[[getSearchButtonIcon_(path)]]" slot="prefix-icon"></iron-icon>
+      [[getSearchButtonText_(path)]]
+    </cr-button>
+  </div>
+</div>

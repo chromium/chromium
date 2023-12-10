@@ -15,9 +15,7 @@ import org.chromium.base.Flag;
 
 import java.util.Map;
 
-/**
- * Test rule for testing subclasses of {@link Flag}.
- */
+/** Test rule for testing subclasses of {@link Flag}. */
 public class BaseFlagTestRule implements TestRule {
     @Override
     public Statement apply(final Statement base, final Description desc) {

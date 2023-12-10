@@ -2,6 +2,14 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+source_set("constants") {
+  sources = [
+    "notifications_promo_view_constants.h",
+    "notifications_promo_view_constants.mm",
+  ]
+  deps = [ "//base" ]
+}
+
 source_set("feed_top_section") {
   sources = [
     "feed_top_section_consumer.h",
@@ -14,18 +22,23 @@ source_set("feed_top_section") {
     "feed_top_section_view_controller_delegate.h",
   ]
   deps = [
+    ":constants",
+    ":feed_top_section_promos_ui",
+    "//base",
+    "//components/prefs",
     "//components/signin/public/identity_manager/objc",
     "//components/sync/base:features",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/discover_feed:constants",
-    "//ios/chrome/browser/ntp:features",
-    "//ios/chrome/browser/ntp/home:features",
+    "//ios/chrome/browser/discover_feed/model:constants",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/public/commands",
-    "//ios/chrome/browser/signin",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/public/features:system_flags",
+    "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/sync/model",
     "//ios/chrome/browser/ui/authentication",
     "//ios/chrome/browser/ui/authentication:signin_presenter",
@@ -36,5 +49,23 @@ source_set("feed_top_section") {
     "//ios/chrome/browser/ui/ntp:utils",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",
+  ]
+}
+
+source_set("feed_top_section_promos_ui") {
+  sources = [
+    "notifications_promo_view.h",
+    "notifications_promo_view.mm",
+  ]
+  deps = [
+    ":constants",
+    "//build:branding_buildflags",
+    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/util:util",
+    "//ios/chrome/common:button_config",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/util:util",
+    "//ui/base:base",
   ]
 }

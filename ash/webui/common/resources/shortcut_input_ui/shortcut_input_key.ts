@@ -20,8 +20,8 @@ export const LWIN_KEY = 'Meta';
 
 /**
  * @fileoverview
- * 'input-key' is a component wrapper for a single input key. Responsible for
- * handling dynamic styling of a single key.
+ * 'shortcut-input-key' is a component wrapper for a single input key.
+ * Responsible for handling dynamic styling of a single key.
  */
 
 const ShortcutInputKeyElementBase = I18nMixin(PolymerElement);
@@ -37,6 +37,7 @@ export class ShortcutInputKeyElement extends ShortcutInputKeyElementBase {
         type: String,
         value: '',
         reflectToAttribute: true,
+        observer: ShortcutInputKeyElement.prototype.onKeyChanged,
       },
 
       keyState: {
@@ -61,6 +62,14 @@ export class ShortcutInputKeyElement extends ShortcutInputKeyElementBase {
         reflectToAttribute: true,
       },
 
+      // This property is used to apply different styling to keys containing
+      // only text and those with icons.
+      hasIcon: {
+        type: Boolean,
+        value: false,
+        reflectToAttribute: true,
+      },
+
       // This property is used to apply different icon if the meta key is
       // launcher button.
       hasLauncherButton: {
@@ -75,6 +84,7 @@ export class ShortcutInputKeyElement extends ShortcutInputKeyElementBase {
   keyState: KeyInputState;
   narrow: boolean;
   highlighted: boolean;
+  hasIcon: boolean;
   hasLauncherButton: boolean;
 
   override connectedCallback(): void {
@@ -127,6 +137,10 @@ export class ShortcutInputKeyElement extends ShortcutInputKeyElementBase {
 
   private getAriaHidden(): boolean {
     return this.keyState === KeyInputState.NOT_SELECTED;
+  }
+
+  private onKeyChanged(): void {
+    this.hasIcon = this.key in KeyToIconNameMap;
   }
 }
 

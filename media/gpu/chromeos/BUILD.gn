@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/chromeos/ui_mode.gni")
+import("//gpu/vulkan/features.gni")
 import("//media/gpu/args.gni")
 import("//testing/test.gni")
 import("//third_party/protobuf/proto_library.gni")
@@ -90,8 +91,6 @@ source_set("common") {
     "vda_video_frame_pool.cc",
     "vda_video_frame_pool.h",
     "video_decoder_pipeline.h",
-    "vulkan_image_processor_backend.cc",
-    "vulkan_image_processor_backend.h",
   ]
 
   # TODO(crbug.com/1012587): Merge :fourcc to :common.
@@ -117,12 +116,22 @@ source_set("common") {
     "//media/gpu:video_frame_mapper_common",
     "//third_party/libyuv",
     "//ui/gfx:buffer_types",
+    "//ui/gfx:gfx_switches",
     "//ui/gfx:memory_buffer",
     "//ui/gfx/geometry",
     "//ui/gfx/linux:drm",
     "//ui/gfx/linux:gbm",
     "//ui/gl",
   ]
+
+  if (enable_vulkan) {
+    sources += [
+      "vulkan_image_processor.cc",
+      "vulkan_image_processor.h",
+    ]
+    deps += [ "//gpu/command_buffer/service:gles2" ]
+  }
+
   if (is_chromeos) {
     sources += [
       "decoder_buffer_transcryptor.cc",
@@ -189,6 +198,7 @@ source_set(
     "fake_chromeos_intel_compressed_gpu_memory_buffer.h",
   ]
   deps = [
+    ":common",
     "//base",
     "//build/config/linux/libdrm",
     "//ui/gfx",
@@ -248,6 +258,9 @@ test("image_processor_test") {
     "//ui/gl",
     "//ui/gl:test_support",
   ]
+  if (enable_vulkan) {
+    deps += [ "//gpu/command_buffer/service:gles2" ]
+  }
 }
 
 if (use_v4l2_codec) {
@@ -266,5 +279,8 @@ if (use_v4l2_codec) {
       "//ui/gl",
       "//ui/gl:test_support",
     ]
+    if (enable_vulkan) {
+      deps += [ "//gpu/command_buffer/service:gles2" ]
+    }
   }
 }

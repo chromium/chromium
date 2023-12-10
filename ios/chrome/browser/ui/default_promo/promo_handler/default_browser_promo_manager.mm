@@ -7,13 +7,14 @@
 #import "base/notreached.h"
 #import "components/feature_engagement/public/feature_constants.h"
 #import "components/feature_engagement/public/tracker.h"
+#import "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
-#import "ios/chrome/browser/signin/authentication_service.h"
-#import "ios/chrome/browser/signin/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_promo_commands.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_promo_coordinator.h"
 #import "ios/chrome/browser/ui/default_promo/tailored_promo_coordinator.h"
@@ -49,7 +50,7 @@ enum class DisplayedVideoPromo {
 
 // Tracks whether or not the Video promo Feature Engagement Tracker should be
 // dismissed.
-@property(nonatomic, assign) absl::optional<DisplayedVideoPromo>
+@property(nonatomic, assign) std::optional<DisplayedVideoPromo>
     displayedVideoPromoForFET;
 
 // Feature engagement tracker reference.
@@ -68,8 +69,11 @@ enum class DisplayedVideoPromo {
       AuthenticationServiceFactory::GetForBrowserState(browserState);
   self.tracker = feature_engagement::TrackerFactory::GetForBrowserState(
       self.browser->GetBrowserState());
+  policy::UserCloudPolicyManager* user_policy_manager =
+      browserState->GetUserCloudPolicyManager();
 
-  if (IsUserPolicyNotificationNeeded(authService, prefService)) {
+  if (IsUserPolicyNotificationNeeded(authService, prefService,
+                                     user_policy_manager)) {
     // Showing the User Policy notification has priority over showing the
     // default browser promo. Both dialogs are competing for the same time slot
     // which is after the browser startup and the browser UI is initialized.

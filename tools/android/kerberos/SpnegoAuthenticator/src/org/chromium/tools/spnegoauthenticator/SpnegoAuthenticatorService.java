@@ -14,6 +14,7 @@ import org.chromium.base.Log;
 /** Service exposing the dummy {@link SpnegoAuthenticator}. */
 public class SpnegoAuthenticatorService extends Service {
     private static final String TAG = "tools_SpnegoAuth";
+
     @SuppressLint("StaticFieldLeak")
     private static SpnegoAuthenticator sAuthenticator;
 

@@ -346,4 +346,8 @@ void WorkletGlobalScope::Trace(Visitor* visitor) const {
   WorkerOrWorkletGlobalScope::Trace(visitor);
 }
 
+bool WorkletGlobalScope::HasPendingActivity() const {
+  return !ExecutionContext::IsContextDestroyed();
+}
+
 }  // namespace blink

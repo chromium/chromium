@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "v8/include/v8.h"
 
@@ -24,6 +25,7 @@ class TestHelperFunction : public ScriptFunction::Callable {
   ScriptValue Call(ScriptState* script_state, ScriptValue value) override {
     DCHECK(!value.IsEmpty());
     *value_ = ToCoreString(
+        script_state->GetIsolate(),
         value.V8Value()->ToString(script_state->GetContext()).ToLocalChecked());
     return value;
   }
@@ -96,6 +98,7 @@ class ScriptPromiseResolverWithTrackerTest : public testing::Test {
   }
 
  protected:
+  test::TaskEnvironment task_environment_;
   base::HistogramTester histogram_tester_;
   std::string metric_name_prefix_;
   std::unique_ptr<DummyPageHolder> page_holder_;

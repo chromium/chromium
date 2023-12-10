@@ -90,7 +90,7 @@ TEST_F(RulesetMatcherTest, RedirectRule) {
   params.element_type = url_pattern_index::flat::ElementType_SUBDOCUMENT;
   params.is_third_party = true;
 
-  absl::optional<RequestAction> redirect_action =
+  std::optional<RequestAction> redirect_action =
       matcher->GetBeforeRequestAction(params);
   ASSERT_TRUE(redirect_action);
   ASSERT_EQ(redirect_action->type, RequestAction::Type::REDIRECT);
@@ -198,7 +198,7 @@ TEST_F(RulesetMatcherTest, ModifyHeaders) {
   rule_1.condition->url_filter = std::string("example.com");
   rule_1.action->type = std::string("modifyHeaders");
   rule_1.action->request_headers = std::vector<TestHeaderInfo>(
-      {TestHeaderInfo("header1", "remove", absl::nullopt)});
+      {TestHeaderInfo("header1", "remove", std::nullopt)});
 
   TestRule rule_2 = CreateGenericRule();
   rule_2.id = kMinValidID + 1;
@@ -207,7 +207,7 @@ TEST_F(RulesetMatcherTest, ModifyHeaders) {
   rule_2.action->type = std::string("modifyHeaders");
   rule_2.action->request_headers = std::vector<TestHeaderInfo>(
       {TestHeaderInfo("header1", "set", "value1"),
-       TestHeaderInfo("header2", "remove", absl::nullopt)});
+       TestHeaderInfo("header2", "remove", std::nullopt)});
 
   std::unique_ptr<RulesetMatcher> matcher;
   ASSERT_TRUE(CreateVerifiedMatcher({rule_1, rule_2}, CreateTemporarySource(),
@@ -226,7 +226,7 @@ TEST_F(RulesetMatcherTest, ModifyHeaders) {
   RequestAction expected_rule_1_action = CreateRequestActionForTesting(
       RequestAction::Type::MODIFY_HEADERS, *rule_1.id, *rule_1.priority);
   expected_rule_1_action.request_headers_to_modify = {RequestAction::HeaderInfo(
-      "header1", dnr_api::HeaderOperation::kRemove, absl::nullopt)};
+      "header1", dnr_api::HeaderOperation::kRemove, std::nullopt)};
 
   RequestAction expected_rule_2_action = CreateRequestActionForTesting(
       RequestAction::Type::MODIFY_HEADERS, *rule_2.id, *rule_2.priority);
@@ -234,7 +234,7 @@ TEST_F(RulesetMatcherTest, ModifyHeaders) {
       RequestAction::HeaderInfo("header1", dnr_api::HeaderOperation::kSet,
                                 "value1"),
       RequestAction::HeaderInfo("header2", dnr_api::HeaderOperation::kRemove,
-                                absl::nullopt)};
+                                std::nullopt)};
 
   EXPECT_THAT(modify_header_actions,
               testing::UnorderedElementsAre(
@@ -261,7 +261,7 @@ TEST_F(RulesetMatcherTest, RedirectToExtensionPath) {
   RequestParams params;
   params.url = &example_url;
 
-  absl::optional<RequestAction> redirect_action =
+  std::optional<RequestAction> redirect_action =
       matcher->GetBeforeRequestAction(params);
 
   RequestAction expected_action = CreateRequestActionForTesting(
@@ -288,7 +288,7 @@ TEST_F(RulesetMatcherTest, RedirectToStaticUrl) {
   RequestParams params;
   params.url = &example_url;
 
-  absl::optional<RequestAction> redirect_action =
+  std::optional<RequestAction> redirect_action =
       matcher->GetBeforeRequestAction(params);
 
   ASSERT_TRUE(redirect_action.has_value());
@@ -302,7 +302,7 @@ TEST_F(RulesetMatcherTest, UrlTransform) {
   struct TestCase {
     std::string url;
     // Valid if a redirect is expected.
-    absl::optional<std::string> expected_redirect_url;
+    std::optional<std::string> expected_redirect_url;
   };
 
   std::vector<TestCase> cases;
@@ -371,8 +371,7 @@ TEST_F(RulesetMatcherTest, UrlTransform) {
       {"http://user@7.com/xyz", "http://new_user:new_pass@7.com/xyz"});
 
   auto make_query = [](const std::string& key, const std::string& value,
-                       const absl::optional<bool>& replace_only =
-                           absl::nullopt) {
+                       const std::optional<bool>& replace_only = std::nullopt) {
     TestRuleQueryKeyValue query;
     query.key = key;
     query.value = value;
@@ -403,7 +402,7 @@ TEST_F(RulesetMatcherTest, UrlTransform) {
       std::vector<std::string>({"r1", "r2"});
   rules.push_back(rule);
   // No redirect is performed since the url won't change.
-  cases.push_back({"http://9.com/path?query#fragment", absl::nullopt});
+  cases.push_back({"http://9.com/path?query#fragment", std::nullopt});
 
   rule = create_transform_rule(10, "||10.com");
   rule.action->redirect->transform->query_transform.emplace();
@@ -445,7 +444,7 @@ TEST_F(RulesetMatcherTest, UrlTransform) {
     RequestParams params;
     params.url = &url;
 
-    absl::optional<RequestAction> redirect_action =
+    std::optional<RequestAction> redirect_action =
         matcher->GetBeforeRequestAction(params);
 
     if (!test_case.expected_redirect_url) {
@@ -513,8 +512,8 @@ TEST_F(RulesetMatcherTest, RegexRules) {
 
   struct TestCase {
     const char* url = nullptr;
-    absl::optional<RequestAction> expected_action;
-    absl::optional<RequestAction> expected_modify_header_action;
+    std::optional<RequestAction> expected_action;
+    std::optional<RequestAction> expected_modify_header_action;
   };
 
   std::vector<TestCase> test_cases;
@@ -673,7 +672,7 @@ TEST_F(RulesetMatcherTest, RegexRules_Metadata) {
     url_pattern_index::flat::ElementType element_type =
         url_pattern_index::flat::ElementType_OTHER;
     bool is_third_party = false;
-    absl::optional<RequestAction> expected_action;
+    std::optional<RequestAction> expected_action;
   };
   std::vector<TestCase> test_cases;
 
@@ -819,14 +818,14 @@ TEST_F(RulesetMatcherTest, RegexAndFilterListRules_RedirectPriority) {
     const char* action_type;
     const char* filter;
     bool is_regex_rule;
-    absl::optional<std::string> redirect_url;
+    std::optional<std::string> redirect_url;
   } rule_info[] = {
       {1, 1, "redirect", "filter.com", false, "http://redirect_filter.com"},
-      {2, 1, "upgradeScheme", "regex\\.com", true, absl::nullopt},
+      {2, 1, "upgradeScheme", "regex\\.com", true, std::nullopt},
       {3, 9, "redirect", "common1.com", false, "http://common1_filter.com"},
       {4, 10, "redirect", "common1\\.com", true, "http://common1_regex.com"},
-      {5, 10, "upgradeScheme", "common2.com", false, absl::nullopt},
-      {6, 9, "upgradeScheme", "common2\\.com", true, absl::nullopt},
+      {5, 10, "upgradeScheme", "common2.com", false, std::nullopt},
+      {6, 9, "upgradeScheme", "common2\\.com", true, std::nullopt},
       {7, 10, "redirect", "abc\\.com", true, "http://example1.com"},
       {8, 9, "redirect", "abc", true, "http://example2.com"},
   };
@@ -857,7 +856,7 @@ TEST_F(RulesetMatcherTest, RegexAndFilterListRules_RedirectPriority) {
 
   struct TestCase {
     const char* url = nullptr;
-    absl::optional<RequestAction> expected_action;
+    std::optional<RequestAction> expected_action;
   };
   std::vector<TestCase> test_cases;
 
@@ -942,17 +941,17 @@ TEST_F(RulesetMatcherTest, RegexAndFilterListRules_ModifyHeaders) {
   rule.action->type = "modifyHeaders";
   rule.condition->url_filter = "abc";
   rule.action->request_headers = std::vector<TestHeaderInfo>(
-      {TestHeaderInfo("header1", "remove", absl::nullopt),
-       TestHeaderInfo("header2", "remove", absl::nullopt)});
+      {TestHeaderInfo("header1", "remove", std::nullopt),
+       TestHeaderInfo("header2", "remove", std::nullopt)});
   rules.push_back(rule);
 
   RequestAction action_1 = CreateRequestActionForTesting(
       RequestAction::Type::MODIFY_HEADERS, 1, *rule.priority);
   action_1.request_headers_to_modify = {
       RequestAction::HeaderInfo("header1", dnr_api::HeaderOperation::kRemove,
-                                absl::nullopt),
+                                std::nullopt),
       RequestAction::HeaderInfo("header2", dnr_api::HeaderOperation::kRemove,
-                                absl::nullopt)};
+                                std::nullopt)};
 
   rule = CreateGenericRule();
   rule.id = 2;
@@ -961,17 +960,17 @@ TEST_F(RulesetMatcherTest, RegexAndFilterListRules_ModifyHeaders) {
   rule.condition->regex_filter = "example";
   rule.action->type = "modifyHeaders";
   rule.action->request_headers = std::vector<TestHeaderInfo>(
-      {TestHeaderInfo("header1", "remove", absl::nullopt),
-       TestHeaderInfo("header3", "remove", absl::nullopt)});
+      {TestHeaderInfo("header1", "remove", std::nullopt),
+       TestHeaderInfo("header3", "remove", std::nullopt)});
   rules.push_back(rule);
 
   RequestAction action_2 = CreateRequestActionForTesting(
       RequestAction::Type::MODIFY_HEADERS, 2, *rule.priority);
   action_2.request_headers_to_modify = {
       RequestAction::HeaderInfo("header1", dnr_api::HeaderOperation::kRemove,
-                                absl::nullopt),
+                                std::nullopt),
       RequestAction::HeaderInfo("header3", dnr_api::HeaderOperation::kRemove,
-                                absl::nullopt)};
+                                std::nullopt)};
 
   std::unique_ptr<RulesetMatcher> matcher;
   ASSERT_TRUE(CreateVerifiedMatcher(rules, CreateTemporarySource(), &matcher));
@@ -1075,7 +1074,7 @@ TEST_F(RulesetMatcherTest, RegexSubstitution) {
 
   struct {
     std::string url;
-    absl::optional<RequestAction> expected_action;
+    std::optional<RequestAction> expected_action;
   } test_cases[] = {
       {"http://google.com/path?query",
        create_redirect_action(
@@ -1085,14 +1084,14 @@ TEST_F(RulesetMatcherTest, RegexSubstitution) {
       {"http://example.com/path?q1=1&redirect=facebook.com&q2=2",
        create_redirect_action(3, "http://facebook.com")},
       // The redirect url here would have been "http://" which is invalid.
-      {"http://example.com/path?q1=1&redirect=&q2=2", absl::nullopt},
+      {"http://example.com/path?q1=1&redirect=&q2=2", std::nullopt},
       {"https://reddit.com", create_redirect_action(4, "https://abc.com")},
       {"http://www.rst.xyz.com/path",
        create_redirect_action(5, "https://rst.xyz.com/path")},
       {"http://yahoo.in/path",
        create_redirect_action(6, "http://yahoo.co.in/path")},
       // No match.
-      {"http://example.com", absl::nullopt}};
+      {"http://example.com", std::nullopt}};
 
   for (const auto& test_case : test_cases) {
     SCOPED_TRACE(test_case.url);
@@ -1148,7 +1147,7 @@ TEST_F(RulesetMatcherTest, RulesCount) {
   ASSERT_TRUE(matcher);
   EXPECT_EQ(kNumRegexRules + kNumNonRegexRules, matcher->GetRulesCount());
   // For static rulesets, no rules are considered unsafe.
-  EXPECT_EQ(absl::nullopt, matcher->GetUnsafeRulesCount());
+  EXPECT_EQ(std::nullopt, matcher->GetUnsafeRulesCount());
   EXPECT_EQ(kNumRegexRules, matcher->GetRegexRulesCount());
 
   // Recreate `matcher` for a dynamic ruleset to test that unsafe rule count is
@@ -1166,7 +1165,7 @@ TEST_F(RulesetMatcherTest, RulesCount) {
       CreateVerifiedMatcher({} /* rules */, CreateTemporarySource(), &matcher));
   ASSERT_TRUE(matcher);
   EXPECT_EQ(0u, matcher->GetRulesCount());
-  EXPECT_EQ(absl::nullopt, matcher->GetUnsafeRulesCount());
+  EXPECT_EQ(std::nullopt, matcher->GetUnsafeRulesCount());
   EXPECT_EQ(0u, matcher->GetRegexRulesCount());
 }
 
@@ -1294,7 +1293,7 @@ TEST_F(AllowAllRequestsTest, AllowlistedFrameTracking) {
 
   GURL example_url("http://example.com");
   simulate_navigation(web_contents->GetPrimaryMainFrame(), example_url);
-  absl::optional<RequestAction> action =
+  std::optional<RequestAction> action =
       matcher->GetAllowlistedFrameActionForTesting(
           web_contents->GetPrimaryMainFrame());
   EXPECT_FALSE(action);

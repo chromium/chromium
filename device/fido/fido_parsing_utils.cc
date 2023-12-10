@@ -78,13 +78,13 @@ std::vector<base::span<const uint8_t>> SplitSpan(base::span<const uint8_t> span,
 }
 
 std::array<uint8_t, crypto::kSHA256Length> CreateSHA256Hash(
-    base::StringPiece data) {
+    std::string_view data) {
   std::array<uint8_t, crypto::kSHA256Length> hashed_data;
   crypto::SHA256HashString(data, hashed_data.data(), hashed_data.size());
   return hashed_data;
 }
 
-base::StringPiece ConvertToStringPiece(base::span<const uint8_t> data) {
+std::string_view ConvertToStringView(base::span<const uint8_t> data) {
   return {reinterpret_cast<const char*>(data.data()), data.size()};
 }
 

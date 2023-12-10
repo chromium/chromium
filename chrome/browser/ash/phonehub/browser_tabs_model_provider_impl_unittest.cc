@@ -77,9 +77,9 @@ class OpenTabsUIDelegateMock : public sync_sessions::OpenTabsUIDelegate {
                     const SessionID tab_id,
                     const sessions::SessionTab** tab));
   MOCK_METHOD1(DeleteForeignSession, void(const std::string& tag));
-  MOCK_METHOD2(GetForeignSession,
-               bool(const std::string& tag,
-                    std::vector<const sessions::SessionWindow*>* windows));
+  MOCK_METHOD1(
+      GetForeignSession,
+      std::vector<const sessions::SessionWindow*>(const std::string& tag));
   MOCK_METHOD2(GetForeignSessionTabs,
                bool(const std::string& tag,
                     std::vector<const sessions::SessionTab*>* tabs));

@@ -24,36 +24,23 @@ public class QuicOptions {
 
     private final Set<String> mConnectionOptions;
     private final Set<String> mClientConnectionOptions;
-    @Nullable
-    private final Integer mInMemoryServerConfigsCacheSize;
-    @Nullable
-    private final String mHandshakeUserAgent;
-    @Nullable
-    private final Boolean mRetryWithoutAltSvcOnQuicErrors;
-    @Nullable
-    private final Boolean mEnableTlsZeroRtt;
+    @Nullable private final Integer mInMemoryServerConfigsCacheSize;
+    @Nullable private final String mHandshakeUserAgent;
+    @Nullable private final Boolean mRetryWithoutAltSvcOnQuicErrors;
+    @Nullable private final Boolean mEnableTlsZeroRtt;
 
-    @Nullable
-    private final Long mPreCryptoHandshakeIdleTimeoutSeconds;
-    @Nullable
-    private final Long mCryptoHandshakeTimeoutSeconds;
+    @Nullable private final Long mPreCryptoHandshakeIdleTimeoutSeconds;
+    @Nullable private final Long mCryptoHandshakeTimeoutSeconds;
 
-    @Nullable
-    private final Long mIdleConnectionTimeoutSeconds;
-    @Nullable
-    private final Long mRetransmittableOnWireTimeoutMillis;
+    @Nullable private final Long mIdleConnectionTimeoutSeconds;
+    @Nullable private final Long mRetransmittableOnWireTimeoutMillis;
 
-    @Nullable
-    private final Boolean mCloseSessionsOnIpChange;
-    @Nullable
-    private final Boolean mGoawaySessionsOnIpChange;
+    @Nullable private final Boolean mCloseSessionsOnIpChange;
+    @Nullable private final Boolean mGoawaySessionsOnIpChange;
 
-    @Nullable
-    private final Long mInitialBrokenServicePeriodSeconds;
-    @Nullable
-    private final Boolean mIncreaseBrokenServicePeriodExponentially;
-    @Nullable
-    private final Boolean mDelayJobsWithAvailableSpdySession;
+    @Nullable private final Long mInitialBrokenServicePeriodSeconds;
+    @Nullable private final Boolean mIncreaseBrokenServicePeriodExponentially;
+    @Nullable private final Boolean mDelayJobsWithAvailableSpdySession;
 
     private final Set<String> mExtraQuicheFlags;
 
@@ -173,42 +160,26 @@ public class QuicOptions {
         return new Builder();
     }
 
-    /**
-     * Builder for {@link QuicOptions}.
-     */
+    /** Builder for {@link QuicOptions}. */
     public static class Builder {
         private final Set<String> mQuicHostAllowlist = new LinkedHashSet<>();
         private final Set<String> mEnabledQuicVersions = new LinkedHashSet<>();
         private final Set<String> mConnectionOptions = new LinkedHashSet<>();
         private final Set<String> mClientConnectionOptions = new LinkedHashSet<>();
-        @Nullable
-        private Integer mInMemoryServerConfigsCacheSize;
-        @Nullable
-        private String mHandshakeUserAgent;
-        @Nullable
-        private Boolean mRetryWithoutAltSvcOnQuicErrors;
-        @Nullable
-        private Boolean mEnableTlsZeroRtt;
-        @Nullable
-        private Long mPreCryptoHandshakeIdleTimeoutSeconds;
-        @Nullable
-        private Long mCryptoHandshakeTimeoutSeconds;
-        @Nullable
-        private Long mIdleConnectionTimeoutSeconds;
-        @Nullable
-        private Long mRetransmittableOnWireTimeoutMillis;
-        @Nullable
-        private Boolean mCloseSessionsOnIpChange;
-        @Nullable
-        private Boolean mGoawaySessionsOnIpChange;
-        @Nullable
-        private Long mInitialBrokenServicePeriodSeconds;
-        @Nullable
-        private Boolean mIncreaseBrokenServicePeriodExponentially;
-        @Nullable
-        private Boolean mDelayJobsWithAvailableSpdySession;
-        @Nullable
-        private final Set<String> mExtraQuicheFlags = new LinkedHashSet<>();
+        @Nullable private Integer mInMemoryServerConfigsCacheSize;
+        @Nullable private String mHandshakeUserAgent;
+        @Nullable private Boolean mRetryWithoutAltSvcOnQuicErrors;
+        @Nullable private Boolean mEnableTlsZeroRtt;
+        @Nullable private Long mPreCryptoHandshakeIdleTimeoutSeconds;
+        @Nullable private Long mCryptoHandshakeTimeoutSeconds;
+        @Nullable private Long mIdleConnectionTimeoutSeconds;
+        @Nullable private Long mRetransmittableOnWireTimeoutMillis;
+        @Nullable private Boolean mCloseSessionsOnIpChange;
+        @Nullable private Boolean mGoawaySessionsOnIpChange;
+        @Nullable private Long mInitialBrokenServicePeriodSeconds;
+        @Nullable private Boolean mIncreaseBrokenServicePeriodExponentially;
+        @Nullable private Boolean mDelayJobsWithAvailableSpdySession;
+        @Nullable private final Set<String> mExtraQuicheFlags = new LinkedHashSet<>();
 
         Builder() {}
 

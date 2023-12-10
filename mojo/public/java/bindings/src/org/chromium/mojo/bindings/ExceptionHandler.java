@@ -35,23 +35,17 @@ public interface ExceptionHandler {
 
         private DefaultExceptionHandler() {}
 
-        /**
-         * Static class that implements the initialization-on-demand holder idiom.
-         */
+        /** Static class that implements the initialization-on-demand holder idiom. */
         private static class LazyHolder {
             static final DefaultExceptionHandler INSTANCE = new DefaultExceptionHandler();
         }
 
-        /**
-         * Gets the singleton instance for the DefaultExceptionHandler.
-         */
+        /** Gets the singleton instance for the DefaultExceptionHandler. */
         public static DefaultExceptionHandler getInstance() {
             return LazyHolder.INSTANCE;
         }
 
-        /**
-         * Sets a delegate ExceptionHandler, in case throwing an exception is not desirable.
-         */
+        /** Sets a delegate ExceptionHandler, in case throwing an exception is not desirable. */
         public void setDelegate(ExceptionHandler exceptionHandler) {
             mDelegate = exceptionHandler;
         }

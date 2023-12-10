@@ -180,6 +180,13 @@ void RTCEncodedVideoStreamTransformer::Broker::SendFrameToSink(
   }
 }
 
+void RTCEncodedVideoStreamTransformer::Broker::StartShortCircuiting() {
+  base::AutoLock locker(transformer_lock_);
+  if (transformer_) {
+    transformer_->StartShortCircuiting();
+  }
+}
+
 RTCEncodedVideoStreamTransformer::RTCEncodedVideoStreamTransformer(
     scoped_refptr<base::SingleThreadTaskRunner> realm_task_runner)
     : broker_(base::AdoptRef(new Broker(this))),
@@ -205,6 +212,10 @@ void RTCEncodedVideoStreamTransformer::RegisterTransformedFrameSinkCallback(
     rtc::scoped_refptr<webrtc::TransformedFrameCallback> callback,
     uint32_t ssrc) {
   base::AutoLock locker(sink_lock_);
+
+  if (short_circuit_) {
+    callback->StartShortCircuiting();
+  }
   for (auto& sink_callback : send_frame_to_sink_callbacks_) {
     if (sink_callback.first == ssrc) {
       sink_callback.second = std::move(callback);
@@ -250,6 +261,14 @@ void RTCEncodedVideoStreamTransformer::SendFrameToSink(
       sink_callback.second->OnTransformedFrame(std::move(frame));
       return;
     }
+  }
+}
+
+void RTCEncodedVideoStreamTransformer::StartShortCircuiting() {
+  base::AutoLock locker(sink_lock_);
+  short_circuit_ = true;
+  for (const auto& sink_callback : send_frame_to_sink_callbacks_) {
+    sink_callback.second->StartShortCircuiting();
   }
 }
 

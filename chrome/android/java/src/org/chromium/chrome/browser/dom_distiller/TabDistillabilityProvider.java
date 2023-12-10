@@ -21,18 +21,19 @@ import org.chromium.ui.base.WindowAndroid;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-/**
- * A mechanism for clients interested in the distillability of a page to receive updates.
- */
-public class TabDistillabilityProvider
-        extends EmptyTabObserver implements PageDistillableDelegate, UserData {
+/** A mechanism for clients interested in the distillability of a page to receive updates. */
+public class TabDistillabilityProvider extends EmptyTabObserver
+        implements PageDistillableDelegate, UserData {
     public static final Class<TabDistillabilityProvider> USER_DATA_KEY =
             TabDistillabilityProvider.class;
 
     // These values are persisted to logs. Entries should not be renumbered and
     // numeric values should never be reused.
-    @IntDef({ContentClassification.OTHER, ContentClassification.LONG_ARTICLE,
-            ContentClassification.COUNT})
+    @IntDef({
+        ContentClassification.OTHER,
+        ContentClassification.LONG_ARTICLE,
+        ContentClassification.COUNT
+    })
     @Retention(RetentionPolicy.SOURCE)
     public @interface ContentClassification {
         int OTHER = 0;
@@ -68,6 +69,7 @@ public class TabDistillabilityProvider
 
     /** Cached results from the last result from native. */
     private boolean mIsDistillable;
+
     private boolean mIsLast;
     private boolean mIsLongArticle;
     private boolean mIsMobileOptimized;
@@ -137,30 +139,34 @@ public class TabDistillabilityProvider
         mIsLongArticle = false;
         mIsMobileOptimized = false;
 
-        if (mTab != null && mTab.getWebContents() != null
+        if (mTab != null
+                && mTab.getWebContents() != null
                 && mTab.getWebContents() != mWebContents) {
             mWebContents = mTab.getWebContents();
             DistillablePageUtils.setDelegate(mWebContents, this);
         }
     }
 
-    /**
-     * Records the Content.Classification metric if the distillability has been determined.
-     */
+    /** Records the Content.Classification metric if the distillability has been determined. */
     private void recordContentClassificationMetric() {
         // If the distillability was determined, record the Content Classification. Should be called
         // before #resetState().
         if (isDistillabilityDetermined()) {
-            RecordHistogram.recordEnumeratedHistogram("Content.Classification",
-                    mIsLongArticle ? ContentClassification.LONG_ARTICLE
-                                   : ContentClassification.OTHER,
+            RecordHistogram.recordEnumeratedHistogram(
+                    "Content.Classification",
+                    mIsLongArticle
+                            ? ContentClassification.LONG_ARTICLE
+                            : ContentClassification.OTHER,
                     ContentClassification.COUNT);
         }
     }
 
     @Override
-    public void onIsPageDistillableResult(boolean isDistillable, boolean isLast,
-            boolean isLongArticle, boolean isMobileOptimized) {
+    public void onIsPageDistillableResult(
+            boolean isDistillable,
+            boolean isLast,
+            boolean isLongArticle,
+            boolean isMobileOptimized) {
         mIsDistillable = isDistillable;
         mIsLast = isLast;
         mIsLongArticle = isLongArticle;

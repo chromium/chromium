@@ -42,7 +42,8 @@ WebAuthFlow::WebAuthFlow(
     Mode mode,
     bool user_gesture,
     AbortOnLoad abort_on_load_for_non_interactive,
-    absl::optional<base::TimeDelta> timeout_for_non_interactive)
+    absl::optional<base::TimeDelta> timeout_for_non_interactive,
+    absl::optional<gfx::Rect> popup_bounds)
     : delegate_(delegate),
       profile_(profile),
       provider_url_(provider_url),
@@ -50,7 +51,8 @@ WebAuthFlow::WebAuthFlow(
       user_gesture_(user_gesture),
       abort_on_load_for_non_interactive_(abort_on_load_for_non_interactive),
       timeout_for_non_interactive_(timeout_for_non_interactive),
-      non_interactive_timeout_timer_(std::make_unique<base::OneShotTimer>()) {
+      non_interactive_timeout_timer_(std::make_unique<base::OneShotTimer>()),
+      popup_bounds_(popup_bounds) {
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("identity", "WebAuthFlow", this);
   if (timeout_for_non_interactive_) {
     DCHECK_GE(*timeout_for_non_interactive_, base::TimeDelta());
@@ -125,6 +127,9 @@ bool WebAuthFlow::DisplayAuthPageInPopupWindow() {
                                        user_gesture_);
   browser_params.omit_from_session_restore = true;
   browser_params.should_trigger_session_restore = false;
+  if (popup_bounds_.has_value()) {
+    browser_params.initial_bounds = popup_bounds_.value();
+  }
 
   Browser* browser = Browser::Create(browser_params);
   browser->tab_strip_model()->AddWebContents(

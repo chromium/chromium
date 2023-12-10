@@ -37,12 +37,13 @@ public class AnimationLooper {
     public AnimationLooper(Drawable drawable) {
         mHandler = new Handler();
         mAnimatable = (Animatable) drawable;
-        mAnimationCallback = new Animatable2Compat.AnimationCallback() {
-            @Override
-            public void onAnimationEnd(Drawable drawable) {
-                mHandler.post(mAnimatable::start);
-            }
-        };
+        mAnimationCallback =
+                new Animatable2Compat.AnimationCallback() {
+                    @Override
+                    public void onAnimationEnd(Drawable drawable) {
+                        mHandler.post(mAnimatable::start);
+                    }
+                };
     }
 
     /** Starts the animation of the associated drawable. */
@@ -73,8 +74,9 @@ public class AnimationLooper {
             return ApiHelperForO.areAnimatorsEnabled();
         } else {
             return Settings.Global.getFloat(
-                           ContextUtils.getApplicationContext().getContentResolver(),
-                           Settings.Global.ANIMATOR_DURATION_SCALE, 1.0f)
+                            ContextUtils.getApplicationContext().getContentResolver(),
+                            Settings.Global.ANIMATOR_DURATION_SCALE,
+                            1.0f)
                     != 0.0f;
         }
     }

@@ -18,6 +18,7 @@
 #include "base/auto_reset.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
@@ -92,6 +93,12 @@ namespace content {
 
 namespace {
 
+// Controls if browser compositor context can be backed by raster decoder.
+// TODO(crbug.com/1505425): Remove kill switch once rolled out to stable.
+BASE_FEATURE(kUseRasterDecoderForAndroidBrowserContext,
+             "UseRasterDecoderForAndroidBrowserContext",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // NOINLINE to make sure crashes use this for magic signature.
 NOINLINE void FatalSurfaceFailure() {
   LOG(FATAL) << "Fatal surface initialization failure";
@@ -110,11 +117,12 @@ gpu::ContextCreationAttribs GetCompositorContextAttributes(
     bool requires_alpha_channel) {
   gpu::ContextCreationAttribs attributes;
   attributes.bind_generates_resource = false;
-  attributes.color_space = gpu::COLOR_SPACE_SRGB;
   attributes.need_alpha = requires_alpha_channel;
 
-  attributes.enable_swap_timestamps_if_supported = true;
   attributes.enable_raster_interface = true;
+  attributes.enable_gles2_interface =
+      !base::FeatureList::IsEnabled(kUseRasterDecoderForAndroidBrowserContext);
+  attributes.enable_grcontext = attributes.enable_gles2_interface;
 
   return attributes;
 }
@@ -134,17 +142,16 @@ void CreateContextProviderAfterGpuChannelEstablished(
 
   constexpr bool automatic_flushes = false;
   constexpr bool support_locking = false;
-  constexpr bool support_grcontext = false;
 
   gpu::ContextCreationAttribs attributes;
   attributes.bind_generates_resource = false;
+  attributes.enable_gles2_interface = true;
 
   auto context_provider =
       base::MakeRefCounted<viz::ContextProviderCommandBuffer>(
           std::move(gpu_channel_host), stream_id, stream_priority, handle,
           GURL(std::string("chrome://gpu/Compositor::CreateContextProvider")),
-          automatic_flushes, support_locking, support_grcontext,
-          shared_memory_limits, attributes,
+          automatic_flushes, support_locking, shared_memory_limits, attributes,
           viz::command_buffer_metrics::ContextType::UNKNOWN);
   std::move(callback).Run(std::move(context_provider));
 }
@@ -632,7 +639,6 @@ void CompositorImpl::OnGpuChannelEstablished(
 
   constexpr bool support_locking = false;
   constexpr bool automatic_flushes = false;
-  constexpr bool support_grcontext = true;
   display_color_spaces_ = display::Screen::GetScreen()
                               ->GetDisplayNearestWindow(root_window_)
                               .GetColorSpaces();
@@ -643,7 +649,7 @@ void CompositorImpl::OnGpuChannelEstablished(
           gpu::kNullSurfaceHandle,
           GURL(std::string("chrome://gpu/CompositorImpl::") +
                std::string("CompositorContextProvider")),
-          automatic_flushes, support_locking, support_grcontext,
+          automatic_flushes, support_locking,
           GetCompositorContextSharedMemoryLimits(root_window_),
           GetCompositorContextAttributes(
               display_color_spaces_.GetRasterColorSpace(),

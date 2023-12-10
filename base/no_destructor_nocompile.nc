@@ -9,10 +9,20 @@
 
 namespace base {
 
-void WontCompile() {
+void WontCompileWithTrivialTypes() {
+  // NoDestructor should not be used with trivial types; trivial types can
+  // simply be directly declared as globals.
+  static NoDestructor<bool> x;  // expected-error@*:* {{static assertion failed due to requirement '!(std::is_trivially_constructible_v<bool> && std::is_trivially_destructible_v<bool>)'}}
+}
+
+struct TypeWithUserConstructor {
+  TypeWithUserConstructor() {}
+};
+
+void WontCompileWithTriviallyDestructibleTypes() {
   // NoDestructor should only be used for non-trivially destructible types;
-  // trivial types can simply be directly declared as globals.
-  static NoDestructor<bool> x;  // expected-error@*:* {{static assertion failed due to requirement '!std::is_trivially_destructible_v<bool>'}}
+  // they should be declared as function-level statics instead.
+  static NoDestructor<TypeWithUserConstructor> x;  // expected-error@*:* {{static assertion failed due to requirement '!std::is_trivially_destructible_v<base::TypeWithUserConstructor>'}}
 }
 
 }  // namespace base

@@ -37,6 +37,8 @@
 #include "ui/compositor/layer_type.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/compositor_extra/shadow.h"
+#include "ui/display/screen.h"
+#include "ui/display/tablet_state.h"
 #include "ui/gfx/geometry/transform_util.h"
 #include "ui/views/layout/layout_manager_base.h"
 
@@ -154,8 +156,7 @@ AssistantPageView::AssistantPageView(
   if (AssistantUiController::Get())  // May be |nullptr| in tests.
     AssistantUiController::Get()->GetModel()->AddObserver(this);
 
-  if (Shell::HasInstance())  // Shell might not has an instance in tests.
-    tablet_mode_observation_.Observe(Shell::Get()->tablet_mode_controller());
+  display_observation_.Observe(display::Screen::GetScreen());
 }
 
 AssistantPageView::~AssistantPageView() {
@@ -361,8 +362,8 @@ void AssistantPageView::OnAssistantControllerDestroying() {
 void AssistantPageView::OnUiVisibilityChanged(
     AssistantVisibility new_visibility,
     AssistantVisibility old_visibility,
-    absl::optional<AssistantEntryPoint> entry_point,
-    absl::optional<AssistantExitPoint> exit_point) {
+    std::optional<AssistantEntryPoint> entry_point,
+    std::optional<AssistantExitPoint> exit_point) {
   if (!assistant_view_delegate_)
     return;
 
@@ -383,12 +384,19 @@ void AssistantPageView::OnUiVisibilityChanged(
   }
 }
 
-void AssistantPageView::OnTabletModeStarted() {
-  UpdateBackground(/*in_tablet_mode=*/true);
-}
-
-void AssistantPageView::OnTabletModeEnded() {
-  UpdateBackground(/*in_tablet_mode=*/false);
+void AssistantPageView::OnDisplayTabletStateChanged(
+    display::TabletState state) {
+  switch (state) {
+    case display::TabletState::kEnteringTabletMode:
+    case display::TabletState::kExitingTabletMode:
+      // Do nothing when the tablet mode is in process of changing.
+      break;
+    case display::TabletState::kInTabletMode:
+      UpdateBackground(/*in_tablet_mode=*/true);
+      break;
+    case display::TabletState::kInClamshellMode:
+      UpdateBackground(/*in_tablet_mode=*/false);
+  }
 }
 
 void AssistantPageView::OnThemeChanged() {

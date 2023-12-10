@@ -26,8 +26,7 @@ import org.chromium.base.test.util.HistogramWatcher;
 @RunWith(Parameterized.class)
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
 public class RendererProcessMetricsProviderTest extends AwParameterizedTest {
-    @Rule
-    public AwActivityTestRule mActivityTestRule;
+    @Rule public AwActivityTestRule mActivityTestRule;
 
     private HistogramWatcher mHistogramExpectationSingleProcess;
     private HistogramWatcher mHistogramExpectationMultiProcess;
@@ -36,7 +35,7 @@ public class RendererProcessMetricsProviderTest extends AwParameterizedTest {
         this.mActivityTestRule = new AwActivityTestRule(param.getMutation());
     }
 
-   @Before
+    @Before
     public void setUp() throws Exception {
         mHistogramExpectationSingleProcess =
                 HistogramWatcher.newBuilder()

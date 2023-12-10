@@ -188,45 +188,51 @@ void V8SetReturnValue(const CallbackInfo& info,
 // Convert v8::String to a WTF::String. If the V8 string is not already
 // an external string then it is transformed into an external string at this
 // point to avoid repeated conversions.
-inline String ToCoreString(v8::Local<v8::String> value) {
-  return ToBlinkString<String>(value, kExternalize);
+inline String ToCoreString(v8::Isolate* isolate, v8::Local<v8::String> value) {
+  return ToBlinkString<String>(isolate, value, kExternalize);
 }
 
-inline String ToCoreStringWithNullCheck(v8::Local<v8::String> value) {
+inline String ToCoreStringWithNullCheck(v8::Isolate* isolate,
+                                        v8::Local<v8::String> value) {
   if (value.IsEmpty() || value->IsNull())
     return String();
-  return ToCoreString(value);
+  return ToCoreString(isolate, value);
 }
 
 inline String ToCoreStringWithUndefinedOrNullCheck(
+    v8::Isolate* isolate,
     v8::Local<v8::String> value) {
   if (value.IsEmpty())
     return String();
-  return ToCoreString(value);
+  return ToCoreString(isolate, value);
 }
 
-inline AtomicString ToCoreAtomicString(v8::Local<v8::String> value) {
-  return ToBlinkString<AtomicString>(value, kExternalize);
+inline AtomicString ToCoreAtomicString(v8::Isolate* isolate,
+                                       v8::Local<v8::String> value) {
+  return ToBlinkString<AtomicString>(isolate, value, kExternalize);
 }
 
-inline AtomicString ToCoreAtomicString(v8::Local<v8::Name> value) {
+inline AtomicString ToCoreAtomicString(v8::Isolate* isolate,
+                                       v8::Local<v8::Name> value) {
   DCHECK(!value.IsEmpty());
   // TODO(crbug.com/1476064): Support converting `value` when it is a symbol
   // instead of a string.
   if (!value->IsString()) {
     return AtomicString();
   }
-  return ToBlinkString<AtomicString>(value.As<v8::String>(), kExternalize);
+  return ToBlinkString<AtomicString>(isolate, value.As<v8::String>(),
+                                     kExternalize);
 }
 
 // This method will return a null String if the v8::Value does not contain a
 // v8::String.  It will not call ToString() on the v8::Value. If you want
 // ToString() to be called, please use the TONATIVE_FOR_V8STRINGRESOURCE_*()
 // macros instead.
-inline String ToCoreStringWithUndefinedOrNullCheck(v8::Local<v8::Value> value) {
+inline String ToCoreStringWithUndefinedOrNullCheck(v8::Isolate* isolate,
+                                                   v8::Local<v8::Value> value) {
   if (value.IsEmpty() || !value->IsString())
     return String();
-  return ToCoreString(value.As<v8::String>());
+  return ToCoreString(isolate, value.As<v8::String>());
 }
 
 // Convert a string to a V8 string.

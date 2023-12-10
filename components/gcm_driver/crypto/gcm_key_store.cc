@@ -177,8 +177,6 @@ void GCMKeyStore::DidStoreKeys(std::unique_ptr<crypto::ECPrivateKey> pair,
                                const std::string& auth_secret,
                                KeysCallback callback,
                                bool success) {
-  UMA_HISTOGRAM_BOOLEAN("GCM.Crypto.CreateKeySuccessRate", success);
-
   if (!success) {
     DVLOG(1) << "Unable to store the created key in the GCM Key Store.";
 

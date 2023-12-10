@@ -1070,7 +1070,7 @@ bool CanMoveTabsToNewWindow(Browser* browser,
 
 void MoveTabsToNewWindow(Browser* browser,
                          const std::vector<int>& tab_indices,
-                         absl::optional<tab_groups::TabGroupId> group) {
+                         std::optional<tab_groups::TabGroupId> group) {
   if (tab_indices.empty()) {
     return;
   }
@@ -1973,8 +1973,7 @@ void SetAndroidOsForTabletSite(content::WebContents* current_tab) {
     ua_override.ua_metadata_override = embedder_support::GetUserAgentMetadata(
         g_browser_process->local_state());
     ua_override.ua_metadata_override->mobile = true;
-    ua_override.ua_metadata_override->form_factor =
-        embedder_support::kMobileFormFactor;
+    ua_override.ua_metadata_override->form_factor = {blink::kTabletFormFactor};
     ua_override.ua_metadata_override->platform =
         kChPlatformOverrideForTabletSite;
     ua_override.ua_metadata_override->platform_version = std::string();
@@ -2123,8 +2122,8 @@ void ToggleCommander(Browser* browser) {
 }
 
 #if !defined(TOOLKIT_VIEWS)
-absl::optional<int> GetKeyboardFocusedTabIndex(const Browser* browser) {
-  return absl::nullopt;
+std::optional<int> GetKeyboardFocusedTabIndex(const Browser* browser) {
+  return std::nullopt;
 }
 #endif
 

@@ -4,30 +4,7 @@
     embed, iframe, img { border: 1px solid black; width: 25px; height: 25px; }
 </style>
 </head>
-<script>
-if (window.testRunner) {
-    // Due to scheduler changes the "Blink Test Plugin: initializing" console log is flaky.
-    testRunner.setDumpConsoleMessages(false);
-    testRunner.waitUntilDone();
-}
-
-// We need to wait for both plugins to load before finishing to ensure a stable screenshot.
-function waitForEmbedsToLoad() {
-  var pending = 2;
-  
-  function waitForLoad(object) {
-    object.addEventListener("message", function(message) {
-      if (message.data == 'loaded' && --pending == 0)
-        testRunner.notifyDone();
-    });
-  }
-  
-  waitForLoad(document.getElementById("embed1"));
-  waitForLoad(document.getElementById("embed2"));
-}
-
-</script>
-<body onload="waitForEmbedsToLoad();">
+<body>
     <div style="width: 30px; border: 1px solid red;">
         <input type="text"><input type="text">
         <img><img>
@@ -38,7 +15,7 @@ function waitForEmbedsToLoad() {
         <input type="checkbox"><input type="checkbox">
         <input type="radio"><input type="radio">
         <iframe></iframe><iframe></iframe>
-        <embed id="embed1" type="application/x-blink-test-plugin"></embed><embed id="embed2" type="application/x-blink-test-plugin"></embed>
+        <embed id="embed1" type="application/x-webkit-test-webplugin"></embed><embed id="embed2" type="application/x-webkit-test-webplugin"></embed>
     </div>
 </body>
 </html>

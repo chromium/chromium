@@ -37,6 +37,6 @@ public class UrlConstantsTest {
         Assert.assertTrue(ntpGurl.isValid());
         Assert.assertEquals(ntpGurl.getHost(), UrlConstants.NTP_HOST);
         Assert.assertEquals(ntpGurl.getScheme(), UrlConstants.CHROME_SCHEME);
-        Assert.assertTrue(UrlUtilities.isNTPUrl(UrlConstants.ntpGurl()));
+        Assert.assertTrue(UrlUtilities.isNtpUrl(UrlConstants.ntpGurl()));
     }
 }

@@ -12,6 +12,11 @@
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_reuse_detector.h"
 #include "components/password_manager/core/browser/password_reuse_detector_consumer.h"
+#include "components/password_manager/core/browser/shared_preferences_delegate.h"
+
+namespace signin {
+class IdentityManager;
+}  // namespace signin
 
 class PrefService;
 
@@ -32,7 +37,10 @@ class PasswordReuseManager : public KeyedService {
   // Always call this on the UI thread.
   virtual void Init(PrefService* prefs,
                     PasswordStoreInterface* profile_store,
-                    PasswordStoreInterface* account_store) = 0;
+                    PasswordStoreInterface* account_store,
+                    signin::IdentityManager* identity_manager = nullptr,
+                    std::unique_ptr<SharedPreferencesDelegate>
+                        shared_pref_delegate = nullptr) = 0;
 
   // Log whether a sync password hash saved.
   virtual void ReportMetrics(const std::string& username,

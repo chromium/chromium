@@ -7,10 +7,13 @@
 #include <memory>
 #include <utility>
 
-#include "content/public/renderer/render_thread.h"
+#include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/v8_value_converter.h"
 #include "extensions/common/dom_action_types.h"
 #include "extensions/renderer/activity_log_converter_strategy.h"
+#include "extensions/renderer/extension_frame_helper.h"
+#include "extensions/renderer/script_context.h"
+#include "extensions/renderer/script_context_set.h"
 #include "ipc/ipc_sync_channel.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url.h"
@@ -25,7 +28,8 @@ namespace {
 
 // Converts the given |v8_value| and appends it to the given |list|, if the
 // conversion succeeds.
-void AppendV8Value(const std::string& api_name,
+void AppendV8Value(v8::Isolate* isolate,
+                   const std::string& api_name,
                    const v8::Local<v8::Value>& v8_value,
                    base::Value::List& list) {
   std::unique_ptr<content::V8ValueConverter> converter =
@@ -33,8 +37,8 @@ void AppendV8Value(const std::string& api_name,
   ActivityLogConverterStrategy strategy;
   converter->SetFunctionAllowed(true);
   converter->SetStrategy(&strategy);
-  std::unique_ptr<base::Value> value(converter->FromV8Value(
-      v8_value, v8::Isolate::GetCurrent()->GetCurrentContext()));
+  std::unique_ptr<base::Value> value(
+      converter->FromV8Value(v8_value, isolate->GetCurrentContext()));
 
   if (value)
     list.Append(base::Value::FromUniquePtrValue(std::move(value)));
@@ -59,51 +63,60 @@ void DOMActivityLogger::AttachToWorld(int32_t world_id,
   }
 }
 
-void DOMActivityLogger::LogGetter(const WebString& api_name,
+void DOMActivityLogger::LogGetter(v8::Isolate* isolate,
+                                  v8::Local<v8::Context> context,
+                                  const WebString& api_name,
                                   const WebURL& url,
                                   const WebString& title) {
-  GetRendererHost()->AddDOMActionToActivityLog(
+  auto* renderer_host = GetRendererHost(context);
+  if (!renderer_host) {
+    return;
+  }
+  renderer_host->AddDOMActionToActivityLog(
       extension_id_, api_name.Utf8(), base::Value::List(), url, title.Utf16(),
       DomActionType::GETTER);
 }
 
-void DOMActivityLogger::LogSetter(const WebString& api_name,
+void DOMActivityLogger::LogSetter(v8::Isolate* isolate,
+                                  v8::Local<v8::Context> context,
+                                  const WebString& api_name,
                                   const v8::Local<v8::Value>& new_value,
                                   const WebURL& url,
                                   const WebString& title) {
-  logSetter(api_name, new_value, v8::Local<v8::Value>(), url, title);
-}
-
-void DOMActivityLogger::logSetter(const WebString& api_name,
-                                  const v8::Local<v8::Value>& new_value,
-                                  const v8::Local<v8::Value>& old_value,
-                                  const WebURL& url,
-                                  const WebString& title) {
+  auto* renderer_host = GetRendererHost(context);
+  if (!renderer_host) {
+    return;
+  }
   base::Value::List args;
   std::string api_name_utf8 = api_name.Utf8();
-  AppendV8Value(api_name_utf8, new_value, args);
-  if (!old_value.IsEmpty())
-    AppendV8Value(api_name_utf8, old_value, args);
-  GetRendererHost()->AddDOMActionToActivityLog(
-      extension_id_, api_name_utf8, std::move(args), url, title.Utf16(),
-      DomActionType::SETTER);
+  AppendV8Value(isolate, api_name_utf8, new_value, args);
+  renderer_host->AddDOMActionToActivityLog(extension_id_, api_name_utf8,
+                                           std::move(args), url, title.Utf16(),
+                                           DomActionType::SETTER);
 }
 
-void DOMActivityLogger::LogMethod(const WebString& api_name,
+void DOMActivityLogger::LogMethod(v8::Isolate* isolate,
+                                  v8::Local<v8::Context> context,
+                                  const WebString& api_name,
                                   int argc,
                                   const v8::Local<v8::Value>* argv,
                                   const WebURL& url,
                                   const WebString& title) {
+  auto* renderer_host = GetRendererHost(context);
+  if (!renderer_host) {
+    return;
+  }
   base::Value::List args;
   std::string api_name_utf8 = api_name.Utf8();
   for (int i = 0; i < argc; ++i)
-    AppendV8Value(api_name_utf8, argv[i], args);
-  GetRendererHost()->AddDOMActionToActivityLog(
-      extension_id_, api_name_utf8, std::move(args), url, title.Utf16(),
-      DomActionType::METHOD);
+    AppendV8Value(isolate, api_name_utf8, argv[i], args);
+  renderer_host->AddDOMActionToActivityLog(extension_id_, api_name_utf8,
+                                           std::move(args), url, title.Utf16(),
+                                           DomActionType::METHOD);
 }
 
-void DOMActivityLogger::LogEvent(const WebString& event_name,
+void DOMActivityLogger::LogEvent(blink::WebLocalFrame& frame,
+                                 const WebString& event_name,
                                  int argc,
                                  const WebString* argv,
                                  const WebURL& url,
@@ -112,17 +125,25 @@ void DOMActivityLogger::LogEvent(const WebString& event_name,
   std::string event_name_utf8 = event_name.Utf8();
   for (int i = 0; i < argc; ++i)
     args.Append(argv[i].Utf8());
-  GetRendererHost()->AddDOMActionToActivityLog(
-      extension_id_, event_name_utf8, std::move(args), url, title.Utf16(),
-      DomActionType::METHOD);
+  ExtensionFrameHelper::Get(content::RenderFrame::FromWebFrame(&frame))
+      ->GetRendererHost()
+      ->AddDOMActionToActivityLog(extension_id_, event_name_utf8,
+                                  std::move(args), url, title.Utf16(),
+                                  DomActionType::METHOD);
 }
 
-mojom::RendererHost* DOMActivityLogger::GetRendererHost() {
-  if (!renderer_host_.is_bound()) {
-    content::RenderThread::Get()->GetChannel()->GetRemoteAssociatedInterface(
-        &renderer_host_);
+mojom::RendererHost* DOMActivityLogger::GetRendererHost(
+    v8::Local<v8::Context> context) {
+  ScriptContext* script_context =
+      ScriptContextSet::GetContextByV8Context(context);
+  if (!script_context) {
+    return nullptr;
   }
-  return renderer_host_.get();
+  auto* frame = script_context->GetRenderFrame();
+  if (!frame) {
+    return nullptr;
+  }
+  return ExtensionFrameHelper::Get(frame)->GetRendererHost();
 }
 
 }  // namespace extensions

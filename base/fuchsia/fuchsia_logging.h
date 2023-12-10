@@ -16,7 +16,7 @@
 #include "base/base_export.h"
 #include "base/check.h"
 #include "base/logging.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 
 // Use the ZX_LOG family of macros along with a zx_status_t containing a Zircon
 // error. The error value will be decoded so that logged messages explain the

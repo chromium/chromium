@@ -7,10 +7,6 @@ use qr_code::types::{Color, EcLevel, QrError};
 use qr_code::{QrCode, Version};
 use std::pin::Pin;
 
-// Requires this allow since cxx generates unsafe code.
-//
-// TODO(crbug.com/1422745): patch upstream cxx to generate compatible code.
-#[allow(unsafe_op_in_unsafe_fn)]
 #[cxx::bridge(namespace = "qr_code_generator")]
 mod ffi {
     extern "Rust" {
@@ -51,7 +47,7 @@ fn generate(data: &[u8], min_version: Option<i16>) -> Result<QrCode, QrError> {
 /// `min_version` can request a minimum QR code version (e.g. if the caller
 /// requires that the QR code has a certain minimal width and height;  for
 /// example, QR code version 5 translates into 37x37 QR pixels).  Setting
-/// `min_version` to 0 or less means that the caller doesn't have any QR version
+/// `min_version` to 0 means that the caller doesn't have any QR version
 /// requirements.
 ///
 /// On success returns `true` and populates `out_pixels` and `out_qr_size`.  On
@@ -62,11 +58,12 @@ pub fn generate_qr_code_using_rust(
     mut out_pixels: Pin<&mut CxxVector<u8>>,
     out_qr_size: &mut usize,
 ) -> bool {
-    let min_version = if min_version <= 0 {
-        None
-    } else {
-        assert!(min_version <= 40);
-        Some(min_version)
+    let min_version = match min_version {
+        0 => None,
+        1..=40 => Some(min_version),
+        _ => {
+            return false;
+        }
     };
 
     match generate(data, min_version) {

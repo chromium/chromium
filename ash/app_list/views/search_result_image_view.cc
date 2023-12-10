@@ -167,7 +167,7 @@ void SearchResultImageView::OnMetadataChanged() {
   UpdateAccessibleName();
   // By default, the description will be set to the tooltip text, but the title
   // is already announced in the accessible name.
-  SetAccessibleDescription(
+  GetViewAccessibility().OverrideDescription(
       u"", ax::mojom::DescriptionFrom::kAttributeExplicitlyEmpty);
 
   if (!result() || result()->icon().icon.IsEmpty()) {
@@ -191,7 +191,8 @@ void SearchResultImageView::OnMetadataChanged() {
         image, skia::ImageOperations::RESIZE_BEST, GetContentsBounds().size());
   }
 
-  result_image_->SetImage(views::Button::STATE_NORMAL, image);
+  result_image_->SetImageModel(views::Button::STATE_NORMAL,
+                               ui::ImageModel::FromImageSkia(image));
   SetTooltipText(result()->title());
 }
 

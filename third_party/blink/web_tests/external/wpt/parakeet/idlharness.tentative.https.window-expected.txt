@@ -1,17 +1,4 @@
 This is a testharness.js-based test.
-[PASS] idl_test setup
-[PASS] idl_test validation
-[PASS] Partial interface Navigator: original interface defined
-[PASS] Partial interface Navigator: member names are unique
-[PASS] Partial interface Navigator[2]: member names are unique
-[PASS] Partial interface mixin NavigatorID: member names are unique
-[PASS] Navigator includes NavigatorID: member names are unique
-[PASS] Navigator includes NavigatorLanguage: member names are unique
-[PASS] Navigator includes NavigatorOnLine: member names are unique
-[PASS] Navigator includes NavigatorContentUtils: member names are unique
-[PASS] Navigator includes NavigatorCookies: member names are unique
-[PASS] Navigator includes NavigatorPlugins: member names are unique
-[PASS] Navigator includes NavigatorConcurrentHardware: member names are unique
 [FAIL] Navigator interface: operation createAdRequest(AdRequestConfig)
   assert_own_property: interface prototype object missing non-static operation expected property "createAdRequest" missing
 [FAIL] Navigator interface: operation finalizeAd(Ads, AuctionAdConfig)

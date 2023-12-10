@@ -29,11 +29,8 @@
 #include "ui/gfx/image/image_skia.h"
 #include "ui/native_theme/common_theme.h"
 #include "ui/native_theme/native_theme_features.h"
-#include "ui/native_theme/overlay_scrollbar_constants_aura.h"
-
-#if BUILDFLAG(IS_WIN)
 #include "ui/native_theme/native_theme_fluent.h"
-#endif  // BUILDFLAG(IS_WIN)
+#include "ui/native_theme/overlay_scrollbar_constants_aura.h"
 
 namespace ui {
 
@@ -66,23 +63,27 @@ BASE_FEATURE(kNewScrollbarArrowRadius,
 #if !BUILDFLAG(IS_APPLE)
 // static
 NativeTheme* NativeTheme::GetInstanceForWeb() {
-#if BUILDFLAG(IS_WIN)
   if (IsFluentScrollbarEnabled()) {
     return NativeThemeFluent::web_instance();
   }
-#endif  // BUILDFLAG(IS_WIN)
   return NativeThemeAura::web_instance();
 }
 
 #if !BUILDFLAG(IS_WIN)
 // static
 NativeTheme* NativeTheme::GetInstanceForNativeUi() {
-  static base::NoDestructor<NativeThemeAura> s_native_theme(false, false);
+  static base::NoDestructor<NativeThemeAura> s_native_theme(
+      /*use_overlay_scrollbars=*/false,
+      /*should_only_use_dark_colors=*/false,
+      /*system_theme=*/ui::SystemTheme::kDefault,
+      /*theme_to_update=*/NativeTheme::GetInstanceForWeb());
   return s_native_theme.get();
 }
 
 NativeTheme* NativeTheme::GetInstanceForDarkUI() {
-  static base::NoDestructor<NativeThemeAura> s_native_theme(false, true);
+  static base::NoDestructor<NativeThemeAura> s_native_theme(
+      /*use_overlay_scrollbars=*/false,
+      /*should_only_use_dark_colors=*/true);
   return s_native_theme.get();
 }
 #endif  // !BUILDFLAG(IS_WIN)
@@ -93,8 +94,11 @@ NativeTheme* NativeTheme::GetInstanceForDarkUI() {
 
 NativeThemeAura::NativeThemeAura(bool use_overlay_scrollbars,
                                  bool should_only_use_dark_colors,
-                                 ui::SystemTheme system_theme)
-    : NativeThemeBase(should_only_use_dark_colors, system_theme),
+                                 ui::SystemTheme system_theme,
+                                 NativeTheme* theme_to_update)
+    : NativeThemeBase(should_only_use_dark_colors,
+                      system_theme,
+                      theme_to_update),
       use_overlay_scrollbars_(use_overlay_scrollbars) {
 // We don't draw scrollbar buttons.
 #if BUILDFLAG(IS_CHROMEOS)
@@ -118,7 +122,8 @@ NativeThemeAura::~NativeThemeAura() {}
 // static
 NativeThemeAura* NativeThemeAura::web_instance() {
   static base::NoDestructor<NativeThemeAura> s_native_theme_for_web(
-      IsOverlayScrollbarEnabled(), false);
+      /*use_overlay_scrollbars=*/IsOverlayScrollbarEnabled(),
+      /*should_only_use_dark_colors=*/false);
   return s_native_theme_for_web.get();
 }
 

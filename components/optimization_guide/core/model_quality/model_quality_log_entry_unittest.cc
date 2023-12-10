@@ -23,4 +23,16 @@ TEST_F(ModelQualityLogEntryTest, Initialize) {
   EXPECT_EQ(log_entry.logging_metadata(), logging_metadata);
 }
 
+// Test client id is correctly set.
+TEST_F(ModelQualityLogEntryTest, ClientId) {
+  std::unique_ptr<proto::LogAiDataRequest> log_ai_data_request(
+      std::make_unique<proto::LogAiDataRequest>());
+  int64_t client_id =
+      log_ai_data_request.get()->mutable_logging_metadata()->client_id();
+
+  ModelQualityLogEntry log_entry(std::move(log_ai_data_request));
+
+  EXPECT_EQ(log_entry.client_id(), client_id);
+}
+
 }  // namespace optimization_guide

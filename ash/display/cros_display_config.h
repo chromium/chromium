@@ -52,7 +52,7 @@ class ASH_EXPORT CrosDisplayConfig
   void SetUnifiedDesktopEnabled(bool enabled) override;
   void OverscanCalibration(const std::string& display_id,
                            crosapi::mojom::DisplayConfigOperation op,
-                           const absl::optional<gfx::Insets>& delta,
+                           const std::optional<gfx::Insets>& delta,
                            OverscanCalibrationCallback callback) override;
   void TouchCalibration(const std::string& display_id,
                         crosapi::mojom::DisplayConfigOperation op,

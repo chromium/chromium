@@ -25,6 +25,7 @@
 #include "content/browser/storage_partition_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/network_service_util.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/test/back_forward_cache_util.h"
@@ -44,6 +45,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
+#include "url/origin.h"
 #include "url/url_util.h"
 
 namespace content {
@@ -54,6 +56,7 @@ constexpr char16_t kPromiseResolvedPageTitle[] = u"Resolved";
 
 constexpr char kPrimaryHost[] = "a.test";
 constexpr char kSecondaryHost[] = "b.test";
+constexpr char kAllowedCspHost[] = "csp.test";
 
 constexpr char kKeepAliveEndpoint[] = "/beacon";
 
@@ -63,9 +66,28 @@ constexpr char k200TextResponse[] =
     "\r\n"
     "Acked!";
 
+constexpr char k301Response[] =
+    "HTTP/1.1 301 Moved Permanently\r\n"
+    "Location: %s\r\n"
+    "\r\n";
+
 constexpr char kBeaconId[] = "beacon01";
 
 constexpr char kFetchLaterEndpoint[] = "/fetch-later";
+
+std::string GetKeepAliveEndpoint(
+    absl::optional<std::string> id = absl::nullopt) {
+  std::string endpoint = kKeepAliveEndpoint;
+  if (id.has_value()) {
+    endpoint += "?id=" + *id;
+  }
+  return endpoint;
+}
+
+std::string GetConnectSrcCSPHeader(const url::Origin& origin) {
+  return base::StringPrintf("Content-Security-Policy: connect-src 'self' %s",
+                            origin.Serialize().c_str());
+}
 
 // Encodes the given `url` using the JS method encodeURIComponent.
 std::string EncodeURL(const GURL& url) {
@@ -143,9 +165,9 @@ class KeepAliveURLBrowserTestBase : public ContentBrowserTest {
 
   // Returns a cross-origin (kSecondaryHost) URL that causes the following
   // redirect chain:
-  //     http://b.com:<port>/no-cors-server-redirect-307?...
-  // --> http://b.com:<port>/server-redirect-307?...
-  // --> http://b.com:<port>/no-cors-server-redirect-307?...
+  //     http(s)://b.test:<port>/no-cors-server-redirect-307?...
+  // --> http(s)://b.test:<port>/server-redirect-307?...
+  // --> http(s)://b.test:<port>/no-cors-server-redirect-307?...
   // --> `target_url
   GURL GetCrossOriginMultipleRedirectsURL(const GURL& target_url) const {
     const auto intermediate_url2 = server()->GetURL(
@@ -161,9 +183,9 @@ class KeepAliveURLBrowserTestBase : public ContentBrowserTest {
 
   // Returns a same-origin (kPrimaryHost) URL that causes the following
   // redirect chain:
-  //     /server-redirect-307?...
-  // --> /no-cors-server-redirect-307?...
-  // --> `target_url
+  //     http(s)://a.test:<port>/server-redirect-307?...
+  // --> http(s)://a.test:<port>/no-cors-server-redirect-307?...
+  // --> `target_url`
   GURL GetSameOriginMultipleRedirectsURL(const GURL& target_url) const {
     const auto intermediate_url1 = server()->GetURL(
         kPrimaryHost, base::StringPrintf("/no-cors-server-redirect-307?%s",
@@ -175,9 +197,9 @@ class KeepAliveURLBrowserTestBase : public ContentBrowserTest {
 
   // Returns a same-origin (kPrimaryHost) URL that leads to cross-origin
   // redirect chain:
-  //     /server-redirect-307?...
-  // --> http://b.com:<port>/no-cors-server-redirect-307?...
-  // --> `target_url
+  //     http(s)://a.test:<port>/server-redirect-307?...
+  // --> http(s)://b.test:<port>/no-cors-server-redirect-307?...
+  // --> `target_url`
   GURL GetSameAndCrossOriginRedirectsURL(const GURL& target_url) const {
     const auto intermediate_url1 = server()->GetURL(
         kSecondaryHost, base::StringPrintf("/no-cors-server-redirect-307?%s",
@@ -185,6 +207,15 @@ class KeepAliveURLBrowserTestBase : public ContentBrowserTest {
     return server()->GetURL(
         kPrimaryHost, base::StringPrintf("/server-redirect-307?%s",
                                          intermediate_url1.spec().c_str()));
+  }
+
+  // Returns a same-origin (kPrimaryHost) URL that redirects to `target_url`:
+  //     http(s)://a.test:<port>/server-redirect-307?...
+  // --> `target_url`
+  GURL GetSameOriginRedirectURL(const GURL& target_url) const {
+    return server()->GetURL(kPrimaryHost,
+                            base::StringPrintf("/server-redirect-307?%s",
+                                               target_url.spec().c_str()));
   }
 
   WebContentsImpl* web_contents() const {
@@ -267,19 +298,41 @@ class KeepAliveURLBrowserTest
     keepalive_request_handler->Done();
   }
 
-  GURL GetKeepAlivePageURL(const std::string& method,
-                           size_t num_requests = 1,
-                           bool set_csp = false) const {
-    return server()->GetURL(
-        kPrimaryHost,
-        base::StringPrintf(
-            "/set-header-with-file/content/test/data/fetch-keepalive.html?"
-            "method=%s&requests=%zu%s",
-            method.c_str(), num_requests,
-            set_csp
-                ? "&Content-Security-Policy: connect-src 'self' http://csp.test"
-                : ""));
+  // Navigates to a page specified by `keepalive_page_url`, which must fire a
+  // fetch keepalive request.
+  // This method ensure request handling happens. After that, `response` will be
+  // sent back.
+  // `keepalive_request_handler` must handle the fetch keepalive request.
+  void LoadPageWithKeepAliveRequestAndSendResponse(
+      const GURL& keepalive_page_url,
+      net::test_server::ControllableHttpResponse* keepalive_request_handler,
+      const std::string& response) {
+    ASSERT_TRUE(NavigateToURL(web_contents(), keepalive_page_url));
+    RenderFrameHostImplWrapper rfh_1(current_frame_host());
+    // Ensure the keepalive request is sent.
+    keepalive_request_handler->WaitForRequest();
+    ASSERT_EQ(loader_service()->NumLoadersForTesting(), 1u);
+    ASSERT_EQ(loader_service()->NumDisconnectedLoadersForTesting(), 0u);
+
+    // Send back response to terminate in-browser request handling.
+    keepalive_request_handler->Send(response);
+    keepalive_request_handler->Done();
   }
+
+  GURL GetKeepAlivePageURL(
+      const std::string& method,
+      size_t num_requests = 1,
+      absl::optional<std::string> headers = absl::nullopt) const {
+    std::string url = base::StringPrintf(
+        "/set-header-with-file/content/test/data/fetch-keepalive.html?"
+        "method=%s&requests=%zu",
+        method.c_str(), num_requests);
+    if (headers.has_value()) {
+      url += "&" + *headers;
+    }
+    return server()->GetURL(kPrimaryHost, url);
+  }
+
   GURL GetCrossOriginPageURL() {
     return server()->GetURL(kSecondaryHost, "/title2.html");
   }
@@ -348,6 +401,42 @@ IN_PROC_BROWSER_TEST_P(KeepAliveURLBrowserTest,
   EXPECT_EQ(watcher.WaitAndGetTitle(), kPromiseResolvedPageTitle);
   loaders_observer().WaitForTotalOnReceiveResponseForwarded(2);
   loaders_observer().WaitForTotalOnCompleteForwarded({net::OK, net::OK});
+  EXPECT_EQ(loader_service()->NumLoadersForTesting(), 0u);
+}
+
+IN_PROC_BROWSER_TEST_P(KeepAliveURLBrowserTest,
+                       RequestAfterNetworkServiceCrashes) {
+  // Can't test this on bots that use an in-process network service.
+  if (IsInProcessNetworkService()) {
+    return;
+  }
+
+  const std::string method = GetParam();
+  auto request_handler =
+      std::move(RegisterRequestHandlers({kKeepAliveEndpoint})[0]);
+  ASSERT_TRUE(server()->Start());
+
+  // Navigate to an empty page first without making any requests.
+  ASSERT_TRUE(NavigateToURL(web_contents(), server()->GetURL("/empty.html")));
+  // Crash the NetworkService process on the page.
+  SimulateNetworkServiceCrash();
+  // Make a fetch keepalive request, expected to succeed.
+  ASSERT_TRUE(ExecJs(web_contents(),
+                     JsReplace(R"(
+    fetch($1, {keepalive: true, method: $2});
+  )",
+                               kKeepAliveEndpoint, method),
+                     content::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
+
+  // Ensure the keepalive request is sent, but delay response.
+  request_handler->WaitForRequest();
+  ASSERT_EQ(loader_service()->NumLoadersForTesting(), 1u);
+  // End the keepalive request by sending back response.
+  request_handler->Send(k200TextResponse);
+  request_handler->Done();
+
+  loaders_observer().WaitForTotalOnReceiveResponseForwarded(1);
+  loaders_observer().WaitForTotalOnCompleteForwarded({net::OK});
   EXPECT_EQ(loader_service()->NumLoadersForTesting(), 0u);
 }
 
@@ -426,9 +515,9 @@ IN_PROC_BROWSER_TEST_P(KeepAliveURLBrowserTest, MultipleRedirectsRequest) {
   // payload that causes multiple redirects and eventually points to a
   // cross-origin `target_url`:
   //
-  //     http://b.com:<port>/no-cors-server-redirect-307?...
-  // --> http://b.com:<port>/server-redirect-307?...
-  // --> http://b.com:<port>/no-cors-server-redirect-307?...
+  //     http://b.test:<port>/no-cors-server-redirect-307?...
+  // --> http://b.test:<port>/server-redirect-307?...
+  // --> http://b.test:<port>/no-cors-server-redirect-307?...
   // --> `target_url
   const auto target_url = server()->GetURL(kSecondaryHost, beacon_endpoint);
   const auto beacon_url = GetCrossOriginMultipleRedirectsURL(target_url);
@@ -482,8 +571,8 @@ IN_PROC_BROWSER_TEST_P(KeepAliveURLBrowserTest,
   // Set up a same-origin URL with CORS-safelisted payload that causes multiple
   // redirects and eventually points to a cross-origin `target_url`:
   //
-  //     http://a.com:<port>/server-redirect-307?...
-  // --> http://b.com:<port>/no-cors-server-redirect-307?... => should fail
+  //     http://a.test:<port>/server-redirect-307?...
+  // --> http://b.test:<port>/no-cors-server-redirect-307?... => should fail
   // --> `target_url => should not reach here
   const auto target_url = server()->GetURL(kSecondaryHost, beacon_endpoint);
   const auto beacon_url = GetSameAndCrossOriginRedirectsURL(target_url);
@@ -533,8 +622,8 @@ IN_PROC_BROWSER_TEST_P(KeepAliveURLBrowserTest,
   // Set up a same-origin URL with CORS-safelisted payload that causes multiple
   // redirects and eventually points to a cross-origin `target_url`:
   //
-  //     http://a.com:<port>/server-redirect-307?...
-  // --> http://a.com:<port>/no-cors-server-redirect-307?...
+  //     http://a.test:<port>/server-redirect-307?...
+  // --> http://a.test:<port>/no-cors-server-redirect-307?...
   // --> `target_url => should fail to get response
   const auto target_url = server()->GetURL(kSecondaryHost, beacon_endpoint);
   const auto beacon_url = GetSameOriginMultipleRedirectsURL(target_url);
@@ -584,14 +673,11 @@ IN_PROC_BROWSER_TEST_P(KeepAliveURLBrowserTest,
   ASSERT_TRUE(server()->Start());
 
   // Sets up redirects according to the following redirect chain:
-  // fetch("http://a.com:<port>/beacon", keepalive: true)
-  // --> http://a.com:<port>/beacon-redirected
+  // fetch("http://a.test:<port>/beacon", keepalive: true)
+  // --> http://a.test:<port>/beacon-redirected
   LoadPageWithKeepAliveRequestAndSendResponseAfterUnload(
       GetKeepAlivePageURL(method), request_handlers[0].get(),
-      base::StringPrintf("HTTP/1.1 301 Moved Permanently\r\n"
-                         "Location: %s\r\n"
-                         "\r\n",
-                         redirect_target));
+      base::StringPrintf(k301Response, redirect_target));
 
   // The in-browser logic should process the redirect.
   loaders_observer().WaitForTotalOnReceiveRedirectProcessed(1);
@@ -621,14 +707,11 @@ IN_PROC_BROWSER_TEST_P(KeepAliveURLBrowserTest,
   ASSERT_TRUE(server()->Start());
 
   // Set up redirects according to the following redirect chain:
-  // fetch("http://a.com:<port>/beacon", keepalive: true)
+  // fetch("http://a.test:<port>/beacon", keepalive: true)
   // --> chrome://settings
   LoadPageWithKeepAliveRequestAndSendResponseAfterUnload(
       GetKeepAlivePageURL(method), request_handler.get(),
-      base::StringPrintf("HTTP/1.1 301 Moved Permanently\r\n"
-                         "Location: %s\r\n"
-                         "\r\n",
-                         unsafe_redirect_target));
+      base::StringPrintf(k301Response, unsafe_redirect_target));
 
   // The redirect is unsafe, so the loader is terminated.
   loaders_observer().WaitForTotalOnCompleteProcessed(
@@ -646,22 +729,192 @@ IN_PROC_BROWSER_TEST_P(KeepAliveURLBrowserTest,
   auto request_handler =
       std::move(RegisterRequestHandlers({kKeepAliveEndpoint})[0]);
   ASSERT_TRUE(server()->Start());
+  const GURL allowed_csp_url = server()->GetURL(kAllowedCspHost, "/");
 
   // Set up redirects according to the following redirect chain:
-  // fetch("http://a.com:<port>/beacon", keepalive: true)
-  // --> http://b.com/beacon-redirected
+  // fetch("http://a.test:<port>/beacon", keepalive: true)
+  // --> http://b.test/beacon-redirected
   LoadPageWithKeepAliveRequestAndSendResponseAfterUnload(
-      GetKeepAlivePageURL(method, /*num_requests=*/1, /*set_csp=*/true),
+      GetKeepAlivePageURL(
+          method, /*num_requests=*/1,
+          GetConnectSrcCSPHeader(url::Origin::Create(allowed_csp_url))),
       request_handler.get(),
-      base::StringPrintf("HTTP/1.1 301 Moved Permanently\r\n"
-                         "Location: %s\r\n"
-                         "\r\n",
-                         violating_csp_redirect_target));
+      base::StringPrintf(k301Response, violating_csp_redirect_target));
 
   // The redirect doesn't match CSP source from the 1st page, so the loader is
   // terminated.
   loaders_observer().WaitForTotalOnCompleteProcessed({net::ERR_BLOCKED_BY_CSP});
   EXPECT_EQ(loader_service()->NumLoadersForTesting(), 0u);
+}
+
+// Verifies a redirect to mixed content target URL is not loaded.
+IN_PROC_BROWSER_TEST_P(KeepAliveURLBrowserTest, ReceiveMixedContentRedirect) {
+  SetUseHttps();
+  const std::string method = GetParam();
+  auto request_handler =
+      std::move(RegisterRequestHandlers({kKeepAliveEndpoint})[0]);
+  ASSERT_TRUE(server()->Start());
+  // Sets up a target URL that only has different scheme.
+  // https://a.test:<port>/beacon-redirected
+  std::string same_content_target =
+      server()->GetURL(kPrimaryHost, "/beacon-redirected").spec();
+  // http://a.test:<port>/beacon-redirected
+  std::string mixed_content_target = same_content_target;
+  base::ReplaceSubstringsAfterOffset(&mixed_content_target, 0, "https", "http");
+
+  // Sets up redirects according to the following redirect chain:
+  // fetch("https://a.test:<port>/beacon", keepalive: true)
+  // --> http://a.test:<port>/beacon-redirected  => blocked by mixed content
+  // Although it's also a CORS request, it will be blocked by mixed content
+  // before reaching network service.
+  LoadPageWithKeepAliveRequestAndSendResponse(
+      GetKeepAlivePageURL(method), request_handler.get(),
+      base::StringPrintf(k301Response, mixed_content_target.c_str()));
+
+  // The redirect is mixed content, so the redirect is aborted.
+  loaders_observer().WaitForTotalOnReceiveRedirectForwarded(1);
+  loaders_observer().WaitForTotalOnReceiveResponseProcessed(0);
+  // Note that the renderer terminates without waiting for error forwarded from
+  // browser as it also calculates the error by itself.
+  loaders_observer().WaitForTotalOnCompleteForwarded({});
+  // The loader in browser is only terminated after renderer terminates its
+  // loader. There is no way to wait for such disconnection mojo message
+  // forwarded to browser at this moment.
+}
+
+// Verifies a redirect to mixed content target URL is allowed by
+// KeepAliveURLLoader if the page making the fetch keepalive request has been
+// unloaded, the same as pre-migration approach https://crrev.com/c/518743.
+//
+// Note that the current implementation in Blink & content cannot handle mixed
+// content checking without the RFHI of the page that loads the request.
+IN_PROC_BROWSER_TEST_P(KeepAliveURLBrowserTest,
+                       ReceiveMixedContentRedirectAfterUnload) {
+  SetUseHttps();
+  const std::string method = GetParam();
+  auto request_handler =
+      std::move(RegisterRequestHandlers({kKeepAliveEndpoint})[0]);
+  auto redirected_request_handler =
+      std::make_unique<net::test_server::ControllableHttpResponse>(
+          embedded_test_server(), "/beacon-redirected");
+  ASSERT_TRUE(server()->Start());
+  ASSERT_TRUE(embedded_test_server()->Start());
+  // Sets up a mixed content target URL that only has different scheme.
+  // http://a.test:<port>/beacon-redirected
+  std::string mixed_content_target =
+      embedded_test_server()->GetURL(kPrimaryHost, "/beacon-redirected").spec();
+
+  // Sets up redirects according to the following redirect chain:
+  // fetch("https://a.test:<port>/beacon", keepalive: true)
+  // --> http://a.test:<port>/beacon-redirected
+  LoadPageWithKeepAliveRequestAndSendResponseAfterUnload(
+      GetKeepAlivePageURL(method), request_handler.get(),
+      base::StringPrintf(k301Response, mixed_content_target.c_str()));
+
+  redirected_request_handler->WaitForRequest();
+  redirected_request_handler->Send(
+      "HTTP/1.1 200 OK\r\n"
+      "Content-Type: text/html; charset=utf-8\r\n"
+      // Necessary as this is a response to cross-origin request.
+      "Access-Control-Allow-Origin: *\r\n"
+      "\r\n"
+      "Acked!");
+  redirected_request_handler->Done();
+
+  // The in-browser logic should process the redirect & response, as there is no
+  // mixed content checking after unload.
+  // TODO(crbug.com/1500989): Revisit the checks after the bug is fixed.
+  loaders_observer().WaitForTotalOnReceiveRedirectProcessed(1);
+  loaders_observer().WaitForTotalOnReceiveResponseProcessed(1);
+  EXPECT_EQ(loader_service()->NumDisconnectedLoadersForTesting(), 0u);
+  EXPECT_EQ(loader_service()->NumLoadersForTesting(), 0u);
+}
+
+// Ensures that a keepalive request in a child frame use its RFH's data instead
+// of its parent frame's:
+// The main frame CSP allows `kAllowedCspHost`, while the child frame CSP does
+// not. See also https://w3c.github.io/webappsec-csp/#security-inherit-csp.
+IN_PROC_BROWSER_TEST_P(KeepAliveURLBrowserTest,
+                       ReceiveViolatingCSPRedirectInChildFrame) {
+  const std::string method = GetParam();
+  auto request_handler =
+      std::move(RegisterRequestHandlers({GetKeepAliveEndpoint("main")})[0]);
+  ASSERT_TRUE(server()->Start());
+  const GURL main_target_url =
+      server()->GetURL(kAllowedCspHost, GetKeepAliveEndpoint("main"));
+  const GURL child_target_url =
+      server()->GetURL(kAllowedCspHost, GetKeepAliveEndpoint("child"));
+  const GURL main_beacon_url = GetSameOriginRedirectURL(main_target_url);
+  const GURL child_beacon_url = GetSameOriginRedirectURL(child_target_url);
+
+  // Main Page:
+  // Prepares the main page that sends out a keepalive request.
+  ASSERT_TRUE(NavigateToURL(
+      web_contents(),
+      server()->GetURL(
+          kPrimaryHost,
+          "/set-header-with-file/content/test/data/title1.html?" +
+              GetConnectSrcCSPHeader(url::Origin::Create(main_target_url)))));
+  ASSERT_TRUE(ExecJs(web_contents(),
+                     JsReplace(R"(
+    fetch($1, {keepalive: true, mode: 'cors'});
+
+    let childLoaded;
+    let childThrown;
+    var childLoadedPromise = new Promise(resolve => childLoaded = resolve);
+    var childThrownPromise = new Promise(resolve => childThrown = resolve);
+    window.addEventListener('message', e => {
+      if (e.data === 'loaded') {
+        childLoaded(true);
+      } else {
+        childThrown(e.data);
+      }
+    });
+
+    // Child Frame (Same-Origin):
+    // Prepares the child page that also sends out a keepalive request.
+    const iframe = document.createElement('iframe');
+    iframe.srcdoc = `
+    <meta http-equiv="Content-Security-Policy" content="connect-src 'self';">
+    <script>
+      fetch($2, {keepalive: true, mode: 'cors'}).catch(e =>
+        window.parent.postMessage(e.message, "*")
+      );
+      window.parent.postMessage('loaded', "*");
+    </script>
+    `;
+    document.body.appendChild(iframe);
+  )",
+                               main_beacon_url, child_beacon_url),
+                     content::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
+  ASSERT_EQ(current_frame_host()->child_count(), 1u);
+  EXPECT_EQ(true, EvalJs(web_contents(), "childLoadedPromise"));
+  // Redirects the keepalive request from child page to an allowed target.
+  //     http://a.test:<port>/server-redirect-307?...
+  // --> http://csp.test:<port>/beacon?id=child => disallowed by CSP
+  EXPECT_EQ("Failed to fetch", EvalJs(web_contents(), "childThrownPromise"));
+
+  // Only the main page is expected to sent out its keepalive request.
+  request_handler->WaitForRequest();
+
+  // Redirects the keepalive request from main page to a disallowed target.
+  //     http://a.test:<port>/server-redirect-307?...
+  // --> http://csp.test:<port>/beacon?id=main => allowed by CSP
+  request_handler->Send(
+      "HTTP/1.1 200 OK\r\n"
+      "Content-Type: text/html; charset=utf-8\r\n"
+      // Necessary as this is a response to cross-origin request.
+      "Access-Control-Allow-Origin: *\r\n"
+      "\r\n"
+      "Acked!");
+  request_handler->Done();
+
+  // Only 1 redirect is expected to reach response.
+  loaders_observer().WaitForTotalOnReceiveRedirectProcessed(1);
+  loaders_observer().WaitForTotalOnReceiveResponse(1);
+  // TODO(crbug.com/1356128): the order of calls to OnComplete is not stable.
+  // Update KeepAliveURLLoadersTestObserver::WaitForTotalOnComplete to
+  // accommodate this situation before asserting net::ERR_BLOCKED_BY_CSP.
 }
 
 class SendBeaconBrowserTestBase : public KeepAliveURLBrowserTestBase {
@@ -847,9 +1100,9 @@ IN_PROC_BROWSER_TEST_P(SendBeaconBrowserTest,
   // Set up a cross-origin (kSecondaryHost) redirect with CORS-safelisted
   // payload according to the following redirect chain:
   // navigator.sendBeacon(
-  //     "http://b.com:<port>/no-cors-server-redirect-307?...",
+  //     "http://b.test:<port>/no-cors-server-redirect-307?...",
   //     <CORS-safelisted payload>)
-  // --> http://b.com:<port>/beacon?id=beacon01
+  // --> http://b.test:<port>/beacon?id=beacon01
   const auto target_url = server()->GetURL(kSecondaryHost, beacon_endpoint);
   const auto beacon_url = server()->GetURL(
       kSecondaryHost, base::StringPrintf("/no-cors-server-redirect-307?%s",
@@ -881,9 +1134,9 @@ IN_PROC_BROWSER_TEST_F(SendBeaconBlobBrowserTest,
   // Set up a cross-origin (kSecondaryHost) redirect with non-CORS-safelisted
   // payload according to the following redirect chain:
   // navigator.sendBeacon(
-  //     "http://b.com:<port>/no-cors-server-redirect-307?...",
+  //     "http://b.test:<port>/no-cors-server-redirect-307?...",
   //     <non-CORS-safelisted payload>) => should fail here
-  // --> http://b.com:<port>/beacon?id=beacon01
+  // --> http://b.test:<port>/beacon?id=beacon01
   const auto target_url = server()->GetURL(kSecondaryHost, beacon_endpoint);
   const auto beacon_url = server()->GetURL(
       kSecondaryHost, base::StringPrintf("/no-cors-server-redirect-307?%s",

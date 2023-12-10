@@ -31,7 +31,7 @@
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
@@ -410,8 +410,7 @@ DiagnosticsDialogUI::DiagnosticsDialogUI(
           kChromeUIDiagnosticsAppHost);
   html_source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ScriptSrc,
-      "script-src chrome://resources chrome://test chrome://webui-test "
-      "'self';");
+      "script-src chrome://resources chrome://webui-test 'self';");
   ash::EnableTrustedTypesCSP(html_source);
 
   const auto resources = base::make_span(kAshDiagnosticsAppResources,

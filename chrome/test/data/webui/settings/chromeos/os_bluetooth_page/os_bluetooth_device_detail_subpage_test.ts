@@ -5,7 +5,7 @@
 import 'chrome://os-settings/lazy_load.js';
 
 import {OsSettingsSubpageElement, SettingsBluetoothDeviceDetailSubpageElement, SettingsBluetoothTrueWirelessImagesElement} from 'chrome://os-settings/lazy_load.js';
-import {CrLinkRowElement, IronIconElement, OsBluetoothDevicesSubpageBrowserProxyImpl, Router, routes} from 'chrome://os-settings/os_settings.js';
+import {CrLinkRowElement, OsBluetoothDevicesSubpageBrowserProxyImpl, Router, routes} from 'chrome://os-settings/os_settings.js';
 import {setBluetoothConfigForTesting} from 'chrome://resources/ash/common/bluetooth/cros_bluetooth_config.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {AudioOutputCapability, BluetoothSystemProperties, DeviceBatteryInfo, DeviceConnectionState, DeviceType, SystemPropertiesObserverInterface} from 'chrome://resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
@@ -591,12 +591,10 @@ suite('<os-settings-bluetooth-device-detail-subpage>', () => {
 
   test('Device UI states test', async () => {
     init();
-    const getBluetoothStatusIcon = () => {
-      const statusIcon =
-          bluetoothDeviceDetailPage.shadowRoot!.querySelector<IronIconElement>(
-              '#statusIcon');
-      assertTrue(!!statusIcon);
-      return statusIcon;
+
+    const getDeviceTypeIcon = () => {
+      return bluetoothDeviceDetailPage.shadowRoot!.querySelector(
+          'bluetooth-icon');
     };
 
     const getBluetoothDeviceNameLabel = () => {
@@ -615,7 +613,7 @@ suite('<os-settings-bluetooth-device-detail-subpage>', () => {
 
     bluetoothConfig.setBluetoothEnabledState(/*enabled=*/ true);
 
-    assertTrue(!!getBluetoothStatusIcon());
+    assertTrue(!!getDeviceTypeIcon());
     assertTrue(!!getBluetoothStateText());
     assertTrue(!!getBluetoothDeviceNameLabel());
     assertNull(getBluetoothForgetBtn());
@@ -653,8 +651,6 @@ suite('<os-settings-bluetooth-device-detail-subpage>', () => {
     assertTrue(bluetoothDeviceDetailPage.getIsDeviceConnectedForTest());
     assertEquals(
         deviceNickname, getBluetoothDeviceNameLabel().textContent!.trim());
-    assertEquals(
-        'os-settings:bluetooth-connected', getBluetoothStatusIcon().icon);
     assertTrue(!!getBluetoothDeviceBatteryInfo());
     assertNull(getNonAudioOutputDeviceMessage());
 
@@ -674,8 +670,6 @@ suite('<os-settings-bluetooth-device-detail-subpage>', () => {
         bluetoothDeviceDetailPage.i18n('bluetoothDeviceDetailDisconnected'),
         getBluetoothStateText().textContent!.trim());
     assertFalse(bluetoothDeviceDetailPage.getIsDeviceConnectedForTest());
-    assertEquals(
-        'os-settings:bluetooth-disabled', getBluetoothStatusIcon().icon);
     assertNull(getBluetoothDeviceBatteryInfo());
     assertEquals(
         bluetoothDeviceDetailPage.i18n(

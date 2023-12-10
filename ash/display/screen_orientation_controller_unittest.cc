@@ -350,10 +350,10 @@ TEST_F(ScreenOrientationControllerTest, SplitViewPreventsLock) {
   Lock(child_window2.get(), chromeos::OrientationType::kPortrait);
   ASSERT_TRUE(RotationLocked());
 
-  split_view_controller()->SnapWindow(
-      focus_window1.get(), SplitViewController::SnapPosition::kPrimary);
-  split_view_controller()->SnapWindow(
-      focus_window1.get(), SplitViewController::SnapPosition::kSecondary);
+  split_view_controller()->SnapWindow(focus_window1.get(),
+                                      SnapPosition::kPrimary);
+  split_view_controller()->SnapWindow(focus_window1.get(),
+                                      SnapPosition::kSecondary);
   EXPECT_FALSE(RotationLocked());
 
   split_view_controller()->EndSplitView();
@@ -836,7 +836,7 @@ TEST_F(ScreenOrientationControllerTest, GetCurrentAppRequestedOrientationLock) {
   EXPECT_EQ(display::Display::ROTATE_270, GetCurrentInternalDisplayRotation());
   EXPECT_EQ(chromeos::OrientationType::kAny, UserLockedOrientation());
 
-  display_manager()->SetMirrorMode(display::MirrorMode::kOff, absl::nullopt);
+  display_manager()->SetMirrorMode(display::MirrorMode::kOff, std::nullopt);
   base::RunLoop().RunUntilIdle();
 
   roots = Shell::GetAllRootWindows();
@@ -866,7 +866,7 @@ TEST_F(ScreenOrientationControllerTest, GetCurrentAppRequestedOrientationLock) {
 
   // Once `win0` is snapped in splitview, it can no longer lock the rotation.
   SplitViewController::Get(win0->GetRootWindow())
-      ->SnapWindow(win0.get(), SplitViewController::SnapPosition::kSecondary);
+      ->SnapWindow(win0.get(), SnapPosition::kSecondary);
   EXPECT_EQ(
       chromeos::OrientationType::kAny,
       screen_orientation_controller->GetCurrentAppRequestedOrientationLock());
@@ -882,7 +882,7 @@ TEST_F(ScreenOrientationControllerTest,
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(display_manager()->IsInSoftwareMirrorMode());
   // Now switch mirror mode off so that we can have two displays in tablet mode.
-  display_manager()->SetMirrorMode(display::MirrorMode::kOff, absl::nullopt);
+  display_manager()->SetMirrorMode(display::MirrorMode::kOff, std::nullopt);
   base::RunLoop().RunUntilIdle();
   auto roots = Shell::GetAllRootWindows();
   ASSERT_EQ(2u, roots.size());

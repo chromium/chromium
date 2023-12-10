@@ -186,6 +186,7 @@ class SharingFCMSenderTest : public testing::Test {
     SharingSyncPreference::RegisterProfilePrefs(prefs_.registry());
   }
 
+  sync_preferences::TestingPrefServiceSyncable prefs_;
   raw_ptr<FakeWebPushSender, DanglingUntriaged> fake_web_push_sender_;
   FakeSharingMessageBridge fake_sharing_message_bridge_;
   syncer::FakeDeviceInfoSyncService fake_device_info_sync_service_;
@@ -196,9 +197,6 @@ class SharingFCMSenderTest : public testing::Test {
   syncer::TestSyncService test_sync_service_;
 
   SharingFCMSender sharing_fcm_sender_;
-
- private:
-  sync_preferences::TestingPrefServiceSyncable prefs_;
 };  // namespace
 
 }  // namespace

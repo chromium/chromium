@@ -28,7 +28,6 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autocomplete_history_manager.h"
-#include "components/autofill/core/browser/autofill_download_manager.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
@@ -37,7 +36,7 @@
 #include "components/autofill/core/browser/payments/test_authentication_requester.h"
 #include "components/autofill/core/browser/payments/test_credit_card_fido_authenticator.h"
 #include "components/autofill/core/browser/payments/test_internal_authenticator.h"
-#include "components/autofill/core/browser/payments/test_payments_client.h"
+#include "components/autofill/core/browser/payments/test_payments_network_interface.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/test_autofill_clock.h"
@@ -111,8 +110,8 @@ class CreditCardFidoAuthenticatorTest : public testing::Test {
 
     autofill_driver_.SetAuthenticator(new TestInternalAuthenticator());
 
-    autofill_client_.set_test_payments_client(
-        std::make_unique<payments::TestPaymentsClient>(
+    autofill_client_.set_test_payments_network_interface(
+        std::make_unique<payments::TestPaymentsNetworkInterface>(
             autofill_client_.GetURLLoaderFactory(),
             autofill_client_.GetIdentityManager(), &personal_data_manager()));
     autofill_client_.set_test_strike_database(
@@ -178,7 +177,7 @@ class CreditCardFidoAuthenticatorTest : public testing::Test {
                   const std::string& real_pan,
                   bool is_virtual_card = false) {
     DCHECK(fido_authenticator().full_card_request_);
-    payments::PaymentsClient::UnmaskResponseDetails response;
+    payments::PaymentsNetworkInterface::UnmaskResponseDetails response;
     response.card_type = is_virtual_card
                              ? AutofillClient::PaymentsRpcCardType::kVirtualCard
                              : AutofillClient::PaymentsRpcCardType::kServerCard;
@@ -186,12 +185,12 @@ class CreditCardFidoAuthenticatorTest : public testing::Test {
         result, response.with_real_pan(real_pan));
   }
 
-  // Mocks an OptChange response from Payments Client.
+  // Mocks an OptChange response from the PaymentsNetworkInterface.
   void OptChange(AutofillClient::PaymentsRpcResult result,
                  bool user_is_opted_in,
                  bool include_creation_options = false,
                  bool include_request_options = false) {
-    payments::PaymentsClient::OptChangeResponseDetails response;
+    payments::PaymentsNetworkInterface::OptChangeResponseDetails response;
     response.user_is_opted_in = user_is_opted_in;
     if (include_creation_options) {
       response.fido_creation_options =
@@ -247,7 +246,7 @@ TEST_F(CreditCardFidoAuthenticatorTest,
        GetUserOptInIntention_IntentToOptIn_Android) {
   // If payments is offering to opt-in, then that means user is not opted in
   // from payments.
-  payments::PaymentsClient::UnmaskDetails unmask_details;
+  payments::PaymentsNetworkInterface::UnmaskDetails unmask_details;
   unmask_details.offer_fido_opt_in = true;
   // Set the local preference to be enabled, which denotes user manually opted
   // in from settings page, and Payments did not update the status in time.
@@ -265,7 +264,7 @@ TEST_F(CreditCardFidoAuthenticatorTest,
        GetUserOptInIntention_IntentToOptIn_Desktop) {
   // If payments is offering to opt-in, then that means user is not opted in
   // from payments.
-  payments::PaymentsClient::UnmaskDetails unmask_details;
+  payments::PaymentsNetworkInterface::UnmaskDetails unmask_details;
   unmask_details.offer_fido_opt_in = true;
   // Set the local preference to be enabled, which denotes user manually opted
   // in from settings page and Payments did not update the status in time, or
@@ -285,7 +284,7 @@ TEST_F(CreditCardFidoAuthenticatorTest,
 TEST_F(CreditCardFidoAuthenticatorTest, GetUserOptInIntention_IntentToOptOut) {
   // If payments is requesting a FIDO auth, then that means user is opted in
   // from payments.
-  payments::PaymentsClient::UnmaskDetails unmask_details;
+  payments::PaymentsNetworkInterface::UnmaskDetails unmask_details;
   unmask_details.unmask_auth_method = AutofillClient::UnmaskAuthMethod::kFido;
   // Set the local preference to be disabled, which denotes user manually opted
   // out from settings page, and Payments did not update the status in time.

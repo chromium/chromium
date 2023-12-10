@@ -15,32 +15,33 @@ import java.lang.annotation.RetentionPolicy;
  * to interact with the app menu.
  */
 public interface AppMenuHandler {
-    @IntDef({AppMenuItemType.STANDARD, AppMenuItemType.TITLE_BUTTON,
-            AppMenuItemType.THREE_BUTTON_ROW, AppMenuItemType.FOUR_BUTTON_ROW,
-            AppMenuItemType.FIVE_BUTTON_ROW})
+    @IntDef({
+        AppMenuItemType.STANDARD,
+        AppMenuItemType.TITLE_BUTTON,
+        AppMenuItemType.THREE_BUTTON_ROW,
+        AppMenuItemType.FOUR_BUTTON_ROW,
+        AppMenuItemType.FIVE_BUTTON_ROW
+    })
     @Retention(RetentionPolicy.SOURCE)
     public @interface AppMenuItemType {
-        /**
-         * Regular Android menu item that contains a title and an icon if icon is specified.
-         */
+        /** Regular Android menu item that contains a title and an icon if icon is specified. */
         int STANDARD = 0;
+
         /**
          * Menu item that has two buttons, the first one is a title and the second one is an icon.
          * It is different from the regular menu item because it contains two separate buttons.
          */
         int TITLE_BUTTON = 1;
-        /**
-         * Menu item that has three buttons. Every one of these buttons is displayed as an icon.
-         */
+
+        /** Menu item that has three buttons. Every one of these buttons is displayed as an icon. */
         int THREE_BUTTON_ROW = 2;
-        /**
-         * Menu item that has four buttons. Every one of these buttons is displayed as an icon.
-         */
+
+        /** Menu item that has four buttons. Every one of these buttons is displayed as an icon. */
         int FOUR_BUTTON_ROW = 3;
-        /**
-         * Menu item that has five buttons. Every one of these buttons is displayed as an icon.
-         */
+
+        /** Menu item that has five buttons. Every one of these buttons is displayed as an icon. */
         int FIVE_BUTTON_ROW = 4;
+
         /**
          * The number of menu item types specified above. If you add a menu item type you MUST
          * increment this.
@@ -77,9 +78,7 @@ public interface AppMenuHandler {
      */
     void setMenuHighlight(Integer highlightItemId);
 
-    /**
-     * Clears the menu highlight.
-     */
+    /** Clears the menu highlight. */
     void clearMenuHighlight();
 
     /**
@@ -87,9 +86,7 @@ public interface AppMenuHandler {
      */
     boolean isAppMenuShowing();
 
-    /**
-     * Requests to hide the App Menu.
-     */
+    /** Requests to hide the App Menu. */
     void hideAppMenu();
 
     /**
@@ -97,8 +94,6 @@ public interface AppMenuHandler {
      */
     AppMenuButtonHelper createAppMenuButtonHelper();
 
-    /**
-     * Call to cause a redraw when an item in the app menu changes.
-     */
+    /** Call to cause a redraw when an item in the app menu changes. */
     void invalidateAppMenu();
 }

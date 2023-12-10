@@ -398,7 +398,7 @@ void SystemTrayClientImpl::ShowBluetoothSettings(const std::string& device_id) {
 }
 
 void SystemTrayClientImpl::ShowBluetoothPairingDialog(
-    absl::optional<base::StringPiece> device_address) {
+    std::optional<base::StringPiece> device_address) {
   if (ash::BluetoothPairingDialog::ShowDialog(device_address)) {
     base::RecordAction(
         base::UserMetricsAction("StatusArea_Bluetooth_Connect_Unknown"));
@@ -732,7 +732,7 @@ void SystemTrayClientImpl::ShowAccessCodeCastingDialog(
 }
 
 void SystemTrayClientImpl::ShowCalendarEvent(
-    const absl::optional<GURL>& event_url,
+    const std::optional<GURL>& event_url,
     const base::Time& date,
     bool& opened_pwa,
     GURL& final_event_url) {
@@ -808,6 +808,20 @@ void SystemTrayClientImpl::ShowAudioSettings() {
   base::RecordAction(base::UserMetricsAction("ShowAudioSettingsPage"));
   ShowSettingsSubPageForActiveUser(
       chromeos::settings::mojom::kAudioSubpagePath);
+}
+
+void SystemTrayClientImpl::ShowGraphicsTabletSettings() {
+  DCHECK(ash::features::IsPeripheralCustomizationEnabled());
+  base::RecordAction(base::UserMetricsAction("ShowGraphicsTabletSettingsPage"));
+  ShowSettingsSubPageForActiveUser(
+      chromeos::settings::mojom::kGraphicsTabletSubpagePath);
+}
+
+void SystemTrayClientImpl::ShowMouseSettings() {
+  DCHECK(ash::features::IsPeripheralCustomizationEnabled());
+  base::RecordAction(base::UserMetricsAction("ShowMouseSettingsPage"));
+  ShowSettingsSubPageForActiveUser(
+      chromeos::settings::mojom::kPerDeviceMouseSubpagePath);
 }
 
 void SystemTrayClientImpl::ShowTouchpadSettings() {

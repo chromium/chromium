@@ -128,7 +128,7 @@ class InstallAttributesClientImpl : public InstallAttributesClient {
                     std::move(callback));
   }
 
-  absl::optional<::user_data_auth::InstallAttributesGetReply>
+  std::optional<::user_data_auth::InstallAttributesGetReply>
   BlockingInstallAttributesGet(
       const ::user_data_auth::InstallAttributesGetRequest& request) override {
     return BlockingCallProtoMethod<::user_data_auth::InstallAttributesGetReply>(
@@ -136,7 +136,7 @@ class InstallAttributesClientImpl : public InstallAttributesClient {
         ::user_data_auth::kInstallAttributesInterface, request);
   }
 
-  absl::optional<::user_data_auth::InstallAttributesSetReply>
+  std::optional<::user_data_auth::InstallAttributesSetReply>
   BlockingInstallAttributesSet(
       const ::user_data_auth::InstallAttributesSetRequest& request) override {
     return BlockingCallProtoMethod<::user_data_auth::InstallAttributesSetReply>(
@@ -144,7 +144,7 @@ class InstallAttributesClientImpl : public InstallAttributesClient {
         ::user_data_auth::kInstallAttributesInterface, request);
   }
 
-  absl::optional<::user_data_auth::InstallAttributesFinalizeReply>
+  std::optional<::user_data_auth::InstallAttributesFinalizeReply>
   BlockingInstallAttributesFinalize(
       const ::user_data_auth::InstallAttributesFinalizeRequest& request)
       override {
@@ -154,7 +154,7 @@ class InstallAttributesClientImpl : public InstallAttributesClient {
         ::user_data_auth::kInstallAttributesInterface, request);
   }
 
-  absl::optional<::user_data_auth::InstallAttributesGetStatusReply>
+  std::optional<::user_data_auth::InstallAttributesGetStatusReply>
   BlockingInstallAttributesGetStatus(
       const ::user_data_auth::InstallAttributesGetStatusRequest& request)
       override {
@@ -182,7 +182,7 @@ class InstallAttributesClientImpl : public InstallAttributesClient {
           << "Failed to append protobuf when calling InstallAttributes method "
           << method_name;
       base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
+          FROM_HERE, base::BindOnce(std::move(callback), std::nullopt));
       return;
     }
     // Bind with the weak pointer of |this| so the response is not
@@ -217,24 +217,23 @@ class InstallAttributesClientImpl : public InstallAttributesClient {
     if (!ParseProto(response, &reply_proto)) {
       LOG(ERROR)
           << "Failed to parse reply protobuf from InstallAttributes method";
-      std::move(callback).Run(absl::nullopt);
+      std::move(callback).Run(std::nullopt);
       return;
     }
     std::move(callback).Run(reply_proto);
   }
 
   template <typename ReplyType, typename RequestType>
-  absl::optional<ReplyType> BlockingCallProtoMethod(
-      const char* method_name,
-      const char* interface_name,
-      const RequestType& request) {
+  std::optional<ReplyType> BlockingCallProtoMethod(const char* method_name,
+                                                   const char* interface_name,
+                                                   const RequestType& request) {
     dbus::MethodCall method_call(interface_name, method_name);
     dbus::MessageWriter writer(&method_call);
     if (!writer.AppendProtoAsArrayOfBytes(request)) {
       LOG(ERROR) << "Failed to append protobuf when calling InstallAttributes "
                     "method (blocking) "
                  << method_name;
-      return absl::nullopt;
+      return std::nullopt;
     }
 
     std::unique_ptr<dbus::Response> response(
@@ -244,7 +243,7 @@ class InstallAttributesClientImpl : public InstallAttributesClient {
     if (!response) {
       LOG(ERROR) << "DBus call failed for InstallAttributes method (blocking) "
                  << method_name;
-      return absl::nullopt;
+      return std::nullopt;
     }
 
     ReplyType reply_proto;
@@ -252,7 +251,7 @@ class InstallAttributesClientImpl : public InstallAttributesClient {
       LOG(ERROR)
           << "Failed to parse proto from InstallAttributes method (blocking) "
           << method_name;
-      return absl::nullopt;
+      return std::nullopt;
     }
 
     return reply_proto;

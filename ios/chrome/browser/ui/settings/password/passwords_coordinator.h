@@ -6,12 +6,13 @@
 #define IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORDS_COORDINATOR_H_
 
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
+#import "ios/chrome/browser/ui/settings/password/reauthentication/password_manager_reauthentication_delegate.h"
 
 class Browser;
 @class PasswordsCoordinator;
 
 // Delegate for PasswordsCoordinator.
-@protocol PasswordsCoordinatorDelegate
+@protocol PasswordsCoordinatorDelegate <PasswordManagerReauthenticationDelegate>
 
 // Called when the view controller is removed from navigation controller.
 - (void)passwordsCoordinatorDidRemove:(PasswordsCoordinator*)coordinator;

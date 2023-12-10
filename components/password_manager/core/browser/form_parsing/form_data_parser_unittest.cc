@@ -7,6 +7,7 @@
 
 #include <stddef.h>
 
+#include <optional>
 #include <set>
 #include <string>
 #include <utility>
@@ -26,7 +27,6 @@
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 using autofill::FieldPropertiesFlags;
@@ -98,15 +98,15 @@ struct FormParsingTestCase {
   raw_ptr<const AlternativeElementVector> all_alternative_usernames = nullptr;
   bool server_side_classification_successful = true;
   bool username_may_use_prefilled_placeholder = false;
-  absl::optional<FormDataParser::ReadonlyPasswordFields> readonly_status;
-  absl::optional<FormDataParser::ReadonlyPasswordFields>
+  std::optional<FormDataParser::ReadonlyPasswordFields> readonly_status;
+  std::optional<FormDataParser::ReadonlyPasswordFields>
       readonly_status_for_saving;
-  absl::optional<FormDataParser::ReadonlyPasswordFields>
+  std::optional<FormDataParser::ReadonlyPasswordFields>
       readonly_status_for_filling;
   // If the result should be marked as only useful for fallbacks.
   bool fallback_only = false;
   SubmissionIndicatorEvent submission_event = SubmissionIndicatorEvent::NONE;
-  absl::optional<bool> is_new_password_reliable;
+  std::optional<bool> is_new_password_reliable;
   bool form_has_autofilled_value = false;
   bool accepts_webauthn_credentials = false;
 };
@@ -435,7 +435,7 @@ class FormParserTest : public testing::Test {
         if (test_case.readonly_status) {
           EXPECT_EQ(*test_case.readonly_status, parser.readonly_status());
         } else {
-          const absl::optional<FormDataParser::ReadonlyPasswordFields>*
+          const std::optional<FormDataParser::ReadonlyPasswordFields>*
               expected_readonly_status =
                   mode == FormDataParser::Mode::kSaving
                       ? &test_case.readonly_status_for_saving
@@ -2163,6 +2163,25 @@ TEST_F(FormParserTest, OneTimeCodeField) {
   });
 }
 
+// The parser should avoid identifying ONE_TIME_CODE fields as usernames.
+TEST_F(FormParserTest, OneTimeCodeFieldNotUsername) {
+  CheckTestData({
+      {
+          .description_for_logging = "Server hints: ONE_TIME_CODE.",
+          .fields =
+              {
+                  {.role = ElementRole::USERNAME,
+                   .form_control_type = FormControlType::kInputText},
+                  {.form_control_type = FormControlType::kInputText,
+                   .prediction = {.type = autofill::ONE_TIME_CODE}},
+                  {.role = ElementRole::CURRENT_PASSWORD,
+                   .form_control_type = FormControlType::kInputPassword},
+              },
+          .fallback_only = false,
+      },
+  });
+}
+
 // The parser should avoid identifying NOT_USERNAME fields as usernames.
 TEST_F(FormParserTest, NotUsernameField) {
   CheckTestData({
@@ -2191,6 +2210,21 @@ TEST_F(FormParserTest, NotUsernameField) {
                    .prediction = {.type = autofill::NOT_USERNAME}},
                   {.role = ElementRole::CURRENT_PASSWORD,
                    .form_control_type = FormControlType::kInputPassword},
+              },
+          .fallback_only = false,
+      },
+      {
+          .description_for_logging =
+              "Server hints: NOT_USERNAME, despite 'predicted_username'.",
+          .fields =
+              {
+                  {.role = ElementRole::NONE,
+                   .form_control_type = FormControlType::kInputText,
+                   .prediction = {.type = autofill::NOT_USERNAME},
+                   .predicted_username = 0},
+                  {.role = ElementRole::CURRENT_PASSWORD,
+                   .form_control_type = FormControlType::kInputPassword,
+                   .prediction = {.type = autofill::PASSWORD}},
               },
           .fallback_only = false,
       },

@@ -9,7 +9,8 @@ import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.robolectric.Shadows.shadowOf;
@@ -99,7 +100,6 @@ import java.util.Date;
     ChromeFeatureList.HISTORY_JOURNEYS,
     ChromeFeatureList.RENAME_JOURNEYS,
     ChromeFeatureList.BACK_GESTURE_REFACTOR_ACTIVITY,
-    ChromeFeatureList.EMPTY_STATES
 })
 public class HistoryUITest {
     private static final int PAGE_INCREMENT = 2;
@@ -236,43 +236,7 @@ public class HistoryUITest {
 
     @Test
     @SmallTest
-    @EnableFeatures(ChromeFeatureList.EMPTY_STATES)
-    public void testRemove_SingleItem_EmptyState() throws Exception {
-        final HistoryItemView itemView = (HistoryItemView) getItemView(2);
-
-        itemView.getRemoveButtonForTests().performClick();
-
-        // Check that one item was removed.
-        ShadowLooper.idleMainLooper();
-        Assert.assertEquals(1, mHistoryProvider.markItemForRemovalCallback.getCallCount());
-        Assert.assertEquals(1, mHistoryProvider.removeItemsCallback.getCallCount());
-        Assert.assertEquals(3, mAdapter.getItemCount());
-        Assert.assertEquals(View.VISIBLE, mRecyclerView.getVisibility());
-        Assert.assertEquals(View.GONE, mHistoryManager.getEmptyViewForTests().getVisibility());
-    }
-
-    @Test
-    @SmallTest
     public void testRemove_AllItems() throws Exception {
-        toggleItemSelection(2);
-        toggleItemSelection(3);
-
-        performMenuAction(R.id.selection_mode_delete_menu_id);
-
-        // Check that all items were removed. The onChangedCallback should be called three times -
-        // once for each item that is being removed and once for the removal of the header.
-        Assert.assertEquals(0, mAdapter.getItemCount());
-        Assert.assertEquals(2, mHistoryProvider.markItemForRemovalCallback.getCallCount());
-        Assert.assertEquals(1, mHistoryProvider.removeItemsCallback.getCallCount());
-        Assert.assertFalse(mHistoryManager.getSelectionDelegateForTests().isSelectionEnabled());
-        Assert.assertEquals(View.GONE, mRecyclerView.getVisibility());
-        Assert.assertEquals(View.VISIBLE, mHistoryManager.getEmptyViewForTests().getVisibility());
-    }
-
-    @Test
-    @SmallTest
-    @EnableFeatures(ChromeFeatureList.EMPTY_STATES)
-    public void testRemove_AllItems_EmptyState() throws Exception {
         toggleItemSelection(2);
         toggleItemSelection(3);
 
@@ -645,11 +609,11 @@ public class HistoryUITest {
         searchText.setText(HISTORY_SEARCH_QUERY);
         layoutRecyclerView();
 
-        TextView emptyView =
-                mHistoryManager.getSelectableListLayout().findViewById(R.id.empty_view);
-        assertThat(
-                emptyView.getText(),
-                is("Can’t find that page. Check your spelling or try a web search."));
+        TextView emptyText =
+                mHistoryManager.getSelectableListLayout().findViewById(R.id.empty_state_text_title);
+        assertTrue(emptyText.getText().toString().startsWith("Can’t find that page."));
+        assertNotNull(
+                mHistoryManager.getSelectableListLayout().findViewById(R.id.empty_state_icon));
     }
 
     @Test

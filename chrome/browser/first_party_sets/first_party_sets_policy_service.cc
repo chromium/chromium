@@ -47,8 +47,13 @@ network::mojom::FirstPartySetsReadyEventPtr MakeReadyEvent(
 
 const base::Value::Dict* GetOverridesPolicyForProfile(
     const PrefService* prefs) {
-  return prefs ? &prefs->GetDict(first_party_sets::kRelatedWebsiteSetsOverrides)
-               : nullptr;
+  if (!prefs) {
+    return nullptr;
+  }
+  // The value is declared as a dict, but we assume that the user may have
+  // modified the prefs file or the file may be corrupt.
+  return prefs->GetValue(first_party_sets::kRelatedWebsiteSetsOverrides)
+      .GetIfDict();
 }
 
 bool GetEnabledStateForProfile(Profile* profile) {
@@ -103,7 +108,6 @@ void FirstPartySetsPolicyService::Init() {
   // non-null `context`.
   CHECK(profile);
 
-  PrefService* prefs = profile->GetPrefs();
   pref_enabled_ = GetEnabledStateForProfile(profile);
 
   if (profile->IsSystemProfile() || profile->IsGuestSession() ||
@@ -118,7 +122,7 @@ void FirstPartySetsPolicyService::Init() {
   // dynamically refresh, and all the delegates for `context` will have the same
   // policy and thus the same config.
   content::FirstPartySetsHandler::GetInstance()->GetContextConfigForPolicy(
-      GetOverridesPolicyForProfile(prefs),
+      GetOverridesPolicyForProfile(profile->GetPrefs()),
       base::BindOnce(&FirstPartySetsPolicyService::OnProfileConfigReady,
                      weak_factory_.GetWeakPtr(),
                      // We should only clear site data if First-Party Sets is

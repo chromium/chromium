@@ -39,6 +39,7 @@ const CGFloat kMultilineTextTrailingMargin = 4.0;
 const CGFloat kMultilineLineSpacing = 2.0;
 const CGFloat kTrailingButtonSize = 24;
 const CGFloat kTrailingButtonTrailingMargin = 14;
+const CGFloat kTrailingButtonTrailingMarginPopoutOmnibox = 30;
 const CGFloat kTopGradientColorOpacity = 0.85;
 const CGFloat kTextSpacing = 2.0f;
 /// In Variation 2, the images and the text in the popup don't align with the
@@ -153,6 +154,8 @@ const CGFloat kOmniboxPopupCellMinimumHeight = 58;
     _separator = [[UIView alloc] initWithFrame:CGRectZero];
     _separator.translatesAutoresizingMaskIntoConstraints = NO;
     _separator.hidden = YES;
+    _separator.backgroundColor =
+        [UIColor colorNamed:kOmniboxSuggestionRowSeparatorColor];
 
     self.backgroundColor = UIColor.clearColor;
 
@@ -326,12 +329,18 @@ const CGFloat kOmniboxPopupCellMinimumHeight = 58;
   self.textTrailingToButtonConstraint = [self.trailingButton.leadingAnchor
       constraintEqualToAnchor:self.textStackView.trailingAnchor
                      constant:kTextTrailingMargin];
+
+  CGFloat trailingConstant = kTrailingButtonTrailingMargin;
+  if (IsIpadPopoutOmniboxEnabled()) {
+    trailingConstant = kTrailingButtonTrailingMarginPopoutOmnibox;
+  }
+
   [NSLayoutConstraint activateConstraints:@[
     [self.trailingButton.centerYAnchor
         constraintEqualToAnchor:self.contentView.centerYAnchor],
     [self.contentView.trailingAnchor
         constraintEqualToAnchor:self.trailingButton.trailingAnchor
-                       constant:kTrailingButtonTrailingMargin],
+                       constant:trailingConstant],
     self.textTrailingToButtonConstraint,
   ]];
 }
@@ -484,10 +493,6 @@ const CGFloat kOmniboxPopupCellMinimumHeight = 58;
 
 - (void)setupWithCurrentData {
   id<AutocompleteSuggestion> suggestion = self.suggestion;
-
-  self.separator.backgroundColor =
-      self.incognito ? [UIColor.whiteColor colorWithAlphaComponent:0.12]
-                     : [UIColor.blackColor colorWithAlphaComponent:0.12];
 
   self.textTruncatingLabel.attributedText =
       self.highlighted

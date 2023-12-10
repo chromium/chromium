@@ -31,6 +31,7 @@
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "net/base/backoff_entry.h"
+#include "net/base/request_priority.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -111,6 +112,7 @@ std::unique_ptr<network::SimpleURLLoader> InitializeSimpleUrlLoader(
   resource_request->url = CreateRequestUrl(fetcher_config);
   resource_request->method = fetcher_config.GetHttpMethod();
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
+  resource_request->priority = fetcher_config.request_priority;
   resource_request->headers.SetHeader(
       net::HttpRequestHeaders::kAuthorization,
       CreateAuthorizationHeader(access_token_info));
@@ -164,7 +166,7 @@ class Metrics {
   Metrics() = delete;
   explicit Metrics(StringPiece basename) : basename_(basename) {}
 
-  void RecordStatus(ProtoFetcherStatus status) const {
+  void RecordStatus(const ProtoFetcherStatus& status) const {
     base::UmaHistogramEnumeration(GetFullHistogramName(MetricType::kStatus),
                                   status.state());
   }
@@ -188,12 +190,12 @@ class Metrics {
         stopwatch_.Lap());
   }
 
-  virtual void RecordStatusLatency(ProtoFetcherStatus status) const {
+  virtual void RecordStatusLatency(const ProtoFetcherStatus& status) const {
     base::UmaHistogramTimes(GetFullHistogramName(MetricType::kLatency, status),
                             stopwatch_.Elapsed());
   }
 
-  void RecordHttpStatusOrNetError(ProtoFetcherStatus status) const {
+  void RecordHttpStatusOrNetError(const ProtoFetcherStatus& status) const {
     CHECK(status.state() ==
           ProtoFetcherStatus::State::HTTP_STATUS_OR_NET_ERROR);
     base::UmaHistogramSparse(
@@ -263,7 +265,7 @@ class Metrics {
   // and should be reflected in tokens in histogram defined for this fetcher.
   // See example at
   // tools/metrics/histograms/metadata/signin/histograms.xml://histogram[@name='Signin.ListFamilyMembersRequest.{Status}.*']
-  static std::string ToMetricEnumLabel(ProtoFetcherStatus status) {
+  static std::string ToMetricEnumLabel(const ProtoFetcherStatus& status) {
     switch (status.state()) {
       case ProtoFetcherStatus::OK:
         return "NoError";
@@ -292,7 +294,7 @@ class OverallMetrics final : public Metrics {
   explicit OverallMetrics(StringPiece basename) : Metrics(basename) {}
 
   // Per-status latency is not defined for OverallMetrics.
-  void RecordStatusLatency(ProtoFetcherStatus status) const override {
+  void RecordStatusLatency(const ProtoFetcherStatus& status) const override {
     NOTIMPLEMENTED();
   }
 
@@ -374,7 +376,7 @@ class FetcherImpl final : public ProtoFetcher<Response> {
   }
 
  private:
-  void RecordMetrics(ProtoFetcherStatus status) {
+  void RecordMetrics(const ProtoFetcherStatus& status) {
     metrics_.RecordStatus(status);
     metrics_.RecordLatency();
     metrics_.RecordStatusLatency(status);
@@ -542,11 +544,11 @@ class RetryingFetcherImpl final : public DeferredFetcherImpl<Response> {
         &RetryingFetcherImpl<Response>::OnResponse, Unretained(this)));
   }
 
-  bool ShouldRetry(ProtoFetcherStatus status) {
+  bool ShouldRetry(const ProtoFetcherStatus& status) {
     return status.IsTransientError();
   }
 
-  void OnResponse(ProtoFetcherStatus status,
+  void OnResponse(const ProtoFetcherStatus& status,
                   std::unique_ptr<Response> response) {
     if (ShouldRetry(status)) {
       backoff_entry_.InformOfRequest(/*succeeded=*/false);

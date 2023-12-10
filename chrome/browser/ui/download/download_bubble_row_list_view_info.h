@@ -7,11 +7,11 @@
 
 #include <list>
 #include <map>
+#include <optional>
 
 #include "chrome/browser/download/download_ui_model.h"
 #include "chrome/browser/ui/download/download_bubble_row_view_info.h"
 #include "components/offline_items_collection/core/offline_item.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // Interface for observers of changes to the list of downloads as a whole.
 class DownloadBubbleRowListViewInfoObserver : public base::CheckedObserver {
@@ -48,7 +48,7 @@ class DownloadBubbleRowListViewInfo
   const DownloadBubbleRowViewInfo* GetRowInfo(
       const offline_items_collection::ContentId& id) const;
 
-  absl::optional<base::Time> last_completed_time() const {
+  std::optional<base::Time> last_completed_time() const {
     return last_completed_time_;
   }
 
@@ -68,7 +68,7 @@ class DownloadBubbleRowListViewInfo
   // (because the pointer to the download has been set to null), so we need a
   // way to locate the correct info to remove, given a ContentId.
   RowListIterMap row_list_iter_map_;
-  absl::optional<base::Time> last_completed_time_;
+  std::optional<base::Time> last_completed_time_;
 };
 
 #endif  // CHROME_BROWSER_UI_DOWNLOAD_DOWNLOAD_BUBBLE_ROW_LIST_VIEW_INFO_H_

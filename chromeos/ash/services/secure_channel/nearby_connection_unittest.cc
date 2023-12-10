@@ -57,7 +57,7 @@ class FakeConnectionObserver : public ConnectionObserver {
   ~FakeConnectionObserver() override = default;
 
   Connection::Status last_status_update = Connection::Status::DISCONNECTED;
-  absl::optional<WireMessage> last_received_message;
+  std::optional<WireMessage> last_received_message;
   bool last_send_complete_success = false;
 
   base::OnceClosure on_status_change_closure;

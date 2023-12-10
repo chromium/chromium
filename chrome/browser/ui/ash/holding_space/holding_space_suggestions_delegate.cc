@@ -142,7 +142,7 @@ void HoldingSpaceSuggestionsDelegate::MaybeScheduleUpdateSuggestionsInModel() {
 
 void HoldingSpaceSuggestionsDelegate::OnSuggestionsFetched(
     FileSuggestionType type,
-    const absl::optional<std::vector<FileSuggestData>>& suggestions) {
+    const std::optional<std::vector<FileSuggestData>>& suggestions) {
   // Mark that the suggestions of `type` have been fetched.
   size_t deleted_size = pending_fetches_.erase(type);
   DCHECK_EQ(1u, deleted_size);

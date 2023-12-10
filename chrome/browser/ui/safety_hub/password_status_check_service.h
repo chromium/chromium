@@ -11,7 +11,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_service.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/password_manager/core/browser/password_store_interface.h"
+#include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 
 class PasswordStatusCheckResult;
@@ -44,10 +44,12 @@ class PasswordStatusCheckService
   size_t reused_credential_count() const { return reused_credential_count_; }
 
   bool is_update_credential_count_pending() const {
-    return is_update_credential_count_pending_;
+    return running_update_credential_count_ > 0;
   }
 
-  bool is_password_check_running() const { return is_password_check_running_; }
+  bool is_password_check_running() const {
+    return password_check_state_ != kStopped;
+  }
 
   bool no_passwords_saved() const { return no_passwords_saved_; }
 
@@ -69,7 +71,16 @@ class PasswordStatusCheckService
 
   // Returns the latest PasswordStatusCheckResult that is available in memory.
   // TODO(crbug.com/1443466): This will be a SafetyHubService implementation.
-  const PasswordStatusCheckResult& GetCachedResult() const;
+  std::optional<std::unique_ptr<SafetyHubService::Result>> GetCachedResult();
+
+  // Returns if there is any ongoing password check or insecure credential
+  // check. Returns true if is_update_credential_count_pending() or
+  // is_password_check_running().
+  bool IsUpdateRunning() const;
+
+  // Verifies that both `password_check_delegate_` and
+  // `saved_passwords_presenter_` are initialized.
+  bool IsInfrastructureReady() const;
 
   // Testing functions.
   bool IsObservingSavedPasswordsPresenterForTesting() const {
@@ -95,6 +106,23 @@ class PasswordStatusCheckService
                            CheckTimeUpdatedAfterRunScheduledInThePast);
   FRIEND_TEST_ALL_PREFIXES(PasswordStatusCheckServiceBaseTest,
                            CheckTimeUpdatedAfterRunScheduledLongTimeInThePast);
+  // The enum to hold 4 password check states.
+  // As soon as the check is started, the state will be kStarting.
+  // When the state is kStarting:
+  // - if OnStateChanged is called, it will be kOnStateChangedCalled.
+  // - if OnStartedPasswordCheck is called, it will be
+  // kOnStartCallbackCompleted.
+  // When the state is kOnStateChangedCalled:
+  // - if OnStartedPasswordCheck is called, it will be kStopped.
+  // When the state is OnStartedPasswordCheck:
+  // - if OnStateChanged is called, it will be kStopped.
+  //  Whenever the state is kStopped, then the infra will be killed.
+  enum PasswordCheckState {
+    kStarting,
+    kOnStateChangedCalled,
+    kOnStartCallbackCompleted,
+    kStopped,
+  };
 
   // Triggers Password Manager's password check to discover new credential
   // issues.
@@ -111,6 +139,7 @@ class PasswordStatusCheckService
       password_manager::BulkLeakCheckService::State state) override;
   void OnCredentialDone(const password_manager::LeakCheckCredential& credential,
                         password_manager::IsLeaked is_leaked) override;
+  void OnBulkCheckServiceShutDown() override;
 
   // PasswordStoreInterface::Observer implementation.
   // Used to trigger an update of the password issue counts when passwords
@@ -122,28 +151,33 @@ class PasswordStatusCheckService
                         const std::vector<password_manager::PasswordForm>&
                             retained_passwords) override;
 
+  // Called whenever password_check_delegate_->StartPasswordCheck is completed.
+  // This is only used to prevent the infra being shutdown while there is an
+  // ongoing check in the delegate.
+  void OnStartedPasswordCheck(
+      password_manager::BulkLeakCheckService::State state);
+
   // This is called when weak and reuse checks are complete and
   // `InsecureCredentialsManager` is ready to be queried for credential issues.
   void OnWeakAndReuseChecksDone();
 
-  // Initializes |saved_passwords_presenter_| and |password_check_delegate_|.
-  void InitializePasswordCheckInfrastructure();
+  // Initializes `saved_passwords_presenter_` and `password_check_delegate_`. If
+  // there is no `password_store`, then the infra can not be initialized.
+  void MaybeInitializePasswordCheckInfrastructure();
 
   // Brings cached values for insecure credential counts up to date with
   // |saved_passwords_presenter_|.
   void UpdateInsecureCredentialCount();
 
-  // Posts a task to delete `password_check_delegate_` and
-  // `saved_passwords_presenter_` if async operations have concluded to keep
-  // memory footprint low.
-  void MaybeResetInfrastructureAsync();
-
-  // Verifies that both `password_check_delegate_` and
-  // `saved_passwords_presenter_` are initialized.
-  bool IsInfrastructureReady() const;
+  // Deletes `password_check_delegate_` and `saved_passwords_presenter_` if
+  // async operations have concluded to keep memory footprint low.
+  void MaybeResetInfrastructure();
 
   // Updates pref dict for scheduled password check.
   void SetPasswordCheckSchedulePrefsWithInterval(base::Time check_time);
+
+  // Schedules the next password check time and calls StartRepeatedUpdates.
+  void ScheduleCheckAndStartRepeatedUpdates();
 
   raw_ptr<Profile> profile_;
 
@@ -194,10 +228,15 @@ class PasswordStatusCheckService
   // True when password stores are empty and there are no saved passwords.
   bool no_passwords_saved_ = true;
 
-  // Flags to indicate which async operations are currently ongoing. Memory
-  // intensive objects will be reset after all have finished.
-  bool is_update_credential_count_pending_ = false;
-  bool is_password_check_running_ = false;
+  // Counter of running sync update credential count checks. Memory intensive
+  // objects will be reset after all have finished and password_check_state_ is
+  // kStopped.
+  int running_update_credential_count_ = 0;
+
+  // Enum to keep the state of password check. Memory intensive objects
+  // will be reset after the state is kStopped and
+  // running_update_credential_count_ is zero.
+  PasswordCheckState password_check_state_ = kStopped;
 
   // Timer to schedule the run of the password check after some time has passed.
   base::OneShotTimer password_check_timer_;

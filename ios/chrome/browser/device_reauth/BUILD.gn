@@ -16,7 +16,17 @@ source_set("device_reauth") {
     "//components/keyed_service/ios",
     "//ios/chrome/browser/shared/model/browser_state:browser_state",
     "//ios/chrome/common/ui/reauthentication",
-    "//third_party/abseil-cpp:absl",
     "//ui/base:base",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "ios_device_authenticator_unittest.mm" ]
+  deps = [
+    "//base/test:test_support",
+    "//ios/chrome/browser/device_reauth:device_reauth",
+    "//ios/chrome/test/app:test_support",
+    "//testing/gtest",
   ]
 }

@@ -130,7 +130,8 @@ public class BookmarkUtils {
                 fromExplicitTrackUi,
                 newBookmarkId,
                 /* wasBookmarkMoved= */ false,
-                /* isNewBookmark= */ true);
+                /* isNewBookmark= */ true,
+                tab.getProfile());
         callback.onResult(newBookmarkId);
     }
 
@@ -143,6 +144,7 @@ public class BookmarkUtils {
      * @param bookmarkId The BookmarkId to show the save flow for. Can be null in some cases.
      * @param wasBookmarkMoved Whether the save flow is shown as a reslult of a moved bookmark.
      * @param isNewBookmark Whether the bookmark is newly created.
+     * @param profile The profile currently used.
      */
     public static void showSaveFlow(
             @NonNull Activity activity,
@@ -150,13 +152,13 @@ public class BookmarkUtils {
             boolean fromExplicitTrackUi,
             @Nullable BookmarkId bookmarkId,
             boolean wasBookmarkMoved,
-            boolean isNewBookmark) {
+            boolean isNewBookmark,
+            @NonNull Profile profile) {
         if (bookmarkId == null) {
             Log.e(TAG, "Null bookmark found when showing the save flow, aborting.");
             return;
         }
 
-        Profile profile = Profile.getLastUsedRegularProfile();
         ShoppingService shoppingService = ShoppingServiceFactory.getForProfile(profile);
 
         BookmarkSaveFlowCoordinator bookmarkSaveFlowCoordinator =
@@ -180,7 +182,12 @@ public class BookmarkUtils {
             @BookmarkType int bookmarkType) {
         if (bookmarkType == BookmarkType.READING_LIST) {
             return addToReadingList(
-                    tab.getOriginalUrl(), tab.getTitle(), snackbarManager, bookmarkModel, activity);
+                    tab.getOriginalUrl(),
+                    tab.getTitle(),
+                    snackbarManager,
+                    bookmarkModel,
+                    activity,
+                    tab.getProfile());
         }
         BookmarkId bookmarkId =
                 addBookmarkInternal(
@@ -265,15 +272,17 @@ public class BookmarkUtils {
      * @param bookmarkBridge The bookmark bridge that talks to the bookmark backend.
      * @param context The associated context.
      * @return The bookmark ID created after saving the article to the reading list.
+     * @param profile The profile currently used.
      */
     public static BookmarkId addToReadingList(
             GURL url,
             String title,
             SnackbarManager snackbarManager,
             BookmarkBridge bookmarkBridge,
-            Context context) {
+            Context context,
+            @NonNull Profile profile) {
         assert bookmarkBridge.isBookmarkModelLoaded();
-        BookmarkId bookmarkId = bookmarkBridge.addToReadingList(title, url);
+        BookmarkId bookmarkId = bookmarkBridge.addToDefaultReadingList(title, url);
 
         if (bookmarkId != null) {
             Snackbar snackbar =
@@ -284,20 +293,20 @@ public class BookmarkUtils {
                             Snackbar.UMA_READING_LIST_BOOKMARK_ADDED);
             snackbarManager.showSnackbar(snackbar);
 
-            TrackerFactory.getTrackerForProfile(Profile.getLastUsedRegularProfile())
+            TrackerFactory.getTrackerForProfile(profile)
                     .notifyEvent(EventConstants.READ_LATER_ARTICLE_SAVED);
         }
         return bookmarkId;
     }
 
     /**
-     * Add all selected tabs from TabSelectionEditor as bookmarks. This logic depends on the
-     * snackbar workflow above. Currently there is no support for adding the selected tabs or newly
-     * created folder directly to the reading list.
+     * Add all selected tabs from TabListEditor as bookmarks. This logic depends on the snackbar
+     * workflow above. Currently there is no support for adding the selected tabs or newly created
+     * folder directly to the reading list.
      *
      * @param activity The current activity.
      * @param bookmarkModel The bookmark model.
-     * @param tabList The list of all currently selected tabs from the TabSelectionEditor menu.
+     * @param tabList The list of all currently selected tabs from the TabListEditor menu.
      * @param snackbarManager The SnackbarManager used to show the snackbar.
      */
     public static void addBookmarksOnMultiSelect(
@@ -395,7 +404,7 @@ public class BookmarkUtils {
         // 2. The last used parent implicitly specifies READING_LIST.
         if (bookmarkType == BookmarkType.READING_LIST
                 || parent.getType() == BookmarkType.READING_LIST) {
-            return bookmarkModel.addToReadingList(title, url);
+            return bookmarkModel.addToReadingList(parent, title, url);
         }
 
         BookmarkId bookmarkId = null;
@@ -719,7 +728,7 @@ public class BookmarkUtils {
     /** Returns whether this bookmark can be moved */
     public static boolean isMovable(BookmarkModel bookmarkModel, BookmarkItem item) {
         if (Objects.equals(item.getParentId(), bookmarkModel.getPartnerFolderId())) return false;
-        return ReadingListUtils.isSwappableReadingListItem(item.getId()) || item.isEditable();
+        return item.isEditable();
     }
 
     /**
@@ -730,7 +739,7 @@ public class BookmarkUtils {
      */
     public static int getChildCountForDisplay(BookmarkId id, BookmarkModel bookmarkModel) {
         if (id.getType() == BookmarkType.READING_LIST) {
-            return bookmarkModel.getUnreadCount();
+            return bookmarkModel.getUnreadCount(id);
         } else {
             return bookmarkModel.getTotalBookmarkCount(id);
         }
@@ -769,7 +778,7 @@ public class BookmarkUtils {
                         iconSize,
                         iconSize,
                         iconSize / 2,
-                        res.getColor(R.color.default_favicon_background_color),
+                        context.getColor(R.color.default_favicon_background_color),
                         getDisplayTextSize(res))
                 : FaviconUtils.createCircularIconGenerator(context);
     }
@@ -813,7 +822,10 @@ public class BookmarkUtils {
      */
     public static boolean canAddFolderToParent(BookmarkModel bookmarkModel, BookmarkId parentId) {
         if (!canAddBookmarkToParent(bookmarkModel, parentId)) return false;
-        if (Objects.equals(parentId, bookmarkModel.getReadingListFolder())) return false;
+        // TODO(crbug.com/1501998): Add account reading list folder support here.
+        if (Objects.equals(parentId, bookmarkModel.getLocalOrSyncableReadingListFolder())) {
+            return false;
+        }
 
         return true;
     }

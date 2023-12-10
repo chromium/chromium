@@ -36,6 +36,8 @@ import {ContentType, WebViewHelper} from '../../components/web_view_helper.js';
 import {CLEAR_ANCHORS_CONTENT_SCRIPT, WebViewLoader} from '../../components/web_view_loader.js';
 import {Oobe} from '../../cr_ui.js';
 
+import {getTemplate} from './consolidated_consent.html.js';
+
 
 // Enum that describes the current state of the consolidated consent screen
 const ConsolidatedConsentScreenState = {
@@ -120,7 +122,7 @@ class ConsolidatedConsent extends ConsolidatedConsentScreenElementBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

@@ -72,8 +72,9 @@ int VirtualCursor::Next() {
       continue;
     }
     int next_page_id = inner_decoder->TryAdvance();
-    if (next_page_id == DatabasePageReader::kInvalidPageId)
+    if (!DatabasePageReader::IsValidPageId(next_page_id)) {
       continue;
+    }
     AppendPageDecoder(next_page_id);
   }
 

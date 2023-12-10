@@ -277,6 +277,13 @@ interface NavigationClient {
   // browser. These may be null if the NavigationThreadingOptimizations feature
   // is disabled. |cookie_manager_info| may also be null for non HTTP/HTTPS
   // navigations, or if the origin is opaque.
+  //
+  // The [SupportsUrgent] attribute enables marking this message as urgent by
+  // calling the method in an UrgentMessageScope. Urgent messages cause the
+  // renderer to prioritize the IPC task queue while there are urgent messages
+  // pending, which increases their priority while maintaining ordering
+  // guarantees. See also mojo/public/tools/bindings/README.md.
+  [SupportsUrgent]
   CommitNavigation(
       blink.mojom.CommonNavigationParams common_params,
       blink.mojom.CommitNavigationParams request_params,
@@ -313,6 +320,13 @@ interface NavigationClient {
   //
   // |info| contains values used to customise the error page. It may be null if
   // the page which displays an error should not be customized.
+  //
+  // The [SupportsUrgent] attribute enables marking this message as urgent by
+  // calling the method in an UrgentMessageScope. Urgent messages cause the
+  // renderer to prioritize the IPC task queue while there are urgent messages
+  // pending, which increases their priority while maintaining ordering
+  // guarantees. See also mojo/public/tools/bindings/README.md.
+  [SupportsUrgent]
   CommitFailedNavigation(
       blink.mojom.CommonNavigationParams common_params,
       blink.mojom.CommitNavigationParams request_params,

@@ -4,28 +4,27 @@
 
 #include "content/browser/aggregation_service/aggregatable_report_scheduler.h"
 
-#include <algorithm>
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/threading/sequence_bound.h"
 #include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
 #include "content/browser/aggregation_service/aggregation_service.h"
 #include "content/browser/aggregation_service/aggregation_service_storage.h"
 #include "content/browser/aggregation_service/aggregation_service_storage_context.h"
 #include "content/public/common/content_switches.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
@@ -69,7 +68,7 @@ bool AggregatableReportScheduler::NotifyInProgressRequestFailed(
     AggregationServiceStorage::RequestId request_id,
     int previous_failed_attempts) {
   DCHECK_GE(previous_failed_attempts, 0);
-  absl::optional<base::TimeDelta> delay =
+  std::optional<base::TimeDelta> delay =
       GetFailedReportDelay(previous_failed_attempts + 1);
 
   if (delay.has_value()) {
@@ -93,12 +92,12 @@ bool AggregatableReportScheduler::NotifyInProgressRequestFailed(
   return false;
 }
 
-absl::optional<base::TimeDelta>
+std::optional<base::TimeDelta>
 AggregatableReportScheduler::GetFailedReportDelay(int failed_send_attempts) {
   DCHECK_GT(failed_send_attempts, 0);
 
   if (failed_send_attempts > kMaxRetries)
-    return absl::nullopt;
+    return std::nullopt;
 
   return kInitialRetryDelay *
          std::pow(kRetryDelayFactor, failed_send_attempts - 1);
@@ -120,7 +119,7 @@ AggregatableReportScheduler::TimerDelegate::TimerDelegate(
 AggregatableReportScheduler::TimerDelegate::~TimerDelegate() = default;
 
 void AggregatableReportScheduler::TimerDelegate::GetNextReportTime(
-    base::OnceCallback<void(absl::optional<base::Time>)> callback,
+    base::OnceCallback<void(std::optional<base::Time>)> callback,
     base::Time now) {
   storage_context_->GetStorage()
       .AsyncCall(&AggregationServiceStorage::NextReportTimeAfter)
@@ -129,17 +128,23 @@ void AggregatableReportScheduler::TimerDelegate::GetNextReportTime(
 }
 
 void AggregatableReportScheduler::TimerDelegate::OnReportingTimeReached(
-    base::Time now) {
+    base::Time now,
+    base::Time timer_desired_run_time) {
+  base::UmaHistogramLongTimes100(
+      "PrivacySandbox.AggregationService.Scheduler.TimerFireDelay",
+      now - timer_desired_run_time);
+
   storage_context_->GetStorage()
       .AsyncCall(&AggregationServiceStorage::GetRequestsReportingOnOrBefore)
-      .WithArgs(now, /*limit=*/absl::nullopt)
+      .WithArgs(now, /*limit=*/std::nullopt)
       .Then(base::BindOnce(&AggregatableReportScheduler::TimerDelegate::
                                OnRequestsReturnedFromStorage,
-                           weak_ptr_factory_.GetWeakPtr()));
+                           weak_ptr_factory_.GetWeakPtr(),
+                           /*task_timer=*/base::ElapsedTimer()));
 }
 
 void AggregatableReportScheduler::TimerDelegate::AdjustOfflineReportTimes(
-    base::OnceCallback<void(absl::optional<base::Time>)> maybe_set_timer_cb) {
+    base::OnceCallback<void(std::optional<base::Time>)> maybe_set_timer_cb) {
   if (should_not_delay_reports_) {
     // No need to adjust the report times, just set the timer as appropriate.
     storage_context_->GetStorage()
@@ -162,10 +167,15 @@ void AggregatableReportScheduler::TimerDelegate::NotifySendAttemptCompleted(
 }
 
 void AggregatableReportScheduler::TimerDelegate::OnRequestsReturnedFromStorage(
+    base::ElapsedTimer task_timer,
     std::vector<AggregationServiceStorage::RequestAndId> requests_and_ids) {
+  base::UmaHistogramLongTimes100(
+      "PrivacySandbox.AggregationService.Storage.RequestsRetrievalTime",
+      task_timer.Elapsed());
+
   // TODO(alexmt): Consider adding metrics of the number of in-progress requests
   // erased to see if optimizations would be desirable.
-  base::EraseIf(
+  std::erase_if(
       requests_and_ids,
       [this](const AggregationServiceStorage::RequestAndId& request_and_id) {
         return base::Contains(in_progress_requests_, request_and_id.id);
@@ -174,7 +184,6 @@ void AggregatableReportScheduler::TimerDelegate::OnRequestsReturnedFromStorage(
        requests_and_ids) {
     in_progress_requests_.insert(request_and_id.id);
   }
-
   if (!requests_and_ids.empty()) {
     on_scheduled_report_time_reached_.Run(std::move(requests_and_ids));
   }

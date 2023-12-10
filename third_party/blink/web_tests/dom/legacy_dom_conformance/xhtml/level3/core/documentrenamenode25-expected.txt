@@ -1,3 +1,0 @@
-Test	http://www.w3.org/2001/DOM-Test-Suite/level3/core/documentrenamenode25
-Status	failure
-Message	documentrenamenode25_NOT_SUPPORTED_ERR: assertTrue failed

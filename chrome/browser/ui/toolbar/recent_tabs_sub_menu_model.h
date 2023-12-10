@@ -108,7 +108,7 @@ class RecentTabsSubMenuModel : public ui::SimpleMenuModel,
   // add it to the menumodel at |curr_model_index|.
   void BuildLocalTabItem(
       SessionID session_id,
-      absl::optional<tab_groups::TabGroupVisualData> visual_data,
+      std::optional<tab_groups::TabGroupVisualData> visual_data,
       const std::u16string& title,
       const GURL& url,
       size_t curr_model_index);
@@ -268,7 +268,7 @@ class RecentTabsSubMenuModel : public ui::SimpleMenuModel,
   SubMenuItems device_sub_menu_items_;
 
   // Index of "Recently closed" title item.
-  absl::optional<size_t> recently_closed_title_index_;
+  std::optional<size_t> recently_closed_title_index_;
 
   // Index of the last local entry (recently closed tab or window or group) in
   // the menumodel.

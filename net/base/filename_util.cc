@@ -197,12 +197,10 @@ bool IsReservedNameOnWindows(const base::FilePath::StringType& filename) {
 #endif
 
   for (const char* const device : known_devices) {
-    // Exact match.
-    if (filename_lower == device)
-      return true;
-    // Starts with "DEVICE.".
-    if (base::StartsWith(filename_lower, std::string(device) + ".",
-                         base::CompareCase::SENSITIVE)) {
+    // Check for an exact match, or a "DEVICE." prefix.
+    size_t len = strlen(device);
+    if (filename_lower.starts_with(device) &&
+        (filename_lower.size() == len || filename_lower[len] == '.')) {
       return true;
     }
   }

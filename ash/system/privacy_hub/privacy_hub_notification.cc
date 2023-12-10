@@ -5,6 +5,7 @@
 #include "ash/system/privacy_hub/privacy_hub_notification.h"
 
 #include <iterator>
+#include <optional>
 #include <string>
 
 #include "ash/accessibility/accessibility_controller_impl.h"
@@ -22,7 +23,6 @@
 #include "base/containers/enum_set.h"
 #include "components/vector_icons/vector_icons.h"
 #include "privacy_hub_notification_controller.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -58,8 +58,8 @@ PrivacyHubNotificationClickDelegate::~PrivacyHubNotificationClickDelegate() =
     default;
 
 void PrivacyHubNotificationClickDelegate::Click(
-    const absl::optional<int>& button_index_opt,
-    const absl::optional<std::u16string>& reply) {
+    const std::optional<int>& button_index_opt,
+    const std::optional<std::u16string>& reply) {
   if (button_index_opt.has_value()) {
     const unsigned int button_index = button_index_opt.value();
     CHECK_GT(button_callbacks_.size(), button_index);

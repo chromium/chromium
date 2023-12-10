@@ -80,13 +80,28 @@ void SetRecommendedDefaultSearchPreferences(const TemplateURLData& data,
       std::move(dict));
 }
 
+void SetManagedSiteSearchSettingsPreference(
+    const EnterpriseSiteSearchManager::OwnedTemplateURLDataVector&
+        site_search_engines,
+    TestingProfile* profile) {
+  base::Value::List pref_value;
+  for (auto& site_search_engine : site_search_engines) {
+    pref_value.Append(
+        base::Value(TemplateURLDataToDictionary(*site_search_engine)));
+  }
+
+  profile->GetTestingPrefService()->SetManagedPref(
+      EnterpriseSiteSearchManager::kSiteSearchSettingsPrefName,
+      std::move(pref_value));
+}
+
 std::unique_ptr<TemplateURL> CreateTestTemplateURL(
     const std::u16string& keyword,
     const std::string& url,
     const std::string& guid,
     base::Time last_modified,
     bool safe_for_autoreplace,
-    bool created_by_policy,
+    TemplateURLData::CreatedByPolicy created_by_policy,
     int prepopulate_id) {
   DCHECK(!base::StartsWith(guid, "key"))
       << "Don't use test GUIDs with the form \"key1\". Use \"guid1\" instead "

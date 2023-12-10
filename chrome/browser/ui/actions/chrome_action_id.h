@@ -279,6 +279,7 @@
     IDC_CONTENT_CONTEXT_OPENLINKINPROFILE) \
   E(kActionContentContextOpenLinkBookmarkApp, \
     IDC_CONTENT_CONTEXT_OPENLINKBOOKMARKAPP) \
+  E(kActionContentContextOpenLinkPreview, IDC_CONTENT_CONTEXT_OPENLINKPREVIEW) \
   /* Image items. */ \
   E(kActionContentContextSaveImageAs, IDC_CONTENT_CONTEXT_SAVEIMAGEAS) \
   E(kActionContentContextCopyImageLocation, \

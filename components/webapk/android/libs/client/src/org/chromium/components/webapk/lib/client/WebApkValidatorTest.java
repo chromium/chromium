@@ -221,9 +221,7 @@ public class WebApkValidatorTest {
         }
     }
 
-    /**
-     * Tests {@link WebApkValidator.canWebApkHandleUrl()} returns false for a non-browsable WebAPK.
-     */
+    /** Tests {@link WebApkValidator.canWebApkHandleUrl()} returns false for a non-browsable WebAPK. */
     @Test
     public void testCanWebApkHandleUrlReturnsFalseForNonBrowsableIntent() {
         try {
@@ -340,9 +338,7 @@ public class WebApkValidatorTest {
                         RuntimeEnvironment.application, MAPSLITE_PACKAGE_NAME + ".notfound"));
     }
 
-    /**
-     * Tests {@link WebApkValidator.isValidWebApk} returns false when the startUrl is not correct.
-     */
+    /** Tests {@link WebApkValidator.isValidWebApk} returns false when the startUrl is not correct. */
     @Test
     public void testIsNotValidWebApkForMapsLiteBadStartUrl() {
         mPackageManager.addPackage(
@@ -415,7 +411,6 @@ public class WebApkValidatorTest {
             "bad-sig.apk",
             "bad-utf8-fname.apk",
             "empty.apk",
-            "extra-field-too-large.apk",
             "extra-len-too-large.apk",
             "fcomment-too-large.apk",
             "no-cd.apk",
@@ -484,9 +479,7 @@ public class WebApkValidatorTest {
                         RuntimeEnvironment.application, INVALID_WEBAPK_PACKAGE_NAME));
     }
 
-    /**
-     * Tests {@link WebApkValidator.isValidV1WebApk} returns false if the package name is maps lite.
-     */
+    /** Tests {@link WebApkValidator.isValidV1WebApk} returns false if the package name is maps lite. */
     @Test
     public void testIsValidV1WebApkFalseForMapsLite() {
         mPackageManager.addPackage(
@@ -507,9 +500,7 @@ public class WebApkValidatorTest {
                         RuntimeEnvironment.application, MAPSLITE_PACKAGE_NAME));
     }
 
-    /**
-     * Tests {@link WebApkValidator#queryBoundWebApkForManifestUrl()} for a valid installed entry.
-     */
+    /** Tests {@link WebApkValidator#queryBoundWebApkForManifestUrl()} for a valid installed entry. */
     @Test
     public void testQueryBoundWebApkForManifestUrl() {
         mPackageManager.addPackage(
@@ -525,9 +516,7 @@ public class WebApkValidatorTest {
                         RuntimeEnvironment.application, MANIFEST_URL));
     }
 
-    /**
-     * Tests {@link WebApkValidator#queryBoundWebApkForManifestUrl()} with an invalid package name.
-     */
+    /** Tests {@link WebApkValidator#queryBoundWebApkForManifestUrl()} with an invalid package name. */
     @Test
     public void testQueryBoundWebApkForManifestUrlWithInvalidPackageName() {
         mPackageManager.addPackage(
@@ -554,9 +543,7 @@ public class WebApkValidatorTest {
                         RuntimeEnvironment.application, MANIFEST_URL));
     }
 
-    /**
-     * Tests {@link WebApkValidator#queryBoundWebApkForManifestUrl()} with an invalid manifest URL.
-     */
+    /** Tests {@link WebApkValidator#queryBoundWebApkForManifestUrl()} with an invalid manifest URL. */
     @Test
     public void testQueryBoundWebApkForManifestUrlWithInvalidManifestUrl() {
         mPackageManager.addPackage(

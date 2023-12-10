@@ -154,10 +154,11 @@ class ArcInputOverlayManager : public KeyedService,
 
   ArcAppListPrefs* GetArcAppListPrefs();
 
-  // Returns the game window if `window` is game dashboard window which is the
-  // window of `GameDashboardButton` or `GameDashboardMainMenu`. Otherwise,
-  // returns nullptr.
-  aura::Window* GetGameWindow(aura::Window* window);
+  // Returns `window`'s anchor window if `window` is a game dashboard main menu
+  // dialog window or `ash::AnchoredNudge` or a transient window, or returns
+  // `window` itself if `window` is none of above windows. For Alpha/AlphaV2
+  // version, it still returns `window` itself.
+  aura::Window* GetAnchorWindow(aura::Window* window);
 
   base::ScopedObservation<aura::Env, aura::EnvObserver> env_observation_{this};
   base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>

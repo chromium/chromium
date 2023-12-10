@@ -6,6 +6,15 @@ import("//build/config/ui.gni")
 import("//components/viz/viz.gni")
 import("//testing/test.gni")
 
+if (is_ios && (skia_use_dawn || skia_use_metal)) {
+  bundle_data("unit_tests_filter_bundle_data") {
+    testonly = true
+    sources = [ "//testing/buildbot/filters/ios.viz_unittests.filter" ]
+    outputs = [ "{{bundle_resources_dir}}/" +
+                "{{source_root_relative_dir}}/{{source_file_part}}" ]
+  }
+}
+
 viz_test("viz_unittests") {
   configs = []
   if (is_chromeos_lacros && is_chromeos_device) {
@@ -52,7 +61,10 @@ viz_test("viz_unittests") {
   }
 
   if (is_ios) {
-    public_deps = [ "//components/test:viz_test_bundle_data" ]
+    public_deps = [
+      ":unit_tests_filter_bundle_data",
+      "//components/test:viz_test_bundle_data",
+    ]
   }
 }
 

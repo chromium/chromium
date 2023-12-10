@@ -5,6 +5,7 @@
 #include "chrome/browser/password_manager/android/password_manager_settings_service_android_impl.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/memory/weak_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -23,7 +24,6 @@
 #include "components/sync/test/test_sync_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -45,11 +45,11 @@ class MockPasswordSettingsUpdaterBridgeHelper
   MOCK_METHOD(void, SetConsumer, (base::WeakPtr<Consumer>), (override));
   MOCK_METHOD(void,
               GetPasswordSettingValue,
-              (absl::optional<SyncingAccount>, PasswordManagerSetting),
+              (std::optional<SyncingAccount>, PasswordManagerSetting),
               (override));
   MOCK_METHOD(void,
               SetPasswordSettingValue,
-              (absl::optional<SyncingAccount>, PasswordManagerSetting, bool),
+              (std::optional<SyncingAccount>, PasswordManagerSetting, bool),
               (override));
 };
 
@@ -72,9 +72,8 @@ class PasswordManagerSettingsServiceAndroidImplBaseTest : public testing::Test {
   void SetPasswordsSync(bool enabled);
   void SetSettingsSync(bool enabled);
 
-  void ExpectSettingsRetrievalFromBackend(
-      absl::optional<SyncingAccount> account,
-      size_t times);
+  void ExpectSettingsRetrievalFromBackend(std::optional<SyncingAccount> account,
+                                          size_t times);
 
   void ExpectSettingsRetrievalFromBackend();
 
@@ -188,7 +187,7 @@ void PasswordManagerSettingsServiceAndroidImplBaseTest::SetSettingsSync(
 }
 
 void PasswordManagerSettingsServiceAndroidImplBaseTest::
-    ExpectSettingsRetrievalFromBackend(absl::optional<SyncingAccount> account,
+    ExpectSettingsRetrievalFromBackend(std::optional<SyncingAccount> account,
                                        size_t times) {
   EXPECT_CALL(
       *bridge_helper(),
@@ -924,6 +923,9 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
 
   EXPECT_FALSE(settings_service()->IsSettingEnabled(
       PasswordManagerSetting::kOfferToSavePasswords));
+
+  histogram_tester()->ExpectUniqueSample(
+      "PasswordManager.PasswordSavingDisabledDueToGMSCoreError", true, 1);
 }
 
 TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
@@ -939,6 +941,8 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
       password_manager::prefs::kSavePasswordsSuspendedByError, true);
   EXPECT_TRUE(settings_service()->IsSettingEnabled(
       PasswordManagerSetting::kOfferToSavePasswords));
+  histogram_tester()->ExpectUniqueSample(
+      "PasswordManager.PasswordSavingDisabledDueToGMSCoreError", false, 1);
 }
 
 TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
@@ -956,6 +960,8 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
       password_manager::prefs::kCredentialsEnableService, base::Value(true));
   EXPECT_TRUE(settings_service()->IsSettingEnabled(
       PasswordManagerSetting::kOfferToSavePasswords));
+  histogram_tester()->ExpectUniqueSample(
+      "PasswordManager.PasswordSavingDisabledDueToGMSCoreError", false, 1);
 }
 
 TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
@@ -974,6 +980,8 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
       password_manager::prefs::kSavePasswordsSuspendedByError, true);
   EXPECT_TRUE(settings_service()->IsSettingEnabled(
       PasswordManagerSetting::kOfferToSavePasswords));
+  histogram_tester()->ExpectUniqueSample(
+      "PasswordManager.PasswordSavingDisabledDueToGMSCoreError", false, 1);
 }
 
 TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
@@ -1087,7 +1095,7 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
   InitializeSettingsService(/*password_sync_enabled=*/false,
                             /*setting_sync_enabled=*/false);
 
-  ExpectSettingsRetrievalFromBackend(absl::nullopt, /*times=*/1);
+  ExpectSettingsRetrievalFromBackend(std::nullopt, /*times=*/1);
   lifecycle_helper()->OnForegroundSessionStart();
 }
 
@@ -1257,7 +1265,7 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
   InitializeSettingsService(/*password_sync_enabled=*/false,
                             /*setting_sync_enabled=*/false);
 
-  ExpectSettingsRetrievalFromBackend(absl::nullopt, /*times=*/1);
+  ExpectSettingsRetrievalFromBackend(std::nullopt, /*times=*/1);
 
   settings_service()->RequestSettingsFromBackend();
 }
@@ -1274,7 +1282,7 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
 
   EXPECT_CALL(
       *bridge_helper(),
-      SetPasswordSettingValue(Eq(absl::nullopt),
+      SetPasswordSettingValue(Eq(std::nullopt),
                               Eq(PasswordManagerSetting::kAutoSignIn), false));
 
   settings_service()->TurnOffAutoSignIn();
@@ -1316,7 +1324,7 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
       password_manager::prefs::kAutoSignInEnabledGMS));
 
   // Settings should be requested from GMS Core on sync state change.
-  ExpectSettingsRetrievalFromBackend(absl::nullopt, /*times=*/1);
+  ExpectSettingsRetrievalFromBackend(std::nullopt, /*times=*/1);
   SetPasswordsSync(/*enabled=*/false);
   sync_service()->FireStateChanged();
 
@@ -1348,7 +1356,7 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
       password_manager::prefs::kOfferToSavePasswordsEnabledGMS));
 
   // Settings should be requested from GMS Core on sync state change.
-  ExpectSettingsRetrievalFromBackend(absl::nullopt, /*times=*/1);
+  ExpectSettingsRetrievalFromBackend(std::nullopt, /*times=*/1);
   SetPasswordsSync(/*enabled=*/false);
   sync_service()->FireStateChanged();
 
@@ -1453,4 +1461,17 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
 
   SetPasswordsSync(false);
   CreateNewService(std::move(bridge_helper));
+}
+
+TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
+       SavePasswordsSettingManagedByCustodian) {
+  InitializeSettingsService(/*password_sync_enabled=*/false,
+                            /*setting_sync_enabled=*/false);
+  pref_service()->SetSupervisedUserPref(
+      password_manager::prefs::kCredentialsEnableService, base::Value(false));
+  pref_service()->SetUserPref(
+      password_manager::prefs::kOfferToSavePasswordsEnabledGMS,
+      base::Value(true));
+  EXPECT_FALSE(settings_service()->IsSettingEnabled(
+      PasswordManagerSetting::kOfferToSavePasswords));
 }

@@ -214,7 +214,7 @@ bool VariationsFieldTrialCreatorBase::SetUpFieldTrials(
     std::unique_ptr<base::FeatureList> feature_list,
     metrics::MetricsStateManager* metrics_state_manager,
     PlatformFieldTrials* platform_field_trials,
-    SafeSeedManagerInterface* safe_seed_manager,
+    SafeSeedManagerBase* safe_seed_manager,
     bool add_entropy_source_to_variations_ids) {
   DCHECK(feature_list);
   DCHECK(metrics_state_manager);
@@ -261,11 +261,11 @@ bool VariationsFieldTrialCreatorBase::SetUpFieldTrials(
                                        switches::kForceDisableVariationIds));
   }
 
-  feature_list->InitializeFromCommandLine(
+  feature_list->InitFromCommandLine(
       command_line->GetSwitchValueASCII(::switches::kEnableFeatures),
       command_line->GetSwitchValueASCII(::switches::kDisableFeatures));
 
-  // This needs to happen here: After the InitializeFromCommandLine() call,
+  // This needs to happen here: After the InitFromCommandLine() call,
   // because the explicit cmdline --disable-features and --enable-features
   // should take precedence over these extra overrides. Before the call to
   // SetInstance(), because overrides cannot be registered after the FeatureList
@@ -580,7 +580,7 @@ VariationsFieldTrialCreatorBase::GetGoogleGroupsFromPrefs() {
 bool VariationsFieldTrialCreatorBase::CreateTrialsFromSeed(
     const EntropyProviders& entropy_providers,
     base::FeatureList* feature_list,
-    SafeSeedManagerInterface* safe_seed_manager) {
+    SafeSeedManagerBase* safe_seed_manager) {
   // This histogram name uses "VariationsFieldTrialCreator" rather than
   // "VariationsFieldTrialCreatorBase" for consistency with historical data
   TRACE_EVENT0("startup", "VariationsFieldTrialCreator::CreateTrialsFromSeed");

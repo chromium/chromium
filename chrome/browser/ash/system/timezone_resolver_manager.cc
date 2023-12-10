@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/constants/geolocation_access_level.h"
 #include "ash/shell.h"
 #include "ash/system/privacy_hub/privacy_hub_controller.h"
 #include "base/check.h"
@@ -18,6 +19,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/ash/components/geolocation/simple_geolocation_provider.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -101,7 +103,7 @@ ServiceConfiguration GetServiceConfigurationFromUserPrefs(
 
 // Returns service configuration for the signin screen.
 ServiceConfiguration GetServiceConfigurationForSigninScreen() {
-  using AccessLevel = PrivacyHubController::AccessLevel;
+  using AccessLevel = GeolocationAccessLevel;
 
   const AccessLevel device_geolocation_permission =
       static_cast<AccessLevel>(g_browser_process->local_state()->GetInteger(
@@ -135,10 +137,17 @@ ServiceConfiguration GetServiceConfigurationForSigninScreen() {
 
 }  // anonymous namespace.
 
-TimeZoneResolverManager::TimeZoneResolverManager() {
-  local_state_initialized_ =
-      g_browser_process->local_state()->GetInitializationStatus() ==
-      PrefService::INITIALIZATION_STATUS_SUCCESS;
+TimeZoneResolverManager::TimeZoneResolverManager(
+    SimpleGeolocationProvider* const geolocation_provider)
+    : geolocation_provider_(geolocation_provider) {
+  switch (g_browser_process->local_state()->GetInitializationStatus()) {
+    case PrefService::INITIALIZATION_STATUS_SUCCESS:
+    case PrefService::INITIALIZATION_STATUS_CREATED_NEW_PREF_STORE:
+      local_state_initialized_ = true;
+      break;
+    default:
+      local_state_initialized_ = false;
+  }
   g_browser_process->local_state()->AddPrefInitObserver(
       base::BindOnce(&TimeZoneResolverManager::OnLocalStateInitialized,
                      weak_factory_.GetWeakPtr()));
@@ -148,9 +157,14 @@ TimeZoneResolverManager::TimeZoneResolverManager() {
       ::prefs::kSystemTimezoneAutomaticDetectionPolicy,
       base::BindRepeating(&TimeZoneResolverManager::UpdateTimezoneResolver,
                           base::Unretained(this)));
+
+  geolocation_provider_->AddObserver(this);
 }
 
-TimeZoneResolverManager::~TimeZoneResolverManager() {}
+TimeZoneResolverManager::~TimeZoneResolverManager() {
+  geolocation_provider_->RemoveObserver(this);
+  geolocation_provider_ = nullptr;
+}
 
 void TimeZoneResolverManager::SetPrimaryUserPrefs(PrefService* pref_service) {
   primary_user_prefs_ = pref_service;
@@ -180,8 +194,10 @@ bool TimeZoneResolverManager::ShouldSendWiFiGeolocationData() const {
   }
 
   // User is logged in at this point.
-  // Check that System-wide location permission is granted by the primary user.
-  if (!primary_user_prefs_->GetBoolean(ash::prefs::kUserGeolocationAllowed)) {
+  // Check that user location permission is granted for system services.
+  if (static_cast<GeolocationAccessLevel>(primary_user_prefs_->GetInteger(
+          ash::prefs::kUserGeolocationAccessLevel)) ==
+      GeolocationAccessLevel::kDisallowed) {
     return false;
   }
 
@@ -220,8 +236,10 @@ bool TimeZoneResolverManager::ShouldSendCellularGeolocationData() const {
   }
 
   // User is logged in at this point.
-  // Check that System-wide location permission is granted by the primary user.
-  if (!primary_user_prefs_->GetBoolean(ash::prefs::kUserGeolocationAllowed)) {
+  // Check that user location permission is granted for system services.
+  if (static_cast<GeolocationAccessLevel>(primary_user_prefs_->GetInteger(
+          ash::prefs::kUserGeolocationAccessLevel)) ==
+      GeolocationAccessLevel::kDisallowed) {
     return false;
   }
 
@@ -230,18 +248,6 @@ bool TimeZoneResolverManager::ShouldSendCellularGeolocationData() const {
   return GetEffectiveUserTimeZoneResolveMethod(primary_user_prefs_,
                                                /*check_policy=*/false) ==
          TimeZoneResolveMethod::SEND_ALL_LOCATION_INFO;
-}
-
-bool TimeZoneResolverManager::IsSystemGeolocationAllowed() const {
-  // Follow device preference on log-in screen.
-  if (!primary_user_prefs_) {
-    return g_browser_process->local_state()->GetInteger(
-               ash::prefs::kDeviceGeolocationAllowed) ==
-           static_cast<int>(PrivacyHubController::AccessLevel::kAllowed);
-  }
-
-  // Inside user session check geolocation user preference.
-  return primary_user_prefs_->GetBoolean(ash::prefs::kUserGeolocationAllowed);
 }
 
 // static
@@ -285,8 +291,8 @@ void TimeZoneResolverManager::UpdateTimezoneResolver() {
     observer.OnTimeZoneResolverUpdated();
 }
 
-void TimeZoneResolverManager::OnSystemGeolocationPermissionChanged(
-    bool enabled) {
+void TimeZoneResolverManager::OnGeolocationPermissionChanged(bool enabled) {
+  // New permission state will be retrieved from `geolocation_provider_`.
   UpdateTimezoneResolver();
 }
 
@@ -305,10 +311,16 @@ bool TimeZoneResolverManager::ShouldApplyResolvedTimezone() {
 bool TimeZoneResolverManager::TimeZoneResolverShouldBeRunning() {
   // System geolocation permission is required for automatic timezone
   // resolution.
-  if (!IsSystemGeolocationAllowed()) {
+  if (!geolocation_provider_->IsGeolocationUsageAllowedForSystem()) {
     return false;
   }
 
+  // Once the permission is granted, it's all up to the time zone
+  // configuration data.
+  return TimeZoneResolverAllowedByTimeZoneConfigData();
+}
+
+bool TimeZoneResolverManager::TimeZoneResolverAllowedByTimeZoneConfigData() {
   ServiceConfiguration result = GetServiceConfigurationFromPolicy();
 
   if (result == UNSPECIFIED) {

@@ -99,9 +99,9 @@ void GrammarSuggestionWindow::OnThemeChanged() {
       views::CreateEmptyBorder(views::LayoutProvider::Get()->GetInsetsMetric(
           views::INSETS_VECTOR_IMAGE_BUTTON)));
 
-  ignore_button_->SetImage(
+  ignore_button_->SetImageModel(
       views::Button::ButtonState::STATE_NORMAL,
-      gfx::CreateVectorIcon(
+      ui::ImageModel::FromVectorIcon(
           views::kCloseIcon,
           ResolveSemanticColor(cros_styles::ColorName::kTextColorPrimary)));
 

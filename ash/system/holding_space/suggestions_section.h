@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "ash/system/holding_space/holding_space_item_views_section.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 
 class PrefChangeRegistrar;
 
@@ -15,6 +16,8 @@ namespace ash {
 
 // Section for suggestions in the `PinnedFilesBubble`.
 class SuggestionsSection : public HoldingSpaceItemViewsSection {
+  METADATA_HEADER(SuggestionsSection, HoldingSpaceItemViewsSection)
+
  public:
   explicit SuggestionsSection(HoldingSpaceViewDelegate* delegate);
   SuggestionsSection(const SuggestionsSection& other) = delete;
@@ -22,7 +25,6 @@ class SuggestionsSection : public HoldingSpaceItemViewsSection {
   ~SuggestionsSection() override;
 
   // HoldingSpaceItemViewsSection:
-  const char* GetClassName() const override;
   std::unique_ptr<views::View> CreateHeader() override;
   std::unique_ptr<views::View> CreateContainer() override;
   std::unique_ptr<HoldingSpaceItemView> CreateView(

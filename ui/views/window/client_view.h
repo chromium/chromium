@@ -22,9 +22,9 @@ enum class CloseRequestResult;
 //  such as non-client hit testing information, sizing etc. Sub-classes of
 //  ClientView are used to create more elaborate contents.
 class VIEWS_EXPORT ClientView : public View {
- public:
-  METADATA_HEADER(ClientView);
+  METADATA_HEADER(ClientView, View)
 
+ public:
   // Constructs a ClientView object for the specified widget with the specified
   // contents. Since this object is created during the process of creating
   // |widget|, |contents_view| must be valid if you want the initial size of

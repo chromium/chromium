@@ -46,6 +46,16 @@ NSString* const kCarrierKey = @"carrier";
 
 }  // namespace
 
+@interface InfobarParcelTrackingTableViewController () <
+    UIEditMenuInteractionDelegate>
+
+// Used to create and show the actions users can execute when they tap on a row
+// in the tableView. These actions are displayed a pop-up.
+@property(nonatomic, strong)
+    UIEditMenuInteraction* editMenu API_AVAILABLE(ios(16));
+
+@end
+
 @implementation InfobarParcelTrackingTableViewController {
   // List of parcels.
   NSArray<CustomTextCheckingResult*>* parcelList_;
@@ -88,9 +98,10 @@ NSString* const kCarrierKey = @"carrier";
   self.navigationItem.leftBarButtonItem = cancelButton;
   self.navigationController.navigationBar.prefersLargeTitles = NO;
 
-  self.tableView.tableFooterView = [self reportIssueButton];
-  self.tableView.tableFooterView.frame =
-      CGRectMake(0, 0, self.tableView.bounds.size.width, kFooterFrameHeight);
+  if (@available(iOS 16.0, *)) {
+    self.editMenu = [[UIEditMenuInteraction alloc] initWithDelegate:self];
+    [self.tableView addInteraction:self.editMenu];
+  }
 
   [self loadModel];
 }
@@ -132,6 +143,30 @@ NSString* const kCarrierKey = @"carrier";
       toSectionWithIdentifier:SectionIdentifier::kContent];
 }
 
+#pragma mark - UITableViewDelegate
+
+- (void)tableView:(UITableView*)tableView
+    didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
+  TableViewModel* model = self.tableViewModel;
+  NSInteger itemType = [model itemTypeForIndexPath:indexPath];
+  switch (itemType) {
+    case kTrackingNumber:
+      // Present an edit menu.
+      if (@available(iOS 16.0, *)) {
+        CGRect row = [self.tableView rectForRowAtIndexPath:indexPath];
+        CGPoint editMenuLocation =
+            CGPointMake(CGRectGetMidX(row), row.origin.y);
+        UIEditMenuConfiguration* configuration = [UIEditMenuConfiguration
+            configurationWithIdentifier:[NSNumber numberWithInt:itemType]
+                            sourcePoint:editMenuLocation];
+        [self.editMenu presentEditMenuWithConfiguration:configuration];
+      }
+      break;
+    default:
+      break;
+  }
+}
+
 #pragma mark - UITableViewDataSource
 
 - (UITableViewCell*)tableView:(UITableView*)tableView
@@ -149,44 +184,37 @@ NSString* const kCarrierKey = @"carrier";
                  addTarget:self
                     action:@selector(trackButtonWasPressed:)
           forControlEvents:UIControlEventTouchUpInside];
-      tableViewTextButtonCell.separatorInset =
-          UIEdgeInsetsMake(0, 0, 0, self.tableView.bounds.size.width);
+      cell.selectionStyle = UITableViewCellSelectionStyleNone;
+      // Hide the separator if "Track This Parcel" button is displayed.
+      if (!trackingParcels_) {
+        tableViewTextButtonCell.separatorInset =
+            UIEdgeInsetsMake(0, 0, 0, self.tableView.bounds.size.width);
+      }
       break;
     }
     case ItemType::kTrackingNumber: {
-      cell.accessoryView = [[UIImageView alloc]
-          initWithImage:DefaultSymbolTemplateWithPointSize(
-                            kCopyActionSymbol, kSymbolAccessoryPointSize)];
+      cell.accessoryView = [self copyButton];
       cell.accessoryView.tintColor = [UIColor colorNamed:kBlueColor];
       break;
     }
     case ItemType::kCarrier:
       cell.accessoryView =
           [[UIImageView alloc] initWithFrame:kEmptyAccessoryViewFrame];
+      cell.selectionStyle = UITableViewCellSelectionStyleNone;
       break;
   }
-
-  [cell setSelectionStyle:UITableViewCellSelectionStyleNone];
 
   return cell;
 }
 
-#pragma mark - UITableViewDelegate
+- (UIView*)tableView:(UITableView*)tableView
+    viewForFooterInSection:(NSInteger)section {
+  return [self reportIssueButton];
+}
 
-- (void)tableView:(UITableView*)tableView
-    didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
-  UITableViewCell* cell = [super tableView:tableView
-                     cellForRowAtIndexPath:indexPath];
-  ItemType itemType = static_cast<ItemType>(
-      [self.tableViewModel itemTypeForIndexPath:indexPath]);
-  if (itemType == ItemType::kTrackingNumber) {
-    TableViewMultiDetailTextCell* tableViewMultiDetailTextCell =
-        base::apple::ObjCCastStrict<TableViewMultiDetailTextCell>(cell);
-    StoreTextInPasteboard(
-        tableViewMultiDetailTextCell.trailingDetailTextLabel.text);
-    // TODO(crbug.com/1473449): Show snackbar message.
-  }
-  [self.tableView deselectRowAtIndexPath:indexPath animated:NO];
+- (CGFloat)tableView:(UITableView*)tableView
+    heightForFooterInSection:(NSInteger)section {
+  return kFooterFrameHeight;
 }
 
 #pragma mark - InfobarParcelTrackingModalConsumer
@@ -197,6 +225,29 @@ NSString* const kCarrierKey = @"carrier";
       [[NSSortDescriptor alloc] initWithKey:kCarrierKey ascending:NO];
   parcelList_ = [parcels sortedArrayUsingDescriptors:@[ sortDescriptor ]];
   trackingParcels_ = tracking;
+}
+
+#pragma mark - UIEditMenuInteractionDelegate
+
+- (UIMenu*)editMenuInteraction:(UIEditMenuInteraction*)interaction
+          menuForConfiguration:(UIEditMenuConfiguration*)configuration
+              suggestedActions:(NSArray<UIMenuElement*>*)suggestedActions
+    API_AVAILABLE(ios(16)) {
+  UITableViewCell* cell = [self.tableView
+      cellForRowAtIndexPath:self.tableView.indexPathForSelectedRow];
+  TableViewMultiDetailTextCell* tableViewMultiDetailTextCell =
+      base::apple::ObjCCastStrict<TableViewMultiDetailTextCell>(cell);
+  UIAction* copy = [UIAction
+      actionWithTitle:l10n_util::GetNSString(IDS_IOS_SETTINGS_SITE_COPY_BUTTON)
+                image:nil
+           identifier:nil
+              handler:^(__kindof UIAction* _Nonnull action) {
+                StoreTextInPasteboard(
+                    tableViewMultiDetailTextCell.trailingDetailTextLabel.text);
+              }];
+  [self.tableView deselectRowAtIndexPath:self.tableView.indexPathForSelectedRow
+                                animated:YES];
+  return [UIMenu menuWithChildren:@[ copy ]];
 }
 
 #pragma mark - Private
@@ -213,7 +264,6 @@ NSString* const kCarrierKey = @"carrier";
       [UIButtonConfiguration plainButtonConfiguration];
   buttonConfiguration.attributedTitle = [self reportIssueString];
   button.configuration = buttonConfiguration;
-  button.contentVerticalAlignment = UIControlContentVerticalAlignmentTop;
   [button addTarget:self
                 action:@selector(reportIssueButtonWasPressed:)
       forControlEvents:UIControlEventTouchUpInside];
@@ -223,6 +273,30 @@ NSString* const kCarrierKey = @"carrier";
 // Presents the "Send Feeback" page.
 - (void)reportIssueButtonWasPressed:(UIButton*)sender {
   [presenter_ showReportIssueView];
+}
+
+// Creates and returns the "copy" button.
+- (UIButton*)copyButton {
+  UIImage* copyImage = DefaultSymbolTemplateWithPointSize(
+      kCopyActionSymbol, kSymbolAccessoryPointSize);
+  UIButton* copyButton = [UIButton buttonWithType:UIButtonTypeSystem];
+  [copyButton addTarget:self
+                 action:@selector(copyButtonPressed:)
+       forControlEvents:UIControlEventTouchUpInside];
+  [copyButton
+      setFrame:CGRectMake(0, 0, copyImage.size.width, copyImage.size.height)];
+  [copyButton setImage:copyImage forState:UIControlStateNormal];
+  return copyButton;
+}
+
+// Handles touch events for the "copy" button. Stores the tracking number of the
+// associated cell in the pasteboard.
+- (void)copyButtonPressed:(UIButton*)sender {
+  UITableViewCell* cell = (UITableViewCell*)sender.superview;
+  TableViewMultiDetailTextCell* tableViewMultiDetailTextCell =
+      base::apple::ObjCCastStrict<TableViewMultiDetailTextCell>(cell);
+  StoreTextInPasteboard(
+      tableViewMultiDetailTextCell.trailingDetailTextLabel.text);
 }
 
 // Returns the TableViewItem for the given carrier.

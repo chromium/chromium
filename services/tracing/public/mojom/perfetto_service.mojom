@@ -4,6 +4,7 @@
 
 module tracing.mojom;
 
+import "mojo/public/mojom/base/token.mojom";
 import "mojo/public/mojom/base/file.mojom";
 import "mojo/public/mojom/base/shared_memory.mojom";
 
@@ -239,6 +240,7 @@ struct TraceConfig {
 
   uint32 duration_ms;
   bool write_into_file;
+  mojo_base.mojom.Token? trace_uuid;
 };
 
 // The priority of the incoming EnableTracing request, used to determine

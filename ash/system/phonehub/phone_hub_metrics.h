@@ -13,7 +13,8 @@ namespace ash::phone_hub_metrics {
 using RecentAppsUiState =
     phonehub::RecentAppsInteractionHandler::RecentAppsUiState;
 
-// Keep in sync with corresponding enum in tools/metrics/histograms/enums.xml.
+// Keep in sync with corresponding PhoneHubInterstitialScreenEvent enum in
+// //tools/metrics/histograms/metadata/phonehub/enums.xml.
 enum class InterstitialScreenEvent {
   kShown = 0,
   kLearnMore = 1,
@@ -22,9 +23,10 @@ enum class InterstitialScreenEvent {
   kMaxValue = kConfirm
 };
 
-// Keep in sync with corresponding enum in tools/metrics/histograms/enums.xml.
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
+// Keep in sync with corresponding PhoneHubScreen enum in
+// //tools/metrics/histograms/metadata/phonehub/enums.xml. These values are
+// persisted to logs. Entries should not be renumbered and numeric values should
+// never be reused.
 // Note that value 2 and 3 have been deprecated and should not be reused.
 enum class Screen {
   kBluetoothOrWifiDisabled = 0,
@@ -40,7 +42,8 @@ enum class Screen {
   kMaxValue = kMiniLauncher
 };
 
-// Keep in sync with corresponding enum in tools/metrics/histograms/enums.xml.
+// Keep in sync with corresponding PhoneHubQuickAction enum in
+// //tools/metrics/histograms/metadata/phonehub/enums.xml.
 enum class QuickAction {
   kToggleHotspotOn = 0,
   kToggleHotspotOff,
@@ -52,16 +55,18 @@ enum class QuickAction {
 };
 
 // Enumeration of possible interactions with a PhoneHub notification. Keep in
-// sync with corresponding enum in tools/metrics/histograms/enums.xml. These
-// values are persisted to logs. Entries should not be renumbered and numeric
-// values should never be reused.
+// sync with corresponding PhoneHubNotificationInteraction enum in
+// //tools/metrics/histograms/metadata/phonehub/enums.xml. Values are persisted
+// to logs. Entries should not be renumbered and numeric values should never be
+// reused.
 enum class NotificationInteraction {
   kInlineReply = 0,
   kDismiss = 1,
   kMaxValue = kDismiss,
 };
 
-// Keep in sync with corresponding enum in tools/metrics/histograms/enums.xml.
+// Keep in sync with corresponding PhoneHubCameraRollContentShown enum in
+// //tools/metrics/histograms/metadata/phonehub/enums.xml.
 enum class CameraRollContentShown {
   kContentShown1 = 1,
   kContentShown2 = 2,
@@ -71,7 +76,8 @@ enum class CameraRollContentShown {
   kMaxValue = kContentShownGTE5
 };
 
-// Keep in sync with corresponding enum in tools/metrics/histograms/enums.xml.
+// Keep in sync with corresponding PhoneHubCameraRollContentClicked enum in
+// //tools/metrics/histograms/metadata/phonehub/enums.xml.
 enum class CameraRollContentClicked {
   kContentClicked1 = 11,
   kContentClicked2 = 21,
@@ -81,7 +87,8 @@ enum class CameraRollContentClicked {
   kMaxValue = kContentClickedGTE5
 };
 
-// Keep in sync with corresponding enum in tools/metrics/histograms/enums.xml.
+// Keep in sync with corresponding PhoneHubCameraRollContextMenuDownload enum in
+// //tools/metrics/histograms/metadata/phonehub/enums.xml.
 enum class CameraRollContextMenuDownload {
   kDownload1 = 111,
   kDownload2 = 211,
@@ -91,15 +98,16 @@ enum class CameraRollContextMenuDownload {
   kMaxValue = kDownloadGTE5
 };
 
-// Keep in sync with corresponding enum in tools/metrics/histograms/enums.xml.
+// Keep in sync with corresponding MoreAppsButtonLoadingState enum in
+// //tools/metrics/histograms/metadata/phonehub/enums.xml.
 enum class MoreAppsButtonLoadingState {
   kAnimationShown = 0,
   kMoreAppsButtonLoaded = 1,
   kMaxValue = kMoreAppsButtonLoaded
 };
 
-// Keep in sync with RecentAppsViewUiState in
-// tools/metrics/histograms/enums.xml.
+// Keep in sync with corresponding RecentAppsViewUiState enum in
+// //tools/metrics/histograms/metadata/phonehub/enums.xml.
 enum class RecentAppsViewUiState {
   kLoading = 0,
   kError = 1,
@@ -107,8 +115,8 @@ enum class RecentAppsViewUiState {
   kMaxValue = kApps,
 };
 
-// Keep in sync with MultideviceSetupNudgeInteraction in
-// tools/metrics/histograms/enums.xml.
+// Keep in sync with MultideviceSetupNudgeInteraction enum in
+// //tools/metrics/histograms/enums.xml.
 enum class MultideviceSetupNudgeInteraction {
   kNudgeClicked = 0,
   kPhoneHubIconClicked = 1,

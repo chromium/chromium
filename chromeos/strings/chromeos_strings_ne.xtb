@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ne">
+<translation id="1003363546227723021">मेरो स्क्रिन निष्क्रिय अवस्थामा हुँदा फोटो, समय, मौसम र मिडियासम्बन्धी जानकारी देखाइयोस्</translation>
 <translation id="1014750484722996375">डेस्कहरू</translation>
 <translation id="1018219910092211213">DNS समाधान गर्न सकिएन</translation>
 <translation id="1018656279737460067">रद्द गरियो</translation>
@@ -28,6 +29,7 @@
 <translation id="1175697296044146566"><ph name="MANAGER" /> ले यो <ph name="DEVICE_TYPE" /> व्यवस्थापन गर्छ।</translation>
 <translation id="1175951029573070619">औसत (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">हटाउनुहोस्</translation>
+<translation id="1191518099344003522">APN अन गरिएको छ।</translation>
 <translation id="1195447618553298278">अज्ञात त्रुटि:</translation>
 <translation id="1196959502276349371">संस्करण <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">प्ले/पज</translation>
@@ -79,6 +81,7 @@
 <translation id="1515129336378114413">ब्राउजर होम</translation>
 <translation id="1526389707933164996">स्क्रिन सेभरको एनिमेसन</translation>
 <translation id="152892567002884378">भोल्युम बढाउनुहोस्</translation>
+<translation id="1539242642795599947">APN को प्रकार डिफल्ट र एट्याच सेट गरिएको छ।</translation>
 <translation id="1555130319947370107">निलो</translation>
 <translation id="155865706765934889">टचप्याड</translation>
 <translation id="1561927818299383735">ब्याकलिटको रङ</translation>
@@ -134,6 +137,7 @@
 <translation id="1852934301711881861">ChromeOS Flex इन्स्टल गर्नुहोस्</translation>
 <translation id="1856388568474281774">डाउन एरो</translation>
 <translation id="1858620243986915808">स्क्रिनसट एट्याच गर्नुहोस्</translation>
+<translation id="1871413952174074704">APN मा <ph name="CHAR_LIMIT" /> भन्दा बढी वर्ण प्रयोग गर्न मिल्दैन</translation>
 <translation id="1871569928317311284">अँध्यारो थिम अफ गर्नुहोस्‌</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">अँध्यारो मोड अफ गर्नुहोस्</translation>
@@ -255,6 +259,7 @@
 <translation id="2872961005593481000">बन्द गर्नुहोस्</translation>
 <translation id="2873483161362553159">ब्राउजर नेभिगेसन</translation>
 <translation id="2874939134665556319">अघिल्लो ट्र्याक</translation>
+<translation id="2875812231449496375">यो वालपेपर उत्कृष्ट देखियोस् भन्नाका लागि यो मोड अन गर्नुहोस्। तपाईं जुनसुकै बेला यो मोड अफ गर्न सक्नुहुन्छ।</translation>
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> सेकेन्डमा <ph name="RATE" /> घट्यो।</translation>
 <translation id="2880569433548999039">क्लाउड फ्लो स्क्रिन सेभर</translation>
 <translation id="2926057806159140518">आफ्नो युजरनेम र पासवर्ड हाल्नुहोस् वा आफ्नो QR कोड स्क्यान गर्नुहोस्</translation>
@@ -336,6 +341,7 @@
 <translation id="3577473026931028326">कुनै समस्या आयो। फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="357889014807611375">मिटर चढ्ने Wi-Fi</translation>
 <translation id="3583278742022654445">सिग्नल कमजोर छ। Wi-Fi सिग्नलको स्रोतको नजिक गई हेर्नुहोस्।</translation>
+<translation id="3594280220611906414"><ph name="USER_FRIENDLY_APN_NAME" /> भनेको <ph name="APN_NAME" /> को प्रयोगकर्ता मैत्री नाम हो।</translation>
 <translation id="3595596368722241419">ब्यटरी पूर्ण</translation>
 <translation id="3600339377155080675">स्क्रिन मिरर</translation>
 <translation id="3602290021589620013">प्रिभ्यु गर्नुहोस्</translation>
@@ -434,7 +440,7 @@
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> वटा फोटो</translation>
 <translation id="4333390807948134856"><ph name="KEY_NAME" /> की थिचियो</translation>
 <translation id="4354430579665871434">की</translation>
-<translation id="435692326371619097">नेटवर्क APN सम्बन्धी सेटिङ मिलाउनुहोस्। APN ले मोबाइल नेटवर्क र इन्टरनेटबिचको कनेक्सन बनाउँछ। <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
+<translation id="4361257691546579041">APN को प्रकार डिफल्ट सेट गरिएको छ।</translation>
 <translation id="437294888293595148">सबै सर्टकटहरू रिसेट गर्नुहोस्</translation>
 <translation id="4378373042927530923">चलेन</translation>
 <translation id="4378551569595875038">जडान गर्दै...</translation>
@@ -534,7 +540,6 @@
 <translation id="4999333166442584738">रिपोर्ट लुकाउनुहोस्</translation>
 <translation id="500920857929044050">परीक्षण रोक्नुहोस्</translation>
 <translation id="5017508259293544172">छलाङ</translation>
-<translation id="5019310272469539976">मेरो स्क्रिन निष्क्रिय अवस्थामा हुँदा फोटो, समय, मौसम र मिडियासम्बन्धी जानकारी देखाइयोस्।</translation>
 <translation id="5035083460461104704">थिमको रङ</translation>
 <translation id="5038292761217083259">किबोर्डको ब्याकलाइटको एकभन्दा बढी रङ</translation>
 <translation id="5039804452771397117">अनुमति दिनुहोस्</translation>
@@ -547,6 +552,7 @@
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
 <translation id="5137451382116112100">फुल स्क्रिन</translation>
 <translation id="5142961317498132443">प्रमाणीकरण</translation>
+<translation id="5145081769226915336">अँध्यारो मोड स्वतः अन गर्ने हो?</translation>
 <translation id="5154917547274118687">स्मरण</translation>
 <translation id="5160857336552977725">तपाईँको <ph name="DEVICE_TYPE" /> मा साइन इन गर्नुहोस्</translation>
 <translation id="5166918508782100047">द्रुत जवाफसम्बन्धी सेटिङ</translation>
@@ -625,6 +631,7 @@
 <translation id="574392208103952083">मध्यम</translation>
 <translation id="5757187557809630523">"अर्को ट्र्याक" जनाउने आइकन</translation>
 <translation id="5760715441271661976">पोर्टलको स्थिति</translation>
+<translation id="5763838252932650682"><ph name="APP_NAME" /> रिस्टार्ट र अपडेट गरिँदै छ</translation>
 <translation id="576835345334454681">डिस्प्लेको चमक बढाउने की</translation>
 <translation id="57838592816432529">म्यूट गर्नुहोस्</translation>
 <translation id="5784136236926853061">HTTP को विलम्बता धेरै छ</translation>
@@ -655,6 +662,7 @@
 <translation id="5946538341867151940">तपाईंले अझै नेटवर्क कनेक्ट गर्नुभएको छैन। तपाईंको मोबाइलको सेवा प्रदायकले कस्टम APN प्रयोग गर्न सिफारिस गरेका खण्डमा "+ नयाँ APN" चयन गरी APN सम्बन्धी जानकारी हाल्नुहोस्</translation>
 <translation id="5972388717451707488">अपडेट इन्जिन</translation>
 <translation id="5984145644188835034">डिफल्ट वालपेपर</translation>
+<translation id="6001235009374883388">APN को प्रकार एट्याच सेट गरिएको छ।</translation>
 <translation id="6017514345406065928">हरियो</translation>
 <translation id="6019566113895157499">Key Shortcuts</translation>
 <translation id="6034694447310538551">मासिक रूपमा डेटा प्रयोग स्वतः रिसेट गर्ने विकल्प अन गर</translation>
@@ -821,6 +829,7 @@
 <translation id="7180611975245234373">ताजा गर्नुहोस्</translation>
 <translation id="7180865173735832675">कस्टमाइज गर्नुहोस्</translation>
 <translation id="7184043045742675738">आफ्नो बटन कस्टमाइज गर्न जुनसुकै कीमा क्लिक गर्नुहोस्। माउस वा एरो कीहरू प्रयोग गरेर की यताउता सार्नुहोस्।</translation>
+<translation id="7212547870105584639">नेटवर्क APN सम्बन्धी सेटिङ मिलाउनुहोस्। APN ले मोबाइल नेटवर्क र इन्टरनेटबिचको कनेक्सन बनाउँछ। <ph name="BEGIN_LINK_LEARN_MORE" />थप जान्नुहोस्<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">बाह्य डिभाइसहरूका लागि फर्मवेयरसम्बन्धी अपडेटहरू</translation>
 <translation id="7216409898977639127">सेलुलर प्रदायक</translation>
 <translation id="725133483556299729">इमेल चयन गर्नुहोस्</translation>
@@ -831,6 +840,7 @@
 <translation id="7287310195820267359">वालपेपरका सङ्ग्रहहरू</translation>
 <translation id="7297226631177386107">फायरवाल पार गरेर HTTPS वेबसाइटहरूमा कनेक्ट गर्न सकिएन</translation>
 <translation id="7297726121602187087">गाढा हरियो</translation>
+<translation id="7301262279595293068">कृपया यो एप अपडेट हुँदै गर्दा पर्खनुहोस्</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7308203371573257315">Chromebook को मद्दतसम्बन्धी फोरममा विशेषज्ञसँग मद्दत माग्नुहोस्</translation>
@@ -1103,4 +1113,5 @@
 <translation id="979450713603643090">हल्का गुलाबी रङ</translation>
 <translation id="982713511914535780">ब्याट्रीको डिस्चार्जसम्बन्धी परीक्षण गर्नुहोस्</translation>
 <translation id="987264212798334818">सामान्य</translation>
+<translation id="995062385528875723">एक्सेन्ट भएका वर्ण, गैर ल्याटिन अक्षर वा चिन्हहरू प्रयोग गर्न मिल्दैन</translation>
 </translationbundle>

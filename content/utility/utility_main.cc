@@ -31,7 +31,6 @@
 #include "sandbox/policy/sandbox.h"
 #include "sandbox/policy/sandbox_type.h"
 #include "services/on_device_model/on_device_model_service.h"
-#include "services/on_device_model/public/cpp/features.h"
 #include "services/tracing/public/cpp/trace_startup.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/icu/source/common/unicode/unistr.h"
@@ -42,6 +41,7 @@
 #include "base/files/file_util.h"
 #include "base/pickle.h"
 #include "content/child/sandboxed_process_thread_type_handler.h"
+#include "content/common/gpu_pre_sandbox_hook_linux.h"
 #include "content/public/common/content_descriptor_keys.h"
 #include "content/utility/speech/speech_recognition_sandbox_hook_linux.h"
 #include "gpu/config/gpu_info_collector.h"
@@ -161,6 +161,8 @@ bool PreLockdownSandboxHook(base::span<const uint8_t> delegate_blob) {
       HMODULE h_mod = base::LoadNativeLibrary(library_path, &lib_error);
       // We deliberately "leak" `h_mod` so that the module stays loaded.
       if (!h_mod) {
+        base::UmaHistogramSparse(
+            "Process.Sandbox.PreloadLibraryFailed.ErrorCode", lib_error.code);
         // The browser should not request libraries that do not exist, so crash
         // on failure.
         wchar_t dll_name[MAX_PATH];
@@ -265,6 +267,7 @@ int UtilityMain(MainFunctionParams parameters) {
   // Seccomp-BPF policy.
   auto sandbox_type =
       sandbox::policy::SandboxTypeFromCommandLine(*parameters.command_line);
+  sandbox::policy::SandboxLinux::Options sandbox_options;
   sandbox::policy::SandboxLinux::PreSandboxHook pre_sandbox_hook;
   switch (sandbox_type) {
     case sandbox::mojom::Sandbox::kNetwork:
@@ -278,6 +281,11 @@ int UtilityMain(MainFunctionParams parameters) {
 #endif  // BUILDFLAG(ENABLE_OOP_PRINTING)
     case sandbox::mojom::Sandbox::kAudio:
       pre_sandbox_hook = base::BindOnce(&audio::AudioPreSandboxHook);
+      break;
+    case sandbox::mojom::Sandbox::kOnDeviceModelExecution:
+      on_device_model::OnDeviceModelService::AddSandboxLinuxOptions(
+          sandbox_options);
+      pre_sandbox_hook = base::BindOnce(&GpuPreSandboxHook);
       break;
     case sandbox::mojom::Sandbox::kSpeechRecognition:
       pre_sandbox_hook =
@@ -317,7 +325,6 @@ int UtilityMain(MainFunctionParams parameters) {
   }
   if (!sandbox::policy::IsUnsandboxedSandboxType(sandbox_type) &&
       (parameters.zygote_child || !pre_sandbox_hook.is_null())) {
-    sandbox::policy::SandboxLinux::Options sandbox_options;
     sandbox_options.use_amd_specific_policies =
         ShouldUseAmdGpuPolicy(sandbox_type);
     sandbox::policy::Sandbox::Initialize(

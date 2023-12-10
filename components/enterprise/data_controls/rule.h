@@ -53,7 +53,6 @@ class Rule {
   // numeric values should never be reused.
   // When new entries are added, EnterpriseDlpPolicyRestriction enum in
   // histograms/enums.xml should be updated.
-  // TODO(b/280449704): Merge this enum with the one in dlp_rules_manager_base.h
   enum class Restriction {
     kUnknownRestriction = 0,
     kClipboard = 1,      // Restricts sharing the data via clipboard and
@@ -74,7 +73,6 @@ class Rule {
   // Should be listed in the order of increased priority.
   // When new entries are added, EnterpriseDlpPolicyLevel enum in
   // histograms/enums.xml should be updated.
-  // TODO(b/280449704): Merge this enum with the one in dlp_rules_manager_base.h
   enum class Level {
     kNotSet = 0,  // Restriction level is not set.
     kReport = 1,  // Restriction level to only report on every action.

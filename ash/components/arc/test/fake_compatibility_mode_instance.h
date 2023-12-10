@@ -21,24 +21,14 @@ class FakeCompatibilityModeInstance : public mojom::CompatibilityModeInstance {
   // mojom::CompatibilityModeInstance overrides:
   void SetResizeLockState(const std::string& package_name,
                           mojom::ArcResizeLockState state) override;
-  // TODO(b/308526374): remove the mojom call.
-  void DEPRECATED_IsGioApplicable(
-      const std::string& package_name,
-      DEPRECATED_IsGioApplicableCallback callback) override;
   void IsOptimizedForCrosApp(const std::string& package_name,
                              IsOptimizedForCrosAppCallback callback) override;
-
-  void set_is_gio_applicable(bool is_gio_applicable) {
-    is_gio_applicable_ = is_gio_applicable;
-  }
 
   void set_o4c_pkg(std::string_view pkg_name) {
     o4c_pkgs_.emplace(std::string(pkg_name));
   }
 
  private:
-  bool is_gio_applicable_ = false;
-
   // Stores information for serving IsOptimizedForCrosApp calls.
   base::flat_set<std::string> o4c_pkgs_;
 };

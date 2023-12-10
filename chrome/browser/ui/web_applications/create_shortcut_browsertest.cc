@@ -4,6 +4,7 @@
 
 #include <initializer_list>
 #include <map>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -47,7 +48,6 @@
 #include "extensions/common/extension.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-shared.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"

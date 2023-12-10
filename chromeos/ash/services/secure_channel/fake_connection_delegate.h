@@ -26,7 +26,7 @@ class FakeConnectionDelegate : public mojom::ConnectionDelegate {
   mojo::PendingRemote<mojom::ConnectionDelegate> GenerateRemote();
   void DisconnectGeneratedRemotes();
 
-  const absl::optional<mojom::ConnectionAttemptFailureReason>&
+  const std::optional<mojom::ConnectionAttemptFailureReason>&
   connection_attempt_failure_reason() const {
     return connection_attempt_failure_reason_;
   }
@@ -56,7 +56,7 @@ class FakeConnectionDelegate : public mojom::ConnectionDelegate {
   mojo::ReceiverSet<mojom::ConnectionDelegate> receivers_;
   base::OnceClosure closure_for_next_delegate_callback_;
 
-  absl::optional<mojom::ConnectionAttemptFailureReason>
+  std::optional<mojom::ConnectionAttemptFailureReason>
       connection_attempt_failure_reason_;
   mojo::Remote<mojom::Channel> channel_;
   mojo::PendingReceiver<mojom::MessageReceiver> message_receiver_receiver_;

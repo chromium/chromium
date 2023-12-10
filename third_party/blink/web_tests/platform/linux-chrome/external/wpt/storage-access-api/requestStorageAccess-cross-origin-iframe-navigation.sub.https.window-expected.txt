@@ -1,0 +1,10 @@
+This is a testharness.js-based test.
+[FAIL] Self-initiated reloads preserve storage access
+  assert_false: frame initially does not have storage access. expected false got true
+[FAIL] Self-initiated same-origin navigations preserve storage access
+  assert_false: frame initially does not have storage access. expected false got true
+[FAIL] Non-self-initiated same-origin navigations do not preserve storage access
+  assert_false: frame initially does not have storage access. expected false got true
+[FAIL] Self-initiated cross-origin navigations do not preserve storage access
+  assert_false: frame initially does not have storage access. expected false got true
+Harness: the test ran to completion.

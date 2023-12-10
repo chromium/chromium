@@ -106,15 +106,10 @@ class CONTENT_EXPORT PrefetchService {
   // |prefetch_container| to the default network context.
   virtual void CopyIsolatedCookies(const PrefetchContainer::Reader& reader);
 
-  // Removes the prefetch with the given |prefetch_container_key| from
-  // |all_prefetches_|.
-  void RemovePrefetch(const PrefetchContainer::Key& prefetch_container_key);
+  void AddPrefetchContainer(
+      std::unique_ptr<PrefetchContainer> prefetch_container);
 
-  // Destroys the prefetch with the given |prefetch_container_key|. Called
-  // to remove a prefetch when making room for a new prefetch, and sets the
-  // status to |PrefetchStatus::kPrefetchEvicted| before destruction to record
-  // this.
-  void EvictPrefetch(const PrefetchContainer::Key& prefetch_container_key);
+  void ResetPrefetch(base::WeakPtr<PrefetchContainer> prefetch_container);
 
   // Called by PrefetchDocumentManager when it finishes processing the latest
   // update of speculation candidates.
@@ -233,15 +228,11 @@ class CONTENT_EXPORT PrefetchService {
   std::tuple<base::WeakPtr<PrefetchContainer>, base::WeakPtr<PrefetchContainer>>
   PopNextPrefetchContainer();
 
-  // Once the network request for a prefetch starts, ownership is transferred
-  // from the referring |PrefetchDocumentManager| to |this|. After
-  // |PrefetchContainerLifetimeInPrefetchService| amount of time, the prefetch
-  // is deleted. Note that if |PrefetchContainerLifetimeInPrefetchService| is 0
-  // or less, then it is kept forever.
-  void TakeOwnershipOfPrefetch(
-      base::WeakPtr<PrefetchContainer> prefetch_container);
+  // After |PrefetchContainerLifetimeInPrefetchService| amount of time, the
+  // prefetch is deleted. Note that if
+  // |PrefetchContainerLifetimeInPrefetchService| is 0 or less, then it is kept
+  // forever.
   void OnPrefetchTimeout(base::WeakPtr<PrefetchContainer> prefetch);
-  void ResetPrefetch(base::WeakPtr<PrefetchContainer> prefetch_container);
 
   // Starts the given |prefetch_container|. If |prefetch_to_evict| is specified,
   // it is evicted immediately before starting |prefetch_container|.
@@ -340,7 +331,7 @@ class CONTENT_EXPORT PrefetchService {
       PrefetchContainer& prefetch_container,
       PrefetchMatchResolver& prefetch_match_resolver);
 
-  // Checks if there is a prefetch in |all_prefetches_| with the same URL as
+  // Checks if there is a prefetch in |owned_prefetches_| with the same URL as
   // |prefetch_container| but from a different referring RenderFrameHost.
   // Records the result to a UMA histogram.
   void RecordExistingPrefetchWithMatchingURL(
@@ -348,7 +339,7 @@ class CONTENT_EXPORT PrefetchService {
 
   void DumpPrefetchesForDebug() const;
 
-  raw_ptr<BrowserContext, AcrossTasksDanglingUntriaged> browser_context_;
+  raw_ptr<BrowserContext> browser_context_;
 
   // Delegate provided by embedder that controls specific behavior of |this|.
   // May be nullptr if embedder doesn't provide a delegate.
@@ -360,10 +351,6 @@ class CONTENT_EXPORT PrefetchService {
 
   // The origin prober class which manages all logic for origin probing.
   std::unique_ptr<PrefetchOriginProber> origin_prober_;
-
-  // All prefetches associated with |this| regardless of ownership.
-  std::map<PrefetchContainer::Key, base::WeakPtr<PrefetchContainer>>
-      all_prefetches_;
 
   // A FIFO queue of prefetches that have been confirmed to be eligible but have
   // not started yet.

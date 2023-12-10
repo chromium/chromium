@@ -16,6 +16,7 @@
 #include "base/synchronization/lock.h"
 #include "skia/ext/skcolorspace_primaries.h"
 #include "skia/ext/skcolorspace_trfn.h"
+#include "skia/ext/skia_utils_base.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkData.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
@@ -517,8 +518,7 @@ std::string ColorSpace::ToString() const {
     case TransferID::CUSTOM: {
       skcms_TransferFunction fn;
       GetTransferFunction(&fn);
-      ss << fn.c << "*x + " << fn.f << " if x < " << fn.d << " else (" << fn.a
-         << "*x + " << fn.b << ")**" << fn.g << " + " << fn.e;
+      ss << skia::SkcmsTransferFunctionToString(fn);
       break;
     }
     case TransferID::CUSTOM_HDR: {
@@ -529,8 +529,7 @@ std::string ColorSpace::ToString() const {
         ss << "LINEAR_HDR (slope " << fn.a << ")";
         break;
       }
-      ss << fn.c << "*x + " << fn.f << " if |x| < " << fn.d << " else sign(x)*("
-         << fn.a << "*|x| + " << fn.b << ")**" << fn.g << " + " << fn.e;
+      ss << skia::SkcmsTransferFunctionToString(fn);
       break;
     }
     case TransferID::PIECEWISE_HDR: {
@@ -876,7 +875,7 @@ void ColorSpace::GetPrimaryMatrix(skcms_Matrix3x3* to_XYZD50) const {
 SkM44 ColorSpace::GetPrimaryMatrix() const {
   skcms_Matrix3x3 toXYZ_3x3;
   GetPrimaryMatrix(&toXYZ_3x3);
-  return SkM44FromRowMajor3x3(&toXYZ_3x3.vals[0][0]);
+  return SkM44FromSkcmsMatrix3x3(toXYZ_3x3);
 }
 
 // static

@@ -82,7 +82,7 @@ WebRequestEventDetails::~WebRequestEventDetails() = default;
 void WebRequestEventDetails::SetRequestBody(WebRequestInfo* request) {
   if (!(extra_info_spec_ & ExtraInfoSpec::REQUEST_BODY))
     return;
-  request_body_ = absl::nullopt;
+  request_body_ = std::nullopt;
   if (request->request_body_data) {
     request_body_ = std::move(request->request_body_data);
     request->request_body_data.reset();

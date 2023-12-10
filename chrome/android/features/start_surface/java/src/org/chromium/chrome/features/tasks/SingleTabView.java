@@ -26,8 +26,7 @@ class SingleTabView extends LinearLayout {
     private ImageView mFavicon;
     private TextView mTitle;
     @Nullable private TabThumbnailView mTabThumbnail;
-    @Nullable
-    private TextView mUrl;
+    @Nullable private TextView mUrl;
 
     /** Default constructor needed to inflate via XML. */
     public SingleTabView(Context context, AttributeSet attrs) {
@@ -46,7 +45,8 @@ class SingleTabView extends LinearLayout {
 
         if (mTabThumbnail != null) {
             mTabThumbnail.setScaleType(ScaleType.MATRIX);
-            mTabThumbnail.updateThumbnailPlaceholder(/*isIncognito=*/false, /*isSelected=*/false);
+            mTabThumbnail.updateThumbnailPlaceholder(
+                    /* isIncognito= */ false, /* isSelected= */ false);
         }
     }
 
@@ -114,8 +114,10 @@ class SingleTabView extends LinearLayout {
             return;
         }
 
-        final float scale = Math.max(
-                (float) width / thumbnail.getWidth(), (float) height / thumbnail.getHeight());
+        final float scale =
+                Math.max(
+                        (float) width / thumbnail.getWidth(),
+                        (float) height / thumbnail.getHeight());
         final int xOffset = (int) (width - thumbnail.getWidth() * scale) / 2;
 
         Matrix m = new Matrix();

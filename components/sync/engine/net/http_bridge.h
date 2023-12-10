@@ -130,13 +130,13 @@ class HttpBridge : public HttpPostProvider {
     base::Time end_time;
 
     // Used to support 'Abort' functionality.
-    bool aborted;
+    bool aborted = false;
 
     // Cached response data.
-    bool request_completed;
-    bool request_succeeded;
-    int http_status_code;
-    int net_error_code;
+    bool request_completed = false;
+    bool request_succeeded = false;
+    int http_status_code = -1;
+    int net_error_code = -1;
     std::string response_content;
     scoped_refptr<net::HttpResponseHeaders> response_headers;
 

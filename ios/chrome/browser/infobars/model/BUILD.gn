@@ -1,0 +1,90 @@
+# Copyright 2016 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("model") {
+  sources = [
+    "infobar_ios.h",
+    "infobar_ios.mm",
+    "infobar_manager_impl.h",
+    "infobar_manager_impl.mm",
+    "infobar_utils.h",
+    "infobar_utils.mm",
+  ]
+  deps = [
+    ":public",
+    "//ios/chrome/browser/ui/infobars/coordinators",
+    "//ios/web",
+    "//ui/gfx",
+  ]
+  public_deps = [
+    "//base",
+    "//components/infobars/core",
+  ]
+}
+
+source_set("badge") {
+  sources = [
+    "infobar_badge_tab_helper.h",
+    "infobar_badge_tab_helper.mm",
+    "infobar_badge_tab_helper_delegate.h",
+  ]
+  deps = [
+    ":model",
+    ":public",
+    "//ios/chrome/browser/overlays/model",
+    "//ios/chrome/browser/overlays/model/public/common/infobars",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/web",
+  ]
+}
+
+source_set("badge_state_public") {
+  sources = [ "badge_state.h" ]
+}
+
+source_set("public") {
+  sources = [
+    "confirm_infobar_metrics_recorder.h",
+    "confirm_infobar_metrics_recorder.mm",
+    "infobar_controller_delegate.h",
+    "infobar_metrics_recorder.h",
+    "infobar_metrics_recorder.mm",
+    "infobar_type.h",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/default_browser/model:utils",
+  ]
+  public_deps = [ ":badge_state_public" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "infobar_badge_tab_helper_unittest.mm",
+    "infobar_ios_unittest.mm",
+  ]
+  deps = [
+    ":badge",
+    ":model",
+    "//base/test:test_support",
+    "//ios/chrome/browser/infobars/model:public",
+    "//ios/chrome/browser/infobars/model/overlays:test_support",
+    "//ios/chrome/browser/infobars/model/test",
+    "//ios/chrome/browser/main/model",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/ui/badges:public",
+    "//ios/chrome/browser/ui/badges:util",
+    "//ios/chrome/browser/ui/infobars:test_support",
+    "//ios/chrome/browser/ui/infobars/test",
+    "//ios/chrome/test:test_support",
+    "//ios/web/public/test",
+    "//ios/web/public/test/fakes",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

@@ -7,7 +7,6 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_scene_agent.h"
 #import "ios/chrome/browser/ui/keyboard/key_command_actions.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/disabled_grid_view_controller.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_consumer.h"
@@ -15,6 +14,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_paging.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_action_wrangler.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/legacy_grid_transition_animation_layout_providing.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/tab_grid_transition_layout_providing.h"
 
 @protocol ApplicationCommands;
 @class GridContainerViewController;
@@ -80,17 +80,15 @@ enum class TabGridPageConfiguration {
 @interface TabGridViewController
     : UIViewController <DisabledGridViewControllerDelegate,
                         GridConsumer,
-                        IncognitoReauthObserver,
                         KeyCommandActions,
                         TabGridConsumer,
                         LegacyGridTransitionAnimationLayoutProviding,
                         TabGridPaging,
                         TabGridToolbarsActionWrangler,
+                        TabGridTransitionLayoutProviding,
                         UISearchBarDelegate>
 
 @property(nonatomic, weak) id<ApplicationCommands> handler;
-// TODO(crbug.com/1457146): Move to Incognito Coordinator.
-@property(nonatomic, weak) IncognitoReauthSceneAgent* reauthAgent;
 
 // Delegate for this view controller to handle presenting tab UI.
 @property(nonatomic, weak) id<TabPresentationDelegate> tabPresentationDelegate;
@@ -134,7 +132,7 @@ enum class TabGridPageConfiguration {
 // TODO(crbug.com/845192) : This was only exposed in the public interface so
 // that TabGridViewController does not need to know about model objects. The
 // model objects used in this view controller should be factored out.
-@property(nonatomic, strong)
+@property(nonatomic, readonly)
     RecentTabsTableViewController* remoteTabsViewController;
 
 // Provides the context menu for the tabs on the grid.

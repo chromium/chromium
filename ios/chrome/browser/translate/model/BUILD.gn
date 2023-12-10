@@ -50,10 +50,10 @@ source_set("model") {
     "//components/translate/ios/browser",
     "//components/web_resource",
     "//ios/chrome/app/theme",
-    "//ios/chrome/browser/infobars",
-    "//ios/chrome/browser/infobars:public",
+    "//ios/chrome/browser/infobars/model",
+    "//ios/chrome/browser/infobars/model:public",
     "//ios/chrome/browser/language/model",
-    "//ios/chrome/browser/optimization_guide",
+    "//ios/chrome/browser/optimization_guide/model",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/url:constants",
@@ -65,7 +65,7 @@ source_set("model") {
     "//url",
   ]
 
-  allow_circular_includes_from = [ "//ios/chrome/browser/infobars" ]
+  allow_circular_includes_from = [ "//ios/chrome/browser/infobars/model" ]
 }
 
 source_set("unit_tests") {
@@ -82,6 +82,8 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/language/core/browser",
     "//components/language/ios/browser",
+    "//components/optimization_guide/core:features",
+    "//components/optimization_guide/core:prediction",
     "//components/prefs",
     "//components/prefs:test_support",
     "//components/sync_preferences:test_support",
@@ -89,13 +91,14 @@ source_set("unit_tests") {
     "//components/translate/core/common",
     "//components/translate/core/language_detection",
     "//components/translate/ios/browser",
-    "//ios/chrome/browser/infobars",
+    "//ios/chrome/browser/infobars/model",
     "//ios/chrome/browser/language/model",
-    "//ios/chrome/browser/optimization_guide",
+    "//ios/chrome/browser/optimization_guide/model",
     "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/browser/shared/model/url:constants",
-    "//ios/chrome/browser/web:web_internal",
+    "//ios/chrome/browser/web/model:web_internal",
     "//ios/chrome/common:string_util",
+    "//ios/chrome/test:test_support",
     "//ios/web/public",
     "//ios/web/public/test:test",
     "//ios/web/public/test:util",

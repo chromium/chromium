@@ -27,7 +27,6 @@ class FakeGlanceablesClassroomClient : public GlanceablesClassroomClient {
       GetAssignmentsCallback callback) override;
   void GetStudentAssignmentsWithoutDueDate(
       GetAssignmentsCallback callback) override;
-  void IsTeacherRoleActive(IsRoleEnabledCallback callback) override;
   void GetTeacherAssignmentsWithApproachingDueDate(
       GetAssignmentsCallback callback) override;
   void GetTeacherAssignmentsRecentlyDue(

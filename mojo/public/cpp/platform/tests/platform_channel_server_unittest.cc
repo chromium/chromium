@@ -7,6 +7,7 @@
 #include <tuple>
 #include <utility>
 
+#include <optional>
 #include "base/containers/span.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback.h"
@@ -18,7 +19,6 @@
 #include "mojo/core/channel.h"
 #include "mojo/public/cpp/platform/named_platform_channel.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace mojo {
 namespace {
@@ -99,7 +99,7 @@ class TestChannel : public core::Channel::Delegate {
   const scoped_refptr<core::Channel> channel_;
   base::RunLoop wait_for_message_;
   base::OnceClosure quit_{wait_for_message_.QuitClosure()};
-  absl::optional<std::string> received_message_;
+  std::optional<std::string> received_message_;
   bool stopped_ = false;
 };
 

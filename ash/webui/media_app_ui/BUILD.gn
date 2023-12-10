@@ -6,7 +6,6 @@ import("//ash/webui/media_app_ui/media_app_ui.gni")
 import("//ash/webui/web_applications/system_apps.gni")
 import("//build/buildflag_header.gni")
 import("//build/config/chromeos/ui_mode.gni")
-import("//chrome/test/base/ash/js2gtest.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 
@@ -23,8 +22,6 @@ static_library("media_app_ui") {
     "media_app_ui.cc",
     "media_app_ui.h",
     "media_app_ui_delegate.h",
-    "media_app_untrusted_page_handler.cc",
-    "media_app_untrusted_page_handler.h",
     "url_constants.cc",
     "url_constants.h",
   ]
@@ -48,21 +45,8 @@ static_library("media_app_ui") {
     "//mojo/public/cpp/platform",
     "//third_party/blink/public/common",
     "//ui/file_manager:resources",
+    "//ui/gfx/geometry/mojom",
     "//ui/webui",
-  ]
-}
-
-js2gtest("browser_tests_js") {
-  test_type = "mojo_lite_webui"
-
-  sources = [ "test/media_app_ui_gtest_browsertest.js" ]
-
-  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-
-  deps = [
-    ":browser_test_support",
-    "//ash/constants",
-    "//chromeos/constants",
   ]
 }
 
@@ -77,6 +61,7 @@ source_set("browser_test_support") {
 
   deps = [
     ":media_app_ui",
+    "//ash/public/cpp:cpp",
     "//ash/webui/web_applications/test:test_support",
     "//chrome/test:test_support_ui",
   ]
@@ -109,6 +94,7 @@ mojom("mojo_bindings") {
 
 mojom("mojo_bindings_untrusted") {
   sources = [ "media_app_ui_untrusted.mojom" ]
+  deps = [ "//ui/gfx/geometry/mojom:mojom" ]
 }
 
 media_test_lib_closure_flags = system_app_closure_flags_strict + [
@@ -147,7 +133,6 @@ js_type_check("closure_compile_browsertests") {
   deps = [
     ":test_media_app_guest_ui_browsertest_js",
     ":test_media_app_ui_browsertest_js",
-    ":test_media_app_ui_gtest_browsertest_js",
   ]
 }
 
@@ -183,13 +168,6 @@ js_library("test_driver_js") {
 js_library("test_worker_js") {
   testonly = true
   sources = [ "test/test_worker.js" ]
-}
-
-js_library("test_media_app_ui_gtest_browsertest_js") {
-  testonly = true
-  sources = [ "test/media_app_ui_gtest_browsertest.js" ]
-  externs_list = [ "//ash/webui/web_applications/js2gtest_support.externs.js" ]
-  deps = [ ":test_media_app_ui_browsertest_js" ]
 }
 
 js_library("test_media_app_ui_browsertest_js") {

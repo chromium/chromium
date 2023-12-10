@@ -52,8 +52,11 @@ class FederatedIdentityAccountKeyedPermissionContext
                        const url::Origin& identity_provider,
                        const std::string& account_id);
 
-  // Revokes previously-granted permission for the (relying_party_requester,
-  // relying_party_embedder, identity_provider, account_id) tuple.
+  // Revokes previously-granted permission for the (`relying_party_requester`,
+  // `relying_party_embedder`, `identity_provider`, `account_id`) tuple. If the
+  // `account_id` is not found, we revoke all accounts associated with the
+  // triple (`relying_party_requester`, `relying_party_embedder`,
+  // `identity_provider`).
   void RevokePermission(const url::Origin& relying_party_requester,
                         const url::Origin& relying_party_embedder,
                         const url::Origin& identity_provider,

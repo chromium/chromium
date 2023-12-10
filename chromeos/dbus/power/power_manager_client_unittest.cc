@@ -762,7 +762,7 @@ TEST_F(PowerManagerClientTest, GetSetBatterySaverModeState) {
           this, &PowerManagerClientTest::HandleGetBatterySaverModeState));
 
   client_->GetBatterySaverModeState(base::BindOnce(
-      [](absl::optional<power_manager::BatterySaverModeState> state) {
+      [](std::optional<power_manager::BatterySaverModeState> state) {
         ASSERT_TRUE(state.has_value());
         EXPECT_TRUE(state->enabled());
       }));

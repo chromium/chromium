@@ -5,11 +5,12 @@
 #ifndef CHROME_BROWSER_ASH_POLICY_HANDLERS_LACROS_AVAILABILITY_POLICY_HANDLER_H_
 #define CHROME_BROWSER_ASH_POLICY_HANDLERS_LACROS_AVAILABILITY_POLICY_HANDLER_H_
 
+#include <optional>
+
 #include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
 #include "chromeos/ash/components/standalone_browser/lacros_availability.h"
 #include "components/policy/core/browser/configuration_policy_handler.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 #error This file shall only be used in ash.
@@ -35,7 +36,7 @@ class LacrosAvailabilityPolicyHandler : public TypeCheckingPolicyHandler {
                            PrefValueMap* prefs) override;
 
  private:
-  absl::optional<ash::standalone_browser::LacrosAvailability> GetValue(
+  std::optional<ash::standalone_browser::LacrosAvailability> GetValue(
       const PolicyMap& policies,
       PolicyErrorMap* errors);
 };

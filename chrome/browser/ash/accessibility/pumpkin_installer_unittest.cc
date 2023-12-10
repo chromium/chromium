@@ -21,18 +21,9 @@ namespace ash {
 
 class PumpkinInstallerTest : public testing::Test {
  protected:
-  void SetUp() override {
-    installer_ = std::make_unique<PumpkinInstaller>();
+  void SetUp() override { installer_ = std::make_unique<PumpkinInstaller>(); }
 
-    DlcserviceClient::InitializeFake();
-    fake_dlcservice_client_ =
-        static_cast<FakeDlcserviceClient*>(DlcserviceClient::Get());
-  }
-
-  void TearDown() override {
-    installer_.reset();
-    DlcserviceClient::Shutdown();
-  }
+  void TearDown() override { installer_.reset(); }
 
   void MaybeInstall() {
     installer_->MaybeInstall(
@@ -61,23 +52,23 @@ class PumpkinInstallerTest : public testing::Test {
   }
 
   void SetInstallError() {
-    fake_dlcservice_client_->set_install_error(dlcservice::kErrorNeedReboot);
+    fake_dlcservice_client_.set_install_error(dlcservice::kErrorNeedReboot);
   }
 
   void SetPumpkinAlreadyInstalled() {
     dlcservice::DlcState dlc_state;
     dlc_state.set_state(dlcservice::DlcState_State_INSTALLED);
-    fake_dlcservice_client_->set_dlc_state(dlc_state);
+    fake_dlcservice_client_.set_dlc_state(dlc_state);
   }
 
   void SetPumpkinCurrentlyInstalling() {
     dlcservice::DlcState dlc_state;
     dlc_state.set_state(dlcservice::DlcState_State_INSTALLING);
-    fake_dlcservice_client_->set_dlc_state(dlc_state);
+    fake_dlcservice_client_.set_dlc_state(dlc_state);
   }
 
   void SetGetDlcStateError() {
-    fake_dlcservice_client_->set_get_dlc_state_error("Test error");
+    fake_dlcservice_client_.set_get_dlc_state_error("Test error");
   }
 
   void ExpectSuccessHistogramCount(int expected_count) {
@@ -100,8 +91,7 @@ class PumpkinInstallerTest : public testing::Test {
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<PumpkinInstaller> installer_;
-  raw_ptr<FakeDlcserviceClient, DanglingUntriaged | ExperimentalAsh>
-      fake_dlcservice_client_;
+  FakeDlcserviceClient fake_dlcservice_client_;
   base::HistogramTester histogram_tester_;
   bool install_succeeded_ = false;
   bool install_failed_ = false;

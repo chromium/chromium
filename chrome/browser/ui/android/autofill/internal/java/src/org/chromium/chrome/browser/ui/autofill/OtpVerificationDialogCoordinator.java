@@ -38,8 +38,10 @@ class OtpVerificationDialogCoordinator {
          * @param otp The OTP entered by the user.
          */
         void onConfirm(String otp);
+
         /** Notify that a new otp was requested by the user. */
         void onNewOtpRequested();
+
         /** Notify the caller that the dialog was dismissed. */
         void onDialogDismissed();
     }
@@ -59,10 +61,12 @@ class OtpVerificationDialogCoordinator {
     static OtpVerificationDialogCoordinator create(
             Context context, ModalDialogManager modalDialogManager, Delegate delegate) {
         OtpVerificationDialogView otpVerificationDialogView =
-                (OtpVerificationDialogView) LayoutInflater.from(context).inflate(
-                        org.chromium.chrome.browser.ui.autofill.internal.R.layout
-                                .otp_verification_dialog,
-                        null);
+                (OtpVerificationDialogView)
+                        LayoutInflater.from(context)
+                                .inflate(
+                                        org.chromium.chrome.browser.ui.autofill.internal.R.layout
+                                                .otp_verification_dialog,
+                                        null);
         return new OtpVerificationDialogCoordinator(
                 context, modalDialogManager, otpVerificationDialogView, delegate);
     }
@@ -77,17 +81,22 @@ class OtpVerificationDialogCoordinator {
      * @param delegate The delegate to be called with results of interaction.
      */
     @VisibleForTesting
-    OtpVerificationDialogCoordinator(Context context, ModalDialogManager modalDialogManager,
-            OtpVerificationDialogView dialogView, Delegate delegate) {
+    OtpVerificationDialogCoordinator(
+            Context context,
+            ModalDialogManager modalDialogManager,
+            OtpVerificationDialogView dialogView,
+            Delegate delegate) {
         mContext = context;
         mDialogView = dialogView;
 
-        boolean useCustomTitleView = ChromeFeatureList.isEnabled(
-                ChromeFeatureList.AUTOFILL_ENABLE_MOVING_GPAY_LOGO_TO_THE_RIGHT_ON_CLANK);
+        boolean useCustomTitleView =
+                ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.AUTOFILL_ENABLE_MOVING_GPAY_LOGO_TO_THE_RIGHT_ON_CLANK);
         int titleIconId =
                 useCustomTitleView ? R.drawable.google_pay : R.drawable.google_pay_with_divider;
-        String title = mContext.getResources().getString(
-                R.string.autofill_card_unmask_otp_input_dialog_title);
+        String title =
+                mContext.getResources()
+                        .getString(R.string.autofill_card_unmask_otp_input_dialog_title);
 
         if (useCustomTitleView) {
             ViewStub stub = mDialogView.findViewById(R.id.title_with_icon_stub);
@@ -147,10 +156,13 @@ class OtpVerificationDialogCoordinator {
     private PropertyModel buildOtpVerificationDialogModel(int otpLength) {
         return new PropertyModel.Builder(ALL_KEYS)
                 .with(OTP_LENGTH, otpLength)
-                .with(EDIT_TEXT_HINT,
-                        mContext.getResources().getString(
-                                R.string.autofill_payments_otp_verification_dialog_otp_input_hint,
-                                otpLength))
+                .with(
+                        EDIT_TEXT_HINT,
+                        mContext.getResources()
+                                .getString(
+                                        R.string
+                                                .autofill_payments_otp_verification_dialog_otp_input_hint,
+                                        otpLength))
                 .build();
     }
 
@@ -163,16 +175,21 @@ class OtpVerificationDialogCoordinator {
     private PropertyModel.Builder getModalDialogModelBuilder(View customView) {
         return new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
                 .with(ModalDialogProperties.CUSTOM_VIEW, customView)
-                .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
-                        mContext.getResources().getString(
-                                org.chromium.chrome.browser.ui.autofill.internal.R.string
-                                        .autofill_payments_otp_verification_dialog_negative_button_label))
-                .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT,
-                        mContext.getResources().getString(
-                                org.chromium.chrome.browser.ui.autofill.internal.R.string
-                                        .autofill_payments_otp_verification_dialog_positive_button_label))
+                .with(
+                        ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
+                        mContext.getResources()
+                                .getString(
+                                        org.chromium.chrome.browser.ui.autofill.internal.R.string
+                                                .autofill_payments_otp_verification_dialog_negative_button_label))
+                .with(
+                        ModalDialogProperties.POSITIVE_BUTTON_TEXT,
+                        mContext.getResources()
+                                .getString(
+                                        org.chromium.chrome.browser.ui.autofill.internal.R.string
+                                                .autofill_payments_otp_verification_dialog_positive_button_label))
                 .with(ModalDialogProperties.POSITIVE_BUTTON_DISABLED, true)
-                .with(ModalDialogProperties.BUTTON_STYLES,
+                .with(
+                        ModalDialogProperties.BUTTON_STYLES,
                         ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NEGATIVE_OUTLINE);
     }
 
@@ -186,8 +203,11 @@ class OtpVerificationDialogCoordinator {
      * @param titleIcon Icon near the title.
      * @param builder The PropertyModel.Builder instance.
      */
-    private void updateTitleView(boolean useCustomTitleView, String title,
-            @DrawableRes int titleIcon, PropertyModel.Builder builder) {
+    private void updateTitleView(
+            boolean useCustomTitleView,
+            String title,
+            @DrawableRes int titleIcon,
+            PropertyModel.Builder builder) {
         if (useCustomTitleView) {
             TextView titleView = (TextView) mDialogView.findViewById(R.id.title);
             titleView.setText(title);
@@ -195,7 +215,8 @@ class OtpVerificationDialogCoordinator {
             iconView.setImageResource(titleIcon);
         } else {
             builder.with(ModalDialogProperties.TITLE, title);
-            builder.with(ModalDialogProperties.TITLE_ICON,
+            builder.with(
+                    ModalDialogProperties.TITLE_ICON,
                     ResourcesCompat.getDrawable(
                             mContext.getResources(), titleIcon, mContext.getTheme()));
         }

@@ -164,7 +164,7 @@ class SystemWebAppDelegate {
   virtual bool ShouldHandleFileOpenIntents() const;
 
   // Setup information to drive a background task.
-  virtual absl::optional<SystemWebAppBackgroundTaskInfo> GetTimerInfo() const;
+  virtual std::optional<SystemWebAppBackgroundTaskInfo> GetTimerInfo() const;
 
   // Default window bounds of the application.
   virtual gfx::Rect GetDefaultBounds(Browser* browser) const;

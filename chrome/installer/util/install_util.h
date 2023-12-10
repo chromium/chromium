@@ -10,14 +10,15 @@
 #define CHROME_INSTALLER_UTIL_INSTALL_UTIL_H_
 
 #include <windows.h>
+
 #include <string>
+#include <string_view>
 #include <tuple>
 #include <utility>
 #include <vector>
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
-#include "base/strings/string_piece.h"
 #include "base/types/strong_alias.h"
 #include "base/version.h"
 #include "base/win/registry.h"
@@ -180,7 +181,7 @@ class InstallUtil {
 
   // Converts a product GUID into a SQuished gUID that is used for MSI installer
   // registry entries.
-  static std::wstring GuidToSquid(base::WStringPiece guid);
+  static std::wstring GuidToSquid(std::wstring_view guid);
 };
 
 #endif  // CHROME_INSTALLER_UTIL_INSTALL_UTIL_H_

@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ml">
 <translation id="1075622780330595106">നിങ്ങളുടെ ടാബുകളിൽ <ph name="NUMBER_OF_TABS" /> എണ്ണം അടുത്തിടെ ഉപയോഗിച്ചിട്ടില്ല. അവ അടയ്‌ക്കണോ?</translation>
+<translation id="1155815720264022949">പഴയ ടാബുകൾ അടയ്ക്കണമെന്നുണ്ടോ?</translation>
 <translation id="1215127405478249895">ടാബുകൾ അവലോകനം ചെയ്യുക</translation>
 <translation id="125153950246128346">മറ്റൊരു ടാബ് കാണാൻ ടാപ്പ് ചെയ്യുക</translation>
 <translation id="1499635324672558517">എല്ലാ അദൃശ്യ ടാബുകളും അടയ്‌ക്കണോ?</translation>
@@ -46,9 +47,11 @@
 <translation id="5073204694187207510">പൂർണ്ണസ്ക്രീൻ ഗ്രിഡ് മറയ്ക്കുക</translation>
 <translation id="5076161749301278626">സ്റ്റോർ റിവ്യൂകൾ കാണണോ?</translation>
 <translation id="5082793167783849073">ഒരു ഗ്രൂപ്പ് സൃഷ്‌ടിച്ചുകൊണ്ട്, വേഗത്തിൽ പേജുകൾ താരതമ്യം ചെയ്യൂ. ആരംഭിക്കാൻ ഒരു ലിങ്ക് സ്‌പർശിച്ച് പിടിക്കുക.</translation>
+<translation id="5303274951032363933">{TABS_COUNT,plural, =1{നിങ്ങൾ സമീപകാലത്ത് ഉപയോഗിക്കാത്ത <ph name="TABS_COUNT_ONE" /> ടാബുണ്ട്}other{നിങ്ങൾ സമീപകാലത്ത് ഉപയോഗിക്കാത്ത <ph name="TABS_COUNT_MANY" /> ടാബുകളുണ്ട്}}</translation>
 <translation id="5339733443032484186">നിങ്ങളുടെ അവസാന ടാബ്</translation>
 <translation id="5490235265819901748">ടാബ് ഗ്രൂപ്പ് വികസിപ്പിച്ചു</translation>
 <translation id="5494920125229734069">എല്ലാം തിരഞ്ഞെടുക്കുക</translation>
+<translation id="5545379293264651575">അവലോകനം ചെയ്യാതെ അടയ്ക്കുക</translation>
 <translation id="5556417849629758491">സ്റ്റോർ വിവരങ്ങൾ കാണുക, സ്ക്രീനിന്റെ മുകൾ ഭാഗത്തിന് സമീപം ഓപ്ഷൻ ലഭ്യമാണ്</translation>
 <translation id="5558362125926932819"><ph name="NUMBER_OF_TABS" /> ടാബുകളുള്ള ടാബ് ഗ്രൂപ്പ് അടയ്ക്കുക</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" /> ടാബുകൾ ഗ്രൂപ്പ് ചെയ്‌തു</translation>
@@ -85,7 +88,6 @@
 <translation id="7885132941432959125">ടാബ് വലത്തേക്ക് നീക്കുക</translation>
 <translation id="7966321538264951561">നിർദ്ദേശങ്ങൾ ഡിസ്‌മിസ് ചെയ്യുക.</translation>
 <translation id="8029301326595421733">ഈ സ്റ്റോറിനെ കുറിച്ചുള്ള വിവരങ്ങളുടെ മുഴുവൻ ഉയരത്തിൽ തുറന്ന ലിസ്റ്റ്</translation>
-<translation id="814503310257431685">എല്ലാം കാണുക</translation>
 <translation id="8205266828577616993">ടാബ് മുകളിലേക്ക് നീക്കുക</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{തിരഞ്ഞെടുത്ത <ph name="TABS_COUNT_ONE" /> ടാബ് അടയ്‌ക്കുക}other{തിരഞ്ഞെടുത്ത <ph name="TABS_COUNT_MANY" /> ടാബുകൾ അടയ്‌ക്കുക}}</translation>
 <translation id="8398929769197326728">പുതിയ ഫോൾഡർ - <ph name="CURRENT_TIMESTAMP_MS" /></translation>

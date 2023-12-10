@@ -5,6 +5,7 @@
 #include "chromeos/ash/components/dbus/shill/modem_messaging_client.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -22,7 +23,6 @@
 #include "dbus/values_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 using ::testing::_;
@@ -213,12 +213,12 @@ TEST_F(ModemMessagingClientTest, List) {
   response_ = response.get();
 
   // Call List.
-  base::test::TestFuture<absl::optional<std::vector<dbus::ObjectPath>>>
+  base::test::TestFuture<std::optional<std::vector<dbus::ObjectPath>>>
       list_result_future;
   client_->List(kServiceName, dbus::ObjectPath(kObjectPath),
                 list_result_future.GetCallback());
 
-  absl::optional<std::vector<dbus::ObjectPath>> result =
+  std::optional<std::vector<dbus::ObjectPath>> result =
       list_result_future.Take();
   EXPECT_TRUE(result);
   EXPECT_EQ(kExpectedResult, result.value());

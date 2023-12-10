@@ -24,8 +24,7 @@ interface PerformanceScriptTiming : PerformanceEntry {
     readonly attribute DOMHighResTimeStamp executionStart;
     readonly attribute DOMHighResTimeStamp forcedStyleAndLayoutDuration;
     readonly attribute DOMHighResTimeStamp pauseDuration;
-    readonly attribute DOMHighResTimeStamp desiredExecutionStart;
     readonly attribute Window? window;
-    readonly attribute DOMString? sourceLocation;
+    readonly attribute DOMString sourceLocation;
     [CallWith=ScriptState, ImplementedAs=toJSONForBinding] object toJSON();
 };

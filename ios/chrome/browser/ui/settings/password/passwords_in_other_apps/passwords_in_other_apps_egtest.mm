@@ -6,6 +6,8 @@
 
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/ui/settings/password/password_manager_egtest_utils.h"
+#import "ios/chrome/browser/ui/settings/password/password_manager_ui_features.h"
 #import "ios/chrome/browser/ui/settings/password/password_settings/password_settings_constants.h"
 #import "ios/chrome/browser/ui/settings/password/password_settings_app_interface.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_in_other_apps/constants.h"
@@ -19,6 +21,7 @@
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/chrome/test/earl_grey/earl_grey_scoped_block_swizzler.h"
+#import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -130,7 +133,7 @@ void OpensPasswordsInOtherApps() {
   AppLaunchConfiguration config;
 
   config.features_enabled.push_back(
-      password_manager::features::kIOSPasswordUISplit);
+      password_manager::features::kIOSPasswordAuthOnEntryV2);
 
   return config;
 }
@@ -348,6 +351,39 @@ void OpensPasswordsInOtherApps() {
   [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationPortrait error:nil];
   [[EarlGrey selectElementWithMatcher:PasswordsInOtherAppsImageMatcher()]
       assertWithMatcher:grey_minimumVisiblePercent(0.2)];
+}
+
+// Tests that the Password Manager UI is dismissed after failed local
+// authentication while in Passwords In Other Apps.
+- (void)testTapPasswordsInOtherAppsWithFailedAuth {
+  OpensPasswordsInOtherApps();
+
+  [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
+                                    ReauthenticationResult::kFailure];
+  [PasswordSettingsAppInterface
+      mockReauthenticationModuleShouldReturnSynchronously:NO];
+
+  [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
+
+  // Passwords in Other Apps should be covered by Reauthentication UI.
+  [[EarlGrey selectElementWithMatcher:PasswordsInOtherAppsViewMatcher()]
+      assertWithMatcher:grey_notVisible()];
+  [[EarlGrey selectElementWithMatcher:password_manager_test_utils::
+                                          ReauthenticationController()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  [PasswordSettingsAppInterface mockReauthenticationModuleReturnMockedResult];
+
+  // The Password Manager UI should have been dismissed leaving Settings
+  // visible.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::SettingsCollectionView()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:PasswordsInOtherAppsViewMatcher()]
+      assertWithMatcher:grey_notVisible()];
+  [[EarlGrey selectElementWithMatcher:password_manager_test_utils::
+                                          ReauthenticationController()]
+      assertWithMatcher:grey_notVisible()];
 }
 
 @end

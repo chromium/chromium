@@ -155,7 +155,7 @@ class CrosDisplayConfigTest : public AshTestBase {
 
   bool OverscanCalibration(int64_t id,
                            crosapi::mojom::DisplayConfigOperation op,
-                           const absl::optional<gfx::Insets>& delta) {
+                           const std::optional<gfx::Insets>& delta) {
     crosapi::mojom::DisplayConfigResult result;
     base::RunLoop run_loop;
     cros_display_config()->OverscanCalibration(
@@ -377,7 +377,7 @@ TEST_F(CrosDisplayConfigTest, FailToSetLayoutMirroredMixedWithOneDisplay) {
   properties->layout_mode = crosapi::mojom::DisplayLayoutMode::kMirrored;
   properties->mirror_source_id = base::NumberToString(displays[0].id());
   properties->mirror_destination_ids =
-      absl::make_optional<std::vector<std::string>>();
+      std::make_optional<std::vector<std::string>>();
 
   crosapi::mojom::DisplayConfigResult result =
       SetDisplayLayoutInfo(std::move(properties));
@@ -400,7 +400,7 @@ TEST_F(CrosDisplayConfigTest, SetLayoutMirroredMixed) {
   properties->layout_mode = crosapi::mojom::DisplayLayoutMode::kMirrored;
   properties->mirror_source_id = base::NumberToString(displays[0].id());
   properties->mirror_destination_ids =
-      absl::make_optional<std::vector<std::string>>(
+      std::make_optional<std::vector<std::string>>(
           {base::NumberToString(displays[1].id()),
            base::NumberToString(displays[3].id())});
   crosapi::mojom::DisplayConfigResult result =
@@ -684,7 +684,7 @@ TEST_F(CrosDisplayConfigTest, OverscanCalibration) {
 
   // Test that kAdjust succeeds after kComplete call.
   EXPECT_TRUE(OverscanCalibration(
-      id, crosapi::mojom::DisplayConfigOperation::kStart, absl::nullopt));
+      id, crosapi::mojom::DisplayConfigOperation::kStart, std::nullopt));
   EXPECT_EQ(gfx::Insets(), display_manager()->GetOverscanInsets(id));
 
   gfx::Insets insets(10);
@@ -694,7 +694,7 @@ TEST_F(CrosDisplayConfigTest, OverscanCalibration) {
   EXPECT_EQ(gfx::Insets(), display_manager()->GetOverscanInsets(id));
 
   EXPECT_TRUE(OverscanCalibration(
-      id, crosapi::mojom::DisplayConfigOperation::kComplete, absl::nullopt));
+      id, crosapi::mojom::DisplayConfigOperation::kComplete, std::nullopt));
   gfx::Insets overscan = display_manager()->GetOverscanInsets(id);
   EXPECT_EQ(insets, overscan)
       << "Overscan: " << overscan.ToString() << " != " << insets.ToString();
@@ -703,20 +703,20 @@ TEST_F(CrosDisplayConfigTest, OverscanCalibration) {
 
   // Start clears any overscan values.
   EXPECT_TRUE(OverscanCalibration(
-      id, crosapi::mojom::DisplayConfigOperation::kStart, absl::nullopt));
+      id, crosapi::mojom::DisplayConfigOperation::kStart, std::nullopt));
   EXPECT_EQ(gfx::Insets(), display_manager()->GetOverscanInsets(id));
 
   // Reset + Complete restores previously set insets.
   EXPECT_TRUE(OverscanCalibration(
-      id, crosapi::mojom::DisplayConfigOperation::kReset, absl::nullopt));
+      id, crosapi::mojom::DisplayConfigOperation::kReset, std::nullopt));
   EXPECT_EQ(gfx::Insets(), display_manager()->GetOverscanInsets(id));
   EXPECT_TRUE(OverscanCalibration(
-      id, crosapi::mojom::DisplayConfigOperation::kComplete, absl::nullopt));
+      id, crosapi::mojom::DisplayConfigOperation::kComplete, std::nullopt));
   EXPECT_EQ(insets, display_manager()->GetOverscanInsets(id));
 
   // Additional complete call should fail.
   EXPECT_FALSE(OverscanCalibration(
-      id, crosapi::mojom::DisplayConfigOperation::kComplete, absl::nullopt));
+      id, crosapi::mojom::DisplayConfigOperation::kComplete, std::nullopt));
 }
 
 TEST_F(CrosDisplayConfigTest, CustomTouchCalibrationInternal) {

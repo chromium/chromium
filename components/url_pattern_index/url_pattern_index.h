@@ -14,7 +14,7 @@
 #include "base/containers/flat_set.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "components/url_pattern_index/closed_hash_map.h"
 #include "components/url_pattern_index/flat/url_pattern_index_generated.h"
 #include "components/url_pattern_index/proto/rules.pb.h"

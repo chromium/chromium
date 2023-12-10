@@ -11,7 +11,6 @@
 #import "ios/chrome/browser/ui/whats_new/cells/whats_new_table_view_fake_header_item.h"
 #import "ios/chrome/browser/ui/whats_new/cells/whats_new_table_view_item.h"
 #import "ios/chrome/browser/ui/whats_new/data_source/whats_new_item.h"
-#import "ios/chrome/browser/ui/whats_new/whats_new_detail_view_controller.h"
 #import "ios/chrome/browser/ui/whats_new/whats_new_table_view_action_handler.h"
 #import "ios/chrome/browser/ui/whats_new/whats_new_table_view_delegate.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"

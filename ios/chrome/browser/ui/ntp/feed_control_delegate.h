@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_UI_NTP_FEED_CONTROL_DELEGATE_H_
 #define IOS_CHROME_BROWSER_UI_NTP_FEED_CONTROL_DELEGATE_H_
 
-#import "ios/chrome/browser/discover_feed/feed_constants.h"
+#import "ios/chrome/browser/discover_feed/model/feed_constants.h"
 
 // Delegate for controlling the presented feed.
 @protocol FeedControlDelegate

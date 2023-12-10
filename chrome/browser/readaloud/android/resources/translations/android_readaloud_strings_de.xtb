@@ -2,10 +2,14 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="de">
 <translation id="1178581264944972037">Pause</translation>
-<translation id="3523426587027570423">Tippe hier, um „Diese Seite anhören“ zu schließen.</translation>
+<translation id="1921351128855867012"><ph name="NUMBER_OF_SECONDS" /> Sekunden vorspulen</translation>
+<translation id="1984328900355667246">Wiedergabe nicht verfügbar</translation>
+<translation id="3023502830214299618">Die Wiedergabe ist für diese Seite derzeit leider nicht möglich. Bitte versuch es später noch einmal.</translation>
+<translation id="3807208219231826020">Scrubbing-Wiedergabe</translation>
+<translation id="385051799172605136">Zurück</translation>
 <translation id="4431240646217225907">Text hervorheben und automatisches Scrollen</translation>
 <translation id="4654641641922242357">Player für „Diese Seite anhören“.</translation>
-<translation id="4731877163452936634">Wiedergabegeschwindigkeit: <ph name="PLAYBACK_SPEED" /> Zum Ändern klicken.</translation>
+<translation id="4872475766448853257"><ph name="NUMBER_OF_SECONDS" /> Sekunden zurückspulen</translation>
 <translation id="5234971936051226002">Der Player „Diese Seite anhören“ ist minimiert.</translation>
 <translation id="5596627076506792578">Weitere Optionen</translation>
 <translation id="6315170314923504164">Sprache</translation>
@@ -14,8 +18,8 @@
 <translation id="6831043979455480757">Übersetzen</translation>
 <translation id="6846298663435243399">Wird geladen…</translation>
 <translation id="7587250070160020374">Chrome gibt jetzt folgende Seite wieder:</translation>
-<translation id="7945822420239537236"><ph name="NUMBER_OF_SECONDS" /> Sekunden vorspulen</translation>
-<translation id="7972866381678406344"><ph name="NUMBER_OF_SECONDS" /> Sekunden zurück</translation>
 <translation id="8136852699834914183">Die Wiedergabefunktion ist für diese Seite nicht verfügbar.</translation>
+<translation id="8264989794233974275">Geschwindigkeit um das <ph name="PLAYBACK_SPEED" />-Fache erhöhen oder verringern.</translation>
+<translation id="8407011429883244666">Player schließen</translation>
 <translation id="8953618380150219653">Der Player „Diese Seite anhören“ ist vollständig geöffnet.</translation>
 </translationbundle>

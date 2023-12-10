@@ -7,15 +7,9 @@ package org.chromium.chrome.browser;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.anyInt;
-import static org.mockito.Mockito.when;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
-import android.content.pm.PackageManager;
-import android.content.pm.PackageManager.NameNotFoundException;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -23,14 +17,14 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.multiwindow.MultiWindowTestUtils;
+import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.url.JUnitTestGURLs;
 
 /** Unit tests for {@link DragAndDropLauncherActivity}. */
@@ -40,25 +34,21 @@ public class DragAndDropLauncherActivityUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule public ExpectedException exception = ExpectedException.none();
 
-    @Mock private ActivityInfo mActivityInfo;
-    @Mock private PackageManager mPackageManager;
-
     private Context mContext;
     private String mLinkUrl;
 
     @Before
-    public void setup() throws NameNotFoundException {
-        mContext = Mockito.spy(ContextUtils.getApplicationContext());
-        when(mContext.getPackageManager()).thenReturn(mPackageManager);
-        when(mPackageManager.getActivityInfo(any(), anyInt())).thenReturn(mActivityInfo);
-        ContextUtils.initApplicationContextForTests(mContext);
-        mActivityInfo.launchMode = ActivityInfo.LAUNCH_SINGLE_INSTANCE_PER_TASK;
+    public void setup() {
+        MultiWindowTestUtils.enableMultiInstance();
+        mContext = ContextUtils.getApplicationContext();
         mLinkUrl = JUnitTestGURLs.HTTP_URL.getSpec();
     }
 
     @Test
     public void testGetLinkLauncherIntent_defaultWindowId() {
-        Intent intent = DragAndDropLauncherActivity.getLinkLauncherIntent(mContext, mLinkUrl, null);
+        Intent intent =
+                DragAndDropLauncherActivity.getLinkLauncherIntent(
+                        mContext, mLinkUrl, MultiWindowUtils.INVALID_INSTANCE_ID);
         assertEquals(
                 "The intent action should be DragAndDropLauncherActivity.ACTION_DRAG_DROP_VIEW.",
                 DragAndDropLauncherActivity.ACTION_DRAG_DROP_VIEW,
@@ -92,7 +82,9 @@ public class DragAndDropLauncherActivityUnitTest {
 
     @Test
     public void testIsIntentValid_invalidIntentAction() {
-        Intent intent = DragAndDropLauncherActivity.getLinkLauncherIntent(mContext, mLinkUrl, null);
+        Intent intent =
+                DragAndDropLauncherActivity.getLinkLauncherIntent(
+                        mContext, mLinkUrl, MultiWindowUtils.INVALID_INSTANCE_ID);
         intent.setAction(Intent.ACTION_VIEW);
         exception.expect(AssertionError.class);
         exception.expectMessage("The intent action is invalid.");
@@ -102,7 +94,9 @@ public class DragAndDropLauncherActivityUnitTest {
 
     @Test
     public void testIsIntentValid_missingIntentCreationTimestamp() {
-        Intent intent = DragAndDropLauncherActivity.getLinkLauncherIntent(mContext, mLinkUrl, null);
+        Intent intent =
+                DragAndDropLauncherActivity.getLinkLauncherIntent(
+                        mContext, mLinkUrl, MultiWindowUtils.INVALID_INSTANCE_ID);
         DragAndDropLauncherActivity.setLinkIntentCreationTimestampMs(null);
         Assert.assertFalse(
                 "The intent creation timestamp is missing.",

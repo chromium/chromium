@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/settings/password/passwords_in_other_apps/passwords_in_other_apps_coordinator.h"
 
 #import "base/check.h"
+#import "base/check_op.h"
 #import "ios/chrome/browser/ui/settings/password/password_manager_ui_features.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_in_other_apps/passwords_in_other_apps_mediator.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_in_other_apps/passwords_in_other_apps_view_controller.h"
@@ -81,6 +82,12 @@
 - (void)successfulReauthenticationWithCoordinator:
     (ReauthenticationCoordinator*)coordinator {
   // No-op.
+}
+
+- (void)dismissUIAfterFailedReauthenticationWithCoordinator:
+    (ReauthenticationCoordinator*)coordinator {
+  CHECK_EQ(_reauthCoordinator, coordinator);
+  [_delegate dismissPasswordManagerAfterFailedReauthentication];
 }
 
 - (void)willPushReauthenticationViewController {

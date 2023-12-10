@@ -172,7 +172,7 @@ void BluetoothLowEnergyCharacteristicsFinder::TryToVerifyEid(
 
 void BluetoothLowEnergyCharacteristicsFinder::OnRemoteCharacteristicRead(
     const std::string& service_id,
-    absl::optional<device::BluetoothGattService::GattErrorCode> error_code,
+    std::optional<device::BluetoothGattService::GattErrorCode> error_code,
     const std::vector<uint8_t>& value) {
   auto it = service_ids_pending_eid_read_.find(service_id);
   if (it == service_ids_pending_eid_read_.end()) {

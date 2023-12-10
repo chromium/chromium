@@ -121,7 +121,7 @@ void NativeMessagingReader::Core::ReadMessage() {
       return;
     }
 
-    absl::optional<base::Value> message = base::JSONReader::Read(message_json);
+    std::optional<base::Value> message = base::JSONReader::Read(message_json);
     if (!message) {
       LOG(ERROR) << "Failed to parse JSON message: " << message_json;
       NotifyEof();

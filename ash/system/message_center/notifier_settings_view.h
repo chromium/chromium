@@ -12,6 +12,7 @@
 #include "ash/public/cpp/notifier_settings_observer.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
 #include "ui/views/controls/button/checkbox.h"
 #include "ui/views/controls/button/image_button.h"
@@ -30,6 +31,8 @@ namespace ash {
 // users to customize the settings.
 class ASH_EXPORT NotifierSettingsView : public views::View,
                                         public NotifierSettingsObserver {
+  METADATA_HEADER(NotifierSettingsView, views::View)
+
  public:
   NotifierSettingsView();
 
@@ -50,7 +53,6 @@ class ASH_EXPORT NotifierSettingsView : public views::View,
 
   // views::View:
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
-  const char* GetClassName() const override;
 
   views::ScrollView* get_scroller_view_for_test() { return scroller_; }
   views::Label* get_notification_settings_lable_for_test() {
@@ -68,6 +70,8 @@ class ASH_EXPORT NotifierSettingsView : public views::View,
   FRIEND_TEST_ALL_PREFIXES(NotifierSettingsViewTest, TestEmptyNotifierView);
 
   class ASH_EXPORT NotifierButton : public views::Button {
+    METADATA_HEADER(NotifierButton, views::Button)
+
    public:
     explicit NotifierButton(const NotifierMetadata& notifier);
 
@@ -82,9 +86,6 @@ class ASH_EXPORT NotifierSettingsView : public views::View,
     const message_center::NotifierId& notifier_id() const {
       return notifier_id_;
     }
-
-    // views::Button:
-    const char* GetClassName() const override;
 
    private:
     // views::Button:

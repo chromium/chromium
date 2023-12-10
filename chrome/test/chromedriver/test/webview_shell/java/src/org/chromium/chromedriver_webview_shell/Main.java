@@ -30,19 +30,22 @@ public class Main extends Activity {
         webSettings.setJavaScriptEnabled(true);
 
         final Activity activity = this;
-        mWebView.setWebChromeClient(new WebChromeClient() {
-            @Override
-            public void onProgressChanged(WebView view, int progress) {
-                activity.setProgress(progress * 100);
-            }
-        });
-        mWebView.setWebViewClient(new WebViewClient() {
-            @Override
-            public void onReceivedError(WebView view, int errorCode, String description,
-                    String failingUrl) {
-                Toast.makeText(activity, "Error: " + description, Toast.LENGTH_SHORT).show();
-            }
-        });
+        mWebView.setWebChromeClient(
+                new WebChromeClient() {
+                    @Override
+                    public void onProgressChanged(WebView view, int progress) {
+                        activity.setProgress(progress * 100);
+                    }
+                });
+        mWebView.setWebViewClient(
+                new WebViewClient() {
+                    @Override
+                    public void onReceivedError(
+                            WebView view, int errorCode, String description, String failingUrl) {
+                        Toast.makeText(activity, "Error: " + description, Toast.LENGTH_SHORT)
+                                .show();
+                    }
+                });
 
         loadUrl(getIntent());
     }

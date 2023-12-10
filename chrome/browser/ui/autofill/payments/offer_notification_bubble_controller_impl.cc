@@ -304,7 +304,7 @@ void OfferNotificationBubbleControllerImpl::HideBubbleAndClearTimestamp(
       should_show_icon ? BubbleState::kShowingIcon : BubbleState::kHidden;
   UpdatePageActionIcon();
   HideBubble();
-  bubble_shown_timestamp_ = absl::nullopt;
+  bubble_shown_timestamp_ = std::nullopt;
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(OfferNotificationBubbleControllerImpl);

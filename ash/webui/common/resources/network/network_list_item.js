@@ -23,6 +23,7 @@ import {FocusRowBehavior} from '//resources/ash/common/focus_row_behavior.js';
 import {I18nBehavior} from '//resources/ash/common/i18n_behavior.js';
 import {loadTimeData} from '//resources/ash/common/load_time_data.m.js';
 import {Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
 import {ActivationStateType, CrosNetworkConfigInterface, GlobalPolicy, ManagedCellularProperties, ManagedProperties, SecurityType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {ConnectionStateType, NetworkType, OncSource, PortalState} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 
@@ -344,9 +345,7 @@ Polymer({
 
     // Service provider from mojo API is a string16 value represented as an
     // array of characters. Convert to string for display.
-    this.subtitle_ = properties.serviceProvider.data
-                         .map((charCode) => String.fromCharCode(charCode))
-                         .join('');
+    this.subtitle_ = mojoString16ToString(properties.serviceProvider);
   },
 
   /** @private */

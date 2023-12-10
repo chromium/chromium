@@ -22,6 +22,7 @@
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/proto/synced/record_constants.pb.h"
+#include "components/reporting/util/encrypted_reporting_json_keys.h"
 #include "components/version_info/version_info.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -53,44 +54,6 @@ constexpr ::reporting::Priority kPriority = ::reporting::Priority::IMMEDIATE;
 constexpr char kEncryptionKeyValue[] = "abcdef";
 constexpr uint64_t kPublicKeyIdValue = 9876;
 
-// Keys for response internal dictionaries
-constexpr char kLastSucceedUploadedRecordKey[] = "lastSucceedUploadedRecord";
-constexpr char kFirstFailedUploadedRecordKey[] = "firstFailedUploadedRecord";
-
-// UploadEncryptedReportingRequest list key
-constexpr char kEncryptedRecordListKey[] = "encryptedRecord";
-
-// Encryption settings request key
-constexpr char kAttachEncryptionSettingsKey[] = "attachEncryptionSettings";
-
-// Configuration file version request key
-constexpr char kConfigurationFileVersionKey[] = "configurationFileVersion";
-
-// Source key
-constexpr char kSourceKey[] = "source";
-
-// Keys for EncryptedRecord
-constexpr char kEncryptedWrappedRecordKey[] = "encryptedWrappedRecord";
-constexpr char kSequenceInformationKey[] = "sequenceInformation";
-constexpr char kEncryptionInfoKey[] = "encryptionInfo";
-
-// Keys for internal encryption information dictionaries.
-constexpr char kEncryptionKey[] = "encryptionKey";
-constexpr char kPublicKeyIdKey[] = "publicKeyId";
-
-// Keys for internal SequenceInformation dictionaries.
-constexpr char kSequencingIdKey[] = "sequencingId";
-constexpr char kGenerationIdKey[] = "generationId";
-constexpr char kPriorityKey[] = "priority";
-
-// Keys for FirstFailedUploadRecord values.
-constexpr char kFailedUploadedRecord[] = "failedUploadedRecord";
-constexpr char kFailureStatus[] = "failureStatus";
-
-// Keys for FirstFailedUploadRecord Status dictionary
-constexpr char kCodeKey[] = "code";
-constexpr char kMessageKey[] = "message";
-
 constexpr char kDmToken[] = "fake-dm-token";
 constexpr char kClientId[] = "fake-client-id";
 constexpr char kServerUrl[] = "https://example.com/reporting";
@@ -106,20 +69,21 @@ class RequestPayloadBuilder {
                                  bool request_configuration_file = false,
                                  bool client_automated_test = false) {
     if (attach_encryption_settings) {
-      payload_.Set(kAttachEncryptionSettingsKey, true);
+      payload_.Set(reporting::json_keys::kAttachEncryptionSettings, true);
     }
     if (request_configuration_file) {
-      payload_.Set(kConfigurationFileVersionKey, 1234);
+      payload_.Set(reporting::json_keys::kConfigurationFileVersion, 1234);
     }
     if (client_automated_test) {
-      payload_.Set(kSourceKey, "tast");
+      payload_.Set(reporting::json_keys::kSource, "tast");
     }
-    payload_.Set(kEncryptedRecordListKey, base::Value::List());
+    payload_.Set(reporting::json_keys::kEncryptedRecordList,
+                 base::Value::List());
   }
 
   RequestPayloadBuilder& AddRecord(const base::Value& record) {
     base::Value::List* records_list =
-        payload_.FindList(kEncryptedRecordListKey);
+        payload_.FindList(reporting::json_keys::kEncryptedRecordList);
     records_list->Append(record.Clone());
     return *this;
   }
@@ -137,10 +101,11 @@ class ResponseValueBuilder {
       absl::optional<base::Value> upload_failure) {
     base::Value::Dict response;
 
-    response.Set(kLastSucceedUploadedRecordKey, sequence_information.Clone());
+    response.Set(reporting::json_keys::kLastSucceedUploadedRecord,
+                 sequence_information.Clone());
 
     if (upload_failure.has_value()) {
-      response.Set(kFirstFailedUploadedRecordKey,
+      response.Set(reporting::json_keys::kFirstFailedUploadedRecord,
                    std::move(upload_failure.value()));
     }
     return response;
@@ -153,22 +118,23 @@ class ResponseValueBuilder {
   }
 
   static std::string GetUploadFailureFailedUploadSequencingIdPath() {
-    return GetPath(kFirstFailedUploadedRecordKey,
+    return GetPath(reporting::json_keys::kFirstFailedUploadedRecord,
                    GetFailedUploadSequencingIdPath());
   }
 
   static std::string GetUploadFailureFailedUploadGenerationIdPath() {
-    return GetPath(kFirstFailedUploadedRecordKey,
+    return GetPath(reporting::json_keys::kFirstFailedUploadedRecord,
                    GetFailedUploadGenerationIdPath());
   }
 
   static std::string GetUploadFailureFailedUploadPriorityPath() {
-    return GetPath(kFirstFailedUploadedRecordKey,
+    return GetPath(reporting::json_keys::kFirstFailedUploadedRecord,
                    GetFailedUploadPriorityPath());
   }
 
   static std::string GetUploadFailureStatusCodePath() {
-    return GetPath(kFirstFailedUploadedRecordKey, GetFailureStatusCodePath());
+    return GetPath(reporting::json_keys::kFirstFailedUploadedRecord,
+                   GetFailureStatusCodePath());
   }
 
  private:
@@ -177,23 +143,28 @@ class ResponseValueBuilder {
   }
 
   static std::string GetFailedUploadSequencingIdPath() {
-    return GetPath(kFailedUploadedRecord, kSequencingIdKey);
+    return GetPath(reporting::json_keys::kFailedUploadedRecord,
+                   reporting::json_keys::kSequencingId);
   }
 
   static std::string GetFailedUploadGenerationIdPath() {
-    return GetPath(kFailedUploadedRecord, kGenerationIdKey);
+    return GetPath(reporting::json_keys::kFailedUploadedRecord,
+                   reporting::json_keys::kGenerationId);
   }
 
   static std::string GetFailedUploadPriorityPath() {
-    return GetPath(kFailedUploadedRecord, kPriorityKey);
+    return GetPath(reporting::json_keys::kFailedUploadedRecord,
+                   reporting::json_keys::kPriority);
   }
 
   static std::string GetFailureStatusCodePath() {
-    return GetPath(kFailureStatus, kCodeKey);
+    return GetPath(reporting::json_keys::kFailedUploadedRecord,
+                   reporting::json_keys::kErrorCode);
   }
 
   static std::string GetFailureStatusMessagePath() {
-    return GetPath(kFailureStatus, kMessageKey);
+    return GetPath(reporting::json_keys::kFailedUploadedRecord,
+                   reporting::json_keys::kErrorMessage);
   }
 };
 
@@ -233,7 +204,8 @@ class EncryptedReportingJobConfigurationTest : public testing::Test {
   TestUpload CreateTestUpload(const base::Value& record_value) {
     TestUpload test_upload;
     test_upload.response = ResponseValueBuilder::CreateResponse(
-        *record_value.GetDict().FindDict(kSequenceInformationKey),
+        *record_value.GetDict().FindDict(
+            reporting::json_keys::kSequenceInformation),
         absl::nullopt);
     test_upload.completion_cb = std::make_unique<StrictMock<MockCompleteCb>>();
     test_upload.configuration =
@@ -251,20 +223,23 @@ class EncryptedReportingJobConfigurationTest : public testing::Test {
     base::Value::Dict record_dictionary;
     std::string base64_encode;
     base::Base64Encode(encrypted_wrapped_record, &base64_encode);
-    record_dictionary.Set(kEncryptedWrappedRecordKey, base64_encode);
+    record_dictionary.Set(reporting::json_keys::kEncryptedWrappedRecord,
+                          base64_encode);
 
     base::Value::Dict* const sequencing_dictionary =
-        record_dictionary.EnsureDict(kSequenceInformationKey);
-    sequencing_dictionary->Set(kSequencingIdKey,
+        record_dictionary.EnsureDict(
+            reporting::json_keys::kSequenceInformation);
+    sequencing_dictionary->Set(reporting::json_keys::kSequencingId,
                                base::NumberToString(GetNextSequenceId()));
-    sequencing_dictionary->Set(kGenerationIdKey,
+    sequencing_dictionary->Set(reporting::json_keys::kGenerationId,
                                base::NumberToString(kGenerationId));
-    sequencing_dictionary->Set(kPriorityKey, priority);
+    sequencing_dictionary->Set(reporting::json_keys::kPriority, priority);
 
     base::Value::Dict* const encryption_info_dictionary =
-        record_dictionary.EnsureDict(kEncryptionInfoKey);
-    encryption_info_dictionary->Set(kEncryptionKey, kEncryptionKeyValue);
-    encryption_info_dictionary->Set(kPublicKeyIdKey,
+        record_dictionary.EnsureDict(reporting::json_keys::kEncryptionInfo);
+    encryption_info_dictionary->Set(reporting::json_keys::kEncryptionKey,
+                                    kEncryptionKeyValue);
+    encryption_info_dictionary->Set(reporting::json_keys::kPublicKeyId,
                                     base::NumberToString(kPublicKeyIdValue));
 
     return base::Value(std::move(record_dictionary));
@@ -280,15 +255,16 @@ class EncryptedReportingJobConfigurationTest : public testing::Test {
   void GetRecordList(EncryptedReportingJobConfiguration* configuration,
                      base::Value::List** record_list) {
     base::Value* const payload = GetPayload(configuration);
-    *record_list = payload->GetDict().FindList(kEncryptedRecordListKey);
+    *record_list =
+        payload->GetDict().FindList(reporting::json_keys::kEncryptedRecordList);
     ASSERT_TRUE(*record_list);
   }
 
   bool GetAttachEncryptionSettings(
       EncryptedReportingJobConfiguration* configuration) {
     base::Value* const payload = GetPayload(configuration);
-    const auto attach_encryption_settings =
-        payload->GetDict().FindBool(kAttachEncryptionSettingsKey);
+    const auto attach_encryption_settings = payload->GetDict().FindBool(
+        reporting::json_keys::kAttachEncryptionSettings);
     return attach_encryption_settings.has_value() &&
            attach_encryption_settings.value();
   }
@@ -296,15 +272,16 @@ class EncryptedReportingJobConfigurationTest : public testing::Test {
   bool VerifyConfigurationFileVersion(
       EncryptedReportingJobConfiguration* configuration) {
     base::Value* const payload = GetPayload(configuration);
-    auto* request_configuration_file =
-        payload->GetDict().Find(kConfigurationFileVersionKey);
+    auto* request_configuration_file = payload->GetDict().Find(
+        reporting::json_keys::kConfigurationFileVersion);
     return request_configuration_file->is_int() &&
            request_configuration_file->GetIfInt() == 1234;
   }
 
   bool VerifySourceIsTast(EncryptedReportingJobConfiguration* configuration) {
     base::Value* const payload = GetPayload(configuration);
-    auto* client_automated_test = payload->GetDict().Find(kSourceKey);
+    auto* client_automated_test =
+        payload->GetDict().Find(reporting::json_keys::kSource);
     return client_automated_test->is_string() &&
            *client_automated_test->GetIfString() == "tast";
   }
@@ -452,7 +429,8 @@ TEST_F(EncryptedReportingJobConfigurationTest, CorrectlyAddEncryptedRecord) {
   EXPECT_EQ((*record_list)[0], record_value);
 
   std::string* encrypted_wrapped_record =
-      (*record_list)[0].GetDict().FindString(kEncryptedWrappedRecordKey);
+      (*record_list)[0].GetDict().FindString(
+          reporting::json_keys::kEncryptedWrappedRecord);
   ASSERT_THAT(encrypted_wrapped_record, NotNull());
 
   std::string decoded_record;
@@ -951,20 +929,17 @@ TEST_F(EncryptedReportingJobConfigurationTest, UnmanagedDeviceUmaName) {
 }
 
 TEST_F(EncryptedReportingJobConfigurationTest, PayloadTopLevelFields) {
-  static constexpr char kDeviceKey[] = "device";
-  static constexpr char kBrowserKey[] = "browser";
-  static constexpr char kRequestId[] = "requestId";
   static constexpr char kInvalidKey[] = "invalid";
 
   base::Value::Dict request;
-  request.Set(kEncryptedRecordListKey, base::Value::List());
-  request.Set(kConfigurationFileVersionKey, 1234);
-  request.Set(kAttachEncryptionSettingsKey, true);
-  request.Set(kSourceKey, "tast");
-  request.Set(kDeviceKey, base::Value::Dict());
-  request.Set(kBrowserKey, base::Value::Dict());
+  request.Set(reporting::json_keys::kEncryptedRecordList, base::Value::List());
+  request.Set(reporting::json_keys::kConfigurationFileVersion, 1234);
+  request.Set(reporting::json_keys::kAttachEncryptionSettings, true);
+  request.Set(reporting::json_keys::kSource, "tast");
+  request.Set(reporting::json_keys::kDevice, base::Value::Dict());
+  request.Set(reporting::json_keys::kBrowser, base::Value::Dict());
   request.Set(kInvalidKey, base::Value::Dict());
-  request.Set(kRequestId, "request-id");
+  request.Set(reporting::json_keys::kRequestId, "request-id");
 
   EncryptedReportingJobConfiguration configuration(
       shared_url_loader_factory_, DMAuth::FromDMToken(client_.dm_token()),
@@ -975,14 +950,17 @@ TEST_F(EncryptedReportingJobConfigurationTest, PayloadTopLevelFields) {
 
   ASSERT_TRUE(payload);
   ASSERT_TRUE(payload->is_dict());
-  EXPECT_TRUE(payload->GetDict().FindList(kEncryptedRecordListKey));
-  EXPECT_TRUE(payload->GetDict().FindBool(kAttachEncryptionSettingsKey));
   EXPECT_TRUE(
-      payload->GetDict().FindInt(kConfigurationFileVersionKey).has_value());
-  EXPECT_TRUE(payload->GetDict().FindString(kSourceKey));
-  EXPECT_TRUE(payload->GetDict().FindDict(kDeviceKey));
-  EXPECT_TRUE(payload->GetDict().FindDict(kBrowserKey));
+      payload->GetDict().FindList(reporting::json_keys::kEncryptedRecordList));
+  EXPECT_TRUE(payload->GetDict().FindBool(
+      reporting::json_keys::kAttachEncryptionSettings));
+  EXPECT_TRUE(payload->GetDict()
+                  .FindInt(reporting::json_keys::kConfigurationFileVersion)
+                  .has_value());
+  EXPECT_TRUE(payload->GetDict().FindString(reporting::json_keys::kSource));
+  EXPECT_TRUE(payload->GetDict().FindDict(reporting::json_keys::kDevice));
+  EXPECT_TRUE(payload->GetDict().FindDict(reporting::json_keys::kBrowser));
   EXPECT_FALSE(payload->GetDict().FindDict(kInvalidKey));
-  EXPECT_TRUE(payload->GetDict().FindString(kRequestId));
+  EXPECT_TRUE(payload->GetDict().FindString(reporting::json_keys::kRequestId));
 }
 }  // namespace policy

@@ -114,14 +114,18 @@ class DefaultWidgetDelegate : public WidgetDelegate {
     // In most situations where a Widget is used without a delegate the Widget
     // is used as a container, so that we want focus to advance to the top-level
     // widget. A good example of this is the find bar.
-    SetOwnedByWidget(true);
     SetFocusTraversesOut(true);
+    RegisterDeleteDelegateCallback(base::BindOnce(
+        &DefaultWidgetDelegate::Destroy, base::Unretained(this)));
   }
 
   DefaultWidgetDelegate(const DefaultWidgetDelegate&) = delete;
   DefaultWidgetDelegate& operator=(const DefaultWidgetDelegate&) = delete;
 
   ~DefaultWidgetDelegate() override = default;
+
+ private:
+  void Destroy() { delete this; }
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -179,6 +183,18 @@ ui::ZOrderLevel Widget::InitParams::EffectiveZOrderLevel() const {
     default:
       return ui::ZOrderLevel::kNormal;
   }
+}
+
+bool Widget::InitParams::ShouldInitAsHeadless() const {
+  if (headless_mode) {
+    return true;
+  }
+
+  if (Widget* top_level_widget = GetTopLevelWidgetForNativeView(parent)) {
+    return top_level_widget->is_headless();
+  }
+
+  return false;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -369,6 +385,7 @@ void Widget::Init(InitParams params) {
 
   params.child |= (params.type == InitParams::TYPE_CONTROL);
   is_top_level_ = !params.child;
+  is_headless_ = params.ShouldInitAsHeadless();
 
   if (params.opacity == views::Widget::InitParams::WindowOpacity::kInferred &&
       params.type != views::Widget::InitParams::TYPE_WINDOW) {
@@ -379,23 +396,20 @@ void Widget::Init(InitParams params) {
     // ViewsDelegate::OnBeforeWidgetInit() may change `params.delegate` either
     // by setting it to null or assigning a different value to it, so handle
     // both cases.
-    // TODO(kylixrd): Rework this to avoid always creating the default delegate
-    // once the widget never owns a provided delegate.
-    owned_widget_delegate_ = std::make_unique<DefaultWidgetDelegate>();
-    widget_delegate_ = params.delegate ? params.delegate->AsWeakPtr()
-                                       : owned_widget_delegate_->AsWeakPtr();
-
     ViewsDelegate::GetInstance()->OnBeforeWidgetInit(&params, this);
 
-    widget_delegate_ = params.delegate ? params.delegate->AsWeakPtr()
-                                       : owned_widget_delegate_->AsWeakPtr();
-    if (widget_delegate_.get() != owned_widget_delegate_.get()) {
+    if (params.delegate) {
       // TODO(kylixrd): This will be unnecessary once the Widget can no longer
       // "own" the delegate.
-      if (widget_delegate_->owned_by_widget())
-        owned_widget_delegate_ = base::WrapUnique(widget_delegate_.get());
-      else
-        owned_widget_delegate_.reset();
+      if (params.delegate->owned_by_widget()) {
+        owned_widget_delegate_ = base::WrapUnique(params.delegate.get());
+        widget_delegate_ = owned_widget_delegate_->AsWeakPtr();
+      } else {
+        widget_delegate_ = params.delegate->AsWeakPtr();
+      }
+    } else {
+      auto default_delegate = std::make_unique<DefaultWidgetDelegate>();
+      widget_delegate_ = default_delegate.release()->AsWeakPtr();
     }
   }
   DCHECK(widget_delegate_);
@@ -666,6 +680,10 @@ void Widget::SetBounds(const gfx::Rect& bounds) {
 void Widget::SetSize(const gfx::Size& size) {
   if (native_widget_)
     native_widget_->SetSize(size);
+}
+
+gfx::Size Widget::GetSize() const {
+  return GetRestoredBounds().size();
 }
 
 void Widget::CenterWindow(const gfx::Size& size) {
@@ -1674,6 +1692,10 @@ void Widget::OnNativeWidgetWorkspaceChanged() {}
 
 void Widget::OnNativeWidgetWindowShowStateChanged() {
   SaveWindowPlacementIfInitialized();
+
+  for (WidgetObserver& observer : observers_) {
+    observer.OnWidgetShowStateChanged(this);
+  }
 }
 
 void Widget::OnNativeWidgetBeginUserBoundsChange() {
@@ -1780,8 +1802,9 @@ void Widget::OnMouseEvent(ui::MouseEvent* event) {
           // process it.
           (event->flags() &
            (ui::EF_LEFT_MOUSE_BUTTON | ui::EF_MIDDLE_MOUSE_BUTTON |
-            ui::EF_RIGHT_MOUSE_BUTTON)) != 0)
+            ui::EF_RIGHT_MOUSE_BUTTON)) != 0) {
         event->SetHandled();
+      }
       return;
 
     case ui::ET_MOUSE_MOVED:
@@ -2031,6 +2054,18 @@ const ui::ColorProvider* Widget::GetColorProvider() const {
       GetColorProviderKey());
 }
 
+const ui::RendererColorMap Widget::GetRendererColorMap(
+    ui::ColorProviderKey::ColorMode color_mode,
+    ui::ColorProviderKey::ForcedColors forced_colors) const {
+  auto key = GetColorProviderKey();
+  key.color_mode = color_mode;
+  key.forced_colors = forced_colors;
+  ui::ColorProvider* color_provider =
+      ui::ColorProviderManager::Get().GetColorProviderFor(key);
+  CHECK(color_provider);
+  return ui::CreateRendererColorMap(*color_provider);
+}
+
 ui::ColorProviderKey Widget::GetColorProviderKeyForTesting() const {
   return GetColorProviderKey();
 }
@@ -2246,6 +2281,7 @@ ADD_PROPERTY_METADATA(int, Width)
 ADD_PROPERTY_METADATA(int, Height)
 ADD_PROPERTY_METADATA(bool, Visible)
 ADD_PROPERTY_METADATA(ui::ZOrderLevel, ZOrderLevel)
+ADD_PROPERTY_METADATA(gfx::Size, Size)
 END_METADATA
 
 namespace internal {

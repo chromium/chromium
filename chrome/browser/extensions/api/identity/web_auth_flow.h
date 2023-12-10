@@ -13,6 +13,7 @@
 #include "base/time/time.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/gfx/geometry/rect.h"
 #include "url/gurl.h"
 
 class Profile;
@@ -95,7 +96,8 @@ class WebAuthFlow : public content::WebContentsObserver {
               bool user_gesture,
               AbortOnLoad abort_on_load_for_non_interactive = AbortOnLoad::kYes,
               absl::optional<base::TimeDelta> timeout_for_non_interactive =
-                  absl::nullopt);
+                  absl::nullopt,
+              absl::optional<gfx::Rect> popup_bounds = absl::nullopt);
 
   WebAuthFlow(const WebAuthFlow&) = delete;
   WebAuthFlow& operator=(const WebAuthFlow&) = delete;
@@ -170,6 +172,7 @@ class WebAuthFlow : public content::WebContentsObserver {
   const AbortOnLoad abort_on_load_for_non_interactive_;
   const absl::optional<base::TimeDelta> timeout_for_non_interactive_;
   std::unique_ptr<base::OneShotTimer> non_interactive_timeout_timer_;
+  const absl::optional<gfx::Rect> popup_bounds_;
   // Flag indicating that the initial URL was successfully loaded. Influences
   // the error code when the flow times out.
   bool initial_url_loaded_ = false;

@@ -312,7 +312,7 @@ void ChannelMojo::OnBrokenDataReceived() {
 // static
 MojoResult ChannelMojo::ReadFromMessageAttachmentSet(
     Message* message,
-    absl::optional<std::vector<mojo::native::SerializedHandlePtr>>* handles) {
+    std::optional<std::vector<mojo::native::SerializedHandlePtr>>* handles) {
   DCHECK(!*handles);
 
   MojoResult result = MOJO_RESULT_OK;
@@ -341,7 +341,7 @@ MojoResult ChannelMojo::ReadFromMessageAttachmentSet(
 
 // static
 MojoResult ChannelMojo::WriteToMessageAttachmentSet(
-    absl::optional<std::vector<mojo::native::SerializedHandlePtr>> handles,
+    std::optional<std::vector<mojo::native::SerializedHandlePtr>> handles,
     Message* message) {
   if (!handles)
     return MOJO_RESULT_OK;

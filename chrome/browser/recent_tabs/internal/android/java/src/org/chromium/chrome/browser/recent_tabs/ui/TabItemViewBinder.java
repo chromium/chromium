@@ -31,17 +31,18 @@ import org.chromium.url.GURL;
 
 /** A binder class for review tabs items on the detail sheet. */
 public class TabItemViewBinder {
-    /**
-     * A class to hold objects used for tab favicon fetching.
-     */
+    /** A class to hold objects used for tab favicon fetching. */
     static class BindContext {
         final DefaultFaviconHelper mDefaultFaviconHelper;
         final RoundedIconGenerator mIconGenerator;
         final FaviconHelper mFaviconHelper;
         final Profile mProfile;
 
-        BindContext(DefaultFaviconHelper defaultFaviconHelper, RoundedIconGenerator iconGenerator,
-                FaviconHelper faviconHelper, Profile profile) {
+        BindContext(
+                DefaultFaviconHelper defaultFaviconHelper,
+                RoundedIconGenerator iconGenerator,
+                FaviconHelper faviconHelper,
+                Profile profile) {
             mDefaultFaviconHelper = defaultFaviconHelper;
             mIconGenerator = iconGenerator;
             mFaviconHelper = faviconHelper;
@@ -86,27 +87,38 @@ public class TabItemViewBinder {
             // back to the review tabs screen without changing devices.
             CheckBox checkBoxView = view.findViewById(R.id.restore_tabs_tab_item_checkbox);
             checkBoxView.setChecked(model.get(IS_SELECTED));
-            int faviconSize = view.getContext().getResources().getDimensionPixelSize(
-                    R.dimen.default_favicon_size);
+            int faviconSize =
+                    view.getContext()
+                            .getResources()
+                            .getDimensionPixelSize(R.dimen.default_favicon_size);
 
             // Load favicon
             ImageView faviconView = view.findViewById(R.id.restore_tabs_review_tabs_screen_favicon);
-            FaviconImageCallback imageCallback = new FaviconImageCallback() {
-                @Override
-                public void onFaviconAvailable(Bitmap bitmap, GURL iconUrl) {
-                    if (bitmap != null) {
-                        Drawable faviconDrawable = FaviconUtils.getIconDrawableWithFilter(bitmap,
-                                tab.url, bindContext.getIconGenerator(),
-                                bindContext.getDefaultFaviconHelper(), view.getContext(),
-                                faviconSize);
-                        faviconView.setImageDrawable(faviconDrawable);
-                    }
-                }
-            };
-            bindContext.getFaviconHelper().getForeignFaviconImageForURL(
-                    bindContext.getProfile(), tab.url, faviconSize, imageCallback);
-            Drawable image = bindContext.getDefaultFaviconHelper().getDefaultFaviconDrawable(
-                    view.getContext(), tab.url, true);
+            FaviconImageCallback imageCallback =
+                    new FaviconImageCallback() {
+                        @Override
+                        public void onFaviconAvailable(Bitmap bitmap, GURL iconUrl) {
+                            if (bitmap != null) {
+                                Drawable faviconDrawable =
+                                        FaviconUtils.getIconDrawableWithFilter(
+                                                bitmap,
+                                                tab.url,
+                                                bindContext.getIconGenerator(),
+                                                bindContext.getDefaultFaviconHelper(),
+                                                view.getContext(),
+                                                faviconSize);
+                                faviconView.setImageDrawable(faviconDrawable);
+                            }
+                        }
+                    };
+            bindContext
+                    .getFaviconHelper()
+                    .getForeignFaviconImageForURL(
+                            bindContext.getProfile(), tab.url, faviconSize, imageCallback);
+            Drawable image =
+                    bindContext
+                            .getDefaultFaviconHelper()
+                            .getDefaultFaviconDrawable(view.getContext(), tab.url, true);
             faviconView.setImageDrawable(image);
         } else if (propertyKey == ON_CLICK_LISTENER) {
             view.setOnClickListener((v) -> model.get(ON_CLICK_LISTENER).run());

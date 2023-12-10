@@ -1,1213 +1,422 @@
 This is a testharness.js-based test.
-Found 1000 tests; 791 PASS, 209 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 209 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] [["subscript",""],["formatblock","<div>"],["inserttext","a"]] "foo[]bar" queryCommandState("subscript") after
   assert_equals: Wrong result returned expected true but got false
 [FAIL] [["subscript",""],["formatblock","<div>"],["inserttext","a"]] "foo[]bar" queryCommandValue("subscript") after
   assert_equals: Wrong result returned expected "" but got "false"
-[PASS] [["subscript",""],["formatblock","<div>"],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("formatblock") before
-[PASS] [["subscript",""],["formatblock","<div>"],["inserttext","a"]] "foo[]bar" queryCommandState("formatblock") before
-[PASS] [["subscript",""],["formatblock","<div>"],["inserttext","a"]] "foo[]bar" queryCommandValue("formatblock") before
-[PASS] [["subscript",""],["formatblock","<div>"],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("formatblock") after
-[PASS] [["subscript",""],["formatblock","<div>"],["inserttext","a"]] "foo[]bar" queryCommandState("formatblock") after
 [FAIL] [["subscript",""],["formatblock","<div>"],["inserttext","a"]] "foo[]bar" queryCommandValue("formatblock") after
   assert_equals: Wrong result returned expected "div" but got ""
-[PASS] [["subscript",""],["formatblock","<div>"],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("inserttext") before
-[PASS] [["subscript",""],["formatblock","<div>"],["inserttext","a"]] "foo[]bar" queryCommandState("inserttext") before
-[PASS] [["subscript",""],["formatblock","<div>"],["inserttext","a"]] "foo[]bar" queryCommandValue("inserttext") before
-[PASS] [["subscript",""],["formatblock","<div>"],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("inserttext") after
-[PASS] [["subscript",""],["formatblock","<div>"],["inserttext","a"]] "foo[]bar" queryCommandState("inserttext") after
-[PASS] [["subscript",""],["formatblock","<div>"],["inserttext","a"]] "foo[]bar" queryCommandValue("inserttext") after
-[PASS] [["subscript",""],["forwarddelete",""]] "foo[]bar": execCommand("subscript", false, "") return value
-[PASS] [["subscript",""],["forwarddelete",""]] "foo[]bar": execCommand("forwarddelete", false, "") return value
-[PASS] [["subscript",""],["forwarddelete",""]] "foo[]bar" checks for modifications to non-editable content
-[PASS] [["subscript",""],["forwarddelete",""]] "foo[]bar" compare innerHTML
-[PASS] [["subscript",""],["forwarddelete",""]] "foo[]bar" queryCommandIndeterm("subscript") before
-[PASS] [["subscript",""],["forwarddelete",""]] "foo[]bar" queryCommandState("subscript") before
 [FAIL] [["subscript",""],["forwarddelete",""]] "foo[]bar" queryCommandValue("subscript") before
   assert_equals: Wrong result returned expected "" but got "false"
-[PASS] [["subscript",""],["forwarddelete",""]] "foo[]bar" queryCommandIndeterm("subscript") after
 [FAIL] [["subscript",""],["forwarddelete",""]] "foo[]bar" queryCommandState("subscript") after
   assert_equals: Wrong result returned expected true but got false
 [FAIL] [["subscript",""],["forwarddelete",""]] "foo[]bar" queryCommandValue("subscript") after
   assert_equals: Wrong result returned expected "" but got "false"
-[PASS] [["subscript",""],["forwarddelete",""]] "foo[]bar" queryCommandIndeterm("forwarddelete") before
-[PASS] [["subscript",""],["forwarddelete",""]] "foo[]bar" queryCommandState("forwarddelete") before
-[PASS] [["subscript",""],["forwarddelete",""]] "foo[]bar" queryCommandValue("forwarddelete") before
-[PASS] [["subscript",""],["forwarddelete",""]] "foo[]bar" queryCommandIndeterm("forwarddelete") after
-[PASS] [["subscript",""],["forwarddelete",""]] "foo[]bar" queryCommandState("forwarddelete") after
-[PASS] [["subscript",""],["forwarddelete",""]] "foo[]bar" queryCommandValue("forwarddelete") after
-[PASS] [["subscript",""],["forwarddelete",""],["inserttext","a"]] "foo[]bar": execCommand("subscript", false, "") return value
-[PASS] [["subscript",""],["forwarddelete",""],["inserttext","a"]] "foo[]bar": execCommand("forwarddelete", false, "") return value
-[PASS] [["subscript",""],["forwarddelete",""],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
-[PASS] [["subscript",""],["forwarddelete",""],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
 [FAIL] [["subscript",""],["forwarddelete",""],["inserttext","a"]] "foo[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<sub><font size=\"3\">a</font></sub>ar" but got "fooaar"
-[PASS] [["subscript",""],["forwarddelete",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("subscript") before
-[PASS] [["subscript",""],["forwarddelete",""],["inserttext","a"]] "foo[]bar" queryCommandState("subscript") before
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<sub><font size=\\"3\\">a</font></sub>ar" but got "fooaar"
 [FAIL] [["subscript",""],["forwarddelete",""],["inserttext","a"]] "foo[]bar" queryCommandValue("subscript") before
   assert_equals: Wrong result returned expected "" but got "false"
-[PASS] [["subscript",""],["forwarddelete",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("subscript") after
 [FAIL] [["subscript",""],["forwarddelete",""],["inserttext","a"]] "foo[]bar" queryCommandState("subscript") after
   assert_equals: Wrong result returned expected true but got false
 [FAIL] [["subscript",""],["forwarddelete",""],["inserttext","a"]] "foo[]bar" queryCommandValue("subscript") after
   assert_equals: Wrong result returned expected "" but got "false"
-[PASS] [["subscript",""],["forwarddelete",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("forwarddelete") before
-[PASS] [["subscript",""],["forwarddelete",""],["inserttext","a"]] "foo[]bar" queryCommandState("forwarddelete") before
-[PASS] [["subscript",""],["forwarddelete",""],["inserttext","a"]] "foo[]bar" queryCommandValue("forwarddelete") before
-[PASS] [["subscript",""],["forwarddelete",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("forwarddelete") after
-[PASS] [["subscript",""],["forwarddelete",""],["inserttext","a"]] "foo[]bar" queryCommandState("forwarddelete") after
-[PASS] [["subscript",""],["forwarddelete",""],["inserttext","a"]] "foo[]bar" queryCommandValue("forwarddelete") after
-[PASS] [["subscript",""],["forwarddelete",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("inserttext") before
-[PASS] [["subscript",""],["forwarddelete",""],["inserttext","a"]] "foo[]bar" queryCommandState("inserttext") before
-[PASS] [["subscript",""],["forwarddelete",""],["inserttext","a"]] "foo[]bar" queryCommandValue("inserttext") before
-[PASS] [["subscript",""],["forwarddelete",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("inserttext") after
-[PASS] [["subscript",""],["forwarddelete",""],["inserttext","a"]] "foo[]bar" queryCommandState("inserttext") after
-[PASS] [["subscript",""],["forwarddelete",""],["inserttext","a"]] "foo[]bar" queryCommandValue("inserttext") after
-[PASS] [["subscript",""],["indent",""]] "foo[]bar": execCommand("subscript", false, "") return value
-[PASS] [["subscript",""],["indent",""]] "foo[]bar": execCommand("indent", false, "") return value
-[PASS] [["subscript",""],["indent",""]] "foo[]bar" checks for modifications to non-editable content
 [FAIL] [["subscript",""],["indent",""]] "foo[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<blockquote>foobar</blockquote>" but got "<blockquote style=\"margin:0 0 0 40px; border:none; padding:0px\">foobar</blockquote>"
-[PASS] [["subscript",""],["indent",""]] "foo[]bar" queryCommandIndeterm("subscript") before
-[PASS] [["subscript",""],["indent",""]] "foo[]bar" queryCommandState("subscript") before
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<blockquote>foobar</blockquote>" but got "<blockquote style=\\"margin:0 0 0 40px; border:none; padding:0px\\">foobar</blockquote>"
 [FAIL] [["subscript",""],["indent",""]] "foo[]bar" queryCommandValue("subscript") before
   assert_equals: Wrong result returned expected "" but got "false"
-[PASS] [["subscript",""],["indent",""]] "foo[]bar" queryCommandIndeterm("subscript") after
 [FAIL] [["subscript",""],["indent",""]] "foo[]bar" queryCommandState("subscript") after
   assert_equals: Wrong result returned expected true but got false
 [FAIL] [["subscript",""],["indent",""]] "foo[]bar" queryCommandValue("subscript") after
   assert_equals: Wrong result returned expected "" but got "false"
-[PASS] [["subscript",""],["indent",""]] "foo[]bar" queryCommandIndeterm("indent") before
-[PASS] [["subscript",""],["indent",""]] "foo[]bar" queryCommandState("indent") before
-[PASS] [["subscript",""],["indent",""]] "foo[]bar" queryCommandValue("indent") before
-[PASS] [["subscript",""],["indent",""]] "foo[]bar" queryCommandIndeterm("indent") after
-[PASS] [["subscript",""],["indent",""]] "foo[]bar" queryCommandState("indent") after
-[PASS] [["subscript",""],["indent",""]] "foo[]bar" queryCommandValue("indent") after
-[PASS] [["subscript",""],["indent",""],["inserttext","a"]] "foo[]bar": execCommand("subscript", false, "") return value
-[PASS] [["subscript",""],["indent",""],["inserttext","a"]] "foo[]bar": execCommand("indent", false, "") return value
-[PASS] [["subscript",""],["indent",""],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
-[PASS] [["subscript",""],["indent",""],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
 [FAIL] [["subscript",""],["indent",""],["inserttext","a"]] "foo[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<blockquote>foo<sub>a</sub>bar</blockquote>" but got "<blockquote style=\"margin:0 0 0 40px; border:none; padding:0px\">fooabar</blockquote>"
-[PASS] [["subscript",""],["indent",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("subscript") before
-[PASS] [["subscript",""],["indent",""],["inserttext","a"]] "foo[]bar" queryCommandState("subscript") before
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<blockquote>foo<sub>a</sub>bar</blockquote>" but got "<blockquote style=\\"margin:0 0 0 40px; border:none; padding:0px\\">fooabar</blockquote>"
 [FAIL] [["subscript",""],["indent",""],["inserttext","a"]] "foo[]bar" queryCommandValue("subscript") before
   assert_equals: Wrong result returned expected "" but got "false"
-[PASS] [["subscript",""],["indent",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("subscript") after
 [FAIL] [["subscript",""],["indent",""],["inserttext","a"]] "foo[]bar" queryCommandState("subscript") after
   assert_equals: Wrong result returned expected true but got false
 [FAIL] [["subscript",""],["indent",""],["inserttext","a"]] "foo[]bar" queryCommandValue("subscript") after
   assert_equals: Wrong result returned expected "" but got "false"
-[PASS] [["subscript",""],["indent",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("indent") before
-[PASS] [["subscript",""],["indent",""],["inserttext","a"]] "foo[]bar" queryCommandState("indent") before
-[PASS] [["subscript",""],["indent",""],["inserttext","a"]] "foo[]bar" queryCommandValue("indent") before
-[PASS] [["subscript",""],["indent",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("indent") after
-[PASS] [["subscript",""],["indent",""],["inserttext","a"]] "foo[]bar" queryCommandState("indent") after
-[PASS] [["subscript",""],["indent",""],["inserttext","a"]] "foo[]bar" queryCommandValue("indent") after
-[PASS] [["subscript",""],["indent",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("inserttext") before
-[PASS] [["subscript",""],["indent",""],["inserttext","a"]] "foo[]bar" queryCommandState("inserttext") before
-[PASS] [["subscript",""],["indent",""],["inserttext","a"]] "foo[]bar" queryCommandValue("inserttext") before
-[PASS] [["subscript",""],["indent",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("inserttext") after
-[PASS] [["subscript",""],["indent",""],["inserttext","a"]] "foo[]bar" queryCommandState("inserttext") after
-[PASS] [["subscript",""],["indent",""],["inserttext","a"]] "foo[]bar" queryCommandValue("inserttext") after
-[PASS] [["subscript",""],["inserthorizontalrule",""]] "foo[]bar": execCommand("subscript", false, "") return value
-[PASS] [["subscript",""],["inserthorizontalrule",""]] "foo[]bar": execCommand("inserthorizontalrule", false, "") return value
-[PASS] [["subscript",""],["inserthorizontalrule",""]] "foo[]bar" checks for modifications to non-editable content
-[PASS] [["subscript",""],["inserthorizontalrule",""]] "foo[]bar" compare innerHTML
-[PASS] [["subscript",""],["inserthorizontalrule",""]] "foo[]bar" queryCommandIndeterm("subscript") before
-[PASS] [["subscript",""],["inserthorizontalrule",""]] "foo[]bar" queryCommandState("subscript") before
 [FAIL] [["subscript",""],["inserthorizontalrule",""]] "foo[]bar" queryCommandValue("subscript") before
   assert_equals: Wrong result returned expected "" but got "false"
-[PASS] [["subscript",""],["inserthorizontalrule",""]] "foo[]bar" queryCommandIndeterm("subscript") after
 [FAIL] [["subscript",""],["inserthorizontalrule",""]] "foo[]bar" queryCommandState("subscript") after
   assert_equals: Wrong result returned expected true but got false
 [FAIL] [["subscript",""],["inserthorizontalrule",""]] "foo[]bar" queryCommandValue("subscript") after
   assert_equals: Wrong result returned expected "" but got "false"
-[PASS] [["subscript",""],["inserthorizontalrule",""]] "foo[]bar" queryCommandIndeterm("inserthorizontalrule") before
-[PASS] [["subscript",""],["inserthorizontalrule",""]] "foo[]bar" queryCommandState("inserthorizontalrule") before
-[PASS] [["subscript",""],["inserthorizontalrule",""]] "foo[]bar" queryCommandValue("inserthorizontalrule") before
-[PASS] [["subscript",""],["inserthorizontalrule",""]] "foo[]bar" queryCommandIndeterm("inserthorizontalrule") after
-[PASS] [["subscript",""],["inserthorizontalrule",""]] "foo[]bar" queryCommandState("inserthorizontalrule") after
-[PASS] [["subscript",""],["inserthorizontalrule",""]] "foo[]bar" queryCommandValue("inserthorizontalrule") after
-[PASS] [["subscript",""],["inserthorizontalrule",""],["inserttext","a"]] "foo[]bar": execCommand("subscript", false, "") return value
-[PASS] [["subscript",""],["inserthorizontalrule",""],["inserttext","a"]] "foo[]bar": execCommand("inserthorizontalrule", false, "") return value
-[PASS] [["subscript",""],["inserthorizontalrule",""],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
-[PASS] [["subscript",""],["inserthorizontalrule",""],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
 [FAIL] [["subscript",""],["inserthorizontalrule",""],["inserttext","a"]] "foo[]bar" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<hr><sub>a</sub>bar" but got "foo<hr>abar"
-[PASS] [["subscript",""],["inserthorizontalrule",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("subscript") before
-[PASS] [["subscript",""],["inserthorizontalrule",""],["inserttext","a"]] "foo[]bar" queryCommandState("subscript") before
 [FAIL] [["subscript",""],["inserthorizontalrule",""],["inserttext","a"]] "foo[]bar" queryCommandValue("subscript") before
   assert_equals: Wrong result returned expected "" but got "false"
-[PASS] [["subscript",""],["inserthorizontalrule",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("subscript") after
 [FAIL] [["subscript",""],["inserthorizontalrule",""],["inserttext","a"]] "foo[]bar" queryCommandState("subscript") after
   assert_equals: Wrong result returned expected true but got false
 [FAIL] [["subscript",""],["inserthorizontalrule",""],["inserttext","a"]] "foo[]bar" queryCommandValue("subscript") after
   assert_equals: Wrong result returned expected "" but got "false"
-[PASS] [["subscript",""],["inserthorizontalrule",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("inserthorizontalrule") before
-[PASS] [["subscript",""],["inserthorizontalrule",""],["inserttext","a"]] "foo[]bar" queryCommandState("inserthorizontalrule") before
-[PASS] [["subscript",""],["inserthorizontalrule",""],["inserttext","a"]] "foo[]bar" queryCommandValue("inserthorizontalrule") before
-[PASS] [["subscript",""],["inserthorizontalrule",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("inserthorizontalrule") after
-[PASS] [["subscript",""],["inserthorizontalrule",""],["inserttext","a"]] "foo[]bar" queryCommandState("inserthorizontalrule") after
-[PASS] [["subscript",""],["inserthorizontalrule",""],["inserttext","a"]] "foo[]bar" queryCommandValue("inserthorizontalrule") after
-[PASS] [["subscript",""],["inserthorizontalrule",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("inserttext") before
-[PASS] [["subscript",""],["inserthorizontalrule",""],["inserttext","a"]] "foo[]bar" queryCommandState("inserttext") before
-[PASS] [["subscript",""],["inserthorizontalrule",""],["inserttext","a"]] "foo[]bar" queryCommandValue("inserttext") before
-[PASS] [["subscript",""],["inserthorizontalrule",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("inserttext") after
-[PASS] [["subscript",""],["inserthorizontalrule",""],["inserttext","a"]] "foo[]bar" queryCommandState("inserttext") after
-[PASS] [["subscript",""],["inserthorizontalrule",""],["inserttext","a"]] "foo[]bar" queryCommandValue("inserttext") after
-[PASS] [["subscript",""],["inserthtml","ab<b>c</b>d"]] "foo[]bar": execCommand("subscript", false, "") return value
-[PASS] [["subscript",""],["inserthtml","ab<b>c</b>d"]] "foo[]bar": execCommand("inserthtml", false, "ab<b>c</b>d") return value
-[PASS] [["subscript",""],["inserthtml","ab<b>c</b>d"]] "foo[]bar" checks for modifications to non-editable content
-[PASS] [["subscript",""],["inserthtml","ab<b>c</b>d"]] "foo[]bar" compare innerHTML
-[PASS] [["subscript",""],["inserthtml","ab<b>c</b>d"]] "foo[]bar" queryCommandIndeterm("subscript") before
-[PASS] [["subscript",""],["inserthtml","ab<b>c</b>d"]] "foo[]bar" queryCommandState("subscript") before
 [FAIL] [["subscript",""],["inserthtml","ab<b>c</b>d"]] "foo[]bar" queryCommandValue("subscript") before
   assert_equals: Wrong result returned expected "" but got "false"
-[PASS] [["subscript",""],["inserthtml","ab<b>c</b>d"]] "foo[]bar" queryCommandIndeterm("subscript") after
 [FAIL] [["subscript",""],["inserthtml","ab<b>c</b>d"]] "foo[]bar" queryCommandState("subscript") after
   assert_equals: Wrong result returned expected true but got false
 [FAIL] [["subscript",""],["inserthtml","ab<b>c</b>d"]] "foo[]bar" queryCommandValue("subscript") after
   assert_equals: Wrong result returned expected "" but got "false"
-[PASS] [["subscript",""],["inserthtml","ab<b>c</b>d"]] "foo[]bar" queryCommandIndeterm("inserthtml") before
-[PASS] [["subscript",""],["inserthtml","ab<b>c</b>d"]] "foo[]bar" queryCommandState("inserthtml") before
-[PASS] [["subscript",""],["inserthtml","ab<b>c</b>d"]] "foo[]bar" queryCommandValue("inserthtml") before
-[PASS] [["subscript",""],["inserthtml","ab<b>c</b>d"]] "foo[]bar" queryCommandIndeterm("inserthtml") after
-[PASS] [["subscript",""],["inserthtml","ab<b>c</b>d"]] "foo[]bar" queryCommandState("inserthtml") after
-[PASS] [["subscript",""],["inserthtml","ab<b>c</b>d"]] "foo[]bar" queryCommandValue("inserthtml") after
-[PASS] [["subscript",""],["inserthtml","ab<b>c</b>d"],["inserttext","a"]] "foo[]bar": execCommand("subscript", false, "") return value
-[PASS] [["subscript",""],["inserthtml","ab<b>c</b>d"],["inserttext","a"]] "foo[]bar": execCommand("inserthtml", false, "ab<b>c</b>d") return value
-[PASS] [["subscript",""],["inserthtml","ab<b>c</b>d"],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
-[PASS] [["subscript",""],["inserthtml","ab<b>c</b>d"],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
 [FAIL] [["subscript",""],["inserthtml","ab<b>c</b>d"],["inserttext","a"]] "foo[]bar" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "fooab<b>c</b>d<sub>a</sub>bar" but got "fooab<b>c</b>dabar"
-[PASS] [["subscript",""],["inserthtml","ab<b>c</b>d"],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("subscript") before
-[PASS] [["subscript",""],["inserthtml","ab<b>c</b>d"],["inserttext","a"]] "foo[]bar" queryCommandState("subscript") before
 [FAIL] [["subscript",""],["inserthtml","ab<b>c</b>d"],["inserttext","a"]] "foo[]bar" queryCommandValue("subscript") before
   assert_equals: Wrong result returned expected "" but got "false"
-[PASS] [["subscript",""],["inserthtml","ab<b>c</b>d"],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("subscript") after
 [FAIL] [["subscript",""],["inserthtml","ab<b>c</b>d"],["inserttext","a"]] "foo[]bar" queryCommandState("subscript") after
   assert_equals: Wrong result returned expected true but got false
 [FAIL] [["subscript",""],["inserthtml","ab<b>c</b>d"],["inserttext","a"]] "foo[]bar" queryCommandValue("subscript") after
   assert_equals: Wrong result returned expected "" but got "false"
-[PASS] [["subscript",""],["inserthtml","ab<b>c</b>d"],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("inserthtml") before
-[PASS] [["subscript",""],["inserthtml","ab<b>c</b>d"],["inserttext","a"]] "foo[]bar" queryCommandState("inserthtml") before
-[PASS] [["subscript",""],["inserthtml","ab<b>c</b>d"],["inserttext","a"]] "foo[]bar" queryCommandValue("inserthtml") before
-[PASS] [["subscript",""],["inserthtml","ab<b>c</b>d"],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("inserthtml") after
-[PASS] [["subscript",""],["inserthtml","ab<b>c</b>d"],["inserttext","a"]] "foo[]bar" queryCommandState("inserthtml") after
-[PASS] [["subscript",""],["inserthtml","ab<b>c</b>d"],["inserttext","a"]] "foo[]bar" queryCommandValue("inserthtml") after
-[PASS] [["subscript",""],["inserthtml","ab<b>c</b>d"],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("inserttext") before
-[PASS] [["subscript",""],["inserthtml","ab<b>c</b>d"],["inserttext","a"]] "foo[]bar" queryCommandState("inserttext") before
-[PASS] [["subscript",""],["inserthtml","ab<b>c</b>d"],["inserttext","a"]] "foo[]bar" queryCommandValue("inserttext") before
-[PASS] [["subscript",""],["inserthtml","ab<b>c</b>d"],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("inserttext") after
-[PASS] [["subscript",""],["inserthtml","ab<b>c</b>d"],["inserttext","a"]] "foo[]bar" queryCommandState("inserttext") after
-[PASS] [["subscript",""],["inserthtml","ab<b>c</b>d"],["inserttext","a"]] "foo[]bar" queryCommandValue("inserttext") after
-[PASS] [["subscript",""],["insertimage","/img/lion.svg"]] "foo[]bar": execCommand("subscript", false, "") return value
-[PASS] [["subscript",""],["insertimage","/img/lion.svg"]] "foo[]bar": execCommand("insertimage", false, "/img/lion.svg") return value
-[PASS] [["subscript",""],["insertimage","/img/lion.svg"]] "foo[]bar" checks for modifications to non-editable content
-[PASS] [["subscript",""],["insertimage","/img/lion.svg"]] "foo[]bar" compare innerHTML
-[PASS] [["subscript",""],["insertimage","/img/lion.svg"]] "foo[]bar" queryCommandIndeterm("subscript") before
-[PASS] [["subscript",""],["insertimage","/img/lion.svg"]] "foo[]bar" queryCommandState("subscript") before
 [FAIL] [["subscript",""],["insertimage","/img/lion.svg"]] "foo[]bar" queryCommandValue("subscript") before
   assert_equals: Wrong result returned expected "" but got "false"
-[PASS] [["subscript",""],["insertimage","/img/lion.svg"]] "foo[]bar" queryCommandIndeterm("subscript") after
 [FAIL] [["subscript",""],["insertimage","/img/lion.svg"]] "foo[]bar" queryCommandState("subscript") after
   assert_equals: Wrong result returned expected true but got false
 [FAIL] [["subscript",""],["insertimage","/img/lion.svg"]] "foo[]bar" queryCommandValue("subscript") after
   assert_equals: Wrong result returned expected "" but got "false"
-[PASS] [["subscript",""],["insertimage","/img/lion.svg"]] "foo[]bar" queryCommandIndeterm("insertimage") before
-[PASS] [["subscript",""],["insertimage","/img/lion.svg"]] "foo[]bar" queryCommandState("insertimage") before
-[PASS] [["subscript",""],["insertimage","/img/lion.svg"]] "foo[]bar" queryCommandValue("insertimage") before
-[PASS] [["subscript",""],["insertimage","/img/lion.svg"]] "foo[]bar" queryCommandIndeterm("insertimage") after
-[PASS] [["subscript",""],["insertimage","/img/lion.svg"]] "foo[]bar" queryCommandState("insertimage") after
-[PASS] [["subscript",""],["insertimage","/img/lion.svg"]] "foo[]bar" queryCommandValue("insertimage") after
-[PASS] [["subscript",""],["insertimage","/img/lion.svg"],["inserttext","a"]] "foo[]bar": execCommand("subscript", false, "") return value
-[PASS] [["subscript",""],["insertimage","/img/lion.svg"],["inserttext","a"]] "foo[]bar": execCommand("insertimage", false, "/img/lion.svg") return value
-[PASS] [["subscript",""],["insertimage","/img/lion.svg"],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
-[PASS] [["subscript",""],["insertimage","/img/lion.svg"],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
 [FAIL] [["subscript",""],["insertimage","/img/lion.svg"],["inserttext","a"]] "foo[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<img src=\"/img/lion.svg\"><sub>a</sub>bar" but got "foo<img src=\"/img/lion.svg\">abar"
-[PASS] [["subscript",""],["insertimage","/img/lion.svg"],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("subscript") before
-[PASS] [["subscript",""],["insertimage","/img/lion.svg"],["inserttext","a"]] "foo[]bar" queryCommandState("subscript") before
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<img src=\\"/img/lion.svg\\"><sub>a</sub>bar" but got "foo<img src=\\"/img/lion.svg\\">abar"
 [FAIL] [["subscript",""],["insertimage","/img/lion.svg"],["inserttext","a"]] "foo[]bar" queryCommandValue("subscript") before
   assert_equals: Wrong result returned expected "" but got "false"
-[PASS] [["subscript",""],["insertimage","/img/lion.svg"],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("subscript") after
 [FAIL] [["subscript",""],["insertimage","/img/lion.svg"],["inserttext","a"]] "foo[]bar" queryCommandState("subscript") after
   assert_equals: Wrong result returned expected true but got false
 [FAIL] [["subscript",""],["insertimage","/img/lion.svg"],["inserttext","a"]] "foo[]bar" queryCommandValue("subscript") after
   assert_equals: Wrong result returned expected "" but got "false"
-[PASS] [["subscript",""],["insertimage","/img/lion.svg"],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("insertimage") before
-[PASS] [["subscript",""],["insertimage","/img/lion.svg"],["inserttext","a"]] "foo[]bar" queryCommandState("insertimage") before
-[PASS] [["subscript",""],["insertimage","/img/lion.svg"],["inserttext","a"]] "foo[]bar" queryCommandValue("insertimage") before
-[PASS] [["subscript",""],["insertimage","/img/lion.svg"],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("insertimage") after
-[PASS] [["subscript",""],["insertimage","/img/lion.svg"],["inserttext","a"]] "foo[]bar" queryCommandState("insertimage") after
-[PASS] [["subscript",""],["insertimage","/img/lion.svg"],["inserttext","a"]] "foo[]bar" queryCommandValue("insertimage") after
-[PASS] [["subscript",""],["insertimage","/img/lion.svg"],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("inserttext") before
-[PASS] [["subscript",""],["insertimage","/img/lion.svg"],["inserttext","a"]] "foo[]bar" queryCommandState("inserttext") before
-[PASS] [["subscript",""],["insertimage","/img/lion.svg"],["inserttext","a"]] "foo[]bar" queryCommandValue("inserttext") before
-[PASS] [["subscript",""],["insertimage","/img/lion.svg"],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("inserttext") after
-[PASS] [["subscript",""],["insertimage","/img/lion.svg"],["inserttext","a"]] "foo[]bar" queryCommandState("inserttext") after
-[PASS] [["subscript",""],["insertimage","/img/lion.svg"],["inserttext","a"]] "foo[]bar" queryCommandValue("inserttext") after
-[PASS] [["subscript",""],["insertlinebreak",""]] "foo[]bar": execCommand("subscript", false, "") return value
-[PASS] [["subscript",""],["insertlinebreak",""]] "foo[]bar": execCommand("insertlinebreak", false, "") return value
-[PASS] [["subscript",""],["insertlinebreak",""]] "foo[]bar" checks for modifications to non-editable content
 [FAIL] [["subscript",""],["insertlinebreak",""]] "foo[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<br>bar" but got "foo<span style=\"vertical-align:sub\"><br></span>bar"
-[PASS] [["subscript",""],["insertlinebreak",""]] "foo[]bar" queryCommandIndeterm("subscript") before
-[PASS] [["subscript",""],["insertlinebreak",""]] "foo[]bar" queryCommandState("subscript") before
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<br>bar" but got "foo<span style=\\"vertical-align:sub\\"><br></span>bar"
 [FAIL] [["subscript",""],["insertlinebreak",""]] "foo[]bar" queryCommandValue("subscript") before
   assert_equals: Wrong result returned expected "" but got "false"
-[PASS] [["subscript",""],["insertlinebreak",""]] "foo[]bar" queryCommandIndeterm("subscript") after
-[PASS] [["subscript",""],["insertlinebreak",""]] "foo[]bar" queryCommandState("subscript") after
 [FAIL] [["subscript",""],["insertlinebreak",""]] "foo[]bar" queryCommandValue("subscript") after
   assert_equals: Wrong result returned expected "" but got "true"
-[PASS] [["subscript",""],["insertlinebreak",""]] "foo[]bar" queryCommandIndeterm("insertlinebreak") before
-[PASS] [["subscript",""],["insertlinebreak",""]] "foo[]bar" queryCommandState("insertlinebreak") before
-[PASS] [["subscript",""],["insertlinebreak",""]] "foo[]bar" queryCommandValue("insertlinebreak") before
-[PASS] [["subscript",""],["insertlinebreak",""]] "foo[]bar" queryCommandIndeterm("insertlinebreak") after
-[PASS] [["subscript",""],["insertlinebreak",""]] "foo[]bar" queryCommandState("insertlinebreak") after
-[PASS] [["subscript",""],["insertlinebreak",""]] "foo[]bar" queryCommandValue("insertlinebreak") after
-[PASS] [["subscript",""],["insertlinebreak",""],["inserttext","a"]] "foo[]bar": execCommand("subscript", false, "") return value
-[PASS] [["subscript",""],["insertlinebreak",""],["inserttext","a"]] "foo[]bar": execCommand("insertlinebreak", false, "") return value
-[PASS] [["subscript",""],["insertlinebreak",""],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
-[PASS] [["subscript",""],["insertlinebreak",""],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
 [FAIL] [["subscript",""],["insertlinebreak",""],["inserttext","a"]] "foo[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<br><sub>a</sub>bar" but got "foo<span style=\"vertical-align:sub\"><br>a</span>bar"
-[PASS] [["subscript",""],["insertlinebreak",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("subscript") before
-[PASS] [["subscript",""],["insertlinebreak",""],["inserttext","a"]] "foo[]bar" queryCommandState("subscript") before
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<br><sub>a</sub>bar" but got "foo<span style=\\"vertical-align:sub\\"><br>a</span>bar"
 [FAIL] [["subscript",""],["insertlinebreak",""],["inserttext","a"]] "foo[]bar" queryCommandValue("subscript") before
   assert_equals: Wrong result returned expected "" but got "false"
-[PASS] [["subscript",""],["insertlinebreak",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("subscript") after
-[PASS] [["subscript",""],["insertlinebreak",""],["inserttext","a"]] "foo[]bar" queryCommandState("subscript") after
 [FAIL] [["subscript",""],["insertlinebreak",""],["inserttext","a"]] "foo[]bar" queryCommandValue("subscript") after
   assert_equals: Wrong result returned expected "" but got "true"
-[PASS] [["subscript",""],["insertlinebreak",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("insertlinebreak") before
-[PASS] [["subscript",""],["insertlinebreak",""],["inserttext","a"]] "foo[]bar" queryCommandState("insertlinebreak") before
-[PASS] [["subscript",""],["insertlinebreak",""],["inserttext","a"]] "foo[]bar" queryCommandValue("insertlinebreak") before
-[PASS] [["subscript",""],["insertlinebreak",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("insertlinebreak") after
-[PASS] [["subscript",""],["insertlinebreak",""],["inserttext","a"]] "foo[]bar" queryCommandState("insertlinebreak") after
-[PASS] [["subscript",""],["insertlinebreak",""],["inserttext","a"]] "foo[]bar" queryCommandValue("insertlinebreak") after
-[PASS] [["subscript",""],["insertlinebreak",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("inserttext") before
-[PASS] [["subscript",""],["insertlinebreak",""],["inserttext","a"]] "foo[]bar" queryCommandState("inserttext") before
-[PASS] [["subscript",""],["insertlinebreak",""],["inserttext","a"]] "foo[]bar" queryCommandValue("inserttext") before
-[PASS] [["subscript",""],["insertlinebreak",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("inserttext") after
-[PASS] [["subscript",""],["insertlinebreak",""],["inserttext","a"]] "foo[]bar" queryCommandState("inserttext") after
-[PASS] [["subscript",""],["insertlinebreak",""],["inserttext","a"]] "foo[]bar" queryCommandValue("inserttext") after
-[PASS] [["subscript",""],["insertorderedlist",""]] "foo[]bar": execCommand("subscript", false, "") return value
-[PASS] [["subscript",""],["insertorderedlist",""]] "foo[]bar": execCommand("insertorderedlist", false, "") return value
-[PASS] [["subscript",""],["insertorderedlist",""]] "foo[]bar" checks for modifications to non-editable content
-[PASS] [["subscript",""],["insertorderedlist",""]] "foo[]bar" compare innerHTML
-[PASS] [["subscript",""],["insertorderedlist",""]] "foo[]bar" queryCommandIndeterm("subscript") before
-[PASS] [["subscript",""],["insertorderedlist",""]] "foo[]bar" queryCommandState("subscript") before
 [FAIL] [["subscript",""],["insertorderedlist",""]] "foo[]bar" queryCommandValue("subscript") before
   assert_equals: Wrong result returned expected "" but got "false"
-[PASS] [["subscript",""],["insertorderedlist",""]] "foo[]bar" queryCommandIndeterm("subscript") after
 [FAIL] [["subscript",""],["insertorderedlist",""]] "foo[]bar" queryCommandState("subscript") after
   assert_equals: Wrong result returned expected true but got false
 [FAIL] [["subscript",""],["insertorderedlist",""]] "foo[]bar" queryCommandValue("subscript") after
   assert_equals: Wrong result returned expected "" but got "false"
-[PASS] [["subscript",""],["insertorderedlist",""]] "foo[]bar" queryCommandIndeterm("insertorderedlist") before
-[PASS] [["subscript",""],["insertorderedlist",""]] "foo[]bar" queryCommandState("insertorderedlist") before
 [FAIL] [["subscript",""],["insertorderedlist",""]] "foo[]bar" queryCommandValue("insertorderedlist") before
   assert_equals: Wrong result returned expected "" but got "false"
-[PASS] [["subscript",""],["insertorderedlist",""]] "foo[]bar" queryCommandIndeterm("insertorderedlist") after
-[PASS] [["subscript",""],["insertorderedlist",""]] "foo[]bar" queryCommandState("insertorderedlist") after
 [FAIL] [["subscript",""],["insertorderedlist",""]] "foo[]bar" queryCommandValue("insertorderedlist") after
   assert_equals: Wrong result returned expected "" but got "true"
-[PASS] [["subscript",""],["insertorderedlist",""],["inserttext","a"]] "foo[]bar": execCommand("subscript", false, "") return value
-[PASS] [["subscript",""],["insertorderedlist",""],["inserttext","a"]] "foo[]bar": execCommand("insertorderedlist", false, "") return value
-[PASS] [["subscript",""],["insertorderedlist",""],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
-[PASS] [["subscript",""],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
 [FAIL] [["subscript",""],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo<sub>a</sub>bar</li></ol>" but got "<ol><li>afoobar</li></ol>"
-[PASS] [["subscript",""],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("subscript") before
-[PASS] [["subscript",""],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandState("subscript") before
 [FAIL] [["subscript",""],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandValue("subscript") before
   assert_equals: Wrong result returned expected "" but got "false"
-[PASS] [["subscript",""],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("subscript") after
 [FAIL] [["subscript",""],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandState("subscript") after
   assert_equals: Wrong result returned expected true but got false
 [FAIL] [["subscript",""],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandValue("subscript") after
   assert_equals: Wrong result returned expected "" but got "false"
-[PASS] [["subscript",""],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("insertorderedlist") before
-[PASS] [["subscript",""],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandState("insertorderedlist") before
 [FAIL] [["subscript",""],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandValue("insertorderedlist") before
   assert_equals: Wrong result returned expected "" but got "false"
-[PASS] [["subscript",""],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("insertorderedlist") after
-[PASS] [["subscript",""],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandState("insertorderedlist") after
 [FAIL] [["subscript",""],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandValue("insertorderedlist") after
   assert_equals: Wrong result returned expected "" but got "true"
-[PASS] [["subscript",""],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("inserttext") before
-[PASS] [["subscript",""],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandState("inserttext") before
-[PASS] [["subscript",""],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandValue("inserttext") before
-[PASS] [["subscript",""],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("inserttext") after
-[PASS] [["subscript",""],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandState("inserttext") after
-[PASS] [["subscript",""],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandValue("inserttext") after
-[PASS] [["subscript",""],["insertparagraph",""]] "foo[]bar": execCommand("subscript", false, "") return value
-[PASS] [["subscript",""],["insertparagraph",""]] "foo[]bar": execCommand("insertparagraph", false, "") return value
-[PASS] [["subscript",""],["insertparagraph",""]] "foo[]bar" checks for modifications to non-editable content
 [FAIL] [["subscript",""],["insertparagraph",""]] "foo[]bar" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo</p><p>bar</p>" but got "foo<div>bar</div>"
-[PASS] [["subscript",""],["insertparagraph",""]] "foo[]bar" queryCommandIndeterm("subscript") before
-[PASS] [["subscript",""],["insertparagraph",""]] "foo[]bar" queryCommandState("subscript") before
 [FAIL] [["subscript",""],["insertparagraph",""]] "foo[]bar" queryCommandValue("subscript") before
   assert_equals: Wrong result returned expected "" but got "false"
-[PASS] [["subscript",""],["insertparagraph",""]] "foo[]bar" queryCommandIndeterm("subscript") after
-[PASS] [["subscript",""],["insertparagraph",""]] "foo[]bar" queryCommandState("subscript") after
 [FAIL] [["subscript",""],["insertparagraph",""]] "foo[]bar" queryCommandValue("subscript") after
   assert_equals: Wrong result returned expected "" but got "true"
-[PASS] [["subscript",""],["insertparagraph",""]] "foo[]bar" queryCommandIndeterm("insertparagraph") before
-[PASS] [["subscript",""],["insertparagraph",""]] "foo[]bar" queryCommandState("insertparagraph") before
-[PASS] [["subscript",""],["insertparagraph",""]] "foo[]bar" queryCommandValue("insertparagraph") before
-[PASS] [["subscript",""],["insertparagraph",""]] "foo[]bar" queryCommandIndeterm("insertparagraph") after
-[PASS] [["subscript",""],["insertparagraph",""]] "foo[]bar" queryCommandState("insertparagraph") after
-[PASS] [["subscript",""],["insertparagraph",""]] "foo[]bar" queryCommandValue("insertparagraph") after
-[PASS] [["subscript",""],["insertparagraph",""],["inserttext","a"]] "foo[]bar": execCommand("subscript", false, "") return value
-[PASS] [["subscript",""],["insertparagraph",""],["inserttext","a"]] "foo[]bar": execCommand("insertparagraph", false, "") return value
-[PASS] [["subscript",""],["insertparagraph",""],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
-[PASS] [["subscript",""],["insertparagraph",""],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
 [FAIL] [["subscript",""],["insertparagraph",""],["inserttext","a"]] "foo[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo</p><p><sub>a</sub>bar</p>" but got "foo<div><span style=\"vertical-align:sub\">a</span>bar</div>"
-[PASS] [["subscript",""],["insertparagraph",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("subscript") before
-[PASS] [["subscript",""],["insertparagraph",""],["inserttext","a"]] "foo[]bar" queryCommandState("subscript") before
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo</p><p><sub>a</sub>bar</p>" but got "foo<div><span style=\\"vertical-align:sub\\">a</span>bar</div>"
 [FAIL] [["subscript",""],["insertparagraph",""],["inserttext","a"]] "foo[]bar" queryCommandValue("subscript") before
   assert_equals: Wrong result returned expected "" but got "false"
-[PASS] [["subscript",""],["insertparagraph",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("subscript") after
-[PASS] [["subscript",""],["insertparagraph",""],["inserttext","a"]] "foo[]bar" queryCommandState("subscript") after
 [FAIL] [["subscript",""],["insertparagraph",""],["inserttext","a"]] "foo[]bar" queryCommandValue("subscript") after
   assert_equals: Wrong result returned expected "" but got "true"
-[PASS] [["subscript",""],["insertparagraph",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("insertparagraph") before
-[PASS] [["subscript",""],["insertparagraph",""],["inserttext","a"]] "foo[]bar" queryCommandState("insertparagraph") before
-[PASS] [["subscript",""],["insertparagraph",""],["inserttext","a"]] "foo[]bar" queryCommandValue("insertparagraph") before
-[PASS] [["subscript",""],["insertparagraph",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("insertparagraph") after
-[PASS] [["subscript",""],["insertparagraph",""],["inserttext","a"]] "foo[]bar" queryCommandState("insertparagraph") after
-[PASS] [["subscript",""],["insertparagraph",""],["inserttext","a"]] "foo[]bar" queryCommandValue("insertparagraph") after
-[PASS] [["subscript",""],["insertparagraph",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("inserttext") before
-[PASS] [["subscript",""],["insertparagraph",""],["inserttext","a"]] "foo[]bar" queryCommandState("inserttext") before
-[PASS] [["subscript",""],["insertparagraph",""],["inserttext","a"]] "foo[]bar" queryCommandValue("inserttext") before
-[PASS] [["subscript",""],["insertparagraph",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("inserttext") after
-[PASS] [["subscript",""],["insertparagraph",""],["inserttext","a"]] "foo[]bar" queryCommandState("inserttext") after
-[PASS] [["subscript",""],["insertparagraph",""],["inserttext","a"]] "foo[]bar" queryCommandValue("inserttext") after
-[PASS] [["subscript",""],["insertunorderedlist",""]] "foo[]bar": execCommand("subscript", false, "") return value
-[PASS] [["subscript",""],["insertunorderedlist",""]] "foo[]bar": execCommand("insertunorderedlist", false, "") return value
-[PASS] [["subscript",""],["insertunorderedlist",""]] "foo[]bar" checks for modifications to non-editable content
-[PASS] [["subscript",""],["insertunorderedlist",""]] "foo[]bar" compare innerHTML
-[PASS] [["subscript",""],["insertunorderedlist",""]] "foo[]bar" queryCommandIndeterm("subscript") before
-[PASS] [["subscript",""],["insertunorderedlist",""]] "foo[]bar" queryCommandState("subscript") before
 [FAIL] [["subscript",""],["insertunorderedlist",""]] "foo[]bar" queryCommandValue("subscript") before
   assert_equals: Wrong result returned expected "" but got "false"
-[PASS] [["subscript",""],["insertunorderedlist",""]] "foo[]bar" queryCommandIndeterm("subscript") after
 [FAIL] [["subscript",""],["insertunorderedlist",""]] "foo[]bar" queryCommandState("subscript") after
   assert_equals: Wrong result returned expected true but got false
 [FAIL] [["subscript",""],["insertunorderedlist",""]] "foo[]bar" queryCommandValue("subscript") after
   assert_equals: Wrong result returned expected "" but got "false"
-[PASS] [["subscript",""],["insertunorderedlist",""]] "foo[]bar" queryCommandIndeterm("insertunorderedlist") before
-[PASS] [["subscript",""],["insertunorderedlist",""]] "foo[]bar" queryCommandState("insertunorderedlist") before
 [FAIL] [["subscript",""],["insertunorderedlist",""]] "foo[]bar" queryCommandValue("insertunorderedlist") before
   assert_equals: Wrong result returned expected "" but got "false"
-[PASS] [["subscript",""],["insertunorderedlist",""]] "foo[]bar" queryCommandIndeterm("insertunorderedlist") after
-[PASS] [["subscript",""],["insertunorderedlist",""]] "foo[]bar" queryCommandState("insertunorderedlist") after
 [FAIL] [["subscript",""],["insertunorderedlist",""]] "foo[]bar" queryCommandValue("insertunorderedlist") after
   assert_equals: Wrong result returned expected "" but got "true"
-[PASS] [["subscript",""],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar": execCommand("subscript", false, "") return value
-[PASS] [["subscript",""],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar": execCommand("insertunorderedlist", false, "") return value
-[PASS] [["subscript",""],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
-[PASS] [["subscript",""],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
 [FAIL] [["subscript",""],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><li>foo<sub>a</sub>bar</li></ul>" but got "<ul><li>afoobar</li></ul>"
-[PASS] [["subscript",""],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("subscript") before
-[PASS] [["subscript",""],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandState("subscript") before
 [FAIL] [["subscript",""],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandValue("subscript") before
   assert_equals: Wrong result returned expected "" but got "false"
-[PASS] [["subscript",""],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("subscript") after
 [FAIL] [["subscript",""],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandState("subscript") after
   assert_equals: Wrong result returned expected true but got false
 [FAIL] [["subscript",""],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandValue("subscript") after
   assert_equals: Wrong result returned expected "" but got "false"
-[PASS] [["subscript",""],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("insertunorderedlist") before
-[PASS] [["subscript",""],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandState("insertunorderedlist") before
 [FAIL] [["subscript",""],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandValue("insertunorderedlist") before
   assert_equals: Wrong result returned expected "" but got "false"
-[PASS] [["subscript",""],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("insertunorderedlist") after
-[PASS] [["subscript",""],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandState("insertunorderedlist") after
 [FAIL] [["subscript",""],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandValue("insertunorderedlist") after
   assert_equals: Wrong result returned expected "" but got "true"
-[PASS] [["subscript",""],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("inserttext") before
-[PASS] [["subscript",""],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandState("inserttext") before
-[PASS] [["subscript",""],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandValue("inserttext") before
-[PASS] [["subscript",""],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("inserttext") after
-[PASS] [["subscript",""],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandState("inserttext") after
-[PASS] [["subscript",""],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandValue("inserttext") after
-[PASS] [["subscript",""],["justifycenter",""]] "foo[]bar": execCommand("subscript", false, "") return value
-[PASS] [["subscript",""],["justifycenter",""]] "foo[]bar": execCommand("justifycenter", false, "") return value
-[PASS] [["subscript",""],["justifycenter",""]] "foo[]bar" checks for modifications to non-editable content
-[PASS] [["subscript",""],["justifycenter",""]] "foo[]bar" compare innerHTML
-[PASS] [["subscript",""],["justifycenter",""]] "foo[]bar" queryCommandIndeterm("subscript") before
-[PASS] [["subscript",""],["justifycenter",""]] "foo[]bar" queryCommandState("subscript") before
 [FAIL] [["subscript",""],["justifycenter",""]] "foo[]bar" queryCommandValue("subscript") before
   assert_equals: Wrong result returned expected "" but got "false"
-[PASS] [["subscript",""],["justifycenter",""]] "foo[]bar" queryCommandIndeterm("subscript") after
 [FAIL] [["subscript",""],["justifycenter",""]] "foo[]bar" queryCommandState("subscript") after
   assert_equals: Wrong result returned expected true but got false
 [FAIL] [["subscript",""],["justifycenter",""]] "foo[]bar" queryCommandValue("subscript") after
   assert_equals: Wrong result returned expected "" but got "false"
-[PASS] [["subscript",""],["justifycenter",""]] "foo[]bar" queryCommandIndeterm("justifycenter") before
-[PASS] [["subscript",""],["justifycenter",""]] "foo[]bar" queryCommandState("justifycenter") before
 [FAIL] [["subscript",""],["justifycenter",""]] "foo[]bar" queryCommandValue("justifycenter") before
   assert_equals: Wrong result returned expected "left" but got "false"
-[PASS] [["subscript",""],["justifycenter",""]] "foo[]bar" queryCommandIndeterm("justifycenter") after
-[PASS] [["subscript",""],["justifycenter",""]] "foo[]bar" queryCommandState("justifycenter") after
 [FAIL] [["subscript",""],["justifycenter",""]] "foo[]bar" queryCommandValue("justifycenter") after
   assert_equals: Wrong result returned expected "center" but got "true"
-[PASS] [["subscript",""],["justifycenter",""],["inserttext","a"]] "foo[]bar": execCommand("subscript", false, "") return value
-[PASS] [["subscript",""],["justifycenter",""],["inserttext","a"]] "foo[]bar": execCommand("justifycenter", false, "") return value
-[PASS] [["subscript",""],["justifycenter",""],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
-[PASS] [["subscript",""],["justifycenter",""],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
 [FAIL] [["subscript",""],["justifycenter",""],["inserttext","a"]] "foo[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\"text-align:center\">foo<sub>a</sub>bar</div>" but got "<div style=\"text-align:center\">fooabar</div>"
-[PASS] [["subscript",""],["justifycenter",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("subscript") before
-[PASS] [["subscript",""],["justifycenter",""],["inserttext","a"]] "foo[]bar" queryCommandState("subscript") before
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"text-align:center\\">foo<sub>a</sub>bar</div>" but got "<div style=\\"text-align:center\\">fooabar</div>"
 [FAIL] [["subscript",""],["justifycenter",""],["inserttext","a"]] "foo[]bar" queryCommandValue("subscript") before
   assert_equals: Wrong result returned expected "" but got "false"
-[PASS] [["subscript",""],["justifycenter",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("subscript") after
 [FAIL] [["subscript",""],["justifycenter",""],["inserttext","a"]] "foo[]bar" queryCommandState("subscript") after
   assert_equals: Wrong result returned expected true but got false
 [FAIL] [["subscript",""],["justifycenter",""],["inserttext","a"]] "foo[]bar" queryCommandValue("subscript") after
   assert_equals: Wrong result returned expected "" but got "false"
-[PASS] [["subscript",""],["justifycenter",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("justifycenter") before
-[PASS] [["subscript",""],["justifycenter",""],["inserttext","a"]] "foo[]bar" queryCommandState("justifycenter") before
 [FAIL] [["subscript",""],["justifycenter",""],["inserttext","a"]] "foo[]bar" queryCommandValue("justifycenter") before
   assert_equals: Wrong result returned expected "left" but got "false"
-[PASS] [["subscript",""],["justifycenter",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("justifycenter") after
-[PASS] [["subscript",""],["justifycenter",""],["inserttext","a"]] "foo[]bar" queryCommandState("justifycenter") after
 [FAIL] [["subscript",""],["justifycenter",""],["inserttext","a"]] "foo[]bar" queryCommandValue("justifycenter") after
   assert_equals: Wrong result returned expected "center" but got "true"
-[PASS] [["subscript",""],["justifycenter",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("inserttext") before
-[PASS] [["subscript",""],["justifycenter",""],["inserttext","a"]] "foo[]bar" queryCommandState("inserttext") before
-[PASS] [["subscript",""],["justifycenter",""],["inserttext","a"]] "foo[]bar" queryCommandValue("inserttext") before
-[PASS] [["subscript",""],["justifycenter",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("inserttext") after
-[PASS] [["subscript",""],["justifycenter",""],["inserttext","a"]] "foo[]bar" queryCommandState("inserttext") after
-[PASS] [["subscript",""],["justifycenter",""],["inserttext","a"]] "foo[]bar" queryCommandValue("inserttext") after
-[PASS] [["subscript",""],["justifyfull",""]] "foo[]bar": execCommand("subscript", false, "") return value
-[PASS] [["subscript",""],["justifyfull",""]] "foo[]bar": execCommand("justifyfull", false, "") return value
-[PASS] [["subscript",""],["justifyfull",""]] "foo[]bar" checks for modifications to non-editable content
-[PASS] [["subscript",""],["justifyfull",""]] "foo[]bar" compare innerHTML
-[PASS] [["subscript",""],["justifyfull",""]] "foo[]bar" queryCommandIndeterm("subscript") before
-[PASS] [["subscript",""],["justifyfull",""]] "foo[]bar" queryCommandState("subscript") before
 [FAIL] [["subscript",""],["justifyfull",""]] "foo[]bar" queryCommandValue("subscript") before
   assert_equals: Wrong result returned expected "" but got "false"
-[PASS] [["subscript",""],["justifyfull",""]] "foo[]bar" queryCommandIndeterm("subscript") after
 [FAIL] [["subscript",""],["justifyfull",""]] "foo[]bar" queryCommandState("subscript") after
   assert_equals: Wrong result returned expected true but got false
 [FAIL] [["subscript",""],["justifyfull",""]] "foo[]bar" queryCommandValue("subscript") after
   assert_equals: Wrong result returned expected "" but got "false"
-[PASS] [["subscript",""],["justifyfull",""]] "foo[]bar" queryCommandIndeterm("justifyfull") before
-[PASS] [["subscript",""],["justifyfull",""]] "foo[]bar" queryCommandState("justifyfull") before
 [FAIL] [["subscript",""],["justifyfull",""]] "foo[]bar" queryCommandValue("justifyfull") before
   assert_equals: Wrong result returned expected "left" but got "false"
-[PASS] [["subscript",""],["justifyfull",""]] "foo[]bar" queryCommandIndeterm("justifyfull") after
-[PASS] [["subscript",""],["justifyfull",""]] "foo[]bar" queryCommandState("justifyfull") after
 [FAIL] [["subscript",""],["justifyfull",""]] "foo[]bar" queryCommandValue("justifyfull") after
   assert_equals: Wrong result returned expected "justify" but got "true"
-[PASS] [["subscript",""],["justifyfull",""],["inserttext","a"]] "foo[]bar": execCommand("subscript", false, "") return value
-[PASS] [["subscript",""],["justifyfull",""],["inserttext","a"]] "foo[]bar": execCommand("justifyfull", false, "") return value
-[PASS] [["subscript",""],["justifyfull",""],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
-[PASS] [["subscript",""],["justifyfull",""],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
 [FAIL] [["subscript",""],["justifyfull",""],["inserttext","a"]] "foo[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\"text-align:justify\">foo<sub>a</sub>bar</div>" but got "<div style=\"text-align:justify\">fooabar</div>"
-[PASS] [["subscript",""],["justifyfull",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("subscript") before
-[PASS] [["subscript",""],["justifyfull",""],["inserttext","a"]] "foo[]bar" queryCommandState("subscript") before
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"text-align:justify\\">foo<sub>a</sub>bar</div>" but got "<div style=\\"text-align:justify\\">fooabar</div>"
 [FAIL] [["subscript",""],["justifyfull",""],["inserttext","a"]] "foo[]bar" queryCommandValue("subscript") before
   assert_equals: Wrong result returned expected "" but got "false"
-[PASS] [["subscript",""],["justifyfull",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("subscript") after
 [FAIL] [["subscript",""],["justifyfull",""],["inserttext","a"]] "foo[]bar" queryCommandState("subscript") after
   assert_equals: Wrong result returned expected true but got false
 [FAIL] [["subscript",""],["justifyfull",""],["inserttext","a"]] "foo[]bar" queryCommandValue("subscript") after
   assert_equals: Wrong result returned expected "" but got "false"
-[PASS] [["subscript",""],["justifyfull",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("justifyfull") before
-[PASS] [["subscript",""],["justifyfull",""],["inserttext","a"]] "foo[]bar" queryCommandState("justifyfull") before
 [FAIL] [["subscript",""],["justifyfull",""],["inserttext","a"]] "foo[]bar" queryCommandValue("justifyfull") before
   assert_equals: Wrong result returned expected "left" but got "false"
-[PASS] [["subscript",""],["justifyfull",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("justifyfull") after
-[PASS] [["subscript",""],["justifyfull",""],["inserttext","a"]] "foo[]bar" queryCommandState("justifyfull") after
 [FAIL] [["subscript",""],["justifyfull",""],["inserttext","a"]] "foo[]bar" queryCommandValue("justifyfull") after
   assert_equals: Wrong result returned expected "justify" but got "true"
-[PASS] [["subscript",""],["justifyfull",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("inserttext") before
-[PASS] [["subscript",""],["justifyfull",""],["inserttext","a"]] "foo[]bar" queryCommandState("inserttext") before
-[PASS] [["subscript",""],["justifyfull",""],["inserttext","a"]] "foo[]bar" queryCommandValue("inserttext") before
-[PASS] [["subscript",""],["justifyfull",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("inserttext") after
-[PASS] [["subscript",""],["justifyfull",""],["inserttext","a"]] "foo[]bar" queryCommandState("inserttext") after
-[PASS] [["subscript",""],["justifyfull",""],["inserttext","a"]] "foo[]bar" queryCommandValue("inserttext") after
-[PASS] [["subscript",""],["justifyleft",""]] "foo[]bar": execCommand("subscript", false, "") return value
-[PASS] [["subscript",""],["justifyleft",""]] "foo[]bar": execCommand("justifyleft", false, "") return value
-[PASS] [["subscript",""],["justifyleft",""]] "foo[]bar" checks for modifications to non-editable content
-[PASS] [["subscript",""],["justifyleft",""]] "foo[]bar" compare innerHTML
-[PASS] [["subscript",""],["justifyleft",""]] "foo[]bar" queryCommandIndeterm("subscript") before
-[PASS] [["subscript",""],["justifyleft",""]] "foo[]bar" queryCommandState("subscript") before
 [FAIL] [["subscript",""],["justifyleft",""]] "foo[]bar" queryCommandValue("subscript") before
   assert_equals: Wrong result returned expected "" but got "false"
-[PASS] [["subscript",""],["justifyleft",""]] "foo[]bar" queryCommandIndeterm("subscript") after
 [FAIL] [["subscript",""],["justifyleft",""]] "foo[]bar" queryCommandState("subscript") after
   assert_equals: Wrong result returned expected true but got false
 [FAIL] [["subscript",""],["justifyleft",""]] "foo[]bar" queryCommandValue("subscript") after
   assert_equals: Wrong result returned expected "" but got "false"
-[PASS] [["subscript",""],["justifyleft",""]] "foo[]bar" queryCommandIndeterm("justifyleft") before
-[PASS] [["subscript",""],["justifyleft",""]] "foo[]bar" queryCommandState("justifyleft") before
 [FAIL] [["subscript",""],["justifyleft",""]] "foo[]bar" queryCommandValue("justifyleft") before
   assert_equals: Wrong result returned expected "left" but got "true"
-[PASS] [["subscript",""],["justifyleft",""]] "foo[]bar" queryCommandIndeterm("justifyleft") after
-[PASS] [["subscript",""],["justifyleft",""]] "foo[]bar" queryCommandState("justifyleft") after
 [FAIL] [["subscript",""],["justifyleft",""]] "foo[]bar" queryCommandValue("justifyleft") after
   assert_equals: Wrong result returned expected "left" but got "true"
-[PASS] [["subscript",""],["justifyleft",""],["inserttext","a"]] "foo[]bar": execCommand("subscript", false, "") return value
-[PASS] [["subscript",""],["justifyleft",""],["inserttext","a"]] "foo[]bar": execCommand("justifyleft", false, "") return value
-[PASS] [["subscript",""],["justifyleft",""],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
-[PASS] [["subscript",""],["justifyleft",""],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
 [FAIL] [["subscript",""],["justifyleft",""],["inserttext","a"]] "foo[]bar" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<sub>a</sub>bar" but got "fooabar"
-[PASS] [["subscript",""],["justifyleft",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("subscript") before
-[PASS] [["subscript",""],["justifyleft",""],["inserttext","a"]] "foo[]bar" queryCommandState("subscript") before
 [FAIL] [["subscript",""],["justifyleft",""],["inserttext","a"]] "foo[]bar" queryCommandValue("subscript") before
   assert_equals: Wrong result returned expected "" but got "false"
-[PASS] [["subscript",""],["justifyleft",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("subscript") after
 [FAIL] [["subscript",""],["justifyleft",""],["inserttext","a"]] "foo[]bar" queryCommandState("subscript") after
   assert_equals: Wrong result returned expected true but got false
 [FAIL] [["subscript",""],["justifyleft",""],["inserttext","a"]] "foo[]bar" queryCommandValue("subscript") after
   assert_equals: Wrong result returned expected "" but got "false"
-[PASS] [["subscript",""],["justifyleft",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("justifyleft") before
-[PASS] [["subscript",""],["justifyleft",""],["inserttext","a"]] "foo[]bar" queryCommandState("justifyleft") before
 [FAIL] [["subscript",""],["justifyleft",""],["inserttext","a"]] "foo[]bar" queryCommandValue("justifyleft") before
   assert_equals: Wrong result returned expected "left" but got "true"
-[PASS] [["subscript",""],["justifyleft",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("justifyleft") after
-[PASS] [["subscript",""],["justifyleft",""],["inserttext","a"]] "foo[]bar" queryCommandState("justifyleft") after
 [FAIL] [["subscript",""],["justifyleft",""],["inserttext","a"]] "foo[]bar" queryCommandValue("justifyleft") after
   assert_equals: Wrong result returned expected "left" but got "true"
-[PASS] [["subscript",""],["justifyleft",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("inserttext") before
-[PASS] [["subscript",""],["justifyleft",""],["inserttext","a"]] "foo[]bar" queryCommandState("inserttext") before
-[PASS] [["subscript",""],["justifyleft",""],["inserttext","a"]] "foo[]bar" queryCommandValue("inserttext") before
-[PASS] [["subscript",""],["justifyleft",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("inserttext") after
-[PASS] [["subscript",""],["justifyleft",""],["inserttext","a"]] "foo[]bar" queryCommandState("inserttext") after
-[PASS] [["subscript",""],["justifyleft",""],["inserttext","a"]] "foo[]bar" queryCommandValue("inserttext") after
-[PASS] [["subscript",""],["justifyright",""]] "foo[]bar": execCommand("subscript", false, "") return value
-[PASS] [["subscript",""],["justifyright",""]] "foo[]bar": execCommand("justifyright", false, "") return value
-[PASS] [["subscript",""],["justifyright",""]] "foo[]bar" checks for modifications to non-editable content
-[PASS] [["subscript",""],["justifyright",""]] "foo[]bar" compare innerHTML
-[PASS] [["subscript",""],["justifyright",""]] "foo[]bar" queryCommandIndeterm("subscript") before
-[PASS] [["subscript",""],["justifyright",""]] "foo[]bar" queryCommandState("subscript") before
 [FAIL] [["subscript",""],["justifyright",""]] "foo[]bar" queryCommandValue("subscript") before
   assert_equals: Wrong result returned expected "" but got "false"
-[PASS] [["subscript",""],["justifyright",""]] "foo[]bar" queryCommandIndeterm("subscript") after
 [FAIL] [["subscript",""],["justifyright",""]] "foo[]bar" queryCommandState("subscript") after
   assert_equals: Wrong result returned expected true but got false
 [FAIL] [["subscript",""],["justifyright",""]] "foo[]bar" queryCommandValue("subscript") after
   assert_equals: Wrong result returned expected "" but got "false"
-[PASS] [["subscript",""],["justifyright",""]] "foo[]bar" queryCommandIndeterm("justifyright") before
-[PASS] [["subscript",""],["justifyright",""]] "foo[]bar" queryCommandState("justifyright") before
 [FAIL] [["subscript",""],["justifyright",""]] "foo[]bar" queryCommandValue("justifyright") before
   assert_equals: Wrong result returned expected "left" but got "false"
-[PASS] [["subscript",""],["justifyright",""]] "foo[]bar" queryCommandIndeterm("justifyright") after
-[PASS] [["subscript",""],["justifyright",""]] "foo[]bar" queryCommandState("justifyright") after
 [FAIL] [["subscript",""],["justifyright",""]] "foo[]bar" queryCommandValue("justifyright") after
   assert_equals: Wrong result returned expected "right" but got "true"
-[PASS] [["subscript",""],["justifyright",""],["inserttext","a"]] "foo[]bar": execCommand("subscript", false, "") return value
-[PASS] [["subscript",""],["justifyright",""],["inserttext","a"]] "foo[]bar": execCommand("justifyright", false, "") return value
-[PASS] [["subscript",""],["justifyright",""],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
-[PASS] [["subscript",""],["justifyright",""],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
 [FAIL] [["subscript",""],["justifyright",""],["inserttext","a"]] "foo[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\"text-align:right\">foo<sub>a</sub>bar</div>" but got "<div style=\"text-align:right\">fooabar</div>"
-[PASS] [["subscript",""],["justifyright",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("subscript") before
-[PASS] [["subscript",""],["justifyright",""],["inserttext","a"]] "foo[]bar" queryCommandState("subscript") before
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"text-align:right\\">foo<sub>a</sub>bar</div>" but got "<div style=\\"text-align:right\\">fooabar</div>"
 [FAIL] [["subscript",""],["justifyright",""],["inserttext","a"]] "foo[]bar" queryCommandValue("subscript") before
   assert_equals: Wrong result returned expected "" but got "false"
-[PASS] [["subscript",""],["justifyright",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("subscript") after
 [FAIL] [["subscript",""],["justifyright",""],["inserttext","a"]] "foo[]bar" queryCommandState("subscript") after
   assert_equals: Wrong result returned expected true but got false
 [FAIL] [["subscript",""],["justifyright",""],["inserttext","a"]] "foo[]bar" queryCommandValue("subscript") after
   assert_equals: Wrong result returned expected "" but got "false"
-[PASS] [["subscript",""],["justifyright",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("justifyright") before
-[PASS] [["subscript",""],["justifyright",""],["inserttext","a"]] "foo[]bar" queryCommandState("justifyright") before
 [FAIL] [["subscript",""],["justifyright",""],["inserttext","a"]] "foo[]bar" queryCommandValue("justifyright") before
   assert_equals: Wrong result returned expected "left" but got "false"
-[PASS] [["subscript",""],["justifyright",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("justifyright") after
-[PASS] [["subscript",""],["justifyright",""],["inserttext","a"]] "foo[]bar" queryCommandState("justifyright") after
 [FAIL] [["subscript",""],["justifyright",""],["inserttext","a"]] "foo[]bar" queryCommandValue("justifyright") after
   assert_equals: Wrong result returned expected "right" but got "true"
-[PASS] [["subscript",""],["justifyright",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("inserttext") before
-[PASS] [["subscript",""],["justifyright",""],["inserttext","a"]] "foo[]bar" queryCommandState("inserttext") before
-[PASS] [["subscript",""],["justifyright",""],["inserttext","a"]] "foo[]bar" queryCommandValue("inserttext") before
-[PASS] [["subscript",""],["justifyright",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("inserttext") after
-[PASS] [["subscript",""],["justifyright",""],["inserttext","a"]] "foo[]bar" queryCommandState("inserttext") after
-[PASS] [["subscript",""],["justifyright",""],["inserttext","a"]] "foo[]bar" queryCommandValue("inserttext") after
-[PASS] [["subscript",""],["outdent",""]] "foo[]bar": execCommand("subscript", false, "") return value
-[PASS] [["subscript",""],["outdent",""]] "foo[]bar": execCommand("outdent", false, "") return value
-[PASS] [["subscript",""],["outdent",""]] "foo[]bar" checks for modifications to non-editable content
-[PASS] [["subscript",""],["outdent",""]] "foo[]bar" compare innerHTML
-[PASS] [["subscript",""],["outdent",""]] "foo[]bar" queryCommandIndeterm("subscript") before
-[PASS] [["subscript",""],["outdent",""]] "foo[]bar" queryCommandState("subscript") before
 [FAIL] [["subscript",""],["outdent",""]] "foo[]bar" queryCommandValue("subscript") before
   assert_equals: Wrong result returned expected "" but got "false"
-[PASS] [["subscript",""],["outdent",""]] "foo[]bar" queryCommandIndeterm("subscript") after
-[PASS] [["subscript",""],["outdent",""]] "foo[]bar" queryCommandState("subscript") after
 [FAIL] [["subscript",""],["outdent",""]] "foo[]bar" queryCommandValue("subscript") after
   assert_equals: Wrong result returned expected "" but got "true"
-[PASS] [["subscript",""],["outdent",""]] "foo[]bar" queryCommandIndeterm("outdent") before
-[PASS] [["subscript",""],["outdent",""]] "foo[]bar" queryCommandState("outdent") before
-[PASS] [["subscript",""],["outdent",""]] "foo[]bar" queryCommandValue("outdent") before
-[PASS] [["subscript",""],["outdent",""]] "foo[]bar" queryCommandIndeterm("outdent") after
-[PASS] [["subscript",""],["outdent",""]] "foo[]bar" queryCommandState("outdent") after
-[PASS] [["subscript",""],["outdent",""]] "foo[]bar" queryCommandValue("outdent") after
-[PASS] [["subscript",""],["outdent",""],["inserttext","a"]] "foo[]bar": execCommand("subscript", false, "") return value
-[PASS] [["subscript",""],["outdent",""],["inserttext","a"]] "foo[]bar": execCommand("outdent", false, "") return value
-[PASS] [["subscript",""],["outdent",""],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
-[PASS] [["subscript",""],["outdent",""],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
 [FAIL] [["subscript",""],["outdent",""],["inserttext","a"]] "foo[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<sub>a</sub>bar" but got "foo<span style=\"vertical-align:sub\">a</span>bar"
-[PASS] [["subscript",""],["outdent",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("subscript") before
-[PASS] [["subscript",""],["outdent",""],["inserttext","a"]] "foo[]bar" queryCommandState("subscript") before
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<sub>a</sub>bar" but got "foo<span style=\\"vertical-align:sub\\">a</span>bar"
 [FAIL] [["subscript",""],["outdent",""],["inserttext","a"]] "foo[]bar" queryCommandValue("subscript") before
   assert_equals: Wrong result returned expected "" but got "false"
-[PASS] [["subscript",""],["outdent",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("subscript") after
-[PASS] [["subscript",""],["outdent",""],["inserttext","a"]] "foo[]bar" queryCommandState("subscript") after
 [FAIL] [["subscript",""],["outdent",""],["inserttext","a"]] "foo[]bar" queryCommandValue("subscript") after
   assert_equals: Wrong result returned expected "" but got "true"
-[PASS] [["subscript",""],["outdent",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("outdent") before
-[PASS] [["subscript",""],["outdent",""],["inserttext","a"]] "foo[]bar" queryCommandState("outdent") before
-[PASS] [["subscript",""],["outdent",""],["inserttext","a"]] "foo[]bar" queryCommandValue("outdent") before
-[PASS] [["subscript",""],["outdent",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("outdent") after
-[PASS] [["subscript",""],["outdent",""],["inserttext","a"]] "foo[]bar" queryCommandState("outdent") after
-[PASS] [["subscript",""],["outdent",""],["inserttext","a"]] "foo[]bar" queryCommandValue("outdent") after
-[PASS] [["subscript",""],["outdent",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("inserttext") before
-[PASS] [["subscript",""],["outdent",""],["inserttext","a"]] "foo[]bar" queryCommandState("inserttext") before
-[PASS] [["subscript",""],["outdent",""],["inserttext","a"]] "foo[]bar" queryCommandValue("inserttext") before
-[PASS] [["subscript",""],["outdent",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("inserttext") after
-[PASS] [["subscript",""],["outdent",""],["inserttext","a"]] "foo[]bar" queryCommandState("inserttext") after
-[PASS] [["subscript",""],["outdent",""],["inserttext","a"]] "foo[]bar" queryCommandValue("inserttext") after
-[PASS] [["superscript",""],["inserttext","a"]] "foo[]bar": execCommand("superscript", false, "") return value
-[PASS] [["superscript",""],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
-[PASS] [["superscript",""],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
 [FAIL] [["superscript",""],["inserttext","a"]] "foo[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<sup>a</sup>bar" but got "foo<span style=\"vertical-align:super\">a</span>bar"
-[PASS] [["superscript",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("superscript") before
-[PASS] [["superscript",""],["inserttext","a"]] "foo[]bar" queryCommandState("superscript") before
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<sup>a</sup>bar" but got "foo<span style=\\"vertical-align:super\\">a</span>bar"
 [FAIL] [["superscript",""],["inserttext","a"]] "foo[]bar" queryCommandValue("superscript") before
   assert_equals: Wrong result returned expected "" but got "false"
-[PASS] [["superscript",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("superscript") after
-[PASS] [["superscript",""],["inserttext","a"]] "foo[]bar" queryCommandState("superscript") after
 [FAIL] [["superscript",""],["inserttext","a"]] "foo[]bar" queryCommandValue("superscript") after
   assert_equals: Wrong result returned expected "" but got "true"
-[PASS] [["superscript",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("inserttext") before
-[PASS] [["superscript",""],["inserttext","a"]] "foo[]bar" queryCommandState("inserttext") before
-[PASS] [["superscript",""],["inserttext","a"]] "foo[]bar" queryCommandValue("inserttext") before
-[PASS] [["superscript",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("inserttext") after
-[PASS] [["superscript",""],["inserttext","a"]] "foo[]bar" queryCommandState("inserttext") after
-[PASS] [["superscript",""],["inserttext","a"]] "foo[]bar" queryCommandValue("inserttext") after
-[PASS] [["superscript",""],["delete",""]] "foo[]bar": execCommand("superscript", false, "") return value
-[PASS] [["superscript",""],["delete",""]] "foo[]bar": execCommand("delete", false, "") return value
-[PASS] [["superscript",""],["delete",""]] "foo[]bar" checks for modifications to non-editable content
-[PASS] [["superscript",""],["delete",""]] "foo[]bar" compare innerHTML
-[PASS] [["superscript",""],["delete",""]] "foo[]bar" queryCommandIndeterm("superscript") before
-[PASS] [["superscript",""],["delete",""]] "foo[]bar" queryCommandState("superscript") before
 [FAIL] [["superscript",""],["delete",""]] "foo[]bar" queryCommandValue("superscript") before
   assert_equals: Wrong result returned expected "" but got "false"
-[PASS] [["superscript",""],["delete",""]] "foo[]bar" queryCommandIndeterm("superscript") after
 [FAIL] [["superscript",""],["delete",""]] "foo[]bar" queryCommandState("superscript") after
   assert_equals: Wrong result returned expected true but got false
 [FAIL] [["superscript",""],["delete",""]] "foo[]bar" queryCommandValue("superscript") after
   assert_equals: Wrong result returned expected "" but got "false"
-[PASS] [["superscript",""],["delete",""]] "foo[]bar" queryCommandIndeterm("delete") before
-[PASS] [["superscript",""],["delete",""]] "foo[]bar" queryCommandState("delete") before
-[PASS] [["superscript",""],["delete",""]] "foo[]bar" queryCommandValue("delete") before
-[PASS] [["superscript",""],["delete",""]] "foo[]bar" queryCommandIndeterm("delete") after
-[PASS] [["superscript",""],["delete",""]] "foo[]bar" queryCommandState("delete") after
-[PASS] [["superscript",""],["delete",""]] "foo[]bar" queryCommandValue("delete") after
-[PASS] [["superscript",""],["delete",""],["inserttext","a"]] "foo[]bar": execCommand("superscript", false, "") return value
-[PASS] [["superscript",""],["delete",""],["inserttext","a"]] "foo[]bar": execCommand("delete", false, "") return value
-[PASS] [["superscript",""],["delete",""],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
-[PASS] [["superscript",""],["delete",""],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
 [FAIL] [["superscript",""],["delete",""],["inserttext","a"]] "foo[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "fo<sup><font size=\"3\">a</font></sup>bar" but got "foabar"
-[PASS] [["superscript",""],["delete",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("superscript") before
-[PASS] [["superscript",""],["delete",""],["inserttext","a"]] "foo[]bar" queryCommandState("superscript") before
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "fo<sup><font size=\\"3\\">a</font></sup>bar" but got "foabar"
 [FAIL] [["superscript",""],["delete",""],["inserttext","a"]] "foo[]bar" queryCommandValue("superscript") before
   assert_equals: Wrong result returned expected "" but got "false"
-[PASS] [["superscript",""],["delete",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("superscript") after
 [FAIL] [["superscript",""],["delete",""],["inserttext","a"]] "foo[]bar" queryCommandState("superscript") after
   assert_equals: Wrong result returned expected true but got false
 [FAIL] [["superscript",""],["delete",""],["inserttext","a"]] "foo[]bar" queryCommandValue("superscript") after
   assert_equals: Wrong result returned expected "" but got "false"
-[PASS] [["superscript",""],["delete",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("delete") before
-[PASS] [["superscript",""],["delete",""],["inserttext","a"]] "foo[]bar" queryCommandState("delete") before
-[PASS] [["superscript",""],["delete",""],["inserttext","a"]] "foo[]bar" queryCommandValue("delete") before
-[PASS] [["superscript",""],["delete",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("delete") after
-[PASS] [["superscript",""],["delete",""],["inserttext","a"]] "foo[]bar" queryCommandState("delete") after
-[PASS] [["superscript",""],["delete",""],["inserttext","a"]] "foo[]bar" queryCommandValue("delete") after
-[PASS] [["superscript",""],["delete",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("inserttext") before
-[PASS] [["superscript",""],["delete",""],["inserttext","a"]] "foo[]bar" queryCommandState("inserttext") before
-[PASS] [["superscript",""],["delete",""],["inserttext","a"]] "foo[]bar" queryCommandValue("inserttext") before
-[PASS] [["superscript",""],["delete",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("inserttext") after
-[PASS] [["superscript",""],["delete",""],["inserttext","a"]] "foo[]bar" queryCommandState("inserttext") after
-[PASS] [["superscript",""],["delete",""],["inserttext","a"]] "foo[]bar" queryCommandValue("inserttext") after
-[PASS] [["superscript",""],["formatblock","<div>"]] "foo[]bar": execCommand("superscript", false, "") return value
-[PASS] [["superscript",""],["formatblock","<div>"]] "foo[]bar": execCommand("formatblock", false, "<div>") return value
-[PASS] [["superscript",""],["formatblock","<div>"]] "foo[]bar" checks for modifications to non-editable content
-[PASS] [["superscript",""],["formatblock","<div>"]] "foo[]bar" compare innerHTML
-[PASS] [["superscript",""],["formatblock","<div>"]] "foo[]bar" queryCommandIndeterm("superscript") before
-[PASS] [["superscript",""],["formatblock","<div>"]] "foo[]bar" queryCommandState("superscript") before
 [FAIL] [["superscript",""],["formatblock","<div>"]] "foo[]bar" queryCommandValue("superscript") before
   assert_equals: Wrong result returned expected "" but got "false"
-[PASS] [["superscript",""],["formatblock","<div>"]] "foo[]bar" queryCommandIndeterm("superscript") after
 [FAIL] [["superscript",""],["formatblock","<div>"]] "foo[]bar" queryCommandState("superscript") after
   assert_equals: Wrong result returned expected true but got false
 [FAIL] [["superscript",""],["formatblock","<div>"]] "foo[]bar" queryCommandValue("superscript") after
   assert_equals: Wrong result returned expected "" but got "false"
-[PASS] [["superscript",""],["formatblock","<div>"]] "foo[]bar" queryCommandIndeterm("formatblock") before
-[PASS] [["superscript",""],["formatblock","<div>"]] "foo[]bar" queryCommandState("formatblock") before
-[PASS] [["superscript",""],["formatblock","<div>"]] "foo[]bar" queryCommandValue("formatblock") before
-[PASS] [["superscript",""],["formatblock","<div>"]] "foo[]bar" queryCommandIndeterm("formatblock") after
-[PASS] [["superscript",""],["formatblock","<div>"]] "foo[]bar" queryCommandState("formatblock") after
-[PASS] [["superscript",""],["formatblock","<div>"]] "foo[]bar" queryCommandValue("formatblock") after
-[PASS] [["superscript",""],["formatblock","<div>"],["inserttext","a"]] "foo[]bar": execCommand("superscript", false, "") return value
-[PASS] [["superscript",""],["formatblock","<div>"],["inserttext","a"]] "foo[]bar": execCommand("formatblock", false, "<div>") return value
-[PASS] [["superscript",""],["formatblock","<div>"],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
-[PASS] [["superscript",""],["formatblock","<div>"],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
 [FAIL] [["superscript",""],["formatblock","<div>"],["inserttext","a"]] "foo[]bar" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div>foo<sup>a</sup>bar</div>" but got "<div>fooabar</div>"
-[PASS] [["superscript",""],["formatblock","<div>"],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("superscript") before
-[PASS] [["superscript",""],["formatblock","<div>"],["inserttext","a"]] "foo[]bar" queryCommandState("superscript") before
 [FAIL] [["superscript",""],["formatblock","<div>"],["inserttext","a"]] "foo[]bar" queryCommandValue("superscript") before
   assert_equals: Wrong result returned expected "" but got "false"
-[PASS] [["superscript",""],["formatblock","<div>"],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("superscript") after
 [FAIL] [["superscript",""],["formatblock","<div>"],["inserttext","a"]] "foo[]bar" queryCommandState("superscript") after
   assert_equals: Wrong result returned expected true but got false
 [FAIL] [["superscript",""],["formatblock","<div>"],["inserttext","a"]] "foo[]bar" queryCommandValue("superscript") after
   assert_equals: Wrong result returned expected "" but got "false"
-[PASS] [["superscript",""],["formatblock","<div>"],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("formatblock") before
-[PASS] [["superscript",""],["formatblock","<div>"],["inserttext","a"]] "foo[]bar" queryCommandState("formatblock") before
-[PASS] [["superscript",""],["formatblock","<div>"],["inserttext","a"]] "foo[]bar" queryCommandValue("formatblock") before
-[PASS] [["superscript",""],["formatblock","<div>"],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("formatblock") after
-[PASS] [["superscript",""],["formatblock","<div>"],["inserttext","a"]] "foo[]bar" queryCommandState("formatblock") after
-[PASS] [["superscript",""],["formatblock","<div>"],["inserttext","a"]] "foo[]bar" queryCommandValue("formatblock") after
-[PASS] [["superscript",""],["formatblock","<div>"],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("inserttext") before
-[PASS] [["superscript",""],["formatblock","<div>"],["inserttext","a"]] "foo[]bar" queryCommandState("inserttext") before
-[PASS] [["superscript",""],["formatblock","<div>"],["inserttext","a"]] "foo[]bar" queryCommandValue("inserttext") before
-[PASS] [["superscript",""],["formatblock","<div>"],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("inserttext") after
-[PASS] [["superscript",""],["formatblock","<div>"],["inserttext","a"]] "foo[]bar" queryCommandState("inserttext") after
-[PASS] [["superscript",""],["formatblock","<div>"],["inserttext","a"]] "foo[]bar" queryCommandValue("inserttext") after
-[PASS] [["superscript",""],["forwarddelete",""]] "foo[]bar": execCommand("superscript", false, "") return value
-[PASS] [["superscript",""],["forwarddelete",""]] "foo[]bar": execCommand("forwarddelete", false, "") return value
-[PASS] [["superscript",""],["forwarddelete",""]] "foo[]bar" checks for modifications to non-editable content
-[PASS] [["superscript",""],["forwarddelete",""]] "foo[]bar" compare innerHTML
-[PASS] [["superscript",""],["forwarddelete",""]] "foo[]bar" queryCommandIndeterm("superscript") before
-[PASS] [["superscript",""],["forwarddelete",""]] "foo[]bar" queryCommandState("superscript") before
 [FAIL] [["superscript",""],["forwarddelete",""]] "foo[]bar" queryCommandValue("superscript") before
   assert_equals: Wrong result returned expected "" but got "false"
-[PASS] [["superscript",""],["forwarddelete",""]] "foo[]bar" queryCommandIndeterm("superscript") after
 [FAIL] [["superscript",""],["forwarddelete",""]] "foo[]bar" queryCommandState("superscript") after
   assert_equals: Wrong result returned expected true but got false
 [FAIL] [["superscript",""],["forwarddelete",""]] "foo[]bar" queryCommandValue("superscript") after
   assert_equals: Wrong result returned expected "" but got "false"
-[PASS] [["superscript",""],["forwarddelete",""]] "foo[]bar" queryCommandIndeterm("forwarddelete") before
-[PASS] [["superscript",""],["forwarddelete",""]] "foo[]bar" queryCommandState("forwarddelete") before
-[PASS] [["superscript",""],["forwarddelete",""]] "foo[]bar" queryCommandValue("forwarddelete") before
-[PASS] [["superscript",""],["forwarddelete",""]] "foo[]bar" queryCommandIndeterm("forwarddelete") after
-[PASS] [["superscript",""],["forwarddelete",""]] "foo[]bar" queryCommandState("forwarddelete") after
-[PASS] [["superscript",""],["forwarddelete",""]] "foo[]bar" queryCommandValue("forwarddelete") after
-[PASS] [["superscript",""],["forwarddelete",""],["inserttext","a"]] "foo[]bar": execCommand("superscript", false, "") return value
-[PASS] [["superscript",""],["forwarddelete",""],["inserttext","a"]] "foo[]bar": execCommand("forwarddelete", false, "") return value
-[PASS] [["superscript",""],["forwarddelete",""],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
-[PASS] [["superscript",""],["forwarddelete",""],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
 [FAIL] [["superscript",""],["forwarddelete",""],["inserttext","a"]] "foo[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<sup><font size=\"3\">a</font></sup>ar" but got "fooaar"
-[PASS] [["superscript",""],["forwarddelete",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("superscript") before
-[PASS] [["superscript",""],["forwarddelete",""],["inserttext","a"]] "foo[]bar" queryCommandState("superscript") before
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<sup><font size=\\"3\\">a</font></sup>ar" but got "fooaar"
 [FAIL] [["superscript",""],["forwarddelete",""],["inserttext","a"]] "foo[]bar" queryCommandValue("superscript") before
   assert_equals: Wrong result returned expected "" but got "false"
-[PASS] [["superscript",""],["forwarddelete",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("superscript") after
 [FAIL] [["superscript",""],["forwarddelete",""],["inserttext","a"]] "foo[]bar" queryCommandState("superscript") after
   assert_equals: Wrong result returned expected true but got false
 [FAIL] [["superscript",""],["forwarddelete",""],["inserttext","a"]] "foo[]bar" queryCommandValue("superscript") after
   assert_equals: Wrong result returned expected "" but got "false"
-[PASS] [["superscript",""],["forwarddelete",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("forwarddelete") before
-[PASS] [["superscript",""],["forwarddelete",""],["inserttext","a"]] "foo[]bar" queryCommandState("forwarddelete") before
-[PASS] [["superscript",""],["forwarddelete",""],["inserttext","a"]] "foo[]bar" queryCommandValue("forwarddelete") before
-[PASS] [["superscript",""],["forwarddelete",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("forwarddelete") after
-[PASS] [["superscript",""],["forwarddelete",""],["inserttext","a"]] "foo[]bar" queryCommandState("forwarddelete") after
-[PASS] [["superscript",""],["forwarddelete",""],["inserttext","a"]] "foo[]bar" queryCommandValue("forwarddelete") after
-[PASS] [["superscript",""],["forwarddelete",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("inserttext") before
-[PASS] [["superscript",""],["forwarddelete",""],["inserttext","a"]] "foo[]bar" queryCommandState("inserttext") before
-[PASS] [["superscript",""],["forwarddelete",""],["inserttext","a"]] "foo[]bar" queryCommandValue("inserttext") before
-[PASS] [["superscript",""],["forwarddelete",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("inserttext") after
-[PASS] [["superscript",""],["forwarddelete",""],["inserttext","a"]] "foo[]bar" queryCommandState("inserttext") after
-[PASS] [["superscript",""],["forwarddelete",""],["inserttext","a"]] "foo[]bar" queryCommandValue("inserttext") after
-[PASS] [["superscript",""],["indent",""]] "foo[]bar": execCommand("superscript", false, "") return value
-[PASS] [["superscript",""],["indent",""]] "foo[]bar": execCommand("indent", false, "") return value
-[PASS] [["superscript",""],["indent",""]] "foo[]bar" checks for modifications to non-editable content
 [FAIL] [["superscript",""],["indent",""]] "foo[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<blockquote>foobar</blockquote>" but got "<blockquote style=\"margin:0 0 0 40px; border:none; padding:0px\">foobar</blockquote>"
-[PASS] [["superscript",""],["indent",""]] "foo[]bar" queryCommandIndeterm("superscript") before
-[PASS] [["superscript",""],["indent",""]] "foo[]bar" queryCommandState("superscript") before
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<blockquote>foobar</blockquote>" but got "<blockquote style=\\"margin:0 0 0 40px; border:none; padding:0px\\">foobar</blockquote>"
 [FAIL] [["superscript",""],["indent",""]] "foo[]bar" queryCommandValue("superscript") before
   assert_equals: Wrong result returned expected "" but got "false"
-[PASS] [["superscript",""],["indent",""]] "foo[]bar" queryCommandIndeterm("superscript") after
 [FAIL] [["superscript",""],["indent",""]] "foo[]bar" queryCommandState("superscript") after
   assert_equals: Wrong result returned expected true but got false
 [FAIL] [["superscript",""],["indent",""]] "foo[]bar" queryCommandValue("superscript") after
   assert_equals: Wrong result returned expected "" but got "false"
-[PASS] [["superscript",""],["indent",""]] "foo[]bar" queryCommandIndeterm("indent") before
-[PASS] [["superscript",""],["indent",""]] "foo[]bar" queryCommandState("indent") before
-[PASS] [["superscript",""],["indent",""]] "foo[]bar" queryCommandValue("indent") before
-[PASS] [["superscript",""],["indent",""]] "foo[]bar" queryCommandIndeterm("indent") after
-[PASS] [["superscript",""],["indent",""]] "foo[]bar" queryCommandState("indent") after
-[PASS] [["superscript",""],["indent",""]] "foo[]bar" queryCommandValue("indent") after
-[PASS] [["superscript",""],["indent",""],["inserttext","a"]] "foo[]bar": execCommand("superscript", false, "") return value
-[PASS] [["superscript",""],["indent",""],["inserttext","a"]] "foo[]bar": execCommand("indent", false, "") return value
-[PASS] [["superscript",""],["indent",""],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
-[PASS] [["superscript",""],["indent",""],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
 [FAIL] [["superscript",""],["indent",""],["inserttext","a"]] "foo[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<blockquote>foo<sup>a</sup>bar</blockquote>" but got "<blockquote style=\"margin:0 0 0 40px; border:none; padding:0px\">fooabar</blockquote>"
-[PASS] [["superscript",""],["indent",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("superscript") before
-[PASS] [["superscript",""],["indent",""],["inserttext","a"]] "foo[]bar" queryCommandState("superscript") before
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<blockquote>foo<sup>a</sup>bar</blockquote>" but got "<blockquote style=\\"margin:0 0 0 40px; border:none; padding:0px\\">fooabar</blockquote>"
 [FAIL] [["superscript",""],["indent",""],["inserttext","a"]] "foo[]bar" queryCommandValue("superscript") before
   assert_equals: Wrong result returned expected "" but got "false"
-[PASS] [["superscript",""],["indent",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("superscript") after
 [FAIL] [["superscript",""],["indent",""],["inserttext","a"]] "foo[]bar" queryCommandState("superscript") after
   assert_equals: Wrong result returned expected true but got false
 [FAIL] [["superscript",""],["indent",""],["inserttext","a"]] "foo[]bar" queryCommandValue("superscript") after
   assert_equals: Wrong result returned expected "" but got "false"
-[PASS] [["superscript",""],["indent",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("indent") before
-[PASS] [["superscript",""],["indent",""],["inserttext","a"]] "foo[]bar" queryCommandState("indent") before
-[PASS] [["superscript",""],["indent",""],["inserttext","a"]] "foo[]bar" queryCommandValue("indent") before
-[PASS] [["superscript",""],["indent",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("indent") after
-[PASS] [["superscript",""],["indent",""],["inserttext","a"]] "foo[]bar" queryCommandState("indent") after
-[PASS] [["superscript",""],["indent",""],["inserttext","a"]] "foo[]bar" queryCommandValue("indent") after
-[PASS] [["superscript",""],["indent",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("inserttext") before
-[PASS] [["superscript",""],["indent",""],["inserttext","a"]] "foo[]bar" queryCommandState("inserttext") before
-[PASS] [["superscript",""],["indent",""],["inserttext","a"]] "foo[]bar" queryCommandValue("inserttext") before
-[PASS] [["superscript",""],["indent",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("inserttext") after
-[PASS] [["superscript",""],["indent",""],["inserttext","a"]] "foo[]bar" queryCommandState("inserttext") after
-[PASS] [["superscript",""],["indent",""],["inserttext","a"]] "foo[]bar" queryCommandValue("inserttext") after
-[PASS] [["superscript",""],["inserthorizontalrule",""]] "foo[]bar": execCommand("superscript", false, "") return value
-[PASS] [["superscript",""],["inserthorizontalrule",""]] "foo[]bar": execCommand("inserthorizontalrule", false, "") return value
-[PASS] [["superscript",""],["inserthorizontalrule",""]] "foo[]bar" checks for modifications to non-editable content
-[PASS] [["superscript",""],["inserthorizontalrule",""]] "foo[]bar" compare innerHTML
-[PASS] [["superscript",""],["inserthorizontalrule",""]] "foo[]bar" queryCommandIndeterm("superscript") before
-[PASS] [["superscript",""],["inserthorizontalrule",""]] "foo[]bar" queryCommandState("superscript") before
 [FAIL] [["superscript",""],["inserthorizontalrule",""]] "foo[]bar" queryCommandValue("superscript") before
   assert_equals: Wrong result returned expected "" but got "false"
-[PASS] [["superscript",""],["inserthorizontalrule",""]] "foo[]bar" queryCommandIndeterm("superscript") after
 [FAIL] [["superscript",""],["inserthorizontalrule",""]] "foo[]bar" queryCommandState("superscript") after
   assert_equals: Wrong result returned expected true but got false
 [FAIL] [["superscript",""],["inserthorizontalrule",""]] "foo[]bar" queryCommandValue("superscript") after
   assert_equals: Wrong result returned expected "" but got "false"
-[PASS] [["superscript",""],["inserthorizontalrule",""]] "foo[]bar" queryCommandIndeterm("inserthorizontalrule") before
-[PASS] [["superscript",""],["inserthorizontalrule",""]] "foo[]bar" queryCommandState("inserthorizontalrule") before
-[PASS] [["superscript",""],["inserthorizontalrule",""]] "foo[]bar" queryCommandValue("inserthorizontalrule") before
-[PASS] [["superscript",""],["inserthorizontalrule",""]] "foo[]bar" queryCommandIndeterm("inserthorizontalrule") after
-[PASS] [["superscript",""],["inserthorizontalrule",""]] "foo[]bar" queryCommandState("inserthorizontalrule") after
-[PASS] [["superscript",""],["inserthorizontalrule",""]] "foo[]bar" queryCommandValue("inserthorizontalrule") after
-[PASS] [["superscript",""],["inserthorizontalrule",""],["inserttext","a"]] "foo[]bar": execCommand("superscript", false, "") return value
-[PASS] [["superscript",""],["inserthorizontalrule",""],["inserttext","a"]] "foo[]bar": execCommand("inserthorizontalrule", false, "") return value
-[PASS] [["superscript",""],["inserthorizontalrule",""],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
-[PASS] [["superscript",""],["inserthorizontalrule",""],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
 [FAIL] [["superscript",""],["inserthorizontalrule",""],["inserttext","a"]] "foo[]bar" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<hr><sup>a</sup>bar" but got "foo<hr>abar"
-[PASS] [["superscript",""],["inserthorizontalrule",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("superscript") before
-[PASS] [["superscript",""],["inserthorizontalrule",""],["inserttext","a"]] "foo[]bar" queryCommandState("superscript") before
 [FAIL] [["superscript",""],["inserthorizontalrule",""],["inserttext","a"]] "foo[]bar" queryCommandValue("superscript") before
   assert_equals: Wrong result returned expected "" but got "false"
-[PASS] [["superscript",""],["inserthorizontalrule",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("superscript") after
 [FAIL] [["superscript",""],["inserthorizontalrule",""],["inserttext","a"]] "foo[]bar" queryCommandState("superscript") after
   assert_equals: Wrong result returned expected true but got false
 [FAIL] [["superscript",""],["inserthorizontalrule",""],["inserttext","a"]] "foo[]bar" queryCommandValue("superscript") after
   assert_equals: Wrong result returned expected "" but got "false"
-[PASS] [["superscript",""],["inserthorizontalrule",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("inserthorizontalrule") before
-[PASS] [["superscript",""],["inserthorizontalrule",""],["inserttext","a"]] "foo[]bar" queryCommandState("inserthorizontalrule") before
-[PASS] [["superscript",""],["inserthorizontalrule",""],["inserttext","a"]] "foo[]bar" queryCommandValue("inserthorizontalrule") before
-[PASS] [["superscript",""],["inserthorizontalrule",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("inserthorizontalrule") after
-[PASS] [["superscript",""],["inserthorizontalrule",""],["inserttext","a"]] "foo[]bar" queryCommandState("inserthorizontalrule") after
-[PASS] [["superscript",""],["inserthorizontalrule",""],["inserttext","a"]] "foo[]bar" queryCommandValue("inserthorizontalrule") after
-[PASS] [["superscript",""],["inserthorizontalrule",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("inserttext") before
-[PASS] [["superscript",""],["inserthorizontalrule",""],["inserttext","a"]] "foo[]bar" queryCommandState("inserttext") before
-[PASS] [["superscript",""],["inserthorizontalrule",""],["inserttext","a"]] "foo[]bar" queryCommandValue("inserttext") before
-[PASS] [["superscript",""],["inserthorizontalrule",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("inserttext") after
-[PASS] [["superscript",""],["inserthorizontalrule",""],["inserttext","a"]] "foo[]bar" queryCommandState("inserttext") after
-[PASS] [["superscript",""],["inserthorizontalrule",""],["inserttext","a"]] "foo[]bar" queryCommandValue("inserttext") after
-[PASS] [["superscript",""],["inserthtml","ab<b>c</b>d"]] "foo[]bar": execCommand("superscript", false, "") return value
-[PASS] [["superscript",""],["inserthtml","ab<b>c</b>d"]] "foo[]bar": execCommand("inserthtml", false, "ab<b>c</b>d") return value
-[PASS] [["superscript",""],["inserthtml","ab<b>c</b>d"]] "foo[]bar" checks for modifications to non-editable content
-[PASS] [["superscript",""],["inserthtml","ab<b>c</b>d"]] "foo[]bar" compare innerHTML
-[PASS] [["superscript",""],["inserthtml","ab<b>c</b>d"]] "foo[]bar" queryCommandIndeterm("superscript") before
-[PASS] [["superscript",""],["inserthtml","ab<b>c</b>d"]] "foo[]bar" queryCommandState("superscript") before
 [FAIL] [["superscript",""],["inserthtml","ab<b>c</b>d"]] "foo[]bar" queryCommandValue("superscript") before
   assert_equals: Wrong result returned expected "" but got "false"
-[PASS] [["superscript",""],["inserthtml","ab<b>c</b>d"]] "foo[]bar" queryCommandIndeterm("superscript") after
 [FAIL] [["superscript",""],["inserthtml","ab<b>c</b>d"]] "foo[]bar" queryCommandState("superscript") after
   assert_equals: Wrong result returned expected true but got false
 [FAIL] [["superscript",""],["inserthtml","ab<b>c</b>d"]] "foo[]bar" queryCommandValue("superscript") after
   assert_equals: Wrong result returned expected "" but got "false"
-[PASS] [["superscript",""],["inserthtml","ab<b>c</b>d"]] "foo[]bar" queryCommandIndeterm("inserthtml") before
-[PASS] [["superscript",""],["inserthtml","ab<b>c</b>d"]] "foo[]bar" queryCommandState("inserthtml") before
-[PASS] [["superscript",""],["inserthtml","ab<b>c</b>d"]] "foo[]bar" queryCommandValue("inserthtml") before
-[PASS] [["superscript",""],["inserthtml","ab<b>c</b>d"]] "foo[]bar" queryCommandIndeterm("inserthtml") after
-[PASS] [["superscript",""],["inserthtml","ab<b>c</b>d"]] "foo[]bar" queryCommandState("inserthtml") after
-[PASS] [["superscript",""],["inserthtml","ab<b>c</b>d"]] "foo[]bar" queryCommandValue("inserthtml") after
-[PASS] [["superscript",""],["inserthtml","ab<b>c</b>d"],["inserttext","a"]] "foo[]bar": execCommand("superscript", false, "") return value
-[PASS] [["superscript",""],["inserthtml","ab<b>c</b>d"],["inserttext","a"]] "foo[]bar": execCommand("inserthtml", false, "ab<b>c</b>d") return value
-[PASS] [["superscript",""],["inserthtml","ab<b>c</b>d"],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
-[PASS] [["superscript",""],["inserthtml","ab<b>c</b>d"],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
 [FAIL] [["superscript",""],["inserthtml","ab<b>c</b>d"],["inserttext","a"]] "foo[]bar" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "fooab<b>c</b>d<sup>a</sup>bar" but got "fooab<b>c</b>dabar"
-[PASS] [["superscript",""],["inserthtml","ab<b>c</b>d"],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("superscript") before
-[PASS] [["superscript",""],["inserthtml","ab<b>c</b>d"],["inserttext","a"]] "foo[]bar" queryCommandState("superscript") before
 [FAIL] [["superscript",""],["inserthtml","ab<b>c</b>d"],["inserttext","a"]] "foo[]bar" queryCommandValue("superscript") before
   assert_equals: Wrong result returned expected "" but got "false"
-[PASS] [["superscript",""],["inserthtml","ab<b>c</b>d"],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("superscript") after
 [FAIL] [["superscript",""],["inserthtml","ab<b>c</b>d"],["inserttext","a"]] "foo[]bar" queryCommandState("superscript") after
   assert_equals: Wrong result returned expected true but got false
 [FAIL] [["superscript",""],["inserthtml","ab<b>c</b>d"],["inserttext","a"]] "foo[]bar" queryCommandValue("superscript") after
   assert_equals: Wrong result returned expected "" but got "false"
-[PASS] [["superscript",""],["inserthtml","ab<b>c</b>d"],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("inserthtml") before
-[PASS] [["superscript",""],["inserthtml","ab<b>c</b>d"],["inserttext","a"]] "foo[]bar" queryCommandState("inserthtml") before
-[PASS] [["superscript",""],["inserthtml","ab<b>c</b>d"],["inserttext","a"]] "foo[]bar" queryCommandValue("inserthtml") before
-[PASS] [["superscript",""],["inserthtml","ab<b>c</b>d"],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("inserthtml") after
-[PASS] [["superscript",""],["inserthtml","ab<b>c</b>d"],["inserttext","a"]] "foo[]bar" queryCommandState("inserthtml") after
-[PASS] [["superscript",""],["inserthtml","ab<b>c</b>d"],["inserttext","a"]] "foo[]bar" queryCommandValue("inserthtml") after
-[PASS] [["superscript",""],["inserthtml","ab<b>c</b>d"],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("inserttext") before
-[PASS] [["superscript",""],["inserthtml","ab<b>c</b>d"],["inserttext","a"]] "foo[]bar" queryCommandState("inserttext") before
-[PASS] [["superscript",""],["inserthtml","ab<b>c</b>d"],["inserttext","a"]] "foo[]bar" queryCommandValue("inserttext") before
-[PASS] [["superscript",""],["inserthtml","ab<b>c</b>d"],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("inserttext") after
-[PASS] [["superscript",""],["inserthtml","ab<b>c</b>d"],["inserttext","a"]] "foo[]bar" queryCommandState("inserttext") after
-[PASS] [["superscript",""],["inserthtml","ab<b>c</b>d"],["inserttext","a"]] "foo[]bar" queryCommandValue("inserttext") after
-[PASS] [["superscript",""],["insertimage","/img/lion.svg"]] "foo[]bar": execCommand("superscript", false, "") return value
-[PASS] [["superscript",""],["insertimage","/img/lion.svg"]] "foo[]bar": execCommand("insertimage", false, "/img/lion.svg") return value
-[PASS] [["superscript",""],["insertimage","/img/lion.svg"]] "foo[]bar" checks for modifications to non-editable content
-[PASS] [["superscript",""],["insertimage","/img/lion.svg"]] "foo[]bar" compare innerHTML
-[PASS] [["superscript",""],["insertimage","/img/lion.svg"]] "foo[]bar" queryCommandIndeterm("superscript") before
-[PASS] [["superscript",""],["insertimage","/img/lion.svg"]] "foo[]bar" queryCommandState("superscript") before
 [FAIL] [["superscript",""],["insertimage","/img/lion.svg"]] "foo[]bar" queryCommandValue("superscript") before
   assert_equals: Wrong result returned expected "" but got "false"
-[PASS] [["superscript",""],["insertimage","/img/lion.svg"]] "foo[]bar" queryCommandIndeterm("superscript") after
 [FAIL] [["superscript",""],["insertimage","/img/lion.svg"]] "foo[]bar" queryCommandState("superscript") after
   assert_equals: Wrong result returned expected true but got false
 [FAIL] [["superscript",""],["insertimage","/img/lion.svg"]] "foo[]bar" queryCommandValue("superscript") after
   assert_equals: Wrong result returned expected "" but got "false"
-[PASS] [["superscript",""],["insertimage","/img/lion.svg"]] "foo[]bar" queryCommandIndeterm("insertimage") before
-[PASS] [["superscript",""],["insertimage","/img/lion.svg"]] "foo[]bar" queryCommandState("insertimage") before
-[PASS] [["superscript",""],["insertimage","/img/lion.svg"]] "foo[]bar" queryCommandValue("insertimage") before
-[PASS] [["superscript",""],["insertimage","/img/lion.svg"]] "foo[]bar" queryCommandIndeterm("insertimage") after
-[PASS] [["superscript",""],["insertimage","/img/lion.svg"]] "foo[]bar" queryCommandState("insertimage") after
-[PASS] [["superscript",""],["insertimage","/img/lion.svg"]] "foo[]bar" queryCommandValue("insertimage") after
-[PASS] [["superscript",""],["insertimage","/img/lion.svg"],["inserttext","a"]] "foo[]bar": execCommand("superscript", false, "") return value
-[PASS] [["superscript",""],["insertimage","/img/lion.svg"],["inserttext","a"]] "foo[]bar": execCommand("insertimage", false, "/img/lion.svg") return value
-[PASS] [["superscript",""],["insertimage","/img/lion.svg"],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
-[PASS] [["superscript",""],["insertimage","/img/lion.svg"],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
 [FAIL] [["superscript",""],["insertimage","/img/lion.svg"],["inserttext","a"]] "foo[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<img src=\"/img/lion.svg\"><sup>a</sup>bar" but got "foo<img src=\"/img/lion.svg\">abar"
-[PASS] [["superscript",""],["insertimage","/img/lion.svg"],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("superscript") before
-[PASS] [["superscript",""],["insertimage","/img/lion.svg"],["inserttext","a"]] "foo[]bar" queryCommandState("superscript") before
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<img src=\\"/img/lion.svg\\"><sup>a</sup>bar" but got "foo<img src=\\"/img/lion.svg\\">abar"
 [FAIL] [["superscript",""],["insertimage","/img/lion.svg"],["inserttext","a"]] "foo[]bar" queryCommandValue("superscript") before
   assert_equals: Wrong result returned expected "" but got "false"
-[PASS] [["superscript",""],["insertimage","/img/lion.svg"],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("superscript") after
 [FAIL] [["superscript",""],["insertimage","/img/lion.svg"],["inserttext","a"]] "foo[]bar" queryCommandState("superscript") after
   assert_equals: Wrong result returned expected true but got false
 [FAIL] [["superscript",""],["insertimage","/img/lion.svg"],["inserttext","a"]] "foo[]bar" queryCommandValue("superscript") after
   assert_equals: Wrong result returned expected "" but got "false"
-[PASS] [["superscript",""],["insertimage","/img/lion.svg"],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("insertimage") before
-[PASS] [["superscript",""],["insertimage","/img/lion.svg"],["inserttext","a"]] "foo[]bar" queryCommandState("insertimage") before
-[PASS] [["superscript",""],["insertimage","/img/lion.svg"],["inserttext","a"]] "foo[]bar" queryCommandValue("insertimage") before
-[PASS] [["superscript",""],["insertimage","/img/lion.svg"],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("insertimage") after
-[PASS] [["superscript",""],["insertimage","/img/lion.svg"],["inserttext","a"]] "foo[]bar" queryCommandState("insertimage") after
-[PASS] [["superscript",""],["insertimage","/img/lion.svg"],["inserttext","a"]] "foo[]bar" queryCommandValue("insertimage") after
-[PASS] [["superscript",""],["insertimage","/img/lion.svg"],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("inserttext") before
-[PASS] [["superscript",""],["insertimage","/img/lion.svg"],["inserttext","a"]] "foo[]bar" queryCommandState("inserttext") before
-[PASS] [["superscript",""],["insertimage","/img/lion.svg"],["inserttext","a"]] "foo[]bar" queryCommandValue("inserttext") before
-[PASS] [["superscript",""],["insertimage","/img/lion.svg"],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("inserttext") after
-[PASS] [["superscript",""],["insertimage","/img/lion.svg"],["inserttext","a"]] "foo[]bar" queryCommandState("inserttext") after
-[PASS] [["superscript",""],["insertimage","/img/lion.svg"],["inserttext","a"]] "foo[]bar" queryCommandValue("inserttext") after
-[PASS] [["superscript",""],["insertlinebreak",""]] "foo[]bar": execCommand("superscript", false, "") return value
-[PASS] [["superscript",""],["insertlinebreak",""]] "foo[]bar": execCommand("insertlinebreak", false, "") return value
-[PASS] [["superscript",""],["insertlinebreak",""]] "foo[]bar" checks for modifications to non-editable content
 [FAIL] [["superscript",""],["insertlinebreak",""]] "foo[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<br>bar" but got "foo<span style=\"vertical-align:super\"><br></span>bar"
-[PASS] [["superscript",""],["insertlinebreak",""]] "foo[]bar" queryCommandIndeterm("superscript") before
-[PASS] [["superscript",""],["insertlinebreak",""]] "foo[]bar" queryCommandState("superscript") before
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<br>bar" but got "foo<span style=\\"vertical-align:super\\"><br></span>bar"
 [FAIL] [["superscript",""],["insertlinebreak",""]] "foo[]bar" queryCommandValue("superscript") before
   assert_equals: Wrong result returned expected "" but got "false"
-[PASS] [["superscript",""],["insertlinebreak",""]] "foo[]bar" queryCommandIndeterm("superscript") after
-[PASS] [["superscript",""],["insertlinebreak",""]] "foo[]bar" queryCommandState("superscript") after
 [FAIL] [["superscript",""],["insertlinebreak",""]] "foo[]bar" queryCommandValue("superscript") after
   assert_equals: Wrong result returned expected "" but got "true"
-[PASS] [["superscript",""],["insertlinebreak",""]] "foo[]bar" queryCommandIndeterm("insertlinebreak") before
-[PASS] [["superscript",""],["insertlinebreak",""]] "foo[]bar" queryCommandState("insertlinebreak") before
-[PASS] [["superscript",""],["insertlinebreak",""]] "foo[]bar" queryCommandValue("insertlinebreak") before
-[PASS] [["superscript",""],["insertlinebreak",""]] "foo[]bar" queryCommandIndeterm("insertlinebreak") after
-[PASS] [["superscript",""],["insertlinebreak",""]] "foo[]bar" queryCommandState("insertlinebreak") after
-[PASS] [["superscript",""],["insertlinebreak",""]] "foo[]bar" queryCommandValue("insertlinebreak") after
-[PASS] [["superscript",""],["insertlinebreak",""],["inserttext","a"]] "foo[]bar": execCommand("superscript", false, "") return value
-[PASS] [["superscript",""],["insertlinebreak",""],["inserttext","a"]] "foo[]bar": execCommand("insertlinebreak", false, "") return value
-[PASS] [["superscript",""],["insertlinebreak",""],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
-[PASS] [["superscript",""],["insertlinebreak",""],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
 [FAIL] [["superscript",""],["insertlinebreak",""],["inserttext","a"]] "foo[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<br><sup>a</sup>bar" but got "foo<span style=\"vertical-align:super\"><br>a</span>bar"
-[PASS] [["superscript",""],["insertlinebreak",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("superscript") before
-[PASS] [["superscript",""],["insertlinebreak",""],["inserttext","a"]] "foo[]bar" queryCommandState("superscript") before
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<br><sup>a</sup>bar" but got "foo<span style=\\"vertical-align:super\\"><br>a</span>bar"
 [FAIL] [["superscript",""],["insertlinebreak",""],["inserttext","a"]] "foo[]bar" queryCommandValue("superscript") before
   assert_equals: Wrong result returned expected "" but got "false"
-[PASS] [["superscript",""],["insertlinebreak",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("superscript") after
-[PASS] [["superscript",""],["insertlinebreak",""],["inserttext","a"]] "foo[]bar" queryCommandState("superscript") after
 [FAIL] [["superscript",""],["insertlinebreak",""],["inserttext","a"]] "foo[]bar" queryCommandValue("superscript") after
   assert_equals: Wrong result returned expected "" but got "true"
-[PASS] [["superscript",""],["insertlinebreak",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("insertlinebreak") before
-[PASS] [["superscript",""],["insertlinebreak",""],["inserttext","a"]] "foo[]bar" queryCommandState("insertlinebreak") before
-[PASS] [["superscript",""],["insertlinebreak",""],["inserttext","a"]] "foo[]bar" queryCommandValue("insertlinebreak") before
-[PASS] [["superscript",""],["insertlinebreak",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("insertlinebreak") after
-[PASS] [["superscript",""],["insertlinebreak",""],["inserttext","a"]] "foo[]bar" queryCommandState("insertlinebreak") after
-[PASS] [["superscript",""],["insertlinebreak",""],["inserttext","a"]] "foo[]bar" queryCommandValue("insertlinebreak") after
-[PASS] [["superscript",""],["insertlinebreak",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("inserttext") before
-[PASS] [["superscript",""],["insertlinebreak",""],["inserttext","a"]] "foo[]bar" queryCommandState("inserttext") before
-[PASS] [["superscript",""],["insertlinebreak",""],["inserttext","a"]] "foo[]bar" queryCommandValue("inserttext") before
-[PASS] [["superscript",""],["insertlinebreak",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("inserttext") after
-[PASS] [["superscript",""],["insertlinebreak",""],["inserttext","a"]] "foo[]bar" queryCommandState("inserttext") after
-[PASS] [["superscript",""],["insertlinebreak",""],["inserttext","a"]] "foo[]bar" queryCommandValue("inserttext") after
-[PASS] [["superscript",""],["insertorderedlist",""]] "foo[]bar": execCommand("superscript", false, "") return value
-[PASS] [["superscript",""],["insertorderedlist",""]] "foo[]bar": execCommand("insertorderedlist", false, "") return value
-[PASS] [["superscript",""],["insertorderedlist",""]] "foo[]bar" checks for modifications to non-editable content
-[PASS] [["superscript",""],["insertorderedlist",""]] "foo[]bar" compare innerHTML
-[PASS] [["superscript",""],["insertorderedlist",""]] "foo[]bar" queryCommandIndeterm("superscript") before
-[PASS] [["superscript",""],["insertorderedlist",""]] "foo[]bar" queryCommandState("superscript") before
 [FAIL] [["superscript",""],["insertorderedlist",""]] "foo[]bar" queryCommandValue("superscript") before
   assert_equals: Wrong result returned expected "" but got "false"
-[PASS] [["superscript",""],["insertorderedlist",""]] "foo[]bar" queryCommandIndeterm("superscript") after
 [FAIL] [["superscript",""],["insertorderedlist",""]] "foo[]bar" queryCommandState("superscript") after
   assert_equals: Wrong result returned expected true but got false
 [FAIL] [["superscript",""],["insertorderedlist",""]] "foo[]bar" queryCommandValue("superscript") after
   assert_equals: Wrong result returned expected "" but got "false"
-[PASS] [["superscript",""],["insertorderedlist",""]] "foo[]bar" queryCommandIndeterm("insertorderedlist") before
-[PASS] [["superscript",""],["insertorderedlist",""]] "foo[]bar" queryCommandState("insertorderedlist") before
 [FAIL] [["superscript",""],["insertorderedlist",""]] "foo[]bar" queryCommandValue("insertorderedlist") before
   assert_equals: Wrong result returned expected "" but got "false"
-[PASS] [["superscript",""],["insertorderedlist",""]] "foo[]bar" queryCommandIndeterm("insertorderedlist") after
-[PASS] [["superscript",""],["insertorderedlist",""]] "foo[]bar" queryCommandState("insertorderedlist") after
 [FAIL] [["superscript",""],["insertorderedlist",""]] "foo[]bar" queryCommandValue("insertorderedlist") after
   assert_equals: Wrong result returned expected "" but got "true"
-[PASS] [["superscript",""],["insertorderedlist",""],["inserttext","a"]] "foo[]bar": execCommand("superscript", false, "") return value
-[PASS] [["superscript",""],["insertorderedlist",""],["inserttext","a"]] "foo[]bar": execCommand("insertorderedlist", false, "") return value
-[PASS] [["superscript",""],["insertorderedlist",""],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
-[PASS] [["superscript",""],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
 [FAIL] [["superscript",""],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foo<sup>a</sup>bar</li></ol>" but got "<ol><li>afoobar</li></ol>"
-[PASS] [["superscript",""],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("superscript") before
-[PASS] [["superscript",""],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandState("superscript") before
 [FAIL] [["superscript",""],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandValue("superscript") before
   assert_equals: Wrong result returned expected "" but got "false"
-[PASS] [["superscript",""],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("superscript") after
 [FAIL] [["superscript",""],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandState("superscript") after
   assert_equals: Wrong result returned expected true but got false
 [FAIL] [["superscript",""],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandValue("superscript") after
   assert_equals: Wrong result returned expected "" but got "false"
-[PASS] [["superscript",""],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("insertorderedlist") before
-[PASS] [["superscript",""],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandState("insertorderedlist") before
 [FAIL] [["superscript",""],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandValue("insertorderedlist") before
   assert_equals: Wrong result returned expected "" but got "false"
-[PASS] [["superscript",""],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("insertorderedlist") after
-[PASS] [["superscript",""],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandState("insertorderedlist") after
 [FAIL] [["superscript",""],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandValue("insertorderedlist") after
   assert_equals: Wrong result returned expected "" but got "true"
-[PASS] [["superscript",""],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("inserttext") before
-[PASS] [["superscript",""],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandState("inserttext") before
-[PASS] [["superscript",""],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandValue("inserttext") before
-[PASS] [["superscript",""],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("inserttext") after
-[PASS] [["superscript",""],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandState("inserttext") after
-[PASS] [["superscript",""],["insertorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandValue("inserttext") after
-[PASS] [["superscript",""],["insertparagraph",""]] "foo[]bar": execCommand("superscript", false, "") return value
-[PASS] [["superscript",""],["insertparagraph",""]] "foo[]bar": execCommand("insertparagraph", false, "") return value
-[PASS] [["superscript",""],["insertparagraph",""]] "foo[]bar" checks for modifications to non-editable content
 [FAIL] [["superscript",""],["insertparagraph",""]] "foo[]bar" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo</p><p>bar</p>" but got "foo<div>bar</div>"
-[PASS] [["superscript",""],["insertparagraph",""]] "foo[]bar" queryCommandIndeterm("superscript") before
-[PASS] [["superscript",""],["insertparagraph",""]] "foo[]bar" queryCommandState("superscript") before
 [FAIL] [["superscript",""],["insertparagraph",""]] "foo[]bar" queryCommandValue("superscript") before
   assert_equals: Wrong result returned expected "" but got "false"
-[PASS] [["superscript",""],["insertparagraph",""]] "foo[]bar" queryCommandIndeterm("superscript") after
-[PASS] [["superscript",""],["insertparagraph",""]] "foo[]bar" queryCommandState("superscript") after
 [FAIL] [["superscript",""],["insertparagraph",""]] "foo[]bar" queryCommandValue("superscript") after
   assert_equals: Wrong result returned expected "" but got "true"
-[PASS] [["superscript",""],["insertparagraph",""]] "foo[]bar" queryCommandIndeterm("insertparagraph") before
-[PASS] [["superscript",""],["insertparagraph",""]] "foo[]bar" queryCommandState("insertparagraph") before
-[PASS] [["superscript",""],["insertparagraph",""]] "foo[]bar" queryCommandValue("insertparagraph") before
-[PASS] [["superscript",""],["insertparagraph",""]] "foo[]bar" queryCommandIndeterm("insertparagraph") after
-[PASS] [["superscript",""],["insertparagraph",""]] "foo[]bar" queryCommandState("insertparagraph") after
-[PASS] [["superscript",""],["insertparagraph",""]] "foo[]bar" queryCommandValue("insertparagraph") after
-[PASS] [["superscript",""],["insertparagraph",""],["inserttext","a"]] "foo[]bar": execCommand("superscript", false, "") return value
-[PASS] [["superscript",""],["insertparagraph",""],["inserttext","a"]] "foo[]bar": execCommand("insertparagraph", false, "") return value
-[PASS] [["superscript",""],["insertparagraph",""],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
-[PASS] [["superscript",""],["insertparagraph",""],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
 [FAIL] [["superscript",""],["insertparagraph",""],["inserttext","a"]] "foo[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo</p><p><sup>a</sup>bar</p>" but got "foo<div><span style=\"vertical-align:super\">a</span>bar</div>"
-[PASS] [["superscript",""],["insertparagraph",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("superscript") before
-[PASS] [["superscript",""],["insertparagraph",""],["inserttext","a"]] "foo[]bar" queryCommandState("superscript") before
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo</p><p><sup>a</sup>bar</p>" but got "foo<div><span style=\\"vertical-align:super\\">a</span>bar</div>"
 [FAIL] [["superscript",""],["insertparagraph",""],["inserttext","a"]] "foo[]bar" queryCommandValue("superscript") before
   assert_equals: Wrong result returned expected "" but got "false"
-[PASS] [["superscript",""],["insertparagraph",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("superscript") after
-[PASS] [["superscript",""],["insertparagraph",""],["inserttext","a"]] "foo[]bar" queryCommandState("superscript") after
 [FAIL] [["superscript",""],["insertparagraph",""],["inserttext","a"]] "foo[]bar" queryCommandValue("superscript") after
   assert_equals: Wrong result returned expected "" but got "true"
-[PASS] [["superscript",""],["insertparagraph",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("insertparagraph") before
-[PASS] [["superscript",""],["insertparagraph",""],["inserttext","a"]] "foo[]bar" queryCommandState("insertparagraph") before
-[PASS] [["superscript",""],["insertparagraph",""],["inserttext","a"]] "foo[]bar" queryCommandValue("insertparagraph") before
-[PASS] [["superscript",""],["insertparagraph",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("insertparagraph") after
-[PASS] [["superscript",""],["insertparagraph",""],["inserttext","a"]] "foo[]bar" queryCommandState("insertparagraph") after
-[PASS] [["superscript",""],["insertparagraph",""],["inserttext","a"]] "foo[]bar" queryCommandValue("insertparagraph") after
-[PASS] [["superscript",""],["insertparagraph",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("inserttext") before
-[PASS] [["superscript",""],["insertparagraph",""],["inserttext","a"]] "foo[]bar" queryCommandState("inserttext") before
-[PASS] [["superscript",""],["insertparagraph",""],["inserttext","a"]] "foo[]bar" queryCommandValue("inserttext") before
-[PASS] [["superscript",""],["insertparagraph",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("inserttext") after
-[PASS] [["superscript",""],["insertparagraph",""],["inserttext","a"]] "foo[]bar" queryCommandState("inserttext") after
-[PASS] [["superscript",""],["insertparagraph",""],["inserttext","a"]] "foo[]bar" queryCommandValue("inserttext") after
-[PASS] [["superscript",""],["insertunorderedlist",""]] "foo[]bar": execCommand("superscript", false, "") return value
-[PASS] [["superscript",""],["insertunorderedlist",""]] "foo[]bar": execCommand("insertunorderedlist", false, "") return value
-[PASS] [["superscript",""],["insertunorderedlist",""]] "foo[]bar" checks for modifications to non-editable content
-[PASS] [["superscript",""],["insertunorderedlist",""]] "foo[]bar" compare innerHTML
-[PASS] [["superscript",""],["insertunorderedlist",""]] "foo[]bar" queryCommandIndeterm("superscript") before
-[PASS] [["superscript",""],["insertunorderedlist",""]] "foo[]bar" queryCommandState("superscript") before
 [FAIL] [["superscript",""],["insertunorderedlist",""]] "foo[]bar" queryCommandValue("superscript") before
   assert_equals: Wrong result returned expected "" but got "false"
-[PASS] [["superscript",""],["insertunorderedlist",""]] "foo[]bar" queryCommandIndeterm("superscript") after
 [FAIL] [["superscript",""],["insertunorderedlist",""]] "foo[]bar" queryCommandState("superscript") after
   assert_equals: Wrong result returned expected true but got false
 [FAIL] [["superscript",""],["insertunorderedlist",""]] "foo[]bar" queryCommandValue("superscript") after
   assert_equals: Wrong result returned expected "" but got "false"
-[PASS] [["superscript",""],["insertunorderedlist",""]] "foo[]bar" queryCommandIndeterm("insertunorderedlist") before
-[PASS] [["superscript",""],["insertunorderedlist",""]] "foo[]bar" queryCommandState("insertunorderedlist") before
 [FAIL] [["superscript",""],["insertunorderedlist",""]] "foo[]bar" queryCommandValue("insertunorderedlist") before
   assert_equals: Wrong result returned expected "" but got "false"
-[PASS] [["superscript",""],["insertunorderedlist",""]] "foo[]bar" queryCommandIndeterm("insertunorderedlist") after
-[PASS] [["superscript",""],["insertunorderedlist",""]] "foo[]bar" queryCommandState("insertunorderedlist") after
 [FAIL] [["superscript",""],["insertunorderedlist",""]] "foo[]bar" queryCommandValue("insertunorderedlist") after
   assert_equals: Wrong result returned expected "" but got "true"
-[PASS] [["superscript",""],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar": execCommand("superscript", false, "") return value
-[PASS] [["superscript",""],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar": execCommand("insertunorderedlist", false, "") return value
-[PASS] [["superscript",""],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar": execCommand("inserttext", false, "a") return value
-[PASS] [["superscript",""],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" checks for modifications to non-editable content
 [FAIL] [["superscript",""],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><li>foo<sup>a</sup>bar</li></ul>" but got "<ul><li>afoobar</li></ul>"
-[PASS] [["superscript",""],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("superscript") before
-[PASS] [["superscript",""],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandState("superscript") before
 [FAIL] [["superscript",""],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandValue("superscript") before
   assert_equals: Wrong result returned expected "" but got "false"
-[PASS] [["superscript",""],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("superscript") after
 [FAIL] [["superscript",""],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandState("superscript") after
   assert_equals: Wrong result returned expected true but got false
 [FAIL] [["superscript",""],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandValue("superscript") after
   assert_equals: Wrong result returned expected "" but got "false"
-[PASS] [["superscript",""],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("insertunorderedlist") before
-[PASS] [["superscript",""],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandState("insertunorderedlist") before
 [FAIL] [["superscript",""],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandValue("insertunorderedlist") before
   assert_equals: Wrong result returned expected "" but got "false"
-[PASS] [["superscript",""],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("insertunorderedlist") after
-[PASS] [["superscript",""],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandState("insertunorderedlist") after
 [FAIL] [["superscript",""],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandValue("insertunorderedlist") after
   assert_equals: Wrong result returned expected "" but got "true"
-[PASS] [["superscript",""],["insertunorderedlist",""],["inserttext","a"]] "foo[]bar" queryCommandIndeterm("inserttext") before
 Harness: the test ran to completion.
 

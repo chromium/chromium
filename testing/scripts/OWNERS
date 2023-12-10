@@ -14,5 +14,3 @@ per-file run_chromedriver_tests.py=file://chrome/test/chromedriver/OWNERS
 
 per-file run_variations_smoke_tests.py=wuwang@chromium.org
 per-file variations_seed_access_helper.py=wuwang@chromium.org
-per-file run_finch_smoke_tests_android.py=rmhasan@google.com
-per-file finch.gni=rmhasan@google.com

@@ -32,6 +32,27 @@ bool IsClosingFlagSet(int flagset, WebStateList::ClosingFlags flag) {
 
 }  // namespace
 
+WebStateList::ScopedBatchOperation::ScopedBatchOperation(
+    WebStateList* web_state_list)
+    : web_state_list_(web_state_list) {
+  DCHECK(web_state_list_);
+  DCHECK(!web_state_list_->batch_operation_in_progress_);
+  web_state_list_->batch_operation_in_progress_ = true;
+  for (auto& observer : web_state_list_->observers_) {
+    observer.WillBeginBatchOperation(web_state_list_.get());
+  }
+}
+
+WebStateList::ScopedBatchOperation::~ScopedBatchOperation() {
+  if (web_state_list_) {
+    DCHECK(web_state_list_->batch_operation_in_progress_);
+    web_state_list_->batch_operation_in_progress_ = false;
+    for (auto& observer : web_state_list_->observers_) {
+      observer.BatchOperationEnded(web_state_list_.get());
+    }
+  }
+}
+
 // Used as a parameter in DetachWebStateAtImpl(). There are 3 situations of
 // detaching a WebState:
 // 1. a WebState is detached.
@@ -197,10 +218,17 @@ WebStateList::WebStateList(WebStateListDelegate* delegate)
 }
 
 WebStateList::~WebStateList() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(!locked_);
+  DCHECK(!batch_operation_in_progress_);
+
   CloseAllWebStates(CLOSE_NO_FLAGS);
   for (auto& observer : observers_) {
     observer.WebStateListDestroyed(this);
   }
+
+  DCHECK(!locked_);
+  DCHECK(!batch_operation_in_progress_);
 }
 
 base::WeakPtr<WebStateList> WebStateList::AsWeakPtr() {
@@ -346,7 +374,7 @@ void WebStateList::CloseAllNonPinnedWebStates(int close_flags) {
 
 void WebStateList::ActivateWebStateAt(int index) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(ContainsIndex(index));
+  DCHECK(ContainsIndex(index) || index == kInvalidIndex);
   auto lock = LockForMutation();
   return ActivateWebStateAtImpl(index);
 }
@@ -601,12 +629,8 @@ void WebStateList::CloseAllWebStatesAfterIndex(int start_index,
                                                int close_flags) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto lock = LockForMutation();
-  PerformBatchOperation(base::BindOnce(
-      [](int start_index, int close_flags, WebStateList* web_state_list) {
-        web_state_list->CloseAllWebStatesAfterIndexImpl(start_index,
-                                                        close_flags);
-      },
-      start_index, close_flags));
+  ScopedBatchOperation batch_lock = StartBatchOperation();
+  CloseAllWebStatesAfterIndexImpl(start_index, close_flags);
 }
 
 void WebStateList::CloseAllWebStatesAfterIndexImpl(int start_index,
@@ -685,30 +709,10 @@ void WebStateList::RemoveObserver(WebStateListObserver* observer) {
   observers_.RemoveObserver(observer);
 }
 
-void WebStateList::PerformBatchOperation(
-    base::OnceCallback<void(WebStateList*)> operation) {
+WebStateList::ScopedBatchOperation WebStateList::StartBatchOperation() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  // Scope to control the lifetime of the `base::AutoReset<>` which is used to
-  // set `batch_operation_in_progress_` to false when the the batch operation is
-  // completed. `base::AutoReset<>` needs to be destroyed before calling
-  // `WebStateListObserver::BatchOperationEnded()`.
-  {
-    DCHECK(!batch_operation_in_progress_);
-    base::AutoReset<bool> lock(&batch_operation_in_progress_, /*locked=*/true);
-
-    for (auto& observer : observers_) {
-      observer.WillBeginBatchOperation(this);
-    }
-    if (!operation.is_null()) {
-      std::move(operation).Run(this);
-    }
-  }
-
   DCHECK(!batch_operation_in_progress_);
-  for (auto& observer : observers_) {
-    observer.BatchOperationEnded(this);
-  }
+  return ScopedBatchOperation(this);
 }
 
 void WebStateList::ClearOpenersReferencing(int index) {

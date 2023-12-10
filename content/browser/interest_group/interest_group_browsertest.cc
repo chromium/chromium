@@ -118,6 +118,8 @@ using ::testing::Optional;
 
 constexpr char kLegitimateAdAuctionResponse[] =
     "ungWv48Bz-pBQUDeXa4iI7ADYaOWF3qctBD_YfIAFa0=";
+constexpr char kLegitimateAdAuctionSignals[] =
+    R"([{"adSlot":"slot1", "sellerSignals":{"signal1":"value1"}}])";
 
 // Returned by test Javascript code when join or leave promises complete without
 // throwing an exception.
@@ -690,11 +692,11 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
          blink::features::kFledgeNegativeTargeting,
          blink::features::kBiddingAndScoringDebugReportingAPI,
          blink::features::kFledgeDirectFromSellerSignalsHeaderAdSlot,
-         blink::features::kFledgeClearOriginJoinedAdInterestGroups,
          blink::features::kFencedFramesM120FeaturesPart1,
          features::kBackForwardCache, features::kFledgeUseInterestGroupCache},
         /*disabled_features=*/
-        {blink::features::kFencedFrames});
+        {blink::features::kFencedFrames,
+         blink::features::kFledgeEnforceKAnonymity});
   }
 
   ~InterestGroupBrowserTest() override { content_browser_client_.reset(); }
@@ -1089,9 +1091,7 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
         // Groups with different origins or joined by different origins should
         // not be modified in any way.
         EXPECT_EQ(group->bidding_browser_signals->join_count, final_join_count);
-      } else if (groups_to_keep &&
-                 std::find(groups_to_keep->begin(), groups_to_keep->end(),
-                           name) != groups_to_keep->end()) {
+      } else if (groups_to_keep && base::Contains(*groups_to_keep, name)) {
         // Interest groups that are excluded by name also should not be
         // modified.
         EXPECT_EQ(group->bidding_browser_signals->join_count, final_join_count);
@@ -1283,8 +1283,17 @@ function provideAdditionalBids(seller, nonce, bidStringList,
 }
 
 (async function() {
+  let auctionConfig = %s;
+  // Our test bots can get kinda slow, so bump script execution time limits
+  // in tests that don't specifically configure them.
+  if (!("perBuyerTimeouts" in auctionConfig)) {
+    auctionConfig.perBuyerTimeouts = { '*': 150 };
+  }
+  if (!("sellerTimeout" in auctionConfig)) {
+    auctionConfig.sellerTimeout = 150;
+  }
   try {
-    return await navigator.runAdAuction(%s);
+    return await navigator.runAdAuction(auctionConfig);
   } catch (e) {
     return e.toString();
   }
@@ -1478,14 +1487,26 @@ function provideAdditionalBids(seller, nonce, bidStringList,
                                                                  response);
   }
 
-  const std::set<std::string>& GetAuctionSignalsForOrigin(
-      const url::Origin& origin) {
+  const scoped_refptr<HeaderDirectFromSellerSignals::Result>
+  ParseAndFindAdAuctionSignals(const url::Origin& origin,
+                               const std::string& ad_slot) {
     Page& page = web_contents()->GetPrimaryPage();
 
     AdAuctionPageData* ad_auction_page_data =
         PageUserData<AdAuctionPageData>::GetOrCreateForPage(page);
 
-    return ad_auction_page_data->GetAuctionSignalsForOrigin(origin);
+    base::RunLoop run_loop;
+    scoped_refptr<HeaderDirectFromSellerSignals::Result> my_result;
+    ad_auction_page_data->ParseAndFindAdAuctionSignals(
+        origin, ad_slot,
+        base::BindLambdaForTesting(
+            [&run_loop, &my_result](
+                scoped_refptr<HeaderDirectFromSellerSignals::Result> result) {
+              my_result = std::move(result);
+              run_loop.Quit();
+            }));
+    run_loop.Run();
+    return my_result;
   }
 
   std::vector<std::string> TakeAuctionAdditionalBidsForOriginAndNonce(
@@ -5398,14 +5419,16 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       "'NavigatorAuction': auctionSignals for AuctionAdConfig with seller "
       "'https://a.test:*' must be a JSON-serializable object.");
 
-  EXPECT_EQ("Promise argument rejected or resolved to invalid value.",
-            RunAuctionAndWait(JsReplace(R"({
+  EXPECT_EQ(
+      "TypeError: Failed to execute 'runAdAuction' on 'Navigator': Promise "
+      "argument rejected or resolved to invalid value.",
+      RunAuctionAndWait(JsReplace(R"({
       seller: $1,
       decisionLogicURL: $2,
       auctionSignals: alert,
       interestGroupBuyers: []
   })",
-                                        test_origin, decision_url)));
+                                  test_origin, decision_url)));
   EXPECT_TRUE(console_observer.Wait());
 }
 
@@ -5427,9 +5450,11 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       interestGroupBuyers: []
   })";
 
-  EXPECT_EQ("Promise argument rejected or resolved to invalid value.",
-            RunAuctionAndWait(
-                JsReplace(kAuctionConfigTemplate, test_origin, decision_url)));
+  EXPECT_EQ(
+      "TypeError: Failed to execute 'runAdAuction' on 'Navigator': Promise "
+      "argument rejected or resolved to invalid value.",
+      RunAuctionAndWait(
+          JsReplace(kAuctionConfigTemplate, test_origin, decision_url)));
 }
 
 // Exercise error-handling path in the renderer for promise-delivered auction
@@ -5455,9 +5480,11 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       "'NavigatorAuction': auctionSignals for AuctionAdConfig with seller "
       "'https://a.test:*' must be a JSON-serializable object.");
 
-  EXPECT_EQ("Promise argument rejected or resolved to invalid value.",
-            RunAuctionAndWait(
-                JsReplace(kAuctionConfigTemplate, test_origin, decision_url)));
+  EXPECT_EQ(
+      "TypeError: Failed to execute 'runAdAuction' on 'Navigator': Promise "
+      "argument rejected or resolved to invalid value.",
+      RunAuctionAndWait(
+          JsReplace(kAuctionConfigTemplate, test_origin, decision_url)));
   EXPECT_TRUE(console_observer.Wait());
 }
 
@@ -5475,14 +5502,16 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       "'NavigatorAuction': sellerSignals for AuctionAdConfig with seller "
       "'https://a.test:*' must be a JSON-serializable object.");
 
-  EXPECT_EQ("Promise argument rejected or resolved to invalid value.",
-            RunAuctionAndWait(JsReplace(R"({
+  EXPECT_EQ(
+      "TypeError: Failed to execute 'runAdAuction' on 'Navigator': Promise "
+      "argument rejected or resolved to invalid value.",
+      RunAuctionAndWait(JsReplace(R"({
       seller: $1,
       decisionLogicURL: $2,
       sellerSignals: function() {},
       interestGroupBuyers: []
   })",
-                                        test_origin, decision_url)));
+                                  test_origin, decision_url)));
   EXPECT_TRUE(console_observer.Wait());
 }
 
@@ -5503,9 +5532,11 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       interestGroupBuyers: []
   })";
 
-  EXPECT_EQ("Promise argument rejected or resolved to invalid value.",
-            RunAuctionAndWait(
-                JsReplace(kAuctionConfigTemplate, test_origin, decision_url)));
+  EXPECT_EQ(
+      "TypeError: Failed to execute 'runAdAuction' on 'Navigator': Promise "
+      "argument rejected or resolved to invalid value.",
+      RunAuctionAndWait(
+          JsReplace(kAuctionConfigTemplate, test_origin, decision_url)));
 }
 
 // Exercise error-handling path in the renderer for promise-delivered seller
@@ -5531,9 +5562,11 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       "Uncaught (in promise) TypeError: Failed to execute 'runAdAuction' on "
       "'NavigatorAuction': sellerSignals for AuctionAdConfig with seller "
       "'https://a.test:*' must be a JSON-serializable object.");
-  EXPECT_EQ("Promise argument rejected or resolved to invalid value.",
-            RunAuctionAndWait(
-                JsReplace(kAuctionConfigTemplate, test_origin, decision_url)));
+  EXPECT_EQ(
+      "TypeError: Failed to execute 'runAdAuction' on 'Navigator': Promise "
+      "argument rejected or resolved to invalid value.",
+      RunAuctionAndWait(
+          JsReplace(kAuctionConfigTemplate, test_origin, decision_url)));
   EXPECT_TRUE(console_observer.Wait());
 }
 
@@ -5554,9 +5587,11 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       interestGroupBuyers: []
   })";
 
-  EXPECT_EQ("Promise argument rejected or resolved to invalid value.",
-            RunAuctionAndWait(
-                JsReplace(kAuctionConfigTemplate, test_origin, decision_url)));
+  EXPECT_EQ(
+      "TypeError: Failed to execute 'runAdAuction' on 'Navigator': Promise "
+      "argument rejected or resolved to invalid value.",
+      RunAuctionAndWait(
+          JsReplace(kAuctionConfigTemplate, test_origin, decision_url)));
 }
 
 // Exercise error-handling path in the renderer for promise-delivered
@@ -5581,9 +5616,11 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   console_observer.SetPattern(
       "Uncaught (in promise) TypeError: Failed to execute 'runAdAuction' on "
       "'NavigatorAuction': Only objects can be converted to record<K,V> types");
-  EXPECT_EQ("Promise argument rejected or resolved to invalid value.",
-            RunAuctionAndWait(
-                JsReplace(kAuctionConfigTemplate, test_origin, decision_url)));
+  EXPECT_EQ(
+      "TypeError: Failed to execute 'runAdAuction' on 'Navigator': Promise "
+      "argument rejected or resolved to invalid value.",
+      RunAuctionAndWait(
+          JsReplace(kAuctionConfigTemplate, test_origin, decision_url)));
   EXPECT_TRUE(console_observer.Wait());
 }
 
@@ -5602,14 +5639,16 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       "AuctionAdConfig with seller 'https://a.test:*' must be a valid https "
       "origin.");
 
-  EXPECT_EQ("Promise argument rejected or resolved to invalid value.",
-            RunAuctionAndWait(JsReplace(R"({
+  EXPECT_EQ(
+      "TypeError: Failed to execute 'runAdAuction' on 'Navigator': Promise "
+      "argument rejected or resolved to invalid value.",
+      RunAuctionAndWait(JsReplace(R"({
       seller: $1,
       decisionLogicURL: $2,
       perBuyerSignals: {'https://invalid^&': {a:1}},
       interestGroupBuyers: []
   })",
-                                        test_origin, decision_url)));
+                                  test_origin, decision_url)));
   EXPECT_TRUE(console_observer.Wait());
 }
 
@@ -5630,9 +5669,11 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       interestGroupBuyers: []
   })";
 
-  EXPECT_EQ("Promise argument rejected or resolved to invalid value.",
-            RunAuctionAndWait(
-                JsReplace(kAuctionConfigTemplate, test_origin, decision_url)));
+  EXPECT_EQ(
+      "TypeError: Failed to execute 'runAdAuction' on 'Navigator': Promise "
+      "argument rejected or resolved to invalid value.",
+      RunAuctionAndWait(
+          JsReplace(kAuctionConfigTemplate, test_origin, decision_url)));
 }
 
 // Exercise error-handling path in the renderer for promise-delivered
@@ -5659,9 +5700,11 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       "'NavigatorAuction': perBuyerTimeouts buyer 'http://b.com' for "
       "AuctionAdConfig with seller 'https://a.test:*' must be \"*\" (wildcard) "
       "or a valid https origin.");
-  EXPECT_EQ("Promise argument rejected or resolved to invalid value.",
-            RunAuctionAndWait(
-                JsReplace(kAuctionConfigTemplate, test_origin, decision_url)));
+  EXPECT_EQ(
+      "TypeError: Failed to execute 'runAdAuction' on 'Navigator': Promise "
+      "argument rejected or resolved to invalid value.",
+      RunAuctionAndWait(
+          JsReplace(kAuctionConfigTemplate, test_origin, decision_url)));
   EXPECT_TRUE(console_observer.Wait());
 }
 
@@ -5680,14 +5723,16 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       "AuctionAdConfig with seller 'https://a.test:*' must be \"*\" (wildcard) "
       "or a valid https origin.");
 
-  EXPECT_EQ("Promise argument rejected or resolved to invalid value.",
-            RunAuctionAndWait(JsReplace(R"({
+  EXPECT_EQ(
+      "TypeError: Failed to execute 'runAdAuction' on 'Navigator': Promise "
+      "argument rejected or resolved to invalid value.",
+      RunAuctionAndWait(JsReplace(R"({
       seller: $1,
       decisionLogicURL: $2,
       perBuyerTimeouts: {'https://invalid^&': 100},
       interestGroupBuyers: []
   })",
-                                        test_origin, decision_url)));
+                                  test_origin, decision_url)));
   EXPECT_TRUE(console_observer.Wait());
 }
 
@@ -5709,9 +5754,11 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       interestGroupBuyers: []
   })";
 
-  EXPECT_EQ("Promise argument rejected or resolved to invalid value.",
-            RunAuctionAndWait(
-                JsReplace(kAuctionConfigTemplate, test_origin, decision_url)));
+  EXPECT_EQ(
+      "TypeError: Failed to execute 'runAdAuction' on 'Navigator': Promise "
+      "argument rejected or resolved to invalid value.",
+      RunAuctionAndWait(
+          JsReplace(kAuctionConfigTemplate, test_origin, decision_url)));
 }
 
 // Exercise error-handling path in the renderer for promise-delivered
@@ -5739,9 +5786,11 @@ IN_PROC_BROWSER_TEST_F(
       "'NavigatorAuction': perBuyerCumulativeTimeouts buyer 'http://b.com' for "
       "AuctionAdConfig with seller 'https://a.test:*' must be \"*\" (wildcard) "
       "or a valid https origin.");
-  EXPECT_EQ("Promise argument rejected or resolved to invalid value.",
-            RunAuctionAndWait(
-                JsReplace(kAuctionConfigTemplate, test_origin, decision_url)));
+  EXPECT_EQ(
+      "TypeError: Failed to execute 'runAdAuction' on 'Navigator': Promise "
+      "argument rejected or resolved to invalid value.",
+      RunAuctionAndWait(
+          JsReplace(kAuctionConfigTemplate, test_origin, decision_url)));
   EXPECT_TRUE(console_observer.Wait());
 }
 
@@ -5759,14 +5808,16 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       "'NavigatorAuction': perBuyerCumulativeTimeouts buyer "
       "'https://invalid^&' for AuctionAdConfig with seller 'https://a.test:*' "
       "must be \"*\" (wildcard) or a valid https origin.");
-  EXPECT_EQ("Promise argument rejected or resolved to invalid value.",
-            RunAuctionAndWait(JsReplace(R"({
+  EXPECT_EQ(
+      "TypeError: Failed to execute 'runAdAuction' on 'Navigator': Promise "
+      "argument rejected or resolved to invalid value.",
+      RunAuctionAndWait(JsReplace(R"({
       seller: $1,
       decisionLogicURL: $2,
       perBuyerCumulativeTimeouts: {'https://invalid^&': 100},
       interestGroupBuyers: []
   })",
-                                        test_origin, decision_url)));
+                                  test_origin, decision_url)));
   EXPECT_TRUE(console_observer.Wait());
 }
 
@@ -5785,14 +5836,16 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       "AuctionAdConfig with seller 'https://a.test:*' must be \"*\" (wildcard) "
       "or a valid https origin.");
 
-  EXPECT_EQ("Promise argument rejected or resolved to invalid value.",
-            RunAuctionAndWait(JsReplace(R"({
+  EXPECT_EQ(
+      "TypeError: Failed to execute 'runAdAuction' on 'Navigator': Promise "
+      "argument rejected or resolved to invalid value.",
+      RunAuctionAndWait(JsReplace(R"({
       seller: $1,
       decisionLogicURL: $2,
       perBuyerCurrencies: {'https://invalid^&': 'USD'},
       interestGroupBuyers: []
   })",
-                                        test_origin, decision_url)));
+                                  test_origin, decision_url)));
   EXPECT_TRUE(console_observer.Wait());
 }
 
@@ -5811,14 +5864,16 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       "AuctionAdConfig with seller 'https://a.test:*' must be a 3-letter "
       "uppercase currency code.");
 
-  EXPECT_EQ("Promise argument rejected or resolved to invalid value.",
-            RunAuctionAndWait(JsReplace(R"({
+  EXPECT_EQ(
+      "TypeError: Failed to execute 'runAdAuction' on 'Navigator': Promise "
+      "argument rejected or resolved to invalid value.",
+      RunAuctionAndWait(JsReplace(R"({
       seller: $1,
       decisionLogicURL: $2,
       perBuyerCurrencies: {'*': 'usd'},
       interestGroupBuyers: []
   })",
-                                        test_origin, decision_url)));
+                                  test_origin, decision_url)));
 }
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
@@ -6009,14 +6064,16 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       "'NavigatorAuction': perBuyerSignals for AuctionAdConfig with seller "
       "'https://a.test:*' must be a JSON-serializable object.");
 
-  EXPECT_EQ("Promise argument rejected or resolved to invalid value.",
-            RunAuctionAndWait(JsReplace(R"({
+  EXPECT_EQ(
+      "TypeError: Failed to execute 'runAdAuction' on 'Navigator': Promise "
+      "argument rejected or resolved to invalid value.",
+      RunAuctionAndWait(JsReplace(R"({
       seller: $1,
       decisionLogicURL: $2,
       perBuyerSignals: {'https://test.com': function() {}},
       interestGroupBuyers: []
   })",
-                                        test_origin, decision_url)));
+                                  test_origin, decision_url)));
   EXPECT_TRUE(console_observer.Wait());
 }
 
@@ -6036,9 +6093,11 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       interestGroupBuyers: []
   })";
 
-  EXPECT_EQ("Promise argument rejected or resolved to invalid value.",
-            RunAuctionAndWait(
-                JsReplace(kAuctionConfigTemplate, test_origin, decision_url)));
+  EXPECT_EQ(
+      "TypeError: Failed to execute 'runAdAuction' on 'Navigator': Promise "
+      "argument rejected or resolved to invalid value.",
+      RunAuctionAndWait(
+          JsReplace(kAuctionConfigTemplate, test_origin, decision_url)));
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -6058,9 +6117,11 @@ IN_PROC_BROWSER_TEST_F(
       interestGroupBuyers: []
   })";
 
-  EXPECT_EQ("Promise argument rejected or resolved to invalid value.",
-            RunAuctionAndWait(
-                JsReplace(kAuctionConfigTemplate, test_origin, decision_url)));
+  EXPECT_EQ(
+      "TypeError: Failed to execute 'runAdAuction' on 'Navigator': Promise "
+      "argument rejected or resolved to invalid value.",
+      RunAuctionAndWait(
+          JsReplace(kAuctionConfigTemplate, test_origin, decision_url)));
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -6095,6 +6156,110 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(console_observer.Wait());
 }
 
+// Parse errors for directFromSellerSignalsHeaderAdSlot are logged to devtools.
+IN_PROC_BROWSER_TEST_F(
+    InterestGroupBrowserTest,
+    RunAdAuctionInvalidDirectFromSellerSignalsHeaderAdSlotLogged) {
+  constexpr char kBidderHost[] = "a.test";
+  constexpr char kTopFrameHost[] = "c.test";
+  constexpr char kSellerHost[] = "b.test";
+  url::Origin seller_origin =
+      url::Origin::Create(https_server_->GetURL(kSellerHost, "/echo"));
+  const url::Origin top_frame_origin =
+      url::Origin::Create(https_server_->GetURL(kTopFrameHost, "/echo"));
+
+  GURL bidder_url = https_server_->GetURL(kBidderHost, "/echo");
+  ASSERT_TRUE(NavigateToURL(shell(), bidder_url));
+  url::Origin bidder_origin = url::Origin::Create(bidder_url);
+
+  ASSERT_EQ(kSuccess,
+            JoinInterestGroupAndVerify(
+                /*owner=*/bidder_origin, /*name=*/"cars", /*priority=*/0.0,
+                blink::InterestGroup::ExecutionMode::kCompatibilityMode,
+                /*bidding_url=*/
+                https_server_->GetURL(kBidderHost,
+                                      "/interest_group/bidding_logic.js"),
+                /*ads=*/
+                {{{GURL("https://example.com/render"),
+                   /*metadata=*/absl::nullopt}}}));
+
+  GURL top_frame_url = https_server_->GetURL(kTopFrameHost, "/echo");
+  ASSERT_TRUE(NavigateToURL(shell(), top_frame_url));
+
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+  console_observer.SetPattern(
+      "directFromSellerSignalsHeaderAdSlot: encountered dict without "
+      "\"adSlot\" key: Ad-Auction-Signals=[{ \"no\": \"adSlot\", "
+      "\"sellerSignals\": {\"json\": \"for\", \"the\": [\"seller\"]} }]");
+
+  const char kHeaderSignalsPath[] = "/header_direct_from_seller_signals.json";
+  // The actual body of the request is just an empty JSON dict for the test,
+  // but it could be any arbitrary payload that the server wants to deliver
+  // alongside the header signals.
+  const char kHeaderSignalsBodyResponse[] = "{}";
+  // The adSlot key is not present, so kHeaderSignalsResponse is invalid. The
+  // signals given to worklet functions should be null, and errors should be
+  // logged to devtools.
+  const char kHeaderSignalsResponse[] = R"([{
+      "no": "adSlot",
+      "sellerSignals": {"json": "for", "the": ["seller"]}
+    }])";
+  network_responder_->RegisterNetworkResponse(
+      kHeaderSignalsPath, kHeaderSignalsBodyResponse, "application/json",
+      /*extra_response_headers=*/
+      {{"Access-Control-Allow-Origin", top_frame_origin.Serialize()},
+       {"Ad-Auction-Signals", kHeaderSignalsResponse}});
+  EXPECT_TRUE(ExecJs(web_contents()->GetPrimaryMainFrame(),
+                     content::JsReplace("fetch($1, {adAuctionHeaders: true})",
+                                        https_server_->GetURL(
+                                            kSellerHost, kHeaderSignalsPath))));
+
+  TestFencedFrameURLMappingResultObserver observer;
+  ConvertFencedFrameURNToURL(
+      GURL(
+          EvalJs(web_contents()->GetPrimaryMainFrame(),
+                 JsReplace(
+                     R"(
+(async function() {
+  return await navigator.runAdAuction({
+      seller: $1,
+      decisionLogicUrl: $2,
+      interestGroupBuyers: [$3],
+      directFromSellerSignalsHeaderAdSlot: "adSlot1"
+  });
+})())",
+                     seller_origin,
+                     https_server_->GetURL(
+                         kSellerHost,
+                         "/interest_group/"
+                         "decision_no_direct_from_seller_signals_validator.js"),
+                     bidder_origin))
+              .ExtractString()),
+      &observer);
+  EXPECT_EQ(GURL("https://example.com/render"), observer.mapped_url());
+  EXPECT_TRUE(console_observer.Wait());
+}
+
+// If this test fails, check that you haven't added a required field that's
+// alphabetically before directFromSellerSignalsHeaderAdSlot. See details at
+// https://github.com/WICG/turtledove/issues/803
+IN_PROC_BROWSER_TEST_F(
+    InterestGroupBrowserTest,
+    RunAdAuctionDirectFromSellerSignalsHeaderAdSlotFeatureDetection) {
+  GURL test_url = https_server_->GetURL("a.test", "/echo");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+
+  EXPECT_TRUE(EvalJs(shell(), R"(
+(async function() {
+  let dfss = false;
+  navigator.runAdAuction({
+      get directFromSellerSignalsHeaderAdSlot() { dfss = true; }
+  }).catch((e) => {});
+  return dfss;
+})())")
+                  .ExtractBool());
+}
+
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                        RunAdAuctionPromiseInvalidDirectFromSellerSignals) {
   GURL test_url = https_server_->GetURL("a.test", "/echo");
@@ -6117,9 +6282,11 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       "'NavigatorAuction': directFromSellerSignals 'http://test.com/signals' "
       "for AuctionAdConfig with seller 'https://a.test:*' must match seller "
       "origin; only https scheme is supported.");
-  EXPECT_EQ("Promise argument rejected or resolved to invalid value.",
-            RunAuctionAndWait(
-                JsReplace(kAuctionConfigTemplate, test_origin, decision_url)));
+  EXPECT_EQ(
+      "TypeError: Failed to execute 'runAdAuction' on 'Navigator': Promise "
+      "argument rejected or resolved to invalid value.",
+      RunAuctionAndWait(
+          JsReplace(kAuctionConfigTemplate, test_origin, decision_url)));
   EXPECT_TRUE(console_observer.Wait());
 }
 
@@ -6144,9 +6311,11 @@ IN_PROC_BROWSER_TEST_F(
 
   WebContentsConsoleObserver console_observer(shell()->web_contents());
   console_observer.SetPattern("Uncaught (in promise) Don't stringify me!");
-  EXPECT_EQ("Promise argument rejected or resolved to invalid value.",
-            RunAuctionAndWait(
-                JsReplace(kAuctionConfigTemplate, test_origin, decision_url)));
+  EXPECT_EQ(
+      "TypeError: Failed to execute 'runAdAuction' on 'Navigator': Promise "
+      "argument rejected or resolved to invalid value.",
+      RunAuctionAndWait(
+          JsReplace(kAuctionConfigTemplate, test_origin, decision_url)));
   EXPECT_TRUE(console_observer.Wait());
 }
 
@@ -6165,14 +6334,16 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       "AuctionAdConfig with seller 'https://a.test:*' cannot be resolved to a "
       "valid URL.");
 
-  EXPECT_EQ("Promise argument rejected or resolved to invalid value.",
-            RunAuctionAndWait(JsReplace(R"({
+  EXPECT_EQ(
+      "TypeError: Failed to execute 'runAdAuction' on 'Navigator': Promise "
+      "argument rejected or resolved to invalid value.",
+      RunAuctionAndWait(JsReplace(R"({
       seller: $1,
       decisionLogicURL: $2,
       directFromSellerSignals: 'https://invalid^&',
       interestGroupBuyers: []
   })",
-                                        test_origin, decision_url)));
+                                  test_origin, decision_url)));
   EXPECT_TRUE(console_observer.Wait());
 }
 
@@ -6190,14 +6361,16 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       "'NavigatorAuction': directFromSellerSignals 'http://test.com/signals' "
       "for AuctionAdConfig with seller 'https://a.test:*' must match seller "
       "origin; only https scheme is supported.");
-  EXPECT_EQ("Promise argument rejected or resolved to invalid value.",
-            RunAuctionAndWait(JsReplace(R"({
+  EXPECT_EQ(
+      "TypeError: Failed to execute 'runAdAuction' on 'Navigator': Promise "
+      "argument rejected or resolved to invalid value.",
+      RunAuctionAndWait(JsReplace(R"({
       seller: $1,
       decisionLogicURL: $2,
       directFromSellerSignals: 'http://test.com/signals',
       interestGroupBuyers: []
   })",
-                                        test_origin, decision_url)));
+                                  test_origin, decision_url)));
   EXPECT_TRUE(console_observer.Wait());
 }
 
@@ -6216,14 +6389,16 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       "for AuctionAdConfig with seller 'https://a.test:*' must match seller "
       "origin; only https scheme is supported.");
 
-  EXPECT_EQ("Promise argument rejected or resolved to invalid value.",
-            RunAuctionAndWait(JsReplace(R"({
+  EXPECT_EQ(
+      "TypeError: Failed to execute 'runAdAuction' on 'Navigator': Promise "
+      "argument rejected or resolved to invalid value.",
+      RunAuctionAndWait(JsReplace(R"({
       seller: $1,
       decisionLogicURL: $2,
       directFromSellerSignals: 'https://test2.com/signals',
       interestGroupBuyers: [$1]
   })",
-                                        test_origin, decision_url)));
+                                  test_origin, decision_url)));
   EXPECT_TRUE(console_observer.Wait());
 }
 
@@ -6243,14 +6418,16 @@ IN_PROC_BROWSER_TEST_F(
       "'https://a.test:*/signals?shouldntBeHere' for AuctionAdConfig with "
       "seller 'https://a.test:*' URL prefix must not have a query string.");
 
-  EXPECT_EQ("Promise argument rejected or resolved to invalid value.",
-            RunAuctionAndWait(JsReplace(R"({
+  EXPECT_EQ(
+      "TypeError: Failed to execute 'runAdAuction' on 'Navigator': Promise "
+      "argument rejected or resolved to invalid value.",
+      RunAuctionAndWait(JsReplace(R"({
       seller: $1,
       decisionLogicURL: $2,
       directFromSellerSignals: $1 + '/signals?shouldntBeHere',
       interestGroupBuyers: [$1]
   })",
-                                        test_origin, decision_url)));
+                                  test_origin, decision_url)));
   EXPECT_TRUE(console_observer.Wait());
 }
 
@@ -6636,7 +6813,7 @@ IN_PROC_BROWSER_TEST_F(
   const char kHeaderSignalsPath[] = "/header_direct_from_seller_signals.json";
   // The actual body of the request is just an empty JSON dict for the test,
   // but it could be any arbitrary payload that the server wants to deliver
-  // with the header signals.
+  // alongside the header signals.
   const char kHeaderSignalsBodyResponse[] = "{}";
   const char kHeaderSignalsResponse[] = R"([{
       "adSlot": "adSlot1",
@@ -6711,7 +6888,7 @@ IN_PROC_BROWSER_TEST_F(
   const char kHeaderSignalsPath[] = "/header_direct_from_seller_signals.json";
   // The actual body of the request is just an empty JSON dict for the test,
   // but it could be any arbitrary payload that the server wants to deliver
-  // with the header signals.
+  // alongside the header signals.
   const char kHeaderSignalsBodyResponse[] = "{}";
   const char kHeaderSignalsResponse[] = R"([{
       "adSlot": "adSlot1",
@@ -6762,8 +6939,10 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   WebContentsConsoleObserver console_observer(shell()->web_contents());
   console_observer.SetPattern("Uncaught (in promise) Error!");
 
-  EXPECT_EQ("Promise argument rejected or resolved to invalid value.",
-            RunAuctionAndWait(JsReplace(R"({
+  EXPECT_EQ(
+      "TypeError: Failed to execute 'runAdAuction' on 'Navigator': Promise "
+      "argument rejected or resolved to invalid value.",
+      RunAuctionAndWait(JsReplace(R"({
       seller: $1,
       decisionLogicURL: $2,
       directFromSellerSignalsHeaderAdSlot: Promise.resolve((() => {
@@ -6775,7 +6954,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       })()),
       interestGroupBuyers: [$1]
   })",
-                                        test_origin, decision_url)));
+                                  test_origin, decision_url)));
   EXPECT_TRUE(console_observer.Wait());
 }
 
@@ -11373,7 +11552,7 @@ IN_PROC_BROWSER_TEST_P(InterestGroupWorkletValidationBrowserTest,
     const char kHeaderSignalsPath[] = "/header_direct_from_seller_signals.json";
     // The actual body of the request is just an empty JSON dict for the test,
     // but it could be any arbitrary payload that the server wants to deliver
-    // with the header signals.
+    // alongside the header signals.
     const char kHeaderSignalsBodyResponse[] = "{}";
     const std::string kHeaderSignalsResponse =
         base::StringPrintf(R"([{
@@ -11769,7 +11948,7 @@ IN_PROC_BROWSER_TEST_P(InterestGroupComponentWorkletValidationBrowserTest,
         "/component_header_direct_from_seller_signals.json";
     // The actual body of both requests is just an empty JSON dict for the test,
     // but it could be any arbitrary payload that the server wants to deliver
-    // with the header signals.
+    // alongside the header signals.
     const char kHeaderSignalsBodyResponse[] = "{}";
     // Intentionally use the same adSlot name for both responses -- responses
     // from different sellers shouldn't conflict.
@@ -13680,7 +13859,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupPrivateNetworkBrowserTest,
 
   const network::URLLoaderCompletionStatus& bidder_status =
       url_loader_monitor.WaitForRequestCompletion(bidder_url);
-  EXPECT_EQ(net::ERR_FAILED, bidder_status.error_code);
+  EXPECT_EQ(net::ERR_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_CHECKS,
+            bidder_status.error_code);
   EXPECT_THAT(bidder_status.cors_error_status,
               Optional(network::CorsErrorStatus(
                   network::mojom::CorsError::kPreflightMissingAllowOriginHeader,
@@ -13736,7 +13916,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupPrivateNetworkBrowserTest,
 
   const network::URLLoaderCompletionStatus& seller_status =
       url_loader_monitor.WaitForRequestCompletion(seller_url);
-  EXPECT_EQ(net::ERR_FAILED, seller_status.error_code);
+  EXPECT_EQ(net::ERR_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_CHECKS,
+            seller_status.error_code);
   EXPECT_THAT(seller_status.cors_error_status,
               Optional(network::CorsErrorStatus(
                   network::mojom::CorsError::kPreflightMissingAllowOriginHeader,
@@ -13812,7 +13993,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupPrivateNetworkBrowserTest,
     SCOPED_TRACE(report_url.spec());
     const network::URLLoaderCompletionStatus& report_status =
         url_loader_monitor.WaitForRequestCompletion(report_url);
-    EXPECT_EQ(net::ERR_FAILED, report_status.error_code);
+    EXPECT_EQ(net::ERR_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_CHECKS,
+              report_status.error_code);
     EXPECT_THAT(
         report_status.cors_error_status,
         Optional(network::CorsErrorStatus(
@@ -14004,7 +14186,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupPrivateNetworkBrowserTest,
     // The request should be blocked in the public address space case.
     if (public_address_space) {
       EXPECT_EQ(
-          net::ERR_FAILED,
+          net::ERR_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_CHECKS,
           url_loader_monitor.WaitForRequestCompletion(update_url).error_code);
     } else {
       EXPECT_EQ(
@@ -14302,7 +14484,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupPrivateNetworkBrowserTest,
           request.trusted_params->client_security_state->ip_address_space);
       // The request should be blocked in the public address space case.
       EXPECT_EQ(
-          net::ERR_FAILED,
+          net::ERR_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_CHECKS,
           url_loader_monitor.WaitForRequestCompletion(update_url).error_code);
     } else {
       EXPECT_EQ(
@@ -14959,471 +15141,736 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, ExecutionModeGroupByOrigin) {
   }
 }
 
-IN_PROC_BROWSER_TEST_F(
-    InterestGroupBrowserTest,
-    FetchCrossOrigin_AdAuctionHeadersEligible_HasAdAuctionResultResponseHeader) {
-  GURL main_frame_url =
-      https_server_->GetURL("a.test", "/interest_group/empty.html");
-  ASSERT_TRUE(NavigateToURL(shell(), main_frame_url));
+enum FetchMethod {
+  kFetch,
+  kIFrame,
+  kDynamicIFrame,
+};
 
-  base::StringPairs replacement;
-  replacement.emplace_back(std::make_pair("{{STATUS}}", "200 OK"));
-  replacement.emplace_back(std::make_pair(
-      "{{AD_AUCTION_HEADERS}}",
-      base::StrCat({"Ad-Auction-Result: ", kLegitimateAdAuctionResponse})));
-  replacement.emplace_back(std::make_pair("{{REDIRECT_HEADER}}", ""));
+class InterestGroupBrowserAdAuctionHeadersTest
+    : public InterestGroupBrowserTest {
+ protected:
+  struct FetchURLParams {
+    std::string origin;
+    absl::optional<std::string> path;
+    std::string ad_auction_headers;
+    absl::optional<GURL> redirect_url;
+  };
+  GURL GetFetchURL(FetchURLParams params) {
+    CHECK(!params.origin.empty());
+    base::StringPairs replacements;
+    replacements.emplace_back(std::make_pair(
+        "{{STATUS}}",
+        params.redirect_url.has_value() ? "301 Moved Permanently" : "200 OK"));
+    replacements.emplace_back(
+        std::make_pair("{{AD_AUCTION_HEADERS}}", params.ad_auction_headers));
+    replacements.emplace_back(std::make_pair(
+        "{{REDIRECT_HEADER}}", params.redirect_url.has_value()
+                                   ? "Location: " + params.redirect_url->spec()
+                                   : ""));
 
-  GURL fetch_url = https_server_->GetURL(
-      "b.test", net::test_server::GetFilePathWithReplacements(
-                    "/interest_group/"
-                    "page_with_custom_ad_auction_result_header.html",
-                    replacement));
-
-  EXPECT_TRUE(ExecJs(
-      web_contents()->GetPrimaryMainFrame(),
-      content::JsReplace("fetch($1, {adAuctionHeaders: true})", fetch_url)));
-
-  absl::optional<std::string> ad_auction_header_value =
-      GetAdAuctionHeaderForRequestPath(
-          "/interest_group/page_with_custom_ad_auction_result_header.html");
-
-  EXPECT_TRUE(ad_auction_header_value);
-  EXPECT_EQ(*ad_auction_header_value, "?1");
-
-  EXPECT_TRUE(WitnessedAuctionResultForOrigin(
-      url::Origin::Create(fetch_url),
-      base64Decode(kLegitimateAdAuctionResponse)));
-
-  const std::set<std::string>& signals =
-      GetAuctionSignalsForOrigin(url::Origin::Create(fetch_url));
-  EXPECT_THAT(signals, ::testing::IsEmpty());
-}
-
-IN_PROC_BROWSER_TEST_F(
-    InterestGroupBrowserTest,
-    FetchSameOrigin_AdAuctionHeadersEligible_HasBothAdAuctionResultAndSignalsResponseHeader) {
-  GURL main_frame_url =
-      https_server_->GetURL("a.test", "/interest_group/empty.html");
-  ASSERT_TRUE(NavigateToURL(shell(), main_frame_url));
-
-  base::StringPairs replacement;
-  replacement.emplace_back(std::make_pair("{{STATUS}}", "200 OK"));
-  replacement.emplace_back(std::make_pair(
-      "{{AD_AUCTION_HEADERS}}",
-      base::StrCat({"Ad-Auction-Result: ", kLegitimateAdAuctionResponse,
-                    "\nAd-Auction-Signals: ", "{}"})));
-  replacement.emplace_back(std::make_pair("{{REDIRECT_HEADER}}", ""));
-
-  GURL fetch_url = https_server_->GetURL(
-      "a.test", net::test_server::GetFilePathWithReplacements(
-                    "/interest_group/"
-                    "page_with_custom_ad_auction_result_header.html",
-                    replacement));
-
-  // Verify that the JavaScript doesn't see the response header
-  //  `Ad-Auction-Signals`. In contrast, it should see `Ad-Auction-Result`.
-  EXPECT_TRUE(ExecJs(web_contents()->GetPrimaryMainFrame(),
-                     content::JsReplace(R"(
-        fetch($1, {adAuctionHeaders: true}).then((response) => {
-          if (!response.headers.get('Ad-Auction-Result')) {
-            throw 'Did not receive `Ad-Auction-Result` header';
-          }
-
-          if (response.headers.get('Ad-Auction-Signals')) {
-            throw 'Unexpectedly received `Ad-Auction-Signals` header';
-          }
-
-        });
-    )",
-                                        fetch_url)));
-
-  absl::optional<std::string> ad_auction_header_value =
-      GetAdAuctionHeaderForRequestPath(
-          "/interest_group/page_with_custom_ad_auction_result_header.html");
-
-  EXPECT_TRUE(ad_auction_header_value);
-  EXPECT_EQ(*ad_auction_header_value, "?1");
-
-  EXPECT_TRUE(WitnessedAuctionResultForOrigin(
-      url::Origin::Create(fetch_url),
-      base64Decode(kLegitimateAdAuctionResponse)));
-
-  const std::set<std::string>& signals =
-      GetAuctionSignalsForOrigin(url::Origin::Create(fetch_url));
-  EXPECT_THAT(signals, ::testing::UnorderedElementsAre("{}"));
-}
-
-IN_PROC_BROWSER_TEST_F(
-    InterestGroupBrowserTest,
-    FetchCrossOrigin_AdAuctionHeadersEligible_HasBothAdAuctionResultAndSignalsResponseHeader) {
-  GURL main_frame_url =
-      https_server_->GetURL("a.test", "/interest_group/empty.html");
-  ASSERT_TRUE(NavigateToURL(shell(), main_frame_url));
-
-  base::StringPairs replacement;
-  replacement.emplace_back(std::make_pair("{{STATUS}}", "200 OK"));
-  replacement.emplace_back(std::make_pair(
-      "{{AD_AUCTION_HEADERS}}",
-      base::StrCat({"Ad-Auction-Result: ", kLegitimateAdAuctionResponse,
-                    "\nAd-Auction-Signals: ", "{}"})));
-  replacement.emplace_back(std::make_pair("{{REDIRECT_HEADER}}", ""));
-
-  GURL fetch_url = https_server_->GetURL(
-      "b.test", net::test_server::GetFilePathWithReplacements(
-                    "/interest_group/"
-                    "page_with_custom_ad_auction_result_header.html",
-                    replacement));
-
-  // Verify that the JavaScript doesn't see the `Ad-Auction-Signals` or
-  // `Ad-Auction-Result` response header, as they are not CORS-safelisted.
-  EXPECT_TRUE(ExecJs(web_contents()->GetPrimaryMainFrame(),
-                     content::JsReplace(R"(
-        fetch($1, {adAuctionHeaders: true}).then((response) => {
-          if (response.headers.get('Ad-Auction-Result')) {
-            throw 'Unexpectedly received `Ad-Auction-Result` header';
-          }
-
-          if (response.headers.get('Ad-Auction-Signals')) {
-            throw 'Unexpectedly received `Ad-Auction-Signals` header';
-          }
-
-        });
-    )",
-                                        fetch_url)));
-
-  absl::optional<std::string> ad_auction_header_value =
-      GetAdAuctionHeaderForRequestPath(
-          "/interest_group/page_with_custom_ad_auction_result_header.html");
-
-  EXPECT_TRUE(ad_auction_header_value);
-  EXPECT_EQ(*ad_auction_header_value, "?1");
-
-  EXPECT_TRUE(WitnessedAuctionResultForOrigin(
-      url::Origin::Create(fetch_url),
-      base64Decode(kLegitimateAdAuctionResponse)));
-
-  const std::set<std::string>& signals =
-      GetAuctionSignalsForOrigin(url::Origin::Create(fetch_url));
-  EXPECT_THAT(signals, ::testing::UnorderedElementsAre("{}"));
-}
-
-IN_PROC_BROWSER_TEST_F(
-    InterestGroupBrowserTest,
-    FetchCrossOrigin_AdAuctionHeadersNotEligible_HasAdAuctionResultResponseHeader) {
-  GURL main_frame_url =
-      https_server_->GetURL("a.test", "/interest_group/empty.html");
-  ASSERT_TRUE(NavigateToURL(shell(), main_frame_url));
-
-  base::StringPairs replacement;
-  replacement.emplace_back(std::make_pair("{{STATUS}}", "200 OK"));
-  replacement.emplace_back(std::make_pair(
-      "{{AD_AUCTION_HEADERS}}",
-      base::StrCat({"Ad-Auction-Result: ", kLegitimateAdAuctionResponse})));
-  replacement.emplace_back(std::make_pair("{{REDIRECT_HEADER}}", ""));
-
-  // "d.test" is not allowlisted for the API. Thus the request isn't eligible
-  // for ad auction headers.
-  GURL fetch_url = https_server_->GetURL(
-      "d.test", net::test_server::GetFilePathWithReplacements(
-                    "/interest_group/"
-                    "page_with_custom_ad_auction_result_header.html",
-                    replacement));
-
-  EXPECT_TRUE(ExecJs(
-      web_contents()->GetPrimaryMainFrame(),
-      content::JsReplace("fetch($1, {adAuctionHeaders: true})", fetch_url)));
-
-  absl::optional<std::string> ad_auction_header_value =
-      GetAdAuctionHeaderForRequestPath(
-          "/interest_group/page_with_custom_ad_auction_result_header.html");
-
-  EXPECT_FALSE(ad_auction_header_value);
-
-  EXPECT_FALSE(WitnessedAuctionResultForOrigin(
-      url::Origin::Create(fetch_url),
-      base64Decode(kLegitimateAdAuctionResponse)));
-}
-
-IN_PROC_BROWSER_TEST_F(
-    InterestGroupBrowserTest,
-    FetchCrossOrigin_AdAuctionHeadersEligible_HasNoAdAuctionResultResponseHeader) {
-  GURL main_frame_url =
-      https_server_->GetURL("a.test", "/interest_group/empty.html");
-  ASSERT_TRUE(NavigateToURL(shell(), main_frame_url));
-
-  base::StringPairs replacement;
-  replacement.emplace_back(std::make_pair("{{STATUS}}", "200 OK"));
-  replacement.emplace_back(std::make_pair("{{AD_AUCTION_HEADERS}}", ""));
-  replacement.emplace_back(std::make_pair("{{REDIRECT_HEADER}}", ""));
-
-  // "d.test" is not allowlisted for the API. Thus the request isn't eligible
-  // for ad auction headers.
-  GURL fetch_url = https_server_->GetURL(
-      "b.test", net::test_server::GetFilePathWithReplacements(
-                    "/interest_group/"
-                    "page_with_custom_ad_auction_result_header.html",
-                    replacement));
-
-  EXPECT_TRUE(ExecJs(
-      web_contents()->GetPrimaryMainFrame(),
-      content::JsReplace("fetch($1, {adAuctionHeaders: true})", fetch_url)));
-
-  absl::optional<std::string> ad_auction_header_value =
-      GetAdAuctionHeaderForRequestPath(
-          "/interest_group/page_with_custom_ad_auction_result_header.html");
-
-  EXPECT_TRUE(ad_auction_header_value);
-  EXPECT_EQ(*ad_auction_header_value, "?1");
-
-  EXPECT_FALSE(WitnessedAuctionResultForOrigin(
-      url::Origin::Create(fetch_url),
-      base64Decode(kLegitimateAdAuctionResponse)));
-}
-
-// On site a.test, test fetch request to b.test that gets redirected to c.test.
-// Only the initial ad auction request header "?1" is expected -- its response
-// will be ignored and the redirect request is also ineligible for ad auction
-// headers handling.
-IN_PROC_BROWSER_TEST_F(
-    InterestGroupBrowserTest,
-    FetchCrossOrigin_HasRedirect_AdAuctionHeadersNotEligible) {
-  GURL main_frame_url =
-      https_server_->GetURL("a.test", "/interest_group/empty.html");
-  ASSERT_TRUE(NavigateToURL(shell(), main_frame_url));
-
-  base::StringPairs redirect_replacement;
-  redirect_replacement.emplace_back(std::make_pair("{{STATUS}}", "200 OK"));
-  redirect_replacement.emplace_back(std::make_pair(
-      "{{AD_AUCTION_HEADERS}}",
-      base::StrCat({"Ad-Auction-Result: ", kLegitimateAdAuctionResponse,
-                    "\nAd-Auction-Signals: ", "{}",
-                    "\nAd-Auction-Additional-Bid: ",
-                    "00000000-0000-0000-0000-000000000000:e30="})));
-  redirect_replacement.emplace_back(std::make_pair("{{REDIRECT_HEADER}}", ""));
-
-  GURL redirect_url = https_server_->GetURL(
-      "c.test", net::test_server::GetFilePathWithReplacements(
-                    "/interest_group/"
-                    "page_with_custom_ad_auction_result_header2.html",
-                    redirect_replacement));
-
-  base::StringPairs replacement;
-  replacement.emplace_back(
-      std::make_pair("{{STATUS}}", "301 Moved Permanently"));
-  replacement.emplace_back(std::make_pair(
-      "{{AD_AUCTION_HEADERS}}",
-      base::StrCat({"Ad-Auction-Result: ", kLegitimateAdAuctionResponse,
-                    "\nAd-Auction-Signals: ", "{}",
-                    "\nAd-Auction-Additional-Bid: ",
-                    "00000000-0000-0000-0000-000000000000:e30="})));
-  replacement.emplace_back(std::make_pair("{{REDIRECT_HEADER}}",
-                                          "Location: " + redirect_url.spec()));
-
-  GURL fetch_url = https_server_->GetURL(
-      "b.test", net::test_server::GetFilePathWithReplacements(
-                    "/interest_group/"
-                    "page_with_custom_ad_auction_result_header.html",
-                    replacement));
-
-  EXPECT_TRUE(ExecJs(
-      web_contents()->GetPrimaryMainFrame(),
-      content::JsReplace("fetch($1, {adAuctionHeaders: true})", fetch_url)));
-
-  {
-    absl::optional<std::string> ad_auction_header_value =
-        GetAdAuctionHeaderForRequestPath(
-            "/interest_group/page_with_custom_ad_auction_result_header.html");
-
-    EXPECT_TRUE(ad_auction_header_value);
-    EXPECT_EQ(*ad_auction_header_value, "?1");
+    return https_server_->GetURL(
+        params.origin,
+        net::test_server::GetFilePathWithReplacements(
+            "/interest_group/" +
+                params.path.value_or(
+                    "page_with_custom_ad_auction_result_header.html"),
+            replacements));
   }
-  {
-    absl::optional<std::string> ad_auction_header_value =
-        GetAdAuctionHeaderForRequestPath(
-            "/interest_group/page_with_custom_ad_auction_result_header2.html");
 
-    EXPECT_FALSE(ad_auction_header_value);
+  void CreateIframe(const GURL& url, bool has_ad_auction_headers_attribute) {
+    content::TestNavigationObserver nav_observer(web_contents());
+
+    ExecuteScriptAsync(
+        web_contents(),
+        content::JsReplace(R"(
+      {
+        const iframe = document.createElement("iframe");
+        iframe.adAuctionHeaders = $1;
+        iframe.src = $2;
+        document.body.appendChild(iframe);
+      }
+                )",
+                           has_ad_auction_headers_attribute, url));
+
+    nav_observer.WaitForNavigationFinished();
+    EXPECT_TRUE(nav_observer.last_navigation_succeeded());
   }
+
+  GURL GetPageWithIFrameURL(GURL fetch_url,
+                            bool has_ad_auction_headers_attribute) {
+    base::StringPairs replacement;
+    replacement.emplace_back(std::make_pair(
+        "{{MAYBE_AD_AUCTION_HEADERS_ATTRIBUTE}}",
+        has_ad_auction_headers_attribute ? "adAuctionHeaders" : ""));
+    replacement.emplace_back(std::make_pair("{{SRC_URL}}", fetch_url.spec()));
+
+    return https_server_->GetURL(
+        "a.test",
+        net::test_server::GetFilePathWithReplacements(
+            "/interest_group/page_with_iframe_with_ad_auction_headers.html",
+            replacement));
+  }
+
+  absl::optional<std::string> GetAdAuctionHeader(
+      absl::optional<std::string> path = absl::nullopt) {
+    return GetAdAuctionHeaderForRequestPath(
+        "/interest_group/" +
+        path.value_or("page_with_custom_ad_auction_result_header.html"));
+  }
+};
+
+class InterestGroupBrowserAdAuctionHeadersAllMethodsAndOriginsTest
+    : public InterestGroupBrowserAdAuctionHeadersTest,
+      public ::testing::WithParamInterface<std::tuple<FetchMethod, bool>> {
+ protected:
+  FetchMethod ad_auction_headers_test_type() { return std::get<0>(GetParam()); }
+
+  bool is_cross_origin() { return std::get<1>(GetParam()); }
+};
+
+IN_PROC_BROWSER_TEST_P(
+    InterestGroupBrowserAdAuctionHeadersAllMethodsAndOriginsTest,
+    AdAuctionHeadersEligible_HasNoResponseHeaders) {
+  GURL fetch_url = GetFetchURL(
+      (FetchURLParams){.origin = is_cross_origin() ? "b.test" : "a.test",
+                       .ad_auction_headers = ""});
+
+  switch (ad_auction_headers_test_type()) {
+    case FetchMethod::kFetch:
+      ASSERT_TRUE(NavigateToURL(
+          shell(),
+          https_server_->GetURL("a.test", "/interest_group/empty.html")));
+      EXPECT_TRUE(
+          ExecJs(web_contents()->GetPrimaryMainFrame(),
+                 content::JsReplace("fetch($1, {adAuctionHeaders: true})",
+                                    fetch_url)));
+      break;
+
+    case FetchMethod::kIFrame:
+      ASSERT_TRUE(NavigateToURL(
+          shell(), GetPageWithIFrameURL(
+                       fetch_url, /*has_ad_auction_headers_attribute=*/true)));
+      break;
+
+    case FetchMethod::kDynamicIFrame:
+      ASSERT_TRUE(NavigateToURL(
+          shell(),
+          https_server_->GetURL("a.test", "/interest_group/empty.html")));
+      CreateIframe(fetch_url, /*has_ad_auction_headers_attribute=*/true);
+      break;
+  }
+
+  absl::optional<std::string> ad_auction_header = GetAdAuctionHeader();
+  EXPECT_TRUE(ad_auction_header);
+  EXPECT_EQ(*ad_auction_header, "?1");
 
   url::Origin request_origin = url::Origin::Create(fetch_url);
-
   EXPECT_FALSE(WitnessedAuctionResultForOrigin(
       request_origin, base64Decode(kLegitimateAdAuctionResponse)));
-
-  const std::set<std::string>& signals =
-      GetAuctionSignalsForOrigin(request_origin);
-  EXPECT_THAT(signals, ::testing::IsEmpty());
-
+  EXPECT_EQ(ParseAndFindAdAuctionSignals(request_origin, "slot1"), nullptr);
   EXPECT_THAT(TakeAuctionAdditionalBidsForOriginAndNonce(
                   request_origin, "00000000-0000-0000-0000-000000000000"),
               ::testing::IsEmpty());
 }
 
-IN_PROC_BROWSER_TEST_F(
-    InterestGroupBrowserTest,
-    FetchSameOrigin_AdAuctionHeadersEligible_HasAdAuctionAdditionalBidResponseHeader) {
-  GURL main_frame_url =
-      https_server_->GetURL("a.test", "/interest_group/empty.html");
-  ASSERT_TRUE(NavigateToURL(shell(), main_frame_url));
+IN_PROC_BROWSER_TEST_P(
+    InterestGroupBrowserAdAuctionHeadersAllMethodsAndOriginsTest,
+    AdAuctionHeadersEligible_HasAdAuctionResultResponseHeader) {
+  GURL fetch_url = GetFetchURL((FetchURLParams){
+      .origin = is_cross_origin() ? "b.test" : "a.test",
+      .ad_auction_headers =
+          base::StrCat({"Ad-Auction-Result: ", kLegitimateAdAuctionResponse})});
 
-  base::StringPairs replacement;
-  replacement.emplace_back(std::make_pair("{{STATUS}}", "200 OK"));
-  replacement.emplace_back(std::make_pair(
-      "{{AD_AUCTION_HEADERS}}",
-      base::StrCat({"Ad-Auction-Additional-Bid: ",
-                    "00000000-0000-0000-0000-000000000000:e30="})));
-  replacement.emplace_back(std::make_pair("{{REDIRECT_HEADER}}", ""));
+  switch (ad_auction_headers_test_type()) {
+    case FetchMethod::kFetch:
+      ASSERT_TRUE(NavigateToURL(
+          shell(),
+          https_server_->GetURL("a.test", "/interest_group/empty.html")));
+      EXPECT_TRUE(ExecJs(web_contents()->GetPrimaryMainFrame(),
+                         content::JsReplace(R"(
+            fetch($1, {adAuctionHeaders: true}).then((response) => {
+              if (!response.headers.get('Ad-Auction-Result')) {
+                throw 'Did not receive `Ad-Auction-Result` header';
+              }
+            });
+          )",
+                                            fetch_url)));
+      break;
 
-  GURL fetch_url = https_server_->GetURL(
-      "a.test", net::test_server::GetFilePathWithReplacements(
-                    "/interest_group/"
-                    "page_with_custom_ad_auction_result_header.html",
-                    replacement));
+    case FetchMethod::kIFrame:
+      ASSERT_TRUE(NavigateToURL(
+          shell(), GetPageWithIFrameURL(
+                       fetch_url, /*has_ad_auction_headers_attribute=*/true)));
+      break;
 
-  // Verify that the JavaScript doesn't see the response header
-  // `Ad-Auction-Additional-Bid`.
-  EXPECT_TRUE(ExecJs(web_contents()->GetPrimaryMainFrame(),
-                     content::JsReplace(R"(
-        fetch($1, {adAuctionHeaders: true}).then((response) => {
-          if (response.headers.get('Ad-Auction-Additional-Bid')) {
-            throw 'Unexpectedly received `Ad-Auction-Additional-Bid` header';
-          }
-        });
-    )",
-                                        fetch_url)));
+    case FetchMethod::kDynamicIFrame:
+      ASSERT_TRUE(NavigateToURL(
+          shell(),
+          https_server_->GetURL("a.test", "/interest_group/empty.html")));
+      CreateIframe(fetch_url, /*has_ad_auction_headers_attribute=*/true);
+      break;
+  }
 
-  absl::optional<std::string> ad_auction_header_value =
-      GetAdAuctionHeaderForRequestPath(
-          "/interest_group/page_with_custom_ad_auction_result_header.html");
-
-  EXPECT_TRUE(ad_auction_header_value);
-  EXPECT_EQ(*ad_auction_header_value, "?1");
-
-  url::Origin request_origin = url::Origin::Create(fetch_url);
-  EXPECT_THAT(TakeAuctionAdditionalBidsForOriginAndNonce(
-                  request_origin, "00000000-0000-0000-0000-000000000000"),
-              ::testing::ElementsAre("e30="));
-}
-
-IN_PROC_BROWSER_TEST_F(
-    InterestGroupBrowserTest,
-    FetchCrossOrigin_AdAuctionHeadersEligible_HasAdAuctionAdditionalBidResponseHeader) {
-  GURL main_frame_url =
-      https_server_->GetURL("a.test", "/interest_group/empty.html");
-  ASSERT_TRUE(NavigateToURL(shell(), main_frame_url));
-
-  base::StringPairs replacement;
-  replacement.emplace_back(std::make_pair("{{STATUS}}", "200 OK"));
-  replacement.emplace_back(std::make_pair(
-      "{{AD_AUCTION_HEADERS}}",
-      base::StrCat({"Ad-Auction-Additional-Bid: ",
-                    "00000000-0000-0000-0000-000000000000:e30="})));
-  replacement.emplace_back(std::make_pair("{{REDIRECT_HEADER}}", ""));
-
-  GURL fetch_url = https_server_->GetURL(
-      "b.test", net::test_server::GetFilePathWithReplacements(
-                    "/interest_group/"
-                    "page_with_custom_ad_auction_result_header.html",
-                    replacement));
-
-  // Verify that the JavaScript doesn't see the response header
-  // `Ad-Auction-Additional-Bid`.
-  EXPECT_TRUE(ExecJs(web_contents()->GetPrimaryMainFrame(),
-                     content::JsReplace(R"(
-        fetch($1, {adAuctionHeaders: true}).then((response) => {
-          if (response.headers.get('Ad-Auction-Additional-Bid')) {
-            throw 'Unexpectedly received `Ad-Auction-Additional-Bid` header';
-          }
-        });
-    )",
-                                        fetch_url)));
-
-  absl::optional<std::string> ad_auction_header_value =
-      GetAdAuctionHeaderForRequestPath(
-          "/interest_group/page_with_custom_ad_auction_result_header.html");
-
-  EXPECT_TRUE(ad_auction_header_value);
-  EXPECT_EQ(*ad_auction_header_value, "?1");
+  absl::optional<std::string> ad_auction_header = GetAdAuctionHeader();
+  ASSERT_TRUE(ad_auction_header);
+  EXPECT_EQ(*ad_auction_header, "?1");
 
   url::Origin request_origin = url::Origin::Create(fetch_url);
-  EXPECT_THAT(TakeAuctionAdditionalBidsForOriginAndNonce(
-                  request_origin, "00000000-0000-0000-0000-000000000000"),
-              ::testing::ElementsAre("e30="));
-}
-
-IN_PROC_BROWSER_TEST_F(
-    InterestGroupBrowserTest,
-    FetchCrossOrigin_AdAuctionHeadersEligible_HasNoAdAuctionAdditionalBidResponseHeader) {
-  GURL main_frame_url =
-      https_server_->GetURL("a.test", "/interest_group/empty.html");
-  ASSERT_TRUE(NavigateToURL(shell(), main_frame_url));
-
-  base::StringPairs replacement;
-  replacement.emplace_back(std::make_pair("{{STATUS}}", "200 OK"));
-  replacement.emplace_back(std::make_pair("{{AD_AUCTION_HEADERS}}", ""));
-  replacement.emplace_back(std::make_pair("{{REDIRECT_HEADER}}", ""));
-
-  GURL fetch_url = https_server_->GetURL(
-      "b.test", net::test_server::GetFilePathWithReplacements(
-                    "/interest_group/"
-                    "page_with_custom_ad_auction_result_header.html",
-                    replacement));
-
-  EXPECT_TRUE(ExecJs(
-      web_contents()->GetPrimaryMainFrame(),
-      content::JsReplace("fetch($1, {adAuctionHeaders: true})", fetch_url)));
-
-  absl::optional<std::string> ad_auction_header_value =
-      GetAdAuctionHeaderForRequestPath(
-          "/interest_group/page_with_custom_ad_auction_result_header.html");
-
-  EXPECT_TRUE(ad_auction_header_value);
-  EXPECT_EQ(*ad_auction_header_value, "?1");
-
-  url::Origin request_origin = url::Origin::Create(fetch_url);
+  EXPECT_TRUE(WitnessedAuctionResultForOrigin(
+      request_origin, base64Decode(kLegitimateAdAuctionResponse)));
+  EXPECT_EQ(ParseAndFindAdAuctionSignals(request_origin, "slot1"), nullptr);
   EXPECT_THAT(TakeAuctionAdditionalBidsForOriginAndNonce(
                   request_origin, "00000000-0000-0000-0000-000000000000"),
               ::testing::IsEmpty());
 }
 
-IN_PROC_BROWSER_TEST_F(
-    InterestGroupBrowserTest,
-    FetchCrossOrigin_AdAuctionHeadersNotEligible_HasAdAuctionAdditionalBidResponseHeader) {
-  GURL main_frame_url =
-      https_server_->GetURL("a.test", "/interest_group/empty.html");
-  ASSERT_TRUE(NavigateToURL(shell(), main_frame_url));
+IN_PROC_BROWSER_TEST_P(
+    InterestGroupBrowserAdAuctionHeadersAllMethodsAndOriginsTest,
+    AdAuctionHeadersEligible_HasAdAuctionSignalsResponseHeader) {
+  GURL fetch_url = GetFetchURL((FetchURLParams){
+      .origin = is_cross_origin() ? "b.test" : "a.test",
+      .ad_auction_headers =
+          base::StrCat({"Ad-Auction-Signals: ", kLegitimateAdAuctionSignals})});
 
-  base::StringPairs replacement;
-  replacement.emplace_back(std::make_pair("{{STATUS}}", "200 OK"));
-  replacement.emplace_back(std::make_pair(
-      "{{AD_AUCTION_HEADERS}}",
-      base::StrCat({"Ad-Auction-Additional-Bid: ",
-                    "00000000-0000-0000-0000-000000000000:e30="})));
-  replacement.emplace_back(std::make_pair("{{REDIRECT_HEADER}}", ""));
+  switch (ad_auction_headers_test_type()) {
+    case FetchMethod::kFetch:
+      ASSERT_TRUE(NavigateToURL(
+          shell(),
+          https_server_->GetURL("a.test", "/interest_group/empty.html")));
 
+      // Verify that the JavaScript doesn't see the `Ad-Auction-Signals`
+      // response header.
+      EXPECT_TRUE(ExecJs(web_contents()->GetPrimaryMainFrame(),
+                         content::JsReplace(R"(
+            fetch($1, {adAuctionHeaders: true}).then((response) => {
+              if (response.headers.get('Ad-Auction-Signals')) {
+                throw 'Unexpectedly received `Ad-Auction-Signals` header';
+              }
+            });
+          )",
+                                            fetch_url)));
+      break;
+
+    case FetchMethod::kIFrame:
+      ASSERT_TRUE(NavigateToURL(
+          shell(), GetPageWithIFrameURL(
+                       fetch_url, /*has_ad_auction_headers_attribute=*/true)));
+      break;
+
+    case FetchMethod::kDynamicIFrame:
+      ASSERT_TRUE(NavigateToURL(
+          shell(),
+          https_server_->GetURL("a.test", "/interest_group/empty.html")));
+      CreateIframe(fetch_url, /*has_ad_auction_headers_attribute=*/true);
+      break;
+  }
+
+  absl::optional<std::string> ad_auction_header = GetAdAuctionHeader();
+  EXPECT_TRUE(ad_auction_header);
+  EXPECT_EQ(*ad_auction_header, "?1");
+
+  url::Origin request_origin = url::Origin::Create(fetch_url);
+  EXPECT_FALSE(WitnessedAuctionResultForOrigin(
+      request_origin, base64Decode(kLegitimateAdAuctionResponse)));
+  const scoped_refptr<HeaderDirectFromSellerSignals::Result> signals =
+      ParseAndFindAdAuctionSignals(url::Origin::Create(fetch_url), "slot1");
+  EXPECT_EQ(*signals->seller_signals(), R"({"signal1":"value1"})");
+  EXPECT_THAT(TakeAuctionAdditionalBidsForOriginAndNonce(
+                  request_origin, "00000000-0000-0000-0000-000000000000"),
+              ::testing::IsEmpty());
+}
+
+IN_PROC_BROWSER_TEST_P(
+    InterestGroupBrowserAdAuctionHeadersAllMethodsAndOriginsTest,
+    AdAuctionHeadersEligible_HasAdAuctionAdditionalBidResponseHeader) {
+  GURL fetch_url = GetFetchURL((FetchURLParams){
+      .origin = is_cross_origin() ? "b.test" : "a.test",
+      .ad_auction_headers =
+          base::StrCat({"Ad-Auction-Additional-Bid: ",
+                        "00000000-0000-0000-0000-000000000000:e30="})});
+
+  switch (ad_auction_headers_test_type()) {
+    case FetchMethod::kFetch:
+      ASSERT_TRUE(NavigateToURL(
+          shell(),
+          https_server_->GetURL("a.test", "/interest_group/empty.html")));
+
+      // Verify that the JavaScript doesn't see the `Ad-Auction-Additional-Bid`
+      // response header.
+      EXPECT_TRUE(ExecJs(web_contents()->GetPrimaryMainFrame(),
+                         content::JsReplace(R"(
+            fetch($1, {adAuctionHeaders: true}).then((response) => {
+              if (response.headers.get('Ad-Auction-Additional-Bid')) {
+                throw 'Unexpectedly received `Ad-Auction-Additional-Bid` header';
+              }
+            });
+          )",
+                                            fetch_url)));
+      break;
+
+    case FetchMethod::kIFrame:
+      ASSERT_TRUE(NavigateToURL(
+          shell(), GetPageWithIFrameURL(
+                       fetch_url, /*has_ad_auction_headers_attribute=*/true)));
+      break;
+
+    case FetchMethod::kDynamicIFrame:
+      ASSERT_TRUE(NavigateToURL(
+          shell(),
+          https_server_->GetURL("a.test", "/interest_group/empty.html")));
+      CreateIframe(fetch_url, /*has_ad_auction_headers_attribute=*/true);
+      break;
+  }
+
+  absl::optional<std::string> ad_auction_header = GetAdAuctionHeader();
+  EXPECT_TRUE(ad_auction_header);
+  EXPECT_EQ(*ad_auction_header, "?1");
+
+  url::Origin request_origin = url::Origin::Create(fetch_url);
+  EXPECT_FALSE(WitnessedAuctionResultForOrigin(
+      request_origin, base64Decode(kLegitimateAdAuctionResponse)));
+  EXPECT_EQ(ParseAndFindAdAuctionSignals(request_origin, "slot1"), nullptr);
+  EXPECT_THAT(TakeAuctionAdditionalBidsForOriginAndNonce(
+                  request_origin, "00000000-0000-0000-0000-000000000000"),
+              ::testing::ElementsAre("e30="));
+}
+
+IN_PROC_BROWSER_TEST_P(
+    InterestGroupBrowserAdAuctionHeadersAllMethodsAndOriginsTest,
+    AdAuctionHeadersEligible_HasAllResponseHeaders) {
+  GURL fetch_url = GetFetchURL((FetchURLParams){
+      .origin = is_cross_origin() ? "b.test" : "a.test",
+      .ad_auction_headers = base::StrCat(
+          {"Ad-Auction-Result: ", kLegitimateAdAuctionResponse,
+           "\nAd-Auction-Signals: ", "{}", "\nAd-Auction-Additional-Bid: ",
+           "00000000-0000-0000-0000-000000000000:e30="})});
+
+  switch (ad_auction_headers_test_type()) {
+    case FetchMethod::kFetch:
+      ASSERT_TRUE(NavigateToURL(
+          shell(),
+          https_server_->GetURL("a.test", "/interest_group/empty.html")));
+
+      // Verify that the JavaScript doesn't see the
+      //  `Ad-Auction-Signals` or `Ad-Auction-Additional-Bid` response headers.
+      // In contrast, it should see `Ad-Auction-Result`.
+      EXPECT_TRUE(ExecJs(web_contents()->GetPrimaryMainFrame(),
+                         content::JsReplace(R"(
+            fetch($1, {adAuctionHeaders: true}).then((response) => {
+              if (!response.headers.get('Ad-Auction-Result')) {
+                throw 'Did not receive `Ad-Auction-Result` header';
+              }
+
+              if (response.headers.get('Ad-Auction-Signals')) {
+                throw 'Unexpectedly received `Ad-Auction-Signals` header';
+              }
+
+              if (response.headers.get('Ad-Auction-Additional-Bid')) {
+                throw 'Unexpectedly received `Ad-Auction-Additional-Bid` header';
+              }
+            });
+          )",
+                                            fetch_url)));
+      break;
+
+    case FetchMethod::kIFrame:
+      ASSERT_TRUE(NavigateToURL(
+          shell(), GetPageWithIFrameURL(
+                       fetch_url, /*has_ad_auction_headers_attribute=*/true)));
+      break;
+
+    case FetchMethod::kDynamicIFrame:
+      ASSERT_TRUE(NavigateToURL(
+          shell(),
+          https_server_->GetURL("a.test", "/interest_group/empty.html")));
+      CreateIframe(fetch_url, /*has_ad_auction_headers_attribute=*/true);
+      break;
+  }
+
+  absl::optional<std::string> ad_auction_header = GetAdAuctionHeader();
+  EXPECT_TRUE(ad_auction_header);
+  EXPECT_EQ(*ad_auction_header, "?1");
+
+  url::Origin request_origin = url::Origin::Create(fetch_url);
+  EXPECT_TRUE(WitnessedAuctionResultForOrigin(
+      request_origin, base64Decode(kLegitimateAdAuctionResponse)));
+  EXPECT_EQ(ParseAndFindAdAuctionSignals(request_origin, "slot1"), nullptr);
+  EXPECT_THAT(TakeAuctionAdditionalBidsForOriginAndNonce(
+                  request_origin, "00000000-0000-0000-0000-000000000000"),
+              ::testing::ElementsAre("e30="));
+}
+
+// On site a.test, test fetch request that gets redirected. Only the initial
+// request is expected to have the ad auction request header "?1"; its response
+// headers are ignored. The redirect request doesn't retain the ad auction
+// request header, and so its response headers are also ignored.
+IN_PROC_BROWSER_TEST_P(
+    InterestGroupBrowserAdAuctionHeadersAllMethodsAndOriginsTest,
+    RedirectOnSameSite_AdAuctionHeadersNotEligible) {
+  GURL redirect_url = GetFetchURL((FetchURLParams){
+      .origin = is_cross_origin() ? "b.test" : "a.test",
+      .path = "page_with_custom_ad_auction_result_header2.html",
+      .ad_auction_headers = base::StrCat(
+          {"Ad-Auction-Result: ", kLegitimateAdAuctionResponse,
+           "\nAd-Auction-Signals: ", "{}", "\nAd-Auction-Additional-Bid: ",
+           "00000000-0000-0000-0000-000000000000:e30="})});
+
+  GURL fetch_url = GetFetchURL((FetchURLParams){
+      .origin = is_cross_origin() ? "b.test" : "a.test",
+      .ad_auction_headers = base::StrCat(
+          {"Ad-Auction-Result: ", kLegitimateAdAuctionResponse,
+           "\nAd-Auction-Signals: ", "{}", "\nAd-Auction-Additional-Bid: ",
+           "00000000-0000-0000-0000-000000000000:e30="}),
+      .redirect_url = redirect_url});
+
+  switch (ad_auction_headers_test_type()) {
+    case FetchMethod::kFetch:
+      ASSERT_TRUE(NavigateToURL(
+          shell(),
+          https_server_->GetURL("a.test", "/interest_group/empty.html")));
+
+      // When this request is first issued, it appears to be eligible for
+      // adAuctionHeaders. However, when it responds as a redirect, neither
+      // the initial response nor the redirected response are eligible, and
+      // so none of the `Ad-Auction-Signals`, `Ad-Auction-Additional-Bid`, and
+      // `Ad-Auction-Result` response headers are processed for later use in
+      // the auction. At the same time, the browser _does_ clear the
+      // `Ad-Auction-Signals` and `Ad-Auction-Additional-Bid` response headers.
+      EXPECT_TRUE(ExecJs(web_contents()->GetPrimaryMainFrame(),
+                         content::JsReplace(R"(
+            fetch($1, {adAuctionHeaders: true}).then((response) => {
+              if (!response.headers.get('Ad-Auction-Result')) {
+                throw 'Did not receive `Ad-Auction-Result` header';
+              }
+
+              if (response.headers.get('Ad-Auction-Signals')) {
+                throw 'Unexpectedly received `Ad-Auction-Signals` header';
+              }
+
+              if (response.headers.get('Ad-Auction-Additional-Bid')) {
+                throw 'Unexpectedly received `Ad-Auction-Additional-Bid` header';
+              }
+            });
+          )",
+                                            fetch_url)));
+      break;
+
+    case FetchMethod::kIFrame:
+      ASSERT_TRUE(NavigateToURL(
+          shell(), GetPageWithIFrameURL(
+                       fetch_url, /*has_ad_auction_headers_attribute=*/true)));
+      break;
+
+    case FetchMethod::kDynamicIFrame:
+      ASSERT_TRUE(NavigateToURL(
+          shell(),
+          https_server_->GetURL("a.test", "/interest_group/empty.html")));
+      CreateIframe(fetch_url, /*has_ad_auction_headers_attribute=*/true);
+      break;
+  }
+
+  {
+    // For the initial fetch
+    absl::optional<std::string> ad_auction_header = GetAdAuctionHeader();
+    EXPECT_TRUE(ad_auction_header);
+    EXPECT_EQ(*ad_auction_header, "?1");
+  }
+  {
+    // For the redirected fetch
+    absl::optional<std::string> ad_auction_header =
+        GetAdAuctionHeader("page_with_custom_ad_auction_result_header2.html");
+    EXPECT_FALSE(ad_auction_header);
+  }
+
+  for (url::Origin request_origin :
+       {url::Origin::Create(fetch_url), url::Origin::Create(redirect_url)}) {
+    EXPECT_FALSE(WitnessedAuctionResultForOrigin(
+        request_origin, base64Decode(kLegitimateAdAuctionResponse)));
+    EXPECT_EQ(ParseAndFindAdAuctionSignals(request_origin, "slot1"), nullptr);
+    EXPECT_THAT(TakeAuctionAdditionalBidsForOriginAndNonce(
+                    request_origin, "00000000-0000-0000-0000-000000000000"),
+                ::testing::IsEmpty());
+  }
+}
+
+// On site a.test, test fetch request that gets redirected. Only the initial
+// request is expected to have the ad auction request header "?1"; its response
+// headers are ignored. The redirect request doesn't retain the ad auction
+// request header, and so its response headers are also ignored. In the
+// cross-origin test, the main site a.test makes a request to b.test, which
+// redirects to c.test.
+IN_PROC_BROWSER_TEST_P(
+    InterestGroupBrowserAdAuctionHeadersAllMethodsAndOriginsTest,
+    RedirectOnCrossSite_AdAuctionHeadersNotEligible) {
+  GURL redirect_url = GetFetchURL((FetchURLParams){
+      .origin = is_cross_origin() ? "c.test" : "a.test",
+      .path = "page_with_custom_ad_auction_result_header2.html",
+      .ad_auction_headers = base::StrCat(
+          {"Ad-Auction-Result: ", kLegitimateAdAuctionResponse,
+           "\nAd-Auction-Signals: ", "{}", "\nAd-Auction-Additional-Bid: ",
+           "00000000-0000-0000-0000-000000000000:e30="})});
+
+  GURL fetch_url = GetFetchURL((FetchURLParams){
+      .origin = is_cross_origin() ? "b.test" : "a.test",
+      .ad_auction_headers = base::StrCat(
+          {"Ad-Auction-Result: ", kLegitimateAdAuctionResponse,
+           "\nAd-Auction-Signals: ", "{}", "\nAd-Auction-Additional-Bid: ",
+           "00000000-0000-0000-0000-000000000000:e30="}),
+      .redirect_url = redirect_url});
+
+  switch (ad_auction_headers_test_type()) {
+    case FetchMethod::kFetch:
+      ASSERT_TRUE(NavigateToURL(
+          shell(),
+          https_server_->GetURL("a.test", "/interest_group/empty.html")));
+
+      // When this request is first issued, it appears to be eligible for
+      // adAuctionHeaders. However, when it responds as a redirect, neither
+      // the initial response nor the redirected response are eligible, and
+      // so none of the `Ad-Auction-Signals`, `Ad-Auction-Additional-Bid`, and
+      // `Ad-Auction-Result` response headers are processed for later use in
+      // the auction. At the same time, the browser _does_ clear the
+      // `Ad-Auction-Signals` and `Ad-Auction-Additional-Bid` response headers.
+      EXPECT_TRUE(ExecJs(web_contents()->GetPrimaryMainFrame(),
+                         content::JsReplace(R"(
+            fetch($1, {adAuctionHeaders: true}).then((response) => {
+              if (!response.headers.get('Ad-Auction-Result')) {
+                throw 'Did not receive `Ad-Auction-Result` header';
+              }
+
+              if (response.headers.get('Ad-Auction-Signals')) {
+                throw 'Unexpectedly received `Ad-Auction-Signals` header';
+              }
+
+              if (response.headers.get('Ad-Auction-Additional-Bid')) {
+                throw 'Unexpectedly received `Ad-Auction-Additional-Bid` header';
+              }
+            });
+          )",
+                                            fetch_url)));
+      break;
+
+    case FetchMethod::kIFrame:
+      ASSERT_TRUE(NavigateToURL(
+          shell(), GetPageWithIFrameURL(
+                       fetch_url, /*has_ad_auction_headers_attribute=*/true)));
+      break;
+
+    case FetchMethod::kDynamicIFrame:
+      ASSERT_TRUE(NavigateToURL(
+          shell(),
+          https_server_->GetURL("a.test", "/interest_group/empty.html")));
+      CreateIframe(fetch_url, /*has_ad_auction_headers_attribute=*/true);
+      break;
+  }
+
+  {
+    // // For the initial fetch
+    absl::optional<std::string> ad_auction_header = GetAdAuctionHeader();
+    EXPECT_TRUE(ad_auction_header);
+    EXPECT_EQ(*ad_auction_header, "?1");
+  }
+  {
+    // For the redirected fetch
+    absl::optional<std::string> ad_auction_header =
+        GetAdAuctionHeader("page_with_custom_ad_auction_result_header2.html");
+    EXPECT_FALSE(ad_auction_header);
+  }
+
+  for (url::Origin request_origin :
+       {url::Origin::Create(fetch_url), url::Origin::Create(redirect_url)}) {
+    EXPECT_FALSE(WitnessedAuctionResultForOrigin(
+        request_origin, base64Decode(kLegitimateAdAuctionResponse)));
+    EXPECT_EQ(ParseAndFindAdAuctionSignals(request_origin, "slot1"), nullptr);
+    EXPECT_THAT(TakeAuctionAdditionalBidsForOriginAndNonce(
+                    request_origin, "00000000-0000-0000-0000-000000000000"),
+                ::testing::IsEmpty());
+  }
+}
+
+IN_PROC_BROWSER_TEST_P(
+    InterestGroupBrowserAdAuctionHeadersAllMethodsAndOriginsTest,
+    NoAdAuctionRequestHeader_AdAuctionHeadersNotEligible) {
+  GURL fetch_url = GetFetchURL((FetchURLParams){
+      .origin = is_cross_origin() ? "b.test" : "a.test",
+      .ad_auction_headers = base::StrCat(
+          {"Ad-Auction-Result: ", kLegitimateAdAuctionResponse,
+           "\nAd-Auction-Signals: ", "{}", "\nAd-Auction-Additional-Bid: ",
+           "00000000-0000-0000-0000-000000000000:e30="})});
+
+  switch (ad_auction_headers_test_type()) {
+    case FetchMethod::kFetch:
+      ASSERT_TRUE(NavigateToURL(
+          shell(),
+          https_server_->GetURL("a.test", "/interest_group/empty.html")));
+
+      // For requests that don't specify adAuctionHeaders, none of the
+      // `Ad-Auction-Signals`, `Ad-Auction-Additional-Bid`, and
+      // `Ad-Auction-Result` response headers are affected by the browser,
+      // and all appear as expected. These response headers are still here
+      // even in the cross-site execution of this test because all three
+      // are included in the Access-Control-Expose-Headers header of the
+      // fetch response.
+      EXPECT_TRUE(ExecJs(web_contents()->GetPrimaryMainFrame(),
+                         content::JsReplace(R"(
+            fetch($1).then((response) => {
+              if (!response.headers.get('Ad-Auction-Result')) {
+                throw 'Did not receive `Ad-Auction-Result` header';
+              }
+
+              if (!response.headers.get('Ad-Auction-Signals')) {
+                throw 'Did not receive `Ad-Auction-Signals` header';
+              }
+
+              if (!response.headers.get('Ad-Auction-Additional-Bid')) {
+                throw 'Did not receive `Ad-Auction-Additional-Bid` header';
+              }
+            });
+          )",
+                                            fetch_url)));
+      break;
+
+    case FetchMethod::kIFrame:
+      ASSERT_TRUE(NavigateToURL(
+          shell(), GetPageWithIFrameURL(
+                       fetch_url, /*has_ad_auction_headers_attribute=*/false)));
+      break;
+
+    case FetchMethod::kDynamicIFrame:
+      ASSERT_TRUE(NavigateToURL(
+          shell(),
+          https_server_->GetURL("a.test", "/interest_group/empty.html")));
+      CreateIframe(fetch_url, /*has_ad_auction_headers_attribute=*/false);
+      break;
+  }
+
+  absl::optional<std::string> ad_auction_header = GetAdAuctionHeader();
+  EXPECT_FALSE(ad_auction_header);
+
+  url::Origin request_origin = url::Origin::Create(fetch_url);
+  EXPECT_FALSE(WitnessedAuctionResultForOrigin(
+      request_origin, base64Decode(kLegitimateAdAuctionResponse)));
+  EXPECT_EQ(ParseAndFindAdAuctionSignals(request_origin, "slot1"), nullptr);
+  EXPECT_THAT(TakeAuctionAdditionalBidsForOriginAndNonce(
+                  request_origin, "00000000-0000-0000-0000-000000000000"),
+              ::testing::IsEmpty());
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    FetchMethodAndOrigin,
+    InterestGroupBrowserAdAuctionHeadersAllMethodsAndOriginsTest,
+    ::testing::Combine(::testing::Values(FetchMethod::kFetch,
+                                         FetchMethod::kIFrame,
+                                         FetchMethod::kDynamicIFrame),
+                       ::testing::Bool()),
+    [](const testing::TestParamInfo<
+        InterestGroupBrowserAdAuctionHeadersAllMethodsAndOriginsTest::
+            ParamType>& info) {
+      std::string same_or_cross_origin =
+          std::get<1>(info.param) ? "CrossOrigin" : "SameOrigin";
+      switch (std::get<0>(info.param)) {
+        case kFetch:
+          return base::StrCat({"Fetch_", same_or_cross_origin});
+        case kIFrame:
+          return base::StrCat({"IFrame_", same_or_cross_origin});
+        case kDynamicIFrame:
+          return base::StrCat({"DynamicIFrame_", same_or_cross_origin});
+      }
+    });
+
+class InterestGroupBrowserAdAuctionHeadersAllMethodsTest
+    : public InterestGroupBrowserAdAuctionHeadersTest,
+      public ::testing::WithParamInterface<FetchMethod> {
+ protected:
+  FetchMethod ad_auction_headers_test_type() { return GetParam(); }
+};
+
+IN_PROC_BROWSER_TEST_P(
+    InterestGroupBrowserAdAuctionHeadersAllMethodsTest,
+    FetchNonAllowlistedCrossOrigin_HasAllResponseHeaders_AdAuctionHeadersNotEligible) {
   // "d.test" is not allowlisted for the API. Thus the request isn't eligible
   // for ad auction headers.
-  GURL fetch_url = https_server_->GetURL(
-      "d.test", net::test_server::GetFilePathWithReplacements(
-                    "/interest_group/"
-                    "page_with_custom_ad_auction_result_header.html",
-                    replacement));
+  GURL fetch_url = GetFetchURL((FetchURLParams){
+      .origin = "d.test",
+      .ad_auction_headers = base::StrCat(
+          {"Ad-Auction-Result: ", kLegitimateAdAuctionResponse,
+           "\nAd-Auction-Signals: ", "{}", "\nAd-Auction-Additional-Bid: ",
+           "00000000-0000-0000-0000-000000000000:e30="})});
 
-  EXPECT_TRUE(ExecJs(
-      web_contents()->GetPrimaryMainFrame(),
-      content::JsReplace("fetch($1, {adAuctionHeaders: true})", fetch_url)));
+  switch (ad_auction_headers_test_type()) {
+    case FetchMethod::kFetch:
+      ASSERT_TRUE(NavigateToURL(
+          shell(),
+          https_server_->GetURL("a.test", "/interest_group/empty.html")));
 
-  absl::optional<std::string> ad_auction_header_value =
-      GetAdAuctionHeaderForRequestPath(
-          "/interest_group/page_with_custom_ad_auction_result_header.html");
+      // Because this initial request is ineligible for adAuctionHeaders, none
+      // of the `Ad-Auction-Signals`, `Ad-Auction-Additional-Bid`, and
+      // `Ad-Auction-Result` response headers are processed for later use in
+      // the auction, and furthermore, neither the `Ad-Auction-Signals` nor the
+      // `Ad-Auction-Additional-Bid` response headers are cleared.
+      EXPECT_TRUE(ExecJs(web_contents()->GetPrimaryMainFrame(),
+                         content::JsReplace(R"(
+            fetch($1).then((response) => {
+              if (!response.headers.get('Ad-Auction-Result')) {
+                throw 'Did not receive `Ad-Auction-Result` header';
+              }
 
-  EXPECT_FALSE(ad_auction_header_value);
+              if (!response.headers.get('Ad-Auction-Signals')) {
+                throw 'Did not receive `Ad-Auction-Signals` header';
+              }
+
+              if (!response.headers.get('Ad-Auction-Additional-Bid')) {
+                throw 'Did not receive `Ad-Auction-Additional-Bid` header';
+              }
+            });
+          )",
+                                            fetch_url)));
+      break;
+
+    case FetchMethod::kIFrame:
+      ASSERT_TRUE(NavigateToURL(
+          shell(), GetPageWithIFrameURL(
+                       fetch_url, /*has_ad_auction_headers_attribute=*/true)));
+      break;
+
+    case FetchMethod::kDynamicIFrame:
+      ASSERT_TRUE(NavigateToURL(
+          shell(),
+          https_server_->GetURL("a.test", "/interest_group/empty.html")));
+      CreateIframe(fetch_url, /*has_ad_auction_headers_attribute=*/true);
+      break;
+  }
+
+  absl::optional<std::string> ad_auction_header = GetAdAuctionHeader();
+  EXPECT_FALSE(ad_auction_header);
 
   url::Origin request_origin = url::Origin::Create(fetch_url);
+  EXPECT_FALSE(WitnessedAuctionResultForOrigin(
+      request_origin, base64Decode(kLegitimateAdAuctionResponse)));
+  EXPECT_EQ(ParseAndFindAdAuctionSignals(request_origin, "slot1"), nullptr);
   EXPECT_THAT(TakeAuctionAdditionalBidsForOriginAndNonce(
                   request_origin, "00000000-0000-0000-0000-000000000000"),
               ::testing::IsEmpty());
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    FetchMethod,
+    InterestGroupBrowserAdAuctionHeadersAllMethodsTest,
+    ::testing::Values(FetchMethod::kFetch,
+                      FetchMethod::kIFrame,
+                      FetchMethod::kDynamicIFrame),
+    [](const testing::TestParamInfo<
+        InterestGroupBrowserAdAuctionHeadersAllMethodsTest::ParamType>& info) {
+      switch (info.param) {
+        case kFetch:
+          return "Fetch";
+        case kIFrame:
+          return "IFrame";
+        case kDynamicIFrame:
+          return "DynamicIFrame";
+      }
+    });
 
 // Runs an ad auction similar to the one in
 // InterestGroupFencedFrameBrowserTest.RunAdAuctionWithWinner but also registers
@@ -16614,7 +17061,7 @@ IN_PROC_BROWSER_TEST_F(
   replacement.emplace_back(std::make_pair(
       "{{AD_AUCTION_HEADERS}}",
       base::StrCat({"Ad-Auction-Result: ", kLegitimateAdAuctionResponse,
-                    "\nAd-Auction-Signals: ", "{}"})));
+                    "\nAd-Auction-Signals: ", R"([{"adSlot":"slot1"}])"})));
   replacement.emplace_back(std::make_pair("{{REDIRECT_HEADER}}", ""));
 
   GURL fetch_url = https_server_->GetURL(
@@ -16652,9 +17099,9 @@ IN_PROC_BROWSER_TEST_F(
       url::Origin::Create(fetch_url),
       base64Decode(kLegitimateAdAuctionResponse)));
 
-  const std::set<std::string>& signals =
-      GetAuctionSignalsForOrigin(url::Origin::Create(fetch_url));
-  EXPECT_THAT(signals, ::testing::UnorderedElementsAre("{}"));
+  const scoped_refptr<HeaderDirectFromSellerSignals::Result> signals =
+      ParseAndFindAdAuctionSignals(url::Origin::Create(fetch_url), "slot1");
+  EXPECT_NE(signals, nullptr);
 }
 
 class AdsAPIsOriginTrialBrowserTest : public ContentBrowserTest {
@@ -16979,19 +17426,23 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBiddingAndAuctionServerBrowserTest,
 IN_PROC_BROWSER_TEST_F(InterestGroupBiddingAndAuctionServerBrowserTest,
                        DecisionLogicURLRequiredForComponent) {
   GURL test_url = https_server_->GetURL("a.test", "/interest_group/empty.html");
+  url::Origin test_origin = url::Origin::Create(test_url);
 
-  std::string auction_config = R"({
-    seller: "https://seller.example.com",
-    serverResponse: new Uint8Array(20),
-    requestId: "00000000-0000-0000-0000-000000000000",
-    componentAuctions: [{
-      seller: "https://seller2.example.com",
-      // No decision logic.
-      interestGroupBuyers: ["https://buyer.example.com"],
-      serverResponse: new Uint8Array(20),
-      requestId: "00000000-0000-0000-0000-000000000000",
-    }]
-  })";
+  std::string auction_config = JsReplace(
+      R"({
+        seller: $1,
+        decisionLogicURL: $2,
+        // Signal to the top-level seller to allow participation in a component
+        // auction.
+        auctionSignals: "sellerAllowsComponentAuction",
+        componentAuctions: [{
+          seller: $1,
+          // No decisionLogicURL
+          interestGroupBuyers: [$1],
+        }]
+      })",
+      test_origin,
+      https_server_->GetURL("a.test", "/interest_group/decision_logic.js"));
 
   ASSERT_TRUE(NavigateToURL(shell(), test_url));
 
@@ -16999,6 +17450,33 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBiddingAndAuctionServerBrowserTest,
       "TypeError: Failed to execute 'runAdAuction' on 'Navigator': Missing "
       "required field ad auction config decisionLogicURL or serverResponse",
       RunAuctionAndWait(auction_config));
+}
+
+IN_PROC_BROWSER_TEST_F(InterestGroupBiddingAndAuctionServerBrowserTest,
+                       DecisionLogicURLNotRequiredForServerComponent) {
+  GURL test_url = https_server_->GetURL("a.test", "/interest_group/empty.html");
+  url::Origin test_origin = url::Origin::Create(test_url);
+
+  std::string auction_config = JsReplace(
+      R"({
+        seller: $1,
+        decisionLogicURL: $2,
+        // Signal to the top-level seller to allow participation in a component
+        // auction.
+        auctionSignals: "sellerAllowsComponentAuction",
+        componentAuctions: [{
+          seller: $1,
+          interestGroupBuyers: [$1],
+          serverResponse: new Uint8Array(20),
+          requestId: "00000000-0000-0000-0000-000000000000",
+        }]
+      })",
+      test_origin,
+      https_server_->GetURL("a.test", "/interest_group/decision_logic.js"));
+
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+
+  EXPECT_EQ(nullptr, RunAuctionAndWait(auction_config));
 }
 
 // TODO(crbug.com/1474303): Re-enable this test
@@ -17391,6 +17869,64 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
            {TestInterestGroupObserver::kWin, test_origin, "cars"}});
     }
   }
+}
+
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
+                       RunAdAuctionWithAdditionalBidNoRegularBids) {
+  URLLoaderMonitor url_loader_monitor;
+
+  GURL test_url = https_server_->GetURL("a.test", "/page_with_iframe.html");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+  url::Origin test_origin = url::Origin::Create(test_url);
+  GURL additional_bid_ad_url =
+      https_server_->GetURL("c.test", "/echo?render_horses");
+
+  AttachInterestGroupObserver();
+  ClearReceivedRequests();
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+  std::string auction_nonce = CreateAuctionNonceAndWait();
+
+  GURL additional_bid_logic_url = https_server_->GetURL(
+      "b.test", "/interest_group/bidding_logic_additional_bid.js");
+  url::Origin additional_bid_origin =
+      url::Origin::Create(additional_bid_logic_url);
+
+  std::string auction_config = JsReplace(
+      R"({
+    seller: $1,
+    decisionLogicUrl: $2,
+    interestGroupBuyers: [$1, $6],
+    auctionNonce: $3,
+    additionalBids: provideAdditionalBids($1, $3, [JSON.stringify({
+        interestGroup: {
+          name: 'campaign123',
+          biddingLogicURL: $5,
+          owner:$6
+        },
+        bid: {
+          ad: ['ad'],
+          bid: 2,
+          render: $4,
+        },
+        auctionNonce: $3,
+        seller: $1,
+      })])})",
+      test_origin,
+      https_server_->GetURL("a.test", "/interest_group/decision_logic.js"),
+      auction_nonce, additional_bid_ad_url, additional_bid_logic_url,
+      additional_bid_origin);
+
+  RunAuctionAndWaitForURLAndNavigateIframe(auction_config,
+                                           additional_bid_ad_url);
+  WaitForUrl(https_server_->GetURL("a.test", "/echoall?report_seller"));
+  WaitForUrl(
+      https_server_->GetURL("a.test", "/echoall?report_bidder_additional"));
+  WaitForAccessObserved({
+      {TestInterestGroupObserver::kAdditionalBid, additional_bid_origin,
+       "campaign123"},
+      {TestInterestGroupObserver::kAdditionalBidWin, additional_bid_origin,
+       "campaign123"},
+  });
 }
 
 // Two additional bids, second one of which wins.

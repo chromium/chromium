@@ -20,15 +20,11 @@ ReadAloudMiniPlayerSceneLayer::ReadAloudMiniPlayerSceneLayer(
     : SceneLayer(env, jobj),
       should_show_background_(false),
       background_color_(SK_ColorWHITE),
-      view_container_(cc::slim::Layer::Create()),
       view_layer_(cc::slim::SolidColorLayer::Create()) {
   layer()->SetIsDrawable(true);
 
-  view_container_->SetIsDrawable(true);
-  view_container_->SetMasksToBounds(true);
-
+  view_layer_->SetMasksToBounds(true);
   view_layer_->SetIsDrawable(true);
-  view_container_->AddChild(view_layer_);
 }
 
 ReadAloudMiniPlayerSceneLayer::~ReadAloudMiniPlayerSceneLayer() = default;
@@ -40,18 +36,14 @@ void ReadAloudMiniPlayerSceneLayer::Destroy(JNIEnv* env,
 
 void ReadAloudMiniPlayerSceneLayer::UpdateReadAloudMiniPlayerLayer(
     JNIEnv* env,
-    jint color_rgba,
-    jint x,
-    jint y,
+    jint color_argb,
     jint width,
-    jint height,
+    jint viewport_height,
+    jint container_height,
     jint bottom_offset) {
-  view_container_->SetBounds(gfx::Size(width, height));
-  view_container_->SetPosition(gfx::PointF(0, y));
-
-  view_layer_->SetBounds(gfx::Size(width, height));
-  view_layer_->SetPosition(gfx::PointF(0, height - bottom_offset));
-  view_layer_->SetBackgroundColor(SkColor4f::FromBytes_RGBA(color_rgba));
+  view_layer_->SetBounds(gfx::Size(width, container_height));
+  view_layer_->SetPosition(gfx::PointF(0, viewport_height - bottom_offset));
+  view_layer_->SetBackgroundColor(SkColor4f::FromColor(color_argb));
 }
 
 void ReadAloudMiniPlayerSceneLayer::SetContentTree(
@@ -65,7 +57,7 @@ void ReadAloudMiniPlayerSceneLayer::SetContentTree(
   if (!content_tree->layer()->parent() ||
       (content_tree->layer()->parent()->id() != layer_->id())) {
     layer_->AddChild(content_tree->layer());
-    layer_->AddChild(view_container_);
+    layer_->AddChild(view_layer_);
   }
 
   // Propagate the layer background color up from the content layer.

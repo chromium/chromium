@@ -13,6 +13,7 @@
 #include "base/compiler_specific.h"
 #include "components/ownership/owner_key_util.h"
 #include "components/ownership/ownership_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace crypto {
 class RSAPrivateKey;
@@ -53,6 +54,12 @@ class OWNERSHIP_EXPORT MockOwnerKeyUtil : public OwnerKeyUtil {
   void ImportPrivateKeyAndSetPublicKey(
       std::unique_ptr<crypto::RSAPrivateKey> key);
 
+  // Same as ImportPrivateKeyAndSetPublicKey, but remembers in which slot the
+  // key is supposed to be. FindPrivateKeyInSlot will take this into account.
+  void ImportPrivateKeyInSlotAndSetPublicKey(
+      std::unique_ptr<crypto::RSAPrivateKey> key,
+      PK11SlotInfo* slot);
+
   // Makes next `fail_times` number of calls to OwnerKeyUtil::GenerateKeyPair
   // fail.
   void SimulateGenerateKeyFailure(int fail_times);
@@ -60,8 +67,13 @@ class OWNERSHIP_EXPORT MockOwnerKeyUtil : public OwnerKeyUtil {
  private:
   ~MockOwnerKeyUtil() override;
 
+  void ImportPrivateKeyAndSetPublicKeyImpl(
+      std::unique_ptr<crypto::RSAPrivateKey> key,
+      PK11SlotInfo* slot);
+
   int generate_key_fail_times_ = 0;
   std::vector<uint8_t> public_key_;
+  absl::optional<CK_SLOT_ID> private_key_slot_id_;
   crypto::ScopedSECKEYPrivateKey private_key_;
 };
 

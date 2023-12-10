@@ -87,6 +87,7 @@
 <translation id="4195557071150719219">‏Chromium کے حالیہ ٹیبز دیکھیں</translation>
 <translation id="4408912345039114853">‏Chromium سیفٹی چیک چلائیں</translation>
 <translation id="4432744876818348753">‏Chromium سے زیادہ سے زیادہ فائدہ اٹھانے کے لیے سائن ان کریں۔</translation>
+<translation id="4498832288620833153">‏Chromium میں آپ کی پڑھنے کی فہرست میں داخل کردہ URLs کو شامل کرتا ہے۔</translation>
 <translation id="452436063477828504">‏یقینی بنائیں کہ آپ ہمیشہ اپنے Google اکاؤنٹ میں Chromium ڈیٹا استعمال کر سکتے ہیں</translation>
 <translation id="4555020257205549924">‏یہ خصوصیت آن کیے جانے پر، Chromium دوسری زبانوں میں لکھے ہوئے صفحات کا Google ترجمہ استعمال کر کے ترجمہ کرنے کی پیشکش کرے گا۔ <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="4576283463017113841">‏Chromium میں ادائیگی کے طریقوں کی ترتیب کا صفحہ کھولتا ہے۔</translation>
@@ -107,6 +108,7 @@
 <translation id="5048795749726991615">‏اپنی دیگر ایپس میں اپنے محفوظ کردہ پاس ورڈز کو آسانی سے پانے کے لیے Chromium برائے آٹو فل استعمال کریں</translation>
 <translation id="5076601183701536878">‏Chromium میں براؤزنگ ڈیٹا صاف کریں</translation>
 <translation id="5131565040785979529">‏آپ کی تنظیم، <ph name="DOMAIN" />، اس اکاؤنٹ کا نظم کرتا ہے جس میں آپ سائن ان ہیں اور اس بات کا نظم کرتا ہے کہ Chromium کا استعمال کیسے کیا جاتا ہے۔</translation>
+<translation id="5146749061471423558">‏Chromium میں بُک مارکس شامل کریں</translation>
 <translation id="5171868502429358653">‏Chromium میں سائن ان کریں</translation>
 <translation id="5213683223491576284">‏Chromium میں پاس ورڈ مینیجر کھولتا ہے۔</translation>
 <translation id="5224391634244552924">‏کوئی محفوظ کردہ پاس ورڈ نہیں۔ جب آپ پاس ورڈز کو محفوظ کرتے ہیں تو Chromium انہیں چیک کر سکتا ہے۔</translation>
@@ -114,6 +116,7 @@
 
         سائن آؤٹ کرنے سے پہلے چند منٹ انتظار کرنے کی کوشش کریں۔ اگر آپ ابھی سائن آؤٹ کرتے ہیں تو یہ ڈیٹا حذف ہو جائے گا۔</translation>
 <translation id="5308226104666789935">‏Chromium اپ ڈیٹس چیک نہیں کر سکتا ہے</translation>
+<translation id="5311557153294205270">‏Chromium میں آپ کے بُک مارکس میں داخل کردہ URLs کو شامل کرتا ہے۔</translation>
 <translation id="5396916991083608703">‏Chromium کو ڈیفالٹ کے بطور سیٹ کریں؟</translation>
 <translation id="5453478652154926037">‏Chromium آپ کے پاس ورڈز چیک نہیں کر سکتا ہے۔</translation>
 <translation id="5521125884468363740">‏اپنے ٹیبز کو دیکھنے کے لئے جہاں کہیں بھی آپ Chromium استعمال کرتے ہیں، سائن ان کریں اور سِنک کو آن کریں</translation>
@@ -165,7 +168,6 @@
 <translation id="6911341667534646387">‏اپنے Google اکاؤنٹ میں Chromium ڈیٹا استعمال کرتے رہیں</translation>
 <translation id="7006920032187763988">‏آپ اپنے iPad پر پاس ورڈ مینیجر میں اپنے محفوظ کردہ پاس ورڈز کو دیگر ایپس میں استعمال کر سکتے ہیں۔</translation>
 <translation id="7018284295775193585">‏Chromium اپ ڈیٹ نہیں کیا جا سکتا</translation>
-<translation id="7025471822960602362">‏Chromium پر دریافت شدہ پیکیجز کو ٹریک کریں</translation>
 <translation id="7045244423563602563">‏Chromium میں سائن ان کریں</translation>
 <translation id="7055269218854630176">‏آپ کی تنظیم، <ph name="DOMAIN" />، اس اکاؤنٹ کا نظم کرتی ہے جس میں آپ سائن ان کر رہے ہیں اور اس بات کا نظم کرتی ہے کہ Chromium کو کیسے استعمال کیا جا سکتا ہے۔ آپ کا منتظم بعض خصوصیات سیٹ اپ کر سکتا یا ان پر پابندی عائد کر سکتا ہے۔</translation>
 <translation id="7099326575020694068">‏Chromium تقسیم کے منظر کی وضع میں آپ کا کیمرا استعمال نہیں کر سکتا ہے</translation>
@@ -195,6 +197,7 @@
 <translation id="7928628054454574139">‏جب بھی آپ دیگر ایپس میں لنکس پر تھپتھپائیں تو انہیں Chromium میں کھولیں</translation>
 <translation id="7931842119211730154">‏جب آپ Chromium کو بند کریں تو پوشیدگی ٹیبز کو مقفل کر دیں</translation>
 <translation id="7934404985878918282">‏Chromium کی پڑھنے کی فہرست دیکھیں</translation>
+<translation id="7971753607796745700">‏Chromium میں پڑھنے کی فہرست آئٹم شامل کریں</translation>
 <translation id="7980860476903281594">‏Chromium آپ کے مقام کی معلومات کا اشتراک ان سائٹس کے ساتھ کرتا ہے جن کی آپ اجازت دیتے ہیں۔</translation>
 <translation id="7995166854192397899">‏تجاویز آپ کے دیگر آلات پر آپ کی براؤزنگ سرگرمی پر مبنی ہیں۔ تجاویز حاصل کرنے کے لیے، اپنے تمام آلات پر Chromium میں سائن ان کریں۔</translation>
 <translation id="800195749539500647">‏Chromium سے زیادہ سے زیادہ فائدہ اٹھائیں</translation>

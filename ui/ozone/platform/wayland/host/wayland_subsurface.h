@@ -49,7 +49,8 @@ class WaylandSubsurface : public base::LinkNode<WaylandSubsurface> {
   //   |reference_below| & |reference_above|: this subsurface is taken from the
   //     subsurface stack and inserted back to be immediately below/above the
   //     reference subsurface.
-  void ConfigureAndShowSurface(
+  // Returns whether or not changes require a commit to the wl_surface.
+  bool ConfigureAndShowSurface(
       const gfx::RectF& bounds_px,
       const gfx::RectF& parent_bounds_px,
       const absl::optional<gfx::Rect>& clip_rect_px,
@@ -60,7 +61,8 @@ class WaylandSubsurface : public base::LinkNode<WaylandSubsurface> {
 
   // Assigns wl_subsurface role to the wl_surface so it is visible when a
   // wl_buffer is attached.
-  void Show();
+  // Returns whether or not changes require a commit to the wl_surface.
+  bool Show();
   // Remove this from the stack to make this invisible.
   void Hide();
   bool IsVisible() const;

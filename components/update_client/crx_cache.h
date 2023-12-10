@@ -66,6 +66,10 @@ class CrxCache : public base::RefCountedThreadSafe<CrxCache> {
            const std::string& fp,
            base::OnceCallback<void(const Result& result)> callback);
 
+  // Removes any stale entries for the given product, should any exist. Runs as
+  // a best effort and ignores any delete errors.
+  void RemoveAll(const std::string& id);
+
  private:
   friend class base::RefCountedThreadSafe<CrxCache>;
 
@@ -79,10 +83,6 @@ class CrxCache : public base::RefCountedThreadSafe<CrxCache> {
   Result ProcessPut(const base::FilePath& crx,
                     const std::string& id,
                     const std::string& fp);
-
-  // Removes any stale entries for the given product, should any exist. Runs as
-  // a best effort and ignores any failed delete errors.
-  void RemoveAll(const std::string& id);
 
   // Moves the CRX located at `original_crx_path` into its new location in the
   // cache located at `crx_cache_path`. Returns UnpackerError::kNone on success.

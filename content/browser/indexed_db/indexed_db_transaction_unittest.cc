@@ -31,7 +31,6 @@
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
 
 namespace content {
-namespace indexed_db_transaction_unittest {
 namespace {
 
 void SetToTrue(bool* value) {
@@ -69,7 +68,7 @@ class IndexedDBTransactionTest : public testing::Test {
         /*is_incognito=*/false, temp_dir_.GetPath(),
         base::SingleThreadTaskRunner::GetCurrentDefault(),
         /*special_storage_policy=*/nullptr);
-    indexed_db_context_ = base::MakeRefCounted<IndexedDBContextImpl>(
+    indexed_db_context_ = std::make_unique<IndexedDBContextImpl>(
         temp_dir_.GetPath(), quota_manager_->proxy(),
         /*blob_storage_context=*/mojo::NullRemote(),
         /*file_system_access_context=*/mojo::NullRemote(),
@@ -77,7 +76,11 @@ class IndexedDBTransactionTest : public testing::Test {
         base::SequencedTaskRunner::GetCurrentDefault());
 
     IndexedDBBucketContext::Delegate delegate;
-    delegate.on_tasks_available = CreateRunTasksCallback();
+    delegate.on_fatal_error = base::BindRepeating(
+        &IndexedDBTransactionTest::OnFatalError, base::Unretained(this));
+    delegate.on_ready_for_destruction =
+        base::BindRepeating(&IndexedDBTransactionTest::OnDbReadyForDestruction,
+                            base::Unretained(this));
 
     bucket_context_ = std::make_unique<IndexedDBBucketContext>(
         storage::BucketInfo(), std::make_unique<PartitionedLockManager>(),
@@ -87,40 +90,16 @@ class IndexedDBTransactionTest : public testing::Test {
         /*blob_storage_context=*/mojo::NullRemote(),
         /*file_system_access_context=*/mojo::NullRemote(), base::DoNothing());
 
-    // DB is created here instead of the constructor to workaround a
-    // "peculiarity of C++". More info at
-    // https://github.com/google/googletest/blob/main/docs/faq.md#my-compiler-complains-that-a-constructor-or-destructor-cannot-return-a-value-whats-going-on
-    db_ = std::make_unique<IndexedDBDatabase>(u"db", *bucket_context_,
-                                              IndexedDBDatabase::Identifier());
+    db_ = bucket_context_->AddDatabase(
+        u"db", std::make_unique<IndexedDBDatabase>(
+                   u"db", *bucket_context_, IndexedDBDatabase::Identifier()));
   }
 
-  TasksAvailableCallback CreateRunTasksCallback() {
-    return base::BindRepeating(&IndexedDBTransactionTest::RunTasksForDatabase,
-                               base::Unretained(this), true);
-  }
+  void TearDown() override { db_ = nullptr; }
 
-  void RunTasksForDatabase(bool async) {
-    if (!db_)
-      return;
-    if (async) {
-      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE,
-          base::BindOnce(&IndexedDBTransactionTest::RunTasksForDatabase,
-                         base::Unretained(this), false));
-      return;
-    }
-    auto [result, status] = db_->RunTasks();
-    switch (result) {
-      case IndexedDBDatabase::RunTasksResult::kDone:
-        return;
-      case IndexedDBDatabase::RunTasksResult::kError:
-        error_called_ = true;
-        return;
-      case IndexedDBDatabase::RunTasksResult::kCanBeDestroyed:
-        db_.reset();
-        return;
-    }
-  }
+  void OnFatalError(leveldb::Status s) { error_called_ = true; }
+
+  void OnDbReadyForDestruction() { bucket_context_.reset(); }
 
   void RunPostedTasks() { base::RunLoop().RunUntilIdle(); }
 
@@ -156,8 +135,8 @@ class IndexedDBTransactionTest : public testing::Test {
   base::ScopedTempDir temp_dir_;
   std::unique_ptr<base::test::TaskEnvironment> task_environment_;
   std::unique_ptr<IndexedDBBucketContext> bucket_context_;
-  std::unique_ptr<IndexedDBDatabase> db_;
-  scoped_refptr<IndexedDBContextImpl> indexed_db_context_;
+  raw_ptr<IndexedDBDatabase> db_;
+  std::unique_ptr<IndexedDBContextImpl> indexed_db_context_;
   scoped_refptr<storage::MockQuotaManager> quota_manager_;
 
   bool error_called_ = false;
@@ -691,5 +670,4 @@ TEST_F(IndexedDBTransactionTest, IsTransactionBlockingOthers) {
   EXPECT_FALSE(db_->IsTransactionBlockingOthers(transaction));
 }
 
-}  // namespace indexed_db_transaction_unittest
 }  // namespace content

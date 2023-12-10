@@ -75,7 +75,7 @@ void LocalLayerContext::OnDeferMainFrameUpdatesChanged(bool) {}
 void LocalLayerContext::OnDeferCommitsChanged(
     bool defer_status,
     PaintHoldingReason reason,
-    absl::optional<PaintHoldingCommitTrigger> trigger) {}
+    std::optional<PaintHoldingCommitTrigger> trigger) {}
 
 void LocalLayerContext::OnCommitRequested() {}
 

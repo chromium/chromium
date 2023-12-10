@@ -18,6 +18,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/gfx/vector_icon_types.h"
 #include "ui/views/accessibility/view_accessibility.h"
 
 using ::testing::Truly;
@@ -77,10 +78,12 @@ views::View* FocusedViewOf(views::Widget* widget) {
   return widget->GetFocusManager()->GetFocusedView();
 }
 
+const gfx::VectorIcon kEmptyIcon;
+
 const std::vector<sharing_hub::SharingHubAction> kFirstPartyActions = {
-    {0, u"Feed to Dino", nullptr, "feed-to-dino", 0},
-    {1, u"Reverse Star", nullptr, "reverse-star", 0},
-    {2, u"Pastelify", nullptr, "pastelify", 0},
+    {0, u"Feed to Dino", &kEmptyIcon, "feed-to-dino", 0},
+    {1, u"Reverse Star", &kEmptyIcon, "reverse-star", 0},
+    {2, u"Pastelify", &kEmptyIcon, "pastelify", 0},
 };
 
 }  // namespace

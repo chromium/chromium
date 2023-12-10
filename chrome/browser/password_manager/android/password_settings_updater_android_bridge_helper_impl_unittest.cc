@@ -59,11 +59,11 @@ class MockPasswordSettingsUpdaterAndroidDispatcherBridge
               (override));
   MOCK_METHOD(void,
               GetPasswordSettingValue,
-              (absl::optional<SyncingAccount>, PasswordManagerSetting),
+              (std::optional<SyncingAccount>, PasswordManagerSetting),
               (override));
   MOCK_METHOD(void,
               SetPasswordSettingValue,
-              (absl::optional<SyncingAccount>, PasswordManagerSetting, bool),
+              (std::optional<SyncingAccount>, PasswordManagerSetting, bool),
               (override));
 };
 

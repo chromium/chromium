@@ -4,17 +4,14 @@
 
 #include "chrome/browser/ui/startup/startup_tab_provider.h"
 
-#include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/signin/signin_features.h"
-#include "chrome/common/url_constants.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/keyed_service/core/keyed_service.h"
 #include "components/search_engines/template_url_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -34,90 +31,6 @@ using StandardOnboardingTabsParams =
 #else
 #define CMD_ARG(x) x
 #endif
-
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-TEST(StartupTabProviderTest, GetStandardOnboardingTabsForState) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(kForYouFre);
-
-  {
-    // Show welcome page to new unauthenticated profile on first run.
-    StandardOnboardingTabsParams params;
-    params.is_first_run = true;
-    params.is_signin_allowed = true;
-    StartupTabs output =
-        StartupTabProviderImpl::GetStandardOnboardingTabsForState(params);
-
-    ASSERT_EQ(1U, output.size());
-    EXPECT_EQ(StartupTabProviderImpl::GetWelcomePageUrl(false), output[0].url);
-    EXPECT_EQ(output[0].type, StartupTab::Type::kNormal);
-  }
-  {
-    // After first run, display welcome page using variant view.
-    StandardOnboardingTabsParams params;
-    params.is_signin_allowed = true;
-    StartupTabs output =
-        StartupTabProviderImpl::GetStandardOnboardingTabsForState(params);
-
-    ASSERT_EQ(1U, output.size());
-    EXPECT_EQ(StartupTabProviderImpl::GetWelcomePageUrl(true), output[0].url);
-    EXPECT_EQ(output[0].type, StartupTab::Type::kNormal);
-  }
-}
-#endif
-
-TEST(StartupTabProviderTest, GetStandardOnboardingTabsForState_Negative) {
-  {
-    // Do not show the welcome page to the same profile twice.
-    StandardOnboardingTabsParams params;
-    params.is_first_run = true;
-    params.has_seen_welcome_page = true;
-    params.is_signin_allowed = true;
-    StartupTabs output =
-        StartupTabProviderImpl::GetStandardOnboardingTabsForState(params);
-    EXPECT_TRUE(output.empty());
-  }
-  {
-    // Do not show the welcome page to authenticated users.
-    StandardOnboardingTabsParams params;
-    params.is_first_run = true;
-    params.is_signin_allowed = true;
-    params.is_signed_in = true;
-    StartupTabs output =
-        StartupTabProviderImpl::GetStandardOnboardingTabsForState(params);
-    EXPECT_TRUE(output.empty());
-  }
-  {
-    // Do not show the welcome page if sign-in is disabled.
-    StandardOnboardingTabsParams params;
-    params.is_first_run = true;
-    StartupTabs output =
-        StartupTabProviderImpl::GetStandardOnboardingTabsForState(params);
-    EXPECT_TRUE(output.empty());
-  }
-  {
-    // Do not show the welcome page to supervised users.
-    StandardOnboardingTabsParams standard_params;
-    standard_params.is_first_run = true;
-    standard_params.is_signin_allowed = true;
-    standard_params.is_child_account = true;
-    StartupTabs output =
-        StartupTabProviderImpl::GetStandardOnboardingTabsForState(
-            standard_params);
-    EXPECT_TRUE(output.empty());
-  }
-  {
-    // Do not show the welcome page if force-sign-in policy is enabled.
-    StandardOnboardingTabsParams standard_params;
-    standard_params.is_first_run = true;
-    standard_params.is_signin_allowed = true;
-    standard_params.is_force_signin_enabled = true;
-    StartupTabs output =
-        StartupTabProviderImpl::GetStandardOnboardingTabsForState(
-            standard_params);
-    EXPECT_TRUE(output.empty());
-  }
-}
 
 TEST(StartupTabProviderTest, GetInitialPrefsTabsForState) {
   std::vector<GURL> input = {GURL(u"https://new_tab_page"),

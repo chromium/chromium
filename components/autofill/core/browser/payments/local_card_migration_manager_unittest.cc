@@ -32,7 +32,7 @@
 #include "components/autofill/core/browser/payments/payments_util.h"
 #include "components/autofill/core/browser/payments/test_credit_card_save_manager.h"
 #include "components/autofill/core/browser/payments/test_local_card_migration_manager.h"
-#include "components/autofill/core/browser/payments/test_payments_client.h"
+#include "components/autofill/core/browser/payments/test_payments_network_interface.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/test_autofill_clock.h"
@@ -69,17 +69,18 @@ class LocalCardMigrationManagerTest : public testing::Test {
     personal_data().SetPrefService(autofill_client_.GetPrefs());
     personal_data().SetSyncServiceForTest(&sync_service_);
     autofill_driver_ = std::make_unique<TestAutofillDriver>();
-    payments_client_ = new payments::TestPaymentsClient(
+    payments_network_interface_ = new payments::TestPaymentsNetworkInterface(
         autofill_client_.GetURLLoaderFactory(),
         autofill_client_.GetIdentityManager(), &personal_data());
-    autofill_client_.set_test_payments_client(
-        std::unique_ptr<payments::TestPaymentsClient>(payments_client_));
-    credit_card_save_manager_ =
-        new TestCreditCardSaveManager(autofill_driver_.get(), &autofill_client_,
-                                      payments_client_, &personal_data());
+    autofill_client_.set_test_payments_network_interface(
+        std::unique_ptr<payments::TestPaymentsNetworkInterface>(
+            payments_network_interface_));
+    credit_card_save_manager_ = new TestCreditCardSaveManager(
+        autofill_driver_.get(), &autofill_client_, payments_network_interface_,
+        &personal_data());
     credit_card_save_manager_->SetCreditCardUploadEnabled(true);
     local_card_migration_manager_ = new TestLocalCardMigrationManager(
-        autofill_driver_.get(), &autofill_client_, payments_client_,
+        autofill_driver_.get(), &autofill_client_, payments_network_interface_,
         &personal_data());
     std::unique_ptr<TestStrikeDatabase> test_strike_database =
         std::make_unique<TestStrikeDatabase>();
@@ -87,7 +88,7 @@ class LocalCardMigrationManagerTest : public testing::Test {
     autofill_client_.set_test_strike_database(std::move(test_strike_database));
     autofill::TestFormDataImporter* test_form_data_importer =
         new TestFormDataImporter(
-            &autofill_client_, payments_client_,
+            &autofill_client_, payments_network_interface_,
             std::unique_ptr<CreditCardSaveManager>(credit_card_save_manager_),
             /*iban_save_manager=*/nullptr, &personal_data(), "en-US",
             std::unique_ptr<LocalCardMigrationManager>(
@@ -155,7 +156,8 @@ class LocalCardMigrationManagerTest : public testing::Test {
     std::unique_ptr<std::unordered_map<std::string, std::string>> save_result =
         std::make_unique<std::unordered_map<std::string, std::string>>();
     save_result->insert(std::make_pair(guid, result));
-    payments_client_->SetSaveResultForCardsMigration(std::move(save_result));
+    payments_network_interface_->SetSaveResultForCardsMigration(
+        std::move(save_result));
   }
 
   // Verify that the correct histogram entry (and only that) was logged.
@@ -328,7 +330,7 @@ class LocalCardMigrationManagerTest : public testing::Test {
   // Ends up getting owned (and destroyed) by TestFormDataImporter:
   raw_ptr<TestLocalCardMigrationManager> local_card_migration_manager_;
   // Ends up getting owned (and destroyed) by TestAutofillClient:
-  raw_ptr<payments::TestPaymentsClient> payments_client_;
+  raw_ptr<payments::TestPaymentsNetworkInterface> payments_network_interface_;
 };
 
 // Having one local card on file and using it will not trigger migration.
@@ -590,7 +592,7 @@ TEST_F(LocalCardMigrationManagerTest,
   // Confirm that the preflight request contained
   // kMigrateCardsBillableServiceNumber in the request.
   EXPECT_EQ(payments::kMigrateCardsBillableServiceNumber,
-            payments_client_->billable_service_number_in_request());
+            payments_network_interface_->billable_service_number_in_request());
 }
 
 TEST_F(LocalCardMigrationManagerTest,
@@ -605,7 +607,8 @@ TEST_F(LocalCardMigrationManagerTest,
 
   // Confirm that the preflight request contained
   // billing customer number in the request.
-  EXPECT_EQ(123456L, payments_client_->billing_customer_number_in_request());
+  EXPECT_EQ(123456L,
+            payments_network_interface_->billing_customer_number_in_request());
 }
 
 TEST_F(LocalCardMigrationManagerTest,
@@ -614,9 +617,9 @@ TEST_F(LocalCardMigrationManagerTest,
   UseLocalCardWithOtherLocalCardsOnFile();
 
   // Confirm that the preflight request contained the correct UploadCardSource.
-  EXPECT_EQ(payments::PaymentsClient::UploadCardSource::
+  EXPECT_EQ(payments::PaymentsNetworkInterface::UploadCardSource::
                 LOCAL_CARD_MIGRATION_CHECKOUT_FLOW,
-            payments_client_->upload_card_source_in_request());
+            payments_network_interface_->upload_card_source_in_request());
 }
 
 TEST_F(LocalCardMigrationManagerTest,
@@ -640,9 +643,9 @@ TEST_F(LocalCardMigrationManagerTest,
   EXPECT_TRUE(local_card_migration_manager_->MainPromptWasShown());
 
   // Confirm that the preflight request contained the correct UploadCardSource.
-  EXPECT_EQ(payments::PaymentsClient::UploadCardSource::
+  EXPECT_EQ(payments::PaymentsNetworkInterface::UploadCardSource::
                 LOCAL_CARD_MIGRATION_SETTINGS_PAGE,
-            payments_client_->upload_card_source_in_request());
+            payments_network_interface_->upload_card_source_in_request());
 }
 
 // Verify that when triggering from settings page, intermediate prompt will not
@@ -679,8 +682,8 @@ TEST_F(LocalCardMigrationManagerTest,
   EXPECT_TRUE(local_card_migration_manager_->MainPromptWasShown());
 }
 
-// Verify that given the parsed response from the payments client, the migration
-// status is correctly set.
+// Verify that given the parsed response from the PaymentsNetworkInterface, the
+// migration status is correctly set.
 TEST_F(LocalCardMigrationManagerTest, MigrateCreditCard_MigrationSuccess) {
   // Set the billing_customer_number to designate existence of a Payments
   // account.
@@ -719,8 +722,8 @@ TEST_F(LocalCardMigrationManagerTest, MigrateCreditCard_MigrationSuccess) {
   EXPECT_FALSE(personal_data().GetCreditCardByNumber("4111111111111111"));
 }
 
-// Verify that given the parsed response from the payments client, the migration
-// status is correctly set.
+// Verify that given the parsed response from the PaymentsNetworkInterface, the
+// migration status is correctly set.
 TEST_F(LocalCardMigrationManagerTest,
        MigrateCreditCard_MigrationTemporaryFailure) {
   // Set the billing_customer_number to designate existence of a Payments
@@ -762,8 +765,8 @@ TEST_F(LocalCardMigrationManagerTest,
   EXPECT_TRUE(personal_data().GetCreditCardByNumber("4111111111111111"));
 }
 
-// Verify that given the parsed response from the payments client, the migration
-// status is correctly set.
+// Verify that given the parsed response from the PaymentsNetworkInterface, the
+// migration status is correctly set.
 TEST_F(LocalCardMigrationManagerTest,
        MigrateCreditCard_MigrationPermanentFailure) {
   // Set the billing_customer_number to designate existence of a Payments
@@ -962,7 +965,7 @@ TEST_F(LocalCardMigrationManagerTest,
   // supported but the one left is supported.
   std::vector<std::pair<int, int>> supported_card_bin_ranges{
       std::make_pair(300, 305), std::make_pair(555, 555)};
-  payments_client_->SetSupportedBINRanges(supported_card_bin_ranges);
+  payments_network_interface_->SetSupportedBINRanges(supported_card_bin_ranges);
 
   // Edit the data, and submit.
   EditCreditCardForm(credit_card_form, "Jane Doe", "4111111111111111", "11",
@@ -994,7 +997,7 @@ TEST_F(LocalCardMigrationManagerTest,
   // only supported card.
   std::vector<std::pair<int, int>> supported_card_bin_ranges{
       std::make_pair(300, 305), std::make_pair(411, 412)};
-  payments_client_->SetSupportedBINRanges(supported_card_bin_ranges);
+  payments_network_interface_->SetSupportedBINRanges(supported_card_bin_ranges);
 
   // Set up our credit card form data.
   FormData credit_card_form = CreateTestCreditCardFormData(true, false);
@@ -1041,7 +1044,7 @@ TEST_F(
   // unsupported but the one left is supported.
   std::vector<std::pair<int, int>> supported_card_bin_ranges{
       std::make_pair(300, 305), std::make_pair(555, 555)};
-  payments_client_->SetSupportedBINRanges(supported_card_bin_ranges);
+  payments_network_interface_->SetSupportedBINRanges(supported_card_bin_ranges);
 
   // Set up our credit card form data.
   FormData credit_card_form = CreateTestCreditCardFormData(true, false);
@@ -1081,7 +1084,7 @@ TEST_F(
   // supported while the one left is unsupported.
   std::vector<std::pair<int, int>> supported_card_bin_ranges{
       std::make_pair(300, 305), std::make_pair(411, 411)};
-  payments_client_->SetSupportedBINRanges(supported_card_bin_ranges);
+  payments_network_interface_->SetSupportedBINRanges(supported_card_bin_ranges);
 
   // Set up our credit card form data.
   FormData credit_card_form = CreateTestCreditCardFormData(true, false);
@@ -1336,7 +1339,7 @@ TEST_F(LocalCardMigrationManagerTest,
   // supported but the one left is supported.
   std::vector<std::pair<int, int>> supported_card_bin_ranges{
       std::make_pair(300, 305), std::make_pair(555, 555)};
-  payments_client_->SetSupportedBINRanges(supported_card_bin_ranges);
+  payments_network_interface_->SetSupportedBINRanges(supported_card_bin_ranges);
 
   // Edit the data, and submit.
   EditCreditCardForm(credit_card_form, "Jane Doe", "4111111111111111", "11",
@@ -1374,7 +1377,7 @@ TEST_F(LocalCardMigrationManagerTest,
   // supported while the one left is unsupported.
   std::vector<std::pair<int, int>> supported_card_bin_ranges{
       std::make_pair(300, 305), std::make_pair(411, 411)};
-  payments_client_->SetSupportedBINRanges(supported_card_bin_ranges);
+  payments_network_interface_->SetSupportedBINRanges(supported_card_bin_ranges);
 
   base::HistogramTester histogram_tester;
   // Set up our credit card form data.
@@ -1417,7 +1420,7 @@ TEST_F(LocalCardMigrationManagerTest,
   // cards are all unsupported.
   std::vector<std::pair<int, int>> supported_card_bin_ranges{
       std::make_pair(300, 305), std::make_pair(400, 400)};
-  payments_client_->SetSupportedBINRanges(supported_card_bin_ranges);
+  payments_network_interface_->SetSupportedBINRanges(supported_card_bin_ranges);
 
   base::HistogramTester histogram_tester;
   // Set up our credit card form data.
@@ -1446,11 +1449,12 @@ TEST_F(LocalCardMigrationManagerTest,
       autofill_metrics::LocalCardMigrationDecisionMetric::OFFERED);
 }
 
-// Tests that if payment client returns an invalid legal message migration
-// should not be offered.
+// Tests that if the PaymentsNetworkInterface returns an invalid legal message,
+// migration should not be offered.
 TEST_F(LocalCardMigrationManagerTest,
        InvalidLegalMessageInOnDidGetUploadDetails) {
-  payments_client_->SetUseInvalidLegalMessageInGetUploadDetails(true);
+  payments_network_interface_->SetUseInvalidLegalMessageInGetUploadDetails(
+      true);
 
   base::HistogramTester histogram_tester;
   UseLocalCardWithOtherLocalCardsOnFile();

@@ -9,7 +9,6 @@
 
 #include "base/auto_reset.h"
 #include "base/memory/raw_ptr.h"
-#include "chromeos/ui/base/tablet_state.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "chromeos/ui/frame/caption_buttons/caption_button_model.h"
@@ -21,6 +20,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/screen.h"
+#include "ui/display/tablet_state.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/non_client_view.h"
@@ -225,7 +225,7 @@ void HeaderView::OnWindowDestroying(aura::Window* window) {
 
 void HeaderView::OnDisplayMetricsChanged(const display::Display& display,
                                          uint32_t changed_metrics) {
-  if ((changed_metrics & chromeos::TabletState::DISPLAY_METRIC_ROTATION) &&
+  if ((changed_metrics & display::DisplayObserver::DISPLAY_METRIC_ROTATION) &&
       frame_header_) {
     frame_header_->LayoutHeader();
   }

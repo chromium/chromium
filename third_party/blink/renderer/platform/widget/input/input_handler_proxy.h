@@ -53,7 +53,6 @@ class CompositorThreadEventQueue;
 class EventWithCallback;
 class InputHandlerProxyClient;
 class ScrollPredictor;
-class MomentumScrollJankTracker;
 class CursorControlHandler;
 
 class SynchronousInputHandler {
@@ -425,9 +424,6 @@ class PLATFORM_EXPORT InputHandlerProxy : public cc::InputHandlerClient,
 
   // This tracks whether the user has set prefers reduced motion.
   bool prefers_reduced_motion_ = false;
-
-  // Helpers for the momentum scroll jank UMAs.
-  std::unique_ptr<MomentumScrollJankTracker> momentum_scroll_jank_tracker_;
 
   // Swipe to move cursor feature.
   std::unique_ptr<CursorControlHandler> cursor_control_handler_;

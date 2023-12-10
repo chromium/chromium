@@ -48,8 +48,6 @@
 #include "chrome/browser/history/web_history_service_factory.h"
 #include "chrome/browser/language/url_language_histogram_factory.h"
 #include "chrome/browser/login_detection/login_detection_prefs.h"
-#include "chrome/browser/media/history/media_history_keyed_service.h"
-#include "chrome/browser/media/history/media_history_keyed_service_factory.h"
 #include "chrome/browser/media/media_engagement_service.h"
 #include "chrome/browser/media/webrtc/media_device_salt_service_factory.h"
 #include "chrome/browser/media/webrtc/webrtc_event_log_manager.h"
@@ -66,6 +64,7 @@
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/reading_list/reading_list_model_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/safe_browsing/verdict_cache_manager_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
@@ -73,6 +72,7 @@
 #include "chrome/browser/share/share_ranking.h"
 #include "chrome/browser/spellchecker/spellcheck_factory.h"
 #include "chrome/browser/spellchecker/spellcheck_service.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/find_bar/find_bar_state.h"
 #include "chrome/browser/ui/find_bar/find_bar_state_factory.h"
@@ -109,15 +109,18 @@
 #include "components/open_from_clipboard/clipboard_recent_content.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/features/password_manager_features_util.h"
+#include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/browser/password_store/smart_bubble_stats_store.h"
-#include "components/password_manager/core/browser/password_store_interface.h"
 #include "components/payments/content/payment_manifest_web_data_service.h"
 #include "components/permissions/permission_actions_history.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
+#include "components/reading_list/core/reading_list_model.h"
 #include "components/safe_browsing/core/browser/verdict_cache_manager.h"
 #include "components/search_engines/template_url_service.h"
+#include "components/sync/service/sync_service.h"
+#include "components/sync/service/sync_user_settings.h"
 #include "components/web_cache/browser/web_cache_manager.h"
 #include "components/webrtc_logging/browser/log_cleanup.h"
 #include "components/webrtc_logging/browser/text_log_list.h"
@@ -325,7 +328,9 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
            ~content::BrowsingDataRemover::DATA_TYPE_AVOID_CLOSING_CONNECTIONS &
            ~constants::FILTERABLE_DATA_TYPES) == 0) ||
          filter_builder->MatchesAllOriginsAndDomains());
-  DCHECK(!should_clear_password_account_storage_settings_);
+#if !BUILDFLAG(IS_ANDROID)
+  DCHECK(!should_clear_sync_account_settings_);
+#endif
 
   TRACE_EVENT0("browsing_data",
                "ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData");
@@ -662,13 +667,15 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
 #endif
     }
 
+#if !BUILDFLAG(IS_ANDROID)
     if (nullable_filter.is_null() ||
         (!filter_builder->IsCrossSiteClearSiteDataForCookies() &&
          nullable_filter.Run(GaiaUrls::GetInstance()->google_url()))) {
       // Set a flag to clear account storage settings later instead of clearing
       // it now as we can not reset this setting before passwords are deleted.
-      should_clear_password_account_storage_settings_ = true;
+      should_clear_sync_account_settings_ = true;
     }
+#endif
 
     // Persistent Origin Trial tokens are only saved until the next page
     // load from the same origin. For that reason, they are not saved with
@@ -760,6 +767,20 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
       auto* dict = spellcheck->GetCustomDictionary();
       if (dict)
         dict->Clear();
+    }
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+  // DATA_TYPE_READING_LIST
+  if (remove_mask & constants::DATA_TYPE_READING_LIST) {
+    auto* reading_list_model =
+        ReadingListModelFactory::GetForBrowserContext(profile_);
+    if (reading_list_model) {
+      if (delete_begin_.is_null() && delete_end_.is_max()) {
+        reading_list_model->DeleteAllEntries();
+      } else {
+        NOTIMPLEMENTED();
+      }
     }
   }
 
@@ -1377,22 +1398,27 @@ void ChromeBrowsingDataRemoverDelegate::OnTaskComplete(
   if (!pending_sub_tasks_.empty())
     return;
 
-  // Explicitly clear any opt-ins to the account-scoped password storage
-  // when cookies are being cleared. This needs to happen after passwords
-  // have been deleted, so it is performed when all other tasks are completed.
+#if !BUILDFLAG(IS_ANDROID)
+  // Explicitly clear any per account sync settings when cookies are being
+  // cleared. This needs to happen after the corresponding data has been
+  // deleted, so it is performed when all other tasks are completed.
   // Note: These usually get cleared automatically when the Google cookies are
   // deleted, but there is one edge case where that doesn't work: If the user
   // clears cookies via CBD while they are already signed out (but their
   // account is still present in the account chooser). In that case, without the
   // code below, the settings-clearing would only happen when the Google cookies
   // are refreshed the next time, typically on the next browser restart.
-  if (should_clear_password_account_storage_settings_) {
-    should_clear_password_account_storage_settings_ = false;
-#if !BUILDFLAG(IS_ANDROID)
-    password_manager::features_util::ClearAccountStorageSettingsForAllUsers(
-        profile_->GetPrefs());
-#endif  // !BUILDFLAG(IS_ANDROID)
+  if (should_clear_sync_account_settings_) {
+    should_clear_sync_account_settings_ = false;
+    syncer::SyncService* sync_service =
+        SyncServiceFactory::GetForProfile(profile_);
+    if (sync_service) {
+      sync_service->GetUserSettings()->KeepAccountSettingsPrefsOnlyForUsers({});
+    }
+    password_manager::features_util::KeepAccountStorageSettingsOnlyForUsers(
+        profile_->GetPrefs(), {});
   }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   slow_pending_tasks_closure_.Cancel();
 

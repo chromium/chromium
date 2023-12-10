@@ -5,6 +5,7 @@
 #ifndef CHROME_UPDATER_WIN_INSTALLER_API_H_
 #define CHROME_UPDATER_WIN_INSTALLER_API_H_
 
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -12,7 +13,6 @@
 #include "chrome/updater/enum_traits.h"
 #include "chrome/updater/installer.h"
 #include "chrome/updater/win/win_constants.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
 
@@ -84,15 +84,15 @@ struct InstallerOutcome {
   InstallerOutcome(const InstallerOutcome&);
   ~InstallerOutcome();
 
-  absl::optional<InstallerResult> installer_result;
-  absl::optional<int> installer_error;
-  absl::optional<int> installer_extracode1;
-  absl::optional<std::string> installer_text;
-  absl::optional<std::string> installer_cmd_line;
+  std::optional<InstallerResult> installer_result;
+  std::optional<int> installer_error;
+  std::optional<int> installer_extracode1;
+  std::optional<std::string> installer_text;
+  std::optional<std::string> installer_cmd_line;
 };
 
 // Opens the registry ClientState subkey for the `app_id`.
-absl::optional<base::win::RegKey> ClientStateAppKeyOpen(
+std::optional<base::win::RegKey> ClientStateAppKeyOpen(
     UpdaterScope updater_scope,
     const std::string& app_id,
     REGSAM regsam);
@@ -116,14 +116,14 @@ bool DeleteInstallerOutput(UpdaterScope updater_scope,
 // Returns the Installer API outcome, best-effort, and renames the InstallerXXX
 // values to LastInstallerXXX values. The LastInstallerXXX values remain around
 // until the next update or install.
-absl::optional<InstallerOutcome> GetInstallerOutcome(UpdaterScope updater_scope,
-                                                     const std::string& app_id);
+std::optional<InstallerOutcome> GetInstallerOutcome(UpdaterScope updater_scope,
+                                                    const std::string& app_id);
 
 // Returns the Last Installer API outcome, i.e., the LastInstallerXXX values.
-absl::optional<InstallerOutcome> GetClientStateKeyLastInstallerOutcome(
+std::optional<InstallerOutcome> GetClientStateKeyLastInstallerOutcome(
     UpdaterScope updater_scope,
     const std::string& app_id);
-absl::optional<InstallerOutcome> GetUpdaterKeyLastInstallerOutcome(
+std::optional<InstallerOutcome> GetUpdaterKeyLastInstallerOutcome(
     UpdaterScope updater_scope);
 
 bool SetInstallerOutcomeForTesting(UpdaterScope updater_scope,
@@ -141,7 +141,7 @@ bool SetInstallerOutcomeForTesting(UpdaterScope updater_scope,
 //   mean `FINGERPRINT_WRITE_FAILED = 2` or the windows error
 //   `ERROR_FILE_NOT_FOUND`.
 Installer::Result MakeInstallerResult(
-    absl::optional<InstallerOutcome> installer_outcome,
+    std::optional<InstallerOutcome> installer_outcome,
     int exit_code);
 
 }  // namespace updater

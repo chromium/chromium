@@ -42,7 +42,7 @@ int CertAndCTVerifier::Verify(const RequestParams& params,
   if (result != ERR_IO_PENDING &&
       (result == OK || IsCertificateError(result))) {
     DCHECK(verify_result->verified_cert);
-    ct_verifier_->Verify(params.hostname(), verify_result->verified_cert.get(),
+    ct_verifier_->Verify(verify_result->verified_cert.get(),
                          params.ocsp_response(), params.sct_list(),
                          &verify_result->scts, net_log);
   }
@@ -71,7 +71,7 @@ void CertAndCTVerifier::OnCertVerifyComplete(const RequestParams& params,
   // successfully.
   if (result == OK || IsCertificateError(result)) {
     DCHECK(verify_result->verified_cert);
-    ct_verifier_->Verify(params.hostname(), verify_result->verified_cert.get(),
+    ct_verifier_->Verify(verify_result->verified_cert.get(),
                          params.ocsp_response(), params.sct_list(),
                          &verify_result->scts, net_log);
   }

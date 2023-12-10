@@ -50,7 +50,7 @@ class ScopedFeatureListTest : public testing::Test {
   ScopedFeatureListTest() {
     // Clear default feature list.
     std::unique_ptr<FeatureList> feature_list(new FeatureList);
-    feature_list->InitializeFromCommandLine(std::string(), std::string());
+    feature_list->InitFromCommandLine(std::string(), std::string());
     original_feature_list_ = FeatureList::ClearInstanceForTesting();
     FeatureList::SetInstance(std::move(feature_list));
   }
@@ -651,8 +651,7 @@ TEST_F(ScopedFeatureListTest,
     feature_list2.InitWithNullFeatureAndFieldTrialLists();
 
     leaked_field_trial_list = std::make_unique<FieldTrialList>();
-    FeatureList::InitializeInstance("TestFeature1:TestParam/TestValue2", "",
-                                    {});
+    FeatureList::InitInstance("TestFeature1:TestParam/TestValue2", "", {});
     EXPECT_TRUE(FeatureList::IsEnabled(kTestFeature1));
     EXPECT_EQ("TestValue2",
               GetFieldTrialParamValueByFeature(kTestFeature1, "TestParam"));

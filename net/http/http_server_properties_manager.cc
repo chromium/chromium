@@ -315,10 +315,6 @@ void HttpServerPropertiesManager::ReadPrefs(
 
   // Set the properties loaded from prefs on |http_server_properties_impl_|.
 
-  // TODO(mmenke): Rename this once more information is stored in this map.
-  UMA_HISTOGRAM_COUNTS_1M("Net.HttpServerProperties.CountOfServers",
-                          (*server_info_map)->size());
-
   UMA_HISTOGRAM_COUNTS_1000("Net.CountOfQuicServerInfos",
                             (*quic_server_info_map)->size());
 

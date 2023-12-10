@@ -151,12 +151,17 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
       throw new Error('Use AutomationNode.setSelection to set the selection ' +
           'in the desktop tree.');
     }
-    automationInternal.performAction({ treeID: anchorNodeImpl.treeID,
-                                       automationNodeID: anchorNodeImpl.id,
-                                       actionType: 'setSelection'},
-                                     { focusNodeID: focusNodeImpl.id,
-                                       anchorOffset: params.anchorOffset,
-                                       focusOffset: params.focusOffset });
+    automationInternal.performAction(
+        {
+          treeID: anchorNodeImpl.treeID,
+          automationNodeID: anchorNodeImpl.id,
+          actionType: 'setSelection',
+        },
+        {
+          focusNodeID: focusNodeImpl.id,
+          anchorOffset: params.anchorOffset,
+          focusOffset: params.focusOffset,
+        });
   });
 });
 

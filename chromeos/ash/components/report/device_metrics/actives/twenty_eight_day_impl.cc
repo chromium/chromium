@@ -250,7 +250,7 @@ void TwentyEightDayImpl::OnCheckMembershipQueryComplete(
 }
 
 void TwentyEightDayImpl::CheckIn() {
-  absl::optional<FresnelImportDataRequest> import_request =
+  std::optional<FresnelImportDataRequest> import_request =
       GenerateImportRequestBody();
   if (!import_request.has_value()) {
     LOG(ERROR) << "Failed to create the import request body.";
@@ -310,7 +310,7 @@ TwentyEightDayImpl::GetPsmIdentifiersToQuery() {
   std::string window_id =
       utils::TimeToYYYYMMDDString(GetParams()->GetActiveTs());
 
-  absl::optional<psm_rlwe::RlwePlaintextId> psm_id =
+  std::optional<psm_rlwe::RlwePlaintextId> psm_id =
       utils::GeneratePsmIdentifier(GetParams()->GetHighEntropySeed(),
                                    psm_rlwe::RlweUseCase_Name(kPsmUseCase),
                                    window_id);
@@ -329,7 +329,7 @@ TwentyEightDayImpl::GetPsmIdentifiersToQuery() {
   return query_psm_ids;
 }
 
-absl::optional<FresnelImportDataRequest>
+std::optional<FresnelImportDataRequest>
 TwentyEightDayImpl::GenerateImportRequestBody() {
   // Generate Fresnel PSM import request body.
   FresnelImportDataRequest import_request;
@@ -365,14 +365,14 @@ TwentyEightDayImpl::GenerateImportRequestBody() {
     }
 
     std::string window_id = utils::TimeToYYYYMMDDString(day_n);
-    absl::optional<psm_rlwe::RlwePlaintextId> psm_id =
+    std::optional<psm_rlwe::RlwePlaintextId> psm_id =
         utils::GeneratePsmIdentifier(GetParams()->GetHighEntropySeed(),
                                      psm_rlwe::RlweUseCase_Name(kPsmUseCase),
                                      window_id);
 
     if (window_id.empty() || !psm_id.has_value()) {
       LOG(ERROR) << "Window ID or Psm ID is empty.";
-      return absl::nullopt;
+      return std::nullopt;
     }
 
     FresnelImportData* import_data = import_request.add_import_data();

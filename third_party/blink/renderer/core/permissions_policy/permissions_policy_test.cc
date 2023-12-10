@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/permissions_policy/permissions_policy_parser.h"
-
 #include <map>
 #include <string>
 
@@ -16,7 +14,9 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/loader/empty_clients.h"
+#include "third_party/blink/renderer/core/permissions_policy/permissions_policy_parser.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -107,6 +107,7 @@ class PermissionsPolicyParserTest : public ::testing::Test {
     return PermissionsPolicyParser::ParseHeader(
         feature_policy_header, g_empty_string, origin, logger, logger, context);
   }
+  test::TaskEnvironment task_environment_;
 };
 
 struct OriginWithPossibleWildcardsForTest {
@@ -1268,6 +1269,7 @@ class FeaturePolicyMutationTest : public testing::Test {
        /*matches_opaque_src=*/false}};
 
   ParsedPermissionsPolicy empty_policy = {};
+  test::TaskEnvironment task_environment_;
 };
 
 TEST_F(FeaturePolicyMutationTest, TestIsFeatureDeclared) {
@@ -1442,6 +1444,8 @@ class PermissionsPolicyViolationHistogramTest : public testing::Test {
   PermissionsPolicyViolationHistogramTest() = default;
 
   ~PermissionsPolicyViolationHistogramTest() override = default;
+  test::TaskEnvironment task_environment_;
 };
 
 }  // namespace blink
+

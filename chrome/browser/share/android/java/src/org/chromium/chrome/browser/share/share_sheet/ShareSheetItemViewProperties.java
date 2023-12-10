@@ -11,9 +11,7 @@ import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
-/**
- * The properties associated with rendering an item in the share sheet.
- */
+/** The properties associated with rendering an item in the share sheet. */
 final class ShareSheetItemViewProperties {
     public static final WritableObjectPropertyKey<Drawable> ICON =
             new WritableObjectPropertyKey<>();
@@ -30,5 +28,6 @@ final class ShareSheetItemViewProperties {
             new WritableBooleanPropertyKey();
 
     public static final PropertyKey[] ALL_KEYS = {
-            ICON, LABEL, CONTENT_DESCRIPTION, CLICK_LISTENER, SHOW_NEW_BADGE};
+        ICON, LABEL, CONTENT_DESCRIPTION, CLICK_LISTENER, SHOW_NEW_BADGE
+    };
 }

@@ -65,7 +65,7 @@ void HeatmapMlAgent::Execute(const std::vector<double>& data,
   if (data.size() != kHeatmapHeight * kHeatmapWidth) {
     DVLOG(1) << "Heatmap data size is incorrect, expect "
              << kHeatmapHeight * kHeatmapWidth << ", got " << data.size();
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
 
@@ -90,7 +90,7 @@ void HeatmapMlAgent::Execute(const std::vector<double>& data,
 void HeatmapMlAgent::OnExecuteDone(
     ExecuteCallback callback,
     ExecuteResult result,
-    absl::optional<std::vector<TensorPtr>> outputs) {
+    std::optional<std::vector<TensorPtr>> outputs) {
   if (result == ExecuteResult::OK && outputs.has_value() &&
       outputs->size() == 1) {
     auto& output_data = (outputs.value())[0]->data;
@@ -100,7 +100,7 @@ void HeatmapMlAgent::OnExecuteDone(
       return;
     }
   }
-  std::move(callback).Run(absl::nullopt);
+  std::move(callback).Run(std::nullopt);
 }
 
 void HeatmapMlAgent::OnLoadModel(LoadModelResult result) {

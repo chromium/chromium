@@ -43,7 +43,7 @@ bool ChromeOSLoginAndLockMediaAccessHandler::SupportsStreamType(
 
 bool ChromeOSLoginAndLockMediaAccessHandler::CheckMediaAccessPermission(
     content::RenderFrameHost* render_frame_host,
-    const GURL& security_origin,
+    const url::Origin& security_origin,
     blink::mojom::MediaStreamType type,
     const extensions::Extension* extension) {
   if (type != blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE)
@@ -70,8 +70,9 @@ bool ChromeOSLoginAndLockMediaAccessHandler::CheckMediaAccessPermission(
         VLOG(1) << "Ignoring wildcard URL pattern: " << *value;
         continue;
       }
-      if (pattern.IsValid() && pattern.Matches(security_origin))
+      if (pattern.IsValid() && pattern.Matches(security_origin.GetURL())) {
         return true;
+      }
     }
   }
   return false;
@@ -89,7 +90,7 @@ void ChromeOSLoginAndLockMediaAccessHandler::HandleRequest(
       CheckMediaAccessPermission(
           content::RenderFrameHost::FromID(request.render_process_id,
                                            request.render_frame_id),
-          request.security_origin,
+          request.url_origin,
           blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE, extension);
 
   CheckDevicesAndRunCallback(web_contents, request, std::move(callback),

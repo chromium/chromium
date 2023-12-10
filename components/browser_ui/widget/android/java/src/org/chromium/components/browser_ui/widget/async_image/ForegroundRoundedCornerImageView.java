@@ -36,13 +36,18 @@ public class ForegroundRoundedCornerImageView extends RoundedCornerImageView {
 
         mForegroundHelper = new ForegroundDrawableCompat(this);
 
-        TypedArray types = attrs == null
-                ? null
-                : context.obtainStyledAttributes(
-                        attrs, R.styleable.ForegroundRoundedCornerImageView, 0, 0);
+        TypedArray types =
+                attrs == null
+                        ? null
+                        : context.obtainStyledAttributes(
+                                attrs, R.styleable.ForegroundRoundedCornerImageView, 0, 0);
 
-        mForegroundHelper.setDrawable(AutoAnimatorDrawable.wrap(UiUtils.getDrawable(
-                context, types, R.styleable.ForegroundRoundedCornerImageView_foregroundCompat)));
+        mForegroundHelper.setDrawable(
+                AutoAnimatorDrawable.wrap(
+                        UiUtils.getDrawable(
+                                context,
+                                types,
+                                R.styleable.ForegroundRoundedCornerImageView_foregroundCompat)));
 
         if (types != null) types.recycle();
     }

@@ -13,6 +13,18 @@
 
 namespace blink {
 
+// Values for the Sec-CH-UA-Form-Factor header.
+// https://wicg.github.io/ua-client-hints/#sec-ch-ua-form-factor
+// LINT.IfChange
+inline constexpr char kDesktopFormFactor[] = "Desktop";
+inline constexpr char kAutomotiveFormFactor[] = "Automotive";
+inline constexpr char kMobileFormFactor[] = "Mobile";
+inline constexpr char kTabletFormFactor[] = "Tablet";
+inline constexpr char kXRFormFactor[] = "XR";
+inline constexpr char kEInkFormFactor[] = "EInk";
+inline constexpr char kWatchFormFactor[] = "Watch";
+// LINT.ThenChange(/android_webview/java/src/org/chromium/android_webview/client_hints/AwUserAgentMetadata.java)
+
 struct BLINK_COMMON_EXPORT UserAgentBrandVersion {
   UserAgentBrandVersion() = default;
   UserAgentBrandVersion(const std::string& ua_brand,
@@ -44,6 +56,7 @@ struct BLINK_COMMON_EXPORT UserAgentMetadata {
   // version.
   const std::string SerializeBrandFullVersionList();
   const std::string SerializeBrandMajorVersionList();
+  const std::string SerializeFormFactor();
 
   static absl::optional<UserAgentMetadata> Demarshal(
       const absl::optional<std::string>& encoded);
@@ -60,7 +73,11 @@ struct BLINK_COMMON_EXPORT UserAgentMetadata {
   bool mobile = false;
   std::string bitness;
   bool wow64 = false;
-  std::string form_factor;
+
+  // The form-factor list. It is up to the embedder to ensure that this is
+  // compliant with the w3c draft spec:
+  // https://wicg.github.io/ua-client-hints/#sec-ch-ua-form-factor.
+  std::vector<std::string> form_factor;
 };
 
 // Used when customizing the sent User-Agent and Sec-CH-UA-* for

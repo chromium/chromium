@@ -11,6 +11,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/signin/dice_web_signin_interceptor.h"
 #include "content/public/browser/web_contents_delegate.h"
@@ -78,6 +79,10 @@ class DiceWebSigninInterceptionBubbleView
                            ProfileKeepAlive);
   FRIEND_TEST_ALL_PREFIXES(DiceWebSigninInterceptionBubbleBrowserTest,
                            OpenLearnMoreLinkInNewTab);
+  FRIEND_TEST_ALL_PREFIXES(DiceWebSigninInterceptionBubbleBrowserTest,
+                           ChromeSigninAccepted);
+  FRIEND_TEST_ALL_PREFIXES(DiceWebSigninInterceptionBubbleBrowserTest,
+                           ChromeSigninDeclined);
   FRIEND_TEST_ALL_PREFIXES(ProfileBubbleInteractiveUiTest,
                            InterceptionBubbleFocus);
 
@@ -91,6 +96,10 @@ class DiceWebSigninInterceptionBubbleView
 
     ScopedHandle& operator=(const ScopedHandle&) = delete;
     ScopedHandle(const ScopedHandle&) = delete;
+
+    DiceWebSigninInterceptionBubbleView* GetBubbleViewForTesting() {
+      return bubble_.get();
+    }
 
    private:
     base::WeakPtr<DiceWebSigninInterceptionBubbleView> bubble_;
@@ -127,6 +136,8 @@ class DiceWebSigninInterceptionBubbleView
   WebSigninInterceptor::Delegate::BubbleParameters bubble_parameters_;
   base::OnceCallback<void(SigninInterceptionResult)> callback_;
   raw_ptr<views::WebView> web_view_;
+
+  base::TimeTicks chrome_signin_bubble_shown_time_;
 
   // Last member in the class: pointers are invalidated before other fields.
   base::WeakPtrFactory<DiceWebSigninInterceptionBubbleView> weak_factory_{this};

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/autofill/popup/popup_view_views.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
@@ -18,7 +19,6 @@
 #include "components/strings/grit/components_strings.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/render_text.h"
 
@@ -34,25 +34,27 @@ using CellType = PopupRowView::CellType;
 
 std::vector<Suggestion> CreateAutofillProfileSuggestions() {
   std::vector<Suggestion> suggestions;
-  suggestions.emplace_back("123 Apple St.", "Charles", "accountIcon",
+  suggestions.emplace_back("123 Apple St.", "Charles",
+                           Suggestion::Icon::kAccount,
                            PopupItemId::kAddressEntry);
-  suggestions.emplace_back("3734 Elvis Presley Blvd.", "Elvis", "accountIcon",
+  suggestions.emplace_back("3734 Elvis Presley Blvd.", "Elvis",
+                           Suggestion::Icon::kAccount,
                            PopupItemId::kAddressEntry);
 
   suggestions.emplace_back(PopupItemId::kSeparator);
 
   Suggestion settings(l10n_util::GetStringUTF16(IDS_AUTOFILL_MANAGE_ADDRESSES));
   settings.popup_item_id = PopupItemId::kAutofillOptions;
-  settings.icon = "settingsIcon";
+  settings.icon = Suggestion::Icon::kSettings;
   suggestions.push_back(std::move(settings));
 
   return suggestions;
 }
 
 std::vector<Suggestion> CreateAutocompleteSuggestions() {
-  return {Suggestion("Autocomplete entry 1", "", "",
+  return {Suggestion("Autocomplete entry 1", "", Suggestion::Icon::kNoIcon,
                      PopupItemId::kAutocompleteEntry),
-          Suggestion("Autocomplete entry 2", "", "",
+          Suggestion("Autocomplete entry 2", "", Suggestion::Icon::kNoIcon,
                      PopupItemId::kAutocompleteEntry)};
 }
 
@@ -86,7 +88,7 @@ class PopupViewViewsBrowsertestBase
 
  private:
   // The index of the selected cell. No cell is selected by default.
-  absl::optional<CellIndex> selected_cell_;
+  std::optional<CellIndex> selected_cell_;
 };
 
 class PopupViewViewsBrowsertest : public PopupViewViewsBrowsertestBase {
@@ -154,8 +156,8 @@ IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
   entry1.additional_label =
       std::u16string(10, gfx::RenderText::kPasswordReplacementChar);
   entry1.popup_item_id = PopupItemId::kAccountStoragePasswordEntry;
-  entry1.icon = "globeIcon";
-  entry1.trailing_icon = "google";
+  entry1.icon = Suggestion::Icon::kGlobe;
+  entry1.trailing_icon = Suggestion::Icon::kGoogle;
   suggestions.push_back(std::move(entry1));
 
   // A profile store entry.
@@ -164,8 +166,8 @@ IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
   entry2.additional_label =
       std::u16string(6, gfx::RenderText::kPasswordReplacementChar);
   entry2.popup_item_id = PopupItemId::kPasswordEntry;
-  entry2.icon = "globeIcon";
-  entry2.trailing_icon = "";
+  entry2.icon = Suggestion::Icon::kGlobe;
+  entry2.trailing_icon = Suggestion::Icon::kNoIcon;
   suggestions.push_back(std::move(entry2));
 
   suggestions.emplace_back(PopupItemId::kSeparator);
@@ -174,8 +176,8 @@ IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
   Suggestion settings(
       l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_MANAGE_PASSWORDS));
   settings.popup_item_id = PopupItemId::kAllSavedPasswordsEntry;
-  settings.icon = "settingsIcon";
-  settings.trailing_icon = "googlePasswordManager";
+  settings.icon = Suggestion::Icon::kSettings;
+  settings.trailing_icon = Suggestion::Icon::kGooglePasswordManager;
   suggestions.push_back(std::move(settings));
 
   PrepareSuggestions(std::move(suggestions));

@@ -109,6 +109,9 @@ class FakeFidoDiscoveryFactory : public device::FidoDiscoveryFactory {
   // FidoDeviceDiscovery::Create. Returns a raw pointer to the fake so that
   // tests can set it up according to taste.
   //
+  // ForgeNextPlatformDiscovery() will queue discoveries if called multiple
+  // times.
+  //
   // It is an error not to call the relevant method prior to a call to
   // FidoDeviceDiscovery::Create with the respective transport.
   FakeFidoDiscovery* ForgeNextHidDiscovery(StartMode mode = StartMode::kManual);
@@ -136,7 +139,7 @@ class FakeFidoDiscoveryFactory : public device::FidoDiscoveryFactory {
   std::unique_ptr<FakeFidoDiscovery> next_hid_discovery_;
   std::unique_ptr<FakeFidoDiscovery> next_nfc_discovery_;
   std::unique_ptr<FakeFidoDiscovery> next_cable_discovery_;
-  std::unique_ptr<FakeFidoDiscovery> next_platform_discovery_;
+  std::vector<std::unique_ptr<FidoDiscoveryBase>> next_platform_discovery_list_;
   bool discover_win_webauthn_api_authenticator_ = false;
 };
 

@@ -98,6 +98,10 @@ enum DownloadDangerType {
   // pssword to use locally for further scanning.
   DOWNLOAD_DANGER_TYPE_PROMPT_FOR_LOCAL_PASSWORD_SCANNING = 21,
 
+  // Download is pending a more detailed verdict after a prompt to use the
+  // password locally for further scanning.
+  DOWNLOAD_DANGER_TYPE_ASYNC_LOCAL_PASSWORD_SCANNING = 22,
+
   // Memory space for histograms is determined by the max.
   // ALWAYS ADD NEW VALUES BEFORE THIS ONE.
   DOWNLOAD_DANGER_TYPE_MAX

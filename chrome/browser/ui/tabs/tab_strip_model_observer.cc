@@ -14,11 +14,10 @@
 
 using content::WebContents;
 
-TabStripModelChange::RemovedTab::RemovedTab(
-    content::WebContents* contents,
-    int index,
-    RemoveReason remove_reason,
-    absl::optional<SessionID> session_id)
+TabStripModelChange::RemovedTab::RemovedTab(content::WebContents* contents,
+                                            int index,
+                                            RemoveReason remove_reason,
+                                            std::optional<SessionID> session_id)
     : contents(contents),
       index(index),
       remove_reason(remove_reason),
@@ -219,7 +218,7 @@ void TabStripModelObserver::TabBlockedStateChanged(WebContents* contents,
 }
 
 void TabStripModelObserver::TabGroupedStateChanged(
-    absl::optional<tab_groups::TabGroupId> group,
+    std::optional<tab_groups::TabGroupId> group,
     content::WebContents* contents,
     int index) {}
 

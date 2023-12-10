@@ -394,9 +394,9 @@ void LogoServiceImpl::OnCachedLogoRead(
   DCHECK(!is_idle_);
 
   if (cached_logo && cached_logo->encoded_image) {
-    // Store the value of logo->encoded_image for use below. This ensures that
-    // logo->encoded_image is evaluated before base::Passed(&logo), which sets
-    // logo to NULL.
+    // Store the value of cached_logo->encoded_image for use below. This ensures
+    // that cached_logo->encoded_image is evaluated before
+    // std::move(cached_logo), which sets cached_logo to nullptr.
     scoped_refptr<base::RefCountedString> encoded_image =
         cached_logo->encoded_image;
     image_decoder_->DecodeImage(
@@ -433,9 +433,9 @@ void LogoServiceImpl::OnLightCachedImageDecoded(
     return;
   }
 
-  // Store the value of logo->dark_encoded_image for use below. This ensures
-  // that logo->dark_encoded_image is evaluated before base::Passed(&logo),
-  // which sets logo to NULL.
+  // Store the value of cached_logo->dark_encoded_image for use below. This
+  // ensures that cached_logo->dark_encoded_image is evaluated before
+  // std::move(cached_logo), which sets cached_logo to nullptr.
   scoped_refptr<base::RefCountedString> dark_encoded_image =
       cached_logo->dark_encoded_image;
 
@@ -530,8 +530,8 @@ void LogoServiceImpl::OnFreshLogoParsed(bool* parsing_failed,
                          SkBitmap());
   } else {
     // Store the value of logo->encoded_image for use below. This ensures that
-    // logo->encoded_image is evaluated before base::Passed(&logo), which sets
-    // logo to NULL.
+    // logo->encoded_image is evaluated before std::move(logo), which sets logo
+    // to nullptr.
     scoped_refptr<base::RefCountedString> encoded_image = logo->encoded_image;
 
     image_decoder_->DecodeImage(
@@ -557,8 +557,8 @@ void LogoServiceImpl::OnLightFreshImageDecoded(
   }
 
   // Store the value of logo->dark_encoded_image for use below. This ensures
-  // that logo->encoded_image is evaluated before base::Passed(&logo), which
-  // sets logo to NULL.
+  // that logo->encoded_image is evaluated before std::move(logo), which sets
+  // logo to nullptr.
   scoped_refptr<base::RefCountedString> dark_encoded_image =
       logo->dark_encoded_image;
 

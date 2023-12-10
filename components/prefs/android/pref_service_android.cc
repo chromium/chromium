@@ -88,6 +88,20 @@ void PrefServiceAndroid::SetInteger(JNIEnv* env,
       base::android::ConvertJavaStringToUTF8(env, j_preference), j_value);
 }
 
+jdouble PrefServiceAndroid::GetDouble(
+    JNIEnv* env,
+    const JavaParamRef<jstring>& j_preference) {
+  return pref_service_->GetDouble(
+      base::android::ConvertJavaStringToUTF8(env, j_preference));
+}
+
+void PrefServiceAndroid::SetDouble(JNIEnv* env,
+                                   const JavaParamRef<jstring>& j_preference,
+                                   const jdouble j_value) {
+  pref_service_->SetDouble(
+      base::android::ConvertJavaStringToUTF8(env, j_preference), j_value);
+}
+
 ScopedJavaLocalRef<jstring> PrefServiceAndroid::GetString(
     JNIEnv* env,
     const JavaParamRef<jstring>& j_preference) {

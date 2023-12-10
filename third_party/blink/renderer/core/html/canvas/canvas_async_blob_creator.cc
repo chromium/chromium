@@ -7,6 +7,7 @@
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/trace_event/typed_macros.h"
 #include "build/build_config.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_metric_builder.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_metrics.h"
@@ -33,6 +34,7 @@
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_std.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
+#include "third_party/blink/renderer/platform/wtf/text/base64.h"
 
 #include "third_party/skia/include/core/SkSurface.h"
 
@@ -222,6 +224,10 @@ CanvasAsyncBlobCreator::CanvasAsyncBlobCreator(
 CanvasAsyncBlobCreator::~CanvasAsyncBlobCreator() = default;
 
 void CanvasAsyncBlobCreator::Dispose() {
+  TRACE_EVENT_INSTANT(
+      TRACE_DISABLED_BY_DEFAULT("identifiability.high_entropy_api"),
+      "CanvasReadback", perfetto::TerminatingFlow::FromPointer(this));
+
   // Eagerly let go of references to prevent retention of these
   // resources while any remaining posted tasks are queued.
   context_.Clear();
@@ -245,8 +251,9 @@ bool CanvasAsyncBlobCreator::EncodeImage(
     const double& quality,
     Vector<unsigned char>* encoded_image) {
   CHECK(encoded_image);
-  if (!buffer)
+  if (!buffer) {
     return false;
+  }
   return buffer->EncodeImage(mime_type, quality, encoded_image);
 }
 
@@ -272,6 +279,10 @@ bool CanvasAsyncBlobCreator::EncodeImage(
 //  - For the in-thread case (2b), not stored anywhere, because encoding happens
 //    within this function.
 void CanvasAsyncBlobCreator::ScheduleAsyncBlobCreation(const double& quality) {
+  TRACE_EVENT_INSTANT(
+      TRACE_DISABLED_BY_DEFAULT("identifiability.high_entropy_api"),
+      "CanvasReadback", perfetto::Flow::FromPointer(this));
+
   if (!static_bitmap_image_loaded_) {
     context_->GetTaskRunner(TaskType::kCanvasBlobSerialization)
         ->PostTask(
@@ -453,6 +464,7 @@ void CanvasAsyncBlobCreator::CreateBlobAndReturnResult(
                                 base::TimeTicks::Now() - start_time_,
                                 image_->width(), image_->height());
 
+  TraceCanvasContent(&encoded_image);
   if (IdentifiabilityStudySettings::Get()->ShouldSampleType(
           blink::IdentifiableSurface::Type::kCanvasReadback)) {
     // Creating this ImageDataBuffer has some overhead, namely getting the
@@ -493,6 +505,21 @@ void CanvasAsyncBlobCreator::RecordIdentifiabilityMetric() {
   Dispose();
 }
 
+void CanvasAsyncBlobCreator::TraceCanvasContent(
+    Vector<unsigned char>* encoded_image) {
+  TRACE_EVENT_INSTANT(
+      TRACE_DISABLED_BY_DEFAULT("identifiability.high_entropy_api"),
+      "CanvasReadback", perfetto::Flow::FromPointer(this),
+      [&](perfetto::EventContext ctx) {
+        String data = "data:";
+        if (encoded_image) {
+          data = data + ImageEncodingMimeTypeName(mime_type_) + ";base64," +
+                 Base64Encode(*encoded_image);
+        }
+        ctx.AddDebugAnnotation("data_url", data.Utf8());
+      });
+}
+
 void CanvasAsyncBlobCreator::CreateNullAndReturnResult() {
   RecordIdleTaskStatusHistogram(idle_task_status_);
   if (function_type_ == kHTMLCanvasToBlobCallback) {
@@ -513,6 +540,7 @@ void CanvasAsyncBlobCreator::CreateNullAndReturnResult() {
                               DOMExceptionCode::kEncodingError,
                               "Encoding of the source image has failed."))));
   }
+  TraceCanvasContent(nullptr);
   // Avoid unwanted retention, see dispose().
   Dispose();
 }
@@ -547,8 +575,9 @@ void CanvasAsyncBlobCreator::EncodeImageOnEncoderThread(
 
 bool CanvasAsyncBlobCreator::InitializeEncoder(double quality) {
   // This is solely used for unit tests.
-  if (fail_encoder_initialization_for_test_)
+  if (fail_encoder_initialization_for_test_) {
     return false;
+  }
   if (mime_type_ == kMimeTypeJpeg) {
     SkJpegEncoder::Options options;
     options.fQuality = ImageEncoder::ComputeJpegQuality(quality);

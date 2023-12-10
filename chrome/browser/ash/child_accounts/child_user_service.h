@@ -91,7 +91,7 @@ class ChildUserService : public KeyedService,
   // app_time::AppTimeLimitInterface:
   void PauseWebActivity(const std::string& app_service_id) override;
   void ResumeWebActivity(const std::string& app_service_id) override;
-  absl::optional<base::TimeDelta> GetTimeLimitForApp(
+  std::optional<base::TimeDelta> GetTimeLimitForApp(
       const std::string& app_service_id,
       apps::AppType app_type) override;
 

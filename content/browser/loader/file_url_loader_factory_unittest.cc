@@ -10,13 +10,18 @@
 #include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_callback_support.h"
+#include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
+#include "components/file_access/scoped_file_access.h"
+#include "components/file_access/test/mock_scoped_file_access_delegate.h"
 #include "content/public/browser/shared_cors_origin_access_list.h"
 #include "content/public/common/content_paths.h"
 #include "content/public/test/simple_url_loader_test_helper.h"
 #include "net/base/filename_util.h"
+#include "net/base/net_errors.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/public/cpp/cors/origin_access_list.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -25,8 +30,11 @@
 #include "services/network/test/test_url_loader_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace content {
+
+using testing::_;
 
 namespace {
 
@@ -100,7 +108,7 @@ class FileURLLoaderFactoryTest : public testing::Test {
 
     SimpleURLLoaderTestHelper helper;
     loader->DownloadToString(
-        factory_.get(), helper.GetCallback(),
+        factory_.get(), helper.GetCallbackDeprecated(),
         network::SimpleURLLoader::kMaxBoundedStringDownloadSize);
 
     helper.WaitForCallback();
@@ -229,5 +237,75 @@ TEST_F(FileURLLoaderFactoryTest, Allowlist) {
 }
 
 }  // namespace
+
+TEST_F(FileURLLoaderFactoryTest, DlpInitiatorAllow) {
+  file_access::MockScopedFileAccessDelegate file_access_delegate;
+  auto origin = url::Origin::Create(GURL("https://example.com"));
+
+  EXPECT_CALL(file_access_delegate, RequestFilesAccess)
+      .WillOnce(base::test::RunOnceCallback<2>(
+          file_access::ScopedFileAccess::Allowed()));
+
+  base::FilePath file;
+  ASSERT_TRUE(base::CreateTemporaryFile(&file));
+  auto request = std::make_unique<network::ResourceRequest>();
+  request->url = net::FilePathToFileURL(file);
+  request->request_initiator = origin;
+  ASSERT_EQ(net::OK, CreateLoaderAndRun(std::move(request)));
+
+  ASSERT_NE(ResponseInfo(), nullptr);
+  ASSERT_NE(ResponseInfo()->headers, nullptr);
+  ASSERT_EQ(200, ResponseInfo()->headers->response_code());
+  ASSERT_EQ("OK", ResponseInfo()->headers->GetStatusText());
+}
+
+TEST_F(FileURLLoaderFactoryTest, DlpNoInitiatorAllow) {
+  file_access::MockScopedFileAccessDelegate file_access_delegate;
+
+  EXPECT_CALL(file_access_delegate, RequestFilesAccessForSystem)
+      .WillOnce(base::test::RunOnceCallback<1>(
+          file_access::ScopedFileAccess::Allowed()));
+
+  base::FilePath file;
+  ASSERT_TRUE(base::CreateTemporaryFile(&file));
+  auto request = std::make_unique<network::ResourceRequest>();
+  request->url = net::FilePathToFileURL(file);
+  ASSERT_EQ(net::OK, CreateLoaderAndRun(std::move(request)));
+
+  ASSERT_NE(ResponseInfo(), nullptr);
+  ASSERT_NE(ResponseInfo()->headers, nullptr);
+  ASSERT_EQ(200, ResponseInfo()->headers->response_code());
+  ASSERT_EQ("OK", ResponseInfo()->headers->GetStatusText());
+}
+
+TEST_F(FileURLLoaderFactoryTest, DlpInitiatorDeny) {
+  file_access::MockScopedFileAccessDelegate file_access_delegate;
+  auto origin = url::Origin::Create(GURL("https://example.com"));
+
+  EXPECT_CALL(file_access_delegate, RequestFilesAccess)
+      .WillOnce(base::test::RunOnceCallback<2>(
+          file_access::ScopedFileAccess::Denied()));
+
+  base::FilePath file;
+  ASSERT_TRUE(base::CreateTemporaryFile(&file));
+  auto request = std::make_unique<network::ResourceRequest>();
+  request->url = net::FilePathToFileURL(file);
+  request->request_initiator = origin;
+  ASSERT_EQ(net::ERR_FAILED, CreateLoaderAndRun(std::move(request)));
+}
+
+TEST_F(FileURLLoaderFactoryTest, DlpNoInitiatorDeny) {
+  file_access::MockScopedFileAccessDelegate file_access_delegate;
+
+  EXPECT_CALL(file_access_delegate, RequestFilesAccessForSystem)
+      .WillOnce(base::test::RunOnceCallback<1>(
+          file_access::ScopedFileAccess::Denied()));
+
+  base::FilePath file;
+  ASSERT_TRUE(base::CreateTemporaryFile(&file));
+  auto request = std::make_unique<network::ResourceRequest>();
+  request->url = net::FilePathToFileURL(file);
+  ASSERT_EQ(net::ERR_FAILED, CreateLoaderAndRun(std::move(request)));
+}
 
 }  // namespace content

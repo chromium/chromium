@@ -275,7 +275,7 @@ class SyncConsentTest
   }
 
  protected:
-  absl::optional<SyncConsentScreen::Result> screen_result_;
+  std::optional<SyncConsentScreen::Result> screen_result_;
   base::HistogramTester histogram_tester_;
   std::vector<int> expected_consent_ids_;
   bool is_minor_user_ = false;

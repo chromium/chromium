@@ -42,11 +42,12 @@ class ContentSettingsInfo {
   };
 
   // This object does not take ownership of |website_settings_info|.
-  ContentSettingsInfo(const WebsiteSettingsInfo* website_settings_info,
-                      const std::vector<std::string>& allowlisted_schemes,
-                      const std::set<ContentSetting>& valid_settings,
-                      IncognitoBehavior incognito_behavior,
-                      OriginRestriction origin_restriction);
+  ContentSettingsInfo(
+      const WebsiteSettingsInfo* website_settings_info,
+      const std::vector<std::string>& allowlisted_primary_schemes,
+      const std::set<ContentSetting>& valid_settings,
+      IncognitoBehavior incognito_behavior,
+      OriginRestriction origin_restriction);
 
   ContentSettingsInfo(const ContentSettingsInfo&) = delete;
   ContentSettingsInfo& operator=(const ContentSettingsInfo&) = delete;
@@ -56,8 +57,17 @@ class ContentSettingsInfo {
   const WebsiteSettingsInfo* website_settings_info() const {
     return website_settings_info_;
   }
-  const std::vector<std::string>& allowlisted_schemes() const {
-    return allowlisted_schemes_;
+  const std::vector<std::string>& allowlisted_primary_schemes() const {
+    return allowlisted_primary_schemes_;
+  }
+
+  void set_third_party_cookie_allowed_secondary_schemes(
+      const std::vector<std::string>& allowed_schemes) {
+    third_party_cookie_allowed_secondary_schemes_ = allowed_schemes;
+  }
+  const std::vector<std::string>& third_party_cookie_allowed_secondary_schemes()
+      const {
+    return third_party_cookie_allowed_secondary_schemes_;
   }
 
   // Gets the original default setting for a particular content type.
@@ -71,7 +81,8 @@ class ContentSettingsInfo {
 
  private:
   raw_ptr<const WebsiteSettingsInfo, DanglingUntriaged> website_settings_info_;
-  const std::vector<std::string> allowlisted_schemes_;
+  const std::vector<std::string> allowlisted_primary_schemes_;
+  std::vector<std::string> third_party_cookie_allowed_secondary_schemes_;
   const std::set<ContentSetting> valid_settings_;
   const IncognitoBehavior incognito_behavior_;
   const OriginRestriction origin_restriction_;

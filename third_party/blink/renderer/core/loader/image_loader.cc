@@ -27,6 +27,7 @@
 
 #include "services/network/public/mojom/attribution.mojom-blink.h"
 #include "services/network/public/mojom/web_client_hints_types.mojom-blink.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
@@ -516,13 +517,15 @@ void ImageLoader::DoUpdateFromElement(
             network::mojom::AttributionReportingEligibility::
                 kEventSourceOrTrigger);
       }
-      bool shared_storage_writable =
+      bool shared_storage_writable_opted_in =
           GetElement()->FastHasAttribute(
               html_names::kSharedstoragewritableAttr) &&
           RuntimeEnabledFeatures::SharedStorageAPIM118Enabled(
               GetElement()->GetExecutionContext()) &&
-          GetElement()->GetExecutionContext()->IsSecureContext();
-      resource_request.SetSharedStorageWritableOptedIn(shared_storage_writable);
+          GetElement()->GetExecutionContext()->IsSecureContext() &&
+          !GetElement()->GetExecutionContext()->GetSecurityOrigin()->IsOpaque();
+      resource_request.SetSharedStorageWritableOptedIn(
+          shared_storage_writable_opted_in);
     }
 
     bool page_is_being_dismissed =
@@ -886,6 +889,14 @@ ResourcePriority ImageLoader::ComputeResourcePriority() const {
 
   ResourcePriority priority = image_resource->ComputeResourcePriority();
   priority.source = ResourcePriority::Source::kImageLoader;
+  if (features::
+          kLCPCriticalPathPredictorImageLoadPriorityEnabledForHTMLImageElement
+              .Get()) {
+    auto* html_image_element = DynamicTo<HTMLImageElement>(element_.Get());
+    if (html_image_element) {
+      priority.is_lcp_resource = html_image_element->IsPredictedLcpElement();
+    }
+  }
   return priority;
 }
 

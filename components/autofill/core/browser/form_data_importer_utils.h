@@ -106,11 +106,6 @@ class TimestampedSameOriginQueue {
   const size_t max_size_;
 };
 
-// Checks suitability of an an import candidate `profile` by validating some
-// of the profiles values.
-bool IsValidLearnableProfile(const AutofillProfile& profile,
-                             LogBuffer* import_log_buffer);
-
 // Tries to infer the country `profile` is from, which can be useful to
 // verify whether the data is sensible. Returns a two-letter ISO country code
 // by considering, in decreasing order of priority:
@@ -172,17 +167,6 @@ class MultiStepImportMerger {
   bool MergeProfileWithMultiStepCandidates(
       AutofillProfile& profile,
       ProfileImportMetadata& import_metadata);
-
-  // Merging can fail if one profile fragment contains an observed country and
-  // the complemented country of the other profile disagrees with it.
-  // This function attempts to make `profile_a` and `profile_b` mergeable by
-  // removing the complemented country.
-  // If successful, true is returned and the complemented country removed.
-  bool MergeableByRemovingIncorrectlyComplementedCountry(
-      AutofillProfile& profile_a,
-      bool& complemented_profile_a,
-      AutofillProfile& profile_b,
-      bool& complemented_profile_b) const;
 
   // `ProfileImportMetadata` is used to log metrics on the user decision,
   // depending on features like invalid phone number removal. When combining two

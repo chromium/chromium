@@ -77,8 +77,8 @@ class ASH_EXPORT SnoopingProtectionNotificationBlocker
 
   // message_center::NotificationObserver:
   void Close(bool by_user) override;
-  void Click(const absl::optional<int>& button_index,
-             const absl::optional<std::u16string>& reply) override;
+  void Click(const std::optional<int>& button_index,
+             const std::optional<std::u16string>& reply) override;
 
  private:
   // Starts or stops blocking and showing the info notification based on the

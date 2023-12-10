@@ -6,9 +6,7 @@ package org.chromium.chrome.browser.vr;
 
 import org.chromium.chrome.browser.modules.ModuleInstallUi;
 
-/**
- * Dummy implementation of VrModuleProvider.
- */
+/** Dummy implementation of VrModuleProvider. */
 public class VrModuleProvider implements ModuleInstallUi.FailureUiListener {
     private static VrDelegateProvider sDelegateProvider;
 

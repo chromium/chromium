@@ -11,9 +11,9 @@
 #import "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
-#import "ios/chrome/browser/signin/authentication_service.h"
-#import "ios/chrome/browser/signin/chrome_account_manager_service.h"
-#import "ios/chrome/browser/signin/system_identity.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
+#import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/browser/ui/authentication/authentication_flow.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_completion_info.h"
 
@@ -183,8 +183,13 @@ constexpr base::TimeDelta kSigninTimeout = base::Seconds(10);
   DCHECK(_authenticationFlow);
   _authenticationFlow = nil;
   if (!success) {
-    [self cancelSigninWithError:
-              ConsistencyPromoSigninMediatorErrorFailedToSignin];
+    RecordConsistencyPromoUserAction(
+        signin_metrics::AccountConsistencyPromoAction::
+            IOS_AUTH_FLOW_CANCELLED_OR_FAILED,
+        _accessPoint);
+    // The error handling and sign-out should be already done in the
+    // authentication flow.
+    [self.delegate consistencyPromoSigninMediatorSignInCancelled:self];
     return;
   }
   if (_accessPoint == signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN) {
@@ -219,11 +224,6 @@ constexpr base::TimeDelta kSigninTimeout = base::Seconds(10);
     case ConsistencyPromoSigninMediatorErrorGeneric:
       RecordConsistencyPromoUserAction(
           signin_metrics::AccountConsistencyPromoAction::GENERIC_ERROR_SHOWN,
-          _accessPoint);
-      break;
-    case ConsistencyPromoSigninMediatorErrorFailedToSignin:
-      RecordConsistencyPromoUserAction(
-          signin_metrics::AccountConsistencyPromoAction::SIGN_IN_FAILED,
           _accessPoint);
       break;
   }

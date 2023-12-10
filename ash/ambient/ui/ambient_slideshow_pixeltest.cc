@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/ambient/ui/media_string_view.h"
-
 #include <array>
+#include <optional>
 #include <tuple>
 
 #include "ash/ambient/test/ambient_ash_test_base.h"
+#include "ash/ambient/ui/media_string_view.h"
 #include "ash/public/cpp/ambient/ambient_ui_model.h"
 #include "ash/public/cpp/style/dark_light_mode_controller.h"
 #include "ash/root_window_controller.h"
@@ -19,7 +19,6 @@
 #include "chromeos/constants/chromeos_features.h"
 #include "services/media_session/public/cpp/media_metadata.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/display/display.h"
 
@@ -27,12 +26,12 @@ namespace ash {
 
 namespace {
 
-using TestParams = std::tuple<absl::optional<media_session::MediaMetadata>,
+using TestParams = std::tuple<std::optional<media_session::MediaMetadata>,
                               /*dark_mode=*/bool,
                               /*rtl=*/bool,
                               /*jelly=*/bool>;
 
-std::array<absl::optional<media_session::MediaMetadata>, 3>
+std::array<std::optional<media_session::MediaMetadata>, 3>
 GetMediaMedataVariations() {
   media_session::MediaMetadata short_metadata;
   short_metadata.artist = u"artist";
@@ -42,7 +41,7 @@ GetMediaMedataVariations() {
   long_metadata.artist = u"A super duper long artist name";
   long_metadata.title = u"A super duper long title";
 
-  return {std::move(short_metadata), std::move(long_metadata), absl::nullopt};
+  return {std::move(short_metadata), std::move(long_metadata), std::nullopt};
 }
 
 bool IsDarkMode(const TestParams& param) {
@@ -57,13 +56,13 @@ bool IsJellyEnabled(const TestParams& param) {
   return std::get<3>(param);
 }
 
-const absl::optional<media_session::MediaMetadata>& GetMediaMetadata(
+const std::optional<media_session::MediaMetadata>& GetMediaMetadata(
     const TestParams& param) {
-  return std::get<absl::optional<media_session::MediaMetadata>>(param);
+  return std::get<std::optional<media_session::MediaMetadata>>(param);
 }
 
 std::string GetName(const testing::TestParamInfo<TestParams>& param_info) {
-  const absl::optional<media_session::MediaMetadata>& metadata =
+  const std::optional<media_session::MediaMetadata>& metadata =
       GetMediaMetadata(param_info.param);
   std::string metadata_description_text;
   if (!metadata.has_value()) {
@@ -89,7 +88,7 @@ class AmbientSlideshowPixelTest
     : public AmbientAshTestBase,
       public testing::WithParamInterface<TestParams> {
  public:
-  absl::optional<pixel_test::InitParams> CreatePixelTestInitParams()
+  std::optional<pixel_test::InitParams> CreatePixelTestInitParams()
       const override {
     pixel_test::InitParams pixel_test_init_params;
     pixel_test_init_params.under_rtl = IsRtl(GetParam());
@@ -104,7 +103,10 @@ class AmbientSlideshowPixelTest
     GetSessionControllerClient()->set_show_lock_screen_views(true);
     DarkLightModeController::Get()->SetDarkModeEnabledForTest(
         IsDarkMode(GetParam()));
-    SetDecodedPhotoColor(SK_ColorGREEN);
+    // Required for decoded image parameters below to exactly reflect what the
+    // ambient photo pipeline produces.
+    UseLosslessPhotoCompression(true);
+    SetNextDecodedPhotoColor(SK_ColorGREEN);
     gfx::Size display_size = GetPrimaryDisplay().size();
     // Simplifies rendering to be consistent for pixel testing.
     SetDecodedPhotoSize(display_size.width(), display_size.height());
@@ -137,7 +139,7 @@ INSTANTIATE_TEST_SUITE_P(
 TEST_P(AmbientSlideshowPixelTest, ShowMediaStringView) {
   SetAmbientShownAndWaitForWidgets();
 
-  const absl::optional<media_session::MediaMetadata>& media_metadata =
+  const std::optional<media_session::MediaMetadata>& media_metadata =
       GetMediaMetadata(GetParam());
 
   if (media_metadata.has_value()) {

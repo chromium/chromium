@@ -11,7 +11,7 @@
 #import "components/autofill/core/browser/personal_data_manager.h"
 #import "components/autofill/core/browser/ui/country_combobox_model.h"
 #import "components/autofill/core/common/autofill_features.h"
-#import "ios/chrome/browser/autofill/personal_data_manager_factory.h"
+#import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
@@ -119,7 +119,8 @@ class AutofillProfileEditMediatorTest : public PlatformTest {
   }
 
   void InitializeMediator(bool is_migration_prompt) {
-    autofill::AutofillProfile autofill_profile;
+    autofill::AutofillProfile autofill_profile(
+        autofill::i18n_model_definition::kLegacyHierarchyCountryCode);
     autofill_profile_edit_mediator_ = [[AutofillProfileEditMediator alloc]
            initWithDelegate:fake_autofill_profile_edit_mediator_delegate_
         personalDataManager:personal_data_manager_

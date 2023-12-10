@@ -13,7 +13,7 @@ MockUserEducationDelegate::MockUserEducationDelegate() {
   // (a) explicitly override this implementation to return `true`, or
   // (b) explicitly force Welcome Tour user eligibility.
   ON_CALL(*this, IsNewUser)
-      .WillByDefault(::testing::ReturnRefOfCopy(absl::optional<bool>()));
+      .WillByDefault(::testing::ReturnRefOfCopy(std::optional<bool>()));
 }
 
 MockUserEducationDelegate::~MockUserEducationDelegate() = default;

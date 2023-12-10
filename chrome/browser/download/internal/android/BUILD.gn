@@ -191,7 +191,6 @@ android_resources("java_resources") {
     "java/res/layout/download_rename_extension_custom_dialog.xml",
     "java/res/layout/download_storage_summary.xml",
     "java/res/layout/downloads_empty_state_view.xml",
-    "java/res/layout/downloads_empty_view.xml",
     "java/res/layout/list_selection_handle_view.xml",
     "java/res/menu/download_manager_menu.xml",
     "java/res/values-sw600dp/dimens.xml",

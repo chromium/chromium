@@ -1,20 +1,5 @@
 This is a testharness.js-based test.
-Found 50 tests; 43 PASS, 7 FAIL, 0 TIMEOUT, 0 NOTRUN.
-[PASS] Initial value of responseType
-[PASS] Set responseType to "" when readyState is UNSENT.
-[PASS] Set responseType to "" when readyState is OPENED.
-[PASS] Set responseType to "" when readyState is HEADERS_RECEIVED.
-[PASS] Set responseType to "" when readyState is LOADING.
-[PASS] Set responseType to "" when readyState is DONE.
-[PASS] Set responseType to "" when readyState is OPENED and the sync flag is set.
-[PASS] Set responseType to "" when readyState is DONE and the sync flag is set.
-[PASS] Set responseType to "json" when readyState is UNSENT.
-[PASS] Set responseType to "json" when readyState is OPENED.
-[PASS] Set responseType to "json" when readyState is HEADERS_RECEIVED.
-[PASS] Set responseType to "json" when readyState is LOADING.
-[PASS] Set responseType to "json" when readyState is DONE.
-[PASS] Set responseType to "json" when readyState is OPENED and the sync flag is set.
-[PASS] Set responseType to "json" when readyState is DONE and the sync flag is set.
+Found 7 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Set responseType to "document" when readyState is UNSENT.
   assert_equals: expected "" but got "document"
 [FAIL] Set responseType to "document" when readyState is OPENED.
@@ -29,33 +14,5 @@ Found 50 tests; 43 PASS, 7 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: expected "" but got "document"
 [FAIL] Set responseType to "document" when readyState is DONE and the sync flag is set.
   Failed to set the 'responseType' property on 'XMLHttpRequest': The response type cannot be set if the object's state is LOADING or DONE.
-[PASS] Set responseType to "arraybuffer" when readyState is UNSENT.
-[PASS] Set responseType to "arraybuffer" when readyState is OPENED.
-[PASS] Set responseType to "arraybuffer" when readyState is HEADERS_RECEIVED.
-[PASS] Set responseType to "arraybuffer" when readyState is LOADING.
-[PASS] Set responseType to "arraybuffer" when readyState is DONE.
-[PASS] Set responseType to "arraybuffer" when readyState is OPENED and the sync flag is set.
-[PASS] Set responseType to "arraybuffer" when readyState is DONE and the sync flag is set.
-[PASS] Set responseType to "blob" when readyState is UNSENT.
-[PASS] Set responseType to "blob" when readyState is OPENED.
-[PASS] Set responseType to "blob" when readyState is HEADERS_RECEIVED.
-[PASS] Set responseType to "blob" when readyState is LOADING.
-[PASS] Set responseType to "blob" when readyState is DONE.
-[PASS] Set responseType to "blob" when readyState is OPENED and the sync flag is set.
-[PASS] Set responseType to "blob" when readyState is DONE and the sync flag is set.
-[PASS] Set responseType to "text" when readyState is UNSENT.
-[PASS] Set responseType to "text" when readyState is OPENED.
-[PASS] Set responseType to "text" when readyState is HEADERS_RECEIVED.
-[PASS] Set responseType to "text" when readyState is LOADING.
-[PASS] Set responseType to "text" when readyState is DONE.
-[PASS] Set responseType to "text" when readyState is OPENED and the sync flag is set.
-[PASS] Set responseType to "text" when readyState is DONE and the sync flag is set.
-[PASS] Set responseType to "nosuchtype" when readyState is UNSENT.
-[PASS] Set responseType to "nosuchtype" when readyState is OPENED.
-[PASS] Set responseType to "nosuchtype" when readyState is HEADERS_RECEIVED.
-[PASS] Set responseType to "nosuchtype" when readyState is LOADING.
-[PASS] Set responseType to "nosuchtype" when readyState is DONE.
-[PASS] Set responseType to "nosuchtype" when readyState is OPENED and the sync flag is set.
-[PASS] Set responseType to "nosuchtype" when readyState is DONE and the sync flag is set.
 Harness: the test ran to completion.
 

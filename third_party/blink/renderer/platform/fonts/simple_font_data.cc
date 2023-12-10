@@ -226,8 +226,6 @@ void SimpleFontData::PlatformInit(bool subpixel_ascent_descent,
 }
 
 void SimpleFontData::PlatformGlyphInit() {
-  // Widths in |font_metrics_| should be initial values.
-  DCHECK(!font_metrics_.IdeographicFullWidth());
   const FontPlatformData& platform_data = PlatformData();
   SkTypeface* typeface = platform_data.Typeface();
 
@@ -246,49 +244,6 @@ void SimpleFontData::PlatformGlyphInit() {
   space_width_ = width;
   zero_glyph_ = GlyphForCharacter('0');
   font_metrics_.SetZeroWidth(WidthForGlyph(zero_glyph_));
-
-  // Use the advance of the CJK water character U+6C34 as the approximated
-  // advance of fullwidth ideographic characters, as specified at
-  // https://drafts.csswg.org/css-values-4/#ic.
-  //
-  // It should be computed without shaping; i.e., it doesn't include font
-  // features, ligatures/kerning, nor `letter-spacing`.
-  // https://github.com/w3c/csswg-drafts/issues/5498#issuecomment-686902802
-  const Glyph cjk_water_glyph = GlyphForCharacter(kCjkWaterCharacter);
-
-  // If `text-orientation: vertical-upright`, use the vertical metrics.
-  if (UNLIKELY(platform_data.Orientation() ==
-               FontOrientation::kVerticalUpright)) {
-    PlatformGlyphInitVerticalUpright(cjk_water_glyph);
-    return;
-  }
-
-  if (cjk_water_glyph)
-    font_metrics_.SetIdeographicFullWidth(WidthForGlyph(cjk_water_glyph));
-}
-
-void SimpleFontData::PlatformGlyphInitVerticalUpright(Glyph cjk_water_glyph) {
-  DCHECK_EQ(PlatformData().Orientation(), FontOrientation::kVerticalUpright);
-  // Widths in |font_metrics_| should be initial values.
-  DCHECK(!font_metrics_.IdeographicFullWidth());
-
-  if (!cjk_water_glyph)
-    return;
-
-  // The vertical metrics is available only in |HarfBuzzFontData|, but it can't
-  // be constructed while initializing |SimpleFontData|. See crbug.com/784389.
-  const FontPlatformData& platform_data = PlatformData();
-  scoped_refptr<OpenTypeVerticalData> vertical_data =
-      platform_data.CreateVerticalData();
-  const FontMetrics& metrics = GetFontMetrics();
-  const int units_per_em =
-      platform_data.GetHarfBuzzFace()->UnitsPerEmFromHeadTable();
-  const float size_per_unit =
-      platform_data.size() / (units_per_em ? units_per_em : 1);
-  vertical_data->SetScaleAndFallbackMetrics(
-      size_per_unit, metrics.FloatAscent(), metrics.Height());
-  font_metrics_.SetIdeographicFullWidth(
-      vertical_data->AdvanceHeight(cjk_water_glyph));
 }
 
 const SimpleFontData* SimpleFontData::FontDataForCharacter(UChar32) const {
@@ -461,6 +416,41 @@ LayoutUnit SimpleFontData::VerticalPosition(
   }
   NOTREACHED();
   return LayoutUnit();
+}
+
+absl::optional<float> SimpleFontData::IdeographicAdvanceWidth() const {
+  std::call_once(ideographic_advance_width_once_, [this] {
+    if (const Glyph cjk_water_glyph = GlyphForCharacter(kCjkWaterCharacter)) {
+      ideographic_advance_width_ = WidthForGlyph(cjk_water_glyph);
+    }
+  });
+  return ideographic_advance_width_;
+}
+
+const absl::optional<float>& SimpleFontData::IdeographicInlineSize() const {
+  std::call_once(ideographic_inline_size_once_, [this] {
+    // It should be computed without shaping; i.e., it doesn't include font
+    // features, ligatures/kerning, nor `letter-spacing`.
+    // https://github.com/w3c/csswg-drafts/issues/5498#issuecomment-686902802
+    if (PlatformData().Orientation() != FontOrientation::kVerticalUpright) {
+      ideographic_inline_size_ = IdeographicAdvanceWidth();
+      return;
+    }
+
+    // Use the advance of the CJK water character U+6C34 as the approximated
+    // advance of fullwidth ideographic characters, as specified at
+    // https://drafts.csswg.org/css-values-4/#ic.
+    const Glyph cjk_water_glyph = GlyphForCharacter(kCjkWaterCharacter);
+    if (!cjk_water_glyph) {
+      return;
+    }
+
+    // Compute vertical advance if the orientation is `kVerticalUpright`.
+    const HarfBuzzFace* hb_face = platform_data_.GetHarfBuzzFace();
+    const OpenTypeVerticalData& vertical_data = hb_face->VerticalData();
+    ideographic_inline_size_ = vertical_data.AdvanceHeight(cjk_water_glyph);
+  });
+  return ideographic_inline_size_;
 }
 
 const HanKerning::FontData& SimpleFontData::HanKerningData(

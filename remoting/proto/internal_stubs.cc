@@ -19,13 +19,16 @@ const std::string& GetEmptyStringRef() {
 }
 }  // namespace
 
-const std::string& GetAuthorizationCode(const RemoteAccessHostV1Proto&) {
+const std::string& GetAuthorizationCode(const ProvisionCorpMachineResponse&) {
   return GetEmptyStringRef();
 }
-const std::string& GetServiceAccount(const RemoteAccessHostV1Proto&) {
+const std::string& GetServiceAccount(const ProvisionCorpMachineResponse&) {
   return GetEmptyStringRef();
 }
-const std::string& GetHostId(const RemoteAccessHostV1Proto&) {
+const std::string& GetOwnerEmail(const ProvisionCorpMachineResponse&) {
+  return GetEmptyStringRef();
+}
+const std::string& GetHostId(const ProvisionCorpMachineResponse&) {
   return GetEmptyStringRef();
 }
 
@@ -33,12 +36,13 @@ std::string GetMachineProvisioningRequestPath() {
   return "";
 }
 
-std::unique_ptr<RemoteAccessHostV1Proto> GetMachineProvisioningRequest(
+std::unique_ptr<ProvisionCorpMachineRequest> GetMachineProvisioningRequest(
     const std::string& owner_email,
     const std::string& fqdn,
     const std::string& public_key,
-    absl::optional<std::string> existing_host_id) {
-  return std::make_unique<RemoteAccessHostV1Proto>();
+    const std::string& version,
+    std::optional<std::string> existing_host_id) {
+  return std::make_unique<ProvisionCorpMachineRequest>();
 }
 
 std::string GetReportProvisioningErrorRequestPath() {
@@ -47,7 +51,8 @@ std::string GetReportProvisioningErrorRequestPath() {
 
 std::unique_ptr<ReportProvisioningErrorRequest>
 GetReportProvisioningErrorRequest(const std::string& host_id,
-                                  const std::string& error_message) {
+                                  const std::string& error_message,
+                                  const std::string& version) {
   return std::make_unique<ReportProvisioningErrorRequest>();
 }
 

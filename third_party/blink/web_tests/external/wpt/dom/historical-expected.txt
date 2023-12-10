@@ -1,88 +1,12 @@
 This is a testharness.js-based test.
-Found 80 tests; 76 PASS, 4 FAIL, 0 TIMEOUT, 0 NOTRUN.
-[PASS] Historical DOM features must be removed: DOMConfiguration
-[PASS] Historical DOM features must be removed: DOMCursor
+Found 4 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Historical DOM features must be removed: DOMError
   assert_false: expected false got true
-[PASS] Historical DOM features must be removed: DOMErrorHandler
-[PASS] Historical DOM features must be removed: DOMImplementationList
-[PASS] Historical DOM features must be removed: DOMImplementationSource
-[PASS] Historical DOM features must be removed: DOMLocator
-[PASS] Historical DOM features must be removed: DOMObject
-[PASS] Historical DOM features must be removed: DOMRequest
-[PASS] Historical DOM features must be removed: DOMSettableTokenList
-[PASS] Historical DOM features must be removed: DOMUserData
-[PASS] Historical DOM features must be removed: Entity
-[PASS] Historical DOM features must be removed: EntityReference
-[PASS] Historical DOM features must be removed: EventException
-[PASS] Historical DOM features must be removed: NameList
-[PASS] Historical DOM features must be removed: Notation
-[PASS] Historical DOM features must be removed: TypeInfo
-[PASS] Historical DOM features must be removed: UserDataHandler
-[PASS] Historical DOM features must be removed: RangeException
-[PASS] Historical DOM features must be removed: SVGPathSegList
-[PASS] Historical DOM features must be removed: createEntityReference
 [FAIL] Historical DOM features must be removed: xmlEncoding
   assert_false: expected false got true
 [FAIL] Historical DOM features must be removed: xmlStandalone
   assert_false: expected false got true
 [FAIL] Historical DOM features must be removed: xmlVersion
   assert_false: expected false got true
-[PASS] Historical DOM features must be removed: strictErrorChecking
-[PASS] Historical DOM features must be removed: domConfig
-[PASS] Historical DOM features must be removed: normalizeDocument
-[PASS] Historical DOM features must be removed: renameNode
-[PASS] Historical DOM features must be removed: defaultCharset
-[PASS] Historical DOM features must be removed: height
-[PASS] Historical DOM features must be removed: width
-[PASS] Historical DOM features must be removed: commands
-[PASS] Historical DOM features must be removed: cssElementMap
-[PASS] Historical DOM features must be removed: async
-[PASS] Historical DOM features must be removed: origin
-[PASS] document.load
-[PASS] XMLDocument.load
-[PASS] DOMImplementation.getFeature() must be removed.
-[PASS] Historical DOM features must be removed: schemaTypeInfo
-[PASS] Historical DOM features must be removed: setIdAttribute
-[PASS] Historical DOM features must be removed: setIdAttributeNS
-[PASS] Historical DOM features must be removed: setIdAttributeNode
-[PASS] Attr member must be removed: schemaTypeInfo
-[PASS] Attr member must be removed: isId
-[PASS] DocumentType member must be removed: entities
-[PASS] DocumentType member must be removed: notations
-[PASS] DocumentType member must be removed: internalSubset
-[PASS] Text member must be removed: isElementContentWhitespace
-[PASS] Text member must be removed: replaceWholeText
-[PASS] Node member must be removed: hasAttributes
-[PASS] Node member must be removed: attributes
-[PASS] Node member must be removed: namespaceURI
-[PASS] Node member must be removed: prefix
-[PASS] Node member must be removed: localName
-[PASS] Node member must be removed: isSupported
-[PASS] Node member must be removed: getFeature
-[PASS] Node member must be removed: getUserData
-[PASS] Node member must be removed: setUserData
-[PASS] Node member must be removed: rootNode
-[PASS] Window member must be removed: attachEvent
-[PASS] Window member must be removed: content
-[PASS] Window member must be removed: sidebar
-[PASS] Event should not have this constant: MOUSEDOWN
-[PASS] Event should not have this constant: MOUSEUP
-[PASS] Event should not have this constant: MOUSEOVER
-[PASS] Event should not have this constant: MOUSEOUT
-[PASS] Event should not have this constant: MOUSEMOVE
-[PASS] Event should not have this constant: MOUSEDRAG
-[PASS] Event should not have this constant: CLICK
-[PASS] Event should not have this constant: DBLCLICK
-[PASS] Event should not have this constant: KEYDOWN
-[PASS] Event should not have this constant: KEYUP
-[PASS] Event should not have this constant: KEYPRESS
-[PASS] Event should not have this constant: DRAGDROP
-[PASS] Event should not have this constant: FOCUS
-[PASS] Event should not have this constant: BLUR
-[PASS] Event should not have this constant: SELECT
-[PASS] Event should not have this constant: CHANGE
-[PASS] Event.prototype should not have this property: getPreventDefault
-[PASS] Event.prototype should not have this property: path
 Harness: the test ran to completion.
 

@@ -20,6 +20,7 @@
 #include "components/reporting/proto/synced/record_constants.pb.h"
 #include "components/reporting/storage/storage_module_interface.h"
 #include "components/reporting/util/status.h"
+#include "components/reporting/util/status_macros.h"
 #include "components/reporting/util/statusor.h"
 
 namespace reporting {
@@ -155,7 +156,8 @@ class ReportQueueProvider {
   virtual void CreateNewQueue(std::unique_ptr<ReportQueueConfiguration> config,
                               CreateReportQueueCallback cb);
   virtual StatusOr<std::unique_ptr<ReportQueue, base::OnTaskRunnerDeleter>>
-  CreateNewSpeculativeQueue();
+  CreateNewSpeculativeQueue(
+      const ReportQueue::SpeculativeConfigSettings& config_settings);
 
   // Configures a given report queue config with appropriate DM tokens after its
   // retrieval so it can be used for downstream processing while building a

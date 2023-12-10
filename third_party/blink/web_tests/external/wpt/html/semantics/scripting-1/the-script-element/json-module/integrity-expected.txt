@@ -1,6 +1,5 @@
 This is a testharness.js-based test.
 [FAIL] The integrity attribute must be verified on the top-level of a module loading a JSON module and allow it to execute when it matches
   assert_array_equals: The module and its dependency must have executed lengths differ, expected array ["integrity-matches,json:42"] length 1, got [] length 0
-[PASS] The integrity attribute must be verified on the top-level of a module loading a JSON module and not allow it to execute when there's a mismatch
 Harness: the test ran to completion.
 

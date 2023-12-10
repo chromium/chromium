@@ -4,10 +4,11 @@
 
 #include "chromeos/ash/services/network_config/test_apn_data.h"
 
+#include <optional>
+
 #include "ash/constants/ash_features.h"
 #include "chromeos/ash/components/network/policy_util.h"
 #include "components/onc/onc_constants.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
 namespace ash::network_config {
@@ -79,7 +80,7 @@ mojom::ApnPropertiesPtr TestApnData::AsMojoApn() const {
   apn->attach = attach;
   apn->authentication = mojo_authentication;
   if (features::IsApnRevampEnabled()) {
-    apn->id = id.empty() ? absl::nullopt : absl::optional<std::string>(id);
+    apn->id = id.empty() ? std::nullopt : std::optional<std::string>(id);
     apn->ip_type = mojo_ip_type;
     apn->apn_types = mojo_apn_types;
     apn->state = mojo_state;
@@ -157,7 +158,7 @@ bool TestApnData::MojoApnEquals(const mojom::ApnProperties& apn) const {
 
   static auto MatchOptionalString =
       [](const std::string& expected,
-         const absl::optional<std::string>& actual) -> bool {
+         const std::optional<std::string>& actual) -> bool {
     if (actual.has_value())
       return expected == *actual;
     return expected.empty();

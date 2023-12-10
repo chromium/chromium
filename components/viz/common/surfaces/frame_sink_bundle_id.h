@@ -7,12 +7,9 @@
 
 #include <stdint.h>
 
-#include <iosfwd>
-#include <string>
-#include <tuple>
+#include <compare>
 
 #include "base/hash/hash.h"
-#include "base/strings/string_piece.h"
 #include "components/viz/common/viz_common_export.h"
 
 namespace viz {
@@ -32,18 +29,8 @@ class VIZ_COMMON_EXPORT FrameSinkBundleId {
   constexpr uint32_t client_id() const { return client_id_; }
   constexpr uint32_t bundle_id() const { return bundle_id_; }
 
-  bool operator==(const FrameSinkBundleId& other) const {
-    return client_id_ == other.client_id_ && bundle_id_ == other.bundle_id_;
-  }
-
-  bool operator!=(const FrameSinkBundleId& other) const {
-    return !(*this == other);
-  }
-
-  bool operator<(const FrameSinkBundleId& other) const {
-    return std::tie(client_id_, bundle_id_) <
-           std::tie(other.client_id_, other.bundle_id_);
-  }
+  friend std::strong_ordering operator<=>(const FrameSinkBundleId&,
+                                          const FrameSinkBundleId&) = default;
 
   size_t hash() const { return base::HashInts(client_id_, bundle_id_); }
 

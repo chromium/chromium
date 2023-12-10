@@ -210,6 +210,8 @@ class HistoryClustersServiceTestBase : public testing::Test {
     add_page_args.context_id = context_id;
     add_page_args.nav_entry_id = next_navigation_id_;
     add_page_args.url = visit.url_row.url();
+    EXPECT_TRUE(add_page_args.url.is_valid())
+        << " for URL \"" << add_page_args.url.possibly_invalid_spec() << "\"";
     add_page_args.title = visit.url_row.title();
     add_page_args.time = visit.visit_row.visit_time;
     add_page_args.visit_source = visit.source;
@@ -238,6 +240,7 @@ class HistoryClustersServiceTestBase : public testing::Test {
   void AddCompleteVisit(history::VisitID visit_id, base::Time visit_time) {
     history::AnnotatedVisit visit;
     visit.url_row.set_id(1);
+    visit.url_row.set_url(GURL("https://foo.com"));
     visit.visit_row.visit_id = visit_id;
     visit.visit_row.visit_time = visit_time;
     visit.source = history::VisitSource::SOURCE_BROWSED;

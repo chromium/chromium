@@ -402,7 +402,7 @@ void FrameCaptionButton::UpdateInkDropBaseColor() {
       GetColorWithMaxContrast(GetColorWithMaxContrast(button_color)));
 }
 
-BEGIN_METADATA(FrameCaptionButton, Button)
+BEGIN_METADATA(FrameCaptionButton)
 ADD_PROPERTY_METADATA(int, InkDropCornerRadius)
 ADD_READONLY_PROPERTY_METADATA(CaptionButtonIcon, Icon)
 ADD_PROPERTY_METADATA(bool, PaintAsActive)

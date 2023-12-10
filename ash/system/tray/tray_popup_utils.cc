@@ -58,7 +58,7 @@ std::unique_ptr<views::LayoutManager> CreateDefaultCenterLayoutManager(
     bool use_wide_layout) {
   const auto insets =
       gfx::Insets::VH(kTrayPopupLabelVerticalPadding,
-                      use_wide_layout ? kQsPopupLabelHorizontalPadding
+                      use_wide_layout ? kWideTrayPopupLabelHorizontalPadding
                                       : kTrayPopupLabelHorizontalPadding);
   auto box_layout = std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, insets);
@@ -104,15 +104,15 @@ void ConfigureDefaultSizeAndFlex(TriView* tri_view,
   int min_width = 0;
   switch (container) {
     case TriView::Container::START:
-      min_width = use_wide_layout ? kQsPopupItemMinStartWidth
-                                  : kTrayPopupItemMinStartWidth;
+      min_width = use_wide_layout ? kTrayPopupItemMinStartWidth
+                                  : kWideTrayPopupItemMinStartWidth;
       break;
     case TriView::Container::CENTER:
       tri_view->SetFlexForContainer(TriView::Container::CENTER, 1.f);
       break;
     case TriView::Container::END:
-      min_width =
-          use_wide_layout ? kQsPopupItemMinEndWidth : kTrayPopupItemMinEndWidth;
+      min_width = use_wide_layout ? kWideTrayPopupItemMinEndWidth
+                                  : kTrayPopupItemMinEndWidth;
       break;
   }
 
@@ -132,7 +132,7 @@ class HighlightPathGenerator : public views::HighlightPathGenerator {
   HighlightPathGenerator& operator=(const HighlightPathGenerator&) = delete;
 
   // views::HighlightPathGenerator:
-  absl::optional<gfx::RRectF> GetRoundRect(const gfx::RectF& rect) override {
+  std::optional<gfx::RRectF> GetRoundRect(const gfx::RectF& rect) override {
     gfx::RectF bounds = rect;
     bounds.Inset(gfx::InsetsF(GetInkDropInsets(ink_drop_style_)));
     float corner_radius = 0.f;
@@ -187,11 +187,11 @@ TriView* TrayPopupUtils::CreateSubHeaderRowView(bool start_visible) {
 TriView* TrayPopupUtils::CreateMultiTargetRowView(bool use_wide_layout) {
   TriView* tri_view = new TriView(0 /* padding_between_items */);
 
-  tri_view->SetInsets(
-      gfx::Insets::TLBR(0,
-                        use_wide_layout ? kQsExtraMarginFromLeftEdge
-                                        : kMenuExtraMarginFromLeftEdge,
-                        0, use_wide_layout ? kQsExtraMarginsFromRightEdge : 0));
+  tri_view->SetInsets(gfx::Insets::TLBR(
+      0,
+      use_wide_layout ? kWideMenuExtraMarginFromLeftEdge
+                      : kMenuExtraMarginFromLeftEdge,
+      0, use_wide_layout ? kWideMenuExtraMarginsFromRightEdge : 0));
 
   ConfigureDefaultSizeAndFlex(tri_view, TriView::Container::START,
                               use_wide_layout);
@@ -230,7 +230,7 @@ views::ImageView* TrayPopupUtils::CreateMainImageView(bool use_wide_layout) {
     image->SetPreferredSize(gfx::Size(kMenuIconSize, kMenuIconSize));
   } else {
     image->SetPreferredSize(
-        gfx::Size(kTrayPopupItemMinStartWidth, kTrayPopupItemMinHeight));
+        gfx::Size(kWideTrayPopupItemMinStartWidth, kTrayPopupItemMinHeight));
   }
   return image;
 }
@@ -242,8 +242,8 @@ std::unique_ptr<views::Painter> TrayPopupUtils::CreateFocusPainter() {
       kFocusBorderThickness, gfx::InsetsF());
 }
 
+// TODO(b/309681875): Rename this method.
 void TrayPopupUtils::ConfigureAsStickyHeader(views::View* view) {
-  view->SetID(VIEW_ID_STICKY_HEADER);
   view->SetBorder(views::CreateEmptyBorder(
       gfx::Insets::VH(kMenuSeparatorVerticalPadding, 0)));
   view->SetPaintToLayer();
@@ -279,14 +279,6 @@ void TrayPopupUtils::InstallHighlightPathGenerator(
       host, std::make_unique<HighlightPathGenerator>(ink_drop_style));
 }
 
-views::Separator* TrayPopupUtils::CreateListSubHeaderSeparator() {
-  views::Separator* separator = new views::Separator();
-  separator->SetColorId(ui::kColorAshSystemUIMenuSeparator);
-  separator->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
-      kMenuSeparatorVerticalPadding - views::Separator::kThickness, 0, 0, 0)));
-  return separator;
-}
-
 views::Separator* TrayPopupUtils::CreateListItemSeparator(bool left_inset) {
   views::Separator* separator = new views::Separator();
   separator->SetColorId(ui::kColorAshSystemUIMenuSeparator);
@@ -304,7 +296,6 @@ bool TrayPopupUtils::CanOpenWebUISettings() {
 }
 
 bool TrayPopupUtils::CanShowNightLightFeatureTile() {
-  CHECK(features::IsQsRevampEnabled());
   return Shell::Get()->session_controller()->ShouldEnableSettings() ||
          (Shell::Get()->session_controller()->GetSessionState() ==
           session_manager::SessionState::LOCKED);
@@ -364,36 +355,7 @@ ui::ImageModel TrayPopupUtils::CreateCheckMark(ui::ColorId color_id) {
 
 // static
 void TrayPopupUtils::SetLabelFontList(views::Label* label, FontStyle style) {
-  // See function header comment.
-  DCHECK(!features::IsQsRevampEnabled() ||
-         !chromeos::features::IsJellyEnabled());
-  label->SetAutoColorReadabilityEnabled(false);
-  const gfx::FontList google_sans_font_list({"Google Sans"}, gfx::Font::NORMAL,
-                                            16, gfx::Font::Weight::MEDIUM);
-  const gfx::FontList roboto_font_list({"Roboto"}, gfx::Font::NORMAL, 16,
-                                       gfx::Font::Weight::MEDIUM);
-
-  switch (style) {
-    case FontStyle::kTitle:
-      label->SetFontList(google_sans_font_list);
-      break;
-    case FontStyle::kPodMenuHeader:
-      label->SetFontList(roboto_font_list);
-      break;
-    case FontStyle::kSubHeader:
-      label->SetFontList(roboto_font_list.Derive(-1, gfx::Font::NORMAL,
-                                                 gfx::Font::Weight::MEDIUM));
-      break;
-    case FontStyle::kSmallTitle:
-      label->SetFontList(roboto_font_list.Derive(-3, gfx::Font::NORMAL,
-                                                 gfx::Font::Weight::MEDIUM));
-      break;
-    case FontStyle::kDetailedViewLabel:
-    case FontStyle::kSystemInfo:
-      label->SetFontList(roboto_font_list.Derive(-4, gfx::Font::NORMAL,
-                                                 gfx::Font::Weight::NORMAL));
-      break;
-  }
+  // TODO(b/309681875): Remove this method.
 }
 
 }  // namespace ash

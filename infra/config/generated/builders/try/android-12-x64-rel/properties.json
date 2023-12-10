@@ -1,10 +1,13 @@
 {
   "$build/chromium_orchestrator": {
     "compilator": "android-12-x64-rel-compilator",
-    "compilator_watcher_git_revision": "e6d08be3fd589d4f222dae5d18dbc972e6117b23"
+    "compilator_watcher_git_revision": "27c191f304c8d7329a393d8a69020fc14032c3c3"
   },
   "$build/chromium_tests_builder_config": {
     "builder_config": {
+      "additional_exclusions": [
+        "infra/config/generated/builders/try/android-12-x64-rel/gn-args.json"
+      ],
       "builder_db": {
         "entries": [
           {

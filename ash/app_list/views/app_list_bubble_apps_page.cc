@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <limits>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -37,9 +38,9 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "chromeos/constants/chromeos_features.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/animation_throughput_reporter.h"
@@ -113,6 +114,8 @@ constexpr base::TimeDelta kShowPageAnimationOpacityDuration =
 
 // A view that runs a click callback when clicked or tapped.
 class ClickableView : public views::View {
+  METADATA_HEADER(ClickableView, views::View)
+
  public:
   explicit ClickableView(base::RepeatingClosure click_callback)
       : click_callback_(click_callback) {}
@@ -141,6 +144,9 @@ class ClickableView : public views::View {
  private:
   base::RepeatingClosure click_callback_;
 };
+
+BEGIN_METADATA(ClickableView)
+END_METADATA
 
 }  // namespace
 
@@ -171,7 +177,7 @@ AppListBubbleAppsPage::AppListBubbleAppsPage(
   scroll_view_->ClipHeightTo(0, std::numeric_limits<int>::max());
   scroll_view_->SetDrawOverflowIndicator(false);
   // Don't paint a background. The bubble already has one.
-  scroll_view_->SetBackgroundColor(absl::nullopt);
+  scroll_view_->SetBackgroundColor(std::nullopt);
   // Arrow keys are used to select app icons.
   scroll_view_->SetAllowKeyboardScrolling(false);
 
@@ -512,7 +518,7 @@ void AppListBubbleAppsPage::DisableFocusForShowingActiveFolder(bool disabled) {
 }
 
 void AppListBubbleAppsPage::UpdateForNewSortingOrder(
-    const absl::optional<AppListSortOrder>& new_order,
+    const std::optional<AppListSortOrder>& new_order,
     bool animate,
     base::OnceClosure update_position_closure,
     base::OnceClosure animation_done_closure) {
@@ -772,7 +778,7 @@ void AppListBubbleAppsPage::HandleFocusAfterSort() {
 }
 
 void AppListBubbleAppsPage::OnAppsGridViewFadeOutAnimationEnded(
-    const absl::optional<AppListSortOrder>& new_order,
+    const std::optional<AppListSortOrder>& new_order,
     bool aborted) {
   // Update item positions after the fade out animation but before the fade in
   // animation. NOTE: `update_position_closure_` can be empty in some edge

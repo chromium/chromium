@@ -33,8 +33,7 @@ import java.util.Set;
 public class DisableOriginTrialsSafeModeTest extends AwParameterizedTest {
     public static final String TAG = "DisableOriginTrialsSafeModeTest";
 
-    @Rule
-    public AwActivityTestRule mRule;
+    @Rule public AwActivityTestRule mRule;
 
     public DisableOriginTrialsSafeModeTest(AwSettingsMutation param) {
         this.mRule = new AwActivityTestRule(param.getMutation());

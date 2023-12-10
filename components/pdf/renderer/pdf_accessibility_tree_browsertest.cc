@@ -2233,6 +2233,14 @@ TEST_F(PdfAccessibilityTreeTest, TestSelectionActionDataConversion) {
   EXPECT_EQ(0u, pdf_action_data.selection_end_index.page_index);
   EXPECT_EQ(20u, pdf_action_data.selection_end_index.char_index);
 
+  // Verify selection offsets in tree data.
+  ui::AXTreeData tree_data;
+  pdf_accessibility_tree_->GetTreeData(&tree_data);
+  EXPECT_EQ(9, tree_data.sel_anchor_object_id);
+  EXPECT_EQ(0, tree_data.sel_anchor_offset);
+  EXPECT_EQ(9, tree_data.sel_focus_object_id);
+  EXPECT_EQ(0, tree_data.sel_focus_offset);
+
   pdf_anchor_action_target =
       pdf_accessibility_tree_->CreateActionTarget(*static_text_nodes1[0]);
   ASSERT_EQ(ui::AXActionTarget::Type::kPdf,
@@ -2434,6 +2442,10 @@ TEST_F(PdfAccessibilityTreeTest, StitchChildTreeAction) {
   EXPECT_EQ(0u, inline_box->GetChildCount());
 }
 
+// TODO(crbug.com/1442928): Remove the test case below once PDF OCR is launched
+// on Windows, Linux, and macOS as this test will be replaced with the other
+// existing test, `PdfOcrTest.CheckLiveRegionPoliteStatus`.
+#if !BUILDFLAG(IS_CHROMEOS)
 TEST_F(PdfAccessibilityTreeTest, CheckLiveRegionPoliteStatus) {
   CreatePdfAccessibilityTree();
 
@@ -2527,6 +2539,7 @@ TEST_F(PdfAccessibilityTreeTest, CheckLiveRegionPoliteStatus) {
   const ui::AXNode* image_node = paragraph_node->GetChildAtIndex(0);
   ASSERT_NE(nullptr, image_node);
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 struct PdfOcrServiceTestBatchData {
@@ -2891,9 +2904,6 @@ TEST_P(PdfOcrServiceTest, EmptyOCRResults) {
             status_node->GetStringAttribute(ax::mojom::StringAttribute::kName));
 }
 
-// TODO(crbug.com/1473176): Update it to provide fine-grained test coverage,
-// considering that the status node can be updated with an OCR complete message
-// before or after `UnserializeNodes()`.
 TEST_P(PdfOcrServiceTest, OCRCompleteNotification) {
   CreatePdfAccessibilityTree();
 
@@ -2966,7 +2976,7 @@ INSTANTIATE_TEST_SUITE_P(
             PdfOcrServiceTestBatchData(105u, 10u),
             PdfOcrServiceTestBatchData(280u, 20u))));
 
-// TODO(crbug.com/1443341): Add test for end result on a non-synthetic
+// TODO(crbug.com/1443346): Add test for end result on a non-synthetic
 // multi-page PDF.
 
 class PdfOcrTest : public PdfAccessibilityTreeTest {

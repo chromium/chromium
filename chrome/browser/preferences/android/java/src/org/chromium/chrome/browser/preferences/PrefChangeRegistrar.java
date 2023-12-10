@@ -18,10 +18,10 @@ import java.util.Map;
  * Note that {@link #destroy} should be called to destroy the native PrefChangeRegistrar.
  */
 public class PrefChangeRegistrar {
-    /**
-     * Interface for callback when registered preference is changed.
-     */
-    public interface PrefObserver { void onPreferenceChange(); }
+    /** Interface for callback when registered preference is changed. */
+    public interface PrefObserver {
+        void onPreferenceChange();
+    }
 
     /** Mapping preference key and corresponding observer. **/
     private final Map<String, PrefObserver> mObservers = new ArrayMap<>();
@@ -29,9 +29,7 @@ public class PrefChangeRegistrar {
     /** Native pointer for PrefChangeRegistrarAndroid. **/
     private long mNativeRegistrar;
 
-    /**
-     * Initialize native PrefChangeRegistrar.
-     */
+    /** Initialize native PrefChangeRegistrar. */
     public PrefChangeRegistrar() {
         mNativeRegistrar = PrefChangeRegistrarJni.get().init(PrefChangeRegistrar.this);
     }
@@ -42,8 +40,8 @@ public class PrefChangeRegistrar {
      * @param observer The observer to be notified.
      */
     public void addObserver(String preference, PrefObserver observer) {
-        assert mObservers.get(preference)
-                == null : "Only one observer should be added to each preference.";
+        assert mObservers.get(preference) == null
+                : "Only one observer should be added to each preference.";
         mObservers.put(preference, observer);
         PrefChangeRegistrarJni.get().add(mNativeRegistrar, PrefChangeRegistrar.this, preference);
     }
@@ -59,9 +57,7 @@ public class PrefChangeRegistrar {
         PrefChangeRegistrarJni.get().remove(mNativeRegistrar, PrefChangeRegistrar.this, preference);
     }
 
-    /**
-     * Destroy native PrefChangeRegistrar.
-     */
+    /** Destroy native PrefChangeRegistrar. */
     public void destroy() {
         if (mNativeRegistrar != 0) {
             PrefChangeRegistrarJni.get().destroy(mNativeRegistrar, PrefChangeRegistrar.this);
@@ -71,18 +67,25 @@ public class PrefChangeRegistrar {
 
     @CalledByNative
     private void onPreferenceChange(String preference) {
-        assert mObservers.get(preference)
-                != null : "Notification from unregistered preference changes.";
+        assert mObservers.get(preference) != null
+                : "Notification from unregistered preference changes.";
         mObservers.get(preference).onPreferenceChange();
     }
 
     @NativeMethods
     public interface Natives {
         long init(PrefChangeRegistrar caller);
-        void add(long nativePrefChangeRegistrarAndroid, PrefChangeRegistrar caller,
+
+        void add(
+                long nativePrefChangeRegistrarAndroid,
+                PrefChangeRegistrar caller,
                 String preference);
-        void remove(long nativePrefChangeRegistrarAndroid, PrefChangeRegistrar caller,
+
+        void remove(
+                long nativePrefChangeRegistrarAndroid,
+                PrefChangeRegistrar caller,
                 String preference);
+
         void destroy(long nativePrefChangeRegistrarAndroid, PrefChangeRegistrar caller);
     }
 }

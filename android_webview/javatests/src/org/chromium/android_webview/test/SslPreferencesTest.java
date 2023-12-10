@@ -23,14 +23,11 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.ServerCertificate;
 
-/**
- * SslError tests.
- */
+/** SslError tests. */
 @RunWith(Parameterized.class)
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
 public class SslPreferencesTest extends AwParameterizedTest {
-    @Rule
-    public AwActivityTestRule mActivityTestRule;
+    @Rule public AwActivityTestRule mActivityTestRule;
 
     private AwTestContainerView mTestContainerView;
     private TestAwContentsClient mContentsClient;

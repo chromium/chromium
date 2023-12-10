@@ -43,7 +43,8 @@ static const ax::mojom::Role kRolesToSkip[]{
     ax::mojom::Role::kNavigation,
 };
 
-// Find all of the main and article nodes.
+// Find all of the main and article nodes. Also, include unignored heading nodes
+// which lie outside of the main and article node.
 // TODO(crbug.com/1266555): Replace this with a call to
 // OneShotAccessibilityTreeSearch.
 void GetContentRootNodes(const ui::AXNode* root,
@@ -53,6 +54,7 @@ void GetContentRootNodes(const ui::AXNode* root,
   }
   std::queue<const ui::AXNode*> queue;
   queue.push(root);
+  bool has_main_or_heading = false;
   while (!queue.empty()) {
     const ui::AXNode* node = queue.front();
     queue.pop();
@@ -61,12 +63,23 @@ void GetContentRootNodes(const ui::AXNode* root,
     if (node->GetRole() == ax::mojom::Role::kMain ||
         node->GetRole() == ax::mojom::Role::kArticle) {
       content_root_nodes->push_back(node);
+      has_main_or_heading = true;
+      continue;
+    }
+    // If a heading node is found, add it to the list of content root nodes,
+    // too. It may be removed later if the tree doesn't contain a main or
+    // article node.
+    if (node->GetRole() == ax::mojom::Role::kHeading) {
+      content_root_nodes->push_back(node);
       continue;
     }
     for (auto iter = node->UnignoredChildrenBegin();
          iter != node->UnignoredChildrenEnd(); ++iter) {
       queue.push(iter.get());
     }
+  }
+  if (!has_main_or_heading) {
+    content_root_nodes->clear();
   }
 }
 
@@ -110,9 +123,12 @@ void AXTreeDistiller::Distill(const ui::AXTree& tree,
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   base::TimeTicks start_time = base::TimeTicks::Now();
 #endif
-  // Try with the algorithm first.
+
   std::vector<ui::AXNodeID> content_node_ids;
-  DistillViaAlgorithm(tree, ukm_source_id, &content_node_ids);
+  if (features::IsReadAnythingWithAlgorithmEnabled()) {
+    // Try with the algorithm first.
+    DistillViaAlgorithm(tree, ukm_source_id, &content_node_ids);
+  }
 
   // If Read Anything with Screen 2x is enabled and the main content extractor
   // is bound, kick off Screen 2x run, which distills the AXTree in the

@@ -114,6 +114,7 @@ class PLATFORM_EXPORT VideoFrameSinkBundle
       uint32_t sink_id,
       viz::mojom::blink::CompositorFrameSinkType);
   void SetNeedsBeginFrame(uint32_t sink_id, bool needs_begin_frame);
+  void SetWantsBeginFrameAcks(uint32_t sink_id);
   void SubmitCompositorFrame(
       uint32_t sink_id,
       const viz::LocalSurfaceId& local_surface_id,

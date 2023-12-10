@@ -28,6 +28,8 @@ source_set("fake_libva_driver_internals") {
     "fake_driver.h",
     "fake_surface.cc",
     "fake_surface.h",
+    "no_op_context_delegate.cc",
+    "no_op_context_delegate.h",
     "object_tracker.h",
     "scoped_bo_mapping_factory.cc",
     "scoped_bo_mapping_factory.h",

@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+[FAIL] Timeline time increases once per animation frame in an iframe
+  assert_greater_than: Timeline time within an iframe increases between animation frames expected a number greater than 0 but got 0
+Harness: the test ran to completion.

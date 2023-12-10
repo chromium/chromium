@@ -11,6 +11,15 @@
     padding-inline-start: 12px;
   }
 
+  /* TODO(niharm): Theme border color to sys tonal-outline. */
+  :host-context([expanded-state-layout-chrome-refresh]) {
+    --action-height: 28px;
+    border: solid 1px #A8C7FA;
+    border-radius: 8px;
+    padding-inline-end: 8px;
+    padding-inline-start: 8px;
+  }
+
   .contents {
     align-items: center;
     display: flex;
@@ -21,6 +30,18 @@
     flex-shrink: 0;
     height: var(--cr-icon-size);
     width: var(--cr-icon-size);
+  }
+
+  /* TODO(niharm): Theme background color to sys primary. */
+  :host-context([expanded-state-layout-chrome-refresh]) #action-icon {
+    -webkit-mask-position: center;
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-size: 15px;
+    background-color: #0B57D0;
+    background-position: center center;
+    background-repeat: no-repeat;
+    height: 16px;
+    width: 16px;
   }
 
   #text {
@@ -40,10 +61,21 @@
     box-shadow: inset 0 0 0 2px var(--google-blue-600);
   }
 
+  :host-context([expanded-state-layout-chrome-refresh]):host-context(
+      .focus-outline-visible):host(:focus) {
+    margin: 2px;
+    margin-inline-end: 2px;
+    border: solid 1px #a8c7fa;
+    box-shadow: none;
+  }
+
 </style>
 <div class="contents" title="[[tooltip_]]" on-click="onActionClick_"
                      on-keydown="onActionKeyDown_">
-  <img id="action-icon" src$="[[action.iconUrl]]">
+  <div id="action-icon" style$="-webkit-mask-image: url([[action.iconUrl]])"
+      hidden="[[!showCr23ActionIcon_()]]"></div>
+  <img id="action-icon" src$="[[action.iconUrl]]"
+      hidden="[[showCr23ActionIcon_()]]">
   <div id="text" inner-h-t-m-l="[[hintHtml_]]"></div>
 </div>
 

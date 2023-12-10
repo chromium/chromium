@@ -10,14 +10,14 @@
 namespace mojo_base {
 
 namespace {
-absl::optional<base::SafeBaseName> CreateSafeBaseName() {
+std::optional<base::SafeBaseName> CreateSafeBaseName() {
   return base::SafeBaseName::Create(base::FilePath());
 }
 }  // namespace
 
 TEST(SafeBaseNameTest, PathEmpty) {
-  absl::optional<base::SafeBaseName> basename = CreateSafeBaseName();
-  absl::optional<base::SafeBaseName> basename_out = CreateSafeBaseName();
+  std::optional<base::SafeBaseName> basename = CreateSafeBaseName();
+  std::optional<base::SafeBaseName> basename_out = CreateSafeBaseName();
 
   ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::SafeBaseName>(
       *basename, *basename_out));
@@ -25,9 +25,9 @@ TEST(SafeBaseNameTest, PathEmpty) {
 }
 
 TEST(SafeBaseNameTest, PathContainsNoSeparators) {
-  absl::optional<base::SafeBaseName> basename(
+  std::optional<base::SafeBaseName> basename(
       base::SafeBaseName::Create(FILE_PATH_LITERAL("hello")));
-  absl::optional<base::SafeBaseName> basename_out = CreateSafeBaseName();
+  std::optional<base::SafeBaseName> basename_out = CreateSafeBaseName();
 
   ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::SafeBaseName>(
       *basename, *basename_out));
@@ -37,8 +37,8 @@ TEST(SafeBaseNameTest, PathContainsNoSeparators) {
 TEST(SafeBaseNameTest, PathContainsSeparators) {
   base::FilePath file = base::FilePath(FILE_PATH_LITERAL("hello"))
                             .Append(FILE_PATH_LITERAL("world"));
-  absl::optional<base::SafeBaseName> basename(base::SafeBaseName::Create(file));
-  absl::optional<base::SafeBaseName> basename_out = CreateSafeBaseName();
+  std::optional<base::SafeBaseName> basename(base::SafeBaseName::Create(file));
+  std::optional<base::SafeBaseName> basename_out = CreateSafeBaseName();
 
   ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::SafeBaseName>(
       *basename, *basename_out));
@@ -49,8 +49,8 @@ TEST(SafeBaseNameTest, PathEndsWithSeparator) {
   base::FilePath file = base::FilePath(FILE_PATH_LITERAL("hello"))
                             .Append(FILE_PATH_LITERAL("world"))
                             .AsEndingWithSeparator();
-  absl::optional<base::SafeBaseName> basename(base::SafeBaseName::Create(file));
-  absl::optional<base::SafeBaseName> basename_out = CreateSafeBaseName();
+  std::optional<base::SafeBaseName> basename(base::SafeBaseName::Create(file));
+  std::optional<base::SafeBaseName> basename_out = CreateSafeBaseName();
 
   ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::SafeBaseName>(
       *basename, *basename_out));
@@ -62,7 +62,7 @@ TEST(SafeBaseNameTest, PathIsRootWin) {
   mojo_base::mojom::SafeBaseNamePtr mojom_basename =
       mojo_base::mojom::SafeBaseName::New();
   mojom_basename->path = base::FilePath(FILE_PATH_LITERAL("C:\\"));
-  absl::optional<base::SafeBaseName> basename_out = CreateSafeBaseName();
+  std::optional<base::SafeBaseName> basename_out = CreateSafeBaseName();
 
   // Expect deserialization to fail because "C:\\ is an absolute path. See
   // safe_base_name.h
@@ -74,7 +74,7 @@ TEST(SafeBaseNameTest, PathIsRoot) {
   mojo_base::mojom::SafeBaseNamePtr mojom_basename =
       mojo_base::mojom::SafeBaseName::New();
   mojom_basename->path = base::FilePath(FILE_PATH_LITERAL("/"));
-  absl::optional<base::SafeBaseName> basename_out = CreateSafeBaseName();
+  std::optional<base::SafeBaseName> basename_out = CreateSafeBaseName();
 
   // Expect deserialization to fail because "/" is an absolute path. See
   // safe_base_name.h
@@ -85,9 +85,9 @@ TEST(SafeBaseNameTest, PathIsRoot) {
 
 #if defined(FILE_PATH_USES_WIN_SEPARATORS)
 TEST(SafeBaseNameTest, PathIsFileInRootWin) {
-  absl::optional<base::SafeBaseName> basename(
+  std::optional<base::SafeBaseName> basename(
       base::SafeBaseName::Create(FILE_PATH_LITERAL("C:\\foo.txt")));
-  absl::optional<base::SafeBaseName> basename_out = CreateSafeBaseName();
+  std::optional<base::SafeBaseName> basename_out = CreateSafeBaseName();
 
   ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::SafeBaseName>(
       *basename, *basename_out));

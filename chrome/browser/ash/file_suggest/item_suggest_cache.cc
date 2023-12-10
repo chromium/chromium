@@ -104,19 +104,19 @@ void LogLatency(base::TimeDelta latency) {
 // JSON response parsing
 //----------------------
 
-absl::optional<std::string> GetString(const base::Value::Dict& value,
-                                      const std::string& key) {
+std::optional<std::string> GetString(const base::Value::Dict& value,
+                                     const std::string& key) {
   const auto* field = value.FindString(key);
   if (!field) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return *field;
 }
 
-absl::optional<ItemSuggestCache::Result> ConvertResult(
+std::optional<ItemSuggestCache::Result> ConvertResult(
     const base::Value* value) {
   if (!value->is_dict()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   const auto& value_dict = value->GetDict();
 
@@ -124,11 +124,11 @@ absl::optional<ItemSuggestCache::Result> ConvertResult(
   const auto& item_id = GetString(value_dict, "itemId");
   const auto& display_text = GetString(value_dict, "displayText");
   if (!item_id || !display_text) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   ItemSuggestCache::Result result(item_id.value(), display_text.value(),
-                                  /*prediction_reason=*/absl::nullopt);
+                                  /*prediction_reason=*/std::nullopt);
 
   // Get the justification string. We allow this to be empty, so return the
   // previously-created `result` on failure.
@@ -164,16 +164,16 @@ absl::optional<ItemSuggestCache::Result> ConvertResult(
   return result;
 }
 
-absl::optional<ItemSuggestCache::Results> ConvertResults(
+std::optional<ItemSuggestCache::Results> ConvertResults(
     const base::Value* value) {
   if (!value->is_dict()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   const auto& value_dict = value->GetDict();
 
   const auto suggestion_id = GetString(value_dict, "suggestionSessionId");
   if (!suggestion_id) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   ItemSuggestCache::Results results(suggestion_id.value());
@@ -186,11 +186,11 @@ absl::optional<ItemSuggestCache::Results> ConvertResults(
 
   for (const auto& result_value : *items) {
     auto result = ConvertResult(&result_value);
-    // If any result fails conversion, fail completely and return absl::nullopt,
+    // If any result fails conversion, fail completely and return std::nullopt,
     // rather than just skipping this result. This makes clear the distinction
     // between a response format issue and the response containing no results.
     if (!result) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     results.results.push_back(std::move(result.value()));
   }
@@ -213,7 +213,7 @@ constexpr base::FeatureParam<int> ItemSuggestCache::kLongDelayMinutes;
 ItemSuggestCache::Result::Result(
     const std::string& id,
     const std::string& title,
-    const absl::optional<std::string>& prediction_reason)
+    const std::optional<std::string>& prediction_reason)
     : id(id), title(title), prediction_reason(prediction_reason) {}
 
 ItemSuggestCache::Result::Result(const Result& other)
@@ -252,7 +252,7 @@ base::CallbackListSubscription ItemSuggestCache::RegisterCallback(
   return on_results_callback_list_.Add(std::move(callback));
 }
 
-absl::optional<ItemSuggestCache::Results> ItemSuggestCache::GetResults() {
+std::optional<ItemSuggestCache::Results> ItemSuggestCache::GetResults() {
   // Return a copy because a pointer to |results_| will become invalid whenever
   // the cache is updated.
   return results_;
@@ -462,7 +462,7 @@ std::unique_ptr<network::SimpleURLLoader> ItemSuggestCache::MakeRequestLoader(
 }
 
 // static
-absl::optional<ItemSuggestCache::Results> ItemSuggestCache::ConvertJsonForTest(
+std::optional<ItemSuggestCache::Results> ItemSuggestCache::ConvertJsonForTest(
     const base::Value* value) {
   return ConvertResults(value);
 }

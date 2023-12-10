@@ -1,0 +1,41 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "tab_strip_mediator_unittest.mm" ]
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//components/favicon/core",
+    "//components/favicon/ios",
+    "//ios/chrome/browser/favicon",
+    "//ios/chrome/browser/history/model",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/model/web_state_list/test:test_support",
+    "//ios/chrome/browser/ui/tab_switcher",
+    "//ios/chrome/browser/ui/tab_switcher/tab_strip/coordinator",
+    "//ios/chrome/browser/ui/tab_switcher/tab_strip/ui:swift",
+    "//ios/chrome/test:test_support",
+    "//ios/web/public/test",
+    "//testing/gtest",
+    "//third_party/ocmock",
+  ]
+}
+
+source_set("eg2_tests") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [ "tab_strip_egtest.mm" ]
+  deps = [
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//net:test_support",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}

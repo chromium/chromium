@@ -1,10 +1,5 @@
 This is a testharness.js-based test.
-[PASS] ::before in selected host is styled
-[PASS] ::after in selected host is styled
 [FAIL] ::placeholder in selected host is styled
   assert_equals: expected "rgb(0, 128, 0)" but got "rgb(0, 0, 0)"
-[PASS] ::selection in selected host is styled
-[PASS] ::first-line in selected host is styled
-[PASS] ::first-letter in selected host is styled
 Harness: the test ran to completion.
 

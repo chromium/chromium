@@ -44,35 +44,43 @@ const DWORD kProcessKilledExitCode = 1;
 
 #endif  // BUILDFLAG(IS_WIN)
 
-// Return status values from GetTerminationStatus.  Don't use these as
-// exit code arguments to KillProcess*(), use platform/application
-// specific values instead.
+// Return status values from GetTerminationStatus. Don't use these as exit code
+// arguments to KillProcess*(), use platform/application specific values
+// instead.
+//
+// Used for metrics. Keep in sync with the "TerminationStatus" histogram enum.
+// Do not repurpose previously used indexes.
 enum TerminationStatus {
-  // clang-format off
-  TERMINATION_STATUS_NORMAL_TERMINATION,   // zero exit status
-  TERMINATION_STATUS_ABNORMAL_TERMINATION, // non-zero exit status
-  TERMINATION_STATUS_PROCESS_WAS_KILLED,   // e.g. SIGKILL or task manager kill
-  TERMINATION_STATUS_PROCESS_CRASHED,      // e.g. Segmentation fault
-  TERMINATION_STATUS_STILL_RUNNING,        // child hasn't exited yet
+  // Zero exit status.
+  TERMINATION_STATUS_NORMAL_TERMINATION = 0,
+  // Other abnormal termination reason.
+  TERMINATION_STATUS_ABNORMAL_TERMINATION = 1,
+  // E.g. SIGKILL or task manager kill.
+  TERMINATION_STATUS_PROCESS_WAS_KILLED = 2,
+  // E.g. Segmentation fault.
+  TERMINATION_STATUS_PROCESS_CRASHED = 3,
+  // Child hasn't exited yet.
+  TERMINATION_STATUS_STILL_RUNNING = 4,
 #if BUILDFLAG(IS_CHROMEOS)
-  // Used for the case when oom-killer kills a process on ChromeOS.
-  TERMINATION_STATUS_PROCESS_WAS_KILLED_BY_OOM,
+  // OOM-killer killed the process on ChromeOS.
+  TERMINATION_STATUS_PROCESS_WAS_KILLED_BY_OOM = 5,
 #endif
 #if BUILDFLAG(IS_ANDROID)
   // On Android processes are spawned from the system Zygote and we do not get
-  // the termination status.  We can't know if the termination was a crash or an
+  // the termination status. We can't know if the termination was a crash or an
   // oom kill for sure, but we can use status of the strong process bindings as
   // a hint.
-  TERMINATION_STATUS_OOM_PROTECTED,        // child was protected from oom kill
+  TERMINATION_STATUS_OOM_PROTECTED = 6,
 #endif
-  TERMINATION_STATUS_LAUNCH_FAILED,        // child process never launched
-  TERMINATION_STATUS_OOM,                  // Process died due to oom
+  // Child process never launched.
+  TERMINATION_STATUS_LAUNCH_FAILED = 7,
+  // Out of memory.
+  TERMINATION_STATUS_OOM = 8,
 #if BUILDFLAG(IS_WIN)
   // On Windows, the OS terminated process due to code integrity failure.
-  TERMINATION_STATUS_INTEGRITY_FAILURE,
+  TERMINATION_STATUS_INTEGRITY_FAILURE = 9,
 #endif
-  TERMINATION_STATUS_MAX_ENUM
-  // clang-format on
+  TERMINATION_STATUS_MAX_ENUM = 10,
 };
 
 // Attempts to kill all the processes on the current machine that were launched

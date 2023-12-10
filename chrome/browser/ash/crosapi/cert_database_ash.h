@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_ASH_CROSAPI_CERT_DATABASE_ASH_H_
 #define CHROME_BROWSER_ASH_CROSAPI_CERT_DATABASE_ASH_H_
 
+#include <optional>
+
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
@@ -13,7 +15,6 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace crosapi {
 
@@ -62,11 +63,11 @@ class CertDatabaseAsh : public mojom::CertDatabase, ash::LoginState::Observer {
   void WaitForCertDatabaseReady(GetCertDatabaseInfoCallback callback);
   void OnCertDatabaseReady(GetCertDatabaseInfoCallback callback,
                            unsigned long private_slot_id,
-                           absl::optional<unsigned long> system_slot_id);
+                           std::optional<unsigned long> system_slot_id);
 
-  absl::optional<bool> is_cert_database_ready_;
+  std::optional<bool> is_cert_database_ready_;
   unsigned long private_slot_id_;
-  absl::optional<unsigned long> system_slot_id_;
+  std::optional<unsigned long> system_slot_id_;
 
   // The observers that will receive notifications about cert changes in Ash.
   mojo::RemoteSet<mojom::AshCertDatabaseObserver> observers_;

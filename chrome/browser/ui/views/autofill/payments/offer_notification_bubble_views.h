@@ -9,6 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "chrome/browser/ui/autofill/payments/offer_notification_bubble_controller.h"
+#include "chrome/browser/ui/views/controls/page_switcher_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/views/controls/styled_label.h"
@@ -41,6 +42,8 @@ class OfferNotificationBubbleViews : public AutofillBubbleBase,
       delete;
 
  private:
+  // TODO(crbug.com/1507113) : Remove these friended test and convert the test
+  // to use Kombucha framework.
   FRIEND_TEST_ALL_PREFIXES(OfferNotificationBubbleViewsInteractiveUiTest,
                            CopyPromoCode);
   FRIEND_TEST_ALL_PREFIXES(
@@ -59,6 +62,8 @@ class OfferNotificationBubbleViews : public AutofillBubbleBase,
       ShowShoppingServiceFreeListingOffer_WhenGPayPromoCodeOfferNotAvailable);
   FRIEND_TEST_ALL_PREFIXES(OfferNotificationBubbleViewsInteractiveUiTest,
                            TooltipAndAccessibleName);
+  FRIEND_TEST_ALL_PREFIXES(OfferNotificationBubbleViewsInteractiveUiTest,
+                           ShowTermsAndConditionsPage);
   FRIEND_TEST_ALL_PREFIXES(
       OfferNotificationBubbleViewsWithDiscountOnChromeHistoryClusterTest,
       RecordHistoryClusterUsageRelatedMetrics);
@@ -90,16 +95,35 @@ class OfferNotificationBubbleViews : public AutofillBubbleBase,
 
   void UpdateButtonTooltipsAndAccessibleNames();
 
+  void OpenTermsAndConditionsPage(AutofillOfferData offer,
+                                  std::string seller_domain);
+
+  std::unique_ptr<views::View> CreateFreeListingCouponOfferMainPageHeaderView();
+  std::unique_ptr<views::View> CreateFreeListingCouponOfferMainPageTitleView(
+      const AutofillOfferData& offer);
+  std::unique_ptr<views::View> CreateFreeListingCouponOfferMainPageContent(
+      const AutofillOfferData& offer,
+      const std::string& seller_domain);
+  void OpenFreeListingCouponOfferMainPage(AutofillOfferData offer,
+                                          std::string seller_domain);
+
+  void ResetPointersToFreeListingCouponOfferMainPageContent();
+
   raw_ptr<OfferNotificationBubbleController> controller_;
-
-  raw_ptr<PromoCodeLabelButton> promo_code_label_button_ = nullptr;
-
-  raw_ptr<PromoCodeLabelView> promo_code_label_view_ = nullptr;
 
   // TODO(crbug.com/1334806): Replace tests with Pixel tests.
   raw_ptr<views::StyledLabel> promo_code_label_ = nullptr;
 
   raw_ptr<views::Label> instructions_label_ = nullptr;
+
+  // Used in tests for FreeListing offers.
+  raw_ptr<PromoCodeLabelButton> promo_code_label_button_ = nullptr;
+  raw_ptr<PromoCodeLabelView> promo_code_label_view_ = nullptr;
+  raw_ptr<views::StyledLabel> promo_code_value_prop_label_ = nullptr;
+
+  raw_ptr<PageSwitcherView> free_listing_coupon_page_container_ = nullptr;
+
+  base::WeakPtrFactory<OfferNotificationBubbleViews> weak_factory_{this};
 };
 
 }  // namespace autofill

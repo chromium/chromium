@@ -8,6 +8,7 @@ import("//mojo/public/interfaces/bindings/tests/validation_data_files.gni")
 
 rust_static_library("mojo_rust_system_tests") {
   testonly = true
+  is_gtest_unittests = true
   allow_unsafe = true
   crate_root = "system/lib.rs"
   sources = [
@@ -25,6 +26,7 @@ rust_static_library("mojo_rust_system_tests") {
 
 rust_static_library("mojo_rust_encoding_tests") {
   testonly = true
+  is_gtest_unittests = true
   allow_unsafe = true
   crate_root = "encoding/lib.rs"
   sources = [
@@ -58,6 +60,7 @@ rust_static_library("mojo_rust_encoding_tests") {
 
 rust_static_library("mojo_rust_integration_tests") {
   testonly = true
+  is_gtest_unittests = true
   allow_unsafe = true
   crate_root = "integration/lib.rs"
   sources = [

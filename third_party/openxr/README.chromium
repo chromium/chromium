@@ -1,8 +1,8 @@
 Name: OpenXR SDK
 Short Name: OpenXR
 URL: https://github.com/KhronosGroup/OpenXR-SDK
-Version: 1.0.27
-Revision: 58a00cf85c39ad5ec4dc43a769624e420c06179a
+Version: 1.0.31
+Revision: 95fe35ffb383710a6e0567e958ead9a3b66e930c
 License: Apache 2.0
 License File: src/LICENSE
 Security Critical: yes
@@ -18,6 +18,10 @@ No modifications to upstream files. BUILD.gn contains all of the configurations
 needed to build the OpenXR loader in Chromium, along with its dependencies. The
 readme was expanded with information about transitive dependencies that are
 copied directly into the OpenXR SDK repository.
+Added dev/xr_android.h for prototyping xr_android extensions that are currently
+under active development and not in any openxr release at present. This file is
+expected to be superceded by any official definitions and may require additional
+work before a roll containing those definitions can be conducted.
 
 -------------------- DEPENDENCY DIVIDER --------------------
 
@@ -50,7 +54,7 @@ URL: https://gitlab.freedesktop.org/monado/utilities/android-jni-wrappers
 Version: N/A
 Revision: unknown
 License: Apache 2.0
-License File: https://gitlab.freedesktop.org/monado/utilities/android-jni-wrappers/-/blob/a3ca2c505a338cdffcca2bf91021ee72b010122f/LICENSES/Apache-2.0.txt
+License File: src/LICENSES/Apache-2.0.txt
 Security Critical: yes
 Shipped: yes
 

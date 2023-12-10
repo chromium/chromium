@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+[FAIL] [ABA] document.hasStorageAccess() should not be allowed by default unless in top-level frame or same-origin iframe.
+  assert_false: Access should not be granted in secure same-origin iframe that is in a third-party context by default. expected false got true
+Harness: the test ran to completion.

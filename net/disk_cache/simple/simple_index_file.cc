@@ -142,7 +142,7 @@ void ProcessEntryFile(BackendFileOperations* file_operations,
   const std::string file_name(base_name.begin(), base_name.end());
 
   // Cleanup any left over doomed entries.
-  if (base::StartsWith(file_name, "todelete_", base::CompareCase::SENSITIVE)) {
+  if (file_name.starts_with("todelete_")) {
     file_operations->DeleteFile(file_path);
     return;
   }

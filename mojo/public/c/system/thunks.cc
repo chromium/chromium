@@ -7,6 +7,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <cstring>
+#include <string_view>
 #include <vector>
 
 #include "base/check_op.h"
@@ -15,7 +16,6 @@
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
-#include "base/strings/string_piece.h"
 #include "build/build_config.h"
 #include "mojo/public/c/system/core.h"
 #include "mojo/public/c/system/data_pipe.h"
@@ -25,11 +25,11 @@
 
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || \
     BUILDFLAG(IS_FUCHSIA)
+#include <optional>
 #include "base/environment.h"
 #include "base/files/file_path.h"
 #include "base/scoped_native_library.h"
 #include "base/threading/thread_restrictions.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #endif
 
 namespace {
@@ -144,7 +144,7 @@ class CoreLibraryInitializer {
  private:
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || \
     BUILDFLAG(IS_FUCHSIA)
-  absl::optional<base::ScopedNativeLibrary> library_;
+  std::optional<base::ScopedNativeLibrary> library_;
 #endif
 };
 
@@ -155,12 +155,12 @@ extern "C" {
 MojoResult MojoInitialize(const struct MojoInitializeOptions* options) {
   static base::NoDestructor<mojo::CoreLibraryInitializer> initializer;
 
-  base::StringPiece library_path_utf8;
+  std::string_view library_path_utf8;
   if (options) {
     if (!MOJO_IS_STRUCT_FIELD_PRESENT(options, mojo_core_path_length))
       return MOJO_RESULT_INVALID_ARGUMENT;
-    library_path_utf8 = base::StringPiece(options->mojo_core_path,
-                                          options->mojo_core_path_length);
+    library_path_utf8 = std::string_view(options->mojo_core_path,
+                                         options->mojo_core_path_length);
   }
 
   MojoResult load_result = initializer->LoadLibrary(

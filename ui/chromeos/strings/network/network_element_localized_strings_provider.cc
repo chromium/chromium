@@ -5,6 +5,7 @@
 #include "ui/chromeos/strings/network/network_element_localized_strings_provider.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/url_constants.h"
 #include "base/feature_list.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -329,8 +330,6 @@ void AddDetailsLocalizedStrings(content::WebUIDataSource* html_source) {
       {"apnPageAddNewApn", IDS_SETTINGS_ADD_NEW_APN},
       {"apnSettingsDescriptionNoLink", IDS_SETTINGS_APN_DESCRIPTION_NO_LINK},
       {"customApnLimitReached", IDS_SETTINGS_CUSTOM_APN_LIMIT_REACHED},
-      {"apnSettingsDescriptionWithLink",
-       IDS_SETTINGS_APN_DESCRIPTION_WITH_LEARN_MORE_LINK},
       {"apnSettingsZeroStateDescription",
        IDS_SETTINGS_APN_ZERO_STATE_DESCRIPTION},
       {"apnSettingsDatabaseApnsErrorMessage",
@@ -344,9 +343,12 @@ void AddDetailsLocalizedStrings(content::WebUIDataSource* html_source) {
       {"apnMenuRemove", IDS_SETTINGS_APN_MENU_REMOVE},
       {"apnMoreActionsTitle", IDS_SETTINGS_APN_MORE_ACTIONS_TITLE},
       {"apnA11yName", IDS_SETTINGS_APN_A11Y_NAME},
+      {"apnA11yUserFriendlyNameIndicator",
+       IDS_SETTINGS_APN_A11Y_USER_FRIENDLY_NAME_INDICATOR},
       {"apnA11yAutoDetected", IDS_SETTINGS_APN_A11Y_AUTO_DETECTED},
       {"apnA11yConnected", IDS_SETTINGS_APN_A11Y_CONNECTED},
       {"apnA11yDisabled", IDS_SETTINGS_APN_A11Y_DISABLED},
+      {"apnA11yEnabled", IDS_SETTINGS_APN_A11Y_ENABLED},
       {"apnDetailAddApnDialogTitle", IDS_SETTINGS_ADD_APN_DIALOG_TITLE},
       {"apnDetailViewApnDialogTitle", IDS_SETTINGS_VIEW_APN_DIALOG_TITLE},
       {"apnDetailEditApnDialogTitle", IDS_SETTINGS_EDIT_APN_DIALOG_TITLE},
@@ -360,6 +362,10 @@ void AddDetailsLocalizedStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_APN_DIALOG_APN_TYPE_DEFAULT_CHECKBOX},
       {"apnDetailApnTypeAttach",
        IDS_SETTINGS_APN_DIALOG_APN_TYPE_ATTACH_CHECKBOX},
+      {"apnA11yDefaultAndAttachApn",
+       IDS_SETTINGS_APN_A11Y_DEFAULT_AND_ATTACH_APN},
+      {"apnA11yDefaultApnOnly", IDS_SETTINGS_APN_A11Y_DEFAULT_APN_ONLY},
+      {"apnA11yAttachApnOnly", IDS_SETTINGS_APN_A11Y_ATTACH_APN_ONLY},
       {"apnDetailDefaultApnRequired",
        IDS_SETTINGS_APN_DIALOG_DEFAULT_APN_REQUIRED},
       {"apnDetailIpType", IDS_SETTINGS_APN_DIALOG_IP_TYPE_LABEL},
@@ -524,6 +530,11 @@ void AddDetailsLocalizedStrings(content::WebUIDataSource* html_source) {
                           ash::features::IsApnRevampEnabled());
   html_source->AddBoolean("isCellularCarrierLockEnabled",
                           ash::features::IsCellularCarrierLockEnabled());
+
+  html_source->AddString("apnSettingsDescriptionWithLink",
+                         l10n_util::GetStringFUTF16(
+                             IDS_SETTINGS_APN_DESCRIPTION_WITH_LEARN_MORE_LINK,
+                             chrome::kApnSettingsLearnMoreUrl));
 }
 
 void AddConfigLocalizedStrings(content::WebUIDataSource* html_source) {

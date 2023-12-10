@@ -5,11 +5,11 @@
 #ifndef CHROME_BROWSER_UI_SIDE_PANEL_SIDE_PANEL_ENTRY_KEY_H_
 #define CHROME_BROWSER_UI_SIDE_PANEL_SIDE_PANEL_ENTRY_KEY_H_
 
+#include <optional>
 #include <string>
 
 #include "chrome/browser/ui/side_panel/side_panel_entry_id.h"
 #include "extensions/common/extension_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // Container for entry identification related information.
 class SidePanelEntryKey {
@@ -24,14 +24,14 @@ class SidePanelEntryKey {
   bool operator<(const SidePanelEntryKey& other) const;
 
   SidePanelEntryId id() const { return id_; }
-  absl::optional<extensions::ExtensionId> extension_id() const {
+  std::optional<extensions::ExtensionId> extension_id() const {
     return extension_id_;
   }
   std::string ToString() const;
 
  private:
   SidePanelEntryId id_;
-  absl::optional<extensions::ExtensionId> extension_id_ = absl::nullopt;
+  std::optional<extensions::ExtensionId> extension_id_ = std::nullopt;
 };
 
 #endif  // CHROME_BROWSER_UI_SIDE_PANEL_SIDE_PANEL_ENTRY_KEY_H_

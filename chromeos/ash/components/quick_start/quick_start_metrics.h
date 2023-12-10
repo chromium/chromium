@@ -5,19 +5,20 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_QUICK_START_QUICK_START_METRICS_H_
 #define CHROMEOS_ASH_COMPONENTS_QUICK_START_QUICK_START_METRICS_H_
 
+#include <optional>
+
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "chromeos/ash/components/quick_start/quick_start_response_type.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::quick_start {
 
 class QuickStartMetrics {
  public:
   // This enum is tied directly to a UMA enum defined in
-  // //tools/metrics/histograms/enums.xml, and should always reflect it (do not
-  // change one without changing the other). Entries should be never modified
-  // or deleted. Only additions possible.
+  // //tools/metrics/histograms/metadata/quickstart/enums.xml, and should always
+  // reflect it (do not change one without changing the other). Entries should
+  // be never modified or deleted. Only additions possible.
   enum class ScreenName {
     kOther = 0,  // We don't expect this value to ever be emitted.
     kNone = 1,  // There is no previous screen when automatically resuming after
@@ -48,9 +49,9 @@ class QuickStartMetrics {
   };
 
   // This enum is tied directly to a UMA enum defined in
-  // //tools/metrics/histograms/enums.xml, and should always reflect it (do not
-  // change one without changing the other). Entries should be never modified
-  // or deleted. Only additions possible.
+  // //tools/metrics/histograms/metadata/quickstart/enums.xml, and should always
+  // reflect it (do not change one without changing the other). Entries should
+  // be never modified or deleted. Only additions possible.
   enum class AdvertisingMethod {
     kQrCode = 0,
     kPin = 1,
@@ -58,9 +59,10 @@ class QuickStartMetrics {
   };
 
   // This enum is tied directly to a UMA enum defined in
-  // //tools/metrics/histograms/enums.xml and should always reflect it. The UMA
-  // enum cannot use |device::BluetoothAdvertisement::ErrorCode| directly,
-  // because it is missing the required |kMaxValue| field.
+  // //tools/metrics/histograms/metadata/quickstart/enums.xml and should always
+  // reflect it. The UMA enum cannot use
+  // |device::BluetoothAdvertisement::ErrorCode| directly, because it is missing
+  // the required |kMaxValue| field.
   enum class FastPairAdvertisingErrorCode {
     kUnsupportedPlatform = 0,
     kAdvertisementAlreadyExists = 1,
@@ -79,9 +81,9 @@ class QuickStartMetrics {
   };
 
   // This enum is tied directly to a UMA enum defined in
-  // //tools/metrics/histograms/enums.xml, and should always reflect it (do not
-  // change one without changing the other). Entries should be never modified
-  // or deleted. Only additions possible.
+  // //tools/metrics/histograms/metadata/quickstart/enums.xml, and should always
+  // reflect it (do not change one without changing the other). Entries should
+  // be never modified or deleted. Only additions possible.
   enum class HandshakeErrorCode {
     kFailedToReadResponse = 0,
     kFailedToParse = 1,
@@ -94,9 +96,9 @@ class QuickStartMetrics {
   };
 
   // This enum is tied directly to a UMA enum defined in
-  // //tools/metrics/histograms/enums.xml, and should always reflect it (do not
-  // change one without changing the other). Entries should be never modified
-  // or deleted. Only additions possible.
+  // //tools/metrics/histograms/metadata/quickstart/enums.xml, and should always
+  // reflect it (do not change one without changing the other). Entries should
+  // be never modified or deleted. Only additions possible.
   enum class MessageType {
     kWifiCredentials = 0,
     kBootstrapConfigurations = 1,
@@ -104,13 +106,15 @@ class QuickStartMetrics {
     kNotifySourceOfUpdate = 3,
     kGetInfo = 4,
     kAssertion = 5,
-    kMaxValue = kAssertion,
+    kBootstrapStateCancel = 6,
+    kBootstrapStateComplete = 7,
+    kMaxValue = kBootstrapStateComplete,
   };
 
   // This enum is tied directly to a UMA enum defined in
-  // //tools/metrics/histograms/enums.xml, and should always reflect it (do not
-  // change one without changing the other). Entries should be never modified
-  // or deleted. Only additions possible.
+  // //tools/metrics/histograms/metadata/quickstart/enums.xml, and should always
+  // reflect it (do not change one without changing the other). Entries should
+  // be never modified or deleted. Only additions possible.
   enum class MessageReceivedErrorCode {
     kTimeOut = 0,
     kDeserializationFailure = 1,
@@ -118,14 +122,21 @@ class QuickStartMetrics {
     kMaxValue = kUnknownError,
   };
 
+  // This enum is tied directly to a UMA enum defined in
+  // //tools/metrics/histograms/metadata/quickstart/enums.xml, and should always
+  // reflect it (do not change one without changing the other). Entries should
+  // be never modified or deleted. Only additions possible.
   enum class AttestationCertificateRequestErrorCode {
-    kCertificateNotObtained,
+    kUnknownError = 0,
+    kBadRequest = 1,
+    kAttestationNotSupportedOnDevice = 2,
+    kMaxValue = kAttestationNotSupportedOnDevice,
   };
 
   // This enum is tied directly to a UMA enum defined in
-  // //tools/metrics/histograms/enums.xml, and should always reflect it (do not
-  // change one without changing the other). Entries should be never modified
-  // or deleted. Only additions possible.
+  // //tools/metrics/histograms/metadata/quickstart/enums.xml, and should always
+  // reflect it (do not change one without changing the other). Entries should
+  // be never modified or deleted. Only additions possible.
   enum class WifiTransferResultFailureReason {
     kConnectionDroppedDuringAttempt = 0,
     kEmptyResponseBytes = 1,
@@ -142,9 +153,9 @@ class QuickStartMetrics {
   };
 
   // This enum is tied directly to a UMA enum defined in
-  // //tools/metrics/histograms/enums.xml, and should always reflect it (do not
-  // change one without changing the other). Entries should be never modified
-  // or deleted. Only additions possible.
+  // //tools/metrics/histograms/metadata/quickstart/enums.xml, and should always
+  // reflect it (do not change one without changing the other). Entries should
+  // be never modified or deleted. Only additions possible.
   enum class GaiaTransferResultFailureReason {
     kNoAccountsReceivedFromPhone = 0,
     kIneligibleAccount = 1,
@@ -178,11 +189,11 @@ class QuickStartMetrics {
   static void RecordScreenClosed(ScreenName screen,
                                  int32_t session_id,
                                  base::Time timestamp,
-                                 absl::optional<ScreenName> previous_screen);
+                                 std::optional<ScreenName> previous_screen);
 
   static void RecordWifiTransferResult(
       bool succeeded,
-      absl::optional<WifiTransferResultFailureReason> failure_reason);
+      std::optional<WifiTransferResultFailureReason> failure_reason);
 
   static void RecordGaiaTransferAttempted(bool attempted);
 
@@ -192,17 +203,9 @@ class QuickStartMetrics {
 
   static void RecordForcedUpdateRequired(int32_t session_id);
 
-  static void RecordAttestationCertificateRequested(int32_t session_id);
-
-  static void RecordAttestationCertificateRequestEnded(
-      int32_t session_id,
-      bool succeeded,
-      int duration,
-      absl::optional<AttestationCertificateRequestErrorCode> error_code);
-
   static void RecordGaiaTransferResult(
       bool succeeded,
-      absl::optional<GaiaTransferResultFailureReason> failure_reason);
+      std::optional<GaiaTransferResultFailureReason> failure_reason);
 
   static void RecordEntryPoint(EntryPoint entry_point);
 
@@ -211,11 +214,19 @@ class QuickStartMetrics {
   const QuickStartMetrics& operator=(const QuickStartMetrics&) = delete;
   virtual ~QuickStartMetrics();
 
+  void RecordAttestationCertificateRequested();
+
+  // Records the end of a Remote Attestation certificate request. `error_code`
+  // is empty if the request was successful - otherwise it contains the details
+  // of the error.
+  void RecordAttestationCertificateRequestEnded(
+      std::optional<AttestationCertificateRequestErrorCode> error_code);
+
   void RecordFastPairAdvertisementStarted(AdvertisingMethod advertising_method);
 
   void RecordFastPairAdvertisementEnded(
       bool succeeded,
-      absl::optional<FastPairAdvertisingErrorCode> error_code);
+      std::optional<FastPairAdvertisingErrorCode> error_code);
 
   void RecordNearbyConnectionsAdvertisementStarted(
       int32_t session_id,
@@ -223,27 +234,27 @@ class QuickStartMetrics {
 
   void RecordNearbyConnectionsAdvertisementEnded(
       bool succeeded,
-      absl::optional<NearbyConnectionsAdvertisingErrorCode> error_code);
+      std::optional<NearbyConnectionsAdvertisingErrorCode> error_code);
 
   // TODO(b/308200138): Change the wording here to make this less confusing.
   void RecordHandshakeStarted(bool handshake_started);
 
   void RecordHandshakeResult(bool succeeded,
-                             absl::optional<HandshakeErrorCode> error_code);
+                             std::optional<HandshakeErrorCode> error_code);
 
   void RecordMessageSent(MessageType message_type);
 
   void RecordMessageReceived(
       MessageType desired_message_type,
       bool succeeded,
-      absl::optional<MessageReceivedErrorCode> error_code);
+      std::optional<MessageReceivedErrorCode> error_code);
 
  private:
   // Timer to keep track of Fast Pair advertising duration. Should be
   // constructed when advertising starts and destroyed when advertising
   // finishes.
   std::unique_ptr<base::ElapsedTimer> fast_pair_advertising_timer_;
-  absl::optional<AdvertisingMethod> fast_pair_advertising_method_;
+  std::optional<AdvertisingMethod> fast_pair_advertising_method_;
 
   // Timer to keep track of handshake duration. Should be constructed when
   // the handshake starts and destroyed when the handshake finishes.
@@ -253,6 +264,11 @@ class QuickStartMetrics {
   // constructed when the request is sent and destroyed when the response is
   // received.
   std::unique_ptr<base::ElapsedTimer> message_elapsed_timer_;
+
+  // Timer to keep track of remote attestation certificate fetch requests. It
+  // should be set at the start of a certificate fetch and destroyed when a
+  // response is received.
+  std::unique_ptr<base::ElapsedTimer> attestation_certificate_timer_;
 };
 
 }  // namespace ash::quick_start

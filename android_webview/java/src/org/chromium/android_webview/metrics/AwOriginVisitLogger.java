@@ -22,9 +22,7 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
 
-/**
- * Stores visited origins and logs the count of distinct origins for a day.
- */
+/** Stores visited origins and logs the count of distinct origins for a day. */
 @Lifetime.Singleton
 public final class AwOriginVisitLogger {
     private static final String PREFS_FILE = "AwOriginVisitLoggerPrefs";
@@ -40,8 +38,9 @@ public final class AwOriginVisitLogger {
     @WorkerThread
     public static void logOriginVisit(long originHash) {
         try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
-            SharedPreferences prefs = ContextUtils.getApplicationContext().getSharedPreferences(
-                    PREFS_FILE, Context.MODE_PRIVATE);
+            SharedPreferences prefs =
+                    ContextUtils.getApplicationContext()
+                            .getSharedPreferences(PREFS_FILE, Context.MODE_PRIVATE);
 
             // We use TimeUtils to make testing easier.
             Date now = new Date(TimeUtils.currentTimeMillis());
@@ -51,8 +50,9 @@ public final class AwOriginVisitLogger {
             String storedDate = prefs.getString(KEY_ORIGINS_VISITED_DATE, null);
 
             // Wrap it in a new HashSet as the one returned by getStringSet must not be modified.
-            Set<String> origins = new HashSet<>(
-                    prefs.getStringSet(KEY_ORIGINS_VISITED_SET, Collections.emptySet()));
+            Set<String> origins =
+                    new HashSet<>(
+                            prefs.getStringSet(KEY_ORIGINS_VISITED_SET, Collections.emptySet()));
 
             // If there are stored origin hashes that are not for today, then their count must be
             // logged exactly once and the set cleared before we start storing hashes for today.

@@ -169,7 +169,7 @@ void GetDefault(std::vector<std::string>* app_ids) {
     web_app::kCanvasAppId,
 
     ash::kChromeUIUntrustedProjectorSwaAppId,
-    web_app::kDefaultInstalledPartnerAppId,
+    web_app::kAdobeExpressAppId,
     extension_misc::kTextEditorAppId,
     web_app::kPrintManagementAppId,
     web_app::kScanningAppId,

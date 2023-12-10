@@ -33,7 +33,7 @@ MandatoryReauthIconView::MandatoryReauthIconView(
                          delegate,
                          "MandatoryReauth") {
   SetAccessibilityProperties(
-      /*role=*/absl::nullopt,
+      /*role=*/std::nullopt,
       l10n_util::GetStringUTF16(IDS_AUTOFILL_MANDATORY_REAUTH_ICON_TOOLTIP));
 }
 

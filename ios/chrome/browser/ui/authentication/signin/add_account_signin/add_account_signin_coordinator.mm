@@ -16,13 +16,13 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/signin/authentication_service.h"
-#import "ios/chrome/browser/signin/authentication_service_factory.h"
-#import "ios/chrome/browser/signin/chrome_account_manager_service.h"
-#import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
-#import "ios/chrome/browser/signin/identity_manager_factory.h"
-#import "ios/chrome/browser/signin/system_identity_interaction_manager.h"
-#import "ios/chrome/browser/signin/system_identity_manager.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
+#import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
+#import "ios/chrome/browser/signin/model/system_identity_interaction_manager.h"
+#import "ios/chrome/browser/signin/model/system_identity_manager.h"
 #import "ios/chrome/browser/ui/authentication/authentication_ui_util.h"
 #import "ios/chrome/browser/ui/authentication/history_sync/history_sync_popup_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/signin/add_account_signin/add_account_signin_manager.h"
@@ -47,8 +47,6 @@ using signin_metrics::PromoAction;
     HistorySyncPopupCoordinator* historySyncPopupCoordinator;
 // Manager that handles sign-in add account UI.
 @property(nonatomic, strong) AddAccountSigninManager* addAccountSigninManager;
-// View where the sign-in button was displayed.
-@property(nonatomic, assign) AccessPoint accessPoint;
 // Promo button used to trigger the sign-in.
 @property(nonatomic, assign) PromoAction promoAction;
 // Add account sign-in intent.
@@ -68,10 +66,11 @@ using signin_metrics::PromoAction;
                                promoAction:(PromoAction)promoAction
                               signinIntent:
                                   (AddAccountSigninIntent)signinIntent {
-  self = [super initWithBaseViewController:viewController browser:browser];
+  self = [super initWithBaseViewController:viewController
+                                   browser:browser
+                               accessPoint:accessPoint];
   if (self) {
     _signinIntent = signinIntent;
-    _accessPoint = accessPoint;
     _promoAction = promoAction;
   }
   return self;
@@ -327,7 +326,7 @@ using signin_metrics::PromoAction;
                    showUserEmail:NO
                signOutIfDeclined:NO
                       isOptional:YES
-                     accessPoint:_accessPoint];
+                     accessPoint:self.accessPoint];
   self.historySyncPopupCoordinator.delegate = self;
   [self.historySyncPopupCoordinator start];
 }

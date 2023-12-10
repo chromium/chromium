@@ -27,4 +27,4 @@ class WebAppTask : public RendererTask {
 
 }  // namespace task_manager
 
-#endif  // CHROME_BROWSER_TASK_MANAGER_PROVIDERS_WEB_CONTENTS_ISOLATED_WEB_APP_TASK_H_
+#endif  // CHROME_BROWSER_TASK_MANAGER_PROVIDERS_WEB_CONTENTS_WEB_APP_TASK_H_

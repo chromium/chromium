@@ -4,6 +4,7 @@
 
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/accessibility/ui/accessibility_confirmation_dialog.h"
+#include "ash/display/screen_orientation_controller_test_api.h"
 #include "ash/shell.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -24,6 +25,8 @@
 #include "extensions/test/result_catcher.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/display/test/display_manager_test_api.h"
+#include "ui/events/base_event_utils.h"
 
 namespace ash {
 
@@ -349,6 +352,96 @@ IN_PROC_BROWSER_TEST_P(AccessibilityPrivateApiTest, GetDlcContentsSuccess) {
       base::WriteFile(dlc_dir.GetPath().Append("voice.zvoice"), content));
 
   ASSERT_TRUE(RunSubtest("testGetDlcContentsSuccess")) << message_;
+}
+
+IN_PROC_BROWSER_TEST_P(AccessibilityPrivateApiTest,
+                       GetTtsDlcContentsDlcNotOnDevice) {
+  ASSERT_TRUE(RunSubtest("testGetTtsDlcContentsDlcNotOnDevice")) << message_;
+}
+
+IN_PROC_BROWSER_TEST_P(AccessibilityPrivateApiTest, GetTtsDlcContentsSuccess) {
+  // Create a fake DLC file. We need to put this in a ScopedTempDir because this
+  // test doesn't have write access to the actual DLC directory
+  // (/run/imageloader/).
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::ScopedTempDir dlc_dir;
+  ASSERT_TRUE(dlc_dir.CreateUniqueTempDir());
+  AccessibilityManager::Get()->SetDlcPathForTest(dlc_dir.GetPath());
+  std::string content = "Fake DLC file content";
+  ASSERT_TRUE(
+      base::WriteFile(dlc_dir.GetPath().Append("voice.zvoice"), content));
+
+  ASSERT_TRUE(RunSubtest("testGetTtsDlcContentsSuccess")) << message_;
+}
+
+IN_PROC_BROWSER_TEST_P(AccessibilityPrivateApiTest,
+                       GetVariantTtsDlcContentsDlcNotOnDevice) {
+  ASSERT_TRUE(RunSubtest("testGetVariantTtsDlcContentsDlcNotOnDevice"))
+      << message_;
+}
+
+IN_PROC_BROWSER_TEST_P(AccessibilityPrivateApiTest,
+                       GetVariantTtsDlcContentsSuccess) {
+  // Create a fake DLC file. We need to put this in a ScopedTempDir because this
+  // test doesn't have write access to the actual DLC directory
+  // (/run/imageloader/).
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::ScopedTempDir dlc_dir;
+  ASSERT_TRUE(dlc_dir.CreateUniqueTempDir());
+  AccessibilityManager::Get()->SetDlcPathForTest(dlc_dir.GetPath());
+  std::string content = "Fake DLC file content";
+  ASSERT_TRUE(base::WriteFile(dlc_dir.GetPath().Append("voice-standard.zvoice"),
+                              content));
+
+  ASSERT_TRUE(RunSubtest("testGetVariantTtsDlcContentsSuccess")) << message_;
+}
+
+IN_PROC_BROWSER_TEST_P(AccessibilityPrivateApiTest, SetCursorPosition) {
+  const std::string kTestCases[] = {"800x600", "1000x800*2.0",
+                                    "801+0-400x300,1+0-400x300"};
+  for (const auto& test : kTestCases) {
+    display::test::DisplayManagerTestApi(Shell::Get()->display_manager())
+        .UpdateDisplay(test);
+    ScreenOrientationControllerTestApi(
+        Shell::Get()->screen_orientation_controller())
+        .UpdateNaturalOrientation();
+    // The setCursorPosition method takes density-independent pixels.
+    ASSERT_TRUE(RunSubtest("testSetCursorPosition")) << message_;
+    // The screen point is in density-independent pixels, so it should always be
+    // the same as what the JS has set, (450, 350), assuming all the
+    // multiple-display and DPI math was correct.
+    const gfx::Point point =
+        display::Screen::GetScreen()->GetCursorScreenPoint();
+    EXPECT_EQ(point, gfx::Point(450, 350));
+  }
+}
+
+IN_PROC_BROWSER_TEST_P(AccessibilityPrivateApiTest, GetDisplayBoundsSimple) {
+  display::test::DisplayManagerTestApi(Shell::Get()->display_manager())
+      .UpdateDisplay("800x600");
+  ScreenOrientationControllerTestApi(
+      Shell::Get()->screen_orientation_controller())
+      .UpdateNaturalOrientation();
+  ASSERT_TRUE(RunSubtest("testGetDisplayBoundsSimple")) << message_;
+}
+
+IN_PROC_BROWSER_TEST_P(AccessibilityPrivateApiTest, GetDisplayBoundsHighDPI) {
+  display::test::DisplayManagerTestApi(Shell::Get()->display_manager())
+      .UpdateDisplay("1000x800*2.0");
+  ScreenOrientationControllerTestApi(
+      Shell::Get()->screen_orientation_controller())
+      .UpdateNaturalOrientation();
+  ASSERT_TRUE(RunSubtest("testGetDisplayBoundsHighDPI")) << message_;
+}
+
+IN_PROC_BROWSER_TEST_P(AccessibilityPrivateApiTest,
+                       GetDisplayBoundsMultipleDisplays) {
+  display::test::DisplayManagerTestApi(Shell::Get()->display_manager())
+      .UpdateDisplay("801+0-400x300,1+0-800x600*2.0");
+  ScreenOrientationControllerTestApi(
+      Shell::Get()->screen_orientation_controller())
+      .UpdateNaturalOrientation();
+  ASSERT_TRUE(RunSubtest("testGetDisplayBoundsMultipleDisplays")) << message_;
 }
 
 INSTANTIATE_TEST_SUITE_P(PersistentBackground,

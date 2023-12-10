@@ -4,9 +4,7 @@
 
 package org.chromium.ui.modaldialog;
 
-/**
- * Classes that hold an instance of {@link ModalDialogManager} should implement this interface.
- */
+/** Classes that hold an instance of {@link ModalDialogManager} should implement this interface. */
 public interface ModalDialogManagerHolder {
     /**
      * @return The {@link ModalDialogManager} associated with this class

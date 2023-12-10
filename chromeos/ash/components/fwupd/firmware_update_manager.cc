@@ -59,6 +59,7 @@ enum class FwupdStatus {
   kWaitingForAuth,
   kDeviceBusy,
   kShutdown,
+  kWaitingForUser,
 };
 
 static constexpr auto FwupdStatusStringMap =
@@ -76,7 +77,8 @@ static constexpr auto FwupdStatusStringMap =
          {FwupdStatus::kDeviceErase, "Erasing a device"},
          {FwupdStatus::kWaitingForAuth, "Waiting for authentication"},
          {FwupdStatus::kDeviceBusy, "The device is busy"},
-         {FwupdStatus::kShutdown, "The daemon is shutting down"}});
+         {FwupdStatus::kShutdown, "The daemon is shutting down"},
+         {FwupdStatus::kWaitingForUser, "Waiting for user action"}});
 
 const char* GetFwupdStatusString(FwupdStatus enum_val) {
   DCHECK(base::Contains(FwupdStatusStringMap, enum_val));
@@ -234,6 +236,8 @@ firmware_update::mojom::UpdateState GetUpdateState(FwupdStatus fwupd_status) {
       return firmware_update::mojom::UpdateState::kRestarting;
     case FwupdStatus::kDeviceWrite:
       return firmware_update::mojom::UpdateState::kUpdating;
+    case FwupdStatus::kWaitingForUser:
+      return firmware_update::mojom::UpdateState::kWaitingForUser;
   }
 }
 
@@ -389,9 +393,6 @@ void FirmwareUpdateManager::RequestUpdates(const std::string& device_id) {
   }
 }
 
-// TODO(jimmyxgong): Currently only looks for the local cache for the update
-// file. This needs to update to fetch the update file from a server and
-// download it to the local cache.
 void FirmwareUpdateManager::StartInstall(const std::string& device_id,
                                          const base::FilePath& filepath,
                                          base::OnceCallback<void()> callback) {
@@ -724,7 +725,7 @@ void FirmwareUpdateManager::BeginUpdate(const std::string& device_id,
   StartInstall(device_id, filepath, /**callback=*/base::DoNothing());
 }
 
-void FirmwareUpdateManager::AddObserver(
+void FirmwareUpdateManager::AddUpdateProgressObserver(
     mojo::PendingRemote<firmware_update::mojom::UpdateProgressObserver>
         observer) {
   update_progress_observer_.reset();

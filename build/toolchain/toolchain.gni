@@ -5,8 +5,8 @@
 # Toolchain-related configuration that may be needed outside the context of the
 # toolchain() rules themselves.
 
+import("//build/config/cast.gni")
 import("//build/config/chrome_build.gni")
-import("//build/config/chromecast_build.gni")
 import("//build_overrides/build.gni")
 
 declare_args() {

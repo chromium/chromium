@@ -51,7 +51,9 @@ public class FilterCoordinator {
      * @param exploreOfflineTabVisibilitySupplier A supplier that indicates whether or not explore
      *         offline tab is shown.
      */
-    public FilterCoordinator(Context context, OfflineItemFilterSource chipFilterSource,
+    public FilterCoordinator(
+            Context context,
+            OfflineItemFilterSource chipFilterSource,
             Supplier<Boolean> exploreOfflineTabVisibilitySupplier) {
         mChipsProvider =
                 new FilterChipsProvider(context, type -> handleChipSelected(), chipFilterSource);
@@ -71,8 +73,7 @@ public class FilterCoordinator {
     }
 
     /** Tears down this coordinator. */
-    public void destroy() {
-    }
+    public void destroy() {}
 
     /** @return The {@link View} representing this widget. */
     public View getView() {
@@ -94,8 +95,7 @@ public class FilterCoordinator {
      * components might need to update the UI state.
      */
     public void setSelectedFilter(@FilterType int filter) {
-        @TabType
-        int tabSelected;
+        @TabType int tabSelected;
         if (filter == Filters.FilterType.PREFETCHED && mExploreOfflineTabVisibilitySupplier.get()) {
             tabSelected = TabType.PREFETCH;
         } else {
@@ -128,8 +128,7 @@ public class FilterCoordinator {
     private void handleTabSelected(@TabType int selectedTab) {
         selectTab(selectedTab);
 
-        @FilterType
-        int filterType;
+        @FilterType int filterType;
         if (selectedTab == TabType.FILES) {
             filterType = mChipsProvider.getSelectedFilter();
         } else {

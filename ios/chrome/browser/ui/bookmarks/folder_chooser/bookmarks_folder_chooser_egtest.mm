@@ -46,19 +46,6 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 
 @implementation BookmarksFolderChooserTestCase
 
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config;
-  if ([self isRunningTest:@selector
-            (testCreateNewLocalOrSyncableFolderDefaultDestination)]) {
-    config.features_enabled.push_back(syncer::kEnableBookmarksAccountStorage);
-  } else if ([self isRunningTest:@selector
-                   (testCreateNewFolderDefaultDestinationLegacy)]) {
-    // Legacy test verifies pre-EnableBookmarksAccountStorage behavior.
-    config.features_disabled.push_back(syncer::kEnableBookmarksAccountStorage);
-  }
-  return config;
-}
-
 - (void)setUp {
   [super setUp];
 
@@ -112,41 +99,6 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
                                    grey_accessibilityID(@"Change Folder"),
                                    grey_accessibilityLabel(@"Mobile Bookmarks"),
                                    nil)]
-      assertWithMatcher:grey_sufficientlyVisible()];
-}
-
-// Tests that new folder is created under the old parent folder by default.
-- (void)testCreateNewFolderDefaultDestinationLegacy {
-  [BookmarkEarlGrey
-      setupStandardBookmarksInStorage:bookmarks::StorageType::kLocalOrSyncable];
-  [BookmarkEarlGreyUI openBookmarks];
-  [BookmarkEarlGreyUI openMobileBookmarks];
-
-  // Open `Folder 3` nested in `Folder 1->Folder 2`.
-  [[EarlGrey
-      selectElementWithMatcher:TappableBookmarkNodeWithLabel(@"Folder 1")]
-      performAction:grey_tap()];
-  [[EarlGrey
-      selectElementWithMatcher:TappableBookmarkNodeWithLabel(@"Folder 2")]
-      performAction:grey_tap()];
-
-  // Long press on `Folder 3` and try to move it to a new folder.
-  [[EarlGrey
-      selectElementWithMatcher:TappableBookmarkNodeWithLabel(@"Folder 3")]
-      performAction:grey_longPress()];
-  [[EarlGrey selectElementWithMatcher:ButtonWithAccessibilityLabelId(
-                                          IDS_IOS_BOOKMARK_CONTEXT_MENU_MOVE)]
-      performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:
-                 grey_accessibilityID(
-                     kBookmarkCreateNewLocalOrSyncableFolderCellIdentifier)]
-      performAction:grey_tap()];
-
-  // Verify default parent folder is 'Folder 2'.
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(
-                                   grey_accessibilityID(@"Change Folder"),
-                                   grey_accessibilityLabel(@"Folder 2"), nil)]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 

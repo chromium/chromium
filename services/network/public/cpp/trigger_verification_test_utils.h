@@ -5,12 +5,10 @@
 #ifndef SERVICES_NETWORK_PUBLIC_CPP_TRIGGER_VERIFICATION_TEST_UTILS_H_
 #define SERVICES_NETWORK_PUBLIC_CPP_TRIGGER_VERIFICATION_TEST_UTILS_H_
 
-#include <ostream>
+#include <iosfwd>
 
 namespace network {
 class TriggerVerification;
-
-bool operator==(const TriggerVerification&, const TriggerVerification&);
 
 std::ostream& operator<<(std::ostream&, const TriggerVerification&);
 }  // namespace network

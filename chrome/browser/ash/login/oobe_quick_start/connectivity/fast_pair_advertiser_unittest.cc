@@ -198,7 +198,7 @@ class FastPairAdvertiserTest : public testing::Test {
 
   void TestExpectedMetrics(
       bool should_succeed,
-      absl::optional<device::BluetoothAdvertisement::ErrorCode> error_code) {
+      std::optional<device::BluetoothAdvertisement::ErrorCode> error_code) {
     expected_total_count_++;
     QuickStartMetrics::AdvertisingMethod advertising_method =
         use_pin_authentication_ ? QuickStartMetrics::AdvertisingMethod::kPin
@@ -343,7 +343,7 @@ TEST_F(FastPairAdvertiserTest, TestStopAdvertising_Success) {
   EXPECT_TRUE(called_on_start_advertising());
   EXPECT_FALSE(called_on_start_advertising_error());
   EXPECT_TRUE(called_on_stop_advertising());
-  TestExpectedMetrics(/*should_succeed=*/true, /*error_code=*/absl::nullopt);
+  TestExpectedMetrics(/*should_succeed=*/true, /*error_code=*/std::nullopt);
 }
 
 TEST_F(FastPairAdvertiserTest, TestStopAdvertising_Error) {

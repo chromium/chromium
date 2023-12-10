@@ -60,9 +60,9 @@ SmbServiceBaseTest::SmbServiceBaseTest() {
   {
     auto user_manager_temp = std::make_unique<FakeChromeUserManager>();
 
-    profile = profile_manager_->CreateTestingProfile("test-user@example.com");
+    profile_ = profile_manager_->CreateTestingProfile("test-user@example.com");
     user_manager_temp->AddUser(
-        AccountId::FromUserEmail(profile->GetProfileUserName()));
+        AccountId::FromUserEmail(profile_->GetProfileUserName()));
 
     // Run pending async tasks resulting from profile construction to ensure
     // these are complete before the test begins.

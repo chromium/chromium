@@ -6,6 +6,7 @@
 #define ASH_STYLE_TAB_SLIDER_H_
 
 #include <cstddef>
+#include <utility>
 
 #include "ash/ash_export.h"
 #include "base/memory/raw_ptr.h"
@@ -66,8 +67,8 @@ class ASH_EXPORT TabSlider : public views::TableLayoutView {
   // Add a button with the button's ctor arguments. For example
   // AddButton<SliderButtonType>(arg1, arg2, ...).
   template <typename T, typename... Args>
-  T* AddButton(Args... args) {
-    auto button = std::make_unique<T>(args...);
+  T* AddButton(Args&&... args) {
+    auto button = std::make_unique<T>(std::forward<Args>(args)...);
     return AddButton(std::move(button));
   }
 

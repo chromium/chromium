@@ -8,6 +8,7 @@
 #include "ash/ash_export.h"
 #include "ui/color/color_provider_source_observer.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/shadow_value.h"
 
 namespace aura {
@@ -87,7 +88,16 @@ class ASH_EXPORT SystemShadow : public ui::ColorProviderSourceObserver {
 
   virtual void SetContentBounds(const gfx::Rect& bounds) = 0;
 
+  // TODO(http://b/307326019): Deprecate this method when all shadow
+  // implementations use `gfx::RoundedCornersF`.
   virtual void SetRoundedCornerRadius(int corner_radius) = 0;
+
+  // TODO(http://b/307326019): This is only used for
+  // `SystemShadowOnTextureLayer` for now. Should be applied to
+  // `SystemShadowOnNinePatchLayer` when `ui::Shadow` is able to use
+  // `gfx::RoundedCornersF`.
+  virtual void SetRoundedCorners(
+      const gfx::RoundedCornersF& rounded_corners) = 0;
 
   virtual const gfx::Rect& GetContentBounds() = 0;
 

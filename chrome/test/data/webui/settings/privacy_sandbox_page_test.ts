@@ -501,7 +501,8 @@ suite('TopicsSubpage', function() {
     assertEquals(links.length, 2, 'footer should contains two links');
     links.forEach(
         link => assertEquals(
-            link.title, loadTimeData.getString('opensInNewTab'),
+            link.getAttribute('aria-description'),
+            loadTimeData.getString('opensInNewTab'),
             'the link should indicate that it will be opened in a new tab'));
     const hrefs = Array.from<HTMLAnchorElement>(links).map(link => link.href);
     const expectedLinks =
@@ -900,7 +901,8 @@ suite('FledgeSubpage', function() {
     assertEquals(links.length, 2, 'footer should contains two links');
     links.forEach(
         link => assertEquals(
-            link.title, loadTimeData.getString('opensInNewTab'),
+            link.getAttribute('aria-description'),
+            loadTimeData.getString('opensInNewTab'),
             'the link should indicate that it will be opened in a new tab'));
     const hrefs = Array.from<HTMLAnchorElement>(links).map(link => link.href);
     const expectedLinks =

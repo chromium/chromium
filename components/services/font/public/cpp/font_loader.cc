@@ -66,7 +66,7 @@ SkStreamAsset* FontLoader::openStream(const FontIdentity& identity) {
 
 sk_sp<SkTypeface> FontLoader::makeTypeface(const FontIdentity& identity) {
   TRACE_EVENT0("fonts", "FontServiceThread::makeTypeface");
-  return SkFontConfigInterface::makeTypeface(identity, skia::GetFontMgr());
+  return SkFontConfigInterface::makeTypeface(identity, skia::DefaultFontMgr());
 }
 
 // Additional cross-thread accessible methods.

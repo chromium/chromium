@@ -23,19 +23,21 @@ import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.widget.TextViewWithClickableSpans;
 
-/**
- * The {@View} binder class for the quick delete MVC.
- */
+/** The {@View} binder class for the quick delete MVC. */
 class QuickDeleteViewBinder {
     public static void bind(PropertyModel model, View quickDeleteView, PropertyKey propertyKey) {
         if (QuickDeleteProperties.DOMAIN_VISITED_DATA == propertyKey) {
             assert model.get(QuickDeleteProperties.DOMAIN_VISITED_DATA) != null;
-            updateBrowsingHistoryRow(model.get(QuickDeleteProperties.CONTEXT), quickDeleteView,
+            updateBrowsingHistoryRow(
+                    model.get(QuickDeleteProperties.CONTEXT),
+                    quickDeleteView,
                     model.get(QuickDeleteProperties.DOMAIN_VISITED_DATA),
                     model.get(QuickDeleteProperties.TIME_PERIOD));
         } else if (QuickDeleteProperties.CLOSED_TABS_COUNT == propertyKey
                 || QuickDeleteProperties.TIME_PERIOD == propertyKey) {
-            updateClosedTabsCount(model.get(QuickDeleteProperties.CONTEXT), quickDeleteView,
+            updateClosedTabsCount(
+                    model.get(QuickDeleteProperties.CONTEXT),
+                    quickDeleteView,
                     model.get(QuickDeleteProperties.CLOSED_TABS_COUNT),
                     model.get(QuickDeleteProperties.TIME_PERIOD));
         } else if (QuickDeleteProperties.IS_SIGNED_IN == propertyKey) {
@@ -45,7 +47,8 @@ class QuickDeleteViewBinder {
             updateBrowsingHistorySubtitleVisibility(
                     quickDeleteView, model.get(QuickDeleteProperties.IS_SYNCING_HISTORY));
         } else if (QuickDeleteProperties.IS_DOMAIN_VISITED_DATA_PENDING == propertyKey) {
-            updateBrowsingHistoryRowIfPending(model.get(QuickDeleteProperties.CONTEXT),
+            updateBrowsingHistoryRowIfPending(
+                    model.get(QuickDeleteProperties.CONTEXT),
                     quickDeleteView,
                     model.get(QuickDeleteProperties.IS_DOMAIN_VISITED_DATA_PENDING));
         }
@@ -79,8 +82,10 @@ class QuickDeleteViewBinder {
         quickDeleteHistoryRow.setVisibility(VISIBLE);
     }
 
-    private static void updateBrowsingHistoryRow(@NonNull Context context,
-            @NonNull View quickDeleteView, @NonNull DomainVisitsData domainVisitsData,
+    private static void updateBrowsingHistoryRow(
+            @NonNull Context context,
+            @NonNull View quickDeleteView,
+            @NonNull DomainVisitsData domainVisitsData,
             @TimePeriod int timePeriod) {
         String browsingHistoryRowTitleTemplate = null;
         int domainsCount = domainVisitsData.mDomainsCount;
@@ -92,12 +97,16 @@ class QuickDeleteViewBinder {
             title.setTemplate(browsingHistoryRowTitleTemplate);
 
             if (timePeriod == TimePeriod.ALL_TIME) {
-                title.setText(context.getString(
-                        R.string.quick_delete_dialog_zero_browsing_history_domain_count_all_time_text));
+                title.setText(
+                        context.getString(
+                                R.string
+                                        .quick_delete_dialog_zero_browsing_history_domain_count_all_time_text));
             } else {
-                title.setText(context.getString(
-                        R.string.quick_delete_dialog_zero_browsing_history_domain_count_text,
-                        getTimePeriodString(context, timePeriod)));
+                title.setText(
+                        context.getString(
+                                R.string
+                                        .quick_delete_dialog_zero_browsing_history_domain_count_text,
+                                getTimePeriodString(context, timePeriod)));
             }
             return;
         }
@@ -107,9 +116,13 @@ class QuickDeleteViewBinder {
 
         // If there is at least 1 other site counted, add the count template, eg `+ 1 site`.
         if (domainsCount > 0) {
-            String domainCountText = context.getResources().getQuantityString(
-                    R.plurals.quick_delete_dialog_browsing_history_domain_count_text, domainsCount,
-                    domainsCount);
+            String domainCountText =
+                    context.getResources()
+                            .getQuantityString(
+                                    R.plurals
+                                            .quick_delete_dialog_browsing_history_domain_count_text,
+                                    domainsCount,
+                                    domainsCount);
             browsingHistoryRowTitleTemplate = "%s " + domainCountText;
         }
 
@@ -117,22 +130,31 @@ class QuickDeleteViewBinder {
         title.setText(domainVisitsData.mLastVisitedDomain);
     }
 
-    private static void updateClosedTabsCount(@NonNull Context context,
-            @NonNull View quickDeleteView, int tabsCount, @TimePeriod int timePeriod) {
+    private static void updateClosedTabsCount(
+            @NonNull Context context,
+            @NonNull View quickDeleteView,
+            int tabsCount,
+            @TimePeriod int timePeriod) {
         TextViewWithCompoundDrawables quickDeleteTabsCloseRow =
                 quickDeleteView.findViewById(R.id.quick_delete_tabs_close_row);
 
         if (tabsCount > 0) {
-            String tabDescription = context.getResources().getQuantityString(
-                    R.plurals.quick_delete_dialog_tabs_closed_text, tabsCount, tabsCount);
+            String tabDescription =
+                    context.getResources()
+                            .getQuantityString(
+                                    R.plurals.quick_delete_dialog_tabs_closed_text,
+                                    tabsCount,
+                                    tabsCount);
             quickDeleteTabsCloseRow.setText(tabDescription);
         } else {
             if (timePeriod == TimePeriod.ALL_TIME) {
-                quickDeleteTabsCloseRow.setText(context.getString(
-                        R.string.quick_delete_dialog_zero_tabs_closed_all_time_text));
+                quickDeleteTabsCloseRow.setText(
+                        context.getString(
+                                R.string.quick_delete_dialog_zero_tabs_closed_all_time_text));
             } else {
                 quickDeleteTabsCloseRow.setText(
-                        context.getString(R.string.quick_delete_dialog_zero_tabs_closed_text,
+                        context.getString(
+                                R.string.quick_delete_dialog_zero_tabs_closed_text,
                                 getTimePeriodString(context, timePeriod)));
             }
         }

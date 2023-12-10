@@ -20,9 +20,7 @@ import java.lang.annotation.RetentionPolicy;
 public class TaskInfo {
     public static final String SERIALIZED_TASK_EXTRAS = "serialized_task_extras";
 
-    /**
-     * Common interface for all types of task information.
-     */
+    /** Common interface for all types of task information. */
     public interface TimingInfo {
         /**
          * Receives a {@link TimingInfoVisitor}, which will perform actions on this object.
@@ -45,6 +43,7 @@ public class TaskInfo {
          * @param oneOffInfo object to act on.
          */
         void visit(OneOffInfo oneOffInfo);
+
         /**
          * Applies actions on a given {@link PeriodicInfo}. This affects information regarding
          * timing for a periodic task.
@@ -53,9 +52,7 @@ public class TaskInfo {
         void visit(PeriodicInfo periodicInfo);
     }
 
-    /**
-     * Specifies information regarding one-off tasks.
-     */
+    /** Specifies information regarding one-off tasks. */
     public static class OneOffInfo implements TimingInfo {
         private final long mWindowStartTimeMs;
         private final long mWindowEndTimeMs;
@@ -87,16 +84,12 @@ public class TaskInfo {
             return mWindowEndTimeMs;
         }
 
-        /**
-         * @return whether this one-off task has a window start time constraint.
-         */
+        /** @return whether this one-off task has a window start time constraint. */
         public boolean hasWindowStartTimeConstraint() {
             return mHasWindowStartTimeConstraint;
         }
 
-        /**
-         * @return whether this one-off task has a window end time constraint.
-         */
+        /** @return whether this one-off task has a window end time constraint. */
         public boolean hasWindowEndTimeConstraint() {
             return mHasWindowEndTimeConstraint;
         }
@@ -140,9 +133,7 @@ public class TaskInfo {
             return sb.toString();
         }
 
-        /**
-         * @return a new {@link Builder} object to set the values of the one-off task.
-         */
+        /** @return a new {@link Builder} object to set the values of the one-off task. */
         public static Builder create() {
             return new Builder();
         }
@@ -191,9 +182,7 @@ public class TaskInfo {
         }
     }
 
-    /**
-     * Specifies information regarding periodic tasks.
-     */
+    /** Specifies information regarding periodic tasks. */
     public static class PeriodicInfo implements TimingInfo {
         private final long mIntervalMs;
         private final long mFlexMs;
@@ -207,9 +196,7 @@ public class TaskInfo {
             mExpiresAfterWindowEndTime = builder.mExpiresAfterWindowEndTime;
         }
 
-        /**
-         * @return the interval between occurrences of this task in milliseconds.
-         */
+        /** @return the interval between occurrences of this task in milliseconds. */
         public long getIntervalMs() {
             return mIntervalMs;
         }
@@ -222,9 +209,7 @@ public class TaskInfo {
             return mFlexMs;
         }
 
-        /**
-         * @return true whether this task has defined a flex time. False otherwise.
-         */
+        /** @return true whether this task has defined a flex time. False otherwise. */
         public boolean hasFlex() {
             return mHasFlex;
         }
@@ -282,9 +267,7 @@ public class TaskInfo {
             return sb.toString();
         }
 
-        /**
-         * @return a new {@link OneOffInfo.Builder} object to set the values of the one-off task.
-         */
+        /** @return a new {@link OneOffInfo.Builder} object to set the values of the one-off task. */
         public static PeriodicInfo.Builder create() {
             return new PeriodicInfo.Builder();
         }
@@ -318,6 +301,7 @@ public class TaskInfo {
                 mExpiresAfterWindowEndTime = expiresAfterWindowEndTime;
                 return this;
             }
+
             /**
              * Build the {@link PeriodicInfo object} specified by this builder.
              *
@@ -338,12 +322,14 @@ public class TaskInfo {
          * @see NetworkType
          */
         int NONE = 0;
+
         /**
          * This task requires network connectivity.
          *
          * @see NetworkType
          */
         int ANY = 1;
+
         /**
          * This task requires network connectivity that is unmetered.
          *
@@ -358,41 +344,25 @@ public class TaskInfo {
      */
     private final int mTaskId;
 
-    /**
-     * The extras to provide to the {@link BackgroundTask} when it is run.
-     */
-    @NonNull
-    private final PersistableBundle mExtras;
+    /** The extras to provide to the {@link BackgroundTask} when it is run. */
+    @NonNull private final PersistableBundle mExtras;
 
-    /**
-     * The type of network the task requires to run.
-     */
-    @NetworkType
-    private final int mRequiredNetworkType;
+    /** The type of network the task requires to run. */
+    @NetworkType private final int mRequiredNetworkType;
 
-    /**
-     * Whether the task requires charging to run.
-     */
+    /** Whether the task requires charging to run. */
     private final boolean mRequiresCharging;
 
-    /**
-     * Whether the task is being scheduled to fulfill an explicit user request.
-     */
+    /** Whether the task is being scheduled to fulfill an explicit user request. */
     private final boolean mUserInitiated;
 
-    /**
-     * Whether or not to persist this task across device reboots.
-     */
+    /** Whether or not to persist this task across device reboots. */
     private final boolean mIsPersisted;
 
-    /**
-     * Whether this task should override any preexisting tasks with the same task id.
-     */
+    /** Whether this task should override any preexisting tasks with the same task id. */
     private final boolean mUpdateCurrent;
 
-    /**
-     * Task information regarding a type of task.
-     */
+    /** Task information regarding a type of task. */
     private final TimingInfo mTimingInfo;
 
     private TaskInfo(Builder builder) {
@@ -412,60 +382,44 @@ public class TaskInfo {
         }
     }
 
-    /**
-     * @return the unique ID of this task.
-     */
+    /** @return the unique ID of this task. */
     public int getTaskId() {
         return mTaskId;
     }
 
-    /**
-     * @return the extras that will be provided to the {@link BackgroundTask}.
-     */
+    /** @return the extras that will be provided to the {@link BackgroundTask}. */
     @NonNull
     public PersistableBundle getExtras() {
         return mExtras;
     }
 
-    /**
-     * @return the type of network the task requires to run.
-     */
+    /** @return the type of network the task requires to run. */
     @NetworkType
     public int getRequiredNetworkType() {
         return mRequiredNetworkType;
     }
 
-    /**
-     * @return whether the task requires charging to run.
-     */
+    /** @return whether the task requires charging to run. */
     public boolean requiresCharging() {
         return mRequiresCharging;
     }
 
-    /**
-     * @return Whether the task is being scheduled to fulfill an explicit user request.
-     */
+    /** @return Whether the task is being scheduled to fulfill an explicit user request. */
     public boolean isUserInitiated() {
         return mUserInitiated;
     }
 
-    /**
-     * @return whether or not to persist this task across device reboots.
-     */
+    /** @return whether or not to persist this task across device reboots. */
     public boolean isPersisted() {
         return mIsPersisted;
     }
 
-    /**
-     * @return whether this task should override any preexisting tasks with the same task id.
-     */
+    /** @return whether this task should override any preexisting tasks with the same task id. */
     public boolean shouldUpdateCurrent() {
         return mUpdateCurrent;
     }
 
-    /**
-     * @return Whether or not this task is a periodic task.
-     */
+    /** @return Whether or not this task is a periodic task. */
     @Deprecated
     public boolean isPeriodic() {
         return mTimingInfo instanceof PeriodicInfo;
@@ -493,9 +447,7 @@ public class TaskInfo {
         return null;
     }
 
-    /**
-     * @return the specific data based on the type of task.
-     */
+    /** @return the specific data based on the type of task. */
     public TimingInfo getTimingInfo() {
         return mTimingInfo;
     }
@@ -570,10 +522,11 @@ public class TaskInfo {
     @Deprecated
     public static Builder createOneOffTask(
             int taskId, long windowStartTimeMs, long windowEndTimeMs) {
-        TimingInfo oneOffInfo = OneOffInfo.create()
-                                        .setWindowStartTimeMs(windowStartTimeMs)
-                                        .setWindowEndTimeMs(windowEndTimeMs)
-                                        .build();
+        TimingInfo oneOffInfo =
+                OneOffInfo.create()
+                        .setWindowStartTimeMs(windowStartTimeMs)
+                        .setWindowEndTimeMs(windowEndTimeMs)
+                        .build();
         return new Builder(taskId).setTimingInfo(oneOffInfo);
     }
 
@@ -615,8 +568,7 @@ public class TaskInfo {
         private final int mTaskId;
 
         private PersistableBundle mExtras;
-        @NetworkType
-        private int mRequiredNetworkType;
+        @NetworkType private int mRequiredNetworkType;
         private boolean mRequiresCharging;
         private boolean mUserInitiated;
         private boolean mIsPersisted;

@@ -214,12 +214,6 @@ void HTMLBodyElement::ParseAttribute(
         event_type_names::kLanguagechange,
         JSEventHandlerForContentAttribute::Create(GetExecutionContext(), name,
                                                   value));
-  } else if (RuntimeEnabledFeatures::PortalsEnabled(GetExecutionContext()) &&
-             name == html_names::kOnportalactivateAttr) {
-    GetDocument().SetWindowAttributeEventListener(
-        event_type_names::kPortalactivate,
-        JSEventHandlerForContentAttribute::Create(GetExecutionContext(), name,
-                                                  value));
   } else if (RuntimeEnabledFeatures::TimeZoneChangeEventEnabled() &&
              name == html_names::kOntimezonechangeAttr) {
     GetDocument().SetWindowAttributeEventListener(

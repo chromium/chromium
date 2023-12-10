@@ -622,8 +622,8 @@ inline constexpr char kAccessibilitySelectToSpeakVoiceSwitching[] =
 inline constexpr char kAccessibilitySelectToSpeakWordHighlight[] =
     "settings.a11y.select_to_speak_word_highlight";
 
-inline constexpr char kAccessibilityFaceTrackingEnabled[] =
-    "settings.a11y.face_tracking.enabled";
+inline constexpr char kAccessibilityFaceGazeEnabled[] =
+    "settings.a11y.face_gaze.enabled";
 
 // A boolean pref which determines whether the accessibility menu shows
 // regardless of the state of a11y features.
@@ -652,6 +652,12 @@ inline constexpr char kDesksNamesList[] = "ash.desks.desks_names_list";
 // for the primary user on first sign-in. The guids are stored as lowercase
 // strings.
 inline constexpr char kDesksGuidsList[] = "ash.desks.desks_guids_list";
+// A list containing the lacros profile ID associations for desks in the same
+// order of the desks in the overview desks bar. This is used so that desk <->
+// profile associations can be restored. The profile IDs are logically unsigned
+// integers, but stored as strings since they can (and will) be 64-bits large.
+inline constexpr char kDesksLacrosProfileIdList[] =
+    "ash.desks.desks_lacros_profile_id_list";
 // This list stores the metrics of virtual desks. Like |kDesksNamesList|, this
 // list stores entries in the same order of the desks in the overview desks bar.
 // Values are stored as dictionaries.
@@ -751,6 +757,10 @@ inline constexpr char kSecondaryDisplays[] =
 // managed guest session should be stored in local state.
 inline constexpr char kAllowMGSToStoreDisplayProperties[] =
     "settings.display.allow_mgs_to_store";
+
+// A list of all displays used by the user and reported to popularity metrics.
+const char kDisplayPopularityUserReportedDisplays[] =
+    "display_popularity.user_reported_displays";
 
 // A boolean pref that enable fullscreen alert bubble.
 // TODO(zxdan): Change to an allowlist in M89.
@@ -1117,6 +1127,15 @@ inline constexpr char kWallpaperDailyRefreshFirstCheckTime[] =
 inline constexpr char kWallpaperDailyRefreshSecondCheckTime[] =
     "ash.wallpaper_daily_refresh.second_check_time";
 
+// Prefs required by `ScheduledFeature` for the time of day wallpaper to follow
+// a sunset-to-sunrise schedule. Nothing in the system ultimately uses them.
+// TODO(b/309020921): Remove these once ScheduledFeature doesn't require prefs
+// to operate.
+inline constexpr char kWallpaperTimeOfDayStatus[] =
+    "ash.wallpaper_time_of_day.status";
+inline constexpr char kWallpaperTimeOfDayScheduleType[] =
+    "ash.wallpaper_time_of_day.schedule_type";
+
 // Boolean pref indicating whether a user has enabled the bluetooth adapter.
 inline constexpr char kUserBluetoothAdapterEnabled[] =
     "ash.user.bluetooth.adapter_enabled";
@@ -1124,9 +1143,6 @@ inline constexpr char kUserBluetoothAdapterEnabled[] =
 // Boolean pref indicating system-wide setting for bluetooth adapter power.
 inline constexpr char kSystemBluetoothAdapterEnabled[] =
     "ash.system.bluetooth.adapter_enabled";
-
-// Boolean pref to persist the expanded state of the system tray across reboots.
-inline constexpr char kSystemTrayExpanded[] = "ash.system_tray.expanded";
 
 // A boolean pref indicating whether the camera is allowed to be used.
 inline constexpr char kUserCameraAllowed[] = "ash.user.camera_allowed";
@@ -1153,11 +1169,12 @@ inline constexpr char kShouldShowSpeakOnMuteOptInNudge[] =
 inline constexpr char kSpeakOnMuteOptInNudgeShownCount[] =
     "ash.user.speak_on_mute_opt_in_nudge_shown_count";
 
-// A boolean pref indicating whether the geolocation is allowed for the user.
-inline constexpr char kUserGeolocationAllowed[] =
-    "ash.user.geolocation_allowed";
+// An enum pref, indicating whether the geolocation is allowed inside user
+// session. Values are from `ash::GeolocationAccessLevel`.
+inline constexpr char kUserGeolocationAccessLevel[] =
+    "ash.user.geolocation_access_level";
 // An enum pref indicating whether the geolocation is allowed outside user
-// session. Values are from PrivacyHubController::AccessLevel.
+// session. Values are from `ash::GeolocationAccessLevel`.
 inline constexpr char kDeviceGeolocationAllowed[] =
     "ash.device.geolocation_allowed";
 
@@ -1323,11 +1340,6 @@ inline constexpr char kAppListReorderNudge[] =
 // the continue files section for the launcher.
 inline constexpr char kLauncherFilesPrivacyNotice[] =
     "ash.launcher.continue_section_privacy_notice";
-
-// A dictionary pref that determines if the image search privacy notice in the
-// launcher search should be shown or not.
-inline constexpr char kImageSearchPrivacyNotice[] =
-    "ash.launcher.image_search_privacy_notice";
 
 // A boolean pref that indicates whether lock screen media controls are enabled.
 // Controlled by user policy.
@@ -1584,6 +1596,10 @@ inline constexpr char kBackgroundBlur[] = "ash.camera.background_blur";
 
 // An boolean pref that indicates whether background replacement is applied.
 inline constexpr char kBackgroundReplace[] = "ash.camera.background_replace";
+
+// An string pref that indicates the image path of the camera background.
+inline constexpr char kBackgroundImagePath[] =
+    "ash.camera.background_image_path";
 
 // An boolean pref that indicates whether portrait relighting is applied.
 inline constexpr char kPortraitRelighting[] = "ash.camera.portrait_relighting";
@@ -1898,6 +1914,16 @@ inline constexpr char kTouchpadDefaultSettings[] =
 // DeviceExtendedFkeysMofidier.
 inline constexpr char kExtendedFkeysModifier[] =
     "ash.settings.extended_fkeys_modifier";
+
+// An integer pref that counts the number of times we have shown a form of
+// screen capture education (a nudge or tutorial).
+inline constexpr char kCaptureModeEducationShownCount[] =
+    "ash.capture_mode.capture_mode_education_shown_count";
+
+// A time pref that tracks the most recent instance when we have shown a form of
+// screen capture education (a nudge or tutorial).
+inline constexpr char kCaptureModeEducationLastShown[] =
+    "ash.capture_mode.capture_mode_education_last_shown";
 
 //-----------------------------------------------------------------------------
 // Language related Prefs

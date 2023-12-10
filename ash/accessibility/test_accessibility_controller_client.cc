@@ -94,9 +94,9 @@ std::string TestAccessibilityControllerClient::GetDictationDefaultLocale(
   return "";
 }
 
-absl::optional<Sound>
+std::optional<Sound>
 TestAccessibilityControllerClient::GetPlayedEarconAndReset() {
-  return std::exchange(sound_key_, absl::nullopt);
+  return std::exchange(sound_key_, std::nullopt);
 }
 
 }  // namespace ash

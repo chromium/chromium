@@ -41,11 +41,11 @@ const ui::ClipboardFormatType& GetAppItemFormatType() {
   return *format;
 }
 
-absl::optional<DraggableAppItemInfo> GetAppInfoFromDropDataForAppType(
+std::optional<DraggableAppItemInfo> GetAppInfoFromDropDataForAppType(
     const ui::OSExchangeData& data) {
   base::Pickle data_pickle;
   if (!data.GetPickledData(GetAppItemFormatType(), &data_pickle)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   std::string app_id;
@@ -53,7 +53,7 @@ absl::optional<DraggableAppItemInfo> GetAppInfoFromDropDataForAppType(
   base::PickleIterator iter(data_pickle);
   if (!iter.ReadString(&app_id) || !iter.ReadInt(&type_value) ||
       type_value < 0 || type_value > static_cast<int>(DraggableAppType::kMax)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return DraggableAppItemInfo(app_id,
                               static_cast<DraggableAppType>(type_value));

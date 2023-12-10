@@ -17,9 +17,6 @@ This is a testharness.js-based test.
   assert_equals: expected 1 but got 2
 [FAIL] sRD(simulcast offer), addTrack, then rollback brings us back to having a single encoding
   assert_array_equals: lengths differ, expected array [undefined] length 1, got ["foo", "bar"] length 2
-[PASS] Reordering of rids in sRD(answer) is ignored
-[PASS] Reordering of rids in sRD(reanswer) is ignored
-[PASS] Reordering of rids in sRD(reoffer) is ignored
 [FAIL] Rollback of sRD(reoffer) with a single rid results in all previous encodings
   assert_array_equals: lengths differ, expected array ["foo", "bar"] length 2, got ["bar"] length 1
 [FAIL] sRD(recv simulcast answer) can narrow the simulcast envelope specified by addTransceiver by removing the first encoding
@@ -28,9 +25,5 @@ This is a testharness.js-based test.
   assert_array_equals: expected property 0 to be 1 but got undefined (expected array [1] got [undefined])
 [FAIL] sRD(simulcast offer) can narrow the simulcast envelope from a previous negotiation by removing the first encoding
   assert_array_equals: [[SendEncodings]] is not updated in have-remote-offer for reoffers lengths differ, expected array ["foo", "bar"] length 2, got ["bar"] length 1
-[PASS] sender renegotiation to inactive does not disable simulcast
-[PASS] sender renegotiation to recvonly does not disable simulcast
-[PASS] receiver renegotiation to inactive does not disable simulcast
-[PASS] receiver renegotiation to sendonly does not disable simulcast
 Harness: the test ran to completion.
 

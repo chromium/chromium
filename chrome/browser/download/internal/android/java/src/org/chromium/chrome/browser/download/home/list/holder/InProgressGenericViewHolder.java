@@ -21,18 +21,17 @@ import org.chromium.ui.modelutil.PropertyModel;
 public class InProgressGenericViewHolder extends InProgressViewHolder {
     private final TextView mTitle;
 
-    /**
-     * Creates a new {@link InProgressViewHolder} instance.
-     */
+    /** Creates a new {@link InProgressViewHolder} instance. */
     public static InProgressGenericViewHolder create(ViewGroup parent) {
-        View view = LayoutInflater.from(parent.getContext())
-                            .inflate(R.layout.download_manager_in_progress_item, null);
+        View view =
+                LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.download_manager_in_progress_item, null);
         return new InProgressGenericViewHolder(view);
     }
 
     /** Constructor. */
     public InProgressGenericViewHolder(View view) {
-        super(view, false /* constrainCaption */);
+        super(view, /* constrainCaption= */ false);
         mTitle = view.findViewById(R.id.title);
     }
 

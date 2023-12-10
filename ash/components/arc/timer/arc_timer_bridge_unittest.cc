@@ -4,6 +4,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -34,7 +35,6 @@
 #include "mojo/public/cpp/system/handle.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace arc {
 
@@ -75,10 +75,10 @@ class ArcTimerStore {
 
   void ClearTimers() { return arc_timers_.clear(); }
 
-  absl::optional<int> GetTimerReadFd(clockid_t clock_id) {
+  std::optional<int> GetTimerReadFd(clockid_t clock_id) {
     if (!HasTimer(clock_id))
-      return absl::nullopt;
-    return absl::optional<int>(arc_timers_[clock_id].get());
+      return std::nullopt;
+    return std::optional<int>(arc_timers_[clock_id].get());
   }
 
   bool HasTimer(clockid_t clock_id) const {
@@ -233,7 +233,7 @@ bool ArcTimerTest::WaitForExpiration(clockid_t clock_id) {
 
   // Wait for the host to indicate expiration by watching the read end of the
   // socket pair.
-  absl::optional<int> timer_read_fd_opt =
+  std::optional<int> timer_read_fd_opt =
       arc_timer_store_.GetTimerReadFd(clock_id);
   // This should never happen if the timer was present in the store.
   if (!timer_read_fd_opt.has_value()) {

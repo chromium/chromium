@@ -7,6 +7,7 @@
 
 #include "chrome/browser/extensions/cws_info_service.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/safety_hub/password_status_check_service.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -18,7 +19,7 @@ class MockCWSInfoService : public extensions::CWSInfoService {
   explicit MockCWSInfoService(Profile* profile);
   ~MockCWSInfoService() override;
 
-  MOCK_METHOD(absl::optional<CWSInfoServiceInterface::CWSInfo>,
+  MOCK_METHOD(std::optional<CWSInfoServiceInterface::CWSInfo>,
               GetCWSInfo,
               (const extensions::Extension&),
               (const, override));
@@ -30,6 +31,11 @@ class MockCWSInfoService : public extensions::CWSInfoService {
 // the function returns.
 void UpdateSafetyHubServiceAsync(SafetyHubService* service);
 
+// This will run UpdateInsecureCredentialCountAsync on
+// PasswordStatusCheckService and return when the check is completed.
+void UpdatePasswordCheckServiceAsync(
+    PasswordStatusCheckService* password_service);
+
 // Creates a mock service that returns mock results for the CWS info service. In
 // total six extensions with different properties are mocked: malware, policy
 // violation, unpublished, combination of malware and unpublished, no violation,
@@ -39,6 +45,9 @@ std::unique_ptr<testing::NiceMock<MockCWSInfoService>> GetMockCWSInfoService(
 
 // Adds seven extensions, of which one is installed by an external policy.
 void CreateMockExtensions(Profile* profile);
+
+// Deletes all mock extensions that are added by CreateMockExtensions.
+void CleanAllMockExtensions(Profile* profile);
 
 }  // namespace safety_hub_test_util
 

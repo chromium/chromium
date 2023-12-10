@@ -142,21 +142,17 @@ class TwentyEightDayImplDirectCheckIn : public TwentyEightDayImplBase {
   void SetUp() override {
     TwentyEightDayImplBase::SetUp();
 
-    // |psm_client_delegate_| is owned by |use_case_params_|.
+    // |psm_client_delegate| is owned by |psm_client_manager_|.
     // Stub successful request payloads when created by the PSM client.
-    StubPsmClientManagerDelegate* psm_client_delegate =
-        new StubPsmClientManagerDelegate();
-    SimulateOprfRequest(psm_client_delegate,
-                        psm_rlwe::PrivateMembershipRlweOprfRequest());
-    SimulateQueryRequest(psm_client_delegate,
-                         psm_rlwe::PrivateMembershipRlweQueryRequest());
-    SimulateMembershipResponses(psm_client_delegate, GetMembershipResponses());
+    std::unique_ptr<StubPsmClientManagerDelegate> psm_client_delegate =
+        std::make_unique<StubPsmClientManagerDelegate>();
+    psm_client_manager_ =
+        std::make_unique<PsmClientManager>(std::move(psm_client_delegate));
 
     use_case_params_ = std::make_unique<UseCaseParameters>(
         GetFakeTimeNow(), kFakeChromeParameters, GetUrlLoaderFactory(),
         utils::kFakeHighEntropySeed, GetLocalState(),
-        std::make_unique<PsmClientManager>(
-            base::WrapUnique(psm_client_delegate)));
+        psm_client_manager_.get());
     twenty_eight_day_impl_ =
         std::make_unique<TwentyEightDayImpl>(use_case_params_.get());
   }
@@ -164,6 +160,7 @@ class TwentyEightDayImplDirectCheckIn : public TwentyEightDayImplBase {
   void TearDown() override {
     twenty_eight_day_impl_.reset();
     use_case_params_.reset();
+    psm_client_manager_.reset();
   }
 
   TwentyEightDayImpl* GetTwentyEightDayImpl() {
@@ -185,12 +182,13 @@ class TwentyEightDayImplDirectCheckIn : public TwentyEightDayImplBase {
     twenty_eight_day_impl_->SetLastPingTimestamp(ts);
   }
 
-  absl::optional<FresnelImportDataRequest>
+  std::optional<FresnelImportDataRequest>
   GenerateImportRequestBodyForTesting() {
     return twenty_eight_day_impl_->GenerateImportRequestBody();
   }
 
  private:
+  std::unique_ptr<PsmClientManager> psm_client_manager_;
   std::unique_ptr<UseCaseParameters> use_case_params_;
   std::unique_ptr<TwentyEightDayImpl> twenty_eight_day_impl_;
 };

@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/webid/account_selection_bubble_view.h"
 
 #include <algorithm>
+#include <utility>
 
 #include "base/feature_list.h"
 #include "base/i18n/case_conversion.h"
@@ -140,7 +141,7 @@ class LetterCircleCroppedImageSkiaSource : public gfx::CanvasImageSource {
 class CircleCroppedImageSkiaSource : public gfx::CanvasImageSource {
  public:
   CircleCroppedImageSkiaSource(gfx::ImageSkia avatar,
-                               absl::optional<int> pre_resize_avatar_crop_size,
+                               std::optional<int> pre_resize_avatar_crop_size,
                                int canvas_edge_size)
       : gfx::CanvasImageSource(gfx::Size(canvas_edge_size, canvas_edge_size)) {
     int scaled_width = canvas_edge_size;
@@ -201,7 +202,7 @@ class ContinueButton : public views::MdTextButton {
                  const std::u16string& text,
                  AccountSelectionBubbleView* bubble_view,
                  const content::IdentityProviderMetadata& idp_metadata)
-      : views::MdTextButton(callback, text),
+      : views::MdTextButton(std::move(callback), text),
         bubble_view_(bubble_view),
         brand_background_color_(idp_metadata.brand_background_color),
         brand_text_color_(idp_metadata.brand_text_color) {
@@ -223,8 +224,8 @@ class ContinueButton : public views::MdTextButton {
     if (color_utils::GetContrastRatio(dialog_background_color,
                                       *brand_background_color_) <
         color_utils::kMinimumVisibleContrastRatio) {
-      SetBgColorOverride(absl::nullopt);
-      SetEnabledTextColors(absl::nullopt);
+      SetBgColorOverride(std::nullopt);
+      SetEnabledTextColors(std::nullopt);
       return;
     }
 
@@ -244,8 +245,8 @@ class ContinueButton : public views::MdTextButton {
 
  private:
   raw_ptr<AccountSelectionBubbleView> bubble_view_;
-  absl::optional<SkColor> brand_background_color_;
-  absl::optional<SkColor> brand_text_color_;
+  std::optional<SkColor> brand_background_color_;
+  std::optional<SkColor> brand_text_color_;
 };
 
 BEGIN_METADATA(ContinueButton, views::MdTextButton)
@@ -290,9 +291,9 @@ class AccountImageView : public views::ImageView {
     } else {
       avatar =
           gfx::CanvasImageSource::MakeImageSkia<CircleCroppedImageSkiaSource>(
-              image.AsImageSkia(), absl::nullopt, kDesiredAvatarSize);
+              image.AsImageSkia(), std::nullopt, kDesiredAvatarSize);
     }
-    SetImage(avatar);
+    SetImage(ui::ImageModel::FromImageSkia(avatar));
   }
 
   base::WeakPtrFactory<AccountImageView> weak_ptr_factory_{this};
@@ -339,7 +340,7 @@ class IdpImageView : public views::ImageView {
             image.Width() *
                 FedCmAccountSelectionView::kMaskableWebIconSafeZoneRatio,
             kDesiredIdpIconSize);
-    SetImage(idp_image);
+    SetImage(ui::ImageModel::FromImageSkia(idp_image));
     bubble_view_->AddIdpImage(image_url, idp_image);
   }
 
@@ -359,14 +360,7 @@ void SendAccessibilityEvent(views::Widget* widget,
     return;
 
   views::View* const root_view = widget->GetRootView();
-#if BUILDFLAG(IS_MAC)
-  if (!announcement.empty())
-    root_view->GetViewAccessibility().OverrideName(announcement);
-  root_view->NotifyAccessibilityEvent(ax::mojom::Event::kAlert, true);
-#else
-  if (!announcement.empty())
-    root_view->GetViewAccessibility().AnnounceText(announcement);
-#endif
+  root_view->GetViewAccessibility().AnnounceText(announcement);
 }
 
 // Selects string for disclosure text based on passed-in `privacy_policy_url`
@@ -410,11 +404,10 @@ void SetTitleHeaderProperties(views::Label* label) {
 
 // Returns the title to be shown in the dialog. This does not include the
 // subtitle. For screen reader purposes, GetAccessibleTitle() is used instead.
-std::u16string GetTitle(
-    const std::u16string& top_frame_for_display,
-    const absl::optional<std::u16string>& iframe_for_display,
-    const absl::optional<std::u16string>& idp_title,
-    blink::mojom::RpContext rp_context) {
+std::u16string GetTitle(const std::u16string& top_frame_for_display,
+                        const std::optional<std::u16string>& iframe_for_display,
+                        const std::optional<std::u16string>& idp_title,
+                        blink::mojom::RpContext rp_context) {
   std::u16string frame_in_title = iframe_for_display.has_value()
                                       ? iframe_for_display.value()
                                       : top_frame_for_display;
@@ -435,8 +428,8 @@ std::u16string GetSubtitle(const std::u16string& top_frame_for_display) {
 // Returns the title combined with the subtitle for screen reader purposes.
 std::u16string GetAccessibleTitle(
     const std::u16string& top_frame_for_display,
-    const absl::optional<std::u16string>& iframe_for_display,
-    const absl::optional<std::u16string>& idp_title,
+    const std::optional<std::u16string>& iframe_for_display,
+    const std::optional<std::u16string>& idp_title,
     blink::mojom::RpContext rp_context) {
   std::u16string title = GetTitle(top_frame_for_display, iframe_for_display,
                                   idp_title, rp_context);
@@ -446,7 +439,7 @@ std::u16string GetAccessibleTitle(
 }
 
 std::pair<std::u16string, std::u16string> GetErrorDialogText(
-    const absl::optional<TokenError>& error,
+    const std::optional<TokenError>& error,
     const std::u16string& top_frame_for_display,
     const std::u16string& idp_for_display) {
   std::string code = error ? error->code : "";
@@ -516,8 +509,8 @@ std::pair<std::u16string, std::u16string> GetErrorDialogText(
 
 AccountSelectionBubbleView::AccountSelectionBubbleView(
     const std::u16string& top_frame_for_display,
-    const absl::optional<std::u16string>& iframe_for_display,
-    const absl::optional<std::u16string>& idp_title,
+    const std::optional<std::u16string>& iframe_for_display,
+    const std::optional<std::u16string>& idp_title,
     blink::mojom::RpContext rp_context,
     bool show_auto_reauthn_checkbox,
 
@@ -545,7 +538,7 @@ AccountSelectionBubbleView::AccountSelectionBubbleView(
   SetShowCloseButton(false);
   set_close_on_deactivate(false);
 
-  // If `idp_title` is absl::nullopt, we are going to show multi-IDP UI. DCHECK
+  // If `idp_title` is std::nullopt, we are going to show multi-IDP UI. DCHECK
   // that we do not get to this when the flag is disabled.
   DCHECK(
       idp_title.has_value() ||
@@ -607,7 +600,8 @@ void AccountSelectionBubbleView::ShowVerifyingSheet(
 
   RemoveNonHeaderChildViews();
   views::ProgressBar* const progress_bar =
-      AddChildView(std::make_unique<views::ProgressBar>(kProgressBarHeight));
+      AddChildView(std::make_unique<views::ProgressBar>());
+  progress_bar->SetPreferredHeight(kProgressBarHeight);
   // Use an infinite animation: SetValue(-1).
   progress_bar->SetValue(-1);
   progress_bar->SetBackgroundColor(SK_ColorLTGRAY);
@@ -628,7 +622,7 @@ void AccountSelectionBubbleView::ShowVerifyingSheet(
 
 void AccountSelectionBubbleView::ShowSingleAccountConfirmDialog(
     const std::u16string& top_frame_for_display,
-    const absl::optional<std::u16string>& iframe_for_display,
+    const std::optional<std::u16string>& iframe_for_display,
     const content::IdentityRequestAccount& account,
     const IdentityProviderDisplayData& idp_display_data,
     bool show_back_button) {
@@ -657,7 +651,7 @@ void AccountSelectionBubbleView::ShowSingleAccountConfirmDialog(
 
 void AccountSelectionBubbleView::ShowFailureDialog(
     const std::u16string& top_frame_for_display,
-    const absl::optional<std::u16string>& iframe_for_display,
+    const std::optional<std::u16string>& iframe_for_display,
     const std::u16string& idp_for_display,
     const content::IdentityProviderMetadata& idp_metadata) {
   std::u16string title = GetTitle(top_frame_for_display, iframe_for_display,
@@ -690,7 +684,7 @@ void AccountSelectionBubbleView::ShowFailureDialog(
 
   // Add continue button.
   auto button = std::make_unique<ContinueButton>(
-      base::BindRepeating(&Observer::OnSigninToIdP, base::Unretained(observer_),
+      base::BindRepeating(&Observer::OnLoginToIdP, base::Unretained(observer_),
                           idp_metadata.idp_login_url),
       l10n_util::GetStringUTF16(IDS_IDP_SIGNIN_STATUS_MISMATCH_DIALOG_CONTINUE),
       this, idp_metadata);
@@ -705,10 +699,10 @@ void AccountSelectionBubbleView::ShowFailureDialog(
 
 void AccountSelectionBubbleView::ShowErrorDialog(
     const std::u16string& top_frame_for_display,
-    const absl::optional<std::u16string>& iframe_for_display,
+    const std::optional<std::u16string>& iframe_for_display,
     const std::u16string& idp_for_display,
     const content::IdentityProviderMetadata& idp_metadata,
-    const absl::optional<TokenError>& error) {
+    const std::optional<TokenError>& error) {
   std::u16string title = GetTitle(top_frame_for_display, iframe_for_display,
                                   idp_for_display, rp_context_);
   UpdateHeader(idp_metadata, title, subtitle_,
@@ -791,10 +785,10 @@ std::string AccountSelectionBubbleView::GetDialogTitle() const {
   return base::UTF16ToUTF8(title_label_->GetText());
 }
 
-absl::optional<std::string> AccountSelectionBubbleView::GetDialogSubtitle()
+std::optional<std::string> AccountSelectionBubbleView::GetDialogSubtitle()
     const {
   if (!subtitle_label_) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return base::UTF16ToUTF8(subtitle_label_->GetText());
@@ -1024,6 +1018,20 @@ AccountSelectionBubbleView::CreateMultipleAccountChooser(
     }
     num_rows += idp_display_data.accounts.size();
   }
+
+  // TODO(crbug.com/1502635): Make "Add Account" work reasonably for multi-IDP
+  const content::IdentityProviderMetadata& idp_metadata =
+      idp_display_data_list[0].idp_metadata;
+  if (idp_metadata.supports_add_account) {
+    auto button = std::make_unique<ContinueButton>(
+        base::BindRepeating(&Observer::OnLoginToIdP,
+                            base::Unretained(observer_),
+                            idp_metadata.idp_login_url),
+        l10n_util::GetStringUTF16(IDS_ACCOUNT_SELECTION_ADD_ACCOUNT), this,
+        idp_metadata);
+    row->AddChildView(std::move(button));
+  }
+
   // The maximum height that the multi-account-picker can have. This value was
   // chosen so that if there are more than two accounts, the picker will show up
   // as a scrollbar showing 2 accounts plus half of the third one. Note that
@@ -1146,7 +1154,7 @@ void AccountSelectionBubbleView::ConfigureIdpBrandImageView(
 
   auto it = idp_images_.find(idp_metadata.brand_icon_url);
   if (it != idp_images_.end()) {
-    image_view->SetImage(it->second);
+    image_view->SetImage(ui::ImageModel::FromImageSkia(it->second));
     return;
   }
 

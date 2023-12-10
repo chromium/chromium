@@ -15,8 +15,9 @@
 #include "base/observer_list.h"
 #include "components/password_manager/core/browser/form_fetcher.h"
 #include "components/password_manager/core/browser/http_password_store_migrator.h"
-#include "components/password_manager/core/browser/password_store_consumer.h"
-#include "components/password_manager/core/browser/password_store_interface.h"
+#include "components/password_manager/core/browser/password_store/password_store_backend_error.h"
+#include "components/password_manager/core/browser/password_store/password_store_consumer.h"
+#include "components/password_manager/core/browser/password_store/password_store_interface.h"
 
 namespace password_manager {
 
@@ -59,7 +60,9 @@ class FormFetcherImpl : public FormFetcher,
   const std::vector<const PasswordForm*>& GetBestMatches() const override;
   const PasswordForm* GetPreferredMatch() const override;
   std::unique_ptr<FormFetcher> Clone() override;
-  absl::optional<PasswordStoreBackendError> GetProfileStoreBackendError()
+  std::optional<PasswordStoreBackendError> GetProfileStoreBackendError()
+      const override;
+  std::optional<PasswordStoreBackendError> GetAccountStoreBackendError()
       const override;
 
  protected:
@@ -147,7 +150,8 @@ class FormFetcherImpl : public FormFetcher,
 
   // Holds an error if it occurred during login retrieval from the
   // PasswordStore.
-  absl::optional<PasswordStoreBackendError> profile_store_backend_error_;
+  std::optional<PasswordStoreBackendError> profile_store_backend_error_;
+  std::optional<PasswordStoreBackendError> account_store_backend_error_;
 
   base::WeakPtrFactory<FormFetcherImpl> weak_ptr_factory_{this};
 };

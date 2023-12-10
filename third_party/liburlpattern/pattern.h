@@ -135,6 +135,9 @@ class COMPONENT_EXPORT(LIBURLPATTERN) Pattern {
 
   const std::vector<Part>& PartList() const { return part_list_; }
 
+  // Returns true if the pattern has at least one kRegex part.
+  bool HasRegexGroups() const;
+
   // Returns true if the pattern can match input strings using `DirectMatch()`.
   bool CanDirectMatch() const;
 

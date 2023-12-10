@@ -9,9 +9,7 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.FeatureMap;
 
-/**
- * Java accessor for base::Features listed in {@link MessageFeatureList}
- */
+/** Java accessor for base::Features listed in {@link MessageFeatureList} */
 @JNINamespace("messages")
 public final class MessageFeatureMap extends FeatureMap {
     private static final MessageFeatureMap sInstance = new MessageFeatureMap();
@@ -19,16 +17,12 @@ public final class MessageFeatureMap extends FeatureMap {
     // Do not instantiate this class.
     private MessageFeatureMap() {}
 
-    /**
-     * @return the singleton MessageFeatureMap.
-     */
+    /** @return the singleton MessageFeatureMap. */
     public static MessageFeatureMap getInstance() {
         return sInstance;
     }
 
-    /**
-     * Convenience method to call {@link #isEnabledInNative(String)} statically.
-     */
+    /** Convenience method to call {@link #isEnabledInNative(String)} statically. */
     public static boolean isEnabled(String featureName) {
         return getInstance().isEnabledInNative(featureName);
     }

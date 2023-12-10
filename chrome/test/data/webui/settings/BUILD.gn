@@ -8,6 +8,7 @@ build_webui_tests("build") {
   files = [
     "about_page_test.ts",
     "advanced_page_test.ts",
+    "ai_page_test.ts",
     "all_sites_test.ts",
     "anti_abuse_page_test.ts",
     "appearance_fonts_page_test.ts",
@@ -60,7 +61,6 @@ build_webui_tests("build") {
     "privacy_guide_test_util.ts",
     "privacy_page_test.ts",
     "privacy_sandbox_page_test.ts",
-    "privacy_sandbox_test.ts",
     "protocol_handlers_test.ts",
     "recent_site_permissions_test.ts",
     "reset_page_test.ts",
@@ -167,6 +167,7 @@ build_webui_tests("build") {
 
   if (!is_chromeos) {
     files += [
+      "a11y_page_test.ts",
       "live_caption_section_test.ts",
       "live_translate_section_test.ts",
       "test_captions_browser_proxy.ts",

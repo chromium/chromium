@@ -20,9 +20,9 @@
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/policy/messaging_layer/public/report_client.h"
 #include "chrome/browser/policy/messaging_layer/public/report_client_test_util.h"
-#include "chrome/browser/policy/messaging_layer/upload/dm_server_uploader.h"
 #include "chrome/browser/policy/messaging_layer/upload/file_upload_job.h"
 #include "chrome/browser/policy/messaging_layer/upload/file_upload_job_test_util.h"
+#include "chrome/browser/policy/messaging_layer/upload/server_uploader.h"
 #include "chrome/browser/policy/messaging_layer/util/reporting_server_connector.h"
 #include "chrome/browser/policy/messaging_layer/util/reporting_server_connector_test_util.h"
 #include "chrome/browser/policy/messaging_layer/util/test_request_payload.h"
@@ -324,7 +324,7 @@ TEST_P(RecordHandlerImplTest, ContainsGenerationGuid) {
   test_env_.SimulateCustomResponseForRequest(0, std::move(response.value()));
 
   const auto result = responder_event.result();
-  EXPECT_TRUE(result.has_value()) << result.error();
+  EXPECT_OK(result) << result.error();
 }
 
 TEST_P(RecordHandlerImplTest, ValidGenerationGuid) {
@@ -358,7 +358,7 @@ TEST_P(RecordHandlerImplTest, ValidGenerationGuid) {
   test_env_.SimulateCustomResponseForRequest(0, std::move(response.value()));
 
   const auto result = responder_event.result();
-  EXPECT_TRUE(result.has_value()) << result.error();
+  EXPECT_OK(result) << result.error();
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -432,7 +432,7 @@ TEST_P(RecordHandlerImplTest, MissingGenerationGuidFromManagedDeviceIsOk) {
   test_env_.SimulateCustomResponseForRequest(0, std::move(response.value()));
 
   const auto result = responder_event.result();
-  EXPECT_TRUE(result.has_value()) << result.error();
+  EXPECT_OK(result) << result.error();
 }
 
 #if BUILDFLAG(IS_CHROMEOS)

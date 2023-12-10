@@ -1,4 +1,4 @@
-var referrerHeader = "<?php echo $_SERVER['HTTP_REFERER'] ?>";
+var referrerHeader = "<?php echo ($_SERVER['HTTP_REFERER'] ?? null) ?>";
 if (referrerHeader === "")
     scriptReferrer = "none";
 else

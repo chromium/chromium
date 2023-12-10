@@ -77,6 +77,7 @@ mojom_component("test_mojom") {
   sources = [ "browser_test_interfaces.mojom" ]
 
   public_deps = [
+    ":xr_common",
     "//ui/gfx/geometry/mojom",
     "//ui/gfx/mojom",
   ]
@@ -107,6 +108,7 @@ mojom_component("xr_common") {
   macro_prefix = "DEVICE_XR_COMMON_MOJO_BINDINGS"
 
   sources = [
+    "openxr_interaction_profile_type.mojom",
     "xr_device.mojom",
     "xr_session.mojom",
   ]
@@ -135,6 +137,5 @@ mojom_component("xr_common") {
   }
 
   webui_module_path = "/"
-  use_typescript_sources = true
   generate_legacy_js_bindings = true
 }

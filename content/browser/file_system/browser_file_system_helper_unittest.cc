@@ -13,6 +13,8 @@
 #include "base/test/null_task_runner.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/file_system/browser_file_system_helper.h"
+#include "content/common/features.h"
+#include "content/public/common/content_client.h"
 #include "content/public/common/drop_data.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
@@ -40,7 +42,12 @@ TEST(BrowserFileSystemHelperTest,
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
 
-  BrowserTaskEnvironment task_environment;
+  // We need the task environment to use a separate IO thread so that the
+  // ChildProcessSecurityPolicy checks which perform different logic
+  // based on whether they are called on the UI thread or the IO thread do the
+  // right thing.
+  BrowserTaskEnvironment task_environment{
+      content::BrowserTaskEnvironment::REAL_IO_THREAD};
   TestBrowserContext browser_context;
   ChildProcessSecurityPolicyImpl* p =
       ChildProcessSecurityPolicyImpl::GetInstance();
@@ -139,10 +146,28 @@ TEST(BrowserFileSystemHelperTest,
 }
 
 TEST(BrowserFileSystemHelperTest, PrepareDropDataForChildProcess_LocalFiles) {
+  // Install a custom ContentBrowserClient that overrides IsHandledURL() to
+  // return `true` for file URLs, just like regular Chromium would.  This is
+  // necessary for ChildProcessSecurityPolicy::CanRequestURL() checks to work
+  // more accurately, since it allows URLs not destined for the browser itself
+  // (i.e., when IsHandledURL() returns false).
+  class LocalFileTestBrowserClient : public ContentBrowserClient {
+   public:
+    LocalFileTestBrowserClient() = default;
+
+    bool IsHandledURL(const GURL& url) override { return url.SchemeIsFile(); }
+  } test_browser_client;
+  auto* old_browser_client = SetBrowserClientForTesting(&test_browser_client);
+
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
 
-  BrowserTaskEnvironment task_environment;
+  // We need the task environment to use a separate IO thread so that the
+  // ChildProcessSecurityPolicy checks which perform different logic
+  // based on whether they are called on the UI thread or the IO thread do the
+  // right thing.
+  BrowserTaskEnvironment task_environment{
+      content::BrowserTaskEnvironment::REAL_IO_THREAD};
   TestBrowserContext browser_context;
   ChildProcessSecurityPolicyImpl* p =
       ChildProcessSecurityPolicyImpl::GetInstance();
@@ -161,9 +186,13 @@ TEST(BrowserFileSystemHelperTest, PrepareDropDataForChildProcess_LocalFiles) {
   EXPECT_FALSE(p->CanReadFile(kRendererID, kDraggedFile));
   EXPECT_FALSE(p->CanReadFile(kRendererID, kOtherFile));
   EXPECT_FALSE(
+      p->CanRequestURL(kRendererID, net::FilePathToFileURL(kDraggedFile)));
+  EXPECT_FALSE(
       p->CanCommitURL(kRendererID, net::FilePathToFileURL(kDraggedFile)));
   EXPECT_FALSE(p->CanCreateReadWriteFile(kRendererID, kDraggedFile));
   EXPECT_FALSE(p->CanCreateReadWriteFile(kRendererID, kOtherFile));
+  EXPECT_FALSE(
+      p->CanRequestURL(kRendererID, net::FilePathToFileURL(kOtherFile)));
   EXPECT_FALSE(
       p->CanCommitURL(kRendererID, net::FilePathToFileURL(kOtherFile)));
 
@@ -176,19 +205,32 @@ TEST(BrowserFileSystemHelperTest, PrepareDropDataForChildProcess_LocalFiles) {
   EXPECT_EQ(kDraggedFile, drop_data.filenames[0].path);
 
   // Verify that read access (and no other access) is granted for
-  // |kDraggedFile|.
+  // |kDraggedFile|.  After RequestFileSetCheckedInCanRequestURL ships, the
+  // renderer should be allowed to request this file, but not commit it;
+  // previously it was allowed to do both.
   EXPECT_TRUE(p->CanReadFile(kRendererID, kDraggedFile));
   EXPECT_FALSE(p->CanCreateReadWriteFile(kRendererID, kDraggedFile));
   EXPECT_TRUE(
-      p->CanCommitURL(kRendererID, net::FilePathToFileURL(kDraggedFile)));
+      p->CanRequestURL(kRendererID, net::FilePathToFileURL(kDraggedFile)));
+  if (base::FeatureList::IsEnabled(
+          features::kRequestFileSetCheckedInCanRequestURL)) {
+    EXPECT_FALSE(
+        p->CanCommitURL(kRendererID, net::FilePathToFileURL(kDraggedFile)));
+  } else {
+    EXPECT_TRUE(
+        p->CanCommitURL(kRendererID, net::FilePathToFileURL(kDraggedFile)));
+  }
 
   // Verify that there is still no access for |kOtherFile|.
   EXPECT_FALSE(p->CanReadFile(kRendererID, kOtherFile));
   EXPECT_FALSE(p->CanCreateReadWriteFile(kRendererID, kOtherFile));
   EXPECT_FALSE(
+      p->CanRequestURL(kRendererID, net::FilePathToFileURL(kOtherFile)));
+  EXPECT_FALSE(
       p->CanCommitURL(kRendererID, net::FilePathToFileURL(kOtherFile)));
 
   p->Remove(kRendererID);
+  SetBrowserClientForTesting(old_browser_client);
 }
 
 }  // namespace browser_file_system_helper_unittest

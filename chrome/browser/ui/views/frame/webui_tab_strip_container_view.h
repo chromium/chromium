@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_FRAME_WEBUI_TAB_STRIP_CONTAINER_VIEW_H_
 
 #include <memory>
+#include <optional>
 #include <set>
 
 #include "base/memory/raw_ptr.h"
@@ -18,7 +19,6 @@
 #include "chrome/browser/ui/webui/tab_strip/tab_strip_ui_metrics.h"
 #include "chrome/common/buildflags.h"
 #include "components/tab_groups/tab_group_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/events/event_handler.h"
 #include "ui/gfx/animation/animation_delegate.h"
@@ -105,8 +105,8 @@ class WebUITabStripContainerView : public TabStripUIEmbedder,
   // Called when drag-to-open finishes. If |fling_direction| is present,
   // the user released their touch with a high velocity. We should use
   // just this direction to animate open or closed.
-  void EndDragToOpen(absl::optional<WebUITabStripDragDirection>
-                         fling_direction = absl::nullopt);
+  void EndDragToOpen(
+      std::optional<WebUITabStripDragDirection> fling_direction = std::nullopt);
 
   void TabCounterPressed(const ui::Event& event);
 
@@ -173,11 +173,11 @@ class WebUITabStripContainerView : public TabStripUIEmbedder,
   int old_top_container_width_ = 0;
 #endif  // BUILDFLAG(IS_WIN)
 
-  absl::optional<float> current_drag_height_;
+  std::optional<float> current_drag_height_;
 
   // When opened, if currently open. Used to calculate metric for how
   // long the tab strip is kept open.
-  absl::optional<base::TimeTicks> time_at_open_;
+  std::optional<base::TimeTicks> time_at_open_;
 
   // Used to keep the toolbar revealed while the tab strip is open.
   std::unique_ptr<ImmersiveRevealedLock> immersive_revealed_lock_;

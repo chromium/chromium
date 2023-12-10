@@ -5,8 +5,8 @@
 #include "extensions/browser/api_test_utils.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
-
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
@@ -18,7 +18,6 @@
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/extension_function_dispatcher.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using extensions::ExtensionFunctionDispatcher;
 
@@ -53,7 +52,7 @@ void SendResponseHelper::WaitForResponse() {
 }
 
 bool GetBoolean(const base::Value::Dict& dict, const std::string& key) {
-  absl::optional<bool> value = dict.FindBool(key);
+  std::optional<bool> value = dict.FindBool(key);
   if (!value.has_value()) {
     ADD_FAILURE() << key << " does not exist or is not a boolean.";
     return false;
@@ -62,7 +61,7 @@ bool GetBoolean(const base::Value::Dict& dict, const std::string& key) {
 }
 
 int GetInteger(const base::Value::Dict& dict, const std::string& key) {
-  absl::optional<int> value = dict.FindInt(key);
+  std::optional<int> value = dict.FindInt(key);
   if (!value.has_value()) {
     ADD_FAILURE() << key << " does not exist or is not an integer.";
     return 0;
@@ -99,7 +98,7 @@ base::Value::Dict GetDict(const base::Value::Dict& dict,
   return value->Clone();
 }
 
-base::Value::Dict ToDict(absl::optional<base::ValueView> val) {
+base::Value::Dict ToDict(std::optional<base::ValueView> val) {
   if (!val) {
     ADD_FAILURE() << "val is nullopt";
     return base::Value::Dict();
@@ -112,7 +111,7 @@ base::Value::Dict ToDict(absl::optional<base::ValueView> val) {
   return std::move(result).TakeDict();
 }
 
-base::Value::List ToList(absl::optional<base::ValueView> val) {
+base::Value::List ToList(std::optional<base::ValueView> val) {
   if (!val) {
     ADD_FAILURE() << "val is nullopt";
     return base::Value::List();
@@ -125,7 +124,7 @@ base::Value::List ToList(absl::optional<base::ValueView> val) {
   return std::move(result).TakeList();
 }
 
-absl::optional<base::Value> RunFunctionWithDelegateAndReturnSingleResult(
+std::optional<base::Value> RunFunctionWithDelegateAndReturnSingleResult(
     scoped_refptr<ExtensionFunction> function,
     ArgsType args,
     std::unique_ptr<ExtensionFunctionDispatcher> dispatcher,
@@ -135,11 +134,11 @@ absl::optional<base::Value> RunFunctionWithDelegateAndReturnSingleResult(
       << "Unexpected error: " << function->GetError();
   const base::Value::List* results = function->GetResultListForTest();
   if (!results || results->empty())
-    return absl::nullopt;
+    return std::nullopt;
   return (*results)[0].Clone();
 }
 
-absl::optional<base::Value> RunFunctionAndReturnSingleResult(
+std::optional<base::Value> RunFunctionAndReturnSingleResult(
     scoped_refptr<ExtensionFunction> function,
     ArgsType args,
     content::BrowserContext* context,

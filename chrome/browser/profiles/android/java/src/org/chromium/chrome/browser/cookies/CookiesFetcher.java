@@ -59,9 +59,7 @@ public class CookiesFetcher {
                 .getAbsolutePath();
     }
 
-    /**
-     * Asynchronously fetches cookies from the incognito profile and saves them to a file.
-     */
+    /** Asynchronously fetches cookies from the incognito profile and saves them to a file. */
     public static void persistCookies() {
         try {
             CookiesFetcherJni.get().persistCookies();
@@ -128,12 +126,24 @@ public class CookiesFetcher {
             protected void onPostExecute(List<CanonicalCookie> cookies) {
                 // We can only access cookies and profiles on the UI thread.
                 for (CanonicalCookie cookie : cookies) {
-                    CookiesFetcherJni.get().restoreCookies(cookie.getName(), cookie.getValue(),
-                            cookie.getDomain(), cookie.getPath(), cookie.getCreationDate(),
-                            cookie.getExpirationDate(), cookie.getLastAccessDate(),
-                            cookie.getLastUpdateDate(), cookie.isSecure(), cookie.isHttpOnly(),
-                            cookie.getSameSite(), cookie.getPriority(), cookie.isSameParty(),
-                            cookie.getPartitionKey(), cookie.sourceScheme(), cookie.sourcePort());
+                    CookiesFetcherJni.get()
+                            .restoreCookies(
+                                    cookie.getName(),
+                                    cookie.getValue(),
+                                    cookie.getDomain(),
+                                    cookie.getPath(),
+                                    cookie.getCreationDate(),
+                                    cookie.getExpirationDate(),
+                                    cookie.getLastAccessDate(),
+                                    cookie.getLastUpdateDate(),
+                                    cookie.isSecure(),
+                                    cookie.isHttpOnly(),
+                                    cookie.getSameSite(),
+                                    cookie.getPriority(),
+                                    cookie.isSameParty(),
+                                    cookie.getPartitionKey(),
+                                    cookie.sourceScheme(),
+                                    cookie.sourcePort());
                 }
             }
         }.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
@@ -155,9 +165,7 @@ public class CookiesFetcher {
         return true;
     }
 
-    /**
-     * Delete the cookies file. Called when we detect that all incognito tabs have been closed.
-     */
+    /** Delete the cookies file. Called when we detect that all incognito tabs have been closed. */
     private static void scheduleDeleteCookiesFile() {
         new BackgroundOnlyAsyncTask<Void>() {
             @Override
@@ -174,13 +182,40 @@ public class CookiesFetcher {
     }
 
     @CalledByNative
-    private static CanonicalCookie createCookie(String name, String value, String domain,
-            String path, long creation, long expiration, long lastAccess, long lastUpdate,
-            boolean secure, boolean httpOnly, int sameSite, int priority, boolean sameParty,
-            String partitionKey, int sourceScheme, int sourcePort) {
-        return new CanonicalCookie(name, value, domain, path, creation, expiration, lastAccess,
-                lastUpdate, secure, httpOnly, sameSite, priority, sameParty, partitionKey,
-                sourceScheme, sourcePort);
+    private static CanonicalCookie createCookie(
+            String name,
+            String value,
+            String domain,
+            String path,
+            long creation,
+            long expiration,
+            long lastAccess,
+            long lastUpdate,
+            boolean secure,
+            boolean httpOnly,
+            int sameSite,
+            int priority,
+            boolean sameParty,
+            String partitionKey,
+            int sourceScheme,
+            int sourcePort) {
+        return new CanonicalCookie(
+                name,
+                value,
+                domain,
+                path,
+                creation,
+                expiration,
+                lastAccess,
+                lastUpdate,
+                secure,
+                httpOnly,
+                sameSite,
+                priority,
+                sameParty,
+                partitionKey,
+                sourceScheme,
+                sourcePort);
     }
 
     @CalledByNative
@@ -234,9 +269,23 @@ public class CookiesFetcher {
     @NativeMethods
     interface Natives {
         void persistCookies();
-        void restoreCookies(String name, String value, String domain, String path, long creation,
-                long expiration, long lastAccess, long lastUpdate, boolean secure, boolean httpOnly,
-                int sameSite, int priority, boolean sameParty, String partitionKey,
-                int sourceScheme, int sourcePort);
+
+        void restoreCookies(
+                String name,
+                String value,
+                String domain,
+                String path,
+                long creation,
+                long expiration,
+                long lastAccess,
+                long lastUpdate,
+                boolean secure,
+                boolean httpOnly,
+                int sameSite,
+                int priority,
+                boolean sameParty,
+                String partitionKey,
+                int sourceScheme,
+                int sourcePort);
     }
 }

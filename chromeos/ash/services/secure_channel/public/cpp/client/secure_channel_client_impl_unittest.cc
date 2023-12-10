@@ -4,6 +4,8 @@
 
 #include "chromeos/ash/services/secure_channel/public/cpp/client/secure_channel_client_impl.h"
 
+#include <optional>
+
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -25,7 +27,6 @@
 #include "chromeos/ash/services/secure_channel/public/mojom/secure_channel.mojom.h"
 #include "chromeos/ash/services/secure_channel/secure_channel_initializer.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::secure_channel {
 
@@ -99,7 +100,7 @@ class TestConnectionAttemptDelegate : public ConnectionAttempt::Delegate {
     client_channels_.push_back(std::move(channel));
   }
 
-  absl::optional<mojom::ConnectionAttemptFailureReason>
+  std::optional<mojom::ConnectionAttemptFailureReason>
   last_connection_attempt_failure_reason() {
     return last_connection_attempt_failure_reason_;
   }
@@ -109,7 +110,7 @@ class TestConnectionAttemptDelegate : public ConnectionAttempt::Delegate {
   }
 
  private:
-  absl::optional<mojom::ConnectionAttemptFailureReason>
+  std::optional<mojom::ConnectionAttemptFailureReason>
       last_connection_attempt_failure_reason_;
   std::vector<std::unique_ptr<ClientChannel>> client_channels_;
 };

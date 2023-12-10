@@ -111,8 +111,8 @@ LONG DecryptString(const std::string& ciphertext, std::string* plaintext) {
 LONG CreateRandomSecret(std::string* secret) {
   // Generate a password with 128 bits of randomness.
   const int kBytes = 128 / 8;
-  std::string generated_secret;
-  base::Base64Encode(base::RandBytesAsString(kBytes), &generated_secret);
+  std::string generated_secret =
+      base::Base64Encode(base::RandBytesAsVector(kBytes));
 
   std::string encrypted_secret;
   LONG result = EncryptString(generated_secret, &encrypted_secret);
@@ -147,8 +147,7 @@ OSStatus AddRandomPasswordToKeychain(const crypto::AppleKeychain& keychain,
                                      std::string* secret) {
   // Generate a password with 128 bits of randomness.
   const int kBytes = 128 / 8;
-  std::string password;
-  base::Base64Encode(base::RandBytesAsString(kBytes), &password);
+  std::string password = base::Base64Encode(base::RandBytesAsVector(kBytes));
 
   OSStatus status = WriteKeychainItem(kServiceName, kAccountName, password);
   if (status == noErr)

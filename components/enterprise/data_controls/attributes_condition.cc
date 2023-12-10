@@ -17,6 +17,7 @@ namespace {
 // Constants used to parse sub-dictionaries of DLP policies that should map to
 // an AttributesCondition.
 constexpr char kKeyUrls[] = "urls";
+constexpr char kKeyIncognito[] = "incognito";
 
 #if BUILDFLAG(IS_CHROMEOS)
 constexpr char kKeyComponents[] = "components";
@@ -44,6 +45,8 @@ AttributesCondition::AttributesCondition(const base::Value::Dict& value) {
     }
   }
 
+  incognito_ = value.FindBool(kKeyIncognito);
+
 #if BUILDFLAG(IS_CHROMEOS)
   const base::Value::List* components_value = value.FindList(kKeyComponents);
   if (components_value) {
@@ -67,9 +70,10 @@ AttributesCondition::AttributesCondition(AttributesCondition&& other) = default;
 
 bool AttributesCondition::IsValid() const {
 #if BUILDFLAG(IS_CHROMEOS)
-  return (url_matcher_ && !url_matcher_->IsEmpty()) || !components_.empty();
+  return (url_matcher_ && !url_matcher_->IsEmpty()) || !components_.empty() ||
+         incognito_.has_value();
 #else
-  return url_matcher_ && !url_matcher_->IsEmpty();
+  return (url_matcher_ && !url_matcher_->IsEmpty()) || incognito_.has_value();
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
@@ -101,6 +105,17 @@ bool AttributesCondition::ComponentMatches(Component component) const {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+bool AttributesCondition::IncognitoMatches(
+    const absl::optional<bool>& incognito) const {
+  // When the condition has no assertion on the incognito status of the tab,
+  // `incognito` is always considered to have a matching value.
+  if (!incognito_.has_value()) {
+    return true;
+  }
+
+  return incognito.has_value() && incognito_.value() == incognito.value();
+}
+
 // static
 std::unique_ptr<Condition> SourceAttributesCondition::Create(
     const base::Value& value) {
@@ -124,6 +139,9 @@ std::unique_ptr<Condition> SourceAttributesCondition::Create(
 
 bool SourceAttributesCondition::IsTriggered(
     const ActionContext& action_context) const {
+  if (!IncognitoMatches(action_context.source.incognito)) {
+    return false;
+  }
   return URLMatches(action_context.source.url);
 }
 
@@ -154,6 +172,9 @@ std::unique_ptr<Condition> DestinationAttributesCondition::Create(
 
 bool DestinationAttributesCondition::IsTriggered(
     const ActionContext& action_context) const {
+  if (!IncognitoMatches(action_context.destination.incognito)) {
+    return false;
+  }
 #if BUILDFLAG(IS_CHROMEOS)
   if (!ComponentMatches(action_context.destination.component)) {
     return false;

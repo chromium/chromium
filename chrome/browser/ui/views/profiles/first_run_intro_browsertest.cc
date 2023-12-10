@@ -95,8 +95,8 @@ class FirstRunIntroPixelTest
         }));
     profile_picker_view_->ShowAndWait(
         GetParam().use_fixed_size
-            ? absl::optional<gfx::Size>(gfx::Size(840, 630))
-            : absl::nullopt);
+            ? std::optional<gfx::Size>(gfx::Size(840, 630))
+            : std::nullopt);
 
     if (GetParam().use_longer_strings) {
       EXPECT_EQ(true, content::EvalJs(profile_picker_view_->GetPickerContents(),

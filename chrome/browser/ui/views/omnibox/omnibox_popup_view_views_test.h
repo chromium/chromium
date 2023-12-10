@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_POPUP_VIEW_VIEWS_TEST_H_
 #define CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_POPUP_VIEW_VIEWS_TEST_H_
 
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.h"
 #include "chrome/browser/themes/test/theme_service_changed_waiter.h"
 #include "chrome/browser/themes/theme_service.h"
@@ -17,6 +18,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/omnibox/browser/omnibox_controller.h"
 #include "components/omnibox/browser/omnibox_edit_model.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "ui/views/widget/widget.h"
 
 // Base class for omnibox browser and ui tests.
@@ -99,6 +101,8 @@ class OmniboxPopupViewViewsTest : public InProcessBrowserTest {
 
  private:
   OmniboxTriggeredFeatureService triggered_feature_service_;
+  base::test::ScopedFeatureList feature_list_{
+      omnibox::kOmniboxKeywordModeRefresh};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_POPUP_VIEW_VIEWS_TEST_H_

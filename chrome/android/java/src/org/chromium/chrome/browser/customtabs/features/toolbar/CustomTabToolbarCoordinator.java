@@ -19,6 +19,8 @@ import android.view.View;
 import androidx.annotation.Nullable;
 import androidx.browser.customtabs.CustomTabsIntent;
 
+import dagger.Lazy;
+
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
@@ -44,8 +46,6 @@ import org.chromium.url.GURL;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-
-import dagger.Lazy;
 
 /**
  * Works with the toolbar in a Custom Tab. Encapsulates interactions with Chrome's toolbar-related
@@ -74,8 +74,7 @@ public class CustomTabToolbarCoordinator {
     private final CustomTabBrowserControlsVisibilityDelegate mVisibilityDelegate;
     private final CustomTabToolbarColorController mToolbarColorController;
 
-    @Nullable
-    private ToolbarManager mToolbarManager;
+    @Nullable private ToolbarManager mToolbarManager;
 
     private int mControlsHidingToken = TokenHolder.INVALID_TOKEN;
     private boolean mInitializedToolbarWithNative;
@@ -84,9 +83,12 @@ public class CustomTabToolbarCoordinator {
     private static final String TAG = "CustomTabToolbarCoor";
 
     @Inject
-    public CustomTabToolbarCoordinator(BrowserServicesIntentDataProvider intentDataProvider,
-            CustomTabActivityTabProvider tabProvider, CustomTabsConnection connection,
-            Activity activity, @Named(APP_CONTEXT) Context appContext,
+    public CustomTabToolbarCoordinator(
+            BrowserServicesIntentDataProvider intentDataProvider,
+            CustomTabActivityTabProvider tabProvider,
+            CustomTabsConnection connection,
+            Activity activity,
+            @Named(APP_CONTEXT) Context appContext,
             CustomTabActivityTabController tabController,
             Lazy<BrowserControlsVisibilityManager> controlsVisiblityManager,
             CustomTabActivityNavigationController navigationController,
@@ -172,8 +174,15 @@ public class CustomTabToolbarCoordinator {
         try {
             ActivityOptions options = ActivityOptions.makeBasic();
             ApiCompatibilityUtils.setActivityOptionsBackgroundActivityStartMode(options);
-            params.getPendingIntent().send(mAppContext, 0, addedIntent,
-                    mButtonClickOnFinishedForTesting, null, null, options.toBundle());
+            params.getPendingIntent()
+                    .send(
+                            mAppContext,
+                            0,
+                            addedIntent,
+                            mButtonClickOnFinishedForTesting,
+                            null,
+                            null,
+                            options.toBundle());
         } catch (PendingIntent.CanceledException e) {
             Log.e(TAG, "CanceledException while sending pending intent in custom tab");
         }
@@ -181,7 +190,7 @@ public class CustomTabToolbarCoordinator {
 
     private void onCompositorContentInitialized(LayoutManagerImpl layoutDriver) {
         mToolbarManager.initializeWithNative(
-                layoutDriver, null, null, null, v -> onCloseButtonClick(), null);
+                layoutDriver, null, null, null, null, v -> onCloseButtonClick(), null);
         mInitializedToolbarWithNative = true;
     }
 
@@ -198,19 +207,20 @@ public class CustomTabToolbarCoordinator {
         mVisibilityDelegate.setControlsState(controlsState);
         if (controlsState == BrowserControlsState.HIDDEN) {
             mControlsHidingToken =
-                    mBrowserControlsVisibilityManager.get().hideAndroidControlsAndClearOldToken(
-                            mControlsHidingToken);
+                    mBrowserControlsVisibilityManager
+                            .get()
+                            .hideAndroidControlsAndClearOldToken(mControlsHidingToken);
         } else {
-            mBrowserControlsVisibilityManager.get().releaseAndroidControlsHidingToken(
-                    mControlsHidingToken);
+            mBrowserControlsVisibilityManager
+                    .get()
+                    .releaseAndroidControlsHidingToken(mControlsHidingToken);
         }
     }
 
-    /**
-     * Shows toolbar temporarily, for a few seconds.
-     */
+    /** Shows toolbar temporarily, for a few seconds. */
     public void showToolbarTemporarily() {
-        mBrowserControlsVisibilityManager.get()
+        mBrowserControlsVisibilityManager
+                .get()
                 .getBrowserVisibilityDelegate()
                 .showControlsTransient();
     }

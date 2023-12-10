@@ -9,10 +9,14 @@ source_set("test") {
   testonly = true
 
   sources = [
+    "feature_promo_session_test_util.cc",
+    "feature_promo_session_test_util.h",
     "feature_promo_test_util.cc",
     "feature_promo_test_util.h",
     "mock_feature_promo_controller.cc",
     "mock_feature_promo_controller.h",
+    "mock_feature_promo_session_manager.cc",
+    "mock_feature_promo_session_manager.h",
     "test_feature_promo_storage_service.cc",
     "test_feature_promo_storage_service.h",
     "test_help_bubble.cc",

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string_view>
+
 #include "raw_input_gamepad_device_win.h"
 
 // NOTE: <hidsdi.h> must be included before <hidpi.h>. clang-format will want to
@@ -395,7 +397,7 @@ bool RawInputGamepadDeviceWin::QueryProductString(
   }
 
   // Remove trailing NUL characters.
-  buffer = std::wstring(base::TrimString(buffer, base::WStringPiece(L"\0", 1),
+  buffer = std::wstring(base::TrimString(buffer, std::wstring_view(L"\0", 1),
                                          base::TRIM_TRAILING));
 
   // The product string cannot be empty.

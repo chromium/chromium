@@ -315,7 +315,7 @@ base::Value::Dict PageAggregator::DescribePageNodeData(
   ret.Set("num_frames_holding_web_lock",
           static_cast<int>(data->num_frames_holding_web_lock_));
   ret.Set("num_frames_holding_indexeddb_lock",
-          static_cast<int>(data->num_frames_holding_web_lock_));
+          static_cast<int>(data->num_frames_holding_indexeddb_lock_));
   ret.Set("num_current_frames_with_form_interaction",
           static_cast<int>(data->num_current_frames_with_form_interaction_));
   return ret;

@@ -210,8 +210,8 @@ void FrameSinkHolder::SetBeginFrameSource(viz::BeginFrameSource* source) {
   }
 }
 
-absl::optional<viz::HitTestRegionList> FrameSinkHolder::BuildHitTestData() {
-  return absl::nullopt;
+std::optional<viz::HitTestRegionList> FrameSinkHolder::BuildHitTestData() {
+  return std::nullopt;
 }
 
 void FrameSinkHolder::ReclaimResources(

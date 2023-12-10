@@ -33,7 +33,7 @@ class CardUnmaskPromptController {
   virtual int GetCvcImageRid() const = 0;
   virtual bool ShouldRequestExpirationDate() const = 0;
 #if BUILDFLAG(IS_ANDROID)
-  virtual std::string GetCardIconString() const = 0;
+  virtual Suggestion::Icon GetCardIcon() const = 0;
   virtual std::u16string GetCardName() const = 0;
   virtual std::u16string GetCardLastFourDigits() const = 0;
   virtual std::u16string GetCardExpiration() const = 0;

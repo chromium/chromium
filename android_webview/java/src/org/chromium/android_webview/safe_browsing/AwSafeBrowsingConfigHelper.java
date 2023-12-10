@@ -17,9 +17,7 @@ import org.chromium.base.CommandLine;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.ScopedSysTraceEvent;
 
-/**
- * Helper class for getting the configuration settings related to safebrowsing in WebView.
- */
+/** Helper class for getting the configuration settings related to safebrowsing in WebView. */
 @JNINamespace("android_webview")
 public class AwSafeBrowsingConfigHelper {
     private static volatile boolean sSafeBrowsingUserOptIn;
@@ -52,8 +50,9 @@ public class AwSafeBrowsingConfigHelper {
 
     // Should only be called once during startup. Calling this multiple times will skew UMA metrics.
     public static void maybeEnableSafeBrowsingFromManifest() {
-        try (ScopedSysTraceEvent e = ScopedSysTraceEvent.scoped(
-                     "AwSafeBrowsingConfigHelper.maybeEnableSafeBrowsingFromManifest")) {
+        try (ScopedSysTraceEvent e =
+                ScopedSysTraceEvent.scoped(
+                        "AwSafeBrowsingConfigHelper.maybeEnableSafeBrowsingFromManifest")) {
             Boolean appOptIn = getOptInPreferenceTraced();
             if (appOptIn == null) {
                 recordAppOptIn(AppOptIn.NO_PREFERENCE);
@@ -68,22 +67,23 @@ public class AwSafeBrowsingConfigHelper {
             setSafeBrowsingEnabledByManifest(
                     appOptIn == null ? !isDisabledByCommandLine() : appOptIn);
 
-            Callback<Boolean> cb = verifyAppsValue
-                    -> setSafeBrowsingUserOptIn(Boolean.TRUE.equals(verifyAppsValue));
+            Callback<Boolean> cb =
+                    verifyAppsValue ->
+                            setSafeBrowsingUserOptIn(Boolean.TRUE.equals(verifyAppsValue));
             PlatformServiceBridge.getInstance().querySafeBrowsingUserConsent(cb);
         }
     }
 
     private static Boolean getOptInPreferenceTraced() {
-        try (ScopedSysTraceEvent e = ScopedSysTraceEvent.scoped(
-                     "AwSafeBrowsingConfigHelper.getAppOptInPreference")) {
+        try (ScopedSysTraceEvent e =
+                ScopedSysTraceEvent.scoped("AwSafeBrowsingConfigHelper.getAppOptInPreference")) {
             return ManifestMetadataUtil.getSafeBrowsingAppOptInPreference();
         }
     }
 
     private static boolean isDisabledByCommandLine() {
-        try (ScopedSysTraceEvent e = ScopedSysTraceEvent.scoped(
-                     "AwSafeBrowsingConfigHelper.isDisabledByCommandLine")) {
+        try (ScopedSysTraceEvent e =
+                ScopedSysTraceEvent.scoped("AwSafeBrowsingConfigHelper.isDisabledByCommandLine")) {
             CommandLine cli = CommandLine.getInstance();
             // Disable flag has higher precedence than the default
             return cli.hasSwitch(AwSwitches.WEBVIEW_DISABLE_SAFEBROWSING_SUPPORT);

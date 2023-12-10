@@ -14,9 +14,7 @@ import org.chromium.components.paintpreview.player.frame.PlayerFrameViewport;
 import org.chromium.content.browser.accessibility.AccessibilityDelegate;
 import org.chromium.content_public.browser.WebContents;
 
-/**
- * Implementation of {@link AccessibilityDelegate} based on the Paint Preview Player.
- */
+/** Implementation of {@link AccessibilityDelegate} based on the Paint Preview Player. */
 public class PlayerAccessibilityDelegate implements AccessibilityDelegate {
     private final PlayerFrameCoordinator mRootCoordinator;
     private final long mNativeAxTree;
@@ -26,9 +24,11 @@ public class PlayerAccessibilityDelegate implements AccessibilityDelegate {
             PlayerFrameCoordinator coordinator, long nativeAxTree, Size constantOffset) {
         mRootCoordinator = coordinator;
         mNativeAxTree = nativeAxTree;
-        mPlayerAccessibilityCoordinates = new PlayerAccessibilityCoordinatesImpl(
-                mRootCoordinator.getViewportForAccessibility(),
-                mRootCoordinator.getContentSizeForAccessibility(), constantOffset);
+        mPlayerAccessibilityCoordinates =
+                new PlayerAccessibilityCoordinatesImpl(
+                        mRootCoordinator.getViewportForAccessibility(),
+                        mRootCoordinator.getContentSizeForAccessibility(),
+                        constantOffset);
     }
 
     @Override

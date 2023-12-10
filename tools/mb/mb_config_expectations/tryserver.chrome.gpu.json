@@ -1,0 +1,17 @@
+{
+  "gpu-fyi-try-chromeos-skylab-jacuzzi": {
+    "args_file": "//build/args/chromeos/jacuzzi.gni",
+    "gn_args": {
+      "dcheck_always_on": false,
+      "ffmpeg_branding": "Chrome",
+      "is_chromeos_device": true,
+      "is_component_build": false,
+      "is_debug": false,
+      "is_skylab": true,
+      "ozone_platform_headless": true,
+      "proprietary_codecs": true,
+      "symbol_level": 0,
+      "use_remoteexec": true
+    }
+  }
+}

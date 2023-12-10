@@ -22,6 +22,7 @@
 #include "components/segmentation_platform/public/segmentation_platform_service.h"
 
 using base::android::AttachCurrentThread;
+using base::android::ConvertJavaStringToUTF8;
 using base::android::JavaParamRef;
 
 namespace segmentation_platform {

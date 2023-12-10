@@ -77,44 +77,6 @@ const char kDocumentClickHandlerSubmitJS[] =
     "  document.getElementById('testform').submit();"
     "};";
 
-// TODO(bondd): PdmChangeWaiter in autofill_uitest_util.cc is a replacement for
-// this class. Remove this class and use helper functions in that file instead.
-class WindowedPersonalDataManagerObserver : public PersonalDataManagerObserver {
- public:
-  explicit WindowedPersonalDataManagerObserver(Browser* browser)
-      : alerted_(false), has_run_message_loop_(false), browser_(browser) {
-    PersonalDataManagerFactory::GetForProfile(browser_->profile())->
-        AddObserver(this);
-  }
-
-  ~WindowedPersonalDataManagerObserver() override {}
-
-  void Wait() {
-    if (!alerted_) {
-      has_run_message_loop_ = true;
-      content::RunMessageLoop();
-    }
-    PersonalDataManagerFactory::GetForProfile(browser_->profile())->
-        RemoveObserver(this);
-  }
-
-  // PersonalDataManagerObserver:
-  void OnPersonalDataChanged() override {
-    if (has_run_message_loop_) {
-      base::RunLoop::QuitCurrentWhenIdleDeprecated();
-      has_run_message_loop_ = false;
-    }
-    alerted_ = true;
-  }
-
-  void OnInsufficientFormData() override { OnPersonalDataChanged(); }
-
- private:
-  bool alerted_;
-  bool has_run_message_loop_;
-  raw_ptr<Browser> browser_;
-};
-
 class AutofillTest : public InProcessBrowserTest {
  protected:
   class TestAutofillManager : public BrowserAutofillManager {
@@ -135,7 +97,7 @@ class AutofillTest : public InProcessBrowserTest {
 
   AutofillTest() {
     feature_list_.InitAndEnableFeature(
-        blink::features::kAutofillDetectRemovedFormControls);
+        features::kAutofillDetectRemovedFormControls);
   }
 
   void SetUpOnMainThread() override {
@@ -151,6 +113,7 @@ class AutofillTest : public InProcessBrowserTest {
   }
 
   void TearDownOnMainThread() override {
+    base::RunLoop().RunUntilIdle();
     // Make sure to close any showing popups prior to tearing down the UI.
     ContentAutofillDriverFactory::FromWebContents(web_contents())
         ->DriverForFrame(web_contents()->GetPrimaryMainFrame())
@@ -204,7 +167,7 @@ class AutofillTest : public InProcessBrowserTest {
         autofill_manager_injector_[web_contents()]->WaitForFormsSeen(1));
     // Shortcut explicit save prompts and automatically accept.
     personal_data_manager()->set_auto_accept_address_imports_for_testing(true);
-    WindowedPersonalDataManagerObserver observer(browser());
+    PdmChangeWaiter observer(browser()->profile());
     ASSERT_TRUE(
         content::ExecJs(web_contents(), GetJSToFillForm(data) + submit_js));
     if (simulate_click) {
@@ -232,8 +195,9 @@ class AutofillTest : public InProcessBrowserTest {
         data, "\n", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
     int parsed_profiles = 0;
     for (const auto& line : lines) {
-      if (base::StartsWith(line, "#", base::CompareCase::SENSITIVE))
+      if (line.starts_with("#")) {
         continue;
+      }
 
       std::vector<std::string> fields = base::SplitString(
           line, "|", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);

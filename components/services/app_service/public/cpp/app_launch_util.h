@@ -65,10 +65,11 @@ enum class LaunchSource {
   kFromProfileMenu =
       35,  // Profile menu of installable chrome://password-manager WebUI.
   kFromSysTrayCalendar = 36,  // Launches from the system tray Calendar.
+  kFromInstaller = 37,        // Installation UI
 
   // Add any new values above this one, and update kMaxValue to the highest
   // enumerator value.
-  kMaxValue = kFromSysTrayCalendar,
+  kMaxValue = kFromInstaller,
 };
 
 // Don't remove items or change the order of this enum.  It's used in

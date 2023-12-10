@@ -39,16 +39,16 @@ TEST(IdlCompiler, Basics) {
   MyType1 a;
   a.x = 5;
   a.y = std::string("foo");
-  MyType1 b;
-  EXPECT_TRUE(MyType1::Populate(a.ToValue(), b));
-  EXPECT_EQ(a.x, b.x);
-  EXPECT_EQ(a.y, b.y);
+  auto b = MyType1::FromValue(a.ToValue());
+  ASSERT_TRUE(b);
+  EXPECT_EQ(a.x, b->x);
+  EXPECT_EQ(a.y, b->y);
   EXPECT_EQ(a.Clone().ToValue(), a.ToValue());
 
   // Test Function2, which takes an integer parameter.
   base::Value::List list;
   list.Append(5);
-  absl::optional<Function2::Params> f2_params = Function2::Params::Create(list);
+  std::optional<Function2::Params> f2_params = Function2::Params::Create(list);
   EXPECT_EQ(5, f2_params->x);
 
   // Test Function3, which takes a MyType1 parameter.
@@ -61,7 +61,7 @@ TEST(IdlCompiler, Basics) {
   tmp.Set("b", "bstring");
   tmp.Set("c", "cstring");
   list.Append(base::Value(std::move(tmp)));
-  absl::optional<Function3::Params> f3_params = Function3::Params::Create(list);
+  std::optional<Function3::Params> f3_params = Function3::Params::Create(list);
   EXPECT_EQ(17, f3_params->arg.x);
   EXPECT_EQ("hello", f3_params->arg.y);
 
@@ -77,17 +77,17 @@ TEST(IdlCompiler, Basics) {
 
   base::Value::List f6_results = Function6::Results::Create(a);
   ASSERT_EQ(1u, f6_results.size());
-  MyType1 c;
-  EXPECT_TRUE(MyType1::Populate(f6_results[0], c));
-  EXPECT_EQ(a.x, c.x);
-  EXPECT_EQ(a.y, c.y);
+  auto c = MyType1::FromValue(f6_results[0]);
+  ASSERT_TRUE(c);
+  EXPECT_EQ(a.x, c->x);
+  EXPECT_EQ(a.y, c->y);
 }
 
 TEST(IdlCompiler, OptionalArguments) {
   // Test a function that takes one optional argument, both without and with
   // that argument.
   base::Value::List list;
-  absl::optional<Function7::Params> f7_params = Function7::Params::Create(list);
+  std::optional<Function7::Params> f7_params = Function7::Params::Create(list);
   EXPECT_FALSE(f7_params->arg.has_value());
   list.Append(7);
   f7_params = Function7::Params::Create(list);
@@ -97,7 +97,7 @@ TEST(IdlCompiler, OptionalArguments) {
   // argument.
   list.clear();
   list.Append(8);
-  absl::optional<Function8::Params> f8_params = Function8::Params::Create(list);
+  std::optional<Function8::Params> f8_params = Function8::Params::Create(list);
   EXPECT_EQ(8, f8_params->arg1);
   EXPECT_FALSE(f8_params->arg2.has_value());
   list.Append("foo");
@@ -107,7 +107,7 @@ TEST(IdlCompiler, OptionalArguments) {
 
   // Test a function with an optional argument of custom type.
   list.clear();
-  absl::optional<Function9::Params> f9_params = Function9::Params::Create(list);
+  std::optional<Function9::Params> f9_params = Function9::Params::Create(list);
   EXPECT_FALSE(f9_params->arg.has_value());
   list.clear();
   base::Value::Dict tmp;
@@ -131,9 +131,9 @@ TEST(IdlCompiler, ArrayTypes) {
   base::Value::List list;
   list.Append(33);
   list.Append(base::Value::List());
-  absl::optional<Function10::Params> f10_params =
+  std::optional<Function10::Params> f10_params =
       Function10::Params::Create(list);
-  ASSERT_TRUE(f10_params != absl::nullopt);
+  ASSERT_TRUE(f10_params != std::nullopt);
   EXPECT_EQ(33, f10_params->x);
   EXPECT_TRUE(f10_params->y.empty());
 
@@ -145,7 +145,7 @@ TEST(IdlCompiler, ArrayTypes) {
   sublist.Append(35);
   list.Append(std::move(sublist));
   f10_params = Function10::Params::Create(list);
-  ASSERT_TRUE(f10_params != absl::nullopt);
+  ASSERT_TRUE(f10_params != std::nullopt);
   EXPECT_EQ(33, f10_params->x);
   ASSERT_EQ(2u, f10_params->y.size());
   EXPECT_EQ(34, f10_params->y[0]);
@@ -163,9 +163,9 @@ TEST(IdlCompiler, ArrayTypes) {
   sublist2.Append(base::Value(a.ToValue()));
   sublist2.Append(base::Value(b.ToValue()));
   list.Append(std::move(sublist2));
-  absl::optional<Function11::Params> f11_params =
+  std::optional<Function11::Params> f11_params =
       Function11::Params::Create(list);
-  ASSERT_TRUE(f11_params != absl::nullopt);
+  ASSERT_TRUE(f11_params != std::nullopt);
   ASSERT_EQ(2u, f11_params->arg.size());
   EXPECT_EQ(5, f11_params->arg[0].x);
   EXPECT_EQ("foo", f11_params->arg[0].y);
@@ -177,29 +177,28 @@ TEST(IdlCompiler, ObjectTypes) {
   // Test the FooType type.
   FooType f1;
   f1.x = 3;
-  FooType f2;
-  EXPECT_TRUE(FooType::Populate(f1.ToValue(), f2));
-  EXPECT_EQ(f1.x, f2.x);
+  auto f2 = FooType::FromValue(f1.ToValue());
+  ASSERT_TRUE(f2);
+  EXPECT_EQ(f1.x, f2->x);
 
   // Test the BarType type.
   BarType b1;
   b1.x = base::Value(7);
-  BarType b2;
-  EXPECT_TRUE(BarType::Populate(b1.ToValue(), b2));
-  ASSERT_TRUE(b2.x.is_int());
-  EXPECT_EQ(7, b2.x.GetInt());
-  EXPECT_FALSE(b2.y.has_value());
+  auto b2 = BarType::FromValue(b1.ToValue());
+  ASSERT_TRUE(b2);
+  ASSERT_TRUE(b2->x.is_int());
+  EXPECT_EQ(7, b2->x.GetInt());
+  EXPECT_FALSE(b2->y.has_value());
 
   // Test the params to the ObjectFunction1 function.
   base::Value::Dict icon_props;
   icon_props.Set("hello", "world");
-  ObjectFunction1::Params::Icon icon;
-  EXPECT_TRUE(ObjectFunction1::Params::Icon::Populate(icon_props, icon));
+  ASSERT_TRUE(ObjectFunction1::Params::Icon::FromValue(icon_props));
   base::Value::List list;
   list.Append(std::move(icon_props));
-  absl::optional<ObjectFunction1::Params> params =
+  std::optional<ObjectFunction1::Params> params =
       ObjectFunction1::Params::Create(list);
-  ASSERT_TRUE(params != absl::nullopt);
+  ASSERT_TRUE(params != std::nullopt);
   const std::string* tmp =
       params->icon.additional_properties.FindString("hello");
   ASSERT_TRUE(tmp);

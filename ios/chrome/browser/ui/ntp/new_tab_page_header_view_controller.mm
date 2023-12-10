@@ -11,18 +11,18 @@
 #import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/prefs/pref_service.h"
 #import "components/signin/public/base/signin_switches.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/sync/base/features.h"
-#import "ios/chrome/browser/ntp/features.h"
-#import "ios/chrome/browser/ntp/home/features.h"
-#import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
+#import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
 #import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_lens_input_selection_command.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/elements/new_feature_badge_view.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -87,10 +87,17 @@ NSString* const kScribbleFakeboxElementId = @"fakebox";
 
 @end
 
-@implementation NewTabPageHeaderViewController
+@implementation NewTabPageHeaderViewController {
+  BOOL _useNewBadgeForLensButton;
+}
 
-- (instancetype)init {
-  return [super initWithNibName:nil bundle:nil];
+- (instancetype)initWithUseNewBadgeForLensButton:
+    (BOOL)useNewBadgeForLensButton {
+  self = [super initWithNibName:nil bundle:nil];
+  if (self) {
+    _useNewBadgeForLensButton = useNewBadgeForLensButton;
+  }
+  return self;
 }
 
 #pragma mark - Public
@@ -245,7 +252,8 @@ NSString* const kScribbleFakeboxElementId = @"fakebox";
 
     CGFloat width = self.view.frame.size.width;
 
-    self.headerView = [[NewTabPageHeaderView alloc] init];
+    self.headerView = [[NewTabPageHeaderView alloc]
+        initWithUseNewBadgeForLensButton:_useNewBadgeForLensButton];
     self.headerView.isGoogleDefaultSearchEngine =
         self.isGoogleDefaultSearchEngine;
     self.headerView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -281,6 +289,7 @@ NSString* const kScribbleFakeboxElementId = @"fakebox";
                       andHeaderView:self.headerView];
 
     [self.logoVendor fetchDoodle];
+    self.headerView.tintAdjustmentMode = UIViewTintAdjustmentModeNormal;
   }
 }
 
@@ -567,23 +576,20 @@ NSString* const kScribbleFakeboxElementId = @"fakebox";
               requestElementsInRect:(CGRect)rect
                          completion:
                              (void (^)(NSArray<UIScribbleElementIdentifier>*
-                                           elements))completion
-    API_AVAILABLE(ios(14.0)) {
+                                           elements))completion {
   completion(@[ kScribbleFakeboxElementId ]);
 }
 
 - (BOOL)indirectScribbleInteraction:(UIIndirectScribbleInteraction*)interaction
                    isElementFocused:
-                       (UIScribbleElementIdentifier)elementIdentifier
-    API_AVAILABLE(ios(14.0)) {
+                       (UIScribbleElementIdentifier)elementIdentifier {
   DCHECK(elementIdentifier == kScribbleFakeboxElementId);
   return self.toolbarDelegate.fakeboxScribbleForwardingTarget.isFirstResponder;
 }
 
 - (CGRect)
     indirectScribbleInteraction:(UIIndirectScribbleInteraction*)interaction
-                frameForElement:(UIScribbleElementIdentifier)elementIdentifier
-    API_AVAILABLE(ios(14.0)) {
+                frameForElement:(UIScribbleElementIdentifier)elementIdentifier {
   DCHECK(elementIdentifier == kScribbleFakeboxElementId);
 
   // Imitate the entire location bar being scribblable.
@@ -596,7 +602,7 @@ NSString* const kScribbleFakeboxElementId = @"fakebox";
                      referencePoint:(CGPoint)focusReferencePoint
                          completion:
                              (void (^)(UIResponder<UITextInput>* focusedInput))
-                                 completion API_AVAILABLE(ios(14.0)) {
+                                 completion {
   if (!self.toolbarDelegate.fakeboxScribbleForwardingTarget.isFirstResponder) {
     [self.toolbarDelegate.fakeboxScribbleForwardingTarget becomeFirstResponder];
   }
@@ -606,8 +612,7 @@ NSString* const kScribbleFakeboxElementId = @"fakebox";
 
 - (BOOL)indirectScribbleInteraction:(UIIndirectScribbleInteraction*)interaction
          shouldDelayFocusForElement:
-             (UIScribbleElementIdentifier)elementIdentifier
-    API_AVAILABLE(ios(14.0)) {
+             (UIScribbleElementIdentifier)elementIdentifier {
   DCHECK(elementIdentifier == kScribbleFakeboxElementId);
   return YES;
 }

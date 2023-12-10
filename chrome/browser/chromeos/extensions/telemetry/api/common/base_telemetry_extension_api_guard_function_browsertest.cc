@@ -41,6 +41,8 @@ namespace chromeos {
 
 namespace {
 
+// The tests cases must be kept sorted for the test to pass. Tests should be
+// grouped by the API type, then sorted alphabetically within the same type.
 std::string GetServiceWorkerForError(const std::string& error) {
   std::string service_worker = R"(
     const tests = [
@@ -173,6 +175,16 @@ std::string GetServiceWorkerForError(const std::string& error) {
         );
         chrome.test.succeed();
       },
+      async function createFanRoutine() {
+        await chrome.test.assertPromiseRejects(
+            chrome.os.diagnostics.createFanRoutine({
+            }),
+            'Error: Unauthorized access to ' +
+            'chrome.os.diagnostics.createFanRoutine. ' +
+            '%s'
+        );
+        chrome.test.succeed();
+      },
       async function createMemoryRoutine() {
         await chrome.test.assertPromiseRejects(
             chrome.os.diagnostics.createMemoryRoutine({
@@ -215,6 +227,16 @@ std::string GetServiceWorkerForError(const std::string& error) {
             ),
             'Error: Unauthorized access to ' +
             'chrome.os.diagnostics.getRoutineUpdate. ' +
+            '%s'
+        );
+        chrome.test.succeed();
+      },
+      async function isFanRoutineArgumentSupported() {
+        await chrome.test.assertPromiseRejects(
+            chrome.os.diagnostics.isFanRoutineArgumentSupported({
+            }),
+            'Error: Unauthorized access to ' +
+            'chrome.os.diagnostics.isFanRoutineArgumentSupported. ' +
             '%s'
         );
         chrome.test.succeed();

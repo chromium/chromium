@@ -147,7 +147,7 @@ class MultiDeviceSetupHostVerifierImplTest
     }
 
     if (host_state == HostState::kHostNotSet)
-      fake_host_backend_delegate_->NotifyHostChangedOnBackend(absl::nullopt);
+      fake_host_backend_delegate_->NotifyHostChangedOnBackend(std::nullopt);
     else
       fake_host_backend_delegate_->NotifyHostChangedOnBackend(test_device_);
 
@@ -487,7 +487,7 @@ TEST_P(MultiDeviceSetupHostVerifierImplTest,
               0 /* expected_retry_delta_value */);
 
   fake_host_backend_delegate()->AttemptToSetMultiDeviceHostOnBackend(
-      absl::nullopt /* host_device */);
+      std::nullopt /* host_device */);
   VerifyState(false /* expected_is_verified */,
               0u /* expected_num_verified_events */,
               0 /* expected_retry_timestamp_value */,

@@ -404,6 +404,7 @@ target(link_target_type, "gles2_sources") {
     "//third_party/re2",
     "//third_party/zlib",
     "//ui/base:features",
+    "//ui/base:ozone_buildflags",
     "//ui/gfx",
     "//ui/gfx/geometry",
     "//ui/gl",
@@ -474,6 +475,8 @@ target(link_target_type, "gles2_sources") {
       sources += [
         "shared_image/skia_vk_ozone_image_representation.cc",
         "shared_image/skia_vk_ozone_image_representation.h",
+        "shared_image/vulkan_ozone_image_representation.cc",
+        "shared_image/vulkan_ozone_image_representation.h",
       ]
     }
 

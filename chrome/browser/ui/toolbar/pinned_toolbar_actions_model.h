@@ -107,6 +107,8 @@ class PinnedToolbarActionsModel : public KeyedService {
   // of the search companion feature.
   void UpdateSearchCompanionDefaultState();
 
+  void UpdatePref(const std::vector<actions::ActionId>& updated_list);
+
   // Our observers.
   base::ObserverList<Observer>::Unchecked observers_;
 

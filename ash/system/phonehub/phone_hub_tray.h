@@ -24,6 +24,7 @@
 #include "chromeos/ash/components/phonehub/app_stream_manager.h"
 #include "chromeos/ash/components/phonehub/icon_decoder.h"
 #include "chromeos/ash/components/phonehub/phone_hub_manager.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/events/event.h"
 #include "ui/views/controls/button/image_button.h"
 
@@ -54,6 +55,8 @@ class ASH_EXPORT PhoneHubTray : public TrayBackgroundView,
                                 public SessionObserver,
                                 public WindowTreeHostManager::Observer,
                                 public phonehub::AppStreamManager::Observer {
+  METADATA_HEADER(PhoneHubTray, TrayBackgroundView)
+
  public:
   explicit PhoneHubTray(Shelf* shelf);
   PhoneHubTray(const PhoneHubTray&) = delete;
@@ -124,7 +127,9 @@ class ASH_EXPORT PhoneHubTray : public TrayBackgroundView,
                                      bool aborted) override;
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(PhoneHubTrayTest, EcheIconActivatesCallback);
   FRIEND_TEST_ALL_PREFIXES(PhoneHubTrayTest, SafeAccessToHeaderView);
+  FRIEND_TEST_ALL_PREFIXES(PhoneHubTrayTest, TrayPressedMetrics);
 
   // TrayBubbleView::Delegate:
   std::u16string GetAccessibleNameForBubble() override;

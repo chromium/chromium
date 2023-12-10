@@ -43,11 +43,11 @@ const char kContactMessageNumUnreachableContactsKey[] =
 // dictionaries corresponding to each contact-manager observer functions. This
 // will require changes at the javascript layer as well.
 base::Value::Dict ContactMessageToDictionary(
-    absl::optional<bool> did_contacts_change_since_last_upload,
-    const absl::optional<std::set<std::string>>& allowed_contact_ids,
-    const absl::optional<std::vector<nearbyshare::proto::ContactRecord>>&
+    std::optional<bool> did_contacts_change_since_last_upload,
+    const std::optional<std::set<std::string>>& allowed_contact_ids,
+    const std::optional<std::vector<nearby::sharing::proto::ContactRecord>>&
         contacts,
-    absl::optional<uint32_t> num_unreachable_contacts_filtered_out) {
+    std::optional<uint32_t> num_unreachable_contacts_filtered_out) {
   base::Value::Dict dictionary;
 
   dictionary.Set(kContactMessageTimeKey, GetJavascriptTimestamp());
@@ -132,11 +132,11 @@ void NearbyInternalsContactHandler::HandleDownloadContacts(
 
 void NearbyInternalsContactHandler::OnContactsDownloaded(
     const std::set<std::string>& allowed_contact_ids,
-    const std::vector<nearbyshare::proto::ContactRecord>& contacts,
+    const std::vector<nearby::sharing::proto::ContactRecord>& contacts,
     uint32_t num_unreachable_contacts_filtered_out) {
   FireWebUIListener("contacts-updated",
                     ContactMessageToDictionary(
-                        /*did_contacts_change_since_last_upload=*/absl::nullopt,
+                        /*did_contacts_change_since_last_upload=*/std::nullopt,
                         allowed_contact_ids, contacts,
                         num_unreachable_contacts_filtered_out));
 }
@@ -147,7 +147,7 @@ void NearbyInternalsContactHandler::OnContactsUploaded(
       "contacts-updated",
       ContactMessageToDictionary(
           did_contacts_change_since_last_upload,
-          /*allowed_contact_ids=*/absl::nullopt,
-          /*contacts=*/absl::nullopt,
-          /*num_unreachable_contacts_filtered_out=*/absl::nullopt));
+          /*allowed_contact_ids=*/std::nullopt,
+          /*contacts=*/std::nullopt,
+          /*num_unreachable_contacts_filtered_out=*/std::nullopt));
 }

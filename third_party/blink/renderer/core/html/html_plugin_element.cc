@@ -598,9 +598,11 @@ LayoutEmbeddedContent* HTMLPlugInElement::LayoutEmbeddedContentForJSBindings()
   return ExistingLayoutEmbeddedContent();
 }
 
-bool HTMLPlugInElement::IsKeyboardFocusable() const {
-  if (HTMLFrameOwnerElement::IsKeyboardFocusable())
+bool HTMLPlugInElement::IsKeyboardFocusable(
+    UpdateBehavior update_behavior) const {
+  if (HTMLFrameOwnerElement::IsKeyboardFocusable(update_behavior)) {
     return true;
+  }
 
   WebPluginContainerImpl* embedded_content_view = nullptr;
   if (LayoutEmbeddedContent* layout_embedded_content =
@@ -609,7 +611,8 @@ bool HTMLPlugInElement::IsKeyboardFocusable() const {
   }
 
   return GetDocument().IsActive() && embedded_content_view &&
-         embedded_content_view->SupportsKeyboardFocus() && IsFocusable();
+         embedded_content_view->SupportsKeyboardFocus() &&
+         IsFocusable(update_behavior);
 }
 
 bool HTMLPlugInElement::HasCustomFocusLogic() const {
@@ -633,13 +636,16 @@ void HTMLPlugInElement::DisconnectContentFrame() {
   SetPersistedPlugin(nullptr);
 }
 
-bool HTMLPlugInElement::IsFocusableStyle() const {
-  if (HTMLFrameOwnerElement::SupportsFocus() &&
-      HTMLFrameOwnerElement::IsFocusableStyle())
+bool HTMLPlugInElement::IsFocusableStyle(UpdateBehavior update_behavior) const {
+  if (HTMLFrameOwnerElement::SupportsFocus(update_behavior) &&
+      HTMLFrameOwnerElement::IsFocusableStyle(update_behavior)) {
     return true;
+  }
 
-  if (UseFallbackContent() || !HTMLFrameOwnerElement::IsFocusableStyle())
+  if (UseFallbackContent() ||
+      !HTMLFrameOwnerElement::IsFocusableStyle(update_behavior)) {
     return false;
+  }
   return plugin_is_available_;
 }
 

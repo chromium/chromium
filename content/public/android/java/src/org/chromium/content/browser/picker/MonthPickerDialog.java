@@ -8,9 +8,7 @@ import android.content.Context;
 
 import org.chromium.content.R;
 
-/**
- * A month picker dialog
- */
+/** A month picker dialog */
 public class MonthPickerDialog extends TwoFieldDatePickerDialog {
 
     /**
@@ -19,8 +17,13 @@ public class MonthPickerDialog extends TwoFieldDatePickerDialog {
      * @param year The initial year of the dialog.
      * @param monthOfYear The initial month of the dialog.
      */
-    public MonthPickerDialog(Context context,  OnValueSetListener callBack,
-            int year, int monthOfYear, double minMonth, double maxMonth) {
+    public MonthPickerDialog(
+            Context context,
+            OnValueSetListener callBack,
+            int year,
+            int monthOfYear,
+            double minMonth,
+            double maxMonth) {
         super(context, callBack, year, monthOfYear, minMonth, maxMonth);
         setTitle(R.string.month_picker_dialog_title);
     }

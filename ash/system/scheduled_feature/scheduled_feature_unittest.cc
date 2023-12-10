@@ -40,6 +40,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/time/time.h"
@@ -193,9 +194,20 @@ class TestScheduledFeature : public ScheduledFeature {
   TestScheduledFeature& operator=(const TestScheduledFeature& rhs) = delete;
   ~TestScheduledFeature() override {}
 
+  // ScheduledFeature:
   const char* GetFeatureName() const override { return "TestFeature"; }
-
+  const char* GetScheduleTypeHistogramName() const override {
+    return schedule_type_histogram_name_.c_str();
+  }
   MOCK_METHOD(void, RefreshFeatureState, (RefreshReason reason), (override));
+
+  void set_schedule_type_histogram_name(
+      std::string schedule_type_histogram_name) {
+    schedule_type_histogram_name_ = std::move(schedule_type_histogram_name);
+  }
+
+ private:
+  std::string schedule_type_histogram_name_;
 };
 
 class ScheduledFeatureTest : public NoSessionAshTestBase,
@@ -225,8 +237,10 @@ class ScheduledFeatureTest : public NoSessionAshTestBase,
   const base::OneShotTimer* timer_ptr() const { return timer_ptr_; }
 
   TestGeolocationUrlLoaderFactory* factory() const {
+    CHECK(SimpleGeolocationProvider::GetInstance());
     return static_cast<TestGeolocationUrlLoaderFactory*>(
-        geolocation_controller_->GetSharedURLLoaderFactoryForTesting());
+        SimpleGeolocationProvider::GetInstance()
+            ->GetSharedURLLoaderFactoryForTesting());
   }
 
   // AshTestBase:
@@ -776,12 +790,16 @@ TEST_F(ScheduledFeatureTest, MAYBE_ChangingStartTimesThatDontChangeTheStatus) {
   // Change the start time in such a way that doesn't change the status, but
   // despite that, confirm that schedule has been updated.
   ASSERT_FALSE(GetEnabled());
+  EXPECT_CALL(*feature(), RefreshFeatureState(RefreshReason::kSettingsChanged));
   feature()->SetCustomStartTime(MakeTimeOfDay(7, AmPm::kPM));  // 7:00 PM.
+  Mock::VerifyAndClearExpectations(feature());
   EXPECT_FALSE(GetEnabled());
 
   // Changing the end time in a similar fashion to the above and expect no
   // change.
+  EXPECT_CALL(*feature(), RefreshFeatureState(RefreshReason::kSettingsChanged));
   feature()->SetCustomEndTime(MakeTimeOfDay(11, AmPm::kPM));  // 11:00 PM.
+  Mock::VerifyAndClearExpectations(feature());
   EXPECT_FALSE(GetEnabled());
   FastForwardBy(base::Days(1));
   EXPECT_THAT(change_log.changes(),
@@ -1449,6 +1467,32 @@ TEST_P(ScheduledFeatureGeopositionTest, CyclesThroughCheckpoints) {
         checkpoint_observer.changes()[i].second,
         GetNextExpectedCheckpoint(checkpoint_observer.changes()[i - 1].second));
   }
+}
+
+TEST_F(ScheduledFeatureTest, RecordsScheduleTypeHistogram) {
+  const std::string test_histogram_name = "Ash.Test.ScheduleType";
+  base::HistogramTester histogram_tester;
+  feature()->SetScheduleType(ScheduleType::kCustom);
+  histogram_tester.ExpectTotalCount(test_histogram_name, 0);
+
+  feature()->set_schedule_type_histogram_name(test_histogram_name);
+  feature()->SetScheduleType(ScheduleType::kSunsetToSunrise);
+  feature()->SetScheduleType(ScheduleType::kNone);
+  feature()->SetScheduleType(ScheduleType::kCustom);
+  histogram_tester.ExpectBucketCount(test_histogram_name, ScheduleType::kNone,
+                                     1);
+  histogram_tester.ExpectBucketCount(test_histogram_name,
+                                     ScheduleType::kSunsetToSunrise, 1);
+  histogram_tester.ExpectBucketCount(test_histogram_name, ScheduleType::kCustom,
+                                     1);
+
+  // Switching users should not count as a schedule type change even if second
+  // user's schedule type is different from the first.
+  base::HistogramTester histogram_tester_2;
+  const ScheduleType user_1_schedule_type = feature()->GetScheduleType();
+  SwitchActiveUser(kUser2Email);
+  ASSERT_NE(feature()->GetScheduleType(), user_1_schedule_type);
+  histogram_tester_2.ExpectTotalCount(test_histogram_name, 0);
 }
 
 }  // namespace

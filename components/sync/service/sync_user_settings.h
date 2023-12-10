@@ -57,6 +57,13 @@ class SyncUserSettings {
   virtual bool IsTypeManagedByPolicy(UserSelectableType type) const = 0;
   virtual bool IsTypeManagedByCustodian(UserSelectableType type) const = 0;
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  // On Desktop, kPasswords isn't considered "selected" by default in transport
+  // mode. This method returns how many accounts selected (enabled) the type.
+  // TODO(crbug.com/1503669): Remove this once the type is enabled by default.
+  virtual int GetNumberOfAccountsWithPasswordsSelected() const = 0;
+#endif
+
   // Whether the "Sync everything" is enabled. This only has an effect if
   // Sync-the-feature is enabled. Note that even if this is true, some types may
   // be disabled e.g. due to enterprise policy.

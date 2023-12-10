@@ -7,7 +7,7 @@
 
 #include <string>
 #include "base/containers/flat_set.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "components/feed/core/proto/v2/store.pb.h"
 #include "components/feed/core/v2/public/stream_type.h"

@@ -1,0 +1,27 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="et">
+<translation id="1220509181886849806">Kas kasutada salvestatud parooli?</translation>
+<translation id="1435940442311036198">Kasuta pääsuvõtit teises seadmes</translation>
+<translation id="1717486229951421299">Loend mandaatidest, mis tuleb puudutusega täita, on avatud poolele kõrgusele.</translation>
+<translation id="2359808026110333948">Jätka</translation>
+<translation id="2364266287022099258">Kas kasutada salvestatud pääsuvõtit?</translation>
+<translation id="3399357656427473483">Loend mandaatidest, mis tuleb puudutusega täita.</translation>
+<translation id="3653689374478248324">Logite sisse saidile <ph name="SITE_NAME" /></translation>
+<translation id="3950820424414687140">Logige sisse</translation>
+<translation id="4553044860350038560">Rohkem pääsuvõtmeid</translation>
+<translation id="4598345735110653698">Pääsukoodide haldamine</translation>
+<translation id="4722735765955348426">Kasutaja <ph name="USERNAME" /> parool</translation>
+<translation id="4907224763885298217">Kasutage ekraanilukku</translation>
+<translation id="5012523644916800014">Paroolide ja pääsukoodide haldamine</translation>
+<translation id="5441504010984421144">Loend mandaatidest, mis tuleb puudutusega täita, on avatud täiskõrgusele.</translation>
+<translation id="5591247451101092906">Kas kasutada salvestatud parooli või pääsuvõtit?</translation>
+<translation id="5624120631404540903">Paroolide haldamine</translation>
+<translation id="6560306912274274630">Kasutaja <ph name="USERNAME" /> pääsuvõti, kasutage oma ekraanilukku</translation>
+<translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{Uus parool selle saidi jaoks}other{Uued paroolid selle saidi jaoks}}</translation>
+<translation id="7286867818472074330">Pääsuvõtme valimine</translation>
+<translation id="7669320311687290322"><ph name="ITEM_LABEL" />, <ph name="ITEM_POSITION" />/<ph name="ITEMS_TOTAL" />.</translation>
+<translation id="7738288782501322815">Olete saanud saidi <ph name="SITE_NAME" /> paroolid</translation>
+<translation id="8614995815226664591"><ph name="SENDER_NAME" /> jagas teiega veebisaidi <ph name="SITE_NAME" /> parooli</translation>
+<translation id="8891372124884726271">Mandaatide loend on suletud.</translation>
+</translationbundle>

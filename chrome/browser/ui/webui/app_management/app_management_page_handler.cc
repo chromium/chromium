@@ -26,6 +26,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/link_capturing/link_capturing_features.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/locks/all_apps_lock.h"
@@ -66,6 +67,7 @@
 #include "url/origin.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/components/arc/arc_features.h"
 #include "ash/components/arc/session/connection_holder.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ash/apps/apk_web_app_service.h"
@@ -78,8 +80,6 @@
 #if BUILDFLAG(IS_WIN)
 #include "base/win/default_apps_util.h"
 #endif
-
-using app_management::mojom::OptionalBool;
 
 namespace {
 
@@ -100,6 +100,32 @@ const char kFileHandlingLearnMore[] =
 constexpr char const* kAppIdsWithHiddenStoragePermission[] = {
     arc::kPlayStoreAppId,
 };
+
+// In ICU library, undefined locale is treated as unknown language (ICU-20273).
+const char kUndefinedTranslatedLocaleName[] = "und";
+
+app_management::mojom::LocalePtr CreateLocaleForTag(
+    const std::string& locale_tag,
+    const std::string& system_locale) {
+  const std::string display_name =
+      base::UTF16ToUTF8(l10n_util::GetDisplayNameForLocale(
+          locale_tag, system_locale, /*is_for_ui=*/true));
+  const std::string native_display_name = base::UTF16ToUTF8(
+      l10n_util::GetDisplayNameForLocale(locale_tag, locale_tag,
+                                         /*is_for_ui=*/true));
+
+  // In Android, it's possible for Apps to set custom locale tag, hence these
+  // locales might be untranslatable (based on ICU-20273).
+  // In this case, we'll pass empty string and let the UI decides what to
+  // display. For ARC, we'll display the `locale_tag` as is (relying on
+  // Polymer to escape possible HTML tags).
+  return app_management::mojom::Locale::New(
+      locale_tag,
+      display_name == kUndefinedTranslatedLocaleName ? "" : display_name,
+      native_display_name == kUndefinedTranslatedLocaleName
+          ? ""
+          : native_display_name);
+}
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 app_management::mojom::ExtensionAppPermissionMessagePtr
@@ -200,7 +226,7 @@ std::vector<std::string> GetSupportedLinksForPWAs(
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
-absl::optional<std::string> MaybeFormatBytes(absl::optional<uint64_t> bytes) {
+std::optional<std::string> MaybeFormatBytes(std::optional<uint64_t> bytes) {
   if (bytes.has_value()) {
     // ui::FormatBytes requires a non-negative signed integer. In general, we
     // expect that converting from unsigned to signed int here should always
@@ -212,12 +238,12 @@ absl::optional<std::string> MaybeFormatBytes(absl::optional<uint64_t> bytes) {
       // sizes.
       LOG(ERROR) << "Invalid app size: " << signed_bytes;
       base::debug::DumpWithoutCrashing();
-      return absl::nullopt;
+      return std::nullopt;
     }
     return base::UTF16ToUTF8(ui::FormatBytes(signed_bytes));
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 #if !BUILDFLAG(IS_CHROMEOS)
 std::string GetFormattedOrigin(const webapps::AppId& app_id,
@@ -299,7 +325,7 @@ void AppManagementPageHandler::OnPinnedChanged(const std::string& app_id,
     return;
   }
 
-  app->is_pinned = pinned ? OptionalBool::kTrue : OptionalBool::kFalse;
+  app->is_pinned = pinned;
 
   page_->OnAppChanged(std::move(app));
 }
@@ -394,7 +420,7 @@ void AppManagementPageHandler::GetExtensionAppPermissionMessages(
 }
 
 void AppManagementPageHandler::SetPinned(const std::string& app_id,
-                                         OptionalBool pinned) {
+                                         bool pinned) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   shelf_delegate_.SetPinned(app_id, pinned);
 #else
@@ -597,17 +623,28 @@ app_management::mojom::AppPtr AppManagementPageHandler::CreateUIAppPtr(
   app->app_size = MaybeFormatBytes(update.AppSizeInBytes());
   app->data_size = MaybeFormatBytes(update.DataSizeInBytes());
 
-  // On other OS's, is_pinned defaults to OptionalBool::kUnknown, which is
-  // used to represent the fact that there is no concept of being pinned.
+  // On other OS's, is_pinned defaults to std::nullopt, which is used to
+  // represent the fact that there is no concept of being pinned.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  app->is_pinned = shelf_delegate_.IsPinned(update.AppId())
-                       ? OptionalBool::kTrue
-                       : OptionalBool::kFalse;
-  app->is_policy_pinned = shelf_delegate_.IsPolicyPinned(update.AppId())
-                              ? OptionalBool::kTrue
-                              : OptionalBool::kFalse;
+  app->is_pinned = shelf_delegate_.IsPinned(update.AppId());
+  app->is_policy_pinned = shelf_delegate_.IsPolicyPinned(update.AppId());
   app->resize_locked = update.ResizeLocked().value_or(false);
   app->hide_resize_locked = !update.ResizeLocked().has_value();
+
+  if (base::FeatureList::IsEnabled(arc::kPerAppLanguage)) {
+    const std::string& system_locale =
+        g_browser_process->GetApplicationLocale();
+    // Translate supported locales.
+    for (const std::string& locale_tag : update.SupportedLocales()) {
+      app->supported_locales.push_back(
+          CreateLocaleForTag(locale_tag, system_locale));
+    }
+    // Translate selected locale.
+    std::optional<std::string> locale_tag = update.SelectedLocale();
+    if (locale_tag.has_value()) {
+      app->selected_locale = CreateLocaleForTag(*locale_tag, system_locale);
+    }
+  }
 #endif
 #if BUILDFLAG(IS_CHROMEOS)
   app->is_preferred_app = apps::AppServiceProxyFactory::GetForProfile(profile_)
@@ -710,7 +747,7 @@ app_management::mojom::AppPtr AppManagementPageHandler::CreateUIAppPtr(
                 "LINK", "#"));
       }
 
-      absl::optional<GURL> learn_more_url;
+      std::optional<GURL> learn_more_url;
       if (!CanShowDefaultAppAssociationsUi()) {
         learn_more_url = GURL(kFileHandlingLearnMore);
       }
@@ -761,6 +798,16 @@ void AppManagementPageHandler::OpenStorePage(const std::string& app_id) {
                                   apps::LaunchSource::kFromChromeInternal);
         }
       });
+#endif
+}
+
+void AppManagementPageHandler::SetAppLocale(const std::string& app_id,
+                                            const std::string& locale_tag) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  apps::AppServiceProxyFactory::GetForProfile(profile_)->SetAppLocale(
+      app_id, locale_tag);
+#else
+  NOTREACHED();
 #endif
 }
 

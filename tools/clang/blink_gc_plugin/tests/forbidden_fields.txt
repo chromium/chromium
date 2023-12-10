@@ -87,6 +87,6 @@ class AnotherHeapObject : public GarbageCollected<AnotherHeapObject> {
   scoped_refptr<TaskRunnerTimer<AnotherHeapObject>> scoped_refptr_timer_;
   ^
 ./forbidden_fields.h:48:3: note: [blink-gc] TaskRunnerTimer field 'weak_ptr_timer_' used within a garbage collected context. Consider using HeapTaskRunnerTimer instead.
-  WeakPtr<TaskRunnerTimer<AnotherHeapObject>> weak_ptr_timer_;
+  base::WeakPtr<TaskRunnerTimer<AnotherHeapObject>> weak_ptr_timer_;
   ^
 2 warnings generated.

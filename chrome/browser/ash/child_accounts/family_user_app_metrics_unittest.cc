@@ -13,6 +13,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/app_service_test.h"
 #include "chrome/browser/extensions/extension_service_test_with_install.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/supervised_user/supervised_user_extensions_delegate_impl.h"
@@ -91,6 +92,8 @@ class FamilyUserAppMetricsTest
     ExtensionServiceInitParams params;
     params.profile_is_supervised = IsFamilyLink();
     InitializeExtensionService(params);
+    WaitForAppServiceProxyReady(
+        apps::AppServiceProxyFactory::GetForProfile(profile()));
 
     EXPECT_EQ(IsFamilyLink(), profile()->IsChild());
 

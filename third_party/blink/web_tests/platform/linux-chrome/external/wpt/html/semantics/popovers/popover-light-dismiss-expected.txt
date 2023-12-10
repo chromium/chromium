@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+[FAIL] Pointer down in one document and pointer up in another document shouldn't dismiss popover
+  assert_true: expected true got false
+Harness: the test ran to completion.

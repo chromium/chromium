@@ -7,9 +7,7 @@ package org.chromium.chrome.browser.feature_guide.notifications;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
-/**
- * Contains JNI methods needed by the feature notification guide.
- */
+/** Contains JNI methods needed by the feature notification guide. */
 @JNINamespace("feature_guide")
 public final class FeatureNotificationGuideBridge extends FeatureNotificationGuideService {
     private long mNativeFeatureNotificationGuideBridge;

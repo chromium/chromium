@@ -6,21 +6,21 @@
 
 #if !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
 
-#include "base/allocator/partition_allocator/src/partition_alloc/starscan/pcscan.h"
+#include "partition_alloc/starscan/pcscan.h"
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc-inl.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/bits.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/compiler_specific.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/cpu.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/logging.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_config.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_constants.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_for_testing.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_root.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/starscan/stack/stack.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/tagging.h"
 #include "build/build_config.h"
+#include "partition_alloc/partition_alloc-inl.h"
+#include "partition_alloc/partition_alloc_base/bits.h"
+#include "partition_alloc/partition_alloc_base/compiler_specific.h"
+#include "partition_alloc/partition_alloc_base/cpu.h"
+#include "partition_alloc/partition_alloc_base/logging.h"
+#include "partition_alloc/partition_alloc_buildflags.h"
+#include "partition_alloc/partition_alloc_config.h"
+#include "partition_alloc/partition_alloc_constants.h"
+#include "partition_alloc/partition_alloc_for_testing.h"
+#include "partition_alloc/partition_root.h"
+#include "partition_alloc/starscan/stack/stack.h"
+#include "partition_alloc/tagging.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(USE_STARSCAN)
@@ -51,14 +51,16 @@ struct DisableStackScanningScope final {
 class PartitionAllocPCScanTestBase : public testing::Test {
  public:
   PartitionAllocPCScanTestBase()
-      : allocator_(PartitionOptions{
-            .aligned_alloc = PartitionOptions::kAllowed,
-            .star_scan_quarantine = PartitionOptions::kAllowed,
-            .memory_tagging = {
-                .enabled =
-                    base::CPU::GetInstanceNoAllocation().has_mte()
-                        ? partition_alloc::PartitionOptions::kEnabled
-                        : partition_alloc::PartitionOptions::kDisabled}}) {
+      : allocator_([]() {
+          PartitionOptions opts;
+          opts.aligned_alloc = PartitionOptions::kAllowed;
+          opts.star_scan_quarantine = PartitionOptions::kAllowed;
+          opts.memory_tagging = {
+              .enabled = base::CPU::GetInstanceNoAllocation().has_mte()
+                             ? partition_alloc::PartitionOptions::kEnabled
+                             : partition_alloc::PartitionOptions::kDisabled};
+          return opts;
+        }()) {
     PartitionAllocGlobalInit([](size_t) { PA_LOG(FATAL) << "Out of memory"; });
     // Previous test runs within the same process decommit pools, therefore
     // we need to make sure that the card table is recommitted for each run.
@@ -205,6 +207,12 @@ struct List final : ListBase {
 
   static void Destroy(PartitionRoot& root, List* list) { root.Free(list); }
 };
+
+constexpr auto kPartitionOptionWithStarScan = []() {
+  PartitionOptions opts;
+  opts.star_scan_quarantine = PartitionOptions::kAllowed;
+  return opts;
+}();
 
 TEST_F(PartitionAllocPCScanTest, ArbitraryObjectInQuarantine) {
   using ListType = List<8>;
@@ -459,13 +467,9 @@ TEST_F(PartitionAllocPCScanTest, DanglingInterPartitionReference) {
   using SourceList = List<64>;
   using ValueList = SourceList;
 
-  PartitionRoot source_root(PartitionOptions{
-      .star_scan_quarantine = PartitionOptions::kAllowed,
-  });
+  PartitionRoot source_root(kPartitionOptionWithStarScan);
   source_root.UncapEmptySlotSpanMemoryForTesting();
-  PartitionRoot value_root(PartitionOptions{
-      .star_scan_quarantine = PartitionOptions::kAllowed,
-  });
+  PartitionRoot value_root(kPartitionOptionWithStarScan);
   value_root.UncapEmptySlotSpanMemoryForTesting();
 
   PCScan::RegisterScannableRoot(&source_root);
@@ -484,13 +488,9 @@ TEST_F(PartitionAllocPCScanTest, DanglingReferenceToNonScannablePartition) {
   using SourceList = List<64>;
   using ValueList = SourceList;
 
-  PartitionRoot source_root(PartitionOptions{
-      .star_scan_quarantine = PartitionOptions::kAllowed,
-  });
+  PartitionRoot source_root(kPartitionOptionWithStarScan);
   source_root.UncapEmptySlotSpanMemoryForTesting();
-  PartitionRoot value_root(PartitionOptions{
-      .star_scan_quarantine = PartitionOptions::kAllowed,
-  });
+  PartitionRoot value_root(kPartitionOptionWithStarScan);
   value_root.UncapEmptySlotSpanMemoryForTesting();
 
   PCScan::RegisterScannableRoot(&source_root);
@@ -509,13 +509,9 @@ TEST_F(PartitionAllocPCScanTest, DanglingReferenceFromNonScannablePartition) {
   using SourceList = List<64>;
   using ValueList = SourceList;
 
-  PartitionRoot source_root(PartitionOptions{
-      .star_scan_quarantine = PartitionOptions::kAllowed,
-  });
+  PartitionRoot source_root(kPartitionOptionWithStarScan);
   source_root.UncapEmptySlotSpanMemoryForTesting();
-  PartitionRoot value_root(PartitionOptions{
-      .star_scan_quarantine = PartitionOptions::kAllowed,
-  });
+  PartitionRoot value_root(kPartitionOptionWithStarScan);
   value_root.UncapEmptySlotSpanMemoryForTesting();
 
   PCScan::RegisterNonScannableRoot(&source_root);

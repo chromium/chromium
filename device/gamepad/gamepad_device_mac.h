@@ -11,6 +11,8 @@
 #include <ForceFeedback/ForceFeedback.h>
 #include <IOKit/hid/IOHIDManager.h>
 
+#include <string_view>
+
 #include "base/memory/weak_ptr.h"
 #include "device/gamepad/abstract_haptic_gamepad.h"
 #include "device/gamepad/gamepad_standard_mappings.h"
@@ -32,7 +34,7 @@ class GamepadDeviceMac final : public AbstractHapticGamepad {
  public:
   GamepadDeviceMac(int location_id,
                    IOHIDDeviceRef device_ref,
-                   base::StringPiece product_name,
+                   std::string_view product_name,
                    int vendor_id,
                    int product_id);
   ~GamepadDeviceMac() override;

@@ -204,7 +204,7 @@ class COMPONENT_EXPORT(CHROMEOS_MLSERVICE) FakeServiceConnectionImpl
       ml::model_loader::mojom::ComputeResult result);
   // Sets the output of `model_loader::mojom::Model::Compute`.
   void SetOutputWebPlatformModelCompute(
-      absl::optional<base::flat_map<std::string, std::vector<uint8_t>>> output);
+      std::optional<base::flat_map<std::string, std::vector<uint8_t>>> output);
 
   // Call SetOutputValue() before Execute() to set the output tensor.
   void SetOutputValue(const std::vector<int64_t>& shape,
@@ -471,7 +471,7 @@ class COMPONENT_EXPORT(CHROMEOS_MLSERVICE) FakeServiceConnectionImpl
   ml::model_loader::mojom::LoadModelResult load_web_platform_model_result_;
   ml::model_loader::mojom::ModelInfoPtr web_platform_model_info_;
   ml::model_loader::mojom::ComputeResult web_platform_model_compute_result_;
-  absl::optional<base::flat_map<std::string, std::vector<uint8_t>>>
+  std::optional<base::flat_map<std::string, std::vector<uint8_t>>>
       web_platform_model_compute_output_;
 
   bool async_mode_;

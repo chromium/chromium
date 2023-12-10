@@ -132,9 +132,7 @@ public class PaintPreviewPlayerTest extends BlankUiTestActivityTestCase {
                 CriteriaHelper.DEFAULT_POLLING_INTERVAL);
     }
 
-    /**
-     * Tests the the player correctly initializes and displays a sample paint preview with 1 frame.
-     */
+    /** Tests the the player correctly initializes and displays a sample paint preview with 1 frame. */
     @Test
     @MediumTest
     @Feature({"RenderTest"})

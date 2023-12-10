@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="bn">
 <translation id="130631256467250065">পরের বার আপনি আপনার ডিভাইস পুনরারম্ভ করলে আপনার পরিবর্তনগুলি প্রভাবী হবে৷</translation>
-<translation id="1555506416658437797">পেমেন্ট পদ্ধতি এডিট করুন।</translation>
 <translation id="275588974610408078">Chromium-এ ক্র্যাশ প্রতিবেদন উপলব্ধ নেই৷</translation>
 <translation id="3064346599913645280">আপনি একটি নিরাপদ Chromium পৃষ্ঠা  দেখছেন</translation>
 <translation id="3255926992597692024">পেমেন্ট পদ্ধতি পূরণের জন্য Chromium চেষ্টা করছে সেটিংস পরিবর্তন করার।</translation>
@@ -30,7 +29,6 @@
           &gt;
           <ph name="PROXIES_TITLE" />
           এবং আপনার কনফিগারেশন "প্রক্সি নয়" বা "সরাসরি" তে সেট আছে কি না নিশ্চিত করুন৷</translation>
-<translation id="585620188971323280">পেমেন্ট পদ্ধতি পূরণ করার জন্য সেটিংসে পরিবর্তন করুন।</translation>
 <translation id="6549378540556750549">এছাড়াও Chromium অন্য <ph name="BEGIN_LINK_OSS" />ওপেন সোর্স সফ্টওয়্যার<ph name="END_LINK_OSS" /> দ্বারা পরিচালিত।</translation>
 <translation id="6613594504749178791">আপনার পরিবর্তনগুলি পরবর্তী সময় আপনি Chromium আবার চালু হলে ফলপ্রদ হবে৷</translation>
 <translation id="7681937895330411637">এছাড়াও Chromium <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> ওপেন সোর্স প্রোজেক্ট দ্বারা পরিচালিত।</translation>

@@ -19,6 +19,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class JankReportingScheduler {
     private static final long PERIODIC_METRIC_DELAY_MS = 5_000;
     private final FrameMetricsStore mFrameMetricsStore;
+    // TODO(b/308551047): Fix/cleanup this member variable. We do query the map but we never add
+    // anything to it.
     private final HashMap<Integer, JankReportingRunnable> mRunnableStore;
 
     public JankReportingScheduler(FrameMetricsStore frameMetricsStore) {
@@ -26,25 +28,26 @@ public class JankReportingScheduler {
         mRunnableStore = new HashMap<Integer, JankReportingRunnable>();
     }
 
-    private final Runnable mPeriodicMetricReporter = new Runnable() {
-        @Override
-        public void run() {
-            // delay should never be null.
-            finishTrackingScenario(JankScenario.PERIODIC_REPORTING);
+    private final Runnable mPeriodicMetricReporter =
+            new Runnable() {
+                @Override
+                public void run() {
+                    // delay should never be null.
+                    finishTrackingScenario(JankScenario.PERIODIC_REPORTING);
 
-            if (mIsPeriodicReporterLooping.get()) {
-                // We delay starting the next periodic reporting until the timeout has finished by
-                // taking the delay and +1 so that it will run in order (it was posted above).
-                startTrackingScenario(JankScenario.PERIODIC_REPORTING);
-                getOrCreateHandler().postDelayed(mPeriodicMetricReporter, PERIODIC_METRIC_DELAY_MS);
-            }
-        }
-    };
+                    if (mIsPeriodicReporterLooping.get()) {
+                        // We delay starting the next periodic reporting until the timeout has
+                        // finished by taking the delay and +1 so that it will run in order (it
+                        // was posted above).
+                        startTrackingScenario(JankScenario.PERIODIC_REPORTING);
+                        getOrCreateHandler()
+                                .postDelayed(mPeriodicMetricReporter, PERIODIC_METRIC_DELAY_MS);
+                    }
+                }
+            };
 
-    @Nullable
-    protected HandlerThread mHandlerThread;
-    @Nullable
-    private Handler mHandler;
+    @Nullable protected HandlerThread mHandlerThread;
+    @Nullable private Handler mHandler;
     private final AtomicBoolean mIsPeriodicReporterLooping = new AtomicBoolean(false);
 
     public void startTrackingScenario(@JankScenario int scenario) {
@@ -57,8 +60,14 @@ public class JankReportingScheduler {
             getOrCreateHandler().removeCallbacks(stopTask);
             mRunnableStore.remove(scenario);
         }
-        getOrCreateHandler().post(new JankReportingRunnable(
-                mFrameMetricsStore, scenario, /* isStartingTracking= */ true, mHandler, null));
+        getOrCreateHandler()
+                .post(
+                        new JankReportingRunnable(
+                                mFrameMetricsStore,
+                                scenario,
+                                /* isStartingTracking= */ true,
+                                mHandler,
+                                null));
     }
 
     public void finishTrackingScenario(@JankScenario int scenario) {
@@ -73,9 +82,15 @@ public class JankReportingScheduler {
             @JankScenario int scenario, JankEndScenarioTime endScenarioTime) {
         // We store the stop task in case the delay is greater than zero and we start this scenario
         // again.
-        JankReportingRunnable runnable = mRunnableStore.getOrDefault(scenario,
-                new JankReportingRunnable(mFrameMetricsStore, scenario,
-                        /* isStartingTracking= */ false, mHandler, endScenarioTime));
+        JankReportingRunnable runnable =
+                mRunnableStore.getOrDefault(
+                        scenario,
+                        new JankReportingRunnable(
+                                mFrameMetricsStore,
+                                scenario,
+                                /* isStartingTracking= */ false,
+                                mHandler,
+                                endScenarioTime));
         getOrCreateHandler().post(runnable);
     }
 
@@ -84,12 +99,13 @@ public class JankReportingScheduler {
             mHandlerThread = new HandlerThread("Jank-Tracker");
             mHandlerThread.start();
             mHandler = new Handler(mHandlerThread.getLooper());
-            mHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    mFrameMetricsStore.initialize();
-                }
-            });
+            mHandler.post(
+                    new Runnable() {
+                        @Override
+                        public void run() {
+                            mFrameMetricsStore.initialize();
+                        }
+                    });
         }
         return mHandler;
     }

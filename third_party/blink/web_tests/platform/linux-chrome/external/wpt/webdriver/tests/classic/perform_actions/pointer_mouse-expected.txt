@@ -1,50 +1,16 @@
 This is a wdspec test.
-[PASS] test_null_response_value
-[PASS] test_no_top_browsing_context
 [FAIL] test_no_browsing_context
   Failed: DID NOT RAISE <class 'webdriver.error.NoSuchWindowException'>
-[PASS] test_stale_element_reference[top_context]
-[PASS] test_stale_element_reference[child_context]
-[PASS] test_click_at_coordinates
-[PASS] test_context_menu_at_coordinates
-[PASS] test_middle_click
-[PASS] test_click_element_center
-[PASS] test_click_element_in_shadow_tree[outer-open]
 [FAIL] test_click_element_in_shadow_tree[outer-closed]
   webdriver.error.NoSuchShadowRootException: no such shadow root (404): no such shadow root
-[PASS] test_click_element_in_shadow_tree[inner-open]
 [FAIL] test_click_element_in_shadow_tree[inner-closed]
   webdriver.error.NoSuchShadowRootException: no such shadow root (404): no such shadow root
-[PASS] test_click_navigation
 [FAIL] test_move_to_position_in_viewport[default value]
   AssertionError: assert 1 == 0
-[PASS] test_move_to_position_in_viewport[x]
-[PASS] test_move_to_position_in_viewport[y]
-[PASS] test_drag_and_drop[20-0-0]
-[PASS] test_drag_and_drop[20-0-300]
-[PASS] test_drag_and_drop[20-0-800]
-[PASS] test_drag_and_drop[0-15-0]
-[PASS] test_drag_and_drop[0-15-300]
-[PASS] test_drag_and_drop[0-15-800]
-[PASS] test_drag_and_drop[10-15-0]
-[PASS] test_drag_and_drop[10-15-300]
-[PASS] test_drag_and_drop[10-15-800]
-[PASS] test_drag_and_drop[-20-0-0]
-[PASS] test_drag_and_drop[-20-0-300]
-[PASS] test_drag_and_drop[-20-0-800]
-[PASS] test_drag_and_drop[10--15-0]
-[PASS] test_drag_and_drop[10--15-300]
-[PASS] test_drag_and_drop[10--15-800]
-[PASS] test_drag_and_drop[-10--15-0]
-[PASS] test_drag_and_drop[-10--15-300]
-[PASS] test_drag_and_drop[-10--15-800]
 [FAIL] test_drag_and_drop_with_draggable_element[0]
   AssertionError: Events captured were [{'altKey': False, 'button': 0, 'buttons': 0, 'ctrlKey': False, 'metaKey': False, 'pageX': 58, 'pageY': 413, 'shiftKey': False, 'target': 'draggable', 'type': 'mousemove'}, {'altKey': False, 'button': 0, 'buttons': 1, 'ctrlKey': False, 'metaKey': False, 'pageX': 58, 'pageY': 413, 'shiftKey': False, 'target': 'draggable', 'type': 'dragstart'}, {'altKey': False, 'button': 0, 'buttons': 1, 'ctrlKey': False, 'metaKey': False, 'pageX': 212, 'pageY': 438, 'shiftKey': False, 'target': '', 'type': 'dragenter'}, {'altKey': False, 'button': 0, 'buttons': 1, 'ctrlKey': False, 'metaKey': False, 'pageX': 212, 'pageY': 438, 'shiftKey': False, 'target': '', 'type': 'dragover'}, {'altKey': False, 'button': 0, 'buttons': 0, 'ctrlKey': False, 'metaKey': False, 'pageX': 212, 'pageY': 438, 'shiftKey': False, 'target': '', 'type': 'dragleave'}, {'altKey': False, 'button': 0, 'buttons': 0, 'ctrlKey': False, 'metaKey': False, 'pageX': 212, 'pageY': 438, 'shiftKey': False, 'target': 'draggable', 'type': 'dragend'}]
 [FAIL] test_drag_and_drop_with_draggable_element[300]
   AssertionError: Events captured were [{'altKey': False, 'button': 0, 'buttons': 0, 'ctrlKey': False, 'metaKey': False, 'pageX': 58, 'pageY': 413, 'shiftKey': False, 'target': 'draggable', 'type': 'mousemove'}, {'altKey': False, 'button': 0, 'buttons': 1, 'ctrlKey': False, 'metaKey': False, 'pageX': 58, 'pageY': 413, 'shiftKey': False, 'target': 'draggable', 'type': 'dragstart'}, {'altKey': False, 'button': 0, 'buttons': 1, 'ctrlKey': False, 'metaKey': False, 'pageX': 212, 'pageY': 438, 'shiftKey': False, 'target': '', 'type': 'dragenter'}, {'altKey': False, 'button': 0, 'buttons': 1, 'ctrlKey': False, 'metaKey': False, 'pageX': 212, 'pageY': 438, 'shiftKey': False, 'target': '', 'type': 'dragover'}, {'altKey': False, 'button': 0, 'buttons': 0, 'ctrlKey': False, 'metaKey': False, 'pageX': 212, 'pageY': 438, 'shiftKey': False, 'target': '', 'type': 'dragleave'}, {'altKey': False, 'button': 0, 'buttons': 0, 'ctrlKey': False, 'metaKey': False, 'pageX': 212, 'pageY': 438, 'shiftKey': False, 'target': 'draggable', 'type': 'dragend'}]
 [FAIL] test_drag_and_drop_with_draggable_element[800]
   AssertionError: Events captured were [{'altKey': False, 'button': 0, 'buttons': 0, 'ctrlKey': False, 'metaKey': False, 'pageX': 58, 'pageY': 413, 'shiftKey': False, 'target': 'draggable', 'type': 'mousemove'}, {'altKey': False, 'button': 0, 'buttons': 1, 'ctrlKey': False, 'metaKey': False, 'pageX': 58, 'pageY': 413, 'shiftKey': False, 'target': 'draggable', 'type': 'dragstart'}, {'altKey': False, 'button': 0, 'buttons': 1, 'ctrlKey': False, 'metaKey': False, 'pageX': 212, 'pageY': 438, 'shiftKey': False, 'target': '', 'type': 'dragenter'}, {'altKey': False, 'button': 0, 'buttons': 1, 'ctrlKey': False, 'metaKey': False, 'pageX': 212, 'pageY': 438, 'shiftKey': False, 'target': '', 'type': 'dragover'}, {'altKey': False, 'button': 0, 'buttons': 0, 'ctrlKey': False, 'metaKey': False, 'pageX': 212, 'pageY': 438, 'shiftKey': False, 'target': '', 'type': 'dragleave'}, {'altKey': False, 'button': 0, 'buttons': 0, 'ctrlKey': False, 'metaKey': False, 'pageX': 212, 'pageY': 438, 'shiftKey': False, 'target': 'draggable', 'type': 'dragend'}]
-[PASS] test_missing_coordinates[x]
-[PASS] test_missing_coordinates[y]
-[PASS] test_invalid_element_origin
 Harness: the test ran to completion.

@@ -7,6 +7,7 @@
 #include <string.h>
 #include <algorithm>
 
+#include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/tick_clock.h"
 
@@ -33,8 +34,8 @@ void WebSocketMessageChunkAccumulator::Append(base::span<const char> data) {
   if (!segments_.empty()) {
     const size_t to_be_written =
         std::min(data.size(), kSegmentSize - GetLastSegmentSize());
-    memcpy(segments_.back().get() + GetLastSegmentSize(), data.data(),
-           to_be_written);
+    base::ranges::copy(data.first(to_be_written),
+                       segments_.back().get() + GetLastSegmentSize());
     data = data.subspan(to_be_written);
     size_ += to_be_written;
   }

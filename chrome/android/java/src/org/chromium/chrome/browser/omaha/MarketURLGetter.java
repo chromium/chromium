@@ -33,7 +33,7 @@ public class MarketURLGetter {
 
     private static MarketURLGetter sInstanceForTests;
 
-    protected MarketURLGetter() { }
+    protected MarketURLGetter() {}
 
     /** Returns the Play Store URL that points to Chrome. */
     protected String getMarketUrlInternal() {

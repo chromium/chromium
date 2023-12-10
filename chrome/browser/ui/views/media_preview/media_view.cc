@@ -18,7 +18,7 @@ MediaView::MediaView(bool is_subsection) {
   SetMainAxisAlignment(views::BoxLayout::MainAxisAlignment::kCenter);
   SetInsideBorderInsets(insets);
   SetBetweenChildSpacing(
-      provider->GetDistanceMetric(views::DISTANCE_UNRELATED_CONTROL_VERTICAL));
+      provider->GetDistanceMetric(views::DISTANCE_RELATED_CONTROL_VERTICAL));
 }
 
 void MediaView::RefreshSize() {
@@ -31,5 +31,5 @@ void MediaView::ChildPreferredSizeChanged(View* child) {
 
 MediaView::~MediaView() = default;
 
-BEGIN_METADATA(MediaView, views::BoxLayoutView)
+BEGIN_METADATA(MediaView)
 END_METADATA

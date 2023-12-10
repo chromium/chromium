@@ -63,6 +63,16 @@ void AutofillProviderAndroidBridgeImpl::AttachToJavaAutofillProvider(
       env, obj, reinterpret_cast<intptr_t>(this));
 }
 
+void AutofillProviderAndroidBridgeImpl::SendPrefillRequest(
+    FormDataAndroid& form) {
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
+  if (obj.is_null()) {
+    return;
+  }
+  Java_AutofillProvider_sendPrefillRequest(env, obj, form.GetJavaPeer());
+}
+
 void AutofillProviderAndroidBridgeImpl::StartAutofillSession(
     FormDataAndroid& form,
     const FieldInfo& field,
@@ -199,6 +209,16 @@ void AutofillProviderAndroidBridgeImpl::OnDidFillAutofillFormData() {
   Java_AutofillProvider_onDidFillAutofillFormData(env, obj);
 }
 
+void AutofillProviderAndroidBridgeImpl::Reset() {
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
+  if (obj.is_null()) {
+    return;
+  }
+
+  Java_AutofillProvider_reset(env, obj);
+}
+
 void AutofillProviderAndroidBridgeImpl::DetachFromJavaAutofillProvider(
     JNIEnv* env) {
   java_ref_.reset();
@@ -227,4 +247,10 @@ void AutofillProviderAndroidBridgeImpl::SetAnchorViewRect(JNIEnv* env,
                                gfx::RectF(x, y, width, height));
 }
 
+void AutofillProviderAndroidBridgeImpl::OnShowBottomSheetResult(
+    JNIEnv* env,
+    jboolean is_shown,
+    jboolean provided_autofill_structure) {
+  delegate_->OnShowBottomSheetResult(is_shown, provided_autofill_structure);
+}
 }  // namespace autofill

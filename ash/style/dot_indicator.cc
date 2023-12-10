@@ -4,6 +4,7 @@
 
 #include "ash/style/dot_indicator.h"
 
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/scoped_canvas.h"
@@ -67,5 +68,8 @@ void DotIndicator::OnPaint(gfx::Canvas* canvas) {
   flags.setAntiAlias(true);
   canvas->DrawCircle(center, dsf * radius, flags);
 }
+
+BEGIN_METADATA(DotIndicator)
+END_METADATA
 
 }  // namespace ash

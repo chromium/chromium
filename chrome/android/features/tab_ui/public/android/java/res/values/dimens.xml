@@ -7,12 +7,8 @@ found in the LICENSE file.
 
 <resources>
     <!-- Tab strip container alpha values -->
-    <item name="bg_tabstrip_tab_detached_startup_alpha" format="float" type="dimen">0.03</item>
     <item name="bg_tabstrip_tab_folio_startup_alpha" format="float" type="dimen">0.05</item>
 
     <!-- Tab strip container hover color alpha values -->
-    <item name="gm2_tab_inactive_hover_alpha" format="float" type="dimen">0.08</item>
-    <item name="tsr_detached_tab_inactive_hover_alpha_light" format="float" type="dimen">0.05</item>
-    <item name="tsr_detached_tab_inactive_hover_alpha_dark" format="float" type="dimen">0.12</item>
     <item name="tsr_folio_tab_inactive_hover_alpha" format="float" type="dimen">0.08</item>
 </resources>

@@ -5,16 +5,16 @@
 #import "ios/chrome/browser/permissions/model/permissions_tab_helper.h"
 
 #import "base/timer/timer.h"
-#import "ios/chrome/browser/infobars/infobar_ios.h"
-#import "ios/chrome/browser/infobars/infobar_manager_impl.h"
-#import "ios/chrome/browser/infobars/overlays/infobar_overlay_request_inserter.h"
-#import "ios/chrome/browser/infobars/overlays/infobar_overlay_util.h"
-#import "ios/chrome/browser/overlays/public/infobar_banner/infobar_banner_placeholder_request_config.h"
-#import "ios/chrome/browser/overlays/public/overlay_callback_manager.h"
-#import "ios/chrome/browser/overlays/public/overlay_request_queue.h"
-#import "ios/chrome/browser/overlays/public/overlay_request_queue_util.h"
-#import "ios/chrome/browser/overlays/public/overlay_response.h"
-#import "ios/chrome/browser/overlays/public/web_content_area/permissions_dialog_overlay.h"
+#import "ios/chrome/browser/infobars/model/infobar_ios.h"
+#import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
+#import "ios/chrome/browser/infobars/model/overlays/infobar_overlay_request_inserter.h"
+#import "ios/chrome/browser/infobars/model/overlays/infobar_overlay_util.h"
+#import "ios/chrome/browser/overlays/model/public/infobar_banner/infobar_banner_placeholder_request_config.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_callback_manager.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_request_queue.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_request_queue_util.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_response.h"
+#import "ios/chrome/browser/overlays/model/public/web_content_area/permissions_dialog_overlay.h"
 #import "ios/chrome/browser/permissions/model/permissions_infobar_delegate.h"
 
 namespace {
@@ -24,7 +24,7 @@ constexpr base::TimeDelta kTimeout = base::Milliseconds(250);
 // Completion callback for permissions alert overlay.
 void HandlePermissionDialogResponse(
     web::WebStatePermissionDecisionHandler handler,
-    OverlayResponse* response) API_AVAILABLE(ios(15.0)) {
+    OverlayResponse* response) {
   PermissionsDialogResponse* dialog_response =
       response ? response->GetInfo<PermissionsDialogResponse>() : nullptr;
   web::PermissionDecision decision =
@@ -38,15 +38,12 @@ void HandlePermissionDialogResponse(
 
 PermissionsTabHelper::PermissionsTabHelper(web::WebState* web_state)
     : web_state_(web_state) {
-  if (@available(iOS 15.0, *)) {
-    DCHECK(web_state);
-    permissions_to_state_ =
-        [web_state->GetStatesForAllPermissions() mutableCopy];
-    banner_queue_ = OverlayRequestQueue::FromWebState(
-        web_state, OverlayModality::kInfobarBanner);
-    inserter_ = InfobarOverlayRequestInserter::FromWebState(web_state);
-    web_state_->AddObserver(this);
-  }
+  DCHECK(web_state);
+  permissions_to_state_ = [web_state->GetStatesForAllPermissions() mutableCopy];
+  banner_queue_ = OverlayRequestQueue::FromWebState(
+      web_state, OverlayModality::kInfobarBanner);
+  inserter_ = InfobarOverlayRequestInserter::FromWebState(web_state);
+  web_state_->AddObserver(this);
 }
 
 PermissionsTabHelper::~PermissionsTabHelper() {}
@@ -114,9 +111,8 @@ void PermissionsTabHelper::PermissionStateChanged(web::WebState* web_state,
 void PermissionsTabHelper::WebStateDestroyed(web::WebState* web_state) {
   DCHECK_EQ(web_state_, web_state);
   DCHECK(banner_queue_);
-  if (@available(iOS 15.0, *)) {
-    web_state_->RemoveObserver(this);
-  }
+  web_state_->RemoveObserver(this);
+
   web_state_ = nullptr;
   banner_queue_ = nullptr;
   inserter_ = nullptr;

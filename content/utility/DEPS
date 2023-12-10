@@ -1,6 +1,7 @@
 include_rules = [
   "+ash/components/arc/video_accelerator",
   "+chromeos/ash/services/ime",
+  "+components/optimization_guide/core/optimization_guide_features.h",
   "+components/services/storage",
   "+content/child",
   "+content/public/utility",

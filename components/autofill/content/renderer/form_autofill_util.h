@@ -13,6 +13,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/i18n/rtl.h"
+#include "components/autofill/content/renderer/form_tracker.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/dense_set.h"
 #include "components/autofill/core/common/form_data.h"
@@ -128,17 +129,11 @@ bool IsDOMPredecessor(const blink::WebNode& x,
 void GetDataListSuggestions(const blink::WebInputElement& element,
                             std::vector<SelectOption>* options);
 
-// Extract FormData from the form element and return whether the
-// operation was successful.
-bool ExtractFormData(const blink::WebFormElement& form_element,
-                     const FieldDataManager& field_data_manager,
-                     FormData* data);
-
-// Returns true if at least one element from |control_elements| is visible in
-// |document|.
-bool IsSomeControlElementVisible(
-    const blink::WebDocument& document,
-    const std::set<FieldRendererId>& control_elements);
+// Extract FormData from the form element and return it or std::nullopt
+// depending on whether the operation was successful.
+std::optional<FormData> ExtractFormData(
+    const blink::WebFormElement& form_element,
+    const FieldDataManager& field_data_manager);
 
 // Helper functions to assist in getting the canonical form of the action and
 // origin. The action will properly take into account <BASE>, and both will
@@ -151,6 +146,9 @@ bool IsMonthInput(const blink::WebInputElement& element);
 
 // Returns true if |element| is a text input element.
 bool IsTextInput(const blink::WebInputElement& element);
+
+// Returns true if |element| is a text input element.
+bool IsTextInput(const blink::WebFormControlElement& element);
 
 // Returns true if `element` is either a select or a selectlist element.
 bool IsSelectOrSelectListElement(const blink::WebFormControlElement& element);
@@ -273,7 +271,7 @@ void WebFormControlElementToFormField(
 bool WebFormElementToFormData(
     const blink::WebFormElement& form_element,
     const blink::WebFormControlElement& form_control_element,
-    const FieldDataManager* field_data_manager,
+    const FieldDataManager& field_data_manager,
     DenseSet<ExtractOption> extract_options,
     FormData* form,
     FormFieldData* field);
@@ -314,7 +312,7 @@ bool UnownedFormElementsToFormData(
     const std::vector<blink::WebElement>& iframe_elements,
     const blink::WebFormControlElement* element,
     const blink::WebDocument& document,
-    const FieldDataManager* field_data_manager,
+    const FieldDataManager& field_data_manager,
     DenseSet<ExtractOption> extract_options,
     FormData* form,
     FormFieldData* field);
@@ -326,7 +324,7 @@ bool UnownedFormElementsToFormData(
 // is not found or cannot be serialized.
 bool FindFormAndFieldForFormControlElement(
     const blink::WebFormControlElement& element,
-    const FieldDataManager* field_data_manager,
+    const FieldDataManager& field_data_manager,
     DenseSet<ExtractOption> extract_options,
     FormData* form,
     FormFieldData* field);
@@ -355,14 +353,15 @@ bool FindFormAndFieldForFormControlElement(
 std::optional<FormData> FindFormForContentEditable(
     const blink::WebElement& content_editable);
 
-// Fills or previews the form represented by `form`.
+// Fills or previews the fields represented by `fields`.
 // `initiating_element` is the element that initiated the autofill process.
 // Returns the filled elements.
-std::vector<blink::WebFormControlElement> ApplyFormAction(
-    const FormData& form,
+std::vector<FieldRef> ApplyFormAction(
+    base::span<const FormFieldData> fields,
     const blink::WebFormControlElement& initiating_element,
     mojom::ActionType action_type,
-    mojom::ActionPersistence action_persistence);
+    mojom::ActionPersistence action_persistence,
+    FieldDataManager& field_data_manager);
 
 // Clears the suggested values in `previewed_elements`.
 // `initiating_element` is the element that initiated the preview operation.

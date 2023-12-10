@@ -322,8 +322,8 @@ void SaveAddressProfileView::Hide() {
 }
 
 void SaveAddressProfileView::AddedToWidget() {
-  absl::optional<SaveUpdateAddressProfileBubbleController::HeaderImages>
-      images = controller_->GetHeaderImages();
+  std::optional<SaveUpdateAddressProfileBubbleController::HeaderImages> images =
+      controller_->GetHeaderImages();
   if (images) {
     GetBubbleFrameView()->SetHeaderView(
         std::make_unique<ThemeTrackingNonAccessibleImageView>(

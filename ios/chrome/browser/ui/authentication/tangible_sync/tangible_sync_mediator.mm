@@ -10,10 +10,11 @@
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "components/sync/service/sync_service.h"
 #import "components/unified_consent/unified_consent_service.h"
-#import "ios/chrome/browser/signin/authentication_service.h"
-#import "ios/chrome/browser/signin/chrome_account_manager_service.h"
-#import "ios/chrome/browser/signin/chrome_account_manager_service_observer_bridge.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
+#import "ios/chrome/browser/signin/model/chrome_account_manager_service_observer_bridge.h"
 #import "ios/chrome/browser/sync/model/sync_setup_service.h"
+#import "ios/chrome/browser/ui/authentication/account_capabilities_latency_tracker.h"
 #import "ios/chrome/browser/ui/authentication/authentication_flow.h"
 #import "ios/chrome/browser/ui/authentication/tangible_sync/tangible_sync_consumer.h"
 #import "ios/chrome/browser/ui/authentication/tangible_sync/tangible_sync_mediator_delegate.h"
@@ -45,6 +46,9 @@
   unified_consent::UnifiedConsentService* _unifiedConsentService;
   // Sync opt-in access point.
   signin_metrics::AccessPoint _accessPoint;
+  // Records the latency of capabilities fetch for this view.
+  std::unique_ptr<signin::AccountCapabilitiesLatencyTracker>
+      _accountCapabilitiesLatencyTracker;
 }
 
 - (instancetype)
@@ -82,11 +86,15 @@
     _syncSetupService = syncSetupService;
     _unifiedConsentService = unifiedConsentService;
     _accessPoint = accessPoint;
+    _accountCapabilitiesLatencyTracker =
+        std::make_unique<signin::AccountCapabilitiesLatencyTracker>(
+            identityManager);
   }
   return self;
 }
 
 - (void)disconnect {
+  _accountCapabilitiesLatencyTracker.reset();
   _accountManagerServiceObserver.reset();
   _identityManagerObserver.reset();
   self.consumer = nil;
@@ -169,6 +177,10 @@
     }
     [self.delegate tangibleSyncMediatorUserRemoved:self];
   }
+}
+
+- (void)onExtendedAccountInfoUpdated:(const AccountInfo&)info {
+  _accountCapabilitiesLatencyTracker->OnExtendedAccountInfoUpdated(info);
 }
 
 #pragma mark - Private

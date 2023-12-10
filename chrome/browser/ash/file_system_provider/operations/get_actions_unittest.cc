@@ -83,7 +83,7 @@ void CreateRequestValueFromJSON(const std::string& json, RequestValue* result) {
   ASSERT_TRUE(parsed_json.has_value()) << parsed_json.error().message;
 
   ASSERT_TRUE(parsed_json->is_list());
-  absl::optional<Params> params = Params::Create(parsed_json->GetList());
+  std::optional<Params> params = Params::Create(parsed_json->GetList());
   ASSERT_TRUE(params.has_value());
   *result = RequestValue::CreateForGetActionsSuccess(std::move(*params));
   ASSERT_TRUE(result->is_valid());
@@ -133,14 +133,14 @@ TEST_F(FileSystemProviderOperationsGetActionsTest, Execute) {
   const base::Value* options_as_value = &event_args[0];
   ASSERT_TRUE(options_as_value->is_dict());
 
-  GetActionsRequestedOptions options;
-  ASSERT_TRUE(GetActionsRequestedOptions::Populate(options_as_value->GetDict(),
-                                                   options));
-  EXPECT_EQ(kFileSystemId, options.file_system_id);
-  EXPECT_EQ(kRequestId, options.request_id);
-  ASSERT_EQ(entry_paths_.size(), options.entry_paths.size());
-  EXPECT_EQ(entry_paths_[0].value(), options.entry_paths[0]);
-  EXPECT_EQ(entry_paths_[1].value(), options.entry_paths[1]);
+  auto options =
+      GetActionsRequestedOptions::FromValue(options_as_value->GetDict());
+  ASSERT_TRUE(options);
+  EXPECT_EQ(kFileSystemId, options->file_system_id);
+  EXPECT_EQ(kRequestId, options->request_id);
+  ASSERT_EQ(entry_paths_.size(), options->entry_paths.size());
+  EXPECT_EQ(entry_paths_[0].value(), options->entry_paths[0]);
+  EXPECT_EQ(entry_paths_[1].value(), options->entry_paths[1]);
 }
 
 TEST_F(FileSystemProviderOperationsGetActionsTest, Execute_NoListener) {

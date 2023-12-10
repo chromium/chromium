@@ -14,8 +14,9 @@ import org.chromium.ui.modelutil.PropertyModel;
  * The mediator responsible for listening to back-end changes affecting the quick delete {@link
  * View}.
  */
-class QuickDeleteMediator implements QuickDeleteDialogDelegate.TimePeriodChangeObserver,
-                                     QuickDeleteBridge.DomainVisitsCallback {
+class QuickDeleteMediator
+        implements QuickDeleteDialogDelegate.TimePeriodChangeObserver,
+                QuickDeleteBridge.DomainVisitsCallback {
     private final @NonNull PropertyModel mPropertyModel;
     private final @NonNull Profile mProfile;
     private final @NonNull QuickDeleteBridge mQuickDeleteBridge;
@@ -29,7 +30,9 @@ class QuickDeleteMediator implements QuickDeleteDialogDelegate.TimePeriodChangeO
      * @param quickDeleteTabsFilter {@link QuickDeleteTabsFilter} used to fetch the tabs to be
      *         closed data.
      */
-    QuickDeleteMediator(@NonNull PropertyModel propertyModel, @NonNull Profile profile,
+    QuickDeleteMediator(
+            @NonNull PropertyModel propertyModel,
+            @NonNull Profile profile,
             @NonNull QuickDeleteBridge quickDeleteBridge,
             @NonNull QuickDeleteTabsFilter quickDeleteTabsFilter) {
         mPropertyModel = propertyModel;
@@ -47,7 +50,8 @@ class QuickDeleteMediator implements QuickDeleteDialogDelegate.TimePeriodChangeO
     public void onTimePeriodChanged(@TimePeriod int timePeriod) {
         mPropertyModel.set(
                 QuickDeleteProperties.IS_SIGNED_IN, QuickDeleteDelegate.isSignedIn(mProfile));
-        mPropertyModel.set(QuickDeleteProperties.CLOSED_TABS_COUNT,
+        mPropertyModel.set(
+                QuickDeleteProperties.CLOSED_TABS_COUNT,
                 mQuickDeleteTabsFilter.getListOfTabsToBeClosed(timePeriod).size());
         mPropertyModel.set(QuickDeleteProperties.TIME_PERIOD, timePeriod);
 
@@ -69,9 +73,11 @@ class QuickDeleteMediator implements QuickDeleteDialogDelegate.TimePeriodChangeO
     public void onLastVisitedDomainAndUniqueDomainCountReady(
             String lastVisitedDomain, int domainCount) {
         mPropertyModel.set(QuickDeleteProperties.IS_DOMAIN_VISITED_DATA_PENDING, false);
-        mPropertyModel.set(QuickDeleteProperties.IS_SYNCING_HISTORY,
+        mPropertyModel.set(
+                QuickDeleteProperties.IS_SYNCING_HISTORY,
                 QuickDeleteDelegate.isSyncingHistory(mProfile));
-        mPropertyModel.set(QuickDeleteProperties.DOMAIN_VISITED_DATA,
+        mPropertyModel.set(
+                QuickDeleteProperties.DOMAIN_VISITED_DATA,
                 new QuickDeleteDelegate.DomainVisitsData(lastVisitedDomain, domainCount));
     }
 }

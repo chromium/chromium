@@ -43,7 +43,7 @@ class TestPrefsUtil : public PrefsUtil {
  public:
   explicit TestPrefsUtil(Profile* profile) : PrefsUtil(profile) {}
 
-  absl::optional<api::settings_private::PrefObject> GetPref(
+  std::optional<api::settings_private::PrefObject> GetPref(
       const std::string& name) override {
     if (name != "cros.accounts.users")
       return PrefsUtil::GetPref(name);

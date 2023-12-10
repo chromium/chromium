@@ -270,39 +270,6 @@ if (is_chromeos || is_linux || is_android || is_win || is_fuchsia) {
     }
   }
 
-  if (is_chromeos_ash) {
-    if (target_cpu == "arm" || target_cpu == "arm64") {
-      android32_toolchain = "android_clang_arm"
-      android64_toolchain = "android_clang_arm64"
-    } else {
-      android32_toolchain = "android_clang_x86"
-      android64_toolchain = "android_clang_x64"
-    }
-
-    group("shared_libraries_for_arc") {
-      deps = [
-        ":shared_library_arc32",
-        ":shared_library_arc64",
-      ]
-    }
-
-    copy("shared_library_arc32") {
-      sources = [ "${root_build_dir}/${android32_toolchain}/libmojo_core.so" ]
-      outputs = [ "${root_build_dir}/libmojo_core_arc32.so" ]
-      deps = [
-        ":shared_library(//build/toolchain/android:${android32_toolchain})",
-      ]
-    }
-
-    copy("shared_library_arc64") {
-      sources = [ "${root_build_dir}/${android64_toolchain}/libmojo_core.so" ]
-      outputs = [ "${root_build_dir}/libmojo_core_arc64.so" ]
-      deps = [
-        ":shared_library(//build/toolchain/android:${android64_toolchain})",
-      ]
-    }
-  }
-
   config("export_only_thunks_api") {
     inputs = [ "export_only_thunks_api.lst" ]
     ldflags = [ "-Wl,--version-script=" +

@@ -210,7 +210,7 @@ void OpenItem(Profile* profile,
 
   GetMetadataForPath(
       GetFileManagerFileSystemContext(profile), file_path,
-      storage::FileSystemOperation::GET_METADATA_FIELD_IS_DIRECTORY,
+      {storage::FileSystemOperation::GetMetadataField::kIsDirectory},
       base::BindOnce(&OpenItemWithMetadata, profile, file_path, url,
                      expected_type, std::move(callback)));
 }
@@ -229,7 +229,7 @@ void ShowItemInFolder(Profile* profile,
 
   GetMetadataForPath(
       GetFileManagerFileSystemContext(profile), file_path,
-      storage::FileSystemOperation::GET_METADATA_FIELD_IS_DIRECTORY,
+      {storage::FileSystemOperation::GetMetadataField::kIsDirectory},
       base::BindOnce(&ShowItemInFolderWithMetadata, profile, file_path, url,
                      std::move(callback)));
 }

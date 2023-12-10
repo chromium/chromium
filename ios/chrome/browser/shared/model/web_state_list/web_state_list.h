@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "base/auto_reset.h"
-#include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
@@ -66,6 +66,44 @@ class WebStateList {
     CLOSE_USER_ACTION = 1 << 0,
   };
 
+  // Scoped type representing a batch operation in progress.
+  //
+  // This is returned by `StartBatchOperation(...)`. The batch operation will
+  // be considered as over when the returned instance is destroyed. To perform
+  // a batch operation, the pattern is the following:
+  //
+  //  void DoBatchChangeOnWebStateList(WebStateList* web_state_list) {
+  //    WebStateList::ScopedBatchOperation lock =
+  //        web_state_list->StartBatchOperation();
+  //    ... // modify the WebStateList ...
+  //  }
+  //
+  // If the caller wants to perform a batch operation in a larger method, use
+  // a scope to limit the lifetime of the ScopedBatchOperation object.
+  //
+  // In all case, the ScopedBatchOperation must have a smaller lifetime than
+  // the WebStateList that returned it.
+  class [[maybe_unused, nodiscard]] ScopedBatchOperation {
+   public:
+    ScopedBatchOperation(ScopedBatchOperation&& other)
+        : web_state_list_(std::exchange(other.web_state_list_, nullptr)) {}
+
+    ScopedBatchOperation& operator=(ScopedBatchOperation&& other) {
+      web_state_list_ = std::exchange(other.web_state_list_, nullptr);
+      return *this;
+    }
+
+    ~ScopedBatchOperation();
+
+   private:
+    friend class WebStateList;
+
+    ScopedBatchOperation(WebStateList* web_state_list);
+
+    // The WebStateList on which the batch operation is in progress.
+    raw_ptr<WebStateList> web_state_list_ = nullptr;
+  };
+
   explicit WebStateList(WebStateListDelegate* delegate);
 
   WebStateList(const WebStateList&) = delete;
@@ -86,6 +124,10 @@ class WebStateList {
   // beginning of the WebStateList, any tabs whose index is smaller than is
   // pinned, and any tabs whose index is greater or equal is not pinned.
   int pinned_tabs_count() const { return pinned_tabs_count_; }
+
+  // Returns the number of regular tabs (i.e. the number of tabs that are
+  // not pinned).
+  int regular_tabs_count() const { return count() - pinned_tabs_count(); }
 
   // Returns the index of the currently active WebState, or kInvalidIndex if
   // there are no active WebState.
@@ -181,16 +223,16 @@ class WebStateList {
   // Removes an observer from the model.
   void RemoveObserver(WebStateListObserver* observer);
 
-  // Performs mutating operations on the WebStateList as batched operation.
-  // The observers will be notified by WillBeginBatchOperation() before the
-  // `operation` callback is executed and by BatchOperationEnded() after it
-  // has completed.
-  void PerformBatchOperation(base::OnceCallback<void(WebStateList*)> operation);
+  // Starts a batch operation and returns a ScopedBatchOperation. The batch
+  // will be considered complete when the ScopedBatchOperation is destroyed.
+  ScopedBatchOperation StartBatchOperation();
 
   // Invalid index.
   static const int kInvalidIndex = -1;
 
  private:
+  friend class ScopedBatchOperation;
+
   class DetachParams;
   class WebStateWrapper;
 

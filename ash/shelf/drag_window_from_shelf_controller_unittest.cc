@@ -106,7 +106,7 @@ class DragWindowFromShelfControllerTest : public AshTestBase {
                                   scroll_y);
   }
   void EndDrag(const gfx::Point& location_in_screen,
-               absl::optional<float> velocity_y) {
+               std::optional<float> velocity_y) {
     window_drag_controller_->EndDrag(gfx::PointF(location_in_screen),
                                      velocity_y);
     window_drag_controller_->FinalizeDraggedWindow();
@@ -182,7 +182,7 @@ TEST_F(DragWindowFromShelfControllerTest,
   EXPECT_FALSE(window1->GetProperty(kHideDuringWindowDragging));
   EXPECT_TRUE(window2->GetProperty(kHideDuringWindowDragging));
   EXPECT_TRUE(window3->GetProperty(kHideDuringWindowDragging));
-  EndDrag(shelf_bounds.CenterPoint(), /*velocity_y=*/absl::nullopt);
+  EndDrag(shelf_bounds.CenterPoint(), /*velocity_y=*/std::nullopt);
   EXPECT_TRUE(window1->IsVisible());
   EXPECT_TRUE(window2->IsVisible());
   EXPECT_TRUE(window3->IsVisible());
@@ -206,10 +206,8 @@ TEST_F(DragWindowFromShelfControllerTest,
   EXPECT_TRUE(window3->IsVisible());
 
   // In splitview mode, the snapped windows will stay visible during dragging.
-  split_view_controller()->SnapWindow(
-      window1.get(), SplitViewController::SnapPosition::kPrimary);
-  split_view_controller()->SnapWindow(
-      window2.get(), SplitViewController::SnapPosition::kSecondary);
+  split_view_controller()->SnapWindow(window1.get(), SnapPosition::kPrimary);
+  split_view_controller()->SnapWindow(window2.get(), SnapPosition::kSecondary);
 
   // Try to drag a left snapped window
   StartDrag(window1.get(), shelf_bounds.left_center());
@@ -217,7 +215,7 @@ TEST_F(DragWindowFromShelfControllerTest,
   EXPECT_TRUE(window1->IsVisible());
   EXPECT_TRUE(window2->IsVisible());
   EXPECT_FALSE(window3->IsVisible());
-  EndDrag(shelf_bounds.bottom_left(), /*velocity_y=*/absl::nullopt);
+  EndDrag(shelf_bounds.bottom_left(), /*velocity_y=*/std::nullopt);
   EXPECT_TRUE(window1->IsVisible());
   EXPECT_TRUE(window2->IsVisible());
   EXPECT_TRUE(window3->IsVisible());
@@ -225,10 +223,10 @@ TEST_F(DragWindowFromShelfControllerTest,
   // snapping.
   EXPECT_TRUE(split_view_controller()->IsWindowInSplitView(window1.get()));
   EXPECT_EQ(split_view_controller()->GetPositionOfSnappedWindow(window1.get()),
-            SplitViewController::SnapPosition::kPrimary);
+            SnapPosition::kPrimary);
   EXPECT_TRUE(split_view_controller()->IsWindowInSplitView(window2.get()));
   EXPECT_EQ(split_view_controller()->GetPositionOfSnappedWindow(window2.get()),
-            SplitViewController::SnapPosition::kSecondary);
+            SnapPosition::kSecondary);
   EXPECT_FALSE(split_view_controller()->IsWindowInSplitView(window3.get()));
 
   // Try to drag a right snapped window
@@ -237,7 +235,7 @@ TEST_F(DragWindowFromShelfControllerTest,
   EXPECT_TRUE(window1->IsVisible());
   EXPECT_TRUE(window2->IsVisible());
   EXPECT_FALSE(window3->IsVisible());
-  EndDrag(shelf_bounds.bottom_right(), /*velocity_y=*/absl::nullopt);
+  EndDrag(shelf_bounds.bottom_right(), /*velocity_y=*/std::nullopt);
   EXPECT_TRUE(window1->IsVisible());
   EXPECT_TRUE(window2->IsVisible());
   EXPECT_TRUE(window3->IsVisible());
@@ -245,10 +243,10 @@ TEST_F(DragWindowFromShelfControllerTest,
   // snapping.
   EXPECT_TRUE(split_view_controller()->IsWindowInSplitView(window1.get()));
   EXPECT_EQ(split_view_controller()->GetPositionOfSnappedWindow(window1.get()),
-            SplitViewController::SnapPosition::kPrimary);
+            SnapPosition::kPrimary);
   EXPECT_TRUE(split_view_controller()->IsWindowInSplitView(window2.get()));
   EXPECT_EQ(split_view_controller()->GetPositionOfSnappedWindow(window2.get()),
-            SplitViewController::SnapPosition::kSecondary);
+            SnapPosition::kSecondary);
   EXPECT_FALSE(split_view_controller()->IsWindowInSplitView(window3.get()));
 }
 
@@ -265,7 +263,7 @@ TEST_F(DragWindowFromShelfControllerTest, HideHomeLauncherDuringDraggingTest) {
   EXPECT_FALSE(home_screen_window->IsVisible());
 
   EndDrag(shelf_bounds.CenterPoint(),
-          /*velocity_y=*/absl::nullopt);
+          /*velocity_y=*/std::nullopt);
   EXPECT_TRUE(home_screen_window->IsVisible());
 }
 
@@ -285,7 +283,7 @@ TEST_F(DragWindowFromShelfControllerTest, MayOrMayNotReShowHiddenWindows) {
   Drag(gfx::Point(200, 200), 0.f, 1.f);
   EXPECT_FALSE(window2->IsVisible());
   EXPECT_TRUE(window2->GetProperty(kHideDuringWindowDragging));
-  EndDrag(shelf_bounds.CenterPoint(), absl::nullopt);
+  EndDrag(shelf_bounds.CenterPoint(), std::nullopt);
   EXPECT_TRUE(window2->IsVisible());
   EXPECT_FALSE(window2->GetProperty(kHideDuringWindowDragging));
 
@@ -312,7 +310,7 @@ TEST_F(DragWindowFromShelfControllerTest, MayOrMayNotReShowHiddenWindows) {
   EXPECT_TRUE(overview_controller->InOverviewSession());
   DragWindowFromShelfControllerTestApi().WaitUntilOverviewIsShown(
       window_drag_controller());
-  EndDrag(gfx::Point(200, 200), absl::nullopt);
+  EndDrag(gfx::Point(200, 200), std::nullopt);
   EXPECT_TRUE(overview_controller->InOverviewSession());
   EXPECT_TRUE(overview_controller->overview_session()->IsWindowInOverview(
       window1.get()));
@@ -329,7 +327,7 @@ TEST_F(DragWindowFromShelfControllerTest, MayOrMayNotReShowHiddenWindows) {
   EXPECT_FALSE(window2->IsVisible());
   EXPECT_TRUE(window2->GetProperty(kHideDuringWindowDragging));
   EXPECT_TRUE(overview_controller->InOverviewSession());
-  EndDrag(gfx::Point(0, 200), absl::nullopt);
+  EndDrag(gfx::Point(0, 200), std::nullopt);
   EXPECT_TRUE(overview_controller->InOverviewSession());
   EXPECT_TRUE(split_view_controller()->InSplitViewMode());
   EXPECT_TRUE(split_view_controller()->IsWindowInSplitView(window1.get()));
@@ -364,7 +362,7 @@ TEST_F(DragWindowFromShelfControllerTest, MinimizedWindowsShowInOverview) {
   EXPECT_TRUE(overview_controller->overview_session()->IsWindowInOverview(
       window3.get()));
   // Release the drag, the window should be added to overview.
-  EndDrag(gfx::Point(200, 200), absl::nullopt);
+  EndDrag(gfx::Point(200, 200), std::nullopt);
   EXPECT_TRUE(overview_controller->overview_session()->IsWindowInOverview(
       window1.get()));
 }
@@ -383,7 +381,7 @@ TEST_F(DragWindowFromShelfControllerTest, OpenOverviewWhenHold) {
   Drag(gfx::Point(200, 200), 0.f,
        DragWindowFromShelfController::kOpenOverviewThreshold);
   EXPECT_TRUE(overview_controller->InOverviewSession());
-  EndDrag(gfx::Point(200, 200), absl::nullopt);
+  EndDrag(gfx::Point(200, 200), std::nullopt);
 }
 
 // Test if the dragged window is not dragged far enough than
@@ -404,7 +402,7 @@ TEST_F(DragWindowFromShelfControllerTest, RestoreWindowToOriginalBounds) {
   EXPECT_FALSE(window->layer()->GetTargetTransform().IsIdentity());
   OverviewController* overview_controller = OverviewController::Get();
   EXPECT_FALSE(overview_controller->InOverviewSession());
-  EndDrag(gfx::Point(200, 400), absl::nullopt);
+  EndDrag(gfx::Point(200, 400), std::nullopt);
   EXPECT_TRUE(window->layer()->GetTargetTransform().IsIdentity());
   EXPECT_TRUE(WindowState::Get(window.get())->IsMaximized());
 
@@ -421,22 +419,20 @@ TEST_F(DragWindowFromShelfControllerTest, RestoreWindowToOriginalBounds) {
           display_bounds.bottom() -
               DragWindowFromShelfController::GetReturnToMaximizedThreshold() +
               1),
-      absl::nullopt);
+      std::nullopt);
   EXPECT_TRUE(window->layer()->GetTargetTransform().IsIdentity());
   EXPECT_FALSE(overview_controller->InOverviewSession());
   EXPECT_TRUE(WindowState::Get(window.get())->IsMaximized());
 
   // The same thing should happen if splitview mode is active.
   auto window2 = CreateTestWindow();
-  split_view_controller()->SnapWindow(
-      window.get(), SplitViewController::SnapPosition::kPrimary);
-  split_view_controller()->SnapWindow(
-      window2.get(), SplitViewController::SnapPosition::kSecondary);
+  split_view_controller()->SnapWindow(window.get(), SnapPosition::kPrimary);
+  split_view_controller()->SnapWindow(window2.get(), SnapPosition::kSecondary);
   StartDrag(window.get(), shelf_bounds.left_center());
   Drag(gfx::Point(0, 200), 0.f, 1.f);
   EXPECT_FALSE(window->layer()->GetTargetTransform().IsIdentity());
   EXPECT_TRUE(overview_controller->InOverviewSession());
-  EndDrag(gfx::Point(0, 400), absl::nullopt);
+  EndDrag(gfx::Point(0, 400), std::nullopt);
   EXPECT_TRUE(window->layer()->GetTargetTransform().IsIdentity());
   EXPECT_FALSE(overview_controller->InOverviewSession());
   EXPECT_EQ(split_view_controller()->primary_window(), window.get());
@@ -468,7 +464,7 @@ TEST_F(DragWindowFromShelfControllerTest, FlingInOverview) {
   EXPECT_TRUE(overview_controller->InOverviewSession());
   EndDrag(
       gfx::Point(0, 350),
-      absl::make_optional(
+      std::make_optional(
           -DragWindowFromShelfController::kVelocityToHomeScreenThreshold + 10));
   // The window should restore back to its original position.
   EXPECT_FALSE(overview_controller->InOverviewSession());
@@ -480,7 +476,7 @@ TEST_F(DragWindowFromShelfControllerTest, FlingInOverview) {
   Drag(gfx::Point(200, 200), 0.f, 1.f);
   EXPECT_TRUE(overview_controller->InOverviewSession());
   EndDrag(gfx::Point(0, 350),
-          absl::make_optional(
+          std::make_optional(
               -DragWindowFromShelfController::kVelocityToHomeScreenThreshold));
   EXPECT_FALSE(overview_controller->InOverviewSession());
   EXPECT_TRUE(WindowState::Get(window.get())->IsMinimized());
@@ -513,7 +509,7 @@ TEST_F(DragWindowFromShelfControllerTest,
   Drag(gfx::Point(200, 200), 0.f,
        DragWindowFromShelfController::kOpenOverviewThreshold + 1);
   EndDrag(gfx::Point(0, 350),
-          absl::make_optional(
+          std::make_optional(
               -DragWindowFromShelfController::kVelocityToHomeScreenThreshold));
   WaitForHomeLauncherAnimationToFinish();
 
@@ -531,10 +527,8 @@ TEST_F(DragWindowFromShelfControllerTest, DragOrFlingInSplitView) {
   auto window1 = CreateTestWindow();
   auto window2 = CreateTestWindow();
   OverviewController* overview_controller = OverviewController::Get();
-  split_view_controller()->SnapWindow(
-      window1.get(), SplitViewController::SnapPosition::kPrimary);
-  split_view_controller()->SnapWindow(
-      window2.get(), SplitViewController::SnapPosition::kSecondary);
+  split_view_controller()->SnapWindow(window1.get(), SnapPosition::kPrimary);
+  split_view_controller()->SnapWindow(window2.get(), SnapPosition::kSecondary);
   EXPECT_TRUE(split_view_controller()->InSplitViewMode());
 
   // If the window is only dragged for a small distance:
@@ -542,7 +536,7 @@ TEST_F(DragWindowFromShelfControllerTest, DragOrFlingInSplitView) {
   Drag(gfx::Point(100, 200), 0.f, 1.f);
   EXPECT_TRUE(split_view_controller()->InSplitViewMode());
   EXPECT_TRUE(overview_controller->InOverviewSession());
-  EndDrag(gfx::Point(100, 350), absl::nullopt);
+  EndDrag(gfx::Point(100, 350), std::nullopt);
   EXPECT_FALSE(overview_controller->InOverviewSession());
   EXPECT_TRUE(split_view_controller()->InSplitViewMode());
   EXPECT_TRUE(split_view_controller()->IsWindowInSplitView(window1.get()));
@@ -553,7 +547,7 @@ TEST_F(DragWindowFromShelfControllerTest, DragOrFlingInSplitView) {
   Drag(gfx::Point(100, 200), 0.f, 1.f);
   EXPECT_TRUE(split_view_controller()->InSplitViewMode());
   EXPECT_TRUE(overview_controller->InOverviewSession());
-  EndDrag(gfx::Point(100, 200), absl::nullopt);
+  EndDrag(gfx::Point(100, 200), std::nullopt);
   EXPECT_TRUE(overview_controller->InOverviewSession());
   EXPECT_TRUE(overview_controller->overview_session()->IsWindowInOverview(
       window1.get()));
@@ -569,7 +563,7 @@ TEST_F(DragWindowFromShelfControllerTest, DragOrFlingInSplitView) {
   EXPECT_TRUE(overview_controller->InOverviewSession());
   EndDrag(
       gfx::Point(100, 350),
-      absl::make_optional(
+      std::make_optional(
           -DragWindowFromShelfController::kVelocityToOverviewThreshold + 10));
   EXPECT_FALSE(overview_controller->InOverviewSession());
   EXPECT_TRUE(split_view_controller()->InSplitViewMode());
@@ -582,7 +576,7 @@ TEST_F(DragWindowFromShelfControllerTest, DragOrFlingInSplitView) {
   EXPECT_TRUE(split_view_controller()->InSplitViewMode());
   EXPECT_TRUE(overview_controller->InOverviewSession());
   EndDrag(gfx::Point(100, 150),
-          absl::make_optional(
+          std::make_optional(
               -DragWindowFromShelfController::kVelocityToOverviewThreshold));
   EXPECT_TRUE(overview_controller->InOverviewSession());
   EXPECT_TRUE(overview_controller->overview_session()->IsWindowInOverview(
@@ -625,7 +619,7 @@ TEST_F(DragWindowFromShelfControllerTest, HideOverviewDuringDragging) {
   DragWindowFromShelfControllerTestApi().WaitUntilOverviewIsShown(
       window_drag_controller());
   EndDrag(gfx::Point(200, 200),
-          /*velocity_y=*/absl::nullopt);
+          /*velocity_y=*/std::nullopt);
   EXPECT_TRUE(overview_controller->InOverviewSession());
   // |window1| should have added to overview. Test its visibility.
   EXPECT_TRUE(overview_controller->overview_session()->IsWindowInOverview(
@@ -648,7 +642,7 @@ TEST_F(DragWindowFromShelfControllerTest,
   EXPECT_TRUE(overview_controller->InOverviewSession());
   OverviewSession* overview_session = overview_controller->overview_session();
   ASSERT_EQ(1u, overview_session->grid_list().size());
-  SplitViewDragIndicators* drag_indicators =
+  const SplitViewDragIndicators* drag_indicators =
       overview_session->grid_list()[0]->split_view_drag_indicators();
   EXPECT_EQ(SplitViewDragIndicators::WindowDraggingState::kFromShelf,
             drag_indicators->current_window_dragging_state());
@@ -667,7 +661,7 @@ TEST_F(DragWindowFromShelfControllerTest,
   EXPECT_EQ(SplitViewDragIndicators::WindowDraggingState::kFromShelf,
             drag_indicators->current_window_dragging_state());
 
-  EndDrag(shelf_bounds.CenterPoint(), /*velocity_y=*/absl::nullopt);
+  EndDrag(shelf_bounds.CenterPoint(), /*velocity_y=*/std::nullopt);
 }
 
 // Test there is no black backdrop behind the dragged window if we're doing the
@@ -684,7 +678,7 @@ TEST_F(DragWindowFromShelfControllerTest, NoBackdropDuringWindowScaleDown) {
   StartDrag(window.get(), GetShelfBounds().left_center());
   Drag(gfx::Point(0, 200), 0.f, 10.f);
   EndDrag(gfx::Point(0, 200),
-          absl::make_optional(
+          std::make_optional(
               -DragWindowFromShelfController::kVelocityToHomeScreenThreshold));
   EXPECT_FALSE(window->layer()->GetTargetTransform().IsIdentity());
   EXPECT_NE(window_backdrop->mode(), WindowBackdrop::BackdropMode::kDisabled);
@@ -753,7 +747,7 @@ TEST_F(DragWindowFromShelfControllerTest, FlingWithHiddenHotseat) {
   // Only drag for a small distance and then fling.
   Drag(gfx::Point(start.x(), start.y() - 10), 0.5f, 0.5f);
   EndDrag(gfx::Point(start.x(), start.y() - 10),
-          absl::make_optional(
+          std::make_optional(
               -DragWindowFromShelfController::kVelocityToHomeScreenThreshold));
   // The window should restore back to its original position.
   EXPECT_TRUE(WindowState::Get(window.get())->IsMaximized());
@@ -769,7 +763,7 @@ TEST_F(DragWindowFromShelfControllerTest, FlingWithHiddenHotseat) {
   StartDrag(window.get(), start);
   Drag(gfx::Point(start.x(), start.y() - 200), 0.5f, 0.5f);
   EndDrag(gfx::Point(start.x(), start.y() - 200),
-          absl::make_optional(
+          std::make_optional(
               -DragWindowFromShelfController::kVelocityToHomeScreenThreshold));
   // The window should be minimized.
   EXPECT_TRUE(WindowState::Get(window.get())->IsMinimized());
@@ -810,7 +804,7 @@ TEST_F(DragWindowFromShelfControllerTest, DragToSnapMinDistance) {
   // Drag into the snap region and release.
   gfx::Point end = gfx::Point(
       start.x() - DragWindowFromShelfController::kMinDragDistance + 10, 200);
-  EndDrag(end, absl::nullopt);
+  EndDrag(end, std::nullopt);
   OverviewController* overview_controller = OverviewController::Get();
   EXPECT_TRUE(overview_controller->InOverviewSession());
   EXPECT_FALSE(split_view_controller()->InSplitViewMode());
@@ -836,7 +830,7 @@ TEST_F(DragWindowFromShelfControllerTest, DragToSnapMinDistance) {
 
   // Drag into the snap region and release.
   end.set_x(start.x() - 10 - DragWindowFromShelfController::kMinDragDistance);
-  EndDrag(end, absl::nullopt);
+  EndDrag(end, std::nullopt);
 
   EXPECT_TRUE(overview_controller->InOverviewSession());
   EXPECT_TRUE(split_view_controller()->InSplitViewMode());
@@ -863,7 +857,7 @@ TEST_F(DragWindowFromShelfControllerTest, DragToSnapMinDistance) {
       window_drag_controller());
   // Drag for a small distance and release.
   end.set_x(start.x() - 10);
-  EndDrag(end, absl::nullopt);
+  EndDrag(end, std::nullopt);
   EXPECT_TRUE(overview_controller->InOverviewSession());
   EXPECT_FALSE(split_view_controller()->InSplitViewMode());
 
@@ -888,7 +882,7 @@ TEST_F(DragWindowFromShelfControllerTest, DragToSnapMinDistance) {
   DragWindowFromShelfControllerTestApi().WaitUntilOverviewIsShown(
       window_drag_controller());
   end.set_x(start.x() - 5);
-  EndDrag(end, absl::nullopt);
+  EndDrag(end, std::nullopt);
   EXPECT_TRUE(overview_controller->InOverviewSession());
   EXPECT_TRUE(split_view_controller()->InSplitViewMode());
   EXPECT_TRUE(split_view_controller()->IsWindowInSplitView(window1.get()));
@@ -914,7 +908,7 @@ TEST_F(DragWindowFromShelfControllerTest, TestOverviewInvisible) {
   DragWindowFromShelfControllerTestApi().WaitUntilOverviewIsShown(
       window_drag_controller());
   // End drag without any fling, the window should be added to overview.
-  EndDrag(gfx::Point(200, 200), absl::nullopt);
+  EndDrag(gfx::Point(200, 200), std::nullopt);
   OverviewController* overview_controller = OverviewController::Get();
   EXPECT_TRUE(overview_controller->InOverviewSession());
   EXPECT_TRUE(overview_controller->overview_session()->IsWindowInOverview(
@@ -925,7 +919,7 @@ TEST_F(DragWindowFromShelfControllerTest, TestOverviewInvisible) {
   Drag(gfx::Point(200, 200), 0.f, 10.f);
   // At this moment overview should be invisible. End the drag without any
   // fling, the window should be taken to home screen.
-  EndDrag(gfx::Point(200, 200), absl::nullopt);
+  EndDrag(gfx::Point(200, 200), std::nullopt);
   EXPECT_TRUE(WindowState::Get(window.get())->IsMinimized());
 
   wm::ActivateWindow(window.get());
@@ -969,7 +963,7 @@ TEST_F(DragWindowFromShelfControllerTest,
   gfx::Point end =
       start -
       gfx::Vector2d(10 + DragWindowFromShelfController::kMinDragDistance, 200);
-  EndDrag(end, absl::nullopt);
+  EndDrag(end, std::nullopt);
 
   EXPECT_FALSE(OverviewController::Get()->InOverviewSession());
   EXPECT_FALSE(split_view_controller()->InSplitViewMode());
@@ -992,7 +986,7 @@ TEST_F(DragWindowFromShelfControllerTest, RestoreBackdropAfterDragEnds) {
   Drag(gfx::Point(200, 200), 0.f, 1.f);
   DragWindowFromShelfControllerTestApi().WaitUntilOverviewIsShown(
       window_drag_controller());
-  EndDrag(gfx::Point(200, 200), absl::nullopt);
+  EndDrag(gfx::Point(200, 200), std::nullopt);
   OverviewController* overview_controller = OverviewController::Get();
   EXPECT_TRUE(overview_controller->InOverviewSession());
   EXPECT_TRUE(overview_controller->overview_session()->IsWindowInOverview(
@@ -1009,7 +1003,7 @@ TEST_F(DragWindowFromShelfControllerTest, RestoreBackdropAfterDragEnds) {
   DragWindowFromShelfControllerTestApi().WaitUntilOverviewIsShown(
       window_drag_controller());
   EndDrag(gfx::Point(200, 200),
-          absl::make_optional(
+          std::make_optional(
               -DragWindowFromShelfController::kVelocityToHomeScreenThreshold));
   EXPECT_TRUE(WindowState::Get(window.get())->IsMinimized());
   EXPECT_FALSE(window_backdrop->temporarily_disabled());
@@ -1021,7 +1015,7 @@ TEST_F(DragWindowFromShelfControllerTest, RestoreBackdropAfterDragEnds) {
   EXPECT_TRUE(window_backdrop->temporarily_disabled());
   EXPECT_EQ(window_backdrop->mode(), WindowBackdrop::BackdropMode::kAuto);
   Drag(gfx::Point(200, 200), 0.f, 1.f);
-  EndDrag(shelf_bounds.CenterPoint(), absl::nullopt);
+  EndDrag(shelf_bounds.CenterPoint(), std::nullopt);
   EXPECT_FALSE(window_backdrop->temporarily_disabled());
   EXPECT_EQ(window_backdrop->mode(), WindowBackdrop::BackdropMode::kAuto);
 
@@ -1031,7 +1025,7 @@ TEST_F(DragWindowFromShelfControllerTest, RestoreBackdropAfterDragEnds) {
   StartDrag(window.get(), shelf_bounds.CenterPoint());
   EXPECT_TRUE(window_backdrop->temporarily_disabled());
   EXPECT_EQ(window_backdrop->mode(), WindowBackdrop::BackdropMode::kAuto);
-  EndDrag(gfx::Point(0, 200), absl::nullopt);
+  EndDrag(gfx::Point(0, 200), std::nullopt);
   EXPECT_TRUE(WindowState::Get(window.get())->IsMinimized());
   EXPECT_FALSE(window_backdrop->temporarily_disabled());
   EXPECT_EQ(window_backdrop->mode(), WindowBackdrop::BackdropMode::kAuto);
@@ -1044,7 +1038,7 @@ TEST_F(DragWindowFromShelfControllerTest, RestoreBackdropAfterDragEnds) {
   Drag(gfx::Point(200, 200), 0.f, 1.f);
   DragWindowFromShelfControllerTestApi().WaitUntilOverviewIsShown(
       window_drag_controller());
-  EndDrag(gfx::Point(0, 200), absl::nullopt);
+  EndDrag(gfx::Point(0, 200), std::nullopt);
   EXPECT_TRUE(split_view_controller()->IsWindowInSplitView(window.get()));
   EXPECT_EQ(window_backdrop->mode(), WindowBackdrop::BackdropMode::kAuto);
   EXPECT_FALSE(window_backdrop->temporarily_disabled());
@@ -1066,7 +1060,7 @@ TEST_F(DragWindowFromShelfControllerTest,
   EXPECT_TRUE(overview_controller->InOverviewSession());
   // During dragging, the active window should not change.
   EXPECT_EQ(window.get(), window_util::GetActiveWindow());
-  EndDrag(gfx::Point(200, 200), absl::nullopt);
+  EndDrag(gfx::Point(200, 200), std::nullopt);
   EXPECT_TRUE(overview_controller->InOverviewSession());
   OverviewSession* overview_session = overview_controller->overview_session();
   EXPECT_TRUE(overview_session->IsWindowInOverview(window.get()));
@@ -1100,7 +1094,7 @@ TEST_F(DragWindowFromShelfControllerTest,
   // During dragging, the active window should not change.
   EXPECT_EQ(window.get(), window_util::GetActiveWindow());
   OverviewSession* overview_session = overview_controller->overview_session();
-  EndDrag(gfx::Point(200, 200), absl::nullopt);
+  EndDrag(gfx::Point(200, 200), std::nullopt);
   EXPECT_TRUE(overview_controller->InOverviewSession());
   EXPECT_TRUE(overview_session->IsWindowInOverview(window.get()));
   // After window is added to overview, the active window should change to the
@@ -1136,7 +1130,7 @@ TEST_F(DragWindowFromShelfControllerTest, DropsIntoOverviewAtCorrectPosition) {
   Drag(gfx::Point(200, 200), 1.f, 1.f);
   DragWindowFromShelfControllerTestApi().WaitUntilOverviewIsShown(
       window_drag_controller());
-  EndDrag(gfx::Point(200, 200), absl::nullopt);
+  EndDrag(gfx::Point(200, 200), std::nullopt);
 
   // Verify the grid arrangement.
   OverviewController* overview_controller = OverviewController::Get();
@@ -1148,8 +1142,7 @@ TEST_F(DragWindowFromShelfControllerTest, DropsIntoOverviewAtCorrectPosition) {
   EXPECT_EQ(
       expected_mru_list,
       Shell::Get()->mru_window_tracker()->BuildMruWindowList(kActiveDesk));
-  EXPECT_EQ(expected_overview_list,
-            overview_controller->GetWindowsListInOverviewGridsForTest());
+  EXPECT_EQ(expected_overview_list, GetWindowsListInOverviewGrids());
 
   // Verify the stacking order.
   aura::Window* parent = window1->parent();
@@ -1193,7 +1186,7 @@ TEST_F(DragWindowFromShelfControllerTest, NoAnimationWhenReturnToMaximize) {
   // Drag back to the shelf, |window2|'s overview item should not move.
   ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
-  EndDrag(shelf_centerpoint, absl::nullopt);
+  EndDrag(shelf_centerpoint, std::nullopt);
   EXPECT_EQ(pre_exit_bounds, item_window->bounds());
   EXPECT_EQ(pre_exit_transform, item_window->layer()->GetTargetTransform());
 
@@ -1214,20 +1207,18 @@ TEST_F(DragWindowFromShelfControllerTest,
   auto window2 = CreateTestWindow();
 
   // In splitview mode, the snapped windows will stay visible during dragging.
-  split_view_controller()->SnapWindow(
-      window1.get(), SplitViewController::SnapPosition::kPrimary);
-  split_view_controller()->SnapWindow(
-      window2.get(), SplitViewController::SnapPosition::kSecondary);
+  split_view_controller()->SnapWindow(window1.get(), SnapPosition::kPrimary);
+  split_view_controller()->SnapWindow(window2.get(), SnapPosition::kSecondary);
 
   // Try to drag a left snapped window from shelf, but finally restore to
   // original bounds.
   StartDrag(window1.get(), shelf_bounds.left_center());
   Drag(gfx::Point(0, 200), 1.f, 1.f);
-  EndDrag(shelf_bounds.bottom_left(), /*velocity_y=*/absl::nullopt);
+  EndDrag(shelf_bounds.bottom_left(), /*velocity_y=*/std::nullopt);
   // Ensure that the window still keep its initial snap position.
   EXPECT_TRUE(split_view_controller()->IsWindowInSplitView(window1.get()));
   EXPECT_EQ(split_view_controller()->GetPositionOfSnappedWindow(window1.get()),
-            SplitViewController::SnapPosition::kPrimary);
+            SnapPosition::kPrimary);
   // Try to drag a right snapped window from shelf, and finally drop to
   // overview.
   StartDrag(window2.get(), shelf_bounds.right_center());
@@ -1236,7 +1227,7 @@ TEST_F(DragWindowFromShelfControllerTest,
       window_drag_controller());
   OverviewController* overview_controller = OverviewController::Get();
   OverviewSession* overview_session = overview_controller->overview_session();
-  EndDrag(gfx::Point(200, 200), /*velocity_y=*/absl::nullopt);
+  EndDrag(gfx::Point(200, 200), /*velocity_y=*/std::nullopt);
   // Ensure that the window is not in splitview but in overview.
   EXPECT_FALSE(split_view_controller()->IsWindowInSplitView(window2.get()));
   EXPECT_TRUE(overview_session->IsWindowInOverview(window2.get()));
@@ -1244,11 +1235,11 @@ TEST_F(DragWindowFromShelfControllerTest,
   // Try to drag the left window again within the restore distance.
   StartDrag(window1.get(), shelf_bounds.left_center());
   Drag(gfx::Point(0, 200), 1.f, 1.f);
-  EndDrag(shelf_bounds.bottom_left(), /*velocity_y=*/absl::nullopt);
+  EndDrag(shelf_bounds.bottom_left(), /*velocity_y=*/std::nullopt);
   // Ensure that the left window still keep snapped.
   EXPECT_TRUE(split_view_controller()->IsWindowInSplitView(window1.get()));
   EXPECT_EQ(split_view_controller()->GetPositionOfSnappedWindow(window1.get()),
-            SplitViewController::SnapPosition::kPrimary);
+            SnapPosition::kPrimary);
   // Ensure that the right window is still in the overview, and doesn't get
   // minimized.
   EXPECT_FALSE(split_view_controller()->IsWindowInSplitView(window2.get()));
@@ -1370,7 +1361,7 @@ TEST_F(DragWindowFromShelfControllerTest, DestroyTransientWhileAnimating) {
   StartDrag(child.get(), shelf_bounds.right_center());
   Drag(gfx::Point(100, 100), 1.f, 1.f);
   EndDrag(gfx::Point(shelf_bounds.width() / 2, shelf_bounds.y() - 10),
-          /*velocity_y=*/absl::nullopt);
+          /*velocity_y=*/std::nullopt);
   ASSERT_TRUE(window->layer()->GetAnimator()->is_animating());
   ASSERT_TRUE(child->layer()->GetAnimator()->is_animating());
 
@@ -1386,8 +1377,7 @@ TEST_F(DragWindowFromShelfControllerTest,
 
   // Create a window and snapped to the left in split screen.
   auto window = CreateTestWindow();
-  split_view_controller()->SnapWindow(
-      window.get(), SplitViewController::SnapPosition::kPrimary);
+  split_view_controller()->SnapWindow(window.get(), SnapPosition::kPrimary);
 
   // Try to drag the window from shelf.
   StartDrag(window.get(), shelf_bounds.left_center());
@@ -1396,7 +1386,7 @@ TEST_F(DragWindowFromShelfControllerTest,
   // Destroy the window while dragging. Expect no crash.
   window.reset();
 
-  EndDrag(shelf_bounds.CenterPoint(), /*velocity_y=*/absl::nullopt);
+  EndDrag(shelf_bounds.CenterPoint(), /*velocity_y=*/std::nullopt);
 }
 
 class FloatDragWindowFromShelfControllerTest
@@ -1447,7 +1437,7 @@ TEST_F(FloatDragWindowFromShelfControllerTest, DragFloatedWindow) {
             other_window_copy_layer->bounds());
 
   Drag(gfx::Point(0, 200), 1.f, 1.f);
-  EndDrag(shelf_bounds.CenterPoint(), /*velocity_y=*/absl::nullopt);
+  EndDrag(shelf_bounds.CenterPoint(), /*velocity_y=*/std::nullopt);
   EXPECT_FALSE(GetOtherWindowCopyLayer());
 }
 
@@ -1476,7 +1466,7 @@ TEST_F(FloatDragWindowFromShelfControllerTest, DragMaximizedWindow) {
             other_window_copy_layer->parent());
 
   Drag(gfx::Point(0, 200), 1.f, 1.f);
-  EndDrag(shelf_bounds.CenterPoint(), /*velocity_y=*/absl::nullopt);
+  EndDrag(shelf_bounds.CenterPoint(), /*velocity_y=*/std::nullopt);
   EXPECT_FALSE(GetOtherWindowCopyLayer());
 }
 
@@ -1496,7 +1486,7 @@ TEST_F(FloatDragWindowFromShelfControllerTest, WindowStatePreserved) {
   Drag(gfx::Point(200, 200), 1.f, 1.f);
   DragWindowFromShelfControllerTestApi().WaitUntilOverviewIsShown(
       window_drag_controller());
-  EndDrag(gfx::Point(200, 200), /*velocity_y=*/absl::nullopt);
+  EndDrag(gfx::Point(200, 200), /*velocity_y=*/std::nullopt);
 
   // Verify that on exiting overview, the original window state is preserved
   // (neither window is minimized).
@@ -1609,10 +1599,10 @@ TEST_F(FloatDragWindowFromShelfControllerTest,
   auto left_window = CreateTestWindow();
   auto right_window = CreateTestWindow();
   auto floated_window = CreateFloatedWindow();
-  split_view_controller()->SnapWindow(
-      left_window.get(), SplitViewController::SnapPosition::kPrimary);
-  split_view_controller()->SnapWindow(
-      right_window.get(), SplitViewController::SnapPosition::kSecondary);
+  split_view_controller()->SnapWindow(left_window.get(),
+                                      SnapPosition::kPrimary);
+  split_view_controller()->SnapWindow(right_window.get(),
+                                      SnapPosition::kSecondary);
 
   // Ensure we are in a both snapped state with a floated window.
   wm::ActivateWindow(floated_window.get());

@@ -6,6 +6,9 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
+#include "base/strings/string_piece.h"
 #include "chrome/browser/ash/login/demo_mode/demo_setup_controller.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
@@ -31,11 +34,18 @@
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/test/browser_test.h"
+#include "net/base/url_util.h"
 
 namespace ash {
 namespace {
 
-const char kAccountIdEmail[] = "public-session@test.com";
+inline constexpr char kAccountIdEmail[] = "public-session@test.com";
+
+inline constexpr char kDemoModeAppUrl[] =
+    "chrome-untrusted://demo-mode-app/index.html";
+
+inline constexpr char kGrowthCampaignsComponentName[] = "growth-campaigns";
+inline constexpr char kCampaignsFileName[] = "campaigns.json";
 
 void SetDemoConfigPref(DemoSession::DemoModeConfig demo_config) {
   PrefService* prefs = g_browser_process->local_state();
@@ -200,21 +210,35 @@ IN_PROC_BROWSER_TEST_F(DemoSessionActiveDirectoryDeviceTest, NotDemoMode) {
 // has been initialized on the browser
 class DemoLoginTestMainExtraParts : public ChromeBrowserMainExtraParts {
  public:
-  DemoLoginTestMainExtraParts() = default;
+  DemoLoginTestMainExtraParts() {
+    CHECK(components_temp_dir_.CreateUniqueTempDir());
+  }
   DemoLoginTestMainExtraParts(const DemoLoginTestMainExtraParts&) = delete;
   DemoLoginTestMainExtraParts& operator=(const DemoLoginTestMainExtraParts&) =
       delete;
 
+  base::FilePath GetGrowthCampaignsPath() {
+    return components_temp_dir_.GetPath()
+        .AppendASCII("cros-components")
+        .AppendASCII(kGrowthCampaignsComponentName);
+  }
+
   void PostEarlyInitialization() override {
     auto cros_component_manager =
         base::MakeRefCounted<component_updater::FakeCrOSComponentManager>();
-    cros_component_manager->set_supported_components({"demo-mode-app"});
+    cros_component_manager->set_supported_components(
+        {"demo-mode-app", kGrowthCampaignsComponentName});
     cros_component_manager->ResetComponentState(
         "demo-mode-app",
         component_updater::FakeCrOSComponentManager::ComponentInfo(
             component_updater::CrOSComponentManager::Error::NONE,
             base::FilePath("/dev/null"),
             base::FilePath("/run/imageloader/demo-mode-app")));
+    cros_component_manager->ResetComponentState(
+        "growth-campaigns",
+        component_updater::FakeCrOSComponentManager::ComponentInfo(
+            component_updater::CrOSComponentManager::Error::NONE,
+            base::FilePath("/dev/null"), GetGrowthCampaignsPath()));
 
     platform_part_test_api_ =
         std::make_unique<BrowserProcessPlatformPartTestApi>(
@@ -230,6 +254,7 @@ class DemoLoginTestMainExtraParts : public ChromeBrowserMainExtraParts {
 
  private:
   std::unique_ptr<BrowserProcessPlatformPartTestApi> platform_part_test_api_;
+  base::ScopedTempDir components_temp_dir_;
 };
 
 // Tests that involve asserting state about actual logged-in Demo sessions
@@ -251,8 +276,10 @@ class DemoSessionLoginTest : public LoginManagerTest,
 
   void CreatedBrowserMainParts(
       content::BrowserMainParts* browser_main_parts) override {
+    auto extra_parts = std::make_unique<DemoLoginTestMainExtraParts>();
+    growth_campaigns_mounted_path_ = extra_parts->GetGrowthCampaignsPath();
     static_cast<ChromeBrowserMainParts*>(browser_main_parts)
-        ->AddParts(std::make_unique<DemoLoginTestMainExtraParts>());
+        ->AddParts(std::move(extra_parts));
     LoginManagerTest::CreatedBrowserMainParts(browser_main_parts);
   }
 
@@ -308,12 +335,17 @@ class DemoSessionLoginTest : public LoginManagerTest,
     }
   }
 
+  base::FilePath growth_campaigns_mounted_path() {
+    return growth_campaigns_mounted_path_;
+  }
+
   LoginManagerMixin login_manager_mixin_{&mixin_host_};
   DeviceStateMixin device_state_mixin_{
       &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_DEMO_MODE};
   LocalStateMixin local_state_mixin_{&mixin_host_, this};
   base::OnceClosure on_browser_added_callback_;
   static constexpr double kInitialBrightness = 20.0;
+  base::FilePath growth_campaigns_mounted_path_;
   base::WeakPtrFactory<DemoSessionLoginTest> weak_ptr_factory_{this};
 };
 
@@ -334,7 +366,8 @@ IN_PROC_BROWSER_TEST_F(DemoSessionLoginTest, DemoSWALaunchesOnSessionStartup) {
 
   // Verify that Demo Mode App is opened.
   Browser* app_browser =
-      FindSystemWebAppBrowser(profile, SystemWebAppType::DEMO_MODE);
+      FindSystemWebAppBrowser(profile, SystemWebAppType::DEMO_MODE,
+                              Browser::TYPE_APP, GURL(kDemoModeAppUrl));
   ASSERT_TRUE(app_browser);
   content::WebContents* tab =
       app_browser->tab_strip_model()->GetActiveWebContents();
@@ -352,6 +385,166 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(chromeos::FakePowerManagerClient::Get()
                 ->num_increase_keyboard_brightness_calls(),
             3);
+}
+
+class DemoSessionLoginWithGrowthCampaignTest : public DemoSessionLoginTest {
+ public:
+  DemoSessionLoginWithGrowthCampaignTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {features::kGrowthCampaignsInDemoMode, ash::features::kGrowthFramework},
+        {});
+  }
+
+  void CreateTestCampaignsFile(base::StringPiece data) {
+    auto campaigns_mounted_path = growth_campaigns_mounted_path();
+    CHECK(base::CreateDirectory(campaigns_mounted_path));
+
+    base::FilePath campaigns_file(
+        campaigns_mounted_path.Append(kCampaignsFileName));
+    CHECK(base::WriteFile(campaigns_file, data));
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(DemoSessionLoginWithGrowthCampaignTest,
+                       DemoSWALaunchesOnSessionStartupWithPayload) {
+  base::ScopedAllowBlockingForTesting scoped_allow_blocking;
+
+  CreateTestCampaignsFile(R"({
+      "reactiveCampaigns": {
+        "0": [
+          {
+            "id": 3,
+            "targetings": [],
+            "payload": {
+              "demoModeApp": {
+                "attractionLoop": {
+                  "videoSrcLang1": "/asset/peripherals_lang1.mp4",
+                  "videoSrcLang2": "/asset/peripherals_lang2.mp4"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "proactiveCampaigns": {}
+  })");
+
+  login_manager_mixin_.WaitForActiveSession();
+  auto* profile = ProfileManager::GetActiveUserProfile();
+  SystemWebAppManager::GetForTest(profile)->InstallSystemAppsForTesting();
+  ui_test_utils::BrowserChangeObserver browser_opened(
+      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
+  browser_opened.Wait();
+
+  // Verify that Demo Mode App is opened with payload
+  auto base_url = GURL(kDemoModeAppUrl);
+  auto* param_value =
+      R"({"attractionLoop":{"videoSrcLang1":"/asset/peripherals_lang1.mp4",)"
+      R"("videoSrcLang2":"/asset/peripherals_lang2.mp4"}})";
+  auto url = net::AppendQueryParameter(base_url, /*name=*/"model", param_value);
+  Browser* app_browser = FindSystemWebAppBrowser(
+      profile, SystemWebAppType::DEMO_MODE, Browser::TYPE_APP, url);
+  ASSERT_TRUE(app_browser);
+
+  content::WebContents* tab =
+      app_browser->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(tab);
+  EXPECT_EQ(tab->GetController().GetVisibleEntry()->GetPageType(),
+            content::PAGE_TYPE_NORMAL);
+}
+
+IN_PROC_BROWSER_TEST_F(DemoSessionLoginWithGrowthCampaignTest,
+                       DemoSWALaunchesOnSessionStartupWithoutPayload) {
+  base::ScopedAllowBlockingForTesting scoped_allow_blocking;
+
+  CreateTestCampaignsFile(R"({
+      "reactiveCampaigns": {
+        "0": [
+          {
+            "id": 3,
+            "targetings": [],
+            "payload": {}
+          }
+        ]
+      },
+      "proactiveCampaigns": {}
+  })");
+
+  login_manager_mixin_.WaitForActiveSession();
+  auto* profile = ProfileManager::GetActiveUserProfile();
+  SystemWebAppManager::GetForTest(profile)->InstallSystemAppsForTesting();
+  ui_test_utils::BrowserChangeObserver browser_opened(
+      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
+  browser_opened.Wait();
+
+  // Verify that Demo Mode App is opened without payload.
+  auto base_url = GURL(kDemoModeAppUrl);
+  Browser* app_browser = FindSystemWebAppBrowser(
+      profile, SystemWebAppType::DEMO_MODE, Browser::TYPE_APP, base_url);
+  ASSERT_TRUE(app_browser);
+  content::WebContents* tab =
+      app_browser->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(tab);
+  EXPECT_EQ(tab->GetController().GetVisibleEntry()->GetPageType(),
+            content::PAGE_TYPE_NORMAL);
+}
+
+IN_PROC_BROWSER_TEST_F(DemoSessionLoginWithGrowthCampaignTest,
+                       DemoSWALaunchesOnSessionStartupMismatch) {
+  base::ScopedAllowBlockingForTesting scoped_allow_blocking;
+
+  CreateTestCampaignsFile(R"({
+      "reactiveCampaigns": {
+        "0": [
+          {
+            "id": 3,
+            "targetings": [
+              {
+                "demoMode": {
+                  "retailers": ["bby", "bestbuy", "bbt"],
+                  "storeIds": ["2", "4", "6"],
+                  "countries": ["US"],
+                  "capability": {
+                    "isCloudGamingDevice": true,
+                    "isFeatureAwareDevice": true
+                  }
+                }
+              }
+            ],
+            "payload": {
+              "demoModeApp": {
+                "attractionLoop": {
+                  "videoSrcLang1": "/asset/peripherals_lang1.mp4",
+                  "videoSrcLang2": "/asset/peripherals_lang2.mp4"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "proactiveCampaigns": {}
+  })");
+
+  login_manager_mixin_.WaitForActiveSession();
+  auto* profile = ProfileManager::GetActiveUserProfile();
+  SystemWebAppManager::GetForTest(profile)->InstallSystemAppsForTesting();
+  ui_test_utils::BrowserChangeObserver browser_opened(
+      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
+  browser_opened.Wait();
+
+  // Verify that Demo Mode App is opened without payload.
+  auto base_url = GURL(kDemoModeAppUrl);
+  Browser* app_browser = FindSystemWebAppBrowser(
+      profile, SystemWebAppType::DEMO_MODE, Browser::TYPE_APP, base_url);
+  ASSERT_TRUE(app_browser);
+  content::WebContents* tab =
+      app_browser->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(tab);
+  EXPECT_EQ(tab->GetController().GetVisibleEntry()->GetPageType(),
+            content::PAGE_TYPE_NORMAL);
 }
 
 }  // namespace

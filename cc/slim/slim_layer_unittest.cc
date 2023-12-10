@@ -199,7 +199,7 @@ TEST_P(SlimLayerTest, SurfaceLayerProperties) {
   viz::SurfaceId end(viz::FrameSinkId(1u, 2u),
                      viz::LocalSurfaceId(5u, 6u, token));
 
-  EXPECT_EQ(layer->oldest_acceptable_fallback(), absl::nullopt);
+  EXPECT_EQ(layer->oldest_acceptable_fallback(), std::nullopt);
   layer->SetOldestAcceptableFallback(start);
   EXPECT_EQ(layer->oldest_acceptable_fallback(), start);
   layer->SetSurfaceId(end, cc::DeadlinePolicy::UseDefaultDeadline());

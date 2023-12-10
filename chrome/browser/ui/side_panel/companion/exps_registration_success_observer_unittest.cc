@@ -174,6 +174,8 @@ TEST_F(ExpsRegistrationSuccessObserverTest,
 }
 
 TEST_F(ExpsRegistrationSuccessObserverTest, MatchURL) {
+  SetupExpsObserver();
+
   std::vector<std::string> url_patterns;
   url_patterns.emplace_back("https://labs.google.com/search/experiment");
   url_patterns.emplace_back("https://labs.google.com/search/otherexperiment");

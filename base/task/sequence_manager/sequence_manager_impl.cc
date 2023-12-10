@@ -152,12 +152,6 @@ char* PrependHexAddress(char* output, const void* address) {
 }
 #endif  // !BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_ANDROID)
 
-// Controls whether canceled tasks are removed from the front of the queue when
-// deciding when the next wake up should happen.
-// Note: An atomic is used here because some tests can initialize two different
-//       sequence managers on different threads (e.g. by using base::Thread).
-std::atomic_bool g_no_wake_ups_for_canceled_tasks{true};
-
 // Atomic to avoid TSAN flags when a test  tries to access the value before the
 // feature list is available.
 std::atomic_bool g_record_crash_keys = false;
@@ -297,8 +291,6 @@ std::unique_ptr<SequenceManagerImpl> SequenceManagerImpl::CreateUnbound(
 
 // static
 void SequenceManagerImpl::InitializeFeatures() {
-  base::InitializeTaskLeeway();
-  ApplyNoWakeUpsForCanceledTasks();
   TaskQueueImpl::InitializeFeatures();
   MessagePump::InitializeFeatures();
   ThreadControllerWithMessagePumpImpl::InitializeFeatures();
@@ -311,27 +303,6 @@ void SequenceManagerImpl::InitializeFeatures() {
       FeatureList::IsEnabled(kRecordSequenceManagerCrashKeys),
       std::memory_order_relaxed);
   TaskQueueSelector::InitializeFeatures();
-}
-
-// static
-void SequenceManagerImpl::ApplyNoWakeUpsForCanceledTasks() {
-  // Since kNoWakeUpsForCanceledTasks is not constexpr (forbidden for Features),
-  // it cannot be used to initialize |g_no_wake_ups_for_canceled_tasks| at
-  // compile time. At least DCHECK that its initial value matches the default
-  // value of the feature here.
-  DCHECK_EQ(
-      g_no_wake_ups_for_canceled_tasks.load(std::memory_order_relaxed),
-      kNoWakeUpsForCanceledTasks.default_state == FEATURE_ENABLED_BY_DEFAULT);
-  g_no_wake_ups_for_canceled_tasks.store(
-      FeatureList::IsEnabled(kNoWakeUpsForCanceledTasks),
-      std::memory_order_relaxed);
-}
-
-// static
-void SequenceManagerImpl::ResetNoWakeUpsForCanceledTasksForTesting() {
-  g_no_wake_ups_for_canceled_tasks.store(
-      kNoWakeUpsForCanceledTasks.default_state == FEATURE_ENABLED_BY_DEFAULT,
-      std::memory_order_relaxed);
 }
 
 void SequenceManagerImpl::BindToMessagePump(std::unique_ptr<MessagePump> pump) {
@@ -693,9 +664,6 @@ void SequenceManagerImpl::DidRunTask(LazyNow& lazy_now) {
 
 void SequenceManagerImpl::RemoveAllCanceledDelayedTasksFromFront(
     LazyNow* lazy_now) {
-  if (!g_no_wake_ups_for_canceled_tasks.load(std::memory_order_relaxed))
-    return;
-
   main_thread_only().wake_up_queue->RemoveAllCanceledDelayedTasksFromFront(
       lazy_now);
   main_thread_only()
@@ -705,8 +673,10 @@ void SequenceManagerImpl::RemoveAllCanceledDelayedTasksFromFront(
 
 absl::optional<WakeUp> SequenceManagerImpl::GetPendingWakeUp(
     LazyNow* lazy_now,
-    SelectTaskOption option) const {
+    SelectTaskOption option) {
   DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
+
+  RemoveAllCanceledDelayedTasksFromFront(lazy_now);
 
   if (main_thread_only().selector.GetHighestPendingPriority(option)) {
     // If the selector has non-empty queues we trivially know there is immediate
@@ -765,7 +735,7 @@ absl::optional<WakeUp> SequenceManagerImpl::AdjustWakeUp(
 
 void SequenceManagerImpl::MaybeAddLeewayToTask(Task& task) const {
   if (!main_thread_only().time_domain) {
-    task.leeway = GetTaskLeewayForCurrentThread();
+    task.leeway = MessagePump::GetLeewayForCurrentThread();
   }
 }
 
@@ -785,7 +755,7 @@ bool SequenceManagerImpl::HasPendingHighResolutionTasks() {
     // way, we don't need to activate the high resolution timer for precise
     // tasks that will run in more than 16ms if there are non precise tasks in
     // front of them.
-    DCHECK_GE(GetDefaultTaskLeeway(),
+    DCHECK_GE(MessagePump::GetLeewayIgnoringThreadOverride(),
               Milliseconds(Time::kMinLowResolutionThresholdMs));
     return wake_up->delay_policy == subtle::DelayPolicy::kPrecise;
   }
@@ -1060,13 +1030,6 @@ void SequenceManagerImpl::CleanUpQueues() {
   main_thread_only().queues_to_delete.clear();
 }
 
-void SequenceManagerImpl::RemoveAllCanceledTasksFromFrontOfWorkQueues() {
-  for (internal::TaskQueueImpl* queue : main_thread_only().active_queues) {
-    queue->delayed_work_queue()->RemoveAllCanceledTasksFromFront();
-    queue->immediate_work_queue()->RemoveAllCanceledTasksFromFront();
-  }
-}
-
 WeakPtr<SequenceManagerImpl> SequenceManagerImpl::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
@@ -1114,7 +1077,13 @@ void SequenceManagerImpl::AttachToMessagePump() {
 
 bool SequenceManagerImpl::IsIdleForTesting() {
   ReloadEmptyWorkQueues();
-  RemoveAllCanceledTasksFromFrontOfWorkQueues();
+
+  // Make sure that canceled tasks don't affect the return value.
+  for (internal::TaskQueueImpl* queue : main_thread_only().active_queues) {
+    queue->delayed_work_queue()->RemoveAllCanceledTasksFromFront();
+    queue->immediate_work_queue()->RemoveAllCanceledTasksFromFront();
+  }
+
   return !main_thread_only().selector.GetHighestPendingPriority().has_value();
 }
 

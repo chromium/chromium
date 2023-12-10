@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/login/enrollment/enrollment_screen.h"
 
+#include <optional>
+
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
@@ -29,7 +31,6 @@
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -281,7 +282,7 @@ class EnrollmentScreenUnitTest : public testing::Test {
   WizardContext wizard_context_;
 
   // The last result reported by `enrollment_screen_`.
-  absl::optional<EnrollmentScreen::Result> last_screen_result_;
+  std::optional<EnrollmentScreen::Result> last_screen_result_;
 };
 
 TEST_F(EnrollmentScreenUnitTest, ConfigAfterRollback) {
@@ -313,13 +314,27 @@ TEST_F(EnrollmentScreenUnitTest, RollbackFlowShouldFinishEnrollmentScreen) {
   TestEnrollmentFlowShouldComplete(config);
 }
 
-TEST_F(EnrollmentScreenUnitTest, RollbackFlowShouldRetryEnrollment) {
+TEST_F(EnrollmentScreenUnitTest, RollbackFlowShouldNotRetryEnrollment) {
   ConfigureRestoreAfterRollback();
   policy::EnrollmentConfig config;
   config.mode = policy::EnrollmentConfig::MODE_MANUAL_REENROLLMENT;
   config.auth_mechanism =
       policy::EnrollmentConfig::AUTH_MECHANISM_BEST_AVAILABLE;
-  TestEnrollmentFlowRetriesOnFailure(config);
+
+  // Define behavior of MockEnrollmentLauncher to always fail enrollment.
+  SetupMockEnrollmentLauncher(AttestationEnrollmentStatus::DMSERVER_ERROR);
+
+  ScopedEnrollmentLauncherFactoryOverrideForTesting
+      enrollment_launcher_factory_override(base::BindRepeating(
+          FakeEnrollmentLauncher::Create, &mock_enrollment_launcher_));
+
+  SetUpEnrollmentScreen(config);
+
+  ShowEnrollmentScreen(/*suppress_jitter=*/true);
+
+  FastForwardTime(base::Days(1));
+
+  EXPECT_EQ(GetEnrollmentScreenRetries(), 0);
 }
 
 TEST_F(EnrollmentScreenUnitTest, ZeroTouchFlowShouldFinishEnrollmentScreen) {

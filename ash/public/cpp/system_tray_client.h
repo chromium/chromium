@@ -5,13 +5,13 @@
 #ifndef ASH_PUBLIC_CPP_SYSTEM_TRAY_CLIENT_H_
 #define ASH_PUBLIC_CPP_SYSTEM_TRAY_CLIENT_H_
 
+#include <optional>
 #include <string>
 
 #include "ash/public/cpp/ash_public_export.h"
 #include "base/strings/string_piece.h"
 #include "components/access_code_cast/common/access_code_cast_metrics.h"
 #include "components/version_info/channel.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -38,7 +38,7 @@ class ASH_PUBLIC_EXPORT SystemTrayClient {
   // should be in the form "XX:XX:XX:XX:XX:XX". When |device_address| is not
   // provided the dialog will show the device list instead.
   virtual void ShowBluetoothPairingDialog(
-      absl::optional<base::StringPiece> device_address) = 0;
+      std::optional<base::StringPiece> device_address) = 0;
 
   // Shows the settings related to date, timezone etc.
   virtual void ShowDateSettings() = 0;
@@ -172,7 +172,7 @@ class ASH_PUBLIC_EXPORT SystemTrayClient {
   // so the URL actually opened may not be the same as the passed-in URL.  This
   // is guaranteed to be the case if no event URL was passed in.  The URL that's
   // actually opened is assigned to `finalized_event_url`.
-  virtual void ShowCalendarEvent(const absl::optional<GURL>& event_url,
+  virtual void ShowCalendarEvent(const std::optional<GURL>& event_url,
                                  const base::Time& date,
                                  bool& opened_pwa,
                                  GURL& finalized_event_url) = 0;
@@ -203,6 +203,12 @@ class ASH_PUBLIC_EXPORT SystemTrayClient {
   // Returns 'true' if the user preference is set to allow users to submit
   // feedback, 'false' otherwise.
   virtual bool IsUserFeedbackEnabled() = 0;
+
+  // Shows settings related to graphics tablets.
+  virtual void ShowGraphicsTabletSettings() = 0;
+
+  // Shows settings related to mice.
+  virtual void ShowMouseSettings() = 0;
 
   // Shows settings related to touchpads.
   virtual void ShowTouchpadSettings() = 0;

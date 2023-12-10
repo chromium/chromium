@@ -26,8 +26,7 @@ import java.util.List;
 @RunWith(Parameterized.class)
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
 public class AwServiceWorkerClientTest extends AwParameterizedTest {
-    @Rule
-    public AwActivityTestRule mActivityTestRule;
+    @Rule public AwActivityTestRule mActivityTestRule;
 
     private TestAwContentsClient mContentsClient;
     private AwContents mAwContents;

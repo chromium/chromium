@@ -15,17 +15,14 @@ import java.io.Reader;
 import java.io.Writer;
 import java.util.Arrays;
 
-/**
- * Utility class for dealing with files for test.
- */
+/** Utility class for dealing with files for test. */
 public class TestFileUtil {
     public static void createNewHtmlFile(String name, String title, String body)
             throws IOException {
         createNewHtmlFile(new File(name), title, body);
     }
 
-    public static void createNewHtmlFile(File file, String title, String body)
-            throws IOException {
+    public static void createNewHtmlFile(File file, String title, String body) throws IOException {
         if (!file.createNewFile()) {
             throw new IOException("File \"" + file.getAbsolutePath() + "\" already exists");
         }
@@ -33,12 +30,15 @@ public class TestFileUtil {
         Writer writer = null;
         try {
             writer = new OutputStreamWriter(new FileOutputStream(file), "UTF-8");
-            writer.write("<html><meta charset=\"UTF-8\" />"
-                    + "     <head><title>" + title + "</title></head>"
-                    + "     <body>"
-                    + (body != null ? body : "")
-                    + "     </body>"
-                    + "   </html>");
+            writer.write(
+                    "<html><meta charset=\"UTF-8\" />"
+                            + "     <head><title>"
+                            + title
+                            + "</title></head>"
+                            + "     <body>"
+                            + (body != null ? body : "")
+                            + "     </body>"
+                            + "   </html>");
         } finally {
             if (writer != null) {
                 writer.close();
@@ -62,14 +62,19 @@ public class TestFileUtil {
      * @throws FileNotFoundException file does not exceed
      * @throws IOException error encountered accessing the file
      */
-    public static char[] readUtf8File(String fileName, int sizeLimit) throws
-            FileNotFoundException, IOException {
+    public static char[] readUtf8File(String fileName, int sizeLimit)
+            throws FileNotFoundException, IOException {
         Reader reader = null;
         try {
             File f = new File(fileName);
             if (f.length() > sizeLimit) {
-                throw new IOException("File " + fileName + " length " + f.length()
-                        + " exceeds limit " + sizeLimit);
+                throw new IOException(
+                        "File "
+                                + fileName
+                                + " length "
+                                + f.length()
+                                + " exceeds limit "
+                                + sizeLimit);
             }
             char[] buffer = new char[(int) f.length()];
             reader = new InputStreamReader(new FileInputStream(f), "UTF-8");

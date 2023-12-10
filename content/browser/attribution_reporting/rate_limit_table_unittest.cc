@@ -144,16 +144,9 @@ struct RateLimitRow {
   std::string context_origin;
   base::Time time;
   base::Time source_expiry_or_attribution_time;
-};
 
-bool operator==(const RateLimitRow& a, const RateLimitRow& b) {
-  const auto tie = [](const RateLimitRow& row) {
-    return std::make_tuple(row.scope, row.source_site, row.destination_site,
-                           row.reporting_origin, row.context_origin, row.time,
-                           row.source_expiry_or_attribution_time);
-  };
-  return tie(a) == tie(b);
-}
+  friend bool operator==(const RateLimitRow&, const RateLimitRow&) = default;
+};
 
 std::ostream& operator<<(std::ostream& out, const RateLimitScope scope) {
   switch (scope) {

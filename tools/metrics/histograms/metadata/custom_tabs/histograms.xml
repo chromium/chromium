@@ -69,18 +69,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="CustomTabs.Branding.BrandingCheckCanceled"
-    enum="BooleanCanceled" expires_after="2023-12-31">
-  <owner>wenyufu@chromium.org</owner>
-  <owner>chrome-connective-tissue@google.com</owner>
-  <summary>
-    For every CCT launch, Chrome will start an async task in the background
-    checking the last time branding is shown for the client app. Record whether
-    such branding check is canceled due to timeout when it is finished. Record
-    for Android CCT only.
-  </summary>
-</histogram>
-
 <histogram name="CustomTabs.Branding.BrandingCheckDuration" units="ms"
     expires_after="2024-04-28">
   <owner>wenyufu@chromium.org</owner>
@@ -107,22 +95,6 @@ chromium-metrics-reviews@google.com.
 
     Record what branding decision will be used for the current CCT session when
     the branding check is finished or canceled. Record for Android CCT only.
-  </summary>
-</histogram>
-
-<histogram name="CustomTabs.Branding.IsPackageNameValid" enum="BooleanValid"
-    expires_after="2023-12-31">
-  <owner>wenyufu@chromium.org</owner>
-  <owner>chrome-connective-tissue@google.com</owner>
-  <summary>
-    For every CCT launch, Chrome will start an async task in the background
-    checking the last time branding is shown for the client app. Recorded
-    whether the package name of CCT client app can be found on device when the
-    async task is finished. Record for Android CCT only.
-
-    If the client app is using CCT service connection, the client app package
-    name will be read from CCT service; otherwise the package name will be
-    parsed from the Activity#getReferrer of CustomTabsActivity.
   </summary>
 </histogram>
 
@@ -223,7 +195,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CustomTabs.DetachedResourceRequest.FinalStatus"
-    enum="NetErrorCodes" expires_after="2024-03-17">
+    enum="NetErrorCodes" expires_after="2024-05-19">
   <owner>lizeb@chromium.org</owner>
   <owner>cct-team@google.com</owner>
   <summary>
@@ -245,8 +217,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="CustomTabs.DeviceSpec" enum="PcctDeviceSpec"
+    expires_after="2024-11-09">
+  <owner>jinsukkim@chromium.org</owner>
+  <owner>chrome-connective-tissue@google.com</owner>
+  <summary>
+    Reports some chosen specs of the device on which PCCT runs. We are
+    interested in understanding how many devices running PCCT will be able to
+    migrate to Activity Embedding later, which requires that the device not be a
+    low-end one and support picture-in-picture feature. Low-endness is defined
+    as the return value of API ActivityManager#isLowRamDevice. This is recorded
+    only once per Chrome session, when PCCT is launched.
+  </summary>
+</histogram>
+
 <histogram name="CustomTabs.FeatureUsage" enum="CustomTabsFeatureUsed"
-    expires_after="2024-03-17">
+    expires_after="2024-05-19">
   <owner>donnd@chromium.org</owner>
   <owner>chrome-connective-tissue@google.com</owner>
   <summary>
@@ -256,21 +242,6 @@ chromium-metrics-reviews@google.com.
     single large list of features and their percentage usage (one or more times
     per session) right in the UMA timeline. Recorded during a CCT Session.
     Android only.
-  </summary>
-</histogram>
-
-<histogram name="CustomTabs.HadInteractionOnClose" enum="Boolean"
-    expires_after="2023-06-18">
-  <obsolete>
-    Deprecated 2022-12. Replaced by CustomTabs.HadInteractionOnClose.Form and
-    CustomTabs.HadInteractionOnClose.Navigation
-  </obsolete>
-  <owner>wenyufu@chromium.org</owner>
-  <owner>chrome-connective-tissue@google.com</owner>
-  <summary>
-    Whether current CCT has seen any interactions. &quot;Interactions&quot;
-    includes any form entries for text / drop down, and whether a tab can go
-    forward / back when it is closed. Recorded when CCT tab is closed.
   </summary>
 </histogram>
 
@@ -287,7 +258,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CustomTabs.HadInteractionOnClose.FormStillActive"
-    enum="Boolean" expires_after="2024-03-24">
+    enum="Boolean" expires_after="2024-05-26">
   <owner>katzz@google.com</owner>
   <owner>chrome-connective-tissue@google.com</owner>
   <summary>
@@ -320,32 +291,6 @@ chromium-metrics-reviews@google.com.
     retrieved in a non-spoofable way for Custom Tabs. When the histogram returns
     true, it means we can confirm the package name was passed by the defined
     host app. Emitted when the Custom Tab is launched.
-  </summary>
-</histogram>
-
-<histogram name="CustomTabs.ImmersiveModeConfirmationsSettingConfirmed"
-    enum="Boolean" expires_after="2023-05-14">
-  <obsolete>
-    Deprecated 2022-12. No longer needed.
-  </obsolete>
-  <owner>kgrosu@google.com</owner>
-  <owner>chrome-connective-tissue@google.com</owner>
-  <summary>
-    Android only. Recorded during Partial Custom Tab creation, if it has not
-    already been logged during the existing Chrome session. Returns true if the
-    value for &quot;immersive_mode_confirmations&quot; from Settings.Secure is
-    set to &quot;confirmed&quot;, false otherwise.
-
-    This is trying to approximate what percentage of Chrome sessions that run
-    PCCTs have already confirmed the dialog that shows up when an app enters
-    immersive mode (e.g. when hiding the navigation bar buttons or status bar).
-    Once the user has tapped on the dialog, it should never be displayed again.
-    This metric will be used to measure the impact that hiding the navigation
-    bar buttons would have. In the scenario where we hide the nav bar buttons
-    only when a PCCT is being resized, this confirmation dialog shows only while
-    the user is dragging the PCCT window, but disappears as soon as the finger
-    is lifted from the screen, giving no time for the user to confirm that they
-    are aware that they entered immersive mode.
   </summary>
 </histogram>
 
@@ -392,7 +337,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CustomTabs.MayLaunchUrlType" enum="MayLaunchUrlType"
-    expires_after="2024-03-24">
+    expires_after="2024-05-26">
   <owner>lizeb@chromium.org</owner>
   <summary>
     Android only. Which flavors of mayLaunchUrl() were used before a tab launch.
@@ -403,6 +348,16 @@ chromium-metrics-reviews@google.com.
 
     Before M118, unlike CustomTabs.WarmupStateOnLaunch, this metric was only
     recorded with a valid session.
+  </summary>
+</histogram>
+
+<histogram name="CustomTabs.Minimized.ReceivedIntentReusingSession"
+    enum="Boolean" expires_after="2024-06-01">
+  <owner>sinansahin@google.com</owner>
+  <owner>chrome-connective-tissue@google.com</owner>
+  <summary>
+    Emitted when the Custom Tab receives an intent that reuses a session id
+    while the Custom Tab is minimized. Always emits true. Android only.
   </summary>
 </histogram>
 
@@ -419,7 +374,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CustomTabs.MinimizedFeatureAvailability"
-    enum="CustomTabsMinimizedFeatureAvailability" expires_after="2024-04-01">
+    enum="CustomTabsMinimizedFeatureAvailability" expires_after="2024-06-02">
   <owner>sinansahin@google.com</owner>
   <owner>chrome-connective-tissue@google.com</owner>
   <summary>
@@ -430,7 +385,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CustomTabs.PageInsights.Event" enum="PageInsightsEvent"
-    expires_after="2024-04-01">
+    expires_after="2024-06-02">
   <owner>jinsukkim@chromium.org</owner>
   <owner>chrome-connective-tissue@google.com</owner>
   <summary>
@@ -438,6 +393,16 @@ chromium-metrics-reviews@google.com.
     Insights BottomSheet, such as invoking PIH manually or by being auto
     triggered, the bottom sheet's states and when it is dismissed, and
     interactions with xSurface views.
+  </summary>
+</histogram>
+
+<histogram name="CustomTabs.PageNavigation.ErrorCode" enum="NetErrorCodes"
+    expires_after="2024-11-12">
+  <owner>jinsukkim@chromium.org</owner>
+  <owner>chrome-connective-tissue@google.com</owner>
+  <summary>
+    Network error code occuring upon page navigation. Recorded each time Custom
+    tabs receives an event TabObserver.onPageLoadFailed.
   </summary>
 </histogram>
 
@@ -504,7 +469,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="CustomTabs.PostMessage.RequestPostMessageChannelWithTargetOrigin"
-    enum="Boolean" expires_after="2024-03-22">
+    enum="Boolean" expires_after="2024-05-26">
   <owner>elabadysayed@chromium.org</owner>
   <owner>chrome-connective-tissue@google.com</owner>
   <summary>
@@ -512,19 +477,6 @@ chromium-metrics-reviews@google.com.
     to establish a two way postMessage channel. Emits true if the request is
     with targetOrigin specified and false otherwise. That should determine if we
     can to delete the old API (Without targetOrigin) or not.
-  </summary>
-</histogram>
-
-<histogram name="CustomTabs.ResizeType" enum="CustomTabsResizeType"
-    expires_after="2023-05-14">
-  <obsolete>
-    Deprecated 2022-11. Replaced by CustomTabs.ResizeType2
-  </obsolete>
-  <owner>kgrosu@google.com</owner>
-  <owner>chrome-connective-tissue@google.com</owner>
-  <summary>
-    When a Partial Custom Tab has been resized by the user log if it is an
-    expansion or a minimization of the tab.
   </summary>
 </histogram>
 
@@ -581,7 +533,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CustomTabs.SessionDisconnectStatus"
-    enum="CustomTabsSessionDisconnectStatus" expires_after="2024-03-24">
+    enum="CustomTabsSessionDisconnectStatus" expires_after="2024-05-26">
   <owner>kgrosu@google.com</owner>
   <owner>chrome-connective-tissue@google.com</owner>
   <summary>
@@ -625,7 +577,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CustomTabs.SideSheetResizeType" enum="CustomTabsResizeType2"
-    expires_after="2024-02-11">
+    expires_after="2024-06-02">
   <owner>kgrosu@google.com</owner>
   <owner>chrome-connective-tissue@google.com</owner>
   <summary>
@@ -693,7 +645,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CustomTabs.TabCounts.OnClosingAllTabs" units="count"
-    expires_after="2023-10-08">
+    expires_after="2024-05-08">
   <owner>wenyufu@chromium.org</owner>
   <owner>chrome-connective-tissue@google.com</owner>
   <summary>
@@ -705,7 +657,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CustomTabs.TabCounts.UniqueTabsSeen" units="count"
-    expires_after="2024-02-11">
+    expires_after="2024-05-12">
   <owner>wenyufu@chromium.org</owner>
   <owner>chrome-connective-tissue@google.com</owner>
   <summary>
@@ -720,7 +672,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CustomTabs.TimeElapsedSinceMinimized.Destroyed" units="s"
-    expires_after="2024-04-01">
+    expires_after="2024-06-02">
   <owner>katzz@google.com</owner>
   <owner>chrome-connective-tissue@google.com</owner>
   <summary>
@@ -732,7 +684,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CustomTabs.TimeElapsedSinceMinimized.Maximized" units="s"
-    expires_after="2024-04-01">
+    expires_after="2024-06-02">
   <owner>katzz@google.com</owner>
   <owner>chrome-connective-tissue@google.com</owner>
   <summary>
@@ -743,7 +695,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CustomTabs.TimeScrollUpdateReceivedAfterScrollEnd" units="ms"
-    expires_after="2024-03-24">
+    expires_after="2024-05-26">
   <owner>sinansahin@google.com</owner>
   <owner>chrome-connective-tissue@google.com</owner>
   <summary>
@@ -784,7 +736,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CustomTabs.WebContentsStateOnLaunch" enum="WebContentsState"
-    expires_after="2024-03-24">
+    expires_after="2024-05-26">
   <owner>lizeb@chromium.org</owner>
   <summary>
     Android: When a CustomTabActivity creates its Tab, whether we use a
@@ -824,7 +776,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TrustedWebActivity.ExtraCommandSuccess.{command}"
-    enum="BooleanSuccess" expires_after="2023-11-01">
+    enum="BooleanSuccess" expires_after="2024-11-14">
   <owner>mvanouwerkerk@google.com</owner>
   <owner>peconn@chromium.org</owner>
   <owner>
@@ -841,7 +793,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TrustedWebActivity.LocationDelegationEnrolled" enum="Boolean"
-    expires_after="2024-03-24">
+    expires_after="2024-05-26">
   <owner>eirage@chromium.org</owner>
   <owner>peconn@chromium.org</owner>
   <summary>
@@ -851,28 +803,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="TrustedWebActivity.LocationPermissionChanged"
-    enum="TrustedWebActivityPermissionChanged" expires_after="2023-11-12">
-  <owner>eirage@chromium.org</owner>
-  <owner>peconn@chromium.org</owner>
-  <summary>
-    When a Trusted Web Activity client app's location permission is changed,
-    record the previous state and new stase.
-  </summary>
-</histogram>
-
-<histogram name="TrustedWebActivity.LocationPermissionRequestIsGranted"
-    enum="Boolean" expires_after="2023-11-19">
-  <owner>eirage@chromium.org</owner>
-  <owner>peconn@chromium.org</owner>
-  <summary>
-    Records the boolean result (granted or not) from requesting a Trusted Web
-    Activity client app's location permission.
-  </summary>
-</histogram>
-
 <histogram name="TrustedWebActivity.Notification.PermissionRequestResult"
-    enum="ContentSetting" expires_after="2023-11-01">
+    enum="ContentSetting" expires_after="2024-11-14">
   <owner>mvanouwerkerk@chromium.org</owner>
   <owner>peconn@chromium.org</owner>
   <owner>
@@ -894,7 +826,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TrustedWebActivity.SplashScreenShown" enum="Boolean"
-    expires_after="2024-03-03">
+    expires_after="2024-05-05">
   <owner>peconn@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/apps/link_capturing/chromeos_link_capturing_delegate.h"
 
+#include <optional>
 #include <string_view>
 
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
@@ -31,7 +32,6 @@
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace apps {
 namespace {
@@ -129,7 +129,7 @@ bool IsWorkspaceApp(const std::string& app_id) {
 
 // Returns the ID of the app window where the link click originated. Returns
 // nullopt if the link was not clicked in an app window.
-absl::optional<webapps::AppId> GetSourceAppId(
+std::optional<webapps::AppId> GetSourceAppId(
     Profile* profile,
     content::WebContents* web_contents) {
   const webapps::AppId* app_id = web_app::WebAppProvider::GetForWebApps(profile)
@@ -151,7 +151,7 @@ absl::optional<webapps::AppId> GetSourceAppId(
     return helper->source_app_id();
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void LaunchApp(base::WeakPtr<AppServiceProxy> proxy,
@@ -185,17 +185,17 @@ static const base::TickClock*& GetTickClock() {
 }  // namespace
 
 // static
-absl::optional<std::string> ChromeOsLinkCapturingDelegate::GetLaunchAppId(
+std::optional<std::string> ChromeOsLinkCapturingDelegate::GetLaunchAppId(
     const AppIdsToLaunchForUrl& app_ids_to_launch,
     bool is_navigation_from_link,
-    absl::optional<webapps::AppId> source_app_id) {
+    std::optional<webapps::AppId> source_app_id) {
   if (app_ids_to_launch.candidates.empty()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (ShouldOnlyCaptureLinks(app_ids_to_launch.candidates) &&
       !is_navigation_from_link) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (app_ids_to_launch.preferred) {
@@ -205,7 +205,7 @@ absl::optional<std::string> ChromeOsLinkCapturingDelegate::GetLaunchAppId(
   // If there's no user preference, but the link was clicked from within an app
   // window, we may still launch the app.
   if (!source_app_id.has_value()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // When AppToAppLinkCapturing is enabled, always capture links from within
@@ -220,7 +220,7 @@ absl::optional<std::string> ChromeOsLinkCapturingDelegate::GetLaunchAppId(
   if (base::FeatureList::IsEnabled(
           apps::features::kAppToAppLinkCapturingWorkspaceApps)) {
     if (!IsWorkspaceApp(source_app_id.value())) {
-      return absl::nullopt;
+      return std::nullopt;
     }
 
     auto dest_app =
@@ -230,7 +230,7 @@ absl::optional<std::string> ChromeOsLinkCapturingDelegate::GetLaunchAppId(
     }
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 // static
@@ -259,7 +259,7 @@ bool ChromeOsLinkCapturingDelegate::ShouldCancelThrottleCreation(
   return !AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile);
 }
 
-absl::optional<apps::LinkCapturingNavigationThrottle::LaunchCallback>
+std::optional<apps::LinkCapturingNavigationThrottle::LaunchCallback>
 ChromeOsLinkCapturingDelegate::CreateLinkCaptureLaunchClosure(
     Profile* profile,
     content::WebContents* web_contents,
@@ -269,25 +269,38 @@ ChromeOsLinkCapturingDelegate::CreateLinkCaptureLaunchClosure(
 
   AppIdsToLaunchForUrl app_ids_to_launch = FindAppIdsToLaunchForUrl(proxy, url);
 
-  absl::optional<std::string> launch_app_id =
+  std::optional<std::string> launch_app_id =
       GetLaunchAppId(app_ids_to_launch, is_navigation_from_link,
                      GetSourceAppId(profile, web_contents));
   if (!launch_app_id) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Only automatically launch supported app types.
   AppType app_type = proxy->AppRegistryCache().GetAppType(*launch_app_id);
   if (app_type != AppType::kArc && app_type != AppType::kWeb &&
       !IsSystemWebApp(profile, *launch_app_id)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Don't capture if already inside the target app scope.
+  // TODO(b/313518305): Query App Service intent filters instead, so that this
+  // check also covers ARC apps.
   if (app_type == AppType::kWeb &&
       base::ValuesEquivalent(web_app::WebAppTabHelper::GetAppId(web_contents),
                              &launch_app_id.value())) {
-    return absl::nullopt;
+    return std::nullopt;
+  }
+
+  // Don't capture if already inside a window for the target app. If the
+  // previous early return didn't trigger, this means we are in an app window
+  // but out of scope of the original app, and navigating will put us back in
+  // scope.
+  if (base::ValuesEquivalent(web_app::WebAppProvider::GetForWebApps(profile)
+                                 ->ui_manager()
+                                 .GetAppIdForWindow(web_contents),
+                             &launch_app_id.value())) {
+    return std::nullopt;
   }
 
   auto launch_source = is_navigation_from_link ? LaunchSource::kFromLink

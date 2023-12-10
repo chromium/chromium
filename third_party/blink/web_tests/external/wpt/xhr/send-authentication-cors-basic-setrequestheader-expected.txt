@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] XMLHttpRequest: send() - "Basic" authenticated CORS request using setRequestHeader() (expects to succeed)
-  Failed to execute 'send' on 'XMLHttpRequest': Failed to load 'http://www1.web-platform.test:8001/xhr/resources/auth2/corsenabled.py'.
-Harness: the test ran to completion.
-

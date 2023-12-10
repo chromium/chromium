@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/ash/thumbnail_loader.h"
 
 #include <algorithm>
+#include <optional>
 #include <utility>
 
 #include "ash/public/cpp/image_downloader.h"
@@ -35,7 +36,6 @@
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "storage/browser/file_system/file_system_context.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/re2/src/re2/re2.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/rect.h"
@@ -351,8 +351,8 @@ void ThumbnailLoader::Load(const ThumbnailRequest& request,
       file_manager::util::GetFileSystemContextForSourceURL(profile_,
                                                            source_url),
       request.file_path,
-      storage::FileSystemOperation::GET_METADATA_FIELD_IS_DIRECTORY |
-          storage::FileSystemOperation::GET_METADATA_FIELD_LAST_MODIFIED,
+      {storage::FileSystemOperation::GetMetadataField::kIsDirectory,
+       storage::FileSystemOperation::GetMetadataField::kLastModified},
       base::BindOnce(&ThumbnailLoader::LoadForFileWithMetadata,
                      weak_factory_.GetWeakPtr(), request, std::move(callback)));
 }

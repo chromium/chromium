@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.net.Uri;
+import android.os.Bundle;
 import android.provider.Browser;
 
 import androidx.annotation.IntDef;
@@ -23,6 +24,8 @@ import org.chromium.chrome.browser.LaunchIntentDispatcher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
+import org.chromium.components.browser_ui.site_settings.SingleCategorySettings;
+import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
 import org.chromium.components.messages.DismissReason;
 import org.chromium.components.messages.MessageBannerProperties;
@@ -132,6 +135,12 @@ public class TrackingProtectionNoticeController {
     }
 
     private void showNotice() {
+        if (getNoticeType() == NoticeType.SILENT_ONBOARDING) {
+            TrackingProtectionBridge.noticeShown(getNoticeType());
+            destroy();
+            return;
+        }
+
         if (mMessageDispatcher == null) return;
 
         Resources resources = mContext.getResources();
@@ -291,7 +300,13 @@ public class TrackingProtectionNoticeController {
                                             ? R.string
                                                     .tracking_protection_onboarding_notice_learn_more_button_label
                                             : R.string
-                                                    .tracking_protection_offboarding_notice_learn_more_button_label));
+                                                    .tracking_protection_offboarding_notice_learn_more_button_label),
+                            res.getString(
+                                    getNoticeType() == NoticeType.ONBOARDING
+                                            ? R.string
+                                                    .tracking_protection_onboarding_notice_learn_more_button_a11y_label
+                                            : R.string
+                                                    .tracking_protection_offboarding_notice_learn_more_button_a11y_label));
 
             MVCListAdapter.ModelList menuItems = new MVCListAdapter.ModelList();
             menuItems.add(settingsItem);
@@ -307,13 +322,33 @@ public class TrackingProtectionNoticeController {
             return BrowserUiListMenuUtils.buildMenuListItem(title, itemID, 0, true);
         }
 
+        private ListItem getMenuItem(int itemID, String title, String contentDescription) {
+            return BrowserUiListMenuUtils.buildMenuListItem(
+                    title, itemID, 0, contentDescription, true);
+        }
+
         private Delegate onClickDelegate() {
             return (clickedItem) -> {
                 int clickedItemID = clickedItem.get(ListMenuItemProperties.MENU_ITEM_ID);
 
                 if (clickedItemID == SETTINGS_ITEM_ID) {
-                    mSettingsLauncher.launchSettingsActivity(
-                            mContext, TrackingProtectionSettings.class);
+                    if (getNoticeType() == NoticeType.ONBOARDING) {
+                        mSettingsLauncher.launchSettingsActivity(
+                                mContext, TrackingProtectionSettings.class);
+                    } else {
+                        Bundle fragmentArguments = new Bundle();
+                        fragmentArguments.putString(
+                                SingleCategorySettings.EXTRA_CATEGORY,
+                                SiteSettingsCategory.preferenceKey(
+                                        SiteSettingsCategory.Type.THIRD_PARTY_COOKIES));
+                        fragmentArguments.putString(
+                                SingleCategorySettings.EXTRA_TITLE,
+                                mContext.getResources()
+                                        .getString(R.string.third_party_cookies_page_title));
+                        mSettingsLauncher.launchSettingsActivity(
+                                mContext, SingleCategorySettings.class, fragmentArguments);
+                    }
+
                     TrackingProtectionBridge.noticeActionTaken(
                             getNoticeType(),
                             org.chromium.chrome.browser.privacy_sandbox.NoticeAction.SETTINGS);

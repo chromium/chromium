@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/url/url_util.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
@@ -29,14 +30,14 @@
 #import "ios/chrome/browser/shared/public/commands/toolbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
-#import "ios/chrome/browser/signin/authentication_service.h"
-#import "ios/chrome/browser/signin/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/ui/lens/lens_availability.h"
 #import "ios/chrome/browser/ui/lens/lens_entrypoint.h"
 #import "ios/chrome/browser/ui/lens/lens_modal_animator.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
-#import "ios/chrome/browser/web/web_navigation_util.h"
+#import "ios/chrome/browser/web/model/web_navigation_util.h"
 #import "ios/chrome/browser/web_state_list/model/web_state_dependency_installer_bridge.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -211,6 +212,9 @@ const base::TimeDelta kCloseLensViewTimeout = base::Seconds(10);
     featureTracker->NotifyEvent(
         feature_engagement::events::kLensButtonKeyboardUsed);
     featureTracker->Dismissed(feature_engagement::kIPHiOSLensKeyboardFeature);
+  } else if (entrypoint == LensEntrypoint::NewTabPage) {
+    browserState->GetPrefs()->SetInteger(
+        prefs::kNTPLensEntryPointNewBadgeShownCount, INT_MAX);
   }
 
   if (!isIncognito) {
@@ -404,10 +408,20 @@ const base::TimeDelta kCloseLensViewTimeout = base::Seconds(10);
 - (void)openWebLoadParams:(const web::NavigationManager::WebLoadParams&)params {
   if (!self.browser)
     return;
-  UrlLoadParams loadParams = UrlLoadParams::InNewTab(params);
-  loadParams.SetInBackground(NO);
+  web::WebState* webState =
+      self.browser->GetWebStateList()->GetActiveWebState();
+  UrlLoadParams loadParams;
+
+  // Open in the current tab if the current tab is a NTP.
+  if (webState && IsUrlNtp(webState->GetLastCommittedURL())) {
+    loadParams = UrlLoadParams::InCurrentTab(params);
+    self.loadingWebState = webState;
+  } else {
+    loadParams = UrlLoadParams::InNewTab(params);
+    loadParams.append_to = OpenPosition::kCurrentTab;
+    loadParams.SetInBackground(NO);
+  }
   loadParams.in_incognito = self.browser->GetBrowserState()->IsOffTheRecord();
-  loadParams.append_to = OpenPosition::kCurrentTab;
   UrlLoadingBrowserAgent::FromBrowser(self.browser)->Load(loadParams);
 }
 
@@ -451,7 +465,6 @@ const base::TimeDelta kCloseLensViewTimeout = base::Seconds(10);
   // is determined elsewhere in the Extension Search Engine Data Updater.
   const bool enableLensInWidget =
       ios::provider::IsLensSupported() &&
-      base::FeatureList::IsEnabled(kEnableLensInHomeScreenWidget) &&
       GetApplicationContext()->GetLocalState()->GetBoolean(
           prefs::kLensCameraAssistedSearchPolicyAllowed) &&
       ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET;

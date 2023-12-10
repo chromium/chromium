@@ -80,6 +80,8 @@ class UnitTestTestSuite {
 
   std::unique_ptr<TestBlinkWebUnitTestSupport> blink_test_support_;
 
+  raw_ptr<v8::Isolate> isolate_;
+
   std::unique_ptr<TestHostResolver> test_host_resolver_;
 
   std::unique_ptr<BrowserAccessibilityStateImpl> browser_accessibility_state_;

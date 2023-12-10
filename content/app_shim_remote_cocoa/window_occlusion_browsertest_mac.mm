@@ -482,7 +482,7 @@ class WindowOcclusionBrowserTestMac
       watcher = [[WebContentVisibilityUpdateCounter alloc] init];
     }
 
-    [window orderWindow:NSWindowAbove relativeTo:0];
+    [window orderFront:nil];
     ASSERT_TRUE([window isVisible]);
 
     if (kEnhancedWindowOcclusionDetection.Get()) {
@@ -491,7 +491,7 @@ class WindowOcclusionBrowserTestMac
   }
 
   void OrderWindowOut(NSWindow* window) {
-    [window orderWindow:NSWindowOut relativeTo:0];
+    [window orderOut:nil];
     ASSERT_FALSE(window.visible);
 
     WaitForOcclusionUpdate();

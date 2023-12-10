@@ -1,0 +1,216 @@
+This is a testharness.js-based test.
+Found 106 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] cos float32 1D tensor / sync
+  Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (cos) is not supported.
+[FAIL] cos float32 2D tensor / sync
+  Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (cos) is not supported.
+[FAIL] cos float32 3D tensor / sync
+  Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (cos) is not supported.
+[FAIL] cos float32 4D tensor / sync
+  Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (cos) is not supported.
+[FAIL] cos float32 5D tensor / sync
+  Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (cos) is not supported.
+[FAIL] exp float32 1D tensor / sync
+  Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (exp) is not supported.
+[FAIL] exp float32 2D tensor / sync
+  Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (exp) is not supported.
+[FAIL] exp float32 3D tensor / sync
+  Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (exp) is not supported.
+[FAIL] exp float32 4D tensor / sync
+  Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (exp) is not supported.
+[FAIL] exp float32 5D tensor / sync
+  Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (exp) is not supported.
+[FAIL] identity float32 0D scalar / sync
+  Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (identity) is not supported.
+[FAIL] identity float32 1D tensor / sync
+  Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (identity) is not supported.
+[FAIL] identity float32 2D tensor / sync
+  Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (identity) is not supported.
+[FAIL] identity float32 3D tensor / sync
+  Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (identity) is not supported.
+[FAIL] identity float32 4D tensor / sync
+  Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (identity) is not supported.
+[FAIL] identity float32 5D tensor / sync
+  Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (identity) is not supported.
+[FAIL] log float32 positive 1D tensor / sync
+  Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (log) is not supported.
+[FAIL] log float32 positive 2D tensor / sync
+  Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (log) is not supported.
+[FAIL] log float32 positive 3D tensor / sync
+  Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (log) is not supported.
+[FAIL] log float32 positive 4D tensor / sync
+  Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (log) is not supported.
+[FAIL] log float32 positive 5D tensor / sync
+  Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (log) is not supported.
+[FAIL] reciprocal float32 0D scalar / sync
+  Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (reciprocal) is not supported.
+[FAIL] reciprocal float32 1D tensor / sync
+  Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (reciprocal) is not supported.
+[FAIL] reciprocal float32 2D tensor / sync
+  Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (reciprocal) is not supported.
+[FAIL] reciprocal float32 3D tensor / sync
+  Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (reciprocal) is not supported.
+[FAIL] reciprocal float32 4D tensor / sync
+  Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (reciprocal) is not supported.
+[FAIL] reciprocal float32 5D tensor / sync
+  Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (reciprocal) is not supported.
+[FAIL] sin float32 1D tensor / sync
+  Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (sin) is not supported.
+[FAIL] sin float32 2D tensor / sync
+  Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (sin) is not supported.
+[FAIL] sin float32 3D tensor / sync
+  Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (sin) is not supported.
+[FAIL] sin float32 4D tensor / sync
+  Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (sin) is not supported.
+[FAIL] sin float32 5D tensor / sync
+  Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (sin) is not supported.
+[FAIL] sqrt float32 0D scalar / sync
+  Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (sqrt) is not supported.
+[FAIL] sqrt float32 1D tensor / sync
+  Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (sqrt) is not supported.
+[FAIL] sqrt float32 2D tensor / sync
+  Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (sqrt) is not supported.
+[FAIL] sqrt float32 3D tensor / sync
+  Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (sqrt) is not supported.
+[FAIL] sqrt float32 4D tensor / sync
+  Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (sqrt) is not supported.
+[FAIL] sqrt float32 5D tensor / sync
+  Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (sqrt) is not supported.
+[FAIL] tan float32 1D tensor / sync
+  Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (tan) is not supported.
+[FAIL] tan float32 2D tensor / sync
+  Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (tan) is not supported.
+[FAIL] tan float32 3D tensor / sync
+  Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (tan) is not supported.
+[FAIL] tan float32 4D tensor / sync
+  Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (tan) is not supported.
+[FAIL] tan float32 5D tensor / sync
+  Failed to execute 'buildSync' on 'MLGraphBuilder': The operator (tan) is not supported.
+[FAIL] abs float32 1D tensor / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] abs float32 2D tensor / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] abs float32 3D tensor / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] abs float32 4D tensor / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] abs float32 5D tensor / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] ceil float32 1D tensor / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] ceil float32 2D tensor / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] ceil float32 3D tensor / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] ceil float32 4D tensor / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] ceil float32 5D tensor / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] cos float32 1D tensor / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] cos float32 2D tensor / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] cos float32 3D tensor / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] cos float32 4D tensor / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] cos float32 5D tensor / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] exp float32 1D tensor / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] exp float32 2D tensor / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] exp float32 3D tensor / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] exp float32 4D tensor / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] exp float32 5D tensor / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] floor float32 1D tensor / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] floor float32 2D tensor / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] floor float32 3D tensor / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] floor float32 4D tensor / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] floor float32 5D tensor / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] identity float32 0D scalar / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] identity float32 1D tensor / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] identity float32 2D tensor / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] identity float32 3D tensor / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] identity float32 4D tensor / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] identity float32 5D tensor / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] log float32 positive 1D tensor / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] log float32 positive 2D tensor / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] log float32 positive 3D tensor / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] log float32 positive 4D tensor / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] log float32 positive 5D tensor / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] neg float32 1D tensor / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] neg float32 2D tensor / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] neg float32 3D tensor / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] neg float32 4D tensor / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] neg float32 5D tensor / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] reciprocal float32 0D scalar / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] reciprocal float32 1D tensor / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] reciprocal float32 2D tensor / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] reciprocal float32 3D tensor / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] reciprocal float32 4D tensor / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] reciprocal float32 5D tensor / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] sin float32 1D tensor / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] sin float32 2D tensor / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] sin float32 3D tensor / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] sin float32 4D tensor / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] sin float32 5D tensor / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] sqrt float32 0D scalar / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] sqrt float32 1D tensor / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] sqrt float32 2D tensor / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] sqrt float32 3D tensor / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] sqrt float32 4D tensor / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] sqrt float32 5D tensor / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] tan float32 1D tensor / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] tan float32 2D tensor / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] tan float32 3D tensor / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] tan float32 4D tensor / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] tan float32 5D tensor / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+Harness: the test ran to completion.
+

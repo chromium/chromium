@@ -30,6 +30,7 @@
 <translation id="2226276347425096477">Reduza este texto para <ph name="MAX_CHARACTERS" /> caracteres ou menos (você está usando <ph name="CURRENT_LENGTH" /> caracteres).</translation>
 <translation id="2247351761944213033">Semana <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Faixa <ph name="NUMBER" /></translation>
+<translation id="2353297238722298836">Câmera e microfone permitidos</translation>
 <translation id="2393030564806080191">Valor hexadecimal da cor</translation>
 <translation id="2398813069815436052">caixa de diálogo aberta.</translation>
 <translation id="245932805758469625">segundos restantes do vídeo</translation>
@@ -60,10 +61,12 @@
 <translation id="3822383571486410024">Aumente este texto para <ph name="MIN_CHARACTERS" /> caracteres ou mais. No momento, você está usando <ph name="CURRENT_LENGTH" /> caracteres).</translation>
 <translation id="383465348367842624">Uma parte seguida por "<ph name="ATSIGN" />" não deve conter o símbolo "<ph name="INVALIDCHARACTER" />".</translation>
 <translation id="3846214748874656680">Sair da tela cheia</translation>
+<translation id="4031179711345676612">Microfone permitido</translation>
 <translation id="4103419683916926126">Milésimos de segundo</translation>
 <translation id="4201051445878709314">Mostrar mês anterior</translation>
 <translation id="4360991593054037559">Insira um valor válido. Os dois valores válidos mais próximos são <ph name="VALID_VALUE_LOW" /> e <ph name="VALID_VALUE_HIGHER" />.</translation>
 <translation id="4522570452068850558">Saiba mais</translation>
+<translation id="4663373278480897665">Câmera permitida</translation>
 <translation id="4664250907885839816">A parte depois de "<ph name="ATSIGN" />" não deve conter o símbolo "<ph name="INVALIDCHARACTER" />".</translation>
 <translation id="4718048029184481307">Vídeo no modo picture-in-picture</translation>
 <translation id="4748357248530471599">ativa tela cheia com corte de tela</translation>
@@ -137,6 +140,7 @@
 <translation id="6941933287844615239">fazer o download da mídia</translation>
 <translation id="698788488269350478">expandido.</translation>
 <translation id="6989848892321993519">Aumente esse texto para <ph name="MIN_CHARACTERS" /> caracteres ou mais. No momento, você está usando 1 caractere.</translation>
+<translation id="7080893216867146095">O compartilhamento de local é permitido</translation>
 <translation id="709897737746224366">É preciso que o formato corresponda ao exigido.</translation>
 <translation id="7102274145889307184">local atual</translation>
 <translation id="7263440858009898357">Selecione um item da lista.</translation>

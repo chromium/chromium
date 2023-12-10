@@ -409,6 +409,12 @@ chromium-metrics-reviews@google.com.
              database"/>
 </enum>
 
+<enum name="OutdatedGMSDialogDismissalReason">
+  <int value="0" label="Other"/>
+  <int value="1" label="Accepted"/>
+  <int value="2" label="Rejected"/>
+</enum>
+
 <enum name="PasswordAddLoginSyncError">
   <int value="0" label="None"/>
   <int value="1" label="DB Not Available"/>
@@ -709,6 +715,26 @@ chromium-metrics-reviews@google.com.
   <int value="14" label="Dialog header: 'Help icon button' clicked"/>
 </enum>
 
+<enum name="PasswordManager.PasswordSharingIOSUserAction">
+  <int value="0" label="Password details: 'Share' button clicked"/>
+  <int value="1" label="First Run: 'Share' button clicked"/>
+  <int value="2" label="First Run: 'Cancel' button clicked"/>
+  <int value="3" label="First Run: 'Learn more' link clicked"/>
+  <int value="4"
+      label="Family picker: 'Share' button clicked (1 member selected)"/>
+  <int value="5"
+      label="Family picker: 'Share' button clicked (&gt;1 member selected)"/>
+  <int value="6"
+      label="Family picker: Ineligible recipient 'Learn more' link clicked"/>
+  <int value="7" label="Family promo: 'Create family group' link clicked"/>
+  <int value="8" label="Family promo: 'Invite family members' link clicked"/>
+  <int value="9" label="Family promo: 'Got it' button clicked"/>
+  <int value="10" label="Confirmation dialog: 'Cancel' button clicked"/>
+  <int value="11" label="Confirmation dialog: 'Learn more' link clicked"/>
+  <int value="12" label="Confirmation dialog: 'Change password' link clicked"/>
+  <int value="13" label="Confirmation dialog: 'Done' button clicked"/>
+</enum>
+
 <enum name="PasswordManager.ProcessIncomingPasswordSharingInvitationResult">
   <int value="0" label="Auto-approved"/>
   <int value="1" label="No password store"/>
@@ -857,6 +883,7 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Web password manager promo"/>
   <int value="2" label="Add shortcut promo"/>
   <int value="3" label="Access on any device promo"/>
+  <int value="4" label="Relaunch Chrome"/>
 </enum>
 
 <enum name="PasswordManagerShortcutMetric">
@@ -1125,6 +1152,7 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Uncategorized"/>
   <int value="1" label="AuthErrorResolvable"/>
   <int value="2" label="AuthErrorUnresolvable"/>
+  <int value="3" label="KeychainError"/>
 </enum>
 
 <enum name="PasswordSubmissionEvent">

@@ -9,7 +9,9 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/check.h"
@@ -34,9 +36,10 @@
 #include "chromeos/services/machine_learning/public/mojom/machine_learning_service.mojom.h"
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "mojo/public/cpp/system/message_pipe.h"
 
 namespace media {
 namespace stable::mojom {
@@ -338,6 +341,8 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosService {
   // this class.
   friend class LacrosServiceNeverBlockingState;
 
+  FRIEND_TEST_ALL_PREFIXES(LacrosServiceTest, CheckCrosapiRemoteVersion);
+
   // Forward declare inner class to give it access to private members.
   template <typename CrosapiInterface,
             void (Crosapi::*bind_func)(mojo::PendingReceiver<CrosapiInterface>),
@@ -347,7 +352,7 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosService {
   // Returns ash's version of the Crosapi mojo interface version. This
   // determines which interface methods are available. This is safe to call from
   // any sequence. This can only be called after BindReceiver().
-  absl::optional<uint32_t> CrosapiVersion() const;
+  std::optional<uint32_t> CrosapiVersion() const;
 
   // Requests ash-chrome to send idle info updates.
   void StartSystemIdleCache();
@@ -355,13 +360,29 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosService {
   // Requests ash-chrome to send native theme info updates.
   void StartNativeThemeCache();
 
-  // This function initializes a remote for a given CrosapiInterface.
-  // It performs the following operations:
-  //   1) Calls BindNewPipeAndPassReceiver() on the remote.
-  //   2) Calls BindPendingReceiverOrRemote() on the PendingReceiver.
+  // This function initializes a remote for a given CrosapiInterface. Returns
+  // true if remote initialization succeeds; otherwise, returns false.
   template <typename CrosapiInterface,
             void (Crosapi::*bind_func)(mojo::PendingReceiver<CrosapiInterface>)>
-  void InitializeAndBindRemote(mojo::Remote<CrosapiInterface>* remote);
+  bool MaybeInitializeAndBindRemote(mojo::Remote<CrosapiInterface>* remote) {
+    const int version = GetInterfaceVersion<CrosapiInterface>();
+    if (version < 0) {
+      return false;
+    }
+
+    // Implement the same functionality as
+    // `mojo::Remote::BindNewPipeAndPassReceiver()`, but explicitly set the
+    // remote version.
+    mojo::MessagePipe pipe;
+    remote->Bind(
+        mojo::PendingRemote<CrosapiInterface>(std::move(pipe.handle0), version),
+        /*task_runner=*/nullptr);
+
+    BindPendingReceiverOrRemote<mojo::PendingReceiver<CrosapiInterface>,
+                                bind_func>(
+        mojo::PendingReceiver<CrosapiInterface>(std::move(pipe.handle1)));
+    return true;
+  }
 
   // This function constructs a new remote for a crosapi interface and stashes
   // it in |interfaces_|. This remote will later be bound during BindReceiver().

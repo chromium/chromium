@@ -8,10 +8,10 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/to_string.h"
-#include "chrome/browser/web_applications/isolated_web_apps/remove_isolated_web_app_browsing_data.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
+#include "chrome/browser/web_applications/isolated_web_apps/remove_isolated_web_app_data.h"
 #include "chrome/browser/web_applications/jobs/uninstall/remove_install_source_job.h"
 #include "chrome/browser/web_applications/locks/all_apps_lock.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
@@ -20,6 +20,7 @@
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
@@ -133,6 +134,8 @@ void RemoveWebAppJob::Start(AllAppsLock& lock, Callback callback) {
     profile_->GetPrefs()->SetBoolean(
         prefs::kShouldGarbageCollectStoragePartitions, true);
 
+    location_ = app->isolation_data()->location;
+
     url::Origin iwa_origin = url::Origin::Create(app->scope());
     web_app::RemoveIsolatedWebAppBrowsingData(
         &profile_.get(), iwa_origin,
@@ -224,14 +227,30 @@ void RemoveWebAppJob::OnIsolatedWebAppBrowsingDataCleared() {
   CHECK(!isolated_web_app_browsing_data_cleared_);
   // Must be an Isolated Web App.
   CHECK(has_isolated_storage_);
+  CHECK(location_.has_value());
   isolated_web_app_browsing_data_cleared_ = true;
+
+  web_app::CloseAndDeleteBundle(
+      &profile_.get(), location_.value(),
+      base::BindOnce(&RemoveWebAppJob::OnIsolatedWebAppOwnedLocationDeleted,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void RemoveWebAppJob::OnIsolatedWebAppOwnedLocationDeleted() {
+  CHECK(!primary_removal_result_.has_value());
+  CHECK(has_isolated_storage_);
+  CHECK(!isolated_web_app_owned_location_deleted_);
+
+  isolated_web_app_owned_location_deleted_ = true;
   MaybeFinishPrimaryRemoval();
 }
 
 void RemoveWebAppJob::MaybeFinishPrimaryRemoval() {
   CHECK(!primary_removal_result_.has_value());
+  const bool is_iwa_fully_removed = isolated_web_app_browsing_data_cleared_ &&
+                                    isolated_web_app_owned_location_deleted_;
   if (!hooks_uninstalled_ || !app_data_deleted_ || !translation_data_deleted_ ||
-      (has_isolated_storage_ && !isolated_web_app_browsing_data_cleared_)) {
+      (has_isolated_storage_ && !is_iwa_fully_removed)) {
     return;
   }
 

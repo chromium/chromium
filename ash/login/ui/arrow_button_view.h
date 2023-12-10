@@ -6,10 +6,10 @@
 #define ASH_LOGIN_UI_ARROW_BUTTON_VIEW_H_
 
 #include <memory>
+#include <optional>
 
 #include "ash/login/ui/login_button.h"
 #include "base/memory/raw_ptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/animation/animation_delegate.h"
 #include "ui/views/controls/image_view.h"

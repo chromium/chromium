@@ -48,10 +48,12 @@ public class AccountPickerCoordinator {
 
         SimpleRecyclerViewAdapter adapter = new SimpleRecyclerViewAdapter(listModel);
 
-        adapter.registerType(ItemType.ADD_ACCOUNT_ROW,
+        adapter.registerType(
+                ItemType.ADD_ACCOUNT_ROW,
                 new LayoutViewBuilder<>(R.layout.account_picker_new_account_row),
                 new OnClickListenerViewBinder(AddAccountRowProperties.ON_CLICK_LISTENER));
-        adapter.registerType(ItemType.EXISTING_ACCOUNT_ROW,
+        adapter.registerType(
+                ItemType.EXISTING_ACCOUNT_ROW,
                 new LayoutViewBuilder<>(R.layout.account_picker_row),
                 new ExistingAccountRowViewBinder());
 

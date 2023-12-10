@@ -260,8 +260,6 @@ public class AppMenuPropertiesDelegateUnitTest {
 
     private void setShoppingListItemRowEnabled(boolean enabled) {
         ShoppingFeatures.setShoppingListEligibleForTesting(enabled);
-        when(mPrefService.getBoolean(Pref.WEB_AND_APP_ACTIVITY_ENABLED_FOR_SHOPPING))
-                .thenReturn(true);
         mTestValues.addFeatureFlagOverride(ChromeFeatureList.BOOKMARKS_REFRESH, enabled);
         FeatureList.setTestValues(mTestValues);
     }
@@ -1139,10 +1137,26 @@ public class AppMenuPropertiesDelegateUnitTest {
     }
 
     @Test
-    public void testShouldShowMoveToOtherWindow_isAutomotive_returnsFalse() {
+    public void testShouldShowMoveToOtherWindow_returnsTrue() {
+        assertTrue(
+                doTestShouldShowMoveToOtherWindowMenu(
+                        /* totalTabCount= */ 1,
+                        /* isInstanceSwitcherEnabled= */ false,
+                        /* currentWindowInstances= */ 1,
+                        /* isTabletSizeScreen= */ true,
+                        /* canEnterMultiWindowMode= */ false,
+                        /* isChromeRunningInAdjacentWindow= */ false,
+                        /* isInMultiWindowMode= */ false,
+                        /* isInMultiDisplayMode= */ false,
+                        /* isMultiInstanceRunning= */ false,
+                        /* isMoveToOtherWindowSupported= */ true));
+    }
+
+    @Test
+    public void testShouldShowMoveToOtherWindow_dispatcherReturnsFalse_returnsFalse() {
         assertFalse(
                 doTestShouldShowMoveToOtherWindowMenu(
-                        /* isAutomotive= */ true,
+                        /* totalTabCount= */ 1,
                         /* isInstanceSwitcherEnabled= */ false,
                         /* currentWindowInstances= */ 1,
                         /* isTabletSizeScreen= */ true,
@@ -1150,7 +1164,8 @@ public class AppMenuPropertiesDelegateUnitTest {
                         /* isChromeRunningInAdjacentWindow= */ false,
                         /* isInMultiWindowMode= */ false,
                         /* isInMultiDisplayMode= */ true,
-                        /* isMultiInstanceRunning= */ false));
+                        /* isMultiInstanceRunning= */ false,
+                        /* isMoveToOtherWindowSupported= */ false));
         verify(mAppMenuPropertiesDelegate, never()).isTabletSizeScreen();
     }
 
@@ -1327,7 +1342,7 @@ public class AppMenuPropertiesDelegateUnitTest {
         mShadowPackageManager.setSystemFeature(PackageManager.FEATURE_AUTOMOTIVE, isAutomotive);
         doReturn(isInstanceSwitcherEnabled)
                 .when(mAppMenuPropertiesDelegate)
-                .instanceSwitcherEnabled();
+                .instanceSwitcherWithMultiInstanceEnabled();
         doReturn(currentWindowInstances).when(mAppMenuPropertiesDelegate).getInstanceCount();
         doReturn(isTabletSizeScreen).when(mAppMenuPropertiesDelegate).isTabletSizeScreen();
         doReturn(canEnterMultiWindowMode)
@@ -1346,7 +1361,7 @@ public class AppMenuPropertiesDelegateUnitTest {
     }
 
     private boolean doTestShouldShowMoveToOtherWindowMenu(
-            boolean isAutomotive,
+            int totalTabCount,
             boolean isInstanceSwitcherEnabled,
             int currentWindowInstances,
             boolean isTabletSizeScreen,
@@ -1354,11 +1369,11 @@ public class AppMenuPropertiesDelegateUnitTest {
             boolean isChromeRunningInAdjacentWindow,
             boolean isInMultiWindowMode,
             boolean isInMultiDisplayMode,
-            boolean isMultiInstanceRunning) {
-        mShadowPackageManager.setSystemFeature(PackageManager.FEATURE_AUTOMOTIVE, isAutomotive);
+            boolean isMultiInstanceRunning,
+            boolean isMoveToOtherWindowSupported) {
         doReturn(isInstanceSwitcherEnabled)
                 .when(mAppMenuPropertiesDelegate)
-                .instanceSwitcherEnabled();
+                .instanceSwitcherWithMultiInstanceEnabled();
         doReturn(currentWindowInstances).when(mAppMenuPropertiesDelegate).getInstanceCount();
         doReturn(isTabletSizeScreen).when(mAppMenuPropertiesDelegate).isTabletSizeScreen();
         doReturn(canEnterMultiWindowMode)
@@ -1372,6 +1387,9 @@ public class AppMenuPropertiesDelegateUnitTest {
         doReturn(isMultiInstanceRunning)
                 .when(mMultiWindowModeStateDispatcher)
                 .isMultiInstanceRunning();
+        doReturn(isMoveToOtherWindowSupported)
+                .when(mMultiWindowModeStateDispatcher)
+                .isMoveToOtherWindowSupported(any());
 
         return mAppMenuPropertiesDelegate.shouldShowMoveToOtherWindow();
     }
@@ -1601,7 +1619,6 @@ public class AppMenuPropertiesDelegateUnitTest {
                     .withAutoDarkEnabled();
         }
     }
-    ;
 
     private void setMenuOptions(MenuOptions options) {
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.SEARCH_URL);

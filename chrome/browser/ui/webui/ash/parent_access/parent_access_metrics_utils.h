@@ -5,11 +5,11 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_ASH_PARENT_ACCESS_PARENT_ACCESS_METRICS_UTILS_H_
 #define CHROME_BROWSER_UI_WEBUI_ASH_PARENT_ACCESS_PARENT_ACCESS_METRICS_UTILS_H_
 
+#include <optional>
 #include <string>
 
 #include "base/strings/string_piece.h"
 #include "chrome/browser/ui/webui/ash/parent_access/parent_access_ui.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace parent_access {
 
@@ -25,7 +25,7 @@ constexpr char kParentAccessWidgetErrorHistogramBase[] =
 // type.
 std::string GetHistogramTitleForFlowType(
     base::StringPiece parent_access_histogram_base,
-    absl::optional<parent_access_ui::mojom::ParentAccessParams::FlowType>
+    std::optional<parent_access_ui::mojom::ParentAccessParams::FlowType>
         flow_type);
 }  // namespace parent_access
 

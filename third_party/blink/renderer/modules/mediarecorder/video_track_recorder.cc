@@ -484,26 +484,24 @@ void VideoTrackRecorderImpl::Encoder::StartFrameEncode(
     return;
   }
 
-  scoped_refptr<media::VideoFrame> frame = video_frame;
   const bool is_format_supported =
       (video_frame->format() == media::PIXEL_FORMAT_NV12 &&
        video_frame->HasGpuMemoryBuffer()) ||
       (video_frame->IsMappable() &&
        (video_frame->format() == media::PIXEL_FORMAT_I420 ||
         video_frame->format() == media::PIXEL_FORMAT_I420A));
+  scoped_refptr<media::VideoFrame> frame = std::move(video_frame);
+  // First, pixel format is converted to NV12, I420 or I420A.
   if (!is_format_supported) {
-    frame = MaybeProvideEncodableFrame(video_frame);
-  } else if (!video_frame->HasGpuMemoryBuffer()) {
-    // Drop alpha channel if the encoder does not support it yet.
-    if (!CanEncodeAlphaChannel() &&
-        video_frame->format() == media::PIXEL_FORMAT_I420A) {
-      frame = media::WrapAsI420VideoFrame(video_frame);
-    } else {
-      frame = media::VideoFrame::WrapVideoFrame(
-          video_frame, video_frame->format(), video_frame->visible_rect(),
-          video_frame->natural_size());
-    }
+    frame = MaybeProvideEncodableFrame(std::move(frame));
   }
+  if (frame && frame->format() == media::PIXEL_FORMAT_I420A &&
+      !CanEncodeAlphaChannel()) {
+    CHECK(!frame->HasGpuMemoryBuffer());
+    // Drop alpha channel if the encoder does not support it yet.
+    frame = media::WrapAsI420VideoFrame(std::move(frame));
+  }
+
   if (!frame) {
     // Explicit reasons for the frame drop are already logged.
     return;

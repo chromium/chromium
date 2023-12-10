@@ -660,7 +660,9 @@ void AXPlatformNodeWin::NotifyAccessibilityEvent(ax::mojom::Event event_type) {
     }
   }
 
-  if (event_type == ax::mojom::Event::kValueChanged) {
+  if (event_type == ax::mojom::Event::kValueChanged ||
+      event_type == ax::mojom::Event::kLiveRegionCreated ||
+      event_type == ax::mojom::Event::kLiveRegionChanged) {
     // For the IAccessibleText interface to work on non-web content nodes, we
     // need to update the nodes' hypertext
     // when the value changes. Otherwise, for web and PDF content, this is
@@ -928,6 +930,7 @@ AXPlatformNodeWin::UIARoleProperties AXPlatformNodeWin::GetUIARoleProperties() {
               UIA_WindowControlTypeId, L"dialog"};
 
     case ax::mojom::Role::kDisclosureTriangle:
+    case ax::mojom::Role::kDisclosureTriangleGrouped:
       return {UIALocalizationStrategy::kSupply, UIA_ButtonControlTypeId,
               L"button"};
 
@@ -6458,6 +6461,7 @@ int AXPlatformNodeWin::MSAARole() {
       return ROLE_SYSTEM_DIALOG;
 
     case ax::mojom::Role::kDisclosureTriangle:
+    case ax::mojom::Role::kDisclosureTriangleGrouped:
       return ROLE_SYSTEM_PUSHBUTTON;
 
     case ax::mojom::Role::kDirectory:

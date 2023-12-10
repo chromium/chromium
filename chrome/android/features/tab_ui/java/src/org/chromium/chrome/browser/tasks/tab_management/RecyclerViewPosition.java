@@ -4,9 +4,7 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
-/**
- * A structure for holding the a recycler view position and offset.
- */
+/** A structure for holding the a recycler view position and offset. */
 public class RecyclerViewPosition {
     private int mPosition;
     private int mOffset;

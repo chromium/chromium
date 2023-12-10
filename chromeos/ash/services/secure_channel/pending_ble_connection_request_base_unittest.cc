@@ -82,15 +82,14 @@ class SecureChannelPendingBleConnectionRequestBaseTest : public testing::Test {
         test_pending_ble_connection_request_.get()));
   }
 
-  const absl::optional<
-      PendingConnectionRequestDelegate::FailedConnectionReason>&
+  const std::optional<PendingConnectionRequestDelegate::FailedConnectionReason>&
   GetFailedConnectionReason() {
     return fake_pending_connection_request_delegate_
         ->GetFailedConnectionReasonForId(
             test_pending_ble_connection_request_->GetRequestId());
   }
 
-  const absl::optional<mojom::ConnectionAttemptFailureReason>&
+  const std::optional<mojom::ConnectionAttemptFailureReason>&
   GetConnectionAttemptFailureReason() const {
     return fake_client_connection_parameters_->failure_reason();
   }

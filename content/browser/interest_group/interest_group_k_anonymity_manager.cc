@@ -26,9 +26,9 @@ bool IsKAnonymous(const StorageInterestGroup::KAnonymityData& data,
 
 InterestGroupKAnonymityManager::InterestGroupKAnonymityManager(
     InterestGroupManagerImpl* interest_group_manager,
-    KAnonymityServiceDelegate* k_anonymity_service)
+    GetKAnonymityServiceDelegateCallback k_anonymity_service_callback)
     : interest_group_manager_(interest_group_manager),
-      k_anonymity_service_(k_anonymity_service),
+      k_anonymity_service_callback_(k_anonymity_service_callback),
       weak_ptr_factory_(this) {}
 
 InterestGroupKAnonymityManager::~InterestGroupKAnonymityManager() = default;
@@ -43,12 +43,15 @@ void InterestGroupKAnonymityManager::QueryKAnonymityForInterestGroup(
 
 void InterestGroupKAnonymityManager::QueryKAnonymityData(
     const std::vector<StorageInterestGroup::KAnonymityData>& k_anon_data) {
-  if (!k_anonymity_service_)
+  KAnonymityServiceDelegate* k_anonymity_service =
+      k_anonymity_service_callback_.Run();
+  if (!k_anonymity_service) {
     return;
+  }
 
   std::vector<std::string> ids_to_query;
   base::Time check_time = base::Time::Now();
-  base::TimeDelta min_wait = k_anonymity_service_->GetQueryInterval();
+  base::TimeDelta min_wait = k_anonymity_service->GetQueryInterval();
 
   for (const StorageInterestGroup::KAnonymityData& k_anon_data_item :
        k_anon_data) {
@@ -57,7 +60,7 @@ void InterestGroupKAnonymityManager::QueryKAnonymityData(
     }
 
     if (ids_to_query.size() >= kQueryBatchSizeLimit) {
-      k_anonymity_service_->QuerySets(
+      k_anonymity_service->QuerySets(
           ids_to_query,
           base::BindOnce(&InterestGroupKAnonymityManager::QuerySetsCallback,
                          weak_ptr_factory_.GetWeakPtr(), ids_to_query,
@@ -69,7 +72,7 @@ void InterestGroupKAnonymityManager::QueryKAnonymityData(
   if (ids_to_query.empty())
     return;
 
-  k_anonymity_service_->QuerySets(
+  k_anonymity_service->QuerySets(
       ids_to_query,
       base::BindOnce(&InterestGroupKAnonymityManager::QuerySetsCallback,
                      weak_ptr_factory_.GetWeakPtr(), ids_to_query,
@@ -102,8 +105,6 @@ void InterestGroupKAnonymityManager::RegisterAdKeysAsJoined(
 
 void InterestGroupKAnonymityManager::RegisterIDAsJoined(
     const std::string& key) {
-  if (!k_anonymity_service_)
-    return;
   if (joins_in_progress.contains(key))
     return;
   joins_in_progress.insert(key);
@@ -116,6 +117,11 @@ void InterestGroupKAnonymityManager::RegisterIDAsJoined(
 void InterestGroupKAnonymityManager::OnGotLastReportedTime(
     std::string key,
     absl::optional<base::Time> last_update_time) {
+  KAnonymityServiceDelegate* k_anonymity_service =
+      k_anonymity_service_callback_.Run();
+  if (!k_anonymity_service) {
+    return;
+  }
   if (!last_update_time) {
     joins_in_progress.erase(key);
     return;
@@ -123,12 +129,12 @@ void InterestGroupKAnonymityManager::OnGotLastReportedTime(
 
   // If it has been long enough since we last joined
   if (base::Time::Now() < last_update_time.value_or(base::Time()) +
-                              k_anonymity_service_->GetJoinInterval()) {
+                              k_anonymity_service->GetJoinInterval()) {
     joins_in_progress.erase(key);
     return;
   }
 
-  k_anonymity_service_->JoinSet(
+  k_anonymity_service->JoinSet(
       key, base::BindOnce(&InterestGroupKAnonymityManager::JoinSetCallback,
                           weak_ptr_factory_.GetWeakPtr(), key));
 }

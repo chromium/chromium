@@ -15,9 +15,7 @@ import android.widget.LinearLayout;
 
 import androidx.annotation.Nullable;
 
-/**
- * The view for the section of a set of search suggestions on the search resumption module.
- */
+/** The view for the section of a set of search suggestions on the search resumption module. */
 public class SearchResumptionTileContainerView extends LinearLayout {
     private static final int ANIMATION_DURATION_MS = 200;
 
@@ -27,12 +25,11 @@ public class SearchResumptionTileContainerView extends LinearLayout {
         super(context, attrs);
     }
 
-    /**
-     * Inflates a {@link SearchResumptionTileView} instance.
-     */
+    /** Inflates a {@link SearchResumptionTileView} instance. */
     SearchResumptionTileView buildTileView() {
-        return (SearchResumptionTileView) LayoutInflater.from(getContext())
-                .inflate(R.layout.search_resumption_module_tile_layout, this, false);
+        return (SearchResumptionTileView)
+                LayoutInflater.from(getContext())
+                        .inflate(R.layout.search_resumption_module_tile_layout, this, false);
     }
 
     boolean isExpanded() {
@@ -46,9 +43,7 @@ public class SearchResumptionTileContainerView extends LinearLayout {
         removeAllViews();
     }
 
-    /**
-     * Expands or collapses the view, with an animation if enabled.
-     */
+    /** Expands or collapses the view, with an animation if enabled. */
     void configureExpandedCollapsed(boolean expand, boolean isAnimationEnabled) {
         if (mIsExpanded == expand) return;
 
@@ -60,9 +55,7 @@ public class SearchResumptionTileContainerView extends LinearLayout {
         }
     }
 
-    /**
-     * Expands this view to full height.
-     */
+    /** Expands this view to full height. */
     private void expand(boolean isAnimationEnabled) {
         // Width is match_parent and height is wrap_content.
         int widthMeasureSpec =
@@ -75,24 +68,25 @@ public class SearchResumptionTileContainerView extends LinearLayout {
         getLayoutParams().height = 1;
         setVisibility(VISIBLE);
 
-        Animation animation = new Animation() {
-            @Override
-            protected void applyTransformation(float interpolatedTime, Transformation t) {
-                int height;
-                if (interpolatedTime == 1) {
-                    height = ViewGroup.LayoutParams.WRAP_CONTENT;
-                } else {
-                    height = (int) (targetHeight * interpolatedTime);
-                }
-                getLayoutParams().height = height;
-                requestLayout();
-            }
+        Animation animation =
+                new Animation() {
+                    @Override
+                    protected void applyTransformation(float interpolatedTime, Transformation t) {
+                        int height;
+                        if (interpolatedTime == 1) {
+                            height = ViewGroup.LayoutParams.WRAP_CONTENT;
+                        } else {
+                            height = (int) (targetHeight * interpolatedTime);
+                        }
+                        getLayoutParams().height = height;
+                        requestLayout();
+                    }
 
-            @Override
-            public boolean willChangeBounds() {
-                return true;
-            }
-        };
+                    @Override
+                    public boolean willChangeBounds() {
+                        return true;
+                    }
+                };
 
         animation.setDuration(isAnimationEnabled ? ANIMATION_DURATION_MS : 0);
         startAnimation(animation);
@@ -102,23 +96,24 @@ public class SearchResumptionTileContainerView extends LinearLayout {
     private void collapse(boolean isAnimationEnabled) {
         int initialHeight = getMeasuredHeight();
 
-        Animation animation = new Animation() {
-            @Override
-            protected void applyTransformation(float interpolatedTime, Transformation t) {
-                if (interpolatedTime == 1) {
-                    setVisibility(GONE);
-                } else {
-                    getLayoutParams().height =
-                            initialHeight - (int) (initialHeight * interpolatedTime);
-                    requestLayout();
-                }
-            }
+        Animation animation =
+                new Animation() {
+                    @Override
+                    protected void applyTransformation(float interpolatedTime, Transformation t) {
+                        if (interpolatedTime == 1) {
+                            setVisibility(GONE);
+                        } else {
+                            getLayoutParams().height =
+                                    initialHeight - (int) (initialHeight * interpolatedTime);
+                            requestLayout();
+                        }
+                    }
 
-            @Override
-            public boolean willChangeBounds() {
-                return true;
-            }
-        };
+                    @Override
+                    public boolean willChangeBounds() {
+                        return true;
+                    }
+                };
 
         animation.setDuration(isAnimationEnabled ? ANIMATION_DURATION_MS : 0);
         startAnimation(animation);

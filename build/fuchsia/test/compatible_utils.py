@@ -7,9 +7,8 @@ import os
 import platform
 import re
 import stat
-import subprocess
 
-from typing import Iterable, List, Optional, Tuple
+from typing import Iterable, List, Tuple
 
 
 # File indicating version of an image downloaded to the host
@@ -59,40 +58,6 @@ def add_exec_to_file(file: str) -> None:
     """
     file_stat = os.stat(file)
     os.chmod(file, file_stat.st_mode | stat.S_IXUSR)
-
-
-def _add_exec_to_pave_binaries(system_image_dir: str):
-    """Add exec to required pave files.
-
-    The pave files may vary depending if a product-bundle or a prebuilt images
-    directory is being used.
-    Args:
-      system_image_dir: string path to the directory containing the pave files.
-    """
-    pb_files = [
-        'pave.sh',
-        os.path.join(f'host_{get_host_arch()}', 'bootserver')
-    ]
-    image_files = [
-        'pave.sh',
-        os.path.join(f'bootserver.exe.linux-{get_host_arch()}')
-    ]
-    use_pb_files = os.path.exists(os.path.join(system_image_dir, pb_files[1]))
-    for f in pb_files if use_pb_files else image_files:
-        add_exec_to_file(os.path.join(system_image_dir, f))
-
-
-def pave(image_dir: str, target_id: Optional[str])\
-        -> subprocess.CompletedProcess:
-    """"Pave a device using the pave script inside |image_dir|."""
-    _add_exec_to_pave_binaries(image_dir)
-    pave_command = [
-        os.path.join(image_dir, 'pave.sh'), '--authorized-keys',
-        get_ssh_keys(), '-1'
-    ]
-    if target_id:
-        pave_command.extend(['-n', target_id])
-    return subprocess.run(pave_command, check=True, text=True, timeout=300)
 
 
 def parse_host_port(host_port_pair: str) -> Tuple[str, int]:

@@ -251,11 +251,11 @@ void ArcAccessibilityHelperBridge::OnAction(
   if (!tree_source)
     return;
 
-  absl::optional<int32_t> window_id = tree_source->window_id();
+  std::optional<int32_t> window_id = tree_source->window_id();
   if (!window_id)
     return;
 
-  const absl::optional<ax::android::mojom::AccessibilityActionType> action =
+  const std::optional<ax::android::mojom::AccessibilityActionType> action =
       ax::android::ConvertToAndroidAction(data.action);
   if (!action.has_value())
     return;
@@ -409,7 +409,7 @@ void ArcAccessibilityHelperBridge::OnActionResult(const ui::AXActionData& data,
 
 void ArcAccessibilityHelperBridge::OnGetTextLocationDataResult(
     const ui::AXActionData& data,
-    const absl::optional<gfx::Rect>& result_rect) const {
+    const std::optional<gfx::Rect>& result_rect) const {
   ax::android::AXTreeSourceAndroid* tree_source =
       tree_tracker_.GetFromTreeId(data.target_tree_id);
 
@@ -421,21 +421,21 @@ void ArcAccessibilityHelperBridge::OnGetTextLocationDataResult(
       OnGetTextLocationDataResultInternal(data.target_tree_id, result_rect));
 }
 
-absl::optional<gfx::Rect>
+std::optional<gfx::Rect>
 ArcAccessibilityHelperBridge::OnGetTextLocationDataResultInternal(
     const ui::AXTreeID& ax_tree_id,
-    const absl::optional<gfx::Rect>& result_rect) const {
+    const std::optional<gfx::Rect>& result_rect) const {
   if (!result_rect)
-    return absl::nullopt;
+    return std::nullopt;
 
   ax::android::AXTreeSourceAndroid* tree_source =
       tree_tracker_.GetFromTreeId(ax_tree_id);
   if (!tree_source)
-    return absl::nullopt;
+    return std::nullopt;
 
   aura::Window* window = tree_source->window();
   if (!window)
-    return absl::nullopt;
+    return std::nullopt;
 
   const gfx::RectF& rect_f =
       ScaleAndroidPxToChromePx(result_rect.value(), window);

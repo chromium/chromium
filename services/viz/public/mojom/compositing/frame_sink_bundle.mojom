@@ -59,6 +59,10 @@ interface FrameSinkBundle {
   // for the identified sink.
   SetNeedsBeginFrame(uint32 sink_id, bool needs_begin_frame);
 
+  // Corresponds to a single message of the same name on CompositorFrameSink
+  // for the identified sink.
+  SetWantsBeginFrameAcks(uint32 sink_id);
+
   // Corresponds to a series of batched requests equivalent to calls across
   // arbitrary CompositorFrameSinks for frame sinks belonging to this bundle.
   // Can be used to substantially reduce IPC traffic when many related sinks are

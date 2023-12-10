@@ -8,6 +8,7 @@
 #include "ash/display/screen_orientation_controller_test_api.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/test/ash_test_util.h"
 #include "ash/wm/splitview/split_view_constants.h"
 #include "ash/wm/window_positioning_utils.h"
 #include "ash/wm/window_state.h"
@@ -184,7 +185,7 @@ class FrameSizeButtonTest : public AshTestBase {
 
   WindowState* window_state() { return window_state_; }
   const WindowState* window_state() const { return window_state_; }
-  views::Widget* GetWidget() const { return widget_; }
+  views::Widget* GetWidget() { return widget_; }
 
   views::FrameCaptionButton* minimize_button() { return minimize_button_; }
   views::FrameCaptionButton* size_button() { return size_button_; }
@@ -679,13 +680,8 @@ class MultitaskMenuTest : public FrameSizeButtonTest {
 
   void ShowMultitaskMenu(MultitaskMenuEntryType entry_type =
                              MultitaskMenuEntryType::kFrameSizeButtonHover) {
-    DCHECK(size_button());
-
-    views::NamedWidgetShownWaiter waiter(
-        views::test::AnyWidgetTestPasskey{},
-        std::string(kMultitaskMenuBubbleWidgetName));
-    static_cast<FrameSizeButton*>(size_button())->ShowMultitaskMenu(entry_type);
-    waiter.WaitIfNeededAndGet();
+    ShowAndWaitMultitaskMenuForWindow(
+        static_cast<FrameSizeButton*>(size_button()), entry_type);
   }
 };
 
@@ -1138,6 +1134,35 @@ TEST_F(MultitaskMenuTest, PressOnSizeButtonReleaseOnMultitaskMenu) {
     release(touch);
     EXPECT_TRUE(window_state()->IsFloated());
   }
+}
+
+// Tests that if the window is right snapped, and we try to fullscreen the
+// window via touch-dragging the multitask menu, the window is properly
+// fullscreened. Regression test for http://b/304437185.
+TEST_F(MultitaskMenuTest, FullscreenFromTouchMultitaskMenu) {
+  const WindowSnapWMEvent snap_secondary(WM_EVENT_SNAP_SECONDARY);
+  window_state()->OnWMEvent(&snap_secondary);
+  ASSERT_TRUE(window_state()->IsSnapped());
+
+  // Long press on the size button until the multitask menu is shown.
+  ui::test::EventGenerator* event_generator = GetEventGenerator();
+  views::NamedWidgetShownWaiter waiter(
+      views::test::AnyWidgetTestPasskey{},
+      std::string(kMultitaskMenuBubbleWidgetName));
+  event_generator->PressTouch(size_button()->GetBoundsInScreen().CenterPoint());
+  waiter.WaitIfNeededAndGet();
+
+  // Without releasing, drag to the full button and release. Test that we are
+  // in fullscreen state.
+  MultitaskMenu* multitask_menu = GetMultitaskMenu();
+  ASSERT_TRUE(multitask_menu);
+  event_generator->MoveTouch(
+      MultitaskMenuViewTestApi(multitask_menu->multitask_menu_view())
+          .GetFullButton()
+          ->GetBoundsInScreen()
+          .CenterPoint());
+  event_generator->ReleaseTouch();
+  EXPECT_TRUE(window_state()->IsFullscreen());
 }
 
 // Tests that focus traversal with the tab and arrow keys works as expected.

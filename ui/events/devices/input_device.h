@@ -61,9 +61,8 @@ struct EVENTS_DEVICES_EXPORT InputDevice {
   // If the device is enabled, and whether events should be dispatched to UI.
   bool enabled = true;
 
-  // If the device is suspected to be identifying as another device type
-  // (Currently only applies to Mice pretending to be keyboards).
-  bool suspected_imposter = false;
+  // If the device is suspected to be falsely identifying as a keyboard.
+  bool suspected_keyboard_imposter = false;
 
   // The path to the input device in the sysfs filesystem.
   base::FilePath sys_path;

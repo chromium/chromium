@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/autofill/core/browser/autofill_manager.h"
+#include <functional>
 
 #include "base/check_deref.h"
 #include "base/command_line.h"
@@ -66,8 +67,8 @@ ParsingCallback(Functor&& functor, Args&&... args) {
   return base::BindOnce(
       [](Functor&& functor, std::remove_reference_t<Args&&>... args,
          AutofillManager& self, const FormData& form) -> AutofillManager& {
-        base::invoke(std::forward<Functor>(functor), self, form,
-                     std::forward<Args>(args)...);
+        std::invoke(std::forward<Functor>(functor), self, form,
+                    std::forward<Args>(args)...);
         return self;
       },
       std::forward<Functor>(functor), std::forward<Args>(args)...);
@@ -312,8 +313,9 @@ void AutofillManager::OnFormsSeen(
   for (FormGlobalId removed_form : removed_forms)
     form_structures_.erase(removed_form);
 
-  if (!IsValidFormDataVector(updated_forms) || !driver_->RendererIsAvailable())
+  if (!IsValidFormDataVector(updated_forms)) {
     return;
+  }
 
   if (!ShouldParseForms()) {
     return;
@@ -419,9 +421,9 @@ void AutofillManager::OnFormsParsed(const std::vector<FormData>& forms) {
   LogAutofillTypePredictionsAvailable(log_manager_, queryable_forms);
 
   // Query the server if at least one of the forms was parsed.
-  if (!queryable_forms.empty() && download_manager()) {
+  if (!queryable_forms.empty() && client().GetCrowdsourcingManager()) {
     NotifyObservers(&Observer::OnBeforeLoadedServerPredictions);
-    if (!download_manager()->StartQueryRequest(
+    if (!client().GetCrowdsourcingManager()->StartQueryRequest(
             queryable_forms, driver().IsolationInfo(), GetWeakPtr())) {
       NotifyObservers(&Observer::OnAfterLoadedServerPredictions);
     }

@@ -100,7 +100,6 @@ class TestImporterTest(LoggingTestCase):
             'INFO:   cq-wpt-builder-c\n',
             'ERROR: No initial try job results, aborting.\n',
         ])
-        self.assertEqual(importer.git_cl.calls[-1], ['git', 'cl', 'set-close'])
 
     def test_update_expectations_for_cl_closed_cl(self):
         host = self.mock_host()
@@ -164,6 +163,8 @@ class TestImporterTest(LoggingTestCase):
             'INFO:   cq-builder-b\n',
             'INFO:   cq-wpt-builder-c\n',
             'INFO: All jobs finished.\n',
+            'INFO: Skip Slow and Timeout tests.\n',
+            'INFO: Generating MANIFEST.json\n',
         ])
 
     def test_run_commit_queue_for_cl_pass(self):
@@ -229,7 +230,6 @@ class TestImporterTest(LoggingTestCase):
         ])
         self.assertEqual(importer.git_cl.calls, [
             ['git', 'cl', 'try'],
-            ['git', 'cl', 'set-close'],
         ])
 
     def test_run_commit_queue_for_cl_fail_to_land(self):
@@ -269,7 +269,6 @@ class TestImporterTest(LoggingTestCase):
                 'git', 'cl', 'upload', '-f', '--send-mail',
                 '--enable-auto-submit', '--reviewers', RUBBER_STAMPER_BOT
             ],
-            ['git', 'cl', 'set-close'],
         ])
 
     def test_run_commit_queue_for_cl_closed_cl(self):
@@ -307,8 +306,7 @@ class TestImporterTest(LoggingTestCase):
             'INFO: Triggering CQ try jobs.\n',
             'ERROR: Timed out waiting for CQ; aborting.\n'
         ])
-        self.assertEqual(importer.git_cl.calls,
-                         [['git', 'cl', 'try'], ['git', 'cl', 'set-close']])
+        self.assertEqual(importer.git_cl.calls, [['git', 'cl', 'try']])
 
     def test_submit_cl_timeout_and_already_merged(self):
         # Here we simulate a case where we timeout waiting for the CQ to submit a
@@ -318,17 +316,9 @@ class TestImporterTest(LoggingTestCase):
         host.filesystem.write_text_file(
             MOCK_WEB_TESTS + 'W3CImportExpectations', '')
         importer = self._get_test_importer(host)
-        # Define some error text that looks like a typical ScriptError.
-        git_error_text = (
-            'This is a git Script Error\n'
-            '...there is usually a stack trace here with some calls\n'
-            '...and maybe other calls\n'
-            'And finally, there is the exception:\n'
-            'GerritError: Conflict: change is merged\n')
         importer.git_cl = MockGitCL(
             host,
             status='lgtm',
-            git_error_output={'set-close': git_error_text},
             # Only the latest job for each builder is counted.
             try_job_results={
                 Build('cq-builder-a', 120): TryJobStatus(
@@ -340,7 +330,7 @@ class TestImporterTest(LoggingTestCase):
         importer.git_cl.wait_for_closed_status = lambda timeout_seconds: False
         success = importer.run_commit_queue_for_cl()
         # Since the CL is already merged, we absorb the error and treat it as success.
-        self.assertTrue(success)
+        self.assertFalse(success)
         self.assertLog([
             'INFO: Triggering CQ try jobs.\n',
             'INFO: All jobs finished.\n',
@@ -352,7 +342,6 @@ class TestImporterTest(LoggingTestCase):
             'googlesource.com/infra/infra/+/refs/heads/main/go/src/infra/'
             'appengine/rubber-stamper/README.md\n',
             'ERROR: Cannot submit CL; aborting.\n',
-            'ERROR: CL is already merged; treating as success.\n',
         ])
         self.assertEqual(importer.git_cl.calls, [
             ['git', 'cl', 'try'],
@@ -360,7 +349,6 @@ class TestImporterTest(LoggingTestCase):
                 'git', 'cl', 'upload', '-f', '--send-mail',
                 '--enable-auto-submit', '--reviewers', RUBBER_STAMPER_BOT
             ],
-            ['git', 'cl', 'set-close'],
         ])
 
     def test_apply_exportable_commits_locally(self):
@@ -480,7 +468,8 @@ class TestImporterTest(LoggingTestCase):
             'NOAUTOREVERT=true\n'
             'No-Export: true\n'
             'Validate-Test-Flakiness: skip\n'
-            'Cq-Include-Trybots: luci.chromium.try:linux-blink-rel')
+            'Cq-Include-Trybots: luci.chromium.try:linux-blink-rel\n'
+            'Cq-Include-Trybots: luci.chromium.try:linux-wpt-chromium-rel\n')
         self.assertEqual(host.executive.calls,
                          [MANIFEST_INSTALL_CMD] +
                          [['git', 'log', '-1', '--format=%B']])

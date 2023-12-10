@@ -23,6 +23,11 @@ interface SafeBrowsing {
   // The check and (subsequent checks performed using SafeBrowsingUrlChecker)
   // checks against SafeBrowsing's Malware, Phishing, and UwS blocklists.
   //
+  // `frame_token` is set when the request originates from the context of a
+  // frame. Dedicated workers are associated with a frame context and will
+  // have the value set. Service workers and shared workers are not associated
+  // with a frame and will have it set to null.
+  //
   // The SafeBrowsingUrlChecker interface should be used (and only used) for
   // subsequent checks of redirects, so that the server side could keep track of
   // the redirect chain. Disconnecting the checker interface cancels on-going
@@ -44,7 +49,7 @@ interface SafeBrowsing {
   // |showed_interstitial| indicates whether the SafeBrowsing interstitial page
   // has been shown to the user.
   CreateCheckerAndCheck(
-      int32 render_frame_id,
+      blink.mojom.LocalFrameToken? frame_token,
       pending_receiver<SafeBrowsingUrlChecker> receiver,
       url.mojom.Url url,
       string method,

@@ -10,6 +10,7 @@
 #include <map>
 #include <set>
 
+#include <optional>
 #include "android_webview/browser/gfx/begin_frame_source_webview.h"
 #include "android_webview/browser/gfx/child_frame.h"
 #include "android_webview/browser/gfx/compositor_frame_producer.h"
@@ -24,7 +25,6 @@
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "content/public/browser/android/synchronous_compositor.h"
 #include "content/public/browser/android/synchronous_compositor_client.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
@@ -282,7 +282,7 @@ class BrowserViewRenderer : public content::SynchronousCompositorClient,
   gfx::Vector2dF overscroll_rounding_error_;
 
   // The scroll to apply after the next scroll state update.
-  absl::optional<gfx::Point> scroll_on_scroll_state_update_;
+  std::optional<gfx::Point> scroll_on_scroll_state_update_;
 
   ParentCompositorDrawConstraints external_draw_constraints_;
 

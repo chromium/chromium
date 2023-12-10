@@ -2,6 +2,27 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifndef COMPONENTS_POLICY_TEST_SUPPORT_FAKE_DMSERVER_H_
+#define COMPONENTS_POLICY_TEST_SUPPORT_FAKE_DMSERVER_H_
+
+#include <memory>
+#include <set>
+#include <string>
+
+#include "base/command_line.h"
+#include "base/containers/unique_ptr_adapters.h"
+#include "base/files/file_path.h"
+#include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
+#include "base/values.h"
+#include "chromecast/cast_core/grpc/grpc_server.h"
+#include "chromecast/cast_core/grpc/grpc_unary_handler.h"
+#include "components/policy/test_support/client_storage.h"
+#include "components/policy/test_support/embedded_policy_test_server.h"
+#include "components/policy/test_support/remote_commands_service.castcore.pb.h"  // NOLINT(build/include_directory)
+#include "components/policy/test_support/remote_commands_state.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
 /*
 A bare-bones test server for testing cloud policy support.
 
@@ -73,26 +94,6 @@ Example:
   }
 }
 */
-
-#ifndef COMPONENTS_POLICY_TEST_SUPPORT_FAKE_DMSERVER_H_
-#define COMPONENTS_POLICY_TEST_SUPPORT_FAKE_DMSERVER_H_
-
-#include <set>
-#include <string>
-
-#include "base/command_line.h"
-#include "base/containers/unique_ptr_adapters.h"
-#include "base/memory/weak_ptr.h"
-#include "base/sequence_checker.h"
-#include "base/timer/timer.h"
-#include "base/values.h"
-#include "chromecast/cast_core/grpc/grpc_server.h"
-#include "chromecast/cast_core/grpc/grpc_unary_handler.h"
-#include "components/policy/test_support/client_storage.h"
-#include "components/policy/test_support/embedded_policy_test_server.h"
-#include "components/policy/test_support/remote_commands_service.castcore.pb.h"  // NOLINT(build/include_directory)
-#include "components/policy/test_support/remote_commands_state.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace fakedms {
 
@@ -225,8 +226,8 @@ class FakeDMServer : public policy::EmbeddedPolicyTestServer {
   // Erase the wait operation from the waiters_ set.
   void EraseWaitOperation(RemoteCommandsWaitOperation*);
 
-  std::string policy_blob_path_;
-  std::string client_state_path_;
+  const base::FilePath policy_blob_path_;
+  const base::FilePath client_state_path_;
   std::string grpc_unix_socket_uri_;
 
   // Sequence checker for fake_dmserver main IO thread.

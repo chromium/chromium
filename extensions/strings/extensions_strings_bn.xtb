@@ -8,6 +8,7 @@
 <translation id="1420684932347524586">এ বাবা! র‌্যান্ডম RSA ব্যক্তিগত কী জেনারেট করতে ব্যর্থ৷</translation>
 <translation id="1445572445564823378">এই এক্সটেনশনটির গতি কমে যাচ্ছে <ph name="PRODUCT_NAME" />৷ আপনাকে <ph name="PRODUCT_NAME" />-এর সম্পাদনা পুনঃস্থাপন করার জন্য এটিকে বন্ধ করতে হবে৷</translation>
 <translation id="1468038450257740950">WebGL সমর্থিত নয়৷</translation>
+<translation id="1610570795592207282">স্ক্রিপ্টের জন্য css '<ph name="RELATIVE_PATH" />' লোড করা যায়নি।</translation>
 <translation id="1803557475693955505">পৃষ্ঠভূমি পৃষ্ঠা '<ph name="BACKGROUND_PAGE" />' লোড করা যায়নি৷</translation>
 <translation id="2159915644201199628">ছবি ডিকোড করা যায়নি: '<ph name="IMAGE_NAME" />'</translation>
 <translation id="2350172092385603347">স্থানীয়করণ ব্যবহৃত হয়েছে, কিন্তু default_locale তালিকাতে উল্লেখ ছিল না৷</translation>
@@ -18,14 +19,12 @@
 <translation id="3115238746683532089"><ph name="VENDOR_ID" /> বিক্রেতার থেকেঅজানা পণ্য <ph name="PRODUCT_ID" /> (সিরিয়াল নম্বর <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">crx ফাইলটি প্রতিস্থাপন করতে ব্যর্থ৷ ফাইলটি ব্যবহার হচ্ছে কিনা দেখে নিন৷</translation>
 <translation id="3163201441334626963"><ph name="VENDOR_ID" /> বিক্রেতার থেকে অজানা পণ্য <ph name="PRODUCT_ID" /></translation>
-<translation id="3302709122321372472">কন্টেন্ট স্ক্রিপ্টের জন্য css '<ph name="RELATIVE_PATH" />' লোড করা যায়নি৷</translation>
 <translation id="3369521687965833290">এক্সটেনশন আনপ্যাক করতে পারেনা৷ কোনও এক্সটেনশনকে সুরক্ষিতভাবে আনপ্যাক করতে, আপনার প্রোফাইল ডিরেক্টরিতে অবশ্যই এমন একটি পথ থাকবে যা চালক অক্ষর দিয়ে শুরু হবে এবং এতে কোন জাংশন, মাউন্ট পয়েন্ট বা সিমলিঙ্ক থাকবে না৷  আপনার প্রোফাইলে এই ধরনের কোনও পথ নেই৷</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (সিরিয়াল নম্বর <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="VENDOR_ID" /> বিক্রেতার থেকে <ph name="PRODUCT_NAME" /> (সিরিয়াল নম্বর <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">ব্যক্তিগত কীয়ের জন্য ইনপুট মান অবশ্যই একটি সঠিক পাথ হবে৷</translation>
 <translation id="388442998277590542">বিকল্প পৃষ্ঠা '<ph name="OPTIONS_PAGE" />' লোড করা যায়নি৷</translation>
 <translation id="3984413272403535372">এক্সটেনশন স্বাক্ষরের সময় সমস্যা৷</translation>
-<translation id="39964277676607559">কন্টেন্ট স্ক্রিপ্টের জন্য '<ph name="RELATIVE_PATH" />' লোড করা যায়নি৷</translation>
 <translation id="4115165561519362854"><ph name="EXTENSION_VERSION" />-এর কোনো সর্বনিম্ন ভার্সন রাখতে, এই মেশিনের প্রশাসকের জন্য <ph name="EXTENSION_NAME" /> প্রয়োজন৷ এটিকে যতক্ষণ না পর্যন্ত সেই ভার্সনে আপডেট করা হচ্ছে (বা আরও নতুন) এটি চালু হবে না৷</translation>
 <translation id="4233778200880751280"><ph name="ABOUT_PAGE" /> সম্পর্কিত পৃষ্ঠা লোড করা গেল না।</translation>
 <translation id="471800408830181311">ব্যক্তিগত কী আউটপুট করতে ব্যর্থ৷</translation>
@@ -33,6 +32,7 @@
 <translation id="4988792151665380515">ব্যক্তিগত কী-টি রপ্তানি করতে ব্যর্থ৷</translation>
 <translation id="5026754133087629784">ওয়েবদর্শন: <ph name="WEBVIEW_TAG_NAME" /></translation>
 <translation id="5098647635849512368">প্যাক করার জন্য ডিরেক্টরির সঠিক পাথটি খুঁজে পাওয়া যাবে না৷</translation>
+<translation id="5160071981665899014">স্ক্রিপ্টের জন্য জাভাস্ক্রিপ্ট '<ph name="RELATIVE_PATH" />' লোড করা যায়নি।</translation>
 <translation id="5356315618422219272">অ্যাপ্লিকেশান দর্শন: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5436430103864390185">আকৃতি দেয়া উইন্ডো সমর্থিত নয়।</translation>
 <translation id="5456409301717116725">এই এক্সটেনশনটি '<ph name="KEY_PATH" />' মুখ্য ফাইলকে অন্তর্ভুক্ত করে৷ আপনি সম্ভবত এটি করতে চাইবেন না৷</translation>

@@ -21,6 +21,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 #include "printing/common/metafile_utils.h"
+#include "skia/ext/font_utils.h"
 #include "third_party/blink/public/platform/web_image_generator.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkDocument.h"
@@ -87,7 +88,7 @@ PrintCompositorImpl::PrintCompositorImpl(
   // This doesn't do comprehensive tests to make sure fonts can work properly.
   // It is just a quick and simple check to catch things like improper sandbox
   // policy setup.
-  DCHECK(SkFontMgr::RefDefault()->countFamilies());
+  DCHECK(skia::DefaultFontMgr()->countFamilies());
 #endif
 }
 
@@ -192,6 +193,7 @@ void PrintCompositorImpl::CompleteDocumentToPdf(
 
   if (!docinfo_->doc) {
     docinfo_->doc = MakePdfDocument(creator_, accessibility_tree_,
+                                    GeneratePdfDocumentOutline::kNone,
                                     &docinfo_->compositor_stream);
   }
 
@@ -358,7 +360,8 @@ mojom::PrintCompositor::Status PrintCompositorImpl::CompositeToPdf(
   // CompositeDocumentToPdf() call.
   SkDynamicMemoryWStream wstream;
   sk_sp<SkDocument> doc = MakePdfDocument(
-      creator_, docinfo_ ? ui::AXTreeUpdate() : accessibility_tree_, &wstream);
+      creator_, docinfo_ ? ui::AXTreeUpdate() : accessibility_tree_,
+      GeneratePdfDocumentOutline::kNone, &wstream);
 
   for (const auto& page : pages) {
     TRACE_EVENT0("print", "PrintCompositorImpl::CompositeToPdf draw page");
@@ -369,6 +372,7 @@ mojom::PrintCompositor::Status PrintCompositorImpl::CompositeToPdf(
       // Create document PDF if needed.
       if (!docinfo_->doc) {
         docinfo_->doc = MakePdfDocument(creator_, accessibility_tree_,
+                                        GeneratePdfDocumentOutline::kNone,
                                         &docinfo_->compositor_stream);
       }
 

@@ -173,12 +173,17 @@ export enum ZoomBehavior {
 
 /**
  * Creates a BrowserApi for an extension running as a mime handler.
- * @return A promise to a BrowserApi instance constructed using the
- *     mimeHandlerPrivate API.
+ * @return A promise to a BrowserApi instance. The instance is constructed by
+ *     the pdfViewerPrivate API if PDF OOPIF is enabled, otherwise it is
+ *     constructed by the mimeHandlerPrivate API.
  */
 export function createBrowserApi(): Promise<BrowserApi> {
   return new Promise<chrome.mimeHandlerPrivate.StreamInfo>(function(resolve) {
-           chrome.mimeHandlerPrivate.getStreamInfo(resolve);
+           if (document.documentElement.hasAttribute('pdfOopifEnabled')) {
+             chrome.pdfViewerPrivate.getStreamInfo(resolve);
+           } else {
+             chrome.mimeHandlerPrivate.getStreamInfo(resolve);
+           }
          })
       .then(function(streamInfo) {
         const promises = [];

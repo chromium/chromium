@@ -14,28 +14,27 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
 
-/**
- * One of the concrete {@link MessageService} that only serves {@link MessageType.IPH}.
- */
+/** One of the concrete {@link MessageService} that only serves {@link MessageType.IPH}. */
 public class IphMessageService extends MessageService {
     private final TabSwitcherCoordinator.IphController mIphController;
     private Tracker mTracker;
-    private Callback<Boolean> mInitializedCallback = (result) -> {
-        if (mTracker.wouldTriggerHelpUI(FeatureConstants.TAB_GROUPS_DRAG_AND_DROP_FEATURE)) {
-            assert mTracker.isInitialized();
-            sendAvailabilityNotification(
-                    new IphMessageData(this::review, (int messageType) -> dismiss()));
-        }
-    };
+    private Callback<Boolean> mInitializedCallback =
+            (result) -> {
+                if (mTracker.wouldTriggerHelpUI(
+                        FeatureConstants.TAB_GROUPS_DRAG_AND_DROP_FEATURE)) {
+                    assert mTracker.isInitialized();
+                    sendAvailabilityNotification(
+                            new IphMessageData(this::review, (int messageType) -> dismiss()));
+                }
+            };
 
-    /**
-     * This is the data type that this MessageService is serving to its Observer.
-     */
+    /** This is the data type that this MessageService is serving to its Observer. */
     class IphMessageData implements MessageData {
         private final MessageCardView.ReviewActionProvider mReviewActionProvider;
         private final MessageCardView.DismissActionProvider mDismissActionProvider;
 
-        IphMessageData(MessageCardView.ReviewActionProvider reviewActionProvider,
+        IphMessageData(
+                MessageCardView.ReviewActionProvider reviewActionProvider,
                 MessageCardView.DismissActionProvider dismissActionProvider) {
             mReviewActionProvider = reviewActionProvider;
             mDismissActionProvider = dismissActionProvider;

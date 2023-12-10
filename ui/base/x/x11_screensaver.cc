@@ -11,11 +11,11 @@
 #include "base/notreached.h"
 #include "ui/base/x/x11_util.h"
 #include "ui/gfx/switches.h"
+#include "ui/gfx/x/atom_cache.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/event.h"
 #include "ui/gfx/x/property_cache.h"
 #include "ui/gfx/x/screensaver.h"
-#include "ui/gfx/x/x11_atom_cache.h"
 
 namespace ui {
 
@@ -42,10 +42,6 @@ class ScreensaverStatusWatcher : public x11::EventObserver {
     x_screensaver_status_ = std::make_unique<x11::PropertyCache>(
         connection, connection->default_root(),
         std::vector<x11::Atom>{x11::GetAtom("_SCREENSAVER_STATUS")});
-
-    // Let the server know the client version before making any requests.
-    connection->screensaver().QueryVersion(
-        {x11::ScreenSaver::major_version, x11::ScreenSaver::minor_version});
 
     connection->AddEventObserver(this);
     connection->screensaver().SelectInput(connection->default_root(),

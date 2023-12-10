@@ -531,7 +531,7 @@ void MultipartUploadRequestBase::NotifyResult(
                        weak_ptr_factory_.GetWeakPtr(), code,
                        std::move(notify_complete_callback)));
   } else {
-    absl::optional<std::string> reason = MapJsonErrorToReason(body);
+    std::optional<std::string> reason = MapJsonErrorToReason(body);
     NotifyError(reason.has_value() ? MapDriveReasonToError(code, reason.value())
                                    : code);
     std::move(notify_complete_callback).Run();

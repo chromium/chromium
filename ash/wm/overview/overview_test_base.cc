@@ -44,12 +44,12 @@ void OverviewTestBase::EnterTabletMode() {
   base::RunLoop().RunUntilIdle();
 }
 
-bool OverviewTestBase::InOverviewSession() {
-  return GetOverviewController()->InOverviewSession();
+bool OverviewTestBase::InOverviewSession() const {
+  return OverviewController::Get()->InOverviewSession();
 }
 
 bool OverviewTestBase::WindowsOverlapping(aura::Window* window1,
-                                          aura::Window* window2) {
+                                          aura::Window* window2) const {
   const gfx::Rect window1_bounds = GetTransformedTargetBounds(window1);
   const gfx::Rect window2_bounds = GetTransformedTargetBounds(window2);
   return window1_bounds.Intersects(window2_bounds);
@@ -80,7 +80,7 @@ SplitViewController* OverviewTestBase::GetSplitViewController() {
   return SplitViewController::Get(Shell::GetPrimaryRootWindow());
 }
 
-gfx::Rect OverviewTestBase::GetTransformedBounds(aura::Window* window) {
+gfx::Rect OverviewTestBase::GetTransformedBounds(aura::Window* window) const {
   gfx::RectF bounds(window->layer()->bounds());
   wm::TranslateRectToScreen(window->parent(), &bounds);
   const gfx::Transform transform =
@@ -88,7 +88,8 @@ gfx::Rect OverviewTestBase::GetTransformedBounds(aura::Window* window) {
   return ToStableSizeRoundedRect(transform.MapRect(bounds));
 }
 
-gfx::Rect OverviewTestBase::GetTransformedTargetBounds(aura::Window* window) {
+gfx::Rect OverviewTestBase::GetTransformedTargetBounds(
+    aura::Window* window) const {
   gfx::RectF bounds(window->layer()->GetTargetBounds());
   wm::TranslateRectToScreen(window->parent(), &bounds);
   const gfx::Transform transform = gfx::TransformAboutPivot(
@@ -97,7 +98,7 @@ gfx::Rect OverviewTestBase::GetTransformedTargetBounds(aura::Window* window) {
 }
 
 gfx::Rect OverviewTestBase::GetTransformedBoundsInRootWindow(
-    aura::Window* window) {
+    aura::Window* window) const {
   aura::Window* root = window->GetRootWindow();
   CHECK(window->layer());
   CHECK(root->layer());
@@ -109,8 +110,11 @@ gfx::Rect OverviewTestBase::GetTransformedBoundsInRootWindow(
   return transform.MapRect(gfx::Rect(window->bounds().size()));
 }
 
-OverviewItemBase* OverviewTestBase::GetDropTarget(int grid_index) {
-  return GetOverviewSession()->grid_list_[grid_index]->drop_target();
+const OverviewItemBase* OverviewTestBase::GetDropTarget(int grid_index) const {
+  return OverviewController::Get()
+      ->overview_session()
+      ->grid_list_[grid_index]
+      ->drop_target();
 }
 
 CloseButton* OverviewTestBase::GetCloseButton(OverviewItemBase* item) {
@@ -133,7 +137,8 @@ WindowPreviewView* OverviewTestBase::GetPreviewView(OverviewItemBase* item) {
       ->overview_item_view_->preview_view();
 }
 
-gfx::Rect OverviewTestBase::GetShadowBounds(OverviewItemBase* item) const {
+gfx::Rect OverviewTestBase::GetShadowBounds(
+    const OverviewItemBase* item) const {
   SystemShadow* shadow = item->shadow_.get();
   if (!shadow || !shadow->GetLayer()->visible()) {
     return gfx::Rect();
@@ -223,14 +228,15 @@ void OverviewTestBase::CheckOverviewEnterExitHistogram(
     const std::vector<int>& exit_counts) {
   CheckForDuplicateTraceName(trace);
 
-  // Force a frame then wait, ensuring there is one more frame presented after
-  // animation finishes to allow animation throughput data to be passed from
-  // cc to ui.
+  // Force frames and wait for all throughput trackers to be gone to allow
+  // animation throughput data to be passed from cc to ui.
   ui::Compositor* compositor =
       Shell::GetPrimaryRootWindow()->layer()->GetCompositor();
-  compositor->ScheduleFullRedraw();
-  std::ignore =
-      ui::WaitForNextFrameToBePresented(compositor, base::Milliseconds(500));
+  while (compositor->has_throughput_trackers_for_testing()) {
+    compositor->ScheduleFullRedraw();
+    std::ignore =
+        ui::WaitForNextFrameToBePresented(compositor, base::Milliseconds(500));
+  }
 
   {
     SCOPED_TRACE(trace + ".Enter");

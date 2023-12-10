@@ -5,12 +5,14 @@
 #ifndef UI_BASE_CLIPBOARD_CLIPBOARD_DATA_H_
 #define UI_BASE_CLIPBOARD_CLIPBOARD_DATA_H_
 
+#include <map>
 #include <string>
 #include <vector>
 
 #include "base/component_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/base/clipboard/clipboard_format_type.h"
 #include "ui/base/clipboard/clipboard_sequence_number_token.h"
 #include "ui/base/clipboard/file_info.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
@@ -57,11 +59,14 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ClipboardData {
   // Bitmask of ClipboardInternalFormat types.
   int format() const { return format_; }
 
-  // Returns the size of the data in clipboard of `format`, total size of the
-  // clipboard data if `format` is empty, and absl::nullopt if it can't be
-  // determined.
-  absl::optional<size_t> size(
-      const absl::optional<ClipboardInternalFormat>& format) const;
+  // Returns the size of the data in clipboard of `format`, or total size of the
+  // clipboard data if `format` is empty. When `format` is kCustom,
+  // `custom_data_format` identifies which custom data item to calculate the
+  // size of. Returns absl::nullopt if size can't be determined, such as when
+  // `format` is kFilenames.
+  absl::optional<size_t> CalculateSize(
+      const absl::optional<ClipboardInternalFormat>& format,
+      const absl::optional<ClipboardFormatType>& custom_data_format) const;
 
   const std::string& text() const { return text_; }
   void set_text(base::StringPiece text) {
@@ -135,10 +140,14 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ClipboardData {
   // bitmap to a PNG on a background thread.
   absl::optional<SkBitmap> GetBitmapIfPngNotEncoded() const;
 
-  const std::string& custom_data_format() const { return custom_data_format_; }
-  const std::string& custom_data_data() const { return custom_data_data_; }
-  void SetCustomData(const std::string& data_format,
-                     const std::string& data_data);
+  // Returns true if `format` such as ClipboardFormatType::WebCustomDataType(),
+  // or `application/web;type="custom/format0"` exists.
+  bool HasCustomDataFormat(const ClipboardFormatType& format) const;
+  std::string GetCustomData(const ClipboardFormatType& data_format) const;
+  // Returns the ClipboardFormatType::WebCustomDataType() pickle.
+  std::string GetWebCustomData() const;
+  void SetCustomData(const ClipboardFormatType& format,
+                     const std::string& data);
 
   bool web_smart_paste() const { return web_smart_paste_; }
   void set_web_smart_paste(bool web_smart_paste) {
@@ -198,9 +207,8 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ClipboardData {
   //    this member is the decoded version of `maybe_png_`.
   absl::optional<SkBitmap> maybe_bitmap_ = absl::nullopt;
 
-  // Data with custom format.
-  std::string custom_data_format_;
-  std::string custom_data_data_;
+  // Custom Data keyed by format.
+  std::map<ClipboardFormatType, std::string> custom_data_;
 
   // WebKit smart paste data.
   bool web_smart_paste_ = false;

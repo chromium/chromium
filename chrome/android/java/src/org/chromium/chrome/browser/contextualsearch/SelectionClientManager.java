@@ -82,10 +82,11 @@ public class SelectionClientManager {
             SelectionClient contextualSearchSelectionClient) {
         assert contextualSearchSelectionClient != null;
         assert !(mOptionalSelectionClient instanceof SelectionClientBridge)
-            : "No more than two selection client instances are supported!";
+                : "No more than two selection client instances are supported!";
         if (mIsSmartSelectionEnabledInChrome) {
-            mOptionalSelectionClient = new SelectionClientBridge(
-                    mOptionalSelectionClient, contextualSearchSelectionClient);
+            mOptionalSelectionClient =
+                    new SelectionClientBridge(
+                            mOptionalSelectionClient, contextualSearchSelectionClient);
         } else {
             mOptionalSelectionClient = contextualSearchSelectionClient;
         }
@@ -100,14 +101,14 @@ public class SelectionClientManager {
     @Nullable
     SelectionClient removeContextualSearchSelectionClient() {
         if (mIsSmartSelectionEnabledInChrome) {
-            assert mOptionalSelectionClient
-                    instanceof SelectionClientBridge : "Looks like it was never added.";
+            assert mOptionalSelectionClient instanceof SelectionClientBridge
+                    : "Looks like it was never added.";
             SelectionClientBridge currentSelectionClientBridge =
                     (SelectionClientBridge) mOptionalSelectionClient;
             mOptionalSelectionClient = currentSelectionClientBridge.getSmartSelectionClient();
         } else {
             assert !(mOptionalSelectionClient instanceof SelectionClientBridge)
-                : "Internal error managing selection clients.";
+                    : "Internal error managing selection clients.";
             mOptionalSelectionClient = null;
         }
         return mOptionalSelectionClient;
@@ -132,7 +133,8 @@ public class SelectionClientManager {
          * @param contextualSearchSelectionClient A {@link SelectionClient} based on the
          *        {@code ContextualSearchManager}.
          */
-        private SelectionClientBridge(SelectionClient smartSelectionClient,
+        private SelectionClientBridge(
+                SelectionClient smartSelectionClient,
                 SelectionClient contextualSearchSelectionClient) {
             mSmartSelectionClient = smartSelectionClient;
             mContextualSearchSelectionClient = contextualSearchSelectionClient;

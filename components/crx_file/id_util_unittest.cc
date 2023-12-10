@@ -32,7 +32,7 @@ TEST(IDUtilTest, GenerateID) {
   EXPECT_EQ("melddjfinppjdikinhbgehiennejpfhp", extension_id);
 
   EXPECT_EQ("daibjpdaanagajckigeiigphanababab",
-            GenerateIdFromHash(public_key_info, sizeof(public_key_info)));
+            GenerateIdFromHash(public_key_info));
 
   EXPECT_EQ("jpignaibiiemhngfjkcpokkamffknabf", GenerateId("test"));
 

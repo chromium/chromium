@@ -8,8 +8,8 @@
 #include <memory>
 #include <utility>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/starscan/pcscan_internal.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/starscan/raceful_worklist.h"
+#include "partition_alloc/starscan/pcscan_internal.h"
+#include "partition_alloc/starscan/raceful_worklist.h"
 
 namespace partition_alloc::internal {
 

@@ -13,15 +13,13 @@ import androidx.annotation.NonNull;
 
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.flags.MutableFlagWithSafeDefault;
 
 /**
  * An abstract base class to provide common functionalities related to allowing/blocking snapshot
  * for Incognito tabs across {@link ChromeTabbedActivity} and {@link CustomTabActivity}.
  */
 public abstract class IncognitoSnapshotController {
-    private static final MutableFlagWithSafeDefault sIncognitoScreenshotFlag =
-            new MutableFlagWithSafeDefault(ChromeFeatureList.INCOGNITO_SCREENSHOT, false);
+
     private final @NonNull Activity mActivity;
     private final @NonNull Window mWindow;
     private final @NonNull Supplier<Boolean> mIsShowingIncognitoSupplier;
@@ -38,9 +36,7 @@ public abstract class IncognitoSnapshotController {
         mIsShowingIncognitoSupplier = isShowingIncognitoSupplier;
     }
 
-    /**
-     * Sets the attributes flags to secure if there is an incognito tab visible.
-     */
+    /** Sets the attributes flags to secure if there is an incognito tab visible. */
     protected void updateIncognitoTabSnapshotState() {
         assert mIsShowingIncognitoSupplier != null : "Supplier not found!";
 
@@ -55,10 +51,11 @@ public abstract class IncognitoSnapshotController {
 
     private void updateScreenshotState(boolean expectedSecureState) {
         WindowManager.LayoutParams attributes = mWindow.getAttributes();
-        boolean currentSecureState = (attributes.flags & WindowManager.LayoutParams.FLAG_SECURE)
-                == WindowManager.LayoutParams.FLAG_SECURE;
+        boolean currentSecureState =
+                (attributes.flags & WindowManager.LayoutParams.FLAG_SECURE)
+                        == WindowManager.LayoutParams.FLAG_SECURE;
 
-        if (sIncognitoScreenshotFlag.isEnabled()) {
+        if (ChromeFeatureList.sIncognitoScreenshot.isEnabled()) {
             expectedSecureState = false;
         }
 

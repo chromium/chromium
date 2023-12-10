@@ -23,7 +23,6 @@
 #include "ash/wm/float/tablet_mode_float_window_resizer.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/pip/pip_window_resizer.h"
-#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/tile_group/window_splitter.h"
 #include "ash/wm/toplevel_window_event_handler.h"
 #include "ash/wm/window_animations.h"
@@ -519,7 +518,7 @@ std::unique_ptr<WindowResizer> CreateWindowResizer(
     return std::make_unique<PipWindowResizer>(window_state);
   }
 
-  if (Shell::Get()->tablet_mode_controller()->InTabletMode()) {
+  if (display::Screen::GetScreen()->InTabletMode()) {
     return CreateWindowResizerForTabletMode(window, point_in_parent,
                                             window_component, source);
   }
@@ -667,13 +666,15 @@ void WorkspaceWindowResizer::Drag(const gfx::PointF& location_in_parent,
       return;
     }
   }
-  last_location_in_parent_ = location_in_parent;
+  gfx::PointF location_in_screen = location_in_parent;
+  wm::ConvertPointToScreen(GetTarget()->parent(), &location_in_screen);
+  last_location_in_screen_ = location_in_screen;
 
   int sticky_size;
   if (event_flags & ui::EF_CONTROL_DOWN) {
     sticky_size = 0;
   } else if ((details().bounds_change & kBoundsChange_Resizes) &&
-             details().source == ::wm::WINDOW_MOVE_SOURCE_TOUCH) {
+             details().source == wm::WINDOW_MOVE_SOURCE_TOUCH) {
     sticky_size = kScreenEdgeInsetForTouchDrag;
   } else {
     sticky_size = kScreenEdgeInset;
@@ -757,13 +758,11 @@ void WorkspaceWindowResizer::Drag(const gfx::PointF& location_in_parent,
     return;
   }
 
-  gfx::PointF location_in_screen = location_in_parent;
-  ::wm::ConvertPointToScreen(GetTarget()->parent(), &location_in_screen);
   if (!can_snap_to_maximize_) {
     gfx::PointF initial_location_in_screen =
         details().initial_location_in_parent;
-    ::wm::ConvertPointToScreen(GetTarget()->parent(),
-                               &initial_location_in_screen);
+    wm::ConvertPointToScreen(GetTarget()->parent(),
+                             &initial_location_in_screen);
     // When repositioning windows across the top of the screen, only trigger a
     // snap when there is significant vertical movement.
     can_snap_to_maximize_ =
@@ -829,9 +828,7 @@ void WorkspaceWindowResizer::Drag(const gfx::PointF& location_in_parent,
 void WorkspaceWindowResizer::CompleteDrag() {
   tab_dragging_recorder_.reset();
 
-  gfx::PointF last_location_in_screen = last_location_in_parent_;
-  wm::ConvertPointToScreen(GetTarget()->parent(), &last_location_in_screen);
-  window_state()->OnCompleteDrag(last_location_in_screen);
+  window_state()->OnCompleteDrag(last_location_in_screen_);
   EndDragForAttachedWindows(/*revert_drag=*/false);
 
   if (!did_move_or_resize_) {
@@ -854,7 +851,7 @@ void WorkspaceWindowResizer::CompleteDrag() {
     if (!window_state()->HasRestoreBounds()) {
       // Use `restore_bounds_for_gesture_` for touch dragging which is inside
       // parent's bounds and would not put window to different display.
-      gfx::Rect bounds = details().source == ::wm::WINDOW_MOVE_SOURCE_TOUCH
+      gfx::Rect bounds = details().source == wm::WINDOW_MOVE_SOURCE_TOUCH
                              ? restore_bounds_for_gesture_
                          : details().restore_bounds_in_parent.IsEmpty()
                              ? details().initial_bounds_in_parent
@@ -959,16 +956,14 @@ void WorkspaceWindowResizer::CompleteDrag() {
   window_state()->ClearRestoreBounds();
 
   if (window_splitter_) {
-    window_splitter_->CompleteDrag(last_location_in_screen);
+    window_splitter_->CompleteDrag(last_location_in_screen_);
   }
 }
 
 void WorkspaceWindowResizer::RevertDrag() {
   tab_dragging_recorder_.reset();
 
-  gfx::PointF last_location_in_screen = last_location_in_parent_;
-  wm::ConvertPointToScreen(GetTarget()->parent(), &last_location_in_screen);
-  window_state()->OnRevertDrag(last_location_in_screen);
+  window_state()->OnRevertDrag(last_location_in_screen_);
   EndDragForAttachedWindows(/*revert_drag=*/true);
   window_state()->set_bounds_changed_by_user(initial_bounds_changed_by_user_);
   snap_phantom_window_controller_.reset();
@@ -1076,7 +1071,7 @@ WorkspaceWindowResizer::WorkspaceWindowResizer(
   // being moved or resized with touch, so do not lock the cursor.
   // If the window state is controlled by a client, which may set the
   // cursor by itself, don't lock the cursor.
-  if (details().source != ::wm::WINDOW_MOVE_SOURCE_TOUCH &&
+  if (details().source != wm::WINDOW_MOVE_SOURCE_TOUCH &&
       !window_state->allow_set_bounds_direct()) {
     Shell::Get()->cursor_manager()->LockCursor();
     did_lock_cursor_ = true;
@@ -1300,11 +1295,11 @@ void WorkspaceWindowResizer::MagneticallySnapToOtherWindows(
     gfx::Rect* bounds) {
   if (UpdateMagnetismWindow(display, *bounds, kAllMagnetismEdges)) {
     gfx::Rect bounds_in_screen = *bounds;
-    ::wm::ConvertRectToScreen(GetTarget()->parent(), &bounds_in_screen);
+    wm::ConvertRectToScreen(GetTarget()->parent(), &bounds_in_screen);
     gfx::Point point = OriginForMagneticAttach(
         bounds_in_screen, magnetism_window_->GetBoundsInScreen(),
         magnetism_edge_);
-    ::wm::ConvertPointFromScreen(GetTarget()->parent(), &point);
+    wm::ConvertPointFromScreen(GetTarget()->parent(), &point);
     bounds->set_origin(point);
   }
 }
@@ -1316,11 +1311,11 @@ void WorkspaceWindowResizer::MagneticallySnapResizeToOtherWindows(
       WindowComponentToMagneticEdge(details().window_component);
   if (UpdateMagnetismWindow(display, *bounds, edges)) {
     gfx::Rect bounds_in_screen = *bounds;
-    ::wm::ConvertRectToScreen(GetTarget()->parent(), &bounds_in_screen);
+    wm::ConvertRectToScreen(GetTarget()->parent(), &bounds_in_screen);
     *bounds = BoundsForMagneticResizeAttach(
         bounds_in_screen, magnetism_window_->GetBoundsInScreen(),
         magnetism_edge_);
-    ::wm::ConvertRectFromScreen(GetTarget()->parent(), bounds);
+    wm::ConvertRectFromScreen(GetTarget()->parent(), bounds);
   }
 }
 
@@ -1332,7 +1327,7 @@ bool WorkspaceWindowResizer::UpdateMagnetismWindow(
 
   // |bounds| are in coordinates of original window's parent.
   gfx::Rect bounds_in_screen = bounds;
-  ::wm::ConvertRectToScreen(GetTarget()->parent(), &bounds_in_screen);
+  wm::ConvertRectToScreen(GetTarget()->parent(), &bounds_in_screen);
   MagnetismMatcher matcher(bounds_in_screen, edges);
 
   // If we snapped to a window then check it first. That way we don't bounce
@@ -1393,8 +1388,7 @@ bool WorkspaceWindowResizer::UpdateMagnetismWindow(
 void WorkspaceWindowResizer::AdjustBoundsForMainWindow(int sticky_size,
                                                        gfx::Rect* bounds) {
   gfx::Point last_location_in_screen =
-      gfx::ToRoundedPoint(last_location_in_parent_);
-  wm::ConvertPointToScreen(GetTarget()->parent(), &last_location_in_screen);
+      gfx::ToRoundedPoint(last_location_in_screen_);
   display::Display display =
       display::Screen::GetScreen()->GetDisplayNearestPoint(
           last_location_in_screen);
@@ -1759,7 +1753,7 @@ void WorkspaceWindowResizer::StartDragForAttachedWindows() {
     WindowState* window_state = WindowState::Get(window);
     window_state->CreateDragDetails(details().initial_location_in_parent,
                                     window_component,
-                                    ::wm::WINDOW_MOVE_SOURCE_MOUSE);
+                                    wm::WINDOW_MOVE_SOURCE_MOUSE);
     window_state->OnDragStarted(window_component);
   }
 }
@@ -1769,12 +1763,17 @@ void WorkspaceWindowResizer::EndDragForAttachedWindows(bool revert_drag) {
     return;
   }
 
+  // TODO(aluh): Figure out why location is in parent coord here,
+  // but in screen coord for the rest of the class.
+  gfx::PointF last_location_in_parent = last_location_in_screen_;
+  wm::ConvertPointFromScreen(GetTarget()->parent(), &last_location_in_parent);
+
   for (auto* window : attached_windows_) {
     WindowState* window_state = WindowState::Get(window);
     if (revert_drag) {
-      window_state->OnRevertDrag(last_location_in_parent_);
+      window_state->OnRevertDrag(last_location_in_parent);
     } else {
-      window_state->OnCompleteDrag(last_location_in_parent_);
+      window_state->OnCompleteDrag(last_location_in_parent);
     }
     window_state->DeleteDragDetails();
   }

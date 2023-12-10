@@ -45,8 +45,7 @@ import java.util.concurrent.TimeoutException;
 @RunWith(Parameterized.class)
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
 public class FencedFrameTest extends AwParameterizedTest {
-    @Rule
-    public AwActivityTestRule mActivityTestRule;
+    @Rule public AwActivityTestRule mActivityTestRule;
 
     private TestAwContentsClient mContentsClient;
     private AwTestContainerView mTestView;

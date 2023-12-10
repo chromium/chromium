@@ -45,6 +45,7 @@ public abstract class ContentShellBrowserTestActivity extends NativeBrowserTestA
                     appContext, appContext.getPackageName() + API_AUTHORITY_SUFFIX, file);
         }
     }
+
     /**
      * Initializes the browser process.
      *
@@ -61,8 +62,9 @@ public abstract class ContentShellBrowserTestActivity extends NativeBrowserTestA
         setContentView(getTestActivityViewId());
         mShellManager = (ShellManager) findViewById(getShellManagerViewId());
         IntentRequestTracker intentRequestTracker = IntentRequestTracker.createFromActivity(this);
-        mWindowAndroid = new ActivityWindowAndroid(
-                this, /* listenToActivityState= */ true, intentRequestTracker);
+        mWindowAndroid =
+                new ActivityWindowAndroid(
+                        this, /* listenToActivityState= */ true, intentRequestTracker);
         mShellManager.setWindow(mWindowAndroid);
 
         Window wind = this.getWindow();
@@ -70,26 +72,34 @@ public abstract class ContentShellBrowserTestActivity extends NativeBrowserTestA
         wind.addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED);
         wind.addFlags(WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
 
-        BrowserStartupController.getInstance().setContentMainCallbackForTests(() -> {
-            // This jumps into C++ to set up and run the test harness. The test harness runs
-            // ContentMain()-equivalent code, and then waits for javaStartupTasksComplete()
-            // to be called.
-            runTests();
-        });
-        BrowserStartupController.getInstance().startBrowserProcessesAsync(
-                LibraryProcessType.PROCESS_BROWSER, false, false, new StartupCallback() {
-                    @Override
-                    public void onSuccess() {
-                        // The C++ test harness is running thanks to runTests() above, but it
-                        // waits for Java initialization to complete. This tells C++ that it may
-                        // continue now to finish running the tests.
-                        NativeBrowserTest.javaStartupTasksComplete();
-                    }
-                    @Override
-                    public void onFailure() {
-                        throw new RuntimeException("Failed to startBrowserProcessesAsync()");
-                    }
-                });
+        BrowserStartupController.getInstance()
+                .setContentMainCallbackForTests(
+                        () -> {
+                            // This jumps into C++ to set up and run the test harness. The test
+                            // harness runs ContentMain()-equivalent code, and then waits for
+                            // javaStartupTasksComplete() to be called.
+                            runTests();
+                        });
+        BrowserStartupController.getInstance()
+                .startBrowserProcessesAsync(
+                        LibraryProcessType.PROCESS_BROWSER,
+                        false,
+                        false,
+                        new StartupCallback() {
+                            @Override
+                            public void onSuccess() {
+                                // The C++ test harness is running thanks to runTests() above, but
+                                // it waits for Java initialization to complete. This tells C++
+                                // that it may continue now to finish running the tests.
+                                NativeBrowserTest.javaStartupTasksComplete();
+                            }
+
+                            @Override
+                            public void onFailure() {
+                                throw new RuntimeException(
+                                        "Failed to startBrowserProcessesAsync()");
+                            }
+                        });
     }
 
     @Override
@@ -102,6 +112,7 @@ public abstract class ContentShellBrowserTestActivity extends NativeBrowserTestA
     protected String getUserDataDirectoryCommandLineSwitch() {
         return "data-path";
     }
+
     protected abstract int getTestActivityViewId();
 
     protected abstract int getShellManagerViewId();

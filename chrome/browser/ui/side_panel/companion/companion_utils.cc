@@ -124,7 +124,7 @@ bool IsNewBadgeEnabledForSearchMenuItem(const Browser* browser) {
 }
 
 void UpdateCompanionDefaultPinnedToToolbarState(PrefService* pref_service) {
-  absl::optional<bool> should_force_pin =
+  std::optional<bool> should_force_pin =
       switches::ShouldForceOverrideCompanionPinState();
   if (should_force_pin) {
     pref_service->SetBoolean(prefs::kSidePanelCompanionEntryPinnedToToolbar,

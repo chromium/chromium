@@ -9,9 +9,7 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.metrics.RecordUserAction;
 
-/**
- * Class that captures all the metrics needed for Send Tab To Self on Android.
- */
+/** Class that captures all the metrics needed for Send Tab To Self on Android. */
 @JNINamespace("send_tab_to_self")
 class MetricsRecorder {
     public static void recordSendingEvent(@SendingEvent int sendingEvent) {
@@ -39,9 +37,13 @@ class MetricsRecorder {
     @NativeMethods
     interface Natives {
         void recordSendingEvent(int sendingEvent);
+
         void recordNotificationShown();
+
         void recordNotificationOpened();
+
         void recordNotificationDismissed();
+
         void recordNotificationTimedOut();
     }
 }

@@ -6,7 +6,6 @@
 
 #include "base/containers/contains.h"
 #include "base/memory/raw_ref.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "net/http/http_response_headers.h"
@@ -104,7 +103,7 @@ class CSPContextTest : public CSPContext {
     scheme_to_bypass_.push_back(scheme);
   }
 
-  bool SchemeShouldBypassCSP(const base::StringPiece& scheme) override {
+  bool SchemeShouldBypassCSP(const std::string_view& scheme) override {
     return base::Contains(scheme_to_bypass_, scheme);
   }
 

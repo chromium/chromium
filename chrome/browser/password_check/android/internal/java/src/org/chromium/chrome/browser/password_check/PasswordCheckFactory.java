@@ -15,6 +15,7 @@ import org.chromium.components.browser_ui.settings.SettingsLauncher;
  */
 public class PasswordCheckFactory {
     private static PasswordCheck sPasswordCheck;
+
     private PasswordCheckFactory() {}
 
     /**

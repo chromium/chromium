@@ -38,21 +38,33 @@ public class CreditCardScannerBridge implements CreditCardScanner.Delegate {
 
     @Override
     public void onScanCancelled() {
-        CreditCardScannerBridgeJni.get().scanCancelled(
-                mNativeScanner, CreditCardScannerBridge.this);
+        CreditCardScannerBridgeJni.get()
+                .scanCancelled(mNativeScanner, CreditCardScannerBridge.this);
     }
 
     @Override
     public void onScanCompleted(
             String cardHolderName, String cardNumber, int expirationMonth, int expirationYear) {
-        CreditCardScannerBridgeJni.get().scanCompleted(mNativeScanner, CreditCardScannerBridge.this,
-                cardHolderName, cardNumber, expirationMonth, expirationYear);
+        CreditCardScannerBridgeJni.get()
+                .scanCompleted(
+                        mNativeScanner,
+                        CreditCardScannerBridge.this,
+                        cardHolderName,
+                        cardNumber,
+                        expirationMonth,
+                        expirationYear);
     }
 
     @NativeMethods
     interface Natives {
         void scanCancelled(long nativeCreditCardScannerViewAndroid, CreditCardScannerBridge caller);
-        void scanCompleted(long nativeCreditCardScannerViewAndroid, CreditCardScannerBridge caller,
-                String cardHolderName, String cardNumber, int expirationMonth, int expirationYear);
+
+        void scanCompleted(
+                long nativeCreditCardScannerViewAndroid,
+                CreditCardScannerBridge caller,
+                String cardHolderName,
+                String cardNumber,
+                int expirationMonth,
+                int expirationYear);
     }
 }

@@ -10,20 +10,19 @@
 #include <cmath>
 #include <limits>
 #include <utility>
-#include <vector>
 
 #include "base/i18n/rtl.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/default_style.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/canvas.h"
@@ -33,14 +32,12 @@
 #include "ui/gfx/text_utils.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/accessibility/views_utilities_aura.h"
 #include "ui/views/background.h"
-#include "ui/views/cascading_property.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/selection_controller.h"
-#include "ui/views/style/typography.h"
 #include "ui/views/style/typography_provider.h"
-#include "ui/views/views_features.h"
 
 namespace {
 
@@ -79,8 +76,6 @@ Label::Label(const std::u16string& text,
              gfx::DirectionalityMode directionality_mode)
     : text_context_(text_context),
       text_style_(text_style),
-      use_legacy_preferred_size_(
-          base::FeatureList::IsEnabled(features::kForceUseLegacyPreferredSize)),
       context_menu_contents_(this) {
   Init(text, TypographyProvider::Get().GetFont(text_context, text_style),
        directionality_mode);
@@ -89,8 +84,6 @@ Label::Label(const std::u16string& text,
 Label::Label(const std::u16string& text, const CustomFont& font)
     : text_context_(style::CONTEXT_LABEL),
       text_style_(style::STYLE_PRIMARY),
-      use_legacy_preferred_size_(
-          base::FeatureList::IsEnabled(features::kForceUseLegacyPreferredSize)),
       context_menu_contents_(this) {
   Init(text, font.font_list, gfx::DirectionalityMode::DIRECTIONALITY_FROM_TEXT);
 }
@@ -527,10 +520,6 @@ void Label::SetMaximumWidth(int max_width) {
   OnPropertyChanged(&max_width_, kPropertyEffectsPreferredSizeChanged);
 }
 
-void Label::SetUseLegacyPreferredSize(bool use_legacy) {
-  use_legacy_preferred_size_ = use_legacy;
-}
-
 void Label::SetMaximumWidthSingleLine(int max_width) {
   DCHECK(!GetMultiLine());
   if (max_width_single_line_ == max_width)
@@ -662,15 +651,7 @@ gfx::Size Label::CalculatePreferredSize(
   if (GetMultiLine() && fixed_width_ != 0 && !GetText().empty())
     return gfx::Size(fixed_width_, GetHeightForWidth(fixed_width_));
 
-  // In the scenario of unbounded layout. The available size is always
-  // constrained to the width of the label.
-  // TODO(crbug.com/1346889): Remove this.
-  SizeBounds fixed_available_size(available_size);
-  if (use_legacy_preferred_size_ && available_size.width().is_bounded()) {
-    fixed_available_size.set_width(width());
-  }
-
-  gfx::Size size(GetBoundedTextSize(fixed_available_size));
+  gfx::Size size(GetBoundedTextSize(available_size));
   const gfx::Insets insets = GetInsets();
   size.Enlarge(insets.width(), insets.height());
 
@@ -1008,6 +989,42 @@ bool Label::CanHandleAccelerators() const {
          View::CanHandleAccelerators();
 }
 
+void Label::GetAccessibleNodeData(ui::AXNodeData* node_data) {
+  View::GetAccessibleNodeData(node_data);
+
+#if BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
+  // If the accessible name changed since the last time we computed the text
+  // offsets, we need to recompute them.
+  if (::features::IsUiaProviderEnabled() &&
+      ax_name_used_to_compute_offsets_ != GetAccessibleName()) {
+    GetViewAccessibility().ClearTextOffsets();
+    ax_name_used_to_compute_offsets_.clear();
+    if (RefreshAccessibleTextOffsets()) {
+      ax_name_used_to_compute_offsets_ = GetAccessibleName();
+    }
+  }
+#endif  // BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
+}
+
+#if BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
+bool Label::RefreshAccessibleTextOffsets() {
+  MaybeBuildDisplayText();
+  // TODO(https://crbug.com/1485632): Add support for multiline textfields.
+  if (!display_text_ || display_text_->multiline()) {
+    return false;
+  }
+
+  GetViewAccessibility().OverrideCharacterOffsets(
+      ComputeTextOffsets(display_text_.get()));
+
+  WordBoundaries boundaries = ComputeWordBoundaries(GetText());
+  GetViewAccessibility().OverrideWordStarts(boundaries.starts);
+  GetViewAccessibility().OverrideWordEnds(boundaries.ends);
+
+  return true;
+}
+#endif  // BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
+
 void Label::OnDeviceScaleFactorChanged(float old_device_scale_factor,
                                        float new_device_scale_factor) {
   View::OnDeviceScaleFactorChanged(old_device_scale_factor,
@@ -1039,22 +1056,20 @@ void Label::ShowContextMenuForViewImpl(View* source,
 
 bool Label::GetWordLookupDataAtPoint(const gfx::Point& point,
                                      gfx::DecoratedText* decorated_word,
-                                     gfx::Point* baseline_point) {
+                                     gfx::Rect* rect) {
   gfx::RenderText* render_text = GetRenderTextForSelectionController();
   if (render_text && !render_text->obscured()) {
-    return render_text->GetWordLookupDataAtPoint(point, decorated_word,
-                                                 baseline_point);
+    return render_text->GetWordLookupDataAtPoint(point, decorated_word, rect);
   }
   return false;
 }
 
 bool Label::GetWordLookupDataFromSelection(gfx::DecoratedText* decorated_text,
-                                           gfx::Point* baseline_point) {
+                                           gfx::Rect* rect) {
   gfx::RenderText* render_text = GetRenderTextForSelectionController();
-  return render_text
-             ? render_text->GetLookupDataForRange(
-                   render_text->selection(), decorated_text, baseline_point)
-             : false;
+  return render_text ? render_text->GetLookupDataForRange(
+                           render_text->selection(), decorated_text, rect)
+                     : false;
 }
 
 gfx::RenderText* Label::GetRenderTextForSelectionController() {
@@ -1365,7 +1380,7 @@ void Label::UpdateFullTextElideBehavior() {
                                                           : gfx::NO_ELIDE);
 }
 
-BEGIN_METADATA(Label, View)
+BEGIN_METADATA(Label)
 ADD_PROPERTY_METADATA(std::u16string, Text)
 ADD_PROPERTY_METADATA(int, TextContext)
 ADD_PROPERTY_METADATA(int, TextStyle)

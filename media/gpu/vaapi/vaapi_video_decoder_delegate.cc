@@ -336,9 +336,15 @@ void VaapiVideoDecoderDelegate::RecoverProtectedSession() {
   protected_session_state_ = ProtectedSessionState::kNeedsRecovery;
   hw_key_data_map_.clear();
   hw_identifier_.clear();
-  vaapi_wrapper_->DestroyProtectedSession();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (chromeos_cdm_context_ && chromeos_cdm_context_->UsingArcCdm()) {
+  CHECK(chromeos_cdm_context_);
+  // ARC will not re-seek, so we cannot do the VAContext recreation for it.
+  if (!chromeos_cdm_context_->UsingArcCdm()) {
+    OnVAContextDestructionSoon();
+    vaapi_wrapper_->DestroyContext();
+  }
+  vaapi_wrapper_->DestroyProtectedSession();
+  if (chromeos_cdm_context_->UsingArcCdm()) {
     // The ARC decoder doesn't handle the WaitingCB that'll get invoked so we
     // need to trigger a protected update ourselves in order to get decoding
     // running again.

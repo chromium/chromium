@@ -59,13 +59,17 @@ public class NotificationSuspender {
         if (!isEnabled()) return Promise.fulfilled(false);
         return waitForChromeStartup()
                 .then((Void v) -> UsageStatsService.getInstance().getAllSuspendedWebsitesAsync())
-                .then((List<String> fqdns) -> {
-                    if (!fqdns.contains(getValidFqdnOrEmptyString(notification))) return false;
-                    UsageStatsService.getInstance()
-                            .getNotificationSuspender()
-                            .storeNotificationResources(Collections.singletonList(notification));
-                    return true;
-                });
+                .then(
+                        (List<String> fqdns) -> {
+                            if (!fqdns.contains(getValidFqdnOrEmptyString(notification))) {
+                                return false;
+                            }
+                            UsageStatsService.getInstance()
+                                    .getNotificationSuspender()
+                                    .storeNotificationResources(
+                                            Collections.singletonList(notification));
+                            return true;
+                        });
     }
 
     public NotificationSuspender(Profile profile) {
@@ -102,8 +106,8 @@ public class NotificationSuspender {
             mNotificationManager.cancel(tag, NotificationPlatformBridge.PLATFORM_ID);
         }
 
-        NotificationSuspenderJni.get().storeNotificationResources(
-                mProfile, ids, origins, resources);
+        NotificationSuspenderJni.get()
+                .storeNotificationResources(mProfile, ids, origins, resources);
     }
 
     private void unsuspendWebsites(List<String> fqdns) {
@@ -127,8 +131,10 @@ public class NotificationSuspender {
             if (!URLUtil.isHttpUrl(origin) && !URLUtil.isHttpsUrl(origin)) continue;
             if (!fqdns.contains(Uri.parse(origin).getHost())) continue;
             NotificationMetadata metadata =
-                    new NotificationMetadata(NotificationUmaTracker.SystemNotificationType.SITES,
-                            tag, NotificationPlatformBridge.PLATFORM_ID);
+                    new NotificationMetadata(
+                            NotificationUmaTracker.SystemNotificationType.SITES,
+                            tag,
+                            NotificationPlatformBridge.PLATFORM_ID);
             notifications.add(new NotificationWrapper(notification.getNotification(), metadata));
         }
 
@@ -165,16 +171,18 @@ public class NotificationSuspender {
         BrowserStartupController browserStartup = BrowserStartupController.getInstance();
         if (browserStartup.isFullBrowserStarted()) return Promise.fulfilled(null);
         Promise<Void> promise = new Promise<>();
-        browserStartup.addStartupCompletedObserver(new StartupCallback() {
-            @Override
-            public void onSuccess() {
-                promise.fulfill(null);
-            }
-            @Override
-            public void onFailure() {
-                promise.reject(null);
-            }
-        });
+        browserStartup.addStartupCompletedObserver(
+                new StartupCallback() {
+                    @Override
+                    public void onSuccess() {
+                        promise.fulfill(null);
+                    }
+
+                    @Override
+                    public void onFailure() {
+                        promise.reject(null);
+                    }
+                });
         return promise;
     }
 

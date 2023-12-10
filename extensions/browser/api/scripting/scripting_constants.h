@@ -8,11 +8,6 @@
 namespace extensions {
 namespace scripting {
 
-// TODO(crbug.com/1168627): The can_execute_script_everywhere flag is currently
-// only used by the legacy version Chromevox extension. We can assume it will
-// always be false here, but it may be added back if needed.
-inline constexpr bool kScriptsCanExecuteEverywhere = false;
-
 // The all_urls_includes_chrome_urls flag is only true for the legacy ChromeVox
 // extension, which does not call this API. Therefore we can assume it to be
 // always false.

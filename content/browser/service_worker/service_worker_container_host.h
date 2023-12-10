@@ -21,6 +21,7 @@
 #include "content/browser/storage_partition_impl.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/child_process_host.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/service_worker_client_info.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -486,6 +487,11 @@ class CONTENT_EXPORT ServiceWorkerContainerHost final
   // For service worker clients. Returns this client's controller's
   // registration.
   ServiceWorkerRegistration* controller_registration() const;
+
+  // Should be called only when `controller()` is non-null.
+  // Callers should fill `ControllerServiceWorkerInfo::object_info` when needed.
+  blink::mojom::ControllerServiceWorkerInfoPtr
+  CreateControllerServiceWorkerInfo();
 
   // For service worker execution contexts.
   void set_service_worker_host(ServiceWorkerHost* service_worker_host);

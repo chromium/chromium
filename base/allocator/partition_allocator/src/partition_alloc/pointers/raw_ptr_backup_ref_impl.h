@@ -9,20 +9,20 @@
 
 #include <type_traits>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/chromeos_buildflags.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_address_space.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/compiler_specific.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/component_export.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/cxx20_is_constant_evaluated.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_config.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_constants.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_forward.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/tagging.h"
 #include "build/build_config.h"
+#include "partition_alloc/chromeos_buildflags.h"
+#include "partition_alloc/partition_address_space.h"
+#include "partition_alloc/partition_alloc_base/compiler_specific.h"
+#include "partition_alloc/partition_alloc_base/component_export.h"
+#include "partition_alloc/partition_alloc_base/cxx20_is_constant_evaluated.h"
+#include "partition_alloc/partition_alloc_buildflags.h"
+#include "partition_alloc/partition_alloc_config.h"
+#include "partition_alloc/partition_alloc_constants.h"
+#include "partition_alloc/partition_alloc_forward.h"
+#include "partition_alloc/tagging.h"
 
 #if !BUILDFLAG(HAS_64_BIT_POINTERS)
-#include "base/allocator/partition_allocator/src/partition_alloc/address_pool_manager_bitmap.h"
+#include "partition_alloc/address_pool_manager_bitmap.h"
 #endif
 
 #if !BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)

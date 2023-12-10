@@ -135,7 +135,7 @@ CryptAuthGroupPrivateKeySharerImpl::~CryptAuthGroupPrivateKeySharerImpl() =
     default;
 
 // static
-absl::optional<base::TimeDelta>
+std::optional<base::TimeDelta>
 CryptAuthGroupPrivateKeySharerImpl::GetTimeoutForState(State state) {
   switch (state) {
     case State::kWaitingForGroupPrivateKeyEncryption:
@@ -144,12 +144,12 @@ CryptAuthGroupPrivateKeySharerImpl::GetTimeoutForState(State state) {
       return kWaitingForShareGroupPrivateKeyResponseTimeout;
     default:
       // Signifies that there should not be a timeout.
-      return absl::nullopt;
+      return std::nullopt;
   }
 }
 
 // static
-absl::optional<CryptAuthDeviceSyncResult::ResultCode>
+std::optional<CryptAuthDeviceSyncResult::ResultCode>
 CryptAuthGroupPrivateKeySharerImpl::ResultCodeErrorFromTimeoutDuringState(
     State state) {
   switch (state) {
@@ -160,7 +160,7 @@ CryptAuthGroupPrivateKeySharerImpl::ResultCodeErrorFromTimeoutDuringState(
       return CryptAuthDeviceSyncResult::ResultCode::
           kErrorTimeoutWaitingForShareGroupPrivateKeyResponse;
     default:
-      return absl::nullopt;
+      return std::nullopt;
   }
 }
 
@@ -171,7 +171,7 @@ void CryptAuthGroupPrivateKeySharerImpl::SetState(State state) {
   state_ = state;
   last_state_change_timestamp_ = base::TimeTicks::Now();
 
-  absl::optional<base::TimeDelta> timeout_for_state = GetTimeoutForState(state);
+  std::optional<base::TimeDelta> timeout_for_state = GetTimeoutForState(state);
   if (!timeout_for_state)
     return;
 
@@ -182,7 +182,7 @@ void CryptAuthGroupPrivateKeySharerImpl::SetState(State state) {
 
 void CryptAuthGroupPrivateKeySharerImpl::OnTimeout() {
   // If there's a timeout specified, there should be a corresponding error code.
-  absl::optional<CryptAuthDeviceSyncResult::ResultCode> error_code =
+  std::optional<CryptAuthDeviceSyncResult::ResultCode> error_code =
       ResultCodeErrorFromTimeoutDuringState(state_);
   DCHECK(error_code);
 

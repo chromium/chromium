@@ -1,0 +1,27 @@
+This is a testharness.js-based test.
+Found 12 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] -webkit-appearance: inner-spin-button (invalid)
+  assert_in_array: style.WebkitAppearance (uppercase W) value "inner-spin-button" not in array [""]
+[FAIL] -webkit-appearance: push-button (invalid)
+  assert_in_array: style.WebkitAppearance (uppercase W) value "push-button" not in array [""]
+[FAIL] -webkit-appearance: searchfield-cancel-button (invalid)
+  assert_in_array: style.WebkitAppearance (uppercase W) value "searchfield-cancel-button" not in array [""]
+[FAIL] -webkit-appearance: slider-horizontal (invalid)
+  assert_in_array: style.WebkitAppearance (uppercase W) value "slider-horizontal" not in array [""]
+[FAIL] -webkit-appearance: slider-vertical (invalid)
+  assert_in_array: style.WebkitAppearance (uppercase W) value "slider-vertical" not in array [""]
+[FAIL] -webkit-appearance: square-button (invalid)
+  assert_in_array: style.WebkitAppearance (uppercase W) value "square-button" not in array [""]
+[FAIL] appearance: inner-spin-button (invalid)
+  assert_in_array: style.appearance value "inner-spin-button" not in array [""]
+[FAIL] appearance: push-button (invalid)
+  assert_in_array: style.appearance value "push-button" not in array [""]
+[FAIL] appearance: searchfield-cancel-button (invalid)
+  assert_in_array: style.appearance value "searchfield-cancel-button" not in array [""]
+[FAIL] appearance: slider-horizontal (invalid)
+  assert_in_array: style.appearance value "slider-horizontal" not in array [""]
+[FAIL] appearance: slider-vertical (invalid)
+  assert_in_array: style.appearance value "slider-vertical" not in array [""]
+[FAIL] appearance: square-button (invalid)
+  assert_in_array: style.appearance value "square-button" not in array [""]
+Harness: the test ran to completion.

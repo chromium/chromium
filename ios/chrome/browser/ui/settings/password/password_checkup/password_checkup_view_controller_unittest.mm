@@ -12,7 +12,6 @@
 #import "components/password_manager/core/browser/password_manager_test_utils.h"
 #import "components/password_manager/core/browser/password_store/test_password_store.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
-#import "components/password_manager/core/common/password_manager_features.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_affiliation_service_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
@@ -26,7 +25,7 @@
 #import "ios/chrome/browser/ui/settings/cells/settings_check_item.h"
 #import "ios/chrome/browser/ui/settings/password/password_checkup/password_checkup_commands.h"
 #import "ios/chrome/browser/ui/settings/password/password_checkup/password_checkup_constants.h"
-#import "ios/chrome/browser/ui/settings/password/password_checkup/password_checkup_mediator+private.h"
+#import "ios/chrome/browser/ui/settings/password/password_checkup/password_checkup_mediator+Testing.h"
 #import "ios/chrome/browser/ui/settings/password/password_checkup/password_checkup_mediator.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -49,12 +48,6 @@ class PasswordCheckupViewControllerTest
   PasswordCheckupViewControllerTest() = default;
 
   void SetUp() override {
-    // Enable Password Checkup and Password Grouping to get the affiliated
-    // groups.
-    feature_list.InitWithFeatures(
-        /*enabled_features=*/{password_manager::features::kIOSPasswordCheckup},
-        /*disabled_features=*/{});
-
     LegacyChromeTableViewControllerTest::SetUp();
     TestChromeBrowserState::Builder builder;
     builder.AddTestingFactory(

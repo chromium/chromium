@@ -18,7 +18,9 @@ public class HistoryDeletionBridge {
      * Allows derived class to listen to history deletions that pass through this bridge. The
      * HistoryDeletionInfo passed as a parameter is only valid for the duration of the method.
      */
-    public interface Observer { void onURLsDeleted(HistoryDeletionInfo historyDeletionInfo); }
+    public interface Observer {
+        void onURLsDeleted(HistoryDeletionInfo historyDeletionInfo);
+    }
 
     private static HistoryDeletionBridge sInstance;
 

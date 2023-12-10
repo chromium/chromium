@@ -108,9 +108,9 @@ std::string GetFileNameFromIcon(const gfx::VectorIcon* icon) {
 
 struct HelpBubbleHandlerBase::ElementData {
   ElementData() = default;
+  ElementData(ElementData&& other) noexcept = default;
+  ElementData& operator=(ElementData&& other) noexcept = default;
   ~ElementData() = default;
-  ElementData(ElementData&& other) = default;
-  ElementData& operator=(ElementData&& other) = default;
 
   bool has_webui_help_bubble() const { return static_cast<bool>(params); }
 

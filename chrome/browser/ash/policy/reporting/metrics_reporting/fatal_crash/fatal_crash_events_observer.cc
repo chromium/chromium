@@ -4,16 +4,21 @@
 
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/fatal_crash/fatal_crash_events_observer.h"
 
+#include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
 
 #include "ash/public/cpp/session/session_types.h"
 #include "ash/shell.h"
+#include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
+#include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_runner.h"
@@ -22,25 +27,20 @@
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/fatal_crash/fatal_crash_events_observer_reported_local_id_manager.h"
+#include "chrome/browser/ash/policy/reporting/metrics_reporting/fatal_crash/fatal_crash_events_observer_save_file_paths_provider.h"
+#include "chrome/browser/ash/policy/reporting/metrics_reporting/fatal_crash/fatal_crash_events_observer_settings_for_test.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/fatal_crash/fatal_crash_events_observer_uploaded_crash_info_manager.h"
 #include "chromeos/ash/services/cros_healthd/public/cpp/service_connection.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
 #include "components/user_manager/user_type.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace reporting {
 
 using ::ash::cros_healthd::mojom::CrashEventInfo;
 using ::ash::cros_healthd::mojom::CrashEventInfoPtr;
-using ::ash::cros_healthd::mojom::CrashUploadInfoPtr;
+using ::ash::cros_healthd::mojom::EventInfoPtr;
 
 namespace {
-
-constexpr std::string_view kDefaultReportedLocalIdSaveFilePath =
-    "/var/lib/reporting/crash_events/REPORTED_LOCAL_IDS";
-constexpr std::string_view kDefaultUploadedCrashInfoSaveFilePath =
-    "/var/lib/reporting/crash_events/UPLOADED_CRASH_INFO";
-constexpr base::TimeDelta kDefaultBackoffTimeForLoading = base::Seconds(5);
 
 // Get current user session.
 const ash::UserSession* GetCurrentUserSession() {
@@ -74,35 +74,54 @@ FatalCrashTelemetry::SessionType GetSessionType(
 }
 
 // Get the user email of the given session.
-absl::optional<std::string> GetUserEmail(const ash::UserSession* user_session) {
+std::optional<std::string> GetUserEmail(const ash::UserSession* user_session) {
   if (!user_session || !user_session->user_info.is_managed) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   if (!user_session->user_info.account_id.is_valid()) {
     LOG(ERROR) << "Invalid user account ID.";
-    return absl::nullopt;
+    return std::nullopt;
   }
   return user_session->user_info.account_id.GetUserEmail();
 }
 }  // namespace
 
 FatalCrashEventsObserver::FatalCrashEventsObserver()
-    : FatalCrashEventsObserver(
-          base::FilePath(kDefaultReportedLocalIdSaveFilePath),
-          base::FilePath(kDefaultUploadedCrashInfoSaveFilePath),
-          kDefaultBackoffTimeForLoading) {}
+    : FatalCrashEventsObserver(DefaultSaveFilePathsProvider::Get(),
+                               /*reported_local_id_io_task_runner=*/nullptr,
+                               /*uploaded_crash_info_io_task_runner=*/nullptr) {
+}
 
 FatalCrashEventsObserver::FatalCrashEventsObserver(
-    base::FilePath reported_local_id_save_file,
-    base::FilePath uploaded_crash_info_save_file,
-    base::TimeDelta backoff_time_for_loading)
+    const SaveFilePathsProviderInterface& save_file_paths_provider,
+    scoped_refptr<base::SequencedTaskRunner> reported_local_id_io_task_runner,
+    scoped_refptr<base::SequencedTaskRunner> uploaded_crash_info_io_task_runner)
     : MojoServiceEventsObserverBase<ash::cros_healthd::mojom::EventObserver>(
           this),
       reported_local_id_manager_{ReportedLocalIdManager::Create(
-          std::move(reported_local_id_save_file))},
+          save_file_paths_provider.GetReportedLocalIdSaveFilePath(),
+          // Don't BindPostTask here, because it would risk calling
+          // `ProcessEventsBeforeSaveFilesLoaded` twice, once from
+          // reported_local_id_manager_, once from uploaded_crash_info_manager_.
+          /*save_file_loaded_callback=*/
+          base::BindOnce(
+              &FatalCrashEventsObserver::ProcessEventsBeforeSaveFilesLoaded,
+              // Called from member reported_local_id_manager_ from
+              // the same sequence, safe to assume this instance is still alive.
+              base::Unretained(this)),
+          std::move(reported_local_id_io_task_runner))},
       uploaded_crash_info_manager_{UploadedCrashInfoManager::Create(
-          std::move(uploaded_crash_info_save_file))},
-      backoff_time_for_loading_{backoff_time_for_loading} {}
+          save_file_paths_provider.GetUploadedCrashInfoSaveFilePath(),
+          // Don't BindPostTask here, because it would risk calling
+          // `ProcessEventsBeforeSaveFilesLoaded` twice, once from
+          // reported_local_id_manager_, once from uploaded_crash_info_manager_.
+          /*save_file_loaded_callback=*/
+          base::BindOnce(
+              &FatalCrashEventsObserver::ProcessEventsBeforeSaveFilesLoaded,
+              // Called from member uploaded_crash_info_manager_ from
+              // the same sequence, safe to assume this instance is still alive.
+              base::Unretained(this)),
+          std::move(uploaded_crash_info_io_task_runner))} {}
 
 FatalCrashEventsObserver::~FatalCrashEventsObserver() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -119,98 +138,126 @@ int64_t FatalCrashEventsObserver::ConvertTimeToMicroseconds(base::Time t) {
          base::Time::kMicrosecondsPerMillisecond;
 }
 
-void FatalCrashEventsObserver::SetSkippedUnuploadedCrashCallback(
-    base::RepeatingCallback<void(LocalIdEntry)> callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  skipped_unuploaded_callback_ = std::move(callback);
+// static
+const base::flat_set<CrashEventInfo::CrashType>&
+FatalCrashEventsObserver::GetAllowedCrashTypes() {
+  // This may appear to be overkilling for only 2 crash types, but it provides
+  // more robustness for future crash type additions.
+  static const base::NoDestructor<base::flat_set<CrashEventInfo::CrashType>>
+      allowed_crash_types({CrashEventInfo::CrashType::kKernel,
+                           CrashEventInfo::CrashType::kEmbeddedController});
+  return *allowed_crash_types;
 }
 
-void FatalCrashEventsObserver::SetSkippedUploadedCrashCallback(
-    SkippedUploadedCrashCallback callback) {
+void FatalCrashEventsObserver::OnEvent(EventInfoPtr info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  skipped_uploaded_callback_ = std::move(callback);
-}
-
-void FatalCrashEventsObserver::OnEvent(
-    ash::cros_healthd::mojom::EventInfoPtr info) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (!AreLoaded()) {
-    // If save files are still being loaded, wait for
-    // `backoff_time_for_loading_` (5 seconds in production code).
-    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(&FatalCrashEventsObserver::OnEvent,
-                       weak_factory_.GetWeakPtr(), std::move(info)),
-        backoff_time_for_loading_);
-    return;
-  }
+  DCHECK_CALLED_ON_VALID_SEQUENCE(settings_for_test_->sequence_checker);
 
   if (!info->is_crash_event_info()) {
     return;
   }
-  const auto& crash_event_info = info->get_crash_event_info();
+
+  // Events in `event_queue_before_save_files_loaded_` must be processed first.
+  // If the events there have not been cleared, enqueue this event there.
+  if (!AreSaveFilesLoaded() || !event_queue_before_save_files_loaded_.empty()) {
+    if (settings_for_test_->event_collected_before_save_files_loaded_callback) {
+      settings_for_test_->event_collected_before_save_files_loaded_callback.Run(
+          info->get_crash_event_info().Clone());
+    }
+    event_queue_before_save_files_loaded_.push(std::move(info));
+    return;
+  }
+
+  ProcessEvent(std::move(info));
+}
+
+void FatalCrashEventsObserver::ProcessEvent(EventInfoPtr info) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(settings_for_test_->sequence_checker);
+
+  auto& crash_event_info = info->get_crash_event_info();
+  if (!GetAllowedCrashTypes().contains(crash_event_info->crash_type)) {
+    // A type of crash that is uninteresting to us. Don't process it.
+    settings_for_test_->skipped_uninteresting_crash_type_callback.Run(
+        crash_event_info->crash_type);
+    return;
+  }
 
   if (crash_event_info->upload_info.is_null()) {
-    // Unuploaded crash. Need to look up whether the crash has been reported or
-    // not.
-    const auto capture_timestamp_us =
-        ConvertTimeToMicroseconds(crash_event_info->capture_time);
-    const auto should_report_result = reported_local_id_manager_->ShouldReport(
-        crash_event_info->local_id, capture_timestamp_us);
-    // Currently impossible to reach `ShouldReportResult::kNegativeTimestamp`,
-    // as it can only happen when loading a save file.
-    base::UmaHistogramEnumeration(kUmaUnuploadedCrashShouldNotReportReason,
-                                  should_report_result);
-    if (should_report_result !=
-        ReportedLocalIdManager::ShouldReportResult::kYes) {
-      skipped_unuploaded_callback_.Run(
-          {.local_id = std::move(crash_event_info->local_id),
-           .capture_timestamp_us = capture_timestamp_us});
-      return;
-    }
+    ProcessUnuploadedCrashEvent(std::move(crash_event_info));
   } else {
-    // Uploaded crash.
-    if (!uploaded_crash_info_manager_->ShouldReport(
-            crash_event_info->upload_info)) {
-      // The crash is from an earlier part of uploads.log. Skip.
-      const auto& upload_info = crash_event_info->upload_info;
-      skipped_uploaded_callback_.Run(upload_info->crash_report_id,
-                                     upload_info->creation_time,
-                                     upload_info->offset);
-      return;
-    }
+    ProcessUploadedCrashEvent(std::move(crash_event_info));
+  }
+}
+
+void FatalCrashEventsObserver::ProcessUnuploadedCrashEvent(
+    CrashEventInfoPtr crash_event_info) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(settings_for_test_->sequence_checker);
+
+  // Look up whether the crash has been reported or not.
+  const auto capture_timestamp_us =
+      ConvertTimeToMicroseconds(crash_event_info->capture_time);
+  const auto should_report_result = reported_local_id_manager_->ShouldReport(
+      crash_event_info->local_id, capture_timestamp_us);
+  // Currently impossible to reach `ShouldReportResult::kNegativeTimestamp`,
+  // as it can only happen when loading a save file.
+  base::UmaHistogramEnumeration(kUmaUnuploadedCrashShouldNotReportReason,
+                                should_report_result);
+  if (should_report_result !=
+      ReportedLocalIdManager::ShouldReportResult::kYes) {
+    settings_for_test_->skipped_unuploaded_crash_callback.Run(
+        {.local_id = std::move(crash_event_info->local_id),
+         .capture_timestamp_us = capture_timestamp_us});
+    return;
+  }
+
+  MetricData metric_data = FillFatalCrashTelemetry(crash_event_info);
+  OnEventObserved(std::move(metric_data));
+  if (settings_for_test_->interrupted_after_event_observed) {
+    return;
+  }
+
+  // Update saved reported local IDs.
+  if (!reported_local_id_manager_->UpdateLocalId(crash_event_info->local_id,
+                                                 capture_timestamp_us)) {
+    LOG(ERROR) << "Failed to update local ID: " << crash_event_info->local_id;
+    return;
+  }
+}
+
+void FatalCrashEventsObserver::ProcessUploadedCrashEvent(
+    CrashEventInfoPtr crash_event_info) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(settings_for_test_->sequence_checker);
+
+  if (!uploaded_crash_info_manager_->ShouldReport(
+          crash_event_info->upload_info)) {
+    // The crash is from an earlier part of uploads.log. Skip.
+    const auto& upload_info = crash_event_info->upload_info;
+    settings_for_test_->skipped_uploaded_crash_callback.Run(
+        upload_info->crash_report_id, upload_info->creation_time,
+        upload_info->offset);
+    return;
   }
 
   MetricData metric_data = FillFatalCrashTelemetry(crash_event_info);
   OnEventObserved(std::move(metric_data));
 
-  if (interrupted_after_event_observed_for_test_) {
+  if (settings_for_test_->interrupted_after_event_observed) {
     return;
   }
 
-  if (crash_event_info->upload_info.is_null()) {
-    // Unuploaded crash. Need to update saved reported local IDs.
-    if (auto capture_timestamp_us =
-            ConvertTimeToMicroseconds(crash_event_info->capture_time);
-        !reported_local_id_manager_->UpdateLocalId(crash_event_info->local_id,
-                                                   capture_timestamp_us)) {
-      LOG(ERROR) << "Failed to update local ID: " << crash_event_info->local_id;
-      return;
-    }
-  } else {
-    // Uploaded crash.
-    uploaded_crash_info_manager_->Update(
-        crash_event_info->upload_info->creation_time,
-        crash_event_info->upload_info->offset);
-    // Once uploaded, the crash's local ID must be removed from saved local IDs.
-    // Reason is that when the number of saved local IDs reach the max, the
-    // crash with the earliest capture time will be removed. However, crashes do
-    // not come in the order of capture time. If we leave uploaded crashes in
-    // the saved local IDs, some late-coming crashes with early capture time may
-    // not get reported because of this.
-    reported_local_id_manager_->Remove(crash_event_info->local_id);
-  }
+  uploaded_crash_info_manager_->Update(
+      crash_event_info->upload_info->creation_time,
+      crash_event_info->upload_info->offset);
+  // Once uploaded, the crash's local ID must be removed from saved local IDs.
+  // Reason is that when the number of saved local IDs reach the max, the crash
+  // with the earliest capture time will be removed. However, crashes do not
+  // come in the order of capture time. If we leave uploaded crashes in the
+  // saved local IDs, some late-coming crashes with early capture time may not
+  // get reported because of this.
+  reported_local_id_manager_->Remove(crash_event_info->local_id);
 }
 
 void FatalCrashEventsObserver::AddObserver() {
@@ -221,16 +268,50 @@ void FatalCrashEventsObserver::AddObserver() {
                          BindNewPipeAndPassRemote());
 }
 
-bool FatalCrashEventsObserver::AreLoaded() const {
+bool FatalCrashEventsObserver::AreSaveFilesLoaded() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // TODO(b/266018440): Also off-load uploaded_crash_info_manager_'s save file.
-  return reported_local_id_manager_->IsLoaded();
+  return reported_local_id_manager_->IsSaveFileLoaded() &&
+         uploaded_crash_info_manager_->IsSaveFileLoaded();
+}
+
+void FatalCrashEventsObserver::ProcessEventsBeforeSaveFilesLoaded() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!AreSaveFilesLoaded()) {
+    // Don't do anything if not yet loaded. There are two save files,
+    // REPORTED_LOCAL_IDS and UPLOADED_CRASH_INFO. This function is called when
+    // either save file is loaded.
+    //
+    // The first call to this method would likely reach here as it is called
+    // when the first save file is loaded, since the other file is not yet
+    // loaded.
+    return;
+  }
+
+  if (event_queue_before_save_files_loaded_.empty()) {
+    return;
+  }
+
+  // Only crash events can be enqueued to `events_gathered_before_loaded_`.
+  CHECK(event_queue_before_save_files_loaded_.front()->is_crash_event_info());
+
+  ProcessEvent(std::move(event_queue_before_save_files_loaded_.front()));
+  event_queue_before_save_files_loaded_.pop();
+
+  // Process one crash event at a time to avoid blocking processing other types
+  // of events.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &FatalCrashEventsObserver::ProcessEventsBeforeSaveFilesLoaded,
+          weak_factory_.GetWeakPtr()));
 }
 
 MetricData FatalCrashEventsObserver::FillFatalCrashTelemetry(
     const CrashEventInfoPtr& info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   MetricData metric_data;
+  metric_data.mutable_event_data()->set_type(MetricEventType::FATAL_CRASH);
+
   FatalCrashTelemetry& data =
       *metric_data.mutable_telemetry_data()->mutable_fatal_crash_telemetry();
 
@@ -244,7 +325,8 @@ MetricData FatalCrashEventsObserver::FillFatalCrashTelemetry(
     case CrashEventInfo::CrashType::kUnknown:
       [[fallthrough]];
     default:  // Other types added by healthD that are unknown here yet.
-      data.set_type(FatalCrashTelemetry::CRASH_TYPE_UNSPECIFIED);
+      NOTREACHED_NORETURN()
+          << "Encountered unhandled or unknown crash type " << info->crash_type;
   }
 
   const auto* const user_session = GetCurrentUserSession();
@@ -268,11 +350,5 @@ MetricData FatalCrashEventsObserver::FillFatalCrashTelemetry(
   }
 
   return metric_data;
-}
-
-void FatalCrashEventsObserver::SetInterruptedAfterEventObservedForTest(
-    bool interrupted_after_event_observed) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  interrupted_after_event_observed_for_test_ = interrupted_after_event_observed;
 }
 }  // namespace reporting

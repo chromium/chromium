@@ -22,6 +22,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
+#include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/gcm/gcm_profile_service_factory.h"
 #include "chrome/browser/gcm/instance_id/instance_id_profile_service_factory.h"
@@ -44,6 +45,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/browsing_data/content/browsing_data_helper.h"
+#include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
@@ -1864,6 +1866,8 @@ IN_PROC_BROWSER_TEST_P(PushMessagingPartitionedBrowserTest, CrossOriginFrame) {
   const GURL kEmbedderURL = https_server()->GetURL(
       "embedder.com", "/push_messaging/framed_test.html");
   const GURL kRequesterURL = https_server()->GetURL("requester.com", "/");
+  CookieSettingsFactory::GetForProfile(browser()->profile())
+      ->SetCookieSetting(kRequesterURL, CONTENT_SETTING_ALLOW);
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(GetBrowser(), kEmbedderURL));
 

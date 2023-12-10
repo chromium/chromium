@@ -31,7 +31,6 @@ namespace content_settings {
 
 class CookieSettings;
 class CookieControlsObserver;
-class OldCookieControlsObserver;
 
 // Handles the tab specific state for cookie controls.
 class CookieControlsController
@@ -66,17 +65,14 @@ class CookieControlsController
   bool FirstPartyCookiesBlocked();
 
   // Returns whether the cookie blocking setting for the current site is
-  // different than what it was when last reset.
-  bool HasCookieBlockingChangedForSite();
+  // different than what it was when last reset and user-controlled.
+  bool HasUserChangedCookieBlockingForSite();
 
   // Returns the current breakage confidence level.
   CookieControlsBreakageConfidenceLevel GetBreakageConfidenceLevel();
 
   // Returns the current cookie controls status.
   CookieControlsStatus GetCookieControlsStatus();
-
-  void AddObserver(OldCookieControlsObserver* obs);
-  void RemoveObserver(OldCookieControlsObserver* obs);
 
   void AddObserver(CookieControlsObserver* obs);
   void RemoveObserver(CookieControlsObserver* obs);
@@ -218,7 +214,6 @@ class CookieControlsController
   CookieControlsStatus initial_page_cookie_controls_status_ =
       CookieControlsStatus::kUninitialized;
 
-  base::ObserverList<OldCookieControlsObserver> old_observers_;
   base::ObserverList<CookieControlsObserver> observers_;
 };
 

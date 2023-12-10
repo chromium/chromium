@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 #import <set>
+#import <string>
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 
 @protocol BookmarksHomeConsumer;
@@ -33,6 +34,8 @@ typedef NS_ENUM(NSInteger, BookmarksHomeSectionIdentifier) {
   BookmarksHomeSectionIdentifierRootLocalOrSyncable,
   // Section to display a message, such as "no result" for a search.
   BookmarksHomeSectionIdentifierMessages,
+  // Section to display the batch upload option.
+  BookmarksBatchUploadSectionIdentifier,
 };
 
 // Whether this section contains bookmarks nodes.
@@ -46,6 +49,8 @@ typedef NS_ENUM(NSInteger, BookmarksHomeItemType) {
   BookmarksHomeItemTypePromo,
   BookmarksHomeItemTypeBookmark,
   BookmarksHomeItemTypeMessage,
+  BookmarksHomeItemTypeBatchUploadButton,
+  BookmarksHomeItemTypeBatchUploadRecommendation,
 };
 
 namespace bookmarks {
@@ -118,6 +123,13 @@ class BookmarkModel;
 
 // Updates promo cell based on its current visibility.
 - (void)computePromoTableViewData;
+
+// Triggers batch upload of local bookmarks using the sync service.
+- (void)triggerBatchUpload;
+
+// Queries the sync service for the count of local bookmarks.
+- (void)queryLocalBookmarks:(void (^)(int local_bookmarks_count,
+                                      std::string user_email))completion;
 
 // Returns weather the slashed cloud icon should be displayed for
 // `bookmarkModel`.

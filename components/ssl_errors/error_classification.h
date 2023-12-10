@@ -188,9 +188,6 @@ bool NameUnderAnyNames(const HostnameTokens& child,
 bool AnyNamesUnderName(const std::vector<HostnameTokens>& potential_children,
                        const HostnameTokens& parent);
 
-// Exposed for teshting.
-size_t GetLevenshteinDistance(const std::string& str1, const std::string& str2);
-
 }  // namespace ssl_errors
 
 #endif  // COMPONENTS_SSL_ERRORS_ERROR_CLASSIFICATION_H_

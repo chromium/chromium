@@ -146,7 +146,7 @@ SplitListValueAdapterCallback(ListValueSuccessOrFailureCallback callback) {
 
 // This adapter will handle the case where a list get returned.
 using ValueListMojoCallback =
-    base::OnceCallback<void(absl::optional<base::Value::List>)>;
+    base::OnceCallback<void(std::optional<base::Value::List>)>;
 using ValueListDelegateCallback =
     base::OnceCallback<void(base::Value::List result)>;
 ValueListDelegateCallback ValueListAdapterCallback(
@@ -164,15 +164,15 @@ ValueListDelegateCallback ValueListAdapterCallback(
 using PropertiesMojoCallback =
     base::OnceCallback<void(mojom::PropertiesSuccessOrErrorReturnPtr result)>;
 using PropertiesDelegateCallback =
-    base::OnceCallback<void(absl::optional<::base::Value::Dict> result,
-                            const absl::optional<std::string>& error)>;
+    base::OnceCallback<void(std::optional<::base::Value::Dict> result,
+                            const std::optional<std::string>& error)>;
 
 PropertiesDelegateCallback PropertiesAdapterCallback(
     PropertiesMojoCallback result_callback) {
   return base::BindOnce(
       [](PropertiesMojoCallback callback,
-         absl::optional<::base::Value::Dict> result,
-         const absl::optional<std::string>& error) {
+         std::optional<::base::Value::Dict> result,
+         const std::optional<std::string>& error) {
         if (result) {
           std::move(callback).Run(
               mojom::PropertiesSuccessOrErrorReturn::NewSuccessResult(
@@ -187,21 +187,17 @@ PropertiesDelegateCallback PropertiesAdapterCallback(
 
 void DeviceStateListCallbackAdapter(
     NetworkingPrivateAsh::GetDeviceStateListCallback callback,
-    std::unique_ptr<extensions::NetworkingPrivateDelegate::DeviceStateList>
+    std::optional<extensions::NetworkingPrivateDelegate::DeviceStateList>
         result) {
   if (!result) {
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
 
-  std::vector<absl::optional<base::Value::Dict>> list;
+  std::vector<std::optional<base::Value::Dict>> list;
 
   for (size_t i = 0; i < result->size(); ++i) {
-    if (result->at(i)) {
-      list.push_back(result->at(i)->ToValue());
-    } else {
-      list.push_back(base::Value::Dict());
-    }
+    list.emplace_back(result->at(i).ToValue());
   }
 
   std::move(callback).Run(std::move(list));

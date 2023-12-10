@@ -56,11 +56,11 @@ class AttributionStorage;
 class AttributionStorageDelegate;
 class CreateReportResult;
 class StoragePartitionImpl;
+class StoreSourceResult;
 
 struct GlobalRenderFrameHostId;
 struct OsRegistration;
 struct SendResult;
-struct StoreSourceResult;
 
 // UI thread class that manages the lifetime of the underlying attribution
 // storage and coordinates sending attribution reports. Owned by the storage
@@ -244,13 +244,6 @@ class CONTENT_EXPORT AttributionManagerImpl
   void OnOsRegistration(bool is_debug_key_allowed,
                         const OsRegistration&,
                         bool success);
-
-  // Per the spec, source's and trigger's filtering keys prefixed with "_"
-  // should only be used for specified features, e.g., lookback window. Before
-  // enforcing this, we measure the use of reserved keys for non specified
-  // features. TODO(https://crbug.com/1481746): Clear when enforcing this.
-  void RecordReservedKeysUsage(const SourceOrTrigger& event,
-                               GlobalRenderFrameHostId) const;
 
   // PrivacySandboxAttestationsObserver:
   void OnAttestationsLoaded() override;

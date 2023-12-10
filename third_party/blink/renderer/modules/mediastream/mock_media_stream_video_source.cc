@@ -7,6 +7,7 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
+#include "build/build_config.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-blink.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
@@ -33,6 +34,23 @@ MockMediaStreamVideoSource::MockMediaStreamVideoSource(
       attempted_to_start_(false) {}
 
 MockMediaStreamVideoSource::~MockMediaStreamVideoSource() {}
+
+#if !BUILDFLAG(IS_ANDROID)
+void MockMediaStreamVideoSource::SendWheel(
+    CapturedWheelAction* action,
+    base::OnceCallback<void(bool, const String&)> callback) {
+  CHECK(send_wheel_result_);
+  std::move(callback).Run(send_wheel_result_->success,
+                          send_wheel_result_->error);
+}
+
+void MockMediaStreamVideoSource::GetZoomLevel(
+    base::OnceCallback<void(absl::optional<int>, const String&)> callback) {
+  CHECK(get_zoom_level_result_);
+  std::move(callback).Run(get_zoom_level_result_->zoom_level,
+                          get_zoom_level_result_->error);
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 void MockMediaStreamVideoSource::StartMockedSource() {
   DCHECK(attempted_to_start_);

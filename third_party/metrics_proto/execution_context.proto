@@ -94,6 +94,17 @@ enum Thread {
   // Dav1d worker threads (in renderer process), which runs the AV1 codec.
   DAV1D_WORKER_THREAD = 25;
 
+  // Stack sampling profiler uses this thread to periodically stop a thread
+  // and get stack execution information.
+  // Spawned at
+  // https://source.chromium.org/chromium/chromium/src/+/main:base/profiler/stack_sampling_profiler.cc;l=379;drc=ada6c70d141251b40840a6cab657737bf63eed9d.
+  STACK_SAMPLING_THREAD = 26;
+
+  // Used for batching frames for video streams.
+  // Spawned at
+  // https://source.chromium.org/chromium/chromium/src/+/main:content/renderer/renderer_blink_platform_impl.cc;l=988;drc=7172fffc3c545134d5c88af8ab07b04fcb1d628e.
+  VIDEO_FRAME_COMPOSITOR_THREAD = 27;
+
   // A Chrome thread not identified by any other enum. Defined for the benefit
   // of Chrome OS. Do not use for the Chrome sampling profiler; define a new
   // enum instead.

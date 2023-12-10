@@ -18,6 +18,9 @@ public interface CSPChecker {
      * @param didFollowRedirect Whether there was a redirect.
      * @param resultCallback The callback to invoke with the result of the CSP check.
      */
-    void allowConnectToSource(GURL url, GURL urlBeforeRedirects, boolean didFollowRedirect,
+    void allowConnectToSource(
+            GURL url,
+            GURL urlBeforeRedirects,
+            boolean didFollowRedirect,
             Callback<Boolean> resultCallback);
 }

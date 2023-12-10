@@ -6,6 +6,7 @@
 #define IOS_COMPONENTS_SECURITY_INTERSTITIALS_SAFE_BROWSING_SAFE_BROWSING_QUERY_MANAGER_H_
 
 #include <map>
+#include <optional>
 #include <string>
 
 #include "base/containers/flat_map.h"
@@ -18,7 +19,6 @@
 #include "components/security_interstitials/core/unsafe_resource.h"
 #import "ios/web/public/navigation/web_state_policy_decider.h"
 #import "ios/web/public/web_state_user_data.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace web {
@@ -70,7 +70,7 @@ class SafeBrowsingQueryManager
     // Whether an error page should be shown for the URL.
     bool show_error_page = false;
     // The UnsafeResource created for the URL check, if any.
-    absl::optional<security_interstitials::UnsafeResource> resource;
+    std::optional<security_interstitials::UnsafeResource> resource;
   };
 
   // Observer class for the query manager.
@@ -133,12 +133,10 @@ class SafeBrowsingQueryManager
         std::unique_ptr<safe_browsing::SafeBrowsingUrlCheckerImpl> url_checker,
         const GURL& url,
         const std::string& method,
-        base::OnceCallback<
-            void(bool proceed,
-                 bool show_error_page,
-                 safe_browsing::SafeBrowsingUrlCheckerImpl::PerformedCheck
-                     performed_check,
-                 bool did_check_url_real_time_allowlist)> callback);
+        base::OnceCallback<void(bool proceed,
+                                bool show_error_page,
+                                safe_browsing::SafeBrowsingUrlCheckerImpl::
+                                    PerformedCheck performed_check)> callback);
 
    private:
     // Called by `url_checker` with the initial result of performing a url
@@ -153,8 +151,7 @@ class SafeBrowsingQueryManager
         bool proceed,
         bool showed_interstitial,
         safe_browsing::SafeBrowsingUrlCheckerImpl::PerformedCheck
-            performed_check,
-        bool did_check_url_real_time_allowlist);
+            performed_check);
 
     // Called by `url_checker` with the final result of performing a url check.
     // `url_checker` must be non-null. This is an implementation of
@@ -164,8 +161,7 @@ class SafeBrowsingQueryManager
         bool proceed,
         bool showed_interstitial,
         safe_browsing::SafeBrowsingUrlCheckerImpl::PerformedCheck
-            performed_check,
-        bool did_check_url_real_time_allowlist);
+            performed_check);
 
     // This maps SafeBrowsingUrlCheckerImpls that have started but not completed
     // a url check to the callback that should be invoked once the url check is
@@ -175,8 +171,7 @@ class SafeBrowsingQueryManager
                        bool proceed,
                        bool show_error_page,
                        safe_browsing::SafeBrowsingUrlCheckerImpl::PerformedCheck
-                           performed_check,
-                       bool did_check_url_real_time_allowlist)>,
+                           performed_check)>,
                    base::UniquePtrComparator>
         active_url_checkers_;
   };
@@ -187,8 +182,8 @@ class SafeBrowsingQueryManager
       const Query query,
       bool proceed,
       bool show_error_page,
-      safe_browsing::SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check,
-      bool did_check_url_real_time_allowlist);
+      safe_browsing::SafeBrowsingUrlCheckerImpl::PerformedCheck
+          performed_check);
 
   // The WebState whose URL queries are being managed.
   web::WebState* web_state_ = nullptr;

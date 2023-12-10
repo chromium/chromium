@@ -23,7 +23,8 @@ found in the LICENSE file.
 <network-select id="networkSelect" class="focus-on-show"
     show-scan-progress
     enable-wifi-scans="[[enableWifiScans]]"
-    custom-items="[[getNetworkCustomItems_(isNetworkConnected)]]"
+    custom-items="[[getNetworkCustomItems_(isNetworkConnected,
+        isQuickStartVisible)]]"
     on-default-network-changed="onDefaultNetworkChanged_"
     on-network-connect-changed="onNetworkConnectChanged_"
     on-network-list-changed="onNetworkListChanged_"

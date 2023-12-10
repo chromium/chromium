@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/payments/payment_handler_web_flow_view_controller.h"
 
 #include <memory>
+#include <utility>
 
 #include "base/check_op.h"
 #include "base/strings/strcat.h"
@@ -204,7 +205,7 @@ class PaymentHandlerCloseButton : public views::ImageButton {
       views::Button::PressedCallback pressed_callback,
       const SkColor enabled_color,
       const SkColor disabled_color)
-      : views::ImageButton(pressed_callback) {
+      : views::ImageButton(std::move(pressed_callback)) {
     ConfigureVectorImageButton(this);
     views::InstallCircleHighlightPathGenerator(this);
     constexpr int kCloseButtonSize = 16;
@@ -264,7 +265,8 @@ void PaymentHandlerWebFlowViewController::FillContentView(
     // Add the progress bar to the separator container. The progress bar
     // colors will be set in PopulateSheetHeaderView.
     progress_bar_ = header_content_separator_container()->AddChildView(
-        std::make_unique<views::ProgressBar>(/*preferred_height=*/2));
+        std::make_unique<views::ProgressBar>());
+    progress_bar_->SetPreferredHeight(2);
     if (!spec()->IsPaymentHandlerMinimalHeaderUXEnabled()) {
       // Prior to minimal UX, the separator container used a Separator view,
       // which uses the Chrome theme color which may not match the header color.

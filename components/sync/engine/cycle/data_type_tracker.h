@@ -35,7 +35,6 @@ struct WaitInterval {
     // We re retrying for exponetial backoff.
     kExponentialBackoffRetrying,
   };
-  WaitInterval();
   WaitInterval(BlockingMode mode, base::TimeDelta length);
   ~WaitInterval();
 
@@ -175,18 +174,18 @@ class DataTypeTracker {
 
   // Number of local change nudges received for this type since the last
   // successful sync cycle.
-  int local_nudge_count_;
+  int local_nudge_count_ = 0;
 
   // Number of local refresh requests received for this type since the last
   // successful sync cycle.
-  int local_refresh_request_count_;
+  int local_refresh_request_count_ = 0;
 
   // Set to true if this type is ready for, but has not yet completed initial
   // sync.
-  bool initial_sync_required_;
+  bool initial_sync_required_ = false;
 
   // Set to true if this type need to get update to resolve conflict issue.
-  bool sync_required_to_resolve_conflict_;
+  bool sync_required_to_resolve_conflict_ = false;
 
   // Set to true if this type has invalidations that are needed to be used in
   // GetUpdate() trigger message.
@@ -206,7 +205,7 @@ class DataTypeTracker {
 
   // Quota for commits (used only for data types that can be committed by
   // extensions).
-  std::unique_ptr<CommitQuota> quota_;
+  const std::unique_ptr<CommitQuota> quota_;
 
   // The amount of time to delay a sync cycle by when a local change for this
   // type occurs and the commit quota is depleted.

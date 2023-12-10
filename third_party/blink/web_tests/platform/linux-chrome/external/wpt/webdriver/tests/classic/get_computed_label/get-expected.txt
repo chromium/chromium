@@ -1,11 +1,8 @@
 This is a wdspec test.
 [FAIL] test_no_browsing_context
   AssertionError: assert 'no such element' == 'no such window'
-[PASS] test_no_such_element_with_invalid_value
 [FAIL] test_no_such_element_with_shadow_root
   assert 200 == 404
-[PASS] test_no_such_element_from_other_window_handle[open]
-[PASS] test_no_such_element_from_other_window_handle[closed]
 [FAIL] test_no_such_element_from_other_frame[open]
   assert 200 == 404
 [FAIL] test_no_such_element_from_other_frame[closed]
@@ -14,10 +11,6 @@ This is a wdspec test.
   assert 200 == 404
 [FAIL] test_stale_element_reference[child_context]
   assert 200 == 404
-[PASS] test_get_computed_label[<button>ok</button>-button-ok]
-[PASS] test_get_computed_label[<button aria-labelledby="one two"></button><div id=one>ok</div><div id=two>go</div>-button-ok go]
-[PASS] test_get_computed_label[<button aria-label=foo>bar</button>-button-foo]
 [FAIL] test_get_computed_label[<label><input> foo</label>-input-foo]
   AssertionError: assert ' foo' == 'foo'
-[PASS] test_get_computed_label[<label for=b>foo<label><input id=b>-input-foo]
 Harness: the test ran to completion.

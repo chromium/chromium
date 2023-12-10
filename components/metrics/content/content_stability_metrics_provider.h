@@ -14,8 +14,6 @@
 #include "components/metrics/metrics_provider.h"
 #include "components/metrics/stability_metrics_helper.h"
 #include "content/public/browser/browser_child_process_observer.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
 #include "content/public/browser/render_process_host_creation_observer.h"
 #include "content/public/browser/render_process_host_observer.h"
 
@@ -38,8 +36,7 @@ class ContentStabilityMetricsProvider
       public crash_reporter::CrashMetricsReporter::Observer,
 #endif
       public content::RenderProcessHostCreationObserver,
-      public content::RenderProcessHostObserver,
-      public content::NotificationObserver {
+      public content::RenderProcessHostObserver {
  public:
   // |extensions_helper| is used to determine if a process corresponds to an
   // extension and is optional. If an ExtensionsHelper is not supplied it is
@@ -56,6 +53,7 @@ class ContentStabilityMetricsProvider
   // MetricsProvider:
   void OnRecordingEnabled() override;
   void OnRecordingDisabled() override;
+  void OnPageLoadStarted() override;
 #if BUILDFLAG(IS_ANDROID)
   // A couple Local-State-pref-based stability counts are retained for Android
   // WebView. Other platforms, including Android Chrome and WebLayer, should use
@@ -71,7 +69,9 @@ class ContentStabilityMetricsProvider
   FRIEND_TEST_ALL_PREFIXES(ContentStabilityMetricsProviderTest,
                            BrowserChildProcessObserverUtility);
   FRIEND_TEST_ALL_PREFIXES(ContentStabilityMetricsProviderTest,
-                           NotificationObserver);
+                           RenderProcessObserver);
+  FRIEND_TEST_ALL_PREFIXES(ContentStabilityMetricsProviderTest,
+                           MetricsServicesWebContentObserver);
   FRIEND_TEST_ALL_PREFIXES(ContentStabilityMetricsProviderTest,
                            ExtensionsNotificationObserver);
 
@@ -83,11 +83,6 @@ class ContentStabilityMetricsProvider
       content::RenderProcessHost* host,
       const content::ChildProcessTerminationInfo& info) override;
   void RenderProcessHostDestroyed(content::RenderProcessHost* host) override;
-
-  // content::NotificationObserver:
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
 
   // content::BrowserChildProcessObserver:
   void BrowserChildProcessCrashed(
@@ -116,9 +111,6 @@ class ContentStabilityMetricsProvider
   base::ScopedMultiSourceObservation<content::RenderProcessHost,
                                      content::RenderProcessHostObserver>
       host_observation_{this};
-
-  // Registrar for receiving stability-related notifications.
-  content::NotificationRegistrar registrar_;
 
   std::unique_ptr<ExtensionsHelper> extensions_helper_;
 };

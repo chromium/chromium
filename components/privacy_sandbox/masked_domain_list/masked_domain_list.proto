@@ -1,15 +1,12 @@
 syntax = "proto2";
 
-option optimize_for = LITE_RUNTIME;
-
 package masked_domain_list;
+
+option optimize_for = LITE_RUNTIME;
 
 // Resource that is used in a 3rd party context.
 message Resource {
-  enum Category {
-    CATEGORY_UNKNOWN = 0;
-    // TODO(aakallam): Add the categories once they have been finalized.
-  }
+  reserved 2;
 
   enum Experiment {
     EXPERIMENT_UNKNOWN = 0;
@@ -17,7 +14,6 @@ message Resource {
   }
 
   optional string domain = 1;
-  repeated Category categories = 2 [packed = true];
   repeated Experiment experiments = 3 [packed = true];
 }
 

@@ -5,7 +5,6 @@
 #include "ash/system/unified/notification_icons_controller.h"
 
 #include "ash/constants/ash_constants.h"
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
@@ -16,9 +15,7 @@
 #include "ash/system/notification_center/notification_center_tray.h"
 #include "ash/system/tray/tray_item_view.h"
 #include "ash/system/unified/notification_counter_view.h"
-#include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/ash_test_base.h"
-#include "base/test/scoped_feature_list.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
 
@@ -31,23 +28,10 @@ const char kUsbNotificationNotifierId[] = "ash.power";
 constexpr int kIconsViewDisplaySizeThreshold = 768;
 }  // namespace
 
-class NotificationIconsControllerTest
-    : public AshTestBase,
-      public testing::WithParamInterface<bool> {
+class NotificationIconsControllerTest : public AshTestBase {
  public:
   NotificationIconsControllerTest() = default;
   ~NotificationIconsControllerTest() override = default;
-
-  void SetUp() override {
-    scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
-    scoped_feature_list_->InitWithFeatureState(features::kQsRevamp,
-                                               /*enabled=*/IsQsRevampEnabled());
-
-    AshTestBase::SetUp();
-  }
-
-  // TODO(b/305075031) clean up after the flag is removed.
-  bool IsQsRevampEnabled() { return true; }
 
   std::string AddNotification(bool is_pinned,
                               bool is_critical_warning,
@@ -108,43 +92,24 @@ class NotificationIconsControllerTest
     // auto-hide preference has been set, which simulates logging into a new
     // user session where that shelf preference is already set.
     return std::make_unique<NotificationIconsController>(
-        GetPrimaryShelf(), /*model=*/nullptr,
+        GetPrimaryShelf(),
         GetPrimaryShelf()->GetStatusAreaWidget()->notification_center_tray());
-  }
-
-  TrayItemView* separator() {
-    return GetNotificationIconsController()->separator_;
   }
 
  protected:
   NotificationIconsController* GetNotificationIconsController() {
     auto* status_area_widget = GetPrimaryShelf()->status_area_widget();
-    return IsQsRevampEnabled() ? status_area_widget->notification_center_tray()
-                                     ->notification_icons_controller_.get()
-                               : status_area_widget->unified_system_tray()
-                                     ->notification_icons_controller_.get();
+    return status_area_widget->notification_center_tray()
+        ->notification_icons_controller_.get();
   }
   int notification_id_ = 0;
-
- private:
-  std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
 };
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         NotificationIconsControllerTest,
-                         testing::Bool() /* IsQsRevampEnabled() */);
 
 // Tests `icons_view_visible_` initialization behavior for the case where a
 // user logs in and the shelf is already set to auto-hide. It should initialize
 // to true when the display size meets or exceeds the threshold.
-TEST_P(NotificationIconsControllerTest,
+TEST_F(NotificationIconsControllerTest,
        IconsViewVisibleInitializationForAutoHiddenShelfAndLargeDisplay) {
-  if (!IsQsRevampEnabled()) {
-    // Without QsRevamp, icons view visibility is determined by the
-    // `UnifiedSystemTrayModel`.
-    return;
-  }
-
   // Verify that the display size meets the threshold.
   auto display_size = GetPrimaryDisplay().size();
   ASSERT_GE(std::max(display_size.width(), display_size.height()),
@@ -162,14 +127,8 @@ TEST_P(NotificationIconsControllerTest,
 // Tests `icons_view_visible_` initialization behavior for the case where a
 // user logs in and the shelf is already set to auto-hide. It should initialize
 // to false when the display size is smaller than the threshold.
-TEST_P(NotificationIconsControllerTest,
+TEST_F(NotificationIconsControllerTest,
        IconsViewVisibleInitializationForAutoHiddenShelfAndSmallDisplay) {
-  if (!IsQsRevampEnabled()) {
-    // Without QsRevamp, icons view visibility is determined by the
-    // `UnifiedSystemTrayModel`.
-    return;
-  }
-
   // Update the display to have a size smaller than the threshold.
   UpdateDisplay(base::NumberToString(kIconsViewDisplaySizeThreshold - 1) + "x" +
                 base::NumberToString(kIconsViewDisplaySizeThreshold - 2));
@@ -188,7 +147,7 @@ TEST_P(NotificationIconsControllerTest,
   EXPECT_FALSE(notification_icons_controller->icons_view_visible());
 }
 
-TEST_P(NotificationIconsControllerTest, DisplayChanged) {
+TEST_F(NotificationIconsControllerTest, DisplayChanged) {
   AddNotification(true /* is_pinned */, false /* is_critical_warning */);
   AddNotification(false /* is_pinned */, false /* is_critical_warning */);
 
@@ -199,30 +158,18 @@ TEST_P(NotificationIconsControllerTest, DisplayChanged) {
   EXPECT_TRUE(
       GetNotificationIconsController()->tray_items().back()->GetVisible());
 
-  if (!IsQsRevampEnabled()) {
-    EXPECT_TRUE(separator()->GetVisible());
-  }
-
   // Notification icons should not be shown in small screen size.
   UpdateDisplay("600x500");
   EXPECT_FALSE(
       GetNotificationIconsController()->tray_items().back()->GetVisible());
 
-  if (!IsQsRevampEnabled()) {
-    EXPECT_FALSE(separator()->GetVisible());
-  }
-
   // Notification icons should be shown in large screen size.
   UpdateDisplay("1680x800");
   EXPECT_TRUE(
       GetNotificationIconsController()->tray_items().back()->GetVisible());
-
-  if (!IsQsRevampEnabled()) {
-    EXPECT_TRUE(separator()->GetVisible());
-  }
 }
 
-TEST_P(NotificationIconsControllerTest, ShowNotificationIcons) {
+TEST_F(NotificationIconsControllerTest, ShowNotificationIcons) {
   UpdateDisplay("800x700");
 
   // Icons get added from RTL, so we check the end of the vector first.
@@ -237,20 +184,12 @@ TEST_P(NotificationIconsControllerTest, ShowNotificationIcons) {
   EXPECT_FALSE(
       GetNotificationIconsController()->tray_items()[end - 1]->GetVisible());
 
-  if (!IsQsRevampEnabled()) {
-    EXPECT_FALSE(separator()->GetVisible());
-  }
-
   // Same case for non pinned or non critical warning notification.
   AddNotification(false /* is_pinned */, false /* is_critical_warning */);
   EXPECT_FALSE(
       GetNotificationIconsController()->tray_items()[end]->GetVisible());
   EXPECT_FALSE(
       GetNotificationIconsController()->tray_items()[end - 1]->GetVisible());
-
-  if (!IsQsRevampEnabled()) {
-    EXPECT_FALSE(separator()->GetVisible());
-  }
 
   // Notification icons should be shown when pinned or critical warning
   // notification is added.
@@ -261,20 +200,12 @@ TEST_P(NotificationIconsControllerTest, ShowNotificationIcons) {
   EXPECT_FALSE(
       GetNotificationIconsController()->tray_items()[end - 1]->GetVisible());
 
-  if (!IsQsRevampEnabled()) {
-    EXPECT_TRUE(separator()->GetVisible());
-  }
-
   std::string id1 =
       AddNotification(false /* is_pinned */, true /* is_critical_warning */);
   EXPECT_TRUE(
       GetNotificationIconsController()->tray_items()[end]->GetVisible());
   EXPECT_TRUE(
       GetNotificationIconsController()->tray_items()[end - 1]->GetVisible());
-
-  if (!IsQsRevampEnabled()) {
-    EXPECT_TRUE(separator()->GetVisible());
-  }
 
   // Remove the critical warning notification should make the tray show only one
   // icon.
@@ -285,10 +216,6 @@ TEST_P(NotificationIconsControllerTest, ShowNotificationIcons) {
   EXPECT_FALSE(
       GetNotificationIconsController()->tray_items()[end - 1]->GetVisible());
 
-  if (!IsQsRevampEnabled()) {
-    EXPECT_TRUE(separator()->GetVisible());
-  }
-
   // Remove the pinned notification, no icon is shown.
   message_center::MessageCenter::Get()->RemoveNotification(id0,
                                                            false /* by_user */);
@@ -296,13 +223,9 @@ TEST_P(NotificationIconsControllerTest, ShowNotificationIcons) {
       GetNotificationIconsController()->tray_items()[end]->GetVisible());
   EXPECT_FALSE(
       GetNotificationIconsController()->tray_items()[end - 1]->GetVisible());
-
-  if (!IsQsRevampEnabled()) {
-    EXPECT_FALSE(separator()->GetVisible());
-  }
 }
 
-TEST_P(NotificationIconsControllerTest, NotShowNotificationIcons) {
+TEST_F(NotificationIconsControllerTest, NotShowNotificationIcons) {
   UpdateDisplay("800x700");
 
   // Icons get added from RTL, so we check the end of the vector first.
@@ -316,10 +239,6 @@ TEST_P(NotificationIconsControllerTest, NotShowNotificationIcons) {
   EXPECT_FALSE(
       GetNotificationIconsController()->tray_items().back()->GetVisible());
 
-  if (!IsQsRevampEnabled()) {
-    EXPECT_FALSE(separator()->GetVisible());
-  }
-
   // Notification count does update for this notification.
   GetNotificationIconsController()->notification_counter_view()->Update();
   EXPECT_EQ(1, GetNotificationIconsController()
@@ -331,10 +250,6 @@ TEST_P(NotificationIconsControllerTest, NotShowNotificationIcons) {
   // Usb charging notification should not be shown.
   EXPECT_FALSE(
       GetNotificationIconsController()->tray_items().back()->GetVisible());
-
-  if (!IsQsRevampEnabled()) {
-    EXPECT_FALSE(separator()->GetVisible());
-  }
 
   // Notification count does update for this notification.
   GetNotificationIconsController()->notification_counter_view()->Update();
@@ -348,10 +263,6 @@ TEST_P(NotificationIconsControllerTest, NotShowNotificationIcons) {
   // VM camera/mic notification should not be shown.
   EXPECT_FALSE(
       GetNotificationIconsController()->tray_items().back()->GetVisible());
-
-  if (!IsQsRevampEnabled()) {
-    EXPECT_FALSE(separator()->GetVisible());
-  }
 
   // Notification count does not update for this notification (since there's
   // another tray item for this).
@@ -367,10 +278,6 @@ TEST_P(NotificationIconsControllerTest, NotShowNotificationIcons) {
   EXPECT_FALSE(
       GetNotificationIconsController()->tray_items().back()->GetVisible());
 
-  if (!IsQsRevampEnabled()) {
-    EXPECT_FALSE(separator()->GetVisible());
-  }
-
   // Notification count does not update for this notification (since there's
   // another tray item for this).
   GetNotificationIconsController()->notification_counter_view()->Update();
@@ -379,7 +286,7 @@ TEST_P(NotificationIconsControllerTest, NotShowNotificationIcons) {
                    ->count_for_display_for_testing());
 }
 
-TEST_P(NotificationIconsControllerTest, NotificationItemInQuietMode) {
+TEST_F(NotificationIconsControllerTest, NotificationItemInQuietMode) {
   UpdateDisplay("800x700");
   message_center::MessageCenter::Get()->SetQuietMode(true);
 

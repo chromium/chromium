@@ -5,6 +5,7 @@
 #include "ash/capture_mode/video_recording_watcher.h"
 
 #include <memory>
+#include <optional>
 
 #include "ash/accessibility/magnifier/docked_magnifier_controller.h"
 #include "ash/capture_mode/capture_mode_behavior.h"
@@ -22,13 +23,11 @@
 #include "ash/style/color_util.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/mru_window_tracker.h"
-#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/aura/client/cursor_shape_client.h"
 #include "ui/aura/window_tree_host.h"
@@ -36,6 +35,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/compositor/paint_recorder.h"
 #include "ui/display/screen.h"
+#include "ui/display/tablet_state.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/dip_util.h"
@@ -228,7 +228,6 @@ VideoRecordingWatcher::VideoRecordingWatcher(
 
   display::Screen::GetScreen()->AddObserver(this);
   window_being_recorded_->AddObserver(this);
-  TabletModeController::Get()->AddObserver(this);
 
   // Note the following:
   // 1- We add |this| as a pre-target handler of the |window_being_recorded_| as
@@ -286,7 +285,6 @@ void VideoRecordingWatcher::ShutDown() {
   ReleaseLayer();
 
   window_being_recorded_->RemovePreTargetHandler(this);
-  TabletModeController::Get()->RemoveObserver(this);
   if (recording_source_ == CaptureModeSource::kWindow) {
     Shell::Get()->activation_client()->RemoveObserver(this);
   } else {
@@ -492,6 +490,22 @@ void VideoRecordingWatcher::OnWindowActivated(ActivationReason reason,
   UpdateLayerStackingAndDimmers();
 }
 
+void VideoRecordingWatcher::OnDisplayTabletStateChanged(
+    display::TabletState state) {
+  switch (state) {
+    case display::TabletState::kEnteringTabletMode:
+    case display::TabletState::kExitingTabletMode:
+      // Do nothing when tablet state is still in process of transition.
+      break;
+    case display::TabletState::kInTabletMode:
+      UpdateCursorOverlayNow(gfx::PointF());
+      break;
+    case display::TabletState::kInClamshellMode:
+      UpdateCursorOverlayNow(GetCursorLocationInWindow(window_being_recorded_));
+      break;
+  }
+}
+
 void VideoRecordingWatcher::OnDisplayMetricsChanged(
     const display::Display& display,
     uint32_t metrics) {
@@ -598,14 +612,6 @@ void VideoRecordingWatcher::OnTouchEvent(ui::TouchEvent* event) {
         event->type(), event->pointer_details().id,
         GetEventLocationInWindow(window_being_recorded_, *event));
   }
-}
-
-void VideoRecordingWatcher::OnTabletModeStarted() {
-  UpdateCursorOverlayNow(gfx::PointF());
-}
-
-void VideoRecordingWatcher::OnTabletModeEnded() {
-  UpdateCursorOverlayNow(GetCursorLocationInWindow(window_being_recorded_));
 }
 
 void VideoRecordingWatcher::OnCursorCompositingStateChanged(bool enabled) {
@@ -817,7 +823,7 @@ void VideoRecordingWatcher::UpdateCursorOverlayNow(
     return;
 
   if (force_cursor_overlay_hidden_ ||
-      TabletModeController::Get()->InTabletMode()) {
+      display::Screen::GetScreen()->InTabletMode()) {
     HideCursorOverlay();
     return;
   }
@@ -832,7 +838,7 @@ void VideoRecordingWatcher::UpdateCursorOverlayNow(
   const gfx::NativeCursor cursor = GetCurrentCursor();
   DCHECK_NE(cursor.type(), ui::mojom::CursorType::kNull);
 
-  absl::optional<ui::CursorData> cursor_data =
+  std::optional<ui::CursorData> cursor_data =
       aura::client::GetCursorShapeClient().GetCursorData(cursor);
   if (!cursor_data)
     return;

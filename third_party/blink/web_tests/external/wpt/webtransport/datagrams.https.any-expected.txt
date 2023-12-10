@@ -1,13 +1,6 @@
 This is a testharness.js-based test.
-[PASS] Datagrams are echoed successfully
-[PASS] Successfully reading datagrams with BYOB reader.
-[PASS] Reading datagrams with insufficient buffer should be rejected.
-[PASS] Transfer max-size datagram
 [FAIL] Fail to transfer max-size+1 datagram
   assert_equals: expected (undefined) undefined but got (object) object "[object Object]"
-[PASS] Sending and receiving datagrams is ready to use before session is established
-[PASS] Datagram's outgoingHighWaterMark correctly regulates written datagrams
-[PASS] Datagrams read is less than or equal to the incomingHighWaterMark
 [FAIL] Datagram MaxAge getters/setters work correctly
   assert_equals: expected (number) Infinity but got (object) null
 [FAIL] Datagram HighWaterMark getters/setters work correctly

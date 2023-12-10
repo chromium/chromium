@@ -73,6 +73,7 @@
 #include "third_party/icu/source/i18n/unicode/timezone.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/window_open_disposition.h"
+#include "ui/views/widget/widget.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "chrome/browser/webauthn/chrome_authenticator_request_delegate_mac.h"
@@ -336,10 +337,16 @@ absl::optional<bool> ChromeWebAuthenticationDelegate::
 
   // Chrome disables platform authenticators is Guest sessions. They may be
   // available (behind an additional interstitial) in Incognito mode.
-  Profile* profile =
-      Profile::FromBrowserContext(render_frame_host->GetBrowserContext());
+  auto* browser_context = render_frame_host->GetBrowserContext();
+  Profile* profile = Profile::FromBrowserContext(browser_context);
   if (profile->IsGuestSession()) {
     return false;
+  }
+
+  // The cloud enclave authenticator counts as a UVPA, regardless of what the
+  // underlying platform offers.
+  if (IsEnclaveAuthenticatorAvailable(browser_context)) {
+    return true;
   }
 
   return absl::nullopt;
@@ -396,6 +403,20 @@ ChromeWebAuthenticationDelegate::GetGenerateRequestIdCallback(
       ->GetRegisterCallback(window);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+bool ChromeWebAuthenticationDelegate::IsEnclaveAuthenticatorAvailable(
+    content::BrowserContext* browser_context) {
+  // `browser_context` is currently unused but will be needed to look up
+  // whether the current profile/device is registered with the authenticator.
+#if BUILDFLAG(IS_CHROMEOS)
+  // Enclave service authenticators are not needed for Chrome OS.
+  return false;
+#else
+  // TODO(https://crbug.com/1459620): This also has to be conditional on device
+  // registration with the enclave, when implemented.
+  return base::FeatureList::IsEnabled(device::kWebAuthnEnclaveAuthenticator);
+#endif
+}
 
 // ---------------------------------------------------------------------
 // ChromeAuthenticatorRequestDelegate
@@ -617,9 +638,14 @@ void ChromeAuthenticatorRequestDelegate::ConfigureDiscoveries(
     device::FidoRequestType request_type,
     absl::optional<device::ResidentKeyRequirement> resident_key_requirement,
     base::span<const device::CableDiscoveryData> pairings_from_extension,
+    bool is_enclave_authenticator_available,
     device::FidoDiscoveryFactory* discovery_factory) {
   DCHECK(request_type == device::FidoRequestType::kGetAssertion ||
          resident_key_requirement.has_value());
+
+  is_enclave_authenticator_available_ = is_enclave_authenticator_available;
+  dialog_model_->set_is_enclave_authenticator_available(
+      is_enclave_authenticator_available);
 
   // Without the UI enabled, discoveries like caBLE, Android AOA, iCloud
   // keychain, and the enclave, don't make sense.
@@ -742,7 +768,7 @@ void ChromeAuthenticatorRequestDelegate::ConfigureDiscoveries(
   }
 
   if (non_extension_cablev2_enabled || cablev2_extension_provided ||
-      base::FeatureList::IsEnabled(device::kWebAuthnEnclaveAuthenticator)) {
+      is_enclave_authenticator_available_) {
     if (SystemNetworkContextManager::GetInstance()) {
       discovery_factory->set_network_context(
           SystemNetworkContextManager::GetInstance()->GetContext());
@@ -771,17 +797,25 @@ void ChromeAuthenticatorRequestDelegate::ConfigureDiscoveries(
   }
 
 #if BUILDFLAG(IS_MAC)
-  content::WebContents* web_contents =
-      content::WebContents::FromRenderFrameHost(GetRenderFrameHost());
-  BrowserWindow* browser_window =
-      BrowserWindow::FindBrowserWindowWithWebContents(web_contents);
-  if (browser_window) {
-    discovery_factory->set_nswindow(reinterpret_cast<uintptr_t>(
-        browser_window->GetNativeWindow().GetNativeNSWindow()));
+  {
+    content::WebContents* web_contents =
+        content::WebContents::FromRenderFrameHost(GetRenderFrameHost());
+    // Not all contexts in which this code runs have a BrowserWindow.
+    // Notably the dialog containing a WebContents that is used for signing
+    // into a new profile does not. Thus the NSWindow is fetched more directly.
+    const views::Widget* widget = views::Widget::GetTopLevelWidgetForNativeView(
+        web_contents->GetNativeView());
+    if (widget) {
+      const gfx::NativeWindow window = widget->GetNativeWindow();
+      if (window) {
+        discovery_factory->set_nswindow(
+            reinterpret_cast<uintptr_t>(window.GetNativeNSWindow()));
+      }
+    }
   }
 #endif
 
-  if (EnclaveAuthenticatorAvailable() &&
+  if (is_enclave_authenticator_available_ &&
       request_type == device::FidoRequestType::kGetAssertion) {
     ConfigureEnclaveDiscovery(rp_id, discovery_factory);
   }
@@ -871,7 +905,7 @@ void ChromeAuthenticatorRequestDelegate::OnTransportAvailabilityEnumerated(
   }
   if (base::FeatureList::IsEnabled(syncer::kSyncWebauthnCredentials) &&
       base::FeatureList::IsEnabled(device::kWebAuthnNewPasskeyUI) &&
-      (can_use_synced_phone_passkeys_ || EnclaveAuthenticatorAvailable()) &&
+      (can_use_synced_phone_passkeys_ || is_enclave_authenticator_available_) &&
       !IsVirtualEnvironmentEnabled()) {
     GetPhoneContactableGpmPasskeysForRpId(&data.recognized_credentials);
   }
@@ -1093,7 +1127,7 @@ void ChromeAuthenticatorRequestDelegate::GetPhoneContactableGpmPasskeysForRpId(
       PasskeyModelFactory::GetInstance()->GetForProfile(
           Profile::FromBrowserContext(GetBrowserContext()));
   CHECK(passkey_model);
-  device::AuthenticatorType type = EnclaveAuthenticatorAvailable()
+  device::AuthenticatorType type = is_enclave_authenticator_available_
                                        ? device::AuthenticatorType::kEnclave
                                        : device::AuthenticatorType::kPhone;
   for (const sync_pb::WebauthnCredentialSpecifics& passkey :
@@ -1120,18 +1154,18 @@ void ChromeAuthenticatorRequestDelegate::ConfigureEnclaveDiscovery(
 
   std::vector<sync_pb::WebauthnCredentialSpecifics> passkeys =
       passkey_model->GetPasskeysForRelyingPartyId(rp_id);
-  discovery_factory->SetEnclavePasskeys(std::move(passkeys));
+  discovery_factory->set_enclave_passkeys(std::move(passkeys));
+  discovery_factory->set_enclave_passkey_creation_callback(
+      base::BindRepeating(&ChromeAuthenticatorRequestDelegate::OnPasskeyCreated,
+                          weak_ptr_factory_.GetWeakPtr()));
 }
 
-bool ChromeAuthenticatorRequestDelegate::EnclaveAuthenticatorAvailable() {
-#if BUILDFLAG(IS_CHROMEOS)
-  // Enclave service authenticators are not needed for Chrome OS.
-  return false;
-#else
-  // TODO(https://crbug.com/1459620): This also has to be conditional on device
-  // registration with the enclave, when implemented.
-  return base::FeatureList::IsEnabled(device::kWebAuthnEnclaveAuthenticator);
-#endif
+void ChromeAuthenticatorRequestDelegate::OnPasskeyCreated(
+    sync_pb::WebauthnCredentialSpecifics passkey) {
+  webauthn::PasskeyModel* passkey_model =
+      PasskeyModelFactory::GetInstance()->GetForProfile(
+          Profile::FromBrowserContext(GetBrowserContext()));
+  passkey_model->CreatePasskey(passkey);
 }
 
 #if BUILDFLAG(IS_MAC)

@@ -4,14 +4,12 @@
 
 #include "chrome/browser/feedback/system_logs/log_sources/related_website_sets_source.h"
 
+#include <set>
 #include <utility>
 
 #include "base/json/json_writer.h"
 #include "base/values.h"
 #include "chrome/browser/first_party_sets/first_party_sets_policy_service.h"
-#include "chrome/browser/first_party_sets/first_party_sets_policy_service_factory.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "components/feedback/system_logs/system_logs_source.h"
 #include "content/public/browser/browser_thread.h"
 #include "net/base/schemeful_site.h"
@@ -48,49 +46,48 @@ const char* GetSiteType(const net::SiteType type) {
 //   "AssociatedSites": [ "https://a2.com", "https://b2.com" ],
 //   "PrimarySites": [ "https://example2.com", "https://example2.com.co" ]
 // } ]
-std::string ComputeRelatedWebsiteSetsInfo() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  Profile* profile = ProfileManager::GetActiveUserProfile();
-#else
-  Profile* profile = ProfileManager::GetLastUsedProfile();
-#endif
-  first_party_sets::FirstPartySetsPolicyService* service = first_party_sets::
-      FirstPartySetsPolicyServiceFactory::GetForBrowserContext(profile);
-  CHECK(service);
-
-  if (!service->is_enabled()) {
+std::string ComputeRelatedWebsiteSetsInfo(
+    base::WeakPtr<first_party_sets::FirstPartySetsPolicyService> service) {
+  if (!service || !service->is_enabled()) {
     return kRelatedWebsiteSetsDisabled;
   }
   if (!service->is_ready()) {
     return "";
   }
 
-  // Iterate through all RWS effective entries and form a dict of primary -> a
-  // single set. A single set contains fields of "PrimarySites",
-  // "AssociatedSites" and "ServiceSites".
-  std::map<std::string, base::Value::Dict> rws_dict;
+  // Collect all effective RWS entries for this profile.
+  std::map<std::string, std::map<net::SiteType, std::set<std::string>>> sets;
   service->ForEachEffectiveSetEntry([&](const net::SchemefulSite& site,
                                         const net::FirstPartySetEntry& entry) {
-    rws_dict[entry.primary().Serialize()]
-        .EnsureList(GetSiteType(entry.site_type()))
-        ->Append(site.Serialize());
+    sets[entry.primary().Serialize()][entry.site_type()].insert(
+        site.Serialize());
     return true;
   });
 
-  base::Value::List rws_list;
-  for (auto& [_, value] : rws_dict) {
-    rws_list.Append(std::move(value));
+  base::Value::List list;
+  list.reserve(sets.size());
+  for (auto& [unused_primary, set] : sets) {
+    base::Value::Dict value;
+    for (auto& [site_type, sites] : set) {
+      base::Value::List* subset = value.EnsureList(GetSiteType(site_type));
+      subset->reserve(sites.size());
+      for (auto& site : sites) {
+        subset->Append(std::move(site));
+      }
+    }
+    list.Append(std::move(value));
   }
 
-  return base::WriteJsonWithOptions(rws_list,
+  return base::WriteJsonWithOptions(list,
                                     base::JsonOptions::OPTIONS_PRETTY_PRINT)
       .value_or(kSerializationError);
 }
 
 }  // namespace
 
-RelatedWebsiteSetsSource::RelatedWebsiteSetsSource()
-    : SystemLogsSource("RelatedWebsiteSets") {}
+RelatedWebsiteSetsSource::RelatedWebsiteSetsSource(
+    first_party_sets::FirstPartySetsPolicyService* service)
+    : SystemLogsSource("RelatedWebsiteSets"), service_(service->GetWeakPtr()) {}
 
 RelatedWebsiteSetsSource::~RelatedWebsiteSetsSource() = default;
 
@@ -99,7 +96,7 @@ void RelatedWebsiteSetsSource::Fetch(SysLogsSourceCallback callback) {
   CHECK(callback);
 
   auto response = std::make_unique<SystemLogsResponse>();
-  response->emplace(kSetsInfoField, ComputeRelatedWebsiteSetsInfo());
+  response->emplace(kSetsInfoField, ComputeRelatedWebsiteSetsInfo(service_));
 
   std::move(callback).Run(std::move(response));
 }

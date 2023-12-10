@@ -7,6 +7,7 @@
 #include <cstdint>
 #include <iomanip>
 #include <memory>
+#include <optional>
 #include <sstream>
 #include <vector>
 
@@ -33,7 +34,6 @@
 #include "components/cross_device/logging/logging.h"
 #include "device/bluetooth//bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_device.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -170,7 +170,7 @@ void FastPairNotDiscoverableScannerImpl::OnDeviceLost(
 
 void FastPairNotDiscoverableScannerImpl::OnAdvertisementParsed(
     const std::string& address,
-    const absl::optional<NotDiscoverableAdvertisement>& advertisement) {
+    const std::optional<NotDiscoverableAdvertisement>& advertisement) {
   CD_LOG(INFO, Feature::FP)
       << __func__
       << ": Has value: " << (advertisement.has_value() ? "yes" : "no");
@@ -222,7 +222,7 @@ void FastPairNotDiscoverableScannerImpl::OnAdvertisementParsed(
 
 void FastPairNotDiscoverableScannerImpl::OnAccountKeyFilterCheckResult(
     const std::string& address,
-    absl::optional<PairingMetadata> metadata) {
+    std::optional<PairingMetadata> metadata) {
   account_key_filters_.erase(address);
 
   CD_LOG(INFO, Feature::FP)

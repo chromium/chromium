@@ -24,7 +24,7 @@ class LayoutSVGText final : public LayoutSVGBlock {
 
   bool IsObjectBoundingBoxValid() const;
 
-  // These two functions return a LayoutNGSVGText or nullptr.
+  // These two functions return a LayoutSVGText or nullptr.
   static LayoutSVGText* LocateLayoutSVGTextAncestor(LayoutObject*);
   static const LayoutSVGText* LocateLayoutSVGTextAncestor(const LayoutObject*);
 

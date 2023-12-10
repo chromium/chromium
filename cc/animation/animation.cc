@@ -139,7 +139,7 @@ void Animation::UnregisterAnimation() {
 }
 
 void Animation::PushPropertiesTo(Animation* animation_impl) {
-  absl::optional<base::TimeTicks> impl_start_time;
+  std::optional<base::TimeTicks> impl_start_time;
   if (use_start_time_from_impl_ && !GetStartTime()) {
     // If this animation is replacing an existing one before having received a
     // start time, try to get the start from the animation being replaced.
@@ -246,11 +246,11 @@ void Animation::SetNeedsCommit() {
   animation_host()->SetNeedsCommit();
 }
 
-absl::optional<base::TimeTicks> Animation::GetStartTime() const {
+std::optional<base::TimeTicks> Animation::GetStartTime() const {
   CHECK(keyframe_effect());
 
   if (!keyframe_effect()->keyframe_models().size()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // KeyframeModels should all share the same start time so just use the first
@@ -258,7 +258,7 @@ absl::optional<base::TimeTicks> Animation::GetStartTime() const {
   gfx::KeyframeModel& km = *keyframe_effect()->keyframe_models().front();
 
   if (!km.has_set_start_time()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return km.start_time();

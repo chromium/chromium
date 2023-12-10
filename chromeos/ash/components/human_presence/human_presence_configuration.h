@@ -5,10 +5,11 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_HUMAN_PRESENCE_HUMAN_PRESENCE_CONFIGURATION_H_
 #define CHROMEOS_ASH_COMPONENTS_HUMAN_PRESENCE_HUMAN_PRESENCE_CONFIGURATION_H_
 
+#include <optional>
+
 #include "base/component_export.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/dbus/hps/hps_service.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class TimeDelta;
@@ -19,12 +20,12 @@ namespace hps {
 // Gets FeatureConfig for enabling LockOnLeave from Finch.
 // Returns nullopt if feature is not enabled or can't be parsed correctly.
 COMPONENT_EXPORT(HPS)
-absl::optional<hps::FeatureConfig> GetEnableLockOnLeaveConfig();
+std::optional<hps::FeatureConfig> GetEnableLockOnLeaveConfig();
 
 // Gets FeatureConfig for enabling SnoopingProtection from Finch.
 // Returns nullopt if feature is not enabled or can't be parsed correctly.
 COMPONENT_EXPORT(HPS)
-absl::optional<hps::FeatureConfig> GetEnableSnoopingProtectionConfig();
+std::optional<hps::FeatureConfig> GetEnableSnoopingProtectionConfig();
 
 // Gets quick dim delay to configure power_manager.
 COMPONENT_EXPORT(HPS) base::TimeDelta GetQuickDimDelay();

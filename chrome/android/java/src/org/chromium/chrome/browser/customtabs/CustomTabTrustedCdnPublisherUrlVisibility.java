@@ -22,7 +22,8 @@ class CustomTabTrustedCdnPublisherUrlVisibility
     private WindowAndroid mWindowAndroid;
     private BooleanSupplier mIsPublisherPackageForSession;
 
-    CustomTabTrustedCdnPublisherUrlVisibility(WindowAndroid windowAndroid,
+    CustomTabTrustedCdnPublisherUrlVisibility(
+            WindowAndroid windowAndroid,
             ActivityLifecycleDispatcher lifecycleDispatcher,
             BooleanSupplier isPublisherPackageForSession) {
         mWindowAndroid = windowAndroid;

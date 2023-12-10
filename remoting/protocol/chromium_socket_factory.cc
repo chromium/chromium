@@ -25,10 +25,12 @@
 #include "remoting/protocol/session_options_provider.h"
 #include "remoting/protocol/socket_util.h"
 #include "remoting/protocol/stream_packet_socket.h"
+#include "third_party/webrtc/api/units/timestamp.h"
 #include "third_party/webrtc/media/base/rtp_utils.h"
 #include "third_party/webrtc/rtc_base/async_dns_resolver.h"
 #include "third_party/webrtc/rtc_base/async_packet_socket.h"
 #include "third_party/webrtc/rtc_base/net_helpers.h"
+#include "third_party/webrtc/rtc_base/network/received_packet.h"
 #include "third_party/webrtc/rtc_base/socket.h"
 
 namespace remoting::protocol {
@@ -396,8 +398,10 @@ void UdpPacketSocket::HandleReadResult(int result) {
       LOG(ERROR) << "Failed to convert address received from RecvFrom().";
       return;
     }
-    SignalReadPacket(this, receive_buffer_->data(), result, address,
-                     rtc::TimeMicros());
+    rtc::ReceivedPacket packet(
+        rtc::MakeArrayView(receive_buffer_->bytes(), result), address,
+        webrtc::Timestamp::Micros(rtc::TimeMicros()));
+    NotifyPacketReceived(packet);
   } else {
     LOG(ERROR) << "Received error when reading from UDP socket: " << result;
   }

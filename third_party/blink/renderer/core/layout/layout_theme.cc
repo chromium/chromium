@@ -286,6 +286,9 @@ void LayoutTheme::AdjustStyle(const Element* element,
 }
 
 String LayoutTheme::ExtraDefaultStyleSheet() {
+  if (RuntimeEnabledFeatures::CssDisplayRubyEnabled()) {
+    return "ruby { display: ruby; }\nruby > rt { display: ruby-text; }\n";
+  }
   return g_empty_string;
 }
 
@@ -704,7 +707,8 @@ Color LayoutTheme::DefaultSystemColor(
     default:
       break;
   }
-  NOTREACHED();
+  DUMP_WILL_BE_NOTREACHED_NORETURN()
+      << getValueName(css_value_id) << " is not a recognized system color";
   return Color();
 }
 

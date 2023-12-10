@@ -585,6 +585,137 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
+                       GetTextEmptyButtonWithAriaLabelRangeAnchoredInSpans) {
+  LoadInitialAccessibilityTreeFromHtml(R"HTML(
+      <!DOCTYPE html>
+          <span>before</span>
+          <button aria-label="middle"><svg aria-hidden="true"></svg></button>
+          <span>after</span>
+  )HTML");
+
+  BrowserAccessibility* root = GetRootAndAssertNonNull();
+
+  ComPtr<ITextRangeProvider> text_range_provider;
+  GetTextRangeProviderFromTextNode(*root, &text_range_provider);
+  ASSERT_NE(nullptr, text_range_provider.Get());
+  EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, L"before\nmiddle\nafter");
+  EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
+      text_range_provider, TextPatternRangeEndpoint_Start, TextUnit_Character,
+      /*count*/ 6,
+      /*expected_text*/ L"\nmiddle\nafter",
+      /*expected_count*/ 6);
+  EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
+      text_range_provider, TextPatternRangeEndpoint_Start, TextUnit_Character,
+      /*count*/ 7,
+      /*expected_text*/ L"\nafter",
+      /*expected_count*/ 7);
+}
+
+IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
+                       GetTextEmptyButtonWithAriaLabel) {
+  LoadInitialAccessibilityTreeFromHtml(R"HTML(
+      <!DOCTYPE html>
+          <button aria-label="middle"><svg aria-hidden="true"></svg></button>
+  )HTML");
+
+  BrowserAccessibility* root = GetRootAndAssertNonNull();
+
+  ComPtr<ITextRangeProvider> text_range_provider;
+  GetTextRangeProviderFromTextNode(*root, &text_range_provider);
+  ASSERT_NE(nullptr, text_range_provider.Get());
+  EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, L"middle");
+  EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
+      text_range_provider, TextPatternRangeEndpoint_Start, TextUnit_Character,
+      /*count*/ 3,
+      /*expected_text*/ L"dle",
+      /*expected_count*/ 3);
+}
+
+IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
+                       GetTextEmptyButtonWithAriaLabelStartAnchoredInSpan) {
+  LoadInitialAccessibilityTreeFromHtml(R"HTML(
+      <!DOCTYPE html>
+          <span>before</span>
+          <button aria-label="middle"><svg aria-hidden="true"></svg></button>
+  )HTML");
+
+  BrowserAccessibility* root = GetRootAndAssertNonNull();
+
+  ComPtr<ITextRangeProvider> text_range_provider;
+  GetTextRangeProviderFromTextNode(*root, &text_range_provider);
+  ASSERT_NE(nullptr, text_range_provider.Get());
+  EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, L"before\nmiddle");
+  EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
+      text_range_provider, TextPatternRangeEndpoint_Start, TextUnit_Character,
+      /*count*/ 8,
+      /*expected_text*/ L"iddle",
+      /*expected_count*/ 8);
+}
+
+IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
+                       GetTextEmptyButtonWithAriaLabelButtonEndAnchoredInSpan) {
+  LoadInitialAccessibilityTreeFromHtml(R"HTML(
+      <!DOCTYPE html>
+          <button aria-label="middle"><svg aria-hidden="true"></svg></button>
+          <span>after</span>
+  )HTML");
+
+  BrowserAccessibility* root = GetRootAndAssertNonNull();
+
+  ComPtr<ITextRangeProvider> text_range_provider;
+  GetTextRangeProviderFromTextNode(*root, &text_range_provider);
+  ASSERT_NE(nullptr, text_range_provider.Get());
+  EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, L"middle\nafter");
+  EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
+      text_range_provider, TextPatternRangeEndpoint_Start, TextUnit_Character,
+      /*count*/ 6,
+      /*expected_text*/ L"\nafter",
+      /*expected_count*/ 6);
+}
+
+IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
+                       GetTextEmptyTextfieldWithAriaLabel) {
+  LoadInitialAccessibilityTreeFromHtml(R"HTML(
+      <!DOCTYPE html>
+          <input type="text" aria-label="before">
+          <span>after</span>
+  )HTML");
+
+  BrowserAccessibility* root = GetRootAndAssertNonNull();
+
+  ComPtr<ITextRangeProvider> text_range_provider;
+  GetTextRangeProviderFromTextNode(*root, &text_range_provider);
+  ASSERT_NE(nullptr, text_range_provider.Get());
+  EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, L"before\nafter");
+  EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
+      text_range_provider, TextPatternRangeEndpoint_Start, TextUnit_Character,
+      /*count*/ 6,
+      /*expected_text*/ L"\nafter",
+      /*expected_count*/ 6);
+}
+
+IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
+                       GetTextNonEmptyTextfieldWithAriaLabel) {
+  LoadInitialAccessibilityTreeFromHtml(R"HTML(
+      <!DOCTYPE html>
+          <input type="text" aria-label="before" value="go blue">
+          <span>after</span>
+  )HTML");
+
+  BrowserAccessibility* root = GetRootAndAssertNonNull();
+
+  ComPtr<ITextRangeProvider> text_range_provider;
+  GetTextRangeProviderFromTextNode(*root, &text_range_provider);
+  ASSERT_NE(nullptr, text_range_provider.Get());
+  EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, L"go blue\nafter");
+  EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
+      text_range_provider, TextPatternRangeEndpoint_Start, TextUnit_Character,
+      /*count*/ 6,
+      /*expected_text*/ L"e\nafter",
+      /*expected_count*/ 6);
+}
+
+IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
                        GetAttributeValue) {
   LoadInitialAccessibilityTreeFromHtml(R"HTML(
       <!DOCTYPE html>
@@ -637,14 +768,16 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
       <!DOCTYPE html>
       <html>
         <body>
-          <input readonly type="text" aria-label="input_text">
-          <input type="search" aria-label="input_search">
+          <input readonly type="text">
+          <input type="search">
         </body>
       </html>
   )HTML");
 
+  BrowserAccessibility* root = GetRootAndAssertNonNull();
+
   BrowserAccessibility* input_text_node =
-      FindNode(ax::mojom::Role::kTextField, "input_text");
+      root->InternalGetFirstChild()->InternalGetFirstChild();
   ASSERT_NE(nullptr, input_text_node);
   EXPECT_TRUE(input_text_node->IsLeaf());
   EXPECT_EQ(0u, input_text_node->PlatformChildCount());
@@ -664,7 +797,7 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
   value.Reset();
 
   BrowserAccessibility* input_search_node =
-      FindNode(ax::mojom::Role::kSearchBox, "input_search");
+      input_text_node->InternalGetNextSibling();
   ASSERT_NE(nullptr, input_search_node);
   EXPECT_TRUE(input_search_node->IsLeaf());
   EXPECT_EQ(0u, input_search_node->PlatformChildCount());

@@ -1,38 +1,15 @@
 This is a testharness.js-based test.
-[PASS] Waiting for load
-[PASS] Collapse selection into text in the open shadow DOM
-[PASS] Collapse selection into text in <div contenteditable> in the open shadow DOM
-[PASS] Set focus to <object> in the open shadow DOM
-[PASS] Set focus to <p tabindex="0"> in the open shadow DOM
 [FAIL] SelectAll in the open shadow DOM
   promise_test: Unhandled rejection with value: object "TypeError: Invalid web code."
 [FAIL] SelectAll in the <div contenteditable> in the open shadow DOM
   promise_test: Unhandled rejection with value: object "TypeError: Invalid web code."
-[PASS] Collapse selection into text in the closed shadow DOM
-[PASS] Collapse selection into text in <div contenteditable> in the closed shadow DOM
-[PASS] Set focus to <object> in the closed shadow DOM
-[PASS] Set focus to <p tabindex="0"> in the closed shadow DOM
 [FAIL] SelectAll in the closed shadow DOM
   promise_test: Unhandled rejection with value: object "TypeError: Invalid web code."
 [FAIL] SelectAll in the <div contenteditable> in the closed shadow DOM
   promise_test: Unhandled rejection with value: object "TypeError: Invalid web code."
-[PASS] Focus after Collapse selection into text in the open shadow DOM
-[PASS] Typing "A" after Collapse selection into text in the open shadow DOM
-[PASS] Focus after Collapse selection into text in <div contenteditable> in the open shadow DOM
 [FAIL] Typing "A" after Collapse selection into text in <div contenteditable> in the open shadow DOM
-  assert_equals: The shadow DOM shouldn't be modified after Collapse selection into text in <div contenteditable> in the open shadow DOM expected "<style>:focus { outline: 3px red solid; }</style><div>text<div contenteditable=\"\">Aeditable</div><object tabindex=\"0\">object</object><p tabindex=\"0\">paragraph</p></div>" but got "<style>:focus { outline: 3px red solid; }</style><div>text<div contenteditable=\"\">editable</div><object tabindex=\"0\">object</object><p tabindex=\"0\">paragraph</p></div>"
-[PASS] Focus after Set focus to <object> in the open shadow DOM
-[PASS] Typing "A" after Set focus to <object> in the open shadow DOM
-[PASS] Focus after Set focus to <p tabindex="0"> in the open shadow DOM
-[PASS] Typing "A" after Set focus to <p tabindex="0"> in the open shadow DOM
-[PASS] Focus after Collapse selection into text in the closed shadow DOM
-[PASS] Typing "A" after Collapse selection into text in the closed shadow DOM
-[PASS] Focus after Collapse selection into text in <div contenteditable> in the closed shadow DOM
+  assert_equals: The shadow DOM shouldn't be modified after Collapse selection into text in <div contenteditable> in the open shadow DOM expected "<style>:focus { outline: 3px red solid; }</style><div>text<div contenteditable=\\"\\">Aeditable</div><object tabindex=\\"0\\">object</object><p tabindex=\\"0\\">paragraph</p></div>" but got "<style>:focus { outline: 3px red solid; }</style><div>text<div contenteditable=\\"\\">editable</div><object tabindex=\\"0\\">object</object><p tabindex=\\"0\\">paragraph</p></div>"
 [FAIL] Typing "A" after Collapse selection into text in <div contenteditable> in the closed shadow DOM
-  assert_equals: The shadow DOM shouldn't be modified after Collapse selection into text in <div contenteditable> in the closed shadow DOM expected "<style>:focus { outline: 3px red solid; }</style><div>text<div contenteditable=\"\">Aeditable</div><object tabindex=\"0\">object</object><p tabindex=\"0\">paragraph</p></div>" but got "<style>:focus { outline: 3px red solid; }</style><div>text<div contenteditable=\"\">editable</div><object tabindex=\"0\">object</object><p tabindex=\"0\">paragraph</p></div>"
-[PASS] Focus after Set focus to <object> in the closed shadow DOM
-[PASS] Typing "A" after Set focus to <object> in the closed shadow DOM
-[PASS] Focus after Set focus to <p tabindex="0"> in the closed shadow DOM
-[PASS] Typing "A" after Set focus to <p tabindex="0"> in the closed shadow DOM
+  assert_equals: The shadow DOM shouldn't be modified after Collapse selection into text in <div contenteditable> in the closed shadow DOM expected "<style>:focus { outline: 3px red solid; }</style><div>text<div contenteditable=\\"\\">Aeditable</div><object tabindex=\\"0\\">object</object><p tabindex=\\"0\\">paragraph</p></div>" but got "<style>:focus { outline: 3px red solid; }</style><div>text<div contenteditable=\\"\\">editable</div><object tabindex=\\"0\\">object</object><p tabindex=\\"0\\">paragraph</p></div>"
 Harness: the test ran to completion.
 

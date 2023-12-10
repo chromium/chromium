@@ -11,6 +11,8 @@
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager_factory.h"
+#import "ios/chrome/browser/passwords/model/metrics/ios_password_manager_metrics.h"
+#import "ios/chrome/browser/passwords/model/metrics/ios_password_manager_visits_recorder.h"
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
@@ -58,7 +60,10 @@
 
 @end
 
-@implementation AddPasswordCoordinator
+@implementation AddPasswordCoordinator {
+  // For recording visits to the page.
+  IOSPasswordManagerVisitsRecorder* _visitsRecorder;
+}
 
 @synthesize baseNavigationController = _baseNavigationController;
 
@@ -105,14 +110,35 @@
                                         animated:YES
                                       completion:nil];
 
+  _visitsRecorder = [[IOSPasswordManagerVisitsRecorder alloc]
+      initWithPasswordManagerSurface:password_manager::PasswordManagerSurface::
+                                         kAddPassword];
+  [_visitsRecorder maybeRecordVisitMetric];
+
   if (password_manager::features::IsAuthOnEntryV2Enabled()) {
     [self startReauthCoordinator];
   }
 }
 
 - (void)stop {
-  [self.viewController.navigationController dismissViewControllerAnimated:YES
-                                                               completion:nil];
+  [self stopWithUIDismissal:YES];
+}
+
+#pragma mark - AddPasswordCoordinator
+
+- (void)stopWithUIDismissal:(BOOL)shouldDismissUI {
+  // When the coordinator is stopped due to failed authentication, the whole
+  // Password Manager UI is dismissed via command. Not dismissing the top
+  // coordinator UI before everything else prevents the Password Manager UI
+  // from being visible without local authentication.
+  if (shouldDismissUI) {
+    UINavigationController* navigationController =
+        _viewController.navigationController;
+    [navigationController.presentingViewController
+        dismissViewControllerAnimated:YES
+                           completion:nil];
+  }
+
   [self dismissAlertCoordinator];
   self.mediator = nil;
   self.viewController = nil;
@@ -184,6 +210,12 @@
 - (void)successfulReauthenticationWithCoordinator:
     (ReauthenticationCoordinator*)coordinator {
   // No-op.
+}
+
+- (void)dismissUIAfterFailedReauthenticationWithCoordinator:
+    (ReauthenticationCoordinator*)coordinator {
+  CHECK_EQ(_reauthCoordinator, coordinator);
+  [_delegate dismissPasswordManagerAfterFailedReauthentication];
 }
 
 - (void)willPushReauthenticationViewController {

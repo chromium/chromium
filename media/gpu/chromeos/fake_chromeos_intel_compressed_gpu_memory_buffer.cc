@@ -8,6 +8,7 @@
 #include <fcntl.h>
 
 #include "base/atomic_sequence_num.h"
+#include "media/gpu/chromeos/chromeos_compressed_gpu_memory_buffer_video_frame_utils.h"
 
 namespace media {
 
@@ -21,10 +22,13 @@ base::ScopedFD GetDummyFD() {
 
 FakeChromeOSIntelCompressedGpuMemoryBuffer::
     FakeChromeOSIntelCompressedGpuMemoryBuffer(const gfx::Size& size,
-                                               gfx::BufferFormat format)
+                                               gfx::BufferFormat format,
+                                               uint64_t modifier)
     : size_(size), format_(format) {
   CHECK(format == gfx::BufferFormat::YUV_420_BIPLANAR ||
         format == gfx::BufferFormat::P010);
+  CHECK(modifier == I915_FORMAT_MOD_Y_TILED_GEN12_MC_CCS ||
+        modifier == I915_FORMAT_MOD_4_TILED_MTL_MC_CCS);
 
   handle_.type = gfx::NATIVE_PIXMAP;
 
@@ -40,7 +44,7 @@ FakeChromeOSIntelCompressedGpuMemoryBuffer::
         /*offset=*/i,
         /*size=*/i, GetDummyFD());
   }
-  handle_.native_pixmap_handle.modifier = I915_FORMAT_MOD_Y_TILED_GEN12_MC_CCS;
+  handle_.native_pixmap_handle.modifier = modifier;
 }
 
 FakeChromeOSIntelCompressedGpuMemoryBuffer::

@@ -34,11 +34,11 @@ const char kLocationSettingsNextShowDSE[] = "location_settings_next_show_dse";
 // the default search engine.
 const char kLocationSettingsNextShowDefault[] =
     "location_settings_next_show_default";
-#else   // BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
+
 // The number of one time permission prompts a user has seen.
 const char kOneTimePermissionPromptsDecidedCount[] =
     "profile.one_time_permission_prompts_decided_count";
-#endif  // BUILDFLAG(IS_ANDROID)
 
 // Boolean that specifies whether or not unused site permissions should be
 // revoked by Safety Hub. It is used only when kSafetyHub flag is on.

@@ -36,6 +36,7 @@ source_set("commands") {
     "password_protection_commands.h",
     "password_suggestion_commands.h",
     "passwords_account_storage_notice_commands.h",
+    "phone_number_commands.h",
     "policy_change_commands.h",
     "popup_menu_commands.h",
     "price_notifications_commands.h",
@@ -79,8 +80,9 @@ source_set("commands") {
     "//base",
     "//components/browsing_data/core",
     "//components/password_manager/core/browser",
+    "//components/plus_addresses",
     "//ios/chrome/browser/browsing_data/model:model_remove_mask",
-    "//ios/chrome/browser/discover_feed:constants",
+    "//ios/chrome/browser/discover_feed/model:constants",
     "//ios/chrome/browser/promos_manager:constants",
   ]
 }

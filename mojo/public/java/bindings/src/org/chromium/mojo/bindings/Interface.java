@@ -22,9 +22,7 @@ import org.chromium.mojo.system.Pair;
 import java.io.Closeable;
 import java.util.concurrent.Executor;
 
-/**
- * Base class for mojo generated interfaces.
- */
+/** Base class for mojo generated interfaces. */
 public interface Interface extends ConnectionErrorHandler, Closeable {
 
     /**
@@ -41,13 +39,9 @@ public interface Interface extends ConnectionErrorHandler, Closeable {
      * {@link MessageReceiverWithResponder}, along with the response callback if needed.
      */
     public interface Proxy extends Interface {
-        /**
-         * Class allowing to interact with the proxy itself.
-         */
+        /** Class allowing to interact with the proxy itself. */
         public interface Handler extends Closeable {
-            /**
-             * Sets the {@link ConnectionErrorHandler} that will be notified of errors.
-             */
+            /** Sets the {@link ConnectionErrorHandler} that will be notified of errors. */
             public void setErrorHandler(ConnectionErrorHandler errorHandler);
 
             /**
@@ -56,9 +50,7 @@ public interface Interface extends ConnectionErrorHandler, Closeable {
              */
             public MessagePipeHandle passHandle();
 
-            /**
-             * Returns the version number of the interface that the remote side supports.
-             */
+            /** Returns the version number of the interface that the remote side supports. */
             public int getVersion();
 
             /**
@@ -80,23 +72,15 @@ public interface Interface extends ConnectionErrorHandler, Closeable {
             public void requireVersion(int version);
         }
 
-        /**
-         * Returns the {@link Handler} object allowing to interact with the proxy itself.
-         */
+        /** Returns the {@link Handler} object allowing to interact with the proxy itself. */
         public Handler getProxyHandler();
     }
 
-    /**
-     * Base implementation of {@link Proxy}.
-     */
+    /** Base implementation of {@link Proxy}. */
     abstract class AbstractProxy implements Proxy {
-        /**
-         * Implementation of {@link Handler}.
-         */
+        /** Implementation of {@link Handler}. */
         protected static class HandlerImpl implements Proxy.Handler, ConnectionErrorHandler {
-            /**
-             * The {@link Core} implementation to use.
-             */
+            /** The {@link Core} implementation to use. */
             private final Core mCore;
 
             /**
@@ -105,14 +89,10 @@ public interface Interface extends ConnectionErrorHandler, Closeable {
              */
             private final MessageReceiverWithResponder mMessageReceiver;
 
-            /**
-             * The {@link ConnectionErrorHandler} that will be notified of errors.
-             */
+            /** The {@link ConnectionErrorHandler} that will be notified of errors. */
             private ConnectionErrorHandler mErrorHandler;
 
-            /**
-             * The currently known version of the interface.
-             */
+            /** The currently known version of the interface. */
             private int mVersion;
 
             /**
@@ -130,23 +110,17 @@ public interface Interface extends ConnectionErrorHandler, Closeable {
                 mVersion = version;
             }
 
-            /**
-             * Returns the message receiver to send message to.
-             */
+            /** Returns the message receiver to send message to. */
             public MessageReceiverWithResponder getMessageReceiver() {
                 return mMessageReceiver;
             }
 
-            /**
-             * Returns the Core implementation.
-             */
+            /** Returns the Core implementation. */
             public Core getCore() {
                 return mCore;
             }
 
-            /**
-             * Sets the {@link ConnectionErrorHandler} that will be notified of errors.
-             */
+            /** Sets the {@link ConnectionErrorHandler} that will be notified of errors. */
             @Override
             public void setErrorHandler(ConnectionErrorHandler errorHandler) {
                 this.mErrorHandler = errorHandler;
@@ -198,7 +172,10 @@ public interface Interface extends ConnectionErrorHandler, Closeable {
                 message.input = new RunInput();
                 message.input.setQueryVersion(new QueryVersion());
 
-                InterfaceControlMessagesHelper.sendRunMessage(getCore(), mMessageReceiver, message,
+                InterfaceControlMessagesHelper.sendRunMessage(
+                        getCore(),
+                        mMessageReceiver,
+                        message,
                         new Callback1<RunResponseMessageParams>() {
                             @Override
                             public void call(RunResponseMessageParams response) {
@@ -230,9 +207,7 @@ public interface Interface extends ConnectionErrorHandler, Closeable {
             }
         }
 
-        /**
-         * The handler associated with this proxy.
-         */
+        /** The handler associated with this proxy. */
         private final HandlerImpl mHandler;
 
         protected AbstractProxy(Core core, MessageReceiverWithResponder messageReceiver) {
@@ -273,14 +248,10 @@ public interface Interface extends ConnectionErrorHandler, Closeable {
      */
     abstract class Stub<I extends Interface> implements MessageReceiverWithResponder {
 
-        /**
-         * The {@link Core} implementation to use.
-         */
+        /** The {@link Core} implementation to use. */
         private final Core mCore;
 
-        /**
-         * The implementation to delegate calls to.
-         */
+        /** The implementation to delegate calls to. */
         private final I mImpl;
 
         /**
@@ -294,16 +265,12 @@ public interface Interface extends ConnectionErrorHandler, Closeable {
             mImpl = impl;
         }
 
-        /**
-         * Returns the Core implementation.
-         */
+        /** Returns the Core implementation. */
         protected Core getCore() {
             return mCore;
         }
 
-        /**
-         * Returns the implementation to delegate calls to.
-         */
+        /** Returns the implementation to delegate calls to. */
         protected I getImpl() {
             return mImpl;
         }
@@ -315,7 +282,6 @@ public interface Interface extends ConnectionErrorHandler, Closeable {
         public void close() {
             mImpl.close();
         }
-
     }
 
     /**
@@ -330,9 +296,7 @@ public interface Interface extends ConnectionErrorHandler, Closeable {
          */
         private final MessageReceiverWithResponder mMessageReceiver;
 
-        /**
-         * The {@link Executor} to forward all tasks to.
-         */
+        /** The {@link Executor} to forward all tasks to. */
         private final Executor mExecutor;
 
         /**
@@ -351,9 +315,10 @@ public interface Interface extends ConnectionErrorHandler, Closeable {
          */
         @Override
         public void close() {
-            mExecutor.execute(() -> {
-                mMessageReceiver.close();
-            });
+            mExecutor.execute(
+                    () -> {
+                        mMessageReceiver.close();
+                    });
         }
 
         /**
@@ -361,9 +326,10 @@ public interface Interface extends ConnectionErrorHandler, Closeable {
          */
         @Override
         public boolean accept(Message message) {
-            mExecutor.execute(() -> {
-                mMessageReceiver.accept(message);
-            });
+            mExecutor.execute(
+                    () -> {
+                        mMessageReceiver.accept(message);
+                    });
             return true;
         }
 
@@ -372,9 +338,10 @@ public interface Interface extends ConnectionErrorHandler, Closeable {
          */
         @Override
         public boolean acceptWithResponder(Message message, MessageReceiver responder) {
-            mExecutor.execute(() -> {
-                mMessageReceiver.acceptWithResponder(message, responder);
-            });
+            mExecutor.execute(
+                    () -> {
+                        mMessageReceiver.acceptWithResponder(message, responder);
+                    });
             return true;
         }
     }
@@ -393,9 +360,7 @@ public interface Interface extends ConnectionErrorHandler, Closeable {
          */
         public abstract String getName();
 
-        /**
-         * Returns the version of the managed interface.
-         */
+        /** Returns the version of the managed interface. */
         public abstract int getVersion();
 
         /**
@@ -412,9 +377,7 @@ public interface Interface extends ConnectionErrorHandler, Closeable {
             return router;
         }
 
-        /**
-         * Binds the given implementation to the InterfaceRequest.
-         */
+        /** Binds the given implementation to the InterfaceRequest. */
         public final Router bind(I impl, InterfaceRequest<I> request) {
             return bind(impl, request.passHandle());
         }
@@ -465,8 +428,10 @@ public interface Interface extends ConnectionErrorHandler, Closeable {
             // Close the original proxy now that its handle has been passed.
             proxy.close();
 
-            proxy = buildProxy(
-                core, new ThreadSafeForwarder(core, new AutoCloseableRouter(core, router)));
+            proxy =
+                    buildProxy(
+                            core,
+                            new ThreadSafeForwarder(core, new AutoCloseableRouter(core, router)));
             DelegatingConnectionErrorHandler handlers = new DelegatingConnectionErrorHandler();
             handlers.addConnectionErrorHandler(proxy);
             router.setErrorHandler(handlers);
@@ -475,35 +440,24 @@ public interface Interface extends ConnectionErrorHandler, Closeable {
             return proxy;
         }
 
-        /**
-         * Binds the implementation to the given |router|.
-         */
+        /** Binds the implementation to the given |router|. */
         final void bind(Core core, I impl, Router router) {
             router.setErrorHandler(impl);
             router.setIncomingMessageReceiver(buildStub(core, impl));
         }
 
-        /**
-         * Returns a Proxy that will send messages to the given |router|.
-         */
+        /** Returns a Proxy that will send messages to the given |router|. */
         final P attachProxy(Core core, Router router) {
             return buildProxy(core, new AutoCloseableRouter(core, router));
         }
 
-        /**
-         * Creates a new array of the given |size|.
-         */
+        /** Creates a new array of the given |size|. */
         protected abstract I[] buildArray(int size);
 
-        /**
-         * Constructs a Stub delegating to the given implementation.
-         */
+        /** Constructs a Stub delegating to the given implementation. */
         protected abstract Stub<I> buildStub(Core core, I impl);
 
-        /**
-         * Constructs a Proxy forwarding the calls to the given message receiver.
-         */
+        /** Constructs a Proxy forwarding the calls to the given message receiver. */
         protected abstract P buildProxy(Core core, MessageReceiverWithResponder messageReceiver);
-
     }
 }

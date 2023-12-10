@@ -25,7 +25,6 @@ namespace cryptohome {
 namespace {
 
 using ::ash::ChallengeResponseKey;
-using ::google::protobuf::RepeatedPtrField;
 
 ChallengeSignatureAlgorithm ChallengeSignatureAlgorithmToProtoEnum(
     ChallengeResponseKey::SignatureAlgorithm algorithm) {
@@ -77,73 +76,6 @@ void KeyDefProviderDataToKeyProviderDataEntry(
 }
 
 }  // namespace
-
-KeyDefinition KeyDataToKeyDefinition(const KeyData& key_data) {
-  CHECK(key_data.has_type());
-  KeyDefinition result;
-  // Extract |type|, |label| and |revision|.
-  switch (key_data.type()) {
-    case KeyData::KEY_TYPE_PASSWORD:
-      result.type = KeyDefinition::TYPE_PASSWORD;
-      break;
-    case KeyData::KEY_TYPE_CHALLENGE_RESPONSE:
-      result.type = KeyDefinition::TYPE_CHALLENGE_RESPONSE;
-      break;
-    case KeyData::KEY_TYPE_FINGERPRINT:
-      // KEY_TYPE_FINGERPRINT means the key is a request for fingerprint auth
-      // and does not really carry any auth information. KEY_TYPE_FINGERPRINT
-      // is not expected to be used in GetKeyData.
-      NOTREACHED();
-      break;
-    case KeyData::KEY_TYPE_KIOSK:
-      result.type = KeyDefinition::TYPE_PUBLIC_MOUNT;
-      break;
-  }
-  result.label = KeyLabel(key_data.label());
-  result.revision = key_data.revision();
-
-  // Extract |privileges|.
-  const KeyPrivileges& privileges = key_data.privileges();
-  if (privileges.add()) {
-    result.privileges |= PRIV_ADD;
-  }
-  if (privileges.remove()) {
-    result.privileges |= PRIV_REMOVE;
-  }
-  if (privileges.update()) {
-    result.privileges |= PRIV_MIGRATE;
-  }
-
-  // Extract |policy|.
-  result.policy.low_entropy_credential =
-      key_data.policy().low_entropy_credential();
-  result.policy.auth_locked = key_data.policy().auth_locked();
-
-  // Extract |provider_data|.
-  for (auto& provider_datum : key_data.provider_data().entry()) {
-    // We have either of two
-    DCHECK_NE(provider_datum.has_number(), provider_datum.has_bytes());
-
-    if (provider_datum.has_number()) {
-      result.provider_data.push_back(KeyDefinition::ProviderData(
-          provider_datum.name(), provider_datum.number()));
-    } else {
-      result.provider_data.push_back(KeyDefinition::ProviderData(
-          provider_datum.name(), provider_datum.bytes()));
-    }
-  }
-  return result;
-}
-
-std::vector<KeyDefinition> RepeatedKeyDataToKeyDefinitions(
-    const RepeatedPtrField<KeyData>& key_data) {
-  std::vector<KeyDefinition> key_definitions;
-  for (RepeatedPtrField<KeyData>::const_iterator it = key_data.begin();
-       it != key_data.end(); ++it) {
-    key_definitions.push_back(KeyDataToKeyDefinition(*it));
-  }
-  return key_definitions;
-}
 
 AuthorizationRequest CreateAuthorizationRequest(const KeyLabel& label,
                                                 const std::string& secret) {

@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="km">
 <translation id="1000498691615767391">ជ្រើសរើសថតឯកសារដើម្បីបើក</translation>
+<translation id="1014208178561091457">មិនអាច​ចម្លង <ph name="FILE_NAME" /> បានទេ ដោយសារ​វាត្រូវបាន​អ៊ីនគ្រីប។</translation>
 <translation id="1047956942837015229">កំពុងលុប <ph name="COUNT" /> ធាតុ...</translation>
 <translation id="1049926623896334335">ឯកសារ Word</translation>
 <translation id="1056775291175587022">មិនមានបណ្ដាញទេ</translation>
@@ -55,6 +56,7 @@
 <translation id="1435838927755162558">ចែករំលែក​ថត​ជាមួយ Parallels Desktop</translation>
 <translation id="1439919885608649279">មនុស្ស​កាន់ផ្កា</translation>
 <translation id="1458457385801829801">ដក <ph name="TARGET_NAME" /> ចេញ</translation>
+<translation id="146691674290220697">មិនអាច​ចម្លង​ឯកសារ <ph name="NUMBER_OF_FILES" /> បានទេ ដោយសារ​ឯកសារ​ទាំងនេះ​ត្រូវបាន​អ៊ីនគ្រីប។</translation>
 <translation id="1471718551822868769">ភាសា​ស្លូវ៉ាគី</translation>
 <translation id="1482884275703521657">ភាសា​ហ្វាំងឡង់</translation>
 <translation id="148466539719134488">ស្វីស</translation>
@@ -276,6 +278,7 @@
 <translation id="3253225298092156258">មិនមានទេ</translation>
 <translation id="3254434849914415189">ជ្រើសរើសកម្មវិធីលំនាំដើមសម្រាប់ឯកសារ <ph name="FILE_TYPE" />៖</translation>
 <translation id="3255159654094949700">ភាសា​អារ៉ាប់</translation>
+<translation id="326396468955264502">មិនអាច​ផ្លាស់ទី​ឯកសារ <ph name="NUMBER_OF_FILES" /> បានទេ ដោយសារ​ឯកសារ​ទាំងនេះ​ត្រូវបាន​អ៊ីនគ្រីប។</translation>
 <translation id="3264582393905923483">បរិបទ</translation>
 <translation id="3272909651715601089">មិនអាចបើក "<ph name="PATH" />" បានទេ</translation>
 <translation id="3280431534455935878">កំពុងរៀបចំ</translation>
@@ -313,6 +316,7 @@
 <translation id="3523225005467146490">បានចែករំលែក​ថត 1 ជាមួយ <ph name="VM_NAME" /></translation>
 <translation id="3524311639100184459">ប្រុងប្រយ័ត្ន៖ ឯកសារទាំងនេះ​គឺជាឯកសារ​បណ្ដោះអាសន្ន និងអាចត្រូវបានលុប​ដោយស្វ័យប្រវត្តិ ដើម្បីបង្កើន​ទំហំផ្ទុកថាស។  <ph name="BEGIN_LINK" />ស្វែងយល់បន្ថែម<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">ថតឯកសារ</translation>
+<translation id="3529424493985988200">ទាក់ទងទៅ​អ្នកគ្រប់គ្រង​របស់អ្នក ដើម្បី​ទទួលបាន​ព័ត៌មាន​លម្អិត។</translation>
 <translation id="3548125359243647069">បានបញ្ចូលកូដ PIN មិនត្រឹមត្រូវច្រើនដងពេក។</translation>
 <translation id="3549797760399244642">ទៅកាន់ drive.google.com...</translation>
 <translation id="3553048479571901246">ដើម្បីបើកឯកសារដោយប្រើ <ph name="APP_NAME" /> សូមចម្លងឯកសារទាំងនោះទៅក្នុងថតឯកសារ Windows ជាមុនសិន។</translation>
@@ -701,6 +705,7 @@
 <translation id="637062427944097960">៝ឯកសារនេះបានបើកនៅលើដេស៍ថបផ្សេង។ ផ្លាស់ទីទៅ <ph name="USER_NAME" /> <ph name="MAIL_ADDRESS" /> ដើម្បីមើលវា។</translation>
 <translation id="6394388407447716302">បានតែអានប៉ុណ្ណោះ</translation>
 <translation id="6395575651121294044">ធាតុ <ph name="NUMBER_OF_FILES" /></translation>
+<translation id="6407769893376380348">មិនអាច​ផ្លាស់ទី <ph name="FILE_NAME" /> បានទេ ដោយសារ​វាត្រូវបាន​អ៊ីនគ្រីប។</translation>
 <translation id="642282551015776456">ឈ្មោះនេះមិនគួរប្រើជាឯកសារនៃឈ្មោះថតឯកសារទេ</translation>
 <translation id="6423031066725912715">ភាសាវៀតណាម​ដែលប្រើ​ក្ដារចុច TCVN</translation>
 <translation id="6430271654280079150">អ្នកអាចព្យាយាមបាន 1 ដងទៀត។</translation>

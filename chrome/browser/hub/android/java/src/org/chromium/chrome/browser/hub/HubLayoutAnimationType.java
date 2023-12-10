@@ -25,16 +25,22 @@ import java.lang.annotation.RetentionPolicy;
 public @interface HubLayoutAnimationType {
     /** Show the Hub immediately with no transition. */
     int NONE = 0;
+
     /** Show the Hub via a crossfade. */
     int FADE_IN = 1;
+
     /** Hide the Hub via a crossfade out. */
     int FADE_OUT = 2;
+
     /** Shrink from a tab to the tab switcher pane. */
     int SHRINK_TAB = 3;
+
     /** Expand from a tab switcher tab card out to the current tab. */
     int EXPAND_TAB = 4;
+
     /** Translate the entire Hub Android view upward. */
     int TRANSLATE_UP = 5;
+
     /** Translate the entire Hub Android view downward. */
     int TRANSLATE_DOWN = 6;
 

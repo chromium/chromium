@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import 'chrome://nearby/app.js';
-import 'chrome://webui-test/mojo_webui_test_support.js';
+import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 import 'chrome://resources/mojo/chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom-webui.js';
 
 import {setContactManagerForTesting} from 'chrome://nearby/shared/nearby_contact_manager.js';

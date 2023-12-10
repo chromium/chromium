@@ -40,6 +40,7 @@
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/toolbar_manager_test_helper_android.h"
 #include "chrome/test/base/android/android_browser_test.h"
 #else
 #include "chrome/browser/ui/browser.h"
@@ -248,7 +249,14 @@ class InstallableManagerBrowserTest : public PlatformBrowserTest {
       : disable_banner_trigger_(&test::g_disable_banner_triggering_for_testing,
                                 true),
         scoped_min_favicon_size_(&test::g_minimum_favicon_size_for_testing,
-                                 32) {}
+                                 32) {
+#if BUILDFLAG(IS_ANDROID)
+    // Skips recreating the Android activity when homepage settings are changed.
+    // This happens when the feature chrome::android::kStartSurfaceAndroid is
+    // enabled.
+    toolbar_manager::setSkipRecreateForTesting(true);
+#endif  // BUILDFLAG(IS_ANDROID)
+  }
 
   void SetUpOnMainThread() override {
     embedded_test_server()->ServeFilesFromSourceDirectory(
@@ -430,7 +438,13 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest, CheckNoManifest) {
   EXPECT_EQ(nullptr, tester->primary_icon());
   EXPECT_FALSE(tester->has_maskable_primary_icon());
   EXPECT_FALSE(tester->installable_check_passed());
-  EXPECT_EQ(std::vector<InstallableStatusCode>{NO_MANIFEST}, tester->errors());
+  if (base::FeatureList::IsEnabled(
+          features::kUniversalInstallRootScopeNoManifest)) {
+    EXPECT_EQ(std::vector<InstallableStatusCode>{}, tester->errors());
+  } else {
+    EXPECT_EQ(std::vector<InstallableStatusCode>{NO_MANIFEST},
+              tester->errors());
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest, CheckManifest404) {
@@ -452,8 +466,13 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest, CheckManifest404) {
   EXPECT_EQ(nullptr, tester->primary_icon());
   EXPECT_FALSE(tester->has_maskable_primary_icon());
   EXPECT_FALSE(tester->installable_check_passed());
-  EXPECT_EQ(std::vector<InstallableStatusCode>{MANIFEST_EMPTY},
-            tester->errors());
+  if (base::FeatureList::IsEnabled(
+          features::kUniversalInstallRootScopeNoManifest)) {
+    EXPECT_EQ(std::vector<InstallableStatusCode>{}, tester->errors());
+  } else {
+    EXPECT_EQ(std::vector<InstallableStatusCode>{MANIFEST_EMPTY},
+              tester->errors());
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest, CheckManifestOnly) {
@@ -548,8 +567,13 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest, FetchWebPageMetaData) {
     EXPECT_TRUE(blink::IsEmptyManifest(tester->manifest()));
     EXPECT_TRUE(tester->manifest_url().is_empty());
 
-    EXPECT_EQ(std::vector<InstallableStatusCode>{NO_MANIFEST},
-              tester->errors());
+    if (base::FeatureList::IsEnabled(
+            features::kUniversalInstallRootScopeNoManifest)) {
+      EXPECT_EQ(std::vector<InstallableStatusCode>{}, tester->errors());
+    } else {
+      EXPECT_EQ(std::vector<InstallableStatusCode>{NO_MANIFEST},
+                tester->errors());
+    }
   }
 }
 
@@ -828,7 +852,6 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest, CheckWebapp) {
     EXPECT_TRUE(!manager->task_queue_.HasCurrent());
     EXPECT_TRUE(manager->has_worker());
     EXPECT_EQ(NO_ERROR_DETECTED, manager->worker_error());
-    ;
   }
 
   // Request everything again without navigating away. This should work fine.
@@ -862,7 +885,6 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest, CheckWebapp) {
     EXPECT_TRUE(!manager->task_queue_.HasCurrent());
     EXPECT_TRUE(manager->has_worker());
     EXPECT_EQ(NO_ERROR_DETECTED, manager->worker_error());
-    ;
   }
 
   {
@@ -1524,7 +1546,12 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest,
     run_loop.Run();
 
     EXPECT_TRUE(blink::IsEmptyManifest(tester->manifest()));
-    EXPECT_EQ(NO_MANIFEST, manager->manifest_error());
+    if (base::FeatureList::IsEnabled(
+            features::kUniversalInstallRootScopeNoManifest)) {
+      EXPECT_EQ(NO_ERROR_DETECTED, manager->manifest_error());
+    } else {
+      EXPECT_EQ(NO_MANIFEST, manager->manifest_error());
+    }
     EXPECT_EQ(std::vector<InstallableStatusCode>{NO_MANIFEST},
               tester->errors());
   }
@@ -2006,11 +2033,12 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerInPrerenderingBrowserTest,
         base::BindOnce(&CallbackTester::OnDidFinishInstallableCheck,
                        base::Unretained(tester.get())));
     run_loop.Run();
+    // It should have no data since manifest_test_page.html is loaded in the
+    // prerendering.
+    EXPECT_TRUE(blink::IsEmptyManifest(manager->manifest()));
+    EXPECT_EQ(std::vector<InstallableStatusCode>{NO_MANIFEST},
+              tester->errors());
   }
-  // It should have no data since manifest_test_page.html is loaded in the
-  // prerendering.
-  EXPECT_TRUE(blink::IsEmptyManifest(manager->manifest()));
-  EXPECT_EQ(NO_MANIFEST, manager->manifest_error());
 
   {
     // If the page is activated from the prerendering and the data should be
@@ -2019,10 +2047,9 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerInPrerenderingBrowserTest,
     manager->SetQuitClosure(run_loop.QuitClosure());
     NavigateAndMaybeWaitForWorker(path);
     run_loop.Run();
+    EXPECT_TRUE(blink::IsEmptyManifest(manager->manifest()));
+    EXPECT_EQ(NO_ERROR_DETECTED, manager->manifest_error());
   }
-
-  EXPECT_TRUE(blink::IsEmptyManifest(manager->manifest()));
-  EXPECT_EQ(NO_ERROR_DETECTED, manager->manifest_error());
 
   {
     // Fetch the data again. This should succeed.
@@ -2104,11 +2131,12 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerInPrerenderingBrowserTest,
         base::BindOnce(&CallbackTester::OnDidFinishInstallableCheck,
                        base::Unretained(tester.get())));
     run_loop.Run();
+    // It should have no data since manifest_test_page.html is loaded in the
+    // prerendering.
+    EXPECT_TRUE(blink::IsEmptyManifest(manager->manifest()));
+    EXPECT_EQ(std::vector<InstallableStatusCode>{NO_MANIFEST},
+              tester->errors());
   }
-  // It should have no data since manifest_test_page.html is loaded in the
-  // prerendering.
-  EXPECT_TRUE(blink::IsEmptyManifest(manager->manifest()));
-  EXPECT_EQ(NO_MANIFEST, manager->manifest_error());
 
   {
     // If the page is activated from the prerendering and the data should be
@@ -2180,9 +2208,10 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerInPrerenderingBrowserTest,
         base::BindOnce(&CallbackTester::OnDidFinishInstallableCheck,
                        base::Unretained(tester.get())));
     run_loop.Run();
+    EXPECT_TRUE(blink::IsEmptyManifest(manager->manifest()));
+    EXPECT_EQ(std::vector<InstallableStatusCode>{NO_MANIFEST},
+              tester->errors());
   }
-  EXPECT_TRUE(blink::IsEmptyManifest(manager->manifest()));
-  EXPECT_EQ(NO_MANIFEST, manager->manifest_error());
 
   // OnResetData() is called when a navigation is finished.
   EXPECT_CALL(*manager.get(), OnResetData()).Times(1);
@@ -2208,10 +2237,70 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerInPrerenderingBrowserTest,
                        base::Unretained(tester.get())));
     run_loop.Run();
     EXPECT_TRUE(blink::IsEmptyManifest(tester->manifest()));
-    EXPECT_EQ(NO_MANIFEST, manager->manifest_error());
+    if (base::FeatureList::IsEnabled(
+            features::kUniversalInstallRootScopeNoManifest)) {
+      EXPECT_EQ(NO_ERROR_DETECTED, manager->manifest_error());
+    } else {
+      EXPECT_EQ(NO_MANIFEST, manager->manifest_error());
+    }
     EXPECT_EQ(std::vector<InstallableStatusCode>{NO_MANIFEST},
               tester->errors());
   }
 }
 
+IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest, NoManifestRootScopeTest) {
+  InstallableParams params;
+  params.fetch_metadata = true;
+  params.installable_criteria = InstallableCriteria::kNoManifestAtRootScope;
+
+  std::map<std::string, std::string> meta_tags = {
+      {"application-name", "Test App Name"},
+      {"icon", "/banners/256x256-red.png"}};
+  {
+    base::RunLoop run_loop;
+    std::unique_ptr<CallbackTester> tester(
+        new CallbackTester(run_loop.QuitClosure()));
+
+    NavigateAndRunInstallableManager(
+        tester.get(), params,
+        GetUrlOfPageWithTags("/no_manifest_test_page.html", meta_tags));
+
+    run_loop.Run();
+
+    EXPECT_TRUE(blink::IsEmptyManifest(tester->manifest()));
+    EXPECT_TRUE(tester->manifest_url().is_empty());
+    EXPECT_EQ(u"Test App Name", tester->metadata().application_name);
+    EXPECT_TRUE(tester->manifest().icons.empty());
+    EXPECT_FALSE(web_contents()->GetFaviconURLs().empty());
+    if (base::FeatureList::IsEnabled(
+            features::kUniversalInstallRootScopeNoManifest)) {
+      EXPECT_TRUE(tester->installable_check_passed());
+      EXPECT_EQ(std::vector<InstallableStatusCode>{}, tester->errors());
+    } else {
+      EXPECT_FALSE(tester->installable_check_passed());
+      EXPECT_EQ(std::vector<InstallableStatusCode>{NO_MANIFEST},
+                tester->errors());
+    }
+  }
+  {
+    base::RunLoop run_loop;
+    std::unique_ptr<CallbackTester> tester(
+        new CallbackTester(run_loop.QuitClosure()));
+
+    NavigateAndRunInstallableManager(
+        tester.get(), params,
+        GetUrlOfPageWithTags("/banners/no_manifest_test_page.html", meta_tags));
+
+    run_loop.Run();
+
+    EXPECT_TRUE(blink::IsEmptyManifest(tester->manifest()));
+    EXPECT_TRUE(tester->manifest_url().is_empty());
+    EXPECT_EQ(u"Test App Name", tester->metadata().application_name);
+    EXPECT_TRUE(tester->manifest().icons.empty());
+    EXPECT_FALSE(web_contents()->GetFaviconURLs().empty());
+    EXPECT_FALSE(tester->installable_check_passed());
+    EXPECT_EQ(std::vector<InstallableStatusCode>{NO_MANIFEST},
+              tester->errors());
+  }
+}
 }  // namespace webapps

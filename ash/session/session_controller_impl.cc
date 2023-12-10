@@ -5,6 +5,7 @@
 #include "ash/session/session_controller_impl.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -32,7 +33,6 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_type.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/message_center/message_center.h"
 
 using session_manager::SessionState;
@@ -231,12 +231,12 @@ bool SessionControllerImpl::IsUserPublicAccount() const {
   return active_user_type == user_manager::USER_TYPE_PUBLIC_ACCOUNT;
 }
 
-absl::optional<user_manager::UserType> SessionControllerImpl::GetUserType()
+std::optional<user_manager::UserType> SessionControllerImpl::GetUserType()
     const {
   if (!IsActiveUserSessionStarted())
-    return absl::nullopt;
+    return std::nullopt;
 
-  return absl::make_optional(GetUserSession(0)->user_info.type);
+  return std::make_optional(GetUserSession(0)->user_info.type);
 }
 
 bool SessionControllerImpl::IsUserPrimary() const {
@@ -257,9 +257,9 @@ bool SessionControllerImpl::IsEnterpriseManaged() const {
   return client_ && client_->IsEnterpriseManaged();
 }
 
-absl::optional<int> SessionControllerImpl::GetExistingUsersCount() const {
-  return client_ ? absl::optional<int>(client_->GetExistingUsersCount())
-                 : absl::nullopt;
+std::optional<int> SessionControllerImpl::GetExistingUsersCount() const {
+  return client_ ? std::optional<int>(client_->GetExistingUsersCount())
+                 : std::nullopt;
 }
 
 bool SessionControllerImpl::ShouldDisplayManagedUI() const {
@@ -318,6 +318,11 @@ PrefService* SessionControllerImpl::GetSigninScreenPrefService() const {
 PrefService* SessionControllerImpl::GetUserPrefServiceForUser(
     const AccountId& account_id) const {
   return client_ ? client_->GetUserPrefService(account_id) : nullptr;
+}
+
+base::FilePath SessionControllerImpl::GetProfilePath(
+    const AccountId& account_id) const {
+  return client_ ? client_->GetProfilePath(account_id) : base::FilePath();
 }
 
 PrefService* SessionControllerImpl::GetPrimaryUserPrefService() const {

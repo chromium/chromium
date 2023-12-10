@@ -49,10 +49,10 @@ class BlobReader : public blink::mojom::BlobReaderClient,
 
   static void Read(mojo::PendingRemote<blink::mojom::Blob> blob,
                    BlobReadCallback callback,
-                   absl::optional<Range> range);
+                   std::optional<Range> range);
 
   BlobReader(mojo::PendingRemote<blink::mojom::Blob> blob,
-             absl::optional<Range> range);
+             std::optional<Range> range);
   void Start(base::OnceClosure callback);
 
   // blink::mojom::BlobReaderClient:
@@ -69,12 +69,12 @@ class BlobReader : public blink::mojom::BlobReaderClient,
 
   base::OnceClosure callback_;
   mojo::Remote<blink::mojom::Blob> blob_;
-  absl::optional<Range> read_range_;
+  std::optional<Range> read_range_;
 
   mojo::Receiver<blink::mojom::BlobReaderClient> receiver_{this};
   std::unique_ptr<mojo::DataPipeDrainer> data_pipe_drainer_;
 
-  absl::optional<uint64_t> blob_length_;
+  std::optional<uint64_t> blob_length_;
   std::unique_ptr<std::string> blob_data_;
   bool data_complete_ = false;
 };

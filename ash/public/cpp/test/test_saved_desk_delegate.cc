@@ -37,11 +37,11 @@ bool TestSavedDeskDelegate::IsWindowPersistable(aura::Window* window) const {
   return true;
 }
 
-absl::optional<gfx::ImageSkia>
+std::optional<gfx::ImageSkia>
 TestSavedDeskDelegate::MaybeRetrieveIconForSpecialIdentifier(
     const std::string& identifier,
     const ui::ColorProvider* color_provider) const {
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void TestSavedDeskDelegate::GetFaviconForUrl(

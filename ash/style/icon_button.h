@@ -24,6 +24,8 @@ class Event;
 
 namespace ash {
 
+class BlurredBackgroundShield;
+
 // A circular ImageButton that can have small/medium/large different sizes. Each
 // of them has the floating version, which does not have the background. The
 // prominent-floating buttons have different icon colors when the button is
@@ -129,6 +131,12 @@ class ASH_EXPORT IconButton : public views::ImageButton {
   // Updates the `toggled_` state of the button.
   void SetToggled(bool toggled);
 
+  // Sets whether to enable the blurred background shield. Setting blurred
+  // background shield enabled will use a blurred background shield to replace
+  // the current background. For floating type button with untoggled state,
+  // there is no blurred background shield even it is enabled.
+  void SetEnableBlurredBackgroundShield(bool enable);
+
   // views::ImageButton:
   void OnFocus() override;
   void OnBlur() override;
@@ -138,6 +146,7 @@ class ASH_EXPORT IconButton : public views::ImageButton {
 
  protected:
   void UpdateBackground();
+  void UpdateBlurredBackgroundShield();
   void UpdateVectorIcon(bool color_changes_only = false);
 
   void OnEnabledStateChanged();
@@ -169,8 +178,13 @@ class ASH_EXPORT IconButton : public views::ImageButton {
   ColorVariant icon_color_ = gfx::kPlaceholderColor;
   ColorVariant icon_toggled_color_ = gfx::kPlaceholderColor;
 
+  bool blurred_background_shield_enabled_ = false;
+  // Note: the blurred background shield will still be null if the button type
+  // is floating with untoggled state.
+  std::unique_ptr<BlurredBackgroundShield> blurred_background_shield_;
+
   // Custom value for icon size (usually used to make the icon smaller).
-  absl::optional<int> icon_size_;
+  std::optional<int> icon_size_;
 
   // Called to update background color when the button is enabled/disabled.
   base::CallbackListSubscription enabled_changed_subscription_;

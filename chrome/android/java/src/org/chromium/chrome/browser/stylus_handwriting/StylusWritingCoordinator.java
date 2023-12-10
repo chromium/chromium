@@ -24,7 +24,8 @@ public class StylusWritingCoordinator implements WindowFocusChangedObserver {
     private final ActivityLifecycleDispatcher mLifecycleDispatcher;
     private final StylusWritingController mStylusWritingController;
 
-    public StylusWritingCoordinator(Activity activity,
+    public StylusWritingCoordinator(
+            Activity activity,
             ActivityLifecycleDispatcher lifecycleDispatcher,
             ObservableSupplier<Tab> activityTabProvider) {
         mActivity = activity;
@@ -33,23 +34,27 @@ public class StylusWritingCoordinator implements WindowFocusChangedObserver {
 
         lifecycleDispatcher.register(this);
         mLifecycleDispatcher = lifecycleDispatcher;
-        mCurrentTabObserver = new CurrentTabObserver(activityTabProvider,
-                new EmptyTabObserver() {
-                    @Override
-                    public void onContentChanged(Tab tab) {
-                        if (tab.getWebContents() == null) return;
-                        mStylusWritingController.onWebContentsChanged(tab.getWebContents());
-                        tab.getContentView().setStylusWritingIconSupplier(
-                                mStylusWritingController::resolvePointerIcon);
-                    }
-                },
-                /* swap Callback */
-                tab -> {
-                    if (tab == null || tab.getWebContents() == null) return;
-                    mStylusWritingController.onWebContentsChanged(tab.getWebContents());
-                    tab.getContentView().setStylusWritingIconSupplier(
-                            mStylusWritingController::resolvePointerIcon);
-                });
+        mCurrentTabObserver =
+                new CurrentTabObserver(
+                        activityTabProvider,
+                        new EmptyTabObserver() {
+                            @Override
+                            public void onContentChanged(Tab tab) {
+                                if (tab.getWebContents() == null) return;
+                                mStylusWritingController.onWebContentsChanged(tab.getWebContents());
+                                tab.getContentView()
+                                        .setStylusWritingIconSupplier(
+                                                mStylusWritingController::resolvePointerIcon);
+                            }
+                        },
+                        /* swap Callback */
+                        tab -> {
+                            if (tab == null || tab.getWebContents() == null) return;
+                            mStylusWritingController.onWebContentsChanged(tab.getWebContents());
+                            tab.getContentView()
+                                    .setStylusWritingIconSupplier(
+                                            mStylusWritingController::resolvePointerIcon);
+                        });
     }
 
     public void destroy() {

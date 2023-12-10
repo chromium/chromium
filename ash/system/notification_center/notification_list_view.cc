@@ -23,6 +23,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"
 #include "base/time/time.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/compositor.h"
 #include "ui/gfx/animation/linear_animation.h"
@@ -68,7 +69,7 @@ void RecordAnimationSmoothness(const std::string& histogram_name,
 
 void SetupThroughputTrackerForAnimationSmoothness(
     views::Widget* widget,
-    absl::optional<ui::ThroughputTracker>& tracker,
+    std::optional<ui::ThroughputTracker>& tracker,
     const char* histogram_name) {
   // `widget` may not exist in tests.
   if (!widget) {
@@ -86,6 +87,8 @@ void SetupThroughputTrackerForAnimationSmoothness(
 // All children of NotificationListView should be MessageViewContainer.
 class NotificationListView::MessageViewContainer : public MessageView::Observer,
                                                    public views::View {
+  METADATA_HEADER(MessageViewContainer, views::View)
+
  public:
   MessageViewContainer(MessageView* message_view,
                        NotificationListView* list_view)
@@ -275,7 +278,7 @@ class NotificationListView::MessageViewContainer : public MessageView::Observer,
       return;
     }
 
-    absl::optional<size_t> index = list_view_->GetIndexOf(this);
+    std::optional<size_t> index = list_view_->GetIndexOf(this);
     if (!index.has_value()) {
       return;
     }
@@ -377,6 +380,9 @@ class NotificationListView::MessageViewContainer : public MessageView::Observer,
   const raw_ptr<NotificationListView, ExperimentalAsh> list_view_;
   const raw_ptr<NotificationSwipeControlView, ExperimentalAsh> control_view_;
 };
+
+BEGIN_METADATA(NotificationListView, MessageViewContainer, views::View)
+END_METADATA
 
 NotificationListView::NotificationListView(
     NotificationCenterView* message_center_view)
@@ -691,15 +697,17 @@ void NotificationListView::OnChildNotificationViewUpdated(
   }
 
   // Update the child notification view with the updated notification.
-  auto* child_view = static_cast<AshNotificationView*>(
-      parent_view->FindGroupNotificationView(child_notification_id));
+  auto* child_view =
+      parent_view->FindGroupNotificationView(child_notification_id);
+
+  if (!child_view) {
+    return;
+  }
+
   auto* notification =
       MessageCenter::Get()->FindNotificationById(child_notification_id);
-
-  if (child_view && notification) {
-    child_view->UpdateWithNotification(*notification);
-    ResetBounds();
-  }
+  static_cast<MessageView*>(child_view)->UpdateWithNotification(*notification);
+  ResetBounds();
 }
 
 void NotificationListView::OnNotificationAdded(const std::string& id) {
@@ -826,8 +834,11 @@ void NotificationListView::OnNotificationUpdated(const std::string& id) {
     return;
   }
 
+  int previous_height = found_child->GetPreferredSize().height();
   found_child->UpdateWithNotification(*notification);
-  ResetBounds();
+  if (found_child->GetPreferredSize().height() != previous_height) {
+    ResetBounds();
+  }
 }
 
 void NotificationListView::OnSlideStarted(const std::string& notification_id) {

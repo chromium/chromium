@@ -1,0 +1,51 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_lacros",
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "optimization_guide.model_execution.compose_enterprise_policy_allowed": {
+            "default_value": 0
+          }
+        }
+      },
+      {
+        "policies": {
+          "ComposeAllowed": 0
+        },
+        "prefs": {
+          "optimization_guide.model_execution.compose_enterprise_policy_allowed": {
+            "value": 0
+          }
+        }
+      },
+      {
+        "policies": {
+          "ComposeAllowed": 1
+        },
+        "prefs": {
+          "optimization_guide.model_execution.compose_enterprise_policy_allowed": {
+            "value": 1
+          }
+        }
+      },
+      {
+        "policies": {
+          "ComposeAllowed": 2
+        },
+        "prefs": {
+          "optimization_guide.model_execution.compose_enterprise_policy_allowed": {
+            "value": 2
+          }
+        }
+      }
+    ]
+  }
+]

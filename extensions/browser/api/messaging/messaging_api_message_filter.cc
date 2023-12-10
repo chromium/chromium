@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "extensions/browser/api/messaging/messaging_api_message_filter.h"
-
+#include <optional>
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/types/optional_util.h"
@@ -22,7 +22,6 @@
 #include "extensions/common/extension_messages.h"
 #include "extensions/common/mojom/message_port.mojom-shared.h"
 #include "extensions/common/trace_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
 

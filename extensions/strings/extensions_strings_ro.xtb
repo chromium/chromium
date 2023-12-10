@@ -8,6 +8,7 @@
 <translation id="1420684932347524586">Hopa! Generarea cheii private RSA aleatorii nu a reușit.</translation>
 <translation id="1445572445564823378">Această extensie încetinește <ph name="PRODUCT_NAME" />. Vă recomandăm să o dezactivați pentru a restabili performanțele produsului <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1468038450257740950">WebGL nu este acceptat.</translation>
+<translation id="1610570795592207282">Nu am putut încărca fișierul CSS <ph name="RELATIVE_PATH" /> pentru script.</translation>
 <translation id="1803557475693955505">Nu se poate încărca pagina de fundal „<ph name="BACKGROUND_PAGE" />”.</translation>
 <translation id="2159915644201199628">Imaginea nu a putut fi decodificată: „<ph name="IMAGE_NAME" />”</translation>
 <translation id="2350172092385603347">A fost utilizată localizarea, dar nu s-a specificat default_locale în manifest.</translation>
@@ -18,14 +19,12 @@
 <translation id="3115238746683532089">Produs necunoscut <ph name="PRODUCT_ID" /> de la furnizorul <ph name="VENDOR_ID" /> (numărul de serie <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">Înlocuirea fișierului crx a eșuat. Verificați dacă fișierul este în uz.</translation>
 <translation id="3163201441334626963">Produs necunoscut <ph name="PRODUCT_ID" /> de la furnizorul <ph name="VENDOR_ID" /></translation>
-<translation id="3302709122321372472">Nu se poate încărca fișierul CSS „<ph name="RELATIVE_PATH" />” pentru scriptul de conținut.</translation>
 <translation id="3369521687965833290">Nu se poate despacheta extensia. Pentru a despacheta în siguranță o extensie, trebuie să existe o cale către directorul de profil, care începe cu o literă de unitate și nu conține o joncțiune, un punct de montare sau un link simbolic. Nu există o astfel de cale pentru profilul tău.</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (numărul de serie <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> de la furnizorul <ph name="VENDOR_ID" /> (numărul de serie <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Valoarea introdusă pentru cheia privată trebuie să fie o cale validă.</translation>
 <translation id="388442998277590542">Nu se poate încărca pagina cu opțiuni „<ph name="OPTIONS_PAGE" />”.</translation>
 <translation id="3984413272403535372">Eroare la semnarea extensiei.</translation>
-<translation id="39964277676607559">Nu se poate încărca conținutul JavaScript „<ph name="RELATIVE_PATH" />” pentru scriptul de conținut.</translation>
 <translation id="4115165561519362854">Administratorul acestui computer solicită ca versiunea minimă pentru <ph name="EXTENSION_NAME" /> să fie <ph name="EXTENSION_VERSION" />. Extensia poate fi activată doar după actualizarea la acea versiune (sau una superioară).</translation>
 <translation id="4233778200880751280">Pagina informativă „<ph name="ABOUT_PAGE" />” nu s-a putut încărca.</translation>
 <translation id="471800408830181311">Cheia privată nu poate fi generată.</translation>
@@ -33,6 +32,7 @@
 <translation id="4988792151665380515">Exportul cheii publice nu a reușit.</translation>
 <translation id="5026754133087629784">Afișare web: <ph name="WEBVIEW_TAG_NAME" /></translation>
 <translation id="5098647635849512368">Nu se poate găsi calea completă către directorul de împachetat.</translation>
+<translation id="5160071981665899014">Nu se poate încărca conținutul JavaScript <ph name="RELATIVE_PATH" /> pentru script.</translation>
 <translation id="5356315618422219272">Eticheta appview: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5436430103864390185">Ferestrele cu formă personalizată nu sunt acceptate.</translation>
 <translation id="5456409301717116725">Această extensie include fișierul cheie „<ph name="KEY_PATH" />”. Probabil că nu doriți să faceți asta.</translation>

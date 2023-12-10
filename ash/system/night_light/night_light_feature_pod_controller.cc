@@ -117,7 +117,7 @@ const std::u16string NightLightFeaturePodController::GetPodSubLabel() {
       const TimeOfDay time_of_day = is_enabled
                                         ? controller->GetCustomEndTime()
                                         : controller->GetCustomStartTime();
-      const absl::optional<base::Time> time = time_of_day.ToTimeToday();
+      const std::optional<base::Time> time = time_of_day.ToTimeToday();
       if (!time) {
         return std::u16string();
       }

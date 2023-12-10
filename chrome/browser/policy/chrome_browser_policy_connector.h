@@ -64,6 +64,9 @@ class ChromeBrowserPolicyConnector : public BrowserPolicyConnector {
             scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
       override;
 
+  // Called to signal the browser has started.
+  virtual void OnBrowserStarted();
+
   bool IsDeviceEnterpriseManaged() const override;
 
   bool HasMachineLevelPolicies() override;
@@ -91,6 +94,8 @@ class ChromeBrowserPolicyConnector : public BrowserPolicyConnector {
   machine_level_user_cloud_policy_manager() {
     return machine_level_user_cloud_policy_manager_;
   }
+  void SetMachineLevelUserCloudPolicyManagerForTesting(
+      MachineLevelUserCloudPolicyManager* manager);
 
   ProxyPolicyProvider* proxy_policy_provider() {
     return proxy_policy_provider_;
@@ -200,7 +205,7 @@ class ChromeBrowserPolicyConnector : public BrowserPolicyConnector {
 
   raw_ptr<ConfigurationPolicyProvider> local_test_provider_for_testing_ =
       nullptr;
-  std::unique_ptr<LocalTestPolicyProvider> local_test_provider_ = nullptr;
+  std::unique_ptr<LocalTestPolicyProvider> local_test_provider_;
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   std::unique_ptr<DeviceSettingsLacros> device_settings_ = nullptr;

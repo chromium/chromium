@@ -41,7 +41,7 @@ WebViewModelTypeStoreServiceFactory::BuildServiceInstanceFor(
   WebViewBrowserState* browser_state =
       WebViewBrowserState::FromBrowserState(context);
   return std::make_unique<syncer::ModelTypeStoreServiceImpl>(
-      browser_state->GetStatePath());
+      browser_state->GetStatePath(), browser_state->GetPrefs());
 }
 
 web::BrowserState* WebViewModelTypeStoreServiceFactory::GetBrowserStateToUse(

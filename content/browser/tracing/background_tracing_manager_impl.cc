@@ -617,11 +617,12 @@ void BackgroundTracingManagerImpl::OnScenarioRecording(
 
 void BackgroundTracingManagerImpl::SaveTrace(
     TracingScenario* scenario,
+    base::Token trace_uuid,
     const BackgroundTracingRule* triggered_rule,
     std::string&& trace_data) {
   OnProtoDataComplete(std::move(trace_data), scenario->scenario_name(),
                       triggered_rule->rule_id(), /*is_crash_scenario=*/false,
-                      scenario->GetSessionID());
+                      trace_uuid);
 }
 
 bool BackgroundTracingManagerImpl::HasActiveScenario() {

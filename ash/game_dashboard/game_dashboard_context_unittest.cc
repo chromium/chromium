@@ -641,6 +641,53 @@ TEST_F(GameDashboardContextTest, GameControlsEditMode) {
   EXPECT_TRUE(tool_bar_widget->IsVisible());
 }
 
+TEST_F(GameDashboardContextTest, CompatModeArcGame) {
+  // Create an ARC game window that supports Compat Mode.
+  CreateGameWindow(/*is_arc_window=*/true);
+  game_window_->SetProperty(ash::kArcResizeLockTypeKey,
+                            ash::ArcResizeLockType::RESIZE_ENABLED_TOGGLABLE);
+
+  test_api_->OpenTheMainMenu();
+
+  auto* screen_size_button = test_api_->GetMainMenuScreenSizeSettingsButton();
+  ASSERT_TRUE(screen_size_button);
+  EXPECT_TRUE(screen_size_button->GetEnabled());
+}
+
+TEST_F(GameDashboardContextTest, NonCompatModeArcGame) {
+  // Create an ARC game window that doesn't support Compat Mode.
+  CreateGameWindow(/*is_arc_window=*/true);
+  game_window_->SetProperty(
+      ash::kArcResizeLockTypeKey,
+      ash::ArcResizeLockType::RESIZE_DISABLED_NONTOGGLABLE);
+
+  test_api_->OpenTheMainMenu();
+
+  auto* screen_size_button = test_api_->GetMainMenuScreenSizeSettingsButton();
+  ASSERT_TRUE(screen_size_button);
+  EXPECT_FALSE(screen_size_button->GetEnabled());
+  EXPECT_EQ(u"This app supports only this size.",
+            screen_size_button->GetTooltipText());
+}
+
+// Verifies the Main Menu View closes when the Screen Size row is selected.
+TEST_F(GameDashboardContextTest, SelectScreenSizeButton) {
+  // Create an ARC game window.
+  CreateGameWindow(/*is_arc_window=*/true);
+  game_window_->SetProperty(ash::kArcResizeLockTypeKey,
+                            ash::ArcResizeLockType::RESIZE_DISABLED_TOGGLABLE);
+
+  test_api_->OpenTheMainMenu();
+
+  auto* screen_size_button = test_api_->GetMainMenuScreenSizeSettingsButton();
+  ASSERT_TRUE(screen_size_button);
+  ASSERT_TRUE(screen_size_button->GetEnabled());
+
+  LeftClickOn(screen_size_button);
+
+  EXPECT_FALSE(test_api_->GetMainMenuWidget());
+}
+
 // Verifies that when one game window starts a recording session, it's
 // record game buttons are enabled and the other game's record game buttons
 // are disabled.

@@ -23,8 +23,9 @@
 #include <wbemidl.h>
 #include <wrl/client.h>
 
+#include <string_view>
+
 #include "base/base_export.h"
-#include "base/strings/string_piece.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
@@ -84,8 +85,8 @@ BASE_EXPORT Microsoft::WRL::ComPtr<IWbemServices> CreateWmiConnection(
 // WMI method that you can fill with parameter values using SetParameter.
 BASE_EXPORT bool CreateWmiClassMethodObject(
     IWbemServices* wmi_services,
-    WStringPiece class_name,
-    WStringPiece method_name,
+    std::wstring_view class_name,
+    std::wstring_view method_name,
     Microsoft::WRL::ComPtr<IWbemClassObject>* class_instance);
 
 // Creates a new process from |command_line|. The advantage over CreateProcess

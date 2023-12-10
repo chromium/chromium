@@ -4,14 +4,14 @@
 
 #include "google_apis/tasks/tasks_api_url_generator_utils.h"
 
+#include <optional>
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace google_apis::tasks {
 
 TEST(TasksApiUrlGeneratorUtilsTest, ReturnsListTaskListsUrl) {
-  EXPECT_EQ(GetListTaskListsUrl(/*max_results=*/absl::nullopt,
+  EXPECT_EQ(GetListTaskListsUrl(/*max_results=*/std::nullopt,
                                 /*page_token=*/""),
             "https://tasks.googleapis.com/tasks/v1/users/@me/lists"
             "?fields=kind%2Citems(id%2Ctitle%2Cupdated)%2CnextPageToken");
@@ -28,11 +28,11 @@ TEST(TasksApiUrlGeneratorUtilsTest, ReturnsListTaskListsUrlWithOptionalArgs) {
 
 TEST(TasksApiUrlGeneratorUtilsTest, ReturnsListTasksUrl) {
   EXPECT_EQ(GetListTasksUrl("task-list-id", /*include_completed=*/false,
-                            /*max_results=*/absl::nullopt,
+                            /*max_results=*/std::nullopt,
                             /*page_token=*/""),
             "https://tasks.googleapis.com/tasks/v1/lists/task-list-id/tasks"
             "?fields=kind%2Citems(id%2Ctitle%2Cstatus%2Cparent%2Cposition"
-            "%2Cdue%2Clinks(type)%2Cnotes)%2CnextPageToken"
+            "%2Cdue%2Clinks(type)%2Cnotes%2Cupdated)%2CnextPageToken"
             "&showCompleted=false");
 }
 
@@ -42,7 +42,7 @@ TEST(TasksApiUrlGeneratorUtilsTest, ReturnsListTasksUrlWithOptionalArgs) {
                             /*page_token=*/"qwerty"),
             "https://tasks.googleapis.com/tasks/v1/lists/task-list-id/tasks"
             "?fields=kind%2Citems(id%2Ctitle%2Cstatus%2Cparent%2Cposition%"
-            "2Cdue%2Clinks(type)%2Cnotes)%2CnextPageToken"
+            "2Cdue%2Clinks(type)%2Cnotes%2Cupdated)%2CnextPageToken"
             "&showCompleted=true"
             "&maxResults=100"
             "&pageToken=qwerty");

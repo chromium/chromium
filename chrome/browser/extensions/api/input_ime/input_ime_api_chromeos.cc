@@ -545,34 +545,6 @@ class ImeObserverChromeOS
         extensions::events::INPUT_IME_ON_SURROUNDING_TEXT_CHANGED,
         input_ime::OnSurroundingTextChanged::kEventName, std::move(args));
   }
-  void OnTouch(ui::EventPointerType pointerType) override {
-    if (extension_id_.empty() ||
-        !HasListener(input_method_private::OnTouch::kEventName))
-      return;
-
-    std::string pointer = "";
-    switch (pointerType) {
-      case ui::EventPointerType::kPen:
-        pointer = "pen";
-        break;
-      case ui::EventPointerType::kMouse:
-        pointer = "mouse";
-        break;
-      case ui::EventPointerType::kTouch:
-        pointer = "touch";
-        break;
-      default:
-        pointer = "other";
-        break;
-    }
-
-    auto args(input_method_private::OnTouch::Create(
-        input_method_private::ParseFocusReason(pointer)));
-
-    DispatchEventToExtension(extensions::events::INPUT_METHOD_PRIVATE_ON_TOUCH,
-                             input_method_private::OnTouch::kEventName,
-                             std::move(args));
-  }
 
   void OnAssistiveWindowButtonClicked(
       const ui::ime::AssistiveWindowButton& button) override {

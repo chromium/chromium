@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "build/chromeos_buildflags.h"
+#include "ui/events/base_event_utils.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
@@ -133,6 +134,8 @@ void WaylandDataDevice::OnEnter(void* data,
     VLOG(1) << "Failed to get window.";
     return;
   }
+  // drag enter event doesn't have timestamp. Use EventTimeForNow().
+  const auto timestamp = EventTimeForNow();
 
   // Null |drag_delegate_| here means that the DND session has been initiated by
   // an external application. In this case, use the default data drag delegate.
@@ -144,7 +147,7 @@ void WaylandDataDevice::OnEnter(void* data,
 
   gfx::PointF point = self->connection()->MaybeConvertLocation(
       gfx::PointF(wl_fixed_to_double(x), wl_fixed_to_double(y)), window);
-  self->drag_delegate_->OnDragEnter(window, point, serial);
+  self->drag_delegate_->OnDragEnter(window, point, timestamp, serial);
 
   self->connection()->Flush();
 }
@@ -159,14 +162,17 @@ void WaylandDataDevice::OnMotion(void* data,
     gfx::PointF point = self->connection()->MaybeConvertLocation(
         gfx::PointF(wl_fixed_to_double(x), wl_fixed_to_double(y)),
         self->drag_delegate_->GetDragTarget());
-    self->drag_delegate_->OnDragMotion(point);
+    self->drag_delegate_->OnDragMotion(point,
+                                       wl::EventMillisecondsToTimeTicks(time));
   }
 }
 
 void WaylandDataDevice::OnDrop(void* data, wl_data_device* data_device) {
+  // drop event doesn't have timestamp. Use EventTimeForNow().
+  const auto timestamp = EventTimeForNow();
   auto* self = static_cast<WaylandDataDevice*>(data);
   if (self->drag_delegate_) {
-    self->drag_delegate_->OnDragDrop();
+    self->drag_delegate_->OnDragDrop(timestamp);
     self->connection()->Flush();
   }
 
@@ -175,15 +181,17 @@ void WaylandDataDevice::OnDrop(void* data, wl_data_device* data_device) {
   // potential leaks and/or UAFs, forcibly call corresponding delegate callback
   // here, in Lacros. TODO(crbug.com/1293415): Remove once Exo bug is fixed.
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  self->drag_delegate_->OnDragLeave();
+  self->drag_delegate_->OnDragLeave(timestamp);
   self->ResetDragDelegateIfNotDragSource();
 #endif
 }
 
 void WaylandDataDevice::OnLeave(void* data, wl_data_device* data_device) {
+  // leave event doesn't have timestamp. Use EventTimeForNow().
+  const auto timestamp = EventTimeForNow();
   auto* self = static_cast<WaylandDataDevice*>(data);
   if (self->drag_delegate_) {
-    self->drag_delegate_->OnDragLeave();
+    self->drag_delegate_->OnDragLeave(timestamp);
     self->connection()->Flush();
   }
   self->ResetDragDelegateIfNotDragSource();

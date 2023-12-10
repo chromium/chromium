@@ -16,6 +16,7 @@
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/shortcut/shortcut.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace apps {
 
@@ -39,24 +40,45 @@ class BrowserShortcutsCrosapiPublisher
   void RegisterCrosapiHost(
       mojo::PendingReceiver<crosapi::mojom::AppShortcutPublisher> receiver);
 
+  void SetLaunchShortcutCallbackForTesting(
+      crosapi::mojom::AppShortcutController::LaunchShortcutCallback callback);
+
+  void SetRemoveShortcutCallbackForTesting(
+      crosapi::mojom::AppShortcutController::RemoveShortcutCallback callback);
+
  private:
   // crosapi::mojom::AppShortcutPublisher overrides.
   void PublishShortcuts(std::vector<apps::ShortcutPtr> deltas,
                         PublishShortcutsCallback callback) override;
+  void RegisterAppShortcutController(
+      mojo::PendingRemote<crosapi::mojom::AppShortcutController> controller,
+      RegisterAppShortcutControllerCallback callback) override;
+  void ShortcutRemoved(const std::string& shortcut_id,
+                       ShortcutRemovedCallback callback) override;
 
   // apps::ShortcutPublisher overrides.
   void LaunchShortcut(const std::string& host_app_id,
                       const std::string& local_shortcut_id,
                       int64_t display_id) override;
-
   void RemoveShortcut(const std::string& host_app_id,
                       const std::string& local_shortcut_id,
                       apps::UninstallSource uninstall_source) override;
+  void GetCompressedIconData(const std::string& shortcut_id,
+                             int32_t size_in_dip,
+                             ui::ResourceScaleFactor scale_factor,
+                             apps::LoadIconCallback callback) override;
 
   void OnCrosapiDisconnected();
+  void OnControllerDisconnected();
 
   mojo::Receiver<crosapi::mojom::AppShortcutPublisher> receiver_{this};
+  mojo::Remote<crosapi::mojom::AppShortcutController> controller_;
   const raw_ptr<apps::AppServiceProxy> proxy_;
+
+  crosapi::mojom::AppShortcutController::LaunchShortcutCallback
+      launch_shortcut_callback_for_testing_;
+  crosapi::mojom::AppShortcutController::RemoveShortcutCallback
+      remove_shortcut_callback_for_testing_;
 
   base::WeakPtrFactory<BrowserShortcutsCrosapiPublisher> weak_factory_{this};
 };

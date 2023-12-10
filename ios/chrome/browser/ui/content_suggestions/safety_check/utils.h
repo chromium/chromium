@@ -5,13 +5,13 @@
 #ifndef IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_SAFETY_CHECK_UTILS_H_
 #define IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_SAFETY_CHECK_UTILS_H_
 
-#import <vector>
-
 #import <UIKit/UIKit.h>
+
+#import <optional>
+#import <vector>
 
 #import "base/time/time.h"
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_constants.h"
-#import "third_party/abseil-cpp/absl/types/optional.h"
 
 @protocol ApplicationCommands;
 namespace password_manager {
@@ -47,11 +47,11 @@ bool InvalidSafeBrowsingState(SafeBrowsingSafetyCheckState state);
 int CheckIssuesCount(SafetyCheckState* state);
 
 // Returns true if the Safety Check can be run given `last_run_time`.
-bool CanRunSafetyCheck(absl::optional<base::Time> last_run_time);
+bool CanRunSafetyCheck(std::optional<base::Time> last_run_time);
 
 // Given `last_run_time`, returns a short, human-readable string for the
 // timestamp.
 NSString* FormatElapsedTimeSinceLastSafetyCheck(
-    absl::optional<base::Time> last_run_time);
+    std::optional<base::Time> last_run_time);
 
 #endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_SAFETY_CHECK_UTILS_H_

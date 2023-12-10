@@ -90,6 +90,10 @@ bool PasswordStoreAndroidBackendBridgeHelperImpl::
       CanUseGetAllLoginsWithBrandingInfoAPI();
 }
 
+bool PasswordStoreAndroidBackendBridgeHelperImpl::CanRemoveUnenrollment() {
+  return PasswordStoreAndroidBackendDispatcherBridge::CanRemoveUnenrollment();
+}
+
 void PasswordStoreAndroidBackendBridgeHelperImpl::SetConsumer(
     base::WeakPtr<Consumer> consumer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);

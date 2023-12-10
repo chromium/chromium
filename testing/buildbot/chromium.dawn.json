@@ -1779,8 +1779,6 @@
           "--use-webgpu-power-preference=default-high-performance",
           "--jobs=4"
         ],
-        "ci_only": true,
-        "experiment_percentage": 100,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -2875,8 +2873,6 @@
           "--use-webgpu-power-preference=default-high-performance",
           "--jobs=4"
         ],
-        "ci_only": true,
-        "experiment_percentage": 100,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -3132,6 +3128,7 @@
           "dimensions": {
             "cpu": "arm64",
             "display_attached": "1",
+            "gpu": "apple:m2",
             "hidpi": "1",
             "mac_model": "Mac14,7",
             "os": "Mac-13.3.1",
@@ -3160,6 +3157,7 @@
           "dimensions": {
             "cpu": "arm64",
             "display_attached": "1",
+            "gpu": "apple:m2",
             "hidpi": "1",
             "mac_model": "Mac14,7",
             "os": "Mac-13.3.1",
@@ -3187,6 +3185,7 @@
           "dimensions": {
             "cpu": "arm64",
             "display_attached": "1",
+            "gpu": "apple:m2",
             "hidpi": "1",
             "mac_model": "Mac14,7",
             "os": "Mac-13.3.1",
@@ -3215,6 +3214,7 @@
           "dimensions": {
             "cpu": "arm64",
             "display_attached": "1",
+            "gpu": "apple:m2",
             "hidpi": "1",
             "mac_model": "Mac14,7",
             "os": "Mac-13.3.1",
@@ -3243,6 +3243,7 @@
           "dimensions": {
             "cpu": "arm64",
             "display_attached": "1",
+            "gpu": "apple:m2",
             "hidpi": "1",
             "mac_model": "Mac14,7",
             "os": "Mac-13.3.1",
@@ -3269,6 +3270,7 @@
           "dimensions": {
             "cpu": "arm64",
             "display_attached": "1",
+            "gpu": "apple:m2",
             "hidpi": "1",
             "mac_model": "Mac14,7",
             "os": "Mac-13.3.1",
@@ -3300,6 +3302,7 @@
           "dimensions": {
             "cpu": "arm64",
             "display_attached": "1",
+            "gpu": "apple:m2",
             "hidpi": "1",
             "mac_model": "Mac14,7",
             "os": "Mac-13.3.1",
@@ -3331,6 +3334,7 @@
           "dimensions": {
             "cpu": "arm64",
             "display_attached": "1",
+            "gpu": "apple:m2",
             "hidpi": "1",
             "mac_model": "Mac14,7",
             "os": "Mac-13.3.1",
@@ -3355,6 +3359,7 @@
           "dimensions": {
             "cpu": "arm64",
             "display_attached": "1",
+            "gpu": "apple:m2",
             "hidpi": "1",
             "mac_model": "Mac14,7",
             "os": "Mac-13.3.1",
@@ -3388,6 +3393,7 @@
           "dimensions": {
             "cpu": "arm64",
             "display_attached": "1",
+            "gpu": "apple:m2",
             "hidpi": "1",
             "mac_model": "Mac14,7",
             "os": "Mac-13.3.1",
@@ -3421,6 +3427,7 @@
           "dimensions": {
             "cpu": "arm64",
             "display_attached": "1",
+            "gpu": "apple:m2",
             "hidpi": "1",
             "mac_model": "Mac14,7",
             "os": "Mac-13.3.1",
@@ -3458,6 +3465,7 @@
           "dimensions": {
             "cpu": "arm64",
             "display_attached": "1",
+            "gpu": "apple:m2",
             "hidpi": "1",
             "mac_model": "Mac14,7",
             "os": "Mac-13.3.1",
@@ -3498,6 +3506,7 @@
           "dimensions": {
             "cpu": "arm64",
             "display_attached": "1",
+            "gpu": "apple:m2",
             "hidpi": "1",
             "mac_model": "Mac14,7",
             "os": "Mac-13.3.1",
@@ -3532,6 +3541,7 @@
           "dimensions": {
             "cpu": "arm64",
             "display_attached": "1",
+            "gpu": "apple:m2",
             "hidpi": "1",
             "mac_model": "Mac14,7",
             "os": "Mac-13.3.1",
@@ -3565,6 +3575,7 @@
           "dimensions": {
             "cpu": "arm64",
             "display_attached": "1",
+            "gpu": "apple:m2",
             "hidpi": "1",
             "mac_model": "Mac14,7",
             "os": "Mac-13.3.1",
@@ -3604,6 +3615,7 @@
           "dimensions": {
             "cpu": "arm64",
             "display_attached": "1",
+            "gpu": "apple:m2",
             "hidpi": "1",
             "mac_model": "Mac14,7",
             "os": "Mac-13.3.1",
@@ -3646,6 +3658,7 @@
           "dimensions": {
             "cpu": "arm64",
             "display_attached": "1",
+            "gpu": "apple:m2",
             "hidpi": "1",
             "mac_model": "Mac14,7",
             "os": "Mac-13.3.1",
@@ -3681,6 +3694,7 @@
           "dimensions": {
             "cpu": "arm64",
             "display_attached": "1",
+            "gpu": "apple:m2",
             "hidpi": "1",
             "mac_model": "Mac14,7",
             "os": "Mac-13.3.1",
@@ -3709,6 +3723,7 @@
           "dimensions": {
             "cpu": "arm64",
             "display_attached": "1",
+            "gpu": "apple:m2",
             "hidpi": "1",
             "mac_model": "Mac14,7",
             "os": "Mac-13.3.1",
@@ -3736,6 +3751,7 @@
           "dimensions": {
             "cpu": "arm64",
             "display_attached": "1",
+            "gpu": "apple:m2",
             "hidpi": "1",
             "mac_model": "Mac14,7",
             "os": "Mac-13.3.1",
@@ -3764,6 +3780,7 @@
           "dimensions": {
             "cpu": "arm64",
             "display_attached": "1",
+            "gpu": "apple:m2",
             "hidpi": "1",
             "mac_model": "Mac14,7",
             "os": "Mac-13.3.1",
@@ -3792,6 +3809,7 @@
           "dimensions": {
             "cpu": "arm64",
             "display_attached": "1",
+            "gpu": "apple:m2",
             "hidpi": "1",
             "mac_model": "Mac14,7",
             "os": "Mac-13.3.1",
@@ -3818,6 +3836,7 @@
           "dimensions": {
             "cpu": "arm64",
             "display_attached": "1",
+            "gpu": "apple:m2",
             "hidpi": "1",
             "mac_model": "Mac14,7",
             "os": "Mac-13.3.1",
@@ -3849,6 +3868,7 @@
           "dimensions": {
             "cpu": "arm64",
             "display_attached": "1",
+            "gpu": "apple:m2",
             "hidpi": "1",
             "mac_model": "Mac14,7",
             "os": "Mac-13.3.1",
@@ -3880,6 +3900,7 @@
           "dimensions": {
             "cpu": "arm64",
             "display_attached": "1",
+            "gpu": "apple:m2",
             "hidpi": "1",
             "mac_model": "Mac14,7",
             "os": "Mac-13.3.1",
@@ -3904,6 +3925,7 @@
           "dimensions": {
             "cpu": "arm64",
             "display_attached": "1",
+            "gpu": "apple:m2",
             "hidpi": "1",
             "mac_model": "Mac14,7",
             "os": "Mac-13.3.1",
@@ -3937,6 +3959,7 @@
           "dimensions": {
             "cpu": "arm64",
             "display_attached": "1",
+            "gpu": "apple:m2",
             "hidpi": "1",
             "mac_model": "Mac14,7",
             "os": "Mac-13.3.1",
@@ -3970,6 +3993,7 @@
           "dimensions": {
             "cpu": "arm64",
             "display_attached": "1",
+            "gpu": "apple:m2",
             "hidpi": "1",
             "mac_model": "Mac14,7",
             "os": "Mac-13.3.1",
@@ -4007,6 +4031,7 @@
           "dimensions": {
             "cpu": "arm64",
             "display_attached": "1",
+            "gpu": "apple:m2",
             "hidpi": "1",
             "mac_model": "Mac14,7",
             "os": "Mac-13.3.1",
@@ -4047,6 +4072,7 @@
           "dimensions": {
             "cpu": "arm64",
             "display_attached": "1",
+            "gpu": "apple:m2",
             "hidpi": "1",
             "mac_model": "Mac14,7",
             "os": "Mac-13.3.1",
@@ -4081,6 +4107,7 @@
           "dimensions": {
             "cpu": "arm64",
             "display_attached": "1",
+            "gpu": "apple:m2",
             "hidpi": "1",
             "mac_model": "Mac14,7",
             "os": "Mac-13.3.1",
@@ -4114,6 +4141,7 @@
           "dimensions": {
             "cpu": "arm64",
             "display_attached": "1",
+            "gpu": "apple:m2",
             "hidpi": "1",
             "mac_model": "Mac14,7",
             "os": "Mac-13.3.1",
@@ -4153,6 +4181,7 @@
           "dimensions": {
             "cpu": "arm64",
             "display_attached": "1",
+            "gpu": "apple:m2",
             "hidpi": "1",
             "mac_model": "Mac14,7",
             "os": "Mac-13.3.1",
@@ -4195,6 +4224,7 @@
           "dimensions": {
             "cpu": "arm64",
             "display_attached": "1",
+            "gpu": "apple:m2",
             "hidpi": "1",
             "mac_model": "Mac14,7",
             "os": "Mac-13.3.1",

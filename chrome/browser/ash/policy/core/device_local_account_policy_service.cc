@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/policy/core/device_local_account_policy_service.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -41,7 +42,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/network_service_instance.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace policy {

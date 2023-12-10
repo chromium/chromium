@@ -47,7 +47,8 @@ function clickAnnotation(index: number): boolean {
     if (length >= maxChars) return;
     if (node.nodeType === Node.ELEMENT_NODE) {
       // Reject non-text nodes such as scripts.
-      if (NON_TEXT_NODE_NAMES.has(node.nodeName)) {
+      if (NON_TEXT_NODE_NAMES.has(node.nodeName) &&
+          node.nodeName !== 'CHROME_ANNOTATION') {
         return;
       }
       const element = node as Element;

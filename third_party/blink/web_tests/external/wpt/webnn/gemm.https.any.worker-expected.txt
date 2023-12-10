@@ -1,0 +1,79 @@
+This is a testharness.js-based test.
+[FAIL] gemm two float32 2D tensors options.c / sync
+  Failed to execute 'buildSync' on 'MLGraphBuilder': The dimensions of bias must be [5].
+[FAIL] gemm two float32 2D tensors broadcast options.c [1, 5] => [3, 5] / sync
+  Failed to execute 'buildSync' on 'MLGraphBuilder': The dimensions of bias must be [5].
+[FAIL] gemm two float32 2D tensors broadcast options.c [3, 1] => [3, 5] / sync
+  Failed to execute 'buildSync' on 'MLGraphBuilder': The dimensions of bias must be [5].
+[FAIL] gemm two float32 2D tensors broadcast options.c [1, 1] => [3, 5] / sync
+  Failed to execute 'buildSync' on 'MLGraphBuilder': The dimensions of bias must be [5].
+[FAIL] gemm two float32 2D tensors broadcast options.c [1] => [3, 5] / sync
+  Failed to execute 'buildSync' on 'MLGraphBuilder': The dimensions of bias must be [5].
+[FAIL] gemm two float32 2D tensors scalar options.c / sync
+  Failed to execute 'buildSync' on 'MLGraphBuilder': The dimensions of bias must be [5].
+[FAIL] gemm two float32 2D tensors options.alpha / sync
+  Failed to execute 'buildSync' on 'MLGraphBuilder': gemm doesn't support alpha option.
+[FAIL] gemm two float32 2D tensors options.beta / sync
+  Failed to execute 'buildSync' on 'MLGraphBuilder': gemm doesn't support beta option.
+[FAIL] gemm two float32 2D tensors options.c and options.beta / sync
+  Failed to execute 'buildSync' on 'MLGraphBuilder': The dimensions of bias must be [5].
+[FAIL] gemm two float32 2D tensors options.aTranspose being true / sync
+  Failed to execute 'buildSync' on 'MLGraphBuilder': gemm doesn't support aTranspose option.
+[FAIL] gemm two float32 2D tensors all options / sync
+  Failed to execute 'buildSync' on 'MLGraphBuilder': The dimensions of bias must be [5].
+[FAIL] gemm both negative options.alpha and 1st float32 input tensor / sync
+  Failed to execute 'buildSync' on 'MLGraphBuilder': The dimensions of bias must be [5].
+[FAIL] gemm both negative options.alpha and 2nd float32 input tensor / sync
+  Failed to execute 'buildSync' on 'MLGraphBuilder': The dimensions of bias must be [5].
+[FAIL] gemm both negative options.beta and 3rd float32 input tensor (options.c) / sync
+  Failed to execute 'buildSync' on 'MLGraphBuilder': The dimensions of bias must be [5].
+[FAIL] gemm both negative options.alpha and options.beta / sync
+  Failed to execute 'buildSync' on 'MLGraphBuilder': The dimensions of bias must be [5].
+[FAIL] gemm both negative options.alpha and 3rd float32 input tensor (options.c) / sync
+  Failed to execute 'buildSync' on 'MLGraphBuilder': The dimensions of bias must be [5].
+[FAIL] gemm two float32 2D tensors (b is non-constant) default options / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] gemm two float32 2D tensors default options / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] gemm two float32 2D tensors options.c / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] gemm two float32 2D tensors broadcast options.c [1, 5] => [3, 5] / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] gemm two float32 2D tensors broadcast options.c [3, 1] => [3, 5] / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] gemm two float32 2D tensors broadcast options.c [1, 1] => [3, 5] / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] gemm two float32 2D tensors broadcast options.c [5] => [3, 5] / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] gemm two float32 2D tensors broadcast options.c [1] => [3, 5] / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] gemm two float32 2D tensors scalar options.c / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] gemm two float32 2D tensors options.alpha / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] gemm two float32 2D tensors options.beta / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] gemm two float32 2D tensors options.c and options.beta / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] gemm two float32 2D tensors options.aTranspose being true / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] gemm two float32 2D tensors options.aTranspose being explicit false / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] gemm two float32 2D tensors options.bTranspose being true / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] gemm two float32 2D tensors options.bTranspose being explicit false / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] gemm two float32 2D tensors all options / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] gemm both negative options.alpha and 1st float32 input tensor / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] gemm both negative options.alpha and 2nd float32 input tensor / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] gemm both negative options.beta and 3rd float32 input tensor (options.c) / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] gemm both negative options.alpha and options.beta / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] gemm both negative options.alpha and 3rd float32 input tensor (options.c) / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+Harness: the test ran to completion.
+

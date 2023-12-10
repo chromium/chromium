@@ -12,7 +12,6 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chromeos/ui/base/tablet_state.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/render_view_host.h"
@@ -21,6 +20,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
+#include "ui/display/screen.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ui/webui/ash/system_web_dialog_delegate.h"
@@ -58,9 +58,10 @@ void OverrideWebkitPrefsForTabletMode(
     content::WebContents* contents,
     blink::web_pref::WebPreferences* web_prefs) {
   // Enable some mobile-like behaviors when in tablet mode on Chrome OS.
-  if (!chromeos::TabletState::Get() ||
-      !chromeos::TabletState::Get()->InTabletMode())
+  if (!display::Screen::GetScreen()->HasScreen() ||
+      !display::Screen::GetScreen()->InTabletMode()) {
     return;
+  }
 
   // Do this only for webcontents displayed in browsers and are not of hosted
   // apps.

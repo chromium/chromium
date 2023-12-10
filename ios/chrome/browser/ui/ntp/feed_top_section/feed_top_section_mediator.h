@@ -36,7 +36,7 @@ class IdentityManager;
 @property(nonatomic, weak) SigninPromoViewMediator* signinPromoMediator;
 
 // Delegate for NTP related actions.
-@property(nonatomic, weak) id<NewTabPageDelegate> ntpDelegate;
+@property(nonatomic, weak) id<NewTabPageDelegate> NTPDelegate;
 
 // Returns `YES` if the signin promo exists on the current NTP.
 @property(nonatomic, assign) BOOL isSignInPromoEnabled;

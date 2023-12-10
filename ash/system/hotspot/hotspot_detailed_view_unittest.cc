@@ -16,7 +16,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "chromeos/ash/services/hotspot_config/public/cpp/cros_hotspot_config_test_helper.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/gfx/vector_icon_types.h"
@@ -59,11 +58,7 @@ class HotspotDetailedViewTest : public AshTestBase {
   ~HotspotDetailedViewTest() override = default;
 
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kHotspot, features::kQsRevamp}, {});
-    cros_hotspot_config_test_helper_ =
-        std::make_unique<hotspot_config::CrosHotspotConfigTestHelper>(
-            /*use_fake_implementation=*/true);
+    scoped_feature_list_.InitWithFeatures({features::kHotspot}, {});
     AshTestBase::SetUp();
 
     auto hotspot_detailed_view = std::make_unique<HotspotDetailedView>(
@@ -79,7 +74,6 @@ class HotspotDetailedViewTest : public AshTestBase {
     widget_.reset();
 
     AshTestBase::TearDown();
-    cros_hotspot_config_test_helper_.reset();
   }
 
   void UpdateHotspotView(HotspotState state,
@@ -157,8 +151,6 @@ class HotspotDetailedViewTest : public AshTestBase {
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
-  std::unique_ptr<hotspot_config::CrosHotspotConfigTestHelper>
-      cros_hotspot_config_test_helper_;
   std::unique_ptr<views::Widget> widget_;
   FakeHotspotDetailedViewDelegate hotspot_detailed_view_delegate_;
   FakeDetailedViewDelegate detailed_view_delegate_;
@@ -208,6 +200,11 @@ TEST_F(HotspotDetailedViewTest, HotspotEnabledUI) {
 
   UpdateHotspotView(HotspotState::kEnabled, HotspotAllowStatus::kAllowed, 2);
   AssertSubtextLabel(u"2 devices connected");
+
+  UpdateHotspotView(HotspotState::kEnabled,
+                    HotspotAllowStatus::kDisallowedNoMobileData);
+  AssertToggleOn(/*expected_toggle_on=*/true,
+                 /**expected_toggle_enabled=*/true);
 }
 
 TEST_F(HotspotDetailedViewTest, HotspotEnablingUI) {

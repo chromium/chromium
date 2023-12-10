@@ -30,6 +30,7 @@ message Descriptors {
 
 message Image {
   bytes encoded_image = 1;
+  int64 image_id = 2;
 }
 
 message WallpaperSearchImageQuality {

@@ -9,6 +9,7 @@
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/mem_buffer_util.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/bind.h"
 #include "base/test/test_future.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
@@ -549,19 +550,18 @@ class ChunkedHttpTransactionFactory : public net::test_server::HttpResponse {
 IN_PROC_BROWSER_TEST_F(FrameImplTest, NavigationEventDuringPendingLoad) {
   auto frame = FrameForTest::Create(context(), {});
 
-  ChunkedHttpTransactionFactory* factory = new ChunkedHttpTransactionFactory;
+  auto factory = std::make_unique<ChunkedHttpTransactionFactory>();
   base::RunLoop transaction_created_run_loop;
   factory->SetOnResponseCreatedCallback(
       transaction_created_run_loop.QuitClosure());
   embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
       &net::test_server::HandlePrefixedRequest, "/pausable",
-      base::BindRepeating(
-          [](std::unique_ptr<ChunkedHttpTransactionFactory> out_factory,
-             const net::test_server::HttpRequest&)
+      base::BindLambdaForTesting(
+          [&](const net::test_server::HttpRequest&)
               -> std::unique_ptr<net::test_server::HttpResponse> {
-            return out_factory;
-          },
-          base::Passed(base::WrapUnique(factory)))));
+            CHECK(factory);
+            return std::move(factory);
+          })));
 
   net::test_server::EmbeddedTestServerHandle test_server_handle;
   ASSERT_TRUE(test_server_handle =
@@ -921,7 +921,7 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, MAYBE_SetPageScale) {
                                        url.spec()));
   frame.navigation_listener().RunUntilUrlAndTitleEquals(url, "done");
 
-  absl::optional<base::Value> default_dpr =
+  std::optional<base::Value> default_dpr =
       ExecuteJavaScript(frame.ptr().get(), "window.devicePixelRatio");
   ASSERT_TRUE(default_dpr);
 
@@ -933,7 +933,7 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, MAYBE_SetPageScale) {
   settings.set_page_scale(kZoomInScale);
   frame->SetContentAreaSettings(std::move(settings));
 
-  absl::optional<base::Value> scaled_dpr =
+  std::optional<base::Value> scaled_dpr =
       ExecuteJavaScript(frame.ptr().get(), "window.devicePixelRatio");
   ASSERT_TRUE(scaled_dpr);
 
@@ -949,7 +949,7 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, MAYBE_SetPageScale) {
                                        url2.spec()));
   frame.navigation_listener().RunUntilUrlAndTitleEquals(url2, "done");
 
-  absl::optional<base::Value> dpr_after_navigation =
+  std::optional<base::Value> dpr_after_navigation =
       ExecuteJavaScript(frame.ptr().get(), "window.devicePixelRatio");
   ASSERT_TRUE(scaled_dpr);
 
@@ -962,7 +962,7 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, MAYBE_SetPageScale) {
   settings2.set_page_scale(kDefaultScale);
   frame->SetContentAreaSettings(std::move(settings2));
 
-  absl::optional<base::Value> dpr_after_reset =
+  std::optional<base::Value> dpr_after_reset =
       ExecuteJavaScript(frame.ptr().get(), "window.devicePixelRatio");
   ASSERT_TRUE(dpr_after_reset);
 
@@ -974,7 +974,7 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, MAYBE_SetPageScale) {
   settings3.set_page_scale(kZoomOutScale);
   frame->SetContentAreaSettings(std::move(settings3));
 
-  absl::optional<base::Value> zoomed_out_dpr =
+  std::optional<base::Value> zoomed_out_dpr =
       ExecuteJavaScript(frame.ptr().get(), "window.devicePixelRatio");
   ASSERT_TRUE(zoomed_out_dpr);
 
@@ -998,7 +998,7 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, MAYBE_SetPageScale) {
                                        url.spec()));
   frame2.navigation_listener().RunUntilUrlAndTitleEquals(url, "done");
 
-  absl::optional<base::Value> frame2_dpr =
+  std::optional<base::Value> frame2_dpr =
       ExecuteJavaScript(frame2.ptr().get(), "window.devicePixelRatio");
   ASSERT_TRUE(frame2_dpr);
 

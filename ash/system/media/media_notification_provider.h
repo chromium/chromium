@@ -54,14 +54,13 @@ class ASH_EXPORT MediaNotificationProvider {
   virtual bool HasFrozenNotifications() = 0;
 
   // Returns a MediaNotificationListView that will show a list of
-  // MediaItemUIView for all the active media items. If `item_id` is not empty,
-  // the list will only show the item for this ID. If `show_devices_for_item_id`
-  // is not empty, when the list shows the item for this ID, it will expand the
-  // casting device list too.
+  // MediaItemUIView for all the active media items. If
+  // `show_devices_for_item_id` is not empty, when the list shows the item for
+  // this ID, it will expand the casting device list too.
   virtual std::unique_ptr<views::View> GetMediaNotificationListView(
       int separator_thickness,
       bool should_clip_height,
-      const std::string& item_id = "",
+      global_media_controls::GlobalMediaControlsEntryPoint entry_point,
       const std::string& show_devices_for_item_id = "") = 0;
 
   // Used for ash to notify the bubble is closing.

@@ -105,7 +105,7 @@ class Keys(object):
     R_DELETE = u"\uE05D"
 
 
-ALL_KEYS = getmembers(Keys, lambda x: type(x) == str)
+ALL_KEYS = getmembers(Keys, lambda x: type(x) is str)
 
 ALL_EVENTS = OrderedDict(
     [
@@ -243,10 +243,10 @@ ALL_EVENTS = OrderedDict(
         )),
         ("EQUALS", OrderedDict(
             [
-                ("code", ""),
+                ("code", "NumpadEqual"),
                 ("ctrl", False),
                 ("key", "="),
-                ("location", 0),
+                ("location", 3),
                 ("meta", False),
                 ("shift", False),
                 ("value", u"\ue019")
@@ -606,7 +606,7 @@ ALL_EVENTS = OrderedDict(
         )),
         ("PAUSE", OrderedDict(
             [
-                ("code", ""),
+                ("code", "Pause"),
                 ("ctrl", False),
                 ("key", "Pause"),
                 ("location", 0),

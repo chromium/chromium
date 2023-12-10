@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ta">
 <translation id="1075622780330595106">உங்கள் <ph name="NUMBER_OF_TABS" /> தாவல்கள் சமீபத்தில் பயன்படுத்தவில்லை. அவற்றை மூடவா?</translation>
+<translation id="1155815720264022949">பழைய பக்கங்களை மூட வேண்டுமா?</translation>
 <translation id="1215127405478249895">பக்கங்களைப் பாருங்கள்</translation>
 <translation id="125153950246128346">வேறொரு தாவலைப் பார்க்க, தட்டவும்</translation>
 <translation id="1499635324672558517">மறைநிலைப் பக்கங்கள் அனைத்தையும் மூடவா?</translation>
@@ -46,9 +47,11 @@
 <translation id="5073204694187207510">முழுத்திரை கட்டத்தை மூடு</translation>
 <translation id="5076161749301278626">ஸ்டோருக்குக் கிடைத்த கருத்துகளைப் பார்க்க வேண்டுமா?</translation>
 <translation id="5082793167783849073">ஒரு குழுவை உருவாக்கிப் பக்கங்களை விரைவாக ஒப்பிடலாம். தொடங்க, ஓர் இணைப்பைத் தொட்டுப் பிடிக்கவும்.</translation>
+<translation id="5303274951032363933">{TABS_COUNT,plural, =1{நீங்கள் சமீபத்தில் பயன்படுத்தாத <ph name="TABS_COUNT_ONE" /> பக்கம் உள்ளது}other{நீங்கள் சமீபத்தில் பயன்படுத்தாத <ph name="TABS_COUNT_MANY" /> பக்கங்கள் உள்ளன}}</translation>
 <translation id="5339733443032484186">உங்கள் கடைசிப் பக்கம்</translation>
 <translation id="5490235265819901748">பக்கக் குழு விரிவாக்கப்பட்டது</translation>
 <translation id="5494920125229734069">எல்லாவற்றையும் தேர்ந்தெடு</translation>
+<translation id="5545379293264651575">சரிபார்க்காமல் மூடு</translation>
 <translation id="5556417849629758491">ஸ்டோர் தகவலைப் பார்ப்பதற்கான விருப்பம் திரையின் மேற்பகுதிக்கு அருகில் உள்ளது</translation>
 <translation id="5558362125926932819"><ph name="NUMBER_OF_TABS" /> பக்கங்கள் உள்ள பக்கக் குழுவை மூடும்</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" /> தாவல்கள் குழுவாக்கப்பட்டுள்ளன</translation>
@@ -85,7 +88,6 @@
 <translation id="7885132941432959125">தாவலை வலதுபுறம் நகர்த்து</translation>
 <translation id="7966321538264951561">பரிந்துரைகளை நிராகரிக்கும்.</translation>
 <translation id="8029301326595421733">இந்த ஸ்டோர் குறித்த தகவல்கள் முழுத் திரையில் காட்டப்பட்டுள்ளன</translation>
-<translation id="814503310257431685">அனைத்தும் காட்டு</translation>
 <translation id="8205266828577616993">தாவலை மேலே நகர்த்து</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{தேர்ந்தெடுத்த <ph name="TABS_COUNT_ONE" /> தாவலை மூடும்}other{தேர்ந்தெடுத்த <ph name="TABS_COUNT_MANY" /> தாவல்களை மூடும்}}</translation>
 <translation id="8398929769197326728">புதிய ஃபோல்டர் - <ph name="CURRENT_TIMESTAMP_MS" /></translation>

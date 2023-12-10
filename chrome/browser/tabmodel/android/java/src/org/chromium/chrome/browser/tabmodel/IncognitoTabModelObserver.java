@@ -4,13 +4,9 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
-/**
- * An observer of {@link IncognitoTabModel} that receives events relevant to incognito tabs.
- */
+/** An observer of {@link IncognitoTabModel} that receives events relevant to incognito tabs. */
 public interface IncognitoTabModelObserver {
-    /**
-     * A delegate to control whether to show or hide the Incognito re-auth dialog.
-     */
+    /** A delegate to control whether to show or hide the Incognito re-auth dialog. */
     interface IncognitoReauthDialogDelegate {
         /**
          * An event which is fired the last when the {@link TabModel} changed to regular in order
@@ -26,13 +22,9 @@ public interface IncognitoTabModelObserver {
         void onBeforeIncognitoTabModelSelected();
     }
 
-    /**
-     * Called when the first tab of the {@link IncognitoTabModel} is created.
-     */
+    /** Called when the first tab of the {@link IncognitoTabModel} is created. */
     default void wasFirstTabCreated() {}
 
-    /**
-     * Called when the last tab of the {@link IncognitoTabModel} is closed.
-     */
+    /** Called when the last tab of the {@link IncognitoTabModel} is closed. */
     default void didBecomeEmpty() {}
 }

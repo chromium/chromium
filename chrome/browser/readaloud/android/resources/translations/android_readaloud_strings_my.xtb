@@ -2,11 +2,14 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="my">
 <translation id="1178581264944972037">ဆိုင်းငံ့ထားရန်</translation>
-<translation id="2558806128245168542">နောက်သို့ ပြန်သွားရန်</translation>
-<translation id="3523426587027570423">“ဤစာမျက်နှာကို နားထောင်ရန်” ကို ပိတ်ရန် တို့ပါ။</translation>
+<translation id="1921351128855867012"><ph name="NUMBER_OF_SECONDS" /> စက္ကန့် ရှေ့သို့အမြန်ရစ်ရန်</translation>
+<translation id="1984328900355667246">ဖွင့်မရပါ</translation>
+<translation id="3023502830214299618">ဤစာမျက်နှာအတွက် ဖွင့်ခြင်းကို လောလောဆယ် မရနိုင်ပါ။ နောက်မှ ထပ်စမ်းကြည့်ပါ။</translation>
+<translation id="3807208219231826020">ဖွင့်ထားသည့်အပုဒ်တွင် ရှာရန်</translation>
+<translation id="385051799172605136">နောက်သို့</translation>
 <translation id="4431240646217225907">စာသား မြင်သာအောင်လုပ်ပြီး အလိုအလျောက် လှိမ့်ရန်</translation>
 <translation id="4654641641922242357">“ဤစာမျက်နှာကို နားထောင်ရန်” ဖွင့်စနစ်။</translation>
-<translation id="4731877163452936634">ဖွင့်သည့်မြန်နှုန်း- <ph name="PLAYBACK_SPEED" /> ပြောင်းရန် နှိပ်ပါ။</translation>
+<translation id="4872475766448853257"><ph name="NUMBER_OF_SECONDS" /> စက္ကန့် ပြန်သွားရန်</translation>
 <translation id="5234971936051226002">“ဤစာမျက်နှာကို နားထောင်ရန်” ဖွင့်စနစ်ကို ချုံ့ထားသည်။</translation>
 <translation id="5596627076506792578">ပိုမို ရွေးချယ်စရာများ</translation>
 <translation id="6315170314923504164">အသံ</translation>
@@ -15,8 +18,8 @@
 <translation id="6831043979455480757">ဘာသာပြန်ရန်</translation>
 <translation id="6846298663435243399">တင်ပေးနေ…</translation>
 <translation id="7587250070160020374">Chrome ယခု ဖွင့်နေသည်များ</translation>
-<translation id="7945822420239537236">ရှေ့သို့ <ph name="NUMBER_OF_SECONDS" /> စက္ကန့်ရစ်ရန်</translation>
-<translation id="7972866381678406344">နောက်သို့ <ph name="NUMBER_OF_SECONDS" /> စက္ကန့်ရစ်ရန်</translation>
 <translation id="8136852699834914183">ဤစာမျက်နှာအတွက် ဖွင့်ခြင်း မရနိုင်ပါ။</translation>
+<translation id="8264989794233974275">မြန်နှုန်း <ph name="PLAYBACK_SPEED" /> ဆ တိုး/လျှော့ရန်။</translation>
+<translation id="8407011429883244666">ပလေယာပိတ်ရန်။</translation>
 <translation id="8953618380150219653">“ဤစာမျက်နှာကို နားထောင်ရန်” ဖွင့်စနစ်ကို မြင်ကွင်းအပြည့် ဖွင့်ထားသည်။</translation>
 </translationbundle>

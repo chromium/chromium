@@ -96,6 +96,13 @@ class MockAnchorElementMetricsHost
       mojom::blink::AnchorElementPointerEventForMLModelPtr pointer_event)
       override {}
 
+  void ShouldSkipUpdateDelays(
+      ShouldSkipUpdateDelaysCallback callback) override {
+    // We don't use this mechanism to disable the delay of reports, as the tests
+    // cover the delaying logic.
+    std::move(callback).Run(false);
+  }
+
  public:
   std::vector<mojom::blink::AnchorElementClickPtr> clicks_;
   std::vector<mojom::blink::AnchorElementEnteredViewportPtr> entered_viewport_;

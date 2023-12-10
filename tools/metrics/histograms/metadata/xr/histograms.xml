@@ -22,12 +22,13 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
-<histogram name="VRSessionTime" units="ms" expires_after="2024-04-28">
+<histogram name="VRSessionTime.WebVR" units="ms" expires_after="2024-04-28">
   <owner>alcooper@chromium.org</owner>
   <owner>xr-dev@chromium.org</owner>
   <summary>
     The duration of the VR session. Logged when a new disjoint session has
-    begun, or when the session has ended in a non-continuable way.
+    begun, or when the session has ended in a non-continuable way. Restricted to
+    the period that the browser is displaying WebVR (XR) content.
   </summary>
 </histogram>
 
@@ -48,7 +49,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="XR.RuntimeUsed" enum="XRDeviceId" expires_after="2024-01-07">
+<histogram name="XR.RuntimeUsed" enum="XRDeviceId" expires_after="2025-01-07">
   <owner>alcooper@chromium.org</owner>
   <owner>xr-dev@chromium.org</owner>
   <summary>

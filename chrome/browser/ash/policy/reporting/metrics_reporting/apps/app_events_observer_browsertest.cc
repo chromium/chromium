@@ -207,7 +207,7 @@ IN_PROC_BROWSER_TEST_F(AppEventsObserverBrowserTest, ReportPreinstalledApp) {
 
   const auto app_id = InstallStandaloneWebApp(GURL(kWebAppUrl));
   ::content::RunAllTasksUntilIdle();
-  ASSERT_FALSE(missive_observer.HasNewEnqueuedRecords());
+  ASSERT_FALSE(missive_observer.HasNewEnqueuedRecord());
   EXPECT_THAT(profile()->GetPrefs()->GetList(::ash::reporting::kAppsInstalled),
               Contains(app_id).Times(1));
 }

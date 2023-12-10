@@ -69,6 +69,9 @@ struct GFX_EXPORT GpuFenceHandle {
   HANDLE Peek() const;
 #endif
 
+  // Returns global total number of clones since last call.
+  static uint32_t GetAndClearNumberOfClones();
+
  private:
   struct RefCountedScopedFence
       : public base::RefCountedThreadSafe<RefCountedScopedFence> {

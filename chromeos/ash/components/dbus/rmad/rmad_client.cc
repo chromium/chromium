@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/components/dbus/rmad/rmad_client.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/files/file_path.h"
@@ -20,7 +21,6 @@
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/object_proxy.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace ash {
@@ -110,10 +110,10 @@ class RmadClientImpl : public RmadClient {
       observers_;
 
   // True if the RMAD executable exists.
-  absl::optional<bool> rma_executable_exists_;
+  std::optional<bool> rma_executable_exists_;
 
   // True if the RMAD state file exists.
-  absl::optional<bool> rma_state_file_exists_;
+  std::optional<bool> rma_state_file_exists_;
 
   // Set from the response to the RMA daemon D-Bus call.
   bool is_rma_required_ = false;
@@ -443,7 +443,7 @@ void RmadClientImpl::TransitionNextState(
   if (!writer.AppendProtoAsArrayOfBytes(protobuf_request)) {
     LOG(ERROR) << "Error constructing message for "
                << rmad::kTransitionNextStateMethod;
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
   rmad_proxy_->CallMethod(
@@ -505,7 +505,7 @@ void RmadClientImpl::RecordBrowserActionMetric(
   if (!writer.AppendProtoAsArrayOfBytes(request)) {
     LOG(ERROR) << "Error constructing message for "
                << rmad::kRecordBrowserActionMetricMethod;
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
 
@@ -576,7 +576,7 @@ void RmadClientImpl::OnProtoReply(chromeos::DBusMethodCallback<T> callback,
                                   dbus::Response* response) {
   if (!response) {
     LOG(ERROR) << "Error calling rmad function";
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
 
@@ -584,7 +584,7 @@ void RmadClientImpl::OnProtoReply(chromeos::DBusMethodCallback<T> callback,
   T response_proto;
   if (!reader.PopArrayOfBytesAsProto(&response_proto)) {
     LOG(ERROR) << "Unable to decode response for " << response->GetMember();
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
   DCHECK(!reader.HasMoreData());

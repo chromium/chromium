@@ -8,9 +8,7 @@ import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 
-/**
- * Observer of tab changes for all tabs owned by a {@link TabModel}.
- */
+/** Observer of tab changes for all tabs owned by a {@link TabModel}. */
 public class TabModelTabObserver extends EmptyTabObserver {
     private final TabModel mTabModel;
     private final TabModelObserver mTabModelObserver;
@@ -55,9 +53,7 @@ public class TabModelTabObserver extends EmptyTabObserver {
         maybeCallOnTabSelected();
     }
 
-    /**
-     * Destroys the observer and removes itself as a listener for Tab updates.
-     */
+    /** Destroys the observer and removes itself as a listener for Tab updates. */
     public void destroy() {
         mTabModel.removeObserver(mTabModelObserver);
         int tabCount = mTabModel.getCount();

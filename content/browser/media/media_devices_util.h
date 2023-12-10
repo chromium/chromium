@@ -21,12 +21,6 @@
 namespace content {
 
 using DeviceIdCallback = base::OnceCallback<void(const std::string&)>;
-// Returns the ID of the user-default device ID via `callback`.
-// If no such device ID can be found, `callback` receives an empty string.
-CONTENT_EXPORT void GetDefaultMediaDeviceID(
-    blink::mojom::MediaDeviceType device_type,
-    GlobalRenderFrameHostId render_frame_host_id,
-    DeviceIdCallback callback);
 
 class CONTENT_EXPORT MediaDeviceSaltAndOrigin {
  public:
@@ -102,20 +96,17 @@ using GetMediaDeviceSaltAndOriginCallback =
 // `salt_and_origin`.
 // The `group_id` field is hashed using the `group_id_salt` and `origin` in
 // `salt_and_origin`.
-// If `has_permission` is false:
-//   If `features::kEnumerateDevicesHideDeviceIDs` is enabled, all fields in the
-//   returned value are empty.
-//   Otherwise, only the label field is empty.
+// If `has_permission` is false all fields in the returned value are empty.
 CONTENT_EXPORT blink::WebMediaDeviceInfo TranslateMediaDeviceInfo(
     bool has_permission,
     const MediaDeviceSaltAndOrigin& salt_and_origin,
     const blink::WebMediaDeviceInfo& device_info);
 
 // Returns a translated (HMAC) version of raw `device_infos`, with each element
-// translated using TranslateMediaDeviceInfo(). If `has_permission` is false and
-// `features::kEnumerateDevicesHideDeviceIDs` is enabled, the output will
-// contain at most one element per device type with empty values for all fields,
-// as per https://w3c.github.io/mediacapture-main/#access-control-model
+// translated using TranslateMediaDeviceInfo(). If `has_permission` is false,
+// the output will contain at most one element per device type with empty values
+// for all fields, as per
+// https://w3c.github.io/mediacapture-main/#access-control-model
 CONTENT_EXPORT blink::WebMediaDeviceInfoArray TranslateMediaDeviceInfoArray(
     bool has_permission,
     const MediaDeviceSaltAndOrigin& salt_and_origin,

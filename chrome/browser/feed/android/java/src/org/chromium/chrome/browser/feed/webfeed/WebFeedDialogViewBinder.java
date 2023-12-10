@@ -16,9 +16,7 @@ import org.chromium.chrome.browser.feed.R;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
-/**
- * Class responsible for binding the model and the view for the WebFeed dialog.
- */
+/** Class responsible for binding the model and the view for the WebFeed dialog. */
 class WebFeedDialogViewBinder {
     static void bind(PropertyModel model, View view, PropertyKey propertyKey) {
         if (ILLUSTRATION == propertyKey) {

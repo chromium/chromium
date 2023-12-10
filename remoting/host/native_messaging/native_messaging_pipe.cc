@@ -37,7 +37,7 @@ void NativeMessagingPipe::OnDisconnect() {
 
 void NativeMessagingPipe::PostMessageFromNativeHost(
     const std::string& message) {
-  absl::optional<base::Value> json = base::JSONReader::Read(message);
+  std::optional<base::Value> json = base::JSONReader::Read(message);
   channel_->SendMessage(json);
 }
 

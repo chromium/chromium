@@ -1,0 +1,10 @@
+This is a testharness.js-based test.
+Found 3 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] Shorthand contraction of view-timeline-name:--a, --b, --c:undefined;view-timeline-axis:inline, inline:undefined;view-timeline-inset:auto, auto:undefined
+  assert_equals: Declared value expected "--a inline, --b inline, --c inline" but got ""
+[FAIL] Shorthand contraction of view-timeline-name:--a, --b:undefined;view-timeline-axis:inline, inline, inline:undefined;view-timeline-inset:auto, auto, auto:undefined
+  assert_equals: Declared value expected "--a inline, --b inline" but got ""
+[FAIL] Shorthand contraction of view-timeline-name:--a, --b:undefined;view-timeline-axis:inline, inline:undefined;view-timeline-inset:auto, auto, auto:undefined
+  assert_equals: Declared value expected "--a inline, --b inline" but got ""
+Harness: the test ran to completion.
+

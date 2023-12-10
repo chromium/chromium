@@ -66,6 +66,9 @@ enum State {
   // current domain.
   GENERATED_PASSWORD_CONFIRMATION_STATE,
 
+  // Saved credentials cannot be filled because of a Keychain error.
+  KEYCHAIN_ERROR_STATE,
+
   // For the current sign-in form, one of the stored credentials is shared by
   // another user. The user is notified about the existence of that credential
   // using a native bubble. The bubble keeps showing every time the user visits

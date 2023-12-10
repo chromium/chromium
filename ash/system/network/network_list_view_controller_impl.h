@@ -5,6 +5,7 @@
 #ifndef ASH_SYSTEM_NETWORK_NETWORK_LIST_VIEW_CONTROLLER_IMPL_H_
 #define ASH_SYSTEM_NETWORK_NETWORK_LIST_VIEW_CONTROLLER_IMPL_H_
 
+#include <optional>
 #include <string>
 
 #include "ash/ash_export.h"
@@ -27,7 +28,6 @@
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace views {
 class ImageView;
@@ -164,9 +164,10 @@ class ASH_EXPORT NetworkListViewControllerImpl
           networks,
       NetworkIdToViewMap* previous_views);
 
-  // Generates the correct warning to display based on the enterprise status
-  // andn XDR reporting policy.
-  std::u16string GenerateLabelText(bool show_managed_icon);
+  // Generates the correct warning to display based on the management status of
+  // the network configurations and how privacy intrusive the network
+  // configurations are.
+  std::u16string GenerateLabelText();
 
   // Creates a view that indicates connections might be monitored if
   // connected to a VPN, if the default network has a proxy installed, if the
@@ -277,12 +278,12 @@ class ASH_EXPORT NetworkListViewControllerImpl
   bool is_tether_enabled_;
   std::string connected_vpn_guid_;
 
-  // Can be nullopt while the managed properties of the network are being
-  // fetched via mojo. If one of `is_proxy_managed_` or `is_vpn_managed_` is
-  // true, the system icon shown next to the privacy warning is replaced by a
-  // managed icon.
-  absl::optional<bool> is_proxy_managed_;
-  absl::optional<bool> is_vpn_managed_;
+  // Indicates whether the proxy associated with the default network is
+  // managed.
+  bool is_proxy_managed_ = false;
+  // Indicates whether the proxy associated with `connected_vpn_guid_` is
+  // managed.
+  bool is_vpn_managed_ = false;
 
   raw_ptr<NetworkDetailedNetworkView, DanglingUntriaged | ExperimentalAsh>
       network_detailed_network_view_;

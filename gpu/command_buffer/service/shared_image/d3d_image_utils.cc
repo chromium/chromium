@@ -8,13 +8,16 @@
 #include "base/notreached.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 
+#if BUILDFLAG(USE_DAWN)
 using dawn::native::ExternalImageDescriptor;
 using dawn::native::d3d::ExternalImageDescriptorD3D11Texture;
 using dawn::native::d3d::ExternalImageDescriptorDXGISharedHandle;
 using dawn::native::d3d::ExternalImageDXGI;
+#endif
 
 namespace gpu {
 
+#if BUILDFLAG(USE_DAWN)
 namespace {
 
 wgpu::TextureFormat DXGIToWGPUFormat(DXGI_FORMAT dxgi_format) {
@@ -75,6 +78,7 @@ wgpu::TextureUsage GetAllowedDawnUsages(
 }
 
 }  // namespace
+#endif  // BUILDFLAG(USE_DAWN)
 
 bool ClearD3D11TextureToColor(
     const Microsoft::WRL::ComPtr<ID3D11Texture2D>& d3d11_texture,
@@ -101,6 +105,7 @@ bool ClearD3D11TextureToColor(
   return true;
 }
 
+#if BUILDFLAG(USE_DAWN)
 std::unique_ptr<ExternalImageDXGI> CreateDawnExternalImageDXGI(
     const wgpu::Device& device,
     uint32_t shared_image_usage,
@@ -185,5 +190,6 @@ std::unique_ptr<ExternalImageDXGI> CreateDawnExternalImageDXGI(
   DCHECK(external_image->IsValid());
   return external_image;
 }
+#endif  // BUILDFLAG(USE_DAWN)
 
 }  // namespace gpu

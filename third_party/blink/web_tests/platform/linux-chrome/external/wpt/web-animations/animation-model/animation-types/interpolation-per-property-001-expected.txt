@@ -1,0 +1,28 @@
+This is a testharness.js-based test.
+Found 12 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] background-image uses discrete animation when animating between "url("http://localhost/test-1")" and "url("http://localhost/test-2")" with linear easing
+  assert_equals: The value should be url("http://localhost/test-1") at 499ms expected "url(\\"http://localhost/test-1\\")" but got "-webkit-cross-fade(url(\\"http://localhost/test-1\\"), url(\\"http://localhost/test-2\\"), 0.499)"
+[FAIL] background-image uses discrete animation when animating between "url("http://localhost/test-1")" and "url("http://localhost/test-2")" with effect easing
+  assert_equals: The value should be url("http://localhost/test-1") at 940ms expected "url(\\"http://localhost/test-1\\")" but got "-webkit-cross-fade(url(\\"http://localhost/test-1\\"), url(\\"http://localhost/test-2\\"), 0.428259)"
+[FAIL] background-image uses discrete animation when animating between "url("http://localhost/test-1")" and "url("http://localhost/test-2")" with keyframe easing
+  assert_equals: The value should be url("http://localhost/test-1") at 940ms expected "url(\\"http://localhost/test-1\\")" but got "-webkit-cross-fade(url(\\"http://localhost/test-1\\"), url(\\"http://localhost/test-2\\"), 0.428259)"
+[FAIL] border-image-source uses discrete animation when animating between "url("http://localhost/test-1")" and "url("http://localhost/test-2")" with linear easing
+  assert_equals: The value should be url("http://localhost/test-1") at 499ms expected "url(\\"http://localhost/test-1\\")" but got "-webkit-cross-fade(url(\\"http://localhost/test-1\\"), url(\\"http://localhost/test-2\\"), 0.499)"
+[FAIL] border-image-source uses discrete animation when animating between "url("http://localhost/test-1")" and "url("http://localhost/test-2")" with effect easing
+  assert_equals: The value should be url("http://localhost/test-1") at 940ms expected "url(\\"http://localhost/test-1\\")" but got "-webkit-cross-fade(url(\\"http://localhost/test-1\\"), url(\\"http://localhost/test-2\\"), 0.428259)"
+[FAIL] border-image-source uses discrete animation when animating between "url("http://localhost/test-1")" and "url("http://localhost/test-2")" with keyframe easing
+  assert_equals: The value should be url("http://localhost/test-1") at 940ms expected "url(\\"http://localhost/test-1\\")" but got "-webkit-cross-fade(url(\\"http://localhost/test-1\\"), url(\\"http://localhost/test-2\\"), 0.428259)"
+[FAIL] font-style uses discrete animation when animating between "italic" and "oblique" with linear easing
+  assert_equals: The value should be oblique at 500ms expected "oblique" but got "italic"
+[FAIL] font-style uses discrete animation when animating between "italic" and "oblique" with effect easing
+  assert_equals: The value should be oblique at 960ms expected "oblique" but got "italic"
+[FAIL] font-style uses discrete animation when animating between "italic" and "oblique" with keyframe easing
+  assert_equals: The value should be oblique at 960ms expected "oblique" but got "italic"
+[FAIL] grid-template-areas uses discrete animation when animating between "". . a b" ". .a b"" and "none" with linear easing
+  assert_equals: The value should be ". . a b" ". .a b" at 0ms expected "\\". . a b\\" \\". .a b\\"" but got "\\". . a b\\" \\". . a b\\""
+[FAIL] grid-template-areas uses discrete animation when animating between "". . a b" ". .a b"" and "none" with effect easing
+  assert_equals: The value should be ". . a b" ". .a b" at 0ms expected "\\". . a b\\" \\". .a b\\"" but got "\\". . a b\\" \\". . a b\\""
+[FAIL] grid-template-areas uses discrete animation when animating between "". . a b" ". .a b"" and "none" with keyframe easing
+  assert_equals: The value should be ". . a b" ". .a b" at 0ms expected "\\". . a b\\" \\". .a b\\"" but got "\\". . a b\\" \\". . a b\\""
+Harness: the test ran to completion.
+

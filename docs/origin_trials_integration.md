@@ -35,6 +35,9 @@ The following fields of an entry are relevant:
 - `origin_trial_os`: Specifies a `[list]` of platforms where they will allow the
   trial to be enabled. The list values are case-insensitive, but must match one
   of the defined `OS_<platform>` macros (see [`build_config.h`]).
+- `origin_trial_allows_third_party`: Must be enabled to allow third-party tokens
+  to work correctly. Set to true, if (and only if) you intend to support
+  third-party matching.
 - `base_feature`: Generates a `base::Feature` in the `blink::features`
   namespace if the value is not `"none"`. It helps to control the Origin Trial
   remotely. See also [Generate a `base::Feature` instance from a Blink Feature].

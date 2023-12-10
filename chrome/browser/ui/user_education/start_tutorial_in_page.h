@@ -5,12 +5,13 @@
 #ifndef CHROME_BROWSER_UI_USER_EDUCATION_START_TUTORIAL_IN_PAGE_H_
 #define CHROME_BROWSER_UI_USER_EDUCATION_START_TUTORIAL_IN_PAGE_H_
 
+#include <optional>
+
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/user_education/common/tutorial_identifier.h"
 #include "components/user_education/common/tutorial_service.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 class Browser;
@@ -49,12 +50,12 @@ class StartTutorialInPage {
   // Specifies how a page should be open to show a help bubble.
   struct Params {
     Params();
+    Params(Params&& other) noexcept;
+    Params& operator=(Params&& other) noexcept;
     ~Params();
-    Params(Params&& other);
-    Params& operator=(Params&& other);
 
     // The page to open. If not specified, the current page will be used.
-    absl::optional<GURL> target_url = absl::nullopt;
+    std::optional<GURL> target_url = std::nullopt;
 
     // See overwrite_active_tab in show_promo_in_page.h
     bool overwrite_active_tab = false;
@@ -66,8 +67,8 @@ class StartTutorialInPage {
     Callback callback = base::DoNothing();
 
     // The ID of the tutorial to start.
-    absl::optional<user_education::TutorialIdentifier> tutorial_id =
-        absl::nullopt;
+    std::optional<user_education::TutorialIdentifier> tutorial_id =
+        std::nullopt;
   };
 
   StartTutorialInPage(const StartTutorialInPage&) = delete;

@@ -26,7 +26,7 @@ class WPTResultsProcessorTest(LoggingTestCase):
         self.host.port_factory = MockPortFactory(self.host)
         self.fs = self.host.filesystem
         self.path_finder = PathFinder(self.fs)
-        port = self.host.port_factory.get()
+        port = self.host.port_factory.get('test-linux-trusty')
 
         # Create a testing manifest containing any test files that we
         # might interact with.
@@ -479,7 +479,6 @@ class WPTResultsProcessorTest(LoggingTestCase):
                              'variant_foo=baz-actual.txt')),
             textwrap.dedent("""\
                 This is a testharness.js-based test.
-                [PASS] passing subtest (include for now)
                 [FAIL] subtest
                   actual-message
                 Harness: the test ran to completion.
@@ -563,6 +562,27 @@ class WPTResultsProcessorTest(LoggingTestCase):
                 self.fs.join('/mock-checkout', 'out', 'Default',
                              'layout-test-results', 'external', 'wpt',
                              'variant_foo=baz-actual.txt')))
+
+    def test_extract_text_reset_results(self):
+        self.processor.reset_results = True
+        with self.fs.patch_builtins():
+            self._event(action='test_start', test='/variant.html?foo=baz')
+            self._event(action='test_status',
+                        test='/variant.html?foo=baz',
+                        subtest='passing subtest',
+                        status='PASS')
+            self._event(action='test_end',
+                        test='/variant.html?foo=baz',
+                        status='OK')
+        self.assertEqual(
+            self.fs.read_text_file(
+                self.path_finder.path_from_web_tests(
+                    'platform', 'test-linux-trusty', 'external', 'wpt',
+                    'variant_foo=baz-expected.txt')),
+            textwrap.dedent("""\
+                This is a testharness.js-based test.
+                Harness: the test ran to completion.
+                """))
 
     def test_extract_screenshots(self):
         self._event(action='test_start', test='/reftest.html')
@@ -883,25 +903,6 @@ class WPTResultsProcessorTest(LoggingTestCase):
     def test_process_wpt_report(self):
         report_src = self.fs.join('/mock-checkout', 'out', 'Default',
                                   'wpt_report.json')
-        self.fs.write_text_file(report_src,
-                                (json.dumps(self.wpt_report) + '\n') * 2)
-        self.processor.process_wpt_report(report_src)
-        report_dest = self.fs.join('/mock-checkout', 'out', 'Default',
-                                   'layout-test-results', 'wpt_report.json')
-        self.processor.sink.report_invocation_level_artifacts.assert_called_once_with(
-            {
-                'wpt_report.json': {
-                    'filePath': report_dest,
-                },
-            })
-        report = json.loads(self.fs.read_text_file(report_dest))
-        self.assertEqual(report['run_info'], self.wpt_report['run_info'])
-        self.assertEqual(report['results'], self.wpt_report['results'] * 2)
-
-    def test_process_wpt_report_compact(self):
-        report_src = self.fs.join('/mock-checkout', 'out', 'Default',
-                                  'wpt_report.json')
-        self.wpt_report['run_info']['used_upstream'] = False
         self.fs.write_text_file(report_src, json.dumps(self.wpt_report))
         self.processor.process_wpt_report(report_src)
         report_dest = self.fs.join('/mock-checkout', 'out', 'Default',
@@ -913,25 +914,5 @@ class WPTResultsProcessorTest(LoggingTestCase):
                 },
             })
         report = json.loads(self.fs.read_text_file(report_dest))
-        self.assertEqual(
-            report['run_info'], {
-                'os': 'linux',
-                'version': '18.04',
-                'product': 'chrome',
-                'revision': '57a5dfb2d7d6253fbb7dbd7c43e7588f9339f431',
-                'used_upstream': False,
-            })
-        self.assertEqual(report['results'], [{
-            'test':
-            '/a/b.html',
-            'subtests': [{
-                'name': 'subtest',
-                'status': 'FAIL',
-                'expected': 'PASS',
-            }],
-            'status':
-            'OK',
-            'duration':
-            1000,
-            'known_intermittent': ['CRASH'],
-        }])
+        self.assertEqual(report['run_info'], self.wpt_report['run_info'])
+        self.assertEqual(report['results'], self.wpt_report['results'])

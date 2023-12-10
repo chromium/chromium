@@ -73,6 +73,8 @@ struct MerchantInfo {
 };
 
 // Position of current price with respect to the typical price range.
+// A Java counterpart will be generated for this enum.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.commerce.core
 enum class PriceBucket {
   kUnknown = 0,
   kLowPrice = 1,

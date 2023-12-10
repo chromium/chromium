@@ -40,7 +40,8 @@ class GlanceableInfoView : public views::View,
   GlanceableInfoView(
       AmbientViewDelegate* delegate,
       GlanceableInfoView::Delegate* glanceable_info_view_delegate,
-      int time_font_size_dip);
+      int time_font_size_dip,
+      bool add_text_shadow);
   GlanceableInfoView(const GlanceableInfoView&) = delete;
   GlanceableInfoView& operator=(const GlanceableInfoView&) = delete;
   ~GlanceableInfoView() override;
@@ -75,6 +76,7 @@ class GlanceableInfoView : public views::View,
       nullptr;
 
   const int time_font_size_dip_;
+  const bool add_text_shadow_;
 
   base::ScopedObservation<AmbientWeatherModel, AmbientWeatherModelObserver>
       scoped_weather_model_observer_{this};

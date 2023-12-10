@@ -30,11 +30,11 @@
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
 #include "third_party/blink/renderer/platform/fonts/font_fallback_list.h"
 #include "third_party/blink/renderer/platform/fonts/font_fallback_map.h"
-#include "third_party/blink/renderer/platform/fonts/ng_text_fragment_paint_info.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/caching_word_shaper.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_bloberizer.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_view.h"
 #include "third_party/blink/renderer/platform/fonts/simple_font_data.h"
+#include "third_party/blink/renderer/platform/fonts/text_fragment_paint_info.h"
 #include "third_party/blink/renderer/platform/fonts/text_run_paint_info.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/text/bidi_paragraph.h"
@@ -238,7 +238,7 @@ void Font::DrawText(cc::PaintCanvas* canvas,
 }
 
 void Font::DrawText(cc::PaintCanvas* canvas,
-                    const NGTextFragmentPaintInfo& text_info,
+                    const TextFragmentPaintInfo& text_info,
                     const gfx::PointF& point,
                     cc::NodeId node_id,
                     const cc::PaintFlags& flags,
@@ -348,7 +348,7 @@ void Font::DrawEmphasisMarks(cc::PaintCanvas* canvas,
 }
 
 void Font::DrawEmphasisMarks(cc::PaintCanvas* canvas,
-                             const NGTextFragmentPaintInfo& text_info,
+                             const TextFragmentPaintInfo& text_info,
                              const AtomicString& mark,
                              const gfx::PointF& point,
                              const cc::PaintFlags& flags) const {
@@ -366,7 +366,7 @@ void Font::DrawEmphasisMarks(cc::PaintCanvas* canvas,
   DrawBlobs(canvas, flags, bloberizer.Blobs(), point);
 }
 
-gfx::RectF Font::TextInkBounds(const NGTextFragmentPaintInfo& text_info) const {
+gfx::RectF Font::TextInkBounds(const TextFragmentPaintInfo& text_info) const {
   // No need to compute bounds if using custom fonts that are in the process
   // of loading as it won't be painted.
   if (ShouldSkipDrawing())
@@ -452,7 +452,7 @@ void Font::GetTextIntercepts(const TextRunPaintInfo& run_info,
   GetTextInterceptsInternal(bloberizer.Blobs(), flags, bounds, intercepts);
 }
 
-void Font::GetTextIntercepts(const NGTextFragmentPaintInfo& text_info,
+void Font::GetTextIntercepts(const TextFragmentPaintInfo& text_info,
                              const cc::PaintFlags& flags,
                              const std::tuple<float, float>& bounds,
                              Vector<TextIntercept>& intercepts) const {

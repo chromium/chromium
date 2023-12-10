@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <numeric>
+#include <utility>
 
 #include "ash/constants/ash_features.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -29,6 +30,7 @@
 #include "chromeos/ash/components/phonehub/phone_hub_manager.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/insets.h"
@@ -157,12 +159,12 @@ PhoneHubRecentAppsView::HeaderView::HeaderView(
 
   if (features::IsEcheNetworkConnectionStateEnabled()) {
     error_button_ =
-        AddChildView(std::make_unique<views::ImageButton>(callback));
-    gfx::ImageSkia image = gfx::CreateVectorIcon(
+        AddChildView(std::make_unique<views::ImageButton>(std::move(callback)));
+    ui::ImageModel image = ui::ImageModel::FromVectorIcon(
         kPhoneHubEcheErrorStatusIcon,
         AshColorProvider::Get()->GetContentLayerColor(
             AshColorProvider::ContentLayerType::kIconColorWarning));
-    error_button_->SetImage(views::Button::STATE_NORMAL, image);
+    error_button_->SetImageModel(views::Button::STATE_NORMAL, image);
     views::FocusRing::Get(error_button_)
         ->SetColorId(static_cast<ui::ColorId>(cros_tokens::kCrosSysFocusRing));
     views::InstallCircleHighlightPathGenerator(error_button_);
@@ -172,10 +174,6 @@ PhoneHubRecentAppsView::HeaderView::HeaderView(
   }
 }
 
-const char* PhoneHubRecentAppsView::HeaderView::GetClassName() const {
-  return "HeaderView";
-}
-
 void PhoneHubRecentAppsView::HeaderView::SetErrorButtonVisible(
     bool is_visible) {
   if (error_button_) {
@@ -183,7 +181,12 @@ void PhoneHubRecentAppsView::HeaderView::SetErrorButtonVisible(
   }
 }
 
+BEGIN_METADATA(PhoneHubRecentAppsView, HeaderView, views::View)
+END_METADATA
+
 class PhoneHubRecentAppsView::PlaceholderView : public views::Label {
+  METADATA_HEADER(PlaceholderView, views::Label)
+
  public:
   PlaceholderView() {
     SetText(
@@ -205,10 +208,10 @@ class PhoneHubRecentAppsView::PlaceholderView : public views::Label {
   ~PlaceholderView() override = default;
   PlaceholderView(PlaceholderView&) = delete;
   PlaceholderView operator=(PlaceholderView&) = delete;
-
-  // views::View:
-  const char* GetClassName() const override { return "ContentView"; }
 };
+
+BEGIN_METADATA(PhoneHubRecentAppsView, PlaceholderView, views::Label)
+END_METADATA
 
 PhoneHubRecentAppsView::PhoneHubRecentAppsView(
     phonehub::RecentAppsInteractionHandler* recent_apps_interaction_handler,
@@ -251,10 +254,6 @@ PhoneHubRecentAppsView::PhoneHubRecentAppsView(
 
 PhoneHubRecentAppsView::~PhoneHubRecentAppsView() {
   recent_apps_interaction_handler_->RemoveObserver(this);
-}
-
-const char* PhoneHubRecentAppsView::GetClassName() const {
-  return "PhoneHubRecentAppsView";
 }
 
 PhoneHubRecentAppsView::RecentAppButtonsView::RecentAppButtonsView() {
@@ -307,10 +306,6 @@ void PhoneHubRecentAppsView::RecentAppButtonsView::Layout() {
   LayoutAppButtonsView(this);
 }
 
-const char* PhoneHubRecentAppsView::RecentAppButtonsView::GetClassName() const {
-  return "RecentAppButtonView";
-}
-
 void PhoneHubRecentAppsView::RecentAppButtonsView::Reset() {
   RemoveAllChildViews();
 }
@@ -319,6 +314,9 @@ base::WeakPtr<PhoneHubRecentAppsView::RecentAppButtonsView>
 PhoneHubRecentAppsView::RecentAppButtonsView::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
+
+BEGIN_METADATA(PhoneHubRecentAppsView, RecentAppButtonsView, views::View)
+END_METADATA
 
 PhoneHubRecentAppsView::LoadingView::LoadingView() {
   SetPaintToLayer();
@@ -356,10 +354,6 @@ void PhoneHubRecentAppsView::LoadingView::Layout() {
   LayoutAppButtonsView(this);
 }
 
-const char* PhoneHubRecentAppsView::LoadingView::GetClassName() const {
-  return "RecentAppLoadingView";
-}
-
 base::WeakPtr<PhoneHubRecentAppsView::LoadingView>
 PhoneHubRecentAppsView::LoadingView::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
@@ -381,6 +375,9 @@ void PhoneHubRecentAppsView::LoadingView::StopLoadingAnimation() {
   }
   more_apps_button_->StopLoadingAnimation();
 }
+
+BEGIN_METADATA(PhoneHubRecentAppsView, LoadingView, views::BoxLayoutView)
+END_METADATA
 
 void PhoneHubRecentAppsView::Update() {
   recent_app_buttons_view_->Reset();
@@ -570,9 +567,10 @@ std::unique_ptr<views::View> PhoneHubRecentAppsView::GenerateMoreAppsButton() {
       kPhoneHubFullAppsListIcon,
       AshColorProvider::Get()->GetContentLayerColor(
           AshColorProvider::ContentLayerType::kButtonIconColor));
-  more_apps_button->SetImage(
+  more_apps_button->SetImageModel(
       views::Button::STATE_NORMAL,
-      gfx::ImageSkiaOperations::ExtractSubset(image, kMoreAppsButtonArea));
+      ui::ImageModel::FromImageSkia(
+          gfx::ImageSkiaOperations::ExtractSubset(image, kMoreAppsButtonArea)));
   more_apps_button->SetBackground(views::CreateRoundedRectBackground(
       AshColorProvider::Get()->GetControlsLayerColor(
           AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive),
@@ -582,5 +580,8 @@ std::unique_ptr<views::View> PhoneHubRecentAppsView::GenerateMoreAppsButton() {
 
   return more_apps_button;
 }
+
+BEGIN_METADATA(PhoneHubRecentAppsView)
+END_METADATA
 
 }  // namespace ash

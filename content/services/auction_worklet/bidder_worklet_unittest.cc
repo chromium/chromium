@@ -658,8 +658,8 @@ class BidderWorkletTest : public testing::Test {
         auction_network_events_handler_.CreateRemote(),
         url.is_empty() ? interest_group_bidding_url_ : url,
         interest_group_wasm_url_, interest_group_trusted_bidding_signals_url_,
-        top_window_origin_, permissions_policy_state_.Clone(),
-        experiment_group_id_);
+        /*trusted_bidding_signals_slot_size_param=*/"", top_window_origin_,
+        permissions_policy_state_.Clone(), experiment_group_id_);
     auto* bidder_worklet_ptr = bidder_worklet_impl.get();
     mojo::Remote<mojom::BidderWorklet> bidder_worklet;
     mojo::ReceiverId receiver_id =
@@ -1131,6 +1131,15 @@ TEST_F(BidderWorkletTest, GenerateBidReturnValueAd) {
       /*expected_bid=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/absl::nullopt,
       {"https://url.test/ generateBid() bid has invalid ad value."});
+
+  // JSON extraction failing to terminate is also handled.
+  RunGenerateBidWithReturnValueExpectingResult(
+      R"({ad: {get field() { while(true); } },
+          bid:1, render:"https://response.test/"})",
+      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_data_version=*/absl::nullopt,
+      {"https://url.test/ generateBid() serializing bid 'ad' value to JSON "
+       "timed out."});
 
   // Make sure recursive structures aren't allowed in ad field.
   RunGenerateBidWithJavascriptExpectingResult(
@@ -1855,6 +1864,21 @@ TEST_F(BidderWorkletTest, GenerateBidSetBidThrows) {
       /*expected_bid=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/absl::nullopt,
       {"https://url.test/:5 Uncaught TypeError: bid has invalid ad value."});
+
+  // Timeouts can also happen when serializing ad field to json.
+  RunGenerateBidWithJavascriptExpectingResult(
+      R"(
+        function generateBid() {
+          var a = {
+            get field() { while(true); }
+          }
+          setBid({ad: a, bid:1, render:"https://response.test/"});
+          return {};
+        }
+      )",
+      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_data_version=*/absl::nullopt,
+      {"https://url.test/ execution of `generateBid` timed out."});
 
   // --------
   // Vary bid
@@ -5157,7 +5181,11 @@ TEST_F(BidderWorkletTest, ReportWin) {
 // Debug win/loss reporting APIs should do nothing when feature
 // kBiddingAndScoringDebugReportingAPI is not enabled. It will not fail
 // generateBid().
-TEST_F(BidderWorkletTest, ForDebuggingOnlyReports) {
+TEST_F(BidderWorkletTest, ForDebuggingOnlyReportsWithDebugFeatureDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      blink::features::kBiddingAndScoringDebugReportingAPI);
+
   RunGenerateBidWithJavascriptExpectingResult(
       CreateBasicGenerateBidScriptWithDebuggingReport(
           R"(forDebuggingOnly.reportAdAuctionLoss("https://loss.url"))"),
@@ -5669,27 +5697,24 @@ TEST_F(BidderWorkletTest, ReportWinBrowserSignalRecency) {
       GURL("https://jumboshrimp.test"));
 }
 
-TEST_F(BidderWorkletTest, ReportWinSignalKAnonStatusNotExposedByDefault) {
-  RunReportWinWithFunctionBodyExpectingResult(
-      R"(if (!("kAnonStatus" in browserSignals))
-            sendReportTo('https://pass.test');)",
-      GURL("https://pass.test"));
+TEST_F(BidderWorkletTest, ReportWinNoBrowserSignalRecencyForAdditionalBid) {
+  is_for_additional_bid_ = true;
+  browser_signal_recency_report_win_ = 19u;
+  const char kScript[] = R"(
+    function reportAdditionalBidWin(
+          auctionSignals, perBuyerSignals, sellerSignals,
+          browserSignals, directFromSellerSignals) {
+      if ('recency' in browserSignals)
+        throw 'Should not have recency in reportAdditionalBidWin';
+      sendReportTo("https://report-additional-bid-win.test/");
+    }
+  )";
+
+  RunReportWinWithJavascriptExpectingResult(
+      kScript, GURL("https://report-additional-bid-win.test/"));
 }
 
-class BidderWorkletReportWinSignalKAnonStatusEnableTest
-    : public BidderWorkletTest {
- public:
-  BidderWorkletReportWinSignalKAnonStatusEnableTest() {
-    feature_list_.InitAndEnableFeature(
-        blink::features::kFledgePassKAnonStatusToReportWin);
-  }
-
- protected:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-TEST_F(BidderWorkletReportWinSignalKAnonStatusEnableTest,
-       KAnonStatusSignalExposed) {
+TEST_F(BidderWorkletTest, KAnonStatusExposesInReportWinBrowserSignals) {
   kanon_mode_ = auction_worklet::mojom::KAnonymityBidMode::kEnforce;
   bid_is_kanon_ = true;
   RunReportWinWithFunctionBodyExpectingResult(

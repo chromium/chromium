@@ -13,6 +13,7 @@
 #include "base/task/task_traits.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
+#include "chrome/browser/ssl/daily_navigation_counter.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/site_engagement/content/site_engagement_score.h"
@@ -28,6 +29,18 @@ class SiteEngagementService;
 }
 
 class StatefulSSLHostStateDelegate;
+
+// The set of valid states of the user-controllable HTTPS-First Mode setting.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// Must be kept in sync with the HttpsFirstModeSetting enum located in
+// chrome/browser/resources/settings/privacy_page/security_page.js.
+enum class HttpsFirstModeSetting {
+  kDisabled = 0,
+  kEnabledIncognito = 1,
+  kEnabledFull = 2,
+  kMaxValue = kEnabledFull,
+};
 
 // A `KeyedService` that tracks changes to the HTTPS-First Mode pref for each
 // profile. This is currently used for:
@@ -78,6 +91,13 @@ class HttpsFirstModeService
   void MaybeEnableHttpsFirstModeForEngagedSites(
       base::OnceClosure done_callback);
 
+  HttpsFirstModeSetting GetCurrentSetting() const;
+
+  // Increment recent navigation count and maybe save the counts to a pref.
+  void IncrementRecentNavigationCount();
+  // Returns the number of navigations counted recently in a rolling window.
+  size_t GetRecentNavigationCount() const;
+
   // Sets the clock for use in tests.
   void SetClockForTesting(base::Clock* clock);
   // Returns the current number of fallback entries recorded.
@@ -95,7 +115,8 @@ class HttpsFirstModeService
   bool IsUserTypicallySecure();
 
   // Check the Site Engagement scores of the hostname of `url` and enable
-  // HFM on the hostname if the HTTPS score is high enough.
+  // HFM on the hostname if the HTTPS score is high enough. `url` should have a
+  // default port.
   void MaybeEnableHttpsFirstModeForUrl(
       const GURL& url,
       site_engagement::SiteEngagementService* engagement_service,
@@ -110,6 +131,9 @@ class HttpsFirstModeService
   raw_ptr<Profile> profile_;
   PrefChangeRegistrar pref_change_registrar_;
   raw_ptr<base::Clock> clock_;
+
+  base::Value::Dict navigation_counts_dict_;
+  std::unique_ptr<DailyNavigationCounter> navigation_counter_;
 
   base::ScopedObservation<
       safe_browsing::AdvancedProtectionStatusManager,

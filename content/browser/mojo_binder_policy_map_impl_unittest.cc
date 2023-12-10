@@ -7,8 +7,8 @@
 #include "base/test/gtest_util.h"
 #include "base/test/task_environment.h"
 #include "content/browser/browser_interface_binders.h"
+#include "content/public/test/mojo_capability_control_test_interfaces.mojom.h"
 #include "content/test/test_content_browser_client.h"
-#include "content/test/test_mojo_binder_policy_applier_unittest.mojom.h"
 #include "mojo/public/cpp/bindings/binder_map.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

@@ -40,14 +40,10 @@ public interface NavigationController {
      */
     void goToNavigationIndex(int index);
 
-    /**
-     * Goes to the first non-skippable navigation entry before the current.
-     */
+    /** Goes to the first non-skippable navigation entry before the current. */
     void goBack();
 
-    /**
-     * Goes to the first non-skippable navigation entry following the current.
-     */
+    /** Goes to the first non-skippable navigation entry following the current. */
     void goForward();
 
     /**
@@ -55,9 +51,7 @@ public interface NavigationController {
      */
     boolean isInitialNavigation();
 
-    /**
-     * Loads the current navigation if there is a pending lazy load (after tab restore).
-     */
+    /** Loads the current navigation if there is a pending lazy load (after tab restore). */
     public void loadIfNecessary();
 
     /**
@@ -65,29 +59,19 @@ public interface NavigationController {
      */
     public boolean needsReload();
 
-    /**
-     * Requests the current navigation to be loaded upon the next call to loadIfNecessary().
-     */
+    /** Requests the current navigation to be loaded upon the next call to loadIfNecessary(). */
     public void setNeedsReload();
 
-    /**
-     * Reload the current page.
-     */
+    /** Reload the current page. */
     public void reload(boolean checkForRepost);
 
-    /**
-     * Reload the current page, bypassing the contents of the cache.
-     */
+    /** Reload the current page, bypassing the contents of the cache. */
     public void reloadBypassingCache(boolean checkForRepost);
 
-    /**
-     * Cancel the pending reload.
-     */
+    /** Cancel the pending reload. */
     public void cancelPendingReload();
 
-    /**
-     * Continue the pending reload.
-     */
+    /** Continue the pending reload. */
     public void continuePendingReload();
 
     /**
@@ -111,18 +95,16 @@ public interface NavigationController {
     public NavigationHistory getNavigationHistory();
 
     /**
-    * Get the navigation history of NavigationController from current navigation entry index
-    * with direction (forward/backward)
-    * @param isForward determines forward or backward from current index
-    * @param itemLimit maximum number of entries to be retrieved in specified
-    * diection.
-    * @return navigation history by keeping above constraints.
-    */
+     * Get the navigation history of NavigationController from current navigation entry index
+     * with direction (forward/backward)
+     * @param isForward determines forward or backward from current index
+     * @param itemLimit maximum number of entries to be retrieved in specified
+     * diection.
+     * @return navigation history by keeping above constraints.
+     */
     public NavigationHistory getDirectedNavigationHistory(boolean isForward, int itemLimit);
 
-    /**
-     * Clears SSL preferences for this NavigationController.
-     */
+    /** Clears SSL preferences for this NavigationController. */
     public void clearSslPreferences();
 
     /**
@@ -191,10 +173,4 @@ public interface NavigationController {
      * @param value The data value.
      */
     void setEntryExtraData(int index, String key, String value);
-
-    /**
-     * @param index The index of the navigation entry.
-     * @return true if the entry at |index| is marked to be skipped on back/forward UI.
-     */
-    public boolean isEntryMarkedToBeSkipped(int index);
 }

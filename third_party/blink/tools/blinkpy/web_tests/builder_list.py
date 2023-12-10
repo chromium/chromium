@@ -119,9 +119,9 @@ class BuilderList:
     def try_bots_with_cq_mirror(self):
         """Returns a sorted list of (try_builder_names, cq_mirror_builder_names).
 
-        When all steps in a blink-rel trybot exist in a cq trybot and the port
-        name matches, we say that blink-rel trybot has a cq mirror, and thus
-        there is no need to trigger both the blink-rel trybot and its cq mirror.
+        When all steps in a cq trybot exist in a blink-rel trybot and the port
+        name matches, we say that blink-rel trybot has a cq mirror, and thus there
+        is no need to trigger the cq trybot together with the blink-rel trybot.
 
         As of today, this should return:
         [("linux-blink-rel", "linux-rel"),
@@ -138,8 +138,9 @@ class BuilderList:
                 if (self.port_name_for_builder_name(cq_builder_name) !=
                         self.port_name_for_builder_name(builder_name)):
                     continue
-                cq_step_names = self.step_names_for_builder(cq_builder_name)
-                if step_names.issubset(cq_step_names):
+                cq_step_names = set(
+                    self.step_names_for_builder(cq_builder_name))
+                if cq_step_names.issubset(step_names):
                     rv.append((builder_name, cq_builder_name))
                     break
         return rv

@@ -11,25 +11,19 @@ import android.widget.FrameLayout;
 
 import org.chromium.chrome.browser.content_creation.internal.R;
 
-/**
- * The view for the top bar.
- */
+/** The view for the top bar. */
 public class TopBarView extends FrameLayout {
     public TopBarView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
-    /**
-     * Set listener for close button.
-     */
+    /** Set listener for close button. */
     void setOnCloseListener(Runnable listener) {
         View button = findViewById(R.id.close);
         button.setOnClickListener(v -> listener.run());
     }
 
-    /**
-     * Set listener for next button.
-     */
+    /** Set listener for next button. */
     void setOnNextListener(Runnable listener) {
         View button = findViewById(R.id.next);
         button.setOnClickListener(v -> listener.run());

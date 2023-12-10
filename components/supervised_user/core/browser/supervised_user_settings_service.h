@@ -12,13 +12,12 @@
 #include "base/callback_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_store.h"
 #include "components/supervised_user/core/common/supervised_users.h"
 #include "components/sync/model/syncable_service.h"
-#include "components/sync/service/sync_type_preference_provider.h"
 #include "url/gurl.h"
 
 class PersistentPrefStore;
@@ -56,7 +55,6 @@ namespace supervised_user {
 // and one with key "Moose:baz" and value "blurp".
 class SupervisedUserSettingsService : public KeyedService,
                                       public syncer::SyncableService,
-                                      public syncer::SyncTypePreferenceProvider,
                                       public PrefStore::Observer {
  public:
   // A callback whose first parameter is a dictionary containing all supervised
@@ -177,8 +175,7 @@ class SupervisedUserSettingsService : public KeyedService,
   void OnPrefValueChanged(const std::string& key) override;
   void OnInitializationCompleted(bool success) override;
 
-  // SyncTypePreferenceProvider implementation:
-  bool IsCustomPassphraseAllowed() const override;
+  bool IsCustomPassphraseAllowed() const;
 
   const base::Value::Dict& LocalSettingsForTest() const;
 

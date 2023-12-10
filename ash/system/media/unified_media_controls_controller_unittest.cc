@@ -397,7 +397,7 @@ TEST_F(UnifiedMediaControlsControllerTest,
   EXPECT_TRUE(delegate()->IsControlsVisible());
   EXPECT_FALSE(IsMediaControlsInEmptyState());
 
-  controller()->MediaSessionChanged(absl::nullopt);
+  controller()->MediaSessionChanged(std::nullopt);
   EXPECT_FALSE(IsMediaControlsInEmptyState());
 
   // Still in normal state since we are within waiting delay time frame.
@@ -411,7 +411,7 @@ TEST_F(UnifiedMediaControlsControllerTest,
   EXPECT_FALSE(IsMediaControlsInEmptyState());
 
   // Hide controls timer expired, controls should be in empty state.
-  controller()->MediaSessionChanged(absl::nullopt);
+  controller()->MediaSessionChanged(std::nullopt);
   task_environment()->FastForwardBy(base::Milliseconds(kFreezeControlsTime));
   EXPECT_TRUE(IsMediaControlsInEmptyState());
   EXPECT_TRUE(delegate()->IsControlsVisible());
@@ -442,7 +442,7 @@ TEST_F(UnifiedMediaControlsControllerTest, MediaControlsEmptyState) {
     EXPECT_TRUE(button->GetEnabled());
 
   // Media controls should be in empty state after getting empty session.
-  controller()->MediaSessionChanged(absl::nullopt);
+  controller()->MediaSessionChanged(std::nullopt);
   task_environment()->FastForwardBy(base::Milliseconds(kFreezeControlsTime));
 
   EXPECT_TRUE(IsMediaControlsInEmptyState());
@@ -493,7 +493,7 @@ TEST_F(UnifiedMediaControlsControllerTest, MediaControlsEmptyStateWithArtwork) {
   EXPECT_TRUE(artwork_view()->GetVisible());
   EXPECT_EQ(artwork_view()->background(), nullptr);
 
-  controller()->MediaSessionChanged(absl::nullopt);
+  controller()->MediaSessionChanged(std::nullopt);
   task_environment()->FastForwardBy(base::Milliseconds(kFreezeControlsTime));
 
   // Artwork view should still be visible and have an background in empty state.
@@ -530,7 +530,7 @@ TEST_F(UnifiedMediaControlsControllerTest, FreezeControlsWhenUpdateSession) {
   EXPECT_EQ(artist_label()->GetText(), init_metadata.artist);
   EXPECT_FALSE(artwork_view()->GetVisible());
 
-  controller()->MediaSessionChanged(absl::nullopt);
+  controller()->MediaSessionChanged(std::nullopt);
 
   // Test that metadata update is ignored when we waiting for new session.
   media_session::MediaMetadata metadata;

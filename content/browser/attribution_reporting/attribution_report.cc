@@ -15,9 +15,9 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
+#include "components/attribution_reporting/aggregatable_trigger_config.h"
 #include "components/attribution_reporting/source_type.h"
 #include "components/attribution_reporting/suitable_origin.h"
-#include "content/browser/attribution_reporting/attribution_utils.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
 #include "content/browser/attribution_reporting/stored_source.h"
 #include "net/http/http_request_headers.h"
@@ -50,12 +50,18 @@ base::Value::Dict GetReportBody(
     dict.Set("trigger_debug_key", base::NumberToString(*trigger_debug_key));
   }
 
+  if (const auto& trigger_context_id =
+          data.aggregatable_trigger_config.trigger_context_id();
+      trigger_context_id.has_value()) {
+    dict.Set("trigger_context_id", *trigger_context_id);
+  }
+
   return dict;
 }
 
 }  // namespace
 
-AttributionReport::EventLevelData::EventLevelData(uint64_t trigger_data,
+AttributionReport::EventLevelData::EventLevelData(uint32_t trigger_data,
                                                   int64_t priority,
                                                   StoredSource source)
     : trigger_data(trigger_data),
@@ -79,11 +85,11 @@ AttributionReport::CommonAggregatableData::CommonAggregatableData(
     absl::optional<attribution_reporting::SuitableOrigin>
         aggregation_coordinator_origin,
     absl::optional<std::string> verification_token,
-    attribution_reporting::mojom::SourceRegistrationTimeConfig
-        source_registration_time_config)
+    attribution_reporting::AggregatableTriggerConfig
+        aggregatable_trigger_config)
     : aggregation_coordinator_origin(std::move(aggregation_coordinator_origin)),
       verification_token(std::move(verification_token)),
-      source_registration_time_config(source_registration_time_config) {}
+      aggregatable_trigger_config(std::move(aggregatable_trigger_config)) {}
 
 AttributionReport::CommonAggregatableData::CommonAggregatableData() = default;
 

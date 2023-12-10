@@ -7,10 +7,11 @@
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
-#import "ios/chrome/browser/signin/fake_system_identity.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_table_view_constants.h"
 #import "ios/chrome/browser/ui/settings/password/password_manager_egtest_utils.h"
+#import "ios/chrome/browser/ui/settings/password/password_manager_ui_features.h"
 #import "ios/chrome/browser/ui/settings/password/password_settings_app_interface.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/password_sharing_constants.h"
 #import "ios/chrome/common/ui/confirmation_alert/constants.h"
@@ -27,7 +28,6 @@
 namespace {
 
 using base::test::ios::kWaitForActionTimeout;
-using chrome_test_util::ButtonWithAccessibilityLabel;
 using password_manager_test_utils::kScrollAmount;
 using password_manager_test_utils::OpenPasswordManager;
 using password_manager_test_utils::SavePasswordForm;
@@ -37,6 +37,12 @@ constexpr char kGoogleHelpCenterURL[] = "support.google.com";
 void SignInAndEnableSync() {
   FakeSystemIdentity* fake_identity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGreyUI signinWithFakeIdentity:fake_identity enableSync:YES];
+}
+
+// Matcher for Password Sharing First Run.
+id<GREYMatcher> PasswordSharingFirstRunMatcher() {
+  return grey_accessibilityLabel(
+      l10n_util::GetNSString(IDS_IOS_PASSWORD_SHARING_FIRST_RUN_TITLE));
 }
 
 }  // namespace
@@ -68,7 +74,7 @@ void SignInAndEnableSync() {
                                           grey_sufficientlyVisible(), nil)]
          usingSearchAction:grey_scrollInDirection(kGREYDirectionDown,
                                                   kScrollAmount)
-      onElementWithMatcher:grey_accessibilityID(kPasswordsTableViewId)]
+      onElementWithMatcher:grey_accessibilityID(kPasswordsTableViewID)]
       performAction:grey_tap()];
 }
 
@@ -92,7 +98,7 @@ void SignInAndEnableSync() {
                                           grey_sufficientlyVisible(), nil)]
          usingSearchAction:grey_scrollInDirection(kGREYDirectionDown,
                                                   kScrollAmount)
-      onElementWithMatcher:grey_accessibilityID(kPasswordsTableViewId)]
+      onElementWithMatcher:grey_accessibilityID(kPasswordsTableViewID)]
       performAction:grey_tap()];
 }
 
@@ -113,6 +119,12 @@ void SignInAndEnableSync() {
         password_manager::features::kSendPasswords);
     config.features_enabled.push_back(
         password_manager::features::kPasswordManagerEnableSenderService);
+  }
+
+  if ([self isRunningTest:@selector
+            (testFirstRunExperienceViewDismissedForAuthentication)]) {
+    config.features_enabled.push_back(
+        password_manager::features::kIOSPasswordAuthOnEntryV2);
   }
 
   return config;
@@ -151,7 +163,7 @@ void SignInAndEnableSync() {
   [self saveExamplePasswordAndOpenDetails];
 
   [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonId)]
+      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonID)]
       assertWithMatcher:grey_not(grey_sufficientlyVisible())];
 }
 
@@ -160,7 +172,7 @@ void SignInAndEnableSync() {
   [self saveExamplePasswordAndOpenDetails];
 
   [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonId)]
+      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonID)]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
@@ -168,7 +180,7 @@ void SignInAndEnableSync() {
   [self saveExamplePasswordAndOpenDetails];
 
   [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonId)]
+      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonID)]
       assertWithMatcher:grey_not(grey_sufficientlyVisible())];
 }
 
@@ -179,7 +191,7 @@ void SignInAndEnableSync() {
   [self saveExamplePasswordAndOpenDetails];
 
   [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonId)]
+      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonID)]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
@@ -192,7 +204,7 @@ void SignInAndEnableSync() {
   [self saveExamplePasswordAndOpenDetails];
 
   [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonId)]
+      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonID)]
       assertWithMatcher:grey_not(grey_sufficientlyVisible())];
 }
 
@@ -201,11 +213,11 @@ void SignInAndEnableSync() {
   [self saveExamplePasswordAndOpenDetails];
 
   [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonId)]
+      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonID)]
       assertWithMatcher:grey_sufficientlyVisible()];
 
   [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonId)]
+      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonID)]
       performAction:grey_tap()];
 
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
@@ -214,7 +226,7 @@ void SignInAndEnableSync() {
 
   // Check that the current view is the password details view.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kPasswordDetailsTableViewId)]
+                                          kPasswordDetailsTableViewID)]
       assertWithMatcher:grey_notNil()];
 }
 
@@ -223,10 +235,10 @@ void SignInAndEnableSync() {
   [self saveExamplePasswordsAndOpenDetails];
 
   [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonId)]
+      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonID)]
       assertWithMatcher:grey_sufficientlyVisible()];
   [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonId)]
+      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonID)]
       performAction:grey_tap()];
 
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
@@ -235,7 +247,7 @@ void SignInAndEnableSync() {
 
   // Check that the current view is the password details view.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kPasswordDetailsTableViewId)]
+                                          kPasswordDetailsTableViewID)]
       assertWithMatcher:grey_notNil()];
 }
 
@@ -245,62 +257,72 @@ void SignInAndEnableSync() {
   config.additional_args.push_back(std::string("-") +
                                    test_switches::kFamilyStatus + "=3");
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
+  [ChromeEarlGrey setBoolValue:YES
+                   forUserPref:prefs::kPasswordSharingFlowHasBeenEntered];
 
   SignInAndEnableSync();
   [self saveExamplePasswordAndOpenDetails];
 
   [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonId)]
+      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonID)]
       performAction:grey_tap()];
 
   // Check that the family promo view was displayed.
   [[EarlGrey selectElementWithMatcher:
-                 grey_accessibilityLabel(l10n_util::GetNSString(
-                     IDS_IOS_PASSWORD_SHARING_FAMILY_PROMO_TITLE))]
-      assertWithMatcher:grey_sufficientlyVisible()];
+                 grey_allOf(grey_accessibilityID(
+                                kConfirmationAlertTitleAccessibilityIdentifier),
+                            grey_accessibilityLabel(l10n_util::GetNSString(
+                                IDS_IOS_PASSWORD_SHARING_FAMILY_PROMO_TITLE)),
+                            nil)] assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Click the "Got It" button.
   [[EarlGrey selectElementWithMatcher:
-                 ButtonWithAccessibilityLabel(l10n_util::GetNSString(
-                     IDS_IOS_PASSWORD_SHARING_FAMILY_PROMO_BUTTON))]
+                 grey_accessibilityID(
+                     kConfirmationAlertPrimaryActionAccessibilityIdentifier)]
       performAction:grey_tap()];
 
   // Check that the current view is the password details view.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kPasswordDetailsTableViewId)]
+                                          kPasswordDetailsTableViewID)]
       assertWithMatcher:grey_notNil()];
 }
 
-// Disabled due to https://crbug.com/1496889
-- (void)DISABLED_testTappingGotItInFamilyPromoInviteMembersView {
+- (void)testTappingGotItInFamilyPromoInviteMembersView {
   // Override family status with
   // `FetchFamilyMembersRequestStatus::kNoOtherFamilyMembers`.
   AppLaunchConfiguration config = [self appConfigurationForTestCase];
   config.additional_args.push_back(std::string("-") +
                                    test_switches::kFamilyStatus + "=5");
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
+  [ChromeEarlGrey setBoolValue:YES
+                   forUserPref:prefs::kPasswordSharingFlowHasBeenEntered];
 
   SignInAndEnableSync();
   [self saveExamplePasswordAndOpenDetails];
 
   [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonId)]
+      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonID)]
       performAction:grey_tap()];
 
   // Check that the family promo view was displayed.
   [[EarlGrey
       selectElementWithMatcher:
-          grey_accessibilityLabel(l10n_util::GetNSString(
-              IDS_IOS_PASSWORD_SHARING_FAMILY_PROMO_INVITE_MEMBERS_TITLE))]
-      assertWithMatcher:grey_sufficientlyVisible()];
+          grey_allOf(
+              grey_accessibilityID(
+                  kConfirmationAlertTitleAccessibilityIdentifier),
+              grey_accessibilityLabel(l10n_util::GetNSString(
+                  IDS_IOS_PASSWORD_SHARING_FAMILY_PROMO_INVITE_MEMBERS_TITLE)),
+              nil)] assertWithMatcher:grey_sufficientlyVisible()];
 
   // Click the "Got It" button.
   [[EarlGrey selectElementWithMatcher:
-                 ButtonWithAccessibilityLabel(l10n_util::GetNSString(
-                     IDS_IOS_PASSWORD_SHARING_FAMILY_PROMO_BUTTON))]
+                 grey_accessibilityID(
+                     kConfirmationAlertPrimaryActionAccessibilityIdentifier)]
       performAction:grey_tap()];
 
   // Check that the current view is the password details view.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kPasswordDetailsTableViewId)]
+                                          kPasswordDetailsTableViewID)]
       assertWithMatcher:grey_notNil()];
 }
 
@@ -310,12 +332,14 @@ void SignInAndEnableSync() {
   config.additional_args.push_back(std::string("-") +
                                    test_switches::kFamilyStatus + "=0");
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
+  [ChromeEarlGrey setBoolValue:YES
+                   forUserPref:prefs::kPasswordSharingFlowHasBeenEntered];
 
   SignInAndEnableSync();
   [self saveExamplePasswordAndOpenDetails];
 
   [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonId)]
+      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonID)]
       performAction:grey_tap()];
 
   // Check that the error view was displayed and close it.
@@ -328,7 +352,7 @@ void SignInAndEnableSync() {
 
   // Check that the current view is the password details view.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kPasswordDetailsTableViewId)]
+                                          kPasswordDetailsTableViewID)]
       assertWithMatcher:grey_notNil()];
 }
 
@@ -337,10 +361,10 @@ void SignInAndEnableSync() {
   [self saveExamplePasswordAndOpenDetails];
 
   [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonId)]
+      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonID)]
       assertWithMatcher:grey_sufficientlyVisible()];
   [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonId)]
+      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonID)]
       performAction:grey_tap()];
 
   // Make sure that the share button is disabled before the recipient selection
@@ -383,7 +407,7 @@ void SignInAndEnableSync() {
       selectElementWithMatcher:grey_accessibilityID(kSharingStatusDoneButtonId)]
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kPasswordDetailsTableViewId)]
+                                          kPasswordDetailsTableViewID)]
       assertWithMatcher:grey_notNil()];
 }
 
@@ -392,7 +416,7 @@ void SignInAndEnableSync() {
   [self saveExamplePasswordsAndOpenDetails];
 
   [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonId)]
+      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonID)]
       performAction:grey_tap()];
 
   // Check that the next button is enabled by default.
@@ -426,10 +450,10 @@ void SignInAndEnableSync() {
   [self saveExamplePasswordAndOpenDetails];
 
   [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonId)]
+      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonID)]
       assertWithMatcher:grey_sufficientlyVisible()];
   [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonId)]
+      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonID)]
       performAction:grey_tap()];
 
   // Scroll down to the last recipient (the ineligible ones are on the bottom).
@@ -463,7 +487,7 @@ void SignInAndEnableSync() {
   [self saveExamplePasswordAndOpenDetails];
 
   [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonId)]
+      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonID)]
       performAction:grey_tap()];
 
   // Tap the cancel button.
@@ -474,17 +498,15 @@ void SignInAndEnableSync() {
 
   // Check that the current view is the password details view.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kPasswordDetailsTableViewId)]
+                                          kPasswordDetailsTableViewID)]
       assertWithMatcher:grey_notNil()];
 
   // Tap the share button again and verify that the first run view is still
   // displayed since it was not acknowledged.
   [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonId)]
+      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonID)]
       performAction:grey_tap()];
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
-                                   IDS_IOS_PASSWORD_SHARING_FIRST_RUN_TITLE))]
+  [[EarlGrey selectElementWithMatcher:PasswordSharingFirstRunMatcher()]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
@@ -496,7 +518,7 @@ void SignInAndEnableSync() {
   [self saveExamplePasswordAndOpenDetails];
 
   [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonId)]
+      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonID)]
       performAction:grey_tap()];
 
   // Tap the share button in the first run experience view.
@@ -518,7 +540,7 @@ void SignInAndEnableSync() {
   // Tap the share button in password details view and verify that the first run
   // view will not be displayed anymore since it was acknowledged.
   [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonId)]
+      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonID)]
       performAction:grey_tap()];
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityID(kFamilyPickerTableViewId)]
@@ -538,10 +560,10 @@ void SignInAndEnableSync() {
   [self saveExamplePasswordAndOpenDetails];
 
   [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonId)]
+      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonID)]
       assertWithMatcher:grey_sufficientlyVisible()];
   [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonId)]
+      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonID)]
       performAction:grey_tap()];
 
   // Tap the "Learn more" link in the popup.
@@ -552,6 +574,28 @@ void SignInAndEnableSync() {
   GREYAssertEqual(std::string(kGoogleHelpCenterURL),
                   [ChromeEarlGrey webStateVisibleURL].host(),
                   @"Did not navigate to the help center article.");
+}
+
+- (void)testFirstRunExperienceViewDismissedForAuthentication {
+  [ChromeEarlGrey setBoolValue:NO
+                   forUserPref:prefs::kPasswordSharingFlowHasBeenEntered];
+
+  SignInAndEnableSync();
+  [self saveExamplePasswordAndOpenDetails];
+
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonID)]
+      performAction:grey_tap()];
+
+  [[EarlGrey selectElementWithMatcher:PasswordSharingFirstRunMatcher()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Background then foreground app so reauthentication UI is displayed.
+  [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
+
+  // Check that first run experience is gone.
+  [[EarlGrey selectElementWithMatcher:PasswordSharingFirstRunMatcher()]
+      assertWithMatcher:grey_nil()];
 }
 
 @end

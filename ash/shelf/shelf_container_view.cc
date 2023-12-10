@@ -5,6 +5,7 @@
 #include "ash/shelf/shelf_container_view.h"
 
 #include "ash/public/cpp/shelf_config.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 
 namespace ash {
@@ -49,10 +50,6 @@ void ShelfContainerView::ChildPreferredSizeChanged(views::View* child) {
   PreferredSizeChanged();
 }
 
-const char* ShelfContainerView::GetClassName() const {
-  return "ShelfContainerView";
-}
-
 void ShelfContainerView::TranslateShelfView(const gfx::Vector2dF& offset) {
   gfx::Transform transform_matrix;
   transform_matrix.Translate(-offset);
@@ -60,5 +57,8 @@ void ShelfContainerView::TranslateShelfView(const gfx::Vector2dF& offset) {
   shelf_view_->NotifyAccessibilityEvent(ax::mojom::Event::kLocationChanged,
                                         true);
 }
+
+BEGIN_METADATA(ShelfContainerView)
+END_METADATA
 
 }  // namespace ash

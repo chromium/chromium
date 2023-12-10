@@ -186,7 +186,7 @@ void DemoComponents::OnResourcesVersionReady(const base::FilePath& path,
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(&RecordResourcesVersion, version));
 
-  OnDemoResourcesLoaded(absl::make_optional(path));
+  OnDemoResourcesLoaded(std::make_optional(path));
 }
 
 void DemoComponents::SetCrOSComponentLoadedForTesting(
@@ -216,12 +216,12 @@ void DemoComponents::InstalledComponentLoaded(
         base::BindOnce(&DemoComponents::OnResourcesVersionReady,
                        weak_ptr_factory_.GetWeakPtr(), path));
   } else {
-    OnDemoResourcesLoaded(absl::make_optional(path));
+    OnDemoResourcesLoaded(std::make_optional(path));
   }
 }
 
 void DemoComponents::OnDemoResourcesLoaded(
-    absl::optional<base::FilePath> mounted_path) {
+    std::optional<base::FilePath> mounted_path) {
   resources_loaded_ = true;
 
   if (mounted_path.has_value())

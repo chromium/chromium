@@ -210,7 +210,7 @@ void FastPairAdvertiser::OnUnregisterAdvertisement() {
   advertisement_.reset();
   quick_start_metrics_.RecordFastPairAdvertisementEnded(
       /*succeeded=*/true,
-      /*error_code=*/absl::nullopt);
+      /*error_code=*/std::nullopt);
 
   std::move(stop_callback_).Run();
   // |this| might be destroyed here, do not access local fields.

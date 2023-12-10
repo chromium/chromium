@@ -38,8 +38,8 @@ public class SendTabToSelfAndroidBridge {
             Profile profile, String url, String title, String targetDeviceSyncCacheGuid) {
         // TODO(https://crbug.com/942549): Add this assertion back in once the code to load is in
         // place. assert mIsNativeSendTabToSelfModelLoaded;
-        return SendTabToSelfAndroidBridgeJni.get().addEntry(
-                profile, url, title, targetDeviceSyncCacheGuid);
+        return SendTabToSelfAndroidBridgeJni.get()
+                .addEntry(profile, url, title, targetDeviceSyncCacheGuid);
     }
 
     /**

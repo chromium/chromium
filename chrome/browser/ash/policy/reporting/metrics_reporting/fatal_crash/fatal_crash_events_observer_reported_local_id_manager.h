@@ -11,11 +11,11 @@
 #include <unordered_map>
 
 #include "base/files/file_path.h"
+#include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/task/thread_pool.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/fatal_crash/fatal_crash_events_observer.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_events.mojom.h"
 
@@ -23,6 +23,9 @@ namespace reporting {
 
 class FatalCrashEventsObserver::ReportedLocalIdManager {
  public:
+  // Callback type once the save file is loaded.
+  using SaveFileLoadedCallback = base::OnceCallback<void()>;
+
   // The result of `ShouldReport`.
   enum class ShouldReportResult : uint8_t {
     kYes = 0u,
@@ -32,8 +35,19 @@ class FatalCrashEventsObserver::ReportedLocalIdManager {
     kMaxValue = kCrashTooOldAndMaxNumOfSavedLocalIdsReached
   };
 
+  // Create a `ReportedLocalIdManager` instance.
+  //
+  // Params:
+  //
+  // - save_file_path: Path to the save file.
+  // - save_file_loaded_callback: The value of `save_file_loaded_callback_`. See
+  //   its document.
+  // - io_task_runner: The task runner to run IO tasks on. If nullptr, the
+  //                   constructor would create a default task runner.
   static std::unique_ptr<ReportedLocalIdManager> Create(
-      base::FilePath save_file_path);
+      base::FilePath save_file_path,
+      SaveFileLoadedCallback save_file_loaded_callback,
+      scoped_refptr<base::SequencedTaskRunner> io_task_runner);
   ReportedLocalIdManager(const ReportedLocalIdManager&) = delete;
   ReportedLocalIdManager& operator=(const ReportedLocalIdManager&) = delete;
   virtual ~ReportedLocalIdManager();
@@ -71,7 +85,7 @@ class FatalCrashEventsObserver::ReportedLocalIdManager {
   void Remove(const std::string& local_id);
 
   // Indicates whether the save file has been loaded.
-  bool IsLoaded() const;
+  bool IsSaveFileLoaded() const;
 
  private:
   // Give `TestEnvironment` the access to `kMaxNumOfLocalIds`.
@@ -93,7 +107,10 @@ class FatalCrashEventsObserver::ReportedLocalIdManager {
   // The maximum size of the priority queue before reconstructing it.
   static constexpr size_t kMaxSizeOfLocalIdEntryQueue{kMaxNumOfLocalIds * 10u};
 
-  explicit ReportedLocalIdManager(base::FilePath save_file_path);
+  ReportedLocalIdManager(
+      base::FilePath save_file_path,
+      SaveFileLoadedCallback save_file_loaded_callback,
+      scoped_refptr<base::SequencedTaskRunner> io_task_runner);
 
   // Loads save file. Logs and ignores errors. If there is a parsing error,
   // still loads all lines before the line on which the error occurs. Does not
@@ -125,6 +142,8 @@ class FatalCrashEventsObserver::ReportedLocalIdManager {
   // Remove the local ID entry corresponding to the earliest unuploaded crash.
   void RemoveEarliestLocalIdEntry();
 
+  // This instance is always on the same sequence as that of the owning
+  // `FatalCrashEventsObserver` instance.
   SEQUENCE_CHECKER(sequence_checker_);
 
   // The file that saves reported local IDs. It is in the CSV format: csv
@@ -153,14 +172,28 @@ class FatalCrashEventsObserver::ReportedLocalIdManager {
                       LocalIdEntryComparator>
       local_id_entry_queue_ GUARDED_BY_CONTEXT(sequence_checker_);
 
-  // The task runner that performs IO. This instance would not be recreated in
-  // production code, but may be in unit tests.
-  scoped_refptr<base::SequencedTaskRunner> io_task_runner_ GUARDED_BY_CONTEXT(
-      sequence_checker_){base::ThreadPool::CreateSequencedTaskRunner(
-      {base::TaskShutdownBehavior::BLOCK_SHUTDOWN, base::MayBlock()})};
-
   // Indicates whether loading has finished.
-  bool loaded_ GUARDED_BY_CONTEXT(sequence_checker_){false};
+  bool save_file_loaded_ GUARDED_BY_CONTEXT(sequence_checker_){false};
+
+  // Called when the save file is loaded. Should only be called once because the
+  // save file is only loaded once throughout the lifetime of this class
+  // instance.
+  SaveFileLoadedCallback save_file_loaded_callback_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // The task runner that performs IO.
+  const scoped_refptr<base::SequencedTaskRunner> io_task_runner_;
+
+  // The counter that keeps track of the number of IO tasks posted. This is
+  // mostly used to avoid duplicate IO tasks, i.e., a later save file writing
+  // task is posted and there's no need to executing an earlier file writing
+  // task that has not started. It is always deleted on the IO thread so that
+  // when an instance of this class is destroyed, this counter remains
+  // accessible for all tasks posted to the IO thread.
+  const std::unique_ptr<std::atomic<uint64_t>, base::OnTaskRunnerDeleter>
+      latest_save_file_writing_task_id_{
+          new std::atomic<uint64_t>(0u),
+          base::OnTaskRunnerDeleter(io_task_runner_)};
 
   base::WeakPtrFactory<ReportedLocalIdManager> weak_factory_{this};
 };

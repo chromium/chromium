@@ -41,10 +41,6 @@ namespace {
 
 using ::chromeos::WindowStateType;
 
-// This specifies how much percent (30%) of a window rect
-// must be visible when the window is added to the workspace.
-const float kMinimumPercentOnScreenArea = 0.3f;
-
 // When a window that has restore bounds at least as large as a work area is
 // unmaximized, inset the bounds slightly so that they are not exactly the same.
 // This makes it easier to resize the window.
@@ -419,10 +415,10 @@ void DefaultState::HandleTransitionEvents(WindowState* window_state,
     }
   }
 
-  absl::optional<chromeos::FloatStartLocation> float_start_location =
+  std::optional<chromeos::FloatStartLocation> float_start_location =
       event->AsFloatEvent()
-          ? absl::make_optional(event->AsFloatEvent()->float_start_location())
-          : absl::nullopt;
+          ? std::make_optional(event->AsFloatEvent()->float_start_location())
+          : std::nullopt;
   EnterToNextState(window_state, next_state_type, float_start_location);
 }
 
@@ -472,7 +468,7 @@ void DefaultState::SetBounds(WindowState* window_state,
 void DefaultState::EnterToNextState(
     WindowState* window_state,
     WindowStateType next_state_type,
-    absl::optional<chromeos::FloatStartLocation> float_start_location) {
+    std::optional<chromeos::FloatStartLocation> float_start_location) {
   if (!ShouldEnterNextState(state_type_, next_state_type, window_state)) {
     return;
   }
@@ -576,7 +572,7 @@ void DefaultState::ReenterToCurrentState(
   }
 
   UpdateBoundsFromState(window_state, state_in_previous_mode->GetType(),
-                        /*float_start_location=*/absl::nullopt);
+                        /*float_start_location=*/std::nullopt);
   UpdateMinimizedState(window_state, state_in_previous_mode->GetType());
 
   // Then restore the restore bounds to their previous value.
@@ -591,7 +587,7 @@ void DefaultState::ReenterToCurrentState(
 void DefaultState::UpdateBoundsFromState(
     WindowState* window_state,
     WindowStateType previous_state_type,
-    absl::optional<chromeos::FloatStartLocation> float_start_location) {
+    std::optional<chromeos::FloatStartLocation> float_start_location) {
   aura::Window* window = window_state->window();
   gfx::Rect bounds_in_parent;
 
@@ -608,8 +604,9 @@ void DefaultState::UpdateBoundsFromState(
           window_state->window(), state_type_, *window_state->snap_ratio());
       base::UmaHistogramEnumeration(
           kSnapWindowDeviceOrientationHistogramName,
-          chromeos::IsDisplayLayoutHorizontal(
-              display::Screen::GetScreen()->GetDisplayNearestWindow(window))
+          display::Screen::GetScreen()
+                  ->GetDisplayNearestWindow(window)
+                  .is_landscape()
               ? SplitViewMetricsController::DeviceOrientation::kLandscape
               : SplitViewMetricsController::DeviceOrientation::kPortrait);
       break;
@@ -697,7 +694,7 @@ void DefaultState::UpdateBoundsFromState(
   } else {
     // Record smoothness of the snapping animation if the size of the window
     // changes.
-    absl::optional<ui::AnimationThroughputReporter> reporter;
+    std::optional<ui::AnimationThroughputReporter> reporter;
     if (window_state->IsSnapped() &&
         bounds_in_parent.size() != window->bounds().size()) {
       reporter.emplace(

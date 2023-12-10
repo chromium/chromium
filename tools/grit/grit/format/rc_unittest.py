@@ -289,8 +289,8 @@ END'''.strip()
 
     # Check for the content added by the <include> tag.
     self.assertTrue(file_contents.find('Hello Include!') != -1)
-    # Check for inserted -webkit-image-set.
-    self.assertTrue(file_contents.find('content: -webkit-image-set') != -1)
+    # Check for inserted image-set.
+    self.assertTrue(file_contents.find('content: image-set') != -1)
     os.remove(output_file)
 
   def testSubstitutionHtml(self):

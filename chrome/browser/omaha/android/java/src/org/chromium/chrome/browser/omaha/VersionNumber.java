@@ -6,9 +6,7 @@ package org.chromium.chrome.browser.omaha;
 
 import java.util.Locale;
 
-/**
- * Utility for dealing with Chrome version numbers.
- */
+/** Utility for dealing with Chrome version numbers. */
 public class VersionNumber {
     private final int[] mVersion = {0, 0, 0, 0};
 

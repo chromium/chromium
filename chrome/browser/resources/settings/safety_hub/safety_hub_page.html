@@ -13,33 +13,40 @@
   .card-container {
     align-items: stretch;
     display: flex;
-    gap: 13px;
+    gap: 16px;
     justify-content: space-between;
     width: 100%;
   }
 
   .card:hover {
     background-color: var(--cr-hover-background-color);
+    cursor: pointer;
   }
 
   .module {
     height: fit-content;
-    margin-bottom: 24px;
+    margin-bottom: 16px;
+    padding: 12px 20px;
   }
 
   .section-header {
+    flex: 1;
     /* Should be 13px when html font-size is 16px */
     font-size: 0.8125rem;
-    margin: 16px 0px;
+    margin-bottom: 16px;
+    margin-top: 30px;
     width: 100%;
-    flex: 1;
     user-select: none;
+  }
+
+  .section-header.first{
+    margin-top: 0px;
   }
 </style>
 
-<div class="section-header cr-secondary-text">
+<h5 class="section-header cr-secondary-text first">
   $i18n{safetyHubPageCardSectionHeader}
-</div>
+</h5>
 <div class="card-container">
   <settings-safety-hub-card id="passwords" class="card box"
       data="[[passwordCardData_]]" on-click="onPasswordsClick_"
@@ -54,9 +61,9 @@
       tabindex="0" on-keydown="onSafeBrowsingKeyPress_">
   </settings-safety-hub-card>
 </div>
-<div class="section-header cr-secondary-text">
+<h5 class="section-header cr-secondary-text">
   $i18n{safetyHubPageModuleSectionHeader}
-</div>
+</h5>
 <template is="dom-if" if="[[showNotificationPermissions_]]">
   <settings-safety-hub-notification-permissions-module class="module box">
   </settings-safety-hub-notification-permissions-module>

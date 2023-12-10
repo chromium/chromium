@@ -82,6 +82,27 @@ void DrmNativeDisplayDelegate::SetHDCPState(
   display->SetHDCPState(state, protection_method, std::move(callback));
 }
 
+void DrmNativeDisplayDelegate::SetColorTemperatureAdjustment(
+    int64_t display_id,
+    const display::ColorTemperatureAdjustment& cta) {
+  DrmDisplayHost* display = display_manager_->GetDisplay(display_id);
+  display->SetColorTemperatureAdjustment(cta);
+}
+
+void DrmNativeDisplayDelegate::SetColorCalibration(
+    int64_t display_id,
+    const display::ColorCalibration& calibration) {
+  DrmDisplayHost* display = display_manager_->GetDisplay(display_id);
+  display->SetColorCalibration(calibration);
+}
+
+void DrmNativeDisplayDelegate::SetGammaAdjustment(
+    int64_t display_id,
+    const display::GammaAdjustment& adjustment) {
+  DrmDisplayHost* display = display_manager_->GetDisplay(display_id);
+  display->SetGammaAdjustment(adjustment);
+}
+
 bool DrmNativeDisplayDelegate::SetColorMatrix(
     int64_t display_id,
     const std::vector<float>& color_matrix) {
@@ -92,10 +113,10 @@ bool DrmNativeDisplayDelegate::SetColorMatrix(
 
 bool DrmNativeDisplayDelegate::SetGammaCorrection(
     int64_t display_id,
-    const std::vector<display::GammaRampRGBEntry>& degamma_lut,
-    const std::vector<display::GammaRampRGBEntry>& gamma_lut) {
+    const display::GammaCurve& degamma,
+    const display::GammaCurve& gamma) {
   DrmDisplayHost* display = display_manager_->GetDisplay(display_id);
-  display->SetGammaCorrection(degamma_lut, gamma_lut);
+  display->SetGammaCorrection(degamma, gamma);
   return true;
 }
 

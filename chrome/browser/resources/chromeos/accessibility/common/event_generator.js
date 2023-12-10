@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {KeyCode} from './key_code.js';
+import {Key} from './key_code.js';
 
 /** Functions to send synthetic key and mouse events. */
 export class EventGenerator {
@@ -10,7 +10,7 @@ export class EventGenerator {
    * Sends a single key stroke (down and up) with the given key code and
    *     keyboard modifiers (whether or not CTRL, ALT, SEARCH, and SHIFT are
    *     being held).
-   * @param {!KeyCode} keyCode
+   * @param {!Key.Code} keyCode
    * @param {!chrome.accessibilityPrivate.SyntheticKeyboardModifiers} modifiers
    * @param {boolean} useRewriters If true, uses rewriters for the key event;
    *     only allowed if used from Dictation. Otherwise indicates that rewriters

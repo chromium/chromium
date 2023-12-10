@@ -74,16 +74,34 @@ class PDFExtensionTestBase : public extensions::ExtensionApiTest {
 
   int CountPDFProcesses();
 
+  // TODO(crbug.com/1445746): Remove this once there are no more existing use
+  // cases.
   void SimulateMouseClickAt(extensions::MimeHandlerViewGuest* guest,
                             int modifiers,
                             blink::WebMouseEvent::Button button,
                             const gfx::Point& point_in_guest);
+
+  void SimulateMouseClickAt(content::RenderFrameHost* extension_host,
+                            content::WebContents* contents,
+                            int modifiers,
+                            blink::WebMouseEvent::Button button,
+                            const gfx::Point& point_in_extension);
+
+  // Returns true if the test should use the OOPIF PDF viewer instead of the
+  // GuestView PDF viewer.
+  // TODO(crbug.com/1445746): Remove once only OOPIF PDF viewer is used.
+  virtual bool UseOopif() const;
 
   // Hooks to set up feature flags.
   virtual std::vector<base::test::FeatureRef> GetEnabledFeatures() const;
   virtual std::vector<base::test::FeatureRef> GetDisabledFeatures() const;
 
  private:
+  // Check if the PDF loaded. The test will fail if the frame tree does not have
+  // exactly one PDF extension host and one PDF content host. For GuestView PDF
+  // viewer, the test will also fail if there is not exactly one GuestView.
+  testing::AssertionResult EnsurePDFHasLoadedWithValidFrameTree();
+
   base::test::ScopedFeatureList feature_list_;
   guest_view::TestGuestViewManagerFactory factory_;
 };

@@ -15,7 +15,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_data_delegate.h"
-#include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
+#include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/webstore_data_fetcher.h"
 #include "chrome/browser/extensions/webstore_install_helper.h"
@@ -46,7 +46,7 @@ namespace ash {
 
 namespace {
 
-// Keys for local state data. See sample layout in KioskAppManager.
+// Keys for local state data. See sample layout in KioskChromeAppManager.
 constexpr char kKeyRequiredPlatformVersion[] = "required_platform_version";
 
 // Returns true for valid kiosk app manifest.
@@ -256,7 +256,7 @@ KioskAppData::KioskAppData(KioskAppDataDelegate* delegate,
                            const AccountId& account_id,
                            const GURL& update_url,
                            const base::FilePath& cached_crx)
-    : KioskAppDataBase(KioskAppManager::kKioskDictionaryName,
+    : KioskAppDataBase(KioskChromeAppManager::kKioskDictionaryName,
                        app_id,
                        account_id),
       delegate_(delegate),
@@ -429,7 +429,7 @@ void KioskAppData::OnExtensionIconLoaded(const gfx::Image& icon) {
   SetStatus(Status::kLoaded);
 }
 
-void KioskAppData::OnIconLoadDone(absl::optional<gfx::ImageSkia> icon) {
+void KioskAppData::OnIconLoadDone(std::optional<gfx::ImageSkia> icon) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   kiosk_app_icon_loader_.reset();
   if (!icon.has_value()) {

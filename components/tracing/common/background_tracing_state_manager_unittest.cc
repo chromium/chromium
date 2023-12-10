@@ -30,7 +30,7 @@ class BackgroundTracingStateManagerTest : public testing::Test {
   }
 
   void TearDown() override {
-    tracing::BackgroundTracingStateManager::GetInstance().Reset();
+    tracing::BackgroundTracingStateManager::GetInstance().ResetForTesting();
   }
 
   std::string GetSessionStateJson() {

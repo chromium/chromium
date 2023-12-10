@@ -413,6 +413,14 @@ class TestFuture<void> {
   //   ASSERT_TRUE(future.Wait()) << "Detailed error message";
   [[nodiscard]] bool Wait() { return implementation_.Wait(); }
 
+  // Same as above, then clears the future, allowing it to be reused and accept
+  // a new value.
+  [[nodiscard]] bool WaitAndClear() {
+    auto result = Wait();
+    Clear();
+    return result;
+  }
+
   // Waits until the callback or `SetValue()` is invoked.
   void Get() { std::ignore = implementation_.Get(); }
 

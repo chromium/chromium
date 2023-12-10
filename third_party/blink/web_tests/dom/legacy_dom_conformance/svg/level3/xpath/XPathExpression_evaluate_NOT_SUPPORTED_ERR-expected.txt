@@ -1,2 +1,0 @@
-XPathExpression_evaluate_NOT_SUPPORTED_ERR
-TypeError: doc.createEntityReference is not a function

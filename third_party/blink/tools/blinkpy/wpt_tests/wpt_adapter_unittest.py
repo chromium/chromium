@@ -221,7 +221,6 @@ class WPTAdapterTest(unittest.TestCase):
             path: contents
             for path, contents in self.fs.files.items() if contents is not None
         }
-        files.pop('/mock-checkout/out/Release/wpt_reports.json')
         self.assertEqual(files, files_before)
 
     def test_parse_isolated_filter_nonexistent_tests(self):

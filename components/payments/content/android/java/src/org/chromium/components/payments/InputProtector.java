@@ -6,9 +6,9 @@ package org.chromium.components.payments;
 
 import androidx.annotation.VisibleForTesting;
 
-/**
- * An InputProtector is used in payments UIs to prevent potentially unintended user interaction.
- */
+import org.chromium.base.TimeUtils;
+
+/** An InputProtector is used in payments UIs to prevent potentially unintended user interaction. */
 public class InputProtector {
     // Amount of time in ms for which we ignore inputs. Note this is typically timed from when we
     // invoke the method to show the UI, so it may include time spent animating the sheet into view.
@@ -23,20 +23,16 @@ public class InputProtector {
     private long mShowTime;
 
     public InputProtector() {
-        mClock = System::currentTimeMillis;
+        mClock = TimeUtils::currentTimeMillis;
     }
 
-    /**
-     * Constructor used for tests to override the clock.
-     */
+    /** Constructor used for tests to override the clock. */
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     public InputProtector(Clock clock) {
         mClock = clock;
     }
 
-    /**
-     * Records the show time to the current time provided by the clock.
-     */
+    /** Records the show time to the current time provided by the clock. */
     public void markShowTime() {
         mShowTime = mClock.currentTimeMillis();
     }

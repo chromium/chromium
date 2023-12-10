@@ -18,9 +18,8 @@
 #import "components/segmentation_platform/embedder/default_model/device_switcher_result_dispatcher.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/iph_for_new_chrome_user/model/utils.h"
-#import "ios/chrome/browser/segmentation_platform/segmentation_platform_service_factory.h"
+#import "ios/chrome/browser/segmentation_platform/model/segmentation_platform_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
-#import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
@@ -34,24 +33,46 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
+#import "ios/chrome/browser/shared/ui/util/named_guide.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
 #import "ios/chrome/browser/ui/bubble/bubble_constants.h"
 #import "ios/chrome/browser/ui/bubble/bubble_presenter_delegate.h"
 #import "ios/chrome/browser/ui/bubble/bubble_util.h"
 #import "ios/chrome/browser/ui/bubble/bubble_view_controller_presenter.h"
+#import "ios/chrome/browser/ui/bubble/side_swipe_bubble/side_swipe_bubble_view.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_notifier_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_observer_bridge.h"
+#import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/ui/crw_web_view_proxy.h"
 #import "ios/web/public/ui/crw_web_view_scroll_view_proxy.h"
 #import "ios/web/public/web_state.h"
+#import "ios/web/public/web_state_observer_bridge.h"
 #import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util.h"
 
-@interface BubblePresenter () <SceneStateObserver, URLLoadingObserver>
+namespace {
+
+// Returns whether `view` could display and animate correctly within `guide`. If
+// NO, elements in `view` may be hidden or overlap with each other during the
+// animation.
+BOOL CanSideSwipeBubbleViewFitInGuide(SideSwipeBubbleView* view,
+                                      UILayoutGuide* guide) {
+  CGSize guide_size = guide.layoutFrame.size;
+  CGSize view_fitting_size =
+      [view systemLayoutSizeFittingSize:UILayoutFittingCompressedSize];
+  return view_fitting_size.width <= guide_size.width &&
+         view_fitting_size.height <= guide_size.height;
+}
+
+}  // namespace
+
+@interface BubblePresenter () <CRWWebStateObserver,
+                               SceneStateObserver,
+                               URLLoadingObserver>
 
 // Used to display the bottom toolbar tip in-product help promotion bubble.
 // `nil` if the tip bubble has not yet been presented. Once the bubble is
@@ -83,6 +104,7 @@
     BubbleViewControllerPresenter* lensKeyboardPresenter;
 @property(nonatomic, strong)
     BubbleViewControllerPresenter* parcelTrackingTipBubblePresenter;
+@property(nonatomic, strong) SideSwipeBubbleView* pullToRefreshSideSwipeBubble;
 @property(nonatomic, assign) WebStateList* webStateList;
 @property(nonatomic, assign) feature_engagement::Tracker* engagementTracker;
 @property(nonatomic, assign) HostContentSettingsMap* settingsMap;
@@ -101,6 +123,10 @@
   PrefService* _prefService;
 
   id<TabStripCommands> _tabStripCommandsHandler;
+
+  web::WebState* _pullToRefreshIPHWebState;
+  std::unique_ptr<web::WebStateObserverBridge>
+      _pullToRefreshIPHWebStateObserver;
 }
 
 #pragma mark - Public
@@ -138,6 +164,10 @@
     _loadingNotifier->AddObserver(_loadingObserverBridge.get());
 
     [sceneState addObserver:self];
+
+    _pullToRefreshIPHWebState = nullptr;
+    _pullToRefreshIPHWebStateObserver =
+        std::make_unique<web::WebStateObserverBridge>(self);
   }
   return self;
 }
@@ -150,6 +180,8 @@
 
   _loadingNotifier->RemoveObserver(_loadingObserverBridge.get());
   _loadingObserverBridge.reset();
+
+  [self removeAndUntriggerPullToRefreshIPH];
 }
 
 - (void)hideAllHelpBubbles {
@@ -164,6 +196,8 @@
   [self.lensKeyboardPresenter dismissAnimated:NO];
   [self.defaultPageModeTipBubblePresenter dismissAnimated:NO];
   [self.parcelTrackingTipBubblePresenter dismissAnimated:NO];
+  [self.pullToRefreshSideSwipeBubble
+      dismissWithReason:IPHDismissalReasonType::kUnknown];
 }
 
 - (void)presentShareButtonHelpBubbleIfEligible {
@@ -415,7 +449,43 @@
   self.parcelTrackingTipBubblePresenter = presenter;
 }
 
+- (void)notifyMultiGestureRefreshAndShowHelpBubbleIfEligible {
+  self.engagementTracker->NotifyEvent(
+      feature_engagement::events::kIOSMultiGestureRefreshUsed);
+  BOOL userEligibleForPullToRefreshIPH =
+      iph_for_new_chrome_user::IsUserEligible(
+          _deviceSwitcherResultDispatcher) &&
+      self.engagementTracker->WouldTriggerHelpUI(
+          feature_engagement::kIPHiOSPullToRefreshFeature);
+  if (!userEligibleForPullToRefreshIPH) {
+    return;
+  }
+  _pullToRefreshIPHWebState = self.webStateList->GetActiveWebState();
+  if (_pullToRefreshIPHWebState) {
+    _pullToRefreshIPHWebState->AddObserver(
+        _pullToRefreshIPHWebStateObserver.get());
+  }
+}
+
 #pragma mark - Private
+
+// Remove pull-to-refresh IPH if showing. Also, if
+// `_pullToRefreshIPHWebStateObserver` is observing the currently active web
+// state, unobserve it.
+- (void)removeAndUntriggerPullToRefreshIPH {
+  if (_pullToRefreshIPHWebState) {
+    _pullToRefreshIPHWebState->RemoveObserver(
+        _pullToRefreshIPHWebStateObserver.get());
+  }
+  _pullToRefreshIPHWebState = nullptr;
+  _pullToRefreshIPHWebStateObserver.reset();
+
+  if (self.pullToRefreshSideSwipeBubble) {
+    // TODO(crbug.com/1467873): Add a new reason type and use that.
+    [self.pullToRefreshSideSwipeBubble
+        dismissWithReason:IPHDismissalReasonType::kUnknown];
+  }
+}
 
 // Convenience method that calls -presentBubbleForFeature with default param
 // values for `alignment`, `presentAction`, and `dismissAction`.
@@ -612,6 +682,31 @@
   self.tabGridIPHBubblePresenter = presenter;
 }
 
+// Optionally presents a full screen IPH associated with the pull-to-refresh
+// feature. If the feature engagement tracker determines it is valid to show the
+// pull-to-refresh tip, then it initializes a SideSwipeBubbleView and presents
+// it, otherwise it does nothing. This method requires that `self.browserState`
+// is not NULL.
+- (void)presentPullToRefreshSideSwipeBubble {
+  if (UIAccessibilityIsVoiceOverRunning() || (![self canPresentBubble])) {
+    return;
+  }
+  __weak BubblePresenter* weakSelf = self;
+  NamedGuide* guide = [NamedGuide guideWithName:kContentAreaGuide
+                                           view:self.rootViewController.view];
+  NSString* text = l10n_util::GetNSString(IDS_IOS_PULL_TO_REFRESH_IPH);
+  ProceduralBlock resetPullToRefreshSideSwipeBubble = ^{
+    weakSelf.pullToRefreshSideSwipeBubble = nil;
+  };
+  self.pullToRefreshSideSwipeBubble =
+      [self presentSideSwipeBubbleForFeature:feature_engagement::
+                                                 kIPHiOSPullToRefreshFeature
+                                   direction:BubbleArrowDirectionUp
+                                        text:text
+                               dismissAction:resetPullToRefreshSideSwipeBubble
+                                     toGuide:guide];
+}
+
 #pragma mark - Private Utils
 
 // Returns the anchor point for a bubble with an `arrowDirection` pointing to a
@@ -715,6 +810,51 @@
   return nil;
 }
 
+// Present a screen-covering side swipe bubble associated with an in-product
+// help promotion if it is valid to show the promotion, and return the view.
+// `feature` is the base::Feature object associated with the given promotion.
+// `direction` is the direction the bubble's arrow is pointing. `text` is the
+// text displayed by the bubble. `dismissAction` is the callback function
+// invoked when the IPH is dismissed, and `guide` is used for the initial
+// positioning of the side swipe bubble.
+//
+// TODO(crbug.com/1450600): Once kContentAreaGuide is moved to
+// LayoutGuideCenter, replace the parameter `guide` with a string `guideName`.
+- (SideSwipeBubbleView*)
+    presentSideSwipeBubbleForFeature:(const base::Feature&)feature
+                           direction:(BubbleArrowDirection)direction
+                                text:(NSString*)text
+                       dismissAction:(ProceduralBlock)dismissAction
+                             toGuide:(UILayoutGuide*)guide {
+  DCHECK(self.engagementTracker);
+  if (!(guide && self.engagementTracker->WouldTriggerHelpUI(feature))) {
+    return nil;
+  }
+  SideSwipeBubbleView* sideSwipeBubbleView =
+      [[SideSwipeBubbleView alloc] initWithText:text
+                             bubbleBoundingSize:guide.layoutFrame.size
+                                 arrowDirection:direction];
+  [sideSwipeBubbleView setTranslatesAutoresizingMaskIntoConstraints:NO];
+  if (CanSideSwipeBubbleViewFitInGuide(sideSwipeBubbleView, guide) &&
+      self.engagementTracker->ShouldTriggerHelpUI(feature)) {
+    __weak BubblePresenter* weakSelf = self;
+    CallbackWithIPHDismissalReasonType dismissalCallbackWithSnoozeAction =
+        ^(IPHDismissalReasonType IPHDismissalReasonType,
+          feature_engagement::Tracker::SnoozeAction snoozeAction) {
+          if (dismissAction) {
+            dismissAction();
+          }
+          [weakSelf featureDismissed:feature withSnooze:snoozeAction];
+        };
+    sideSwipeBubbleView.dismissCallback = dismissalCallbackWithSnoozeAction;
+    [self.rootViewController.view addSubview:sideSwipeBubbleView];
+    AddSameConstraints(sideSwipeBubbleView, guide);
+    [sideSwipeBubbleView startAnimation];
+    return sideSwipeBubbleView;
+  }
+  return nil;
+}
+
 - (void)featureDismissed:(const base::Feature&)feature
               withSnooze:
                   (feature_engagement::Tracker::SnoozeAction)snoozeAction {
@@ -744,6 +884,29 @@
   return NO;
 }
 
+// TODO(crbug.com/1467873): Refactor observers and tab-event-based IPHs to a
+// separate object.
+#pragma mark - CRWWebStateObserver
+
+- (void)webStateDidStopLoading:(web::WebState*)webState {
+  CHECK_EQ(webState, _pullToRefreshIPHWebState);
+  if (webState->GetLoadingProgress() == 1) {
+    [self presentPullToRefreshSideSwipeBubble];
+  } else {
+    [self removeAndUntriggerPullToRefreshIPH];
+  }
+}
+
+- (void)webStateWasHidden:(web::WebState*)webState {
+  CHECK_EQ(webState, _pullToRefreshIPHWebState);
+  [self removeAndUntriggerPullToRefreshIPH];
+}
+
+- (void)webStateDestroyed:(web::WebState*)webState {
+  CHECK_EQ(webState, _pullToRefreshIPHWebState);
+  [self removeAndUntriggerPullToRefreshIPH];
+}
+
 #pragma mark - SceneStateObserver
 
 - (void)sceneState:(SceneState*)sceneState
@@ -758,10 +921,17 @@
 - (void)tabDidLoadURL:(GURL)URL
        transitionType:(ui::PageTransition)transitionType {
   web::WebState* currentWebState = _webStateList->GetActiveWebState();
-  if (currentWebState &&
-      ((transitionType & ui::PAGE_TRANSITION_FROM_ADDRESS_BAR) ||
-       (transitionType & ui::PAGE_TRANSITION_FORWARD_BACK))) {
-    [self presentNewTabToolbarItemBubble];
+  if (currentWebState) {
+    if ((transitionType & ui::PAGE_TRANSITION_FROM_ADDRESS_BAR) ||
+        (transitionType & ui::PAGE_TRANSITION_FORWARD_BACK)) {
+      [self presentNewTabToolbarItemBubble];
+    }
+    GURL visible = currentWebState->GetLastCommittedURL();
+    if (URL == visible &&
+        transitionType & ui::PAGE_TRANSITION_FROM_ADDRESS_BAR &&
+        URL != kChromeUINewTabURL) {
+      [self notifyMultiGestureRefreshAndShowHelpBubbleIfEligible];
+    }
   }
 }
 
@@ -770,4 +940,5 @@
     [self presentTabGridToolbarItemBubble];
   }
 }
+
 @end

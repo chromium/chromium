@@ -20,7 +20,9 @@
 #include "components/history/core/browser/history_service.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 
+using base::android::AppendJavaStringArrayToStringVector;
 using base::android::AttachCurrentThread;
+using base::android::JavaArrayOfByteArrayToStringVector;
 using base::android::JavaParamRef;
 using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
@@ -321,7 +323,7 @@ void UsageStatsBridge::OnURLsDeleted(
 
   history::DeletionTimeRange time_range = deletion_info.time_range();
   if (time_range.IsValid()) {
-    const absl::optional<std::set<GURL>>& urls = deletion_info.restrict_urls();
+    const std::optional<std::set<GURL>>& urls = deletion_info.restrict_urls();
     if (urls.has_value() && urls.value().size() > 0) {
       std::vector<std::string> domains;
       domains.reserve(urls.value().size());

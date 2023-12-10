@@ -14,9 +14,9 @@
 #include <limits>
 #include <type_traits>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/numerics/checked_math.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/numerics/safe_conversions.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/numerics/safe_math_shared_impl.h"
+#include "partition_alloc/partition_alloc_base/numerics/checked_math.h"
+#include "partition_alloc/partition_alloc_base/numerics/safe_conversions.h"
+#include "partition_alloc/partition_alloc_base/numerics/safe_math_shared_impl.h"
 
 namespace partition_alloc::internal::base::internal {
 

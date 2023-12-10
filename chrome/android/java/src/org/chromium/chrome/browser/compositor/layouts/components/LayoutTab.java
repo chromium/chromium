@@ -25,11 +25,10 @@ public class LayoutTab extends PropertyModel {
 
     public static float sDpToPx;
     private static float sPxToDp;
+
     // End section --------------
 
-    /**
-     * Supplier for determining if the current layout is active.
-     */
+    /** Supplier for determining if the current layout is active. */
     public interface IsActiveLayoutSupplier {
         /**
          * @return whether the current layout is active.
@@ -93,9 +92,7 @@ public class LayoutTab extends PropertyModel {
     /** Whether we need to draw the decoration (border, shadow, ..) at all. */
     public static final WritableFloatPropertyKey DECORATION_ALPHA = new WritableFloatPropertyKey();
 
-    /**
-     * Whether initFromHost() has been called since the last call to init().
-     */
+    /** Whether initFromHost() has been called since the last call to init(). */
     public static final WritableBooleanPropertyKey INIT_FROM_HOST_CALLED =
             new WritableBooleanPropertyKey();
 
@@ -116,17 +113,41 @@ public class LayoutTab extends PropertyModel {
     public static final PropertyModel.WritableFloatPropertyKey CONTENT_OFFSET =
             new PropertyModel.WritableFloatPropertyKey();
 
-    public static final PropertyModel
-            .WritableObjectPropertyKey<IsActiveLayoutSupplier> IS_ACTIVE_LAYOUT_SUPPLIER =
-            new WritableObjectPropertyKey<>();
+    public static final PropertyModel.WritableObjectPropertyKey<IsActiveLayoutSupplier>
+            IS_ACTIVE_LAYOUT_SUPPLIER = new WritableObjectPropertyKey<>();
 
-    public static final PropertyKey[] ALL_KEYS = new PropertyKey[] {TAB_ID, IS_INCOGNITO, SCALE, X,
-            Y, RENDER_X, RENDER_Y, CLIPPED_WIDTH, CLIPPED_HEIGHT, ALPHA, SATURATION, BORDER_ALPHA,
-            BORDER_SCALE, ORIGINAL_CONTENT_WIDTH_IN_DP, ORIGINAL_CONTENT_HEIGHT_IN_DP,
-            MAX_CONTENT_WIDTH, MAX_CONTENT_HEIGHT, STATIC_TO_VIEW_BLEND, SHOULD_STALL,
-            CAN_USE_LIVE_TEXTURE, SHOW_TOOLBAR, ANONYMIZE_TOOLBAR, DECORATION_ALPHA,
-            INIT_FROM_HOST_CALLED, BACKGROUND_COLOR, TOOLBAR_BACKGROUND_COLOR,
-            TEXT_BOX_BACKGROUND_COLOR, CONTENT_OFFSET, IS_ACTIVE_LAYOUT_SUPPLIER};
+    public static final PropertyKey[] ALL_KEYS =
+            new PropertyKey[] {
+                TAB_ID,
+                IS_INCOGNITO,
+                SCALE,
+                X,
+                Y,
+                RENDER_X,
+                RENDER_Y,
+                CLIPPED_WIDTH,
+                CLIPPED_HEIGHT,
+                ALPHA,
+                SATURATION,
+                BORDER_ALPHA,
+                BORDER_SCALE,
+                ORIGINAL_CONTENT_WIDTH_IN_DP,
+                ORIGINAL_CONTENT_HEIGHT_IN_DP,
+                MAX_CONTENT_WIDTH,
+                MAX_CONTENT_HEIGHT,
+                STATIC_TO_VIEW_BLEND,
+                SHOULD_STALL,
+                CAN_USE_LIVE_TEXTURE,
+                SHOW_TOOLBAR,
+                ANONYMIZE_TOOLBAR,
+                DECORATION_ALPHA,
+                INIT_FROM_HOST_CALLED,
+                BACKGROUND_COLOR,
+                TOOLBAR_BACKGROUND_COLOR,
+                TEXT_BOX_BACKGROUND_COLOR,
+                CONTENT_OFFSET,
+                IS_ACTIVE_LAYOUT_SUPPLIER
+            };
 
     /**
      * Default constructor for a {@link LayoutTab}.
@@ -136,7 +157,10 @@ public class LayoutTab extends PropertyModel {
      * @param maxContentTextureWidth  The maximum width for drawing the content in px.
      * @param maxContentTextureHeight The maximum height for drawing the content in px.
      */
-    public LayoutTab(int tabId, boolean isIncognito, int maxContentTextureWidth,
+    public LayoutTab(
+            int tabId,
+            boolean isIncognito,
+            int maxContentTextureWidth,
             int maxContentTextureHeight) {
         super(ALL_KEYS);
 
@@ -191,8 +215,12 @@ public class LayoutTab extends PropertyModel {
      *                              wait for the content layer to load.
      * @param canUseLiveTexture     Whether the tab can use a live texture when being displayed.
      */
-    public void initFromHost(int backgroundColor, boolean shouldStall, boolean canUseLiveTexture,
-            int toolbarBackgroundColor, int textBoxBackgroundColor) {
+    public void initFromHost(
+            int backgroundColor,
+            boolean shouldStall,
+            boolean canUseLiveTexture,
+            int toolbarBackgroundColor,
+            int textBoxBackgroundColor) {
         set(BACKGROUND_COLOR, backgroundColor);
         set(TOOLBAR_BACKGROUND_COLOR, toolbarBackgroundColor);
         set(TEXT_BOX_BACKGROUND_COLOR, textBoxBackgroundColor);
@@ -299,6 +327,7 @@ public class LayoutTab extends PropertyModel {
     public float getFinalContentWidth() {
         return Math.min(get(CLIPPED_WIDTH), getScaledContentWidth());
     }
+
     /**
      * @return The maximum height the content can be.
      */

@@ -77,7 +77,7 @@ class TestRegistrationObserver : public content::ServiceWorkerContextObserver {
   base::RunLoop stored_run_loop_;
   base::RunLoop started_run_loop_;
   base::RunLoop activated_run_loop_;
-  absl::optional<int64_t> running_version_id_;
+  std::optional<int64_t> running_version_id_;
   raw_ptr<content::ServiceWorkerContext> context_ = nullptr;
 };
 

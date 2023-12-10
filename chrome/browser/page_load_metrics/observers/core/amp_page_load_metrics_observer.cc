@@ -590,43 +590,44 @@ void AMPPageLoadMetricsObserver::MaybeRecordAmpDocumentMetrics() {
   }
 
   RecordNormalizedResponsivenessMetrics(
-      subframe_info.responsiveness_metrics_normalization
-          .GetNormalizedResponsivenessMetrics(),
-      builder);
+      subframe_info.responsiveness_metrics_normalization, builder);
   builder.Record(ukm::UkmRecorder::Get());
 }
 
 void AMPPageLoadMetricsObserver::RecordNormalizedResponsivenessMetrics(
-    const page_load_metrics::NormalizedResponsivenessMetrics&
-        normalized_responsiveness_metrics,
+    const page_load_metrics::ResponsivenessMetricsNormalization&
+        responsiveness_metrics_normalization,
     ukm::builders::AmpPageLoad& builder) {
   DCHECK(!GetDelegate().IsInPrerenderingBeforeActivationStart());
 
-  if (!normalized_responsiveness_metrics.num_user_interactions)
+  if (!responsiveness_metrics_normalization.num_user_interactions()) {
     return;
+  }
 
   const std::string histogram_suffix =
       current_main_frame_nav_info_->is_same_document_navigation
           ? ""
           : ".FullNavigation";
-  auto& max_event_durations =
-      normalized_responsiveness_metrics.normalized_max_event_durations;
 
   builder
       .SetSubFrame_InteractiveTiming_WorstUserInteractionLatency_MaxEventDuration2(
-          max_event_durations.worst_latency.InMilliseconds());
+          responsiveness_metrics_normalization.worst_latency()
+              .value()
+              .interaction_latency.InMilliseconds());
   base::UmaHistogramCustomTimes(
       std::string(kHistogramPrefix)
           .append(
               kHistogramAMPSubframeWorstUserInteractionLatencyMaxEventDuration)
           .append(histogram_suffix),
-      max_event_durations.worst_latency, base::Milliseconds(1),
-      base::Seconds(60), 50);
+      responsiveness_metrics_normalization.worst_latency()
+          .value()
+          .interaction_latency,
+      base::Milliseconds(1), base::Seconds(60), 50);
 
-  base::TimeDelta high_percentile2_max_event_duration = page_load_metrics::
-      ResponsivenessMetricsNormalization::ApproximateHighPercentile(
-          normalized_responsiveness_metrics.num_user_interactions,
-          max_event_durations.worst_ten_latencies);
+  base::TimeDelta high_percentile2_max_event_duration =
+      responsiveness_metrics_normalization.ApproximateHighPercentile()
+          .value()
+          .interaction_latency;
 
   builder
       .SetSubFrame_InteractiveTiming_UserInteractionLatency_HighPercentile2_MaxEventDuration(
@@ -634,7 +635,7 @@ void AMPPageLoadMetricsObserver::RecordNormalizedResponsivenessMetrics(
 
   builder.SetSubFrame_InteractiveTiming_NumInteractions(
       ukm::GetExponentialBucketMinForCounts1000(
-          normalized_responsiveness_metrics.num_user_interactions));
+          responsiveness_metrics_normalization.num_user_interactions()));
 
   base::UmaHistogramCustomTimes(
       std::string(kHistogramPrefix)
@@ -646,5 +647,5 @@ void AMPPageLoadMetricsObserver::RecordNormalizedResponsivenessMetrics(
   base::UmaHistogramCounts1000(
       std::string(kHistogramPrefix)
           .append(kHistogramAMPSubframeNumInteractions),
-      normalized_responsiveness_metrics.num_user_interactions);
+      responsiveness_metrics_normalization.num_user_interactions());
 }

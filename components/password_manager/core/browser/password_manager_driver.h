@@ -81,6 +81,11 @@ class PasswordManagerDriver
       autofill::FieldRendererId generation_element_id,
       const std::u16string& password) {}
 
+  // Notifies the driver that the focus should be advanced to the next input
+  // field after password fields (assuming that password fields are adjacent
+  // in account creation).
+  virtual void FocusNextFieldAfterPasswords() {}
+
   // Tells the driver to fill the form with the |username| and |password|.
   virtual void FillSuggestion(const std::u16string& username,
                               const std::u16string& password) = 0;

@@ -11,6 +11,7 @@
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "components/password_manager/core/browser/password_store/mock_password_store_backend.h"
+#include "components/password_manager/core/browser/password_store/password_store.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
@@ -52,7 +53,8 @@ class PasswordStoreBackendMigrationDecoratorTest : public testing::Test {
 
     backend_migration_decorator_ =
         std::make_unique<PasswordStoreBackendMigrationDecorator>(
-            CreateBuiltInBackend(), CreateAndroidBackend(), &prefs_);
+            CreateBuiltInBackend(), CreateAndroidBackend(), &prefs_,
+            IsAccountStore(false));
   }
 
   ~PasswordStoreBackendMigrationDecoratorTest() override {
@@ -358,7 +360,7 @@ TEST_F(PasswordStoreBackendMigrationDecoratorTest,
       .WillOnce(
           WithArg<1>(testing::Invoke([](LoginsOrErrorReply reply) -> void {
             LoginsResult logins;
-            logins.emplace_back(std::make_unique<PasswordForm>());
+            logins.emplace_back();
             base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
                 FROM_HERE, base::BindOnce(std::move(reply), std::move(logins)));
           })));

@@ -83,7 +83,7 @@ void FlossAdminClient::HandleCallbackRegistered(DBusResult<uint32_t> result) {
 
 void FlossAdminClient::HandleCallbackUnregistered(DBusResult<bool> result) {
   if (!result.has_value() || *result == false) {
-    LOG(WARNING) << __func__ << "Failed to unregister callback";
+    LOG(WARNING) << __func__ << ": Failed to unregister callback";
   }
 }
 

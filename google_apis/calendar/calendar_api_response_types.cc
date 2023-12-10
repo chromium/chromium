@@ -10,6 +10,7 @@
 #include <memory>
 #include <string>
 
+#include <optional>
 #include "base/containers/fixed_flat_map.h"
 #include "base/json/json_value_converter.h"
 #include "base/ranges/algorithm.h"
@@ -20,7 +21,6 @@
 #include "base/values.h"
 #include "google_apis/common/parser_util.h"
 #include "google_apis/common/time_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace google_apis {
 
@@ -92,13 +92,13 @@ bool ConvertEventStatus(const base::Value* value,
   return true;
 }
 
-// Returns user's self response status on the event, or `absl::nullopt` in case
+// Returns user's self response status on the event, or `std::nullopt` in case
 // the passed value is structurally different from expected.
-absl::optional<CalendarEvent::ResponseStatus> CalculateSelfResponseStatus(
+std::optional<CalendarEvent::ResponseStatus> CalculateSelfResponseStatus(
     const base::Value& value) {
   const auto* event = value.GetIfDict();
   if (!event)
-    return absl::nullopt;
+    return std::nullopt;
 
   const auto* attendees_raw_value = event->Find(kAttendees);
   if (!attendees_raw_value) {
@@ -125,12 +125,12 @@ absl::optional<CalendarEvent::ResponseStatus> CalculateSelfResponseStatus(
 
   const auto* attendees = attendees_raw_value->GetIfList();
   if (!attendees)
-    return absl::nullopt;
+    return std::nullopt;
 
   for (const auto& x : *attendees) {
     const auto* attendee = x.GetIfDict();
     if (!attendee)
-      return absl::nullopt;
+      return std::nullopt;
 
     const bool is_self = attendee->FindBool(kAttendeesSelf).value_or(false);
     if (!is_self) {
@@ -143,7 +143,7 @@ absl::optional<CalendarEvent::ResponseStatus> CalculateSelfResponseStatus(
 
     const auto* responseStatus = attendee->FindString(kAttendeesResponseStatus);
     if (!responseStatus)
-      return absl::nullopt;
+      return std::nullopt;
 
     const auto* it = kAttendeesResponseStatuses.find(*responseStatus);
     if (it != kAttendeesResponseStatuses.end()) {

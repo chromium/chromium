@@ -3,12 +3,5 @@ This is a testharness.js-based test.
   promise_test: Unhandled rejection with value: object "NotSupportedError: The user agent does not support public key credentials."
 [FAIL] Payment credential allows residentKey to be "preferred".
   promise_test: Unhandled rejection with value: object "NotSupportedError: The user agent does not support public key credentials."
-[PASS] Payment credential requires userVerification to be "required", not "preferred".
-[PASS] Payment credential requires userVerification to be "required", not "discouraged".
-[PASS] Payment credential does not allow residentKey to be "discouraged".
-[PASS] Payment credential requires authenticatorAttachment to be "platform", not "cross-platform".
-[PASS] Payment credential abort without reason
-[PASS] Payment credential abort reason with Error
-[PASS] Clean up the test environment
 Harness: the test ran to completion.
 

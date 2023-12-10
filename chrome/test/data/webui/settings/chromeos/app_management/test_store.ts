@@ -4,7 +4,7 @@
 
 import {AppManagementActions, AppManagementPageState, AppManagementStore, reduceAction} from 'chrome://os-settings/os_settings.js';
 import {createEmptyState} from 'chrome://resources/cr_components/app_management/util.js';
-import {TestStore} from 'chrome://webui-test/test_store_ts.js';
+import {TestStore} from 'chrome://webui-test/test_store.js';
 
 export class TestAppManagementStore extends
     TestStore<AppManagementPageState, AppManagementActions> {

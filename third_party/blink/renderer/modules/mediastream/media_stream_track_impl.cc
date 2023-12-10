@@ -28,6 +28,7 @@
 #include <memory>
 
 #include "base/functional/callback_helpers.h"
+#include "build/build_config.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_track.h"
 #include "third_party/blink/public/platform/modules/webrtc/webrtc_logging.h"
 #include "third_party/blink/public/web/modules/mediastream/media_stream_video_source.h"
@@ -905,6 +906,19 @@ void MediaStreamTrackImpl::PropagateTrackEnded() {
   }
   is_iterating_registered_media_streams_ = false;
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+void MediaStreamTrackImpl::SendWheel(
+    CapturedWheelAction* action,
+    base::OnceCallback<void(bool, const String&)> callback) {
+  std::move(callback).Run(false, "Unsupported.");
+}
+
+void MediaStreamTrackImpl::GetZoomLevel(
+    base::OnceCallback<void(absl::optional<int>, const String&)> callback) {
+  std::move(callback).Run(absl::nullopt, "Unsupported.");
+}
+#endif
 
 bool MediaStreamTrackImpl::HasPendingActivity() const {
   // If 'ended' listeners exist and the object hasn't yet reached

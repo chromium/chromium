@@ -30,6 +30,7 @@
 <translation id="2226276347425096477">Κάντε πιο σύντομο αυτό το κείμενο ώστε να έχει το πολύ <ph name="MAX_CHARACTERS" /> χαρακτήρες (αυτήν τη στιγμή χρησιμοποιείτε <ph name="CURRENT_LENGTH" /> χαρακτήρες).</translation>
 <translation id="2247351761944213033">Εβδομάδα <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Κομμάτι <ph name="NUMBER" /></translation>
+<translation id="2353297238722298836">Η κάμερα και το μικρόφωνο επιτρέπονται</translation>
 <translation id="2393030564806080191">Δεκαεξαδική τιμή χρώματος</translation>
 <translation id="2398813069815436052">το παράθυρο διαλόγου άνοιξε.</translation>
 <translation id="245932805758469625">χρόνος που απομένει από το βίντεο σε δευτερόλεπτα</translation>
@@ -60,10 +61,12 @@
 <translation id="3822383571486410024">Αυξήστε την έκταση αυτού του κειμένου στους <ph name="MIN_CHARACTERS" /> χαρακτήρες ή περισσότερο (αυτήν τη στιγμή χρησιμοποιείτε <ph name="CURRENT_LENGTH" /> χαρακτήρες).</translation>
 <translation id="383465348367842624">Το τμήμα της διεύθυνσης πριν το σύμβολο "<ph name="ATSIGN" />" δεν πρέπει να περιέχει το σύμβολο "<ph name="INVALIDCHARACTER" />".</translation>
 <translation id="3846214748874656680">Έξοδος από πλήρη οθόνη</translation>
+<translation id="4031179711345676612">Επιτρέπεται το μικρόφωνο</translation>
 <translation id="4103419683916926126">Χιλιοστά του δευτερολέπτου</translation>
 <translation id="4201051445878709314">Εμφάνιση προηγούμενου μήνα</translation>
 <translation id="4360991593054037559">Καταχωρίστε μια έγκυρη τιμή. Οι δύο πιο κοντινές έγκυρες τιμές είναι <ph name="VALID_VALUE_LOW" /> και <ph name="VALID_VALUE_HIGHER" />.</translation>
 <translation id="4522570452068850558">Λεπτομέρειες</translation>
+<translation id="4663373278480897665">Επιτρέπεται η κάμερα</translation>
 <translation id="4664250907885839816">Το τμήμα της διεύθυνσης μετά το σύμβολο "<ph name="ATSIGN" />" δεν πρέπει να περιέχει το σύμβολο "<ph name="INVALIDCHARACTER" />".</translation>
 <translation id="4718048029184481307">Αναπαραγωγή σε λειτουργία picture-in-picture</translation>
 <translation id="4748357248530471599">εναλλαγή πλήρους οθόνης εγκοπής οθόνης</translation>
@@ -137,6 +140,7 @@
 <translation id="6941933287844615239">λήψη μέσων</translation>
 <translation id="698788488269350478">αναπτυγμένο.</translation>
 <translation id="6989848892321993519">Αυξήστε την έκταση αυτού του κειμένου στους <ph name="MIN_CHARACTERS" /> χαρακτήρες ή περισσότερο (αυτήν τη στιγμή χρησιμοποιείτε 1 χαρακτήρα).</translation>
+<translation id="7080893216867146095">Επιτράπηκε η κοινοποίηση τοποθεσίας</translation>
 <translation id="709897737746224366">Αντιστοιχίστε τη ζητούμενη μορφή.</translation>
 <translation id="7102274145889307184">τρέχουσα τοποθεσία</translation>
 <translation id="7263440858009898357">Επιλέξτε ένα στοιχείο από τη λίστα.</translation>

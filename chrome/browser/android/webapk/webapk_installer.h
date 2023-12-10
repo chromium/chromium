@@ -8,6 +8,7 @@
 #include <jni.h>
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/android/scoped_java_ref.h"
@@ -18,7 +19,6 @@
 #include "chrome/browser/android/webapk/webapk_install_service.h"
 #include "components/webapps/browser/android/shortcut_info.h"
 #include "components/webapps/browser/android/webapk/webapk_icon_hasher.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "url/gurl.h"
 
@@ -216,7 +216,7 @@ class WebApkInstaller {
 
   // Called with the computed Murmur2 hash for the icons.
   void OnGotIconMurmur2Hashes(
-      absl::optional<std::map<std::string, webapps::WebApkIconHasher::Icon>>
+      std::optional<std::map<std::string, webapps::WebApkIconHasher::Icon>>
           hashes);
 
   // Called with the serialized proto for the WebAPK install.

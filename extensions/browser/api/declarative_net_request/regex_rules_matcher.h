@@ -62,15 +62,15 @@ class RegexRulesMatcher final : public RulesetMatcherBase {
   ~RegexRulesMatcher() override;
   std::vector<RequestAction> GetModifyHeadersActions(
       const RequestParams& params,
-      absl::optional<uint64_t> min_priority) const override;
+      std::optional<uint64_t> min_priority) const override;
   bool IsExtraHeadersMatcher() const override;
   size_t GetRulesCount() const override;
 
  private:
   // RulesetMatcherBase override:
-  absl::optional<RequestAction> GetAllowAllRequestsAction(
+  std::optional<RequestAction> GetAllowAllRequestsAction(
       const RequestParams& params) const override;
-  absl::optional<RequestAction> GetBeforeRequestActionIgnoringAncestors(
+  std::optional<RequestAction> GetBeforeRequestActionIgnoringAncestors(
       const RequestParams& params) const override;
 
   // Helper to build the necessary data structures for matching.
@@ -87,7 +87,7 @@ class RegexRulesMatcher final : public RulesetMatcherBase {
       const RequestParams& params) const;
 
   // Returns a RequestAction for the the given regex substitution rule.
-  absl::optional<RequestAction> CreateRegexSubstitutionRedirectAction(
+  std::optional<RequestAction> CreateRegexSubstitutionRedirectAction(
       const RequestParams& params,
       const RegexRuleInfo& info) const;
 

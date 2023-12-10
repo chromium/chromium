@@ -1,12 +1,7 @@
 // Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-import 'chrome://emoji-picker/emoji_picker.js';
-
-import {GIF_VALIDATION_DATE, TRENDING} from 'chrome://emoji-picker/constants.js';
-import {EmojiPicker} from 'chrome://emoji-picker/emoji_picker.js';
-import {EmojiPickerApiProxyImpl} from 'chrome://emoji-picker/emoji_picker_api_proxy.js';
-import {EmojiGroupElement} from 'chrome://emoji-picker/types.js';
+import {EmojiGroupElement, EmojiPickerApiProxyImpl, EmojiPickerApp, GIF_VALIDATION_DATE, TRENDING} from 'chrome://emoji-picker/emoji_picker.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
@@ -131,7 +126,7 @@ suite(`emoji-picker-validation-gif`, () => {
 
   EmojiPickerApiProxyImpl.setInstance(new TestEmojiPickerApiProxyImpl());
 
-  let emojiPicker: EmojiPicker;
+  let emojiPicker: EmojiPickerApp;
   let findInEmojiPicker: (...path: string[]) => HTMLElement | null;
   let waitUntilFindInEmojiPicker: (...path: string[]) => Promise<HTMLElement>;
   let scrollToBottom: () => void;

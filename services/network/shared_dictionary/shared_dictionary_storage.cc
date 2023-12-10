@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <string_view>
 
+#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/strings/pattern.h"
 #include "base/strings/string_util.h"
@@ -135,8 +136,7 @@ SharedDictionaryStorage::MaybeCreateWriter(
     // Currently we only support support sha-256.
     // TODO(crbug.com/1413922): Investigate the spec and decide whether to
     // support non lowercase token or not.
-    if (std::find(info->algorithms->begin(), info->algorithms->end(),
-                  "sha-256") == info->algorithms->end()) {
+    if (!base::Contains(*info->algorithms, "sha-256")) {
       return nullptr;
     }
   }

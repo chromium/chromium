@@ -21,6 +21,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/mac/app_mode_common.h"
+#include "components/variations/net/variations_command_line.h"
 #include "content/public/browser/browser_task_traits.h"
 
 AppShimListener::AppShimListener() = default;
@@ -90,6 +91,11 @@ void AppShimListener::InitOnBackgroundThread() {
       app_mode::ChromeConnectionConfig::GenerateForCurrentProcess();
   base::DeleteFile(version_path);
   base::CreateSymbolicLink(config.EncodeAsPath(), version_path);
+
+  if (!variations::VariationsCommandLine::GetForCurrentProcess().WriteToFile(
+          user_data_dir.Append(app_mode::kFeatureStateFileName))) {
+    LOG(ERROR) << "Failed to write feature state to " << user_data_dir;
+  }
 }
 
 void AppShimListener::OnClientConnected(mojo::PlatformChannelEndpoint endpoint,

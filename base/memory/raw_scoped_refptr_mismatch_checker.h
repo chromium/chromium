@@ -18,38 +18,32 @@
 // The following set of traits are designed to generate a compile error
 // whenever this antipattern is attempted.
 
-namespace base {
-
-// This is a base internal implementation file used by task.h and callback.h.
-// Not for public consumption, so we wrap it in namespace internal.
-namespace internal {
-
-template <typename T, typename = void>
-struct IsRefCountedType : std::false_type {};
+namespace base::internal {
 
 template <typename T>
-struct IsRefCountedType<T,
-                        std::void_t<decltype(std::declval<T*>()->AddRef()),
-                                    decltype(std::declval<T*>()->Release())>>
-    : std::true_type {};
+concept IsRefCountedType = requires(T& x) {
+  // There are no additional constraints on `AddRef()` and `Release()` since
+  // `scoped_refptr`, for better or worse`, seamlessly interoperates with other
+  // non-base types that happen to implement the same signatures (e.g. COM's
+  // IUnknown).
+  x.AddRef();
+  x.Release();
+};
 
 // Human readable translation: you needed to be a scoped_refptr if you are a raw
 // pointer type and are convertible to a RefCounted(Base|ThreadSafeBase) type.
 template <typename T>
-struct NeedsScopedRefptrButGetsRawPtr
-    : std::disjunction<
-          // TODO(danakj): Should ban native references and
-          // std::reference_wrapper here too.
-          std::conjunction<base::IsRawRef<T>,
-                           IsRefCountedType<base::RemoveRawRefT<T>>>,
-          std::conjunction<base::IsPointer<T>,
-                           IsRefCountedType<base::RemovePointerT<T>>>> {
+struct NeedsScopedRefptrButGetsRawPtr {
   static_assert(!std::is_reference_v<T>,
                 "NeedsScopedRefptrButGetsRawPtr requires non-reference type.");
+
+  // TODO(danakj): Should ban native references and
+  // std::reference_wrapper here too.
+  static constexpr bool value =
+      (base::IsRawRef<T>::value && IsRefCountedType<base::RemoveRawRefT<T>>) ||
+      (base::IsPointer<T>::value && IsRefCountedType<base::RemovePointerT<T>>);
 };
 
-}  // namespace internal
-
-}  // namespace base
+}  // namespace base::internal
 
 #endif  // BASE_MEMORY_RAW_SCOPED_REFPTR_MISMATCH_CHECKER_H_

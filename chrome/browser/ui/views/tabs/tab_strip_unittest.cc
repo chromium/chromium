@@ -624,7 +624,7 @@ TEST_P(TabStripTest, CloseTabInGroupWhilePreviousTabAnimatingClosed) {
   CompleteAnimationAndLayout();
   ASSERT_EQ(3, tab_strip_->GetTabCount());
   ASSERT_EQ(3, tab_strip_->GetModelCount());
-  EXPECT_EQ(absl::nullopt, tab_strip_->tab_at(0)->group());
+  EXPECT_EQ(std::nullopt, tab_strip_->tab_at(0)->group());
   EXPECT_EQ(group_id, tab_strip_->tab_at(1)->group());
   EXPECT_EQ(group_id, tab_strip_->tab_at(2)->group());
 
@@ -653,7 +653,7 @@ TEST_P(TabStripTest, CloseTabInGroupWhilePreviousTabAnimatingClosed) {
   // After finishing animations, there should be exactly 1 tab in no
   // group.
   EXPECT_EQ(1, tab_strip_->GetTabCount());
-  EXPECT_EQ(absl::nullopt, tab_strip_->tab_at(0)->group());
+  EXPECT_EQ(std::nullopt, tab_strip_->tab_at(0)->group());
   EXPECT_EQ(1, tab_strip_->GetModelCount());
 }
 
@@ -837,7 +837,7 @@ TEST_P(TabStripTestWithScrollingDisabled, GroupedTabSlotOverflowVisibility) {
     ASSERT_TRUE(tab_strip_->tab_at(i)->GetVisible());
 
   // The group header of an invisible tab should not be visible.
-  absl::optional<tab_groups::TabGroupId> group1 =
+  std::optional<tab_groups::TabGroupId> group1 =
       tab_groups::TabGroupId::GenerateNew();
   controller_->MoveTabIntoGroup(invisible_tab_index, group1);
   CompleteAnimationAndLayout();
@@ -846,7 +846,7 @@ TEST_P(TabStripTestWithScrollingDisabled, GroupedTabSlotOverflowVisibility) {
 
   // The group header of a visible tab should be visible when the group is
   // expanded and collapsed.
-  absl::optional<tab_groups::TabGroupId> group2 =
+  std::optional<tab_groups::TabGroupId> group2 =
       tab_groups::TabGroupId::GenerateNew();
   controller_->MoveTabIntoGroup(0, group2);
   CompleteAnimationAndLayout();

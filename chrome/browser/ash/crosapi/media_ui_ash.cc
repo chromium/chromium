@@ -9,6 +9,10 @@
 #include "ash/shell.h"
 #include "ash/system/media/media_tray.h"
 #include "ash/system/status_area_widget.h"
+#include "ash/system/unified/unified_system_tray.h"
+#include "ash/system/unified/unified_system_tray_bubble.h"
+#include "ash/system/unified/unified_system_tray_controller.h"
+#include "components/global_media_controls/public/constants.h"
 
 namespace crosapi {
 
@@ -37,13 +41,22 @@ void MediaUIAsh::RegisterDeviceService(
 }
 
 void MediaUIAsh::ShowDevicePicker(const std::string& item_id) {
-  // The media tray must be pinned to the shelf before it can be shown.
-  if (!ash::MediaTray::IsPinnedToShelf()) {
-    ash::MediaTray::SetPinnedToShelf(true);
+  if (ash::MediaTray::IsPinnedToShelf()) {
+    ash::StatusAreaWidget::ForWindow(ash::Shell::Get()->GetPrimaryRootWindow())
+        ->media_tray()
+        ->ShowBubbleWithItem(item_id);
+  } else {
+    ash::UnifiedSystemTray* tray =
+        ash::StatusAreaWidget::ForWindow(
+            ash::Shell::Get()->GetPrimaryRootWindow())
+            ->unified_system_tray();
+    tray->ShowBubble();
+    tray->bubble()
+        ->unified_system_tray_controller()
+        ->ShowMediaControlsDetailedView(
+            global_media_controls::GlobalMediaControlsEntryPoint::kPresentation,
+            item_id);
   }
-  ash::StatusAreaWidget::ForWindow(ash::Shell::Get()->GetPrimaryRootWindow())
-      ->media_tray()
-      ->ShowBubbleWithItem(item_id);
 }
 
 mojom::DeviceService* MediaUIAsh::GetDeviceService(

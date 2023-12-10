@@ -144,6 +144,7 @@ void ScrollbarDisplayItem::Record(
   // Must check PaintController::UseCachedItemIfPossible before this function.
   DCHECK(RuntimeEnabledFeatures::PaintUnderInvalidationCheckingEnabled() ||
          !paint_controller.UseCachedItemIfPossible(client, type));
+  CHECK(IsScrollbarElementId(element_id));
 
   paint_controller.CreateAndAppend<ScrollbarDisplayItem>(
       client, type, std::move(scrollbar), visual_rect,

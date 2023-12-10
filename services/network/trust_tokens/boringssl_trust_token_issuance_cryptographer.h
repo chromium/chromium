@@ -7,9 +7,9 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/containers/flat_map.h"
-#include "base/strings/string_piece.h"
 #include "services/network/public/mojom/trust_tokens.mojom-shared.h"
 #include "services/network/trust_tokens/trust_token_request_issuance_helper.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -29,10 +29,10 @@ class BoringsslTrustTokenIssuanceCryptographer
   // TrustTokenRequestIssuanceHelper::Cryptographer implementation:
   bool Initialize(mojom::TrustTokenProtocolVersion issuer_configured_version,
                   int issuer_configured_batch_size) override;
-  bool AddKey(base::StringPiece key) override;
+  bool AddKey(std::string_view key) override;
   absl::optional<std::string> BeginIssuance(size_t num_tokens) override;
   std::unique_ptr<UnblindedTokens> ConfirmIssuance(
-      base::StringPiece response_header) override;
+      std::string_view response_header) override;
 
  private:
   // Maintains Trust Tokens protocol state.

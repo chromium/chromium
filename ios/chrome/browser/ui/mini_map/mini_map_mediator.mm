@@ -7,7 +7,7 @@
 #import "base/metrics/histogram_functions.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
-#import "ios/chrome/browser/web/annotations/annotations_util.h"
+#import "ios/chrome/browser/web/model/annotations/annotations_util.h"
 #import "ios/web/public/annotations/annotations_text_manager.h"
 #import "ios/web/public/web_state.h"
 

@@ -37,9 +37,6 @@ class VIZ_SERVICE_EXPORT HintSession {
   virtual void ReportCpuCompletionTime(base::TimeDelta actual_duration,
                                        base::TimeTicks draw_start,
                                        BoostType preferable_boost_type) = 0;
-
-  // Issue a mid frame boost hint to the session.
-  virtual void BoostMidFrame() = 0;
 };
 
 class VIZ_SERVICE_EXPORT HintSessionFactory {

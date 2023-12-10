@@ -11,9 +11,7 @@ import org.chromium.content_shell.browsertests.ContentShellBrowserTestActivity;
 
 import java.io.File;
 
-/**
- * Android activity for running content_public.browser.tests
- */
+/** Android activity for running content_public.browser.tests */
 public class ContentBrowserTestsActivity extends ContentShellBrowserTestActivity {
     private static final String TAG = "native_test";
 
@@ -28,7 +26,8 @@ public class ContentBrowserTestsActivity extends ContentShellBrowserTestActivity
     protected File getPrivateDataDirectory() {
         // TODO(agrieve): We should not be touching the side-loaded test data directory.
         //     https://crbug.com/617734
-        return new File(UrlUtils.getIsolatedTestRoot(),
+        return new File(
+                UrlUtils.getIsolatedTestRoot(),
                 ContentBrowserTestsApplication.PRIVATE_DATA_DIRECTORY_SUFFIX);
     }
 
@@ -41,5 +40,4 @@ public class ContentBrowserTestsActivity extends ContentShellBrowserTestActivity
     protected int getShellManagerViewId() {
         return R.id.shell_container;
     }
-
 }

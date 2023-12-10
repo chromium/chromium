@@ -8,11 +8,13 @@
 #include "base/memory/raw_ref.h"
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
+#include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/browser/web_ui_controller_factory.h"
 #include "content/public/browser/webui_config.h"
+#include "content/public/common/content_client.h"
 #include "content/public/common/url_constants.h"
 #include "url/gurl.h"
 
@@ -48,6 +50,8 @@ class WebUIConfigMapWebUIControllerFactory : public WebUIControllerFactory {
     auto* config = config_map_->GetConfig(browser_context, url);
     if (!config)
       return nullptr;
+
+    GetContentClient()->browser()->LogWebUIUrl(url);
 
     return config->CreateWebUIController(web_ui, url);
   }
@@ -127,6 +131,21 @@ std::unique_ptr<WebUIConfig> WebUIConfigMap::RemoveConfig(const GURL& url) {
   auto webui_config = std::move(it->second);
   configs_map_.erase(it);
   return webui_config;
+}
+
+std::vector<WebUIConfigInfo> WebUIConfigMap::GetWebUIConfigList(
+    BrowserContext* browser_context) {
+  std::vector<WebUIConfigInfo> origins;
+  for (auto& it : configs_map_) {
+    auto& webui_config = it.second;
+    origins.push_back({
+        .origin = it.first,
+        .enabled = browser_context == nullptr
+                       ? false
+                       : webui_config->IsWebUIEnabled(browser_context),
+    });
+  }
+  return origins;
 }
 
 }  // namespace content

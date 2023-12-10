@@ -88,8 +88,7 @@ void RealTimeUrlLookupService::GetAccessToken(
 
 void RealTimeUrlLookupService::OnPrefChanged() {
   if (CanPerformFullURLLookup()) {
-    url_lookup_enabled_timestamp_ =
-        base::Time::Now().InSecondsFSinceUnixEpoch();
+    url_lookup_enabled_timestamp_ = base::Time::Now();
   }
 }
 
@@ -231,8 +230,17 @@ bool RealTimeUrlLookupService::ShouldIncludeCredentials() const {
   return true;
 }
 
-double RealTimeUrlLookupService::GetMinAllowedTimestampForReferrerChains()
+base::Time RealTimeUrlLookupService::GetMinAllowedTimestampForReferrerChains()
     const {
+  // TODO(crbug.com/1501054): Currently some unit tests can call this when this
+  // has not been explicitly set to base::Time::Now() by OnPrefChangeed().
+  //
+  // Either:
+  // 1. The tests need to make sure that OnPrefChanged() is appropriately
+  //    triggered, because CanPerformFullURLLookup() is true.
+  // 2. Or CanPerformFullURLLookup() is false and this function should not be
+  //    called, so this field should be set to a sentinel value and a CHECK()
+  //    added that the sentinel value is not returned here.
   return url_lookup_enabled_timestamp_;
 }
 

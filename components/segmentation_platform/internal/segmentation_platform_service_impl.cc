@@ -58,6 +58,7 @@ SegmentationPlatformServiceImpl::SegmentationPlatformServiceImpl(
           std::make_unique<FieldTrialRecorder>(field_trial_register_.get())),
       profile_prefs_(init_params->profile_prefs.get()),
       creation_time_(clock_->Now()) {
+  stats::BackgroundUmaRecorder::GetInstance().Initialize();
   base::UmaHistogramMediumTimes(
       "SegmentationPlatform.Init.ProcessCreationToServiceCreationLatency",
       base::SysInfo::Uptime());
@@ -93,9 +94,10 @@ SegmentationPlatformServiceImpl::SegmentationPlatformServiceImpl(
       config_holder->configs());
 
   // Construct signal processors.
+  DCHECK(!init_params->profile_id.empty());
   signal_handler_.Initialize(
       storage_service_.get(), init_params->history_service,
-      config_holder->all_segment_ids(),
+      config_holder->all_segment_ids(), init_params->profile_id,
       base::BindRepeating(
           &SegmentationPlatformServiceImpl::OnModelRefreshNeeded,
           weak_ptr_factory_.GetWeakPtr()));

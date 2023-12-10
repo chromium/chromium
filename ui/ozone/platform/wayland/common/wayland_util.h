@@ -10,6 +10,7 @@
 #include "base/containers/flat_map.h"
 #include "base/files/scoped_file.h"
 #include "base/functional/callback.h"
+#include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/rect.h"
@@ -118,6 +119,9 @@ void SkColorToWlArray(const SkColor4f& color, wl_array& array);
 void TransformToWlArray(
     const absl::variant<gfx::OverlayTransform, gfx::Transform>& transform,
     wl_array& array);
+
+// Converts `milliseconds`, which is server dependent, to base::TimeTicks.
+base::TimeTicks EventMillisecondsToTimeTicks(uint32_t milliseconds);
 
 }  // namespace wl
 

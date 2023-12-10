@@ -14,6 +14,11 @@
 #include "chrome/browser/ash/login/oobe_quick_start/target_device_bootstrap_controller.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
+#include "chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-forward.h"
+#include "chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-shared.h"
+#include "chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace ash::quick_start {
 
@@ -23,13 +28,16 @@ namespace ash::quick_start {
 // source of truth for what the UI (QuickStartScreen) should be showing. Unlike
 // other OOBE screens, QuickStartScreen just acts as a delegate for this main
 // controller.
-class QuickStartController : public OobeUI::Observer,
-                             public TargetDeviceBootstrapController::Observer {
+class QuickStartController
+    : public OobeUI::Observer,
+      public TargetDeviceBootstrapController::Observer,
+      public bluetooth_config::mojom::SystemPropertiesObserver {
  public:
   // QuickStart flow entry point locations.
   enum class EntryPoint {
     WELCOME_SCREEN,
     NETWORK_SCREEN,
+    GAIA_INFO_SCREEN,
     GAIA_SCREEN,
   };
 
@@ -42,6 +50,13 @@ class QuickStartController : public OobeUI::Observer,
     CONNECTED,
     // TODO(b:283965994) - Replace with more appropriate state.
     CONTINUING_AFTER_ENROLLMENT_CHECKS,
+  };
+
+  enum class AbortFlowReason {
+    USER_CLICKED_BACK,
+    USER_CLICKED_CANCEL,
+    QUICK_START_FLOW_COMPLETE,
+    ERROR,
   };
 
   // Implemented by the QuickStartScreen
@@ -86,9 +101,9 @@ class QuickStartController : public OobeUI::Observer,
   void DetermineEntryPointVisibility(
       EntryPointButtonVisibilityCallback callback);
 
-  // Invoked by the frontend whenever the user cancels the flow or we encounter
-  // an error.
-  void AbortFlow();
+  // Invoked by the frontend whenever the user cancels the flow, the flow
+  // completes, or we encounter an error.
+  void AbortFlow(AbortFlowReason reason);
 
   // Whether QuickStart is ongoing and orchestrating the flow.
   bool IsSetupOngoing() {
@@ -108,12 +123,29 @@ class QuickStartController : public OobeUI::Observer,
   FidoAssertionInfo GetFidoAssertion() { return fido_.value(); }
   std::string GetWiFiName() { return wifi_name_.value(); }
 
+  // Check if bluetooth is disabled which would require showing the enable
+  // bluetooth dialog to turn on bluetooth before continuing quick start flow.
+  bool ShouldShowBluetoothDialog();
+
+  // Turn on bluetooth for quick start flow to continue
+  void TurnOnBluetooth();
+
+  bluetooth_config::mojom::BluetoothSystemState
+  get_bluetooth_system_state_for_testing();
+
   // Exit point to be used when the flow is cancelled.
   EntryPoint GetExitPoint();
 
  private:
   // Initializes the BootstrapController and starts to observe it.
   void InitTargetDeviceBootstrapController();
+
+  // Initializes the Bluetooth and starts to observe it.
+  void StartObservingBluetoothState();
+
+  // bluetooth_config::mojom::SystemPropertiesObserver
+  void OnPropertiesUpdated(bluetooth_config::mojom::BluetoothSystemPropertiesPtr
+                               properties) override;
 
   // Updates the UI state and notifies the frontend.
   void UpdateUiState(UiState ui_state);
@@ -137,6 +169,14 @@ class QuickStartController : public OobeUI::Observer,
   // Invoked whenever OOBE transitions into the QuickStart screen.
   void HandleTransitionToQuickStartScreen();
 
+  // Starts transferring the user account from the phone.
+  void StartAccountTransfer();
+
+  // Steps to take when the connection with the phone is fully established.
+  // Either transfers WiFi credentials if early in the OOBE flow, or starts
+  // to transfer the user's credentials.
+  void OnPhoneConnectionEstablished();
+
   void SavePhoneInstanceID();
 
   // Resets all internal values. Invoked when the flow is interrupted.
@@ -148,36 +188,45 @@ class QuickStartController : public OobeUI::Observer,
   base::WeakPtr<TargetDeviceBootstrapController> bootstrap_controller_;
 
   // Source of truth of OOBE's current state via OobeUI::Observer
-  absl::optional<OobeScreenId> current_screen_, previous_screen_;
+  std::optional<OobeScreenId> current_screen_, previous_screen_;
 
   // Bookkeeping where the quick start flow started and ended.
-  absl::optional<EntryPoint> entry_point_, exit_point_;
+  std::optional<EntryPoint> entry_point_, exit_point_;
 
   // Discoverable name to be used on the UI. e.g.: Chromebook (123)
-  absl::optional<std::string> discoverable_name_;
+  std::optional<std::string> discoverable_name_;
 
   // QR Code to be shown on the UI when requested.
-  absl::optional<QRCode::PixelData> qr_code_data_;
+  std::optional<QRCode::PixelData> qr_code_data_;
 
   // PIN to be shown on the UI when requested.
-  absl::optional<std::string> pin_;
+  std::optional<std::string> pin_;
 
   // FIDO assertion returned by the phone. Used by the UI for debugging for now.
-  absl::optional<FidoAssertionInfo> fido_;
+  std::optional<FidoAssertionInfo> fido_;
 
   // WiFi name to be shown on the UI.
-  absl::optional<std::string> wifi_name_;
+  std::optional<std::string> wifi_name_;
 
   // Main state that the controller can be in.
   ControllerState controller_state_ = ControllerState::NOT_ACTIVE;
 
   // UI state that should be displayed by the QuickStartScreen. Only exists when
   // there is an ongoing setup.
-  absl::optional<UiState> ui_state_;
+  std::optional<UiState> ui_state_;
 
   // QuickStartScreen implements the UiDelegate and registers itself whenever it
   // is shown. UI updates happen over this observation path.
   base::ObserverList<UiDelegate> ui_delegates_;
+
+  mojo::Remote<bluetooth_config::mojom::CrosBluetoothConfig>
+      cros_bluetooth_config_remote_;
+
+  mojo::Receiver<bluetooth_config::mojom::SystemPropertiesObserver>
+      cros_system_properties_observer_receiver_{this};
+
+  bluetooth_config::mojom::BluetoothSystemState bluetooth_system_state_ =
+      bluetooth_config::mojom::BluetoothSystemState::kUnavailable;
 
   base::ScopedObservation<OobeUI, OobeUI::Observer> observation_{this};
   base::WeakPtrFactory<QuickStartController> weak_ptr_factory_{this};

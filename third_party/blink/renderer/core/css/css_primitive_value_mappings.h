@@ -43,6 +43,7 @@
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/core/scroll/scrollable_area.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
+#include "third_party/blink/renderer/core/style/inset_area.h"
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
 #include "third_party/blink/renderer/platform/fonts/font_smoothing_mode.h"
 #include "third_party/blink/renderer/platform/fonts/text_rendering_mode.h"
@@ -57,33 +58,38 @@ namespace blink {
 
 // TODO(sashab): Move these to CSSPrimitiveValue.h.
 template <>
-inline int16_t CSSPrimitiveValue::ConvertTo() const {
+inline int16_t CSSPrimitiveValue::ConvertTo(
+    const CSSLengthResolver& length_resolver) const {
   DCHECK(IsNumber());
-  return ClampTo<int16_t>(GetDoubleValue());
+  return ClampTo<int16_t>(ComputeInteger(length_resolver));
 }
 
 template <>
-inline uint16_t CSSPrimitiveValue::ConvertTo() const {
+inline uint16_t CSSPrimitiveValue::ConvertTo(
+    const CSSLengthResolver& length_resolver) const {
   DCHECK(IsNumber());
-  return ClampTo<uint16_t>(GetDoubleValue());
+  return ClampTo<uint16_t>(ComputeInteger(length_resolver));
 }
 
 template <>
-inline int CSSPrimitiveValue::ConvertTo() const {
+inline int CSSPrimitiveValue::ConvertTo(
+    const CSSLengthResolver& length_resolver) const {
   DCHECK(IsNumber());
-  return ClampTo<int>(GetDoubleValue());
+  return ClampTo<int>(ComputeInteger(length_resolver));
 }
 
 template <>
-inline unsigned CSSPrimitiveValue::ConvertTo() const {
+inline unsigned CSSPrimitiveValue::ConvertTo(
+    const CSSLengthResolver& length_resolver) const {
   DCHECK(IsNumber());
-  return ClampTo<unsigned>(GetDoubleValue());
+  return ClampTo<unsigned>(ComputeInteger(length_resolver));
 }
 
 template <>
-inline float CSSPrimitiveValue::ConvertTo() const {
+inline float CSSPrimitiveValue::ConvertTo(
+    const CSSLengthResolver& length_resolver) const {
   DCHECK(IsNumber());
-  return ClampTo<float>(GetDoubleValue());
+  return ClampTo<float>(ComputeNumber(length_resolver));
 }
 
 // TODO(sashab): Move these to CSSIdentifierValueMappings.h, and update to use
@@ -1730,10 +1736,8 @@ inline EContainerType CSSIdentifierValue::ConvertTo() const {
       return kContainerTypeInlineSize;
     case CSSValueID::kSize:
       return kContainerTypeSize;
-    case CSSValueID::kSticky:
-      return kContainerTypeSticky;
-    case CSSValueID::kSnap:
-      return kContainerTypeSnap;
+    case CSSValueID::kScrollState:
+      return kContainerTypeScrollState;
     default:
       break;
   }
@@ -2118,6 +2122,117 @@ inline EScrollStartTarget CSSIdentifierValue::ConvertTo() const {
     default:
       NOTREACHED();
       return EScrollStartTarget::kNone;
+  };
+}
+
+template <>
+inline CSSIdentifierValue::CSSIdentifierValue(InsetAreaRegion region)
+    : CSSValue(kIdentifierClass) {
+  switch (region) {
+    case InsetAreaRegion::kNone:
+      value_id_ = CSSValueID::kNone;
+      break;
+    case InsetAreaRegion::kAll:
+      value_id_ = CSSValueID::kAll;
+      break;
+    case InsetAreaRegion::kCenter:
+      value_id_ = CSSValueID::kCenter;
+      break;
+    case InsetAreaRegion::kStart:
+      value_id_ = CSSValueID::kStart;
+      break;
+    case InsetAreaRegion::kEnd:
+      value_id_ = CSSValueID::kEnd;
+      break;
+    case InsetAreaRegion::kSelfStart:
+      value_id_ = CSSValueID::kSelfStart;
+      break;
+    case InsetAreaRegion::kSelfEnd:
+      value_id_ = CSSValueID::kSelfEnd;
+      break;
+    case InsetAreaRegion::kTop:
+      value_id_ = CSSValueID::kTop;
+      break;
+    case InsetAreaRegion::kBottom:
+      value_id_ = CSSValueID::kBottom;
+      break;
+    case InsetAreaRegion::kLeft:
+      value_id_ = CSSValueID::kLeft;
+      break;
+    case InsetAreaRegion::kRight:
+      value_id_ = CSSValueID::kRight;
+      break;
+    case InsetAreaRegion::kXStart:
+      value_id_ = CSSValueID::kXStart;
+      break;
+    case InsetAreaRegion::kXEnd:
+      value_id_ = CSSValueID::kXEnd;
+      break;
+    case InsetAreaRegion::kYStart:
+      value_id_ = CSSValueID::kYStart;
+      break;
+    case InsetAreaRegion::kYEnd:
+      value_id_ = CSSValueID::kYEnd;
+      break;
+    case InsetAreaRegion::kXSelfStart:
+      value_id_ = CSSValueID::kXSelfStart;
+      break;
+    case InsetAreaRegion::kXSelfEnd:
+      value_id_ = CSSValueID::kXSelfEnd;
+      break;
+    case InsetAreaRegion::kYSelfStart:
+      value_id_ = CSSValueID::kYSelfStart;
+      break;
+    case InsetAreaRegion::kYSelfEnd:
+      value_id_ = CSSValueID::kYSelfEnd;
+      break;
+  }
+}
+
+template <>
+inline InsetAreaRegion CSSIdentifierValue::ConvertTo() const {
+  switch (GetValueID()) {
+    case CSSValueID::kNone:
+      return InsetAreaRegion::kNone;
+    case CSSValueID::kAll:
+      return InsetAreaRegion::kAll;
+    case CSSValueID::kCenter:
+      return InsetAreaRegion::kCenter;
+    case CSSValueID::kStart:
+      return InsetAreaRegion::kStart;
+    case CSSValueID::kEnd:
+      return InsetAreaRegion::kEnd;
+    case CSSValueID::kSelfStart:
+      return InsetAreaRegion::kSelfStart;
+    case CSSValueID::kSelfEnd:
+      return InsetAreaRegion::kSelfEnd;
+    case CSSValueID::kTop:
+      return InsetAreaRegion::kTop;
+    case CSSValueID::kBottom:
+      return InsetAreaRegion::kBottom;
+    case CSSValueID::kLeft:
+      return InsetAreaRegion::kLeft;
+    case CSSValueID::kRight:
+      return InsetAreaRegion::kRight;
+    case CSSValueID::kXStart:
+      return InsetAreaRegion::kXStart;
+    case CSSValueID::kXEnd:
+      return InsetAreaRegion::kXEnd;
+    case CSSValueID::kYStart:
+      return InsetAreaRegion::kYStart;
+    case CSSValueID::kYEnd:
+      return InsetAreaRegion::kYEnd;
+    case CSSValueID::kXSelfStart:
+      return InsetAreaRegion::kXSelfStart;
+    case CSSValueID::kXSelfEnd:
+      return InsetAreaRegion::kXSelfEnd;
+    case CSSValueID::kYSelfStart:
+      return InsetAreaRegion::kYSelfStart;
+    case CSSValueID::kYSelfEnd:
+      return InsetAreaRegion::kYSelfEnd;
+    default:
+      NOTREACHED();
+      return InsetAreaRegion::kNone;
   };
 }
 

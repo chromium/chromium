@@ -1,0 +1,40 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("api") {
+  public = [ "chrome_ml_api.h" ]
+  deps = [ "//third_party/dawn/src/dawn/native:headers" ]
+}
+
+source_set("ml") {
+  public = [
+    "chrome_ml.h",
+    "on_device_model_executor.h",
+    "utils.h",
+  ]
+
+  sources = [
+    "chrome_ml.cc",
+    "on_device_model_executor.cc",
+    "utils.cc",
+  ]
+
+  deps = [
+    "//components/optimization_guide/core:features",
+    "//gpu/config",
+    "//third_party/angle:includes",
+    "//third_party/dawn/src/dawn/native",
+  ]
+  public_deps = [
+    ":api",
+    "//base",
+    "//gpu/config:webgpu_blocklist_impl",
+    "//mojo/public/cpp/bindings",
+    "//services/on_device_model/public/cpp",
+    "//services/on_device_model/public/mojom",
+  ]
+
+  data_deps =
+      [ "//components/optimization_guide/internal:optimization_guide_internal" ]
+}

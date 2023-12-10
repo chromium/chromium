@@ -7,11 +7,14 @@
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/accessibility/dictation_nudge.h"
 #include "ash/accessibility/dictation_nudge_controller.h"
+#include "ash/constants/ash_features.h"
 #include "ash/shell.h"
+#include "ash/system/toast/anchored_nudge_manager_impl.h"
 #include "ash/system/tray/system_nudge_label.h"
 #include "ash/test/ash_test_base.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
@@ -24,8 +27,16 @@ using ::testing::HasSubstr;
 
 namespace ash {
 
+namespace {
+
+constexpr char kDictationLanguageUpgradedNudgeId[] =
+    "dictation_language_upgraded.nudge_id";
+
+}  // namespace
+
 // Tests for showing the Dictation Nudge from AccessibilityControllerImpl.
-class DictationNudgeControllerTest : public AshTestBase {
+class DictationNudgeControllerTest : public AshTestBase,
+                                     public testing::WithParamInterface<bool> {
  public:
   DictationNudgeControllerTest() = default;
   DictationNudgeControllerTest(const DictationNudgeControllerTest&) = delete;
@@ -35,6 +46,8 @@ class DictationNudgeControllerTest : public AshTestBase {
 
   // AshTestBase:
   void SetUp() override {
+    scoped_feature_list_.InitWithFeatureState(features::kSystemNudgeMigration,
+                                              IsSystemNudgeMigrationEnabled());
     AshTestBase::SetUp();
     Shell::Get()->accessibility_controller()->dictation().SetEnabled(true);
   }
@@ -76,9 +89,30 @@ class DictationNudgeControllerTest : public AshTestBase {
 
     widget_destroyed_waiter.Wait();
   }
+
+  bool IsSystemNudgeMigrationEnabled() { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_F(DictationNudgeControllerTest, ShowsAndHidesNudge) {
+INSTANTIATE_TEST_SUITE_P(All,
+                         DictationNudgeControllerTest,
+                         /*enable_system_nudge_migration=*/testing::Bool());
+
+TEST_P(DictationNudgeControllerTest, ShowsAndHidesNudge) {
+  if (IsSystemNudgeMigrationEnabled()) {
+    EXPECT_FALSE(AnchoredNudgeManager::Get()->IsNudgeShown(
+        kDictationLanguageUpgradedNudgeId));
+    ShowDictationLanguageUpgradedNudge("en-US", "en-US");
+    EXPECT_TRUE(AnchoredNudgeManager::Get()->IsNudgeShown(
+        kDictationLanguageUpgradedNudgeId));
+
+    // Manager handled nudge's destruction is tested in
+    // anchored_nudge_manager_impl_unittest.cc.
+    return;
+  }
+
   EXPECT_FALSE(GetDictationNudgeController());
 
   ShowDictationLanguageUpgradedNudge("en-US", "en-US");
@@ -92,7 +126,7 @@ TEST_F(DictationNudgeControllerTest, ShowsAndHidesNudge) {
   WaitForWidgetDestruction(controller, nudge);
 }
 
-TEST_F(DictationNudgeControllerTest, SetsLabelBasedOnApplicationLocale) {
+TEST_P(DictationNudgeControllerTest, SetsLabelBasedOnApplicationLocale) {
   struct {
     std::string locale;
     std::string application_locale;
@@ -106,19 +140,28 @@ TEST_F(DictationNudgeControllerTest, SetsLabelBasedOnApplicationLocale) {
   for (const auto& testcase : kTestCases) {
     ShowDictationLanguageUpgradedNudge(testcase.locale,
                                        testcase.application_locale);
+    if (IsSystemNudgeMigrationEnabled()) {
+      ASSERT_TRUE(AnchoredNudgeManager::Get()->IsNudgeShown(
+          kDictationLanguageUpgradedNudgeId));
 
-    DictationNudgeController* controller = GetDictationNudgeController();
-    ASSERT_TRUE(controller);
+      const std::string body_text = base::UTF16ToUTF8(
+          Shell::Get()->anchored_nudge_manager()->GetNudgeBodyTextForTest(
+              kDictationLanguageUpgradedNudgeId));
+      EXPECT_THAT(body_text, HasSubstr(testcase.label));
+    } else {
+      DictationNudgeController* controller = GetDictationNudgeController();
+      ASSERT_TRUE(controller);
 
-    DictationNudge* nudge =
-        static_cast<DictationNudge*>(controller->GetSystemNudgeForTesting());
-    ASSERT_TRUE(nudge);
+      DictationNudge* nudge =
+          static_cast<DictationNudge*>(controller->GetSystemNudgeForTesting());
+      ASSERT_TRUE(nudge);
 
-    std::unique_ptr<SystemNudgeLabel> label = GetDictationNudgeLabel(nudge);
-    std::string text = base::UTF16ToUTF8(label->GetText());
-    EXPECT_THAT(text, HasSubstr(testcase.label));
+      std::unique_ptr<SystemNudgeLabel> label = GetDictationNudgeLabel(nudge);
+      std::string text = base::UTF16ToUTF8(label->GetText());
+      EXPECT_THAT(text, HasSubstr(testcase.label));
 
-    WaitForWidgetDestruction(controller, nudge);
+      WaitForWidgetDestruction(controller, nudge);
+    }
   }
 }
 

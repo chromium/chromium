@@ -163,7 +163,7 @@ void TestStatefulDecoderAllocations(uint32_t codec_fourcc,
   std::vector<int32_t> strides =
       VideoFrame::ComputeStrides(PIXEL_FORMAT_NV12, coded_size);
   for (int i = 0; i < bo_num_planes; ++i) {
-    uint32_t s = base::bits::AlignUp(strides[i], 64);
+    uint32_t s = base::bits::AlignUpDeprecatedDoNotUse(strides[i], 64);
     EXPECT_EQ(s, gbm_bo_get_stride_for_plane(bo, i));
   }
 

@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/animation/animation_test_helpers.h"
 #include "third_party/blink/renderer/core/css/cssom/css_unit_values.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "v8/include/v8.h"
 
 namespace blink {
@@ -40,6 +41,7 @@ class AnimationTimingInputTest : public testing::Test {
 
   Document* GetDocument() const { return &page_holder_->GetDocument(); }
 
+  test::TaskEnvironment task_environment_;
   std::unique_ptr<DummyPageHolder> page_holder_;
 };
 

@@ -50,8 +50,6 @@ class MockPasswordFeatureManager : public PasswordFeatureManager {
               SetDefaultPasswordStore,
               (const PasswordForm::Store& store),
               (override));
-  MOCK_METHOD(void, RecordMoveOfferedToNonOptedInUser, (), (override));
-  MOCK_METHOD(int, GetMoveOfferedToNonOptedInUserCount, (), (override, const));
 #endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 };
 

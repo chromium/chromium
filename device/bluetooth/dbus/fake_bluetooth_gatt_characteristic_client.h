@@ -10,6 +10,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
@@ -62,7 +63,7 @@ class DEVICE_BLUETOOTH_EXPORT FakeBluetoothGattCharacteristicClient
                  ErrorCallback error_callback) override;
   void WriteValue(const dbus::ObjectPath& object_path,
                   const std::vector<uint8_t>& value,
-                  base::StringPiece type_option,
+                  std::string_view type_option,
                   base::OnceClosure callback,
                   ErrorCallback error_callback) override;
   void PrepareWriteValue(const dbus::ObjectPath& object_path,

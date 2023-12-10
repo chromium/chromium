@@ -5,10 +5,10 @@
 #ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_DIRECT_MAP_EXTENT_H_
 #define BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_DIRECT_MAP_EXTENT_H_
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/compiler_specific.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_check.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_bucket.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_page.h"
+#include "partition_alloc/partition_alloc_base/compiler_specific.h"
+#include "partition_alloc/partition_alloc_check.h"
+#include "partition_alloc/partition_bucket.h"
+#include "partition_alloc/partition_page.h"
 
 namespace partition_alloc::internal {
 

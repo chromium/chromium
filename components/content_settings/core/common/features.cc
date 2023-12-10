@@ -9,13 +9,6 @@
 
 namespace content_settings {
 
-// Enables an improved UI for third-party cookie blocking in incognito mode.
-#if BUILDFLAG(IS_IOS)
-BASE_FEATURE(kImprovedCookieControls,
-             "ImprovedCookieControls",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_IOS)
-
 // Enables auto dark feature in theme settings.
 #if BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kDarkenWebsitesCheckboxInThemesSetting,
@@ -79,7 +72,7 @@ BASE_FEATURE(kUserBypassFeedback,
 
 BASE_FEATURE(kImprovedSemanticsActivityIndicators,
              "ImprovedSemanticsActivityIndicators",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTrackingProtection3pcd,
              "TrackingProtection3pcd",
@@ -89,10 +82,23 @@ const char kTpcdReadHeuristicsGrantsName[] = "TpcdReadHeuristicsGrants";
 
 BASE_FEATURE(kTpcdHeuristicsGrants,
              "TpcdHeuristicsGrants",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 const base::FeatureParam<bool> kTpcdReadHeuristicsGrants{
-    &kTpcdHeuristicsGrants, kTpcdReadHeuristicsGrantsName, false};
+    &kTpcdHeuristicsGrants, kTpcdReadHeuristicsGrantsName, true};
+
+BASE_FEATURE(kContentSettingsPartitioning,
+             "ContentSettingsPartitioning",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const char kMetadataGrantsThresholdName[] = "MetadataGrantsThreshold";
+
+BASE_FEATURE(kHostIndexedMetadataGrants,
+             "HostIndexedMetadataGrants",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<int> kMetadataGrantsThreshold{
+    &kHostIndexedMetadataGrants, kMetadataGrantsThresholdName, 1};
 
 }  // namespace features
 }  // namespace content_settings

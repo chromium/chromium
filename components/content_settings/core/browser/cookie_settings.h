@@ -6,15 +6,19 @@
 #define COMPONENTS_CONTENT_SETTINGS_CORE_BROWSER_COOKIE_SETTINGS_H_
 
 #include <string>
+#include <utility>
 
+#include "base/feature_list.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/thread_checker.h"
 #include "components/content_settings/core/browser/content_settings_observer.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/browser/host_indexed_content_settings.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/cookie_settings_base.h"
+#include "components/content_settings/core/common/features.h"
 #include "components/keyed_service/core/refcounted_keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/privacy_sandbox/tracking_protection_settings.h"
@@ -111,10 +115,12 @@ class CookieSettings
                                     const GURL& first_party_url) const;
 
   // Sets the `TPCD_HEURISTICS_GRANTS` setting for the given (`url`,
-  // `first_party_url`) pair, for the provided `ttl`. If
-  // `use_schemeless_pattern` is set, the patterns will be generated from
-  // `ContentSettingsPattern::FromUrl`, which maps HTTP URLs onto a wildcard
-  // scheme.
+  // `first_party_url`) pair, for the provided `ttl`. By default, the patterns
+  // are generated from `ContentSettingsPattern::FromURLToSchemefulSitePattern`
+  // that keeps the scheme and host. If `use_schemeless_pattern` is set, the
+  // patterns will be generated from
+  // `ContentSettingsPattern::ToHostOnlyPattern(FromURLToSchemefulSitePattern)',
+  // which also maps HTTP URLs onto a wildcard scheme.
   //
   // This should only be called on the UI thread.
   void SetTemporaryCookieGrantForHeuristic(
@@ -149,6 +155,16 @@ class CookieSettings
       const ContentSettingsForOneType settings) {
     base::AutoLock lock(tpcd_lock_);
     settings_for_3pcd_metadata_grants_ = settings;
+    if (base::FeatureList::IsEnabled(features::kHostIndexedMetadataGrants) &&
+        std::cmp_greater_equal(settings.size(),
+                               features::kMetadataGrantsThreshold.Get())) {
+      indexed_settings_for_3pcd_metadata_grants_ = ToHostIndexedMap(settings);
+      // TODO(b/314800700): clear settings_for_3pcd_metadata_grants_ since we
+      // only need one copy.
+    } else {
+      // only need one list.
+      indexed_settings_for_3pcd_metadata_grants_.clear();
+    }
   }
 
   ContentSettingsForOneType GetTpcdMetadataGrantsForTesting() {
@@ -285,9 +301,13 @@ class CookieSettings
   ContentSettingsForOneType settings_for_3pcd_metadata_grants_
       GUARDED_BY(tpcd_lock_);
 
+  // Map indexed by a setting's primary_pattern host.
+  HostIndexedContentSettings indexed_settings_for_3pcd_metadata_grants_
+      GUARDED_BY(tpcd_lock_);
+
   mutable base::Lock lock_;
   bool block_third_party_cookies_ GUARDED_BY(lock_);
-  bool mitigations_enabled_for_3pcd_ GUARDED_BY(lock_) = false;
+  bool mitigations_enabled_for_3pcd_ GUARDED_BY(lock_);
   bool tracking_protection_enabled_for_3pcd_ GUARDED_BY(lock_) = false;
 };
 

@@ -5,15 +5,20 @@
 #ifndef MEDIA_GPU_V4L2_STATELESS_STATELESS_DEVICE_H_
 #define MEDIA_GPU_V4L2_STATELESS_STATELESS_DEVICE_H_
 
+#include "base/files/scoped_file.h"
 #include "media/gpu/v4l2/stateless/device.h"
 
 namespace media {
 class MEDIA_GPU_EXPORT StatelessDevice : public Device {
  public:
+  StatelessDevice();
+
   bool CheckCapabilities(VideoCodec codec) override;
   bool Open() override;
 
   bool IsCompressedVP9HeaderSupported();
+  base::ScopedFD CreateRequestFD();
+  bool QueueRequest(const base::ScopedFD& request_fd);
 
   // As part of the stateless uAPI the headers are parsed by the client
   // and sent to the device. When |request_fd| is invalid the driver parses
@@ -28,7 +33,10 @@ class MEDIA_GPU_EXPORT StatelessDevice : public Device {
  private:
   uint32_t VideoCodecToV4L2PixFmt(VideoCodec codec) override;
 
+  bool OpenMedia();
   std::string DevicePath() override;
+
+  base::ScopedFD media_fd_;
 };
 
 }  //  namespace media

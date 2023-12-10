@@ -33,10 +33,12 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <tuple>
 #include <utility>
 #include <vector>
 
+#include <optional>
 #include "base/environment.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -44,9 +46,7 @@
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/process/launch.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -99,13 +99,13 @@ void PrintUsage() {
 // Shell-escapes a single argument in a way that is compatible with various
 // different shells. Returns nullopt when argument contains a newline, which
 // can't be represented in a cross-shell fashion.
-absl::optional<std::string> ShellEscapeArgument(
-    const base::StringPiece argument) {
+std::optional<std::string> ShellEscapeArgument(
+    const std::string_view argument) {
   std::string result;
   for (char character : argument) {
     // csh in particular doesn't provide a good way to handle this
     if (character == '\n') {
-      return absl::nullopt;
+      return std::nullopt;
     }
 
     // Some shells ascribe special meaning to some escape sequences such as \t,
@@ -231,28 +231,28 @@ class PamHandle {
 
   // Returns the current username according to PAM. It is possible for PAM
   // modules to change this from the initial value passed to the constructor.
-  absl::optional<std::string> GetUser() {
+  std::optional<std::string> GetUser() {
     const char* user;
     last_return_code_ = pam_get_item(pam_handle_, PAM_USER,
                                      reinterpret_cast<const void**>(&user));
     if (last_return_code_ != PAM_SUCCESS || user == nullptr) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     return std::string(user);
   }
 
   // Sets a PAM environment variable.
-  int PutEnv(base::StringPiece name, base::StringPiece value) {
+  int PutEnv(std::string_view name, std::string_view value) {
     std::string name_value = base::StrCat({name, "=", value});
     return last_return_code_ = pam_putenv(pam_handle_, name_value.c_str());
   }
 
   // Obtains the list of environment variables provided by PAM modules.
-  absl::optional<base::EnvironmentMap> GetEnvironment() {
+  std::optional<base::EnvironmentMap> GetEnvironment() {
     char** environment = pam_getenvlist(pam_handle_);
 
     if (environment == nullptr) {
-      return absl::nullopt;
+      return std::nullopt;
     }
 
     base::EnvironmentMap environment_map;
@@ -276,7 +276,7 @@ class PamHandle {
   }
 
   // Logs a fatal error if return_code isn't PAM_SUCCESS
-  void CheckReturnCode(int return_code, base::StringPiece what) {
+  void CheckReturnCode(int return_code, std::string_view what) {
     if (return_code != PAM_SUCCESS) {
       LOG(FATAL) << "[PAM] " << what << ": " << ErrorString(return_code);
     }
@@ -323,14 +323,14 @@ std::string FindScriptPath() {
   // argv[0] with a '-'.
   std::string shell_name = '-' + base::FilePath(login_shell).BaseName().value();
 
-  absl::optional<std::string> escaped_script_path =
+  std::optional<std::string> escaped_script_path =
       ShellEscapeArgument(FindScriptPath());
   CHECK(escaped_script_path) << "Could not escape script path";
 
   std::string shell_arg = *escaped_script_path + " --start --child-process";
 
   for (const std::string& arg : script_args) {
-    absl::optional<std::string> escaped_arg = ShellEscapeArgument(arg);
+    std::optional<std::string> escaped_arg = ShellEscapeArgument(arg);
     CHECK(escaped_arg) << "Could not escape script argument";
     shell_arg += " ";
     shell_arg += *escaped_arg;
@@ -369,7 +369,7 @@ std::string FindScriptPath() {
 
 // Either |user| must be set when running as root, xor the real user ID must be
 // properly set when running as a user.
-void Relaunch(const absl::optional<std::string>& user,
+void Relaunch(const std::optional<std::string>& user,
               const std::vector<std::string>& script_args) {
   CHECK(user.has_value() == (getuid() == 0));
 
@@ -400,7 +400,7 @@ void Relaunch(const absl::optional<std::string>& user,
 // Returns: whether the session should be relaunched.
 bool ExecuteSession(std::string user,
                     bool chown_log,
-                    absl::optional<uid_t> match_uid,
+                    std::optional<uid_t> match_uid,
                     const std::vector<std::string>& script_args) {
   PamHandle pam_handle(kPamName, user.c_str(), &kPamConversation);
   CHECK(pam_handle.IsInitialized()) << "Failed to initialize PAM";
@@ -492,7 +492,7 @@ bool ExecuteSession(std::string user,
   if (child_pid == 0) {
     PCHECK(setuid(pwinfo->pw_uid) == 0) << "setuid failed";
     PCHECK(chdir(pwinfo->pw_dir) == 0) << "chdir to $HOME failed";
-    absl::optional<base::EnvironmentMap> pam_environment =
+    std::optional<base::EnvironmentMap> pam_environment =
         pam_handle.GetEnvironment();
     CHECK(pam_environment) << "Failed to get environment from PAM";
 
@@ -628,8 +628,8 @@ void HandleAlarm(int) {
 // Relay messages from the host session and then exit.
 void WaitForMessagesAndExit(int read_fd, const std::string& log_name) {
   // Use initializer-list syntax to avoid trailing null
-  static const base::StringPiece kMessagePrefix = "MSG:";
-  static const base::StringPiece kReady = "READY\n";
+  static const std::string_view kMessagePrefix = "MSG:";
+  static const std::string_view kReady = "READY\n";
 
   struct sigaction action = {};
   sigemptyset(&action.sa_mask);
@@ -658,7 +658,7 @@ void WaitForMessagesAndExit(int read_fd, const std::string& log_name) {
   bool host_ready = false;
   while ((line_size = getline(&buffer, &buffer_size, stream)) >= 0) {
     message_received = true;
-    base::StringPiece line(buffer, line_size);
+    std::string_view line(buffer, line_size);
     if (base::StartsWith(line, kMessagePrefix, base::CompareCase::SENSITIVE)) {
       line.remove_prefix(kMessagePrefix.size());
       std::fwrite(line.data(), sizeof(char), line.size(), stderr);
@@ -803,7 +803,7 @@ int main(int argc, char** argv) {
   argv += 2;
 
   bool foreground = false;
-  absl::optional<std::string> user;
+  std::optional<std::string> user;
   std::vector<std::string> script_args;
 
   while (argc > 0) {
@@ -855,8 +855,8 @@ int main(int argc, char** argv) {
   // Daemonizing redirects stdout to a log file, which we want to be owned by
   // the target user.
   bool chown_stdout = !foreground;
-  absl::optional<uid_t> match_uid =
-      real_uid != 0 ? absl::make_optional(real_uid) : absl::nullopt;
+  std::optional<uid_t> match_uid =
+      real_uid != 0 ? std::make_optional(real_uid) : std::nullopt;
 
   // Fork before opening PAM session so relaunches don't descend from the closed
   // PAM session.
@@ -885,7 +885,7 @@ int main(int argc, char** argv) {
       // If running as root, forward the username argument to the relaunched
       // process. Otherwise, it should be inferred from the user id and
       // environment.
-      Relaunch(real_uid == 0 ? user : absl::nullopt, script_args);
+      Relaunch(real_uid == 0 ? user : std::nullopt, script_args);
     }
   }
 

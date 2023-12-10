@@ -1,10 +1,5 @@
 This is a testharness.js-based test.
-[PASS] window.event for constructors from another global: EventTarget
-[PASS] window.event for constructors from another global: XMLHttpRequest
-[PASS] window.event and element from another document
-[PASS] window.event and moving an element post-dispatch
 [FAIL] window.event should not be affected by nodes moving post-dispatch
   assert_equals: expected (undefined) undefined but got (object) object "[object Event]"
-[PASS] Listener from a different global
 Harness: the test ran to completion.
 

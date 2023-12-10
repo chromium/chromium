@@ -109,9 +109,6 @@ class NET_EXPORT StreamSocket : public Socket {
   // Write() methods had been called, not the underlying transport's.
   virtual bool WasEverUsed() const = 0;
 
-  // Returns true if ALPN was negotiated during the connection of this socket.
-  virtual bool WasAlpnNegotiated() const = 0;
-
   // Returns the protocol negotiated via ALPN for this socket, or
   // kProtoUnknown will be returned if ALPN is not applicable.
   virtual NextProto GetNegotiatedProtocol() const = 0;

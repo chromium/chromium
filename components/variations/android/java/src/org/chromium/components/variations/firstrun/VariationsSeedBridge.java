@@ -42,7 +42,8 @@ public class VariationsSeedBridge {
             byte[] rawSeed, String signature, String country, long date, boolean isGzipCompressed) {
         ContextUtils.getAppSharedPreferences()
                 .edit()
-                .putString(VARIATIONS_FIRST_RUN_SEED_BASE64,
+                .putString(
+                        VARIATIONS_FIRST_RUN_SEED_BASE64,
                         Base64.encodeToString(rawSeed, Base64.NO_WRAP))
                 .putString(VARIATIONS_FIRST_RUN_SEED_SIGNATURE, signature)
                 .putString(VARIATIONS_FIRST_RUN_SEED_COUNTRY, country)
@@ -63,22 +64,18 @@ public class VariationsSeedBridge {
                 .apply();
     }
 
-    /**
-     * Returns the status of the variations first run fetch: was it successful or not.
-     */
+    /** Returns the status of the variations first run fetch: was it successful or not. */
     public static boolean hasJavaPref() {
         return !ContextUtils.getAppSharedPreferences()
-                        .getString(VARIATIONS_FIRST_RUN_SEED_BASE64, "")
-                        .isEmpty();
+                .getString(VARIATIONS_FIRST_RUN_SEED_BASE64, "")
+                .isEmpty();
     }
 
-    /**
-     * Returns the status of the variations seed storing on the C++ side: was it successful or not.
-     */
+    /** Returns the status of the variations seed storing on the C++ side: was it successful or not. */
     @CalledByNative
     public static boolean hasNativePref() {
-        return ContextUtils.getAppSharedPreferences().getBoolean(
-                VARIATIONS_FIRST_RUN_SEED_NATIVE_STORED, false);
+        return ContextUtils.getAppSharedPreferences()
+                .getBoolean(VARIATIONS_FIRST_RUN_SEED_NATIVE_STORED, false);
     }
 
     @CalledByNative
@@ -112,7 +109,7 @@ public class VariationsSeedBridge {
 
     @CalledByNative
     private static boolean getVariationsFirstRunSeedIsGzipCompressed() {
-        return ContextUtils.getAppSharedPreferences().getBoolean(
-                VARIATIONS_FIRST_RUN_SEED_IS_GZIP_COMPRESSED, false);
+        return ContextUtils.getAppSharedPreferences()
+                .getBoolean(VARIATIONS_FIRST_RUN_SEED_IS_GZIP_COMPRESSED, false);
     }
 }

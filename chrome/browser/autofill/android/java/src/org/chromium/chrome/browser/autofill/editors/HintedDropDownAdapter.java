@@ -59,12 +59,18 @@ class HintedDropDownAdapter<T> extends DropdownFieldAdapter<T> {
 
     @Override
     public View getDropDownView(int position, View convertView, ViewGroup parent) {
-        mTextView = convertView == null ? null
-                                        : (TextView) convertView.findViewById(mTextViewResourceId);
+        mTextView =
+                convertView == null
+                        ? null
+                        : (TextView) convertView.findViewById(mTextViewResourceId);
         if (mTextView != null) {
             // Clear the possible changes for the first and last view.
-            ViewCompat.setPaddingRelative(convertView, ViewCompat.getPaddingStart(convertView), 0,
-                    ViewCompat.getPaddingEnd(convertView), 0);
+            ViewCompat.setPaddingRelative(
+                    convertView,
+                    ViewCompat.getPaddingStart(convertView),
+                    0,
+                    ViewCompat.getPaddingEnd(convertView),
+                    0);
             mTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
             ApiCompatibilityUtils.setTextAppearance(
                     mTextView, R.style.TextAppearance_TextLarge_Primary);
@@ -73,10 +79,14 @@ class HintedDropDownAdapter<T> extends DropdownFieldAdapter<T> {
 
         if (position == 0) {
             // Padding at the top of the dropdown.
-            ViewCompat.setPaddingRelative(convertView, ViewCompat.getPaddingStart(convertView),
-                    getContext().getResources().getDimensionPixelSize(
-                            R.dimen.editor_dialog_section_small_spacing),
-                    ViewCompat.getPaddingEnd(convertView), convertView.getPaddingBottom());
+            ViewCompat.setPaddingRelative(
+                    convertView,
+                    ViewCompat.getPaddingStart(convertView),
+                    getContext()
+                            .getResources()
+                            .getDimensionPixelSize(R.dimen.editor_dialog_section_small_spacing),
+                    ViewCompat.getPaddingEnd(convertView),
+                    convertView.getPaddingBottom());
         }
         return convertView;
     }

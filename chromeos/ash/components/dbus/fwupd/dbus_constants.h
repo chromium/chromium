@@ -14,6 +14,7 @@ const char kFwupdDeviceAddedSignalName[] = "DeviceAdded";
 const char kFwupdGetUpgradesMethodName[] = "GetUpgrades";
 const char kFwupdGetDevicesMethodName[] = "GetDevices";
 const char kFwupdInstallMethodName[] = "Install";
+const char kFwupdSetFeatureFlagsMethodName[] = "SetFeatureFlags";
 
 }  // namespace ash
 

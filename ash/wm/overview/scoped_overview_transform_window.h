@@ -219,8 +219,7 @@ class ASH_EXPORT ScopedOverviewTransformWindow
 
   // While the transform window exists, apply dynamic raster scale to the
   // underlying window.
-  absl::optional<ScopedRasterScaleLayerObserverLock>
-      raster_scale_observer_lock_;
+  std::optional<ScopedRasterScaleLayerObserverLock> raster_scale_observer_lock_;
 
   base::WeakPtrFactory<ScopedOverviewTransformWindow> weak_ptr_factory_{this};
 };

@@ -1,6 +1,9 @@
 {
   "$build/chromium_tests_builder_config": {
     "builder_config": {
+      "additional_exclusions": [
+        "infra/config/generated/builders/try/android-oreo-x86-rel/gn-args.json"
+      ],
       "builder_db": {
         "entries": [
           {

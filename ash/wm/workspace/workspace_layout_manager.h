@@ -21,6 +21,10 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/wm/public/activation_change_observer.h"
 
+namespace display {
+enum class TabletState;
+}  // namespace display
+
 namespace ash {
 
 class RootWindowController;
@@ -91,6 +95,7 @@ class ASH_EXPORT WorkspaceLayoutManager : public aura::LayoutManager,
   // display::DisplayObserver:
   void OnDisplayMetricsChanged(const display::Display& display,
                                uint32_t changed_metrics) override;
+  void OnDisplayTabletStateChanged(display::TabletState state) override;
 
   // ShellObserver:
   void OnFullscreenStateChanged(bool is_fullscreen,

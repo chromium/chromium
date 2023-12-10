@@ -31,6 +31,7 @@
 #include "third_party/blink/public/platform/web_theme_engine.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/scroll/mac_scrollbar_animator.h"
+#include "third_party/blink/renderer/core/scroll/scrollable_area.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context_state_saver.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
@@ -227,9 +228,12 @@ void ScrollbarThemeMac::PaintTrack(GraphicsContext& context,
               WebThemeEngine::ScrollbarOrientation::kHorizontal
           ? WebThemeEngine::Part::kPartScrollbarHorizontalTrack
           : WebThemeEngine::Part::kPartScrollbarVerticalTrack;
+  const ui::ColorProvider* color_provider =
+      scrollbar.GetScrollableArea()->GetColorProvider(
+          scrollbar.UsedColorScheme());
   WebThemeEngineHelper::GetNativeThemeEngine()->Paint(
       context.Canvas(), track_part, WebThemeEngine::State::kStateNormal, bounds,
-      &params, scrollbar_extra.scrollbar_theme);
+      &params, scrollbar_extra.scrollbar_theme, color_provider);
   if (opacity != 1)
     context.EndLayer();
 }
@@ -239,10 +243,11 @@ void ScrollbarThemeMac::PaintScrollCorner(
     const Scrollbar* vertical_scrollbar,
     const DisplayItemClient& item,
     const gfx::Rect& rect,
-    mojom::blink::ColorScheme color_scheme) {
+    mojom::blink::ColorScheme color_scheme,
+    const ui::ColorProvider* color_provider) {
   if (!vertical_scrollbar) {
     ScrollbarTheme::PaintScrollCorner(context, vertical_scrollbar, item, rect,
-                                      color_scheme);
+                                      color_scheme, color_provider);
     return;
   }
   if (DrawingRecorder::UseCachedDrawingIfPossible(context, item,
@@ -259,7 +264,8 @@ void ScrollbarThemeMac::PaintScrollCorner(
   WebThemeEngineHelper::GetNativeThemeEngine()->Paint(
       context.Canvas(), WebThemeEngine::Part::kPartScrollbarCorner,
       WebThemeEngine::State::kStateNormal, bounds, &params,
-      absl::get<WebThemeEngine::ScrollbarExtraParams>(params).scrollbar_theme);
+      absl::get<WebThemeEngine::ScrollbarExtraParams>(params).scrollbar_theme,
+      color_provider);
 }
 
 void ScrollbarThemeMac::PaintThumbInternal(GraphicsContext& context,
@@ -317,9 +323,12 @@ void ScrollbarThemeMac::PaintThumbInternal(GraphicsContext& context,
               WebThemeEngine::ScrollbarOrientation::kHorizontal
           ? WebThemeEngine::Part::kPartScrollbarHorizontalThumb
           : WebThemeEngine::Part::kPartScrollbarVerticalThumb;
+  const ui::ColorProvider* color_provider =
+      scrollbar.GetScrollableArea()->GetColorProvider(
+          scrollbar.UsedColorScheme());
   WebThemeEngineHelper::GetNativeThemeEngine()->Paint(
       context.Canvas(), thumb_part, WebThemeEngine::State::kStateNormal, bounds,
-      &params, scrollbar_extra.scrollbar_theme);
+      &params, scrollbar_extra.scrollbar_theme, color_provider);
   if (opacity != 1.0f)
     context.EndLayer();
 }

@@ -1,12 +1,7 @@
 This is a testharness.js-based test.
-[PASS] e.style['fill'] = "none" should set the property value
 [FAIL] e.style['fill'] = "context-fill" should set the property value
   assert_not_equals: property should be set got disallowed value ""
 [FAIL] e.style['fill'] = "context-stroke" should set the property value
   assert_not_equals: property should be set got disallowed value ""
-[PASS] e.style['fill'] = "rgb(12, 34, 56)" should set the property value
-[PASS] e.style['fill'] = "url(\"https://example.com/\")" should set the property value
-[PASS] e.style['fill'] = "url(\"https://example.com/\") none" should set the property value
-[PASS] e.style['fill'] = "url(\"https://example.com/\") rgb(12, 34, 56)" should set the property value
 Harness: the test ran to completion.
 

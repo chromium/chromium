@@ -189,7 +189,7 @@ TEST_F(SearchConceptRegistryTest, SearchConceptToDataStandardAccelerator) {
                   ui::Accelerator(
                       /*key_code=*/ui::KeyboardCode::VKEY_A,
                       /*modifiers=*/ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN),
-                  u"A", absl::nullopt)));
+                  u"A", std::nullopt)));
   ash::mojom::AcceleratorInfoPtr second_standard_accelerator_info =
       ash::mojom::AcceleratorInfo::New(
           /*type=*/ash::mojom::AcceleratorType::kDefault,
@@ -201,7 +201,7 @@ TEST_F(SearchConceptRegistryTest, SearchConceptToDataStandardAccelerator) {
                   ui::Accelerator(
                       /*key_code=*/ui::KeyboardCode::VKEY_BRIGHTNESS_DOWN,
                       /*modifiers=*/ui::EF_ALT_DOWN),
-                  u"BrightnessDown", absl::nullopt)));
+                  u"BrightnessDown", std::nullopt)));
 
   std::vector<ash::mojom::AcceleratorInfoPtr> accelerator_info_list;
   accelerator_info_list.push_back(std::move(first_standard_accelerator_info));

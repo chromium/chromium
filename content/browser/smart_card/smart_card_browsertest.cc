@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "base/base_switches.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "content/browser/smart_card/mock_smart_card_context_factory.h"
@@ -13,6 +14,7 @@
 #include "content/public/browser/smart_card_delegate.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_content_browser_client.h"
 #include "content/public/test/content_browser_test_utils.h"
@@ -29,12 +31,14 @@
 #include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/mojom/smart_card/smart_card.mojom.h"
 
+using base::test::RunOnceCallback;
 using base::test::TestFuture;
 using device::mojom::SmartCardConnection;
 using device::mojom::SmartCardConnectionState;
 using device::mojom::SmartCardContext;
 using device::mojom::SmartCardDisposition;
 using device::mojom::SmartCardError;
+using device::mojom::SmartCardListReadersResult;
 using device::mojom::SmartCardProtocol;
 using device::mojom::SmartCardReaderStateFlags;
 using device::mojom::SmartCardReaderStateOut;
@@ -49,11 +53,14 @@ using testing::Exactly;
 using testing::HasSubstr;
 using testing::InSequence;
 using testing::MatchesRegex;
+using testing::Return;
 using testing::StrictMock;
 
 namespace content {
 
 namespace {
+
+constexpr char kFakeReader[] = "Fake reader";
 
 class MockSmartCardConnection : public device::mojom::SmartCardConnection {
  public:
@@ -132,6 +139,24 @@ class FakeSmartCardDelegate : public SmartCardDelegate {
   mojo::PendingRemote<device::mojom::SmartCardContextFactory>
   GetSmartCardContextFactory(BrowserContext& browser_context) override;
 
+  MOCK_METHOD(bool,
+              HasReaderPermission,
+              (content::RenderFrameHost & render_frame_host,
+               const std::string& reader_name),
+              (override));
+
+  MOCK_METHOD(void,
+              RequestReaderPermission,
+              (content::RenderFrameHost & render_frame_host,
+               const std::string& reader_name,
+               RequestReaderPermissionCallback callback),
+              (override));
+
+  void ExpectHasReaderPermission(const std::string& reader_name) {
+    EXPECT_CALL(*this, HasReaderPermission(_, reader_name))
+        .WillOnce(Return(true));
+  }
+
   MockSmartCardContextFactory mock_context_factory;
 };
 
@@ -192,6 +217,7 @@ class SmartCardTest : public ContentBrowserTest {
     {
       InSequence s;
 
+      GetFakeSmartCardDelegate().ExpectHasReaderPermission(kFakeReader);
       mock_context_factory.ExpectConnectFakeReaderSharedT1(connection_receiver);
       mock_connection.ExpectBeginTransaction(transaction_receiver);
       mock_transaction.ExpectEndTransaction(SmartCardDisposition::kReset);
@@ -329,6 +355,8 @@ IN_PROC_BROWSER_TEST_F(SmartCardTest, Disconnect) {
   {
     InSequence s;
 
+    GetFakeSmartCardDelegate().ExpectHasReaderPermission(kFakeReader);
+
     mock_context_factory.ExpectConnectFakeReaderSharedT1(connection_receiver);
 
     EXPECT_CALL(mock_connection, Disconnect(SmartCardDisposition::kEject, _))
@@ -375,6 +403,8 @@ IN_PROC_BROWSER_TEST_F(SmartCardTest, ConcurrentDisconnect) {
 
   {
     InSequence s;
+
+    GetFakeSmartCardDelegate().ExpectHasReaderPermission(kFakeReader);
 
     mock_context_factory.ExpectConnectFakeReaderSharedT1(connection_receiver);
 
@@ -430,6 +460,8 @@ IN_PROC_BROWSER_TEST_F(SmartCardTest, Transmit) {
   {
     InSequence s;
 
+    GetFakeSmartCardDelegate().ExpectHasReaderPermission(kFakeReader);
+
     mock_context_factory.ExpectConnectFakeReaderSharedT1(connection_receiver);
 
     EXPECT_CALL(mock_connection, Transmit(SmartCardProtocol::kT1, _, _))
@@ -469,8 +501,10 @@ IN_PROC_BROWSER_TEST_F(SmartCardTest, TransmitWithOptions) {
   {
     InSequence s;
 
+    GetFakeSmartCardDelegate().ExpectHasReaderPermission(kFakeReader);
+
     EXPECT_CALL(mock_context_factory,
-                Connect("Fake reader", SmartCardShareMode::kDirect, _, _))
+                Connect(kFakeReader, SmartCardShareMode::kDirect, _, _))
         .WillOnce([&connection_receiver](
                       const std::string& reader,
                       device::mojom::SmartCardShareMode share_mode,
@@ -529,8 +563,10 @@ IN_PROC_BROWSER_TEST_F(SmartCardTest, TransmitNoProtocol) {
   {
     InSequence s;
 
+    GetFakeSmartCardDelegate().ExpectHasReaderPermission(kFakeReader);
+
     EXPECT_CALL(mock_context_factory,
-                Connect("Fake reader", SmartCardShareMode::kDirect, _, _))
+                Connect(kFakeReader, SmartCardShareMode::kDirect, _, _))
         .WillOnce([&connection_receiver](
                       const std::string& reader,
                       device::mojom::SmartCardShareMode share_mode,
@@ -582,6 +618,8 @@ IN_PROC_BROWSER_TEST_F(SmartCardTest, Control) {
   {
     InSequence s;
 
+    GetFakeSmartCardDelegate().ExpectHasReaderPermission(kFakeReader);
+
     mock_context_factory.ExpectConnectFakeReaderSharedT1(connection_receiver);
 
     EXPECT_CALL(mock_connection, Control(42, _, _))
@@ -620,6 +658,8 @@ IN_PROC_BROWSER_TEST_F(SmartCardTest, GetAttribute) {
   {
     InSequence s;
 
+    GetFakeSmartCardDelegate().ExpectHasReaderPermission(kFakeReader);
+
     mock_context_factory.ExpectConnectFakeReaderSharedT1(connection_receiver);
 
     EXPECT_CALL(mock_connection, GetAttrib(42, _))
@@ -655,6 +695,8 @@ IN_PROC_BROWSER_TEST_F(SmartCardTest, SetAttribute) {
 
   {
     InSequence s;
+
+    GetFakeSmartCardDelegate().ExpectHasReaderPermission(kFakeReader);
 
     mock_context_factory.ExpectConnectFakeReaderSharedT1(connection_receiver);
 
@@ -693,13 +735,15 @@ IN_PROC_BROWSER_TEST_F(SmartCardTest, Status) {
   {
     InSequence s;
 
+    GetFakeSmartCardDelegate().ExpectHasReaderPermission(kFakeReader);
+
     mock_context_factory.ExpectConnectFakeReaderSharedT1(connection_receiver);
 
     EXPECT_CALL(mock_connection, Status(_))
         .WillOnce([](SmartCardConnection::StatusCallback callback) {
           auto result = device::mojom::SmartCardStatusResult::NewStatus(
               SmartCardStatus::New(
-                  "Fake reader", SmartCardConnectionState::kSpecific,
+                  kFakeReader, SmartCardConnectionState::kSpecific,
                   SmartCardProtocol::kT1, std::vector<uint8_t>({3u, 2u, 1u})));
           std::move(callback).Run(std::move(result));
         });
@@ -724,13 +768,7 @@ IN_PROC_BROWSER_TEST_F(SmartCardTest, ListReaders) {
   MockSmartCardContextFactory& mock_context_factory =
       GetFakeSmartCardDelegate().mock_context_factory;
 
-  EXPECT_CALL(mock_context_factory, ListReaders(_))
-      .WillOnce([](SmartCardContext::ListReadersCallback callback) {
-        std::vector<std::string> readers{"Foo", "Bar"};
-        auto result =
-            device::mojom::SmartCardListReadersResult::NewReaders(readers);
-        std::move(callback).Run(std::move(result));
-      });
+  mock_context_factory.ExpectListReaders({"Foo", "Bar"});
 
   ASSERT_TRUE(NavigateToURL(shell(), GetIsolatedContextUrl()));
 
@@ -755,11 +793,8 @@ IN_PROC_BROWSER_TEST_F(SmartCardTest, ListReadersEmpty) {
       GetFakeSmartCardDelegate().mock_context_factory;
 
   EXPECT_CALL(mock_context_factory, ListReaders(_))
-      .WillOnce([](SmartCardContext::ListReadersCallback callback) {
-        auto result = device::mojom::SmartCardListReadersResult::NewError(
-            SmartCardError::kNoReadersAvailable);
-        std::move(callback).Run(std::move(result));
-      });
+      .WillOnce(RunOnceCallback<0>(SmartCardListReadersResult::NewError(
+          SmartCardError::kNoReadersAvailable)));
 
   ASSERT_TRUE(NavigateToURL(shell(), GetIsolatedContextUrl()));
 
@@ -954,7 +989,7 @@ IN_PROC_BROWSER_TEST_F(SmartCardTest, Connect) {
       GetFakeSmartCardDelegate().mock_context_factory;
 
   EXPECT_CALL(mock_context_factory,
-              Connect("Fake reader", SmartCardShareMode::kShared, _, _))
+              Connect(kFakeReader, SmartCardShareMode::kShared, _, _))
       .WillOnce([](const std::string& reader,
                    device::mojom::SmartCardShareMode share_mode,
                    device::mojom::SmartCardProtocolsPtr preferred_protocols,
@@ -977,6 +1012,8 @@ IN_PROC_BROWSER_TEST_F(SmartCardTest, Connect) {
                 std::move(success)));
       });
 
+  GetFakeSmartCardDelegate().ExpectHasReaderPermission(kFakeReader);
+
   ASSERT_TRUE(NavigateToURL(shell(), GetIsolatedContextUrl()));
 
   auto expected_reader_names =
@@ -988,6 +1025,124 @@ IN_PROC_BROWSER_TEST_F(SmartCardTest, Connect) {
       let result = await context.connect("Fake reader", "shared",
           {preferredProtocols: ["t0", "t1"]});
       return `${result.connection}, ${result.activeProtocol}`;
+    })())"));
+}
+
+IN_PROC_BROWSER_TEST_F(SmartCardTest, ConnectDenied) {
+  MockSmartCardContextFactory& mock_context_factory =
+      GetFakeSmartCardDelegate().mock_context_factory;
+
+  EXPECT_CALL(mock_context_factory, Connect(_, _, _, _)).Times(0);
+
+  {
+    InSequence s;
+
+    mock_context_factory.ExpectListReaders({kFakeReader});
+
+    // No permission yet. So renderer will have to request it.
+    EXPECT_CALL(GetFakeSmartCardDelegate(), HasReaderPermission(_, kFakeReader))
+        .WillOnce(Return(false));
+
+    // Permission was requested and it got denied.
+    EXPECT_CALL(GetFakeSmartCardDelegate(),
+                RequestReaderPermission(_, kFakeReader, _))
+        .WillOnce(RunOnceCallback<2>(false));
+  }
+
+  ASSERT_TRUE(NavigateToURL(shell(), GetIsolatedContextUrl()));
+
+  EXPECT_EQ("NotAllowedError", EvalJs(shell(), R"(
+    (async () => {
+      let context = await navigator.smartCard.establishContext();
+      let readers = await context.listReaders();
+      try {
+        let result = await context.connect(readers[0], "shared",
+            {preferredProtocols: ["t0", "t1"]});
+      } catch (e) {
+        return e.name;
+      }
+      return "ok";
+    })())"));
+}
+
+// Tests that a connection request is immediately denied if the application
+// passes a reader name string that is not known to have come from the smart
+// card API.
+// This is to avoid presenting unfiltered strings to the user in a permission
+// prompt.
+IN_PROC_BROWSER_TEST_F(SmartCardTest, ConnectDeniedUnknownString) {
+  constexpr char kMyDisturbingString[] = "my disturbing string";
+
+  MockSmartCardContextFactory& mock_context_factory =
+      GetFakeSmartCardDelegate().mock_context_factory;
+
+  // The connection request shall not go through.
+  EXPECT_CALL(mock_context_factory, Connect(_, _, _, _)).Times(0);
+
+  // We tell that there's no permission yet.
+  EXPECT_CALL(GetFakeSmartCardDelegate(),
+              HasReaderPermission(_, kMyDisturbingString))
+      .WillOnce(Return(false));
+
+  // But the permission should not be requested as the reader name string is
+  // unknown.
+  EXPECT_CALL(GetFakeSmartCardDelegate(),
+              RequestReaderPermission(_, kMyDisturbingString, _))
+      .Times(0);
+
+  ASSERT_TRUE(NavigateToURL(shell(), GetIsolatedContextUrl()));
+
+  EXPECT_EQ("NotAllowedError", EvalJs(shell(), JsReplace(R"(
+    (async () => {
+      let context = await navigator.smartCard.establishContext();
+      try {
+        let result = await context.connect($1, "shared",
+            {preferredProtocols: ["t0", "t1"]});
+      } catch (e) {
+        return e.name;
+      }
+      return "ok";
+    })())",
+                                                         kMyDisturbingString)));
+}
+
+IN_PROC_BROWSER_TEST_F(SmartCardTest, ConnectPermissionGranted) {
+  MockSmartCardContextFactory& mock_context_factory =
+      GetFakeSmartCardDelegate().mock_context_factory;
+  MockSmartCardConnection mock_connection;
+  mojo::Receiver<SmartCardConnection> connection_receiver(&mock_connection);
+
+  {
+    InSequence s;
+
+    mock_context_factory.ExpectListReaders({kFakeReader});
+
+    // No permission yet. So renderer will have to request it.
+    EXPECT_CALL(GetFakeSmartCardDelegate(), HasReaderPermission(_, kFakeReader))
+        .WillOnce(Return(false));
+
+    // Permission was requested and granted.
+    EXPECT_CALL(GetFakeSmartCardDelegate(),
+                RequestReaderPermission(_, kFakeReader, _))
+        .WillOnce(RunOnceCallback<2>(true));
+
+    // The Connect request will then finally go through.
+    mock_context_factory.ExpectConnectFakeReaderSharedT1(connection_receiver);
+  }
+
+  ASSERT_TRUE(NavigateToURL(shell(), GetIsolatedContextUrl()));
+
+  EXPECT_EQ("ok", EvalJs(shell(), R"(
+    (async () => {
+      let context = await navigator.smartCard.establishContext();
+      let readers = await context.listReaders();
+      try {
+        let result = await context.connect(readers[0], "shared",
+            {preferredProtocols: ["t1"]});
+      } catch (e) {
+        return `${e.name}, ${e.message}`;
+      }
+      return "ok";
     })())"));
 }
 
@@ -1005,6 +1160,8 @@ IN_PROC_BROWSER_TEST_F(SmartCardTest, StartTransaction) {
 
   {
     InSequence s;
+
+    GetFakeSmartCardDelegate().ExpectHasReaderPermission(kFakeReader);
 
     mock_context_factory.ExpectConnectFakeReaderSharedT1(connection_receiver);
 
@@ -1055,6 +1212,8 @@ IN_PROC_BROWSER_TEST_F(SmartCardTest, StartTransactionAborted) {
 
   {
     InSequence s;
+
+    GetFakeSmartCardDelegate().ExpectHasReaderPermission(kFakeReader);
 
     mock_context_factory.ExpectConnectFakeReaderSharedT1(connection_receiver);
 
@@ -1161,6 +1320,7 @@ IN_PROC_BROWSER_TEST_F(SmartCardTest, EndTransactionFails) {
   {
     InSequence s;
 
+    GetFakeSmartCardDelegate().ExpectHasReaderPermission(kFakeReader);
     mock_context_factory.ExpectConnectFakeReaderSharedT1(connection_receiver);
     mock_connection.ExpectBeginTransaction(transaction_receiver);
 
@@ -1214,6 +1374,7 @@ IN_PROC_BROWSER_TEST_F(SmartCardTest, DisconnectedOnTransactionReturn) {
   {
     InSequence s;
 
+    GetFakeSmartCardDelegate().ExpectHasReaderPermission(kFakeReader);
     mock_context_factory.ExpectConnectFakeReaderSharedT1(connection_receiver);
     mock_connection.ExpectBeginTransaction(transaction_receiver);
 
@@ -1268,6 +1429,7 @@ IN_PROC_BROWSER_TEST_F(SmartCardTest, OngoingTransmitOnTransactionReturn) {
   {
     InSequence s;
 
+    GetFakeSmartCardDelegate().ExpectHasReaderPermission(kFakeReader);
     mock_context_factory.ExpectConnectFakeReaderSharedT1(connection_receiver);
     mock_connection.ExpectBeginTransaction(transaction_receiver);
 
@@ -1325,6 +1487,8 @@ IN_PROC_BROWSER_TEST_F(SmartCardTest,
   {
     InSequence s;
 
+    GetFakeSmartCardDelegate().ExpectHasReaderPermission(kFakeReader);
+
     mock_context_factory.ExpectConnectFakeReaderSharedT1(connection_receiver);
 
     EXPECT_CALL(mock_context_factory, ListReaders(_))
@@ -1362,9 +1526,8 @@ IN_PROC_BROWSER_TEST_F(SmartCardTest,
     })())"));
 
   // Let context.listReaders() conclude
-  std::vector<std::string> readers{"Fake reader"};
-  auto result = device::mojom::SmartCardListReadersResult::NewReaders(readers);
-  list_readers_callback.Take().Run(std::move(result));
+  list_readers_callback.Take().Run(
+      SmartCardListReadersResult::NewReaders({kFakeReader}));
 }
 
 IN_PROC_BROWSER_TEST_F(SmartCardTest, ConnectionDiesWithOperationInProgress) {
@@ -1377,6 +1540,8 @@ IN_PROC_BROWSER_TEST_F(SmartCardTest, ConnectionDiesWithOperationInProgress) {
 
   {
     InSequence s;
+
+    GetFakeSmartCardDelegate().ExpectHasReaderPermission(kFakeReader);
 
     mock_context_factory.ExpectConnectFakeReaderSharedT1(connection_receiver);
 
@@ -1418,6 +1583,8 @@ IN_PROC_BROWSER_TEST_F(SmartCardTest, ContextDiesConnectionStays) {
 
   {
     InSequence s;
+
+    GetFakeSmartCardDelegate().ExpectHasReaderPermission(kFakeReader);
 
     mock_context_factory.ExpectConnectFakeReaderSharedT1(connection_receiver);
 
@@ -1497,6 +1664,8 @@ IN_PROC_BROWSER_TEST_F(SmartCardTest, EndTransactionAfterFailedOperation) {
   {
     InSequence s;
 
+    GetFakeSmartCardDelegate().ExpectHasReaderPermission(kFakeReader);
+
     mock_context_factory.ExpectConnectFakeReaderSharedT1(connection_receiver);
 
     mock_connection.ExpectBeginTransaction(transaction_receiver);
@@ -1557,17 +1726,13 @@ IN_PROC_BROWSER_TEST_F(SmartCardTest, EndTransactionAfterContextOperation) {
   {
     InSequence s;
 
+    GetFakeSmartCardDelegate().ExpectHasReaderPermission(kFakeReader);
+
     mock_context_factory.ExpectConnectFakeReaderSharedT1(connection_receiver);
 
     mock_connection.ExpectBeginTransaction(transaction_receiver);
 
-    EXPECT_CALL(mock_context_factory, ListReaders(_))
-        .WillOnce([](SmartCardContext::ListReadersCallback callback) {
-          std::vector<std::string> readers{"Foo", "Bar"};
-          auto result =
-              device::mojom::SmartCardListReadersResult::NewReaders(readers);
-          std::move(callback).Run(std::move(result));
-        });
+    mock_context_factory.ExpectListReaders({"Foo", "Bar"});
 
     mock_transaction.ExpectEndTransaction(SmartCardDisposition::kEject);
   }

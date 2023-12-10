@@ -20,17 +20,18 @@
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/payments/iban_save_manager.h"
 #include "components/autofill/core/browser/payments/local_card_migration_manager.h"
-#include "components/autofill/core/browser/payments/payments_client.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-
-class SaveCardOfferObserver;
 
 namespace autofill {
 
 class AddressProfileSaveManager;
 class CreditCardSaveManager;
+
+namespace payments {
+class PaymentsNetworkInterface;
+}
 
 // Manages logic for importing address profiles and credit card information from
 // web forms into the user's Autofill profile via the PersonalDataManager.
@@ -52,13 +53,16 @@ class FormDataImporter : public PersonalDataManagerObserver {
     kNewCard,
     // The extracted card is already known to be a virtual card.
     kVirtualCard,
+    // The extracted card is known to be a duplicate local and server card.
+    kDuplicateLocalServerCard,
   };
 
   // The parameters should outlive the FormDataImporter.
-  FormDataImporter(AutofillClient* client,
-                   payments::PaymentsClient* payments_client,
-                   PersonalDataManager* personal_data_manager,
-                   const std::string& app_locale);
+  FormDataImporter(
+      AutofillClient* client,
+      payments::PaymentsNetworkInterface* payments_network_interface,
+      PersonalDataManager* personal_data_manager,
+      const std::string& app_locale);
 
   FormDataImporter(const FormDataImporter&) = delete;
   FormDataImporter& operator=(const FormDataImporter&) = delete;
@@ -87,8 +91,8 @@ class FormDataImporter : public PersonalDataManagerObserver {
   ExtractCreditCardFromFormResult ExtractCreditCardFromForm(
       const FormStructure& form);
 
-  // Tries to initiate the saving of `iban_import_candidate` if applicable.
-  bool ProcessIbanImportCandidate(const Iban& iban_import_candidate);
+  // Tries to initiate the saving of `extracted_iban` if applicable.
+  bool ProcessIbanImportCandidate(const Iban& extracted_iban);
 
   // Cache the last four of the fetched virtual card so we don't offer saving
   // them.
@@ -129,18 +133,6 @@ class FormDataImporter : public PersonalDataManagerObserver {
     return form_associator_.GetFormAssociations(form_signature);
   }
 
-  CreditCardImportType credit_card_import_type_for_testing() const {
-    return credit_card_import_type_;
-  }
-  void set_credit_card_import_type_for_testing(
-      CreditCardImportType credit_card_import_type) {
-    credit_card_import_type_ = credit_card_import_type;
-  }
-
-  IbanSaveManager* iban_save_manager_for_testing() {
-    return iban_save_manager_.get();
-  }
-
   // This should only set
   // `card_record_type_if_non_interactive_authentication_flow_completed_` to a
   // value when there was an autofill with no interactive authentication,
@@ -151,37 +143,6 @@ class FormDataImporter : public PersonalDataManagerObserver {
   absl::optional<CreditCard::RecordType>
   GetCardRecordTypeIfNonInteractiveAuthenticationFlowCompleted() const;
 
-  bool ProcessExtractedCreditCardForTesting(
-      const FormStructure& submitted_form,
-      const absl::optional<CreditCard>& credit_card_import_candidate,
-      bool payment_methods_autofill_enabled,
-      bool is_credit_card_upstream_enabled) {
-    return ProcessExtractedCreditCard(
-        submitted_form, credit_card_import_candidate,
-        payment_methods_autofill_enabled, is_credit_card_upstream_enabled);
-  }
-
- protected:
-  void set_credit_card_save_manager_for_testing(
-      std::unique_ptr<CreditCardSaveManager> credit_card_save_manager);
-
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  void set_iban_save_manager_for_testing(
-      std::unique_ptr<IbanSaveManager> iban_save_manager) {
-    iban_save_manager_ = std::move(iban_save_manager);
-  }
-  void set_local_card_migration_manager_for_testing(
-      std::unique_ptr<LocalCardMigrationManager> local_card_migration_manager) {
-    local_card_migration_manager_ = std::move(local_card_migration_manager);
-  }
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-
-  // The instrument id of the card that has been most recently retrieved via
-  // Autofill Downstream (card retrieval from server). This can be used to
-  // decide whether the card submitted is the same card retrieved. This field is
-  // optional and is set when an Autofill Downstream has happened.
-  absl::optional<int64_t> fetched_card_instrument_id_;
-
  private:
   // Defines a candidate for address profile import.
   struct AddressProfileImportCandidate {
@@ -190,7 +151,7 @@ class FormDataImporter : public PersonalDataManagerObserver {
     ~AddressProfileImportCandidate();
 
     // The profile that was extracted from the form.
-    AutofillProfile profile;
+    AutofillProfile profile{i18n_model_definition::kLegacyHierarchyCountryCode};
     // The URL the profile was extracted from.
     GURL url;
     // Indicates if all import requirements have been fulfilled.
@@ -220,7 +181,7 @@ class FormDataImporter : public PersonalDataManagerObserver {
         address_profile_import_candidates;
     // IBAN extracted from the form, which is a candidate for importing. Present
     // if an IBAN is found in the form.
-    absl::optional<Iban> iban_import_candidate;
+    absl::optional<Iban> extracted_iban;
   };
 
   // Scans the given `form` for extractable Autofill data.
@@ -238,11 +199,12 @@ class FormDataImporter : public PersonalDataManagerObserver {
                                 std::vector<AddressProfileImportCandidate>*
                                     address_profile_import_candidates);
 
-  // Validates that the required fields in the `profile` have values, based on
-  // the requirements of the `profile`'s country. Accordingly, logs the form
-  // import requirement metrics.
-  bool LogAddressFormImportRequirementMetric(const AutofillProfile& profile,
-                                             LogBuffer* import_log_buffer);
+  // Helper method to construct an AutofillProfile out of observed values in the
+  // form. Used during `ExtractAddressProfileFromSection()`.
+  AutofillProfile ConstructProfileFromObservedValues(
+      const base::flat_map<ServerFieldType, std::u16string>& observed_values,
+      LogBuffer* import_log_buffer,
+      ProfileImportMetadata& import_metadata);
 
   // Helper method for ImportAddressProfiles which only considers the fields
   // for a specified `section`. If no section is passed, the import is
@@ -342,7 +304,7 @@ class FormDataImporter : public PersonalDataManagerObserver {
   // country or alternatively the app locale.
   // Returns false if the provided `combined_phone` is invalid.
   bool SetPhoneNumber(AutofillProfile& profile,
-                      PhoneNumber::PhoneCombineHelper& combined_phone);
+                      const PhoneNumber::PhoneCombineHelper& combined_phone);
 
   // Clears all setting-inaccessible values from `profile` if
   // `kAutofillRemoveInaccessibleProfileValues` is enabled.
@@ -400,15 +362,13 @@ class FormDataImporter : public PersonalDataManagerObserver {
   absl::optional<CreditCard::RecordType>
       card_record_type_if_non_interactive_authentication_flow_completed_;
 
-  friend class AutofillMergeTest;
-  friend class FormDataImporterTest;
-  friend class FormDataImporterTestBase;
-  friend class LocalCardMigrationBrowserTest;
-  friend class SaveCardBubbleViewsFullFormBrowserTest;
-  friend class SaveCardInfobarEGTestHelper;
-  friend class ::SaveCardOfferObserver;
-  FRIEND_TEST_ALL_PREFIXES(FormDataImporterNonParameterizedTest,
-                           ShouldOfferCreditCardSave);
+  // The instrument id of the card that has been most recently retrieved via
+  // Autofill Downstream (card retrieval from server). This can be used to
+  // decide whether the card submitted is the same card retrieved. This field is
+  // optional and is set when an Autofill Downstream has happened.
+  absl::optional<int64_t> fetched_card_instrument_id_;
+
+  friend class FormDataImporterTestApi;
 };
 
 }  // namespace autofill

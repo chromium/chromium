@@ -1214,8 +1214,6 @@ void AccessibleNode::NotifyAttributeChanged(
     return;
   }
 
-  // By definition, any attribute on an AccessibleNode is interesting to
-  // AXObjectCache, so no need to check return value.
   cache->HandleAttributeChanged(attribute, element_);
 }
 

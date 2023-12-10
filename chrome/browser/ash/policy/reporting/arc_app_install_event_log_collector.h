@@ -83,7 +83,8 @@ class ArcAppInstallEventLogCollector : public InstallEventLogCollectorBase,
   // ArcAppListPrefs::Observer:
   void OnInstallationStarted(const std::string& package_name) override;
   void OnInstallationFinished(const std::string& package_name,
-                              bool success) override;
+                              bool success,
+                              bool is_launchable_app) override;
 
  protected:
   // Overrides to handle events from InstallEventLogCollectorBase.

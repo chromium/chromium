@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/run_loop.h"
-#include "base/strings/string_piece_forward.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"

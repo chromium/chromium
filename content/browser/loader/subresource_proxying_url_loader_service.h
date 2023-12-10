@@ -35,7 +35,7 @@ class RenderFrameHostImpl;
 class CONTENT_EXPORT SubresourceProxyingURLLoaderService final
     : public network::mojom::URLLoaderFactory {
  public:
-  struct CONTENT_EXPORT BindContext {
+  struct CONTENT_EXPORT BindContext : public base::RefCounted<BindContext> {
     // `factory` is a clone of the default factory bundle for document
     // subresource requests.
     BindContext(int frame_tree_node_id,
@@ -43,10 +43,6 @@ class CONTENT_EXPORT SubresourceProxyingURLLoaderService final
                 base::WeakPtr<RenderFrameHostImpl> render_frame_host,
                 scoped_refptr<PrefetchedSignedExchangeCache>
                     prefetched_signed_exchange_cache);
-
-    explicit BindContext(const std::unique_ptr<BindContext>& other);
-
-    ~BindContext();
 
     // Set `document` to `committed_document`.
     void OnDidCommitNavigation(WeakDocumentPtr committed_document);
@@ -74,6 +70,10 @@ class CONTENT_EXPORT SubresourceProxyingURLLoaderService final
     // This must be the last member.
     base::WeakPtrFactory<SubresourceProxyingURLLoaderService::BindContext>
         weak_ptr_factory{this};
+
+   private:
+    ~BindContext();
+    friend class base::RefCounted<BindContext>;
   };
 
   explicit SubresourceProxyingURLLoaderService(BrowserContext* browser_context);
@@ -120,7 +120,7 @@ class CONTENT_EXPORT SubresourceProxyingURLLoaderService final
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation);
 
   mojo::ReceiverSet<network::mojom::URLLoaderFactory,
-                    std::unique_ptr<BindContext>>
+                    scoped_refptr<BindContext>>
       loader_factory_receivers_;
 
   mojo::ReceiverSet<network::mojom::URLLoader,

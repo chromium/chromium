@@ -18,7 +18,6 @@ source_set("credential_ui_entry") {
     "//components/password_manager/core/browser/import:csv",
     "//components/password_manager/core/browser/well_known_change_password",
     "//components/url_formatter",
-    "//third_party/abseil-cpp:absl",
   ]
 }
 
@@ -51,12 +50,11 @@ source_set("ui") {
     "//components/password_manager/core/browser:metrics_util",
     "//components/password_manager/core/browser:passkey_credential",
     "//components/password_manager/core/browser:password_form",
-    "//components/password_manager/core/browser:password_store_interface",
     "//components/password_manager/core/browser/affiliation",
     "//components/password_manager/core/browser/features:password_features",
     "//components/password_manager/core/browser/leak_detection",
+    "//components/password_manager/core/browser/password_store:password_store_interface",
     "//components/password_manager/core/common",
-    "//components/password_manager/core/common:features",
     "//components/prefs",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//components/sync/base:features",
@@ -105,7 +103,6 @@ source_set("unit_tests") {
     "//components/password_manager/core/browser/features:password_features",
     "//components/password_manager/core/browser/leak_detection:test_support",
     "//components/password_manager/core/common",
-    "//components/password_manager/core/common:features",
     "//components/prefs",
     "//components/prefs:test_support",
     "//components/safe_browsing/core/common:safe_browsing_prefs",

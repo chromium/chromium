@@ -87,6 +87,10 @@ class MockLoginScreenClient : public LoginScreenClient {
               ShowGaiaSignin,
               (const AccountId& prefilled_account),
               (override));
+  MOCK_METHOD(void,
+              StartUserRecovery,
+              (const AccountId& account_to_recover),
+              (override));
   MOCK_METHOD(void, ShowOsInstallScreen, (), (override));
   MOCK_METHOD(void, OnRemoveUserWarningShown, (), (override));
   MOCK_METHOD(void, RemoveUser, (const AccountId& account_id), (override));

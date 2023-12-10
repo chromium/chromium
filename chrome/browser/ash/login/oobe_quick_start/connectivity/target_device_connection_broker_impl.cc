@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker_impl.h"
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/base64.h"
@@ -23,7 +24,6 @@
 #include "chromeos/ash/components/quick_start/quick_start_metrics.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/chromeos/devicetype_utils.h"
 
 namespace ash::quick_start {
@@ -402,7 +402,7 @@ void TargetDeviceConnectionBrokerImpl::OnIncomingConnectionInitiated(
 
   CHECK(connection_lifecycle_listener_);
   if (use_pin_authentication_) {
-    absl::optional<std::string> auth_token =
+    std::optional<std::string> auth_token =
         quick_start_connectivity_service_->GetNearbyConnectionsManager()
             ->GetAuthenticationToken(endpoint_id);
     CHECK(auth_token);
@@ -442,7 +442,7 @@ void TargetDeviceConnectionBrokerImpl::OnIncomingConnectionAccepted(
         Connection::AuthenticationMethod::kPin);
   } else {
     QS_LOG(INFO) << "Initiating cryptographic handshake.";
-    absl::optional<std::string> auth_token =
+    std::optional<std::string> auth_token =
         quick_start_connectivity_service_->GetNearbyConnectionsManager()
             ->GetAuthenticationToken(endpoint_id);
     CHECK(auth_token);

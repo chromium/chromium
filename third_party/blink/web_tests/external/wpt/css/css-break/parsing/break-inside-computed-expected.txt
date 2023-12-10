@@ -1,8 +1,4 @@
 This is a testharness.js-based test.
-[PASS] Property break-inside value 'auto'
-[PASS] Property break-inside value 'avoid'
-[PASS] Property break-inside value 'avoid-page'
-[PASS] Property break-inside value 'avoid-column'
 [FAIL] Property break-inside value 'avoid-region'
   assert_true: 'avoid-region' is a supported value for break-inside. expected true got false
 Harness: the test ran to completion.

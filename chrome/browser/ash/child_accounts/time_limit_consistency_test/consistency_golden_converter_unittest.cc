@@ -48,7 +48,7 @@ TEST_F(ConsistencyGoldenConverterTest, ConvertInputWithBedtimes) {
   // First window: Wednesday, 22:30 to 8:00
   consistency_utils::AddWindowLimitEntryToGoldenInput(
       &input, WEDNESDAY, consistency_utils::TimeOfDay({22, 30}),
-      consistency_utils::TimeOfDay({8, 0}), absl::nullopt);
+      consistency_utils::TimeOfDay({8, 0}), std::nullopt);
   utils::AddTimeWindowLimit(&expected_output, utils::kWednesday,
                             utils::CreateTime(22, 30), utils::CreateTime(8, 0),
                             kTestLastUpdated);
@@ -56,7 +56,7 @@ TEST_F(ConsistencyGoldenConverterTest, ConvertInputWithBedtimes) {
   // Second window: Saturday, 18:45 to 22:30
   consistency_utils::AddWindowLimitEntryToGoldenInput(
       &input, SATURDAY, consistency_utils::TimeOfDay({18, 45}),
-      consistency_utils::TimeOfDay({22, 30}), absl::nullopt);
+      consistency_utils::TimeOfDay({22, 30}), std::nullopt);
   utils::AddTimeWindowLimit(&expected_output, utils::kSaturday,
                             utils::CreateTime(18, 45),
                             utils::CreateTime(22, 30), kTestLastUpdated);
@@ -95,13 +95,13 @@ TEST_F(ConsistencyGoldenConverterTest, ConvertInputWithUsageLimit) {
 
   // First quota: Tuesday, 60 minutes
   consistency_utils::AddUsageLimitEntryToGoldenInput(&input, TUESDAY, 60,
-                                                     absl::nullopt);
+                                                     std::nullopt);
   utils::AddTimeUsageLimit(&expected_output, utils::kTuesday, base::Minutes(60),
                            kTestLastUpdated);
 
   // Second quota: Friday, 30 minutes
   consistency_utils::AddUsageLimitEntryToGoldenInput(&input, FRIDAY, 30,
-                                                     absl::nullopt);
+                                                     std::nullopt);
   utils::AddTimeUsageLimit(&expected_output, utils::kFriday, base::Minutes(30),
                            kTestLastUpdated);
 
@@ -117,13 +117,13 @@ TEST_F(ConsistencyGoldenConverterTest, ConvertInputWithUsageLimitDefaultReset) {
 
   // First quota: Tuesday, 60 minutes
   consistency_utils::AddUsageLimitEntryToGoldenInput(&input, TUESDAY, 60,
-                                                     absl::nullopt);
+                                                     std::nullopt);
   utils::AddTimeUsageLimit(&expected_output, utils::kTuesday, base::Minutes(60),
                            kTestLastUpdated);
 
   // Second quota: Friday, 30 minutes
   consistency_utils::AddUsageLimitEntryToGoldenInput(&input, FRIDAY, 30,
-                                                     absl::nullopt);
+                                                     std::nullopt);
   utils::AddTimeUsageLimit(&expected_output, utils::kFriday, base::Minutes(30),
                            kTestLastUpdated);
 
@@ -254,7 +254,7 @@ TEST_F(ConsistencyGoldenConverterTest, GeneratePreviousStateUnlockUsageLimit) {
   consistency_utils::AddOverrideToGoldenInput(&input, UNLOCK_USAGE_LIMIT,
                                               kTestTimestamp);
 
-  absl::optional<usage_time_limit::State> generated_state =
+  std::optional<usage_time_limit::State> generated_state =
       GenerateUnlockUsageLimitOverrideStateFromInput(input);
 
   EXPECT_TRUE(generated_state->is_locked);
@@ -272,10 +272,10 @@ TEST_F(ConsistencyGoldenConverterTest, GeneratePreviousStateOtherOverrides) {
   consistency_utils::AddOverrideToGoldenInput(&input, UNLOCK_WINDOW_LIMIT,
                                               kTestTimestamp);
 
-  absl::optional<usage_time_limit::State> generated_state =
+  std::optional<usage_time_limit::State> generated_state =
       GenerateUnlockUsageLimitOverrideStateFromInput(input);
 
-  EXPECT_EQ(generated_state, absl::nullopt);
+  EXPECT_EQ(generated_state, std::nullopt);
 }
 
 }  // namespace time_limit_consistency

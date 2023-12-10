@@ -319,9 +319,9 @@ class GetFormattedPhoneNumberForDisplayTest
 
 TEST_P(GetFormattedPhoneNumberForDisplayTest,
        GetFormattedPhoneNumberForDisplay) {
-  AutofillProfile profile;
+  AutofillProfile profile(
+      AddressCountryCode(base::UTF16ToUTF8(GetParam().country)));
   profile.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, GetParam().phone);
-  profile.SetRawInfo(ADDRESS_HOME_COUNTRY, GetParam().country);
   EXPECT_EQ(GetParam().expected_format, i18n::GetFormattedPhoneNumberForDisplay(
                                             profile, GetParam().locale));
 }

@@ -1,0 +1,40 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ash.app_install.mojom;
+
+import "url/mojom/url.mojom";
+
+struct DialogArgs {
+  url.mojom.Url url;
+
+  string name;
+
+  string description;
+
+  url.mojom.Url iconUrl;
+
+  // TODO(crbug.com/1488697): Add screenshots.
+};
+
+// Lives in the browser process. A renderer uses this to create a page handler
+// that enables communication between a renderer and the browser process.
+interface PageHandlerFactory {
+  // Creates a page handler to enable communication with the browser process.
+  CreatePageHandler(pending_receiver<PageHandler> handler);
+};
+
+// Lives in the browser process. A renderer uses this to invoke methods that
+// are implemented in the browser process.
+interface PageHandler {
+  // Returns arguments passed to the dialog on creation.
+  GetDialogArgs() => (DialogArgs args);
+
+  // Closes the dialog.
+  CloseDialog();
+
+  // Runs the callback to install the app and returns whether the app was
+  // successfully installed.
+  InstallApp() => (bool installed);
+};

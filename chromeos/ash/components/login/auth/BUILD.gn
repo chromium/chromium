@@ -70,10 +70,6 @@ component("auth") {
     "challenge_response/known_user_pref_utils.h",
     "cryptohome_parameter_utils.cc",
     "cryptohome_parameter_utils.h",
-    "extended_authenticator.cc",
-    "extended_authenticator.h",
-    "extended_authenticator_impl.cc",
-    "extended_authenticator_impl.h",
     "login_performer.cc",
     "login_performer.h",
     "mount_performer.cc",
@@ -115,8 +111,6 @@ source_set("test_support") {
     "//testing/gtest",
   ]
   sources = [
-    "fake_extended_authenticator.cc",
-    "fake_extended_authenticator.h",
     "mock_auth_performer.cc",
     "mock_auth_performer.h",
     "mock_auth_status_consumer.cc",

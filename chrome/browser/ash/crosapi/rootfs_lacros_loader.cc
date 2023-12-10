@@ -68,7 +68,7 @@ void RootfsLacrosLoader::Unload() {
 void RootfsLacrosLoader::Reset() {
   // TODO(crbug.com/1432069): Reset call while loading breaks the behavior. Need
   // to handle such edge cases.
-  version_ = absl::nullopt;
+  version_ = std::nullopt;
 }
 
 void RootfsLacrosLoader::GetVersion(

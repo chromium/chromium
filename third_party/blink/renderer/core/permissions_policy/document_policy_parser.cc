@@ -13,35 +13,16 @@ namespace {
 constexpr const char* kReportTo = "report-to";
 constexpr const char* kNone = "none";
 
-const char* ItemTypeToString(net::structured_headers::Item::ItemType type) {
-  switch (type) {
-    case net::structured_headers::Item::ItemType::kIntegerType:
-      return "Integer";
-    case net::structured_headers::Item::ItemType::kDecimalType:
-      return "Decimal";
-    case net::structured_headers::Item::ItemType::kBooleanType:
-      return "Boolean";
-    case net::structured_headers::Item::ItemType::kByteSequenceType:
-      return "ByteSequence";
-    case net::structured_headers::Item::ItemType::kNullType:
-      return "Null";
-    case net::structured_headers::Item::ItemType::kStringType:
-      return "String";
-    case net::structured_headers::Item::ItemType::kTokenType:
-      return "Token";
-  }
-}
-
 const char* PolicyValueTypeToString(mojom::blink::PolicyValueType type) {
   switch (type) {
     case mojom::blink::PolicyValueType::kNull:
-      return "Null";
+      return "null";
     case mojom::blink::PolicyValueType::kBool:
-      return "Boolean";
+      return "boolean";
     case mojom::blink::PolicyValueType::kDecDouble:
-      return "Double";
+      return "double";
     case mojom::blink::PolicyValueType::kEnum:
-      return "Enum";
+      return "enum";
   }
 }
 
@@ -121,7 +102,7 @@ absl::optional<ParsedFeature> ParseFeature(
     logger.Warn(String::Format(
         "Parameter for feature %s should be %s, not %s.", feature_name.c_str(),
         PolicyValueTypeToString(expected_policy_value_type),
-        ItemTypeToString(item.Type())));
+        net::structured_headers::ItemTypeToString(item.Type()).data()));
     return absl::nullopt;
   }
   parsed_feature.policy_value = *policy_value;

@@ -16,7 +16,7 @@ namespace {
 // kept in sync with components/neterror/resources/error_page_controller_ios.js.
 const char kWebUIMessageHandlerName[] = "SupervisedUserInterstitialMessage";
 
-absl::optional<security_interstitials::SecurityInterstitialCommand>
+std::optional<security_interstitials::SecurityInterstitialCommand>
 GetEnumCommand(const std::string& command) {
   if (command == "requestUrlAccessRemote") {
     return security_interstitials::SecurityInterstitialCommand::
@@ -25,7 +25,7 @@ GetEnumCommand(const std::string& command) {
     return security_interstitials::SecurityInterstitialCommand::
         CMD_DONT_PROCEED;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 }  // namespace
@@ -45,7 +45,7 @@ SupervisedUserInterstitialJavaScriptFeature::
 SupervisedUserInterstitialJavaScriptFeature::
     ~SupervisedUserInterstitialJavaScriptFeature() = default;
 
-absl::optional<std::string>
+std::optional<std::string>
 SupervisedUserInterstitialJavaScriptFeature::GetScriptMessageHandlerName()
     const {
   return kWebUIMessageHandlerName;

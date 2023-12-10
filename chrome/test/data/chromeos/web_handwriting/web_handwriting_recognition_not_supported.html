@@ -1,0 +1,57 @@
+<!-- Copyright 2021 The ChromiumOS Authors
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<!DOCTYPE html>
+
+<title>Web Handwriting Recognition Test</title>
+<h1>Device doesn't support on-device handwriting</h1>
+
+<script>
+    // Tast test should wait for this Promise.
+    // This method should throw an Error with a description if test fails.
+    window.resultPromise = (async function () {
+        if ((!navigator.queryHandwritingRecognizerSupport && !navigator.queryHandwritingRecognizer)
+            || !navigator.createHandwritingRecognizer) {
+            throw new Error("Web Handwriting Recognition API is not available");
+        }
+
+        // Test that calling JS API will return (doesn't crash or hang), so JS
+        // knows that handwriting isn't supported.
+        if (navigator.queryHandwritingRecognizerSupport) {
+            // V1 API.
+            const { languages } = await navigator.queryHandwritingRecognizerSupport({ languages: ['en'] });
+            if (languages !== false) {
+                throw new Error("Feature query shouldn't report as supported");
+            }
+        }
+
+        if (navigator.queryHandwritingRecognizer) {
+            // V2 API.
+            const featureSupport = await navigator.queryHandwritingRecognizer({ languages: ['en'] });
+            if (featureSupport !== null) {
+                throw new Error("Feature query should return null");
+            }
+        }
+
+        // Test that a JS error is thrown (via Promise rejection) when creating a recognizer.
+        const didCreateRecognizer = await navigator.createHandwritingRecognizer({ languages: ['en'] }).then(
+            _ => true,
+            error => false,
+        );
+        if (didCreateRecognizer) {
+            throw new Error("Recognizer shouldn't be created, should have thrown an Error");
+        }
+
+        // It's okay to create and manipulate handwriting strokes.
+        const stroke = new HandwritingStroke()
+        stroke.addPoint({ x: 1, y: 2, t: 0 })
+        if (stroke.getPoints().length !== 1) {
+            throw new Error("Can't add point to stroke");
+        }
+        stroke.clear();
+        if (stroke.getPoints().length !== 0) {
+            throw new Error("Can't clear stroke");
+        }
+    })();
+</script>

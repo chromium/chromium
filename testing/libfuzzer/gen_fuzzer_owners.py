@@ -92,12 +92,16 @@ def GetOwnersForFuzzer(sources):
         # File is not in working tree. Return owners for third_party.
         return GetOwnersIfThirdParty(full_source_path)
 
-      # git log --follow and --reverse don't work together and using just
-      # --follow is too slow. Make a best estimate with an assumption that
-      # the original author has authored line 1 which is usually the
-      # copyright line and does not change even with file rename / move.
+      # `git log --follow` and `--reverse` don't work together and using just
+      # `--follow` is too slow. Make a best estimate with an assumption that the
+      # original author has authored the copyright block, which (generally) does
+      # not change even with file rename/move. Look at the last line of the
+      # block, as a copyright block update sweep in late 2022 made one person
+      # responsible for changing the first line of every copyright block in the
+      # repo, and it would be best to avoid assigning ownership of every fuzz
+      # issue predating that year to that one person.
       blame_output = subprocess.check_output(
-          [git_command, '--git-dir', git_dir, 'blame', '--porcelain', '-L1,1',
+          [git_command, '--git-dir', git_dir, 'blame', '--porcelain', '-L3,3',
            source], cwd=CHROMIUM_SRC_DIR)
       return GetAuthorFromGitBlame(blame_output)
 

@@ -18,7 +18,7 @@ void HeatmapPalmDetector::DetectPalm(const std::vector<double>& data,
 }
 
 void HeatmapPalmDetector::OnExecuteDone(DetectionDoneCallback callback,
-                                        absl::optional<double> result) {
+                                        std::optional<double> result) {
   std::move(callback).Run(result.value_or(0) > 0 ? DetectionResult::kPalm
                                                  : DetectionResult::kNoPalm);
 }

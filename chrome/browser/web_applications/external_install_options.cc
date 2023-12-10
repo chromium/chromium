@@ -67,7 +67,7 @@ bool ExternalInstallOptions::operator==(
         options.install_as_shortcut,
         options.force_reinstall,
         options.force_reinstall_for_milestone,
-        options.wait_for_windows_closed,
+        options.placeholder_resolution_behavior,
         options.install_placeholder,
         options.launch_query_params,
         options.load_and_await_service_worker_registration,
@@ -158,7 +158,8 @@ base::Value ExternalInstallOptions::AsDebugValue() const {
                                     ? base::ToString(*user_display_mode)
                                     : "");
   root.Set("user_type_allowlist", ConvertStringList(user_type_allowlist));
-  root.Set("wait_for_windows_closed", wait_for_windows_closed);
+  root.Set("placeholder_resolution_behavior",
+           base::Value(static_cast<int>(placeholder_resolution_behavior)));
 
   return base::Value(std::move(root));
 }

@@ -1,0 +1,7 @@
+WebView textSize:16.00 style:0 bundle:[display="", htmlTag="#document"]
+++View textSize:16.00 style:0 bundle:[display="block", htmlTag="div", id="parent"]
+++++Image text:"alternative text" textSize:16.00 style:0 bundle:[display="inline", htmlTag="::before"]
+++++TextView text:" " textSize:16.00 style:0 bundle:[display="", htmlTag=""]
+++++TextView text:"DOM text" textSize:16.00 style:0 bundle:[display="", htmlTag=""]
+++++TextView text:" " textSize:16.00 style:0 bundle:[display="", htmlTag=""]
+++++Image textSize:16.00 style:0 bundle:[display="inline", htmlTag="::after"]

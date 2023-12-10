@@ -36,10 +36,16 @@ void GuestOSApps::InitializeForTesting() {
 void GuestOSApps::Initialize() {
   DCHECK(profile_);
   if (!CouldBeAllowed()) {
+    // Set the publisher unavailable to remove apps saved in the AppStorage
+    // file, and related launch requests.
+    proxy()->SetPublisherUnavailable(AppType());
     return;
   }
   registry_ = guest_os::GuestOsRegistryServiceFactory::GetForProfile(profile_);
   if (!registry_) {
+    // Set the publisher unavailable to remove apps saved in the AppStorage
+    // file, and related launch requests.
+    proxy()->SetPublisherUnavailable(AppType());
     return;
   }
   registry_observation_.Observe(registry_);
@@ -79,6 +85,23 @@ void GuestOSApps::GetCompressedIconData(const std::string& app_id,
                                   std::move(callback));
 }
 
+void GuestOSApps::LaunchAppWithParams(AppLaunchParams&& params,
+                                      LaunchCallback callback) {
+  auto event_flags = apps::GetEventFlags(params.disposition,
+                                         /*prefer_container=*/false);
+  if (params.intent) {
+    LaunchAppWithIntent(params.app_id, event_flags, std::move(params.intent),
+                        params.launch_source,
+                        std::make_unique<WindowInfo>(params.display_id),
+                        std::move(callback));
+  } else {
+    Launch(params.app_id, event_flags, params.launch_source,
+           std::make_unique<WindowInfo>(params.display_id));
+    // TODO(crbug.com/1244506): Add launch return value.
+    std::move(callback).Run(LaunchResult());
+  }
+}
+
 void GuestOSApps::OnRegistryUpdated(
     guest_os::GuestOsRegistryService* registry_service,
     guest_os::VmType vm_type,
@@ -109,21 +132,20 @@ void GuestOSApps::OnRegistryUpdated(
   }
 }
 
-void GuestOSApps::LaunchAppWithParams(AppLaunchParams&& params,
-                                      LaunchCallback callback) {
-  auto event_flags = apps::GetEventFlags(params.disposition,
-                                         /*prefer_container=*/false);
-  if (params.intent) {
-    LaunchAppWithIntent(params.app_id, event_flags, std::move(params.intent),
-                        params.launch_source,
-                        std::make_unique<WindowInfo>(params.display_id),
-                        std::move(callback));
-  } else {
-    Launch(params.app_id, event_flags, params.launch_source,
-           std::make_unique<WindowInfo>(params.display_id));
-    // TODO(crbug.com/1244506): Add launch return value.
-    std::move(callback).Run(LaunchResult());
+void GuestOSApps::OnAppLastLaunchTimeUpdated(
+    guest_os::VmType vm_type,
+    const std::string& app_id,
+    const base::Time& last_launch_time) {
+  if (vm_type != VmType()) {
+    return;
   }
+
+  auto app = std::make_unique<App>(AppType(), app_id);
+  app->last_launch_time = last_launch_time;
+  std::vector<AppPtr> apps;
+  apps.push_back(std::move(app));
+  AppPublisher::Publish(std::move(apps), AppType(),
+                        /*should_notify_initialized=*/false);
 }
 
 AppPtr GuestOSApps::CreateApp(
@@ -159,6 +181,7 @@ AppPtr GuestOSApps::CreateApp(
   app->show_in_shelf = show;
   app->show_in_management = false;
   app->allow_uninstall = false;
+  app->allow_close = true;
 
   // Add intent filters based on file extensions.
   app->handles_intents = true;

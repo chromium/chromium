@@ -50,8 +50,10 @@ object_value {
   field {
     name: "max_event_level_reports"
     value {
-      int_value {
-        value: 5
+      number_value {
+        integer_value {
+          value: 5
+        }
       }
     }
   }
@@ -127,6 +129,16 @@ object_value {
     value {
       string_value {
         value: "exact"
+      }
+    }
+  }
+  field {
+    name: "event_level_epsilon"
+    value {
+      number_value {
+        float_value {
+          value: 4.2
+        }
       }
     }
   }

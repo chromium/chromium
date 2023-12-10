@@ -8,10 +8,10 @@
 #include <cfloat>
 #include <cmath>
 
+#include <optional>
 #include "cc/paint/paint_export.h"
 #include "cc/paint/paint_flags.h"
 #include "gpu/command_buffer/common/mailbox.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkSize.h"
@@ -35,7 +35,7 @@ class CC_PAINT_EXPORT DecodedDrawImage {
                    bool is_budgeted);
   DecodedDrawImage(const gpu::Mailbox& mailbox,
                    PaintFlags::FilterQuality filter_quality);
-  DecodedDrawImage(absl::optional<uint32_t> transfer_cache_entry_id,
+  DecodedDrawImage(std::optional<uint32_t> transfer_cache_entry_id,
                    sk_sp<ColorFilter> dark_mode_color_filter,
                    const SkSize& src_rect_offset,
                    const SkSize& scale_adjustment,
@@ -54,7 +54,7 @@ class CC_PAINT_EXPORT DecodedDrawImage {
   const sk_sp<ColorFilter>& dark_mode_color_filter() const {
     return dark_mode_color_filter_;
   }
-  absl::optional<uint32_t> transfer_cache_entry_id() const {
+  std::optional<uint32_t> transfer_cache_entry_id() const {
     return transfer_cache_entry_id_;
   }
   const SkSize& src_rect_offset() const { return src_rect_offset_; }
@@ -76,7 +76,7 @@ class CC_PAINT_EXPORT DecodedDrawImage {
  private:
   sk_sp<SkImage> image_;
   gpu::Mailbox mailbox_;
-  absl::optional<uint32_t> transfer_cache_entry_id_;
+  std::optional<uint32_t> transfer_cache_entry_id_;
   sk_sp<ColorFilter> dark_mode_color_filter_;
   SkSize src_rect_offset_;
   SkSize scale_adjustment_;

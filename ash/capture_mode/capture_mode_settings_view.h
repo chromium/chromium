@@ -175,7 +175,7 @@ class ASH_EXPORT CaptureModeSettingsView
 
   // If not set, custom folder is not set. If true, customer folder is set and
   // available. If false, customer folder is set but unavailable.
-  absl::optional<bool> is_custom_folder_available_;
+  std::optional<bool> is_custom_folder_available_;
 
   // If set, it will be called when the settings menu is refreshed.
   base::OnceClosure on_settings_menu_refreshed_callback_for_test_;

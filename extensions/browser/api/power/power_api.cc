@@ -37,7 +37,7 @@ base::LazyInstance<BrowserContextKeyedAPIFactory<PowerAPI>>::DestructorAtExit
 }  // namespace
 
 ExtensionFunction::ResponseAction PowerRequestKeepAwakeFunction::Run() {
-  absl::optional<api::power::RequestKeepAwake::Params> params =
+  std::optional<api::power::RequestKeepAwake::Params> params =
       api::power::RequestKeepAwake::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
   PowerAPI::Get(browser_context())->AddRequest(extension_id(), params->level);
@@ -51,7 +51,7 @@ ExtensionFunction::ResponseAction PowerReleaseKeepAwakeFunction::Run() {
 
 #if BUILDFLAG(IS_CHROMEOS)
 ExtensionFunction::ResponseAction PowerReportActivityFunction::Run() {
-  absl::optional<std::string> error =
+  std::optional<std::string> error =
       extensions::ActivityReporterDelegate::GetDelegate()->ReportActivity();
   if (error.has_value()) {
     return RespondNow(Error(error.value()));

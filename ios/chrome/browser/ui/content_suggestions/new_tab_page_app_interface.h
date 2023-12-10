@@ -29,6 +29,9 @@
 // Returns the Discover header label.
 + (UILabel*)discoverHeaderLabel;
 
+// Disables the SetUpList via a pref.
++ (void)disableSetUpList;
+
 // Resets SetUpList prefs to clear any completed items.
 + (void)resetSetUpListPrefs;
 

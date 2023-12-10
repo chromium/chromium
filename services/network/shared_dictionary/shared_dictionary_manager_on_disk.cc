@@ -15,26 +15,10 @@
 #include "base/unguessable_token.h"
 #include "net/base/net_errors.h"
 #include "net/disk_cache/disk_cache.h"
-#include "services/network/public/cpp/features.h"
 #include "services/network/shared_dictionary/shared_dictionary_storage_on_disk.h"
 
 namespace network {
 namespace {
-
-const char kTaskPriorityOptionBestEffort[] = "best_effort";
-const char kTaskPriorityOptionUserVisible[] = "user_visible";
-const char kTaskPriorityOptionUserBlocking[] = "user_blocking";
-const char kTaskPriorityOptionName[] = "task_priority";
-
-const base::FeatureParam<base::TaskPriority>::Option kTaskPriorityOptions[] = {
-    {base::TaskPriority::BEST_EFFORT, kTaskPriorityOptionBestEffort},
-    {base::TaskPriority::USER_VISIBLE, kTaskPriorityOptionUserVisible},
-    {base::TaskPriority::USER_BLOCKING, kTaskPriorityOptionUserBlocking}};
-const base::FeatureParam<base::TaskPriority>
-    kCompressionDictionaryTransportStoreTaskPriority{
-        &features::kCompressionDictionaryTransportBackend,
-        kTaskPriorityOptionName, base::TaskPriority::USER_BLOCKING,
-        &kTaskPriorityOptions};
 
 absl::optional<base::UnguessableToken> DeserializeToUnguessableToken(
     const std::string& token_string) {
@@ -481,15 +465,13 @@ SharedDictionaryManagerOnDisk::SharedDictionaryManagerOnDisk(
         file_operations_factory)
     : cache_max_size_(cache_max_size),
       cache_max_count_(cache_max_count),
-      metadata_store_(
-          database_path,
-          /*client_task_runner=*/
-          base::SingleThreadTaskRunner::GetCurrentDefault(),
-          /*background_task_runner=*/
-          base::ThreadPool::CreateSequencedTaskRunner(
-              {base::MayBlock(),
-               kCompressionDictionaryTransportStoreTaskPriority.Get(),
-               base::TaskShutdownBehavior::BLOCK_SHUTDOWN})) {
+      metadata_store_(database_path,
+                      /*client_task_runner=*/
+                      base::SingleThreadTaskRunner::GetCurrentDefault(),
+                      /*background_task_runner=*/
+                      base::ThreadPool::CreateSequencedTaskRunner(
+                          {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
+                           base::TaskShutdownBehavior::BLOCK_SHUTDOWN})) {
   disk_cache_.Initialize(cache_directory_path,
 #if BUILDFLAG(IS_ANDROID)
                          app_status_listener_getter,

@@ -31,7 +31,7 @@ void KeyDataProviderFile::OnKeyReady() {
   NotifyKeyReady();
 }
 
-absl::optional<uint64_t> KeyDataProviderFile::GetId(
+std::optional<uint64_t> KeyDataProviderFile::GetId(
     const std::string& project_name) {
   DCHECK(IsReady());
 
@@ -41,16 +41,16 @@ absl::optional<uint64_t> KeyDataProviderFile::GetId(
       validator::Validators::Get()->GetProjectValidator(project_name);
 
   if (!maybe_project_validator.has_value()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   const auto* project_validator = maybe_project_validator.value();
   return key_data_->Id(project_validator->project_hash(),
                        project_validator->key_rotation_period());
 }
 
-absl::optional<uint64_t> KeyDataProviderFile::GetSecondaryId(
+std::optional<uint64_t> KeyDataProviderFile::GetSecondaryId(
     const std::string& project_name) {
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 KeyData* KeyDataProviderFile::GetKeyData(const std::string& project_name) {

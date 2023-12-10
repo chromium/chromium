@@ -56,9 +56,9 @@ class ImageView;
 // title row. Otherwise, they will be positioned closer to the frame
 // edge.
 class VIEWS_EXPORT BubbleFrameView : public NonClientFrameView {
- public:
-  METADATA_HEADER(BubbleFrameView);
+  METADATA_HEADER(BubbleFrameView, NonClientFrameView)
 
+ public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kMinimizeButtonElementId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kCloseButtonElementId);
 

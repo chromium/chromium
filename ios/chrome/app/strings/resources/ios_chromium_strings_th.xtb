@@ -16,6 +16,7 @@
 <translation id="1513122820609681462">ตั้งค่า Chromium เป็นเบราว์เซอร์เริ่มต้น</translation>
 <translation id="1531155317299575425">แสดงข้อความแจ้งให้ลงชื่อเข้าใช้ Chromium</translation>
 <translation id="1591119736686995611">เปิดตารางกริดของแท็บ Chromium</translation>
+<translation id="1611584326765829247">ให้ Chromium ช่วยคุณติดตามพัสดุ</translation>
 <translation id="1617663976202781617">ข้อมูลจากการซิงค์ Chromium</translation>
 <translation id="1647558790457890304">การตั้งค่า Chromium</translation>
 <translation id="164952285225495380">ติดตามพัสดุนี้ใน Chromium แล้ว</translation>
@@ -87,6 +88,7 @@
 <translation id="4195557071150719219">ดูแท็บล่าสุดใน Chromium</translation>
 <translation id="4408912345039114853">เรียกใช้การตรวจสอบความปลอดภัยใน Chromium</translation>
 <translation id="4432744876818348753">ลงชื่อเข้าใช้เพื่อรับประโยชน์สูงสุดจาก Chromium</translation>
+<translation id="4498832288620833153">เพิ่ม URL ที่ป้อนลงในเรื่องรออ่านใน Chromium</translation>
 <translation id="452436063477828504">ตรวจสอบว่าคุณใช้ข้อมูล Chromium ในบัญชี Google ได้เสมอ</translation>
 <translation id="4555020257205549924">เมื่อเปิดฟีเจอร์นี้ Chromium จะเสนอให้แปลหน้าต่างๆ ที่เขียนด้วยภาษาอื่นโดยใช้ Google แปลภาษา <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="4576283463017113841">เปิดหน้าการตั้งค่าวิธีการชำระเงินใน Chromium</translation>
@@ -107,6 +109,7 @@
 <translation id="5048795749726991615">หากต้องการเรียกข้อมูลรหัสผ่านที่บันทึกไว้ในแอปอื่นๆ ได้โดยง่าย ให้ใช้ Chromium สำหรับการป้อนข้อความอัตโนมัติ</translation>
 <translation id="5076601183701536878">ล้างข้อมูลการท่องเว็บใน Chromium</translation>
 <translation id="5131565040785979529">องค์กร <ph name="DOMAIN" /> ของคุณจะเป็นผู้จัดการบัญชีที่คุณลงชื่อเข้าใช้และวิธีใช้ Chromium</translation>
+<translation id="5146749061471423558">เพิ่มบุ๊กมาร์กใน Chromium</translation>
 <translation id="5171868502429358653">ลงชื่อเข้าใช้ Chromium</translation>
 <translation id="5213683223491576284">เปิดเครื่องมือจัดการรหัสผ่านใน Chromium</translation>
 <translation id="5224391634244552924">ไม่มีรหัสผ่านที่บันทึกไว้ Chromium จะตรวจสอบรหัสผ่านได้เมื่อคุณบันทึกรหัสผ่านไว้</translation>
@@ -114,6 +117,7 @@
 
         โปรดรอสักครู่ก่อนออกจากระบบ หากคุณออกจากระบบตอนนี้ ระบบจะลบข้อมูลนี้</translation>
 <translation id="5308226104666789935">Chromium ตรวจหาอัปเดตไม่ได้</translation>
+<translation id="5311557153294205270">เพิ่ม URL ที่ป้อนไปยังบุ๊กมาร์กใน Chromium</translation>
 <translation id="5396916991083608703">ตั้งค่า Chromium เป็นค่าเริ่มต้นไหม</translation>
 <translation id="5453478652154926037">Chromium ตรวจสอบรหัสผ่านของคุณไม่ได้</translation>
 <translation id="5521125884468363740">ลงชื่อเข้าใช้และเปิดการซิงค์เพื่อดูแท็บที่เปิดไว้จากอุปกรณ์ที่คุณใช้ Chromium</translation>
@@ -165,7 +169,6 @@
 <translation id="6911341667534646387">ใช้ข้อมูล Chromium ในบัญชี Google ต่อไป</translation>
 <translation id="7006920032187763988">คุณใช้รหัสผ่านที่บันทึกอยู่ในเครื่องมือจัดการรหัสผ่านในแอปอื่นๆ บน iPad ได้</translation>
 <translation id="7018284295775193585">อัปเดต Chromium ไม่ได้</translation>
-<translation id="7025471822960602362">ติดตามแพ็กเกจที่ตรวจพบใน Chromium</translation>
 <translation id="7045244423563602563">ปรับเปลี่ยน Chromium ในแบบของคุณ</translation>
 <translation id="7055269218854630176">องค์กร <ph name="DOMAIN" /> ของคุณจะเป็นผู้จัดการบัญชีที่คุณลงชื่อเข้าใช้และวิธีใช้ Chromium ผู้ดูแลระบบจะตั้งค่าหรือจำกัดฟีเจอร์บางอย่างได้</translation>
 <translation id="7099326575020694068">Chromium ไม่สามารถใช้กล้องถ่ายรูปในโหมด Split View</translation>
@@ -195,6 +198,7 @@
 <translation id="7928628054454574139">คุณแตะลิงก์ในแอปอื่นๆ เพื่อเปิด Chromium ได้ทุกเมื่อ</translation>
 <translation id="7931842119211730154">ล็อกแท็บที่ไม่ระบุตัวตนเมื่อปิด Chromium</translation>
 <translation id="7934404985878918282">ดูเรื่องรออ่านใน Chromium</translation>
+<translation id="7971753607796745700">เพิ่มรายการเรื่องรออ่านใน Chromium</translation>
 <translation id="7980860476903281594">Chromium แชร์ตำแหน่งกับเว็บไซต์ที่คุณอนุญาต</translation>
 <translation id="7995166854192397899">คำแนะนำต่างๆ จะอิงตามกิจกรรมการท่องเว็บในอุปกรณ์อื่นๆ ของคุณ หากต้องการรับคำแนะนำ ให้ลงชื่อเข้าใช้ Chromium ในอุปกรณ์ทั้งหมดของคุณ</translation>
 <translation id="800195749539500647">รับประโยชน์สูงสุดจาก Chromium</translation>

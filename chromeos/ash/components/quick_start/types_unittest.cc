@@ -4,13 +4,13 @@
 
 #include "chromeos/ash/components/quick_start/types.h"
 
+#include <optional>
 #include <string>
 
 #include "base/base64.h"
 #include "base/base64url.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::quick_start {
 
@@ -31,42 +31,42 @@ constexpr char kBase64StringWithPadding[] = "aQ==";
 
 TEST(QuickStartTypesTest,
      Base64UrlTranscodeReturnsAnEmptyOptionalForInvalidInput) {
-  absl::optional<Base64UrlString> result =
+  std::optional<Base64UrlString> result =
       Base64UrlTranscode(Base64String(kInvalidBase64String));
-  EXPECT_THAT(result, Eq(absl::nullopt));
+  EXPECT_THAT(result, Eq(std::nullopt));
 }
 
 TEST(QuickStartTypesTest, Base64UrlTranscodeSubstitutesSlash) {
-  absl::optional<Base64UrlString> result =
+  std::optional<Base64UrlString> result =
       Base64UrlTranscode(Base64String(kBase64StringWithSlash));
-  ASSERT_THAT(result, Ne(absl::nullopt));
+  ASSERT_THAT(result, Ne(std::nullopt));
 
   const std::string& result_str = *result.value();
   EXPECT_THAT(result_str, Not(HasSubstr("/")));
 }
 
 TEST(QuickStartTypesTest, Base64UrlTranscodeSubstitutesPlus) {
-  absl::optional<Base64UrlString> result =
+  std::optional<Base64UrlString> result =
       Base64UrlTranscode(Base64String(kBase64StringWithPlus));
-  ASSERT_THAT(result, Ne(absl::nullopt));
+  ASSERT_THAT(result, Ne(std::nullopt));
 
   const std::string& result_str = *result.value();
   EXPECT_THAT(result_str, Not(HasSubstr("+")));
 }
 
 TEST(QuickStartTypesTest, Base64UrlTranscodeOmitsPadding) {
-  absl::optional<Base64UrlString> result =
+  std::optional<Base64UrlString> result =
       Base64UrlTranscode(Base64String(kBase64StringWithPadding));
-  ASSERT_THAT(result, Ne(absl::nullopt));
+  ASSERT_THAT(result, Ne(std::nullopt));
 
   const std::string& result_str = *result.value();
   EXPECT_THAT(result_str, Not(HasSubstr("=")));
 }
 
 TEST(QuickStartTypesTest, Base64UrlTranscodeWorksWithPaddedInput) {
-  absl::optional<Base64UrlString> b64url_result =
+  std::optional<Base64UrlString> b64url_result =
       Base64UrlTranscode(Base64String(kBase64StringWithPadding));
-  ASSERT_THAT(b64url_result, Ne(absl::nullopt));
+  ASSERT_THAT(b64url_result, Ne(std::nullopt));
 
   // The underlying decoded data must be the same.
   EXPECT_THAT(

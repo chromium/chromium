@@ -35,18 +35,20 @@ class TabViewManagerImpl implements TabViewManager, Comparator<TabViewProvider> 
      * important. The {@link TabViewProvider} with the highest priority will always be shown first,
      * regardless of its insertion time relative to other {@link TabViewProvider}s.
      */
-    @VisibleForTesting
-    @TabViewProvider.Type
-    static final int[] PRIORITIZED_TAB_VIEW_PROVIDER_TYPES = new int[] {
-            TabViewProvider.Type.SUSPENDED_TAB,
-            TabViewProvider.Type.PAINT_PREVIEW,
-            TabViewProvider.Type.SAD_TAB};
+    @VisibleForTesting @TabViewProvider.Type
+    static final int[] PRIORITIZED_TAB_VIEW_PROVIDER_TYPES =
+            new int[] {
+                TabViewProvider.Type.SUSPENDED_TAB,
+                TabViewProvider.Type.PAINT_PREVIEW,
+                TabViewProvider.Type.SAD_TAB
+            };
 
     /**
      * A lookup table for {@link #PRIORITIZED_TAB_VIEW_PROVIDER_TYPES}. This is initialized in the
      * following static block and doesn't need to be manually updated.
      */
     private static final SparseIntArray TAB_VIEW_PROVIDER_PRIORITY_LOOKUP = new SparseIntArray();
+
     static {
         for (int i = 0; i < PRIORITIZED_TAB_VIEW_PROVIDER_TYPES.length; i++) {
             TAB_VIEW_PROVIDER_PRIORITY_LOOKUP.put(PRIORITIZED_TAB_VIEW_PROVIDER_TYPES[i], i);
@@ -65,7 +67,8 @@ class TabViewManagerImpl implements TabViewManager, Comparator<TabViewProvider> 
     }
 
     private void initMarginSupplier() {
-        if (mTab.getActivity() == null || mTab.getActivity().isActivityFinishingOrDestroyed()
+        if (mTab.getActivity() == null
+                || mTab.getActivity().isActivityFinishingOrDestroyed()
                 || mMarginSupplier != null) {
             return;
         }
@@ -147,8 +150,10 @@ class TabViewManagerImpl implements TabViewManager, Comparator<TabViewProvider> 
     private void updateViewMargins() {
         if (mCurrentView == null) return;
 
-        FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(
-                FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
+        FrameLayout.LayoutParams layoutParams =
+                new FrameLayout.LayoutParams(
+                        FrameLayout.LayoutParams.MATCH_PARENT,
+                        FrameLayout.LayoutParams.MATCH_PARENT);
         layoutParams.setMargins(
                 mViewMargins.left, mViewMargins.top, mViewMargins.right, mViewMargins.bottom);
         mCurrentView.setLayoutParams(layoutParams);

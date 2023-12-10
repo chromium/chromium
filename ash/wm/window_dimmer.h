@@ -10,6 +10,7 @@
 #include "ui/aura/window_observer.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider_source_observer.h"
+#include "ui/wm/public/activation_delegate.h"
 
 namespace ash {
 
@@ -24,7 +25,8 @@ namespace ash {
 // deleted out from under it (this generally happens if the parent of the
 // window is deleted). If WindowDimmer is deleted and the window it created is
 // still valid, then WindowDimmer deletes the window.
-class ASH_EXPORT WindowDimmer : public aura::WindowObserver,
+class ASH_EXPORT WindowDimmer : public wm::ActivationDelegate,
+                                public aura::WindowObserver,
                                 public ui::ColorProviderSourceObserver {
  public:
   // Defines an interface for an optional delegate to the WindowDimmer, which
@@ -71,6 +73,9 @@ class ASH_EXPORT WindowDimmer : public aura::WindowObserver,
   // `color_id`. This color must not be opaque.
   void SetDimColor(ui::ColorId color_id);
 
+  // wm::ActivationDelegate:
+  bool ShouldActivate() const override;
+
   // NOTE: WindowDimmer is an observer for both |parent_| and |window_|.
   // aura::WindowObserver:
   void OnWindowBoundsChanged(aura::Window* window,
@@ -99,7 +104,7 @@ class ASH_EXPORT WindowDimmer : public aura::WindowObserver,
 
   // Used to get the color for the dimming `window_`'s layer. It's updated
   // through `SetDimColor`. It will be reset when SetDimOpacity() is called.
-  absl::optional<ui::ColorId> dim_color_type_;
+  std::optional<ui::ColorId> dim_color_type_;
 };
 
 }  // namespace ash

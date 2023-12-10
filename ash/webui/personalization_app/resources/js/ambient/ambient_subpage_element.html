@@ -12,7 +12,7 @@
     grid-template-areas:
       'leftspacertop    preview rightspacertop   '
       'leftspacerbottom content rightspacerbottom';
-    grid-template-columns: minmax(16px, 1fr) minmax(568px, 920px) minmax(16px, 1fr);
+    grid-template-columns: minmax(10px, 1fr) minmax(568px, 920px) minmax(10px, 1fr);
     grid-template-rows: auto minmax(0, 1fr);
     margin-block-end: 0;
     min-height: var(--personalization-app-subpage-container-min-height);
@@ -24,12 +24,12 @@
   }
   toggle-row,
   #toggleRowPlaceholder {
-    margin: 0 8px;
+    margin: 0 10px;
   }
   ambient-duration,
   #durationPlaceholder {
     border-top: var(--cr-separator-line);
-    margin-bottom: 0;
+    margin: 0 10px;
   }
   .ambient-toggle-label-placeholder {
     height: 20px;
@@ -42,7 +42,7 @@
     margin: 20px 8px 0 8px;
   }
   :host-context(body.jelly-enabled) ambient-preview-small {
-    margin: 0 8px;
+    margin: 0 10px;
   }
   albums-subpage {
     grid-area: content;
@@ -50,7 +50,7 @@
   :host-context(body.jelly-enabled) albums-subpage,
   #mainSettings {
     background-color: var(--cros-bg-color);
-    padding: 20px 0 24px 0;
+    padding: 20px 0 20px 0;
   }
   .ambient-theme-placeholder-list {
     width: 516px;

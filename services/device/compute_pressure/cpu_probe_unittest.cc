@@ -26,8 +26,17 @@ namespace device {
 
 class CpuProbeTest : public testing::Test {
  public:
-  CpuProbeTest()
-      : cpu_probe_(std::make_unique<FakeCpuProbe>(
+  // Constructs CpuProbeTest with |traits| being forwarded to its
+  // TaskEnvironment.
+  template <typename... TaskEnvironmentTraits>
+  NOINLINE explicit CpuProbeTest(TaskEnvironmentTraits&&... traits)
+      : CpuProbeTest(std::make_unique<base::test::TaskEnvironment>(
+            std::forward<TaskEnvironmentTraits>(traits)...)) {}
+
+  explicit CpuProbeTest(
+      std::unique_ptr<base::test::TaskEnvironment> task_environment)
+      : task_environment_(std::move(task_environment)),
+        cpu_probe_(std::make_unique<FakeCpuProbe>(
             base::Milliseconds(1),
             base::BindRepeating(&CpuProbeTest::CollectorCallback,
                                 base::Unretained(this)))) {}
@@ -52,7 +61,7 @@ class CpuProbeTest : public testing::Test {
  protected:
   SEQUENCE_CHECKER(sequence_checker_);
 
-  base::test::TaskEnvironment task_environment_;
+  std::unique_ptr<base::test::TaskEnvironment> task_environment_;
 
   // This member is a std::unique_ptr instead of a plain CpuProbe
   // so it can be replaced inside tests.
@@ -72,6 +81,12 @@ class CpuProbeTest : public testing::Test {
 
   // Used to implement WaitForUpdate().
   base::OnceClosure update_callback_ GUARDED_BY_CONTEXT(sequence_checker_);
+};
+
+class CpuProbeWithMockTimeTest : public CpuProbeTest {
+ public:
+  CpuProbeWithMockTimeTest()
+      : CpuProbeTest(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 };
 
 TEST_F(CpuProbeTest, EnsureStarted) {
@@ -132,6 +147,43 @@ TEST_F(CpuProbeTest, EnsureStartedCheckCalculateStateWrongValue) {
   cpu_probe_->EnsureStarted();
 
   EXPECT_DCHECK_DEATH_WITH(run_loop.Run(), "unexpected value: 1.1");
+}
+
+TEST_F(CpuProbeWithMockTimeTest, EnsureStartedCheckBreakCalibrationMitigation) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // cpu_probe_ is redefined with larger sampling time in seconds.
+  // We noticed that cpu_probe_, with fast sampling (ms), is slowing down
+  // testing when using FastForwardBy(), especially on tsan and asan test
+  // releases.
+  cpu_probe_ = std::make_unique<FakeCpuProbe>(
+      base::Seconds(1), base::BindRepeating(&CpuProbeTest::CollectorCallback,
+                                            base::Unretained(this)));
+
+  static_cast<FakeCpuProbe*>(cpu_probe_.get())
+      ->SetLastSample(PressureSample{0.86});
+  cpu_probe_->EnsureStarted();
+  WaitForUpdate();
+  EXPECT_THAT(samples_.back(),
+              mojom::PressureState(mojom::PressureState::kSerious));
+
+  cpu_probe_->Stop();
+  samples_.clear();
+
+  static_cast<FakeCpuProbe*>(cpu_probe_.get())
+      ->SetLastSample(PressureSample{0.86});
+  cpu_probe_->EnsureStarted();
+  WaitForUpdate();
+  // First toggling.
+  task_environment_->FastForwardBy(
+      cpu_probe_.get()->GetRandomizationTimeForTesting());
+  EXPECT_THAT(samples_.back(),
+              mojom::PressureState(mojom::PressureState::kCritical));
+  // Second toggling.
+  task_environment_->FastForwardBy(
+      cpu_probe_.get()->GetRandomizationTimeForTesting());
+  EXPECT_THAT(samples_.back(),
+              mojom::PressureState(mojom::PressureState::kSerious));
 }
 
 TEST_F(CpuProbeTest, EnsureStartedCheckCalculateStateHysteresisUp) {

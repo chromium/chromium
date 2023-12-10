@@ -12,7 +12,7 @@
 #             android-pixel-6 android-shield-android-tv android-sm-a135m
 #             android-sm-a235m
 #         chromeos-board-amd64-generic chromeos-board-eve chromeos-board-jacuzzi
-#             chromeos-board-octopus
+#             chromeos-board-octopus chromeos-board-volteer
 #         fuchsia-board-astro fuchsia-board-nelson fuchsia-board-sherlock
 #             fuchsia-board-qemu-x64 ]
 # Platform
@@ -409,7 +409,6 @@ crbug.com/1175371 [ angle-opengles chromeos mesa_ge_21.0 passthrough target-cpu-
 crbug.com/1175371 [ angle-opengl display-server-x linux passthrough renderer-skia-gl ] conformance/extensions/khr-parallel-shader-compile.html [ Failure ]
 crbug.com/1175371 [ angle-opengles display-server-wayland linux passthrough ] conformance/extensions/khr-parallel-shader-compile.html [ Failure ]
 crbug.com/1175371 [ mac angle-metal ] conformance/extensions/khr-parallel-shader-compile.html [ Failure ]
-crbug.com/1175371 [ win ] conformance/extensions/khr-parallel-shader-compile.html [ Failure ]
 
 # Won't investigate failure on validating command decoder. Remove once it's unshipped.
 crbug.com/angleproject/5499 [ no-passthrough ] conformance/glsl/misc/shaders-with-name-conflicts.html [ Failure ]
@@ -438,7 +437,7 @@ crbug.com/angleproject/6358 [ no-passthrough ] conformance/programs/program-test
 # Fuchsia failures #
 ####################
 
-crbug.com/1371306 [ fuchsia web-engine-shell ] conformance/textures/misc/texture-video-transparent.html [ Failure ]
+crbug.com/1371306 [ fuchsia fuchsia-board-nelson web-engine-shell ] conformance/textures/misc/texture-video-transparent.html [ Failure ]
 
 # Flaky tests
 crbug.com/1489477 [ fuchsia fuchsia-board-astro ] conformance/more/conformance/quickCheck* [ Failure ]
@@ -537,7 +536,6 @@ crbug.com/784817 [ mac nvidia-0xfe9 ] conformance/glsl/bugs/init-array-with-loop
 
 ## Mac / M1 / OpenGL ##
 
-crbug.com/1493524 [ mac apple passthrough angle-opengl ] conformance/renderbuffers/stencil-renderbuffer-initialization.html [ RetryOnFailure ]
 
 
 ####################
@@ -566,8 +564,6 @@ crbug.com/1271688 [ linux angle-vulkan passthrough nvidia ] conformance/ogles/GL
 # Android failures #
 ####################
 
-crbug.com/903903 [ android-nexus-5x android-nougat qualcomm target-cpu-64 ] conformance/glsl/bugs/sampler-array-struct-function-arg.html [ Failure ]
-crbug.com/478572 [ android-nexus-5x android-nougat qualcomm target-cpu-64 ] conformance/glsl/bugs/sequence-operator-evaluation-order.html [ Failure ]
 crbug.com/1439682 [ android android-nexus-5x passthrough ] conformance/textures/misc/tex-video-using-tex-unit-non-zero.html [ Failure ]
 
 # Need to investigate failure on basically all devices with passthrough on Android.
@@ -578,17 +574,13 @@ crbug.com/angleproject/5038 [ android no-passthrough qualcomm renderer-skia-gl ]
 crbug.com/angleproject/5038 [ android-pie android-shield-android-tv no-passthrough nvidia renderer-skia-gl target-cpu-32 ] conformance/extensions/ext-color-buffer-half-float.html [ Failure ]
 
 # Was too difficult to suppress these failures on individual bots.
-crbug.com/1165751 [ android-nougat ] conformance/glsl/bugs/vector-matrix-constructor-scalarization.html [ Failure ]
 crbug.com/1470376 [ android-oreo ] conformance/glsl/bugs/vector-matrix-constructor-scalarization.html [ Failure ]
 
-# These video tests are flakey on many configurations.
-crbug.com/1347077 [ android-nexus-5x android-nougat angle-opengles passthrough qualcomm renderer-skia-gl target-cpu-64 ] conformance/textures/misc/video-rotation.html [ Failure ]
 
 ## Nexus 5X ##
 
 # Was timing out randomly on android_optional_gpu_tests_rel, but became so
 # flaky (2018-09-10) that it had to be upgraded to Fail.
-crbug.com/609883 [ android-nexus-5x android-nougat ] conformance/glsl/bugs/sampler-struct-function-arg.html [ Failure ]
 crbug.com/951628 [ android android-nexus-5x no-passthrough ] conformance/rendering/blending.html [ Failure ]
 crbug.com/1056830 [ android android-nexus-5x ] conformance/extensions/webgl-compressed-texture-astc.html [ Failure ]
 # Timing out on this device for unknown reasons.
@@ -651,7 +643,25 @@ crbug.com/1372155 [ android android-sm-a135m ] conformance/offscreencanvas/conte
 crbug.com/1372155 [ android android-sm-a135m no-passthrough ] conformance/rendering/blending.html [ Failure ]
 crbug.com/1372155 [ android android-sm-a135m ] conformance/uniforms/uniform-samplers-test.html [ Failure ]
 crbug.com/1372149 [ android android-sm-a235m no-passthrough ] conformance/rendering/blending.html [ Failure ]
-
+crbug.com/1499000 [ android android-sm-a235m no-passthrough renderer-skia-vulkan ] conformance/extensions/ext-color-buffer-half-float.html [ Failure ]
+crbug.com/1499000 [ android android-sm-a235m no-passthrough renderer-skia-vulkan ] conformance/extensions/oes-texture-float-with-video.html [ Failure ]
+crbug.com/1499000 [ android android-sm-a235m no-passthrough renderer-skia-vulkan ] conformance/extensions/oes-texture-float.html [ Failure ]
+crbug.com/1499000 [ android android-sm-a235m no-passthrough renderer-skia-vulkan ] conformance/extensions/oes-texture-half-float-with-video.html [ Failure ]
+crbug.com/1499000 [ android android-sm-a235m no-passthrough renderer-skia-vulkan ] conformance/textures/image_bitmap_from_video/tex-2d-luminance-luminance-unsigned_byte.html [ Failure ]
+crbug.com/1499000 [ android android-sm-a235m no-passthrough renderer-skia-vulkan ] conformance/textures/image_bitmap_from_video/tex-2d-luminance_alpha-luminance_alpha-unsigned_byte.html [ Failure ]
+crbug.com/1499000 [ android android-sm-a235m no-passthrough renderer-skia-vulkan ] conformance/textures/image_bitmap_from_video/tex-2d-rgb-rgb-unsigned_byte.html [ Failure ]
+crbug.com/1499000 [ android android-sm-a235m no-passthrough renderer-skia-vulkan ] conformance/textures/image_bitmap_from_video/tex-2d-rgb-rgb-unsigned_short_5_6_5.html [ Failure ]
+crbug.com/1499000 [ android android-sm-a235m no-passthrough renderer-skia-vulkan ] conformance/textures/image_bitmap_from_video/tex-2d-rgba-rgba-unsigned_byte.html [ Failure ]
+crbug.com/1499000 [ android android-sm-a235m no-passthrough renderer-skia-vulkan ] conformance/textures/image_bitmap_from_video/tex-2d-rgba-rgba-unsigned_short_4_4_4_4.html [ Failure ]
+crbug.com/1499000 [ android android-sm-a235m no-passthrough renderer-skia-vulkan ] conformance/textures/image_bitmap_from_video/tex-2d-rgba-rgba-unsigned_short_5_5_5_1.html [ Failure ]
+crbug.com/1499000 [ android android-sm-a235m no-passthrough renderer-skia-vulkan ] conformance/textures/misc/video-rotation.html [ Failure ]
+crbug.com/1499000 [ android android-sm-a235m no-passthrough renderer-skia-vulkan ] conformance/textures/video/tex-2d-luminance-luminance-unsigned_byte.html [ Failure ]
+crbug.com/1499000 [ android android-sm-a235m no-passthrough renderer-skia-vulkan ] conformance/textures/video/tex-2d-luminance_alpha-luminance_alpha-unsigned_byte.html [ Failure ]
+crbug.com/1499000 [ android android-sm-a235m no-passthrough renderer-skia-vulkan ] conformance/textures/video/tex-2d-rgb-rgb-unsigned_byte.html [ Failure ]
+crbug.com/1499000 [ android android-sm-a235m no-passthrough renderer-skia-vulkan ] conformance/textures/video/tex-2d-rgb-rgb-unsigned_short_5_6_5.html [ Failure ]
+crbug.com/1499000 [ android android-sm-a235m no-passthrough renderer-skia-vulkan ] conformance/textures/video/tex-2d-rgba-rgba-unsigned_byte.html [ Failure ]
+crbug.com/1499000 [ android android-sm-a235m no-passthrough renderer-skia-vulkan ] conformance/textures/video/tex-2d-rgba-rgba-unsigned_short_4_4_4_4.html [ Failure ]
+crbug.com/1499000 [ android android-sm-a235m no-passthrough renderer-skia-vulkan ] conformance/textures/video/tex-2d-rgba-rgba-unsigned_short_5_5_5_1.html [ Failure ]
 
 ############
 # ChromeOS #
@@ -683,7 +693,6 @@ crbug.com/1357064 [ chromeos chromeos-board-amd64-generic no-passthrough ] confo
 crbug.com/1455026 [ chromeos chromeos-board-amd64-generic ] conformance/extensions/ext-disjoint-timer-query.html [ Failure ]
 
 ## Jacuzzi ##
-crbug.com/1410164 [ chromeos cros-chrome chromeos-board-jacuzzi ] WebglExtension_TestCoverage [ Failure ]
 crbug.com/1488973 [ chromeos cros-chrome chromeos-board-jacuzzi ] conformance/glsl/bugs/constant-precision-qualifier.html [ Failure ]
 crbug.com/1488978 [ chromeos cros-chrome chromeos-board-jacuzzi ] conformance/limits/gl-max-texture-dimensions.html [ Failure ]
 crbug.com/1488979 [ chromeos cros-chrome chromeos-board-jacuzzi ] conformance/misc/shader-precision-format.html [ Failure ]
@@ -695,12 +704,11 @@ crbug.com/1492241 [ chromeos cros-chrome chromeos-board-jacuzzi ] conformance/re
 # Lacros failures #
 #####################
 
-
 crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-jacuzzi arm angle-opengles passthrough ] conformance/extensions/angle-instanced-arrays-out-of-bounds.html [ Failure ]
 crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] conformance/glsl/bugs/constant-precision-qualifier.html [ Failure ]
 crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] conformance/limits/gl-max-texture-dimensions.html [ Failure ]
 crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] conformance/misc/shader-precision-format.html [ Failure ]
-crbug.com/1481267 [ chromeos lacros-chrome chromeos-board-octopus passthrough ] conformance/textures/misc/texture-size-limit.html [ Failure ]
+
 
 ###########################
 # Lacros/Wayland failures #
@@ -709,6 +717,11 @@ crbug.com/1481267 [ chromeos lacros-chrome chromeos-board-octopus passthrough ] 
 crbug.com/1185344 [ angle-opengles linux display-server-wayland intel ] WebglExtension_EXT_shader_texture_lod [ Failure ]
 
 crbug.com/angleproject/5038 [ linux intel display-server-wayland ] conformance/extensions/ext-color-buffer-half-float.html [ Failure ]
+
+###########################
+# SkiaGraphite failures #
+###########################
+crbug.com/1491023 [ mac angle-metal graphite-enabled amd ] conformance/canvas/draw-static-webgl-to-multiple-canvas-test.html [ Failure ]
 
 ###############################
 # New failures in WebGL rolls #

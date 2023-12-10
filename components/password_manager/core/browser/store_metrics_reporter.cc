@@ -21,8 +21,8 @@
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_reuse_detector.h"
 #include "components/password_manager/core/browser/password_reuse_manager.h"
-#include "components/password_manager/core/browser/password_store_consumer.h"
-#include "components/password_manager/core/browser/password_store_interface.h"
+#include "components/password_manager/core/browser/password_store/password_store_consumer.h"
+#include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/browser/password_sync_util.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
@@ -569,9 +569,9 @@ void ReportAllMetrics(bool custom_passphrase_enabled,
                       const std::string& sync_username,
                       bool is_opted_in_account_storage,
                       bool is_safe_browsing_enabled,
-                      absl::optional<std::vector<std::unique_ptr<PasswordForm>>>
+                      std::optional<std::vector<std::unique_ptr<PasswordForm>>>
                           profile_store_results,
-                      absl::optional<std::vector<std::unique_ptr<PasswordForm>>>
+                      std::optional<std::vector<std::unique_ptr<PasswordForm>>>
                           account_store_results) {
   // Maps from (signon_realm, username) to password.
   std::unique_ptr<
@@ -654,7 +654,6 @@ StoreMetricsReporter::StoreMetricsReporter(
     PasswordStoreInterface* profile_store,
     PasswordStoreInterface* account_store,
     const syncer::SyncService* sync_service,
-    const signin::IdentityManager* identity_manager,
     PrefService* prefs,
     password_manager::PasswordReuseManager* password_reuse_manager,
     bool is_under_advanced_protection,
@@ -685,14 +684,13 @@ StoreMetricsReporter::StoreMetricsReporter(
       base::Time::Now().InSecondsFSinceUnixEpoch());
 
   sync_username_ = password_manager::sync_util::
-      GetAccountEmailIfSyncFeatureEnabledIncludingPasswords(sync_service,
-                                                            identity_manager);
+      GetAccountEmailIfSyncFeatureEnabledIncludingPasswords(sync_service);
 
   custom_passphrase_enabled_ = IsCustomPassphraseEnabled(
       password_manager::sync_util::GetPasswordSyncState(sync_service));
 
   is_opted_in_account_storage_ =
-      features_util::IsOptedInForAccountStorage(prefs, sync_service);
+      features_util::IsOptedInForAccountStorage(sync_service);
 
   is_safe_browsing_enabled_ = safe_browsing::IsSafeBrowsingEnabled(*prefs);
 
@@ -756,8 +754,8 @@ void StoreMetricsReporter::OnGetPasswordStoreResultsFrom(
       base::BindOnce(&ReportAllMetrics, custom_passphrase_enabled_,
                      sync_username_, is_opted_in_account_storage_,
                      is_safe_browsing_enabled_,
-                     std::exchange(profile_store_results_, absl::nullopt),
-                     std::exchange(account_store_results_, absl::nullopt)),
+                     std::exchange(profile_store_results_, std::nullopt),
+                     std::exchange(account_store_results_, std::nullopt)),
       base::BindOnce(&OnMetricsReportingCompleted,
                      weak_ptr_factory_.GetWeakPtr(),
                      std::move(done_callback_)));

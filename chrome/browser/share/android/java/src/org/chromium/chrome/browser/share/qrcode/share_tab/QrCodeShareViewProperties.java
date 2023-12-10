@@ -27,6 +27,11 @@ class QrCodeShareViewProperties {
     public static final WritableBooleanPropertyKey IS_ON_FOREGROUND =
             new WritableBooleanPropertyKey();
 
-    public static final PropertyKey[] ALL_KEYS = {QRCODE_BITMAP, ERROR_STRING,
-            HAS_STORAGE_PERMISSION, CAN_PROMPT_FOR_PERMISSION, IS_ON_FOREGROUND};
+    public static final PropertyKey[] ALL_KEYS = {
+        QRCODE_BITMAP,
+        ERROR_STRING,
+        HAS_STORAGE_PERMISSION,
+        CAN_PROMPT_FOR_PERMISSION,
+        IS_ON_FOREGROUND
+    };
 }

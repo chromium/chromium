@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_mediator.h"
+#import "ios/chrome/browser/ui/settings/password/password_details/password_details_mediator+Testing.h"
 
 #import "base/test/bind.h"
 #import "base/test/scoped_feature_list.h"
@@ -12,7 +13,6 @@
 #import "components/password_manager/core/browser/password_form.h"
 #import "components/password_manager/core/browser/password_store/test_password_store.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
-#import "components/password_manager/core/common/password_manager_features.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_account_password_store_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_affiliation_service_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager.h"
@@ -21,7 +21,6 @@
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_consumer.h"
-#import "ios/chrome/browser/ui/settings/password/password_details/password_details_mediator+private.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -588,11 +587,6 @@ TEST_F(PasswordDetailsMediatorTest, EditCredential) {
 // the SavedPasswordsPresenter's credential list. Also tests that the consumer
 // is notified with the expected information.
 TEST_F(PasswordDetailsMediatorTest, DidConfirmWarningDismissalForPassword) {
-  // Enable Password Checkup feature since warning muting is only available
-  // with it.
-  base::test::ScopedFeatureList feature_list(
-      password_manager::features::kIOSPasswordCheckup);
-
   // Add an unmuted compromsied password to the store.
   AddInsecurePasswordForm(/*url=*/kExampleURL2,
                           /*password*/ kExamplePassword2,
@@ -635,11 +629,6 @@ TEST_F(PasswordDetailsMediatorTest, DidConfirmWarningDismissalForPassword) {
 // SavedPasswordsPresenter's credential list. Also tests that the consumer is
 // notified with the expected information.
 TEST_F(PasswordDetailsMediatorTest, RestoreWarningForCurrentPassword) {
-  // Enable Password Checkup feature since warning restoration is only
-  // available with it.
-  base::test::ScopedFeatureList feature_list(
-      password_manager::features::kIOSPasswordCheckup);
-
   // Warning restauration is only available in the `kDismissedWarnings`
   // context.
   mediator().context = DetailsContext::kDismissedWarnings;

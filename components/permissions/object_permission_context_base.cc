@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/observer_list.h"
 #include "base/strings/utf_string_conversions.h"
@@ -14,6 +15,7 @@
 #include "base/values.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
+#include "components/permissions/features.h"
 #include "url/origin.h"
 
 namespace permissions {
@@ -303,9 +305,20 @@ void ObjectPermissionContextBase::SaveWebsiteSetting(
   }
   base::Value::Dict website_setting_value;
   website_setting_value.Set(kObjectListKey, std::move(objects_list));
+
+  content_settings::ContentSettingConstraints constraints;
+#if !BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(
+          features::kRecordChooserPermissionLastVisitedTimestamps)) {
+    if (content_settings::CanTrackLastVisit(data_content_settings_type_)) {
+      constraints.set_track_last_visit_for_autoexpiration(true);
+    }
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
+
   host_content_settings_map_->SetWebsiteSettingDefaultScope(
       origin.GetURL(), GURL(), data_content_settings_type_,
-      base::Value(std::move(website_setting_value)));
+      base::Value(std::move(website_setting_value)), constraints);
 }
 
 void ObjectPermissionContextBase::ScheduleSaveWebsiteSetting(

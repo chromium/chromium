@@ -10,6 +10,7 @@
 #include <memory>
 #include <vector>
 
+#include <optional>
 #include "base/component_export.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -26,7 +27,6 @@
 #include "storage/browser/quota/quota_callbacks.h"
 #include "storage/browser/quota/quota_client_type.h"
 #include "storage/browser/quota/quota_manager_impl.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
 
 namespace blink {
@@ -195,7 +195,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerProxy
   virtual void NotifyBucketModified(
       QuotaClientType client_id,
       const BucketLocator& bucket,
-      absl::optional<int64_t> delta,
+      std::optional<int64_t> delta,
       base::Time modification_time,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
       base::OnceClosure callback);
@@ -248,7 +248,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerProxy
   void OverrideQuotaForStorageKey(
       int handle_id,
       const blink::StorageKey& storage_key,
-      absl::optional<int64_t> quota_size,
+      std::optional<int64_t> quota_size,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
       base::OnceClosure callback);
   void WithdrawOverridesForHandle(int handle_id);

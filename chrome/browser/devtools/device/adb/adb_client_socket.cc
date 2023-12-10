@@ -245,8 +245,8 @@ void AdbClientSocket::ReadResponse(CommandCallback callback,
     std::move(callback).Run(result, "IO error");
     return;
   }
-  scoped_refptr<net::IOBuffer> response_buffer =
-      base::MakeRefCounted<net::IOBuffer>(kBufferSize);
+  auto response_buffer =
+      base::MakeRefCounted<net::IOBufferWithSize>(kBufferSize);
   auto split_callback = base::SplitOnceCallback(
       base::BindOnce(&AdbClientSocket::OnResponseHeader, base::Unretained(this),
                      std::move(callback), is_void, response_buffer));

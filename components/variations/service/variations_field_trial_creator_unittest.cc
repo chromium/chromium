@@ -1171,13 +1171,6 @@ TEST_P(FieldTrialCreatorTestWithFeatures,
   static BASE_FEATURE(kFeature1, "UnitTestEnabled",
                       base::FEATURE_DISABLED_BY_DEFAULT);
 
-  // Since |kFeature1| is static, the same instance will be reused across the
-  // parameterized tests. We need to make sure that the cached value for the
-  // feature's enabled state is not reused, so we invalidate the cache.
-  static uint16_t caching_context = 1;
-  base::FeatureList::GetInstance()->SetCachingContextForTesting(
-      caching_context++);
-
   EXPECT_EQ(GetParam() == ::switches::kEnableFeatures,
             base::FeatureList::IsEnabled(kFeature1));
 
@@ -1460,13 +1453,6 @@ TEST_P(FieldTrialCreatorFormFactorTest, FilterByFormFactor) {
       std::make_unique<base::FeatureList>(), metrics_state_manager.get(),
       &platform_field_trials, &safe_seed_manager,
       /*add_entropy_source_to_variations_ids=*/true));
-
-  // Since the test features are static, the same instance will be reused across
-  // the parameterized tests. We need to make sure that the cached value for the
-  // feature's enabled state is not reused, so we invalidate the feature cache.
-  static uint16_t caching_context = 1;
-  base::FeatureList::GetInstance()->SetCachingContextForTesting(
-      caching_context++);
 
   // Each form factor specific feature should be enabled iff the current form
   // factor matches the feature's targetted form factor.

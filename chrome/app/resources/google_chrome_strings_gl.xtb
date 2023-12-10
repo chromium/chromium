@@ -26,6 +26,7 @@
 <translation id="139993653570221430">Se cambias de idea, podes modificar a configuración de Chrome en calquera momento. Con todo, as probas inscríbense na experiencia actual de publicación de anuncios, polo que non verás cambios de inmediato.</translation>
 <translation id="1425903838053942728">{COUNT,plural, =0{Actualizouse Chrome. Podes usar a versión máis recente tan pronto como o reinicies. Despois volverán abrirse as pestanas actuais.}=1{Actualizouse Chrome. Cando reinicies o dispositivo, xa podes usar a versión máis recente. Despois volverán abrirse as pestanas actuais. A ventá do modo de incógnito non se volverá abrir.}other{Actualizouse Chrome. Cando reinicies o dispositivo, xa podes usar a versión máis recente. Despois volverán abrirse as pestanas actuais. As # ventás do modo de incógnito non se volverán abrir.}}</translation>
 <translation id="1434626383986940139">Aplicacións de Chrome Canary</translation>
+<translation id="146866447420868597">Queres iniciar sesión en Chrome?</translation>
 <translation id="1492280395845991349">Reiniciar para completar a actualización de Chrome</translation>
 <translation id="1497802159252041924">Erro de instalación: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1507198376417198979">Personaliza o teu novo perfil de Chrome</translation>
@@ -72,6 +73,7 @@
 <translation id="2130870084309816036">Non se puido establecer conexión con Internet. Se utilizas un firewall, inclúe <ph name="PRODUCT_EXE_NAME" /> na lista de entidades permitidas.</translation>
 <translation id="2131230230468101642">Para protexer a túa privacidade, eliminamos automaticamente os teus intereses cuxa antigüidade sexa superior a 4 semanas. Algúns poderían volver incluírse na lista ao seguires navegando. Se o prefires, podes quitar os intereses que non queiras que teña en conta Chrome.</translation>
 <translation id="2139300032719313227">Reiniciar Chrome OS</translation>
+<translation id="2146761408396054429">Este ficheiro pode ser perigoso<ph name="LINE_BREAK" />Chrome pode comprobar esta descarga por ti se lle proporcionas o contrasinal, o cal permanecerá no teu dispositivo</translation>
 <translation id="2151406531797534936">Reinicia Chrome agora</translation>
 <translation id="2174917724755363426">A instalación non finalizou. Seguro que queres cancelala?</translation>
 <translation id="2190166659037789668">Produciuse un erro durante a comprobación de actualizacións: <ph name="UPDATE_CHECK_ERROR" />.</translation>
@@ -90,12 +92,15 @@
 <translation id="2424440923901031101">Esta extensión infrinxe a política de Chrome Web Store e podería non ser segura. Quítaa de Chrome para que deixe de ver e cambiar os teus datos nos sitios que visites, como a túa información persoal.</translation>
 <translation id="2467438592969358367">Google Chrome quere exportar os teus contrasinais. Escribe o teu contrasinal de Windows para permitir esta acción.</translation>
 <translation id="2472092250898121027">Esta extensión contén software malicioso, polo que non é segura. Quítaa de Chrome para que deixe de ver e cambiar os teus datos nos sitios que visites, como a túa información persoal.</translation>
+<translation id="2472163211318554013">Inicia sesión para sacarlle o máximo partido a Chrome</translation>
 <translation id="2485422356828889247">Desinstalar</translation>
+<translation id="2513154137948333830">Reinicio necesario: <ph name="INSTALL_SUCCESS" /></translation>
 <translation id="2534365042754120737">Para protexer os teus datos, Chrome quita permisos dos sitios que non visitaches recentemente. Aínda así, non deixarás de recibir as notificacións.</translation>
 <translation id="2534507159460261402">Google Pay (copiouse en Chrome)</translation>
 <translation id="2556847002339236023">A túa organización pecha Chrome cando non se usa durante <ph name="TIMEOUT_DURATION" />. Elimináronse os datos de navegación. Entre esa información, poden incluírse o historial, os datos da función de autocompletar e as descargas.</translation>
 <translation id="2559253115192232574">Máis tarde, un sitio que visites pode consultarlle a Chrome os teus intereses para personalizar os anuncios que se che mostren. Chrome pode compartir ata 3 intereses.</translation>
 <translation id="2563121210305478421">Queres reiniciar Chrome?</translation>
+<translation id="2569974318947988067">Chrome tentará actualizar as navegacións ao protocolo HTTPS</translation>
 <translation id="2574930892358684005"><ph name="EXISTING_USER" /> xa ten a sesión iniciada neste perfil de Chrome. Se queres xestionar a túa navegación cun perfil independente e de teu, Chrome pode crearche un.</translation>
 <translation id="2580411288591421699">Non se pode instalar a mesma versión de Google Chrome que se está executando actualmente. Pecha Google Chrome e téntao de novo.</translation>
 <translation id="2586406160782125153">Esta acción eliminará os teus datos de navegación deste dispositivo. Para recuperar os teus datos máis tarde, inicia sesión en Chrome como <ph name="USER_EMAIL" />.</translation>
@@ -106,7 +111,6 @@
 <translation id="2649768380733403658">Chrome fai comprobacións de forma periódica para ver se tes a configuración máis segura. Informarémoste se atopamos algo que necesites revisar.</translation>
 <translation id="2652691236519827073">Abrir ligazón nunha nova &amp;pestana de Chrome</translation>
 <translation id="2665296953892887393">Axudar a mellorar Google Chrome enviando informes de erros e <ph name="UMA_LINK" /> a Google.</translation>
-<translation id="2689103672227170538">Esta extensión cambiou a páxina que se mostra ao iniciar Chrome.</translation>
 <translation id="2712234843277364121">Reiniciar para actualizar; volveranse abrir as pestanas</translation>
 <translation id="2738871930057338499">Non se puido establecer conexión con Internet. Erro: HTTP 403 Forbidden (acceso non permitido). Revisa a configuración do proxy.</translation>
 <translation id="2742320827292110288">Advertencia: Google Chrome non pode evitar que as extensións rexistren o teu historial de navegación. Para desactivar esta extensión no modo de incógnito, anula a selección da caixa correspondente a esta opción.</translation>
@@ -114,6 +118,7 @@
 <translation id="2770231113462710648">Cambiar o navegador predeterminado a:</translation>
 <translation id="2775140325783767197">Chrome non puido comprobar os teus contrasinais. Verifica a conexión a Internet.</translation>
 <translation id="2799223571221894425">Iniciar de novo</translation>
+<translation id="2846251086934905009">Erro de instalación: O instalador non completou o proceso. Abortouse a instalación.</translation>
 <translation id="2847461019998147611">Mostrar Google Chrome neste idioma</translation>
 <translation id="2853415089995957805">Chrome precargará as páxinas que é probable que visites para que carguen máis rapidamente cando accedas a elas</translation>
 <translation id="2857540653560290388">Iniciando Chrome…</translation>
@@ -129,6 +134,7 @@
 <translation id="2926952073016206995">Chrome necesita permiso de acceso á cámara para este sitio</translation>
 <translation id="2928420929544864228">Completouse a instalación.</translation>
 <translation id="2929907241665500097">Chrome non se actualizou, xa que se produciu un erro. <ph name="BEGIN_LINK" />Soluciona os problemas de actualización de Chrome e as actualizacións que non se puidesen realizar<ph name="END_LINK" />.</translation>
+<translation id="2945997411976714835">Erro de instalación: Non se puido iniciar o proceso do instalador.</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> (inicio de sesión de rede, Chrome)</translation>
 <translation id="3018957014024118866">Eliminar tamén datos de Chrome (<ph name="URL" />)</translation>
 <translation id="3019382870990049182">Reiniciar para actualizar Chrome OS Flex</translation>
@@ -174,7 +180,6 @@
 <translation id="3703994572283698466">Chrome OS é posible grazas a <ph name="BEGIN_LINK_CROS_OSS" />software de código aberto<ph name="END_LINK_CROS_OSS" /> adicional, igual que o <ph name="BEGIN_LINK_LINUX_OSS" />contorno de programación de Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="3716540481907974026">Versión de Chrome OS Flex</translation>
 <translation id="3718181793972440140">Esta acción eliminará 1 elemento deste dispositivo. Para recuperar os teus datos máis tarde, inicia sesión en Chrome como <ph name="USER_EMAIL" />.</translation>
-<translation id="3735758079232443276">A extensión "<ph name="EXTENSION_NAME" />" cambiou a páxina que se mostra ao iniciar Chrome.</translation>
 <translation id="3744202345691150878">Obter axuda sobre Chrome OS</translation>
 <translation id="3780814664026482060">Chrome: <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">Chrome OS Flex non puido sincronizar os teus datos por mor dun erro durante o inicio de sesión.</translation>
@@ -185,6 +190,7 @@
 <translation id="3865754807470779944">Tes instalada a versión <ph name="PRODUCT_VERSION" /> de Chrome</translation>
 <translation id="3873044882194371212">Abrir ligazón nunha ventá do modo de incó&amp;gnito de Chrome</translation>
 <translation id="3889417619312448367">Desinstalar Google Chrome</translation>
+<translation id="3941890832296813527">Erro de instalación: O nome de ficheiro do instalador non é válido ou non se admite.</translation>
 <translation id="3999683152997576765">Podes ver e eliminar temas de interese que usan os sitios para mostrarche anuncios. Chrome estima os teus intereses en función do teu historial de navegación recente.</translation>
 <translation id="4035053306113201399">É necesario reiniciar Chrome OS para aplicar a actualización.</translation>
 <translation id="4050175100176540509">A última versión conta con melloras de seguranza importantes e novas funcións.</translation>
@@ -211,6 +217,7 @@
 <translation id="4335235004908507846">Chrome pode protexerte contra violacións da seguranza dos datos, extensións prexudiciais e moito máis</translation>
 <translation id="4343195214584226067">Engadiuse a extensión <ph name="EXTENSION_NAME" /> a Chrome</translation>
 <translation id="4384570495110188418">Chrome non puido comprobar os teus contrasinais porque non iniciaches sesión</translation>
+<translation id="4389991535395284064">Cando navegues no modo de incógnito, Chrome mostrarache unha advertencia antes de cargar un sitio cunha conexión pouco segura</translation>
 <translation id="4393248995085527349">Se queres recibir actualizacións de Google Chrome no futuro, debes instalar o sistema operativo macOS 10.15 ou unha versión posterior. Este ordenador ten macOS 10.13.</translation>
 <translation id="4427306783828095590">A protección mellorada é máis eficaz á hora de bloquear o phishing e o software malicioso</translation>
 <translation id="4450664632294415862">Chrome (inicio de sesión, <ph name="PAGE_TITLE" />)</translation>
@@ -227,6 +234,7 @@
 <translation id="4633000520311261472">Para que Chrome resulte máis seguro, desactivamos algunhas extensións que non están enumeradas en <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> e que é posible que se engadisen sen o teu coñecemento.</translation>
 <translation id="4680828127924988555">Cancelar instalación</translation>
 <translation id="469553575393225953">As extensións, as aplicacións e os temas de fontes descoñecidas poden danar o dispositivo. Chrome recomenda que os instales só desde Chrome Web Store</translation>
+<translation id="4724676981607797757">Produciuse un erro na instalación debido a un erro de protocolo non compatible.</translation>
 <translation id="4728575227883772061">Non se puido efectuar a instalación debido a un erro non especificado. Se Google Chrome se está executando nestes momentos, péchao e téntao de novo.</translation>
 <translation id="4747730611090640388">Chrome pode facer unha estimación dos teus intereses.  Máis tarde, un sitio que visites pode consultarlle a Chrome os teus intereses para personalizar os anuncios que se che mostren.</translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
@@ -247,7 +255,6 @@
 <translation id="4970947549776831107">Chrome bloqueou este ficheiro porque os elementos deste tipo son perigosos</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5003967926796347400">Fai clic en Xestor de contrasinais de Google</translation>
-<translation id="5098668839038261629">Se activas esta opción, tamén se pechará a túa sesión en Chrome</translation>
 <translation id="5126049312684316860">Chrome precargará aínda máis páxinas que é probable que visites para que carguen máis rapidamente cando accedas a elas</translation>
 <translation id="5132929315877954718">Descubre aplicacións, xogos, extensións e temas fantásticos para Google Chrome.</translation>
 <translation id="5139423532931106058">Personalizar o teu perfil de Chrome</translation>
@@ -264,6 +271,7 @@
 <translation id="5334487786912937552">Chrome necesita permiso de acceso ao almacenamento para descargar ficheiros</translation>
 <translation id="5337648990166757586">Opcional: Axuda a mellorar as funcións e o rendemento de Chrome OS enviando automaticamente datos de uso e diagnóstico a Google.</translation>
 <translation id="5357889879764279201">Obter axuda con Chrome OS Flex</translation>
+<translation id="5368118228313795342">Código adicional: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5386118856456530849">Ir á configuración da versión de Chrome</translation>
 <translation id="5386244825306882791">Tamén controla a páxina que se mostra ao iniciar Chrome ou ao realizar unha busca desde Omnibox.</translation>
 <translation id="5394833366792865639">Compartir unha pestana de Chrome</translation>
@@ -286,7 +294,6 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="5727531838415286053">Se Chrome te inclúe automaticamente nunha proba activa, o teu historial de navegación aféctalles aos anuncios que se che mostran e aos intereses estimados que se indican abaixo. Para protexer a túa privacidade, Chrome elimina os teus intereses cada mes. A menos que os quites, os intereses actualízanse.</translation>
 <translation id="5736850870166430177">Se un sitio tenta roubarche o contrasinal ou se descargas un ficheiro daniño, Chrome tamén pode comprobar os enderezos URL, así como fragmentos de contido das páxinas, a través da función Navegación segura</translation>
 <translation id="5756509061973259733">Neste dispositivo xa existe un perfil de Chrome con esta conta</translation>
-<translation id="5779368197781401531">Inicia sesión para acceder ás túas cousas de Chrome en todos os dispositivos</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> (versión experimental de Google Chrome)</translation>
 <translation id="5804318322022881572">Non se puido iniciar Chrome. Téntao de novo.</translation>
 <translation id="5809516625706423866">Non se puido establecer conexión con Internet. Erro: HTTP 401 (acceso non autorizado). Revisa a configuración do proxy.</translation>
@@ -312,6 +319,7 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="6157638032135951407">A túa organización elimina os datos de Chrome cando non se usan durante <ph name="TIMEOUT_DURATION" />. Entre esa información, poden incluírse o historial, os datos da función de autocompletar e as descargas.</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> (versión beta de Google Chrome)</translation>
+<translation id="6182736845697986886">Produciuse un erro na instalación debido a un erro interno do servidor de actualizacións.</translation>
 <translation id="6235018212288296708">Norma de entrada de Google Chrome para permitir tráfico mDNS.</translation>
 <translation id="624230925347970731">Chrome pecharase en breve</translation>
 <translation id="6247557882553405851">Xestor de contrasinais de Google</translation>
@@ -351,6 +359,7 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="6943584222992551122">Os datos de navegación desta persoa eliminaranse deste dispositivo. Para recuperalos, inicia sesión en Chrome como <ph name="USER_EMAIL" />.</translation>
 <translation id="6967962315388095737">Regra de entrada para que Google Chrome Beta permita tráfico mDNS.</translation>
 <translation id="6989339256997917931">Actualizouse Google Chrome, pero non o utilizas desde hai polo menos 30 días.</translation>
+<translation id="7011190694940573312">Produciuse un erro na instalación porque non se admite esta versión do sistema operativo.</translation>
 <translation id="7024536598735240744">Produciuse un erro na descompresión: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Detívose a instalación.</translation>
 <translation id="7025800014283535195">Aquí podes cambiar entre perfís de Chrome</translation>
@@ -381,6 +390,7 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="7426611252293106642">Pode que Google Chrome non funcione correctamente porque xa non é compatible con esta distribución de Linux</translation>
 <translation id="7449333426561673451">{COUNT,plural, =1{A túa organización pechará Chrome automaticamente cando leve 1 minuto sen usarse.}other{A túa organización pechará Chrome automaticamente cando leve # minutos sen usarse.}}</translation>
 <translation id="7452987490177144319">{COUNT,plural, =1{A túa organización eliminará os datos de navegación automaticamente cando Chrome leve 1 minuto sen usarse. Entre esa información, poderían incluírse o historial, os datos da función de autocompletar e as descargas. As pestanas permanecerán abertas.}other{A túa organización eliminará os datos de navegación automaticamente cando Chrome leve # minutos sen usarse. Entre esa información, poderían incluírse o historial, os datos da función de autocompletar e as descargas. As pestanas permanecerán abertas.}}</translation>
+<translation id="7477130805345743099">Chrome mostrarache unha advertencia antes de cargar un sitio cunha conexión pouco segura</translation>
 <translation id="7481213027396403996">Goza da máxima seguranza de Chrome</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
 <translation id="7583399374488819119">Instalador de <ph name="COMPANY_NAME" /></translation>
@@ -420,6 +430,7 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="8019103195866286235">O programador anulou a publicación desta extensión, polo que poida que non sexa segura. Quítaa de Chrome para que deixe de ver e cambiar os teus datos nos sitios que visites, como a túa información persoal.</translation>
 <translation id="80471789339884597">Grazas por levar a cabo a instalación. Para utilizar <ph name="BUNDLE_NAME" />, debes reiniciar todos os teus navegadores.</translation>
 <translation id="8064015586118426197">Chrome OS Flex</translation>
+<translation id="8086881907087796310">Produciuse un erro na instalación porque o teu ordenador non cumpre os requisitos mínimos de hardware.</translation>
 <translation id="8129812357326543296">Acerca de &amp;Google Chrome</translation>
 <translation id="813913629614996137">Iniciando...</translation>
 <translation id="8255190535488645436">Google Chrome está utilizando a túa cámara e micrófono.</translation>
@@ -459,22 +470,23 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="8679801911857917785">Tamén controla a páxina que se mostra ao iniciar Chrome.</translation>
 <translation id="8686817260976772516">Cos perfís de Chrome podes separar todo o contido que teñas neste navegador. Crea perfís para os amigos e a familia ou ben crea un para o traballo e outro para o lecer.</translation>
 <translation id="8712767363896337380">A actualización está a piques de rematar. Para que finalice, reinicia Chrome.</translation>
-<translation id="8727043961453758442">Tira o máximo proveito de Chrome</translation>
 <translation id="873133009373065397">Google Chrome non pode determinar nin establecer o navegador predeterminado</translation>
 <translation id="8765470054473112089">Cando escribes algo na barra de enderezos ou na caixa de busca, Chrome envíallo ao motor de busca predeterminado para obter mellores suxestións. Esta opción está desactivada no modo de incógnito.</translation>
+<translation id="878572486461146056">Erro de instalación: A persoa que administra a rede aplicou unha política de grupo que non permite a instalación (<ph name="INSTALL_ERROR" />)</translation>
 <translation id="8821043148920470810">Se queres recibir actualizacións de Google Chrome no futuro, debes instalar Windows 10 ou unha versión posterior. Este ordenador ten instalado Windows 7.</translation>
 <translation id="8823341990149967727">Chrome está desactualizado</translation>
 <translation id="8825634023950448068">Para protexer a túa privacidade, eliminamos automaticamente os teus intereses cuxa antigüidade sexa superior a 4 semanas. Algúns poderían volver incluírse na lista ao seguires navegando. Se Chrome se trabuca ou non queres ver certos anuncios, podes quitar un interese.</translation>
 <translation id="8834965163890861871">Google Chrome está tentando editar os contrasinais. Escribe o teu contrasinal de Windows para permitir esta acción.</translation>
-<translation id="884296878221830158">Tamén controla que páxina se mostra ao iniciar Chrome ou ao facer clic no botón Inicio.</translation>
 <translation id="8862326446509486874">Non tes os dereitos apropiados para efectuar a instalación a nivel do sistema. Tenta volver executar o instalador como administrador.</translation>
 <translation id="8914504000324227558">Reiniciar Chrome</translation>
 <translation id="8922193594870374009">Para enviar un número desde <ph name="ORIGIN" /> ao teu teléfono Android, inicia sesión en Chrome nos dous dispositivos.</translation>
 <translation id="8986207147630327271">Estás a piques de engadir un perfil de traballo a este navegador e de permitir que o teu administrador controle só o perfil de traballo.</translation>
 <translation id="8989968390305463310">O teu historial de navegación aféctalles aos anuncios que se che mostran e aos intereses estimados que se indican abaixo. Para protexer a túa privacidade, Chrome elimina automaticamente os teus intereses cada mes. A menos que os quites, os intereses poden actualizarse.</translation>
+<translation id="8999117580775242387">Cando o protocolo HTTPS non estea dispoñible, Chrome usará unha conexión pouco segura sen avisarte</translation>
 <translation id="8999208279178790196">{0,plural, =0{Hai unha actualización de Chrome dispoñible}=1{Hai unha actualización de Chrome dispoñible}other{Hai unha actualización de Chrome que leva dispoñible # días}}</translation>
 <translation id="9053892488859122171">Sistema Chrome OS Flex</translation>
 <translation id="9054037008353851982">Reiniciar para actualizar; volveranse abrir as pestanas</translation>
+<translation id="9090566250983691233">Descubre por que Chrome bloquea algúns ficheiros</translation>
 <translation id="911206726377975832">Queres eliminar tamén os teus datos de navegación?</translation>
 <translation id="9138603949443464873">Para aplicar os cambios, reinicia Chrome</translation>
 <translation id="9195993889682885387">Chrome pode facer unha estimación dos teus intereses a partir do teu historial de navegación das últimas semanas. Esa información non sae do teu dispositivo.</translation>
@@ -485,6 +497,7 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="940313311831216333">Se queres acceder ás túas cousas de Chrome desde calquera dos teus dispositivos, inicia sesión e activa a sincronización.</translation>
 <translation id="943390475793766444">Chrome recomenda analizar este ficheiro porque pode ser perigoso.</translation>
 <translation id="963650557422347554">Cando esta opción está activada, Chrome limita as actividades en segundo plano e os efectos visuais (o desprazamento suave, os fotogramas por segundo dos vídeos…) para aforrar batería.</translation>
+<translation id="983803489796659991">Produciuse un erro na instalación porque o servidor de actualizacións non ten ningún dato de hash para a aplicación.</translation>
 <translation id="989369509083708165">Google Chrome é o teu navegador predeterminado</translation>
 <translation id="989816563149873169">O atallo <ph name="SHORTCUT" /> permite cambiar entre perfís de Chrome</translation>
 </translationbundle>

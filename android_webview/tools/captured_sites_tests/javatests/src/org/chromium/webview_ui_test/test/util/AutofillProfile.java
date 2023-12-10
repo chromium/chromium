@@ -26,16 +26,20 @@ public class AutofillProfile {
     public AutofillProfile(String profile) throws Exception {
         this(parseInstructions(profile));
     }
+
     // For testing.
     public AutofillProfile(JSONObject json) throws Exception {
         profileMap = new HashMap<>();
         parseProfile(json);
     }
+
     // Reads the given .profile file and stores the fields in map.
     private static JSONObject parseInstructions(String path) throws Exception {
         try {
-            String out = new String(
-                    Files.readAllBytes(Paths.get(FULL_PREFIX + path)), StandardCharsets.UTF_8);
+            String out =
+                    new String(
+                            Files.readAllBytes(Paths.get(FULL_PREFIX + path)),
+                            StandardCharsets.UTF_8);
             JSONObject test = new JSONObject(out);
             return test;
         } catch (Exception e) {
@@ -65,7 +69,8 @@ public class AutofillProfile {
                     throw new IOException("Autofill profile has duplicate type " + type);
                 }
             } catch (NullPointerException e) {
-                Log.w(TAG,
+                Log.w(
+                        TAG,
                         "Attribute from autofillProfile discarded"
                                 + "due to incomplete type or value");
             }

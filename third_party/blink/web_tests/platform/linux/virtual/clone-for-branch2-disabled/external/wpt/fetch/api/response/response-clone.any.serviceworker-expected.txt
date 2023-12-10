@@ -1,11 +1,4 @@
 This is a testharness.js-based test.
-[PASS] Check Response's clone with default values, without body
-[PASS] Check Response's clone has the expected attribute values
-[PASS] Check orginal response's body after cloning
-[PASS] Check cloned response's body
-[PASS] Cannot clone a disturbed response
-[PASS] Cloned responses should provide the same data
-[PASS] Cancelling stream should not affect cloned one
 [FAIL] Check response clone use structureClone for teed ReadableStreams (Int8Arraychunk)
   assert_not_equals: Buffer of cloned response stream is a clone of the original buffer got disallowed value object "0,0,0,0,0,0,0,0,0,0,0,0,0,0,0"
 [FAIL] Check response clone use structureClone for teed ReadableStreams (Int16Arraychunk)

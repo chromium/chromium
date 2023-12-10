@@ -190,6 +190,7 @@ cc_library(
         ":private_handle_accessor",
         "//absl/base:config",
         "//absl/base:core_headers",
+        "//absl/base:no_destructor",
         "//absl/container:flat_hash_map",
         "//absl/strings",
         "//absl/synchronization",

@@ -13,9 +13,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.ui.display.DisplayAndroid.DisplayAndroidObserver;
 
-/**
- * Provides DisplayRefreshRate tracking for MainBeginFrameSourceWebView
- */
+/** Provides DisplayRefreshRate tracking for MainBeginFrameSourceWebView */
 @JNINamespace("android_webview")
 @Lifetime.Singleton
 public class RootBeginFrameSourceWebView implements DisplayAndroidObserver {
@@ -33,13 +31,19 @@ public class RootBeginFrameSourceWebView implements DisplayAndroidObserver {
 
     @Override
     public void onRefreshRateChanged(float refreshRate) {
-        RootBeginFrameSourceWebViewJni.get().onUpdateRefreshRate(
-                mNativeRootBeginFrameSourceWebView, RootBeginFrameSourceWebView.this, refreshRate);
+        RootBeginFrameSourceWebViewJni.get()
+                .onUpdateRefreshRate(
+                        mNativeRootBeginFrameSourceWebView,
+                        RootBeginFrameSourceWebView.this,
+                        refreshRate);
     }
 
     @NativeMethods
     interface Natives {
-        void onUpdateRefreshRate(long nativeRootBeginFrameSourceWebView,
-                RootBeginFrameSourceWebView caller, float refreshRate);
+        void onUpdateRefreshRate(
+                long nativeRootBeginFrameSourceWebView,
+                RootBeginFrameSourceWebView caller,
+                float refreshRate);
     }
-};
+}
+;

@@ -87,6 +87,7 @@ Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chromiumi an
 <translation id="4195557071150719219">Kuva Chromiumi hiljutised vahelehed</translation>
 <translation id="4408912345039114853">Chromiumi ohutuskontrolli käitamine</translation>
 <translation id="4432744876818348753">Chromiumi parimal moel kasutamiseks logige sisse.</translation>
+<translation id="4498832288620833153">Lisab sisestatud URL-id Chromiumis teie lugemisloendisse.</translation>
 <translation id="452436063477828504">Veenduge, et saaksite alati kasutada oma Google'i kontol Chromiumi andmeid</translation>
 <translation id="4555020257205549924">Kui see funktsioon on sisse lülitatud, pakub Chromium võimalust tõlkida teistes keeltes kirjutatud lehti Google'i tõlke abil. <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
 <translation id="4576283463017113841">Avab Chromiumis makseviisi seadete lehe.</translation>
@@ -107,6 +108,7 @@ Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chromiumi an
 <translation id="5048795749726991615">Selleks et muudes rakendustes hõlpsasti oma salvestatud paroolidele juurde pääseda, kasutage funktsiooni Chromium automaattäite jaoks</translation>
 <translation id="5076601183701536878">Tühjenda Chromiumi sirvimisandmed</translation>
 <translation id="5131565040785979529">Teie organisatsioon <ph name="DOMAIN" /> haldab kontot, millele olete sisse logitud, ja Chromiumi kasutamist.</translation>
+<translation id="5146749061471423558">Järjehoidjate lisamine Chromiumisse</translation>
 <translation id="5171868502429358653">Logige Chromiumi sisse</translation>
 <translation id="5213683223491576284">Avab Chromiumis paroolihalduri.</translation>
 <translation id="5224391634244552924">Salvestatud paroole ei ole. Chromium saab teie paroole kontrollida, kui olete need salvestanud.</translation>
@@ -114,6 +116,7 @@ Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chromiumi an
 
         Oodake enne väljalogimist paar minutit. Kui logite kohe välja, siis need andmed kustutatakse.</translation>
 <translation id="5308226104666789935">Chromium ei saa värskendusi otsida</translation>
+<translation id="5311557153294205270">Lisab sisestatud URL-id Chromiumis teie järjehoidjatesse.</translation>
 <translation id="5396916991083608703">Kas määrata Chromium vaikebrauseriks?</translation>
 <translation id="5453478652154926037">Chromium ei saa teie paroole kontrollida.</translation>
 <translation id="5521125884468363740">Selleks et näha vahelehti kõikjalt, kus Chromiumi kasutate, logige sisse ja lülitage sisse sünkroonimine</translation>
@@ -165,7 +168,6 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="6911341667534646387">Jätkake Chromiumi andmete kasutamist Google'i kontol</translation>
 <translation id="7006920032187763988">Saate paroolihaldurisse salvestatud paroole oma iPadi muudes rakendustes kasutada.</translation>
 <translation id="7018284295775193585">Chromiumit ei saa värskendada</translation>
-<translation id="7025471822960602362">Tuvastatud pakettide jälgimine Chromiumis</translation>
 <translation id="7045244423563602563">Isikupärastage Chromiumi</translation>
 <translation id="7055269218854630176">Teie organisatsioon <ph name="DOMAIN" /> haldab kontot, millele sisse logite, ja Chromiumi kasutamist. Teie administraator saab teatud funktsioone seadistada või piirata.</translation>
 <translation id="7099326575020694068">Chromium ei saa poolitatud vaate režiimis kaamerat kasutada</translation>
@@ -195,6 +197,7 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="7928628054454574139">Kui muudes rakendustes linke puudutate, avaneb alati Chromium</translation>
 <translation id="7931842119211730154">Lukusta Chromiumi sulgemisel inkognito vahelehed</translation>
 <translation id="7934404985878918282">Kuva Chromiumi lugemisloend</translation>
+<translation id="7971753607796745700">Lisa Chromiumi lugemisloendi üksus</translation>
 <translation id="7980860476903281594">Chromium jagab teie asukohateavet saitidega, millele olete loa andnud.</translation>
 <translation id="7995166854192397899">Soovitused põhinevad teie sirvimistegevusel teie teistes seadmetes. Soovituste saamiseks logige kõigis oma seadmetes Chromiumi sisse.</translation>
 <translation id="800195749539500647">Chromiumi parimal moel kasutamine</translation>

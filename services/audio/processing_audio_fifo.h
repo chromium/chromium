@@ -5,9 +5,10 @@
 #ifndef SERVICES_AUDIO_PROCESSING_AUDIO_FIFO_H_
 #define SERVICES_AUDIO_PROCESSING_AUDIO_FIFO_H_
 
+#include <string_view>
+
 #include "base/functional/callback_forward.h"
 #include "base/sequence_checker.h"
-#include "base/strings/string_piece.h"
 #include "base/synchronization/atomic_flag.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
@@ -38,7 +39,7 @@ class ProcessingAudioFifo {
                                    bool,
                                    const media::AudioGlitchInfo&)>;
 
-  using LogCallback = base::RepeatingCallback<void(base::StringPiece)>;
+  using LogCallback = base::RepeatingCallback<void(std::string_view)>;
 
   // |processing_callback| will only be called back on the processing thread.
   ProcessingAudioFifo(const media::AudioParameters& input_params,

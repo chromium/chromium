@@ -53,7 +53,7 @@ class CustomizeChromeSidePanelController
   base::WeakPtr<CustomizeChromeUI> customize_chrome_ui_;
   // Caches a request to scroll to a section in case the request happens before
   // the front-end is ready to receive the request.
-  absl::optional<CustomizeChromeSection> section_;
+  std::optional<CustomizeChromeSection> section_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_CUSTOMIZE_CHROME_CUSTOMIZE_CHROME_SIDE_PANEL_CONTROLLER_H_

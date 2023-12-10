@@ -48,7 +48,7 @@ AwURLLoaderThrottleProvider::~AwURLLoaderThrottleProvider() {
 
 blink::WebVector<std::unique_ptr<blink::URLLoaderThrottle>>
 AwURLLoaderThrottleProvider::CreateThrottles(
-    int render_frame_id,
+    base::optional_ref<const blink::LocalFrameToken> local_frame_token,
     const blink::WebURLRequest& request) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -67,7 +67,7 @@ AwURLLoaderThrottleProvider::CreateThrottles(
       safe_browsing_.Bind(std::move(safe_browsing_remote_));
     throttles.emplace_back(
         std::make_unique<safe_browsing::RendererURLLoaderThrottle>(
-            safe_browsing_.get(), render_frame_id));
+            safe_browsing_.get(), local_frame_token));
   }
 
   return throttles;

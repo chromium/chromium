@@ -37,6 +37,46 @@
 
 namespace ash {
 
+namespace {
+
+constexpr net::NetworkTrafficAnnotationTag kTasksTrafficAnnotation =
+    net::DefineNetworkTrafficAnnotation("glanceables_tasks_integration",
+                                        R"(
+        semantics {
+          sender: "Glanceables keyed service"
+          description: "Provide ChromeOS users quick access to their "
+                       "task lists without opening the app or website"
+          trigger: "User presses the calendar pill in shelf, which triggers "
+                   "opening the calendar, classroom (if available) and tasks "
+                   "widgets. This specific client implementation "
+                   "is responsible for fetching user's tasks data from "
+                   "Google Tasks API."
+          internal {
+            contacts {
+              email: "chromeos-launcher@google.com"
+            }
+          }
+          user_data {
+            type: ACCESS_TOKEN
+          }
+          data: "The request is authenticated with an OAuth2 access token "
+                "identifying the Google account"
+          destination: GOOGLE_OWNED_SERVICE
+          last_reviewed: "2023-08-21"
+        }
+        policy {
+          cookies_allowed: NO
+          setting: "This feature cannot be disabled in settings"
+          chrome_policy {
+            GlanceablesEnabled {
+              GlanceablesEnabled: false
+            }
+          }
+        }
+    )");
+
+}  // namespace
+
 GlanceablesKeyedService::GlanceablesKeyedService(Profile* profile)
     : profile_(profile),
       identity_manager_(IdentityManagerFactory::GetForProfile(profile_)),
@@ -106,8 +146,8 @@ void GlanceablesKeyedService::RegisterClients() {
       base::Unretained(this));
   classroom_client_ = std::make_unique<GlanceablesClassroomClientImpl>(
       base::DefaultClock::GetInstance(), create_request_sender_callback);
-  tasks_client_ =
-      std::make_unique<TasksClientImpl>(create_request_sender_callback);
+  tasks_client_ = std::make_unique<TasksClientImpl>(
+      create_request_sender_callback, kTasksTrafficAnnotation);
 
   Shell::Get()->glanceables_controller()->UpdateClientsRegistration(
       account_id_, GlanceablesController::ClientsRegistration{

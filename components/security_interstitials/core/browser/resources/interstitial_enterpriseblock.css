@@ -4,7 +4,7 @@
  */
 
 .enterprise-block .icon {
-  background-image: -webkit-image-set(
+  background-image: image-set(
     url(images/1x/triangle_red.png) 1x,
     url(images/2x/triangle_red.png) 2x);
 }

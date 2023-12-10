@@ -70,16 +70,18 @@ public class CloseListenerManager implements BackPressHandler, Destroyable {
         mTab = mActivityTabSupplier.get();
         if (mTab == null) return;
 
-        mTabObserver = new EmptyTabObserver() {
-            @Override
-            public void onNavigationStateChanged() {
-                onBackPressStateChanged();
-            }
-            @Override
-            public void onDidChangeCloseSignalInterceptStatus() {
-                onBackPressStateChanged();
-            }
-        };
+        mTabObserver =
+                new EmptyTabObserver() {
+                    @Override
+                    public void onNavigationStateChanged() {
+                        onBackPressStateChanged();
+                    }
+
+                    @Override
+                    public void onDidChangeCloseSignalInterceptStatus() {
+                        onBackPressStateChanged();
+                    }
+                };
         mTab.addObserver(mTabObserver);
     }
 

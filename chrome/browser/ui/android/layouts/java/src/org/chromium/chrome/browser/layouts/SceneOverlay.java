@@ -13,9 +13,7 @@ import org.chromium.ui.resources.ResourceManager;
 
 import java.util.List;
 
-/**
- * An interface which positions the actual tabs and adds additional UI to the them.
- */
+/** An interface which positions the actual tabs and adds additional UI to the them. */
 public interface SceneOverlay extends BackPressHandler {
     /**
      * Updates and gets a {@link SceneOverlayLayer} that represents an scene overlay.

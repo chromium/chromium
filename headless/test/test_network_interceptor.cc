@@ -44,7 +44,7 @@ class RedirectLoader : public network::mojom::URLLoader {
       const std::vector<std::string>& removed_headers,
       const net::HttpRequestHeaders& modified_headers,
       const net::HttpRequestHeaders& modified_cors_exempt_headers,
-      const absl::optional<GURL>& new_url) override;
+      const std::optional<GURL>& new_url) override;
 
   void SetPriority(net::RequestPriority priority,
                    int32_t intra_priority_value) override {}
@@ -132,7 +132,7 @@ void RedirectLoader::FollowRedirect(
     const std::vector<std::string>& removed_headers /* unused */,
     const net::HttpRequestHeaders& modified_headers /* unused */,
     const net::HttpRequestHeaders& modified_cors_exempt_headers /* unused */,
-    const absl::optional<GURL>& new_url) {
+    const std::optional<GURL>& new_url) {
   response_ = interceptor_impl_->FindResponse(method_, url_.spec());
   CHECK(response_) << "No content for " << url_.spec();
   std::string location;

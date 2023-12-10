@@ -44,12 +44,11 @@ class ASH_EXPORT LocalAuthenticationRequestWidget {
   // Creates and shows the instance of LocalAuthenticationRequestWidget.
   // This widget is modal and only one instance can be created at a time. It
   // will be destroyed when dismissed.
-  static void Show(
-      OnLocalAuthenticationCompleted on_local_authentication_completed,
-      const std::u16string& title,
-      const std::u16string& description,
-      LocalAuthenticationRequestView::Delegate* delegate,
-      std::unique_ptr<UserContext> user_context);
+  static void Show(LocalAuthenticationCallback local_authentication_callback,
+                   const std::u16string& title,
+                   const std::u16string& description,
+                   LocalAuthenticationRequestView::Delegate* delegate,
+                   std::unique_ptr<UserContext> user_context);
 
   // Returns the instance of LocalAuthenticationRequestWidget or nullptr if it
   // does not exits.
@@ -69,15 +68,14 @@ class ASH_EXPORT LocalAuthenticationRequestWidget {
   // Closes the widget.
   // |success| describes whether the validation was successful and is passed to
   // |on_local_authentication_request_done_|.
-  void Close(bool success);
+  void Close(bool success, std::unique_ptr<UserContext> user_context);
 
   // Returns the associated view for testing purposes.
   static LocalAuthenticationRequestView* GetViewForTesting();
 
  private:
   LocalAuthenticationRequestWidget(
-      LocalAuthenticationRequestView::OnLocalAuthenticationRequestDone
-          on_local_authentication_request_done,
+      LocalAuthenticationCallback local_authentication_callback,
       const std::u16string& title,
       const std::u16string& description,
       LocalAuthenticationRequestView::Delegate* delegate,
@@ -91,8 +89,7 @@ class ASH_EXPORT LocalAuthenticationRequestWidget {
   LocalAuthenticationRequestView* GetView();
 
   // Callback invoked when closing the widget.
-  LocalAuthenticationRequestView::OnLocalAuthenticationRequestDone
-      on_local_authentication_completed_;
+  LocalAuthenticationCallback local_authentication_callback_;
 
   std::unique_ptr<views::Widget> widget_;
 

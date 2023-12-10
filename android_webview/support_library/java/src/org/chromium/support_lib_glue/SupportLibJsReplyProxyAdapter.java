@@ -15,11 +15,9 @@ import org.chromium.support_lib_glue.SupportLibWebViewChromiumFactory.ApiCall;
 
 import java.lang.reflect.InvocationHandler;
 
-/**
- * Adapter between JsReplyProxyBoundaryInterface and JsReplyProxy.
- */
-class SupportLibJsReplyProxyAdapter
-        extends IsomorphicAdapter implements JsReplyProxyBoundaryInterface {
+/** Adapter between JsReplyProxyBoundaryInterface and JsReplyProxy. */
+class SupportLibJsReplyProxyAdapter extends IsomorphicAdapter
+        implements JsReplyProxyBoundaryInterface {
     private JsReplyProxy mReplyProxy;
 
     public SupportLibJsReplyProxyAdapter(JsReplyProxy replyProxy) {
@@ -29,7 +27,7 @@ class SupportLibJsReplyProxyAdapter
     @Override
     public void postMessage(String message) {
         try (TraceEvent event =
-                        TraceEvent.scoped("WebView.APICall.AndroidX.JS_REPLY_POST_MESSAGE")) {
+                TraceEvent.scoped("WebView.APICall.AndroidX.JS_REPLY_POST_MESSAGE")) {
             recordApiCall(ApiCall.JS_REPLY_POST_MESSAGE);
             mReplyProxy.postMessage(new MessagePayload(message));
         }
@@ -37,8 +35,8 @@ class SupportLibJsReplyProxyAdapter
 
     @Override
     public void postMessageWithPayload(/* MessagePayload */ InvocationHandler payload) {
-        try (TraceEvent event = TraceEvent.scoped(
-                     "WebView.APICall.AndroidX.JS_REPLY_POST_MESSAGE_WITH_PAYLOAD")) {
+        try (TraceEvent event =
+                TraceEvent.scoped("WebView.APICall.AndroidX.JS_REPLY_POST_MESSAGE_WITH_PAYLOAD")) {
             recordApiCall(ApiCall.JS_REPLY_POST_MESSAGE_WITH_PAYLOAD);
             mReplyProxy.postMessage(SupportLibWebMessagePayloadAdapter.toMessagePayload(payload));
         }

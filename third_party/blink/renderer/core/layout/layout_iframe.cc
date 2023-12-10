@@ -41,7 +41,7 @@ void LayoutIFrame::UpdateLayout() {
   NOT_DESTROYED();
   DCHECK(NeedsLayout());
 
-  ClearLayoutOverflow();
+  ClearScrollableOverflow();
   ClearNeedsLayout();
 }
 

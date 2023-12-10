@@ -33,8 +33,8 @@ export abstract class CrTreeBaseElement extends CustomElement {
   }
 
   get items(): CrTreeBaseElement[] {
-    return Array.from(this.itemsRoot.querySelectorAll('cr-tree-item')) as
-        CrTreeBaseElement[];
+    return Array.from(
+        this.itemsRoot.querySelectorAll<CrTreeBaseElement>('cr-tree-item'));
   }
 
   abstract get depth(): number;

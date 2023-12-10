@@ -48,7 +48,7 @@ bool ShouldShowDeviceSelectorView(
 
 void UpdateMediaSessionItemReceiverName(
     base::WeakPtr<media_message_center::MediaNotificationItem> item,
-    const absl::optional<media_router::MediaRoute>& route) {
+    const std::optional<media_router::MediaRoute>& route) {
   if (item->GetSourceType() ==
       media_message_center::SourceType::kLocalMediaSession) {
     auto* media_session_item =
@@ -57,7 +57,7 @@ void UpdateMediaSessionItemReceiverName(
     if (route.has_value()) {
       media_session_item->UpdateDeviceName(route->media_sink_name());
     } else {
-      media_session_item->UpdateDeviceName(absl::nullopt);
+      media_session_item->UpdateDeviceName(std::nullopt);
     }
   }
 }
@@ -80,32 +80,32 @@ bool HasRemotePlaybackRoute(
   return false;
 }
 
-absl::optional<media_router::MediaRoute> GetSessionRoute(
+std::optional<media_router::MediaRoute> GetSessionRoute(
     const std::string& item_id,
     base::WeakPtr<media_message_center::MediaNotificationItem> item,
     content::BrowserContext* context) {
   if (!media_router::MediaRouterEnabled(context)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
-  // Return absl::nullopt if the item is not a local media session.
+  // Return std::nullopt if the item is not a local media session.
   if (!item || item->GetSourceType() !=
                    media_message_center::SourceType::kLocalMediaSession) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
-  // Return absl::nullopt if fallback to tab mirroring is disabled, and
+  // Return std::nullopt if fallback to tab mirroring is disabled, and
   // media session doesn't have an associated Remote Playback route.
   if (!base::FeatureList::IsEnabled(
           media_router::kFallbackToAudioTabMirroring) &&
       !HasRemotePlaybackRoute(item)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   auto* web_contents =
       content::MediaSession::GetWebContentsFromRequestId(item_id);
   if (!web_contents) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   const int item_tab_id =
@@ -114,7 +114,7 @@ absl::optional<media_router::MediaRoute> GetSessionRoute(
        media_router::MediaRouterFactory::GetApiForBrowserContext(context)
            ->GetCurrentRoutes()) {
     media_router::MediaSource media_source = route.media_source();
-    absl::optional<int> tab_id_from_route_id;
+    std::optional<int> tab_id_from_route_id;
     if (media_source.IsRemotePlaybackSource()) {
       tab_id_from_route_id = media_source.TabIdFromRemotePlaybackSource();
     } else if (media_source.IsTabMirroringSource()) {
@@ -127,7 +127,7 @@ absl::optional<media_router::MediaRoute> GetSessionRoute(
     }
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 std::unique_ptr<MediaItemUIDeviceSelectorView> BuildDeviceSelector(
@@ -138,7 +138,7 @@ std::unique_ptr<MediaItemUIDeviceSelectorView> BuildDeviceSelector(
     Profile* profile,
     global_media_controls::GlobalMediaControlsEntryPoint entry_point,
     bool show_devices,
-    absl::optional<media_message_center::MediaColorTheme> media_color_theme) {
+    std::optional<media_message_center::MediaColorTheme> media_color_theme) {
   if (!device_service || !selector_delegate || !profile ||
       !ShouldShowDeviceSelectorView(id, item, profile)) {
     return nullptr;
@@ -173,7 +173,7 @@ std::unique_ptr<global_media_controls::MediaItemUIFooter> BuildFooter(
     const std::string& id,
     base::WeakPtr<media_message_center::MediaNotificationItem> item,
     Profile* profile,
-    absl::optional<media_message_center::MediaColorTheme> media_color_theme) {
+    std::optional<media_message_center::MediaColorTheme> media_color_theme) {
   // Show a footer view for a Cast item.
   if (item->GetSourceType() == media_message_center::SourceType::kCast &&
       media_router::GlobalMediaControlsCastStartStopEnabled(profile)) {

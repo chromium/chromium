@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_LOGIN_SMART_LOCK_SMART_LOCK_SERVICE_H_
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 
@@ -23,7 +24,6 @@
 #include "chromeos/ash/services/device_sync/public/cpp/device_sync_client.h"
 #include "chromeos/ash/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class AccountId;
 class Profile;
@@ -193,7 +193,7 @@ class SmartLockService
   Profile* profile() const { return profile_; }
 
   void RecordAuthResult(
-      absl::optional<SmartLockMetricsRecorder::SmartLockAuthResultFailureReason>
+      std::optional<SmartLockMetricsRecorder::SmartLockAuthResultFailureReason>
           failure_reason);
 
   // Resets the Smart Lock state set by this service.
@@ -204,7 +204,7 @@ class SmartLockService
   void SetProximityAuthDevices(
       const AccountId& account_id,
       const multidevice::RemoteDeviceRefList& remote_devices,
-      absl::optional<multidevice::RemoteDeviceRef> local_device);
+      std::optional<multidevice::RemoteDeviceRef> local_device);
 
   void set_will_authenticate_using_smart_lock(
       bool will_authenticate_using_smart_lock) {
@@ -249,7 +249,7 @@ class SmartLockService
 
   ChromeProximityAuthClient proximity_auth_client_;
 
-  absl::optional<SmartLockState> smart_lock_state_;
+  std::optional<SmartLockState> smart_lock_state_;
 
   // The handler for the current auth attempt. Set iff an auth attempt is in
   // progress.
@@ -314,4 +314,4 @@ class SmartLockService
 
 }  // namespace ash
 
-#endif  // CHROME_BROWSER_ASH_LOGIN_EASY_UNLOCK_EASY_UNLOCK_SERVICE_H_
+#endif  // CHROME_BROWSER_ASH_LOGIN_SMART_LOCK_SMART_LOCK_SERVICE_H_

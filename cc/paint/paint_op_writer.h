@@ -151,7 +151,7 @@ class CC_PAINT_EXPORT PaintOpWriter {
   static size_t SerializedSize(const PaintFilter* filter);
 
   template <typename T>
-  static size_t SerializedSize(const absl::optional<T>& o) {
+  static size_t SerializedSize(const std::optional<T>& o) {
     if (o) {
       return (base::CheckedNumeric<size_t>(SerializedSize<bool>()) +
               SerializedSize<T>(*o))

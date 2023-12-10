@@ -5,6 +5,7 @@
 #include "device/fido/win/webauthn_api.h"
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/feature_list.h"
@@ -13,7 +14,6 @@
 #include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util_win.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -316,8 +316,7 @@ WinWebAuthnApi::WinWebAuthnApi() = default;
 WinWebAuthnApi::~WinWebAuthnApi() = default;
 
 bool WinWebAuthnApi::SupportsHybrid() {
-  return base::FeatureList::IsEnabled(device::kWebAuthnWindowsUIv6) &&
-         IsAvailable() && Version() >= WEBAUTHN_API_VERSION_6;
+  return IsAvailable() && Version() >= WEBAUTHN_API_VERSION_6;
 }
 
 std::pair<CtapDeviceResponseCode,
@@ -482,7 +481,7 @@ AuthenticatorMakeCredentialBlocking(WinWebAuthnApi* webauthn_api,
       exclude_list_ptrs.data()};
 
   WEBAUTHN_AUTHENTICATOR_MAKE_CREDENTIAL_OPTIONS options{
-      WEBAUTHN_AUTHENTICATOR_MAKE_CREDENTIAL_OPTIONS_VERSION_6,
+      WEBAUTHN_AUTHENTICATOR_MAKE_CREDENTIAL_OPTIONS_VERSION_7,
       kWinWebAuthnTimeoutMilliseconds,
       WEBAUTHN_CREDENTIALS{
           0, nullptr},  // Ignored because pExcludeCredentialList is set.
@@ -502,6 +501,9 @@ AuthenticatorMakeCredentialBlocking(WinWebAuthnApi* webauthn_api,
           ResidentKeyRequirement::kPreferred,
       request_options.is_off_the_record_context,
       request.hmac_secret,
+      /*pLinkedDevice=*/nullptr,
+      /*cbJsonExt=*/0,
+      /*pbJsonExt=*/nullptr,
   };
 
   FIDO_LOG(DEBUG) << "WebAuthNAuthenticatorMakeCredential("
@@ -558,8 +560,8 @@ AuthenticatorGetAssertionBlocking(WinWebAuthnApi* webauthn_api,
   absl::optional<std::u16string> opt_app_id16 = absl::nullopt;
   if (request.app_id) {
     opt_app_id16 = base::UTF8ToUTF16(
-        base::StringPiece(reinterpret_cast<const char*>(request.app_id->data()),
-                          request.app_id->size()));
+        std::string_view(reinterpret_cast<const char*>(request.app_id->data()),
+                         request.app_id->size()));
   }
 
   // Note that entries in |allow_list_credentials| hold pointers into
@@ -616,7 +618,7 @@ AuthenticatorGetAssertionBlocking(WinWebAuthnApi* webauthn_api,
   static BOOL kUseAppIdTrue = TRUE;    // const
   static BOOL kUseAppIdFalse = FALSE;  // const
   WEBAUTHN_AUTHENTICATOR_GET_ASSERTION_OPTIONS options{
-      WEBAUTHN_AUTHENTICATOR_GET_ASSERTION_OPTIONS_VERSION_6,
+      WEBAUTHN_AUTHENTICATOR_GET_ASSERTION_OPTIONS_VERSION_7,
       kWinWebAuthnTimeoutMilliseconds,
       // As of Nov 2018, the WebAuthNAuthenticatorGetAssertion method will
       // fail to challenge credentials via CTAP1 if the allowList is passed
@@ -644,6 +646,10 @@ AuthenticatorGetAssertionBlocking(WinWebAuthnApi* webauthn_api,
       large_blob.data(),
       hmac_salt_values,
       request_options.is_off_the_record_context,
+      /*pLinkedDevice=*/nullptr,
+      /*bAutoFill=*/FALSE,
+      /*cbJsonExt=*/0,
+      /*pbJsonExt=*/nullptr,
   };
 
   FIDO_LOG(DEBUG) << "WebAuthNAuthenticatorGetAssertion("

@@ -26,6 +26,7 @@
 #include "chrome/browser/policy/cloud/user_policy_signin_service.h"
 #include "chrome/browser/policy/cloud/user_policy_signin_service_factory.h"
 #include "chrome/browser/profiles/profile_metrics.h"
+#include "chrome/browser/signin/account_reconcilor_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/signin/signin_manager_factory.h"
@@ -44,8 +45,10 @@
 #include "components/keyed_service/core/keyed_service_shutdown_notifier.h"
 #include "components/policy/core/common/management/management_service.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/core/browser/account_reconcilor.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_managed_status_finder.h"
 #include "components/signin/public/identity_manager/accounts_mutator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -410,7 +413,7 @@ void TurnSyncOnHelper::CreateNewSignedInProfile() {
   dice_signed_in_profile_creator_ =
       std::make_unique<DiceSignedInProfileCreator>(
           profile_, account_info_.account_id,
-          /*local_profile_name=*/std::u16string(), /*icon_index=*/absl::nullopt,
+          /*local_profile_name=*/std::u16string(), /*icon_index=*/std::nullopt,
           base::BindOnce(&TurnSyncOnHelper::OnNewSignedInProfileCreated,
                          base::Unretained(this)));
 #else
@@ -719,6 +722,12 @@ void TurnSyncOnHelper::AttachToProfile() {
 }
 
 void TurnSyncOnHelper::AbortAndDelete() {
+  // The lock is needed here because the `SigninManager` should unset the
+  // primary account before the `AccountReconcilor` runs. The
+  // `AccountReconcilor` does not support the case where the primary account has
+  // no token.
+  AccountReconcilor::Lock lock(
+      AccountReconcilorFactory::GetForProfile(profile_));
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // If the initial primary account is still valid, reset it. This is only
   // on Lacros because the `SigninManager` does it automatically with DICE.
@@ -729,7 +738,8 @@ void TurnSyncOnHelper::AbortAndDelete() {
   }
 #endif
 
-  if (signin_aborted_mode_ == SigninAbortedMode::REMOVE_ACCOUNT) {
+  if (signin_aborted_mode_ == SigninAbortedMode::REMOVE_ACCOUNT ||
+      signin_aborted_mode_ == SigninAbortedMode::KEEP_ACCOUNT_ON_WEB_ONLY) {
     policy::UserPolicySigninServiceFactory::GetForProfile(profile_)
         ->ShutdownCloudPolicyManager();
 
@@ -738,13 +748,30 @@ void TurnSyncOnHelper::AbortAndDelete() {
     // account with no token. See https://crbug.com/1404961
     account_change_blocker_.reset();
 
-    // Revoke the token, and the `AccountReconcilor` and/or the Gaia server will
-    // take care of invalidating the cookies.
-    auto* accounts_mutator = identity_manager_->GetAccountsMutator();
-    accounts_mutator->RemoveAccount(
-        account_info_.account_id,
-        signin_metrics::SourceForRefreshTokenOperation::
-            kTurnOnSyncHelper_Abort);
+    switch (signin_aborted_mode_) {
+      case SigninAbortedMode::REMOVE_ACCOUNT: {
+        // Revoke the token, and the `AccountReconcilor` and/or the Gaia server
+        // will take care of invalidating the cookies.
+        auto* accounts_mutator = identity_manager_->GetAccountsMutator();
+        accounts_mutator->RemoveAccount(
+            account_info_.account_id,
+            signin_metrics::SourceForRefreshTokenOperation::
+                kTurnOnSyncHelper_Abort);
+        break;
+      }
+      case SigninAbortedMode::KEEP_ACCOUNT_ON_WEB_ONLY: {
+        CHECK(base::FeatureList::IsEnabled(switches::kUnoDesktop));
+        auto* primary_account_mutator =
+            identity_manager_->GetPrimaryAccountMutator();
+        primary_account_mutator->RemovePrimaryAccountButKeepTokens(
+            signin_metrics::ProfileSignout::
+                kCancelSyncConfirmationOnWebOnlySignedIn,
+            signin_metrics::SignoutDelete::kIgnoreMetric);
+        break;
+      }
+      case SigninAbortedMode::KEEP_ACCOUNT:
+        NOTREACHED_NORETURN();
+    }
   }
 
   delete this;

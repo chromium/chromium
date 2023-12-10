@@ -5,8 +5,8 @@
 #ifndef CHROME_BROWSER_ASH_WALLPAPER_HANDLERS_MOCK_SEA_PEN_FETCHER_H_
 #define CHROME_BROWSER_ASH_WALLPAPER_HANDLERS_MOCK_SEA_PEN_FETCHER_H_
 
-#include <string>
-
+#include "ash/webui/personalization_app/mojom/sea_pen.mojom-forward.h"
+#include "ash/webui/personalization_app/mojom/sea_pen.mojom.h"
 #include "base/functional/callback.h"
 #include "chrome/browser/ash/wallpaper_handlers/sea_pen_fetcher.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -23,9 +23,16 @@ class MockSeaPenFetcher : public SeaPenFetcher {
   ~MockSeaPenFetcher() override;
 
   MOCK_METHOD(void,
-              Start,
-              (const std::string& query,
-               SeaPenFetcher::OnWallpaperSearchComplete callback),
+              FetchThumbnails,
+              (const ash::personalization_app::mojom::SeaPenQueryPtr& query,
+               SeaPenFetcher::OnFetchThumbnailsComplete callback),
+              (override));
+
+  MOCK_METHOD(void,
+              FetchWallpaper,
+              (const ash::SeaPenImage& image,
+               const ash::personalization_app::mojom::SeaPenQueryPtr& query,
+               SeaPenFetcher::OnFetchWallpaperComplete callback),
               (override));
 };
 

@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/cancelable_callback.h"
@@ -23,7 +24,6 @@
 #include "components/captive_portal/core/captive_portal_types.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace network {
@@ -178,7 +178,7 @@ class NetworkPortalDetectorImpl : public NetworkPortalDetector,
   base::TimeDelta next_attempt_delay_;
 
   // Delay before next portal detection for testing.
-  absl::optional<base::TimeDelta> attempt_delay_for_testing_;
+  std::optional<base::TimeDelta> attempt_delay_for_testing_;
 
   // Timeout before attempt is timed out.
   base::TimeDelta attempt_timeout_;

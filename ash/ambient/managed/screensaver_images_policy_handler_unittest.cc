@@ -4,8 +4,8 @@
 
 #include "ash/ambient/managed/screensaver_images_policy_handler.h"
 
-#include <algorithm>
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "ash/ambient/managed/screensaver_image_downloader.h"
@@ -20,6 +20,7 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_helper.h"
 #include "base/base_paths.h"
+#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -34,7 +35,6 @@
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -267,11 +267,10 @@ class ScreensaverImagesPolicyHandlerForAnySessionTest
   void ResetScreensaverImagesPolicyHandler() { policy_handler_.reset(); }
 
   base::FilePath GetExpectedFilePath(const std::string url) {
-    const std::string hash = base::SHA1HashString(url);
-    const std::string encoded_hash = base::HexEncode(hash.data(), hash.size());
+    auto hash = base::SHA1HashSpan(base::as_bytes(base::make_span(url)));
     return temp_dir_.GetPath()
         .AppendASCII(GetParam().base_directory)
-        .AppendASCII(encoded_hash + kCacheFileExt);
+        .AppendASCII(base::HexEncode(hash) + kCacheFileExt);
   }
 };
 
@@ -323,10 +322,8 @@ TEST_P(ScreensaverImagesPolicyHandlerForAnySessionTest,
     EXPECT_TRUE(test_future.Wait());
     std::vector<base::FilePath> file_paths = test_future.Take();
     ASSERT_EQ(2u, file_paths.size());
-    EXPECT_NE(file_paths.end(),
-              std::find(file_paths.begin(), file_paths.end(), file_path1));
-    EXPECT_NE(file_paths.end(),
-              std::find(file_paths.begin(), file_paths.end(), file_path2));
+    EXPECT_TRUE(base::Contains(file_paths, file_path1));
+    EXPECT_TRUE(base::Contains(file_paths, file_path2));
   }
 
   EXPECT_TRUE(test_future.IsEmpty());
@@ -373,10 +370,8 @@ TEST_P(ScreensaverImagesPolicyHandlerForAnySessionTest, DownloadImagesTest) {
     EXPECT_TRUE(test_future.Wait());
     std::vector<base::FilePath> file_paths = test_future.Take();
     EXPECT_EQ(2u, file_paths.size());
-    EXPECT_NE(file_paths.end(), std::find(file_paths.begin(), file_paths.end(),
-                                          GetExpectedFilePath(kImageUrl1)));
-    EXPECT_NE(file_paths.end(), std::find(file_paths.begin(), file_paths.end(),
-                                          GetExpectedFilePath(kImageUrl2)));
+    EXPECT_TRUE(base::Contains(file_paths, GetExpectedFilePath(kImageUrl1)));
+    EXPECT_TRUE(base::Contains(file_paths, GetExpectedFilePath(kImageUrl2)));
   }
 }
 

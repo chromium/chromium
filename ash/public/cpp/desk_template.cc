@@ -6,6 +6,7 @@
 
 #include "ash/constants/app_types.h"
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/window_properties.h"
 #include "base/i18n/time_formatting.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
@@ -17,6 +18,8 @@
 namespace ash {
 
 namespace {
+
+constexpr char kOsFeedbackAppId[] = "iffgohomcomlpmkfikfffagkkoojjffm";
 
 std::string TabGroupDataToString(const app_restore::RestoreData* restore_data) {
   std::string result = "tab groups:[";
@@ -79,8 +82,14 @@ bool DeskTemplate::IsAppTypeSupported(aura::Window* window) {
     case AppType::ARC_APP:
     case AppType::BROWSER:
     case AppType::CHROME_APP:
-    case AppType::SYSTEM_APP:
-      break;
+      return true;
+    case AppType::SYSTEM_APP: {
+      const auto* app_id = window->GetProperty(kAppIDKey);
+      // Feedback app is not saved, see b/301479278.
+      if (app_id && *app_id == kOsFeedbackAppId) {
+        return false;
+      }
+    } break;
   }
 
   return true;
@@ -99,6 +108,7 @@ std::unique_ptr<DeskTemplate> DeskTemplate::Clone() const {
   desk_template->set_client_cache_guid(client_cache_guid_);
   desk_template->should_launch_on_startup_ = should_launch_on_startup_;
   desk_template->policy_definition_ = policy_definition_.Clone();
+  desk_template->lacros_profile_id_ = lacros_profile_id_;
   return desk_template;
 }
 
@@ -123,6 +133,8 @@ std::string DeskTemplate::ToDebugString() const {
   result += "launch id: " + base::NumberToString(launch_id_) + "\n";
   result += "auto launch: ";
   result += should_launch_on_startup_ ? "yes\n" : "no\n";
+  result +=
+      "Lacros profile ID: " + base::NumberToString(lacros_profile_id_) + "\n";
 
   // Converting to value and printing the debug string may be more
   // intensive but gives more complete information which increases

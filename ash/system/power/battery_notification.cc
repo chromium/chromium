@@ -81,7 +81,7 @@ std::u16string GetLowBatteryTitle(
       notification_state == PowerNotificationController::NOTIFICATION_CRITICAL;
 
   const bool enabling_at_threshold_notification =
-      features::IsBatterySaverAvailable() &&
+      IsBatterySaverAllowed() &&
       notification_state ==
           PowerNotificationController::NOTIFICATION_BSM_ENABLING_AT_THRESHOLD;
 
@@ -118,8 +118,7 @@ std::u16string GetLowBatteryMessage(
 
   // Send notification immediately with only battery percentage, but update
   // string to battery percentage + time remaining when available.
-  if (features::IsBatterySaverAvailable() &&
-      enabling_at_threshold_notification) {
+  if (IsBatterySaverAllowed() && enabling_at_threshold_notification) {
     return should_display_time
                ? l10n_util::GetStringFUTF16(
                      IDS_ASH_STATUS_TRAY_LOW_BATTERY_BSM_AUTOENABLED_MESSAGE,
@@ -129,7 +128,7 @@ std::u16string GetLowBatteryMessage(
                      base::NumberToString16(battery_percentage));
   }
 
-  if (features::IsBatterySaverAvailable() &&
+  if (IsBatterySaverAllowed() &&
       (opt_in_at_threshold_notification || generic_low_power_notification ||
        critical_notification)) {
     return should_display_time
@@ -146,7 +145,7 @@ std::u16string GetLowBatteryMessage(
                                     base::NumberToString16(battery_percentage));
 }
 
-absl::optional<int> CalculateNotificationButtonToken(
+std::optional<int> CalculateNotificationButtonToken(
     const PowerStatus& status,
     PowerNotificationController::NotificationState notification_state) {
   const bool no_notification =
@@ -160,9 +159,9 @@ absl::optional<int> CalculateNotificationButtonToken(
   // There are no buttons to add if either battery saver mode isn't available,
   // or if it is available, but there are no notifications showing, or if our
   // battery is a generic low power or critical notification.
-  if (!features::IsBatterySaverAvailable() || no_notification ||
+  if (!IsBatterySaverAllowed() || no_notification ||
       generic_low_power_notification || critical_battery_notification) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Note: At this point, the Notification State could be OPT_OUT, or OPT_IN.
@@ -179,9 +178,9 @@ void CalculateNotificationButtons(
     const PowerStatus& status,
     PowerNotificationController::NotificationState notification_state,
     message_center::RichNotificationData& rich_notification_data) {
-  absl::optional<int> enable_disable_bsm_token_optional =
+  std::optional<int> enable_disable_bsm_token_optional =
       CalculateNotificationButtonToken(status, notification_state);
-  if (enable_disable_bsm_token_optional == absl::nullopt) {
+  if (enable_disable_bsm_token_optional == std::nullopt) {
     return;
   }
 
@@ -194,10 +193,10 @@ void CalculateNotificationButtons(
 }
 
 void HandlePowerNotificationButtonClick(
-    absl::optional<int> token,
+    std::optional<int> token,
     PowerNotificationController* power_notification_controller,
-    const absl::optional<int> button_index) {
-  if (token == absl::nullopt || button_index == absl::nullopt) {
+    const std::optional<int> button_index) {
+  if (token == std::nullopt || button_index == std::nullopt) {
     return;
   }
 
@@ -246,7 +245,7 @@ std::unique_ptr<Notification> CreateNotification(
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_BATTERY_PERCENT),
       battery_percentage / 100.0);
 
-  const absl::optional<base::TimeDelta> time =
+  const std::optional<base::TimeDelta> time =
       status.IsBatteryCharging() ? status.GetBatteryTimeToFull()
                                  : status.GetBatteryTimeToEmpty();
 
@@ -259,7 +258,7 @@ std::unique_ptr<Notification> CreateNotification(
         IDS_ASH_STATUS_TRAY_BATTERY_CHARGING_UNRELIABLE);
   } else if (time &&
              (power_utils::ShouldDisplayBatteryTime(*time) ||
-              features::IsBatterySaverAvailable()) &&
+              IsBatterySaverAllowed()) &&
              !status.IsBatteryDischargingOnLinePower()) {
     std::u16string duration = ui::TimeFormat::Simple(
         ui::TimeFormat::FORMAT_DURATION, ui::TimeFormat::LENGTH_LONG, *time);

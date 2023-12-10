@@ -44,8 +44,8 @@ public class ForeignSessionItemViewBinder {
                 deviceIconView.setImageResource(R.drawable.restore_tabs_tablet_icon);
             }
             assert (session.formFactor == FormFactor.PHONE
-                    || session.formFactor == FormFactor.TABLET)
-                : "Unsupported form factor device retrieved.";
+                            || session.formFactor == FormFactor.TABLET)
+                    : "Unsupported form factor device retrieved.";
 
             String sessionInfo = getSessionInfo(view, session);
             TextView sessionInfoView =
@@ -66,9 +66,14 @@ public class ForeignSessionItemViewBinder {
         StringBuilder builder = new StringBuilder();
         builder.append(session.name);
         builder.append(sessionInfo);
-        builder.append(view.getContext().getResources().getString(isSelected
-                        ? R.string.restore_tabs_device_screen_selected_description
-                        : R.string.restore_tabs_device_screen_not_selected_description));
+        builder.append(
+                view.getContext()
+                        .getResources()
+                        .getString(
+                                isSelected
+                                        ? R.string.restore_tabs_device_screen_selected_description
+                                        : R.string
+                                                .restore_tabs_device_screen_not_selected_description));
         view.setContentDescription(builder.toString());
     }
 
@@ -78,11 +83,17 @@ public class ForeignSessionItemViewBinder {
             tabCount += window.tabs.size();
         }
 
-        CharSequence lastModifiedTimeString = DateUtils.getRelativeTimeSpanString(
-                session.modifiedTime, System.currentTimeMillis(), 0);
-        String sessionInfo = view.getContext().getResources().getQuantityString(
-                R.plurals.restore_tabs_promo_sheet_device_info, tabCount,
-                Integer.toString(tabCount), lastModifiedTimeString);
+        CharSequence lastModifiedTimeString =
+                DateUtils.getRelativeTimeSpanString(
+                        session.modifiedTime, System.currentTimeMillis(), 0);
+        String sessionInfo =
+                view.getContext()
+                        .getResources()
+                        .getQuantityString(
+                                R.plurals.restore_tabs_promo_sheet_device_info,
+                                tabCount,
+                                Integer.toString(tabCount),
+                                lastModifiedTimeString);
         return sessionInfo;
     }
 }

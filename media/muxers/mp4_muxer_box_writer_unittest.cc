@@ -584,7 +584,7 @@ TEST_F(Mp4MuxerBoxWriterTest, Mp4MovieVisualSampleEntry) {
   EXPECT_EQ(static_cast<uint16_t>(kWidth), video_sample_entry.width);
   EXPECT_EQ(static_cast<uint16_t>(kHeight), video_sample_entry.height);
   EXPECT_EQ(VideoCodecProfile::H264PROFILE_MAIN,
-            video_sample_entry.video_codec_profile);
+            video_sample_entry.video_info.profile);
 }
 
 TEST_F(Mp4MuxerBoxWriterTest, Mp4MovieAVCDecoderConfigurationRecord) {

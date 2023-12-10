@@ -15,9 +15,11 @@
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/gtest_util.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/clipboard/clipboard.h"
@@ -35,6 +37,7 @@
 #include "ui/gfx/text_constants.h"
 #include "ui/gfx/text_elider.h"
 #include "ui/strings/grit/ui_strings.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/base_control_test_widget.h"
@@ -548,50 +551,6 @@ TEST_F(LabelTest, MultilinePreferredSizeTest) {
   gfx::Size new_size = label()->GetPreferredSize();
   EXPECT_GT(multi_line_size.width(), new_size.width());
   EXPECT_LT(multi_line_size.height(), new_size.height());
-}
-
-TEST_F(LabelTest, SetUseLegacyPreferredSizeTest) {
-  label()->SetText(u"This is an example.");
-
-  const gfx::Size single_line_size = label()->GetPreferredSize();
-
-  // Test the preferred size when the label is not yet laid out.
-  label()->SetMultiLine(true);
-  const gfx::Size multi_line_size = label()->GetPreferredSize();
-  EXPECT_EQ(single_line_size, multi_line_size);
-
-  // Test the preferred size after the label is laid out.
-  const int layout_width = multi_line_size.width() / 2;
-  label()->SetBounds(0, 0, layout_width,
-                     label()->GetHeightForWidth(layout_width));
-
-  const gfx::Size multi_line_size_bounded =
-      label()->GetPreferredSize({single_line_size.width(), {/* Unbounded */}});
-  const gfx::Size multi_line_size_bounded2 = label()->GetPreferredSize(
-      {single_line_size.width() / 2, {/* Unbounded */}});
-
-  EXPECT_EQ(multi_line_size_bounded.width(), single_line_size.width());
-  EXPECT_GT(multi_line_size_bounded.width(), multi_line_size_bounded2.width());
-  EXPECT_LT(multi_line_size_bounded.height(),
-            multi_line_size_bounded2.height());
-
-  // After SetUseLegacyPreferredSize(true). GetPreferredSize is affected by
-  // Bounds
-  label()->SetUseLegacyPreferredSize(true);
-
-  // Explicitly specified unbounded layout should follow unbounded layout,
-  // it does not follow the constraints of SetAllowBoundedPreferredSize
-  const gfx::Size multi_line_size_unbounded =
-      label()->GetPreferredSize({/* Unbounded */});
-  EXPECT_EQ(multi_line_size, multi_line_size_unbounded);
-
-  // Explicitly specifying SetAllowBoundedPreferredSize(false),
-  // GetPreferredSize(SizeBounds) should ignore the specified width.
-  const gfx::Size multi_line_size_bounded3 =
-      label()->GetPreferredSize({single_line_size.width(), {/* Unbounded */}});
-  const gfx::Size multi_line_size_bounded4 = label()->GetPreferredSize(
-      {single_line_size.width() / 2, {/* Unbounded */}});
-  EXPECT_EQ(multi_line_size_bounded3, multi_line_size_bounded4);
 }
 
 TEST_F(LabelTest, MultilinePreferredSizeWithConstraintTest) {
@@ -1327,6 +1286,117 @@ TEST_F(LabelTest, MAYBE_ChecksSubpixelRenderingOntoOpaqueSurface) {
   view.SetBackground(CreateSolidBackground(SK_ColorWHITE));
   label->OnPaint(&canvas);
 }
+
+#if BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
+TEST_F(LabelTest, WordOffsets) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(::features::kUiaProvider);
+  const std::u16string text = u"This is a string";
+  label()->SetText(text);
+  label()->SizeToPreferredSize();
+  EXPECT_EQ(text, label()->GetDisplayTextForTesting());
+  ui::AXNodeData node_data;
+  label()->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  std::vector<int32_t> expected_starts = {0, 5, 8, 10};
+  std::vector<int32_t> expected_ends = {4, 7, 9, 16};
+  EXPECT_EQ(
+      node_data.GetIntListAttribute(ax::mojom::IntListAttribute::kWordStarts),
+      expected_starts);
+  EXPECT_EQ(
+      node_data.GetIntListAttribute(ax::mojom::IntListAttribute::kWordEnds),
+      expected_ends);
+}
+
+TEST_F(LabelTest, AccessibleGraphemeOffsets) {
+  struct {
+    std::u16string text;
+    std::vector<int32_t> expected_offsets;
+  } cases[] = {
+      {std::u16string(), {}},
+      // LTR.
+      {u"This is a string",
+       {0, 6, 13, 15, 21, 24, 27, 32, 35, 41, 45, 50, 54, 58, 61, 68, 76}},
+      // RTL: should render left-to-right as "<space>43210 \n cba9876".
+      // Note this used to say "Arabic language", in Arabic, but the last
+      // character in the string (\u0629) got fancy in an updated Mac font, so
+      // now the penultimate character repeats.
+      //
+      // TODO(accessibility): This is not the correct order of grapheme offsets.
+      // Blink returns the offsets from the right boundary when in RTL and so
+      // should we for Views.
+      {u"اللغة العربيي",
+       {67, 63, 59, 52, 46, 43, 40, 36, 29, 24, 20, 16, 6, 17}},
+      // LTR कि (DEVANAGARI KA with VOWEL I) (2-char grapheme), LTR abc, and LTR
+      // कि.
+      {u"\u0915\u093fabc\u0915\u093f", {10, 23, 29, 36, 42, 56}},
+      // LTR ab, LTR कि (DEVANAGARI KA with VOWEL I) (2-char grapheme), LTR cd.
+      {u"ab\u0915\u093fcd", {3, 9, 16, 29, 35, 43}},
+      // LTR ab, 𝄞 'MUSICAL SYMBOL G CLEF' U+1D11E (surrogate pair), LTR cd.
+      // Windows requires wide strings for \Unnnnnnnn universal character names.
+      {u"ab\U0001D11Ecd", {4, 10, 17, 23, 29, 37}},
+  };
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(::features::kUiaProvider);
+
+  for (size_t i = 0; i < std::size(cases); i++) {
+    SCOPED_TRACE(base::StringPrintf("Testing cases[%" PRIuS "]", i));
+    label()->SetText(cases[i].text);
+    label()->SizeToPreferredSize();
+    EXPECT_EQ(cases[i].text, label()->GetDisplayTextForTesting());
+
+    ui::AXNodeData node_data;
+    label()->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+    EXPECT_EQ(node_data.GetIntListAttribute(
+                  ax::mojom::IntListAttribute::kCharacterOffsets),
+              cases[i].expected_offsets);
+  }
+}
+
+TEST_F(LabelTest, AccessibleGraphemeOffsetsObscured) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(::features::kUiaProvider);
+  const std::u16string text = u"password";
+  label()->SetText(text);
+  label()->SizeToPreferredSize();
+  label()->SetObscured(true);
+  EXPECT_EQ(
+      std::u16string(text.size(), gfx::RenderText::kPasswordReplacementChar),
+      label()->GetDisplayTextForTesting());
+  ui::AXNodeData node_data;
+  label()->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  std::vector<int32_t> expected_offsets = {6, 10, 15, 20, 25, 30, 35, 40, 45};
+  EXPECT_EQ(node_data.GetIntListAttribute(
+                ax::mojom::IntListAttribute::kCharacterOffsets),
+            expected_offsets);
+}
+
+TEST_F(LabelTest, AccessibleGraphemeOffsetsElided) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(::features::kUiaProvider);
+  const std::u16string text = u"This is a string";
+
+  label()->SetText(text);
+  gfx::Size size = label()->GetPreferredSize();
+  label()->SetBoundsRect(gfx::Rect(size));
+  EXPECT_EQ(text, label()->GetDisplayTextForTesting());
+
+  size.set_width(size.width() / 2);
+  label()->SetBoundsRect(gfx::Rect(size));
+  EXPECT_GT(text.size(), label()->GetDisplayTextForTesting().size());
+
+  label()->SetElideBehavior(gfx::ELIDE_TAIL);
+  EXPECT_EQ(u"This i\x2026", label()->GetDisplayTextForTesting());
+
+  ui::AXNodeData node_data;
+  label()->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  std::vector<int32_t> expected_offsets = {1,  7,  14, 16, 22, 25, 28, 38, 38,
+                                           38, 38, 38, 38, 38, 38, 38, 38};
+  EXPECT_EQ(node_data.GetIntListAttribute(
+                ax::mojom::IntListAttribute::kCharacterOffsets),
+            expected_offsets);
+}
+#endif  // BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
 
 TEST_F(LabelSelectionTest, Selectable) {
   // By default, labels don't support text selection.

@@ -26,9 +26,7 @@ public class PriceCardView extends FrameLayout {
         super(context, attrs);
     }
 
-    /**
-     * Sets the current price string and previous price string when a price drop is detected
-     */
+    /** Sets the current price string and previous price string when a price drop is detected */
     public void setPriceStrings(String priceString, String previousPriceString) {
         assert !TextUtils.isEmpty(priceString) && !TextUtils.isEmpty(previousPriceString);
         mPriceInfoBox.setText(priceString);

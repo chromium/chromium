@@ -2,23 +2,15 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//tools/typescript/ts_library.gni")
-import("//ui/webui/resources/tools/generate_grd.gni")
+import("../../build_webui_tests.gni")
 
-ts_library("build_ts") {
-  root_dir = "."
-  out_dir = "$target_gen_dir/tsc"
-  tsconfig_base = "../../tsconfig_base.json"
-  path_mappings = [
-    "chrome://shortcut-customization/*|" +
+build_webui_tests("build_webui_tests") {
+  ts_path_mappings =
+      [ "chrome://shortcut-customization/*|" +
         rebase_path(
             "$root_gen_dir/ash/webui/shortcut_customization_ui/resources/tsc/*",
-            target_gen_dir),
-    "chrome://webui-test/*|" +
-        rebase_path("$root_gen_dir/chrome/test/data/webui/tsc/*",
-                    target_gen_dir),
-  ]
-  in_files = [
+            target_gen_dir) ]
+  files = [
     "accelerator_edit_dialog_test.ts",
     "accelerator_edit_view_test.ts",
     "accelerator_lookup_manager_test.ts",
@@ -28,7 +20,6 @@ ts_library("build_ts") {
     "bottom_nav_content_test.ts",
     "fake_shortcut_provider_test.ts",
     "fake_shortcut_search_handler_test.ts",
-    "input_key_test.ts",
     "router_test.ts",
     "search_box_test.ts",
     "search_result_bolding_test.ts",
@@ -40,22 +31,11 @@ ts_library("build_ts") {
     "shortcut_utils_test.ts",
     "text_accelerator_test.ts",
   ]
-  deps = [
-    "../..:build_ts",
+  ts_deps = [
     "//ash/webui/common/resources:build_ts",
     "//ash/webui/shortcut_customization_ui/resources:build_ts",
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
   ]
-}
-
-generate_grd("build_grdp") {
-  grd_prefix = "webui_chromeos_shortcut_customization"
-  out_grd = "$target_gen_dir/resources.grdp"
-
-  deps = [ ":build_ts" ]
-  manifest_files =
-      filter_include(get_target_outputs(":build_ts"), [ "*_manifest.json" ])
-  resource_path_prefix = "chromeos/shortcut_customization"
 }

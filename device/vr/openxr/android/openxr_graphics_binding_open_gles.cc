@@ -16,6 +16,7 @@
 #include "gpu/command_buffer/common/gpu_memory_buffer_support.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/ahardwarebuffer_utils.h"
+#include "gpu/ipc/common/android/android_hardware_buffer_utils.h"
 #include "gpu/ipc/common/gpu_memory_buffer_impl_android_hardware_buffer.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
 #include "ui/gfx/buffer_types.h"
@@ -30,10 +31,6 @@
 #include "ui/gl/scoped_egl_image.h"
 
 namespace device {
-
-namespace {
-int next_memory_buffer_id = 0;
-}  // namespace
 
 // static
 void OpenXrGraphicsBinding::GetRequiredExtensions(
@@ -87,8 +84,7 @@ bool OpenXrGraphicsBindingOpenGLES::Initialize(XrInstance instance,
   DCHECK(gl::GetGLImplementation() != gl::kGLImplementationEGLANGLE);
 
   scoped_refptr<gl::GLSurface> surface;
-  surface = gl::init::CreateOffscreenGLSurfaceWithFormat(display, {0, 0},
-                                                         gl::GLSurfaceFormat());
+  surface = gl::init::CreateOffscreenGLSurface(display, {0, 0});
 
   DVLOG(3) << "surface=" << surface.get();
   if (!surface.get()) {
@@ -224,29 +220,32 @@ void OpenXrGraphicsBindingOpenGLES::ResizeSharedBuffer(
 
   static constexpr gfx::BufferFormat format = gfx::BufferFormat::RGBA_8888;
   static constexpr gfx::BufferUsage usage = gfx::BufferUsage::SCANOUT;
-
-  glGenTextures(1, &swap_chain_info.shared_buffer_texture);
-
-  gfx::GpuMemoryBufferId kBufferId(next_memory_buffer_id++);
-  swap_chain_info.gmb = gpu::GpuMemoryBufferImplAndroidHardwareBuffer::Create(
-      kBufferId, transfer_size, format, usage,
-      gpu::GpuMemoryBufferImpl::DestructionCallback());
-  swap_chain_info.shared_buffer_size = transfer_size;
-
   uint32_t shared_image_usage = gpu::SHARED_IMAGE_USAGE_SCANOUT |
                                 gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
                                 gpu::SHARED_IMAGE_USAGE_GLES2;
 
+  glGenTextures(1, &swap_chain_info.shared_buffer_texture);
+
+  swap_chain_info.scoped_ahb_handle =
+      gpu::CreateScopedHardwareBufferHandle(transfer_size, format, usage);
+  swap_chain_info.shared_buffer_size = transfer_size;
+
+  // Create a GMB Handle from scoped_ahb_handle.
+  gfx::GpuMemoryBufferHandle gmb_handle;
+  gmb_handle.type = gfx::ANDROID_HARDWARE_BUFFER;
+  // GpuMemoryBufferId is not used in this case and hence hardcoding it to 1.
+  gmb_handle.id = gfx::GpuMemoryBufferId(1);
+  gmb_handle.android_hardware_buffer =
+      swap_chain_info.scoped_ahb_handle.Clone();
+
   auto client_shared_image = sii->CreateSharedImage(
-      viz::SinglePlaneFormat::kRGBA_8888, swap_chain_info.gmb->GetSize(),
-      gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
-      shared_image_usage, "OpenXrGraphicsBinding",
-      swap_chain_info.gmb->CloneHandle());
+      viz::SinglePlaneFormat::kRGBA_8888, transfer_size, gfx::ColorSpace(),
+      kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, shared_image_usage,
+      "OpenXrGraphicsBinding", std::move(gmb_handle));
   CHECK(client_shared_image);
   swap_chain_info.mailbox_holder.mailbox = client_shared_image->mailbox();
   swap_chain_info.mailbox_holder.sync_token = sii->GenVerifiedSyncToken();
-  DCHECK(!gpu::NativeBufferNeedsPlatformSpecificTextureTarget(
-      swap_chain_info.gmb->GetFormat()));
+  DCHECK(!gpu::NativeBufferNeedsPlatformSpecificTextureTarget(format));
   swap_chain_info.mailbox_holder.texture_target = GL_TEXTURE_2D;
 
   DVLOG(2) << ": CreateSharedImage, mailbox="
@@ -254,11 +253,9 @@ void OpenXrGraphicsBindingOpenGLES::ResizeSharedBuffer(
            << ", SyncToken="
            << swap_chain_info.mailbox_holder.sync_token.ToDebugString();
 
-  base::android::ScopedHardwareBufferHandle ahb =
-      swap_chain_info.gmb->CloneHandle().android_hardware_buffer;
-
   // Create an EGLImage for the buffer.
-  auto egl_image = gpu::CreateEGLImageFromAHardwareBuffer(ahb.get());
+  auto egl_image = gpu::CreateEGLImageFromAHardwareBuffer(
+      swap_chain_info.scoped_ahb_handle.get());
   if (!egl_image.is_valid()) {
     DLOG(WARNING) << __func__ << ": ERROR: failed to initialize image!";
     return;

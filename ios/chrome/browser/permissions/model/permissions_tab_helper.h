@@ -39,12 +39,12 @@ class PermissionsTabHelper
   // access `permissions` on the device.
   void PresentPermissionsDecisionDialogWithCompletionHandler(
       NSArray<NSNumber*>* permissions,
-      web::WebStatePermissionDecisionHandler handler) API_AVAILABLE(ios(15.0));
+      web::WebStatePermissionDecisionHandler handler);
 
   // web::WebStateObserver implementation.
   void PermissionStateChanged(web::WebState* web_state,
-                              web::Permission permission) override
-      API_AVAILABLE(ios(15.0));
+                              web::Permission permission) override;
+
   void WebStateDestroyed(web::WebState* web_state) override;
 
   // infobars::InfoBarManager::Observer implementation.

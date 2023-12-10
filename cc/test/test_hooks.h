@@ -142,7 +142,7 @@ class TestHooks : public AnimationDelegate {
       base::TimeTicks animation_start_time,
       std::unique_ptr<gfx::AnimationCurve> curve) override {}
   void NotifyLocalTimeUpdated(
-      absl::optional<base::TimeDelta> local_time) override {}
+      std::optional<base::TimeDelta> local_time) override {}
 
   // OutputSurface indirections to the LayerTreeTest, that can be further
   // overridden.

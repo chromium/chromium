@@ -34,11 +34,14 @@ mojom("cros_camera") {
   ]
 
   deps = [
-    "//chromeos/components/sensors/mojom",
     "//components/chromeos_camera/common",
     "//media/capture/mojom:image_capture",
   ]
-  public_deps = [ ":cros_camera_common" ]
+
+  public_deps = [
+    ":cros_camera_common",
+    "//mojo/public/mojom/base",
+  ]
 }
 
 mojom("jpeg_accelerator") {

@@ -1,68 +1,42 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Cross origin iframes have their URI censored</title>
-    <script src="/resources/testharness.js"></script>
-    <script src="/resources/testharnessreport.js"></script>
-    <script src='../support/logTest.sub.js?logs=["PASS IFrame %231 generated a load event.", "blocked-uri=http://{{domains[www1]}}:{{ports[http][0]}}"]'></script>
-    <!-- CSP headers
+  <title>Cross origin iframes have their URI censored</title>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <!-- CSP headers
 Content-Security-Policy: script-src 'self' 'unsafe-inline'
 Content-Security-Policy-Report-Only: frame-src 'none'; script-src 'self' 'unsafe-inline'; report-uri /reporting/resources/report.py?op=put&reportID=$id
 -->
 </head>
 <body>
-    <script>
-        window.addEventListener("message", function(event) {
-            alert_assert(event.data);
-        }, false);
+  <script>
+    let iframe = document.createElement('iframe');
+    iframe.src = "http://{{domains[www1]}}:{{ports[http][0]}}" +
+                 "/content-security-policy/support/postmessage-pass.html";
 
-        window.addEventListener("securitypolicyviolation", function(e) {
-             log("blocked-uri=" + e.blockedURI);
-        });
+    let test_load_event = async_test("The load event triggers");
+    iframe.onload = test_load_event.step_func_done();
 
-        var t_alert = async_test('Expecting alerts: ["PASS"]');
-        var expected_alerts = ["PASS"];
+    let test_iframe_allowed = async_test("The iframe is allowed to load.");
+    window.addEventListener("message", test_iframe_allowed.step_func(event => {
+      if (event.source === iframe.contentWindow) {
+        assert_equals(event.data, "PASS");
+        test_iframe_allowed.done();
+      }
+    }));
 
-        function alert_assert(msg) {
-            t_alert.step(function() {
-                if (msg.match(/^FAIL/i)) {
-                    assert_unreached(msg);
-                    t_alert.done();
-                }
-                for (var i = 0; i < expected_alerts.length; i++) {
-                    if (expected_alerts[i] == msg) {
-                        assert_equals(expected_alerts[i], msg);
-                        expected_alerts.splice(i, 1);
-                        if (expected_alerts.length == 0) {
-                            t_alert.done();
-                        }
-                        return;
-                    }
-                }
-                assert_unreached('unexpected alert: ' + msg);
-                t_alert.done();
-            });
-        }
+    let test_spv = async_test("The securitypolicyviolation is triggered.");
+    window.addEventListener("securitypolicyviolation",
+                            test_spv.step_func_done(e => {
+      assert_equals(e.blockedURI,
+                    "http://{{domains[www1]}}:{{ports[http][0]}}");
+    }));
 
-    </script>
-    <p>
-        This iframe should be allowed, but the produced report should have a censored URI.
-    </p>
-    <script>
-        window.wasPostTestScriptParsed = true;
-        var loads = 0;
+    document.body.appendChild(iframe);
+  </script>
 
-        function loadEvent() {
-            loads++;
-            log("PASS " + "IFrame #" + loads + " generated a load event.");
-        }
-
-    </script>
-
-    <iframe src="http://{{domains[www1]}}:{{ports[http][0]}}/content-security-policy/support/postmessage-pass.html" onload="loadEvent()"></iframe>
-    <div id="log"></div>
-
-    <!-- Ensure that we get the censored URI (without the full path) here: -->
-    <script async defer src='../support/checkReport.sub.js?reportField=blocked-uri&reportValue=http://{{domains[www1]}}:{{ports[http][0]}}'></script>
+  <!-- Ensure that we get the censored URI (without the full path) here: -->
+  <script async defer src='../support/checkReport.sub.js?reportField=blocked-uri&reportValue=http://{{domains[www1]}}:{{ports[http][0]}}'></script>
 </body>
 </html>

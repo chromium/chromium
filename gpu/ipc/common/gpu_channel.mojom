@@ -19,6 +19,7 @@ import "ui/gfx/geometry/mojom/geometry.mojom";
 import "ui/gfx/mojom/buffer_types.mojom";
 import "ui/gfx/mojom/color_space.mojom";
 import "ui/gfx/mojom/gpu_fence_handle.mojom";
+import "ui/gfx/mojom/native_handle_types.mojom";
 import "ui/gfx/mojom/presentation_feedback.mojom";
 import "ui/gl/mojom/gpu_preference.mojom";
 import "url/mojom/url.mojom";
@@ -60,10 +61,8 @@ struct ContextCreationAttribs {
   bool enable_grcontext = false;
   bool enable_raster_interface = false;
   bool enable_oop_rasterization = false;
-  bool enable_swap_timestamps_if_supported = false;
 
   ContextType context_type = kOpenGLES2;
-  ContextColorSpace color_space = kUnspecified;
 };
 
 struct CreateCommandBufferParams {
@@ -482,6 +481,18 @@ union DeferredSharedImageRequest {
   // See PresentSwapChainParams.
   [EnableIf=is_win]
   PresentSwapChainParams present_swap_chain;
+
+  // See RegisterDxgiFenceParams.
+  [EnableIf=is_win]
+  RegisterDxgiFenceParams register_dxgi_fence;
+
+  // See UpdateDxgiFenceParams.
+  [EnableIf=is_win]
+  UpdateDxgiFenceParams update_dxgi_fence;
+
+  // See UnregisterDxgiFenceParams.
+  [EnableIf=is_win]
+  UnregisterDxgiFenceParams unregister_dxgi_fence;
 };
 
 // Asynchronously synchronize the put and get offsets of both processes.
@@ -740,4 +751,38 @@ struct PresentSwapChainParams {
 
   // The fence to release once the swap chain is presented.
   uint32 release_id;
+};
+
+[EnableIf=is_win]
+struct RegisterDxgiFenceParams {
+  // Mailbox identifying the shared image backing to register fence.
+  Mailbox mailbox;
+
+  // The DXGIHandleToken to identifying the registered gpu fence handle.
+  // Use this token to update fence after registration.
+  gfx.mojom.DXGIHandleToken dxgi_token;
+
+  // The fence handle to register.
+  gfx.mojom.GpuFenceHandle fence_handle;
+};
+
+[EnableIf=is_win]
+struct UpdateDxgiFenceParams {
+  // Mailbox identifying the shared image backing to update the fence.
+  Mailbox mailbox;
+
+  // The DXGIHandleToken to identifying the fence to update.
+  gfx.mojom.DXGIHandleToken dxgi_token;
+
+  // The fence value to signal.
+  uint64 fence_value;
+};
+
+[EnableIf=is_win]
+struct UnregisterDxgiFenceParams {
+  // Mailbox identifying the shared image backing to clear the fence.
+  Mailbox mailbox;
+
+  // The DXGIHandleToken to identifying the fence needs to be cleared.
+  gfx.mojom.DXGIHandleToken dxgi_token;
 };

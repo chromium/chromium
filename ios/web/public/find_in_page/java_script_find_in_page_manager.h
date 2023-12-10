@@ -17,6 +17,11 @@ class JavaScriptFindInPageManager
  public:
   JavaScriptFindInPageManager() = default;
 
+  // Need to overload CreateForWebState() as the default implementation
+  // inherited from WebStateUserData<FindInPageManager> would create a
+  // FindInPageManager which is a pure abstract class.
+  static void CreateForWebState(WebState* web_state);
+
   JavaScriptFindInPageManager(const JavaScriptFindInPageManager&) = delete;
   JavaScriptFindInPageManager& operator=(const JavaScriptFindInPageManager&) =
       delete;

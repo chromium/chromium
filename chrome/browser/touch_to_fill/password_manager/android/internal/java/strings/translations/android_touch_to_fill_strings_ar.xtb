@@ -1,0 +1,27 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="ar">
+<translation id="1220509181886849806">هل تريد استخدام كلمة المرور المحفوظة؟</translation>
+<translation id="1435940442311036198">استخدام مفتاح مرور على جهاز آخر</translation>
+<translation id="1717486229951421299">تم فتح قائمة بيانات الاعتماد التي يتم ملؤها باللمس على طول النصف السفلي من الشاشة.</translation>
+<translation id="2359808026110333948">متابعة</translation>
+<translation id="2364266287022099258">هل تريد استخدام مفتاح المرور المحفوظ؟</translation>
+<translation id="3399357656427473483">قائمة ببيانات الاعتماد التي يتم ملؤها باللمس</translation>
+<translation id="3653689374478248324">سيتم تسجيل دخولك إلى <ph name="SITE_NAME" />.</translation>
+<translation id="3950820424414687140">تسجيل الدخول</translation>
+<translation id="4553044860350038560">المزيد من مفاتيح المرور</translation>
+<translation id="4598345735110653698">إدارة مفاتيح المرور</translation>
+<translation id="4722735765955348426">كلمة مرور <ph name="USERNAME" /></translation>
+<translation id="4907224763885298217">استخدام قفل الشاشة</translation>
+<translation id="5012523644916800014">إدارة كلمات المرور ومفاتيح المرور</translation>
+<translation id="5441504010984421144">تم فتح قائمة بيانات الاعتماد التي يجب ملؤها باللمس على طول الشاشة.</translation>
+<translation id="5591247451101092906">هل تريد استخدام كلمة المرور أو مفتاح المرور المحفوظَين؟</translation>
+<translation id="5624120631404540903">إدارة كلمات المرور</translation>
+<translation id="6560306912274274630">مفتاح مرور "<ph name="USERNAME" />": عليك استخدام قفل الشاشة.</translation>
+<translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{هناك كلمة مرور جديدة لهذا الموقع الإلكتروني}zero{ما مِن كلمات مرور جديدة لهذا الموقع الإلكتروني}two{هناك كلمتا مرور جديدتان لهذا الموقع الإلكتروني}few{هناك كلمات مرور جديدة لهذا الموقع الإلكتروني}many{هناك كلمات مرور جديدة لهذا الموقع الإلكتروني}other{هناك كلمات مرور جديدة لهذا الموقع الإلكتروني}}</translation>
+<translation id="7286867818472074330">اختيار مفتاح المرور</translation>
+<translation id="7669320311687290322"><ph name="ITEM_LABEL" />، <ph name="ITEM_POSITION" /> من إجمالي <ph name="ITEMS_TOTAL" /></translation>
+<translation id="7738288782501322815">لقد تلقّيت كلمات مرور للموقع الإلكتروني <ph name="SITE_NAME" /></translation>
+<translation id="8614995815226664591">لقد تلقّيت من "<ph name="SENDER_NAME" />" كلمة مرور للموقع الإلكتروني <ph name="SITE_NAME" /></translation>
+<translation id="8891372124884726271">تم إغلاق قائمة بيانات الاعتماد.</translation>
+</translationbundle>

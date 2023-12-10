@@ -323,6 +323,12 @@ void ResetAuthentication() {
       isEqualToString:NSStringFromSelector(selector)];
 }
 
+- (void)triggerRestoreByRestartingApplication {
+  AppLaunchConfiguration config = [self appConfigurationForTestCase];
+  config.relaunch_policy = ForceRelaunchByCleanShutdown;
+  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
+}
+
 + (void)testForStartup {
   gStartupTest = YES;
 }

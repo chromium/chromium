@@ -1,0 +1,14 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<!-- This file is generated using tools/search_engine_choice/generate_search_engine_snippets.py. Do not modify it manually. -->
+<translationbundle lang="bg">
+  <translation id="IDS_BING_SEARCH_DESCRIPTION">Бързо, точно и поверително търсене от Microsoft</translation>
+  <translation id="IDS_DUCKDUCKGO_SEARCH_DESCRIPTION">Ние не те следим. Поверителност, опростена.</translation>
+  <translation id="IDS_GOOGLE_SEARCH_DESCRIPTION">Намирайте това, което ви е необходимо, с помощта на най-използваната в света търсеща машина.</translation>
+  <translation id="IDS_INFOCOM_SEARCH_DESCRIPTION">Бързо и лесно търсене</translation>
+  <translation id="IDS_MOJEEK_SEARCH_DESCRIPTION">Независима, европейска търсачка без проследяване</translation>
+  <translation id="IDS_OCEANHERO_SEARCH_DESCRIPTION">Помогнете за спиране на замърсяването на океана заедно с OceanHero.</translation>
+  <translation id="IDS_PRIVACYWALL_SEARCH_DESCRIPTION">Търсачка, която защитава вашата поверителност.</translation>
+  <translation id="IDS_YANDEX_SEARCH_DESCRIPTION">Бързо и надеждно търсене на сайтове, изображения и видеоклипове</translation>
+  <translation id="IDS_YEP_SEARCH_DESCRIPTION">Уеб търсачка, която има за цел споделя приходи от реклами с създателите.</translation>
+</translationbundle>

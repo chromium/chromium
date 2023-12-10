@@ -44,10 +44,17 @@ class BridgeImpl : public AutoTranslateSnackbarController::Bridge {
   void ShowSnackbar(
       JNIEnv* env,
       base::android::ScopedJavaLocalRef<jstring> target_language) override {
+    if (!CanShowSnackbar()) {
+      return;
+    }
     Java_AutoTranslateSnackbarController_show(
         env, java_auto_translate_snackbar_controller_,
         std::move(target_language));
     is_showing_ = true;
+  }
+
+  bool CanShowSnackbar() override {
+    return bool(java_auto_translate_snackbar_controller_);
   }
 
   void WasDismissed() override { is_showing_ = false; }
@@ -55,11 +62,12 @@ class BridgeImpl : public AutoTranslateSnackbarController::Bridge {
   bool IsSnackbarShowing() override { return is_showing_; }
 
   void DismissSnackbar(JNIEnv* env) override {
-    if (java_auto_translate_snackbar_controller_) {
-      Java_AutoTranslateSnackbarController_dismiss(
-          env, java_auto_translate_snackbar_controller_);
-      is_showing_ = false;
+    if (!CanShowSnackbar()) {
+      return;
     }
+    Java_AutoTranslateSnackbarController_dismiss(
+        env, java_auto_translate_snackbar_controller_);
+    is_showing_ = false;
   }
 
  private:
@@ -88,8 +96,6 @@ AutoTranslateSnackbarController::AutoTranslateSnackbarController(
     : AutoTranslateSnackbarController(web_contents,
                                       translate_manager,
                                       std::make_unique<BridgeImpl>()) {
-  JNIEnv* env = base::android::AttachCurrentThread();
-  bridge_->CreateAutoTranslateSnackbarController(env, web_contents_, this);
 }
 
 AutoTranslateSnackbarController::~AutoTranslateSnackbarController() {
@@ -102,6 +108,15 @@ void AutoTranslateSnackbarController::ShowSnackbar(
   JNIEnv* env = base::android::AttachCurrentThread();
   base::android::ScopedJavaLocalRef<jstring> java_target_langauge =
       base::android::ConvertUTF8ToJavaString(env, target_language);
+  // If this is the first time ShowSnackbar has been called or the Java
+  // AutoTranslateSnackbar failed to be created last time, create it.
+  if (!bridge_->CanShowSnackbar() &&
+      !bridge_->CreateAutoTranslateSnackbarController(env, web_contents_,
+                                                      this)) {
+    // The Java AutoTranslateSnackbar failed to create, such as
+    // when the activity is being destroyed, so there is no Snackbar to show.
+    return;
+  }
   bridge_->ShowSnackbar(env, java_target_langauge);
 }
 

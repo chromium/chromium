@@ -6,8 +6,6 @@ package org.chromium.chrome.browser.feed;
 
 /** Interface to listen events about feed loading from FeedStream. */
 public interface FeedContentFirstLoadWatcher {
-    /**
-     * Called when some actual (non-native) content has loaded for the first time.
-     */
+    /** Called when some actual (non-native) content has loaded for the first time. */
     void nonNativeContentLoaded(@StreamKind int kind);
 }

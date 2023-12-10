@@ -238,7 +238,7 @@ bool AppendRelativePath(const base::FilePath& parent,
 }
 
 // Translates known DriveFS folders into their localized message id.
-absl::optional<int> DriveFsFolderToMessageId(std::string folder) {
+std::optional<int> DriveFsFolderToMessageId(std::string folder) {
   if (folder == kDriveFsDirRoot) {
     return IDS_FILE_BROWSER_DRIVE_MY_DRIVE_LABEL;
   } else if (folder == kDriveFsDirTeamDrives) {
@@ -250,11 +250,11 @@ absl::optional<int> DriveFsFolderToMessageId(std::string folder) {
   } else if (folder == kDriveFsDirShortcutsSharedWithMe) {
     return IDS_FILE_BROWSER_DRIVE_SHARED_WITH_ME_COLLECTION_LABEL;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 // Translates special My Files folders into their localized message id.
-absl::optional<int> MyFilesFolderToMessageId(std::string folder) {
+std::optional<int> MyFilesFolderToMessageId(std::string folder) {
   if (folder == kFolderNameDownloads) {
     return IDS_FILE_BROWSER_DOWNLOADS_DIRECTORY_LABEL;
   } else if (folder == kFolderNamePvmDefault) {
@@ -262,7 +262,7 @@ absl::optional<int> MyFilesFolderToMessageId(std::string folder) {
   } else if (folder == kFolderNameCamera) {
     return IDS_FILE_BROWSER_CAMERA_DIRECTORY_LABEL;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 }  // namespace
@@ -1113,12 +1113,12 @@ std::u16string GetDisplayableFileName16(storage::FileSystemURL file_url) {
   return base::UTF8ToUTF16(GetDisplayableFileName(file_url.ToGURL()));
 }
 
-absl::optional<base::FilePath> GetDisplayablePath(Profile* profile,
-                                                  base::FilePath path) {
+std::optional<base::FilePath> GetDisplayablePath(Profile* profile,
+                                                 base::FilePath path) {
   base::WeakPtr<Volume> volume =
       file_manager::VolumeManager::Get(profile)->FindVolumeFromPath(path);
   if (!volume) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   base::FilePath mount_relative_path;
@@ -1137,11 +1137,11 @@ absl::optional<base::FilePath> GetDisplayablePath(Profile* profile,
       // The first directory indicates which Drive the path is in, so check it
       // against the expected directories. e.g. My Drive, Shared with me, etc.
       if (cur_component == path_components.end()) {
-        return absl::nullopt;
+        return std::nullopt;
       }
       auto maybe_id = DriveFsFolderToMessageId(*cur_component);
       if (!maybe_id.has_value()) {
-        return absl::nullopt;
+        return std::nullopt;
       }
       result = result.Append(l10n_util::GetStringUTF8(*maybe_id));
       cur_component++;
@@ -1186,10 +1186,10 @@ absl::optional<base::FilePath> GetDisplayablePath(Profile* profile,
       break;
     case VOLUME_TYPE_TESTING:
     case VOLUME_TYPE_SYSTEM_INTERNAL:
-      return absl::nullopt;
+      return std::nullopt;
     case NUM_VOLUME_TYPE:
       NOTREACHED();
-      return absl::nullopt;
+      return std::nullopt;
   }
   while (cur_component != path_components.end()) {
     result = result.Append(*cur_component);
@@ -1198,7 +1198,7 @@ absl::optional<base::FilePath> GetDisplayablePath(Profile* profile,
   return result;
 }
 
-absl::optional<base::FilePath> GetDisplayablePath(
+std::optional<base::FilePath> GetDisplayablePath(
     Profile* profile,
     storage::FileSystemURL file_url) {
   return GetDisplayablePath(profile, file_url.path());
@@ -1214,7 +1214,7 @@ std::vector<ui::FileInfo> ParseFileSystemSources(
     return file_info;
   }
 
-  absl::optional<std::u16string> maybe_file_system_url_list =
+  std::optional<std::u16string> maybe_file_system_url_list =
       ui::ReadCustomDataForType(pickle, kFilesAppMimeSources);
   if (!maybe_file_system_url_list || maybe_file_system_url_list->empty()) {
     return file_info;

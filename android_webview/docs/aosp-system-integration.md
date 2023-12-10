@@ -277,21 +277,17 @@ proprietary_codecs = true
 
 #### Crash stack unwinding
 
-By default, builds using `is_official_build = true` exclude unwind tables from
-the binaries, as they significantly increase binary size. Google's builds rely
-on crashes being reported using Crashpad, which can then be decoded server-side.
-If you don't intend to enable Crashpad and set up dedicated crash reporting
-infrastructure for your WebView, you may wish to re-enable the unwind tables
-with the following GN argument:
+By default, WebView builds include unwind tables in the final APK. We recommend
+keeping this default because it helps Android's default debuggerd process report
+meaningful stack traces for crashes that occur inside WebView's native code.
+This is how Google's WebView builds are configured.
+
+If you choose to go against this recommendation, you may exclude unwind tables
+from your WebView build to save some binary size:
 
 ``` gn
-exclude_unwind_tables = false
+exclude_unwind_tables = true
 ```
-
-This will allow Android's debuggerd to produce meaningful stack traces for
-crashes that occur inside WebView's native code. We don't recommend using this
-setting in shipping builds due to the binary size impact, but it may be the only
-alternative if using Crashpad is impractical.
 
 #### Other build options
 

@@ -80,6 +80,9 @@ class PerformanceManagerTabHelper
   void OnFrameVisibilityChanged(
       content::RenderFrameHost* render_frame_host,
       blink::mojom::FrameVisibility visibility) override;
+  void OnFrameIsCapturingMediaStreamChanged(
+      content::RenderFrameHost* render_frame_host,
+      bool is_capturing_media_stream) override;
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
   void TitleWasSet(content::NavigationEntry* entry) override;

@@ -14,7 +14,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
-#include "chrome/browser/ui/webui/signin/enterprise_profile_welcome_ui.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -84,7 +83,14 @@ enum class SigninInterceptionHeuristicOutcome {
   // in to Chrome.
   kInterceptChromeSignin = 19,
 
-  kMaxValue = kInterceptChromeSignin,
+  // Interception aborted:
+  // The user signed out while the interception was in progress.
+  kAbortSignedOut = 20,
+  // This is not the first account in the identity manager but there is no
+  // primary account.
+  kAbortNotFirstAccountButNoPrimaryAccount = 21,
+
+  kMaxValue = kAbortNotFirstAccountButNoPrimaryAccount,
 };
 
 // User selection in the interception bubble.

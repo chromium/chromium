@@ -9,13 +9,11 @@
 #import "base/metrics/user_metrics_action.h"
 #import "components/sessions/core/tab_restore_service.h"
 #import "ios/chrome/browser/policy/policy_util.h"
-#import "ios/chrome/browser/sessions/session_restoration_browser_agent.h"
-#import "ios/chrome/browser/sessions/session_window_ios.h"
-#import "ios/chrome/browser/sessions/web_state_list_serialization.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/snapshots/model/snapshot_browser_agent.h"
 #import "ios/chrome/browser/tabs/model/features.h"
+#import "ios/chrome/browser/tabs/model/tabs_closer.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_collection_consumer.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_consumer.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_toolbars_configuration_provider.h"
@@ -24,20 +22,14 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_paging.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_configuration.h"
 
-// To get access to UseSessionSerializationOptimizations().
-// TODO(crbug.com/1383087): remove once the feature is fully launched.
-#import "ios/web/common/features.h"
-
 // TODO(crbug.com/1457146): Needed for `TabPresentationDelegate`, should be
 // refactored.
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_view_controller.h"
 
 @implementation RegularGridMediator {
-  // The saved session window just before close all tabs is called.
-  SessionWindowIOS* _closedSessionWindow;
-  // The number of tabs in `closedSessionWindow` that are synced by
-  // TabRestoreService.
-  int _syncedClosedTabsCount;
+  // TabsClosed used to implement the "close all tabs" operation with support
+  // for undoing the operation.
+  std::unique_ptr<TabsCloser> _tabsCloser;
 }
 
 #pragma mark - GridCommands
@@ -49,66 +41,31 @@
 }
 
 - (void)saveAndCloseAllItems {
-  RecordTabGridCloseTabsCount(self.webStateList->count());
-  base::RecordAction(
-      base::UserMetricsAction("MobileTabGridCloseAllRegularTabs"));
-
-  if (self.webStateList->empty()) {
+  if (![self canCloseTabs]) {
     return;
   }
 
-  int old_size =
-      self.tabRestoreService ? self.tabRestoreService->entries().size() : 0;
-
-  if (IsPinnedTabsEnabled()) {
-    BOOL hasPinnedWebStatesOnly =
-        self.webStateList->pinned_tabs_count() == self.webStateList->count();
-
-    if (hasPinnedWebStatesOnly) {
-      return;
-    }
-
-    if (!web::features::UseSessionSerializationOptimizations()) {
-      _closedSessionWindow = SerializeWebStateList(self.webStateList);
-    }
-    self.webStateList->CloseAllNonPinnedWebStates(
-        WebStateList::CLOSE_USER_ACTION);
-  } else {
-    if (!web::features::UseSessionSerializationOptimizations()) {
-      _closedSessionWindow = SerializeWebStateList(self.webStateList);
-    }
-    self.webStateList->CloseAllWebStates(WebStateList::CLOSE_USER_ACTION);
-  }
-
-  _syncedClosedTabsCount =
-      self.tabRestoreService
-          ? self.tabRestoreService->entries().size() - old_size
-          : 0;
+  const int closed_tabs = _tabsCloser->CloseTabs();
+  RecordTabGridCloseTabsCount(closed_tabs);
+  base::RecordAction(
+      base::UserMetricsAction("MobileTabGridCloseAllRegularTabs"));
 }
 
 - (void)undoCloseAllItems {
+  if (![self canUndoCloseTabs]) {
+    return;
+  }
+
   base::RecordAction(
       base::UserMetricsAction("MobileTabGridUndoCloseAllRegularTabs"));
-  if (!web::features::UseSessionSerializationOptimizations()) {
-    if (!_closedSessionWindow) {
-      return;
-    }
-    SessionRestorationBrowserAgent::FromBrowser(self.browser)
-        ->RestoreSessionWindow(_closedSessionWindow,
-                               SessionRestorationScope::kRegularOnly);
-    _closedSessionWindow = nil;
-  }
-  [self removeEntriesFromTabRestoreService];
-  _syncedClosedTabsCount = 0;
+  _tabsCloser->UndoCloseTabs();
 }
 
 - (void)discardSavedClosedItems {
-  if (!_closedSessionWindow) {
+  if (![self canUndoCloseTabs]) {
     return;
   }
-  _syncedClosedTabsCount = 0;
-  _closedSessionWindow = nil;
-  SnapshotBrowserAgent::FromBrowser(self.browser)->RemoveAllSnapshots();
+  _tabsCloser->ConfirmDeletion();
 }
 
 #pragma mark - TabGridPageMutator
@@ -131,8 +88,7 @@
   // This was saved as a stack: first save the inactive tabs, then the active
   // tabs. So undo in the reverse order: first undo the active tabs, then the
   // inactive tabs.
-  if (_closedSessionWindow ||
-      [self.containedGridToolbarsProvider didSavedClosedTabs]) {
+  if ([self canUndoCloseRegularOrInactiveTabs]) {
     if ([self.consumer respondsToSelector:@selector(willUndoCloseAll)]) {
       [self.consumer willUndoCloseAll];
     }
@@ -170,18 +126,23 @@
   [self.gridConsumer setPageIdleStatus:NO];
   base::RecordAction(base::UserMetricsAction("MobileTabNewTab"));
   [self.gridConsumer prepareForDismissal];
-  [self addNewItem];
-  [self.gridConsumer setActivePageFromPage:TabGridPageRegularTabs];
-  [self.tabPresentationDelegate showActiveTabInPage:TabGridPageRegularTabs
-                                       focusOmnibox:NO];
-  base::RecordAction(base::UserMetricsAction("MobileTabGridCreateRegularTab"));
+  // Shows the tab only if has been created.
+  if ([self addNewItem]) {
+    [self.gridConsumer setActivePageFromPage:TabGridPageRegularTabs];
+    [self.tabPresentationDelegate showActiveTabInPage:TabGridPageRegularTabs
+                                         focusOmnibox:NO];
+    base::RecordAction(
+        base::UserMetricsAction("MobileTabGridCreateRegularTab"));
+  } else {
+    base::RecordAction(
+        base::UserMetricsAction("MobileTabGridFailedCreateRegularTab"));
+  }
 }
 
 #pragma mark - Parent's function
 
 - (void)disconnect {
-  _closedSessionWindow = nil;
-  _syncedClosedTabsCount = 0;
+  _tabsCloser.reset();
   [super disconnect];
 }
 
@@ -198,56 +159,64 @@
 
   TabGridToolbarsConfiguration* toolbarsConfiguration =
       [[TabGridToolbarsConfiguration alloc] init];
-  toolbarsConfiguration.closeAllButton = [self canCloseAll];
+  toolbarsConfiguration.closeAllButton = [self canCloseRegularOrInactiveTabs];
   toolbarsConfiguration.doneButton = !self.webStateList->empty();
   toolbarsConfiguration.newTabButton = YES;
   toolbarsConfiguration.searchButton = YES;
-  toolbarsConfiguration.selectTabsButton = [self isTabsInGrid];
-  toolbarsConfiguration.undoButton = [self canUndo];
+  toolbarsConfiguration.selectTabsButton = [self hasRegularTabs];
+  toolbarsConfiguration.undoButton = [self canUndoCloseRegularOrInactiveTabs];
   [self.toolbarsMutator setToolbarConfiguration:toolbarsConfiguration];
 }
 
 #pragma mark - Private
 
-// Removes `self.syncedClosedTabsCount` most recent entries from the
-// TabRestoreService.
-- (void)removeEntriesFromTabRestoreService {
-  if (!self.tabRestoreService) {
-    return;
-  }
-  std::vector<SessionID> identifiers;
-  auto iter = self.tabRestoreService->entries().begin();
-  auto end = self.tabRestoreService->entries().end();
-  for (int i = 0; i < _syncedClosedTabsCount && iter != end; i++) {
-    identifiers.push_back(iter->get()->id);
-    iter++;
-  }
-  for (const SessionID sessionID : identifiers) {
-    self.tabRestoreService->RemoveTabEntryById(sessionID);
-  }
+// YES if there are regular tabs in the grid.
+- (BOOL)hasRegularTabs {
+  return [self canCloseTabs];
 }
 
-// YES if there are tabs that can be closed.
-- (BOOL)canCloseAll {
+- (BOOL)canCloseTabs {
+  return _tabsCloser && _tabsCloser->CanCloseTabs();
+}
+
+- (BOOL)canUndoCloseTabs {
+  return _tabsCloser && _tabsCloser->CanUndoCloseTabs();
+}
+
+- (BOOL)canCloseRegularOrInactiveTabs {
+  if ([self canCloseTabs]) {
+    return YES;
+  }
+
+  // This is an indirect way to check whether the inactive tabs can close
+  // tabs or undo a close tabs action.
   TabGridToolbarsConfiguration* containedGridToolbarsConfiguration =
       [self.containedGridToolbarsProvider toolbarsConfiguration];
-
-  return
-      [self isTabsInGrid] || containedGridToolbarsConfiguration.closeAllButton;
+  return containedGridToolbarsConfiguration.closeAllButton;
 }
 
-// YES if there are tabs that can be restored.
-- (BOOL)canUndo {
-  return (_closedSessionWindow != nil) ||
-         [self.containedGridToolbarsProvider didSavedClosedTabs];
+- (BOOL)canUndoCloseRegularOrInactiveTabs {
+  if ([self canUndoCloseTabs]) {
+    return YES;
+  }
+
+  // This is an indirect way to check whether the inactive tabs can close
+  // tabs or undo a close tabs action.
+  TabGridToolbarsConfiguration* containedGridToolbarsConfiguration =
+      [self.containedGridToolbarsProvider toolbarsConfiguration];
+  return containedGridToolbarsConfiguration.undoButton;
 }
 
-// YES if there are tabs in regular grid only (not pinned, not in inactive tabs,
-// etc.).
-- (BOOL)isTabsInGrid {
-  BOOL onlyPinnedTabs =
-      self.webStateList->pinned_tabs_count() == self.webStateList->count();
-  return !self.webStateList->empty() && !onlyPinnedTabs;
+#pragma mark - Properties
+
+- (void)setBrowser:(Browser*)browser {
+  [super setBrowser:browser];
+  if (browser) {
+    _tabsCloser = std::make_unique<TabsCloser>(
+        browser, TabsCloser::ClosePolicy::kRegularTabs);
+  } else {
+    _tabsCloser.reset();
+  }
 }
 
 @end

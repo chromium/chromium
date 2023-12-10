@@ -29,7 +29,7 @@
 #include "chrome/common/open_search_description_document_handler.mojom.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/renderer/chrome_content_settings_agent_delegate.h"
-#include "chrome/renderer/companion/visual_search/visual_search_classifier_agent.h"
+#include "chrome/renderer/companion/visual_query/visual_query_classifier_agent.h"
 #include "chrome/renderer/media/media_feeds.h"
 #include "components/crash/core/common/crash_key.h"
 #include "components/lens/lens_metadata.mojom.h"
@@ -123,7 +123,7 @@ base::Lock& GetFrameHeaderMapLock() {
   return *s;
 }
 
-using FrameHeaderMap = std::map<int, std::string>;
+using FrameHeaderMap = std::map<blink::LocalFrameToken, std::string>;
 
 FrameHeaderMap& GetFrameHeaderMap() {
   GetFrameHeaderMapLock().AssertAcquired();
@@ -201,24 +201,20 @@ ChromeRenderFrameObserver::ChromeRenderFrameObserver(
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
-  SetVisualSearchClassifierAgent();
+  SetVisualQueryClassifierAgent();
 #endif
   translate_agent_ =
       new translate::TranslateAgent(render_frame, ISOLATED_WORLD_ID_TRANSLATE);
 }
 
-ChromeRenderFrameObserver::~ChromeRenderFrameObserver() {
-#if BUILDFLAG(IS_ANDROID)
-  base::AutoLock auto_lock(GetFrameHeaderMapLock());
-  GetFrameHeaderMap().erase(routing_id());
-#endif
-}
+ChromeRenderFrameObserver::~ChromeRenderFrameObserver() = default;
 
 #if BUILDFLAG(IS_ANDROID)
-std::string ChromeRenderFrameObserver::GetCCTClientHeader(int render_frame_id) {
+std::string ChromeRenderFrameObserver::GetCCTClientHeader(
+    const blink::LocalFrameToken& frame_token) {
   base::AutoLock auto_lock(GetFrameHeaderMapLock());
   auto frame_map = GetFrameHeaderMap();
-  auto iter = frame_map.find(render_frame_id);
+  auto iter = frame_map.find(frame_token);
   return iter == frame_map.end() ? std::string() : iter->second;
 }
 #endif
@@ -347,6 +343,14 @@ void ChromeRenderFrameObserver::OnDestruct() {
   delete this;
 }
 
+void ChromeRenderFrameObserver::WillDetach(blink::DetachReason detach_reason) {
+#if BUILDFLAG(IS_ANDROID)
+  base::AutoLock auto_lock(GetFrameHeaderMapLock());
+  GetFrameHeaderMap().erase(
+      render_frame()->GetWebFrame()->GetLocalFrameToken());
+#endif
+}
+
 void ChromeRenderFrameObserver::DraggableRegionsChanged() {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
@@ -440,7 +444,8 @@ void ChromeRenderFrameObserver::RequestImageForContextNode(
   if (needs_downscale) {
     latency_logs.push_back(lens::mojom::LatencyLog::New(
         lens::mojom::Phase::DOWNSCALE_START, original_size, gfx::Size(),
-        image_format_conversion.at(image_format), base::Time::Now()));
+        image_format_conversion.at(image_format), base::Time::Now(),
+        /*encoded_size_bytes=*/0));
   }
   SkBitmap thumbnail =
       Downscale(image, thumbnail_min_area_pixels, thumbnail_max_size_pixels);
@@ -448,7 +453,8 @@ void ChromeRenderFrameObserver::RequestImageForContextNode(
   if (needs_downscale) {
     latency_logs.push_back(lens::mojom::LatencyLog::New(
         lens::mojom::Phase::DOWNSCALE_END, original_size, downscaled_size,
-        image_format_conversion.at(image_format), base::Time::Now()));
+        image_format_conversion.at(image_format), base::Time::Now(),
+        /*encoded_size_bytes=*/0));
   }
 
   SkBitmap bitmap;
@@ -475,7 +481,8 @@ void ChromeRenderFrameObserver::RequestImageForContextNode(
   if (needs_encode) {
     latency_logs.push_back(lens::mojom::LatencyLog::New(
         lens::mojom::Phase::ENCODE_START, original_size, downscaled_size,
-        image_format_conversion.at(image_format), base::Time::Now()));
+        image_format_conversion.at(image_format), base::Time::Now(),
+        /*encoded_size_bytes=*/0));
   }
   switch (image_format) {
     case chrome::mojom::ImageFormat::PNG:
@@ -503,7 +510,8 @@ void ChromeRenderFrameObserver::RequestImageForContextNode(
   if (needs_encode) {
     latency_logs.push_back(lens::mojom::LatencyLog::New(
         lens::mojom::Phase::ENCODE_END, original_size, downscaled_size,
-        image_format_conversion.at(image_format), base::Time::Now()));
+        image_format_conversion.at(image_format), base::Time::Now(),
+        sizeof(uint8_t) * image_data.size()));
   }
 
   std::move(callback).Run(image_data, original_size, downscaled_size,
@@ -536,8 +544,12 @@ void ChromeRenderFrameObserver::RequestReloadImageForContextNode() {
 
 #if BUILDFLAG(IS_ANDROID)
 void ChromeRenderFrameObserver::SetCCTClientHeader(const std::string& header) {
+  auto* web_frame = render_frame()->GetWebFrame();
+  if (!web_frame) {
+    return;
+  }
   base::AutoLock auto_lock(GetFrameHeaderMapLock());
-  GetFrameHeaderMap()[routing_id()] = header;
+  GetFrameHeaderMap()[web_frame->GetLocalFrameToken()] = header;
 }
 #endif
 
@@ -573,10 +585,10 @@ void ChromeRenderFrameObserver::SetClientSidePhishingDetection() {
 #endif
 }
 
-void ChromeRenderFrameObserver::SetVisualSearchClassifierAgent() {
+void ChromeRenderFrameObserver::SetVisualQueryClassifierAgent() {
 #if !BUILDFLAG(IS_ANDROID)
   visual_classifier_ =
-      companion::visual_search::VisualSearchClassifierAgent::Create(
+      companion::visual_query::VisualQueryClassifierAgent::Create(
           render_frame());
 #endif
 }
@@ -677,20 +689,6 @@ void ChromeRenderFrameObserver::CapturePageText(
   // loads, so attempt detection here first.
   if (translate_agent_ &&
       (layout_type == blink::WebMeaningfulLayout::kFinishedParsing)) {
-    // Under kRetryLanguageDetection, do not attempt language detection if no
-    // page content was captured.
-    if (!base::FeatureList::IsEnabled(translate::kRetryLanguageDetection) ||
-        contents.size()) {
-      translate_agent_->PageCaptured(contents);
-    }
-  }
-  // Under kRetryLanguageDetection, language detection may be attempted
-  // later when the page finishes loading if no content was captured at
-  // kFinishedParsing.
-  if (base::FeatureList::IsEnabled(translate::kRetryLanguageDetection) &&
-      translate_agent_ &&
-      (layout_type == blink::WebMeaningfulLayout::kFinishedLoading) &&
-      !translate_agent_->WasPageContentCapturedForUrl()) {
     translate_agent_->PageCaptured(contents);
   }
 

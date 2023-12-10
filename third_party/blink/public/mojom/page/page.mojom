@@ -16,6 +16,7 @@ import "third_party/blink/public/mojom/page/page_visibility_state.mojom";
 import "third_party/blink/public/mojom/tokens/tokens.mojom";
 import "third_party/blink/public/mojom/webpreferences/web_preferences.mojom";
 import "third_party/blink/public/mojom/renderer_preferences.mojom";
+import "ui/color/color_id.mojom";
 
 enum PagehideDispatch {
   // We haven't dispatched pagehide and should do so when appropriate.
@@ -65,6 +66,13 @@ struct PageRestoreParams {
   blink.mojom.ViewTransitionState? view_transition_state;
 };
 
+// Contains the information necessary to construct the light, dark, forced ColorProviders.
+struct ColorProviderColorMaps {
+  map<color.mojom.RendererColorId, skia.mojom.SkColor> light_colors_map;
+  map<color.mojom.RendererColorId, skia.mojom.SkColor> dark_colors_map;
+  map<color.mojom.RendererColorId, skia.mojom.SkColor> forced_colors_map;
+};
+
 // Parameters to send with ActivatePrerenderedPage calls when we're activating a
 // prerendered page.
 struct PrerenderPageActivationParams {
@@ -108,10 +116,6 @@ interface PageBroadcast {
   // TODO(falken): Move this to SetPageLifecycleState.
   ActivatePrerenderedPage(
       PrerenderPageActivationParams prerender_page_activation_params) => ();
-
-  // Notifies renderers when a portal web contents is activated or if a
-  // web contents is adopted as a portal.
-  SetInsidePortal(bool is_inside_portal);
 
   // Notifies the renderer when updating a set of blink preferences.
   UpdateWebPreferences(blink.mojom.WebPreferences preferences);
@@ -162,4 +166,11 @@ interface PageBroadcast {
   // supported/unsupported or when attribution is enabled/disabled for
   // Android WebView.
   SetPageAttributionSupport(network.mojom.AttributionSupport support);
+
+  // Sends an update for the ColorProviders to be used for the given page.
+  // The update is sent when either occurs:
+  // 1. A blink::WebView is created.
+  // 2. The ColorProvider associated with the WebContents changes as a result
+  // of theme changes.
+  UpdateColorProviders(ColorProviderColorMaps color_provider_colors);
 };

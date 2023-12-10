@@ -14,6 +14,7 @@
 #include "ash/shell.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/test_widget_builder.h"
+#include "ash/wm/pip/pip_controller.h"
 #include "ash/wm/pip/pip_positioner.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
@@ -32,6 +33,7 @@
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/frame/caption_buttons/caption_button_model.h"
 #include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
+#include "chromeos/ui/frame/caption_buttons/snap_controller.h"
 #include "chromeos/ui/frame/header_view.h"
 #include "chromeos/ui/wm/window_util.h"
 #include "components/app_restore/window_properties.h"
@@ -1030,32 +1032,32 @@ TEST_P(ClientControlledShellSurfaceTest, SnapWindowInSplitViewModeTest) {
   // Snap window to left.
   ash::SplitViewController* split_view_controller =
       ash::SplitViewController::Get(ash::Shell::GetPrimaryRootWindow());
-  split_view_controller->SnapWindow(
-      window1, ash::SplitViewController::SnapPosition::kPrimary);
+  split_view_controller->SnapWindow(window1, ash::SnapPosition::kPrimary);
   state1->set_bounds_locally(true);
   window1->SetBounds(split_view_controller->GetSnappedWindowBoundsInScreen(
-      ash::SplitViewController::SnapPosition::kPrimary, window1));
+      ash::SnapPosition::kPrimary, window1, chromeos::kDefaultSnapRatio));
   state1->set_bounds_locally(false);
   EXPECT_EQ(window_state1->GetStateType(), WindowStateType::kPrimarySnapped);
   EXPECT_EQ(shell_surface1->GetWidget()->GetWindowBoundsInScreen(),
             split_view_controller->GetSnappedWindowBoundsInScreen(
-                ash::SplitViewController::SnapPosition::kPrimary,
-                shell_surface1->GetWidget()->GetNativeWindow()));
+                ash::SnapPosition::kPrimary,
+                shell_surface1->GetWidget()->GetNativeWindow(),
+                chromeos::kDefaultSnapRatio));
   EXPECT_TRUE(HasBackdrop());
   split_view_controller->EndSplitView();
 
   // Snap window to right.
-  split_view_controller->SnapWindow(
-      window1, ash::SplitViewController::SnapPosition::kSecondary);
+  split_view_controller->SnapWindow(window1, ash::SnapPosition::kSecondary);
   state1->set_bounds_locally(true);
   window1->SetBounds(split_view_controller->GetSnappedWindowBoundsInScreen(
-      ash::SplitViewController::SnapPosition::kSecondary, window1));
+      ash::SnapPosition::kSecondary, window1, chromeos::kDefaultSnapRatio));
   state1->set_bounds_locally(false);
   EXPECT_EQ(window_state1->GetStateType(), WindowStateType::kSecondarySnapped);
   EXPECT_EQ(shell_surface1->GetWidget()->GetWindowBoundsInScreen(),
             split_view_controller->GetSnappedWindowBoundsInScreen(
-                ash::SplitViewController::SnapPosition::kSecondary,
-                shell_surface1->GetWidget()->GetNativeWindow()));
+                ash::SnapPosition::kSecondary,
+                shell_surface1->GetWidget()->GetNativeWindow(),
+                chromeos::kDefaultSnapRatio));
   EXPECT_TRUE(HasBackdrop());
 }
 
@@ -2085,13 +2087,13 @@ TEST_P(ClientControlledShellSurfaceTest,
                            .SetWindowState(chromeos::WindowStateType::kPip)
                            .BuildClientControlledShellSurface();
   auto* surface = shell_surface->root_surface();
-  auto window_left = CreateTestWindow();
-  auto window_right = CreateTestWindow();
+  auto primary_window = CreateTestWindow();
+  auto secondary_window = CreateTestWindow();
 
-  split_view_controller->SnapWindow(
-      window_left.get(), ash::SplitViewController::SnapPosition::kPrimary);
-  split_view_controller->SnapWindow(
-      window_right.get(), ash::SplitViewController::SnapPosition::kSecondary);
+  split_view_controller->SnapWindow(primary_window.get(),
+                                    ash::SnapPosition::kPrimary);
+  split_view_controller->SnapWindow(secondary_window.get(),
+                                    ash::SnapPosition::kSecondary);
   EXPECT_TRUE(split_view_controller->InSplitViewMode());
 
   // Should end split view.
@@ -2113,13 +2115,13 @@ TEST_P(ClientControlledShellSurfaceTest,
                            .SetWindowState(chromeos::WindowStateType::kPip)
                            .BuildClientControlledShellSurface();
   auto* surface = shell_surface->root_surface();
-  auto window_left = CreateTestWindow();
-  auto window_right = CreateTestWindow();
+  auto primary_window = CreateTestWindow();
+  auto secondary_window = CreateTestWindow();
 
-  split_view_controller->SnapWindow(
-      window_left.get(), ash::SplitViewController::SnapPosition::kPrimary);
-  split_view_controller->SnapWindow(
-      window_right.get(), ash::SplitViewController::SnapPosition::kSecondary);
+  split_view_controller->SnapWindow(primary_window.get(),
+                                    ash::SnapPosition::kPrimary);
+  split_view_controller->SnapWindow(secondary_window.get(),
+                                    ash::SnapPosition::kSecondary);
   EXPECT_TRUE(split_view_controller->InSplitViewMode());
 
   // Should not end split-view.
@@ -2245,7 +2247,7 @@ TEST_P(ClientControlledShellSurfaceTest,
 }
 
 TEST_P(ClientControlledShellSurfaceTest,
-       DoNotApplyCollisionDetectionWhileDragged) {
+       DoNotApplyCollisionDetectionWhileDraggedOrTucked) {
   constexpr gfx::Size buffer_size(256, 256);
   constexpr gfx::Rect original_bounds({8, 50}, buffer_size);
   auto shell_surface = exo::test::ShellSurfaceBuilder(buffer_size)
@@ -2266,6 +2268,13 @@ TEST_P(ClientControlledShellSurfaceTest,
   shell_surface->SetGeometry(gfx::Rect(gfx::Point(20, 50), buffer_size));
   surface->Commit();
   EXPECT_EQ(gfx::Rect(20, 50, 256, 256), window->bounds());
+  window_state->DeleteDragDetails();
+  ASSERT_FALSE(window_state->is_dragged());
+
+  ash::Shell::Get()->pip_controller()->TuckWindow(/*left=*/true);
+  shell_surface->SetGeometry(gfx::Rect(gfx::Point(-20, 50), buffer_size));
+  surface->Commit();
+  EXPECT_EQ(gfx::Rect(-20, 50, 256, 256), window->bounds());
 }
 
 TEST_P(ClientControlledShellSurfaceTest, EnteringPipSavesPipSnapFraction) {

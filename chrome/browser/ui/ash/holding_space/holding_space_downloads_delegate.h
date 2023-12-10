@@ -40,9 +40,9 @@ class HoldingSpaceDownloadsDelegate
   ~HoldingSpaceDownloadsDelegate() override;
 
   // Attempts to mark the download underlying the given `item` to open when
-  // complete. Returns `absl::nullopt` on success or the reason if the attempt
+  // complete. Returns `std::nullopt` on success or the reason if the attempt
   // was not successful.
-  absl::optional<holding_space_metrics::ItemFailureToLaunchReason>
+  std::optional<holding_space_metrics::ItemFailureToLaunchReason>
   OpenWhenComplete(const HoldingSpaceItem* item);
 
  private:

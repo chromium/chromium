@@ -24,10 +24,16 @@ class ContextMenuHeaderCoordinator {
     private PropertyModel mModel;
     private ContextMenuHeaderMediator mMediator;
 
-    ContextMenuHeaderCoordinator(Activity activity, ContextMenuParams params, Profile profile,
+    ContextMenuHeaderCoordinator(
+            Activity activity,
+            ContextMenuParams params,
+            Profile profile,
             ContextMenuNativeDelegate nativeDelegate) {
-        mModel = buildModel(
-                activity, ContextMenuUtils.getTitle(params), getUrl(activity, params, profile));
+        mModel =
+                buildModel(
+                        activity,
+                        ContextMenuUtils.getTitle(params),
+                        getUrl(activity, params, profile));
         mMediator =
                 new ContextMenuHeaderMediator(activity, mModel, params, profile, nativeDelegate);
     }
@@ -36,27 +42,33 @@ class ContextMenuHeaderCoordinator {
     static PropertyModel buildModel(Context context, String title, CharSequence url) {
         boolean usePopupContextMenu = ContextMenuUtils.usePopupContextMenuForContext(context);
 
-        int monogramSizeDimen = usePopupContextMenu
-                ? R.dimen.context_menu_popup_header_monogram_size
-                : R.dimen.context_menu_header_monogram_size;
+        int monogramSizeDimen =
+                usePopupContextMenu
+                        ? R.dimen.context_menu_popup_header_monogram_size
+                        : R.dimen.context_menu_header_monogram_size;
 
         PropertyModel model =
                 new PropertyModel.Builder(ContextMenuHeaderProperties.ALL_KEYS)
                         .with(ContextMenuHeaderProperties.TITLE, title)
-                        .with(ContextMenuHeaderProperties.TITLE_MAX_LINES,
+                        .with(
+                                ContextMenuHeaderProperties.TITLE_MAX_LINES,
                                 TextUtils.isEmpty(url) ? 2 : 1)
                         .with(ContextMenuHeaderProperties.URL, url)
-                        .with(ContextMenuHeaderProperties.URL_MAX_LINES,
+                        .with(
+                                ContextMenuHeaderProperties.URL_MAX_LINES,
                                 TextUtils.isEmpty(title) ? 2 : 1)
                         .with(ContextMenuHeaderProperties.IMAGE, null)
                         .with(ContextMenuHeaderProperties.CIRCLE_BG_VISIBLE, false)
-                        .with(ContextMenuHeaderProperties.MONOGRAM_SIZE_PIXEL,
+                        .with(
+                                ContextMenuHeaderProperties.MONOGRAM_SIZE_PIXEL,
                                 context.getResources().getDimensionPixelSize(monogramSizeDimen))
                         .build();
 
         if (usePopupContextMenu) {
-            int maxImageSize = context.getResources().getDimensionPixelSize(
-                    R.dimen.context_menu_popup_header_image_max_size);
+            int maxImageSize =
+                    context.getResources()
+                            .getDimensionPixelSize(
+                                    R.dimen.context_menu_popup_header_image_max_size);
 
             // Popup context menu leaves the same size for image and monogram.
             model.set(
@@ -66,11 +78,14 @@ class ContextMenuHeaderCoordinator {
             model.set(ContextMenuHeaderProperties.OVERRIDE_HEADER_CIRCLE_BG_MARGIN_PIXEL, 0);
         } else {
             // Use invalid override instead of 0, so view binder will not override layout params.
-            model.set(ContextMenuHeaderProperties.OVERRIDE_HEADER_IMAGE_MAX_SIZE_PIXEL,
+            model.set(
+                    ContextMenuHeaderProperties.OVERRIDE_HEADER_IMAGE_MAX_SIZE_PIXEL,
                     ContextMenuHeaderProperties.INVALID_OVERRIDE);
-            model.set(ContextMenuHeaderProperties.OVERRIDE_HEADER_CIRCLE_BG_SIZE_PIXEL,
+            model.set(
+                    ContextMenuHeaderProperties.OVERRIDE_HEADER_CIRCLE_BG_SIZE_PIXEL,
                     ContextMenuHeaderProperties.INVALID_OVERRIDE);
-            model.set(ContextMenuHeaderProperties.OVERRIDE_HEADER_CIRCLE_BG_MARGIN_PIXEL,
+            model.set(
+                    ContextMenuHeaderProperties.OVERRIDE_HEADER_CIRCLE_BG_MARGIN_PIXEL,
                     ContextMenuHeaderProperties.INVALID_OVERRIDE);
         }
 
@@ -86,8 +101,12 @@ class ContextMenuHeaderCoordinator {
                     new SpannableString(ChromeContextMenuPopulator.createUrlText(params));
             ChromeAutocompleteSchemeClassifier chromeAutocompleteSchemeClassifier =
                     new ChromeAutocompleteSchemeClassifier(profile);
-            OmniboxUrlEmphasizer.emphasizeUrl(spannableUrl, activity,
-                    chromeAutocompleteSchemeClassifier, ConnectionSecurityLevel.NONE, useDarkColors,
+            OmniboxUrlEmphasizer.emphasizeUrl(
+                    spannableUrl,
+                    activity,
+                    chromeAutocompleteSchemeClassifier,
+                    ConnectionSecurityLevel.NONE,
+                    useDarkColors,
                     false);
             chromeAutocompleteSchemeClassifier.destroy();
             url = spannableUrl;

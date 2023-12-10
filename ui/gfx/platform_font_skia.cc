@@ -70,17 +70,17 @@ sk_sp<SkTypeface> CreateSkTypeface(bool italic,
       italic ? SkFontStyle::kItalic_Slant : SkFontStyle::kUpright_Slant);
   sk_sp<SkTypeface> typeface;
   {
-    TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("fonts"), "SkTypeface::MakeFromName",
-                 "family", *family);
-    typeface = SkTypeface::MakeFromName(family->c_str(), sk_style);
+    TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("fonts"),
+                 "skia::MakeTypefaceFromName", "family", *family);
+    typeface = skia::MakeTypefaceFromName(family->c_str(), sk_style);
   }
   if (!typeface) {
-    TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("fonts"), "SkTypeface::MakeFromName",
-                 "family", kFallbackFontFamilyName);
+    TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("fonts"),
+                 "skia::MakeTypefaceFromName", "family",
+                 kFallbackFontFamilyName);
     // A non-scalable font such as .pcf is specified. Fall back to a default
     // scalable font.
-    typeface = sk_sp<SkTypeface>(
-        SkTypeface::MakeFromName(kFallbackFontFamilyName, sk_style));
+    typeface = skia::MakeTypefaceFromName(kFallbackFontFamilyName, sk_style);
     if (!typeface) {
       *out_success = false;
       return nullptr;

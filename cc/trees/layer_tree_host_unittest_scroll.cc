@@ -90,10 +90,10 @@ class LayerTreeHostScrollTest : public LayerTreeTest, public ScrollCallbacks {
   }
 
   // ScrollCallbacks
-  void DidCompositorScroll(ElementId element_id,
-                           const gfx::PointF& scroll_offset,
-                           const absl::optional<TargetSnapAreaElementIds>&
-                               snap_target_ids) override {
+  void DidCompositorScroll(
+      ElementId element_id,
+      const gfx::PointF& scroll_offset,
+      const std::optional<TargetSnapAreaElementIds>& snap_target_ids) override {
     // Simulates cc client (e.g Blink) behavior when handling impl-side scrolls.
     SetScrollOffsetFromImplSide(layer_tree_host()->LayerByElementId(element_id),
                                 scroll_offset);
@@ -615,10 +615,10 @@ class LayerTreeHostScrollTestCaseWithChild : public LayerTreeHostScrollTest {
     }
   }
 
-  void DidCompositorScroll(ElementId element_id,
-                           const gfx::PointF& offset,
-                           const absl::optional<TargetSnapAreaElementIds>&
-                               snap_target_ids) override {
+  void DidCompositorScroll(
+      ElementId element_id,
+      const gfx::PointF& offset,
+      const std::optional<TargetSnapAreaElementIds>& snap_target_ids) override {
     LayerTreeHostScrollTest::DidCompositorScroll(element_id, offset,
                                                  snap_target_ids);
     if (element_id == expected_scroll_layer_->element_id()) {
@@ -1823,7 +1823,7 @@ class LayerTreeHostScrollTestLayerStructureChange
   void DidCompositorScroll(
       ElementId element_id,
       const gfx::PointF&,
-      const absl::optional<TargetSnapAreaElementIds>&) override {
+      const std::optional<TargetSnapAreaElementIds>&) override {
     if (scroll_destroy_whole_tree_) {
       layer_tree_host()->SetRootLayer(nullptr);
       layer_tree_host()->property_trees()->clear();
@@ -2660,8 +2660,7 @@ class LayerTreeHostRasterPriorityTest : public LayerTreeHostScrollTest {
       // In frame 0, scroll node has main_thread_scrolling_reasons. Prioritize
       // new content and not smoothness, since we need to repaint on the main
       // thread for the user to see the scroll.
-      // TODO(crbug.com/1477299): Re-enable this check.
-      // EXPECT_EQ(NEW_CONTENT_TAKES_PRIORITY, host_impl->GetTreePriority());
+      EXPECT_EQ(NEW_CONTENT_TAKES_PRIORITY, host_impl->GetTreePriority());
       input_handler.ScrollEnd();
       PostSetNeedsCommitToMainThread();
     }

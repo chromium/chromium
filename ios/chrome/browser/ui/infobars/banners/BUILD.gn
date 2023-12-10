@@ -15,7 +15,7 @@ source_set("banners") {
     ":public",
     "//base",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/infobars:public",
+    "//ios/chrome/browser/infobars/model:public",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util",
@@ -40,7 +40,7 @@ source_set("unit_tests") {
   sources = [ "infobar_banner_view_controller_unittest.mm" ]
   deps = [
     ":banners",
-    "//ios/chrome/browser/infobars:public",
+    "//ios/chrome/browser/infobars/model:public",
     "//ios/chrome/test:test_support",
     "//testing/gtest",
     "//third_party/ocmock",

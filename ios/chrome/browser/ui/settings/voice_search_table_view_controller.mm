@@ -291,29 +291,18 @@ typedef NS_ENUM(NSInteger, ItemType) {
   NSIndexPath* switchPath =
       [self.tableViewModel indexPathForItemType:ItemTypeTTSEnabled
                               sectionIdentifier:SectionIdentifierTTS];
-  TableViewSwitchCell* switchCell =
-      base::apple::ObjCCastStrict<TableViewSwitchCell>(
-          [self.tableView cellForRowAtIndexPath:switchPath]);
-
   // Some languages do not support TTS.  Disable the switch for those
   // languages.
   BOOL enabled = [self currentLanguageSupportsTTS];
   BOOL on = enabled && _ttsEnabled.GetValue();
 
-  UISwitch* switchView = switchCell.switchView;
-  switchView.enabled = enabled;
-  switchCell.textLabel.textColor =
-      [TableViewSwitchCell defaultTextColorForState:switchView.state];
-  if (on != switchView.isOn) {
-    [switchView setOn:on animated:YES];
-  }
-
-  // Also update the switch item.
   TableViewSwitchItem* switchItem =
       base::apple::ObjCCastStrict<TableViewSwitchItem>(
           [self.tableViewModel itemAtIndexPath:switchPath]);
   switchItem.enabled = enabled;
   switchItem.on = on;
+
+  [self reconfigureCellsForItems:@[ switchItem ]];
 }
 
 @end

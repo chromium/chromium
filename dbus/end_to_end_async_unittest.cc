@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include <optional>
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -26,7 +27,6 @@
 #include "dbus/object_proxy.h"
 #include "dbus/test_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace dbus {
 
@@ -252,7 +252,7 @@ class EndToEndAsyncTest : public testing::Test {
   }
 
   base::test::SingleThreadTaskEnvironment task_environment_;
-  absl::optional<base::ScopedDisallowBlocking> disallow_blocking_;
+  std::optional<base::ScopedDisallowBlocking> disallow_blocking_;
   std::unique_ptr<base::RunLoop> run_loop_;
   std::vector<std::string> response_strings_;
   std::vector<std::string> error_names_;

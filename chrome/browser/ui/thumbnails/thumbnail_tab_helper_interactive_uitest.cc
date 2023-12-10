@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -20,7 +22,6 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/test/browser_test.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(ENABLE_SESSION_SERVICE)
@@ -34,7 +35,7 @@ class ThumbnailWaiter {
   ThumbnailWaiter() = default;
   ~ThumbnailWaiter() = default;
 
-  absl::optional<gfx::ImageSkia> WaitForThumbnail(ThumbnailImage* thumbnail) {
+  std::optional<gfx::ImageSkia> WaitForThumbnail(ThumbnailImage* thumbnail) {
     std::unique_ptr<ThumbnailImage::Subscription> subscription =
         thumbnail->Subscribe();
     subscription->SetUncompressedImageCallback(base::BindRepeating(
@@ -52,7 +53,7 @@ class ThumbnailWaiter {
 
  private:
   base::RunLoop run_loop_;
-  absl::optional<gfx::ImageSkia> image_;
+  std::optional<gfx::ImageSkia> image_;
 };
 
 }  // anonymous namespace
@@ -135,7 +136,7 @@ class ThumbnailTabHelperInteractiveTest : public InProcessBrowserTest {
         << " tab at index " << tab_index << " already has data.";
 
     ThumbnailWaiter waiter;
-    const absl::optional<gfx::ImageSkia> data =
+    const std::optional<gfx::ImageSkia> data =
         waiter.WaitForThumbnail(thumbnail.get());
     EXPECT_TRUE(thumbnail->has_data())
         << " tab at index " << tab_index << " thumbnail has no data.";

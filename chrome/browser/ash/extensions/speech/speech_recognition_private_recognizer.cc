@@ -40,7 +40,7 @@ SpeechRecognitionPrivateRecognizer::~SpeechRecognitionPrivateRecognizer() {}
 void SpeechRecognitionPrivateRecognizer::OnSpeechResult(
     const std::u16string& text,
     bool is_final,
-    const absl::optional<media::SpeechRecognitionResult>& full_result) {
+    const std::optional<media::SpeechRecognitionResult>& full_result) {
   // TODO(crbug.com/1220107): NetworkSpeechRecognizer adds spaces between
   // results, but SpeechRecognitionRecognizerClientImpl doesn't. Add behavior in
   // SpeechRecognitionRecognizerClientImpl so it's consistent with
@@ -74,7 +74,7 @@ void SpeechRecognitionPrivateRecognizer::OnSpeechRecognitionStateChanged(
   } else if (new_state == SPEECH_RECOGNIZER_RECOGNIZING) {
     if (!on_start_callback_.is_null()) {
       std::move(on_start_callback_)
-          .Run(/*type=*/type_, /*error=*/absl::optional<std::string>());
+          .Run(/*type=*/type_, /*error=*/std::optional<std::string>());
     } else {
       // If we get here, we are unintentionally recognizing speech. Turn off
       // the recognizer.
@@ -93,13 +93,13 @@ void SpeechRecognitionPrivateRecognizer::OnSpeechRecognitionStateChanged(
 }
 
 void SpeechRecognitionPrivateRecognizer::HandleStart(
-    absl::optional<std::string> locale,
-    absl::optional<bool> interim_results,
+    std::optional<std::string> locale,
+    std::optional<bool> interim_results,
     OnStartCallback callback) {
   if (speech_recognizer_) {
     std::move(callback).Run(
         /*type=*/type_,
-        /*error=*/absl::optional<std::string>(kSpeechRecognitionStartError));
+        /*error=*/std::optional<std::string>(kSpeechRecognitionStartError));
     RecognizerOff();
     return;
   }
@@ -141,16 +141,16 @@ void SpeechRecognitionPrivateRecognizer::HandleStop(OnStopCallback callback) {
     // will crash if an extension function is destroyed and hasn't responded).
     has_error = true;
     std::move(on_start_callback_)
-        .Run(/*type=*/type_, /*error=*/absl::optional<std::string>(
+        .Run(/*type=*/type_, /*error=*/std::optional<std::string>(
                  kSpeechRecognitionNeverStartedError));
     std::move(callback).Run(
-        /*error=*/absl::optional<std::string>(kSpeechRecognitionStopError));
+        /*error=*/std::optional<std::string>(kSpeechRecognitionStopError));
   } else if (current_state_ == SPEECH_RECOGNIZER_OFF) {
     // If speech recognition is already off, run `callback` with an error
     // message.
     has_error = true;
     std::move(callback).Run(
-        /*error=*/absl::optional<std::string>(kSpeechRecognitionStopError));
+        /*error=*/std::optional<std::string>(kSpeechRecognitionStopError));
   }
 
   RecognizerOff();
@@ -159,7 +159,7 @@ void SpeechRecognitionPrivateRecognizer::HandleStop(OnStopCallback callback) {
 
   delegate_->HandleSpeechRecognitionStopped(id_);
   DCHECK(!callback.is_null());
-  std::move(callback).Run(/*error=*/absl::optional<std::string>());
+  std::move(callback).Run(/*error=*/std::optional<std::string>());
 }
 
 void SpeechRecognitionPrivateRecognizer::RecognizerOff() {
@@ -169,8 +169,8 @@ void SpeechRecognitionPrivateRecognizer::RecognizerOff() {
 }
 
 void SpeechRecognitionPrivateRecognizer::MaybeUpdateProperties(
-    absl::optional<std::string> locale,
-    absl::optional<bool> interim_results,
+    std::optional<std::string> locale,
+    std::optional<bool> interim_results,
     OnStartCallback callback) {
   if (locale.has_value())
     locale_ = locale.value();

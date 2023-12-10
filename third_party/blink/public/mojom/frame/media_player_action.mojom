@@ -4,7 +4,7 @@
 
 module blink.mojom;
 
-// Perform the below mention actions on the media player
+// Perform the below actions on the media player.
 enum MediaPlayerActionType {
   kLoop,
   kControls,
@@ -14,9 +14,10 @@ enum MediaPlayerActionType {
   kDefaultActionType = kPictureInPicture
 };
 
-// Send MediaPlayerAction data from browser to renderer. Attribute
-// 'type' defines action needs to be performed on Media Player and
-// boolean attribute 'enable' enables or disables the action.
+// Send MediaPlayerAction data from browser to renderer. Attribute `type`
+// defines action needs to be performed on Media Player and boolean attribute
+// `enable` indicates enabling or disabling the option, e.g. for `kLoop`,
+// `kControls` and `kPictureInPicture`. For other actions, `enable` is ignored.
 struct MediaPlayerAction {
   MediaPlayerActionType type = kDefaultActionType;
   bool enable = false;

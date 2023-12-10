@@ -40,7 +40,6 @@
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/splitview/split_view_utils.h"
 #include "ash/wm/switchable_windows.h"
-#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_cycle/window_cycle_controller.h"
 #include "ash/wm/window_properties.h"
 #include "ash/wm/window_restore/window_restore_controller.h"
@@ -71,6 +70,7 @@
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window_tracker.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/display/screen.h"
 #include "ui/events/devices/haptic_touchpad_effects.h"
 #include "ui/views/widget/native_widget_private.h"
 #include "ui/wm/core/window_animations.h"
@@ -237,11 +237,11 @@ bool IsParentSwitchableContainer(const aura::Window* window) {
 
 bool IsApplistActiveInTabletMode(const aura::Window* active_window) {
   DCHECK(active_window);
-  Shell* shell = Shell::Get();
-  if (!shell->tablet_mode_controller()->InTabletMode())
+  if (!display::Screen::GetScreen()->InTabletMode()) {
     return false;
+  }
 
-  auto* app_list_controller = shell->app_list_controller();
+  auto* app_list_controller = Shell::Get()->app_list_controller();
   return active_window == app_list_controller->GetWindow();
 }
 
@@ -637,6 +637,7 @@ void DesksController::NewDesk(DesksCreationRemovalSource source) {
     }
     desks_restore_util::UpdatePrimaryUserDeskGuidsPrefs();
     desks_restore_util::UpdatePrimaryUserDeskNamesPrefs();
+    desks_restore_util::UpdatePrimaryUserDeskLacrosProfileIdPrefs();
     desks_restore_util::UpdatePrimaryUserDeskMetricsPrefs();
     UMA_HISTOGRAM_ENUMERATION(kNewDeskHistogramName, source);
     ReportDesksCountHistogram();
@@ -711,6 +712,7 @@ void DesksController::ReorderDesk(int old_index, int new_index) {
   // right order.
   desks_restore_util::UpdatePrimaryUserDeskNamesPrefs();
   desks_restore_util::UpdatePrimaryUserDeskGuidsPrefs();
+  desks_restore_util::UpdatePrimaryUserDeskLacrosProfileIdPrefs();
   desks_restore_util::UpdatePrimaryUserDeskMetricsPrefs();
 
   // 2. For multi-profile switching, update all affected active desk index in
@@ -756,7 +758,7 @@ void DesksController::ActivateDesk(const Desk* desk, DesksSwitchSource source) {
   // If we are switching users, we don't want to notify desks of content changes
   // until the user switch animation has shown the new user's windows.
   const bool is_user_switch = source == DesksSwitchSource::kUserSwitch;
-  absl::optional<Desk::ScopedContentUpdateNotificationDisabler>
+  std::optional<Desk::ScopedContentUpdateNotificationDisabler>
       desks_scoped_notify_disabler;
   if (is_user_switch) {
     desks_scoped_notify_disabler.emplace(/*desks=*/desks_,
@@ -1227,7 +1229,7 @@ void DesksController::CaptureActiveDeskAsSavedDesk(
       current_account_id_);
 }
 
-const Desk* DesksController::CreateNewDeskForSavedDesk(
+Desk* DesksController::CreateNewDeskForSavedDesk(
     DeskTemplateType template_type,
     const std::u16string& customized_desk_name) {
   DCHECK(CanCreateDesks());
@@ -1996,6 +1998,7 @@ void DesksController::RemoveDeskInternal(const Desk* desk,
 
   desks_restore_util::UpdatePrimaryUserDeskNamesPrefs();
   desks_restore_util::UpdatePrimaryUserDeskGuidsPrefs();
+  desks_restore_util::UpdatePrimaryUserDeskLacrosProfileIdPrefs();
   desks_restore_util::UpdatePrimaryUserDeskMetricsPrefs();
 
   DCHECK_LE(available_container_ids_.size(), desks_util::GetMaxNumberOfDesks());

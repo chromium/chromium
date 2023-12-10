@@ -12,6 +12,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/power/power_notification_controller.h"
 #include "ash/system/system_notification_controller.h"
+#include "base/check_is_test.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
@@ -38,9 +39,28 @@ void SetUserOptStatus(bool status) {
   }
 }
 
+// Overrides the result of IsBatterySaverAllowed for testing.
+absl::optional<bool> override_allowed_for_testing;
+
 }  // namespace
 
 namespace ash {
+
+bool IsBatterySaverAllowed() {
+  if (override_allowed_for_testing) {
+    CHECK_IS_TEST();
+    return *override_allowed_for_testing;
+  }
+  if (features::IsBatterySaverAvailable()) {
+    return !Shell::Get()->battery_saver_controller()->IsDisabledByPolicy();
+  }
+  return false;
+}
+
+void OverrideIsBatterySaverAllowedForTesting(absl::optional<bool> isAllowed) {
+  CHECK_IS_TEST();
+  override_allowed_for_testing = isAllowed;
+}
 
 BatterySaverController::BatterySaverController(PrefService* local_state)
     : local_state_(local_state),
@@ -164,7 +184,7 @@ void BatterySaverController::ShowBatterySaverModeEnabledToast() {
 
 void BatterySaverController::SetState(bool active, UpdateReason reason) {
   auto* power_status = PowerStatus::Get();
-  absl::optional<base::TimeDelta> time_to_empty =
+  std::optional<base::TimeDelta> time_to_empty =
       power_status->GetBatteryTimeToEmpty();
   double battery_percent = power_status->GetBatteryPercent();
 
@@ -227,7 +247,7 @@ void BatterySaverController::SetState(bool active, UpdateReason reason) {
                                     duration);
         break;
     }
-    enable_record_ = absl::nullopt;
+    enable_record_ = std::nullopt;
 
     // Disabled reason metrics.
     switch (reason) {
@@ -303,13 +323,19 @@ void BatterySaverController::SetState(bool active, UpdateReason reason) {
 }
 
 bool BatterySaverController::IsBatterySaverSupported() const {
-  const absl::optional<power_manager::PowerSupplyProperties>& proto =
+  const std::optional<power_manager::PowerSupplyProperties>& proto =
       chromeos::PowerManagerClient::Get()->GetLastStatus();
   if (!proto) {
     return false;
   }
   return proto->battery_state() !=
          power_manager::PowerSupplyProperties_BatteryState_NOT_PRESENT;
+}
+
+bool BatterySaverController::IsDisabledByPolicy() const {
+  // Pref is managed and set to false.
+  return local_state_->IsManagedPreference(prefs::kPowerBatterySaver) &&
+         !local_state_->GetBoolean(prefs::kPowerBatterySaver);
 }
 
 }  // namespace ash

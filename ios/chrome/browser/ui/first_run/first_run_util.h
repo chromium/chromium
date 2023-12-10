@@ -7,8 +7,9 @@
 
 #import <UIKit/UIKit.h>
 
-#include "ios/chrome/browser/first_run/first_run_metrics.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
+#include "ios/chrome/browser/first_run/model/first_run_metrics.h"
 
 namespace base {
 class Time;
@@ -40,7 +41,7 @@ bool ShouldPresentFirstRunExperience();
 void RecordMetricsReportingDefaultState();
 
 // If the first run sentinel file exist, returns the info; otherwise, return
-// `absl::nullopt`.
-absl::optional<base::Time> GetFirstRunTime();
+// `std::nullopt`.
+std::optional<base::Time> GetFirstRunTime();
 
 #endif  // IOS_CHROME_BROWSER_UI_FIRST_RUN_FIRST_RUN_UTIL_H_

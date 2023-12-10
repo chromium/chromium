@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/user_education/start_tutorial_in_page.h"
 
+#include <optional>
+
 #include "base/test/mock_callback.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -20,7 +22,6 @@
 #include "components/user_education/common/tutorial_registry.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace {

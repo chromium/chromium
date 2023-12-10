@@ -20,10 +20,12 @@ export class TabOrganizationFailureElement extends PolymerElement {
   static get properties() {
     return {
       error: Object,
+      showFre: Boolean,
     };
   }
 
   error: TabOrganizationError = TabOrganizationError.kNone;
+  showFre: boolean;
 
   static get template() {
     return getTemplate();
@@ -40,15 +42,51 @@ export class TabOrganizationFailureElement extends PolymerElement {
     }
   }
 
-  private getBody_(): string {
+  private getBodyPreLink_(): string {
     switch (this.error) {
       case TabOrganizationError.kGrouping:
-        return loadTimeData.getString('failureBodyGrouping');
+        return loadTimeData.getString('failureBodyGroupingPreLink');
       case TabOrganizationError.kGeneric:
-        return loadTimeData.getString('failureBodyGeneric');
+        return loadTimeData.getString('failureBodyGenericPreLink');
       default:
         return '';
     }
+  }
+
+  private getBodyLink_(): string {
+    switch (this.error) {
+      case TabOrganizationError.kGrouping:
+        return loadTimeData.getString('failureBodyGroupingLink');
+      case TabOrganizationError.kGeneric:
+        return loadTimeData.getString('failureBodyGenericLink');
+      default:
+        return '';
+    }
+  }
+
+  private getBodyPostLink_(): string {
+    switch (this.error) {
+      case TabOrganizationError.kGrouping:
+        return loadTimeData.getString('failureBodyGroupingPostLink');
+      case TabOrganizationError.kGeneric:
+        return loadTimeData.getString('failureBodyGenericPostLink');
+      default:
+        return '';
+    }
+  }
+
+  private onCheckNow_() {
+    this.dispatchEvent(new CustomEvent('check-now', {
+      bubbles: true,
+      composed: true,
+    }));
+  }
+
+  private onTipClick_() {
+    this.dispatchEvent(new CustomEvent('tip-click', {
+      bubbles: true,
+      composed: true,
+    }));
   }
 }
 

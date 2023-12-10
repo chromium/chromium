@@ -9,7 +9,11 @@ import androidx.annotation.NonNull;
 import org.chromium.base.supplier.ObservableSupplier;
 
 /** Interface for managing {@link Pane}s. */
-public interface PaneManager {
+public interface PaneManager extends PaneLookup {
+    /** Returns the authoritative source of the order of panes. */
+    @NonNull
+    PaneOrderController getPaneOrderController();
+
     /** Returns an observable version of the current pane. */
     @NonNull
     ObservableSupplier<Pane> getFocusedPaneSupplier();
@@ -19,7 +23,7 @@ public interface PaneManager {
      * will occur. This operation may fail i.e. the Pane does not exist, is not focusable, etc.
      *
      * @param paneId The {@link PaneId} of the {@link Pane} to attempt to focus.
-     * @return whether focusing on the Pane will occur.
+     * @return whether focusing on the Pane will occur. Also true if the pane was already focused.
      */
     boolean focusPane(@PaneId int paneId);
 }

@@ -14,7 +14,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/transform_paint_property_node.h"
 #include "third_party/blink/renderer/platform/graphics/view_transition_element_id.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
-#include "third_party/blink/renderer/platform/region_capture_crop_id.h"
+#include "third_party/blink/renderer/platform/restriction_target_id.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/rrect_f.h"
 
@@ -125,9 +125,7 @@ class PLATFORM_EXPORT EffectPaintPropertyNode
     viz::ViewTransitionElementResourceId view_transition_element_resource_id;
 
     // Used to associate this effect node with its originating Element.
-    // TODO(https://crbug.com/1418194): rename crop ID type to a name suitable
-    // for both element-level and region capture.
-    RegionCaptureCropId element_capture_id;
+    RestrictionTargetId restriction_target_id;
 
     // When set, the affected elements should avoid doing clipping for
     // optimization purposes (like off-screen clipping). This is set by view
@@ -324,8 +322,8 @@ class PLATFORM_EXPORT EffectPaintPropertyNode
     return state_.view_transition_element_resource_id;
   }
 
-  const RegionCaptureCropId& ElementCaptureId() const {
-    return state_.element_capture_id;
+  const RestrictionTargetId& ElementCaptureId() const {
+    return state_.restriction_target_id;
   }
 
   bool SelfOrAncestorParticipatesInViewTransition() const {

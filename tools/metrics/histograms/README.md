@@ -689,12 +689,12 @@ correction to its `direction` attribute any time.
 
 ### Cleaning Up Histogram Entries {#obsolete}
 
-If a histogram is no longer being emitted to, you should clean it up by removing
-the corresponding histograms.xml entry. The histogram data will still be
-available for viewing on Google's internal UMA dashboard.
+When the code to log a histogram is deleted, its corresponding histograms.xml
+entry should also be removed. Past histogram data will still be available for
+viewing on Google's internal UMA dashboard.
 
-When removing a histograms.xml entry you can also add an obsoletion message in
-the same changelist. This also applies to variants of a
+The CL to remove one or more histograms can also specify an obsoletion message
+through special syntax in the CL description. This also applies to variants of a
 [patterned histogram](#Patterned-Histograms) and to suffix entries for a
 suffixed histogram.
 
@@ -706,9 +706,9 @@ current owners.
 Delete the entry in the histograms.xml file.
 
 * In some cases there may be artifacts that remain, with some examples being:
-  * Empty `<token>` blocks.
+  * Empty `<token>` blocks, or individual `<variant>`s.
   * `<enum>` blocks from enums.xml that are no longer used.
-  * Suffix entries in histogram_suffixes_list.xml.
+  * Suffix entries in `histogram_suffixes_list.xml`.
 * Please remove these artifacts if you find them.
   * **Exception**: please update the label of `<int value=... label=... />` with
     the `(Obsolete) ` prefix, e.g.
@@ -722,33 +722,31 @@ An obsoletion message is displayed on the dashboard and provides developers
 context for why the histogram was removed and, if applicable, which histogram
 it was replaced by.
 
-**Note:** You can skip this step if the histogram is already expired or
-obsolete. This is because tooling automatically records the date and milestone
-of a histogram's expiration or obsoletion.
+**Note:** You can skip this step if the histogram is expired. This is because
+tooling automatically records the date and milestone of a histogram's
+expiration.
 
 You can provide a custom obsoletion message for a removed histogram via tags
 on the CL description:
 
 * Add the obsoletion message in the CL description in the format
-  OBSOLETE_HISTOGRAM[histogram name]=obsoletion message (e.g.
-  OBSOLETE_HISTOGRAM[Tab.Count]=Replaced by Tab.Count2).
-* If you want to add the same obsoletion message to all the histograms removed
-  in the CL, you can use OBSOLETE_HISTOGRAMS=message (e.g.
-  OBSOLETE_HISTOGRAMS=Patterned histogram Hist.{Token} is replaced by
-  Hist.{Token}.2).
+  `OBSOLETE_HISTOGRAM[histogram name]=message`, e.g.:
+  `OBSOLETE_HISTOGRAM[Tab.Count]=Replaced by Tab.Count2`
+* To add the same obsoletion message to all the histograms removed in the CL,
+  you can use `OBSOLETE_HISTOGRAMS=message`, e.g.:
+  `OBSOLETE_HISTOGRAMS=Patterned histogram Hist.{Token} is replaced by Hist.{Token}.2`
 * **Notes:**
   * The full tag should be put on a single line, even if it is longer than the
     maximum CL description width.
   * You can add multiple obsoletion message tags in one CL.
-  * OBSOLETE_HISTOGRAMS messages will be overwritten by histogram-specific ones,
-    if present.
-  * OBSOLETE_HISTOGRAMS messages are not applied to already obsolete histograms.
-* You could also include information about why the histogram has become
-  obsolete. For example, you might indicate how the histogram's summary did not
-  accurately describe the collected data.
-* If the obsolete histogram is being replaced, include the name of the
-  replacement and make sure that the new description is different from the
-  original to reflect the change between versions.
+  * `OBSOLETE_HISTOGRAMS` messages will be overwritten by histogram-specific
+    ones, if present.
+* You could also include information about why the histogram was removed. For
+  example, you might indicate how the histogram's summary did not accurately
+  describe the collected data.
+* If the histogram is being replaced, include the name of the replacement and
+  make sure that the new description is different from the original to reflect
+  the change between versions.
 
 ### Patterned Histograms
 

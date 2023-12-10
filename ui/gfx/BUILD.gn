@@ -210,6 +210,8 @@ component("gfx") {
       "font_fallback_win.cc",
       "font_fallback_win.h",
       "font_render_params_win.cc",
+      "font_util_win.cc",
+      "font_util_win.h",
       "path_win.cc",
       "path_win.h",
       "system_fonts_win.cc",
@@ -395,6 +397,7 @@ component("gfx") {
 
   # Windows.
   if (is_win) {
+    deps += [ "//ui/base:features" ]
     libs = [
       "setupapi.lib",
       "dwmapi.lib",
@@ -937,6 +940,8 @@ test("gfx_unittests") {
 
   if (is_win) {
     sources += [
+      "font_render_params_win_unittest.cc",
+      "font_util_win.cc",
       "icon_util_unittest.cc",
       "icon_util_unittests.rc",
       "icon_util_unittests_resource.h",

@@ -10,7 +10,7 @@ import "services/viz/public/mojom/compositing/internal/singleplanar_format.mojom
 enum PlaneConfig { kY_U_V, kY_V_U, kY_UV, kY_UV_A };
 
 // See Subsampling in components/viz/common/resources/shared_image_format.h
-enum Subsampling { k420 };
+enum Subsampling { k420, k422, k444 };
 
 // See ChannelFormat in components/viz/common/resources/shared_image_format.h
 enum ChannelFormat { k8, k10, k16, k16F };

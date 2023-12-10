@@ -4,7 +4,6 @@
 
 // Use the <code>chrome.power</code> API to override the system's power
 // management features.
-[modernised_enums]
 namespace power {
   callback VoidCallback = void ();
 

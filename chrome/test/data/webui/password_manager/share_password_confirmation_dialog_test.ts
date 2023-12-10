@@ -15,7 +15,8 @@ import {createPasswordEntry, makeRecipientInfo} from './test_util.js';
 
 const SHARED_PASSWORD_ID = 42;
 const SHARED_PASSWORD_NAME = 'example.com';
-const CHANGE_PASSWORD_URL = 'https://example.com';
+const HTTPS_CHANGE_PASSWORD_URL = 'https://example.com';
+const HTTP_CHANGE_PASSWORD_URL = 'http://example.com';
 
 function assertVisibleTextContent(element: HTMLElement, expectedText: string) {
   assertTrue(isVisible(element));
@@ -37,7 +38,7 @@ suite('SharePasswordConfirmationDialogTest', function() {
     dialog.passwordName = SHARED_PASSWORD_NAME;
     dialog.password = createPasswordEntry({
       id: SHARED_PASSWORD_ID,
-      changePasswordUrl: CHANGE_PASSWORD_URL,
+      changePasswordUrl: HTTPS_CHANGE_PASSWORD_URL,
     });
     dialog.recipients = [makeRecipientInfo()];
     document.body.appendChild(dialog);
@@ -85,45 +86,76 @@ suite('SharePasswordConfirmationDialogTest', function() {
     assertEquals(1, actualRecipients.length);
   });
 
-  test('Has correct success state with single recipient', async function() {
-    // The user has 5 seconds to cancel the dialog, after that `sharePassword`
-    // is triggered.
-    mockTimer.tick(5000);
-    flush();
+  test(
+      'Has correct success state with single recipient (https site)',
+      async function() {
+        // The user has 5 seconds to cancel the dialog, after that
+        // `sharePassword` is triggered.
+        mockTimer.tick(5000);
+        flush();
 
-    assertVisibleTextContent(
-        dialog.$.header, dialog.i18n('shareDialogSuccessTitle'));
+        assertVisibleTextContent(
+            dialog.$.header, dialog.i18n('shareDialogSuccessTitle'));
 
-    assertTrue(isVisible(dialog.$.description));
-    assertEquals(
-        dialog.$.description.innerHTML,
-        dialog
-            .i18nAdvanced(
-                'sharePasswordConfirmationDescriptionSingleRecipient', {
+        assertTrue(isVisible(dialog.$.description));
+        assertEquals(
+            dialog.$.description.innerHTML,
+            dialog
+                .i18nAdvanced(
+                    'sharePasswordConfirmationDescriptionSingleRecipient', {
+                      substitutions: [
+                        'New User',
+                        SHARED_PASSWORD_NAME,
+                        dialog.i18n('passwordSharingLearnMoreURL'),
+                      ],
+                    })
+                .toString());
+        assertTrue(isVisible(dialog.$.footerDescription));
+        assertEquals(
+            dialog.$.footerDescription.innerHTML,
+            dialog
+                .i18nAdvanced('sharePasswordConfirmationFooterWebsite', {
                   substitutions: [
-                    'New User',
-                    SHARED_PASSWORD_NAME,
-                    dialog.i18n('passwordSharingLearnMoreURL'),
+                    `<a href='${HTTPS_CHANGE_PASSWORD_URL}' target='_blank'>${
+                        SHARED_PASSWORD_NAME}</a>`,
                   ],
                 })
-            .toString());
-    assertTrue(isVisible(dialog.$.footerDescription));
-    assertEquals(
-        dialog.$.footerDescription.innerHTML,
-        dialog
-            .i18nAdvanced('sharePasswordConfirmationFooterWebsite', {
-              substitutions: [
-                CHANGE_PASSWORD_URL,
-                SHARED_PASSWORD_NAME,
-              ],
-            })
-            .toString());
+                .toString());
 
-    const [actualId, actualRecipients] =
-        await passwordManager.whenCalled('sharePassword');
-    assertEquals(SHARED_PASSWORD_ID, actualId);
-    assertEquals(1, actualRecipients.length);
-  });
+        const [actualId, actualRecipients] =
+            await passwordManager.whenCalled('sharePassword');
+        assertEquals(SHARED_PASSWORD_ID, actualId);
+        assertEquals(1, actualRecipients.length);
+      });
+
+  test(
+      'Has correct success footer with single recipient (http site)',
+      async function() {
+        dialog.password = createPasswordEntry({
+          id: SHARED_PASSWORD_ID,
+          changePasswordUrl: HTTP_CHANGE_PASSWORD_URL,
+        });
+
+        // The user has 5 seconds to cancel the dialog, after that
+        // `sharePassword` is triggered.
+        mockTimer.tick(5000);
+        flush();
+
+        assertEquals(
+            dialog.$.footerDescription.innerHTML,
+            dialog
+                .i18nAdvanced('sharePasswordConfirmationFooterWebsite', {
+                  substitutions: [
+                    SHARED_PASSWORD_NAME,
+                  ],
+                })
+                .toString());
+
+        const [actualId, actualRecipients] =
+            await passwordManager.whenCalled('sharePassword');
+        assertEquals(SHARED_PASSWORD_ID, actualId);
+        assertEquals(1, actualRecipients.length);
+      });
 
   test('Has correct footer for shared Android creadential', async function() {
     // Credential without change password url is an Android credentail.

@@ -678,7 +678,9 @@ void FileSystemAccessManagerImpl::ResolveDataTransferToken(
                                weak_factory_.GetWeakPtr(), binding_context,
                                data_transfer_token_impl->second->file_path(),
                                fs_url, std::move(token_resolved_callback))),
-      fs_url, storage::FileSystemOperation::GET_METADATA_FIELD_IS_DIRECTORY);
+      fs_url,
+      storage::FileSystemOperation::GetMetadataFieldSet(
+          {storage::FileSystemOperation::GetMetadataField::kIsDirectory}));
 }
 
 void FileSystemAccessManagerImpl::ResolveDataTransferTokenWithFileType(
@@ -1694,7 +1696,9 @@ void FileSystemAccessManagerImpl::CleanupAccessHandleCapacityAllocation(
                          CleanupAccessHandleCapacityAllocationImpl,
                      weak_factory_.GetWeakPtr(), url, allocated_file_size,
                      std::move(callback)),
-      url, storage::FileSystemOperation::GET_METADATA_FIELD_SIZE);
+      url,
+      storage::FileSystemOperation::GetMetadataFieldSet(
+          {storage::FileSystemOperation::GetMetadataField::kSize}));
 }
 
 void FileSystemAccessManagerImpl::CleanupAccessHandleCapacityAllocationImpl(
@@ -1733,8 +1737,21 @@ void FileSystemAccessManagerImpl::DidCleanupAccessHandleCapacityAllocation(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(access_handle_host);
 
-  size_t count_removed =
-      access_handle_host_receivers_.erase(access_handle_host);
+  // We cannot destroy `access_handle_host` by erasing it from the
+  // `access_handle_host_receivers_` set.
+  //
+  // The destruction of a `FileSystemAccessAccessHandleHostImpl` can trigger the
+  // creation of another. This means that if we directly erase
+  // `access_handle_host` from the set, `access_handle_host_receivers_` `erase`
+  // could call into `access_handle_host_receivers_` `insert` (in
+  // `CreateAccessHandleHost`) which is undefined behavior. Instead, we'll move
+  // it out of the set before erasing and then destroying.
+  size_t initial_size = access_handle_host_receivers_.size();
+  auto iter = access_handle_host_receivers_.find(access_handle_host);
+  auto access_handle_host_receiver = std::move(*iter);
+  access_handle_host_receivers_.erase(iter);
+
+  size_t count_removed = initial_size - access_handle_host_receivers_.size();
   DCHECK_EQ(1u, count_removed);
 }
 

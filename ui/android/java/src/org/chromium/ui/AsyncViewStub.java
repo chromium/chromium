@@ -96,8 +96,9 @@ public class AsyncViewStub extends View implements AsyncLayoutInflater.OnInflate
                 mAsyncLayoutInflater.inflate(mLayoutResource, (ViewGroup) viewParent, this);
             } else {
                 ViewGroup inflatedView =
-                        (ViewGroup) LayoutInflater.from(getContext())
-                                .inflate(mLayoutResource, (ViewGroup) viewParent, false);
+                        (ViewGroup)
+                                LayoutInflater.from(getContext())
+                                        .inflate(mLayoutResource, (ViewGroup) viewParent, false);
                 onInflateFinished(inflatedView, mLayoutResource, (ViewGroup) viewParent);
             }
         }

@@ -16,10 +16,12 @@
 #include "net/base/network_anonymization_key.h"
 #include "net/base/proxy_chain.h"
 #include "net/base/proxy_string_util.h"
+#include "net/proxy_resolution/proxy_info.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_context_builder.h"
 #include "net/url_request/url_request_test_util.h"
+#include "services/network/ip_protection_config_cache_impl.h"
 #include "services/network/ip_protection_proxy_list_manager.h"
 #include "services/network/ip_protection_token_cache_manager.h"
 #include "services/network/masked_domain_list/network_service_proxy_allow_list.h"
@@ -72,8 +74,8 @@ class MockIpProtectionConfigCache : public IpProtectionConfigCache {
     NOTREACHED_NORETURN();
   }
 
-  const std::vector<std::string>& GetProxyList() override {
-    return *proxy_list_;
+  std::vector<net::ProxyChain> GetProxyChainList() override {
+    return proxy_chain_list_;
   }
 
   bool IsProxyListAvailable() override { return proxy_list_.has_value(); }
@@ -85,8 +87,10 @@ class MockIpProtectionConfigCache : public IpProtectionConfigCache {
   }
 
   // Set the proxy list returned from `ProxyList()`.
-  void SetProxyList(std::vector<std::string> proxy_list) {
+  void SetProxyList(std::vector<std::vector<std::string>> proxy_list) {
     proxy_list_ = std::move(proxy_list);
+    proxy_chain_list_ = IpProtectionConfigCacheImpl::
+        ConvertProxyServerStringsToProxyChainListForTesting(*proxy_list_);
   }
 
   void SetOnRequestRefreshProxyList(
@@ -96,7 +100,8 @@ class MockIpProtectionConfigCache : public IpProtectionConfigCache {
 
  private:
   absl::optional<network::mojom::BlindSignedAuthTokenPtr> auth_token_;
-  absl::optional<std::vector<std::string>> proxy_list_;
+  absl::optional<std::vector<std::vector<std::string>>> proxy_list_;
+  std::vector<net::ProxyChain> proxy_chain_list_;
   base::OnceClosure on_force_refresh_proxy_list_;
 };
 
@@ -246,15 +251,54 @@ TEST_F(NetworkServiceProxyDelegateTest, AddsTokenToTunnelRequest) {
 
   auto ipp_config_cache = std::make_unique<MockIpProtectionConfigCache>();
   ipp_config_cache->SetNextAuthToken(MakeAuthToken("Bearer: a-token"));
-  ipp_config_cache->SetProxyList({"proxy"});
+  ipp_config_cache->SetProxyList({{"proxya", "proxyb"}});
   delegate->SetIpProtectionConfigCache(std::move(ipp_config_cache));
 
   net::HttpRequestHeaders headers;
-  auto proxy_chain = net::ProxyChain::FromSchemeHostAndPort(
-      net::ProxyServer::SCHEME_HTTPS, "proxy", absl::nullopt);
-  delegate->OnBeforeTunnelRequest(proxy_chain, /*chain_index=*/0, &headers);
+  auto ip_protection_proxy_chain =
+      net::ProxyChain(
+          {net::ProxyServer::FromSchemeHostAndPort(
+               net::ProxyServer::SCHEME_HTTPS, "proxya", absl::nullopt),
+           net::ProxyServer::FromSchemeHostAndPort(
+               net::ProxyServer::SCHEME_HTTPS, "proxyb", absl::nullopt)})
+          .ForIpProtection();
+  delegate->OnBeforeTunnelRequest(ip_protection_proxy_chain, /*chain_index=*/0,
+                                  &headers);
 
   EXPECT_THAT(headers, Contain("Authorization", "Bearer: a-token"));
+}
+
+TEST_F(NetworkServiceProxyDelegateTest, AddsPskToTunnelRequest) {
+  std::map<std::string, std::string> parameters;
+  parameters[net::features::kIpPrivacyProxyBPsk.name] = "seekrit";
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      net::features::kEnableIpProtectionProxy, std::move(parameters));
+
+  auto config =
+      NetworkServiceProxyAllowList::MakeIpProtectionCustomProxyConfig();
+  auto delegate = CreateDelegate(std::move(config));
+
+  auto ipp_config_cache = std::make_unique<MockIpProtectionConfigCache>();
+  ipp_config_cache->SetProxyList({{"proxya", "proxyb"}});
+  delegate->SetIpProtectionConfigCache(std::move(ipp_config_cache));
+
+  net::HttpRequestHeaders headers;
+  auto ip_protection_proxy_chain =
+      net::ProxyChain(
+          {net::ProxyServer::FromSchemeHostAndPort(
+               net::ProxyServer::SCHEME_HTTPS, "proxya", absl::nullopt),
+           net::ProxyServer::FromSchemeHostAndPort(
+               net::ProxyServer::SCHEME_HTTPS, "proxyb", absl::nullopt)})
+          .ForIpProtection();
+  delegate->OnBeforeTunnelRequest(ip_protection_proxy_chain, /*chain_index=*/0,
+                                  &headers);
+  EXPECT_THAT(headers, testing::Not(Contain("Proxy-Authorization",
+                                            "Preshared seekrit")));
+
+  delegate->OnBeforeTunnelRequest(ip_protection_proxy_chain, /*chain_index=*/1,
+                                  &headers);
+  EXPECT_THAT(headers, Contain("Proxy-Authorization", "Preshared seekrit"));
 }
 
 TEST_F(NetworkServiceProxyDelegateTest, NoTokenIfNotIpProtection) {
@@ -267,12 +311,40 @@ TEST_F(NetworkServiceProxyDelegateTest, NoTokenIfNotIpProtection) {
   delegate->SetIpProtectionConfigCache(std::move(ipp_config_cache));
 
   net::HttpRequestHeaders headers;
-  auto proxy_chain =
-      net::ProxyChain(net::PacResultElementToProxyServer("HTTPS proxy"));
-  delegate->OnBeforeTunnelRequest(proxy_chain, /*chain_index=*/0, &headers);
+  auto ip_protection_proxy_chain =
+      net::ProxyChain(net::PacResultElementToProxyServer("HTTPS proxy"))
+          .ForIpProtection();
+  delegate->OnBeforeTunnelRequest(ip_protection_proxy_chain, /*chain_index=*/0,
+                                  &headers);
 
   std::string value;
   EXPECT_FALSE(headers.GetHeader("Authorization", &value));
+}
+
+TEST_F(NetworkServiceProxyDelegateTest,
+       OnResolveProxyDiscardsInvalidProxyServers) {
+  auto config =
+      NetworkServiceProxyAllowList::MakeIpProtectionCustomProxyConfig();
+  std::map<std::string, std::set<std::string>> first_party_map;
+  first_party_map["example.com"] = {};
+  auto network_service_proxy_allow_list =
+      NetworkServiceProxyAllowList::CreateForTesting(first_party_map);
+  auto delegate =
+      CreateDelegate(std::move(config), &network_service_proxy_allow_list);
+
+  auto ipp_config_cache = std::make_unique<MockIpProtectionConfigCache>();
+  ipp_config_cache->SetNextAuthToken(MakeAuthToken("Bearer: a-token"));
+  ipp_config_cache->SetProxyList({{"foo:80"}});
+  delegate->SetIpProtectionConfigCache(std::move(ipp_config_cache));
+
+  net::ProxyInfo result;
+  result.UseDirect();
+  delegate->OnResolveProxy(GURL(kHttpsUrl),
+                           net::NetworkAnonymizationKey::CreateCrossSite(
+                               net::SchemefulSite(GURL("https://top.com"))),
+                           "GET", net::ProxyRetryInfoMap(), &result);
+  EXPECT_TRUE(result.is_direct());
+  EXPECT_FALSE(result.is_for_ip_protection());
 }
 
 TEST_F(NetworkServiceProxyDelegateTest, OnResolveProxySuccessHttpProxy) {
@@ -629,37 +701,50 @@ TEST_F(NetworkServiceProxyDelegateTest,
 
   auto ipp_config_cache = std::make_unique<MockIpProtectionConfigCache>();
   ipp_config_cache->SetNextAuthToken(MakeAuthToken("Bearer: a-token"));
-  ipp_config_cache->SetProxyList({"ippro-1", "ippro-2"});
+  ipp_config_cache->SetProxyList({{"ippro-1"}, {"ippro-2"}});
   delegate->SetIpProtectionConfigCache(std::move(ipp_config_cache));
 
   net::ProxyInfo result;
   // Verify that the IP Protection proxy list is correctly merged with the
   // existing proxy list.
   result.UsePacString("PROXY bar; DIRECT; PROXY weird");
-  delegate->OnResolveProxy(GURL(kHttpUrl),
+  delegate->OnResolveProxy(GURL(kHttpsUrl),
                            net::NetworkAnonymizationKey::CreateCrossSite(
-                               net::SchemefulSite(GURL("http://top.com"))),
+                               net::SchemefulSite(GURL("https://top.com"))),
                            "GET", net::ProxyRetryInfoMap(), &result);
 
   net::ProxyList expected_proxy_list;
   expected_proxy_list.AddProxyServer(
       net::PacResultElementToProxyServer("PROXY bar"));
-  expected_proxy_list.AddProxyServer(
-      net::PacResultElementToProxyServer("HTTPS ippro-1"));
-  expected_proxy_list.AddProxyServer(
-      net::PacResultElementToProxyServer("HTTPS ippro-2"));
+
+  auto ip_protection_proxy_chain_1 =
+      net::ProxyChain(net::PacResultElementToProxyServer("HTTPS ippro-1"))
+          .ForIpProtection();
+  expected_proxy_list.AddProxyChain(std::move(ip_protection_proxy_chain_1));
+
+  auto ip_protection_proxy_chain_2 =
+      net::ProxyChain(net::PacResultElementToProxyServer("HTTPS ippro-2"))
+          .ForIpProtection();
+  expected_proxy_list.AddProxyChain(std::move(ip_protection_proxy_chain_2));
+
   expected_proxy_list.AddProxyServer(net::ProxyServer::Direct());
   expected_proxy_list.AddProxyServer(
       net::PacResultElementToProxyServer("PROXY weird"));
+
   EXPECT_TRUE(result.proxy_list().Equals(expected_proxy_list))
-      << "Got: " << result.proxy_list().ToPacString();
+      << "Got: " << result.proxy_list().ToDebugString();
+  EXPECT_FALSE(result.is_for_ip_protection());
+
+  // After a fallback, the first IP Protection proxy chain should be used.
+  EXPECT_TRUE(result.Fallback(net::ERR_PROXY_CONNECTION_FAILED,
+                              net::NetLogWithSource()));
   EXPECT_TRUE(result.is_for_ip_protection());
 }
 
 TEST_F(NetworkServiceProxyDelegateTest,
        OnResolveProxyNetworkServiceProxyAllowListMatch_DirectOnly) {
   std::map<std::string, std::string> parameters;
-  parameters["IpPrivacyDirectOnly"] = "true";
+  parameters[net::features::kIpPrivacyDirectOnly.name] = "true";
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
       net::features::kEnableIpProtectionProxy, std::move(parameters));
@@ -675,21 +760,21 @@ TEST_F(NetworkServiceProxyDelegateTest,
 
   auto ipp_config_cache = std::make_unique<MockIpProtectionConfigCache>();
   ipp_config_cache->SetNextAuthToken(MakeAuthToken("Bearer: a-token"));
-  ipp_config_cache->SetProxyList({"foo"});
+  ipp_config_cache->SetProxyList({{"foo"}});
   delegate->SetIpProtectionConfigCache(std::move(ipp_config_cache));
 
   net::ProxyInfo result;
   result.UseDirect();
-  delegate->OnResolveProxy(GURL(kHttpUrl),
+  delegate->OnResolveProxy(GURL(kHttpsUrl),
                            net::NetworkAnonymizationKey::CreateCrossSite(
-                               net::SchemefulSite(GURL("http://top.com"))),
+                               net::SchemefulSite(GURL("https://top.com"))),
                            "GET", net::ProxyRetryInfoMap(), &result);
 
   net::ProxyList expected_proxy_list;
-  // Proxy server is not added.
-  expected_proxy_list.AddProxyServer(net::ProxyServer::Direct());
+  auto ip_protection_proxy_chain = net::ProxyChain::Direct().ForIpProtection();
+  expected_proxy_list.AddProxyChain(std::move(ip_protection_proxy_chain));
   EXPECT_TRUE(result.proxy_list().Equals(expected_proxy_list))
-      << "Got: " << result.proxy_list().ToPacString();
+      << "Got: " << result.proxy_list().ToDebugString();
   EXPECT_TRUE(result.is_for_ip_protection());
 }
 
@@ -708,14 +793,14 @@ TEST_F(
 
   auto ipp_config_cache = std::make_unique<MockIpProtectionConfigCache>();
   ipp_config_cache->SetNextAuthToken(MakeAuthToken("Bearer: a-token"));
-  ipp_config_cache->SetProxyList({"ippro-1", "ippro-2"});
+  ipp_config_cache->SetProxyList({{"ippro-1"}, {"ippro-2"}});
   delegate->SetIpProtectionConfigCache(std::move(ipp_config_cache));
 
   net::ProxyInfo result;
   result.UseDirect();
-  delegate->OnResolveProxy(GURL(kHttpUrl),
+  delegate->OnResolveProxy(GURL(kHttpsUrl),
                            net::NetworkAnonymizationKey::CreateCrossSite(
-                               net::SchemefulSite(GURL("http://top.com"))),
+                               net::SchemefulSite(GURL("https://top.com"))),
                            "GET", net::ProxyRetryInfoMap(), &result);
 
   EXPECT_TRUE(result.is_direct());
@@ -735,9 +820,9 @@ TEST_F(NetworkServiceProxyDelegateTest, OnResolveProxy_NoConfigCache) {
 
   net::ProxyInfo result;
   result.UseDirect();
-  delegate->OnResolveProxy(GURL(kHttpUrl),
+  delegate->OnResolveProxy(GURL(kHttpsUrl),
                            net::NetworkAnonymizationKey::CreateCrossSite(
-                               net::SchemefulSite(GURL("http://top.com"))),
+                               net::SchemefulSite(GURL("https://top.com"))),
                            "GET", net::ProxyRetryInfoMap(), &result);
 
   EXPECT_TRUE(result.is_direct());
@@ -756,15 +841,15 @@ TEST_F(NetworkServiceProxyDelegateTest, OnResolveProxy_NoAuthToken) {
       CreateDelegate(std::move(config), &network_service_proxy_allow_list);
 
   auto ipp_config_cache = std::make_unique<MockIpProtectionConfigCache>();
-  ipp_config_cache->SetProxyList({"proxy"});
+  ipp_config_cache->SetProxyList({{"proxy"}});
   // No token is added to the cache, so the result will be direct.
   delegate->SetIpProtectionConfigCache(std::move(ipp_config_cache));
 
   net::ProxyInfo result;
   result.UseDirect();
-  delegate->OnResolveProxy(GURL(kHttpUrl),
+  delegate->OnResolveProxy(GURL(kHttpsUrl),
                            net::NetworkAnonymizationKey::CreateCrossSite(
-                               net::SchemefulSite(GURL("http://top.com"))),
+                               net::SchemefulSite(GURL("https://top.com"))),
                            "GET", net::ProxyRetryInfoMap(), &result);
 
   EXPECT_TRUE(result.is_direct());
@@ -788,9 +873,9 @@ TEST_F(NetworkServiceProxyDelegateTest, OnResolveProxy_NoProxyList) {
 
   net::ProxyInfo result;
   result.UseDirect();
-  delegate->OnResolveProxy(GURL(kHttpUrl),
+  delegate->OnResolveProxy(GURL(kHttpsUrl),
                            net::NetworkAnonymizationKey::CreateCrossSite(
-                               net::SchemefulSite(GURL("http://top.com"))),
+                               net::SchemefulSite(GURL("https://top.com"))),
                            "GET", net::ProxyRetryInfoMap(), &result);
 
   EXPECT_TRUE(result.is_direct());
@@ -814,14 +899,14 @@ TEST_F(NetworkServiceProxyDelegateTest, OnResolveProxy_AllowListDisabled) {
 
   auto ipp_config_cache = std::make_unique<MockIpProtectionConfigCache>();
   ipp_config_cache->SetNextAuthToken(MakeAuthToken("Bearer: a-token"));
-  ipp_config_cache->SetProxyList({"proxy"});
+  ipp_config_cache->SetProxyList({{"proxy"}});
   delegate->SetIpProtectionConfigCache(std::move(ipp_config_cache));
 
   net::ProxyInfo result;
   result.UseDirect();
-  delegate->OnResolveProxy(GURL(kHttpUrl),
+  delegate->OnResolveProxy(GURL(kHttpsUrl),
                            net::NetworkAnonymizationKey::CreateCrossSite(
-                               net::SchemefulSite(GURL("http://top.com"))),
+                               net::SchemefulSite(GURL("https://top.com"))),
                            "GET", net::ProxyRetryInfoMap(), &result);
 
   EXPECT_TRUE(result.is_direct());
@@ -843,14 +928,14 @@ TEST_F(
 
   auto ipp_config_cache = std::make_unique<MockIpProtectionConfigCache>();
   ipp_config_cache->SetNextAuthToken(MakeAuthToken("Bearer: a-token"));
-  ipp_config_cache->SetProxyList({"ippro-1", "ippro-2"});
+  ipp_config_cache->SetProxyList({{"ippro-1"}, {"ippro-2"}});
   delegate->SetIpProtectionConfigCache(std::move(ipp_config_cache));
 
   net::ProxyInfo result;
   result.UseDirect();
-  delegate->OnResolveProxy(GURL(kHttpUrl),
+  delegate->OnResolveProxy(GURL(kHttpsUrl),
                            net::NetworkAnonymizationKey::CreateCrossSite(
-                               net::SchemefulSite(GURL("http://top.com"))),
+                               net::SchemefulSite(GURL("https://top.com"))),
                            "GET", net::ProxyRetryInfoMap(), &result);
 
   EXPECT_TRUE(result.is_direct());
@@ -866,7 +951,7 @@ TEST_F(NetworkServiceProxyDelegateTest,
 
   auto ipp_config_cache = std::make_unique<MockIpProtectionConfigCache>();
   ipp_config_cache->SetNextAuthToken(MakeAuthToken("Bearer: a-token"));
-  ipp_config_cache->SetProxyList({"ippro-1", "ippro-2"});
+  ipp_config_cache->SetProxyList({{"ippro-1"}, {"ippro-2"}});
   delegate->SetIpProtectionConfigCache(std::move(ipp_config_cache));
 
   net::ProxyInfo result;
@@ -893,7 +978,7 @@ TEST_F(NetworkServiceProxyDelegateTest, OnResolveProxyIpProtectionNoMatch) {
 
   auto ipp_config_cache = std::make_unique<MockIpProtectionConfigCache>();
   ipp_config_cache->SetNextAuthToken(MakeAuthToken("Bearer: a-token"));
-  ipp_config_cache->SetProxyList({"ippro-1", "ippro-2"});
+  ipp_config_cache->SetProxyList({{"ippro-1"}, {"ippro-2"}});
   delegate->SetIpProtectionConfigCache(std::move(ipp_config_cache));
 
   net::ProxyInfo result;
@@ -906,10 +991,13 @@ TEST_F(NetworkServiceProxyDelegateTest, OnResolveProxyIpProtectionNoMatch) {
   EXPECT_FALSE(result.is_for_ip_protection());
 }
 
-// When a `config` does look like an IP Protection `CustomProxyConfig` and
-// the URLs match the allow list, and a token is available, the result is
-// flagged as for IP protection and is not direct.
-TEST_F(NetworkServiceProxyDelegateTest, OnResolveProxyMayNeedAuthTokenSoon) {
+// When a `config` does look like an IP Protection `CustomProxyConfig`, but
+// the URL is HTTP instead of HTTPS, the result is direct and not flagged as for
+// IP Protection.
+// TODO(https://crbug.com/1474932): Support proxying HTTP URLs by using
+// CONNECT requests (i.e. tunnelling) instead of using the old-style proxy GET
+// requests from the last proxy in the chain.
+TEST_F(NetworkServiceProxyDelegateTest, OnResolveProxyIpProtectionHttpFailure) {
   auto config =
       NetworkServiceProxyAllowList::MakeIpProtectionCustomProxyConfig();
   std::map<std::string, std::set<std::string>> first_party_map;
@@ -921,7 +1009,7 @@ TEST_F(NetworkServiceProxyDelegateTest, OnResolveProxyMayNeedAuthTokenSoon) {
 
   auto ipp_config_cache = std::make_unique<MockIpProtectionConfigCache>();
   ipp_config_cache->SetNextAuthToken(MakeAuthToken("Bearer: a-token"));
-  ipp_config_cache->SetProxyList({"proxy"});
+  ipp_config_cache->SetProxyList({{"proxy"}});
   delegate->SetIpProtectionConfigCache(std::move(ipp_config_cache));
 
   net::ProxyInfo result;
@@ -929,6 +1017,35 @@ TEST_F(NetworkServiceProxyDelegateTest, OnResolveProxyMayNeedAuthTokenSoon) {
   delegate->OnResolveProxy(GURL(kHttpUrl),
                            net::NetworkAnonymizationKey::CreateCrossSite(
                                net::SchemefulSite(GURL("http://top.com"))),
+                           "GET", net::ProxyRetryInfoMap(), &result);
+  EXPECT_TRUE(result.is_direct());
+  EXPECT_FALSE(result.is_for_ip_protection());
+}
+
+// When a `config` does look like an IP Protection `CustomProxyConfig` and
+// the URLs match the allow list, and a token is available, the result is
+// flagged as for IP protection and is not direct.
+TEST_F(NetworkServiceProxyDelegateTest,
+       OnResolveProxyIpProtectionHttpsSuccess) {
+  auto config =
+      NetworkServiceProxyAllowList::MakeIpProtectionCustomProxyConfig();
+  std::map<std::string, std::set<std::string>> first_party_map;
+  first_party_map["example.com"] = {};
+  auto network_service_proxy_allow_list =
+      NetworkServiceProxyAllowList::CreateForTesting(first_party_map);
+  auto delegate =
+      CreateDelegate(std::move(config), &network_service_proxy_allow_list);
+
+  auto ipp_config_cache = std::make_unique<MockIpProtectionConfigCache>();
+  ipp_config_cache->SetNextAuthToken(MakeAuthToken("Bearer: a-token"));
+  ipp_config_cache->SetProxyList({{"proxy"}});
+  delegate->SetIpProtectionConfigCache(std::move(ipp_config_cache));
+
+  net::ProxyInfo result;
+  result.UseDirect();
+  delegate->OnResolveProxy(GURL(kHttpsUrl),
+                           net::NetworkAnonymizationKey::CreateCrossSite(
+                               net::SchemefulSite(GURL("https://top.com"))),
                            "GET", net::ProxyRetryInfoMap(), &result);
   EXPECT_FALSE(result.is_direct());
   EXPECT_TRUE(result.is_for_ip_protection());
@@ -971,8 +1088,10 @@ TEST_F(NetworkServiceProxyDelegateTest, OnFallbackObserved) {
 }
 
 TEST_F(NetworkServiceProxyDelegateTest, OnFallback_IpProtection) {
-  auto proxy_chain = net::ProxyChain::FromSchemeHostAndPort(
-      net::ProxyServer::SCHEME_HTTPS, "proxy.com", absl::nullopt);
+  auto ip_protection_proxy_chain =
+      net::ProxyChain::FromSchemeHostAndPort(net::ProxyServer::SCHEME_HTTPS,
+                                             "proxy.com", absl::nullopt)
+          .ForIpProtection();
   bool force_refresh_called = false;
 
   auto config = mojom::CustomProxyConfig::New();
@@ -981,10 +1100,10 @@ TEST_F(NetworkServiceProxyDelegateTest, OnFallback_IpProtection) {
   auto ipp_config_cache = std::make_unique<MockIpProtectionConfigCache>();
   ipp_config_cache->SetOnRequestRefreshProxyList(
       base::BindLambdaForTesting([&]() { force_refresh_called = true; }));
-  ipp_config_cache->SetProxyList({"proxy.com"});
+  ipp_config_cache->SetProxyList({{"proxy.com"}});
   delegate->SetIpProtectionConfigCache(std::move(ipp_config_cache));
 
-  delegate->OnFallback(proxy_chain, net::ERR_FAILED);
+  delegate->OnFallback(ip_protection_proxy_chain, net::ERR_FAILED);
   EXPECT_TRUE(force_refresh_called);
 }
 
@@ -1016,6 +1135,52 @@ TEST_F(NetworkServiceProxyDelegateTest, OnTunnelHeadersReceivedObserved) {
   EXPECT_EQ(
       TestObserver()->HeadersReceivedArgs()->response_headers->raw_headers(),
       headers->raw_headers());
+}
+
+TEST_F(NetworkServiceProxyDelegateTest, MergeProxyRules) {
+  net::ProxyChain chain1({
+      net::ProxyServer::FromSchemeHostAndPort(net::ProxyServer::SCHEME_HTTPS,
+                                              "proxy2a.com", 80),
+      net::ProxyServer::FromSchemeHostAndPort(net::ProxyServer::SCHEME_HTTPS,
+                                              "proxy2b.com", 80),
+  });
+  net::ProxyChain chain2(net::ProxyServer::Direct());
+  net::ProxyChain chain3({
+      net::ProxyServer::FromSchemeHostAndPort(net::ProxyServer::SCHEME_HTTPS,
+                                              "proxy1.com", 80),
+  });
+  net::ProxyList existing_proxy_list;
+  existing_proxy_list.AddProxyChain(chain1);
+  existing_proxy_list.AddProxyChain(chain2);
+  existing_proxy_list.AddProxyChain(chain3);
+
+  net::ProxyChain custom1({
+      net::ProxyServer::FromSchemeHostAndPort(net::ProxyServer::SCHEME_HTTPS,
+                                              "custom-a.com", 80),
+      net::ProxyServer::FromSchemeHostAndPort(net::ProxyServer::SCHEME_HTTPS,
+                                              "custom-b.com", 80),
+      net::ProxyServer::FromSchemeHostAndPort(net::ProxyServer::SCHEME_HTTPS,
+                                              "custom-c.com", 80),
+  });
+  net::ProxyChain custom2(net::ProxyServer::Direct());
+  net::ProxyList custom_proxy_list;
+  custom_proxy_list.AddProxyChain(custom1);
+  custom_proxy_list.AddProxyChain(custom2);
+
+  auto config = mojom::CustomProxyConfig::New();
+  auto delegate = CreateDelegate(std::move(config));
+
+  auto result =
+      delegate->MergeProxyRules(existing_proxy_list, custom_proxy_list);
+
+  // Custom chains replace `chain2`.
+  std::vector<net::ProxyChain> expected = {
+      chain1,
+      custom1,
+      custom2,
+      chain3,
+  };
+  EXPECT_EQ(result.AllChains(), expected);
 }
 
 }  // namespace network

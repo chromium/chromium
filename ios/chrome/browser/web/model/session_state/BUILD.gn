@@ -1,0 +1,14 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("session_state") {
+  sources = [
+    "web_session_state_cache.h",
+    "web_session_state_cache_factory.h",
+    "web_session_state_cache_web_state_list_observer.h",
+    "web_session_state_tab_helper.h",
+  ]
+
+  public_deps = [ "//ios/chrome/browser/web/session_state" ]
+}

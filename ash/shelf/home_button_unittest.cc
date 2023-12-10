@@ -139,7 +139,7 @@ class HomeButtonAnimationTest : public HomeButtonTestBase {
   }
 
  private:
-  absl::optional<ui::ScopedAnimationDurationScaleMode> animation_duration_;
+  std::optional<ui::ScopedAnimationDurationScaleMode> animation_duration_;
 
   base::test::ScopedFeatureList scoped_feature_list_;
 };

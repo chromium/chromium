@@ -4,6 +4,8 @@
 
 source_set("coordinators") {
   sources = [
+    "features.h",
+    "features.mm",
     "infobar_banner_overlay_coordinator.h",
     "infobar_banner_overlay_coordinator.mm",
   ]
@@ -11,11 +13,11 @@ source_set("coordinators") {
   deps = [
     ":mediators",
     "//base",
-    "//ios/chrome/browser/infobars",
-    "//ios/chrome/browser/infobars:public",
-    "//ios/chrome/browser/overlays",
-    "//ios/chrome/browser/overlays/public/common/infobars",
-    "//ios/chrome/browser/overlays/public/default",
+    "//ios/chrome/browser/infobars/model",
+    "//ios/chrome/browser/infobars/model:public",
+    "//ios/chrome/browser/overlays/model",
+    "//ios/chrome/browser/overlays/model/public/common/infobars",
+    "//ios/chrome/browser/overlays/model/public/default",
     "//ios/chrome/browser/shared/coordinator/layout_guide",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/util",
@@ -47,8 +49,8 @@ source_set("mediators") {
   deps = [
     "//base",
     "//components/infobars/core",
-    "//ios/chrome/browser/overlays",
-    "//ios/chrome/browser/overlays/public/infobar_banner",
+    "//ios/chrome/browser/overlays/model",
+    "//ios/chrome/browser/overlays/model/public/infobar_banner",
     "//ios/chrome/browser/ui/infobars/banners",
     "//ios/chrome/browser/ui/infobars/banners:public",
     "//ios/chrome/browser/ui/overlays:coordinators",
@@ -62,10 +64,10 @@ source_set("unit_tests") {
   deps = [
     ":mediators",
     "//components/infobars/core",
-    "//ios/chrome/browser/infobars/test",
-    "//ios/chrome/browser/overlays",
-    "//ios/chrome/browser/overlays/public/infobar_banner",
-    "//ios/chrome/browser/overlays/test",
+    "//ios/chrome/browser/infobars/model/test",
+    "//ios/chrome/browser/overlays/model",
+    "//ios/chrome/browser/overlays/model/public/infobar_banner",
+    "//ios/chrome/browser/overlays/model/test",
     "//ios/chrome/browser/ui/overlays/test",
     "//testing/gmock",
     "//testing/gtest",

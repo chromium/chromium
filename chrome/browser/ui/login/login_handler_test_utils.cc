@@ -62,22 +62,3 @@ void LoginPromptBrowserTestObserver::Register(
 void LoginPromptBrowserTestObserver::UnregisterAll() {
   registrar_.RemoveAll();
 }
-
-WindowedLoadStopObserver::WindowedLoadStopObserver(
-    content::NavigationController* controller,
-    int notification_count)
-    : WindowedNavigationObserver<content::NOTIFICATION_LOAD_STOP>(controller),
-      remaining_notification_count_(notification_count) {
-  // This should really be an ASSERT, if those were allowed in a method which
-  // does not return void.
-  EXPECT_LE(0, remaining_notification_count_);
-}
-
-void WindowedLoadStopObserver::Observe(
-    int type,
-    const content::NotificationSource& source,
-    const content::NotificationDetails& details) {
-  ASSERT_LT(0, remaining_notification_count_);
-  if (--remaining_notification_count_ == 0)
-    WindowedNotificationObserver::Observe(type, source, details);
-}

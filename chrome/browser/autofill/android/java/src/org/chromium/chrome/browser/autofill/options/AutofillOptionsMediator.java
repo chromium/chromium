@@ -24,8 +24,10 @@ class AutofillOptionsMediator {
     @VisibleForTesting
     static final String HISTOGRAM_USE_THIRD_PARTY_FILLING =
             "Autofill.Settings.ToggleUseThirdPartyFilling";
+
     @VisibleForTesting
     static final String HISTOGRAM_REFERRER = "Autofill.Settings.AutofillOptionsReferrerAndroid";
+
     private final Profile mProfile;
     private PropertyModel mModel;
 
@@ -45,7 +47,8 @@ class AutofillOptionsMediator {
 
     void updateToggleStateFromPref() {
         assert isInitialized();
-        mModel.set(THIRD_PARTY_AUTOFILL_ENABLED,
+        mModel.set(
+                THIRD_PARTY_AUTOFILL_ENABLED,
                 prefs().getBoolean(Pref.AUTOFILL_USING_VIRTUAL_VIEW_STRUCTURE));
     }
 

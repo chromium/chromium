@@ -445,7 +445,7 @@ bool ChooseAndSetDefaultTaskFromPolicyPrefs(
 
   std::vector<FullTaskDescriptor*> filtered_tasks;
   // `app_id` matching is not necessary if the policy points to a virtual task.
-  if (absl::optional<base::StringPiece> virtual_task_id =
+  if (std::optional<base::StringPiece> virtual_task_id =
           apps_util::GetVirtualTaskIdFromPolicyId(policy_id)) {
     std::string full_virtual_task_id = ToSwaActionId(*virtual_task_id);
     for (auto& task : resulting_tasks->tasks) {

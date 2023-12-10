@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -38,7 +39,6 @@
 #include "chromeos/dbus/power_manager/power_supply_properties.pb.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/multi_user/multi_user_sign_in_policy.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/display/display_observer.h"
 #include "ui/display/screen.h"
@@ -159,6 +159,8 @@ class ASH_EXPORT LockContentsView
   void OnAuthDisabledForUser(
       const AccountId& user,
       const AuthDisabledData& auth_disabled_data) override;
+  void OnAuthenticationStageChanged(
+      const AuthenticationStage auth_stage) override;
   void OnSetTpmLockedState(const AccountId& user,
                            bool is_locked,
                            base::TimeDelta time_left) override;
@@ -516,7 +518,7 @@ class ASH_EXPORT LockContentsView
 
   // Whether the system information should be displayed or not be displayed
   // forcedly according to policy settings.
-  absl::optional<bool> enable_system_info_enforced_ = absl::nullopt;
+  std::optional<bool> enable_system_info_enforced_ = std::nullopt;
 
   // Whether the system information is intended to be displayed if possible.
   // (e.g., Alt-V is pressed, particular OS channels)
@@ -545,7 +547,7 @@ class ASH_EXPORT LockContentsView
 
   // When OnUsersChanged called during authentication this object stores
   // the users info till the authentication finished.
-  absl::optional<std::vector<LoginUserInfo>> pending_users_change_;
+  std::optional<std::vector<LoginUserInfo>> pending_users_change_;
 
   // The widget this view is attached to. This field is here so that we can
   // remove `this` as FocusChangeListener in `RemovedFromWidget`.

@@ -240,8 +240,8 @@ TEST_F(ChromeMetricsServiceClientTest, TestRegisterMetricsServiceProviders) {
   // PersonalizationAppThemeMetricsProvider, PrinterMetricsProvider,
   // FamilyUserMetricsProvider, FamilyLinkUserMetricsProvider,
   // UpdateEngineMetricsProvider, OsSettingsMetricsProvider,
-  // and UserTypeByDeviceTypeMetricsProvider.
-  expected_providers += 13;
+  // UserTypeByDeviceTypeMetricsProvider, and WallpaperMetricsProvider.
+  expected_providers += 14;
 
   // StructuredMetricsProvider.
   if (!base::FeatureList::IsEnabled(
@@ -255,10 +255,6 @@ TEST_F(ChromeMetricsServiceClientTest, TestRegisterMetricsServiceProviders) {
   // AccessibilityMetricsProvider
   expected_providers += 2;
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
-  expected_providers++;  // UpgradeMetricsProvider
-#endif  //! BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_MAC)
   expected_providers++;  // PowerMetricsProvider
@@ -282,8 +278,7 @@ TEST_F(ChromeMetricsServiceClientTest, TestRegisterMetricsServiceProviders) {
   expected_providers += 1;
 #endif
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   expected_providers++;  // FamilyLinkUserMetricsProvider
 #endif
 

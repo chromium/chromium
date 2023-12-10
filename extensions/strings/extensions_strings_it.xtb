@@ -8,6 +8,7 @@
 <translation id="1420684932347524586">Spiacenti, operazione di generazione della chiave privata RSA casuale non riuscita.</translation>
 <translation id="1445572445564823378">Questa estensione sta rallentando <ph name="PRODUCT_NAME" />. È necessario disabilitarla per ripristinare le prestazioni di <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1468038450257740950">WebGL non è supportato.</translation>
+<translation id="1610570795592207282">Impossibile caricare il CSS "<ph name="RELATIVE_PATH" />" per lo script.</translation>
 <translation id="1803557475693955505">Impossibile caricare la pagina di sfondo "<ph name="BACKGROUND_PAGE" />".</translation>
 <translation id="2159915644201199628">Impossibile decodificare l'immagine: "<ph name="IMAGE_NAME" />"</translation>
 <translation id="2350172092385603347">Localizzazione utilizzata, ma default_locale non era specificato nel file manifest.</translation>
@@ -18,14 +19,12 @@
 <translation id="3115238746683532089">Prodotto sconosciuto <ph name="PRODUCT_ID" /> del fornitore <ph name="VENDOR_ID" /> (numero di serie <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">Impossibile sostituire il file crx. Controlla se il file è in uso.</translation>
 <translation id="3163201441334626963">Prodotto sconosciuto <ph name="PRODUCT_ID" /> del fornitore <ph name="VENDOR_ID" /></translation>
-<translation id="3302709122321372472">Impossibile caricare css "<ph name="RELATIVE_PATH" />" per script contenuti.</translation>
 <translation id="3369521687965833290">Impossibile decomprimere l'estensione. Per decomprimere in modo sicuro un'estensione, deve essere fornito un percorso alla directory del profilo che inizi con una lettera di unità e non contenga un punto di giunzione, un punto di montaggio o un link simbolico. Non esiste un simile percorso per il tuo profilo.</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (numero di serie <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> del fornitore <ph name="VENDOR_ID" /> (numero di serie <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Il valore di input per la chiave privata deve essere un percorso valido.</translation>
 <translation id="388442998277590542">Impossibile caricare la pagina delle opzioni "<ph name="OPTIONS_PAGE" />".</translation>
 <translation id="3984413272403535372">Errore durante la firma dell'estensione.</translation>
-<translation id="39964277676607559">Impossibile caricare javascript "<ph name="RELATIVE_PATH" />" per script contenuti.</translation>
 <translation id="4115165561519362854">L'amministratore di questo computer richiede che <ph name="EXTENSION_NAME" /> abbia almeno la versione <ph name="EXTENSION_VERSION" />. L'attivazione potrà essere completata solo dopo che è stato eseguito l'aggiornamento a questa versione o a una versione successiva.</translation>
 <translation id="4233778200880751280">Impossibile caricare la pagina di informazioni "<ph name="ABOUT_PAGE" />".</translation>
 <translation id="471800408830181311">Operazione di output della chiave privata non riuscita.</translation>
@@ -33,6 +32,7 @@
 <translation id="4988792151665380515">Operazione di esportazione della chiave pubblica non riuscita.</translation>
 <translation id="5026754133087629784">Visualizzazione web: <ph name="WEBVIEW_TAG_NAME" /></translation>
 <translation id="5098647635849512368">Impossibile trovare il percorso assoluto della directory per creare il pacchetto.</translation>
+<translation id="5160071981665899014">Impossibile caricare il codice JavaScript "<ph name="RELATIVE_PATH" />" per lo script.</translation>
 <translation id="5356315618422219272">Appview: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5436430103864390185">Le finestre con forma personalizzata non sono supportate.</translation>
 <translation id="5456409301717116725">Questa estensione include il file di chiave "<ph name="KEY_PATH" />". Probabilmente preferiresti che non l'includesse.</translation>

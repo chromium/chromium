@@ -10,6 +10,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/test/ash_test_helper.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
@@ -56,9 +57,7 @@ class HotspotTrayViewTest : public AshTestBase,
     } else {
       scoped_feature_list_.InitAndEnableFeature(features::kHotspot);
     }
-    cros_hotspot_config_test_helper_ =
-        std::make_unique<hotspot_config::CrosHotspotConfigTestHelper>(
-            /*use_fake_implementation=*/true);
+
     AshTestBase::SetUp();
     std::unique_ptr<HotspotTrayView> hotspot_tray_view =
         std::make_unique<HotspotTrayView>(GetPrimaryShelf());
@@ -72,7 +71,6 @@ class HotspotTrayViewTest : public AshTestBase,
 
   void TearDown() override {
     widget_.reset();
-    cros_hotspot_config_test_helper_.reset();
     AshTestBase::TearDown();
   }
 
@@ -80,7 +78,7 @@ class HotspotTrayViewTest : public AshTestBase,
     auto hotspot_info = HotspotInfo::New();
     hotspot_info->state = state;
     hotspot_info->client_count = client_count;
-    cros_hotspot_config_test_helper_->SetFakeHotspotInfo(
+    ash_test_helper()->cros_hotspot_config_test_helper()->SetFakeHotspotInfo(
         std::move(hotspot_info));
     base::RunLoop().RunUntilIdle();
   }
@@ -99,8 +97,6 @@ class HotspotTrayViewTest : public AshTestBase,
 
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
-  std::unique_ptr<hotspot_config::CrosHotspotConfigTestHelper>
-      cros_hotspot_config_test_helper_;
   std::unique_ptr<views::Widget> widget_;
   raw_ptr<HotspotTrayView, DanglingUntriaged | ExperimentalAsh>
       hotspot_tray_view_;

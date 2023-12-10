@@ -71,11 +71,14 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
   void Encode(scoped_refptr<VideoFrame> frame,
               const EncodeOptions& options) override;
   void UseOutputBitstreamBuffer(BitstreamBuffer buffer) override;
-  void RequestEncodingParametersChange(const Bitrate& bitrate,
-                                       uint32_t framerate) override;
+  void RequestEncodingParametersChange(
+      const Bitrate& bitrate,
+      uint32_t framerate,
+      const absl::optional<gfx::Size>& size) override;
   void RequestEncodingParametersChange(
       const VideoBitrateAllocation& bitrate_allocation,
-      uint32_t framerate) override;
+      uint32_t framerate,
+      const absl::optional<gfx::Size>& size) override;
   void Destroy() override;
   void Flush(FlushCallback flush_callback) override;
   bool IsFlushSupported() override;
@@ -97,6 +100,9 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
   // Holds output buffers coming from the client ready to be filled.
   struct BitstreamBufferRef;
 
+  // A helper for parsing bitstream buffer after encoding.
+  class BitstreamParserHelper;
+
   // Holds output buffers coming from the encoder.
   class EncodeOutput;
 
@@ -112,6 +118,7 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
     gfx::ColorSpace color_space;
     bool discard_output = false;
     absl::optional<int> qp;
+    uint32_t frame_id;
   };
 
   // Encoder state.
@@ -137,10 +144,6 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
   void EncodeInternal(scoped_refptr<VideoFrame> frame,
                       const EncodeOptions& options,
                       bool discard_output);
-
-  // Get supported profiles for specific codec.
-  VideoEncodeAccelerator::SupportedProfiles GetSupportedProfilesForCodec(
-      VideoCodec codec);
 
   // Activates the asynchronous encoder instance |encoder_| according to codec
   // merit.
@@ -174,16 +177,10 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
   HRESULT PopulateInputSampleBufferGpu(scoped_refptr<VideoFrame> frame);
   HRESULT CopyInputSampleBufferFromGpu(const VideoFrame& frame);
 
-  // Assign TemporalID by bitstream or external state machine(based on SVC
-  // Spec).
-  bool AssignTemporalId(ComMFMediaBuffer output_buffer,
-                        size_t size,
-                        int* temporal_id,
-                        bool keyframe);
+  // Assign TemporalID by state machine(based on SVC Spec).
+  int AssignTemporalIdBySvcSpec(uint32_t frame_id);
 
-  int AssignTemporalIdBySvcSpec(bool keyframe);
-
-  bool temporal_scalable_coding() const { return num_temporal_layers_ > 1; }
+  bool IsTemporaScalabilityCoding() const { return num_temporal_layers_ > 1; }
 
   // Checks for and copies encoded output.
   void ProcessOutput();
@@ -222,9 +219,9 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
   // EncodeOutput needs to be copied into a BitstreamBufferRef as a FIFO.
   base::circular_deque<std::unique_ptr<EncodeOutput>> encoder_output_queue_;
 
-  // Counter of outputs which is used to assign temporal layer indexes
+  // Counter of inputs which is used to assign temporal layer indexes
   // according to the corresponding layer pattern. Reset for every key frame.
-  uint32_t outputs_since_keyframe_count_ = 0;
+  uint32_t input_since_keyframe_count_ = 0;
 
   // Encoder state. Encode tasks will only run in kEncoding state.
   State state_ = kUninitialized;
@@ -232,11 +229,8 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
   // True if keyframe was requested for the last frame.
   bool last_frame_was_keyframe_request_ = false;
 
-  // This parser is used to assign temporalId.
-  H264Parser h264_parser_;
-#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
-  H265NaluParser h265_nalu_parser_;
-#endif
+  // This helper is used for parsing bitstream and assign metadata.
+  std::unique_ptr<BitstreamParserHelper> parser_;
 
   gfx::Size input_visible_size_;
   size_t bitstream_buffer_size_ = 0u;

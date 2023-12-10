@@ -860,55 +860,6 @@ IN_PROC_BROWSER_TEST_F(SmsBrowserTest,
   ExpectNoOutcomeUKM();
 }
 
-// Disabled test: https://crbug.com/1134455
-IN_PROC_BROWSER_TEST_F(SmsBrowserTest, DISABLED_RecordPendingOriginCount) {
-  base::HistogramTester histogram_tester;
-  auto provider = std::make_unique<MockSmsProvider>();
-  MockSmsProvider* mock_provider_ptr = provider.get();
-  BrowserMainLoop::GetInstance()->SetSmsProviderForTesting(std::move(provider));
-
-  Shell* tab1 = CreateBrowser();
-  Shell* tab2 = CreateBrowser();
-
-  net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
-  https_server.ServeFilesFromSourceDirectory(GetTestDataFilePath());
-  ASSERT_TRUE(https_server.Start());
-
-  GURL url1 = https_server.GetURL("a.com", "/simple_page.html");
-  GURL url2 = https_server.GetURL("b.com", "/simple_page.html");
-  EXPECT_TRUE(NavigateToURL(tab1, url1));
-  EXPECT_TRUE(NavigateToURL(tab2, url2));
-
-  EXPECT_CALL(*mock_provider_ptr, Retrieve(_, _)).Times(2);
-
-  tab1->web_contents()->SetDelegate(&delegate_);
-  tab2->web_contents()->SetDelegate(&delegate_);
-
-  std::string script = R"(
-    var request = navigator.credentials.get({otp: {transport: ["sms"]}})
-      .then(({code}) => {
-        return code;
-      });
-  )";
-  ExecuteScriptAsync(tab1, script);
-  ExecuteScriptAsync(tab2, script);
-
-  ExpectSmsPrompt();
-  mock_provider_ptr->NotifyReceive(OriginList{url::Origin::Create(url1)},
-                                   "code1", UserConsent::kNotObtained);
-  ConfirmPrompt();
-  EXPECT_EQ("code1", EvalJs(tab1, "request"));
-
-  ExpectSmsPrompt();
-  mock_provider_ptr->NotifyReceive(OriginList{url::Origin::Create(url2)},
-                                   "code2", UserConsent::kNotObtained);
-  ConfirmPrompt();
-  EXPECT_EQ("code2", EvalJs(tab2, "request"));
-
-  histogram_tester.ExpectBucketCount("Blink.Sms.PendingOriginCount", 1, 1);
-  histogram_tester.ExpectBucketCount("Blink.Sms.PendingOriginCount", 2, 1);
-}
-
 // Verifies that the metrics are correctly recorded when an invalid SMS cannot
 // be parsed.
 IN_PROC_BROWSER_TEST_F(SmsBrowserTest, RecordSmsNotParsedMetrics) {

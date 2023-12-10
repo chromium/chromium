@@ -5,9 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_SYSTEM_FLAGS_H_
 #define IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_SYSTEM_FLAGS_H_
 
+#import <optional>
 #import <string>
-
-#import "third_party/abseil-cpp/absl/types/optional.h"
 
 #import <Foundation/Foundation.h>
 
@@ -48,6 +47,10 @@ bool ShouldResetFirstFollowCount();
 // Returns true if the top of feed signin promo should be shown regardless of
 // dismissal conditions. The promo will still only show for signed out users.
 bool ShouldForceFeedSigninPromo();
+
+// Returns true if the top of feed notifications promo should be shown
+// regardless of dismissal conditions. It is only shown for signed in users.
+bool ShouldForceContentNotificationsPromo();
 
 // Returns true if Tile Ablation should be forced regardless of the value of
 // `isTileAblationExperimentComplete`.
@@ -95,27 +98,27 @@ NSString* GetForcedPromoToDisplay();
 
 // Returns the forced state of the Update Chrome check in the Safety Check
 // (Magic Stack) module.
-absl::optional<UpdateChromeSafetyCheckState> GetUpdateChromeSafetyCheckState();
+std::optional<UpdateChromeSafetyCheckState> GetUpdateChromeSafetyCheckState();
 
 // Returns the forced state of the Password check in the Safety Check (Magic
 // Stack) module.
-absl::optional<PasswordSafetyCheckState> GetPasswordSafetyCheckState();
+std::optional<PasswordSafetyCheckState> GetPasswordSafetyCheckState();
 
 // Returns the forced state of the Safe Browsing check in the Safety Check
 // (Magic Stack) module.
-absl::optional<SafeBrowsingSafetyCheckState> GetSafeBrowsingSafetyCheckState();
+std::optional<SafeBrowsingSafetyCheckState> GetSafeBrowsingSafetyCheckState();
 
 // Returns the forced number of weak passwords for the Safety Check (Magic
 // Stack) module.
-absl::optional<int> GetSafetyCheckWeakPasswordsCount();
+std::optional<int> GetSafetyCheckWeakPasswordsCount();
 
 // Returns the forced number of reused passwords for the Safety Check (Magic
 // Stack) module.
-absl::optional<int> GetSafetyCheckReusedPasswordsCount();
+std::optional<int> GetSafetyCheckReusedPasswordsCount();
 
 // Returns the forced number of compromised passwords for the Safety Check
 // (Magic Stack) module.
-absl::optional<int> GetSafetyCheckCompromisedPasswordsCount();
+std::optional<int> GetSafetyCheckCompromisedPasswordsCount();
 
 // Returns the selected device segment the user wants to simulate as a string;
 // the string should either be nil or one of the options from synthetic trial

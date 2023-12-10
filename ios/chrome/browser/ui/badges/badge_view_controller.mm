@@ -5,8 +5,8 @@
 #import "ios/chrome/browser/ui/badges/badge_view_controller.h"
 
 #import "base/check.h"
-#import "ios/chrome/browser/infobars/badge_state.h"
-#import "ios/chrome/browser/infobars/infobar_ios.h"
+#import "ios/chrome/browser/infobars/model/badge_state.h"
+#import "ios/chrome/browser/infobars/model/infobar_ios.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
 #import "ios/chrome/browser/ui/badges/badge_button.h"

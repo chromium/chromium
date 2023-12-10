@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+[FAIL] Navigating to a url (A) that redirects to an unparseable URL (B), saves the URL (A) in the history entry, for later traversal
+  assert_equals: Precondition: history.length is 1 expected 1 but got 2
+Harness: the test ran to completion.

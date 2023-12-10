@@ -216,14 +216,6 @@ absl::optional<CtapMakeCredentialRequest> CtapMakeCredentialRequest::Parse(
           return absl::nullopt;
         }
         request.min_pin_length_requested = extension.second.GetBool();
-      } else if (extension_name == kExtensionDevicePublicKey) {
-        request.device_public_key = DevicePublicKeyRequest::FromCBOR(
-            extension.second,
-            request.attestation_preference ==
-                AttestationConveyancePreference::kEnterpriseApprovedByBrowser);
-        if (!request.device_public_key) {
-          return absl::nullopt;
-        }
       }
     }
   }
@@ -361,11 +353,6 @@ AsCTAPRequestValuePair(const CtapMakeCredentialRequest& request) {
 
   if (request.min_pin_length_requested) {
     extensions.emplace(kExtensionMinPINLength, true);
-  }
-
-  if (request.device_public_key) {
-    extensions.emplace(kExtensionDevicePublicKey,
-                       request.device_public_key->ToCBOR());
   }
 
   if (!extensions.empty()) {

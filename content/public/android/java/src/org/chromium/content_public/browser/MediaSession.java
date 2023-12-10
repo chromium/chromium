@@ -9,9 +9,7 @@ import androidx.annotation.Nullable;
 import org.chromium.base.ObserverList;
 import org.chromium.content.browser.MediaSessionImpl;
 
-/**
- * The MediaSession Java wrapper to allow communicating with the native MediaSession object.
- */
+/** The MediaSession Java wrapper to allow communicating with the native MediaSession object. */
 public abstract class MediaSession {
     /**
      * @return The MediaSession associated with |contents|.
@@ -28,19 +26,13 @@ public abstract class MediaSession {
      */
     public abstract ObserverList.RewindableIterator<MediaSessionObserver> getObserversForTesting();
 
-    /**
-     * Resumes the media session.
-     */
+    /** Resumes the media session. */
     public abstract void resume();
 
-    /**
-     * Suspends the media session.
-     */
+    /** Suspends the media session. */
     public abstract void suspend();
 
-    /**
-     * Stops the media session.
-     */
+    /** Stops the media session. */
     public abstract void stop();
 
     /**
@@ -56,18 +48,12 @@ public abstract class MediaSession {
      */
     public abstract void seekTo(long millis);
 
-    /**
-     * Notify the media session that an action has been performed.
-     */
+    /** Notify the media session that an action has been performed. */
     public abstract void didReceiveAction(int action);
 
-    /**
-     * Request audio focus from the system.
-     */
+    /** Request audio focus from the system. */
     public abstract void requestSystemAudioFocus();
 
-    /**
-     * Returns whether the media session can be resumed/suspended.
-     */
+    /** Returns whether the media session can be resumed/suspended. */
     public abstract boolean isControllable();
 }

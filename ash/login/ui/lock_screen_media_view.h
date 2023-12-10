@@ -15,6 +15,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/media_session/public/mojom/media_controller.mojom.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 namespace ash {
@@ -34,6 +35,8 @@ class ASH_EXPORT LockScreenMediaView
       public media_session::mojom::MediaControllerImageObserver,
       public media_message_center::MediaNotificationContainer,
       public base::PowerSuspendObserver {
+  METADATA_HEADER(LockScreenMediaView, views::View)
+
  public:
   using MediaControlsEnabledCallback = const base::RepeatingCallback<bool()>&;
 
@@ -53,14 +56,14 @@ class ASH_EXPORT LockScreenMediaView
   void MediaSessionInfoChanged(
       media_session::mojom::MediaSessionInfoPtr session_info) override;
   void MediaSessionMetadataChanged(
-      const absl::optional<media_session::MediaMetadata>& metadata) override;
+      const std::optional<media_session::MediaMetadata>& metadata) override;
   void MediaSessionActionsChanged(
       const std::vector<media_session::mojom::MediaSessionAction>& actions)
       override;
   void MediaSessionChanged(
-      const absl::optional<base::UnguessableToken>& request_id) override;
+      const std::optional<base::UnguessableToken>& request_id) override;
   void MediaSessionPositionChanged(
-      const absl::optional<media_session::MediaPosition>& position) override;
+      const std::optional<media_session::MediaPosition>& position) override;
 
   // media_session::mojom::MediaControllerImageObserver:
   void MediaControllerImageChanged(
@@ -121,7 +124,7 @@ class ASH_EXPORT LockScreenMediaView
 
   // The id of the current media session. It will be null if there is no current
   // session.
-  absl::optional<base::UnguessableToken> media_session_id_;
+  std::optional<base::UnguessableToken> media_session_id_;
 
   // A timer that delays for some time before considering a new media session
   // has started to replace the current one. If a switch has occurred, the media

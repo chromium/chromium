@@ -12,7 +12,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_move_support.h"
 #include "base/test/task_environment.h"

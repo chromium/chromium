@@ -1,0 +1,19 @@
+/* Copyright 2022 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=vars-lit
+ * #import=./other1.css.js
+ * #import=./other2.css.js
+ * #css_wrapper_metadata_end */
+
+html {
+  --my-var: 9px;
+}
+
+@media (prefers-color-scheme: dark) {
+  html {
+    --my-var: 10px;
+  }
+}

@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/components/language_packs/handwriting.h"
 
+#include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -15,7 +16,6 @@
 #include "base/no_destructor.h"
 #include "chromeos/ash/components/language_packs/language_pack_manager.h"
 #include "chromeos/ash/components/language_packs/language_packs_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ime/ash/extension_ime_util.h"
 #include "ui/base/ime/ash/input_method_manager.h"
 #include "ui/base/ime/ash/input_method_util.h"
@@ -25,7 +25,7 @@ namespace ash::language_packs {
 using ::ash::input_method::InputMethodManager;
 
 // TODO: b/294162606 - Move this code to the input_method codebase.
-absl::optional<std::string> MapEngineIdToHandwritingLocale(
+std::optional<std::string> MapEngineIdToHandwritingLocale(
     input_method::InputMethodUtil* const util,
     const std::string& engine_id) {
   const std::string input_method_id =
@@ -34,25 +34,25 @@ absl::optional<std::string> MapEngineIdToHandwritingLocale(
 }
 
 // TODO: b/294162606 - Move this code to the input_method codebase.
-absl::optional<std::string> MapInputMethodIdToHandwritingLocale(
+std::optional<std::string> MapInputMethodIdToHandwritingLocale(
     input_method::InputMethodUtil* const util,
     const std::string& input_method_id) {
   const input_method::InputMethodDescriptor* descriptor =
       util->GetInputMethodDescriptorFromId(input_method_id);
   if (descriptor == nullptr) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return descriptor->handwriting_language();
 }
 
-absl::optional<std::string> HandwritingLocaleToDlc(std::string_view locale) {
+std::optional<std::string> HandwritingLocaleToDlc(std::string_view locale) {
   // TODO: b/285993323 - Replace this with a set lookup (to see if it is a valid
   // locale) and concatenation (to produce the DLC ID) to eventually deprecate
   // `GetAllLanguagePackDlcIds`.
   return GetDlcIdForLanguagePack(kHandwritingFeatureId, std::string(locale));
 }
 
-absl::optional<std::string> DlcToHandwritingLocale(std::string_view dlc_id) {
+std::optional<std::string> DlcToHandwritingLocale(std::string_view dlc_id) {
   static const base::NoDestructor<
       const base::flat_map<std::string, std::string>>
       handwriting_locale_from_dlc([] {
@@ -75,7 +75,7 @@ absl::optional<std::string> DlcToHandwritingLocale(std::string_view dlc_id) {
 
   auto it = handwriting_locale_from_dlc->find(dlc_id);
   if (it == handwriting_locale_from_dlc->end()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return it->second;
 }

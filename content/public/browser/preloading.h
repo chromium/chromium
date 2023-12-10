@@ -71,6 +71,12 @@ class CONTENT_EXPORT PreloadingPredictor {
   int64_t ukm_value() const { return ukm_value_; }
   base::StringPiece name() const { return name_; }
 
+  bool operator==(const PreloadingPredictor& other) const {
+    // There's no need to compare name_ since every PreloadingPredictor has a
+    // distinct ukm_value_.
+    return other.ukm_value_ == ukm_value_;
+  }
+
  private:
   int64_t ukm_value_;
   base::StringPiece name_;
@@ -209,14 +215,7 @@ enum class PreloadingEligibility {
   // Preloading was ineligible for non-http(s).
   kHttpOrHttpsOnly = 19,
 
-  // Values between `kPreloadingEligibilityCommonEnd` (inclusive) and
-  // `kPreloadingEligibilityContentEnd` (exclusive) are reserved for enums
-  // defined under `//content`, namely `PrefetchStatus`.
-  kPreloadingEligibilityCommonEnd = 50,
-
-  // Values corresponding to `PrefetchStatus`.
-  // The values here are equal to the corresponding `PrefetchStatus`'s values +
-  // `kPreloadingEligibilityCommonEnd`.
+  // See corresponding values in PrefetchStatus for documentation.
   kUserHasCookies = 55,
   kUserHasServiceWorker = 56,
   // This is similar to `kHttpsOnly`, but separately defined here to keep

@@ -133,10 +133,14 @@ class TestRunner {
   bool CanDumpPixelsFromRenderer() const;
 
 #if BUILDFLAG(ENABLE_PRINTING)
-  // Returns the page size to be used for printing. This is either the size that
-  // was explicitly set via SetPrintingSize or the size of the frame if no size
-  // was set.
+  // Returns the default page size to be used for printing. This is either the
+  // size that was explicitly set via SetPrintingSize or the size of the frame
+  // if no size was set.
   gfx::Size GetPrintingPageSize(blink::WebLocalFrame* frame) const;
+
+  // Returns the default page margin size to be used for printing. The value
+  // applies to all four sides of the page.
+  int GetPrintingMargin() const;
 
   // Returns the page ranges to be printed. This is specified in the document
   // via a tag of the form <meta name=reftest-pages content="1,2-3,5-">. If no
@@ -477,6 +481,7 @@ class TestRunner {
   void SetPrinting();
   void SetPrintingForFrame(const std::string& frame_name);
   void SetPrintingSize(int width, int height);
+  void SetPrintingMargin(int size);
 
   void SetShouldStayOnPageAfterHandlingBeforeUnload(bool value);
 

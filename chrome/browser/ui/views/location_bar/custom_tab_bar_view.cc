@@ -100,6 +100,8 @@ ui::ColorId GetSecurityChipColorId(
 // The CustomTabBarView uses a WebAppMenuButton with a custom color. This class
 // overrides the GetForegroundColor method to achieve this effect.
 class CustomTabBarAppMenuButton : public WebAppMenuButton {
+  METADATA_HEADER(CustomTabBarAppMenuButton, WebAppMenuButton)
+
  public:
   using WebAppMenuButton::WebAppMenuButton;
 
@@ -108,6 +110,10 @@ class CustomTabBarAppMenuButton : public WebAppMenuButton {
     return GetColorProvider()->GetColor(kColorPwaMenuButtonIcon);
   }
 };
+
+BEGIN_METADATA(CustomTabBarAppMenuButton)
+END_METADATA
+
 #endif
 
 }  // namespace
@@ -412,6 +418,11 @@ SkColor CustomTabBarView::GetIconLabelBubbleSurroundingForegroundColor() const {
 
 SkColor CustomTabBarView::GetIconLabelBubbleBackgroundColor() const {
   return GetColorProvider()->GetColor(kColorPwaToolbarBackground);
+}
+
+std::optional<ui::ColorId>
+CustomTabBarView::GetLocationIconBackgroundColorOverride() const {
+  return kColorPwaToolbarBackground;
 }
 
 content::WebContents* CustomTabBarView::GetWebContents() {

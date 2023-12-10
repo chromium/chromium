@@ -147,6 +147,7 @@ struct LargeIconImageResult {
 // favicon server. Used for UMA enum GoogleFaviconServerRequestStatus, so do not
 // change existing values. Insert new values at the end, and update the
 // histogram definition.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.favicon
 enum class GoogleFaviconServerRequestStatus {
   // Request sent out and the favicon successfully fetched.
   SUCCESS = 0,

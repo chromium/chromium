@@ -1,5 +1,4 @@
 This is a testharness.js-based test.
-[PASS] item 1
 [FAIL] item 2
   assert_equals: \n<item data-expected-margin-bottom="0"></item>\nmargin-bottom expected "0" but got "10"
 [FAIL] item 3

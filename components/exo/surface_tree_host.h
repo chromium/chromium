@@ -100,6 +100,9 @@ class SurfaceTreeHost : public SurfaceDelegate,
 
   uint32_t GenerateNextFrameToken() { return ++next_token_; }
 
+  // Returns the primary SurfaceId.
+  viz::SurfaceId GetSurfaceId() const;
+
   // SurfaceDelegate:
   void OnSurfaceCommit() override;
   bool IsSurfaceSynchronized() const override;
@@ -187,10 +190,14 @@ class SurfaceTreeHost : public SurfaceDelegate,
   // need to be released back to the client.
   void SubmitEmptyCompositorFrame();
 
-  // Updates the host window's size to cover surfaces that must be visible and
-  // not clipped.
-  // It also updates root surface origin accordingly to the origin.
-  void UpdateHostWindowSizeAndRootSurfaceOrigin();
+  // Updates the host window's (or the closest representative surface layer's)
+  // size to cover exo surfaces that must be visible and not clipped.
+  // It also updates `root_surface_origin_` accordingly to the origin.
+  void UpdateSurfaceLayerSizeAndRootSurfaceOrigin();
+
+  // Updates the host layer's opacity. This has to be called after root
+  // surface's resource is updated.
+  void UpdateHostLayerOpacity();
 
   bool client_submits_surfaces_in_pixel_coordinates() const {
     return client_submits_surfaces_in_pixel_coordinates_;
@@ -221,22 +228,35 @@ class SurfaceTreeHost : public SurfaceDelegate,
   // Changes the local_surface_id as the viz::Surface property will change.
   void AllocateLocalSurfaceId();
 
-  // If local_surface_id is newer than |host_window_|'s ui layer, push the
-  // current local_surface_id to |host_window_| and its ui layer to produce a
-  // different SurfaceDrawQuad.
-  void MaybeActivateSurface();
+  // If local_surface_id is newer than `GetCommitTargetLayer()`, update the
+  // surface ranges to produce different SurfaceDrawQuads.
+  virtual void MaybeActivateSurface();
 
-  // Returns the primary SurfaceId.
-  viz::SurfaceId GetSurfaceId() const;
+  // The local_surface_id that the `layer_tree_frame_sink_holder_` is submitting
+  // with.
+  const viz::LocalSurfaceId& GetCurrentLocalSurfaceId() const;
+
+  // Returns the ui::Layer that hosts client's surface commits, i.e.
+  // commit_target_layer. Its property can be controlled by the client.
+  // When an animation causes the host_window->layer to be cloned, before the
+  // client acks the config event for that request, the old_layer prior to the
+  // cloning should be the commit_target_layer.
+  //
+  // On SurfaceTreeHost implementations that don't have async config/ack flow,
+  // this returns host_window()->layer().
+  //
+  // Note: due to animation cancelling, the commit_target_layer can be
+  // destroyed with the cancelled animation, so this method may return nullptr.
+  virtual ui::Layer* GetCommitTargetLayer();
+  virtual const ui::Layer* GetCommitTargetLayer() const;
+
+  // The FrameSinkId associated with this.
+  viz::FrameSinkId frame_sink_id_;
 
  private:
   void InitHostWindow(const std::string& window_name);
 
   viz::CompositorFrame PrepareToSubmitCompositorFrame();
-
-  // The local_surface_id that the |frame_sink_| is submitting with, it should
-  // never be older than the local_surface_id of |host_window_|'s layer.
-  const viz::LocalSurfaceId& GetCurrentLocalSurfaceId() const;
 
   void HandleContextLost();
 
@@ -253,8 +273,6 @@ class SurfaceTreeHost : public SurfaceDelegate,
 
   std::unique_ptr<LayerTreeFrameSinkHolder> CreateLayerTreeFrameSinkHolder();
 
-  // The FrameSinkId associated with this.
-  viz::FrameSinkId frame_sink_id_;
   std::unique_ptr<viz::ChildLocalSurfaceIdAllocator>
       child_local_surface_id_allocator_;
 
@@ -299,7 +317,8 @@ class SurfaceTreeHost : public SurfaceDelegate,
 
   display::ScopedDisplayObserver display_observer_{this};
 
-  int64_t display_id_ = display::kInvalidDisplayId;
+  // The display id for the output the surface is entered onto.
+  int64_t output_display_id_ = display::kInvalidDisplayId;
 
   bool client_submits_surfaces_in_pixel_coordinates_ = false;
 

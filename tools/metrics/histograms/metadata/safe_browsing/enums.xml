@@ -111,6 +111,11 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Ineligible"/>
 </enum>
 
+<enum name="BooleanIsPrefetch">
+  <int value="0" label="Is not prefetch"/>
+  <int value="1" label="Is prefetch"/>
+</enum>
+
 <enum name="BooleanIsSubresource">
   <int value="0" label="Mainframe"/>
   <int value="1" label="Subresource"/>
@@ -119,6 +124,11 @@ chromium-metrics-reviews@google.com.
 <enum name="BooleanManagedPref">
   <int value="0" label="Unmanaged Pref"/>
   <int value="1" label="Managed Pref"/>
+</enum>
+
+<enum name="BooleanSafeBrowsingApiUnknownException">
+  <int value="0" label="Known exception"/>
+  <int value="1" label="Unknown exception"/>
 </enum>
 
 <enum name="BooleanSentOrReceived">
@@ -169,6 +179,26 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="NO_MATCH"/>
 </enum>
 
+<enum name="SafeBrowsingApiExceptionStatusCode">
+  <int value="-1" label="SUCCESS_CACHE"/>
+  <int value="0" label="SUCCESS"/>
+  <int value="4" label="SIGN_IN_REQUIRED"/>
+  <int value="5" label="INVALID_ACCOUNT"/>
+  <int value="6" label="RESOLUTION_REQUIRED"/>
+  <int value="7" label="NETWORK_ERROR"/>
+  <int value="8" label="INTERNAL_ERROR"/>
+  <int value="10" label="DEVELOPER_ERROR"/>
+  <int value="13" label="ERROR"/>
+  <int value="14" label="INTERRUPTED"/>
+  <int value="15" label="TIMEOUT"/>
+  <int value="16" label="CANCELED"/>
+  <int value="17" label="API_NOT_CONNECTED"/>
+  <int value="19" label="REMOTE_EXCEPTION"/>
+  <int value="20" label="CONNECTION_SUSPENDED_DURING_CALL"/>
+  <int value="21" label="RECONNECTION_TIMED_OUT_DURING_UPDATE"/>
+  <int value="22" label="RECONNECTION_TIMED_OUT"/>
+</enum>
+
 <enum name="SafeBrowsingApiJavaValidationResult">
   <int value="0" label="valid"/>
   <int value="1" label="valid, but has unrecognized response status"/>
@@ -194,6 +224,7 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="SUCCESS_FALLBACK_REAL_TIME_THROTTLED"/>
   <int value="4" label="FAILURE_NETWORK_UNAVAILABLE"/>
   <int value="5" label="FAILURE_BLOCK_LIST_UNAVAILABLE"/>
+  <int value="6" label="FAILURE_INVALID_URL"/>
 </enum>
 
 <enum name="SafeBrowsingApiThreatAttribute">
@@ -203,11 +234,12 @@ chromium-metrics-reviews@google.com.
 
 <enum name="SafeBrowsingApiThreatType">
   <int value="0" label="NO_THREAT"/>
+  <int value="2" label="SOCIAL_ENGINEERING"/>
   <int value="3" label="UNWANTED_SOFTWARE"/>
   <int value="4" label="POTENTIALLY_HARMFUL_APPLICATION"/>
-  <int value="5" label="SOCIAL_ENGINEERING"/>
-  <int value="13" label="SUBRESOURCE_FILTER"/>
   <int value="15" label="BILLING"/>
+  <int value="20" label="ABUSIVE_EXPERIENCE_VIOLATION"/>
+  <int value="21" label="BETTER_ADS_VIOLATION"/>
 </enum>
 
 <enum name="SafeBrowsingAppOptIn">
@@ -588,6 +620,23 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="A report failed to start"/>
   <int value="8" label="An active report failed to finish"/>
   <int value="9" label="A report was possible but skipped"/>
+</enum>
+
+<enum name="SuspiciousSiteTriggerManagerReason">
+  <int value="0" label="No reason"/>
+  <int value="1" label="The user opted-out of reports"/>
+  <int value="2" label="A report is already running on this page"/>
+  <int value="3" label="No report was started on this page"/>
+  <int value="4" label="The user has exceeded their report quota"/>
+  <int value="5" label="The report type has been deprecated"/>
+</enum>
+
+<enum name="SuspiciousSiteTriggerState">
+  <int value="0" label="The trigger is idle"/>
+  <int value="1" label="A page is loading"/>
+  <int value="2" label="A report will begin when the page loads"/>
+  <int value="3" label="A report has started"/>
+  <int value="4" label="The trigger is in monitoring mode"/>
 </enum>
 
 </enums>

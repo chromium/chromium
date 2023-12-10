@@ -7,7 +7,7 @@
 
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller.h"
 
-#import "ios/chrome/browser/infobars/infobar_type.h"
+#import "ios/chrome/browser/infobars/model/infobar_type.h"
 #import "ios/chrome/browser/ui/infobars/modals/infobar_password_modal_consumer.h"
 
 @protocol InfobarPasswordModalDelegate;

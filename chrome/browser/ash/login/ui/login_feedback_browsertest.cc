@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/webui/ash/system_web_dialog_delegate.h"
 #include "chrome/browser/ui/webui/feedback/feedback_dialog.h"
 #include "content/public/test/browser_test.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
 namespace {
@@ -105,6 +106,10 @@ void EnsureFeedbackAppUIShown(FeedbackDialog* feedback_dialog,
 }
 
 void TestFeedback() {
+  // TODO(http://b/309467654): clean up obsolete code.
+  if (ash::features::IsOsFeedbackDialogEnabled()) {
+    GTEST_SKIP();
+  }
   Profile* const profile = ProfileHelper::GetSigninProfile();
   auto login_feedback = std::make_unique<ash::LoginFeedback>(profile);
 

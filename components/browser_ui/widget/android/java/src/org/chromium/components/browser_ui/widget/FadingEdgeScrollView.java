@@ -17,9 +17,7 @@ import androidx.annotation.IntDef;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-/**
- * An extension of the ScrollView that supports edge boundaries coming in.
- */
+/** An extension of the ScrollView that supports edge boundaries coming in. */
 public class FadingEdgeScrollView extends ScrollView {
     @IntDef({EdgeType.NONE, EdgeType.FADING, EdgeType.HARD})
     @Retention(RetentionPolicy.SOURCE)
@@ -41,10 +39,8 @@ public class FadingEdgeScrollView extends ScrollView {
     private final int mSeparatorColor;
     private final int mSeparatorHeight;
 
-    @EdgeType
-    private int mDrawTopEdge = EdgeType.FADING;
-    @EdgeType
-    private int mDrawBottomEdge = EdgeType.FADING;
+    @EdgeType private int mDrawTopEdge = EdgeType.FADING;
+    @EdgeType private int mDrawBottomEdge = EdgeType.FADING;
 
     public FadingEdgeScrollView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -125,8 +121,9 @@ public class FadingEdgeScrollView extends ScrollView {
                     a.getInt(R.styleable.FadingEdgeScrollView_topEdgeVisibility, EdgeType.FADING);
         }
         if (a.hasValue(R.styleable.FadingEdgeScrollView_bottomEdgeVisibility)) {
-            mDrawBottomEdge = a.getInt(
-                    R.styleable.FadingEdgeScrollView_bottomEdgeVisibility, EdgeType.FADING);
+            mDrawBottomEdge =
+                    a.getInt(
+                            R.styleable.FadingEdgeScrollView_bottomEdgeVisibility, EdgeType.FADING);
         }
         a.recycle();
     }

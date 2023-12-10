@@ -46,6 +46,7 @@ if (!is_android) {
 # Environment variables to be used by grit and its subproceses.
 
 _grit_environment_vars = [
+  "branding_path_component=$branding_path_component",
   "root_gen_dir=" + rebase_path(root_gen_dir, root_build_dir),
   "root_src_dir=" + rebase_path("//", root_build_dir),
 ]

@@ -16,11 +16,16 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/actions/actions.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/display/screen.h"
+#include "ui/events/base_event_utils.h"
+#include "ui/events/event.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/events/types/event_type.h"
+#include "ui/gfx/geometry/point.h"
 #include "ui/views/animation/ink_drop_host.h"
 #include "ui/views/animation/ink_drop_impl.h"
 #include "ui/views/animation/test/ink_drop_host_test_api.h"
@@ -38,6 +43,7 @@
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/style/platform_style.h"
 #include "ui/views/test/ax_event_counter.h"
+#include "ui/views/test/button_test_api.h"
 #include "ui/views/test/view_metadata_test_utils.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/widget/widget_utils.h"
@@ -1016,6 +1022,35 @@ TEST_F(ButtonTest, AnchorHighlightsCanOutliveButton) {
   CreateButtonWithInkDrop(false);
 
   highlight.reset();
+}
+
+using ButtonActionViewInterfaceTest = ButtonTest;
+
+TEST_F(ButtonActionViewInterfaceTest, TestActionChanged) {
+  const std::u16string test_string = u"test_string";
+  std::unique_ptr<actions::ActionItem> action_item =
+      actions::ActionItem::Builder()
+          .SetTooltipText(test_string)
+          .SetActionId(0)
+          .SetEnabled(false)
+          .Build();
+  button()->GetActionViewInterface()->ActionItemChangedImpl(action_item.get());
+  // Test some properties to ensure that the right ActionViewInterface is linked
+  // to the view.
+  EXPECT_EQ(test_string, button()->GetTooltipText());
+  EXPECT_FALSE(button()->GetEnabled());
+}
+
+TEST_F(ButtonActionViewInterfaceTest, TestActionTriggered) {
+  ui::MouseEvent e(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+                   ui::EventTimeForNow(), 0, 0);
+  bool called = false;
+  button()->GetActionViewInterface()->LinkActionTriggerToView(
+      base::BindRepeating([](bool* called_bool) { *called_bool = true; },
+                          &called));
+  views::test::ButtonTestApi test_api(button());
+  test_api.NotifyClick(e);
+  EXPECT_TRUE(called);
 }
 
 }  // namespace views

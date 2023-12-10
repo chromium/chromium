@@ -75,9 +75,19 @@ bool TimestampIsRecent(CachedMetadata* cached_metadata) {
   return (base::TimeTicks::Now() - time_stamp) < kHotHours;
 }
 
+// Flags that can be set in the CacheMetadata header, describing how the code
+// cache data was produced so that the consumer can generate better trace
+// messages.
+enum class DetailFlags : uint64_t {
+  kNone = 0,
+  kFull = 1,
+};
+
+}  // namespace
+
 // Check previously stored timestamp (either from the code cache or compile
 // hints cache).
-bool HasHotTimestamp(const CachedMetadataHandler* cache_handler) {
+bool V8CodeCache::HasHotTimestamp(const CachedMetadataHandler* cache_handler) {
   scoped_refptr<CachedMetadata> cached_metadata =
       cache_handler->GetCachedMetadata(
           V8CodeCache::TagForTimeStamp(cache_handler));
@@ -91,16 +101,6 @@ bool HasHotTimestamp(const CachedMetadataHandler* cache_handler) {
   }
   return false;
 }
-
-// Flags that can be set in the CacheMetadata header, describing how the code
-// cache data was produced so that the consumer can generate better trace
-// messages.
-enum class DetailFlags : uint64_t {
-  kNone = 0,
-  kFull = 1,
-};
-
-}  // namespace
 
 bool V8CodeCache::HasCodeCache(
     const CachedMetadataHandler* cache_handler,

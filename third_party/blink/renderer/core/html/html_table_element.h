@@ -73,7 +73,6 @@ class CORE_EXPORT HTMLTableElement final : public HTMLElement {
   const CSSPropertyValueSet* AdditionalGroupStyle(bool rows);
 
   bool HasNonInBodyInsertionMode() const override { return true; }
-  void FinishParsingChildren() override;
 
   void Trace(Visitor*) const override;
 

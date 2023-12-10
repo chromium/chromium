@@ -64,7 +64,8 @@ class AutofillProfileImportProcessTest : public testing::Test {
 
 // Test that two subsequently created `ProfileImportProcess`s have distinct ids.
 TEST_F(AutofillProfileImportProcessTest, DistinctIds) {
-  AutofillProfile empty_profile;
+  AutofillProfile empty_profile(
+      i18n_model_definition::kLegacyHierarchyCountryCode);
   ProfileImportProcess import_data1(empty_profile, "en_US", url_,
                                     &personal_data_manager_,
                                     /*allow_only_silent_updates=*/false);
@@ -316,38 +317,10 @@ TEST_F(AutofillProfileImportProcessTest, ImportSubsetProfile_kAccount) {
               testing::UnorderedElementsAre(account_profile));
 }
 
-// Tests that importing a profile that is a superset of a kAccount profile is
-// rejected as a duplicate when `kAutofillAccountProfileStorage` is disabled.
-TEST_F(AutofillProfileImportProcessTest,
-       ImportSupersetProfile_kAccount_PreStorage) {
-  base::test::ScopedFeatureList feature;
-  feature.InitAndDisableFeature(features::kAutofillAccountProfileStorage);
-
-  AutofillProfile account_profile = test::SubsetOfStandardProfile();
-  account_profile.set_source_for_testing(AutofillProfile::Source::kAccount);
-  personal_data_manager_.AddProfile(account_profile);
-
-  ProfileImportProcess import_data(
-      /*observed_profile=*/test::StandardProfile(), "en_US", url_,
-      &personal_data_manager_,
-      /*allow_only_silent_updates=*/false);
-
-  EXPECT_EQ(import_data.import_type(),
-            AutofillProfileImportType::kDuplicateImport);
-  import_data.AcceptWithoutPrompt();
-  EXPECT_FALSE(import_data.ProfilesChanged());
-  EXPECT_THAT(ApplyImportAndGetProfiles(import_data),
-              testing::UnorderedElementsAre(account_profile));
-}
-
 // Tests that importing a profile that is a superset of a kAccount profile
-// results in an update when `kAutofillAccountProfileStorage` is enabled.
-// The source of resulting profile remains kAccount.
+// results in an update. The source of resulting profile remains kAccount.
 TEST_F(AutofillProfileImportProcessTest,
        ImportSupersetProfile_kAccount_PostStorage) {
-  base::test::ScopedFeatureList feature(
-      features::kAutofillAccountProfileStorage);
-
   AutofillProfile account_profile = test::SubsetOfStandardProfile();
   account_profile.set_source_for_testing(AutofillProfile::Source::kAccount);
   personal_data_manager_.AddProfile(account_profile);

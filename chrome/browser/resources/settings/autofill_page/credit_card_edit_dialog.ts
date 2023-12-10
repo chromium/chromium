@@ -7,6 +7,7 @@
  * editing or creating a credit card entry.
  */
 
+import 'chrome://resources/cr_components/settings_prefs/prefs.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
@@ -22,6 +23,8 @@ import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialo
 import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {loadTimeData} from '../i18n_setup.js';
 
 import {getTemplate} from './credit_card_edit_dialog.html.js';
 
@@ -40,6 +43,7 @@ declare global {
 export interface SettingsCreditCardEditDialogElement {
   $: {
     cancelButton: CrButtonElement,
+    cvcInput: CrInputElement,
     dialog: CrDialogElement,
     expiredError: HTMLElement,
     month: HTMLSelectElement,
@@ -65,6 +69,11 @@ export class SettingsCreditCardEditDialogElement extends
 
   static get properties() {
     return {
+      /**
+       * User preferences state.
+       */
+      prefs: Object,
+
       /**
        * The credit card being edited.
        */
@@ -102,6 +111,7 @@ export class SettingsCreditCardEditDialogElement extends
 
       name_: String,
       cardNumber_: String,
+      cvc_: String,
       nickname_: String,
       expirationYear_: String,
       expirationMonth_: String,
@@ -118,20 +128,33 @@ export class SettingsCreditCardEditDialogElement extends
         reflectToAttribute: true,
         observer: 'onExpiredChanged_',
       },
+
+      /**
+       * Checks if CVC storage is available based on the feature flag.
+       */
+      cvcStorageAvailable_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('cvcStorageAvailable');
+        },
+      },
     };
   }
 
+  prefs: {[key: string]: any};
   creditCard: chrome.autofillPrivate.CreditCardEntry;
   private title_: string;
   private monthList_: string[];
   private yearList_: string[];
   private name_?: string;
-  private cardNumber_?: string;
+  private cardNumber_: string;
   private nickname_?: string;
   private expirationYear_?: string;
   private expirationMonth_?: string;
   private nicknameInvalid_: boolean;
   private expired_: boolean;
+  private cvc_?: string;
+  private cvcStorageAvailable_: boolean;
 
   /**
    * @return True iff the provided expiration date is passed.
@@ -185,8 +208,9 @@ export class SettingsCreditCardEditDialogElement extends
     microTask.run(() => {
       this.expirationYear_ = selectedYear.toString();
       this.expirationMonth_ = this.creditCard.expirationMonth;
+      this.cvc_ = this.creditCard.cvc;
       this.name_ = this.creditCard.name;
-      this.cardNumber_ = this.creditCard.cardNumber;
+      this.cardNumber_ = this.creditCard.cardNumber || '';
       this.nickname_ = this.creditCard.nickname;
       this.$.dialog.showModal();
     });
@@ -217,6 +241,8 @@ export class SettingsCreditCardEditDialogElement extends
     this.creditCard.name = this.name_;
     this.creditCard.cardNumber = this.cardNumber_;
     this.creditCard.nickname = this.nickname_;
+    // Take the user entered CVC input as-is. This is due to PCI compliance.
+    this.creditCard.cvc = this.cvc_;
     this.trimCreditCard_();
     this.dispatchEvent(new CustomEvent(
         'save-credit-card',
@@ -301,6 +327,35 @@ export class SettingsCreditCardEditDialogElement extends
     if (this.creditCard.nickname) {
       this.creditCard.nickname = this.creditCard.nickname.trim();
     }
+  }
+
+  private isCardAmex_(): boolean {
+    return !!this.cardNumber_ && this.cardNumber_.length >= 2 &&
+        !!this.cardNumber_.match('^(34|37)');
+  }
+
+  private getCvcImageTooltip_(): string {
+    // An icon is shown to the user to help them look for their CVC.
+    // The location differs for AmEx and non-AmEx cards, so we have to get
+    // the first two digits of the card number for AmEx cards before we can
+    // update the icon.
+    return this.i18n(
+        this.isCardAmex_() ? 'creditCardCvcAmexImageTitle' :
+                             'creditCardCvcImageTitle');
+  }
+
+  private getCvcImageSource_(): string {
+    // An icon is shown to the user to help them look for their CVC.
+    // The location differs for AmEx and non-AmEx cards, so we have to get
+    // the first two digits of the card number for AmEx cards before we can
+    // update the icon.
+    return this.isCardAmex_() ? 'chrome://settings/images/cvc_amex.svg' :
+                                'chrome://settings/images/cvc.svg';
+  }
+
+  private checkIfCvcStorageIsAvailable_(cvcStorageToggleEnabled: boolean):
+      boolean {
+    return this.cvcStorageAvailable_ && cvcStorageToggleEnabled;
   }
 }
 

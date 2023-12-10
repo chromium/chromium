@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/omnibox/omnibox_match_cell_view.h"
 
 #include <algorithm>
+#include <optional>
 
 #include "base/metrics/field_trial_params.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
@@ -23,7 +24,6 @@
 #include "components/omnibox/common/omnibox_features.h"
 #include "content/public/common/color_parser.h"
 #include "skia/ext/image_operations.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -304,16 +304,16 @@ void OmniboxMatchCellView::OnMatchUpdate(const OmniboxResultView* result_view,
     answer_image_view_->SetImageSize(
         gfx::Size(answer_image_size, answer_image_size));
     if (OmniboxFieldTrial::kSquareSuggestIconAnswers.Get()) {
-      answer_image_view_->SetImage(
+      answer_image_view_->SetImage(ui::ImageModel::FromImageSkia(
           gfx::ImageSkiaOperations::CreateImageWithRoundRectBackground(
               gfx::SizeF(answer_image_size, answer_image_size),
               GetIconAndImageCornerRadius(),
-              color_provider->GetColor(background_color_id), icon));
+              color_provider->GetColor(background_color_id), icon)));
     } else {
-      answer_image_view_->SetImage(
+      answer_image_view_->SetImage(ui::ImageModel::FromImageSkia(
           gfx::ImageSkiaOperations::CreateImageWithCircleBackground(
               /*radius=*/answer_image_size / 2,
-              color_provider->GetColor(background_color_id), icon));
+              color_provider->GetColor(background_color_id), icon)));
     }
   };
   if (match.type == AutocompleteMatchType::CALCULATOR) {
@@ -322,7 +322,7 @@ void OmniboxMatchCellView::OnMatchUpdate(const OmniboxResultView* result_view,
       separator_view_->SetSize(gfx::Size());
     }
   } else if (!has_image_) {
-    answer_image_view_->SetImage(gfx::ImageSkia());
+    answer_image_view_->SetImage(ui::ImageModel());
     answer_image_view_->SetSize(gfx::Size());
   } else {
     // Determine if we have a local icon (or else it will be downloaded).
@@ -345,9 +345,9 @@ void OmniboxMatchCellView::OnMatchUpdate(const OmniboxResultView* result_view,
 
       gfx::Size size(size_px, size_px);
       answer_image_view_->SetImageSize(size);
-      answer_image_view_->SetImage(
-          gfx::CanvasImageSource::MakeImageSkia<PlaceholderImageSource>(size,
-                                                                        color));
+      answer_image_view_->SetImage(ui::ImageModel::FromImageSkia(
+          gfx::CanvasImageSource::MakeImageSkia<PlaceholderImageSource>(
+              size, color)));
     }
   }
   SetTailSuggestCommonPrefixWidth(
@@ -364,27 +364,32 @@ void OmniboxMatchCellView::SetIcon(const gfx::ImageSkia& image,
   bool is_journeys_suggestion_row =
       match.type == AutocompleteMatchType::HISTORY_CLUSTER &&
       OmniboxFieldTrial::IsActionsUISimplificationEnabled();
+  bool is_instant_keyword_row =
+      match.type == AutocompleteMatchType::STARTER_PACK &&
+      OmniboxFieldTrial::IsKeywordModeRefreshEnabled();
   if (is_pedal_suggestion_row || is_journeys_suggestion_row ||
+      is_instant_keyword_row ||
       OmniboxFieldTrial::kSquareSuggestIconIcons.Get()) {
     // When a PEDAL suggestion has been split out to its own row, apply a square
     // background with a distinctive color to the respective icon. Journeys
     // suggestion rows should also receive the same treatment.
-    const auto background_color =
-        is_pedal_suggestion_row || is_journeys_suggestion_row
-            ? kColorOmniboxAnswerIconGM3Background
-            : kColorOmniboxResultsIconGM3Background;
-    icon_view_->SetImage(
+    const auto background_color = is_pedal_suggestion_row ||
+                                          is_journeys_suggestion_row ||
+                                          is_instant_keyword_row
+                                      ? kColorOmniboxAnswerIconGM3Background
+                                      : kColorOmniboxResultsIconGM3Background;
+    icon_view_->SetImage(ui::ImageModel::FromImageSkia(
         gfx::ImageSkiaOperations::CreateImageWithRoundRectBackground(
             gfx::SizeF(kUniformRowHeightIconSize, kUniformRowHeightIconSize),
             GetIconAndImageCornerRadius(),
-            GetColorProvider()->GetColor(background_color), image));
+            GetColorProvider()->GetColor(background_color), image)));
   } else {
-    icon_view_->SetImage(image);
+    icon_view_->SetImage(ui::ImageModel::FromImageSkia(image));
   }
 }
 
 void OmniboxMatchCellView::ClearIcon() {
-  icon_view_->SetImage({});
+  icon_view_->SetImage(ui::ImageModel());
 }
 
 void OmniboxMatchCellView::SetImage(const gfx::ImageSkia& image,
@@ -406,24 +411,24 @@ void OmniboxMatchCellView::SetImage(const gfx::ImageSkia& image,
     gfx::ImageSkia resized_image = gfx::ImageSkiaOperations::CreateResizedImage(
         image, skia::ImageOperations::RESIZE_GOOD,
         gfx::Size(GetWeatherImageSize(), GetWeatherImageSize()));
-    answer_image_view_->SetImage(
+    answer_image_view_->SetImage(ui::ImageModel::FromImageSkia(
         gfx::ImageSkiaOperations::CreateImageWithRoundRectBackground(
             gfx::SizeF(GetWeatherBackgroundSize(), GetWeatherBackgroundSize()),
             GetIconAndImageCornerRadius(),
             GetColorProvider()->GetColor(kColorOmniboxResultsBackground),
-            resized_image));
+            resized_image)));
   } else if (OmniboxFieldTrial::kSquareSuggestIconEntities.Get() &&
              !is_weather_answer) {
     const float scaled_size = max / GetEntityBackgroundScale();
-    answer_image_view_->SetImage(
+    answer_image_view_->SetImage(ui::ImageModel::FromImageSkia(
         gfx::ImageSkiaOperations::CreateImageWithRoundRectBackground(
             gfx::SizeF(scaled_size, scaled_size), GetIconAndImageCornerRadius(),
             GetColorProvider()->GetColor(kColorOmniboxResultsIconGM3Background),
             gfx::ImageSkiaOperations::CreateImageWithRoundRectClip(
-                GetIconAndImageCornerRadius(), image)));
+                GetIconAndImageCornerRadius(), image))));
 
   } else {
-    answer_image_view_->SetImage(image);
+    answer_image_view_->SetImage(ui::ImageModel::FromImageSkia(image));
 
     // Usually, answer images are square. But if that's not the case, setting
     // answer_image_view_ size proportional to the image size preserves

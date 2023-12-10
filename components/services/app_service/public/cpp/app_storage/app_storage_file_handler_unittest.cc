@@ -4,6 +4,7 @@
 
 #include "components/services/app_service/public/cpp/app_storage/app_storage_file_handler.h"
 
+#include <limits.h>
 #include <memory>
 #include <vector>
 
@@ -112,6 +113,7 @@ class AppStorageFileHandlerTest : public testing::Test {
     app2->readiness = Readiness::kDisabledByUser;
     app2->name = kAppName2;
     app2->short_name = kAppShortName;
+    app2->publisher_id = "publisher_id";
     app2->description = "description";
     app2->version = "version";
     app2->additional_search_terms = {"item1", "item2"};
@@ -144,6 +146,13 @@ class AppStorageFileHandlerTest : public testing::Test {
     app2->intent_filters.push_back(apps_util::MakeIntentFilterForUrlScope(
         GURL("https://www.google.com/abc")));
     app2->window_mode = WindowMode::kBrowser;
+    app2->run_on_os_login = RunOnOsLogin(RunOnOsLoginMode::kNotRun,
+                                         /*is_managed=*/true);
+    app2->allow_close = false;
+    app2->app_size_in_bytes = ULLONG_MAX;
+    app2->data_size_in_bytes = ULLONG_MAX - 1;
+    app2->supported_locales = {"a", "b", "c"};
+    app2->selected_locale = "c";
     apps.push_back(std::move(app2));
 
     // TODO(crbug.com/1385932): Add other files in the App structure.

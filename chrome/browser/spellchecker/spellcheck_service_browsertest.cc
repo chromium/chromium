@@ -30,6 +30,7 @@
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/spellchecker/spell_check_host_chrome_impl.h"
+#include "chrome/browser/spellchecker/spell_check_initialization_host_impl.h"
 #include "chrome/browser/spellchecker/spellcheck_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_paths.h"
@@ -291,8 +292,8 @@ class SpellcheckServiceHostBrowserTest : public SpellcheckServiceBrowserTest {
       const SpellcheckServiceHostBrowserTest&) = delete;
 
   void RequestDictionary() {
-    mojo::Remote<spellcheck::mojom::SpellCheckHost> interface;
-    RequestSpellCheckHost(&interface);
+    mojo::Remote<spellcheck::mojom::SpellCheckInitializationHost> interface;
+    RequestSpellCheckInitializationHost(&interface);
 
     interface->RequestDictionary();
   }
@@ -329,6 +330,13 @@ class SpellcheckServiceHostBrowserTest : public SpellcheckServiceBrowserTest {
       mojo::Remote<spellcheck::mojom::SpellCheckHost>* interface) {
     SpellCheckHostChromeImpl::Create(GetRenderer()->GetID(),
                                      interface->BindNewPipeAndPassReceiver());
+  }
+
+  void RequestSpellCheckInitializationHost(
+      mojo::Remote<spellcheck::mojom::SpellCheckInitializationHost>*
+          interface) {
+    SpellCheckInitializationHostImpl::Create(
+        GetRenderer()->GetID(), interface->BindNewPipeAndPassReceiver());
   }
 
   void SpellingServiceDone(bool success,

@@ -66,11 +66,13 @@
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"
 
+using base::android::AppendJavaStringArrayToStringVector;
 using base::android::AttachCurrentThread;
 using base::android::ConvertJavaStringToUTF16;
 using base::android::ConvertJavaStringToUTF8;
 using base::android::ConvertUTF16ToJavaString;
 using base::android::ConvertUTF8ToJavaString;
+using base::android::JavaFloatArrayToFloatVector;
 using base::android::JavaParamRef;
 using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
@@ -126,6 +128,10 @@ AutocompleteControllerAndroid::AutocompleteControllerAndroid(
       AutocompleteControllerEmitter::GetForBrowserContext(profile_);
   if (emitter)
     autocomplete_controller_->AddObserver(emitter);
+
+  if (profile) {
+    profile_observation_.Observe(profile);
+  }
 }
 
 void AutocompleteControllerAndroid::Start(JNIEnv* env,
@@ -410,13 +416,13 @@ void AutocompleteControllerAndroid::DeleteMatchElement(JNIEnv* env,
 }
 
 ScopedJavaLocalRef<jobject> AutocompleteControllerAndroid::
-    UpdateMatchDestinationURLWithAdditionalAssistedQueryStats(
+    UpdateMatchDestinationURLWithAdditionalSearchboxStats(
         JNIEnv* env,
         uintptr_t match_ptr,
         jlong elapsed_time_since_input_change) {
   auto* match = reinterpret_cast<AutocompleteMatch*>(match_ptr);
   autocomplete_controller_
-      ->UpdateMatchDestinationURLWithAdditionalAssistedQueryStats(
+      ->UpdateMatchDestinationURLWithAdditionalSearchboxStats(
           base::Milliseconds(elapsed_time_since_input_change), match);
   return url::GURLAndroid::FromNativeGURL(env, match->destination_url);
 }
@@ -459,6 +465,21 @@ ScopedJavaLocalRef<jobject> AutocompleteControllerAndroid::GetJavaObject()
 
 void AutocompleteControllerAndroid::Destroy(JNIEnv*) {
   delete this;
+}
+
+void AutocompleteControllerAndroid::OnProfileWillBeDestroyed(Profile* profile) {
+  // In the UrlKeyedDataCollectionConsentHelper there is an assumption
+  // that the PrefChangeRegistrar outlives the PrefService. However, in
+  // the case where AutocompleteControllerAndroid owns the above consent
+  // helper through the AutocompleteProviderClient from the
+  // AutocompleteController, the Profile and ProfileKeyedService (PrefService)
+  // is destroyed before the Java profile notifies the
+  // AutocompleteControllerAndroid to destroy itself via
+  // AutocompleteControllerAndroid::Destroy.
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_AutocompleteController_notifyNativeDestroyed(env, java_controller_);
+  java_controller_.Reset();
+  Destroy(env);
 }
 
 AutocompleteControllerAndroid::~AutocompleteControllerAndroid() = default;

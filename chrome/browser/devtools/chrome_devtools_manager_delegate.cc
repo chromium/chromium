@@ -105,7 +105,10 @@ bool GetExtensionInfo(content::WebContents* wc,
     *type = ChromeDevToolsManagerDelegate::kTypePage;
     return true;
   }
-  return false;
+
+  // Set type to other for extensions if not matched previously.
+  *type = DevToolsAgentHost::kTypeOther;
+  return true;
 }
 
 ChromeDevToolsManagerDelegate* g_instance;
@@ -160,7 +163,8 @@ ChromeDevToolsManagerDelegate::~ChromeDevToolsManagerDelegate() {
 
 void ChromeDevToolsManagerDelegate::Inspect(
     content::DevToolsAgentHost* agent_host) {
-  DevToolsWindow::OpenDevToolsWindow(agent_host, nullptr);
+  DevToolsWindow::OpenDevToolsWindow(agent_host, nullptr,
+                                     DevToolsOpenedByAction::kInspectLink);
 }
 
 void ChromeDevToolsManagerDelegate::HandleCommand(

@@ -12,10 +12,10 @@ import {MockFileEntry, MockFileSystem} from '../../common/js/mock_entry.js';
 import {ProgressItemState} from '../../common/js/progress_center_common.js';
 import {LEGACY_FILES_EXTENSION_ID} from '../../common/js/url_constants.js';
 import {descriptorEqual} from '../../common/js/util.js';
-import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
+import {RootType, VolumeError, VolumeType} from '../../common/js/volume_manager_types.js';
 import {EntryLocation} from '../../externs/entry_location.js';
 import type {VolumeInfo} from '../../externs/volume_info.js';
-import {VolumeManager} from '../../externs/volume_manager.js';
+import type {VolumeManager} from '../../externs/volume_manager.js';
 import {USER_CANCELLED, XfPasswordDialog} from '../../widgets/xf_password_dialog.js';
 
 import {DirectoryChangeTracker, DirectoryModel} from './directory_model.js';
@@ -99,7 +99,7 @@ export function setUp() {
       executeTask: function(
           _descriptor: any, _entries: any,
           onViewFiles: (result: chrome.fileManagerPrivate.TaskResult) => void) {
-        onViewFiles('failed');
+        onViewFiles(chrome.fileManagerPrivate.TaskResult.FAILED);
       },
       sharePathsWithCrostini: function(
           _vmName: any, _entries: Entry[], _persist: any,
@@ -133,7 +133,7 @@ function getMockFileManager(): FileManager {
     volumeManager: /** @type {!VolumeManager} */ ({
       getLocationInfo: function(_entry: Entry) {
         return {
-          rootType: VolumeManagerCommon.RootType.DRIVE,
+          rootType: RootType.DRIVE,
         };
       },
       getDriveConnectionState: function() {
@@ -141,7 +141,7 @@ function getMockFileManager(): FileManager {
       },
       getVolumeInfo: function(_entry: Entry) {
         return {
-          volumeType: VolumeManagerCommon.VolumeType.DRIVE,
+          volumeType: VolumeType.DRIVE,
         };
       },
     }),
@@ -446,7 +446,7 @@ function setUpInstallLinuxPackage() {
   const fileManager = getMockFileManager();
   fileManager.volumeManager.getLocationInfo = (_entry): EntryLocation => {
     return {
-      rootType: VolumeManagerCommon.RootType.CROSTINI,
+      rootType: RootType.CROSTINI,
     } as unknown as EntryLocation;
   };
   const fileTask = {
@@ -548,7 +548,6 @@ export function testGetViewFileType() {
 /**
  * Checks that the progress center is properly updated when mounting archives
  * successfully.
- * @suppress {visibility}
  */
 export async function testMountArchiveAndChangeDirectoryNotificationSuccess(
     done: () => void) {
@@ -592,7 +591,6 @@ export async function testMountArchiveAndChangeDirectoryNotificationSuccess(
 /**
  * Checks that the progress center is properly updated when mounting an archive
  * resolves with an error.
- * @suppress {visibility}
  */
 export async function
 testMountArchiveAndChangeDirectoryNotificationInvalidArchive(done: () => void) {
@@ -606,7 +604,7 @@ testMountArchiveAndChangeDirectoryNotificationInvalidArchive(done: () => void) {
       fileManager.taskController);
 
   fileManager.volumeManager.mountArchive = function(_url, _password) {
-    return Promise.reject(VolumeManagerCommon.VolumeError.INTERNAL_ERROR);
+    return Promise.reject(VolumeError.INTERNAL_ERROR);
   };
 
   // Mount archive.
@@ -631,7 +629,6 @@ testMountArchiveAndChangeDirectoryNotificationInvalidArchive(done: () => void) {
 /**
  * Checks that the progress center is properly updated when the password prompt
  * for an encrypted archive is canceled.
- * @suppress {visibility}
  */
 export async function
 testMountArchiveAndChangeDirectoryNotificationCancelPassword(done: () => void) {
@@ -645,7 +642,7 @@ testMountArchiveAndChangeDirectoryNotificationCancelPassword(done: () => void) {
       fileManager.taskController);
 
   fileManager.volumeManager.mountArchive = function(_url, _password) {
-    return Promise.reject(VolumeManagerCommon.VolumeError.NEED_PASSWORD);
+    return Promise.reject(VolumeError.NEED_PASSWORD);
   };
 
   passwordDialog.askForPassword =
@@ -675,7 +672,6 @@ testMountArchiveAndChangeDirectoryNotificationCancelPassword(done: () => void) {
 /**
  * Checks that the progress center is properly updated when mounting an
  * encrypted archive.
- * @suppress {visibility}
  */
 export async function
 testMountArchiveAndChangeDirectoryNotificationEncryptedArchive(
@@ -697,7 +693,7 @@ testMountArchiveAndChangeDirectoryNotificationEncryptedArchive(
         const volumeInfo = {resolveDisplayRoot: () => null};
         resolve(volumeInfo as unknown as VolumeInfo);
       } else {
-        reject(VolumeManagerCommon.VolumeError.NEED_PASSWORD);
+        reject(VolumeError.NEED_PASSWORD);
       }
     });
   };

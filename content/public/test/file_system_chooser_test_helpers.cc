@@ -46,6 +46,10 @@ class CancellingSelectFileDialog : public ui::SelectFileDialog {
       } else {
         out_params_->caller = absl::nullopt;
       }
+
+      // Free the pointer since output parameters should only be written to
+      // once.
+      out_params_ = nullptr;
     }
     listener_->FileSelectionCanceled(params);
   }
@@ -57,7 +61,11 @@ class CancellingSelectFileDialog : public ui::SelectFileDialog {
   bool HasMultipleFileTypeChoicesImpl() override { return false; }
 
  private:
-  ~CancellingSelectFileDialog() override { out_params_ = nullptr; }
+  ~CancellingSelectFileDialog() override {
+    if (out_params_) {
+      out_params_ = nullptr;
+    }
+  }
   raw_ptr<SelectFileDialogParams> out_params_;
 };
 
@@ -97,6 +105,9 @@ class FakeSelectFileDialog : public ui::SelectFileDialog {
       } else {
         out_params_->caller = absl::nullopt;
       }
+
+      // Clean up the output parameters; they should only be filled in once.
+      out_params_ = nullptr;
     }
     // The selected files are passed by reference to the listener. Ensure they
     // outlive the dialog if it is immediately deleted by the listener.
@@ -116,9 +127,13 @@ class FakeSelectFileDialog : public ui::SelectFileDialog {
   bool HasMultipleFileTypeChoicesImpl() override { return false; }
 
  private:
-  ~FakeSelectFileDialog() override = default;
+  ~FakeSelectFileDialog() override {
+    if (out_params_) {
+      out_params_ = nullptr;
+    }
+  }
   std::vector<ui::SelectedFileInfo> result_;
-  raw_ptr<SelectFileDialogParams, LeakedDanglingUntriaged> out_params_;
+  raw_ptr<SelectFileDialogParams> out_params_;
 };
 
 }  // namespace
@@ -153,7 +168,9 @@ FakeSelectFileDialogFactory::FakeSelectFileDialogFactory(
     SelectFileDialogParams* out_params)
     : result_(std::move(result)), out_params_(out_params) {}
 
-FakeSelectFileDialogFactory::~FakeSelectFileDialogFactory() = default;
+FakeSelectFileDialogFactory::~FakeSelectFileDialogFactory() {
+  out_params_ = nullptr;
+}
 
 ui::SelectFileDialog* FakeSelectFileDialogFactory::Create(
     ui::SelectFileDialog::Listener* listener,

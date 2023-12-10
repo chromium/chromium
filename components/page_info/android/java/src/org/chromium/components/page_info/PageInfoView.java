@@ -14,9 +14,7 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-/**
- * Represents the view inside the page info popup.
- */
+/** Represents the view inside the page info popup. */
 public class PageInfoView extends FrameLayout implements OnClickListener {
     private static final int COOKIES_ROW_POSITION = 1;
 
@@ -38,13 +36,11 @@ public class PageInfoView extends FrameLayout implements OnClickListener {
     public PageInfoView(Context context, Params params) {
         super(context);
         LayoutInflater.from(context).inflate(R.layout.page_info, this, true);
-        // Elevate the "Cookies and site data" item when User Bypass is enabled.
-        if (PageInfoFeatures.USER_BYPASS_UI.isEnabled()) {
-            LinearLayout rowWrapper = (LinearLayout) findViewById(R.id.page_info_row_wrapper);
-            PageInfoRowView cookiesRow = (PageInfoRowView) findViewById(R.id.page_info_cookies_row);
-            rowWrapper.removeView(cookiesRow);
-            rowWrapper.addView(cookiesRow, COOKIES_ROW_POSITION);
-        }
+        // Elevate the "Cookies and site data" item.
+        LinearLayout rowWrapper = (LinearLayout) findViewById(R.id.page_info_row_wrapper);
+        PageInfoRowView cookiesRow = (PageInfoRowView) findViewById(R.id.page_info_cookies_row);
+        rowWrapper.removeView(cookiesRow);
+        rowWrapper.addView(cookiesRow, COOKIES_ROW_POSITION);
         init(params);
     }
 
@@ -90,7 +86,9 @@ public class PageInfoView extends FrameLayout implements OnClickListener {
     private void initOpenOnline(Params params) {
         mOpenOnlineButton = findViewById(R.id.page_info_open_online_button);
         // The open online button should not fade in.
-        initializePageInfoViewChild(mOpenOnlineButton, params.openOnlineButtonShown,
+        initializePageInfoViewChild(
+                mOpenOnlineButton,
+                params.openOnlineButtonShown,
                 params.openOnlineButtonClickCallback);
     }
 

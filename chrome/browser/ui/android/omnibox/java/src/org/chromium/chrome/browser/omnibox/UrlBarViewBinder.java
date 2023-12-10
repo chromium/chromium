@@ -130,7 +130,7 @@ class UrlBarViewBinder {
 
         int highlightColor;
         if (useIncognitoColors) {
-            highlightColor = view.getResources().getColor(R.color.text_highlight_color_incognito);
+            highlightColor = view.getContext().getColor(R.color.text_highlight_color_incognito);
         } else {
             highlightColor = originalHighlightColor;
         }

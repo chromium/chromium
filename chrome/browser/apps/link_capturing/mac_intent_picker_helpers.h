@@ -5,16 +5,16 @@
 #ifndef CHROME_BROWSER_APPS_LINK_CAPTURING_MAC_INTENT_PICKER_HELPERS_H_
 #define CHROME_BROWSER_APPS_LINK_CAPTURING_MAC_INTENT_PICKER_HELPERS_H_
 
+#include <optional>
 #include <string>
 
 #include "chrome/browser/apps/link_capturing/apps_intent_picker_delegate.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace apps {
 
 // Returns a native Mac app, if any, registered to own the given `url`.
-absl::optional<IntentPickerAppInfo> FindMacAppForUrl(const GURL& url);
+std::optional<IntentPickerAppInfo> FindMacAppForUrl(const GURL& url);
 
 // Launches a native Mac app, specified by the `launch_name` (the path) returned
 // by `FindMacAppForUrl` above, for the given `url`.

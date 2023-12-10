@@ -49,18 +49,24 @@ class ChoiceScreenView extends LinearLayout {
     }
 
     private void scheduleDividerVisibilityUpdate() {
-        mRecyclerView.getViewTreeObserver().addOnGlobalLayoutListener(
-                new ViewTreeObserver.OnGlobalLayoutListener() {
-                    @Override
-                    public void onGlobalLayout() {
-                        // At this point the layout is complete, the dimensions of recyclerView and
-                        // of child views are known.
-                        mRecyclerView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+        mRecyclerView
+                .getViewTreeObserver()
+                .addOnGlobalLayoutListener(
+                        new ViewTreeObserver.OnGlobalLayoutListener() {
+                            @Override
+                            public void onGlobalLayout() {
+                                // At this point the layout is complete, the dimensions of
+                                // recyclerView and of child views are known.
+                                mRecyclerView
+                                        .getViewTreeObserver()
+                                        .removeOnGlobalLayoutListener(this);
 
-                        boolean isListScrollable = mRecyclerView.canScrollVertically(1)
-                                || mRecyclerView.canScrollVertically(-1);
-                        mDivider.setVisibility(isListScrollable ? View.VISIBLE : View.INVISIBLE);
-                    }
-                });
+                                boolean isListScrollable =
+                                        mRecyclerView.canScrollVertically(1)
+                                                || mRecyclerView.canScrollVertically(-1);
+                                mDivider.setVisibility(
+                                        isListScrollable ? View.VISIBLE : View.INVISIBLE);
+                            }
+                        });
     }
 }

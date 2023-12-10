@@ -24,13 +24,17 @@ class Size;
 namespace ash {
 
 // We force at least this many DIPs for any window on the screen.
-const int kMinimumOnScreenArea = 25;
+inline constexpr int kMinimumOnScreenArea = 25;
+
+// This specifies how much percent (30%) of a window rect must be visible when
+// the window is added to the workspace.
+inline constexpr float kMinimumPercentOnScreenArea = 0.3f;
 
 // In clamshell mode, users can snap left/right for horizontal display and
 // top/bottom for vertical display. For primary-landscape-oriented display,
 // |kPrimary| and |kSecondary| are left snap and right snap.
 // For other orientation see the table of description for
-// `SplitViewController::IsLayoutHorizontal()`.
+// `IsLayoutHorizontal()`.
 enum class SnapViewType { kPrimary, kSecondary };
 
 // Adjusts |bounds| so that the size does not exceed |max_size|.

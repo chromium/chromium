@@ -482,6 +482,7 @@ struct BLINK_EXPORT WebNavigationParams {
   // that API.
   WebVector<WebHistoryItem> navigation_api_back_entries;
   WebVector<WebHistoryItem> navigation_api_forward_entries;
+  WebHistoryItem navigation_api_previous_entry;
 
   // List of URLs which are preloaded by HTTP Early Hints.
   // TODO(https://crbug.com/1317936): Pass information more than URL such as

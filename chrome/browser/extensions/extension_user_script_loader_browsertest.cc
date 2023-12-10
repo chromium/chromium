@@ -130,8 +130,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionUserScriptLoaderBrowserTest,
   const UserScriptList& loaded_dynamic_scripts =
       loader->GetLoadedDynamicScripts();
   ASSERT_EQ(1u, loaded_dynamic_scripts.size());
-  auto copied_scripts = std::make_unique<UserScriptList>();
-  copied_scripts->push_back(
+  UserScriptList copied_scripts;
+  copied_scripts.push_back(
       UserScript::CopyMetadataFrom(*loaded_dynamic_scripts[0]));
   {
     base::test::TestFuture<const absl::optional<std::string>&> future;
@@ -140,7 +140,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionUserScriptLoaderBrowserTest,
     EXPECT_EQ("<no error>", future.Get().value_or("<no error>"));
   }
   {
-    std::string id = (*copied_scripts)[0]->id();
+    std::string id = copied_scripts[0]->id();
     base::test::TestFuture<const absl::optional<std::string>&> future;
     loader->AddPendingDynamicScriptIDs({id});
     loader->AddDynamicScripts(std::move(copied_scripts), {id},

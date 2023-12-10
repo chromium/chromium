@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -57,7 +58,6 @@
 #include "ash/system/status_area_widget.h"
 #include "ash/system/status_area_widget_delegate.h"
 #include "ash/system/tray/system_tray_notifier.h"
-#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -74,7 +74,6 @@
 #include "components/user_manager/multi_user/multi_user_sign_in_policy.h"
 #include "components/user_manager/user_type.h"
 #include "media/base/media_switches.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -87,6 +86,7 @@
 #include "ui/display/display.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/manager/managed_display_info.h"
+#include "ui/display/screen.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
@@ -143,7 +143,7 @@ void FocusFirstOrLastFocusableChild(views::View* root, bool reverse) {
 // |bold_length|: The length of bold text.
 void MakeSectionBold(views::StyledLabel* label,
                      const std::u16string& text,
-                     const absl::optional<int>& bold_start,
+                     const std::optional<int>& bold_start,
                      int bold_length) {
   auto create_style = [&](bool is_bold) {
     views::StyledLabel::RangeStyleInfo style;
@@ -193,10 +193,6 @@ keyboard::KeyboardUIController* GetKeyboardControllerForWidget(
 
 bool IsPublicAccountUser(const LoginUserInfo& user) {
   return user.basic_user_info.type == user_manager::USER_TYPE_PUBLIC_ACCOUNT;
-}
-
-bool IsTabletMode() {
-  return Shell::Get()->tablet_mode_controller()->InTabletMode();
 }
 
 //
@@ -264,6 +260,8 @@ struct MediumViewLayout {
 };
 
 class UserAddingScreenIndicator : public views::View {
+  METADATA_HEADER(UserAddingScreenIndicator, views::View)
+
  public:
   UserAddingScreenIndicator() {
     views::BoxLayout* layout_manager =
@@ -308,6 +306,9 @@ class UserAddingScreenIndicator : public views::View {
   raw_ptr<views::ImageView, ExperimentalAsh> info_icon_ = nullptr;
   raw_ptr<views::Label, ExperimentalAsh> label_ = nullptr;
 };
+
+BEGIN_METADATA(UserAddingScreenIndicator)
+END_METADATA
 
 }  // namespace
 
@@ -994,6 +995,13 @@ void LockContentsView::OnAuthDisabledForUser(
   }
 }
 
+void LockContentsView::OnAuthenticationStageChanged(
+    const AuthenticationStage auth_stage) {
+  if (auth_stage != AuthenticationStage::kIdle && auth_error_bubble_) {
+    HideAuthErrorMessage();
+  }
+}
+
 void LockContentsView::OnSetTpmLockedState(const AccountId& user,
                                            bool is_locked,
                                            base::TimeDelta time_left) {
@@ -1004,7 +1012,7 @@ void LockContentsView::OnSetTpmLockedState(const AccountId& user,
   }
 
   state->time_until_tpm_unlock =
-      is_locked ? absl::make_optional(time_left) : absl::nullopt;
+      is_locked ? std::make_optional(time_left) : std::nullopt;
 
   LoginBigUserView* big_user =
       TryToFindBigUser(user, true /*require_auth_active*/);
@@ -1099,7 +1107,7 @@ void LockContentsView::OnSystemInfoChanged(
   if (enforced) {
     enable_system_info_enforced_ = show;
   } else {
-    enable_system_info_enforced_ = absl::nullopt;
+    enable_system_info_enforced_ = std::nullopt;
     enable_system_info_if_possible_ |= show;
   }
 
@@ -1434,7 +1442,7 @@ void LockContentsView::ToggleDisableTpmForUserForDebug(const AccountId& user) {
     return;
   }
   if (state->time_until_tpm_unlock.has_value()) {
-    state->time_until_tpm_unlock = absl::nullopt;
+    state->time_until_tpm_unlock = std::nullopt;
   } else {
     state->time_until_tpm_unlock = base::Minutes(5);
   }
@@ -2152,39 +2160,15 @@ void LockContentsView::ShowAuthErrorMessage() {
   int unlock_attempt = unlock_attempt_by_user_[account_id];
   UserState* user_state = FindStateForUser(account_id);
 
-  // Show gaia signin if this is login and the user has failed too many times.
-  // Do not show on secondary login screen – even though it has type kLogin – as
-  // there is no OOBE there.
-  if (!ash::features::IsCryptohomeRecoveryEnabled()) {
-    // Pin login attempt does not trigger Gaia dialog. Pin auth method will be
-    // disabled after 5 failed attempts.
-    int pin_unlock_attempt = pin_unlock_attempt_by_user_[account_id];
-    if (screen_type_ == LockScreen::ScreenType::kLogin &&
-        (unlock_attempt - pin_unlock_attempt) >=
-            kLoginAttemptsBeforeGaiaDialog &&
-        Shell::Get()->session_controller()->GetSessionState() !=
-            session_manager::SessionState::LOGIN_SECONDARY) {
-      Shell::Get()->login_screen_controller()->ShowGaiaSignin(
-          big_view->auth_user()->current_user().basic_user_info.account_id);
-      return;
-    }
-  }
-
   std::u16string error_text;
-  if (ash::features::IsCryptohomeRecoveryEnabled()) {
-    if (user_state->show_pin) {
-      error_text += l10n_util::GetStringUTF16(
-          unlock_attempt > 1 ? IDS_ASH_LOGIN_ERROR_AUTHENTICATING_2ND_TIME_NEW
-                             : IDS_ASH_LOGIN_ERROR_AUTHENTICATING);
-    } else {
-      error_text += l10n_util::GetStringUTF16(
-          unlock_attempt > 1 ? IDS_ASH_LOGIN_ERROR_AUTHENTICATING_PWD_2ND_TIME
-                             : IDS_ASH_LOGIN_ERROR_AUTHENTICATING_PWD);
-    }
+  if (user_state->show_pin) {
+    error_text += l10n_util::GetStringUTF16(
+        unlock_attempt > 1 ? IDS_ASH_LOGIN_ERROR_AUTHENTICATING_2ND_TIME_NEW
+                           : IDS_ASH_LOGIN_ERROR_AUTHENTICATING);
   } else {
     error_text += l10n_util::GetStringUTF16(
-        unlock_attempt > 1 ? IDS_ASH_LOGIN_ERROR_AUTHENTICATING_2ND_TIME
-                           : IDS_ASH_LOGIN_ERROR_AUTHENTICATING);
+        unlock_attempt > 1 ? IDS_ASH_LOGIN_ERROR_AUTHENTICATING_PWD_2ND_TIME
+                           : IDS_ASH_LOGIN_ERROR_AUTHENTICATING_PWD);
   }
 
   ImeControllerImpl* ime_controller = Shell::Get()->ime_controller();
@@ -2194,11 +2178,12 @@ void LockContentsView::ShowAuthErrorMessage() {
         {u" ", l10n_util::GetStringUTF16(IDS_ASH_LOGIN_ERROR_CAPS_LOCK_HINT)});
   }
 
-  absl::optional<int> bold_start;
+  std::optional<int> bold_start;
   int bold_length = 0;
   // Display a hint to switch keyboards if there are other active input
   // methods in clamshell mode.
-  if (ime_controller->GetVisibleImes().size() > 1 && !IsTabletMode()) {
+  if (ime_controller->GetVisibleImes().size() > 1 &&
+      !display::Screen::GetScreen()->InTabletMode()) {
     error_text += u" ";
     bold_start = error_text.length();
     std::u16string shortcut =
@@ -2212,7 +2197,7 @@ void LockContentsView::ShowAuthErrorMessage() {
     *bold_start += shortcut_offset_in_string;
   }
 
-  if (ash::features::IsCryptohomeRecoveryEnabled() && unlock_attempt > 1) {
+  if (unlock_attempt > 1) {
     base::StrAppend(&error_text,
                     {u"\n\n", l10n_util::GetStringUTF16(
                                   user_state->show_pin
@@ -2240,19 +2225,17 @@ void LockContentsView::ShowAuthErrorMessage() {
   container->AddChildView(std::move(label));
   container->AddChildView(std::move(learn_more_button));
 
-  if (ash::features::IsCryptohomeRecoveryEnabled()) {
-    // The recover user flow is only accessible from the login screen but
-    // not from the lock screen.
-    if (screen_type_ == LockScreen::ScreenType::kLogin &&
-        Shell::Get()->session_controller()->GetSessionState() !=
-            session_manager::SessionState::LOGIN_SECONDARY) {
-      auto recover_user_button = std::make_unique<PillButton>(
-          base::BindRepeating(&LockContentsView::RecoverUserButtonPressed,
-                              base::Unretained(this)),
-          l10n_util::GetStringUTF16(IDS_ASH_LOGIN_RECOVER_USER_BUTTON));
+  // The recover user flow is only accessible from the login screen but
+  // not from the lock screen.
+  if (screen_type_ == LockScreen::ScreenType::kLogin &&
+      Shell::Get()->session_controller()->GetSessionState() !=
+          session_manager::SessionState::LOGIN_SECONDARY) {
+    auto recover_user_button = std::make_unique<PillButton>(
+        base::BindRepeating(&LockContentsView::RecoverUserButtonPressed,
+                            base::Unretained(this)),
+        l10n_util::GetStringUTF16(IDS_ASH_LOGIN_RECOVER_USER_BUTTON));
 
-      container->AddChildView(std::move(recover_user_button));
-    }
+    container->AddChildView(std::move(recover_user_button));
   }
 
   auth_error_bubble_->SetAnchorView(
@@ -2339,7 +2322,7 @@ void LockContentsView::RecoverUserButtonPressed() {
                           static_cast<int>(ReauthReason::kForgotPassword));
   RecordAndResetPasswordAttempts(
       AuthEventsRecorder::AuthenticationOutcome::kRecovery, account_id);
-  Shell::Get()->login_screen_controller()->ShowGaiaSignin(account_id);
+  Shell::Get()->login_screen_controller()->StartUserRecovery(account_id);
   HideAuthErrorMessage();
 }
 

@@ -7,13 +7,13 @@
 
 #include <memory>
 
+#include <optional>
 #include "base/memory/ref_counted.h"
 #include "chromecast/media/api/decoder_buffer_base.h"
 #include "chromecast/media/cma/backend/proxy/buffer_id_manager.h"
 #include "chromecast/media/cma/backend/proxy/cast_runtime_audio_channel_broker.h"
 #include "chromecast/media/cma/backend/proxy/cma_proxy_handler.h"
 #include "chromecast/media/cma/backend/proxy/push_buffer_pending_handler.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromecast {
 
@@ -75,7 +75,7 @@ class ProxyCallTranslator : public CmaProxyHandler,
       std::unique_ptr<CastRuntimeAudioChannelBroker> decoder_channel);
 
   // CastRuntimeAudioChannelBroker::Handler overrides:
-  absl::optional<PushBufferRequest> GetBufferedData() override;
+  std::optional<PushBufferRequest> GetBufferedData() override;
   bool HasBufferedData() override;
   void HandleInitializeResponse(
       CastRuntimeAudioChannelBroker::StatusCode status) override;
@@ -90,7 +90,7 @@ class ProxyCallTranslator : public CmaProxyHandler,
       int64_t decoded_bytes,
       CastRuntimeAudioChannelBroker::StatusCode status) override;
   void HandleGetMediaTimeResponse(
-      absl::optional<MediaTime> time,
+      std::optional<MediaTime> time,
       CastRuntimeAudioChannelBroker::StatusCode status) override;
 
   // Helper to share error handling code.

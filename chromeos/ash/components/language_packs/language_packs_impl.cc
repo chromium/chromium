@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <string>
-
 #include "chromeos/ash/components/language_packs/language_packs_impl.h"
 
+#include <optional>
+#include <string>
+
 #include "base/no_destructor.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::language_packs {
 
@@ -20,7 +20,7 @@ using ::ash::language::mojom::PackState;
 
 namespace {
 
-absl::optional<std::string> ConvertMojoFeatureToPackId(FeatureId mojo_id) {
+std::optional<std::string> ConvertMojoFeatureToPackId(FeatureId mojo_id) {
   switch (mojo_id) {
     case FeatureId::HANDWRITING_RECOGNITION:
       return kHandwritingFeatureId;
@@ -30,7 +30,7 @@ absl::optional<std::string> ConvertMojoFeatureToPackId(FeatureId mojo_id) {
 
     // Catch all unknown cases here.
     default:
-      return absl::nullopt;
+      return std::nullopt;
   }
 }
 
@@ -112,13 +112,11 @@ void LanguagePacksImpl::BindReceiver(
 void LanguagePacksImpl::GetPackInfo(FeatureId feature_id,
                                     const std::string& language,
                                     GetPackInfoCallback mojo_callback) {
-
-  LanguagePackManager* lp = LanguagePackManager::GetInstance();
-  const absl::optional<std::string> pack_id =
+  const std::optional<std::string> pack_id =
       ConvertMojoFeatureToPackId(feature_id);
 
   if (pack_id.has_value()) {
-    lp->GetPackState(
+    LanguagePackManager::GetPackState(
         pack_id.value(), language,
         base::BindOnce(&OnOperationComplete, std::move(mojo_callback)));
   } else {
@@ -131,12 +129,11 @@ void LanguagePacksImpl::GetPackInfo(FeatureId feature_id,
 void LanguagePacksImpl::InstallPack(FeatureId feature_id,
                                     const std::string& language,
                                     InstallPackCallback mojo_callback) {
-  LanguagePackManager* lp = LanguagePackManager::GetInstance();
-  const absl::optional<std::string> pack_id =
+  const std::optional<std::string> pack_id =
       ConvertMojoFeatureToPackId(feature_id);
 
   if (pack_id.has_value()) {
-    lp->InstallPack(
+    LanguagePackManager::InstallPack(
         pack_id.value(), language,
         base::BindOnce(&OnOperationComplete, std::move(mojo_callback)));
   } else {
@@ -148,13 +145,13 @@ void LanguagePacksImpl::InstallPack(FeatureId feature_id,
 
 void LanguagePacksImpl::InstallBasePack(FeatureId feature_id,
                                         InstallBasePackCallback mojo_callback) {
-  LanguagePackManager* lp = LanguagePackManager::GetInstance();
-  const absl::optional<std::string> pack_id =
+  const std::optional<std::string> pack_id =
       ConvertMojoFeatureToPackId(feature_id);
 
   if (pack_id.has_value()) {
-    lp->InstallBasePack(*pack_id, base::BindOnce(&OnInstallBasePackComplete,
-                                                 std::move(mojo_callback)));
+    LanguagePackManager::InstallBasePack(
+        *pack_id,
+        base::BindOnce(&OnInstallBasePackComplete, std::move(mojo_callback)));
   } else {
     auto info = BasePackInfo::New();
     info->pack_state = PackState::ERROR;
@@ -165,13 +162,13 @@ void LanguagePacksImpl::InstallBasePack(FeatureId feature_id,
 void LanguagePacksImpl::UninstallPack(FeatureId feature_id,
                                       const std::string& language,
                                       UninstallPackCallback mojo_callback) {
-  LanguagePackManager* lp = LanguagePackManager::GetInstance();
-  const absl::optional<std::string> pack_id =
+  const std::optional<std::string> pack_id =
       ConvertMojoFeatureToPackId(feature_id);
 
   // We ignore the request if the input parameters are incorrect.
   if (pack_id.has_value()) {
-    lp->RemovePack(pack_id.value(), language, base::DoNothing());
+    LanguagePackManager::RemovePack(pack_id.value(), language,
+                                    base::DoNothing());
   }
 }
 

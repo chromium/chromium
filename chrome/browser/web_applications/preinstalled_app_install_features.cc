@@ -74,7 +74,7 @@ constexpr const FeatureWithEnabledFunction
 // this flag directly to correctly exclude managed devices.
 BASE_FEATURE(kDocsSheetsSlidesDrivePreinstallStandaloneTabbed,
              "DocsSheetsSlidesDrivePreinstallStandaloneTabbed",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 bool IsPreinstalledDocsSheetsSlidesDriveStandaloneTabbed(Profile& profile) {

@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include <optional>
 #include "base/containers/lru_cache.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/raw_ptr.h"
@@ -24,13 +25,13 @@
 #include "gpu/command_buffer/service/gl_context_virtual_delegate.h"
 #include "gpu/command_buffer/service/gr_shader_cache.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
 #include "gpu/config/gpu_preferences.h"
 #include "gpu/gpu_gles2_export.h"
 #include "gpu/ipc/common/command_buffer_id.h"
 #include "gpu/ipc/common/gpu_peak_memory.h"
 #include "gpu/vulkan/buildflags.h"
 #include "skia/buildflags.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
 #include "ui/gl/progress_reporter.h"
@@ -137,8 +138,10 @@ class GPU_GLES2_EXPORT SharedContextState
   void StoreVkPipelineCacheIfNeeded();
 
   void UseShaderCache(
-      absl::optional<gpu::raster::GrShaderCache::ScopedCacheUse>& cache_use,
+      std::optional<gpu::raster::GrShaderCache::ScopedCacheUse>& cache_use,
       int32_t client_id) const;
+
+  GLFormatCaps GetGLFormatCaps() { return GLFormatCaps(feature_info()); }
 
   gl::GLShareGroup* share_group() const { return share_group_.get(); }
   gl::GLContext* context() const { return context_.get(); }
@@ -175,7 +178,7 @@ class GPU_GLES2_EXPORT SharedContextState
   gles2::FeatureInfo* feature_info() { return feature_info_.get(); }
   gles2::ContextState* context_state() const { return context_state_.get(); }
   bool context_lost() const { return !!context_lost_reason_; }
-  absl::optional<error::ContextLostReason> context_lost_reason() {
+  std::optional<error::ContextLostReason> context_lost_reason() {
     return context_lost_reason_;
   }
   bool need_context_state_reset() const { return need_context_state_reset_; }
@@ -330,7 +333,7 @@ class GPU_GLES2_EXPORT SharedContextState
   bool InitializeGraphite(const GpuPreferences& gpu_preferences,
                           const GpuDriverBugWorkarounds& workarounds);
 
-  absl::optional<error::ContextLostReason> GetResetStatus(bool needs_gl);
+  std::optional<error::ContextLostReason> GetResetStatus(bool needs_gl);
 
   // gpu::GLContextVirtualDelegate implementation.
   bool initialized() const override;
@@ -399,7 +402,7 @@ class GPU_GLES2_EXPORT SharedContextState
   // driver's GL state.
   bool need_context_state_reset_ = false;
 
-  absl::optional<error::ContextLostReason> context_lost_reason_;
+  std::optional<error::ContextLostReason> context_lost_reason_;
   base::ObserverList<ContextLostObserver>::Unchecked context_lost_observers_;
 
   base::LRUCache<void*, sk_sp<SkSurface>> sk_surface_cache_;

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_mediator.h"
+#import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_mediator+Testing.h"
 
 #import "base/feature_list.h"
 #import "base/ios/ios_util.h"
@@ -29,9 +30,8 @@
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/favicon/favicon_loader.h"
 #import "ios/chrome/browser/net/crurl.h"
-#import "ios/chrome/browser/ntp/new_tab_page_util.h"
+#import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
 #import "ios/chrome/browser/shared/coordinator/default_browser_promo/default_browser_promo_scene_agent_utils.h"
-#import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_backed_boolean.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
@@ -46,7 +46,6 @@
 #import "ios/chrome/browser/ui/omnibox/popup/carousel_item.h"
 #import "ios/chrome/browser/ui/omnibox/popup/carousel_item_menu_provider.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_pedal_annotator.h"
-#import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_mediator+private.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_presenter.h"
 #import "ios/chrome/browser/ui/omnibox/popup/pedal_section_extractor.h"
 #import "ios/chrome/browser/ui/omnibox/popup/pedal_suggestion_wrapper.h"
@@ -199,7 +198,7 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
   if (self.remoteSuggestionsService) {
     _remoteSuggestionsServiceObserverBridge =
         std::make_unique<RemoteSuggestionsServiceObserverBridge>(
-            debugInfoConsumer);
+            debugInfoConsumer, self.remoteSuggestionsService);
     self.remoteSuggestionsService->AddObserver(
         _remoteSuggestionsServiceObserverBridge.get());
   }
@@ -207,7 +206,7 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
   _debugInfoConsumer = debugInfoConsumer;
 }
 
-- (void)setPrefService:(PrefService*)originalPrefService {
+- (void)setOriginalPrefService:(PrefService*)originalPrefService {
   _originalPrefService = originalPrefService;
   if (IsBottomOmniboxSteadyStateEnabled() && _originalPrefService) {
     _bottomOmniboxEnabled =
@@ -631,7 +630,7 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
             strongSelf.mostVisitedActionFactory;
 
         // Record that this context menu was shown to the user.
-        RecordMenuShown(MenuScenarioHistogram::kOmniboxMostVisitedEntry);
+        RecordMenuShown(kMenuScenarioHistogramOmniboxMostVisitedEntry);
 
         NSMutableArray<UIMenuElement*>* menuElements =
             [[NSMutableArray alloc] init];
@@ -660,7 +659,8 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
           [menuElements addObject:newWindowAction];
         }
 
-        [menuElements addObject:[actionFactory actionToCopyURL:copyURL]];
+        CrURL* URL = [[CrURL alloc] initWithGURL:copyURL];
+        [menuElements addObject:[actionFactory actionToCopyURL:URL]];
 
         [menuElements addObject:[actionFactory actionToShareWithBlock:^{
                         [weakSelf.sharingDelegate

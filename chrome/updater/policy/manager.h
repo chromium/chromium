@@ -5,6 +5,7 @@
 #ifndef CHROME_UPDATER_POLICY_MANAGER_H_
 #define CHROME_UPDATER_POLICY_MANAGER_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -12,7 +13,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "chrome/updater/constants.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
 
@@ -55,30 +55,30 @@ class PolicyManagerInterface
   // Returns the policy for how often the Updater should check for updates.
   // Returns the time interval between update checks.
   // 0 indicates updates are disabled.
-  virtual absl::optional<base::TimeDelta> GetLastCheckPeriod() const = 0;
+  virtual std::optional<base::TimeDelta> GetLastCheckPeriod() const = 0;
 
   // For domain-joined machines, checks the current time against the times that
   // updates are suppressed.
-  virtual absl::optional<UpdatesSuppressedTimes> GetUpdatesSuppressedTimes()
+  virtual std::optional<UpdatesSuppressedTimes> GetUpdatesSuppressedTimes()
       const = 0;
 
   // Returns the policy for the download preference.
-  virtual absl::optional<std::string> GetDownloadPreference() const = 0;
+  virtual std::optional<std::string> GetDownloadPreference() const = 0;
 
   // Returns the policy for the package cache size limit in megabytes.
-  virtual absl::optional<int> GetPackageCacheSizeLimitMBytes() const = 0;
+  virtual std::optional<int> GetPackageCacheSizeLimitMBytes() const = 0;
 
   // Returns the policy for the package cache expiration in days.
-  virtual absl::optional<int> GetPackageCacheExpirationTimeDays() const = 0;
+  virtual std::optional<int> GetPackageCacheExpirationTimeDays() const = 0;
 
   // Returns kPolicyEnabled if installation of the specified app is allowed.
   // Otherwise, returns kPolicyDisabled.
-  virtual absl::optional<int> GetEffectivePolicyForAppInstalls(
+  virtual std::optional<int> GetEffectivePolicyForAppInstalls(
       const std::string& app_id) const = 0;
   // Returns kPolicyEnabled if updates of the specified app is allowed.
   // Otherwise, returns one of kPolicyDisabled, kPolicyManualUpdatesOnly, or
   // kPolicyAutomaticUpdatesOnly.
-  virtual absl::optional<int> GetEffectivePolicyForAppUpdates(
+  virtual std::optional<int> GetEffectivePolicyForAppUpdates(
       const std::string& app_id) const = 0;
   // Returns the target version prefix for the app.
   // Examples:
@@ -86,34 +86,33 @@ class PolicyManagerInterface
   // * "55.": update to any minor version of 55 (e.g. 55.24.34 or 55.60.2).
   // * "55.2.": update to any minor version of 55.2 (e.g. 55.2.34 or 55.2.2).
   // * "55.24.34": update to this specific version only.
-  virtual absl::optional<std::string> GetTargetVersionPrefix(
+  virtual std::optional<std::string> GetTargetVersionPrefix(
       const std::string& app_id) const = 0;
   // Returns whether the RollbackToTargetVersion policy has been set for the
   // app. If RollbackToTargetVersion is set, the TargetVersionPrefix policy
   // governs the version to rollback clients with higher versions to.
-  virtual absl::optional<bool> IsRollbackToTargetVersionAllowed(
+  virtual std::optional<bool> IsRollbackToTargetVersionAllowed(
       const std::string& app_id) const = 0;
   // Returns a proxy mode such as |auto_detect|.
-  virtual absl::optional<std::string> GetProxyMode() const = 0;
+  virtual std::optional<std::string> GetProxyMode() const = 0;
 
   // Returns a proxy PAC URL.
-  virtual absl::optional<std::string> GetProxyPacUrl() const = 0;
+  virtual std::optional<std::string> GetProxyPacUrl() const = 0;
 
   // Returns a proxy server.
-  virtual absl::optional<std::string> GetProxyServer() const = 0;
+  virtual std::optional<std::string> GetProxyServer() const = 0;
 
   // Returns a channel, for example {stable|beta|dev}.
-  virtual absl::optional<std::string> GetTargetChannel(
+  virtual std::optional<std::string> GetTargetChannel(
       const std::string& app_id) const = 0;
 
   // Returns a list of apps that need to be downloaded and installed by the
   // updater.
-  virtual absl::optional<std::vector<std::string>> GetForceInstallApps()
+  virtual std::optional<std::vector<std::string>> GetForceInstallApps()
       const = 0;
 
   // Returns all apps that have some policy set.
-  virtual absl::optional<std::vector<std::string>> GetAppsWithPolicy()
-      const = 0;
+  virtual std::optional<std::vector<std::string>> GetAppsWithPolicy() const = 0;
 
  protected:
   friend class base::RefCountedThreadSafe<PolicyManagerInterface>;

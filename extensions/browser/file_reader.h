@@ -5,14 +5,13 @@
 #ifndef EXTENSIONS_BROWSER_FILE_READER_H_
 #define EXTENSIONS_BROWSER_FILE_READER_H_
 
+#include <optional>
 #include <string>
 #include <vector>
-
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/single_thread_task_runner.h"
 #include "extensions/common/extension_resource.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // This file defines an interface for reading files asynchronously on a
 // background sequence.
@@ -24,7 +23,7 @@ class FileReader : public base::RefCountedThreadSafe<FileReader> {
   // encountered error in `error`. If there was an error, `data` will be empty.
   using DoneCallback =
       base::OnceCallback<void(std::vector<std::unique_ptr<std::string>> data,
-                              absl::optional<std::string> error)>;
+                              std::optional<std::string> error)>;
 
   // Lets the caller accomplish tasks on the file data, after the file content
   // has been read. This is called once per file successfully read (it is not

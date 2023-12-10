@@ -34,11 +34,11 @@ class FakeRecentSource : public RecentSource {
   void SetLag(const base::TimeDelta& lag);
 
   // RecentSource overrides:
-  void GetRecentFiles(Params params) override;
+  void GetRecentFiles(Params params, GetRecentFilesCallback callback) override;
 
  private:
   // Invoked by OneShotTimer after the lag has passed.
-  void OnFilesReady(Params params);
+  void OnFilesReady(const Params& params, GetRecentFilesCallback callback);
 
   // Returns a vector of matching files.
   std::vector<RecentFile> GetMatchingFiles(const Params& params);

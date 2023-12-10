@@ -152,8 +152,8 @@ void HttpsLatencyRoutine::AttemptNextResolution() {
 void HttpsLatencyRoutine::OnHostResolutionComplete(
     int result,
     const net::ResolveErrorInfo&,
-    const absl::optional<net::AddressList>& resolved_addresses,
-    const absl::optional<net::HostResolverEndpointResults>&) {
+    const std::optional<net::AddressList>& resolved_addresses,
+    const std::optional<net::HostResolverEndpointResults>&) {
   if (result != net::OK) {
     CHECK(!resolved_addresses);
     successfully_resolved_hosts_ = false;

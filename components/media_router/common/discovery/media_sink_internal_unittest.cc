@@ -36,7 +36,8 @@ media_router::CastSinkExtraData CreateCastSinkExtraData(
   EXPECT_TRUE(ip.AssignFromIPLiteral(ip_address));
   cast_extra_data.ip_endpoint = net::IPEndPoint(ip, 1234);
   cast_extra_data.model_name = model_name;
-  cast_extra_data.capabilities = 2;
+  cast_extra_data.capabilities = {
+      cast_channel::CastDeviceCapability::kVideoOut};
   cast_extra_data.cast_channel_id = 3;
   return cast_extra_data;
 }

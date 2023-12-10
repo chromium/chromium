@@ -52,15 +52,16 @@ public class BrowserRestartActivity extends Activity {
 
         // Kill the main Chrome process.
         Intent intent = getIntent();
-        int mainBrowserPid = IntentUtils.safeGetIntExtra(
-                intent, BrowserRestartActivity.EXTRA_MAIN_PID, -1);
+        int mainBrowserPid =
+                IntentUtils.safeGetIntExtra(intent, BrowserRestartActivity.EXTRA_MAIN_PID, -1);
         assert mainBrowserPid != -1;
         assert mainBrowserPid != Process.myPid();
         Process.killProcess(mainBrowserPid);
 
         // Fire an Intent to restart Chrome, if necessary.
-        boolean restart = IntentUtils.safeGetBooleanExtra(
-                intent, BrowserRestartActivity.EXTRA_RESTART, false);
+        boolean restart =
+                IntentUtils.safeGetBooleanExtra(
+                        intent, BrowserRestartActivity.EXTRA_RESTART, false);
         if (restart) {
             Context context = ContextUtils.getApplicationContext();
             Intent restartIntent = new Intent(Intent.ACTION_MAIN);

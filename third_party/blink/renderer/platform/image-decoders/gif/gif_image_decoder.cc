@@ -101,13 +101,13 @@ void GIFImageDecoder::OnSetData(scoped_refptr<SegmentReader> data) {
 
     switch (codec_creation_result) {
       case SkCodec::kSuccess: {
+        segment_stream_ = segment_stream_ptr;
         // SkGifDecoder::Decode will read enough of the image to get the image
         // size.
         SkImageInfo image_info = codec_->getInfo();
         SetSize(static_cast<unsigned>(image_info.width()),
                 static_cast<unsigned>(image_info.height()));
 
-        segment_stream_ = segment_stream_ptr;
         return;
       }
 

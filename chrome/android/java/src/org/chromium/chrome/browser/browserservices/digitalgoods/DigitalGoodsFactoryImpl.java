@@ -21,9 +21,7 @@ import org.chromium.payments.mojom.DigitalGoods;
 import org.chromium.payments.mojom.DigitalGoodsFactory;
 import org.chromium.payments.mojom.DigitalGoodsFactory.CreateDigitalGoods_Response;
 
-/**
- * An implementation of the mojo {@link DigitalGoodsFactory} interface.
- */
+/** An implementation of the mojo {@link DigitalGoodsFactory} interface. */
 public class DigitalGoodsFactoryImpl implements DigitalGoodsFactory {
     private static DigitalGoods sImplForTesting;
 
@@ -39,8 +37,9 @@ public class DigitalGoodsFactoryImpl implements DigitalGoodsFactory {
     public DigitalGoodsFactoryImpl(RenderFrameHost renderFrameHost) {
         mRenderFrameHost = renderFrameHost;
         mDigitalGoodsDelegate = mRenderFrameHost::getLastCommittedURL;
-        mAdapter = new DigitalGoodsAdapter(
-                ChromeApplicationImpl.getComponent().resolveTrustedWebActivityClient());
+        mAdapter =
+                new DigitalGoodsAdapter(
+                        ChromeApplicationImpl.getComponent().resolveTrustedWebActivityClient());
     }
 
     private int getResponseCode(String paymentMethod) {

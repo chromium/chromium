@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/modules/mediastream/media_stream_track.h"
 #include "third_party/blink/renderer/modules/peerconnection/identifiability_metrics.h"
 #include "third_party/blink/renderer/modules/peerconnection/peer_connection_dependency_factory.h"
+#include "third_party/blink/renderer/modules/peerconnection/peer_connection_features.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_dtls_transport.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_dtmf_sender.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_audio_sender_sink_optimizer.h"
@@ -618,32 +619,43 @@ RTCRtpSender::RTCRtpSender(RTCPeerConnection* pc,
                            String kind,
                            MediaStreamTrack* track,
                            MediaStreamVector streams,
-                           bool encoded_insertable_streams)
+                           bool require_encoded_insertable_streams,
+                           scoped_refptr<base::SequencedTaskRunner>
+                               encoded_transform_shortcircuit_runner)
     : ExecutionContextLifecycleObserver(pc->GetExecutionContext()),
       pc_(pc),
       sender_(std::move(sender)),
       kind_(std::move(kind)),
       track_(track),
       streams_(std::move(streams)),
-      encoded_insertable_streams_(encoded_insertable_streams),
       encoded_audio_transformer_(
-          encoded_insertable_streams_ && kind_ == "audio"
+          sender_->GetEncodedAudioStreamTransformer()
               ? sender_->GetEncodedAudioStreamTransformer()->GetBroker()
               : nullptr),
       encoded_video_transformer_(
-          encoded_insertable_streams_ && kind_ == "video"
+          sender_->GetEncodedVideoStreamTransformer()
               ? sender_->GetEncodedVideoStreamTransformer()->GetBroker()
               : nullptr) {
   DCHECK(pc_);
   DCHECK(sender_);
   DCHECK(!track || kind_ == track->kind());
-  LogMessage(base::StringPrintf("%s({encoded_insertable_streams=%s})", __func__,
-                                encoded_insertable_streams ? "true" : "false"));
+  LogMessage(base::StringPrintf(
+      "%s({require_encoded_insertable_streams=%s})", __func__,
+      require_encoded_insertable_streams ? "true" : "false"));
   if (encoded_audio_transformer_) {
     RegisterEncodedAudioStreamCallback();
   }
   if (encoded_video_transformer_) {
     RegisterEncodedVideoStreamCallback();
+  }
+
+  if (!require_encoded_insertable_streams &&
+      (encoded_audio_transformer_ || encoded_video_transformer_)) {
+    // Schedule a task to short circuit encoded streams if JS doesn't
+    // synchronously create them.
+    encoded_transform_shortcircuit_runner->PostTask(
+        FROM_HERE, WTF::BindOnce(&RTCRtpSender::MaybeShortCircuitEncodedStreams,
+                                 WrapPersistent(this)));
   }
 }
 
@@ -916,7 +928,13 @@ RTCInsertableStreams* RTCRtpSender::createEncodedStreams(
     ScriptState* script_state,
     ExceptionState& exception_state) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  LogMessage(__func__);
+  LogMessage(base::StringPrintf("%s({transform_shortcircuited_=%s})", __func__,
+                                transform_shortcircuited_ ? "true" : "false"));
+  if (transform_shortcircuited_) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "Too late to create encoded streams");
+    return nullptr;
+  }
   if (kind_ == "audio")
     return createEncodedAudioStreams(script_state, exception_state);
   DCHECK_EQ(kind_, "video");
@@ -927,7 +945,13 @@ RTCInsertableStreams* RTCRtpSender::createEncodedAudioStreams(
     ScriptState* script_state,
     ExceptionState& exception_state) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  if (!encoded_insertable_streams_) {
+  if (!encoded_audio_transformer_) {
+    // Should only happen if the killswitch
+    // kWebRtcEncodedTransformsPerStreamCreation is disabled and we go back to
+    // the old behaviour.
+    // TODO(crbug.com/1502781): Remove when cleaning up the feature.
+    DCHECK(!base::FeatureList::IsEnabled(
+        kWebRtcEncodedTransformsPerStreamCreation));
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         "Encoded audio streams not requested at PC initialization");
@@ -947,7 +971,13 @@ RTCInsertableStreams* RTCRtpSender::createEncodedVideoStreams(
     ScriptState* script_state,
     ExceptionState& exception_state) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  if (!encoded_insertable_streams_) {
+  if (!encoded_video_transformer_) {
+    // Should only happen if the killswitch
+    // kWebRtcEncodedTransformsPerStreamCreation is disabled and we go back to
+    // the old behaviour.
+    // TODO(crbug.com/1502781): Remove when cleaning up the feature.
+    DCHECK(!base::FeatureList::IsEnabled(
+        kWebRtcEncodedTransformsPerStreamCreation));
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         "Encoded video streams not requested at PC initialization");
@@ -1065,6 +1095,20 @@ RTCRtpCapabilities* RTCRtpSender::getCapabilities(ScriptState* state,
   return capabilities;
 }
 
+void RTCRtpSender::MaybeShortCircuitEncodedStreams() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  if (encoded_video_transformer_ && !encoded_video_streams_) {
+    transform_shortcircuited_ = true;
+    LogMessage("Starting short circuiting of video transform");
+    encoded_video_transformer_->StartShortCircuiting();
+  }
+  if (encoded_audio_transformer_ && !encoded_audio_streams_) {
+    transform_shortcircuited_ = true;
+    LogMessage("Starting short circuiting of audio transform");
+    encoded_audio_transformer_->StartShortCircuiting();
+  }
+}
+
 void RTCRtpSender::RegisterEncodedAudioStreamCallback() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK_EQ(kind_, "audio");
@@ -1113,7 +1157,6 @@ void RTCRtpSender::SetAudioUnderlyingSink(
 void RTCRtpSender::InitializeEncodedAudioStreams(ScriptState* script_state) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(!encoded_audio_streams_);
-  DCHECK(encoded_insertable_streams_);
 
   encoded_audio_streams_ = RTCInsertableStreams::Create();
 
@@ -1229,7 +1272,6 @@ void RTCRtpSender::SetVideoUnderlyingSink(
 void RTCRtpSender::InitializeEncodedVideoStreams(ScriptState* script_state) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(!encoded_video_streams_);
-  DCHECK(encoded_insertable_streams_);
 
   encoded_video_streams_ = RTCInsertableStreams::Create();
 

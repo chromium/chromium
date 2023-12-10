@@ -260,7 +260,11 @@ std::unique_ptr<Layer> Layer::Clone() const {
   // Background filters.
   clone->SetBackgroundBlur(background_blur_sigma_);
   clone->SetBackgroundZoom(zoom_, zoom_inset_);
-  clone->SetBackgroundOffset(background_offset_);
+  clone->SetBackdropFilterQuality(backdrop_filter_quality_);
+  auto backdrop_filter_bounds = cc_layer_->backdrop_filter_bounds();
+  if (backdrop_filter_bounds) {
+    clone->SetBackdropFilterBounds(*backdrop_filter_bounds);
+  }
 
   // Filters.
   clone->SetLayerSaturation(layer_saturation_);
@@ -275,6 +279,7 @@ std::unique_ptr<Layer> Layer::Clone() const {
   clone->SetLayerBlur(layer_blur_sigma_);
   if (alpha_shape_)
     clone->SetAlphaShape(std::make_unique<ShapeRects>(*alpha_shape_));
+  clone->SetLayerOffset(layer_offset_);
 
   // cc::Layer state.
   // TODO(crbug/1308932): Remove toSkColor and make all SkColor4f.
@@ -569,8 +574,23 @@ float Layer::GetCombinedOpacity() const {
   return opacity;
 }
 
+void Layer::SetBackdropFilterBounds(const gfx::RRectF& bounds) {
+  cc_layer_->SetBackdropFilterBounds(bounds);
+}
+
+void Layer::ClearBackdropFilterBounds() {
+  cc_layer_->ClearBackdropFilterBounds();
+}
+
 void Layer::SetBackgroundBlur(float blur_sigma) {
   background_blur_sigma_ = blur_sigma;
+
+  SetLayerBackgroundFilters();
+}
+
+void Layer::SetBackgroundZoom(float zoom, int inset) {
+  zoom_ = zoom;
+  zoom_inset_ = inset;
 
   SetLayerBackgroundFilters();
 }
@@ -640,6 +660,11 @@ void Layer::ClearLayerCustomColorMatrix() {
   SetLayerFilters();
 }
 
+void Layer::SetLayerOffset(const gfx::Point& offset) {
+  layer_offset_ = offset;
+  SetLayerFilters();
+}
+
 void Layer::SetLayerInverted(bool inverted) {
   layer_inverted_ = inverted;
   SetLayerFilters();
@@ -682,18 +707,6 @@ void Layer::SetMaskLayer(Layer* layer_mask) {
     layer_mask->layer_mask_back_link_ = this;
     layer_mask->OnDeviceScaleFactorChanged(device_scale_factor_);
   }
-}
-
-void Layer::SetBackgroundZoom(float zoom, int inset) {
-  zoom_ = zoom;
-  zoom_inset_ = inset;
-
-  SetLayerBackgroundFilters();
-}
-
-void Layer::SetBackgroundOffset(const gfx::Point& background_offset) {
-  background_offset_ = background_offset;
-  SetLayerBackgroundFilters();
 }
 
 void Layer::SetAlphaShape(std::unique_ptr<ShapeRects> shape) {
@@ -757,6 +770,11 @@ void Layer::SetLayerFilters() {
     filters.Append(
         cc::FilterOperation::CreateAlphaThresholdFilter(*alpha_shape_));
   }
+  // An Offset as the last filter operation can almost always be converted to
+  // a translation transform for free within Skia.
+  if (!layer_offset_.IsOrigin()) {
+    filters.Append(cc::FilterOperation::CreateOffsetFilter(layer_offset_));
+  }
 
   cc_layer_->SetFilters(filters);
 }
@@ -767,10 +785,6 @@ void Layer::SetLayerBackgroundFilters() {
   if (background_blur_sigma_) {
     filters.Append(cc::FilterOperation::CreateBlurFilter(background_blur_sigma_,
                                                          SkTileMode::kClamp));
-  }
-
-  if (!background_offset_.IsOrigin()) {
-    filters.Append(cc::FilterOperation::CreateOffsetFilter(background_offset_));
   }
 
   // The background zoom is applied after the background offset to support
@@ -1032,6 +1046,10 @@ void Layer::SetSurfaceSize(gfx::Size surface_size_in_dip) {
   RecomputeDrawsContentAndUVRect();
 }
 
+base::WeakPtr<Layer> Layer::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 bool Layer::ContainsMirrorForTest(Layer* mirror) const {
   return base::Contains(mirrors_, mirror, &LayerMirror::dest);
 }
@@ -1116,6 +1134,29 @@ void Layer::SetShowSurface(const viz::SurfaceId& surface_id,
   for (const auto& mirror : mirrors_) {
     mirror->dest()->SetShowSurface(surface_id, frame_size_in_dip,
                                    default_background_color, deadline_policy,
+                                   stretch_content_to_fill_bounds);
+  }
+}
+
+void Layer::SetShowSurface(const viz::SurfaceId& surface_id,
+                           SkColor default_background_color,
+                           const cc::DeadlinePolicy& deadline_policy,
+                           bool stretch_content_to_fill_bounds) {
+  DCHECK(type_ == LAYER_TEXTURED || type_ == LAYER_SOLID_COLOR);
+  DCHECK(surface_layer_.get());
+
+  // Assumes `frame_size_in_dip_` is already set.
+  // TODO(crbug.com/1491605): with surface sync, it should use on `bounds_`.
+  surface_layer_->SetSurfaceId(surface_id, deadline_policy);
+  surface_layer_->SetBackgroundColor(
+      SkColor4f::FromColor(default_background_color));
+  surface_layer_->SetSafeOpaqueBackgroundColor(
+      SkColor4f::FromColor(default_background_color));
+  surface_layer_->SetStretchContentToFillBounds(stretch_content_to_fill_bounds);
+
+  for (const auto& mirror : mirrors_) {
+    mirror->dest()->SetShowSurface(surface_id, default_background_color,
+                                   deadline_policy,
                                    stretch_content_to_fill_bounds);
   }
 }
@@ -1791,6 +1832,8 @@ void Layer::RecomputeDrawsContentAndUVRect() {
       static_cast<float>(size.height()) / frame_size_in_dip_.height());
     texture_layer_->SetUV(uv_top_left, uv_bottom_right);
   } else if (surface_layer_.get()) {
+    // TODO(crbug.com/1491605): with surface sync, size shouldn't rely on
+    // `frame_size_in_dip_` anymore.
     size.SetToMin(frame_size_in_dip_);
   }
   cc_layer_->SetBounds(size);

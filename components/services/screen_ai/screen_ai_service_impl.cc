@@ -59,7 +59,7 @@ class PreloadedModelData {
   }
 
   static std::unique_ptr<PreloadedModelData> Create(
-      base::flat_map<std::string, base::File> model_files) {
+      base::flat_map<base::FilePath, base::File> model_files) {
     return base::WrapUnique<PreloadedModelData>(
         new PreloadedModelData(std::move(model_files)));
   }
@@ -91,7 +91,7 @@ class PreloadedModelData {
 
  private:
   explicit PreloadedModelData(
-      base::flat_map<std::string, base::File> model_files) {
+      base::flat_map<base::FilePath, base::File> model_files) {
     CHECK_EQ(g_preloaded_model_data_instance, nullptr);
     g_preloaded_model_data_instance = this;
 
@@ -110,7 +110,7 @@ class PreloadedModelData {
                 << model_file.first;
         continue;
       }
-      data_[model_file.first] = std::move(buffer);
+      data_[model_file.first.MaybeAsASCII()] = std::move(buffer);
     }
   }
 };
@@ -156,7 +156,7 @@ void ScreenAIService::LoadLibrary(const base::FilePath& library_path) {
 
 void ScreenAIService::InitializeMainContentExtraction(
     const base::FilePath& library_path,
-    base::flat_map<std::string, base::File> model_files,
+    base::flat_map<base::FilePath, base::File> model_files,
     mojo::PendingReceiver<mojom::MainContentExtractionService>
         main_content_extractor_service_receiver,
     InitializeMainContentExtractionCallback callback) {
@@ -184,6 +184,9 @@ void ScreenAIService::InitializeMainContentExtractionInternal(
         main_content_extractor_service_receiver,
     InitializeMainContentExtractionCallback callback,
     std::unique_ptr<PreloadedModelData> model_data) {
+  // `model_data` contains the content of the model files and its accessors are
+  // passed to the library. It should be kept in memory until after library
+  // initialization.
   bool init_successful = library_->InitMainContentExtraction();
   base::UmaHistogramBoolean(
       "Accessibility.ScreenAI.MainContentExtraction.Initialized",
@@ -204,6 +207,7 @@ void ScreenAIService::InitializeMainContentExtractionInternal(
 
 void ScreenAIService::InitializeOCR(
     const base::FilePath& library_path,
+    base::flat_map<base::FilePath, base::File> model_files,
     mojo::PendingReceiver<mojom::OCRService> ocr_service_receiver,
     InitializeOCRCallback callback) {
   if (!library_) {
@@ -214,8 +218,23 @@ void ScreenAIService::InitializeOCR(
     std::move(callback).Run(false);
     base::Process::TerminateCurrentProcessImmediately(-1);
   }
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
+      base::BindOnce(&PreloadedModelData::Create, std::move(model_files)),
+      base::BindOnce(&ScreenAIService::InitializeOCRInternal,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(ocr_service_receiver), std::move(callback)));
+}
 
-  bool init_successful = library_->InitOCR(library_path.DirName());
+void ScreenAIService::InitializeOCRInternal(
+    mojo::PendingReceiver<mojom::OCRService> ocr_service_receiver,
+    InitializeMainContentExtractionCallback callback,
+    std::unique_ptr<PreloadedModelData> model_data) {
+  // `model_data` contains the content of the model files and its accessors are
+  // passed to the library. It should be kept in memory until after library
+  // initialization.
+  bool init_successful = library_->InitOCR();
   base::UmaHistogramBoolean("Accessibility.ScreenAI.OCR.Initialized",
                             init_successful);
 
@@ -295,14 +314,31 @@ void ScreenAIService::ExtractSemanticLayout(
 }
 
 absl::optional<chrome_screen_ai::VisualAnnotation>
-ScreenAIService::PerformOcrAndRecordMetrics(const SkBitmap& image) {
+ScreenAIService::PerformOcrAndRecordMetrics(const SkBitmap& image,
+                                            bool a11y_tree_request) {
   base::TimeTicks start_time = base::TimeTicks::Now();
   auto result = library_->PerformOcr(image);
   base::TimeDelta elapsed_time = base::TimeTicks::Now() - start_time;
+  int lines_count = result ? result->lines_size() : 0;
+  VLOG(1) << "OCR returned " << lines_count << " lines in " << elapsed_time;
 
+  base::UmaHistogramCounts100("Accessibility.ScreenAI.OCR.LinesCount",
+                              lines_count);
   base::UmaHistogramTimes("Accessibility.ScreenAI.OCR.Time", elapsed_time);
   base::UmaHistogramCounts10M("Accessibility.ScreenAI.OCR.ImageSize10M",
                               image.width() * image.height());
+
+  // If needed to extend to more clients, an identifier can be passed from the
+  // client to introduce itself and these metrics can be collected based on it.
+  if (a11y_tree_request) {
+    base::UmaHistogramCounts100("Accessibility.ScreenAI.OCR.LinesCount.PDF",
+                                lines_count);
+    base::UmaHistogramTimes("Accessibility.ScreenAI.OCR.Time.PDF",
+                            elapsed_time);
+    base::UmaHistogramCounts10M("Accessibility.ScreenAI.OCR.ImageSize.PDF",
+                                image.width() * image.height());
+  }
+
   return result;
 }
 
@@ -310,7 +346,7 @@ void ScreenAIService::PerformOcrAndReturnAnnotation(
     const SkBitmap& image,
     PerformOcrAndReturnAnnotationCallback callback) {
   absl::optional<chrome_screen_ai::VisualAnnotation> annotation_proto =
-      PerformOcrAndRecordMetrics(image);
+      PerformOcrAndRecordMetrics(image, /*a11y_tree_request=*/false);
 
   if (annotation_proto) {
     std::move(callback).Run(ConvertProtoToVisualAnnotation(*annotation_proto));
@@ -324,10 +360,9 @@ void ScreenAIService::PerformOcrAndReturnAXTreeUpdate(
     const SkBitmap& image,
     PerformOcrAndReturnAXTreeUpdateCallback callback) {
   absl::optional<chrome_screen_ai::VisualAnnotation> annotation_proto =
-      PerformOcrAndRecordMetrics(image);
+      PerformOcrAndRecordMetrics(image, /*a11y_tree_request=*/true);
   ui::AXTreeUpdate update = ConvertVisualAnnotationToTreeUpdate(
       annotation_proto, gfx::Rect(image.width(), image.height()));
-  VLOG(1) << "OCR returned " << update.nodes.size() << " nodes.";
 
   // The original caller is always replied to, and an empty AXTreeUpdate tells
   // that the annotation function was not successful.

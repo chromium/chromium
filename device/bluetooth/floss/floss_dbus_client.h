@@ -151,6 +151,7 @@ inline constexpr char kOnAdvertisementLost[] = "OnAdvertisementLost";
 namespace manager {
 inline constexpr char kStart[] = "Start";
 inline constexpr char kStop[] = "Stop";
+inline constexpr char kGetAdapterEnabled[] = "GetAdapterEnabled";
 inline constexpr char kGetFlossEnabled[] = "GetFlossEnabled";
 inline constexpr char kSetFlossEnabled[] = "SetFlossEnabled";
 inline constexpr char kGetState[] = "GetState";

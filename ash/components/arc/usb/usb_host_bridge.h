@@ -63,7 +63,7 @@ class ArcUsbHostBridge : public KeyedService,
                          bool interactive,
                          RequestPermissionCallback callback) override;
   void OpenDevice(const std::string& guid,
-                  const absl::optional<std::string>& package,
+                  const std::optional<std::string>& package,
                   OpenDeviceCallback callback) override;
   void GetDeviceInfo(const std::string& guid,
                      GetDeviceInfoCallback callback) override;

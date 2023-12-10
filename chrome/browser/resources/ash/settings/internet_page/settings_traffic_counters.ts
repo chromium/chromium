@@ -37,7 +37,7 @@ const PB = TB * 1000;
  * fixed to two decimal values.
  */
 function getDataInfoString(totalBytes: bigint): string {
-  let unit: string = 'B';
+  let unit = 'B';
   let dividend = 1;
 
   if (totalBytes >= PB) {

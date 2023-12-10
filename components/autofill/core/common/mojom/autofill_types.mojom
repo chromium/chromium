@@ -138,7 +138,7 @@ enum SubmissionIndicatorEvent {
   FRAME_DETACHED = 4,
   // DEPRECATED_MANUAL_SAVE,
   DOM_MUTATION_AFTER_XHR = 6,
-  PROVISIONALLY_SAVED_FORM_ON_START_PROVISIONAL_LOAD = 7,
+  // DEPRECATED_PROVISIONALLY_SAVED_FORM_ON_START_PROVISIONAL_LOAD,
   // DEPRECATED_FILLED_FORM_ON_START_PROVISIONAL_LOAD,
   // DEPRECATED_FILLED_INPUT_ELEMENTS_ON_START_PROVISIONAL_LOAD,
   PROBABLE_FORM_SUBMISSION = 10,
@@ -349,8 +349,7 @@ struct FormFieldData {
   mojo_base.mojom.String16 id_attribute;
   mojo_base.mojom.String16 name_attribute;
   mojo_base.mojom.String16 value;
-  uint32 selection_start;
-  uint32 selection_end;
+  mojo_base.mojom.String16 selected_text;
   FormControlType form_control_type;
   string autocomplete_attribute;
   AutocompleteParsingResult? parsed_autocomplete;
@@ -417,6 +416,7 @@ struct FormFieldDataPredictions {
   string signature;
   string heuristic_type;
   string server_type;
+  string html_type;
   string overall_type;
   string parseable_name;
   string section;
@@ -475,6 +475,7 @@ struct PasswordGenerationUIData {
   bool is_generation_element_password_type;
   mojo_base.mojom.TextDirection text_direction;
   FormData form_data;
+  bool input_field_empty;
 };
 
 // autofill::ParsingResult
@@ -560,14 +561,6 @@ enum AutofillSuggestionTriggerSource {
   // On the browser process side, all password suggestions are treated as
   // `kPasswordManager`. On the renderer side, `kPasswordManager` is unused.
   kPasswordManager,
-  // WebView doesn't have Autofill suggestion, but autocomplete suggestions are
-  // merged into and displayed in <datalist>s. When a suggestion from a datalist
-  // is accepted, this counts as trigger source `kAndroidWebView`.
-  // In theory, since the suggestions are triggered through the Autofill
-  // renderer code, a more specific trigger source is available. This has little
-  // value for Autofill and would require passing the trigger source back and
-  // forth between WebView Java code.
-  kAndroidWebView,
   // Since iOS has no renderer, it has separate suggestion triggering logic.
   // This code currently doesn't distinguish between different suggestion
   // trigger sources. They are all treated as `kiOS`. See crbug.com/1448447.

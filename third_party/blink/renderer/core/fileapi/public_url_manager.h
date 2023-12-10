@@ -26,6 +26,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_FILEAPI_PUBLIC_URL_MANAGER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FILEAPI_PUBLIC_URL_MANAGER_H_
 
+#include "base/types/pass_key.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-blink-forward.h"
@@ -43,6 +44,7 @@ namespace blink {
 
 class KURL;
 class ExecutionContext;
+class StorageAccessHandle;
 class URLRegistry;
 class URLRegistrable;
 
@@ -62,6 +64,10 @@ class CORE_EXPORT PublicURLManager final
       public ExecutionContextLifecycleObserver {
  public:
   explicit PublicURLManager(ExecutionContext*);
+  explicit PublicURLManager(
+      base::PassKey<StorageAccessHandle>,
+      ExecutionContext*,
+      mojo::PendingAssociatedRemote<mojom::blink::BlobURLStore>);
 
   // Generates a new Blob URL and registers the URLRegistrable to the
   // corresponding URLRegistry with the Blob URL. Returns the serialization

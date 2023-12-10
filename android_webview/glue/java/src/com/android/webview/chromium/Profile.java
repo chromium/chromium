@@ -21,20 +21,15 @@ import org.chromium.base.ThreadUtils;
  */
 @Lifetime.Profile
 public class Profile {
-    @NonNull
-    private final String mName;
+    @NonNull private final String mName;
 
-    @NonNull
-    private final CookieManager mCookieManager;
+    @NonNull private final CookieManager mCookieManager;
 
-    @NonNull
-    private final WebStorage mWebStorage;
+    @NonNull private final WebStorage mWebStorage;
 
-    @NonNull
-    private final GeolocationPermissions mGeolocationPermissions;
+    @NonNull private final GeolocationPermissions mGeolocationPermissions;
 
-    @NonNull
-    private final ServiceWorkerController mServiceWorkerController;
+    @NonNull private final ServiceWorkerController mServiceWorkerController;
 
     public Profile(@NonNull final AwBrowserContext browserContext) {
         assert ThreadUtils.runningOnUiThread();
@@ -49,8 +44,9 @@ public class Profile {
         } else {
             mCookieManager = new CookieManagerAdapter(browserContext.getCookieManager());
             mWebStorage = new WebStorageAdapter(factory, browserContext.getQuotaManagerBridge());
-            mGeolocationPermissions = new GeolocationPermissionsAdapter(
-                    factory, browserContext.getGeolocationPermissions());
+            mGeolocationPermissions =
+                    new GeolocationPermissionsAdapter(
+                            factory, browserContext.getGeolocationPermissions());
             mServiceWorkerController =
                     new ServiceWorkerControllerAdapter(browserContext.getServiceWorkerController());
         }

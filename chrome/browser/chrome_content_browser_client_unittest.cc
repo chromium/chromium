@@ -10,6 +10,8 @@
 
 #include "ash/webui/camera_app_ui/url_constants.h"
 #include "base/command_line.h"
+#include "base/files/file_path.h"
+#include "base/files/scoped_file.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -18,17 +20,20 @@
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_delegate.h"
 #include "chrome/browser/captive_portal/captive_portal_service_factory.h"
 #include "chrome/browser/enterprise/reporting/prefs.h"
+#include "chrome/browser/media/prefs/capture_device_ranking.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/webauthn/webauthn_pref_names.h"
@@ -43,6 +48,8 @@
 #include "components/browsing_data/content/browsing_data_helper.h"
 #include "components/captive_portal/core/buildflags.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/file_access/scoped_file_access.h"
+#include "components/file_access/test/mock_scoped_file_access_delegate.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
@@ -76,7 +83,6 @@
 #include "url/origin.h"
 
 #if !BUILDFLAG(IS_ANDROID)
-#include "base/test/test_future.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -609,37 +615,6 @@ TEST_F(ChromeContentBrowserClientTest, HandleWebUIReverse) {
 }
 
 #if !BUILDFLAG(IS_ANDROID)
-TEST_F(ChromeContentBrowserClientTest, RedirectPrivacySandboxURL) {
-  base::test::ScopedFeatureList feature_list(
-      privacy_sandbox::kPrivacySandboxSettings4);
-
-  TestChromeContentBrowserClient test_content_browser_client;
-  base::HistogramTester histogram_tester;
-  const std::string histogram_name =
-      "Settings.PrivacySandbox.DeprecatedRedirect";
-
-  GURL settings_url = GURL(chrome::kChromeUISettingsURL);
-  settings_url = net::AppendQueryParameter(settings_url, "foo", "bar");
-
-  GURL::Replacements replacements;
-  replacements.SetPathStr(chrome::kPrivacySandboxSubPagePath);
-  GURL old_settings_url = settings_url.ReplaceComponents(replacements);
-
-  replacements.SetPathStr(chrome::kAdPrivacySubPagePath);
-  GURL new_settings_url = settings_url.ReplaceComponents(replacements);
-
-  test_content_browser_client.HandleWebUI(&old_settings_url, &profile_);
-  EXPECT_EQ(new_settings_url, old_settings_url);
-  histogram_tester.ExpectUniqueSample(histogram_name, true, 1);
-
-  test_content_browser_client.HandleWebUI(&new_settings_url, &profile_);
-  histogram_tester.ExpectBucketCount(histogram_name, false, 1);
-  histogram_tester.ExpectTotalCount(histogram_name, 2);
-}
-
-#endif
-
-#if !BUILDFLAG(IS_ANDROID)
 TEST_F(ChromeContentBrowserClientTest, BindVideoEffectsManager) {
   TestChromeContentBrowserClient test_content_browser_client;
   mojo::Remote<video_capture::mojom::VideoEffectsManager> video_effects_manager;
@@ -655,6 +630,52 @@ TEST_F(ChromeContentBrowserClientTest, BindVideoEffectsManager) {
   EXPECT_FALSE(configuration_future.Get().is_null());
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+TEST_F(ChromeContentBrowserClientTest, PreferenceRankAudioDeviceInfos) {
+  blink::WebMediaDeviceInfoArray infos{
+      {/*device_id=*/"0", /*label=*/"0", /*group_id=*/"0"},
+      {/*device_id=*/"1", /*label=*/"1", /*group_id=*/"1"},
+  };
+
+  // Initialize the ranking with device 1 being preferred.
+  TestingProfile profile_with_prefs;
+  media_prefs::UpdateAudioDevicePreferenceRanking(
+      *profile_with_prefs.GetPrefs(), infos.begin() + 1, infos);
+
+  TestChromeContentBrowserClient test_content_browser_client;
+  blink::WebMediaDeviceInfoArray expected_infos{
+      infos.back(),   // device_id=1
+      infos.front(),  // device_id=0
+  };
+  test_content_browser_client.PreferenceRankAudioDeviceInfos(
+      &profile_with_prefs, infos);
+  EXPECT_EQ(infos, expected_infos);
+}
+
+TEST_F(ChromeContentBrowserClientTest, PreferenceRankVideoDeviceInfos) {
+  blink::WebMediaDeviceInfoArray infos{
+      blink::WebMediaDeviceInfo{
+          media::VideoCaptureDeviceDescriptor{/*display_name=*/"0",
+                                              /*device_id=*/"0"}},
+      blink::WebMediaDeviceInfo{
+          media::VideoCaptureDeviceDescriptor{/*display_name=*/"1",
+                                              /*device_id=*/"1"}},
+  };
+
+  // Initialize the ranking with device 1 being preferred.
+  TestingProfile profile_with_prefs;
+  media_prefs::UpdateVideoDevicePreferenceRanking(
+      *profile_with_prefs.GetPrefs(), infos.begin() + 1, infos);
+
+  TestChromeContentBrowserClient test_content_browser_client;
+  blink::WebMediaDeviceInfoArray expected_infos{
+      infos.back(),   // device_id=1
+      infos.front(),  // device_id=0
+  };
+  test_content_browser_client.PreferenceRankVideoDeviceInfos(
+      &profile_with_prefs, infos);
+  EXPECT_EQ(infos, expected_infos);
+}
 
 #if BUILDFLAG(IS_CHROMEOS)
 class ChromeContentSettingsRedirectTest
@@ -1153,6 +1174,36 @@ TEST_F(ChromeContentBrowserClientTest, IsolatedWebAppsDisabledOnSignInScreen) {
   EXPECT_FALSE(client.AreIsolatedWebAppsEnabled(sign_in_screen_profile.get()));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS)
+TEST_F(ChromeContentBrowserClientTest, RequestFileAccessAllow) {
+  file_access::MockScopedFileAccessDelegate scoped_file_access;
+  base::test::TestFuture<file_access::ScopedFileAccess> continuation_callback;
+  base::FilePath path = base::FilePath(FILE_PATH_LITERAL("/path/to/file"));
+  EXPECT_CALL(scoped_file_access,
+              RequestFilesAccess(testing::ElementsAre(path), GURL(), _))
+      .WillOnce(base::test::RunOnceCallback<2>(
+          file_access::ScopedFileAccess::Allowed()));
+  ChromeContentBrowserClient client;
+  client.RequestFilesAccess({path}, GURL(),
+                            continuation_callback.GetCallback());
+  EXPECT_TRUE(continuation_callback.Take().is_allowed());
+}
+
+TEST_F(ChromeContentBrowserClientTest, RequestFileAccessDeny) {
+  file_access::MockScopedFileAccessDelegate scoped_file_access;
+  base::test::TestFuture<file_access::ScopedFileAccess> continuation_callback;
+  base::FilePath path = base::FilePath(FILE_PATH_LITERAL("/path/to/file"));
+  EXPECT_CALL(scoped_file_access,
+              RequestFilesAccess(testing::ElementsAre(path), GURL(), _))
+      .WillOnce(base::test::RunOnceCallback<2>(
+          file_access::ScopedFileAccess::Denied()));
+  ChromeContentBrowserClient client;
+  client.RequestFilesAccess({path}, GURL(),
+                            continuation_callback.GetCallback());
+  EXPECT_FALSE(continuation_callback.Take().is_allowed());
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 class ChromeContentBrowserClientSwitchTest
     : public ChromeRenderViewHostTestHarness {

@@ -7,7 +7,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
+#include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 
 namespace ash {
@@ -35,12 +35,12 @@ class KioskEnableScreen : public BaseScreen {
   void HandleClose();
   void HandleEnable();
 
-  // Callback for KioskAppManager::EnableConsumerModeKiosk().
+  // Callback for KioskChromeAppManager::EnableConsumerModeKiosk().
   void OnEnableConsumerKioskAutoLaunch(bool success);
 
-  // Callback for KioskAppManager::GetConsumerKioskModeStatus().
+  // Callback for KioskChromeAppManager::GetConsumerKioskModeStatus().
   void OnGetConsumerKioskAutoLaunchStatus(
-      KioskAppManager::ConsumerKioskAutoLaunchStatus status);
+      KioskChromeAppManager::ConsumerKioskAutoLaunchStatus status);
 
   base::WeakPtr<KioskEnableScreenView> view_;
   base::RepeatingClosure exit_callback_;

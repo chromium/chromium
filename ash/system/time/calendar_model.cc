@@ -18,7 +18,6 @@
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/functional/bind.h"
-#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "google_apis/calendar/calendar_api_response_types.h"
@@ -116,6 +115,50 @@ auto FilterEventsStartingSoonOrRecentlyInProgress(
         EventStartedLessThanOneHourAgo(event, now_local)) {
       result.emplace_back(event);
     }
+  }
+
+  return result;
+}
+
+auto FilterTheNextEventsOrEventsRecentlyInProgress(
+    const ash::SingleDayEventList& list,
+    const base::Time& now_local) {
+  std::list<CalendarEvent> result;
+  int min_start_time_difference_in_mins = INT_MAX;
+  for (const CalendarEvent& event : list) {
+    if (event.all_day_event()) {
+      continue;
+    }
+
+    if (EventStartedLessThanOneHourAgo(event, now_local)) {
+      result.emplace_back(event);
+      continue;
+    }
+
+    const int start_time_difference_in_mins =
+        (ash::calendar_utils::GetStartTimeAdjusted(&event) - now_local)
+            .InMinutes();
+
+    // If the event has already started, don't add it and go to the next event,
+    // because this event should have started over an hour ago since we have
+    // already added events started less than an hour ago earlier.
+    if (start_time_difference_in_mins < 0) {
+      continue;
+    }
+
+    // If the event start time was more than
+    // `min_start_time_difference_in_mins`, then don't show it, and don't
+    // consider the rest of the events because they are sorted in chronnological
+    // order.
+    if (start_time_difference_in_mins > min_start_time_difference_in_mins) {
+      return result;
+    }
+
+    // This event starts later than `now_local` and is either the first event
+    // happening next or the event happening at the same time as the next
+    // event, add it into `result`.
+    min_start_time_difference_in_mins = start_time_difference_in_mins;
+    result.emplace_back(event);
   }
 
   return result;
@@ -507,6 +550,14 @@ std::list<CalendarEvent> CalendarModel::FindUpcomingEvents(
     base::Time now_local) const {
   // First get today's events for `now_local`.
   auto upcoming_events = FindEvents(now_local);
+
+  // For Glanceables, the candidate event list should be today's event list.
+  if (features::AreGlanceablesV2Enabled() &&
+      features::IsGlanceablesV2CalendarViewEnabled()) {
+    return FilterTheNextEventsOrEventsRecentlyInProgress(upcoming_events,
+                                                         now_local);
+  }
+
   const base::Time now_in_ten_mins = now_local + base::Minutes(10);
   // If `now_in_ten_mins` is the subsequent day, include its events.
   if (now_in_ten_mins.UTCMidnight() != now_local.UTCMidnight()) {

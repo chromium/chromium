@@ -1,17 +1,7 @@
 This is a testharness.js-based test.
-[PASS] Default "microphone" feature policy ["self"] allows the top-level document.
-[PASS] Default "microphone" feature policy ["self"] allows same-origin iframes.
-[PASS] Default "microphone" feature policy ["self"] disallows cross-origin iframes.
 [FAIL] Feature policy "microphone" can be enabled in cross-origin iframes using "allow" attribute.
   assert_equals: expected "#OK" but got "#All requested devices must be present with audio true and video true, or fail"
-[PASS] Default "camera" feature policy ["self"] allows the top-level document.
-[PASS] Default "camera" feature policy ["self"] allows same-origin iframes.
-[PASS] Default "camera" feature policy ["self"] disallows cross-origin iframes.
 [FAIL] Feature policy "camera" can be enabled in cross-origin iframes using "allow" attribute.
   assert_equals: expected "#OK" but got "#All requested devices must be present with audio true and video true, or fail"
-[PASS] Default "camera;microphone" feature policy ["self"] allows the top-level document.
-[PASS] Default "camera;microphone" feature policy ["self"] allows same-origin iframes.
-[PASS] Default "camera;microphone" feature policy ["self"] disallows cross-origin iframes.
-[PASS] Feature policy "camera;microphone" can be enabled in cross-origin iframes using "allow" attribute.
 Harness: the test ran to completion.
 

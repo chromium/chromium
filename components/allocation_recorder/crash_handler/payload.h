@@ -5,8 +5,9 @@
 #ifndef COMPONENTS_ALLOCATION_RECORDER_CRASH_HANDLER_PAYLOAD_H_
 #define COMPONENTS_ALLOCATION_RECORDER_CRASH_HANDLER_PAYLOAD_H_
 
+#include <string_view>
+
 #include "base/containers/span.h"
-#include "base/strings/string_piece.h"
 #include "components/allocation_recorder/crash_handler/memory_operation_report.pb.h"
 
 namespace base::debug::tracer {
@@ -27,12 +28,12 @@ allocation_recorder::Payload CreatePayloadWithMemoryOperationReport(
 // Create a payload with the ProcessingFailures set from the passed
 // |error_messages|.
 allocation_recorder::Payload CreatePayloadWithProcessingFailures(
-    base::span<const base::StringPiece> error_messages);
+    base::span<const std::string_view> error_messages);
 
 // Create a payload with the ProcessingFailures set from the passed
 // |error_message|.
 inline allocation_recorder::Payload CreatePayloadWithProcessingFailures(
-    const base::StringPiece error_message) {
+    const std::string_view error_message) {
   return CreatePayloadWithProcessingFailures(
       base::make_span(&error_message, 1ul));
 }
@@ -41,8 +42,8 @@ inline allocation_recorder::Payload CreatePayloadWithProcessingFailures(
 // |error_messages|.
 template <size_t Extent>
 inline allocation_recorder::Payload CreatePayloadWithProcessingFailures(
-    base::span<const base::StringPiece, Extent> error_messages) {
-  base::span<const base::StringPiece, base::dynamic_extent>
+    base::span<const std::string_view, Extent> error_messages) {
+  base::span<const std::string_view, base::dynamic_extent>
       error_messages_as_dynamic_span =
           base::make_span(std::begin(error_messages), Extent);
 

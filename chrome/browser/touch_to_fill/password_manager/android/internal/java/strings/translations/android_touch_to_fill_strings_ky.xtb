@@ -1,0 +1,27 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="ky">
+<translation id="1220509181886849806">Сакталган сырсөз колдонулсунбу?</translation>
+<translation id="1435940442311036198">Мүмкүндүк алуу ачкычын башка түзмөктө колдонуу</translation>
+<translation id="1717486229951421299">Аккаунтка киргизүүчү маалыматтардын басып коюп толтурула турган тизмеси жарымына чейин ачылды.</translation>
+<translation id="2359808026110333948">Улантуу</translation>
+<translation id="2364266287022099258">Сакталган киргизүүчү ачкыч колдонулсунбу?</translation>
+<translation id="3399357656427473483">Аккаунтка киргизүүчү маалыматтардын басып коюп толтурула турган тизмеси.</translation>
+<translation id="3653689374478248324"><ph name="SITE_NAME" /> сайтына киресиз</translation>
+<translation id="3950820424414687140">Кирүү</translation>
+<translation id="4553044860350038560">Дагы башка киргизүүчү ачкычтар</translation>
+<translation id="4598345735110653698">Киргизүүчү ачкычтарды тескөө</translation>
+<translation id="4722735765955348426"><ph name="USERNAME" /> дарегинин сырсөзү</translation>
+<translation id="4907224763885298217">Экранды бөгөттөөнү колдонуңуз</translation>
+<translation id="5012523644916800014">Сырсөздөрдү жана киргизүүчү ачкычтарды тескөө</translation>
+<translation id="5441504010984421144">Аккаунтка киргизүүчү маалыматтардын басып коюп толтурула турган тизмеси толугу менен ачылды.</translation>
+<translation id="5591247451101092906">Сакталган сырсөз же киргизүүчү ачкыч колдонулсунбу?</translation>
+<translation id="5624120631404540903">Сырсөздөрдү башкаруу</translation>
+<translation id="6560306912274274630"><ph name="USERNAME" /> үчүн киргизүүчү ачкыч, экрандын кулпусун колдонуңуз</translation>
+<translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{Бул сайт үчүн жаңы сырсөз}other{Бул сайт үчүн жаңы сырсөздөр}}</translation>
+<translation id="7286867818472074330">Киргизүүчү ачкычты тандоо</translation>
+<translation id="7669320311687290322"><ph name="ITEM_LABEL" />, <ph name="ITEMS_TOTAL" /> ичинен <ph name="ITEM_POSITION" />.</translation>
+<translation id="7738288782501322815"><ph name="SITE_NAME" /> үчүн сырсөздөрдү алдыңыз</translation>
+<translation id="8614995815226664591"><ph name="SENDER_NAME" /> сиз менен <ph name="SITE_NAME" /> үчүн сырсөздү бөлүштү</translation>
+<translation id="8891372124884726271">Эсептик дайындардын тизмеси жабылды.</translation>
+</translationbundle>

@@ -44,6 +44,7 @@
 namespace blink {
 
 class FontPlatformData;
+class OpenTypeVerticalData;
 struct HarfBuzzFontData;
 
 // |HarfBuzzFace| is a thread specific data associated to |FontPlatformData|,
@@ -83,6 +84,8 @@ class HarfBuzzFace final : public RefCounted<HarfBuzzFace> {
   Glyph HbGlyphForCharacter(UChar32 character);
 
   bool ShouldSubpixelPosition();
+
+  const OpenTypeVerticalData& VerticalData() const;
 
   static void Init();
 

@@ -6,6 +6,8 @@
 
 #include <stddef.h>
 
+#include <utility>
+
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/debug/crash_logging.h"
@@ -128,7 +130,7 @@ BrowserAccessibilityStateImpl::BrowserAccessibilityStateImpl()
   }
 
   // Hook ourselves up to observe ax mode changes.
-  ui::AXPlatformNode::AddAXModeObserver(this);
+  ax_mode_observation_.Observe(&ax_platform_);
 
   if (disallow_changes) {
     DisallowAXModeChanges();
@@ -161,9 +163,6 @@ void BrowserAccessibilityStateImpl::InitBackgroundTasks() {
 BrowserAccessibilityStateImpl::~BrowserAccessibilityStateImpl() {
   DCHECK_EQ(g_instance, this);
   g_instance = nullptr;
-
-  // Remove ourselves from the AXMode global observer list.
-  ui::AXPlatformNode::RemoveAXModeObserver(this);
 }
 
 void BrowserAccessibilityStateImpl::OnScreenReaderDetected() {
@@ -238,13 +237,6 @@ void BrowserAccessibilityStateImpl::MaybeResetAccessibilityMode() {
 
 void BrowserAccessibilityStateImpl::ResetAccessibilityMode() {
   ResetAccessibilityModeValue();
-
-  // AXPlatformNode has its own AXMode. If we don't reset it when accessibility
-  // support is auto-disabled, the next time a screen reader is detected
-  // |AXPlatformNode::NotifyAddAXModeFlags| will return early due to the
-  // AXPlatformNode's AXMode being unchanged (kAXModeComplete). As a result,
-  // the observers are never notified and screen reader support fails to work.
-  ui::AXPlatformNode::SetAXMode(accessibility_mode_);
 
   NotifyWebContentsToSetAXMode(accessibility_mode_);
 }
@@ -336,11 +328,6 @@ void BrowserAccessibilityStateImpl::OnAXModeAdded(ui::AXMode mode) {
 }
 
 ui::AXMode BrowserAccessibilityStateImpl::GetAccessibilityMode() {
-  // TODO(accessibility) Combine this with the AXMode we store in AXPlatformNode
-  // into a single global AXMode tracker in ui/accessibility. The current
-  // situation of storing in two places could lead to misalignment.
-  CHECK_EQ(accessibility_mode_, ui::AXPlatformNode::GetAccessibilityMode())
-      << "Accessibility modes in content and UI are misaligned.";
   return accessibility_mode_;
 }
 
@@ -434,23 +421,23 @@ void BrowserAccessibilityStateImpl::AddAccessibilityModeFlags(ui::AXMode mode) {
   // toggles accessibility flags in chrome://accessibility.
   OnAccessibilityApiUsage();
 
-  ui::AXMode previous_mode = accessibility_mode_;
-  accessibility_mode_ |= mode;
+  const ui::AXMode previous_mode = accessibility_mode_;
+  const ui::AXMode new_mode = accessibility_mode_ | mode;
 
   // Form controls mode is restrictive. There are other modes that should not be
   // used in combination with it.
-  if (accessibility_mode_.HasExperimentalFlags(
-          ui::AXMode::kExperimentalFormControls)) {
-    CHECK(!accessibility_mode_.has_mode(ui::AXMode::kInlineTextBoxes));
-    CHECK(!accessibility_mode_.has_mode(ui::AXMode::kScreenReader));
+  if (new_mode.HasExperimentalFlags(ui::AXMode::kExperimentalFormControls)) {
+    CHECK(!new_mode.has_mode(ui::AXMode::kInlineTextBoxes));
+    CHECK(!new_mode.has_mode(ui::AXMode::kScreenReader));
   }
 
-  if (accessibility_mode_ == previous_mode)
+  if (new_mode == accessibility_mode_) {
     return;
+  }
 
   // Keep track of the total time accessibility is enabled, and the time
   // it was previously disabled.
-  if (previous_mode.is_mode_off()) {
+  if (accessibility_mode_.is_mode_off()) {
     base::TimeTicks now = ui::EventTimeForNow();
     accessibility_enabled_time_ = now;
     if (!accessibility_disabled_time_.is_null()) {
@@ -459,8 +446,9 @@ void BrowserAccessibilityStateImpl::AddAccessibilityModeFlags(ui::AXMode mode) {
     }
   }
 
-  // Proxy the AXMode to AXPlatformNode to enable accessibility.
-  ui::AXPlatformNode::NotifyAddAXModeFlags(accessibility_mode_);
+  // Update accessibility_mode_ via the old AXPlatformNode API so that its
+  // observers are notified.
+  ui::AXPlatformNode::NotifyAddAXModeFlags(new_mode);
 
   ui::RecordAccessibilityModeHistograms(ui::AXHistogramPrefix::kNone,
                                         accessibility_mode_, previous_mode);
@@ -494,9 +482,6 @@ void BrowserAccessibilityStateImpl::RemoveAccessibilityModeFlags(
       (mode.experimental_flags() & accessibility_mode_.experimental_flags());
   accessibility_mode_ = ui::AXMode(raw_flags, raw_experimental_flags);
 
-  // Proxy the new AXMode to AXPlatformNode.
-  ui::AXPlatformNode::SetAXMode(accessibility_mode_);
-
   NotifyWebContentsToSetAXMode(accessibility_mode_);
 }
 
@@ -504,6 +489,19 @@ base::CallbackListSubscription
 BrowserAccessibilityStateImpl::RegisterFocusChangedCallback(
     FocusChangedCallback callback) {
   return focus_changed_callbacks_.Add(std::move(callback));
+}
+
+ui::AXMode BrowserAccessibilityStateImpl::GetProcessMode() {
+  return accessibility_mode_;
+}
+
+void BrowserAccessibilityStateImpl::SetProcessMode(ui::AXMode new_mode) {
+  const ui::AXMode old_mode = std::exchange(accessibility_mode_, new_mode);
+
+  // Broadcast the new mode flags, if any, to the AXModeObservers.
+  if (const auto additions = new_mode & ~old_mode; !additions.is_mode_off()) {
+    ax_platform_.NotifyModeAdded(additions);
+  }
 }
 
 void BrowserAccessibilityStateImpl::CallInitBackgroundTasksForTesting(

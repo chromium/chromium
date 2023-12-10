@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_ANDROID_SMS_ANDROID_SMS_APP_MANAGER_IMPL_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
@@ -13,7 +14,6 @@
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/ash/android_sms/android_sms_app_manager.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 class PrefService;
@@ -62,7 +62,7 @@ class AndroidSmsAppManagerImpl : public AndroidSmsAppManager {
   friend class AndroidSmsAppManagerImplTest;
 
   // AndroidSmsAppManager:
-  absl::optional<GURL> GetCurrentAppUrl() override;
+  std::optional<GURL> GetCurrentAppUrl() override;
 
   // AndroidSmsAppHelperDelegate:
   void SetUpAndroidSmsApp() override;
@@ -72,14 +72,14 @@ class AndroidSmsAppManagerImpl : public AndroidSmsAppManager {
   bool IsAppRegistryReady() override;
   void ExecuteOnAppRegistryReady(base::OnceClosure task) override;
 
-  absl::optional<PwaDomain> GetInstalledPwaDomain();
-  absl::optional<PwaDomain> GetInstalledPwaDomainForMigration();
+  std::optional<PwaDomain> GetInstalledPwaDomain();
+  std::optional<PwaDomain> GetInstalledPwaDomainForMigration();
   void CompleteAsyncInitialization();
   void NotifyInstalledAppUrlChangedIfNecessary();
-  void OnSetUpNewAppResult(const absl::optional<PwaDomain>& migrating_from,
+  void OnSetUpNewAppResult(const std::optional<PwaDomain>& migrating_from,
                            const GURL& install_url,
                            bool success);
-  void OnRemoveOldAppResult(const absl::optional<PwaDomain>& migrating_from,
+  void OnRemoveOldAppResult(const std::optional<PwaDomain>& migrating_from,
                             bool success);
   void HandleAppSetupFinished();
 
@@ -98,7 +98,7 @@ class AndroidSmsAppManagerImpl : public AndroidSmsAppManager {
 
   // The installed app URL, initialized when app registry is ready and updated
   // any time NotifyInstalledAppUrlChanged() is invoked.
-  absl::optional<GURL> last_installed_url_;
+  std::optional<GURL> last_installed_url_;
 
   std::unique_ptr<PwaDelegate> pwa_delegate_;
   base::WeakPtrFactory<AndroidSmsAppManagerImpl> weak_ptr_factory_{this};

@@ -8,20 +8,17 @@ import org.chromium.base.Callback;
 
 import java.util.List;
 
-/**
- * Observes when new Tab Suggestions become available
- */
+/** Observes when new Tab Suggestions become available */
 public interface TabSuggestionsObserver {
     /**
      * Notify when we have new Tab Suggestions
      * @param tabSuggestions tab suggestions acquired
      * @param tabSuggestionFeedback callback for providing feedback on the suggestions
      */
-    void onNewSuggestion(List<TabSuggestion> tabSuggestions,
+    void onNewSuggestion(
+            List<TabSuggestion> tabSuggestions,
             Callback<TabSuggestionFeedback> tabSuggestionFeedback);
 
-    /**
-     * Notify when a {@link TabContext} is no longer valid/representative of the user's tabs.
-     */
+    /** Notify when a {@link TabContext} is no longer valid/representative of the user's tabs. */
     void onTabSuggestionInvalidated();
 }

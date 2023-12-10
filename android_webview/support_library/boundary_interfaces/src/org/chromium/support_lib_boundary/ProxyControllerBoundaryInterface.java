@@ -6,13 +6,17 @@ package org.chromium.support_lib_boundary;
 
 import java.util.concurrent.Executor;
 
-/**
- * Boundary interface for ProxyController.
- */
+/** Boundary interface for ProxyController. */
 public interface ProxyControllerBoundaryInterface {
     void setProxyOverride(
             String[][] proxyRules, String[] bypassRules, Runnable listener, Executor executor);
-    void setProxyOverride(String[][] proxyRules, String[] bypassRules, Runnable listener,
-            Executor executor, boolean reverseBypass);
+
+    void setProxyOverride(
+            String[][] proxyRules,
+            String[] bypassRules,
+            Runnable listener,
+            Executor executor,
+            boolean reverseBypass);
+
     void clearProxyOverride(Runnable listener, Executor executor);
 }

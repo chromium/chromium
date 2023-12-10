@@ -115,14 +115,13 @@ bool AppBannerManagerAndroid::OnAppDetailsRetrieved(
                      weak_factory_.GetWeakPtr()));
 }
 
-void AppBannerManagerAndroid::RequestAppBanner(const GURL& validated_url) {
+void AppBannerManagerAndroid::RequestAppBanner() {
   JNIEnv* env = base::android::AttachCurrentThread();
   if (!Java_AppBannerManager_isSupported(env) ||
       !WebappsClient::Get()->CanShowAppBanners(web_contents())) {
     return;
   }
-
-  AppBannerManager::RequestAppBanner(validated_url);
+  AppBannerManager::RequestAppBanner();
 }
 
 void AppBannerManagerAndroid::ShowBannerFromBadge() {
@@ -151,10 +150,6 @@ AppBannerManagerAndroid::ParamsToPerformInstallableWebAppCheck() {
       AppBannerManager::ParamsToPerformInstallableWebAppCheck();
   params.prefer_maskable_icon =
       WebappsIconUtils::DoesAndroidSupportMaskableIcons();
-  params.installable_criteria =
-      base::FeatureList::IsEnabled(features::kUniversalInstallManifest)
-          ? InstallableCriteria::kImplicitManifestFieldsHTML
-          : InstallableCriteria::kValidManifestWithIcons;
   params.fetch_favicon =
       base::FeatureList::IsEnabled(features::kUniversalInstallIcon);
   return params;
@@ -188,7 +183,7 @@ bool AppBannerManagerAndroid::IsWebAppConsideredInstalled() const {
   return WebappsUtils::IsWebApkInstalled(web_contents()->GetBrowserContext(),
                                          manifest().start_url) ||
          WebappsClient::Get()->IsInstallationInProgress(web_contents(),
-                                                        manifest().id);
+                                                        manifest_id_);
 }
 
 void AppBannerManagerAndroid::ResetCurrentPageData() {
@@ -208,8 +203,8 @@ AppBannerManagerAndroid::CreateAddToHomescreenParams(
   if (native_app_data_.is_null()) {
     a2hs_params->app_type = AddToHomescreenParams::AppType::WEBAPK;
     a2hs_params->shortcut_info = ShortcutInfo::CreateShortcutInfo(
-        manifest_url_, manifest(), primary_icon_url_,
-        has_maskable_primary_icon_);
+        validated_url_, manifest_url_, manifest(), web_page_metadata(),
+        primary_icon_url_, has_maskable_primary_icon_);
     a2hs_params->install_source = install_source;
   } else {
     a2hs_params->app_type = AddToHomescreenParams::AppType::NATIVE;

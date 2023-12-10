@@ -1464,9 +1464,6 @@ suite('AddExceptionDialog', function() {
         dialog.set('category', ContentSettingsTypes.COOKIES);
         dialog.set('cookiesExceptionType', CookiesExceptionType.COMBINED);
         flush();
-        // TODO(crbug.com/1378703): Remove after crbug/1378703 launched and the
-        // checkbox is deprecated.
-        assertTrue(dialog.$.thirdParties.hidden);
 
         // Enter a pattern and click the button.
         const expectedPattern = 'foo-bar.com';
@@ -1485,9 +1482,6 @@ suite('AddExceptionDialog', function() {
     dialog.set('category', ContentSettingsTypes.COOKIES);
     dialog.set('cookiesExceptionType', CookiesExceptionType.THIRD_PARTY);
     flush();
-    // TODO(crbug.com/1378703): Remove after crbug/1378703 launched and the
-    // checkbox is deprecated.
-    assertTrue(dialog.$.thirdParties.hidden);
 
     // Enter a pattern and click the button.
     const expectedPattern = 'foo-bar.com';
@@ -1506,124 +1500,6 @@ suite('AddExceptionDialog', function() {
     dialog.set('category', ContentSettingsTypes.COOKIES);
     dialog.set('cookiesExceptionType', CookiesExceptionType.SITE_DATA);
     flush();
-    // TODO(crbug.com/1378703): Remove after crbug/1378703 launched and the
-    // checkbox is deprecated.
-    assertTrue(dialog.$.thirdParties.hidden);
-
-    // Enter a pattern and click the button.
-    const expectedPattern = 'foo-bar.com';
-    await inputText(expectedPattern);
-    dialog.$.add.click();
-
-    // The created exception has secondary pattern wildcard (site data
-    // exception).
-    const [primaryPattern, secondaryPattern] =
-        await browserProxy.whenCalled('setCategoryPermissionForPattern');
-    assertEquals(primaryPattern, expectedPattern);
-    assertEquals(secondaryPattern, SITE_EXCEPTION_WILDCARD);
-  });
-});
-
-// TODO(crbug.com/1378703): Remove after crbug/1378703 launched.
-suite('AddExceptionDialog_PrivacySandbox4Disabled', function() {
-  let dialog: AddSiteDialogElement;
-  let browserProxy: TestSiteSettingsPrefsBrowserProxy;
-
-  async function inputText(expectedPattern: string) {
-    const actionButton = dialog.$.add;
-    assertTrue(!!actionButton);
-    assertTrue(actionButton.disabled);
-
-    const input = dialog.shadowRoot!.querySelector('cr-input');
-    input!.value = expectedPattern;
-    input!.dispatchEvent(
-        new CustomEvent('input', {bubbles: true, composed: true}));
-
-    const [pattern, _category] =
-        await browserProxy.whenCalled('isPatternValidForType');
-    assertEquals(expectedPattern, pattern);
-    assertFalse(actionButton.disabled);
-  }
-
-  suiteSetup(function() {
-    loadTimeData.overrideValues({
-      isPrivacySandboxSettings4: false,
-    });
-  });
-
-  setup(function() {
-    populateTestExceptions();
-
-    browserProxy = new TestSiteSettingsPrefsBrowserProxy();
-    SiteSettingsPrefsBrowserProxyImpl.setInstance(browserProxy);
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    dialog = document.createElement('add-site-dialog');
-    dialog.category = ContentSettingsTypes.GEOLOCATION;
-    dialog.contentSetting = ContentSetting.ALLOW;
-    dialog.hasIncognito = false;
-    document.body.appendChild(dialog);
-  });
-
-  teardown(function() {
-    dialog.remove();
-  });
-
-  test(
-      'add cookie exception for combined cookie exception type',
-      async function() {
-        dialog.set('category', ContentSettingsTypes.COOKIES);
-        dialog.set('cookiesExceptionType', CookiesExceptionType.COMBINED);
-        flush();
-        // Cookie exceptions that support all wildcard patterns (both primary
-        // and secondary) have a checkbox to control the type of exception.
-        assertFalse(dialog.$.thirdParties.hidden);
-        assertFalse(dialog.$.thirdParties.checked);
-
-        // Enter a pattern and click the button.
-        const expectedPattern = 'foo-bar.com';
-        await inputText(expectedPattern);
-        dialog.$.add.click();
-
-        // The created exception has secondary pattern wildcard by default
-        // (created site data cookie exception).
-        const [primaryPattern, secondaryPattern] =
-            await browserProxy.whenCalled('setCategoryPermissionForPattern');
-        assertEquals(primaryPattern, expectedPattern);
-        assertEquals(secondaryPattern, SITE_EXCEPTION_WILDCARD);
-      });
-
-  test('add third party cookie exception', async function() {
-    dialog.set('category', ContentSettingsTypes.COOKIES);
-    dialog.set('cookiesExceptionType', CookiesExceptionType.THIRD_PARTY);
-    flush();
-    // Third party cookies exceptions don't need checkbox to control the
-    // exception mode. Exceptions with primary pattern wildcard are created.
-    // CookiesExceptionType.THIRD_PARTY is not used outside of PrivacySandbox4,
-    // this test is for completeness.
-    assertTrue(dialog.$.thirdParties.hidden);
-
-    // Enter a pattern and click the button.
-    const expectedPattern = 'foo-bar.com';
-    await inputText(expectedPattern);
-    dialog.$.add.click();
-
-    // The created exception has primary pattern wildcard (third party
-    // exception).
-    const [primaryPattern, secondaryPattern] =
-        await browserProxy.whenCalled('setCategoryPermissionForPattern');
-    assertEquals(primaryPattern, SITE_EXCEPTION_WILDCARD);
-    assertEquals(secondaryPattern, expectedPattern);
-  });
-
-  test('add site data cookie exception', async function() {
-    dialog.set('category', ContentSettingsTypes.COOKIES);
-    dialog.set('cookiesExceptionType', CookiesExceptionType.SITE_DATA);
-    flush();
-    // Site data cookie exceptions don't need checkbox to control the exception
-    // mode. Exceptions with secondary pattern wildcard are created.
-    // CookiesExceptionType.SITE_DATA is not used outside of PrivacySandbox4,
-    // this test is for completeness.
-    assertTrue(dialog.$.thirdParties.hidden);
 
     // Enter a pattern and click the button.
     const expectedPattern = 'foo-bar.com';

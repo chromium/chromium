@@ -16,22 +16,22 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
 
-/**
- * Utilities for dealing with variations seeds.
- */
+/** Utilities for dealing with variations seeds. */
 @JNINamespace("android_webview")
 public class VariationsTestUtils {
     // This should match the Feature definition in variations_test_utils.cc.
     public static final String TEST_FEATURE_NAME = "WebViewTestFeature";
 
     public static void assertSeedsEqual(SeedInfo expected, SeedInfo actual) {
-        Assert.assertTrue("Expected " + expected + " but got " + actual,
-                seedsEqual(expected, actual));
+        Assert.assertTrue(
+                "Expected " + expected + " but got " + actual, seedsEqual(expected, actual));
     }
 
     public static boolean seedsEqual(SeedInfo a, SeedInfo b) {
-        return strEqual(a.signature, b.signature) && strEqual(a.country, b.country)
-                && (a.date == b.date) && (a.isGzipCompressed == b.isGzipCompressed)
+        return strEqual(a.signature, b.signature)
+                && strEqual(a.country, b.country)
+                && (a.date == b.date)
+                && (a.isGzipCompressed == b.isGzipCompressed)
                 && Arrays.equals(a.seedData, b.seedData);
     }
 

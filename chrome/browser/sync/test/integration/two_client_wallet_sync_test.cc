@@ -6,7 +6,6 @@
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/sync/test/integration/wallet_helper.h"
 #include "components/autofill/core/browser/data_model/autofill_metadata.h"
-#include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/test_autofill_clock.h"
@@ -19,18 +18,12 @@
 
 namespace {
 
-using autofill::AutofillProfile;
 using autofill::CreditCard;
 using wallet_helper::CreateDefaultSyncPaymentsCustomerData;
-using wallet_helper::CreateSyncWalletAddress;
 using wallet_helper::CreateSyncWalletCard;
-using wallet_helper::GetLocalProfiles;
-using wallet_helper::GetServerAddressesMetadata;
 using wallet_helper::GetServerCardsMetadata;
 using wallet_helper::GetServerCreditCards;
-using wallet_helper::GetServerProfiles;
 using wallet_helper::kDefaultBillingAddressID;
-using wallet_helper::UpdateServerAddressMetadata;
 using wallet_helper::UpdateServerCardMetadata;
 
 const char kDifferentBillingAddressId[] = "another address entity ID";

@@ -45,8 +45,12 @@ public class AutoSigninSnackbarController implements SnackbarManager.SnackbarCon
         SnackbarManager snackbarManager = SnackbarManagerProvider.from(windowAndroid);
         AutoSigninSnackbarController snackbarController =
                 new AutoSigninSnackbarController(snackbarManager, tab);
-        Snackbar snackbar = Snackbar.make(
-                text, snackbarController, Snackbar.TYPE_NOTIFICATION, Snackbar.UMA_AUTO_LOGIN);
+        Snackbar snackbar =
+                Snackbar.make(
+                        text,
+                        snackbarController,
+                        Snackbar.TYPE_NOTIFICATION,
+                        Snackbar.UMA_AUTO_LOGIN);
         int backgroundColor = SemanticColorUtils.getDefaultControlColorActive(activity);
         Drawable icon = AppCompatResources.getDrawable(activity, R.drawable.logo_avatar_anonymous);
         snackbar.setSingleLine(false)
@@ -63,28 +67,27 @@ public class AutoSigninSnackbarController implements SnackbarManager.SnackbarCon
     private AutoSigninSnackbarController(SnackbarManager snackbarManager, Tab tab) {
         mTab = tab;
         mSnackbarManager = snackbarManager;
-        mTabObserver = new EmptyTabObserver() {
-            @Override
-            public void onHidden(Tab tab, @TabHidingType int type) {
-                AutoSigninSnackbarController.this.dismissAutoSigninSnackbar();
-            }
+        mTabObserver =
+                new EmptyTabObserver() {
+                    @Override
+                    public void onHidden(Tab tab, @TabHidingType int type) {
+                        AutoSigninSnackbarController.this.dismissAutoSigninSnackbar();
+                    }
 
-            @Override
-            public void onDestroyed(Tab tab) {
-                AutoSigninSnackbarController.this.dismissAutoSigninSnackbar();
-            }
+                    @Override
+                    public void onDestroyed(Tab tab) {
+                        AutoSigninSnackbarController.this.dismissAutoSigninSnackbar();
+                    }
 
-            @Override
-            public void onCrash(Tab tab) {
-                AutoSigninSnackbarController.this.dismissAutoSigninSnackbar();
-            }
-        };
+                    @Override
+                    public void onCrash(Tab tab) {
+                        AutoSigninSnackbarController.this.dismissAutoSigninSnackbar();
+                    }
+                };
         mTab.addObserver(mTabObserver);
     }
 
-    /**
-     * Dismisses the snackbar.
-     */
+    /** Dismisses the snackbar. */
     public void dismissAutoSigninSnackbar() {
         if (mSnackbarManager.isShowing()) {
             mSnackbarManager.dismissSnackbars(this);

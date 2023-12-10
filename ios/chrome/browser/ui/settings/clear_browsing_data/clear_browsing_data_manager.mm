@@ -30,12 +30,11 @@
 #import "ios/chrome/browser/browsing_data/model/browsing_data_remover_factory.h"
 #import "ios/chrome/browser/browsing_data/model/browsing_data_remover_observer_bridge.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
-#import "ios/chrome/browser/history/web_history_service_factory.h"
+#import "ios/chrome/browser/history/model/web_history_service_factory.h"
 #import "ios/chrome/browser/net/crurl.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
-#import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
@@ -48,13 +47,12 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_link_item.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/signin/authentication_service.h"
-#import "ios/chrome/browser/signin/authentication_service_factory.h"
-#import "ios/chrome/browser/signin/identity_manager_factory.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/ui/scoped_ui_blocker/ui_blocker_manager.h"
 #import "ios/chrome/browser/ui/settings/cells/clear_browsing_data_constants.h"
-#import "ios/chrome/browser/ui/settings/cells/search_engine_item.h"
 #import "ios/chrome/browser/ui/settings/cells/table_view_clear_browsing_data_item.h"
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/browsing_data_counter_wrapper_producer.h"
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/clear_browsing_data_consumer.h"
@@ -113,8 +111,7 @@ UIImage* SymbolForItemType(ClearBrowsingDataItemType itemType) {
 // Returns YES if UI is currently blocking, to stop a second clear browsing data
 // task to start.
 BOOL UIIsBlocking(Browser* browser) {
-  SceneState* sceneState =
-      SceneStateBrowserAgent::FromBrowser(browser)->GetSceneState();
+  SceneState* sceneState = browser->GetSceneState();
   return [sceneState.uiBlockerManager currentUIBlocker];
 }
 
@@ -729,9 +726,6 @@ BOOL UIIsBlocking(Browser* browser) {
   if (!model) {
     return;
   }
-  UMA_HISTOGRAM_BOOLEAN(
-      "History.ClearBrowsingData.HistoryNoticeShownInFooterWhenUpdated",
-      _shouldShowNoticeAboutOtherFormsOfBrowsingHistory);
 
   if (![self identityManager]->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
     return;

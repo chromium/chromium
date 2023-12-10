@@ -17,17 +17,33 @@
 
 namespace blink {
 
-class StorageAccessHandleTest
-    : public testing::TestWithParam<
-          testing::tuple<bool, bool, bool, bool, bool, bool, bool>> {
+namespace {
+
+using TestParams = std::
+    tuple<bool, bool, bool, bool, bool, bool, bool, bool, bool, bool, bool>;
+
+template <size_t N>
+TestParams MakeParamsWithSetBit() {
+  TestParams params;
+  std::get<N>(params) = true;
+  return params;
+}
+
+}  // namespace
+
+class StorageAccessHandleTest : public testing::TestWithParam<TestParams> {
  public:
   bool all() { return std::get<0>(GetParam()); }
-  bool session_storage() { return std::get<1>(GetParam()); }
-  bool local_storage() { return std::get<2>(GetParam()); }
-  bool indexed_db() { return std::get<3>(GetParam()); }
+  bool sessionStorage() { return std::get<1>(GetParam()); }
+  bool localStorage() { return std::get<2>(GetParam()); }
+  bool indexedDB() { return std::get<3>(GetParam()); }
   bool locks() { return std::get<4>(GetParam()); }
   bool caches() { return std::get<5>(GetParam()); }
   bool getDirectory() { return std::get<6>(GetParam()); }
+  bool estimate() { return std::get<7>(GetParam()); }
+  bool createObjectURL() { return std::get<8>(GetParam()); }
+  bool revokeObjectURL() { return std::get<9>(GetParam()); }
+  bool BroadcastChannel() { return std::get<10>(GetParam()); }
 
   LocalDOMWindow* getLocalDOMWindow() {
     test::ScopedMockedURLLoad scoped_mocked_url_load_root(
@@ -48,12 +64,16 @@ TEST_P(StorageAccessHandleTest, LoadHandle) {
   StorageAccessTypes* storage_access_types =
       MakeGarbageCollected<StorageAccessTypes>();
   storage_access_types->setAll(all());
-  storage_access_types->setSessionStorage(session_storage());
-  storage_access_types->setLocalStorage(local_storage());
-  storage_access_types->setIndexedDB(indexed_db());
+  storage_access_types->setSessionStorage(sessionStorage());
+  storage_access_types->setLocalStorage(localStorage());
+  storage_access_types->setIndexedDB(indexedDB());
   storage_access_types->setLocks(locks());
   storage_access_types->setCaches(caches());
   storage_access_types->setGetDirectory(getDirectory());
+  storage_access_types->setEstimate(estimate());
+  storage_access_types->setCreateObjectURL(createObjectURL());
+  storage_access_types->setRevokeObjectURL(revokeObjectURL());
+  storage_access_types->setBroadcastChannel(BroadcastChannel());
   StorageAccessHandle* storage_access_handle =
       MakeGarbageCollected<StorageAccessHandle>(*window, storage_access_types);
   EXPECT_TRUE(window->document()->IsUseCounted(
@@ -66,17 +86,17 @@ TEST_P(StorageAccessHandleTest, LoadHandle) {
       window->document()->IsUseCounted(
           WebFeature::
               kStorageAccessAPI_requestStorageAccess_BeyondCookies_sessionStorage),
-      session_storage());
+      sessionStorage());
   EXPECT_EQ(
       window->document()->IsUseCounted(
           WebFeature::
               kStorageAccessAPI_requestStorageAccess_BeyondCookies_localStorage),
-      local_storage());
+      localStorage());
   EXPECT_EQ(
       window->document()->IsUseCounted(
           WebFeature::
               kStorageAccessAPI_requestStorageAccess_BeyondCookies_indexedDB),
-      indexed_db());
+      indexedDB());
   EXPECT_EQ(window->document()->IsUseCounted(
                 WebFeature::
                     kStorageAccessAPI_requestStorageAccess_BeyondCookies_locks),
@@ -91,6 +111,26 @@ TEST_P(StorageAccessHandleTest, LoadHandle) {
           WebFeature::
               kStorageAccessAPI_requestStorageAccess_BeyondCookies_getDirectory),
       getDirectory());
+  EXPECT_EQ(
+      window->document()->IsUseCounted(
+          WebFeature::
+              kStorageAccessAPI_requestStorageAccess_BeyondCookies_estimate),
+      estimate());
+  EXPECT_EQ(
+      window->document()->IsUseCounted(
+          WebFeature::
+              kStorageAccessAPI_requestStorageAccess_BeyondCookies_createObjectURL),
+      createObjectURL());
+  EXPECT_EQ(
+      window->document()->IsUseCounted(
+          WebFeature::
+              kStorageAccessAPI_requestStorageAccess_BeyondCookies_revokeObjectURL),
+      revokeObjectURL());
+  EXPECT_EQ(
+      window->document()->IsUseCounted(
+          WebFeature::
+              kStorageAccessAPI_requestStorageAccess_BeyondCookies_BroadcastChannel),
+      BroadcastChannel());
   EXPECT_FALSE(window->document()->IsUseCounted(
       WebFeature::
           kStorageAccessAPI_requestStorageAccess_BeyondCookies_sessionStorage_Use));
@@ -109,14 +149,26 @@ TEST_P(StorageAccessHandleTest, LoadHandle) {
   EXPECT_FALSE(window->document()->IsUseCounted(
       WebFeature::
           kStorageAccessAPI_requestStorageAccess_BeyondCookies_getDirectory_Use));
+  EXPECT_FALSE(window->document()->IsUseCounted(
+      WebFeature::
+          kStorageAccessAPI_requestStorageAccess_BeyondCookies_estimate_Use));
+  EXPECT_FALSE(window->document()->IsUseCounted(
+      WebFeature::
+          kStorageAccessAPI_requestStorageAccess_BeyondCookies_createObjectURL_Use));
+  EXPECT_FALSE(window->document()->IsUseCounted(
+      WebFeature::
+          kStorageAccessAPI_requestStorageAccess_BeyondCookies_revokeObjectURL_Use));
+  EXPECT_FALSE(window->document()->IsUseCounted(
+      WebFeature::
+          kStorageAccessAPI_requestStorageAccess_BeyondCookies_BroadcastChannel_Use));
   {
     V8TestingScope scope;
     storage_access_handle->sessionStorage(scope.GetExceptionState());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
-              (all() || session_storage()) ? DOMExceptionCode::kNoError
-                                           : DOMExceptionCode::kSecurityError);
+              (all() || sessionStorage()) ? DOMExceptionCode::kNoError
+                                          : DOMExceptionCode::kSecurityError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
-              (all() || session_storage())
+              (all() || sessionStorage())
                   ? nullptr
                   : StorageAccessHandle::kSessionStorageNotRequested);
   }
@@ -124,10 +176,10 @@ TEST_P(StorageAccessHandleTest, LoadHandle) {
     V8TestingScope scope;
     storage_access_handle->localStorage(scope.GetExceptionState());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
-              (all() || local_storage()) ? DOMExceptionCode::kNoError
-                                         : DOMExceptionCode::kSecurityError);
+              (all() || localStorage()) ? DOMExceptionCode::kNoError
+                                        : DOMExceptionCode::kSecurityError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
-              (all() || local_storage())
+              (all() || localStorage())
                   ? nullptr
                   : StorageAccessHandle::kLocalStorageNotRequested);
   }
@@ -135,10 +187,10 @@ TEST_P(StorageAccessHandleTest, LoadHandle) {
     V8TestingScope scope;
     storage_access_handle->indexedDB(scope.GetExceptionState());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
-              (all() || indexed_db()) ? DOMExceptionCode::kNoError
-                                      : DOMExceptionCode::kSecurityError);
+              (all() || indexedDB()) ? DOMExceptionCode::kNoError
+                                     : DOMExceptionCode::kSecurityError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
-              (all() || indexed_db())
+              (all() || indexedDB())
                   ? nullptr
                   : StorageAccessHandle::kIndexedDBNotRequested);
   }
@@ -178,21 +230,75 @@ TEST_P(StorageAccessHandleTest, LoadHandle) {
                   ? "Storage directory access is denied."
                   : StorageAccessHandle::kGetDirectoryNotRequested);
   }
+  {
+    V8TestingScope scope;
+    ScriptPromise promise = storage_access_handle->estimate(
+        scope.GetScriptState(), scope.GetExceptionState());
+    ScriptPromiseTester tester(scope.GetScriptState(), promise);
+    if (all() || estimate()) {
+      EXPECT_FALSE(tester.IsFulfilled());
+      EXPECT_FALSE(tester.IsRejected());
+    } else {
+      tester.WaitUntilSettled();
+      EXPECT_TRUE(tester.IsRejected());
+      auto* dom_exception = V8DOMException::ToWrappable(
+          scope.GetIsolate(), tester.Value().V8Value());
+      EXPECT_EQ(dom_exception->code(),
+                (uint16_t)DOMExceptionCode::kSecurityError);
+      EXPECT_EQ(dom_exception->message(),
+                StorageAccessHandle::kEstimateNotRequested);
+    }
+  }
+  {
+    V8TestingScope scope;
+    storage_access_handle->createObjectURL(
+        Blob::Create(scope.GetExecutionContext()), scope.GetExceptionState());
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              (all() || createObjectURL()) ? DOMExceptionCode::kNoError
+                                           : DOMExceptionCode::kSecurityError);
+    EXPECT_EQ(scope.GetExceptionState().Message(),
+              (all() || createObjectURL())
+                  ? nullptr
+                  : StorageAccessHandle::kCreateObjectURLNotRequested);
+  }
+  {
+    V8TestingScope scope;
+    storage_access_handle->revokeObjectURL("", scope.GetExceptionState());
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              (all() || revokeObjectURL()) ? DOMExceptionCode::kNoError
+                                           : DOMExceptionCode::kSecurityError);
+    EXPECT_EQ(scope.GetExceptionState().Message(),
+              (all() || revokeObjectURL())
+                  ? nullptr
+                  : StorageAccessHandle::kRevokeObjectURLNotRequested);
+  }
+  {
+    V8TestingScope scope;
+    storage_access_handle->BroadcastChannel(scope.GetExecutionContext(), "",
+                                            scope.GetExceptionState());
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              (all() || BroadcastChannel()) ? DOMExceptionCode::kNoError
+                                            : DOMExceptionCode::kSecurityError);
+    EXPECT_EQ(scope.GetExceptionState().Message(),
+              (all() || BroadcastChannel())
+                  ? nullptr
+                  : StorageAccessHandle::kBroadcastChannelNotRequested);
+  }
   EXPECT_EQ(
       window->document()->IsUseCounted(
           WebFeature::
               kStorageAccessAPI_requestStorageAccess_BeyondCookies_sessionStorage_Use),
-      all() || session_storage());
+      all() || sessionStorage());
   EXPECT_EQ(
       window->document()->IsUseCounted(
           WebFeature::
               kStorageAccessAPI_requestStorageAccess_BeyondCookies_localStorage_Use),
-      all() || local_storage());
+      all() || localStorage());
   EXPECT_EQ(
       window->document()->IsUseCounted(
           WebFeature::
               kStorageAccessAPI_requestStorageAccess_BeyondCookies_indexedDB_Use),
-      all() || indexed_db());
+      all() || indexedDB());
   EXPECT_EQ(
       window->document()->IsUseCounted(
           WebFeature::
@@ -208,16 +314,57 @@ TEST_P(StorageAccessHandleTest, LoadHandle) {
           WebFeature::
               kStorageAccessAPI_requestStorageAccess_BeyondCookies_getDirectory_Use),
       all() || getDirectory());
+  EXPECT_EQ(
+      window->document()->IsUseCounted(
+          WebFeature::
+              kStorageAccessAPI_requestStorageAccess_BeyondCookies_estimate_Use),
+      all() || estimate());
+  EXPECT_EQ(
+      window->document()->IsUseCounted(
+          WebFeature::
+              kStorageAccessAPI_requestStorageAccess_BeyondCookies_createObjectURL_Use),
+      all() || createObjectURL());
+  EXPECT_EQ(
+      window->document()->IsUseCounted(
+          WebFeature::
+              kStorageAccessAPI_requestStorageAccess_BeyondCookies_revokeObjectURL_Use),
+      all() || revokeObjectURL());
+  EXPECT_EQ(
+      window->document()->IsUseCounted(
+          WebFeature::
+              kStorageAccessAPI_requestStorageAccess_BeyondCookies_BroadcastChannel_Use),
+      all() || BroadcastChannel());
 }
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         StorageAccessHandleTest,
-                         testing::Combine(testing::Bool(),
-                                          testing::Bool(),
-                                          testing::Bool(),
-                                          testing::Bool(),
-                                          testing::Bool(),
-                                          testing::Bool(),
-                                          testing::Bool()));
+// Test all handles.
+INSTANTIATE_TEST_SUITE_P(
+    /*no prefix*/,
+    StorageAccessHandleTest,
+    testing::ValuesIn(std::vector<TestParams>{
+        // Nothing:
+        TestParams(),
+        // All:
+        MakeParamsWithSetBit<0>(),
+        // Session Storage:
+        MakeParamsWithSetBit<1>(),
+        // Local Storage:
+        MakeParamsWithSetBit<2>(),
+        // IndexedDB:
+        MakeParamsWithSetBit<3>(),
+        // Web Locks:
+        MakeParamsWithSetBit<4>(),
+        // Cache Storage:
+        MakeParamsWithSetBit<5>(),
+        // Origin Private File System:
+        MakeParamsWithSetBit<6>(),
+        // Quota:
+        MakeParamsWithSetBit<7>(),
+        // createObjectURL:
+        MakeParamsWithSetBit<8>(),
+        // revokeObjectURL:
+        MakeParamsWithSetBit<9>(),
+        // BroadcastChannel:
+        MakeParamsWithSetBit<10>(),
+    }));
 
 }  // namespace blink

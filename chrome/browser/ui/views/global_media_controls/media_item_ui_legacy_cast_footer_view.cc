@@ -16,6 +16,7 @@
 #include "components/media_router/browser/media_router.h"
 #include "components/media_router/browser/media_router_factory.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/background.h"
@@ -99,3 +100,6 @@ void MediaItemUILegacyCastFooterView::UpdateColors() {
       views::CreateRoundedRectBorder(1, radius, foreground_color_),
       kBorderInsets));
 }
+
+BEGIN_METADATA(MediaItemUILegacyCastFooterView)
+END_METADATA

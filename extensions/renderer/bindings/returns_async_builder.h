@@ -25,7 +25,7 @@ class ReturnsAsyncBuilder {
   std::unique_ptr<APISignature::ReturnsAsync> Build();
 
  private:
-  absl::optional<std::vector<std::unique_ptr<ArgumentSpec>>> signature_;
+  std::optional<std::vector<std::unique_ptr<ArgumentSpec>>> signature_;
   bool optional_ = false;
   binding::APIPromiseSupport promise_support_ =
       binding::APIPromiseSupport::kUnsupported;

@@ -10,9 +10,7 @@ import org.chromium.mojo.system.MessagePipeHandle;
 import org.chromium.mojo.system.SharedBufferHandle;
 import org.chromium.mojo.system.UntypedHandle;
 
-/**
- * Implementation of {@link UntypedHandle}.
- */
+/** Implementation of {@link UntypedHandle}. */
 class UntypedHandleImpl extends HandleBase implements UntypedHandle {
     /**
      * @see HandleBase#HandleBase(CoreImpl, long)

@@ -560,16 +560,5 @@ MemoryAllocatorDumpGuid ProcessMemoryDump::GetDumpId(
       "%s:%s", process_token().ToString().c_str(), absolute_name.c_str()));
 }
 
-bool ProcessMemoryDump::MemoryAllocatorDumpEdge::operator==(
-    const MemoryAllocatorDumpEdge& other) const {
-  return source == other.source && target == other.target &&
-         importance == other.importance && overridable == other.overridable;
-}
-
-bool ProcessMemoryDump::MemoryAllocatorDumpEdge::operator!=(
-    const MemoryAllocatorDumpEdge& other) const {
-  return !(*this == other);
-}
-
 }  // namespace trace_event
 }  // namespace base

@@ -30,18 +30,16 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
-/**
- * Coordinator for displaying a list of {@link SuggestionsTileView} in a {@link ViewGroup}.
- */
+/** Coordinator for displaying a list of {@link SuggestionsTileView} in a {@link ViewGroup}. */
 public class MostVisitedTilesCoordinator implements ConfigurationChangedObserver {
     private static final int TITLE_LINES = 1;
     public static final String CONTEXT_MENU_USER_ACTION_PREFIX = "Suggestions";
+
     /**
      * The maximum number of tiles to try and fit in a row. On smaller screens, there may not be
      * enough space to fit all of them.
      */
-    @VisibleForTesting
-    public static final int MAX_TILE_COLUMNS_FOR_GRID = 4;
+    @VisibleForTesting public static final int MAX_TILE_COLUMNS_FOR_GRID = 4;
 
     private final Activity mActivity;
     private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
@@ -71,18 +69,25 @@ public class MostVisitedTilesCoordinator implements ConfigurationChangedObserver
      *                                        changed.
      * @param tileCountChangedRunnable The runnable called when the tile count is changed.
      */
-    public MostVisitedTilesCoordinator(Activity activity,
-            ActivityLifecycleDispatcher activityLifecycleDispatcher, View mvTilesContainerLayout,
-            WindowAndroid windowAndroid, boolean shouldShowSkeletonUIPreNative,
-            boolean isScrollableMVTEnabled, int maxRows,
+    public MostVisitedTilesCoordinator(
+            Activity activity,
+            ActivityLifecycleDispatcher activityLifecycleDispatcher,
+            View mvTilesContainerLayout,
+            WindowAndroid windowAndroid,
+            boolean shouldShowSkeletonUIPreNative,
+            boolean isScrollableMVTEnabled,
+            int maxRows,
             @Nullable Runnable snapshotTileGridChangedRunnable,
             @Nullable Runnable tileCountChangedRunnable) {
         mActivity = activity;
         mActivityLifecycleDispatcher = activityLifecycleDispatcher;
         mWindowAndroid = windowAndroid;
 
-        ((ViewStub) mvTilesContainerLayout.findViewById(
-                 isScrollableMVTEnabled ? R.id.mv_tiles_carousel_stub : R.id.mv_tiles_grid_stub))
+        ((ViewStub)
+                        mvTilesContainerLayout.findViewById(
+                                isScrollableMVTEnabled
+                                        ? R.id.mv_tiles_carousel_stub
+                                        : R.id.mv_tiles_grid_stub))
                 .inflate();
         ViewGroup tilesLayout = mvTilesContainerLayout.findViewById(R.id.mv_tiles_layout);
 
@@ -94,18 +99,31 @@ public class MostVisitedTilesCoordinator implements ConfigurationChangedObserver
 
         mUiConfig = new UiConfig(tilesLayout);
         PropertyModel propertyModel = new PropertyModel(MostVisitedTilesProperties.ALL_KEYS);
-        mModelChangeProcessor = PropertyModelChangeProcessor.create(propertyModel,
-                new MostVisitedTilesViewBinder.ViewHolder(mvTilesContainerLayout, tilesLayout),
-                MostVisitedTilesViewBinder::bind);
-        mRenderer = new TileRenderer(
-                mActivity, SuggestionsConfig.getTileStyle(mUiConfig), TITLE_LINES, null);
+        mModelChangeProcessor =
+                PropertyModelChangeProcessor.create(
+                        propertyModel,
+                        new MostVisitedTilesViewBinder.ViewHolder(
+                                mvTilesContainerLayout, tilesLayout),
+                        MostVisitedTilesViewBinder::bind);
+        mRenderer =
+                new TileRenderer(
+                        mActivity, SuggestionsConfig.getTileStyle(mUiConfig), TITLE_LINES, null);
 
         boolean isTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity);
-        mMediator = new MostVisitedTilesMediator(activity.getResources(), mUiConfig, tilesLayout,
-                mvTilesContainerLayout.findViewById(R.id.tile_grid_placeholder_stub), mRenderer,
-                propertyModel, shouldShowSkeletonUIPreNative, isScrollableMVTEnabled, isTablet,
-                snapshotTileGridChangedRunnable, tileCountChangedRunnable,
-                StartSurfaceConfiguration.isNtpAsHomeSurfaceEnabled(isTablet));
+        mMediator =
+                new MostVisitedTilesMediator(
+                        activity.getResources(),
+                        mUiConfig,
+                        tilesLayout,
+                        mvTilesContainerLayout.findViewById(R.id.tile_grid_placeholder_stub),
+                        mRenderer,
+                        propertyModel,
+                        shouldShowSkeletonUIPreNative,
+                        isScrollableMVTEnabled,
+                        isTablet,
+                        snapshotTileGridChangedRunnable,
+                        tileCountChangedRunnable,
+                        StartSurfaceConfiguration.isNtpAsHomeSurfaceEnabled(isTablet));
     }
 
     /**
@@ -117,25 +135,39 @@ public class MostVisitedTilesCoordinator implements ConfigurationChangedObserver
      * @param touchEnabledDelegate The {@link TouchEnabledDelegate} for handling whether touch
      *                             events are allowed.
      */
-    public void initWithNative(SuggestionsUiDelegate suggestionsUiDelegate,
-            TileGroup.Delegate tileGroupDelegate, TouchEnabledDelegate touchEnabledDelegate) {
+    public void initWithNative(
+            SuggestionsUiDelegate suggestionsUiDelegate,
+            TileGroup.Delegate tileGroupDelegate,
+            TouchEnabledDelegate touchEnabledDelegate) {
         mActivityLifecycleDispatcher.register(this);
         Profile profile = Profile.getLastUsedRegularProfile();
         if (mRenderer == null) {
-            mRenderer = new TileRenderer(mActivity, SuggestionsConfig.getTileStyle(mUiConfig), 1,
-                    suggestionsUiDelegate.getImageFetcher());
+            mRenderer =
+                    new TileRenderer(
+                            mActivity,
+                            SuggestionsConfig.getTileStyle(mUiConfig),
+                            1,
+                            suggestionsUiDelegate.getImageFetcher());
         } else {
             mRenderer.setImageFetcher(suggestionsUiDelegate.getImageFetcher());
         }
         mRenderer.onNativeInitializationReady();
 
-        mContextMenuManager = new ContextMenuManager(suggestionsUiDelegate.getNavigationDelegate(),
-                touchEnabledDelegate, mActivity::closeContextMenu, CONTEXT_MENU_USER_ACTION_PREFIX);
+        mContextMenuManager =
+                new ContextMenuManager(
+                        suggestionsUiDelegate.getNavigationDelegate(),
+                        touchEnabledDelegate,
+                        mActivity::closeContextMenu,
+                        CONTEXT_MENU_USER_ACTION_PREFIX);
         mWindowAndroid.addContextMenuCloseListener(mContextMenuManager);
         mOfflinePageBridge =
                 SuggestionsDependencyFactory.getInstance().getOfflinePageBridge(profile);
-        mMediator.initWithNative(suggestionsUiDelegate, mContextMenuManager, tileGroupDelegate,
-                mOfflinePageBridge, mRenderer);
+        mMediator.initWithNative(
+                suggestionsUiDelegate,
+                mContextMenuManager,
+                tileGroupDelegate,
+                mOfflinePageBridge,
+                mRenderer);
     }
 
     /** Called when the TasksSurface is hidden or NewTabPageLayout is destroyed. */

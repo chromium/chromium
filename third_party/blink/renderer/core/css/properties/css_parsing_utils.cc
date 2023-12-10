@@ -76,6 +76,8 @@
 #include "third_party/blink/renderer/core/frame/deprecation/deprecation.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
+#include "third_party/blink/renderer/core/page/chrome_client.h"
+#include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/style_property_shorthand.h"
 #include "third_party/blink/renderer/core/svg/svg_parsing_error.h"
 #include "third_party/blink/renderer/core/svg/svg_path_utilities.h"
@@ -1837,15 +1839,13 @@ Color ResolveColor(CSSValue* value) {
 }  // namespace
 
 CSSValue* ConsumeColorContrast(CSSParserTokenRange& range,
-                               const CSSParserContext& context,
-                               bool accept_quirky_colors) {
+                               const CSSParserContext& context) {
   DCHECK_EQ(range.Peek().FunctionId(), CSSValueID::kColorContrast);
 
   CSSParserTokenRange range_copy = range;
   CSSParserTokenRange args = ConsumeFunction(range_copy);
 
-  CSSValue* background_color =
-      ConsumeColor(args, context, accept_quirky_colors);
+  CSSValue* background_color = ConsumeColor(args, context);
   if (!background_color) {
     return nullptr;
   }
@@ -1856,7 +1856,7 @@ CSSValue* ConsumeColorContrast(CSSParserTokenRange& range,
 
   VectorOf<CSSValue> colors_to_compare_against;
   do {
-    CSSValue* color = ConsumeColor(args, context, accept_quirky_colors);
+    CSSValue* color = ConsumeColor(args, context);
     if (!color) {
       return nullptr;
     }
@@ -1933,13 +1933,33 @@ CSSValue* ConsumeColorContrast(CSSParserTokenRange& range,
       ResolveColor(colors_to_compare_against[highest_contrast_index]));
 }
 
+namespace {
+
+bool SystemAccentColorAllowed(const CSSParserContext& context) {
+  if (!RuntimeEnabledFeatures::CSSSystemAccentColorEnabled()) {
+    return false;
+  }
+
+  if (RuntimeEnabledFeatures::PreventReadingSystemAccentColorEnabled()) {
+    if (const auto* document = context.GetDocument()) {
+      if (document->GetPage()->GetChromeClient().IsSVGImageChromeClient()) {
+        return false;
+      }
+    }
+  }
+
+  return true;
+}
+
+}  // namespace
+
 CSSValue* ConsumeColor(CSSParserTokenRange& range,
                        const CSSParserContext& context,
                        bool accept_quirky_colors,
                        AllowedColorKeywords allowed_keywords) {
   if (RuntimeEnabledFeatures::CSSColorContrastEnabled() &&
       range.Peek().FunctionId() == CSSValueID::kColorContrast) {
-    return ConsumeColorContrast(range, context, accept_quirky_colors);
+    return ConsumeColorContrast(range, context);
   }
 
   if (range.Peek().FunctionId() == CSSValueID::kColorMix) {
@@ -1949,7 +1969,7 @@ CSSValue* ConsumeColor(CSSParserTokenRange& range,
 
   CSSValueID id = range.Peek().Id();
   if ((id == CSSValueID::kAccentcolor || id == CSSValueID::kAccentcolortext) &&
-      !RuntimeEnabledFeatures::CSSSystemAccentColorEnabled()) {
+      !SystemAccentColorAllowed(context)) {
     return nullptr;
   }
   if (StyleColor::IsColorKeyword(id)) {
@@ -2850,8 +2870,7 @@ CSSValue* ConsumeIntrinsicSizeLonghand(CSSParserTokenRange& range,
   if (css_parsing_utils::IdentMatches<CSSValueID::kAuto>(range.Peek().Id())) {
     list->Append(*css_parsing_utils::ConsumeIdent(range));
   }
-  if (RuntimeEnabledFeatures::CSSContainIntrinsicSizeAutoNoneEnabled() &&
-      css_parsing_utils::IdentMatches<CSSValueID::kNone>(range.Peek().Id())) {
+  if (css_parsing_utils::IdentMatches<CSSValueID::kNone>(range.Peek().Id())) {
     list->Append(*css_parsing_utils::ConsumeIdent(range));
   } else {
     CSSValue* length = css_parsing_utils::ConsumeLength(
@@ -3271,15 +3290,13 @@ void CountKeywordOnlyPropertyUsage(CSSPropertyID property,
               NonStandardAppearanceValueSliderVerticalEnabled() &&
           value_id == CSSValueID::kSliderVertical) {
         if (const auto* document = context.GetDocument()) {
-          // TODO(crbug.com/681917): Remove "currently experimental" note when
-          // feature FormControlsVerticalWritingModeSupport is in stable.
           document->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
               mojom::blink::ConsoleMessageSource::kDeprecation,
               mojom::blink::ConsoleMessageLevel::kWarning,
               "The keyword 'slider-vertical' specified to an 'appearance' "
-              "property is not standardized. It will be removed in the future "
-              "and replaced by vertical writing-mode (currently "
-              "experimental)."));
+              "property is not standardized. It will be removed in the future. "
+              "Use <input type=range style=\"writing-mode: vertical-lr\"> "
+              "instead."));
           Deprecation::CountDeprecation(
               document->GetExecutionContext(),
               WebFeature::kCSSValueAppearanceSliderVertical);
@@ -5124,8 +5141,7 @@ CSSValue* ConsumeFontStyle(CSSParserTokenRange& range,
     return ConsumeIdent(range);
   }
 
-  if (RuntimeEnabledFeatures::CSSFontFaceAutoVariableRangeEnabled() &&
-      range.Peek().Id() == CSSValueID::kAuto &&
+  if (range.Peek().Id() == CSSValueID::kAuto &&
       context.Mode() == kCSSFontFaceRuleMode) {
     return ConsumeIdent(range);
   }
@@ -5176,8 +5192,7 @@ CSSIdentifierValue* ConsumeFontStretchKeywordOnly(
        token.Id() <= CSSValueID::kUltraExpanded)) {
     return ConsumeIdent(range);
   }
-  if (RuntimeEnabledFeatures::CSSFontFaceAutoVariableRangeEnabled() &&
-      token.Id() == CSSValueID::kAuto &&
+  if (token.Id() == CSSValueID::kAuto &&
       context.Mode() == kCSSFontFaceRuleMode) {
     return ConsumeIdent(range);
   }
@@ -5221,10 +5236,8 @@ CSSValue* ConsumeFontWeight(CSSParserTokenRange& range,
       return ConsumeIdent(range);
     }
   } else {
-    if ((token.Id() == CSSValueID::kNormal ||
-         token.Id() == CSSValueID::kBold) ||
-        (RuntimeEnabledFeatures::CSSFontFaceAutoVariableRangeEnabled() &&
-         token.Id() == CSSValueID::kAuto)) {
+    if (token.Id() == CSSValueID::kNormal || token.Id() == CSSValueID::kBold ||
+        token.Id() == CSSValueID::kAuto) {
       return ConsumeIdent(range);
     }
   }
@@ -5591,6 +5604,13 @@ bool ConsumeGridTrackRepeatFunction(CSSParserTokenRange& range,
                                     bool& is_auto_repeat,
                                     bool& all_tracks_are_fixed_sized) {
   CSSParserTokenRange args = ConsumeFunction(range);
+
+  // <name-repeat> syntax for subgrids only supports `auto-fill`.
+  if (is_subgrid_track_list &&
+      IdentMatches<CSSValueID::kAutoFit>(args.Peek().Id())) {
+    return false;
+  }
+
   is_auto_repeat = IdentMatches<CSSValueID::kAutoFill, CSSValueID::kAutoFit>(
       args.Peek().Id());
   CSSValueList* repeated_values;
@@ -5797,7 +5817,9 @@ CSSValue* ConsumeGridLine(CSSParserTokenRange& range,
   if (span_value) {
     values->Append(*span_value);
   }
-  if (numeric_value) {
+  // If span is present, omit `1` if there's a trailing identifier.
+  if (numeric_value &&
+      (!span_value || !grid_line_name || numeric_value->GetIntValue() != 1)) {
     values->Append(*numeric_value);
   }
   if (grid_line_name) {
@@ -5816,7 +5838,6 @@ CSSValue* ConsumeGridTrackList(CSSParserTokenRange& range,
   }
 
   bool is_subgrid_track_list =
-      RuntimeEnabledFeatures::LayoutNGSubgridEnabled() &&
       track_list_type == TrackListType::kGridTemplateSubgrid;
 
   CSSValueList* values = CSSValueList::CreateSpaceSeparated();
@@ -6919,8 +6940,7 @@ CSSValue* ConsumeContainerType(CSSParserTokenRange& range) {
   }
 
   CSSValue* size_value = nullptr;
-  CSSValue* sticky_value = nullptr;
-  CSSValue* snap_value = nullptr;
+  CSSValue* scroll_state_value = nullptr;
 
   do {
     if (!size_value) {
@@ -6930,17 +6950,10 @@ CSSValue* ConsumeContainerType(CSSParserTokenRange& range) {
         continue;
       }
     }
-    if (!sticky_value &&
-        RuntimeEnabledFeatures::CSSStickyContainerQueriesEnabled()) {
-      sticky_value = ConsumeIdent<CSSValueID::kSticky>(range);
-      if (sticky_value) {
-        continue;
-      }
-    }
-    if (!snap_value &&
-        RuntimeEnabledFeatures::CSSSnapContainerQueriesEnabled()) {
-      snap_value = ConsumeIdent<CSSValueID::kSnap>(range);
-      if (snap_value) {
+    if (!scroll_state_value &&
+        RuntimeEnabledFeatures::CSSScrollStateContainerQueriesEnabled()) {
+      scroll_state_value = ConsumeIdent<CSSValueID::kScrollState>(range);
+      if (scroll_state_value) {
         continue;
       }
     }
@@ -6951,11 +6964,8 @@ CSSValue* ConsumeContainerType(CSSParserTokenRange& range) {
   if (size_value) {
     list->Append(*size_value);
   }
-  if (sticky_value) {
-    list->Append(*sticky_value);
-  }
-  if (snap_value) {
-    list->Append(*snap_value);
+  if (scroll_state_value) {
+    list->Append(*scroll_state_value);
   }
   return list;
 }

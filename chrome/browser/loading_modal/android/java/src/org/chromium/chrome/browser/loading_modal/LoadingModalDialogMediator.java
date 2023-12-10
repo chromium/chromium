@@ -137,9 +137,7 @@ class LoadingModalDialogMediator
         }
     }
 
-    /**
-     * Indicates the current dialog state.
-     */
+    /** Indicates the current dialog state. */
     @LoadingModalDialogCoordinator.State
     int getState() {
         return mState;
@@ -153,9 +151,7 @@ class LoadingModalDialogMediator
         mDisableTimeout = true;
     }
 
-    /**
-     * Indicates if the dailog could be immediately dismissed.
-     */
+    /** Indicates if the dailog could be immediately dismissed. */
     boolean isImmediatelyDismissable() {
         switch (mState) {
             case LoadingModalDialogCoordinator.State.PENDING:

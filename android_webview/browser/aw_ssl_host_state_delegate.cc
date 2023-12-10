@@ -82,8 +82,8 @@ void AwSSLHostStateDelegate::SetHttpsEnforcementForHost(
   // Intentional no-op for Android WebView.
 }
 
-bool AwSSLHostStateDelegate::IsHttpsEnforcedForHost(
-    const std::string& host,
+bool AwSSLHostStateDelegate::IsHttpsEnforcedForUrl(
+    const GURL& url,
     content::StoragePartition* storage_partition) {
   // Intentional no-op for Android WebView. Return value does not matter as
   // HTTPS-First Mode is not enabled on WebView.

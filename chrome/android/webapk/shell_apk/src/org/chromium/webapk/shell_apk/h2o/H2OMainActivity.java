@@ -32,8 +32,8 @@ public class H2OMainActivity extends TransparentLauncherActivity {
             // H2OMainActivity is enabled by default for old-style WebAPKs.
             // R.bool.transparent_main_activity_enabled_default is inaccurate for old-style WebAPKs.
             return !isNewStyleWebApk
-                    || context.getResources().getBoolean(
-                            R.bool.transparent_main_activity_enabled_default);
+                    || context.getResources()
+                            .getBoolean(R.bool.transparent_main_activity_enabled_default);
         }
         return enabledSetting == PackageManager.COMPONENT_ENABLED_STATE_ENABLED;
     }
@@ -53,8 +53,10 @@ public class H2OMainActivity extends TransparentLauncherActivity {
             // WebAPK app. We cannot use AlarmManager or JobScheduler because their minimum
             // delay (several seconds) is too high.
             H2OLauncher.requestRelaunchFromHostBrowser(this, params);
-            H2OLauncher.changeEnabledComponentsAndKillShellApk(appContext,
-                    new ComponentName(appContext, H2OOpaqueMainActivity.class), getComponentName());
+            H2OLauncher.changeEnabledComponentsAndKillShellApk(
+                    appContext,
+                    new ComponentName(appContext, H2OOpaqueMainActivity.class),
+                    getComponentName());
             return;
         }
 

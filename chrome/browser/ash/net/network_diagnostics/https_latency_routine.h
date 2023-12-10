@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_NET_NETWORK_DIAGNOSTICS_HTTPS_LATENCY_ROUTINE_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -17,7 +18,6 @@
 #include "net/dns/public/host_resolver_results.h"
 #include "net/dns/public/resolve_error_info.h"
 #include "services/network/public/mojom/host_resolver.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 class HttpRequestManager;
@@ -76,8 +76,8 @@ class HttpsLatencyRoutine : public NetworkDiagnosticsRoutine {
   void OnHostResolutionComplete(
       int result,
       const net::ResolveErrorInfo&,
-      const absl::optional<net::AddressList>& resolved_addresses,
-      const absl::optional<net::HostResolverEndpointResults>&);
+      const std::optional<net::AddressList>& resolved_addresses,
+      const std::optional<net::HostResolverEndpointResults>&);
 
   // Attempts the next DNS resolution.
   void AttemptNextResolution();

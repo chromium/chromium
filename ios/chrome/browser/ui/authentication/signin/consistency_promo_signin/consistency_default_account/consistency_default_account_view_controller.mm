@@ -84,7 +84,7 @@ UIFont* GetNavigationBarTitleFont() {
   // Disable buttons.
   self.identityButtonControl.enabled = NO;
   self.primaryButton.enabled = NO;
-  [self.primaryButton setTitle:@"" forState:UIControlStateNormal];
+  SetConfigurationTitle(self.primaryButton, @"");
 }
 
 - (void)stopSpinner {
@@ -98,8 +98,7 @@ UIFont* GetNavigationBarTitleFont() {
   self.identityButtonControl.enabled = YES;
   self.primaryButton.enabled = YES;
   DCHECK(self.continueAsTitle);
-  [self.primaryButton setTitle:self.continueAsTitle
-                      forState:UIControlStateNormal];
+  SetConfigurationTitle(self.primaryButton, self.continueAsTitle);
 }
 
 #pragma mark - UIViewController
@@ -210,9 +209,11 @@ UIFont* GetNavigationBarTitleFont() {
   // Add the primary button (the "Continue as"/"Sign in" button).
   self.primaryButton =
       PrimaryActionButton(/* pointer_interaction_enabled */ YES);
-  SetContentEdgeInsets(self.primaryButton,
-                       UIEdgeInsetsMake(kPrimaryButtonVerticalInsets, 0,
-                                        kPrimaryButtonVerticalInsets, 0));
+  UIButtonConfiguration* buttonConfiguration = self.primaryButton.configuration;
+  buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
+      kPrimaryButtonVerticalInsets, 0, kPrimaryButtonVerticalInsets, 0);
+  self.primaryButton.configuration = buttonConfiguration;
+
   self.primaryButton.accessibilityIdentifier =
       kWebSigninPrimaryButtonAccessibilityIdentifier;
   self.primaryButton.translatesAutoresizingMaskIntoConstraints = NO;
@@ -229,7 +230,7 @@ UIFont* GetNavigationBarTitleFont() {
   // Adjust the identity button control rounded corners to the same value than
   // the "continue as" button.
   self.identityButtonControl.layer.cornerRadius =
-      self.primaryButton.layer.cornerRadius;
+      self.primaryButton.configuration.background.cornerRadius;
 
   // Ensure that keyboard is hidden.
   UIResponder* firstResponder = GetFirstResponder();
@@ -305,8 +306,7 @@ UIFont* GetNavigationBarTitleFont() {
 
   // If spinner is active, delay UI updates until stopSpinner() is called.
   if (!self.activityIndicatorView) {
-    [self.primaryButton setTitle:self.continueAsTitle
-                        forState:UIControlStateNormal];
+    SetConfigurationTitle(self.primaryButton, self.continueAsTitle);
     self.identityButtonControl.hidden = NO;
   }
 }
@@ -319,9 +319,9 @@ UIFont* GetNavigationBarTitleFont() {
   // Hide the IdentityButtonControl, and update the primary button to serve as
   // a "Sign in…" button.
   self.identityButtonControl.hidden = YES;
-  [self.primaryButton
-      setTitle:l10n_util::GetNSString(IDS_IOS_CONSISTENCY_PROMO_SIGN_IN)
-      forState:UIControlStateNormal];
+  SetConfigurationTitle(
+      self.primaryButton,
+      l10n_util::GetNSString(IDS_IOS_CONSISTENCY_PROMO_SIGN_IN));
 }
 
 @end

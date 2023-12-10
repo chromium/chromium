@@ -99,7 +99,7 @@ TabRendererData TabRendererData::FromTabInModel(const TabStripModel* model,
   data.should_themify_favicon =
       entry && favicon::ShouldThemifyFaviconForEntry(entry);
 
-  absl::optional<mojom::LifecycleUnitDiscardReason> discard_reason =
+  std::optional<mojom::LifecycleUnitDiscardReason> discard_reason =
       high_efficiency::GetDiscardReason(contents);
 
   // Only show discard status for tabs that were proactively discarded to

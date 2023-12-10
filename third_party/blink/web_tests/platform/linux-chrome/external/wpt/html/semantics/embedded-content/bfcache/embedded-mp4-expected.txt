@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+[PRECONDITION_FAILED] Page with <embed type=undefined src=/media/white.mp4>
+  Could have been BFCached but actually wasn't
+[PRECONDITION_FAILED] Page with <object type=undefined data=/media/white.mp4>
+  Could have been BFCached but actually wasn't
+Harness: the test ran to completion.

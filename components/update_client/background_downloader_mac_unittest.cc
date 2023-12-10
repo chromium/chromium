@@ -34,6 +34,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_file_util.h"
 #include "base/test/test_timeouts.h"
+#include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "components/update_client/crx_downloader.h"
 #include "components/update_client/task_traits.h"
@@ -76,6 +77,7 @@ const std::string GetLargeDownloadData() {
 class BackgroundDownloaderTest : public testing::Test {
  public:
   void SetUp() override {
+    environment_ = CreateTaskEnvironment();
     background_sequence_ = base::ThreadPool::CreateSequencedTaskRunner(
         kTaskTraitsBackgroundDownloader);
 
@@ -100,6 +102,10 @@ class BackgroundDownloaderTest : public testing::Test {
   }
 
  protected:
+  virtual std::unique_ptr<base::test::TaskEnvironment> CreateTaskEnvironment() {
+    return std::make_unique<base::test::TaskEnvironment>();
+  }
+
   void DoStartDownload(
       const GURL& url,
       BackgroundDownloaderSharedSession::OnDownloadCompleteCallback
@@ -157,6 +163,7 @@ class BackgroundDownloaderTest : public testing::Test {
   base::RepeatingCallback<std::unique_ptr<HttpResponse>(
       const HttpRequest& request)>
       request_handler_;
+  std::unique_ptr<base::test::TaskEnvironment> environment_;
 
  private:
   std::unique_ptr<HttpResponse> HandleRequest(const HttpRequest& request) {
@@ -164,7 +171,6 @@ class BackgroundDownloaderTest : public testing::Test {
     return request_handler_.Run(request);
   }
 
-  base::test::TaskEnvironment environment_;
   std::unique_ptr<net::test_server::EmbeddedTestServer> test_server_;
   EmbeddedTestServerHandle test_server_handle_;
 };
@@ -382,6 +388,52 @@ TEST_F(BackgroundDownloaderTest, ConcurrentDownloaders) {
   run_loop.Run();
 }
 
+class BackgroundDownloaderCacheCleanTest : public BackgroundDownloaderTest {
+ public:
+  std::unique_ptr<base::test::TaskEnvironment> CreateTaskEnvironment()
+      override {
+    // Configure the task environment to use mocked time that starts at the
+    // current real time. This is important for tests which rely on cached file
+    // ages, which are irrespective of mocked time.
+    base::Time now = base::Time::NowFromSystemTime();
+    auto environment = std::make_unique<base::test::TaskEnvironment>(
+        base::test::TaskEnvironment::TimeSource::MOCK_TIME);
+    environment->AdvanceClock(now - base::Time::Now());
+    return environment;
+  }
+};
+
+TEST_F(BackgroundDownloaderCacheCleanTest, CleansStaleDownloads) {
+  request_handler_ = base::BindLambdaForTesting([&](const HttpRequest&) {
+    std::unique_ptr<BasicHttpResponse> response =
+        std::make_unique<BasicHttpResponse>();
+    response->set_code(net::HTTP_OK);
+    response->set_content(kSmallDownloadData);
+    response->set_content_type("text/plain");
+    return base::WrapUnique<HttpResponse>(response.release());
+  });
+
+  ASSERT_TRUE(base::WriteFile(download_cache_.AppendASCII("file1"),
+                              kSmallDownloadData));
+  ASSERT_TRUE(base::WriteFile(download_cache_.AppendASCII("file2"),
+                              kSmallDownloadData));
+  environment_->FastForwardBy(base::Days(3));
+
+  base::RunLoop run_loop;
+  DoStartDownload(GetURL(),
+                  base::BindLambdaForTesting(
+                      [](bool is_handled, const CrxDownloader::Result& result,
+                         const CrxDownloader::DownloadMetrics& metrics) {})
+                      .Then(run_loop.QuitClosure()));
+  run_loop.Run();
+
+  environment_->FastForwardBy(base::Minutes(30));
+  environment_->RunUntilIdle();
+
+  EXPECT_FALSE(base::PathExists(download_cache_.AppendASCII("file1")));
+  EXPECT_FALSE(base::PathExists(download_cache_.AppendASCII("file2")));
+}
+
 class BackgroundDownloaderCrashingClientTest : public testing::Test {
  public:
   void SetUp() override {
@@ -455,7 +507,7 @@ TEST_F(BackgroundDownloaderCrashingClientTest, ClientCrash) {
           return base::WrapUnique<HttpResponse>(response.release());
         } else {
           return base::WrapUnique<HttpResponse>(
-              new InterruptedHttpResponse(base::BindLambdaForTesting([&]() {
+              new InterruptedHttpResponse(base::BindLambdaForTesting([&] {
                 CHECK(test_child_process.IsValid());
                 // Terminate the child process with extreme prejudice. SIGKILL
                 // is used to prevent the client from cleaning up.

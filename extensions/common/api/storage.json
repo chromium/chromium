@@ -7,9 +7,6 @@
     "namespace": "storage",
     "description": "Use the <code>chrome.storage</code> API to store, retrieve, and track changes to user data.",
     "unprivileged": true,
-    "compiler_options": {
-      "modernised_enums": true
-    },
     "types": [
       {
         "id": "AccessLevel",

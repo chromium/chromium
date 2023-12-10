@@ -117,7 +117,7 @@ syncer::SyncData CreateAppRemoteData(
     const std::string& item_ordinal,
     const std::string& item_pin_ordinal,
     sync_pb::AppListSpecifics_AppListItemType item_type,
-    absl::optional<bool> is_user_pinned,
+    std::optional<bool> is_user_pinned,
     const std::string& promise_package_id) {
   sync_pb::EntitySpecifics specifics;
   sync_pb::AppListSpecifics* app_list = specifics.mutable_app_list();

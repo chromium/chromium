@@ -43,13 +43,8 @@ std::string TestPrintingContextDelegate::GetAppLocale() {
 }
 
 TestPrintingContext::TestPrintingContext(Delegate* delegate,
-                                         bool skip_system_calls)
-    : PrintingContext(delegate) {
-#if BUILDFLAG(ENABLE_OOP_PRINTING)
-  if (skip_system_calls)
-    set_skip_system_calls();
-#endif
-}
+                                         ProcessBehavior process_behavior)
+    : PrintingContext(delegate, process_behavior) {}
 
 TestPrintingContext::~TestPrintingContext() = default;
 
@@ -141,6 +136,10 @@ mojom::ResultCode TestPrintingContext::UpdatePrinterSettings(
     const PrinterSettings& printer_settings) {
   DCHECK(!in_print_job_);
 
+  if (update_printer_settings_fails_) {
+    return mojom::ResultCode::kFailed;
+  }
+
   // The printer name is to be embedded in the printing context's existing
   // settings.
   const std::string& device_name = base::UTF16ToUTF8(settings_->device_name());
@@ -156,6 +155,7 @@ mojom::ResultCode TestPrintingContext::UpdatePrinterSettings(
   DVLOG(1) << "Updating context settings for device `" << device_name << "`";
   std::unique_ptr<PrintSettings> existing_settings = std::move(settings_);
   settings_ = std::make_unique<PrintSettings>(*found->second);
+  settings_->set_copies(existing_settings->copies());
   settings_->set_dpi(existing_settings->dpi());
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   for (const auto& item : existing_settings->advanced_settings())
@@ -185,7 +185,7 @@ mojom::ResultCode TestPrintingContext::NewDocument(
   DCHECK(!in_print_job_);
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING_NO_OOP_BASIC_PRINT_DIALOG)
-  if (!skip_system_calls() && features::ShouldPrintJobOop() &&
+  if (process_behavior() == ProcessBehavior::kOopEnabledPerformSystemCalls &&
       !settings_->system_print_dialog_data().empty()) {
     // Mimic the update when system print dialog settings are provided to
     // Print Backend service from the browser process.
@@ -204,7 +204,13 @@ mojom::ResultCode TestPrintingContext::NewDocument(
   abort_printing_ = false;
   in_print_job_ = true;
 
-  if (!skip_system_calls()) {
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
+  const bool make_system_calls =
+      process_behavior() != ProcessBehavior::kOopEnabledSkipSystemCalls;
+#else
+  const bool make_system_calls = true;
+#endif
+  if (make_system_calls) {
     if (new_document_cancels_) {
       return mojom::ResultCode::kCanceled;
     }

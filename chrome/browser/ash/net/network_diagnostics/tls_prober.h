@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_ASH_NET_NETWORK_DIAGNOSTICS_TLS_PROBER_H_
 #define CHROME_BROWSER_ASH_NET_NETWORK_DIAGNOSTICS_TLS_PROBER_H_
 
+#include <optional>
+
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -15,7 +17,6 @@
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/tcp_socket.mojom.h"
 #include "services/network/public/mojom/tls_socket.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
 class SimpleHostResolver;
@@ -39,8 +40,9 @@ class TlsProber {
   };
   using NetworkContextGetter =
       base::RepeatingCallback<network::mojom::NetworkContext*()>;
-  using OnConnectCompleteOnUIThreadCallback = base::OnceCallback<
-      void(int result, const absl::optional<net::IPEndPoint>& peer_addr)>;
+  using OnConnectCompleteOnUIThreadCallback =
+      base::OnceCallback<void(int result,
+                              const std::optional<net::IPEndPoint>& peer_addr)>;
   using TlsProbeCompleteCallback =
       base::OnceCallback<void(int result, ProbeExitEnum probe_exit_enum)>;
 
@@ -63,8 +65,8 @@ class TlsProber {
   void OnHostResolutionComplete(
       int result,
       const net::ResolveErrorInfo&,
-      const absl::optional<net::AddressList>& resolved_addresses,
-      const absl::optional<net::HostResolverEndpointResults>&);
+      const std::optional<net::AddressList>& resolved_addresses,
+      const std::optional<net::HostResolverEndpointResults>&);
 
  protected:
   // Test-only constructor.
@@ -80,8 +82,8 @@ class TlsProber {
   // handling has not been set up, the streams should not be used and fall out
   // of scope when this method completes.
   void OnConnectComplete(int result,
-                         const absl::optional<net::IPEndPoint>& local_addr,
-                         const absl::optional<net::IPEndPoint>& peer_addr,
+                         const std::optional<net::IPEndPoint>& local_addr,
+                         const std::optional<net::IPEndPoint>& peer_addr,
                          mojo::ScopedDataPipeConsumerHandle receive_stream,
                          mojo::ScopedDataPipeProducerHandle send_stream);
 
@@ -93,7 +95,7 @@ class TlsProber {
   void OnTlsUpgrade(int result,
                     mojo::ScopedDataPipeConsumerHandle receive_stream,
                     mojo::ScopedDataPipeProducerHandle send_stream,
-                    const absl::optional<net::SSLInfo>& ssl_info);
+                    const std::optional<net::SSLInfo>& ssl_info);
 
   // Handles disconnects on the TCP connected and TLS client remotes.
   void OnDisconnect();

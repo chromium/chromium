@@ -57,7 +57,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Histogram.MismatchedConstructionArguments"
-    enum="HistogramNameHash" expires_after="2024-03-03">
+    enum="HistogramNameHash" expires_after="2024-05-05">
   <owner>asvitkine@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
@@ -160,7 +160,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UMA.CleanExitBeaconConsistency3"
-    enum="UmaCleanExitConsistency3" expires_after="2023-12-04">
+    enum="UmaCleanExitConsistency3" expires_after="2024-12-04">
   <owner>caitlinfischer@google.com</owner>
   <owner>justincohen@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
@@ -191,7 +191,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="UMA.ClientIdCleared" enum="Boolean" expires_after="2024-03-10">
+<histogram name="UMA.ClientIdCleared" enum="Boolean" expires_after="2024-05-12">
   <owner>pdyson@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
@@ -271,7 +271,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UMA.EntropySourceType" enum="UmaEntropySourceType"
-    expires_after="2024-03-03">
+    expires_after="2024-05-05">
   <owner>asvitkine@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
@@ -281,7 +281,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UMA.ExternalExperiment.GroupCount" units="groups"
-    expires_after="2024-03-03">
+    expires_after="2024-05-05">
   <owner>asvitkine@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
@@ -293,7 +293,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UMA.FileMetricsProvider.AccessResult"
-    enum="FileMetricsProviderAccessResult" expires_after="2024-03-03">
+    enum="FileMetricsProviderAccessResult" expires_after="2024-05-05">
   <owner>asvitkine@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
@@ -352,7 +352,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UMA.IsClonedInstall" enum="BooleanCloned"
-    expires_after="2024-03-17">
+    expires_after="2024-05-19">
   <owner>asvitkine@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
@@ -450,7 +450,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UMA.MetricsReporting.Toggle" enum="MetricsReportingChange"
-    expires_after="2024-03-17">
+    expires_after="2024-06-02">
   <owner>asvitkine@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
@@ -731,7 +731,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UMA.ProtoCompressionRatio" units="%"
-    expires_after="2024-03-03">
+    expires_after="2024-05-05">
   <owner>asvitkine@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
@@ -811,17 +811,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Whether the session is a background or foreground session. Recorded just
     before the MetricsStateManager is created. Android Chrome only.
-  </summary>
-</histogram>
-
-<histogram name="UMA.StatisticsRecorder.LockWaitTime" units="ms"
-    expires_after="2024-03-01">
-  <owner>asvitkine@chromium.org</owner>
-  <owner>src/base/metrics/OWNERS</owner>
-  <summary>
-    Records the sum of the accumulating wait times for acquiring the lock in
-    StatisticsRecorder. This is logged with every UMA log and reset to 0 at that
-    time.
   </summary>
 </histogram>
 
@@ -945,18 +934,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="UMA.TruncatedEvents.Omnibox" units="events"
-    expires_after="M85">
-  <owner>rkaplow@chromium.org</owner>
-  <owner>src/base/metrics/OWNERS</owner>
-  <summary>
-    The number of omnibox events that existed in the metrics log before we
-    truncated them to save bandwidth.
-  </summary>
-</histogram>
-
 <histogram name="UMA.TruncatedEvents.UserAction" units="events"
-    expires_after="2024-04-28">
+    expires_after="2024-05-26">
   <owner>rkaplow@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>

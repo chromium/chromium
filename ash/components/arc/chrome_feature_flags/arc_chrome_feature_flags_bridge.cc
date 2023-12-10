@@ -75,7 +75,6 @@ void ArcChromeFeatureFlagsBridge::NotifyFeatureFlags() {
     return;
   }
   mojom::FeatureFlagsPtr flags = mojom::FeatureFlags::New();
-  flags->qs_revamp = ash::features::IsQsRevampEnabled();
   flags->jelly_colors = chromeos::features::IsJellyEnabled();
   flags->touchscreen_emulation =
       base::FeatureList::IsEnabled(kTouchscreenEmulation);
@@ -90,6 +89,10 @@ void ArcChromeFeatureFlagsBridge::NotifyFeatureFlags() {
   flags->rounded_window_radius = chromeos::features::RoundedWindowsRadius();
   flags->xdg_mode = base::FeatureList::IsEnabled(kXdgMode);
   flags->enable_pip_double_tap = ash::features::IsPipDoubleTapToResizeEnabled();
+  flags->render_arc_notifications_by_chrome =
+      ash::features::IsRenderArcNotificationsByChromeEnabled();
+  flags->game_dashboard = ash::features::IsGameDashboardEnabled();
+  flags->resize_compat = base::FeatureList::IsEnabled(arc::kResizeCompat);
 
   chrome_feature_flags_instance->NotifyFeatureFlags(std::move(flags));
 }

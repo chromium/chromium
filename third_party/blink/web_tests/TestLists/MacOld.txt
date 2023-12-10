@@ -62,7 +62,6 @@ http/tests/inspector-protocol/network/disabled-cache-navigation.js
 http/tests/navigation/location-change-repeated-from-blank.html
 inspector-protocol/layout-fonts/lang-fallback.js
 media/controls/doubletap-to-toggle-fullscreen.html
-plugins/refcount-leaks.html
 scrollbars/custom-scrollbar-thumb-width-changed-on-inactive-pseudo.html
 scrollbars/hidden-scrollbars-invisible.html
 tables/mozilla_expected_failures/bugs/bug89315.html
@@ -82,7 +81,6 @@ virtual/keepalive-in-browser-migration/external/wpt/fetch/metadata/window-open.h
 virtual/oopr-canvas2d/fast/canvas/OffscreenCanvas-2d-drawImage.html
 virtual/pending-beacon/external/wpt/pending-beacon/pending_beacon-sendonhidden.tentative.https.window.html
 virtual/pending-beacon/external/wpt/pending-beacon/pending_post_beacon-cors.tentative.https.window.html
-virtual/plz-dedicated-worker/external/wpt/fetch/api/basic/scheme-blob.sub.any.html
 virtual/produce-compile-hints/external/wpt/fetch/api/basic/scheme-blob.sub.any.html
 virtual/produce-compile-hints/external/wpt/fetch/api/basic/scheme-blob.sub.any.worker.html
 virtual/reduce-accept-language/http/tests/inspector-protocol/network/navigate-iframe-in2out.js

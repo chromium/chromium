@@ -160,11 +160,9 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
   // be used for any other autofill activity.
   bool TextDidChangeInTextField(const blink::WebInputElement& element);
 
-  // Function that should be called whenever the value of |element| changes due
-  // to user input. This is separate from TextDidChangeInTextField() as that
-  // function may trigger UI and should only be called when other UI won't be
-  // shown.
-  void UpdateStateForTextChange(const blink::WebInputElement& element);
+  // Called from AutofillAgent::UpdateStateForTextChange() to do
+  // password-manager specific work.
+  void UpdatePasswordStateForTextChange(const blink::WebInputElement& element);
 
   // Instructs `autofill_agent_` to track the autofilled `element`.
   void TrackAutofilledElement(const blink::WebFormControlElement& element);
@@ -242,19 +240,17 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
   void DidCommitProvisionalLoad(ui::PageTransition transition) override;
   void OnDestruct() override;
 
-  const scoped_refptr<FieldDataManager> GetFieldDataManager() {
-    return field_data_manager_;
-  }
-
   bool IsPrerendering() const;
 
   // Check if the given element is a username input field.
   bool IsUsernameInputField(const blink::WebInputElement& input_element) const;
 
-  const blink::WebFormControlElement& focused_element() const {
+  blink::WebFormControlElement focused_element() const {
     CHECK(autofill_agent_);
     return autofill_agent_->focused_element();
   }
+
+  AutofillAgent& autofill_agent() { return *autofill_agent_; }
 
  private:
   using OnPasswordField = base::StrongAlias<class OnPasswordFieldTag, bool>;
@@ -416,8 +412,6 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
   // only one value per |PasswordAutofillAgent| instance.
   void LogPrefilledUsernameFillOutcome(PrefilledUsernameFillOutcome outcome);
 
-  void OnFrameDetached();
-
   void HidePopup();
 
   // Returns pair(username_element, password_element) based on renderer ids from
@@ -475,22 +469,19 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
   void NotifyPasswordManagerAboutClearedForm(
       const blink::WebFormElement& cleared_form);
 
-  // The logins we have filled so far with their associated info.
+  FieldDataManager& field_data_manager() const {
+    return autofill_agent_->field_data_manager();
+  }
+
+  // A map from WebInput elements to `PasswordInfo` for all elements that
+  // password manager has fill information for.
   WebInputToPasswordInfoMap web_input_to_password_info_;
-  // A (sort-of) reverse map to |web_input_to_password_info_|.
+  // A (sort-of) reverse map to `web_input_to_password_info_`.
   PasswordToLoginMap password_to_username_;
-  // The chronologically last insertion into |web_input_to_password_info_|.
+  // The chronologically last insertion into `web_input_to_password_info_`.
   WebInputToPasswordInfoMap::iterator last_supplied_password_info_iter_;
 
   bool should_show_popup_without_passwords_ = false;
-
-  // Map WebFormControlElement to the pair of:
-  // 1) The most recent text that user typed or PasswordManager autofilled in
-  // input elements. Used for storing username/password before JavaScript
-  // changes them.
-  // 2) Field properties mask, i.e. whether the field was autofilled, modified
-  // by user, etc. (see FieldPropertiesMask).
-  const scoped_refptr<FieldDataManager> field_data_manager_;
 
   PasswordValueGatekeeper gatekeeper_;
 
@@ -513,7 +504,7 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
   // Records the username typed before suggestions preview.
   std::u16string username_query_prefix_;
 
-  raw_ptr<AutofillAgent> autofill_agent_;
+  raw_ptr<AutofillAgent> autofill_agent_ = nullptr;
 
   raw_ptr<PasswordGenerationAgent, ExperimentalRenderer>
       password_generation_agent_;  // Weak reference.

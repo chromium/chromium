@@ -1,0 +1,22 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Notifications: Document for closing a notification in the "pagehide" event.</title>
+  </head>
+  <body>
+    <script>
+      var notification = new Notification('My Notification', {
+          body: 'Created from a window.',
+          icon: '/icon.png',
+      });
+
+      opener.postMessage('opened', '*');
+
+      window.addEventListener('pagehide', function() {
+          notification.close();
+
+          opener.postMessage('closed', '*');
+      });
+    </script>
+  </body>
+</html>

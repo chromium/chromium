@@ -4,9 +4,7 @@
 
 package org.chromium.chrome.browser.keyboard_accessory;
 
-/**
- * Use {@link #createComponent()} to instantiate a {@link ManualFillingComponent}.
- */
+/** Use {@link #createComponent()} to instantiate a {@link ManualFillingComponent}. */
 public class ManualFillingComponentFactory {
     private ManualFillingComponentFactory() {}
 

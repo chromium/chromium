@@ -16,7 +16,7 @@ class FullscreenPixelTest : public AshTestBase {
   FullscreenPixelTest() : scoped_features_(chromeos::features::kJelly) {}
 
   // AshTestBase:
-  absl::optional<pixel_test::InitParams> CreatePixelTestInitParams()
+  std::optional<pixel_test::InitParams> CreatePixelTestInitParams()
       const override {
     return pixel_test::InitParams();
   }
@@ -28,7 +28,7 @@ class FullscreenPixelTest : public AshTestBase {
 // Verifies the primary fullscreen of an active user session.
 TEST_F(FullscreenPixelTest, VerifyDefaultPrimaryDisplay) {
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "primary_display", /*revision_number=*/5, Shell::GetPrimaryRootWindow()));
+      "primary_display", /*revision_number=*/6, Shell::GetPrimaryRootWindow()));
 }
 
 }  // namespace ash

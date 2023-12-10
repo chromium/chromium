@@ -1,6 +1,4 @@
 This is a testharness.js-based test.
-[PASS] Insert text into the inline element styled with border
-[PASS] Insert text into the inline element styled with padding
 [FAIL] Insert text into the unstyled inline element
   promise_test: Unhandled rejection with value: object "Error: element event-dispatch intercepted error"
 [FAIL] Insert text into the unstyled inline element with the styled ::before pseudoelement

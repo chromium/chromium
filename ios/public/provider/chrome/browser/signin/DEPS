@@ -7,12 +7,12 @@ include_rules = [
   "+ios/chrome/browser/shared/model/browser/browser.h",
   "+ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h",
   "+ios/chrome/browser/shared/coordinator/scene/scene_state.h",
-  "+ios/chrome/browser/signin/capabilities_dict.h",
-  "+ios/chrome/browser/signin/capabilities_types.h",
-  "+ios/chrome/browser/signin/system_identity.h",
-  "+ios/chrome/browser/signin/system_identity_manager.h",
-  "+ios/chrome/browser/signin/trusted_vault_client_backend.h",
-  "+ios/chrome/browser/signin/trusted_vault_configuration.h",
+  "+ios/chrome/browser/signin/model/capabilities_dict.h",
+  "+ios/chrome/browser/signin/model/capabilities_types.h",
+  "+ios/chrome/browser/signin/model/system_identity.h",
+  "+ios/chrome/browser/signin/model/system_identity_manager.h",
+  "+ios/chrome/browser/signin/model/trusted_vault_client_backend.h",
+  "+ios/chrome/browser/signin/model/trusted_vault_configuration.h",
   "+ios/chrome/browser/ui/first_run/first_run_screen_delegate.h",
   "+ios/chrome/browser/ui/promos_manager/standard_promo_display_handler.h",
 ]
@@ -22,10 +22,10 @@ specific_include_rules = {
     "+ui/base/test/ios/ui_image_test_utils.h",
   ],
   "fake_chrome_identity_service\.mm": [
-    "+ios/chrome/browser/signin/fake_system_identity.h",
-    "+ios/chrome/browser/signin/fake_account_details_view_controller.h",
+    "+ios/chrome/browser/signin/model/fake_system_identity.h",
+    "+ios/chrome/browser/signin/model/fake_account_details_view_controller.h",
   ],
   "chrome_identity_service_unittest\.mm": [
-    "+ios/chrome/browser/signin/fake_system_identity.h",
+    "+ios/chrome/browser/signin/model/fake_system_identity.h",
   ],
 }

@@ -44,6 +44,7 @@
 namespace blink {
 
 class Document;
+class Element;
 class LayoutSVGRoot;
 class LocalFrame;
 class Node;
@@ -116,6 +117,9 @@ class CORE_EXPORT SVGImage final : public Image {
 
   void SetPreferredColorScheme(
       mojom::blink::PreferredColorScheme preferred_color_scheme);
+
+  // Introspective service hatch for mask-image. Don't abuse for anything else.
+  Element* GetResourceElement(const AtomicString& id) const;
 
  protected:
   // Whether or not size is available yet.

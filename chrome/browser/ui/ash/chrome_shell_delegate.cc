@@ -40,6 +40,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/sessions/session_restore.h"
+#include "chrome/browser/ui/ash/api/tasks/chrome_tasks_delegate.h"
 #include "chrome/browser/ui/ash/back_gesture_contextual_nudge_delegate.h"
 #include "chrome/browser/ui/ash/capture_mode/chrome_capture_mode_delegate.h"
 #include "chrome/browser/ui/ash/chrome_accelerator_prefs_delegate.h"
@@ -96,7 +97,7 @@ const char kKeyboardShortcutHelpPageUrl[] =
 
 // Browser tests are always started with --disable-logging-redirect, so we need
 // independent option here.
-absl::optional<bool> disable_logging_redirect_for_testing;
+std::optional<bool> disable_logging_redirect_for_testing;
 
 // Returns the TabStripModel that associates with |window| if the given |window|
 // contains a browser frame, otherwise returns nullptr.
@@ -118,6 +119,8 @@ content::WebContents* GetActiveWebContentsForNativeBrowserWindow(
 chrome::FeedbackSource ToChromeFeedbackSource(
     ash::ShellDelegate::FeedbackSource source) {
   switch (source) {
+    case ash::ShellDelegate::FeedbackSource::kFocusMode:
+      return chrome::FeedbackSource::kFeedbackSourceFocusMode;
     case ash::ShellDelegate::FeedbackSource::kGameDashboard:
       return chrome::FeedbackSource::kFeedbackSourceGameDashboard;
     case ash::ShellDelegate::FeedbackSource::kWindowLayoutMenu:
@@ -191,6 +194,11 @@ ChromeShellDelegate::CreateSystemSoundsDelegate() const {
   return std::make_unique<SystemSoundsDelegateImpl>();
 }
 
+std::unique_ptr<ash::api::TasksDelegate>
+ChromeShellDelegate::CreateTasksDelegate() const {
+  return std::make_unique<ash::api::ChromeTasksDelegate>();
+}
+
 std::unique_ptr<ash::UserEducationDelegate>
 ChromeShellDelegate::CreateUserEducationDelegate() const {
   return std::make_unique<ChromeUserEducationDelegate>();
@@ -231,7 +239,7 @@ bool ChromeShellDelegate::AllowDefaultTouchActions(gfx::NativeWindow window) {
       render_widget_host_view->GetRenderWidgetHost();
   if (!render_widget_host)
     return true;
-  absl::optional<cc::TouchAction> allowed_touch_action =
+  std::optional<cc::TouchAction> allowed_touch_action =
       render_widget_host->GetAllowedTouchAction();
   return allowed_touch_action.has_value()
              ? *allowed_touch_action != cc::TouchAction::kNone
@@ -387,6 +395,12 @@ void ChromeShellDelegate::OpenFeedbackDialog(
   chrome::OpenFeedbackDialog(/*browser=*/nullptr,
                              ToChromeFeedbackSource(source),
                              description_template);
+}
+
+void ChromeShellDelegate::OpenProfileManager() {
+  if (crosapi::BrowserManager::Get()->IsRunning()) {
+    crosapi::BrowserManager::Get()->OpenProfileManager();
+  }
 }
 
 // static

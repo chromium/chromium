@@ -82,6 +82,11 @@ void LacrosSaveHandler::OnBrowserWindowAdded(aura::Window* const window,
   uint32_t browser_session_id =
       static_cast<uint32_t>(window->GetProperty(app_restore::kWindowIdKey));
 
+  // Ephemeral windows have a`browser_session_id` of 0 by default.
+  if (!browser_session_id) {
+    return;
+  }
+
   auto it = window_candidates_.find(lacros_window_id);
   if (it != window_candidates_.end() &&
       it->second.window_id != browser_session_id) {

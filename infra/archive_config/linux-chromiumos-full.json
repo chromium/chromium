@@ -13,8 +13,6 @@
                 "libGLESv2.so",
                 "libminigbm.so",
                 "libmojo_core.so",
-                "libmojo_core_arc32.so",
-                "libmojo_core_arc64.so",
                 "MEIPreload/manifest.json",
                 "MEIPreload/preloaded_data.pb",
                 "nacl_helper",

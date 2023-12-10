@@ -67,6 +67,9 @@ class DownloadUrlSBClient : public SafeBrowsingDatabaseManager::Client,
 
   void UpdateDownloadCheckStats(SBStatsType stat_type);
 
+  void CreateAndMaybeSendClientSafeBrowsingWarningShownReport(
+      std::string post_data);
+
   // The DownloadItem we are checking. Must be accessed only on UI thread.
   raw_ptr<download::DownloadItem> item_;
 

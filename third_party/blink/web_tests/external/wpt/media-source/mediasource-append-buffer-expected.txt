@@ -1,27 +1,5 @@
 This is a testharness.js-based test.
-[PASS] Test SourceBuffer.appendBuffer() event dispatching.
-[PASS] Test SourceBuffer.appendBuffer() call during a pending appendBuffer().
-[PASS] Test SourceBuffer.abort() call during a pending appendBuffer().
-[PASS] Test SourceBuffer.appendBuffer() triggering an 'ended' to 'open' transition.
-[PASS] Test zero byte SourceBuffer.appendBuffer() call triggering an 'ended' to 'open' transition.
-[PASS] Test MediaSource.removeSourceBuffer() call during a pending appendBuffer().
-[PASS] Test set MediaSource.duration during a pending appendBuffer() for one of its SourceBuffers.
-[PASS] Test MediaSource.endOfStream() during a pending appendBuffer() for one of its SourceBuffers.
-[PASS] Test set SourceBuffer.timestampOffset during a pending appendBuffer().
-[PASS] Test appending an empty ArrayBufferView.
-[PASS] Test appending a neutered ArrayBufferView.
-[PASS] Test appending an empty ArrayBuffer.
-[PASS] Test appending a neutered ArrayBuffer.
-[PASS] Test appendBuffer with partial init segments.
-[PASS] Test appendBuffer with partial media segments.
 [FAIL] Test appendBuffer events order.
   assert_true: expected true got false
-[PASS] Test abort in the middle of an initialization segment.
-[PASS] Test abort after removing sourcebuffer.
-[PASS] Test abort after readyState is ended following init segment and media segment.
-[PASS] Test abort after appendBuffer update ends.
-[PASS] Test appending null.
-[PASS] Test appending after removeSourceBuffer().
-[PASS] Test slow appending does not trigger stalled events.
 Harness: the test ran to completion.
 

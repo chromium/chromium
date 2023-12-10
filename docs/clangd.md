@@ -119,8 +119,7 @@ https://clangd.llvm.org/installation.html#editor-plugins).
     * Optional: You may want to add `--header-insertion=never` to the clangd
       flags, so that your editor doesn't automatically add incorrect #include
       lines. The feature doesn't correctly handle some common Chromium headers
-      like `base/strings/string_piece_forward.h` and
-      `base/functional/callback_forward.h`
+      like `base/functional/callback_forward.h`.
 
 ## Background Indexing
 
@@ -130,8 +129,9 @@ compilation database). The index improves code navigation features
 
 * clangd only uses idle cores to build the index, you can limit the total amount
   of cores by passing the *-j=\<number\>* flag;
-* the index is saved to the `.clangd/index` in the project root; index shards
-  for common headers e.g. STL will be stored in *$HOME/.clangd/index*;
+* the index is saved to the `.cache/clangd/index` in the project root; index
+  shards for common headers e.g. STL will be stored in
+  *$HOME/.cache/clangd/index*;
 * background indexing can be disabled by the `--background-index=false` flag;
   Note that, disabling background-index will limit clangd’s knowledge about your
   codebase to files you are currently editing.

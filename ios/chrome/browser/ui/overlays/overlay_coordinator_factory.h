@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-#include "ios/chrome/browser/overlays/public/overlay_modality.h"
+#include "ios/chrome/browser/overlays/model/public/overlay_modality.h"
 
 class Browser;
 class OverlayRequestCoordinatorDelegate;

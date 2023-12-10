@@ -25,6 +25,17 @@
   font-weight: 500;
 }
 
+.tab-organization-link {
+  color: var(--color-link-foreground-on-bubble-footer);
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 400;
+  outline-color: var(--color-button-foreground);
+  outline-offset: 2px;
+  text-decoration: underline;
+  width: fit-content;
+}
+
 .tab-organization-text-container {
   display: flex;
   flex-direction: column;
@@ -33,23 +44,37 @@
 
 @keyframes displayOut {
   0% {
-    display: block;
+    height: auto;
+    visibility: visible;
+    position: relative;
   }
 
-  50%,
+  50% {
+    visibility: visible;
+  }
+
   100% {
-    display: none;
+    height: 0;
+    visibility: hidden;
+    position: absolute;
   }
 }
 
 @keyframes displayIn {
-  0%,
+  0% {
+    height: 0;
+    visibility: hidden;
+    position: absolute;
+  }
+
   50% {
-    display: none;
+    visibility: hidden;
   }
 
   100% {
-    display: block;
+    height: auto;
+    visibility: visible;
+    position: relative;
   }
 }
 

@@ -52,8 +52,11 @@ class LargeMessageCardView extends FrameLayout {
     public LargeMessageCardView(Context context, AttributeSet attrs) {
         super(context, attrs);
         mContext = context;
-        mLandscapeSidePadding = (int) context.getResources().getDimension(
-                R.dimen.tab_grid_large_message_side_padding_landscape);
+        mLandscapeSidePadding =
+                (int)
+                        context.getResources()
+                                .getDimension(
+                                        R.dimen.tab_grid_large_message_side_padding_landscape);
     }
 
     @Override
@@ -73,8 +76,10 @@ class LargeMessageCardView extends FrameLayout {
             int closeButtonSize =
                     (int) getResources().getDimension(R.dimen.tab_grid_close_button_size);
             Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.btn_close);
-            sCloseButtonBitmapWeakRef = new WeakReference<>(
-                    Bitmap.createScaledBitmap(bitmap, closeButtonSize, closeButtonSize, true));
+            sCloseButtonBitmapWeakRef =
+                    new WeakReference<>(
+                            Bitmap.createScaledBitmap(
+                                    bitmap, closeButtonSize, closeButtonSize, true));
         }
         mCloseButton.setImageBitmap(sCloseButtonBitmapWeakRef.get());
     }
@@ -152,9 +157,7 @@ class LargeMessageCardView extends FrameLayout {
         mCloseButton.setOnClickListener(listener);
     }
 
-    /**
-     * Setup the price info box.
-     */
+    /** Setup the price info box. */
     void setupPriceInfoBox(@Nullable ShoppingPersistedTabData.PriceDrop priceDrop) {
         if (priceDrop != null) {
             mPriceInfoBox.setPriceStrings(priceDrop.price, priceDrop.previousPrice);
@@ -213,9 +216,15 @@ class LargeMessageCardView extends FrameLayout {
      */
     public static void showPriceDropTooltip(View view) {
         ViewRectProvider rectProvider = new ViewRectProvider(view);
-        TextBubble textBubble = new TextBubble(view.getContext(), view,
-                R.string.price_drop_spotted_lower_price, R.string.price_drop_spotted_lower_price,
-                true, rectProvider, ChromeAccessibilityUtil.get().isAccessibilityEnabled());
+        TextBubble textBubble =
+                new TextBubble(
+                        view.getContext(),
+                        view,
+                        R.string.price_drop_spotted_lower_price,
+                        R.string.price_drop_spotted_lower_price,
+                        true,
+                        rectProvider,
+                        ChromeAccessibilityUtil.get().isAccessibilityEnabled());
         textBubble.setFocusable(true);
         textBubble.setDismissOnTouchInteraction(true);
         textBubble.show();
@@ -229,13 +238,13 @@ class LargeMessageCardView extends FrameLayout {
     void updateMessageCardColor(boolean isIncognito) {
         setBackground(isIncognito);
         MessageCardViewUtils.setTitleTextAppearance(
-                mTitle, isIncognito, /*isLargeMessageCard=*/true);
+                mTitle, isIncognito, /* isLargeMessageCard= */ true);
         MessageCardViewUtils.setDescriptionTextAppearance(
-                mDescription, isIncognito, /*isLargeMessageCard=*/true);
+                mDescription, isIncognito, /* isLargeMessageCard= */ true);
         MessageCardViewUtils.setActionButtonTextAppearance(
-                mActionButton, isIncognito, /*isLargeMessageCard=*/true);
+                mActionButton, isIncognito, /* isLargeMessageCard= */ true);
         MessageCardViewUtils.setActionButtonBackgroundColor(
-                mActionButton, isIncognito, /*isLargeMessageCard=*/true);
+                mActionButton, isIncognito, /* isLargeMessageCard= */ true);
         MessageCardViewUtils.setSecondaryActionButtonColor(mSecondaryActionButton, isIncognito);
         MessageCardViewUtils.setCloseButtonTint(mCloseButton, isIncognito);
     }
@@ -270,13 +279,16 @@ class LargeMessageCardView extends FrameLayout {
      * @param isIncognito Whether the resource is used for incognito mode.
      */
     private void setBackground(boolean isIncognito) {
-        final int elevationDimenId = ChromeFeatureList.sBaselineGm3SurfaceColors.isEnabled()
-                ? R.dimen.default_elevation_2
-                : R.dimen.card_elevation;
+        final int elevationDimenId =
+                ChromeFeatureList.sBaselineGm3SurfaceColors.isEnabled()
+                        ? R.dimen.default_elevation_2
+                        : R.dimen.card_elevation;
 
-        ColorStateList backgroundTint = ColorStateList.valueOf((isIncognito)
-                        ? mContext.getColor(R.color.incognito_card_bg_color)
-                        : ChromeColors.getSurfaceColor(mContext, elevationDimenId));
+        ColorStateList backgroundTint =
+                ColorStateList.valueOf(
+                        (isIncognito)
+                                ? mContext.getColor(R.color.incognito_card_bg_color)
+                                : ChromeColors.getSurfaceColor(mContext, elevationDimenId));
         mMaterialCardViewNoShadow.setBackgroundTintList(backgroundTint);
     }
 }

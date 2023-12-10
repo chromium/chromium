@@ -104,7 +104,7 @@ class CreateDiskImage : public BorealisTask {
   void OnConciergeAvailable(BorealisContext* context, bool is_available);
   void OnCreateDiskImage(
       BorealisContext* context,
-      absl::optional<vm_tools::concierge::CreateDiskImageResponse> response);
+      std::optional<vm_tools::concierge::CreateDiskImageResponse> response);
   base::WeakPtrFactory<CreateDiskImage> weak_factory_{this};
 };
 
@@ -117,10 +117,10 @@ class StartBorealisVm : public BorealisTask {
 
  private:
   void StartBorealisWithExternalDisk(BorealisContext* context,
-                                     absl::optional<base::File> external_disk);
+                                     std::optional<base::File> external_disk);
   void OnStartBorealisVm(
       BorealisContext* context,
-      absl::optional<vm_tools::concierge::StartVmResponse> response);
+      std::optional<vm_tools::concierge::StartVmResponse> response);
   base::WeakPtrFactory<StartBorealisVm> weak_factory_{this};
 };
 

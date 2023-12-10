@@ -5,7 +5,6 @@
 <translation id="1076394037877376434"><ph name="PAGE_NUMBER" />. oldal törlése</translation>
 <translation id="1113173431709655881">Kamera mód</translation>
 <translation id="1153190633558910465">Rács ki</translation>
-<translation id="1175958423215084756">Link észlelve. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213"><ph name="PAGE_NUMBER" />. oldal törölve</translation>
 <translation id="1258009455399840361">Forgatás 90 fokkal az óramutató járásával megegyezően</translation>
 <translation id="1417314334557041815"><ph name="INDEX" />. oldal szerkesztése</translation>
@@ -60,14 +59,12 @@
 <translation id="3642192109456033823">Videó feldolgozása…</translation>
 <translation id="3789724198583203151">Forgatás 90 fokkal az óramutató járásával ellentétesen</translation>
 <translation id="3810838688059735925">Videó</translation>
-<translation id="3892148308691398805">Szöveg másolása</translation>
 <translation id="4060608699153044055">Nem tud felvételt készíteni, mert az eszközön kevés a tárhely. A felvétel elindításához tárhelyet kell felszabadítania az eszközön.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
 <translation id="4118525110028899586">Felvétel szüneteltetése</translation>
 <translation id="4121305183798804752">Dokumentum észlelve</translation>
 <translation id="414641094616694804">A kamera felbontását nem lehet módosítani</translation>
 <translation id="4176463684765177261">Letiltva</translation>
-<translation id="4269820728363426813">Link másolása</translation>
 <translation id="428234092390943511">Oldal indexképe</translation>
 <translation id="4349714250734879769">Keretek átméretezése Chrome-mal</translation>
 <translation id="4383571725254449280">Teljesítménynaplók nyomtatása</translation>
@@ -144,7 +141,6 @@ Ha visszajelzése a kép vagy a videó minőségével kapcsolatos, kérjük, mel
 <translation id="7726641833034062494">Normál videó rögzítése</translation>
 <translation id="7748344063862150053">Dokumentum jobb felső sarka</translation>
 <translation id="7933675232020478311">Mozgatás a jobb alsó sarok irányába</translation>
-<translation id="7983668134180549431">Szöveg észlelve.</translation>
 <translation id="8079255378695216066">Nem sikerült elindítani a felvételt</translation>
 <translation id="8120146556401698679">Pásztázás, döntés, nagyítás/kicsinyítés</translation>
 <translation id="8131740175452115882">Megerősítés</translation>
@@ -163,6 +159,7 @@ Ha visszajelzése a kép vagy a videó minőségével kapcsolatos, kérjük, mel
 <translation id="8870695351537079478">Nem sikerült elindítani a felvételt.</translation>
 <translation id="8880167521484863515">4:3</translation>
 <translation id="8903921497873541725">Nagyítás</translation>
+<translation id="8926890870105777777">Csatlakozás a(z) „<ph name="WIFINAME" />” hálózathoz</translation>
 <translation id="9045010116236796332">A dokumentum összes szélének a kereten belül kell lennie</translation>
 <translation id="9045155556724273246">10 másodperc</translation>
 <translation id="906331135292332864">Kép feldolgozása…</translation>

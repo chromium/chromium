@@ -22,6 +22,8 @@ import {OobeDialogHostBehavior} from '../../components/behaviors/oobe_dialog_hos
 import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.js';
 import {OOBE_UI_STATE} from '../../components/display_manager_types.js';
 
+import {getTemplate} from './arc_vm_data_migration.html.js';
+
 // Keep in sync with ArcVmDataMigrationScreenView::UIState.
 const ArcVmDataMigrationUIState = {
   LOADING: 'loading',
@@ -63,7 +65,7 @@ class ArcVmDataMigrationScreen extends ArcVmDataMigrationScreenElementBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

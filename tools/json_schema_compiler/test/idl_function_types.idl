@@ -14,8 +14,10 @@ namespace idl_function_types {
     static void blah(MyUnionCallback callback);
     static void badabish(MyOptionalUnionCallback callback);
     static void union_params((long or DOMString) x);
-    [supportsPromises] static void promise_supporting(MyCallback callback);
-    [supportsPromises] static void promise_supporting_with_params(
+    [doesNotSupportPromises="Test"]
+    static void non_promise_supporting(MyCallback callback);
+    [doesNotSupportPromises="Test"]
+    static void non_promise_supporting_with_params(
         long z, (long or DOMString) y, MyCallback callback);
   };
 };

@@ -62,6 +62,7 @@
 #include "content/browser/browser_url_handler_impl.h"
 #include "content/browser/dom_storage/dom_storage_context_wrapper.h"
 #include "content/browser/dom_storage/session_storage_namespace_impl.h"
+#include "content/browser/preloading/prerender/prerender_host.h"
 #include "content/browser/process_lock.h"
 #include "content/browser/renderer_host/back_forward_cache_impl.h"
 #include "content/browser/renderer_host/debug_urls.h"
@@ -74,6 +75,7 @@
 #include "content/browser/renderer_host/navigation_transitions/navigation_entry_screenshot_cache.h"
 #include "content/browser/renderer_host/navigation_transitions/navigation_entry_screenshot_manager.h"
 #include "content/browser/renderer_host/navigator.h"
+#include "content/browser/renderer_host/page_delegate.h"
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
 #include "content/browser/renderer_host/system_entropy_utils.h"
@@ -2541,11 +2543,6 @@ void NavigationControllerImpl::DeleteNavigationEntries(
   delegate()->NotifyNavigationEntriesDeleted();
 }
 
-bool NavigationControllerImpl::IsEntryMarkedToBeSkipped(int index) {
-  auto* entry = GetEntryAtIndex(index);
-  return entry && entry->should_skip_on_back_forward_ui();
-}
-
 BackForwardCacheImpl& NavigationControllerImpl::GetBackForwardCache() {
   return back_forward_cache_;
 }
@@ -4531,6 +4528,39 @@ void NavigationControllerImpl::UpdateStateForFrame(
   NotifyEntryChanged(entry);
 }
 
+namespace {
+
+// The caller is responsible for ensuring the entry is same-origin to the
+// origin to be committed.
+blink::mojom::NavigationApiHistoryEntryPtr ToNavigationApiHistoryEntry(
+    FrameNavigationEntry* frame_entry,
+    int64_t pending_document_sequence_number) {
+  blink::ExplodedPageState exploded_state;
+  if (!blink::DecodePageState(frame_entry->page_state().ToEncodedData(),
+                              &exploded_state)) {
+    return nullptr;
+  }
+  blink::ExplodedFrameState frame_state = exploded_state.top;
+
+  // If the document represented by this FNE hid its full url from appearing in
+  // a referrer via a "no-referrer" or "origin" referrer policy, censor the url
+  // in the navigation API as well (unless we're navigating to that document).
+  std::u16string url;
+  if (pending_document_sequence_number ==
+          frame_entry->document_sequence_number() ||
+      !frame_entry->protect_url_in_navigation_api()) {
+    url = frame_state.url_string.value_or(std::u16string());
+  }
+
+  return blink::mojom::NavigationApiHistoryEntry::New(
+      frame_state.navigation_api_key.value_or(std::u16string()),
+      frame_state.navigation_api_id.value_or(std::u16string()), url,
+      frame_state.item_sequence_number, frame_state.document_sequence_number,
+      frame_state.navigation_api_state);
+}
+
+}  // namespace
+
 std::vector<blink::mojom::NavigationApiHistoryEntryPtr>
 NavigationControllerImpl::PopulateSingleNavigationApiHistoryEntryVector(
     Direction direction,
@@ -4539,7 +4569,8 @@ NavigationControllerImpl::PopulateSingleNavigationApiHistoryEntryVector(
     FrameTreeNode* node,
     SiteInstance* site_instance,
     int64_t pending_item_sequence_number,
-    int64_t pending_document_sequence_number) {
+    int64_t pending_document_sequence_number,
+    int& last_index_checked) {
   std::vector<blink::mojom::NavigationApiHistoryEntryPtr> entries;
   if (GetLastCommittedEntry()->IsInitialEntry()) {
     // Don't process the initial entry.
@@ -4550,6 +4581,7 @@ NavigationControllerImpl::PopulateSingleNavigationApiHistoryEntryVector(
   int64_t previous_item_sequence_number = pending_item_sequence_number;
   for (int i = entry_index + offset; i >= 0 && i < GetEntryCount();
        i += offset) {
+    last_index_checked = i;
     FrameNavigationEntry* frame_entry = GetEntryAtIndex(i)->GetFrameEntry(node);
     if (!frame_entry)
       break;
@@ -4557,6 +4589,9 @@ NavigationControllerImpl::PopulateSingleNavigationApiHistoryEntryVector(
     // the same origin as the document being committed. Check the committed
     // origin, or if that is not available (during restore), check against the
     // FNE's url.
+    // TODO(crbug.com/1209092): Move this into ToNavigationApiHistoryEntry()
+    // once we can be sure that entries with the same ISN will never be
+    // cross-origin.
     url::Origin frame_entry_origin =
         frame_entry->committed_origin().value_or(url::Origin::Resolve(
             frame_entry->url(),
@@ -4565,30 +4600,9 @@ NavigationControllerImpl::PopulateSingleNavigationApiHistoryEntryVector(
       break;
     if (previous_item_sequence_number == frame_entry->item_sequence_number())
       continue;
-    blink::ExplodedPageState exploded_page_state;
-    if (blink::DecodePageState(frame_entry->page_state().ToEncodedData(),
-                               &exploded_page_state)) {
-      blink::ExplodedFrameState frame_state = exploded_page_state.top;
-
-      // If the document represented by this FNE hid its full url from appearing
-      // in a referrer via a "no-referrer" or "origin" referrer policy, censor
-      // the url in the navigation API as well (unless we're navigating to that
-      // document).
-      std::u16string url;
-      if (pending_document_sequence_number ==
-              frame_entry->document_sequence_number() ||
-          !frame_entry->protect_url_in_navigation_api()) {
-        url = frame_state.url_string.value_or(std::u16string());
-      }
-
-      blink::mojom::NavigationApiHistoryEntryPtr entry =
-          blink::mojom::NavigationApiHistoryEntry::New(
-              frame_state.navigation_api_key.value_or(std::u16string()),
-              frame_state.navigation_api_id.value_or(std::u16string()), url,
-              frame_state.item_sequence_number,
-              frame_state.document_sequence_number,
-              frame_state.navigation_api_state);
-
+    if (blink::mojom::NavigationApiHistoryEntryPtr entry =
+            ToNavigationApiHistoryEntry(frame_entry,
+                                        pending_document_sequence_number)) {
       DCHECK(entry->url.empty() ||
              pending_origin.CanBeDerivedFrom(GURL(entry->url)));
       entries.push_back(std::move(entry));
@@ -4660,18 +4674,54 @@ NavigationControllerImpl::GetNavigationApiHistoryEntryVectors(
     return entry_arrays;
   }
 
+  int backmost_index = entry_index;
   entry_arrays->back_entries = PopulateSingleNavigationApiHistoryEntryVector(
       Direction::kBack, entry_index, pending_origin, node, site_instance.get(),
-      pending_item_sequence_number, pending_document_sequence_number);
+      pending_item_sequence_number, pending_document_sequence_number,
+      backmost_index);
 
   // Don't populate forward entries if they will be truncated by a new entry.
+  int forwardmost_index = entry_index;
   if (!will_create_new_entry) {
     entry_arrays->forward_entries =
         PopulateSingleNavigationApiHistoryEntryVector(
             Direction::kForward, entry_index, pending_origin, node,
             site_instance.get(), pending_item_sequence_number,
-            pending_document_sequence_number);
+            pending_document_sequence_number, forwardmost_index);
   }
+
+  // If the previous entry is within the block of contiguous entries being
+  // provided, then report it as the `previous_entry`.
+  FrameNavigationEntry* previous_entry = nullptr;
+  if (frame_tree_->is_prerendering()) {
+    int initiator_id = PrerenderHost::GetFromFrameTreeNode(*node)
+                           .initiator_frame_tree_node_id();
+    if (initiator_id != RenderFrameHost::kNoFrameTreeNodeId) {
+      auto* initiator_node = FrameTreeNode::GloballyFindByID(initiator_id);
+      previous_entry = initiator_node->frame_tree()
+                           .controller()
+                           .GetLastCommittedEntry()
+                           ->GetFrameEntry(initiator_node);
+    }
+  } else if (GetLastCommittedEntryIndex() != -1 &&
+             GetLastCommittedEntryIndex() >= backmost_index &&
+             GetLastCommittedEntryIndex() <= forwardmost_index) {
+    previous_entry = GetLastCommittedEntry()->GetFrameEntry(node);
+  }
+  if (previous_entry) {
+    url::Origin previous_entry_origin =
+        previous_entry->committed_origin().value_or(url::Origin::Resolve(
+            previous_entry->url(),
+            previous_entry->initiator_origin().value_or(url::Origin())));
+    // TODO(crbug.com/1209092): Move this into ToNavigationApiHistoryEntry()
+    // once we can be sure that entries with the same ISN will never be
+    // cross-origin.
+    if (pending_origin.IsSameOriginWith(previous_entry_origin)) {
+      entry_arrays->previous_entry = ToNavigationApiHistoryEntry(
+          previous_entry, pending_document_sequence_number);
+    }
+  }
+
   return entry_arrays;
 }
 
@@ -4749,7 +4799,10 @@ bool NavigationControllerImpl::ShouldMaintainTrivialSessionHistory(
   // TODO(https://crbug.com/1197384): We may have to add portals in addition to
   // prerender and fenced frames. This should be kept in sync with
   // LocalFrame version, LocalFrame::ShouldMaintainTrivialSessionHistory.
+  // The preview mode appears as prerendered page in renderers, and
+  // GetDocument()->IsPrerendering() covers the case together.
   return frame_tree_->is_prerendering() ||
+         frame_tree_->page_delegate()->IsInPreviewMode() ||
          frame_tree_node->IsInFencedFrameTree();
 }
 

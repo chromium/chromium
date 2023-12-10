@@ -39,7 +39,7 @@ FactoryPingEmbargoState GetPingEmbargoState(
     StatisticsProvider* statistics_provider,
     const std::string& key_name,
     const char* uma_prefix) {
-  const absl::optional<base::StringPiece> ping_embargo_end_date =
+  const std::optional<base::StringPiece> ping_embargo_end_date =
       statistics_provider->GetMachineStatistic(key_name);
   if (!ping_embargo_end_date) {
     return FactoryPingEmbargoState::kMissingOrMalformed;

@@ -36,6 +36,7 @@ from typing import List, Optional
 
 from blinkpy.common import exit_codes
 from blinkpy.common.host import Host
+from blinkpy.common.path_finder import PathFinder
 from blinkpy.common.system.log_utils import configure_logging
 from blinkpy.web_tests.models.test_expectations import (TestExpectations,
                                                         ParseError)
@@ -68,15 +69,14 @@ def lint(host, options):
     # Force a manifest update to ensure it's always up-to-date.
     # TODO(crbug.com/1411505): See if the manifest refresh can be made faster.
     options.manifest_update = True
-    port = host.port_factory.get(options=options)
 
+    finder = PathFinder(host.filesystem)
     # Add all extra expectation files to be linted.
-    options.additional_expectations.extend(
-        [ANDROID_DISABLED_TESTS] + [
-            host.filesystem.join(port.web_tests_dir(),
-                                 'WPTOverrideExpectations'),
-            host.filesystem.join(port.web_tests_dir(), 'WebGPUExpectations'),
-        ])
+    options.additional_expectations.extend([ANDROID_DISABLED_TESTS] + [
+        finder.path_from_web_tests('ChromeTestExpectations'),
+        finder.path_from_web_tests('WebGPUExpectations'),
+    ])
+    port = host.port_factory.get(options=options)
 
     failures = []
     warnings = []

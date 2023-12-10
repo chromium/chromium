@@ -45,7 +45,7 @@ class FeedbackDialog : public ui::WebDialogDelegate {
       const content::MediaStreamRequest& request,
       content::MediaResponseCallback callback) override;
   bool CheckMediaAccessPermission(content::RenderFrameHost* render_frame_host,
-                                  const GURL& security_origin,
+                                  const url::Origin& security_origin,
                                   blink::mojom::MediaStreamType type) override;
 
   // Widget for the Feedback WebUI.

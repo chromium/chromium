@@ -207,7 +207,6 @@ TEST(CSSParserImplTest, AtContainerOffsets) {
 }
 
 TEST(CSSParserImplTest, DirectNesting) {
-  ScopedCSSNestingForTest enabled(true);
   String sheet_text =
       ".element { color: green; &.other { color: red; margin-left: 10px; }}";
 
@@ -233,7 +232,6 @@ TEST(CSSParserImplTest, DirectNesting) {
 }
 
 TEST(CSSParserImplTest, RuleNotStartingWithAmpersand) {
-  ScopedCSSNestingForTest enabled(true);
   String sheet_text = ".element { color: green;  .outer & { color: red; }}";
 
   auto* context = MakeGarbageCollected<CSSParserContext>(
@@ -259,7 +257,6 @@ TEST(CSSParserImplTest, RuleNotStartingWithAmpersand) {
 }
 
 TEST(CSSParserImplTest, ImplicitDescendantSelector) {
-  ScopedCSSNestingForTest enabled(true);
   String sheet_text = ".element { color: green; .outer { color: red; }}";
 
   auto* context = MakeGarbageCollected<CSSParserContext>(
@@ -285,7 +282,6 @@ TEST(CSSParserImplTest, ImplicitDescendantSelector) {
 }
 
 TEST(CSSParserImplTest, NestedRelativeSelector) {
-  ScopedCSSNestingForTest enabled(true);
   String sheet_text = ".element { color: green; > .inner { color: red; }}";
 
   auto* context = MakeGarbageCollected<CSSParserContext>(
@@ -364,7 +360,6 @@ TEST(CSSParserImplTest, NestedEmptySelectorCrash) {
 }
 
 TEST(CSSParserImplTest, NestedRulesInsideMediaQueries) {
-  ScopedCSSNestingForTest enabled(true);
   String sheet_text = R"CSS(
     .element {
       color: green;
@@ -412,7 +407,6 @@ TEST(CSSParserImplTest, NestedRulesInsideMediaQueries) {
 }
 
 TEST(CSSParserImplTest, ObserveNestedMediaQuery) {
-  ScopedCSSNestingForTest enabled(true);
   String sheet_text = R"CSS(
     .element {
       color: green;
@@ -437,7 +431,6 @@ TEST(CSSParserImplTest, ObserveNestedMediaQuery) {
 }
 
 TEST(CSSParserImplTest, ObserveNestedLayer) {
-  ScopedCSSNestingForTest enabled(true);
   String sheet_text = R"CSS(
     .element {
       color: green;
@@ -739,6 +732,61 @@ TEST(CSSParserImplTest, LayeredImportRulesInvalid) {
     auto* parsed = DynamicTo<StyleRuleImport>(ParseRule(*document, rule));
     ASSERT_TRUE(parsed);
     EXPECT_FALSE(parsed->IsLayered());
+  }
+}
+
+TEST(CSSParserImplTest, ImportRulesWithSupports) {
+  using css_test_helpers::ParseRule;
+  ScopedNullExecutionContext execution_context;
+  Document* document =
+      Document::CreateForTest(execution_context.GetExecutionContext());
+
+  {
+    String rule =
+        "@import url(foo.css) layer(bar.baz) supports(display: block);";
+    auto* parsed = DynamicTo<StyleRuleImport>(ParseRule(*document, rule));
+    ASSERT_TRUE(parsed);
+    ASSERT_TRUE(parsed->IsSupported());
+  }
+
+  {
+    String rule = "@import url(foo.css) supports(display: block);";
+    auto* parsed = DynamicTo<StyleRuleImport>(ParseRule(*document, rule));
+    ASSERT_TRUE(parsed);
+    ASSERT_TRUE(parsed->IsSupported());
+  }
+
+  {
+    String rule =
+        "@import url(foo.css)   supports((display: block) and (color: green));";
+    auto* parsed = DynamicTo<StyleRuleImport>(ParseRule(*document, rule));
+    ASSERT_TRUE(parsed);
+    ASSERT_TRUE(parsed->IsSupported());
+  }
+
+  {
+    String rule =
+        "@import url(foo.css) supports((foo: bar) and (color: green));";
+    auto* parsed = DynamicTo<StyleRuleImport>(ParseRule(*document, rule));
+    ASSERT_TRUE(parsed);
+    ASSERT_FALSE(parsed->IsSupported());
+  }
+
+  {
+    String rule = "@import url(foo.css) supports());";
+    auto* parsed = DynamicTo<StyleRuleImport>(ParseRule(*document, rule));
+    ASSERT_TRUE(parsed);
+    ASSERT_FALSE(parsed->IsSupported());
+  }
+
+  {
+    String rule = "@import url(foo.css) supports(color: green) (width >= 0px);";
+    auto* parsed = DynamicTo<StyleRuleImport>(ParseRule(*document, rule));
+    ASSERT_TRUE(parsed);
+    ASSERT_TRUE(parsed->IsSupported());
+    ASSERT_TRUE(parsed->MediaQueries());
+    ASSERT_EQ(parsed->MediaQueries()->QueryVector().size(), 1u);
+    ASSERT_EQ(parsed->MediaQueries()->MediaText(), String("(width >= 0px)"));
   }
 }
 

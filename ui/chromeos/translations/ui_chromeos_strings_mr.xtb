@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="mr">
 <translation id="1000498691615767391">उघडण्यासाठी फोल्डर निवडा</translation>
+<translation id="1014208178561091457"><ph name="FILE_NAME" /> कॉपी करता आली नाही, कारण ती एन्क्रिप्ट केलेली आहे.</translation>
 <translation id="1047956942837015229"><ph name="COUNT" /> आयटम हटवत आहे...</translation>
 <translation id="1049926623896334335">Word दस्तऐवज</translation>
 <translation id="1056775291175587022">नेटवर्क नाहीत</translation>
@@ -55,6 +56,7 @@
 <translation id="1435838927755162558">Parallels Desktop सोबत फोल्डर शेअर करा</translation>
 <translation id="1439919885608649279">हातात फुले असलेली व्यक्ती</translation>
 <translation id="1458457385801829801"><ph name="TARGET_NAME" /> बाहेर काढा</translation>
+<translation id="146691674290220697"><ph name="NUMBER_OF_FILES" /> फाइल कॉपी करता आल्या नाहीत, कारण त्या एन्क्रिप्ट केलेल्या आहेत.</translation>
 <translation id="1471718551822868769">स्लोव्हाक</translation>
 <translation id="1482884275703521657">फिनिश</translation>
 <translation id="148466539719134488">स्विस</translation>
@@ -276,6 +278,7 @@
 <translation id="3253225298092156258">उपलब्ध नाही</translation>
 <translation id="3254434849914415189"><ph name="FILE_TYPE" /> फायलींसाठी डीफॉल्ट ॲप्लिकेशन निवडा:</translation>
 <translation id="3255159654094949700">अरबी</translation>
+<translation id="326396468955264502"><ph name="NUMBER_OF_FILES" /> फाइल हलवता आल्या नाहीत, कारण त्या एन्क्रिप्ट केलेल्या आहेत.</translation>
 <translation id="3264582393905923483">संदर्भ</translation>
 <translation id="3272909651715601089">"<ph name="PATH" />" उघडता आले नाही</translation>
 <translation id="3280431534455935878">तयारी करीत आहे</translation>
@@ -313,6 +316,7 @@
 <translation id="3523225005467146490"><ph name="VM_NAME" /> सह १ फोल्डर शेअर केले</translation>
 <translation id="3524311639100184459">सावधान: या फाइल तात्पुरत्या आहेत आणि डिस्कवरील जागा मोकळी करण्यासाठी त्या आपोआप हटवल्या जाऊ शकतात.  <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">फोल्डर</translation>
+<translation id="3529424493985988200">तपशिलांसाठी तुमच्या अ‍ॅडमिनिस्ट्रेटरशी संपर्क साधा.</translation>
 <translation id="3548125359243647069">बऱ्याच वेळा चुकीचा पिन एंटर करण्यात आला.</translation>
 <translation id="3549797760399244642">drive.google.com वर जा...</translation>
 <translation id="3553048479571901246"><ph name="APP_NAME" /> सोबत फाइल उघडण्यासाठी, प्रथम त्या Windows फाइल फोल्डरमध्ये कॉपी करा.</translation>
@@ -701,6 +705,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="637062427944097960">ही फाइल एका भिन्न डेस्कटॉपवर उघडलेली आहे. ती पाहण्यासाठी <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) वर हलवा.</translation>
 <translation id="6394388407447716302">रीड-ओन्ली</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> आयटम</translation>
+<translation id="6407769893376380348"><ph name="FILE_NAME" /> हलवता आली नाही, कारण ती एन्क्रिप्ट केलेली आहे.</translation>
 <translation id="642282551015776456">हे नाव एखाद्या फाइल किंवा फोल्डरचे नाव म्हणून वापरले जाऊ शकत नाही</translation>
 <translation id="6423031066725912715">TCVN कीबोर्डसह व्हिएतनामी</translation>
 <translation id="6430271654280079150">तुमच्याकडे एक प्रयत्न शिल्लक आहे.</translation>

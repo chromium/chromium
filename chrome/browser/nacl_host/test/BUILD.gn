@@ -4,14 +4,9 @@
 
 import("//components/nacl/features.gni")
 
-if (enable_nacl && (is_linux || is_chromeos || is_win)) {
+if (enable_nacl && (is_linux || is_chromeos)) {
   executable("mock_nacl_gdb") {
     sources = [ "mock_nacl_gdb.cc" ]
-    deps = [
-      "//base",
-
-      # Default manifest on Windows (a no-op elsewhere).
-      "//build/win:default_exe_manifest",
-    ]
+    deps = [ "//base" ]
   }
 }

@@ -59,22 +59,22 @@ public class AutofillPopupWithKeyboardTest {
         mActivityTestRule.startMainActivityWithURL(
                 UrlUtils.encodeHtmlDataUri(
                         "<html><head><meta name=\"viewport\"content=\"width=device-width,"
-                            + " initial-scale=1.0, maximum-scale=1.0\" /></head><body><form"
-                            + " method=\"POST\"><input type=\"text\" id=\"fn\""
-                            + " autocomplete=\"given-name\" /><br><input type=\"text\" id=\"ln\""
-                            + " autocomplete=\"family-name\" /><br><textarea id=\"sa\""
-                            + " autocomplete=\"street-address\"></textarea><br><input type=\"text\""
-                            + " id=\"a1\" autocomplete=\"address-line1\" /><br><input type=\"text\""
-                            + " id=\"a2\" autocomplete=\"address-line2\" /><br><input type=\"text\""
-                            + " id=\"ct\" autocomplete=\"locality\" /><br><input type=\"text\""
-                            + " id=\"zc\" autocomplete=\"postal-code\" /><br><input type=\"text\""
-                            + " id=\"em\" autocomplete=\"email\" /><br><input type=\"text\""
-                            + " id=\"ph\" autocomplete=\"tel\" /><br><input type=\"text\" id=\"fx\""
-                            + " autocomplete=\"fax\" /><br><select id=\"co\""
-                            + " autocomplete=\"country\"><br><option"
-                            + " value=\"BR\">Brazil</option><option value=\"US\">United"
-                            + " States</option></select><input type=\"submit\" />"
-                            + "</form></body></html>"));
+                                + " initial-scale=1.0, maximum-scale=1.0\" /></head><body><form"
+                                + " method=\"POST\"><input type=\"text\" id=\"fn\""
+                                + " autocomplete=\"given-name\" /><br><input type=\"text\" id=\"ln\""
+                                + " autocomplete=\"family-name\" /><br><textarea id=\"sa\""
+                                + " autocomplete=\"street-address\"></textarea><br><input type=\"text\""
+                                + " id=\"a1\" autocomplete=\"address-line1\" /><br><input type=\"text\""
+                                + " id=\"a2\" autocomplete=\"address-line2\" /><br><input type=\"text\""
+                                + " id=\"ct\" autocomplete=\"locality\" /><br><input type=\"text\""
+                                + " id=\"zc\" autocomplete=\"postal-code\" /><br><input type=\"text\""
+                                + " id=\"em\" autocomplete=\"email\" /><br><input type=\"text\""
+                                + " id=\"ph\" autocomplete=\"tel\" /><br><input type=\"text\" id=\"fx\""
+                                + " autocomplete=\"fax\" /><br><select id=\"co\""
+                                + " autocomplete=\"country\"><br><option"
+                                + " value=\"BR\">Brazil</option><option value=\"US\">United"
+                                + " States</option></select><input type=\"submit\" />"
+                                + "</form></body></html>"));
         new AutofillTestHelper()
                 .setProfile(
                         AutofillProfile.builder()

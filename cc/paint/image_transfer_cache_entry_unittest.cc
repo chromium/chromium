@@ -103,8 +103,8 @@ class ImageTransferCacheEntryTest
     //  The surface will be stored by the gl::GLContext.
     ASSERT_TRUE(gl_context_->default_surface());
     ASSERT_TRUE(gl_context_->MakeCurrentDefault());
-    sk_sp<GrGLInterface> gl_interface(gl::init::CreateGrGLInterface(
-        *gl_context_->GetVersionInfo(), false /* use_version_es2 */));
+    sk_sp<GrGLInterface> gl_interface(
+        gl::init::CreateGrGLInterface(*gl_context_->GetVersionInfo()));
     gr_context_ = GrDirectContexts::MakeGL(std::move(gl_interface));
     ASSERT_TRUE(gr_context_);
   }
@@ -245,7 +245,7 @@ TEST_P(ImageTransferCacheEntryTest, MAYBE_Deserialize) {
       ClientImageTransferCacheEntry::Image(yuva_pixmaps.planes().data(),
                                            yuva_info,
                                            nullptr /* decoded color space*/),
-      true /* needs_mips */, absl::nullopt));
+      true /* needs_mips */, std::nullopt));
   uint32_t size = client_entry->SerializedSize();
   auto data = PaintOpWriter::AllocateAlignedBuffer<uint8_t>(size);
   ASSERT_TRUE(client_entry->Serialize(
@@ -399,7 +399,7 @@ TEST(ImageTransferCacheEntryTestNoYUV, CPUImageWithMips) {
 
   ClientImageTransferCacheEntry client_entry(
       ClientImageTransferCacheEntry::Image(&bitmap.pixmap()), true,
-      absl::nullopt);
+      std::nullopt);
   const uint32_t storage_size = client_entry.SerializedSize();
   auto storage = PaintOpWriter::AllocateAlignedBuffer<uint8_t>(storage_size);
   client_entry.Serialize(base::make_span(storage.get(), storage_size));
@@ -429,7 +429,7 @@ TEST(ImageTransferCacheEntryTestNoYUV, CPUImageAddMipsLater) {
       SkImageInfo::MakeN32Premul(gr_context->maxTextureSize() + 1, 10));
   ClientImageTransferCacheEntry client_entry(
       ClientImageTransferCacheEntry::Image(&bitmap.pixmap()), false,
-      absl::nullopt);
+      std::nullopt);
   const uint32_t storage_size = client_entry.SerializedSize();
   auto storage = PaintOpWriter::AllocateAlignedBuffer<uint8_t>(storage_size);
   client_entry.Serialize(base::make_span(storage.get(), storage_size));

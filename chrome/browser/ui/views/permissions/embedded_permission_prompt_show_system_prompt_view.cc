@@ -15,7 +15,7 @@
 EmbeddedPermissionPromptShowSystemPromptView::
     EmbeddedPermissionPromptShowSystemPromptView(
         Browser* browser,
-        base::WeakPtr<Delegate> delegate)
+        base::WeakPtr<EmbeddedPermissionPromptViewDelegate> delegate)
     : EmbeddedPermissionPromptBaseView(browser, delegate) {}
 
 EmbeddedPermissionPromptShowSystemPromptView::
@@ -65,6 +65,5 @@ std::u16string EmbeddedPermissionPromptShowSystemPromptView::GetMessageText()
   }
 
   return l10n_util::GetStringFUTF16(IDS_PERMISSION_CHROME_NEEDS_PERMISSION,
-                                    permission_name,
-                                    GetUrlIdentityObject().name);
+                                    permission_name);
 }

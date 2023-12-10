@@ -18,7 +18,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
-#include "components/version_info/version_info.h"
+#include "components/version_info/channel.h"
 #include "content/public/renderer/render_thread_observer.h"
 #include "extensions/common/event_filter.h"
 #include "extensions/common/extension_id.h"
@@ -67,6 +67,7 @@ const int kRendererProfileId = 0;
 class ContentWatcher;
 class DispatcherDelegate;
 class Extension;
+class ExtensionsRendererAPIProvider;
 class IPCMessageSender;
 class ScriptContext;
 class ScriptContextSetIterable;
@@ -86,7 +87,9 @@ class Dispatcher : public content::RenderThreadObserver,
                    public mojom::EventDispatcher,
                    public NativeExtensionBindingsSystem::Delegate {
  public:
-  explicit Dispatcher(std::unique_ptr<DispatcherDelegate> delegate);
+  Dispatcher(std::unique_ptr<DispatcherDelegate> delegate,
+             std::vector<std::unique_ptr<ExtensionsRendererAPIProvider>>
+                 api_providers);
 
   Dispatcher(const Dispatcher&) = delete;
   Dispatcher& operator=(const Dispatcher&) = delete;
@@ -107,7 +110,7 @@ class Dispatcher : public content::RenderThreadObserver,
 
   V8SchemaRegistry* v8_schema_registry() { return v8_schema_registry_.get(); }
 
-  const absl::optional<std::string>& webview_partition_id() {
+  const std::optional<std::string>& webview_partition_id() {
     return webview_partition_id_;
   }
 
@@ -341,6 +344,10 @@ class Dispatcher : public content::RenderThreadObserver,
   // |context|.
   void RequireGuestViewModules(ScriptContext* context);
 
+  // Returns true if one of the API providers is able to provide a WebView
+  // module.
+  bool RequireWebViewModulesFromProviders(ScriptContext* context);
+
   // Creates the NativeExtensionBindingsSystem. Note: this may be called on any
   // thread, and thus cannot mutate any state or rely on state which can be
   // mutated in Dispatcher.
@@ -352,6 +359,9 @@ class Dispatcher : public content::RenderThreadObserver,
 
   // The delegate for this dispatcher to handle embedder-specific logic.
   std::unique_ptr<DispatcherDelegate> delegate_;
+
+  // The list of embedder API providers.
+  std::vector<std::unique_ptr<ExtensionsRendererAPIProvider>> api_providers_;
 
   // The IDs of extensions that failed to load, mapped to the error message
   // generated on failure.
@@ -394,7 +404,7 @@ class Dispatcher : public content::RenderThreadObserver,
   // if this renderer is a WebView guest render process, otherwise unset.
   // Note that this may be an empty string, even if it's set (if the webview
   // doesn't have a set partition ID).
-  absl::optional<std::string> webview_partition_id_;
+  std::optional<std::string> webview_partition_id_;
 
   // Extensions renderer receiver. This is an associated receiver because
   // it is dependent on other messages sent on other associated channels.

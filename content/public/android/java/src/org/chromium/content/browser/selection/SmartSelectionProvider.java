@@ -35,9 +35,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Controls Smart Text selection. Talks to the Android TextClassificationManager API.
- */
+/** Controls Smart Text selection. Talks to the Android TextClassificationManager API. */
 public class SmartSelectionProvider {
     private static final String TAG = "SmartSelProvider";
 
@@ -55,30 +53,33 @@ public class SmartSelectionProvider {
 
     private Handler mHandler;
     private Runnable mFailureResponseRunnable;
-    @Nullable
-    private final SmartSelectionEventProcessor mSelectionEventProcessor;
+    @Nullable private final SmartSelectionEventProcessor mSelectionEventProcessor;
 
-    public SmartSelectionProvider(SelectionClient.ResultCallback callback, WebContents webContents,
+    public SmartSelectionProvider(
+            SelectionClient.ResultCallback callback,
+            WebContents webContents,
             @Nullable SmartSelectionEventProcessor selectionEventProcessor) {
         mResultCallback = callback;
         mWindowAndroid = webContents.getTopLevelNativeWindow();
         WindowEventObserverManager manager = WindowEventObserverManager.from(webContents);
         if (manager != null) {
-            manager.addObserver(new WindowEventObserver() {
-                @Override
-                public void onWindowAndroidChanged(WindowAndroid newWindowAndroid) {
-                    mWindowAndroid = newWindowAndroid;
-                }
-            });
+            manager.addObserver(
+                    new WindowEventObserver() {
+                        @Override
+                        public void onWindowAndroidChanged(WindowAndroid newWindowAndroid) {
+                            mWindowAndroid = newWindowAndroid;
+                        }
+                    });
         }
 
         mHandler = new Handler();
-        mFailureResponseRunnable = new Runnable() {
-            @Override
-            public void run() {
-                mResultCallback.onClassified(new SelectionClient.Result());
-            }
-        };
+        mFailureResponseRunnable =
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        mResultCallback.onClassified(new SelectionClient.Result());
+                    }
+                };
         mSelectionEventProcessor = selectionEventProcessor;
     }
 
@@ -121,8 +122,8 @@ public class SmartSelectionProvider {
         Context context = mWindowAndroid.getContext().get();
         if (context == null) return null;
 
-        return ((TextClassificationManager) context.getSystemService(
-                        Context.TEXT_CLASSIFICATION_SERVICE))
+        return ((TextClassificationManager)
+                        context.getSystemService(Context.TEXT_CLASSIFICATION_SERVICE))
                 .getTextClassifier();
     }
 
@@ -165,8 +166,14 @@ public class SmartSelectionProvider {
 
         // We checked mWindowAndroid.getContext().get() is not null in getTextClassifier(), so pass
         // the value directly here.
-        mClassificationTask = new ClassificationTask(
-                classifier, requestType, text, start, end, mWindowAndroid.getContext().get());
+        mClassificationTask =
+                new ClassificationTask(
+                        classifier,
+                        requestType,
+                        text,
+                        start,
+                        end,
+                        mWindowAndroid.getContext().get());
         mClassificationTask.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
     }
 
@@ -179,8 +186,13 @@ public class SmartSelectionProvider {
         private final int mOriginalEnd;
         private final Context mContext;
 
-        ClassificationTask(TextClassifier classifier, @RequestType int requestType,
-                CharSequence text, int start, int end, Context context) {
+        ClassificationTask(
+                TextClassifier classifier,
+                @RequestType int requestType,
+                CharSequence text,
+                int start,
+                int end,
+                Context context) {
             mTextClassifier = classifier;
             mRequestType = requestType;
             mText = text;
@@ -211,8 +223,9 @@ public class SmartSelectionProvider {
                 }
 
                 if (textClassification == null) {
-                    textClassification = mTextClassifier.classifyText(
-                            mText, start, end, LocaleList.getAdjustedDefault());
+                    textClassification =
+                            mTextClassifier.classifyText(
+                                    mText, start, end, LocaleList.getAdjustedDefault());
                 }
                 return makeResult(start, end, textClassification, textSelection);
             } catch (IllegalStateException ex) {

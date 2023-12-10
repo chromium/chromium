@@ -7,10 +7,10 @@
 
 #include <stddef.h>
 #include <memory>
+#include <optional>
 #include <set>
 #include <utility>
 #include <vector>
-
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
@@ -18,7 +18,6 @@
 #include "extensions/browser/api/declarative_net_request/utils.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/permissions/permissions_data.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class BrowserContext;
@@ -131,7 +130,7 @@ class RulesetManager {
   using RulesetAndPageAccess =
       std::pair<const ExtensionRulesetData*, PermissionsData::PageAccess>;
 
-  absl::optional<RequestAction> GetBeforeRequestAction(
+  std::optional<RequestAction> GetBeforeRequestAction(
       const std::vector<RulesetAndPageAccess>& rulesets,
       const WebRequestInfo& request,
       const RequestParams& params) const;

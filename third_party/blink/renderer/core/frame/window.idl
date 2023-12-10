@@ -130,8 +130,8 @@
     // browsing context
     [MeasureAs=WindowMove] void moveTo(long x, long y);
     [MeasureAs=WindowMove] void moveBy(long x, long y);
-    [MeasureAs=WindowResize] void resizeTo(long x, long y);
-    [MeasureAs=WindowResize] void resizeBy(long x, long y);
+    [MeasureAs=WindowResize, RaisesException] void resizeTo(long x, long y);
+    [MeasureAs=WindowResize, RaisesException] void resizeBy(long x, long y);
 
     // viewport
     [HighEntropy=Direct, MeasureAs=WindowInnerWidth, Replaceable] readonly attribute long innerWidth;

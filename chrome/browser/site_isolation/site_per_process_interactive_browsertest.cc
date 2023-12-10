@@ -288,9 +288,8 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessInteractiveBrowserTest,
 //
 // The test then presses <tab> six times to cycle through focused elements 1-6.
 // The test then repeats this with <shift-tab> to cycle in reverse order.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_MAC)
 // TODO(crbug.com/1295296): Fails on Mac 10.11.
-// TODO(crbug.com/1469621): Flakes on Lacros.
 #define MAYBE_SequentialFocusNavigation DISABLED_SequentialFocusNavigation
 #else
 #define MAYBE_SequentialFocusNavigation SequentialFocusNavigation
@@ -886,14 +885,14 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessInteractiveBrowserTest,
   auto child2_input_coords = parse_points(result, iframe2_offset);
 
   // Helper to simulate a tab press and wait for a focus message.
-  auto press_tab_and_wait_for_message = [web_contents](
-                                            content::RenderFrameHost* receiver,
-                                            bool reverse) {
-    SimulateKeyPress(web_contents, ui::DomKey::TAB, ui::DomCode::TAB,
-                     ui::VKEY_TAB, false, reverse /* shift */, false, false);
-    LOG(INFO) << "Press tab";
-    return EvalJs(receiver, "waitForFocusEvent()");
-  };
+  auto press_tab_and_wait_for_message =
+      [web_contents](content::RenderFrameHost* receiver, bool reverse) {
+        SimulateKeyPress(web_contents, ui::DomKey::TAB, ui::DomCode::TAB,
+                         ui::VKEY_TAB, false, reverse /* shift */, false,
+                         false);
+        LOG(INFO) << "Press tab";
+        return EvalJs(receiver, "waitForFocusEvent()");
+      };
 
   auto click_element_and_wait_for_message =
       [web_contents](content::RenderFrameHost* receiver,
@@ -1058,8 +1057,9 @@ void WaitForMultipleFullscreenEvents(
     } else if (response_params[0] == "resize") {
       resize_validated = true;
     }
-    if (remaining_events.empty() && resize_validated)
+    if (remaining_events.empty() && resize_validated) {
       break;
+    }
   }
 }
 
@@ -1474,6 +1474,11 @@ class SitePerProcessInteractivePDFTest
                                   ->CreateGuestViewManagerDelegate());
   }
 
+  void TearDownOnMainThread() override {
+    test_guest_view_manager_ = nullptr;
+    SitePerProcessInteractiveBrowserTest::TearDownOnMainThread();
+  }
+
  protected:
   guest_view::TestGuestViewManager* test_guest_view_manager() const {
     return test_guest_view_manager_;
@@ -1481,8 +1486,7 @@ class SitePerProcessInteractivePDFTest
 
  private:
   guest_view::TestGuestViewManagerFactory factory_;
-  raw_ptr<guest_view::TestGuestViewManager, DanglingUntriaged>
-      test_guest_view_manager_;
+  raw_ptr<guest_view::TestGuestViewManager> test_guest_view_manager_ = nullptr;
 };
 
 // This test loads a PDF inside an OOPIF and then verifies that context menu
@@ -1896,12 +1900,14 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessInteractiveBrowserTest,
   // will send a message, and the two messages can arrive in any order.
   std::string status;
   while (main_queue.WaitForMessage(&status)) {
-    if (status == "\"main-lost-focus\"")
+    if (status == "\"main-lost-focus\"") {
       break;
+    }
   }
   while (popup_queue.WaitForMessage(&status)) {
-    if (status == "\"popup-got-focus\"")
+    if (status == "\"popup-got-focus\"") {
       break;
+    }
   }
 
   // The popup should be focused now.

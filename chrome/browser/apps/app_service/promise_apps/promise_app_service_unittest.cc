@@ -4,6 +4,8 @@
 
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_service.h"
 
+#include <optional>
+
 #include "ash/constants/ash_features.h"
 #include "base/functional/callback_helpers.h"
 #include "base/scoped_observation.h"
@@ -32,7 +34,6 @@
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/image/image_skia.h"
@@ -61,6 +62,7 @@ class PromiseAppServiceTest : public testing::Test,
             url_loader_factory_.get());
     service_ = proxy()->PromiseAppService();
     service_->SetSkipApiKeyCheckForTesting(true);
+    service_->SetSkipAlmanacForTesting(false);
   }
 
   void TearDown() override {
@@ -128,7 +130,7 @@ class PromiseAppServiceTest : public testing::Test,
   void FinishApkWebAppInstall(const std::string& package_name,
                               const std::string& app_id) {
     apk_web_app_service()->OnDidFinishInstall(
-        package_name, app_id, true, absl::nullopt,
+        package_name, app_id, true, std::nullopt,
         webapps::InstallResultCode::kWriteDataFailed);
   }
 
@@ -461,6 +463,63 @@ TEST_F(PromiseAppServiceTest, FailedWebAppInstallationRemovesTwaPromiseApp) {
 
   // Confirm that the promise app was removed from PromiseAppRegistryCache.
   EXPECT_FALSE(cache()->HasPromiseApp(package_id));
+}
+
+TEST_F(PromiseAppServiceTest, PromiseAppTypeRecorded) {
+  // Case 1: ARC promise app.
+  std::string arc_package_name = "com.arc.example";
+  apps::PackageId arc_package_id =
+      apps::PackageId(apps::AppType::kArc, arc_package_name);
+  std::string arc_app_id = "qwerty";
+
+  // Add an ARC package ID promise app to the cache.
+  std::unique_ptr<apps::PromiseApp> arc_promise_app =
+      std::make_unique<apps::PromiseApp>(arc_package_id);
+  service()->OnPromiseApp(std::move(arc_promise_app));
+
+  // Register the installed ARC app.
+  apps::AppPtr arc_app =
+      std::make_unique<apps::App>(apps::AppType::kArc, arc_app_id);
+  arc_app->publisher_id = arc_package_name;
+  arc_app->readiness = apps::Readiness::kReady;
+  std::vector<apps::AppPtr> arc_apps;
+  arc_apps.push_back(std::move(arc_app));
+  proxy()->OnApps(std::move(arc_apps), apps::AppType::kArc,
+                  /*should_notify_initialized=*/false);
+
+  histogram_tester().ExpectBucketCount(kPromiseAppTypeHistogram,
+                                       PromiseAppType::kArc, 1);
+  histogram_tester().ExpectBucketCount(kPromiseAppTypeHistogram,
+                                       PromiseAppType::kTwa, 0);
+
+  // Case 2: TWA promise app: should have an ARC package ID but results in a web
+  // app.
+  std::string twa_package_name = "com.twa.example";
+  apps::PackageId twa_package_id =
+      apps::PackageId(apps::AppType::kArc, twa_package_name);
+  std::string twa_app_id = "asdfghjkl";
+
+  // Add an ARC package ID promise app to the cache.
+  std::unique_ptr<apps::PromiseApp> twa_promise_app =
+      std::make_unique<apps::PromiseApp>(twa_package_id);
+  service()->OnPromiseApp(std::move(twa_promise_app));
+
+  // Register the installed web app.
+  apk_web_app_service()->AddInstallingWebApkPackageName(twa_app_id,
+                                                        twa_package_name);
+  apps::AppPtr twa_app =
+      std::make_unique<apps::App>(apps::AppType::kWeb, twa_app_id);
+  twa_app->publisher_id = "https://something.com";
+  twa_app->readiness = apps::Readiness::kReady;
+  std::vector<apps::AppPtr> twa_apps;
+  twa_apps.push_back(std::move(twa_app));
+  proxy()->OnApps(std::move(twa_apps), apps::AppType::kWeb,
+                  /*should_notify_initialized=*/false);
+
+  histogram_tester().ExpectBucketCount(kPromiseAppTypeHistogram,
+                                       PromiseAppType::kArc, 1);
+  histogram_tester().ExpectBucketCount(kPromiseAppTypeHistogram,
+                                       PromiseAppType::kTwa, 1);
 }
 
 }  // namespace apps

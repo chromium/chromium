@@ -261,7 +261,7 @@ void AssistantAshTestBase::ClickOnAndWait(
   base::RunLoop().RunUntilIdle();
 }
 
-absl::optional<assistant::AssistantInteractionMetadata>
+std::optional<assistant::AssistantInteractionMetadata>
 AssistantAshTestBase::current_interaction() {
   return assistant_service()->current_interaction();
 }

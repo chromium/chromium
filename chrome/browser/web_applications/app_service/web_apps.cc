@@ -19,6 +19,7 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/services/app_service/public/cpp/icon_effects.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -27,6 +28,8 @@
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"  // nogncheck
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/menu_item_constants.h"
 #include "chrome/browser/apps/app_service/menu_util.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_web_apps_utils.h"
@@ -35,7 +38,6 @@
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/instance_registry.h"
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
 #endif
@@ -179,6 +181,13 @@ void WebApps::GetMenuModel(const std::string& app_id,
     return;
   }
 
+  bool can_close = true;
+  apps::AppServiceProxyFactory::GetForProfile(profile())
+      ->AppRegistryCache()
+      .ForOneApp(app_id, [&can_close](const apps::AppUpdate& update) {
+        can_close = update.AllowClose().value_or(true);
+      });
+
   apps::MenuItems menu_items;
   auto* swa_manager = ash::SystemWebAppManager::Get(profile());
   if (swa_manager && swa_manager->IsSystemWebApp(web_app->app_id())) {
@@ -191,20 +200,27 @@ void WebApps::GetMenuModel(const std::string& app_id,
       apps::AddCommandItem(ash::LAUNCH_NEW,
                            IDS_APP_LIST_CONTEXT_MENU_NEW_WINDOW, menu_items);
     }
-  } else {
-    apps::CreateOpenNewSubmenu(
-        publisher_helper().GetWindowMode(app_id) == apps::WindowMode::kBrowser
-            ? IDS_APP_LIST_CONTEXT_MENU_NEW_TAB
-            : IDS_APP_LIST_CONTEXT_MENU_NEW_WINDOW,
-        menu_items);
+    // If app cannot be closed there should be no more than 1 open window, so we
+    // should not allow open more windows because user won't be able to close
+    // them.
+  } else if (can_close) {
+    if (chromeos::features::IsCrosShortstandEnabled()) {
+      apps::AddCommandItem(ash::LAUNCH_NEW,
+                           IDS_APP_LIST_CONTEXT_MENU_NEW_WINDOW, menu_items);
+    } else {
+      apps::CreateOpenNewSubmenu(
+          publisher_helper().GetWindowMode(app_id) == apps::WindowMode::kBrowser
+              ? IDS_APP_LIST_CONTEXT_MENU_NEW_TAB
+              : IDS_APP_LIST_CONTEXT_MENU_NEW_WINDOW,
+          menu_items);
+    }
   }
 
   if (app_id == guest_os::kTerminalSystemAppId) {
     guest_os::AddTerminalMenuItems(profile_, menu_items);
   }
 
-  if (menu_type == apps::MenuType::kShelf &&
-      instance_registry_->ContainsAppId(app_id)) {
+  if (ShouldAddCloseItem(app_id, menu_type, profile_)) {
     apps::AddCommandItem(ash::MENU_CLOSE, IDS_SHELF_CONTEXT_MENU_CLOSE,
                          menu_items);
   }

@@ -49,6 +49,21 @@ namespace {
 BASE_FEATURE(kAVFoundationOverlays,
              "avfoundation-overlays",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+#if BUILDFLAG(IS_MAC)
+// Whether the presentation should be delayed until the next CVDisplayLink
+// callback when kCVDisplayLinkBeginFrameSource is enabled. This flag has no
+// effect if kCVDisplayLinkBeginFrameSource is disabled.
+BASE_FEATURE(kDelayOnFramePresent,
+             "DelayOnFramePresent",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Whether the presentation for the first frame after VSync stops should be
+// delayed when kDelayOnFramePresent is enabled.
+BASE_FEATURE(kNoDelayOnFirstFramePresent,
+             "NoDelayOnFirstFramePresent",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_MAC)
 }  // namespace
 
 ImageTransportSurfaceOverlayMacEGL::ImageTransportSurfaceOverlayMacEGL()
@@ -171,6 +186,12 @@ void ImageTransportSurfaceOverlayMacEGL::Present(
   num_committed_ca_layer_trees_++;
 
 #if BUILDFLAG(IS_MAC)
+  // With display_link_mac_, delay the presentation until next VSync if
+  // 1) It's not the first frame or
+  // 2) We allow delay on all frames including the first frame.
+  bool delay_presenetation_until_next_vsync =
+      !!vsync_callback_mac_ ||
+      !base::FeatureList::IsEnabled(kNoDelayOnFirstFramePresent);
   if (display_link_mac_ && !vsync_callback_mac_) {
     vsync_callback_mac_ = display_link_mac_->RegisterCallback(
         base::BindRepeating(
@@ -179,9 +200,14 @@ void ImageTransportSurfaceOverlayMacEGL::Present(
         /*do_callback_on_register_thread=*/true);
   }
 
+  // To avoid FID (First Input Delay), delay PopulateCALayerParameters only if
+  // this is not the first frame after vsync stops.
   if (vsync_callback_mac_) {
-    // PopulateCALayerParameters will be called in OnVSyncPresentation.
-    return;
+    vsync_callback_mac_keep_alive_counter_ = kMaxKeepAliveCounter;
+    if (delay_presenetation_until_next_vsync) {
+      // PopulateCALayerParameters will be called in OnVSyncPresentation.
+      return;
+    }
   }
 #endif
 
@@ -292,16 +318,23 @@ void ImageTransportSurfaceOverlayMacEGL::SetCALayerErrorCode(
 
 #if BUILDFLAG(IS_MAC)
 void ImageTransportSurfaceOverlayMacEGL::SetVSyncDisplayID(int64_t display_id) {
-  if (!base::FeatureList::IsEnabled(features::kCVDisplayLinkBeginFrameSource)) {
+  if (!base::FeatureList::IsEnabled(features::kCVDisplayLinkBeginFrameSource) ||
+      !base::FeatureList::IsEnabled(kDelayOnFramePresent)) {
     return;
   }
 
   if ((!display_link_mac_ || display_id != display_id_) &&
       display_id != display::kInvalidDisplayId) {
+    // Call PopulateCALayerParameters if there is a pending frame.
     if (vsync_callback_mac_) {
+      // Set the keep_alive_counter to the last one so vsync_callback_mac_ will
+      // be destroyed.
+      vsync_callback_mac_keep_alive_counter_ =
+          num_committed_ca_layer_trees_ ? 0 : 1;
       OnVSyncPresentation(ui::VSyncParamsMac());
       DCHECK(!vsync_callback_mac_);
     }
+
     display_link_mac_ = ui::DisplayLinkMac::GetForDisplay(display_id);
   }
 
@@ -312,10 +345,12 @@ void ImageTransportSurfaceOverlayMacEGL::OnVSyncPresentation(
     ui::VSyncParamsMac params) {
   if (num_committed_ca_layer_trees_) {
     PopulateCALayerParameters();
+  } else {
+    DCHECK(vsync_callback_mac_keep_alive_counter_ > 0);
+    vsync_callback_mac_keep_alive_counter_ -= 1;
   }
 
-  // No more pending frames. Now stop the vsync callback.
-  if (!num_committed_ca_layer_trees_) {
+  if (vsync_callback_mac_keep_alive_counter_ == 0) {
     vsync_callback_mac_ = nullptr;
   }
 }

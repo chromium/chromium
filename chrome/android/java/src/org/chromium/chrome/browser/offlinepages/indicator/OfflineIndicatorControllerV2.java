@@ -33,10 +33,12 @@ import java.lang.annotation.RetentionPolicy;
  * connectivity information.
  */
 public class OfflineIndicatorControllerV2 {
-    @IntDef({UmaEnum.CAN_ANIMATE_NATIVE_CONTROLS,
-            UmaEnum.CAN_ANIMATE_NATIVE_CONTROLS_OMNIBOX_FOCUSED,
-            UmaEnum.CANNOT_ANIMATE_NATIVE_CONTROLS,
-            UmaEnum.CANNOT_ANIMATE_NATIVE_CONTROLS_OMNIBOX_FOCUSED})
+    @IntDef({
+        UmaEnum.CAN_ANIMATE_NATIVE_CONTROLS,
+        UmaEnum.CAN_ANIMATE_NATIVE_CONTROLS_OMNIBOX_FOCUSED,
+        UmaEnum.CANNOT_ANIMATE_NATIVE_CONTROLS,
+        UmaEnum.CANNOT_ANIMATE_NATIVE_CONTROLS_OMNIBOX_FOCUSED
+    })
     @Retention(RetentionPolicy.SOURCE)
     public @interface UmaEnum {
         int CAN_ANIMATE_NATIVE_CONTROLS = 0;
@@ -60,6 +62,7 @@ public class OfflineIndicatorControllerV2 {
 
     @SuppressLint("StaticFieldLeak")
     private static OfflineDetector sMockOfflineDetector;
+
     private static Supplier<Long> sMockElapsedTimeSupplier;
     private static OfflineIndicatorMetricsDelegate sMockOfflineIndicatorMetricsDelegate;
 
@@ -94,11 +97,13 @@ public class OfflineIndicatorControllerV2 {
      * TODO(sinansahin): We can remove canAnimateNativeBrowserControls once we're done with metrics
      *                   collection.
      */
-    public OfflineIndicatorControllerV2(Context context, StatusIndicatorCoordinator statusIndicator,
+    public OfflineIndicatorControllerV2(
+            Context context,
+            StatusIndicatorCoordinator statusIndicator,
             ObservableSupplier<Boolean> isUrlBarFocusedSupplier,
             Supplier<Boolean> canAnimateNativeBrowserControls) {
-        if (CommandLine.getInstance().hasSwitch(
-                    ContentSwitches.FORCE_ONLINE_CONNECTION_STATE_FOR_INDICATOR)) {
+        if (CommandLine.getInstance()
+                .hasSwitch(ContentSwitches.FORCE_ONLINE_CONNECTION_STATE_FOR_INDICATOR)) {
             // If "force online connection state" switch is set, the offline indicator should never
             // show.
             return;
@@ -120,68 +125,86 @@ public class OfflineIndicatorControllerV2 {
         if (sMockOfflineDetector != null) {
             mOfflineDetector = sMockOfflineDetector;
         } else {
-            mOfflineDetector = new OfflineDetector((Boolean offline)
-                                                           -> onConnectionStateChanged(offline),
-                    (Boolean isForeground) -> onApplicationStateChanged(isForeground), mContext);
+            mOfflineDetector =
+                    new OfflineDetector(
+                            (Boolean offline) -> onConnectionStateChanged(offline),
+                            (Boolean isForeground) -> onApplicationStateChanged(isForeground),
+                            mContext);
         }
 
         // Initializes the application state.
         onApplicationStateChanged(mOfflineDetector.isApplicationForeground());
 
-        mShowRunnable = () -> {
-            RecordUserAction.record("OfflineIndicator.Shown");
+        mShowRunnable =
+                () -> {
+                    RecordUserAction.record("OfflineIndicator.Shown");
 
-            mMetricsDelegate.onIndicatorShown();
+                    mMetricsDelegate.onIndicatorShown();
 
-            setLastActionTime();
+                    setLastActionTime();
 
-            final int backgroundColor = mContext.getColor(R.color.offline_indicator_offline_color);
-            final int textColor = mContext.getColor(R.color.default_text_color_light);
-            final Drawable statusIcon = mContext.getDrawable(R.drawable.ic_cloud_offline_24dp);
-            final int iconTint = mContext.getColor(R.color.default_icon_color_light);
-            mStatusIndicator.show(mContext.getString(R.string.offline_indicator_v2_offline_text),
-                    statusIcon, backgroundColor, textColor, iconTint);
-        };
+                    final int backgroundColor =
+                            mContext.getColor(R.color.offline_indicator_offline_color);
+                    final int textColor = mContext.getColor(R.color.default_text_color_light);
+                    final Drawable statusIcon =
+                            mContext.getDrawable(R.drawable.ic_cloud_offline_24dp);
+                    final int iconTint = mContext.getColor(R.color.default_icon_color_light);
+                    mStatusIndicator.show(
+                            mContext.getString(R.string.offline_indicator_v2_offline_text),
+                            statusIcon,
+                            backgroundColor,
+                            textColor,
+                            iconTint);
+                };
 
-        mHideRunnable = () -> {
-            mHandler.postDelayed(
-                    () -> mStatusIndicator.hide(), STATUS_INDICATOR_WAIT_BEFORE_HIDE_DURATION_MS);
-        };
+        mHideRunnable =
+                () -> {
+                    mHandler.postDelayed(
+                            () -> mStatusIndicator.hide(),
+                            STATUS_INDICATOR_WAIT_BEFORE_HIDE_DURATION_MS);
+                };
 
-        mUpdateAndHideRunnable = () -> {
-            RecordUserAction.record("OfflineIndicator.Hidden");
+        mUpdateAndHideRunnable =
+                () -> {
+                    RecordUserAction.record("OfflineIndicator.Hidden");
 
-            mMetricsDelegate.onIndicatorHidden();
+                    mMetricsDelegate.onIndicatorHidden();
 
-            setLastActionTime();
+                    setLastActionTime();
 
-            final int backgroundColor =
-                    ChromeSemanticColorUtils.getOfflineIndicatorBackOnlineColor(mContext);
-            final int textColor = SemanticColorUtils.getDefaultTextColorOnAccent1(mContext);
-            final Drawable statusIcon = mContext.getDrawable(R.drawable.ic_globe_24dp);
-            final int iconTint = SemanticColorUtils.getDefaultIconColorInverse(mContext);
-            mStatusIndicator.updateContent(
-                    mContext.getString(R.string.offline_indicator_v2_back_online_text), statusIcon,
-                    backgroundColor, textColor, iconTint, mHideRunnable);
-        };
+                    final int backgroundColor =
+                            ChromeSemanticColorUtils.getOfflineIndicatorBackOnlineColor(mContext);
+                    final int textColor = SemanticColorUtils.getDefaultTextColorOnAccent1(mContext);
+                    final Drawable statusIcon = mContext.getDrawable(R.drawable.ic_globe_24dp);
+                    final int iconTint = SemanticColorUtils.getDefaultIconColorInverse(mContext);
+                    mStatusIndicator.updateContent(
+                            mContext.getString(R.string.offline_indicator_v2_back_online_text),
+                            statusIcon,
+                            backgroundColor,
+                            textColor,
+                            iconTint,
+                            mHideRunnable);
+                };
 
         mIsUrlBarFocusedSupplier = isUrlBarFocusedSupplier;
         mCanAnimateBrowserControlsSupplier = canAnimateNativeBrowserControls;
         // TODO(crbug.com/1075793): Move the UrlBar focus related code to the widget or glue code.
-        mOnUrlBarFocusChanged = (hasFocus) -> {
-            if (!hasFocus && mOnUrlBarUnfocusedRunnable != null) {
-                mOnUrlBarUnfocusedRunnable.run();
-                mOnUrlBarUnfocusedRunnable = null;
-            }
-        };
+        mOnUrlBarFocusChanged =
+                (hasFocus) -> {
+                    if (!hasFocus && mOnUrlBarUnfocusedRunnable != null) {
+                        mOnUrlBarUnfocusedRunnable.run();
+                        mOnUrlBarUnfocusedRunnable = null;
+                    }
+                };
         mIsUrlBarFocusedSupplier.addObserver(mOnUrlBarFocusChanged);
 
-        mUpdateStatusIndicatorDelayedRunnable = () -> {
-            final boolean offline = mOfflineDetector.isConnectionStateOffline();
-            if (offline != mIsOffline) {
-                updateStatusIndicator(offline);
-            }
-        };
+        mUpdateStatusIndicatorDelayedRunnable =
+                () -> {
+                    final boolean offline = mOfflineDetector.isConnectionStateOffline();
+                    if (offline != mIsOffline) {
+                        updateStatusIndicator(offline);
+                    }
+                };
     }
 
     public void onConnectionStateChanged(boolean offline) {
@@ -194,7 +217,8 @@ public class OfflineIndicatorControllerV2 {
         // state. We need a better way to handle flaky connections.
         final long elapsedTimeSinceLastAction = getElapsedTime() - mLastActionTime;
         if (elapsedTimeSinceLastAction < STATUS_INDICATOR_COOLDOWN_BEFORE_NEXT_ACTION_MS) {
-            mHandler.postDelayed(mUpdateStatusIndicatorDelayedRunnable,
+            mHandler.postDelayed(
+                    mUpdateStatusIndicatorDelayedRunnable,
                     STATUS_INDICATOR_COOLDOWN_BEFORE_NEXT_ACTION_MS - elapsedTimeSinceLastAction);
             return;
         }
@@ -235,7 +259,7 @@ public class OfflineIndicatorControllerV2 {
     private void updateStatusIndicator(boolean offline) {
         mIsOffline = offline;
         if (!mIsOfflineStateInitialized) {
-            mMetricsDelegate.onOfflineStateInitialized(/*isOffline=*/offline);
+            mMetricsDelegate.onOfflineStateInitialized(/* isOffline= */ offline);
         }
         if (!mIsOfflineStateInitialized && !offline) {
             mIsOfflineStateInitialized = true;
@@ -253,25 +277,29 @@ public class OfflineIndicatorControllerV2 {
                 return;
             }
             mOnUrlBarUnfocusedRunnable = offline ? mShowRunnable : mUpdateAndHideRunnable;
-            surfaceState = mCanAnimateBrowserControlsSupplier.get()
-                    ? UmaEnum.CAN_ANIMATE_NATIVE_CONTROLS_OMNIBOX_FOCUSED
-                    : UmaEnum.CANNOT_ANIMATE_NATIVE_CONTROLS_OMNIBOX_FOCUSED;
+            surfaceState =
+                    mCanAnimateBrowserControlsSupplier.get()
+                            ? UmaEnum.CAN_ANIMATE_NATIVE_CONTROLS_OMNIBOX_FOCUSED
+                            : UmaEnum.CANNOT_ANIMATE_NATIVE_CONTROLS_OMNIBOX_FOCUSED;
         } else {
             assert mOnUrlBarUnfocusedRunnable == null;
             (offline ? mShowRunnable : mUpdateAndHideRunnable).run();
-            surfaceState = mCanAnimateBrowserControlsSupplier.get()
-                    ? UmaEnum.CAN_ANIMATE_NATIVE_CONTROLS
-                    : UmaEnum.CANNOT_ANIMATE_NATIVE_CONTROLS;
+            surfaceState =
+                    mCanAnimateBrowserControlsSupplier.get()
+                            ? UmaEnum.CAN_ANIMATE_NATIVE_CONTROLS
+                            : UmaEnum.CANNOT_ANIMATE_NATIVE_CONTROLS;
         }
         RecordHistogram.recordEnumeratedHistogram(
                 "OfflineIndicator.ConnectivityChanged.DeviceState."
                         + (offline ? "Offline" : "Online"),
-                surfaceState, UmaEnum.NUM_ENTRIES);
+                surfaceState,
+                UmaEnum.NUM_ENTRIES);
     }
 
     private long getElapsedTime() {
-        return sMockElapsedTimeSupplier != null ? sMockElapsedTimeSupplier.get()
-                                                : SystemClock.elapsedRealtime();
+        return sMockElapsedTimeSupplier != null
+                ? sMockElapsedTimeSupplier.get()
+                : SystemClock.elapsedRealtime();
     }
 
     private void setLastActionTime() {

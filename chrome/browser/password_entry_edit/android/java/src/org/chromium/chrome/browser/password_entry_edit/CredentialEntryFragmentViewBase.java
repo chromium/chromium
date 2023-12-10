@@ -24,19 +24,13 @@ public abstract class CredentialEntryFragmentViewBase extends PreferenceFragment
      * TODO(crbug.com/1178519): The coordinator should be made a LifecycleObserver instead.
      */
     interface ComponentStateDelegate {
-        /**
-         * Called when the fragment is started.
-         */
+        /** Called when the fragment is started. */
         void onStartFragment();
 
-        /**
-         * Called when the fragment is resumed.
-         */
+        /** Called when the fragment is resumed. */
         void onResumeFragment();
 
-        /**
-         * Signals that the component is no longer needed.
-         */
+        /** Signals that the component is no longer needed. */
         void onDestroy();
     }
 

@@ -11,17 +11,19 @@
 #import "base/notreached.h"
 #import "base/time/time.h"
 #import "components/signin/public/base/signin_metrics.h"
-#import "ios/chrome/browser/first_run/first_run_metrics.h"
+#import "ios/chrome/browser/first_run/model/first_run_metrics.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/ui/authentication/history_sync/history_sync_coordinator.h"
 #import "ios/chrome/browser/ui/first_run/default_browser/default_browser_screen_coordinator.h"
 #import "ios/chrome/browser/ui/first_run/first_run_screen_delegate.h"
 #import "ios/chrome/browser/ui/first_run/first_run_util.h"
+#import "ios/chrome/browser/ui/first_run/omnibox_position/omnibox_position_choice_coordinator.h"
 #import "ios/chrome/browser/ui/first_run/signin/signin_screen_coordinator.h"
 #import "ios/chrome/browser/ui/first_run/tangible_sync/tangible_sync_screen_coordinator.h"
 #import "ios/chrome/browser/ui/screen/screen_provider.h"
 #import "ios/chrome/browser/ui/screen/screen_type.h"
+#import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_coordinator.h"
 #import "ios/public/provider/chrome/browser/signin/choice_api.h"
 
 @interface FirstRunCoordinator () <FirstRunScreenDelegate,
@@ -147,9 +149,15 @@
                                    browser:self.browser
                                   delegate:self];
     case kChoice:
-      return ios::provider::
-          CreateChoiceCoordinatorForFREWithNavigationController(
-              self.navigationController, self.browser, self);
+      return [[SearchEngineChoiceCoordinator alloc]
+          initForFirstRunWithBaseNavigationController:self.navigationController
+                                              browser:self.browser
+                                     firstRunDelegate:self];
+    case kOmniboxPosition:
+      return [[OmniboxPositionChoiceCoordinator alloc]
+          initWithBaseNavigationController:self.navigationController
+                                   browser:self.browser
+                                  delegate:self];
     case kStepsCompleted:
       NOTREACHED() << "Reaches kStepsCompleted unexpectedly.";
       break;

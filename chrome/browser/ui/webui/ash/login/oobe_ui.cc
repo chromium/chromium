@@ -44,7 +44,7 @@
 #include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/webui/about_ui.h"
+#include "chrome/browser/ui/webui/about/about_ui.h"
 #include "chrome/browser/ui/webui/ash/login/add_child_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/app_downloading_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/app_launch_splash_screen_handler.h"
@@ -68,6 +68,7 @@
 #include "chrome/browser/ui/webui/ash/login/enable_debugging_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/encryption_migration_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/enrollment_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/enter_old_password_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/error_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/family_link_notice_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/fingerprint_setup_screen_handler.h"
@@ -96,6 +97,10 @@
 #include "chrome/browser/ui/webui/ash/login/oobe_display_chooser.h"
 #include "chrome/browser/ui/webui/ash/login/os_install_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/os_trial_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/osauth/apply_online_password_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/osauth/factor_setup_success_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/osauth/local_data_loss_warning_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/osauth/osauth_error_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/packaged_license_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/parental_handoff_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/password_selection_screen_handler.h"
@@ -374,9 +379,10 @@ void CreateAndAddOobeUIDataSource(Profile* profile,
   // Only add a filter when runing as test.
   const bool is_running_test = command_line->HasSwitch(::switches::kTestName) ||
                                command_line->HasSwitch(::switches::kTestType);
-  if (is_running_test)
+  if (is_running_test) {
     source->SetRequestFilter(::test::GetTestShouldHandleRequest(),
                              ::test::GetTestFilesRequestFilter());
+  }
 }
 
 std::string GetDisplayType(const GURL& url) {
@@ -479,7 +485,14 @@ void OobeUI::ConfigureOobeDisplay() {
   if (features::AreLocalPasswordsEnabledForConsumers()) {
     AddScreenHandler(std::make_unique<PasswordSelectionScreenHandler>());
     AddScreenHandler(std::make_unique<LocalPasswordSetupHandler>());
+    AddScreenHandler(std::make_unique<ApplyOnlinePasswordScreenHandler>());
   }
+
+  AddScreenHandler(std::make_unique<LocalDataLossWarningScreenHandler>());
+  AddScreenHandler(std::make_unique<EnterOldPasswordScreenHandler>());
+
+  AddScreenHandler(std::make_unique<OSAuthErrorScreenHandler>());
+  AddScreenHandler(std::make_unique<FactorSetupSuccessScreenHandler>());
 
   AddScreenHandler(std::make_unique<GestureNavigationScreenHandler>());
 
@@ -595,11 +608,13 @@ void OobeUI::ConfigureOobeDisplay() {
 
   BootTimesRecorderTabHelper::MaybeCreateForWebContents(contents);
 
-  if (ShouldUpScaleOobe())
+  if (ShouldUpScaleOobe()) {
     UpScaleOobe();
+  }
 
-  if (policy::EnrollmentRequisitionManager::IsRemoraRequisition())
+  if (policy::EnrollmentRequisitionManager::IsRemoraRequisition()) {
     oobe_display_chooser_ = std::make_unique<OobeDisplayChooser>();
+  }
 }
 
 bool OobeUI::ShouldUpScaleOobe() {
@@ -630,8 +645,9 @@ void OobeUI::BindInterface(
   multidevice_setup::MultiDeviceSetupService* service =
       multidevice_setup::MultiDeviceSetupServiceFactory::GetForProfile(
           ProfileManager::GetActiveUserProfile());
-  if (service)
+  if (service) {
     service->BindMultiDeviceSetup(std::move(receiver));
+  }
 }
 
 void OobeUI::BindInterface(
@@ -640,8 +656,9 @@ void OobeUI::BindInterface(
   multidevice_setup::MultiDeviceSetupService* service =
       multidevice_setup::MultiDeviceSetupServiceFactory::GetForProfile(
           ProfileManager::GetActiveUserProfile());
-  if (service)
+  if (service) {
     service->BindPrivilegedHostDeviceSetter(std::move(receiver));
+  }
 }
 
 void OobeUI::BindInterface(
@@ -720,8 +737,9 @@ OobeUI::OobeUI(content::WebUI* web_ui, const GURL& url)
 }
 
 OobeUI::~OobeUI() {
-  for (Observer& observer : observer_list_)
+  for (Observer& observer : observer_list_) {
     observer.OnDestroyingOobeUI();
+  }
   LOG(WARNING) << "OobeUI destroyed";
 }
 
@@ -732,8 +750,8 @@ void OobeUI::AddOobeComponents(content::WebUIDataSource* source) {
   source->AddResourcePaths(base::make_span(kOobeUnconditionalResources,
                                            kOobeUnconditionalResourcesSize));
   // Add Gaia Authenticator resources
-  source->AddResourcePaths(base::make_span(kGaiaAuthHostResources,
-                                           kGaiaAuthHostResourcesSize));
+  source->AddResourcePaths(
+      base::make_span(kGaiaAuthHostResources, kGaiaAuthHostResourcesSize));
 
   if (policy::EnrollmentRequisitionManager::IsRemoraRequisition()) {
     source->AddResourcePath(
@@ -761,8 +779,9 @@ ErrorScreen* OobeUI::GetErrorScreen() {
 base::Value::Dict OobeUI::GetLocalizedStrings() {
   base::Value::Dict localized_strings;
   core_handler_->GetLocalizedStrings(&localized_strings);
-  for (BaseWebUIHandler* handler : webui_handlers_)
+  for (BaseWebUIHandler* handler : webui_handlers_) {
     handler->GetLocalizedStrings(&localized_strings);
+  }
 
   const std::string& app_locale = g_browser_process->GetApplicationLocale();
   webui::SetLoadTimeDataDefaults(app_locale, &localized_strings);
@@ -830,8 +849,9 @@ void OobeUI::CurrentScreenChanged(OobeScreenId new_screen) {
   previous_screen_ = current_screen_;
 
   current_screen_ = new_screen;
-  for (Observer& observer : observer_list_)
+  for (Observer& observer : observer_list_) {
     observer.OnCurrentScreenChanged(previous_screen_, new_screen);
+  }
 }
 
 void OobeUI::OnBackdropLoaded() {
@@ -870,10 +890,12 @@ void OobeUI::RemoveObserver(Observer* observer) {
 }
 
 void OobeUI::OnDisplayConfigurationChanged() {
-  if (oobe_display_chooser_)
+  if (oobe_display_chooser_) {
     oobe_display_chooser_->TryToPlaceUiOnTouchDisplay();
-  if (ShouldUpScaleOobe())
+  }
+  if (ShouldUpScaleOobe()) {
     UpScaleOobe();
+  }
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(OobeUI)

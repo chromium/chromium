@@ -22,26 +22,15 @@ DeskBarView::DeskBarView(aura::Window* root)
     : DeskBarViewBase(root, DeskBarViewBase::Type::kDeskButton) {}
 
 gfx::Size DeskBarView::CalculatePreferredSize() const {
-  // For desk button bar, it comes with dynamic width. Thus, we calculate
-  // the preferred width (summation of all child elements and paddings) and
-  // use the full available width as the upper limit.
-  // TODO(b/301663756): consolidate size calculation for the desk bar and its
-  // scroll contents.
-  int width = 0;
-  for (auto* child : scroll_view_contents_->children()) {
-    if (!child->GetVisible()) {
-      continue;
-    }
-    if (width) {
-      width += kDeskBarMiniViewsSpacing;
-    }
-    width += child->GetPreferredSize().width();
-  }
-  width += kDeskBarScrollViewMinimumHorizontalPaddingDeskButton * 2 +
-           kDeskBarDeskPreviewViewFocusRingThicknessAndPadding * 2;
-  width = std::min(width, GetAvailableBounds().width());
-
-  return {width, GetPreferredBarHeight(root_, type_, state_)};
+  // The preferred size should be its scroll view contents' size plus the
+  // horizontal padding at both left/right. In addition, it should not exceed
+  // the available size.
+  gfx::Size preferred_size = scroll_view_contents_->GetPreferredSize();
+  preferred_size.Enlarge(
+      /*grow_width=*/kDeskBarScrollViewMinimumHorizontalPaddingDeskButton * 2,
+      /*grow_height=*/0);
+  preferred_size.SetToMin(GetAvailableBounds().size());
+  return preferred_size;
 }
 
 gfx::Rect DeskBarView::GetAvailableBounds() const {

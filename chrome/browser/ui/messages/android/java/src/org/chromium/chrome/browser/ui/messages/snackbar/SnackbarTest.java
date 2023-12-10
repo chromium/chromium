@@ -294,7 +294,7 @@ public class SnackbarTest {
                     snackbar.setDuration(SnackbarManager.getDefaultA11yDurationForTesting() / 3);
                     Assert.assertEquals(
                             "Snackbar should use default a11y duration when set duration is less"
-                                + " than default and a gesture performing a11y service is running.",
+                                    + " than default and a gesture performing a11y service is running.",
                             SnackbarManager.getDefaultA11yDurationForTesting(),
                             mManager.getDuration(snackbar));
                 });

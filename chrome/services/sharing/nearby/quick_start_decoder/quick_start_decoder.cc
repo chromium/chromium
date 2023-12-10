@@ -33,7 +33,12 @@ using CBOR = cbor::Value;
 constexpr int kExpectedResponseSize = 2;
 constexpr char kCredentialIdKey[] = "id";
 constexpr char kEntitiyIdMapKey[] = "id";
+constexpr char kBootstrapConfigurationsKey[] = "bootstrapConfigurations";
 constexpr char kDeviceDetailsKey[] = "deviceDetails";
+constexpr char kSecondDeviceAuthPayloadKey[] = "secondDeviceAuthPayload";
+constexpr char kIsTransferUnicornKey[] = "isTransferUnicorn";
+constexpr char kBootstrapAccountsKey[] = "bootstrapAccounts";
+constexpr char kNameKey[] = "name";
 constexpr char kInstanceIdKey[] = "instanceId";
 constexpr uint8_t kCtapDeviceResponseSuccess = 0x00;
 constexpr int kCborDecoderNoError = 0;
@@ -98,6 +103,79 @@ std::pair<int, absl::optional<cbor::Value>> CborDecodeGetAssertionResponse(
   return std::make_pair(kCborDecoderNoError, std::move(cbor));
 }
 
+std::string FindInstanceIdInBootstrapConfigurations(
+    const base::Value::Dict& payload) {
+  const base::Value::Dict* bootstrap_configurations =
+      payload.FindDict(kBootstrapConfigurationsKey);
+  CHECK(bootstrap_configurations);
+
+  const base::Value::Dict* device_details =
+      bootstrap_configurations->FindDict(kDeviceDetailsKey);
+  if (!device_details) {
+    LOG(WARNING) << "DeviceDetails not found within BootstrapConfigurations.";
+    return "";
+  }
+
+  const std::string* instance_id_ptr =
+      device_details->FindString(kInstanceIdKey);
+  return instance_id_ptr ? *instance_id_ptr : "";
+}
+
+std::string FindEmailInBootstrapConfigurations(
+    const base::Value::Dict& payload) {
+  const base::Value::Dict* bootstrap_configurations =
+      payload.FindDict(kBootstrapConfigurationsKey);
+  CHECK(bootstrap_configurations);
+
+  const base::Value::List* accounts =
+      bootstrap_configurations->FindList(kBootstrapAccountsKey);
+  if (!accounts) {
+    LOG(WARNING)
+        << "BootstrapAccounts not found within BootstrapConfigurations.";
+    return "";
+  }
+
+  if (accounts->empty()) {
+    LOG(WARNING) << "Empty accounts list received from source device.";
+    return "";
+  }
+
+  const base::Value::Dict* first_account = accounts->front().GetIfDict();
+  if (!first_account) {
+    LOG(WARNING) << "Invalid value for account received from source device.";
+    return "";
+  }
+
+  const std::string* email_ptr = first_account->FindString(kNameKey);
+  if (!email_ptr) {
+    LOG(WARNING) << "Email missing from account received from source device.";
+    return "";
+  }
+
+  return *email_ptr;
+}
+
+bool FindIsSupervisedAccountInBootstrapConfigurations(
+    const base::Value::Dict& payload) {
+  const base::Value::Dict* second_device_auth_payload =
+      payload.FindDict(kSecondDeviceAuthPayloadKey);
+  if (!second_device_auth_payload) {
+    LOG(WARNING) << "SecondDeviceAuthPayload not found in "
+                    "BootstrapConfigurations message.";
+    return false;
+  }
+
+  absl::optional<bool> is_supervised_account_optional =
+      second_device_auth_payload->FindBool(kIsTransferUnicornKey);
+  if (!is_supervised_account_optional.has_value()) {
+    LOG(WARNING) << "Supervised account boolean not found in "
+                    "BootstrapConfigurations message.";
+    return false;
+  }
+
+  return is_supervised_account_optional.value();
+}
+
 }  // namespace
 
 QuickStartDecoder::QuickStartDecoder(
@@ -153,6 +231,9 @@ QuickStartDecoder::DoDecodeQuickStartMessage(const std::vector<uint8_t>& data) {
     case QuickStartMessageType::kSecondDeviceAuthPayload:
       return DecodeSecondDeviceAuthPayload(*payload);
     case QuickStartMessageType::kBootstrapOptions:
+      NOTIMPLEMENTED();
+      break;
+    case QuickStartMessageType::kBootstrapState:
       NOTIMPLEMENTED();
       break;
     case QuickStartMessageType::kBootstrapConfigurations:
@@ -455,23 +536,11 @@ QuickStartDecoder::DecodeWifiCredentials(
 base::expected<mojom::QuickStartMessagePtr, mojom::QuickStartDecoderError>
 QuickStartDecoder::DecodeBootstrapConfigurations(
     const base::Value::Dict& payload) {
-  const base::Value::Dict* device_details = payload.FindDict(kDeviceDetailsKey);
-  if (!device_details) {
-    LOG(WARNING)
-        << "DeviceDetails cannot be found within BootstrapConfigurations.";
-    return mojom::QuickStartMessage::NewBootstrapConfigurations(
-        mojom::BootstrapConfigurations::New(/*instance_id=*/""));
-  }
-
-  const std::string* instance_id_ptr =
-      device_details->FindString(kInstanceIdKey);
-  if (!instance_id_ptr) {
-    LOG(WARNING) << "InstanceId for the Android Device could not be found.";
-    return mojom::QuickStartMessage::NewBootstrapConfigurations(
-        mojom::BootstrapConfigurations::New(/*instance_id=*/""));
-  }
   return mojom::QuickStartMessage::NewBootstrapConfigurations(
-      mojom::BootstrapConfigurations::New(*instance_id_ptr));
+      mojom::BootstrapConfigurations::New(
+          FindInstanceIdInBootstrapConfigurations(payload),
+          FindIsSupervisedAccountInBootstrapConfigurations(payload),
+          FindEmailInBootstrapConfigurations(payload)));
 }
 
 }  // namespace ash::quick_start

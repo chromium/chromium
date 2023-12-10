@@ -46,7 +46,7 @@ struct FieldInfo {
   autofill::ServerFieldType type = autofill::ServerFieldType::UNKNOWN_TYPE;
 
   // Predictions for the form containing the field.
-  absl::optional<FormPredictions> stored_predictions;
+  std::optional<FormPredictions> stored_predictions;
 
   FieldInfo(int driver_id,
             autofill::FieldRendererId field_id,
@@ -70,7 +70,7 @@ class FieldInfoManager : public KeyedService {
 
   // Caches |info|.
   void AddFieldInfo(const FieldInfo& new_info,
-                    const absl::optional<FormPredictions>& predictions);
+                    const std::optional<FormPredictions>& predictions);
 
   // Retrieves field info for the given |signon_realm|.
   std::vector<FieldInfo> GetFieldInfo(const std::string& signon_realm);

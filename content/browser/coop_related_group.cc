@@ -13,10 +13,16 @@ namespace content {
 
 CoopRelatedGroup::CoopRelatedGroup(BrowserContext* browser_context,
                                    bool is_guest,
-                                   bool is_fenced)
+                                   bool is_fenced,
+                                   bool is_fixed_storage_partition)
     : browser_context_(browser_context),
       is_guest_(is_guest),
-      is_fenced_(is_fenced) {}
+      is_fenced_(is_fenced),
+      is_fixed_storage_partition_(is_fixed_storage_partition) {
+  if (is_guest_) {
+    CHECK(is_fixed_storage_partition_);
+  }
+}
 
 CoopRelatedGroup::~CoopRelatedGroup() = default;
 
@@ -56,7 +62,8 @@ CoopRelatedGroup::GetOrCreateBrowsingInstanceForCoopPolicy(
 
   return base::WrapRefCounted<BrowsingInstance>(new BrowsingInstance(
       browser_context_, web_exposed_isolation_info, is_guest_, is_fenced_,
-      base::WrapRefCounted<CoopRelatedGroup>(this), common_coop_origin));
+      is_fixed_storage_partition_, base::WrapRefCounted<CoopRelatedGroup>(this),
+      common_coop_origin));
 }
 
 void CoopRelatedGroup::RegisterBrowsingInstance(
@@ -75,6 +82,9 @@ void CoopRelatedGroup::RegisterBrowsingInstance(
           browsing_instance->common_coop_origin(),
           browsing_instance->web_exposed_isolation_info());
   CHECK(duplicated_policy_browsing_instance.get() == nullptr);
+
+  CHECK(browsing_instance->is_fixed_storage_partition() ==
+        is_fixed_storage_partition_);
 
   coop_related_browsing_instances_.push_back(browsing_instance);
 }

@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include <optional>
 #include "android_webview/browser/aw_browser_context.h"
 #include "android_webview/browser/aw_browser_context_store.h"
 #include "android_webview/browser/aw_client_hints_controller_delegate.h"
@@ -54,7 +55,6 @@
 #include "services/network/cookie_access_delegate_impl.h"
 #include "services/network/network_service.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/url_constants.h"
 
 using base::WaitableEvent;
@@ -488,7 +488,7 @@ void CookieManager::SetCookieHelper(const GURL& host,
       host, value, workaround_http_secure_cookies_, &should_allow_cookie);
 
   std::unique_ptr<net::CanonicalCookie> cc(net::CanonicalCookie::Create(
-      new_host, value, base::Time::Now(), absl::nullopt /* server_time */,
+      new_host, value, base::Time::Now(), std::nullopt /* server_time */,
       net::CookiePartitionKey::FromWire(net::SchemefulSite(new_host))));
 
   if (!cc || !should_allow_cookie) {

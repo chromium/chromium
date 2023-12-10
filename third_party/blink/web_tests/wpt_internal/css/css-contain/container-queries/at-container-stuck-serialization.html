@@ -1,16 +1,16 @@
 <!DOCTYPE html>
-<title>CSS Container Queries: state(stuck) conditionText serialization</title>
+<title>CSS Container Queries: scroll-state(stuck) conditionText serialization</title>
 <link rel="help" href="https://drafts.csswg.org/css-contain-3/#container-queries">
 <link rel="help" href="https://drafts.csswg.org/cssom/#serialize-a-css-rule">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/css/css-contain/container-queries/support/cq-testcommon.js"></script>
 <style id="testSheet">
-  @container state(        stuck:top) { }
-  @container STate(stuck:    ) { }
-  @container STate(stuck) { }
-  @container  state(  ( stuck: BOTTOM) OR ( STUCK: INset-inline-START  ) ) { }
-  @container state (stuck: top) { }
+  @container scroll-state(        stuck:top) { }
+  @container scroll-STate(stuck:    ) { }
+  @container scroll-STate(stuck) { }
+  @container  scroll-state(  ( stuck: BOTTOM) OR ( STUCK: INset-inline-START  ) ) { }
+  @container scroll-state (stuck: top) { }
 </style>
 <script>
   setup(() => {
@@ -19,11 +19,11 @@
   });
 
   const tests = [
-      ["state(stuck: top)", "Normalize spaces"],
-      ["STate(stuck: )", "No value - invalid, serializes as <general-enclosed>"],
-      ["state(stuck)", "Boolean context"],
-      ["state((stuck: bottom) or (stuck: inset-inline-start))", "Logical with 'or'"],
-      ["state (stuck: top)", "Not a state function with space before '('"]
+      ["scroll-state(stuck: top)", "Normalize spaces"],
+      ["scroll-STate(stuck: )", "No value - invalid, serializes as <general-enclosed>"],
+      ["scroll-state(stuck)", "Boolean context"],
+      ["scroll-state((stuck: bottom) or (stuck: inset-inline-start))", "Logical with 'or'"],
+      ["scroll-state (stuck: top)", "Not a scroll-state function with space before '('"]
   ].map((e, i) => [testSheet.sheet.cssRules[i], ...e]);
 
   tests.forEach((t) => {

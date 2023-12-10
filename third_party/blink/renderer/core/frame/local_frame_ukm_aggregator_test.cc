@@ -12,6 +12,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/metrics/document_update_reason.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_intersection_observer_init.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_document_element.h"
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing.h"
 #include "third_party/blink/renderer/core/testing/intersection_observer_test_helper.h"
@@ -691,6 +692,8 @@ class LocalFrameUkmAggregatorSimTest : public SimTest {
     // Create internal observer
     IntersectionObserverInit* observer_init =
         IntersectionObserverInit::Create();
+    observer_init->setRoot(
+        MakeGarbageCollected<V8UnionDocumentOrElement>(&document));
     TestIntersectionObserverDelegate* internal_delegate =
         MakeGarbageCollected<TestIntersectionObserverDelegate>(
             document, LocalFrameUkmAggregator::kLazyLoadIntersectionObserver);
@@ -720,7 +723,7 @@ class LocalFrameUkmAggregatorSimTest : public SimTest {
     EXPECT_EQ(
         histogram_tester.GetTotalSum(
             "Blink.IntersectionObservationInternalCount.UpdateTime.PreFCP"),
-        4);
+        RuntimeEnabledFeatures::IntersectionOptimizationEnabled() ? 2 : 4);
     EXPECT_EQ(
         histogram_tester.GetTotalSum(
             "Blink.IntersectionObservationJavascriptCount.UpdateTime.PreFCP"),
@@ -734,12 +737,12 @@ class LocalFrameUkmAggregatorSimTest : public SimTest {
         base::TimeTicks(), base::TimeTicks() + base::Microseconds(10), 0,
         root_document->UkmSourceID(), root_document->UkmRecorder());
 
-    target1->setAttribute(html_names::kStyleAttr, AtomicString("width: 60px"));
+    target1->setAttribute(html_names::kStyleAttr, AtomicString("height: 60px"));
     Compositor().BeginFrame();
     EXPECT_EQ(
         histogram_tester.GetTotalSum(
             "Blink.IntersectionObservationInternalCount.UpdateTime.PreFCP"),
-        4);
+        RuntimeEnabledFeatures::IntersectionOptimizationEnabled() ? 2 : 4);
     EXPECT_EQ(
         histogram_tester.GetTotalSum(
             "Blink.IntersectionObservationJavascriptCount.UpdateTime.PreFCP"),

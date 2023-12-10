@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/main_thread_scheduler_impl.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support_with_mock_scheduler.h"
 
 using testing::InvokeWithoutArgs;
@@ -115,6 +116,7 @@ class ScriptRunnerTest : public testing::Test {
                             ScriptRunner::DelayReason::kLoad));
   }
 
+  test::TaskEnvironment task_environment_;
   std::unique_ptr<DummyPageHolder> page_holder_;
   Persistent<Document> document_;
   Persistent<ScriptRunner> script_runner_;
@@ -566,6 +568,7 @@ class PostTaskWithLowPriorityUntilTimeoutTest : public testing::Test {
         null_task_runner_(base::MakeRefCounted<base::NullTaskRunner>()) {}
 
  protected:
+  test::TaskEnvironment task_environment_;
   ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>
       platform_;
   scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;

@@ -24,6 +24,11 @@
 #include "third_party/blink/public/mojom/mediastream/media_devices.mojom.h"
 #include "url/origin.h"
 
+namespace features {
+CONTENT_EXPORT BASE_DECLARE_FEATURE(
+    kEnableBackForwardCacheForPagesWithMediaDevicesDispatcherHost);
+}  // namespace features
+
 namespace content {
 
 class MediaStreamManager;
@@ -83,29 +88,20 @@ class CONTENT_EXPORT MediaDevicesDispatcherHost
   using GetVideoInputDeviceFormatsCallback =
       GetAllVideoInputDeviceFormatsCallback;
 
-  void GetDefaultVideoInputDeviceID(
+  void OnVideoGotSaltAndOrigin(
       GetVideoInputCapabilitiesCallback client_callback,
       const MediaDeviceSaltAndOrigin& salt_and_origin);
-
-  void GotDefaultVideoInputDeviceID(
-      GetVideoInputCapabilitiesCallback client_callback,
-      const MediaDeviceSaltAndOrigin& salt_and_origin,
-      const std::string& default_device_id);
 
   void FinalizeGetVideoInputCapabilities(
       GetVideoInputCapabilitiesCallback client_callback,
       const MediaDeviceSaltAndOrigin& salt_and_origin,
-      const std::string& default_device_id,
       const MediaDeviceEnumeration& enumeration);
 
-  void GetDefaultAudioInputDeviceID(
+  void OnAudioGotSaltAndOrigin(
       GetAudioInputCapabilitiesCallback client_callback,
       const MediaDeviceSaltAndOrigin& salt_and_origin);
 
-  void GotDefaultAudioInputDeviceID(const std::string& default_device_id);
-
-  void GotAudioInputEnumeration(const std::string& default_device_id,
-                                const MediaDeviceEnumeration& enumeration);
+  void GotAudioInputEnumeration(const MediaDeviceEnumeration& enumeration);
 
   void GotAudioInputParameters(
       size_t index,

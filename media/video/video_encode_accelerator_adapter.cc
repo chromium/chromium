@@ -96,8 +96,9 @@ VideoEncodeAccelerator::Config SetUpVeaConfig(
   Bitrate bitrate =
       CreateBitrate(opts.bitrate, opts.frame_size, supported_rc_modes);
   auto config =
-      VideoEncodeAccelerator::Config(format, opts.frame_size, profile, bitrate,
-                                     initial_framerate, opts.keyframe_interval);
+      VideoEncodeAccelerator::Config(format, opts.frame_size, profile, bitrate);
+  config.initial_framerate = initial_framerate;
+  config.gop_length = opts.keyframe_interval;
 
   if (opts.content_hint) {
     switch (*opts.content_hint) {
@@ -630,8 +631,6 @@ void VideoEncodeAcceleratorAdapter::ChangeOptionsOnAcceleratorThread(
   uint32_t framerate = base::ClampRound<uint32_t>(
       options.framerate.value_or(VideoEncodeAccelerator::kDefaultFramerate));
 
-  accelerator_->RequestEncodingParametersChange(bitrate, framerate);
-
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
   if (profile_ >= H264PROFILE_MIN && profile_ <= H264PROFILE_MAX) {
     if (options.avc.produce_annexb) {
@@ -656,6 +655,9 @@ void VideoEncodeAcceleratorAdapter::ChangeOptionsOnAcceleratorThread(
   options_ = options;
   if (!output_cb.is_null())
     output_cb_ = std::move(output_cb);
+
+  accelerator_->RequestEncodingParametersChange(bitrate, framerate,
+                                                absl::nullopt);
   std::move(done_cb).Run(EncoderStatus::Codes::kOk);
 }
 

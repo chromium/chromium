@@ -257,7 +257,7 @@ void ProximityAuthWebUIHandler::GetLocalState(const base::Value::List& args) {
 }
 
 base::Value ProximityAuthWebUIHandler::GetTruncatedLocalDeviceId() {
-  absl::optional<multidevice::RemoteDeviceRef> local_device_metadata =
+  std::optional<multidevice::RemoteDeviceRef> local_device_metadata =
       device_sync_client_->GetLocalDeviceMetadata();
 
   std::string device_id =

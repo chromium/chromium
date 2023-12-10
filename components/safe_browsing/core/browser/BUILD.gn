@@ -209,6 +209,9 @@ source_set("token_fetcher_unit_tests") {
     "//base/test:test_support",
     "//testing/gtest",
   ]
+  if (is_ios) {
+    deps += [ "//components/test:safe_browsing_test_bundle_data" ]
+  }
 }
 
 source_set("token_fetcher_testing_helper") {

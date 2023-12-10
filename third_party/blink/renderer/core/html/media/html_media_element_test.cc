@@ -15,9 +15,11 @@
 #include "third_party/blink/public/mojom/autoplay/autoplay.mojom-blink.h"
 #include "third_party/blink/public/platform/web_media_player.h"
 #include "third_party/blink/public/platform/web_media_player_source.h"
+#include "third_party/blink/renderer/core/dom/dom_implementation.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
+#include "third_party/blink/renderer/core/html/html_document.h"
 #include "third_party/blink/renderer/core/html/media/html_audio_element.h"
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
 #include "third_party/blink/renderer/core/html/media/media_error.h"
@@ -537,12 +539,13 @@ class HTMLMediaElementTest : public testing::TestWithParam<MediaTestParam> {
     EXPECT_FALSE(WasPlayerDestroyed());
   }
 
+  std::unique_ptr<DummyPageHolder> dummy_page_holder_;
+
  private:
   TestMediaPlayerObserver& media_player_observer() {
     return media_player_host_.observer();
   }
 
-  std::unique_ptr<DummyPageHolder> dummy_page_holder_;
   Persistent<HTMLMediaElement> media_;
 
   // Owned by WebMediaStubLocalFrameClient.
@@ -920,7 +923,7 @@ TEST_P(HTMLMediaElementTest, ContextFrozen) {
 }
 
 TEST_P(HTMLMediaElementTest, GcMarkingNoAllocWebTimeRanges) {
-  ::testing::FLAGS_gtest_death_test_style = "threadsafe";
+  GTEST_FLAG_SET(death_test_style, "threadsafe");
   auto* thread_state = ThreadState::Current();
   ThreadState::NoAllocationScope no_allocation_scope(thread_state);
   EXPECT_FALSE(thread_state->IsAllocationAllowed());
@@ -1583,6 +1586,44 @@ TEST_P(HTMLMediaElementTest, CanFreezeWithMediaPlayerAttached) {
       mojom::FrameLifecycleState::kFrozenAutoResumeMedia);
 
   EXPECT_FALSE(MediaIsPlaying());
+}
+
+TEST_P(HTMLMediaElementTest, MoveToAnotherDocument) {
+  auto* second_document =
+      dummy_page_holder_->GetDocument().implementation().createHTMLDocument();
+
+  // The second document is not active. When Media() is moved over, it triggers
+  // a call to HTMLMediaElement::ShouldShowControls. This should not violate any
+  // DCHECKs.
+  second_document->body()->AppendChild(Media());
+
+  // Destroying the first document should not cause anything unusual to happen.
+  dummy_page_holder_.reset();
+
+  EXPECT_FALSE(ControlsVisible());
+}
+
+TEST_P(HTMLMediaElementTest, LoadingFailsAfterContextDestruction) {
+  // Ensure the media element throws an error if loading is attempted after V8
+  // memory is purged (which destroys the element's execution context).
+
+  constexpr char kOrigin[] = "https://a.com";
+  SetSecurityOrigin(kOrigin);
+  WaitForPlayer();
+  auto new_dummy_page_holder =
+      CreatePageWithSecurityOrigin(kOrigin, /*is_picture_in_picture=*/false);
+  EXPECT_FALSE(WasPlayerDestroyed());
+
+  LocalFrame* frame = Media()->LocalFrameForPlayer();
+  ASSERT_TRUE(frame);
+  frame->ForciblyPurgeV8Memory();
+  test::RunPendingTasks();
+  EXPECT_TRUE(WasPlayerDestroyed());
+  EXPECT_FALSE(Media()->error());
+
+  Media()->load();
+  test::RunPendingTasks();
+  EXPECT_TRUE(Media()->error());
 }
 
 }  // namespace blink

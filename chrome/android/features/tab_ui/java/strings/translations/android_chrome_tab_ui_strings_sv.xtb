@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="sv">
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> av flikarna har inte använts på länge. Vill du stänga dem?</translation>
+<translation id="1155815720264022949">Vill du stänga gamla flikar?</translation>
 <translation id="1215127405478249895">Granska flikar</translation>
 <translation id="125153950246128346">Tryck för att visa en annan flik</translation>
 <translation id="1499635324672558517">Vill du stänga alla inkognitoflikar?</translation>
@@ -46,9 +47,11 @@
 <translation id="5073204694187207510">Dölj helskärmsrutnät</translation>
 <translation id="5076161749301278626">Vill du visa butiksrecensioner?</translation>
 <translation id="5082793167783849073">Jämför sidor snabbt genom att skapa en grupp. Börja med att trycka länge på en länk.</translation>
+<translation id="5303274951032363933">{TABS_COUNT,plural, =1{Du har <ph name="TABS_COUNT_ONE" /> flik som du inte har använt nyligen}other{Du har <ph name="TABS_COUNT_MANY" /> flikar som du inte har använt nyligen}}</translation>
 <translation id="5339733443032484186">Din senaste flik</translation>
 <translation id="5490235265819901748">Flikgruppen har utökats</translation>
 <translation id="5494920125229734069">Markera alla</translation>
+<translation id="5545379293264651575">Stäng utan att granska</translation>
 <translation id="5556417849629758491">Visa butiksinformation. Alternativet visas högt upp på skärmen</translation>
 <translation id="5558362125926932819">Stäng flikgruppen med <ph name="NUMBER_OF_TABS" /> flikar</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" /> flikar har grupperats</translation>
@@ -85,7 +88,6 @@
 <translation id="7885132941432959125">Flytta fliken åt höger</translation>
 <translation id="7966321538264951561">Ignorera förslagen.</translation>
 <translation id="8029301326595421733">Information om den här butiken har öppnats över hela skärmen</translation>
-<translation id="814503310257431685">Visa alla</translation>
 <translation id="8205266828577616993">Flytta fliken uppåt</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Stäng <ph name="TABS_COUNT_ONE" /> vald flik}other{Stäng <ph name="TABS_COUNT_MANY" /> valda flikar}}</translation>
 <translation id="8398929769197326728">Ny mapp – <ph name="CURRENT_TIMESTAMP_MS" /></translation>

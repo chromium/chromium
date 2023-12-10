@@ -12,6 +12,7 @@
 ; Define constants for all of the parameter strings passed in.
 (define browser-pid "BROWSER_PID")
 (define bundle-id "BUNDLE_ID")
+(define helper-bundle-id "HELPER_BUNDLE_ID")
 (define bundle-path "BUNDLE_PATH")
 (define component-path "COMPONENT_PATH")
 (define disable-sandbox-denial-logging "DISABLE_SANDBOX_DENIAL_LOGGING")
@@ -28,6 +29,9 @@
 ; local development.
 (define filter-syscalls "FILTER_SYSCALLS")
 (define filter-syscalls-debug "FILTER_SYSCALLS_DEBUG")
+
+; Sandboxed processes which use Metal may need to disable the shader cache.
+(define disable-metal-shader-cache "DISABLE_METAL_SHADER_CACHE")
 
 ; --enable-sandbox-logging causes the sandbox to log failures to the syslog.
 (if (param-true? disable-sandbox-denial-logging)
@@ -64,6 +68,42 @@
     ; /System/Library/Asssets/com_apple_MobileAsset_Font*.
     ; (https://crbug.com/662686)
     (allow file-read* (extension "com.apple.app-sandbox.read"))))
+
+; A function that profiles can call to allow forcibly disabling the Metal shader
+; cache in lieu of poking necessary holes in the sandbox for it.
+; See https://crbug.com/1159113
+(define (maybe-disable-metal-shader-cache)
+  (if (param-true? disable-metal-shader-cache)
+    (let ((metal-cache-dir (subpath (string-append (param darwin-user-cache-dir)
+                                                   "/com.apple.metal"))))
+      (deny file-read* metal-cache-dir)
+      (deny file-write* metal-cache-dir)
+      #t)
+    #f))
+
+; A function profiles can call to enable the requisite file access needed for
+; Metal shader compilation to work with the shader cache.
+;
+; Metal shader compilation may be offloaded to a helper process that needs
+; access to the user cache directory in order to cache its work to disk.
+; If this sandbox is applied to an executable that is not within an app bundle,
+; such as in a unit test, the helper-bundle-id parameter will not be set and
+; issuing sandbox extensions to the Metal cache directories will not be allowed.
+; See https://crbug.com/1453813
+(define (maybe-allow-metal-shader-cache-access)
+  (begin
+    (if (param helper-bundle-id)
+      (let ((helper-bundle-cache-dir
+            (string-append (param darwin-user-cache-dir)
+                            "/" (param helper-bundle-id))))
+        (allow file-issue-extension
+          (require-all
+            (extension-class "com.apple.app-sandbox.read-write")
+            (require-any
+              (subpath (string-append helper-bundle-cache-dir
+                                      "/com.apple.metalfe"))
+              (subpath (string-append helper-bundle-cache-dir
+                                      "/com.apple.gpuarchiver")))))))))
 
 ; Reads of signed Mach-O blobs created by the CVMS server.
 ; https://crbug.com/850021

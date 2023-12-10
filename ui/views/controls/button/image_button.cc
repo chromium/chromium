@@ -49,14 +49,6 @@ gfx::ImageSkia ImageButton::GetImage(ButtonState state) const {
   return images_[state].Rasterize(GetColorProvider());
 }
 
-void ImageButton::SetImage(ButtonState for_state, const gfx::ImageSkia* image) {
-  SetImage(for_state, image ? *image : gfx::ImageSkia());
-}
-
-void ImageButton::SetImage(ButtonState for_state, const gfx::ImageSkia& image) {
-  SetImageModel(for_state, ui::ImageModel::FromImageSkia(image));
-}
-
 void ImageButton::SetImageModel(ButtonState for_state,
                                 const ui::ImageModel& image_model) {
   if (for_state == STATE_HOVERED)
@@ -166,7 +158,7 @@ std::unique_ptr<ImageButton> ImageButton::CreateIconButton(
   int icon_size = (icon_style == MaterialIconStyle::kLarge) ? kLargeIconSize
                                                             : kSmallIconSize;
   std::unique_ptr<ImageButton> icon_button =
-      std::make_unique<ImageButton>(callback);
+      std::make_unique<ImageButton>(std::move(callback));
   icon_button->SetImageModel(
       ButtonState::STATE_NORMAL,
       ui::ImageModel::FromVectorIcon(icon, ui::kColorIcon, icon_size));
@@ -415,13 +407,13 @@ void ToggleImageButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   }
 }
 
-BEGIN_METADATA(ImageButton, Button)
+BEGIN_METADATA(ImageButton)
 ADD_PROPERTY_METADATA(HorizontalAlignment, ImageHorizontalAlignment)
 ADD_PROPERTY_METADATA(VerticalAlignment, ImageVerticalAlignment)
 ADD_PROPERTY_METADATA(gfx::Size, MinimumImageSize)
 END_METADATA
 
-BEGIN_METADATA(ToggleImageButton, ImageButton)
+BEGIN_METADATA(ToggleImageButton)
 ADD_PROPERTY_METADATA(bool, Toggled)
 ADD_PROPERTY_METADATA(std::unique_ptr<Background>, ToggledBackground)
 ADD_PROPERTY_METADATA(std::u16string, ToggledTooltipText)

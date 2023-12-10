@@ -12,8 +12,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "components/password_manager/core/browser/fake_password_store_backend.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
+#include "components/password_manager/core/browser/password_store/fake_password_store_backend.h"
 #include "components/password_manager/core/browser/password_store/mock_password_store_backend.h"
 #include "components/password_manager/core/browser/password_store/password_store_backend.h"
 #include "components/password_manager/core/common/password_manager_features.h"
@@ -27,6 +27,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using ::testing::ElementsAre;
+using ::testing::ElementsAreArray;
 using ::testing::Eq;
 using ::testing::Invoke;
 using ::testing::IsEmpty;
@@ -272,11 +274,9 @@ TEST_F(BuiltInBackendToAndroidBackendMigratorTest,
   RunUntilIdle();
 
   base::MockCallback<LoginsOrErrorReply> mock_reply;
-  std::vector<std::unique_ptr<PasswordForm>> expected_logins_android_backend;
-  expected_logins_android_backend.push_back(
-      std::make_unique<PasswordForm>(form_with_local_data));
-  EXPECT_CALL(mock_reply,
-              Run(LoginsResultsOrErrorAre(&expected_logins_android_backend)));
+  EXPECT_CALL(
+      mock_reply,
+      Run(VariantWith<LoginsResult>(ElementsAre(form_with_local_data))));
   android_backend().GetAllLoginsAsync(mock_reply.Get());
   RunUntilIdle();
 }
@@ -303,11 +303,9 @@ TEST_F(BuiltInBackendToAndroidBackendMigratorTest,
   RunUntilIdle();
 
   base::MockCallback<LoginsOrErrorReply> mock_reply;
-  std::vector<std::unique_ptr<PasswordForm>> expected_logins_built_in_backend;
-  expected_logins_built_in_backend.push_back(
-      std::make_unique<PasswordForm>(form_with_local_data));
-  EXPECT_CALL(mock_reply,
-              Run(LoginsResultsOrErrorAre(&expected_logins_built_in_backend)));
+  EXPECT_CALL(
+      mock_reply,
+      Run(VariantWith<LoginsResult>(ElementsAre(form_with_local_data))));
   android_backend().GetAllLoginsAsync(mock_reply.Get());
   RunUntilIdle();
 }
@@ -367,12 +365,9 @@ TEST_F(BuiltInBackendToAndroidBackendMigratorTest,
   RunUntilIdle();
 
   base::MockCallback<LoginsOrErrorReply> mock_reply;
-  std::vector<std::unique_ptr<PasswordForm>> expected_logins;
-  expected_logins.push_back(std::make_unique<PasswordForm>(form_1));
-  expected_logins.push_back(std::make_unique<PasswordForm>(form_2));
-
   // Credentials should be cleaned in both android and built in backends.
-  EXPECT_CALL(mock_reply, Run(LoginsResultsOrErrorAre(&expected_logins)))
+  EXPECT_CALL(mock_reply,
+              Run(VariantWith<LoginsResult>(ElementsAre(form_1, form_2))))
       .Times(2);
   android_backend().GetAllLoginsAsync(mock_reply.Get());
   built_in_backend().GetAllLoginsAsync(mock_reply.Get());
@@ -405,11 +400,9 @@ TEST_F(BuiltInBackendToAndroidBackendMigratorTest,
   RunUntilIdle();
 
   base::MockCallback<LoginsOrErrorReply> mock_reply;
-  std::vector<std::unique_ptr<PasswordForm>> expected_logins_android_backend;
-  expected_logins_android_backend.push_back(
-      std::make_unique<PasswordForm>(form_with_local_data));
-  EXPECT_CALL(mock_reply,
-              Run(LoginsResultsOrErrorAre(&expected_logins_android_backend)));
+  EXPECT_CALL(
+      mock_reply,
+      Run(VariantWith<LoginsResult>(ElementsAre(form_with_local_data))));
   android_backend().GetAllLoginsAsync(mock_reply.Get());
   RunUntilIdle();
 
@@ -433,11 +426,11 @@ struct MigrationParam {
           base::TimeDelta date_created = base::TimeDelta())
         : index(index), password(password), date_created(date_created) {}
 
-    std::unique_ptr<PasswordForm> ToPasswordForm() const {
+    PasswordForm ToPasswordForm() const {
       PasswordForm form = CreateTestPasswordForm(index);
       form.password_value = base::ASCIIToUTF16(password);
       form.date_created = base::Time() + date_created;
-      return std::make_unique<PasswordForm>(form);
+      return form;
     }
 
     int index;
@@ -445,25 +438,25 @@ struct MigrationParam {
     base::TimeDelta date_created;
   };
 
-  std::vector<std::unique_ptr<PasswordForm>> GetBuiltInLogins() const {
+  std::vector<PasswordForm> GetBuiltInLogins() const {
     return EntriesToPasswordForms(built_in_logins);
   }
 
-  std::vector<std::unique_ptr<PasswordForm>> GetAndroidLogins() const {
+  std::vector<PasswordForm> GetAndroidLogins() const {
     return EntriesToPasswordForms(android_logins);
   }
 
-  std::vector<std::unique_ptr<PasswordForm>> GetMergedLogins() const {
+  std::vector<PasswordForm> GetMergedLogins() const {
     return EntriesToPasswordForms(merged_logins);
   }
 
-  std::vector<std::unique_ptr<PasswordForm>> GetUpdatedAndroidLogins() const {
+  std::vector<PasswordForm> GetUpdatedAndroidLogins() const {
     return EntriesToPasswordForms(updated_android_logins);
   }
 
-  std::vector<std::unique_ptr<PasswordForm>> EntriesToPasswordForms(
+  std::vector<PasswordForm> EntriesToPasswordForms(
       const std::vector<Entry>& entries) const {
-    std::vector<std::unique_ptr<PasswordForm>> v;
+    std::vector<PasswordForm> v;
     base::ranges::transform(entries, std::back_inserter(v),
                             &Entry::ToPasswordForm);
     return v;
@@ -491,10 +484,10 @@ TEST_P(BuiltInBackendToAndroidBackendMigratorTestWithMigrationParams,
   const MigrationParam& p = GetParam();
 
   for (const auto& login : p.GetBuiltInLogins()) {
-    built_in_backend().AddLoginAsync(*login, base::DoNothing());
+    built_in_backend().AddLoginAsync(login, base::DoNothing());
   }
   for (const auto& login : p.GetAndroidLogins()) {
-    android_backend().AddLoginAsync(*login, base::DoNothing());
+    android_backend().AddLoginAsync(login, base::DoNothing());
   }
   RunUntilIdle();
 
@@ -504,14 +497,15 @@ TEST_P(BuiltInBackendToAndroidBackendMigratorTestWithMigrationParams,
 
   // The built-in logins should not be affected.
   base::MockCallback<LoginsOrErrorReply> built_in_reply;
-  auto built_in_logins = p.GetBuiltInLogins();
-  EXPECT_CALL(built_in_reply, Run(LoginsResultsOrErrorAre(&built_in_logins)));
+  EXPECT_CALL(
+      built_in_reply,
+      Run(VariantWith<LoginsResult>(ElementsAreArray(p.GetBuiltInLogins()))));
   built_in_backend().GetAllLoginsAsync(built_in_reply.Get());
 
   // The android logins are updated. Existing logins are retained.
   base::MockCallback<LoginsOrErrorReply> android_reply;
-  auto updated_logins = p.GetUpdatedAndroidLogins();
-  EXPECT_CALL(android_reply, Run(LoginsResultsOrErrorAre(&updated_logins)));
+  EXPECT_CALL(android_reply, Run(VariantWith<LoginsResult>(ElementsAreArray(
+                                 p.GetUpdatedAndroidLogins()))));
   android_backend().GetAllLoginsAsync(android_reply.Get());
   RunUntilIdle();
 }
@@ -532,10 +526,10 @@ TEST_P(BuiltInBackendToAndroidBackendMigratorTestWithMigrationParams,
   const MigrationParam& p = GetParam();
 
   for (const auto& login : p.GetBuiltInLogins()) {
-    built_in_backend().AddLoginAsync(*login, base::DoNothing());
+    built_in_backend().AddLoginAsync(login, base::DoNothing());
   }
   for (const auto& login : p.GetAndroidLogins()) {
-    android_backend().AddLoginAsync(*login, base::DoNothing());
+    android_backend().AddLoginAsync(login, base::DoNothing());
   }
   RunUntilIdle();
 
@@ -545,8 +539,9 @@ TEST_P(BuiltInBackendToAndroidBackendMigratorTestWithMigrationParams,
 
   for (auto* const backend : {&android_backend(), &built_in_backend()}) {
     base::MockCallback<LoginsOrErrorReply> mock_reply;
-    auto expected_logins = p.GetMergedLogins();
-    EXPECT_CALL(mock_reply, Run(LoginsResultsOrErrorAre(&expected_logins)));
+    EXPECT_CALL(
+        mock_reply,
+        Run(VariantWith<LoginsResult>(ElementsAreArray(p.GetMergedLogins()))));
     backend->GetAllLoginsAsync(mock_reply.Get());
     RunUntilIdle();
   }
@@ -564,10 +559,10 @@ TEST_P(BuiltInBackendToAndroidBackendMigratorTestWithMigrationParams,
   const MigrationParam& p = GetParam();
 
   for (const auto& login : p.GetBuiltInLogins()) {
-    built_in_backend().AddLoginAsync(*login, base::DoNothing());
+    built_in_backend().AddLoginAsync(login, base::DoNothing());
   }
   for (const auto& login : p.GetAndroidLogins()) {
-    android_backend().AddLoginAsync(*login, base::DoNothing());
+    android_backend().AddLoginAsync(login, base::DoNothing());
   }
   RunUntilIdle();
 
@@ -577,8 +572,9 @@ TEST_P(BuiltInBackendToAndroidBackendMigratorTestWithMigrationParams,
 
   for (auto* const backend : {&android_backend(), &built_in_backend()}) {
     base::MockCallback<LoginsOrErrorReply> mock_reply;
-    auto expected_logins = p.GetAndroidLogins();
-    EXPECT_CALL(mock_reply, Run(LoginsResultsOrErrorAre(&expected_logins)));
+    EXPECT_CALL(
+        mock_reply,
+        Run(VariantWith<LoginsResult>(ElementsAreArray(p.GetAndroidLogins()))));
     backend->GetAllLoginsAsync(mock_reply.Get());
     RunUntilIdle();
   }

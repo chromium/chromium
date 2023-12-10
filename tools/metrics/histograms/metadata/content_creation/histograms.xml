@@ -68,36 +68,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="NoteCreation.SelectedDynamicTemplateID" units="count"
-    expires_after="2023-04-23">
-  <obsolete>
-    Removed 2023-03
-  </obsolete>
-  <owner>graysonlafleur@google.com</owner>
-  <owner>chrome-creation@google.com</owner>
-  <summary>
-    Records the ID of the template selected. Recorded only for dynamic templates
-    while NoteCreation.SelectedTemplate records selected template based on an
-    enum of hardcoded template IDs. This will replace
-    NoteCreation.SelectedTemplate.
-  </summary>
-</histogram>
-
-<histogram name="NoteCreation.SelectedDynamicTemplateIndex" units="count"
-    expires_after="2023-04-23">
-  <obsolete>
-    Removed 2023-03
-  </obsolete>
-  <owner>graysonlafleur@google.com</owner>
-  <owner>chrome-creation@google.com</owner>
-  <summary>
-    Records the index of the template selected. Recorded only for dynamic
-    templates. Since we will no longer use an enum of template IDs, we will also
-    record the index of the template the user selects so that we can detect
-    where exactly the template was in the carousel.
-  </summary>
-</histogram>
-
 <histogram name="NoteCreation.SelectedTemplate" enum="NoteTemplate"
     expires_after="2023-09-17">
   <owner>sebsg@chromium.org</owner>
@@ -139,7 +109,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SharedHighlights.AndroidShareSheet.SharedState"
-    enum="LinkGenerationSharedStatus" expires_after="2024-03-17">
+    enum="LinkGenerationSharedStatus" expires_after="2024-05-19">
   <owner>sebsg@chromium.org</owner>
   <owner>jeffreycohen@chromium.org</owner>
   <owner>chrome-shared-highlighting@google.com</owner>
@@ -172,7 +142,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SharedHighlights.Desktop.CopiedLinkType"
-    enum="LinkGenerationCopiedLinkType" expires_after="2024-03-17">
+    enum="LinkGenerationCopiedLinkType" expires_after="2024-05-19">
   <owner>sebsg@chromium.org</owner>
   <owner>jeffreycohen@chromium.org</owner>
   <owner>chrome-shared-highlighting@google.com</owner>
@@ -203,7 +173,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SharedHighlights.LinkGenerated.Error.Requested"
-    enum="LinkGenerationError" expires_after="2024-03-10">
+    enum="LinkGenerationError" expires_after="2024-05-12">
   <owner>jeffreycohen@chromium.org</owner>
   <owner>chrome-shared-highlighting@google.com</owner>
   <summary>
@@ -281,22 +251,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="TextFragmentAnchor.ElementIdFragmentFound" enum="Boolean"
-    expires_after="2022-09-11">
-  <obsolete>
-    Removed 2022-05.
-  </obsolete>
-  <owner>bokan@chromium.org</owner>
-  <owner>chrome-shared-highlighting@google.com</owner>
-  <summary>
-    Whether an element-id based fragment was found in the document. Counted only
-    when a fragment was specified and it wasn't parsed into a |targetText| style
-    anchor.
-  </summary>
-</histogram>
-
 <histogram name="TextFragmentAnchor.LinkOpenSource"
-    enum="TextFragmentLinkOpenSource" expires_after="2024-03-10">
+    enum="TextFragmentLinkOpenSource" expires_after="2024-05-12">
   <owner>jeffreycohen@chromium.org</owner>
   <owner>chrome-shared-highlighting@google.com</owner>
   <summary>
@@ -328,92 +284,6 @@ chromium-metrics-reviews@google.com.
   <token key="TextFragmentSource" variants="TextFragmentSource"/>
 </histogram>
 
-<histogram name="TextFragmentAnchor{TextFragmentSource}.DidScrollIntoView"
-    enum="Boolean" expires_after="2022-06-30">
-  <obsolete>
-    Removed 2022-05.
-  </obsolete>
-  <owner>bokan@chromium.org</owner>
-  <owner>chrome-shared-highlighting@google.com</owner>
-  <summary>
-    Whether the page did a non-zero scroll in order to scroll the match into
-    view. Only recorded if we found a match and scrolled it into view. Recorded
-    when TextFragmentAnchor finishes searching once the page is loaded.
-
-    Recorded from text fragment links followed from {TextFragmentSource}.
-  </summary>
-  <token key="TextFragmentSource" variants="TextFragmentSource"/>
-</histogram>
-
-<histogram name="TextFragmentAnchor{TextFragmentSource}.DirectiveLength"
-    units="characters" expires_after="2022-06-30">
-  <obsolete>
-    Removed 2022-05.
-  </obsolete>
-  <owner>bokan@chromium.org</owner>
-  <owner>chrome-shared-highlighting@google.com</owner>
-  <summary>
-    The raw length of the directive in the URL (e.g. spaces count as the three
-    characters '%20'), regardless of how many text= terms there are. Recorded if
-    there was a text directive, regardless of whether a match was found.
-    Recorded when TextFragmentAnchor finishes searching once the page is loaded.
-
-    Recorded from text fragment links followed from {TextFragmentSource}.
-  </summary>
-  <token key="TextFragmentSource" variants="TextFragmentSource"/>
-</histogram>
-
-<histogram name="TextFragmentAnchor{TextFragmentSource}.EndTextLength"
-    units="characters" expires_after="2022-06-30">
-  <obsolete>
-    Removed 2022-05.
-  </obsolete>
-  <owner>bokan@chromium.org</owner>
-  <owner>chrome-shared-highlighting@google.com</owner>
-  <summary>
-    The length of the end parameter, in the case of a range match. Only recorded
-    if a match was found. Recorded when TextFragmentAnchor finishes searching
-    once the page is loaded.
-
-    Recorded from text fragment links followed from {TextFragmentSource}.
-  </summary>
-  <token key="TextFragmentSource" variants="TextFragmentSource"/>
-</histogram>
-
-<histogram name="TextFragmentAnchor{TextFragmentSource}.ExactTextLength"
-    units="characters" expires_after="2022-06-30">
-  <obsolete>
-    Removed 2022-05.
-  </obsolete>
-  <owner>bokan@chromium.org</owner>
-  <owner>chrome-shared-highlighting@google.com</owner>
-  <summary>
-    The length of the matched text, in the case of an exact match. Only recorded
-    if a match was found. Recorded when TextFragmentAnchor finishes searching
-    once the page is loaded.
-
-    Recorded from text fragment links followed from {TextFragmentSource}.
-  </summary>
-  <token key="TextFragmentSource" variants="TextFragmentSource"/>
-</histogram>
-
-<histogram name="TextFragmentAnchor{TextFragmentSource}.ListItemMatch"
-    enum="Boolean" expires_after="2022-06-30">
-  <obsolete>
-    Removed 2022-05.
-  </obsolete>
-  <owner>bokan@chromium.org</owner>
-  <owner>chrome-shared-highlighting@google.com</owner>
-  <summary>
-    Whether the match was within a list item. Only recorded for exact text
-    fragments and only if a match was found. Recorded when TextFragmentAnchor
-    finishes searching once the page is loaded.
-
-    Recorded from text fragment links followed from {TextFragmentSource}.
-  </summary>
-  <token key="TextFragmentSource" variants="TextFragmentSource"/>
-</histogram>
-
 <histogram name="TextFragmentAnchor{TextFragmentSource}.MatchRate" units="%"
     expires_after="2024-06-30">
   <owner>bokan@chromium.org</owner>
@@ -421,126 +291,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     The percentage of selectors for which a match was found in the document.
     Recorded when TextFragmentAnchor finishes searching once the page is loaded.
-
-    Recorded from text fragment links followed from {TextFragmentSource}.
-  </summary>
-  <token key="TextFragmentSource" variants="TextFragmentSource"/>
-</histogram>
-
-<histogram name="TextFragmentAnchor{TextFragmentSource}.Parameters"
-    enum="TextFragmentAnchorParameters" expires_after="2022-06-30">
-  <obsolete>
-    Removed 2022-05.
-  </obsolete>
-  <owner>bokan@chromium.org</owner>
-  <owner>chrome-shared-highlighting@google.com</owner>
-  <summary>
-    An enum indicating which parameters were specified in the text fragment
-    anchor. Only recorded if a match was found. Recorded when TextFragmentAnchor
-    finishes searching once the page is loaded.
-
-    Recorded from text fragment links followed from {TextFragmentSource}.
-  </summary>
-  <token key="TextFragmentSource" variants="TextFragmentSource"/>
-</histogram>
-
-<histogram name="TextFragmentAnchor{TextFragmentSource}.RangeMatchLength"
-    units="characters" expires_after="2022-06-30">
-  <obsolete>
-    Removed 2022-05.
-  </obsolete>
-  <owner>bokan@chromium.org</owner>
-  <owner>chrome-shared-highlighting@google.com</owner>
-  <summary>
-    The length of the matched text, in the case of a range match. Only recorded
-    if a match was found. Recorded when TextFragmentAnchor finishes searching
-    once the page is loaded.
-
-    Recorded from text fragment links followed from {TextFragmentSource}.
-  </summary>
-  <token key="TextFragmentSource" variants="TextFragmentSource"/>
-</histogram>
-
-<histogram name="TextFragmentAnchor{TextFragmentSource}.ScrollCancelled"
-    enum="Boolean" expires_after="2022-06-30">
-  <obsolete>
-    Removed 2022-05.
-  </obsolete>
-  <owner>bokan@chromium.org</owner>
-  <owner>chrome-shared-highlighting@google.com</owner>
-  <summary>
-    Whether the scroll into view was cancelled by a user gesture or programmatic
-    scroll. Recorded when TextFragmentAnchor finishes searching once the page is
-    loaded.
-
-    Recorded from text fragment links followed from {TextFragmentSource}.
-  </summary>
-  <token key="TextFragmentSource" variants="TextFragmentSource"/>
-</histogram>
-
-<histogram name="TextFragmentAnchor{TextFragmentSource}.SelectorCount"
-    units="selectors" expires_after="2022-06-30">
-  <obsolete>
-    Removed 2022-05.
-  </obsolete>
-  <owner>bokan@chromium.org</owner>
-  <owner>chrome-shared-highlighting@google.com</owner>
-  <summary>
-    The number of selectors in the text fragment anchor if it is present.
-    Recorded when TextFragmentAnchor finishes searching once the page is loaded.
-
-    Recorded from text fragment links followed from {TextFragmentSource}.
-  </summary>
-  <token key="TextFragmentSource" variants="TextFragmentSource"/>
-</histogram>
-
-<histogram name="TextFragmentAnchor{TextFragmentSource}.SpansMultipleBlocks"
-    enum="Boolean" expires_after="2022-06-30">
-  <obsolete>
-    Removed 2022-05.
-  </obsolete>
-  <owner>bokan@chromium.org</owner>
-  <owner>chrome-shared-highlighting@google.com</owner>
-  <owner>input-dev@chromium.org</owner>
-  <summary>
-    Whether or not a range-based text fragment match crosses any block
-    boundaries. That is, the start and end of the range are in different blocks
-    or in the same block but contain an intervening block. Only recorded for
-    range-based (start,end) text fragments. Only recorded on successful match.
-
-    Recorded from text fragment links followed from {TextFragmentSource}.
-  </summary>
-  <token key="TextFragmentSource" variants="TextFragmentSource"/>
-</histogram>
-
-<histogram name="TextFragmentAnchor{TextFragmentSource}.StartTextLength"
-    units="characters" expires_after="2022-06-30">
-  <obsolete>
-    Removed 2022-05.
-  </obsolete>
-  <owner>bokan@chromium.org</owner>
-  <owner>chrome-shared-highlighting@google.com</owner>
-  <summary>
-    The length of the start parameter, in the case of a range match. Only
-    recorded if a match was found. Recorded when TextFragmentAnchor finishes
-    searching once the page is loaded.
-
-    Recorded from text fragment links followed from {TextFragmentSource}.
-  </summary>
-  <token key="TextFragmentSource" variants="TextFragmentSource"/>
-</histogram>
-
-<histogram name="TextFragmentAnchor{TextFragmentSource}.TableCellMatch"
-    enum="Boolean" expires_after="2022-06-30">
-  <obsolete>
-    Removed 2022-05.
-  </obsolete>
-  <owner>bokan@chromium.org</owner>
-  <owner>chrome-shared-highlighting@google.com</owner>
-  <summary>
-    Whether the match was within a table cell. Only recorded for exact text
-    fragments and only if a match was found. Recorded when TextFragmentAnchor
-    finishes searching once the page is loaded.
 
     Recorded from text fragment links followed from {TextFragmentSource}.
   </summary>
@@ -556,25 +306,6 @@ chromium-metrics-reviews@google.com.
     and scrolling the target into view. Only recorded if there is a match and we
     tried to scroll it into view (it may already have been in view). Recorded
     when TextFragmentAnchor finishes searching once the page is loaded.
-
-    Recorded from text fragment links followed from {TextFragmentSource}.
-  </summary>
-  <token key="TextFragmentSource" variants="TextFragmentSource"/>
-</histogram>
-
-<histogram name="TextFragmentAnchor{TextFragmentSource}.TimeToScrollToTop"
-    units="ms" expires_after="2022-06-30">
-  <obsolete>
-    Removed 2022-05.
-  </obsolete>
-  <owner>bokan@chromium.org</owner>
-  <owner>chrome-shared-highlighting@google.com</owner>
-  <summary>
-    The time between scrolling a match into view and the user scrolling back to
-    the top of the page. Used as a signal for whether a match was useful. Only
-    recorded if a match is scrolled into view and the user subsequently scrolled
-    back to the top of the page. Recorded when TextFragmentAnchor finishes
-    searching once the page is loaded.
 
     Recorded from text fragment links followed from {TextFragmentSource}.
   </summary>

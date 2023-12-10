@@ -4,12 +4,12 @@
 
 #include "chromecast/cast_core/runtime/browser/url_rewrite/url_request_rewrite_type_converters.h"
 
+#include <optional>
 #include "base/run_loop.h"
 #include "base/strings/string_piece.h"
 #include "components/url_rewrite/browser/url_request_rewrite_rules_validation.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cast_core/public/src/proto/v2/url_rewrite.pb.h"
 
 namespace chromecast {
@@ -28,7 +28,7 @@ cast::v2::UrlRequestRewrite CreateRewriteAddHeaders(std::string header_name,
 }
 
 cast::v2::UrlRequestRewrite CreateRewriteRemoveHeader(
-    absl::optional<std::string> query_pattern,
+    std::optional<std::string> query_pattern,
     std::string header_name) {
   cast::v2::UrlRequestRewrite rewrite;
   auto* remove_header = rewrite.mutable_remove_header();
@@ -107,7 +107,7 @@ TEST_F(UrlRequestRewriteTypeConvertersTest, ConvertAddHeader) {
 // Tests RemoveHeader rewrites are properly converted to their Mojo equivalent.
 TEST_F(UrlRequestRewriteTypeConvertersTest, ConvertRemoveHeader) {
   EXPECT_TRUE(UpdateRulesFromRewrite(
-      CreateRewriteRemoveHeader(absl::make_optional("Test"), "Header")));
+      CreateRewriteRemoveHeader(std::make_optional("Test"), "Header")));
   ASSERT_THAT(cached_rules_->rules, SizeIs(1));
   ASSERT_FALSE(cached_rules_->rules[0]->hosts_filter);
   ASSERT_FALSE(cached_rules_->rules[0]->schemes_filter);
@@ -122,7 +122,7 @@ TEST_F(UrlRequestRewriteTypeConvertersTest, ConvertRemoveHeader) {
 
   // Create a RemoveHeader rewrite with no pattern.
   EXPECT_TRUE(UpdateRulesFromRewrite(
-      CreateRewriteRemoveHeader(absl::nullopt, "Header")));
+      CreateRewriteRemoveHeader(std::nullopt, "Header")));
   ASSERT_THAT(cached_rules_->rules, SizeIs(1));
   ASSERT_FALSE(cached_rules_->rules[0]->hosts_filter);
   ASSERT_FALSE(cached_rules_->rules[0]->schemes_filter);

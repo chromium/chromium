@@ -1,17 +1,5 @@
 This is a testharness.js-based test.
 [FAIL] CSSStyleRule is a CSSGroupingRule
   assert_equals: expected function "function CSSGroupingRule() { [native code] }" but got function "function CSSRule() { [native code] }"
-[PASS] Simple CSSOM manipulation of subrules
-[PASS] Simple CSSOM manipulation of subrules 1
-[PASS] Simple CSSOM manipulation of subrules 2
-[PASS] Simple CSSOM manipulation of subrules 3
-[PASS] Simple CSSOM manipulation of subrules 4
-[PASS] Simple CSSOM manipulation of subrules 5
-[PASS] Simple CSSOM manipulation of subrules 6
-[PASS] Simple CSSOM manipulation of subrules 7
-[PASS] Simple CSSOM manipulation of subrules 8
-[PASS] Simple CSSOM manipulation of subrules 9
-[PASS] Simple CSSOM manipulation of subrules 10
-[PASS] Mutating the selectorText of outer rule invalidates inner rules
 Harness: the test ran to completion.
 

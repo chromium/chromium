@@ -30,12 +30,13 @@
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
-#import "ios/chrome/browser/signin/identity_manager_factory.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/model/session_sync_service_factory.h"
 #import "ios/chrome/browser/sync/model/sync_setup_service.h"
 #import "ios/chrome/browser/sync/model/sync_setup_service_factory.h"
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_consumer.h"
 #import "ios/chrome/browser/ui/recent_tabs/sessions_sync_user_state.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_consumer.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_toolbars_mutator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_action_wrangler.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_buttons_delegate.h"
@@ -408,11 +409,15 @@ bool UserActionIsRequiredToHaveTabSyncWork(syncer::SyncService* sync_service) {
 }
 
 - (void)searchButtonTapped:(id)sender {
-  [self.toolbarActionWrangler searchButtonTapped:sender];
+  [self.toolbarsMutator setToolbarsMode:TabGridModeSearch];
+  [self.gridConsumer setPageMode:TabGridModeSearch];
+  base::RecordAction(base::UserMetricsAction("MobileTabGridSearchTabs"));
 }
 
 - (void)cancelSearchButtonTapped:(id)sender {
-  [self.toolbarActionWrangler cancelSearchButtonTapped:sender];
+  base::RecordAction(base::UserMetricsAction("MobileTabGridCancelSearchTabs"));
+  [self.gridConsumer setPageMode:TabGridModeNormal];
+  [self.toolbarsMutator setToolbarsMode:TabGridModeNormal];
 }
 
 - (void)closeSelectedTabs:(id)sender {

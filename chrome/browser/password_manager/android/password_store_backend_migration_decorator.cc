@@ -8,6 +8,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/password_manager/android/built_in_backend_to_android_backend_migrator.h"
 #include "chrome/browser/password_manager/android/password_store_proxy_backend.h"
+#include "components/password_manager/core/browser/password_store/password_store.h"
 #include "components/password_manager/core/browser/password_sync_util.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
@@ -38,7 +39,8 @@ bool ShouldAttemptMigration(const PrefService* prefs) {
 PasswordStoreBackendMigrationDecorator::PasswordStoreBackendMigrationDecorator(
     std::unique_ptr<PasswordStoreBackend> built_in_backend,
     std::unique_ptr<PasswordStoreBackend> android_backend,
-    PrefService* prefs)
+    PrefService* prefs,
+    IsAccountStore is_account_store)
     : built_in_backend_(std::move(built_in_backend)),
       android_backend_(std::move(android_backend)),
       prefs_(prefs),
@@ -46,7 +48,8 @@ PasswordStoreBackendMigrationDecorator::PasswordStoreBackendMigrationDecorator(
   DCHECK(built_in_backend_);
   DCHECK(android_backend_);
   active_backend_ = std::make_unique<PasswordStoreProxyBackend>(
-      built_in_backend_.get(), android_backend_.get(), prefs_);
+      built_in_backend_.get(), android_backend_.get(), prefs_,
+      is_account_store);
 }
 
 PasswordStoreBackendMigrationDecorator::
@@ -218,7 +221,7 @@ void PasswordStoreBackendMigrationDecorator::GetAutofillableLoginsAsync(
 }
 
 void PasswordStoreBackendMigrationDecorator::GetAllLoginsForAccountAsync(
-    absl::optional<std::string> account,
+    std::string account,
     LoginsOrErrorReply callback) {
   NOTREACHED();
 }

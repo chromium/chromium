@@ -22,6 +22,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback_helpers.h"
+#include "base/i18n/icu_util.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/message_loop/message_pump_type.h"
@@ -405,6 +406,11 @@ int LaunchTestsInternal(TestLauncherDelegate* launcher_delegate,
     }
 #endif
     return launcher_delegate->RunTestSuite(argc, argv);
+  }
+
+  // ICU must be initialized before any attempts to format times, e.g. for logs.
+  if (!base::i18n::InitializeICU()) {
+    return false;
   }
 
   base::AtExitManager at_exit;

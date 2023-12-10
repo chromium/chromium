@@ -63,14 +63,13 @@ class UninstallDialog {
     UiBase& operator=(const UiBase&) = delete;
     virtual ~UiBase() = default;
 
-    static void Create(Profile* profile,
-                       apps::AppType app_type,
-                       const std::string& app_id,
-                       const std::string& app_name,
-                       gfx::ImageSkia image,
-                       gfx::NativeWindow parent_window,
-                       OnDialogCreatedCallback callback,
-                       UninstallDialog* uninstall_dialog);
+    static views::Widget* Create(Profile* profile,
+                                 apps::AppType app_type,
+                                 const std::string& app_id,
+                                 const std::string& app_name,
+                                 gfx::ImageSkia image,
+                                 gfx::NativeWindow parent_window,
+                                 UninstallDialog* uninstall_dialog);
 
     UninstallDialog* uninstall_dialog() const { return uninstall_dialog_; }
 
@@ -122,8 +121,6 @@ class UninstallDialog {
  private:
   // Callback invoked when the icon is loaded.
   void OnLoadIcon(IconValuePtr icon_value);
-
-  void OnUninstallDialogCreated(views::Widget* widget);
 
   const raw_ptr<Profile> profile_;
   const apps::AppType app_type_;

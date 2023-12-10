@@ -7,9 +7,7 @@ package org.chromium.chrome.browser.tab.state;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileKeyedMap;
 
-/**
- * Creates {@link LevelDBPersistedTabDataStorage} instances per profile
- */
+/** Creates {@link LevelDBPersistedTabDataStorage} instances per profile */
 public class LevelDBPersistedTabDataStorageFactory
         implements PersistedTabDataStorageFactory<LevelDBPersistedTabDataStorage> {
     private static ProfileKeyedMap<LevelDBPersistedTabDataStorage> sProfileToLevelDBStorageMap;

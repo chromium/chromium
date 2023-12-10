@@ -33,9 +33,6 @@ class MEDIA_EXPORT MediaCodecUtil {
                                             SampleFormat sample_format);
   static std::string CodecToAndroidMimeType(VideoCodec codec);
 
-  // Returns true if MediaCodec supports CBCS Encryption.
-  static bool PlatformSupportsCbcsEncryption(int sdk);
-
   // Indicates if the vp8 decoder or encoder is available on this device.
   static bool IsVp8DecoderAvailable();
   static bool IsVp8EncoderAvailable();

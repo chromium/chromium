@@ -138,14 +138,14 @@ class UserScriptListenerTest : public testing::Test {
                                         .AppendASCII("Extensions")
                                         .AppendASCII(kTestExtensionId)
                                         .AppendASCII("1.0.0.0");
-    extensions::TestExtensionRegistryObserver observer(
-        ExtensionRegistry::Get(profile_), kTestExtensionId);
+    TestExtensionRegistryObserver observer(ExtensionRegistry::Get(profile_),
+                                           kTestExtensionId);
     UnpackedInstaller::Create(service_)->Load(extension_path);
     observer.WaitForExtensionLoaded();
   }
 
   void UnloadTestExtension() {
-    const extensions::ExtensionSet& extensions =
+    const ExtensionSet& extensions =
         ExtensionRegistry::Get(profile_)->enabled_extensions();
     ASSERT_FALSE(extensions.empty());
     service_->UnloadExtension((*extensions.begin())->id(),

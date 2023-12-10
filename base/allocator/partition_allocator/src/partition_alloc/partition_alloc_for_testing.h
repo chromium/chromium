@@ -5,7 +5,7 @@
 #ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_ALLOC_FOR_TESTING_H_
 #define BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_ALLOC_FOR_TESTING_H_
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc.h"
+#include "partition_alloc/partition_alloc.h"
 
 namespace partition_alloc {
 namespace internal {

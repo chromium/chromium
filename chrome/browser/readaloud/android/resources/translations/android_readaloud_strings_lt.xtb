@@ -2,11 +2,14 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="lt">
 <translation id="1178581264944972037">Pristabdyti</translation>
-<translation id="2558806128245168542">Eiti atgal</translation>
-<translation id="3523426587027570423">Palieskite, kad uždarytumėte leistuvę „Klausytis šio puslapio“.</translation>
+<translation id="1921351128855867012">Prasukti pirmyn <ph name="NUMBER_OF_SECONDS" /> sek.</translation>
+<translation id="1984328900355667246">Atkūrimas nepasiekiamas</translation>
+<translation id="3023502830214299618">Deja, šiuo metu šio puslapio atkūrimas nepasiekiamas. Vėliau bandykite dar kartą.</translation>
+<translation id="3807208219231826020">Kontroliuoti atkūrimą</translation>
+<translation id="385051799172605136">Atgal</translation>
 <translation id="4431240646217225907">Teksto paryškinimas ir automatinis slinkimas</translation>
 <translation id="4654641641922242357">Leistuvė „Klausytis šio puslapio“.</translation>
-<translation id="4731877163452936634">Atkūrimo greitis: <ph name="PLAYBACK_SPEED" />. Spustelėkite ir pakeiskite.</translation>
+<translation id="4872475766448853257">Grįžti <ph name="NUMBER_OF_SECONDS" /> sek.</translation>
 <translation id="5234971936051226002">Leistuvė „Klausyti šio puslapio“ sumažinta.</translation>
 <translation id="5596627076506792578">Daugiau parinkčių</translation>
 <translation id="6315170314923504164">Balsas</translation>
@@ -15,8 +18,8 @@
 <translation id="6831043979455480757">Vertėjas</translation>
 <translation id="6846298663435243399">Įkeliama…</translation>
 <translation id="7587250070160020374">Dabar „Chrome“ leidžiama</translation>
-<translation id="7945822420239537236">Sukti į priekį <ph name="NUMBER_OF_SECONDS" /> sek.</translation>
-<translation id="7972866381678406344">Atgal <ph name="NUMBER_OF_SECONDS" /> sek.</translation>
 <translation id="8136852699834914183">Šio puslapio negalima atkurti.</translation>
+<translation id="8264989794233974275"><ph name="PLAYBACK_SPEED" /> k. padidinti / sumažinti spartą.</translation>
+<translation id="8407011429883244666">Uždaryti leistuvę.</translation>
 <translation id="8953618380150219653">Leistuvė „Klausytis šio puslapio“ atidaryta per visą ekrano aukštį.</translation>
 </translationbundle>

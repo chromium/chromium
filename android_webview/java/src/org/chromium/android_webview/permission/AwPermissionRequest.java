@@ -37,6 +37,7 @@ public class AwPermissionRequest {
         private DestroyRunnable(long nativeAwPermissionRequest) {
             mNativeAwPermissionRequest = nativeAwPermissionRequest;
         }
+
         @Override
         public void run() {
             AwPermissionRequestJni.get().destroy(mNativeAwPermissionRequest);
@@ -44,15 +45,14 @@ public class AwPermissionRequest {
     }
 
     @CalledByNative
-    private static AwPermissionRequest create(long nativeAwPermissionRequest, String url,
-            long resources) {
+    private static AwPermissionRequest create(
+            long nativeAwPermissionRequest, String url, long resources) {
         if (nativeAwPermissionRequest == 0) return null;
         Uri origin = Uri.parse(url);
         return new AwPermissionRequest(nativeAwPermissionRequest, origin, resources);
     }
 
-    private AwPermissionRequest(long nativeAwPermissionRequest, Uri origin,
-            long resources) {
+    private AwPermissionRequest(long nativeAwPermissionRequest, Uri origin, long resources) {
         mNativeAwPermissionRequest = nativeAwPermissionRequest;
         mOrigin = origin;
         mResources = resources;
@@ -71,8 +71,8 @@ public class AwPermissionRequest {
     public void grant() {
         validate();
         if (mNativeAwPermissionRequest != 0) {
-            AwPermissionRequestJni.get().onAccept(
-                    mNativeAwPermissionRequest, AwPermissionRequest.this, true);
+            AwPermissionRequestJni.get()
+                    .onAccept(mNativeAwPermissionRequest, AwPermissionRequest.this, true);
             destroyNative();
         }
         mProcessed = true;
@@ -81,8 +81,8 @@ public class AwPermissionRequest {
     public void deny() {
         validate();
         if (mNativeAwPermissionRequest != 0) {
-            AwPermissionRequestJni.get().onAccept(
-                    mNativeAwPermissionRequest, AwPermissionRequest.this, false);
+            AwPermissionRequestJni.get()
+                    .onAccept(mNativeAwPermissionRequest, AwPermissionRequest.this, false);
             destroyNative();
         }
         mProcessed = true;
@@ -109,6 +109,7 @@ public class AwPermissionRequest {
     @NativeMethods
     interface Natives {
         void onAccept(long nativeAwPermissionRequest, AwPermissionRequest caller, boolean allowed);
+
         void destroy(long nativeAwPermissionRequest);
     }
 }

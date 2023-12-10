@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/xr/xr_cube_map.h"
 
 #include <algorithm>
+#include <bit>
 #include <cstring>
 
 #include "device/vr/public/mojom/vr_service.mojom-blink.h"
@@ -14,9 +15,6 @@
 #include "third_party/blink/renderer/platform/graphics/gpu/drawing_buffer.h"
 
 namespace {
-bool IsPowerOfTwo(uint32_t value) {
-  return value && (value & (value - 1)) == 0;
-}
 
 // This is an inversion of FloatToHalfFloat in ui/gfx/half_float.cc
 float HalfFloatToFloat(const uint16_t input) {
@@ -60,7 +58,7 @@ XRCubeMap::XRCubeMap(const device::mojom::blink::XRCubeMap& cube_map) {
                 "XRCubeMaps are expected to be in the RGBA16F format");
 
   // Cube map sides must all be a power-of-two image
-  bool valid = IsPowerOfTwo(cube_map.width_and_height);
+  bool valid = std::has_single_bit(cube_map.width_and_height);
   const size_t expected_size =
       cube_map.width_and_height * cube_map.width_and_height;
   valid &= cube_map.positive_x.size() == expected_size;

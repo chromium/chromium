@@ -5,9 +5,10 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <string_view>
+
 #include "base/command_line.h"
 #include "base/i18n/icu_util.h"
-#include "base/strings/string_piece.h"
 #include "components/attribution_reporting/os_registration.h"
 #include "url/gurl.h"
 
@@ -25,6 +26,6 @@ struct Environment {
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   static Environment env;
   attribution_reporting::ParseOsSourceOrTriggerHeader(
-      base::StringPiece(reinterpret_cast<const char*>(data), size));
+      std::string_view(reinterpret_cast<const char*>(data), size));
   return 0;
 }

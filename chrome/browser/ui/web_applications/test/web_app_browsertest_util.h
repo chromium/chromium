@@ -10,7 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
@@ -118,7 +118,7 @@ bool IsBrowserOpen(const Browser* test_browser);
 
 // Install a web policy app with |url|.
 // Returns a valid app ID of the installed app or nullopt.
-absl::optional<webapps::AppId> ForceInstallWebApp(Profile* profile, GURL url);
+std::optional<webapps::AppId> ForceInstallWebApp(Profile* profile, GURL url);
 
 // Helper class that lets you await one Browser added and one Browser removed
 // event. Optionally filters to a specific Browser with |filter|. Useful for
@@ -165,6 +165,10 @@ class UpdateAwaiter : public WebAppInstallManagerObserver {
 
 // Creates a temporary file with the |extension|.
 base::FilePath CreateTestFileWithExtension(base::StringPiece extension);
+
+// Wait for an IPH bubble to show up inside the browser, and return true or
+// false based on whether the bubble showed up.
+bool WaitForIPHToShowIfAny(Browser* browser);
 
 }  // namespace web_app
 

@@ -6,9 +6,7 @@ package org.chromium.testing.local;
 
 import java.io.File;
 
-/**
- *  Tools to get the junit test path.
- */
+/** Tools to get the junit test path. */
 public class TestDir {
     private static final String TEST_FOLDER = "/chrome/test/data/";
 

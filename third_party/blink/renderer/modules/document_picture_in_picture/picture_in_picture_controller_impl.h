@@ -84,6 +84,9 @@ class MODULES_EXPORT PictureInPictureControllerImpl
   bool PictureInPictureEnabled() const override;
   Status IsElementAllowed(const HTMLVideoElement&,
                           bool report_failure) const override;
+#if !BUILDFLAG(IS_ANDROID)
+  bool HasDocumentPictureInPictureWindow() const override;
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   // Implementation of PictureInPictureSessionObserver.
   void OnWindowSizeChanged(const gfx::Size&) override;

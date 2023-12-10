@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="pt-BR">
 <translation id="1000498691615767391">Selecionar uma pasta para ser aberta</translation>
+<translation id="1014208178561091457">Não foi possível copiar o arquivo <ph name="FILE_NAME" /> porque ele está criptografado.</translation>
 <translation id="1047956942837015229">Excluindo <ph name="COUNT" /> itens...</translation>
 <translation id="1049926623896334335">Documento do Word</translation>
 <translation id="1056775291175587022">Nenhuma rede</translation>
@@ -55,6 +56,7 @@
 <translation id="1435838927755162558">Compartilhar pasta com o Parallels Desktop</translation>
 <translation id="1439919885608649279">Pessoa com flores</translation>
 <translation id="1458457385801829801">Ejetar <ph name="TARGET_NAME" /></translation>
+<translation id="146691674290220697">Não foi possível copiar <ph name="NUMBER_OF_FILES" /> arquivos porque eles estão criptografados.</translation>
 <translation id="1471718551822868769">Eslovaco</translation>
 <translation id="1482884275703521657">Finlandês</translation>
 <translation id="148466539719134488">Suíço</translation>
@@ -276,6 +278,7 @@
 <translation id="3253225298092156258">Indisponível</translation>
 <translation id="3254434849914415189">Escolha o aplicativo padrão para os arquivos <ph name="FILE_TYPE" />:</translation>
 <translation id="3255159654094949700">Árabe</translation>
+<translation id="326396468955264502">Não foi possível mover <ph name="NUMBER_OF_FILES" /> arquivos porque eles estão criptografados.</translation>
 <translation id="3264582393905923483">Contexto</translation>
 <translation id="3272909651715601089">Não foi possível abrir "<ph name="PATH" />"</translation>
 <translation id="3280431534455935878">Preparando</translation>
@@ -313,6 +316,7 @@
 <translation id="3523225005467146490">Uma pasta compartilhada com <ph name="VM_NAME" /></translation>
 <translation id="3524311639100184459">Atenção: esses arquivos são temporários e podem ser excluídos automaticamente para liberar espaço em disco.  <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Pasta</translation>
+<translation id="3529424493985988200">Entre em contato com o administrador para saber detalhes.</translation>
 <translation id="3548125359243647069">Um PIN incorreto foi digitado muitas vezes.</translation>
 <translation id="3549797760399244642">Ir para drive.google.com...</translation>
 <translation id="3553048479571901246">Para abrir arquivos usando <ph name="APP_NAME" />, primeiro os copie para a pasta de arquivos do Windows.</translation>
@@ -701,6 +705,7 @@
 <translation id="637062427944097960">Este arquivo está aberto em uma área de trabalho diferente. Mude para <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) para visualizá-lo.</translation>
 <translation id="6394388407447716302">Somente leitura</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> itens</translation>
+<translation id="6407769893376380348">Não foi possível mover o arquivo <ph name="FILE_NAME" /> porque ele está criptografado.</translation>
 <translation id="642282551015776456">Este não é um nome válido para arquivos ou pastas.</translation>
 <translation id="6423031066725912715">Vietnamita com teclado TCVN</translation>
 <translation id="6430271654280079150">Você tem 1 tentativa restante.</translation>

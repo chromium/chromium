@@ -29,18 +29,13 @@ constexpr int kTabOrganizeCloseButtonSize = 16;
 
 TabOrganizationButton::TabOrganizationButton(
     TabStripController* tab_strip_controller,
-    TabOrganizationService* tab_organization_service,
     PressedCallback pressed_callback,
+    PressedCallback close_pressed_callback,
     Edge flat_edge)
-    : TabStripControlButton(
-          tab_strip_controller,
-          base::BindRepeating(&TabOrganizationButton::ButtonPressed,
-                              base::Unretained(this)),
-          l10n_util::GetStringUTF16(IDS_TAB_ORGANIZE),
-          flat_edge),
-      service_(tab_organization_service),
-      pressed_callback_(std::move(pressed_callback)),
-      browser_(tab_strip_controller->GetBrowser()) {
+    : TabStripControlButton(tab_strip_controller,
+                            std::move(pressed_callback),
+                            l10n_util::GetStringUTF16(IDS_TAB_ORGANIZE),
+                            flat_edge) {
   auto* const layout_manager =
       SetLayoutManager(std::make_unique<views::BoxLayout>());
   layout_manager->set_main_axis_alignment(
@@ -65,8 +60,7 @@ TabOrganizationButton::TabOrganizationButton(
 
   set_paint_transparent_for_custom_image_theme(false);
 
-  SetCloseButton(base::BindRepeating(&TabOrganizationButton::ClosePressed,
-                                     base::Unretained(this)));
+  SetCloseButton(std::move(close_pressed_callback));
   layout_manager->SetFlexForView(close_button_, 1);
 
   UpdateColors();
@@ -84,17 +78,6 @@ gfx::Size TabOrganizationButton::CalculatePreferredSize() const {
   const int width = full_width * width_factor_;
   const int height = TabStripControlButton::CalculatePreferredSize().height();
   return gfx::Size(width, height);
-}
-
-void TabOrganizationButton::ButtonPressed(const ui::Event& event) {
-  if (service_ && browser_) {
-    service_->StartRequest(browser_);
-  }
-  pressed_callback_.Run(event);
-}
-
-void TabOrganizationButton::ClosePressed(const ui::Event& event) {
-  pressed_callback_.Run(event);
 }
 
 int TabOrganizationButton::GetCornerRadius() const {

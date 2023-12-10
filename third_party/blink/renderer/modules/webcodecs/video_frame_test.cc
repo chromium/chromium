@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_blob_htmlcanvaselement_htmlimageelement_htmlvideoelement_imagebitmap_imagedata_offscreencanvas_svgimageelement_videoframe.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_cssimagevalue_htmlcanvaselement_htmlimageelement_htmlvideoelement_imagebitmap_offscreencanvas_svgimageelement_videoframe.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_decoder_config.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_video_frame_copy_to_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_frame_init.h"
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
 #include "third_party/blink/renderer/modules/canvas/imagebitmap/image_bitmap_factories.h"
@@ -25,6 +26,7 @@
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/test/gpu_test_utils.h"
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "ui/gfx/geometry/rect.h"
@@ -103,6 +105,49 @@ TEST_F(VideoFrameTest, ConstructorAndAttributes) {
   EXPECT_EQ(0u, blink_frame->codedWidth());
   EXPECT_EQ(0u, blink_frame->codedHeight());
   EXPECT_EQ(nullptr, blink_frame->frame());
+}
+
+TEST_F(VideoFrameTest, CopyToRGB) {
+  V8TestingScope scope;
+
+  ScopedWebCodecsCopyToRGBForTest feature(true);
+  scoped_refptr<media::VideoFrame> media_frame = CreateBlackMediaVideoFrame(
+      base::Microseconds(1000), media::PIXEL_FORMAT_I420,
+      /* coded_size= */ gfx::Size(64, 48),
+      /* visible_size= */ gfx::Size(64, 48));
+  VideoFrame* blink_frame =
+      CreateBlinkVideoFrame(media_frame, scope.GetExecutionContext());
+  VideoFrameCopyToOptions* options = VideoFrameCopyToOptions::Create();
+  options->setFormat(V8VideoPixelFormat::Enum::kRGBA);
+
+  uint32_t buffer_size =
+      blink_frame->allocationSize(options, scope.GetExceptionState());
+  auto* buffer = DOMArrayBuffer::Create(buffer_size, 1);
+  uint8_t* data = static_cast<uint8_t*>(buffer->Data());
+
+  // Set buffer to white pixels.
+  memset(data, 0xff, buffer_size);
+  AllowSharedBufferSource* destination =
+      MakeGarbageCollected<AllowSharedBufferSource>(buffer);
+
+  auto promise = blink_frame->copyTo(scope.GetScriptState(), destination,
+                                     options, scope.GetExceptionState());
+
+  ScriptPromiseTester tester(scope.GetScriptState(), promise);
+  tester.WaitUntilSettled();
+  ASSERT_TRUE(tester.IsFulfilled());
+
+  // Check that after copyTo() all the pixels are black.
+  for (int y = 0; y < media_frame->coded_size().height(); y++) {
+    for (int x = 0; x < media_frame->coded_size().width(); x++) {
+      uint8_t* addr = &data[y * media_frame->stride(0) + x * 4];
+      ASSERT_EQ(addr[0], 0) << " R x: " << x << " y: " << y;
+      ASSERT_EQ(addr[1], 0) << " G x: " << x << " y: " << y;
+      ASSERT_EQ(addr[2], 0) << " B x: " << x << " y: " << y;
+    }
+  }
+
+  blink_frame->close();
 }
 
 TEST_F(VideoFrameTest, FramesSharingHandleClose) {

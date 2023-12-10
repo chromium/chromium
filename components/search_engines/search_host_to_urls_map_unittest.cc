@@ -83,7 +83,8 @@ TEST_F(SearchHostToURLsMapTest, GetsBestTemplateURLForKnownHost) {
   TemplateURLData data;
   data.SetURL("http://" + host_ + "/path1");
   // Make the new TemplateURL "better" by having it created by policy.
-  data.created_by_policy = true;
+  data.created_by_policy =
+      TemplateURLData::CreatedByPolicy::kDefaultSearchProvider;
 
   TemplateURL new_t_url(data);
   provider_map_->Add(&new_t_url, SearchTermsData());

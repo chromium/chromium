@@ -56,7 +56,6 @@
 #include "third_party/blink/public/mojom/input/input_handler.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/lcp_critical_path_predictor/lcp_critical_path_predictor.mojom-blink.h"
 #include "third_party/blink/public/mojom/page/widget.mojom-blink.h"
-#include "third_party/blink/public/mojom/portal/portal.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/script/script_evaluation_params.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/web_file_system_type.h"
 #include "third_party/blink/public/web/web_history_commit_type.h"
@@ -80,7 +79,6 @@ namespace blink {
 class ChromePrintContext;
 class FindInPage;
 class HTMLFencedFrameElement;
-class HTMLPortalElement;
 class LocalFrameClientImpl;
 class ResourceError;
 class ScrollableArea;
@@ -116,7 +114,7 @@ class CORE_EXPORT WebLocalFrameImpl final
   // WebFrame overrides:
   void Close() override;
   WebView* View() const override;
-  v8::Local<v8::Object> GlobalProxy() const override;
+  v8::Local<v8::Object> GlobalProxy(v8::Isolate* isolate) const override;
   bool IsLoading() const override;
 
   // WebLocalFrame overrides:
@@ -466,11 +464,6 @@ class CORE_EXPORT WebLocalFrameImpl final
 
   LocalFrame* CreateChildFrame(const AtomicString& name,
                                HTMLFrameOwnerElement*);
-  std::pair<RemoteFrame*, PortalToken> CreatePortal(
-      HTMLPortalElement*,
-      mojo::PendingAssociatedReceiver<mojom::blink::Portal>,
-      mojo::PendingAssociatedRemote<mojom::blink::PortalClient>);
-  RemoteFrame* AdoptPortal(HTMLPortalElement*);
 
   RemoteFrame* CreateFencedFrame(
       HTMLFencedFrameElement*,

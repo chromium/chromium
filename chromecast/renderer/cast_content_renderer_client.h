@@ -75,7 +75,7 @@ class CastContentRendererClient
   std::unique_ptr<blink::URLLoaderThrottleProvider>
   CreateURLLoaderThrottleProvider(
       blink::URLLoaderThrottleProviderType type) override;
-  absl::optional<::media::AudioRendererAlgorithmParameters>
+  std::optional<::media::AudioRendererAlgorithmParameters>
   GetAudioRendererAlgorithmParameters(
       ::media::AudioParameters audio_parameters) override;
 

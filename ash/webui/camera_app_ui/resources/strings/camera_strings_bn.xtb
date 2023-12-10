@@ -5,7 +5,6 @@
 <translation id="1076394037877376434"><ph name="PAGE_NUMBER" />টি পৃষ্ঠা মুছুন</translation>
 <translation id="1113173431709655881">ক্যামেরা মোড</translation>
 <translation id="1153190633558910465">গ্রিড বন্ধ আছে</translation>
-<translation id="1175958423215084756">লিঙ্ক শনাক্ত হয়েছে। <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213"><ph name="PAGE_NUMBER" />টি পৃষ্ঠা মুছে ফেলা হয়েছে</translation>
 <translation id="1258009455399840361">ঘড়ির কাঁটার দিকে ৯০ ডিগ্রি ঘোরান</translation>
 <translation id="1417314334557041815">পৃষ্ঠা <ph name="INDEX" /> এডিট করুন</translation>
@@ -60,14 +59,12 @@
 <translation id="3642192109456033823">ভিডিও প্রসেস করা হচ্ছে...</translation>
 <translation id="3789724198583203151">ঘড়ির কাঁটার বিপরীতে ৯০ ডিগ্রি ঘোরান</translation>
 <translation id="3810838688059735925">ভিডিও</translation>
-<translation id="3892148308691398805">টেক্সট কপি করুন</translation>
 <translation id="4060608699153044055">ডিভাইস স্টোরেজ কম থাকার কারণে আপনি রেকর্ড করতে পারবেন না। রেকর্ডিং শুরু করতে, আপনার ডিভাইসে জায়গা খালি করতে হবে।</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> এমপি</translation>
 <translation id="4118525110028899586">রেকর্ডিং পজ করুন</translation>
 <translation id="4121305183798804752">ডকুমেন্ট শনাক্ত হয়েছে</translation>
 <translation id="414641094616694804">এই ক্যামেরা রেজোলিউশন পরিবর্তন করতে পারে না</translation>
 <translation id="4176463684765177261">অক্ষম হয়েছে</translation>
-<translation id="4269820728363426813">লিঙ্ক অ্যাড্রেস কপি করুন</translation>
 <translation id="428234092390943511">পৃষ্ঠা থাম্বনেল</translation>
 <translation id="4349714250734879769">Chrome-এর মাধ্যমে ফ্রেম স্কেল করুন</translation>
 <translation id="4383571725254449280">প্রিন্ট পারফর্ম্যান্স লগ</translation>
@@ -144,7 +141,6 @@
 <translation id="7726641833034062494">নর্মাল ভিডিও রেকর্ড করুন</translation>
 <translation id="7748344063862150053">উপরে-ডানদিকের কোণার ডকুমেন্ট</translation>
 <translation id="7933675232020478311">নিচে ডানদিকে সরানো হচ্ছে</translation>
-<translation id="7983668134180549431">টেক্সট শনাক্ত করা গেছে।</translation>
 <translation id="8079255378695216066">রেকর্ডিং শুরু করা যাচ্ছে না</translation>
 <translation id="8120146556401698679">প্যান টিল্ট জুম</translation>
 <translation id="8131740175452115882">নিশ্চিত হন</translation>
@@ -163,6 +159,7 @@
 <translation id="8870695351537079478">রেকর্ডিং শুরু করা যাচ্ছে না</translation>
 <translation id="8880167521484863515">৪ থেকে ৩</translation>
 <translation id="8903921497873541725">জুম বাড়ান</translation>
+<translation id="8926890870105777777">"<ph name="WIFINAME" />" নেটওয়ার্কে যোগ দিন</translation>
 <translation id="9045010116236796332">ডকুমেন্টের সমস্ত প্রান্ত ফ্রেমের মধ্যে রাখুন</translation>
 <translation id="9045155556724273246">১০ সেকেন্ড</translation>
 <translation id="906331135292332864">ছবি প্রসেস করা হচ্ছে...</translation>

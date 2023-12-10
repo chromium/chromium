@@ -5,12 +5,12 @@
 #include "services/network/proxy_resolving_client_socket.h"
 
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
 #include "base/compiler_specific.h"
 #include "base/run_loop.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
@@ -44,7 +44,7 @@ namespace network {
 namespace {
 
 std::unique_ptr<net::ConfiguredProxyResolutionService>
-CreateProxyResolutionService(base::StringPiece pac_result) {
+CreateProxyResolutionService(std::string_view pac_result) {
   return net::ConfiguredProxyResolutionService::CreateFixedFromPacResultForTest(
       static_cast<std::string>(pac_result), TRAFFIC_ANNOTATION_FOR_TESTS);
 }
@@ -73,7 +73,7 @@ class ProxyResolvingClientSocketTest
   }
 
   std::unique_ptr<net::URLRequestContextBuilder> CreateBuilder(
-      base::StringPiece pac_result = "PROXY bad:99; PROXY maybe:80; DIRECT") {
+      std::string_view pac_result = "PROXY bad:99; PROXY maybe:80; DIRECT") {
     auto builder = net::CreateTestURLRequestContextBuilder();
     builder->set_proxy_resolution_service(
         CreateProxyResolutionService(pac_result));
@@ -336,7 +336,7 @@ TEST_P(ProxyResolvingClientSocketTest, ConnectError) {
   };
   const GURL kDestination("https://example.com:443");
   for (auto test : kTestCases) {
-    base::StringPiece pac_result =
+    std::string_view pac_result =
         test.is_direct ? "DIRECT" : "PROXY myproxy.com:89";
     auto context = CreateBuilder(pac_result)->Build();
     net::StaticSocketDataProvider socket_data;

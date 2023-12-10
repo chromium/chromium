@@ -98,7 +98,7 @@ bool VideoToolboxH265Accelerator::ExtractParameterSetData(
   return true;
 }
 
-bool VideoToolboxH265Accelerator::CreateFormat() {
+bool VideoToolboxH265Accelerator::CreateFormat(scoped_refptr<H265Picture> pic) {
   active_vps_data_.clear();
   active_sps_data_.clear();
   active_pps_data_.clear();
@@ -140,11 +140,11 @@ bool VideoToolboxH265Accelerator::CreateFormat() {
   }
 
   // Record session metadata.
-  active_session_metadata_ = VideoToolboxSessionMetadata{
+  active_session_metadata_ = VideoToolboxDecompressionSessionMetadata{
       /*allow_software_decoding=*/true,
       /*is_hbd=*/frame_is_hbd_,
       /*has_alpha=*/frame_has_alpha_,
-  };
+      /*visible_rect=*/pic->visible_rect()};
 
   return true;
 }
@@ -270,7 +270,7 @@ VideoToolboxH265Accelerator::Status VideoToolboxH265Accelerator::SubmitDecode(
   // parameter sets vs. creating a new format.
   if (!active_format_ || (combined_nalu_data.size() && frame_is_keyframe_)) {
     combined_nalu_data.clear();
-    CreateFormat();
+    CreateFormat(pic);
   }
 
   // Append slice data.
@@ -286,15 +286,14 @@ VideoToolboxH265Accelerator::Status VideoToolboxH265Accelerator::SubmitDecode(
   // Allocate a buffer.
   base::apple::ScopedCFTypeRef<CMBlockBufferRef> data;
   OSStatus status = CMBlockBufferCreateWithMemoryBlock(
-      kCFAllocatorDefault,
-      nullptr,              // memory_block
-      data_size,            // block_length
-      kCFAllocatorDefault,  // block_allocator
-      nullptr,              // custom_block_source
-      0,                    // offset_to_data
-      data_size,            // data_length
-      0,                    // flags
-      data.InitializeInto());
+      /*structureAllocator=*/kCFAllocatorDefault,
+      /*memoryBlock=*/nullptr,
+      /*blockLength=*/data_size,
+      /*blockAllocator=*/kCFAllocatorDefault,
+      /*customBlockSource=*/nullptr,
+      /*offsetToData=*/0,
+      /*dataLength=*/data_size,
+      /*flags=*/0, data.InitializeInto());
   if (status != noErr) {
     OSSTATUS_MEDIA_LOG(ERROR, status, media_log_.get())
         << "CMBlockBufferCreateWithMemoryBlock()";
@@ -336,18 +335,18 @@ VideoToolboxH265Accelerator::Status VideoToolboxH265Accelerator::SubmitDecode(
 
   // Wrap in a sample.
   base::apple::ScopedCFTypeRef<CMSampleBufferRef> sample;
-  status = CMSampleBufferCreate(kCFAllocatorDefault,
-                                data.get(),  // data_buffer
-                                true,        // data_ready
-                                nullptr,     // make_data_ready_callback
-                                nullptr,     // make_data_ready_refcon
-                                active_format_.get(),  // format_description
-                                1,                     // num_samples
-                                0,           // num_sample_timing_entries
-                                nullptr,     // sample_timing_array
-                                1,           // num_sample_size_entries
-                                &data_size,  // sample_size_array
-                                sample.InitializeInto());
+  status = CMSampleBufferCreate(
+      /*allocator=*/kCFAllocatorDefault,
+      /*dataBuffer=*/data.get(),
+      /*dataReady=*/true,
+      /*makeDataReadyCallback=*/nullptr,
+      /*makeDataReadyRefcon=*/nullptr,
+      /*formatDescription=*/active_format_.get(),
+      /*numSamples=*/1,
+      /*numSampleTimingEntries=*/0,
+      /*sampleTimingArray=*/nullptr,
+      /*numSampleSizeEntries=*/1,
+      /*sampleSizeArray=*/&data_size, sample.InitializeInto());
   if (status != noErr) {
     OSSTATUS_MEDIA_LOG(ERROR, status, media_log_.get())
         << "CMSampleBufferCreate()";

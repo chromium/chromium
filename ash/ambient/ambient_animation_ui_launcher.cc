@@ -22,8 +22,6 @@
 namespace ash {
 
 AmbientAnimationUiLauncher::AmbientAnimationUiLauncher(
-    AmbientPhotoCache& photo_cache,
-    AmbientPhotoCache& backup_photo_cache,
     AmbientUiSettings current_ui_settings,
     AmbientViewDelegateImpl* view_delegate)
     : animation_(AmbientAnimationStaticResources::Create(
@@ -34,9 +32,7 @@ AmbientAnimationUiLauncher::AmbientAnimationUiLauncher(
                      /*serializable=*/false)
                      ->GetSkottieWrapper()),
       view_delegate_(view_delegate),
-      photo_controller_(photo_cache,
-                        backup_photo_cache,
-                        *view_delegate,
+      photo_controller_(*view_delegate,
                         CreateAmbientAnimationPhotoConfig(
                             animation_->GetImageAssetMetadata()),
                         std::make_unique<AmbientTopicQueueAnimationDelegate>(

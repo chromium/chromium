@@ -102,7 +102,9 @@ bool IsInline(const Node* node) {
     return false;
 
   const ComputedStyle* style = node->GetComputedStyle();
-  return style && style->Display() == EDisplay::kInline;
+  // Should we apply IsDisplayInlineType()?
+  return style && (style->Display() == EDisplay::kInline ||
+                   style->Display() == EDisplay::kRuby);
 }
 
 // FIXME: This method should not need to call

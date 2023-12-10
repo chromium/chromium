@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+[FAIL] Dropping references to a port does not close its streams
+  promise_test: Unhandled rejection with value: object "ReferenceError: GCController is not defined"
+Harness: the test ran to completion.

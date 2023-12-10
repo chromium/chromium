@@ -10,7 +10,7 @@
         "policies": {},
         "prefs": {
           "filebrowser.office.microsoft_one_drive_account_restrictions": {
-            "default_value": []
+            "value": ["organizations"]
           }
         }
       },

@@ -19,7 +19,7 @@ source_set("model") {
     "//components/keyed_service/core",
     "//components/ntp_tiles",
     "//ios/chrome/browser/favicon",
-    "//ios/chrome/browser/history",
+    "//ios/chrome/browser/history/model",
     "//ios/chrome/browser/json_parser",
     "//ios/chrome/browser/search_engines/model",
     "//ios/chrome/browser/shared/model/application_context",
@@ -36,7 +36,7 @@ source_set("eg2_tests") {
   sources = [ "ntp_tiles_egtest.mm" ]
   deps = [
     "//base/test:test_support",
-    "//ios/chrome/browser/ntp/home:features",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
     "//ios/web/public/test/http_server:http_server",

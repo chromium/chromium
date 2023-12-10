@@ -5,12 +5,13 @@
 #ifndef CHROME_BROWSER_ASH_APP_MODE_CRASH_RECOVERY_LAUNCHER_H_
 #define CHROME_BROWSER_ASH_APP_MODE_CRASH_RECOVERY_LAUNCHER_H_
 
+#include <optional>
+
 #include "base/functional/callback_forward.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launcher.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/ash/app_mode/lacros_launcher.h"
 #include "chrome/browser/profiles/profile.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -21,7 +22,7 @@ class CrashRecoveryLauncher : public KioskAppLauncher::NetworkDelegate,
  public:
   using OnDoneCallback =
       base::OnceCallback<void(bool success,
-                              const absl::optional<std::string>& app_name)>;
+                              const std::optional<std::string>& app_name)>;
 
   CrashRecoveryLauncher(Profile& profile, const KioskAppId& kiosk_app_id);
   ~CrashRecoveryLauncher() override;
@@ -33,7 +34,7 @@ class CrashRecoveryLauncher : public KioskAppLauncher::NetworkDelegate,
  private:
   void OnLacrosLaunchComplete();
   void InvokeDoneCallback(bool success,
-                          const absl::optional<std::string>& app_name);
+                          const std::optional<std::string>& app_name);
 
   // KioskAppLauncher::NetworkDelegate:
   void InitializeNetwork() override;
@@ -43,7 +44,7 @@ class CrashRecoveryLauncher : public KioskAppLauncher::NetworkDelegate,
   void OnAppInstalling() override;
   void OnAppPrepared() override;
   void OnAppLaunched() override;
-  void OnAppWindowCreated(const absl::optional<std::string>& app_name) override;
+  void OnAppWindowCreated(const std::optional<std::string>& app_name) override;
   void OnLaunchFailed(KioskAppLaunchError::Error error) override;
 
   const KioskAppId kiosk_app_id_;

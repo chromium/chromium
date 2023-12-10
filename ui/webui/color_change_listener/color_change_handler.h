@@ -40,4 +40,4 @@ class ColorChangeHandler : public content::WebContentsObserver,
 
 }  // namespace ui
 
-#endif  // CHROME_BROWSER_UI_WEBUI_COLOR_CHANGE_LISTENER_COLOR_CHANGE_HANDLER_H_
+#endif  // UI_WEBUI_COLOR_CHANGE_LISTENER_COLOR_CHANGE_HANDLER_H_

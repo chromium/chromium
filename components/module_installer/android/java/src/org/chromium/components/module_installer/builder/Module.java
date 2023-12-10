@@ -66,18 +66,14 @@ public class Module<T> {
         mInstaller = engine;
     }
 
-    /**
-     * Returns true if the module is currently installed and can be accessed.
-     */
+    /** Returns true if the module is currently installed and can be accessed. */
     public boolean isInstalled() {
         try (Timer timer = new Timer()) {
             return getInstallEngine().isInstalled(mName);
         }
     }
 
-    /**
-     * Requests install of the module.
-     */
+    /** Requests install of the module. */
     public void install(InstallListener listener) {
         try (Timer timer = new Timer()) {
             assert !isInstalled();
@@ -85,9 +81,7 @@ public class Module<T> {
         }
     }
 
-    /**
-     * Requests deferred install of the module.
-     */
+    /** Requests deferred install of the module. */
     public void installDeferred() {
         try (Timer timer = new Timer()) {
             getInstallEngine().installDeferred(mName);
@@ -119,15 +113,25 @@ public class Module<T> {
             } catch (ClassCastException e) {
                 ClassLoader interfaceClassLoader = mInterfaceClass.getClassLoader();
                 ClassLoader implClassLoader = impl.getClass().getClassLoader();
-                throw new RuntimeException("Failure casting " + mName
-                                + " module class, interface ClassLoader: " + interfaceClassLoader
-                                + " (parent " + interfaceClassLoader.getParent() + ")"
-                                + ", impl ClassLoader: " + implClassLoader + " (parent "
-                                + implClassLoader.getParent() + ")"
-                                + ", equal: " + interfaceClassLoader.equals(implClassLoader)
+                throw new RuntimeException(
+                        "Failure casting "
+                                + mName
+                                + " module class, interface ClassLoader: "
+                                + interfaceClassLoader
+                                + " (parent "
+                                + interfaceClassLoader.getParent()
+                                + ")"
+                                + ", impl ClassLoader: "
+                                + implClassLoader
+                                + " (parent "
+                                + implClassLoader.getParent()
+                                + ")"
+                                + ", equal: "
+                                + interfaceClassLoader.equals(implClassLoader)
                                 + " (parents equal: "
-                                + interfaceClassLoader.getParent().equals(
-                                        implClassLoader.getParent())
+                                + interfaceClassLoader
+                                        .getParent()
+                                        .equals(implClassLoader.getParent())
                                 + ")",
                         e);
             }
@@ -165,35 +169,36 @@ public class Module<T> {
         ModuleDescriptor ret = mModuleDescriptor;
         if (ret == null) {
             if (BundleUtils.isBundle()) {
-                ret = (ModuleDescriptor) instantiateReflectively(
-                        "org.chromium.components.module_installer.builder.ModuleDescriptor_"
-                        + mName);
+                ret =
+                        (ModuleDescriptor)
+                                instantiateReflectively(
+                                        "org.chromium.components.module_installer.builder.ModuleDescriptor_"
+                                                + mName);
             } else {
-                ret = new ModuleDescriptor() {
-                    @Override
-                    public String[] getLibraries() {
-                        return new String[0];
-                    }
+                ret =
+                        new ModuleDescriptor() {
+                            @Override
+                            public String[] getLibraries() {
+                                return new String[0];
+                            }
 
-                    @Override
-                    public String[] getPaks() {
-                        return new String[0];
-                    }
+                            @Override
+                            public String[] getPaks() {
+                                return new String[0];
+                            }
 
-                    @Override
-                    public boolean getLoadNativeOnGetImpl() {
-                        return false;
-                    }
-                };
+                            @Override
+                            public boolean getLoadNativeOnGetImpl() {
+                                return false;
+                            }
+                        };
             }
             mModuleDescriptor = ret;
         }
         return ret;
     }
 
-    /**
-     * Returns the Context associated with the module.
-     */
+    /** Returns the Context associated with the module. */
     public Context getContext() {
         // Ensure mContext is initialized.
         getImpl();

@@ -28,6 +28,7 @@
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/autofill_wallet_usage_data.h"
+#include "components/autofill/core/browser/data_model/bank_account.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/credit_card_cloud_token_data.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -95,10 +96,9 @@ std::ostream& operator<<(std::ostream& os, const AutocompleteChange& change) {
 
 namespace {
 
-typedef std::set<AutocompleteEntry,
-                 bool (*)(const AutocompleteEntry&, const AutocompleteEntry&)>
-    AutocompleteEntrySet;
-typedef AutocompleteEntrySet::iterator AutocompleteEntrySetIterator;
+using AutocompleteEntrySet =
+    std::set<AutocompleteEntry,
+             bool (*)(const AutocompleteEntry&, const AutocompleteEntry&)>;
 
 bool CompareAutocompleteEntries(const AutocompleteEntry& a,
                                 const AutocompleteEntry& b) {
@@ -235,7 +235,8 @@ INSTANTIATE_TEST_SUITE_P(
                        AutofillProfile::Source::kAccount}));
 
 TEST_F(AutofillTableTest, Autocomplete) {
-  Time t1 = AutofillClock::Now();
+  TestAutofillClock clock(AutofillClock::Now());
+  base::Time begin = AutofillClock::Now();
 
   // Simulate the submission of a handful of entries in a field called "Name",
   // some more often than others.
@@ -243,25 +244,25 @@ TEST_F(AutofillTableTest, Autocomplete) {
   FormFieldData field;
   field.name = u"Name";
   field.value = u"Superman";
-  base::Time now = AutofillClock::Now();
-  base::TimeDelta two_seconds = base::Seconds(2);
-  EXPECT_TRUE(table_->AddFormFieldValue(field, &changes));
+  EXPECT_TRUE(table_->AddFormFieldValues({field}, &changes));
   std::vector<AutocompleteEntry> v;
   for (int i = 0; i < 5; ++i) {
     field.value = u"Clark Kent";
-    EXPECT_TRUE(
-        table_->AddFormFieldValueTime(field, &changes, now + i * two_seconds));
+    EXPECT_TRUE(table_->AddFormFieldValues({field}, &changes));
+    clock.Advance(base::Seconds(2));
   }
+  clock.SetNow(begin);
   for (int i = 0; i < 3; ++i) {
     field.value = u"Clark Sutter";
-    EXPECT_TRUE(
-        table_->AddFormFieldValueTime(field, &changes, now + i * two_seconds));
+    EXPECT_TRUE(table_->AddFormFieldValues({field}, &changes));
+    clock.Advance(base::Seconds(2));
   }
+  clock.SetNow(begin);
   for (int i = 0; i < 2; ++i) {
     field.name = u"Favorite Color";
     field.value = u"Green";
-    EXPECT_TRUE(
-        table_->AddFormFieldValueTime(field, &changes, now + i * two_seconds));
+    EXPECT_TRUE(table_->AddFormFieldValues({field}, &changes));
+    clock.Advance(base::Seconds(2));
   }
 
   // We have added the name Clark Kent 5 times, so count should be 5.
@@ -279,7 +280,7 @@ TEST_F(AutofillTableTest, Autocomplete) {
   // no matter what they start with.  The order that the names occur in the list
   // should be decreasing order by count.
   EXPECT_TRUE(
-      table_->GetFormValuesForElementName(u"Name", std::u16string(), &v, 6));
+      table_->GetFormValuesForElementName(u"Name", std::u16string(), 6, v));
   EXPECT_EQ(3U, v.size());
   if (v.size() == 3) {
     EXPECT_EQ(u"Clark Kent", v[0].key().value());
@@ -290,15 +291,15 @@ TEST_F(AutofillTableTest, Autocomplete) {
   // If we query again limiting the list size to 1, we should only get the most
   // frequent entry.
   EXPECT_TRUE(
-      table_->GetFormValuesForElementName(u"Name", std::u16string(), &v, 1));
+      table_->GetFormValuesForElementName(u"Name", std::u16string(), 1, v));
   EXPECT_EQ(1U, v.size());
   if (v.size() == 1) {
     EXPECT_EQ(u"Clark Kent", v[0].key().value());
   }
 
   // Querying for suggestions given a prefix is case-insensitive, so the prefix
-  // "cLa" shoud get suggestions for both Clarks.
-  EXPECT_TRUE(table_->GetFormValuesForElementName(u"Name", u"cLa", &v, 6));
+  // "cLa" should get suggestions for both Clarks.
+  EXPECT_TRUE(table_->GetFormValuesForElementName(u"Name", u"cLa", 6, v));
   EXPECT_EQ(2U, v.size());
   if (v.size() == 2) {
     EXPECT_EQ(u"Clark Kent", v[0].key().value());
@@ -308,7 +309,7 @@ TEST_F(AutofillTableTest, Autocomplete) {
   // Removing all elements since the beginning of this function should remove
   // everything from the database.
   changes.clear();
-  EXPECT_TRUE(table_->RemoveFormElementsAddedBetween(t1, Time(), &changes));
+  EXPECT_TRUE(table_->RemoveFormElementsAddedBetween(begin, Time(), changes));
 
   const AutocompleteChange kExpectedChanges[] = {
       AutocompleteChange(AutocompleteChange::REMOVE,
@@ -328,77 +329,78 @@ TEST_F(AutofillTableTest, Autocomplete) {
   EXPECT_EQ(0, GetAutocompleteEntryCount(u"Name", u"Clark Kent", db_.get()));
 
   EXPECT_TRUE(
-      table_->GetFormValuesForElementName(u"Name", std::u16string(), &v, 6));
+      table_->GetFormValuesForElementName(u"Name", std::u16string(), 6, v));
   EXPECT_EQ(0U, v.size());
 
   // Now add some values with empty strings.
   const std::u16string kValue = u"  toto   ";
   field.name = u"blank";
   field.value = std::u16string();
-  EXPECT_TRUE(table_->AddFormFieldValue(field, &changes));
+  EXPECT_TRUE(table_->AddFormFieldValues({field}, &changes));
   field.name = u"blank";
   field.value = u" ";
-  EXPECT_TRUE(table_->AddFormFieldValue(field, &changes));
+  EXPECT_TRUE(table_->AddFormFieldValues({field}, &changes));
   field.name = u"blank";
   field.value = u"      ";
-  EXPECT_TRUE(table_->AddFormFieldValue(field, &changes));
+  EXPECT_TRUE(table_->AddFormFieldValues({field}, &changes));
   field.name = u"blank";
   field.value = kValue;
-  EXPECT_TRUE(table_->AddFormFieldValue(field, &changes));
+  EXPECT_TRUE(table_->AddFormFieldValues({field}, &changes));
 
   // They should be stored normally as the DB layer does not check for empty
   // values.
   v.clear();
   EXPECT_TRUE(
-      table_->GetFormValuesForElementName(u"blank", std::u16string(), &v, 10));
+      table_->GetFormValuesForElementName(u"blank", std::u16string(), 10, v));
   EXPECT_EQ(4U, v.size());
 }
 
 TEST_F(AutofillTableTest, Autocomplete_GetEntry_Populated) {
+  TestAutofillClock clock(base::Time::FromSecondsSinceUnixEpoch(1546889367));
+
   AutocompleteChangeList changes;
   FormFieldData field;
   field.name = u"Name";
   field.value = u"Superman";
-  base::Time now = base::Time::FromSecondsSinceUnixEpoch(1546889367);
-
-  EXPECT_TRUE(table_->AddFormFieldValueTime(field, &changes, now));
+  EXPECT_TRUE(table_->AddFormFieldValues({field}, &changes));
 
   std::vector<AutocompleteEntry> prefix_v;
   EXPECT_TRUE(
-      table_->GetFormValuesForElementName(field.name, u"Super", &prefix_v, 10));
+      table_->GetFormValuesForElementName(field.name, u"Super", 10, prefix_v));
 
   std::vector<AutocompleteEntry> no_prefix_v;
   EXPECT_TRUE(
-      table_->GetFormValuesForElementName(field.name, u"", &no_prefix_v, 10));
+      table_->GetFormValuesForElementName(field.name, u"", 10, no_prefix_v));
 
   AutocompleteEntry expected_entry(AutocompleteKey(field.name, field.value),
-                                   now, now);
+                                   AutofillClock::Now(), AutofillClock::Now());
 
   EXPECT_THAT(prefix_v, ElementsAre(expected_entry));
   EXPECT_THAT(no_prefix_v, ElementsAre(expected_entry));
 
   // Update date_last_used.
-  base::Time new_time = now + base::Seconds(1000);
-  EXPECT_TRUE(table_->AddFormFieldValueTime(field, &changes, new_time));
+  clock.Advance(base::Seconds(1000));
+  EXPECT_TRUE(table_->AddFormFieldValues({field}, &changes));
   EXPECT_TRUE(
-      table_->GetFormValuesForElementName(field.name, u"Super", &prefix_v, 10));
+      table_->GetFormValuesForElementName(field.name, u"Super", 10, prefix_v));
   EXPECT_TRUE(
-      table_->GetFormValuesForElementName(field.name, u"", &no_prefix_v, 10));
+      table_->GetFormValuesForElementName(field.name, u"", 10, no_prefix_v));
 
-  expected_entry = AutocompleteEntry(AutocompleteKey(field.name, field.value),
-                                     now, new_time);
+  expected_entry =
+      AutocompleteEntry(AutocompleteKey(field.name, field.value),
+                        expected_entry.date_created(), AutofillClock::Now());
 
   EXPECT_THAT(prefix_v, ElementsAre(expected_entry));
   EXPECT_THAT(no_prefix_v, ElementsAre(expected_entry));
 }
 
 TEST_F(AutofillTableTest, Autocomplete_GetCountOfValuesContainedBetween) {
+  TestAutofillClock clock(AutofillClock::Now());
   AutocompleteChangeList changes;
   // This test makes time comparisons that are precise to a microsecond, but the
   // database uses the time_t format which is only precise to a second.
   // Make sure we use timestamps rounded to a second.
   Time begin = Time::FromTimeT(AutofillClock::Now().ToTimeT());
-  Time now = begin;
   base::TimeDelta second = base::Seconds(1);
 
   struct Entry {
@@ -412,8 +414,8 @@ TEST_F(AutofillTableTest, Autocomplete_GetCountOfValuesContainedBetween) {
     FormFieldData field;
     field.name = entry.name;
     field.value = entry.value;
-    ASSERT_TRUE(table_->AddFormFieldValueTime(field, &changes, now));
-    now += second;
+    ASSERT_TRUE(table_->AddFormFieldValues({field}, &changes));
+    clock.Advance(second);
   }
 
   // While the entry "Alter ego" : "Superman" is entirely contained within
@@ -458,6 +460,7 @@ TEST_F(AutofillTableTest, Autocomplete_GetCountOfValuesContainedBetween) {
 }
 
 TEST_F(AutofillTableTest, Autocomplete_RemoveBetweenChanges) {
+  TestAutofillClock clock(AutofillClock::Now());
   base::TimeDelta one_day(base::Days(1));
   Time t1 = AutofillClock::Now();
   Time t2 = t1 + one_day;
@@ -466,11 +469,12 @@ TEST_F(AutofillTableTest, Autocomplete_RemoveBetweenChanges) {
   FormFieldData field;
   field.name = u"Name";
   field.value = u"Superman";
-  EXPECT_TRUE(table_->AddFormFieldValueTime(field, &changes, t1));
-  EXPECT_TRUE(table_->AddFormFieldValueTime(field, &changes, t2));
+  EXPECT_TRUE(table_->AddFormFieldValues({field}, &changes));
+  clock.Advance(one_day);
+  EXPECT_TRUE(table_->AddFormFieldValues({field}, &changes));
 
   changes.clear();
-  EXPECT_TRUE(table_->RemoveFormElementsAddedBetween(t1, t2, &changes));
+  EXPECT_TRUE(table_->RemoveFormElementsAddedBetween(t1, t2, changes));
   ASSERT_EQ(1U, changes.size());
   EXPECT_EQ(AutocompleteChange(AutocompleteChange::UPDATE,
                                AutocompleteKey(u"Name", u"Superman")),
@@ -478,7 +482,7 @@ TEST_F(AutofillTableTest, Autocomplete_RemoveBetweenChanges) {
   changes.clear();
 
   EXPECT_TRUE(
-      table_->RemoveFormElementsAddedBetween(t2, t2 + one_day, &changes));
+      table_->RemoveFormElementsAddedBetween(t2, t2 + one_day, changes));
   ASSERT_EQ(1U, changes.size());
   EXPECT_EQ(AutocompleteChange(AutocompleteChange::REMOVE,
                                AutocompleteKey(u"Name", u"Superman")),
@@ -486,22 +490,20 @@ TEST_F(AutofillTableTest, Autocomplete_RemoveBetweenChanges) {
 }
 
 TEST_F(AutofillTableTest, Autocomplete_AddChanges) {
-  base::TimeDelta one_day(base::Days(1));
-  Time t1 = AutofillClock::Now();
-  Time t2 = t1 + one_day;
-
+  TestAutofillClock clock(AutofillClock::Now());
   AutocompleteChangeList changes;
   FormFieldData field;
   field.name = u"Name";
   field.value = u"Superman";
-  EXPECT_TRUE(table_->AddFormFieldValueTime(field, &changes, t1));
+  EXPECT_TRUE(table_->AddFormFieldValues({field}, &changes));
   ASSERT_EQ(1U, changes.size());
   EXPECT_EQ(AutocompleteChange(AutocompleteChange::ADD,
                                AutocompleteKey(u"Name", u"Superman")),
             changes[0]);
 
   changes.clear();
-  EXPECT_TRUE(table_->AddFormFieldValueTime(field, &changes, t2));
+  clock.Advance(base::Days(1));
+  EXPECT_TRUE(table_->AddFormFieldValues({field}, &changes));
   ASSERT_EQ(1U, changes.size());
   EXPECT_EQ(AutocompleteChange(AutocompleteChange::UPDATE,
                                AutocompleteKey(u"Name", u"Superman")),
@@ -542,11 +544,11 @@ TEST_F(AutofillTableTest, Autocomplete_GetAutofillTimestamps) {
   entries.push_back(entry);
   ASSERT_TRUE(table_->UpdateAutocompleteEntries(entries));
 
-  Time date_created, date_last_used;
-  ASSERT_TRUE(table_->GetAutofillTimestamps(u"foo", u"bar", &date_created,
-                                            &date_last_used));
-  EXPECT_EQ(Time::FromTimeT(1), date_created);
-  EXPECT_EQ(Time::FromTimeT(2), date_last_used);
+  std::optional<AutocompleteEntry> table_entry =
+      table_->GetAutocompleteEntry(u"foo", u"bar");
+  ASSERT_TRUE(table_entry);
+  EXPECT_EQ(Time::FromTimeT(1), table_entry->date_created());
+  EXPECT_EQ(Time::FromTimeT(2), table_entry->date_last_used());
 }
 
 TEST_F(AutofillTableTest, Autocomplete_UpdateTwo) {
@@ -590,7 +592,7 @@ TEST_F(AutofillTableTest, Autocomplete_UpdateReplace) {
   FormFieldData field;
   field.name = u"Name";
   field.value = u"Superman";
-  EXPECT_TRUE(table_->AddFormFieldValue(field, &changes));
+  EXPECT_TRUE(table_->AddFormFieldValues({field}, &changes));
 
   AutocompleteEntry entry(MakeAutocompleteEntry(u"Name", u"Superman", 1, 2));
   std::vector<AutocompleteEntry> entries;
@@ -613,7 +615,7 @@ TEST_F(AutofillTableTest, Autocomplete_UpdateDontReplace) {
   FormFieldData field;
   field.name = existing.key().name();
   field.value = existing.key().value();
-  EXPECT_TRUE(table_->AddFormFieldValueTime(field, &changes, t));
+  EXPECT_TRUE(table_->AddFormFieldValues({field}, &changes));
   AutocompleteEntry entry(MakeAutocompleteEntry(u"Name", u"Clark Kent", 1, 2));
   std::vector<AutocompleteEntry> entries;
   entries.push_back(entry);
@@ -629,8 +631,6 @@ TEST_F(AutofillTableTest, Autocomplete_UpdateDontReplace) {
 }
 
 TEST_F(AutofillTableTest, Autocomplete_AddFormFieldValues) {
-  Time t = AutofillClock::Now();
-
   // Add multiple values for "firstname" and "lastname" names.  Test that only
   // first value of each gets added. Related to security issue:
   // http://crbug.com/51727.
@@ -653,7 +653,7 @@ TEST_F(AutofillTableTest, Autocomplete_AddFormFieldValues) {
   elements.push_back(field);
 
   std::vector<AutocompleteChange> changes;
-  table_->AddFormFieldValuesTime(elements, &changes, t);
+  table_->AddFormFieldValues(elements, &changes);
 
   ASSERT_EQ(2U, changes.size());
   EXPECT_EQ(changes[0],
@@ -670,81 +670,66 @@ TEST_F(AutofillTableTest, Autocomplete_AddFormFieldValues) {
 
 TEST_F(AutofillTableTest,
        Autocomplete_RemoveFormElementsAddedBetween_UsedOnlyBefore) {
+  TestAutofillClock clock;
   // Add an entry used only before the targeted range.
   AutocompleteChangeList changes;
   FormFieldData field;
   field.name = u"Name";
   field.value = u"Superman";
-  EXPECT_TRUE(table_->AddFormFieldValueTime(field, &changes,
-                                            base::Time::FromTimeT(10)));
-  EXPECT_TRUE(table_->AddFormFieldValueTime(field, &changes,
-                                            base::Time::FromTimeT(20)));
-  EXPECT_TRUE(table_->AddFormFieldValueTime(field, &changes,
-                                            base::Time::FromTimeT(30)));
-  EXPECT_TRUE(table_->AddFormFieldValueTime(field, &changes,
-                                            base::Time::FromTimeT(40)));
-  EXPECT_TRUE(table_->AddFormFieldValueTime(field, &changes,
-                                            base::Time::FromTimeT(50)));
+  for (int i = 0; i < 5; i++) {
+    clock.SetNow(base::Time::FromTimeT(10 * (i + 1)));
+    EXPECT_TRUE(table_->AddFormFieldValues({field}, &changes));
+  }
 
   EXPECT_EQ(5, GetAutocompleteEntryCount(field.name, field.value, db_.get()));
 
   changes.clear();
   EXPECT_TRUE(table_->RemoveFormElementsAddedBetween(
-      base::Time::FromTimeT(51), base::Time::FromTimeT(60), &changes));
+      base::Time::FromTimeT(51), base::Time::FromTimeT(60), changes));
   EXPECT_TRUE(changes.empty());
   EXPECT_EQ(5, GetAutocompleteEntryCount(field.name, field.value, db_.get()));
 }
 
 TEST_F(AutofillTableTest,
        Autocomplete_RemoveFormElementsAddedBetween_UsedOnlyAfter) {
+  TestAutofillClock clock;
   // Add an entry used only after the targeted range.
   AutocompleteChangeList changes;
   FormFieldData field;
   field.name = u"Name";
   field.value = u"Superman";
-  EXPECT_TRUE(table_->AddFormFieldValueTime(field, &changes,
-                                            base::Time::FromTimeT(50)));
-  EXPECT_TRUE(table_->AddFormFieldValueTime(field, &changes,
-                                            base::Time::FromTimeT(60)));
-  EXPECT_TRUE(table_->AddFormFieldValueTime(field, &changes,
-                                            base::Time::FromTimeT(70)));
-  EXPECT_TRUE(table_->AddFormFieldValueTime(field, &changes,
-                                            base::Time::FromTimeT(80)));
-  EXPECT_TRUE(table_->AddFormFieldValueTime(field, &changes,
-                                            base::Time::FromTimeT(90)));
+  for (int i = 0; i < 5; i++) {
+    clock.SetNow(base::Time::FromTimeT(50 + 10 * i));
+    EXPECT_TRUE(table_->AddFormFieldValues({field}, &changes));
+  }
 
   EXPECT_EQ(5, GetAutocompleteEntryCount(field.name, field.value, db_.get()));
 
   changes.clear();
   EXPECT_TRUE(table_->RemoveFormElementsAddedBetween(
-      base::Time::FromTimeT(40), base::Time::FromTimeT(50), &changes));
+      base::Time::FromTimeT(40), base::Time::FromTimeT(50), changes));
   EXPECT_TRUE(changes.empty());
   EXPECT_EQ(5, GetAutocompleteEntryCount(field.name, field.value, db_.get()));
 }
 
 TEST_F(AutofillTableTest,
        Autocomplete_RemoveFormElementsAddedBetween_UsedOnlyDuring) {
+  TestAutofillClock clock;
   // Add an entry used entirely during the targeted range.
   AutocompleteChangeList changes;
   FormFieldData field;
   field.name = u"Name";
   field.value = u"Superman";
-  EXPECT_TRUE(table_->AddFormFieldValueTime(field, &changes,
-                                            base::Time::FromTimeT(10)));
-  EXPECT_TRUE(table_->AddFormFieldValueTime(field, &changes,
-                                            base::Time::FromTimeT(20)));
-  EXPECT_TRUE(table_->AddFormFieldValueTime(field, &changes,
-                                            base::Time::FromTimeT(30)));
-  EXPECT_TRUE(table_->AddFormFieldValueTime(field, &changes,
-                                            base::Time::FromTimeT(40)));
-  EXPECT_TRUE(table_->AddFormFieldValueTime(field, &changes,
-                                            base::Time::FromTimeT(50)));
+  for (int i = 0; i < 5; i++) {
+    clock.SetNow(base::Time::FromTimeT(10 * (i + 1)));
+    EXPECT_TRUE(table_->AddFormFieldValues({field}, &changes));
+  }
 
   EXPECT_EQ(5, GetAutocompleteEntryCount(field.name, field.value, db_.get()));
 
   changes.clear();
   EXPECT_TRUE(table_->RemoveFormElementsAddedBetween(
-      base::Time::FromTimeT(10), base::Time::FromTimeT(51), &changes));
+      base::Time::FromTimeT(10), base::Time::FromTimeT(51), changes));
   ASSERT_EQ(1U, changes.size());
   EXPECT_EQ(AutocompleteChange(AutocompleteChange::REMOVE,
                                AutocompleteKey(field.name, field.value)),
@@ -754,97 +739,90 @@ TEST_F(AutofillTableTest,
 
 TEST_F(AutofillTableTest,
        Autocomplete_RemoveFormElementsAddedBetween_UsedBeforeAndDuring) {
+  TestAutofillClock clock;
   // Add an entry used both before and during the targeted range.
   AutocompleteChangeList changes;
   FormFieldData field;
   field.name = u"Name";
   field.value = u"Superman";
-  EXPECT_TRUE(table_->AddFormFieldValueTime(field, &changes,
-                                            base::Time::FromTimeT(10)));
-  EXPECT_TRUE(table_->AddFormFieldValueTime(field, &changes,
-                                            base::Time::FromTimeT(20)));
-  EXPECT_TRUE(table_->AddFormFieldValueTime(field, &changes,
-                                            base::Time::FromTimeT(30)));
-  EXPECT_TRUE(table_->AddFormFieldValueTime(field, &changes,
-                                            base::Time::FromTimeT(40)));
-  EXPECT_TRUE(table_->AddFormFieldValueTime(field, &changes,
-                                            base::Time::FromTimeT(50)));
+  for (int i = 0; i < 5; i++) {
+    clock.SetNow(base::Time::FromTimeT(10 * (i + 1)));
+    EXPECT_TRUE(table_->AddFormFieldValues({field}, &changes));
+  }
 
   EXPECT_EQ(5, GetAutocompleteEntryCount(field.name, field.value, db_.get()));
 
   changes.clear();
   EXPECT_TRUE(table_->RemoveFormElementsAddedBetween(
-      base::Time::FromTimeT(40), base::Time::FromTimeT(60), &changes));
+      base::Time::FromTimeT(40), base::Time::FromTimeT(60), changes));
   ASSERT_EQ(1U, changes.size());
   EXPECT_EQ(AutocompleteChange(AutocompleteChange::UPDATE,
                                AutocompleteKey(field.name, field.value)),
             changes[0]);
   EXPECT_EQ(4, GetAutocompleteEntryCount(field.name, field.value, db_.get()));
-  base::Time date_created, date_last_used;
-  EXPECT_TRUE(table_->GetAutofillTimestamps(field.name, field.value,
-                                            &date_created, &date_last_used));
-  EXPECT_EQ(base::Time::FromTimeT(10), date_created);
-  EXPECT_EQ(base::Time::FromTimeT(39), date_last_used);
+  std::optional<AutocompleteEntry> entry =
+      table_->GetAutocompleteEntry(field.name, field.value);
+  ASSERT_TRUE(entry);
+  EXPECT_EQ(base::Time::FromTimeT(10), entry->date_created());
+  EXPECT_EQ(base::Time::FromTimeT(39), entry->date_last_used());
 }
 
 TEST_F(AutofillTableTest,
        Autocomplete_RemoveFormElementsAddedBetween_UsedDuringAndAfter) {
+  TestAutofillClock clock;
   // Add an entry used both during and after the targeted range.
   AutocompleteChangeList changes;
   FormFieldData field;
   field.name = u"Name";
   field.value = u"Superman";
-  EXPECT_TRUE(table_->AddFormFieldValueTime(field, &changes,
-                                            base::Time::FromTimeT(50)));
-  EXPECT_TRUE(table_->AddFormFieldValueTime(field, &changes,
-                                            base::Time::FromTimeT(60)));
-  EXPECT_TRUE(table_->AddFormFieldValueTime(field, &changes,
-                                            base::Time::FromTimeT(70)));
-  EXPECT_TRUE(table_->AddFormFieldValueTime(field, &changes,
-                                            base::Time::FromTimeT(80)));
-  EXPECT_TRUE(table_->AddFormFieldValueTime(field, &changes,
-                                            base::Time::FromTimeT(90)));
+  for (int i = 0; i < 5; i++) {
+    clock.SetNow(base::Time::FromTimeT(50 + 10 * i));
+    EXPECT_TRUE(table_->AddFormFieldValues({field}, &changes));
+  }
 
   EXPECT_EQ(5, GetAutocompleteEntryCount(field.name, field.value, db_.get()));
 
   changes.clear();
   EXPECT_TRUE(table_->RemoveFormElementsAddedBetween(
-      base::Time::FromTimeT(40), base::Time::FromTimeT(80), &changes));
+      base::Time::FromTimeT(40), base::Time::FromTimeT(80), changes));
   ASSERT_EQ(1U, changes.size());
   EXPECT_EQ(AutocompleteChange(AutocompleteChange::UPDATE,
                                AutocompleteKey(field.name, field.value)),
             changes[0]);
   EXPECT_EQ(2, GetAutocompleteEntryCount(field.name, field.value, db_.get()));
-  base::Time date_created, date_last_used;
-  EXPECT_TRUE(table_->GetAutofillTimestamps(field.name, field.value,
-                                            &date_created, &date_last_used));
-  EXPECT_EQ(base::Time::FromTimeT(80), date_created);
-  EXPECT_EQ(base::Time::FromTimeT(90), date_last_used);
+  std::optional<AutocompleteEntry> entry =
+      table_->GetAutocompleteEntry(field.name, field.value);
+  ASSERT_TRUE(entry);
+  EXPECT_EQ(base::Time::FromTimeT(80), entry->date_created());
+  EXPECT_EQ(base::Time::FromTimeT(90), entry->date_last_used());
 }
 
 TEST_F(AutofillTableTest,
        Autocomplete_RemoveFormElementsAddedBetween_OlderThan30Days) {
-  const base::Time kNow = AutofillClock::Now();
-  const base::Time k29DaysOld = kNow - base::Days(29);
-  const base::Time k30DaysOld = kNow - base::Days(30);
-  const base::Time k31DaysOld = kNow - base::Days(31);
+  TestAutofillClock clock(AutofillClock::Now());
 
   // Add some form field entries.
   AutocompleteChangeList changes;
   FormFieldData field;
   field.name = u"Name";
-  field.value = u"Superman";
-  EXPECT_TRUE(table_->AddFormFieldValueTime(field, &changes, kNow));
-  field.value = u"Clark Kent";
-  EXPECT_TRUE(table_->AddFormFieldValueTime(field, &changes, k29DaysOld));
+
   field.value = u"Clark Sutter";
-  EXPECT_TRUE(table_->AddFormFieldValueTime(field, &changes, k31DaysOld));
+  EXPECT_TRUE(table_->AddFormFieldValues({field}, &changes));
+  clock.Advance(base::Days(2));
+
+  field.value = u"Clark Kent";
+  EXPECT_TRUE(table_->AddFormFieldValues({field}, &changes));
+  clock.Advance(base::Days(29));
+
+  field.value = u"Superman";
+  EXPECT_TRUE(table_->AddFormFieldValues({field}, &changes));
+
   EXPECT_EQ(3U, changes.size());
 
   // Removing all elements added before 30days from the database.
   changes.clear();
-  EXPECT_TRUE(table_->RemoveFormElementsAddedBetween(base::Time(), k30DaysOld,
-                                                     &changes));
+  EXPECT_TRUE(table_->RemoveFormElementsAddedBetween(
+      base::Time(), AutofillClock::Now() - base::Days(30), changes));
   ASSERT_EQ(1U, changes.size());
   EXPECT_EQ(AutocompleteChange(AutocompleteChange::REMOVE,
                                AutocompleteKey(u"Name", u"Clark Sutter")),
@@ -858,18 +836,17 @@ TEST_F(AutofillTableTest,
 // Tests that we set the change type to EXPIRE for expired elements and we
 // delete an old entry.
 TEST_F(AutofillTableTest, RemoveExpiredFormElements_Expires_DeleteEntry) {
-  auto kNow = AutofillClock::Now();
-  auto k2YearsOld = kNow - 2 * kAutocompleteRetentionPolicyPeriod;
+  TestAutofillClock clock(AutofillClock::Now());
 
   AutocompleteChangeList changes;
   FormFieldData field;
   field.name = u"Name";
   field.value = u"Superman";
-  EXPECT_TRUE(table_->AddFormFieldValueTime(field, &changes, k2YearsOld));
+  EXPECT_TRUE(table_->AddFormFieldValues({field}, &changes));
+  clock.Advance(2 * kAutocompleteRetentionPolicyPeriod);
   changes.clear();
 
-  EXPECT_TRUE(table_->RemoveExpiredFormElements(&changes));
-
+  EXPECT_TRUE(table_->RemoveExpiredFormElements(changes));
   EXPECT_EQ(AutocompleteChange(AutocompleteChange::EXPIRE,
                                AutocompleteKey(field.name, field.value)),
             changes[0]);
@@ -878,17 +855,17 @@ TEST_F(AutofillTableTest, RemoveExpiredFormElements_Expires_DeleteEntry) {
 // Tests that we don't
 // delete non-expired entries' data from the SQLite table.
 TEST_F(AutofillTableTest, RemoveExpiredFormElements_NotOldEnough) {
-  auto kNow = AutofillClock::Now();
-  auto k2DaysOld = kNow - base::Days(2);
+  TestAutofillClock clock(AutofillClock::Now());
 
   AutocompleteChangeList changes;
   FormFieldData field;
   field.name = u"Name";
   field.value = u"Superman";
-  EXPECT_TRUE(table_->AddFormFieldValueTime(field, &changes, k2DaysOld));
+  EXPECT_TRUE(table_->AddFormFieldValues({field}, &changes));
+  clock.Advance(base::Days(2));
   changes.clear();
 
-  EXPECT_TRUE(table_->RemoveExpiredFormElements(&changes));
+  EXPECT_TRUE(table_->RemoveExpiredFormElements(changes));
   EXPECT_TRUE(changes.empty());
 }
 
@@ -938,6 +915,9 @@ TEST_P(AutofillTableProfileTest, AutofillProfile) {
       u"Street Name between streets House Number Premise APT 10 Floor 2 "
       u"Landmark",
       VerificationStatus::kUserVerified);
+  home_profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_STREET_LOCATION,
+                                                u"Street Name House Number",
+                                                VerificationStatus::kFormatted);
   home_profile.SetRawInfoWithVerificationStatus(
       ADDRESS_HOME_STREET_NAME, u"Street Name", VerificationStatus::kFormatted);
   home_profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_DEPENDENT_LOCALITY,
@@ -1031,9 +1011,11 @@ TEST_F(AutofillTableTest, GetAutofillProfiles) {
 // source.
 TEST_P(AutofillTableProfileTest, RemoveAllAutofillProfiles) {
   ASSERT_TRUE(table_->AddAutofillProfile(
-      AutofillProfile(AutofillProfile::Source::kLocalOrSyncable)));
+      AutofillProfile(AutofillProfile::Source::kLocalOrSyncable,
+                      i18n_model_definition::kLegacyHierarchyCountryCode)));
   ASSERT_TRUE(table_->AddAutofillProfile(
-      AutofillProfile(AutofillProfile::Source::kAccount)));
+      AutofillProfile(AutofillProfile::Source::kAccount,
+                      i18n_model_definition::kLegacyHierarchyCountryCode)));
 
   EXPECT_TRUE(table_->RemoveAllAutofillProfiles(profile_source()));
 
@@ -1158,14 +1140,28 @@ TEST_F(AutofillTableTest, MaskedServerIban) {
   Iban iban_2 = test::GetServerIban3();
   std::vector<Iban> ibans = {iban_0, iban_1, iban_2};
 
-  EXPECT_TRUE(table_->SetServerIbans(ibans));
+  table_->SetServerIbansForTesting(ibans);
 
-  std::vector<std::unique_ptr<Iban>> masked_server_ibans =
-      table_->GetServerIbans();
+  std::vector<std::unique_ptr<Iban>> masked_server_ibans;
+  EXPECT_TRUE(table_->GetServerIbans(masked_server_ibans));
   EXPECT_EQ(3U, masked_server_ibans.size());
   EXPECT_THAT(ibans, UnorderedElementsAre(*masked_server_ibans[0],
                                           *masked_server_ibans[1],
                                           *masked_server_ibans[2]));
+  EXPECT_FALSE(table_->GetServerIbansMetadata().empty());
+}
+
+// Test that masked IBANs can be added and loaded successfully without updating
+// their metadata.
+TEST_F(AutofillTableTest, MaskedServerIbanMetadataNotUpdated) {
+  std::vector<Iban> ibans = {test::GetServerIban()};
+
+  table_->SetServerIbansData(ibans);
+
+  std::vector<std::unique_ptr<Iban>> masked_server_ibans;
+  EXPECT_TRUE(table_->GetServerIbans(masked_server_ibans));
+  EXPECT_EQ(1U, masked_server_ibans.size());
+  EXPECT_THAT(ibans, UnorderedElementsAre(*masked_server_ibans[0]));
 }
 
 TEST_F(AutofillTableTest, CreditCard) {
@@ -1555,7 +1551,7 @@ TEST_F(AutofillTableTest, AddFullServerCreditCard) {
   EXPECT_TRUE(table_->AddFullServerCreditCard(credit_card));
 
   std::vector<std::unique_ptr<CreditCard>> outputs;
-  ASSERT_TRUE(table_->GetServerCreditCards(&outputs));
+  ASSERT_TRUE(table_->GetServerCreditCards(outputs));
   ASSERT_EQ(1U, outputs.size());
   EXPECT_EQ(0, credit_card.Compare(*outputs[0]));
 }
@@ -2002,14 +1998,13 @@ TEST_F(AutofillTableTest, Autocomplete_GetAllAutocompleteEntries_OneResult) {
   AutocompleteChangeList changes;
   std::map<std::string, std::vector<Time>> name_value_times_map;
 
-  time_t start = 0;
+  TestAutofillClock clock;
   std::vector<Time> timestamps1;
   FormFieldData field;
   field.name = u"Name";
   field.value = u"Superman";
-  EXPECT_TRUE(
-      table_->AddFormFieldValueTime(field, &changes, Time::FromTimeT(start)));
-  timestamps1.push_back(Time::FromTimeT(start));
+  EXPECT_TRUE(table_->AddFormFieldValues({field}, &changes));
+  timestamps1.push_back(AutofillClock::Now());
   std::string key1("NameSuperman");
   name_value_times_map.insert(
       std::pair<std::string, std::vector<Time>>(key1, timestamps1));
@@ -2029,28 +2024,26 @@ TEST_F(AutofillTableTest, Autocomplete_GetAllAutocompleteEntries_OneResult) {
 }
 
 TEST_F(AutofillTableTest, Autocomplete_GetAllAutocompleteEntries_TwoDistinct) {
+  TestAutofillClock clock;
   AutocompleteChangeList changes;
   std::map<std::string, std::vector<Time>> name_value_times_map;
-  time_t start = 0;
 
   std::vector<Time> timestamps1;
   FormFieldData field;
   field.name = u"Name";
   field.value = u"Superman";
-  EXPECT_TRUE(
-      table_->AddFormFieldValueTime(field, &changes, Time::FromTimeT(start)));
-  timestamps1.push_back(Time::FromTimeT(start));
+  EXPECT_TRUE(table_->AddFormFieldValues({field}, &changes));
+  timestamps1.push_back(AutofillClock::Now());
   std::string key1("NameSuperman");
   name_value_times_map.insert(
       std::pair<std::string, std::vector<Time>>(key1, timestamps1));
 
-  ++start;
+  clock.SetNow(Time::FromTimeT(1));
   std::vector<Time> timestamps2;
   field.name = u"Name";
   field.value = u"Clark Kent";
-  EXPECT_TRUE(
-      table_->AddFormFieldValueTime(field, &changes, Time::FromTimeT(start)));
-  timestamps2.push_back(Time::FromTimeT(start));
+  EXPECT_TRUE(table_->AddFormFieldValues({field}, &changes));
+  timestamps2.push_back(AutofillClock::Now());
   std::string key2("NameClark Kent");
   name_value_times_map.insert(
       std::pair<std::string, std::vector<Time>>(key2, timestamps2));
@@ -2073,18 +2066,19 @@ TEST_F(AutofillTableTest, Autocomplete_GetAllAutocompleteEntries_TwoDistinct) {
 }
 
 TEST_F(AutofillTableTest, Autocomplete_GetAllAutocompleteEntries_TwoSame) {
+  TestAutofillClock clock;
   AutocompleteChangeList changes;
   std::map<std::string, std::vector<Time>> name_value_times_map;
 
   std::vector<Time> timestamps;
-  time_t start = 0;
-  for (int i = 0; i < 2; ++i, ++start) {
+  for (int i = 0; i < 2; ++i) {
     FormFieldData field;
     field.name = u"Name";
     field.value = u"Superman";
-    EXPECT_TRUE(
-        table_->AddFormFieldValueTime(field, &changes, Time::FromTimeT(start)));
-    timestamps.push_back(Time::FromTimeT(start));
+    base::Time now = Time::FromTimeT(i);
+    clock.SetNow(now);
+    EXPECT_TRUE(table_->AddFormFieldValues({field}, &changes));
+    timestamps.push_back(now);
   }
 
   std::string key("NameSuperman");
@@ -2142,7 +2136,7 @@ TEST_F(AutofillTableTest, SetGetServerCards) {
   test::SetServerCreditCards(table_.get(), inputs);
 
   std::vector<std::unique_ptr<CreditCard>> outputs;
-  ASSERT_TRUE(table_->GetServerCreditCards(&outputs));
+  ASSERT_TRUE(table_->GetServerCreditCards(outputs));
   ASSERT_EQ(inputs.size(), outputs.size());
 
   // Ordering isn't guaranteed, so fix the ordering if it's backwards.
@@ -2200,39 +2194,16 @@ TEST_F(AutofillTableTest, SetGetRemoveServerCardMetadata) {
   EXPECT_TRUE(table_->AddServerCardMetadata(input));
 
   // Make sure it was added correctly.
-  std::map<std::string, AutofillMetadata> outputs;
-  ASSERT_TRUE(table_->GetServerCardsMetadata(&outputs));
+  std::vector<AutofillMetadata> outputs;
+  ASSERT_TRUE(table_->GetServerCardsMetadata(outputs));
   ASSERT_EQ(1U, outputs.size());
-  EXPECT_EQ(input, outputs[input.id]);
+  EXPECT_EQ(input, outputs[0]);
 
   // Remove the metadata from the table.
   EXPECT_TRUE(table_->RemoveServerCardMetadata(input.id));
 
   // Make sure it was removed correctly.
-  ASSERT_TRUE(table_->GetServerCardsMetadata(&outputs));
-  EXPECT_EQ(0U, outputs.size());
-}
-
-TEST_F(AutofillTableTest, SetGetRemoveServerAddressMetadata) {
-  // Create and set the metadata.
-  AutofillMetadata input;
-  input.id = "server id";
-  input.use_count = 50;
-  input.use_date = AutofillClock::Now();
-  input.has_converted = true;
-  table_->AddServerAddressMetadata(input);
-
-  // Make sure it was added correctly.
-  std::map<std::string, AutofillMetadata> outputs;
-  ASSERT_TRUE(table_->GetServerAddressesMetadata(&outputs));
-  ASSERT_EQ(1U, outputs.size());
-  EXPECT_EQ(input, outputs[input.id]);
-
-  // Remove the metadata from the table.
-  EXPECT_TRUE(table_->RemoveServerAddressMetadata(input.id));
-
-  // Make sure it was removed correctly.
-  ASSERT_TRUE(table_->GetServerAddressesMetadata(&outputs));
+  ASSERT_TRUE(table_->GetServerCardsMetadata(outputs));
   EXPECT_EQ(0U, outputs.size());
 }
 
@@ -2243,7 +2214,7 @@ TEST_F(AutofillTableTest, SetGetRemoveServerIbanMetadata) {
   // Set the metadata.
   iban.set_use_count(50);
   iban.set_use_date(AutofillClock::Now());
-  EXPECT_TRUE(table_->AddOrUpdateServerIbanMetadata(iban));
+  EXPECT_TRUE(table_->AddOrUpdateServerIbanMetadata(iban.GetMetadata()));
 
   // Make sure it was added correctly.
   std::vector<AutofillMetadata> outputs = table_->GetServerIbansMetadata();
@@ -2258,37 +2229,6 @@ TEST_F(AutofillTableTest, SetGetRemoveServerIbanMetadata) {
   EXPECT_EQ(0u, outputs.size());
 }
 
-TEST_F(AutofillTableTest, AddUpdateServerAddressMetadata) {
-  // Create and set the metadata.
-  AutofillMetadata input;
-  input.id = "server id";
-  input.use_count = 50;
-  input.use_date = AutofillClock::Now();
-  input.has_converted = true;
-  ASSERT_TRUE(table_->AddServerAddressMetadata(input));
-
-  // Make sure it was added correctly.
-  std::map<std::string, AutofillMetadata> outputs;
-  ASSERT_TRUE(table_->GetServerAddressesMetadata(&outputs));
-  ASSERT_EQ(1U, outputs.size());
-  ASSERT_EQ(input, outputs[input.id]);
-
-  // Update the metadata in the table.
-  input.use_count = 51;
-  EXPECT_TRUE(table_->UpdateServerAddressMetadata(input));
-
-  // Make sure it was updated correctly.
-  ASSERT_TRUE(table_->GetServerAddressesMetadata(&outputs));
-  ASSERT_EQ(1U, outputs.size());
-  EXPECT_EQ(input, outputs[input.id]);
-
-  // Insert a new entry using update - that should also be legal.
-  input.id = "another server id";
-  EXPECT_TRUE(table_->UpdateServerAddressMetadata(input));
-  ASSERT_TRUE(table_->GetServerAddressesMetadata(&outputs));
-  ASSERT_EQ(2U, outputs.size());
-}
-
 TEST_F(AutofillTableTest, AddUpdateServerCardMetadata) {
   // Create and set the metadata.
   AutofillMetadata input;
@@ -2299,57 +2239,25 @@ TEST_F(AutofillTableTest, AddUpdateServerCardMetadata) {
   ASSERT_TRUE(table_->AddServerCardMetadata(input));
 
   // Make sure it was added correctly.
-  std::map<std::string, AutofillMetadata> outputs;
-  ASSERT_TRUE(table_->GetServerCardsMetadata(&outputs));
+  std::vector<AutofillMetadata> outputs;
+  ASSERT_TRUE(table_->GetServerCardsMetadata(outputs));
   ASSERT_EQ(1U, outputs.size());
-  ASSERT_EQ(input, outputs[input.id]);
+  ASSERT_EQ(input, outputs[0]);
 
   // Update the metadata in the table.
   input.use_count = 51;
   EXPECT_TRUE(table_->UpdateServerCardMetadata(input));
 
   // Make sure it was updated correctly.
-  ASSERT_TRUE(table_->GetServerCardsMetadata(&outputs));
+  ASSERT_TRUE(table_->GetServerCardsMetadata(outputs));
   ASSERT_EQ(1U, outputs.size());
-  EXPECT_EQ(input, outputs[input.id]);
+  EXPECT_EQ(input, outputs[0]);
 
   // Insert a new entry using update - that should also be legal.
   input.id = "another server id";
   EXPECT_TRUE(table_->UpdateServerCardMetadata(input));
-  ASSERT_TRUE(table_->GetServerCardsMetadata(&outputs));
+  ASSERT_TRUE(table_->GetServerCardsMetadata(outputs));
   ASSERT_EQ(2U, outputs.size());
-}
-
-TEST_F(AutofillTableTest, UpdateServerAddressMetadataDoesNotChangeData) {
-  AutofillProfile one(AutofillProfile::SERVER_PROFILE, "a123",
-                      AddressCountryCode("ES"));
-  std::vector<AutofillProfile> inputs;
-  inputs.push_back(one);
-  table_->SetServerProfiles(inputs);
-
-  std::vector<std::unique_ptr<AutofillProfile>> outputs;
-  table_->GetServerProfiles(&outputs);
-  ASSERT_EQ(1u, outputs.size());
-  EXPECT_EQ(one.server_id(), outputs[0]->server_id());
-
-  // Update metadata in the profile.
-  ASSERT_NE(outputs[0]->use_count(), 51u);
-  outputs[0]->set_use_count(51);
-
-  AutofillMetadata input_metadata = outputs[0]->GetMetadata();
-  EXPECT_TRUE(table_->UpdateServerAddressMetadata(input_metadata));
-
-  // Make sure it was updated correctly.
-  std::map<std::string, AutofillMetadata> output_metadata;
-  ASSERT_TRUE(table_->GetServerAddressesMetadata(&output_metadata));
-  ASSERT_EQ(1U, output_metadata.size());
-  EXPECT_EQ(input_metadata, output_metadata[input_metadata.id]);
-
-  // Make sure nothing else got updated.
-  std::vector<std::unique_ptr<AutofillProfile>> outputs2;
-  table_->GetServerProfiles(&outputs2);
-  ASSERT_EQ(1u, outputs2.size());
-  EXPECT_TRUE(outputs[0]->EqualsForLegacySyncPurposes(*outputs2[0]));
 }
 
 TEST_F(AutofillTableTest, UpdateServerCardMetadataDoesNotChangeData) {
@@ -2362,7 +2270,7 @@ TEST_F(AutofillTableTest, UpdateServerCardMetadataDoesNotChangeData) {
   test::SetServerCreditCards(table_.get(), inputs);
 
   std::vector<std::unique_ptr<CreditCard>> outputs;
-  ASSERT_TRUE(table_->GetServerCreditCards(&outputs));
+  ASSERT_TRUE(table_->GetServerCreditCards(outputs));
   ASSERT_EQ(1u, outputs.size());
   EXPECT_EQ(inputs[0].server_id(), outputs[0]->server_id());
 
@@ -2374,31 +2282,32 @@ TEST_F(AutofillTableTest, UpdateServerCardMetadataDoesNotChangeData) {
   EXPECT_TRUE(table_->UpdateServerCardMetadata(input_metadata));
 
   // Make sure it was updated correctly.
-  std::map<std::string, AutofillMetadata> output_metadata;
-  ASSERT_TRUE(table_->GetServerCardsMetadata(&output_metadata));
+  std::vector<AutofillMetadata> output_metadata;
+  ASSERT_TRUE(table_->GetServerCardsMetadata(output_metadata));
   ASSERT_EQ(1U, output_metadata.size());
-  EXPECT_EQ(input_metadata, output_metadata[input_metadata.id]);
+  EXPECT_EQ(input_metadata, output_metadata[0]);
 
   // Make sure nothing else got updated.
   std::vector<std::unique_ptr<CreditCard>> outputs2;
-  table_->GetServerCreditCards(&outputs2);
+  table_->GetServerCreditCards(outputs2);
   ASSERT_EQ(1u, outputs2.size());
   EXPECT_EQ(0, outputs[0]->Compare(*outputs2[0]));
 }
 
 // Test that updating masked IBAN metadata won't affect IBAN data.
-TEST_F(AutofillTableTest, UpdateServerIbanMetadataDoesNotChangeData) {
+TEST_F(AutofillTableTest, UpdateServerIbanMetadata) {
   std::vector<Iban> inputs = {test::GetServerIban()};
-  table_->SetServerIbans(inputs);
+  table_->SetServerIbansForTesting(inputs);
 
-  std::vector<std::unique_ptr<Iban>> outputs = table_->GetServerIbans();
+  std::vector<std::unique_ptr<Iban>> outputs;
+  EXPECT_TRUE(table_->GetServerIbans(outputs));
   ASSERT_EQ(1U, outputs.size());
   EXPECT_EQ(inputs[0].instrument_id(), outputs[0]->instrument_id());
 
   // Update metadata in the IBAN.
   outputs[0]->set_use_count(outputs[0]->use_count() + 1);
 
-  EXPECT_TRUE(table_->AddOrUpdateServerIbanMetadata(*outputs[0]));
+  EXPECT_TRUE(table_->AddOrUpdateServerIbanMetadata(outputs[0]->GetMetadata()));
 
   // Make sure it was updated correctly.
   std::vector<AutofillMetadata> output_metadata =
@@ -2407,7 +2316,8 @@ TEST_F(AutofillTableTest, UpdateServerIbanMetadataDoesNotChangeData) {
   EXPECT_EQ(outputs[0]->GetMetadata(), output_metadata[0]);
 
   // Make sure nothing else got updated.
-  std::vector<std::unique_ptr<Iban>> outputs2 = table_->GetServerIbans();
+  std::vector<std::unique_ptr<Iban>> outputs2;
+  EXPECT_TRUE(table_->GetServerIbans(outputs2));
   ASSERT_EQ(1U, outputs2.size());
   EXPECT_EQ(0, outputs[0]->Compare(*outputs2[0]));
 }
@@ -2422,16 +2332,16 @@ TEST_F(AutofillTableTest, RemoveWrongServerCardMetadata) {
   table_->AddServerCardMetadata(input);
 
   // Make sure it was added correctly.
-  std::map<std::string, AutofillMetadata> outputs;
-  ASSERT_TRUE(table_->GetServerCardsMetadata(&outputs));
+  std::vector<AutofillMetadata> outputs;
+  ASSERT_TRUE(table_->GetServerCardsMetadata(outputs));
   ASSERT_EQ(1U, outputs.size());
-  EXPECT_EQ(input, outputs[input.id]);
+  EXPECT_EQ(input, outputs[0]);
 
   // Try removing some non-existent metadata.
   EXPECT_FALSE(table_->RemoveServerCardMetadata("a_wrong_id"));
 
   // Make sure the metadata was not removed.
-  ASSERT_TRUE(table_->GetServerCardsMetadata(&outputs));
+  ASSERT_TRUE(table_->GetServerCardsMetadata(outputs));
   ASSERT_EQ(1U, outputs.size());
 }
 
@@ -2459,7 +2369,7 @@ TEST_F(AutofillTableTest, SetServerCardsData) {
 
   // Make sure the card was added correctly.
   std::vector<std::unique_ptr<CreditCard>> outputs;
-  ASSERT_TRUE(table_->GetServerCreditCards(&outputs));
+  ASSERT_TRUE(table_->GetServerCreditCards(outputs));
   ASSERT_EQ(inputs.size(), outputs.size());
 
   // GUIDs for server cards are dynamically generated so will be different
@@ -2483,24 +2393,24 @@ TEST_F(AutofillTableTest, SetServerCardsData) {
   EXPECT_EQ(u"Fake description", outputs[0]->product_description());
 
   // Make sure no metadata was added.
-  std::map<std::string, AutofillMetadata> metadata_map;
-  ASSERT_TRUE(table_->GetServerCardsMetadata(&metadata_map));
-  ASSERT_EQ(0U, metadata_map.size());
+  std::vector<AutofillMetadata> metadata;
+  ASSERT_TRUE(table_->GetServerCardsMetadata(metadata));
+  ASSERT_EQ(0U, metadata.size());
 
   // Set a different card.
   inputs[0] = CreditCard(CreditCard::RecordType::kMaskedServerCard, "card2");
   table_->SetServerCardsData(inputs);
 
   // The original one should have been replaced.
-  ASSERT_TRUE(table_->GetServerCreditCards(&outputs));
+  ASSERT_TRUE(table_->GetServerCreditCards(outputs));
   ASSERT_EQ(1U, outputs.size());
   EXPECT_EQ("card2", outputs[0]->server_id());
   EXPECT_EQ(CreditCard::Issuer::kIssuerUnknown, outputs[0]->card_issuer());
   EXPECT_EQ("", outputs[0]->issuer_id());
 
   // Make sure no metadata was added.
-  ASSERT_TRUE(table_->GetServerCardsMetadata(&metadata_map));
-  ASSERT_EQ(0U, metadata_map.size());
+  ASSERT_TRUE(table_->GetServerCardsMetadata(metadata));
+  ASSERT_EQ(0U, metadata.size());
 }
 
 // Tests that adding server cards data does not delete the existing metadata.
@@ -2519,92 +2429,9 @@ TEST_F(AutofillTableTest, SetServerCardsData_ExistingMetadata) {
   table_->SetServerCardsData(inputs);
 
   // Make sure the metadata is still intact.
-  std::map<std::string, AutofillMetadata> outputs;
-  ASSERT_TRUE(table_->GetServerCardsMetadata(&outputs));
-  ASSERT_EQ(1U, outputs.size());
-  EXPECT_EQ(input, outputs[input.id]);
-}
-
-TEST_F(AutofillTableTest, SetServerAddressesData) {
-  AutofillProfile one(AutofillProfile::SERVER_PROFILE, "a123",
-                      AddressCountryCode("ES"));
-  std::vector<AutofillProfile> inputs;
-  inputs.push_back(one);
-  table_->SetServerAddressesData(inputs);
-
-  // Make sure the address was added correctly.
-  std::vector<std::unique_ptr<AutofillProfile>> outputs;
-  table_->GetServerProfiles(&outputs);
-  ASSERT_EQ(1u, outputs.size());
-  EXPECT_EQ(one.server_id(), outputs[0]->server_id());
-
-  outputs.clear();
-
-  // Make sure no metadata was added.
-  std::map<std::string, AutofillMetadata> metadata_map;
-  ASSERT_TRUE(table_->GetServerAddressesMetadata(&metadata_map));
-  ASSERT_EQ(0U, metadata_map.size());
-
-  // Set a different profile.
-  AutofillProfile two(AutofillProfile::SERVER_PROFILE, "b456");
-  inputs[0] = two;
-  table_->SetServerAddressesData(inputs);
-
-  // The original one should have been replaced.
-  table_->GetServerProfiles(&outputs);
-  ASSERT_EQ(1u, outputs.size());
-  EXPECT_EQ(two.server_id(), outputs[0]->server_id());
-
-  // Make sure no metadata was added.
-  ASSERT_TRUE(table_->GetServerAddressesMetadata(&metadata_map));
-  ASSERT_EQ(0U, metadata_map.size());
-}
-
-// Tests that adding server addresses data does not delete the existing
-// metadata.
-TEST_F(AutofillTableTest, SetServerAddressesData_ExistingMetadata) {
-  // Create and set some metadata.
-  AutofillMetadata input;
-  input.id = "server id";
-  input.use_count = 50;
-  input.use_date = AutofillClock::Now();
-  input.has_converted = true;
-  table_->AddServerAddressMetadata(input);
-
-  // Set an address data.
-  std::vector<AutofillProfile> inputs;
-  inputs.push_back(
-      AutofillProfile(AutofillProfile::SERVER_PROFILE, "server id"));
-  table_->SetServerAddressesData(inputs);
-
-  // Make sure the metadata is still intact.
-  std::map<std::string, AutofillMetadata> outputs;
-  ASSERT_TRUE(table_->GetServerAddressesMetadata(&outputs));
-  ASSERT_EQ(1U, outputs.size());
-  EXPECT_EQ(input, outputs[input.id]);
-}
-
-TEST_F(AutofillTableTest, RemoveWrongServerAddressMetadata) {
-  // Crete and set some metadata.
-  AutofillMetadata input;
-  input.id = "server id";
-  input.use_count = 50;
-  input.use_date = AutofillClock::Now();
-  input.has_converted = true;
-  table_->AddServerAddressMetadata(input);
-
-  // Make sure it was added correctly.
-  std::map<std::string, AutofillMetadata> outputs;
-  ASSERT_TRUE(table_->GetServerAddressesMetadata(&outputs));
-  ASSERT_EQ(1U, outputs.size());
-  EXPECT_EQ(input, outputs[input.id]);
-
-  // Try removing some non-existent metadata.
-  EXPECT_FALSE(table_->RemoveServerAddressMetadata("a_wrong_id"));
-
-  // Make sure the metadata was not removed.
-  ASSERT_TRUE(table_->GetServerAddressesMetadata(&outputs));
-  ASSERT_EQ(1U, outputs.size());
+  std::vector<AutofillMetadata> outputs;
+  ASSERT_TRUE(table_->GetServerCardsMetadata(outputs));
+  EXPECT_THAT(outputs, ElementsAre(input));
 }
 
 TEST_F(AutofillTableTest, MaskUnmaskServerCards) {
@@ -2623,7 +2450,7 @@ TEST_F(AutofillTableTest, MaskUnmaskServerCards) {
   ASSERT_TRUE(table_->UnmaskServerCreditCard(inputs[0], full_number));
 
   std::vector<std::unique_ptr<CreditCard>> outputs;
-  table_->GetServerCreditCards(&outputs);
+  table_->GetServerCreditCards(outputs);
   ASSERT_EQ(1u, outputs.size());
   EXPECT_TRUE(CreditCard::RecordType::kFullServerCard ==
               outputs[0]->record_type());
@@ -2633,7 +2460,7 @@ TEST_F(AutofillTableTest, MaskUnmaskServerCards) {
 
   // Re-mask the number, we should only get the last 4 digits out.
   ASSERT_TRUE(table_->MaskServerCreditCard(inputs[0].server_id()));
-  table_->GetServerCreditCards(&outputs);
+  table_->GetServerCreditCards(outputs);
   ASSERT_EQ(1u, outputs.size());
   EXPECT_TRUE(CreditCard::RecordType::kMaskedServerCard ==
               outputs[0]->record_type());
@@ -2663,7 +2490,7 @@ TEST_F(AutofillTableTest, SetServerCardModify) {
 
   // The card should now be unmasked.
   std::vector<std::unique_ptr<CreditCard>> outputs;
-  table_->GetServerCreditCards(&outputs);
+  table_->GetServerCreditCards(outputs);
   ASSERT_EQ(1u, outputs.size());
   EXPECT_TRUE(outputs[0]->record_type() ==
               CreditCard::RecordType::kFullServerCard);
@@ -2676,7 +2503,7 @@ TEST_F(AutofillTableTest, SetServerCardModify) {
   test::SetServerCreditCards(table_.get(), inputs);
 
   // The card should stay unmasked.
-  table_->GetServerCreditCards(&outputs);
+  table_->GetServerCreditCards(outputs);
   ASSERT_EQ(1u, outputs.size());
   EXPECT_TRUE(outputs[0]->record_type() ==
               CreditCard::RecordType::kFullServerCard);
@@ -2695,7 +2522,7 @@ TEST_F(AutofillTableTest, SetServerCardModify) {
   test::SetServerCreditCards(table_.get(), inputs);
 
   // We should have only the new card, the other one should have been deleted.
-  table_->GetServerCreditCards(&outputs);
+  table_->GetServerCreditCards(outputs);
   ASSERT_EQ(1u, outputs.size());
   EXPECT_TRUE(outputs[0]->record_type() ==
               CreditCard::RecordType::kMaskedServerCard);
@@ -2708,7 +2535,7 @@ TEST_F(AutofillTableTest, SetServerCardModify) {
   // that the unmasked data was really deleted).
   inputs[0] = masked_card;
   test::SetServerCreditCards(table_.get(), inputs);
-  table_->GetServerCreditCards(&outputs);
+  table_->GetServerCreditCards(outputs);
   ASSERT_EQ(1u, outputs.size());
   EXPECT_TRUE(outputs[0]->record_type() ==
               CreditCard::RecordType::kMaskedServerCard);
@@ -2733,7 +2560,7 @@ TEST_F(AutofillTableTest, SetServerCardUpdateUsageStatsAndBillingAddress) {
   test::SetServerCreditCards(table_.get(), inputs);
 
   std::vector<std::unique_ptr<CreditCard>> outputs;
-  table_->GetServerCreditCards(&outputs);
+  table_->GetServerCreditCards(outputs);
   ASSERT_EQ(1u, outputs.size());
   EXPECT_EQ(masked_card.server_id(), outputs[0]->server_id());
   EXPECT_EQ(1U, outputs[0]->use_count());
@@ -2748,7 +2575,7 @@ TEST_F(AutofillTableTest, SetServerCardUpdateUsageStatsAndBillingAddress) {
   inputs.back().set_use_date(base::Time());
   inputs.back().set_billing_address_id("2");
   table_->UpdateServerCardMetadata(inputs.back());
-  table_->GetServerCreditCards(&outputs);
+  table_->GetServerCreditCards(outputs);
   ASSERT_EQ(1u, outputs.size());
   EXPECT_EQ(masked_card.server_id(), outputs[0]->server_id());
   EXPECT_EQ(4U, outputs[0]->use_count());
@@ -2759,7 +2586,7 @@ TEST_F(AutofillTableTest, SetServerCardUpdateUsageStatsAndBillingAddress) {
 
   // Setting the cards again shouldn't delete the usage stats.
   table_->SetServerCreditCards(inputs);
-  table_->GetServerCreditCards(&outputs);
+  table_->GetServerCreditCards(outputs);
   ASSERT_EQ(1u, outputs.size());
   EXPECT_EQ(masked_card.server_id(), outputs[0]->server_id());
   EXPECT_EQ(4U, outputs[0]->use_count());
@@ -2776,82 +2603,13 @@ TEST_F(AutofillTableTest, SetServerCardUpdateUsageStatsAndBillingAddress) {
   // Back to the original card list.
   inputs.back() = masked_card;
   table_->SetServerCreditCards(inputs);
-  table_->GetServerCreditCards(&outputs);
+  table_->GetServerCreditCards(outputs);
   ASSERT_EQ(1u, outputs.size());
   EXPECT_EQ(masked_card.server_id(), outputs[0]->server_id());
   EXPECT_EQ(1U, outputs[0]->use_count());
   EXPECT_NE(base::Time(), outputs[0]->use_date());
   EXPECT_EQ(base::Time(), outputs[0]->modification_date());
   EXPECT_EQ("1", outputs[0]->billing_address_id());
-  outputs.clear();
-}
-
-TEST_F(AutofillTableTest, SetServerProfile) {
-  AutofillProfile one(AutofillProfile::SERVER_PROFILE, "a123",
-                      AddressCountryCode("ES"));
-  std::vector<AutofillProfile> inputs;
-  inputs.push_back(one);
-  table_->SetServerProfiles(inputs);
-
-  std::vector<std::unique_ptr<AutofillProfile>> outputs;
-  table_->GetServerProfiles(&outputs);
-  ASSERT_EQ(1u, outputs.size());
-  EXPECT_EQ(one.server_id(), outputs[0]->server_id());
-
-  outputs.clear();
-
-  // Set a different profile.
-  AutofillProfile two(AutofillProfile::SERVER_PROFILE, "b456",
-                      AddressCountryCode("ES"));
-  inputs[0] = two;
-  table_->SetServerProfiles(inputs);
-
-  // The original one should have been replaced.
-  table_->GetServerProfiles(&outputs);
-  ASSERT_EQ(1u, outputs.size());
-  EXPECT_EQ(two.server_id(), outputs[0]->server_id());
-
-  outputs.clear();
-}
-
-TEST_F(AutofillTableTest, SetServerProfileUpdateUsageStats) {
-  AutofillProfile one(AutofillProfile::SERVER_PROFILE, "a123",
-                      AddressCountryCode("ES"));
-  std::vector<AutofillProfile> inputs;
-  inputs.push_back(one);
-  table_->SetServerProfiles(inputs);
-
-  std::vector<std::unique_ptr<AutofillProfile>> outputs;
-  table_->GetServerProfiles(&outputs);
-  ASSERT_EQ(1u, outputs.size());
-  EXPECT_EQ(one.server_id(), outputs[0]->server_id());
-  EXPECT_EQ(1U, outputs[0]->use_count());
-  EXPECT_NE(base::Time(), outputs[0]->use_date());
-  // We don't track modification date for server profiles. It should always be
-  // base::Time().
-  EXPECT_EQ(base::Time(), outputs[0]->modification_date());
-  outputs.clear();
-
-  // Update the usage stats; make sure they're reflected in GetServerProfiles.
-  inputs.back().set_use_count(4U);
-  inputs.back().set_use_date(AutofillClock::Now());
-  table_->UpdateServerAddressMetadata(inputs.back());
-  table_->GetServerProfiles(&outputs);
-  ASSERT_EQ(1u, outputs.size());
-  EXPECT_EQ(one.server_id(), outputs[0]->server_id());
-  EXPECT_EQ(4U, outputs[0]->use_count());
-  EXPECT_NE(base::Time(), outputs[0]->use_date());
-  EXPECT_EQ(base::Time(), outputs[0]->modification_date());
-  outputs.clear();
-
-  // Setting the profiles again shouldn't delete the usage stats.
-  table_->SetServerProfiles(inputs);
-  table_->GetServerProfiles(&outputs);
-  ASSERT_EQ(1u, outputs.size());
-  EXPECT_EQ(one.server_id(), outputs[0]->server_id());
-  EXPECT_EQ(4U, outputs[0]->use_count());
-  EXPECT_NE(base::Time(), outputs[0]->use_date());
-  EXPECT_EQ(base::Time(), outputs[0]->modification_date());
   outputs.clear();
 }
 
@@ -2888,7 +2646,7 @@ TEST_F(AutofillTableTest, DeleteUnmaskedCard) {
 
   // This should not affect the unmasked card (should be unmasked).
   std::vector<std::unique_ptr<CreditCard>> outputs;
-  ASSERT_TRUE(table_->GetServerCreditCards(&outputs));
+  ASSERT_TRUE(table_->GetServerCreditCards(outputs));
   ASSERT_EQ(1u, outputs.size());
   EXPECT_EQ(CreditCard::RecordType::kFullServerCard, outputs[0]->record_type());
   EXPECT_EQ(full_number, outputs[0]->GetRawInfo(CREDIT_CARD_NUMBER));
@@ -2902,7 +2660,7 @@ TEST_F(AutofillTableTest, DeleteUnmaskedCard) {
       now - base::Days(1), now, &profiles, &credit_cards));
 
   // This should re-mask.
-  ASSERT_TRUE(table_->GetServerCreditCards(&outputs));
+  ASSERT_TRUE(table_->GetServerCreditCards(outputs));
   ASSERT_EQ(1u, outputs.size());
   EXPECT_EQ(CreditCard::RecordType::kMaskedServerCard,
             outputs[0]->record_type());
@@ -2911,7 +2669,7 @@ TEST_F(AutofillTableTest, DeleteUnmaskedCard) {
 
   // Unmask again, the card should be back.
   table_->UnmaskServerCreditCard(masked_card, full_number);
-  ASSERT_TRUE(table_->GetServerCreditCards(&outputs));
+  ASSERT_TRUE(table_->GetServerCreditCards(outputs));
   ASSERT_EQ(1u, outputs.size());
   EXPECT_EQ(CreditCard::RecordType::kFullServerCard, outputs[0]->record_type());
   EXPECT_EQ(full_number, outputs[0]->GetRawInfo(CREDIT_CARD_NUMBER));
@@ -2922,7 +2680,7 @@ TEST_F(AutofillTableTest, DeleteUnmaskedCard) {
       base::Time(), base::Time::Max(), &profiles, &credit_cards));
 
   // Should be masked again.
-  ASSERT_TRUE(table_->GetServerCreditCards(&outputs));
+  ASSERT_TRUE(table_->GetServerCreditCards(outputs));
   ASSERT_EQ(1u, outputs.size());
   EXPECT_EQ(CreditCard::RecordType::kMaskedServerCard,
             outputs[0]->record_type());
@@ -2936,14 +2694,14 @@ TEST_F(AutofillTableTest, SetGetPaymentsCustomerData) {
   table_->SetPaymentsCustomerData(&input);
 
   std::unique_ptr<PaymentsCustomerData> output;
-  ASSERT_TRUE(table_->GetPaymentsCustomerData(&output));
+  ASSERT_TRUE(table_->GetPaymentsCustomerData(output));
   EXPECT_EQ(input, *output);
 }
 
 // We don't set anything in the table. Test that we don't crash.
 TEST_F(AutofillTableTest, GetPaymentsCustomerData_NoData) {
   std::unique_ptr<PaymentsCustomerData> output;
-  ASSERT_TRUE(table_->GetPaymentsCustomerData(&output));
+  ASSERT_TRUE(table_->GetPaymentsCustomerData(output));
   EXPECT_FALSE(output);
 }
 
@@ -2959,7 +2717,7 @@ TEST_F(AutofillTableTest, SetGetPaymentsCustomerData_MultipleSet) {
   table_->SetPaymentsCustomerData(&input3);
 
   std::unique_ptr<PaymentsCustomerData> output;
-  ASSERT_TRUE(table_->GetPaymentsCustomerData(&output));
+  ASSERT_TRUE(table_->GetPaymentsCustomerData(output));
   EXPECT_EQ(input3, *output);
 }
 
@@ -2970,7 +2728,7 @@ TEST_F(AutofillTableTest, SetGetCreditCardCloudData_OneTimeSet) {
   table_->SetCreditCardCloudTokenData(inputs);
 
   std::vector<std::unique_ptr<CreditCardCloudTokenData>> outputs;
-  ASSERT_TRUE(table_->GetCreditCardCloudTokenData(&outputs));
+  ASSERT_TRUE(table_->GetCreditCardCloudTokenData(outputs));
   EXPECT_EQ(outputs.size(), inputs.size());
   EXPECT_EQ(0, outputs[0]->Compare(test::GetCreditCardCloudTokenData1()));
   EXPECT_EQ(0, outputs[1]->Compare(test::GetCreditCardCloudTokenData2()));
@@ -2988,14 +2746,14 @@ TEST_F(AutofillTableTest, SetGetCreditCardCloudData_MultipleSet) {
   table_->SetCreditCardCloudTokenData(inputs);
 
   std::vector<std::unique_ptr<CreditCardCloudTokenData>> outputs;
-  ASSERT_TRUE(table_->GetCreditCardCloudTokenData(&outputs));
+  ASSERT_TRUE(table_->GetCreditCardCloudTokenData(outputs));
   EXPECT_EQ(1u, outputs.size());
   EXPECT_EQ(0, outputs[0]->Compare(test::GetCreditCardCloudTokenData2()));
 }
 
 TEST_F(AutofillTableTest, GetCreditCardCloudData_NoData) {
   std::vector<std::unique_ptr<CreditCardCloudTokenData>> output;
-  ASSERT_TRUE(table_->GetCreditCardCloudTokenData(&output));
+  ASSERT_TRUE(table_->GetCreditCardCloudTokenData(output));
   EXPECT_TRUE(output.empty());
 }
 
@@ -3335,7 +3093,197 @@ TEST_F(AutofillTableTest, DontCrashWhenAddingValueToPoisonedDB) {
   FormFieldData field;
   field.name = u"Name";
   field.value = u"Superman";
-  EXPECT_FALSE(table_->AddFormFieldValue(field, &changes));
+  EXPECT_FALSE(table_->AddFormFieldValues({field}, &changes));
+}
+
+TEST_F(AutofillTableTest, AddBankAccount) {
+  BankAccount bank_account_to_store_1 = test::CreatePixBankAccount(100);
+  BankAccount bank_account_to_store_2 = test::CreatePixBankAccount(200);
+  bank_account_to_store_2.AddPaymentRail(
+      PaymentInstrument::PaymentRail::kUnknown);
+  bank_account_to_store_1.AddToDatabase(table_.get());
+  bank_account_to_store_2.AddToDatabase(table_.get());
+
+  // Verify bank account 1 is correctly retrieved.
+  std::unique_ptr<PaymentInstrument> payment_instrument_1 =
+      table_->GetPaymentInstrument(
+          bank_account_to_store_1.instrument_id(),
+          PaymentInstrument::InstrumentType::kBankAccount);
+  BankAccount* bank_account_from_db_1(
+      static_cast<BankAccount*>(payment_instrument_1.get()));
+
+  ASSERT_TRUE(bank_account_from_db_1);
+  EXPECT_EQ(bank_account_to_store_1, *bank_account_from_db_1);
+  EXPECT_TRUE(bank_account_from_db_1->IsSupported(
+      PaymentInstrument::PaymentRail::kPix));
+
+  // Verify bank account 2 is correctly retrieved.
+  std::unique_ptr<PaymentInstrument> payment_instrument_2 =
+      table_->GetPaymentInstrument(
+          bank_account_to_store_2.instrument_id(),
+          PaymentInstrument::InstrumentType::kBankAccount);
+  BankAccount* bank_account_from_db_2(
+      static_cast<BankAccount*>(payment_instrument_2.get()));
+
+  ASSERT_TRUE(bank_account_from_db_2);
+  EXPECT_EQ(bank_account_to_store_2, *bank_account_from_db_2);
+  EXPECT_TRUE(bank_account_from_db_2->IsSupported(
+      PaymentInstrument::PaymentRail::kPix));
+  EXPECT_TRUE(bank_account_from_db_2->IsSupported(
+      PaymentInstrument::PaymentRail::kUnknown));
+}
+
+TEST_F(AutofillTableTest, UpdateBankAccount) {
+  BankAccount bank_account_to_store = test::CreatePixBankAccount(100);
+  ASSERT_TRUE(bank_account_to_store.AddToDatabase(table_.get()));
+
+  BankAccount updated_bank_account_to_store(
+      100, u"updated_nickname", GURL("http://www.updated-example.com"),
+      u"updated_bank_name", u"updated_account_number_suffix",
+      BankAccount::AccountType::kSalary);
+  updated_bank_account_to_store.AddPaymentRail(
+      PaymentInstrument::PaymentRail::kPix);
+  updated_bank_account_to_store.AddPaymentRail(
+      PaymentInstrument::PaymentRail::kUnknown);
+  ASSERT_TRUE(updated_bank_account_to_store.UpdateInDatabase(table_.get()));
+
+  std::unique_ptr<PaymentInstrument> payment_instrument =
+      table_->GetPaymentInstrument(
+          bank_account_to_store.instrument_id(),
+          PaymentInstrument::InstrumentType::kBankAccount);
+  BankAccount* bank_account_from_db(
+      static_cast<BankAccount*>(payment_instrument.get()));
+
+  ASSERT_TRUE(bank_account_from_db);
+  EXPECT_EQ(updated_bank_account_to_store, *bank_account_from_db);
+  // Verify existing payment rail is still supported.
+  EXPECT_TRUE(
+      bank_account_from_db->IsSupported(PaymentInstrument::PaymentRail::kPix));
+  // Verify updated payment rail is supported.
+  EXPECT_TRUE(bank_account_from_db->IsSupported(
+      PaymentInstrument::PaymentRail::kUnknown));
+}
+
+TEST_F(AutofillTableTest, UpdateBankAccount_RemoveSupportedRail) {
+  // Add 2 supported payment rails.
+  BankAccount bank_account_to_store = test::CreatePixBankAccount(100);
+  bank_account_to_store.AddPaymentRail(
+      PaymentInstrument::PaymentRail::kUnknown);
+  ASSERT_TRUE(bank_account_to_store.AddToDatabase(table_.get()));
+
+  BankAccount updated_bank_account_to_store(
+      100, bank_account_to_store.nickname(),
+      bank_account_to_store.display_icon_url(),
+      bank_account_to_store.bank_name(),
+      bank_account_to_store.account_number_suffix(),
+      bank_account_to_store.account_type());
+  // Add only 1 supported payment rail.
+  updated_bank_account_to_store.AddPaymentRail(
+      PaymentInstrument::PaymentRail::kUnknown);
+
+  ASSERT_TRUE(updated_bank_account_to_store.UpdateInDatabase(table_.get()));
+
+  std::unique_ptr<PaymentInstrument> payment_instrument =
+      table_->GetPaymentInstrument(
+          bank_account_to_store.instrument_id(),
+          PaymentInstrument::InstrumentType::kBankAccount);
+  BankAccount* bank_account_from_db(
+      static_cast<BankAccount*>(payment_instrument.get()));
+
+  ASSERT_TRUE(bank_account_from_db);
+  EXPECT_EQ(updated_bank_account_to_store, *bank_account_from_db);
+  // Verify existing payment rail is no longer supported.
+  EXPECT_FALSE(
+      bank_account_from_db->IsSupported(PaymentInstrument::PaymentRail::kPix));
+  // Verify updated payment rail is supported.
+  EXPECT_TRUE(bank_account_from_db->IsSupported(
+      PaymentInstrument::PaymentRail::kUnknown));
+}
+
+TEST_F(AutofillTableTest, RemoveBankAccount) {
+  BankAccount bank_account_to_store = test::CreatePixBankAccount(100);
+  bank_account_to_store.AddPaymentRail(
+      PaymentInstrument::PaymentRail::kUnknown);
+  ASSERT_TRUE(bank_account_to_store.AddToDatabase(table_.get()));
+
+  // Remove bank account from db.
+  ASSERT_TRUE(bank_account_to_store.DeleteFromDatabase(table_.get()));
+
+  // Verify row is deleted from payment_instruments table.
+  sql::Statement payment_instruments_select(
+      db_->GetSQLConnection()->GetUniqueStatement(
+          "SELECT COUNT(*) "
+          "FROM payment_instruments WHERE instrument_id = ? AND "
+          "instrument_type = ?"));
+  payment_instruments_select.BindInt64(0,
+                                       bank_account_to_store.instrument_id());
+  payment_instruments_select.BindInt64(
+      1, static_cast<int>(bank_account_to_store.GetInstrumentType()));
+
+  EXPECT_TRUE(payment_instruments_select.Step());
+  EXPECT_EQ(0, payment_instruments_select.ColumnInt(0));
+
+  // Verify row is deleted from payment_instrument_supported_rails table.
+  sql::Statement payment_instrument_supported_rails_select(
+      db_->GetSQLConnection()->GetUniqueStatement(
+          "SELECT COUNT(*) "
+          "FROM payment_instrument_supported_rails WHERE instrument_id = ? AND "
+          "instrument_type = ?"));
+  payment_instrument_supported_rails_select.BindInt64(
+      0, bank_account_to_store.instrument_id());
+  payment_instrument_supported_rails_select.BindInt64(
+      1, static_cast<int>(bank_account_to_store.GetInstrumentType()));
+
+  EXPECT_TRUE(payment_instrument_supported_rails_select.Step());
+  EXPECT_EQ(0, payment_instrument_supported_rails_select.ColumnInt(0));
+
+  // Verify row is deleted from bank_accounts table.
+  sql::Statement bank_accounts_select(
+      db_->GetSQLConnection()->GetUniqueStatement(
+          "SELECT COUNT(*) "
+          "FROM bank_accounts WHERE instrument_id = ?"));
+  bank_accounts_select.BindInt64(0, bank_account_to_store.instrument_id());
+  EXPECT_TRUE(bank_accounts_select.Step());
+  EXPECT_EQ(0, bank_accounts_select.ColumnInt(0));
+}
+
+TEST_F(AutofillTableTest, GetPaymentInstrument) {
+  sql::Statement payment_instruments_insert(
+      db_->GetSQLConnection()->GetUniqueStatement(
+          "INSERT INTO payment_instruments (instrument_id, instrument_type, "
+          "nickname, display_icon_url) VALUES(100, 1, 'nickname', "
+          "'http://display-icon-url.com')"));
+  sql::Statement payment_instrument_supported_rails_insert(
+      db_->GetSQLConnection()->GetUniqueStatement(
+          "INSERT INTO payment_instrument_supported_rails (instrument_id, "
+          "instrument_type, payment_rail)VALUES(100, 1, 1)"));
+  sql::Statement bank_accounts_insert(
+      db_->GetSQLConnection()->GetUniqueStatement(
+          "INSERT INTO bank_accounts (instrument_id, bank_name, "
+          "account_number_suffix, account_type) VALUES(100, 'bank_name', "
+          "'account_number_suffix', 1)"));
+  EXPECT_TRUE(payment_instruments_insert.Run());
+  EXPECT_TRUE(payment_instrument_supported_rails_insert.Run());
+  EXPECT_TRUE(bank_accounts_insert.Run());
+
+  std::unique_ptr<PaymentInstrument> payment_instrument =
+      table_->GetPaymentInstrument(
+          100, PaymentInstrument::InstrumentType::kBankAccount);
+  BankAccount* bank_account_from_db(
+      static_cast<BankAccount*>(payment_instrument.get()));
+
+  ASSERT_TRUE(bank_account_from_db);
+  EXPECT_EQ(100, bank_account_from_db->instrument_id());
+  EXPECT_EQ(u"nickname", bank_account_from_db->nickname());
+  EXPECT_EQ(static_cast<BankAccount::AccountType>(1),
+            bank_account_from_db->account_type());
+  EXPECT_EQ(u"account_number_suffix",
+            bank_account_from_db->account_number_suffix());
+  EXPECT_EQ(GURL("http://display-icon-url.com"),
+            bank_account_from_db->display_icon_url());
+  EXPECT_EQ(u"bank_name", bank_account_from_db->bank_name());
+  EXPECT_TRUE(
+      bank_account_from_db->IsSupported(PaymentInstrument::PaymentRail::kPix));
 }
 
 }  // namespace autofill

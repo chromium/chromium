@@ -1,0 +1,46 @@
+<!--
+@AURALINUX-ALLOW:posinset*
+@AURALINUX-ALLOW:setsize*
+@BLINK-ALLOW:setSize*
+@BLINK-ALLOW:posInSet*
+@MAC-ALLOW:AXARIASetSize
+@MAC-ALLOW:AXARIAPosInSet
+@WIN-ALLOW:setsize*
+@WIN-ALLOW:posinset*
+@WAIT-FOR:done
+-->
+<!--
+TODO(https://crbug.com/1465626): if we also allowed this:
+@BLINK-ALLOW:radioGroupIds=*
+then we would get flaky test failures from the radioGroupIds not being
+invalidated correctly.  If we eventually fix this, we should add this
+as allowed.
+-->
+<div>
+  <input type="radio" name="dogs" value="airedale">Airedale
+  <div lang="en-CA">
+    <input type="radio" name="dogs" value="beagle">Beagle
+  </div>
+  <script>
+    document.getElementsByTagName("input")[1].offsetWidth;
+  </script>
+  <input type="radio" name="dogs" value="chihuahua">Chihuahua
+  <!-- a fourth input will be created here -->
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        let div = document.getElementsByTagName("div")[0];
+        let input = document.createElement("input");
+        input.type = "radio";
+        input.name = "dogs"
+        input.value = "dachshund";
+        div.appendChild(input);
+        div.appendChild(document.createTextNode("Dachshund"));
+
+        document.title = 'done';
+      });
+    })
+  });
+</script>

@@ -14,6 +14,7 @@
 #include "ash/shelf/shelf_navigation_widget.h"
 #include "ash/shell.h"
 #include "ash/wm/desks/desk_button/desk_button.h"
+#include "ash/wm/desks/desks_constants.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "base/i18n/rtl.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
@@ -26,16 +27,6 @@
 #include "ui/views/widget/widget_delegate.h"
 
 namespace ash {
-
-namespace {
-
-constexpr int kDeskButtonLargeWidth = 136;
-constexpr int kDeskButtonSmallWidth = 96;
-constexpr int kDeskButtonHeight = 36;
-constexpr int kDeskButtonLargeDisplayThreshold = 1280;
-constexpr int kDeskButtonInsets = 6;
-
-}  // namespace
 
 class DeskButtonWidget::DelegateView : public views::WidgetDelegateView {
  public:

@@ -7,6 +7,8 @@ import("../build_webui_tests.gni")
 build_webui_tests("build") {
   files = [
     "app_test.ts",
+    "experiment_test.ts",
+    "url_test.ts",
     "test_flags_browser_proxy.ts",
   ]
 

@@ -494,6 +494,31 @@ TEST_F(TouchpadPrefHandlerTest, PreservesOldSettings) {
   EXPECT_EQ(kDictFakeValue, *value);
 }
 
+TEST_F(TouchpadPrefHandlerTest, LastUpdated) {
+  CallUpdateTouchpadSettings(kTouchpadKey1, kTouchpadSettings1,
+                             /*is_external=*/true);
+  auto devices_dict =
+      pref_service_->GetDict(prefs::kTouchpadDeviceSettingsDictPref).Clone();
+  auto* settings_dict = devices_dict.FindDict(kTouchpadKey1);
+  ASSERT_NE(nullptr, settings_dict);
+  auto* time_stamp1 = settings_dict->Find(prefs::kLastUpdatedKey);
+  ASSERT_NE(nullptr, time_stamp1);
+
+  mojom::TouchpadSettingsPtr updated_settings = kTouchpadSettings1.Clone();
+  updated_settings->reverse_scrolling = !updated_settings->reverse_scrolling;
+  CallUpdateTouchpadSettings(kTouchpadKey1, *updated_settings);
+
+  const auto& updated_devices_dict =
+      pref_service_->GetDict(prefs::kTouchpadDeviceSettingsDictPref);
+  const auto* updated_settings_dict =
+      updated_devices_dict.FindDict(kTouchpadKey1);
+  ASSERT_NE(nullptr, updated_settings_dict);
+  auto* updated_time_stamp1 =
+      updated_settings_dict->Find(prefs::kLastUpdatedKey);
+  ASSERT_NE(nullptr, updated_time_stamp1);
+  ASSERT_NE(time_stamp1, updated_time_stamp1);
+}
+
 TEST_F(TouchpadPrefHandlerTest, UpdateSettings) {
   CallUpdateTouchpadSettings(kTouchpadKey1, kTouchpadSettings1);
   CallUpdateTouchpadSettings(kTouchpadKey2, kTouchpadSettings2);

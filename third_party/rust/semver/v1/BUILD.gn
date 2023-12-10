@@ -2,7 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# @generated from third_party/rust/BUILD.gn.hbs by tools/crates/gnrt.
+# @generated from third_party/rust/chromium_crates_io/BUILD.gn.hbs by
+# tools/crates/gnrt.
 # Do not edit!
 
 import("//build/rust/cargo_crate.gni")
@@ -11,35 +12,24 @@ cargo_crate("lib") {
   crate_name = "semver"
   epoch = "1"
   crate_type = "rlib"
-
-  # Only for usage from third-party crates. Add the crate to
-  # third_party.toml to use it from first-party code.
-  visibility = [ "//third_party/rust/*" ]
-  crate_root = "crate/src/lib.rs"
+  crate_root =
+      "//third_party/rust/chromium_crates_io/vendor/semver-1.0.20/src/lib.rs"
   sources = [
-    "//third_party/rust/semver/v1/crate/benches/parse.rs",
-    "//third_party/rust/semver/v1/crate/build.rs",
-    "//third_party/rust/semver/v1/crate/src/backport.rs",
-    "//third_party/rust/semver/v1/crate/src/display.rs",
-    "//third_party/rust/semver/v1/crate/src/error.rs",
-    "//third_party/rust/semver/v1/crate/src/eval.rs",
-    "//third_party/rust/semver/v1/crate/src/identifier.rs",
-    "//third_party/rust/semver/v1/crate/src/impls.rs",
-    "//third_party/rust/semver/v1/crate/src/lib.rs",
-    "//third_party/rust/semver/v1/crate/src/parse.rs",
-    "//third_party/rust/semver/v1/crate/src/serde.rs",
-    "//third_party/rust/semver/v1/crate/tests/node/mod.rs",
-    "//third_party/rust/semver/v1/crate/tests/test_identifier.rs",
-    "//third_party/rust/semver/v1/crate/tests/test_version.rs",
-    "//third_party/rust/semver/v1/crate/tests/test_version_req.rs",
-    "//third_party/rust/semver/v1/crate/tests/util/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/semver-1.0.20/src/backport.rs",
+    "//third_party/rust/chromium_crates_io/vendor/semver-1.0.20/src/display.rs",
+    "//third_party/rust/chromium_crates_io/vendor/semver-1.0.20/src/error.rs",
+    "//third_party/rust/chromium_crates_io/vendor/semver-1.0.20/src/eval.rs",
+    "//third_party/rust/chromium_crates_io/vendor/semver-1.0.20/src/identifier.rs",
+    "//third_party/rust/chromium_crates_io/vendor/semver-1.0.20/src/impls.rs",
+    "//third_party/rust/chromium_crates_io/vendor/semver-1.0.20/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/semver-1.0.20/src/parse.rs",
+    "//third_party/rust/chromium_crates_io/vendor/semver-1.0.20/src/serde.rs",
   ]
-  inputs = [ "//third_party/rust/semver/v1/crate/README.md" ]
+  inputs = []
 
-  # Unit tests skipped. Generate with --with-tests to include them.
   build_native_rust_unit_tests = false
   edition = "2018"
-  cargo_pkg_version = "1.0.4"
+  cargo_pkg_version = "1.0.20"
   cargo_pkg_authors = "David Tolnay <dtolnay@gmail.com>"
   cargo_pkg_name = "semver"
   cargo_pkg_description =
@@ -49,6 +39,13 @@ cargo_crate("lib") {
   executable_configs -= [ "//build/config/compiler:chromium_code" ]
   executable_configs += [ "//build/config/compiler:no_chromium_code" ]
   features = [ "std" ]
-  build_root = "crate/build.rs"
-  build_sources = [ "crate/build.rs" ]
+  build_root =
+      "//third_party/rust/chromium_crates_io/vendor/semver-1.0.20/build.rs"
+  build_sources =
+      [ "//third_party/rust/chromium_crates_io/vendor/semver-1.0.20/build.rs" ]
+
+  # Only for usage from third-party crates. Add the crate to
+  # third_party.toml to use it from first-party code.
+  visibility = [ "//third_party/rust/*" ]
+  testonly = true
 }

@@ -70,7 +70,7 @@ class PerformanceManagerTabHelperTest : public PerformanceManagerTestHarness {
   static size_t CountAllRenderProcessNodes(GraphImpl* graph) {
     size_t num_hosts = 0;
     for (ProcessNodeImpl* process_node : graph->GetAllProcessNodeImpls()) {
-      if (process_node->process_type() == content::PROCESS_TYPE_RENDERER) {
+      if (process_node->GetProcessType() == content::PROCESS_TYPE_RENDERER) {
         ++num_hosts;
       }
     }
@@ -105,7 +105,7 @@ void PerformanceManagerTabHelperTest::CheckGraphTopology(
     // Expect all frame nodes to be current. This fails if our
     // implementation of RenderFrameHostChanged is borked.
     for (auto* frame : graph->GetAllFrameNodeImpls()) {
-      EXPECT_TRUE(frame->is_current());
+      EXPECT_TRUE(frame->IsCurrent());
     }
 
     ASSERT_EQ(1u, graph->GetAllPageNodeImpls().size());
@@ -125,19 +125,19 @@ void PerformanceManagerTabHelperTest::CheckGraphTopology(
     EXPECT_EQ(4u, GraphImplOperations::GetFrameNodes(page).size());
     ASSERT_EQ(1u, page->main_frame_nodes().size());
 
-    auto* main_frame = page->GetMainFrameNodeImpl();
-    EXPECT_EQ(kParentUrl, main_frame->url().spec());
+    auto* main_frame = page->main_frame_node();
+    EXPECT_EQ(kParentUrl, main_frame->GetURL().spec());
     EXPECT_EQ(2u, main_frame->child_frame_nodes().size());
 
     for (auto* child_frame : main_frame->child_frame_nodes()) {
-      if (child_frame->url().spec() == kChild1Url) {
+      if (child_frame->GetURL().spec() == kChild1Url) {
         ASSERT_EQ(1u, child_frame->child_frame_nodes().size());
         auto* grandchild_frame = *(child_frame->child_frame_nodes().begin());
-        EXPECT_EQ(grandchild_url, grandchild_frame->url().spec());
-      } else if (child_frame->url().spec() == kChild2Url) {
+        EXPECT_EQ(grandchild_url, grandchild_frame->GetURL().spec());
+      } else if (child_frame->GetURL().spec() == kChild2Url) {
         EXPECT_TRUE(child_frame->child_frame_nodes().empty());
       } else {
-        FAIL() << "Unexpected child frame: " << child_frame->url().spec();
+        FAIL() << "Unexpected child frame: " << child_frame->GetURL().spec();
       }
     }
   });
@@ -209,7 +209,7 @@ void ExpectPageIsAudible(bool is_audible) {
   RunInGraph([&](GraphImpl* graph) {
     ASSERT_EQ(1u, graph->GetAllPageNodeImpls().size());
     auto* page = graph->GetAllPageNodeImpls()[0];
-    EXPECT_EQ(is_audible, page->is_audible());
+    EXPECT_EQ(is_audible, page->IsAudible());
   });
 }
 

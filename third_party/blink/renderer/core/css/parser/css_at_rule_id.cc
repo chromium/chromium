@@ -13,9 +13,9 @@
 namespace blink {
 
 CSSAtRuleID CssAtRuleID(StringView name) {
-  if (EqualIgnoringASCIICase(name, "view-transitions")) {
+  if (EqualIgnoringASCIICase(name, "view-transition")) {
     if (RuntimeEnabledFeatures::ViewTransitionOnNavigationEnabled()) {
-      return CSSAtRuleID::kCSSAtRuleViewTransitions;
+      return CSSAtRuleID::kCSSAtRuleViewTransition;
     }
     return CSSAtRuleID::kCSSAtRuleInvalid;
   }
@@ -98,10 +98,7 @@ CSSAtRuleID CssAtRuleID(StringView name) {
     return CSSAtRuleID::kCSSAtRuleInvalid;
   }
   if (EqualIgnoringASCIICase(name, "starting-style")) {
-    if (RuntimeEnabledFeatures::CSSStartingStyleEnabled()) {
-      return CSSAtRuleID::kCSSAtRuleStartingStyle;
-    }
-    return CSSAtRuleID::kCSSAtRuleInvalid;
+    return CSSAtRuleID::kCSSAtRuleStartingStyle;
   }
   if (EqualIgnoringASCIICase(name, "-webkit-keyframes")) {
     return CSSAtRuleID::kCSSAtRuleWebkitKeyframes;
@@ -115,8 +112,8 @@ absl::optional<WebFeature> AtRuleFeature(CSSAtRuleID rule_id) {
   switch (rule_id) {
     case CSSAtRuleID::kCSSAtRuleAnnotation:
       return WebFeature::kCSSAtRuleAnnotation;
-    case CSSAtRuleID::kCSSAtRuleViewTransitions:
-      return WebFeature::kCSSAtRuleViewTransitions;
+    case CSSAtRuleID::kCSSAtRuleViewTransition:
+      return WebFeature::kCSSAtRuleViewTransition;
     case CSSAtRuleID::kCSSAtRuleCharset:
       return WebFeature::kCSSAtRuleCharset;
     case CSSAtRuleID::kCSSAtRuleCharacterVariant:

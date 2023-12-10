@@ -18,6 +18,7 @@
 #include "base/values.h"
 #include "components/aggregation_service/features.h"
 #include "components/attribution_reporting/aggregatable_dedup_key.h"
+#include "components/attribution_reporting/aggregatable_trigger_config.h"
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
 #include "components/attribution_reporting/aggregatable_values.h"
 #include "components/attribution_reporting/event_trigger_data.h"
@@ -44,6 +45,7 @@ using ::testing::AllOf;
 using ::testing::ElementsAre;
 using ::testing::Field;
 using ::testing::IsEmpty;
+using ::testing::Property;
 
 TriggerRegistration TriggerRegistrationWith(
     base::FunctionRef<void(TriggerRegistration&)> f) {
@@ -84,8 +86,8 @@ TEST(TriggerRegistrationTest, Parse) {
               Field(&TriggerRegistration::debug_reporting, false),
               Field(&TriggerRegistration::aggregation_coordinator_origin,
                     absl::nullopt),
-              Field(&TriggerRegistration::source_registration_time_config,
-                    SourceRegistrationTimeConfig::kExclude))),
+              Field(&TriggerRegistration::aggregatable_trigger_config,
+                    AggregatableTriggerConfig()))),
       },
       {
           "filters_valid",
@@ -260,33 +262,28 @@ TEST(TriggerRegistrationTest, Parse) {
           ErrorIs(TriggerRegistrationError::kAggregatableDedupKeyValueInvalid),
       },
       {
-          "aggregatable_source_registration_time_include",
+          // Tested more thoroughly in
+          // `aggregatable_trigger_config_unittest.cc`.
+          "aggregatable_source_registration_time_valid",
           R"json({"aggregatable_source_registration_time":"include"})json",
-          ValueIs(Field(&TriggerRegistration::source_registration_time_config,
-                        SourceRegistrationTimeConfig::kInclude)),
+          ValueIs(Field(
+              &TriggerRegistration::aggregatable_trigger_config,
+              Property(
+                  &AggregatableTriggerConfig::source_registration_time_config,
+                  SourceRegistrationTimeConfig::kInclude))),
       },
       {
-          "aggregatable_source_registration_time_exclude",
-          R"json({"aggregatable_source_registration_time":"exclude"})json",
-          ValueIs(Field(&TriggerRegistration::source_registration_time_config,
-                        SourceRegistrationTimeConfig::kExclude)),
-      },
-      {
-          "aggregatable_source_registration_time_wrong_type",
+          // Tested more thoroughly in
+          // `aggregatable_trigger_config_unittest.cc`.
+          "aggregatable_source_registration_time_invalid",
           R"json({"aggregatable_source_registration_time":123})json",
           ErrorIs(TriggerRegistrationError::
                       kAggregatableSourceRegistrationTimeWrongType),
       },
-      {
-          "aggregatable_source_registration_time_invalid_value",
-          R"json({"aggregatable_source_registration_time":"unknown"})json",
-          ErrorIs(TriggerRegistrationError::
-                      kAggregatableSourceRegistrationTimeUnknownValue),
-      },
   };
 
   static constexpr char kTriggerRegistrationErrorMetric[] =
-      "Conversions.TriggerRegistrationError7";
+      "Conversions.TriggerRegistrationError9";
 
   for (const auto& test_case : kTestCases) {
     SCOPED_TRACE(test_case.description);
@@ -328,11 +325,12 @@ TEST(TriggerRegistrationTest, ToJson) {
             r.filters.positive = {*FilterConfig::Create({{{"b", {}}}})};
             r.filters.negative = {*FilterConfig::Create(
                 {{{"c", {}}}}, /*lookback_window=*/base::Seconds(2))};
-            r.source_registration_time_config =
-                SourceRegistrationTimeConfig::kInclude;
+            r.aggregatable_trigger_config = *AggregatableTriggerConfig::Create(
+                SourceRegistrationTimeConfig::kExclude,
+                /*trigger_context_id=*/"123");
           }),
           R"json({
-            "aggregatable_source_registration_time": "include",
+            "aggregatable_source_registration_time": "exclude",
             "aggregatable_deduplication_keys": [{"deduplication_key":"1"}],
             "aggregatable_trigger_data": [{"key_piece":"0x0"}],
             "aggregatable_values": {"a": 2},
@@ -340,7 +338,8 @@ TEST(TriggerRegistrationTest, ToJson) {
             "debug_reporting": true,
             "event_trigger_data": [{"priority":"0","trigger_data":"0"}],
             "filters": [{"b": []}],
-            "not_filters": [{"c": [], "_lookback_window": 2}]
+            "not_filters": [{"c": [], "_lookback_window": 2}],
+            "trigger_context_id": "123"
           })json",
       },
   };
@@ -380,7 +379,7 @@ TEST(TriggerRegistrationTest, ParseAggregationCoordinator) {
   };
 
   static constexpr char kTriggerRegistrationErrorMetric[] =
-      "Conversions.TriggerRegistrationError7";
+      "Conversions.TriggerRegistrationError9";
 
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(

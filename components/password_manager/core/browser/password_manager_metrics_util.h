@@ -49,6 +49,7 @@ enum UIDisplayDisposition {
   AUTOMATIC_SHARED_PASSWORDS_NOTIFICATION = 16,
   AUTOMATIC_ADD_USERNAME_BUBBLE = 17,
   MANUAL_ADD_USERNAME_BUBBLE = 18,
+  AUTOMATIC_RELAUNCH_CHROME_BUBBLE = 19,
   NUM_DISPLAY_DISPOSITIONS,
 };
 
@@ -723,7 +724,7 @@ void LogGeneralUIDismissalReason(UIDismissalReason reason);
 // user-state-specific histogram.
 void LogSaveUIDismissalReason(
     UIDismissalReason reason,
-    absl::optional<features_util::PasswordAccountStorageUserState> user_state);
+    std::optional<features_util::PasswordAccountStorageUserState> user_state);
 
 // Log the |reason| a user dismissed the update password bubble.
 void LogUpdateUIDismissalReason(UIDismissalReason reason);
@@ -858,7 +859,7 @@ void LogProcessIncomingPasswordSharingInvitationResult(
 
 // Logs GroupedPasswordFetchResult.
 void LogGroupedPasswordsResults(
-    const std::vector<std::unique_ptr<password_manager::PasswordForm>>& logins);
+    const std::vector<password_manager::PasswordForm>& logins);
 
 // Wraps |callback| into another callback that measures the elapsed time between
 // construction and actual execution of the callback. Records the result to

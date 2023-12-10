@@ -406,7 +406,8 @@ void DecoderStream<StreamType>::OnDecoderSelected(
     if (state_ == STATE_INITIALIZING) {
       state_ = STATE_UNINITIALIZED;
       MEDIA_LOG(ERROR, media_log_)
-          << GetStreamTypeString() << " decoder initialization failed";
+          << GetStreamTypeString() << " decoder initialization failed with "
+          << std::move(decoder_or_error).error();
       std::move(init_cb_).Run(false);
       // Node that |decoder_or_error| is not actually lost in this case, as
       // DecoderSelector is keeping track of it to use in case there are no

@@ -49,11 +49,40 @@ extern const base::TimeDelta kPasswordCheckOverdueTimeWindow;
 // An enum of the different Safety Hub modules that are available. This should
 // be updated whenever a notification for a new module is added to or removed
 // from the three-dot menu.
+// Values should correspond to 'SafetyHubModuleType' in enums.xml.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum class SafetyHubModuleType {
-  UNUSED_SITE_PERMISSIONS,
-  NOTIFICATION_PERMISSIONS,
-  SAFE_BROWSING,
-  EXTENSIONS,
+  UNUSED_SITE_PERMISSIONS = 0,
+  NOTIFICATION_PERMISSIONS = 1,
+  SAFE_BROWSING = 2,
+  EXTENSIONS = 3,
+  PASSWORDS = 4,
+  VERSION = 5,
+  kMaxValue = VERSION,
+};
+
+// Values should correspond to 'SafetyHubEntryPoint' in enums.xml.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class SafetyHubEntryPoint {
+  kPrivacySafe = 0,
+  kPrivacyWarning = 1,
+  kSiteSettings = 2,
+  kMenuNotifications = 3,
+  kNotificationSettings = 4,
+  kMaxValue = kNotificationSettings,
+};
+
+// The various surfaces that users could see (a part of) Safety Hub, or interact
+// with it.
+// Values should correspond to 'SafetyHubSurfaces' in enums.xml.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class SafetyHubSurfaces {
+  kThreeDotMenu = 0,
+  kSafetyHubPage = 1,
+  kMaxValue = kSafetyHubPage,
 };
 
 }  // namespace safety_hub

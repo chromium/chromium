@@ -68,9 +68,7 @@ public class WebappLauncherActivity extends Activity {
 
     private static final String TAG = "webapps";
 
-    /**
-     * Extracted parameters from the launch intent.
-     */
+    /** Extracted parameters from the launch intent. */
     @VisibleForTesting
     public static class LaunchData {
         public final String id;
@@ -121,7 +119,7 @@ public class WebappLauncherActivity extends Activity {
      * method is slow. It makes several PackageManager calls.
      */
     public static @Nullable BrowserServicesIntentDataProvider
-    maybeSlowlyGenerateWebApkIntentDataProviderFromIntent(Intent fromIntent) {
+            maybeSlowlyGenerateWebApkIntentDataProviderFromIntent(Intent fromIntent) {
         // Check for intents targeted at WebappActivity, WebappActivity0-9,
         // SameTaskWebApkActivity and WebappLauncherActivity.
         String targetActivityClassName = fromIntent.getComponent().getClassName();
@@ -188,10 +186,14 @@ public class WebappLauncherActivity extends Activity {
     private static LaunchData extractLaunchData(Intent intent) {
         String webApkPackageName = WebappIntentUtils.getWebApkPackageName(intent);
         boolean isForWebApk = !TextUtils.isEmpty(webApkPackageName);
-        boolean isSplashProvidedByWebApk = isForWebApk
-                && IntentUtils.safeGetBooleanExtra(intent, EXTRA_SPLASH_PROVIDED_BY_WEBAPK, false);
-        String id = isForWebApk ? WebappIntentUtils.getIdForWebApkPackage(webApkPackageName)
-                                : WebappIntentUtils.getIdForHomescreenShortcut(intent);
+        boolean isSplashProvidedByWebApk =
+                isForWebApk
+                        && IntentUtils.safeGetBooleanExtra(
+                                intent, EXTRA_SPLASH_PROVIDED_BY_WEBAPK, false);
+        String id =
+                isForWebApk
+                        ? WebappIntentUtils.getIdForWebApkPackage(webApkPackageName)
+                        : WebappIntentUtils.getIdForHomescreenShortcut(intent);
         return new LaunchData(
                 id, WebappIntentUtils.getUrl(intent), webApkPackageName, isSplashProvidedByWebApk);
     }
@@ -202,7 +204,8 @@ public class WebappLauncherActivity extends Activity {
      */
     private static boolean shouldPreferLightweightFre(LaunchData launchData) {
         // Use lightweight FRE for unbound WebAPKs.
-        return launchData != null && launchData.webApkPackageName != null
+        return launchData != null
+                && launchData.webApkPackageName != null
                 && !launchData.webApkPackageName.startsWith(WEBAPK_PACKAGE_PREFIX);
     }
 
@@ -218,8 +221,11 @@ public class WebappLauncherActivity extends Activity {
                 return true;
             }
 
-            Log.d(TAG, "%s is either not a WebAPK or %s is not within the WebAPK's scope",
-                    launchData.webApkPackageName, launchData.url);
+            Log.d(
+                    TAG,
+                    "%s is either not a WebAPK or %s is not within the WebAPK's scope",
+                    launchData.webApkPackageName,
+                    launchData.url);
             return false;
         }
 
@@ -236,8 +242,8 @@ public class WebappLauncherActivity extends Activity {
             Activity launchingActivity, Intent intent, @NonNull LaunchData launchData) {
         Intent launchIntent = createIntentToLaunchForWebapp(intent, launchData);
 
-        WarmupManager.getInstance().maybePrefetchDnsForUrlInBackground(
-                launchingActivity, launchData.url);
+        WarmupManager.getInstance()
+                .maybePrefetchDnsForUrlInBackground(launchingActivity, launchData.url);
 
         IntentUtils.safeStartActivity(launchingActivity, launchIntent);
         if (IntentUtils.isIntentForNewTaskOrNewDocument(launchIntent)) {
@@ -255,15 +261,17 @@ public class WebappLauncherActivity extends Activity {
      * as result of a call to PackageManager#setComponentEnabledSetting().
      */
     private static boolean shouldRelaunchWebApk(Intent sourceIntent, LaunchData launchData) {
-        return launchData != null && launchData.isForWebApk
+        return launchData != null
+                && launchData.isForWebApk
                 && sourceIntent.hasExtra(EXTRA_RELAUNCH);
     }
 
     /** Relaunches WebAPK. */
     private static void relaunchWebApk(
             Activity launchingActivity, Intent sourceIntent, @NonNull LaunchData launchData) {
-        Intent launchIntent = createRelaunchWebApkIntent(
-                sourceIntent, launchData.webApkPackageName, launchData.url);
+        Intent launchIntent =
+                createRelaunchWebApkIntent(
+                        sourceIntent, launchData.webApkPackageName, launchData.url);
         launchAfterDelay(
                 launchingActivity.getApplicationContext(), launchIntent, WEBAPK_LAUNCH_DELAY_MS);
         launchingActivity.finishAndRemoveTask();
@@ -273,8 +281,9 @@ public class WebappLauncherActivity extends Activity {
     private static void launchInTab(Activity launchingActivity, Intent sourceIntent) {
         Context appContext = ContextUtils.getApplicationContext();
         String webappUrl = IntentUtils.safeGetStringExtra(sourceIntent, WebappConstants.EXTRA_URL);
-        int webappSource = IntentUtils.safeGetIntExtra(
-                sourceIntent, WebappConstants.EXTRA_SOURCE, ShortcutSource.UNKNOWN);
+        int webappSource =
+                IntentUtils.safeGetIntExtra(
+                        sourceIntent, WebappConstants.EXTRA_SOURCE, ShortcutSource.UNKNOWN);
 
         if (!TextUtils.isEmpty(webappUrl)) {
             Intent launchIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(webappUrl));
@@ -313,8 +322,9 @@ public class WebappLauncherActivity extends Activity {
 
     /** Returns the class name of the {@link WebappActivity} subclass to launch. */
     private static String selectWebappActivitySubclass(@NonNull LaunchData launchData) {
-        return launchData.isSplashProvidedByWebApk ? SameTaskWebApkActivity.class.getName()
-                                                   : WebappActivity.class.getName();
+        return launchData.isSplashProvidedByWebApk
+                ? SameTaskWebApkActivity.class.getName()
+                : WebappActivity.class.getName();
     }
 
     /** Returns intent to launch for the web app. */
@@ -347,11 +357,15 @@ public class WebappLauncherActivity extends Activity {
         // CustomTabActivity activity and go back to the WebAPK activity. It is intentional that
         // Custom Tab will not be reachable with a back button.
         if (launchData.isSplashProvidedByWebApk) {
-            launchIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NO_ANIMATION
-                    | Intent.FLAG_ACTIVITY_FORWARD_RESULT);
+            launchIntent.setFlags(
+                    Intent.FLAG_ACTIVITY_CLEAR_TOP
+                            | Intent.FLAG_ACTIVITY_NO_ANIMATION
+                            | Intent.FLAG_ACTIVITY_FORWARD_RESULT);
         } else {
-            launchIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NEW_DOCUMENT
-                    | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            launchIntent.setFlags(
+                    Intent.FLAG_ACTIVITY_NEW_TASK
+                            | Intent.FLAG_ACTIVITY_NEW_DOCUMENT
+                            | Intent.FLAG_ACTIVITY_CLEAR_TOP);
         }
 
         return launchIntent;
@@ -359,11 +373,14 @@ public class WebappLauncherActivity extends Activity {
 
     /** Launches intent after a delay. */
     private static void launchAfterDelay(Context appContext, Intent intent, int launchDelayMs) {
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                IntentUtils.safeStartActivity(appContext, intent);
-            }
-        }, launchDelayMs);
+        new Handler()
+                .postDelayed(
+                        new Runnable() {
+                            @Override
+                            public void run() {
+                                IntentUtils.safeStartActivity(appContext, intent);
+                            }
+                        },
+                        launchDelayMs);
     }
 }

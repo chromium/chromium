@@ -24,7 +24,7 @@ class GraphicCharacters {
   GraphicCharacters(const GraphicCharacters&) = delete;
   GraphicCharacters& operator=(const GraphicCharacters&) = delete;
 
-  bool HasGraphicCharacter(base::StringPiece s) {
+  bool HasGraphicCharacter(std::string_view s) {
     int32_t length = graphic_->spanUTF8(
         s.data(), s.size(), USetSpanCondition::USET_SPAN_NOT_CONTAINED);
     return static_cast<size_t>(length) != s.size();
@@ -59,7 +59,7 @@ GraphicCharacters::GraphicCharacters() {
 
 }  // namespace
 
-bool HasGraphicCharacter(base::StringPiece s) {
+bool HasGraphicCharacter(std::string_view s) {
   DCHECK(base::IsStringUTF8(s));
   return GraphicCharacters::GetInstance()->HasGraphicCharacter(s);
 }

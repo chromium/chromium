@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_WEBAUTHN_CREDENTIALS_DELEGATE_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_WEBAUTHN_CREDENTIALS_DELEGATE_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -12,7 +13,6 @@
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "components/password_manager/core/browser/passkey_credential.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace password_manager {
 
@@ -33,9 +33,9 @@ class WebAuthnCredentialsDelegate
   virtual void SelectPasskey(const std::string& backend_id) = 0;
 
   // Returns the list of eligible passkeys to fulfill an ongoing WebAuthn
-  // request if one has been received and is active. Returns absl::nullopt
+  // request if one has been received and is active. Returns std::nullopt
   // otherwise.
-  virtual const absl::optional<std::vector<PasskeyCredential>>& GetPasskeys()
+  virtual const std::optional<std::vector<PasskeyCredential>>& GetPasskeys()
       const = 0;
 
   // Returns whether a "Use a passkey from a different device" option should

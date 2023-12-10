@@ -10,15 +10,15 @@
 
 #include <algorithm>
 #include <array>
+#include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/check_op.h"
 #include "base/containers/span.h"
-#include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "net/base/net_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
@@ -109,11 +109,11 @@ class NET_EXPORT IPAddress {
   enum : size_t { kIPv4AddressSize = 4, kIPv6AddressSize = 16 };
 
   // Nullopt if `value` is malformed to be deserialized to IPAddress.
-  static absl::optional<IPAddress> FromValue(const base::Value& value);
+  static std::optional<IPAddress> FromValue(const base::Value& value);
 
   // Parses an IP address literal (either IPv4 or IPv6). Returns the resulting
   // IPAddress on success, or nullopt on error.
-  static absl::optional<IPAddress> FromIPLiteral(base::StringPiece ip_literal);
+  static std::optional<IPAddress> FromIPLiteral(std::string_view ip_literal);
 
   // Creates a zero-sized, invalid address.
   IPAddress();
@@ -204,7 +204,7 @@ class NET_EXPORT IPAddress {
   //
   // When parsing fails, the original value of |this| will be overwritten such
   // that |this->empty()| and |!this->IsValid()|.
-  [[nodiscard]] bool AssignFromIPLiteral(base::StringPiece ip_literal);
+  [[nodiscard]] bool AssignFromIPLiteral(std::string_view ip_literal);
 
   // Returns the underlying bytes.
   const IPAddressBytes& bytes() const { return ip_address_; }
@@ -288,7 +288,7 @@ NET_EXPORT bool IPAddressMatchesPrefix(const IPAddress& ip_address,
 //    10.10.3.1/20
 //    a:b:c::/46
 //    ::1/128
-NET_EXPORT bool ParseCIDRBlock(base::StringPiece cidr_literal,
+NET_EXPORT bool ParseCIDRBlock(std::string_view cidr_literal,
                                IPAddress* ip_address,
                                size_t* prefix_length_in_bits);
 
@@ -298,7 +298,7 @@ NET_EXPORT bool ParseCIDRBlock(base::StringPiece cidr_literal,
 // surrounded by brackets as in [::1]. On failure |ip_address| may have been
 // overwritten and could contain an invalid IPAddress.
 [[nodiscard]] NET_EXPORT bool ParseURLHostnameToAddress(
-    base::StringPiece hostname,
+    std::string_view hostname,
     IPAddress* ip_address);
 
 // Returns number of matching initial bits between the addresses |a1| and |a2|.

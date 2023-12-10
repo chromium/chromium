@@ -13,6 +13,7 @@
 #include "content/browser/webid/fedcm_metrics.h"
 #include "content/browser/webid/flags.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/federated_identity_api_permission_context_delegate.h"
 #include "content/public/browser/federated_identity_permission_context_delegate.h"
 #include "content/public/common/web_identity.h"
 #include "net/base/net_errors.h"
@@ -334,6 +335,23 @@ std::string FormatUrlWithDomain(const GURL& url, bool for_display) {
   return base::UTF16ToUTF8(url_formatter::FormatUrl(
       GURL(url.scheme() + "://" + formatted_url_str), types,
       base::UnescapeRule::SPACES, nullptr, nullptr, nullptr));
+}
+
+bool HasSharingPermissionOrIdpHasThirdPartyCookiesAccess(
+    RenderFrameHost& host,
+    const GURL& provider_url,
+    const url::Origin& embedder_origin,
+    const url::Origin& requester_origin,
+    const absl::optional<std::string>& account_id,
+    FederatedIdentityPermissionContextDelegate* sharing_permission_delegate,
+    FederatedIdentityApiPermissionContextDelegate* api_permission_delegate) {
+  bool has_access = IsFedCmExemptIdpWithThirdPartyCookiesEnabled() &&
+                    api_permission_delegate->HasThirdPartyCookiesAccess(
+                        host, provider_url, embedder_origin);
+  return sharing_permission_delegate->HasSharingPermission(
+             requester_origin, embedder_origin,
+             url::Origin::Create(provider_url), account_id) ||
+         has_access;
 }
 
 }  // namespace content::webid

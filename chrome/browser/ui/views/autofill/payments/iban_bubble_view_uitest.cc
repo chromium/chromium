@@ -21,6 +21,7 @@
 #include "components/autofill/content/browser/test_autofill_manager_injector.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/browser/form_data_importer.h"
+#include "components/autofill/core/browser/form_data_importer_test_api.h"
 #include "components/autofill/core/browser/metrics/payments/iban_metrics.h"
 #include "components/autofill/core/browser/payments/iban_save_manager.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
@@ -108,10 +109,9 @@ class IbanBubbleViewFullFormBrowserTest
     WaitForPersonalDataManagerToBeLoaded(GetProfile(0));
 
     // Set up this class as the ObserverForTest implementation.
-    iban_save_manager_ = autofill_manager()
-                             ->client()
-                             .GetFormDataImporter()
-                             ->iban_save_manager_for_testing();
+    iban_save_manager_ =
+        test_api(*autofill_manager()->client().GetFormDataImporter())
+            .iban_save_manager();
     iban_save_manager_->SetEventObserverForTesting(this);
     AddEventObserverToController();
   }
@@ -187,7 +187,7 @@ class IbanBubbleViewFullFormBrowserTest
   }
 
   // Should be called for autofill_iban_form.html.
-  void FillForm(absl::optional<std::string> iban_value = absl::nullopt) {
+  void FillForm(std::optional<std::string> iban_value = std::nullopt) {
     NavigateToAndWaitForForm(kIbanForm);
     content::WebContents* web_contents = GetActiveWebContents();
     const std::string click_fill_button_js =
@@ -238,25 +238,6 @@ class IbanBubbleViewFullFormBrowserTest
     ClickOnDialogViewAndWaitForWidgetDestruction(
         save_iban_bubble_views->GetBubbleFrameView()->close_button());
     CHECK(!GetSaveIbanBubbleView());
-  }
-
-  void ClickOnIbanValueToggleButton() {
-    ClickOnDialogView(
-        FindViewInBubbleById(DialogViewId::TOGGLE_IBAN_VALUE_MASKING_BUTTON));
-  }
-
-  std::u16string GetDisplayedIbanValue() {
-    AutofillBubbleBase* iban_bubble_views = GetIbanBubbleView();
-    CHECK(iban_bubble_views);
-    views::Label* iban_value = static_cast<views::Label*>(
-        FindViewInBubbleById(DialogViewId::IBAN_VALUE_LABEL));
-    CHECK(iban_value);
-    std::u16string iban_value_label = iban_value->GetText();
-    // To simplify the expectations in tests, replaces the returned IBAN value
-    // ellipsis ('\u2006') with a whitespace and oneDot ('\u2022') with '*'.
-    base::ReplaceChars(iban_value_label, u"\u2022", u"*", &iban_value_label);
-    base::ReplaceChars(iban_value_label, u"\u2006", u" ", &iban_value_label);
-    return iban_value_label;
   }
 
   SaveIbanBubbleView* GetSaveIbanBubbleView() {
@@ -385,7 +366,7 @@ class IbanBubbleViewFullFormBrowserTest
     return iban_bubble_controller->GetPaymentBubbleView();
   }
 
-  std::unique_ptr<autofill::EventWaiter<DialogEvent>> event_waiter_;
+  std::unique_ptr<EventWaiter<DialogEvent>> event_waiter_;
   TestAutofillManagerInjector<TestAutofillManager> autofill_manager_injector_;
 };
 
@@ -567,28 +548,6 @@ IN_PROC_BROWSER_TEST_F(IbanBubbleViewFullFormBrowserTest,
       autofill_metrics::SaveIbanBubbleResult::kClosed, 1);
 }
 
-// Tests the local save bubble. Ensures that clicking the eye icon button
-// successfully causes the IBAN value to be hidden or shown.
-IN_PROC_BROWSER_TEST_F(IbanBubbleViewFullFormBrowserTest,
-                       Local_ClickingHideOrShowIbanValueEyeIcon) {
-  FillForm(kIbanValue);
-  SubmitFormAndWaitForIbanLocalSaveBubble();
-
-  ResetEventWaiterForSequence({DialogEvent::ACCEPT_SAVE_IBAN_COMPLETE});
-
-  ClickOnIbanValueToggleButton();
-  EXPECT_EQ(GetDisplayedIbanValue(), u"DE91 1000 0000 0123 4567 89");
-
-  ClickOnIbanValueToggleButton();
-  EXPECT_EQ(GetDisplayedIbanValue(), u"DE91 **** **** **** **67 89");
-
-  ClickOnIbanValueToggleButton();
-  EXPECT_EQ(GetDisplayedIbanValue(), u"DE91 1000 0000 0123 4567 89");
-
-  ClickOnIbanValueToggleButton();
-  EXPECT_EQ(GetDisplayedIbanValue(), u"DE91 **** **** **** **67 89");
-}
-
 // Tests the local save bubble. Ensures that clicking the omnibox icon opens
 // manage saved IBAN bubble with IBAN nickname.
 IN_PROC_BROWSER_TEST_F(IbanBubbleViewFullFormBrowserTest,
@@ -634,37 +593,6 @@ IN_PROC_BROWSER_TEST_F(IbanBubbleViewFullFormBrowserTest,
   EXPECT_FALSE(FindViewInBubbleById(DialogViewId::NICKNAME_LABEL));
   // Verify the bubble type is manage saved IBAN.
   ASSERT_EQ(GetBubbleType(), IbanBubbleType::kManageSavedIban);
-}
-
-// Tests the manage saved bubble. Ensures that clicking the eye icon button
-// successfully causes the IBAN value to be masked or unmasked.
-IN_PROC_BROWSER_TEST_F(IbanBubbleViewFullFormBrowserTest,
-                       Local_ClickingHideOrShowIbanValueManageView) {
-  FillForm(kIbanValue);
-  SubmitFormAndWaitForIbanLocalSaveBubble();
-
-  ResetEventWaiterForSequence({DialogEvent::ACCEPT_SAVE_IBAN_COMPLETE});
-  ClickOnSaveButton();
-  ASSERT_TRUE(WaitForObservedEvent());
-
-  // Open up manage IBANs bubble.
-  ResetEventWaiterForSequence({DialogEvent::BUBBLE_SHOWN});
-  ClickOnView(GetSaveIbanIconView());
-  ASSERT_TRUE(WaitForObservedEvent());
-
-  // Verify the bubble type is manage saved IBAN.
-  ASSERT_EQ(GetBubbleType(), IbanBubbleType::kManageSavedIban);
-  ClickOnIbanValueToggleButton();
-  EXPECT_EQ(GetDisplayedIbanValue(), u"DE91 1000 0000 0123 4567 89");
-
-  ClickOnIbanValueToggleButton();
-  EXPECT_EQ(GetDisplayedIbanValue(), u"DE91 **** **** **** **67 89");
-
-  ClickOnIbanValueToggleButton();
-  EXPECT_EQ(GetDisplayedIbanValue(), u"DE91 1000 0000 0123 4567 89");
-
-  ClickOnIbanValueToggleButton();
-  EXPECT_EQ(GetDisplayedIbanValue(), u"DE91 **** **** **** **67 89");
 }
 
 }  // namespace autofill

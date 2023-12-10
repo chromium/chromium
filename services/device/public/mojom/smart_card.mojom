@@ -27,10 +27,9 @@ enum SmartCardSuccess {
   kOk
 };
 
-// PC/SC error codes we can expect to hit (thus a non-exhaustive list).
-// UNKNOWN means an SCARD error code that is not mapped in this enum (and
-// thus should probably be added here).
+// Possible error results for a SmartCard* request.
 enum SmartCardError {
+  // PC/SC error codes we can expect to hit (thus a non-exhaustive list):
   kRemovedCard,
   kResetCard,
   kUnpoweredCard,
@@ -61,7 +60,13 @@ enum SmartCardError {
   kServerTooBusy,
   kUnexpected,
   kShutdown,
-  kUnknown
+
+  // UNKNOWN means an SCARD_* (PC/SC) error code that is not mapped in this enum
+  // (and thus should probably be added above):
+  kUnknown,
+
+  // This request is covered by a permission check and the user has denied it.
+  kPermissionDenied
 };
 
 // Share mode of a connection.

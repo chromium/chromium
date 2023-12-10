@@ -117,10 +117,13 @@ def _generated_script(*, name, label, skip_usage_check = False, args = None):
         args = args,
     )
 
-def _junit_test(*, name, label, skip_usage_check = False):
+def _junit_test(*, name, label, skip_usage_check = False, args = None):
     """Define a junit test target to use in targets specs.
 
     A junit test target is a test using the JUnit test framework.
+
+    crbug/1401052: we're migrating these tests to isolated scripts,
+    but leaving the junit_tests defs around as documentation.
 
     Args:
         name: The name that can be used to refer to the target.
@@ -128,12 +131,7 @@ def _junit_test(*, name, label, skip_usage_check = False):
         skip_usage_check: Disables checking that the target is actually
             referenced in a targets spec for some builder.
     """
-    _create_target(
-        name = name,
-        type = "junit_test",
-        label = label,
-        skip_usage_check = skip_usage_check,
-    )
+    _generated_script(name = name, label = label, skip_usage_check = skip_usage_check, args = args)
 
 def _script(*, name, label, script, skip_usage_check = False, args = None):
     """Define a script target to use in targets specs.
@@ -396,6 +394,7 @@ def _mixin_values(
         lacros_args = None,
         linux_args = None,
         mac_args = None,
+        win_args = None,
         win64_args = None,
         swarming = None,
         android_swarming = None,
@@ -444,6 +443,9 @@ def _mixin_values(
         mac_args: Arguments to be passed to the test when the builder is
             targeting mac. Will be appended to any existing mac_args for
             the test.
+        win_args: Arguments to be passed to the test when the builder
+            is targeting win. Will be appended to any existing
+            win_args for the test.
         win64_args: Arguments to be passed to the test when the builder
             is targeting win64. Will be appended to any existing
             win64_args for the test.
@@ -493,6 +495,7 @@ def _mixin_values(
         lacros_args = lacros_args,
         linux_args = linux_args,
         mac_args = mac_args,
+        win_args = win_args,
         win64_args = win64_args,
         swarming = swarming,
         android_swarming = android_swarming,
@@ -596,7 +599,6 @@ def _legacy_test_config(
         *,
         script = None,
         test = None,
-        override_compile_targets = [],
         results_handler = None,
         telemetry_test_name = None,
         tast_expr = None,
@@ -611,10 +613,6 @@ def _legacy_test_config(
             run as the test. Only applicable to script tests.
         test: The name of the isolate to run as the test. Only applicable to
             gtests, isolated script tests and junit tests.
-        override_compile_targets: A list of compile targets that need to be
-            built to run the test instead of whatever the standard set of
-            compile targets would be. Only applicable to gtests, isolated
-            script tests and script tests.
         results_handler: The name of the results handler to use for the test.
             Only applicable to isolated script tests and gtests that set
             use_isolated_scripts_api.
@@ -635,7 +633,6 @@ def _legacy_test_config(
     return struct(
         script = script,
         test = test,
-        override_compile_targets = override_compile_targets,
         telemetry_test_name = telemetry_test_name,
         results_handler = results_handler,
         tast_expr = tast_expr,
@@ -760,7 +757,7 @@ _PYL_HEADER_FMT = """\
 
 def _generate_gn_isolate_map_pyl(ctx):
     entries = []
-    for n in graph.children(keys.project(), _TARGET.kind, graph.DEFINITION_ORDER):
+    for n in graph.children(keys.project(), _TARGET.kind, graph.KEY_ORDER):
         entries.append('  "{}": {{'.format(n.key.id))
         entries.append('    "label": "{}",'.format(n.props.label))
         if n.props.label_type != None:
@@ -908,6 +905,7 @@ def _generate_mixin_values(formatter, mixin, generate_skylab_container = False):
         "lacros_args",
         "linux_args",
         "mac_args",
+        "win_args",
         "win64_args",
     ):
         if args_attr in mixin:
@@ -997,7 +995,7 @@ def _generate_mixin_values(formatter, mixin, generate_skylab_container = False):
 def _generate_mixins_pyl(ctx):
     formatter = _formatter()
 
-    for n in graph.children(keys.project(), _TARGET_MIXIN.kind, graph.DEFINITION_ORDER):
+    for n in graph.children(keys.project(), _TARGET_MIXIN.kind, graph.KEY_ORDER):
         mixin = n.props.mixin_values
         formatter.open_scope("'{}': {{".format(n.key.id))
 
@@ -1015,7 +1013,7 @@ lucicfg.generator(_generate_mixins_pyl)
 def _generate_variants_pyl(ctx):
     formatter = _formatter()
 
-    for n in graph.children(keys.project(), _TARGET_VARIANT.kind, graph.DEFINITION_ORDER):
+    for n in graph.children(keys.project(), _TARGET_VARIANT.kind, graph.KEY_ORDER):
         mixin = n.props.mixin_values
         formatter.open_scope("'{}': {{".format(n.key.id))
 
@@ -1046,11 +1044,11 @@ def _generate_test_suites_pyl(ctx):
 
     formatter.open_scope("'basic_suites': {")
 
-    for suite in graph.children(keys.project(), _LEGACY_BASIC_SUITE.kind, graph.DEFINITION_ORDER):
+    for suite in graph.children(keys.project(), _LEGACY_BASIC_SUITE.kind, graph.KEY_ORDER):
         formatter.add_line("")
         formatter.open_scope("'{}': {{".format(suite.key.id))
 
-        for test_name, test_config in suite.props.tests.items():
+        for test_name, test_config in sorted(suite.props.tests.items()):
             if not test_config:
                 formatter.add_line("'{}': {{}},".format(test_name))
                 continue
@@ -1062,11 +1060,6 @@ def _generate_test_suites_pyl(ctx):
 
             if test_config.test:
                 formatter.add_line("'test': '{}',".format(test_config.test))
-            if test_config.override_compile_targets:
-                formatter.open_scope("'override_compile_targets': [")
-                for t in test_config.override_compile_targets:
-                    formatter.add_line("'{}',".format(t))
-                formatter.close_scope("],")
             if test_config.results_handler:
                 formatter.add_line("'results_handler': '{}',".format(test_config.results_handler))
 
@@ -1101,10 +1094,10 @@ def _generate_test_suites_pyl(ctx):
 
     formatter.open_scope("'compound_suites': {")
 
-    for suite in graph.children(keys.project(), _LEGACY_COMPOUND_SUITE.kind, graph.DEFINITION_ORDER):
+    for suite in graph.children(keys.project(), _LEGACY_COMPOUND_SUITE.kind, graph.KEY_ORDER):
         formatter.add_line("")
         formatter.open_scope("'{}': [".format(suite.key.id))
-        for basic_suite in graph.children(suite.key, _LEGACY_BASIC_SUITE.kind, graph.DEFINITION_ORDER):
+        for basic_suite in graph.children(suite.key, _LEGACY_BASIC_SUITE.kind, graph.KEY_ORDER):
             formatter.add_line("'{}',".format(basic_suite.key.id))
         formatter.close_scope("],")
 
@@ -1114,12 +1107,15 @@ def _generate_test_suites_pyl(ctx):
 
     formatter.open_scope("'matrix_compound_suites': {")
 
-    for suite in graph.children(keys.project(), _LEGACY_MATRIX_COMPOUND_SUITE.kind, graph.DEFINITION_ORDER):
+    for suite in graph.children(keys.project(), _LEGACY_MATRIX_COMPOUND_SUITE.kind, graph.KEY_ORDER):
         formatter.add_line("")
         formatter.open_scope("'{}': {{".format(suite.key.id))
-        for matrix_config in graph.children(suite.key, _LEGACY_MATRIX_CONFIG.kind, graph.DEFINITION_ORDER):
+        for matrix_config in graph.children(suite.key, _LEGACY_MATRIX_CONFIG.kind, graph.KEY_ORDER):
+            # The order that mixins are declared is significant,
+            # DEFINITION_ORDER preserves the order that the edges were added
+            # from the parent to the child
             mixins = graph.children(matrix_config.key, _TARGET_MIXIN.kind, graph.DEFINITION_ORDER)
-            variants = graph.children(matrix_config.key, _TARGET_VARIANT.kind, graph.DEFINITION_ORDER)
+            variants = graph.children(matrix_config.key, _TARGET_VARIANT.kind, graph.KEY_ORDER)
             if not (mixins or variants):
                 formatter.add_line("'{}': {{}},".format(matrix_config.key.id))
                 continue

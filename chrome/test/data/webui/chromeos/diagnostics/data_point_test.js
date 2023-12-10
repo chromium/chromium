@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import 'chrome://diagnostics/data_point.js';
-import 'chrome://webui-test/mojo_webui_test_support.js';
+import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
 import {DataPointElement} from 'chrome://diagnostics/data_point.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';

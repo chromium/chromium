@@ -245,7 +245,7 @@ void URLLoaderMockFactoryImpl::LoadRequest(const WebURL& url,
   ResponseInfo response_info;
   if (!LookupURL(url, error, &response_info)) {
     // Non mocked URLs should not have been passed to the default URLLoader.
-    NOTREACHED();
+    NOTREACHED() << url;
     return;
   }
 

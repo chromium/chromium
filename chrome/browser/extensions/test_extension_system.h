@@ -131,10 +131,6 @@ class TestExtensionSystem : public ExtensionSystem {
       in_process_data_decoder_;
 
   scoped_refptr<ContentVerifier> content_verifier_;
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
-#endif
 };
 
 }  // namespace extensions

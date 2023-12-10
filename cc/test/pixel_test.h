@@ -27,6 +27,8 @@
 #include "components/viz/service/display/software_renderer.h"
 #include "components/viz/test/test_gpu_service_holder.h"
 #include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
+#include "gpu/command_buffer/service/sync_point_manager.h"
 #include "gpu/ipc/in_process_command_buffer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/size.h"
@@ -53,7 +55,9 @@ class PixelTest : public testing::Test {
     // SkiaRenderer with the Vulkan backend will be used.
     kSkiaVulkan,
     // SkiaRenderer with the Skia Graphite on Dawn will be used.
-    kSkiaGraphite,
+    kSkiaGraphiteDawn,
+    // SkiaRenderer with the Skia Graphite on Metal will be used.
+    kSkiaGraphiteMetal,
   };
 
   explicit PixelTest(GraphicsBackend backend = kDefault);
@@ -117,6 +121,8 @@ class PixelTest : public testing::Test {
   std::unique_ptr<FakeOutputSurfaceClient> output_surface_client_;
   std::unique_ptr<viz::OutputSurface> output_surface_;
   std::unique_ptr<viz::TestSharedBitmapManager> shared_bitmap_manager_;
+  std::unique_ptr<gpu::SharedImageManager> shared_image_manager_;
+  std::unique_ptr<gpu::SyncPointManager> sync_point_manager_;
   std::unique_ptr<viz::DisplayResourceProvider> resource_provider_;
   scoped_refptr<viz::RasterContextProvider> child_context_provider_;
   std::unique_ptr<viz::ClientResourceProvider> child_resource_provider_;
@@ -129,14 +135,24 @@ class PixelTest : public testing::Test {
 
   void TearDown() override;
 
+  bool use_skia_graphite() const {
+    return graphics_backend_ == GraphicsBackend::kSkiaGraphiteDawn ||
+           graphics_backend_ == GraphicsBackend::kSkiaGraphiteMetal;
+  }
+
  private:
+  // Render |pass_list| and readback the |copy_rect| portion of |target| to
+  // |result_bitmap_|.
+  void RenderReadbackTargetAndAreaToResultBitmap(
+      viz::AggregatedRenderPassList* pass_list,
+      viz::AggregatedRenderPass* target,
+      const gfx::Rect* copy_rect);
+
   void ReadbackResult(base::OnceClosure quit_run_loop,
                       std::unique_ptr<viz::CopyOutputResult> result);
 
-  bool PixelsMatchReference(const base::FilePath& ref_file,
-                            const PixelComparator& comparator);
-
   std::unique_ptr<gl::DisableNullDrawGLBindings> enable_pixel_output_;
+  GraphicsBackend graphics_backend_ = GraphicsBackend::kDefault;
 };
 
 }  // namespace cc

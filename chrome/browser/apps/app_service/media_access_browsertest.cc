@@ -32,7 +32,7 @@ using extensions::Extension;
 namespace {
 
 bool AccessingCamera(Profile* profile, const std::string& app_id) {
-  absl::optional<bool> accessing_camera;
+  std::optional<bool> accessing_camera;
   auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile);
   proxy->AppCapabilityAccessCache().ForOneApp(
       app_id, [&accessing_camera](const apps::CapabilityAccessUpdate& update) {
@@ -42,7 +42,7 @@ bool AccessingCamera(Profile* profile, const std::string& app_id) {
 }
 
 bool AccessingMicrophone(Profile* profile, const std::string& app_id) {
-  absl::optional<bool> accessing_microphone;
+  std::optional<bool> accessing_microphone;
   auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile);
   proxy->AppCapabilityAccessCache().ForOneApp(
       app_id,

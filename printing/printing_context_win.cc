@@ -78,18 +78,14 @@ void SimpleModifyWorldTransform(HDC context,
 // static
 std::unique_ptr<PrintingContext> PrintingContext::CreateImpl(
     Delegate* delegate,
-    bool skip_system_calls) {
-  std::unique_ptr<PrintingContext> context;
-  context = std::make_unique<PrintingContextSystemDialogWin>(delegate);
-#if BUILDFLAG(ENABLE_OOP_PRINTING)
-  if (skip_system_calls)
-    context->set_skip_system_calls();
-#endif
-  return context;
+    ProcessBehavior process_behavior) {
+  return std::make_unique<PrintingContextSystemDialogWin>(delegate,
+                                                          process_behavior);
 }
 
-PrintingContextWin::PrintingContextWin(Delegate* delegate)
-    : PrintingContext(delegate), context_(nullptr) {}
+PrintingContextWin::PrintingContextWin(Delegate* delegate,
+                                       ProcessBehavior process_behavior)
+    : PrintingContext(delegate, process_behavior), context_(nullptr) {}
 
 PrintingContextWin::~PrintingContextWin() {
   ReleaseContext();
@@ -327,16 +323,24 @@ mojom::ResultCode PrintingContextWin::InitWithSettingsForTest(
 mojom::ResultCode PrintingContextWin::NewDocument(
     const std::u16string& document_name) {
   DCHECK(!in_print_job_);
-  if (!context_ && !skip_system_calls())
+  if (!context_
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
+      && process_behavior() != ProcessBehavior::kOopEnabledSkipSystemCalls
+#endif
+  ) {
     return OnError();
+  }
 
   // Set the flag used by the AbortPrintJob dialog procedure.
   abort_printing_ = false;
 
   in_print_job_ = true;
 
-  if (skip_system_calls())
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
+  if (process_behavior() == ProcessBehavior::kOopEnabledSkipSystemCalls) {
     return mojom::ResultCode::kSuccess;
+  }
+#endif
 
   if (base::FeatureList::IsEnabled(printing::features::kUseXpsForPrinting)) {
     // This is all the new document context needed when using XPS.

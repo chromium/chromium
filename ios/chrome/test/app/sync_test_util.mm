@@ -40,8 +40,8 @@
 #import "components/sync_device_info/local_device_info_provider.h"
 #import "components/sync_sessions/session_store.h"
 #import "components/sync_sessions/session_sync_test_helper.h"
-#import "ios/chrome/browser/autofill/personal_data_manager_factory.h"
-#import "ios/chrome/browser/history/history_service_factory.h"
+#import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
+#import "ios/chrome/browser/history/model/history_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/sync/model/device_info_sync_service_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
@@ -171,7 +171,7 @@ void AddLegacyBookmarkToFakeSyncServer(std::string url,
 void AddSessionToFakeSyncServer(
     const synced_sessions::DistantSession& session) {
   std::vector<sync_pb::SessionSpecifics> specifics_list;
-  SessionID window_id = SessionID::FromSerializedValue(1);
+  SessionID window_id = SessionID::NewUnique();
   // Tab specifics.
   std::vector<SessionID> tab_list;
   sync_sessions::SessionSyncTestHelper helper;

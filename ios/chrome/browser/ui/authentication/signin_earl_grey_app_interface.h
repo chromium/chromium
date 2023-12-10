@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/signin/capabilities_dict.h"
+#import "ios/chrome/browser/signin/model/capabilities_dict.h"
 #import "url/gurl.h"
 
 @class FakeSystemIdentity;
@@ -64,10 +64,6 @@ enum class UserSelectableType;
 // directly the current SceneController.
 // `url` that triggered the web sign-in/consistency dialog.
 + (void)triggerConsistencyPromoSigninDialogWithURL:(NSURL*)url;
-
-// Clears the signed-in accounts preference, used to verify if the signed-in
-// accounts view should be presented.
-+ (void)clearLastSignedInAccounts;
 
 // Presents the signed-in accounts view controller if it needs to be presented.
 + (void)presentSignInAccountsViewControllerIfNecessary;

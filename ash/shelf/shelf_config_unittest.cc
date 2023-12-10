@@ -11,6 +11,7 @@
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/command_line.h"
+#include "ui/display/screen.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
@@ -23,9 +24,7 @@ class ShelfConfigTest : public AshTestBase {
  protected:
   bool is_dense() { return ShelfConfig::Get()->is_dense_; }
 
-  bool IsTabletMode() {
-    return Shell::Get()->tablet_mode_controller()->InTabletMode();
-  }
+  bool IsTabletMode() { return display::Screen::GetScreen()->InTabletMode(); }
 
   void SetTabletMode(bool is_tablet_mode) {
     Shell::Get()->tablet_mode_controller()->SetEnabledForTest(is_tablet_mode);

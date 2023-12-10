@@ -25,8 +25,12 @@
 #include "content/browser/renderer_host/media/media_stream_manager.h"
 #include "content/browser/renderer_host/media/media_stream_ui_proxy.h"
 #include "content/browser/renderer_host/media/video_capture_manager.h"
+#include "content/public/browser/content_browser_client.h"
+#include "content/public/common/content_client.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
+#include "content/public/test/test_renderer_host.h"
+#include "content/test/test_web_contents.h"
 #include "media/audio/audio_device_description.h"
 #include "media/audio/audio_system_impl.h"
 #include "media/audio/mock_audio_manager.h"
@@ -50,9 +54,6 @@ namespace content {
 
 namespace {
 
-const int kProcessId = 5;
-const int kRenderId = 6;
-const GlobalRenderFrameHostId kRenderFrameHostId{kProcessId, kRenderId};
 const size_t kNumFakeVideoDevices = 3;
 const char kNormalVideoDeviceID[] = "/dev/video0";
 const char kNoFormatsVideoDeviceID[] = "/dev/video1";
@@ -71,7 +72,7 @@ void PhysicalDevicesEnumerated(base::OnceClosure quit_closure,
 
 class MockMediaDevicesListener : public blink::mojom::MediaDevicesListener {
  public:
-  MockMediaDevicesListener() {}
+  MockMediaDevicesListener() = default;
 
   MOCK_METHOD2(OnDevicesChanged,
                void(MediaDeviceType, const blink::WebMediaDeviceInfoArray&));
@@ -98,6 +99,41 @@ std::u16string MaxLengthCaptureHandle() {
   return maxHandle;
 }
 
+class FakeContentBrowserClient : public ContentBrowserClient {
+ public:
+  explicit FakeContentBrowserClient(BrowserContext* expected_browser_context)
+      : expected_browser_context_(expected_browser_context) {}
+
+  void PreferenceRankAudioDeviceInfos(
+      BrowserContext* browser_context,
+      blink::WebMediaDeviceInfoArray& infos) override {
+    PreferenceRankDeviceInfos(browser_context, kDefaultAudioDeviceID, infos);
+  }
+
+  void PreferenceRankVideoDeviceInfos(
+      BrowserContext* browser_context,
+      blink::WebMediaDeviceInfoArray& infos) override {
+    PreferenceRankDeviceInfos(browser_context, kDefaultVideoDeviceID, infos);
+  }
+
+ private:
+  void PreferenceRankDeviceInfos(BrowserContext* browser_context,
+                                 const std::string& default_device_id,
+                                 blink::WebMediaDeviceInfoArray& infos) {
+    CHECK(expected_browser_context_ == browser_context);
+    const auto iter = std::find_if(infos.begin(), infos.end(),
+                                   [default_device_id](const auto& info) {
+                                     return info.device_id == default_device_id;
+                                   });
+    CHECK(iter < infos.end());
+    auto default_device = *iter;
+    infos.erase(iter);
+    infos.insert(infos.begin(), default_device);
+  }
+
+  raw_ptr<BrowserContext> expected_browser_context_;
+};
+
 }  // namespace
 
 class MediaDevicesDispatcherHostTest
@@ -107,11 +143,8 @@ class MediaDevicesDispatcherHostTest
       : task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP),
         origin_(url::Origin::Create(GURL(GetParam()))) {
     // Make sure we use fake devices to avoid long delays.
-    base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-        switches::kUseFakeDeviceForMediaStream,
-        base::StringPrintf("video-input-default-id=%s, "
-                           "audio-input-default-id=%s",
-                           kDefaultVideoDeviceID, kDefaultAudioDeviceID));
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        switches::kUseFakeDeviceForMediaStream);
     audio_manager_ = std::make_unique<media::MockAudioManager>(
         std::make_unique<media::TestAudioThread>());
     audio_system_ =
@@ -130,8 +163,10 @@ class MediaDevicesDispatcherHostTest
 
     media_stream_manager_ = std::make_unique<MediaStreamManager>(
         audio_system_.get(), std::move(video_capture_provider));
+
+    InitializeRenderFrameHost();
     host_ = std::make_unique<MediaDevicesDispatcherHost>(
-        kRenderFrameHostId, media_stream_manager_.get());
+        render_frame_host_->GetGlobalId(), media_stream_manager_.get());
     media_stream_manager_->media_devices_manager()
         ->set_get_salt_and_origin_cb_for_testing(base::BindRepeating(
             &MediaDevicesDispatcherHostTest::GetSaltAndOrigin,
@@ -149,6 +184,7 @@ class MediaDevicesDispatcherHostTest
   }
 
   void SetUp() override {
+    SetBrowserClientForTesting(&browser_client_);
     std::vector<media::FakeVideoCaptureDeviceSettings> fake_video_devices(
         kNumFakeVideoDevices);
     // A regular video device
@@ -478,6 +514,12 @@ class MediaDevicesDispatcherHostTest
                                 std::move(callback));
   }
 
+  void InitializeRenderFrameHost() {
+    web_contents_ = TestWebContents::Create(
+        &browser_context_, SiteInstanceImpl::Create(&browser_context_));
+    render_frame_host_ = web_contents_->GetPrimaryMainFrame();
+  }
+
   // The order of these members is important on teardown:
   // MediaDevicesDispatcherHost expects to be destroyed on the IO thread while
   // MediaStreamManager expects to be destroyed after the IO thread has been
@@ -502,6 +544,11 @@ class MediaDevicesDispatcherHostTest
   absl::optional<ExpectedCaptureHandleConfig>
       expected_set_capture_handle_config_;
   std::vector<media::VideoCaptureFormat> expected_video_capture_formats_;
+  RenderViewHostTestEnabler rvh_test_enabler_;
+  TestBrowserContext browser_context_;
+  std::unique_ptr<TestWebContents> web_contents_;
+  raw_ptr<TestRenderFrameHost> render_frame_host_;
+  FakeContentBrowserClient browser_client_{&browser_context_};
 };
 
 TEST_P(MediaDevicesDispatcherHostTest, EnumerateAudioInputDevices) {
@@ -606,7 +653,7 @@ TEST_P(MediaDevicesDispatcherHostTest, GetAvailableVideoInputDeviceFormats) {
 
 TEST_P(MediaDevicesDispatcherHostTest, SetCaptureHandleConfigWithNullptr) {
   EXPECT_CALL(*this,
-              MockOnBadMessage(kProcessId,
+              MockOnBadMessage(render_frame_host_->GetGlobalId().child_id,
                                bad_message::MDDH_NULL_CAPTURE_HANDLE_CONFIG));
   host_->SetCaptureHandleConfig(nullptr);
 }
@@ -615,8 +662,9 @@ TEST_P(MediaDevicesDispatcherHostTest,
        SetCaptureHandleConfigWithExcessivelLongHandle) {
   auto config = blink::mojom::CaptureHandleConfig::New();
   config->capture_handle = MaxLengthCaptureHandle() + u"a";  // Max exceeded.
-  EXPECT_CALL(*this, MockOnBadMessage(
-                         kProcessId, bad_message::MDDH_INVALID_CAPTURE_HANDLE));
+  EXPECT_CALL(*this,
+              MockOnBadMessage(render_frame_host_->GetGlobalId().child_id,
+                               bad_message::MDDH_INVALID_CAPTURE_HANDLE));
   host_->SetCaptureHandleConfig(std::move(config));
 }
 
@@ -627,7 +675,7 @@ TEST_P(MediaDevicesDispatcherHostTest,
   config->permitted_origins = {
       url::Origin::Create(GURL("https://chromium.org:123"))};
   EXPECT_CALL(
-      *this, MockOnBadMessage(kProcessId,
+      *this, MockOnBadMessage(render_frame_host_->GetGlobalId().child_id,
                               bad_message::MDDH_INVALID_ALL_ORIGINS_PERMITTED));
   host_->SetCaptureHandleConfig(std::move(config));
 }
@@ -637,9 +685,9 @@ TEST_P(MediaDevicesDispatcherHostTest, SetCaptureHandleConfigWithBadOrigin) {
   config->permitted_origins = {
       url::Origin::Create(GURL("https://chromium.org:999999"))  // Invalid.
   };
-  EXPECT_CALL(
-      *this,
-      MockOnBadMessage(kProcessId, bad_message::MDDH_INVALID_PERMITTED_ORIGIN));
+  EXPECT_CALL(*this,
+              MockOnBadMessage(render_frame_host_->GetGlobalId().child_id,
+                               bad_message::MDDH_INVALID_PERMITTED_ORIGIN));
   host_->SetCaptureHandleConfig(std::move(config));
 }
 
@@ -652,7 +700,9 @@ TEST_P(MediaDevicesDispatcherHostTest,
       url::Origin::Create(GURL("https://chromium.org:123")),
       url::Origin::Create(GURL("ftp://google.com:321"))};
   EXPECT_CALL(*this, MockOnBadMessage(_, _)).Times(0);
-  ExpectOnCaptureHandleConfigAccepted(kProcessId, kRenderId, config->Clone());
+  ExpectOnCaptureHandleConfigAccepted(
+      render_frame_host_->GetGlobalId().child_id,
+      render_frame_host_->GetGlobalId().frame_routing_id, config->Clone());
   host_->SetCaptureHandleConfig(std::move(config));
 }
 
@@ -664,7 +714,9 @@ TEST_P(MediaDevicesDispatcherHostTest,
       url::Origin::Create(GURL("https://chromium.org:123")),
       url::Origin::Create(GURL("ftp://google.com:321"))};
   EXPECT_CALL(*this, MockOnBadMessage(_, _)).Times(0);
-  ExpectOnCaptureHandleConfigAccepted(kProcessId, kRenderId, config->Clone());
+  ExpectOnCaptureHandleConfigAccepted(
+      render_frame_host_->GetGlobalId().child_id,
+      render_frame_host_->GetGlobalId().frame_routing_id, config->Clone());
   host_->SetCaptureHandleConfig(std::move(config));
 }
 
@@ -675,7 +727,9 @@ TEST_P(MediaDevicesDispatcherHostTest,
   config->capture_handle = u"0123456789abcdef";
   config->all_origins_permitted = true;
   EXPECT_CALL(*this, MockOnBadMessage(_, _)).Times(0);
-  ExpectOnCaptureHandleConfigAccepted(kProcessId, kRenderId, config->Clone());
+  ExpectOnCaptureHandleConfigAccepted(
+      render_frame_host_->GetGlobalId().child_id,
+      render_frame_host_->GetGlobalId().frame_routing_id, config->Clone());
   host_->SetCaptureHandleConfig(std::move(config));
 }
 
@@ -713,7 +767,7 @@ TEST_P(MediaDevicesDispatcherHostTest,
        RegisterAndUnregisterWithMediaDevicesManager) {
   {
     mojo::Remote<blink::mojom::MediaDevicesDispatcherHost> client;
-    MediaDevicesDispatcherHost::Create(kRenderFrameHostId,
+    MediaDevicesDispatcherHost::Create(render_frame_host_->GetGlobalId(),
                                        media_stream_manager_.get(),
                                        client.BindNewPipeAndPassReceiver());
     EXPECT_TRUE(client.is_bound());

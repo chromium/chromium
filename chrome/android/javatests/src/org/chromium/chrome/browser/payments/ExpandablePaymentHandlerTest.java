@@ -47,6 +47,7 @@ import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
+import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.payments.InputProtector;
 import org.chromium.components.payments.test_support.FakeClock;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -79,7 +80,6 @@ public class ExpandablePaymentHandlerTest {
     private boolean mUiShownCalled;
     private boolean mUiClosedCalled;
     private UiDevice mDevice;
-    private boolean mDefaultIsIncognito;
     private ChromeActivity mDefaultActivity;
     private BottomSheetTestSupport mBottomSheetTestSupport;
     private FakeClock mClock;
@@ -140,8 +140,7 @@ public class ExpandablePaymentHandlerTest {
         mClock = new FakeClock();
     }
 
-    private PaymentHandlerCoordinator createPaymentHandlerAndShow(boolean isIncognito)
-            throws Throwable {
+    private PaymentHandlerCoordinator createPaymentHandlerAndShow() throws Throwable {
         PaymentHandlerCoordinator paymentHandler = new PaymentHandlerCoordinator();
         paymentHandler.setInputProtectorForTest(new InputProtector(mClock));
         mRule.runOnUiThread(
@@ -149,7 +148,6 @@ public class ExpandablePaymentHandlerTest {
                         paymentHandler.show(
                                 mDefaultActivity.getCurrentWebContents(),
                                 defaultPaymentAppUrl(),
-                                isIncognito,
                                 defaultUiObserver()));
         return paymentHandler;
     }
@@ -215,7 +213,7 @@ public class ExpandablePaymentHandlerTest {
     @Feature({"Payments"})
     public void testOpenClose() throws Throwable {
         startDefaultServer();
-        PaymentHandlerCoordinator paymentHandler = createPaymentHandlerAndShow(mDefaultIsIncognito);
+        PaymentHandlerCoordinator paymentHandler = createPaymentHandlerAndShow();
         waitForUiShown();
 
         mRule.runOnUiThread(() -> paymentHandler.hide());
@@ -228,7 +226,7 @@ public class ExpandablePaymentHandlerTest {
     @Feature({"Payments"})
     public void testSwipeDownCloseUI() throws Throwable {
         startDefaultServer();
-        createPaymentHandlerAndShow(mDefaultIsIncognito);
+        createPaymentHandlerAndShow();
 
         waitForUiShown();
 
@@ -257,7 +255,7 @@ public class ExpandablePaymentHandlerTest {
     @Feature({"Payments"})
     public void testClickCloseButtonCloseUI() throws Throwable {
         startDefaultServer();
-        createPaymentHandlerAndShow(mDefaultIsIncognito);
+        createPaymentHandlerAndShow();
         waitForUiShown();
 
         mClock.advanceCurrentTimeMillis(SAFE_INPUT_DELAY);
@@ -270,7 +268,7 @@ public class ExpandablePaymentHandlerTest {
     @Feature({"Payments"})
     public void testCloseButtonInputProtection() throws Throwable {
         startDefaultServer();
-        createPaymentHandlerAndShow(mDefaultIsIncognito);
+        createPaymentHandlerAndShow();
         waitForUiShown();
 
         // Clicking close immediately is prevented.
@@ -293,7 +291,7 @@ public class ExpandablePaymentHandlerTest {
     @Feature({"Payments"})
     public void testWebContentsInitializedCallbackInvoked() throws Throwable {
         startDefaultServer();
-        PaymentHandlerCoordinator paymentHandler = createPaymentHandlerAndShow(mDefaultIsIncognito);
+        PaymentHandlerCoordinator paymentHandler = createPaymentHandlerAndShow();
         waitForUiShown();
 
         mRule.runOnUiThread(() -> paymentHandler.hide());
@@ -305,7 +303,7 @@ public class ExpandablePaymentHandlerTest {
     @Feature({"Payments"})
     public void testWebContentsDestroy() throws Throwable {
         startDefaultServer();
-        PaymentHandlerCoordinator paymentHandler = createPaymentHandlerAndShow(mDefaultIsIncognito);
+        PaymentHandlerCoordinator paymentHandler = createPaymentHandlerAndShow();
         waitForUiShown();
 
         Assert.assertFalse(paymentHandler.getWebContentsForTest().isDestroyed());
@@ -319,8 +317,8 @@ public class ExpandablePaymentHandlerTest {
     @Feature({"Payments"})
     public void testIncognitoTrue() throws Throwable {
         startDefaultServer();
-        PaymentHandlerCoordinator paymentHandler =
-                createPaymentHandlerAndShow(/* isIncognito= */ true);
+        mRule.loadUrlInNewTab(UrlConstants.ABOUT_URL, true);
+        PaymentHandlerCoordinator paymentHandler = createPaymentHandlerAndShow();
         waitForUiShown();
 
         Assert.assertTrue(paymentHandler.getWebContentsForTest().isIncognito());
@@ -334,8 +332,7 @@ public class ExpandablePaymentHandlerTest {
     @Feature({"Payments"})
     public void testIncognitoFalse() throws Throwable {
         startDefaultServer();
-        PaymentHandlerCoordinator paymentHandler =
-                createPaymentHandlerAndShow(/* isIncognito= */ false);
+        PaymentHandlerCoordinator paymentHandler = createPaymentHandlerAndShow();
         waitForUiShown();
 
         Assert.assertFalse(paymentHandler.getWebContentsForTest().isIncognito());
@@ -349,7 +346,7 @@ public class ExpandablePaymentHandlerTest {
     @Feature({"Payments"})
     public void testUiElements() throws Throwable {
         startDefaultServer();
-        PaymentHandlerCoordinator paymentHandler = createPaymentHandlerAndShow(mDefaultIsIncognito);
+        PaymentHandlerCoordinator paymentHandler = createPaymentHandlerAndShow();
         waitForUiShown();
 
         onView(withId(R.id.bottom_sheet))
@@ -391,7 +388,7 @@ public class ExpandablePaymentHandlerTest {
     @DisabledTest(message = "https://crbug.com/1491094")
     public void testWebContentsInputProtection() throws Throwable {
         startDefaultServer();
-        PaymentHandlerCoordinator paymentHandler = createPaymentHandlerAndShow(mDefaultIsIncognito);
+        PaymentHandlerCoordinator paymentHandler = createPaymentHandlerAndShow();
         waitForUiShown();
 
         CallbackHelper callbackHelper = new CallbackHelper();
@@ -439,7 +436,7 @@ public class ExpandablePaymentHandlerTest {
     @DisabledTest(message = "https://crbug.com/1382925")
     public void testOpenPageInfoDialog() throws Throwable {
         startDefaultServer();
-        PaymentHandlerCoordinator paymentHandler = createPaymentHandlerAndShow(mDefaultIsIncognito);
+        PaymentHandlerCoordinator paymentHandler = createPaymentHandlerAndShow();
         waitForTitleShown(paymentHandler.getWebContentsForTest());
 
         onView(withId(R.id.security_icon)).perform(click());
@@ -468,7 +465,7 @@ public class ExpandablePaymentHandlerTest {
     public void testNavigateBackWithSystemBackButton() throws Throwable {
         startDefaultServer();
 
-        PaymentHandlerCoordinator paymentHandler = createPaymentHandlerAndShow(mDefaultIsIncognito);
+        PaymentHandlerCoordinator paymentHandler = createPaymentHandlerAndShow();
 
         waitForTitleShown(paymentHandler.getWebContentsForTest(), "Max Pay");
         onView(withId(R.id.origin)).check(matches(withText(getOrigin(mServer))));
@@ -504,7 +501,7 @@ public class ExpandablePaymentHandlerTest {
     @ParameterAnnotations.UseMethodParameter(BadCertParams.class)
     public void testInsecureConnectionNotShowUi(int badCertificate) throws Throwable {
         startServer(badCertificate);
-        PaymentHandlerCoordinator paymentHandler = createPaymentHandlerAndShow(mDefaultIsIncognito);
+        PaymentHandlerCoordinator paymentHandler = createPaymentHandlerAndShow();
 
         CriteriaHelper.pollInstrumentationThread(
                 () -> paymentHandler.getWebContentsForTest().isDestroyed());
@@ -519,7 +516,7 @@ public class ExpandablePaymentHandlerTest {
     @ParameterAnnotations.UseMethodParameter(GoodCertParams.class)
     public void testSecureConnectionShowUi(int goodCertificate) throws Throwable {
         startServer(goodCertificate);
-        PaymentHandlerCoordinator paymentHandler = createPaymentHandlerAndShow(mDefaultIsIncognito);
+        PaymentHandlerCoordinator paymentHandler = createPaymentHandlerAndShow();
         waitForTitleShown(paymentHandler.getWebContentsForTest());
 
         onView(withId(R.id.security_icon))
@@ -546,7 +543,6 @@ public class ExpandablePaymentHandlerTest {
                             paymentHandler.show(
                                     mDefaultActivity.getCurrentWebContents(),
                                     defaultPaymentAppUrl(),
-                                    mDefaultIsIncognito,
                                     defaultUiObserver()));
                     // When the return value is null, the caller needs to hide() manually.
                     paymentHandler.hide();

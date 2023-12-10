@@ -144,6 +144,7 @@ class UnsentLogStore : public LogStore {
   const std::string& staged_log_hash() const override;
   const std::string& staged_log_signature() const override;
   absl::optional<uint64_t> staged_log_user_id() const override;
+  const LogMetadata staged_log_metadata() const override;
   void StageNextLog() override;
   void DiscardStagedLog(base::StringPiece reason = "") override;
   void MarkStagedLogAsSent() override;

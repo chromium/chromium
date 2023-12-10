@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/containers/span.h"
-#include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/numerics/checked_math.h"
@@ -22,6 +21,7 @@
 #include "media/base/video_frame_pool.h"
 #include "media/base/video_types.h"
 #include "media/base/video_util.h"
+#include "media/renderers/paint_canvas_video_renderer.h"
 #include "third_party/blink/public/mojom/frame/lifecycle.mojom-blink.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -455,11 +455,30 @@ bool ParseCopyToOptions(const media::VideoFrame& frame,
                         gfx::Rect* src_rect_out = nullptr) {
   DCHECK(dest_layout_out);
 
-  auto copy_to_format = CopyToFormat(frame);
-  if (!copy_to_format) {
+  auto frame_format = CopyToFormat(frame);
+  if (!frame_format.has_value()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,
         "Operation is not supported when format is null.");
+    return false;
+  }
+
+  media::VideoPixelFormat copy_to_format = frame_format.value();
+  if (options->hasFormat()) {
+    copy_to_format = ToMediaPixelFormat(options->format().AsEnum());
+  }
+
+  if (options->hasColorSpace() &&
+      options->colorSpace() != V8PredefinedColorSpace::Enum::kSRGB) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotSupportedError,
+        "This pixel conversion to this color space is not supported.");
+  }
+
+  if (copy_to_format != frame.format() && !media::IsRGB(copy_to_format)) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotSupportedError,
+        "This pixel format conversion is not supported.");
     return false;
   }
 
@@ -470,19 +489,19 @@ bool ParseCopyToOptions(const media::VideoFrame& frame,
     if (exception_state.HadException())
       return false;
   }
-  if (!ValidateOffsetAlignment(*copy_to_format, src_rect,
+  if (!ValidateOffsetAlignment(copy_to_format, src_rect,
                                options->hasRect() ? "rect" : "visibleRect",
                                exception_state)) {
     return false;
   }
 
   gfx::Size dest_coded_size = src_rect.size();
-  VideoFrameLayout dest_layout(*copy_to_format, dest_coded_size,
+  VideoFrameLayout dest_layout(copy_to_format, dest_coded_size,
                                exception_state);
   if (exception_state.HadException())
     return false;
   if (options->hasLayout()) {
-    dest_layout = VideoFrameLayout(*copy_to_format, dest_coded_size,
+    dest_layout = VideoFrameLayout(copy_to_format, dest_coded_size,
                                    options->layout(), exception_state);
     if (exception_state.HadException())
       return false;
@@ -1079,6 +1098,44 @@ uint32_t VideoFrame::allocationSize(VideoFrameCopyToOptions* options,
   return dest_layout.Size();
 }
 
+void VideoFrame::ConvertAndCopyToRGB(scoped_refptr<media::VideoFrame> frame,
+                                     const gfx::Rect& src_rect,
+                                     const VideoFrameLayout& dest_layout,
+                                     base::span<uint8_t> buffer) {
+  DCHECK(media::IsRGB(dest_layout.Format()));
+  SkColorType skia_pixel_format = media::SkColorTypeForPlane(
+      dest_layout.Format(), media::VideoFrame::kARGBPlane);
+
+  if (frame->visible_rect() != src_rect) {
+    frame = media::VideoFrame::WrapVideoFrame(frame, frame->format(), src_rect,
+                                              src_rect.size());
+  }
+
+  SkImageInfo dst_image_info =
+      SkImageInfo::Make(src_rect.width(), src_rect.height(), skia_pixel_format,
+                        kUnpremul_SkAlphaType, SkColorSpace::MakeSRGB());
+
+  SkBitmap bitmap;
+  const wtf_size_t plane = 0;
+  DCHECK_EQ(dest_layout.NumPlanes(), 1u);
+  uint8_t* dst = buffer.data() + dest_layout.Offset(plane);
+  bitmap.installPixels(dst_image_info, dst, dest_layout.Stride(plane));
+  void* last_pixel_addr =
+      bitmap.getAddr(src_rect.width() - 1, src_rect.height() - 1);
+  CHECK_LE(last_pixel_addr, buffer.data() + buffer.size());
+
+  cc::PaintFlags flags;
+  flags.setBlendMode(SkBlendMode::kSrc);
+  flags.setFilterQuality(cc::PaintFlags::FilterQuality::kNone);
+
+  cc::SkiaPaintCanvas canvas(bitmap);
+  // TODO(crbug.com/1442991): Cache this instance of PaintCanvasVideoRenderer
+  media::PaintCanvasVideoRenderer renderer;
+  auto context_provider = GetRasterContextProvider();
+  renderer.Paint(std::move(frame), &canvas, gfx::RectF(src_rect.size()), flags,
+                 media::kNoTransformation, context_provider.get());
+}
+
 ScriptPromiseResolver* VideoFrame::CopyToAsync(
     ScriptState* script_state,
     scoped_refptr<media::VideoFrame> frame,
@@ -1143,8 +1200,11 @@ ScriptPromise VideoFrame::copyTo(ScriptState* script_state,
     return ScriptPromise();
   }
 
-  // Copy planes.
-  if (local_frame->IsMappable()) {
+  if (RuntimeEnabledFeatures::WebCodecsCopyToRGBEnabled() &&
+      dest_layout.Format() != local_frame->format() &&
+      media::IsRGB(dest_layout.Format())) {
+    ConvertAndCopyToRGB(local_frame, src_rect, dest_layout, buffer);
+  } else if (local_frame->IsMappable()) {
     CopyMappablePlanes(*local_frame, src_rect, dest_layout, buffer);
   } else if (local_frame->HasGpuMemoryBuffer()) {
     auto mapped_frame = media::ConvertToMemoryMappedFrame(local_frame);

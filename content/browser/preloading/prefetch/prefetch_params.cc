@@ -4,8 +4,11 @@
 
 #include "content/browser/preloading/prefetch/prefetch_params.h"
 
+#include <string>
+
 #include "base/command_line.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/no_destructor.h"
 #include "base/rand_util.h"
 #include "content/browser/preloading/prefetch/prefetch_features.h"
 #include "content/common/features.h"
@@ -28,22 +31,7 @@ GURL PrefetchProxyHost(const GURL& default_proxy_url) {
     LOG(ERROR) << "--isolated-prerender-tunnel-proxy value is invalid";
   }
 
-  GURL url(base::GetFieldTrialParamValueByFeature(
-      features::kPrefetchUseContentRefactor, "proxy_host"));
-  if (url.is_valid() && url.SchemeIs(url::kHttpsScheme)) {
-    return url;
-  }
-
   return default_proxy_url;
-}
-
-std::string PrefetchProxyHeaderKey() {
-  std::string header = base::GetFieldTrialParamValueByFeature(
-      features::kPrefetchUseContentRefactor, "proxy_header_key");
-  if (!header.empty()) {
-    return header;
-  }
-  return "chrome-tunnel";
 }
 
 std::string PrefetchProxyServerExperimentGroup() {
@@ -157,13 +145,14 @@ bool PrefetchServiceHTMLOnly() {
       features::kPrefetchUseContentRefactor, "html_only", false);
 }
 
-absl::optional<std::string> PrefetchBypassProxyForHost() {
-  absl::optional<std::string> value;
-  auto val_str = base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-      "bypass-prefetch-proxy-for-host");
-  if (val_str.size())
-    value = std::move(val_str);
-  return value;
+bool ShouldPrefetchBypassProxyForTestHost(std::string_view host) {
+  static const base::NoDestructor<std::string> bypass(
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          "bypass-prefetch-proxy-for-host"));
+  if (bypass->empty()) {
+    return false;
+  }
+  return host == *bypass;
 }
 
 base::TimeDelta PrefetchCacheableDuration() {
@@ -273,18 +262,6 @@ std::string GetPrefetchEagernessHistogramSuffix(
   }
 }
 
-bool IsContentPrefetchHoldback() {
-  return base::GetFieldTrialParamByFeatureAsBool(
-      features::kPrefetchUseContentRefactor, "prefetch_holdback", false);
-}
-
-base::TimeDelta PrefetchMaximumRetryAfterDelta() {
-  int max_seconds = base::GetFieldTrialParamByFeatureAsInt(
-      features::kPrefetchUseContentRefactor, "max_retry_after_duration_secs",
-      1 * 60 * 60 * 24 * 7 /* 1 week */);
-  return base::Seconds(max_seconds);
-}
-
 bool PrefetchNewLimitsEnabled() {
   return base::FeatureList::IsEnabled(::features::kPrefetchNewLimits);
 }
@@ -299,6 +276,15 @@ size_t MaxNumberOfNonEagerPrefetchesPerPageForPrefetchNewLimits() {
   int max = base::GetFieldTrialParamByFeatureAsInt(
       ::features::kPrefetchNewLimits, "max_non_eager_prefetches", 2);
   return std::max(0, max);
+}
+
+bool PrefetchNIKScopeEnabled() {
+  return base::FeatureList::IsEnabled(features::kPrefetchNIKScope);
+}
+
+bool PrefetchDocumentManagerEarlyCookieCopySkipped() {
+  return base::FeatureList::IsEnabled(
+      features::kPrefetchDocumentManagerEarlyCookieCopySkipped);
 }
 
 }  // namespace content

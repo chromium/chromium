@@ -1,3 +1,0 @@
-Test	http://www.w3.org/2001/DOM-Test-Suite/level3/core/domconfigparameternames01
-Status	failure
-Message	configNotNull: assertNotNull failed

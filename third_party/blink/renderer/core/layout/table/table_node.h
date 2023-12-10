@@ -6,29 +6,28 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_TABLE_TABLE_NODE_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_block_node.h"
-
+#include "third_party/blink/renderer/core/layout/block_node.h"
 #include "third_party/blink/renderer/core/layout/table/table_borders.h"
 #include "third_party/blink/renderer/core/layout/table/table_layout_algorithm_types.h"
 
 namespace blink {
 
-// Table specific extensions to NGBlockNode.
-class CORE_EXPORT TableNode final : public NGBlockNode {
+// Table specific extensions to BlockNode.
+class CORE_EXPORT TableNode final : public BlockNode {
  public:
-  explicit TableNode(LayoutBox* box) : NGBlockNode(box) {}
+  explicit TableNode(LayoutBox* box) : BlockNode(box) {}
 
   const BoxStrut& GetTableBordersStrut() const;
 
   const TableBorders* GetTableBorders() const;
 
-  LayoutUnit ComputeCaptionBlockSize(const NGConstraintSpace& space) const;
+  LayoutUnit ComputeCaptionBlockSize(const ConstraintSpace& space) const;
 
   scoped_refptr<const TableTypes::Columns> GetColumnConstraints(
       const TableGroupedChildren&,
       const BoxStrut& border_padding) const;
 
-  LayoutUnit ComputeTableInlineSize(const NGConstraintSpace&,
+  LayoutUnit ComputeTableInlineSize(const ConstraintSpace&,
                                     const BoxStrut& border_padding) const;
 
   // Tables are special in that their max intrinsic-size can be "infinite"
@@ -44,9 +43,7 @@ class CORE_EXPORT TableNode final : public NGBlockNode {
 
 template <>
 struct DowncastTraits<TableNode> {
-  static bool AllowFrom(const NGLayoutInputNode& node) {
-    return node.IsTable();
-  }
+  static bool AllowFrom(const LayoutInputNode& node) { return node.IsTable(); }
 };
 
 }  // namespace blink

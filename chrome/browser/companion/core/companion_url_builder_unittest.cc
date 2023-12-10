@@ -13,7 +13,7 @@
 #include "chrome/browser/companion/core/mock_signin_delegate.h"
 #include "chrome/browser/companion/core/promo_handler.h"
 #include "chrome/browser/companion/core/proto/companion_url_params.pb.h"
-#include "chrome/common/companion/visual_search/features.h"
+#include "chrome/common/companion/visual_query/features.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
@@ -242,7 +242,7 @@ TEST_F(CompanionUrlBuilderTest, MsbbAndPcOn) {
   EXPECT_TRUE(proto.is_signed_in());
   EXPECT_TRUE(proto.is_entrypoint_pinned_by_default());
   EXPECT_TRUE(proto.links_open_in_new_tab());
-  EXPECT_FALSE(proto.is_vqs_enabled_on_chrome());
+  EXPECT_TRUE(proto.is_vqs_enabled_on_chrome());
   EXPECT_TRUE(proto.is_upload_dialog_supported());
   EXPECT_TRUE(proto.is_hard_refresh_supported());
 
@@ -420,7 +420,7 @@ class CompanionUrlBuilderVqsEnabledTest : public CompanionUrlBuilderTest {
     return {base::test::FeatureRefAndParams(
                 features::internal::kSidePanelCompanion, {}),
             base::test::FeatureRefAndParams(
-                visual_search::features::kVisualSearchSuggestions, {})};
+                visual_query::features::kVisualQuerySuggestions, {})};
   }
 };
 

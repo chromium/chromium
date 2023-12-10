@@ -17,32 +17,23 @@ import org.jni_zero.JNINamespace;
  */
 @JNINamespace("media_session")
 public final class MediaMetadata {
-    @NonNull
-    private String mTitle;
+    @NonNull private String mTitle;
 
-    @NonNull
-    private String mArtist;
+    @NonNull private String mArtist;
 
-    @NonNull
-    private String mAlbum;
+    @NonNull private String mAlbum;
 
-    /**
-     * Returns the title associated with the media session.
-     */
+    /** Returns the title associated with the media session. */
     public String getTitle() {
         return mTitle;
     }
 
-    /**
-     * Returns the artist name associated with the media session.
-     */
+    /** Returns the artist name associated with the media session. */
     public String getArtist() {
         return mArtist;
     }
 
-    /**
-     * Returns the album name associated with the media session.
-     */
+    /** Returns the album name associated with the media session. */
     public String getAlbum() {
         return mAlbum;
     }
@@ -80,25 +71,22 @@ public final class MediaMetadata {
         return new MediaMetadata(title, artist, album);
     }
 
-    /**
-     * Creates a new MediaMetadata.
-     */
+    /** Creates a new MediaMetadata. */
     public MediaMetadata(@NonNull String title, @NonNull String artist, @NonNull String album) {
         mTitle = title;
         mArtist = artist;
         mAlbum = album;
     }
 
-    /**
-     * Comparing MediaMetadata is expensive and should be used sparingly
-     */
+    /** Comparing MediaMetadata is expensive and should be used sparingly */
     @Override
     public boolean equals(Object obj) {
         if (obj == this) return true;
         if (!(obj instanceof MediaMetadata)) return false;
 
         MediaMetadata other = (MediaMetadata) obj;
-        return TextUtils.equals(mTitle, other.mTitle) && TextUtils.equals(mArtist, other.mArtist)
+        return TextUtils.equals(mTitle, other.mTitle)
+                && TextUtils.equals(mArtist, other.mArtist)
                 && TextUtils.equals(mAlbum, other.mAlbum);
     }
 

@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_STORE_ANDROID_BACKEND_ERROR_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_STORE_ANDROID_BACKEND_ERROR_H_
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
 
 namespace password_manager {
 
@@ -54,11 +54,11 @@ struct AndroidBackendError {
 
   // Numeric error code returned by the GMS Core API, only available if 'type'
   // is kExternalError.
-  absl::optional<int> api_error_code;
+  std::optional<int> api_error_code;
 
   // Numeric connection result status code returned by the GMS Core API, only
   // available if ConnectionResult was set on the returned exception.
-  absl::optional<int> connection_result_code;
+  std::optional<int> connection_result_code;
 };
 
 }  // namespace password_manager

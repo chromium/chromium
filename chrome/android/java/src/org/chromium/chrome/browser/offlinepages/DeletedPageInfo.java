@@ -4,9 +4,7 @@
 
 package org.chromium.chrome.browser.offlinepages;
 
-/**
- * Simple object representing important information of a deleted offline page.
- */
+/** Simple object representing important information of a deleted offline page. */
 public class DeletedPageInfo {
     private final long mOfflineId;
     private final ClientId mClientId;

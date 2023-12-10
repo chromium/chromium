@@ -5,9 +5,10 @@
 #ifndef CONTENT_BROWSER_PRIVATE_AGGREGATION_PRIVATE_AGGREGATION_BUDGET_KEY_H_
 #define CONTENT_BROWSER_PRIVATE_AGGREGATION_PRIVATE_AGGREGATION_BUDGET_KEY_H_
 
+#include <optional>
+
 #include "base/time/time.h"
 #include "content/common/content_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 namespace content {
@@ -63,8 +64,8 @@ class CONTENT_EXPORT PrivateAggregationBudgetKey {
   PrivateAggregationBudgetKey& operator=(PrivateAggregationBudgetKey&& other) =
       default;
 
-  // Returns `absl::nullopt` if `origin` is not potentially trustworthy.
-  static absl::optional<PrivateAggregationBudgetKey>
+  // Returns `std::nullopt` if `origin` is not potentially trustworthy.
+  static std::optional<PrivateAggregationBudgetKey>
   Create(url::Origin origin, base::Time api_invocation_time, Api api);
 
   // Skips validity checks

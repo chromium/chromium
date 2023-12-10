@@ -497,9 +497,6 @@ void OriginTrialContext::AddForceEnabledTrials(
 }
 
 bool OriginTrialContext::CanEnableTrialFromName(const StringView& trial_name) {
-  if (trial_name == "Portals")
-    return base::FeatureList::IsEnabled(features::kPortals);
-
   if (trial_name == "PrivacySandboxAdsAPIs")
     return base::FeatureList::IsEnabled(features::kPrivacySandboxAdsAPIs);
 
@@ -517,11 +514,6 @@ bool OriginTrialContext::CanEnableTrialFromName(const StringView& trial_name) {
 
   if (trial_name == "TrustTokens")
     return base::FeatureList::IsEnabled(network::features::kFledgePst);
-
-  if (trial_name == "SpeculationRulesPrefetch") {
-    return base::FeatureList::IsEnabled(
-        features::kSpeculationRulesPrefetchProxy);
-  }
 
   if (trial_name == "SpeculationRulesPrefetchFuture") {
     return base::FeatureList::IsEnabled(
@@ -565,10 +557,6 @@ OriginTrialContext::RestrictedFeaturesForTrial(const String& trial_name) {
     }
     if (!base::FeatureList::IsEnabled(features::kBrowsingTopics)) {
       restricted.push_back(mojom::blink::OriginTrialFeature::kTopicsAPI);
-    }
-    if (!base::FeatureList::IsEnabled(features::kBrowsingTopics) ||
-        !base::FeatureList::IsEnabled(features::kBrowsingTopicsXHR)) {
-      restricted.push_back(mojom::blink::OriginTrialFeature::kTopicsXHR);
     }
     if (!base::FeatureList::IsEnabled(features::kBrowsingTopics) ||
         !base::FeatureList::IsEnabled(features::kBrowsingTopicsDocumentAPI)) {

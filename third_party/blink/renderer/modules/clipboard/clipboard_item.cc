@@ -18,27 +18,29 @@ namespace blink {
 
 // static
 ClipboardItem* ClipboardItem::Create(
-    const HeapVector<std::pair<String, ScriptPromise>>& items,
+    const HeapVector<std::pair<String, ScriptPromise>>& representations,
     ExceptionState& exception_state) {
   // Check that incoming dictionary isn't empty. If it is, it's possible that
   // Javascript bindings implicitly converted an Object (like a ScriptPromise)
   // into {}, an empty dictionary.
-  if (!items.size()) {
+  if (!representations.size()) {
     exception_state.ThrowTypeError("Empty dictionary argument");
     return nullptr;
   }
-  return MakeGarbageCollected<ClipboardItem>(items);
+  return MakeGarbageCollected<ClipboardItem>(representations);
 }
 
 ClipboardItem::ClipboardItem(
-    const HeapVector<std::pair<String, ScriptPromise>>& items) {
-  DCHECK(items.size());
-  for (const auto& item : items) {
-    String web_custom_format = Clipboard::ParseWebCustomFormat(item.first);
+    const HeapVector<std::pair<String, ScriptPromise>>& representations) {
+  DCHECK(representations.size() ||
+         RuntimeEnabledFeatures::EmptyClipboardReadEnabled());
+  for (const auto& representation : representations) {
+    String web_custom_format =
+        Clipboard::ParseWebCustomFormat(representation.first);
     if (web_custom_format.empty()) {
       // Any arbitrary type can be added to ClipboardItem, but there may not be
       // any read/write support for that type.
-      items_.push_back(item);
+      representations_.push_back(representation);
     } else {
       // Types with "web " prefix are special, so we do some level of MIME type
       // parsing here to get a valid web custom format type.
@@ -50,16 +52,17 @@ ClipboardItem::ClipboardItem(
       String web_custom_format_string =
           String::Format("%s%s", ui::kWebClipboardFormatPrefix,
                          web_custom_format.Utf8().c_str());
-      items_.emplace_back(web_custom_format_string, item.second);
-      custom_format_items_.push_back(web_custom_format_string);
+      representations_.emplace_back(web_custom_format_string,
+                                    representation.second);
+      custom_format_types_.push_back(web_custom_format_string);
     }
   }
 }
 
 Vector<String> ClipboardItem::types() const {
   Vector<String> types;
-  types.ReserveInitialCapacity(items_.size());
-  for (const auto& item : items_) {
+  types.ReserveInitialCapacity(representations_.size());
+  for (const auto& item : representations_) {
     types.push_back(item.first);
   }
   return types;
@@ -68,7 +71,7 @@ Vector<String> ClipboardItem::types() const {
 ScriptPromise ClipboardItem::getType(ScriptState* script_state,
                                      const String& type,
                                      ExceptionState& exception_state) const {
-  for (const auto& item : items_) {
+  for (const auto& item : representations_) {
     if (type == item.first)
       return item.second;
   }
@@ -88,7 +91,7 @@ bool ClipboardItem::supports(const String& type) {
 }
 
 void ClipboardItem::Trace(Visitor* visitor) const {
-  visitor->Trace(items_);
+  visitor->Trace(representations_);
   ScriptWrappable::Trace(visitor);
 }
 

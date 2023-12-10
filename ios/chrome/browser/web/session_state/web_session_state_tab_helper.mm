@@ -18,10 +18,8 @@
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
-#import "ios/chrome/browser/web/features.h"
 #import "ios/chrome/browser/web/session_state/web_session_state_cache.h"
 #import "ios/chrome/browser/web/session_state/web_session_state_cache_factory.h"
-#import "ios/web/common/features.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/navigation/navigation_manager.h"
@@ -72,7 +70,6 @@ const int64_t kMaxSessionState = 1024 * 5;  // 5MB
 
 WebSessionStateTabHelper::WebSessionStateTabHelper(web::WebState* web_state)
     : web_state_(web_state) {
-  CHECK(web::UseNativeSessionRestorationCache());
   web_state_->AddObserver(this);
   web_state_->GetPageWorldWebFramesManager()->AddObserver(this);
   if (web_state_->IsRealized()) {

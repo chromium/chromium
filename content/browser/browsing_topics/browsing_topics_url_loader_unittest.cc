@@ -53,6 +53,10 @@ class TopicsInterceptingContentBrowserClient : public ContentBrowserClient {
     last_get_topics_param_ = get_topics;
     last_observe_param_ = observe;
 
+    if (!topics_eligible_) {
+      return false;
+    }
+
     if (get_topics) {
       if (context_origin == url::Origin::Create(GURL("https://foo1.com"))) {
         blink::mojom::EpochTopicPtr result_topic =
@@ -88,6 +92,8 @@ class TopicsInterceptingContentBrowserClient : public ContentBrowserClient {
     return handle_topics_web_api_count_;
   }
 
+  void set_topics_eligible(bool eligible) { topics_eligible_ = eligible; }
+
   bool last_get_topics_param() const { return last_get_topics_param_; }
 
   bool last_observe_param() const { return last_observe_param_; }
@@ -96,6 +102,7 @@ class TopicsInterceptingContentBrowserClient : public ContentBrowserClient {
   size_t handle_topics_web_api_count_ = 0;
   bool last_get_topics_param_ = false;
   bool last_observe_param_ = false;
+  bool topics_eligible_ = true;
 };
 
 }  // namespace
@@ -115,10 +122,11 @@ class BrowsingTopicsURLLoaderTest : public RenderViewHostTestHarness {
   void TearDown() override {
     SetBrowserClientForTesting(original_client_);
 
+    subresource_proxying_url_loader_service_.reset();
     content::RenderViewHostTestHarness::TearDown();
   }
 
-  const TopicsInterceptingContentBrowserClient& browser_client() const {
+  TopicsInterceptingContentBrowserClient& browser_client() {
     return browser_client_;
   }
 
@@ -231,8 +239,8 @@ TEST_F(BrowsingTopicsURLLoaderTest, RequestArrivedBeforeCommit) {
 
   EXPECT_EQ(browser_client().handle_topics_web_api_count(), 0u);
 
-  histograms.ExpectUniqueSample(
-      "BrowsingTopics.InterceptedTopicsFetchRequest.DocumentPresent", false, 1);
+  histograms.ExpectUniqueSample("BrowsingTopics.Fetch.InitialUrlRequest.Result",
+                                2 /* kNoInitiatorFrame */, 1);
 }
 
 TEST_F(BrowsingTopicsURLLoaderTest, RequestArrivedAfterCommit) {
@@ -282,8 +290,8 @@ TEST_F(BrowsingTopicsURLLoaderTest, RequestArrivedAfterCommit) {
   EXPECT_FALSE(browser_client().last_get_topics_param());
   EXPECT_TRUE(browser_client().last_observe_param());
 
-  histograms.ExpectUniqueSample(
-      "BrowsingTopics.InterceptedTopicsFetchRequest.DocumentPresent", true, 1);
+  histograms.ExpectUniqueSample("BrowsingTopics.Fetch.InitialUrlRequest.Result",
+                                0 /* kSuccess */, 1);
 }
 
 TEST_F(BrowsingTopicsURLLoaderTest, RequestArrivedAfterDocumentDestroyed) {
@@ -335,8 +343,8 @@ TEST_F(BrowsingTopicsURLLoaderTest, RequestArrivedAfterDocumentDestroyed) {
 
   EXPECT_EQ(browser_client().handle_topics_web_api_count(), 0u);
 
-  histograms.ExpectUniqueSample(
-      "BrowsingTopics.InterceptedTopicsFetchRequest.DocumentPresent", false, 1);
+  histograms.ExpectUniqueSample("BrowsingTopics.Fetch.InitialUrlRequest.Result",
+                                2 /* kNoInitiatorFrame */, 1);
 }
 
 TEST_F(BrowsingTopicsURLLoaderTest, RequestFromSubframe) {
@@ -484,7 +492,63 @@ TEST_F(BrowsingTopicsURLLoaderTest, EmptyTopics) {
   EXPECT_TRUE(browser_client().last_observe_param());
 }
 
+TEST_F(BrowsingTopicsURLLoaderTest, TopicsNotEligibleDueToFromFencedFrame) {
+  base::HistogramTester histograms;
+
+  NavigatePage(GURL("https://google.com"));
+
+  RenderFrameHost* initial_fenced_frame =
+      RenderFrameHostTester::For(web_contents()->GetPrimaryMainFrame())
+          ->AppendFencedFrame();
+
+  auto fenced_frame_navigation = NavigationSimulator::CreateRendererInitiated(
+      GURL("https://google.com"), initial_fenced_frame);
+
+  fenced_frame_navigation->Commit();
+
+  RenderFrameHost* final_fenced_frame =
+      fenced_frame_navigation->GetFinalRenderFrameHost();
+
+  mojo::Remote<network::mojom::URLLoaderFactory> remote_url_loader_factory;
+  network::TestURLLoaderFactory proxied_url_loader_factory;
+  mojo::Remote<network::mojom::URLLoader> remote_loader;
+  mojo::PendingReceiver<network::mojom::URLLoaderClient> client;
+
+  base::WeakPtr<SubresourceProxyingURLLoaderService::BindContext> bind_context =
+      CreateFactory(proxied_url_loader_factory, remote_url_loader_factory);
+  bind_context->OnDidCommitNavigation(final_fenced_frame->GetWeakDocumentPtr());
+
+  // The request won't be eligible for topics because it's from a fenced frame.
+  remote_url_loader_factory->CreateLoaderAndStart(
+      remote_loader.BindNewPipeAndPassReceiver(),
+      /*request_id=*/0, /*options=*/0,
+      CreateResourceRequest(GURL("https://foo1.com")),
+      client.InitWithNewPipeAndPassRemote(),
+      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
+  remote_url_loader_factory.FlushForTesting();
+
+  EXPECT_EQ(1, proxied_url_loader_factory.NumPending());
+  network::TestURLLoaderFactory::PendingRequest* pending_request =
+      &proxied_url_loader_factory.pending_requests()->back();
+
+  std::string topics_header_value;
+  bool has_topics_header = pending_request->request.headers.GetHeader(
+      "Sec-Browsing-Topics", &topics_header_value);
+  EXPECT_FALSE(has_topics_header);
+
+  pending_request->client->OnReceiveResponse(CreateResponseHead(true),
+                                             /*body=*/{}, absl::nullopt);
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(browser_client().handle_topics_web_api_count(), 0u);
+
+  histograms.ExpectUniqueSample("BrowsingTopics.Fetch.InitialUrlRequest.Result",
+                                3 /* kFromFencedFrame */, 1);
+}
+
 TEST_F(BrowsingTopicsURLLoaderTest, TopicsNotEligibleDueToInactiveFrame) {
+  base::HistogramTester histograms;
+
   NavigatePage(GURL("https://google.com"));
 
   mojo::Remote<network::mojom::URLLoaderFactory> remote_url_loader_factory;
@@ -526,9 +590,57 @@ TEST_F(BrowsingTopicsURLLoaderTest, TopicsNotEligibleDueToInactiveFrame) {
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(browser_client().handle_topics_web_api_count(), 0u);
+
+  histograms.ExpectUniqueSample("BrowsingTopics.Fetch.InitialUrlRequest.Result",
+                                4 /* kFromNonPrimaryPage */, 1);
+}
+
+TEST_F(BrowsingTopicsURLLoaderTest, OpaqueRequestURL) {
+  base::HistogramTester histograms;
+
+  NavigatePage(GURL("https://google.com"));
+
+  mojo::Remote<network::mojom::URLLoaderFactory> remote_url_loader_factory;
+  network::TestURLLoaderFactory proxied_url_loader_factory;
+  mojo::Remote<network::mojom::URLLoader> remote_loader;
+  mojo::PendingReceiver<network::mojom::URLLoaderClient> client;
+
+  base::WeakPtr<SubresourceProxyingURLLoaderService::BindContext> bind_context =
+      CreateFactory(proxied_url_loader_factory, remote_url_loader_factory);
+  bind_context->OnDidCommitNavigation(
+      web_contents()->GetPrimaryMainFrame()->GetWeakDocumentPtr());
+
+  // Fetch an opaque url. The request won't be eligible for topics.
+  remote_url_loader_factory->CreateLoaderAndStart(
+      remote_loader.BindNewPipeAndPassReceiver(),
+      /*request_id=*/0, /*options=*/0,
+      CreateResourceRequest(GURL("data:text/javascript;base64,Ly8gSGVsbG8h")),
+      client.InitWithNewPipeAndPassRemote(),
+      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
+  remote_url_loader_factory.FlushForTesting();
+
+  EXPECT_EQ(1, proxied_url_loader_factory.NumPending());
+  network::TestURLLoaderFactory::PendingRequest* pending_request =
+      &proxied_url_loader_factory.pending_requests()->back();
+
+  std::string topics_header_value;
+  bool has_topics_header = pending_request->request.headers.GetHeader(
+      "Sec-Browsing-Topics", &topics_header_value);
+  EXPECT_FALSE(has_topics_header);
+
+  pending_request->client->OnReceiveResponse(CreateResponseHead(true),
+                                             /*body=*/{}, absl::nullopt);
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(browser_client().handle_topics_web_api_count(), 0u);
+
+  histograms.ExpectUniqueSample("BrowsingTopics.Fetch.InitialUrlRequest.Result",
+                                5 /* kOpaqueCallerOrigin */, 1);
 }
 
 TEST_F(BrowsingTopicsURLLoaderTest, TopicsNotEligibleDueToPermissionsPolicy) {
+  base::HistogramTester histograms;
+
   NavigatePage(GURL("https://google.com"));
 
   mojo::Remote<network::mojom::URLLoaderFactory> remote_url_loader_factory;
@@ -565,6 +677,60 @@ TEST_F(BrowsingTopicsURLLoaderTest, TopicsNotEligibleDueToPermissionsPolicy) {
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(browser_client().handle_topics_web_api_count(), 0u);
+
+  histograms.ExpectUniqueSample("BrowsingTopics.Fetch.InitialUrlRequest.Result",
+                                7 /* kDisallowedByPermissionsPolicy */, 1);
+}
+
+TEST_F(BrowsingTopicsURLLoaderTest,
+       TopicsNotEligibleDueToContentClientSettings) {
+  base::HistogramTester histograms;
+
+  NavigatePage(GURL("https://google.com"));
+
+  mojo::Remote<network::mojom::URLLoaderFactory> remote_url_loader_factory;
+  network::TestURLLoaderFactory proxied_url_loader_factory;
+  mojo::Remote<network::mojom::URLLoader> remote_loader;
+  mojo::PendingReceiver<network::mojom::URLLoaderClient> client;
+
+  base::WeakPtr<SubresourceProxyingURLLoaderService::BindContext> bind_context =
+      CreateFactory(proxied_url_loader_factory, remote_url_loader_factory);
+  bind_context->OnDidCommitNavigation(
+      web_contents()->GetPrimaryMainFrame()->GetWeakDocumentPtr());
+
+  browser_client().set_topics_eligible(false);
+
+  remote_url_loader_factory->CreateLoaderAndStart(
+      remote_loader.BindNewPipeAndPassReceiver(),
+      /*request_id=*/0, /*options=*/0,
+      CreateResourceRequest(GURL("https://foo1.com")),
+      client.InitWithNewPipeAndPassRemote(),
+      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
+  remote_url_loader_factory.FlushForTesting();
+
+  EXPECT_EQ(1, proxied_url_loader_factory.NumPending());
+  network::TestURLLoaderFactory::PendingRequest* pending_request =
+      &proxied_url_loader_factory.pending_requests()->back();
+
+  // The request won't be eligible for topics due to content client settings.
+  std::string topics_header_value;
+  bool has_topics_header = pending_request->request.headers.GetHeader(
+      "Sec-Browsing-Topics", &topics_header_value);
+  EXPECT_FALSE(has_topics_header);
+
+  EXPECT_EQ(browser_client().handle_topics_web_api_count(), 1u);
+
+  // The response header won't be handled even after re-enabling the settings,
+  // because the request wasn't eligible for topics.
+  browser_client().set_topics_eligible(true);
+  pending_request->client->OnReceiveResponse(CreateResponseHead(true),
+                                             /*body=*/{}, absl::nullopt);
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(browser_client().handle_topics_web_api_count(), 1u);
+
+  histograms.ExpectUniqueSample("BrowsingTopics.Fetch.InitialUrlRequest.Result",
+                                1 /* kDisallowedByContentClient */, 1);
 }
 
 TEST_F(BrowsingTopicsURLLoaderTest, RedirectTopicsUpdated) {

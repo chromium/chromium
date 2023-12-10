@@ -10,19 +10,17 @@ import org.chromium.base.ContextUtils;
 import org.chromium.components.background_task_scheduler.BackgroundTaskSchedulerFactory;
 import org.chromium.components.background_task_scheduler.TaskInfo;
 
-/**
- * Invokes {@link BackgroundTaskScheduler} methods for the tasks scheduled through native interface.
- */
+/** Invokes {@link BackgroundTaskScheduler} methods for the tasks scheduled through native interface. */
 public class NativeTaskScheduler {
     @CalledByNative
     private static boolean schedule(TaskInfo taskInfo) {
-        return BackgroundTaskSchedulerFactory.getScheduler().schedule(
-                ContextUtils.getApplicationContext(), taskInfo);
+        return BackgroundTaskSchedulerFactory.getScheduler()
+                .schedule(ContextUtils.getApplicationContext(), taskInfo);
     }
 
     @CalledByNative
     private static void cancel(int taskId) {
-        BackgroundTaskSchedulerFactory.getScheduler().cancel(
-                ContextUtils.getApplicationContext(), taskId);
+        BackgroundTaskSchedulerFactory.getScheduler()
+                .cancel(ContextUtils.getApplicationContext(), taskId);
     }
 }

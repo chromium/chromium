@@ -353,7 +353,7 @@ TEST_F(CompoundImageBackingTest, NoUploadOnOverlayMemoryAccess) {
   auto access = overlay_rep->BeginScopedReadAccess();
 
 #if BUILDFLAG(IS_WIN)
-  absl::optional<gl::DCLayerOverlayImage> overlay_image =
+  std::optional<gl::DCLayerOverlayImage> overlay_image =
       access->GetDCLayerOverlayImage();
   ASSERT_TRUE(overlay_image);
   EXPECT_EQ(overlay_image->type(), gl::DCLayerOverlayType::kNV12Pixmap);

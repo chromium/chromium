@@ -31,6 +31,9 @@ class SyncSigninDelegate {
 
   // Confirms the Sync opt-in previously triggered via SigninUI(kSync).
   [[nodiscard]] virtual bool ConfirmSyncUI(Profile* profile) = 0;
+
+  // Signs out and clears the primary account.
+  virtual void SignOutPrimaryAccount(Profile* profile) = 0;
 };
 
 // Creates the platform-specific implementation of SyncSigninDelegate.

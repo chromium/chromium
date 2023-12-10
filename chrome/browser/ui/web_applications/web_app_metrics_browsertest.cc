@@ -4,6 +4,7 @@
 
 #include <stdint.h>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -39,7 +40,6 @@
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
 #include "url/gurl.h"
 

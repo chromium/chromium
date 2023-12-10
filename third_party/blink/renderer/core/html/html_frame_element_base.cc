@@ -209,7 +209,7 @@ void HTMLFrameElementBase::SetLocation(const String& str) {
     OpenURL(false);
 }
 
-bool HTMLFrameElementBase::SupportsFocus() const {
+bool HTMLFrameElementBase::SupportsFocus(UpdateBehavior) const {
   return true;
 }
 

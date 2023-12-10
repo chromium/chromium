@@ -15,7 +15,6 @@
 #include "base/component_export.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
-#include "base/strings/string_piece_forward.h"
 #include "crypto/aead.h"
 #include "crypto/hmac.h"
 #include "crypto/symmetric_key.h"

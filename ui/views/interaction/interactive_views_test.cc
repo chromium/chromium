@@ -298,7 +298,7 @@ View* InteractiveViewsTestApi::FindMatchingView(const View* from,
 }
 
 void InteractiveViewsTestApi::SetContextWidget(Widget* widget) {
-  context_widget_ = widget;
+  context_widget_ = widget ? widget->GetWeakPtr() : nullptr;
   if (widget) {
     CHECK(!test_impl().mouse_util_)
         << "Changing the context widget during a test is not supported.";

@@ -18,8 +18,6 @@ source_set("cells") {
     "passphrase_error_item.mm",
     "safe_browsing_header_item.h",
     "safe_browsing_header_item.mm",
-    "search_engine_item.h",
-    "search_engine_item.mm",
     "settings_check_cell.h",
     "settings_check_cell.mm",
     "settings_check_item.h",
@@ -28,6 +26,8 @@ source_set("cells") {
     "settings_image_detail_text_cell.mm",
     "settings_image_detail_text_item.h",
     "settings_image_detail_text_item.mm",
+    "settings_search_engine_item.h",
+    "settings_search_engine_item.mm",
     "sync_switch_item.h",
     "sync_switch_item.mm",
     "table_view_clear_browsing_data_item.h",
@@ -39,7 +39,6 @@ source_set("cells") {
   deps = [
     ":public",
     "//components/autofill/core/browser",
-    "//components/password_manager/core/common:features",
     "//components/strings",
     "//components/sync/base:features",
     "//ios/chrome/app/strings",
@@ -83,9 +82,9 @@ source_set("unit_tests") {
     "copied_to_chrome_item_unittest.mm",
     "inline_promo_item_unittest.mm",
     "passphrase_error_item_unittest.mm",
-    "search_engine_item_unittest.mm",
     "settings_check_item_unittest.mm",
     "settings_image_detail_text_item_unittest.mm",
+    "settings_search_engine_item_unittest.mm",
     "version_item_unittest.mm",
   ]
 

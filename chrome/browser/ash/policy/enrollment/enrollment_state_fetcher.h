@@ -6,11 +6,10 @@
 #define CHROME_BROWSER_ASH_POLICY_ENROLLMENT_ENROLLMENT_STATE_FETCHER_H_
 
 #include <memory>
-#include <string>
 
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
-#include "chrome/browser/ash/policy/enrollment/auto_enrollment_client.h"
+#include "chrome/browser/ash/policy/enrollment/auto_enrollment_state.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "third_party/private_membership/src/private_membership_rlwe.pb.h"

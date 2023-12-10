@@ -5,9 +5,8 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_ASH_SETTINGS_PAGES_PRINTING_SERVER_PRINTER_URL_UTIL_H_
 #define CHROME_BROWSER_UI_WEBUI_ASH_SETTINGS_PAGES_PRINTING_SERVER_PRINTER_URL_UTIL_H_
 
+#include <optional>
 #include <string>
-
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 
@@ -17,10 +16,10 @@ namespace ash::settings {
 // IPPS. Returns false for an empty or any other scheme.
 bool HasValidServerPrinterScheme(const GURL& gurl);
 
-// Returns a GURL from the input |url|. Returns absl::nullopt if
+// Returns a GURL from the input |url|. Returns std::nullopt if
 // either |url| is invalid or constructing the GURL failed. This will also
 // default the server printer URI to use HTTPS if it detects a missing scheme.
-absl::optional<GURL> GenerateServerPrinterUrlWithValidScheme(
+std::optional<GURL> GenerateServerPrinterUrlWithValidScheme(
     const std::string& url);
 
 }  // namespace ash::settings

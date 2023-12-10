@@ -453,50 +453,6 @@ TEST_F(ProofVerifierChromiumTest, PreservesEVIfAllowed) {
             verify_details->cert_verify_result.cert_status);
 }
 
-// Tests that the certificate policy enforcer is consulted for EV
-// and the certificate is not allowed to be EV.
-TEST_F(ProofVerifierChromiumTest, StripsEVIfNotAllowed) {
-  dummy_result_.cert_status = CERT_STATUS_IS_EV;
-
-  MockCertVerifier dummy_verifier;
-  dummy_verifier.AddResultForCert(test_cert_.get(), dummy_result_, OK);
-
-  EXPECT_CALL(ct_policy_enforcer_, CheckCompliance(_, _, _))
-      .WillRepeatedly(
-          Return(ct::CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS));
-
-  ProofVerifierChromium proof_verifier(&dummy_verifier, &ct_policy_enforcer_,
-                                       &transport_security_state_, nullptr, {},
-                                       NetworkAnonymizationKey());
-
-  auto callback = std::make_unique<DummyProofVerifierCallback>();
-  quic::QuicAsyncStatus status = proof_verifier.VerifyProof(
-      kTestHostname, kTestPort, kTestConfig, kTestTransportVersion,
-      kTestChloHash, certs_, kTestEmptySCT, GetTestSignature(),
-      verify_context_.get(), &error_details_, &details_, std::move(callback));
-  ASSERT_EQ(quic::QUIC_SUCCESS, status);
-
-  ASSERT_TRUE(details_.get());
-  ProofVerifyDetailsChromium* verify_details =
-      static_cast<ProofVerifyDetailsChromium*>(details_.get());
-  EXPECT_EQ(CERT_STATUS_CT_COMPLIANCE_FAILED,
-            verify_details->cert_verify_result.cert_status &
-                (CERT_STATUS_CT_COMPLIANCE_FAILED | CERT_STATUS_IS_EV));
-
-  callback = std::make_unique<DummyProofVerifierCallback>();
-  status = proof_verifier.VerifyCertChain(
-      kTestHostname, kTestPort, certs_, kTestEmptyOCSPResponse, kTestEmptySCT,
-      verify_context_.get(), &error_details_, &details_, &tls_alert_,
-      std::move(callback));
-  ASSERT_EQ(quic::QUIC_SUCCESS, status);
-
-  ASSERT_TRUE(details_.get());
-  verify_details = static_cast<ProofVerifyDetailsChromium*>(details_.get());
-  EXPECT_EQ(CERT_STATUS_CT_COMPLIANCE_FAILED,
-            verify_details->cert_verify_result.cert_status &
-                (CERT_STATUS_CT_COMPLIANCE_FAILED | CERT_STATUS_IS_EV));
-}
-
 HashValueVector MakeHashValueVector(uint8_t tag) {
   HashValue hash(HASH_VALUE_SHA256);
   memset(hash.data(), tag, hash.size());

@@ -126,11 +126,11 @@ class I420ConverterImpl : public I420Converter {
   const std::unique_ptr<GLHelper::ScalerInterface> v_planerizer_;
 
   // Intermediate texture, holding the scaler's output.
-  absl::optional<TextureHolder> intermediate_;
+  std::optional<TextureHolder> intermediate_;
 
   // Intermediate texture, holding the UV interim output (if the MRT shader
   // is being used).
-  absl::optional<ScopedTexture> uv_;
+  std::optional<ScopedTexture> uv_;
 };
 
 }  // namespace
@@ -696,7 +696,7 @@ void I420ConverterImpl::EnsureTexturesSizedFor(
     if (!intermediate_ || intermediate_->size() != scaler_output_size)
       intermediate_.emplace(gl_, scaler_output_size);
   } else {
-    intermediate_ = absl::nullopt;
+    intermediate_ = std::nullopt;
   }
 
   // Size the interim UV plane and the three output planes.

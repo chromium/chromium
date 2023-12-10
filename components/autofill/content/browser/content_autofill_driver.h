@@ -165,7 +165,6 @@ class ContentAutofillDriver : public AutofillDriver,
   bool IsPrerendering() const override;
   bool HasSharedAutofillPermission() const override;
   bool CanShowAutofillUi() const override;
-  bool RendererIsAvailable() override;
   void HandleParsedForms(const std::vector<FormData>& forms) override {}
   void PopupHidden() override;
   net::IsolationInfo IsolationInfo() override;

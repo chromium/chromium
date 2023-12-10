@@ -18,6 +18,7 @@ yulunwu@chromium.org
 mhasank@chromium.org
 batoon@google.com
 youkichihosoi@chromium.org
+lingyufeng@chromium.org
 # ash_clipboard
 ckincaid@chromium.org
 dmblack@google.com
@@ -50,6 +51,7 @@ yigu@chromium.org
 # bluetooth
 chadduffin@chromium.org
 crisrael@google.com
+jiajunz@google.com
 julietlevesque@google.com
 khorimoto@chromium.org
 reillyg@chromium.org
@@ -78,6 +80,7 @@ azeemarshad@chromium.org
 chadduffin@chromium.org
 crisrael@google.com
 enlightened@chromium.org
+jiajunz@google.com
 jorgelo@chromium.org
 julietlevesque@google.com
 khorimoto@chromium.org
@@ -147,6 +150,9 @@ poromov@chromium.org
 zmin@chromium.org
 seblalancette@chromium.org
 igorruvinov@chromium.org
+vsavu@google.com
+emaxx@chromium.org
+hendrich@chromium.org
 # event
 jonross@chromium.org
 # extensions
@@ -237,6 +243,7 @@ toyoshim@chromium.org
 # network
 azeemarshad@chromium.org
 chadduffin@chromium.org
+jiajunz@google.com
 khorimoto@chromium.org
 nidhijaju@chromium.org
 toyoshim@chromium.org
@@ -420,7 +427,6 @@ mlippautz@chromium.org
 # web_apk
 eirage@chromium.org
 hartmanng@chromium.org
-rayankans@chromium.org
 # webapps
 alancutter@chromium.org
 dmurph@chromium.org

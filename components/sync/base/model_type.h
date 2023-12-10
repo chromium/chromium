@@ -61,11 +61,11 @@ enum ModelType {
   AUTOFILL,
   // Credentials related to an autofill wallet instrument; aka the CVC/CVV code.
   AUTOFILL_WALLET_CREDENTIAL,
-  // Credit cards and addresses from the user's account. These are read-only on
-  // the client.
+  // Credit cards and customer data from the user's account. These are read-only
+  // on the client.
   AUTOFILL_WALLET_DATA,
-  // Usage counts and last use dates for Wallet cards and addresses. This data
-  // is both readable and writable.
+  // Usage counts and last use dates for Wallet cards. This data is both
+  // readable and writable.
   AUTOFILL_WALLET_METADATA,
   // Offers and rewards from the user's account. These are read-only on the
   // client side.

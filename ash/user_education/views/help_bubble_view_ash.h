@@ -7,6 +7,7 @@
 
 #include <cstddef>
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "ash/ash_export.h"
@@ -15,7 +16,6 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/user_education/common/help_bubble_params.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/geometry/rect.h"
@@ -49,8 +49,9 @@ struct HelpBubbleAnchorParams {
 // in-product help which educates users about certain Chrome features in
 // a deferred context.
 class ASH_EXPORT HelpBubbleViewAsh : public views::BubbleDialogDelegateView {
+  METADATA_HEADER(HelpBubbleViewAsh, views::BubbleDialogDelegateView)
+
  public:
-  METADATA_HEADER(HelpBubbleViewAsh);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kHelpBubbleElementIdForTesting);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kDefaultButtonIdForTesting);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kFirstNonDefaultButtonIdForTesting);
@@ -71,6 +72,10 @@ class ASH_EXPORT HelpBubbleViewAsh : public views::BubbleDialogDelegateView {
 
   views::LabelButton* GetDefaultButtonForTesting() const;
   views::LabelButton* GetNonDefaultButtonForTesting(int index) const;
+
+  // Gets the `gfx::Rect` representing the area of this view's widget/window for
+  // which located events should be targeted to this view.
+  gfx::Rect GetHitRect() const;
 
   HelpBubbleId id() const { return id_; }
   HelpBubbleStyle style() const { return style_; }

@@ -162,18 +162,18 @@ class PrivacySandboxServiceImpl : public PrivacySandboxService {
   FRIEND_TEST_ALL_PREFIXES(PrivacySandboxServiceTest,
                            FirstPartySetsDisabledMetric);
   FRIEND_TEST_ALL_PREFIXES(
-      PrivacySandboxServiceM1Test,
+      PrivacySandboxServiceTest,
       RecordPrivacySandbox4StartupMetrics_PromptSuppressed_Explicitly);
   FRIEND_TEST_ALL_PREFIXES(
-      PrivacySandboxServiceM1Test,
+      PrivacySandboxServiceTest,
       RecordPrivacySandbox4StartupMetrics_PromptSuppressed_Implicitly);
   FRIEND_TEST_ALL_PREFIXES(
-      PrivacySandboxServiceM1Test,
+      PrivacySandboxServiceTest,
       RecordPrivacySandbox4StartupMetrics_PromptNotSuppressed_EEA);
   FRIEND_TEST_ALL_PREFIXES(
-      PrivacySandboxServiceM1Test,
+      PrivacySandboxServiceTest,
       RecordPrivacySandbox4StartupMetrics_PromptNotSuppressed_ROW);
-  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxServiceM1Test,
+  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxServiceTest,
                            RecordPrivacySandbox4StartupMetrics_APIs);
   FRIEND_TEST_ALL_PREFIXES(
       PrivacySandboxServiceM1RestrictedNoticePromptTest,
@@ -292,10 +292,6 @@ class PrivacySandboxServiceImpl : public PrivacySandboxService {
   // profile startup.
   void LogPrivacySandboxState();
 
-  // Logs the state of privacy sandbox 3 in regards to prompts. Called once per
-  // profile startup.
-  void RecordPrivacySandbox3StartupMetrics();
-
   // Logs the state of privacy sandbox 4 in regards to prompts. Called once per
   // profile startup.
   void RecordPrivacySandbox4StartupMetrics();
@@ -313,14 +309,6 @@ class PrivacySandboxServiceImpl : public PrivacySandboxService {
   // cookie block state is passed in, as CookieSettings cannot be used in
   // death tests.
   static PrivacySandboxService::PromptType GetRequiredPromptTypeInternal(
-      PrefService* pref_service,
-      profile_metrics::BrowserProfileType profile_type,
-      privacy_sandbox::PrivacySandboxSettings* privacy_sandbox_settings,
-      bool third_party_cookies_blocked);
-
-  // Equivalent of PrivacySandboxService::GetRequiredPromptTypeInternal, but for
-  // PrivacySandboxSettings4.
-  static PrivacySandboxService::PromptType GetRequiredPromptTypeInternalM1(
       PrefService* pref_service,
       profile_metrics::BrowserProfileType profile_type,
       privacy_sandbox::PrivacySandboxSettings* privacy_sandbox_settings,
@@ -376,17 +364,9 @@ class PrivacySandboxServiceImpl : public PrivacySandboxService {
       {browsing_topics::Topic(4), kFakeTaxonomyVersion}};
 
   // Informs the TrustSafetySentimentService, if it exists, that a
-  // Privacy Sandbox 3 interaction for an area has occurred The area is
+  // Privacy Sandbox interaction for an area has occurred The area is
   // determined by |action|. Only a subset of actions has a corresponding area.
   void InformSentimentService(PrivacySandboxService::PromptAction action);
-
-  // Equivalent of PrivacySandboxService::InformSentimentService, but for
-  // PrivacySandboxSettings4.
-  void InformSentimentServiceM1(PrivacySandboxService::PromptAction action);
-
-  // Implementation of PrivacySandboxService::PromptActionOccurred, but for
-  // PrivacySandboxSettings4.
-  virtual void PromptActionOccurredM1(PromptAction action);
 
   // Record user action metrics based on the |action|.
   void RecordPromptActionMetrics(PrivacySandboxService::PromptAction action);

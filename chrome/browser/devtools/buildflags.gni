@@ -1,5 +1,0 @@
-declare_args() {
-  enable_aida = false
-  aida_endpoint = ""
-  aida_scope = ""
-}

@@ -80,6 +80,12 @@
   <message name="IDS_OS_SETTINGS_TAG_CELLULAR_APN" desc="Text for search result item which, when clicked, navigates the user to Cellular network settings, with the option to set up APNs. Alternate phrase for: 'Wi-Fi networks', 'Wireless'">
     Cellular APN
   </message>
+  <message name="IDS_OS_SETTINGS_TAG_CELLULAR_APN_SETTINGS" desc="Text for search result item which, when clicked, navigates the user to the 'Access Point name (APN)' settings subpage of the currently active cellular network. Alternate phrase for 'Access point name (APN)'">
+    Cellular APN settings
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_CELLULAR_APN_SETTINGS_ALT_1" desc="Text for search result item which, when clicked, navigates the user to the 'Access Point name (APN)' settings subpage of the currently active cellular network. Alternate phrase for 'Cellular APN settings'">
+    Access point name (APN)
+  </message>
   <message name="IDS_OS_SETTINGS_TAG_CELLULAR_TURN_OFF" desc="Text for search result item which, when clicked, navigates the user to cellular network settings, with a toggle to turn off cellular. Alternate phrase for: 'Disable cellular'">
     Turn off Cellular network
   </message>
@@ -94,6 +100,12 @@
   </message>
   <message name="IDS_OS_SETTINGS_TAG_ADD_ESIM_ALT2" desc="Text for search result item which, when clicked, navigates the user to cellular network settings, with an add eSIM icon button. Alternate phrase for: 'Add eSIM profile', 'Install eSIM profile'">
     Download eSIM profile
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_ADD_APN" desc="Text for search result item which, when clicked, navigates the user to the APN (Accesss Point Name) subpage of the currently active cellular network, with the add New APN button focused. Alternate phrase for: 'Add new Access Point Name'">
+    Add new APN
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_ADD_APN_ALT1" desc="Text for search result item which, when clicked, navigates the user to the APN (Accesss Point Name) subpage of the currently active cellular network, with the add New APN button focused. Alternate phrase for: 'Add new APN'">
+    Add new Access point name
   </message>
   <message name="IDS_OS_SETTINGS_TAG_CELLULAR_TURN_ON" desc="Text for search result item which, when clicked, navigates the user to cellular network settings, with a toggle to turn on cellular. Alternate phrase for: 'Enable cellular'">
     Turn on Cellular network
@@ -492,7 +504,7 @@
   <message name="IDS_OS_SETTINGS_TAG_GOOGLE_DRIVE_SEARCH_SUGGESTIONS" desc="Text for search result item which, when clicked, navigates the user to Google services settings, with a toggle to enable/disable a feature which provides suggestions to visit Google Drive items when the user types in the address bar.">
     Show Google Drive suggestions
   </message>
-  <message name="IDS_OS_SETTINGS_TAG_LOCAL_DATA_RECOVERY" desc="Text for search result item which, when clicked, navigates the user to Local Data Recovry toggle.">
+  <message name="IDS_OS_SETTINGS_TAG_LOCAL_DATA_RECOVERY" desc="Text for search result item which, when clicked, navigates the user to Local Data Recovery toggle.">
     Local Data Recovery
   </message>
 

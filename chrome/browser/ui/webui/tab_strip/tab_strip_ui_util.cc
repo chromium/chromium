@@ -26,18 +26,18 @@
 
 namespace tab_strip_ui {
 
-absl::optional<tab_groups::TabGroupId> GetTabGroupIdFromString(
+std::optional<tab_groups::TabGroupId> GetTabGroupIdFromString(
     TabGroupModel* tab_group_model,
     std::string group_id_string) {
   if (!tab_group_model)
-    return absl::nullopt;
+    return std::nullopt;
   for (tab_groups::TabGroupId candidate : tab_group_model->ListTabGroups()) {
     if (candidate.ToString() == group_id_string) {
-      return absl::optional<tab_groups::TabGroupId>{candidate};
+      return std::optional<tab_groups::TabGroupId>{candidate};
     }
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 Browser* GetBrowserWithGroupId(Profile* profile, std::string group_id_string) {
@@ -46,7 +46,7 @@ Browser* GetBrowserWithGroupId(Profile* profile, std::string group_id_string) {
       continue;
     }
 
-    absl::optional<tab_groups::TabGroupId> group_id = GetTabGroupIdFromString(
+    std::optional<tab_groups::TabGroupId> group_id = GetTabGroupIdFromString(
         browser->tab_strip_model()->group_model(), group_id_string);
     if (group_id.has_value()) {
       return browser;
@@ -60,7 +60,7 @@ void MoveTabAcrossWindows(Browser* source_browser,
                           int from_index,
                           Browser* target_browser,
                           int to_index,
-                          absl::optional<tab_groups::TabGroupId> to_group_id) {
+                          std::optional<tab_groups::TabGroupId> to_group_id) {
   bool was_active =
       source_browser->tab_strip_model()->active_index() == from_index;
   bool was_pinned = source_browser->tab_strip_model()->IsTabPinned(from_index);
@@ -121,7 +121,7 @@ bool DropTabsInNewBrowser(Browser* new_browser,
 
   Browser* source_browser = nullptr;
   gfx::Range tab_indices_to_move;
-  absl::optional<tab_groups::TabGroupId> source_group_id;
+  std::optional<tab_groups::TabGroupId> source_group_id;
 
   // TODO(https://crbug.com/1069869): de-duplicate with
   // TabStripUIHandler::HandleMoveTab and
@@ -184,14 +184,14 @@ bool ExtractTabData(const ui::OSExchangeData& drop_data,
   drop_data.GetPickledData(ui::ClipboardFormatType::WebCustomDataType(),
                            &pickle);
 
-  if (absl::optional<std::u16string> maybe_tab_id =
+  if (std::optional<std::u16string> maybe_tab_id =
           ui::ReadCustomDataForType(pickle, kWebUITabIdDataType);
       maybe_tab_id && !maybe_tab_id->empty()) {
     *tab_id_str = std::move(*maybe_tab_id);
     return true;
   }
 
-  if (absl::optional<std::u16string> maybe_group_id =
+  if (std::optional<std::u16string> maybe_group_id =
           ui::ReadCustomDataForType(pickle, kWebUITabGroupIdDataType);
       maybe_group_id && !maybe_group_id->empty()) {
     *group_id_str = std::move(*maybe_group_id);

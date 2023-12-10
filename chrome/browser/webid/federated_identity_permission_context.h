@@ -45,15 +45,6 @@ class FederatedIdentityPermissionContext
   void AddIdpSigninStatusObserver(IdpSigninStatusObserver* observer) override;
   void RemoveIdpSigninStatusObserver(
       IdpSigninStatusObserver* observer) override;
-  bool HasActiveSession(const url::Origin& relying_party_requester,
-                        const url::Origin& identity_provider,
-                        const std::string& account_identifier) override;
-  void GrantActiveSession(const url::Origin& relying_party_requester,
-                          const url::Origin& identity_provider,
-                          const std::string& account_identifier) override;
-  void RevokeActiveSession(const url::Origin& relying_party_requester,
-                           const url::Origin& identity_provider,
-                           const std::string& account_identifier) override;
   bool HasSharingPermission(
       const url::Origin& relying_party_requester,
       const url::Origin& relying_party_embedder,
@@ -65,6 +56,10 @@ class FederatedIdentityPermissionContext
                               const url::Origin& relying_party_embedder,
                               const url::Origin& identity_provider,
                               const std::string& account_id) override;
+  void RevokeSharingPermission(const url::Origin& relying_party_requester,
+                               const url::Origin& relying_party_embedder,
+                               const url::Origin& identity_provider,
+                               const std::string& account_id) override;
   absl::optional<bool> GetIdpSigninStatus(
       const url::Origin& idp_origin) override;
   void SetIdpSigninStatus(const url::Origin& idp_origin,
@@ -81,8 +76,6 @@ class FederatedIdentityPermissionContext
   void FlushScheduledSaveSettingsCalls();
 
  private:
-  std::unique_ptr<FederatedIdentityAccountKeyedPermissionContext>
-      active_session_context_;
   std::unique_ptr<FederatedIdentityAccountKeyedPermissionContext>
       sharing_context_;
   std::unique_ptr<FederatedIdentityIdentityProviderSigninStatusContext>

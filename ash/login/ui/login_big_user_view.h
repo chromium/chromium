@@ -14,6 +14,7 @@
 #include "ash/public/cpp/wallpaper/wallpaper_controller.h"
 #include "ash/public/cpp/wallpaper/wallpaper_controller_observer.h"
 #include "base/memory/raw_ptr.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 
 namespace ash {
 
@@ -23,6 +24,8 @@ namespace ash {
 //  - LoginPublicAccountUserView: for public account user.
 class ASH_EXPORT LoginBigUserView : public NonAccessibleView,
                                     public WallpaperControllerObserver {
+  METADATA_HEADER(LoginBigUserView, NonAccessibleView)
+
  public:
   // TestApi is used for tests to get internal implementation details.
   class ASH_EXPORT TestApi {

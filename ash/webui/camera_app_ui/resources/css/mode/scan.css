@@ -94,7 +94,7 @@ body.enable-scan-barcode .barcode-scan-box {
               visibility 0s var(--fast2-duration);
 }
 
-.barcode-chip-url {
+#barcode-chip-url {
   align-items: center;
   background: var(--cros-sys-base_elevated);
   border-radius: 16px;
@@ -104,24 +104,23 @@ body.enable-scan-barcode .barcode-scan-box {
   font: var(--cros-body-2-font);
   height: var(--chip-height);
   justify-content: center;
+  gap: 10px;
+  max-width: 100%;
+  overflow:hidden;
   padding: 8px 16px;
 }
 
-.barcode-chip-url > svg-wrapper {
+#barcode-chip-url > svg-wrapper {
   color: var(--cros-sys-primary);
-  margin-inline-end: 10px;
 }
 
-.barcode-chip-url > a {
+#barcode-chip-url-content {
   color: var(--cros-sys-primary);
-  overflow: hidden;
+  line-height: var(--text-line-height);
   text-decoration: none;
+  overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-}
-
-.barcode-chip-url > a:focus {
-  outline: none;
 }
 
 .barcode-copy-button:hover {
@@ -174,6 +173,7 @@ body.enable-scan-barcode .barcode-scan-box {
 .expanded #barcode-chip-text-content {
   /* TODO(b/172879638): Make this responsive */
   max-height: calc(var(--text-line-height) * 10);
+  overflow-wrap: break-word;
   white-space: normal;
   /* Keep the same width as before to avoid text jumping. */
   width: var(--chip-max-width);
@@ -196,6 +196,33 @@ body.enable-scan-barcode .barcode-scan-box {
   .down-icon {
     display: none;
   }
+}
+
+#barcode-chip-wifi {
+  align-items: center;
+  background: var(--cros-sys-base_elevated);
+  border-radius: 16px;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.1), 0 4px 4px rgba(0, 0, 0, 0.2);
+  box-sizing: border-box;
+  display: flex;
+  font: var(--cros-body-2-font);
+  height: var(--chip-height);
+  justify-content: center;
+  padding: 8px 16px;
+}
+
+#barcode-chip-wifi > svg-wrapper {
+  color: var(--cros-sys-primary);
+  margin-inline-end: 10px;
+}
+
+#barcode-chip-wifi-content {
+  color: var(--cros-sys-primary);
+  line-height: var(--text-line-height);
+  overflow: hidden;
+  text-decoration: none;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .snackbar {

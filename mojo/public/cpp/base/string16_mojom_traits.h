@@ -9,7 +9,6 @@
 
 #include "base/component_export.h"
 #include "base/containers/span.h"
-#include "base/strings/string_piece.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "mojo/public/mojom/base/string16.mojom-shared.h"

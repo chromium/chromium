@@ -32,6 +32,8 @@ struct VideoEncoderInfo {
   bool reports_average_qp;
   uint32 requested_resolution_alignment;
   bool apply_alignment_to_all_simulcast_layers;
+  // True if encoder supports frame size change without re-initialization.
+  bool supports_frame_size_change = false;
 
   // This array size is equal to media::VideoEncoderInfo::kMaxSpatialLayers.
   array<array<uint8>, 5> fps_allocation;

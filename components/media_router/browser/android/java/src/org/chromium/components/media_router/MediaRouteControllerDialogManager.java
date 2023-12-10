@@ -16,31 +16,31 @@ import androidx.mediarouter.app.MediaRouteControllerDialogFragment;
 import androidx.mediarouter.media.MediaRouteSelector;
 import androidx.mediarouter.media.MediaRouter;
 
-/**
- * Manages the dialog responsible for controlling an existing media route.
- */
+/** Manages the dialog responsible for controlling an existing media route. */
 public class MediaRouteControllerDialogManager extends BaseMediaRouteDialogManager {
     private static final String DIALOG_FRAGMENT_TAG =
             "androidx.mediarouter:MediaRouteControllerDialogFragment";
 
     private final String mMediaRouteId;
 
-    private final MediaRouter.Callback mCallback = new MediaRouter.Callback() {
-        @Override
-        public void onRouteUnselected(MediaRouter router, MediaRouter.RouteInfo route) {
-            delegate().onRouteClosed(mMediaRouteId);
-        }
-    };
+    private final MediaRouter.Callback mCallback =
+            new MediaRouter.Callback() {
+                @Override
+                public void onRouteUnselected(MediaRouter router, MediaRouter.RouteInfo route) {
+                    delegate().onRouteClosed(mMediaRouteId);
+                }
+            };
 
-    public MediaRouteControllerDialogManager(String sourceId, MediaRouteSelector routeSelector,
-            String mediaRouteId, MediaRouteDialogDelegate delegate) {
+    public MediaRouteControllerDialogManager(
+            String sourceId,
+            MediaRouteSelector routeSelector,
+            String mediaRouteId,
+            MediaRouteDialogDelegate delegate) {
         super(sourceId, routeSelector, delegate);
         mMediaRouteId = mediaRouteId;
     }
 
-    /**
-     * Fragment implementation for MediaRouteControllerDialogManager.
-     */
+    /** Fragment implementation for MediaRouteControllerDialogManager. */
     public static class Fragment extends MediaRouteControllerDialogFragment {
         private final Handler mHandler = new Handler();
         private final SystemVisibilitySaver mVisibilitySaver = new SystemVisibilitySaver();
@@ -48,12 +48,13 @@ public class MediaRouteControllerDialogManager extends BaseMediaRouteDialogManag
         private MediaRouter.Callback mCallback;
 
         public Fragment() {
-            mHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    Fragment.this.dismiss();
-                }
-            });
+            mHandler.post(
+                    new Runnable() {
+                        @Override
+                        public void run() {
+                            Fragment.this.dismiss();
+                        }
+                    });
         }
 
         public Fragment(BaseMediaRouteDialogManager manager, MediaRouter.Callback callback) {
@@ -91,7 +92,8 @@ public class MediaRouteControllerDialogManager extends BaseMediaRouteDialogManag
             mManager.androidMediaRouter().removeCallback(mCallback);
             mManager.mDialogFragment = null;
         }
-    };
+    }
+    ;
 
     @Override
     protected DialogFragment openDialogInternal(FragmentManager fm) {

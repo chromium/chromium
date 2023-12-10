@@ -66,7 +66,6 @@ class PeerConnectionTrackerHost
   void StartEventLog(int peer_connection_local_id, int output_period_ms);
   void StopEventLog(int lid);
   void GetStandardStats();
-  void GetLegacyStats();
   void GetCurrentState();
 
   void BindReceiver(

@@ -75,6 +75,16 @@ int AVSeekFrame(AVFormatContext* s, int stream_index, int64_t timestamp) {
   return av_seek_frame(s, stream_index, timestamp, 0);
 }
 
+bool IsStreamEnabled(container_names::MediaContainerName container,
+                     AVStream* stream) {
+  // Track enabled state is only handled for MP4 files.
+  if (container != container_names::MediaContainerName::kContainerMOV) {
+    return true;
+  }
+  // The mov demuxer translates MOV_TKHD_FLAG_ENABLED to AV_DISPOSITION_DEFAULT.
+  return stream->disposition & AV_DISPOSITION_DEFAULT;
+}
+
 }  // namespace
 
 static base::Time ExtractTimelineOffset(
@@ -927,6 +937,9 @@ FFmpegDemuxer::~FFmpegDemuxer() {
   // there are no outstanding WeakPtrs by the time we reach here.
   DCHECK(!weak_factory_.HasWeakPtrs());
 
+  // Clear `streams_` before `glue_` below since they may reference it.
+  streams_.clear();
+
   // There may be outstanding tasks in the blocking pool which are trying to use
   // these members, so release them in sequence with any outstanding calls. The
   // earlier call to Abort() on |data_source_| prevents further access to it.
@@ -1288,6 +1301,37 @@ void FFmpegDemuxer::OnFindStreamInfoDone(int result) {
   // If available, |start_time_| will be set to the lowest stream start time.
   start_time_ = kInfiniteDuration;
 
+  // Check if there is any enabled stream. If there are none, the stream enabled
+  // flag will be ignored.
+  bool has_disabled_stream = false;
+  bool has_enabled_stream = false;
+  for (size_t i = 0; i < format_context->nb_streams; ++i) {
+    AVStream* stream = format_context->streams[i];
+
+    // Only consider audio and video streams.
+    const AVMediaType codec_type = stream->codecpar->codec_type;
+    if (codec_type != AVMEDIA_TYPE_AUDIO && codec_type != AVMEDIA_TYPE_VIDEO) {
+      continue;
+    }
+
+    if (!IsStreamEnabled(container(), stream)) {
+      has_disabled_stream = true;
+    } else {
+      has_enabled_stream = true;
+    }
+
+    if (has_disabled_stream && has_enabled_stream) {
+      break;
+    }
+  }
+  // Display a warning if all streams are disabled.
+  if (has_disabled_stream && !has_enabled_stream) {
+    MEDIA_LOG(WARNING, media_log_)
+        << GetDisplayName()
+        << ": no tracks are enabled, track enabled flag will be ignored";
+  }
+
+  // Create an FFmpegDemuxerStreams for each enabled audio/video stream.
   base::TimeDelta max_duration;
   int supported_audio_track_count = 0;
   int supported_video_track_count = 0;
@@ -1345,10 +1389,15 @@ void FFmpegDemuxer::OnFindStreamInfoDone(int result) {
       continue;
     }
 
-    // Skip disabled tracks. The mov demuxer translates MOV_TKHD_FLAG_ENABLED to
-    // AV_DISPOSITION_DEFAULT.
-    if (container() == container_names::MediaContainerName::kContainerMOV &&
-        !(stream->disposition & AV_DISPOSITION_DEFAULT)) {
+    // Discard disabled streams, if there is at least one that is enabled.
+    if (has_enabled_stream && !IsStreamEnabled(container(), stream)) {
+      if (codec_type == AVMEDIA_TYPE_AUDIO) {
+        MEDIA_LOG(INFO, media_log_)
+            << GetDisplayName() << ": skipping disabled audio track";
+      } else if (codec_type == AVMEDIA_TYPE_VIDEO) {
+        MEDIA_LOG(INFO, media_log_)
+            << GetDisplayName() << ": skipping disabled video track";
+      }
       stream->discard = AVDISCARD_ALL;
       continue;
     }

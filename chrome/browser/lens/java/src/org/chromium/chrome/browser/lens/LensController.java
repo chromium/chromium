@@ -9,9 +9,7 @@ import org.chromium.base.Callback;
 import org.chromium.chrome.browser.contextmenu.ChipRenderParams;
 import org.chromium.ui.base.WindowAndroid;
 
-/**
- * A class which manages communication with the Lens SDK.
- */
+/** A class which manages communication with the Lens SDK. */
 public class LensController {
     private static LensController sInstance = new LensController();
 

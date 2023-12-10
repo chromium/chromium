@@ -47,20 +47,17 @@ import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
-/**
- * ViewBinder for TabGridDialog.
- */
+/** ViewBinder for TabGridDialog. */
 class TabGridPanelViewBinder {
-    /**
-     * ViewHolder class to get access to all {@link View}s inside the TabGridDialog.
-     */
+    /** ViewHolder class to get access to all {@link View}s inside the TabGridDialog. */
     public static class ViewHolder {
         public final TabGroupUiToolbarView toolbarView;
         public final RecyclerView contentView;
-        @Nullable
-        public TabGridDialogView dialogView;
+        @Nullable public TabGridDialogView dialogView;
 
-        ViewHolder(TabGroupUiToolbarView toolbarView, RecyclerView contentView,
+        ViewHolder(
+                TabGroupUiToolbarView toolbarView,
+                RecyclerView contentView,
                 @Nullable TabGridDialogView dialogView) {
             this.toolbarView = toolbarView;
             this.contentView = contentView;
@@ -176,9 +173,11 @@ class TabGridPanelViewBinder {
                 RecyclerView view = viewHolder.contentView;
                 if (view.getWidth() == 0 || view.getHeight() == 0) {
                     // If layout hasn't happened post the scroll index change until layout happens.
-                    view.post(() -> {
-                        setScrollIndex(model.get(BROWSER_CONTROLS_STATE_PROVIDER), view, index);
-                    });
+                    view.post(
+                            () -> {
+                                setScrollIndex(
+                                        model.get(BROWSER_CONTROLS_STATE_PROVIDER), view, index);
+                            });
                     return;
                 }
                 setScrollIndex(
@@ -209,22 +208,27 @@ class TabGridPanelViewBinder {
         }
     }
 
-    private static void setScrollIndex(BrowserControlsStateProvider browserControlsStateProvider,
-            RecyclerView view, int index) {
+    private static void setScrollIndex(
+            BrowserControlsStateProvider browserControlsStateProvider,
+            RecyclerView view,
+            int index) {
         LinearLayoutManager layoutManager = (LinearLayoutManager) view.getLayoutManager();
         int offset = computeOffset(view, layoutManager, browserControlsStateProvider);
         layoutManager.scrollToPositionWithOffset(index, offset);
     }
 
-    private static int computeOffset(RecyclerView view, LinearLayoutManager layoutManager,
+    private static int computeOffset(
+            RecyclerView view,
+            LinearLayoutManager layoutManager,
             BrowserControlsStateProvider browserControlsStateProvider) {
         int width = view.getWidth();
         int height = view.getHeight();
         int cardHeight = 0;
         if (layoutManager instanceof GridLayoutManager) {
             int cardWidth = width / ((GridLayoutManager) layoutManager).getSpanCount();
-            cardHeight = TabUtils.deriveGridCardHeight(
-                    cardWidth, view.getContext(), browserControlsStateProvider);
+            cardHeight =
+                    TabUtils.deriveGridCardHeight(
+                            cardWidth, view.getContext(), browserControlsStateProvider);
         } else {
             // Avoid divide by 0 when there are no tabs.
             if (layoutManager.getItemCount() == 0) return 0;

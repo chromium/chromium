@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_SAFETY_HUB_SAFETY_HUB_SERVICE_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/gtest_prod_util.h"
@@ -17,7 +18,6 @@
 #include "base/timer/timer.h"
 #include "base/values.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 constexpr char kSafetyHubTimestampResultKey[] = "timestamp";
 constexpr char kSafetyHubOriginKey[] = "origin";
@@ -25,8 +25,7 @@ constexpr char kSafetyHubOriginKey[] = "origin";
 // Base class for Safety Hub services. The background and UI tasks of the
 // derived classes will be executed periodically, according to the time delta
 // interval returned by GetRepeatedUpdateInterval().
-class SafetyHubService : public KeyedService,
-                         public base::SupportsWeakPtr<SafetyHubService> {
+class SafetyHubService : public KeyedService {
  public:
   // Base class for results returned after the periodic execution of the Safety
   // Hub service. Each service should implement a derived class that captures
@@ -104,7 +103,7 @@ class SafetyHubService : public KeyedService,
   bool IsUpdateRunning();
 
   // Returns the latest result that is available in memory.
-  absl::optional<std::unique_ptr<SafetyHubService::Result>> GetCachedResult();
+  std::optional<std::unique_ptr<SafetyHubService::Result>> GetCachedResult();
 
   // KeyedService implementation.
   void Shutdown() override;

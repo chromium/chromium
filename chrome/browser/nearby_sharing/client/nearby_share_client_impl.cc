@@ -13,10 +13,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/nearby_sharing/client/nearby_share_http_notifier.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_switches.h"
-#include "chrome/browser/nearby_sharing/proto/certificate_rpc.pb.h"
-#include "chrome/browser/nearby_sharing/proto/contact_rpc.pb.h"
-#include "chrome/browser/nearby_sharing/proto/device_rpc.pb.h"
-#include "chrome/browser/nearby_sharing/proto/rpc_resources.pb.h"
 #include "chromeos/ash/components/nearby/common/client/nearby_api_call_flow_impl.h"
 #include "chromeos/ash/components/nearby/common/client/nearby_http_result.h"
 #include "components/cross_device/logging/logging.h"
@@ -25,6 +21,10 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "third_party/nearby/sharing/proto/certificate_rpc.pb.h"
+#include "third_party/nearby/sharing/proto/contact_rpc.pb.h"
+#include "third_party/nearby/sharing/proto/device_rpc.pb.h"
+#include "third_party/nearby/sharing/proto/rpc_resources.pb.h"
 
 namespace {
 
@@ -58,7 +58,7 @@ GURL CreateV1RequestUrl(const std::string& request_path) {
 
 ash::nearby::NearbyApiCallFlow::QueryParameters
 ListContactPeopleRequestToQueryParameters(
-    const nearbyshare::proto::ListContactPeopleRequest& request) {
+    const nearby::sharing::proto::ListContactPeopleRequest& request) {
   ash::nearby::NearbyApiCallFlow::QueryParameters query_parameters;
   if (request.page_size() > 0) {
     query_parameters.emplace_back(kPageSize,
@@ -72,7 +72,7 @@ ListContactPeopleRequestToQueryParameters(
 
 ash::nearby::NearbyApiCallFlow::QueryParameters
 ListPublicCertificatesRequestToQueryParameters(
-    const nearbyshare::proto::ListPublicCertificatesRequest& request) {
+    const nearby::sharing::proto::ListPublicCertificatesRequest& request) {
   ash::nearby::NearbyApiCallFlow::QueryParameters query_parameters;
   if (request.page_size() > 0) {
     query_parameters.emplace_back(kPageSize,
@@ -232,7 +232,7 @@ NearbyShareClientImpl::NearbyShareClientImpl(
 NearbyShareClientImpl::~NearbyShareClientImpl() = default;
 
 void NearbyShareClientImpl::UpdateDevice(
-    const nearbyshare::proto::UpdateDeviceRequest& request,
+    const nearby::sharing::proto::UpdateDeviceRequest& request,
     UpdateDeviceCallback&& callback,
     ErrorCallback&& error_callback) {
   notifier_->NotifyOfRequest(request);
@@ -244,7 +244,7 @@ void NearbyShareClientImpl::UpdateDevice(
 }
 
 void NearbyShareClientImpl::ListContactPeople(
-    const nearbyshare::proto::ListContactPeopleRequest& request,
+    const nearby::sharing::proto::ListContactPeopleRequest& request,
     ListContactPeopleCallback&& callback,
     ErrorCallback&& error_callback) {
   notifier_->NotifyOfRequest(request);
@@ -256,7 +256,7 @@ void NearbyShareClientImpl::ListContactPeople(
 }
 
 void NearbyShareClientImpl::ListPublicCertificates(
-    const nearbyshare::proto::ListPublicCertificatesRequest& request,
+    const nearby::sharing::proto::ListPublicCertificatesRequest& request,
     ListPublicCertificatesCallback&& callback,
     ErrorCallback&& error_callback) {
   notifier_->NotifyOfRequest(request);

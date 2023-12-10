@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_APP_RESTORE_FULL_RESTORE_SERVICE_H_
 
 #include <memory>
+#include <optional>
 
 #include "ash/public/cpp/accelerators.h"
 #include "base/callback_list.h"
@@ -16,7 +17,6 @@
 #include "chrome/browser/sessions/exit_type_service.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 
 class Profile;
@@ -92,8 +92,8 @@ class FullRestoreService : public KeyedService,
 
   // message_center::NotificationObserver:
   void Close(bool by_user) override;
-  void Click(const absl::optional<int>& button_index,
-             const absl::optional<std::u16string>& reply) override;
+  void Click(const std::optional<int>& button_index,
+             const std::optional<std::u16string>& reply) override;
 
   // AcceleratorController::Observer:
   void OnActionPerformed(AcceleratorAction action) override;

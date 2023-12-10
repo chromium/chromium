@@ -13,6 +13,7 @@
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/skia_conversions.h"
+#include "ui/gfx/image/image_unittest_util.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
@@ -22,14 +23,6 @@
 
 namespace content {
 namespace {
-
-// Creates a basic bitmap for testing with the given width and height.
-SkBitmap CreateTestBitmap(int width, int height) {
-  SkBitmap bitmap;
-  bitmap.allocN32Pixels(width, height);
-  bitmap.eraseColor(SK_ColorRED);
-  return bitmap;
-}
 
 TEST(WebCursorTest, DefaultConstructor) {
   WebCursor webcursor;
@@ -43,8 +36,8 @@ TEST(WebCursorTest, WebCursorCursorConstructor) {
 }
 
 TEST(WebCursorTest, WebCursorCursorConstructorCustom) {
-  const ui::Cursor cursor =
-      ui::Cursor::NewCustom(CreateTestBitmap(32, 32), gfx::Point(10, 20), 2.0f);
+  const ui::Cursor cursor = ui::Cursor::NewCustom(
+      gfx::test::CreateBitmap(/*size=*/32), gfx::Point(10, 20), 2.0f);
   WebCursor webcursor(cursor);
   EXPECT_EQ(cursor, webcursor.cursor());
 
@@ -99,8 +92,8 @@ TEST(WebCursorTest, CursorScaleFactor) {
   constexpr float kImageScale = 2.0f;
   constexpr float kDeviceScale = 4.2f;
 
-  WebCursor webcursor(ui::Cursor::NewCustom(CreateTestBitmap(128, 128),
-                                            gfx::Point(0, 1), kImageScale));
+  WebCursor webcursor(ui::Cursor::NewCustom(
+      gfx::test::CreateBitmap(/*size=*/128), gfx::Point(0, 1), kImageScale));
 
   display::Display display;
   display.set_device_scale_factor(kDeviceScale);
@@ -138,8 +131,8 @@ TEST(WebCursorTest, CursorScaleFactor) {
 
 #if BUILDFLAG(IS_WIN)
 void ScaleCursor(float scale, int hotspot_x, int hotspot_y) {
-  WebCursor webcursor(ui::Cursor::NewCustom(CreateTestBitmap(10, 10),
-                                            gfx::Point(hotspot_x, hotspot_y)));
+  WebCursor webcursor(ui::Cursor::NewCustom(
+      gfx::test::CreateBitmap(/*size=*/10), gfx::Point(hotspot_x, hotspot_y)));
 
   display::Display display;
   display.set_device_scale_factor(scale);

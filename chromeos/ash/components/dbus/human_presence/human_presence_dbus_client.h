@@ -5,12 +5,13 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_DBUS_HUMAN_PRESENCE_HUMAN_PRESENCE_DBUS_CLIENT_H_
 #define CHROMEOS_ASH_COMPONENTS_DBUS_HUMAN_PRESENCE_HUMAN_PRESENCE_DBUS_CLIENT_H_
 
+#include <optional>
+
 #include "base/component_export.h"
 #include "base/functional/callback.h"
 #include "base/observer_list_types.h"
 #include "chromeos/ash/components/dbus/hps/hps_service.pb.h"
 #include "dbus/object_proxy.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace dbus {
 class Bus;
@@ -44,7 +45,7 @@ class COMPONENT_EXPORT(HPS) HumanPresenceDBusClient {
   };
 
   using GetResultCallback =
-      base::OnceCallback<void(absl::optional<hps::HpsResultProto>)>;
+      base::OnceCallback<void(std::optional<hps::HpsResultProto>)>;
 
   HumanPresenceDBusClient(const HumanPresenceDBusClient&) = delete;
   HumanPresenceDBusClient& operator=(const HumanPresenceDBusClient&) = delete;

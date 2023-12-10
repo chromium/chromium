@@ -23,8 +23,12 @@ public class ChosenObjectInfo implements Serializable {
     private final boolean mIsManaged;
 
     @VisibleForTesting
-    public ChosenObjectInfo(@ContentSettingsType int contentSettingsType, String origin,
-            String name, String object, boolean isManaged) {
+    public ChosenObjectInfo(
+            @ContentSettingsType int contentSettingsType,
+            String origin,
+            String name,
+            String object,
+            boolean isManaged) {
         mContentSettingsType = contentSettingsType;
         mOrigin = origin;
         mName = name;
@@ -32,48 +36,37 @@ public class ChosenObjectInfo implements Serializable {
         mIsManaged = isManaged;
     }
 
-    /**
-     * Returns the content settings type of the permission.
-     */
+    /** Returns the content settings type of the permission. */
     public @ContentSettingsType int getContentSettingsType() {
         return mContentSettingsType;
     }
 
-    /**
-     * Returns the origin that requested the permission.
-     */
+    /** Returns the origin that requested the permission. */
     public String getOrigin() {
         return mOrigin;
     }
 
-    /**
-     * Returns the human readable name for the object to display in the UI.
-     */
+    /** Returns the human readable name for the object to display in the UI. */
     public String getName() {
         return mName;
     }
 
-    /**
-     * Returns the opaque object string that represents the object.
-     */
+    /** Returns the opaque object string that represents the object. */
     public String getObject() {
         return mObject;
     }
 
-    /**
-     * Returns whether the object is managed by policy.
-     */
+    /** Returns whether the object is managed by policy. */
     public boolean isManaged() {
         return mIsManaged;
     }
 
-    /**
-     * Revokes permission for the origin to access the object if the object is not managed.
-     */
+    /** Revokes permission for the origin to access the object if the object is not managed. */
     public void revoke(BrowserContextHandle browserContextHandle) {
         if (!mIsManaged) {
-            WebsitePreferenceBridgeJni.get().revokeObjectPermission(
-                    browserContextHandle, mContentSettingsType, mOrigin, mObject);
+            WebsitePreferenceBridgeJni.get()
+                    .revokeObjectPermission(
+                            browserContextHandle, mContentSettingsType, mOrigin, mObject);
         }
     }
 }

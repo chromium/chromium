@@ -35,6 +35,7 @@
 #include "extensions/browser/api/web_request/web_request_proxying_websocket.h"
 #include "extensions/browser/api/web_request/web_request_proxying_webtransport.h"
 #include "extensions/browser/browser_frame_context_data.h"
+#include "extensions/browser/browser_process_context_data.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_navigation_ui_data.h"
 #include "extensions/browser/extension_prefs.h"
@@ -43,11 +44,14 @@
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
+#include "extensions/browser/process_manager.h"
+#include "extensions/browser/process_map.h"
 #include "extensions/browser/warning_service.h"
 #include "extensions/browser/warning_set.h"
 #include "extensions/common/api/web_request.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_api.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/features/feature.h"
 #include "extensions/common/features/feature_provider.h"
@@ -152,7 +156,7 @@ void WebRequestAPI::Proxy::HandleAuthRequest(
     AuthRequestCallback callback) {
   // Default implementation cancels the request.
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt,
+      FROM_HERE, base::BindOnce(std::move(callback), std::nullopt,
                                 false /* should_cancel */));
 }
 
@@ -226,7 +230,7 @@ void WebRequestAPI::ProxySet::MaybeProxyAuthRequest(
     // Run the |callback| which will display a dialog for the user to enter
     // their auth credentials.
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt,
+        FROM_HERE, base::BindOnce(std::move(callback), std::nullopt,
                                   false /* should_cancel */));
     return;
   }
@@ -364,7 +368,7 @@ bool WebRequestAPI::MaybeProxyURLLoaderFactory(
     content::RenderFrameHost* frame,
     int render_process_id,
     URLLoaderFactoryType type,
-    absl::optional<int64_t> navigation_id,
+    std::optional<int64_t> navigation_id,
     ukm::SourceIdObj ukm_source_id,
     mojo::PendingReceiver<network::mojom::URLLoaderFactory>* factory_receiver,
     mojo::PendingRemote<network::mojom::TrustedURLLoaderHeaderClient>*
@@ -373,9 +377,12 @@ bool WebRequestAPI::MaybeProxyURLLoaderFactory(
     const url::Origin& request_initiator) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (!MayHaveProxies()) {
-    bool skip_proxy = true;
+    bool use_proxy = false;
     // There are a few internal WebUIs that use WebView tag that are allowlisted
     // for webRequest.
+    // TODO(https://crbug.com/1500060): Remove the scheme check once we're sure
+    // that WebUIs with WebView run in real WebUI processes and check the
+    // context type using |IsAvailableToWebViewEmbedderFrame()| below.
     if (WebViewGuest::IsGuest(frame)) {
       content::RenderFrameHost* embedder =
           frame->GetOutermostMainFrameOrEmbedder();
@@ -388,8 +395,10 @@ bool WebRequestAPI::MaybeProxyURLLoaderFactory(
                     util::GetBrowserContextId(browser_context),
                     BrowserFrameContextData(frame))
                 .is_available()) {
-          skip_proxy = false;
+          use_proxy = true;
         }
+      } else {
+        use_proxy = IsAvailableToWebViewEmbedderFrame(frame);
       }
     }
 
@@ -408,9 +417,9 @@ bool WebRequestAPI::MaybeProxyURLLoaderFactory(
         !base::FeatureList::IsEnabled(
             safe_browsing::
                 kExtensionTelemetryInterceptRemoteHostsContactedInRenderer)) {
-      skip_proxy = false;
+      use_proxy = true;
     }
-    if (skip_proxy) {
+    if (!use_proxy) {
       return false;
     }
   }
@@ -434,8 +443,9 @@ bool WebRequestAPI::MaybeProxyURLLoaderFactory(
 
   mojo::PendingReceiver<network::mojom::TrustedURLLoaderHeaderClient>
       header_client_receiver;
-  if (header_client)
+  if (header_client) {
     header_client_receiver = header_client->InitWithNewPipeAndPassReceiver();
+  }
 
   // NOTE: This request may be proxied on behalf of an incognito frame, but
   // |this| will always be bound to a regular profile (see
@@ -461,8 +471,11 @@ bool WebRequestAPI::MaybeProxyAuthRequest(
     scoped_refptr<net::HttpResponseHeaders> response_headers,
     const content::GlobalRequestID& request_id,
     bool is_main_frame,
-    AuthRequestCallback callback) {
-  if (!MayHaveProxies()) {
+    AuthRequestCallback callback,
+    WebViewGuest* web_view_guest) {
+  if (!MayHaveProxies() &&
+      (!web_view_guest || !IsAvailableToWebViewEmbedderFrame(
+                              web_view_guest->GetGuestMainFrame()))) {
     return false;
   }
 
@@ -488,11 +501,12 @@ void WebRequestAPI::ProxyWebSocket(
     content::ContentBrowserClient::WebSocketFactory factory,
     const GURL& url,
     const net::SiteForCookies& site_for_cookies,
-    const absl::optional<std::string>& user_agent,
+    const std::optional<std::string>& user_agent,
     mojo::PendingRemote<network::mojom::WebSocketHandshakeClient>
         handshake_client) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(MayHaveProxies() || MayHaveWebsocketProxiesForExtensionTelemetry());
+  DCHECK(MayHaveProxies() || MayHaveWebsocketProxiesForExtensionTelemetry() ||
+         IsAvailableToWebViewEmbedderFrame(frame));
 
   content::BrowserContext* browser_context =
       frame->GetProcess()->GetBrowserContext();
@@ -500,13 +514,10 @@ void WebRequestAPI::ProxyWebSocket(
       WebRequestEventRouter::Get(browser_context)
           ->HasAnyExtraHeadersListener(browser_context);
 
-  const ukm::SourceIdObj& ukm_source_id =
-      ukm::SourceIdObj::FromInt64(frame->GetPageUkmSourceId());
-
   WebRequestProxyingWebSocket::StartProxying(
       std::move(factory), url, site_for_cookies, user_agent,
       std::move(handshake_client), has_extra_headers,
-      frame->GetProcess()->GetID(), frame->GetRoutingID(), ukm_source_id,
+      frame->GetProcess()->GetID(), frame->GetRoutingID(),
       &request_id_generator_, frame->GetLastCommittedOrigin(),
       frame->GetProcess()->GetBrowserContext(), proxies_.get());
 }
@@ -521,8 +532,12 @@ void WebRequestAPI::ProxyWebTransport(
     content::ContentBrowserClient::WillCreateWebTransportCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (!MayHaveProxies()) {
-    std::move(callback).Run(std::move(handshake_client), absl::nullopt);
-    return;
+    auto* render_frame_host = content::RenderFrameHost::FromID(
+        render_process_host.GetID(), frame_routing_id);
+    if (!IsAvailableToWebViewEmbedderFrame(render_frame_host)) {
+      std::move(callback).Run(std::move(handshake_client), std::nullopt);
+      return;
+    }
   }
   DCHECK(proxies_);
   StartWebRequestProxyingWebTransport(
@@ -560,6 +575,33 @@ bool WebRequestAPI::MayHaveWebsocketProxiesForExtensionTelemetry() const {
          !base::FeatureList::IsEnabled(
              safe_browsing::
                  kExtensionTelemetryInterceptRemoteHostsContactedInRenderer);
+}
+
+bool WebRequestAPI::IsAvailableToWebViewEmbedderFrame(
+    content::RenderFrameHost* render_frame_host) const {
+  if (!render_frame_host || !WebViewGuest::IsGuest(render_frame_host)) {
+    return false;
+  }
+
+  content::BrowserContext* browser_context =
+      render_frame_host->GetBrowserContext();
+  content::RenderFrameHost* embedder_frame =
+      render_frame_host->GetOutermostMainFrameOrEmbedder();
+
+  if (!ProcessMap::Get(browser_context)
+           ->CanProcessHostContextType(/*extension=*/nullptr,
+                                       *embedder_frame->GetProcess(),
+                                       Feature::WEB_PAGE_CONTEXT)) {
+    return false;
+  }
+
+  Feature::Availability availability =
+      ExtensionAPI::GetSharedInstance()->IsAvailable(
+          "webRequestInternal", /*extension=*/nullptr,
+          Feature::WEB_PAGE_CONTEXT, embedder_frame->GetLastCommittedURL(),
+          CheckAliasStatus::ALLOWED, util::GetBrowserContextId(browser_context),
+          BrowserFrameContextData(embedder_frame));
+  return availability.is_available();
 }
 
 bool WebRequestAPI::HasExtraHeadersListenerForTesting() {
@@ -819,8 +861,8 @@ WebRequestInternalEventHandledFunction::Run() {
   int web_view_instance_id = web_view_instance_id_value.GetInt();
 
   uint64_t request_id;
-  EXTENSION_FUNCTION_VALIDATE(base::StringToUint64(request_id_str,
-                                                   &request_id));
+  EXTENSION_FUNCTION_VALIDATE(
+      base::StringToUint64(request_id_str, &request_id));
 
   int render_process_id = source_process_id();
 

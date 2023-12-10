@@ -28,7 +28,6 @@
 #import "ios/chrome/browser/ui/autofill/cells/autofill_edit_item.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_constants.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_credit_card_util.h"
-#import "ios/chrome/browser/ui/settings/autofill/autofill_edit_table_view_controller+protected.h"
 #import "ios/chrome/browser/ui/settings/cells/copied_to_chrome_item.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"

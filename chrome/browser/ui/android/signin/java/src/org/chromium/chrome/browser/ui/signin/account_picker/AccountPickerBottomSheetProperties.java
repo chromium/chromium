@@ -20,9 +20,7 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-/**
- * Properties of account picker bottom sheet.
- */
+/** Properties of account picker bottom sheet. */
 class AccountPickerBottomSheetProperties {
     /**
      * View states of account picker.
@@ -30,12 +28,12 @@ class AccountPickerBottomSheetProperties {
      * configuration.
      */
     @IntDef({
-            ViewState.NO_ACCOUNTS,
-            ViewState.COLLAPSED_ACCOUNT_LIST,
-            ViewState.EXPANDED_ACCOUNT_LIST,
-            ViewState.SIGNIN_IN_PROGRESS,
-            ViewState.SIGNIN_GENERAL_ERROR,
-            ViewState.SIGNIN_AUTH_ERROR,
+        ViewState.NO_ACCOUNTS,
+        ViewState.COLLAPSED_ACCOUNT_LIST,
+        ViewState.EXPANDED_ACCOUNT_LIST,
+        ViewState.SIGNIN_IN_PROGRESS,
+        ViewState.SIGNIN_GENERAL_ERROR,
+        ViewState.SIGNIN_AUTH_ERROR,
     })
     @Retention(RetentionPolicy.SOURCE)
     @interface ViewState {
@@ -119,15 +117,16 @@ class AccountPickerBottomSheetProperties {
     static final ReadableObjectPropertyKey<AccountPickerBottomSheetStrings> BOTTOM_SHEET_STRINGS =
             new ReadableObjectPropertyKey("bottom_sheet_strings");
 
-    static final PropertyKey[] ALL_KEYS = new PropertyKey[] {
-            ON_SELECTED_ACCOUNT_CLICKED,
-            SELECTED_ACCOUNT_DATA,
-            ON_CONTINUE_AS_CLICKED,
-            ON_DISMISS_CLICKED,
-            VIEW_STATE,
-            ENTRY_POINT,
-            BOTTOM_SHEET_STRINGS,
-    };
+    static final PropertyKey[] ALL_KEYS =
+            new PropertyKey[] {
+                ON_SELECTED_ACCOUNT_CLICKED,
+                SELECTED_ACCOUNT_DATA,
+                ON_CONTINUE_AS_CLICKED,
+                ON_DISMISS_CLICKED,
+                VIEW_STATE,
+                ENTRY_POINT,
+                BOTTOM_SHEET_STRINGS,
+            };
 
     /**
      * Creates a default model for the AccountPickerBottomSheet.
@@ -135,8 +134,10 @@ class AccountPickerBottomSheetProperties {
      * In the default model, as the selected account data is null, the bottom sheet is in the
      * state {@link ViewState#NO_ACCOUNTS}.
      */
-    static PropertyModel createModel(Runnable onSelectedAccountClicked,
-            Runnable onContinueAsClicked, OnClickListener onDismissClicked,
+    static PropertyModel createModel(
+            Runnable onSelectedAccountClicked,
+            Runnable onContinueAsClicked,
+            OnClickListener onDismissClicked,
             @EntryPoint int entryPoint,
             AccountPickerBottomSheetStrings accountPickerBottomSheetStrings) {
         return new PropertyModel.Builder(ALL_KEYS)

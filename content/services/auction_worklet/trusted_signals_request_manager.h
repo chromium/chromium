@@ -83,6 +83,10 @@ class CONTENT_EXPORT TrustedSignalsRequestManager {
   // TrustedSignals request for any pending requests and reset the send
   // interval.
   //
+  // If non-empty the bidder-only parameter,
+  // "&`trusted_bidding_signals_slot_size_param`" is appended to the end of the
+  // query string. It's expected to already be escaped if necessary.
+  //
   // TODO(https://crbug.com/1279643): Investigate improving the
   // `automatically_send_requests` logic.
   TrustedSignalsRequestManager(
@@ -94,6 +98,7 @@ class CONTENT_EXPORT TrustedSignalsRequestManager {
       const url::Origin& top_level_origin,
       const GURL& trusted_signals_url,
       absl::optional<uint16_t> experiment_group_id,
+      const std::string& trusted_bidding_signals_slot_size_param,
       AuctionV8Helper* v8_helper);
 
   explicit TrustedSignalsRequestManager(const TrustedSignalsRequestManager&) =
@@ -211,6 +216,7 @@ class CONTENT_EXPORT TrustedSignalsRequestManager {
   const url::Origin top_level_origin_;
   const GURL trusted_signals_url_;
   const absl::optional<uint16_t> experiment_group_id_;
+  const std::string trusted_bidding_signals_slot_size_param_;
   const scoped_refptr<AuctionV8Helper> v8_helper_;
 
   // All live requests that haven't yet been assigned to a

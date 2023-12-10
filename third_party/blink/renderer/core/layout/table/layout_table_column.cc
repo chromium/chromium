@@ -5,7 +5,7 @@
 #include "third_party/blink/renderer/core/layout/table/layout_table_column.h"
 
 #include "third_party/blink/renderer/core/html/html_table_col_element.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
+#include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/table/layout_table.h"
 #include "third_party/blink/renderer/core/layout/table/table_borders.h"
 #include "third_party/blink/renderer/core/layout/table/table_layout_algorithm_types.h"
@@ -19,7 +19,7 @@ namespace {
 // `LayoutTable::HasBackgroundForPaint`). Used to know whether the table
 // background should be invalidated when some column span changes.
 bool TableHasColumnsWithBackground(LayoutTable* table) {
-  TableGroupedChildren grouped_children(NGBlockNode(To<LayoutBox>(table)));
+  TableGroupedChildren grouped_children(BlockNode(To<LayoutBox>(table)));
   for (const auto& column : grouped_children.columns) {
     if (column.Style().HasBackground()) {
       return true;
@@ -27,7 +27,7 @@ bool TableHasColumnsWithBackground(LayoutTable* table) {
 
     // Iterate through a colgroup's children.
     if (column.IsTableColgroup()) {
-      NGLayoutInputNode node = column.FirstChild();
+      LayoutInputNode node = column.FirstChild();
       while (node) {
         DCHECK(node.IsTableCol());
         if (node.Style().HasBackground()) {

@@ -5,6 +5,7 @@ include_rules = [
   "+components/domain_reliability",
   "+components/miracle_parameter",
   "+components/network_session_configurator",
+  "+components/os_crypt/async",
   "+components/os_crypt/sync",
   # Prefs are used to create an independent file with a persisted key:value
   # store for networking-related data (Like which servers support QUIC), rather

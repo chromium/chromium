@@ -73,7 +73,7 @@ class NetworkDetailedNetworkViewPixelTest : public AshTestBase {
     base::RunLoop().RunUntilIdle();
   }
 
-  absl::optional<pixel_test::InitParams> CreatePixelTestInitParams()
+  std::optional<pixel_test::InitParams> CreatePixelTestInitParams()
       const override {
     return pixel_test::InitParams();
   }
@@ -107,7 +107,7 @@ TEST_F(NetworkDetailedNetworkViewPixelTest, Basics) {
   // Show the detailed view.
   system_tray->bubble()
       ->unified_system_tray_controller()
-      ->ShowNetworkDetailedView(/*force=*/true);
+      ->ShowNetworkDetailedView();
   TrayDetailedView* detailed_view =
       system_tray->bubble()
           ->quick_settings_view()
@@ -129,7 +129,7 @@ TEST_F(NetworkDetailedNetworkViewPixelTest, Basics) {
   // Compare pixels.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "check_view",
-      /*revision_number=*/6, detailed_view));
+      /*revision_number=*/10, detailed_view));
 }
 
 }  // namespace

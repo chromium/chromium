@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 197 tests; 0 PASS, 197 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 206 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] abs(1) should be used-value-equivalent to 1
   assert_not_equals: abs(1) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
 [FAIL] sign(1) should be used-value-equivalent to 1
@@ -15,19 +15,19 @@ Found 197 tests; 0 PASS, 197 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] sign(sign(sign(1) + sign(1))) should be used-value-equivalent to 1
   assert_not_equals: sign(sign(sign(1) + sign(1))) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
 [FAIL] calc(abs(0.1 + 0.2) + 0.05) should be used-value-equivalent to 0.35
-  assert_not_equals: calc(abs(0.1 + 0.2) + 0.05) isn't valid in 'transform'; got the default value instead. got disallowed value "none"
+  assert_not_equals: calc(abs(0.1 + 0.2) + 0.05) isn't valid in 'scale'; got the default value instead. got disallowed value "none"
 [FAIL] calc(sign(0.1 + 0.2) - 0.05) should be used-value-equivalent to 0.95
-  assert_not_equals: calc(sign(0.1 + 0.2) - 0.05) isn't valid in 'transform'; got the default value instead. got disallowed value "none"
+  assert_not_equals: calc(sign(0.1 + 0.2) - 0.05) isn't valid in 'scale'; got the default value instead. got disallowed value "none"
 [FAIL] calc(abs(0.1 + 0.2) * 2) should be used-value-equivalent to 0.6
-  assert_not_equals: calc(abs(0.1 + 0.2) * 2) isn't valid in 'transform'; got the default value instead. got disallowed value "none"
+  assert_not_equals: calc(abs(0.1 + 0.2) * 2) isn't valid in 'scale'; got the default value instead. got disallowed value "none"
 [FAIL] calc(abs(sign(0.1) + 0.2) / 2) should be used-value-equivalent to 0.6
-  assert_not_equals: calc(abs(sign(0.1) + 0.2) / 2) isn't valid in 'transform'; got the default value instead. got disallowed value "none"
+  assert_not_equals: calc(abs(sign(0.1) + 0.2) / 2) isn't valid in 'scale'; got the default value instead. got disallowed value "none"
 [FAIL] calc(abs(0.1 + 0.2) * -2) should be used-value-equivalent to -0.6
-  assert_not_equals: calc(abs(0.1 + 0.2) * -2) isn't valid in 'transform'; got the default value instead. got disallowed value "none"
+  assert_not_equals: calc(abs(0.1 + 0.2) * -2) isn't valid in 'scale'; got the default value instead. got disallowed value "none"
 [FAIL] calc(sign(0.1 - 0.2) - 0.05) should be used-value-equivalent to -1.05
-  assert_not_equals: calc(sign(0.1 - 0.2) - 0.05) isn't valid in 'transform'; got the default value instead. got disallowed value "none"
+  assert_not_equals: calc(sign(0.1 - 0.2) - 0.05) isn't valid in 'scale'; got the default value instead. got disallowed value "none"
 [FAIL] calc(sign(1) + sign(1) - 0.05) should be used-value-equivalent to 1.95
-  assert_not_equals: calc(sign(1) + sign(1) - 0.05) isn't valid in 'transform'; got the default value instead. got disallowed value "none"
+  assert_not_equals: calc(sign(1) + sign(1) - 0.05) isn't valid in 'scale'; got the default value instead. got disallowed value "none"
 [FAIL] abs(10px) should be used-value-equivalent to 10px
   assert_not_equals: abs(10px) isn't valid in 'margin-left'; got the default value instead. got disallowed value "0px"
 [FAIL] abs(10%) should be used-value-equivalent to 10px
@@ -40,6 +40,8 @@ Found 197 tests; 0 PASS, 197 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_not_equals: abs(-10px) isn't valid in 'margin-left'; got the default value instead. got disallowed value "0px"
 [FAIL] abs(-10%) should be used-value-equivalent to 10px
   assert_not_equals: abs(-10%) isn't valid in 'margin-left'; got the default value instead. got disallowed value "0px"
+[FAIL] calc((1em + 1px) * (sign(1em - 10px - 10%) + 1)) should be used-value-equivalent to 21px
+  assert_not_equals: calc((1em + 1px) * (sign(1em - 10px - 10%) + 1)) isn't valid in 'margin-left'; got the default value instead. got disallowed value "0px"
 [FAIL] calc(calc(sign(-0))) should be used-value-equivalent to 0
   assert_not_equals: calc(calc(sign(-0))) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
 [FAIL] clamp(-1, calc( 1 / sign(calc(sign(-0)))), 1) should be used-value-equivalent to -1
@@ -49,11 +51,25 @@ Found 197 tests; 0 PASS, 197 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] clamp(-1, calc( 1 / sign(calc(sign(0)))), 1) should be used-value-equivalent to 1
   assert_not_equals: clamp(-1, calc( 1 / sign(calc(sign(0)))), 1) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
 [FAIL] abs(infinity) should be used-value-equivalent to calc(infinity)
-  assert_not_equals: abs(infinity) isn't valid in 'transform'; got the default value instead. got disallowed value "none"
+  assert_not_equals: abs(infinity) isn't valid in 'scale'; got the default value instead. got disallowed value "none"
 [FAIL] abs(-infinity) should be used-value-equivalent to calc(infinity)
-  assert_not_equals: abs(-infinity) isn't valid in 'transform'; got the default value instead. got disallowed value "none"
+  assert_not_equals: abs(-infinity) isn't valid in 'scale'; got the default value instead. got disallowed value "none"
 [FAIL] abs(NaN) should be used-value-equivalent to calc(NaN)
-  assert_not_equals: abs(NaN) isn't valid in 'transform'; got the default value instead. got disallowed value "none"
+  assert_not_equals: abs(NaN) isn't valid in 'scale'; got the default value instead. got disallowed value "none"
+[FAIL] calc(20 - abs(-10)) should be used-value-equivalent to 10
+  assert_not_equals: calc(20 - abs(-10)) isn't valid in 'scale'; got the default value instead. got disallowed value "none"
+[FAIL] calc(20 - abs(10)) should be used-value-equivalent to 10
+  assert_not_equals: calc(20 - abs(10)) isn't valid in 'scale'; got the default value instead. got disallowed value "none"
+[FAIL] calc(10 - abs(10 - abs(-30)) should be used-value-equivalent to -10
+  assert_not_equals: calc(10 - abs(10 - abs(-30)) isn't valid in 'scale'; got the default value instead. got disallowed value "none"
+[FAIL] calc(2 - sign(1)) should be used-value-equivalent to 1
+  assert_not_equals: calc(2 - sign(1)) isn't valid in 'scale'; got the default value instead. got disallowed value "none"
+[FAIL] calc(2 - sign(-1)) should be used-value-equivalent to 3
+  assert_not_equals: calc(2 - sign(-1)) isn't valid in 'scale'; got the default value instead. got disallowed value "none"
+[FAIL] calc(2 - sign(1 - sign(-1))) should be used-value-equivalent to 1
+  assert_not_equals: calc(2 - sign(1 - sign(-1))) isn't valid in 'scale'; got the default value instead. got disallowed value "none"
+[FAIL] calc(10 - abs(20 - sign(2 - abs(-20)))) should be used-value-equivalent to -11
+  assert_not_equals: calc(10 - abs(20 - sign(2 - abs(-20)))) isn't valid in 'scale'; got the default value instead. got disallowed value "none"
 [FAIL] sign(1px) should be used-value-equivalent to 1
   assert_not_equals: sign(1px) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
 [FAIL] sign(1cm) should be used-value-equivalent to 1
@@ -375,24 +391,26 @@ Found 197 tests; 0 PASS, 197 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] abs(-1ms) should be used-value-equivalent to 1ms
   assert_not_equals: abs(-1ms) isn't valid in 'transition-delay'; got the default value instead. got disallowed value "0s"
 [FAIL] abs(1deg) should be used-value-equivalent to 1deg
-  assert_not_equals: abs(1deg) isn't valid in 'transform'; got the default value instead. got disallowed value "none"
+  assert_not_equals: abs(1deg) isn't valid in 'rotate'; got the default value instead. got disallowed value "none"
 [FAIL] abs(1grad) should be used-value-equivalent to 1grad
-  assert_not_equals: abs(1grad) isn't valid in 'transform'; got the default value instead. got disallowed value "none"
+  assert_not_equals: abs(1grad) isn't valid in 'rotate'; got the default value instead. got disallowed value "none"
 [FAIL] abs(1rad) should be used-value-equivalent to 1rad
-  assert_not_equals: abs(1rad) isn't valid in 'transform'; got the default value instead. got disallowed value "none"
+  assert_not_equals: abs(1rad) isn't valid in 'rotate'; got the default value instead. got disallowed value "none"
 [FAIL] abs(1turn) should be used-value-equivalent to 1turn
-  assert_not_equals: abs(1turn) isn't valid in 'transform'; got the default value instead. got disallowed value "none"
+  assert_not_equals: abs(1turn) isn't valid in 'rotate'; got the default value instead. got disallowed value "none"
 [FAIL] abs(-1deg) should be used-value-equivalent to 1deg
-  assert_not_equals: abs(-1deg) isn't valid in 'transform'; got the default value instead. got disallowed value "none"
+  assert_not_equals: abs(-1deg) isn't valid in 'rotate'; got the default value instead. got disallowed value "none"
 [FAIL] abs(-1grad) should be used-value-equivalent to 1grad
-  assert_not_equals: abs(-1grad) isn't valid in 'transform'; got the default value instead. got disallowed value "none"
+  assert_not_equals: abs(-1grad) isn't valid in 'rotate'; got the default value instead. got disallowed value "none"
 [FAIL] abs(-1rad) should be used-value-equivalent to 1rad
-  assert_not_equals: abs(-1rad) isn't valid in 'transform'; got the default value instead. got disallowed value "none"
+  assert_not_equals: abs(-1rad) isn't valid in 'rotate'; got the default value instead. got disallowed value "none"
 [FAIL] abs(-1turn) should be used-value-equivalent to 1turn
-  assert_not_equals: abs(-1turn) isn't valid in 'transform'; got the default value instead. got disallowed value "none"
+  assert_not_equals: abs(-1turn) isn't valid in 'rotate'; got the default value instead. got disallowed value "none"
 [FAIL] sign(10px - 1em) should be used-value-equivalent to 0; fontSize=10px
   assert_not_equals: sign(10px - 1em) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
 [FAIL] sign(10px - 2em) should be used-value-equivalent to -1; fontSize=10px
   assert_not_equals: sign(10px - 2em) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
+[FAIL] calc(sign(10%) * 100px) should be used-value-equivalent to 100px
+  assert_not_equals: calc(sign(10%) * 100px) isn't valid in 'margin-left'; got the default value instead. got disallowed value "0px"
 Harness: the test ran to completion.
 

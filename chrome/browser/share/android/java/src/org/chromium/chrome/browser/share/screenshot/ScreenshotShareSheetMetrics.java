@@ -11,17 +11,15 @@ import org.chromium.base.metrics.RecordHistogram;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-/**
- * A helper class to log metrics.
- */
+/** A helper class to log metrics. */
 public class ScreenshotShareSheetMetrics {
     // These values are persisted to logs. Entries should not be renumbered and
     // numeric values should never be reused.
     @IntDef({
-            ScreenshotShareSheetAction.EDIT,
-            ScreenshotShareSheetAction.SHARE,
-            ScreenshotShareSheetAction.SAVE,
-            ScreenshotShareSheetAction.DELETE,
+        ScreenshotShareSheetAction.EDIT,
+        ScreenshotShareSheetAction.SHARE,
+        ScreenshotShareSheetAction.SAVE,
+        ScreenshotShareSheetAction.DELETE,
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface ScreenshotShareSheetAction {

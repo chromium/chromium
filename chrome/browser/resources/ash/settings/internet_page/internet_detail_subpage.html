@@ -64,7 +64,7 @@
     margin-inline-start: var(--cr-section-padding);
   }
 
-  cr-link-row {
+  cr-link-row:not([warning]) {
     --cr-secondary-text-color: var(--cros-text-color-positive);
   }
 
@@ -164,7 +164,7 @@
   <div class$="settings-box single-column
               [[messagesDividerClass_('secondary', managedProperties_,
                   globalPolicy, managedNetworkAvailable,
-                  isSecondaryUser_, isWifiSyncEnabled_)]]">
+                  isSecondaryUser_, isWifiSyncEnabled_, deviceState_)]]">
     <div class="layout horizontal center">
       <iron-icon class="policy" icon="cr:group"></iron-icon>
       <div class="settings-box-text">
@@ -182,7 +182,7 @@
   <div class$="settings-box settings-box-text
               [[messagesDividerClass_('shared', managedProperties_,
                   globalPolicy, managedNetworkAvailable,
-                  isSecondaryUser_, isWifiSyncEnabled_)]]">
+                  isSecondaryUser_, isWifiSyncEnabled_, deviceState_)]]">
       [[sharedString_(managedProperties_)]]
   </div>
 </template>
@@ -193,10 +193,22 @@
   <div class$="settings-box settings-box-text
               [[messagesDividerClass_('synced', managedProperties_,
                   globalPolicy, managedNetworkAvailable,
-                  isSecondaryUser_, isWifiSyncEnabled_)]]">
+                  isSecondaryUser_, isWifiSyncEnabled_, deviceState_)]]">
       <localized-link
           localized-string="[[syncedString_(managedProperties_)]]">
       </localized-link>
+  </div>
+</template>
+<template is="dom-if"
+    if="[[isCarrierLockedActiveSim_(managedProperties_, deviceState_)]]">
+  <!-- Carrier locked network. -->
+  <div class$="settings-box settings-box-text
+      [[messagesDividerClass_('carrierlocked', managedProperties_,
+          globalPolicy, managedNetworkAvailable,
+          isSecondaryUser_, isWifiSyncEnabled_, deviceState_)]]">
+    <localized-link id="carrierLockedNoticeLink"
+        localized-string="[[i18nAdvanced('networkCarrierLocked')]]">
+    </localized-link>
   </div>
 </template>
 <!-- End of NOTICES section -->
@@ -311,7 +323,8 @@
           label="$i18n{internetApnPageTitle}"
           sub-label="[[getApnRowSubLabel_(managedProperties_)]]"
           on-click="onApnRowClicked_"
-          role-description="$i18n{subpageArrowRoleDescription}">
+          role-description="$i18n{subpageArrowRoleDescription}"
+          warning$="[[showRestrictedConnectivity_(managedProperties_)]]">
       </cr-link-row>
     </template>
   </template>

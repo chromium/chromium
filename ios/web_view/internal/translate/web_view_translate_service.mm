@@ -45,8 +45,10 @@ WebViewTranslateService::WebViewTranslateService() {}
 WebViewTranslateService::~WebViewTranslateService() = default;
 
 void WebViewTranslateService::Initialize() {
+  translate_requests_allowed_listener_ =
+      std::make_unique<TranslateRequestsAllowedListener>();
   // Initialize the allowed state for resource requests.
-  translate_requests_allowed_listener_.OnResourceRequestsAllowed();
+  translate_requests_allowed_listener_->OnResourceRequestsAllowed();
 
   // Initialize translate.
   translate::TranslateDownloadManager* download_manager =
@@ -63,6 +65,7 @@ void WebViewTranslateService::Shutdown() {
   translate::TranslateDownloadManager* download_manager =
       translate::TranslateDownloadManager::GetInstance();
   download_manager->Shutdown();
+  translate_requests_allowed_listener_.reset();
 }
 
 }  // namespace ios_web_view

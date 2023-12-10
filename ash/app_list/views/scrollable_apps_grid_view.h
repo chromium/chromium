@@ -63,12 +63,12 @@ class ASH_EXPORT ScrollableAppsGridView : public AppsGridView {
                                   ui::EventType type) override;
   void SetFocusAfterEndDrag(AppListItem* drag_item) override;
   void RecordAppMovingTypeMetrics(AppListAppMovingType type) override;
-  absl::optional<int> GetMaxRowsInPage(int page) const override;
+  std::optional<int> GetMaxRowsInPage(int page) const override;
   gfx::Vector2d GetGridCenteringOffset(int page) const override;
   const gfx::Vector2d CalculateTransitionOffset(
       int page_of_view) const override;
   void EnsureViewVisible(const GridIndex& index) override;
-  absl::optional<VisibleItemIndexRange> GetVisibleItemIndexRange()
+  std::optional<VisibleItemIndexRange> GetVisibleItemIndexRange()
       const override;
   bool ShouldContainerHandleDragEvents() override;
 

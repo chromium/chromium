@@ -204,7 +204,7 @@ class MediaFileValidatorTest : public InProcessBrowserTest {
                  int64_t expected_size,
                  base::OnceCallback<void(bool success)> callback) {
     operation_runner()->GetMetadata(
-        url, storage::FileSystemOperation::GET_METADATA_FIELD_SIZE,
+        url, {storage::FileSystemOperation::GetMetadataField::kSize},
         base::BindOnce(&HandleCheckFileResult, expected_size,
                        std::move(callback)));
   }

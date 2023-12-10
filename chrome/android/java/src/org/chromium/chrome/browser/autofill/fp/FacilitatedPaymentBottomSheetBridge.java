@@ -52,6 +52,6 @@ public class FacilitatedPaymentBottomSheetBridge {
         return (mContext == null)
                 ? false
                 : mBottomSheetController.requestShowContent(
-                        new FacilitatedPaymentBottomSheetContent(mContext), /*animate=*/true);
+                        new FacilitatedPaymentBottomSheetContent(mContext), /* animate= */ true);
     }
 }

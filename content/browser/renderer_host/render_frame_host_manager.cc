@@ -1588,7 +1588,7 @@ RenderFrameHostManager::GetFrameHostForNavigation(
 
   // Speculative RFHs are deleted immediately.
   if (speculative_render_frame_host_)
-    DCHECK(!speculative_render_frame_host_->must_be_replaced());
+    DUMP_WILL_BE_CHECK(!speculative_render_frame_host_->must_be_replaced());
 
   // The appropriate RenderFrameHost to commit the navigation.
   RenderFrameHostImpl* navigation_rfh = nullptr;
@@ -2837,6 +2837,14 @@ bool RenderFrameHostManager::InitializeMainRenderFrameForImmediateUse() {
     // case.
     render_frame_host_->ReinitializeDocumentAssociatedDataForReuseAfterCrash(
         /* passkey */ {});
+
+    // Since it's possible for the now reinitialized main frame to create new
+    // sub-frames/windows we need to also reinitialize the
+    // RuntimeFeatureStateDocumentData, since those new frames/windows will
+    // query it on their creation.
+
+    RuntimeFeatureStateDocumentData::CreateForCurrentDocument(
+        render_frame_host_.get(), blink::RuntimeFeatureStateContext());
   }
 
   if (!ReinitializeMainRenderFrame(render_frame_host_.get())) {
@@ -3330,11 +3338,11 @@ scoped_refptr<SiteInstanceImpl> RenderFrameHostManager::ConvertToSiteInstance(
 
   // At this point we know an unrelated site instance must be returned.
 
-  // If the current SiteInstance is for a guest, the new unrelated
-  // SiteInstance must also be for a guest and must stay in the same
+  // If the current SiteInstance has fixed storage partition (e.g. <webview>
+  // tags), the new unrelated SiteInstance must also stay in the same
   // StoragePartition.
   UrlInfo dest_url_info = descriptor.dest_url_info;
-  if (current_instance->IsGuest()) {
+  if (current_instance->IsFixedStoragePartition()) {
     dest_url_info.storage_partition_config =
         current_instance->GetSiteInfo().storage_partition_config();
   }
@@ -3353,7 +3361,8 @@ scoped_refptr<SiteInstanceImpl> RenderFrameHostManager::ConvertToSiteInstance(
   return SiteInstanceImpl::CreateForUrlInfo(
       GetNavigationController().GetBrowserContext(), dest_url_info,
       current_instance->IsGuest(),
-      current_instance->GetIsolationContext().is_fenced());
+      current_instance->GetIsolationContext().is_fenced(),
+      current_instance->IsFixedStoragePartition());
 }
 
 bool RenderFrameHostManager::CanUseSourceSiteInstance(
@@ -3586,11 +3595,15 @@ RenderFrameHostManager::CreateRenderFrameHost(
           : CreateRenderViewHostCase::kDefault;
 
   scoped_refptr<RenderViewHostImpl> render_view_host = nullptr;
+  absl::optional<viz::FrameSinkId> frame_sink_id;
   // In the case a speculative RenderViewHost will be created, we don't need to
   // check if there's an existing RenderViewHost. Otherwise, get the appropriate
   // RenderViewHost.
   if (create_rvh_case == CreateRenderViewHostCase::kDefault) {
     render_view_host = frame_tree.GetRenderViewHost(site_instance->group());
+  } else if (current_frame_host()->ShouldReuseCompositing(*site_instance)) {
+    frame_sink_id =
+        current_frame_host()->GetRenderWidgetHost()->GetFrameSinkId();
   }
 
   switch (create_frame_case) {
@@ -3624,15 +3637,16 @@ RenderFrameHostManager::CreateRenderFrameHost(
       DCHECK(!renderer_initiated_creation);
       break;
   }
+
   if (!render_view_host) {
     render_view_host = frame_tree.CreateRenderViewHost(
-        site_instance, frame_routing_id, renderer_initiated_creation,
+        site_instance->group(), frame_routing_id, renderer_initiated_creation,
         features::GetBrowsingContextMode() ==
                 features::BrowsingContextStateImplementationType::
                     kSwapForCrossBrowsingInstanceNavigations
             ? browsing_context_state
             : nullptr,
-        create_rvh_case);
+        create_rvh_case, frame_sink_id);
   }
   CHECK(render_view_host);
 
@@ -3923,14 +3937,14 @@ void RenderFrameHostManager::CreateRenderFrameProxy(
       // Before creating a new RenderFrameProxyHost, ensure a RenderViewHost
       // exists for |instance|, as it creates the page level structure in Blink.
       render_view_host = frame_tree_node_->frame_tree().CreateRenderViewHost(
-          instance, /*main_frame_routing_id=*/MSG_ROUTING_NONE,
+          group, /*main_frame_routing_id=*/MSG_ROUTING_NONE,
           /*renderer_initiated_creation=*/false,
           features::GetBrowsingContextMode() ==
                   features::BrowsingContextStateImplementationType::
                       kSwapForCrossBrowsingInstanceNavigations
               ? render_frame_host_->browsing_context_state()
               : nullptr,
-          CreateRenderViewHostCase::kDefault);
+          CreateRenderViewHostCase::kDefault, absl::nullopt);
     } else {
       TRACE_EVENT_INSTANT("navigation",
                           "RenderFrameHostManager::CreateRenderFrameProxy_RVH",
@@ -4214,8 +4228,9 @@ RenderFrameHostManager::GetSiteInstanceForNavigationRequest(
 
 bool RenderFrameHostManager::InitRenderFrame(
     RenderFrameHostImpl* render_frame_host) {
-  if (render_frame_host->IsRenderFrameLive())
+  if (render_frame_host->IsRenderFrameLive()) {
     return true;
+  }
 
   SiteInstanceGroup* site_instance_group =
       render_frame_host->GetSiteInstance()->group();
@@ -4487,9 +4502,8 @@ void RenderFrameHostManager::CommitPending(
       }
     }
 
-    StoredPage::StoredPage::RenderViewHostImplSafeRefSet
-        render_view_hosts_to_restore =
-            pending_stored_page->TakeRenderViewHosts();
+    StoredPage::RenderViewHostImplSafeRefSet render_view_hosts_to_restore =
+        pending_stored_page->TakeRenderViewHosts();
     if (prev_state ==
         RenderFrameHostImpl::LifecycleStateImpl::kInBackForwardCache) {
       for (const auto& rvh : render_view_hosts_to_restore) {
@@ -4508,9 +4522,9 @@ void RenderFrameHostManager::CommitPending(
     } else {
       DCHECK_EQ(prev_state,
                 RenderFrameHostImpl::LifecycleStateImpl::kPrerendering);
-      current_frame_host()->GetPage().ActivateForPrerendering(
-          render_view_hosts_to_restore,
-          pending_stored_page->TakeViewTransitionState());
+      current_frame_host()->GetPage().Activate(
+          PageImpl::ActivationType::kPrerendering, render_view_hosts_to_restore,
+          pending_stored_page->TakeViewTransitionState(), base::DoNothing());
     }
   }
 
@@ -4911,7 +4925,7 @@ std::unique_ptr<RenderFrameHostImpl> RenderFrameHostManager::SetRenderFrameHost(
 }
 
 void RenderFrameHostManager::CollectOpenerFrameTrees(
-    SiteInstanceImpl* site_instance,
+    SiteInstanceGroup* site_instance_group,
     std::vector<FrameTree*>* opener_frame_trees,
     std::unordered_set<FrameTreeNode*>* nodes_with_back_links,
     std::unordered_set<FrameTreeNode*>* cross_browsing_context_group_openers) {
@@ -4944,10 +4958,11 @@ void RenderFrameHostManager::CollectOpenerFrameTrees(
       // TODO(https://crbug.com/1440642): It is not clear that this iteration is
       // actually useful for outer delegate proxies. See if this can be
       // prevented to simplify logic here.
-      SiteInstanceImpl* opener_si =
-          node->opener()->current_frame_host()->GetSiteInstance();
-      if (site_instance && !site_instance->IsRelatedSiteInstance(opener_si) &&
-          site_instance->IsCoopRelatedSiteInstance(opener_si)) {
+      SiteInstanceGroup* opener_sig =
+          node->opener()->current_frame_host()->GetSiteInstance()->group();
+      if (site_instance_group &&
+          !site_instance_group->IsRelatedSiteInstanceGroup(opener_sig) &&
+          site_instance_group->IsCoopRelatedSiteInstanceGroup(opener_sig)) {
         cross_browsing_context_group_openers->insert(node->opener());
         continue;
       }
@@ -4986,7 +5001,8 @@ void RenderFrameHostManager::CreateOpenerProxies(
   std::unordered_set<FrameTreeNode*> nodes_with_back_links;
   std::unordered_set<FrameTreeNode*> cross_browsing_context_group_openers;
 
-  CollectOpenerFrameTrees(instance, &opener_frame_trees, &nodes_with_back_links,
+  CollectOpenerFrameTrees(instance->group(), &opener_frame_trees,
+                          &nodes_with_back_links,
                           &cross_browsing_context_group_openers);
 
   // Create the proxies for openers outside of this BrowsingInstance. They are

@@ -22,6 +22,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
@@ -59,6 +60,7 @@
 #include "chrome/browser/permissions/permission_actions_history_factory.h"
 #include "chrome/browser/permissions/permission_decision_auto_blocker_factory.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
+#include "chrome/browser/reading_list/reading_list_model_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/safe_browsing/verdict_cache_manager_factory.h"
 #include "chrome/browser/segmentation_platform/segmentation_platform_service_factory.h"
@@ -122,11 +124,11 @@
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/os_crypt/sync/os_crypt_mocker.h"
 #include "components/password_manager/core/browser/features/password_features.h"
-#include "components/password_manager/core/browser/mock_password_store_interface.h"
-#include "components/password_manager/core/browser/mock_smart_bubble_stats_store.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
-#include "components/password_manager/core/browser/password_store_consumer.h"
-#include "components/password_manager/core/browser/password_store_interface.h"
+#include "components/password_manager/core/browser/password_store/mock_password_store_interface.h"
+#include "components/password_manager/core/browser/password_store/mock_smart_bubble_stats_store.h"
+#include "components/password_manager/core/browser/password_store/password_store_consumer.h"
+#include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/payments/content/mock_payment_manifest_web_data_service.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_actions_history.h"
@@ -138,6 +140,8 @@
 #include "components/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations.h"
 #include "components/privacy_sandbox/privacy_sandbox_attestations/scoped_privacy_sandbox_attestations.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
+#include "components/reading_list/core/mock_reading_list_model_observer.h"
+#include "components/reading_list/core/reading_list_model.h"
 #include "components/safe_browsing/core/browser/verdict_cache_manager.h"
 #include "components/security_interstitials/content/stateful_ssl_host_state_delegate.h"
 #include "components/segmentation_platform/public/features.h"
@@ -541,28 +545,21 @@ class RemoveUkmDataTester {
   RemoveUkmDataTester() : test_utils_(&ukm_recorder_) {
     test_utils_.PreProfileInit(
         {{kSegmentId, test_utils_.GetSamplePageLoadMetadata("SELECT 1")}});
-    segmentation_platform::UkmDatabaseClient::GetInstance().PreProfileInit();
   }
 
   RemoveUkmDataTester(const RemoveUkmDataTester&) = delete;
   RemoveUkmDataTester& operator=(const RemoveUkmDataTester&) = delete;
 
   [[nodiscard]] bool Init(Profile* profile) {
-    // Create the platform to kick off initialization.
-    segmentation_platform::SegmentationPlatformServiceFactory::GetForProfile(
-        profile);
-    history_service_ = HistoryServiceFactory::GetForProfile(
-        profile, ServiceAccessType::EXPLICIT_ACCESS);
-    if (!history_service_) {
-      return false;
-    }
-    test_utils_.set_history_service(history_service_);
+    test_utils_.SetupForProfile(profile);
 
     // Run model overrides to start storing UKM metrics.
     test_utils_.WaitForUkmObserverRegistration();
 
     return true;
   }
+
+  void TearDown(Profile* profile) { test_utils_.WillDestroyProfile(profile); }
 
   [[nodiscard]] bool UkmDatabaseContainsURL(const GURL& url) {
     return test_utils_.IsUrlInDatabase(url);
@@ -580,7 +577,6 @@ class RemoveUkmDataTester {
 
  private:
   ukm::TestUkmRecorder ukm_recorder_;
-  raw_ptr<history::HistoryService> history_service_;
   segmentation_platform::UkmDataManagerTestUtils test_utils_;
 
   base::WeakPtrFactory<RemoveUkmDataTester> weak_ptr_factory_{this};
@@ -975,7 +971,8 @@ class RemoveAutofillTester {
   // Add one profile and two credit cards to the database. One credit card has a
   // web origin and the other has a Chrome origin.
   void AddProfilesAndCards() {
-    autofill::AutofillProfile profile;
+    autofill::AutofillProfile profile(
+        autofill::i18n_model_definition::kLegacyHierarchyCountryCode);
     profile.set_guid(base::Uuid::GenerateRandomV4().AsLowercaseString());
     profile.SetRawInfo(autofill::NAME_FIRST, u"Bob");
     profile.SetRawInfo(autofill::NAME_LAST, u"Smith");
@@ -1205,9 +1202,7 @@ class StrikeDatabaseTester {
 #if BUILDFLAG(ENABLE_NACL)
 class ScopedNaClBrowserDelegate {
  public:
-  ~ScopedNaClBrowserDelegate() {
-    nacl::NaClBrowser::ClearAndDeleteDelegateForTest();
-  }
+  ~ScopedNaClBrowserDelegate() { nacl::NaClBrowser::ClearAndDeleteDelegate(); }
 
   void Init(ProfileManager* profile_manager) {
     nacl::NaClBrowser::SetDelegate(
@@ -1397,6 +1392,19 @@ class ChromeBrowsingDataRemoverDelegateTest : public testing::Test {
         std::move(filter_builder), &completion_observer);
     base::ThreadPoolInstance::Get()->FlushForTesting();
     completion_observer.BlockUntilCompletion();
+  }
+
+  void WaitForReadingListModelLoaded(ReadingListModel* reading_list_model) {
+    testing::NiceMock<MockReadingListModelObserver> observer_;
+    base::RunLoop run_loop;
+    EXPECT_CALL(observer_, ReadingListModelLoaded).WillOnce([&run_loop] {
+      run_loop.Quit();
+    });
+    // If the ReadingListModel is already loaded, it'll call
+    // ReadingListModelLoaded() immediately.
+    reading_list_model->AddObserver(&observer_);
+    run_loop.Run();
+    reading_list_model->RemoveObserver(&observer_);
   }
 
   const base::Time& GetBeginTime() {
@@ -2132,6 +2140,21 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, DeleteBookmarks) {
   EXPECT_EQ(0u, bookmark_model->bookmark_bar_node()->children().size());
 }
 
+TEST_F(ChromeBrowsingDataRemoverDelegateTest, ClearReadingList) {
+  TestingProfile* profile = GetProfile();
+  auto* reading_list_model =
+      ReadingListModelFactory::GetForBrowserContext(profile);
+  WaitForReadingListModelLoaded(reading_list_model);
+  reading_list_model->AddOrReplaceEntry(
+      GURL("http://url.com/"), "entry_title",
+      reading_list::ADDED_VIA_CURRENT_APP,
+      /*estimated_read_time=*/base::TimeDelta());
+  EXPECT_EQ(1u, reading_list_model->size());
+  BlockUntilBrowsingDataRemoved(base::Time(), base::Time::Max(),
+                                constants::DATA_TYPE_READING_LIST, false);
+  EXPECT_EQ(0u, reading_list_model->size());
+}
+
 TEST_F(ChromeBrowsingDataRemoverDelegateTest, DeleteBookmarkHistory) {
   GURL bookmarked_page("http://a");
 
@@ -2214,34 +2237,47 @@ class ChromeBrowsingDataRemoverDelegateEnabledUkmDatabaseTest
          segmentation_platform::features::kSegmentationPlatformUkmEngine},
         {});
   }
+
+  void SetUp() override {
+    tester_ = std::make_unique<RemoveUkmDataTester>();
+    ChromeBrowsingDataRemoverDelegateTest::SetUp();
+  }
+
+  void TearDown() override {
+    tester_->TearDown(GetProfile());
+    ChromeBrowsingDataRemoverDelegateTest::TearDown();
+    tester_.reset();
+  }
+
+ protected:
+  std::unique_ptr<RemoveUkmDataTester> tester_;
 };
 
 TEST_F(ChromeBrowsingDataRemoverDelegateEnabledUkmDatabaseTest, RemoveUkmUrls) {
-  RemoveUkmDataTester tester;
-  ASSERT_TRUE(tester.Init(GetProfile()));
+  ASSERT_TRUE(tester_->Init(GetProfile()));
 
   const base::Time timestamp1 = base::Time::Now();
   const base::Time timestamp2 = timestamp1 + base::Hours(2);
 
   const GURL kOrigin1("http://host1.com:1");
-  tester.AddURL(kOrigin1, timestamp1);
+  tester_->AddURL(kOrigin1, timestamp1);
   const GURL kOrigin2("http://host2.com:1");
-  tester.AddURL(kOrigin2, timestamp2);
-  ASSERT_TRUE(tester.UkmDatabaseContainsURL(kOrigin2));
+  tester_->AddURL(kOrigin2, timestamp2);
+  ASSERT_TRUE(tester_->UkmDatabaseContainsURL(kOrigin2));
 
   // Removing history URLs will remove URLs from the platform.
   BlockUntilBrowsingDataRemoved(base::Time(), timestamp1 + base::Hours(1),
                                 constants::DATA_TYPE_HISTORY, false);
 
-  EXPECT_FALSE(tester.UkmDatabaseContainsURL(kOrigin1));
-  EXPECT_TRUE(tester.UkmDatabaseContainsURL(kOrigin2));
+  EXPECT_FALSE(tester_->UkmDatabaseContainsURL(kOrigin1));
+  EXPECT_TRUE(tester_->UkmDatabaseContainsURL(kOrigin2));
 
   // Removing history URLs will remove URLs from the platform.
   BlockUntilBrowsingDataRemoved(base::Time(), base::Time::Max(),
                                 constants::DATA_TYPE_HISTORY, false);
 
-  EXPECT_FALSE(tester.UkmDatabaseContainsURL(kOrigin1));
-  EXPECT_FALSE(tester.UkmDatabaseContainsURL(kOrigin2));
+  EXPECT_FALSE(tester_->UkmDatabaseContainsURL(kOrigin1));
+  EXPECT_FALSE(tester_->UkmDatabaseContainsURL(kOrigin2));
 }
 
 // Verify that clearing autofill form data works.
@@ -3123,11 +3159,11 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemoveFederatedContentSettings) {
       content::BrowsingDataRemover::DATA_TYPE_COOKIES,
       constants::DATA_TYPE_HISTORY, constants::DATA_TYPE_PASSWORDS};
   for (content::BrowsingDataRemover::DataType test_data_type : test_cases) {
+    SCOPED_TRACE(base::StringPrintf("Test data type %d",
+                                    static_cast<int>(test_data_type)));
+
     {
       FederatedIdentityPermissionContext federated_context(GetProfile());
-      federated_context.GrantActiveSession(rp_origin, idp_origin, account_id);
-      ASSERT_TRUE(federated_context.HasActiveSession(rp_origin, idp_origin,
-                                                     account_id));
 
       federated_context.GrantSharingPermission(rp_origin, rp_embedder_origin,
                                                idp_origin, account_id);
@@ -3153,8 +3189,6 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemoveFederatedContentSettings) {
       // ObjectPermissionContextBase cache.
       FederatedIdentityPermissionContext federated_context(GetProfile());
 
-      EXPECT_FALSE(federated_context.HasActiveSession(rp_origin, idp_origin,
-                                                      account_id));
       EXPECT_FALSE(federated_context.HasSharingPermission(
           rp_origin, rp_embedder_origin, idp_origin, account_id));
 
@@ -3959,8 +3993,18 @@ class ChromeBrowsingDataRemoverDelegateEnabledPasswordsTest
     : public ChromeBrowsingDataRemoverDelegateTest {
  public:
   ChromeBrowsingDataRemoverDelegateEnabledPasswordsTest() {
+#if BUILDFLAG(IS_ANDROID)
+    // Using the account store on Android also requires UPM support for local
+    // passwords.
+    feature_list_.InitWithFeatures(
+        {password_manager::features::kEnablePasswordsAccountStorage,
+         password_manager::features::
+             kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration},
+        {});
+#else
     feature_list_.InitAndEnableFeature(
         password_manager::features::kEnablePasswordsAccountStorage);
+#endif
   }
 };
 

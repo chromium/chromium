@@ -33,9 +33,8 @@ class ASH_EXPORT LocalAuthenticationRequestControllerImpl
   void OnClose() override;
 
   // LocalAuthenticationRequestController:
-  bool ShowWidget(
-      OnLocalAuthenticationCompleted on_local_authentication_completed,
-      std::unique_ptr<UserContext> user_context) override;
+  bool ShowWidget(LocalAuthenticationCallback local_authentication_callback,
+                  std::unique_ptr<UserContext> user_context) override;
 
  private:
   base::WeakPtrFactory<LocalAuthenticationRequestControllerImpl> weak_factory_{

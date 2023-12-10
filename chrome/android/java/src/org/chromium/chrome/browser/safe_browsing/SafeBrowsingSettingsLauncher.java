@@ -23,7 +23,9 @@ public class SafeBrowsingSettingsLauncher {
         if (window == null) return;
         Context currentContext = window.getContext().get();
         SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
-        settingsLauncher.launchSettingsActivity(currentContext, SafeBrowsingSettingsFragment.class,
+        settingsLauncher.launchSettingsActivity(
+                currentContext,
+                SafeBrowsingSettingsFragment.class,
                 SafeBrowsingSettingsFragment.createArguments(accessPoint));
     }
 }

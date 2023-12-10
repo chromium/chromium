@@ -866,6 +866,7 @@ TEST_F(RenderViewImplTest, BeginNavigationHandlesAllTopLevel) {
       blink::kWebNavigationTypeFormSubmitted,
       blink::kWebNavigationTypeBackForward,
       blink::kWebNavigationTypeReload,
+      blink::kWebNavigationTypeRestore,
       blink::kWebNavigationTypeFormResubmittedBackForward,
       blink::kWebNavigationTypeFormResubmittedReload,
       blink::kWebNavigationTypeOther,
@@ -1143,7 +1144,7 @@ TEST_F(RenderViewImplScaleFactorTest, DeviceScaleCorrectAfterCrossOriginNav) {
       std::move(replication_state), std::move(widget_params),
       blink::mojom::FrameOwnerProperties::New(),
       /*is_on_initial_empty_document=*/true, blink::DocumentToken(),
-      CreateStubPolicyContainer());
+      CreateStubPolicyContainer(), /*is_for_nested_main_frame=*/false);
 
   TestRenderFrame* provisional_frame =
       static_cast<TestRenderFrame*>(RenderFrameImpl::FromRoutingID(routing_id));
@@ -1210,7 +1211,7 @@ TEST_F(RenderViewImplTest, DetachingProxyAlsoDestroysProvisionalFrame) {
       std::move(replication_state),
       /*widget_params=*/nullptr, blink::mojom::FrameOwnerProperties::New(),
       /*is_on_initial_empty_document=*/true, blink::DocumentToken(),
-      CreateStubPolicyContainer());
+      CreateStubPolicyContainer(), /*is_for_nested_main_frame=*/false);
   {
     TestRenderFrame* provisional_frame = static_cast<TestRenderFrame*>(
         RenderFrameImpl::FromRoutingID(routing_id));

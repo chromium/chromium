@@ -132,7 +132,9 @@ static constexpr auto kTypeNameToFieldType =
           ADDRESS_HOME_OVERFLOW_AND_LANDMARK},
          {"ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK",
           ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK},
-         {"SINGLE_USERNAME_FORGOT_PASSWORD", SINGLE_USERNAME_FORGOT_PASSWORD}});
+         {"SINGLE_USERNAME_FORGOT_PASSWORD", SINGLE_USERNAME_FORGOT_PASSWORD},
+         {"SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES",
+          SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES}});
 
 bool IsFillableFieldType(ServerFieldType field_type) {
   switch (field_type) {
@@ -221,6 +223,7 @@ bool IsFillableFieldType(ServerFieldType field_type) {
     case CONFIRMATION_PASSWORD:
     case SINGLE_USERNAME:
     case SINGLE_USERNAME_FORGOT_PASSWORD:
+    case SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES:
       return true;
 
     // Not fillable credential fields.
@@ -308,6 +311,7 @@ std::string_view FieldTypeToDeveloperRepresentationString(
     case USERNAME:
     case SINGLE_USERNAME:
     case SINGLE_USERNAME_FORGOT_PASSWORD:
+    case SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES:
       return "Username";
     case USERNAME_AND_EMAIL_ADDRESS:
       return "Username and email";
@@ -556,6 +560,7 @@ FieldTypeGroup GroupTypeOfServerFieldType(ServerFieldType field_type) {
     case SINGLE_USERNAME:
     case NOT_USERNAME:
     case SINGLE_USERNAME_FORGOT_PASSWORD:
+    case SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES:
       return FieldTypeGroup::kPasswordField;
 
     case NO_SERVER_DATA:

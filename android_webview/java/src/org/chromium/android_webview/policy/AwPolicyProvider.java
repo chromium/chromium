@@ -33,7 +33,8 @@ public class AwPolicyProvider extends AppRestrictionsProvider {
             for (String key : newAppRestrictions.keySet()) {
                 if (!key.startsWith(POLICY_PREFIX)) continue;
 
-                filteredRestrictions.putSerializable(key.substring(POLICY_PREFIX.length()),
+                filteredRestrictions.putSerializable(
+                        key.substring(POLICY_PREFIX.length()),
                         newAppRestrictions.getSerializable(key));
             }
         }

@@ -34,9 +34,7 @@ public class SelectableItemViewHolder<E> extends ViewHolder {
         mItemView.setItem(item);
     }
 
-    /**
-     * @return The {@link SelectableItemView} held by this ViewHolder.
-     */
+    /** @return The {@link SelectableItemView} held by this ViewHolder. */
     public SelectableItemView<E> getItemView() {
         return mItemView;
     }

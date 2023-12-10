@@ -1,6 +1,6 @@
 This is a testharness.js-based test.
 [FAIL] name, cssRules, appendRule, findRule, deleteRule
-  assert_equals: CSSKeyframesRule cssText attribute with CSS-wide keyword name expected "@keyframes\"initial\"{}" but got "@keyframesinitial{}"
+  assert_equals: CSSKeyframesRule cssText attribute with CSS-wide keyword name expected "@keyframes\\"initial\\"{}" but got "@keyframesinitial{}"
 [FAIL] indexed getter, length
   assert_equals: CSSKeyframesRule.length expected (number) 2 but got (undefined) undefined
 Harness: the test ran to completion.

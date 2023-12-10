@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/logging.h"
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "chrome/browser/policy/messaging_layer/proto/synced/crd_event.pb.h"
 #include "components/reporting/proto/synced/record_constants.pb.h"

@@ -19,8 +19,11 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_node_id_forward.h"
+#include "ui/accessibility/ax_node_position.h"
+#include "ui/accessibility/ax_position.h"
 #include "ui/accessibility/ax_tree_update_forward.h"
 #include "url/gurl.h"
 
@@ -108,6 +111,16 @@ class ReadAnythingAppController
   void ScreenAIServiceReady() override;
 #endif
 
+  // Read Aloud Helper methods.
+
+  // Returns the next valid AXNodePosition.
+  ui::AXNodePosition::AXPositionInstance
+  GetNextValidPositionFromCurrentPosition();
+
+  // Uses the current AXNodePosition to return the next node that should be
+  // spoken by Read Aloud.
+  ui::AXNode* GetNodeFromCurrentPosition();
+
   // gin templates:
   ui::AXNodeID RootId() const;
   ui::AXNodeID StartNodeId() const;
@@ -139,13 +152,16 @@ class ReadAnythingAppController
   int BlueTheme() const;
   std::string GetStoredVoice(const std::string& lang) const;
   std::vector<ui::AXNodeID> GetChildren(ui::AXNodeID ax_node_id) const;
+  std::string GetDataFontCss(ui::AXNodeID ax_node_id) const;
   std::string GetHtmlTag(ui::AXNodeID ax_node_id) const;
   std::string GetLanguage(ui::AXNodeID ax_node_id) const;
+  std::string GetNameAttributeText(ui::AXNode* ax_node) const;
   std::string GetTextContent(ui::AXNodeID ax_node_id) const;
   std::string GetTextDirection(ui::AXNodeID ax_node_id) const;
   std::string GetUrl(ui::AXNodeID ax_node_id) const;
   bool ShouldBold(ui::AXNodeID ax_node_id) const;
   bool IsOverline(ui::AXNodeID ax_node_id) const;
+  bool IsLeafNode(ui::AXNodeID ax_node_id) const;
   void OnConnected();
   void OnCopy() const;
   void OnScroll(bool on_selection) const;
@@ -158,6 +174,7 @@ class ReadAnythingAppController
   bool IsSelectable() const;
   bool IsWebUIToolbarEnabled() const;
   bool IsReadAloudEnabled() const;
+  bool IsGoogleDocs() const;
   void OnStandardLineSpacing();
   void OnLooseLineSpacing();
   void OnVeryLooseLineSpacing();
@@ -178,6 +195,11 @@ class ReadAnythingAppController
   double GetLetterSpacingValue(int letter_spacing) const;
   std::vector<std::string> GetSupportedFonts() const;
 
+  std::string GetHtmlTagForPDF(ui::AXNode* ax_node, std::string html_tag) const;
+  std::string GetHeadingHtmlTagForPDF(ui::AXNode* ax_node,
+                                      std::string html_tag) const;
+  std::string GetAriaLevel(ui::AXNode* ax_node) const;
+
   // The language code that should be used to determine which voices are
   // supported for speech.
   const std::string& GetLanguageCodeForSpeech() const;
@@ -196,6 +218,23 @@ class ReadAnythingAppController
                          const std::vector<ui::AXNodeID>& content_node_ids);
 
   void PostProcessSelection();
+
+  // Inits the AXPosition with a starting node.
+  // TODO(crbug.com/1474951): We should be able to use AXPosition in a way
+  // where this isn't needed.
+  void InitAXPositionWithNode(const ui::AXNodeID starting_node_id);
+
+  // Returns a list of triples representing the next nodes that should be
+  // spoken and highlighted with Read Aloud. Each triple contains three numbers:
+  // the AXNodeID, the starting text index, and the ending text index. This
+  // list of triples is represented as a double array.
+  std::vector<std::vector<int>> GetNextText(int max_text_length);
+
+  // Returns a list of triples representing the previous nodes that should be
+  // spoken and highlighted with Read Aloud. Each triple contains three numbers:
+  // the AXNodeID, the starting text index, and the ending text index. This
+  // list of triples is represented as a double array.
+  std::vector<std::vector<int>> GetPreviousText(int max_text_length);
 
   // Returns the index of the next sentence of the given text, such that the
   // next sentence is equivalent to text.substr(0, <returned_index>).
@@ -235,12 +274,23 @@ class ReadAnythingAppController
                           int letter_spacing);
   void SetLanguageForTesting(const std::string& language_code);
 
-  const int render_frame_id_;
+  content::RenderFrame* GetRenderFrame();
+
+  const blink::LocalFrameToken frame_token_;
   std::unique_ptr<AXTreeDistiller> distiller_;
   mojo::Remote<read_anything::mojom::UntrustedPageHandlerFactory>
       page_handler_factory_;
   mojo::Remote<read_anything::mojom::UntrustedPageHandler> page_handler_;
   mojo::Receiver<read_anything::mojom::UntrustedPage> receiver_{this};
+
+  // Read Aloud state
+  ui::AXNodePosition::AXPositionInstance ax_position_;
+  // The current text index within the given node.
+  int current_text_index_ = 0;
+
+  // TODO(b/1474951): There should be a way to navigate text without needing
+  //  to store spoken ids.
+  std::vector<ui::AXNodeID> previously_spoken_ids_;
 
   // Model that holds state for this controller.
   ReadAnythingAppModel model_;

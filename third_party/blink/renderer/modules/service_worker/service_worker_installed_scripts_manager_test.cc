@@ -16,6 +16,7 @@
 #include "third_party/blink/public/web/web_embedded_worker.h"
 #include "third_party/blink/renderer/platform/scheduler/public/non_main_thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
@@ -200,6 +201,7 @@ class ServiceWorkerInstalledScriptsManagerTest : public testing::Test {
     waiter->Signal();
   }
 
+  test::TaskEnvironment task_environment_;
   std::unique_ptr<NonMainThread> io_thread_;
   std::unique_ptr<NonMainThread> worker_thread_;
 

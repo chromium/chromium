@@ -40,6 +40,7 @@ public class ToastManager {
     // Handles toast events per SDK version.
     private interface ToastEvent {
         void onShow(Toast toast);
+
         void onCancel();
     }
 
@@ -99,9 +100,7 @@ public class ToastManager {
         return mToast;
     }
 
-    /**
-     * Check if we already have the same Toast object showing on the screen or in the queue.
-     */
+    /** Check if we already have the same Toast object showing on the screen or in the queue. */
     private boolean isDuplicatedToast(Toast toast) {
         assert toast != null;
         Toast ct = getCurrentToast();
@@ -145,8 +144,10 @@ public class ToastManager {
 
         @Override
         public void onShow(Toast toast) {
-            int durationMs = (mToast.getDuration() == Toast.LENGTH_SHORT) ? DURATION_SHORT_MS
-                                                                          : DURATION_LONG_MS;
+            int durationMs =
+                    (mToast.getDuration() == Toast.LENGTH_SHORT)
+                            ? DURATION_SHORT_MS
+                            : DURATION_LONG_MS;
             mHandler.postDelayed(mPostToastRunnable, durationMs);
         }
 
@@ -162,12 +163,13 @@ public class ToastManager {
         private final android.widget.Toast.Callback mToastCallback;
 
         ToastEventR(Runnable finishRunnable) {
-            mToastCallback = new android.widget.Toast.Callback() {
-                @Override
-                public void onToastHidden() {
-                    finishRunnable.run();
-                }
-            };
+            mToastCallback =
+                    new android.widget.Toast.Callback() {
+                        @Override
+                        public void onToastHidden() {
+                            finishRunnable.run();
+                        }
+                    };
         }
 
         @Override

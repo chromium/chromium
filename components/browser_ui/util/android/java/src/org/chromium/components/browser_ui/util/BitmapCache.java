@@ -74,6 +74,7 @@ public class BitmapCache {
      * size (as for the {@link #mBitmapCache}.
      */
     private static Map<String, WeakReference<Bitmap>> sDeduplicationCache = new HashMap<>();
+
     private static int sUsageCount;
 
     /**
@@ -92,9 +93,7 @@ public class BitmapCache {
         mBitmapCache = referencePool.put(new RecentlyUsedCache(mCacheSize));
     }
 
-    /**
-     * Manually destroy the BitmapCache.
-     */
+    /** Manually destroy the BitmapCache. */
     public void destroy() {
         assert mReferencePool != null;
         assert mBitmapCache != null;
@@ -121,9 +120,7 @@ public class BitmapCache {
         sDeduplicationCache.put(key, new WeakReference<>(bitmap));
     }
 
-    /**
-     * Evict all bitmaps from the cache.
-     */
+    /** Evict all bitmaps from the cache. */
     public void clear() {
         getBitmapCache().evictAll();
         scheduleDeduplicationCache();
@@ -152,10 +149,12 @@ public class BitmapCache {
     }
 
     private static void scheduleDeduplicationCache() {
-        Looper.myQueue().addIdleHandler(() -> {
-            compactDeduplicationCache();
-            return false;
-        });
+        Looper.myQueue()
+                .addIdleHandler(
+                        () -> {
+                            compactDeduplicationCache();
+                            return false;
+                        });
     }
 
     /**

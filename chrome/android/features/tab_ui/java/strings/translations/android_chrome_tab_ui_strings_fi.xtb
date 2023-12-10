@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="fi">
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> välilehteä ei ole käytetty vähään aikaan. Suljetaanko ne?</translation>
+<translation id="1155815720264022949">Haluatko sulkea vanhat välilehdet?</translation>
 <translation id="1215127405478249895">Tarkista välilehdet</translation>
 <translation id="125153950246128346">Näytä toinen välilehti napauttamalla</translation>
 <translation id="1499635324672558517">Suljetaanko kaikki incognito-välilehdet?</translation>
@@ -46,9 +47,11 @@
 <translation id="5073204694187207510">Piilota koko näytön ruudukko</translation>
 <translation id="5076161749301278626">Näytetäänkö kaupan arvostelut?</translation>
 <translation id="5082793167783849073">Luo ryhmä vertaillaksesi sivuja nopeasti. Aloita koskettamalla linkkiä pitkään.</translation>
+<translation id="5303274951032363933">{TABS_COUNT,plural, =1{Sinulla on <ph name="TABS_COUNT_ONE" /> välilehti, jota et ole käyttänyt viime aikoina}other{Sinulla on <ph name="TABS_COUNT_MANY" /> välilehteä, joita et ole käyttänyt viime aikoina}}</translation>
 <translation id="5339733443032484186">Viimeisin välilehti</translation>
 <translation id="5490235265819901748">Välilehtiryhmä laajennettu</translation>
 <translation id="5494920125229734069">Valitse kaikki</translation>
+<translation id="5545379293264651575">Sulje tarkistamatta</translation>
 <translation id="5556417849629758491">Näytä kaupan tiedot, vaihtoehto lähellä näytön yläreunaa</translation>
 <translation id="5558362125926932819">Sulje välilehtiryhmä, jossa on <ph name="NUMBER_OF_TABS" /> välilehteä.</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" /> välilehteä ryhmiteltiin</translation>
@@ -85,7 +88,6 @@
 <translation id="7885132941432959125">Siirrä välilehti oikealle</translation>
 <translation id="7966321538264951561">Ohita ehdotukset.</translation>
 <translation id="8029301326595421733">"Tietoja tästä kaupasta" avattu koko näytön kokoisena</translation>
-<translation id="814503310257431685">Näytä kaikki</translation>
 <translation id="8205266828577616993">Siirrä välilehti ylöspäin</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Sulje <ph name="TABS_COUNT_ONE" /> valittu välilehti}other{Sulje <ph name="TABS_COUNT_MANY" /> valittua välilehteä}}</translation>
 <translation id="8398929769197326728">Uusi kansio – <ph name="CURRENT_TIMESTAMP_MS" /></translation>

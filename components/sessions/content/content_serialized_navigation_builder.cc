@@ -17,28 +17,11 @@
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_entry_restore_context.h"
-#include "content/public/browser/replaced_navigation_entry_data.h"
 #include "content/public/common/referrer.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/blink/public/common/page_state/page_state.h"
 
 namespace sessions {
-namespace {
-
-absl::optional<SerializedNavigationEntry::ReplacedNavigationEntryData>
-ConvertReplacedEntryData(
-    const absl::optional<content::ReplacedNavigationEntryData>& input_data) {
-  if (!input_data.has_value())
-    return absl::nullopt;
-
-  SerializedNavigationEntry::ReplacedNavigationEntryData output_data;
-  output_data.first_committed_url = input_data->first_committed_url;
-  output_data.first_timestamp = input_data->first_timestamp;
-  output_data.first_transition_type = input_data->first_transition_type;
-  return output_data;
-}
-
-}  // namespace
 
 // static
 SerializedNavigationEntry
@@ -66,8 +49,6 @@ ContentSerializedNavigationBuilder::FromNavigationEntry(
     navigation.favicon_url_ = entry->GetFavicon().url;
   navigation.http_status_code_ = entry->GetHttpStatusCode();
   navigation.redirect_chain_ = entry->GetRedirectChain();
-  navigation.replaced_entry_data_ =
-      ConvertReplacedEntryData(entry->GetReplacedEntryData());
   navigation.password_state_ = GetPasswordStateFromNavigation(entry);
   navigation.task_id_ = NavigationTaskId::Get(entry)->id();
   navigation.parent_task_id_ = NavigationTaskId::Get(entry)->parent_id();

@@ -5,7 +5,6 @@
 <translation id="1076394037877376434">Fshi faqen <ph name="PAGE_NUMBER" /></translation>
 <translation id="1113173431709655881">Modaliteti i kamerës</translation>
 <translation id="1153190633558910465">Çaktivizo rrjetin</translation>
-<translation id="1175958423215084756">U zbulua një lidhje. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213">Faqja <ph name="PAGE_NUMBER" /> u fshi</translation>
 <translation id="1258009455399840361">Rrotulloje 90 gradë në drejtim të akrepave të orës</translation>
 <translation id="1417314334557041815">Modifiko faqen <ph name="INDEX" /></translation>
@@ -60,14 +59,12 @@
 <translation id="3642192109456033823">Videoja po përpunohet...</translation>
 <translation id="3789724198583203151">Rrotulloje 90 gradë në drejtim të kundërt të akrepave të orës</translation>
 <translation id="3810838688059735925">Video</translation>
-<translation id="3892148308691398805">Kopjo tekstin</translation>
 <translation id="4060608699153044055">Nuk mund të regjistrosh për shkak të nivelit të ulët të hapësirës ruajtëse të pajisjes. Që të fillosh të regjistrosh, duhet të lirosh hapësirën në pajisjen tënde.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
 <translation id="4118525110028899586">Vendose në pauzë regjistrimin</translation>
 <translation id="4121305183798804752">U zbulua një dokument</translation>
 <translation id="414641094616694804">Kjo kamerë nuk mund ta ndryshojë rezolucionin</translation>
 <translation id="4176463684765177261">I çaktivizuar</translation>
-<translation id="4269820728363426813">Kopjo adresën e lidhjes</translation>
 <translation id="428234092390943511">Miniatura e faqes</translation>
 <translation id="4349714250734879769">Shkallëzo kuadrot me Chrome</translation>
 <translation id="4383571725254449280">Evidencat për cilësinë e funksionimit të printimit</translation>
@@ -144,7 +141,6 @@ Nëse komentet e tua janë për cilësinë e imazhit ose të videos, bashkëngji
 <translation id="7726641833034062494">Regjistro video normale</translation>
 <translation id="7748344063862150053">Këndi lart djathtas i dokumentit</translation>
 <translation id="7933675232020478311">Po zhvendoset djathtas për poshtë</translation>
-<translation id="7983668134180549431">U zbulua një tekst.</translation>
 <translation id="8079255378695216066">Regjistrimi nuk mund të fillojë</translation>
 <translation id="8120146556401698679">Zmadhim me anim të zgjerimit</translation>
 <translation id="8131740175452115882">Konfirmo</translation>
@@ -163,6 +159,7 @@ Nëse komentet e tua janë për cilësinë e imazhit ose të videos, bashkëngji
 <translation id="8870695351537079478">Regjistrimi nuk mund të fillojë</translation>
 <translation id="8880167521484863515">4 me 3</translation>
 <translation id="8903921497873541725">Zmadho</translation>
+<translation id="8926890870105777777">Bashkohu në rrjetin "<ph name="WIFINAME" />"</translation>
 <translation id="9045010116236796332">Vendos të gjitha anët e dokumentit brenda kuadrit</translation>
 <translation id="9045155556724273246">10 sekonda</translation>
 <translation id="906331135292332864">Po përpunon imazhin…</translation>

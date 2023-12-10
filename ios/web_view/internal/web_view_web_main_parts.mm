@@ -77,7 +77,7 @@ void WebViewWebMainParts::PreCreateThreads() {
           switches::kEnableFetchingAccountCapabilities.name,
       },
       ",");
-  feature_list->InitializeFromCommandLine(
+  feature_list->InitFromCommandLine(
       /*enable_features=*/enable_features,
       /*disable_features=*/disabled_features);
   base::FeatureList::SetInstance(std::move(feature_list));

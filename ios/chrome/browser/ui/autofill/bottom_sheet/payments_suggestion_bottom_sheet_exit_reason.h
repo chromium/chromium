@@ -17,6 +17,6 @@ enum class PaymentsSuggestionBottomSheetExitReason {
   kShowPaymentDetails = 3,
   kMaxValue = kShowPaymentDetails,
 };
-// LINT.ThenChange(tools/metrics/histograms/enums.xml)
+// LINT.ThenChange(tools/metrics/histograms/metadata/ios/enums.xml)
 
 #endif  // IOS_CHROME_BROWSER_UI_AUTOFILL_BOTTOM_SHEET_PAYMENTS_SUGGESTION_BOTTOM_SHEET_EXIT_REASON_H_

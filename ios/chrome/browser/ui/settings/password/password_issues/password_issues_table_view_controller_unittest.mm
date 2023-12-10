@@ -10,7 +10,6 @@
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
-#import "components/password_manager/core/common/password_manager_features.h"
 #import "ios/chrome/browser/passwords/model/password_checkup_utils.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_multi_detail_text_item.h"
@@ -200,59 +199,15 @@ class PasswordIssuesTableViewControllerTest
 };
 
 // Tests PasswordIssuesViewController is set up with appropriate items
-// and sections when kIOSPasswordCheckup feature is disabled.
-TEST_F(PasswordIssuesTableViewControllerTest,
-       TestModelWithoutKIOSPasswordCheckup) {
-  // Disable Password Checkup feature.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      password_manager::features::kIOSPasswordCheckup);
-
-  CreateController();
-  CheckController();
-  EXPECT_EQ(1, NumberOfSections());
-
-  EXPECT_EQ(0, NumberOfItemsInSection(0));
-}
-
-// Tests PasswordIssuesViewController is set up with appropriate items
-// and sections when kIOSPasswordCheckup feature is enabled.
-TEST_F(PasswordIssuesTableViewControllerTest,
-       TestModelWithKIOSPasswordCheckup) {
-  // Enable Password Checkup feature.
-  base::test::ScopedFeatureList feature_list(
-      password_manager::features::kIOSPasswordCheckup);
-
+// and sections.
+TEST_F(PasswordIssuesTableViewControllerTest, TestModel) {
   CreateController();
   CheckController();
   EXPECT_EQ(0, NumberOfSections());
 }
 
-// Test verifies password issue is displayed correctly when kIOSPasswordCheckup
-// feature is disabled.
-TEST_F(PasswordIssuesTableViewControllerTest,
-       TestPasswordIssueWithoutKIOSPasswordCheckup) {
-  // Disable Password Checkup feature.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      password_manager::features::kIOSPasswordCheckup);
-
-  CreateController();
-  AddPasswordIssue();
-  EXPECT_EQ(1, NumberOfSections());
-
-  EXPECT_EQ(1, NumberOfItemsInSection(0));
-  CheckURLCellTitleAndDetailText(@"example.com", @"test@egmail.com", 0, 0);
-}
-
-// Test verifies password issue is displayed correctly when kIOSPasswordCheckup
-// feature is enabled.
-TEST_F(PasswordIssuesTableViewControllerTest,
-       TestPasswordIssueWithKIOSPasswordCheckup) {
-  // Enable Password Checkup feature.
-  base::test::ScopedFeatureList feature_list(
-      password_manager::features::kIOSPasswordCheckup);
-
+// Test verifies password issue is displayed correctly.
+TEST_F(PasswordIssuesTableViewControllerTest, TestPasswordIssue) {
   CreateController();
   AddPasswordIssue();
   EXPECT_EQ(1, NumberOfSections());
@@ -262,14 +217,8 @@ TEST_F(PasswordIssuesTableViewControllerTest,
   CheckTextCellTextWithId(IDS_IOS_CHANGE_COMPROMISED_PASSWORD, 0, 1);
 }
 
-// Test verifies password issue groups are displayed correctly when
-// kIOSPasswordCheckup feature is enabled.
-TEST_F(PasswordIssuesTableViewControllerTest,
-       TestPasswordIssueGroupWithKIOSPasswordCheckup) {
-  // Enable Password Checkup feature.
-  base::test::ScopedFeatureList feature_list(
-      password_manager::features::kIOSPasswordCheckup);
-
+// Test verifies password issue groups are displayed correctly.
+TEST_F(PasswordIssuesTableViewControllerTest, TestPasswordIssueGroup) {
   CreateController();
 
   // Add two groups with headers and two issues each.
@@ -346,9 +295,6 @@ TEST_F(PasswordIssuesTableViewControllerTest, TestPasswordIssueSelection) {
 
 // Test verifies tapping dismiss warnings button triggers function in presenter.
 TEST_F(PasswordIssuesTableViewControllerTest, TestDismissWarningsTap) {
-  base::test::ScopedFeatureList feature_list(
-      password_manager::features::kIOSPasswordCheckup);
-
   CreateController();
   SetIssuesAndDismissedWarningsCount(
       @[ [[PasswordIssueGroup alloc]
@@ -369,9 +315,6 @@ TEST_F(PasswordIssuesTableViewControllerTest, TestDismissWarningsTap) {
 
 // Test verifies tapping change password button triggers function in presenter.
 TEST_F(PasswordIssuesTableViewControllerTest, TestChangePasswordTap) {
-  base::test::ScopedFeatureList feature_list(
-      password_manager::features::kIOSPasswordCheckup);
-
   PasswordIssue* password_issue = CreateTestPasswordIssue();
   SetIssuesAndDismissedWarningsCount(
       @[ [[PasswordIssueGroup alloc] initWithHeaderText:nil
@@ -390,9 +333,6 @@ TEST_F(PasswordIssuesTableViewControllerTest, TestChangePasswordTap) {
 // Test verifies removing all issues and dismissed warnings triggers a dismissal
 // in the presenter.
 TEST_F(PasswordIssuesTableViewControllerTest, TestDismissAfterIssuesGone) {
-  base::test::ScopedFeatureList feature_list(
-      password_manager::features::kIOSPasswordCheckup);
-
   CreateController();
   AddPasswordIssue();
 

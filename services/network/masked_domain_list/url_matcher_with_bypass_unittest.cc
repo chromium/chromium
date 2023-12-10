@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "services/network/masked_domain_list/url_matcher_with_bypass.h"
+#include <vector>
 
 #include "base/strings/strcat.h"
 #include "components/privacy_sandbox/masked_domain_list/masked_domain_list.pb.h"
@@ -35,6 +36,30 @@ TEST_F(UrlMatcherWithBypassTest, PartitionMapKey) {
   EXPECT_EQ(PartitionMapKey("tiny.sub.foo.com"), "foo.com");
   EXPECT_EQ(PartitionMapKey("www.tiny.sub.foo.com"), "foo.com");
   EXPECT_EQ(PartitionMapKey("foo.co.uk"), "co.uk");
+}
+
+TEST_F(UrlMatcherWithBypassTest, AddDomainWithBypass_InvalidDomainString) {
+  UrlMatcherWithBypass matcher;
+  matcher.AddDomainWithBypass("", net::SchemeHostPortMatcher(), true);
+  EXPECT_FALSE(matcher.IsPopulated());
+}
+
+TEST_F(UrlMatcherWithBypassTest, AddDomainWithBypass_SubdomainMatching) {
+  UrlMatcherWithBypass matcher;
+  matcher.AddDomainWithBypass("foo.com", net::SchemeHostPortMatcher(), true);
+  EXPECT_TRUE(matcher
+                  .Matches(GURL("http://bar.foo.com"), net::SchemefulSite(),
+                           /*skip_bypass_check=*/true)
+                  .matches);
+}
+
+TEST_F(UrlMatcherWithBypassTest, AddDomainWithBypass_NoSubdomainMatching) {
+  UrlMatcherWithBypass matcher;
+  matcher.AddDomainWithBypass("foo.com", net::SchemeHostPortMatcher(), false);
+  EXPECT_FALSE(matcher
+                   .Matches(GURL("http://bar.foo.com"), net::SchemefulSite(),
+                            /*skip_bypass_check=*/true)
+                   .matches);
 }
 
 class UrlMatcherWithBypassMatchTest : public testing::TestWithParam<MatchTest> {
@@ -178,7 +203,8 @@ const std::vector<MatchTest> kMatchTests = {
               false,
               {.matches = true, .is_third_party = true}},
 
-    // Third-party requests for properties in the MDL should not be proxied.
+    // Third-party requests for properties in the MDL should not be proxied
+    // if bypass policy is kFirstPartyToTopLevelFrame.
     MatchTest{"3PPropInOther",
               "acme-pa.com",
               "somehost.com",
@@ -207,7 +233,8 @@ const std::vector<MatchTest> kMatchTests = {
 
     // As an exception, third-party requests for resources (including
     // subdomains) in the MDL should be not be proxied when the top-level site
-    // is a property with the same owner as the resource.
+    // is a property with the same owner as the resource if bypass policy is
+    // kFirstPartyToTopLevelFrame.
     MatchTest{"3PRsrcInPropSameOwner",
               "acme-ra.com",
               "acme-pa.com",

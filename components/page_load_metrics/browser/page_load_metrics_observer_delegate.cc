@@ -19,6 +19,7 @@ bool PageLoadMetricsObserverDelegate::IsInPrerenderingBeforeActivationStart()
     const {
   switch (GetPrerenderingState()) {
     case PrerenderingState::kNoPrerendering:
+    case PrerenderingState::kInPreview:
       return false;
     case PrerenderingState::kInPrerendering:
     case PrerenderingState::kActivatedNoActivationStart:

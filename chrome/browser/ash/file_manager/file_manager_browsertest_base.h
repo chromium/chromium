@@ -24,6 +24,7 @@
 #include "chrome/test/base/devtools_listener.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/devtools_agent_host_observer.h"
+#include "storage/browser/file_system/file_system_url.h"
 
 class NotificationDisplayServiceTester;
 class SelectFileDialogExtensionTestFactory;
@@ -71,7 +72,7 @@ class SmbfsTestVolume;
 ash::LoggedInUserMixin::LogInType LogInTypeFor(
     TestAccountType test_account_type);
 
-absl::optional<AccountId> AccountIdFor(TestAccountType test_account_type);
+std::optional<AccountId> AccountIdFor(TestAccountType test_account_type);
 
 class FileManagerBrowserTestBase
     : public content::DevToolsAgentHostObserver,
@@ -84,6 +85,12 @@ class FileManagerBrowserTestBase
 
     // Should test run in Guest or Incognito mode?
     GuestMode guest_mode = NOT_IN_GUEST_MODE;
+
+    // Locale used for this test to run.
+    std::string locale;
+
+    // A stored permanent country in `VariationsService` for this test to run.
+    std::string country;
 
     // Account type used to log-in for a test session. This option is valid only
     // for `LoggedInUserFilesAppBrowserTest`. This won't work with `guest_mode`
@@ -184,8 +191,9 @@ class FileManagerBrowserTestBase
     // Whether test should run with the fsps-in-recents flag.
     bool enable_fsps_in_recents = false;
 
-    // Whether tests should enable Google One offer Files banner.
-    bool enable_google_one_offer_files_banner = false;
+    // Whether tests should enable Google One offer Files banner. This flag is
+    // enabled by default.
+    bool enable_google_one_offer_files_banner = true;
 
     // Whether tests should enable the Google Drive bulk pinning feature.
     bool enable_drive_bulk_pinning = false;
@@ -374,6 +382,8 @@ class FileManagerBrowserTestBase
   base::FilePath devtools_code_coverage_dir_;
   DevToolsAgentMap devtools_agent_;
   uint32_t process_id_ = 0;
+
+  storage::FileSystemURL error_url_;
 };
 
 std::ostream& operator<<(std::ostream& out, GuestMode mode);

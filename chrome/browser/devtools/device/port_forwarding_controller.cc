@@ -296,8 +296,7 @@ class SocketTunnel {
   void Pump(net::StreamSocket* from, net::StreamSocket* to) {
     DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-    scoped_refptr<net::IOBuffer> buffer =
-        base::MakeRefCounted<net::IOBuffer>(kBufferSize);
+    auto buffer = base::MakeRefCounted<net::IOBufferWithSize>(kBufferSize);
     int result =
         from->Read(buffer.get(), kBufferSize,
                    base::BindOnce(&SocketTunnel::OnRead, base::Unretained(this),

@@ -10,9 +10,7 @@ import android.content.Intent;
 
 import org.chromium.base.IntentUtils;
 
-/**
- * Util methods to handle external intents.
- */
+/** Util methods to handle external intents. */
 public class SafeIntentUtils {
     public static final String NO_BROWSER_FOUND_ERROR = "Can't find a browser to open URL";
     public static final String WEBVIEW_SETTINGS_ERROR =

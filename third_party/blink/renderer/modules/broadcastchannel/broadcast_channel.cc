@@ -198,6 +198,30 @@ BroadcastChannel::BroadcastChannel(ExecutionContext* execution_context,
                        mojo::NullAssociatedRemote()) {}
 
 BroadcastChannel::BroadcastChannel(
+    base::PassKey<StorageAccessHandle>,
+    ExecutionContext* execution_context,
+    const String& name,
+    mojom::blink::BroadcastChannelProvider* provider)
+    : ActiveScriptWrappable<BroadcastChannel>({}),
+      ExecutionContextLifecycleObserver(execution_context),
+      name_(name),
+      receiver_(this, execution_context),
+      remote_client_(execution_context),
+      feature_handle_for_scheduler_(
+          execution_context->GetScheduler()->RegisterFeature(
+              SchedulingPolicy::Feature::kBroadcastChannel,
+              {SchedulingPolicy::DisableBackForwardCache()})),
+      associated_remote_(execution_context) {
+  provider->ConnectToChannel(
+      name_,
+      receiver_.BindNewEndpointAndPassRemote(
+          execution_context->GetTaskRunner(TaskType::kInternalDefault)),
+      remote_client_.BindNewEndpointAndPassReceiver(
+          execution_context->GetTaskRunner(TaskType::kInternalDefault)));
+  SetupDisconnectHandlers();
+}
+
+BroadcastChannel::BroadcastChannel(
     base::PassKey<BroadcastChannelTester>,
     ExecutionContext* execution_context,
     const String& name,
@@ -280,6 +304,10 @@ BroadcastChannel::BroadcastChannel(
     NOTREACHED();
   }
 
+  SetupDisconnectHandlers();
+}
+
+void BroadcastChannel::SetupDisconnectHandlers() {
   receiver_.set_disconnect_handler(
       WTF::BindOnce(&BroadcastChannel::OnError, WrapWeakPersistent(this)));
   remote_client_.set_disconnect_handler(

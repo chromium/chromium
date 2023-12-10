@@ -313,7 +313,7 @@ class ManagedNetworkConfigurationHandlerTest : public testing::Test {
                  const std::string& userhash,
                  const std::string& path_to_onc) {
     if (path_to_onc.empty()) {
-      absl::optional<base::Value::Dict> policy =
+      std::optional<base::Value::Dict> policy =
           chromeos::onc::ReadDictionaryFromJson(kEmptyUnencryptedConfiguration);
       if (!policy.has_value()) {
         return false;
@@ -335,7 +335,7 @@ class ManagedNetworkConfigurationHandlerTest : public testing::Test {
                                        /*log_warnings=*/true);
     validator.SetOncSource(onc_source);
     chromeos::onc::Validator::Result validation_result;
-    absl::optional<base::Value::Dict> validated_policy =
+    std::optional<base::Value::Dict> validated_policy =
         validator.ValidateAndRepairObject(
             &chromeos::onc::kToplevelConfigurationSignature, policy,
             &validation_result);
@@ -668,11 +668,7 @@ TEST_F(ManagedNetworkConfigurationHandlerTest, SetPolicyProhibitedTechnology) {
 TEST_F(ManagedNetworkConfigurationHandlerTest,
        SetPolicyManagedCellular_SmdsSupportDisabled) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{},
-      /*disabled_features=*/{ash::features::kSmdsDbusMigration,
-                             ash::features::kSmdsSupport,
-                             ash::features::kSmdsSupportEuiccUpload});
+  feature_list.InitAndDisableFeature(ash::features::kSmdsSupport);
 
   InitializeStandardProfiles();
   InitializeEuicc();
@@ -709,7 +705,7 @@ TEST_F(ManagedNetworkConfigurationHandlerTest,
   const base::Value::Dict* properties2 =
       GetShillServiceClient()->GetServiceProperties(service_path);
   ASSERT_TRUE(properties2);
-  absl::optional<bool> auto_connect =
+  std::optional<bool> auto_connect =
       properties2->FindBool(shill::kAutoConnectProperty);
   ASSERT_TRUE(*auto_connect);
 }
@@ -717,11 +713,7 @@ TEST_F(ManagedNetworkConfigurationHandlerTest,
 TEST_F(ManagedNetworkConfigurationHandlerTest,
        SetPolicyManagedCellular_SmdsSupportEnabled) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{ash::features::kSmdsDbusMigration,
-                            ash::features::kSmdsSupport,
-                            ash::features::kSmdsSupportEuiccUpload},
-      /*disabled_features=*/{});
+  feature_list.InitAndEnableFeature(ash::features::kSmdsSupport);
 
   InitializeStandardProfiles();
   InitializeEuicc();
@@ -758,7 +750,7 @@ TEST_F(ManagedNetworkConfigurationHandlerTest,
   const base::Value::Dict* properties2 =
       GetShillServiceClient()->GetServiceProperties(service_path);
   ASSERT_TRUE(properties2);
-  absl::optional<bool> auto_connect =
+  std::optional<bool> auto_connect =
       properties2->FindBool(shill::kAutoConnectProperty);
   ASSERT_TRUE(*auto_connect);
 }
@@ -1364,7 +1356,7 @@ TEST_F(ManagedNetworkConfigurationHandlerTest,
 
   // The entry still exists and has kept the user-provided Passphrase.
   std::string profile_path;
-  absl::optional<base::Value::Dict> resulting_properties =
+  std::optional<base::Value::Dict> resulting_properties =
       GetShillProfileClient()->GetService(kOriginalEntryPath, &profile_path);
   ASSERT_TRUE(resulting_properties);
   EXPECT_THAT(*resulting_properties,
@@ -1596,7 +1588,7 @@ TEST_F(ManagedNetworkConfigurationHandlerTest,
 
   // The entry still exists and has kept the user-provided Passphrase.
   std::string profile_path;
-  absl::optional<base::Value::Dict> resulting_properties =
+  std::optional<base::Value::Dict> resulting_properties =
       GetShillProfileClient()->GetService(kOriginalEntryPath, &profile_path);
   ASSERT_TRUE(resulting_properties);
   EXPECT_THAT(*resulting_properties,
@@ -1874,7 +1866,7 @@ TEST_F(ManagedNetworkConfigurationHandlerTest,
 
   // The entry still exists and has kept the user-provided Passphrase.
   std::string profile_path;
-  absl::optional<base::Value::Dict> resulting_properties =
+  std::optional<base::Value::Dict> resulting_properties =
       GetShillProfileClient()->GetService(original_entry_path, &profile_path);
   ASSERT_TRUE(resulting_properties);
   EXPECT_THAT(*resulting_properties,
@@ -1917,15 +1909,15 @@ TEST_F(ManagedNetworkConfigurationHandlerTest, AutoConnectDisallowed) {
                                /*global_network_config=*/base::Value::Dict());
 
   base::RunLoop get_properties_run_loop;
-  absl::optional<base::Value::Dict> dictionary;
+  std::optional<base::Value::Dict> dictionary;
   managed_handler()->GetManagedProperties(
       kUser1, wifi2_service_path,
       base::BindOnce(
-          [](absl::optional<base::Value::Dict>* dictionary_out,
+          [](std::optional<base::Value::Dict>* dictionary_out,
              base::RepeatingClosure quit_closure,
              const std::string& service_path,
-             absl::optional<base::Value::Dict> dictionary,
-             absl::optional<std::string> error) {
+             std::optional<base::Value::Dict> dictionary,
+             std::optional<std::string> error) {
             if (dictionary) {
               *dictionary_out = std::move(*dictionary);
             } else {
@@ -2342,19 +2334,19 @@ TEST_F(ManagedNetworkConfigurationHandlerTest, ActiveProxySettingsPreference) {
                                /*network_configs_onc=*/base::Value::List(),
                                /*global_network_config=*/base::Value::Dict());
 
-  absl::optional<base::Value::Dict> dictionary_before_pref;
-  absl::optional<base::Value::Dict> dictionary_after_pref;
+  std::optional<base::Value::Dict> dictionary_before_pref;
+  std::optional<base::Value::Dict> dictionary_after_pref;
 
   base::RunLoop get_initial_properties_run_loop;
   // Get properties and verify that proxy is used.
   managed_handler()->GetManagedProperties(
       kUser1, wifi_service_path,
       base::BindOnce(
-          [](absl::optional<base::Value::Dict>* dictionary_out,
+          [](std::optional<base::Value::Dict>* dictionary_out,
              base::RepeatingClosure quit_closure,
              const std::string& service_path,
-             absl::optional<base::Value::Dict> dictionary,
-             absl::optional<std::string> error) {
+             std::optional<base::Value::Dict> dictionary,
+             std::optional<std::string> error) {
             if (dictionary) {
               *dictionary_out = std::move(*dictionary);
             } else {
@@ -2382,11 +2374,11 @@ TEST_F(ManagedNetworkConfigurationHandlerTest, ActiveProxySettingsPreference) {
   managed_handler()->GetManagedProperties(
       kUser1, wifi_service_path,
       base::BindOnce(
-          [](absl::optional<base::Value::Dict>* dictionary_out,
+          [](std::optional<base::Value::Dict>* dictionary_out,
              base::RepeatingClosure quit_closure,
              const std::string& service_path,
-             absl::optional<base::Value::Dict> dictionary,
-             absl::optional<std::string> error) {
+             std::optional<base::Value::Dict> dictionary,
+             std::optional<std::string> error) {
             if (dictionary) {
               *dictionary_out = std::move(*dictionary);
             } else {

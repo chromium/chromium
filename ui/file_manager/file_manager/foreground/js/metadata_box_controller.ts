@@ -2,17 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/**
- * @fileoverview
- * This file is checked via TS, so we suppress Closure checks.
- * @suppress {checkTypes}
- */
-
 import {isDirectoryEntry, isSameEntry, unwrapEntry} from '../../common/js/entry_utils.js';
-import {FileType} from '../../common/js/file_type.js';
+import {getType} from '../../common/js/file_type.js';
 import {strf} from '../../common/js/translations.js';
 import {TrashEntry} from '../../common/js/trash.js';
-import {VolumeManager} from '../../externs/volume_manager.js';
+import type {FilesAppDirEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
+import type {VolumeManager} from '../../externs/volume_manager.js';
 import {FilesMetadataBox, RawIfd} from '../elements/files_metadata_box.js';
 import {FilesQuickView} from '../elements/files_quick_view.js';
 
@@ -22,7 +17,7 @@ import {PathComponent} from './path_component.js';
 import {QuickViewModel} from './quick_view_model.js';
 import {FileMetadataFormatter} from './ui/file_metadata_formatter.js';
 
-function isTrashEntry(entry: Entry): entry is TrashEntry {
+function isTrashEntry(entry: Entry|FilesAppEntry): entry is TrashEntry {
   return 'restoreEntry' in entry;
 }
 
@@ -35,11 +30,12 @@ export class MetadataBoxController {
 
   private quickView_: FilesQuickView|null = null;
 
-  private previousEntry_?: Entry;
+  private previousEntry_?: Entry|FilesAppEntry;
 
   private isDirectorySizeLoading_ = false;
 
-  private onDirectorySizeLoaded_: ((entry: DirectoryEntry) => void)|null = null;
+  private onDirectorySizeLoaded_:
+      ((entry: DirectoryEntry|FilesAppDirEntry) => void)|null = null;
 
   constructor(
       private metadataModel_: MetadataModel,
@@ -114,8 +110,8 @@ export class MetadataBoxController {
    * @param isSameEntry if the entry is not changed from the last time.
    */
   private onGeneralMetadataLoaded_(
-      entry: Entry, isSameEntry: boolean, items: MetadataItem[]) {
-    const type = FileType.getType(entry).type;
+      entry: Entry|FilesAppEntry, isSameEntry: boolean, items: MetadataItem[]) {
+    const type = getType(entry).type;
     const item = items[0];
 
     if (isDirectoryEntry(entry)) {
@@ -149,7 +145,7 @@ export class MetadataBoxController {
             let mimeType = items[0] &&
                     items[0][sniffMimeType as keyof MetadataItem] as string ||
                 '';
-            const newType = FileType.getType(entry, mimeType);
+            const newType = getType(entry, mimeType);
             if (newType.encrypted) {
               mimeType =
                   strf('METADATA_BOX_ENCRYPTED', newType.originalMimeType);
@@ -206,7 +202,8 @@ export class MetadataBoxController {
   /**
    * Updates the metadata box modificationTime.
    */
-  private updateModificationTime_(_: Entry, items: MetadataItem[]) {
+  private updateModificationTime_(
+      _: Entry|FilesAppEntry, items: MetadataItem[]) {
     const item = items[0];
 
     this.metadataBox.modificationTime =
@@ -227,7 +224,8 @@ export class MetadataBoxController {
    * `isSameEntry` is True if the entry is not changed from the last time. False
    * enables the loading animation.
    */
-  private setDirectorySize_(entry: DirectoryEntry, sameEntry: boolean) {
+  private setDirectorySize_(
+      entry: DirectoryEntry|FilesAppDirEntry, sameEntry: boolean) {
     if (!isDirectoryEntry(entry)) {
       return;
     }
@@ -281,7 +279,7 @@ export class MetadataBoxController {
   /**
    * Returns a label to display the file's location.
    */
-  private getFileLocationLabel_(entry: Entry) {
+  private getFileLocationLabel_(entry: Entry|FilesAppEntry) {
     const components =
         PathComponent.computeComponentsFromEntry(entry, this.volumeManager_);
     return components.map(c => c.name).join('/');

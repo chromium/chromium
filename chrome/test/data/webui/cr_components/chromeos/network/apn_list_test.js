@@ -9,6 +9,7 @@ import {ApnDetailDialogMode} from '//resources/ash/common/network/cellular_utils
 import {ApnList} from 'chrome://resources/ash/common/network/apn_list.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
 import {ApnProperties, ApnState, ApnType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {PortalState} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
@@ -145,7 +146,7 @@ suite('ApnListTest', function() {
         apnList.i18n('apnSettingsZeroStateDescription'),
         getZeroStateText().querySelector('div').innerText);
     const getErrorMessage = () =>
-        apnList.shadowRoot.querySelector('#errorMessage');
+        apnList.shadowRoot.querySelector('#errorMessageContainer');
     assertFalse(!!getErrorMessage());
 
     // Set as non-APN-related error.
@@ -160,7 +161,7 @@ suite('ApnListTest', function() {
     assertFalse(!!getZeroStateText());
     assertTrue(!!getErrorMessage());
     const getErrorMessageText = () =>
-        getErrorMessage().querySelector('localized-link').localizedString;
+        getErrorMessage().querySelector('#errorMessage').innerHTML.trim();
     assertEquals(
         apnList.i18n('apnSettingsDatabaseApnsErrorMessage'),
         getErrorMessageText());
@@ -490,5 +491,19 @@ suite('ApnListTest', function() {
     apns = apnList.shadowRoot.querySelectorAll('apn-list-item');
     assertFalse(apns[0].shouldDisallowEnabling);
     assertFalse(apns[1].shouldDisallowEnabling);
+  });
+
+  test('Portal state is set', async function() {
+    apnList.managedCellularProperties = {
+      customApnList: [customApn1],
+    };
+    await flushTasks();
+    const apns = apnList.shadowRoot.querySelectorAll('apn-list-item');
+    assertEquals(apns.length, 1);
+    assertTrue(OncMojo.apnMatch(apns[0].apn, customApn1));
+    assertFalse(!!apns[0].portalState);
+
+    apnList.portalState = PortalState.kNoInternet;
+    assertEquals(PortalState.kNoInternet, apns[0].portalState);
   });
 });

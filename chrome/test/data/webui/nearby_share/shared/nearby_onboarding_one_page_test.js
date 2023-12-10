@@ -4,7 +4,7 @@
 
 import 'chrome://nearby/strings.m.js';
 import 'chrome://nearby/shared/nearby_onboarding_one_page.js';
-import 'chrome://webui-test/mojo_webui_test_support.js';
+import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
 import {setNearbyShareSettingsForTesting} from 'chrome://nearby/shared/nearby_share_settings.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';

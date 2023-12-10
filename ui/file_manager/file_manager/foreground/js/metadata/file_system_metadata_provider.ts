@@ -6,16 +6,16 @@ import {MetadataItem} from './metadata_item.js';
 import {MetadataProvider} from './metadata_provider.js';
 import type {MetadataRequest} from './metadata_request.js';
 
-export const FILE_SYSTEM_METADATA_PROPERTY_NAMES =
-    ['modificationTime', 'size', 'present', 'availableOffline'];
-
 /**
  * Metadata provider for FileEntry#getMetadata.
  * @final
  */
 export class FileSystemMetadataProvider extends MetadataProvider {
+  static readonly PROPERTY_NAMES =
+      ['modificationTime', 'size', 'present', 'availableOffline'];
+
   constructor() {
-    super(FILE_SYSTEM_METADATA_PROPERTY_NAMES);
+    super(FileSystemMetadataProvider.PROPERTY_NAMES);
   }
 
   override get(requests: MetadataRequest[]): Promise<MetadataItem[]> {

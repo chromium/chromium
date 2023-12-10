@@ -173,8 +173,7 @@ SafeBrowsingServiceImpl::CreateUrlChecker(
       web_state->GetWeakPtr(),
       /*render_process_id=*/
       security_interstitials::UnsafeResource::kNoRenderProcessId,
-      /*render_frame_id=*/
-      security_interstitials::UnsafeResource::kNoRenderFrameId,
+      /*render_frame_token=*/std::nullopt,
       /*frame_tree_node_id=*/
       security_interstitials::UnsafeResource::kNoFrameTreeNodeId,
       can_perform_full_url_lookup, can_url_realtime_check_subresource_url,

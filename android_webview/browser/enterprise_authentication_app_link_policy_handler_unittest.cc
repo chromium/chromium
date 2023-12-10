@@ -40,7 +40,7 @@ TEST_F(EnterpriseAuthenticationAppLinkPolicyHandlerTest, ValidPolicy) {
              nullptr);
   this->UpdateProviderPolicy(policy);
   const base::Value* pref_value = nullptr;
-  absl::optional<base::Value> expected = base::JSONReader::Read(R"(
+  std::optional<base::Value> expected = base::JSONReader::Read(R"(
     [
      "https://www.testserver1.com/login",
      "https://www.testserver2.com/login"

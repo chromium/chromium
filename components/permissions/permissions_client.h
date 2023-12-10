@@ -124,7 +124,6 @@ class PermissionsClient {
       content::BrowserContext* browser_context,
       std::vector<std::pair<url::Origin, bool>>* origins);
 
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
   // Returns whether cookie deletion is allowed for |browser_context| and
   // |origin|.
   // TODO(crbug.com/1081944): Remove this method and all code depending on it
@@ -132,7 +131,6 @@ class PermissionsClient {
   virtual bool IsCookieDeletionDisabled(
       content::BrowserContext* browser_context,
       const GURL& origin);
-#endif
 
   // Retrieves the ukm::SourceId (if any) associated with this |browser_context|
   // and |web_contents|. |web_contents| may be null. |callback| will be called
@@ -161,9 +159,8 @@ class PermissionsClient {
 
   using QuietUiReason = PermissionUiSelector::QuietUiReason;
 
-#if !BUILDFLAG(IS_ANDROID)
   virtual void TriggerPromptHatsSurveyIfEnabled(
-      content::BrowserContext* context,
+      content::WebContents* web_contents,
       permissions::RequestType request_type,
       absl::optional<permissions::PermissionAction> action,
       permissions::PermissionPromptDisposition prompt_disposition,
@@ -173,7 +170,6 @@ class PermissionsClient {
       bool is_post_prompt,
       const GURL& gurl,
       base::OnceCallback<void()> hats_shown_callback_);
-#endif
 
   // Called for each request type when a permission prompt is resolved.
   virtual void OnPromptResolved(

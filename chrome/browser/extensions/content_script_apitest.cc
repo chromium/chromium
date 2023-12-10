@@ -19,7 +19,6 @@
 #include "chrome/browser/extensions/extension_management_test_util.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_with_management_policy_apitest.h"
-#include "chrome/browser/extensions/identifiability_metrics_test_util.h"
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/ssl/https_upgrades_interceptor.h"
 #include "chrome/browser/ssl/https_upgrades_util.h"
@@ -50,8 +49,6 @@
 #include "extensions/browser/script_injection_tracker.h"
 #include "extensions/common/api/content_scripts.h"
 #include "extensions/common/extension.h"
-#include "extensions/common/extension_features.h"
-#include "extensions/common/identifiability_metrics.h"
 #include "extensions/common/utils/content_script_utils.h"
 #include "extensions/strings/grit/extensions_strings.h"
 #include "extensions/test/extension_test_message_listener.h"
@@ -62,7 +59,6 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
@@ -1903,16 +1899,10 @@ IN_PROC_BROWSER_TEST_F(ContentScriptRelatedFrameTest,
 class ContentScriptMatchOriginAsFallbackTest
     : public ContentScriptRelatedFrameTest {
  public:
-  ContentScriptMatchOriginAsFallbackTest() {
-    feature_list_.InitAndEnableFeature(
-        extensions_features::kContentScriptsMatchOriginAsFallback);
-  }
+  ContentScriptMatchOriginAsFallbackTest() = default;
   ~ContentScriptMatchOriginAsFallbackTest() override = default;
 
   bool IncludeMatchOriginAsFallback() override { return true; }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 // Inject a content script on an iframe to a data: URL on an allowed site.
@@ -2179,73 +2169,6 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiTest, CoepFrameTest) {
   watcher.AlsoWaitForTitle(kFailed);
 
   ASSERT_EQ(kPassed, watcher.WaitAndGetTitle());
-}
-
-class ContentScriptApiIdentifiabilityTest : public ContentScriptApiTest {
- public:
-  void SetUpOnMainThread() override {
-    identifiability_metrics_test_helper_.SetUpOnMainThread();
-    ContentScriptApiTest::SetUpOnMainThread();
-  }
-
- protected:
-  IdentifiabilityMetricsTestHelper identifiability_metrics_test_helper_;
-};
-
-// TODO(crbug.com/1305273): Fix this flaky test.
-// Test that identifiability study of content script injection produces the
-// expected UKM events.
-// TODO(crbug.com/1093066): When this test is fixed, convert it to run with
-// a service worker-based extension.
-IN_PROC_BROWSER_TEST_F(ContentScriptApiIdentifiabilityTest,
-                       DISABLED_InjectionRecorded) {
-  base::RunLoop run_loop;
-  identifiability_metrics_test_helper_.PrepareForTest(&run_loop);
-
-  ASSERT_TRUE(StartEmbeddedTestServer());
-  ASSERT_TRUE(RunExtensionTest("content_scripts/all_frames")) << message_;
-
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-
-  std::map<ukm::SourceId, ukm::mojom::UkmEntryPtr> merged_entries =
-      identifiability_metrics_test_helper_.NavigateToBlankAndWaitForMetrics(
-          web_contents, &run_loop);
-
-  // Right now the instrumentation infra doesn't track all of the sources that
-  // reported a particular surface, so we merely look for if one had it.
-  // Eventually both frames should report it.
-  //
-  // Further, we can't actually check the UKM source ID since those events
-  // are renderer-side, so use Document-generated IDs that are different than
-  // the navigation IDs provided by RenderFrameHost.
-  std::set<ukm::SourceId> source_ids =
-      IdentifiabilityMetricsTestHelper::GetSourceIDsForSurfaceAndExtension(
-          merged_entries,
-          blink::IdentifiableSurface::Type::kExtensionContentScript,
-          GetSingleLoadedExtension()->id());
-  EXPECT_FALSE(source_ids.empty());
-}
-
-// Test that where a page doesn't get a content script injected, no
-// such event is recorded.
-IN_PROC_BROWSER_TEST_F(ContentScriptApiIdentifiabilityTest,
-                       NoInjectionRecorded) {
-  base::RunLoop run_loop;
-  identifiability_metrics_test_helper_.PrepareForTest(&run_loop);
-
-  ASSERT_TRUE(StartEmbeddedTestServer());
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  identifiability_metrics_test_helper_.EnsureIdentifiabilityEventGenerated(
-      web_contents);
-  std::map<ukm::SourceId, ukm::mojom::UkmEntryPtr> merged_entries =
-      identifiability_metrics_test_helper_.NavigateToBlankAndWaitForMetrics(
-          web_contents, &run_loop);
-  EXPECT_FALSE(IdentifiabilityMetricsTestHelper::ContainsSurfaceOfType(
-      merged_entries,
-      blink::IdentifiableSurface::Type::kExtensionContentScript));
 }
 
 class ContentScriptApiPrerenderingTest

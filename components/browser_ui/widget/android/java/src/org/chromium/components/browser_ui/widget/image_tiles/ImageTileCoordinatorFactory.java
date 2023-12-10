@@ -26,8 +26,11 @@ public class ImageTileCoordinatorFactory {
      * @param tileClickCallback A callback to be invoked when a tile is clicked.
      * @return A {@link ImageTileCoordinator}.
      */
-    public static ImageTileCoordinator create(Context context, TileConfig config,
-            Callback<ImageTile> tileClickCallback, TileVisualsProvider tileVisualsProvider) {
+    public static ImageTileCoordinator create(
+            Context context,
+            TileConfig config,
+            Callback<ImageTile> tileClickCallback,
+            TileVisualsProvider tileVisualsProvider) {
         return new TileCoordinatorImpl(context, config, tileClickCallback, tileVisualsProvider);
     }
 }

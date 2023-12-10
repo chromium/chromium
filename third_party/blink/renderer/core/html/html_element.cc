@@ -352,9 +352,7 @@ void HTMLElement::CollectStyleForPresentationAttribute(
           style, CSSPropertyID::kWebkitUserModify, CSSValueID::kReadOnly);
     }
   } else if (name == html_names::kHiddenAttr) {
-    if (RuntimeEnabledFeatures::BeforeMatchEventEnabled(
-            GetExecutionContext()) &&
-        EqualIgnoringASCIICase(value, "until-found")) {
+    if (EqualIgnoringASCIICase(value, "until-found")) {
       AddPropertyToPresentationAttributeStyle(
           style, CSSPropertyID::kContentVisibility, CSSValueID::kHidden);
       UseCounter::Count(GetDocument(), WebFeature::kHiddenUntilFoundAttribute);
@@ -596,6 +594,8 @@ AttributeTriggers* HTMLElement::TriggersForAttributeName(
        event_type_names::kSlotchange, nullptr},
       {html_names::kOnsnapchangedAttr, kNoWebFeature,
        event_type_names::kSnapchanged, nullptr},
+      {html_names::kOnsnapchangingAttr, kNoWebFeature,
+       event_type_names::kSnapchanging, nullptr},
       {html_names::kOnstalledAttr, kNoWebFeature, event_type_names::kStalled,
        nullptr},
       {html_names::kOnsubmitAttr, kNoWebFeature, event_type_names::kSubmit,
@@ -1118,11 +1118,6 @@ void HTMLElement::setContentEditable(const String& enabled,
 V8UnionBooleanOrStringOrUnrestrictedDouble* HTMLElement::hidden() const {
   const AtomicString& attribute = FastGetAttribute(html_names::kHiddenAttr);
 
-  if (!RuntimeEnabledFeatures::BeforeMatchEventEnabled(GetExecutionContext())) {
-    return MakeGarbageCollected<V8UnionBooleanOrStringOrUnrestrictedDouble>(
-        attribute != g_null_atom);
-  }
-
   if (attribute == g_null_atom) {
     return MakeGarbageCollected<V8UnionBooleanOrStringOrUnrestrictedDouble>(
         false);
@@ -1149,9 +1144,7 @@ void HTMLElement::setHidden(
       }
       break;
     case V8UnionBooleanOrStringOrUnrestrictedDouble::ContentType::kString:
-      if (RuntimeEnabledFeatures::BeforeMatchEventEnabled(
-              GetExecutionContext()) &&
-          EqualIgnoringASCIICase(value->GetAsString(), "until-found")) {
+      if (EqualIgnoringASCIICase(value->GetAsString(), "until-found")) {
         setAttribute(html_names::kHiddenAttr, AtomicString("until-found"));
       } else if (value->GetAsString() == "") {
         removeAttribute(html_names::kHiddenAttr);
@@ -1317,10 +1310,6 @@ bool HTMLElement::IsPopoverReady(PopoverTriggerAction action,
   }
   if (action == PopoverTriggerAction::kShow &&
       GetPopoverData()->visibilityState() != PopoverVisibilityState::kHidden) {
-    if (!RuntimeEnabledFeatures::PopoverDialogDontThrowEnabled()) {
-      maybe_throw_exception(DOMExceptionCode::kInvalidStateError,
-                            "Invalid on popover elements which aren't hidden.");
-    }
     return false;
   }
   if (action == PopoverTriggerAction::kHide &&
@@ -1328,11 +1317,6 @@ bool HTMLElement::IsPopoverReady(PopoverTriggerAction action,
     // Important to check that visibility is not kShowing (rather than
     // popoverOpen()), because a hide transition might have been started on this
     // popover already, and we don't want to allow a double-hide.
-    if (!RuntimeEnabledFeatures::PopoverDialogDontThrowEnabled()) {
-      maybe_throw_exception(
-          DOMExceptionCode::kInvalidStateError,
-          "Invalid on popover elements that aren't already showing.");
-    }
     return false;
   }
   if (!isConnected()) {
@@ -1526,7 +1510,10 @@ void HTMLElement::ShowPopoverInternal(Element* invoker,
     }
 
     if (RuntimeEnabledFeatures::CloseWatcherEnabled()) {
-      auto* close_watcher = CloseWatcher::Create(GetDocument().domWindow());
+      CloseWatcher* close_watcher = nullptr;
+      if (auto* window = GetDocument().domWindow()) {
+        close_watcher = CloseWatcher::Create(*window);
+      }
       if (close_watcher) {
         auto* event_listener =
             MakeGarbageCollected<PopoverCloseWatcherEventListener>(this);
@@ -1955,12 +1942,17 @@ const HTMLElement* NearestTargetPopoverForInvoker(
     const PopoverAncestorOptionsSet ancestor_options =
         PopoverAncestorOptionsSet()) {
   return NearestMatchingAncestor(
-      node, ancestor_options, [](const Node* test_node) {
-        auto* form_element = DynamicTo<HTMLFormControlElement>(test_node);
-        return form_element ? const_cast<HTMLFormControlElement*>(form_element)
-                                  ->popoverTargetElement()
-                                  .popover.Get()
-                            : nullptr;
+      node, ancestor_options, [](const Node* test_node) -> const HTMLElement* {
+        auto* form_element =
+            DynamicTo<HTMLFormControlElement>(const_cast<Node*>(test_node));
+        if (!form_element) {
+          return nullptr;
+        }
+        auto* invoke_target_element = form_element->invokeTargetElement();
+
+        return invoke_target_element
+                   ? invoke_target_element
+                   : form_element->popoverTargetElement().popover.Get();
       });
 }
 
@@ -2269,10 +2261,16 @@ bool HTMLElement::DispatchFocusEvent(
 
 bool HTMLElement::HandleInvokeInternal(HTMLElement& invoker,
                                        AtomicString& action) {
-  if (PopoverType() == PopoverValueType::kNone) {
+  bool is_fullscreen_action =
+      EqualIgnoringASCIICase(action, keywords::kToggleFullscreen) ||
+      EqualIgnoringASCIICase(action, keywords::kRequestFullscreen) ||
+      EqualIgnoringASCIICase(action, keywords::kExitFullscreen);
+  if (PopoverType() == PopoverValueType::kNone && !is_fullscreen_action) {
     return false;
   }
+
   auto& document = GetDocument();
+
   // Note that the order is: `mousedown` which runs popover light dismiss
   // code, then (for clicked elements) focus is set to the clicked
   // element, then |DOMActivate| runs here. Also note that the light
@@ -2331,6 +2329,47 @@ bool HTMLElement::HandleInvokeInternal(HTMLElement& invoker,
       InvokePopover(invoker);
       return true;
     }
+  }
+
+  if (!RuntimeEnabledFeatures::HTMLInvokeActionsV2Enabled()) {
+    return false;
+  }
+
+  LocalFrame* frame = document.GetFrame();
+
+  if (EqualIgnoringASCIICase(action, keywords::kToggleFullscreen)) {
+    if (Fullscreen::IsFullscreenElement(*this)) {
+      Fullscreen::ExitFullscreen(document);
+      return true;
+    } else if (LocalFrame::HasTransientUserActivation(frame)) {
+      Fullscreen::RequestFullscreen(*this);
+      return true;
+    } else {
+      String message = "Cannot request fullscreen without a user gesture.";
+      document.AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+          mojom::ConsoleMessageSource::kJavaScript,
+          mojom::ConsoleMessageLevel::kWarning, message));
+      return false;
+    }
+  } else if (EqualIgnoringASCIICase(action, keywords::kRequestFullscreen)) {
+    if (Fullscreen::IsFullscreenElement(*this)) {
+      return true;
+    }
+    if (LocalFrame::HasTransientUserActivation(frame)) {
+      Fullscreen::RequestFullscreen(*this);
+      return true;
+    } else {
+      String message = "Cannot request fullscreen without a user gesture.";
+      document.AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+          mojom::ConsoleMessageSource::kJavaScript,
+          mojom::ConsoleMessageLevel::kWarning, message));
+      return false;
+    }
+  } else if (EqualIgnoringASCIICase(action, keywords::kExitFullscreen)) {
+    if (Fullscreen::IsFullscreenElement(*this)) {
+      Fullscreen::ExitFullscreen(document);
+    }
+    return true;
   }
   return false;
 }
@@ -2989,8 +3028,6 @@ int HTMLElement::OffsetTopOrLeft(bool top) {
   HeapHashSet<Member<TreeScope>> ancestor_tree_scopes = GetAncestorTreeScopes();
   LayoutUnit offset;
   Element* offset_parent = this;
-  bool new_spec_behavior =
-      RuntimeEnabledFeatures::OffsetParentNewSpecBehaviorEnabled();
   // This loop adds up all of the offsetTop/offsetLeft values for this and
   // parent shadow-hidden offsetParents up the flat tree. If
   // |ancestor_tree_scopes| doesn't contain the next |offset_parent|'s
@@ -3007,7 +3044,7 @@ int HTMLElement::OffsetTopOrLeft(bool top) {
       }
     }
     offset_parent = next_offset_parent;
-  } while (new_spec_behavior && offset_parent &&
+  } while (offset_parent &&
            !ancestor_tree_scopes.Contains(&offset_parent->GetTreeScope()));
 
   return AdjustedOffsetForZoom(offset);
@@ -3253,8 +3290,8 @@ bool HTMLElement::IsFormAssociatedCustomElement() const {
          GetCustomElementDefinition()->IsFormAssociated();
 }
 
-bool HTMLElement::SupportsFocus() const {
-  return Element::SupportsFocus() && !IsDisabledFormControl();
+bool HTMLElement::SupportsFocus(UpdateBehavior update_behavior) const {
+  return Element::SupportsFocus(update_behavior) && !IsDisabledFormControl();
 }
 
 bool HTMLElement::IsDisabledFormControl() const {

@@ -93,9 +93,8 @@ std::unique_ptr<views::LabelButton> CreateAddNewTaskButton(
 
 }  // namespace
 
-TasksBubbleView::TasksBubbleView(DetailedViewDelegate* delegate,
-                                 const ui::ListModel<api::TaskList>* task_lists)
-    : GlanceablesTasksViewBase(delegate) {
+TasksBubbleView::TasksBubbleView(
+    const ui::ListModel<api::TaskList>* task_lists) {
   auto* layout_manager =
       SetLayoutManager(std::make_unique<views::FlexLayout>());
   layout_manager
@@ -196,6 +195,10 @@ void TasksBubbleView::OnViewFocused(views::View* view) {
 
 void TasksBubbleView::ActionButtonPressed(TasksLaunchSource source) {
   RecordTasksLaunchSource(source);
+  if (source == TasksLaunchSource::kAddNewTaskButton &&
+      tasks_combobox_model_->GetItemCount() == 1) {
+    RecordAddTaskButtonUsageForNewTasksUsersTT(/*pressed=*/true);
+  }
   NewWindowDelegate::GetPrimary()->OpenUrl(
       GURL(kTasksManagementPage),
       NewWindowDelegate::OpenUrlFrom::kUserInteraction,
@@ -267,6 +270,9 @@ void TasksBubbleView::UpdateTasksList(const std::string& task_list_id,
   const bool add_new_task_button_visible = (num_tasks_shown_ == 0);
   if (add_new_task_button_visible) {
     RecordAddTaskButtonShown();
+    if (tasks_combobox_model_->GetItemCount() == 1) {
+      RecordAddTaskButtonUsageForNewTasksUsersTT(/*pressed=*/false);
+    }
     add_new_task_button_->SetVisible(true);
   } else {
     add_new_task_button_->SetVisible(false);

@@ -70,6 +70,8 @@ message ComposePageMetadata {
   // The innerText of the page the input field is on. This is temporary. We do
   // not intend to send inner text in the long run.
   string page_inner_text = 3;
+  // The offset into the inner text of the selected input field.
+  uint64 page_inner_text_offset = 4;
 }
 
 // The final status of the feature.
@@ -95,22 +97,29 @@ enum ClipboardUse {
 // Stores all data associated with a single call to the model execution run for
 // compose.
 message ComposeRequest {
-  // Purely the user input text.
-  string user_input = 2;
+  reserved 1, 2, 4, 5, 6;
+
+  message GenerateParams {
+    // User written input text.
+    string user_input = 1;
+  }
+  message RewriteParams {
+    // A previously received ComposeResponse response_text, which will be
+    // rewritten.
+    string previous_response = 1;
+    // Rewrite with either tone or length specified.
+    oneof modifier {
+      ComposeTone tone = 2;
+      ComposeLength length = 3;
+    }
+  }
+  oneof request_params {
+    GenerateParams generate_params = 7;
+    RewriteParams rewrite_params = 8;
+  }
 
   // Contains information scraped from the page.
   ComposePageMetadata page_metadata = 3;
-
-  // Stores the tone selection that the user chose.
-  ComposeTone tone = 4;
-
-  // Stores the length selection that the user chose.
-  ComposeLength length = 5;
-
-  // The previous Compose responses, which may be used when the user is
-  // selecting a different tone or length. Specified only for responses where
-  // the user prompt (and page context) stay the same.
-  repeated ComposePriorResponse previous_responses = 6;
 }
 
 // Stores the response text from the model execution run.
@@ -118,8 +127,18 @@ message ComposeResponse {
   string output = 1;
 }
 
+// A helper message to store the int64 high and uint64 low bits of an int128
+// since protos do not natively handle int128. The underlying value is split
+// into a `low` uint64 holding the low bits, and `high` int64 holding the bits
+// beyond what an int64 can hold.
+message Int128 {
+  uint64 high = 1;
+  uint64 low = 2;
+}
+
 // Any data collected on the client outside of the model request and response.
 // This includes user feedback, and metrics about feature usage.
+// Next Id: 8
 message ComposeQuality {
   FinalStatus final_status = 1;
   UserFeedback user_feedback = 2;
@@ -129,4 +148,8 @@ message ComposeQuality {
   // How much was the text modified before commit only valid iff
   // final_status = INSERTED.
   int64 edit_distance = 5;
+  // A unique ID for each compose session.
+  Int128 session_id = 6;
+  // Was this request generated via an edit action.
+  bool was_generated_via_edit = 7;
 }

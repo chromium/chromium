@@ -4,9 +4,7 @@
 
 package org.chromium.base;
 
-/**
- * Contains various math utilities used throughout Chrome Mobile.
- */
+/** Contains various math utilities used throughout Chrome Mobile. */
 public class MathUtils {
     /** A minimum difference to use when comparing floats for equality. */
     public static final float EPSILON = 0.001f;
@@ -107,28 +105,6 @@ public class MathUtils {
     }
 
     /**
-     * Scales the provided dimension such that it is just large enough to fit
-     * the target width and height.
-     *
-     * @param dimensions The dimensions to scale
-     * @param targetWidth The target width
-     * @param targetHeight The target height
-     * @return The scale factor applied to dimensions
-     */
-    public static float scaleToFitTargetSize(int[] dimensions, int targetWidth, int targetHeight) {
-        if (dimensions.length < 2 || dimensions[0] <= 0 || dimensions[1] <= 0) {
-            throw new IllegalArgumentException(
-                    "Expected dimensions to have length >= 2 && dimensions[0] > 0 && "
-                    + "dimensions[1] > 0");
-        }
-        float scale =
-                Math.max((float) targetWidth / dimensions[0], (float) targetHeight / dimensions[1]);
-        dimensions[0] = (int) (dimensions[0] * scale);
-        dimensions[1] = (int) (dimensions[1] * scale);
-        return scale;
-    }
-
-    /**
      * Flips {@code value} iff {@code flipSign} is {@code true}.
      * @param value    The value to flip.
      * @param flipSign Whether or not to flip the value.
@@ -148,15 +124,6 @@ public class MathUtils {
      */
     public static float flipSignIf(float value, boolean flipSign) {
         return flipSign ? -value : value;
-    }
-
-    /**
-     * Compares two long values. Same as {@link Long#compare}, but available on all API levels.
-     *
-     * TODO(newt): replace this with Long.compare() once Chrome only supports API level 19+.
-     */
-    public static int compareLongs(long lhs, long rhs) {
-        return lhs < rhs ? -1 : (lhs == rhs ? 0 : 1);
     }
 
     /**
@@ -181,6 +148,13 @@ public class MathUtils {
         float xDist = x2 - x1;
         float yDist = y2 - y1;
         return (float) Math.sqrt(xDist * xDist + yDist * yDist);
+    }
+
+    /**
+     * Compute the distance given two coordinate vectors
+     */
+    public static float distance(float distanceX, float distanceY) {
+        return (float) Math.sqrt(distanceX * distanceX + distanceY * distanceY);
     }
 
     /**

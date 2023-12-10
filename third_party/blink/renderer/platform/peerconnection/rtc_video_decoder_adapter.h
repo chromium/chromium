@@ -29,11 +29,6 @@ class GpuVideoAcceleratorFactories;
 }  // namespace media
 
 namespace blink {
-
-namespace features {
-PLATFORM_EXPORT BASE_DECLARE_FEATURE(kWebRtcDecoderAdapterSyncDecode);
-}
-
 // This class decodes video for WebRTC using a media::VideoDecoder. In
 // particular, MojoVideoDecoder are used to provide access to hardware decoding
 // in the GPU process.

@@ -5,79 +5,75 @@
 #ifndef ASH_AMBIENT_AMBIENT_PHOTO_CACHE_H_
 #define ASH_AMBIENT_AMBIENT_PHOTO_CACHE_H_
 
-#include <memory>
 #include <string>
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/ambient/proto/photo_cache_entry.pb.h"
-#include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/scoped_refptr.h"
 
-namespace gfx {
-class ImageSkia;
-}  // namespace gfx
+namespace base {
+class SequencedTaskRunner;
+}  // namespace base
 
 namespace ash {
 
-class AmbientClient;
 class AmbientAccessTokenController;
 
-// Interface for downloading and decoding photos for Ambient mode. Mocked for
-// testing to isolate from network and file system.
-// Each cache entry is written to disk as three files in the |root_path|, with
-// filenames prefixed by |cache_index|.
-class ASH_EXPORT AmbientPhotoCache {
- public:
-  AmbientPhotoCache() = default;
-  AmbientPhotoCache(const AmbientPhotoCache&) = delete;
-  AmbientPhotoCache& operator=(const AmbientPhotoCache&) = delete;
-  virtual ~AmbientPhotoCache() = default;
+// Utilities for downloading and persisting photos for Ambient mode.
+// Each cache entry is written to disk with filenames prefixed by |cache_index|.
+namespace ambient_photo_cache {
 
-  // `root_path` is where the cached photos stored on disk.
-  // `ambient_client` and `access_token_controller` are used to obtain url
-  // loader factory and access tokens to fetch the online images.
-  static std::unique_ptr<AmbientPhotoCache> Create(
-      base::FilePath root_path,
-      AmbientClient& ambient_client,
-      AmbientAccessTokenController& access_token_controller);
-
-  // Overrides the output of |Create()| for testing. This is global and can be
-  // reset back to a null callback to disable the override.
-  static void SetFactoryForTesting(
-      base::RepeatingCallback<std::unique_ptr<AmbientPhotoCache>()> factory_fn);
-
-  static void DownloadPhoto(
-      const std::string& url,
-      AmbientAccessTokenController& access_token_controller,
-      base::OnceCallback<void(std::string&&)> callback);
-
-  // Saves the photo at |url| to |cache_index| and calls |callback| with a
-  // boolean that indicates success.
-  virtual void DownloadPhotoToFile(const std::string& url,
-                                   int cache_index,
-                                   base::OnceCallback<void(bool)> callback) = 0;
-
-  virtual void DecodePhoto(
-      const std::string& data,
-      base::OnceCallback<void(const gfx::ImageSkia&)> callback) = 0;
-
-  // Write photo cache to disk at |cache_index| and call |callback| when
-  // complete.
-  virtual void WritePhotoCache(int cache_index,
-                               const ::ambient::PhotoCacheEntry& cache_entry,
-                               base::OnceClosure callback) = 0;
-
-  // Read the photo cache at |cache_index| and call |callback| when complete.
-  // If a particular cache fails to be read, |cache_entry| will be empty.
-  virtual void ReadPhotoCache(
-      int cache_index,
-      base::OnceCallback<void(::ambient::PhotoCacheEntry cache_entry)>
-          callback) = 0;
-
-  // Erase all stored files from disk.
-  virtual void Clear() = 0;
+// Each `Store` has a different directory (chosen internally) where ambient
+// photos are saved. Caller provides this below to specify which cache
+// directory to operate on.
+enum class Store {
+  // Holds photos matching the most recent ambient topic source selected by
+  // the user (ex: gphotos, art gallery, etc).
+  kPrimary,
+  // Holds a small fixed set of stock photos that do not match the ambient
+  // topic source selected by the user. Only used if the primary store is
+  // empty.
+  kBackup
 };
 
+// Sets the `task_runner` that will be used internally for all file
+// operations. Must be called once before any other cache functions.
+ASH_EXPORT void SetFileTaskRunner(
+    scoped_refptr<base::SequencedTaskRunner> task_runner);
+
+ASH_EXPORT void DownloadPhoto(
+    const std::string& url,
+    AmbientAccessTokenController& access_token_controller,
+    base::OnceCallback<void(std::string&&)> callback);
+
+// Saves the photo at |url| to |cache_index| and calls |callback| with a
+// boolean that indicates success.
+ASH_EXPORT void DownloadPhotoToFile(
+    Store store,
+    const std::string& url,
+    AmbientAccessTokenController& access_token_controller,
+    int cache_index,
+    base::OnceCallback<void(bool)> callback);
+
+// Write photo cache to disk at |cache_index| and call |callback| when
+// complete.
+ASH_EXPORT void WritePhotoCache(Store store,
+                                int cache_index,
+                                const ::ambient::PhotoCacheEntry& cache_entry,
+                                base::OnceClosure callback);
+
+// Read the photo cache at |cache_index| and call |callback| when complete.
+// If a particular cache fails to be read, |cache_entry| will be empty.
+ASH_EXPORT void ReadPhotoCache(
+    Store store,
+    int cache_index,
+    base::OnceCallback<void(::ambient::PhotoCacheEntry cache_entry)> callback);
+
+// Erase all stored files from disk.
+ASH_EXPORT void Clear(Store store);
+
+}  // namespace ambient_photo_cache
 }  // namespace ash
 
 #endif  // ASH_AMBIENT_AMBIENT_PHOTO_CACHE_H_

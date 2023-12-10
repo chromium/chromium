@@ -13,9 +13,7 @@ import android.content.ContentProvider;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 
-/**
- * Delegates to the real AppComponentFactory.
- */
+/** Delegates to the real AppComponentFactory. */
 public class BootstrapAppComponentFactory extends AppComponentFactory {
     static AppComponentFactory sDelegate;
 

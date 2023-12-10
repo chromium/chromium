@@ -6,6 +6,9 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/check.h"
+#import "base/check_op.h"
+#import "base/i18n/message_formatter.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "components/bookmarks/browser/bookmark_utils.h"
@@ -16,8 +19,10 @@
 #import "components/prefs/ios/pref_observer_bridge.h"
 #import "components/prefs/pref_change_registrar.h"
 #import "components/prefs/pref_service.h"
+#import "components/signin/public/identity_manager/account_info.h"
 #import "components/sync/base/features.h"
 #import "components/sync/base/user_selectable_type.h"
+#import "components/sync/service/local_data_description.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_user_settings.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_bridge_observer.h"
@@ -27,14 +32,18 @@
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_image_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_model.h"
 #import "ios/chrome/browser/sync/model/sync_observer_bridge.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
+#import "ios/chrome/browser/ui/authentication/account_settings_presenter.h"
 #import "ios/chrome/browser/ui/authentication/cells/table_view_signin_promo_item.h"
 #import "ios/chrome/browser/ui/authentication/signin_presenter.h"
 #import "ios/chrome/browser/ui/authentication/signin_promo_view_mediator.h"
+#import "ios/chrome/browser/ui/bookmarks/bookmark_ui_constants.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_utils_ios.h"
 #import "ios/chrome/browser/ui/bookmarks/cells/bookmark_home_node_item.h"
 #import "ios/chrome/browser/ui/bookmarks/cells/bookmark_table_cell_title_editing.h"
@@ -48,8 +57,13 @@
 using bookmarks::BookmarkNode;
 
 namespace {
+
+// The size of the symbol displayed in the batch upload dialog.
+constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
+
 // Maximum number of entries to fetch when searching.
 const int kMaxBookmarksSearchResults = 50;
+
 }  // namespace
 
 bool IsABookmarkNodeSectionForIdentifier(
@@ -62,11 +76,14 @@ bool IsABookmarkNodeSectionForIdentifier(
     case BookmarksHomeSectionIdentifierRootLocalOrSyncable:
     case BookmarksHomeSectionIdentifierRootAccount:
       return true;
+    case BookmarksBatchUploadSectionIdentifier:
+      return false;
   }
   NOTREACHED_NORETURN();
 }
 
-@interface BookmarksHomeMediator () <BookmarkModelBridgeObserver,
+@interface BookmarksHomeMediator () <AccountSettingsPresenter,
+                                     BookmarkModelBridgeObserver,
                                      BookmarkPromoControllerDelegate,
                                      PrefObserverDelegate,
                                      SigninPresenter,
@@ -118,9 +135,7 @@ bool IsABookmarkNodeSectionForIdentifier(
 
     _browser = browser->AsWeakPtr();
     _localOrSyncableBookmarkModel = localOrSyncableBookmarkModel->AsWeakPtr();
-    if (base::FeatureList::IsEnabled(syncer::kEnableBookmarksAccountStorage)) {
-      _accountBookmarkModel = accountBookmarkModel->AsWeakPtr();
-    }
+    _accountBookmarkModel = accountBookmarkModel->AsWeakPtr();
     _displayedNode = displayedNode;
   }
   return self;
@@ -133,10 +148,8 @@ bool IsABookmarkNodeSectionForIdentifier(
   ChromeBrowserState* browserState = [self originalBrowserState];
   _localOrSyncableBookmarkModelBridge = std::make_unique<BookmarkModelBridge>(
       self, _localOrSyncableBookmarkModel.get());
-  if (base::FeatureList::IsEnabled(syncer::kEnableBookmarksAccountStorage)) {
     _accountBookmarkModelBridge = std::make_unique<BookmarkModelBridge>(
         self, _accountBookmarkModel.get());
-  }
   _syncedBookmarksObserver =
       std::make_unique<sync_bookmarks::SyncedBookmarksObserverBridge>(
           self, browserState);
@@ -145,7 +158,8 @@ bool IsABookmarkNodeSectionForIdentifier(
       [[BookmarkPromoController alloc] initWithBrowser:_browser.get()
                                            syncService:_syncService
                                               delegate:self
-                                             presenter:self];
+                                       signinPresenter:self
+                              accountSettingsPresenter:self];
 
   _prefChangeRegistrar = std::make_unique<PrefChangeRegistrar>();
   _prefChangeRegistrar->Init(browserState->GetPrefs());
@@ -242,6 +256,9 @@ bool IsABookmarkNodeSectionForIdentifier(
     [self updateHeaderForProfileRootNode];
     [self updateHeaderForAccountRootNode];
   }
+
+  // Show the batch upload section if required.
+  [self maybeShowBatchUploadSection];
 }
 
 - (void)generateTableViewDataForModel:(bookmarks::BookmarkModel*)model
@@ -390,9 +407,7 @@ bool IsABookmarkNodeSectionForIdentifier(
             initWithType:BookmarksHomeItemTypePromo];
     signinPromoItem.configurator = [signinPromoViewMediator createConfigurator];
     signinPromoItem.text =
-        base::FeatureList::IsEnabled(syncer::kEnableBookmarksAccountStorage)
-            ? l10n_util::GetNSString(IDS_IOS_SIGNIN_PROMO_BOOKMARKS)
-            : l10n_util::GetNSString(IDS_IOS_SIGNIN_PROMO_BOOKMARKS_WITH_UNITY);
+        l10n_util::GetNSString(IDS_IOS_SIGNIN_PROMO_BOOKMARKS);
     signinPromoItem.delegate = signinPromoViewMediator;
     [signinPromoViewMediator signinPromoViewIsVisible];
 
@@ -415,6 +430,24 @@ bool IsABookmarkNodeSectionForIdentifier(
   // Update the TabelView background to make sure the new state of the promo
   // does not affect the background.
   [self updateTableViewBackground];
+}
+
+- (void)triggerBatchUpload {
+  self.syncService->TriggerLocalDataMigration(
+      syncer::ModelTypeSet({syncer::BOOKMARKS}));
+}
+
+- (void)queryLocalBookmarks:(void (^)(int local_bookmarks_count,
+                                      std::string user_email))completion {
+  std::string user_email = self.syncService->GetAccountInfo().email;
+  self.syncService->GetLocalDataDescriptions(
+      syncer::ModelTypeSet({syncer::BOOKMARKS}),
+      base::BindOnce(^(std::map<syncer::ModelType, syncer::LocalDataDescription>
+                           description) {
+        auto it = description.find(syncer::BOOKMARKS);
+        CHECK(it != description.end());
+        completion(it->second.item_count, std::move(user_email));
+      }));
 }
 
 - (bookmark_utils_ios::NodeSet&)selectedNodesForEditMode {
@@ -614,6 +647,12 @@ bool IsABookmarkNodeSectionForIdentifier(
   [self.consumer showSignin:command];
 }
 
+#pragma mark - AccountSettingsPresenter
+
+- (void)showAccountSettings {
+  [self.consumer showAccountSettings];
+}
+
 #pragma mark - SyncObserverModelBridge
 
 - (void)onSyncStateChanged {
@@ -671,6 +710,110 @@ bool IsABookmarkNodeSectionForIdentifier(
       forSectionWithIdentifier:BookmarksHomeSectionIdentifierRootAccount];
 }
 
+// Returns true if batch upload dialog should be shown. This checks for the
+// appropriate feature flags, bookmarks state and sync state.
+- (BOOL)shouldShowBatchUploadSection {
+  // Show batch upload section only if kEnableBatchUploadFromBookmarksManager
+  // flag is enabled.
+  if (!base::FeatureList::IsEnabled(kEnableBatchUploadFromBookmarksManager)) {
+    return false;
+  }
+  // Do not show if profile section is empty.
+  BOOL showProfileSection =
+      [self hasBookmarksOrFoldersInModel:_localOrSyncableBookmarkModel.get()];
+  if (!showProfileSection) {
+    return NO;
+  }
+  // Do not show if sync is disabled or is paused.
+  if (!self.syncService || self.syncService->GetAccountInfo().IsEmpty() ||
+      !self.syncService->GetUserSettings()->GetSelectedTypes().Has(
+          syncer::UserSelectableType::kBookmarks) ||
+      self.syncService->GetTransportState() ==
+          syncer::SyncService::TransportState::PAUSED) {
+    return NO;
+  }
+  return YES;
+}
+
+// Asynchronously show the batch upload dialog, if required (i.e. if there
+// exists local bookmarks and the pre-requisites are met).
+- (void)maybeShowBatchUploadSection {
+  if (![self shouldShowBatchUploadSection]) {
+    return;
+  }
+
+  __weak BookmarksHomeMediator* weakSelf = self;
+  [self
+      queryLocalBookmarks:^(int local_bookmarks_count, std::string user_email) {
+        [weakSelf addBatchUploadSection:local_bookmarks_count];
+      }];
+}
+
+// Populates the batch upload section with recommendation item and button.
+- (void)addBatchUploadSection:(int)local_bookmarks_count {
+  // Remove any existing batch upload cards and replace with one with the latest
+  // info.
+  [self deleteAllItemsInBatchUploadSectionIfExists];
+
+  if (local_bookmarks_count == 0) {
+    [self.consumer.tableView reloadData];
+    return;
+  }
+
+  TableViewImageItem* item = [[TableViewImageItem alloc]
+      initWithType:BookmarksHomeItemTypeBatchUploadRecommendation];
+  item.detailText = base::SysUTF16ToNSString(
+      base::i18n::MessageFormatter::FormatWithNamedArgs(
+          l10n_util::GetStringUTF16(
+              IDS_IOS_BOOKMARKS_HOME_BULK_UPLOAD_SECTION_DESCRIPTION),
+          "count", local_bookmarks_count, "email",
+          _syncService->GetAccountInfo().email));
+  item.image = CustomSymbolWithPointSize(kCloudAndArrowUpSymbol,
+                                         kBatchUploadSymbolPointSize);
+  item.enabled = NO;
+  item.accessibilityIdentifier =
+      kBookmarksHomeBatchUploadRecommendationItemIdentifier;
+
+  TableViewTextItem* button = [[TableViewTextItem alloc]
+      initWithType:BookmarksHomeItemTypeBatchUploadButton];
+  button.text = l10n_util::GetNSString(
+      IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_BATCH_UPLOAD_BUTTON_ITEM);
+  button.textColor = [UIColor colorNamed:kBlueColor];
+  button.accessibilityIdentifier = kBookmarksHomeBatchUploadButtonIdentifier;
+
+  [self.consumer.tableViewModel addItem:item
+                toSectionWithIdentifier:BookmarksBatchUploadSectionIdentifier];
+  [self.consumer.tableViewModel addItem:button
+                toSectionWithIdentifier:BookmarksBatchUploadSectionIdentifier];
+
+  base::UmaHistogramBoolean(
+      "IOS.Bookmarks.BulkSaveBookmarksInAccountViewRecreated", true);
+
+  [self.consumer.tableView reloadData];
+}
+
+// Removes all the items from the batch upload section, if they exist.
+- (void)deleteAllItemsInBatchUploadSectionIfExists {
+  NSInteger itemsInSection = [self.consumer.tableViewModel
+      numberOfItemsInSection:[self.consumer.tableViewModel
+                                 sectionForSectionIdentifier:
+                                     BookmarksBatchUploadSectionIdentifier]];
+  if (itemsInSection == 0) {
+    return;
+  }
+  // The recommendation item and the button exist together.
+  CHECK_EQ(2, itemsInSection);
+  CHECK([self.consumer.tableViewModel
+      hasItemForItemType:BookmarksHomeItemTypeBatchUploadRecommendation
+       sectionIdentifier:BookmarksBatchUploadSectionIdentifier]);
+  CHECK([self.consumer.tableViewModel
+      hasItemForItemType:BookmarksHomeItemTypeBatchUploadButton
+       sectionIdentifier:BookmarksBatchUploadSectionIdentifier]);
+
+  [self.consumer.tableViewModel deleteAllItemsFromSectionWithIdentifier:
+                                    BookmarksBatchUploadSectionIdentifier];
+}
+
 // The original chrome browser state used for services that don't exist in
 // incognito mode. E.g., `_syncService` and `ManagedBookmarkService`.
 - (ChromeBrowserState*)originalBrowserState {
@@ -708,7 +851,8 @@ bool IsABookmarkNodeSectionForIdentifier(
     @(BookmarksHomeSectionIdentifierBookmarks),
     @(BookmarksHomeSectionIdentifierRootAccount),
     @(BookmarksHomeSectionIdentifierRootLocalOrSyncable),
-    @(BookmarksHomeSectionIdentifierMessages)
+    @(BookmarksHomeSectionIdentifierMessages),
+    @(BookmarksBatchUploadSectionIdentifier)
   ];
 
   for (NSNumber* section in sectionsToDelete) {

@@ -48,21 +48,27 @@ public class TopUiThemeColorProvider extends ThemeColorProvider {
      *                                night mode.
      * @param allowBrightThemeColors Whether the tab allows bright theme colors.
      */
-    public TopUiThemeColorProvider(Context context, ObservableSupplier<Tab> tabSupplier,
-            Supplier<Integer> activityThemeColorSupplier, boolean isTablet,
-            boolean allowThemingInNightMode, boolean allowBrightThemeColors) {
+    public TopUiThemeColorProvider(
+            Context context,
+            ObservableSupplier<Tab> tabSupplier,
+            Supplier<Integer> activityThemeColorSupplier,
+            boolean isTablet,
+            boolean allowThemingInNightMode,
+            boolean allowBrightThemeColors) {
         super(context);
         mContext = context;
-        mTabObserver = new CurrentTabObserver(tabSupplier,
-                new EmptyTabObserver() {
-                    @Override
-                    public void onDidChangeThemeColor(Tab tab, int themeColor) {
-                        updateColor(tab, themeColor, true);
-                    }
-                },
-                (tab) -> {
-                    if (tab != null) updateColor(tab, tab.getThemeColor(), false);
-                });
+        mTabObserver =
+                new CurrentTabObserver(
+                        tabSupplier,
+                        new EmptyTabObserver() {
+                            @Override
+                            public void onDidChangeThemeColor(Tab tab, int themeColor) {
+                                updateColor(tab, themeColor, true);
+                            }
+                        },
+                        (tab) -> {
+                            if (tab != null) updateColor(tab, tab.getThemeColor(), false);
+                        });
         mActivityThemeColorSupplier = activityThemeColorSupplier;
         mIsTablet = isTablet;
         mAllowThemingInNightMode = allowThemingInNightMode;
@@ -93,8 +99,9 @@ public class TopUiThemeColorProvider extends ThemeColorProvider {
 
         final boolean isDarkTheme =
                 ColorUtils.shouldUseLightForegroundOnBackground(getThemeColor());
-        return isDarkTheme ? BrandedColorScheme.DARK_BRANDED_THEME
-                           : BrandedColorScheme.LIGHT_BRANDED_THEME;
+        return isDarkTheme
+                ? BrandedColorScheme.DARK_BRANDED_THEME
+                : BrandedColorScheme.LIGHT_BRANDED_THEME;
     }
 
     /**
@@ -146,7 +153,8 @@ public class TopUiThemeColorProvider extends ThemeColorProvider {
      * @return Whether the given tab is using the tab theme color.
      */
     private boolean isUsingTabThemeColor(Tab tab, int themeColor) {
-        return isThemingAllowed(tab) && themeColor != TabState.UNSPECIFIED_THEME_COLOR
+        return isThemingAllowed(tab)
+                && themeColor != TabState.UNSPECIFIED_THEME_COLOR
                 && (mAllowBrightThemeColors || !ColorUtils.isThemeColorTooBright(themeColor));
     }
 
@@ -158,8 +166,11 @@ public class TopUiThemeColorProvider extends ThemeColorProvider {
         boolean disallowDueToNightMode =
                 !mAllowThemingInNightMode && ColorUtils.inNightMode(tab.getContext());
 
-        return tab.isThemingAllowed() && !mIsTablet && !disallowDueToNightMode
-                && !tab.isNativePage() && !tab.isIncognito();
+        return tab.isThemingAllowed()
+                && !mIsTablet
+                && !disallowDueToNightMode
+                && !tab.isNativePage()
+                && !tab.isIncognito();
     }
 
     /**
@@ -170,8 +181,9 @@ public class TopUiThemeColorProvider extends ThemeColorProvider {
     public int getSceneLayerBackground(Tab tab) {
         NativePage nativePage = tab.getNativePage();
         int defaultColor = calculateColor(tab, tab.getThemeColor());
-        return nativePage != null ? nativePage.getToolbarSceneLayerBackground(defaultColor)
-                                  : defaultColor;
+        return nativePage != null
+                ? nativePage.getToolbarSceneLayerBackground(defaultColor)
+                : defaultColor;
     }
 
     @Override

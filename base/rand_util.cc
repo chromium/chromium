@@ -112,6 +112,14 @@ std::string RandBytesAsString(size_t length) {
   return result;
 }
 
+std::vector<uint8_t> RandBytesAsVector(size_t length) {
+  std::vector<uint8_t> result(length);
+  if (result.size()) {
+    RandBytes(result.data(), result.size());
+  }
+  return result;
+}
+
 InsecureRandomGenerator::InsecureRandomGenerator() {
   a_ = base::RandUint64();
   b_ = base::RandUint64();

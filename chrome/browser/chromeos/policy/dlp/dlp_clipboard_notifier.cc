@@ -20,6 +20,7 @@
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/display/screen.h"
+#include "ui/events/ozone/events_ozone.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/notifier_catalogs.h"
@@ -41,14 +42,14 @@ namespace policy {
 namespace {
 
 ui::DataTransferEndpoint CloneEndpoint(
-    const ui::DataTransferEndpoint* const data_endpoint) {
-  if (data_endpoint == nullptr)
+    base::optional_ref<const ui::DataTransferEndpoint> data_endpoint) {
+  if (!data_endpoint.has_value()) {
     return ui::DataTransferEndpoint(ui::EndpointType::kDefault);
+  }
 
   return ui::DataTransferEndpoint(*data_endpoint);
 }
 
-// TODO(b/293442668): Fix SynthesizePaste on Lacros.
 void SynthesizePaste() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   auto* host = ash::GetWindowTreeHostForDisplay(
@@ -62,13 +63,21 @@ void SynthesizePaste() {
   ui::KeyEvent control_press(/*type=*/ui::ET_KEY_PRESSED, ui::VKEY_CONTROL,
                              /*code=*/static_cast<ui::DomCode>(0),
                              /*flags=*/0);
-
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Set a property as if this is a key event not consumed by IME.
+  // Ozone/wayland IME relies on this flag to work properly.
+  ui::SetKeyboardImeFlags(&control_press, ui::kPropertyKeyboardImeIgnoredFlag);
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   host->DeliverEventToSink(&control_press);
 
   ui::KeyEvent v_press(/*type=*/ui::ET_KEY_PRESSED, ui::VKEY_V,
                        /*code=*/static_cast<ui::DomCode>(0),
                        /*flags=*/ui::EF_CONTROL_DOWN);
-
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Set a property as if this is a key event not consumed by IME.
+  // Ozone/wayland IME relies on this flag to work properly.
+  ui::SetKeyboardImeFlags(&v_press, ui::kPropertyKeyboardImeIgnoredFlag);
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   host->DeliverEventToSink(&v_press);
 
   ui::KeyEvent v_release(/*type=*/ui::ET_KEY_RELEASED, ui::VKEY_V,
@@ -83,9 +92,9 @@ void SynthesizePaste() {
 }
 
 bool HasEndpoint(const std::vector<ui::DataTransferEndpoint>& saved_endpoints,
-                 const ui::DataTransferEndpoint* const endpoint) {
+                 base::optional_ref<const ui::DataTransferEndpoint> endpoint) {
   const ui::EndpointType endpoint_type =
-      endpoint ? endpoint->type() : ui::EndpointType::kDefault;
+      endpoint.has_value() ? endpoint->type() : ui::EndpointType::kDefault;
 
   for (const auto& ept : saved_endpoints) {
     if (ept.type() == endpoint_type) {
@@ -118,14 +127,14 @@ DlpClipboardNotifier::~DlpClipboardNotifier() {
 }
 
 void DlpClipboardNotifier::NotifyBlockedAction(
-    const ui::DataTransferEndpoint* const data_src,
-    const ui::DataTransferEndpoint* const data_dst) {
-  DCHECK(data_src);
+    base::optional_ref<const ui::DataTransferEndpoint> data_src,
+    base::optional_ref<const ui::DataTransferEndpoint> data_dst) {
+  DCHECK(data_src.has_value());
   DCHECK(data_src->GetURL());
   const std::u16string host_name =
       base::UTF8ToUTF16(data_src->GetURL()->host());
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (data_dst) {
+  if (data_dst.has_value()) {
     if (data_dst->type() == ui::EndpointType::kCrostini) {
       ShowToast(kClipboardBlockCrostiniToastId,
                 ash::ToastCatalogName::kClipboardBlockedAction,
@@ -158,10 +167,10 @@ void DlpClipboardNotifier::NotifyBlockedAction(
 }
 
 void DlpClipboardNotifier::WarnOnPaste(
-    const ui::DataTransferEndpoint* const data_src,
-    const ui::DataTransferEndpoint* const data_dst,
-    base::RepeatingCallback<void()> reporting_cb) {
-  DCHECK(data_src);
+    base::optional_ref<const ui::DataTransferEndpoint> data_src,
+    base::optional_ref<const ui::DataTransferEndpoint> data_dst,
+    base::OnceCallback<void()> reporting_cb) {
+  DCHECK(data_src.has_value());
   DCHECK(data_src->GetURL());
 
   CloseWidget(widget_.get(), views::Widget::ClosedReason::kUnspecified);
@@ -169,7 +178,7 @@ void DlpClipboardNotifier::WarnOnPaste(
   const std::u16string host_name =
       base::UTF8ToUTF16(data_src->GetURL()->host());
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (data_dst) {
+  if (data_dst.has_value()) {
     if (data_dst->type() == ui::EndpointType::kCrostini) {
       ShowToast(kClipboardWarnCrostiniToastId,
                 ash::ToastCatalogName::kClipboardWarnOnPaste,
@@ -208,14 +217,13 @@ void DlpClipboardNotifier::WarnOnPaste(
   }
 #endif
 
-  auto proceed_cb = base::BindRepeating(
-      &DlpClipboardNotifier::ProceedPressed, base::Unretained(this),
-      // The proceed callback is run once only, base::Passed is safe here.
-      base::Passed(std::move(warned_clipboard_data)), CloneEndpoint(data_dst),
-      std::move(reporting_cb));
+  auto proceed_cb =
+      base::BindOnce(&DlpClipboardNotifier::ProceedPressed,
+                     base::Unretained(this), std::move(warned_clipboard_data),
+                     CloneEndpoint(data_dst), std::move(reporting_cb));
   auto cancel_cb =
-      base::BindRepeating(&DlpClipboardNotifier::CancelWarningPressed,
-                          base::Unretained(this), CloneEndpoint(data_dst));
+      base::BindOnce(&DlpClipboardNotifier::CancelWarningPressed,
+                     base::Unretained(this), CloneEndpoint(data_dst));
 
   ShowWarningBubble(l10n_util::GetStringFUTF16(
                         IDS_POLICY_DLP_CLIPBOARD_WARN_ON_PASTE, host_name),
@@ -223,11 +231,11 @@ void DlpClipboardNotifier::WarnOnPaste(
 }
 
 void DlpClipboardNotifier::WarnOnBlinkPaste(
-    const ui::DataTransferEndpoint* const data_src,
-    const ui::DataTransferEndpoint* const data_dst,
+    base::optional_ref<const ui::DataTransferEndpoint> data_src,
+    base::optional_ref<const ui::DataTransferEndpoint> data_dst,
     content::WebContents* web_contents,
     base::OnceCallback<void(bool)> paste_cb) {
-  DCHECK(data_src);
+  DCHECK(data_src.has_value());
   DCHECK(data_src->GetURL());
 
   CloseWidget(widget_.get(), views::Widget::ClosedReason::kUnspecified);
@@ -236,11 +244,11 @@ void DlpClipboardNotifier::WarnOnBlinkPaste(
       base::UTF8ToUTF16(data_src->GetURL()->host());
 
   auto proceed_cb =
-      base::BindRepeating(&DlpClipboardNotifier::BlinkProceedPressed,
-                          base::Unretained(this), CloneEndpoint(data_dst));
+      base::BindOnce(&DlpClipboardNotifier::BlinkProceedPressed,
+                     base::Unretained(this), CloneEndpoint(data_dst));
   auto cancel_cb =
-      base::BindRepeating(&DlpClipboardNotifier::CancelWarningPressed,
-                          base::Unretained(this), CloneEndpoint(data_dst));
+      base::BindOnce(&DlpClipboardNotifier::CancelWarningPressed,
+                     base::Unretained(this), CloneEndpoint(data_dst));
 
   ShowWarningBubble(l10n_util::GetStringFUTF16(
                         IDS_POLICY_DLP_CLIPBOARD_WARN_ON_PASTE, host_name),
@@ -250,19 +258,19 @@ void DlpClipboardNotifier::WarnOnBlinkPaste(
 }
 
 bool DlpClipboardNotifier::DidUserApproveDst(
-    const ui::DataTransferEndpoint* const data_dst) {
+    base::optional_ref<const ui::DataTransferEndpoint> data_dst) {
   return HasEndpoint(approved_dsts_, data_dst);
 }
 
 bool DlpClipboardNotifier::DidUserCancelDst(
-    const ui::DataTransferEndpoint* const data_dst) {
+    base::optional_ref<const ui::DataTransferEndpoint> data_dst) {
   return HasEndpoint(cancelled_dsts_, data_dst);
 }
 
 void DlpClipboardNotifier::ProceedPressed(
     std::unique_ptr<ui::ClipboardData> data,
     const ui::DataTransferEndpoint& data_dst,
-    base::RepeatingCallback<void()> reporting_cb,
+    base::OnceCallback<void()> reporting_cb,
     views::Widget* widget) {
   CloseWidget(widget, views::Widget::ClosedReason::kAcceptButtonClicked);
   approved_dsts_.push_back(data_dst);

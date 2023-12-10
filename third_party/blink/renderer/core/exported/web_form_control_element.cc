@@ -39,6 +39,7 @@
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_control_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_form_control_element_with_state.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
@@ -90,29 +91,22 @@ bool WebFormControlElement::IsPreviewed() const {
 }
 
 bool WebFormControlElement::UserHasEditedTheField() const {
-  if (auto* input = ::blink::DynamicTo<HTMLInputElement>(*private_))
-    return input->UserHasEditedTheField();
-  if (auto* select_element = ::blink::DynamicTo<HTMLSelectElement>(*private_))
-    return select_element->UserHasEditedTheField();
-  if (auto* select_list_element =
-          ::blink::DynamicTo<HTMLSelectListElement>(*private_))
-    return select_list_element->UserHasEditedTheField();
-  return true;
+  if (auto* control =
+          ::blink::DynamicTo<HTMLFormControlElementWithState>(*private_)) {
+    return control->UserHasEditedTheField();
+  }
+  return false;
 }
 
 void WebFormControlElement::SetUserHasEditedTheField(bool value) {
-  if (auto* input = ::blink::DynamicTo<HTMLInputElement>(*private_))
-    input->SetUserHasEditedTheField(value);
-  if (auto* select_element = ::blink::DynamicTo<HTMLSelectElement>(*private_))
-    select_element->SetUserHasEditedTheField(value);
-  if (auto* select_list_element =
-          ::blink::DynamicTo<HTMLSelectListElement>(*private_))
-    select_list_element->SetUserHasEditedTheField(value);
-}
-
-void WebFormControlElement::SetUserHasEditedTheFieldForTest() {
-  if (auto* input = ::blink::DynamicTo<HTMLInputElement>(*private_))
-    input->SetUserHasEditedTheFieldForTest();
+  if (auto* control =
+          ::blink::DynamicTo<HTMLFormControlElementWithState>(*private_)) {
+    if (value) {
+      control->SetUserHasEditedTheField();
+    } else {
+      control->ClearUserHasEditedTheField();
+    }
+  }
 }
 
 void WebFormControlElement::SetAutofillState(WebAutofillState autofill_state) {

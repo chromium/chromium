@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string_view>
+
 #include "services/network/trust_tokens/trust_token_operation_metrics_recorder.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
@@ -26,7 +28,7 @@ namespace {
 
 // These must stay in sync with the corresponding histogram suffixes in
 // histograms.xml.
-base::StringPiece StatusToSuccessOrFailure(
+std::string_view StatusToSuccessOrFailure(
     mojom::TrustTokenOperationStatus status) {
   switch (status) {
     case mojom::TrustTokenOperationStatus::kOk:
@@ -41,7 +43,7 @@ base::StringPiece StatusToSuccessOrFailure(
 
 // These must stay in sync with the corresponding histogram suffixes in
 // histograms.xml.
-base::StringPiece TypeToString(mojom::TrustTokenOperationType type) {
+std::string_view TypeToString(mojom::TrustTokenOperationType type) {
   switch (type) {
     case mojom::TrustTokenOperationType::kIssuance:
       return "Issuance";

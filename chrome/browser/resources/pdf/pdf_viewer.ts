@@ -313,8 +313,13 @@ export class PdfViewerElement extends PdfViewerBaseElement {
     this.inkController_.init(this.viewport);
     this.tracker.add(
         this.inkController_.getEventTarget(),
-        InkControllerEventType.HAS_UNSAVED_CHANGES,
-        () => chrome.mimeHandlerPrivate.setShowBeforeUnloadDialog(true));
+        InkControllerEventType.HAS_UNSAVED_CHANGES, () => {
+          // TODO(crbug.com/1445746): Write an equivalent API call for
+          // chrome.pdfViewerPrivate.
+          if (!this.pdfOopifEnabled) {
+            chrome.mimeHandlerPrivate.setShowBeforeUnloadDialog(true);
+          }
+        });
     // </if>
 
     this.fileName_ = getFilenameFromURL(this.originalUrl);
@@ -917,7 +922,11 @@ export class PdfViewerElement extends PdfViewerBaseElement {
             writer.write(blob);
             // Unblock closing the window now that the user has saved
             // successfully.
-            chrome.mimeHandlerPrivate.setShowBeforeUnloadDialog(false);
+            // TODO(crbug.com/1445746): Write an equivalent API call for
+            // chrome.pdfViewerPrivate.
+            if (!this.pdfOopifEnabled) {
+              chrome.mimeHandlerPrivate.setShowBeforeUnloadDialog(false);
+            }
           });
         });
   }
@@ -1048,7 +1057,11 @@ export class PdfViewerElement extends PdfViewerBaseElement {
             writer.write(blob);
             // Unblock closing the window now that the user has saved
             // successfully.
-            chrome.mimeHandlerPrivate.setShowBeforeUnloadDialog(false);
+            // TODO(crbug.com/1445746): Write an equivalent API call for
+            // chrome.pdfViewerPrivate.
+            if (!this.pdfOopifEnabled) {
+              chrome.mimeHandlerPrivate.setShowBeforeUnloadDialog(false);
+            }
           });
         });
 

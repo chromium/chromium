@@ -2,7 +2,7 @@ Name: Alliance for Open Media Video Codec
 Short Name: libaom
 URL: https://aomedia.googlesource.com/aom/
 Version: N/A
-Revision: 1dbe1c7fae2456f91ccc79fecb919e9ffea0727a
+Revision: 845af45dfea01ed5adfbe6930b7a58e221d0f67d
 CPEPrefix: cpe:/a:aomedia:aomedia:3.6.1
 License: BSD
 License File: source/libaom/LICENSE
@@ -45,6 +45,8 @@ after running roll_dep.py.
 3. Amend the commit created by the first step:
 
      git commit -a --amend
+
+   Add `Bug: b:307414544` to the commit message.
 
 4. Upload the change to Gerrit:
 

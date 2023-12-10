@@ -108,22 +108,6 @@ TEST_P(EnterpriseConnectorsResultShouldAllowDataUseTest,
                 safe_browsing::BinaryUploadService::Result::FILE_ENCRYPTED));
 }
 
-TEST_P(EnterpriseConnectorsResultShouldAllowDataUseTest,
-       BlockUnsupportedFileTypes) {
-  auto pref = base::StringPrintf(R"(
-    {
-      "service_provider": "google",
-      "enable": [{"url_list": ["*"], "tags": ["dlp"]}],
-      "block_unsupported_file_types": %s
-    })",
-                                 bool_setting());
-  test::SetAnalysisConnector(profile()->GetPrefs(), FILE_ATTACHED, pref);
-  EXPECT_EQ(allowed(),
-            ResultShouldAllowDataUse(
-                settings(), safe_browsing::BinaryUploadService::Result::
-                                DLP_SCAN_UNSUPPORTED_FILE_TYPE));
-}
-
 TEST_P(EnterpriseConnectorsResultShouldAllowDataUseTest, BlockUploadFailure) {
   auto pref = base::StringPrintf(R"(
     {

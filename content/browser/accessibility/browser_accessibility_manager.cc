@@ -369,13 +369,6 @@ void BrowserAccessibilityManager::DidStopLoading() {
   FireFocusEventsIfNeeded();
 }
 
-void BrowserAccessibilityManager::DidActivatePortal() {
-  if (GetTreeData().loaded) {
-    FireGeneratedEvent(ui::AXEventGenerator::Event::PORTAL_ACTIVATED,
-                       GetRoot());
-  }
-}
-
 bool BrowserAccessibilityManager::UseRootScrollOffsetsWhenComputingBounds() {
   return use_root_scroll_offsets_when_computing_bounds_;
 }
@@ -389,9 +382,9 @@ bool BrowserAccessibilityManager::OnAccessibilityEvents(
     const AXEventNotificationDetails& details) {
   TRACE_EVENT0("accessibility",
                "BrowserAccessibilityManager::OnAccessibilityEvents");
-  SCOPED_UMA_HISTOGRAM_TIMER(
+  SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
       "Accessibility.Performance.BrowserAccessibilityManager::"
-      "OnAccessibilityEvents");
+      "OnAccessibilityEvents2");
 
 #if DCHECK_IS_ON()
   base::AutoReset<bool> auto_reset(&in_on_accessibility_events_, true);

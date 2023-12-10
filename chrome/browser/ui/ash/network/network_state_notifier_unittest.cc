@@ -68,6 +68,7 @@ class NetworkConnectTestDelegate : public NetworkConnect::Delegate {
   }
   void ShowMobileSetupDialog(const std::string& service_path) override {}
   void ShowCarrierAccountDetail(const std::string& service_path) override {}
+  void ShowCarrierUnlockNotification() override {}
   void ShowPortalSignin(const std::string& service_path,
                         NetworkConnect::Source source) override {}
   void ShowNetworkConnectError(const std::string& error_name,
@@ -249,7 +250,7 @@ TEST_F(NetworkStateNotifierTest, CellularLockedSimConnectionFailure) {
   base::RunLoop().RunUntilIdle();
 
   // Failure should spawn a notification.
-  absl::optional<message_center::Notification> notification =
+  std::optional<message_center::Notification> notification =
       tester.GetNotification(
           NetworkStateNotifier::kNetworkConnectNotificationId);
   EXPECT_TRUE(notification);
@@ -260,8 +261,8 @@ TEST_F(NetworkStateNotifierTest, CellularLockedSimConnectionFailure) {
                 l10n_util::GetStringUTF16(IDS_NETWORK_LIST_SIM_CARD_LOCKED)));
 
   // Clicking the notification should open SIM unlock settings.
-  notification->delegate()->Click(/*button_index=*/absl::nullopt,
-                                  /*reply=*/absl::nullopt);
+  notification->delegate()->Click(/*button_index=*/std::nullopt,
+                                  /*reply=*/std::nullopt);
   EXPECT_EQ(1, test_system_tray_client_.show_sim_unlock_settings_count());
 }
 
@@ -276,7 +277,7 @@ TEST_F(NetworkStateNotifierTest, CellularEsimConnectionFailure) {
   base::RunLoop().RunUntilIdle();
 
   // Failure should spawn a notification.
-  absl::optional<message_center::Notification> notification =
+  std::optional<message_center::Notification> notification =
       tester.GetNotification(
           NetworkStateNotifier::kNetworkConnectNotificationId);
   EXPECT_TRUE(notification);
@@ -321,14 +322,14 @@ TEST_F(NetworkStateNotifierTest,
   base::RunLoop().RunUntilIdle();
 
   // Failure should spawn a notification.
-  absl::optional<message_center::Notification> notification =
+  std::optional<message_center::Notification> notification =
       tester.GetNotification(
           NetworkStateNotifier::kNetworkConnectNotificationId);
   EXPECT_TRUE(notification);
 
   // Clicking the notification should open the APN subpage.
-  notification->delegate()->Click(/*button_index=*/absl::nullopt,
-                                  /*reply=*/absl::nullopt);
+  notification->delegate()->Click(/*button_index=*/std::nullopt,
+                                  /*reply=*/std::nullopt);
   EXPECT_EQ(1, test_system_tray_client_.show_apn_subpage_count());
   EXPECT_EQ(kCellular1Guid,
             test_system_tray_client_.last_apn_subpage_network_id());
@@ -351,14 +352,14 @@ TEST_F(NetworkStateNotifierTest,
   base::RunLoop().RunUntilIdle();
 
   // Failure should spawn a notification.
-  absl::optional<message_center::Notification> notification =
+  std::optional<message_center::Notification> notification =
       tester.GetNotification(
           NetworkStateNotifier::kNetworkConnectNotificationId);
   EXPECT_TRUE(notification);
 
   // Clicking the notification should open the network settings page.
-  notification->delegate()->Click(/*button_index=*/absl::nullopt,
-                                  /*reply=*/absl::nullopt);
+  notification->delegate()->Click(/*button_index=*/std::nullopt,
+                                  /*reply=*/std::nullopt);
   EXPECT_EQ(0, test_system_tray_client_.show_apn_subpage_count());
   EXPECT_EQ(1, test_system_tray_client_.show_network_settings_count());
   EXPECT_EQ(kCellular1Guid,
@@ -377,7 +378,7 @@ TEST_F(NetworkStateNotifierTest, CellularCarrierLockedSimConnectionFailure) {
   base::RunLoop().RunUntilIdle();
 
   // Failure should spawn a notification.
-  absl::optional<message_center::Notification> notification =
+  std::optional<message_center::Notification> notification =
       tester.GetNotification(
           NetworkStateNotifier::kNetworkConnectNotificationId);
   EXPECT_TRUE(notification);
@@ -388,8 +389,8 @@ TEST_F(NetworkStateNotifierTest, CellularCarrierLockedSimConnectionFailure) {
           l10n_util::GetStringUTF16(IDS_NETWORK_LIST_SIM_CARD_CARRIER_LOCKED)));
 
   // Clicking the notification should open network settings page.
-  notification->delegate()->Click(/*button_index=*/absl::nullopt,
-                                  /*reply=*/absl::nullopt);
+  notification->delegate()->Click(/*button_index=*/std::nullopt,
+                                  /*reply=*/std::nullopt);
   EXPECT_EQ(1, test_system_tray_client_.show_network_settings_count());
 }
 
@@ -406,7 +407,7 @@ TEST_F(NetworkStateNotifierTest,
   base::RunLoop().RunUntilIdle();
 
   // with feature flag disabled, failure should not show notification.
-  absl::optional<message_center::Notification> notification =
+  std::optional<message_center::Notification> notification =
       tester.GetNotification(
           NetworkStateNotifier::kNetworkConnectNotificationId);
   EXPECT_FALSE(notification);

@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ky">
 <translation id="1075622780330595106">Өтмөктөрүңүздүн <ph name="NUMBER_OF_TABS" /> акыркы убакта колдонулган жок. Алар жабылсынбы?</translation>
+<translation id="1155815720264022949">Эски өтмөктөр жабылсынбы?</translation>
 <translation id="1215127405478249895">Өтмөктөрдү карап чыгуу</translation>
 <translation id="125153950246128346">Башка өтмөктү көрүү үчүн таптап коюңуз</translation>
 <translation id="1499635324672558517">Бардык жашыруун өтмөктөр жабылсынбы?</translation>
@@ -46,9 +47,11 @@
 <translation id="5073204694187207510">Толук экран торчосун жашыруу</translation>
 <translation id="5076161749301278626">Дүкөн жөнүндө жазылган сын-пикирлерди көрөсүзбү?</translation>
 <translation id="5082793167783849073">Барактарды топко бириктирип, тез салыштырып чыгыңыз. Баштоо үчүн, шилтемени коё бербей басып туруңуз.</translation>
+<translation id="5303274951032363933">{TABS_COUNT,plural, =1{Жакында колдонулбаган <ph name="TABS_COUNT_ONE" /> өтмөк бар}other{Жакында колдонулбаган <ph name="TABS_COUNT_MANY" /> өтмөк бар}}</translation>
 <translation id="5339733443032484186">Акыркы өтмөгүңүз</translation>
 <translation id="5490235265819901748">Өтмөктөр тобу жайылып көрсөтүлдү</translation>
 <translation id="5494920125229734069">Баарын тандоо</translation>
+<translation id="5545379293264651575">Текшербей жабуу</translation>
 <translation id="5556417849629758491">Дүкөн тууралуу маалыматты көрүңүз. Параметр экрандын жогору жагында берилген</translation>
 <translation id="5558362125926932819"><ph name="NUMBER_OF_TABS" /> өтмөктөн турган өтмөктөр тобун жабуу</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" /> өтмөк топтолду</translation>
@@ -85,7 +88,6 @@
 <translation id="7885132941432959125">Өтмөктү оңго жылдыруу</translation>
 <translation id="7966321538264951561">Сунушту жабуу.</translation>
 <translation id="8029301326595421733">Бул дүкөн тууралуу маалымат толук экранда ачылды</translation>
-<translation id="814503310257431685">Баарын көрүү</translation>
 <translation id="8205266828577616993">Өтмөктү жогору жылдыруу</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Тандалган <ph name="TABS_COUNT_ONE" /> өтмөктү жабуу}other{Тандалган <ph name="TABS_COUNT_MANY" /> өтмөктү жабуу}}</translation>
 <translation id="8398929769197326728">Жаңы папка - <ph name="CURRENT_TIMESTAMP_MS" /></translation>

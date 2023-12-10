@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 #include <string.h>
+#include <compare>
 #include <iosfwd>
 #include <tuple>
 
@@ -95,15 +96,12 @@ class BASE_EXPORT UnguessableToken {
 
   span<const uint8_t, 16> AsBytes() const { return token_.AsBytes(); }
 
-  constexpr bool operator<(const UnguessableToken& other) const {
-    return token_ < other.token_;
-  }
+  friend constexpr auto operator<=>(const UnguessableToken& lhs,
+                                    const UnguessableToken& rhs) = default;
 
-  bool operator==(const UnguessableToken& other) const;
-
-  bool operator!=(const UnguessableToken& other) const {
-    return !(*this == other);
-  }
+  // operator== uses constant-time comparison for security where available.
+  friend BASE_EXPORT bool operator==(const UnguessableToken& lhs,
+                                     const UnguessableToken& rhs);
 
 #if defined(UNIT_TEST)
   static UnguessableToken CreateForTesting(uint64_t high, uint64_t low) {
@@ -119,6 +117,9 @@ class BASE_EXPORT UnguessableToken {
 
   base::Token token_;
 };
+
+BASE_EXPORT bool operator==(const UnguessableToken& lhs,
+                            const UnguessableToken& rhs);
 
 BASE_EXPORT std::ostream& operator<<(std::ostream& out,
                                      const UnguessableToken& token);

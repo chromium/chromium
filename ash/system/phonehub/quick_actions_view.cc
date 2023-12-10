@@ -10,6 +10,7 @@
 #include "ash/system/phonehub/quick_action_item.h"
 #include "ash/system/phonehub/silence_phone_quick_action_controller.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/layout/box_layout.h"
 
 namespace ash {
@@ -65,5 +66,8 @@ void QuickActionsView::OnThemeChanged() {
     controller->UpdateQuickActionItemUi();
   }
 }
+
+BEGIN_METADATA(QuickActionsView)
+END_METADATA
 
 }  // namespace ash

@@ -72,6 +72,8 @@ class TestBackgroundTracingHelper
 
 }  // namespace
 
+namespace tracing {
+
 class ChromeTracingDelegateBrowserTest : public InProcessBrowserTest {
  public:
   ChromeTracingDelegateBrowserTest() = default;
@@ -85,6 +87,10 @@ class ChromeTracingDelegateBrowserTest : public InProcessBrowserTest {
     tracing::BackgroundTracingStateManager::GetInstance()
         .SetPrefServiceForTesting(local_state);
     content::TracingController::GetInstance();  // Create tracing agents.
+  }
+
+  void TearDownOnMainThread() override {
+    tracing::BackgroundTracingStateManager::GetInstance().ResetForTesting();
   }
 
   bool StartPreemptiveScenario(
@@ -384,3 +390,5 @@ IN_PROC_BROWSER_TEST_F(ChromeTracingDelegateBrowserTestFromCommandLine,
   TriggerScenarioAndWaitForOutput();
   EXPECT_TRUE(OutputPathExists());
 }
+
+}  // namespace tracing

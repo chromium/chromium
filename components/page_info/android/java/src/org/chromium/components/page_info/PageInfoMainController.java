@@ -12,9 +12,7 @@ import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.url.GURL;
 
-/**
- * Interface for a page info main page controller.
- */
+/** Interface for a page info main page controller. */
 public interface PageInfoMainController {
     /**
      * Launches the PageInfoSubpage provided by |pageInfoCookiesController|.
@@ -22,9 +20,7 @@ public interface PageInfoMainController {
      */
     void launchSubpage(PageInfoSubpageController controller);
 
-    /**
-     * Switches back to the main page info view.
-     */
+    /** Switches back to the main page info view. */
     void exitSubpage();
 
     /**

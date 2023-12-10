@@ -67,7 +67,7 @@ void PredictorJankTracker::ReportLatestScrollDelta(
     float next_delta,
     base::TimeTicks next_presentation_ts,
     base::TimeDelta vsync_interval,
-    absl::optional<EventMetrics::TraceId> trace_id) {
+    std::optional<EventMetrics::TraceId> trace_id) {
   total_frames_++;
   float d1 = frame_data_.prev_delta_;
   float d2 = frame_data_.cur_delta_;
@@ -123,7 +123,7 @@ void PredictorJankTracker::ReportJankyFrame(
     float janky_value,
     bool contains_missed_vsyncs,
     bool slow_scroll,
-    absl::optional<EventMetrics::TraceId> trace_id) {
+    std::optional<EventMetrics::TraceId> trace_id) {
   janky_frames_++;
   TRACE_EVENT_INSTANT(
       "input.scrolling", "PredictorJankTracker::ReportJankyFrame",
@@ -200,7 +200,7 @@ bool PredictorJankTracker::ContainsMissedVSync(
 void PredictorJankTracker::StoreLatestFrameData(
     float delta,
     base::TimeTicks presentation_ts,
-    absl::optional<EventMetrics::TraceId> trace_id) {
+    std::optional<EventMetrics::TraceId> trace_id) {
   frame_data_.prev_delta_ = frame_data_.cur_delta_;
   frame_data_.prev_trace_id_ = frame_data_.cur_trace_id_;
   frame_data_.cur_delta_ = delta;

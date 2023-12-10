@@ -344,8 +344,9 @@ VideoEncoderEncodeOptions* MakeEncodeOptions(
   return options;
 }
 
-AllowSharedBufferSource* MakeAllowSharedBufferSource(
+BufferAndSource MakeAllowSharedBufferSource(
     const wc_fuzzer::AllowSharedBufferSource& proto) {
+  BufferAndSource result = {};
   size_t length =
       std::min(static_cast<size_t>(proto.length()), kMaxBufferLength);
 
@@ -353,7 +354,11 @@ AllowSharedBufferSource* MakeAllowSharedBufferSource(
   if (proto.shared()) {
     buffer = DOMSharedArrayBuffer::Create(static_cast<unsigned>(length), 1);
   } else {
-    buffer = DOMArrayBuffer::Create(length, 1);
+    auto* array_buffer = DOMArrayBuffer::Create(length, 1);
+    buffer = array_buffer;
+    if (proto.transfer()) {
+      result.buffer = array_buffer;
+    }
   }
   DCHECK(buffer);
 
@@ -363,25 +368,28 @@ AllowSharedBufferSource* MakeAllowSharedBufferSource(
       std::min(static_cast<size_t>(proto.view_length()), length - view_offset);
   switch (proto.view_type()) {
     case wc_fuzzer::AllowSharedBufferSource_ViewType_NONE:
-      return MakeGarbageCollected<AllowSharedBufferSource>(buffer);
+      result.source = MakeGarbageCollected<AllowSharedBufferSource>(buffer);
+      break;
     case wc_fuzzer::AllowSharedBufferSource_ViewType_INT8:
-      return MakeGarbageCollected<AllowSharedBufferSource>(
+      result.source = MakeGarbageCollected<AllowSharedBufferSource>(
           MaybeShared<DOMInt8Array>(
               DOMInt8Array::Create(buffer, view_offset, view_length)));
+      break;
     case wc_fuzzer::AllowSharedBufferSource_ViewType_UINT32:
       // View must be element-aligned and is sized by element count.
       view_offset = std::min(view_offset, length / 4) * 4;
       view_length = std::min(view_length, length / 4 - view_offset / 4);
-      return MakeGarbageCollected<AllowSharedBufferSource>(
+      result.source = MakeGarbageCollected<AllowSharedBufferSource>(
           MaybeShared<DOMUint32Array>(
               DOMUint32Array::Create(buffer, view_offset, view_length)));
+      break;
     case wc_fuzzer::AllowSharedBufferSource_ViewType_DATA:
-      return MakeGarbageCollected<AllowSharedBufferSource>(
+      result.source = MakeGarbageCollected<AllowSharedBufferSource>(
           MaybeShared<DOMDataView>(
               DOMDataView::Create(buffer, view_offset, view_length)));
   }
 
-  NOTREACHED();
+  return result;
 }
 
 PlaneLayout* MakePlaneLayout(const wc_fuzzer::PlaneLayout& proto) {
@@ -403,7 +411,7 @@ DOMRectInit* MakeDOMRectInit(const wc_fuzzer::DOMRectInit& proto) {
 VideoFrame* MakeVideoFrame(
     ScriptState* script_state,
     const wc_fuzzer::VideoFrameBufferInitInvocation& proto) {
-  AllowSharedBufferSource* data = MakeAllowSharedBufferSource(proto.data());
+  BufferAndSource data = MakeAllowSharedBufferSource(proto.data());
   VideoFrameBufferInit* init = VideoFrameBufferInit::Create();
 
   switch (proto.init().format()) {
@@ -457,7 +465,13 @@ VideoFrame* MakeVideoFrame(
   if (proto.init().has_display_height())
     init->setDisplayHeight(proto.init().display_height());
 
-  return VideoFrame::Create(script_state, data, init,
+  if (data.buffer) {
+    HeapVector<Member<DOMArrayBuffer>> transfer;
+    transfer.push_back(data.buffer);
+    init->setTransfer(std::move(transfer));
+  }
+
+  return VideoFrame::Create(script_state, data.source, init,
                             IGNORE_EXCEPTION_FOR_TESTING);
 }
 
@@ -533,6 +547,12 @@ AudioData* MakeAudioData(ScriptState* script_state,
   init->setSampleRate(proto.sample_rate());
   init->setFormat(format);
   init->setData(MakeGarbageCollected<AllowSharedBufferSource>(buffer));
+
+  if (proto.transfer()) {
+    HeapVector<Member<DOMArrayBuffer>> transfer;
+    transfer.push_back(buffer);
+    init->setTransfer(std::move(transfer));
+  }
 
   return AudioData::Create(script_state, init, IGNORE_EXCEPTION_FOR_TESTING);
 }

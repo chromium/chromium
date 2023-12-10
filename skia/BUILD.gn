@@ -44,8 +44,8 @@ if (use_typeface_fontations) {
     deps = [
       ":path_bridge",
       "//third_party/rust/font_types/v0_4:lib",
-      "//third_party/rust/read_fonts/v0_11:lib",
-      "//third_party/rust/skrifa/v0_10:lib",
+      "//third_party/rust/read_fonts/v0_13:lib",
+      "//third_party/rust/skrifa/v0_13:lib",
     ]
     configs -= [ "//build/config/compiler:chromium_code" ]
     configs += [
@@ -80,6 +80,10 @@ config("skia_config") {
     "SK_DISABLE_LEGACY_PNG_WRITEBUFFER",
     "SK_SLUG_DISABLE_LEGACY_DESERIALIZE",
     "SK_DISABLE_LEGACY_VK_GRDIRECTCONTEXT_FACTORIES",
+    "SK_DEFAULT_TYPEFACE_IS_EMPTY",
+    "SK_DISABLE_LEGACY_DEFAULT_TYPEFACE",
+    "SK_DISABLE_LEGACY_VULKAN_BACKENDSEMAPHORE",
+    "SK_DISABLE_LEGACY_CREATE_CHARACTERIZATION",
   ]
 
   include_dirs = [
@@ -169,10 +173,13 @@ config("skia_library_config") {
   ]
 
   if (use_blink && !use_system_freetype) {
-    defines += [ "SK_FREETYPE_MINIMUM_RUNTIME_VERSION=(((FREETYPE_MAJOR) * 0x01000000) | ((FREETYPE_MINOR) * 0x00010000) | ((FREETYPE_PATCH) * 0x00000100))" ]
+    defines += [ "SK_FREETYPE_MINIMUM_RUNTIME_VERSION_IS_BUILD_VERSION" ]
   }
   if (use_blink) {
-    defines += [ "SK_TYPEFACE_FACTORY_FREETYPE" ]
+    defines += [
+      "SK_TYPEFACE_FACTORY_FREETYPE",
+      "SK_FONTMGR_FREETYPE_EMPTY_AVAILABLE",
+    ]
   }
   if (is_win) {
     defines += [ "SK_TYPEFACE_FACTORY_DIRECTWRITE" ]
@@ -241,27 +248,6 @@ source_set("skia_core_public_headers") {
   public = skia_core_public
 }
 
-source_set("skcms") {
-  cflags = []
-  if (!is_win || is_clang) {
-    cflags += [
-      "-w",
-      "-std=c11",
-    ]
-  }
-
-  # LLVM automatically sets the equivalent of GCC's -mfp16-format=ieee on ARM
-  # builds by default, while GCC itself does not. We need it to enable support
-  # for half-precision floating point data types used by SKCMS on ARM.
-  if ((is_linux || is_chromeos) && !is_clang && current_cpu == "arm") {
-    cflags += [ "-mfp16-format=ieee" ]
-  }
-
-  public = [ "//third_party/skia/modules/skcms/skcms.h" ]
-  include_dirs = [ "//third_party/skia/modules/skcms" ]
-  sources = rebase_path(skcms_sources, ".", "//third_party/skia/modules/skcms")
-}
-
 component("skia") {
   deps = []
   public = [
@@ -308,16 +294,6 @@ component("skia") {
     "ext/skia_trace_memory_dump_impl.cc",
     "ext/skia_utils_base.cc",
   ]
-  if (!is_apple) {
-    public += [ "ext/fontmgr_default.h" ]
-    sources += [ "ext/fontmgr_default.cc" ]
-  }
-  if (is_android) {
-    sources += [ "ext/fontmgr_default_android.cc" ]
-  }
-  if (is_linux || is_chromeos) {
-    sources += [ "ext/fontmgr_default_linux.cc" ]
-  }
   if (is_ios) {
     public += [ "ext/skia_utils_ios.h" ]
     sources += [ "ext/skia_utils_ios.mm" ]
@@ -328,10 +304,7 @@ component("skia") {
   }
   if (is_win) {
     public += [ "ext/skia_utils_win.h" ]
-    sources += [
-      "ext/fontmgr_default_win.cc",
-      "ext/skia_utils_win.cc",
-    ]
+    sources += [ "ext/skia_utils_win.cc" ]
   }
 
   if (use_blink) {
@@ -433,24 +406,18 @@ component("skia") {
     libs = [ "fontsub.lib" ]
   }
 
-  # need separate win section to handle chromes auto gn filter
-  # (build/config/BUILDCONFIG.gn)
-  if (is_win) {
-    sources -= [
-      #windows
-      "//third_party/skia/src/utils/win/SkWGL_win.cpp",
-    ]
-  }
-
   # Select Skia ports.
 
   # FreeType is needed everywhere where blink is used, on Linux and Android as main
-  # font backend, on Windows and Mac as fallback backend for Variations.
+  # font backend, on Windows and Mac as fallback backend for Variations. Pdfium
+  # also uses this when decoding data out of the device cache.
   if (use_blink) {
     # See SK_TYPEFACE_FACTORY_FREETYPE
     sources += [
       "//third_party/skia/src/ports/SkFontHost_FreeType.cpp",
       "//third_party/skia/src/ports/SkFontHost_FreeType_common.cpp",
+      "//third_party/skia/src/ports/SkFontMgr_custom.cpp",
+      "//third_party/skia/src/ports/SkFontMgr_custom_empty.cpp",
     ]
   }
 
@@ -483,7 +450,6 @@ component("skia") {
     sources += [
       "//third_party/skia/include/ports/SkFontMgr_mac_ct.h",
       "//third_party/skia/src/ports/SkFontMgr_mac_ct.cpp",
-      "//third_party/skia/src/ports/SkFontMgr_mac_ct_factory.cpp",
       "//third_party/skia/src/ports/SkScalerContext_mac_ct.cpp",
       "//third_party/skia/src/ports/SkScalerContext_mac_ct.h",
       "//third_party/skia/src/ports/SkTypeface_mac_ct.cpp",
@@ -510,20 +476,13 @@ component("skia") {
     ]
   }
 
-  if (is_win || (is_apple && use_blink)) {
-    sources += [
-      # Add the FreeType custom font manager as a fallback backend for variable fonts.
-      "//third_party/skia/src/ports/SkFontMgr_custom.cpp",
-      "//third_party/skia/src/ports/SkFontMgr_custom_empty.cpp",
-    ]
-  }
-
   if (is_fuchsia) {
-    sources += [
-      "//third_party/skia/src/ports/SkFontMgr_custom.cpp",
-      "//third_party/skia/src/ports/SkFontMgr_fuchsia.cpp",
-      "ext/fontmgr_default_fuchsia.cc",
-    ]
+    sources += [ "//third_party/skia/src/ports/SkFontMgr_fuchsia.cpp" ]
+
+    # This is already here if use_blink is set
+    if (!use_blink) {
+      sources += [ "//third_party/skia/src/ports/SkFontMgr_custom.cpp" ]
+    }
     deps += [
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.fonts:fuchsia.fonts_hlcpp",
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.io:fuchsia.io_hlcpp",
@@ -746,8 +705,7 @@ if (current_cpu == "x86" || current_cpu == "x64") {
         "-mf16c",
         "-mfma",
       ]
-    }
-    if (is_win) {
+    } else {
       cflags = [ "/arch:AVX2" ]
     }
     visibility = [ ":skia_opts" ]
@@ -798,6 +756,82 @@ skia_source_set("skia_opts") {
   visibility = [ ":skia" ]
 }
 
+if (current_cpu == "x64") {
+  skia_source_set("skcms_TransformHsw") {
+    sources = skcms_TransformHsw
+    if (!is_win) {
+      cflags = [
+        "-w",
+        "-mavx2",
+        "-mf16c",
+        "-std=c11",
+      ]
+    } else {
+      cflags = [ "/arch:AVX2" ]
+    }
+    visibility = [ ":skcms" ]
+  }
+  skia_source_set("skcms_TransformSkx") {
+    sources = skcms_TransformSkx
+    if (!is_win) {
+      cflags = [
+        "-w",
+        "-mavx512f",
+        "-mavx512dq",
+        "-mavx512cd",
+        "-mavx512bw",
+        "-mavx512vl",
+        "-std=c11",
+      ]
+    } else {
+      cflags = [ "/arch:AVX512" ]
+    }
+    visibility = [ ":skcms" ]
+  }
+} else {
+  skia_source_set("skcms_TransformHsw") {
+    sources = []
+    visibility = [ ":skcms" ]
+  }
+  skia_source_set("skcms_TransformSkx") {
+    sources = []
+    visibility = [ ":skcms" ]
+  }
+}
+
+source_set("skcms_TransformBaseline_and_public") {
+  if (!is_win || is_clang) {
+    cflags = [
+      "-w",
+      "-std=c11",
+    ]
+  } else {
+    cflags = []
+  }
+
+  # LLVM automatically sets the equivalent of GCC's -mfp16-format=ieee on ARM
+  # builds by default, while GCC itself does not. We need it to enable support
+  # for half-precision floating point data types used by SKCMS on ARM.
+  if ((is_linux || is_chromeos) && !is_clang && current_cpu == "arm") {
+    cflags += [ "-mfp16-format=ieee" ]
+  }
+
+  sources = rebase_path(skcms_TransformBaseline + skcms_public,
+                        ".",
+                        "//third_party/skia/modules/skcms")
+}
+
+source_set("skcms") {
+  deps = [
+    ":skcms_TransformBaseline_and_public",
+    ":skcms_TransformHsw",
+    ":skcms_TransformSkx",
+  ]
+  public =
+      rebase_path(skcms_public_headers, ".", "//third_party/skia/modules/skcms")
+  include_dirs = [ "//third_party/skia/modules/skcms" ]
+}
+
 # Split out Graphite sources because of conflicting file names with Ganesh.
 # Split into separate private and public source sets because we want to allow
 # shared GPU code in ":skia" to include private Graphite headers, but want to
@@ -827,7 +861,6 @@ if (skia_support_gpu) {
   skia_source_set("skia_graphite_private") {
     sources = skia_graphite_sources
     if (skia_use_dawn) {
-      sources += skia_shared_dawn_sources
       sources += skia_graphite_dawn_sources
     }
     if (skia_use_metal) {

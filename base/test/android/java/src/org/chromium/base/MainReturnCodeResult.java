@@ -7,20 +7,18 @@ package org.chromium.base;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
-/**
- * Contains the result of a native main method that ran in a child process.
- */
+/** Contains the result of a native main method that ran in a child process. */
 @JNINamespace("base::android")
 public final class MainReturnCodeResult {
     private final int mMainReturnCode;
     private final boolean mTimedOut;
 
     public static MainReturnCodeResult createMainResult(int returnCode) {
-        return new MainReturnCodeResult(returnCode, false /* timedOut */);
+        return new MainReturnCodeResult(returnCode, /* timedOut= */ false);
     }
 
     public static MainReturnCodeResult createTimeoutMainResult() {
-        return new MainReturnCodeResult(0, true /* timedOut */);
+        return new MainReturnCodeResult(0, /* timedOut= */ true);
     }
 
     private MainReturnCodeResult(int mainReturnCode, boolean timedOut) {

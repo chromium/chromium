@@ -34,7 +34,7 @@ WebUIBubbleManager::~WebUIBubbleManager() {
   }
 }
 
-bool WebUIBubbleManager::ShowBubble(const absl::optional<gfx::Rect>& anchor,
+bool WebUIBubbleManager::ShowBubble(const std::optional<gfx::Rect>& anchor,
                                     views::BubbleBorder::Arrow arrow,
                                     ui::ElementIdentifier identifier) {
   if (bubble_view_)

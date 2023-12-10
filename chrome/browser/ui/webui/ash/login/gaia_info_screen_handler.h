@@ -24,6 +24,7 @@ class GaiaInfoScreenView : public base::SupportsWeakPtr<GaiaInfoScreenView> {
 
   // Shows the contents of the screen.
   virtual void Show() = 0;
+  virtual void SetQuickStartVisible() = 0;
 };
 
 class GaiaInfoScreenHandler : public BaseScreenHandler,
@@ -44,6 +45,7 @@ class GaiaInfoScreenHandler : public BaseScreenHandler,
 
   // GaiaInfoScreenView:
   void Show() override;
+  void SetQuickStartVisible() override;
 };
 
 }  // namespace ash

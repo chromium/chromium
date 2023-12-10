@@ -133,8 +133,6 @@ message ContactInfoSpecifics {
   optional StringToken address_state = 18;
   optional StringToken address_zip = 19;
   optional StringToken address_country = 20;
-  optional StringToken address_landmark = 41;
-  optional StringToken address_between_streets = 42;
   optional StringToken address_admin_level_2 = 43;
 
   // Additional address fields for i18n.
@@ -167,12 +165,42 @@ message ContactInfoSpecifics {
   reserved "address_premise_name";
   // Contains the floor, staircase or apartment number within a building.
   optional StringToken address_subpremise_name = 30;
+  // All the information related to the apartment. Normally a combination of the
+  // apartment type (address_apt_type) and number (address_apt_num).
+  // E.g. "Apt 5".
+  optional StringToken address_apt = 50;
   // The apartment number within a building.
   optional StringToken address_apt_num = 31;
+  // Information describing the type of apartment (e.g. Apt, Apartamento, Sala,
+  // Departamento).
+  optional StringToken address_apt_type = 51;
   // The floor number within a building.
   optional StringToken address_floor = 32;
   // Contains both the street and house number.
   optional StringToken address_street_location = 44;
+
+  optional StringToken address_landmark = 41;
+  optional StringToken address_overflow = 45;
+  // Indicates that the address is at the intersection between two streets.
+  // It is normally a combination of between_streets_1 and _2. This is a common
+  // way of writing addresses in Mexico.
+  optional StringToken address_between_streets = 42;
+  // The meaning of the field is similar to address_between_streets. The
+  // type should be used for "Entre calle 1" in MX addresses which also
+  // contain the "Entre calle 2" field.
+  optional StringToken address_between_streets_1 = 46;
+  // The meaning of the field is similar to address_between_streets. The
+  // type should be used for "Entre calle 2" in MX addresses which also
+  // contain the "Entre calle 1" field.
+  optional StringToken address_between_streets_2 = 47;
+  // Combination of types address_between_streets or address_landmark. Note that
+  // some address forms require the combination of both in a single field as
+  // opposed to each one separately.
+  optional StringToken address_between_streets_or_landmark = 48;
+  // Combination of types address_overflow and address_landmark. Note that some
+  // address forms require the combination of both in a single field as opposed
+  // to each one separately.
+  optional StringToken address_overflow_and_landmark = 49;
 
   // Phone.
   optional StringToken phone_home_whole_number = 33;

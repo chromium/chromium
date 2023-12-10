@@ -36,7 +36,7 @@ void InspectorWebSocketCreateEvent::Data(perfetto::TracedValue context,
   }
   if (!protocol.IsNull())
     dict.Add("webSocketProtocol", protocol);
-  SetCallStack(dict);
+  SetCallStack(execution_context->GetIsolate(), dict);
 }
 
 void InspectorWebSocketEvent::Data(perfetto::TracedValue context,
@@ -54,7 +54,7 @@ void InspectorWebSocketEvent::Data(perfetto::TracedValue context,
     NOTREACHED()
         << "WebSocket is available only in Window and WorkerGlobalScope";
   }
-  SetCallStack(dict);
+  SetCallStack(execution_context->GetIsolate(), dict);
 }
 
 }  // namespace blink

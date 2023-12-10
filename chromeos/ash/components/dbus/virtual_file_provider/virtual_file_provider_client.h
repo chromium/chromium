@@ -8,13 +8,13 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/component_export.h"
 #include "base/files/scoped_file.h"
 #include "base/functional/callback_forward.h"
 #include "chromeos/dbus/common/dbus_client.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -27,7 +27,7 @@ class COMPONENT_EXPORT(ASH_DBUS_VIRTUAL_FILE_PROVIDER) VirtualFileProviderClient
     : public chromeos::DBusClient {
  public:
   using GenerateVirtualFileIdCallback =
-      base::OnceCallback<void(const absl::optional<std::string>& id)>;
+      base::OnceCallback<void(const std::optional<std::string>& id)>;
   using OpenFileByIdCallback = base::OnceCallback<void(base::ScopedFD fd)>;
 
   // Returns the global instance if initialized. May return null.

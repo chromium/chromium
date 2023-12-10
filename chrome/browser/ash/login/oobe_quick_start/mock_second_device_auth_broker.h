@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_LOGIN_OOBE_QUICK_START_MOCK_SECOND_DEVICE_AUTH_BROKER_H_
 
 #include "base/memory/scoped_refptr.h"
+#include "chrome/browser/ash/login/oobe_quick_start/connectivity/fido_assertion_info.h"
 #include "chrome/browser/ash/login/oobe_quick_start/second_device_auth_broker.h"
 #include "chromeos/ash/components/quick_start/types.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -27,17 +28,19 @@ class MockSecondDeviceAuthBroker : public SecondDeviceAuthBroker {
 
   MOCK_METHOD(void, FetchChallengeBytes, (ChallengeBytesCallback), (override));
   MOCK_METHOD(void,
-              FetchRefreshToken,
-              (const FidoAssertionInfo&,
-               const PEMCertChain&,
-               RefreshTokenCallback),
+              FetchAuthCode,
+              (const FidoAssertionInfo&, const PEMCertChain&, AuthCodeCallback),
               (override));
   MOCK_METHOD(void,
               FetchAttestationCertificate,
-              (const std::string&, AttestationCertificateCallback),
+              (const Base64UrlString&, AttestationCertificateCallback),
               (override));
 
   void SetupChallengeBytesResponse(ChallengeBytesOrError challenge);
+
+  void SetupAttestationCertificateResponse(AttestationCertificateOrError cert);
+
+  void SetupAuthCodeResponse(AuthCodeResponse response);
 };
 
 }  // namespace ash::quick_start

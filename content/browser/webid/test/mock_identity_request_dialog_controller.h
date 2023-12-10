@@ -23,13 +23,14 @@ class MockIdentityRequestDialogController
   MockIdentityRequestDialogController& operator=(
       const MockIdentityRequestDialogController&) = delete;
 
-  MOCK_METHOD7(ShowAccountsDialog,
+  MOCK_METHOD8(ShowAccountsDialog,
                void(const std::string&,
                     const absl::optional<std::string>&,
                     const std::vector<content::IdentityProviderData>&,
                     IdentityRequestAccount::SignInMode,
                     bool,
                     AccountSelectionCallback,
+                    LoginToIdPCallback,
                     DismissCallback));
   MOCK_METHOD0(DestructorCalled, void());
   MOCK_METHOD7(ShowFailureDialog,
@@ -39,7 +40,7 @@ class MockIdentityRequestDialogController
                     const blink::mojom::RpContext& rp_context,
                     const content::IdentityProviderMetadata&,
                     DismissCallback,
-                    SigninToIdPCallback));
+                    LoginToIdPCallback));
   MOCK_METHOD8(ShowErrorDialog,
                void(const std::string&,
                     const absl::optional<std::string>&,

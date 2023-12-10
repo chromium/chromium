@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/modules/video_rvfc/video_frame_request_callback_collection.h"
 #include "third_party/blink/renderer/modules/xr/xr_frame_provider.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/weak_cell.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace blink {
@@ -122,7 +123,7 @@ class MODULES_EXPORT VideoFrameCallbackRequesterImpl final
   Member<VideoFrameRequestCallbackCollection> callback_collection_;
 
   // Only used to invalidate pending OnExecution() calls.
-  base::WeakPtrFactory<VideoFrameCallbackRequesterImpl> weak_factory_{this};
+  WeakCellFactory<VideoFrameCallbackRequesterImpl> weak_factory_{this};
 };
 
 }  // namespace blink

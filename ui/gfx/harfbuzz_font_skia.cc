@@ -249,7 +249,10 @@ class TypefaceData {
   TypefaceData(const TypefaceData&) = delete;
   TypefaceData& operator=(const TypefaceData&) = delete;
 
-  ~TypefaceData() { hb_face_destroy(face_); }
+  ~TypefaceData() {
+    hb_face_destroy(face_);
+    face_ = nullptr;
+  }
 
   hb_face_t* face() { return face_; }
   GlyphCache* glyphs() { return &glyphs_; }

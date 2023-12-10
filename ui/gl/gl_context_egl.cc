@@ -266,12 +266,13 @@ bool GLContextEGL::InitializeImpl(GLSurface* compatible_surface,
     }
   }
 
+  global_texture_share_group_ = attribs.global_texture_share_group;
   if (gl_display_->ext->b_EGL_ANGLE_display_texture_share_group) {
     context_attributes.push_back(EGL_DISPLAY_TEXTURE_SHARE_GROUP_ANGLE);
-    context_attributes.push_back(
-        attribs.global_texture_share_group ? EGL_TRUE : EGL_FALSE);
+    context_attributes.push_back(global_texture_share_group_ ? EGL_TRUE
+                                                             : EGL_FALSE);
   } else {
-    DCHECK(!attribs.global_texture_share_group);
+    DCHECK(!global_texture_share_group_);
   }
 
   if (gl_display_->ext->b_EGL_ANGLE_display_semaphore_share_group) {
@@ -334,10 +335,12 @@ bool GLContextEGL::InitializeImpl(GLSurface* compatible_surface,
     }
   }
 
+  angle_context_virtualization_group_number_ =
+      attribs.angle_context_virtualization_group_number;
   if (gl_display_->ext->b_EGL_ANGLE_context_virtualization) {
     context_attributes.push_back(EGL_CONTEXT_VIRTUALIZATION_GROUP_ANGLE);
     context_attributes.push_back(
-        static_cast<EGLint>(attribs.angle_context_virtualization_group_number));
+        static_cast<EGLint>(angle_context_virtualization_group_number_));
   }
 
   // Append final EGL_NONE to signal the context attributes are finished
@@ -422,6 +425,30 @@ void GLContextEGL::SetVisibility(bool visibility) {
 
 GLDisplayEGL* GLContextEGL::GetGLDisplayEGL() {
   return gl_display_;
+}
+
+GLContextEGL* GLContextEGL::AsGLContextEGL() {
+  return this;
+}
+
+bool GLContextEGL::CanShareTexturesWithContext(GLContext* other_context) {
+  GLContextEGL* other_egl_context = other_context->AsGLContextEGL();
+  if (!other_egl_context) {
+    return false;
+  }
+
+  if (GLContext::CanShareTexturesWithContext(other_egl_context)) {
+    return true;
+  }
+
+  // Contexts can share texture using EGL_ANGLE_display_texture_share_group
+  // extension if they are on the same display and same virtualization group
+  // number.
+  return global_texture_share_group_ &&
+         other_egl_context->global_texture_share_group_ &&
+         angle_context_virtualization_group_number_ ==
+             other_egl_context->angle_context_virtualization_group_number_ &&
+         GetGLDisplayEGL() == other_egl_context->GetGLDisplayEGL();
 }
 
 void GLContextEGL::ReleaseBackpressureFences() {

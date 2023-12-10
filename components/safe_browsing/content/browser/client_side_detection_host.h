@@ -92,8 +92,7 @@ class ClientSideDetectionHost : public content::WebContentsObserver {
   // From content::WebContentsObserver.  If we navigate away we cancel all
   // pending callbacks that could show an interstitial, and check to see whether
   // we should classify the new URL.
-  void DidFinishNavigation(
-      content::NavigationHandle* navigation_handle) override;
+  void PrimaryPageChanged(content::Page& page) override;
 
  protected:
   explicit ClientSideDetectionHost(
@@ -116,8 +115,6 @@ class ClientSideDetectionHost : public content::WebContentsObserver {
                            PrerenderShouldNotAffectClientSideDetection);
   FRIEND_TEST_ALL_PREFIXES(ClientSideDetectionHostPrerenderBrowserTest,
                            ClassifyPrerenderedPageAfterActivation);
-  FRIEND_TEST_ALL_PREFIXES(ClientSideDetectionHostPolicyBrowserTest,
-                           PolicyEnabled);
 
   // Called when pre-classification checks are done for the phishing
   // classifiers.

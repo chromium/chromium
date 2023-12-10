@@ -8,7 +8,7 @@
 #include <limits>
 
 #include "base/containers/contains.h"
-#include "device/vr/openxr/openxr_interaction_profiles.h"
+#include "device/vr/openxr/openxr_interaction_profile_paths.h"
 #include "device/vr/openxr/openxr_platform.h"
 #include "device/vr/openxr/openxr_util.h"
 #include "device/vr/openxr/openxr_view_configuration.h"
@@ -768,6 +768,10 @@ XrResult OpenXrTestHelper::UpdateAction(XrAction action) {
         button_id = device::kY;
       } else if (PathContainsString(path_string, "/shoulder/")) {
         button_id = device::kShoulder;
+      } else if (PathContainsString(path_string, "/pinch_ext/")) {
+        button_id = device::kAxisTrigger;
+      } else if (PathContainsString(path_string, "/grasp_ext/")) {
+        button_id = device::kGrip;
       } else {
         NOTREACHED() << "Unrecognized boolean button: " << path_string;
       }
@@ -792,7 +796,7 @@ XrResult OpenXrTestHelper::UpdateAction(XrAction action) {
             button_supported && touched;
       } else {
         NOTREACHED() << "Boolean actions only supports path string ends with "
-                        "value, click or touch";
+                        "value, click, or touch";
       }
       break;
     }
@@ -963,36 +967,40 @@ bool OpenXrTestHelper::IsSessionRunning() const {
 }
 
 void OpenXrTestHelper::UpdateInteractionProfile(
-    device_test::mojom::InteractionProfileType type) {
+    device::mojom::OpenXrInteractionProfileType type) {
   switch (type) {
-    case device_test::mojom::InteractionProfileType::kWMRMotion:
+    case device::mojom::OpenXrInteractionProfileType::kMicrosoftMotion:
       interaction_profile_ = device::kMicrosoftMotionInteractionProfilePath;
       break;
-    case device_test::mojom::InteractionProfileType::kKHRSimple:
+    case device::mojom::OpenXrInteractionProfileType::kKHRSimple:
       interaction_profile_ = device::kKHRSimpleInteractionProfilePath;
       break;
-    case device_test::mojom::InteractionProfileType::kOculusTouch:
+    case device::mojom::OpenXrInteractionProfileType::kOculusTouch:
       interaction_profile_ = device::kOculusTouchInteractionProfilePath;
       break;
-    case device_test::mojom::InteractionProfileType::kValveIndex:
+    case device::mojom::OpenXrInteractionProfileType::kValveIndex:
       interaction_profile_ = device::kValveIndexInteractionProfilePath;
       break;
-    case device_test::mojom::InteractionProfileType::kHTCVive:
+    case device::mojom::OpenXrInteractionProfileType::kHTCVive:
       interaction_profile_ = device::kHTCViveInteractionProfilePath;
       break;
-    case device_test::mojom::InteractionProfileType::kSamsungOdyssey:
+    case device::mojom::OpenXrInteractionProfileType::kSamsungOdyssey:
       interaction_profile_ = device::kSamsungOdysseyInteractionProfilePath;
       break;
-    case device_test::mojom::InteractionProfileType::kHPReverbG2:
+    case device::mojom::OpenXrInteractionProfileType::kHPReverbG2:
       interaction_profile_ = device::kHPReverbG2InteractionProfilePath;
       break;
-    case device_test::mojom::InteractionProfileType::kHandSelectGrasp:
+    case device::mojom::OpenXrInteractionProfileType::kHandSelectGrasp:
       interaction_profile_ = device::kHandSelectGraspInteractionProfilePath;
       break;
-    case device_test::mojom::InteractionProfileType::kViveCosmos:
+    case device::mojom::OpenXrInteractionProfileType::kViveCosmos:
       interaction_profile_ = device::kHTCViveCosmosInteractionProfilePath;
       break;
-    case device_test::mojom::InteractionProfileType::kInvalid:
+    case device::mojom::OpenXrInteractionProfileType::kExtHand:
+      interaction_profile_ = device::kExtHandInteractionProfilePath;
+      break;
+    case device::mojom::OpenXrInteractionProfileType::kInvalid:
+    case device::mojom::OpenXrInteractionProfileType::kAndroidHandGestures:
       NOTREACHED() << "Invalid EventData interaction_profile type";
       break;
   }

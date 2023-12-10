@@ -25,6 +25,11 @@ class MockScopedFileAccessDelegate : public ScopedFileAccessDelegate {
               (const std::vector<base::FilePath>&,
                base::OnceCallback<void(ScopedFileAccess)>),
               (override));
+  MOCK_METHOD((void),
+              RequestDefaultFilesAccess,
+              (const std::vector<base::FilePath>&,
+               base::OnceCallback<void(ScopedFileAccess)>),
+              (override));
   MOCK_METHOD((RequestFilesAccessIOCallback),
               CreateFileAccessCallback,
               (const GURL& destination),

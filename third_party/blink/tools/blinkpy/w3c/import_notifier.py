@@ -17,6 +17,12 @@ from typing import NamedTuple, Optional
 
 from blinkpy.common import path_finder
 from blinkpy.common.net.luci_auth import LuciAuth
+from blinkpy.common.system.executive import ScriptError
+from blinkpy.web_tests.models.testharness_results import (
+    LineType,
+    Status,
+    parse_testharness_baseline,
+)
 from blinkpy.w3c.common import WPT_GH_URL, WPT_GH_RANGE_URL_TEMPLATE
 from blinkpy.w3c.directory_owners_extractor import DirectoryOwnersExtractor
 from blinkpy.w3c.monorail import MonorailAPI, MonorailIssue
@@ -136,7 +142,7 @@ class ImportNotifier:
                         TestFailure.from_file(test_name, baseline,
                                               gerrit_url_with_ps))
 
-    def more_failures_in_baseline(self, baseline):
+    def more_failures_in_baseline(self, baseline: str) -> bool:
         """Determines if a testharness.js baseline file has new failures.
 
         The file is assumed to have been modified in the current git checkout,
@@ -147,20 +153,33 @@ class ImportNotifier:
         error in the test. Increasing numbers of either are considered new
         failures - this includes going from FAIL to error or vice-versa.
         """
+        try:
+            old_contents = self.git.show_blob(baseline).decode(
+                errors='replace')
+            old_lines = parse_testharness_baseline(old_contents)
+        except ScriptError:
+            old_lines = []
+        try:
+            new_contents = self.host.filesystem.read_text_file(
+                self.finder.path_from_chromium_base(baseline))
+            new_lines = parse_testharness_baseline(new_contents)
+        except FileNotFoundError:
+            new_lines = []
 
-        diff = self.git.run(['diff', '-U0', 'origin/main', '--', baseline])
-        delta_failures = 0
-        delta_harness_errors = 0
-        for line in diff.splitlines():
-            if line.startswith('+FAIL'):
-                delta_failures += 1
-            if line.startswith('-FAIL'):
-                delta_failures -= 1
-            if line.startswith('+Harness Error.'):
-                delta_harness_errors += 1
-            if line.startswith('-Harness Error.'):
-                delta_harness_errors -= 1
-        return delta_failures > 0 or delta_harness_errors > 0
+        failure_statuses = set(Status) - {Status.PASS, Status.NOTRUN}
+        old_failures = [
+            line for line in old_lines if line.statuses & failure_statuses
+        ]
+        new_failures = [
+            line for line in new_lines if line.statuses & failure_statuses
+        ]
+
+        is_error = lambda line: line.line_type is LineType.HARNESS_ERROR
+        if sum(map(is_error, new_failures)) > sum(map(is_error, old_failures)):
+            return True
+        is_subtest = lambda line: line.line_type is LineType.SUBTEST
+        return sum(map(is_subtest, new_failures)) > sum(
+            map(is_subtest, old_failures))
 
     def examine_new_test_expectations(self, test_expectations):
         """Examines new test expectations to find new failures.

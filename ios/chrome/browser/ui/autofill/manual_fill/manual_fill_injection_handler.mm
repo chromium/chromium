@@ -18,7 +18,7 @@
 #import "components/autofill/ios/browser/autofill_util.h"
 #import "components/autofill/ios/form_util/form_activity_observer_bridge.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
-#import "ios/chrome/browser/autofill/form_input_accessory_view_handler.h"
+#import "ios/chrome/browser/autofill/model/form_input_accessory_view_handler.h"
 #import "ios/chrome/browser/passwords/model/password_tab_helper.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/security_alert_commands.h"

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -66,7 +67,6 @@
 #include "content/public/test/test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/idle/idle.h"
 #include "ui/base/idle/scoped_set_idle_state.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -322,7 +322,7 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
   // Then click.
   display_service->SimulateClick(NotificationHandler::Type::TRANSIENT,
                                  "show_release_notes_notification",
-                                 absl::nullopt, absl::nullopt);
+                                 std::nullopt, std::nullopt);
 
   EXPECT_EQ(
       1, user_action_tester.GetActionCount("ReleaseNotes.NotificationShown"));
@@ -395,7 +395,7 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
   navigation_observer.StartWatchingNewWebContents();
   display_service->SimulateClick(NotificationHandler::Type::TRANSIENT,
                                  kShowHelpAppDiscoverTabNotificationId,
-                                 absl::nullopt, absl::nullopt);
+                                 std::nullopt, std::nullopt);
 
   EXPECT_NO_FATAL_FAILURE(navigation_observer.Wait());
   EXPECT_EQ(expected_url, GetActiveWebContents()->GetVisibleURL());
@@ -454,7 +454,7 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
   navigation_observer.StartWatchingNewWebContents();
   display_service->SimulateClick(NotificationHandler::Type::TRANSIENT,
                                  "show_release_notes_notification",
-                                 absl::nullopt, absl::nullopt);
+                                 std::nullopt, std::nullopt);
 
 #if BUILDFLAG(ENABLE_CROS_HELP_APP)
   EXPECT_NO_FATAL_FAILURE(navigation_observer.Wait());

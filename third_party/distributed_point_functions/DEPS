@@ -2,18 +2,10 @@ include_rules = [
   "+absl",
   "+benchmark",
   "+dpf",
-  "+glog/logging.h",
   "+gmock",
   "+google/protobuf",
   "+gtest",
+  "+testing",
   "+hwy",
   "+openssl",
 ]
-
-specific_include_rules = {
-  "logging\.h": [
-    "+base/check.h",
-    "+base/check_op.h",
-    "+base/logging.h",
-  ]
-}

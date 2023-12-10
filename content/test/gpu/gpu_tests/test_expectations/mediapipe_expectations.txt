@@ -12,7 +12,7 @@
 #             android-pixel-6 android-shield-android-tv android-sm-a135m
 #             android-sm-a235m
 #         chromeos-board-amd64-generic chromeos-board-eve chromeos-board-jacuzzi
-#             chromeos-board-octopus
+#             chromeos-board-octopus chromeos-board-volteer
 #         fuchsia-board-astro fuchsia-board-nelson fuchsia-board-sherlock
 #             fuchsia-board-qemu-x64 ]
 # Platform
@@ -110,6 +110,7 @@ crbug.com/1206463 [ linux display-server-x nvidia ] MediaPipe_mediapipe_face_mes
 crbug.com/1206463 [ linux display-server-x amd ] MediaPipe_mediapipe_face_mesh_test [ Failure ]
 crbug.com/1206463 [ win nvidia ] MediaPipe_mediapipe_face_mesh_test [ Failure ]
 crbug.com/1206463 [ mac apple-apple-m1 ] MediaPipe_mediapipe_face_mesh_test [ Failure ]
+crbug.com/1206463 [ chromeos chromeos-board-volteer ] MediaPipe_mediapipe_face_mesh_test [ Failure ]
 crbug.com/1233141 MediaPipe_mediapipe_style_black_and_white_test [ RetryOnFailure ]
 
 crbug.com/1489040 [ chromeos chromeos-board-jacuzzi ] MediaPipe_mediapipe_face_mesh_test [ Failure ]

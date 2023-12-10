@@ -33,30 +33,57 @@ std::string GetStorageKeyFromSpecifics(
 
 sync_pb::OutgoingPasswordSharingInvitationSpecifics
 CreateOutgoingPasswordSharingInvitationSpecifics(
-    const PasswordForm& password_form,
+    const std::vector<PasswordForm>& passwords,
     const PasswordRecipient& recipient) {
+  CHECK(!passwords.empty());
   sync_pb::OutgoingPasswordSharingInvitationSpecifics specifics;
   specifics.set_guid(base::Uuid::GenerateRandomV4().AsLowercaseString());
   specifics.set_recipient_user_id(recipient.user_id);
 
+  sync_pb::PasswordSharingInvitationData::PasswordGroupData*
+      password_group_data = specifics.mutable_client_only_unencrypted_data()
+                                ->mutable_password_group_data();
+  password_group_data->set_username_value(
+      base::UTF16ToUTF8(passwords[0].username_value));
+  password_group_data->set_password_value(
+      base::UTF16ToUTF8(passwords[0].password_value));
+
+  for (const PasswordForm& password : passwords) {
+    sync_pb::PasswordSharingInvitationData::PasswordGroupElementData*
+        element_data = password_group_data->add_element_data();
+    element_data->set_scheme(static_cast<int>(password.scheme));
+    element_data->set_signon_realm(password.signon_realm);
+    element_data->set_origin(password.url.is_valid() ? password.url.spec()
+                                                     : "");
+    element_data->set_username_element(
+        base::UTF16ToUTF8(password.username_element));
+    element_data->set_password_element(
+        base::UTF16ToUTF8(password.password_element));
+    element_data->set_display_name(base::UTF16ToUTF8(password.display_name));
+    element_data->set_avatar_url(
+        password.icon_url.is_valid() ? password.icon_url.spec() : "");
+  }
+
+  // TODO(http://crbug.com/1448235) Stop populating the legacy proto format.
+  // Pick the first paassword and place it in the old proto format to achieve
+  // backwards compatibility.
   sync_pb::PasswordSharingInvitationData::PasswordData* password_data =
       specifics.mutable_client_only_unencrypted_data()->mutable_password_data();
   password_data->set_password_value(
-      base::UTF16ToUTF8(password_form.password_value));
-  password_data->set_scheme(static_cast<int>(password_form.scheme));
-  password_data->set_signon_realm(password_form.signon_realm);
+      base::UTF16ToUTF8(passwords[0].password_value));
+  password_data->set_scheme(static_cast<int>(passwords[0].scheme));
+  password_data->set_signon_realm(passwords[0].signon_realm);
   password_data->set_origin(
-      password_form.url.is_valid() ? password_form.url.spec() : "");
+      passwords[0].url.is_valid() ? passwords[0].url.spec() : "");
   password_data->set_username_element(
-      base::UTF16ToUTF8(password_form.username_element));
+      base::UTF16ToUTF8(passwords[0].username_element));
   password_data->set_password_element(
-      base::UTF16ToUTF8(password_form.password_element));
+      base::UTF16ToUTF8(passwords[0].password_element));
   password_data->set_username_value(
-      base::UTF16ToUTF8(password_form.username_value));
-  password_data->set_display_name(
-      base::UTF16ToUTF8(password_form.display_name));
+      base::UTF16ToUTF8(passwords[0].username_value));
+  password_data->set_display_name(base::UTF16ToUTF8(passwords[0].display_name));
   password_data->set_avatar_url(
-      password_form.icon_url.is_valid() ? password_form.icon_url.spec() : "");
+      passwords[0].icon_url.is_valid() ? passwords[0].icon_url.spec() : "");
 
   return specifics;
 }
@@ -86,16 +113,27 @@ OutgoingPasswordSharingInvitationSyncBridge::CreateMetadataChangeList() {
   return std::make_unique<syncer::DummyMetadataChangeList>();
 }
 
-void OutgoingPasswordSharingInvitationSyncBridge::SendPassword(
-    const PasswordForm& password,
+void OutgoingPasswordSharingInvitationSyncBridge::SendPasswordGroup(
+    const std::vector<PasswordForm>& passwords,
     const PasswordRecipient& recipient) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  CHECK(!passwords.empty());
+  // All `passwords` are expected to belong to the same group and hence have the
+  // same `username_value` and `password_value`.
+  CHECK_EQ(base::ranges::count(passwords, passwords[0].username_value,
+                               &PasswordForm::username_value),
+           static_cast<int>(passwords.size()));
+  CHECK_EQ(base::ranges::count(passwords, passwords[0].password_value,
+                               &PasswordForm::password_value),
+           static_cast<int>(passwords.size()));
+
   if (!change_processor()->IsTrackingMetadata()) {
     return;
   }
 
   sync_pb::OutgoingPasswordSharingInvitationSpecifics specifics =
-      CreateOutgoingPasswordSharingInvitationSpecifics(password, recipient);
+      CreateOutgoingPasswordSharingInvitationSpecifics(passwords, recipient);
   const std::string storage_key = GetStorageKeyFromSpecifics(specifics);
 
   outgoing_invitations_in_flight_.emplace(
@@ -113,16 +151,16 @@ void OutgoingPasswordSharingInvitationSyncBridge::SendPassword(
       metadata_change_list.get());
 }
 
-absl::optional<syncer::ModelError>
+std::optional<syncer::ModelError>
 OutgoingPasswordSharingInvitationSyncBridge::MergeFullSyncData(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(entity_data.empty());
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-absl::optional<syncer::ModelError>
+std::optional<syncer::ModelError>
 OutgoingPasswordSharingInvitationSyncBridge::ApplyIncrementalSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_changes) {
@@ -135,7 +173,7 @@ OutgoingPasswordSharingInvitationSyncBridge::ApplyIncrementalSyncChanges(
     outgoing_invitations_in_flight_.erase(
         GetClientTagHashFromStorageKey(change->storage_key()));
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void OutgoingPasswordSharingInvitationSyncBridge::GetData(

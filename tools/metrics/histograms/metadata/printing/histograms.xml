@@ -23,7 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="Printing.ConversionSize.Emf" units="KB"
-    expires_after="2024-03-17">
+    expires_after="2024-05-19">
   <owner>thestig@chromium.org</owner>
   <owner>awscreen@chromium.org</owner>
   <summary>
@@ -33,7 +33,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Printing.ConversionSize.EmfWithReducedRasterization"
-    units="KB" expires_after="2024-03-03">
+    units="KB" expires_after="2024-05-05">
   <owner>thestig@chromium.org</owner>
   <owner>awscreen@chromium.org</owner>
   <summary>
@@ -93,7 +93,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Printing.CUPS.AutomaticIppSetupResultOfUsbPrinterWithPpd"
-    enum="PrinterSetupResult" expires_after="2024-04-01">
+    enum="PrinterSetupResult" expires_after="2024-06-02">
   <owner>pawliczek@chromium.org</owner>
   <owner>bmgordon@chromium.org</owner>
   <owner>project-bolton@google.com</owner>
@@ -108,7 +108,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Printing.CUPS.AutomaticPpdSetupResultOfUsbPrinterSupportingIpp"
-    enum="PrinterSetupResult" expires_after="2024-04-01">
+    enum="PrinterSetupResult" expires_after="2024-06-02">
   <owner>pawliczek@chromium.org</owner>
   <owner>bmgordon@chromium.org</owner>
   <owner>project-bolton@google.com</owner>
@@ -191,7 +191,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Printing.CUPS.JobResultForUsbPrintersWithIppAndPpd"
-    enum="PrintJobResult" expires_after="2024-04-01">
+    enum="PrintJobResult" expires_after="2024-06-02">
   <owner>pawliczek@chromium.org</owner>
   <owner>bmgordon@chromium.org</owner>
   <owner>project-bolton@google.com</owner>
@@ -228,7 +228,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Printing.CUPS.NearbyNetworkPrintersCount" units="printers"
-    expires_after="2024-03-17">
+    expires_after="2024-05-19">
   <owner>bmgordon@chromium.org</owner>
   <owner>project-bolton@google.com</owner>
   <summary>
@@ -239,7 +239,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Printing.CUPS.PrintDocumentSize" units="KB"
-    expires_after="2024-03-17">
+    expires_after="2024-05-19">
   <owner>bmgordon@chromium.org</owner>
   <owner>project-bolton@google.com</owner>
   <summary>
@@ -249,7 +249,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Printing.CUPS.PrinterAdded" enum="PrinterProtocol"
-    expires_after="2024-03-17">
+    expires_after="2024-05-19">
   <owner>bmgordon@chromium.org</owner>
   <owner>src/chromeos/printing/OWNERS</owner>
   <summary>
@@ -283,7 +283,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Printing.CUPS.PrintersDiscovered" units="printers"
-    expires_after="2024-03-17">
+    expires_after="2024-05-19">
   <owner>bmgordon@chromium.org</owner>
   <owner>src/chromeos/printing/OWNERS</owner>
   <summary>
@@ -307,7 +307,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Printing.CUPS.PrinterSetupResult.PrintPreview"
-    enum="PrinterSetupResult" expires_after="2024-03-17">
+    enum="PrinterSetupResult" expires_after="2024-05-19">
   <owner>bmgordon@chromium.org</owner>
   <owner>cros-printing-dev@chromium.org</owner>
   <summary>
@@ -364,7 +364,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Printing.CUPS.ProtocolUsed" enum="PrinterProtocol"
-    expires_after="2024-03-17">
+    expires_after="2024-05-19">
   <owner>bmgordon@chromium.org</owner>
   <owner>cros-printing-dev@chromium.org</owner>
   <summary>
@@ -376,7 +376,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Printing.CUPS.SavedPrintersCount" units="printers"
-    expires_after="2024-03-31">
+    expires_after="2024-06-02">
   <owner>gavinwill@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -391,20 +391,6 @@ chromium-metrics-reviews@google.com.
   <owner>cros-peripherals@google.com</owner>
   <summary>
     Records the action a user takes on the OS Printer settings page.
-  </summary>
-</histogram>
-
-<histogram name="Printing.CUPS.TotalNetworkPrintersCount" units="printers"
-    expires_after="2024-01-14">
-  <obsolete>
-    Replaced in M116 by Printing.CUPS.TotalNetworkPrintersCount.SettingsOpened
-  </obsolete>
-  <owner>bmgordon@chromium.org</owner>
-  <owner>project-bolton@google.com</owner>
-  <summary>
-    The total number of detected network printers. Recorded when the user
-    navigates to the OS Settings Printing page to set up printers. Only recorded
-    on Chrome OS.
   </summary>
 </histogram>
 
@@ -472,7 +458,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Printing.CUPS.ZeroconfPrinterSetupResult.PrintPreview"
-    enum="PrinterSetupResult" expires_after="2024-03-17">
+    enum="PrinterSetupResult" expires_after="2024-05-19">
   <owner>bmgordon@chromium.org</owner>
   <owner>cros-printing-dev@chromium.org</owner>
   <summary>
@@ -484,7 +470,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Printing.Oop.PrintResult" enum="PrintOopResult"
-    expires_after="2024-03-24">
+    expires_after="2024-05-26">
   <owner>awscreen@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
   <summary>

@@ -2,13 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/**
- * @fileoverview
- * This file is checked via TS, so we suppress Closure checks.
- * @suppress {checkTypes}
- */
-
-import {VolumeManagerCommon} from '../../../../common/js/volume_manager_types.js';
+import {RootType} from '../../../../common/js/volume_manager_types.js';
 
 import {StateBanner} from './state_banner.js';
 import {getTemplate} from './trash_banner.html.js';
@@ -38,7 +32,7 @@ export class TrashBanner extends StateBanner {
    * Only show the banner when the user has navigated to the Trash rootType.
    */
   override allowedVolumes() {
-    return [{root: VolumeManagerCommon.RootType.TRASH}];
+    return [{root: RootType.TRASH}];
   }
 
   /**

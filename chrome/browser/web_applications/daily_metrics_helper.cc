@@ -13,7 +13,7 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/numerics/clamped_math.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/value_iterators.h"
 #include "base/values.h"
 #include "chrome/browser/metrics/ukm_background_recorder_service.h"

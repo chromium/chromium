@@ -84,6 +84,15 @@ class ASH_EXPORT DeskAnimationBase
   void ActivateDeskDuringAnimation(const Desk* desk,
                                    bool update_window_activation);
 
+  // Immediately switches to the target desk and notifies the desk controller
+  // that the animation is done, which will end up deleting `this`.
+  void ActivateTargetDeskWithoutAnimation();
+
+  // Returns true if any of the animators have failed, for any reason. In this
+  // case, we will abort what we're doing and switch to the target desk without
+  // animation.
+  bool AnimatorFailed() const;
+
   // Abstract functions that can be overridden by child classes to do different
   // things when phase (1), and phase (3) completes. Note that
   // `OnDeskSwitchAnimationFinishedInternal()` will be called before the desks
@@ -146,7 +155,7 @@ class ASH_EXPORT DeskAnimationBase
   base::TimeTicks launch_time_;
 
   // ThroughputTracker used for measuring this animation smoothness.
-  absl::optional<ui::ThroughputTracker> throughput_tracker_;
+  std::optional<ui::ThroughputTracker> throughput_tracker_;
 
   // If true, do not notify |controller_| when
   // OnDeskSwitchAnimationFinished() is called. This class and

@@ -108,13 +108,13 @@ TEST_F(PrefetchNetworkContextTest, CreateIsolatedURLLoaderFactory) {
 
   std::unique_ptr<PrefetchNetworkContext> prefetch_network_context =
       std::make_unique<PrefetchNetworkContext>(
-          prefetch_service(),
           /*use_isolated_network_context=*/true,
-          PrefetchType(/*use_prefetch_proxy=*/false,
+          PrefetchType(PreloadingTriggerType::kSpeculationRule,
+                       /*use_prefetch_proxy=*/false,
                        blink::mojom::SpeculationEagerness::kEager),
           referring_origin, main_rfh()->GetGlobalId());
 
-  prefetch_network_context->GetURLLoaderFactory();
+  prefetch_network_context->GetURLLoaderFactory(prefetch_service());
 }
 
 TEST_F(PrefetchNetworkContextTest,
@@ -142,13 +142,13 @@ TEST_F(PrefetchNetworkContextTest,
 
   std::unique_ptr<PrefetchNetworkContext> prefetch_network_context =
       std::make_unique<PrefetchNetworkContext>(
-          prefetch_service(),
           /*use_isolated_network_context=*/false,
-          PrefetchType(/*use_prefetch_proxy=*/false,
+          PrefetchType(PreloadingTriggerType::kSpeculationRule,
+                       /*use_prefetch_proxy=*/false,
                        blink::mojom::SpeculationEagerness::kEager),
           referring_origin, main_rfh()->GetGlobalId());
 
-  prefetch_network_context->GetURLLoaderFactory();
+  prefetch_network_context->GetURLLoaderFactory(prefetch_service());
 }
 
 }  // namespace

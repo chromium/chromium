@@ -141,6 +141,13 @@ void GetAndroidCdmCapability(const std::string& key_system,
         }
       }
     }
+    // Check for AV1 support if enabled.
+    // TODO(b/314185968): Add `media::VideoCodec::kAV1` to
+    // `kMP4VideoCodecsToQuery` when flag removed.
+    if (base::FeatureList::IsEnabled(media::kEnableEncryptedAV1) &&
+        MediaCodecUtil::CanDecode(media::VideoCodec::kAV1, is_secure)) {
+      capability.video_codecs.emplace(media::VideoCodec::kAV1, kAllProfiles);
+    }
   }
 
   if (is_secure && capability.video_codecs.empty()) {
@@ -181,12 +188,8 @@ void GetAndroidCdmCapability(const std::string& key_system,
     }
   }
 
-  // 'cenc' is always supported. 'cbcs' may or may not be available.
   capability.encryption_schemes.insert(media::EncryptionScheme::kCenc);
-  if (MediaCodecUtil::PlatformSupportsCbcsEncryption(
-          base::android::BuildInfo::GetInstance()->sdk_int())) {
-    capability.encryption_schemes.insert(media::EncryptionScheme::kCbcs);
-  }
+  capability.encryption_schemes.insert(media::EncryptionScheme::kCbcs);
 
   capability.session_types.insert(media::CdmSessionType::kTemporary);
   if (MediaDrmBridge::IsPersistentLicenseTypeSupported(key_system)) {

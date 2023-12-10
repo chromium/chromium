@@ -5,6 +5,7 @@
 #ifndef BASE_STRINGS_TO_STRING_H_
 #define BASE_STRINGS_TO_STRING_H_
 
+#include <concepts>
 #include <ios>
 #include <memory>
 #include <sstream>
@@ -29,25 +30,21 @@ concept SupportsToString = requires(const T& t) { t.ToString(); };
 // I/O manipulators are function pointers, but should be sent directly to the
 // `ostream` instead of being cast to `const void*` like other function
 // pointers.
-template <typename T, typename = void>
+template <typename T>
 constexpr bool IsIomanip = false;
 template <typename T>
-constexpr bool
-    IsIomanip<T&(T&), std::enable_if_t<std::is_base_of_v<std::ios_base, T>>> =
-        true;
+  requires(std::derived_from<T, std::ios_base>)
+constexpr bool IsIomanip<T&(T&)> = true;
 
 // Function pointers implicitly convert to `bool`, so use this to avoid printing
 // function pointers as 1 or 0.
-template <typename T, typename = void>
-constexpr bool WillBeIncorrectlyStreamedAsBool = false;
 template <typename T>
-constexpr bool WillBeIncorrectlyStreamedAsBool<
-    T,
-    std::enable_if_t<std::is_function_v<std::remove_pointer_t<T>> &&
-                     !IsIomanip<std::remove_pointer_t<T>>>> = true;
+concept WillBeIncorrectlyStreamedAsBool =
+    std::is_function_v<std::remove_pointer_t<T>> &&
+    !IsIomanip<std::remove_pointer_t<T>>;
 
 // Fallback case when there is no better representation.
-template <typename T, typename = void>
+template <typename T>
 struct ToStringHelper {
   static void Stringify(const T& v, std::ostringstream& ss) {
     ss << "[" << sizeof(v) << "-byte object at 0x" << std::addressof(v) << "]";
@@ -56,17 +53,17 @@ struct ToStringHelper {
 
 // Most streamables.
 template <typename T>
-struct ToStringHelper<T,
-                      std::enable_if_t<SupportsOstreamOperator<const T&> &&
-                                       !WillBeIncorrectlyStreamedAsBool<T>>> {
+  requires(SupportsOstreamOperator<const T&> &&
+           !WillBeIncorrectlyStreamedAsBool<T>)
+struct ToStringHelper<T> {
   static void Stringify(const T& v, std::ostringstream& ss) { ss << v; }
 };
 
 // Functions and function pointers.
 template <typename T>
-struct ToStringHelper<T,
-                      std::enable_if_t<SupportsOstreamOperator<const T&> &&
-                                       WillBeIncorrectlyStreamedAsBool<T>>> {
+  requires(SupportsOstreamOperator<const T&> &&
+           WillBeIncorrectlyStreamedAsBool<T>)
+struct ToStringHelper<T> {
   static void Stringify(const T& v, std::ostringstream& ss) {
     ToStringHelper<const void*>::Stringify(reinterpret_cast<const void*>(v),
                                            ss);
@@ -75,9 +72,8 @@ struct ToStringHelper<T,
 
 // Non-streamables that have a `ToString` member.
 template <typename T>
-struct ToStringHelper<T,
-                      std::enable_if_t<!SupportsOstreamOperator<const T&> &&
-                                       SupportsToString<const T&>>> {
+  requires(!SupportsOstreamOperator<const T&> && SupportsToString<const T&>)
+struct ToStringHelper<T> {
   static void Stringify(const T& v, std::ostringstream& ss) {
     // .ToString() may not return a std::string, e.g. blink::WTF::String.
     ToStringHelper<decltype(v.ToString())>::Stringify(v.ToString(), ss);
@@ -87,9 +83,8 @@ struct ToStringHelper<T,
 // Non-streamable enums (i.e. scoped enums where no `operator<<` overload was
 // declared).
 template <typename T>
-struct ToStringHelper<
-    T,
-    std::enable_if_t<!SupportsOstreamOperator<const T&> && std::is_enum_v<T>>> {
+  requires(!SupportsOstreamOperator<const T&> && std::is_enum_v<T>)
+struct ToStringHelper<T> {
   static void Stringify(const T& v, std::ostringstream& ss) {
     using UT = typename std::underlying_type_t<T>;
     ToStringHelper<UT>::Stringify(static_cast<UT>(v), ss);
@@ -116,7 +111,8 @@ struct ToStringHelper<std::tuple<T...>> {
 }  // namespace internal
 
 // Converts any type to a string, preferring defined operator<<() or ToString()
-// methods if they exist.
+// methods if they exist. If multiple `values` are given, returns the
+// concatenation of the result of applying `ToString` to each value.
 template <typename... Ts>
 std::string ToString(const Ts&... values) {
   std::ostringstream ss;

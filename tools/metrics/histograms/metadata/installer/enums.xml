@@ -1,0 +1,149 @@
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+
+This file describes the enumerations referenced by entries in histograms.xml for
+this directory. Some enums may instead be listed in the central enums.xml file
+at src/tools/metrics/histograms/enums.xml when multiple files use them.
+
+For best practices on writing enumerations descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md#Enum-Histograms
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<!-- Enum types -->
+
+<enums>
+
+<enum name="ChromeOSBiosType">
+  <int value="0" label="kUnknown"/>
+  <int value="1" label="kSecure"/>
+  <int value="2" label="kUBoot"/>
+  <int value="3" label="kLegacy"/>
+  <int value="4" label="kEFI"/>
+</enum>
+
+<enum name="ChromeOSEfiManagementEvent">
+  <int value="0" label="RequiredEntryManagementFailed"/>
+  <int value="1" label="OptionalEntryManagementFailed"/>
+</enum>
+
+<enum name="ChromeOSRecoveryReason">
+  <summary>
+    Reason for entering Recovery Mode. See
+    platform/vboot_reference/firmware/2lib/include/2recovery_reasons.h
+  </summary>
+  <int value="0" label="Recovery not requested."/>
+  <int value="1" label="Recovery requested from legacy utility."/>
+  <int value="2" label="User manually requested recovery via recovery button"/>
+  <int value="3"
+      label="RW firmware failed signature check (neither RW firmware slot was
+             valid)"/>
+  <int value="4" label="S3 resume failed"/>
+  <int value="5" label="TPM error in read-only firmware (deprecated)"/>
+  <int value="6" label="Shared data error in read-only firmware"/>
+  <int value="7" label="Test error from S3Resume()"/>
+  <int value="8" label="Test error from LoadFirmwareSetup() (deprecated)"/>
+  <int value="9" label="Test error from LoadFirmware() (deprecated)"/>
+  <int value="19"
+      label="Latest tried RW firmware keyblock verification failed"/>
+  <int value="20" label="Latest tried RW firmware key version too old"/>
+  <int value="22"
+      label="Latest tried RW firmware preamble verification failed"/>
+  <int value="23" label="Latest tried RW firmware version too old"/>
+  <int value="27" label="Latest tried RW firmware body verification failed"/>
+  <int value="32"
+      label="Firmware boot failure outside of verified boot (RAM init,
+             missing SSD, etc.)."/>
+  <int value="33"
+      label="Recovery mode TPM initialization requires a system reboot. The
+             system was already in recovery mode for some other reason when
+             this happened."/>
+  <int value="34" label="EC software sync - other error"/>
+  <int value="35"
+      label="EC software sync - unable to determine active EC image"/>
+  <int value="36"
+      label="EC software sync - error obtaining EC image hash (deprecated)"/>
+  <int value="37" label="EC software sync - error obtaining expected EC image"/>
+  <int value="38" label="EC software sync - error updating EC"/>
+  <int value="39" label="EC software sync - unable to jump to EC-RW"/>
+  <int value="40"
+      label="EC software sync - unable to protect / unprotect EC-RW"/>
+  <int value="41" label="EC software sync - error obtaining expected EC hash"/>
+  <int value="42"
+      label="EC software sync - expected EC image doesn't match hash"/>
+  <int value="43" label="Secure data inititalization error"/>
+  <int value="44" label="GBB header is bad"/>
+  <int value="45" label="Unable to clear TPM owner"/>
+  <int value="46" label="Error determining/updating virtual dev switch"/>
+  <int value="47" label="Error determining firmware slot"/>
+  <int value="63" label="Unspecified/unknown error in read-only firmware"/>
+  <int value="65"
+      label="User manually requested recovery by pressing a key at developer
+             warning screen"/>
+  <int value="66" label="No OS kernel detected"/>
+  <int value="67" label="OS kernel failed signature check"/>
+  <int value="68" label="TPM error in rewritable firmware (deprecated)"/>
+  <int value="69" label="RW firmware in dev mode, but dev switch is off"/>
+  <int value="70" label="Shared data error in rewritable firmware"/>
+  <int value="71" label="Test error from LoadKernel()"/>
+  <int value="72" label="No bootable disk found (deprecated)"/>
+  <int value="73"
+      label="Rebooting did not correct TPM_E_FAIL or TPM_E_FAILEDSELFTEST"/>
+  <int value="80" label="TPM setup error in read-only firmware"/>
+  <int value="81" label="TPM write error in read-only firmware"/>
+  <int value="82" label="TPM lock error in read-only firmware"/>
+  <int value="83" label="TPM update error in read-only firmware"/>
+  <int value="84" label="TPM read error in rewritable firmware"/>
+  <int value="85" label="TPM write error in rewritable firmware"/>
+  <int value="86" label="TPM lock error in rewritable firmware"/>
+  <int value="87" label="EC software sync unable to get EC image hash"/>
+  <int value="88" label="EC software sync invalid image hash size"/>
+  <int value="89" label="Unspecified error while trying to load kernel"/>
+  <int value="90" label="No bootable storage device in system"/>
+  <int value="91" label="No bootable kernel found on disk"/>
+  <int value="92" label="BCB related error in RW firmware"/>
+  <int value="93" label="Secure data inititalization error 0"/>
+  <int value="94" label="Fastboot mode requested in firmware"/>
+  <int value="95" label="Recovery hash space lock error in RO firmware"/>
+  <int value="127" label="Unspecified/unknown error in rewritable firmware"/>
+  <int value="129" label="DM-verity error"/>
+  <int value="143" label="Unspecified/unknown error in kernel."/>
+  <int value="191" label="Unspecified/unknown error in kernel"/>
+  <int value="193" label="Recovery mode test from user-mode"/>
+  <int value="194" label="Recovery requested by user-mode via BCB"/>
+  <int value="195" label="Fastboot mode requested by user-mode"/>
+  <int value="196"
+      label="User requested recovery for training memory and rebooting."/>
+  <int value="200" label="User requested network based recovery"/>
+  <int value="255" label="Unspecified/unknown error in user-mode"/>
+</enum>
+
+<enum name="ChromeOSRevenPartitionMigration">
+  <int value="0" label="kSuccess"/>
+  <int value="1" label="kNoMigrationNeeded"/>
+  <int value="2" label="kGptReadKernError"/>
+  <int value="3" label="kGptReadRootError"/>
+  <int value="4" label="kGptWriteKernError"/>
+  <int value="5" label="kGptWriteRootError"/>
+  <int value="6" label="kDiskOpenError"/>
+  <int value="7" label="kDiskReadError"/>
+  <int value="8" label="kDiskWriteError"/>
+  <int value="9" label="kRootPartitionUnexpectedSize"/>
+  <int value="10" label="kMigrationNotAllowed"/>
+</enum>
+
+</enums>
+
+</histogram-configuration>

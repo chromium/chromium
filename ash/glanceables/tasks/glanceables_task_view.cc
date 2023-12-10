@@ -25,11 +25,13 @@
 #include "base/types/cxx23_to_underlying.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/font.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
@@ -103,6 +105,8 @@ std::unique_ptr<views::ImageView> CreateSecondRowIcon(
 
 class TaskViewTextField : public views::Textfield,
                           public views::TextfieldController {
+  METADATA_HEADER(TaskViewTextField, views::Textfield)
+
  public:
   using OnFinishedEditingCallback =
       base::OnceCallback<void(const std::u16string& title)>;
@@ -121,6 +125,11 @@ class TaskViewTextField : public views::Textfield,
   TaskViewTextField(const TaskViewTextField&) = delete;
   TaskViewTextField& operator=(const TaskViewTextField&) = delete;
   ~TaskViewTextField() override = default;
+
+  // views::Textfield:
+  gfx::Size CalculatePreferredSize() const override {
+    return gfx::Size(0, GetFontList().GetHeight());
+  }
 
   // views::TextfieldController:
   bool HandleKeyEvent(views::Textfield* sender,
@@ -147,9 +156,14 @@ class TaskViewTextField : public views::Textfield,
   OnFinishedEditingCallback on_finished_editing_;
 };
 
+BEGIN_METADATA(TaskViewTextField)
+END_METADATA
+
 }  // namespace
 
 class GlanceablesTaskView::CheckButton : public views::ImageButton {
+  METADATA_HEADER(CheckButton, views::ImageButton)
+
  public:
   explicit CheckButton(PressedCallback pressed_callback)
       : views::ImageButton(std::move(pressed_callback)) {
@@ -196,7 +210,12 @@ class GlanceablesTaskView::CheckButton : public views::ImageButton {
   bool checked_ = false;
 };
 
+BEGIN_METADATA(GlanceablesTaskView, CheckButton, views::ImageButton)
+END_METADATA
+
 class GlanceablesTaskView::TaskTitleButton : public views::LabelButton {
+  METADATA_HEADER(TaskTitleButton, views::LabelButton)
+
  public:
   TaskTitleButton(const std::u16string& title, PressedCallback pressed_callback)
       : views::LabelButton(std::move(pressed_callback), title) {
@@ -230,6 +249,9 @@ class GlanceablesTaskView::TaskTitleButton : public views::LabelButton {
                                        : gfx::Font::FontStyle::NORMAL));
   }
 };
+
+BEGIN_METADATA(GlanceablesTaskView, TaskTitleButton, views::LabelButton)
+END_METADATA
 
 GlanceablesTaskView::GlanceablesTaskView(
     const api::Task* task,
@@ -382,9 +404,28 @@ void GlanceablesTaskView::TaskTitleButtonPressed() {
 }
 
 void GlanceablesTaskView::OnFinishedEditing(const std::u16string& title) {
-  task_title_ = title;
+  const auto old_title = task_title_;
+  if (!title.empty()) {
+    task_title_ = title;
+  }
+
   UpdateTaskTitleViewForState(TaskTitleViewState::kView);
-  save_callback_.Run(task_id_, base::UTF16ToUTF8(task_title_));
+
+  if (task_id_.empty() || task_title_ != old_title) {
+    save_callback_.Run(task_id_, base::UTF16ToUTF8(task_title_),
+                       base::BindOnce(&GlanceablesTaskView::OnSaved,
+                                      weak_ptr_factory_.GetWeakPtr()));
+    // TODO(b/301253574): introduce "disabled" state for this view to prevent
+    // editing / marking as complete while the task is not fully created yet and
+    // race conditions while editing the same task.
+  }
+}
+
+void GlanceablesTaskView::OnSaved(const api::Task* task) {
+  if (!task) {
+    return;
+  }
+  task_id_ = task->id;
 }
 
 BEGIN_METADATA(GlanceablesTaskView, views::View)

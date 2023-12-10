@@ -18,6 +18,7 @@ import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarController;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
+import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
 import org.chromium.ui.mojom.WindowOpenDisposition;
 import org.chromium.url.GURL;
 
@@ -31,8 +32,11 @@ import java.util.Set;
  * the {@link TileGroup} should not know about.
  */
 public class TileGroupDelegateImpl implements TileGroup.Delegate {
-    private static final Set<Integer> MVTilesClickForUserAction = new HashSet<>(
-            Arrays.asList(WindowOpenDisposition.CURRENT_TAB, WindowOpenDisposition.OFF_THE_RECORD));
+    private static final Set<Integer> MVTilesClickForUserAction =
+            new HashSet<>(
+                    Arrays.asList(
+                            WindowOpenDisposition.CURRENT_TAB,
+                            WindowOpenDisposition.OFF_THE_RECORD));
 
     private final Context mContext;
     private final SnackbarManager mSnackbarManager;
@@ -41,11 +45,13 @@ public class TileGroupDelegateImpl implements TileGroup.Delegate {
 
     private boolean mIsDestroyed;
     private SnackbarController mTileRemovedSnackbarController;
-    @BrowserUiUtils.HostSurface
-    private int mHostSurface;
+    @BrowserUiUtils.HostSurface private int mHostSurface;
 
-    public TileGroupDelegateImpl(Context context, Profile profile,
-            SuggestionsNavigationDelegate navigationDelegate, SnackbarManager snackbarManager,
+    public TileGroupDelegateImpl(
+            Context context,
+            Profile profile,
+            SuggestionsNavigationDelegate navigationDelegate,
+            SnackbarManager snackbarManager,
             @BrowserUiUtils.HostSurface int hostSurface) {
         mContext = context;
         mSnackbarManager = snackbarManager;
@@ -125,24 +131,28 @@ public class TileGroupDelegateImpl implements TileGroup.Delegate {
 
     private void showTileRemovedSnackbar(GURL url, final Callback<GURL> removalUndoneCallback) {
         if (mTileRemovedSnackbarController == null) {
-            mTileRemovedSnackbarController = new SnackbarController() {
-                @Override
-                public void onDismissNoAction(Object actionData) {}
+            mTileRemovedSnackbarController =
+                    new SnackbarController() {
+                        @Override
+                        public void onDismissNoAction(Object actionData) {}
 
-                /** Undoes the tile removal. */
-                @Override
-                public void onAction(Object actionData) {
-                    if (mIsDestroyed) return;
-                    GURL url = (GURL) actionData;
-                    removalUndoneCallback.onResult(url);
-                    mMostVisitedSites.removeBlocklistedUrl(url);
-                }
-            };
+                        /** Undoes the tile removal. */
+                        @Override
+                        public void onAction(Object actionData) {
+                            if (mIsDestroyed) return;
+                            GURL url = (GURL) actionData;
+                            removalUndoneCallback.onResult(url);
+                            mMostVisitedSites.removeBlocklistedUrl(url);
+                        }
+                    };
         }
-        Snackbar snackbar = Snackbar.make(mContext.getString(R.string.most_visited_item_removed),
-                                            mTileRemovedSnackbarController, Snackbar.TYPE_ACTION,
-                                            Snackbar.UMA_NTP_MOST_VISITED_DELETE_UNDO)
-                                    .setAction(mContext.getString(R.string.undo), url);
+        Snackbar snackbar =
+                Snackbar.make(
+                                mContext.getString(R.string.most_visited_item_removed),
+                                mTileRemovedSnackbarController,
+                                Snackbar.TYPE_ACTION,
+                                Snackbar.UMA_NTP_MOST_VISITED_DELETE_UNDO)
+                        .setAction(mContext.getString(R.string.undo), url);
         mSnackbarManager.showSnackbar(snackbar);
     }
 
@@ -163,7 +173,7 @@ public class TileGroupDelegateImpl implements TileGroup.Delegate {
             int windowDisposition, @BrowserUiUtils.HostSurface int hostSurface) {
         if (windowDisposition != WindowOpenDisposition.NEW_WINDOW) {
             BrowserUiUtils.recordModuleClickHistogram(
-                    hostSurface, BrowserUiUtils.ModuleTypeOnStartAndNTP.MOST_VISITED_TILES);
+                    hostSurface, ModuleTypeOnStartAndNtp.MOST_VISITED_TILES);
         }
         if (MVTilesClickForUserAction.contains(windowDisposition)) {
             RecordUserAction.record(

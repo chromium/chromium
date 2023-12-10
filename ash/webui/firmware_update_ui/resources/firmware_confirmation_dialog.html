@@ -1,10 +1,42 @@
 <style include="firmware-shared-fonts firmware-shared">
   :host {
     --cr-dialog-width: 416px;
+    --disclaimer-icon-size: 16px;
   }
 
   #proceedText {
     white-space: pre-line;
+  }
+
+  #disclaimer {
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 16px;
+  }
+
+  #disclaimer-icon {
+    align-items: center;
+    background: var(--cros-sys-warning_container);
+    border-radius: 8px;
+    display: flex;
+    flex: 0 0 auto;
+    height: 24px;
+    justify-content: center;
+    margin-inline-end: 8px;
+    width: 24px;
+  }
+
+  #disclaimer-icon iron-icon {
+    --iron-icon-fill-color: var(--cros-sys-on_warning_container);
+    --iron-icon-height: var(--disclaimer-icon-size);
+    --iron-icon-width: var(--disclaimer-icon-size);
+  }
+
+  #disclaimer-text {
+    color: var(--cros-sys-on_warning_container);
+    font: var(--cros-annotation-2-font);
+    flex: 1;
   }
 </style>
 <template is="dom-if" if="[[open]]" restamp>
@@ -13,6 +45,14 @@
       [[computeTitle(update.*)]]
     </div>
     <div slot="body" class="firmware-dialog-body-font">
+      <template is="dom-if" if="[[shouldShowDisclaimer]]" restamp>
+        <div id="disclaimer">
+          <div id="disclaimer-icon">
+            <iron-icon icon="firmware-updates:warning"></iron-icon>
+          </div>
+          <div id="disclaimer-text">[[i18n('confirmationDisclaimer')]]</div>
+        </div>
+      </template>
       <div id="updateDialogBody">
         [[i18n('updatingInfo')]]
       </div>

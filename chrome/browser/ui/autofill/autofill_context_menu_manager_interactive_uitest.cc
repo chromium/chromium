@@ -33,7 +33,7 @@ namespace {
 
 // Generates a ContextMenuParams for the Autofill context menu options.
 content::ContextMenuParams CreateContextMenuParams(
-    absl::optional<autofill::FormRendererId> form_renderer_id = absl::nullopt,
+    std::optional<autofill::FormRendererId> form_renderer_id = std::nullopt,
     autofill::FieldRendererId field_render_id = autofill::FieldRendererId(0)) {
   content::ContextMenuParams rv;
   rv.is_editable = true;
@@ -201,7 +201,7 @@ IN_PROC_BROWSER_TEST_F(AutofillContextMenuManagerFeedbackUIBrowserTest,
 
   // Extract autofill metadata from dialog arguments and check for correctness.
   std::string dialog_args_str = feedback_dialog->GetDialogArgs();
-  absl::optional<base::Value> value = base::JSONReader::Read(dialog_args_str);
+  std::optional<base::Value> value = base::JSONReader::Read(dialog_args_str);
   ASSERT_TRUE(value.has_value() && value->is_dict());
   const std::string* autofill_metadata =
       value->GetDict().FindString("autofillMetadata");
@@ -213,12 +213,8 @@ IN_PROC_BROWSER_TEST_F(AutofillContextMenuManagerFeedbackUIBrowserTest,
                        IncludesTriggerFormAndFieldSignatures) {
   content::RenderFrameHost* rfh = web_contents()->GetPrimaryMainFrame();
   LocalFrameToken frame_token(rfh->GetFrameToken().value());
-  FormData form;
-  test::CreateTestAddressFormData(&form);
-  form.host_frame = frame_token;
-  for (auto& field : form.fields) {
-    field.host_frame = frame_token;
-  }
+  FormData form = test::CreateFormDataForFrame(
+      test::CreateTestAddressFormData(), frame_token);
   GetAutofillManager()->OnFormsSeen(
       /*updated_forms=*/{form},
       /*removed_forms=*/{});
@@ -250,7 +246,7 @@ IN_PROC_BROWSER_TEST_F(AutofillContextMenuManagerFeedbackUIBrowserTest,
 
   // Extract autofill metadata from dialog arguments and check for correctness.
   std::string dialog_args_str = feedback_dialog->GetDialogArgs();
-  absl::optional<base::Value> value = base::JSONReader::Read(dialog_args_str);
+  std::optional<base::Value> value = base::JSONReader::Read(dialog_args_str);
   ASSERT_TRUE(value.has_value() && value->is_dict());
   const std::string* autofill_metadata =
       value->GetDict().FindString("autofillMetadata");

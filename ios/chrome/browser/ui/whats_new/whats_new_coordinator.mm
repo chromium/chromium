@@ -16,7 +16,6 @@
 #import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller.h"
 #import "ios/chrome/browser/ui/promos_manager/promos_manager_ui_handler.h"
 #import "ios/chrome/browser/ui/whats_new/whats_new_detail_coordinator.h"
-#import "ios/chrome/browser/ui/whats_new/whats_new_detail_view_controller.h"
 #import "ios/chrome/browser/ui/whats_new/whats_new_mediator.h"
 #import "ios/chrome/browser/ui/whats_new/whats_new_table_view_controller.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"

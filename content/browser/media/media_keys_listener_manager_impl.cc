@@ -14,9 +14,15 @@
 #include "content/browser/browser_main_loop.h"
 #include "content/browser/media/active_media_session_controller.h"
 #include "content/browser/media/system_media_controls_notifier.h"
+#include "content/browser/media/web_app_system_media_controls.h"
+#include "content/public/common/content_features.h"
 #include "media/audio/audio_manager.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/idle/idle.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "content/browser/media/web_app_system_media_controls_manager.h"
+#endif
 
 namespace content {
 
@@ -32,28 +38,52 @@ MediaKeysListenerManager* MediaKeysListenerManager::GetInstance() {
   return BrowserMainLoop::GetInstance()->media_keys_listener_manager();
 }
 
-MediaKeysListenerManagerImpl::MediaKeysListenerManagerImpl()
-    : active_media_session_controller_(
-          std::make_unique<ActiveMediaSessionController>()) {
+MediaKeysListenerManagerImpl::MediaKeysListenerManagerImpl() {
   DCHECK(!MediaKeysListenerManager::GetInstance());
+
+#if BUILDFLAG(IS_WIN)
+  // If instanced system media controls are enabled, the ...controls_manager_
+  // will handle creation of browser related classes such as the
+  // browser_active_media_session_controller_.
+  if (ShouldUseWebAppSystemMediaControls()) {
+    web_app_system_media_controls_manager_ =
+        std::make_unique<WebAppSystemMediaControlsManager>();
+    web_app_system_media_controls_manager_->Init();
+    return;
+  }
+#endif
+  // If instanced web app system media controls aren't supported, create the
+  // single ActiveMediaSessionController that follows the active session.
+  // It can be unsupported due to feature flag being off or platform
+  // constraints.
+  browser_active_media_session_controller_ =
+      std::make_unique<ActiveMediaSessionController>(
+          base::UnguessableToken::Null());
 }
 
 MediaKeysListenerManagerImpl::~MediaKeysListenerManagerImpl() = default;
 
 bool MediaKeysListenerManagerImpl::StartWatchingMediaKey(
     ui::KeyboardCode key_code,
-    ui::MediaKeysListener::Delegate* delegate) {
+    ui::MediaKeysListener::Delegate* delegate,
+    base::UnguessableToken web_app_request_id) {
   DCHECK(ui::MediaKeysListener::IsMediaKeycode(key_code));
   DCHECK(delegate);
   StartListeningForMediaKeysIfNecessary();
 
-  // We don't want to start watching the key for the
-  // ActiveMediaSessionController if the ActiveMediaSessionController won't
+  // We don't want to start watching the key for an
+  // ActiveMediaSessionController if an ActiveMediaSessionController won't
   // receive events.
-  bool is_active_media_session_controller =
-      delegate == active_media_session_controller_.get();
-  bool should_start_watching = !is_active_media_session_controller ||
-                               CanActiveMediaSessionControllerReceiveEvents();
+  bool is_delegate_for_browser =
+      delegate == browser_active_media_session_controller_.get();
+  bool is_delegate_for_pwa = ShouldUseWebAppSystemMediaControls() &&
+                             IsDelegateForWebAppSession(delegate);
+
+  bool is_delegate_an_active_media_session_controller =
+      is_delegate_for_browser || is_delegate_for_pwa;
+  bool should_start_watching =
+      !is_delegate_an_active_media_session_controller ||
+      CanActiveMediaSessionControllerReceiveEvents();
 
   // Tell the underlying MediaKeysListener to listen for the key.
   if (should_start_watching && media_keys_listener_ &&
@@ -64,9 +94,24 @@ bool MediaKeysListenerManagerImpl::StartWatchingMediaKey(
   ListeningData* listening_data = GetOrCreateListeningData(key_code);
 
   // If this is the ActiveMediaSessionController, just update the flag.
-  if (is_active_media_session_controller) {
-    listening_data->active_media_session_controller_listening = true;
+  if (is_delegate_an_active_media_session_controller) {
+    // |delegate| should never be for both the browser and a PWA
+    DCHECK(is_delegate_for_browser != is_delegate_for_pwa);
+
+    if (is_delegate_for_browser) {
+      listening_data->browser_active_media_session_controller_listening = true;
+    } else if (is_delegate_for_pwa) {
+      // If token is specified, it's a PWA that's starting to watch for a media
+      // key. As a result, add it to the PWA list.
+      DCHECK(web_app_request_id != base::UnguessableToken::Null());
+      listening_data->listening_web_apps.insert(web_app_request_id);
+    }
     UpdateWhichKeysAreListenedFor();
+
+    // Notify test observers if they exist.
+    if (test_observer_) {
+      test_observer_->OnStartWatchingMediaKey(is_delegate_for_pwa);
+    }
     return true;
   }
 
@@ -78,12 +123,18 @@ bool MediaKeysListenerManagerImpl::StartWatchingMediaKey(
   // longer be needed.
   UpdateWhichKeysAreListenedFor();
 
+  // Notify test observers if they exist.
+  if (test_observer_) {
+    test_observer_->OnStartWatchingMediaKey(is_delegate_for_pwa);
+  }
+
   return true;
 }
 
 void MediaKeysListenerManagerImpl::StopWatchingMediaKey(
     ui::KeyboardCode key_code,
-    ui::MediaKeysListener::Delegate* delegate) {
+    ui::MediaKeysListener::Delegate* delegate,
+    base::UnguessableToken web_app_request_id) {
   DCHECK(ui::MediaKeysListener::IsMediaKeycode(key_code));
   DCHECK(delegate);
   StartListeningForMediaKeysIfNecessary();
@@ -91,11 +142,16 @@ void MediaKeysListenerManagerImpl::StopWatchingMediaKey(
   // Find or create the list of listening delegates for this key code.
   ListeningData* listening_data = GetOrCreateListeningData(key_code);
 
-  // Update the listening data to remove this delegate.
-  if (delegate == active_media_session_controller_.get())
-    listening_data->active_media_session_controller_listening = false;
-  else
+  if (delegate == browser_active_media_session_controller_.get()) {
+    // Update the browser's listening data to remove this delegate.
+    listening_data->browser_active_media_session_controller_listening = false;
+  } else if (ShouldUseWebAppSystemMediaControls() &&
+             IsDelegateForWebAppSession(delegate)) {
+    // Remove this pwa_request_id from the listening data.
+    listening_data->listening_web_apps.erase(web_app_request_id);
+  } else {
     listening_data->listeners.RemoveObserver(delegate);
+  }
 
   UpdateWhichKeysAreListenedFor();
 }
@@ -130,9 +186,10 @@ void MediaKeysListenerManagerImpl::OnMediaKeysAccelerator(
 
   // If the ActiveMediaSessionController is listening and is allowed to listen,
   // notify it of the media key press.
-  if (listening_data->active_media_session_controller_listening &&
+  if (listening_data->browser_active_media_session_controller_listening &&
       CanActiveMediaSessionControllerReceiveEvents()) {
-    active_media_session_controller_->OnMediaKeysAccelerator(accelerator);
+    browser_active_media_session_controller_->OnMediaKeysAccelerator(
+        accelerator);
     return;
   }
 
@@ -148,8 +205,7 @@ void MediaKeysListenerManagerImpl::SetIsMediaPlaying(bool is_playing) {
 void MediaKeysListenerManagerImpl::OnNext(
     system_media_controls::SystemMediaControls* sender) {
   if (ShouldActiveMediaSessionControllerReceiveKey(ui::VKEY_MEDIA_NEXT_TRACK)) {
-    // TODO(liahiscock): Use |sender|'s media controller.
-    active_media_session_controller_->OnNext();
+    GetControllerForSystemMediaControls(sender)->OnNext();
     return;
   }
   MaybeSendKeyCode(ui::VKEY_MEDIA_NEXT_TRACK);
@@ -158,8 +214,7 @@ void MediaKeysListenerManagerImpl::OnNext(
 void MediaKeysListenerManagerImpl::OnPrevious(
     system_media_controls::SystemMediaControls* sender) {
   if (ShouldActiveMediaSessionControllerReceiveKey(ui::VKEY_MEDIA_PREV_TRACK)) {
-    // TODO(liahiscock): Use |sender|'s media controller.
-    active_media_session_controller_->OnPrevious();
+    GetControllerForSystemMediaControls(sender)->OnPrevious();
     return;
   }
   MaybeSendKeyCode(ui::VKEY_MEDIA_PREV_TRACK);
@@ -168,8 +223,7 @@ void MediaKeysListenerManagerImpl::OnPrevious(
 void MediaKeysListenerManagerImpl::OnPlay(
     system_media_controls::SystemMediaControls* sender) {
   if (ShouldActiveMediaSessionControllerReceiveKey(ui::VKEY_MEDIA_PLAY_PAUSE)) {
-    // TODO(liahiscock): Use |sender|'s media controller.
-    active_media_session_controller_->OnPlay();
+    GetControllerForSystemMediaControls(sender)->OnPlay();
     return;
   }
   if (!is_media_playing_)
@@ -179,8 +233,7 @@ void MediaKeysListenerManagerImpl::OnPlay(
 void MediaKeysListenerManagerImpl::OnPause(
     system_media_controls::SystemMediaControls* sender) {
   if (ShouldActiveMediaSessionControllerReceiveKey(ui::VKEY_MEDIA_PLAY_PAUSE)) {
-    // TODO(liahiscock): Use |sender|'s media controller.
-    active_media_session_controller_->OnPause();
+    GetControllerForSystemMediaControls(sender)->OnPause();
     return;
   }
   if (is_media_playing_)
@@ -190,8 +243,7 @@ void MediaKeysListenerManagerImpl::OnPause(
 void MediaKeysListenerManagerImpl::OnPlayPause(
     system_media_controls::SystemMediaControls* sender) {
   if (ShouldActiveMediaSessionControllerReceiveKey(ui::VKEY_MEDIA_PLAY_PAUSE)) {
-    // TODO(liahiscock): Use |sender|'s media controller.
-    active_media_session_controller_->OnPlayPause();
+    GetControllerForSystemMediaControls(sender)->OnPlayPause();
     return;
   }
   MaybeSendKeyCode(ui::VKEY_MEDIA_PLAY_PAUSE);
@@ -200,8 +252,7 @@ void MediaKeysListenerManagerImpl::OnPlayPause(
 void MediaKeysListenerManagerImpl::OnStop(
     system_media_controls::SystemMediaControls* sender) {
   if (ShouldActiveMediaSessionControllerReceiveKey(ui::VKEY_MEDIA_STOP)) {
-    // TODO(liahiscock): Use |sender|'s media controller.
-    active_media_session_controller_->OnStop();
+    GetControllerForSystemMediaControls(sender)->OnStop();
     return;
   }
   MaybeSendKeyCode(ui::VKEY_MEDIA_STOP);
@@ -212,8 +263,7 @@ void MediaKeysListenerManagerImpl::OnSeek(
     const base::TimeDelta& time) {
   if (!CanActiveMediaSessionControllerReceiveEvents())
     return;
-  // TODO(liahiscock): Use |sender|'s media controller.
-  active_media_session_controller_->OnSeek(time);
+  GetControllerForSystemMediaControls(sender)->OnSeek(time);
 }
 
 void MediaKeysListenerManagerImpl::OnSeekTo(
@@ -221,8 +271,7 @@ void MediaKeysListenerManagerImpl::OnSeekTo(
     const base::TimeDelta& time) {
   if (!CanActiveMediaSessionControllerReceiveEvents())
     return;
-  // TODO(liahiscock): Use |sender|'s media controller.
-  active_media_session_controller_->OnSeekTo(time);
+  GetControllerForSystemMediaControls(sender)->OnSeekTo(time);
 }
 
 void MediaKeysListenerManagerImpl::MaybeSendKeyCode(ui::KeyboardCode key_code) {
@@ -246,31 +295,56 @@ void MediaKeysListenerManagerImpl::EnsureAuxiliaryServices() {
 }
 
 void MediaKeysListenerManagerImpl::StartListeningForMediaKeysIfNecessary() {
-  if (system_media_controls_ || media_keys_listener_)
+  if (browser_system_media_controls_ || media_keys_listener_) {
     return;
+  }
 
-// TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
-// complete.
 #if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) || \
     BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-  system_media_controls_ = system_media_controls::SystemMediaControls::Create(
-      media::AudioManager::GetGlobalAppName());
+  // Create SystemMediaControls with the SingletonHwnd.
+  browser_system_media_controls_ =
+      system_media_controls::SystemMediaControls::Create(
+          media::AudioManager::GetGlobalAppName());
 #endif
 
-  if (system_media_controls_) {
-    system_media_controls_->AddObserver(this);
-    system_media_controls_notifier_ =
+  if (browser_system_media_controls_) {
+    browser_system_media_controls_->AddObserver(this);
+    // Pass Null request ID so this notifier will track the active session, not
+    // a specific session.
+    browser_system_media_controls_notifier_ =
         std::make_unique<SystemMediaControlsNotifier>(
-            system_media_controls_.get());
+            browser_system_media_controls_.get(),
+            base::UnguessableToken::Null());
   } else {
-    // If we can't access system media controls, then directly listen for media
-    // key keypresses instead.
     media_keys_listener_ = ui::MediaKeysListener::Create(
         this, ui::MediaKeysListener::Scope::kGlobal);
     DCHECK(media_keys_listener_);
   }
-
   EnsureAuxiliaryServices();
+}
+
+void MediaKeysListenerManagerImpl::SetBrowserActiveMediaRequestId(
+    base::UnguessableToken request_id) {
+  if (!browser_system_media_controls_) {
+    browser_system_media_controls_ =
+        system_media_controls::SystemMediaControls::Create(
+            media::AudioManager::GetGlobalAppName());
+
+    CHECK(browser_system_media_controls_);
+    browser_system_media_controls_->AddObserver(this);
+  }
+
+  // Recreate the notifier and controller so their mojo remotes get rebound
+  // appropriately.
+  browser_system_media_controls_notifier_ =
+      std::make_unique<SystemMediaControlsNotifier>(
+          browser_system_media_controls_.get(), request_id);
+  if (!browser_active_media_session_controller_) {
+    browser_active_media_session_controller_ =
+        std::make_unique<ActiveMediaSessionController>(request_id);
+  } else {
+    browser_active_media_session_controller_->RebindMojoForNewID(request_id);
+  }
 }
 
 MediaKeysListenerManagerImpl::ListeningData*
@@ -289,37 +363,86 @@ MediaKeysListenerManagerImpl::GetOrCreateListeningData(
 void MediaKeysListenerManagerImpl::UpdateWhichKeysAreListenedFor() {
   StartListeningForMediaKeysIfNecessary();
 
-  if (system_media_controls_)
+  if (browser_system_media_controls_) {
     UpdateSystemMediaControlsEnabledControls();
-  else
+  } else {
     UpdateMediaKeysListener();
+  }
 }
 
 void MediaKeysListenerManagerImpl::UpdateSystemMediaControlsEnabledControls() {
-  DCHECK(system_media_controls_);
+  // This should be safe to call even if nothing is playing - which should
+  // result in a no-op.
 
-  for (const auto& key_code_listening_data : delegate_map_) {
-    const ui::KeyboardCode& key_code = key_code_listening_data.first;
-    const ListeningData* listening_data = key_code_listening_data.second.get();
+  if (browser_system_media_controls_) {
+    // Update the browser box.
+    for (const auto& key_code_listening_data : delegate_map_) {
+      const ui::KeyboardCode& key_code = key_code_listening_data.first;
+      const ListeningData* listening_data =
+          key_code_listening_data.second.get();
 
-    bool should_enable = ShouldListenToKey(*listening_data);
-    switch (key_code) {
-      case ui::VKEY_MEDIA_PLAY_PAUSE:
-        system_media_controls_->SetIsPlayPauseEnabled(should_enable);
-        break;
-      case ui::VKEY_MEDIA_NEXT_TRACK:
-        system_media_controls_->SetIsNextEnabled(should_enable);
-        break;
-      case ui::VKEY_MEDIA_PREV_TRACK:
-        system_media_controls_->SetIsPreviousEnabled(should_enable);
-        break;
-      case ui::VKEY_MEDIA_STOP:
-        system_media_controls_->SetIsStopEnabled(should_enable);
-        break;
-      default:
-        NOTREACHED();
+      bool should_enable = ShouldListenToKey(*listening_data);
+      switch (key_code) {
+        case ui::VKEY_MEDIA_PLAY_PAUSE:
+          browser_system_media_controls_->SetIsPlayPauseEnabled(should_enable);
+          break;
+        case ui::VKEY_MEDIA_NEXT_TRACK:
+          browser_system_media_controls_->SetIsNextEnabled(should_enable);
+          break;
+        case ui::VKEY_MEDIA_PREV_TRACK:
+          browser_system_media_controls_->SetIsPreviousEnabled(should_enable);
+          break;
+        case ui::VKEY_MEDIA_STOP:
+          browser_system_media_controls_->SetIsStopEnabled(should_enable);
+          break;
+        default:
+          NOTREACHED();
+      }
     }
   }
+
+#if BUILDFLAG(IS_WIN)
+  // This loops over active web app instanced system media controls and updates
+  // what controls are available on each set of controls.
+  if (!ShouldUseWebAppSystemMediaControls()) {
+    return;
+  }
+
+  for (auto* controls :
+       web_app_system_media_controls_manager_->GetAllControls()) {
+    system_media_controls::SystemMediaControls* smc =
+        controls->GetSystemMediaControls();
+    base::UnguessableToken request_id = controls->GetRequestID();
+
+    for (const auto& key_code_listening_data : delegate_map_) {
+      const ui::KeyboardCode& key_code = key_code_listening_data.first;
+      const ListeningData* listening_data =
+          key_code_listening_data.second.get();
+
+      // If we don't see this token in the listening_pwas, we should not
+      // enable it. If we do find the token in the listening_pwas, we will
+      // enable it.
+      bool should_enable =
+          listening_data->listening_web_apps.contains(request_id);
+      switch (key_code) {
+        case ui::VKEY_MEDIA_PLAY_PAUSE:
+          smc->SetIsPlayPauseEnabled(should_enable);
+          break;
+        case ui::VKEY_MEDIA_NEXT_TRACK:
+          smc->SetIsNextEnabled(should_enable);
+          break;
+        case ui::VKEY_MEDIA_PREV_TRACK:
+          smc->SetIsPreviousEnabled(should_enable);
+          break;
+        case ui::VKEY_MEDIA_STOP:
+          smc->SetIsStopEnabled(should_enable);
+          break;
+        default:
+          NOTREACHED();
+      }
+    }
+  }
+#endif
 }
 
 void MediaKeysListenerManagerImpl::UpdateMediaKeysListener() {
@@ -338,8 +461,9 @@ void MediaKeysListenerManagerImpl::UpdateMediaKeysListener() {
 
 bool MediaKeysListenerManagerImpl::ShouldListenToKey(
     const ListeningData& listening_data) const {
+  // TODO(crbug.com/1502991) verify if this needs a PWA check.
   return !listening_data.listeners.empty() ||
-         (listening_data.active_media_session_controller_listening &&
+         (listening_data.browser_active_media_session_controller_listening &&
           CanActiveMediaSessionControllerReceiveEvents());
 }
 
@@ -370,7 +494,59 @@ bool MediaKeysListenerManagerImpl::ShouldActiveMediaSessionControllerReceiveKey(
 
   DCHECK_NE(nullptr, listening_data);
 
-  return listening_data->active_media_session_controller_listening;
+  return listening_data->browser_active_media_session_controller_listening ||
+         (ShouldUseWebAppSystemMediaControls() &&
+          !listening_data->listening_web_apps.empty());
+}
+
+bool MediaKeysListenerManagerImpl::ShouldUseWebAppSystemMediaControls() const {
+#if BUILDFLAG(IS_WIN)
+  return base::FeatureList::IsEnabled(features::kWebAppSystemMediaControlsWin);
+#else
+  return false;
+#endif
+}
+
+bool MediaKeysListenerManagerImpl::IsDelegateForWebAppSession(
+    ui::MediaKeysListener::Delegate* delegate) {
+#if BUILDFLAG(IS_WIN)
+  std::vector<WebAppSystemMediaControls*> pwa_controls =
+      web_app_system_media_controls_manager_->GetAllControls();
+
+  for (auto* curr_controls : pwa_controls) {
+    if (curr_controls->GetController() == delegate) {
+      return true;
+    }
+  }
+#endif
+  return false;
+}
+
+ActiveMediaSessionController*
+MediaKeysListenerManagerImpl::GetControllerForSystemMediaControls(
+    system_media_controls::SystemMediaControls* system_media_controls) {
+  // Check if system_media_controls is browser box.
+  // If kWebAppSystemMediaControlsWin is not supported, we should always use the
+  // browser controller.
+  if (!ShouldUseWebAppSystemMediaControls() ||
+      system_media_controls == browser_system_media_controls_.get()) {
+    return browser_active_media_session_controller_.get();
+  }
+
+#if BUILDFLAG(IS_WIN)
+  // Ask the manager for the appropriate ActiveMediaSessionController.
+  WebAppSystemMediaControls* controls =
+      web_app_system_media_controls_manager_
+          ->GetWebAppSystemMediaControlsForSystemMediaControls(
+              system_media_controls);
+  if (controls) {
+    return controls->GetController();
+  }
+#endif
+
+  // It's unexpected that any code asks for the controller for a
+  // system_media_controls object we don't know about.
+  NOTREACHED_NORETURN();
 }
 
 }  // namespace content

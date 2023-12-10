@@ -33,11 +33,3 @@ export interface ImageTile {
   isTimeOfDayWallpaper?: boolean;
   hasPreviewImage?: boolean;
 }
-
-// TODO(b/304576846): remove this interface after the real struct is created in
-// mojom.
-export interface SeaPenWallpaper {
-  url: Url;
-  query_info: string;
-  file_path: FilePath;
-}

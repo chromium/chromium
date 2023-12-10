@@ -5,17 +5,21 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/types/expected.h"
+#include "chrome/browser/about_flags.h"
 #include "chrome/browser/compose/compose_enabling.h"
+#include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
-#include "components/compose/core/browser/compose_features.h"  // nogncheck - https://crbug.com/1125897
+#include "components/compose/core/browser/compose_features.h"
+#include "components/compose/core/browser/config.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
@@ -32,6 +36,7 @@ using testing::Return;
 
 namespace {
 constexpr char kEmail[] = "example@gmail.com";
+constexpr char kExampleURL[] = "https://example.com";
 using translate::testing::MockTranslateClient;
 
 class MockTranslateLanguageProvider : public TranslateLanguageProvider {
@@ -52,10 +57,67 @@ class MockTranslateManager : public translate::TranslateManager {
       : TranslateManager(translate_client, nullptr, nullptr) {}
 };
 
+class CustomMockOptimizationGuideKeyedService
+    : public MockOptimizationGuideKeyedService {
+ public:
+  explicit CustomMockOptimizationGuideKeyedService(
+      content::BrowserContext* browser_context)
+      : MockOptimizationGuideKeyedService(browser_context) {}
+
+  ~CustomMockOptimizationGuideKeyedService() override = default;
+
+  MOCK_METHOD(void,
+              CanApplyOptimization,
+              (const GURL& url,
+               optimization_guide::proto::OptimizationType optimization_type,
+               optimization_guide::OptimizationGuideDecisionCallback callback));
+
+  MOCK_METHOD(
+      optimization_guide::OptimizationGuideDecision,
+      CanApplyOptimization,
+      (const GURL& url,
+       optimization_guide::proto::OptimizationType optimization_type,
+       optimization_guide::OptimizationMetadata* optimization_metadata));
+  MOCK_METHOD(void,
+              RegisterOptimizationTypes,
+              (const std::vector<optimization_guide::proto::OptimizationType>&
+                   optimization_types));
+  MOCK_METHOD(
+      void,
+      CanApplyOptimizationOnDemand,
+      (const std::vector<GURL>& urls,
+       const base::flat_set<optimization_guide::proto::OptimizationType>&
+           optimization_types,
+       optimization_guide::proto::RequestContext request_context,
+       optimization_guide::OnDemandOptimizationGuideDecisionRepeatingCallback
+           callback));
+};
+
+void RegisterMockOptimizationGuideKeyedServiceFactory(
+    content::BrowserContext* context) {
+  MockOptimizationGuideKeyedService::InitializeWithExistingTestLocalState();
+  OptimizationGuideKeyedServiceFactory::GetInstance()->SetTestingFactory(
+      context, base::BindRepeating([](content::BrowserContext* context)
+                                       -> std::unique_ptr<KeyedService> {
+        return std::make_unique<
+            testing::NiceMock<CustomMockOptimizationGuideKeyedService>>(
+            context);
+      }));
+}
+
 }  // namespace
 
 class ComposeEnablingTest : public BrowserWithTestWindowTest {
  public:
+  ComposeEnablingTest() {
+    // Allows early registration of a override of the factory that instantiates
+    // OptimizationGuideKeyedService.
+    subscription_ =
+        BrowserContextDependencyManager::GetInstance()
+            ->RegisterCreateServicesCallbackForTesting(base::BindRepeating(
+                RegisterMockOptimizationGuideKeyedServiceFactory));
+  }
+
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
 
@@ -70,9 +132,21 @@ class ComposeEnablingTest : public BrowserWithTestWindowTest {
         std::make_unique<testing::NiceMock<MockTranslateManager>>(
             mock_translate_client_.get());
 
-    AddTab(browser(), GURL("http://foo/1"));
+    AddTab(browser(), GURL(kExampleURL));
     context_menu_params_.is_content_editable_for_autofill = true;
     context_menu_params_.frame_origin = GetOrigin();
+
+    opt_guide_ = static_cast<
+        testing::NiceMock<CustomMockOptimizationGuideKeyedService>*>(
+        OptimizationGuideKeyedServiceFactory::GetForProfile(GetProfile()));
+    ASSERT_TRUE(opt_guide_);
+  }
+
+  void TearDown() override {
+    opt_guide_ = nullptr;
+    compose::ResetConfigForTesting();
+    BrowserWithTestWindowTest::TearDown();
+    MockOptimizationGuideKeyedService::ResetForTesting();
   }
 
   void SignIn(signin::ConsentLevel consent_level) {
@@ -86,6 +160,8 @@ class ComposeEnablingTest : public BrowserWithTestWindowTest {
         unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled,
         new_state);
   }
+
+  CustomMockOptimizationGuideKeyedService& opt_guide() { return *opt_guide_; }
 
  protected:
   void SetLanguage(std::string lang) {
@@ -107,7 +183,7 @@ class ComposeEnablingTest : public BrowserWithTestWindowTest {
         ->GetPrimaryMainFrame();
   }
 
-  void CheckIsEnabledError(ComposeEnabling compose_enabling,
+  void CheckIsEnabledError(ComposeEnabling& compose_enabling,
                            compose::ComposeShowStatus error_show_status) {
     EXPECT_EQ(compose_enabling.IsEnabled(GetProfile(),
                                          identity_test_env_.identity_manager()),
@@ -119,6 +195,10 @@ class ComposeEnablingTest : public BrowserWithTestWindowTest {
 
   content::ContextMenuParams context_menu_params_;
 
+  base::CallbackListSubscription subscription_;
+  raw_ptr<testing::NiceMock<CustomMockOptimizationGuideKeyedService>>
+      opt_guide_;
+
   translate::testing::MockTranslateDriver translate_driver_;
   std::unique_ptr<MockTranslateClient> mock_translate_client_;
   std::unique_ptr<testing::NiceMock<MockTranslateManager>>
@@ -129,7 +209,8 @@ class ComposeEnablingTest : public BrowserWithTestWindowTest {
 };
 
 TEST_F(ComposeEnablingTest, EverythingDisabledTest) {
-  ComposeEnabling compose_enabling(&mock_translate_language_provider_);
+  ComposeEnabling compose_enabling(&mock_translate_language_provider_,
+                                   GetProfile());
   scoped_feature_list_.Reset();
   scoped_feature_list_.InitAndDisableFeature(compose::features::kEnableCompose);
   // We intentionally don't call sign in to make our state not signed in.
@@ -140,7 +221,8 @@ TEST_F(ComposeEnablingTest, EverythingDisabledTest) {
 }
 
 TEST_F(ComposeEnablingTest, FeatureNotEnabledTest) {
-  ComposeEnabling compose_enabling(&mock_translate_language_provider_);
+  ComposeEnabling compose_enabling(&mock_translate_language_provider_,
+                                   GetProfile());
   // Ensure feature flag is off.
   scoped_feature_list_.Reset();
   scoped_feature_list_.InitAndDisableFeature(compose::features::kEnableCompose);
@@ -154,7 +236,8 @@ TEST_F(ComposeEnablingTest, FeatureNotEnabledTest) {
 }
 
 TEST_F(ComposeEnablingTest, MsbbDisabledTest) {
-  ComposeEnabling compose_enabling(&mock_translate_language_provider_);
+  ComposeEnabling compose_enabling(&mock_translate_language_provider_,
+                                   GetProfile());
   // Sign in, with sync turned on.
   SignIn(signin::ConsentLevel::kSync);
   // MSBB turned off.
@@ -164,33 +247,34 @@ TEST_F(ComposeEnablingTest, MsbbDisabledTest) {
 }
 
 TEST_F(ComposeEnablingTest, NotSignedInTest) {
-  ComposeEnabling compose_enabling(&mock_translate_language_provider_);
+  ComposeEnabling compose_enabling(&mock_translate_language_provider_,
+                                   GetProfile());
+  // Turn on MSBB.
+  SetMsbbState(true);
+  CheckIsEnabledError(compose_enabling, compose::ComposeShowStatus::kSignedOut);
+}
+
+TEST_F(ComposeEnablingTest, SignedInErrorTest) {
+  ComposeEnabling compose_enabling(&mock_translate_language_provider_,
+                                   GetProfile());
+
+  // Sign in, with error.
+  AccountInfo account_info = identity_test_env_.MakePrimaryAccountAvailable(
+      kEmail, signin::ConsentLevel::kSync);
+  identity_test_env_.UpdatePersistentErrorOfRefreshTokenForAccount(
+      account_info.account_id,
+      GoogleServiceAuthError(
+          GoogleServiceAuthError::State::INVALID_GAIA_CREDENTIALS));
+
   // Turn on MSBB.
   SetMsbbState(true);
   CheckIsEnabledError(compose_enabling, compose::ComposeShowStatus::kSignedOut);
 }
 
 TEST_F(ComposeEnablingTest, EverythingEnabledTest) {
-  ComposeEnabling compose_enabling(&mock_translate_language_provider_);
-  // Sign in, with sync turned on.
-  SignIn(signin::ConsentLevel::kSync);
-  // Turn on MSBB.
-  SetMsbbState(true);
-  EXPECT_EQ(compose_enabling.IsEnabled(GetProfile(),
-                                       identity_test_env_.identity_manager()),
-            base::ok());
-}
-
-TEST_F(ComposeEnablingTest, AlternateFlagEnabledTest) {
-  ComposeEnabling compose_enabling(&mock_translate_language_provider_);
-  // Ensure alternate feature flag is on and normal feature flag is off.
-  scoped_feature_list_.Reset();
-  scoped_feature_list_.InitWithFeatures(
-      /* enabled features */
-      {compose::features::kFillMultiLine,
-       compose::features::kEnableComposeNudge},
-      /* disabled features */
-      {compose::features::kEnableCompose});
+  ComposeEnabling compose_enabling(&mock_translate_language_provider_,
+                                   GetProfile());
+  compose_enabling.SkipUserEnabledCheckForTesting(true);
   // Sign in, with sync turned on.
   SignIn(signin::ConsentLevel::kSync);
   // Turn on MSBB.
@@ -201,7 +285,8 @@ TEST_F(ComposeEnablingTest, AlternateFlagEnabledTest) {
 }
 
 TEST_F(ComposeEnablingTest, ShouldTriggerContextMenuDisabledTest) {
-  ComposeEnabling compose_enabling(&mock_translate_language_provider_);
+  ComposeEnabling compose_enabling(&mock_translate_language_provider_,
+                                   GetProfile());
 
   // We intentionally disable the feature.
   scoped_feature_list_.Reset();
@@ -216,7 +301,8 @@ TEST_F(ComposeEnablingTest, ShouldTriggerContextMenuDisabledTest) {
 }
 
 TEST_F(ComposeEnablingTest, ShouldTriggerContextMenuLanguageTest) {
-  ComposeEnabling compose_enabling(&mock_translate_language_provider_);
+  ComposeEnabling compose_enabling(&mock_translate_language_provider_,
+                                   GetProfile());
   // Enable everything.
   compose_enabling.SetEnabledForTesting();
 
@@ -233,7 +319,8 @@ TEST_F(ComposeEnablingTest, ShouldTriggerContextMenuLanguageBypassTest) {
       {compose::features::kEnableCompose,
        compose::features::kEnableComposeLanguageBypass},
       {});
-  ComposeEnabling compose_enabling(&mock_translate_language_provider_);
+  ComposeEnabling compose_enabling(&mock_translate_language_provider_,
+                                   GetProfile());
   // Enable everything.
   compose_enabling.SetEnabledForTesting();
 
@@ -248,7 +335,8 @@ TEST_F(ComposeEnablingTest, ShouldTriggerContextMenuLanguageBypassTest) {
 }
 
 TEST_F(ComposeEnablingTest, ShouldTriggerContextMenuEmptyLangugeTest) {
-  ComposeEnabling compose_enabling(&mock_translate_language_provider_);
+  ComposeEnabling compose_enabling(&mock_translate_language_provider_,
+                                   GetProfile());
   // Enable everything.
   compose_enabling.SetEnabledForTesting();
 
@@ -262,7 +350,8 @@ TEST_F(ComposeEnablingTest, ShouldTriggerContextMenuEmptyLangugeTest) {
 }
 
 TEST_F(ComposeEnablingTest, ShouldTriggerContextMenuUndeterminedLangugeTest) {
-  ComposeEnabling compose_enabling(&mock_translate_language_provider_);
+  ComposeEnabling compose_enabling(&mock_translate_language_provider_,
+                                   GetProfile());
   // Enable everything.
   compose_enabling.SetEnabledForTesting();
 
@@ -276,7 +365,8 @@ TEST_F(ComposeEnablingTest, ShouldTriggerContextMenuUndeterminedLangugeTest) {
 }
 
 TEST_F(ComposeEnablingTest, ShouldTriggerContextMenuFieldTypeTest) {
-  ComposeEnabling compose_enabling(&mock_translate_language_provider_);
+  ComposeEnabling compose_enabling(&mock_translate_language_provider_,
+                                   GetProfile());
   // Set ContextMenuParams to non-contenteditable and non-textarea, which we do
   // not support.
   context_menu_params_.is_content_editable_for_autofill = false;
@@ -293,7 +383,8 @@ TEST_F(ComposeEnablingTest, ShouldTriggerContextMenuFieldTypeTest) {
 
 TEST_F(ComposeEnablingTest,
        ShouldTriggerContextMenuAllEnabledContentEditableTest) {
-  ComposeEnabling compose_enabling(&mock_translate_language_provider_);
+  ComposeEnabling compose_enabling(&mock_translate_language_provider_,
+                                   GetProfile());
   // Enable everything.
   compose_enabling.SetEnabledForTesting();
 
@@ -306,7 +397,8 @@ TEST_F(ComposeEnablingTest,
 }
 
 TEST_F(ComposeEnablingTest, ShouldTriggerContextMenuAllEnabledTextAreaTest) {
-  ComposeEnabling compose_enabling(&mock_translate_language_provider_);
+  ComposeEnabling compose_enabling(&mock_translate_language_provider_,
+                                   GetProfile());
   // Enable everything.
   compose_enabling.SetEnabledForTesting();
 
@@ -324,7 +416,8 @@ TEST_F(ComposeEnablingTest, ShouldTriggerContextMenuAllEnabledTextAreaTest) {
 }
 
 TEST_F(ComposeEnablingTest, ShouldTriggerPopupDisabledTest) {
-  ComposeEnabling compose_enabling(&mock_translate_language_provider_);
+  ComposeEnabling compose_enabling(&mock_translate_language_provider_,
+                                   GetProfile());
 
   // We intentionally disable the feature.
   scoped_feature_list_.Reset();
@@ -338,11 +431,12 @@ TEST_F(ComposeEnablingTest, ShouldTriggerPopupDisabledTest) {
 
   EXPECT_FALSE(compose_enabling.ShouldTriggerPopup(
       autocomplete_attribute, GetProfile(), mock_translate_manager_.get(),
-      has_saved_state, GetOrigin(), GetOrigin()));
+      has_saved_state, GetOrigin(), GetOrigin(), GURL(kExampleURL)));
 }
 
 TEST_F(ComposeEnablingTest, ShouldTriggerPopupLanguageTest) {
-  ComposeEnabling compose_enabling(&mock_translate_language_provider_);
+  ComposeEnabling compose_enabling(&mock_translate_language_provider_,
+                                   GetProfile());
   // Enable the feature.
   compose_enabling.SetEnabledForTesting();
   std::string autocomplete_attribute;
@@ -353,7 +447,7 @@ TEST_F(ComposeEnablingTest, ShouldTriggerPopupLanguageTest) {
 
   EXPECT_FALSE(compose_enabling.ShouldTriggerPopup(
       autocomplete_attribute, GetProfile(), mock_translate_manager_.get(),
-      has_saved_state, GetOrigin(), GetOrigin()));
+      has_saved_state, GetOrigin(), GetOrigin(), GURL(kExampleURL)));
 }
 
 TEST_F(ComposeEnablingTest, ShouldTriggerPopupLanguageBypassTest) {
@@ -364,11 +458,12 @@ TEST_F(ComposeEnablingTest, ShouldTriggerPopupLanguageBypassTest) {
        compose::features::kEnableComposeLanguageBypass},
       {});
 
-  ComposeEnabling compose_enabling(&mock_translate_language_provider_);
+  ComposeEnabling compose_enabling(&mock_translate_language_provider_,
+                                   GetProfile());
   // Enable the feature.
   compose_enabling.SetEnabledForTesting();
   std::string autocomplete_attribute;
-  bool has_saved_state = false;
+  bool has_saved_state = true;
 
   // Set the mock language to something we don't support. "eo" is Esperanto.
   // Not expected to be called.
@@ -378,11 +473,12 @@ TEST_F(ComposeEnablingTest, ShouldTriggerPopupLanguageBypassTest) {
   // the bypass is enabled.
   EXPECT_TRUE(compose_enabling.ShouldTriggerPopup(
       autocomplete_attribute, GetProfile(), mock_translate_manager_.get(),
-      has_saved_state, GetOrigin(), GetOrigin()));
+      has_saved_state, GetOrigin(), GetOrigin(), GURL(kExampleURL)));
 }
 
-TEST_F(ComposeEnablingTest, ShouldTriggerPopupAutocompleteTest) {
-  ComposeEnabling compose_enabling(&mock_translate_language_provider_);
+TEST_F(ComposeEnablingTest, ShouldNotTriggerProactivePopupAutocompleteOffTest) {
+  ComposeEnabling compose_enabling(&mock_translate_language_provider_,
+                                   GetProfile());
   // Enable everything.
   compose_enabling.SetEnabledForTesting();
   // Autocomplete is set to off for this page.
@@ -394,37 +490,56 @@ TEST_F(ComposeEnablingTest, ShouldTriggerPopupAutocompleteTest) {
 
   EXPECT_FALSE(compose_enabling.ShouldTriggerPopup(
       autocomplete_attribute, GetProfile(), mock_translate_manager_.get(),
-      has_saved_state, GetOrigin(), GetOrigin()));
+      has_saved_state, GetOrigin(), GetOrigin(), GURL(kExampleURL)));
 }
 
-TEST_F(ComposeEnablingTest, ShouldTriggerPopupSavedStateTest) {
-  ComposeEnabling compose_enabling(&mock_translate_language_provider_);
-  // Enable everything..
+TEST_F(ComposeEnablingTest, ShouldTriggerSavedStatePopupAutocompleteOffTest) {
+  ComposeEnabling compose_enabling(&mock_translate_language_provider_,
+                                   GetProfile());
+  // Enable everything.
   compose_enabling.SetEnabledForTesting();
-  std::string autocomplete_attribute;
-  // We have saved state.
+  // Autocomplete is set to off for this page.
+  std::string autocomplete_attribute("off");
   bool has_saved_state = true;
 
   // Set the language to something we support.
   SetLanguage("en");
 
-  EXPECT_FALSE(compose_enabling.ShouldTriggerPopup(
+  EXPECT_TRUE(compose_enabling.ShouldTriggerPopup(
       autocomplete_attribute, GetProfile(), mock_translate_manager_.get(),
-      has_saved_state, GetOrigin(), GetOrigin()));
+      has_saved_state, GetOrigin(), GetOrigin(), GURL(kExampleURL)));
 }
 
-TEST_F(ComposeEnablingTest, ShouldTriggerPopupAllEnabledTest) {
-  ComposeEnabling compose_enabling(&mock_translate_language_provider_);
+TEST_F(ComposeEnablingTest, ShouldTriggerPopupWithSavedStateTest) {
+  ComposeEnabling compose_enabling(&mock_translate_language_provider_,
+                                   GetProfile());
   // Enable everything.
   compose_enabling.SetEnabledForTesting();
   std::string autocomplete_attribute;
-  bool has_saved_state = false;
 
-  SetLanguage("en");
+  // test all variants of: popup with, popup without state.
+  std::vector<std::pair<bool, bool>> tests = {
+      {true, true}, {true, false}, {false, true}, {false, false}};
 
-  EXPECT_TRUE(compose_enabling.ShouldTriggerPopup(
-      autocomplete_attribute, GetProfile(), mock_translate_manager_.get(),
-      has_saved_state, GetOrigin(), GetOrigin()));
+  for (auto [popup_with_state, popup_without_state] : tests) {
+    compose::Config& config = compose::GetMutableConfigForTesting();
+    config.popup_with_saved_state = popup_with_state;
+    config.popup_with_no_saved_state = popup_without_state;
+
+    SetLanguage("en");
+
+    EXPECT_EQ(popup_with_state, compose_enabling.ShouldTriggerPopup(
+                                    autocomplete_attribute, GetProfile(),
+                                    mock_translate_manager_.get(),
+                                    /*has_saved_state=*/true, GetOrigin(),
+                                    GetOrigin(), GURL(kExampleURL)));
+
+    EXPECT_EQ(popup_without_state, compose_enabling.ShouldTriggerPopup(
+                                       autocomplete_attribute, GetProfile(),
+                                       mock_translate_manager_.get(),
+                                       /*has_saved_state=*/false, GetOrigin(),
+                                       GetOrigin(), GURL(kExampleURL)));
+  }
 }
 
 TEST_F(ComposeEnablingTest, ShouldTriggerPopupNudgeDisabledTest) {
@@ -433,19 +548,41 @@ TEST_F(ComposeEnablingTest, ShouldTriggerPopupNudgeDisabledTest) {
       {compose::features::kEnableCompose},
       {compose::features::kEnableComposeNudge});
 
-  ComposeEnabling compose_enabling(&mock_translate_language_provider_);
-  // Enable everything at the profile level.
+  ComposeEnabling compose_enabling(&mock_translate_language_provider_,
+                                   GetProfile());
+  // Enable everything.
   compose_enabling.SetEnabledForTesting();
+  std::string autocomplete_attribute;
 
-  // Set the language to something we support.
-  SetLanguage("en");
-  EXPECT_FALSE(compose_enabling.ShouldTriggerPopup(
-      "", GetProfile(), mock_translate_manager_.get(),
-      /* has_saved_state= */ false, GetOrigin(), GetOrigin()));
+  std::vector<std::pair<bool, bool>> tests = {
+      // config: popup with, popup without. expect: trigger with, trigger
+      // without.
+      {true, true},
+      {true, false},
+      {false, true},
+      {false, false}};
+
+  for (auto [popup_with_state, popup_without_state] : tests) {
+    compose::Config& config = compose::GetMutableConfigForTesting();
+    config.popup_with_saved_state = popup_with_state;
+    config.popup_with_no_saved_state = popup_without_state;
+
+    SetLanguage("en");
+
+    EXPECT_FALSE(compose_enabling.ShouldTriggerPopup(
+        autocomplete_attribute, GetProfile(), mock_translate_manager_.get(),
+        /*has_saved_state=*/true, GetOrigin(), GetOrigin(), GURL(kExampleURL)));
+
+    EXPECT_FALSE(compose_enabling.ShouldTriggerPopup(
+        autocomplete_attribute, GetProfile(), mock_translate_manager_.get(),
+        /*has_saved_state=*/false, GetOrigin(), GetOrigin(),
+        GURL(kExampleURL)));
+  }
 }
 
 TEST_F(ComposeEnablingTest, ShouldTriggerPopupCrossOrigin) {
-  ComposeEnabling compose_enabling(&mock_translate_language_provider_);
+  ComposeEnabling compose_enabling(&mock_translate_language_provider_,
+                                   GetProfile());
   // Enable everything.
   compose_enabling.SetEnabledForTesting();
   std::string autocomplete_attribute;
@@ -455,11 +592,13 @@ TEST_F(ComposeEnablingTest, ShouldTriggerPopupCrossOrigin) {
   SetLanguage("en");
   EXPECT_FALSE(compose_enabling.ShouldTriggerPopup(
       autocomplete_attribute, GetProfile(), mock_translate_manager_.get(),
-      has_saved_state, GetOrigin(), url::Origin()));
+      has_saved_state, GetOrigin(), url::Origin(), GURL(kExampleURL)));
 }
 
 TEST_F(ComposeEnablingTest, ShouldTriggerContextMenuCrossOrigin) {
-  ComposeEnabling compose_enabling(&mock_translate_language_provider_);
+  base::HistogramTester histogram_tester;
+  ComposeEnabling compose_enabling(&mock_translate_language_provider_,
+                                   GetProfile());
   // Enable everything.
   compose_enabling.SetEnabledForTesting();
 
@@ -470,4 +609,136 @@ TEST_F(ComposeEnablingTest, ShouldTriggerContextMenuCrossOrigin) {
   EXPECT_FALSE(compose_enabling.ShouldTriggerContextMenu(
       GetProfile(), mock_translate_manager_.get(), /*rfh=*/GetRenderFrameHost(),
       context_menu_params_));
+
+  // Check that a response result OK metric was emitted.
+  histogram_tester.ExpectUniqueSample(
+      compose::kComposeShowStatus,
+      compose::ComposeShowStatus::kFormFieldInCrossOriginFrame, 1);
+}
+
+TEST_F(ComposeEnablingTest, GetOptimizationGuidanceShowNudgeTest) {
+  ComposeEnabling compose_enabling(&mock_translate_language_provider_,
+                                   GetProfile());
+  // Set up a fake metadata to return from the mock.
+  optimization_guide::OptimizationMetadata test_metadata;
+  compose::ComposeHintMetadata compose_hint_metadata;
+  compose_hint_metadata.set_decision(
+      compose::ComposeHintDecision::COMPOSE_HINT_DECISION_ENABLED);
+  test_metadata.SetAnyMetadataForTesting(compose_hint_metadata);
+
+  EXPECT_CALL(opt_guide(),
+              CanApplyOptimization(
+                  GURL(kExampleURL),
+                  optimization_guide::proto::OptimizationType::COMPOSE,
+                  ::testing::An<optimization_guide::OptimizationMetadata*>()))
+      .WillRepeatedly(testing::DoAll(
+          testing::SetArgPointee<2>(test_metadata),
+          testing::Return(
+              optimization_guide::OptimizationGuideDecision::kTrue)));
+
+  GURL example(kExampleURL);
+  compose::ComposeHintDecision decision =
+      compose_enabling.GetOptimizationGuidanceForUrl(example, GetProfile());
+
+  // Verify response from CanApplyOptimization is as we expect.
+  EXPECT_EQ(compose::ComposeHintDecision::COMPOSE_HINT_DECISION_ENABLED,
+            decision);
+}
+
+TEST_F(ComposeEnablingTest, GetOptimizationGuidanceNoFeedbackTest) {
+  ComposeEnabling compose_enabling(&mock_translate_language_provider_,
+                                   GetProfile());
+  // Set up a fake metadata to return from the mock.
+  optimization_guide::OptimizationMetadata test_metadata;
+  compose::ComposeHintMetadata compose_hint_metadata;
+  compose_hint_metadata.set_decision(
+      compose::ComposeHintDecision::COMPOSE_HINT_DECISION_ENABLED);
+  test_metadata.SetAnyMetadataForTesting(compose_hint_metadata);
+
+  EXPECT_CALL(opt_guide(),
+              CanApplyOptimization(
+                  GURL(kExampleURL),
+                  optimization_guide::proto::OptimizationType::COMPOSE,
+                  ::testing::An<optimization_guide::OptimizationMetadata*>()))
+      .WillRepeatedly(testing::DoAll(
+          testing::SetArgPointee<2>(test_metadata),
+          testing::Return(
+              optimization_guide::OptimizationGuideDecision::kFalse)));
+
+  GURL example(kExampleURL);
+  compose::ComposeHintDecision decision =
+      compose_enabling.GetOptimizationGuidanceForUrl(example, GetProfile());
+
+  // Verify response from CanApplyOptimization is as we expect.
+  EXPECT_EQ(compose::ComposeHintDecision::COMPOSE_HINT_DECISION_UNSPECIFIED,
+            decision);
+}
+
+TEST_F(ComposeEnablingTest, GetOptimizationGuidanceNoComposeMetadataTest) {
+  ComposeEnabling compose_enabling(&mock_translate_language_provider_,
+                                   GetProfile());
+  // Set up a fake metadata to return from the mock.
+  optimization_guide::OptimizationMetadata test_metadata;
+  compose::ComposeHintMetadata compose_hint_metadata;
+  test_metadata.SetAnyMetadataForTesting(compose_hint_metadata);
+
+  EXPECT_CALL(opt_guide(),
+              CanApplyOptimization(
+                  GURL(kExampleURL),
+                  optimization_guide::proto::OptimizationType::COMPOSE,
+                  ::testing::An<optimization_guide::OptimizationMetadata*>()))
+      .WillRepeatedly(testing::DoAll(
+          testing::SetArgPointee<2>(test_metadata),
+          testing::Return(
+              optimization_guide::OptimizationGuideDecision::kTrue)));
+
+  GURL example(kExampleURL);
+  compose::ComposeHintDecision decision =
+      compose_enabling.GetOptimizationGuidanceForUrl(example, GetProfile());
+
+  // Verify response from CanApplyOptimization is as we expect.
+  EXPECT_EQ(compose::ComposeHintDecision::COMPOSE_HINT_DECISION_UNSPECIFIED,
+            decision);
+}
+
+TEST_F(ComposeEnablingTest, ShouldTriggerContextMenuOutOfPolicyURLTest) {
+  ComposeEnabling compose_enabling(&mock_translate_language_provider_,
+                                   GetProfile());
+  // Enable everything.
+  compose_enabling.SetEnabledForTesting();
+  // Set the language to something we support.
+  SetLanguage("en");
+
+  // Set ContextMenuParams to textarea, which we support.
+  context_menu_params_.is_content_editable_for_autofill = false;
+  context_menu_params_.form_control_type =
+      blink::mojom::FormControlType::kTextArea;
+
+  base::HistogramTester histogram_tester;
+
+  // Set up a fake metadata to return from the mock.
+  optimization_guide::OptimizationMetadata test_metadata;
+  compose::ComposeHintMetadata compose_hint_metadata;
+  compose_hint_metadata.set_decision(
+      compose::ComposeHintDecision::COMPOSE_HINT_DECISION_COMPOSE_DISABLED);
+  test_metadata.SetAnyMetadataForTesting(compose_hint_metadata);
+
+  EXPECT_CALL(opt_guide(),
+              CanApplyOptimization(
+                  GURL(kExampleURL),
+                  optimization_guide::proto::OptimizationType::COMPOSE,
+                  ::testing::An<optimization_guide::OptimizationMetadata*>()))
+      .WillRepeatedly(testing::DoAll(
+          testing::SetArgPointee<2>(test_metadata),
+          testing::Return(
+              optimization_guide::OptimizationGuideDecision::kTrue)));
+
+  EXPECT_FALSE(compose_enabling.ShouldTriggerContextMenu(
+      GetProfile(), mock_translate_manager_.get(), /*rfh=*/GetRenderFrameHost(),
+      context_menu_params_));
+
+  // Verify the metrics reflect the decision not to show the page.
+  histogram_tester.ExpectUniqueSample(
+      compose::kComposeShowStatus,
+      compose::ComposeShowStatus::kPerUrlChecksFailed, 1);
 }

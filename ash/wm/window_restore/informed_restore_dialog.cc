@@ -118,9 +118,13 @@ class InformedRestoreContentsView : public views::TableLayoutView {
     auto* delegate = Shell::Get()->saved_desk_delegate();
     for (const std::string& app_id : app_ids) {
       std::string title;
-      cache->ForOneApp(app_id, [&title](const apps::AppUpdate& update) {
-        title = update.Name();
-      });
+      // `cache` might be null in a test environment. In that case, we will use
+      // an empty title.
+      if (cache) {
+        cache->ForOneApp(app_id, [&title](const apps::AppUpdate& update) {
+          title = update.Name();
+        });
+      }
 
       auto item_view = std::make_unique<InformedRestoreItemView>(title);
       auto* item_view_ptr = item_view.get();

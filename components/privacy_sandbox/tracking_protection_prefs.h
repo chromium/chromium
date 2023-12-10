@@ -62,6 +62,23 @@ inline constexpr char kTrackingProtectionOffboardedSince[] =
 inline constexpr char kTrackingProtectionOffboardingAckAction[] =
     "tracking_protection.tracking_protection_offboarding_ack_action";
 
+// Silent onboarding
+
+// Unsynced pref that indicates what status the profile is at with regards to
+// tracking protections (Silent Onboarding Notice for control groups).
+inline constexpr char kTrackingProtectionSilentOnboardingStatus[] =
+    "tracking_protection.tracking_protection_silent_onboarding_status";
+
+// Unsynced pref that indicates when the profile has been marked eligible for
+// silent onboarding tracking protection control groups.
+inline constexpr char kTrackingProtectionSilentEligibleSince[] =
+    "tracking_protection.tracking_protection_silent_eligible_since";
+
+// Unsynced pref that indicates when the profile has been silently onboarded
+// onto tracking protection control groups.
+inline constexpr char kTrackingProtectionSilentOnboardedSince[] =
+    "tracking_protection.tracking_protection_silent_onboarded_since";
+
 // Tracking Protection Settings Prefs.
 
 // Synced boolean that indicates whether the "block all 3pc" toggle on the

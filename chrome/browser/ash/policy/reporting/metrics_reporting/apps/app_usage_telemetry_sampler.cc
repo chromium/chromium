@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/apps/app_usage_telemetry_sampler.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/memory/weak_ptr.h"
@@ -20,7 +21,6 @@
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace reporting {
 
@@ -40,7 +40,7 @@ void AppUsageTelemetrySampler::MaybeCollect(OptionalMetricCallback callback) {
   }
   if (!profile_) {
     // Profile has be destructed. Return.
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
 
@@ -51,7 +51,7 @@ void AppUsageTelemetrySampler::MaybeCollect(OptionalMetricCallback callback) {
   const PrefService* const user_prefs = profile_->GetPrefs();
   if (!user_prefs->HasPrefPath(::apps::kAppUsageTime)) {
     // No usage data in the pref store.
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
 
@@ -87,7 +87,7 @@ void AppUsageTelemetrySampler::MaybeCollect(OptionalMetricCallback callback) {
 
   if (app_usage_data->app_usage().empty()) {
     // No app instance usage to report.
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
 

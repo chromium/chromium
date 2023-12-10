@@ -50,6 +50,12 @@ class AutofillWebDataBackend {
   // sequence notifications are asynchronous.
   virtual void NotifyOfCreditCardChanged(const CreditCardChange& change) = 0;
 
+  // Notifies listeners on the DB sequence that an IBAN has been
+  // added/removed/updated in the WebDatabase.
+  // NOTE: This method is intended to be called from the DB sequence. The UI
+  // sequence notifications are asynchronous.
+  virtual void NotifyOfIbanChanged(const IbanChange& change) = 0;
+
   // Notifies listeners on UI sequences that changes have been made to
   // Autofill records of the database by the sync.
   // NOTE: The UI sequence notifications are asynchronous.

@@ -7,9 +7,7 @@ package org.chromium.components.paintpreview.player;
 import android.graphics.Rect;
 import android.util.Size;
 
-/**
- * Stores data about a frame for testing.
- */
+/** Stores data about a frame for testing. */
 public class FrameData {
     private final Size mSize;
     private final int[] mLinkRects;
@@ -17,7 +15,11 @@ public class FrameData {
     private final int[] mChildRects;
     private final FrameData[] mChildFrames;
 
-    public FrameData(Size size, Rect[] linkRects, String[] links, Rect[] childRects,
+    public FrameData(
+            Size size,
+            Rect[] linkRects,
+            String[] links,
+            Rect[] childRects,
             FrameData[] childFrames) {
         mSize = size;
 

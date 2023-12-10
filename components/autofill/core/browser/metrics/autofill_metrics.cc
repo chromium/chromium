@@ -76,54 +76,53 @@ constexpr auto kStructuredAddressTypeToNameMap =
          {ADDRESS_HOME_APT_NUM, "ApartmentNumber"},
          {ADDRESS_HOME_SUBPREMISE, "SubPremise"}});
 
-// Note: if adding an enum value here, update the corresponding description for
-// AutofillFieldPredictionQualityByFieldType in
-// tools/metrics/histograms/enums.xml.
+// Don't change the enum values because they are recorded in metrics.
 enum FieldTypeGroupForMetrics {
   GROUP_AMBIGUOUS = 0,
-  GROUP_NAME,
-  GROUP_COMPANY,
-  GROUP_ADDRESS_LINE_1,
-  GROUP_ADDRESS_LINE_2,
-  GROUP_ADDRESS_CITY,
-  GROUP_ADDRESS_STATE,
-  GROUP_ADDRESS_ZIP,
-  GROUP_ADDRESS_COUNTRY,
-  GROUP_ADDRESS_HOME_STREET_NAME,
-  GROUP_ADDRESS_HOME_HOUSE_NUMBER,
-  GROUP_ADDRESS_HOME_SUBPREMISE,
-  GROUP_PHONE,
-  GROUP_FAX,  // Deprecated.
-  GROUP_EMAIL,
-  GROUP_CREDIT_CARD_NAME,
-  GROUP_CREDIT_CARD_NUMBER,
-  GROUP_CREDIT_CARD_DATE,
-  GROUP_CREDIT_CARD_TYPE,
-  GROUP_PASSWORD,
-  GROUP_ADDRESS_LINE_3,
-  GROUP_USERNAME,
-  GROUP_STREET_ADDRESS,
-  GROUP_CREDIT_CARD_VERIFICATION,
-  GROUP_UNFILLABLE,
-  GROUP_ADDRESS_HOME_APT_NUM,
-  GROUP_ADDRESS_HOME_SORTING_CODE,
-  GROUP_ADDRESS_HOME_DEPENDENT_LOCALITY,
-  GROUP_ADDRESS_HOME_OTHER_SUBUNIT,
-  GROUP_ADDRESS_HOME_ADDRESS,
-  GROUP_ADDRESS_HOME_ADDRESS_WITH_NAME,
-  GROUP_ADDRESS_HOME_FLOOR,
-  GROUP_UNKNOWN_TYPE,
-  GROUP_BIRTHDATE,
-  GROUP_IBAN,
-  GROUP_ADDRESS_HOME_LANDMARK,
-  GROUP_ADDRESS_HOME_BETWEEN_STREETS,
-  GROUP_ADDRESS_HOME_ADMIN_LEVEL2,
-  GROUP_ADDRESS_HOME_STREET_LOCATION,
-  GROUP_ADDRESS_HOME_OVERFLOW,
-  GROUP_DELIVERY_INSTRUCTIONS,
-  GROUP_ADDRESS_HOME_OVERFLOW_AND_LANDMARK,
-  GROUP_ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK,
-  // Add new entries here and update enums.xml.
+  GROUP_NAME = 1,
+  GROUP_COMPANY = 2,
+  GROUP_ADDRESS_LINE_1 = 3,
+  GROUP_ADDRESS_LINE_2 = 4,
+  GROUP_ADDRESS_CITY = 5,
+  GROUP_ADDRESS_STATE = 6,
+  GROUP_ADDRESS_ZIP = 7,
+  GROUP_ADDRESS_COUNTRY = 8,
+  GROUP_ADDRESS_HOME_STREET_NAME = 9,
+  GROUP_ADDRESS_HOME_HOUSE_NUMBER = 10,
+  GROUP_ADDRESS_HOME_SUBPREMISE = 11,
+  GROUP_PHONE = 12,
+  GROUP_FAX = 13,  // Deprecated.
+  GROUP_EMAIL = 14,
+  GROUP_CREDIT_CARD_NAME = 15,
+  GROUP_CREDIT_CARD_NUMBER = 16,
+  GROUP_CREDIT_CARD_DATE = 17,
+  GROUP_CREDIT_CARD_TYPE = 18,
+  GROUP_PASSWORD = 19,
+  GROUP_ADDRESS_LINE_3 = 20,
+  GROUP_USERNAME = 21,
+  GROUP_STREET_ADDRESS = 22,
+  GROUP_CREDIT_CARD_VERIFICATION = 23,
+  GROUP_UNFILLABLE = 24,
+  GROUP_ADDRESS_HOME_APT_NUM = 25,
+  GROUP_ADDRESS_HOME_SORTING_CODE = 26,
+  GROUP_ADDRESS_HOME_DEPENDENT_LOCALITY = 27,
+  GROUP_ADDRESS_HOME_OTHER_SUBUNIT = 28,
+  GROUP_ADDRESS_HOME_ADDRESS = 29,
+  GROUP_ADDRESS_HOME_ADDRESS_WITH_NAME = 30,
+  GROUP_ADDRESS_HOME_FLOOR = 31,
+  GROUP_UNKNOWN_TYPE = 32,
+  GROUP_BIRTHDATE = 33,
+  GROUP_IBAN = 34,
+  GROUP_ADDRESS_HOME_LANDMARK = 35,
+  GROUP_ADDRESS_HOME_BETWEEN_STREETS = 36,
+  GROUP_ADDRESS_HOME_ADMIN_LEVEL2 = 37,
+  GROUP_ADDRESS_HOME_STREET_LOCATION = 38,
+  GROUP_ADDRESS_HOME_OVERFLOW = 39,
+  GROUP_DELIVERY_INSTRUCTIONS = 40,
+  GROUP_ADDRESS_HOME_OVERFLOW_AND_LANDMARK = 41,
+  GROUP_ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK = 42,
+  // Note: if adding an enum value here, run
+  // tools/metrics/histograms/update_autofill_enums.py
   NUM_FIELD_TYPE_GROUPS_FOR_METRICS
 };
 
@@ -327,6 +326,7 @@ int GetFieldTypeGroupPredictionQualityMetric(
         case MAX_VALID_FIELD_TYPE:
         case CREDIT_CARD_STANDALONE_VERIFICATION_CODE:
         case SINGLE_USERNAME_FORGOT_PASSWORD:
+        case SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES:
           NOTREACHED() << field_type << " type is not in that group.";
           group = GROUP_AMBIGUOUS;
           break;
@@ -1675,11 +1675,6 @@ void AutofillMetrics::LogAutofillFormCleared() {
 }
 
 // static
-void AutofillMetrics::LogAutofillUndo() {
-  base::RecordAction(base::UserMetricsAction("Autofill_UndoFilling"));
-}
-
-// static
 void AutofillMetrics::LogNumberOfEditedAutofilledFields(
     size_t num_edited_autofilled_fields,
     bool observed_submission) {
@@ -2078,7 +2073,7 @@ void AutofillMetrics::OnAutocompleteSuggestionsShown() {
 
 // static
 void AutofillMetrics::OnAutocompleteSuggestionDeleted(
-    AutocompleteSingleEntryRemovalMethod removal_method) {
+    SingleEntryRemovalMethod removal_method) {
   AutofillMetrics::Log(AutocompleteEvent::AUTOCOMPLETE_SUGGESTION_DELETED);
   base::UmaHistogramEnumeration(
       "Autofill.Autocomplete.SingleEntryRemovalMethod", removal_method);
@@ -2087,7 +2082,7 @@ void AutofillMetrics::OnAutocompleteSuggestionDeleted(
 // static
 void AutofillMetrics::Log(AutocompleteEvent event) {
   DCHECK_LT(event, AutocompleteEvent::NUM_AUTOCOMPLETE_EVENTS);
-  base::UmaHistogramEnumeration("Autocomplete.Events", event,
+  base::UmaHistogramEnumeration("Autocomplete.Events2", event,
                                 NUM_AUTOCOMPLETE_EVENTS);
 }
 
@@ -2209,22 +2204,17 @@ void AutofillMetrics::FormInteractionsUkmLogger::LogSuggestionsShown(
 }
 
 void AutofillMetrics::FormInteractionsUkmLogger::LogDidFillSuggestion(
-    absl::variant<AutofillProfile::RecordType, CreditCard::RecordType>
-        record_type,
     const FormStructure& form,
-    const AutofillField& field) {
+    const AutofillField& field,
+    std::optional<CreditCard::RecordType> record_type) {
   if (!CanLog())
     return;
 
-  bool is_for_credit_card =
-      absl::holds_alternative<CreditCard::RecordType>(record_type);
-
-  ukm::builders::Autofill_SuggestionFilled(GetSourceId())
-      .SetRecordType(is_for_credit_card
-                         ? base::to_underlying(
-                               absl::get<CreditCard::RecordType>(record_type))
-                         : absl::get<AutofillProfile::RecordType>(record_type))
-      .SetIsForCreditCard(is_for_credit_card)
+  auto metric = ukm::builders::Autofill_SuggestionFilled(GetSourceId());
+  if (record_type) {
+    metric.SetRecordType(base::to_underlying(*record_type));
+  }
+  metric.SetIsForCreditCard(record_type.has_value())
       .SetMillisecondsSinceFormParsed(
           MillisecondsSinceFormParsed(form.form_parsed_timestamp()))
       .SetFormSignature(HashFormSignature(form.form_signature()))
@@ -2531,9 +2521,9 @@ void AutofillMetrics::FormInteractionsUkmLogger::
       .SetFieldSessionIdentifier(
           AutofillMetrics::FieldGlobalIdToHash64Bit(field.global_id()))
       .SetFieldSignature(HashFieldSignature(field.GetFieldSignature()))
-      .SetFormControlType(base::to_underlying(field.FormControlType()))
       .SetFormControlType2(base::to_underlying(field.form_control_type))
-      .SetAutocompleteState(base::to_underlying(autocomplete_state));
+      .SetAutocompleteState(base::to_underlying(autocomplete_state))
+      .SetFieldLogEventCount(field_log_events.size());
 
   SetStatusVector(AutofillStatus::kIsFocusable, field.IsFocusable());
   SetStatusVector(AutofillStatus::kUserTypedIntoField,

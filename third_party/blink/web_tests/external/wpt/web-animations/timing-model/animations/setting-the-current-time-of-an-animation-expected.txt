@@ -1,14 +1,5 @@
 This is a testharness.js-based test.
-[PASS] Setting the current time of a pending animation to unresolved does not throw a TypeError
-[PASS] Setting the current time of a playing animation to unresolved throws a TypeError
-[PASS] Setting the current time of a paused animation to unresolved throws a TypeError
 [FAIL] Validate different value types that can be used to set current time
   assert_throws_js: function "() => {\n    animation.currentTime = CSSNumericValue.parse("30%");\n  }" threw object "NotSupportedError: Failed to set the 'currentTime' property on 'Animation': Invalid currentTime. CSSNumericValue must be either a number or a time value for time based animations." ("NotSupportedError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
-[PASS] Setting the current time of a pausing animation applies a pending playback rate
-[PASS] Setting the current time after the end with a positive playback rate
-[PASS] Setting a negative current time with a positive playback rate
-[PASS] Setting the current time after the end with a negative playback rate
-[PASS] Setting a negative current time with a negative playback rate
-[PASS] Setting the current time on an animation with a zero playback rate
 Harness: the test ran to completion.
 

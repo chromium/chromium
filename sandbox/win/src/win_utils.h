@@ -12,8 +12,8 @@
 #include <string>
 #include <vector>
 
+#include <optional>
 #include "base/win/windows_types.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace sandbox {
 
@@ -71,20 +71,20 @@ DWORD IsReparsePoint(const std::wstring& full_path);
 bool SameObject(HANDLE handle, const wchar_t* full_path);
 
 // Resolves a handle to an nt path or nullopt if the path cannot be resolved.
-absl::optional<std::wstring> GetPathFromHandle(HANDLE handle);
+std::optional<std::wstring> GetPathFromHandle(HANDLE handle);
 
 // Resolves a win32 path to an nt path using GetPathFromHandle. The path must
 // exist. Returns the path if the translation was successful.
-absl::optional<std::wstring> GetNtPathFromWin32Path(const std::wstring& path);
+std::optional<std::wstring> GetNtPathFromWin32Path(const std::wstring& path);
 
 // Resolves a handle to its type name. Returns the typename if successful.
-absl::optional<std::wstring> GetTypeNameFromHandle(HANDLE handle);
+std::optional<std::wstring> GetTypeNameFromHandle(HANDLE handle);
 
 // Resolves a user-readable registry path to a system-readable registry path.
 // For example, HKEY_LOCAL_MACHINE\\Software\\microsoft is translated to
 // \\registry\\machine\\software\\microsoft. Returns nullopt if the path
 // cannot be resolved.
-absl::optional<std::wstring> ResolveRegistryName(std::wstring name);
+std::optional<std::wstring> ResolveRegistryName(std::wstring name);
 
 // Allocates |buffer_bytes| in child (PAGE_READWRITE) and copies data
 // from |local_buffer| in this process into |child|. |remote_buffer|
@@ -113,7 +113,7 @@ void* GetProcessBaseAddress(HANDLE process);
 // value is returned. Note that unless all threads are suspended in the process
 // the valid handles could change between the return of the list and when you
 // use them.
-absl::optional<ProcessHandleMap> GetCurrentProcessHandles();
+std::optional<ProcessHandleMap> GetCurrentProcessHandles();
 
 }  // namespace sandbox
 

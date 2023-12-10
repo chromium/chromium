@@ -5,6 +5,8 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_NETWORK_CELLULAR_METRICS_LOGGER_H_
 #define CHROMEOS_ASH_COMPONENTS_NETWORK_CELLULAR_METRICS_LOGGER_H_
 
+#include <optional>
+
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
 #include "base/gtest_prod_util.h"
@@ -18,7 +20,6 @@
 #include "chromeos/ash/components/network/network_connection_observer.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_state_handler_observer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -116,7 +117,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularMetricsLogger
   static void RecordSimPinOperationResult(
       const SimPinOperation& pin_operation,
       const bool allow_cellular_sim_lock,
-      const absl::optional<std::string>& shill_error_name = absl::nullopt);
+      const std::optional<std::string>& shill_error_name = std::nullopt);
 
   // Records the SIM lock notification event.
   static void RecordSimLockNotificationEvent(
@@ -194,15 +195,15 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularMetricsLogger
                    bool is_connecting);
     ~ConnectionInfo();
     const std::string network_guid;
-    absl::optional<bool> is_connected;
+    std::optional<bool> is_connected;
     bool is_connecting = false;
     // Tracks whether a disconnect was requested from chrome on a network that
     // was previously in the connecting state. This field is set back to false
     // when shill connection failures are checked in
     // NetworkConnectionStateChanged().
     bool disconnect_requested = false;
-    absl::optional<base::TimeTicks> last_disconnect_request_time;
-    absl::optional<base::TimeTicks> last_connect_start_time;
+    std::optional<base::TimeTicks> last_disconnect_request_time;
+    std::optional<base::TimeTicks> last_connect_start_time;
   };
 
   // Usage type for cellular network. These values are persisted to logs.
@@ -401,22 +402,22 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularMetricsLogger
       const std::string& cellular_network_guid);
 
   // Tracks the last cellular network usage state.
-  absl::optional<CellularUsage> last_cellular_usage_;
+  std::optional<CellularUsage> last_cellular_usage_;
 
   // Tracks the last PSim cellular network usage state.
-  absl::optional<CellularUsage> last_psim_cellular_usage_;
+  std::optional<CellularUsage> last_psim_cellular_usage_;
 
   // Tracks the last time the PSim network's cellular usage changed.
-  absl::optional<base::ElapsedTimer> psim_usage_elapsed_timer_;
+  std::optional<base::ElapsedTimer> psim_usage_elapsed_timer_;
 
   // Tracks the last eSIM cellular network usage state.
-  absl::optional<CellularUsage> last_esim_cellular_usage_;
+  std::optional<CellularUsage> last_esim_cellular_usage_;
 
   // Tracks the last time eSIM network's cellular usage is managed or not.
   bool last_managed_by_policy_ = false;
 
   // Tracks the last time the eSIM network's cellular usage changed.
-  absl::optional<base::ElapsedTimer> esim_usage_elapsed_timer_;
+  std::optional<base::ElapsedTimer> esim_usage_elapsed_timer_;
 
   // Tracks whether cellular device is available or not.
   bool is_cellular_available_ = false;

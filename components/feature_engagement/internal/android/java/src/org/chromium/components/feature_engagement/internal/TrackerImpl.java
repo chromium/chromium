@@ -53,9 +53,7 @@ public class TrackerImpl implements Tracker {
         }
     }
 
-    /**
-     * The pointer to the feature_engagement::TrackerImplAndroid JNI bridge.
-     */
+    /** The pointer to the feature_engagement::TrackerImplAndroid JNI bridge. */
     private long mNativePtr;
 
     @CalledByNative
@@ -91,8 +89,8 @@ public class TrackerImpl implements Tracker {
             return new TriggerDetails(false, false);
         }
         assert mNativePtr != 0;
-        return TrackerImplJni.get().shouldTriggerHelpUIWithSnooze(
-                mNativePtr, TrackerImpl.this, feature);
+        return TrackerImplJni.get()
+                .shouldTriggerHelpUIWithSnooze(mNativePtr, TrackerImpl.this, feature);
     }
 
     @Override
@@ -104,8 +102,8 @@ public class TrackerImpl implements Tracker {
     @Override
     public boolean hasEverTriggered(String feature, boolean fromWindow) {
         assert mNativePtr != 0;
-        return TrackerImplJni.get().hasEverTriggered(
-                mNativePtr, TrackerImpl.this, feature, fromWindow);
+        return TrackerImplJni.get()
+                .hasEverTriggered(mNativePtr, TrackerImpl.this, feature, fromWindow);
     }
 
     @Override
@@ -124,8 +122,8 @@ public class TrackerImpl implements Tracker {
     @Override
     public void dismissedWithSnooze(String feature, int snoozeAction) {
         assert mNativePtr != 0;
-        TrackerImplJni.get().dismissedWithSnooze(
-                mNativePtr, TrackerImpl.this, feature, snoozeAction);
+        TrackerImplJni.get()
+                .dismissedWithSnooze(mNativePtr, TrackerImpl.this, feature, snoozeAction);
     }
 
     @Override
@@ -150,14 +148,15 @@ public class TrackerImpl implements Tracker {
     @Override
     public void registerPriorityNotificationHandler(
             String feature, Runnable priorityNotificationHandler) {
-        TrackerImplJni.get().registerPriorityNotificationHandler(
-                mNativePtr, TrackerImpl.this, feature, priorityNotificationHandler);
+        TrackerImplJni.get()
+                .registerPriorityNotificationHandler(
+                        mNativePtr, TrackerImpl.this, feature, priorityNotificationHandler);
     }
 
     @Override
     public void unregisterPriorityNotificationHandler(String feature) {
-        TrackerImplJni.get().unregisterPriorityNotificationHandler(
-                mNativePtr, TrackerImpl.this, feature);
+        TrackerImplJni.get()
+                .unregisterPriorityNotificationHandler(mNativePtr, TrackerImpl.this, feature);
     }
 
     @Override
@@ -192,30 +191,54 @@ public class TrackerImpl implements Tracker {
     @NativeMethods
     interface Natives {
         void notifyEvent(long nativeTrackerImplAndroid, TrackerImpl caller, String event);
+
         boolean shouldTriggerHelpUI(
                 long nativeTrackerImplAndroid, TrackerImpl caller, String feature);
+
         TriggerDetails shouldTriggerHelpUIWithSnooze(
                 long nativeTrackerImplAndroid, TrackerImpl caller, String feature);
+
         boolean wouldTriggerHelpUI(
                 long nativeTrackerImplAndroid, TrackerImpl caller, String feature);
-        boolean hasEverTriggered(long nativeTrackerImplAndroid, TrackerImpl caller, String feature,
+
+        boolean hasEverTriggered(
+                long nativeTrackerImplAndroid,
+                TrackerImpl caller,
+                String feature,
                 boolean fromWindow);
+
         int getTriggerState(long nativeTrackerImplAndroid, TrackerImpl caller, String feature);
+
         void dismissed(long nativeTrackerImplAndroid, TrackerImpl caller, String feature);
-        void dismissedWithSnooze(long nativeTrackerImplAndroid, TrackerImpl caller, String feature,
+
+        void dismissedWithSnooze(
+                long nativeTrackerImplAndroid,
+                TrackerImpl caller,
+                String feature,
                 int snoozeAction);
+
         DisplayLockHandleAndroid acquireDisplayLock(
                 long nativeTrackerImplAndroid, TrackerImpl caller);
+
         void setPriorityNotification(
                 long nativeTrackerImplAndroid, TrackerImpl caller, String feature);
+
         String getPendingPriorityNotification(long nativeTrackerImplAndroid, TrackerImpl caller);
-        void registerPriorityNotificationHandler(long nativeTrackerImplAndroid, TrackerImpl caller,
-                String feature, Runnable priorityNotificationHandler);
+
+        void registerPriorityNotificationHandler(
+                long nativeTrackerImplAndroid,
+                TrackerImpl caller,
+                String feature,
+                Runnable priorityNotificationHandler);
+
         void unregisterPriorityNotificationHandler(
                 long nativeTrackerImplAndroid, TrackerImpl caller, String feature);
+
         boolean isInitialized(long nativeTrackerImplAndroid, TrackerImpl caller);
+
         void addOnInitializedCallback(
                 long nativeTrackerImplAndroid, TrackerImpl caller, Callback<Boolean> callback);
+
         void release(long nativeDisplayLockHandleAndroid);
     }
 }

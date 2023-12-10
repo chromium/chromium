@@ -58,7 +58,7 @@ bool GetAccessibilityInfo(PDFEngine* engine,
 
   int char_index = 0;
   while (char_index < char_count) {
-    absl::optional<AccessibilityTextRunInfo> text_run_info_result =
+    std::optional<AccessibilityTextRunInfo> text_run_info_result =
         engine->GetTextRunInfo(page_index, char_index);
     DCHECK(text_run_info_result.has_value());
     const auto& text_run_info = text_run_info_result.value();

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import 'chrome://diagnostics/network_list.js';
-import 'chrome://webui-test/mojo_webui_test_support.js';
+import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
 import {ConnectivityCardElement} from 'chrome://diagnostics/connectivity_card.js';
 import {DiagnosticsBrowserProxyImpl} from 'chrome://diagnostics/diagnostics_browser_proxy.js';

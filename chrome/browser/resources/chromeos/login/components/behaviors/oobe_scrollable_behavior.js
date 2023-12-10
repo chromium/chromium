@@ -48,14 +48,6 @@ export const OobeScrollableBehavior = {
   },
 };
 
-/**
- * TODO: Replace with an interface. b/24294625
- * @typedef {{
- *   initScrollableObservers: function()
- * }}
- */
-OobeScrollableBehavior.Proto;
-
 /** @interface */
 export class OobeScrollableBehaviorInterface {
   initScrollableObservers(scrollableElement, ...sizeChangeObservableElemenets) {

@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="vi">
 <translation id="1075622780330595106">Gần đây, bạn không sử dụng <ph name="NUMBER_OF_TABS" /> trong tổng số các thẻ của mình. Bạn có muốn đóng các thẻ này không?</translation>
+<translation id="1155815720264022949">Bạn muốn đóng các thẻ cũ?</translation>
 <translation id="1215127405478249895">Xem lại thẻ</translation>
 <translation id="125153950246128346">Nhấn để xem một thẻ khác</translation>
 <translation id="1499635324672558517">Đóng tất cả thẻ ẩn danh?</translation>
@@ -46,9 +47,11 @@
 <translation id="5073204694187207510">Ẩn lưới toàn màn hình</translation>
 <translation id="5076161749301278626">Xem đánh giá về cửa hàng?</translation>
 <translation id="5082793167783849073">Tạo một nhóm để so sánh nhanh các trang. Để bắt đầu, hãy chạm và giữ một đường liên kết.</translation>
+<translation id="5303274951032363933">{TABS_COUNT,plural, =1{Có <ph name="TABS_COUNT_ONE" /> thẻ mà gần đây bạn không dùng đến}other{Có <ph name="TABS_COUNT_MANY" /> thẻ mà gần đây bạn không dùng đến}}</translation>
 <translation id="5339733443032484186">Thẻ bạn truy cập gần đây nhất</translation>
 <translation id="5490235265819901748">Đã mở rộng nhóm thẻ</translation>
 <translation id="5494920125229734069">Chọn tất cả</translation>
+<translation id="5545379293264651575">Đóng mà không xem lại</translation>
 <translation id="5556417849629758491">Xem thông tin cửa hàng, tùy chọn này nằm ở gần đầu màn hình</translation>
 <translation id="5558362125926932819">Đóng nhóm thẻ có <ph name="NUMBER_OF_TABS" /> thẻ</translation>
 <translation id="5580090775658607195">Đã nhóm <ph name="TAB_COUNT" /> thẻ</translation>
@@ -85,7 +88,6 @@
 <translation id="7885132941432959125">Chuyển thẻ sang phải</translation>
 <translation id="7966321538264951561">Đóng nội dung đề xuất.</translation>
 <translation id="8029301326595421733">Thông tin về cửa hàng này đã mở trên toàn màn hình</translation>
-<translation id="814503310257431685">Xem tất cả</translation>
 <translation id="8205266828577616993">Chuyển thẻ lên trên</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Đóng <ph name="TABS_COUNT_ONE" /> thẻ đã chọn}other{Đóng <ph name="TABS_COUNT_MANY" /> thẻ đã chọn}}</translation>
 <translation id="8398929769197326728">Thư mục mới – <ph name="CURRENT_TIMESTAMP_MS" /></translation>

@@ -45,8 +45,7 @@ import java.util.concurrent.TimeUnit;
 @RunWith(Parameterized.class)
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
 public class ClientOnReceivedError2Test extends AwParameterizedTest {
-    @Rule
-    public AwActivityTestRule mActivityTestRule;
+    @Rule public AwActivityTestRule mActivityTestRule;
 
     private VerifyOnReceivedErrorCallClient mContentsClient;
     private AwTestContainerView mTestContainerView;

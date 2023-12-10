@@ -30,8 +30,7 @@ import java.util.concurrent.Executor;
 @RunWith(Parameterized.class)
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
 public class AwProxyControllerTest extends AwParameterizedTest {
-    @Rule
-    public AwActivityTestRule mActivityTestRule;
+    @Rule public AwActivityTestRule mActivityTestRule;
 
     private static final String MATCH_ALL_SCHEMES = "*";
     private static final String DIRECT = "direct://";

@@ -97,13 +97,13 @@ void EnsureSoftwareVideoDecodersAreDisabled(
 // Exits the Runner process if creation of data storage fails for any reason.
 void SetDataParamsForMainContext(fuchsia::web::CreateContextParams* params) {
   // Set the web data quota based on the CastRunner configuration.
-  const absl::optional<base::Value::Dict>& config =
+  const std::optional<base::Value::Dict>& config =
       fuchsia_component_support::LoadPackageConfig();
   if (!config)
     return;
 
   constexpr char kDataQuotaBytesSwitch[] = "data-quota-bytes";
-  const absl::optional<int> data_quota_bytes =
+  const std::optional<int> data_quota_bytes =
       config->FindInt(kDataQuotaBytesSwitch);
   if (!data_quota_bytes)
     return;
@@ -130,11 +130,11 @@ void SetDataParamsForMainContext(fuchsia::web::CreateContextParams* params) {
 // CDM data persistence is always enabled, with an optional soft quota.
 // Exits the Runner if creation of CDM storage fails for any reason.
 void SetCdmParamsForMainContext(fuchsia::web::CreateContextParams* params) {
-  const absl::optional<base::Value::Dict>& config =
+  const std::optional<base::Value::Dict>& config =
       fuchsia_component_support::LoadPackageConfig();
   if (config) {
     constexpr char kCdmDataQuotaBytesSwitch[] = "cdm-data-quota-bytes";
-    const absl::optional<int> cdm_data_quota_bytes =
+    const std::optional<int> cdm_data_quota_bytes =
         config->FindInt(kCdmDataQuotaBytesSwitch);
     if (cdm_data_quota_bytes)
       params->set_cdm_data_quota_bytes(*cdm_data_quota_bytes);
@@ -414,26 +414,26 @@ CastRunner::GetIsolatedWebInstanceConfigForCastStreaming() {
   return config;
 }
 
-absl::optional<WebContentRunner::WebInstanceConfig>
+std::optional<WebContentRunner::WebInstanceConfig>
 CastRunner::GetWebInstanceConfigForAppConfig(
     chromium::cast::ApplicationConfig* app_config) {
   if (IsAppConfigForCastStreaming(*app_config)) {
     // TODO(crbug.com/1082821): Remove this once the CastStreamingReceiver
     // Component has been implemented.
-    return absl::make_optional(GetIsolatedWebInstanceConfigForCastStreaming());
+    return std::make_optional(GetIsolatedWebInstanceConfigForCastStreaming());
   }
 
   const bool is_isolated_app =
       app_config->has_content_directories_for_isolated_application();
   if (is_isolated_app) {
-    return absl::make_optional(
+    return std::make_optional(
         GetIsolatedWebInstanceConfigWithFuchsiaDirs(std::move(
             *app_config
                  ->mutable_content_directories_for_isolated_application())));
   }
 
   // No need to create an isolated context in other cases.
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 WebContentRunner* CastRunner::CreateIsolatedRunner(

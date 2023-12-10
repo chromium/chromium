@@ -133,7 +133,8 @@ class WaylandFrameManager {
   void DiscardFrame(std::unique_ptr<WaylandFrame> frame);
 
   // Configures |surface| but does not commit wl_surface states yet.
-  void ApplySurfaceConfigure(WaylandFrame* frame,
+  // Returns whether or not changes require a commit to the wl_surface.
+  bool ApplySurfaceConfigure(WaylandFrame* frame,
                              WaylandSurface* surface,
                              wl::WaylandOverlayConfig& config,
                              bool needs_opaque_region);

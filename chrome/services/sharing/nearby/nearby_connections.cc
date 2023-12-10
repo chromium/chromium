@@ -8,7 +8,7 @@
 
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -109,7 +109,16 @@ v3::ConnectionListener CreateConnectionListenerV3(
               return;
             }
 
-            NOTIMPLEMENTED();
+            remote->OnConnectionInitiated(
+                ash::nearby::presence::BuildPresenceMojomDevice(
+                    static_cast<const ::nearby::presence::PresenceDevice&>(
+                        remote_device)),
+                mojom::InitialConnectionInfoV3::New(
+                    info.authentication_digits, info.raw_authentication_token,
+                    info.is_incoming_connection,
+                    // TODO(b/314197753): Change to info.authentication_status
+                    // when implemented in the Nearby library.
+                    mojom::AuthenticationStatus::kSuccess));
           },
       .result_cb =
           [remote](const NearbyDevice& remote_device,
@@ -126,7 +135,10 @@ v3::ConnectionListener CreateConnectionListenerV3(
               return;
             }
 
-            NOTIMPLEMENTED();
+            remote->OnDisconnected(
+                ash::nearby::presence::BuildPresenceMojomDevice(
+                    static_cast<const ::nearby::presence::PresenceDevice&>(
+                        remote_device)));
           },
       .bandwidth_changed_cb =
           [remote](const NearbyDevice& remote_device,
@@ -541,7 +553,7 @@ void NearbyConnections::RequestConnectionV3(
     ash::nearby::presence::mojom::PresenceDevicePtr remote_device,
     mojom::ConnectionOptionsPtr options,
     mojo::PendingRemote<mojom::ConnectionListenerV3> listener,
-    RequestConnectionCallback callback) {
+    RequestConnectionV3Callback callback) {
   int keep_alive_interval_millis =
       options->keep_alive_interval
           ? options->keep_alive_interval->InMilliseconds()
@@ -562,19 +574,23 @@ void NearbyConnections::RequestConnectionV3(
         ByteArrayFromMojom(*options->remote_bluetooth_mac_address);
   }
 
+  presence::PresenceDevice presence_device(remote_device->endpoint_id);
+  presence_device.SetMetadata(
+      ash::nearby::presence::MetadataFromMojom(remote_device->metadata.get()));
+
+  // TODO(b/315016880): Create mechanism for caching PresenceDevice references
+  // so they don't go out of scope when passing to Core.
   GetCore(service_id)
-      ->RequestConnectionV3(
-          presence::PresenceDevice(ash::nearby::presence::MetadataFromMojom(
-              remote_device->metadata.get())),
-          connection_options, CreateConnectionListenerV3(std::move(listener)),
-          ResultCallbackFromMojom(std::move(callback)));
+      ->RequestConnectionV3(presence_device, connection_options,
+                            CreateConnectionListenerV3(std::move(listener)),
+                            ResultCallbackFromMojom(std::move(callback)));
 }
 
 void NearbyConnections::AcceptConnectionV3(
     const std::string& service_id,
     ash::nearby::presence::mojom::PresenceDevicePtr remote_device,
     mojo::PendingRemote<mojom::PayloadListenerV3> listener,
-    AcceptConnectionCallback callback) {
+    AcceptConnectionV3Callback callback) {
   mojo::SharedRemote<mojom::PayloadListenerV3> remote(std::move(listener));
 
   v3::PayloadListener payload_listener_v3 = {
@@ -654,34 +670,45 @@ void NearbyConnections::AcceptConnectionV3(
             }
           }};
 
+  presence::PresenceDevice presence_device(remote_device->endpoint_id);
+  presence_device.SetMetadata(
+      ash::nearby::presence::MetadataFromMojom(remote_device->metadata.get()));
+
+  // TODO(b/315016880): Create mechanism for caching PresenceDevice references
+  // so they don't go out of scope when passing to Core.
   GetCore(service_id)
-      ->AcceptConnectionV3(
-          presence::PresenceDevice(ash::nearby::presence::MetadataFromMojom(
-              remote_device->metadata.get())),
-          std::move(payload_listener_v3),
-          ResultCallbackFromMojom(std::move(callback)));
+      ->AcceptConnectionV3(presence_device, std::move(payload_listener_v3),
+                           ResultCallbackFromMojom(std::move(callback)));
 }
 
 void NearbyConnections::RejectConnectionV3(
     const std::string& service_id,
     ash::nearby::presence::mojom::PresenceDevicePtr remote_device,
-    RejectConnectionCallback callback) {
+    RejectConnectionV3Callback callback) {
+  presence::PresenceDevice presence_device(remote_device->endpoint_id);
+  presence_device.SetMetadata(
+      ash::nearby::presence::MetadataFromMojom(remote_device->metadata.get()));
+
+  // TODO(b/315016880): Create mechanism for caching PresenceDevice references
+  // so they don't go out of scope when passing to Core.
   GetCore(service_id)
-      ->RejectConnectionV3(
-          presence::PresenceDevice(ash::nearby::presence::MetadataFromMojom(
-              remote_device->metadata.get())),
-          ResultCallbackFromMojom(std::move(callback)));
+      ->RejectConnectionV3(presence_device,
+                           ResultCallbackFromMojom(std::move(callback)));
 }
 
 void NearbyConnections::DisconnectFromDeviceV3(
     const std::string& service_id,
     ash::nearby::presence::mojom::PresenceDevicePtr remote_device,
     DisconnectFromDeviceV3Callback callback) {
+  presence::PresenceDevice presence_device(remote_device->endpoint_id);
+  presence_device.SetMetadata(
+      ash::nearby::presence::MetadataFromMojom(remote_device->metadata.get()));
+
+  // TODO(b/315016880): Create mechanism for caching PresenceDevice references
+  // so they don't go out of scope when passing to Core.
   GetCore(service_id)
-      ->DisconnectFromDeviceV3(
-          presence::PresenceDevice(ash::nearby::presence::MetadataFromMojom(
-              remote_device->metadata.get())),
-          ResultCallbackFromMojom(std::move(callback)));
+      ->DisconnectFromDeviceV3(presence_device,
+                               ResultCallbackFromMojom(std::move(callback)));
 }
 
 base::File NearbyConnections::ExtractInputFile(int64_t payload_id) {

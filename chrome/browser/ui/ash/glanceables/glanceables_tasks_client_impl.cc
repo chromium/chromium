@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <iterator>
 #include <memory>
+#include <optional>
 #include <string>
 #include <tuple>
 #include <vector>
@@ -27,8 +28,6 @@
 #include "google_apis/tasks/tasks_api_requests.h"
 #include "google_apis/tasks/tasks_api_response_types.h"
 #include "google_apis/tasks/tasks_api_task_status.h"
-#include "net/traffic_annotation/network_traffic_annotation.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/models/list_model.h"
 
 namespace ash {
@@ -46,41 +45,6 @@ using ::google_apis::tasks::TaskLists;
 using ::google_apis::tasks::TaskRequestPayload;
 using ::google_apis::tasks::Tasks;
 using ::google_apis::tasks::TaskStatus;
-
-constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotationTag =
-    net::DefineNetworkTrafficAnnotation("glanceables_tasks_integration", R"(
-        semantics {
-          sender: "Glanceables keyed service"
-          description: "Provide ChromeOS users quick access to their "
-                       "task lists without opening the app or website"
-          trigger: "User presses the calendar pill in shelf, which triggers "
-                   "opening the calendar, classroom (if available) and tasks "
-                   "widgets. This specific client implementation "
-                   "is responsible for fetching user's tasks data from "
-                   "Google Tasks API."
-          internal {
-            contacts {
-              email: "chromeos-launcher@google.com"
-            }
-          }
-          user_data {
-            type: ACCESS_TOKEN
-          }
-          data: "The request is authenticated with an OAuth2 access token "
-                "identifying the Google account"
-          destination: GOOGLE_OWNED_SERVICE
-          last_reviewed: "2023-08-21"
-        }
-        policy {
-          cookies_allowed: NO
-          setting: "This feature cannot be disabled in settings"
-          chrome_policy {
-            GlanceablesEnabled {
-              GlanceablesEnabled: false
-            }
-          }
-        }
-    )");
 
 // Converts `raw_tasks` received from Google Tasks API to ash-friendly types.
 std::vector<std::unique_ptr<api::Task>> ConvertTasks(
@@ -121,7 +85,7 @@ std::vector<std::unique_ptr<api::Task>> ConvertTasks(
     const bool has_notes = !root_task->notes().empty();
     converted_tasks.push_back(std::make_unique<api::Task>(
         root_task->id(), root_task->title(), completed, root_task->due(),
-        has_subtasks, has_email_link, has_notes));
+        has_subtasks, has_email_link, has_notes, root_task->updated()));
   }
 
   return converted_tasks;
@@ -139,8 +103,10 @@ TasksClientImpl::TasksFetchState::~TasksFetchState() = default;
 
 TasksClientImpl::TasksClientImpl(
     const TasksClientImpl::CreateRequestSenderCallback&
-        create_request_sender_callback)
-    : create_request_sender_callback_(create_request_sender_callback) {}
+        create_request_sender_callback,
+    net::NetworkTrafficAnnotationTag traffic_annotation_tag)
+    : create_request_sender_callback_(create_request_sender_callback),
+      traffic_annotation_tag_(traffic_annotation_tag) {}
 
 TasksClientImpl::~TasksClientImpl() = default;
 
@@ -203,25 +169,25 @@ void TasksClientImpl::MarkAsCompleted(const std::string& task_list_id,
 }
 
 void TasksClientImpl::AddTask(const std::string& task_list_id,
-                              const std::string& title) {
+                              const std::string& title,
+                              api::TasksClient::OnTaskSavedCallback callback) {
   CHECK(!task_list_id.empty());
   CHECK(!title.empty());
+  CHECK(callback);
 
   auto* const request_sender = GetRequestSender();
-  // TODO(b/299317602): update `previous_task_id` parameter if new tasks need to
-  // be added to the end of the list.
   request_sender->StartRequestWithAuthRetry(std::make_unique<InsertTaskRequest>(
       request_sender, task_list_id, /*previous_task_id=*/"",
       TaskRequestPayload{.title = title, .status = TaskStatus::kNeedsAction},
       base::BindOnce(&TasksClientImpl::OnTaskAdded, weak_factory_.GetWeakPtr(),
-                     task_list_id)));
+                     task_list_id, base::Time::Now(), std::move(callback))));
 }
 
 void TasksClientImpl::UpdateTask(
     const std::string& task_list_id,
     const std::string& task_id,
     const std::string& title,
-    api::TasksClient::UpdateTaskCallback callback) {
+    api::TasksClient::OnTaskSavedCallback callback) {
   CHECK(!task_list_id.empty());
   CHECK(!task_id.empty());
   CHECK(!title.empty());
@@ -232,7 +198,7 @@ void TasksClientImpl::UpdateTask(
       request_sender, task_list_id, task_id, TaskRequestPayload{.title = title},
       base::BindOnce(&TasksClientImpl::OnTaskUpdated,
                      weak_factory_.GetWeakPtr(), task_list_id,
-                     std::move(callback))));
+                     base::Time::Now(), std::move(callback))));
 }
 
 void TasksClientImpl::OnGlanceablesBubbleClosed(
@@ -423,51 +389,67 @@ void TasksClientImpl::OnMarkedAsCompleted(
 
 void TasksClientImpl::OnTaskAdded(
     const std::string& task_list_id,
+    const base::Time& request_start_time,
+    api::TasksClient::OnTaskSavedCallback callback,
     base::expected<std::unique_ptr<Task>, ApiErrorCode> result) {
+  base::UmaHistogramTimes("Ash.Glanceables.Api.Tasks.InsertTask.Latency",
+                          base::Time::Now() - request_start_time);
+  base::UmaHistogramSparse("Ash.Glanceables.Api.Tasks.InsertTask.Status",
+                           result.error_or(ApiErrorCode::HTTP_SUCCESS));
+
   if (!result.has_value()) {
-    // TODO(b/299317602): propagate `result.error()` to the UI layer.
+    std::move(callback).Run(/*task=*/nullptr);
     return;
   }
 
   const auto iter = tasks_in_task_lists_.find(task_list_id);
   if (iter == tasks_in_task_lists_.end()) {
+    std::move(callback).Run(/*task=*/nullptr);
     return;
   }
 
-  // TODO(b/299317602): update `index` parameter if new tasks need to be added
-  // to the end of the list.
-  iter->second.AddAt(
+  const auto* const task = iter->second.AddAt(
       /*index=*/0,
-      std::make_unique<api::Task>(
-          result.value()->id(), result.value()->title(),
-          /*completed=*/false, /*due=*/absl::nullopt, /*has_subtasks=*/false,
-          /*has_email_link=*/false, /*has_notes=*/false));
+      std::make_unique<api::Task>(result.value()->id(), result.value()->title(),
+                                  /*completed=*/false, /*due=*/std::nullopt,
+                                  /*has_subtasks=*/false,
+                                  /*has_email_link=*/false, /*has_notes=*/false,
+                                  result.value()->updated()));
+  std::move(callback).Run(/*task=*/task);
 }
 
 void TasksClientImpl::OnTaskUpdated(
     const std::string& task_list_id,
-    api::TasksClient::UpdateTaskCallback callback,
+    const base::Time& request_start_time,
+    api::TasksClient::OnTaskSavedCallback callback,
     base::expected<std::unique_ptr<Task>, ApiErrorCode> result) {
-  // TODO(b/301253574): Add metrics.
+  base::UmaHistogramTimes("Ash.Glanceables.Api.Tasks.PatchTask.Latency",
+                          base::Time::Now() - request_start_time);
+  base::UmaHistogramSparse("Ash.Glanceables.Api.Tasks.PatchTask.Status",
+                           result.error_or(ApiErrorCode::HTTP_SUCCESS));
 
   if (!result.has_value()) {
-    std::move(callback).Run(/*success=*/false);
+    std::move(callback).Run(/*task=*/nullptr);
     return;
   }
 
   const auto tasks_iter = tasks_in_task_lists_.find(task_list_id);
-  if (tasks_iter != tasks_in_task_lists_.end()) {
-    const auto task_iter =
-        std::find_if(tasks_iter->second.begin(), tasks_iter->second.end(),
-                     [&result](const auto& task) {
-                       return task->id == result->get()->id();
-                     });
-    if (task_iter != tasks_iter->second.end()) {
-      task_iter->get()->title = result->get()->title();
-    }
+  if (tasks_iter == tasks_in_task_lists_.end()) {
+    std::move(callback).Run(/*task=*/nullptr);
+    return;
   }
 
-  std::move(callback).Run(/*success=*/true);
+  const auto task_iter = std::find_if(
+      tasks_iter->second.begin(), tasks_iter->second.end(),
+      [&result](const auto& task) { return task->id == result->get()->id(); });
+  if (task_iter == tasks_iter->second.end()) {
+    std::move(callback).Run(/*task=*/nullptr);
+    return;
+  }
+
+  task_iter->get()->title = result->get()->title();
+  task_iter->get()->updated = result->get()->updated();
+  std::move(callback).Run(/*task=*/task_iter->get());
 }
 
 google_apis::RequestSender* TasksClientImpl::GetRequestSender() {
@@ -476,7 +458,7 @@ google_apis::RequestSender* TasksClientImpl::GetRequestSender() {
     request_sender_ = std::move(create_request_sender_callback_)
                           .Run({GaiaConstants::kTasksReadOnlyOAuth2Scope,
                                 GaiaConstants::kTasksOAuth2Scope},
-                               kTrafficAnnotationTag);
+                               traffic_annotation_tag_);
     CHECK(request_sender_);
   }
   return request_sender_.get();

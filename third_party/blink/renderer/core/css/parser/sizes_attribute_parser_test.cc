@@ -8,15 +8,38 @@
 #include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom-blink.h"
 #include "third_party/blink/renderer/core/css/media_values_cached.h"
 #include "third_party/blink/renderer/core/media_type_names.h"
+#include "third_party/blink/renderer/core/testing/page_test_base.h"
 
 namespace blink {
+
+namespace {
+MediaValues* GetTestMediaValues(const double viewport_width = 500) {
+  MediaValuesCached::MediaValuesCachedData data;
+  data.viewport_width = viewport_width;
+  data.viewport_height = 600;
+  data.device_width = 500;
+  data.device_height = 500;
+  data.device_pixel_ratio = 2.0;
+  data.color_bits_per_component = 24;
+  data.monochrome_bits_per_component = 0;
+  data.primary_pointer_type = mojom::blink::PointerType::kPointerFineType;
+  data.three_d_enabled = true;
+  data.media_type = media_type_names::kScreen;
+  data.strict_mode = true;
+  data.display_mode = blink::mojom::DisplayMode::kBrowser;
+
+  return MakeGarbageCollected<MediaValuesCached>(data);
+}
+}  // namespace
 
 typedef struct {
   const char* input;
   const float effective_size;
 } SizesAttributeParserTestCase;
 
-TEST(SizesAttributeParserTest, Basic) {
+class SizesAttributeParserTest : public PageTestBase {};
+
+TEST_F(SizesAttributeParserTest, Basic) {
   SizesAttributeParserTestCase test_cases[] = {
       {"screen", 500},
       {"(min-width:500px)", 500},
@@ -75,28 +98,15 @@ TEST(SizesAttributeParserTest, Basic) {
       {nullptr, 0}  // Do not remove the terminator line.
   };
 
-  MediaValuesCached::MediaValuesCachedData data;
-  data.viewport_width = 500;
-  data.viewport_height = 600;
-  data.device_width = 500;
-  data.device_height = 500;
-  data.device_pixel_ratio = 2.0;
-  data.color_bits_per_component = 24;
-  data.monochrome_bits_per_component = 0;
-  data.primary_pointer_type = mojom::blink::PointerType::kPointerFineType;
-  data.three_d_enabled = true;
-  data.media_type = media_type_names::kScreen;
-  data.strict_mode = true;
-  data.display_mode = blink::mojom::DisplayMode::kBrowser;
-  auto* media_values = MakeGarbageCollected<MediaValuesCached>(data);
+  auto* media_values = GetTestMediaValues();
 
   for (unsigned i = 0; test_cases[i].input; ++i) {
     SizesAttributeParser parser(media_values, test_cases[i].input, nullptr);
-    ASSERT_EQ(test_cases[i].effective_size, parser.length());
+    ASSERT_EQ(test_cases[i].effective_size, parser.Size());
   }
 }
 
-TEST(SizesAttributeParserTest, FloatViewportWidth) {
+TEST_F(SizesAttributeParserTest, FloatViewportWidth) {
   SizesAttributeParserTestCase test_cases[] = {
       {"screen", 500.5},
       {"(min-width:500px)", 500.5},
@@ -155,25 +165,115 @@ TEST(SizesAttributeParserTest, FloatViewportWidth) {
       {nullptr, 0}  // Do not remove the terminator line.
   };
 
-  MediaValuesCached::MediaValuesCachedData data;
-  data.viewport_width = 500.5;
-  data.viewport_height = 600;
-  data.device_width = 500;
-  data.device_height = 500;
-  data.device_pixel_ratio = 2.0;
-  data.color_bits_per_component = 24;
-  data.monochrome_bits_per_component = 0;
-  data.primary_pointer_type = mojom::blink::PointerType::kPointerFineType;
-  data.three_d_enabled = true;
-  data.media_type = media_type_names::kScreen;
-  data.strict_mode = true;
-  data.display_mode = blink::mojom::DisplayMode::kBrowser;
-  auto* media_values = MakeGarbageCollected<MediaValuesCached>(data);
+  auto* media_values = GetTestMediaValues(500.5);
 
   for (unsigned i = 0; test_cases[i].input; ++i) {
     SizesAttributeParser parser(media_values, test_cases[i].input, nullptr);
-    ASSERT_EQ(test_cases[i].effective_size, parser.length());
+    ASSERT_EQ(test_cases[i].effective_size, parser.Size());
   }
+}
+
+TEST_F(SizesAttributeParserTest, NegativeSourceSizesValue) {
+  SizesAttributeParser parser(GetTestMediaValues(), "-10px", nullptr);
+
+  ASSERT_TRUE(!parser.IsAuto());
+  ASSERT_EQ(500, parser.Size());
+}
+
+TEST_F(SizesAttributeParserTest, ZeroSourceSizesValue) {
+  SizesAttributeParser parser(GetTestMediaValues(), "0px", nullptr);
+
+  ASSERT_TRUE(!parser.IsAuto());
+  ASSERT_EQ(0, parser.Size());
+}
+
+TEST_F(SizesAttributeParserTest, PositiveSourceSizesValue) {
+  SizesAttributeParser parser(GetTestMediaValues(), "27px", nullptr);
+
+  ASSERT_TRUE(!parser.IsAuto());
+  ASSERT_EQ(27, parser.Size());
+}
+
+TEST_F(SizesAttributeParserTest, EmptySizes) {
+  SizesAttributeParser parser(GetTestMediaValues(), "", nullptr);
+
+  ASSERT_TRUE(!parser.IsAuto());
+  ASSERT_EQ(500, parser.Size());
+}
+
+TEST_F(SizesAttributeParserTest, AutoSizes) {
+  SizesAttributeParser parser(GetTestMediaValues(), "auto", nullptr);
+
+  ASSERT_TRUE(parser.IsAuto());
+  ASSERT_EQ(500, parser.Size());
+}
+
+TEST_F(SizesAttributeParserTest, AutoSizesNonLazyImg) {
+  SetBodyInnerHTML(R"HTML(
+    <img id="target" width="5" height="3" sizes="auto">
+  )HTML");
+
+  auto* img = To<HTMLImageElement>(GetElementById("target"));
+
+  SizesAttributeParser parser(GetTestMediaValues(), "auto", nullptr, img);
+
+  ASSERT_TRUE(parser.IsAuto());
+  ASSERT_EQ(500, parser.Size());
+}
+
+TEST_F(SizesAttributeParserTest, AutoSizesLazyImgNoWidth) {
+  SetBodyInnerHTML(R"HTML(
+    <img id="target" sizes="auto" loading="lazy">
+  )HTML");
+
+  auto* img = To<HTMLImageElement>(GetElementById("target"));
+
+  SizesAttributeParser parser(GetTestMediaValues(), "auto", nullptr, img);
+
+  ASSERT_TRUE(parser.IsAuto());
+
+  // When img does not have a width and height defined the value from the UA
+  // style sheet will be used
+  ASSERT_EQ(300, parser.Size());
+}
+
+TEST_F(SizesAttributeParserTest, AutoSizesLazyImgZeroWidth) {
+  SetBodyInnerHTML(R"HTML(
+    <img id="target" loading="lazy" width="0px" height="0px" sizes="auto">
+  )HTML");
+
+  auto* img = To<HTMLImageElement>(GetElementById("target"));
+
+  SizesAttributeParser parser(GetTestMediaValues(), "auto", nullptr, img);
+
+  ASSERT_TRUE(parser.IsAuto());
+  ASSERT_EQ(0, parser.Size());
+}
+
+TEST_F(SizesAttributeParserTest, AutoSizesLazyImgSmallPositiveWidth) {
+  SetBodyInnerHTML(R"HTML(
+    <img id="target" loading="lazy" width="5" height="3" sizes="auto">
+  )HTML");
+
+  auto* img = To<HTMLImageElement>(GetElementById("target"));
+
+  SizesAttributeParser parser(GetTestMediaValues(), "auto", nullptr, img);
+
+  ASSERT_TRUE(parser.IsAuto());
+  ASSERT_EQ(5, parser.Size());
+}
+
+TEST_F(SizesAttributeParserTest, AutoSizesLazyImgLargePositiveWidth) {
+  SetBodyInnerHTML(R"HTML(
+    <img id="target" loading="lazy" width="531px" height="246px" sizes="auto">
+  )HTML");
+
+  auto* img = To<HTMLImageElement>(GetElementById("target"));
+
+  SizesAttributeParser parser(GetTestMediaValues(), "auto", nullptr, img);
+
+  ASSERT_TRUE(parser.IsAuto());
+  ASSERT_EQ(531, parser.Size());
 }
 
 }  // namespace blink

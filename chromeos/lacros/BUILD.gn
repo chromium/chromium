@@ -91,18 +91,6 @@ if (is_chromeos_device) {
     tast_disabled_tests = tast_disabled_tests_from_lacros_all
   }
 
-  lacros_tast_tests("lacros_all_tast_tests_informational") {
-    # The following expression runs all informational tests. See the link below
-    # for more details:
-    # https://chromium.googlesource.com/chromiumos/platform/tast/+/main/docs/test_attributes.md
-    tast_attr_expr = "\"group:mainline\" && (\"dep:lacros\" || \"dep:lacros_unstable\") && informational"
-
-    # To disable a specific test, add it to the
-    # tast_disabled_tests_from_lacros_all list in "tast_control.gni" and cite
-    # a bug.
-    tast_disabled_tests = tast_disabled_tests_from_lacros_all
-  }
-
   # This target is run in lacros CQ builder in addition to lacros_all_tast_tests
   # on eve board
   lacros_tast_tests("lacros_cq_tast_tests_eve") {
@@ -138,20 +126,21 @@ if (is_chromeos_device) {
     ]
   }
 
-  lacros_tast_tests("lacros_fyi_tast_tests") {
-    tast_tests = [
-      "lacros.AppLauncherLaunch",
-      "lacros.AppLauncherLaunch.unstable",
-      "lacros.AudioPlay",
-      "lacros.AudioPlay.unstable",
-      "lacros.Basic",
-      "lacros.Basic.unstable",
-      "lacros.ShelfLaunch",
-      "lacros.ShelfLaunch.unstable",
-    ]
-  }
-
   lacros_tast_tests("lacros_variations_tast_tests") {
     tast_tests = [ "lacros.VariationSmoke" ]
   }
+}
+
+source_set("unit_tests") {
+  testonly = true
+  deps = [
+    ":lacros",
+    ":test_support",
+    "//base",
+    "//base/test:test_support",
+    "//chromeos/crosapi/mojom",
+    "//chromeos/startup",
+    "//testing/gtest",
+  ]
+  sources = [ "lacros_service_unittest.cc" ]
 }

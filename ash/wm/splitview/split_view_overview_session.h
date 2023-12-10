@@ -5,14 +5,16 @@
 #ifndef ASH_WM_SPLITVIEW_SPLIT_VIEW_OVERVIEW_SESSION_H_
 #define ASH_WM_SPLITVIEW_SPLIT_VIEW_OVERVIEW_SESSION_H_
 
+#include <optional>
+
 #include "ash/wm/overview/overview_metrics.h"
 #include "ash/wm/overview/overview_types.h"
 #include "ash/wm/window_state_observer.h"
 #include "ash/wm/wm_metrics.h"
 #include "base/scoped_observation.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window_observer.h"
 #include "ui/compositor/presentation_time_recorder.h"
+#include "ui/events/event_handler.h"
 
 namespace ash {
 
@@ -66,8 +68,8 @@ class ASH_EXPORT SplitViewOverviewSession : public aura::WindowObserver,
 
   // Initializes the session by starting overview. This must be called after the
   // constructor, as consumers may check if `this` exists.
-  void Init(absl::optional<OverviewStartAction> action,
-            absl::optional<OverviewEnterExitType> type);
+  void Init(std::optional<OverviewStartAction> action,
+            std::optional<OverviewEnterExitType> type);
 
   // Records the `SplitViewOverviewSessionExitPoint` in uma metrics.
   void RecordSplitViewOverviewSessionExitPointMetrics(
@@ -79,6 +81,11 @@ class ASH_EXPORT SplitViewOverviewSession : public aura::WindowObserver,
   AutoSnapController* auto_snap_controller() {
     return auto_snap_controller_.get();
   }
+
+  // Called by `OverviewSession` on a key or mouse event that isn't processed by
+  // overview session.
+  void OnKeyEvent();
+  void OnMouseEvent(const ui::MouseEvent& event);
 
   // aura::WindowObserver:
   void OnResizeLoopStarted(aura::Window* window) override;
@@ -98,6 +105,11 @@ class ASH_EXPORT SplitViewOverviewSession : public aura::WindowObserver,
   }
 
  private:
+  // Either ends full overview, or only `SplitViewOverviewSession`.
+  void MaybeEndOverview(
+      SplitViewOverviewSessionExitPoint exit_point,
+      OverviewEnterExitType exit_type = OverviewEnterExitType::kNormal);
+
   // True while we are processing a window resize event.
   bool is_resizing_ = false;
 
@@ -111,9 +123,6 @@ class ASH_EXPORT SplitViewOverviewSession : public aura::WindowObserver,
   // The single snapped window in intermediate split view, with overview on
   // the opposite side.
   const raw_ptr<aura::Window> window_;
-
-  // True when `this` is being destroyed.
-  bool is_shutting_down_ = false;
 
   SplitViewOverviewSetupType setup_type_ =
       SplitViewOverviewSetupType::kSnapThenAutomaticOverview;

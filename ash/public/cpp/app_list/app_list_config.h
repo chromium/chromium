@@ -202,8 +202,11 @@ class ASH_PUBLIC_EXPORT AppListConfig {
   }
   int folder_bubble_radius() const { return folder_bubble_radius_; }
   int icon_visible_dimension() const { return icon_visible_dimension_; }
-  int unclipped_icon_dimension() const { return unclipped_icon_dimension_; }
+  int folder_icon_dimension() const { return folder_icon_dimension_; }
   int folder_icon_radius() const { return folder_icon_radius_; }
+  int icon_extended_background_dimension() const {
+    return icon_extended_background_dimension_;
+  }
   int icon_extended_background_radius() const {
     return icon_extended_background_radius_;
   }
@@ -216,14 +219,21 @@ class ASH_PUBLIC_EXPORT AppListConfig {
   int shortcut_host_badge_icon_dimension() const {
     return shortcut_host_badge_icon_dimension_;
   }
-  int shortcut_host_badge_icon_border_dimension() const {
-    return shortcut_host_badge_icon_border_dimension_;
+  int shortcut_host_badge_icon_border_margin() const {
+    return shortcut_host_badge_icon_border_margin_;
   }
-  int shortcut_background_border_dimension() const {
-    return shortcut_background_border_dimension_;
+  int shortcut_background_border_margin() const {
+    return shortcut_background_border_margin_;
+  }
+  int promise_icon_dimension_installing() const {
+    return promise_icon_dimension_installing_;
+  }
+  int promise_icon_dimension_pending() const {
+    return promise_icon_dimension_pending_;
   }
   int GetShortcutHostBadgeIconContainerDimension() const;
   int GetShortcutBackgroundContainerDimension() const;
+  gfx::Size GetShortcutIconSize() const;
 
   gfx::Size grid_icon_size() const {
     return gfx::Size(grid_icon_dimension_, grid_icon_dimension_);
@@ -233,8 +243,8 @@ class ASH_PUBLIC_EXPORT AppListConfig {
     return gfx::Size(icon_visible_dimension_, icon_visible_dimension_);
   }
 
-  gfx::Size unclipped_icon_size() const {
-    return gfx::Size(unclipped_icon_dimension_, unclipped_icon_dimension_);
+  gfx::Size folder_icon_size() const {
+    return gfx::Size(folder_icon_dimension_, folder_icon_dimension_);
   }
 
   gfx::Size item_icon_in_folder_icon_size() const {
@@ -293,15 +303,14 @@ class ASH_PUBLIC_EXPORT AppListConfig {
   // item over it).
   const int icon_visible_dimension_;
 
-  // The size of an item icon background in its expanded state (e.g. when the
-  // user drags an item on top of the folder). In the non-expanded state, the
-  // folder is actually drawn at this size, then clipped to
-  // `icon_visible_dimension_`. When animating to the expanded state, the code
-  // just animates the clipping.
-  const int unclipped_icon_dimension_;
+  // The folder icon size.
+  const int folder_icon_dimension_;
 
   // The corner radius of folder icon.
   const int folder_icon_radius_;
+
+  // The width and height of background for item icons in extended state.
+  const int icon_extended_background_dimension_;
 
   // The background corner radius of an item icon in extended state.
   const int icon_extended_background_radius_;
@@ -316,10 +325,16 @@ class ASH_PUBLIC_EXPORT AppListConfig {
   const int shortcut_host_badge_icon_dimension_;
 
   // The dimension of a host badge icon container border of a shortcut.
-  const int shortcut_host_badge_icon_border_dimension_;
+  const int shortcut_host_badge_icon_border_margin_;
 
   // The dimension of a background container border of a shortcut.
-  const int shortcut_background_border_dimension_;
+  const int shortcut_background_border_margin_;
+
+  // The preferred icon size for the promise apps on installing state.
+  const int promise_icon_dimension_installing_;
+
+  // The preferred icon size for the promise apps on pending state.
+  const int promise_icon_dimension_pending_;
 };
 
 }  // namespace ash

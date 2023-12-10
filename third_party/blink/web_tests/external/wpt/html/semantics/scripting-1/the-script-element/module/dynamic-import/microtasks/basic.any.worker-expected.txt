@@ -1,7 +1,5 @@
 This is a testharness.js-based test.
-[PASS] import() should not drain the microtask queue if it fails during specifier resolution
 [FAIL] import() should not drain the microtask queue when loading an already loaded module
   assert_less_than: expected a number less than 1000 but got 1000
-[PASS] import() should drain the microtask queue when fetching a new module
 Harness: the test ran to completion.
 

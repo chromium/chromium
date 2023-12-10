@@ -12,18 +12,18 @@ import './shared_style.css.js';
 import './synced_device_card.js';
 import './strings.m.js';
 
-import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
-import {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
+import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import type {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {FocusGrid} from 'chrome://resources/js/focus_grid.js';
-import {FocusRow} from 'chrome://resources/js/focus_row.js';
+import type {FocusRow} from 'chrome://resources/js/focus_row.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {Debouncer, microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserServiceImpl} from './browser_service.js';
 import {SYNCED_TABS_HISTOGRAM_NAME, SyncedTabsHistogram} from './constants.js';
-import {ForeignSession, ForeignSessionTab} from './externs.js';
-import {HistorySyncedDeviceCardElement} from './synced_device_card.js';
+import type {ForeignSession, ForeignSessionTab} from './externs.js';
+import type {HistorySyncedDeviceCardElement} from './synced_device_card.js';
 import {getTemplate} from './synced_device_manager.html.js';
 
 interface ForeignDeviceInternal {

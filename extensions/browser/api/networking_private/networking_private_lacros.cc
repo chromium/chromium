@@ -152,14 +152,14 @@ ListValueSuccessOrFailureCallback ListValueAdapterCallback(
 // This adapter will handle the call back from ash which passes back a
 // base::Value::List object.
 using ValueListMojoCallback =
-    base::OnceCallback<void(absl::optional<base::Value::List>)>;
+    base::OnceCallback<void(std::optional<base::Value::List>)>;
 using ValueListDelegateCallback =
     base::OnceCallback<void(base::Value::List result)>;
 ValueListMojoCallback ValueListAdapterCallback(
     ValueListDelegateCallback result_callback) {
   return base::BindOnce(
       [](ValueListDelegateCallback callback,
-         absl::optional<base::Value::List> result) {
+         std::optional<base::Value::List> result) {
         if (!result) {
           std::move(callback).Run(base::Value::List());
         } else {
@@ -175,8 +175,8 @@ ValueListMojoCallback ValueListAdapterCallback(
 using PropertiesMojoCallback = base::OnceCallback<void(
     crosapi::mojom::PropertiesSuccessOrErrorReturnPtr result)>;
 using PropertiesDelegateCallback =
-    base::OnceCallback<void(absl::optional<::base::Value::Dict> result,
-                            const absl::optional<std::string>& error)>;
+    base::OnceCallback<void(std::optional<::base::Value::Dict> result,
+                            const std::optional<std::string>& error)>;
 
 PropertiesMojoCallback PropertiesAdapterCallback(
     PropertiesDelegateCallback result_callback) {
@@ -184,12 +184,11 @@ PropertiesMojoCallback PropertiesAdapterCallback(
       [](PropertiesDelegateCallback callback,
          crosapi::mojom::PropertiesSuccessOrErrorReturnPtr result) {
         if (result->is_error()) {
-          std::move(callback).Run(absl::nullopt,
-                                  std::move(result->get_error()));
+          std::move(callback).Run(std::nullopt, std::move(result->get_error()));
         } else {
-          std::move(callback).Run(absl::optional<::base::Value::Dict>(std::move(
+          std::move(callback).Run(std::optional<::base::Value::Dict>(std::move(
                                       result->get_success_result().GetDict())),
-                                  absl::nullopt);
+                                  std::nullopt);
         }
       },
       std::move(result_callback));
@@ -199,28 +198,25 @@ PropertiesMojoCallback PropertiesAdapterCallback(
 // internally used datastructure DeviceStateList and forward it to the callback
 // handler from the caller.
 using DeviceStateListPtr =
-    absl::optional<std::vector<absl::optional<::base::Value::Dict>>>;
+    std::optional<std::vector<std::optional<::base::Value::Dict>>>;
 
 void DeviceStateListCallbackAdapter(
     extensions::NetworkingPrivateDelegate::DeviceStateListCallback callback,
     DeviceStateListPtr result) {
   if (!result) {
-    std::move(callback).Run(
-        std::make_unique<
-            extensions::NetworkingPrivateDelegate::DeviceStateList>());
+    std::move(callback).Run(std::nullopt);
     return;
   }
-  auto list = std::make_unique<
-      extensions::NetworkingPrivateDelegate::DeviceStateList>();
+  auto list =
+      std::optional<extensions::NetworkingPrivateDelegate::DeviceStateList>();
   for (auto& item : *result) {
     if (item) {
-      list->push_back(
-          extensions::api::networking_private::DeviceStateProperties::
-              FromValueDeprecated(base::Value(std::move(*item))));
+      list->emplace_back(
+          extensions::api::networking_private::DeviceStateProperties::FromValue(
+              base::Value(std::move(*item)))
+              .value());
     } else {
-      list->push_back(
-          std::make_unique<
-              extensions::api::networking_private::DeviceStateProperties>());
+      list->emplace_back();
     }
   }
   std::move(callback).Run(std::move(list));
@@ -239,12 +235,12 @@ NetworkingPrivateLacros::~NetworkingPrivateLacros() = default;
 void NetworkingPrivateLacros::GetProperties(const std::string& guid,
                                             PropertiesCallback callback) {
   if (!is_primary_user_) {
-    std::move(callback).Run(absl::nullopt, kErrorNotPrimaryUser);
+    std::move(callback).Run(std::nullopt, kErrorNotPrimaryUser);
     return;
   }
   auto* networking_private = GetNetworkingPrivateRemote();
   if (!networking_private) {
-    std::move(callback).Run(absl::nullopt, kErrorApiNotFound);
+    std::move(callback).Run(std::nullopt, kErrorApiNotFound);
     return;
   }
   (*networking_private)
@@ -256,12 +252,12 @@ void NetworkingPrivateLacros::GetManagedProperties(
     const std::string& guid,
     PropertiesCallback callback) {
   if (!is_primary_user_) {
-    std::move(callback).Run(absl::nullopt, kErrorNotPrimaryUser);
+    std::move(callback).Run(std::nullopt, kErrorNotPrimaryUser);
     return;
   }
   auto* networking_private = GetNetworkingPrivateRemote();
   if (!networking_private) {
-    std::move(callback).Run(absl::nullopt, kErrorApiNotFound);
+    std::move(callback).Run(std::nullopt, kErrorApiNotFound);
     return;
   }
   (*networking_private)
@@ -488,7 +484,7 @@ void NetworkingPrivateLacros::GetDeviceStateList(
     DeviceStateListCallback callback) {
   auto* networking_private = GetNetworkingPrivateRemote();
   if (!networking_private || !is_primary_user_) {
-    std::move(callback).Run(nullptr);
+    std::move(callback).Run(std::nullopt);
     return;
   }
   (*networking_private)

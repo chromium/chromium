@@ -22,7 +22,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 class MenuSheetContent implements BottomSheetContent {
     private static final String TAG = "ReadAloudMenu";
     private final BottomSheetController mBottomSheetController;
-    private final BottomSheetContent mParent;
+    protected final BottomSheetContent mParent;
     private boolean mOpeningSubmenu;
     protected final Menu mMenu;
 
@@ -66,8 +66,8 @@ class MenuSheetContent implements BottomSheetContent {
     }
 
     // TODO(b/306426853) Replace this with a BottomSheetObserver.
-    void notifySheetClosed() {
-        if (mBottomSheetController.getCurrentSheetContent() == this) {
+    void notifySheetClosed(BottomSheetContent closingContent) {
+        if (closingContent == this) {
             // If this sheet is closing for any reason besides showing a child menu, bring back the
             // parent.
             if (!mOpeningSubmenu) {

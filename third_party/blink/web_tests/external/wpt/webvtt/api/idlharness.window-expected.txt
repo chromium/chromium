@@ -1,64 +1,12 @@
 This is a testharness.js-based test.
-Found 56 tests; 52 PASS, 4 FAIL, 0 TIMEOUT, 0 NOTRUN.
-[PASS] idl_test setup
-[PASS] idl_test validation
-[PASS] VTTCue interface: existence and properties of interface object
-[PASS] VTTCue interface object length
-[PASS] VTTCue interface object name
-[PASS] VTTCue interface: existence and properties of interface prototype object
-[PASS] VTTCue interface: existence and properties of interface prototype object's "constructor" property
-[PASS] VTTCue interface: existence and properties of interface prototype object's @@unscopables property
-[PASS] VTTCue interface: attribute region
-[PASS] VTTCue interface: attribute vertical
-[PASS] VTTCue interface: attribute snapToLines
-[PASS] VTTCue interface: attribute line
+Found 4 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] VTTCue interface: attribute lineAlign
   assert_true: The prototype object must have a property "lineAlign" expected true got false
-[PASS] VTTCue interface: attribute position
 [FAIL] VTTCue interface: attribute positionAlign
   assert_true: The prototype object must have a property "positionAlign" expected true got false
-[PASS] VTTCue interface: attribute size
-[PASS] VTTCue interface: attribute align
-[PASS] VTTCue interface: attribute text
-[PASS] VTTCue interface: operation getCueAsHTML()
-[PASS] VTTCue must be primary interface of new VTTCue(0, 0, "")
-[PASS] Stringification of new VTTCue(0, 0, "")
-[PASS] VTTCue interface: new VTTCue(0, 0, "") must inherit property "region" with the proper type
-[PASS] VTTCue interface: new VTTCue(0, 0, "") must inherit property "vertical" with the proper type
-[PASS] VTTCue interface: new VTTCue(0, 0, "") must inherit property "snapToLines" with the proper type
-[PASS] VTTCue interface: new VTTCue(0, 0, "") must inherit property "line" with the proper type
 [FAIL] VTTCue interface: new VTTCue(0, 0, "") must inherit property "lineAlign" with the proper type
   assert_inherits: property "lineAlign" not found in prototype chain
-[PASS] VTTCue interface: new VTTCue(0, 0, "") must inherit property "position" with the proper type
 [FAIL] VTTCue interface: new VTTCue(0, 0, "") must inherit property "positionAlign" with the proper type
   assert_inherits: property "positionAlign" not found in prototype chain
-[PASS] VTTCue interface: new VTTCue(0, 0, "") must inherit property "size" with the proper type
-[PASS] VTTCue interface: new VTTCue(0, 0, "") must inherit property "align" with the proper type
-[PASS] VTTCue interface: new VTTCue(0, 0, "") must inherit property "text" with the proper type
-[PASS] VTTCue interface: new VTTCue(0, 0, "") must inherit property "getCueAsHTML()" with the proper type
-[PASS] VTTRegion interface: existence and properties of interface object
-[PASS] VTTRegion interface object length
-[PASS] VTTRegion interface object name
-[PASS] VTTRegion interface: existence and properties of interface prototype object
-[PASS] VTTRegion interface: existence and properties of interface prototype object's "constructor" property
-[PASS] VTTRegion interface: existence and properties of interface prototype object's @@unscopables property
-[PASS] VTTRegion interface: attribute id
-[PASS] VTTRegion interface: attribute width
-[PASS] VTTRegion interface: attribute lines
-[PASS] VTTRegion interface: attribute regionAnchorX
-[PASS] VTTRegion interface: attribute regionAnchorY
-[PASS] VTTRegion interface: attribute viewportAnchorX
-[PASS] VTTRegion interface: attribute viewportAnchorY
-[PASS] VTTRegion interface: attribute scroll
-[PASS] VTTRegion must be primary interface of new VTTRegion()
-[PASS] Stringification of new VTTRegion()
-[PASS] VTTRegion interface: new VTTRegion() must inherit property "id" with the proper type
-[PASS] VTTRegion interface: new VTTRegion() must inherit property "width" with the proper type
-[PASS] VTTRegion interface: new VTTRegion() must inherit property "lines" with the proper type
-[PASS] VTTRegion interface: new VTTRegion() must inherit property "regionAnchorX" with the proper type
-[PASS] VTTRegion interface: new VTTRegion() must inherit property "regionAnchorY" with the proper type
-[PASS] VTTRegion interface: new VTTRegion() must inherit property "viewportAnchorX" with the proper type
-[PASS] VTTRegion interface: new VTTRegion() must inherit property "viewportAnchorY" with the proper type
-[PASS] VTTRegion interface: new VTTRegion() must inherit property "scroll" with the proper type
 Harness: the test ran to completion.
 

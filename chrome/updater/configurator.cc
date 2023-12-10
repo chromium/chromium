@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -23,6 +24,7 @@
 #include "chrome/updater/crx_downloader_factory.h"
 #include "chrome/updater/external_constants.h"
 #include "chrome/updater/net/network.h"
+#include "chrome/updater/persisted_data.h"
 #include "chrome/updater/policy/service.h"
 #include "chrome/updater/prefs.h"
 #include "chrome/updater/updater_scope.h"
@@ -36,7 +38,6 @@
 #include "components/update_client/unzip/in_process_unzipper.h"
 #include "components/update_client/unzipper.h"
 #include "components/version_info/version_info.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -50,8 +51,10 @@ Configurator::Configurator(scoped_refptr<UpdaterPrefs> prefs,
     : prefs_(prefs),
       policy_service_(base::MakeRefCounted<PolicyService>(external_constants)),
       external_constants_(external_constants),
-      activity_data_service_(
-          std::make_unique<ActivityDataService>(GetUpdaterScope())),
+      persisted_data_(base::MakeRefCounted<PersistedData>(
+          GetUpdaterScope(),
+          prefs->GetPrefService(),
+          std::make_unique<ActivityDataService>(GetUpdaterScope()))),
       unzip_factory_(
           base::MakeRefCounted<update_client::InProcessUnzipperFactory>()),
       patch_factory_(
@@ -60,7 +63,7 @@ Configurator::Configurator(scoped_refptr<UpdaterPrefs> prefs,
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
         return base::IsManagedOrEnterpriseDevice();
 #else
-        return absl::nullopt;
+        return std::nullopt;
 #endif
       }()) {
 #if BUILDFLAG(IS_LINUX)
@@ -185,9 +188,12 @@ PrefService* Configurator::GetPrefService() const {
   return prefs_->GetPrefService();
 }
 
-update_client::ActivityDataService* Configurator::GetActivityDataService()
-    const {
-  return activity_data_service_.get();
+update_client::PersistedData* Configurator::GetPersistedData() const {
+  return persisted_data_.get();
+}
+
+scoped_refptr<PersistedData> Configurator::GetUpdaterPersistedData() const {
+  return persisted_data_;
 }
 
 bool Configurator::IsPerUserInstall() const {
@@ -199,8 +205,8 @@ Configurator::GetProtocolHandlerFactory() const {
   return std::make_unique<update_client::ProtocolHandlerFactoryJSON>();
 }
 
-absl::optional<bool> Configurator::IsMachineExternallyManaged() const {
-  const absl::optional<bool> is_managed_overridden =
+std::optional<bool> Configurator::IsMachineExternallyManaged() const {
+  const std::optional<bool> is_managed_overridden =
       external_constants_->IsMachineManaged();
   return is_managed_overridden.has_value() ? is_managed_overridden
                                            : is_managed_device_;
@@ -221,7 +227,7 @@ update_client::UpdaterStateProvider Configurator::GetUpdaterStateProvider()
   });
 }
 
-absl::optional<base::FilePath> Configurator::GetCrxCachePath() const {
+std::optional<base::FilePath> Configurator::GetCrxCachePath() const {
   return updater::GetCrxDiffCacheDirectory(GetUpdaterScope());
 }
 

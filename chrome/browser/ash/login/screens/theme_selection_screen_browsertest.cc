@@ -11,6 +11,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/login/screens/guest_tos_screen.h"
+#include "chrome/browser/ash/login/screens/theme_selection_screen.h"
 #include "chrome/browser/ash/login/screens/welcome_screen.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/fake_eula_mixin.h"
@@ -71,8 +72,8 @@ class ThemeSelectionScreenTest
 
     original_callback_ =
         theme_selection_screen->get_exit_callback_for_testing();
-    theme_selection_screen->set_exit_callback_for_testing(base::BindRepeating(
-        &ThemeSelectionScreenTest::HandleScreenExit, base::Unretained(this)));
+    theme_selection_screen->set_exit_callback_for_testing(
+        screen_result_waiter_.GetRepeatingCallback());
     OobeBaseTest::SetUpOnMainThread();
   }
 
@@ -87,13 +88,10 @@ class ThemeSelectionScreenTest
         ThemeSelectionScreenView::kScreenId);
   }
 
-  void WaitForScreenExit() {
-    if (result_.has_value()) {
-      return;
-    }
-    base::test::TestFuture<void> waiter;
-    quit_closure_ = waiter.GetCallback();
-    EXPECT_TRUE(waiter.Wait());
+  ThemeSelectionScreen::Result WaitForScreenExitResult() {
+    auto result = screen_result_waiter_.Take();
+    original_callback_.Run(result);
+    return result;
   }
 
   void setTabletMode(bool enabled) {
@@ -102,20 +100,12 @@ class ThemeSelectionScreenTest
     waiter.Wait();
   }
 
-  ThemeSelectionScreen::ScreenExitCallback original_callback_;
-  absl::optional<ThemeSelectionScreen::Result> result_;
   base::HistogramTester histogram_tester_;
 
  private:
-  void HandleScreenExit(ThemeSelectionScreen::Result result) {
-    result_ = result;
-    original_callback_.Run(result);
-    if (quit_closure_)
-      std::move(quit_closure_).Run();
-  }
-
   LoginManagerMixin login_manager_mixin_{&mixin_host_};
-  base::OnceClosure quit_closure_;
+  ThemeSelectionScreen::ScreenExitCallback original_callback_;
+  base::test::TestFuture<ThemeSelectionScreen::Result> screen_result_waiter_;
 };
 
 IN_PROC_BROWSER_TEST_F(ThemeSelectionScreenTest,
@@ -124,7 +114,7 @@ IN_PROC_BROWSER_TEST_F(ThemeSelectionScreenTest,
   ShowThemeSelectionScreen();
   test::OobeJS().ClickOnPath(kNextButtonPath);
 
-  WaitForScreenExit();
+  EXPECT_EQ(WaitForScreenExitResult(), ThemeSelectionScreen::Result::kProceed);
 
   EXPECT_THAT(
       histogram_tester_.GetAllSamples(kStepShownStatusHistogram),
@@ -140,10 +130,8 @@ IN_PROC_BROWSER_TEST_F(ThemeSelectionScreenTest,
       false;
   ShowThemeSelectionScreen();
 
-  // for not branded build marketingOptIn screen is skipped causing
-  // login host controller and oobe UI to be detoryed
-  ash::test::TapOnPathAndWaitForOobeToBeDestroyed(kNextButtonPath);
-  WaitForScreenExit();
+  test::OobeJS().ClickOnPath(kNextButtonPath);
+  EXPECT_EQ(WaitForScreenExitResult(), ThemeSelectionScreen::Result::kProceed);
 
   EXPECT_THAT(
       histogram_tester_.GetAllSamples(kStepShownStatusHistogram),
@@ -187,17 +175,11 @@ IN_PROC_BROWSER_TEST_P(ThemeSelectionScreenTest, SelectTheme) {
     theme = ThemeSelectionScreen::SelectedTheme::kAuto;
   }
 
-  // for not branded build marketingOptIn screen is skipped causing
-  // login host controller and oobe UI to be detoryed
-  if (branded_build) {
-    test::OobeJS().ClickOnPath(kNextButtonPath);
-  } else {
-    ash::test::TapOnPathAndWaitForOobeToBeDestroyed(kNextButtonPath);
-  }
+  test::OobeJS().ClickOnPath(kNextButtonPath);
 
   EXPECT_THAT(histogram_tester_.GetAllSamples(kSelectedThemeHistogram),
               ElementsAre(base::Bucket(static_cast<int>(theme), 1)));
-  WaitForScreenExit();
+  EXPECT_EQ(WaitForScreenExitResult(), ThemeSelectionScreen::Result::kProceed);
 }
 
 IN_PROC_BROWSER_TEST_F(ThemeSelectionScreenTest, ToggleTabletMode) {

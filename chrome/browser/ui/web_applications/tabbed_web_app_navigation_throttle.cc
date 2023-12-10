@@ -54,7 +54,7 @@ TabbedWebAppNavigationThrottle::MaybeCreateThrottleFor(
 
   const webapps::AppId& app_id = browser->app_controller()->app_id();
 
-  absl::optional<GURL> home_tab_url =
+  std::optional<GURL> home_tab_url =
       provider->registrar_unsafe().GetAppPinnedHomeTabUrl(app_id);
 
   auto* tab_helper = WebAppTabHelper::FromWebContents(web_contents);
@@ -83,7 +83,7 @@ TabbedWebAppNavigationThrottle::WillStartRequest() {
 
   const webapps::AppId& app_id = app_controller->app_id();
 
-  absl::optional<GURL> home_tab_url =
+  std::optional<GURL> home_tab_url =
       provider->registrar_unsafe().GetAppPinnedHomeTabUrl(app_id);
   DCHECK(home_tab_url.has_value());
 

@@ -41,8 +41,9 @@ void WebNNCommandRecorderTest::SetUp() {
   SKIP_TEST_IF(!UseGPUInTests());
   ASSERT_TRUE(InitializeGLDisplay());
   Adapter::EnableDebugLayerForTesting();
-  adapter_ = Adapter::GetInstanceForTesting();
-  ASSERT_NE(adapter_.get(), nullptr);
+  auto adapter_creation_result = Adapter::GetInstanceForTesting();
+  ASSERT_TRUE(adapter_creation_result.has_value());
+  adapter_ = std::move(adapter_creation_result.value());
 }
 
 void WebNNCommandRecorderTest::Upload(CommandRecorder* command_recorder,

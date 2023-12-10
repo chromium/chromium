@@ -4,9 +4,7 @@
 
 package org.chromium.support_lib_boundary;
 
-/**
- * Boundary interface for WebViewRenderer.
- */
+/** Boundary interface for WebViewRenderer. */
 public interface WebViewRendererBoundaryInterface extends IsomorphicObjectBoundaryInterface {
     boolean terminate();
 }

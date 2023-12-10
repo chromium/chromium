@@ -5,11 +5,10 @@
 #ifndef EXTENSIONS_BROWSER_URL_REQUEST_UTIL_H_
 #define EXTENSIONS_BROWSER_URL_REQUEST_UTIL_H_
 
+#include <optional>
 #include <string>
-
 #include "base/strings/string_piece.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/page_transition_types.h"
 
 namespace network {

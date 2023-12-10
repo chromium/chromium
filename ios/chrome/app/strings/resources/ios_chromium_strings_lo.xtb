@@ -16,6 +16,7 @@
 <translation id="1513122820609681462">ຕັ້ງຄ່າ Chromium ເປັນໂປຣແກຣມທ່ອງເວັບເລີ່ມຕົ້ນ</translation>
 <translation id="1531155317299575425">ສະແດງຂໍ້ຄວາມເພື່ອເຂົ້າສູ່ລະບົບຫາ Chromium.</translation>
 <translation id="1591119736686995611">ເປີດໂຄງຮ່າງຕາຕະລາງຂອງແຖບ Chromium.</translation>
+<translation id="1611584326765829247">ໃຫ້ Chromium ຊ່ວຍທ່ານຕິດຕາມແພັກ​ເກດຂອງທ່ານ</translation>
 <translation id="1617663976202781617">ຂໍ້ມູນຈາກການຊິ້ງຂໍ້ມູນຂອງ Chromium</translation>
 <translation id="1647558790457890304">ການຕັ້ງຄ່າ Chromium</translation>
 <translation id="164952285225495380">ພັດສະດຸນີ້ຖືກຕິດຕາມຢູ່ Chromium ຢູ່ກ່ອນແລ້ວ.</translation>
@@ -87,6 +88,7 @@
 <translation id="4195557071150719219">ເບິ່ງແຖບຫຼ້າສຸດໃນ Chromium</translation>
 <translation id="4408912345039114853">ເອີ້ນໃຊ້ການກວດສອບຄວາມປອດໄພ Chromium</translation>
 <translation id="4432744876818348753">ເຂົ້າສູ່ລະບົບເພື່ອໃຊ້ປະໂຫຍດສູງສຸດຈາກ Chromium.</translation>
+<translation id="4498832288620833153">ເພີ່ມ URL ທີ່ປ້ອນເຂົ້າໃສ່ລາຍຊື່ການອ່ານຂອງທ່ານໃນ Chromium.</translation>
 <translation id="452436063477828504">ກວດສອບໃຫ້ແນ່ໃຈວ່າທ່ານສາມາດໃຊ້ຂໍ້ມູນ Chromium ໃນບັນຊີ Google ຂອງທ່ານໄດ້ສະເໝີ</translation>
 <translation id="4555020257205549924">ເມື່ອຄຸນສົມບັດນີ້ເປີດຢູ່, Chromium ຈະສະເໜີແປໜ້າຕ່າງໆທີ່ຂຽນເປັນພາສາອື່ນ ໂດຍໃຊ້ Google ແປພາສາ. <ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK" /></translation>
 <translation id="4576283463017113841">ເປີດໜ້າການຕັ້ງຄ່າວິທີການຈ່າຍເງິນໃນ Chromium.</translation>
@@ -107,6 +109,7 @@
 <translation id="5048795749726991615">ເພື່ອເບິ່ງລະຫັດຜ່ານທີ່ບັນທຶກໄວ້ໃນແອັບອື່ນໆຂອງທ່ານໄດ້ຢ່າງງ່າຍດາຍ, ໃຫ້ໃຊ້ Chromium ສຳລັບການຕື່ມຂໍ້ມູນອັດຕະໂນມັດ</translation>
 <translation id="5076601183701536878">ລຶບລ້າງຂໍ້ມູນການທ່ອງເວັບໃນ Chromium</translation>
 <translation id="5131565040785979529">ອົງກອນ <ph name="DOMAIN" /> ຂອງທ່ານຈະເປັນຜູ້ຈັດການບັນຊີທີ່ທ່ານເຂົ້າສູ່ລະບົບ ແລະ ວິທີໃຊ້ Chromium.</translation>
+<translation id="5146749061471423558">ເພີ່ມບຸກມາກໃສ່ໃນ Chromium</translation>
 <translation id="5171868502429358653">ເຂົ້າສູ່ລະບົບຫາ Chromium</translation>
 <translation id="5213683223491576284">ເປີດຕົວຈັດການລະຫັດຜ່ານໃນ Chromium.</translation>
 <translation id="5224391634244552924">ບໍ່ມີລະຫັດຜ່ານທີ່ບັນທຶກໄວ້. Chromium ສາມາດກວດເບິ່ງລະຫັດຜ່ານຂອງທ່ານເມື່ອທ່ານບັນທຶກພວກມັນໄວ້.</translation>
@@ -114,6 +117,7 @@
 
         ກະລຸນາລໍຖ້າສອງສາມນາທີກ່ອນອອກຈາກລະບົບ. ຫາກທ່ານອອກຈາກລະບົບຕອນນີ້, ຂໍ້ມູນນີ້ຈະຖືກລຶບ.</translation>
 <translation id="5308226104666789935">Chromium ບໍ່ສາມາດກວດຫາການອັບເດດໄດ້</translation>
+<translation id="5311557153294205270">ເພີ່ມ URL ທີ່ປ້ອນເຂົ້າໃສ່ບຸກມາກຂອງທ່ານໃນ Chromium.</translation>
 <translation id="5396916991083608703">ຕັ້ງ Chromium ເປັນຄ່າເລີ່ມຕົ້ນບໍ?</translation>
 <translation id="5453478652154926037">Chromium ບໍ່ສາມາດກວດລະຫັດຜ່ານຂອງທ່ານໄດ້.</translation>
 <translation id="5521125884468363740">ເພື່ອເຫັນແຖບຂອງທ່ານຈາກທຸກບ່ອນທີ່ທ່ານໃຊ້ Chromium, ກະລຸນາເຂົ້າສູ່ລະບົບ ແລະ ເປີດການຊິ້ງຂໍ້ມູນ</translation>
@@ -164,7 +168,6 @@
 <translation id="6911341667534646387">ໃຊ້ຂໍ້ມູນ Chromium ໃນບັນຊີ Google ຂອງທ່ານຕໍ່ໄປ</translation>
 <translation id="7006920032187763988">ທ່ານສາມາດໃຊ້ລະຫັດຜ່ານທີ່ທ່ານບັນທຶກໄປໃສ່ຕົວຈັດການລະຫັດຜ່ານໃນແອັບອື່ນຢູ່ iPad ຂອງທ່ານໄດ້.</translation>
 <translation id="7018284295775193585">Chromium ບໍ່ສາມາດອັບເດດໄດ້</translation>
-<translation id="7025471822960602362">ຕິດຕາມແພັກເກດທີ່ກວດພົບໃນ Chromium</translation>
 <translation id="7045244423563602563">ຕັ້ງຄ່າ Chromium ແບບກຳນົດເອງ</translation>
 <translation id="7055269218854630176">ອົງກອນ <ph name="DOMAIN" /> ຂອງທ່ານຈະເປັນຜູ້ຈັດການບັນຊີທີ່ທ່ານກຳລັງເຂົ້າສູ່ລະບົບ ແລະ ວິທີໃຊ້ Chromium. ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານສາມາດຕັ້ງຄ່າ ຫຼື ຈຳກັດຄຸນສົມບັດບາງຢ່າງໄດ້.</translation>
 <translation id="7099326575020694068">Chromium ບໍ່ສາມາດໃຊ້ກ້ອງຖ່າຍຮູບຂອງທ່ານໃນໂໝດມຸມມອງແຍກກັນໄດ້</translation>
@@ -194,6 +197,7 @@
 <translation id="7928628054454574139">ເປີດ Chromium ຕອນໃດກໍໄດ້ທີ່ທ່ານແຕະໃສ່ລິ້ງໃນແອັບອື່ນ</translation>
 <translation id="7931842119211730154">ລັອກ incognito tab ເມື່ອທ່ານປິດ Chromium</translation>
 <translation id="7934404985878918282">ເບິ່ງລາຍຊື່ການອ່ານ Chromium</translation>
+<translation id="7971753607796745700">ເພີ່ມລາຍການລາຍຊື່ການອ່ານໃສ່ Chromium</translation>
 <translation id="7980860476903281594">Chromium ຈະແບ່ງປັນສະຖານທີ່ຂອງທ່ານໃຫ້ກັບເວັບໄຊທີ່ທ່ານອະນຸຍາດ.</translation>
 <translation id="7995166854192397899">ຄຳແນະນຳຕ່າງໆຈະອີງຕາມການເຄື່ອນໄຫວການທ່ອງເວັບຂອງທ່ານໃນອຸປະກອນອື່ນໆຂອງທ່ານ. ເພື່ອຮັບຄຳແນະນຳ, ໃຫ້ເຂົ້າສູ່ລະບົບ Chromium ໃນອຸປະກອນທັງໝົດຂອງທ່ານ.</translation>
 <translation id="800195749539500647">ໃຊ້ປະໂຫຍດສູງສຸດຈາກ Chromium</translation>

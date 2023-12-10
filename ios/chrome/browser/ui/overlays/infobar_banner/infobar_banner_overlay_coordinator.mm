@@ -6,13 +6,13 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/check.h"
-#import "ios/chrome/browser/infobars/infobar_ios.h"
-#import "ios/chrome/browser/infobars/infobar_type.h"
-#import "ios/chrome/browser/overlays/public/common/infobars/infobar_overlay_request_config.h"
-#import "ios/chrome/browser/overlays/public/default/default_infobar_overlay_request_config.h"
-#import "ios/chrome/browser/overlays/public/overlay_request.h"
-#import "ios/chrome/browser/overlays/public/overlay_request_support.h"
-#import "ios/chrome/browser/overlays/public/overlay_response.h"
+#import "ios/chrome/browser/infobars/model/infobar_ios.h"
+#import "ios/chrome/browser/infobars/model/infobar_type.h"
+#import "ios/chrome/browser/overlays/model/public/common/infobars/infobar_overlay_request_config.h"
+#import "ios/chrome/browser/overlays/model/public/default/default_infobar_overlay_request_config.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_request.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_request_support.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_response.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
@@ -24,6 +24,7 @@
 #import "ios/chrome/browser/ui/infobars/presentation/infobar_banner_transition_driver.h"
 #import "ios/chrome/browser/ui/overlays/infobar_banner/autofill_address_profile/save_address_profile_infobar_banner_overlay_mediator.h"
 #import "ios/chrome/browser/ui/overlays/infobar_banner/confirm/confirm_infobar_banner_overlay_mediator.h"
+#import "ios/chrome/browser/ui/overlays/infobar_banner/features.h"
 #import "ios/chrome/browser/ui/overlays/infobar_banner/infobar_banner_overlay_mediator.h"
 #import "ios/chrome/browser/ui/overlays/infobar_banner/parcel_tracking/parcel_tracking_infobar_banner_overlay_mediator.h"
 #import "ios/chrome/browser/ui/overlays/infobar_banner/passwords/password_infobar_banner_overlay_mediator.h"
@@ -139,12 +140,9 @@
   if (!UIAccessibilityIsVoiceOverRunning()) {
     // Auto-dismiss the banner after timeout if VoiceOver is off (banner should
     // persist until user explicitly swipes it away).
-    const base::TimeDelta timeout =
-        config->is_high_priority() ? kInfobarBannerLongPresentationDuration
-                                   : kInfobarBannerDefaultPresentationDuration;
     [self performSelector:@selector(dismissBannerIfReady)
                withObject:nil
-               afterDelay:timeout.InSecondsF()];
+               afterDelay:[self infobarDuration].InSecondsF()];
   }
 }
 
@@ -254,6 +252,34 @@
 // currently interaction with it).
 - (void)dismissBannerIfReady {
   [self.bannerViewController dismissWhenInteractionIsFinished];
+}
+
+// Determines the duration for which to show the infobar based on its priority
+// and its type.
+- (base::TimeDelta)infobarDuration {
+  InfobarOverlayRequestConfig* config =
+      self.request->GetConfig<InfobarOverlayRequestConfig>();
+
+  // Experiments with longer infobar duration for passwords, cards and
+  // addresses.
+  InfobarType type = config->infobar_type();
+  if (type == InfobarType::kInfobarTypePasswordSave ||
+      type == InfobarType::kInfobarTypePasswordUpdate) {
+    if (base::FeatureList::IsEnabled(kPasswordInfobarDisplayLength)) {
+      return base::Seconds(kPasswordInfobarDisplayLengthParam.Get());
+    }
+  } else if (type == InfobarType::kInfobarTypeSaveCard) {
+    if (base::FeatureList::IsEnabled(kCreditCardInfobarDisplayLength)) {
+      return base::Seconds(kCreditCardInfobarDisplayLengthParam.Get());
+    }
+  } else if (type == InfobarType::kInfobarTypeSaveAutofillAddressProfile) {
+    if (base::FeatureList::IsEnabled(kAddressInfobarDisplayLength)) {
+      return base::Seconds(kAddressInfobarDisplayLengthParam.Get());
+    }
+  }
+
+  return config->is_high_priority() ? kInfobarBannerLongPresentationDuration
+                                    : kInfobarBannerDefaultPresentationDuration;
 }
 
 @end

@@ -266,6 +266,7 @@ namespace http://www.w3.org/1999/xhtml
     property onselectstart
     property onslotchange
     property onsnapchanged
+    property onsnapchanging
     property onstalled
     property onsubmit
     property onsuspend
@@ -679,6 +680,7 @@ html element html
     property version
 html element i
 html element iframe
+    property adAuctionHeaders
     property align
     property allow
     property allowFullscreen
@@ -1519,6 +1521,7 @@ namespace http://www.w3.org/2000/svg
     property onselectstart
     property onslotchange
     property onsnapchanged
+    property onsnapchanging
     property onstalled
     property onsubmit
     property onsuspend

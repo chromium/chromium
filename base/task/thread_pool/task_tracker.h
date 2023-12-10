@@ -35,6 +35,8 @@ class ConditionVariable;
 
 namespace internal {
 
+class JobTaskSource;
+
 // Determines which tasks are allowed to run.
 enum class CanRunPolicy {
   // All tasks are allowed to run.
@@ -113,6 +115,9 @@ class BASE_EXPORT TaskTracker {
   // true.
   RegisteredTaskSource RegisterTaskSource(
       scoped_refptr<TaskSource> task_source);
+
+  // Informs this TaskTracker that |task_source| is about to be queued.
+  void WillEnqueueJob(JobTaskSource* task_source);
 
   // Returns true if a task with |priority| can run under to the current policy.
   bool CanRunPriority(TaskPriority priority) const;

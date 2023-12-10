@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/signin/signin_email_confirmation_dialog.h"
 
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -23,7 +24,6 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_message_handler.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -159,7 +159,7 @@ content::WebContents* SigninEmailConfirmationDialog::GetDialogWebContents()
 void SigninEmailConfirmationDialog::OnDialogClosed(
     const std::string& json_retval) {
   Action action = CLOSE;
-  absl::optional<base::Value> ret_value = base::JSONReader::Read(json_retval);
+  std::optional<base::Value> ret_value = base::JSONReader::Read(json_retval);
   if (ret_value && ret_value->is_dict()) {
     const std::string* action_string =
         ret_value->GetDict().FindString(kSigninEmailConfirmationActionKey);

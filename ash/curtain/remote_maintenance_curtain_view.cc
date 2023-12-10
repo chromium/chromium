@@ -14,6 +14,7 @@
 #include "ash/wallpaper/views/wallpaper_view.h"
 #include "ash/wallpaper/wallpaper_constants.h"
 #include "base/check_deref.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/size.h"
@@ -88,5 +89,8 @@ void RemoteMaintenanceCurtainView::AddCurtainWebView() {
   // Load the actual security curtain content.
   curtain_view_->Navigate(GURL(kRemoteManagementCurtainUrl));
 }
+
+BEGIN_METADATA(RemoteMaintenanceCurtainView)
+END_METADATA
 
 }  // namespace ash::curtain

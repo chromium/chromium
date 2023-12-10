@@ -12,15 +12,12 @@
 
 namespace ash {
 
-class DetailedViewDelegate;
-class UnifiedSystemTrayController;
 class CalendarView;
 
 // Controller of `CalendarView` in UnifiedSystemTray.
 class UnifiedCalendarViewController : public DetailedViewController {
  public:
-  explicit UnifiedCalendarViewController(
-      UnifiedSystemTrayController* tray_controller);
+  UnifiedCalendarViewController() = default;
   UnifiedCalendarViewController(const UnifiedCalendarViewController& other) =
       delete;
   UnifiedCalendarViewController& operator=(
@@ -32,12 +29,7 @@ class UnifiedCalendarViewController : public DetailedViewController {
   std::u16string GetAccessibleName() const override;
 
  private:
-  const std::unique_ptr<DetailedViewDelegate> detailed_view_delegate_;
-
-  // Unowned, the object that instantiated us.
-  const raw_ptr<UnifiedSystemTrayController, ExperimentalAsh> tray_controller_;
-
-  // Owned by UnifiedSystemTrayView's detailed_view_container_.
+  // Owned by `QuickSettingsView`'s detailed_view_container_.
   raw_ptr<CalendarView, DanglingUntriaged | ExperimentalAsh> view_ = nullptr;
 };
 

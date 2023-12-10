@@ -117,6 +117,8 @@ constexpr PrefsForManagedContentSettingsMapEntry
          CONTENT_SETTING_ALLOW},
         {prefs::kManagedMidiBlockedForUrls, ContentSettingsType::MIDI,
          CONTENT_SETTING_BLOCK},
+        {prefs::kManagedMidiBlockedForUrls, ContentSettingsType::MIDI_SYSEX,
+         CONTENT_SETTING_BLOCK},
 };
 
 constexpr const char* kManagedPrefs[] = {
@@ -302,6 +304,7 @@ const PolicyProvider::PrefsForManagedDefaultMapEntry
         {ContentSettingsType::THIRD_PARTY_STORAGE_PARTITIONING,
          prefs::kManagedDefaultThirdPartyStoragePartitioningSetting},
         {ContentSettingsType::MIDI, prefs::kManagedDefaultMidi},
+        {ContentSettingsType::MIDI_SYSEX, prefs::kManagedDefaultMidi},
 };
 
 // static
@@ -338,7 +341,8 @@ PolicyProvider::~PolicyProvider() {
 
 std::unique_ptr<RuleIterator> PolicyProvider::GetRuleIterator(
     ContentSettingsType content_type,
-    bool incognito) const {
+    bool incognito,
+    const PartitionKey& partition_key) const {
   return value_map_.GetRuleIterator(content_type);
 }
 
@@ -553,12 +557,14 @@ bool PolicyProvider::SetWebsiteSetting(
     const ContentSettingsPattern& secondary_pattern,
     ContentSettingsType content_type,
     base::Value&& value,
-    const ContentSettingConstraints& constraints) {
+    const ContentSettingConstraints& constraints,
+    const PartitionKey& partition_key) {
   return false;
 }
 
 void PolicyProvider::ClearAllContentSettingsRules(
-    ContentSettingsType content_type) {}
+    ContentSettingsType content_type,
+    const PartitionKey& partition_key) {}
 
 void PolicyProvider::ShutdownOnUIThread() {
   DCHECK(CalledOnValidThread());

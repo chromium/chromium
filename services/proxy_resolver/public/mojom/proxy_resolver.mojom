@@ -29,7 +29,7 @@ interface HostResolverRequestClient {
 };
 
 struct ProxyInfo {
-  array<network.mojom.ProxyServer> proxy_servers;
+  array<network.mojom.ProxyChain> proxy_chains;
 };
 
 interface ProxyResolver {

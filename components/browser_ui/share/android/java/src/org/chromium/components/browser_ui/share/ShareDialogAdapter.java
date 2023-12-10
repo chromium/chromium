@@ -16,9 +16,7 @@ import android.widget.TextView;
 
 import java.util.List;
 
-/**
- * Adapter that provides the list of activities via which a web page can be shared.
- */
+/** Adapter that provides the list of activities via which a web page can be shared. */
 class ShareDialogAdapter extends ArrayAdapter<ResolveInfo> {
     private final LayoutInflater mInflater;
     private final PackageManager mManager;

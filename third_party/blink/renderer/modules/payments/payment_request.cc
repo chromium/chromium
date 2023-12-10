@@ -249,13 +249,15 @@ void ValidateShippingOptionOrPaymentItem(const T* item,
   }
 
   String error_message;
-  if (!PaymentsValidators::IsValidCurrencyCodeFormat(item->amount()->currency(),
-                                                     &error_message)) {
+  if (!PaymentsValidators::IsValidCurrencyCodeFormat(
+          execution_context.GetIsolate(), item->amount()->currency(),
+          &error_message)) {
     exception_state.ThrowRangeError(error_message);
     return;
   }
 
-  if (!PaymentsValidators::IsValidAmountFormat(item->amount()->value(),
+  if (!PaymentsValidators::IsValidAmountFormat(execution_context.GetIsolate(),
+                                               item->amount()->value(),
                                                item_name, &error_message)) {
     exception_state.ThrowTypeError(error_message);
     return;
@@ -510,7 +512,8 @@ void ValidateAndConvertPaymentDetailsModifiers(
       }
     }
 
-    if (!PaymentsValidators::IsValidMethodFormat(modifier->supportedMethod())) {
+    if (!PaymentsValidators::IsValidMethodFormat(execution_context.GetIsolate(),
+                                                 modifier->supportedMethod())) {
       exception_state.ThrowRangeError(
           "Invalid payment method identifier format");
       return;
@@ -717,6 +720,7 @@ void ValidateAndConvertPaymentMethodData(
 
   for (const PaymentMethodData* payment_method_data : input) {
     if (!PaymentsValidators::IsValidMethodFormat(
+            execution_context.GetIsolate(),
             payment_method_data->supportedMethod())) {
       exception_state.ThrowRangeError(
           "Invalid payment method identifier format");
@@ -1470,7 +1474,9 @@ void PaymentRequest::OnShippingAddressChange(PaymentAddressPtr address) {
   DCHECK(!complete_resolver_);
 
   String error_message;
-  if (!PaymentsValidators::IsValidShippingAddress(address, &error_message)) {
+  if (!PaymentsValidators::IsValidShippingAddress(
+          GetPendingAcceptPromiseResolver()->GetScriptState()->GetIsolate(),
+          address, &error_message)) {
     GetPendingAcceptPromiseResolver()->Reject(
         MakeGarbageCollected<DOMException>(DOMExceptionCode::kSyntaxError,
                                            error_message));
@@ -1527,8 +1533,9 @@ void PaymentRequest::OnPaymentResponse(PaymentResponsePtr response) {
     }
 
     String error_message;
-    if (!PaymentsValidators::IsValidShippingAddress(response->shipping_address,
-                                                    &error_message)) {
+    if (!PaymentsValidators::IsValidShippingAddress(
+            resolver->GetScriptState()->GetIsolate(),
+            response->shipping_address, &error_message)) {
       resolver->Reject(MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kSyntaxError, error_message));
       ClearResolversAndCloseMojoConnection();

@@ -5,11 +5,12 @@
 #include "components/qr_code_generator/features.h"
 
 #include "base/feature_list.h"
+#include "build/build_config.h"
 
 namespace qr_code_generator {
 
 BASE_FEATURE(kRustyQrCodeGeneratorFeature,
              "RustyQrCodeGenerator",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace qr_code_generator

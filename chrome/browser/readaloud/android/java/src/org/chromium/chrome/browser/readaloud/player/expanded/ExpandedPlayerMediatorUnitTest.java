@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.readaloud.player.expanded;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyInt;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
@@ -64,13 +65,13 @@ public class ExpandedPlayerMediatorUnitTest {
         reset(mModel);
         mMediator.show();
         assertEquals(VisibilityState.SHOWING, mMediator.getVisibility());
-        verify(mModel, never()).set(eq(PlayerProperties.EXPANDED_PLAYER_VISIBILITY), any());
+        verify(mModel, never()).set(eq(PlayerProperties.EXPANDED_PLAYER_VISIBILITY), anyInt());
 
         mModel.set(PlayerProperties.EXPANDED_PLAYER_VISIBILITY, VisibilityState.VISIBLE);
         reset(mModel);
         mMediator.show();
         assertEquals(VisibilityState.VISIBLE, mMediator.getVisibility());
-        verify(mModel, never()).set(eq(PlayerProperties.EXPANDED_PLAYER_VISIBILITY), any());
+        verify(mModel, never()).set(eq(PlayerProperties.EXPANDED_PLAYER_VISIBILITY), anyInt());
     }
 
     @Test

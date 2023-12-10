@@ -350,9 +350,14 @@ void HTMLVideoElement::OnLoadFinished() {
   // element actually becomes visible to complete the load.
   if (web_media_player_->DidLazyLoad() && !PotentiallyPlaying()) {
     lazy_load_intersection_observer_ = IntersectionObserver::Create(
-        {}, {IntersectionObserver::kMinimumThreshold}, &GetDocument(),
+        /* (root) margin */ Vector<Length>(),
+        /* scroll_margin */ Vector<Length>(),
+        /* thresholds */ {IntersectionObserver::kMinimumThreshold},
+        /* document */ &GetDocument(),
+        /* callback */
         WTF::BindRepeating(&HTMLVideoElement::OnIntersectionChangedForLazyLoad,
                            WrapWeakPersistent(this)),
+        /* ukm_metric_id */
         LocalFrameUkmAggregator::kMediaIntersectionObserver);
     lazy_load_intersection_observer_->observe(this);
   }
@@ -512,7 +517,8 @@ bool HTMLVideoElement::IsDefaultPosterImageURL() const {
 }
 
 scoped_refptr<StaticBitmapImage> HTMLVideoElement::CreateStaticBitmapImage(
-    bool allow_accelerated_images) {
+    bool allow_accelerated_images,
+    absl::optional<gfx::Size> size) {
   media::PaintCanvasVideoRenderer* video_renderer = nullptr;
   scoped_refptr<media::VideoFrame> media_video_frame;
   if (auto* wmp = GetWebMediaPlayer()) {
@@ -523,11 +529,16 @@ scoped_refptr<StaticBitmapImage> HTMLVideoElement::CreateStaticBitmapImage(
   if (!media_video_frame || !video_renderer)
     return nullptr;
 
+  gfx::Size dest_size = size.value_or(media_video_frame->natural_size());
+  if (dest_size.width() <= 0 || dest_size.height() <= 0) {
+    return nullptr;
+  }
+
   // TODO(https://crbug.com/1341235): The choice of color type, alpha type,
   // and color space is inappropriate in many circumstances.
   const auto resource_provider_info =
-      SkImageInfo::Make(gfx::SizeToSkISize(media_video_frame->natural_size()),
-                        kN32_SkColorType, kPremul_SkAlphaType, nullptr);
+      SkImageInfo::Make(gfx::SizeToSkISize(dest_size), kN32_SkColorType,
+                        kPremul_SkAlphaType, nullptr);
   if (!resource_provider_ ||
       allow_accelerated_images != resource_provider_->IsAccelerated() ||
       resource_provider_info != resource_provider_->GetSkImageInfo()) {
@@ -545,11 +556,10 @@ scoped_refptr<StaticBitmapImage> HTMLVideoElement::CreateStaticBitmapImage(
       return nullptr;
   }
 
-  const auto dest_rect = gfx::Rect(media_video_frame->natural_size());
   auto image = CreateImageFromVideoFrame(std::move(media_video_frame),
                                          /*allow_zero_copy_images=*/true,
                                          resource_provider_.get(),
-                                         video_renderer, dest_rect);
+                                         video_renderer, gfx::Rect(dest_size));
   if (image)
     image->SetOriginClean(!WouldTaintOrigin());
   return image;

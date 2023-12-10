@@ -78,6 +78,8 @@ bool IsBottom(TapLabelPosition position) {
 }
 
 class ActionLabelTap : public ActionLabel {
+  METADATA_HEADER(ActionLabelTap, ActionLabel)
+
  public:
   ActionLabelTap(MouseAction mouse_action, TapLabelPosition label_position)
       : ActionLabel(mouse_action), label_position_(label_position) {
@@ -182,7 +184,12 @@ class ActionLabelTap : public ActionLabel {
   TapLabelPosition label_position_ = TapLabelPosition::kNone;
 };
 
+BEGIN_METADATA(ActionLabelTap)
+END_METADATA
+
 class ActionLabelMove : public ActionLabel {
+  METADATA_HEADER(ActionLabelMove, ActionLabel)
+
  public:
   ActionLabelMove(const std::u16string& text, size_t index)
       : ActionLabel(text, index) {}
@@ -209,6 +216,9 @@ class ActionLabelMove : public ActionLabel {
 
   void UpdateLabelPositionType(TapLabelPosition label_position) override {}
 };
+
+BEGIN_METADATA(ActionLabelMove)
+END_METADATA
 
 }  // namespace
 
@@ -463,13 +473,13 @@ void ActionLabel::SetToViewMode() {
 
   if (mouse_action_ != MouseAction::NONE) {
     if (mouse_action_ == MouseAction::PRIMARY_CLICK) {
-      auto left_click_icon = gfx::CreateVectorIcon(
-          gfx::IconDescription(kMouseLeftClickViewIcon, kIconSize));
-      SetImage(views::Button::STATE_NORMAL, left_click_icon);
+      auto left_click_icon = ui::ImageModel::FromVectorIcon(
+          kMouseLeftClickViewIcon, gfx::kPlaceholderColor, kIconSize);
+      SetImageModel(views::Button::STATE_NORMAL, left_click_icon);
     } else {
-      auto right_click_icon = gfx::CreateVectorIcon(
-          gfx::IconDescription(kMouseRightClickViewIcon, kIconSize));
-      SetImage(views::Button::STATE_NORMAL, right_click_icon);
+      auto right_click_icon = ui::ImageModel::FromVectorIcon(
+          kMouseRightClickViewIcon, gfx::kPlaceholderColor, kIconSize);
+      SetImageModel(views::Button::STATE_NORMAL, right_click_icon);
     }
   }
 
@@ -500,13 +510,13 @@ void ActionLabel::SetToEditMode() {
 
   if (mouse_action_ != MouseAction::NONE) {
     if (mouse_action_ == MouseAction::PRIMARY_CLICK) {
-      auto left_click_icon = gfx::CreateVectorIcon(
-          gfx::IconDescription(kMouseLeftClickEditIcon, kIconSize));
-      SetImage(views::Button::STATE_NORMAL, left_click_icon);
+      auto left_click_icon = ui::ImageModel::FromVectorIcon(
+          kMouseLeftClickEditIcon, gfx::kPlaceholderColor, kIconSize);
+      SetImageModel(views::Button::STATE_NORMAL, left_click_icon);
     } else {
-      auto right_click_icon = gfx::CreateVectorIcon(
-          gfx::IconDescription(kMouseRightClickEditIcon, kIconSize));
-      SetImage(views::Button::STATE_NORMAL, right_click_icon);
+      auto right_click_icon = ui::ImageModel::FromVectorIcon(
+          kMouseRightClickEditIcon, gfx::kPlaceholderColor, kIconSize);
+      SetImageModel(views::Button::STATE_NORMAL, right_click_icon);
     }
   }
   SetToEditDefault();
@@ -517,7 +527,7 @@ void ActionLabel::SetToEditDefault() {
                                      gfx::Font::Weight::BOLD));
   SetEnabledTextColors(kTextColorDefault);
   SetBackgroundForEdit();
-  views::FocusRing::Get(this)->SetColorId(absl::nullopt);
+  views::FocusRing::Get(this)->SetColorId(std::nullopt);
 }
 
 void ActionLabel::SetToEditHover(bool hovered) {
@@ -525,7 +535,7 @@ void ActionLabel::SetToEditHover(bool hovered) {
     views::FocusRing::Get(this)->SetColorId(
         ui::kColorAshActionLabelFocusRingHover);
   } else {
-    views::FocusRing::Get(this)->SetColorId(absl::nullopt);
+    views::FocusRing::Get(this)->SetColorId(std::nullopt);
   }
 }
 

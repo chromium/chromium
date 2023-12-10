@@ -6,6 +6,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #import "components/policy/core/common/policy_pref_names.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
@@ -16,7 +17,7 @@
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
-#import "ios/chrome/browser/signin/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/ui/policy/user_policy/user_policy_prompt_coordinator.h"
 #import "ios/chrome/browser/ui/policy/user_policy/user_policy_prompt_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/policy/user_policy_util.h"
@@ -61,7 +62,10 @@
 // TODO(crbug.com/1325115): Remove the logic to show the notification dialog
 // once we determined that this isn't needed anymore.
 
-@implementation UserPolicySceneAgent
+@implementation UserPolicySceneAgent {
+  // Manager for user policies that provides access to the stored policy data.
+  policy::UserCloudPolicyManager* _userPolicyManager;
+}
 
 - (instancetype)initWithSceneUIProvider:(id<SceneUIProvider>)sceneUIProvider
                             authService:(AuthenticationService*)authService
@@ -70,7 +74,9 @@
                             prefService:(PrefService*)prefService
                             mainBrowser:(Browser*)mainBrowser
                           policyService:
-                              (policy::UserPolicySigninService*)policyService {
+                              (policy::UserPolicySigninService*)policyService
+                      userPolicyManager:
+                          (policy::UserCloudPolicyManager*)userPolicyManager {
   self = [super init];
   if (self) {
     _sceneUIProvider = sceneUIProvider;
@@ -79,6 +85,7 @@
     _prefService = prefService;
     _mainBrowser = mainBrowser;
     _policyService = policyService;
+    _userPolicyManager = userPolicyManager;
   }
   return self;
 }
@@ -170,7 +177,8 @@
     return;
   }
 
-  if (!IsUserPolicyNotificationNeeded(self.authService, self.prefService)) {
+  if (!IsUserPolicyNotificationNeeded(self.authService, self.prefService,
+                                      _userPolicyManager)) {
     // Skip notification if the notification isn't needed anymore. This
     // situation can happen when the user had already dismissed the
     // notification dialog during the same session.

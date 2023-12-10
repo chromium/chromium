@@ -25,6 +25,7 @@
 #include "chrome/browser/search_engines/template_url_service_test_util.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/history/core/browser/history_service.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "components/search_engines/keyword_web_data_service.h"
 #include "components/search_engines/search_engine_type.h"
 #include "components/search_engines/search_engines_pref_names.h"
@@ -32,6 +33,7 @@
 #include "components/search_engines/search_host_to_urls_map.h"
 #include "components/search_engines/search_terms_data.h"
 #include "components/search_engines/template_url.h"
+#include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_prepopulate_data.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/template_url_starter_pack_data.h"
@@ -124,6 +126,28 @@ std::unique_ptr<TemplateURLData> CreateTestSearchEngine() {
   result->alternate_urls = {"http://test.com/search#t={searchTerms}"};
   return result;
 }
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS_ASH)
+// Creates a `TemplateURLData` corresponding to a site search engine set by
+// policy, with some fake data generated from `keyword`.
+std::unique_ptr<TemplateURLData> CreateTestSiteSearchEntry(
+    const std::string& keyword) {
+  auto data = std::make_unique<TemplateURLData>();
+  data->SetShortName(base::UTF8ToUTF16(keyword + "name"));
+  data->SetKeyword(base::UTF8ToUTF16(keyword));
+  data->SetURL(std::string("https://") + keyword + ".com/q={searchTerms}");
+  data->created_by_policy = TemplateURLData::CreatedByPolicy::kSiteSearch;
+  data->enforced_by_policy = false;
+  data->favicon_url =
+      GURL(std::string("https://") + keyword + ".com/favicon.ico");
+  data->safe_for_autoreplace = false;
+  data->date_created = base::Time();
+  data->last_modified = base::Time();
+  return data;
+}
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS_ASH)
 
 std::string ParamToTestSuffix(const ::testing::TestParamInfo<bool>& info) {
   return info.param ? "SearchEngineChoiceEnabled"
@@ -2485,6 +2509,231 @@ TEST_P(TemplateURLServiceTest, EmitTemplateURLActiveOnStartupHistogram) {
       "Omnibox.KeywordModeUsageByEngineType.InactiveOnStartup",
       BuiltinEngineType::KEYWORD_MODE_NON_BUILT_IN, 1);
 }
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS_ASH)
+TEST_P(TemplateURLServiceTest, SiteSearchPolicyBeforeLoading) {
+  constexpr char kKeyword1[] = "site_search_1";
+  constexpr char kKeyword2[] = "site_search_2";
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(omnibox::kSiteSearchSettingsPolicy);
+
+  // Reset the model to ensure an `EnterpriseSiteSearchManager` instance is
+  // created (it depends on `kSiteSearchSettingsPolicy` being enabled).
+  test_util()->ResetModel(/*verify_load=*/false);
+
+  // Set a managed preference that establishes site search providers before
+  // the keywords table is loaded.
+  EnterpriseSiteSearchManager::OwnedTemplateURLDataVector site_search_engines;
+  site_search_engines.push_back(CreateTestSiteSearchEntry(kKeyword1));
+  site_search_engines.push_back(CreateTestSiteSearchEntry(kKeyword2));
+
+  SetManagedSiteSearchSettingsPreference(site_search_engines,
+                                         test_util()->profile());
+
+  // Ensure managed site search engines can be accessed even before the keywords
+  // table loading is completed.
+  for (auto& engine : site_search_engines) {
+    const TemplateURL* actual_turl =
+        model()->GetTemplateURLForKeyword(engine->keyword());
+    ASSERT_TRUE(actual_turl);
+    ExpectSimilar(engine.get(), &actual_turl->data());
+  }
+
+  // Complete loading the DB.
+  test_util()->VerifyLoad();
+
+  // Ensure managed site search engines can still be accessed after the keywords
+  // table is loaded.
+  for (auto& engine : site_search_engines) {
+    const TemplateURL* actual_turl =
+        model()->GetTemplateURLForKeyword(engine->keyword());
+    ASSERT_TRUE(actual_turl);
+    ExpectSimilar(engine.get(), &actual_turl->data());
+  }
+
+  // The following call has no effect on managed search engines.
+  model()->RepairPrepopulatedSearchEngines();
+
+  for (auto& engine : site_search_engines) {
+    const TemplateURL* actual_turl =
+        model()->GetTemplateURLForKeyword(engine->keyword());
+    ASSERT_TRUE(actual_turl);
+    ExpectSimilar(engine.get(), &actual_turl->data());
+  }
+}
+
+TEST_P(TemplateURLServiceTest, SiteSearchPolicyAfterLoading) {
+  constexpr char kKeyword1[] = "site_search_1";
+  constexpr char kKeyword2[] = "site_search_2";
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(omnibox::kSiteSearchSettingsPolicy);
+
+  // Reset the model to ensure an `EnterpriseSiteSearchManager` instance is
+  // created (it depends on `kSiteSearchSettingsPolicy` being enabled).
+  test_util()->ResetModel(/*verify_load=*/true);
+
+  // Set a managed preference that establishes site search providers after
+  // the keywords table loading is completed.
+  EnterpriseSiteSearchManager::OwnedTemplateURLDataVector site_search_engines;
+  site_search_engines.push_back(CreateTestSiteSearchEntry(kKeyword1));
+  site_search_engines.push_back(CreateTestSiteSearchEntry(kKeyword2));
+
+  SetManagedSiteSearchSettingsPreference(site_search_engines,
+                                         test_util()->profile());
+
+  // Ensure managed site search engines can be accessed.
+  for (auto& engine : site_search_engines) {
+    const TemplateURL* actual_turl =
+        model()->GetTemplateURLForKeyword(engine->keyword());
+    ASSERT_TRUE(actual_turl);
+    ExpectSimilar(engine.get(), &actual_turl->data());
+  }
+}
+
+TEST_P(TemplateURLServiceTest, SiteSearchPolicyUpdates) {
+  constexpr char kKeyword1[] = "site_search_1";
+  constexpr char kKeyword2[] = "site_search_2";
+  constexpr char kKeyword3[] = "site_search_3";
+  constexpr char kKeyword4[] = "site_search_4";
+
+  constexpr char16_t kKeyword1U16[] = u"site_search_1";
+  constexpr char16_t kKeyword2U16[] = u"site_search_2";
+  constexpr char16_t kKeyword3U16[] = u"site_search_3";
+  constexpr char16_t kKeyword4U16[] = u"site_search_4";
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(omnibox::kSiteSearchSettingsPolicy);
+
+  // Reset the model to ensure an `EnterpriseSiteSearchManager` instance is
+  // created (it depends on `kSiteSearchSettingsPolicy` being enabled).
+  test_util()->ResetModel(/*verify_load=*/true);
+
+  // Set a managed preference that establishes site search providers.
+  // In the first stage, add keywords `kKeyword1`, `kKeyword2`, and `kKeyword3`.
+  EnterpriseSiteSearchManager::OwnedTemplateURLDataVector
+      initial_site_search_engines;
+  initial_site_search_engines.push_back(CreateTestSiteSearchEntry(kKeyword1));
+  initial_site_search_engines.push_back(CreateTestSiteSearchEntry(kKeyword2));
+  initial_site_search_engines.push_back(CreateTestSiteSearchEntry(kKeyword3));
+
+  SetManagedSiteSearchSettingsPreference(initial_site_search_engines,
+                                         test_util()->profile());
+
+  // Ensure managed site search engines can be accessed.
+  for (auto& engine : initial_site_search_engines) {
+    const TemplateURL* actual_turl =
+        model()->GetTemplateURLForKeyword(engine->keyword());
+    ASSERT_TRUE(actual_turl);
+    ExpectSimilar(engine.get(), &actual_turl->data());
+  }
+
+  // Update the policy including one addition (`kKeyword4`), one deletion
+  // (`kKeyword3`), one update (`kKeyword2`).
+  EnterpriseSiteSearchManager::OwnedTemplateURLDataVector
+      updated_site_search_engines;
+  updated_site_search_engines.push_back(CreateTestSiteSearchEntry(kKeyword1));
+  std::unique_ptr<TemplateURLData> updated_engine_2 =
+      CreateTestSiteSearchEntry(kKeyword2);
+  updated_engine_2->SetShortName(u"newname");
+  updated_site_search_engines.push_back(std::move(updated_engine_2));
+  updated_site_search_engines.push_back(CreateTestSiteSearchEntry(kKeyword4));
+
+  SetManagedSiteSearchSettingsPreference(updated_site_search_engines,
+                                         test_util()->profile());
+
+  // Ensure the deleted site search engine can no longer be accessed.
+  EXPECT_FALSE(model()->GetTemplateURLForKeyword(kKeyword3U16));
+
+  // Ensure updated managed site search engines can be accessed.
+  for (auto& engine : updated_site_search_engines) {
+    const TemplateURL* actual_turl =
+        model()->GetTemplateURLForKeyword(engine->keyword());
+    ASSERT_TRUE(actual_turl);
+    ExpectSimilar(engine.get(), &actual_turl->data());
+  }
+
+  // Delete all the entries, and ensure they can no longer be accessed.
+  SetManagedSiteSearchSettingsPreference(
+      EnterpriseSiteSearchManager::OwnedTemplateURLDataVector(),
+      test_util()->profile());
+  EXPECT_FALSE(model()->GetTemplateURLForKeyword(kKeyword1U16));
+  EXPECT_FALSE(model()->GetTemplateURLForKeyword(kKeyword2U16));
+  EXPECT_FALSE(model()->GetTemplateURLForKeyword(kKeyword3U16));
+  EXPECT_FALSE(model()->GetTemplateURLForKeyword(kKeyword4U16));
+}
+
+TEST_P(TemplateURLServiceTest, SiteSearchPolicyConflictWithExistingEngines) {
+  constexpr char kKeyword1[] = "site_search_1";
+  constexpr char kKeyword2[] = "site_search_2";
+
+  constexpr char16_t kKeyword1U16[] = u"site_search_1";
+  constexpr char16_t kKeyword2U16[] = u"site_search_2";
+
+  constexpr char kUserDefinedUrl[] =
+      "https://www.my-search.com/q={searchTerms}";
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(omnibox::kSiteSearchSettingsPolicy);
+
+  // Reset the model to ensure an `EnterpriseSiteSearchManager` instance is
+  // created (it depends on `kSiteSearchSettingsPolicy` being enabled).
+  test_util()->ResetModel(/*verify_load=*/true);
+
+  // Create two pre-existing site search engines.
+  TemplateURLData data1;
+  data1.SetKeyword(kKeyword1U16);
+  data1.SetURL(kUserDefinedUrl);
+  data1.safe_for_autoreplace = true;
+  model()->Add(std::make_unique<TemplateURL>(data1));
+
+  TemplateURLData data2;
+  data2.SetKeyword(kKeyword2U16);
+  data2.SetURL(kUserDefinedUrl);
+  data2.safe_for_autoreplace = false;
+  TemplateURL* user_engine2 =
+      model()->Add(std::make_unique<TemplateURL>(data2));
+
+  // Set a managed preference that establishes site search providers conflicting
+  // with pre-existing search engines.
+  EnterpriseSiteSearchManager::OwnedTemplateURLDataVector site_search_engines;
+  site_search_engines.push_back(CreateTestSiteSearchEntry(kKeyword1));
+  site_search_engines.push_back(CreateTestSiteSearchEntry(kKeyword2));
+
+  SetManagedSiteSearchSettingsPreference(site_search_engines,
+                                         test_util()->profile());
+
+  // Ensure the search engines set by policy can be accessed.
+  // TODO(b/314359989): Only the user-define search engine with
+  //                    `safe_for_autoreplace` == false should be overridden
+  //                    by the policy.
+  for (auto& engine : site_search_engines) {
+    const TemplateURL* actual_turl =
+        model()->GetTemplateURLForKeyword(engine->keyword());
+    ASSERT_TRUE(actual_turl);
+    ExpectSimilar(engine.get(), &actual_turl->data());
+  }
+
+  // Reset the policy.
+  SetManagedSiteSearchSettingsPreference(
+      EnterpriseSiteSearchManager::OwnedTemplateURLDataVector(),
+      test_util()->profile());
+
+  // TODO(b/314368463): Site engines with `safe_for_replacement` true should
+  //                    not be deleted.
+  ASSERT_FALSE(model()->GetTemplateURLForKeyword(kKeyword1U16));
+
+  // Once the policy no longer applies, the user should be able to continue
+  // using the site engine originally defined.
+  const TemplateURL* actual_turl =
+      model()->GetTemplateURLForKeyword(kKeyword2U16);
+  ASSERT_TRUE(actual_turl);
+  AssertEquals(*user_engine2, *actual_turl);
+}
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS_ASH)
 
 INSTANTIATE_TEST_SUITE_P(,
                          TemplateURLServiceTest,

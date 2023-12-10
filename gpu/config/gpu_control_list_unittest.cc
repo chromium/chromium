@@ -36,10 +36,8 @@ class GpuControlListTest : public testing::Test,
     return gpu_info_;
   }
 
-  std::unique_ptr<GpuControlList> Create(size_t entry_count,
-                                         const Entry* entries) {
-    GpuControlListData data(entry_count, entries);
-    std::unique_ptr<GpuControlList> rt(new GpuControlList(data));
+  std::unique_ptr<GpuControlList> Create(base::span<const Entry> entries) {
+    std::unique_ptr<GpuControlList> rt(new GpuControlList(entries));
     rt->AddSupportedFeature("test_feature_0", TEST_FEATURE_0);
     rt->AddSupportedFeature("test_feature_1", TEST_FEATURE_1);
     rt->AddSupportedFeature("test_feature_2", TEST_FEATURE_2);
@@ -81,7 +79,7 @@ INSTANTIATE_TEST_SUITE_P(,
 TEST_P(GpuControlListTest, NeedsMoreInfo) {
   const Entry kEntries[1] = {
       kGpuControlListTestingEntries[kGpuControlListTest_NeedsMoreInfo]};
-  std::unique_ptr<GpuControlList> control_list = Create(1, kEntries);
+  std::unique_ptr<GpuControlList> control_list = Create(kEntries);
 
   GPUInfo gpu_info;
   gpu_info.gpu.vendor_id = kNvidiaVendorId;
@@ -112,7 +110,7 @@ TEST_P(GpuControlListTest, NeedsMoreInfoForExceptions) {
   const Entry kEntries[1] = {
       kGpuControlListTestingEntries
           [kGpuControlListTest_NeedsMoreInfoForExceptions]};
-  std::unique_ptr<GpuControlList> control_list = Create(1, kEntries);
+  std::unique_ptr<GpuControlList> control_list = Create(kEntries);
 
   GPUInfo gpu_info;
   gpu_info.gpu.vendor_id = kIntelVendorId;
@@ -153,7 +151,7 @@ TEST_P(GpuControlListTest, IgnorableEntries) {
   const Entry kEntries[2] = {
       kGpuControlListTestingEntries[kGpuControlListTest_IgnorableEntries_0],
       kGpuControlListTestingEntries[kGpuControlListTest_IgnorableEntries_1]};
-  std::unique_ptr<GpuControlList> control_list = Create(2, kEntries);
+  std::unique_ptr<GpuControlList> control_list = Create(kEntries);
 
   GPUInfo gpu_info;
   gpu_info.gpu.vendor_id = kIntelVendorId;
@@ -170,7 +168,7 @@ TEST_P(GpuControlListTest, DisabledExtensionTest) {
                                  [kGpuControlListTest_DisabledExtensionTest_0],
                              kGpuControlListTestingEntries
                                  [kGpuControlListTest_DisabledExtensionTest_1]};
-  std::unique_ptr<GpuControlList> control_list = Create(2, kEntries);
+  std::unique_ptr<GpuControlList> control_list = Create(kEntries);
 
   GPUInfo gpu_info;
   control_list->MakeDecision(GpuControlList::kOsWin, kOsVersion, gpu_info);
@@ -187,7 +185,7 @@ TEST_P(GpuControlListTest, DisabledExtensionTest) {
 TEST_P(GpuControlListTest, LinuxKernelVersion) {
   const Entry kEntries[1] = {
       kGpuControlListTestingEntries[kGpuControlListTest_LinuxKernelVersion]};
-  std::unique_ptr<GpuControlList> control_list = Create(1, kEntries);
+  std::unique_ptr<GpuControlList> control_list = Create(kEntries);
 
   GPUInfo gpu_info;
   gpu_info.gpu.vendor_id = 0x8086;
@@ -206,7 +204,7 @@ TEST_P(GpuControlListTest, TestGroup) {
       kGpuControlListTestingEntries[kGpuControlListTest_LinuxKernelVersion],
       kGpuControlListTestingEntries[kGpuControlListTest_TestGroup_0],
       kGpuControlListTestingEntries[kGpuControlListTest_TestGroup_1]};
-  std::unique_ptr<GpuControlList> control_list = Create(3, kEntries);
+  std::unique_ptr<GpuControlList> control_list = Create(kEntries);
   GPUInfo gpu_info;
 
   // Default test group.

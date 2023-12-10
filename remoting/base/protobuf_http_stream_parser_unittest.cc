@@ -9,6 +9,7 @@
 
 #include "base/test/mock_callback.h"
 #include "remoting/base/protobuf_http_client_messages.pb.h"
+#include "remoting/base/protobuf_http_client_test_messages.pb.h"
 #include "remoting/base/protobuf_http_status.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -124,6 +125,26 @@ TEST_F(ProtobufHttpStreamParserTest,
   ASSERT_TRUE(stream_parser_.HasPendingData());
   stream_parser_.Append(data_2);
   ASSERT_FALSE(stream_parser_.HasPendingData());
+}
+
+TEST_F(ProtobufHttpStreamParserTest,
+       ParseStreamBodyWithInvalidMessages_StreamIsClosed) {
+  EXPECT_CALL(stream_closed_callback_, Run(_));
+
+  protobufhttpclienttest::InvalidStreamBody stream_body;
+  stream_body.set_messages(1);
+  std::string stream_data = stream_body.SerializeAsString();
+  stream_parser_.Append(stream_data);
+}
+
+TEST_F(ProtobufHttpStreamParserTest,
+       ParseStreamBodyWithInvalidStatus_StreamIsClosed) {
+  EXPECT_CALL(stream_closed_callback_, Run(_));
+
+  protobufhttpclienttest::InvalidStreamBody stream_body;
+  stream_body.set_status(2);
+  std::string stream_data = stream_body.SerializeAsString();
+  stream_parser_.Append(stream_data);
 }
 
 }  // namespace remoting

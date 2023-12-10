@@ -159,7 +159,7 @@ void DeviceCacheImpl::DeviceBatteryChanged(
 
 void DeviceCacheImpl::OnDeviceNicknameChanged(
     const std::string& device_id,
-    const absl::optional<std::string>& nickname) {
+    const std::optional<std::string>& nickname) {
   BLUETOOTH_LOG(DEBUG) << "Device nickname changed: " << device_id
                        << ", new nickname: "
                        << (nickname.has_value() ? nickname.value() : "null");

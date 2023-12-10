@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/testing/io_task_runner_testing_platform_support.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/video_capture/video_capturer_source.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_media.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
@@ -121,8 +122,7 @@ class MediaStreamVideoCapturerSourceTest : public testing::Test {
     // CreateVideoTrack will trigger StartDone.
     return MediaStreamVideoTrack::CreateVideoTrack(
         video_capturer_source_, adapter_settings, noise_reduction,
-        is_screencast, min_frame_rate, absl::nullopt, absl::nullopt,
-        absl::nullopt, false,
+        is_screencast, min_frame_rate, nullptr, false,
         WTF::BindOnce(&MediaStreamVideoCapturerSourceTest::StartDone,
                       base::Unretained(this)),
         enabled);
@@ -162,6 +162,7 @@ class MediaStreamVideoCapturerSourceTest : public testing::Test {
     start_result_ = result;
   }
 
+  test::TaskEnvironment task_environment_;
   ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform_;
 
   Persistent<MediaStreamSource> stream_source_;

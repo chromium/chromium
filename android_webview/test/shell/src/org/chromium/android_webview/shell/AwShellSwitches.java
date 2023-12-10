@@ -15,4 +15,3 @@ public abstract class AwShellSwitches {
     // Prevent instantiation.
     private AwShellSwitches() {}
 }
-

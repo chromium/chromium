@@ -39,6 +39,7 @@
 
 using base::android::AttachCurrentThread;
 using base::android::BuildInfo;
+using base::android::ConvertJavaStringToUTF8;
 using base::android::ConvertUTF8ToJavaString;
 using base::android::ScopedJavaLocalRef;
 
@@ -267,7 +268,8 @@ void NotificationChannelsProviderAndroid::ClearBlockedChannelsIfNecessary(
 std::unique_ptr<content_settings::RuleIterator>
 NotificationChannelsProviderAndroid::GetRuleIterator(
     ContentSettingsType content_type,
-    bool incognito) const {
+    bool incognito,
+    const content_settings::PartitionKey& partition_key) const {
   if (content_type != ContentSettingsType::NOTIFICATIONS || incognito ||
       !platform_supports_channels_) {
     return nullptr;
@@ -307,7 +309,8 @@ bool NotificationChannelsProviderAndroid::SetWebsiteSetting(
     const ContentSettingsPattern& secondary_pattern,
     ContentSettingsType content_type,
     base::Value&& value,
-    const content_settings::ContentSettingConstraints& constraints) {
+    const content_settings::ContentSettingConstraints& constraints,
+    const content_settings::PartitionKey& partition_key) {
   if (content_type != ContentSettingsType::NOTIFICATIONS ||
       !platform_supports_channels_) {
     return false;
@@ -358,7 +361,8 @@ bool NotificationChannelsProviderAndroid::SetWebsiteSetting(
 }
 
 void NotificationChannelsProviderAndroid::ClearAllContentSettingsRules(
-    ContentSettingsType content_type) {
+    ContentSettingsType content_type,
+    const content_settings::PartitionKey& partition_key) {
   if (content_type != ContentSettingsType::NOTIFICATIONS ||
       !platform_supports_channels_) {
     return;

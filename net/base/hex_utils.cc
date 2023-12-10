@@ -10,14 +10,14 @@
 
 namespace net {
 
-std::string HexDecode(base::StringPiece hex) {
+std::string HexDecode(std::string_view hex) {
   std::string output;
   const bool success = base::HexStringToString(hex, &output);
   DCHECK(success);
   return output;
 }
 
-std::string HexDump(base::StringPiece input) {
+std::string HexDump(std::string_view input) {
   return quiche::QuicheTextUtils::HexDump(input);
 }
 

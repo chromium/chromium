@@ -17,7 +17,7 @@ CryptAuthV2Enroller::~CryptAuthV2Enroller() = default;
 void CryptAuthV2Enroller::Enroll(
     const cryptauthv2::ClientMetadata& client_metadata,
     const cryptauthv2::ClientAppMetadata& client_app_metadata,
-    const absl::optional<cryptauthv2::PolicyReference>&
+    const std::optional<cryptauthv2::PolicyReference>&
         client_directive_policy_reference,
     EnrollmentAttemptFinishedCallback callback) {
   // Enforce that Enroll() can only be called once.

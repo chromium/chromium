@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+[FAIL] navigator.vibrate(1234) triggers vibration correctly.
+  assert_equals: expected (string) "Vibrate" but got (object) object "[object Object]"
+Harness: the test ran to completion.

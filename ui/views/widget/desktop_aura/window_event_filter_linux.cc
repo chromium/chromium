@@ -11,6 +11,7 @@
 #include "ui/aura/window_delegate.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/hit_test.h"
+#include "ui/base/ozone_buildflags.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/events/event.h"
@@ -176,9 +177,9 @@ void WindowEventFilterLinux::MaybeToggleMaximizedState(aura::Window* window) {
 }
 
 void WindowEventFilterLinux::LowerWindow() {
-#if BUILDFLAG(OZONE_PLATFORM_X11)
+#if BUILDFLAG(IS_OZONE_X11)
   desktop_window_tree_host_->LowerWindow();
-#endif
+#endif  // BUILDFLAG(IS_OZONE_X11)
 }
 
 void WindowEventFilterLinux::MaybeDispatchHostWindowDragMovement(

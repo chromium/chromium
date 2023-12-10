@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+[FAIL] Attributes should not be counted in user agent shadow DOM.
+  internals is not defined
+Harness: the test ran to completion.

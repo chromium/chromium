@@ -9,6 +9,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <unordered_set>
@@ -30,7 +31,6 @@
 #include "chrome/browser/ash/arc/policy/arc_policy_bridge.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class ArcDefaultAppList;
 class PrefService;
@@ -38,6 +38,7 @@ class Profile;
 
 namespace arc {
 class ArcAppMetricsUtil;
+class ArcPackageInstallPriorityHandler;
 class ArcPackageSyncableService;
 template <typename InstanceType, typename HostType>
 class ConnectionHolder;
@@ -59,6 +60,13 @@ namespace app_list::test {
 class ArcAppShortcutsSearchProviderTest;
 }  // namespace app_list::test
 
+// Indicates the source of updating package prefs.
+enum class UpdatePackagePrefsReason {
+  kOnPackageAdded,
+  kOnPackageModified,
+  kOnPackageListRefreshed
+};
+
 // Declares shareable ARC app specific preferences, that keep information
 // about app attributes (name, package_name, activity) and its state. This
 // information is used to pre-create non-ready app items while ARC bridge
@@ -78,13 +86,13 @@ class ArcAppListPrefs : public KeyedService,
     WindowLayout();
     WindowLayout(arc::mojom::WindowSizeType type,
                  bool resizable,
-                 absl::optional<gfx::Rect> bounds);
+                 std::optional<gfx::Rect> bounds);
     WindowLayout(const WindowLayout& other);
     ~WindowLayout();
 
     arc::mojom::WindowSizeType type;
     bool resizable;
-    absl::optional<gfx::Rect> bounds;
+    std::optional<gfx::Rect> bounds;
 
     bool operator==(const WindowLayout& other) const;
   };
@@ -94,7 +102,7 @@ class ArcAppListPrefs : public KeyedService,
             const std::string& activity,
             const std::string& intent_uri,
             const std::string& icon_resource_id,
-            const absl::optional<std::string>& version_name,
+            const std::optional<std::string>& version_name,
             const base::Time& last_launch_time,
             const base::Time& install_time,
             bool sticky,
@@ -108,8 +116,8 @@ class ArcAppListPrefs : public KeyedService,
             bool shortcut,
             bool launchable,
             bool need_fixup,
-            absl::optional<uint64_t> app_size_in_bytes,
-            absl::optional<uint64_t> data_size_in_bytes,
+            std::optional<uint64_t> app_size_in_bytes,
+            std::optional<uint64_t> data_size_in_bytes,
             arc::mojom::AppCategory app_category);
     AppInfo(AppInfo&& other);
     AppInfo& operator=(AppInfo&& other);
@@ -120,7 +128,7 @@ class ArcAppListPrefs : public KeyedService,
     std::string activity;
     std::string intent_uri;
     std::string icon_resource_id;
-    absl::optional<std::string> version_name;
+    std::optional<std::string> version_name;
     base::Time last_launch_time;
     base::Time install_time;
     // Whether app could not be uninstalled.
@@ -151,8 +159,8 @@ class ArcAppListPrefs : public KeyedService,
     bool need_fixup;
 
     // Storage size of app and it's related data.
-    absl::optional<uint64_t> app_size_in_bytes;
-    absl::optional<uint64_t> data_size_in_bytes;
+    std::optional<uint64_t> app_size_in_bytes;
+    std::optional<uint64_t> data_size_in_bytes;
 
     // App category from PackageManager.
     arc::mojom::AppCategory app_category;
@@ -284,7 +292,8 @@ class ArcAppListPrefs : public KeyedService,
     // Notifies that installation of package finished. |succeed| is set to true
     // in case of success.
     virtual void OnInstallationFinished(const std::string& package_name,
-                                        bool success) {}
+                                        bool success,
+                                        bool is_launchable_app) {}
 
     // Notifies that ArcAppListPrefs is destroyed.
     virtual void OnArcAppListPrefsDestroyed() {}
@@ -486,6 +495,12 @@ class ArcAppListPrefs : public KeyedService,
 
   arc::mojom::AppCategory GetAppCategory(const std::string& app_id) const;
 
+  arc::ArcPackageInstallPriorityHandler* GetInstallPriorityHandler();
+
+  // Update package prefs with |selected_locale| and notify app states changed.
+  void SetAppLocale(const std::string& package_name,
+                    const std::string& selected_locale);
+
  private:
   friend class ChromeShelfControllerTestBase;
   friend class ArcAppModelBuilderTest;
@@ -518,8 +533,8 @@ class ArcAppListPrefs : public KeyedService,
   void OnTaskCreated(int32_t task_id,
                      const std::string& package_name,
                      const std::string& activity,
-                     const absl::optional<std::string>& name,
-                     const absl::optional<std::string>& intent,
+                     const std::optional<std::string>& name,
+                     const std::optional<std::string>& intent,
                      int32_t session_id) override;
   // This interface is deprecated and will soon be replaced by
   // OnTaskDescriptionChanged().
@@ -541,7 +556,7 @@ class ArcAppListPrefs : public KeyedService,
   void OnPackageListRefreshed(
       std::vector<arc::mojom::ArcPackageInfoPtr> packages) override;
   void OnInstallationStarted(
-      const absl::optional<std::string>& package_name) override;
+      const std::optional<std::string>& package_name) override;
   void OnInstallationProgressChanged(const std::string& package_name,
                                      float progress) override;
   void OnInstallationActiveChanged(const std::string& package_name,
@@ -571,7 +586,7 @@ class ArcAppListPrefs : public KeyedService,
                          const std::string& activity,
                          const std::string& intent_uri,
                          const std::string& icon_resource_id,
-                         const absl::optional<std::string>& version_name,
+                         const std::optional<std::string>& version_name,
                          const bool sticky,
                          const bool notifications_enabled,
                          const bool app_ready,
@@ -580,11 +595,12 @@ class ArcAppListPrefs : public KeyedService,
                          const bool launchable,
                          const bool need_fixup,
                          const WindowLayout& initial_window_layout,
-                         const absl::optional<uint64_t> app_size_in_bytes,
-                         const absl::optional<uint64_t> data_size_in_bytes,
+                         const std::optional<uint64_t> app_size_in_bytes,
+                         const std::optional<uint64_t> data_size_in_bytes,
                          const arc::mojom::AppCategory app_category);
   // Adds or updates local pref for given package.
-  void AddOrUpdatePackagePrefs(const arc::mojom::ArcPackageInfo& package);
+  void AddOrUpdatePackagePrefs(const arc::mojom::ArcPackageInfo& package,
+                               const UpdatePackagePrefsReason& update_reason);
   // Removes given package from local pref.
   void RemovePackageFromPrefs(const std::string& package_name);
 
@@ -634,7 +650,7 @@ class ArcAppListPrefs : public KeyedService,
   // This checks if app is not registered yet and in this case creates
   // non-launchable app entry. In case app is already registered then updates
   // last launch time.
-  void HandleTaskCreated(const absl::optional<std::string>& name,
+  void HandleTaskCreated(const std::optional<std::string>& name,
                          const std::string& package_name,
                          const std::string& activity);
 
@@ -742,6 +758,8 @@ class ArcAppListPrefs : public KeyedService,
 
   bool default_apps_ready_ = false;
   std::unique_ptr<ArcDefaultAppList> default_apps_;
+  std::unique_ptr<arc::ArcPackageInstallPriorityHandler>
+      install_priority_handler_;
   base::OnceClosure default_apps_ready_callback_;
   // Set of packages installed by policy in case of managed user.
   std::set<std::string> packages_by_policy_;

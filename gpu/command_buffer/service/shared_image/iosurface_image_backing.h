@@ -202,7 +202,8 @@ class DawnIOSurfaceRepresentation : public DawnImageRepresentation {
 
  private:
   const wgpu::Device device_;
-  const gfx::ScopedIOSurface io_surface_;
+  gfx::ScopedIOSurface io_surface_;
+  wgpu::SharedTextureMemory shared_texture_memory_;
   const gfx::Size io_surface_size_;
   const wgpu::TextureFormat wgpu_format_;
   const std::vector<wgpu::TextureFormat> view_formats_;
@@ -252,7 +253,7 @@ class GPU_GLES2_EXPORT IOSurfaceImageBacking
       bool framebuffer_attachment_angle,
       bool is_cleared,
       bool retain_gl_texture,
-      absl::optional<gfx::BufferUsage> buffer_usage = absl::nullopt);
+      std::optional<gfx::BufferUsage> buffer_usage = std::nullopt);
   IOSurfaceImageBacking(const IOSurfaceImageBacking& other) = delete;
   IOSurfaceImageBacking& operator=(const IOSurfaceImageBacking& other) = delete;
   ~IOSurfaceImageBacking() override;

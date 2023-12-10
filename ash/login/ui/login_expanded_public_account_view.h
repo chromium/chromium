@@ -12,6 +12,7 @@
 #include "ash/login/ui/public_account_menu_view.h"
 #include "ash/style/system_shadow.h"
 #include "base/memory/raw_ptr.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/events/event_handler.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -34,6 +35,8 @@ struct LoginUserInfo;
 // Implements an expanded view for the public account user to select language
 // and keyboard options.
 class ASH_EXPORT LoginExpandedPublicAccountView : public NonAccessibleView {
+  METADATA_HEADER(LoginExpandedPublicAccountView, NonAccessibleView)
+
  public:
   // TestApi is used for tests to get internal implementation details.
   class ASH_EXPORT TestApi {

@@ -75,23 +75,19 @@ bool IsUserEligibleForAccountStorage(const syncer::SyncService* sync_service);
 // Whether the current signed-in user (aka unconsented primary account) has
 // opted in to use the Google account storage for passwords (as opposed to
 // local/profile storage). This always returns false for sync-the-feature users.
-// |pref_service| must not be null.
 // |sync_service| may be null (commonly the case in incognito mode), in which
 // case this will simply return false.
 // See PasswordFeatureManager::IsOptedInForAccountStorage.
-bool IsOptedInForAccountStorage(const PrefService* pref_service,
-                                const syncer::SyncService* sync_service);
+bool IsOptedInForAccountStorage(const syncer::SyncService* sync_service);
 
 // Whether it makes sense to ask the user to opt-in for account-based
 // password storage. This is true if the opt-in doesn't exist yet, but all
 // other requirements are met (i.e. there is a signed-in user, Sync-the-feature
 // is not enabled, etc).
-// |pref_service| must not be null.
 // |sync_service| may be null (commonly the case in incognito mode), in which
 // case this will simply return false.
 // See PasswordFeatureManager::ShouldShowAccountStorageOptIn.
-bool ShouldShowAccountStorageOptIn(const PrefService* pref_service,
-                                   const syncer::SyncService* sync_service);
+bool ShouldShowAccountStorageOptIn(const syncer::SyncService* sync_service);
 
 // Whether it makes sense to ask the user to signin again to access the
 // account-based password storage. This is true if a user on this device
@@ -101,8 +97,7 @@ bool ShouldShowAccountStorageOptIn(const PrefService* pref_service,
 // already doing that). For non-web contexts (e.g. native UIs), it is valid to
 // pass an empty GURL.
 // See PasswordFeatureManager::ShouldShowAccountStorageReSignin.
-bool ShouldShowAccountStorageReSignin(const PrefService* pref_service,
-                                      const syncer::SyncService* sync_service,
+bool ShouldShowAccountStorageReSignin(const syncer::SyncService* sync_service,
                                       const GURL& current_page_url);
 
 // Whether it makes sense to ask the user to move a password to their account or
@@ -158,22 +153,17 @@ PasswordAccountStorageUsageLevel ComputePasswordAccountStorageUsageLevel(
 // |pref_service| and |sync_service| must not be null.
 // See PasswordFeatureManager::OptInToAccountStorage.
 void OptInToAccountStorage(PrefService* pref_service,
-                           const syncer::SyncService* sync_service);
+                           syncer::SyncService* sync_service);
 
 // Clears the opt-in to using account storage for passwords for the
 // current signed-in user (unconsented primary account), as well as all other
 // associated settings (e.g. default store choice).
+// WARNING: this does not clear the account key from prefs like
+// KeepAccountStorageSettingsOnlyForUsers().
 // |pref_service| and |sync_service| must not be null.
 // See PasswordFeatureManager::OptOutOfAccountStorageAndClearSettings.
-void OptOutOfAccountStorageAndClearSettings(
-    PrefService* pref_service,
-    const syncer::SyncService* sync_service);
-
-// Like OptOutOfAccountStorageAndClearSettings(), but applies to a specific
-// given |gaia_id| rather than to the current signed-in user.
-void OptOutOfAccountStorageAndClearSettingsForAccount(
-    PrefService* pref_service,
-    const std::string& gaia_id);
+void OptOutOfAccountStorageAndClearSettings(PrefService* pref_service,
+                                            syncer::SyncService* sync_service);
 
 // Sets the default storage location for signed-in but non-syncing users. This
 // store is used for saving new credentials and adding blacking listing entries.
@@ -184,35 +174,17 @@ void SetDefaultPasswordStore(PrefService* pref_service,
                              PasswordForm::Store default_store);
 
 // Clears all account-storage-related settings for all users *except* the ones
-// in the passed-in |gaia_ids|. Most notably, this includes the opt-in, but also
-// all other related settings like the default password store.
+// in the passed-in |gaia_ids|. Most notably, the default password store.
+// WARNING: this does not clear the opt-in!
 // |pref_service| must not be null.
 void KeepAccountStorageSettingsOnlyForUsers(
     PrefService* pref_service,
     const std::vector<std::string>& gaia_ids);
 
-// Clears all account-storage-related settings for all users. Most notably, this
-// includes the opt-in, but also all other related settings like the default
-// password store. Meant to be called when account cookies were cleared.
-// |pref_service| must not be null.
-void ClearAccountStorageSettingsForAllUsers(PrefService* pref_service);
-
-// Increases the count of how many times Chrome automatically offered a user
-// not opted-in to the account-scoped passwords storage to move a password to
-// their account. Should only be called if the user is signed-in and not
-// opted-in. |pref_service| and |sync_service| must be non-null.
-// See PasswordFeatureManager::RecordMoveOfferedToNonOptedInUser().
-void RecordMoveOfferedToNonOptedInUser(PrefService* pref_service,
-                                       const syncer::SyncService* sync_service);
-
-// Gets the count of how many times Chrome automatically offered a user
-// not opted-in to the account-scoped passwords storage to move a password to
-// their account. Should only be called if the user is signed-in and not
-// opted-in. |pref_service| and |sync_service| must be non-null.
-// See PasswordFeatureManager::GetMoveOfferedToNonOptedInUserCount().
-int GetMoveOfferedToNonOptedInUserCount(
-    const PrefService* pref_service,
-    const syncer::SyncService* sync_service);
+// Migrates the old password_manager account storage opt-in pref to
+// SyncUserSettings::GetSelectedTypes(), see crbug.com/1484531.
+// TODO(crbug.com/1503112): Delete the migration when appropriate, see bug.
+void MigrateOptInPrefToSyncSelectedTypes(PrefService* pref_service);
 #endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 
 }  // namespace password_manager::features_util

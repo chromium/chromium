@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.tasks.tab_management;
+
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.CARD_ALPHA;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.CARD_TYPE;
 
@@ -14,9 +15,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.ui.modelutil.PropertyModel;
 
-/**
- * A class to create the property model for the Incognito re-auth promo card.
- */
+/** A class to create the property model for the Incognito re-auth promo card. */
 public class IncognitoReauthPromoViewModel {
     /**
      * Create a {@link PropertyModel} for incognito re-auth promo card.
@@ -26,7 +25,8 @@ public class IncognitoReauthPromoViewModel {
      * @param data The {@link IncognitoReauthPromoMessageService.IncognitoReauthMessageData} to use.
      * @return A {@link PropertyModel} for the given {@code data}.
      */
-    public static PropertyModel create(Context context,
+    public static PropertyModel create(
+            Context context,
             MessageCardView.DismissActionProvider uiDismissActionProvider,
             IncognitoReauthPromoMessageService.IncognitoReauthMessageData data) {
         String titleText = context.getString(R.string.incognito_reauth_promo_title);

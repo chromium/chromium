@@ -39,7 +39,7 @@ class ExtensionJSRunner : public JSRunner {
  private:
   // Called with the result of executing the JS function.
   void OnFunctionComplete(ResultCallback,
-                          absl::optional<base::Value> value,
+                          std::optional<base::Value> value,
                           base::TimeTicks start_time);
 
   // The associated ScriptContext. Guaranteed to outlive this object.

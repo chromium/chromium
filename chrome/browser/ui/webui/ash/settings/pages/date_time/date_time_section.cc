@@ -132,19 +132,15 @@ void DateTimeSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_TIME_ZONE_DETECTION_MODE_SEND_WIFI_AP},
       {"setTimeZoneAutomaticallyWithAllLocationInfo",
        IDS_SETTINGS_TIME_ZONE_DETECTION_MODE_SEND_ALL_INFO},
+      {"timeZoneGeolocationWarningText",
+       IDS_SETTINGS_TIME_ZONE_DETECTION_GEOLOCATION_WARNING_TEXT},
       {"use24HourClock", IDS_SETTINGS_USE_24_HOUR_CLOCK},
       {"setDateTime", IDS_SETTINGS_SET_DATE_TIME},
-      {"timeZoneGeolocationDialogTitle",
-       IDS_SETTINGS_TIME_ZONE_GEOLOCATION_DIALOG_TITLE},
-      {"timeZoneGeolocationDialogBody",
-       IDS_SETTINGS_TIME_ZONE_GEOLOCATION_DIALOG_BODY},
-      {"timeZoneGeolocationDialogCancelButton",
-       IDS_SETTINGS_TIME_ZONE_GEOLOCATION_DIALOG_CANCEL_BUTTON},
-      {"timeZoneGeolocationDialogTurnOnButton", IDS_SETTINGS_TURN_ON}};
+  };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
   html_source->AddString(
-      "timeZoneGeolocationDialogLearnMoreUrl",
+      "systemGeolocationDialogLearnMoreUrl",
       base::ASCIIToUTF16(base::StringPrintf(
           chrome::kTimeZoneSettingsLearnMoreURL,
           g_browser_process->GetApplicationLocale().c_str())));

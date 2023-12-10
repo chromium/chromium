@@ -160,6 +160,12 @@ IsolatedWebAppUrlInfo::GetStoragePartitionConfigForControlledFrame(
       browser_context, partition_domain(), partition_name, in_memory);
 }
 
+bool IsolatedWebAppUrlInfo::operator==(
+    const IsolatedWebAppUrlInfo& other) const {
+  return origin_ == other.origin_ && app_id_ == other.app_id_ &&
+         web_bundle_id_ == other.web_bundle_id_;
+}
+
 std::string IsolatedWebAppUrlInfo::partition_domain() const {
   constexpr char kIsolatedWebAppPartitionPrefix[] = "iwa-";
   // We add a prefix to `partition_domain` to avoid potential name conflicts

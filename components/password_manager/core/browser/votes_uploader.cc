@@ -17,8 +17,8 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
-#include "components/autofill/core/browser/autofill_download_manager.h"
 #include "components/autofill/core/browser/autofill_field.h"
+#include "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_manager.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/proto/server.pb.h"
 #include "components/autofill/core/browser/randomized_encoder.h"
@@ -32,9 +32,8 @@
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/common/password_manager_constants.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
-using autofill::AutofillDownloadManager;
+using autofill::AutofillCrowdsourcingManager;
 using autofill::AutofillField;
 using autofill::AutofillUploadContents;
 using autofill::FieldRendererId;
@@ -442,10 +441,9 @@ bool VotesUploader::UploadPasswordVote(
     return false;
   }
 
-  AutofillDownloadManager* download_manager =
-      client_->GetAutofillDownloadManager();
-  if (!download_manager)
+  if (!client_->GetAutofillCrowdsourcingManager()) {
     return false;
+  }
 
   // If this is an update, a vote about the observed form is sent. If the user
   // re-uses credentials, a vote about the saved form is sent. If the user saves
@@ -542,10 +540,6 @@ bool VotesUploader::UploadPasswordVote(
       {{form_to_upload.username_element_renderer_id, username_vote_type}},
       &form_structure, &available_field_types);
 
-  // Force uploading as these events are relatively rare and we want to make
-  // sure to receive them.
-  form_structure.set_upload_required(UPLOAD_REQUIRED);
-
   if (password_manager_util::IsLoggingActive(client_)) {
     BrowserSavePasswordProgressLogger logger(client_->GetLogManager());
     logger.LogFormStructure(Logger::STRING_PASSWORD_FORM_VOTE, form_structure);
@@ -553,17 +547,8 @@ bool VotesUploader::UploadPasswordVote(
 
   // Annotate the form with the source language of the page.
   form_structure.set_current_page_language(client_->GetPageLanguage());
-
-  // Attach the Randomized Encoder.
-  form_structure.set_randomized_encoder(
-      RandomizedEncoder::Create(client_->GetPrefs()));
-
-  // TODO(crbug.com/875768): Use VotesUploader::StartUploadRequest for avoiding
-  // code duplication.
-  return download_manager->StartUploadRequest(
-      form_structure, false /* was_autofilled */, available_field_types,
-      login_form_signature, true /* observed_submission */, nullptr /* prefs */,
-      nullptr /* observer */);
+  return StartUploadRequest(form_structure, available_field_types,
+                            login_form_signature);
 }
 
 // TODO(crbug.com/840384): Share common code with UploadPasswordVote.
@@ -571,10 +556,11 @@ void VotesUploader::UploadFirstLoginVotes(
     const std::vector<const PasswordForm*>& best_matches,
     const PasswordForm& pending_credentials,
     const PasswordForm& form_to_upload) {
-  AutofillDownloadManager* download_manager =
-      client_->GetAutofillDownloadManager();
-  if (!download_manager)
+  AutofillCrowdsourcingManager* crowdsourcing_manager =
+      client_->GetAutofillCrowdsourcingManager();
+  if (!crowdsourcing_manager) {
     return;
+  }
 
   if (form_to_upload.form_data.fields.empty()) {
     // List of fields may be empty in tests.
@@ -602,16 +588,8 @@ void VotesUploader::UploadFirstLoginVotes(
               &available_field_types);
   SetKnownValueFlag(pending_credentials, best_matches, &form_structure);
 
-  // Force uploading as these events are relatively rare and we want to make
-  // sure to receive them.
-  form_structure.set_upload_required(UPLOAD_REQUIRED);
-
   // Annotate the form with the source language of the page.
   form_structure.set_current_page_language(client_->GetPageLanguage());
-
-  // Attach the Randomized Encoder.
-  form_structure.set_randomized_encoder(
-      RandomizedEncoder::Create(client_->GetPrefs()));
 
   SetInitialHashValueOfUsernameField(
       form_to_upload.username_element_renderer_id, &form_structure);
@@ -621,12 +599,7 @@ void VotesUploader::UploadFirstLoginVotes(
     logger.LogFormStructure(Logger::STRING_FIRSTUSE_FORM_VOTE, form_structure);
   }
 
-  // TODO(crbug.com/875768): Use VotesUploader::StartUploadRequest for avoiding
-  // code duplication.
-  download_manager->StartUploadRequest(
-      form_structure, false /* was_autofilled */, available_field_types,
-      std::string(), true /* observed_submission */, nullptr /* prefs */,
-      nullptr);
+  StartUploadRequest(form_structure, available_field_types);
 }
 
 void VotesUploader::SetInitialHashValueOfUsernameField(
@@ -915,25 +888,23 @@ void VotesUploader::StoreInitialFieldValues(
 }
 
 bool VotesUploader::StartUploadRequest(
-    std::unique_ptr<autofill::FormStructure> form_to_upload,
-    const ServerFieldTypeSet& available_field_types) {
-  AutofillDownloadManager* download_manager =
-      client_->GetAutofillDownloadManager();
-  if (!download_manager)
+    autofill::FormStructure& form_to_upload,
+    const ServerFieldTypeSet& available_field_types,
+    const std::string& login_form_signature) {
+  AutofillCrowdsourcingManager* crowdsourcing_manager =
+      client_->GetAutofillCrowdsourcingManager();
+  if (!crowdsourcing_manager) {
     return false;
+  }
 
-  // Force uploading as these events are relatively rare and we want to make
-  // sure to receive them.
-  form_to_upload->set_upload_required(UPLOAD_REQUIRED);
-
-  // Attach the Randomized Encoder.
-  form_to_upload->set_randomized_encoder(
+  form_to_upload.set_randomized_encoder(
       RandomizedEncoder::Create(client_->GetPrefs()));
-
-  return download_manager->StartUploadRequest(
-      *form_to_upload, false /* was_autofilled */, available_field_types,
-      std::string(), true /* observed_submission */, nullptr /* prefs */,
-      nullptr);
+  return crowdsourcing_manager->StartUploadRequest(
+      form_to_upload, /*form_was_autofilled=*/false, available_field_types,
+      /*login_form_signature=*/login_form_signature,
+      /*observed_submission=*/true,
+      /*pref_service=*/nullptr,
+      /*observer=*/nullptr);
 }
 
 bool VotesUploader::SetSingleUsernameVoteOnUsernameForm(
@@ -1112,7 +1083,7 @@ bool VotesUploader::MaybeSendSingleUsernameVote(
                               *form_to_upload);
     }
 
-    if (StartUploadRequest(std::move(form_to_upload), available_field_types)) {
+    if (StartUploadRequest(*form_to_upload, available_field_types)) {
       return true;
     }
   }

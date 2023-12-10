@@ -43,31 +43,6 @@ using version_info::GetProductNameAndVersionForUserAgent;
 namespace autofill {
 namespace {
 
-// TODO(bondd): PdmChangeWaiter in autofill_uitest_util.cc is a replacement for
-// this class. Remove this class and use helper functions in that file instead.
-class WindowedPersonalDataManagerObserver : public PersonalDataManagerObserver {
- public:
-  explicit WindowedPersonalDataManagerObserver(Profile* profile)
-      : profile_(profile),
-        message_loop_runner_(new content::MessageLoopRunner) {
-    PersonalDataManagerFactory::GetForProfile(profile_)->AddObserver(this);
-  }
-  ~WindowedPersonalDataManagerObserver() override {}
-
-  // Waits for the PersonalDataManager's list of profiles to be updated.
-  void Wait() {
-    message_loop_runner_->Run();
-    PersonalDataManagerFactory::GetForProfile(profile_)->RemoveObserver(this);
-  }
-
-  // PersonalDataManagerObserver:
-  void OnPersonalDataChanged() override { message_loop_runner_->Quit(); }
-
- private:
-  raw_ptr<Profile> profile_;
-  scoped_refptr<content::MessageLoopRunner> message_loop_runner_;
-};
-
 class WindowedNetworkObserver {
  public:
   explicit WindowedNetworkObserver(Matcher<std::string> expected_upload_data)
@@ -81,7 +56,7 @@ class WindowedNetworkObserver {
   WindowedNetworkObserver(const WindowedNetworkObserver&) = delete;
   WindowedNetworkObserver& operator=(const WindowedNetworkObserver&) = delete;
 
-  ~WindowedNetworkObserver() {}
+  ~WindowedNetworkObserver() = default;
 
   // Waits for a network request with the |expected_upload_data_|.
   void Wait() {
@@ -107,7 +82,7 @@ class WindowedNetworkObserver {
 
   bool OnIntercept(content::URLLoaderInterceptor::RequestParams* params) {
     // NOTE: This constant matches the one defined in
-    // components/autofill/core/browser/autofill_download_manager.cc
+    // components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_manager.cc
     static const char kDefaultAutofillServerURL[] =
         "https://content-autofill.googleapis.com/";
     DCHECK(params);
@@ -205,8 +180,7 @@ IN_PROC_BROWSER_TEST_F(AutofillServerTest,
                        QueryAndUploadBothIncludeFieldsWithAutocompleteOff) {
   // Seed some test Autofill profile data, as upload requests are only made when
   // there is local data available to use as a baseline.
-  WindowedPersonalDataManagerObserver personal_data_observer(
-      browser()->profile());
+  PdmChangeWaiter personal_data_observer(browser()->profile());
   PersonalDataManagerFactory::GetForProfile(browser()->profile())
       ->AddProfile(test::GetFullProfile());
   personal_data_observer.Wait();

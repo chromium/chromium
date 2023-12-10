@@ -43,19 +43,6 @@ AngleVulkanImageBackingFactory::AngleVulkanImageBackingFactory(
       context_state_(context_state) {
   DCHECK(context_state_->GrContextIsVulkan());
   DCHECK(gl::GLSurfaceEGL::GetGLDisplayEGL()->ext->b_EGL_ANGLE_vulkan_image);
-
-  // If R_8 and RG_88 are supported by GL then 8 bit YUV formats should also
-  // work.
-  auto r_iter = supported_formats_.find(viz::SinglePlaneFormat::kR_8);
-  auto rg_iter = supported_formats_.find(viz::SinglePlaneFormat::kRG_88);
-  if (r_iter != supported_formats_.end() &&
-      rg_iter != supported_formats_.end()) {
-    auto& r_info = r_iter->second[0];
-    auto& rg_info = rg_iter->second[0];
-    supported_formats_[viz::MultiPlaneFormat::kNV12] = {r_info, rg_info};
-    supported_formats_[viz::MultiPlaneFormat::kYV12] = {r_info, r_info, r_info};
-    supported_formats_[viz::MultiPlaneFormat::kI420] = {r_info, r_info, r_info};
-  }
 }
 
 AngleVulkanImageBackingFactory::~AngleVulkanImageBackingFactory() = default;

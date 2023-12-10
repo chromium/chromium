@@ -33,12 +33,9 @@ public class RelatedSearchesStampTest {
      * The stamps to use for various experiment configurations. Note that users still may need
      * the ability to send everything in order to keep the experiment populations balanced.
      */
-    private static final String CONFIG_STAMP_URL_ONLY = "1Ru";
-
-    private static final String CONFIG_STAMP_CONTENT_ONLY = "1Rc";
-    private static final String CONFIG_STAMP_BOTH = "1Rb";
     private static final String EXPECTED_DEFAULT_STAMP = "1Rs";
     private static final String EXPECTED_DEFAULT_STAMP_LANGUAGE_RESTRICTED = "1Rsl";
+    private static final String EXPECTED_DEFAULT_STAMP_ALL_LANGUAGE = "1Rsa";
 
     /** The stamp CGI parameter. */
     private static final String RELATED_SEARCHES_STAMP_PARAM = "ctxsl_rs";
@@ -50,7 +47,6 @@ public class RelatedSearchesStampTest {
     private static final String ENGLISH = "en";
     private static final String SPANISH = "es";
     private static final String GERMAN = "de";
-    private static final String ENGLISH_AND_SPANISH = ENGLISH + "," + SPANISH;
 
     private ContextualSearchPolicy mPolicy;
     private FeatureList.TestValues mFeatureListValues;
@@ -65,7 +61,6 @@ public class RelatedSearchesStampTest {
         mFeatureListValues.addFeatureFlagOverride(ChromeFeatureList.RELATED_SEARCHES, true);
         mPolicy = new ContextualSearchPolicy(null, null);
         mStamp = new RelatedSearchesStamp(mPolicy);
-        mStamp.disableDefaultAllowedLanguagesForTesting(true);
     }
 
     // ====================================================================================
@@ -78,17 +73,6 @@ public class RelatedSearchesStampTest {
     }
 
     /**
-     * Sets whether the config specifies that the user needs permissions for sending content in
-     * order to get any Related Searches.
-     */
-    private void setNeedsContent(boolean needsContent) {
-        mFeatureListValues.addFieldTrialParamOverride(
-                ChromeFeatureList.RELATED_SEARCHES,
-                ContextualSearchFieldTrial.RELATED_SEARCHES_NEEDS_CONTENT_PARAM_NAME,
-                "" + needsContent);
-    }
-
-    /**
      * Sets whether the user has allowed sending the URL (has enabled "Make search and browsing
      * better").
      */
@@ -97,82 +81,26 @@ public class RelatedSearchesStampTest {
     }
 
     /**
-     * Sets whether the config specifies that the user needs permissions for sending the URL in
-     * order to get any Related Searches.
-     */
-    private void setNeedsUrl(boolean needsUrl) {
-        mFeatureListValues.addFieldTrialParamOverride(
-                ChromeFeatureList.RELATED_SEARCHES,
-                ContextualSearchFieldTrial.RELATED_SEARCHES_NEEDS_URL_PARAM_NAME,
-                "" + needsUrl);
-    }
-
-    /**
      * Sets whether the config specifies if the content can be any language to get any Related
      * Searches.
      */
     private void setSupportAllLanguage(boolean support) {
-        mFeatureListValues.addFieldTrialParamOverride(
-                ChromeFeatureList.RELATED_SEARCHES,
-                ContextualSearchFieldTrial
-                        .RELATED_SEARCHES_LANGUAGE_SUPPORT_ALL_LANGUAGES_PARAM_NAME,
-                "" + support);
-    }
-
-    /**
-     * Sets whether the config specifies that the content must be in English (or some list of
-     * allowed languages) in order to get any Related Searches.
-     */
-    private void setLanguageAllowlist(String commaSeparatedLanguages) {
-        mFeatureListValues.addFieldTrialParamOverride(
-                ChromeFeatureList.RELATED_SEARCHES,
-                ContextualSearchFieldTrial.RELATED_SEARCHES_LANGUAGE_ALLOWLIST_PARAM_NAME,
-                commaSeparatedLanguages);
-    }
-
-    /** Sets the base stamp that the config specifies for this Related Searches experiment arm. */
-    private void setRelatedSearchesExperimentConfigurationStamp(String stampFromConfig) {
-        mFeatureListValues.addFieldTrialParamOverride(
-                ChromeFeatureList.RELATED_SEARCHES,
-                ContextualSearchFieldTrial.RELATED_SEARCHES_CONFIG_STAMP_PARAM_NAME,
-                stampFromConfig);
+        mFeatureListValues.addFeatureFlagOverride(
+                ChromeFeatureList.RELATED_SEARCHES_ALL_LANGUAGE, support);
     }
 
     /** Sets the standard config setup that we're using for Related Searches experiments. */
     private void setStandardExperimentRequirements() {
         // For experimentation we currently require all users have all the permissions
         // for all experiment arms, and we restrict the language to English-only.
-        setNeedsUrl(true);
-        setNeedsContent(true);
         setSupportAllLanguage(false);
-        setLanguageAllowlist(ENGLISH);
     }
 
     /** Sets a standard config setup for the default Related Searches launch configuration. */
     private void setStandardDefaultLaunchConfiguration() {
-        setStandardLaunchConfiguration("");
-    }
-
-    /**
-     * Sets a standard config setup for a particular Related Searches launch configuration.
-     * @param stampFromConfig The base stamp just as we expect it to be set in the experiment
-     *         config.
-     */
-    private void setStandardLaunchConfiguration(String stampFromConfig) {
-        setStandardExperimentConfiguration(stampFromConfig);
-        setLanguageAllowlist("");
-    }
-
-    /**
-     * Sets a standard config setup for a particular Related Searches experiment arm.
-     * @param stampFromConfig The base stamp just as we expect it to be set in the experiment
-     *         config.
-     */
-    private void setStandardExperimentConfiguration(String stampFromConfig) {
         setStandardExperimentRequirements();
         setCanSendUrl(true);
         setCanSendContent(true);
-        setRelatedSearchesExperimentConfigurationStamp(stampFromConfig);
     }
 
     // ====================================================================================
@@ -181,121 +109,8 @@ public class RelatedSearchesStampTest {
 
     @Test
     @Feature({"RelatedSearches", "RelatedSearchesStamp"})
-    public void testGetRelatedSearchesStampExpectedLaunchConfiguration() {
-        setStandardDefaultLaunchConfiguration();
-        assertThat(
-                "Non English pages are not generating the expected stamp to track usage for the "
-                        + "expected launch configuration!",
-                mStamp.getRelatedSearchesStamp(GERMAN),
-                is(EXPECTED_DEFAULT_STAMP));
-    }
-
-    @Test
-    @Feature({"RelatedSearches", "RelatedSearchesStamp"})
-    public void testGetStampUrlOnlyLaunchConfig() {
-        setStandardLaunchConfiguration(CONFIG_STAMP_URL_ONLY);
-        setNeedsContent(false);
-        setCanSendContent(false);
-        assertThat(
-                "Non English pages are not generating the expected stamp to track usage for a "
-                        + "URL-only launch configuration!",
-                mStamp.getRelatedSearchesStamp(GERMAN),
-                is(CONFIG_STAMP_URL_ONLY));
-    }
-
-    @Test
-    @Feature({"RelatedSearches", "RelatedSearchesStamp"})
-    public void testGetStampContentOnlyLaunchConfig() {
-        setStandardLaunchConfiguration(CONFIG_STAMP_CONTENT_ONLY);
-        setNeedsUrl(false);
-        setCanSendUrl(false);
-        assertThat(
-                "Non English pages are not generating the expected stamp to track usage for a "
-                        + "content-only launch configuration!",
-                mStamp.getRelatedSearchesStamp(GERMAN),
-                is(CONFIG_STAMP_CONTENT_ONLY));
-    }
-
-    @Test
-    @Feature({"RelatedSearches", "RelatedSearchesStamp"})
-    public void testGetStampExplicitLaunchConfig() {
-        setStandardLaunchConfiguration(CONFIG_STAMP_BOTH);
-        assertThat(
-                "Non English pages are not generating the expected stamp to track usage for a "
-                        + "combined URL and content launch configuration!",
-                mStamp.getRelatedSearchesStamp(GERMAN),
-                is(CONFIG_STAMP_BOTH));
-    }
-
-    @Test
-    @Feature({"RelatedSearches", "RelatedSearchesStamp"})
-    public void testGetStampExplicitLanguageRestrictedLaunchConfig() {
-        setStandardLaunchConfiguration(CONFIG_STAMP_BOTH);
-        setLanguageAllowlist(ENGLISH_AND_SPANISH);
-        assertThat(
-                "English pages are not generated the expected stamp to track usage with a "
-                        + "multi-language allow-list!",
-                mStamp.getRelatedSearchesStamp(ENGLISH),
-                is(CONFIG_STAMP_BOTH + RELATED_SEARCHES_LANGUAGE_RESTRICTION));
-        assertThat(
-                "Spanish pages are not generated the expected stamp to track usage with a "
-                        + "multi-language allow-list!",
-                mStamp.getRelatedSearchesStamp(SPANISH),
-                is(CONFIG_STAMP_BOTH + RELATED_SEARCHES_LANGUAGE_RESTRICTION));
-        assertThat(
-                "German pages are generating a Related Searches tracking stamp even though the "
-                        + "multi-language allow-list doesn't include German!",
-                mStamp.getRelatedSearchesStamp(GERMAN),
-                is(""));
-    }
-
-    @Test
-    @Feature({"RelatedSearches", "RelatedSearchesStamp"})
-    public void testGetRelatedSearchesStampForUrlExperiments() {
-        setStandardExperimentConfiguration(CONFIG_STAMP_URL_ONLY);
-        assertThat(
-                "German pages are generating a Related Searches tracking stamp on a URL-only "
-                        + "experiment even though the standard English allow-list should exclude "
-                        + "German!",
-                mStamp.getRelatedSearchesStamp(GERMAN),
-                is(""));
-        assertThat(
-                "English pages are not generated the expected stamp to track usage on a URL-only "
-                        + "experiment with a standard allow-list!",
-                mStamp.getRelatedSearchesStamp(ENGLISH),
-                is(CONFIG_STAMP_URL_ONLY + RELATED_SEARCHES_LANGUAGE_RESTRICTION));
-    }
-
-    @Test
-    @Feature({"RelatedSearches", "RelatedSearchesStamp"})
-    public void testGetRelatedSearchesStampForContentExperiments() {
-        setStandardExperimentConfiguration(CONFIG_STAMP_CONTENT_ONLY);
-        assertThat(mStamp.getRelatedSearchesStamp(GERMAN), is(""));
-        assertThat(
-                mStamp.getRelatedSearchesStamp(ENGLISH),
-                is(CONFIG_STAMP_CONTENT_ONLY + RELATED_SEARCHES_LANGUAGE_RESTRICTION));
-    }
-
-    @Test
-    @Feature({"RelatedSearches", "RelatedSearchesStamp"})
-    public void testGetRelatedSearchesStampForBothKindsOfSuggestionsExperiments() {
-        setStandardExperimentConfiguration(CONFIG_STAMP_BOTH);
-        assertThat(
-                "German pages are generating a Related Searches stamp when an experiment should "
-                        + "be language restricted!",
-                mStamp.getRelatedSearchesStamp(GERMAN),
-                is(""));
-        assertThat(
-                "An English page is not generated the expected stamp for an experiment for both "
-                        + "kinds of input!",
-                mStamp.getRelatedSearchesStamp(ENGLISH),
-                is(CONFIG_STAMP_BOTH + RELATED_SEARCHES_LANGUAGE_RESTRICTION));
-    }
-
-    @Test
-    @Feature({"RelatedSearches", "RelatedSearchesStamp"})
     public void testGetRelatedSearchesStampForUnspecifiedExperiments() {
-        setStandardExperimentConfiguration("");
+        setStandardDefaultLaunchConfiguration();
         // When there's no stamp in the config we expect to build a version-1 stamp.
         // This can happen when flags are flipped manually.
         assertThat(
@@ -313,7 +128,7 @@ public class RelatedSearchesStampTest {
     @Test
     @Feature({"RelatedSearches", "RelatedSearchesStamp"})
     public void testGetStampNotUrlQualified() {
-        setStandardExperimentConfiguration(CONFIG_STAMP_URL_ONLY);
+        setStandardDefaultLaunchConfiguration();
         setCanSendUrl(false);
         assertTrue(
                 "Users that have not enabled sending a URL are still generating Related Searches "
@@ -324,7 +139,7 @@ public class RelatedSearchesStampTest {
     @Test
     @Feature({"RelatedSearches", "RelatedSearchesStamp"})
     public void testGetStampNotContentQualified() {
-        setStandardExperimentConfiguration(CONFIG_STAMP_CONTENT_ONLY);
+        setStandardDefaultLaunchConfiguration();
         setCanSendContent(false);
         assertTrue(
                 "Users that have not enabled sending page content are still generating Related "
@@ -335,7 +150,7 @@ public class RelatedSearchesStampTest {
     @Test
     @Feature({"RelatedSearches", "RelatedSearchesStamp"})
     public void testGetStampNotLanguageQualified() {
-        setStandardExperimentConfiguration(CONFIG_STAMP_BOTH);
+        setStandardDefaultLaunchConfiguration();
         assertFalse(
                 "A standard experiment with both inputs is not generating Related Searches for "
                         + "English, but should!",
@@ -350,16 +165,10 @@ public class RelatedSearchesStampTest {
     @Feature({"RelatedSearches", "RelatedSearchesStamp"})
     public void testGetStampLanguageRestricted() {
         setStandardDefaultLaunchConfiguration();
-        setLanguageAllowlist(ENGLISH_AND_SPANISH);
         assertThat(
                 "A launch configuration with multiple languages is not generating the expected "
                         + "processing stamp for English!",
                 mStamp.getRelatedSearchesStamp(ENGLISH),
-                is(EXPECTED_DEFAULT_STAMP_LANGUAGE_RESTRICTED));
-        assertThat(
-                "A launch configuration with multiple languages is not generating the expected "
-                        + "processing stamp for Spanish!",
-                mStamp.getRelatedSearchesStamp(SPANISH),
                 is(EXPECTED_DEFAULT_STAMP_LANGUAGE_RESTRICTED));
         assertThat(
                 "A launch configuration with multiple languages is generating Related Searches "
@@ -377,17 +186,17 @@ public class RelatedSearchesStampTest {
                 "A launch configuration with all languages support is not generating the expected "
                         + "processing stamp for English!",
                 mStamp.getRelatedSearchesStamp(ENGLISH),
-                is(EXPECTED_DEFAULT_STAMP));
+                is(EXPECTED_DEFAULT_STAMP_ALL_LANGUAGE));
         assertThat(
                 "A launch configuration with all languages support is not generating the expected "
                         + "processing stamp for Spanish!",
                 mStamp.getRelatedSearchesStamp(SPANISH),
-                is(EXPECTED_DEFAULT_STAMP));
+                is(EXPECTED_DEFAULT_STAMP_ALL_LANGUAGE));
         assertThat(
                 "A launch configuration with all languages support is not generating the expected "
                         + "processing stamp for German!",
                 mStamp.getRelatedSearchesStamp(GERMAN),
-                is(EXPECTED_DEFAULT_STAMP));
+                is(EXPECTED_DEFAULT_STAMP_ALL_LANGUAGE));
     }
 
     @Test

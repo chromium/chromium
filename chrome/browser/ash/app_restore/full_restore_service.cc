@@ -314,8 +314,8 @@ void FullRestoreService::Close(bool by_user) {
   }
 }
 
-void FullRestoreService::Click(const absl::optional<int>& button_index,
-                               const absl::optional<std::u16string>& reply) {
+void FullRestoreService::Click(const std::optional<int>& button_index,
+                               const std::optional<std::u16string>& reply) {
   DCHECK(notification_);
   skip_notification_histogram_ = true;
 

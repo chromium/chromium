@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <memory>
 #include <utility>
+#include <vector>
 
 #include "base/containers/contains.h"
 #include "base/debug/alias.h"
@@ -71,6 +72,7 @@
 #include "extensions/renderer/dom_activity_logger.h"
 #include "extensions/renderer/extension_frame_helper.h"
 #include "extensions/renderer/extension_interaction_provider.h"
+#include "extensions/renderer/extensions_renderer_api_provider.h"
 #include "extensions/renderer/extensions_renderer_client.h"
 #include "extensions/renderer/guest_view/guest_view_internal_custom_bindings.h"
 #include "extensions/renderer/id_generator_custom_bindings.h"
@@ -269,8 +271,11 @@ Dispatcher::PendingServiceWorker::~PendingServiceWorker() = default;
 
 // Note that we can't use Blink public APIs in the constructor because Blink
 // is not initialized at the point we create Dispatcher.
-Dispatcher::Dispatcher(std::unique_ptr<DispatcherDelegate> delegate)
+Dispatcher::Dispatcher(
+    std::unique_ptr<DispatcherDelegate> delegate,
+    std::vector<std::unique_ptr<ExtensionsRendererAPIProvider>> api_providers)
     : delegate_(std::move(delegate)),
+      api_providers_(std::move(api_providers)),
       content_watcher_(new ContentWatcher()),
       source_map_(&ui::ResourceBundle::GetSharedInstance()),
       v8_schema_registry_(new V8SchemaRegistry),
@@ -551,7 +556,7 @@ void Dispatcher::WillEvaluateServiceWorkerOnWorkerThread(
   context->set_service_worker_version_id(service_worker_version_id);
 
   WorkerThreadDispatcher* worker_dispatcher = WorkerThreadDispatcher::Get();
-  absl::optional<base::UnguessableToken> worker_activation_token =
+  std::optional<base::UnguessableToken> worker_activation_token =
       RendererExtensionRegistry::Get()->GetWorkerActivationToken(
           extension->id());
 
@@ -1004,18 +1009,9 @@ void Dispatcher::RegisterNativeHandlers(
       "runtime",
       std::unique_ptr<NativeHandler>(new RuntimeCustomBindings(context)));
 
-  scoped_refptr<base::SingleThreadTaskRunner> io_task_runner = nullptr;
-  // RenderThread::Get() returns nullptr from some tests.
-  if (context->IsForServiceWorker() && RenderThread::Get()) {
-    io_task_runner = RenderThread::Get()->GetIOTaskRunner();
-  } else if (context->web_frame()) {
-    io_task_runner =
-        context->web_frame()->GetTaskRunner(blink::TaskType::kInternalDefault);
-  }
   module_system->RegisterNativeHandler(
       "automationInternal", std::make_unique<AutomationInternalCustomBindings>(
-                                context, bindings_system, io_task_runner,
-                                content::WorkerThread::GetCurrentId()));
+                                context, bindings_system));
 }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
@@ -1111,7 +1107,7 @@ void Dispatcher::LoadExtensions(
   for (auto& param : loaded_extensions) {
     std::string error;
     std::string id = param->id;
-    absl::optional<base::UnguessableToken> worker_activation_token =
+    std::optional<base::UnguessableToken> worker_activation_token =
         param->worker_activation_token;
 
     scoped_refptr<const Extension> extension =
@@ -1383,6 +1379,14 @@ void Dispatcher::DispatchEvent(mojom::DispatchEventParamsPtr params,
   CHECK_EQ(params->worker_thread_id, kMainThreadId);
   content::RenderFrame* background_frame =
       ExtensionFrameHelper::GetBackgroundPageFrame(params->extension_id);
+  ScriptContext* background_context = nullptr;
+  if (background_frame) {
+    background_context =
+        ScriptContextSet::GetMainWorldContextForFrame(background_frame);
+  }
+  bool event_has_listener_in_background_context =
+      background_context && bindings_system_->HasEventListenerInContext(
+                                params->event_name, background_context);
 
   // Synthesize a user gesture if this was in response to user action; this is
   // necessary if the gesture was e.g. by clicking on the extension toolbar
@@ -1393,14 +1397,10 @@ void Dispatcher::DispatchEvent(mojom::DispatchEventParamsPtr params,
   // the user gesture. This is intentional, since frames other than the
   // background page should have their own user gestures, such as through button
   // clicks.
-  if (params->is_user_gesture && background_frame) {
-    ScriptContext* background_context =
-        ScriptContextSet::GetMainWorldContextForFrame(background_frame);
-    if (background_context && bindings_system_->HasEventListenerInContext(
-                                  params->event_name, background_context)) {
-      background_frame->GetWebFrame()->NotifyUserActivation(
-          blink::mojom::UserActivationNotificationType::kExtensionEvent);
-    }
+  if (params->is_user_gesture && background_context &&
+      event_has_listener_in_background_context) {
+    background_frame->GetWebFrame()->NotifyUserActivation(
+        blink::mojom::UserActivationNotificationType::kExtensionEvent);
   }
 
   DispatchEventHelper(params->extension_id, params->event_name, event_args,
@@ -1414,11 +1414,12 @@ void Dispatcher::DispatchEvent(mojom::DispatchEventParamsPtr params,
         RendererExtensionRegistry::Get()->GetByID(params->extension_id);
     if (extension && BackgroundInfo::HasLazyBackgroundPage(extension)) {
       background_frame->Send(new ExtensionHostMsg_EventAck(
-          background_frame->GetRoutingID(), params->event_id));
+          background_frame->GetRoutingID(), params->event_id,
+          event_has_listener_in_background_context));
     }
   }
 #endif
-  std::move(callback).Run();
+  std::move(callback).Run(event_has_listener_in_background_context);
 }
 
 void Dispatcher::SetDeveloperMode(bool current_developer_mode) {
@@ -1529,7 +1530,9 @@ void Dispatcher::EnableCustomElementAllowlist() {
   blink::WebCustomElement::AddEmbedderCustomElementName("appview");
   blink::WebCustomElement::AddEmbedderCustomElementName("extensionoptions");
   blink::WebCustomElement::AddEmbedderCustomElementName("webview");
-  delegate_->EnableCustomElementAllowlist();
+  for (const auto& api_provider : api_providers_) {
+    api_provider->EnableCustomElementAllowlist();
+  }
 }
 
 void Dispatcher::UpdateAllBindings(bool api_permissions_changed) {
@@ -1572,6 +1575,9 @@ void Dispatcher::PopulateSourceMap() {
   for (const auto& resource : resources)
     source_map_.RegisterSource(resource.name, resource.id);
   delegate_->PopulateSourceMap(&source_map_);
+  for (const auto& api_provider : api_providers_) {
+    api_provider->PopulateSourceMap(&source_map_);
+  }
 }
 
 bool Dispatcher::IsWithinPlatformApp() {
@@ -1627,9 +1633,14 @@ void Dispatcher::RequireGuestViewModules(ScriptContext* context) {
   // Require WebView.
   if (context->GetAvailability("webViewInternal").is_available()) {
     requires_guest_view_module = true;
-    // The embedder of the extensions layer may define its own implementation
-    // of WebView.
-    delegate_->RequireWebViewModules(context);
+
+    // If none of the API providers require a WebView module, use the embedder's
+    // implementation.
+    if (!RequireWebViewModulesFromProviders(context)) {
+      // The embedder of the extensions layer may define its own implementation
+      // of WebView.
+      delegate_->RequireWebViewModules(context);
+    }
   } else if (web_view_permission_exists) {
     module_system->Require("webViewDeny");
   }
@@ -1644,6 +1655,15 @@ void Dispatcher::RequireGuestViewModules(ScriptContext* context) {
         ->GetSettings()
         ->SetForceMainWorldInitialization(true);
   }
+}
+
+bool Dispatcher::RequireWebViewModulesFromProviders(ScriptContext* context) {
+  for (const auto& api_provider : api_providers_) {
+    if (api_provider->RequireWebViewModules(context)) {
+      return true;
+    }
+  }
+  return false;
 }
 
 std::unique_ptr<NativeExtensionBindingsSystem> Dispatcher::CreateBindingsSystem(

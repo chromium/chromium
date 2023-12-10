@@ -148,6 +148,23 @@ ChromeOsFeedbackDelegate::ChromeOsFeedbackDelegate(
   }
 }
 
+// Static.
+bool ChromeOsFeedbackDelegate::IsWifiDebugLogsAllowed(
+    const PrefService* prefs) {
+  if (prefs == nullptr) {
+    return false;
+  }
+
+  const base::Value::List& allowed_list =
+      prefs->GetList(prefs::kUserFeedbackWithLowLevelDebugDataAllowed);
+  for (const auto& item : allowed_list) {
+    if (item == "all" || item == "wifi") {
+      return true;
+    }
+  }
+  return false;
+}
+
 ChromeOsFeedbackDelegate ChromeOsFeedbackDelegate::CreateForTesting(
     Profile* profile) {
   return ChromeOsFeedbackDelegate(profile);
@@ -205,14 +222,7 @@ ChromeOsFeedbackDelegate::GetLinkedPhoneMacAddress() {
 }
 
 bool ChromeOsFeedbackDelegate::IsWifiDebugLogsAllowed() const {
-  const base::Value::List& allowed_list = profile_->GetPrefs()->GetList(
-      prefs::kUserFeedbackWithLowLevelDebugDataAllowed);
-  for (const auto& item : allowed_list) {
-    if (item == "all" || item == "wifi") {
-      return true;
-    }
-  }
-  return false;
+  return IsWifiDebugLogsAllowed(profile_->GetPrefs());
 }
 
 int ChromeOsFeedbackDelegate::GetPerformanceTraceId() {

@@ -22,6 +22,33 @@
 
 namespace extensions {
 
+// A helper class to wait for the service worker context to be initialized.
+class WorkerInitializedWaiter : public ServiceWorkerTaskQueue::TestObserver {
+ public:
+  explicit WorkerInitializedWaiter(ExtensionId extension_id)
+      : extension_id_(std::move(extension_id)) {
+    ServiceWorkerTaskQueue::SetObserverForTest(this);
+  }
+
+  ~WorkerInitializedWaiter() override {
+    ServiceWorkerTaskQueue::SetObserverForTest(nullptr);
+  }
+
+  void WaitForWorkerContextInitialized() { run_loop_.Run(); }
+
+ private:
+  // ServiceWorkerTaskQueue::TestObserver:
+  void DidInitializeServiceWorkerContext(
+      const ExtensionId& extension_id) override {
+    if (extension_id == extension_id_) {
+      run_loop_.Quit();
+    }
+  }
+
+  const ExtensionId extension_id_;
+  base::RunLoop run_loop_;
+};
+
 // Tests related to the registration state of extension background service
 // workers.
 class ServiceWorkerRegistrationApiTest : public ExtensionApiTest {
@@ -43,6 +70,33 @@ class ServiceWorkerRegistrationApiTest : public ExtensionApiTest {
     service_worker_context->CheckHasServiceWorker(root_scope, storage_key,
                                                   future.GetCallback());
     return future.Get();
+  }
+
+  // Returns true if the extension with the specified `extension_id` has an
+  // active worker registered in the ProcessManager.
+  bool HasActiveServiceWorker(const ExtensionId& extension_id) {
+    ProcessManager* process_manager = ProcessManager::Get(profile());
+    std::vector<WorkerId> worker_ids =
+        process_manager->GetServiceWorkersForExtension(extension_id);
+    if (worker_ids.size() > 1) {
+      // We should never have more than one worker registered in the process
+      // manager for a given extension.
+      ADD_FAILURE() << "Muliple active worker IDs found for extension.";
+      return false;
+    }
+    return worker_ids.size() == 1;
+  }
+
+  // Returns the value of `self.currentVersion` in the service worker context
+  // of the extension with the given `extension_id`.
+  int GetVersionFlagFromServiceWorker(const ExtensionId& extension_id) {
+    static constexpr char kScript[] =
+        R"(chrome.test.sendScriptResult(
+               self.currentVersion ? self.currentVersion : -1);)";
+    return BackgroundScriptExecutor::ExecuteScript(
+               profile(), extension_id, kScript,
+               BackgroundScriptExecutor::ResultCapture::kSendScriptResult)
+        .GetInt();
   }
 };
 
@@ -109,16 +163,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerRegistrationApiTest,
   EXPECT_EQ(mojom::ManifestLocation::kUnpacked, extension->location());
   const ExtensionId id = extension->id();
 
-  auto get_version_flag = [this, id]() {
-    static constexpr char kScript[] =
-        R"(chrome.test.sendScriptResult(
-               self.currentVersion ? self.currentVersion : -1);)";
-    return BackgroundScriptExecutor::ExecuteScript(
-        profile(), id, kScript,
-        BackgroundScriptExecutor::ResultCapture::kSendScriptResult);
-  };
-
-  EXPECT_EQ(base::Value(1), get_version_flag());
+  EXPECT_EQ(base::Value(1), GetVersionFlagFromServiceWorker(id));
 
   // Unlike `LoadExtension()`, `ReloadExtension()` doesn't automatically wait
   // for the service worker to be ready, so we need to wait for a message to
@@ -132,7 +177,149 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerRegistrationApiTest,
   // Note: `extension` is unsafe to use here since the extension has been
   // reloaded.
 
-  EXPECT_EQ(base::Value(2), get_version_flag());
+  EXPECT_EQ(base::Value(2), GetVersionFlagFromServiceWorker(id));
+}
+
+// Tests updating an extension and installing it immediately while it has an
+// active new tab page override and a new tab is open.
+// Regression test for https://crbug.com/1498035.
+IN_PROC_BROWSER_TEST_F(ServiceWorkerRegistrationApiTest,
+                       ImmediateUpdateWithNewTabPageOverrideActive) {
+  // An extension manifest with a service worker and a new tab page override.
+  // The new tab page override is important because:
+  // * It commits to the extension origin and can be claimed by the service
+  //   worker as a client.
+  // * Unlike other chrome-extension:-scheme pages, we don't close the new
+  //   tab page when the extension is unloaded, which means the client is
+  //   still around when the worker is being re-registered.
+  static constexpr char kManifestWithNtpV1[] =
+      R"({
+         "name": "Extension",
+         "manifest_version": 3,
+         "version": "0.1",
+         "background": {"service_worker": "background.js"},
+         "action": {},
+         "chrome_url_overrides": {
+           "newtab": "page.html"
+         }
+       })";
+
+  static constexpr char kManifestWithNtpV2[] =
+      R"({
+         "name": "Extension",
+         "manifest_version": 3,
+         "version": "0.2",
+         "action": {},
+         "background": {"service_worker": "background.js"},
+         "chrome_url_overrides": {
+           "newtab": "page.html"
+         }
+       })";
+
+  // A background script that sends a message once the service worker is
+  // activated.
+  constexpr char kBackgroundV1[] =
+      R"(self.currentVersion = 1;
+         // Wait for the service worker to be active and claim any clients.
+         (async () => {
+           if (self.serviceWorker.state != 'activated') {
+             await new Promise(resolve => {
+               self.addEventListener('activate', resolve);
+             });
+           }
+           await clients.claim();
+           chrome.test.sendMessage('v1 ready');
+         })();)";
+  constexpr char kBackgroundV2[] = R"(self.currentVersion = 2;)";
+
+  static constexpr char kPageHtml[] = "<html>This is a page</html>";
+
+  // Write and package the two versions of the extension.
+  TestExtensionDir extension_dir;
+  extension_dir.WriteManifest(kManifestWithNtpV1);
+  extension_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackgroundV1);
+  extension_dir.WriteFile(FILE_PATH_LITERAL("page.html"), kPageHtml);
+
+  base::FilePath crx_v1 = extension_dir.Pack("v1.crx");
+
+  extension_dir.WriteManifest(kManifestWithNtpV2);
+  extension_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackgroundV2);
+  base::FilePath crx_v2 = extension_dir.Pack("v2.crx");
+
+  // Load the first version of the extension.
+  const Extension* extension = nullptr;
+  {
+    ExtensionTestMessageListener listener("v1 ready");
+    extension = InstallExtension(crx_v1, 1);
+    ASSERT_TRUE(listener.WaitUntilSatisfied());
+  }
+
+  ASSERT_TRUE(extension);
+  EXPECT_EQ(mojom::ManifestLocation::kInternal, extension->location());
+  const ExtensionId id = extension->id();
+  EXPECT_TRUE(HasActiveServiceWorker(id));
+
+  // Open a new tab. The extension overrides the NTP, so this is the extension's
+  // page.
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL("chrome://newtab/"),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+
+  EXPECT_EQ(
+      "This is a page",
+      content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                      "document.body.innerText;"));
+
+  // Verify the service worker is at v1.
+  EXPECT_EQ(base::Value(1), GetVersionFlagFromServiceWorker(id));
+
+  {
+    // Install v2. This will result in the extension updating. We set
+    // `install_immediately` to true so that the system won't wait for the
+    // extension to be idle to unload the old version and start the new one
+    // (since there's an active NTP that the extension overrides, it would
+    // never be idle and it's important for the test case to update the
+    // extension while there's an active client of the service worker).
+    // This also mimics update behavior if a user clicks "Update" in the
+    // chrome://extensions page.
+    scoped_refptr<CrxInstaller> crx_installer =
+        CrxInstaller::Create(extension_service(), /*prompt=*/nullptr);
+    crx_installer->set_error_on_unsupported_requirements(true);
+    crx_installer->set_off_store_install_allow_reason(
+        CrxInstaller::OffStoreInstallAllowedFromSettingsPage);
+    crx_installer->set_install_immediately(true);
+
+    base::test::TestFuture<absl::optional<CrxInstallError>>
+        installer_done_future;
+    crx_installer->AddInstallerCallback(
+        installer_done_future
+            .GetCallback<const absl::optional<CrxInstallError>&>());
+
+    WorkerInitializedWaiter worker_waiter(id);
+
+    crx_installer->InstallCrx(crx_v2);
+
+    // Wait for the install to finish and for the (new) service worker context
+    // to be initialized.
+    std::optional<CrxInstallError> install_error = installer_done_future.Get();
+    ASSERT_FALSE(install_error.has_value()) << install_error->message();
+    worker_waiter.WaitForWorkerContextInitialized();
+  }
+
+  // Grab the new version of the extension (the old one was replaced and is
+  // unsafe to use).
+  extension =
+      ExtensionRegistry::Get(profile())->enabled_extensions().GetByID(id);
+  ASSERT_TRUE(extension);
+
+  EXPECT_EQ(mojom::ManifestLocation::kInternal, extension->location());
+  EXPECT_EQ("0.2", extension->version().GetString());
+  EXPECT_EQ(id, extension->id());
+  EXPECT_TRUE(HasActiveServiceWorker(id));
+
+  // The service worker context should be that of the new version.
+  EXPECT_EQ(base::Value(2), GetVersionFlagFromServiceWorker(id));
 }
 
 // Tests that updating an unpacked extension properly updates the extension's

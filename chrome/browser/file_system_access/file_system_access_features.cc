@@ -16,10 +16,16 @@ BASE_FEATURE(kFileSystemAccessLocalUNCPathBlock,
 #endif
 
 // Enables persistent permissions for the File System Access API.
-// TODO(crbug.com/1373962): Remove `kFileSystemAccessPersistentPermissions`
-// feature after launch.
+// TODO(crbug.com/1467574): Remove `kFileSystemAccessPersistentPermissions`
+// flag after FSA Persistent Permissions feature launch.
 BASE_FEATURE(kFileSystemAccessPersistentPermissions,
              "kFileSystemAccessPersistentPermissions",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables performing the blocklist check on a full absolute path, which
+// resolves any symbolic link.
+BASE_FEATURE(kFileSystemAccessSymbolicLinkCheck,
+             "FileSystemAccessSymbolicLinkCheck",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace features

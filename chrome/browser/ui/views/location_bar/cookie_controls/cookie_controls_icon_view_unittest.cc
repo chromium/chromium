@@ -80,8 +80,6 @@ class CookieControlsIconViewUnitTest
   CookieControlsIconViewUnitTest()
       : a11y_counter_(views::AXEventManager::Get()) {}
   void SetUp() override {
-    feature_list_.InitAndEnableFeature(
-        content_settings::features::kUserBypassUI);
     TestWithBrowserView::SetUp();
 
     delegate_ = browser_view()->GetLocationBarView();
@@ -335,12 +333,12 @@ TEST_P(CookieControlsIconViewUnitTest, HighConfidenceDisabledForSite) {
   view_->OnBreakageConfidenceLevelChanged(
       CookieControlsBreakageConfidenceLevel::kHigh);
   EXPECT_TRUE(Visible());
-  EXPECT_TRUE(LabelShown());
+  EXPECT_FALSE(LabelShown());
   EXPECT_EQ(TooltipText(),
             In3pcd() ? TrackingProtectionLabel() : AllowedLabel());
-  EXPECT_EQ(LabelText(), AllowedLabel());
+  EXPECT_EQ(LabelText(), In3pcd() ? TrackingProtectionLabel() : AllowedLabel());
 #if !OS_MAC && !BUILDFLAG(IS_CHROMEOS_ASH)
-  EXPECT_EQ(a11y_counter_.GetCount(ax::mojom::Event::kAlert), 1);
+  EXPECT_EQ(a11y_counter_.GetCount(ax::mojom::Event::kAlert), 0);
 #endif
   EXPECT_EQ(user_actions_.GetActionCount(kUMAHighConfidenceShown), 1);
   ExecuteIcon();

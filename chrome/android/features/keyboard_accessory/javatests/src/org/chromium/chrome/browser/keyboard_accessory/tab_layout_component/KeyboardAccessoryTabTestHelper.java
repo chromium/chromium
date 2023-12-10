@@ -12,9 +12,7 @@ import org.hamcrest.Matcher;
 
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 
-/**
- * Helpers in this class simplify interactions with the Keyboard Accessory Tab Layout.
- */
+/** Helpers in this class simplify interactions with the Keyboard Accessory Tab Layout. */
 public class KeyboardAccessoryTabTestHelper {
     private KeyboardAccessoryTabTestHelper() {}
 

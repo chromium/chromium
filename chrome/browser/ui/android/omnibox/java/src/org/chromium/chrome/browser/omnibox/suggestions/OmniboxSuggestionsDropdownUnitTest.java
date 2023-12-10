@@ -124,7 +124,7 @@ public class OmniboxSuggestionsDropdownUnitTest {
                 new ContextThemeWrapper(
                         ApplicationProvider.getApplicationContext(),
                         R.style.Theme_BrowserUI_DayNight);
-        mDropdown = new OmniboxSuggestionsDropdown(mContext, mPool);
+        mDropdown = new OmniboxSuggestionsDropdown(mContext, mPool, false);
         mDropdown.setAdapter(mAdapter);
         mListener = mDropdown.getLayoutScrollListener();
     }
@@ -424,7 +424,7 @@ public class OmniboxSuggestionsDropdownUnitTest {
     @SmallTest
     @LooperMode(Mode.PAUSED)
     public void testAlignmentProvider_changeDuringlayout() {
-        mDropdown = Mockito.spy(new OmniboxSuggestionsDropdown(mContext, mPool));
+        mDropdown = Mockito.spy(new OmniboxSuggestionsDropdown(mContext, mPool, false));
         mDropdown.setAdapter(mAdapter);
         mDropdown.setEmbedder(mEmbedder);
         mDropdown.onAttachedToWindow();

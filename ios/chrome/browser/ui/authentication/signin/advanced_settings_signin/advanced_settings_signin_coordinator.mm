@@ -11,9 +11,9 @@
 #import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/signin/authentication_service.h"
-#import "ios/chrome/browser/signin/authentication_service_factory.h"
-#import "ios/chrome/browser/signin/identity_manager_factory.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/sync/model/sync_setup_service.h"
 #import "ios/chrome/browser/sync/model/sync_setup_service_factory.h"
@@ -52,8 +52,12 @@ using l10n_util::GetNSString;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
-                               signinState:(IdentitySigninState)signinState {
-  self = [super initWithBaseViewController:viewController browser:browser];
+                               signinState:(IdentitySigninState)signinState
+                               accessPoint:
+                                   (signin_metrics::AccessPoint)accessPoint {
+  self = [super initWithBaseViewController:viewController
+                                   browser:browser
+                               accessPoint:accessPoint];
   if (self) {
     _signinStateForCancel = signinState;
   }

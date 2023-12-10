@@ -50,6 +50,22 @@ source_set("features") {
   ]
 }
 
+source_set("test_utils") {
+  testonly = true
+
+  sources = [
+    "features_testutils.cc",
+    "features_testutils.h",
+  ]
+
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//components/supervised_user/core/common:features",
+    "//testing/gtest",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [ "features_unittest.cc" ]

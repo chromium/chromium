@@ -37,7 +37,7 @@ void SystemWebAppIconCheckerImpl::StartCheck(
          "finish installing.";
 
   auto barrier = base::BarrierCallback<
-      absl::optional<web_app::WebAppIconDiagnostic::Result>>(
+      std::optional<web_app::WebAppIconDiagnostic::Result>>(
       app_ids.size(),
       base::BindOnce(&SystemWebAppIconCheckerImpl::OnChecksDone,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
@@ -55,8 +55,7 @@ void SystemWebAppIconCheckerImpl::StartCheck(
 
 void SystemWebAppIconCheckerImpl::OnChecksDone(
     base::OnceCallback<void(IconState)> callback,
-    std::vector<absl::optional<web_app::WebAppIconDiagnostic::Result>>
-        results) {
+    std::vector<std::optional<web_app::WebAppIconDiagnostic::Result>> results) {
   checkers_.clear();
 
   if (results.size() == 0) {

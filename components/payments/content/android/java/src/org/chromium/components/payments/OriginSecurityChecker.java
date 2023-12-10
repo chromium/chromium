@@ -38,6 +38,7 @@ public class OriginSecurityChecker {
     @NativeMethods
     interface Natives {
         boolean isOriginSecure(GURL url);
+
         boolean isSchemeCryptographic(GURL url);
     }
 }

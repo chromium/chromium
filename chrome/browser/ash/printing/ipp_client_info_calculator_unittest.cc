@@ -78,7 +78,7 @@ class IppClientInfoCalculatorTest : public testing::Test {
 TEST_F(IppClientInfoCalculatorTest, OsInfo) {
   const IppClientInfoPtr os_info = GetOsInfo();
   const IppClientInfo expected(IppClientInfo::ClientType::kOperatingSystem,
-                               "ChromeOS", "15183.69.3", "42", absl::nullopt);
+                               "ChromeOS", "15183.69.3", "42", std::nullopt);
   ASSERT_TRUE(os_info);
   ExpectClientInfoEqual(*os_info, expected);
 }
@@ -93,7 +93,7 @@ TEST_F(IppClientInfoCalculatorTest, DeviceInfoSimplePolicy) {
 
   const IppClientInfoPtr device_info = GetDeviceInfo();
   const IppClientInfo expected(IppClientInfo::ClientType::kOther, "chromebook",
-                               absl::nullopt, "", absl::nullopt);
+                               std::nullopt, "", std::nullopt);
   ASSERT_TRUE(device_info);
   ExpectClientInfoEqual(*device_info, expected);
 }
@@ -110,7 +110,7 @@ TEST_F(IppClientInfoCalculatorTest, DeviceInfoPolicyWithVariables) {
   const IppClientInfoPtr device_info = GetDeviceInfo();
   const IppClientInfo expected(IppClientInfo::ClientType::kOther,
                                "chromebook_asset-id_1234-abcd_serial_location",
-                               absl::nullopt, "", absl::nullopt);
+                               std::nullopt, "", std::nullopt);
   ASSERT_TRUE(device_info);
   ExpectClientInfoEqual(*device_info, expected);
 }
@@ -124,7 +124,7 @@ TEST_F(IppClientInfoCalculatorTest, DeviceInfoPolicyChange) {
     SetClientNameTemplatePolicy("initial");
     const IppClientInfoPtr device_info = GetDeviceInfo();
     const IppClientInfo expected(IppClientInfo::ClientType::kOther, "initial",
-                                 absl::nullopt, "", absl::nullopt);
+                                 std::nullopt, "", std::nullopt);
     ASSERT_TRUE(device_info);
     ExpectClientInfoEqual(*device_info, expected);
   }
@@ -133,7 +133,7 @@ TEST_F(IppClientInfoCalculatorTest, DeviceInfoPolicyChange) {
     SetClientNameTemplatePolicy("changed");
     const IppClientInfoPtr device_info = GetDeviceInfo();
     const IppClientInfo expected(IppClientInfo::ClientType::kOther, "changed",
-                                 absl::nullopt, "", absl::nullopt);
+                                 std::nullopt, "", std::nullopt);
     ASSERT_TRUE(device_info);
     ExpectClientInfoEqual(*device_info, expected);
   }

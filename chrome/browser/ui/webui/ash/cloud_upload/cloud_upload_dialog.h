@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_ASH_CLOUD_UPLOAD_CLOUD_UPLOAD_DIALOG_H_
 #define CHROME_BROWSER_UI_WEBUI_ASH_CLOUD_UPLOAD_CLOUD_UPLOAD_DIALOG_H_
 
+#include <optional>
 #include <vector>
 
 #include "base/gtest_prod_util.h"
@@ -24,7 +25,6 @@
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom-forward.h"
 #include "components/drive/file_errors.h"
 #include "storage/browser/file_system/file_system_url.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 
 class Profile;
@@ -171,11 +171,14 @@ class CloudOpenTask : public BrowserListObserver,
   void StartUpload();
 
   // Callbacks from `DriveUploadHandler` and `OneDriveUploadHandler`. URL passed
-  // to these callbacks will be `absl::nullopt` and size will be 0 if upload
+  // to these callbacks will be `std::nullopt` and size will be 0 if upload
   // fails.
-  void FinishedDriveUpload(absl::optional<GURL> url, int64_t size);
+  void FinishedDriveUpload(OfficeTaskResult task_result,
+                           std::optional<GURL> url,
+                           int64_t size);
   void FinishedOneDriveUpload(base::WeakPtr<Profile> profile_weak_ptr,
-                              absl::optional<storage::FileSystemURL> url,
+                              OfficeTaskResult task_result,
+                              std::optional<storage::FileSystemURL> url,
                               int64_t size);
 
   void LogGoogleDriveOpenResultUMA(OfficeTaskResult success_task_result,
@@ -232,15 +235,12 @@ class CloudOpenTask : public BrowserListObserver,
 // is not mounted or the Office PWA is not installed. Returns False otherwise.
 bool ShouldFixUpOffice(Profile* profile, const CloudProvider cloud_provider);
 
-// Returns True if the url is on ODFS.
-bool UrlIsOnODFS(Profile* profile, const FileSystemURL& url);
-
 // Returns True if the url is on the Android OneDrive DocumentsProvider.
 bool UrlIsOnAndroidOneDrive(Profile* profile, const FileSystemURL& url);
 
 // Return the email from the Root Document Id of the Android OneDrive
 // DocumentsProvider.
-absl::optional<std::string> GetEmailFromAndroidOneDriveRootDoc(
+std::optional<std::string> GetEmailFromAndroidOneDriveRootDoc(
     const std::string& root_document_id);
 
 // If the Microsoft account logged into the Android OneDrive matches the account
@@ -258,7 +258,7 @@ void OpenAndroidOneDriveUrlsIfAccountMatchedODFS(
 // for files in OneDrive that can be accessed via Android OneDrive or ODFS.
 // These are the users' own files - in the Android OneDrive "Files" directory.
 // Fails if an equivalent ODFS file path can't be constructed.
-absl::optional<ODFSFileSystemAndPath> AndroidOneDriveUrlToODFS(
+std::optional<ODFSFileSystemAndPath> AndroidOneDriveUrlToODFS(
     Profile* profile,
     const FileSystemURL& android_onedrive_file_url);
 

@@ -120,7 +120,6 @@ class VIZ_SERVICE_EXPORT DisplayScheduler
   bool UpdateHasPendingSurfaces();
   void MaybeCreateHintSession(
       base::flat_set<base::PlatformThreadId> thread_ids);
-  void OnFrameBoostDeadline();
 
   std::unique_ptr<BeginFrameObserver> begin_frame_observer_;
   raw_ptr<BeginFrameSource> begin_frame_source_;
@@ -130,7 +129,6 @@ class VIZ_SERVICE_EXPORT DisplayScheduler
   base::RepeatingClosure begin_frame_deadline_closure_;
   base::DeadlineTimer begin_frame_deadline_timer_;
   base::TimeTicks begin_frame_deadline_task_time_;
-  base::DeadlineTimer frame_boost_deadline_timer_;
 
   base::CancelableOnceClosure missed_begin_frame_task_;
   bool inside_surface_damaged_;

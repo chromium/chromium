@@ -19,6 +19,16 @@ namespace autofill {
 // of events by the controller.
 class AutofillPopupDelegate {
  public:
+  // Defines the position of the suggestion that was selected.
+  // This is useful for desktop where popups can have sub-popups.
+  struct SuggestionPosition {
+    // Defines the row selected in the list of suggestions.
+    int row = 0;
+    // On desktop, it defines the subpopup that contains the suggestion
+    // selected.
+    int sub_popup_level = 0;
+  };
+
   // Called when the Autofill popup is shown. If the popup supports sub-popups
   // only the root one triggers it.
   virtual void OnPopupShown() = 0;
@@ -30,31 +40,19 @@ class AutofillPopupDelegate {
 
   // Called when the autofill `suggestion` has been temporarily selected (e.g.,
   // hovered).
-  virtual void DidSelectSuggestion(
-      const Suggestion& suggestion,
-      AutofillSuggestionTriggerSource trigger_source) = 0;
+  virtual void DidSelectSuggestion(const Suggestion& suggestion) = 0;
 
-  // Informs the delegate that a row in the popup has been chosen. |suggestion|
-  // is the suggestion that was chosen in the popup. |position| refers to the
-  // index of the suggestion in the suggestion list.
-  virtual void DidAcceptSuggestion(
-      const Suggestion& suggestion,
-      int position,
-      AutofillSuggestionTriggerSource trigger_source) = 0;
+  // Informs the delegate that a row in the popup has been chosen. `suggestion`
+  // is the suggestion that was chosen in the popup. `position` refers to the
+  // row and level of the suggestion in the suggestions layout.
+  virtual void DidAcceptSuggestion(const Suggestion& suggestion,
+                                   const SuggestionPosition& position) = 0;
 
   // Informs the delegate that the user chose to perform the button action
   // associated with `suggestion`. Actions are currently implemented only on
   // Desktop.
   virtual void DidPerformButtonActionForSuggestion(
       const Suggestion& suggestion) = 0;
-
-  // Returns whether the given value can be deleted, and if true,
-  // fills out |title| and |body|.
-  virtual bool GetDeletionConfirmationText(const std::u16string& value,
-                                           PopupItemId popup_item_id,
-                                           Suggestion::BackendId backend_id,
-                                           std::u16string* title,
-                                           std::u16string* body) = 0;
 
   // Delete the described suggestion. Returns true if something was deleted,
   // or false if deletion is not allowed.

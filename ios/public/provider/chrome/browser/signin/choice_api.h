@@ -14,40 +14,16 @@
 #import "ios/chrome/browser/ui/first_run/first_run_screen_delegate.h"
 #import "ios/chrome/browser/ui/promos_manager/standard_promo_display_handler.h"
 
-class ChromeBrowserState;
-
 namespace ios {
 namespace provider {
 
-// Creates a new ChoiceCoordinator instance.
-// TODO(b/280753739): Rename this method to CreateCoordinator(...).
-ChromeCoordinator* CreateChoiceCoordinatorWithViewController(
-    UIViewController* view_controller,
-    Browser* browser);
-
-// Creates a new ChoiceCoordinator instance for the FRE.
-// TODO(b/280753569): Rename this method to CreateCoordinatorForFRE(...).
-ChromeCoordinator* CreateChoiceCoordinatorForFREWithNavigationController(
-    UINavigationController* navigation_controller,
-    Browser* browser,
-    id<FirstRunScreenDelegate> first_run_delegate);
-
-// Creates a new ChoiceDisplayHandler instance.
-id<StandardPromoDisplayHandler> CreateChoiceDisplayHandler(
-    ChromeBrowserState* browserState);
-
-// Creates a new ChoiceDisplayHandler instance.
-id<StandardPromoDisplayHandler> CreateChoiceDisplayHandler();
-
-// Creates a new ChoiceSceneAgent instance.
-id<SceneAgent> CreateChoiceSceneAgent(PromosManager* promosManager);
-
-// Creates a new ChoiceSceneAgent instance.
-id<SceneAgent> CreateChoiceSceneAgent(PromosManager* promosManager,
-                                      ChromeBrowserState* browserState);
-
-// Whether the feature is enabled
+// Whether the feature flag is enabled on runs that are not the first run.
+// TODO(b/306576460): Update this method's name to make it clearer what is
+// enabled or not.
 bool IsChoiceEnabled();
+
+// Whether the feature flag is enabled for the first run.
+bool IsSearchEngineChoiceScreenEnabledFre();
 
 }  // namespace provider
 }  // namespace ios

@@ -114,7 +114,7 @@ void VersionHandlerChromeOS::OnOsVersion(const std::string& version) {
 #endif
 
 void VersionHandlerChromeOS::OnPlatformVersion(
-    const absl::optional<std::string>& version) {
+    const std::optional<std::string>& version) {
   FireWebUIListener("return-platform-version",
                     base::Value(version.value_or("0.0.0.0")));
 }
@@ -132,7 +132,7 @@ void VersionHandlerChromeOS::OnArcAndArcAndroidSdkVersions(
 // static
 std::string VersionHandlerChromeOS::GetArcAndArcAndroidSdkVersions() {
   std::string arc_version = chromeos::version_loader::GetArcVersion();
-  absl::optional<std::string> arc_android_sdk_version =
+  std::optional<std::string> arc_android_sdk_version =
       chromeos::version_loader::GetArcAndroidSdkVersion();
   if (!arc_android_sdk_version.has_value()) {
     arc_android_sdk_version = base::UTF16ToUTF8(

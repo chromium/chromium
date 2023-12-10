@@ -19,6 +19,7 @@
 #include "base/thread_annotations.h"
 #include "base/trace_event/trace_event.h"
 #include "cc/paint/skottie_mru_resource_provider.h"
+#include "skia/ext/font_utils.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/modules/skottie/include/Skottie.h"
@@ -342,6 +343,7 @@ class SkottieWrapperImpl : public SkottieWrapper {
             skottie::Animation::Builder()
                 .setLogger(sk_make_sp<SkottieLogWriter>())
                 .setPropertyObserver(property_manager_)
+                .setFontManager(skia::DefaultFontMgr())
                 .setResourceProvider(skresources::CachingResourceProvider::Make(
                     mru_resource_provider))
                 .setMarkerObserver(marker_store_)

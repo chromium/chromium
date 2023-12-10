@@ -56,10 +56,11 @@ public class GroupCardLabelAdder implements ListConsumer {
                 ((ListItem.OfflineItemListItem) listItem).isGrouped = false;
             }
 
-            boolean addToExistingGroup = ListUtils.canGroup(listItem)
-                    && ListUtils.canGroup(previousItem)
-                    && getDateAndDomainForItem(listItem).equals(
-                            getDateAndDomainForItem(previousItem));
+            boolean addToExistingGroup =
+                    ListUtils.canGroup(listItem)
+                            && ListUtils.canGroup(previousItem)
+                            && getDateAndDomainForItem(listItem)
+                                    .equals(getDateAndDomainForItem(previousItem));
             if (addToExistingGroup) {
                 candidateCardItems.add(listItem);
             } else {

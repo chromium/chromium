@@ -17,12 +17,23 @@ public final class ChildProcessCreationParams {
      * Set params. This should be called once on start up. If null is passed for
      * privilegedServicesName or sandboxedServicesName, the default service names will be used.
      */
-    public static void set(String privilegedPackageName, String privilegedServicesName,
-            String sandboxedPackageName, String sandboxedServicesName,
-            boolean isExternalSandboxedService, int libraryProcessType, boolean bindToCallerCheck,
+    public static void set(
+            String privilegedPackageName,
+            String privilegedServicesName,
+            String sandboxedPackageName,
+            String sandboxedServicesName,
+            boolean isExternalSandboxedService,
+            int libraryProcessType,
+            boolean bindToCallerCheck,
             boolean ignoreVisibilityForImportance) {
-        ChildProcessCreationParamsImpl.set(privilegedPackageName, privilegedServicesName,
-                sandboxedPackageName, sandboxedServicesName, isExternalSandboxedService,
-                libraryProcessType, bindToCallerCheck, ignoreVisibilityForImportance);
+        ChildProcessCreationParamsImpl.set(
+                privilegedPackageName,
+                privilegedServicesName,
+                sandboxedPackageName,
+                sandboxedServicesName,
+                isExternalSandboxedService,
+                libraryProcessType,
+                bindToCallerCheck,
+                ignoreVisibilityForImportance);
     }
 }

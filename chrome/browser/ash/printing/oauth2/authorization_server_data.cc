@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/printing/oauth2/authorization_server_data.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -19,7 +20,6 @@
 #include "chromeos/printing/uri.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace ash {

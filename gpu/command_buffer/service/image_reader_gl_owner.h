@@ -120,7 +120,7 @@ class GPU_GLES2_EXPORT ImageReaderGLOwner : public TextureOwner,
 
   // Most recently acquired image using image reader. This works like a cached
   // image until next new image is acquired which overwrites this.
-  absl::optional<ScopedCurrentImageRef> current_image_ref_ GUARDED_BY(lock_);
+  std::optional<ScopedCurrentImageRef> current_image_ref_ GUARDED_BY(lock_);
   std::unique_ptr<AImageReader_ImageListener> listener_;
 
   // A map consisting of pending refs on an AImage. If an image has any refs, it

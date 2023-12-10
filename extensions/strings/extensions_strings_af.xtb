@@ -8,6 +8,7 @@
 <translation id="1420684932347524586">Oeps! Kon nie lukraak RSA private sleutel genereer nie.</translation>
 <translation id="1445572445564823378">Hierdie uitbreiding maak <ph name="PRODUCT_NAME" /> stadig. Jy moet dit deaktiveer om <ph name="PRODUCT_NAME" /> se prestasie te herstel.</translation>
 <translation id="1468038450257740950">WebGL word nie gesteun nie.</translation>
+<translation id="1610570795592207282">Kon nie css “<ph name="RELATIVE_PATH" />” vir skrip laai nie.</translation>
 <translation id="1803557475693955505">Kon nie plaaslike agtergrondbladsy '<ph name="BACKGROUND_PAGE" />' laai nie.</translation>
 <translation id="2159915644201199628">Kon nie prent ontsyfer nie: "<ph name="IMAGE_NAME" />"</translation>
 <translation id="2350172092385603347">Lokalisering is gebruik, maar verstek_ligging is nie in die manifes gespesifiseer nie.</translation>
@@ -18,14 +19,12 @@
 <translation id="3115238746683532089">Onbekende produk <ph name="PRODUCT_ID" /> vanaf verkoper <ph name="VENDOR_ID" /> (reeksnommer <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">Kon nie crx-lêer vervang nie. Gaan na om te sien of die lêer gebruik word.</translation>
 <translation id="3163201441334626963">Onbekende produk <ph name="PRODUCT_ID" /> vanaf verkoper <ph name="VENDOR_ID" /></translation>
-<translation id="3302709122321372472">Kon nie css '<ph name="RELATIVE_PATH" />' vir inhoudskrip laai nie.</translation>
 <translation id="3369521687965833290">Kan nie uitbreiding uitpak nie. Om 'n uitbreiding veilig uit te pak, moet daar 'n pad na jou profielgids wees wat met 'n skyfletter begin en nie 'n kruising, koppelpunt of simskakel bevat nie. Geen so 'n pad bestaan vir jou profiel nie.</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (reeksnommer <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> vanaf verkoper <ph name="VENDOR_ID" /> (reeksnommer <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Invoerwaarde vir private sleutel moet 'n geldige pad wees.</translation>
 <translation id="388442998277590542">Kon nie opsiebladsy '<ph name="OPTIONS_PAGE" />' laai nie.</translation>
 <translation id="3984413272403535372">Kon nie 'n uitbreiding onderteken nie.</translation>
-<translation id="39964277676607559">Kon nie JavaScript '<ph name="RELATIVE_PATH" />' vir inhoudskrip laai nie.</translation>
 <translation id="4115165561519362854">Die administrateur van hierdie masjien vereis dat <ph name="EXTENSION_NAME" /> minstens weergawe <ph name="EXTENSION_VERSION" /> moet wees. Dit kan nie geaktiveer word voordat dit tot daardie weergawe (of nuwer) opgedateer het nie.</translation>
 <translation id="4233778200880751280">Kon nie meer-oor-bladsy "<ph name="ABOUT_PAGE" />" laai nie.</translation>
 <translation id="471800408830181311">Kon nie private sleutel uitvoer nie.</translation>
@@ -33,6 +32,7 @@
 <translation id="4988792151665380515">Kon nie publieke sleutel uitvoer nie.</translation>
 <translation id="5026754133087629784">Webaansig: <ph name="WEBVIEW_TAG_NAME" /></translation>
 <translation id="5098647635849512368">Kan nie die absolute pad vind na die gids om te pak nie.</translation>
+<translation id="5160071981665899014">Kon nie javascript “<ph name="RELATIVE_PATH" />” vir skrip laai nie.</translation>
 <translation id="5356315618422219272">Programaansig: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5436430103864390185">Gevormde vensters word nie gesteun nie</translation>
 <translation id="5456409301717116725">Hierdie uitbreiding sluit die sleutellêer "<ph name="KEY_PATH" />" in. Jy wil dit waarskynlik nie doen nie.</translation>

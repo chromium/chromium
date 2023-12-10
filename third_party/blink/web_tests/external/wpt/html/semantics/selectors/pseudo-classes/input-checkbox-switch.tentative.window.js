@@ -60,3 +60,16 @@ test(t => {
   input.checked = false;
   assert_false(document.body.matches(":has(:checked)"));
 }, "Parent of a switch control that becomes a checkbox continues to match :has(:checked)");
+
+test(t => {
+  const input = document.body.appendChild(document.createElement("input"));
+  t.add_cleanup(() => input.remove());
+  input.type = "checkbox";
+  input.switch = true;
+  input.indeterminate = true;
+  assert_false(input.matches(":indeterminate"));
+  input.type = "text";
+  input.removeAttribute("switch");
+  input.type = "checkbox";
+  assert_true(input.matches(":indeterminate"));
+}, "A switch control that becomes a checkbox in a roundabout way");

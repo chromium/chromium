@@ -97,7 +97,7 @@ class TabSharingUIViews : public TabSharingUI,
   // rate-limit our response.
 
   void OnRegionCaptureRectChanged(
-      const absl::optional<gfx::Rect>& region_capture_rect) override;
+      const std::optional<gfx::Rect>& region_capture_rect) override;
 
  protected:
 #if BUILDFLAG(IS_CHROMEOS)
@@ -143,7 +143,7 @@ class TabSharingUIViews : public TabSharingUI,
   void RefreshFavicons();
 
   void MaybeUpdateFavicon(content::WebContents* focus_target,
-                          absl::optional<uint32_t>* current_hash,
+                          std::optional<uint32_t>* current_hash,
                           content::WebContents* infobar_owner);
 
   ui::ImageModel TabFavicon(content::WebContents* web_contents) const;
@@ -215,8 +215,8 @@ class TabSharingUIViews : public TabSharingUI,
   // Indicates whether this instance is used for casting or capturing.
   const TabSharingInfoBarDelegate::TabShareType capture_type_;
 
-  absl::optional<uint32_t> capturer_favicon_hash_;
-  absl::optional<uint32_t> captured_favicon_hash_;
+  std::optional<uint32_t> capturer_favicon_hash_;
+  std::optional<uint32_t> captured_favicon_hash_;
 
   std::map<content::WebContents*, ui::ImageModel>
       favicon_overrides_for_testing_;

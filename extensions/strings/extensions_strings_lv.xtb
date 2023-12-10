@@ -8,6 +8,7 @@
 <translation id="1420684932347524586">Vai! Neizdevās ģenerēt nejauši izvēlētu RSA privāto atslēgu.</translation>
 <translation id="1445572445564823378">Šis paplašinājums palēnina <ph name="PRODUCT_NAME" /> darbību. Atspējojiet to, lai atjaunotu <ph name="PRODUCT_NAME" /> veiktspēju.</translation>
 <translation id="1468038450257740950">Tehnoloģija WebGL netiek atbalstīta.</translation>
+<translation id="1610570795592207282">Nevarēja ielādēt CSS “<ph name="RELATIVE_PATH" />” skriptam.</translation>
 <translation id="1803557475693955505">Nevarēja ielādēt fona lapu “<ph name="BACKGROUND_PAGE" />”.</translation>
 <translation id="2159915644201199628">Nevarēja dekodēt attēlu: <ph name="IMAGE_NAME" /></translation>
 <translation id="2350172092385603347">Lokalizācija ir lietota, tomēr manifestā nav norādīta default_locale.</translation>
@@ -18,14 +19,12 @@
 <translation id="3115238746683532089">Nezināms produkts (ID: <ph name="PRODUCT_ID" />), ko piedāvā <ph name="VENDOR_ID" /> (sērijas numurs: <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">Neizdevās aizstāt crx failu. Pārbaudiet, vai fails tiek izmantots.</translation>
 <translation id="3163201441334626963">Nezināms produkts (ID: <ph name="PRODUCT_ID" />), ko piedāvā <ph name="VENDOR_ID" /></translation>
-<translation id="3302709122321372472">Nevarēja ielādēt css “<ph name="RELATIVE_PATH" />” satura skriptam.</translation>
 <translation id="3369521687965833290">Nevar atvērt paplašinājuma pakotni. Lai varētu drošā veidā atvērt paplašinājuma pakotni, jābūt norādītam ceļam uz jūsu profila direktoriju, kas sākas ar diska burtu un neietver savienojumu, montēšanas punktu vai simbolisku saiti. Jūsu profilam nav norādīts šāds ceļš.</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (sērijas numurs: <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" />, ko piedāvā <ph name="VENDOR_ID" /> (sērijas numurs: <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Privātās atslēgas ievades vērtībai jābūt derīgam ceļam.</translation>
 <translation id="388442998277590542">Nevarēja ielādēt opciju lapu “<ph name="OPTIONS_PAGE" />”.</translation>
 <translation id="3984413272403535372">Kļūda paplašinājuma parakstīšanas laikā.</translation>
-<translation id="39964277676607559">Nevarēja ielādēt JavaScript “<ph name="RELATIVE_PATH" />” satura skriptam.</translation>
 <translation id="4115165561519362854">Šīs iekārtas administrators pieprasa, lai tiktu izmantots pakalpojums <ph name="EXTENSION_NAME" /> <ph name="EXTENSION_VERSION" /> vai jaunāka versija. To nevar iespējot, līdz nebūs veikta jaunināšana uz norādīto (vai jaunāku) versiju.</translation>
 <translation id="4233778200880751280">Nevarēja ielādēt lapu “Par” (<ph name="ABOUT_PAGE" />).</translation>
 <translation id="471800408830181311">Neizdevās izvadīt privāto atslēgu.</translation>
@@ -33,6 +32,7 @@
 <translation id="4988792151665380515">Neizdevās eksportēt publisko atslēgu.</translation>
 <translation id="5026754133087629784">Webview: <ph name="WEBVIEW_TAG_NAME" /></translation>
 <translation id="5098647635849512368">Nevar atrast ceļu uz direktoriju, lai to atpakotu.</translation>
+<translation id="5160071981665899014">Nevarēja ielādēt JavaScript “<ph name="RELATIVE_PATH" />” skriptam.</translation>
 <translation id="5356315618422219272">Lietotnes skats: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5436430103864390185">Pielāgotas formas logi netiek atbalstīti.</translation>
 <translation id="5456409301717116725">Šis paplašinājums ietver atslēgas failu <ph name="KEY_PATH" />. Iespējams, jūs to nevēlaties izmantot.</translation>

@@ -6,15 +6,16 @@
 
 #include <memory>
 
+#include "base/check_is_test.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/no_destructor.h"
 #include "base/ranges/algorithm.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/screen_ai/pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -25,9 +26,13 @@
 #include "base/cpu.h"
 #endif
 
+#if BUILDFLAG(IS_WIN)
+#include "base/native_library.h"
+#endif
+
 namespace {
 const int kScreenAICleanUpDelayInDays = 30;
-const char kMinExpectedVersion[] = "119.0";
+const char kMinExpectedVersion[] = "121.1";
 
 bool IsDeviceCompatible() {
   // Check if the CPU has the required instruction set to run the Screen AI
@@ -50,7 +55,13 @@ ScreenAIInstallState* g_instance = nullptr;
 
 // static
 ScreenAIInstallState* ScreenAIInstallState::GetInstance() {
-  return g_instance;
+  if (g_instance) {
+    return g_instance;
+  }
+  // `!g_instance` only happens in unit tests in which a browser instance is
+  // not created. Assert that this code path is only taken in tests.
+  CHECK_IS_TEST();
+  return ScreenAIInstallState::CreateForTesting();
 }
 
 // static
@@ -61,6 +72,38 @@ bool ScreenAIInstallState::VerifyLibraryVersion(const std::string& version) {
   VLOG(0) << "Screen AI library version is expected to be at least "
           << kMinExpectedVersion << ", but it is: " << version;
   return false;
+}
+
+// static
+bool ScreenAIInstallState::VerifyLibraryAvailablity(
+    const base::FilePath& install_dir) {
+  // Check the file iterator heuristic to find the library in the sandbox
+  // returns the same directory as `install_dir`.
+  base::FilePath binary_path = screen_ai::GetLatestComponentBinaryPath();
+  if (binary_path.DirName() != install_dir) {
+    VLOG(0) << "Screen AI library is installed in an unexpected folder.";
+    return false;
+  }
+
+#if !BUILDFLAG(IS_WIN)
+  return true;
+#else
+  // Sometimes the library cannot be loaded due to an installation error or OS
+  // limitations.
+  base::NativeLibraryLoadError lib_error;
+  base::NativeLibrary library =
+      base::LoadNativeLibrary(binary_path, &lib_error);
+  bool available = (library != nullptr);
+  base::UmaHistogramBoolean("Accessibility.ScreenAI.LibraryAvailableOnVerify",
+                            available);
+  base::UmaHistogramSparse("Accessibility.ScreenAI.LibraryAccessResultOnVerify",
+                           lib_error.code);
+  if (available) {
+    base::UnloadNativeLibrary(library);
+  }
+
+  return available;
+#endif
 }
 
 ScreenAIInstallState::ScreenAIInstallState() {
@@ -157,13 +200,6 @@ void ScreenAIInstallState::SetState(State state) {
     DCHECK(state == State::kReady || state == State::kFailed ||
            state == State::kDownloading);
     return;
-  }
-
-  // Switching state from `Ready` to `Fail` is unexpected and requires
-  // investigation.
-  // TODO(crbug.com/1443345): Remove after verifying this case does not happen.
-  if (state == State::kFailed && state_ == State::kReady) {
-    base::debug::DumpWithoutCrashing();
   }
 
   state_ = state;

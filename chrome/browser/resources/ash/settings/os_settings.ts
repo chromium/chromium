@@ -107,6 +107,7 @@ export {CrLinkRowElement} from 'chrome://resources/cr_elements/cr_link_row/cr_li
 export {CrCardRadioButtonElement} from 'chrome://resources/cr_elements/cr_radio_button/cr_card_radio_button.js';
 export {CrRadioButtonElement} from 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.js';
 export {CrRadioGroupElement} from 'chrome://resources/cr_elements/cr_radio_group/cr_radio_group.js';
+export {CrSearchFieldElement} from 'chrome://resources/cr_elements/cr_search_field/cr_search_field.js';
 export {CrSearchableDropDownElement} from 'chrome://resources/cr_elements/cr_searchable_drop_down/cr_searchable_drop_down.js';
 export {CrSliderElement} from 'chrome://resources/cr_elements/cr_slider/cr_slider.js';
 export {CrTextareaElement} from 'chrome://resources/cr_elements/cr_textarea/cr_textarea.js';
@@ -221,6 +222,8 @@ export {setAppPermissionProviderForTesting} from './os_privacy_page/mojo_interfa
 export {OsSettingsPrivacyPageElement} from './os_privacy_page/os_privacy_page.js';
 export {DataAccessPolicyState, PeripheralDataAccessBrowserProxy, PeripheralDataAccessBrowserProxyImpl} from './os_privacy_page/peripheral_data_access_browser_proxy.js';
 export {SettingsPrivacyHubAppPermissionRow} from './os_privacy_page/privacy_hub_app_permission_row.js';
+export {GeolocationAccessLevel} from './os_privacy_page/privacy_hub_geolocation_subpage.js';
+export {PrivacyHubSensorSubpageUserAction} from './os_privacy_page/privacy_hub_metrics_util.js';
 export {OsResetBrowserProxy, OsResetBrowserProxyImpl} from './os_reset_page/os_reset_browser_proxy.js';
 export {OsSettingsSearchPageElement} from './os_search_page/os_search_page.js';
 export {SearchAndAssistantSettingsCardElement} from './os_search_page/search_and_assistant_settings_card.js';

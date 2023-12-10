@@ -1,12 +1,4 @@
 This is a testharness.js-based test.
-[PASS] e.style['opacity'] = "1" should set the property value
-[PASS] e.style['opacity'] = "0.5" should set the property value
-[PASS] e.style['opacity'] = "0" should set the property value
-[PASS] e.style['opacity'] = "-2" should set the property value
-[PASS] e.style['opacity'] = "3" should set the property value
-[PASS] e.style['opacity'] = "-100%" should set the property value
-[PASS] e.style['opacity'] = "50%" should set the property value
-[PASS] e.style['opacity'] = "300%" should set the property value
 [FAIL] e.style['opacity'] = "clamp(50%, 0%, 70%)" should set the property value
   assert_equals: serialization should be canonical expected "calc(0.5)" but got "0.5"
 [FAIL] e.style['opacity'] = "clamp(50%, 80%, 70%)" should set the property value

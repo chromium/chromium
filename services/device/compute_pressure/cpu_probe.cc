@@ -6,8 +6,10 @@
 
 #include <memory>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/rand_util.h"
 #include "build/build_config.h"
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "services/device/compute_pressure/cpu_probe_linux.h"
@@ -16,6 +18,7 @@
 #elif BUILDFLAG(IS_MAC)
 #include "services/device/compute_pressure/cpu_probe_mac.h"
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#include "services/device/public/cpp/device_features.h"
 
 namespace device {
 
@@ -24,12 +27,25 @@ namespace {
 // Delta for the state decision hysteresis.
 constexpr double kThresholdDelta = 0.03;
 
+// |randomization_timer_| boundaries in second.
+constexpr uint64_t kMinRandomizationTimeInSeconds = 120;
+constexpr uint64_t kMaxRandomizationTimeInSeconds = 240;
+
+// Thresholds to use with no randomization.
 constexpr std::array<double,
                      static_cast<size_t>(mojom::PressureState::kMaxValue) + 1>
-    kStateThresholds = {0.3,   // kNominal
-                        0.6,   // kFair
-                        0.9,   // kSerious
-                        1.0};  // kCritical
+    kStateBaseThresholds = {0.3,   // kNominal
+                            0.6,   // kFair
+                            0.9,   // kSerious
+                            1.0};  // kCritical
+
+// Thresholds to use during randomization.
+constexpr std::array<double,
+                     static_cast<size_t>(mojom::PressureState::kMaxValue) + 1>
+    kStateRandomizedThresholds = {0.2,   // kNominal
+                                  0.7,   // kFair
+                                  0.85,  // kSerious
+                                  1.0};  // kCritical
 
 }  // namespace
 
@@ -75,13 +91,38 @@ void CpuProbe::EnsureStarted() {
 
   timer_.Start(FROM_HERE, sampling_interval_,
                base::BindRepeating(&CpuProbe::Update, base::Unretained(this)));
+
+  if (base::FeatureList::IsEnabled(
+          features::kComputePressureBreakCalibrationMitigation)) {
+    randomization_time_ = base::Seconds(base::RandInt(
+        kMinRandomizationTimeInSeconds, kMaxRandomizationTimeInSeconds));
+
+    randomization_timer_.Start(
+        FROM_HERE, randomization_time_,
+        base::BindRepeating(&CpuProbe::ToggleStateRandomization,
+                            base::Unretained(this)));
+  }
 }
 
 void CpuProbe::Stop() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   timer_.AbandonAndStop();
+  randomization_timer_.AbandonAndStop();
+  state_randomization_requested_ = false;
   got_probe_baseline_ = false;
+}
+
+void CpuProbe::ToggleStateRandomization() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  state_randomization_requested_ = !state_randomization_requested_;
+  randomization_time_ = base::Seconds(base::RandInt(
+      kMinRandomizationTimeInSeconds, kMaxRandomizationTimeInSeconds));
+  randomization_timer_.Start(
+      FROM_HERE, randomization_time_,
+      base::BindRepeating(&CpuProbe::ToggleStateRandomization,
+                          base::Unretained(this)));
 }
 
 void CpuProbe::OnPressureSampleAvailable(PressureSample sample) {
@@ -106,6 +147,10 @@ mojom::PressureState CpuProbe::CalculateState(const PressureSample& sample) {
   // PressureState using PressureSample needs to be determined.
   // At this moment the algorithm is the simplest possible
   // with thresholds defining the state.
+  const auto& kStateThresholds = state_randomization_requested_
+                                     ? kStateRandomizedThresholds
+                                     : kStateBaseThresholds;
+
   auto* it =
       base::ranges::lower_bound(kStateThresholds, sample.cpu_utilization);
   if (it == kStateThresholds.end()) {

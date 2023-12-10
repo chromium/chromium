@@ -121,7 +121,8 @@ class CORE_EXPORT HTMLOptionElement final : public HTMLElement {
   bool IsRichlyEditableForAccessibility() const override { return false; }
 
  private:
-  bool SupportsFocus() const override;
+  bool SupportsFocus(UpdateBehavior update_behavior =
+                         UpdateBehavior::kStyleAndLayout) const override;
   bool MatchesDefaultPseudoClass() const override;
   bool MatchesEnabledPseudoClass() const override;
   void ParseAttribute(const AttributeModificationParams&) override;

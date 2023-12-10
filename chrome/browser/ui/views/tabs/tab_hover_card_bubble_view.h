@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_TABS_TAB_HOVER_CARD_BUBBLE_VIEW_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -18,7 +19,6 @@
 #include "chrome/browser/ui/tabs/tab_utils.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/tabs/fade_footer_view.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/animation/linear_animation.h"
 #include "ui/views/animation/animation_delegate_views.h"
@@ -65,11 +65,12 @@ class TabHoverCardBubbleView : public views::BubbleDialogDelegateView {
   // Accessors used by tests.
   std::u16string GetTitleTextForTesting() const;
   std::u16string GetDomainTextForTesting() const;
+  views::View* GetThumbnailViewForTesting();
 
   // Returns the percentage complete during transition animations when a
   // pre-emptive crossfade to a placeholder should start if a new image is not
-  // available, or `absl::nullopt` to disable crossfades entirely.
-  static absl::optional<double> GetPreviewImageCrossfadeStart();
+  // available, or `std::nullopt` to disable crossfades entirely.
+  static std::optional<double> GetPreviewImageCrossfadeStart();
 
  private:
   FRIEND_TEST_ALL_PREFIXES(TabHoverCardInteractiveUiTest,
@@ -80,6 +81,8 @@ class TabHoverCardBubbleView : public views::BubbleDialogDelegateView {
                            HoverCardFooterShowsDiscardStatus);
   FRIEND_TEST_ALL_PREFIXES(TabHoverCardFadeFooterInteractiveUiTest,
                            HoverCardFooterShowsMemoryUsage);
+  FRIEND_TEST_ALL_PREFIXES(TabHoverCardFadeFooterInteractiveUiTest,
+                           BackgroundTabHoverCardContentsHaveCorrectDimensions);
   class ThumbnailView;
 
   // views::BubbleDialogDelegateView:
@@ -89,7 +92,7 @@ class TabHoverCardBubbleView : public views::BubbleDialogDelegateView {
   raw_ptr<FadeLabelView> domain_label_ = nullptr;
   raw_ptr<ThumbnailView> thumbnail_view_ = nullptr;
   raw_ptr<FooterView> footer_view_ = nullptr;
-  absl::optional<TabAlertState> alert_state_;
+  std::optional<TabAlertState> alert_state_;
   const raw_ptr<const TabStyle> tab_style_;
   const bool discard_tab_treatment_enabled_;
   const bool memory_usage_in_hovercards_enabled_;

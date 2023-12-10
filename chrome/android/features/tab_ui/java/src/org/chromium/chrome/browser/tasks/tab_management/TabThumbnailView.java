@@ -26,6 +26,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.view.ViewCompat;
 
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.tab_ui.R;
 
 /**
@@ -41,15 +42,12 @@ public class TabThumbnailView extends ImageView {
     private static final boolean SUPPORTS_ANTI_ALIAS_CLIP =
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.P;
 
-    /**
-     * Placeholder drawable constants.
-     */
+    /** Placeholder drawable constants. */
     private static final float SIZE_PERCENTAGE = 0.42f;
+
     private static Integer sVerticalOffsetPx;
 
-    /**
-     * To prevent {@link TabThumbnailView#updateImage()} from running during inflation.
-     */
+    /** To prevent {@link TabThumbnailView#updateImage()} from running during inflation. */
     private boolean mInitialized;
 
     /**
@@ -60,6 +58,7 @@ public class TabThumbnailView extends ImageView {
      * and adjusted upwards.
      */
     private VectorDrawable mIconDrawable;
+
     private Matrix mIconMatrix;
     private int mIconColor;
 
@@ -85,8 +84,10 @@ public class TabThumbnailView extends ImageView {
         super(context, attrs, defStyle);
 
         if (sVerticalOffsetPx == null) {
-            sVerticalOffsetPx = context.getResources().getDimensionPixelSize(
-                    R.dimen.tab_thumbnail_placeholder_vertical_offset);
+            sVerticalOffsetPx =
+                    context.getResources()
+                            .getDimensionPixelSize(
+                                    R.dimen.tab_thumbnail_placeholder_vertical_offset);
         }
 
         mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -103,8 +104,8 @@ public class TabThumbnailView extends ImageView {
                 a.getDimensionPixelSize(R.styleable.TabThumbnailView_cornerRadiusTopStart, 0);
         int radiusTopEnd =
                 a.getDimensionPixelSize(R.styleable.TabThumbnailView_cornerRadiusTopEnd, 0);
-        int radiusBottomStart = a.getDimensionPixelSize(
-                R.styleable.TabThumbnailView_cornerRadiusBottomStart, 0);
+        int radiusBottomStart =
+                a.getDimensionPixelSize(R.styleable.TabThumbnailView_cornerRadiusBottomStart, 0);
         int radiusBottomEnd =
                 a.getDimensionPixelSize(R.styleable.TabThumbnailView_cornerRadiusBottomEnd, 0);
         a.recycle();
@@ -195,8 +196,10 @@ public class TabThumbnailView extends ImageView {
 
     private void updateIconDrawable() {
         if (mIconDrawable == null) {
-            mIconDrawable = (VectorDrawable) AppCompatResources.getDrawable(
-                    getContext(), R.drawable.ic_tab_placeholder);
+            mIconDrawable =
+                    (VectorDrawable)
+                            AppCompatResources.getDrawable(
+                                    getContext(), R.drawable.ic_tab_placeholder);
         }
         setColorFilter(mIconColor, PorterDuff.Mode.SRC_IN);
         // External callers either change this or use MATRIX there is no need to reset this.
@@ -231,11 +234,13 @@ public class TabThumbnailView extends ImageView {
      */
     public void updateThumbnailPlaceholder(boolean isIncognito, boolean isSelected) {
         // Step 1: Background color.
-        mBackgroundDrawable.setColor(TabUiThemeProvider.getMiniThumbnailPlaceholderColor(
-                getContext(), isIncognito, isSelected));
+        mBackgroundDrawable.setColor(
+                TabUiThemeProvider.getMiniThumbnailPlaceholderColor(
+                        getContext(), isIncognito, isSelected));
         final int oldColor = mPaint.getColor();
-        final int newColor = TabUiThemeProvider.getCardViewBackgroundColor(
-                getContext(), isIncognito, isSelected);
+        final int newColor =
+                TabUiThemeProvider.getCardViewBackgroundColor(
+                        getContext(), isIncognito, isSelected);
         mPaint.setColor(newColor);
 
         // Step 2: Placeholder icon.
@@ -259,18 +264,37 @@ public class TabThumbnailView extends ImageView {
      * @param cornerRadiusBottomStart bottom start corner radius.
      * @param cornerRadiusBottomEnd bottom end corner radius.
      */
-    void setRoundedCorners(int cornerRadiusTopStart, int cornerRadiusTopEnd,
-            int cornerRadiusBottomStart, int cornerRadiusBottomEnd) {
+    void setRoundedCorners(
+            int cornerRadiusTopStart,
+            int cornerRadiusTopEnd,
+            int cornerRadiusBottomStart,
+            int cornerRadiusBottomEnd) {
         // This is borrowed from {@link RoundedCornerImageView}. It could be further simplified as
         // at present the only radii distinction is top vs bottom.
         if (ViewCompat.getLayoutDirection(this) == ViewCompat.LAYOUT_DIRECTION_LTR) {
-            mRadii = new float[] {cornerRadiusTopStart, cornerRadiusTopStart, cornerRadiusTopEnd,
-                    cornerRadiusTopEnd, cornerRadiusBottomEnd, cornerRadiusBottomEnd,
-                    cornerRadiusBottomStart, cornerRadiusBottomStart};
+            mRadii =
+                    new float[] {
+                        cornerRadiusTopStart,
+                        cornerRadiusTopStart,
+                        cornerRadiusTopEnd,
+                        cornerRadiusTopEnd,
+                        cornerRadiusBottomEnd,
+                        cornerRadiusBottomEnd,
+                        cornerRadiusBottomStart,
+                        cornerRadiusBottomStart
+                    };
         } else {
-            mRadii = new float[] {cornerRadiusTopEnd, cornerRadiusTopEnd, cornerRadiusTopStart,
-                    cornerRadiusTopStart, cornerRadiusBottomStart, cornerRadiusBottomStart,
-                    cornerRadiusBottomEnd, cornerRadiusBottomEnd};
+            mRadii =
+                    new float[] {
+                        cornerRadiusTopEnd,
+                        cornerRadiusTopEnd,
+                        cornerRadiusTopStart,
+                        cornerRadiusTopStart,
+                        cornerRadiusBottomStart,
+                        cornerRadiusBottomStart,
+                        cornerRadiusBottomEnd,
+                        cornerRadiusBottomEnd
+                    };
         }
 
         mBackgroundDrawable.setCornerRadii(mRadii);
@@ -293,14 +317,19 @@ public class TabThumbnailView extends ImageView {
 
             // Center and offset vertically by sVerticalOffsetPx to account for optical illusion of
             // centering.
-            mIconMatrix.postTranslate((float) (width - edgeLength) / 2f,
+            mIconMatrix.postTranslate(
+                    (float) (width - edgeLength) / 2f,
                     (float) (height - edgeLength) / 2f - sVerticalOffsetPx);
             setImageMatrix(mIconMatrix);
         }
     }
 
     private boolean useThumbnailPlaceholder() {
-        return TabUiFeatureUtilities.sThumbnailPlaceholder.isEnabled()
-                || TabUiFeatureUtilities.sAdvancedPeripheralsSupportTabStrip.isEnabled();
+        return ChromeFeatureList.sThumbnailPlaceholder.isEnabled()
+                || ChromeFeatureList.sAdvancedPeripheralsSupportTabStrip.isEnabled();
+    }
+
+    public VectorDrawable getIconDrawableForTesting() {
+        return mIconDrawable;
     }
 }

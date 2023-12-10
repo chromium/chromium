@@ -53,6 +53,7 @@
 #include "third_party/blink/public/common/features.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/toolbar_manager_test_helper_android.h"
 #include "chrome/test/base/android/android_browser_test.h"
 #else  // BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser.h"
@@ -89,6 +90,14 @@ class SearchPreloadUnifiedBrowserTest : public PlatformBrowserTest,
       : prerender_helper_(base::BindRepeating(
             &SearchPreloadUnifiedBrowserTest::GetActiveWebContents,
             base::Unretained(this))) {
+#if BUILDFLAG(IS_ANDROID)
+    // Skips recreating the Android ChromeTabbedActivity when
+    // homepage settings are changed.
+    // This happens when the feature chrome::android::kStartSurfaceAndroid is
+    // enabled (currently enabled by default).
+    toolbar_manager::setSkipRecreateForTesting(true);
+#endif  // BUILDFLAG(IS_ANDROID)
+
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {
             {features::kSupportSearchSuggestionForPrerender2,
@@ -458,8 +467,16 @@ class SearchPreloadUnifiedBrowserTest : public PlatformBrowserTest,
 
 // Tests that the SearchSuggestionService can trigger prerendering after the
 // corresponding prefetch request succeeds.
+// TODO(crbug.com/1503002): enable the flaky test.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_PrerenderHintReceivedBeforeSucceed \
+  DISABLED_PrerenderHintReceivedBeforeSucceed
+#else
+#define MAYBE_PrerenderHintReceivedBeforeSucceed \
+  PrerenderHintReceivedBeforeSucceed
+#endif
 IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest,
-                       PrerenderHintReceivedBeforeSucceed) {
+                       MAYBE_PrerenderHintReceivedBeforeSucceed) {
   SearchPrefetchServiceFactory::GetForProfile(chrome_test_utils::GetProfile(this));
   base::HistogramTester histogram_tester;
   const GURL kInitialUrl = embedded_test_server()->GetURL("/empty.html");

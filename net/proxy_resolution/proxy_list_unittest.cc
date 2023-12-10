@@ -25,7 +25,7 @@ namespace {
 TEST(ProxyListTest, SetFromPacString) {
   const struct {
     const char* pac_input;
-    const char* pac_output;
+    const char* debug_output;
   } tests[] = {
     // Valid inputs:
     {  "PROXY foopy:10",
@@ -68,7 +68,7 @@ TEST(ProxyListTest, SetFromPacString) {
   for (const auto& test : tests) {
     ProxyList list;
     list.SetFromPacString(test.pac_input);
-    EXPECT_EQ(test.pac_output, list.ToPacString());
+    EXPECT_EQ(test.debug_output, list.ToDebugString());
     EXPECT_FALSE(list.IsEmpty());
   }
 }
@@ -77,7 +77,7 @@ TEST(ProxyListTest, RemoveProxiesWithoutScheme) {
   const struct {
     const char* pac_input;
     int filter;
-    const char* filtered_pac_output;
+    const char* filtered_debug_output;
   } tests[] = {
     {  "PROXY foopy:10 ; SOCKS5 foopy2 ; SOCKS foopy11 ; PROXY foopy3 ; DIRECT",
        // Remove anything that isn't HTTP or DIRECT.
@@ -95,8 +95,41 @@ TEST(ProxyListTest, RemoveProxiesWithoutScheme) {
     ProxyList list;
     list.SetFromPacString(test.pac_input);
     list.RemoveProxiesWithoutScheme(test.filter);
-    EXPECT_EQ(test.filtered_pac_output, list.ToPacString());
+    EXPECT_EQ(test.filtered_debug_output, list.ToDebugString());
   }
+}
+
+TEST(ProxyListTest, RemoveProxiesWithoutSchemeWithProxyChains) {
+  const ProxyChain kProxyChainFooHttps({
+      ProxyServer::FromSchemeHostAndPort(ProxyServer::Scheme::SCHEME_HTTPS,
+                                         "foo-a", 443),
+      ProxyServer::FromSchemeHostAndPort(ProxyServer::Scheme::SCHEME_HTTPS,
+                                         "foo-b", 443),
+  });
+  const ProxyChain kProxyChainBarMixed({
+      ProxyServer::FromSchemeHostAndPort(ProxyServer::Scheme::SCHEME_SOCKS5,
+                                         "bar-a", 443),
+      ProxyServer::FromSchemeHostAndPort(ProxyServer::Scheme::SCHEME_HTTPS,
+                                         "bar-b", 443),
+  });
+  const ProxyChain kProxyChainGraultSocks = ProxyChain::FromSchemeHostAndPort(
+      ProxyServer::Scheme::SCHEME_SOCKS4, "grault", 443);
+
+  ProxyList list;
+  list.AddProxyChain(kProxyChainFooHttps);
+  list.AddProxyChain(kProxyChainBarMixed);
+  list.AddProxyChain(kProxyChainGraultSocks);
+  list.AddProxyChain(ProxyChain::Direct());
+
+  // Remove anything that isn't entirely HTTPS or DIRECT.
+  list.RemoveProxiesWithoutScheme(ProxyServer::SCHEME_DIRECT |
+                                  ProxyServer::SCHEME_HTTPS);
+
+  std::vector<net::ProxyChain> expected = {
+      kProxyChainFooHttps,
+      ProxyChain::Direct(),
+  };
+  EXPECT_EQ(list.AllChains(), expected);
 }
 
 TEST(ProxyListTest, DeprioritizeBadProxyChains) {
@@ -113,7 +146,7 @@ TEST(ProxyListTest, DeprioritizeBadProxyChains) {
     ProxyRetryInfoMap retry_info_map;
     list.DeprioritizeBadProxyChains(retry_info_map);
     EXPECT_EQ("PROXY foopy1:80;PROXY foopy2:80;PROXY foopy3:80",
-              list.ToPacString());
+              list.ToDebugString());
   }
 
   // Call DeprioritizeBadProxyChains with 2 of the three chains marked as bad.
@@ -134,7 +167,7 @@ TEST(ProxyListTest, DeprioritizeBadProxyChains) {
     list.DeprioritizeBadProxyChains(retry_info_map);
 
     EXPECT_EQ("PROXY foopy2:80;PROXY foopy1:80;PROXY foopy3:80",
-              list.ToPacString());
+              list.ToDebugString());
   }
 
   // Call DeprioritizeBadProxyChains where ALL of the chains are marked as bad.
@@ -154,7 +187,7 @@ TEST(ProxyListTest, DeprioritizeBadProxyChains) {
     list.DeprioritizeBadProxyChains(retry_info_map);
 
     EXPECT_EQ("PROXY foopy1:80;PROXY foopy2:80;PROXY foopy3:80",
-              list.ToPacString());
+              list.ToDebugString());
   }
 
   // Call DeprioritizeBadProxyChains with 2 of the three chains marked as bad.
@@ -178,8 +211,7 @@ TEST(ProxyListTest, DeprioritizeBadProxyChains) {
 
     list.DeprioritizeBadProxyChains(retry_info_map);
 
-    EXPECT_EQ("PROXY foopy2:80;PROXY foopy1:80",
-              list.ToPacString());
+    EXPECT_EQ("PROXY foopy2:80;PROXY foopy1:80", list.ToDebugString());
   }
 }
 
@@ -338,6 +370,56 @@ TEST(ProxyListTest, UpdateRetryInfoOnFallback) {
                 retry_info_map.find(ProxyUriToProxyChain(
                     "foopy3:80", ProxyServer::SCHEME_HTTP)));
   }
+}
+
+TEST(ProxyListTest, ToPacString) {
+  ProxyList list;
+  list.AddProxyChain(ProxyChain::FromSchemeHostAndPort(
+      ProxyServer::Scheme::SCHEME_HTTPS, "foo", 443));
+  EXPECT_EQ(list.ToPacString(), "HTTPS foo:443");
+
+  // ToPacString should fail for proxy chains.
+  list.AddProxyChain(ProxyChain({
+      ProxyServer::FromSchemeHostAndPort(ProxyServer::Scheme::SCHEME_HTTPS,
+                                         "foo-a", 443),
+      ProxyServer::FromSchemeHostAndPort(ProxyServer::Scheme::SCHEME_HTTPS,
+                                         "foo-b", 443),
+  }));
+  EXPECT_DEATH_IF_SUPPORTED(list.ToPacString(), "");
+}
+
+TEST(ProxyListTest, ToDebugString) {
+  ProxyList list;
+  list.AddProxyChain(ProxyChain::FromSchemeHostAndPort(
+      ProxyServer::Scheme::SCHEME_HTTPS, "foo", 443));
+  list.AddProxyChain(ProxyChain({
+      ProxyServer::FromSchemeHostAndPort(ProxyServer::Scheme::SCHEME_HTTPS,
+                                         "foo-a", 443),
+      ProxyServer::FromSchemeHostAndPort(ProxyServer::Scheme::SCHEME_HTTPS,
+                                         "foo-b", 443),
+  }));
+
+  EXPECT_EQ(list.ToDebugString(),
+            "HTTPS foo:443;[https://foo-a:443, https://foo-b:443]");
+}
+
+TEST(ProxyListTest, ToValue) {
+  ProxyList list;
+  list.AddProxyChain(ProxyChain::FromSchemeHostAndPort(
+      ProxyServer::Scheme::SCHEME_HTTPS, "foo", 443));
+  list.AddProxyChain(ProxyChain({
+      ProxyServer::FromSchemeHostAndPort(ProxyServer::Scheme::SCHEME_HTTPS,
+                                         "foo-a", 443),
+      ProxyServer::FromSchemeHostAndPort(ProxyServer::Scheme::SCHEME_HTTPS,
+                                         "foo-b", 443),
+  }));
+
+  base::Value expected(base::Value::Type::LIST);
+  base::Value::List& exp_list = expected.GetList();
+  exp_list.Append("[https://foo:443]");
+  exp_list.Append("[https://foo-a:443, https://foo-b:443]");
+
+  EXPECT_EQ(list.ToValue(), expected);
 }
 
 }  // anonymous namespace

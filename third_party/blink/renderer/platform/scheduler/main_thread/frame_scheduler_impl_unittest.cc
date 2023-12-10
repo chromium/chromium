@@ -196,7 +196,6 @@ class FrameSchedulerDelegateForTesting : public FrameScheduler::Delegate {
   }
 
   void OnTaskCompleted(base::TimeTicks,
-                       base::TimeTicks,
                        base::TimeTicks) override {}
   const base::UnguessableToken& GetAgentClusterId() const override {
     return base::UnguessableToken::Null();

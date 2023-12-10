@@ -191,6 +191,9 @@ void CompactTitleMessageView::set_message(const std::u16string& message) {
   message_->SetText(message);
 }
 
+BEGIN_METADATA(CompactTitleMessageView)
+END_METADATA
+
 // ////////////////////////////////////////////////////////////
 // NotificationViewBase
 // ////////////////////////////////////////////////////////////
@@ -522,9 +525,9 @@ void NotificationViewBase::CreateOrUpdateProgressBarView(
   DCHECK(left_content_);
 
   if (!progress_bar_view_) {
-    auto progress_bar_view =
-        std::make_unique<views::ProgressBar>(kProgressBarHeight,
-                                             /* allow_round_corner */ false);
+    auto progress_bar_view = std::make_unique<views::ProgressBar>();
+    progress_bar_view->SetPreferredHeight(kProgressBarHeight);
+    progress_bar_view->SetPreferredCornerRadii(absl::nullopt);
     progress_bar_view->SetBorder(views::CreateEmptyBorder(
         gfx::Insets::TLBR(kProgressBarTopPadding, 0, 0, 0)));
     progress_bar_view_ = AddViewToLeftContent(std::move(progress_bar_view));
@@ -680,7 +683,12 @@ void NotificationViewBase::CreateOrUpdateActionButtonViews(
     for (auto* item : action_buttons_)
       delete item;
     action_buttons_.clear();
-    actions_row_->SetVisible(expanded_ && !buttons.empty());
+
+    // The `actions_row_` also contains the snooze button in ash.
+    actions_row_->SetVisible(
+        expanded_ &&
+        (!buttons.empty() ||
+         (for_ash_notification_ && notification.should_show_snooze_button())));
   }
 
   // Hide inline reply field if it doesn't exist anymore.

@@ -16,6 +16,7 @@
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/ash/login/hardware_data_collection_screen_handler.h"
+#include "chromeos/ash/components/osauth/public/auth_session_storage.h"
 #include "components/user_manager/user_manager.h"
 
 namespace ash {
@@ -95,9 +96,17 @@ void HWDataCollectionScreen::ShowImpl() {
   if (view_) {
     view_->Show(hw_data_usage_enabled_);
   }
+  if (ash::features::AreLocalPasswordsEnabledForConsumers()) {
+    if (context()->extra_factors_token) {
+      session_refresher_ = AuthSessionStorage::Get()->KeepAlive(
+          context()->extra_factors_token.value());
+    }
+  }
 }
 
-void HWDataCollectionScreen::HideImpl() {}
+void HWDataCollectionScreen::HideImpl() {
+  session_refresher_.reset();
+}
 
 void HWDataCollectionScreen::OnUserAction(const base::Value::List& args) {
   const std::string& action_id = args[0].GetString();

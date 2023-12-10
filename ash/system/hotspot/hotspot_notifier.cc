@@ -176,7 +176,7 @@ void HotspotNotifier::OnGetHotspotInfo(
 }
 
 void HotspotNotifier::DisableHotspotHandler(const char* notification_id,
-                                            absl::optional<int> button_index) {
+                                            std::optional<int> button_index) {
   if (!button_index) {
     return;
   }
@@ -197,7 +197,7 @@ void HotspotNotifier::DisableHotspotHandler(const char* notification_id,
 }
 
 void HotspotNotifier::EnableHotspotHandler(const char* notification_id,
-                                           absl::optional<int> button_index) {
+                                           std::optional<int> button_index) {
   if (!button_index) {
     return;
   }
@@ -220,7 +220,7 @@ void HotspotNotifier::EnableHotspotHandler(const char* notification_id,
 }
 
 void HotspotNotifier::EnableWiFiHandler(const char* notification_id,
-                                        absl::optional<int> button_index) {
+                                        std::optional<int> button_index) {
   if (!button_index) {
     return;
   }

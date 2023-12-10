@@ -22,6 +22,10 @@ class GpuMemoryBuffer;
 class Rect;
 }  // namespace gfx
 
+namespace gpu {
+class ClientSharedImage;
+}
+
 namespace ash {
 
 // FastInkHost is used to support low-latency rendering. It supports
@@ -69,7 +73,9 @@ class ASH_EXPORT FastInkHost : public FrameSinkHost {
     return gpu_memory_buffer_.get();
   }
 
-  const gpu::Mailbox& mailbox_for_test() const { return mailbox_; }
+  gpu::ClientSharedImage* client_si_for_test() const {
+    return client_shared_image_.get();
+  }
 
   int get_pending_bitmaps_size_for_test() const {
     return pending_bitmaps_.size();
@@ -111,7 +117,7 @@ class ASH_EXPORT FastInkHost : public FrameSinkHost {
 
   std::vector<PendingBitmap> pending_bitmaps_;
 
-  gpu::Mailbox mailbox_;
+  scoped_refptr<gpu::ClientSharedImage> client_shared_image_;
   gpu::SyncToken sync_token_;
   scoped_refptr<viz::RasterContextProvider> context_provider_;
 };

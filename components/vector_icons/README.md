@@ -56,6 +56,8 @@ Chrome's native UI on desktop platforms. Currently the vector icons are in exten
 
 Use [this extension](https://github.com/sadrulhc/vector-icons) to preview icons in [codesearch](http://cs.chromium.org/).
 
+You can also use the [Vector Icon Viewer](https://marketplace.visualstudio.com/items?itemName=adolfdaniel.vscode-chromium-vector-icons) extension for VS Code to preview icons in Visual Studio. This is especially helpful when adding new icons.
+
 You can also build and run the `views_examples_exe` (or `views_examples_with_content_exe`) target and select "Vector Icons" from the dropdown menu. This loads a simple interface which allows you view a provided vector icon file at a specified size and color. Contributions to improve this interface are welcome ([bug](https://bugs.chromium.org/p/chromium/issues/detail?id=630295)).
 
 ### Can my vector icon have more than one color?

@@ -11,8 +11,8 @@
 #import "base/observer_list.h"
 #import "components/prefs/pref_change_registrar.h"
 #import "ios/chrome/browser/shared/model/browser/browser_user_data.h"
-#import "ios/chrome/browser/signin/authentication_service.h"
-#import "ios/chrome/browser/signin/authentication_service_observer.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_observer.h"
 
 class Browser;
 @protocol PolicyChangeCommands;

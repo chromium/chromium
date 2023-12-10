@@ -6,12 +6,11 @@ package org.chromium.chrome.browser.ntp;
 
 import org.chromium.url.GURL;
 
-/**
- * Represents a recently closed tab from TabRestoreService.
- */
+/** Represents a recently closed tab from TabRestoreService. */
 public class RecentlyClosedTab extends RecentlyClosedEntry {
     private final String mTitle;
     private final GURL mUrl;
+
     /**
      * Native tab_groups::TabGroupId. This is NOT equal to {@link RecentlyClosedEntry#id} for the
      * corresponding {@link RecentlyClosedGroup}.

@@ -13,6 +13,7 @@
 
 #include <tuple>
 
+#include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/posix/eintr_wrapper.h"

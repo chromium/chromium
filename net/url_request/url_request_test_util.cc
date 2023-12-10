@@ -131,7 +131,7 @@ TestURLRequestContextGetter::GetNetworkTaskRunner() const {
 const int TestDelegate::kBufferSize;
 
 TestDelegate::TestDelegate()
-    : buf_(base::MakeRefCounted<IOBuffer>(kBufferSize)) {}
+    : buf_(base::MakeRefCounted<IOBufferWithSize>(kBufferSize)) {}
 
 TestDelegate::~TestDelegate() = default;
 

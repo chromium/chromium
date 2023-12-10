@@ -11,6 +11,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
@@ -191,6 +192,38 @@ void OnTPMTokenReadyOnIOThread(
   original_task_runner->PostTask(FROM_HERE, std::move(ready_callback));
 }
 
+// Deletes the `private_key` and the associated public key.
+// TODO(b/264397430): The method is used to delete replaced keys. It can be
+// removed after the migration is done.
+void DeleteKeyPairOnWorkerThread(crypto::ScopedSECKEYPrivateKey private_key) {
+  if (!private_key) {
+    return;
+  }
+  RecordOwnerKeyEvent(OwnerKeyEvent::kOldOwnerKeyCleanUpStarted,
+                      /*success=*/true);
+
+  crypto::ScopedSECKEYPublicKey public_key(
+      SECKEY_ConvertToPublicKey(private_key.get()));
+
+  // PK11_DeleteTokenPrivateKey function frees the privKey structure
+  // unconditionally, and thus releasing the ownership of the passed private
+  // key.
+  // |force| is set to true, so the key will be deleted even if there are
+  // matching certificates for it. There shouldn't be any though.
+  if (PK11_DeleteTokenPrivateKey(/*privKey=*/private_key.release(),
+                                 /*force=*/true) != SECSuccess) {
+    LOG(ERROR) << "Cannot delete owner private key";
+  }
+
+  // PK11_DeleteTokenPublicKey function frees the pubKey structure
+  // unconditionally, and thus releasing the ownership of the passed private
+  // key.
+  if (PK11_DeleteTokenPublicKey(/*pubKey=*/public_key.release()) !=
+      SECSuccess) {
+    LOG(WARNING) << "Cannot delete owner public key";
+  }
+}
+
 }  // namespace
 
 OwnerSettingsServiceAsh::ManagementSettings::ManagementSettings() = default;
@@ -368,8 +401,20 @@ void OwnerSettingsServiceAsh::OnProfileManagerDestroying() {
 
 void OwnerSettingsServiceAsh::OwnerKeySet(bool success) {
   DCHECK(thread_checker_.CalledOnValidThread());
+  RecordOwnerKeyEvent(OwnerKeyEvent::kOwnerKeySet, success);
 
   if (base::FeatureList::IsEnabled(ownership::kChromeSideOwnerKeyGeneration)) {
+    // If the new owner key was successfully set and there was a different owner
+    // key before, it can be deleted now.
+    if (success && old_owner_key_) {
+      base::ThreadPool::PostTask(
+          FROM_HERE,
+          {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+           base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+          base::BindOnce(&DeleteKeyPairOnWorkerThread,
+                         std::move(old_owner_key_)));
+    }
+
     // OwnerKeySet notification is used to reload the owner key in Chrome when
     // session manager generates it. If Chrome is responsible for generating the
     // owner key, the notification is not useful.
@@ -650,7 +695,6 @@ void OwnerSettingsServiceAsh::UpdateDeviceSettings(
     //   kAccountsPrefEphemeralUsersEnabled
     //   kAccountsPrefFamilyLinkAccountsAllowed
     //   kAccountsPrefTransferSAMLCookies
-    //   kDeviceAttestationEnabled
     //   kDeviceOwner
     //   kDeviceReportRuntimeCounters
     //   kDeviceReportXDREvents
@@ -757,6 +801,7 @@ void OwnerSettingsServiceAsh::OnReloadedKeypairImpl(
     scoped_refptr<PublicKey> public_key,
     scoped_refptr<PrivateKey> private_key) {
   std::move(callback).Run(std::move(public_key), std::move(private_key));
+  old_owner_key_ = owner_key_loader_->ExtractOldOwnerKey();
   owner_key_loader_.reset();
 }
 

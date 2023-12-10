@@ -118,7 +118,8 @@ class PLATFORM_EXPORT DOMWrapperWorld : public RefCounted<DOMWrapperWorld> {
     return number_of_non_main_worlds_in_main_thread_;
   }
 
-  static void AllWorldsInCurrentThread(
+  static void AllWorldsInIsolate(
+      v8::Isolate* isolate,
       Vector<scoped_refptr<DOMWrapperWorld>>& worlds);
 
   static DOMWrapperWorld& World(v8::Local<v8::Context> context) {
@@ -129,7 +130,7 @@ class PLATFORM_EXPORT DOMWrapperWorld : public RefCounted<DOMWrapperWorld> {
     return World(isolate->GetCurrentContext());
   }
 
-  static DOMWrapperWorld& MainWorld();
+  static DOMWrapperWorld& MainWorld(v8::Isolate* isolate);
 
   static void SetNonMainWorldStableId(int32_t world_id, const String&);
   String NonMainWorldStableId() const;
@@ -152,8 +153,6 @@ class PLATFORM_EXPORT DOMWrapperWorld : public RefCounted<DOMWrapperWorld> {
       const base::UnguessableToken& cluster_id);
   scoped_refptr<const SecurityOrigin> IsolatedWorldSecurityOrigin(
       const base::UnguessableToken& cluster_id) const;
-
-  static bool HasWrapperInAnyWorldInMainThread(ScriptWrappable*);
 
   bool IsMainWorld() const { return world_type_ == WorldType::kMain; }
   bool IsWorkerWorld() const { return world_type_ == WorldType::kWorker; }

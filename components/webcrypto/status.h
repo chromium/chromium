@@ -9,7 +9,7 @@
 
 #include <string>
 
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "third_party/blink/public/platform/web_crypto.h"
 
 namespace webcrypto {
@@ -35,8 +35,14 @@ class Status {
 
   blink::WebCryptoErrorType error_type() const { return error_type_; }
 
+  blink::WebCryptoWarningType warning_type() const { return warning_type_; }
+
   // Constructs a status representing success.
   static Status Success();
+
+  // Constructs a status representing success, but informing the derived key has
+  // been truncated.
+  static Status SuccessDeriveBitsTruncation();
 
   // Constructs a status representing a generic operation error. It contains no
   // extra details.
@@ -313,6 +319,7 @@ class Status {
 
   Type type_;
   blink::WebCryptoErrorType error_type_;
+  blink::WebCryptoWarningType warning_type_{blink::kWebCryptoWarningTypeNone};
   std::string error_details_;
 };
 

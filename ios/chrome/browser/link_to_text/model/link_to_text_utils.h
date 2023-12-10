@@ -5,9 +5,10 @@
 #ifndef IOS_CHROME_BROWSER_LINK_TO_TEXT_MODEL_LINK_TO_TEXT_UTILS_H_
 #define IOS_CHROME_BROWSER_LINK_TO_TEXT_MODEL_LINK_TO_TEXT_UTILS_H_
 
+#import <optional>
+
 #import "components/shared_highlighting/core/common/shared_highlighting_metrics.h"
 #import "ios/chrome/browser/link_to_text/model/link_generation_outcome.h"
-#import "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class TimeDelta;
@@ -18,8 +19,7 @@ namespace link_to_text {
 // Attempts to convert a numerical `status` value from the
 // text-fragments-polyfill library into a LinkGenerationOutcome enum
 // value, representing outcomes for that library.
-absl::optional<LinkGenerationOutcome> ParseStatus(
-    absl::optional<double> status);
+std::optional<LinkGenerationOutcome> ParseStatus(std::optional<double> status);
 
 // Converts a given text-fragments-polyfill library error `outcome` to its
 // LinkGenerationError counterpart.

@@ -19,7 +19,7 @@ import java.io.File;
     private static boolean sCrashDirMade;
 
     public AwPureJavaExceptionReporter() {
-        super(/*attachLogcat=*/false);
+        super(/* attachLogcat= */ false);
     }
 
     @Override
@@ -39,8 +39,9 @@ import java.io.File;
             // make sure to create it.
             // TODO(https://crbug.com/1293108): this should be shared with chrome as well and
             // removed from here.
-            new File(SystemWideCrashDirectories.getOrCreateWebViewCrashDir(),
-                    CrashFileManager.CRASH_DUMP_DIR)
+            new File(
+                            SystemWideCrashDirectories.getOrCreateWebViewCrashDir(),
+                            CrashFileManager.CRASH_DUMP_DIR)
                     .mkdirs();
             sCrashDirMade = true;
         }

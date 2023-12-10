@@ -259,19 +259,8 @@ void ProfileOAuth2TokenServiceDelegateAndroid::
 
 void ProfileOAuth2TokenServiceDelegateAndroid::
     SeedAccountsThenReloadAllAccountsWithPrimaryAccount(
-        JNIEnv* env,
-        const base::android::JavaParamRef<jobjectArray>& j_core_account_infos,
-        const base::android::JavaParamRef<jobject>& j_primary_account_id) {
-  std::vector<CoreAccountInfo> core_account_infos;
-  for (size_t i = 0; i < SafeGetArrayLength(env, j_core_account_infos); i++) {
-    base::android::ScopedJavaLocalRef<jobject> core_account_info_java(
-        env, env->GetObjectArrayElement(j_core_account_infos.obj(), i));
-    core_account_infos.push_back(
-        ConvertFromJavaCoreAccountInfo(env, core_account_info_java));
-  }
-
-  CoreAccountId primary_account_id =
-      ConvertFromJavaCoreAccountId(env, j_primary_account_id);
+        const std::vector<CoreAccountInfo>& core_account_infos,
+        const absl::optional<CoreAccountId>& primary_account_id) {
   account_tracker_service_->SeedAccountsInfo(core_account_infos,
                                              primary_account_id);
   std::vector<CoreAccountId> account_ids;

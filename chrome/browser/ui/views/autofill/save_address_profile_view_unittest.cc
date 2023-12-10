@@ -28,7 +28,7 @@ class MockSaveUpdateAddressProfileBubbleController
     : public SaveUpdateAddressProfileBubbleController {
  public:
   MOCK_METHOD(std::u16string, GetWindowTitle, (), (const, override));
-  MOCK_METHOD(absl::optional<HeaderImages>,
+  MOCK_METHOD(std::optional<HeaderImages>,
               GetHeaderImages,
               (),
               (const, override));
@@ -95,7 +95,8 @@ class SaveAddressProfileViewTest : public ChromeViewsTestBase {
  private:
   base::test::ScopedFeatureList feature_list_;
   TestingProfile profile_;
-  AutofillProfile address_profile_to_save_;
+  AutofillProfile address_profile_to_save_{
+      i18n_model_definition::kLegacyHierarchyCountryCode};
   // This enables uses of TestWebContents.
   content::RenderViewHostTestEnabler test_render_host_factories_;
   std::unique_ptr<content::WebContents> test_web_contents_;

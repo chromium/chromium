@@ -68,10 +68,14 @@ public class AwSupervisedUserUrlClassifier {
 
     @CalledByNative
     public static void shouldBlockUrl(GURL requestUrl, long nativeCallbackPtr) {
-        getInstance().mDelegate.shouldBlockUrl(requestUrl, shouldBlockUrl -> {
-            AwSupervisedUserUrlClassifierJni.get().onShouldBlockUrlResult(
-                    nativeCallbackPtr, shouldBlockUrl);
-        });
+        getInstance()
+                .mDelegate
+                .shouldBlockUrl(
+                        requestUrl,
+                        shouldBlockUrl -> {
+                            AwSupervisedUserUrlClassifierJni.get()
+                                    .onShouldBlockUrlResult(nativeCallbackPtr, shouldBlockUrl);
+                        });
     }
 
     @NativeMethods

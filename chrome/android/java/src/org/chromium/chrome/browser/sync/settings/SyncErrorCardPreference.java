@@ -23,9 +23,7 @@ import org.chromium.components.sync.SyncService;
 
 public class SyncErrorCardPreference extends Preference
         implements SyncService.SyncStateChangedListener, ProfileDataCache.Observer {
-    /**
-     * Listener for the buttons in the error card.
-     */
+    /** Listener for the buttons in the error card. */
     public interface SyncErrorCardPreferenceListener {
         /**
          * Called to check if the preference should be hidden in case its created from signin
@@ -33,9 +31,7 @@ public class SyncErrorCardPreference extends Preference
          */
         boolean shouldSuppressSyncSetupIncomplete();
 
-        /**
-         * Called when the user clicks the primary button.
-         */
+        /** Called when the user clicks the primary button. */
         void onSyncErrorCardPrimaryButtonClicked();
 
         /**
@@ -64,8 +60,11 @@ public class SyncErrorCardPreference extends Preference
      * Must be called before the preference is attached, which is called from the containing
      * settings screen's onViewCreated method.
      */
-    public void initialize(ProfileDataCache profileDataCache, SyncService syncService,
-            IdentityManager identityManager, SyncErrorCardPreferenceListener listener) {
+    public void initialize(
+            ProfileDataCache profileDataCache,
+            SyncService syncService,
+            IdentityManager identityManager,
+            SyncErrorCardPreferenceListener listener) {
         mProfileDataCache = profileDataCache;
         mSyncService = syncService;
         mIdentityManager = identityManager;
@@ -108,7 +107,7 @@ public class SyncErrorCardPreference extends Preference
         mSyncError = SyncSettingsUtils.getSyncError(mSyncService);
         boolean suppressSyncSetupIncompleteFromSigninPage =
                 (mSyncError == SyncError.SYNC_SETUP_INCOMPLETE)
-                && mListener.shouldSuppressSyncSetupIncomplete();
+                        && mListener.shouldSuppressSyncSetupIncomplete();
         if (mSyncError == SyncError.NO_ERROR || suppressSyncSetupIncompleteFromSigninPage) {
             setVisible(false);
         } else {
@@ -118,8 +117,9 @@ public class SyncErrorCardPreference extends Preference
     }
 
     private void setupSyncErrorCardView(PersonalizedSigninPromoView errorCardView) {
-        String signedInAccount = CoreAccountInfo.getEmailFrom(
-                mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SYNC));
+        String signedInAccount =
+                CoreAccountInfo.getEmailFrom(
+                        mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SYNC));
         // May happen if account is removed from the device while this screen is shown.
         // ManageSyncSettings will take care of finishing the activity in such case.
         if (signedInAccount == null) {
@@ -135,19 +135,24 @@ public class SyncErrorCardPreference extends Preference
         } else {
             errorCardView.getTitle().setVisibility(View.VISIBLE);
         }
-        errorCardView.getTitle().setText(
-                SyncSettingsUtils.getSyncErrorCardTitle(getContext(), mSyncError));
+        errorCardView
+                .getTitle()
+                .setText(SyncSettingsUtils.getSyncErrorCardTitle(getContext(), mSyncError));
 
-        errorCardView.getDescription().setText(
-                SyncSettingsUtils.getSyncErrorHint(getContext(), mSyncError));
+        errorCardView
+                .getDescription()
+                .setText(SyncSettingsUtils.getSyncErrorHint(getContext(), mSyncError));
 
-        errorCardView.getPrimaryButton().setText(
-                SyncSettingsUtils.getSyncErrorCardButtonLabel(getContext(), mSyncError));
-        errorCardView.getPrimaryButton().setOnClickListener(
-                v -> mListener.onSyncErrorCardPrimaryButtonClicked());
+        errorCardView
+                .getPrimaryButton()
+                .setText(SyncSettingsUtils.getSyncErrorCardButtonLabel(getContext(), mSyncError));
+        errorCardView
+                .getPrimaryButton()
+                .setOnClickListener(v -> mListener.onSyncErrorCardPrimaryButtonClicked());
         if (mSyncError == SyncError.SYNC_SETUP_INCOMPLETE) {
-            errorCardView.getSecondaryButton().setOnClickListener(
-                    v -> mListener.onSyncErrorCardSecondaryButtonClicked());
+            errorCardView
+                    .getSecondaryButton()
+                    .setOnClickListener(v -> mListener.onSyncErrorCardSecondaryButtonClicked());
             errorCardView.getSecondaryButton().setText(R.string.cancel);
         } else {
             errorCardView.getSecondaryButton().setVisibility(View.GONE);
@@ -158,17 +163,13 @@ public class SyncErrorCardPreference extends Preference
         return mSyncError;
     }
 
-    /**
-     * {@link SyncService.SyncStateChangedListener} implementation.
-     */
+    /** {@link SyncService.SyncStateChangedListener} implementation. */
     @Override
     public void syncStateChanged() {
         update();
     }
 
-    /**
-     * {@link ProfileDataCache.Observer} implementation.
-     */
+    /** {@link ProfileDataCache.Observer} implementation. */
     @Override
     public void onProfileDataUpdated(String accountEmail) {
         update();

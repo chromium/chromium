@@ -62,6 +62,9 @@ build_webui_tests("build") {
     "app_management/test_util.ts",
     "app_management/toggle_row_test.ts",
 
+    "common/app_language_selection_dialog/app_language_selection_dialog_test.ts",
+    "common/app_language_selection_dialog/app_language_selection_item_test.ts",
+
     "crostini_page/crostini_extra_containers_subpage_test.ts",
     "crostini_page/crostini_page_test.ts",
     "crostini_page/crostini_settings_card_test.ts",
@@ -74,7 +77,9 @@ build_webui_tests("build") {
     "date_time_page/timezone_subpage_test.ts",
 
     "device_page/audio_page_test.ts",
+    "device_page/customize_button_dropdown_item_test.ts",
     "device_page/customize_button_row_test.ts",
+    "device_page/customize_button_select_test.ts",
     "device_page/customize_buttons_subsection_test.ts",
     "device_page/customize_mouse_buttons_subpage_test.ts",
     "device_page/customize_tablet_buttons_subpage_test.ts",
@@ -184,6 +189,7 @@ build_webui_tests("build") {
     "os_apps_page/app_management_page/app_detail_view_test.ts",
     "os_apps_page/app_management_page/app_details_item_test.ts",
     "os_apps_page/app_management_page/app_item_test.ts",
+    "os_apps_page/app_management_page/app_language_item_test.ts",
     "os_apps_page/app_management_page/app_management_page_test.ts",
     "os_apps_page/app_management_page/arc_detail_view_test.ts",
     "os_apps_page/app_management_page/borealis_detail_view_test.ts",
@@ -272,6 +278,8 @@ build_webui_tests("build") {
     "os_privacy_page/manage_users_subpage_test.ts",
     "os_privacy_page/os_privacy_page_test.ts",
     "os_privacy_page/privacy_hub_app_permission_row_test.ts",
+    "os_privacy_page/privacy_hub_app_permission_test_util.ts",
+    "os_privacy_page/privacy_hub_camera_subpage_test.ts",
     "os_privacy_page/privacy_hub_microphone_subpage_test.ts",
     "os_privacy_page/privacy_hub_subpage_test.ts",
     "os_privacy_page/smart_privacy_subpage_test.ts",

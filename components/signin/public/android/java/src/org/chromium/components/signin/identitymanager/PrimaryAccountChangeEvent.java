@@ -43,9 +43,8 @@ public class PrimaryAccountChangeEvent {
         mEventTypeForConsentLevelNotRequired = eventTypeForConsentLevelNotRequired;
         mEventTypeForConsentLevelSync = eventTypeForConsentLevelSync;
         assert mEventTypeForConsentLevelNotRequired != Type.NONE
-                || mEventTypeForConsentLevelSync
-                        != Type.NONE
-            : "PrimaryAccountChangeEvent should not be fired for no-change events";
+                        || mEventTypeForConsentLevelSync != Type.NONE
+                : "PrimaryAccountChangeEvent should not be fired for no-change events";
     }
 
     /**
@@ -57,7 +56,8 @@ public class PrimaryAccountChangeEvent {
      *         CLEARED - The primary account set for consentLevel is cleared.
      */
     public @Type int getEventTypeFor(@ConsentLevel int consentLevel) {
-        return consentLevel == ConsentLevel.SYNC ? mEventTypeForConsentLevelSync
-                                                 : mEventTypeForConsentLevelNotRequired;
+        return consentLevel == ConsentLevel.SYNC
+                ? mEventTypeForConsentLevelSync
+                : mEventTypeForConsentLevelNotRequired;
     }
 }

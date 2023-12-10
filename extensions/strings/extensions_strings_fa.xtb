@@ -8,6 +8,7 @@
 <translation id="1420684932347524586">‏اوه! ایجاد کلید خصوصی RSA تصادفی ناموفق بود.</translation>
 <translation id="1445572445564823378">این برنامهٔ افزودنی سرعت <ph name="PRODUCT_NAME" /> را پایین می‌آورد. شما باید برای بازیابی عملکرد <ph name="PRODUCT_NAME" /> این برنامه را غیرفعال کنید.</translation>
 <translation id="1468038450257740950">‏WebGL پشتیبانی نمی‌شود.</translation>
+<translation id="1610570795592207282">‏بارگیری CSS در «<ph name="RELATIVE_PATH" />» برای دستورگان انجام نشد.</translation>
 <translation id="1803557475693955505">بارگیری صفحه پس‌زمینه "<ph name="BACKGROUND_PAGE" />" ممکن نیست.</translation>
 <translation id="2159915644201199628">رمزگشایی تصویر امکان‌پذیر نیست: «<ph name="IMAGE_NAME" />»</translation>
 <translation id="2350172092385603347">‏بومی سازی استفاده شده است، اما default_locale در اظهارنامه مشخص نشده است.</translation>
@@ -18,14 +19,12 @@
 <translation id="3115238746683532089">محصول نامشخص <ph name="PRODUCT_ID" /> از فروشنده <ph name="VENDOR_ID" /> (شماره سریال <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">‏فایل crx جایگزین نشد. بررسی کنید که آیا فایل در حال استفاده است یا نه.</translation>
 <translation id="3163201441334626963">محصول نامشخص <ph name="PRODUCT_ID" /> از فروشنده <ph name="VENDOR_ID" /></translation>
-<translation id="3302709122321372472">‏بارگیری "<ph name="RELATIVE_PATH" />" css برای اسکریپت محتوا ممکن نیست.</translation>
 <translation id="3369521687965833290">بسته برنامهٔ افزودنی را نمی‌توان باز کرد.  برای باز کردن ایمن برنامهٔ افزودنی، باید یک مسیر در فهرست نمایهٔ شما وجود داشته باشد که با یک حرف درایو آغاز شود و فاقد یک خط اتصال، نقطه اتصال و پیوند نمادی باشد.  چنین مسیری برای نمایهٔ شما وجود ندارد.</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (شماره سریال <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> از فروشنده <ph name="VENDOR_ID" /> (شماره سریال <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">مقدار ورودی برای کلید خصوصی باید یک مسیر معتبر باشد.</translation>
 <translation id="388442998277590542">صفحه گزینه‌ها "<ph name="OPTIONS_PAGE" />" بارگیری نشد.</translation>
 <translation id="3984413272403535372">هنگام امضای برنامهٔ افزودنی خطا رخ داد.</translation>
-<translation id="39964277676607559">بارگیری جاوا اسکریپت "<ph name="RELATIVE_PATH" />" برای اسکریپت محتوا ممکن نیست.</translation>
 <translation id="4115165561519362854">طبق دستور سرپرست این دستگاه باید نسخه <ph name="EXTENSION_NAME" /> حداقل <ph name="EXTENSION_VERSION" /> باشد. تا زمانی که به آن نسخه (یا بالاتر) به‌روزرسانی نشود نمی‌توان آن را فعال کرد.</translation>
 <translation id="4233778200880751280">صفحه درباره «<ph name="ABOUT_PAGE" />» بارگیری نشد.</translation>
 <translation id="471800408830181311">ارسال کلید خصوصی ناموفق بود.</translation>
@@ -33,6 +32,7 @@
 <translation id="4988792151665380515">صادر کردن کلید عمومی ناموفق بود.</translation>
 <translation id="5026754133087629784">وب‌نما: <ph name="WEBVIEW_TAG_NAME" /></translation>
 <translation id="5098647635849512368">نمی‌توان مسیر کامل به دایرکتوری را برای بسته بندی پیدا کرد.</translation>
+<translation id="5160071981665899014">بارگیری جاوا اسکریپت در «<ph name="RELATIVE_PATH" />» برای دستورگان انجام نشد.</translation>
 <translation id="5356315618422219272">Appview: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5436430103864390185">پنجره‌های دارای اشکال مختلف پشتیبانی نمی‌شوند.</translation>
 <translation id="5456409301717116725">این برنامهٔ افزودنی شامل فایل کلید «<ph name="KEY_PATH" />» است. احتمالاً نمی‌خواهید این کار را انجام دهید.</translation>

@@ -5,10 +5,10 @@
 #include "net/base/proxy_string_util.h"
 
 #include <string>
+#include <string_view>
 
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "net/base/proxy_server.h"
 #include "net/base/url_util.h"
@@ -22,7 +22,7 @@ namespace {
 // Parses the proxy type from a PAC string, to a ProxyServer::Scheme.
 // This mapping is case-insensitive. If no type could be matched
 // returns SCHEME_INVALID.
-ProxyServer::Scheme GetSchemeFromPacTypeInternal(base::StringPiece type) {
+ProxyServer::Scheme GetSchemeFromPacTypeInternal(std::string_view type) {
   if (base::EqualsCaseInsensitiveASCII(type, "proxy"))
     return ProxyServer::SCHEME_HTTP;
   if (base::EqualsCaseInsensitiveASCII(type, "socks")) {
@@ -46,7 +46,7 @@ ProxyServer::Scheme GetSchemeFromPacTypeInternal(base::StringPiece type) {
 }
 
 ProxyServer FromSchemeHostAndPort(ProxyServer::Scheme scheme,
-                                  base::StringPiece host_and_port) {
+                                  std::string_view host_and_port) {
   // Trim leading/trailing space.
   host_and_port = HttpUtil::TrimLWS(host_and_port);
 
@@ -72,7 +72,7 @@ ProxyServer FromSchemeHostAndPort(ProxyServer::Scheme scheme,
     return ProxyServer();
   }
 
-  base::StringPiece hostname =
+  std::string_view hostname =
       host_and_port.substr(hostname_component.begin, hostname_component.len);
 
   // Reject inputs like "foo:". /url parsing and canonicalization code generally
@@ -80,7 +80,7 @@ ProxyServer FromSchemeHostAndPort(ProxyServer::Scheme scheme,
   // Chrome has traditionally disallowed it in proxy specifications.
   if (port_component.is_valid() && port_component.is_empty())
     return ProxyServer();
-  base::StringPiece port =
+  std::string_view port =
       port_component.is_nonempty()
           ? host_and_port.substr(port_component.begin, port_component.len)
           : "";
@@ -88,24 +88,23 @@ ProxyServer FromSchemeHostAndPort(ProxyServer::Scheme scheme,
   return ProxyServer::FromSchemeHostAndPort(scheme, hostname, port);
 }
 
-std::string ConstructHostPortString(base::StringPiece hostname, uint16_t port) {
+std::string ConstructHostPortString(std::string_view hostname, uint16_t port) {
   DCHECK(!hostname.empty());
   DCHECK((hostname.front() == '[' && hostname.back() == ']') ||
-         hostname.find(":") == base::StringPiece::npos);
+         hostname.find(":") == std::string_view::npos);
 
   return base::StrCat({hostname, ":", base::NumberToString(port)});
 }
 
 }  // namespace
 
-ProxyChain PacResultElementToProxyChain(base::StringPiece pac_result_element) {
-  // TODO(https://crbug.com/1491092): Support parsing multi-hop proxy chains
-  // from PAC scripts.
+ProxyChain PacResultElementToProxyChain(std::string_view pac_result_element) {
+  // Proxy chains are not supported in PAC strings, so this is just parsed
+  // as a single server.
   return ProxyChain(PacResultElementToProxyServer(pac_result_element));
 }
 
-ProxyServer PacResultElementToProxyServer(
-    base::StringPiece pac_result_element) {
+ProxyServer PacResultElementToProxyServer(std::string_view pac_result_element) {
   // Trim the leading/trailing whitespace.
   pac_result_element = HttpUtil::TrimLWS(pac_result_element);
 
@@ -127,13 +126,6 @@ ProxyServer PacResultElementToProxyServer(
   // And everything to the right of the space is the
   // <host>[":" <port>].
   return FromSchemeHostAndPort(scheme, pac_result_element.substr(space));
-}
-
-std::string ProxyChainToPacResultElement(const ProxyChain& proxy_chain) {
-  // TODO(https://crbug.com/1491092): Support converting a multi-hop ProxyChain
-  // to a PAC script format.
-  CHECK(!proxy_chain.is_multi_proxy());
-  return ProxyServerToPacResultElement(proxy_chain.proxy_server());
 }
 
 std::string ProxyServerToPacResultElement(const ProxyServer& proxy_server) {
@@ -168,12 +160,12 @@ std::string ProxyServerToPacResultElement(const ProxyServer& proxy_server) {
   }
 }
 
-ProxyChain ProxyUriToProxyChain(base::StringPiece uri,
+ProxyChain ProxyUriToProxyChain(std::string_view uri,
                                 ProxyServer::Scheme default_scheme) {
   return ProxyChain(ProxyUriToProxyServer(uri, default_scheme));
 }
 
-ProxyServer ProxyUriToProxyServer(base::StringPiece uri,
+ProxyServer ProxyUriToProxyServer(std::string_view uri,
                                   ProxyServer::Scheme default_scheme) {
   // We will default to |default_scheme| if no scheme specifier was given.
   ProxyServer::Scheme scheme = default_scheme;
@@ -183,7 +175,7 @@ ProxyServer ProxyUriToProxyServer(base::StringPiece uri,
 
   // Check for [<scheme> "://"]
   size_t colon = uri.find(':');
-  if (colon != base::StringPiece::npos && uri.size() - colon >= 3 &&
+  if (colon != std::string_view::npos && uri.size() - colon >= 3 &&
       uri[colon + 1] == '/' && uri[colon + 2] == '/') {
     scheme = GetSchemeFromUriScheme(uri.substr(0, colon));
     uri = uri.substr(colon + 3);  // Skip past the "://"
@@ -224,7 +216,7 @@ std::string ProxyServerToProxyUri(const ProxyServer& proxy_server) {
   }
 }
 
-ProxyServer::Scheme GetSchemeFromUriScheme(base::StringPiece scheme) {
+ProxyServer::Scheme GetSchemeFromUriScheme(std::string_view scheme) {
   if (base::EqualsCaseInsensitiveASCII(scheme, "http"))
     return ProxyServer::SCHEME_HTTP;
   if (base::EqualsCaseInsensitiveASCII(scheme, "socks4"))

@@ -11,9 +11,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.RestrictionSkipCheck;
 import org.chromium.ui.base.DeviceFormFactor;
 
-/**
- * Checks if any restrictions exist and skip the test if it meets those restrictions.
- */
+/** Checks if any restrictions exist and skip the test if it meets those restrictions. */
 public class UiRestrictionSkipCheck extends RestrictionSkipCheck {
     public UiRestrictionSkipCheck(Context targetContext) {
         super(targetContext);

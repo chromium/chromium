@@ -20,7 +20,7 @@ using AuthFactorState = AuthFactorModel::AuthFactorState;
 
 struct LabelTestcase {
   SmartLockState state;
-  absl::optional<bool> can_use_pin;
+  std::optional<bool> can_use_pin;
   int label_id;
   int accessible_name_id;
 };
@@ -50,25 +50,25 @@ constexpr LabelTestcase kLabelTestcases[] = {
     {SmartLockState::kPhoneNotAuthenticated, /*can_use_pin=*/false,
      IDS_AUTH_FACTOR_LABEL_PASSWORD_REQUIRED,
      IDS_AUTH_FACTOR_LABEL_PASSWORD_REQUIRED},
-    {SmartLockState::kBluetoothDisabled, /*can_use_pin=*/absl::nullopt,
+    {SmartLockState::kBluetoothDisabled, /*can_use_pin=*/std::nullopt,
      IDS_SMART_LOCK_LABEL_NO_BLUETOOTH, IDS_SMART_LOCK_LABEL_NO_BLUETOOTH},
-    {SmartLockState::kPhoneNotLockable, /*can_use_pin=*/absl::nullopt,
+    {SmartLockState::kPhoneNotLockable, /*can_use_pin=*/std::nullopt,
      IDS_SMART_LOCK_LABEL_NO_PHONE_LOCK_SCREEN,
      IDS_SMART_LOCK_LABEL_NO_PHONE_LOCK_SCREEN},
-    {SmartLockState::kConnectingToPhone, /*can_use_pin=*/absl::nullopt,
+    {SmartLockState::kConnectingToPhone, /*can_use_pin=*/std::nullopt,
      IDS_SMART_LOCK_LABEL_LOOKING_FOR_PHONE,
      IDS_SMART_LOCK_LABEL_LOOKING_FOR_PHONE},
-    {SmartLockState::kPhoneFoundLockedAndDistant, /*can_use_pin=*/absl::nullopt,
+    {SmartLockState::kPhoneFoundLockedAndDistant, /*can_use_pin=*/std::nullopt,
      IDS_SMART_LOCK_LABEL_PHONE_TOO_FAR, IDS_SMART_LOCK_LABEL_PHONE_TOO_FAR},
     {SmartLockState::kPhoneFoundUnlockedAndDistant,
-     /*can_use_pin=*/absl::nullopt, IDS_SMART_LOCK_LABEL_PHONE_TOO_FAR,
+     /*can_use_pin=*/std::nullopt, IDS_SMART_LOCK_LABEL_PHONE_TOO_FAR,
      IDS_SMART_LOCK_LABEL_PHONE_TOO_FAR},
-    {SmartLockState::kPhoneNotFound, /*can_use_pin=*/absl::nullopt,
+    {SmartLockState::kPhoneNotFound, /*can_use_pin=*/std::nullopt,
      IDS_SMART_LOCK_LABEL_NO_PHONE, IDS_SMART_LOCK_LABEL_NO_PHONE},
     {SmartLockState::kPhoneFoundLockedAndProximate,
-     /*can_use_pin=*/absl::nullopt, IDS_SMART_LOCK_LABEL_PHONE_LOCKED,
+     /*can_use_pin=*/std::nullopt, IDS_SMART_LOCK_LABEL_PHONE_LOCKED,
      IDS_SMART_LOCK_LABEL_PHONE_LOCKED},
-    {SmartLockState::kPhoneAuthenticated, /*can_use_pin=*/absl::nullopt,
+    {SmartLockState::kPhoneAuthenticated, /*can_use_pin=*/std::nullopt,
      IDS_AUTH_FACTOR_LABEL_CLICK_TO_ENTER,
      IDS_AUTH_FACTOR_LABEL_CLICK_TO_ENTER},
 };

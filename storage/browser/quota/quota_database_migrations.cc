@@ -184,7 +184,7 @@ bool QuotaDatabaseMigrations::MigrateFromVersion7ToVersion8(
     std::string storage_key_string = select_statement.ColumnString(1);
     insert_statement.BindString(1, storage_key_string);
 
-    absl::optional<blink::StorageKey> storage_key =
+    std::optional<blink::StorageKey> storage_key =
         blink::StorageKey::Deserialize(storage_key_string);
     const std::string& host = storage_key.has_value()
                                   ? storage_key.value().origin().host()

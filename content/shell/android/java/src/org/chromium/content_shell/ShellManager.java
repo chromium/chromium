@@ -18,9 +18,7 @@ import org.chromium.components.embedder_support.view.ContentViewRenderView;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 
-/**
- * Container and generator of ShellViews.
- */
+/** Container and generator of ShellViews. */
 @JNINamespace("content")
 public class ShellManager extends FrameLayout {
 
@@ -33,9 +31,7 @@ public class ShellManager extends FrameLayout {
     // The target for all content rendering.
     private ContentViewRenderView mContentViewRenderView;
 
-    /**
-     * Constructor for inflating via XML.
-     */
+    /** Constructor for inflating via XML. */
     public ShellManager(final Context context, AttributeSet attrs) {
         super(context, attrs);
         ShellManagerJni.get().init(this);
@@ -58,16 +54,12 @@ public class ShellManager extends FrameLayout {
         return mWindow;
     }
 
-    /**
-     * Get the ContentViewRenderView.
-     */
+    /** Get the ContentViewRenderView. */
     public ContentViewRenderView getContentViewRenderView() {
         return mContentViewRenderView;
     }
 
-    /**
-     * Sets the startup URL for new shell windows.
-     */
+    /** Sets the startup URL for new shell windows. */
     public void setStartupUrl(String url) {
         mStartupUrl = url;
     }
@@ -111,8 +103,11 @@ public class ShellManager extends FrameLayout {
 
     private void showShell(Shell shellView) {
         shellView.setContentViewRenderView(mContentViewRenderView);
-        addView(shellView, new FrameLayout.LayoutParams(
-                FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));
+        addView(
+                shellView,
+                new FrameLayout.LayoutParams(
+                        FrameLayout.LayoutParams.MATCH_PARENT,
+                        FrameLayout.LayoutParams.MATCH_PARENT));
         mActiveShell = shellView;
         WebContents webContents = mActiveShell.getWebContents();
         if (webContents != null) {
@@ -149,6 +144,7 @@ public class ShellManager extends FrameLayout {
     @NativeMethods
     interface Natives {
         void init(Object shellManagerInstance);
+
         void launchShell(String url);
     }
 }

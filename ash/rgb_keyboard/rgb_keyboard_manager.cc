@@ -188,7 +188,7 @@ void RgbKeyboardManager::OnCapabilityUpdatedForTesting(
 }
 
 void RgbKeyboardManager::OnGetRgbKeyboardCapabilities(
-    absl::optional<rgbkbd::RgbKeyboardCapabilities> reply) {
+    std::optional<rgbkbd::RgbKeyboardCapabilities> reply) {
   if (!reply.has_value()) {
     if (base::SysInfo::IsRunningOnChromeOS()) {
       LOG(ERROR) << "No response received for GetRgbKeyboardCapabilities";

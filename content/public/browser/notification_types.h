@@ -33,37 +33,7 @@ enum NotificationType {
   // TODO(https://crbug.com/1174760): Remove.
   NOTIFICATION_NAV_ENTRY_COMMITTED = NOTIFICATION_CONTENT_START,
 
-  // Other load-related (not from NavigationController) ----------------------
-
-  // A content load is starting.  The source will be a
-  // Source<NavigationController> corresponding to the tab in which the load
-  // is occurring.  No details are expected for this notification.
-  // DEPRECATED: Use WebContentsObserver::DidStartLoading()
-  // TODO(https://crbug.com/1174762): Remove.
-  NOTIFICATION_LOAD_START,
-
-  // A content load has stopped. The source will be a
-  // Source<NavigationController> corresponding to the tab in which the load
-  // is occurring.  No details are expected for this notification.
-  // DEPRECATED: Use WebContentsObserver::DidStopLoading()
-  // TODO(https://crbug.com/1174764): Remove.
-  NOTIFICATION_LOAD_STOP,
-
   // WebContents ---------------------------------------------------------------
-
-  // Indicates that a render process was closed (meaning it exited, but the
-  // RenderProcessHost might be reused).  The source will be the corresponding
-  // RenderProcessHost.  The details will be a ChildProcessTerminationInfo
-  // struct. This may get sent along with RENDERER_PROCESS_TERMINATED.
-  // DEPRECATED: Use RenderProcessHostObserver::RenderProcessExited()
-  // TODO(https://crbug.com/357627): Remove.
-  NOTIFICATION_RENDERER_PROCESS_CLOSED,
-
-  // Indicates that a RenderWidgetHost has become unresponsive for a period of
-  // time. The source will be the RenderWidgetHost that corresponds to the
-  // hung view, and no details are expected.
-  // TODO(https://crbug.com/1174769): Remove.
-  NOTIFICATION_RENDER_WIDGET_HOST_HANG,
 
   // Indicates a RenderWidgetHost has been hidden or restored. The source is
   // the RWH whose visibility changed, the details is a bool set to true if

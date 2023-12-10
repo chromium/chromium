@@ -221,6 +221,6 @@ void SyncAppHelper::FixNTPOrdinalCollisions(Profile* profile) {
   ExtensionSystem::Get(profile)->app_sorting()->FixNTPOrdinalCollisions();
 }
 
-SyncAppHelper::SyncAppHelper() : setup_completed_(false) {}
+SyncAppHelper::SyncAppHelper() = default;
 
 SyncAppHelper::~SyncAppHelper() = default;

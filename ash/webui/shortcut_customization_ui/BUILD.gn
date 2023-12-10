@@ -22,6 +22,8 @@ static_library("shortcut_customization_ui") {
     "//ash",
     "//ash/constants",
     "//ash/webui/common:trusted_types_util",
+    "//ash/webui/common/backend",
+    "//ash/webui/common/mojom",
     "//ash/webui/resources:shortcut_customization_app_resources",
     "//ash/webui/shortcut_customization_ui/backend",
     "//ash/webui/shortcut_customization_ui/backend/search:mojo_bindings",

@@ -171,7 +171,7 @@ void WebGL2RenderingContext::RegisterContextExtensions() {
   RegisterExtension(ext_color_buffer_float_);
   RegisterExtension(ext_color_buffer_half_float_);
   RegisterExtension(ext_conservative_depth_, kDraftExtension);
-  RegisterExtension(ext_depth_clamp_, kDraftExtension);
+  RegisterExtension(ext_depth_clamp_);
   RegisterExtension(
       ext_disjoint_timer_query_web_gl2_,
       TimerQueryExtensionsEnabled() ? kApprovedExtension : kDeveloperExtension);
@@ -205,7 +205,7 @@ void WebGL2RenderingContext::RegisterContextExtensions() {
   RegisterExtension(webgl_multi_draw_);
   RegisterExtension(webgl_multi_draw_instanced_base_vertex_base_instance_,
                     kDraftExtension);
-  RegisterExtension(webgl_polygon_mode_, kDraftExtension);
+  RegisterExtension(webgl_polygon_mode_);
   RegisterExtension(webgl_provoking_vertex_);
   RegisterExtension(webgl_render_shared_exponent_, kDraftExtension);
   RegisterExtension(webgl_shader_pixel_local_storage_, kDraftExtension);

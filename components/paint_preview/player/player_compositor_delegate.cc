@@ -21,6 +21,7 @@
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_event.h"
 #include "base/unguessable_token.h"
+#include "base/version.h"
 #include "components/paint_preview/browser/paint_preview_base_service.h"
 #include "components/paint_preview/browser/warm_compositor.h"
 #include "components/paint_preview/common/proto/paint_preview.pb.h"
@@ -30,6 +31,7 @@
 #include "components/paint_preview/public/paint_preview_compositor_client.h"
 #include "components/paint_preview/public/paint_preview_compositor_service.h"
 #include "components/services/paint_preview_compositor/public/mojom/paint_preview_compositor.mojom.h"
+#include "components/version_info/version_info.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -451,11 +453,12 @@ void PlayerCompositorDelegate::ValidateProtoAndLoadAXTree(
   // If the current Chrome version doesn't match the one in proto, we can't
   // use the AXTreeUpdate.
   auto chrome_version = capture_result_->proto.metadata().chrome_version();
+  const auto& current_chrome_version = version_info::GetVersion();
   if (capture_result_->proto.metadata().has_chrome_version() &&
-      chrome_version.major() == CHROME_VERSION_MAJOR &&
-      chrome_version.minor() == CHROME_VERSION_MINOR &&
-      chrome_version.build() == CHROME_VERSION_BUILD &&
-      chrome_version.patch() == CHROME_VERSION_PATCH) {
+      chrome_version.major() == current_chrome_version.components()[0] &&
+      chrome_version.minor() == current_chrome_version.components()[1] &&
+      chrome_version.build() == current_chrome_version.components()[2] &&
+      chrome_version.patch() == current_chrome_version.components()[3]) {
     paint_preview_service_->GetFileMixin()->GetAXTreeUpdate(
         key_, base::BindOnce(&PlayerCompositorDelegate::OnAXTreeUpdateAvailable,
                              weak_factory_.GetWeakPtr()));

@@ -20,6 +20,7 @@
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -140,7 +141,7 @@ AuthFactorModel* GetHighestPriorityAuthFactor(
 
 std::unique_ptr<lottie::Animation> GetCheckmarkAnimation(
     ui::ColorProvider* color_provider) {
-  absl::optional<std::vector<uint8_t>> lottie_data =
+  std::optional<std::vector<uint8_t>> lottie_data =
       ui::ResourceBundle::GetSharedInstance().GetLottieData(
           IDR_LOGIN_ARROW_CHECKMARK_ANIMATION);
   CHECK(lottie_data.has_value());
@@ -601,5 +602,8 @@ void LoginAuthFactorsView::UpdateShouldHidePasswordField(
   on_auth_factor_is_hiding_password_changed_callback_.Run(
       should_hide_password_field);
 }
+
+BEGIN_METADATA(LoginAuthFactorsView)
+END_METADATA
 
 }  // namespace ash

@@ -17,6 +17,7 @@
 #include "base/format_macros.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/i18n/icu_util.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/message_loop/message_pump_type.h"
@@ -179,6 +180,11 @@ int RunTestSuite(RunTestSuiteCallback run_test_suite,
           switches::kTestChildProcess) ||
       force_single_process) {
     return std::move(run_test_suite).Run();
+  }
+
+  // ICU must be initialized before any attempts to format times, e.g. for logs.
+  if (!base::i18n::InitializeICU()) {
+    return false;
   }
 
   if (CommandLine::ForCurrentProcess()->HasSwitch(switches::kHelpFlag)) {

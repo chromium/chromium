@@ -43,7 +43,7 @@ include_rules = [
   "+chromeos/services/tts",
   "+components/crash/core/common/crash_keys.h",
   "+components/device_signals/core/common/mojom",
-  "+components/metrics/call_stack_profile_builder.h",
+  "+components/metrics/call_stacks/call_stack_profile_builder.h",
   "+components/heap_profiling/in_process/heap_profiler_controller.h",
   "+components/mirroring/mojom",
   "+components/mirroring/service",

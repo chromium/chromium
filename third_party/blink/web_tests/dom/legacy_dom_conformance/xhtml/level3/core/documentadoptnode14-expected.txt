@@ -1,2 +1,0 @@
-Test	http://www.w3.org/2001/DOM-Test-Suite/level3/core/documentadoptnode14
-Status	Success

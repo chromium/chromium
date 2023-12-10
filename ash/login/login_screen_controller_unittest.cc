@@ -24,6 +24,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/session_manager_types.h"
 #include "components/user_manager/known_user.h"
+#include "testing/gmock/include/gmock/gmock.h"
 
 using session_manager::SessionState;
 using ::testing::_;
@@ -65,11 +66,11 @@ TEST_F(LoginScreenControllerTest, RequestAuthentication) {
   // (hashed) password, and the correct PIN state.
   EXPECT_CALL(*client,
               AuthenticateUserWithPasswordOrPin_(id, password, false, _));
-  absl::optional<bool> callback_result;
+  std::optional<bool> callback_result;
   base::RunLoop run_loop1;
   controller->AuthenticateUserWithPasswordOrPin(
       id, password, false,
-      base::BindLambdaForTesting([&](absl::optional<bool> did_auth) {
+      base::BindLambdaForTesting([&](std::optional<bool> did_auth) {
         callback_result = did_auth;
         run_loop1.Quit();
       }));
@@ -89,7 +90,7 @@ TEST_F(LoginScreenControllerTest, RequestAuthentication) {
   base::RunLoop run_loop2;
   controller->AuthenticateUserWithPasswordOrPin(
       id, pin, true,
-      base::BindLambdaForTesting([&](absl::optional<bool> did_auth) {
+      base::BindLambdaForTesting([&](std::optional<bool> did_auth) {
         callback_result = did_auth;
         run_loop2.Quit();
       }));
@@ -120,6 +121,26 @@ TEST_F(LoginScreenControllerTest, RequestUserPodFocus) {
   // Verify FocusPod mojo call is run with the same account id.
   EXPECT_CALL(*client, OnFocusPod(id));
   controller->OnFocusPod(id);
+  base::RunLoop().RunUntilIdle();
+}
+
+// b/308840749 test for clicking on second user pod while first is logging in.
+TEST_F(LoginScreenControllerNoSessionTest, DoesNotCallOnFocusPodDuringLogin) {
+  ASSERT_EQ(SessionState::LOGIN_PRIMARY,
+            Shell::Get()->session_controller()->GetSessionState());
+
+  LoginScreenController* controller = Shell::Get()->login_screen_controller();
+  auto client = std::make_unique<testing::StrictMock<MockLoginScreenClient>>();
+  AccountId id = AccountId::FromUserEmail("user1@test.com");
+  EXPECT_CALL(*client, OnFocusPod(id)).Times(1);
+  controller->OnFocusPod(id);
+
+  // Simulate starting log in as user1.
+  GetSessionControllerClient()->SetSessionState(
+      SessionState::LOGGED_IN_NOT_ACTIVE);
+
+  // Click on user2 pod while logging in as user1. No `OnFocusPod` calls sent.
+  controller->OnFocusPod(AccountId::FromUserEmail("user2@test.com"));
   base::RunLoop().RunUntilIdle();
 }
 

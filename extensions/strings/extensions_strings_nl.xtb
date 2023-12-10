@@ -8,6 +8,7 @@
 <translation id="1420684932347524586">O nee! Kan geen willekeurige persoonlijke RSA-sleutel genereren.</translation>
 <translation id="1445572445564823378"><ph name="PRODUCT_NAME" /> wordt door deze extensie vertraagd. Zet de extensie uit om de prestaties van <ph name="PRODUCT_NAME" /> te verbeteren.</translation>
 <translation id="1468038450257740950">WebGL wordt niet ondersteund.</translation>
+<translation id="1610570795592207282">Kan css '<ph name="RELATIVE_PATH" />' niet laden voor het script.</translation>
 <translation id="1803557475693955505">Kan achtergrondpagina '<ph name="BACKGROUND_PAGE" />' niet laden.</translation>
 <translation id="2159915644201199628">Kan afbeelding niet decoderen: '<ph name="IMAGE_NAME" />'</translation>
 <translation id="2350172092385603347">Lokalisatie gebruikt, maar er is geen 'default_locale' opgegeven in het manifest.</translation>
@@ -18,14 +19,12 @@
 <translation id="3115238746683532089">Onbekend product <ph name="PRODUCT_ID" /> van leverancier <ph name="VENDOR_ID" /> (serienummer <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">Vervangen van crx-bestand is mislukt. Controleer of het bestand wordt gebruikt.</translation>
 <translation id="3163201441334626963">Onbekend product <ph name="PRODUCT_ID" /> van leverancier <ph name="VENDOR_ID" /></translation>
-<translation id="3302709122321372472">Kan CSS '<ph name="RELATIVE_PATH" />' niet laden voor het inhoudsscript.</translation>
 <translation id="3369521687965833290">Kan extensie niet uitpakken. Om een extensie beveiligd te kunnen uitpakken, moet er een pad naar je profieldirectory verwijzen dat begint met een schijfletter en geen koppeling, koppelpunt of symlink bevat. Een dergelijk pad bestaat niet voor je profiel.</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (serienummer <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> van leverancier <ph name="VENDOR_ID" /> (serienummer <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Invoerwaarde voor persoonlijke sleutel moet een geldig pad zijn.</translation>
 <translation id="388442998277590542">Kan optiepagina '<ph name="OPTIONS_PAGE" />' niet laden.</translation>
 <translation id="3984413272403535372">Fout bij ondertekenen van extensie.</translation>
-<translation id="39964277676607559">Kan JavaScript '<ph name="RELATIVE_PATH" />' niet laden voor het inhoudsscript.</translation>
 <translation id="4115165561519362854">De beheerder van dit apparaat vereist dat minimaal versie <ph name="EXTENSION_VERSION" /> van <ph name="EXTENSION_NAME" /> moet zijn geïnstalleerd. De extensie kan pas worden aangezet nadat deze is geüpdatet naar die versie (of hoger).</translation>
 <translation id="4233778200880751280">De informatiepagina '<ph name="ABOUT_PAGE" />' kan niet worden geladen.</translation>
 <translation id="471800408830181311">Uitvoer van persoonlijke sleutel is mislukt.</translation>
@@ -33,6 +32,7 @@
 <translation id="4988792151665380515">Exporteren van openbare sleutel is mislukt.</translation>
 <translation id="5026754133087629784">Webweergave: <ph name="WEBVIEW_TAG_NAME" /></translation>
 <translation id="5098647635849512368">Kan het absolute pad naar de in te pakken directory niet vinden.</translation>
+<translation id="5160071981665899014">Kan JavaScript '<ph name="RELATIVE_PATH" />' niet laden voor het script.</translation>
 <translation id="5356315618422219272">Appview: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5436430103864390185">Gevormde vensters worden niet ondersteund.</translation>
 <translation id="5456409301717116725">Deze extensie bevat het sleutelbestand '<ph name="KEY_PATH" />'. Dit is waarschijnlijk niet je bedoeling.</translation>

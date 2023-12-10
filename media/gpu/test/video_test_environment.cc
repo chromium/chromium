@@ -4,7 +4,6 @@
 
 #include "media/gpu/test/video_test_environment.h"
 
-#include "base/command_line.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
@@ -14,10 +13,6 @@
 
 #if BUILDFLAG(USE_VAAPI)
 #include "media/gpu/vaapi/vaapi_wrapper.h"
-#endif
-
-#if BUILDFLAG(IS_OZONE)
-#include "ui/ozone/public/ozone_platform.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -60,21 +55,6 @@ VideoTestEnvironment::VideoTestEnvironment(
   // Intel media compression environment flag for minigbm is correctly set
   ui::EnsureIntelMediaCompressionEnvVarIsSet();
 #endif  // BUILDFLAG(IS_CHROMEOS)
-
-  // Perform all static initialization that is required when running video
-  // codecs in a test environment.
-#if BUILDFLAG(IS_OZONE)
-  // Initialize Ozone. This is necessary to gain access to the GPU for hardware
-  // video acceleration.
-  // TODO(b/230370976): we may no longer need to initialize Ozone since we don't
-  // use it for buffer allocation.
-  LOG(WARNING) << "Initializing Ozone Platform...\n"
-                  "If this hangs indefinitely please call 'stop ui' first!";
-  ui::OzonePlatform::InitParams params;
-  params.single_process = true;
-  ui::OzonePlatform::InitializeForUI(params);
-  ui::OzonePlatform::InitializeForGPU(params);
-#endif
 
 #if BUILDFLAG(USE_VAAPI)
   media::VaapiWrapper::PreSandboxInitialization(

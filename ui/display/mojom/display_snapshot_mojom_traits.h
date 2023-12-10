@@ -93,11 +93,6 @@ struct StructTraits<display::mojom::DisplaySnapshotDataView,
     return snapshot->has_color_correction_matrix();
   }
 
-  static bool color_correction_in_linear_space(
-      const std::unique_ptr<display::DisplaySnapshot>& snapshot) {
-    return snapshot->color_correction_in_linear_space();
-  }
-
   static const gfx::ColorSpace& color_space(
       const std::unique_ptr<display::DisplaySnapshot>& snapshot) {
     return snapshot->color_space();

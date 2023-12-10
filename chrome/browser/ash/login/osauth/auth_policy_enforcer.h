@@ -48,14 +48,14 @@ class AuthPolicyEnforcer {
   void OnAuthFactorConfigurationLoaded(
       AuthOperationCallback callback,
       std::unique_ptr<UserContext> context,
-      absl::optional<AuthenticationError> error);
+      std::optional<AuthenticationError> error);
   // Ensures that recovery-related policies are applied.
   // If no errors happen, would end up calling `OnPolicesApplied`.
   void EnforceRecoveryPolicies(std::unique_ptr<UserContext> context,
                                AuthOperationCallback callback);
   void OnRecoveryUpdated(AuthOperationCallback callback,
                          std::unique_ptr<UserContext> context,
-                         absl::optional<AuthenticationError> error);
+                         std::optional<AuthenticationError> error);
   // Called when policies for all applicable factor types were applied.
   void OnPolicesApplied(std::unique_ptr<UserContext> context,
                         AuthOperationCallback callback);

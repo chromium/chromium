@@ -5,7 +5,6 @@
 #include "media/gpu/android/ndk_video_encode_accelerator.h"
 
 #include "base/bits.h"
-#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/unsafe_shared_memory_region.h"
@@ -166,10 +165,6 @@ MediaFormatPtr CreateVideoFormat(const std::string& mime,
   return result;
 }
 
-BASE_FEATURE(kAndroidNdkVideoEncoder,
-             "AndroidNdkVideoEncoder",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 absl::optional<std::string> FindMediaCodecFor(
     const VideoEncodeAccelerator::Config& config) {
   absl::optional<std::string> encoder_name;
@@ -240,8 +235,7 @@ NdkVideoEncodeAccelerator::~NdkVideoEncodeAccelerator() {
 }
 
 bool NdkVideoEncodeAccelerator::IsSupported() {
-  return base::FeatureList::IsEnabled(kAndroidNdkVideoEncoder) &&
-         NdkMediaCodecWrapper::IsSupported();
+  return NdkMediaCodecWrapper::IsSupported();
 }
 
 VideoEncodeAccelerator::SupportedProfiles
@@ -351,8 +345,15 @@ void NdkVideoEncodeAccelerator::UseOutputBitstreamBuffer(
 
 void NdkVideoEncodeAccelerator::RequestEncodingParametersChange(
     const Bitrate& bitrate,
-    uint32_t framerate) {
+    uint32_t framerate,
+    const absl::optional<gfx::Size>& size) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (size.has_value()) {
+    NotifyErrorStatus({EncoderStatus::Codes::kEncoderUnsupportedConfig,
+                       "Update output frame size is not supported"});
+    return;
+  }
+
   MediaFormatPtr format(AMediaFormat_new());
 
   if (effective_framerate_ != framerate)
@@ -417,9 +418,9 @@ bool NdkVideoEncodeAccelerator::SetInputBufferLayout(
   // Non 16x16 aligned resolutions don't work well with MediaCodec
   // unfortunately, see https://crbug.com/1084702 for details. It seems they
   // only work when stride/y_plane_height information is provided.
-  const auto aligned_size =
-      gfx::Size(base::bits::AlignDown(configured_size.width(), 16),
-                base::bits::AlignDown(configured_size.height(), 16));
+  const auto aligned_size = gfx::Size(
+      base::bits::AlignDownDeprecatedDoNotUse(configured_size.width(), 16),
+      base::bits::AlignDownDeprecatedDoNotUse(configured_size.height(), 16));
 
   bool require_aligned_resolution = false;
   if (!AMediaFormat_getInt32(input_format.get(), AMEDIAFORMAT_KEY_STRIDE,

@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="sr">
 <translation id="1075622780330595106">Имате више картица (<ph name="NUMBER_OF_TABS" />) које нисте користили у скорије време. Желите ли да их затворите?</translation>
+<translation id="1155815720264022949">Желите да затворите старе картице?</translation>
 <translation id="1215127405478249895">Прегледајте картице</translation>
 <translation id="125153950246128346">Додирните да бисте видели неку другу картицу</translation>
 <translation id="1499635324672558517">Желите да затворите све картице без архивирања?</translation>
@@ -46,9 +47,11 @@
 <translation id="5073204694187207510">Сакријте приказ мреже на целом екрану</translation>
 <translation id="5076161749301278626">Желите да видите рецензије продавница?</translation>
 <translation id="5082793167783849073">Направите групу да бисте брзо упоређивали странице. За почетак додирните и задржите линк.</translation>
+<translation id="5303274951032363933">{TABS_COUNT,plural, =1{Имате <ph name="TABS_COUNT_ONE" /> картицу коју нисте скоро користили}one{Имате <ph name="TABS_COUNT_MANY" /> картицу коју нисте скоро користили}few{Имате <ph name="TABS_COUNT_MANY" /> картице које нисте скоро користили}other{Имате <ph name="TABS_COUNT_MANY" /> картица које нисте скоро користили}}</translation>
 <translation id="5339733443032484186">Последња картица</translation>
 <translation id="5490235265819901748">Група картица је проширена</translation>
 <translation id="5494920125229734069">Избор свих ставки</translation>
+<translation id="5545379293264651575">Затвори без прегледа</translation>
 <translation id="5556417849629758491">Прегледајте информације о продавници, опцију која је доступна у врху екрана</translation>
 <translation id="5558362125926932819">Затворите групу од картица: <ph name="NUMBER_OF_TABS" /></translation>
 <translation id="5580090775658607195">Картице су груписане (<ph name="TAB_COUNT" />)</translation>
@@ -85,7 +88,6 @@
 <translation id="7885132941432959125">Преместите картицу удесно</translation>
 <translation id="7966321538264951561">Одбаците предлоге.</translation>
 <translation id="8029301326595421733">Информације о овој продавници су отворене на целом екрану</translation>
-<translation id="814503310257431685">Прикажи све</translation>
 <translation id="8205266828577616993">Премести картицу нагоре</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Затворите <ph name="TABS_COUNT_ONE" /> изабрану картицу}one{Затворите <ph name="TABS_COUNT_MANY" /> изабрану картицу}few{Затворите <ph name="TABS_COUNT_MANY" /> изабране картице}other{Затворите <ph name="TABS_COUNT_MANY" /> изабраних картица}}</translation>
 <translation id="8398929769197326728">Нови фолдер – <ph name="CURRENT_TIMESTAMP_MS" /></translation>

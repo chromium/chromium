@@ -68,6 +68,9 @@ class ASH_EXPORT GameDashboardController : public aura::EnvObserver,
   void StartCaptureSession(GameDashboardContext* context,
                            bool record_instantly = false);
 
+  // Shows the compat mode resize toggle menu for the given `window`.
+  void ShowResizeToggleMenu(aura::Window* window);
+
   // aura::EnvObserver:
   void OnWindowInitialized(aura::Window* new_window) override;
 

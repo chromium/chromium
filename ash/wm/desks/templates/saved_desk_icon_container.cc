@@ -131,7 +131,7 @@ void InsertIconIdentifierToIconInfoFromLaunchList(
       // PWAs will have the same app id as chrome. For these apps, retrieve
       // their app id from their app name if possible.
       std::string new_app_id = app_id;
-      const absl::optional<std::string>& app_name =
+      const std::optional<std::string>& app_name =
           restore_data.second->app_name;
       if (IsBrowserAppId(app_id) && app_name.has_value())
         new_app_id = app_restore::GetAppIdFromAppName(app_name.value());

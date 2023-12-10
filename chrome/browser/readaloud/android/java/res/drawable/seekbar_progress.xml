@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<layer-list
+    xmlns:android="http://schemas.android.com/apk/res/android" >
+    <item
+        android:id="@+id/progressshape" >
+        <clip>
+            <shape
+                android:shape="rectangle" >
+                <corners
+                    android:radius="5dp" />
+                <solid android:color="@macro/default_icon_color"/>
+            </shape>
+        </clip>
+    </item>
+</layer-list>

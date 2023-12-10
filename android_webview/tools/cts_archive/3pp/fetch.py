@@ -8,7 +8,7 @@ import json
 
 
 def do_latest():
-  print('2023.09.08')  # Update to current date when updating the URLs below
+  print('2023.11.13')  # Update to current date when updating the URLs below
 
 
 def get_download_url():

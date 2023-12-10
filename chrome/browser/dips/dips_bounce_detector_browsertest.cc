@@ -16,6 +16,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
@@ -202,14 +203,12 @@ class WCOCallbackLogger
   // End SharedWorkerService.Observer overrides.
 
   // Start DedicatedWorkerService.Observer overrides:
-  void OnWorkerCreated(
-      const blink::DedicatedWorkerToken& worker_token,
-      int worker_process_id,
-      content::GlobalRenderFrameHostId ancestor_render_frame_host_id) override;
+  void OnWorkerCreated(const blink::DedicatedWorkerToken& worker_token,
+                       int worker_process_id,
+                       content::DedicatedWorkerCreator creator) override;
   void OnBeforeWorkerDestroyed(
       const blink::DedicatedWorkerToken& worker_token,
-      content::GlobalRenderFrameHostId ancestor_render_frame_host_id) override {
-  }
+      content::DedicatedWorkerCreator creator) override {}
   void OnFinalResponseURLDetermined(
       const blink::DedicatedWorkerToken& worker_token,
       const GURL& url) override {}
@@ -289,9 +288,11 @@ void WCOCallbackLogger::OnClientAdded(
 void WCOCallbackLogger::OnWorkerCreated(
     const blink::DedicatedWorkerToken& worker_token,
     int worker_process_id,
-    content::GlobalRenderFrameHostId ancestor_render_frame_host_id) {
+    content::DedicatedWorkerCreator creator) {
+  const content::GlobalRenderFrameHostId& render_frame_host_id =
+      absl::get<content::GlobalRenderFrameHostId>(creator);
   content::RenderFrameHost* render_frame_host =
-      content::RenderFrameHost::FromID(ancestor_render_frame_host_id);
+      content::RenderFrameHost::FromID(render_frame_host_id);
   GURL scope = GetFirstPartyURL(render_frame_host).value_or(GURL());
 
   log_.push_back(base::StringPrintf("OnDedicatedWorkerCreated(%s)",
@@ -535,8 +536,16 @@ IN_PROC_BROWSER_TEST_F(
                                       "(Write) -> d.test/title1.html")));
 }
 
+// TODO(crbug.com/1466483): Flaky on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_AttributeSameSiteIframesCookieServerAccessTo1P \
+  DISABLED_AttributeSameSiteIframesCookieServerAccessTo1P
+#else
+#define MAYBE_AttributeSameSiteIframesCookieServerAccessTo1P \
+  AttributeSameSiteIframesCookieServerAccessTo1P
+#endif
 IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
-                       AttributeSameSiteIframesCookieServerAccessTo1P) {
+                       MAYBE_AttributeSameSiteIframesCookieServerAccessTo1P) {
   net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
   https_server.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
   https_server.AddDefaultHandlers(kChromeTestDataDir);
@@ -547,6 +556,10 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
 
   const GURL primary_main_frame_url =
       embedded_test_server()->GetURL("a.test", "/iframe_blank.html");
+  CookieSettingsFactory::GetForProfile(
+      Profile::FromBrowserContext(GetActiveWebContents()->GetBrowserContext()))
+      ->SetThirdPartyCookieSetting(
+          embedded_test_server()->GetURL("a.test", "/"), CONTENT_SETTING_ALLOW);
   ASSERT_TRUE(
       content::NavigateToURL(GetActiveWebContents(), primary_main_frame_url));
 
@@ -1455,17 +1468,17 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
   // Open a server-redirecting link in a new tab.
   GURL new_tab_url(embedded_test_server()->GetURL(
       "b.test", "/cross-site-with-cookie/c.test/title1.html"));
-  auto maybe_new_tab = OpenInNewTab(original_tab, new_tab_url);
-  ASSERT_TRUE(maybe_new_tab.has_value()) << maybe_new_tab.error();
+  ASSERT_OK_AND_ASSIGN(WebContents * new_tab,
+                       OpenInNewTab(original_tab, new_tab_url));
 
   // Verify the tab is different from the original and at the correct URL.
-  EXPECT_NE(*maybe_new_tab, original_tab);
-  ASSERT_EQ((*maybe_new_tab)->GetLastCommittedURL(),
+  EXPECT_NE(new_tab, original_tab);
+  ASSERT_EQ(new_tab->GetLastCommittedURL(),
             embedded_test_server()->GetURL("c.test", "/title1.html"));
 
   std::vector<std::string> redirects;
   DIPSWebContentsObserver* tab_web_contents_observer =
-      DIPSWebContentsObserver::FromWebContents(*maybe_new_tab);
+      DIPSWebContentsObserver::FromWebContents(new_tab);
   tab_web_contents_observer->SetRedirectChainHandlerForTesting(
       base::BindRepeating(&AppendRedirects, &redirects));
 
@@ -1489,23 +1502,22 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
 
   // Open link in a new tab.
   GURL new_tab_url(embedded_test_server()->GetURL("b.test", "/title1.html"));
-  auto maybe_new_tab = OpenInNewTab(original_tab, new_tab_url);
-  ASSERT_TRUE(maybe_new_tab.has_value()) << maybe_new_tab.error();
+  ASSERT_OK_AND_ASSIGN(WebContents * new_tab,
+                       OpenInNewTab(original_tab, new_tab_url));
 
   // Verify the tab is different from the original and at the correct URL.
-  EXPECT_NE(original_tab, *maybe_new_tab);
-  ASSERT_EQ(new_tab_url, (*maybe_new_tab)->GetLastCommittedURL());
+  EXPECT_NE(original_tab, new_tab);
+  ASSERT_EQ(new_tab_url, new_tab->GetLastCommittedURL());
 
   std::vector<std::string> redirects;
   DIPSWebContentsObserver* tab_web_contents_observer =
-      DIPSWebContentsObserver::FromWebContents(*maybe_new_tab);
+      DIPSWebContentsObserver::FromWebContents(new_tab);
   tab_web_contents_observer->SetRedirectChainHandlerForTesting(
       base::BindRepeating(&AppendRedirects, &redirects));
 
   // Navigate without a click (i.e. by C-redirecting) to c.test.
   ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
-      *maybe_new_tab,
-      embedded_test_server()->GetURL("c.test", "/title1.html")));
+      new_tab, embedded_test_server()->GetURL("c.test", "/title1.html")));
   EndRedirectChain();
 
   EXPECT_THAT(
@@ -1526,17 +1538,17 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
   // Open a server-redirecting link in a new tab.
   GURL new_tab_url(embedded_test_server()->GetURL(
       "b.test", "/cross-site-with-cookie/c.test/title1.html"));
-  auto maybe_new_tab = OpenInNewTab(original_tab, new_tab_url);
-  ASSERT_TRUE(maybe_new_tab.has_value()) << maybe_new_tab.error();
+  ASSERT_OK_AND_ASSIGN(WebContents * new_tab,
+                       OpenInNewTab(original_tab, new_tab_url));
 
   // Verify the tab is different from the original and at the correct URL.
-  EXPECT_NE(*maybe_new_tab, original_tab);
-  ASSERT_EQ((*maybe_new_tab)->GetLastCommittedURL(),
+  EXPECT_NE(new_tab, original_tab);
+  ASSERT_EQ(new_tab->GetLastCommittedURL(),
             embedded_test_server()->GetURL("c.test", "/title1.html"));
 
   std::vector<std::string> redirects;
   DIPSWebContentsObserver* tab_web_contents_observer =
-      DIPSWebContentsObserver::FromWebContents(*maybe_new_tab);
+      DIPSWebContentsObserver::FromWebContents(new_tab);
   tab_web_contents_observer->SetRedirectChainHandlerForTesting(
       base::BindRepeating(&AppendRedirects, &redirects));
 
@@ -1657,16 +1669,9 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
 
 // Tests setting different metrics for the RedirectHeuristic_CookieAccess UKM
 // event.
-#if BUILDFLAG(IS_MAC)
-// TODO(https://crbug.com/1489241): Flaky on Mac.
-#define MAYBE_RedirectHeuristicCookieAccessEvent_AllMetrics \
-  DISABLED_RedirectHeuristicCookieAccessEvent_AllMetrics
-#else
-#define MAYBE_RedirectHeuristicCookieAccessEvent_AllMetrics \
-  RedirectHeuristicCookieAccessEvent_AllMetrics
-#endif
+// TODO(https://crbug.com/1489241): Flaky on multiple platforms.
 IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
-                       MAYBE_RedirectHeuristicCookieAccessEvent_AllMetrics) {
+                       DISABLED_RedirectHeuristicCookieAccessEvent_AllMetrics) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   WebContents* web_contents = GetActiveWebContents();
 
@@ -1922,6 +1927,9 @@ IN_PROC_BROWSER_TEST_P(RedirectHeuristicGrantTest,
       web_contents, first_party_url));
   EndRedirectChain();
 
+  // Wait on async tasks for the grants to be created.
+  WaitOnStorage(GetDipsService(web_contents));
+
   // Expect some cookie grants on `first_party_url` based on flags and criteria.
   EXPECT_EQ(cookie_settings->GetCookieSetting(
                 aba_current_interaction_url, first_party_url,
@@ -1979,6 +1987,9 @@ IN_PROC_BROWSER_TEST_P(
   ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
       web_contents, first_party_url));
   EndRedirectChain();
+
+  // Wait on async tasks for the grants to be created.
+  WaitOnStorage(GetDipsService(web_contents));
 
   // Expect some cookie grants on `first_party_url` based on flags and criteria.
   EXPECT_EQ(cookie_settings->GetCookieSetting(

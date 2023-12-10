@@ -4,9 +4,7 @@
 
 package org.chromium.content_public.browser;
 
-/**
- * Convenience static methods to access {@link ContentFeatureMap}.
- */
+/** Convenience static methods to access {@link ContentFeatureMap}. */
 public class ContentFeatureList {
     private ContentFeatureList() {}
 
@@ -23,9 +21,6 @@ public class ContentFeatureList {
 
     public static final String ACCESSIBILITY_PERFORMANCE_FILTERING =
             "AccessibilityPerformanceFiltering";
-
-    public static final String ACCESSIBILITY_PERFORMANCE_TESTING =
-            "AccessibilityPerformanceTesting";
 
     public static final String AUTO_DISABLE_ACCESSIBILITY_V2 = "AutoDisableAccessibilityV2";
 

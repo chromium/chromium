@@ -68,7 +68,7 @@ class TestBubbleView : public AccountSelectionBubbleViewInterface {
 
   void ShowSingleAccountConfirmDialog(
       const std::u16string& top_frame_for_display,
-      const absl::optional<std::u16string>& iframe_for_display,
+      const std::optional<std::u16string>& iframe_for_display,
       const content::IdentityRequestAccount& account,
       const IdentityProviderDisplayData& idp_data,
       bool show_back_button) override {
@@ -79,7 +79,7 @@ class TestBubbleView : public AccountSelectionBubbleViewInterface {
 
   void ShowFailureDialog(
       const std::u16string& top_frame_for_display,
-      const absl::optional<std::u16string>& iframe_for_display,
+      const std::optional<std::u16string>& iframe_for_display,
       const std::u16string& idp_for_display,
       const content::IdentityProviderMetadata& idp_metadata) override {
     sheet_type_ = SheetType::kFailure;
@@ -87,21 +87,21 @@ class TestBubbleView : public AccountSelectionBubbleViewInterface {
   }
 
   void ShowErrorDialog(const std::u16string& top_frame_for_display,
-                       const absl::optional<std::u16string>& iframe_for_display,
+                       const std::optional<std::u16string>& iframe_for_display,
                        const std::u16string& idp_for_display,
                        const content::IdentityProviderMetadata& idp_metadata,
-                       const absl::optional<TokenError>& error) override {
+                       const std::optional<TokenError>& error) override {
     sheet_type_ = SheetType::kError;
     account_ids_ = {};
   }
 
   std::string GetDialogTitle() const override { return std::string(); }
-  absl::optional<std::string> GetDialogSubtitle() const override {
-    return absl::nullopt;
+  std::optional<std::string> GetDialogSubtitle() const override {
+    return std::nullopt;
   }
 
   bool show_back_button_{false};
-  absl::optional<SheetType> sheet_type_;
+  std::optional<SheetType> sheet_type_;
   std::vector<std::string> account_ids_;
 };
 
@@ -155,8 +155,8 @@ class TestFedCmAccountSelectionView : public FedCmAccountSelectionView {
  protected:
   views::Widget* CreateBubbleWithAccessibleTitle(
       const std::u16string& top_frame_etld_plus_one,
-      const absl::optional<std::u16string>& iframe_etld_plus_one,
-      const absl::optional<std::u16string>& idp_title,
+      const std::optional<std::u16string>& iframe_etld_plus_one,
+      const std::optional<std::u16string>& idp_title,
       blink::mojom::RpContext rp_context,
       bool show_auto_reauthn_checkbox) override {
     ++num_bubbles_;
@@ -191,7 +191,7 @@ class StubAccountSelectionViewDelegate : public AccountSelectionView::Delegate {
   void OnDismiss(DismissReason dismiss_reason) override {
     dismiss_reason_ = dismiss_reason;
   }
-  void OnSigninToIdP(const GURL& idp_login_url) override {}
+  void OnLoginToIdP(const GURL& idp_login_url) override {}
   void OnMoreDetails() override {}
   gfx::NativeView GetNativeView() override { return gfx::NativeView(); }
 
@@ -250,7 +250,7 @@ class FedCmAccountSelectionViewDesktopTest : public ChromeViewsTestBase {
             bool show_auto_reauthn_checkbox = false) {
     controller.Show(
         kTopFrameEtldPlusOne,
-        absl::make_optional<std::string>(kIframeEtldPlusOne),
+        std::make_optional<std::string>(kIframeEtldPlusOne),
         {{kIdpEtldPlusOne, accounts, content::IdentityProviderMetadata(),
           content::ClientMetadata(GURL(), GURL()),
           blink::mojom::RpContext::kSignIn, /* request_permission */ true}},
@@ -274,7 +274,7 @@ class FedCmAccountSelectionViewDesktopTest : public ChromeViewsTestBase {
         delegate_.get(), widget_.get(), bubble_view_.get());
     controller->ShowErrorDialog(
         kTopFrameEtldPlusOne, kIframeEtldPlusOne, kIdpEtldPlusOne, rp_context,
-        content::IdentityProviderMetadata(), /*error=*/absl::nullopt);
+        content::IdentityProviderMetadata(), /*error=*/std::nullopt);
     EXPECT_EQ(TestBubbleView::SheetType::kError, bubble_view_->sheet_type_);
     return controller;
   }
@@ -648,7 +648,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
       "Blink.FedCm.IdpSigninStatus.MismatchDialogResult", 0);
 
   // Emulate user clicking on "Continue" button in the mismatch dialog.
-  observer->OnSigninToIdP(GURL(kLoginUrl), CreateMouseEvent());
+  observer->OnLoginToIdP(GURL(kLoginUrl), CreateMouseEvent());
   CreateAndShowPopupWindow(*controller);
 
   histogram_tester_.ExpectUniqueSample(
@@ -672,7 +672,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
         "Blink.FedCm.IdpSigninStatus.MismatchDialogResult", 0);
 
     // Emulate user clicking on "Continue" button in the mismatch dialog.
-    observer->OnSigninToIdP(GURL(kLoginUrl), CreateMouseEvent());
+    observer->OnLoginToIdP(GURL(kLoginUrl), CreateMouseEvent());
     CreateAndShowPopupWindow(*controller);
   }
 
@@ -697,7 +697,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
         static_cast<AccountSelectionBubbleView::Observer*>(controller.get());
 
     // Emulate user clicking on "Continue" button in the mismatch dialog.
-    observer->OnSigninToIdP(GURL(kLoginUrl), CreateMouseEvent());
+    observer->OnLoginToIdP(GURL(kLoginUrl), CreateMouseEvent());
     CreateAndShowPopupWindow(*controller);
 
     // When pop-up window is shown, mismatch dialog should be hidden.
@@ -754,7 +754,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
         static_cast<AccountSelectionBubbleView::Observer*>(controller.get());
 
     // Emulate user clicking on "Continue" button in the mismatch dialog.
-    observer->OnSigninToIdP(GURL(kLoginUrl), CreateMouseEvent());
+    observer->OnLoginToIdP(GURL(kLoginUrl), CreateMouseEvent());
     CreateAndShowPopupWindow(*controller);
 
     // When pop-up window is shown, mismatch dialog should be hidden.
@@ -810,7 +810,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
         static_cast<AccountSelectionBubbleView::Observer*>(controller.get());
 
     // Emulate user clicking on "Continue" button in the mismatch dialog.
-    observer->OnSigninToIdP(GURL(kLoginUrl), CreateMouseEvent());
+    observer->OnLoginToIdP(GURL(kLoginUrl), CreateMouseEvent());
     CreateAndShowPopupWindow(*controller);
 
     // Emulate IdP sending the IdP sign-in status header which updates the
@@ -845,7 +845,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
         static_cast<AccountSelectionBubbleView::Observer*>(controller.get());
 
     // Emulate user clicking on "Continue" button in the mismatch dialog.
-    observer->OnSigninToIdP(GURL(kLoginUrl), CreateMouseEvent());
+    observer->OnLoginToIdP(GURL(kLoginUrl), CreateMouseEvent());
     CreateAndShowPopupWindow(*controller);
 
     // Emulate IdentityProvider.close() being called in the pop-up window.
@@ -875,7 +875,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
         static_cast<AccountSelectionBubbleView::Observer*>(controller.get());
 
     // Emulate user clicking on "Continue" button in the mismatch dialog.
-    observer->OnSigninToIdP(GURL(kLoginUrl), CreateMouseEvent());
+    observer->OnLoginToIdP(GURL(kLoginUrl), CreateMouseEvent());
     CreateAndShowPopupWindow(*controller);
 
     histogram_tester_.ExpectTotalCount(
@@ -994,7 +994,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
   // Emulate user clicking on "Continue" button in the mismatch dialog.
   AccountSelectionBubbleView::Observer* observer =
       static_cast<AccountSelectionBubbleView::Observer*>(controller.get());
-  observer->OnSigninToIdP(GURL(kLoginUrl), CreateMouseEvent());
+  observer->OnLoginToIdP(GURL(kLoginUrl), CreateMouseEvent());
   CreateAndShowPopupWindow(*controller);
 
   // Emulate IdP closing the pop-up window.
@@ -1032,7 +1032,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
   // Emulate user clicking on "Continue" button in the mismatch dialog.
   AccountSelectionBubbleView::Observer* observer =
       static_cast<AccountSelectionBubbleView::Observer*>(controller.get());
-  observer->OnSigninToIdP(GURL(kLoginUrl), CreateMouseEvent());
+  observer->OnLoginToIdP(GURL(kLoginUrl), CreateMouseEvent());
   CreateAndShowPopupWindow(*controller);
 
   // Emulate IdP closing the pop-up window.

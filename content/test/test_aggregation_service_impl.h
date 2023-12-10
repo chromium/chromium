@@ -68,4 +68,4 @@ class TestAggregationServiceImpl : public AggregationServiceStorageContext,
 
 }  // namespace content
 
-#endif  // CONTENT_TEST_TEST_AGGREGATION_SERVICE_MANAGER_H_
+#endif  // CONTENT_TEST_TEST_AGGREGATION_SERVICE_IMPL_H_

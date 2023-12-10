@@ -7,8 +7,9 @@
 #ifndef CHROME_BROWSER_ASH_CHILD_ACCOUNTS_TIME_LIMIT_CONSISTENCY_TEST_CONSISTENCY_TEST_UTILS_H_
 #define CHROME_BROWSER_ASH_CHILD_ACCOUNTS_TIME_LIMIT_CONSISTENCY_TEST_CONSISTENCY_TEST_UTILS_H_
 
+#include <optional>
+
 #include "chrome/browser/ash/child_accounts/time_limit_consistency_test/goldens/consistency_golden.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 namespace time_limit_consistency_utils {
@@ -26,14 +27,14 @@ void AddWindowLimitEntryToGoldenInput(
     time_limit_consistency::ConsistencyGoldenEffectiveDay effective_day,
     const TimeOfDay& starts_at,
     const TimeOfDay& ends_at,
-    absl::optional<int64_t> last_updated);
+    std::optional<int64_t> last_updated);
 
 // Adds a usage limit entry to the provided ConsistencyGoldenInput.
 void AddUsageLimitEntryToGoldenInput(
     time_limit_consistency::ConsistencyGoldenInput* golden_input,
     time_limit_consistency::ConsistencyGoldenEffectiveDay effective_day,
     int usage_quota_mins,
-    absl::optional<int64_t> last_updated);
+    std::optional<int64_t> last_updated);
 
 // Adds an override to the provided ConsistencyGoldenInput. Must not be used
 // for UNLOCK_UNTIL_LOCK_DEADLINE actions (will DCHECK()), use

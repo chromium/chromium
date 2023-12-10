@@ -3,6 +3,10 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
+
+#include <optional>
+
+#include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -13,6 +17,9 @@
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_info.h"
 #include "chrome/browser/ash/file_system_provider/service.h"
+#include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_dialog.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/common/extensions/api/file_system_provider_capabilities/file_system_provider_capabilities_handler.h"
@@ -21,6 +28,7 @@
 #include "components/services/app_service/public/cpp/types_util.h"
 #include "content/public/browser/browser_thread.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace ash::cloud_upload {
 namespace {
@@ -168,7 +176,7 @@ void RequestODFSMount(Profile* profile,
   service->RequestMount(provider_id, std::move(logging_callback));
 }
 
-absl::optional<ProvidedFileSystemInfo> GetODFSInfo(Profile* profile) {
+std::optional<ProvidedFileSystemInfo> GetODFSInfo(Profile* profile) {
   Service* service = Service::Get(profile);
   ProviderId provider_id =
       ProviderId::CreateFromExtensionId(extension_misc::kODFSExtensionId);
@@ -176,12 +184,12 @@ absl::optional<ProvidedFileSystemInfo> GetODFSInfo(Profile* profile) {
 
   if (odfs_infos.size() == 0) {
     LOG(ERROR) << "ODFS is not mounted";
-    return absl::nullopt;
+    return std::nullopt;
   }
   if (odfs_infos.size() > 1u) {
     LOG(ERROR) << "One and only one filesystem should be mounted for the ODFS "
                   "extension";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return odfs_infos[0];
@@ -227,6 +235,21 @@ bool IsOfficeWebAppInstalled(Profile* profile) {
         installed = apps_util::IsInstalled(update.Readiness());
       });
   return installed;
+}
+
+bool UrlIsOnODFS(Profile* profile, const FileSystemURL& url) {
+  ash::file_system_provider::util::FileSystemURLParser parser(url);
+  if (!parser.Parse()) {
+    return false;
+  }
+
+  file_system_provider::ProviderId provider_id =
+      file_system_provider::ProviderId::CreateFromExtensionId(
+          extension_misc::kODFSExtensionId);
+  if (parser.file_system()->GetFileSystemInfo().provider_id() != provider_id) {
+    return false;
+  }
+  return true;
 }
 
 // Convert |actions| to |ODFSMetadata| and pass the result to |callback|.
@@ -288,7 +311,7 @@ void GetODFSEntryMetadata(
       {path}, base::BindOnce(&OnGetODFSEntryActions, std::move(callback)));
 }
 
-absl::optional<base::File::Error> GetFirstTaskError(
+std::optional<base::File::Error> GetFirstTaskError(
     const ::file_manager::io_task::ProgressStatus& status) {
   for (const auto* entries : {&status.sources, &status.outputs}) {
     for (const ::file_manager::io_task::EntryStatus& entry : *entries) {
@@ -297,7 +320,39 @@ absl::optional<base::File::Error> GetFirstTaskError(
       }
     }
   }
-  return absl::nullopt;
+  return std::nullopt;
+}
+
+std::optional<gfx::Rect> CalculateAuthWindowBounds(Profile* profile) {
+  Browser* browser =
+      FindSystemWebAppBrowser(profile, ash::SystemWebAppType::FILE_MANAGER);
+  if (!browser) {
+    return std::nullopt;
+  }
+
+  gfx::Rect files_app_bounds = browser->window()->GetBounds();
+  // These are the min sizes needed for the oauth dialog to look subjectively
+  // "good".
+  const int kMinWidth = 615;
+  const int kMinHeight = 660;
+  // The dialog won't fit inside Files app's bounds, but we'll try and keep it
+  // centered around the same point.
+  if (files_app_bounds.width() < kMinWidth ||
+      files_app_bounds.height() < kMinHeight) {
+    int files_app_center_x =
+        files_app_bounds.x() + files_app_bounds.width() / 2;
+    int files_app_center_y =
+        files_app_bounds.y() + files_app_bounds.height() / 2;
+    int target_x = std::max(0, files_app_center_x - kMinWidth / 2);
+    int target_y = std::max(0, files_app_center_y - kMinHeight / 2);
+    return gfx::Rect(target_x, target_y, kMinWidth, kMinHeight);
+  }
+
+  // Files app is bigger in both dimensions - shrink popup to min sizes and keep
+  // it centered.
+  gfx::Rect popup_bounds(files_app_bounds);
+  popup_bounds.ClampToCenteredSize(gfx::Size(kMinWidth, kMinHeight));
+  return popup_bounds;
 }
 
 }  // namespace ash::cloud_upload

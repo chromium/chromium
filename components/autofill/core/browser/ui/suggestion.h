@@ -9,10 +9,12 @@
 #include <string>
 
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "base/strings/string_piece.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "base/types/strong_alias.h"
 #include "build/build_config.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -23,7 +25,9 @@ namespace autofill {
 
 struct Suggestion {
   using IsLoading = base::StrongAlias<class IsLoadingTag, bool>;
-  using BackendId = base::StrongAlias<struct BackendIdTag, std::string>;
+  using Guid = base::StrongAlias<class GuidTag, std::string>;
+  using InstrumentId = base::StrongAlias<class InstrumentIdTag, uint64_t>;
+  using BackendId = absl::variant<Guid, InstrumentId>;
   using ValueToFill = base::StrongAlias<struct ValueToFill, std::u16string>;
   using Payload = absl::variant<BackendId, GURL, ValueToFill>;
 
@@ -41,8 +45,7 @@ struct Suggestion {
     Text& operator=(const Text& other);
     Text& operator=(Text&& other);
     ~Text();
-    bool operator==(const Suggestion::Text& text) const;
-    bool operator!=(const Suggestion::Text& text) const;
+    bool operator==(const Suggestion::Text& text) const = default;
 
     // The text value to be shown.
     std::u16string value;
@@ -54,10 +57,13 @@ struct Suggestion {
     ShouldTruncate should_truncate = ShouldTruncate(false);
   };
 
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.ui.suggestion
   enum class Icon {
+    kNoIcon,
     kAccount,
     kClear,
     kCreate,
+    kCode,
     kDelete,
     kDevice,
     kEdit,
@@ -73,8 +79,10 @@ struct Suggestion {
     kLocation,
     kMagic,
     kOfferTag,
+    kPenSpark,
     kScanCreditCard,
     kSettings,
+    kSettingsAndroid,
     kUndo,
     // Credit card icons
     kCardGeneric,
@@ -83,7 +91,7 @@ struct Suggestion {
     kCardDiscover,
     kCardElo,
     kCardJCB,
-    kCardMaster,
+    kCardMasterCard,
     kCardMir,
     kCardTroy,
     kCardUnionPay,
@@ -98,12 +106,16 @@ struct Suggestion {
   // UTF-16.
   Suggestion(base::StringPiece main_text,
              base::StringPiece label,
-             std::string icon,
+             Icon icon,
+             PopupItemId popup_item_id);
+  Suggestion(base::StringPiece main_text,
+             std::vector<std::vector<Text>> labels,
+             Icon icon,
              PopupItemId popup_item_id);
   Suggestion(base::StringPiece main_text,
              base::StringPiece minor_text,
              base::StringPiece label,
-             std::string icon,
+             Icon icon,
              PopupItemId popup_item_id);
   Suggestion(const Suggestion& other);
   Suggestion(Suggestion&& other);
@@ -117,6 +129,12 @@ struct Suggestion {
     DCHECK(Invariant());
 #endif
     return absl::holds_alternative<T>(payload) ? absl::get<T>(payload) : T{};
+  }
+
+  template <typename T>
+  T GetBackendId() const {
+    CHECK(absl::holds_alternative<BackendId>(payload));
+    return absl::get<T>(absl::get<BackendId>(payload));
   }
 
 #if DCHECK_IS_ON()
@@ -179,10 +197,9 @@ struct Suggestion {
   bool is_icon_at_start = false;
 #endif  // BUILDFLAG(IS_ANDROID)
 
-  // TODO(crbug.com/1019660): Identify icons with enum instead of strings.
   // This is the icon which is shown on the side of a suggestion.
-  // If |custom_icon| is empty, the name of the fallback built-in icon.
-  std::string icon;
+  // If |custom_icon| is empty, the fallback built-in icon.
+  Icon icon = Icon::kNoIcon;
 
   // An icon that appears after the suggestion in the suggestion view. For
   // passwords, this icon string shows whether the suggestion originates from
@@ -190,7 +207,7 @@ struct Suggestion {
   // credit card Autofill popup to indicate if all credit cards are server
   // cards. It also holds Google Password Manager icon on the settings entry for
   // the passwords Autofill popup.
-  std::string trailing_icon;
+  Icon trailing_icon = Icon::kNoIcon;
 
   // Whether suggestion was interacted with and is now in a loading state.
   IsLoading is_loading = IsLoading(false);
@@ -200,27 +217,25 @@ struct Suggestion {
   std::string feature_for_iph;
 
   // If specified, this text will be played back as voice over for a11y.
-  absl::optional<std::u16string> voice_over;
+  std::optional<std::u16string> voice_over;
 
   // If specified, this text will be played back if the user accepts this
   // suggestion.
-  absl::optional<std::u16string> acceptance_a11y_announcement;
+  std::optional<std::u16string> acceptance_a11y_announcement;
+
+  // When `popup_item_id` is
+  // `PopupItemId::k(Address|CreditCard)FieldByFieldFilling`, specifies the
+  // `ServerFieldType` used to build the suggestion's `main_text`.
+  std::optional<ServerFieldType> field_by_field_filling_type_used;
+
+  // Denotes whether this suggestion was hidden prior to the effects caused by
+  // kAutofillUseAddressRewriterInProfileSubsetComparison.
+  // TODO(crbug.com/1439742): Remove when the feature launches.
+  bool hidden_prior_to_address_rewriter_usage = false;
 };
 
-#if defined(UNIT_TEST)
-inline void PrintTo(const Suggestion& suggestion, std::ostream* os) {
-  *os << std::endl
-      << "Suggestion (popup_item_id:"
-      << base::to_underlying(suggestion.popup_item_id) << ", main_text:\""
-      << suggestion.main_text.value << "\""
-      << (suggestion.main_text.is_primary ? "(Primary)" : "(Not Primary)")
-      << ", minor_text:\"" << suggestion.minor_text.value << "\""
-      << (suggestion.minor_text.is_primary ? "(Primary)" : "(Not Primary)")
-      << ", additional_label: \"" << suggestion.additional_label << "\""
-      << ", icon:" << suggestion.icon
-      << ", trailing_icon:" << suggestion.trailing_icon << ")";
-}
-#endif
+std::string_view ConvertIconToPrintableString(Suggestion::Icon icon);
+void PrintTo(const Suggestion& suggestion, std::ostream* os);
 
 }  // namespace autofill
 

@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/overlays/overlay_presentation_context_util.h"
 
-#import "ios/chrome/browser/overlays/public/overlay_presentation_context.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_presentation_context.h"
 
 bool OverlayPresentationContextSupportsContainedUI(
     OverlayPresentationContext* context) {

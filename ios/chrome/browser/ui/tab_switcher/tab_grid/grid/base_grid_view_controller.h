@@ -10,19 +10,21 @@
 #import <set>
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_collection_consumer.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_item_provider.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_theme.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_paging.h"
 
-@protocol TabContextMenuProvider;
-@protocol TabCollectionDragDropHandler;
+@protocol BaseGridMediatorItemProvider;
+@class BaseGridViewController;
 @protocol GridEmptyView;
 @class GridItemIdentifier;
-@protocol GridShareableItemsProvider;
+@protocol GridViewControllerMutator;
 @class LegacyGridTransitionLayout;
-@class BaseGridViewController;
 @protocol PriceCardDataSource;
 @protocol SuggestedActionsDelegate;
+@protocol TabContextMenuProvider;
+@protocol TabCollectionDragDropHandler;
+@class TabGridTransitionItem;
+
 namespace web {
 class WebStateID;
 }  // namespace web
@@ -91,10 +93,11 @@ class WebStateID;
 @end
 
 // A view controller that contains a grid of items.
-@interface BaseGridViewController
-    : UIViewController <GridItemProvider, TabCollectionConsumer>
-// The gridView is accessible to manage the content inset behavior.
-@property(nonatomic, readonly) UIScrollView* gridView;
+@interface BaseGridViewController : UIViewController <TabCollectionConsumer>
+// Whether the grid is scrolled to the top.
+@property(nonatomic, readonly, getter=isScrolledToTop) BOOL scrolledToTop;
+// Whether the grid is scrolled to the bottom.
+@property(nonatomic, readonly, getter=isScrolledToBottom) BOOL scrolledToBottom;
 // The view that is shown when there are no items.
 @property(nonatomic, strong) UIView<GridEmptyView>* emptyStateView;
 // Returns YES if the grid has no items.
@@ -114,6 +117,10 @@ class WebStateID;
     suggestedActionsDelegate;
 // Delegate is informed of user interactions in the grid UI.
 @property(nonatomic, weak) id<GridViewControllerDelegate> delegate;
+// Mutator is informed when the model should be updated after user interaction.
+@property(nonatomic, weak) id<GridViewControllerMutator> mutator;
+// Provider of the grid.
+@property(nonatomic, weak) id<BaseGridMediatorItemProvider> gridProvider;
 // Handles drag and drop interactions that involved the model layer.
 @property(nonatomic, weak) id<TabCollectionDragDropHandler> dragDropHandler;
 // Tracks if a drop animation is in progress.
@@ -125,19 +132,20 @@ class WebStateID;
     BOOL selectedCellVisible;
 // Provider of context menu configurations for the tabs in the grid.
 @property(nonatomic, weak) id<TabContextMenuProvider> menuProvider;
-// Provider of shareable state for tabs in the grid.
-@property(nonatomic, weak) id<GridShareableItemsProvider>
-    shareableItemsProvider;
-
-// Whether or not all items are selected. NO if `mode` is not
-// TabGridModeSelection.
-@property(nonatomic, readonly) BOOL allItemsSelectedForEditing;
-
 // Opacity of grid cells that are not the selected tab.
 @property(nonatomic, assign) CGFloat notSelectedTabCellOpacity;
+// The insets to set on the collection view.
+// Setting content insets on the collection view is a workaround. Indeed,
+// ideally, grids would just honor the safe area. But since the 3 panes are part
+// of a scrollview, they don't all get the correct information when being laid
+// out. To that end, contentInsets are manually added.
+@property(nonatomic, assign) UIEdgeInsets contentInsets;
 
 // Returns the layout of the grid for use in an animated transition.
 - (LegacyGridTransitionLayout*)transitionLayout;
+
+// Returns TabGridTransitionItem for the active cell.
+- (TabGridTransitionItem*)transitionItemForActiveCell;
 
 // Notifies the ViewController that its content might soon be displayed.
 - (void)prepareForAppearance;
@@ -149,14 +157,6 @@ class WebStateID;
 
 // Notifies the grid that it is about to be dismissed.
 - (void)prepareForDismissal;
-
-// Selects all items in the grid for editing. No-op if `mode` is not
-// TabGridModeSelection.
-- (void)selectAllItemsForEditing;
-
-// Deselects all items in the grid for editing. No-op if `mode` is not
-// TabGridModeSelection.
-- (void)deselectAllItemsForEditing;
 
 @end
 

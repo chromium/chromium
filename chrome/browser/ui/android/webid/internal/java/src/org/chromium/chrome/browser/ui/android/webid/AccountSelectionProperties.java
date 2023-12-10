@@ -18,15 +18,11 @@ import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 import org.chromium.url.GURL;
 
-/**
- * Properties defined here reflect the state of the AccountSelection-components.
- */
+/** Properties defined here reflect the state of the AccountSelection-components. */
 class AccountSelectionProperties {
     public static final int ITEM_TYPE_ACCOUNT = 1;
 
-    /**
-     * Properties for an account entry in AccountSelection sheet.
-     */
+    /** Properties for an account entry in AccountSelection sheet. */
     static class AccountProperties {
         static class Avatar {
             // Name is used to create a fallback monogram Icon.
@@ -65,6 +61,7 @@ class AccountSelectionProperties {
             SIGN_IN_TO_IDP_STATIC,
             SIGN_IN_ERROR
         }
+
         static final ReadableObjectPropertyKey<Runnable> CLOSE_ON_CLICK_LISTENER =
                 new ReadableObjectPropertyKey<>("close_on_click_listener");
         static final ReadableObjectPropertyKey<String> IDP_FOR_DISPLAY =
@@ -80,8 +77,15 @@ class AccountSelectionProperties {
         static final ReadableObjectPropertyKey<String> RP_CONTEXT =
                 new ReadableObjectPropertyKey<>("rp_context");
 
-        static final PropertyKey[] ALL_KEYS = {CLOSE_ON_CLICK_LISTENER, IDP_FOR_DISPLAY,
-                TOP_FRAME_FOR_DISPLAY, IFRAME_FOR_DISPLAY, IDP_BRAND_ICON, TYPE, RP_CONTEXT};
+        static final PropertyKey[] ALL_KEYS = {
+            CLOSE_ON_CLICK_LISTENER,
+            IDP_FOR_DISPLAY,
+            TOP_FRAME_FOR_DISPLAY,
+            IFRAME_FOR_DISPLAY,
+            IDP_BRAND_ICON,
+            TYPE,
+            RP_CONTEXT
+        };
 
         private HeaderProperties() {}
     }
@@ -175,9 +179,7 @@ class AccountSelectionProperties {
         private ErrorProperties() {}
     }
 
-    /**
-     * Properties defined here reflect sections in the FedCM bottom sheet.
-     */
+    /** Properties defined here reflect sections in the FedCM bottom sheet. */
     static class ItemProperties {
         static final WritableObjectPropertyKey<PropertyModel> CONTINUE_BUTTON =
                 new WritableObjectPropertyKey<>("continue_btn");

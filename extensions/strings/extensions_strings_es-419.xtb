@@ -8,6 +8,7 @@
 <translation id="1420684932347524586">¡Ay! Error al generar clave privada RSA aleatoria.</translation>
 <translation id="1445572445564823378">Esta extensión está ralentizando <ph name="PRODUCT_NAME" />. Deberías inhabilitarla para restaurar el rendimiento de <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1468038450257740950">WebGL no es compatible.</translation>
+<translation id="1610570795592207282">No se pudo cargar <ph name="RELATIVE_PATH" /> de CSS para la secuencia de comandos.</translation>
 <translation id="1803557475693955505">No se pudo cargar la página de fondo '<ph name="BACKGROUND_PAGE" />'.</translation>
 <translation id="2159915644201199628">No se pudo decodificar la imagen "<ph name="IMAGE_NAME" />".</translation>
 <translation id="2350172092385603347">Se utiliza localización, pero default_locale no se especificó en el manifiesto.</translation>
@@ -18,14 +19,12 @@
 <translation id="3115238746683532089">Producto desconocido <ph name="PRODUCT_ID" /> del proveedor <ph name="VENDOR_ID" /> (número de serie <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">No se pudo reemplazar el archivo crx. Comprueba si el archivo está en uso.</translation>
 <translation id="3163201441334626963">Producto desconocido <ph name="PRODUCT_ID" /> del proveedor <ph name="VENDOR_ID" /></translation>
-<translation id="3302709122321372472">No se pudo cargar <ph name="RELATIVE_PATH" /> css para la secuencia de comandos del contenido.</translation>
 <translation id="3369521687965833290">No se puede desempaquetar la extensión. Para desempaquetar una extensión de manera segura, debe haber una ruta de acceso al directorio de tu perfil que comience con una letra de unidad y que no contenga una unión, un punto de montaje ni un symlink. No existe esa ruta de acceso para tu perfil.</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (número de serie <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> del proveedor <ph name="VENDOR_ID" /> (número de serie <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">El valor de entrada de la clave privada debe ser una ruta válida.</translation>
 <translation id="388442998277590542">No se pudo cargar la página de opciones '<ph name="OPTIONS_PAGE" />'.</translation>
 <translation id="3984413272403535372">Error al firmar extensión.</translation>
-<translation id="39964277676607559">No se pudo cargar JavaScript <ph name="RELATIVE_PATH" /> css para la secuencia de comandos del contenido.</translation>
 <translation id="4115165561519362854">El administrador de esta computadora requiere una versión de <ph name="EXTENSION_NAME" /> no anterior a <ph name="EXTENSION_VERSION" />. No se puede habilitar hasta que se haya actualizado a dicha versión (o versiones posteriores).</translation>
 <translation id="4233778200880751280">No se pudo cargar la página de información "<ph name="ABOUT_PAGE" />".</translation>
 <translation id="471800408830181311">Error al emitir clave privada.</translation>
@@ -33,6 +32,7 @@
 <translation id="4988792151665380515">Error al exportar la clave pública.</translation>
 <translation id="5026754133087629784">Vista web: <ph name="WEBVIEW_TAG_NAME" /></translation>
 <translation id="5098647635849512368">No se puede encontrar la ruta de acceso absoluta al directorio al paquete.</translation>
+<translation id="5160071981665899014">No se pudo cargar <ph name="RELATIVE_PATH" /> de JavaScript para la secuencia de comandos.</translation>
 <translation id="5356315618422219272">Appview: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5436430103864390185">No se admiten las ventanas con formas.</translation>
 <translation id="5456409301717116725">Esta extensión incluye el archivo de clave "<ph name="KEY_PATH" />". Probablemente no desees incluir ese archivo.</translation>

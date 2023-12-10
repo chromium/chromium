@@ -532,8 +532,49 @@ TEST_F(AttributionHostTest, DuplicateAttributionSrcToken_BadMessage) {
 
   EXPECT_EQ(
       "Renderer attempted to register a data host with a duplicate "
-      "AttribtionSrcToken.",
+      "AttributionSrcToken.",
       bad_message_observer.WaitForBadMessage());
+}
+
+TEST_F(
+    AttributionHostTest,
+    NotifyNavigationWithBackgroundRegistrationsWillStart_DuplicateAttributionSrcToken_BadMessage) {
+  ON_CALL(*mock_data_host_manager(),
+          NotifyNavigationWithBackgroundRegistrationsWillStart)
+      .WillByDefault(Return(false));
+
+  contents()->NavigateAndCommit(GURL("https://top.example"));
+  ScopedAttributionHostTargetFrame frame_scope(attribution_host(), main_rfh());
+
+  // Create a fake dispatch context to trigger a bad message in.
+  mojo::FakeMessageDispatchContext fake_dispatch_context;
+  mojo::test::BadMessageObserver bad_message_observer;
+
+  mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
+  attribution_host_mojom()
+      ->NotifyNavigationWithBackgroundRegistrationsWillStart(
+          blink::AttributionSrcToken(), /*expected_registrations=*/1);
+
+  EXPECT_EQ(
+      "Renderer attempted to notify of expected registrations with a duplicate "
+      "AttributionSrcToken or an invalid number of expected registrations.",
+      bad_message_observer.WaitForBadMessage());
+}
+
+TEST_F(
+    AttributionHostTest,
+    NotifyNavigationWithBackgroundRegistrationsWillStart_InsecureContext_Ignored) {
+  contents()->NavigateAndCommit(GURL("http://top.example"));
+  ScopedAttributionHostTargetFrame frame_scope(attribution_host(), main_rfh());
+
+  EXPECT_CALL(*mock_data_host_manager(),
+              NotifyNavigationWithBackgroundRegistrationsWillStart)
+      .Times(0);
+
+  mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
+  attribution_host_mojom()
+      ->NotifyNavigationWithBackgroundRegistrationsWillStart(
+          blink::AttributionSrcToken(), /*expected_registrations=*/1);
 }
 
 TEST_F(AttributionHostTest, DataHostInSubframe_ContextIsOutermostFrame) {

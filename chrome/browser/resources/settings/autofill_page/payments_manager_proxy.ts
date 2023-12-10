@@ -64,6 +64,11 @@ export interface PaymentsManagerProxy {
   logServerCardLinkClicked(): void;
 
   /**
+   * Logs that the server IBAN's "Edit in Google Pay" link was clicked.
+   */
+  logServerIbanLinkClicked(): void;
+
+  /**
    * Enables FIDO authentication for card unmasking.
    */
   setCreditCardFidoAuthEnabledState(enabled: boolean): void;
@@ -104,6 +109,13 @@ export interface PaymentsManagerProxy {
    */
   checkIfDeviceAuthAvailable(): Promise<boolean>;
   // </if>
+
+  /**
+   * Bulk delete all the CVCs (server and local) from the local webdata
+   * database. For server CVCs, this will also clear them from the Chrome
+   * sync server and thus other devices.
+   */
+  bulkDeleteAllCvcs(): void;
 }
 
 /**
@@ -158,6 +170,10 @@ export class PaymentsManagerImpl implements PaymentsManagerProxy {
     chrome.autofillPrivate.logServerCardLinkClicked();
   }
 
+  logServerIbanLinkClicked() {
+    chrome.autofillPrivate.logServerIbanLinkClicked();
+  }
+
   setCreditCardFidoAuthEnabledState(enabled: boolean) {
     chrome.autofillPrivate.setCreditCardFIDOAuthEnabledState(enabled);
   }
@@ -192,6 +208,10 @@ export class PaymentsManagerImpl implements PaymentsManagerProxy {
     return chrome.autofillPrivate.checkIfDeviceAuthAvailable();
   }
   // </if>
+
+  bulkDeleteAllCvcs() {
+    chrome.autofillPrivate.bulkDeleteAllCvcs();
+  }
 
   static getInstance(): PaymentsManagerProxy {
     return instance || (instance = new PaymentsManagerImpl());

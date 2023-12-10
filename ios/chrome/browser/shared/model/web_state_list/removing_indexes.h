@@ -30,6 +30,10 @@ class RemovingIndexes {
 
   ~RemovingIndexes();
 
+  // Helper that return a RemovingIndexes corresponding to a continous range
+  // of indexes.
+  static RemovingIndexes Range(int start, int count);
+
   // Returns the number of WebState that will be closed.
   int count() const;
 
@@ -72,6 +76,25 @@ class RemovingIndexes {
     int index_;
   };
 
+  // Represents a RemovingIndexes with a contigous range of indexes.
+  class RangeStorage {
+   public:
+    RangeStorage(int start, int count);
+
+    // Returns the number of items to remove.
+    int Count() const;
+
+    // Returns whether `index` will be removed.
+    bool ContainsIndex(int index) const;
+
+    // Returns the updated value of `index` after items have been removed.
+    int IndexAfterRemoval(int index) const;
+
+   private:
+    int start_;
+    int count_;
+  };
+
   // Represents a RemovingIndexes with two or more indexes.
   class VectorStorage {
    public:
@@ -98,12 +121,17 @@ class RemovingIndexes {
   };
 
   // Alias for the variant storing the indexes to remove. Using a variant
-  // allow not allocating for the common case of removing one element.
-  using Storage = absl::variant<EmptyStorage, OneIndexStorage, VectorStorage>;
+  // allow not allocating for the common case of removing one element or
+  // a contigous range.
+  using Storage =
+      absl::variant<EmptyStorage, OneIndexStorage, RangeStorage, VectorStorage>;
 
   // Helper methods to create the storage from a vector or and initializer list.
   static Storage StorageFromVector(std::vector<int> indexes);
   static Storage StorageFromInitializerList(std::initializer_list<int> indexes);
+
+  // Helper constructor to construct an object from a `Storage` value.
+  explicit RemovingIndexes(Storage storage);
 
   Storage removing_;
 };

@@ -13,9 +13,9 @@
 #include "base/time/time.h"
 #include "chrome/browser/ui/autofill/autofill_popup_view_delegate.h"
 #include "components/autofill/core/browser/autofill_client.h"
+#include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/common/aliases.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace autofill {
 
@@ -28,7 +28,7 @@ class AutofillPopupController : public AutofillPopupViewDelegate {
 
   // Selects the suggestion with `index`. For fillable items, this will trigger
   // preview. For other items, it does not do anything.
-  virtual void SelectSuggestion(absl::optional<size_t> index) = 0;
+  virtual void SelectSuggestion(std::optional<size_t> index) = 0;
 
   // Accepts the suggestion at `index`. The suggestion will only be accepted if
   // the popup has been shown for at least `show_threshold` compared to
@@ -40,8 +40,11 @@ class AutofillPopupController : public AutofillPopupViewDelegate {
   // suggestion at `index`. Button actions depend on the type of the suggestion.
   virtual void PerformButtonActionForSuggestion(int index) = 0;
 
-  // Removes the suggestion at the given index.
-  virtual bool RemoveSuggestion(int index) = 0;
+  // Removes the suggestion at the given `index`. `removal_method`specifies the
+  // UI entry point for removal, e.g. clicking on a delete button.
+  virtual bool RemoveSuggestion(
+      int index,
+      AutofillMetrics::SingleEntryRemovalMethod removal_method) = 0;
 
   // Returns the number of lines of data that there are.
   virtual int GetLineCount() const = 0;
@@ -79,10 +82,6 @@ class AutofillPopupController : public AutofillPopupViewDelegate {
 
   // Returns the popup type corresponding to the controller.
   virtual PopupType GetPopupType() const = 0;
-
-  // Returns the suggestion source that triggered autofill.
-  virtual AutofillSuggestionTriggerSource GetAutofillSuggestionTriggerSource()
-      const = 0;
 
   // Returns whether the popup should ignore the check that the mouse was
   // observed out of bounds - see PopupCellView for more detail.

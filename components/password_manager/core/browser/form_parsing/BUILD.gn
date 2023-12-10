@@ -49,3 +49,7 @@ source_set("unit_tests") {
     "//url",
   ]
 }
+
+group("fuzzers") {
+  deps = [ "//components/password_manager/core/browser/form_parsing/fuzzer" ]
+}

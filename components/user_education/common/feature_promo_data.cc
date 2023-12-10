@@ -47,11 +47,34 @@ std::ostream& operator<<(std::ostream& oss,
 }
 
 FeaturePromoData::FeaturePromoData() = default;
-FeaturePromoData::~FeaturePromoData() = default;
 FeaturePromoData::FeaturePromoData(const FeaturePromoData&) = default;
-FeaturePromoData::FeaturePromoData(FeaturePromoData&&) = default;
+FeaturePromoData::FeaturePromoData(FeaturePromoData&&) noexcept = default;
 FeaturePromoData& FeaturePromoData::operator=(const FeaturePromoData&) =
     default;
-FeaturePromoData& FeaturePromoData::operator=(FeaturePromoData&&) = default;
+FeaturePromoData& FeaturePromoData::operator=(FeaturePromoData&&) noexcept =
+    default;
+FeaturePromoData::~FeaturePromoData() = default;
+
+FeaturePromoSessionData::FeaturePromoSessionData() = default;
+FeaturePromoSessionData::FeaturePromoSessionData(
+    const FeaturePromoSessionData&) = default;
+FeaturePromoSessionData::FeaturePromoSessionData(
+    FeaturePromoSessionData&&) noexcept = default;
+FeaturePromoSessionData& FeaturePromoSessionData::operator=(
+    const FeaturePromoSessionData&) = default;
+FeaturePromoSessionData& FeaturePromoSessionData::operator=(
+    FeaturePromoSessionData&&) noexcept = default;
+FeaturePromoSessionData::~FeaturePromoSessionData() = default;
+
+FeaturePromoPolicyData::FeaturePromoPolicyData() = default;
+FeaturePromoPolicyData::FeaturePromoPolicyData(const FeaturePromoPolicyData&) =
+    default;
+FeaturePromoPolicyData::FeaturePromoPolicyData(
+    FeaturePromoPolicyData&&) noexcept = default;
+FeaturePromoPolicyData& FeaturePromoPolicyData::operator=(
+    const FeaturePromoPolicyData&) = default;
+FeaturePromoPolicyData& FeaturePromoPolicyData::operator=(
+    FeaturePromoPolicyData&&) noexcept = default;
+FeaturePromoPolicyData::~FeaturePromoPolicyData() = default;
 
 }  // namespace user_education

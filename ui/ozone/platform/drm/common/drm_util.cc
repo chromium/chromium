@@ -576,11 +576,6 @@ std::unique_ptr<display::DisplaySnapshot> CreateDisplaySnapshot(
   const bool has_color_correction_matrix =
       HasColorCorrectionMatrix(drm, info->crtc()) ||
       HasPerPlaneColorCorrectionMatrix(drm, info->crtc());
-  // On rk3399 we can set a color correction matrix that will be applied in
-  // linear space. https://crbug.com/839020 to track if it will be possible to
-  // disable the per-plane degamma/gamma.
-  const bool color_correction_in_linear_space =
-      has_color_correction_matrix && drm.GetDriverName() == "rockchip";
   const gfx::Size maximum_cursor_size = GetMaximumCursorSize(drm);
   const display::VariableRefreshRateState variable_refresh_rate_state =
       GetVariableRefreshRateState(drm, info);
@@ -644,11 +639,11 @@ std::unique_ptr<display::DisplaySnapshot> CreateDisplaySnapshot(
       gfx::Point(), physical_size, type, base_connector_id, path_topology,
       is_aspect_preserving_scaling, has_overscan, privacy_screen_state,
       has_content_protection_key, has_color_correction_matrix,
-      color_correction_in_linear_space, display_color_space, bits_per_channel,
-      hdr_static_metadata, display_name, drm.device_path(), std::move(modes),
-      panel_orientation, edid, current_mode, native_mode, product_code,
-      year_of_manufacture, maximum_cursor_size, variable_refresh_rate_state,
-      vsync_rate_min, drm_formats_and_modifiers);
+      display_color_space, bits_per_channel, hdr_static_metadata, display_name,
+      drm.device_path(), std::move(modes), panel_orientation, edid,
+      current_mode, native_mode, product_code, year_of_manufacture,
+      maximum_cursor_size, variable_refresh_rate_state, vsync_rate_min,
+      drm_formats_and_modifiers);
 }
 
 int GetFourCCFormatForOpaqueFramebuffer(gfx::BufferFormat format) {

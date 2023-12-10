@@ -45,7 +45,6 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/extension_util.h"
-#include "chrome/browser/extensions/identifiability_metrics_test_util.h"
 #include "chrome/browser/extensions/load_error_reporter.h"
 #include "chrome/browser/extensions/scripting_permissions_modifier.h"
 #include "chrome/browser/extensions/tab_helper.h"
@@ -5266,54 +5265,6 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest_Packed,
                          {dnr_api::DYNAMIC_RULESET_ID});
 }
 
-class DeclarativeNetRequestIdentifiabilityTest
-    : public DeclarativeNetRequestBrowserTest {
- public:
-  void SetUpOnMainThread() override {
-    identifiability_metrics_test_helper_.SetUpOnMainThread();
-    DeclarativeNetRequestBrowserTest::SetUpOnMainThread();
-  }
-
- protected:
-  IdentifiabilityMetricsTestHelper identifiability_metrics_test_helper_;
-};
-
-// Make sure that a declaratively-blocked request gets recorded for
-// identifiability study.
-IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestIdentifiabilityTest,
-                       DeclarativeBlockRecorded) {
-  TestRule rule = CreateGenericRule();
-  rule.condition->url_filter = std::string("page2.html^");
-  rule.condition->resource_types = std::vector<std::string>({"main_frame"});
-
-  ASSERT_NO_FATAL_FAILURE(LoadExtensionWithRules({rule}));
-
-  base::RunLoop run_loop;
-  identifiability_metrics_test_helper_.PrepareForTest(&run_loop);
-
-  GURL url = embedded_test_server()->GetURL("google.com",
-                                            "/pages_with_script/page2.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-  EXPECT_FALSE(WasFrameWithScriptLoaded(GetPrimaryMainFrame()));
-  EXPECT_EQ(content::PAGE_TYPE_ERROR, GetPageType());
-
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  ukm::SourceId frame_id =
-      web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId();
-
-  std::map<ukm::SourceId, ukm::mojom::UkmEntryPtr> merged_entries =
-      identifiability_metrics_test_helper_.NavigateToBlankAndWaitForMetrics(
-          web_contents, &run_loop);
-
-  std::set<ukm::SourceId> cancel_ids =
-      IdentifiabilityMetricsTestHelper::GetSourceIDsForSurfaceAndExtension(
-          merged_entries,
-          blink::IdentifiableSurface::Type::kExtensionCancelRequest,
-          last_loaded_extension_id());
-  ASSERT_EQ(1u, cancel_ids.size());
-  EXPECT_TRUE(base::Contains(cancel_ids, frame_id));
-}
 
 // Test fixture to verify that host permissions for the request url and the
 // request initiator are properly checked when redirecting requests. Loads an
@@ -6906,11 +6857,6 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBackForwardCacheBrowserTest,
 
 INSTANTIATE_TEST_SUITE_P(All,
                          DeclarativeNetRequestBrowserTest,
-                         ::testing::Values(ExtensionLoadType::PACKED,
-                                           ExtensionLoadType::UNPACKED));
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         DeclarativeNetRequestIdentifiabilityTest,
                          ::testing::Values(ExtensionLoadType::PACKED,
                                            ExtensionLoadType::UNPACKED));
 

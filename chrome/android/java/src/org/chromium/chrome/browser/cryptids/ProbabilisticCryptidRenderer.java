@@ -9,6 +9,9 @@ import android.graphics.drawable.Drawable;
 
 import androidx.annotation.VisibleForTesting;
 
+import jp.tomorrowkey.android.gifplayer.BaseGifDrawable;
+import jp.tomorrowkey.android.gifplayer.BaseGifImage;
+
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
@@ -21,9 +24,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.components.image_fetcher.ImageFetcherConfig;
 import org.chromium.components.image_fetcher.ImageFetcherFactory;
-
-import jp.tomorrowkey.android.gifplayer.BaseGifDrawable;
-import jp.tomorrowkey.android.gifplayer.BaseGifImage;
 
 /**
  * Allows for cryptids to be displayed on the New Tab Page under certain probabilistic conditions.
@@ -77,9 +77,7 @@ public class ProbabilisticCryptidRenderer {
         return getRandom() < calculateProbability();
     }
 
-    /**
-     * Records the current timestamp as the last render time in the appropriate pref.
-     */
+    /** Records the current timestamp as the last render time in the appropriate pref. */
     public void recordRenderEvent() {
         recordRenderEvent(System.currentTimeMillis());
     }
@@ -101,16 +99,18 @@ public class ProbabilisticCryptidRenderer {
             return;
         }
 
-        ImageFetcher fetcher = ImageFetcherFactory.createImageFetcher(
-                ImageFetcherConfig.DISK_CACHE_ONLY, profile.getProfileKey());
+        ImageFetcher fetcher =
+                ImageFetcherFactory.createImageFetcher(
+                        ImageFetcherConfig.DISK_CACHE_ONLY, profile.getProfileKey());
 
         // If no asset key is provided, an empty asset with key "empty" will be fetched; this allows
         // end-to-end execution without any visible change. To test with visible changes, the asset
         // key "test" should be provided.
-        fetcher.fetchGif(ImageFetcher.Params.create(
-                                 String.format(URL_FORMAT,
-                                         getParamValue(ASSET_KEY_PARAM_NAME, EMPTY_ASSET_KEY)),
-                                 ImageFetcher.CRYPTIDS_UMA_CLIENT_NAME),
+        fetcher.fetchGif(
+                ImageFetcher.Params.create(
+                        String.format(
+                                URL_FORMAT, getParamValue(ASSET_KEY_PARAM_NAME, EMPTY_ASSET_KEY)),
+                        ImageFetcher.CRYPTIDS_UMA_CLIENT_NAME),
                 new Callback<BaseGifImage>() {
                     @Override
                     public void onResult(BaseGifImage image) {
@@ -118,7 +118,8 @@ public class ProbabilisticCryptidRenderer {
 
                         if (image == null) {
                             RecordHistogram.recordEnumeratedHistogram(
-                                    "NewTabPage.CryptidRenderResult", HISTOGRAM_FAILURE,
+                                    "NewTabPage.CryptidRenderResult",
+                                    HISTOGRAM_FAILURE,
                                     HISTOGRAM_MAX);
                             callback.onResult(null);
                             return;
@@ -135,9 +136,11 @@ public class ProbabilisticCryptidRenderer {
 
     // Protected for testing
     protected long getLastRenderTimestampMillis() {
-        long lastRenderTimestamp = ChromeSharedPreferences.getInstance().readLong(
-                ChromePreferenceKeys.CRYPTID_LAST_RENDER_TIMESTAMP,
-                /* defaultValue = */ 0);
+        long lastRenderTimestamp =
+                ChromeSharedPreferences.getInstance()
+                        .readLong(
+                                ChromePreferenceKeys.CRYPTID_LAST_RENDER_TIMESTAMP,
+                                /* defaultValue= */ 0);
         if (lastRenderTimestamp == 0) {
             // If no render has ever been recorded, set the timestamp such that the current time is
             // the end of the moratorium period.
@@ -168,8 +171,8 @@ public class ProbabilisticCryptidRenderer {
         RecordUserAction.record("CryptidRendered");
         RecordHistogram.recordEnumeratedHistogram(
                 "NewTabPage.CryptidRenderResult", HISTOGRAM_SUCCESS, HISTOGRAM_MAX);
-        ChromeSharedPreferences.getInstance().writeLong(
-                ChromePreferenceKeys.CRYPTID_LAST_RENDER_TIMESTAMP, timestamp);
+        ChromeSharedPreferences.getInstance()
+                .writeLong(ChromePreferenceKeys.CRYPTID_LAST_RENDER_TIMESTAMP, timestamp);
     }
 
     /**
@@ -188,8 +191,12 @@ public class ProbabilisticCryptidRenderer {
      *     rendered
      */
     @VisibleForTesting
-    static int calculateProbability(long lastRenderTimestamp, long currentTimestamp,
-            long renderingMoratoriumLength, long rampUpLength, int maxProbability) {
+    static int calculateProbability(
+            long lastRenderTimestamp,
+            long currentTimestamp,
+            long renderingMoratoriumLength,
+            long rampUpLength,
+            int maxProbability) {
         if (currentTimestamp < lastRenderTimestamp) {
             Log.e(TAG, "Last render timestamp is in the future");
             return 0;
@@ -208,13 +215,15 @@ public class ProbabilisticCryptidRenderer {
         return (int) Math.round(fractionOfRampUp * maxProbability);
     }
 
-    /**
-     * Convenience method calling the static method above using the appropriate values.
-     */
+    /** Convenience method calling the static method above using the appropriate values. */
     @VisibleForTesting
     int calculateProbability() {
-        return calculateProbability(getLastRenderTimestampMillis(), System.currentTimeMillis(),
-                getRenderingMoratoriumLengthMillis(), getRampUpLengthMillis(), getMaxProbability());
+        return calculateProbability(
+                getLastRenderTimestampMillis(),
+                System.currentTimeMillis(),
+                getRenderingMoratoriumLengthMillis(),
+                getRampUpLengthMillis(),
+                getMaxProbability());
     }
 
     /**
@@ -230,8 +239,9 @@ public class ProbabilisticCryptidRenderer {
      * String. Returns the provided default if no such param value is set.
      */
     private String getParamValue(String name, String defaultValue) {
-        String paramVal = ChromeFeatureList.getFieldTrialParamByFeature(
-                ChromeFeatureList.PROBABILISTIC_CRYPTID_RENDERER, name);
+        String paramVal =
+                ChromeFeatureList.getFieldTrialParamByFeature(
+                        ChromeFeatureList.PROBABILISTIC_CRYPTID_RENDERER, name);
         return paramVal.length() > 0 ? paramVal : defaultValue;
     }
 
@@ -241,8 +251,9 @@ public class ProbabilisticCryptidRenderer {
      * provided can't be parsed as a long (in which case an error is also logged).
      */
     private long getParamValue(String name, long defaultValue) {
-        String paramVal = ChromeFeatureList.getFieldTrialParamByFeature(
-                ChromeFeatureList.PROBABILISTIC_CRYPTID_RENDERER, name);
+        String paramVal =
+                ChromeFeatureList.getFieldTrialParamByFeature(
+                        ChromeFeatureList.PROBABILISTIC_CRYPTID_RENDERER, name);
         try {
             if (paramVal.length() > 0) {
                 return Long.parseLong(paramVal);
@@ -260,8 +271,9 @@ public class ProbabilisticCryptidRenderer {
      * provided can't be parsed as a int (in which case an error is also logged).
      */
     private int getParamValue(String name, int defaultValue) {
-        String paramVal = ChromeFeatureList.getFieldTrialParamByFeature(
-                ChromeFeatureList.PROBABILISTIC_CRYPTID_RENDERER, name);
+        String paramVal =
+                ChromeFeatureList.getFieldTrialParamByFeature(
+                        ChromeFeatureList.PROBABILISTIC_CRYPTID_RENDERER, name);
         try {
             if (paramVal.length() > 0) {
                 return Integer.parseInt(paramVal);

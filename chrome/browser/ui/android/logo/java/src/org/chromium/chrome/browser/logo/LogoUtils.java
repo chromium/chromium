@@ -19,9 +19,7 @@ public class LogoUtils {
         return resources.getDimensionPixelSize(R.dimen.logo_margin_top_polished_small);
     }
 
-    /**
-     * Returns the top margin of the LogoView if Surface Polish is enabled.
-     */
+    /** Returns the top margin of the LogoView if Surface Polish is enabled. */
     public static int getTopMarginPolished(Resources resources) {
         return resources.getDimensionPixelSize(R.dimen.logo_margin_top_polished);
     }
@@ -34,39 +32,37 @@ public class LogoUtils {
         return resources.getDimensionPixelSize(R.dimen.logo_margin_bottom_polished_small);
     }
 
-    /**
-     * Returns the bottom margin of the LogoView if Surface Polish.
-     */
+    /** Returns the bottom margin of the LogoView if Surface Polish. */
     public static int getBottomMarginPolished(Resources resources) {
         return resources.getDimensionPixelSize(R.dimen.logo_margin_bottom_polished);
     }
 
-    /**
-     * Returns the height of the LogoView if Surface Polish and with less brand space.
-     */
+    /** Returns the height of the LogoView if Surface Polish and with less brand space. */
     public static int getLogoHeightPolished(Resources resources) {
         return resources.getDimensionPixelSize(R.dimen.logo_height_polished);
     }
 
-    /**
-     * Returns the height of the LogoView if Surface Polish.
-     */
+    /** Returns the height of the LogoView if Surface Polish. */
     public static int getLogoHeightPolishedShort(Resources resources) {
         return resources.getDimensionPixelSize(R.dimen.logo_height_short);
     }
 
-    /**
-     * Sets the layout params for the LogoView when Surface Polished is enabled.
-     */
+    /** Sets the layout params for the LogoView when Surface Polished is enabled. */
     public static void setLogoViewLayoutParams(
             LogoView logoView, Resources resources, boolean isTablet, boolean useLessBrandSpace) {
-        setLogoViewLayoutParams((MarginLayoutParams) logoView.getLayoutParams(), resources,
-                isTablet, useLessBrandSpace);
+        setLogoViewLayoutParams(
+                (MarginLayoutParams) logoView.getLayoutParams(),
+                resources,
+                isTablet,
+                useLessBrandSpace);
     }
 
     @VisibleForTesting
-    public static void setLogoViewLayoutParams(MarginLayoutParams layoutParams, Resources resources,
-            boolean isTablet, boolean useLessBrandSpace) {
+    public static void setLogoViewLayoutParams(
+            MarginLayoutParams layoutParams,
+            Resources resources,
+            boolean isTablet,
+            boolean useLessBrandSpace) {
         if (layoutParams == null) return;
 
         if (useLessBrandSpace && !isTablet) {

@@ -32,7 +32,7 @@ ScopedJavaLocalRef<jobject> CreateVirtualCardEnrollmentFieldsJavaObject(
                .ObfuscatedNumberWithVisibleLastFourDigits());
   int network_icon_id = ResourceMapper::MapToJavaDrawableId(
       GetIconResourceID(virtual_card_enrollment_fields->credit_card
-                            .CardIconStringForAutofillSuggestion()));
+                            .CardIconForAutofillSuggestion()));
   ScopedJavaLocalRef<jobject> card_art_url = url::GURLAndroid::FromNativeGURL(
       env, virtual_card_enrollment_fields->credit_card.card_art_url());
   ScopedJavaLocalRef<jobject> java_object =

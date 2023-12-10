@@ -112,7 +112,7 @@
       <property name="severity" value="info"/>
     </module>
     <module name="NeedBraces">
-      <property name="severity" value="error"/>
+      <property name="severity" value="warning"/>
       <property name="allowSingleLineStatement" value="true"/>
     </module>
     <module name="RegexpSinglelineJava">

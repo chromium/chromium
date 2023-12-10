@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/allocator/partition_allocator/src/partition_alloc/oom.h"
+#include "partition_alloc/oom.h"
 
-#include "base/allocator/partition_allocator/src/partition_alloc/oom_callback.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/compiler_specific.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/debug/alias.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/immediate_crash.h"
 #include "build/build_config.h"
+#include "partition_alloc/oom_callback.h"
+#include "partition_alloc/partition_alloc_base/compiler_specific.h"
+#include "partition_alloc/partition_alloc_base/debug/alias.h"
+#include "partition_alloc/partition_alloc_base/immediate_crash.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>

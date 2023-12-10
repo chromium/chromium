@@ -7,15 +7,14 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
-
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "extensions/browser/updater/extension_installer.h"
 #include "extensions/browser/updater/extension_update_data.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class FilePath;
@@ -56,7 +55,7 @@ class UpdateDataProvider : public base::RefCounted<UpdateDataProvider> {
       const ExtensionUpdateDataMap& update_info,
       const std::vector<std::string>& ids,
       base::OnceCallback<
-          void(const std::vector<absl::optional<update_client::CrxComponent>>&)>
+          void(const std::vector<std::optional<update_client::CrxComponent>>&)>
           callback);
 
  private:

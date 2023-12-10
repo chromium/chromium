@@ -112,16 +112,16 @@ class CurrentInteractionSubscriber : public AssistantInteractionSubscriber {
 
   void OnInteractionFinished(
       AssistantInteractionResolution resolution) override {
-    current_interaction_ = absl::nullopt;
+    current_interaction_ = std::nullopt;
   }
 
-  absl::optional<AssistantInteractionMetadata> current_interaction() {
+  std::optional<AssistantInteractionMetadata> current_interaction() {
     return current_interaction_;
   }
 
  private:
-  absl::optional<AssistantInteractionMetadata> current_interaction_ =
-      absl::nullopt;
+  std::optional<AssistantInteractionMetadata> current_interaction_ =
+      std::nullopt;
 };
 
 class InteractionResponse::Response {
@@ -205,7 +205,7 @@ void TestAssistantService::SetInteractionResponse(
   interaction_response_ = std::move(response);
 }
 
-absl::optional<AssistantInteractionMetadata>
+std::optional<AssistantInteractionMetadata>
 TestAssistantService::current_interaction() {
   return current_interaction_subscriber_->current_interaction();
 }

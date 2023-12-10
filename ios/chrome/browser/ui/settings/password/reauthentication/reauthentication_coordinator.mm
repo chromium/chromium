@@ -8,23 +8,40 @@
 
 #import "base/check.h"
 #import "base/debug/dump_without_crashing.h"
+#import "base/metrics/histogram_functions.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
-#import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state_observer.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/ui/settings/password/password_manager_ui_features.h"
+#import "ios/chrome/browser/ui/settings/password/reauthentication/reauthentication_constants.h"
 #import "ios/chrome/browser/ui/settings/password/reauthentication/reauthentication_view_controller.h"
 #import "ios/chrome/browser/ui/settings/utils/password_utils.h"
+#import "ios/chrome/common/ui/reauthentication/reauthentication_event.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_protocol.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/public/provider/chrome/browser/passcode_settings/passcode_settings_api.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "url/gurl.h"
+
+namespace {
+
+// Whether the passcode settings action should be displayed in the alert asking
+// the user to set a passcode before accessing the Password Manager.
+bool IsPasscodeSettingsAvailable() {
+  // Use both kill switch and auth on entry feature flag to control the
+  // dispalying of the action.
+  return password_manager::features::IsPasscodeSettingsEnabled() &&
+         password_manager::features::IsAuthOnEntryV2Enabled() &&
+         ios::provider::SupportsPasscodeSettings();
+}
+
+}  // namespace
 
 @interface ReauthenticationCoordinator () <
     ReauthenticationViewControllerDelegate,
@@ -85,7 +102,7 @@
 
 - (void)start {
   if (password_manager::features::IsAuthOnEntryV2Enabled()) {
-    [self.sceneState addObserver:self];
+    [self.browser->GetSceneState() addObserver:self];
   }
 
   if (_authOnStart) {
@@ -94,7 +111,7 @@
 }
 
 - (void)stop {
-  [self.sceneState removeObserver:self];
+  [self.browser->GetSceneState() removeObserver:self];
   _reauthViewController.delegate = nil;
   _reauthViewController = nil;
 }
@@ -125,23 +142,34 @@
 
   __weak __typeof(self) weakSelf = self;
 
-  // Action OK -> Close settings.
-  [_passcodeRequestAlertCoordinator
-      addItemWithTitle:l10n_util::GetNSString(IDS_OK)
-                action:^{
-                  [weakSelf.dispatcher closeSettingsUI];
-                }
-                 style:UIAlertActionStyleCancel];
+  if (IsPasscodeSettingsAvailable()) {
+    // Action Go to Settings.
+    [_passcodeRequestAlertCoordinator
+        addItemWithTitle:l10n_util::GetNSString(
+                             IDS_IOS_SETTINGS_SET_UP_SCREENLOCK_OPEN_SETTINGS)
+                  action:^{
+                    [weakSelf openPasscodeSettings];
+                  }
+                   style:UIAlertActionStyleDefault
+               preferred:YES
+                 enabled:YES];
+
+  } else {
+    // Action OK -> Close UI.
+    [_passcodeRequestAlertCoordinator
+        addItemWithTitle:l10n_util::GetNSString(IDS_OK)
+                  action:^{
+                    [weakSelf closeUI];
+                  }
+                   style:UIAlertActionStyleCancel];
+  }
 
   // Action Learn How -> Close settings and open passcode help page.
-  OpenNewTabCommand* command =
-      [OpenNewTabCommand commandWithURLFromChrome:GURL(kPasscodeArticleURL)];
-
   [_passcodeRequestAlertCoordinator
       addItemWithTitle:l10n_util::GetNSString(
                            IDS_IOS_SETTINGS_SET_UP_SCREENLOCK_LEARN_HOW)
                 action:^{
-                  [weakSelf.dispatcher closeSettingsUIAndOpenURL:command];
+                  [weakSelf openPasscodeHelpPage];
                 }
                  style:UIAlertActionStyleDefault];
 
@@ -155,7 +183,7 @@
     [_delegate successfulReauthenticationWithCoordinator:self];
 
   } else {
-    [_dispatcher closeSettingsUI];
+    [self closeUI];
   }
 }
 
@@ -235,9 +263,17 @@
   [_delegate willPushReauthenticationViewController];
 
   // Dismiss any presented state.
-  [_baseNavigationController.topViewController.presentedViewController
-      dismissViewControllerAnimated:NO
-                         completion:nil];
+  UIViewController* topViewController =
+      _baseNavigationController.topViewController;
+  UIViewController* presentedViewController =
+      topViewController.presentedViewController;
+  // Do not dismiss the Search Controller, otherwise pushViewController does not
+  // add a the new view controller to the top of the navigation stack.
+  if (![presentedViewController isKindOfClass:[UISearchController class]]) {
+    [presentedViewController.presentingViewController
+        dismissViewControllerAnimated:NO
+                           completion:nil];
+  }
 
   _reauthViewController = [[ReauthenticationViewController alloc]
       initWithReauthenticationModule:_reauthModule
@@ -265,9 +301,27 @@
   _reauthViewController = nil;
 }
 
-// Helper returning current sceneState.
-- (SceneState*)sceneState {
-  return SceneStateBrowserAgent::FromBrowser(self.browser)->GetSceneState();
+// Dismisses the UI protected with Local Authentication.
+- (void)closeUI {
+  [_delegate dismissUIAfterFailedReauthenticationWithCoordinator:self];
+}
+
+// Closes the UI and open the support page on setting up a passcode.
+- (void)openPasscodeHelpPage {
+  // TODO(crbug.com/1462419): Move to ReauthenticationCoordinatorDelegate.
+  OpenNewTabCommand* command =
+      [OpenNewTabCommand commandWithURLFromChrome:GURL(kPasscodeArticleURL)];
+  [_dispatcher closeSettingsUIAndOpenURL:command];
+}
+
+- (void)openPasscodeSettings {
+  [self closeUI];
+
+  base::UmaHistogramEnumeration(
+      /*name=*/password_manager::kReauthenticationUIEventHistogram,
+      /*sample=*/ReauthenticationEvent::kOpenPasscodeSettings);
+
+  ios::provider::OpenPasscodeSettings();
 }
 
 @end

@@ -5,6 +5,7 @@
 import 'chrome://resources/js/jstemplate_compiled.js';
 
 import {assert} from 'chrome://resources/js/assert.js';
+import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
 import {getRequiredElement} from 'chrome://resources/js/util.js';
 import {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
 import {Time} from 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
@@ -50,7 +51,7 @@ const stringifyMojo = {
   },
 
   string16(mojoString16: String16): string {
-    return String.fromCharCode(...mojoString16.data);
+    return mojoString16ToString(mojoString16);
   },
 
   scope(mojoScope: String16[]): string {

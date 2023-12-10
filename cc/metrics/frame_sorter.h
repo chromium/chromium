@@ -9,11 +9,11 @@
 
 #include <map>
 
+#include <optional>
 #include "base/containers/circular_deque.h"
 #include "base/functional/callback.h"
 #include "cc/cc_export.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace cc {
 
@@ -78,7 +78,7 @@ class CC_EXPORT FrameSorter {
   std::map<viz::BeginFrameId, FrameState> frame_states_;
   std::map<viz::BeginFrameId, FrameInfo> frame_infos_;
 
-  absl::optional<uint64_t> current_source_id_;
+  std::optional<uint64_t> current_source_id_;
 };
 
 }  // namespace cc

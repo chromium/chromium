@@ -272,7 +272,7 @@ class PrivateNetworkAccessWithFeatureEnabledBrowserTest
                 features::kBlockInsecurePrivateNetworkRequestsFromPrivate,
                 features::kBlockInsecurePrivateNetworkRequestsDeprecationTrial,
                 features::kPrivateNetworkAccessSendPreflights,
-                features::kPrivateNetworkAccessForIframes,
+                features::kPrivateNetworkAccessForNavigations,
                 features::kPrivateNetworkAccessForWorkers,
                 dom_distiller::kReaderMode,
             },
@@ -418,7 +418,7 @@ IN_PROC_BROWSER_TEST_F(
 // This test verifies that when a `public` document navigates itself to a
 // document served by a non-public IP, the correct address space feature is
 // recorded.
-IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessWithFeatureEnabledBrowserTest,
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessWithFeatureDisabledBrowserTest,
                        RecordsAddressSpaceFeatureForNavigation) {
   WebFeatureHistogramTester feature_histogram_tester;
   std::unique_ptr<net::EmbeddedTestServer> server = NewServer();
@@ -445,7 +445,7 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessWithFeatureEnabledBrowserTest,
 // recorded, even if the target document carries a CSP `treat-as-public-address`
 // directive.
 IN_PROC_BROWSER_TEST_F(
-    PrivateNetworkAccessWithFeatureEnabledBrowserTest,
+    PrivateNetworkAccessWithFeatureDisabledBrowserTest,
     RecordsAddressSpaceFeatureForNavigationToTreatAsPublicAddress) {
   WebFeatureHistogramTester feature_histogram_tester;
   std::unique_ptr<net::EmbeddedTestServer> server = NewServer();
@@ -1461,7 +1461,7 @@ class PrivateNetworkAccessAutoReloadBrowserTest
             {
                 features::kBlockInsecurePrivateNetworkRequests,
                 features::kBlockInsecurePrivateNetworkRequestsDeprecationTrial,
-                features::kPrivateNetworkAccessForIframes,
+                features::kPrivateNetworkAccessForNavigations,
             },
             {}) {}
 

@@ -19,6 +19,8 @@
 #include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/companion/core/features.h"
 #include "chrome/browser/download/bubble/download_bubble_prefs.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
 #include "chrome/browser/performance_manager/public/user_tuning/user_tuning_utils.h"
 #include "chrome/browser/preloading/preloading_features.h"
@@ -98,7 +100,6 @@
 #include "components/safe_browsing/core/common/features.h"
 #include "components/search_engines/search_engine_choice_utils.h"
 #include "components/signin/public/base/signin_pref_names.h"
-#include "components/signin/public/base/signin_switches.h"
 #include "components/sync/base/features.h"
 #include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_contents.h"
@@ -317,11 +318,14 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
   }
 
   const bool is_search_engine_choice_settings_ui =
-      base::FeatureList::IsEnabled(switches::kSearchEngineChoiceSettingsUi) &&
       search_engines::IsChoiceScreenFlagEnabled(
           search_engines::ChoicePromo::kAny);
   html_source->AddBoolean("searchEngineChoiceSettingsUi",
                           is_search_engine_choice_settings_ui);
+
+  const bool is_eea_country = search_engines::IsEeaChoiceCountry(
+      search_engines::GetSearchEngineChoiceCountryId(profile->GetPrefs()));
+  html_source->AddBoolean("useLargeSearchEngineIcons", is_eea_country);
   if (is_search_engine_choice_settings_ui) {
     AddGeneratedIconResources(html_source, /*directory=*/"images/");
   }
@@ -379,6 +383,10 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
                               IsHashRealTimeLookupEligibleInSession());
 
   html_source->AddBoolean(
+      "enableHttpsFirstModeNewSettings",
+      base::FeatureList::IsEnabled(features::kHttpsFirstModeIncognito));
+
+  html_source->AddBoolean(
       "enablePageContentSetting",
       base::FeatureList::IsEnabled(features::kPageContentOptIn) ||
           base::FeatureList::IsEnabled(
@@ -392,7 +400,7 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
 
   html_source->AddBoolean(
       "downloadBubblePartialViewControlledByPref",
-      download::IsDownloadBubbleEnabled(profile) &&
+      download::IsDownloadBubbleEnabled() &&
           download::IsDownloadBubblePartialViewControlledByPref());
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
@@ -477,20 +485,12 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       PrivacySandboxServiceFactory::GetForProfile(profile);
   bool is_privacy_sandbox_restricted =
       privacy_sandbox_service->IsPrivacySandboxRestricted();
-  bool is_privacy_sandbox_settings_4 =
-      base::FeatureList::IsEnabled(privacy_sandbox::kPrivacySandboxSettings4);
   bool is_restricted_notice_enabled =
       privacy_sandbox_service->IsRestrictedNoticeEnabled();
   html_source->AddBoolean("isPrivacySandboxRestricted",
                           is_privacy_sandbox_restricted);
-  html_source->AddBoolean("isPrivacySandboxSettings4",
-                          is_privacy_sandbox_settings_4);
   html_source->AddBoolean("isPrivacySandboxRestrictedNoticeEnabled",
                           is_restricted_notice_enabled);
-  if (!is_privacy_sandbox_restricted && !is_privacy_sandbox_settings_4) {
-    html_source->AddResourcePath(
-        "privacySandbox", IDR_SETTINGS_PRIVACY_SANDBOX_PRIVACY_SANDBOX_HTML);
-  }
 
   html_source->AddBoolean(
       "privateStateTokensEnabled",
@@ -505,9 +505,11 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       base::FeatureList::IsEnabled(
           content_settings::features::kSafetyCheckUnusedSitePermissions));
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   html_source->AddBoolean(
       "safetyCheckExtensionsReviewEnabled",
       base::FeatureList::IsEnabled(features::kSafetyCheckExtensions));
+#endif
 
   html_source->AddBoolean("enableSafetyHub",
                           base::FeatureList::IsEnabled(features::kSafetyHub));
@@ -553,6 +555,41 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       "autoPictureInPictureEnabled",
       base::FeatureList::IsEnabled(
           blink::features::kMediaSessionEnterPictureInPicture));
+
+  // AI
+  optimization_guide::proto::ModelExecutionFeature
+      optimization_guide_features[3] = {
+          optimization_guide::proto::ModelExecutionFeature::
+              MODEL_EXECUTION_FEATURE_COMPOSE,
+          optimization_guide::proto::ModelExecutionFeature::
+              MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION,
+          optimization_guide::proto::ModelExecutionFeature::
+              MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH,
+      };
+
+  auto* optimization_guide_service =
+      OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
+  bool optimization_guide_feature_visible[4] = {false, false, false, false};
+
+  for (size_t i = 0; i < 3; i++) {
+    const bool visible = optimization_guide_service &&
+                         optimization_guide_service->IsSettingVisible(
+                             optimization_guide_features[i]);
+    optimization_guide_feature_visible[i + 1] = visible;
+
+    // The main toggle is visible only if at least one of the sub toggles is
+    // visible.
+    optimization_guide_feature_visible[0] |= visible;
+  }
+
+  html_source->AddBoolean("showAdvancedFeaturesMainControl",
+                          optimization_guide_feature_visible[0]);
+  html_source->AddBoolean("showComposeControl",
+                          optimization_guide_feature_visible[1]);
+  html_source->AddBoolean("showTabOrganizationControl",
+                          optimization_guide_feature_visible[2]);
+  html_source->AddBoolean("showWallpaperSearchControl",
+                          optimization_guide_feature_visible[3]);
 
   TryShowHatsSurveyWithTimeout();
 }

@@ -387,14 +387,13 @@ public final class BaseSuggestionViewBinder<T extends View>
         view.setLayoutParams(layoutParams);
     }
 
-    public static void resetCachedDimensions() {
+    public static void resetCachedResources() {
         sDimensionsInitialized = false;
+        sFocusableDrawableState = null;
     }
 
     @VisibleForTesting
     static void initializeDimensions(Context context) {
-        boolean showModernizeVisualUpdate =
-                OmniboxFeatures.shouldShowModernizeVisualUpdate(context);
         Resources resources = context.getResources();
 
         sEdgeSize = resources.getDimensionPixelSize(R.dimen.omnibox_suggestion_24dp_icon_size);

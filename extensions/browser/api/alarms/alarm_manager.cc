@@ -79,9 +79,9 @@ AlarmManager::AlarmList AlarmsFromValue(const std::string extension_id,
   for (int i = 0; i < max_to_create; ++i) {
     const base::Value& alarm_value = list[i];
     Alarm alarm;
-    if (alarm_value.is_dict() &&
-        alarms::Alarm::Populate(alarm_value.GetDict(), *alarm.js_alarm)) {
-      absl::optional<base::TimeDelta> delta =
+    alarm.js_alarm = alarms::Alarm::FromValue(alarm_value);
+    if (alarm.js_alarm) {
+      std::optional<base::TimeDelta> delta =
           base::ValueToTimeDelta(alarm_value.GetDict().Find(kAlarmGranularity));
       if (delta) {
         alarm.granularity = *delta;
@@ -334,7 +334,7 @@ void AlarmManager::WriteToStorage(const std::string& extension_id) {
 
 void AlarmManager::ReadFromStorage(const std::string& extension_id,
                                    base::TimeDelta min_delay,
-                                   absl::optional<base::Value> value) {
+                                   std::optional<base::Value> value) {
   if (value && value->is_list()) {
     AlarmList alarm_states =
         AlarmsFromValue(extension_id, min_delay, value->GetList());
@@ -464,14 +464,13 @@ void AlarmManager::OnExtensionUninstalled(
 
 // AlarmManager::Alarm
 
-Alarm::Alarm() : js_alarm(new alarms::Alarm()) {
-}
+Alarm::Alarm() : js_alarm(std::in_place) {}
 
 Alarm::Alarm(const std::string& name,
              const alarms::AlarmCreateInfo& create_info,
              base::TimeDelta min_granularity,
              base::Time now)
-    : js_alarm(new alarms::Alarm()) {
+    : js_alarm(std::in_place) {
   js_alarm->name = name;
   minimum_granularity = min_granularity;
 

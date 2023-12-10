@@ -450,6 +450,15 @@ std::string Pattern::GenerateRegexString(
   return result;
 }
 
+bool Pattern::HasRegexGroups() const {
+  for (const Part& part : part_list_) {
+    if (part.type == PartType::kRegex) {
+      return true;
+    }
+  }
+  return false;
+}
+
 bool Pattern::CanDirectMatch() const {
   // We currently only support direct matching with the options used by
   // URLPattern.

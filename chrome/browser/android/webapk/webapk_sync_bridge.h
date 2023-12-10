@@ -6,13 +6,14 @@
 #define CHROME_BROWSER_ANDROID_WEBAPK_WEBAPK_SYNC_BRIDGE_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/memory/weak_ptr.h"
 #include "base/time/clock.h"
 #include "chrome/browser/android/webapk/webapk_database.h"
+#include "chrome/browser/android/webapk/webapk_specifics_fetcher.h"
 #include "components/sync/model/entity_change.h"
 #include "components/sync/model/model_type_sync_bridge.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace syncer {
 struct EntityData;
@@ -45,18 +46,21 @@ class WebApkSyncBridge : public syncer::ModelTypeSyncBridge {
       AbstractWebApkDatabaseFactory* database_factory,
       base::OnceClosure on_initialized,
       std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor,
-      std::unique_ptr<base::Clock> clock);
+      std::unique_ptr<base::Clock> clock,
+      std::unique_ptr<AbstractWebApkSpecificsFetcher> specifics_fetcher);
   WebApkSyncBridge(const WebApkSyncBridge&) = delete;
   WebApkSyncBridge& operator=(const WebApkSyncBridge&) = delete;
   ~WebApkSyncBridge() override;
 
+  using CommitCallback = base::OnceCallback<void(bool success)>;
+
   // syncer::ModelTypeSyncBridge:
   std::unique_ptr<syncer::MetadataChangeList> CreateMetadataChangeList()
       override;
-  absl::optional<syncer::ModelError> MergeFullSyncData(
+  std::optional<syncer::ModelError> MergeFullSyncData(
       std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
       syncer::EntityChangeList entity_changes) override;
-  absl::optional<syncer::ModelError> ApplyIncrementalSyncChanges(
+  std::optional<syncer::ModelError> ApplyIncrementalSyncChanges(
       std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
       syncer::EntityChangeList entity_changes) override;
   void GetData(StorageKeyList storage_keys, DataCallback callback) override;
@@ -105,21 +109,67 @@ class WebApkSyncBridge : public syncer::ModelTypeSyncBridge {
   //
   // |sync_update_from_installed| and |sync_changes| are inputs, and
   // |registry_update_from_installed_and_sync| is the output.
-  void PrepareRegistryUpdateFromInstalledAndSyncApps(
+  //
+  // The return value indicates whether or not there were new apps from Sync
+  // that were not already installed on the device (and therefore are candidates
+  // to be Restored from backup).
+  bool PrepareRegistryUpdateFromInstalledAndSyncApps(
       const std::vector<const sync_pb::WebApkSpecifics*>&
           sync_update_from_installed,
       const syncer::EntityChangeList& sync_changes,
       RegistryUpdateData* registry_update_from_installed_and_sync) const;
 
+  void OnWebApkUsed(std::unique_ptr<sync_pb::WebApkSpecifics> app_specifics);
+  void OnWebApkUninstalled(const std::string& manifest_id);
+
+  const Registry& GetRegistryForTesting() const;
+
  private:
+  void ReportErrorToChangeProcessor(const syncer::ModelError& error);
   void OnDatabaseOpened(base::OnceClosure callback,
                         Registry registry,
                         std::unique_ptr<syncer::MetadataBatch> metadata_batch);
-  void ReportErrorToChangeProcessor(const syncer::ModelError& error);
+  void OnDataWritten(CommitCallback callback, bool success);
+
+  // SendInstalledAndRegistryAppsToSync sends a collection of updates to Sync
+  // based on a combination of |registry_| and the app lists gathered in
+  // PrepareSyncUpdateFromInstalledApps() and
+  // PrepareRegistryUpdateFromInstalledAndSyncApps(). This is "Step 3" of
+  // https://docs.google.com/document/d/1Pce17EEuIs0dIbw-L1RZVf2HA4H8-Lu8RqVxHGmdJds.
+  //
+  // Concretely, we send all the updates from installed apps
+  // (|sync_update_from_installed|) as well as everything in |registry_| that
+  // isn't already covered in |registry_update_from_installed_and_sync|. In
+  // other words, this pushes all relevant updates from installed apps, and
+  // anything in the registry that appeared in neither installed nor synced
+  // apps.
+  //
+  // |sync_update_from_installed| and |registry_update_from_installed_and_sync|
+  // are inputs, and |metadata_change_list| is appended to as an output.
+  void SendInstalledAndRegistryAppsToSync(
+      const std::vector<const sync_pb::WebApkSpecifics*>&
+          sync_update_from_installed,
+      const std::unique_ptr<RegistryUpdateData>&
+          registry_update_from_installed_and_sync,
+      syncer::MetadataChangeList* metadata_change_list);
+
+  // ApplyIncrementalSyncChangesToRegistry applies the changes in the app list
+  // gathered in PrepareRegistryUpdateFromInstalledAndSyncApps() to the
+  // registry. This is "Step 5" (the final step) from
+  // https://docs.google.com/document/d/1Pce17EEuIs0dIbw-L1RZVf2HA4H8-Lu8RqVxHGmdJds.
+  void ApplyIncrementalSyncChangesToRegistry(
+      std::unique_ptr<RegistryUpdateData> update_data);
+  void PrepareRegistryUpdateFromSyncApps(
+      const syncer::EntityChangeList& sync_changes,
+      RegistryUpdateData* registry_update_from_sync) const;
+
+  void AddOrModifyAppInSync(std::unique_ptr<WebApkProto> app);
+  void DeleteAppFromSync(const webapps::AppId& app_id);
 
   std::unique_ptr<WebApkDatabase> database_;
   Registry registry_;
   std::unique_ptr<base::Clock> clock_;
+  std::unique_ptr<AbstractWebApkSpecificsFetcher> webapk_specifics_fetcher_;
 
   base::WeakPtrFactory<WebApkSyncBridge> weak_ptr_factory_{this};
 };

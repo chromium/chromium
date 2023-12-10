@@ -6,8 +6,6 @@ found in the LICENSE file.
 -->
 
 <resources>
-    <dimen name="compositor_background_tab_elevation">@dimen/default_elevation_0</dimen>
-
     <!-- Distilled page pref dimensions -->
     <dimen name="distilled_page_pref_background_elev">@dimen/default_elevation_3</dimen>
 </resources>

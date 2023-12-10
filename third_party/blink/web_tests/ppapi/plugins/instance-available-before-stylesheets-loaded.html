@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<link rel="stylesheet" href="data:text/css,">
+<embed id="plugin" type="application/x-blink-deprecated-test-plugin" width=100 height=100></embed>
+<p id="result">
+</p>
+<script>
+    if (window.testRunner)
+        testRunner.dumpAsText();
+
+    var plugIn = document.getElementById("plugin");
+
+    document.getElementById("result").innerText = ("testPassTestObject" in plugIn)
+        ? "PASS: Plugin instance available while waiting for style sheets to load"
+        : "FAIL: Plugin not instantiated on property access while waiting for style sheets to load";
+
+</script>

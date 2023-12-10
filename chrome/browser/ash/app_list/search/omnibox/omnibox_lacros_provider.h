@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_ASH_APP_LIST_SEARCH_OMNIBOX_OMNIBOX_LACROS_PROVIDER_H_
 #define CHROME_BROWSER_ASH_APP_LIST_SEARCH_OMNIBOX_OMNIBOX_LACROS_PROVIDER_H_
 
+#include <optional>
+
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -12,7 +14,6 @@
 #include "chromeos/ash/components/string_matching/tokenized_string.h"
 #include "chromeos/crosapi/mojom/launcher_search.mojom.h"
 #include "components/omnibox/browser/autocomplete_input.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class AppListControllerDelegate;
 class Profile;
@@ -47,7 +48,7 @@ class OmniboxLacrosProvider : public SearchProvider {
   AutocompleteInput input_;
 
   std::u16string last_query_;
-  absl::optional<ash::string_matching::TokenizedString> last_tokenized_query_;
+  std::optional<ash::string_matching::TokenizedString> last_tokenized_query_;
 
   // The AutocompleteController can sometimes update its results more than once
   // after reporting it is done. This flag is set to ensure we only update the

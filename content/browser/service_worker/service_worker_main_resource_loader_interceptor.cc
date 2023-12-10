@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/functional/overloaded.h"
 #include "base/memory/ptr_util.h"
 #include "base/types/optional_util.h"
 #include "build/chromeos_buildflags.h"
@@ -96,7 +97,7 @@ ServiceWorkerMainResourceLoaderInterceptor::CreateForNavigation(
       request_info.isolation_info));
 }
 
-std::unique_ptr<NavigationLoaderInterceptor>
+std::unique_ptr<ServiceWorkerMainResourceLoaderInterceptor>
 ServiceWorkerMainResourceLoaderInterceptor::CreateForWorker(
     const network::ResourceRequest& resource_request,
     const net::IsolationInfo& isolation_info,
@@ -175,7 +176,7 @@ void ServiceWorkerMainResourceLoaderInterceptor::MaybeCreateLoader(
                  network::mojom::RequestDestination::kSharedWorker);
 
       ServiceWorkerClientInfo client_info =
-          ServiceWorkerClientInfo(*worker_token_);
+          absl::ConvertVariantTo<ServiceWorkerClientInfo>(*worker_token_);
 
       container_host = context_core->CreateContainerHostForWorker(
           std::move(host_receiver), process_id_, std::move(client_remote),
@@ -276,63 +277,16 @@ ServiceWorkerMainResourceLoaderInterceptor::
   // Otherwise let's send the controller service worker information along
   // with the navigation commit.
   SubresourceLoaderParams params;
-  auto controller_info = blink::mojom::ControllerServiceWorkerInfo::New();
-  controller_info->mode = container_host->GetControllerMode();
-  controller_info->fetch_handler_type =
-      container_host->controller()->fetch_handler_type();
-  controller_info->effective_fetch_handler_type =
-      container_host->controller()->EffectiveFetchHandlerType();
-  controller_info->fetch_handler_bypass_option =
-      container_host->controller()->fetch_handler_bypass_option();
-  controller_info->sha256_script_checksum =
-      container_host->controller()->sha256_script_checksum();
-  if (container_host->controller()->router_evaluator()) {
-    controller_info->router_data = blink::mojom::ServiceWorkerRouterData::New();
-    controller_info->router_data->router_rules =
-        container_host->controller()->router_evaluator()->rules();
-    // Pass an endpoint for the cache storage.
-    mojo::PendingRemote<blink::mojom::CacheStorage> remote_cache_storage =
-        container_host->GetRemoteCacheStorage();
-    if (remote_cache_storage) {
-      controller_info->router_data->remote_cache_storage =
-          std::move(remote_cache_storage);
-    }
-    if (container_host->controller()
-            ->router_evaluator()
-            ->need_running_status()) {
-      controller_info->router_data->running_status_receiver =
-          container_host->GetRunningStatusCallbackReceiver();
-      controller_info->router_data->initial_running_status =
-          container_host->controller()->running_status();
-    }
-  }
-  // Note that |controller_info->remote_controller| is null if the controller
-  // has no fetch event handler. In that case the renderer frame won't get the
-  // controller pointer upon the navigation commit, and subresource loading will
-  // not be intercepted. (It might get intercepted later if the controller
-  // changes due to skipWaiting() so SetController is sent.)
-  mojo::Remote<blink::mojom::ControllerServiceWorker> remote =
-      container_host->GetRemoteControllerServiceWorker();
-  if (remote.is_bound()) {
-    controller_info->remote_controller = remote.Unbind();
+  params.controller_service_worker_info =
+      container_host->CreateControllerServiceWorkerInfo();
+  if (base::WeakPtr<ServiceWorkerObjectHost> object_host =
+          container_host->GetOrCreateServiceWorkerObjectHost(
+              container_host->controller())) {
+    params.controller_service_worker_object_host = object_host;
+    params.controller_service_worker_info->object_info =
+        object_host->CreateIncompleteObjectInfo();
   }
 
-  controller_info->client_id = container_host->client_uuid();
-  if (container_host->fetch_request_window_id()) {
-    controller_info->fetch_request_window_id =
-        absl::make_optional(container_host->fetch_request_window_id());
-  }
-  base::WeakPtr<ServiceWorkerObjectHost> object_host =
-      container_host->GetOrCreateServiceWorkerObjectHost(
-          container_host->controller());
-  if (object_host) {
-    params.controller_service_worker_object_host = object_host;
-    controller_info->object_info = object_host->CreateIncompleteObjectInfo();
-  }
-  for (const auto feature : container_host->controller()->used_features()) {
-    controller_info->used_features.push_back(feature);
-  }
-  params.controller_service_worker_info = std::move(controller_info);
   return absl::optional<SubresourceLoaderParams>(std::move(params));
 }
 
@@ -399,27 +353,46 @@ ServiceWorkerMainResourceLoaderInterceptor::GetStorageKeyFromWorkerHost(
     const url::Origin& origin) {
   if (!worker_token_.has_value())
     return absl::nullopt;
+
   auto* process = RenderProcessHost::FromID(process_id_);
-  if (!process)
+  if (!process) {
     return absl::nullopt;
+  }
   auto* storage_partition = process->GetStoragePartition();
 
-  if (worker_token_->Is<blink::DedicatedWorkerToken>()) {
-    auto* worker_service = static_cast<DedicatedWorkerServiceImpl*>(
-        storage_partition->GetDedicatedWorkerService());
-    auto* worker_host = worker_service->GetDedicatedWorkerHostFromToken(
-        worker_token_->GetAs<blink::DedicatedWorkerToken>());
-    if (worker_host)
-      return worker_host->GetStorageKey().WithOrigin(origin);
-  } else if (worker_token_->Is<blink::SharedWorkerToken>()) {
-    auto* worker_service = static_cast<SharedWorkerServiceImpl*>(
-        storage_partition->GetSharedWorkerService());
-    auto* worker_host = worker_service->GetSharedWorkerHostFromToken(
-        worker_token_->GetAs<blink::SharedWorkerToken>());
-    if (worker_host)
-      return worker_host->GetStorageKey().WithOrigin(origin);
-  } else {
-    NOTREACHED();
+  return absl::visit(base::Overloaded([&, this](auto token) {
+                       return GetStorageKeyFromWorkerHost(storage_partition,
+                                                          token, origin);
+                     }),
+                     *worker_token_);
+}
+
+absl::optional<blink::StorageKey>
+ServiceWorkerMainResourceLoaderInterceptor::GetStorageKeyFromWorkerHost(
+    content::StoragePartition* storage_partition,
+    blink::DedicatedWorkerToken dedicated_worker_token,
+    const url::Origin& origin) {
+  auto* worker_service = static_cast<DedicatedWorkerServiceImpl*>(
+      storage_partition->GetDedicatedWorkerService());
+  auto* worker_host =
+      worker_service->GetDedicatedWorkerHostFromToken(dedicated_worker_token);
+  if (worker_host) {
+    return worker_host->GetStorageKey().WithOrigin(origin);
+  }
+  return absl::nullopt;
+}
+
+absl::optional<blink::StorageKey>
+ServiceWorkerMainResourceLoaderInterceptor::GetStorageKeyFromWorkerHost(
+    content::StoragePartition* storage_partition,
+    blink::SharedWorkerToken shared_worker_token,
+    const url::Origin& origin) {
+  auto* worker_service = static_cast<SharedWorkerServiceImpl*>(
+      storage_partition->GetSharedWorkerService());
+  auto* worker_host =
+      worker_service->GetSharedWorkerHostFromToken(shared_worker_token);
+  if (worker_host) {
+    return worker_host->GetStorageKey().WithOrigin(origin);
   }
   return absl::nullopt;
 }

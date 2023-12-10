@@ -35,16 +35,16 @@
 #include "third_party/blink/renderer/core/layout/inline/fragment_item.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/layout_block.h"
+#include "third_party/blink/renderer/core/layout/layout_ng_block_flow.h"
 #include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
-#include "third_party/blink/renderer/core/layout/ng/layout_ng_block_flow.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_outline_utils.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
+#include "third_party/blink/renderer/core/layout/outline_utils.h"
+#include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/text_autosizer.h"
 #include "third_party/blink/renderer/core/page/page.h"
+#include "third_party/blink/renderer/core/paint/box_fragment_painter.h"
 #include "third_party/blink/renderer/core/paint/box_painter.h"
-#include "third_party/blink/renderer/core/paint/ng/ng_box_fragment_painter.h"
 #include "third_party/blink/renderer/core/paint/object_paint_invalidator.h"
 #include "third_party/blink/renderer/core/paint/object_painter.h"
 #include "third_party/blink/renderer/core/paint/outline_painter.h"
@@ -191,7 +191,7 @@ bool LayoutInline::ComputeInitialShouldCreateBoxFragment(
   NOT_DESTROYED();
 
   // We'd like to use ScopedSVGPaintState in
-  // NGInlineBoxFragmentPainter::Paint().
+  // InlineBoxFragmentPainter::Paint().
   // TODO(layout-dev): Improve the below condition so that we a create box
   // fragment only if this requires ScopedSVGPaintState, instead of
   // creating box fragments for all LayoutSVGInlines.
@@ -212,7 +212,7 @@ bool LayoutInline::ComputeInitialShouldCreateBoxFragment(
   }
 
   return ComputeIsAbsoluteContainer(&style) ||
-         NGOutlineUtils::HasPaintedOutline(style, GetNode()) ||
+         HasPaintedOutline(style, GetNode()) ||
          CanBeHitTestTargetPseudoNodeStyle(style);
 }
 
@@ -525,7 +525,7 @@ PhysicalRect LayoutInline::AbsoluteBoundingBoxRectHandlingEmptyInline(
     MapCoordinatesFlags flags) const {
   NOT_DESTROYED();
   Vector<PhysicalRect> rects = OutlineRects(
-      nullptr, PhysicalOffset(), NGOutlineType::kIncludeBlockVisualOverflow);
+      nullptr, PhysicalOffset(), OutlineType::kIncludeBlockInkOverflow);
   PhysicalRect rect = UnionRect(rects);
   // When empty LayoutInline is not culled, |rect| is empty but |rects| is not.
   if (rect.IsEmpty())
@@ -623,14 +623,14 @@ bool LayoutInline::NodeAtPoint(HitTestResult& result,
         continue;
       DCHECK(cursor.Current().Item());
       const FragmentItem& item = *cursor.Current().Item();
-      const NGPhysicalBoxFragment* box_fragment = item.BoxFragment();
+      const PhysicalBoxFragment* box_fragment = item.BoxFragment();
       DCHECK(box_fragment);
-      // NGBoxFragmentPainter::NodeAtPoint() takes an offset that is accumulated
+      // BoxFragmentPainter::NodeAtPoint() takes an offset that is accumulated
       // up to the fragment itself. Compute this offset.
       const PhysicalOffset child_offset =
           accumulated_offset + item.OffsetInContainerFragment();
-      NGInlinePaintContext inline_context;
-      if (NGBoxFragmentPainter(cursor, item, *box_fragment, &inline_context)
+      InlinePaintContext inline_context;
+      if (BoxFragmentPainter(cursor, item, *box_fragment, &inline_context)
               .NodeAtPoint(result, hit_test_location, child_offset,
                            accumulated_offset, phase)) {
         return true;
@@ -719,7 +719,7 @@ PhysicalRect LayoutInline::LinesVisualOverflowBoundingBox() const {
     InlineCursor cursor;
     cursor.MoveToIncludingCulledInline(*this);
     for (; cursor; cursor.MoveToNextForSameLayoutObject()) {
-      PhysicalRect child_rect = cursor.Current().InkOverflow();
+      PhysicalRect child_rect = cursor.Current().InkOverflowRect();
       child_rect.offset += cursor.Current().OffsetInContainerFragment();
       result.Unite(child_rect);
     }
@@ -757,14 +757,14 @@ PhysicalRect LayoutInline::VisualOverflowRect() const {
       // rects for children and continuations.
       AddOutlineRectsForNormalChildren(
           collector, PhysicalOffset(),
-          style.OutlineRectsShouldIncludeBlockVisualOverflow());
+          style.OutlineRectsShouldIncludeBlockInkOverflow());
     } else {
       // In non-standard mode, because the difference in
       // LayoutBlock::minLineHeightForReplacedObject(),
       // linesVisualOverflowBoundingBox() may not cover outline rects of lines
       // containing replaced objects.
       AddOutlineRects(collector, nullptr, PhysicalOffset(),
-                      style.OutlineRectsShouldIncludeBlockVisualOverflow());
+                      style.OutlineRectsShouldIncludeBlockInkOverflow());
     }
     if (!collector.Rect().IsEmpty()) {
       PhysicalRect outline_rect = collector.Rect();
@@ -883,11 +883,10 @@ void LayoutInline::ImageChanged(WrappedImagePtr, CanDeferInvalidation) {
       PaintInvalidationReason::kImage);
 }
 
-void LayoutInline::AddOutlineRects(
-    OutlineRectCollector& collector,
-    OutlineInfo* info,
-    const PhysicalOffset& additional_offset,
-    NGOutlineType include_block_overflows) const {
+void LayoutInline::AddOutlineRects(OutlineRectCollector& collector,
+                                   OutlineInfo* info,
+                                   const PhysicalOffset& additional_offset,
+                                   OutlineType include_block_overflows) const {
   NOT_DESTROYED();
 #if DCHECK_IS_ON()
   // TODO(crbug.com/987836): enable this DCHECK universally.
@@ -931,9 +930,8 @@ gfx::RectF LayoutInline::LocalBoundingBoxRectForAccessibility() const {
   NOT_DESTROYED();
   UnionOutlineRectCollector collector;
   AddOutlineRects(collector, nullptr, PhysicalOffset(),
-                  NGOutlineType::kIncludeBlockVisualOverflow);
-
-  return gfx::RectF(FlipForWritingMode(collector.Rect().ToLayoutRect()));
+                  OutlineType::kIncludeBlockInkOverflow);
+  return gfx::RectF(collector.Rect());
 }
 
 void LayoutInline::AddAnnotatedRegions(Vector<AnnotatedRegionValue>& regions) {

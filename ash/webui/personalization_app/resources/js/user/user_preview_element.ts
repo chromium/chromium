@@ -12,6 +12,7 @@ import 'chrome://resources/polymer/v3_0/paper-ripple/paper-ripple.js';
 
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
 
@@ -19,7 +20,7 @@ import {UserImage, UserInfo} from '../../personalization_app.mojom-webui.js';
 import {isPersonalizationJellyEnabled} from '../load_time_booleans.js';
 import {Paths, PersonalizationRouterElement} from '../personalization_router_element.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
-import {decodeString16, isNonEmptyArray, isNonEmptyString} from '../utils.js';
+import {isNonEmptyArray, isNonEmptyString} from '../utils.js';
 
 import {initializeUserData} from './user_controller.js';
 import {UserImageObserver} from './user_image_observer.js';
@@ -143,7 +144,7 @@ export class UserPreviewElement extends WithPersonalizationStore {
       return '';
     }
     if (image.defaultImage) {
-      return decodeString16(image.defaultImage.title);
+      return mojoString16ToString(image.defaultImage.title);
     }
     if (image.externalImage) {
       return this.i18n('lastExternalImageTitle');
@@ -186,7 +187,7 @@ export class UserPreviewElement extends WithPersonalizationStore {
     assert(
         image && image.defaultImage && image.defaultImage.sourceInfo,
         'only called for deprecated default images with sourceInfo');
-    return decodeString16(image.defaultImage.sourceInfo.author);
+    return mojoString16ToString(image.defaultImage.sourceInfo.author);
   }
 
   private getDeprecatedWebsite_(image: UserImage): string {

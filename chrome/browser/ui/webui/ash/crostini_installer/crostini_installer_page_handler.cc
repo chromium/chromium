@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/ash/crostini_installer/crostini_installer_page_handler.h"
 
 #include <algorithm>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -17,7 +18,6 @@
 #include "chrome/browser/ash/crostini/crostini_types.mojom.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chromeos/ash/components/dbus/spaced/spaced_client.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/text/bytes_formatting.h"
 
 namespace ash {
@@ -27,7 +27,7 @@ namespace {
 void OnAmountOfFreeDiskSpace(
     crostini_installer::mojom::PageHandler::RequestAmountOfFreeDiskSpaceCallback
         callback,
-    absl::optional<int64_t> free_bytes) {
+    std::optional<int64_t> free_bytes) {
   if (!free_bytes.has_value()) {
     std::move(callback).Run({}, 0, false);
     return;

@@ -5,6 +5,7 @@
 import("//build/buildflag_header.gni")
 import("//build/config/ui.gni")
 import("//components/viz/viz.gni")
+import("//ui/gl/features.gni")
 
 # Android on x86 architecture is likely an emulator. Some multiplanar texture
 # types don't work on Android emulator.
@@ -110,6 +111,7 @@ viz_static_library("test_support") {
     "//services/viz/privileged/mojom",
     "//testing/gmock",
     "//testing/gtest",
+    "//ui/base:ozone_buildflags",
     "//ui/gfx/geometry",
     "//ui/gl",
     "//ui/latency:test_support",
@@ -122,6 +124,13 @@ viz_static_library("test_support") {
 
   if (enable_vulkan) {
     deps += [ "//gpu/vulkan/init" ]
+  }
+
+  if (use_dawn || skia_use_dawn) {
+    deps += [
+      "//third_party/dawn/src/dawn:proc",
+      "//third_party/dawn/src/dawn/native",
+    ]
   }
 }
 

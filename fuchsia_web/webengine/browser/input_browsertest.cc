@@ -251,7 +251,7 @@ class KeyboardInputTest : public WebEngineBrowserTest {
     frame_for_test_.navigation_listener().RunUntilTitleEquals(
         base::NumberToString(expected.size()));
 
-    absl::optional<base::Value> actual =
+    std::optional<base::Value> actual =
         ExecuteJavaScript(frame_for_test_.ptr().get(), kKeyDicts);
     EXPECT_EQ(*actual, base::Value(std::move(expected)));
   }
@@ -264,13 +264,13 @@ class KeyboardInputTest : public WebEngineBrowserTest {
   }
 
   // Used to publish fake services.
-  absl::optional<base::TestComponentContextForProcess> component_context_;
+  std::optional<base::TestComponentContextForProcess> component_context_;
 
   FrameForTest frame_for_test_;
   ScenicTestHelper scenic_test_helper_;
-  absl::optional<FakeKeyboard> keyboard_service_;
+  std::optional<FakeKeyboard> keyboard_service_;
   base::test::ScopedFeatureList scoped_feature_list_;
-  absl::optional<
+  std::optional<
       NeverConnectedChecker<fuchsia_input_virtualkeyboard::ControllerCreator>>
       virtual_keyboard_checker_;
 };
@@ -592,7 +592,7 @@ class KeyboardInputTestWithoutKeyboardFeature : public KeyboardInputTest {
     keyboard_input_checker_.emplace(component_context_->additional_services());
   }
 
-  absl::optional<NeverConnectedChecker<fuchsia_ui_input3::Keyboard>>
+  std::optional<NeverConnectedChecker<fuchsia_ui_input3::Keyboard>>
       keyboard_input_checker_;
 };
 

@@ -8,11 +8,14 @@ import "components/sync/protocol/web_app_specifics.proto";
 import "chrome/browser/ash/system_web_apps/types/proto/system_web_app_data.proto";
 import "chrome/browser/web_applications/proto/web_app_launch_handler.proto";
 import "chrome/browser/web_applications/proto/web_app_os_integration_state.proto";
+import "chrome/browser/web_applications/proto/web_app_proto_package.proto";
 import "chrome/browser/web_applications/proto/web_app_share_target.proto";
 import "chrome/browser/web_applications/proto/web_app_tab_strip.proto";
 
 option optimize_for = LITE_RUNTIME;
 
+// TODO(http://b/307989065) Make this web_app.proto and remove "Proto" from type
+// names.
 package web_app;
 
 // A mapping between a MIME type and a set of file extensions for a file handler
@@ -181,8 +184,8 @@ message IsolationDataProto {
   // this Isolated Web App.
   repeated string controlled_frame_partitions = 4;
 
-  // The version of the IWA.
-  required string version = 5;
+  // The version of the IWA - required.
+  optional string version = 5;
 
   message PendingUpdateInfo {
     oneof location {
@@ -190,7 +193,8 @@ message IsolationDataProto {
       DevModeBundle dev_mode_bundle = 2;
       DevModeProxy dev_mode_proxy = 3;
     }
-    required string version = 4;
+    // The version of the pending update - required.
+    optional string version = 4;
   }
 
   optional PendingUpdateInfo pending_update_info = 6;
@@ -466,7 +470,8 @@ message WebAppProto {
 
   // Stores whether the current web app is set as the default app to capture
   // links.
-  optional bool is_user_selected_app_for_capturing_links = 63;
+  optional proto.LinkCapturingUserPreference user_link_capturing_preference =
+      63;
 
   // Time the app was updated as part of a full install. For example when a
   // policy installs an app that is already in the DB installed as a

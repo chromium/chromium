@@ -16,7 +16,6 @@
 #include "base/uuid.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
-#include "components/bookmarks/test/test_bookmark_client.h"
 #include "components/power_bookmarks/core/bookmark_client_base.h"
 #include "components/power_bookmarks/core/suggested_save_location_provider.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -34,6 +33,8 @@ class TestBookmarkClientImpl : public BookmarkClientBase {
   TestBookmarkClientImpl(const TestBookmarkClientImpl&) = delete;
   TestBookmarkClientImpl& operator=(const TestBookmarkClientImpl&) = delete;
   ~TestBookmarkClientImpl() override = default;
+
+  bool AreFoldersForAccountStorageAllowed() override { return false; }
 
   bookmarks::LoadManagedNodeCallback GetLoadManagedNodeCallback() override {
     return bookmarks::LoadManagedNodeCallback();
@@ -87,12 +88,10 @@ class MockSuggestionProvider : public SuggestedSaveLocationProvider {
 class BookmarkClientBaseTest : public testing::Test {
  protected:
   void SetUp() override {
-    std::unique_ptr<TestBookmarkClientImpl> client =
-        std::make_unique<TestBookmarkClientImpl>();
+    auto client = std::make_unique<TestBookmarkClientImpl>();
     client_ = client.get();
-
-    model_ =
-        bookmarks::TestBookmarkClient::CreateModelWithClient(std::move(client));
+    model_ = std::make_unique<bookmarks::BookmarkModel>(std::move(client));
+    model_->LoadEmptyForTest();
   }
 
   void TearDown() override { client_ = nullptr; }

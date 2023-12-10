@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/downloads/downloads_list_tracker.h"
 
 #include <iterator>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -37,7 +38,6 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/filename_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/icu/source/i18n/unicode/datefmt.h"
 #include "ui/base/l10n/time_format.h"
 #include "url/url_constants.h"
@@ -76,6 +76,8 @@ downloads::mojom::DangerType GetDangerType(
       return downloads::mojom::DangerType::kPotentiallyUnwanted;
     case download::DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING:
       return downloads::mojom::DangerType::kAsyncScanning;
+    case download::DOWNLOAD_DANGER_TYPE_ASYNC_LOCAL_PASSWORD_SCANNING:
+      return downloads::mojom::DangerType::kAsyncLocalPasswordScanning;
     case download::DOWNLOAD_DANGER_TYPE_BLOCKED_PASSWORD_PROTECTED:
       return downloads::mojom::DangerType::kBlockedPasswordProtected;
     case download::DOWNLOAD_DANGER_TYPE_BLOCKED_TOO_LARGE:
@@ -303,7 +305,7 @@ downloads::mojom::DataPtr DownloadsListTracker::CreateDownloadData(
   // If URL is too long, don't make it clickable.
   if (download_item->GetURL().is_valid() &&
       download_item->GetURL().spec().length() <= url::kMaxURLChars) {
-    file_value->url = absl::make_optional<GURL>(download_item->GetURL());
+    file_value->url = std::make_optional<GURL>(download_item->GetURL());
   }
   file_value->display_url = GetFormattedDisplayUrl(download_item->GetURL());
   file_value->total = download_item->GetTotalBytes();
@@ -320,7 +322,7 @@ downloads::mojom::DataPtr DownloadsListTracker::CreateDownloadData(
   std::u16string progress_status_text;
   bool retry = false;
   // This will always be populated, but we set a null value to start with.
-  absl::optional<downloads::mojom::State> state = absl::nullopt;
+  std::optional<downloads::mojom::State> state = std::nullopt;
 
   switch (download_item->GetState()) {
     case download::DownloadItem::IN_PROGRESS: {
@@ -400,15 +402,13 @@ downloads::mojom::DataPtr DownloadsListTracker::CreateDownloadData(
   file_value->retry = retry;
   file_value->state = *state;
 
+  // Note that the safe_browsing_state is the state of the download's profile
+  // *now* whereas the presence of a verdict was determined when the download
+  // happened, so they are not necessarily related.
   file_value->safe_browsing_state =
       GetSafeBrowsingState(download_model.profile());
   file_value->has_safe_browsing_verdict =
       WasSafeBrowsingVerdictObtained(download_item);
-  // If there is no safe browsing protection, the item should not have a safe
-  // browsing verdict.
-  CHECK(!file_value->has_safe_browsing_verdict ||
-        file_value->safe_browsing_state !=
-            downloads::mojom::SafeBrowsingState::kNoSafeBrowsing);
 
   return file_value;
 }

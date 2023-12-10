@@ -4,7 +4,7 @@
 
 import '//resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import '//resources/cr_elements/cr_input/cr_input.js';
-import '../../components/oobe_i18n_dropdown.js';
+import '../components/oobe_i18n_dropdown.js';
 
 import { assert } from '//resources/ash/common/assert.js';
 import { html, PolymerElement } from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';

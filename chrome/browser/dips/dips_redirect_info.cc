@@ -44,6 +44,7 @@ DIPSRedirectInfo::DIPSRedirectInfo(const GURL& url,
                                    bool has_sticky_activation,
                                    bool web_authn_assertion_request_succeeded)
     : url(url),
+      site(GetSiteForDIPS(url)),
       redirect_type(redirect_type),
       access_type(access_type),
       source_id(source_id),

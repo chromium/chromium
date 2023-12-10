@@ -14,6 +14,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/app_list/search/app_search_provider.h"
+#include "chrome/browser/ash/app_list/search/app_shortcuts_search_provider.h"
 #include "chrome/browser/ash/app_list/search/app_zero_state_provider.h"
 #include "chrome/browser/ash/app_list/search/arc/arc_app_shortcuts_search_provider.h"
 #include "chrome/browser/ash/app_list/search/arc/arc_playstore_search_provider.h"
@@ -45,6 +46,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/settings/services/settings_manager/os_settings_manager.h"
 #include "chrome/browser/ui/webui/ash/settings/services/settings_manager/os_settings_manager_factory.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/session_manager/core/session_manager.h"
 
 namespace app_list {
@@ -96,6 +98,10 @@ std::unique_ptr<SearchController> CreateSearchController(
     if (search_features::IsLauncherImageSearchEnabled()) {
       controller->AddProvider(
           std::make_unique<LocalImageSearchProvider>(profile));
+    }
+    if (chromeos::features::IsCrosWebAppShortcutUiUpdateEnabled()) {
+      controller->AddProvider(
+          std::make_unique<AppShortcutsSearchProvider>(profile));
     }
   }
 

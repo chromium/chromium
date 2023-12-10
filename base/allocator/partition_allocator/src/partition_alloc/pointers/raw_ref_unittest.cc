@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/allocator/partition_allocator/src/partition_alloc/pointers/raw_ref.h"
+#include "partition_alloc/pointers/raw_ref.h"
 
 #include <functional>
 #include <type_traits>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/debug/debugging_buildflags.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/pointers/raw_ptr_counting_impl_for_test.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/pointers/raw_ptr_test_support.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/gtest_util.h"
+#include "partition_alloc/partition_alloc_base/debug/debugging_buildflags.h"
+#include "partition_alloc/partition_alloc_buildflags.h"
+#include "partition_alloc/pointers/raw_ptr_counting_impl_for_test.h"
+#include "partition_alloc/pointers/raw_ptr_test_support.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #if BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
 #include "base/debug/asan_service.h"
@@ -194,6 +194,32 @@ static_assert([]() constexpr {
   return true;
 }());
 #endif
+
+struct StructWithoutTypeBasedTraits {};
+struct BaseWithTypeBasedTraits {};
+struct DerivedWithTypeBasedTraits : BaseWithTypeBasedTraits {};
+
+}  // namespace
+
+namespace base::raw_ptr_traits {
+// `BaseWithTypeBasedTraits` and any derived classes have
+// `RawPtrTraits::kDummyForTest`.
+template <typename T>
+constexpr auto kTypeTraits<
+    T,
+    std::enable_if_t<std::is_base_of_v<BaseWithTypeBasedTraits, T>>> =
+    RawPtrTraits::kDummyForTest;
+}  // namespace base::raw_ptr_traits
+
+// `raw_ptr<T>` should have traits based on specialization of `kTypeTraits<T>`.
+static_assert(!ContainsFlags(raw_ref<StructWithoutTypeBasedTraits>::Traits,
+                             base::RawPtrTraits::kDummyForTest));
+static_assert(ContainsFlags(raw_ref<BaseWithTypeBasedTraits>::Traits,
+                            base::RawPtrTraits::kDummyForTest));
+static_assert(ContainsFlags(raw_ref<DerivedWithTypeBasedTraits>::Traits,
+                            base::RawPtrTraits::kDummyForTest));
+
+namespace {
 
 TEST(RawRef, Construct) {
   int i = 1;

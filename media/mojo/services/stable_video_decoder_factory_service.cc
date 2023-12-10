@@ -133,7 +133,8 @@ class MojoMediaClientImpl : public MojoMediaClient {
           /*frame_converter=*/nullptr,
           VideoDecoderPipeline::DefaultPreferredRenderableFourccs(),
           std::move(log),
-          /*oop_video_decoder=*/{});
+          /*oop_video_decoder=*/{},
+          /*in_video_decoder_process=*/true);
     }
   }
 

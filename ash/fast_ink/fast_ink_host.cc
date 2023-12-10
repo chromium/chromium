@@ -17,7 +17,6 @@
 #include "components/viz/common/quads/texture_draw_quad.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
-#include "ui/aura/env.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
@@ -57,10 +56,10 @@ FastInkHost::FastInkHost() = default;
 FastInkHost::~FastInkHost() {
   if (base::FeatureList::IsEnabled(
           features::kUseOneSharedImageForFastInkHostResources)) {
-    if (!mailbox_.IsZero()) {
+    if (client_shared_image_) {
       CHECK(context_provider_);
-      context_provider_->SharedImageInterface()->DestroySharedImage(sync_token_,
-                                                                    mailbox_);
+      context_provider_->SharedImageInterface()->DestroySharedImage(
+          sync_token_, std::move(client_shared_image_));
     }
   }
 }
@@ -92,14 +91,19 @@ std::unique_ptr<viz::CompositorFrame> FastInkHost::CreateCompositorFrame(
                GetTotalDamage().ToString());
 
   if (features::ShouldUseMappableSharedImage()) {
-    CHECK(!mailbox_.IsZero());
+    CHECK(client_shared_image_);
     CHECK(!gpu_memory_buffer_);
   }
+
+  // If FastInkHost is configured to hold a SharedImage, ensure that that
+  // SharedImage is used when creating compositor frames.
+  auto mailbox =
+      client_shared_image_ ? client_shared_image_->mailbox() : gpu::Mailbox();
 
   auto frame = fast_ink_internal::CreateCompositorFrame(
       begin_frame_ack, GetContentRect(), GetTotalDamage(), auto_update,
       *host_window(), buffer_size_, gpu_memory_buffer_.get(), &resource_manager,
-      mailbox_, sync_token_);
+      mailbox, sync_token_);
 
   ResetDamage();
 
@@ -146,9 +150,7 @@ void FastInkHost::InitializeFastInkBuffer(aura::Window* host_window) {
 
   if (base::FeatureList::IsEnabled(
           features::kUseOneSharedImageForFastInkHostResources)) {
-    context_provider_ = aura::Env::GetInstance()
-                            ->context_factory()
-                            ->SharedMainThreadRasterContextProvider();
+    context_provider_ = fast_ink_internal::GetContextProvider();
     gpu::SharedImageInterface* sii = context_provider_->SharedImageInterface();
 
     // This SharedImage will be used by the display compositor, will be updated
@@ -159,32 +161,27 @@ void FastInkHost::InitializeFastInkBuffer(aura::Window* host_window) {
 
     if (features::ShouldUseMappableSharedImage()) {
       CHECK(!gpu_memory_buffer_);
-      CHECK(mailbox_.IsZero());
-      auto client_shared_image = sii->CreateSharedImage(
-          fast_ink_internal::kFastInkSharedImageFormat, buffer_size_,
-          gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
-          usage, "FastInkHostUIResource", gpu::kNullSurfaceHandle,
-          buffer_usage);
-      LOG_IF(ERROR, !client_shared_image) << "Failed to create MappableSI";
-      if (client_shared_image) {
-        mailbox_ = client_shared_image->mailbox();
-      }
+      CHECK(!client_shared_image_);
+      client_shared_image_ = fast_ink_internal::CreateMappableSharedImage(
+          buffer_size_, usage, buffer_usage);
+      LOG_IF(ERROR, !client_shared_image_) << "Failed to create MappableSI";
     } else {
-      auto client_shared_image = sii->CreateSharedImage(
+      client_shared_image_ = sii->CreateSharedImage(
           fast_ink_internal::kFastInkSharedImageFormat,
           gpu_memory_buffer_->GetSize(), gfx::ColorSpace(),
           kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage,
           "FastInkHostUIResource", gpu_memory_buffer_->CloneHandle());
-      CHECK(client_shared_image);
-      mailbox_ = client_shared_image->mailbox();
+      CHECK(client_shared_image_);
     }
     sync_token_ = sii->GenVerifiedSyncToken();
   }
 
   if (switches::ShouldClearFastInkBuffer()) {
     if (features::ShouldUseMappableSharedImage()) {
-      std::unique_ptr<gpu::SharedImageInterface::ScopedMapping> mapping =
-          context_provider_->SharedImageInterface()->MapSharedImage(mailbox_);
+      std::unique_ptr<gpu::ClientSharedImage::ScopedMapping> mapping;
+      if (client_shared_image_) {
+        mapping = client_shared_image_->Map();
+      }
       LOG_IF(ERROR, !mapping) << "Failed to map MappableSI";
       uint8_t* memory =
           mapping ? static_cast<uint8_t*>(mapping->Memory(0)) : nullptr;
@@ -228,9 +225,9 @@ gfx::Rect FastInkHost::BufferRectFromWindowRect(
 }
 
 void FastInkHost::Draw(SkBitmap bitmap, const gfx::Rect& damage_rect) {
-  bool initialized = features::ShouldUseMappableSharedImage()
-                         ? !mailbox_.IsZero()
-                         : gpu_memory_buffer_ != nullptr;
+  const bool initialized = features::ShouldUseMappableSharedImage()
+                               ? client_shared_image_ != nullptr
+                               : gpu_memory_buffer_ != nullptr;
 
   if (!initialized) {
     // GPU process should be ready soon after start and `pending_bitmaps_`
@@ -244,7 +241,7 @@ void FastInkHost::Draw(SkBitmap bitmap, const gfx::Rect& damage_rect) {
 }
 
 void FastInkHost::DrawBitmap(SkBitmap bitmap, const gfx::Rect& damage_rect) {
-  std::unique_ptr<gpu::SharedImageInterface::ScopedMapping> mapping;
+  std::unique_ptr<gpu::ClientSharedImage::ScopedMapping> mapping;
 
   {
     // TODO(zoraiznaeem): Investigate the precision as we will get non trivial
@@ -252,8 +249,7 @@ void FastInkHost::DrawBitmap(SkBitmap bitmap, const gfx::Rect& damage_rect) {
     TRACE_EVENT0("ui", "FastInkHost::ScopedPaint::Map");
 
     if (features::ShouldUseMappableSharedImage()) {
-      mapping =
-          context_provider_->SharedImageInterface()->MapSharedImage(mailbox_);
+      mapping = client_shared_image_->Map();
       if (!mapping) {
         LOG(ERROR) << "Failed to map MappableSI";
         return;

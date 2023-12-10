@@ -11,9 +11,7 @@ import androidx.annotation.Nullable;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.webapps.R;
 
-/**
- * The class handling the bottom sheet install for the PWA Restore UI.
- */
+/** The class handling the bottom sheet install for the PWA Restore UI. */
 public class PwaRestoreBottomSheetContent implements BottomSheetContent {
     // The view for our bottom sheet.
     private final PwaRestoreBottomSheetView mView;

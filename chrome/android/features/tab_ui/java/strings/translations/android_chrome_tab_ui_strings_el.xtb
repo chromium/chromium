@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="el">
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> από τις καρτέλες σας δεν έχουν χρησιμοποιηθεί πρόσφατα. Κλείσιμο αυτών των καρτελών;</translation>
+<translation id="1155815720264022949">Θέλετε να κλείσετε τις παλιές καρτέλες;</translation>
 <translation id="1215127405478249895">Έλεγχος καρτελών</translation>
 <translation id="125153950246128346">Πατήστε για να δείτε μια άλλη καρτέλα</translation>
 <translation id="1499635324672558517">Θέλετε να κλείσετε όλες τις καρτέλες ανώνυμης περιήγησης;</translation>
@@ -46,9 +47,11 @@
 <translation id="5073204694187207510">Απόκρυψη πλέγματος πλήρους οθόνης</translation>
 <translation id="5076161749301278626">Εμφάνιση αξιολογήσεων καταστήματος;</translation>
 <translation id="5082793167783849073">Συγκρίνετε γρήγορα σελίδες δημιουργώντας μια ομάδα. Για να ξεκινήσετε, αγγίξτε παρατεταμένα κάποιον σύνδεσμο.</translation>
+<translation id="5303274951032363933">{TABS_COUNT,plural, =1{Έχετε <ph name="TABS_COUNT_ONE" /> καρτέλα που δεν έχετε χρησιμοποιήσει πρόσφατα}other{Έχετε <ph name="TABS_COUNT_MANY" /> καρτέλες που δεν έχετε χρησιμοποιήσει πρόσφατα}}</translation>
 <translation id="5339733443032484186">Η τελευταία καρτέλα σας</translation>
 <translation id="5490235265819901748">Η ομάδα καρτελών αναπτύχθηκε</translation>
 <translation id="5494920125229734069">Επιλογή όλων</translation>
+<translation id="5545379293264651575">Κλείσιμο χωρίς έλεγχο</translation>
 <translation id="5556417849629758491">Δείτε πληροφορίες καταστήματος, η επιλογή είναι διαθέσιμη στο επάνω μέρος της οθόνης</translation>
 <translation id="5558362125926932819">Κλείσιμο της ομάδας καρτελών με τις <ph name="NUMBER_OF_TABS" /> καρτέλες</translation>
 <translation id="5580090775658607195">Ομαδοποιήθηκαν <ph name="TAB_COUNT" /> καρτέλες</translation>
@@ -85,7 +88,6 @@
 <translation id="7885132941432959125">Μετακίνηση καρτέλας δεξιά</translation>
 <translation id="7966321538264951561">Παράβλεψη των προτάσεων.</translation>
 <translation id="8029301326595421733">Άνοιγμα σε πλήρες ύψος των πληροφοριών σχετικά με αυτό το κατάστημα</translation>
-<translation id="814503310257431685">Προβολή όλων</translation>
 <translation id="8205266828577616993">Μετακίνηση καρτέλας επάνω</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Κλείσιμο <ph name="TABS_COUNT_ONE" /> επιλεγμένης καρτέλας}other{Κλείσιμο <ph name="TABS_COUNT_MANY" /> επιλεγμένων καρτελών}}</translation>
 <translation id="8398929769197326728">Νέος φάκελος - <ph name="CURRENT_TIMESTAMP_MS" /></translation>

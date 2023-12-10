@@ -108,7 +108,8 @@ TEST_F(WebStateDelegateBridgeTest, ShowRepostFormWarningDialog) {
   EXPECT_FALSE([delegate_ repostFormWarningRequested]);
   EXPECT_FALSE([delegate_ webState]);
   base::OnceCallback<void(bool)> callback;
-  bridge_->ShowRepostFormWarningDialog(&fake_web_state_, std::move(callback));
+  bridge_->ShowRepostFormWarningDialog(
+      &fake_web_state_, web::FormWarningType::kRepost, std::move(callback));
   EXPECT_TRUE([delegate_ repostFormWarningRequested]);
   EXPECT_EQ(&fake_web_state_, [delegate_ webState]);
 }
@@ -118,7 +119,8 @@ TEST_F(WebStateDelegateBridgeTest, ShowRepostFormWarningDialog) {
 TEST_F(WebStateDelegateBridgeTest, ShowRepostFormWarningWithNoDelegateMethod) {
   __block bool callback_called = false;
   empty_delegate_bridge_->ShowRepostFormWarningDialog(
-      nullptr, base::BindOnce(^(bool should_repost) {
+      nullptr, web::FormWarningType::kRepost,
+      base::BindOnce(^(bool should_repost) {
         EXPECT_TRUE(should_repost);
         callback_called = true;
       }));
@@ -134,38 +136,34 @@ TEST_F(WebStateDelegateBridgeTest, GetJavaScriptDialogPresenter) {
 
 // Tests `HandlePermissionsDecisionRequest` forwarding.
 TEST_F(WebStateDelegateBridgeTest, HandlePermissionsDecisionRequest) {
-  if (@available(iOS 15.0, *)) {
-    __block bool callback_called = false;
-    EXPECT_FALSE([delegate_ permissionsRequestHandled]);
-    EXPECT_FALSE([delegate_ webState]);
-    bridge_->HandlePermissionsDecisionRequest(
-        &fake_web_state_, @[], ^(PermissionDecision decision) {
-          EXPECT_EQ(decision, PermissionDecisionGrant);
-          callback_called = true;
-        });
-    EXPECT_TRUE([delegate_ permissionsRequestHandled]);
-    EXPECT_EQ(&fake_web_state_, [delegate_ webState]);
-    EXPECT_TRUE(callback_called);
-  }
+  __block bool callback_called = false;
+  EXPECT_FALSE([delegate_ permissionsRequestHandled]);
+  EXPECT_FALSE([delegate_ webState]);
+  bridge_->HandlePermissionsDecisionRequest(
+      &fake_web_state_, @[], ^(PermissionDecision decision) {
+        EXPECT_EQ(decision, PermissionDecisionGrant);
+        callback_called = true;
+      });
+  EXPECT_TRUE([delegate_ permissionsRequestHandled]);
+  EXPECT_EQ(&fake_web_state_, [delegate_ webState]);
+  EXPECT_TRUE(callback_called);
 }
 
 // Tests `HandlePermissionsDecisionRequest` forwarding to delegate which does
 // not implement `webState:handlePermissions:decisionHandler:` method.
 TEST_F(WebStateDelegateBridgeTest,
        HandlePermissionsDecisionRequestWithNoDelegateMethod) {
-  if (@available(iOS 15.0, *)) {
-    __block bool callback_called = false;
-    empty_delegate_bridge_->HandlePermissionsDecisionRequest(
-        nullptr, @[], ^(PermissionDecision decision) {
-          // Default decision `PermissionDecisionShowDefaultPrompt` will be used
-          // when delegate doesn't implement
-          // `webState:handlePermissions:decisionHandler:` method to handle the
-          // permissions.
-          EXPECT_EQ(decision, PermissionDecisionShowDefaultPrompt);
-          callback_called = true;
-        });
-    EXPECT_TRUE(callback_called);
-  }
+  __block bool callback_called = false;
+  empty_delegate_bridge_->HandlePermissionsDecisionRequest(
+      nullptr, @[], ^(PermissionDecision decision) {
+        // Default decision `PermissionDecisionShowDefaultPrompt` will be used
+        // when delegate doesn't implement
+        // `webState:handlePermissions:decisionHandler:` method to handle the
+        // permissions.
+        EXPECT_EQ(decision, PermissionDecisionShowDefaultPrompt);
+        callback_called = true;
+      });
+  EXPECT_TRUE(callback_called);
 }
 
 // Tests `OnAuthRequired` forwarding.

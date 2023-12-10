@@ -23,7 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="FastPair.CreateBond.Latency" units="ms"
-    expires_after="2024-03-03">
+    expires_after="2024-05-05">
   <owner>jackshira@google.com</owner>
   <owner>dclasson@google.com</owner>
   <owner>brandosocarras@google.com</owner>
@@ -36,7 +36,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FastPair.GattConnection" enum="FastPairGattConnectionSteps"
-    expires_after="2024-03-03">
+    expires_after="2024-05-05">
   <owner>jackshira@google.com</owner>
   <owner>dclasson@google.com</owner>
   <owner>brandosocarras@google.com</owner>
@@ -50,7 +50,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FastPair.GattServiceDiscovery.Latency" units="ms"
-    expires_after="2023-12-31">
+    expires_after="2024-12-31">
   <owner>jackshira@google.com</owner>
   <owner>dclasson@google.com</owner>
   <owner>brandosocarras@google.com</owner>
@@ -62,7 +62,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FastPair.Handshake.AttemptCount" units="count"
-    expires_after="2024-03-03">
+    expires_after="2024-05-05">
   <owner>jackshira@google.com</owner>
   <owner>dclasson@google.com</owner>
   <owner>brandosocarras@google.com</owner>
@@ -75,7 +75,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FastPair.Handshake.EffectiveSuccessRate" enum="BooleanSuccess"
-    expires_after="2024-03-03">
+    expires_after="2024-05-05">
   <owner>jackshira@google.com</owner>
   <owner>dclasson@google.com</owner>
   <owner>brandosocarras@google.com</owner>
@@ -88,7 +88,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FastPair.InitialPairing"
-    enum="FastPairInitialSuccessFunnelEvent" expires_after="2024-03-03">
+    enum="FastPairInitialSuccessFunnelEvent" expires_after="2024-05-05">
   <owner>jackshira@google.com</owner>
   <owner>dclasson@google.com</owner>
   <owner>brandosocarras@google.com</owner>
@@ -103,7 +103,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FastPair.KeyBasedNotify.Latency" units="ms"
-    expires_after="2023-12-31">
+    expires_after="2024-12-31">
   <owner>jackshira@google.com</owner>
   <owner>dclasson@google.com</owner>
   <owner>brandosocarras@google.com</owner>
@@ -116,7 +116,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FastPair.KeyBasedWriteRequest.Latency" units="ms"
-    expires_after="2023-12-31">
+    expires_after="2024-12-31">
   <owner>jackshira@google.com</owner>
   <owner>dclasson@google.com</owner>
   <owner>brandosocarras@google.com</owner>
@@ -129,7 +129,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FastPair.PasskeyNotify.Latency" units="ms"
-    expires_after="2023-12-31">
+    expires_after="2024-12-31">
   <owner>jackshira@google.com</owner>
   <owner>dclasson@google.com</owner>
   <owner>brandosocarras@google.com</owner>
@@ -142,7 +142,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FastPair.PasskeyWriteRequest.Latency" units="ms"
-    expires_after="2023-12-31">
+    expires_after="2024-12-31">
   <owner>jackshira@google.com</owner>
   <owner>dclasson@google.com</owner>
   <owner>brandosocarras@google.com</owner>
@@ -155,7 +155,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FastPair.RetroactivePairing"
-    enum="FastPairRetroactiveSuccessFunnelEvent" expires_after="2024-03-03">
+    enum="FastPairRetroactiveSuccessFunnelEvent" expires_after="2024-05-05">
   <owner>jackshira@google.com</owner>
   <owner>dclasson@google.com</owner>
   <owner>brandosocarras@google.com</owner>
@@ -170,7 +170,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FastPair.SubsequentPairing"
-    enum="FastPairSubsequentSuccessFunnelEvent" expires_after="2024-03-03">
+    enum="FastPairSubsequentSuccessFunnelEvent" expires_after="2024-05-05">
   <owner>jackshira@google.com</owner>
   <owner>dclasson@google.com</owner>
   <owner>brandosocarras@google.com</owner>
@@ -183,7 +183,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FastPair.{FastPairPairingProtocol}.Pairing"
-    enum="FastPairProtocolPairingSteps" expires_after="2024-03-03">
+    enum="FastPairProtocolPairingSteps" expires_after="2024-05-05">
   <owner>jackshira@google.com</owner>
   <owner>dclasson@google.com</owner>
   <owner>brandosocarras@google.com</owner>
@@ -203,7 +203,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FastPair.{PairingScenario}.Initialization"
-    enum="FastPairInitializePairingProcessEvent" expires_after="2024-03-03">
+    enum="FastPairInitializePairingProcessEvent" expires_after="2024-05-05">
   <owner>jackshira@google.com</owner>
   <owner>dclasson@google.com</owner>
   <owner>brandosocarras@google.com</owner>
@@ -241,7 +241,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FastPair.{PairingScenario}.Initialization.FailureReason"
-    enum="FastPairPairFailure" expires_after="2024-03-03">
+    enum="FastPairPairFailure" expires_after="2024-05-05">
   <owner>jackshira@google.com</owner>
   <owner>dclasson@google.com</owner>
   <owner>brandosocarras@google.com</owner>
@@ -279,7 +279,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="FastPair.{PairingScenario}.Initialization.RetriesBeforeSuccess"
-    units="count" expires_after="2023-12-31">
+    units="count" expires_after="2024-12-31">
   <owner>jackshira@google.com</owner>
   <owner>dclasson@google.com</owner>
   <owner>brandosocarras@google.com</owner>

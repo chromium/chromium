@@ -29,7 +29,7 @@ namespace {
 
 using testing::Return;
 
-static std::unique_ptr<KeyedService> BuildTestSyncService(
+std::unique_ptr<KeyedService> BuildTestSyncService(
     content::BrowserContext* context) {
   return std::make_unique<syncer::TestSyncService>();
 }
@@ -41,11 +41,10 @@ class MoveToAccountStoreBubbleControllerTest : public ::testing::Test {
     profile_builder.AddTestingFactories(
         IdentityTestEnvironmentProfileAdaptor::
             GetIdentityTestEnvironmentFactories());
+    profile_builder.AddTestingFactory(
+        SyncServiceFactory::GetInstance(),
+        base::BindRepeating(&BuildTestSyncService));
     profile_ = profile_builder.Build();
-    // Make sure no real SyncService gets created (it's not needed for these
-    // tests, and it'd require more setup).
-    SyncServiceFactory::GetInstance()->SetTestingFactory(
-        profile(), base::BindRepeating(&BuildTestSyncService));
 
     web_contents_ =
         content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
@@ -90,13 +89,6 @@ TEST_F(MoveToAccountStoreBubbleControllerTest, AcceptMoveIfOptedIn) {
   ON_CALL(*password_feature_manager(), IsOptedInForAccountStorage)
       .WillByDefault(Return(true));
   EXPECT_CALL(*delegate(), MovePasswordToAccountStore);
-  controller()->AcceptMove();
-}
-
-TEST_F(MoveToAccountStoreBubbleControllerTest, AuthenticateMoveIfOptedOut) {
-  ON_CALL(*password_feature_manager(), IsOptedInForAccountStorage)
-      .WillByDefault(Return(false));
-  EXPECT_CALL(*delegate(), AuthenticateUserForAccountStoreOptInAndMovePassword);
   controller()->AcceptMove();
 }
 

@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/memory/scoped_refptr.h"
 #include "base/sync_socket.h"
@@ -73,7 +74,7 @@ class InputStream final : public media::mojom::AudioInputStream,
   // InputController::EventHandler implementation.
   void OnCreated(bool initially_muted) override;
   void OnError(InputController::ErrorCode error_code) override;
-  void OnLog(base::StringPiece) override;
+  void OnLog(std::string_view) override;
   void OnMuted(bool is_muted) override;
 
  private:

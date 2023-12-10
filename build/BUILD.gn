@@ -3,8 +3,8 @@
 # found in the LICENSE file.
 
 import("//build/buildflag_header.gni")
+import("//build/config/cast.gni")
 import("//build/config/chrome_build.gni")
-import("//build/config/chromecast_build.gni")
 import("//build/config/chromeos/args.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")

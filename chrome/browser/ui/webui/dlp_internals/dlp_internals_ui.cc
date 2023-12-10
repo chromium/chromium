@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/dlp_internals/dlp_internals_ui.h"
 
+#include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/webui_util.h"
@@ -24,6 +25,9 @@ DlpInternalsUI::DlpInternalsUI(content::WebUI* web_ui)
   DlpRulesManager* rules_manager =
       DlpRulesManagerFactory::GetForPrimaryProfile();
   source->AddBoolean("doRulesManagerExist", rules_manager != nullptr);
+  source->AddBoolean(
+      "isReportingEnabled",
+      rules_manager ? rules_manager->IsReportingEnabled() : false);
 
   webui::SetupWebUIDataSource(
       source,
@@ -32,9 +36,6 @@ DlpInternalsUI::DlpInternalsUI(content::WebUI* web_ui)
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::RequireTrustedTypesFor,
       "require-trusted-types-for 'script';");
-  source->OverrideContentSecurityPolicy(
-      network::mojom::CSPDirectiveName::TrustedTypes,
-      "trusted-types static-types;");
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(DlpInternalsUI)

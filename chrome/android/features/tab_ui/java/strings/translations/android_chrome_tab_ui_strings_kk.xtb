@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="kk">
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> қойынды біраздан бері пайдаланылмады. Олар жабылсын ба?</translation>
+<translation id="1155815720264022949">Ескі қойындыларды жабу қажет пе?</translation>
 <translation id="1215127405478249895">Қойындыларды қарап шығу</translation>
 <translation id="125153950246128346">Басқа қойынды көру үшін түртіңіз.</translation>
 <translation id="1499635324672558517">Барлық инкогнито қойындысы жабылсын ба?</translation>
@@ -46,9 +47,11 @@
 <translation id="5073204694187207510">Толық экрандық торды жасыру</translation>
 <translation id="5076161749301278626">Дүкен туралы пікірлерді көресіз бе?</translation>
 <translation id="5082793167783849073">Топ жасай отырып, беттерді жылдам салыстырыңыз. Бастау үшін сілтемені басып тұрыңыз.</translation>
+<translation id="5303274951032363933">{TABS_COUNT,plural, =1{Сіз жақында пайдаланбаған <ph name="TABS_COUNT_ONE" /> қойынды бар.}other{Сіз жақында пайдаланбаған <ph name="TABS_COUNT_MANY" /> қойынды бар.}}</translation>
 <translation id="5339733443032484186">Соңғы қойындыңыз</translation>
 <translation id="5490235265819901748">Қойындылар тобы жайылды</translation>
 <translation id="5494920125229734069">Барлығын таңдау</translation>
+<translation id="5545379293264651575">Тексермей жабу</translation>
 <translation id="5556417849629758491">Дүкен туралы ақпаратты көру (опция экранның жоғарғы жағында орналасқан)</translation>
 <translation id="5558362125926932819"><ph name="NUMBER_OF_TABS" /> қойындысы бар қойындылар тобын жабу</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" /> қойынды топтастырылды.</translation>
@@ -85,7 +88,6 @@
 <translation id="7885132941432959125">Қойындыны оңға жылжыту</translation>
 <translation id="7966321538264951561">Ұсыныстарды қабылдамау.</translation>
 <translation id="8029301326595421733">Бұл дүкеннің толық ашылғандығы туралы ақпарат</translation>
-<translation id="814503310257431685">Барлығын көру</translation>
 <translation id="8205266828577616993">Қойындыны жоғары жылжыту</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Таңдалған <ph name="TABS_COUNT_ONE" /> қойындыны жабу}other{Таңдалған <ph name="TABS_COUNT_MANY" /> қойындыны жабу}}</translation>
 <translation id="8398929769197326728">Жаңа қалта – <ph name="CURRENT_TIMESTAMP_MS" /></translation>

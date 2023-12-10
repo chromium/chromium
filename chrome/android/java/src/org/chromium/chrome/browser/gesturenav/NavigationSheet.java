@@ -12,13 +12,9 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.content_public.browser.NavigationHistory;
 
-/**
- * Interface that defines the methods for controlling Navigation sheet.
- */
+/** Interface that defines the methods for controlling Navigation sheet. */
 public interface NavigationSheet {
-    /**
-     * Delegate performing navigation-related operations/providing the required info.
-     */
+    /** Delegate performing navigation-related operations/providing the required info. */
     interface Delegate {
         /**
          * @param forward {@code true} if the requested history is of forward navigation.
@@ -27,9 +23,7 @@ public interface NavigationSheet {
          */
         NavigationHistory getHistory(boolean forward, boolean isOffTheRecord);
 
-        /**
-         * Navigates to the page associated with the given index.
-         */
+        /** Navigates to the page associated with the given index. */
         void navigateToIndex(int index);
     }
 
@@ -40,8 +34,11 @@ public interface NavigationSheet {
      * @param bottomSheetController {@link BottomSheetController} object.
      * @return NavigationSheet object.
      */
-    public static NavigationSheet create(View rootView, Context context,
-            Supplier<BottomSheetController> bottomSheetController, Profile profile) {
+    public static NavigationSheet create(
+            View rootView,
+            Context context,
+            Supplier<BottomSheetController> bottomSheetController,
+            Profile profile) {
         return new NavigationSheetCoordinator(rootView, context, bottomSheetController, profile);
     }
 
@@ -61,40 +58,39 @@ public interface NavigationSheet {
                 && controller.isSheetOpen();
     }
 
-    /**
-     * Placeholder object that does nothing. Saves lots of null checks.
-     */
-    static final NavigationSheet PLACEHOLDER = new NavigationSheet() {
-        @Override
-        public void setDelegate(Delegate delegate) {}
+    /** Placeholder object that does nothing. Saves lots of null checks. */
+    static final NavigationSheet PLACEHOLDER =
+            new NavigationSheet() {
+                @Override
+                public void setDelegate(Delegate delegate) {}
 
-        @Override
-        public void start(boolean forward, boolean showCloseIndicator) {}
+                @Override
+                public void start(boolean forward, boolean showCloseIndicator) {}
 
-        @Override
-        public boolean startAndExpand(boolean forward, boolean animate) {
-            return false;
-        }
+                @Override
+                public boolean startAndExpand(boolean forward, boolean animate) {
+                    return false;
+                }
 
-        @Override
-        public void close(boolean animate) {}
+                @Override
+                public void close(boolean animate) {}
 
-        @Override
-        public void onScroll(float delta, float overscroll, boolean willNavigate) {}
+                @Override
+                public void onScroll(float delta, float overscroll, boolean willNavigate) {}
 
-        @Override
-        public void release() {}
+                @Override
+                public void release() {}
 
-        @Override
-        public boolean isHidden() {
-            return true;
-        }
+                @Override
+                public boolean isHidden() {
+                    return true;
+                }
 
-        @Override
-        public boolean isExpanded() {
-            return false;
-        }
-    };
+                @Override
+                public boolean isExpanded() {
+                    return false;
+                }
+            };
 
     /**
      * Set a new {@link Delegate} object whenever the dependency is updated.
@@ -132,9 +128,7 @@ public interface NavigationSheet {
      */
     void onScroll(float delta, float overscroll, boolean willNavigate);
 
-    /**
-     * Process release events.
-     */
+    /** Process release events. */
     void release();
 
     /**

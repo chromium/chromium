@@ -16,7 +16,7 @@
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/autofill_progress_dialog_type.h"
@@ -115,15 +115,18 @@ class AutofillMetrics {
     NUM_AUTOCOMPLETE_EVENTS
   };
 
-  // The user action that triggered the deletion of an Autocomplete entry.
+  // The user action that triggered the deletion of a suggestion entry.
   // These values are used in enums.xml; do not reorder or renumber entries!
-  enum class AutocompleteSingleEntryRemovalMethod {
+  enum class SingleEntryRemovalMethod {
     // The user pressed shift delete while an Autofill popup menu entry was
     // selected.
     kKeyboardShiftDeletePressed = 0,
     // The user clicked the delete button in the Autofill popup menu.
     kDeleteButtonClicked = 1,
-    kMaxValue = kDeleteButtonClicked
+    // The user confirmed the entry deletion via the dialog shown by the
+    // keyboard accessory.
+    kKeyboardAccessory = 2,
+    kMaxValue = kKeyboardAccessory
   };
 
   // Represents card submitted state.
@@ -730,10 +733,11 @@ class AutofillMetrics {
                              const AutofillField& field,
                              const base::TimeTicks& form_parsed_timestamp,
                              bool off_the_record);
-    void LogDidFillSuggestion(absl::variant<AutofillProfile::RecordType,
-                                            CreditCard::RecordType> record_type,
-                              const FormStructure& form,
-                              const AutofillField& field);
+    // For address suggestions, the `record_type` is irrelevant.
+    void LogDidFillSuggestion(
+        const FormStructure& form,
+        const AutofillField& field,
+        std::optional<CreditCard::RecordType> record_type = std::nullopt);
     void LogTextFieldDidChange(const FormStructure& form,
                                const AutofillField& field);
     void LogEditedAutofilledFieldAtSubmission(const FormStructure& form,
@@ -1110,9 +1114,6 @@ class AutofillMetrics {
   // Logs that the user cleared the form.
   static void LogAutofillFormCleared();
 
-  // Logs that the user used Undo to revert some autofill operation.
-  static void LogAutofillUndo();
-
   // Log the number of days since an Autocomplete suggestion was last used.
   static void LogAutocompleteDaysSinceLastUse(size_t days);
 
@@ -1125,7 +1126,7 @@ class AutofillMetrics {
   // Log that an autocomplete suggestion was deleted directly from the popup
   // menu.
   static void OnAutocompleteSuggestionDeleted(
-      AutocompleteSingleEntryRemovalMethod removal_method);
+      SingleEntryRemovalMethod removal_method);
 
   // Log how many autofilled fields in a given form were edited before the
   // submission or when the user unfocused the form (depending on

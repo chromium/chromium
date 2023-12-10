@@ -16,6 +16,7 @@
   self = [super initWithType:type];
   if (self) {
     self.cellClass = [SettingsImageDetailTextCell class];
+    _imageViewAlpha = 1.0f;
   }
   return self;
 }
@@ -26,9 +27,14 @@
   cell.textLabel.text = self.text;
   cell.detailTextLabel.text = self.detailText;
   cell.image = self.image;
+  [cell setImageViewAlpha:self.imageViewAlpha];
 
   if (self.attributedText) {
     cell.textLabel.attributedText = self.attributedText;
+  } else if (self.textColor) {
+    cell.textLabel.textColor = self.textColor;
+  } else {
+    cell.textLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
   }
 
   if (self.detailTextColor) {

@@ -30,6 +30,7 @@
 #include "components/user_manager/user_type.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
@@ -87,7 +88,6 @@ constexpr float kOpaqueUserViewOpacity = 1.f;
 constexpr float kTransparentUserViewOpacity = 0.63f;
 constexpr float kUserFadeAnimationDurationMs = 180;
 
-constexpr char kUserViewClassName[] = "UserView";
 constexpr char kLoginUserImageClassName[] = "LoginUserImage";
 constexpr char kLoginUserLabelClassName[] = "LoginUserLabel";
 
@@ -142,6 +142,8 @@ class EnterpriseBadgeLayout : public views::LayoutManager {
 
 // Renders a user's profile icon.
 class LoginUserView::UserImage : public NonAccessibleView {
+  METADATA_HEADER(UserImage, NonAccessibleView)
+
  public:
   class ASH_EXPORT TestApi {
    public:
@@ -264,8 +266,13 @@ class LoginUserView::UserImage : public NonAccessibleView {
   base::WeakPtrFactory<UserImage> weak_factory_{this};
 };
 
+BEGIN_METADATA(LoginUserView, UserImage, NonAccessibleView)
+END_METADATA
+
 // Shows the user's name.
 class LoginUserView::UserLabel : public NonAccessibleView {
+  METADATA_HEADER(UserLabel, NonAccessibleView)
+
  public:
   UserLabel(LoginDisplayStyle style, int label_width)
       : NonAccessibleView(kLoginUserLabelClassName), label_width_(label_width) {
@@ -328,11 +335,16 @@ class LoginUserView::UserLabel : public NonAccessibleView {
   const int label_width_;
 };
 
+BEGIN_METADATA(LoginUserView, UserLabel, NonAccessibleView)
+END_METADATA
+
 // A button embedded inside of LoginUserView, which is activated whenever the
 // user taps anywhere in the LoginUserView. Previously, LoginUserView was a
 // views::Button, but this breaks ChromeVox as it does not expect buttons to
 // have any children (ie, the dropdown button).
 class LoginUserView::TapButton : public views::Button {
+  METADATA_HEADER(TapButton, views::Button)
+
  public:
   TapButton(PressedCallback callback, LoginUserView* parent)
       : views::Button(std::move(callback)), parent_(parent) {}
@@ -360,6 +372,9 @@ class LoginUserView::TapButton : public views::Button {
  private:
   const raw_ptr<LoginUserView, ExperimentalAsh> parent_;
 };
+
+BEGIN_METADATA(LoginUserView, TapButton, views::Button)
+END_METADATA
 
 // LoginUserView is defined after LoginUserView::UserLabel so it can access the
 // class members.
@@ -567,10 +582,6 @@ LoginButton* LoginUserView::GetDropdownButton() {
   return dropdown_;
 }
 
-const char* LoginUserView::GetClassName() const {
-  return kUserViewClassName;
-}
-
 gfx::Size LoginUserView::CalculatePreferredSize() const {
   switch (display_style_) {
     case LoginDisplayStyle::kLarge:
@@ -732,5 +743,8 @@ void LoginUserView::SetSmallishLayout() {
   AddChildView(user_image_.get());
   AddChildView(user_label_.get());
 }
+
+BEGIN_METADATA(LoginUserView)
+END_METADATA
 
 }  // namespace ash

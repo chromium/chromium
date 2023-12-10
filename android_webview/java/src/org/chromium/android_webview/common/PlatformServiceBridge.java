@@ -90,7 +90,10 @@ public abstract class PlatformServiceBridge {
     // to avoid blocking the critical path for startup.
     public void queryMetricsSetting(Callback<Boolean> callback) {
         ThreadUtils.assertOnUiThread();
-        ThreadUtils.postOnUiThread(() -> { callback.onResult(false); });
+        ThreadUtils.postOnUiThread(
+                () -> {
+                    callback.onResult(false);
+                });
     }
 
     public void setSafeBrowsingHandler() {
@@ -168,9 +171,7 @@ public abstract class PlatformServiceBridge {
      */
     public interface AwContentsWrapper {
 
-        /**
-         * @see org.chromium.android_webview.AwContents#addDocumentStartJavaScript(String, String[])
-         */
+        /** @see org.chromium.android_webview.AwContents#addDocumentStartJavaScript(String, String[]) */
         void addDocumentStartJavaScript(
                 @NonNull String script, @NonNull String[] allowedOriginRules);
 
@@ -193,11 +194,12 @@ public abstract class PlatformServiceBridge {
          * Profile.
          */
         ProfileIdentifier getProfileIdentifier();
+
+        /** Get the availability status of the WebView Media Integrity API for given URI. */
+        @MediaIntegrityApiStatus int getMediaIntegrityApiStatusForUri(Uri uri);
     }
 
-    /**
-     * @see {@link org.chromium.android_webview.WebMessageListener}
-     */
+    /** @see {@link org.chromium.android_webview.WebMessageListener} */
     public interface WebMessageListenerWrapper {
         void onPostMessage(
                 MessagePayload payload,
@@ -208,9 +210,7 @@ public abstract class PlatformServiceBridge {
                 MessagePort[] ports);
     }
 
-    /**
-     * @see org.chromium.android_webview.JsReplyProxy;
-     */
+    /** @see org.chromium.android_webview.JsReplyProxy; */
     public interface JsReplyProxyWrapper {
         void postMessage(@NonNull final MessagePayload payload);
     }

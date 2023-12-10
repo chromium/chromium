@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH_AUTH_PERFORMER_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/component_export.h"
 #include "base/functional/callback.h"
@@ -20,7 +21,6 @@
 #include "chromeos/ash/components/login/auth/public/auth_session_intent.h"
 #include "chromeos/ash/components/login/auth/public/auth_session_status.h"
 #include "chromeos/ash/components/login/auth/public/authentication_error.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -43,17 +43,17 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) AuthPerformer {
   using StartSessionCallback =
       base::OnceCallback<void(bool /* user_exists */,
                               std::unique_ptr<UserContext>,
-                              absl::optional<AuthenticationError>)>;
+                              std::optional<AuthenticationError>)>;
 
   using AuthSessionStatusCallback =
       base::OnceCallback<void(AuthSessionStatus status,
                               base::TimeDelta lifetime,
                               std::unique_ptr<UserContext>,
-                              absl::optional<AuthenticationError>)>;
+                              std::optional<AuthenticationError>)>;
   using RecoveryRequestCallback =
-      base::OnceCallback<void(absl::optional<RecoveryRequest>,
+      base::OnceCallback<void(std::optional<RecoveryRequest>,
                               std::unique_ptr<UserContext>,
-                              absl::optional<AuthenticationError>)>;
+                              std::optional<AuthenticationError>)>;
   // Invalidates any ongoing mount attempts by invalidating Weak pointers on
   // internal callbacks. Callbacks for ongoing operations will not be called
   // afterwards, but there is no guarantees about state of the session.
@@ -108,7 +108,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) AuthPerformer {
       base::Time request_start,
       std::unique_ptr<UserContext> context,
       AuthOperationCallback callback,
-      absl::optional<user_data_auth::AuthenticateAuthFactorReply> reply);
+      std::optional<user_data_auth::AuthenticateAuthFactorReply> reply);
 
   // Attempts to authenticate session using Key in `context`.
   // It is expected that the `challenge_response_keys` field is correctly filled
@@ -170,22 +170,22 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) AuthPerformer {
   void OnStartAuthSession(
       std::unique_ptr<UserContext> context,
       StartSessionCallback callback,
-      absl::optional<user_data_auth::StartAuthSessionReply> reply);
+      std::optional<user_data_auth::StartAuthSessionReply> reply);
 
   void OnInvalidateAuthSession(
       std::unique_ptr<UserContext> context,
       AuthOperationCallback callback,
-      absl::optional<user_data_auth::InvalidateAuthSessionReply> reply);
+      std::optional<user_data_auth::InvalidateAuthSessionReply> reply);
 
   void OnPrepareAuthFactor(
       std::unique_ptr<UserContext> context,
       AuthOperationCallback callback,
-      absl::optional<user_data_auth::PrepareAuthFactorReply> reply);
+      std::optional<user_data_auth::PrepareAuthFactorReply> reply);
 
   void OnTerminateAuthFactor(
       std::unique_ptr<UserContext> context,
       AuthOperationCallback callback,
-      absl::optional<user_data_auth::TerminateAuthFactorReply> reply);
+      std::optional<user_data_auth::TerminateAuthFactorReply> reply);
 
   void HashKeyAndAuthenticate(std::unique_ptr<UserContext> context,
                               AuthOperationCallback callback,
@@ -201,24 +201,24 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) AuthPerformer {
       base::Time request_start,
       std::unique_ptr<UserContext> context,
       AuthOperationCallback callback,
-      absl::optional<user_data_auth::AuthenticateAuthFactorReply> reply);
+      std::optional<user_data_auth::AuthenticateAuthFactorReply> reply);
 
   void OnGetAuthSessionStatus(
       base::Time request_start,
       std::unique_ptr<UserContext> context,
       AuthSessionStatusCallback callback,
-      absl::optional<user_data_auth::GetAuthSessionStatusReply> reply);
+      std::optional<user_data_auth::GetAuthSessionStatusReply> reply);
 
   void OnGetRecoveryRequest(
       RecoveryRequestCallback callback,
       std::unique_ptr<UserContext> context,
-      absl::optional<user_data_auth::GetRecoveryRequestReply> reply);
+      std::optional<user_data_auth::GetRecoveryRequestReply> reply);
 
   void OnExtendAuthSession(
       base::Time request_start,
       std::unique_ptr<UserContext> context,
       AuthOperationCallback callback,
-      absl::optional<user_data_auth::ExtendAuthSessionReply> reply);
+      std::optional<user_data_auth::ExtendAuthSessionReply> reply);
 
   const raw_ptr<UserDataAuthClient, DanglingUntriaged> client_;
   const raw_ptr<const base::Clock> clock_;

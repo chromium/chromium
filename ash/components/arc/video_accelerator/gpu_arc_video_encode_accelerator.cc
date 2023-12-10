@@ -193,7 +193,7 @@ void GpuArcVideoEncodeAccelerator::Encode(
     return;
   }
 
-  absl::optional<gfx::BufferFormat> buffer_format =
+  std::optional<gfx::BufferFormat> buffer_format =
       VideoPixelFormatToGfxBufferFormat(format);
   if (!format) {
     DLOG(ERROR) << "Unexpected format: " << format;
@@ -284,7 +284,8 @@ void GpuArcVideoEncodeAccelerator::RequestEncodingParametersChange(
   // Note that dynamic bitrate mode changes are not allowed. Attempting to
   // change the bitrate mode at runtime will result in the |accelerator_|
   // reporting an error through NotifyError.
-  accelerator_->RequestEncodingParametersChange(bitrate, framerate);
+  accelerator_->RequestEncodingParametersChange(bitrate, framerate,
+                                                absl::nullopt);
 }
 
 void GpuArcVideoEncodeAccelerator::RequestEncodingParametersChangeDeprecated(
@@ -296,7 +297,7 @@ void GpuArcVideoEncodeAccelerator::RequestEncodingParametersChangeDeprecated(
     return;
   }
   accelerator_->RequestEncodingParametersChange(
-      media::Bitrate::ConstantBitrate(bitrate), framerate);
+      media::Bitrate::ConstantBitrate(bitrate), framerate, absl::nullopt);
 }
 
 void GpuArcVideoEncodeAccelerator::Flush(FlushCallback callback) {

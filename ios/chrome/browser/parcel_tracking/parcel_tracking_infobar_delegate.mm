@@ -7,7 +7,9 @@
 #import "components/commerce/core/proto/parcel.pb.h"
 #import "components/commerce/core/shopping_service.h"
 #import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
+#import "ios/chrome/browser/parcel_tracking/metrics.h"
 #import "ios/chrome/browser/parcel_tracking/parcel_tracking_util.h"
+#import "ios/chrome/browser/parcel_tracking/tracking_source.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
@@ -32,9 +34,10 @@ ParcelTrackingInfobarDelegate::~ParcelTrackingInfobarDelegate() = default;
 #pragma mark - Public
 
 void ParcelTrackingInfobarDelegate::TrackPackages(bool display_infobar) {
-  // Track parcels and display infobar.
+  // Track parcels and display an infobar to confirm that parcels are tracked.
   TrackParcels(shopping_service_, parcel_list_, std::string(),
-               parcel_tracking_commands_handler_, display_infobar);
+               parcel_tracking_commands_handler_, display_infobar,
+               TrackingSource::kInfobar);
 }
 
 void ParcelTrackingInfobarDelegate::UntrackPackages(bool display_infobar) {
@@ -44,11 +47,15 @@ void ParcelTrackingInfobarDelegate::UntrackPackages(bool display_infobar) {
           [](bool display_infobar,
              id<ParcelTrackingOptInCommands> parcel_tracking_commands_handler,
              NSArray<CustomTextCheckingResult*>* parcels, bool success) {
-            if (success && display_infobar) {
-              [parcel_tracking_commands_handler
-                  showParcelTrackingInfobarWithParcels:parcels
-                                               forStep:ParcelTrackingStep::
-                                                           kPackageUntracked];
+            if (success) {
+              parcel_tracking::RecordParcelsUntracked(TrackingSource::kInfobar,
+                                                      parcels.count);
+              if (display_infobar) {
+                [parcel_tracking_commands_handler
+                    showParcelTrackingInfobarWithParcels:parcels
+                                                 forStep:ParcelTrackingStep::
+                                                             kPackageUntracked];
+              }
             }
           },
           display_infobar, parcel_tracking_commands_handler_, parcel_list_));
@@ -56,6 +63,10 @@ void ParcelTrackingInfobarDelegate::UntrackPackages(bool display_infobar) {
 
 void ParcelTrackingInfobarDelegate::OpenNTP() {
   [application_commands_handler_ openURLInNewTab:[OpenNewTabCommand command]];
+}
+
+void ParcelTrackingInfobarDelegate::SetStep(ParcelTrackingStep step) {
+  step_ = step;
 }
 
 #pragma mark - ConfirmInfoBarDelegate

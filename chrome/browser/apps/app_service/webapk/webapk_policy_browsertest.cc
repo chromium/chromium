@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <optional>
 
 #include "ash/components/arc/arc_features_parser.h"
 #include "ash/components/arc/session/arc_bridge_service.h"
@@ -24,13 +25,12 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
 constexpr char kWebApkPackageName[] = "org.chromium.webapk.browsertest";
 
-absl::optional<arc::ArcFeatures> GetArcFeatures() {
+std::optional<arc::ArcFeatures> GetArcFeatures() {
   arc::ArcFeatures arc_features;
   arc_features.build_props.abi_list = "x86";
   return arc_features;
@@ -76,7 +76,7 @@ class WebApkPolicyBrowserTest : public policy::PolicyTest {
 
  private:
   std::unique_ptr<arc::FakeWebApkInstance> fake_webapk_instance_;
-  base::RepeatingCallback<absl::optional<arc::ArcFeatures>()>
+  base::RepeatingCallback<std::optional<arc::ArcFeatures>()>
       arc_features_getter_;
   std::unique_ptr<apps::WebApkTestServer> webapk_test_server_;
 };

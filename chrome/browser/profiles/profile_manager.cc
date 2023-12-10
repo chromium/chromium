@@ -66,6 +66,8 @@
 #include "chrome/browser/signin/primary_account_policy_manager_factory.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/ui/sync/sync_promo_ui.h"
+#include "chrome/browser/ui/tabs/organization/tab_organization_service_factory.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/unified_consent/unified_consent_service_factory.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_constants.h"
@@ -126,10 +128,12 @@
 #include "chrome/browser/accessibility/live_caption/live_caption_controller_factory.h"
 #include "chrome/browser/lifetime/application_lifetime_desktop.h"
 #include "chrome/browser/profiles/nuke_profile_directory_utils.h"
+#include "chrome/browser/search/background/wallpaper_search/wallpaper_search_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "components/live_caption/live_caption_controller.h"
+#include "components/optimization_guide/core/model_execution/model_execution_features.h"
 #else
 #include "chrome/browser/profiles/profile_manager_android.h"
 #endif
@@ -1552,6 +1556,14 @@ void ProfileManager::DoFinalInitForServices(Profile* profile,
 
   // Ensure NavigationPredictorKeyedService is started.
   NavigationPredictorKeyedServiceFactory::GetForProfile(profile);
+
+#if !BUILDFLAG(IS_ANDROID)
+  // Ensure WallpaperSearchServiceFactory is started.
+  if (base::FeatureList::IsEnabled(optimization_guide::features::internal::
+                                       kWallpaperSearchSettingsVisibility)) {
+    WallpaperSearchServiceFactory::GetForProfile(profile);
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   // Ensure PreloadingModelKeyedService is started.
   PreloadingModelKeyedServiceFactory::GetForProfile(profile);

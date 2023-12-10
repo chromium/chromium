@@ -174,7 +174,7 @@ SkCanvas* FakeSkiaOutputSurface::BeginPaintRenderPass(
     const gfx::Size& surface_size,
     SharedImageFormat format,
     RenderPassAlphaType alpha_type,
-    bool mipmap,
+    skgpu::Mipmapped,
     bool scanout_dcomp_surface,
     sk_sp<SkColorSpace> color_space,
     bool is_overlay,
@@ -291,9 +291,10 @@ void FakeSkiaOutputSurface::CopyOutput(
     gpu::Mailbox local_mailbox = client_shared_image->mailbox();
 
     CopyOutputResult::ReleaseCallbacks release_callbacks;
-    release_callbacks.push_back(base::BindPostTaskToCurrentDefault(
-        base::BindOnce(&FakeSkiaOutputSurface::DestroyCopyOutputTexture,
-                       weak_ptr_factory_.GetWeakPtr(), local_mailbox)));
+    release_callbacks.push_back(
+        base::BindPostTaskToCurrentDefault(base::BindOnce(
+            &FakeSkiaOutputSurface::DestroyCopyOutputTexture,
+            weak_ptr_factory_.GetWeakPtr(), std::move(client_shared_image))));
 
     request->SendResult(std::make_unique<CopyOutputTextureResult>(
         CopyOutputResult::Format::RGBA, geometry.result_bounds,
@@ -364,9 +365,8 @@ bool FakeSkiaOutputSurface::GetGrBackendTexture(
       image_context.mailbox_holder().sync_token.GetConstData());
   auto texture_id = gl->CreateAndTexStorage2DSharedImageCHROMIUM(
       image_context.mailbox_holder().mailbox.name);
-  auto gl_format_desc = gpu::ToGLFormatDesc(
-      image_context.format(), /*plane_index=*/0,
-      context_provider()->ContextCapabilities().angle_rgbx_internal_format);
+  auto gl_format_desc = gpu::GLFormatCaps().ToGLFormatDesc(
+      image_context.format(), /*plane_index=*/0);
   GrGLTextureInfo gl_texture_info = {
       image_context.mailbox_holder().texture_target, texture_id,
       gl_format_desc.storage_internal_format};
@@ -387,10 +387,11 @@ void FakeSkiaOutputSurface::SwapBuffersAck() {
 }
 
 void FakeSkiaOutputSurface::DestroyCopyOutputTexture(
-    const gpu::Mailbox& mailbox,
+    scoped_refptr<gpu::ClientSharedImage> shared_image,
     const gpu::SyncToken& sync_token,
     bool is_lost) {
-  GetSharedImageInterface()->DestroySharedImage(sync_token, mailbox);
+  GetSharedImageInterface()->DestroySharedImage(sync_token,
+                                                std::move(shared_image));
 }
 
 void FakeSkiaOutputSurface::ScheduleGpuTaskForTesting(

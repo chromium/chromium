@@ -26,6 +26,10 @@
 #include "services/network/tcp_server_socket.h"
 #include "services/network/tls_socket_factory.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "services/network/public/mojom/socket_broker.mojom.h"
+#endif
+
 namespace net {
 class ClientSocketFactory;
 class NetLog;
@@ -104,11 +108,35 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SocketFactory
 
   TLSSocketFactory* tls_socket_factory() { return &tls_socket_factory_; }
 
+#if BUILDFLAG(IS_WIN)
+  void BindSocketBroker(
+      mojo::PendingRemote<mojom::SocketBroker> pending_remote);
+#endif
+
  private:
   // TCPServerSocket::Delegate implementation:
   void OnAccept(
       std::unique_ptr<TCPConnectedSocket> socket,
       mojo::PendingReceiver<mojom::TCPConnectedSocket> receiver) override;
+
+  void CreateTCPServerSocketHelper(
+      std::unique_ptr<TCPServerSocket> socket,
+      const net::IPEndPoint& local_addr,
+      mojom::TCPServerSocketOptionsPtr options,
+      const net::NetworkTrafficAnnotationTag& traffic_annotation,
+      mojo::PendingReceiver<mojom::TCPServerSocket> receiver,
+      mojom::NetworkContext::CreateTCPServerSocketCallback callback);
+
+#if BUILDFLAG(IS_WIN)
+  void DidCompleteCreate(
+      const net::IPEndPoint& local_addr,
+      mojom::TCPServerSocketOptionsPtr options,
+      const net::NetworkTrafficAnnotationTag& traffic_annotation,
+      mojo::PendingReceiver<mojom::TCPServerSocket> receiver,
+      mojom::NetworkContext::CreateTCPServerSocketCallback callback,
+      network::TransferableSocket socket,
+      int result);
+#endif
 
   const raw_ptr<net::NetLog> net_log_;
 
@@ -121,6 +149,12 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SocketFactory
   mojo::UniqueReceiverSet<mojom::TCPConnectedSocket>
       tcp_connected_socket_receiver_;
   mojo::UniqueReceiverSet<mojom::TCPBoundSocket> tcp_bound_socket_receivers_;
+
+#if BUILDFLAG(IS_WIN)
+  mojo::Remote<mojom::SocketBroker> socket_broker_;
+#endif
+
+  base::WeakPtrFactory<SocketFactory> weak_ptr_factory_{this};
 };
 
 }  // namespace network

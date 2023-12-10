@@ -115,7 +115,7 @@ class MediaTestShellDelegate : public TestShellDelegate {
 class TestMediaNotificationItem
     : public media_message_center::test::MockMediaNotificationItem {
  public:
-  absl::optional<base::UnguessableToken> GetSourceId() const override {
+  std::optional<base::UnguessableToken> GetSourceId() const override {
     return source_id_;
   }
 
@@ -179,7 +179,8 @@ class MediaNotificationProviderImplTest : public ChromeAshTestBase {
   std::unique_ptr<global_media_controls::MediaItemUIListView>
   CreateNotificationListView() {
     auto view = provider_->GetMediaNotificationListView(
-        1, /*should_clip_height=*/true, /*item_id=*/"",
+        1, /*should_clip_height=*/true,
+        global_media_controls::GlobalMediaControlsEntryPoint::kSystemTray,
         /*show_devices_for_item_id=*/"");
     return base::WrapUnique(
         static_cast<global_media_controls::MediaItemUIListView*>(
@@ -289,7 +290,8 @@ class CastStartStopMediaNotificationProviderImplTest
     // We must initialize the list view before we can show individual media
     // items.
     list_view_ = provider_->GetMediaNotificationListView(
-        1, /*should_clip_height=*/true, /*item_id=*/"",
+        1, /*should_clip_height=*/true,
+        global_media_controls::GlobalMediaControlsEntryPoint::kSystemTray,
         /*show_devices_for_item_id=*/"");
   }
 

@@ -12,6 +12,7 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_dialog_button.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -166,32 +167,51 @@ ScriptPromise InternalsFedCm::dismissFedCmDialog(ScriptState* script_state,
 }
 
 // static
-ScriptPromise InternalsFedCm::confirmIdpLogin(ScriptState* script_state,
-                                              Internals&) {
+ScriptPromise InternalsFedCm::clickFedCmDialogButton(
+    ScriptState* script_state,
+    Internals&,
+    const V8DialogButton& v8_button) {
   mojo::Remote<test::mojom::blink::FederatedAuthRequestAutomation>
       federated_auth_request_automation =
           CreateFedAuthRequestAutomation(script_state);
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
+
+  test::mojom::blink::DialogButton button;
+  switch (v8_button.AsEnum()) {
+    case V8DialogButton::Enum::kConfirmIdpLoginContinue:
+      button = test::mojom::blink::DialogButton::kConfirmIdpLoginContinue;
+      break;
+    case V8DialogButton::Enum::kErrorGotIt:
+      button = test::mojom::blink::DialogButton::kErrorGotIt;
+      break;
+    case V8DialogButton::Enum::kErrorMoreDetails:
+      button = test::mojom::blink::DialogButton::kErrorMoreDetails;
+      break;
+  }
+
   // Get the interface so `federated_auth_request_automation` can be moved
   // below.
   test::mojom::blink::FederatedAuthRequestAutomation*
       raw_federated_auth_request_automation =
           federated_auth_request_automation.get();
-  raw_federated_auth_request_automation->ConfirmIdpLogin(WTF::BindOnce(
-      // While we only really need |resolver|, we also take the
-      // mojo::Remote<> so that it remains alive after this function exits.
-      [](ScriptPromiseResolver* resolver,
-         mojo::Remote<test::mojom::blink::FederatedAuthRequestAutomation>,
-         bool success) {
-        if (success) {
-          resolver->Resolve();
-        } else {
-          resolver->Reject();
-        }
-      },
-      WrapPersistent(resolver), std::move(federated_auth_request_automation)));
+  raw_federated_auth_request_automation->ClickFedCmDialogButton(
+      button,
+      WTF::BindOnce(
+          // While we only really need |resolver|, we also take the
+          // mojo::Remote<> so that it remains alive after this function exits.
+          [](ScriptPromiseResolver* resolver,
+             mojo::Remote<test::mojom::blink::FederatedAuthRequestAutomation>,
+             bool success) {
+            if (success) {
+              resolver->Resolve();
+            } else {
+              resolver->Reject();
+            }
+          },
+          WrapPersistent(resolver),
+          std::move(federated_auth_request_automation)));
   return promise;
 }
 

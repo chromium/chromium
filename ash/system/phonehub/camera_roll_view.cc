@@ -17,6 +17,8 @@
 #include "base/strings/string_number_conversions.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/views/animation/animation_builder.h"
@@ -48,6 +50,8 @@ gfx::Size GetCameraRollItemSize() {
 }
 
 class HeaderView : public views::Label {
+  METADATA_HEADER(HeaderView, views::Label)
+
  public:
   HeaderView() {
     SetText(l10n_util::GetStringUTF16(IDS_ASH_PHONE_HUB_CAMERA_ROLL_TITLE));
@@ -81,6 +85,9 @@ class HeaderView : public views::Label {
   const char* GetClassName() const override { return "HeaderView"; }
 };
 
+BEGIN_METADATA(HeaderView)
+END_METADATA
+
 }  // namespace
 
 CameraRollView::CameraRollView(
@@ -108,10 +115,6 @@ CameraRollView::~CameraRollView() {
 
 void CameraRollView::OnCameraRollViewUiStateUpdated() {
   Update();
-}
-
-const char* CameraRollView::GetClassName() const {
-  return "CameraRollView";
 }
 
 CameraRollView::CameraRollItemsView::CameraRollItemsView() = default;
@@ -153,10 +156,6 @@ void CameraRollView::CameraRollItemsView::Layout() {
   }
 }
 
-const char* CameraRollView::CameraRollItemsView::GetClassName() const {
-  return "CameraRollItemsView";
-}
-
 gfx::Point CameraRollView::CameraRollItemsView::GetCameraRollItemPosition(
     int index) {
   auto item_size = GetCameraRollItemSize();
@@ -176,6 +175,9 @@ void CameraRollView::CameraRollItemsView::CalculateIdealBounds() {
     camera_roll_items_.set_ideal_bounds(i, camera_roll_item_bounds);
   }
 }
+
+BEGIN_METADATA(CameraRollView, CameraRollItemsView, views::View)
+END_METADATA
 
 void CameraRollView::Update() {
   items_view_->Reset();
@@ -214,5 +216,8 @@ void CameraRollView::Update() {
 
   PreferredSizeChanged();
 }
+
+BEGIN_METADATA(CameraRollView)
+END_METADATA
 
 }  // namespace ash

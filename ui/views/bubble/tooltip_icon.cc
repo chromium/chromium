@@ -173,7 +173,7 @@ void TooltipIcon::OnWidgetDestroyed(Widget* widget) {
   bubble_ = nullptr;
 }
 
-BEGIN_METADATA(TooltipIcon, ImageView)
+BEGIN_METADATA(TooltipIcon)
 ADD_PROPERTY_METADATA(int, BubbleWidth)
 ADD_PROPERTY_METADATA(BubbleBorder::Arrow, AnchorPointArrow)
 END_METADATA

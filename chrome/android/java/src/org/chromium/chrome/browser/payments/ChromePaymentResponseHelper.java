@@ -21,13 +21,10 @@ import org.chromium.payments.mojom.PayerDetail;
 import org.chromium.payments.mojom.PaymentOptions;
 import org.chromium.payments.mojom.PaymentResponse;
 
-/**
- * The helper class to create and prepare a PaymentResponse.
- */
+/** The helper class to create and prepare a PaymentResponse. */
 public class ChromePaymentResponseHelper
         implements NormalizedAddressRequestDelegate, PaymentResponseHelperInterface {
-    @Nullable
-    private final AutofillContact mSelectedContact;
+    @Nullable private final AutofillContact mSelectedContact;
     private final PaymentApp mSelectedPaymentApp;
     private final PaymentOptions mPaymentOptions;
     private final PaymentResponse mPaymentResponse;
@@ -45,9 +42,12 @@ public class ChromePaymentResponseHelper
      * @param selectedPaymentApp      The payment app picked by the user.
      * @param paymentOptions          The paymentOptions of the corresponding payment request.
      */
-    public ChromePaymentResponseHelper(EditableOption selectedShippingAddress,
-            EditableOption selectedShippingOption, @Nullable AutofillContact selectedContact,
-            PaymentApp selectedPaymentApp, PaymentOptions paymentOptions) {
+    public ChromePaymentResponseHelper(
+            EditableOption selectedShippingAddress,
+            EditableOption selectedShippingOption,
+            @Nullable AutofillContact selectedContact,
+            PaymentApp selectedPaymentApp,
+            PaymentOptions paymentOptions) {
         mPaymentResponse = new PaymentResponse();
         mPaymentResponse.payer = new PayerDetail();
 
@@ -76,22 +76,25 @@ public class ChromePaymentResponseHelper
             assert mSelectedShippingAddress.isComplete();
 
             // Record the use of the profile.
-            PersonalDataManager.getInstance().recordAndLogProfileUse(
-                    mSelectedShippingAddress.getProfile().getGUID());
+            PersonalDataManager.getInstance()
+                    .recordAndLogProfileUse(mSelectedShippingAddress.getProfile().getGUID());
 
             mPaymentResponse.shippingAddress = mSelectedShippingAddress.toPaymentAddress();
 
             // The shipping address needs to be normalized before sending the response to the
             // merchant.
             mIsWaitingForShippingNormalization = true;
-            AddressNormalizerFactory.getInstance().normalizeAddress(
-                    mSelectedShippingAddress.getProfile(), this);
+            AddressNormalizerFactory.getInstance()
+                    .normalizeAddress(mSelectedShippingAddress.getProfile(), this);
         }
     }
 
     @Override
-    public void generatePaymentResponse(String methodName, String stringifiedDetails,
-            PayerData payerData, PaymentResponseResultCallback resultCallback) {
+    public void generatePaymentResponse(
+            String methodName,
+            String stringifiedDetails,
+            PayerData payerData,
+            PaymentResponseResultCallback resultCallback) {
         mResultCallback = resultCallback;
         mPaymentResponse.methodName = methodName;
         mPaymentResponse.stringifiedDetails = stringifiedDetails;

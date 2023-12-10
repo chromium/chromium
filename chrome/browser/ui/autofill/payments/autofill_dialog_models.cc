@@ -79,7 +79,7 @@ void MonthComboboxModel::SetDefaultIndexByMonth(int month) {
     default_index_ = static_cast<size_t>(month);
 }
 
-absl::optional<size_t> MonthComboboxModel::GetDefaultIndex() const {
+std::optional<size_t> MonthComboboxModel::GetDefaultIndex() const {
   return default_index_;
 }
 
@@ -100,7 +100,7 @@ void YearComboboxModel::SetDefaultIndexByYear(int year) {
   }
 }
 
-absl::optional<size_t> YearComboboxModel::GetDefaultIndex() const {
+std::optional<size_t> YearComboboxModel::GetDefaultIndex() const {
   return default_index_;
 }
 

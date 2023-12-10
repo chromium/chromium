@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/containers/cxx20_erase.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/root_window_controller.h"
 #include "ash/scoped_animation_disabler.h"
@@ -19,6 +18,7 @@
 #include "ash/wm/overview/overview_utils.h"
 #include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/splitview/split_view_constants.h"
+#include "ash/wm/splitview/split_view_types.h"
 #include "ash/wm/splitview/split_view_utils.h"
 #include "ash/wm/tablet_mode/scoped_skip_user_session_blocked_check.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
@@ -32,6 +32,7 @@
 #include "ash/wm/workspace/workspace_layout_manager.h"
 #include "ash/wm/workspace_controller.h"
 #include "base/containers/contains.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/memory/raw_ptr.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "ui/aura/client/aura_constants.h"
@@ -100,20 +101,21 @@ void DoSplitViewTransition(
   SplitViewController* split_view_controller =
       SplitViewController::Get(Shell::GetPrimaryRootWindow());
   // If split view mode is already active, use its own divider position.
-  if (!split_view_controller->InSplitViewMode())
-    split_view_controller->InitDividerPositionForTransition(divider_position);
+  if (!split_view_controller->InSplitViewMode()) {
+    split_view_controller->set_divider_position(divider_position);
+  }
 
   for (auto& iter : windows) {
     // Preserve the current snap ratio before transition, since
     // `SplitViewController::SnapWindow()` will send a new snap event with
     // `snap_ratio`.
-    absl::optional<float> snap_ratio =
+    std::optional<float> snap_ratio =
         WindowState::Get(iter.first)->snap_ratio();
     split_view_controller->SnapWindow(
         /*window=*/iter.first,
         /*snap_position=*/iter.second == WindowStateType::kPrimarySnapped
-            ? SplitViewController::SnapPosition::kPrimary
-            : SplitViewController::SnapPosition::kSecondary,
+            ? SnapPosition::kPrimary
+            : SnapPosition::kSecondary,
         snap_action_source,
         /*activate_window=*/false,
         /*snap_ratio=*/snap_ratio ? *snap_ratio : chromeos::kDefaultSnapRatio);
@@ -603,8 +605,8 @@ int TabletModeWindowManager::CalculateCarryOverDividerPosition(
       right_window ? GetWindowBoundsInScreen(right_window, clamshell_to_tablet)
                    : gfx::Rect();
 
-  const bool horizontal = SplitViewController::IsLayoutHorizontal(display);
-  const bool primary = SplitViewController::IsLayoutPrimary(display);
+  const bool horizontal = IsLayoutHorizontal(display);
+  const bool primary = IsLayoutPrimary(display);
 
   // We need to expand (or shrink) the width of the snapped windows by the half
   // of the divider width when to-clamshell (or to-tablet) transition happens

@@ -488,6 +488,7 @@ void ContentAnalysisDialog::UpdateStateFromFinalResult(
   switch (final_result_) {
     case FinalContentAnalysisResult::ENCRYPTED_FILES:
     case FinalContentAnalysisResult::LARGE_FILES:
+    case FinalContentAnalysisResult::FAIL_CLOSED:
     case FinalContentAnalysisResult::FAILURE:
       dialog_state_ = State::FAILURE;
       break;
@@ -540,21 +541,26 @@ void ContentAnalysisDialog::UpdateViews() {
   }
 }
 
-void ContentAnalysisDialog::UpdateDialog() {
-  if (!contents_view_) {
-    // If the dialog is no longer pending, a final verdict was received before
-    // the dalog was displayed.  If the verdict is success and this is not a
-    // cloud analysis, don't bother the user at all and close the dialog.
-    // Otherwise make sure it show right away with the verdict.
-    if (!is_pending()) {
-      if (is_success() || !is_cloud_) {
-        CancelDialogAndDelete();
-      } else {
-        ShowDialogNow();
-      }
+bool ContentAnalysisDialog::ShouldShowDialogNow() {
+  DCHECK(!is_pending());
+  // If the final result is fail closed, display ui regardless of cloud or local
+  // analysis.
+  if (final_result_ == FinalContentAnalysisResult::FAIL_CLOSED) {
+    DVLOG(1) << __func__ << ": show fail-closed ui.";
+    return true;
+  }
+  // Otherwise, show dialog now only if it is cloud analysis and the verdict is
+  // not success.
+  return is_cloud_ && !is_success();
+}
 
-      return;
-    }
+void ContentAnalysisDialog::UpdateDialog() {
+  if (!contents_view_ && !is_pending()) {
+    // If the dialog is no longer pending, a final verdict was received before
+    // the dialog was displayed.  Show the verdict right away only if
+    // ShouldShowDialogNow() returns true.
+    ShouldShowDialogNow() ? ShowDialogNow() : CancelDialogAndDelete();
+    return;
   }
 
   DCHECK(is_result());
@@ -721,8 +727,8 @@ std::unique_ptr<views::View> ContentAnalysisDialog::CreateSideIcon() {
   icon->SetLayoutManager(std::make_unique<views::FillLayout>());
 
   auto side_image = std::make_unique<DeepScanningSideIconImageView>(this);
-  side_image->SetImage(gfx::CreateVectorIcon(
-      gfx::IconDescription(vector_icons::kBusinessIcon, kSideImageSize)));
+  side_image->SetImage(ui::ImageModel::FromVectorIcon(
+      vector_icons::kBusinessIcon, gfx::kPlaceholderColor, kSideImageSize));
   side_image->SetBorder(views::CreateEmptyBorder(kSideImageInsets));
   side_icon_image_ = icon->AddChildView(std::move(side_image));
 
@@ -797,6 +803,12 @@ std::u16string ContentAnalysisDialog::GetFailureMessage() const {
   // precedence over the generic ones.
   if (has_custom_message())
     return GetCustomMessage();
+
+  if (final_result_ == FinalContentAnalysisResult::FAIL_CLOSED) {
+    DVLOG(1) << __func__ << ": display fail-closed message.";
+    return l10n_util::GetStringUTF16(
+        IDS_DEEP_SCANNING_DIALOG_UPLOAD_FAIL_CLOSED_MESSAGE);
+  }
 
   if (final_result_ == FinalContentAnalysisResult::LARGE_FILES) {
     if (is_print_scan()) {
@@ -971,9 +983,8 @@ bool ContentAnalysisDialog::ShouldUseDarkTopImage() const {
       contents_view_->GetColorProvider()->GetColor(ui::kColorDialogBackground));
 }
 
-const gfx::ImageSkia* ContentAnalysisDialog::GetTopImage() const {
-  return ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
-      GetTopImageId(ShouldUseDarkTopImage()));
+ui::ImageModel ContentAnalysisDialog::GetTopImage() const {
+  return ui::ImageModel::FromResourceId(GetTopImageId(ShouldUseDarkTopImage()));
 }
 
 bool ContentAnalysisDialog::is_print_scan() const {
@@ -981,6 +992,10 @@ bool ContentAnalysisDialog::is_print_scan() const {
 }
 
 void ContentAnalysisDialog::CancelDialogAndDelete() {
+  if (observer_for_testing) {
+    observer_for_testing->CancelDialogAndDeleteCalled(this, final_result_);
+  }
+
   if (contents_view_) {
     DVLOG(1) << __func__ << ": dialog will be canceled";
     CancelDialog();

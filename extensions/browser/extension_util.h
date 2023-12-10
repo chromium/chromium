@@ -81,7 +81,7 @@ content::ServiceWorkerContext* GetServiceWorkerContextForExtensionId(
 // in the state store and notifies the renderer.
 void SetUserScriptWorldInfo(const Extension& extension,
                             content::BrowserContext* browser_context,
-                            absl::optional<std::string> csp,
+                            std::optional<std::string> csp,
                             bool messaging);
 
 // Returns the `extension_id` user script world configuration for

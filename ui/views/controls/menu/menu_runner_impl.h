@@ -9,6 +9,7 @@
 
 #include <memory>
 #include <set>
+#include <string>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -39,21 +40,22 @@ namespace internal {
 class VIEWS_EXPORT MenuRunnerImpl : public MenuRunnerImplInterface,
                                     public MenuControllerDelegate {
  public:
-  explicit MenuRunnerImpl(MenuItemView* menu);
+  explicit MenuRunnerImpl(std::unique_ptr<MenuItemView> menu);
 
   MenuRunnerImpl(const MenuRunnerImpl&) = delete;
   MenuRunnerImpl& operator=(const MenuRunnerImpl&) = delete;
 
   bool IsRunning() const override;
   void Release() override;
-  void RunMenuAt(
-      Widget* parent,
-      MenuButtonController* button_controller,
-      const gfx::Rect& bounds,
-      MenuAnchorPosition anchor,
-      int32_t run_types,
-      gfx::NativeView native_view_for_gestures,
-      absl::optional<gfx::RoundedCornersF> corners = absl::nullopt) override;
+  void RunMenuAt(Widget* parent,
+                 MenuButtonController* button_controller,
+                 const gfx::Rect& bounds,
+                 MenuAnchorPosition anchor,
+                 int32_t run_types,
+                 gfx::NativeView native_view_for_gestures,
+                 absl::optional<gfx::RoundedCornersF> corners = absl::nullopt,
+                 absl::optional<std::string> show_menu_host_duration_histogram =
+                     absl::nullopt) override;
   void Cancel() override;
   base::TimeTicks GetClosingEventTime() const override;
 
@@ -71,9 +73,8 @@ class VIEWS_EXPORT MenuRunnerImpl : public MenuRunnerImplInterface,
   // Returns true if mnemonics should be shown in the menu.
   bool ShouldShowMnemonics(int32_t run_types);
 
-  // The menu. We own this. We don't use scoped_ptr as the destructor is
-  // protected and we're a friend.
-  raw_ptr<MenuItemView, DanglingUntriaged> menu_;
+  // The menu.
+  std::unique_ptr<MenuItemView> menu_;
 
   // Any sibling menus. Does not include |menu_|. We own these too.
   std::set<MenuItemView*> sibling_menus_;

@@ -78,9 +78,9 @@ class VIEWS_EXPORT ScrollBar : public View,
                                public ScrollDelegate,
                                public ContextMenuController,
                                public ui::SimpleMenuModel::Delegate {
- public:
-  METADATA_HEADER(ScrollBar);
+  METADATA_HEADER(ScrollBar, View)
 
+ public:
   // An enumeration of different amounts of incremental scroll, representing
   // events sent from different parts of the UI/keyboard.
   enum class ScrollAmount {

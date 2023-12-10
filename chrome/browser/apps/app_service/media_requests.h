@@ -6,27 +6,26 @@
 #define CHROME_BROWSER_APPS_APP_SERVICE_MEDIA_REQUESTS_H_
 
 #include <map>
+#include <optional>
 #include <set>
 #include <string>
 
 #include "content/public/browser/media_request_state.h"
 #include "content/public/browser/web_contents.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 
 namespace apps {
 
 struct AccessingRequest {
-  AccessingRequest(absl::optional<bool> camera,
-                   absl::optional<bool> microphone);
+  AccessingRequest(std::optional<bool> camera, std::optional<bool> microphone);
   AccessingRequest(const AccessingRequest&) = delete;
   AccessingRequest& operator=(const AccessingRequest&) = delete;
   AccessingRequest(AccessingRequest&&);
   AccessingRequest& operator=(AccessingRequest&&);
   ~AccessingRequest();
 
-  absl::optional<bool> camera;
-  absl::optional<bool> microphone;
+  std::optional<bool> camera;
+  std::optional<bool> microphone;
 };
 
 // MediaRequests tracks the media usage for each app (e.g. accessing camera,
@@ -67,17 +66,17 @@ class MediaRequests {
   // Maps one app id to a set of web contents.
   using AppIdToWebContents = std::map<std::string, WebContents>;
 
-  absl::optional<bool> MaybeAddRequest(
+  std::optional<bool> MaybeAddRequest(
       const std::string& app_id,
       const content::WebContents* web_contents,
       AppIdToWebContents& app_id_to_web_contents);
 
-  absl::optional<bool> MaybeRemoveRequest(
+  std::optional<bool> MaybeRemoveRequest(
       const std::string& app_id,
       const content::WebContents* web_contents,
       AppIdToWebContents& app_id_to_web_contents);
 
-  absl::optional<bool> MaybeRemoveRequest(
+  std::optional<bool> MaybeRemoveRequest(
       const std::string& app_id,
       AppIdToWebContents& app_id_to_web_contents);
 

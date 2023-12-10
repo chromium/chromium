@@ -44,6 +44,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/gfx/image/image_unittest_util.h"
 #include "url/gurl.h"
 
 namespace apps {
@@ -59,13 +60,6 @@ namespace {
 using ::testing::ElementsAre;
 using ::testing::ElementsAreArray;
 using ::testing::Eq;
-
-SkBitmap CreateTestBitmap(SkColor color, int size) {
-  SkBitmap bitmap;
-  bitmap.allocN32Pixels(size, size);
-  bitmap.eraseColor(color);
-  return bitmap;
-}
 
 class InstallFromSyncTest : public WebAppTest {
  public:
@@ -203,7 +197,7 @@ TEST_F(InstallFromSyncTest, SuccessWithManifest) {
 
   // Icon state.
   web_contents_manager().GetOrCreateIconState(kManifestIconUrl).bitmaps = {
-      CreateTestBitmap(kManifestIconColor, kIconSize)};
+      gfx::test::CreateBitmap(kIconSize, kManifestIconColor)};
 
   InstallResult result =
       InstallFromSyncAndWait(kWebAppStartUrl, kWebAppManifestId);
@@ -237,7 +231,7 @@ TEST_F(InstallFromSyncTest, SuccessWithoutManifest) {
 
   // Icon state.
   web_contents_manager().GetOrCreateIconState(kDocumentIconUrl).bitmaps = {
-      CreateTestBitmap(kDocumentIconColor, kIconSize)};
+      gfx::test::CreateBitmap(kIconSize, kDocumentIconColor)};
 
   InstallResult result =
       InstallFromSyncAndWait(kWebAppStartUrl, kWebAppManifestId);
@@ -273,7 +267,7 @@ TEST_F(InstallFromSyncTest, SuccessManifestNoIcons) {
 
   // Document icon state.
   web_contents_manager().GetOrCreateIconState(kDocumentIconUrl).bitmaps = {
-      CreateTestBitmap(kDocumentIconColor, kIconSize)};
+      gfx::test::CreateBitmap(kIconSize, kDocumentIconColor)};
 
   InstallResult result =
       InstallFromSyncAndWait(kWebAppStartUrl, kWebAppManifestId);
@@ -304,7 +298,7 @@ TEST_F(InstallFromSyncTest, UrlRedirectUseFallback) {
 
   // Fallback icon state.
   web_contents_manager().GetOrCreateIconState(kFallbackIconUrl).bitmaps = {
-      CreateTestBitmap(kFallbackIconColor, kIconSize)};
+      gfx::test::CreateBitmap(kIconSize, kFallbackIconColor)};
 
   InstallResult result =
       InstallFromSyncAndWait(kWebAppStartUrl, kWebAppManifestId);
@@ -339,7 +333,7 @@ TEST_F(InstallFromSyncTest, FallbackWebAppInstallInfo) {
 
   // Fallback icon state.
   web_contents_manager().GetOrCreateIconState(kFallbackIconUrl).bitmaps = {
-      CreateTestBitmap(kFallbackIconColor, kIconSize)};
+      gfx::test::CreateBitmap(kIconSize, kFallbackIconColor)};
 
   InstallResult result =
       InstallFromSyncAndWait(kWebAppStartUrl, kWebAppManifestId);
@@ -379,7 +373,7 @@ TEST_F(InstallFromSyncTest, FallbackManifestIdMismatch) {
 
   // Icon state.
   web_contents_manager().GetOrCreateIconState(kDocumentIconUrl).bitmaps = {
-      CreateTestBitmap(kDocumentIconColor, kIconSize)};
+      gfx::test::CreateBitmap(kIconSize, kDocumentIconColor)};
 
   InstallResult result =
       InstallFromSyncAndWait(kWebAppStartUrl, kWebAppManifestId);

@@ -21,6 +21,7 @@
 #include "third_party/blink/public/common/media/video_capture.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-blink.h"
 #include "third_party/blink/public/web/modules/mediastream/media_stream_video_source.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_captured_wheel_action.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/video_capture/video_capturer_source.h"
 
@@ -93,6 +94,11 @@ class MODULES_EXPORT MediaStreamVideoCapturerSource
   absl::optional<media::VideoCaptureFormat> GetCurrentFormat() const override;
   void ChangeSourceImpl(const MediaStreamDevice& new_device) override;
 #if !BUILDFLAG(IS_ANDROID)
+  void SendWheel(
+      CapturedWheelAction* action,
+      base::OnceCallback<void(bool, const String&)> callback) override;
+  void GetZoomLevel(base::OnceCallback<void(absl::optional<int>, const String&)>
+                        callback) override;
   void ApplySubCaptureTarget(
       media::mojom::blink::SubCaptureTargetType type,
       const base::Token& sub_capture_target,

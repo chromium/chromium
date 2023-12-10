@@ -70,6 +70,14 @@ inline constexpr auto kControlButtonsContainerExpandedPadding =
 inline constexpr auto kControlButtonsContainerCollapsedPadding =
     gfx::Insets::TLBR(2, 0, 0, 0);
 
+// The minimum width necessary for the container that holds the expand/collapse
+// button and the control buttons. This is calculated to ensure that there is
+// 16dp of space between the expand/collapse button and the notification icon if
+// there is one, or else 16dp between the expand/collapse button and the end of
+// the notification title and/or message, if the title and/or message are long
+// and are elided. See http://b/267195370 for details.
+inline constexpr int kExpandAndControlButtonsContainerMinimumWidth = 52;
+
 inline constexpr char kGoogleSansFont[] = "Google Sans";
 inline constexpr int kHeaderViewLabelSize = 12;
 inline constexpr char kNotificationBodyFontWeight = 13;

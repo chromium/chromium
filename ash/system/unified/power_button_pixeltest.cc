@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/constants/ash_features.h"
 #include "ash/system/unified/power_button.h"
 #include "ash/system/unified/quick_settings_footer.h"
 #include "ash/system/unified/unified_system_tray.h"
@@ -10,8 +9,6 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/test/pixel/ash_pixel_differ.h"
 #include "ash/test/pixel/ash_pixel_test_init_params.h"
-#include "base/test/scoped_feature_list.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/submenu_view.h"
 #include "ui/views/view.h"
@@ -21,13 +18,10 @@ namespace ash {
 // Pixel tests for the quick settings Power button and menu.
 class PowerButtonPixelTest : public NoSessionAshTestBase {
  public:
-  PowerButtonPixelTest() {
-    feature_list_.InitWithFeatures(
-        {features::kQsRevamp, chromeos::features::kJelly}, {});
-  }
+  PowerButtonPixelTest() = default;
 
   // AshTestBase:
-  absl::optional<pixel_test::InitParams> CreatePixelTestInitParams()
+  std::optional<pixel_test::InitParams> CreatePixelTestInitParams()
       const override {
     return pixel_test::InitParams();
   }
@@ -53,8 +47,6 @@ class PowerButtonPixelTest : public NoSessionAshTestBase {
   void SimulatePowerButtonPress() { LeftClickOn(button_->button_content_); }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
-
   // Owned by view hierarchy.
   raw_ptr<PowerButton, ExperimentalAsh> button_ = nullptr;
 };

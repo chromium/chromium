@@ -288,7 +288,7 @@ TEST_F(MultiThreadedProxyResolverTest, SingleThread_Basic) {
   // Wait for request 0 to finish.
   rv = callback0.WaitForResult();
   EXPECT_EQ(0, rv);
-  EXPECT_EQ("PROXY request0:80", results0.ToPacString());
+  EXPECT_EQ("PROXY request0:80", results0.ToDebugString());
 
   // The mock proxy resolver should have written 1 log entry. And
   // on completion, this should have been copied into |log0|.
@@ -327,15 +327,15 @@ TEST_F(MultiThreadedProxyResolverTest, SingleThread_Basic) {
 
   rv = callback1.WaitForResult();
   EXPECT_EQ(1, rv);
-  EXPECT_EQ("PROXY request1:80", results1.ToPacString());
+  EXPECT_EQ("PROXY request1:80", results1.ToDebugString());
 
   rv = callback2.WaitForResult();
   EXPECT_EQ(2, rv);
-  EXPECT_EQ("PROXY request2:80", results2.ToPacString());
+  EXPECT_EQ("PROXY request2:80", results2.ToDebugString());
 
   rv = callback3.WaitForResult();
   EXPECT_EQ(3, rv);
-  EXPECT_EQ("PROXY request3:80", results3.ToPacString());
+  EXPECT_EQ("PROXY request3:80", results3.ToDebugString());
 }
 
 // Tests that the NetLog is updated to include the time the request was waiting
@@ -391,7 +391,7 @@ TEST_F(MultiThreadedProxyResolverTest,
   // The NetLog has 1 entry that came from the MultiThreadedProxyResolver, and
   // 1 entry from the mock proxy resolver.
   EXPECT_EQ(0, callback0.WaitForResult());
-  EXPECT_EQ("PROXY request0:80", results0.ToPacString());
+  EXPECT_EQ("PROXY request0:80", results0.ToDebugString());
 
   auto entries0 =
       net_log_observer.GetEntriesForSource(log_with_source0.source());
@@ -401,7 +401,7 @@ TEST_F(MultiThreadedProxyResolverTest,
 
   // Check that request 1 completed as expected.
   EXPECT_EQ(1, callback1.WaitForResult());
-  EXPECT_EQ("PROXY request1:80", results1.ToPacString());
+  EXPECT_EQ("PROXY request1:80", results1.ToDebugString());
 
   auto entries1 =
       net_log_observer.GetEntriesForSource(log_with_source1.source());
@@ -414,7 +414,7 @@ TEST_F(MultiThreadedProxyResolverTest,
 
   // Check that request 2 completed as expected.
   EXPECT_EQ(2, callback2.WaitForResult());
-  EXPECT_EQ("PROXY request2:80", results2.ToPacString());
+  EXPECT_EQ("PROXY request2:80", results2.ToDebugString());
 
   auto entries2 =
       net_log_observer.GetEntriesForSource(log_with_source2.source());
@@ -484,13 +484,13 @@ TEST_F(MultiThreadedProxyResolverTest, SingleThread_CancelRequest) {
 
   rv = callback1.WaitForResult();
   EXPECT_EQ(1, rv);
-  EXPECT_EQ("PROXY request1:80", results1.ToPacString());
+  EXPECT_EQ("PROXY request1:80", results1.ToDebugString());
 
   rv = callback3.WaitForResult();
   // Note that since request2 was cancelled before reaching the resolver,
   // the request count is 2 and not 3 here.
   EXPECT_EQ(2, rv);
-  EXPECT_EQ("PROXY request3:80", results3.ToPacString());
+  EXPECT_EQ("PROXY request3:80", results3.ToDebugString());
 
   // Requests 0 and 2 which were cancelled, hence their completion callbacks
   // were never summoned.
@@ -619,7 +619,7 @@ TEST_F(MultiThreadedProxyResolverTest, ThreeThreads_Basic) {
   // Wait for request 0 to finish.
   rv = callback[0].WaitForResult();
   EXPECT_EQ(0, rv);
-  EXPECT_EQ("PROXY request0:80", results[0].ToPacString());
+  EXPECT_EQ("PROXY request0:80", results[0].ToDebugString());
   ASSERT_EQ(1u, factory().resolvers().size());
   EXPECT_EQ(1, factory().resolvers()[0]->request_count());
 

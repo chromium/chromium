@@ -40,8 +40,7 @@ public class DiscardableReferencePool {
      * @param <T> The type of the object.
      */
     public static class DiscardableReference<T> {
-        @Nullable
-        private T mPayload;
+        @Nullable private T mPayload;
 
         private DiscardableReference(T payload) {
             assert payload != null;
@@ -56,9 +55,7 @@ public class DiscardableReferencePool {
             return mPayload;
         }
 
-        /**
-         * Clear the referent.
-         */
+        /** Clear the referent. */
         private void discard() {
             assert mPayload != null;
             mPayload = null;

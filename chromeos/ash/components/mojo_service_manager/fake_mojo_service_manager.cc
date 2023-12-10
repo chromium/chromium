@@ -81,10 +81,9 @@ void FakeMojoServiceManager::Register(
   }
 }
 
-void FakeMojoServiceManager::Request(
-    const std::string& service_name,
-    absl::optional<base::TimeDelta> /*timeout*/,
-    mojo::ScopedMessagePipeHandle receiver) {
+void FakeMojoServiceManager::Request(const std::string& service_name,
+                                     std::optional<base::TimeDelta> /*timeout*/,
+                                     mojo::ScopedMessagePipeHandle receiver) {
   auto it = service_map_.find(service_name);
   if (it == service_map_.end()) {
     auto [it_new, success] = service_map_.try_emplace(service_name);

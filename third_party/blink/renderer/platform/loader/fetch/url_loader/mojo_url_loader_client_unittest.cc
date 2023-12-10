@@ -45,10 +45,9 @@ class MockResourceRequestSender : public ResourceRequestSender {
     EXPECT_FALSE(context_->complete);
   }
 
-  void OnReceivedRedirect(
-      const net::RedirectInfo& redirect_info,
-      network::mojom::URLResponseHeadPtr head,
-      scoped_refptr<base::SequencedTaskRunner> task_runner) override {
+  void OnReceivedRedirect(const net::RedirectInfo& redirect_info,
+                          network::mojom::URLResponseHeadPtr head,
+                          base::TimeTicks redirect_ipc_arrival_time) override {
     EXPECT_FALSE(context_->cancelled);
     EXPECT_FALSE(context_->complete);
     ++context_->seen_redirects;
@@ -61,7 +60,7 @@ class MockResourceRequestSender : public ResourceRequestSender {
   void OnReceivedResponse(network::mojom::URLResponseHeadPtr head,
                           mojo::ScopedDataPipeConsumerHandle body,
                           absl::optional<mojo_base::BigBuffer> cached_metadata,
-                          base::TimeTicks response_arrival_time) override {
+                          base::TimeTicks response_ipc_arrival_time) override {
     EXPECT_FALSE(context_->cancelled);
     EXPECT_FALSE(context_->received_response);
     EXPECT_FALSE(context_->complete);
@@ -88,8 +87,8 @@ class MockResourceRequestSender : public ResourceRequestSender {
     }
   }
 
-  void OnRequestComplete(
-      const network::URLLoaderCompletionStatus& status) override {
+  void OnRequestComplete(const network::URLLoaderCompletionStatus& status,
+                         base::TimeTicks complete_ipc_arrival_time) override {
     if (context_->cancelled)
       return;
     EXPECT_TRUE(context_->received_response);
@@ -167,7 +166,8 @@ class TestBackForwardCacheLoaderHelper : public BackForwardCacheLoaderHelper {
   void EvictFromBackForwardCache(
       mojom::blink::RendererEvictionReason reason) override {}
 
-  void DidBufferLoadWhileInBackForwardCache(size_t num_bytes) override {}
+  void DidBufferLoadWhileInBackForwardCache(bool update_process_wide_count,
+                                            size_t num_bytes) override {}
 
   void Detach() override {}
 };

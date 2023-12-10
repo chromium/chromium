@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_APP_LIST_SEARCH_FILES_ZERO_STATE_DRIVE_PROVIDER_H_
 #define CHROME_BROWSER_ASH_APP_LIST_SEARCH_FILES_ZERO_STATE_DRIVE_PROVIDER_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -21,7 +22,6 @@
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/core/session_manager_observer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 
@@ -66,7 +66,7 @@ class ZeroStateDriveProvider : public SearchProvider,
  private:
   // Called when file suggestion data are fetched from the service.
   void OnSuggestFileDataFetched(
-      const absl::optional<std::vector<ash::FileSuggestData>>& suggest_results);
+      const std::optional<std::vector<ash::FileSuggestData>>& suggest_results);
 
   // Builds the search results from file suggestions then publishes the results.
   void SetSearchResults(
@@ -75,7 +75,7 @@ class ZeroStateDriveProvider : public SearchProvider,
   std::unique_ptr<FileResult> MakeListResult(
       const std::string& result_id,
       const base::FilePath& filepath,
-      const absl::optional<std::u16string>& prediction_reason,
+      const std::optional<std::u16string>& prediction_reason,
       const float relevance);
 
   // Requests an update from the ItemSuggestCache, but only if the call is long

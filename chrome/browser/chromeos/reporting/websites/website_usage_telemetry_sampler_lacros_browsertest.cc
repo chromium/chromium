@@ -53,7 +53,7 @@ constexpr base::TimeDelta kWebsiteUsageDuration = base::Minutes(2);
 
 // Additional website usage buffer period before the browser is actually closed.
 // Used when validating reported website usage data.
-constexpr base::TimeDelta kWebsiteUsageBufferPeriod = base::Seconds(5);
+constexpr base::TimeDelta kWebsiteUsageBufferPeriod = base::Seconds(10);
 
 void SetupUserDeviceAffiliation() {
   ::enterprise_management::PolicyData profile_policy_data;
@@ -202,7 +202,7 @@ IN_PROC_BROWSER_TEST_F(WebsiteUsageTelemetrySamplerBrowserTest,
   // collection.
   test::MockClock::Get().Advance(
       metrics::kDefaultWebsiteTelemetryCollectionRate);
-  EXPECT_FALSE(missive_observer.HasNewEnqueuedRecords());
+  EXPECT_FALSE(missive_observer.HasNewEnqueuedRecord());
 }
 
 IN_PROC_BROWSER_TEST_F(WebsiteUsageTelemetrySamplerBrowserTest,
@@ -218,7 +218,7 @@ IN_PROC_BROWSER_TEST_F(WebsiteUsageTelemetrySamplerBrowserTest,
       metrics::kDefaultWebsiteTelemetryCollectionRate);
 
   // Verify no telemetry data is enqueued.
-  EXPECT_FALSE(missive_observer.HasNewEnqueuedRecords());
+  EXPECT_FALSE(missive_observer.HasNewEnqueuedRecord());
 }
 
 IN_PROC_BROWSER_TEST_F(WebsiteUsageTelemetrySamplerBrowserTest,
@@ -234,7 +234,7 @@ IN_PROC_BROWSER_TEST_F(WebsiteUsageTelemetrySamplerBrowserTest,
       metrics::kDefaultWebsiteTelemetryCollectionRate);
 
   // Verify no telemetry data is enqueued.
-  EXPECT_FALSE(missive_observer.HasNewEnqueuedRecords());
+  EXPECT_FALSE(missive_observer.HasNewEnqueuedRecord());
 }
 
 IN_PROC_BROWSER_TEST_F(WebsiteUsageTelemetrySamplerBrowserTest,
@@ -265,7 +265,7 @@ IN_PROC_BROWSER_TEST_F(WebsiteUsageTelemetrySamplerBrowserTest,
   // collection.
   test::MockClock::Get().Advance(
       metrics::kDefaultWebsiteTelemetryCollectionRate);
-  EXPECT_FALSE(missive_observer.HasNewEnqueuedRecords());
+  EXPECT_FALSE(missive_observer.HasNewEnqueuedRecord());
 }
 
 }  // namespace

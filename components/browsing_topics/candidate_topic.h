@@ -61,4 +61,4 @@ class CandidateTopic {
 
 }  // namespace browsing_topics
 
-#endif  // COMPONENTS_BROWSING_TOPICS_UTIL_H_
+#endif  // COMPONENTS_BROWSING_TOPICS_CANDIDATE_TOPIC_H_

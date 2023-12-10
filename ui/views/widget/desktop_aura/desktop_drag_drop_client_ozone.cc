@@ -73,7 +73,7 @@ std::unique_ptr<views::Widget> CreateDragWidget(
 
   std::unique_ptr<views::ImageView> image_view =
       std::make_unique<views::ImageView>();
-  image_view->SetImage(image);
+  image_view->SetImage(ui::ImageModel::FromImageSkia(image));
   widget->SetContentsView(std::move(image_view));
   widget->Show();
   widget->GetNativeWindow()->layer()->SetFillsBoundsOpaquely(false);
@@ -298,8 +298,9 @@ void DesktopDragDropClientOzone::OnDragDrop(
             base::BindOnce(&DesktopDragDropClientOzone::DragCancel,
                            weak_factory_.GetWeakPtr()));
 
+        auto* data_to_drop_raw = data_to_drop_.get();
         DropIfAllowed(
-            data_to_drop_.get(), current_drag_info_,
+            data_to_drop_raw, current_drag_info_,
             base::BindOnce(&PerformDrop, std::move(drop_cb),
                            std::move(data_to_drop_), std::move(drag_cancel)));
       }

@@ -60,6 +60,10 @@ google::internal::identity::passwords::leak::check::v1::
       return google::internal::identity::passwords::leak::check::v1::
           LookupSingleLeakRequest::ClientUseCase::
               LookupSingleLeakRequest_ClientUseCase_CHROME_EDIT_CHECK;
+    case LeakDetectionInitiator::kIGABulkSyncedPasswordsCheck:
+      return google::internal::identity::passwords::leak::check::v1::
+          LookupSingleLeakRequest::ClientUseCase::
+              LookupSingleLeakRequest_ClientUseCase_IGA_BULK_SYNCED_PASSWORDS_CHECK;
   }
   NOTREACHED_NORETURN();
 }
@@ -85,8 +89,8 @@ LeakDetectionRequest::~LeakDetectionRequest() = default;
 
 void LeakDetectionRequest::LookupSingleLeak(
     network::mojom::URLLoaderFactory* url_loader_factory,
-    const absl::optional<std::string>& access_token,
-    const absl::optional<std::string>& api_key,
+    const std::optional<std::string>& access_token,
+    const std::optional<std::string>& api_key,
     LookupSingleLeakPayload payload,
     LookupSingleLeakCallback callback) {
   net::NetworkTrafficAnnotationTag traffic_annotation =
@@ -219,7 +223,7 @@ void LeakDetectionRequest::OnLookupSingleLeakResponse(
   base::UmaHistogramCounts100000(
       "PasswordManager.LeakDetection.SingleLeakResponsePrefixes",
       single_lookup_response->encrypted_leak_match_prefixes.size());
-  std::move(callback).Run(std::move(single_lookup_response), absl::nullopt);
+  std::move(callback).Run(std::move(single_lookup_response), std::nullopt);
 }
 
 }  // namespace password_manager

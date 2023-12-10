@@ -9,12 +9,12 @@
 #ifndef CHROME_BROWSER_ASH_FILE_MANAGER_FILESYSTEM_API_UTIL_H_
 #define CHROME_BROWSER_ASH_FILE_MANAGER_FILESYSTEM_API_UTIL_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/functional/callback_forward.h"
 #include "storage/common/file_system/file_system_types.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 
@@ -41,7 +41,7 @@ bool HasNonNativeMimeTypeProvider(Profile* profile, const base::FilePath& path);
 void GetNonNativeLocalPathMimeType(
     Profile* profile,
     const base::FilePath& path,
-    base::OnceCallback<void(const absl::optional<std::string>&)> callback);
+    base::OnceCallback<void(const std::optional<std::string>&)> callback);
 
 // Checks whether the |path| points to a directory, and asynchronously sends
 // the result to |callback|.

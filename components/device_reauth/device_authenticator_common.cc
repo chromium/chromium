@@ -32,12 +32,17 @@ void DeviceAuthenticatorCommon::RecordAuthenticationTimeIfSuccessful(
   if (!success) {
     return;
   }
-  device_authenticator_proxy_->UpdateLastGoodAuthTimestamp();
+  if (device_authenticator_proxy_) {
+    device_authenticator_proxy_->UpdateLastGoodAuthTimestamp();
+  }
 }
 
 bool DeviceAuthenticatorCommon::NeedsToAuthenticate() const {
-  auto last_good_auth_timestamp =
-      device_authenticator_proxy_->GetLastGoodAuthTimestamp();
+  absl::optional<base::TimeTicks> last_good_auth_timestamp;
+  if (device_authenticator_proxy_) {
+    last_good_auth_timestamp =
+        device_authenticator_proxy_->GetLastGoodAuthTimestamp();
+  }
 
   return !last_good_auth_timestamp.has_value() ||
          base::TimeTicks::Now() - last_good_auth_timestamp.value() >=

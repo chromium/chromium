@@ -69,11 +69,11 @@ class FakePlusAddressService : public PlusAddressService {
     on_confirmed = std::move(callback);
   }
 
-  absl::optional<PlusAddressRequestCallback> on_confirmed;
+  std::optional<PlusAddressRequestCallback> on_confirmed;
   std::string facet_ = "facet.bar";
   bool is_confirmed_ = false;
 
-  absl::optional<std::string> GetPrimaryEmail() override {
+  std::optional<std::string> GetPrimaryEmail() override {
     // Ensure the value is present without requiring identity setup.
     return "plus+primary@plus.plus";
   }

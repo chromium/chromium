@@ -58,9 +58,9 @@ TEST(IbanTest, ConstructLocalIban) {
 }
 
 TEST(IbanTest, ConstructServerIban) {
-  Iban server_iban(Iban::InstrumentId("1234567"));
+  Iban server_iban(Iban::InstrumentId(1234567));
   EXPECT_EQ(server_iban.record_type(), Iban::RecordType::kServerIban);
-  EXPECT_EQ("1234567", server_iban.instrument_id());
+  EXPECT_EQ(1234567, server_iban.instrument_id());
 }
 
 TEST(IbanTest, GetMetadata) {
@@ -201,7 +201,7 @@ TEST(IbanTest, GetUserFacingValue_LocalIban) {
 }
 
 TEST(IbanTest, GetUserFacingValue_ServerIban_UnmaskNotAllowed) {
-  Iban server_iban(Iban::InstrumentId("1234567"));
+  Iban server_iban(Iban::InstrumentId(1234567));
   // Set the prefix, suffix and length of the server IBAN.
   server_iban.set_prefix(u"FR76");
   server_iban.set_suffix(u"0189");
@@ -212,7 +212,7 @@ TEST(IbanTest, GetUserFacingValue_ServerIban_UnmaskNotAllowed) {
 }
 
 TEST(IbanTest, GetUserFacingValue_ServerIban_RegularPrefixAndSuffix) {
-  Iban server_iban(Iban::InstrumentId("1234567"));
+  Iban server_iban(Iban::InstrumentId(1234567));
   // Set the prefix, suffix and length of the server IBAN.
   server_iban.set_prefix(u"FR76");
   server_iban.set_suffix(u"0189");
@@ -223,7 +223,7 @@ TEST(IbanTest, GetUserFacingValue_ServerIban_RegularPrefixAndSuffix) {
 
 TEST(IbanTest, GetUserFacingValue_ServerIban_EmptyPrefix) {
   // Set up a `server_iban` with empty prefix.
-  Iban server_iban(Iban::InstrumentId("1234567"));
+  Iban server_iban(Iban::InstrumentId(1234567));
   server_iban.set_prefix(u"");
   server_iban.set_suffix(u"0189");
   server_iban.set_length(27);
@@ -233,7 +233,7 @@ TEST(IbanTest, GetUserFacingValue_ServerIban_EmptyPrefix) {
 
 TEST(IbanTest, GetUserFacingValue_ServerIban_EmptySuffix) {
   // Set up a `server_iban` with empty suffix.
-  Iban server_iban(Iban::InstrumentId("1234567"));
+  Iban server_iban(Iban::InstrumentId(1234567));
   server_iban.set_prefix(u"FR76");
   server_iban.set_suffix(u"");
   server_iban.set_length(27);
@@ -243,7 +243,7 @@ TEST(IbanTest, GetUserFacingValue_ServerIban_EmptySuffix) {
 
 TEST(IbanTest, GetUserFacingValue_ServerIban_OtherLengthOfPrefixAndSuffix) {
   // Set the prefix and suffix of the server IBAN with length other than 4.
-  Iban server_iban(Iban::InstrumentId("1234567"));
+  Iban server_iban(Iban::InstrumentId(1234567));
   server_iban.set_prefix(u"FR7");
   server_iban.set_suffix(u"10189");
   server_iban.set_length(27);
@@ -431,7 +431,7 @@ TEST(IbanTest, MatchesPrefixSuffixAndLength_AcrossTypes) {
   Iban local_iban(
       Iban::Guid(base::Uuid::GenerateRandomV4().AsLowercaseString()));
   local_iban.set_value(u"CH56 0483 5012 3456 7800 9");
-  Iban server_iban(Iban::InstrumentId("1234567"));
+  Iban server_iban(Iban::InstrumentId(1234567));
   server_iban.set_prefix(u"CH56");
   server_iban.set_suffix(u"8009");
   server_iban.set_length(21);

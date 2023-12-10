@@ -36,9 +36,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-/**
- * Reads and caches partner browser customizations information if it exists.
- */
+/** Reads and caches partner browser customizations information if it exists. */
 public class PartnerBrowserCustomizations {
     private static final String TAG = "PartnerCustomize";
     private static final String PROVIDER_AUTHORITY = "com.android.partnerbrowsercustomizations";
@@ -48,12 +46,14 @@ public class PartnerBrowserCustomizations {
 
     private static final int HOMEPAGE_URL_MAX_LENGTH = 1000;
     // Private homepage structure.
-    @VisibleForTesting
-    static final String PARTNER_HOMEPAGE_PATH = "homepage";
+    @VisibleForTesting static final String PARTNER_HOMEPAGE_PATH = "homepage";
+
     @VisibleForTesting
     static final String PARTNER_DISABLE_BOOKMARKS_EDITING_PATH = "disablebookmarksediting";
+
     @VisibleForTesting
     static final String PARTNER_DISABLE_INCOGNITO_MODE_PATH = "disableincognitomode";
+
     private static Boolean sIgnoreSystemPackageCheck;
     private static Boolean sValid;
 
@@ -74,14 +74,10 @@ public class PartnerBrowserCustomizations {
     private final List<Runnable> mInitializeAsyncCallbacks;
     private PartnerHomepageListener mListener;
 
-    /**
-     * Provider of partner customizations.
-     */
+    /** Provider of partner customizations. */
     public interface Provider extends CustomizationProviderDelegate {}
 
-    /**
-     * Partner customizations provided by ContentProvider package.
-     */
+    /** Partner customizations provided by ContentProvider package. */
     public static class ProviderPackage implements Provider {
         CustomizationProviderDelegate mDelegate;
 
@@ -105,9 +101,7 @@ public class PartnerBrowserCustomizations {
         }
     }
 
-    /**
-     * Interface that listen to homepage URI updates from provider packages.
-     */
+    /** Interface that listen to homepage URI updates from provider packages. */
     public interface PartnerHomepageListener {
         /**
          * Will be called if homepage have any update after {@link #initializeAsync(Context, long)}.
@@ -204,76 +198,79 @@ public class PartnerBrowserCustomizations {
         final PartnerCustomizationsUma partnerCustomizationsUma = new PartnerCustomizationsUma();
         mIsInitialized = false;
         // Setup an initializing async task.
-        final AsyncTask<Void> initializeAsyncTask = new AsyncTask<Void>() {
-            private boolean mHomepageUriChanged;
-            private long mStartTime = SystemClock.elapsedRealtime();
+        final AsyncTask<Void> initializeAsyncTask =
+                new AsyncTask<Void>() {
+                    private boolean mHomepageUriChanged;
+                    private long mStartTime = SystemClock.elapsedRealtime();
 
-            @Override
-            protected Void doInBackground() {
-                try {
-                    partnerCustomizationsUma.logAsyncInitStarted();
-                    boolean systemOrPreStable =
-                            (context.getApplicationInfo().flags & ApplicationInfo.FLAG_SYSTEM) == 1
-                            || !VersionInfo.isStableBuild();
-                    if (!systemOrPreStable) {
-                        // Only allow partner customization if this browser is a system package, or
-                        // is in pre-stable channels.
+                    @Override
+                    protected Void doInBackground() {
+                        try {
+                            partnerCustomizationsUma.logAsyncInitStarted();
+                            boolean systemOrPreStable =
+                                    (context.getApplicationInfo().flags
+                                                            & ApplicationInfo.FLAG_SYSTEM)
+                                                    == 1
+                                            || !VersionInfo.isStableBuild();
+                            if (!systemOrPreStable) {
+                                // Only allow partner customization if this browser is a system
+                                // package, or is in pre-stable channels.
+                                return null;
+                            }
+
+                            if (isCancelled()) return null;
+                            CustomizationProviderDelegateImpl delegate =
+                                    new CustomizationProviderDelegateImpl();
+
+                            // Refresh the homepage first, as it has potential impact on the URL to
+                            // use for the initial tab.
+                            if (isCancelled()) return null;
+                            mHomepageUriChanged = refreshHomepage(delegate);
+
+                            if (isCancelled()) return null;
+                            refreshIncognitoModeDisabled(delegate);
+
+                            if (isCancelled()) return null;
+                            refreshBookmarksEditingDisabled(delegate);
+                        } catch (Exception e) {
+                            Log.w(TAG, "Fetching partner customizations failed", e);
+                            partnerCustomizationsUma.logAsyncInitException();
+                        }
                         return null;
                     }
 
-                    if (isCancelled()) return null;
-                    CustomizationProviderDelegateImpl delegate =
-                            new CustomizationProviderDelegateImpl();
+                    @Override
+                    protected void onPostExecute(Void result) {
+                        partnerCustomizationsUma.logAsyncInitCompleted();
+                        onFinalized();
+                    }
 
-                    // Refresh the homepage first, as it has potential impact on the URL to use
-                    // for the initial tab.
-                    if (isCancelled()) return null;
-                    mHomepageUriChanged = refreshHomepage(delegate);
+                    @Override
+                    protected void onCancelled(Void result) {
+                        partnerCustomizationsUma.logAsyncInitCancelled();
+                        onFinalized();
+                    }
 
-                    if (isCancelled()) return null;
-                    refreshIncognitoModeDisabled(delegate);
+                    private void onFinalized() {
+                        assert mIsInitialized != null;
+                        assert !mIsInitialized;
 
-                    if (isCancelled()) return null;
-                    refreshBookmarksEditingDisabled(delegate);
-                } catch (Exception e) {
-                    Log.w(TAG, "Fetching partner customizations failed", e);
-                    partnerCustomizationsUma.logAsyncInitException();
-                }
-                return null;
-            }
+                        mIsInitialized = true;
+                        PartnerCustomizationsUma.logPartnerBrowserCustomizationInitDuration(
+                                mStartTime, SystemClock.elapsedRealtime());
 
-            @Override
-            protected void onPostExecute(Void result) {
-                partnerCustomizationsUma.logAsyncInitCompleted();
-                onFinalized();
-            }
+                        for (Runnable callback : mInitializeAsyncCallbacks) {
+                            callback.run();
+                        }
+                        mInitializeAsyncCallbacks.clear();
 
-            @Override
-            protected void onCancelled(Void result) {
-                partnerCustomizationsUma.logAsyncInitCancelled();
-                onFinalized();
-            }
-
-            private void onFinalized() {
-                assert mIsInitialized != null;
-                assert !mIsInitialized;
-
-                mIsInitialized = true;
-                PartnerCustomizationsUma.logPartnerBrowserCustomizationInitDuration(
-                        mStartTime, SystemClock.elapsedRealtime());
-
-                for (Runnable callback : mInitializeAsyncCallbacks) {
-                    callback.run();
-                }
-                mInitializeAsyncCallbacks.clear();
-
-                if (mHomepageUriChanged && mListener != null) {
-                    mListener.onHomepageUpdate();
-                }
-                partnerCustomizationsUma.logAsyncInitFinalized(
-                        mStartTime, SystemClock.elapsedRealtime(), mHomepageUriChanged);
-            }
-        };
+                        if (mHomepageUriChanged && mListener != null) {
+                            mListener.onHomepageUpdate();
+                        }
+                        partnerCustomizationsUma.logAsyncInitFinalized(
+                                mStartTime, SystemClock.elapsedRealtime(), mHomepageUriChanged);
+                    }
+                };
 
         initializeAsyncTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
@@ -304,13 +301,19 @@ public class PartnerBrowserCustomizations {
      *         native initialization.
      * @param homepageCharacterizationHelper A supplier to characterize a Homepage.
      */
-    public void onCreateInitialTab(@Nullable String homepageUrlCreated, long createInitialTabTime,
+    public void onCreateInitialTab(
+            @Nullable String homepageUrlCreated,
+            long createInitialTabTime,
             boolean isOverviewPageOrStartSurface,
             @NonNull ActivityLifecycleDispatcher activityLifecycleDispatcher,
             @NonNull Supplier<HomepageCharacterizationHelper> homepageCharacterizationHelper) {
         if (mPartnerCustomizationsUma != null) {
-            mPartnerCustomizationsUma.onCreateInitialTab(isInitialized(), homepageUrlCreated,
-                    createInitialTabTime, isOverviewPageOrStartSurface, activityLifecycleDispatcher,
+            mPartnerCustomizationsUma.onCreateInitialTab(
+                    isInitialized(),
+                    homepageUrlCreated,
+                    createInitialTabTime,
+                    isOverviewPageOrStartSurface,
+                    activityLifecycleDispatcher,
                     homepageCharacterizationHelper);
         }
     }
@@ -342,8 +345,10 @@ public class PartnerBrowserCustomizations {
             mHomepage = homepageGurl;
             String valueToWrite =
                     mHomepage == null ? GURL.emptyGURL().serialize() : mHomepage.serialize();
-            ChromeSharedPreferences.getInstance().writeString(
-                    ChromePreferenceKeys.HOMEPAGE_PARTNER_CUSTOMIZED_DEFAULT_GURL, valueToWrite);
+            ChromeSharedPreferences.getInstance()
+                    .writeString(
+                            ChromePreferenceKeys.HOMEPAGE_PARTNER_CUSTOMIZED_DEFAULT_GURL,
+                            valueToWrite);
         } catch (Exception e) {
             Log.w(TAG, "Partner homepage delegate URL read failed : ", e);
         }
@@ -392,14 +397,17 @@ public class PartnerBrowserCustomizations {
     public void setOnInitializeAsyncFinished(final Runnable callback, long timeoutMs) {
         mInitializeAsyncCallbacks.add(callback);
 
-        PostTask.postDelayedTask(TaskTraits.UI_DEFAULT, () -> {
-            if (mInitializeAsyncCallbacks.remove(callback)) {
-                if (!isInitialized()) {
-                    Log.w(TAG, "mInitializeAsyncCallbacks executed as timeout expired.");
-                }
-                callback.run();
-            }
-        }, isInitialized() ? 0 : timeoutMs);
+        PostTask.postDelayedTask(
+                TaskTraits.UI_DEFAULT,
+                () -> {
+                    if (mInitializeAsyncCallbacks.remove(callback)) {
+                        if (!isInitialized()) {
+                            Log.w(TAG, "mInitializeAsyncCallbacks executed as timeout expired.");
+                        }
+                        callback.run();
+                    }
+                },
+                isInitialized() ? 0 : timeoutMs);
     }
 
     public static void destroy() {
@@ -431,10 +439,10 @@ public class PartnerBrowserCustomizations {
             return false;
         }
 
-        if (!url.isValid() || (!UrlUtilities.isHttpOrHttps(url) && !UrlUtilities.isNTPUrl(url))) {
-            Log.w(TAG,
-                    "Partner homepage must be HTTP(S) or NewTabPage. "
-                            + "Got invalid URL \"%s\"",
+        if (!url.isValid() || (!UrlUtilities.isHttpOrHttps(url) && !UrlUtilities.isNtpUrl(url))) {
+            Log.w(
+                    TAG,
+                    "Partner homepage must be HTTP(S) or NewTabPage. " + "Got invalid URL \"%s\"",
                     url.getPossiblyInvalidSpec());
             return false;
         }

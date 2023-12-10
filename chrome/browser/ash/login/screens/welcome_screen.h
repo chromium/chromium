@@ -67,11 +67,11 @@ class WelcomeScreen : public BaseScreen,
   };
 
   enum class Result {
-    NEXT,
-    NEXT_OS_INSTALL,
-    SETUP_DEMO,
-    ENABLE_DEBUGGING,
-    QUICK_START
+    kNext,
+    kNextOSInstall,
+    kSetupDemo,
+    kEnableDebugging,
+    kQuickStart
   };
 
   using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
@@ -176,6 +176,15 @@ class WelcomeScreen : public BaseScreen,
   void OnAccessibilityStatusChanged(
       const AccessibilityStatusEventDetails& details);
   void UpdateA11yState();
+
+  // When Quick Start button is clicked a dialog will pop up if the bluetooth is
+  // disabled asking to turn it on since it's needed in the quickstart flow
+  void OnQuickStartClicked();
+
+  // If user chooses to turn on bluetooth to continue using Quick Start flow,
+  // bluetooth will automatically by turned on and user will be taken to Quick
+  // Start screen.
+  void OnTurnOnBluetoothForQuickStart();
 
   // Adds data to the OOBE.WelcomeScreen.UserChangedLocale metric and calls
   // exit_callback with given Result

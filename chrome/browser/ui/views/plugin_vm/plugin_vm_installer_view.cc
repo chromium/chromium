@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/plugin_vm/plugin_vm_installer_view.h"
 
 #include <memory>
+#include <optional>
 
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/window_properties.h"
@@ -23,7 +24,6 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/browser_thread.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -175,7 +175,8 @@ PluginVmInstallerView::PluginVmInstallerView(Profile* profile)
   learn_more_link_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   message_container_view->AddChildView(learn_more_link_.get());
 
-  progress_bar_ = new views::ProgressBar(kProgressBarHeight);
+  progress_bar_ = new views::ProgressBar();
+  progress_bar_->SetPreferredHeight(kProgressBarHeight);
   progress_bar_->SetProperty(
       views::kMarginsKey,
       gfx::Insets::TLBR(kProgressBarTopMargin - kProgressBarHeight, 0, 0, 0));
@@ -627,7 +628,7 @@ void PluginVmInstallerView::StartInstallation() {
   OnStateUpdated();
 
   plugin_vm_installer_->SetObserver(this);
-  absl::optional<plugin_vm::PluginVmInstaller::FailureReason> failure_reason =
+  std::optional<plugin_vm::PluginVmInstaller::FailureReason> failure_reason =
       plugin_vm_installer_->Start();
   if (failure_reason)
     OnError(failure_reason.value());

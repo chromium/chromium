@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+[FAIL] Accelerometer: unfocused sensors in cross-origin frames are not updated
+  promise_test: Unhandled rejection with value: "NotAllowedError: Permissions to access sensor are not granted"
+[FAIL] LinearAccelerationSensor: unfocused sensors in cross-origin frames are not updated
+  promise_test: Unhandled rejection with value: "NotAllowedError: Permissions to access sensor are not granted"
+[FAIL] GravitySensor: unfocused sensors in cross-origin frames are not updated
+  promise_test: Unhandled rejection with value: "NotAllowedError: Permissions to access sensor are not granted"
+Harness: the test ran to completion.

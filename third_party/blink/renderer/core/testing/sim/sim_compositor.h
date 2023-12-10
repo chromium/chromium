@@ -74,20 +74,13 @@ class SimCompositor final {
   // Sets last_frame_time_ to now, to sync with external time.
   void ResetLastFrameTime() { last_frame_time_ = base::TimeTicks::Now(); }
 
-  // Called when the begin frame occured.
-  void DidBeginMainFrame();
-
   cc::LayerTreeHost* LayerTreeHost() const;
 
  private:
-  SimCanvas::Commands PaintFrame();
-
   WebViewImpl* web_view_ = nullptr;
   cc::LayerTreeHost* layer_tree_host_ = nullptr;
 
   base::TimeTicks last_frame_time_;
-
-  SimCanvas::Commands* paint_commands_;
 
   std::unique_ptr<cc::ScopedDeferMainFrameUpdate>
       scoped_defer_main_frame_update_;

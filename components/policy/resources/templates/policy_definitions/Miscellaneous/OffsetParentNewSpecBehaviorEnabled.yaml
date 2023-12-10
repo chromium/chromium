@@ -17,8 +17,6 @@ example_value: true
 features:
   dynamic_refresh: true
   per_profile: true
-future_on:
-- fuchsia
 items:
 - caption: New offsetParent behavior will be used.
   value: true

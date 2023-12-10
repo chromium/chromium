@@ -13,7 +13,22 @@
 // - Don't use quarantined objects' payload - available for zapping
 // - Don't allocate heap memory.
 // - Flexible to support several applications
-//   - TODO(crbug.com/1462223): Implement Miracle Object quarantine with LQ.
+//
+// `LightweightQuarantineRoot` represents one quarantine system
+// (e.g. scheduler loop quarantine).
+// `LightweightQuarantineBranch` provides a quarantine request interface.
+// It belongs to a `LightweightQuarantineRoot` and there can be multiple
+// instances (e.g. one per thread). By having one branch per thread, it requires
+// no lock for faster quarantine.
+// ┌────────────────────────────┐
+// │PartitionRoot               │
+// └┬──────────────────────────┬┘
+// ┌▽────────────────────────┐┌▽────────────────────┐
+// │LQRoot 1                 ││LQRoot 2             │
+// └┬───────────┬───────────┬┘└──────────────┬──┬──┬┘
+// ┌▽─────────┐┌▽─────────┐┌▽─────────┐      ▽  ▽  ▽
+// │LQBranch 1││LQBranch 2││LQBranch 3│
+// └──────────┘└──────────┘└──────────┘
 
 #ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_LIGHTWEIGHT_QUARANTINE_H_
 #define BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_LIGHTWEIGHT_QUARANTINE_H_
@@ -22,14 +37,13 @@
 #include <array>
 #include <atomic>
 #include <limits>
-#include <numeric>
 #include <type_traits>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/bits.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/export_template.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/rand_util.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/thread_annotations.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_lock.h"
+#include "partition_alloc/partition_alloc_base/export_template.h"
+#include "partition_alloc/partition_alloc_base/rand_util.h"
+#include "partition_alloc/partition_alloc_base/thread_annotations.h"
+#include "partition_alloc/partition_lock.h"
+#include "partition_alloc/partition_stats.h"
 
 namespace partition_alloc {
 
@@ -38,118 +52,142 @@ struct LightweightQuarantineStats;
 
 namespace internal {
 
-// `LightweightQuarantineEntry` represents one quarantine entry,
-// with the original `Free()` request information.
-struct LightweightQuarantineEntry {
-  LightweightQuarantineEntry() = default;
-  explicit LightweightQuarantineEntry(void* object) : object(object) {}
-  PA_ALWAYS_INLINE void* GetObject() const { return object; }
+template <size_t QuarantineCapacityCount>
+class LightweightQuarantineBranch;
 
-  void* object = nullptr;
-};
-
-template <typename QuarantineEntry, size_t CapacityCount>
-class LightweightQuarantineList {
+class LightweightQuarantineRoot {
  public:
-  // `CapacityCount` must be power of two.
-  static constexpr uint32_t kCapacityCount = CapacityCount;
-  static_assert(base::bits::IsPowerOfTwo(kCapacityCount));
-
-  // "Entry" is an object that holds free-time information, created for each
-  // quarantined object.
-  // An application may overwrite `QuarantineEntry` with their custom entry
-  // to record more `Free()`-time information.
-  using Entry = QuarantineEntry;
-  // To be accessed from a crash handler, it must be a trivially copyable.
-  static_assert(std::is_trivially_copyable_v<Entry>);
-
-  // Entry ids are concatenation of "slot index" and "counter".
-  // Their lower bits store "slot index", an index of `slots_`.
-  // Their upper bits store "counter", which is incremented every time
-  // when used (may overflow). It is used to verify the slot is occupied by that
-  // entry.
-  static constexpr uint32_t kSlotIndexMask = kCapacityCount - 1;
-  static constexpr uint32_t kInvalidEntryID =
-      std::numeric_limits<uint32_t>::max();
-
-  // "Slot" is a place to put an entry. Each slot owns at most one entry.
-  struct Slot {
-    void* GetObject() const {
-      // We assume `Entry` has `GetObject()` member function.
-      return entry.GetObject();
-    }
-
-    // Used to make sure the metadata entry isn't stale.
-    uint32_t entry_id = kInvalidEntryID;
-    Entry entry;
-  };
-  static_assert(std::is_trivially_copyable_v<Slot>);
-
-  explicit LightweightQuarantineList(PartitionRoot* root,
+  explicit LightweightQuarantineRoot(PartitionRoot& allocator_root,
                                      size_t capacity_in_bytes = 0)
-      : root_(root), capacity_in_bytes_(capacity_in_bytes) {
-    PA_CHECK(root);
-    // Initialize entry ids with iota.
-    // They can be initialized with any value as long as
-    // `entry_ids_[i] & kSlotIndexMask` are unique.
-    std::iota(entry_ids_.begin(), entry_ids_.end(), 0);
-  }
-  LightweightQuarantineList(const LightweightQuarantineList&) = delete;
-  ~LightweightQuarantineList() { Purge(); }
+      : allocator_root_(allocator_root),
+        capacity_in_bytes_(capacity_in_bytes) {}
 
-  // Quarantines an object. This list holds information you put into `Entry`
-  // as much as possible.
-  // If the object is too large, this may return `kInvalidEntryID`, meaning
-  // that quarantine request has failed (and freed immediately).
-  // Otherwise, returns an entry id for the quarantine.
-  uint32_t Quarantine(Entry&& entry);
-
-  void AccumulateStats(LightweightQuarantineStats& stats) const;
-
-  // Determines this list contains an entry with `entry.GetObject() == ptr`.
-  bool IsQuarantinedForTesting(void* object);
-
-  // Dequarantine all entries.
-  void Purge();
-
-  // Returns a pointer to an array of `Slot`.
-  // Don't try to dereference to avoid harmful races.
-  // You can save this address and entry id returned by `Quarantine()`
-  // somewhere, and use `GetEntryByID()` to obtain the free time information.
-  // E.g. embed an entry id into zapping pattern and detect the pattern in
-  // a crash handler to report the free time information.
-  uintptr_t GetSlotsAddress() {
-    ScopedGuard guard(lock_);
-    return reinterpret_cast<uintptr_t>(slots_.data());
+  template <size_t QuarantineCapacityCount>
+  LightweightQuarantineBranch<QuarantineCapacityCount> CreateBranch(
+      bool lock_required = true) {
+    return LightweightQuarantineBranch<QuarantineCapacityCount>(*this,
+                                                                lock_required);
   }
 
-  // Returns an `Entry` associated with the id.
-  // May return `nullptr` if it is overwritten by another entry. This can rarely
-  // return wrong entry if the id is colliding with another entry.
-  // Not thread-safe, use only in crash handling or in tests.
-  static const Entry* GetEntryByID(uintptr_t slots_address, uint32_t entry_id) {
-    const auto* slots = reinterpret_cast<Slot*>(slots_address);
-    const auto& slot = slots[entry_id & kSlotIndexMask];
-    if (slot.entry_id != entry_id) {
-      return nullptr;
-    }
-    return &slot.entry;
+  void AccumulateStats(LightweightQuarantineStats& stats) const {
+    stats.count += count_.load(std::memory_order_relaxed);
+    stats.size_in_bytes += size_in_bytes_.load(std::memory_order_relaxed);
+    stats.cumulative_count += cumulative_count_.load(std::memory_order_relaxed);
+    stats.cumulative_size_in_bytes +=
+        cumulative_size_in_bytes_.load(std::memory_order_relaxed);
+    stats.quarantine_miss_count +=
+        quarantine_miss_count_.load(std::memory_order_relaxed);
   }
 
   size_t GetCapacityInBytes() const {
     return capacity_in_bytes_.load(std::memory_order_relaxed);
   }
-  void SetCapacityInBytesForTesting(size_t capacity_in_bytes) {
-    capacity_in_bytes_.store(capacity_in_bytes, std::memory_order_relaxed);
-    // Purge to maintain invariant.
-    Purge();
+  void SetCapacityInBytesForTesting(size_t capacity) {
+    capacity_in_bytes_.store(capacity, std::memory_order_relaxed);
+    // `size_in_bytes` may exceed `capacity_in_bytes` here.
+    // Each branch will try to shrink their quarantine later.
   }
 
  private:
-  Lock lock_;
-  // Not `PA_GUARDED_BY` as they have another lock.
-  PartitionRoot* const root_;
+  PartitionRoot& allocator_root_;
   std::atomic_size_t capacity_in_bytes_;
+
+  // Number of quarantined entries.
+  std::atomic_size_t count_ = 0;
+  // Total size of quarantined entries, capped by `capacity_in_bytes`.
+  std::atomic_size_t size_in_bytes_ = 0;
+
+  // Stats.
+  std::atomic_size_t cumulative_count_ = 0;
+  std::atomic_size_t cumulative_size_in_bytes_ = 0;
+  std::atomic_size_t quarantine_miss_count_ = 0;
+
+  template <size_t>
+  friend class LightweightQuarantineBranch;
+};
+
+template <size_t QuarantineCapacityCount>
+class LightweightQuarantineBranch {
+ public:
+  // `QuarantineCapacityCount` must be a positive number.
+  static constexpr uint32_t kQuarantineCapacityCount = QuarantineCapacityCount;
+  static_assert(0 < QuarantineCapacityCount);
+
+  using Root = LightweightQuarantineRoot;
+
+  LightweightQuarantineBranch(const LightweightQuarantineBranch&) = delete;
+  LightweightQuarantineBranch(LightweightQuarantineBranch&& b)
+      : root_(b.root_),
+        lock_required_(b.lock_required_),
+        slots_(std::move(b.slots_)),
+        branch_count_(b.branch_count_),
+        branch_size_in_bytes_(b.branch_size_in_bytes_) {}
+  ~LightweightQuarantineBranch() { Purge(); }
+
+  // Quarantines an object. This list holds information you put into `entry`
+  // as much as possible.  If the object is too large, this may return
+  // `false`, meaning that quarantine request has failed (and freed
+  // immediately). Otherwise, returns `true`.
+  bool Quarantine(void* object);
+
+  // Dequarantine all entries **held by this branch**.
+  // It is possible that another branch with entries and it remains untouched.
+  void Purge() {
+    ConditionalScopedGuard guard(lock_required_, lock_);
+    PurgeInternal(0, 0);
+  }
+
+  // Determines this list contains an object.
+  bool IsQuarantinedForTesting(void* object) {
+    ConditionalScopedGuard guard(lock_required_, lock_);
+    for (size_t i = 0; i < branch_count_; i++) {
+      if (slots_[i] == object) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  Root& GetRoot() { return root_; }
+
+ private:
+  explicit LightweightQuarantineBranch(Root& root, bool lock_required)
+      : root_(root), lock_required_(lock_required) {}
+
+  // Try to dequarantine entries to satisfy below:
+  //   branch_count_ <= target_branch_count
+  //   && root_.size_in_bytes_ <=  target_size_in_bytes
+  // It is possible that this branch cannot satisfy the
+  // request as it has control over only what it has. If you need to ensure the
+  // constraint, call `Purge()` for each branch in sequence, synchronously.
+  void PurgeInternal(size_t target_branch_count, size_t target_size_in_bytes)
+      PA_EXCLUSIVE_LOCKS_REQUIRED(lock_);
+
+  Root& root_;
+
+  bool lock_required_;
+  Lock lock_;
+
+  // An utility to lock only if a condition is met.
+  class PA_SCOPED_LOCKABLE ConditionalScopedGuard {
+   public:
+    explicit ConditionalScopedGuard(bool condition, Lock& lock)
+        PA_EXCLUSIVE_LOCK_FUNCTION(lock)
+        : condition_(condition), lock_(lock) {
+      if (condition_) {
+        lock_.Acquire();
+      }
+    }
+    ~ConditionalScopedGuard() PA_UNLOCK_FUNCTION() {
+      if (condition_) {
+        lock_.Release();
+      }
+    }
+
+   private:
+    const bool condition_;
+    Lock& lock_;
+  };
 
   // Non-cryptographic random number generator.
   // Thread-unsafe so guarded by `lock_`.
@@ -157,32 +195,24 @@ class LightweightQuarantineList {
 
   // `slots_` hold an array of quarantined entries.
   // The contents of empty slots are undefined and reads should not occur.
-  // There is no guarantee that non-empty slots will be placed consecutively.
-  std::array<Slot, kCapacityCount> slots_ PA_GUARDED_BY(lock_);
+  // First `branch_count_` slots are used and entries should be shuffled.
+  std::array<void*, kQuarantineCapacityCount> slots_ PA_GUARDED_BY(lock_);
 
-  // Number of quarantined entries, capped by `kCapacityCount`.
-  std::atomic_size_t count_ = 0;
-  // Total size of quarantined entries, capped by `capacity_in_bytes_`.
-  std::atomic_size_t size_in_bytes_ = 0;
-  // `entry_ids_` is a supplementary data store to access slots quickly.
-  // Its first `count_` elements represents quarantined entry ids and
-  // used to choose an entry to dequarantine quickly.
-  // The other elements reperent empty slot indices to find an empty slot to
-  // fill in quickly. All elements are also responsible for managing upper bits
-  // of entry ids so that they are as unique as possible.
-  std::array<uint32_t, kCapacityCount> entry_ids_ PA_GUARDED_BY(lock_);
+  // # of quarantined entries in this branch.
+  size_t branch_count_ PA_GUARDED_BY(lock_) = 0;
+  size_t branch_size_in_bytes_ PA_GUARDED_BY(lock_) = 0;
 
-  // Stats.
-  std::atomic_size_t cumulative_count_ = 0;
-  std::atomic_size_t cumulative_size_in_bytes_ = 0;
-  std::atomic_size_t quarantine_miss_count_ = 0;
+  friend class LightweightQuarantineRoot;
 };
 
-using SchedulerLoopQuarantine =
-    LightweightQuarantineList<LightweightQuarantineEntry, 1024>;
-extern template class PA_EXPORT_TEMPLATE_DECLARE(
-    PA_COMPONENT_EXPORT(PARTITION_ALLOC))
-    LightweightQuarantineList<LightweightQuarantineEntry, 1024>;
+#define EXPORT_TEMPLATE                             \
+  extern template class PA_EXPORT_TEMPLATE_DECLARE( \
+      PA_COMPONENT_EXPORT(PARTITION_ALLOC))
+using LightweightQuarantineBranchForTesting = LightweightQuarantineBranch<1024>;
+using SchedulerLoopQuarantineRoot = LightweightQuarantineRoot;
+using SchedulerLoopQuarantineBranch = LightweightQuarantineBranch<1024>;
+EXPORT_TEMPLATE LightweightQuarantineBranch<1024>;
+#undef EXPORT_TEMPLATE
 
 }  // namespace internal
 

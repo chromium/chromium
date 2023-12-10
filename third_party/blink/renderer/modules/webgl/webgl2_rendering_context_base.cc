@@ -4718,7 +4718,9 @@ void WebGL2RenderingContextBase::transformFeedbackVaryings(
   PointableStringArray varying_strings(varyings);
 
   program->SetRequiredTransformFeedbackBufferCount(
-      buffer_mode == GL_INTERLEAVED_ATTRIBS ? 1 : varyings.size());
+      buffer_mode == GL_INTERLEAVED_ATTRIBS
+          ? std::min(static_cast<wtf_size_t>(1), varyings.size())
+          : varyings.size());
 
   ContextGL()->TransformFeedbackVaryings(ObjectOrZero(program), varyings.size(),
                                          varying_strings.data(), buffer_mode);

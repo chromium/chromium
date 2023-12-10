@@ -6,9 +6,7 @@ package org.chromium.chrome.browser.feed;
 
 import org.chromium.base.metrics.RecordHistogram;
 
-/**
- * Records UMA stats for the actions that the user takes on the feed in the NTP.
- */
+/** Records UMA stats for the actions that the user takes on the feed in the NTP. */
 public class FeedUma {
     // Possible actions taken by the user to control the feed. These values are also defined in
     // enums.xml as FeedControlsActions.

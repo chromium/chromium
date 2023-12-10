@@ -81,11 +81,7 @@ ElementFragmentAnchor* ElementFragmentAnchor::TryCreate(const KURL& url,
     return nullptr;
 
   HTMLDetailsElement::ExpandDetailsAncestors(*anchor_node);
-
-  if (RuntimeEnabledFeatures::BeforeMatchEventEnabled(
-          frame.GetDocument()->GetExecutionContext())) {
-    DisplayLockUtilities::RevealHiddenUntilFoundAncestors(*anchor_node);
-  }
+  DisplayLockUtilities::RevealHiddenUntilFoundAncestors(*anchor_node);
 
   return MakeGarbageCollected<ElementFragmentAnchor>(*anchor_node, frame);
 }

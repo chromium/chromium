@@ -64,6 +64,10 @@ struct ContentSettingPatternSource {
   bool incognito;
 };
 
+// Formatter method for Google Test.
+std::ostream& operator<<(std::ostream& os,
+                         const ContentSettingPatternSource& source);
+
 typedef std::vector<ContentSettingPatternSource> ContentSettingsForOneType;
 
 struct RendererContentSettingRules {

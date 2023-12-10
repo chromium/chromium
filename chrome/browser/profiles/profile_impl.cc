@@ -398,6 +398,9 @@ void ProfileImpl::RegisterProfilePrefs(
 #if BUILDFLAG(ENABLE_PRINTING)
   registry->RegisterBooleanPref(prefs::kPrintingEnabled, true);
 #endif  // BUILDFLAG(ENABLE_PRINTING)
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
+  registry->RegisterBooleanPref(prefs::kOopPrintDriversAllowedByPolicy, true);
+#endif
   registry->RegisterBooleanPref(prefs::kPrintPreviewDisabled, false);
   registry->RegisterStringPref(
       prefs::kPrintPreviewDefaultDestinationSelectionRules, std::string());
@@ -1114,7 +1117,7 @@ void ProfileImpl::OnLocaleReady(CreateMode create_mode) {
   TRACE_EVENT0("browser", "ProfileImpl::OnLocaleReady");
 
   // Migrate obsolete prefs.
-  MigrateObsoleteProfilePrefs(GetPrefs());
+  MigrateObsoleteProfilePrefs(GetPrefs(), GetPath());
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   // Note: Extension preferences can be keyed off the extension ID, so need to
   // be handled specially (rather than directly as part of

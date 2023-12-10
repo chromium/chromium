@@ -179,12 +179,9 @@ EGLConfig ChooseConfig(EGLDisplay display,
   }
   renderable_types.push_back(EGL_OPENGL_ES2_BIT);
 
-  EGLint buffer_size = format.GetBufferSize();
   EGLint alpha_size = 8;
-  bool want_rgb565 = buffer_size == 16;
-  EGLint depth_size = format.GetDepthBits();
-  EGLint stencil_size = format.GetStencilBits();
-  EGLint samples = format.GetSamples();
+  bool want_rgb565 = format.IsRGB565();
+  EGLint buffer_size = want_rgb565 ? 16 : 32;
 
   // Some platforms (eg. X11) may want to set custom values for alpha and buffer
   // sizes.
@@ -207,12 +204,6 @@ EGLConfig ChooseConfig(EGLDisplay display,
                                     8,
                                     EGL_RED_SIZE,
                                     8,
-                                    EGL_SAMPLES,
-                                    samples,
-                                    EGL_DEPTH_SIZE,
-                                    depth_size,
-                                    EGL_STENCIL_SIZE,
-                                    stencil_size,
                                     EGL_RENDERABLE_TYPE,
                                     renderable_type,
                                     EGL_SURFACE_TYPE,
@@ -227,12 +218,6 @@ EGLConfig ChooseConfig(EGLDisplay display,
                                    6,
                                    EGL_RED_SIZE,
                                    5,
-                                   EGL_SAMPLES,
-                                   samples,
-                                   EGL_DEPTH_SIZE,
-                                   depth_size,
-                                   EGL_STENCIL_SIZE,
-                                   stencil_size,
                                    EGL_RENDERABLE_TYPE,
                                    renderable_type,
                                    EGL_SURFACE_TYPE,

@@ -75,7 +75,7 @@ class ClientUsageTracker : public SpecialStoragePolicy::Observer {
   // reduction in quota usage. Negative `delta` values are clamped to ensure the
   // total cached usage never goes below zero (crbug.com/463729).
   void UpdateBucketUsageCache(const BucketLocator& bucket,
-                              absl::optional<int64_t> delta);
+                              std::optional<int64_t> delta);
 
   // Deletes `bucket` from the cache if it exists. Called either for bucket
   // deletion or disabling cache for `bucket`'s Storage Key.

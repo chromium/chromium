@@ -7,9 +7,9 @@
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_view.h"
 
 #import "base/test/task_environment.h"
-#import "ios/chrome/browser/ntp/set_up_list.h"
-#import "ios/chrome/browser/ntp/set_up_list_item.h"
-#import "ios/chrome/browser/ntp/set_up_list_item_type.h"
+#import "ios/chrome/browser/ntp/model/set_up_list.h"
+#import "ios/chrome/browser/ntp/model/set_up_list_item.h"
+#import "ios/chrome/browser/ntp/model/set_up_list_item_type.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_item_view+private.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_item_view.h"

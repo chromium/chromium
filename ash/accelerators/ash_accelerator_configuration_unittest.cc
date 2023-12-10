@@ -104,11 +104,11 @@ void SetOverridePref(const ui::Accelerator& accelerator,
 
 AcceleratorModificationData ValueToAcceleratorModificationData(
     const base::Value::Dict& value) {
-  absl::optional<int> keycode = value.FindInt(kAcceleratorKeyCodeKey);
-  absl::optional<int> modifier = value.FindInt(kAcceleratorModifiersKey);
-  absl::optional<int> modification_action =
+  std::optional<int> keycode = value.FindInt(kAcceleratorKeyCodeKey);
+  std::optional<int> modifier = value.FindInt(kAcceleratorModifiersKey);
+  std::optional<int> modification_action =
       value.FindInt(kAcceleratorModificationActionKey);
-  absl::optional<int> key_state = value.FindInt(kAcceleratorKeyStateKey);
+  std::optional<int> key_state = value.FindInt(kAcceleratorKeyStateKey);
   CHECK(keycode.has_value());
   CHECK(modifier.has_value());
   CHECK(modification_action.has_value());
@@ -385,7 +385,7 @@ TEST_F(AshAcceleratorConfigurationTest, IsDefaultAccelerator) {
   // AcceleratorAction::kToggleMirrorMode.
   ui::Accelerator expected_default =
       ui::Accelerator(ui::VKEY_ZOOM, ui::EF_CONTROL_DOWN);
-  absl::optional<AcceleratorAction> accelerator_id =
+  std::optional<AcceleratorAction> accelerator_id =
       config_->GetIdForDefaultAccelerator(expected_default);
   EXPECT_TRUE(accelerator_id.has_value());
   EXPECT_EQ(AcceleratorAction::kToggleMirrorMode, accelerator_id.value());
@@ -426,7 +426,7 @@ TEST_F(AshAcceleratorConfigurationTest, MultipleDefaultAccelerators) {
   ui::Accelerator expected_default_2 =
       ui::Accelerator(ui::VKEY_ZOOM, ui::EF_ALT_DOWN);
 
-  absl::optional<AcceleratorAction> accelerator_id =
+  std::optional<AcceleratorAction> accelerator_id =
       config_->GetIdForDefaultAccelerator(expected_default);
   EXPECT_TRUE(accelerator_id.has_value());
   EXPECT_EQ(AcceleratorAction::kToggleMirrorMode, accelerator_id.value());
@@ -465,7 +465,7 @@ TEST_F(AshAcceleratorConfigurationTest, DefaultNotFound) {
   // Verify that Ctrl + U is not a default accelerator in this test set.
   ui::Accelerator fake_default =
       ui::Accelerator(ui::VKEY_U, ui::EF_CONTROL_DOWN);
-  absl::optional<AcceleratorAction> accelerator_id =
+  std::optional<AcceleratorAction> accelerator_id =
       config_->GetIdForDefaultAccelerator(fake_default);
   EXPECT_FALSE(accelerator_id.has_value());
 }

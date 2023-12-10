@@ -5,9 +5,9 @@
 #include "components/autofill/core/browser/autofill_driver_router.h"
 
 #include <algorithm>
+#include <functional>
 
 #include "base/containers/contains.h"
-#include "base/functional/invoke.h"
 #include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/form_forest.h"
@@ -25,7 +25,7 @@ void ForEachFrame(internal::FormForest& form_forest, UnaryFunction fun) {
   for (const std::unique_ptr<internal::FormForest::FrameData>& some_frame :
        form_forest.frame_datas()) {
     if (some_frame->driver) {
-      base::invoke(fun, some_frame->driver);
+      std::invoke(fun, some_frame->driver);
     }
   }
 }
@@ -418,7 +418,8 @@ std::vector<FieldGlobalId> AutofillDriverRouter::ApplyFormAction(
     void (*callback)(AutofillDriver* target,
                      mojom::ActionType action_type,
                      mojom::ActionPersistence action_persistence,
-                     const FormData& form)) {
+                     FormRendererId form_renderer_id,
+                     const std::vector<FormFieldData>& fields)) {
   // Since Undo only affects fields that were already filled, and only sets
   // values to fields to something that already existed in it prior to the
   // filling, it is okay to bypass the filling security checks and hence passing
@@ -431,7 +432,8 @@ std::vector<FieldGlobalId> AutofillDriverRouter::ApplyFormAction(
                                                             &field_type_map));
   for (const FormData& renderer_form : renderer_forms.renderer_forms) {
     if (auto* target = DriverOfFrame(renderer_form.host_frame)) {
-      callback(target, action_type, action_persistence, renderer_form);
+      callback(target, action_type, action_persistence,
+               renderer_form.unique_renderer_id, renderer_form.fields);
     }
   }
   return renderer_forms.safe_fields;

@@ -124,27 +124,6 @@ class SESSIONS_EXPORT SerializedNavigationEntry {
 
   const std::vector<GURL>& redirect_chain() const { return redirect_chain_; }
 
-  // This class is analogous to content::ReplacedNavigationEntryData.
-  // When a history entry is replaced (e.g. history.replaceState()), this
-  // contains some information about the entry prior to being replaced. Even if
-  // an entry is replaced multiple times, it represents data prior to the
-  // *first* replace.
-  struct ReplacedNavigationEntryData {
-    size_t EstimateMemoryUsage() const;
-
-    GURL first_committed_url;
-    base::Time first_timestamp;
-    ui::PageTransition first_transition_type;
-  };
-  const absl::optional<ReplacedNavigationEntryData>& replaced_entry_data()
-      const {
-    return replaced_entry_data_;
-  }
-  void set_replaced_entry_data(
-      const absl::optional<ReplacedNavigationEntryData>& replaced_entry_data) {
-    replaced_entry_data_ = replaced_entry_data;
-  }
-
   bool is_restored() const { return is_restored_; }
   void set_is_restored(bool is_restored) { is_restored_ = is_restored; }
 
@@ -193,8 +172,6 @@ class SESSIONS_EXPORT SerializedNavigationEntry {
   int http_status_code_ = 0;
   bool is_restored_ = false;          // Not persisted.
   std::vector<GURL> redirect_chain_;  // Not persisted.
-  absl::optional<ReplacedNavigationEntryData>
-      replaced_entry_data_;  // Not persisted.
 
   // Additional information.
   BlockedState blocked_state_ = STATE_INVALID;

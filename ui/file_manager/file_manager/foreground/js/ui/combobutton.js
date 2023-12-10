@@ -2,18 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {decorate} from '../../../common/js/ui.js';
-import {MenuItem} from './menu_item.js';
+import {decorate} from '../../../common/js/cr_ui.js';
 
 import {FilesMenuItem} from './files_menu.js';
+import {MenuItem} from './menu_item.js';
 import {MultiMenuButton} from './multi_menu_button.js';
+
 
 /**
  * @fileoverview This implements a combobutton control.
  */
-  /**
-   * Creates a new combo button element.
-   */
+/**
+ * Creates a new combo button element.
+ */
 // @ts-ignore: error TS2415: Class 'ComboButton' incorrectly extends base class
 // 'MultiMenuButton'.
 export class ComboButton extends MultiMenuButton {
@@ -84,9 +85,6 @@ export class ComboButton extends MultiMenuButton {
       // on type 'MenuItem'.
       menuitem.iconStartFileType = item.iconType;
     }
-    if (item.bold) {
-      menuitem.style.fontWeight = 'bold';
-    }
     menuitem.toggleAttribute('disabled', !!item.isDlpBlocked);
     return menuitem;
   }
@@ -144,6 +142,7 @@ export class ComboButton extends MultiMenuButton {
    * @param {!Element} el Element to be decorated.
    * @return {!ComboButton} Decorated element.
    * @public
+   * @override
    */
   static decorate(el) {
     // Add the ComboButton methods to the element we're
@@ -207,6 +206,7 @@ export class ComboButton extends MultiMenuButton {
 
   /**
    * Initializes the element.
+   * @override
    */
   decorate() {
     // @ts-ignore: error TS2339: Property 'decorate' does not exist on type

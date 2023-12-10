@@ -50,6 +50,7 @@
 #include "ui/accessibility/ax_tree_id.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/display/manager/display_manager.h"
+#include "ui/display/screen.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/image/image_skia.h"
@@ -213,8 +214,8 @@ void HandleToggleTouchscreen() {
 }
 
 void HandleToggleTabletMode() {
-  TabletModeController* controller = Shell::Get()->tablet_mode_controller();
-  controller->SetEnabledForDev(!controller->InTabletMode());
+  Shell::Get()->tablet_mode_controller()->SetEnabledForDev(
+      !display::Screen::GetScreen()->InTabletMode());
 }
 
 void HandleToggleVideoConferenceCameraTrayIcon() {

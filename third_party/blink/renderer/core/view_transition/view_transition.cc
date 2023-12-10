@@ -44,6 +44,24 @@ uint32_t NextDocumentTag() {
   return next_document_tag++;
 }
 
+absl::optional<Vector<String>> FilterTypes(
+    const absl::optional<Vector<String>>& types) {
+  absl::optional<Vector<String>> result;
+  if (!types) {
+    return result;
+  }
+
+  result.emplace();
+  for (const auto& type : *types) {
+    String lower = type.LowerASCII();
+    if (lower == "none" || lower.StartsWith("-ua-")) {
+      continue;
+    }
+    result->push_back(type);
+  }
+  return result;
+}
+
 }  // namespace
 
 ViewTransition::ScopedPauseRendering::ScopedPauseRendering(
@@ -134,7 +152,7 @@ ViewTransition::ViewTransition(PassKey,
           *document->GetExecutionContext(),
           *this,
           update_dom_callback)),
-      types_(types) {
+      types_(FilterTypes(types)) {
   CHECK(RuntimeEnabledFeatures::ViewTransitionTypesEnabled() || !types_);
   if (auto* originating_element = document_->documentElement()) {
     originating_element->ActiveViewTransitionStateChanged();
@@ -874,10 +892,10 @@ void ViewTransition::ResumeRendering() {
 }
 
 void ViewTransition::ActivateFromSnapshot() {
+  CHECK(IsForNavigationOnNewDocument());
+
   if (state_ != State::kWaitForRenderBlock)
     return;
-
-  CHECK(IsForNavigationOnNewDocument());
 
   // This function implies that rendering has started. If we were waiting
   // for render-blocking resources to be loaded, they must have been fetched (or

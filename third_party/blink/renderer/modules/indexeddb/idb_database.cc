@@ -107,11 +107,6 @@ IDBDatabase::IDBDatabase(
                            context->GetTaskRunner(TaskType::kDatabaseAccess));
 }
 
-IDBDatabase::~IDBDatabase() {
-  if (!close_pending_ && backend_)
-    backend_->Close();
-}
-
 void IDBDatabase::Trace(Visitor* visitor) const {
   visitor->Trace(version_change_transaction_);
   visitor->Trace(transactions_);
@@ -426,7 +421,6 @@ void IDBDatabase::CloseConnection() {
   DCHECK(transactions_.empty());
 
   if (backend_) {
-    backend_->Close();
     backend_.reset();
   }
 
@@ -520,7 +514,6 @@ void IDBDatabase::ContextDestroyed() {
   // normal close() since that may wait on transactions which require a
   // round trip to the back-end to abort.
   if (backend_) {
-    backend_->Close();
     backend_.reset();
   }
 

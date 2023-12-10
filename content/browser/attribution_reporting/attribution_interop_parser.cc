@@ -180,9 +180,12 @@ class AttributionInteropParser {
     return output;
   }
 
-  [[nodiscard]] std::string ParseConfig(const base::Value::Dict& dict,
-                                        AttributionConfig& config,
-                                        bool required) && {
+  [[nodiscard]] std::string ParseConfig(
+      const base::Value::Dict& dict,
+      AttributionInteropConfig& interop_config,
+      bool required) && {
+    AttributionConfig& config = interop_config.attribution_config;
+
     ParseInt(dict, "max_sources_per_origin", config.max_sources_per_origin,
              required);
 
@@ -235,7 +238,7 @@ class AttributionInteropParser {
     ParseInt(dict, "max_event_level_reports_per_destination",
              config.event_level_limit.max_reports_per_destination, required);
     ParseDouble(dict, "randomized_response_epsilon",
-                config.event_level_limit.randomized_response_epsilon, required);
+                interop_config.max_event_level_epsilon, required);
     ParseInt(dict, "max_aggregatable_reports_per_destination",
              config.aggregate_limit.max_reports_per_destination, required);
 
@@ -696,9 +699,9 @@ ParseAttributionInteropInput(base::Value::Dict input,
   return AttributionInteropParser(offset_time).ParseInput(std::move(input));
 }
 
-base::expected<AttributionConfig, std::string> ParseAttributionConfig(
-    const base::Value::Dict& dict) {
-  AttributionConfig config;
+base::expected<AttributionInteropConfig, std::string>
+ParseAttributionInteropConfig(const base::Value::Dict& dict) {
+  AttributionInteropConfig config;
   std::string error =
       AttributionInteropParser().ParseConfig(dict, config, /*required=*/true);
   if (!error.empty()) {
@@ -707,8 +710,8 @@ base::expected<AttributionConfig, std::string> ParseAttributionConfig(
   return config;
 }
 
-std::string MergeAttributionConfig(const base::Value::Dict& dict,
-                                   AttributionConfig& config) {
+std::string MergeAttributionInteropConfig(const base::Value::Dict& dict,
+                                          AttributionInteropConfig& config) {
   return AttributionInteropParser().ParseConfig(dict, config,
                                                 /*required=*/false);
 }
@@ -786,20 +789,6 @@ AttributionInteropOutput::Report& AttributionInteropOutput::Report::operator=(
   url = other.url;
   payload = other.payload.Clone();
   return *this;
-}
-
-// TODO(apaseltiner): The payload comparison here is too brittle. Reports can
-// be logically equivalent without having exactly the same JSON structure.
-bool operator==(const AttributionInteropOutput::Report& a,
-                const AttributionInteropOutput::Report& b) {
-  return a.time == b.time &&  //
-         a.url == b.url &&    //
-         a.payload == b.payload;
-}
-
-bool operator==(const AttributionInteropOutput::UnparsableRegistration& a,
-                const AttributionInteropOutput::UnparsableRegistration& b) {
-  return a.time == b.time && a.type == b.type;
 }
 
 std::ostream& operator<<(std::ostream& out,

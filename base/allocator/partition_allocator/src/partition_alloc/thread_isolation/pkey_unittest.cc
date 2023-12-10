@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/allocator/partition_allocator/src/partition_alloc/address_pool_manager.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_constants.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_root.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/thread_isolation/thread_isolation.h"
+#include "partition_alloc/address_pool_manager.h"
+#include "partition_alloc/partition_alloc_buildflags.h"
+#include "partition_alloc/partition_alloc_constants.h"
+#include "partition_alloc/partition_root.h"
+#include "partition_alloc/thread_isolation/thread_isolation.h"
 
 #if BUILDFLAG(ENABLE_PKEYS)
 
@@ -14,13 +14,13 @@
 #include <sys/mman.h>
 #include <sys/syscall.h>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/address_space_stats.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/page_allocator.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/page_allocator_constants.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/no_destructor.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_forward.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/thread_isolation/pkey.h"
+#include "partition_alloc/address_space_stats.h"
+#include "partition_alloc/page_allocator.h"
+#include "partition_alloc/page_allocator_constants.h"
+#include "partition_alloc/partition_alloc.h"
+#include "partition_alloc/partition_alloc_base/no_destructor.h"
+#include "partition_alloc/partition_alloc_forward.h"
+#include "partition_alloc/thread_isolation/pkey.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #define ISOLATED_FUNCTION extern "C" __attribute__((used))
@@ -111,10 +111,12 @@ class PkeyTest : public testing::Test {
     }
     isolated_globals.pkey = pkey;
 
-    isolated_globals.allocator->init(PartitionOptions{
-        .aligned_alloc = PartitionOptions::kAllowed,
-        .thread_isolation = ThreadIsolationOption(isolated_globals.pkey),
-    });
+    isolated_globals.allocator->init([]() {
+      partition_alloc::PartitionOptions opts;
+      opts.aligned_alloc = PartitionOptions::kAllowed;
+      opts.thread_isolation = ThreadIsolationOption(isolated_globals.pkey);
+      return opts;
+    }());
 
     InitializeIsolatedThread();
 

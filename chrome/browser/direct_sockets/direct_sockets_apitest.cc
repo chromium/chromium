@@ -13,6 +13,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_base.h"
@@ -23,6 +24,7 @@
 #include "net/base/host_port_pair.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "services/network/public/mojom/network_context.mojom.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/extensions/extension_apitest.h"
@@ -70,14 +72,14 @@ class TestServer {
  public:
   virtual ~TestServer() = default;
 
-  virtual void Start() = 0;
+  virtual void Start(network::mojom::NetworkContext* network_context) = 0;
   virtual void Stop() = 0;
   virtual uint16_t port() const = 0;
 };
 
 class TcpHttpTestServer : public TestServer {
  public:
-  void Start() override {
+  void Start(network::mojom::NetworkContext* network_context) override {
     DCHECK(!test_server_);
     test_server_ = std::make_unique<net::EmbeddedTestServer>(
         net::EmbeddedTestServer::TYPE_HTTP);
@@ -98,11 +100,11 @@ class TcpHttpTestServer : public TestServer {
 
 class UdpEchoTestServer : public TestServer {
  public:
-  void Start() override {
+  void Start(network::mojom::NetworkContext* network_context) override {
     DCHECK(!udp_echo_server_);
     udp_echo_server_ = std::make_unique<extensions::TestUdpEchoServer>();
     net::HostPortPair host_port_pair;
-    ASSERT_TRUE(udp_echo_server_->Start(&host_port_pair));
+    ASSERT_TRUE(udp_echo_server_->Start(network_context, &host_port_pair));
 
     port_ = host_port_pair.port();
     ASSERT_GT(*port_, 0);
@@ -122,7 +124,7 @@ class UdpEchoTestServer : public TestServer {
 
 template <typename TestHarness,
           typename = std::enable_if_t<
-              std::is_base_of_v<content::BrowserTestBase, TestHarness>>>
+              std::is_base_of_v<InProcessBrowserTest, TestHarness>>>
 class ChromeDirectSocketsTest : public TestHarness {
  public:
   ChromeDirectSocketsTest() = delete;
@@ -130,7 +132,10 @@ class ChromeDirectSocketsTest : public TestHarness {
   void SetUpOnMainThread() override {
     TestHarness::SetUpOnMainThread();
     TestHarness::host_resolver()->AddRule(kHostname, "127.0.0.1");
-    test_server()->Start();
+    test_server()->Start(InProcessBrowserTest::browser()
+                             ->profile()
+                             ->GetDefaultStoragePartition()
+                             ->GetNetworkContext());
   }
 
   void TearDownOnMainThread() override {

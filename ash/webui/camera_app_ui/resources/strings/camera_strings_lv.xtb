@@ -5,7 +5,6 @@
 <translation id="1076394037877376434">Dzēst <ph name="PAGE_NUMBER" />. lapu</translation>
 <translation id="1113173431709655881">Kameras režīms</translation>
 <translation id="1153190633558910465">Režģis izslēgts</translation>
-<translation id="1175958423215084756">Konstatēta saite. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213"><ph name="PAGE_NUMBER" />. lapa ir izdzēsta</translation>
 <translation id="1258009455399840361">Pagriezt par 90 grādiem pulksteņrādītāja kustības virzienā</translation>
 <translation id="1417314334557041815">Rediģēt <ph name="INDEX" />. lapu</translation>
@@ -60,14 +59,12 @@
 <translation id="3642192109456033823">Notiek videoklipa apstrāde…</translation>
 <translation id="3789724198583203151">Pagriezt par 90 grādiem pretēji pulksteņrādītāju kustības virzienam</translation>
 <translation id="3810838688059735925">Video</translation>
-<translation id="3892148308691398805">Kopēt tekstu</translation>
 <translation id="4060608699153044055">Nevar veikt ierakstīšanu, jo ierīces krātuvē ir maz brīvas vietas. Lai varētu sākt ierakstīšanu, ierīcē ir jāatbrīvo vieta.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
 <translation id="4118525110028899586">Pārtraukt ierakstīšanu</translation>
 <translation id="4121305183798804752">Konstatēts dokuments</translation>
 <translation id="414641094616694804">Šai kamerai nevar mainīt izšķirtspēju</translation>
 <translation id="4176463684765177261">Atspējota</translation>
-<translation id="4269820728363426813">Kopēt saites adresi</translation>
 <translation id="428234092390943511">Lapas sīktēls</translation>
 <translation id="4349714250734879769">Mērogot ietvarus atbilstoši pārlūkam Chrome</translation>
 <translation id="4383571725254449280">Drukāt veiktspējas žurnālus</translation>
@@ -144,7 +141,6 @@ Ja atsauksme ir par attēlu vai videoklipu kvalitāti, lūdzu, pievienojiet foto
 <translation id="7726641833034062494">Ierakstīt parastu videoklipu</translation>
 <translation id="7748344063862150053">Dokumenta augšējais labais stūris</translation>
 <translation id="7933675232020478311">Pārvietojas uz leju un pa labi</translation>
-<translation id="7983668134180549431">Konstatēts teksts.</translation>
 <translation id="8079255378695216066">Nevar sākt ierakstīšanu</translation>
 <translation id="8120146556401698679">Pārvietot/noliekt/tālummainīt</translation>
 <translation id="8131740175452115882">Apstiprināt</translation>
@@ -163,6 +159,7 @@ Ja atsauksme ir par attēlu vai videoklipu kvalitāti, lūdzu, pievienojiet foto
 <translation id="8870695351537079478">Nevar sākt ierakstīšanu</translation>
 <translation id="8880167521484863515">četri pret trīs</translation>
 <translation id="8903921497873541725">Tuvināt</translation>
+<translation id="8926890870105777777">Pievienojieties tīklam “<ph name="WIFINAME" />”</translation>
 <translation id="9045010116236796332">Novietojiet visas dokumenta malas kadrā.</translation>
 <translation id="9045155556724273246">10 sekundes</translation>
 <translation id="906331135292332864">Notiek attēla apstrāde…</translation>

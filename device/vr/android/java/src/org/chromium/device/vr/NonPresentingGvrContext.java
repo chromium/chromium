@@ -36,13 +36,14 @@ public class NonPresentingGvrContext {
         Display display = DisplayAndroidManager.getDefaultDisplayForContext(context);
 
         try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
-            mDisplaySynchronizer = new DisplaySynchronizer(context, display) {
-                @Override
-                public void onConfigurationChanged() {
-                    super.onConfigurationChanged();
-                    onDisplayConfigurationChanged();
-                }
-            };
+            mDisplaySynchronizer =
+                    new DisplaySynchronizer(context, display) {
+                        @Override
+                        public void onConfigurationChanged() {
+                            super.onConfigurationChanged();
+                            onDisplayConfigurationChanged();
+                        }
+                    };
         }
 
         // Creating the GvrApi can sometimes create the Daydream config file.

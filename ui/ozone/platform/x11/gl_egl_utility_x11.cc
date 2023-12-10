@@ -4,7 +4,6 @@
 
 #include "ui/ozone/platform/x11/gl_egl_utility_x11.h"
 
-#include "ui/base/x/visual_picker_glx.h"
 #include "ui/base/x/x11_gl_egl_utility.h"
 #include "ui/base/x/x11_util.h"
 #include "ui/gfx/gpu_extra_info.h"

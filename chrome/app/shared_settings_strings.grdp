@@ -256,6 +256,9 @@
   </message>
 
   <!-- Sync Accounts page (used by the <settings-sync-account-control> element) -->
+  <message name="IDS_SETTINGS_PEOPLE_SIGNED_IN_TO_ACCOUNT" desc="The text displayed to the user that the profile is currently signed in to a specific account.">
+    Signed in to <ph name="EMAIL">$1<ex>abcd@google.com</ex></ph>
+  </message>
   <message name="IDS_SETTINGS_PEOPLE_SYNCING_TO_ACCOUNT" desc="The text displayed to the user that the profile is currently syncing to a specific account.">
     Syncing to <ph name="EMAIL">$1<ex>abcd@google.com</ex></ph>
   </message>

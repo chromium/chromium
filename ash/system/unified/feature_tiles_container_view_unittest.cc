@@ -4,7 +4,6 @@
 
 #include "ash/system/unified/feature_tiles_container_view.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/constants/quick_settings_catalogs.h"
 #include "ash/public/cpp/pagination/pagination_model.h"
 #include "ash/shell.h"
@@ -18,7 +17,6 @@
 #include "ash/test/ash_test_base.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/test/scoped_feature_list.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/test/views_test_utils.h"
@@ -63,10 +61,7 @@ constexpr int kMaxPrimaryTilesPerRow = 2;
 class FeatureTilesContainerViewTest : public AshTestBase,
                                       public views::ViewObserver {
  public:
-  FeatureTilesContainerViewTest() {
-    feature_list_.InitAndEnableFeature(features::kQsRevamp);
-  }
-
+  FeatureTilesContainerViewTest() = default;
   FeatureTilesContainerViewTest(const FeatureTilesContainerViewTest&) = delete;
   FeatureTilesContainerViewTest& operator=(
       const FeatureTilesContainerViewTest&) = delete;
@@ -154,7 +149,6 @@ class FeatureTilesContainerViewTest : public AshTestBase,
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<views::Widget> widget_;
   std::unique_ptr<UnifiedSystemTrayController> tray_controller_;
   scoped_refptr<UnifiedSystemTrayModel> tray_model_;
@@ -492,7 +486,7 @@ TEST_F(FeatureTilesContainerViewTest, PaginationTransition) {
 
   // Page position after the transition ends should be a page offset to the
   // left.
-  int page_offset = kRevampedTrayMenuWidth;
+  int page_offset = kWideTrayMenuWidth;
   gfx::Rect final_bounds =
       gfx::Rect(initial_bounds.x() - page_offset, initial_bounds.y(),
                 initial_bounds.width(), initial_bounds.height());

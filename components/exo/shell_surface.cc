@@ -4,6 +4,8 @@
 
 #include "components/exo/shell_surface.h"
 
+#include <optional>
+
 #include "ash/frame/non_client_frame_view_ash.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/scoped_animation_disabler.h"
@@ -12,17 +14,21 @@
 #include "ash/wm/toplevel_window_event_handler.h"
 #include "ash/wm/window_resizer.h"
 #include "ash/wm/window_state.h"
+#include "base/containers/adapters.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
+#include "cc/layers/deadline_policy.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "components/exo/custom_window_state_delegate.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/exo/window_properties.h"
 #include "components/viz/common/surfaces/local_surface_id.h"
+#include "components/viz/common/surfaces/surface_id.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/cursor_client.h"
 #include "ui/aura/client/screen_position_client.h"
@@ -73,6 +79,7 @@ struct ShellSurface::Config {
          const gfx::Vector2d& origin_offset,
          int resize_component,
          const viz::LocalSurfaceId& viz_surface_id,
+         base::WeakPtr<ui::Layer> old_layer,
          std::unique_ptr<ui::CompositorLock> compositor_lock);
   ~Config() = default;
 
@@ -80,6 +87,7 @@ struct ShellSurface::Config {
   gfx::Vector2d origin_offset;
   int resize_component;
   const viz::LocalSurfaceId viz_surface_id;
+  base::WeakPtr<ui::Layer> old_layer;
   std::unique_ptr<ui::CompositorLock> compositor_lock;
 };
 
@@ -88,11 +96,13 @@ ShellSurface::Config::Config(
     const gfx::Vector2d& origin_offset,
     int resize_component,
     const viz::LocalSurfaceId& viz_surface_id,
+    base::WeakPtr<ui::Layer> old_layer,
     std::unique_ptr<ui::CompositorLock> compositor_lock)
     : serial(serial),
       origin_offset(origin_offset),
       resize_component(resize_component),
       viz_surface_id(viz_surface_id),
+      old_layer(std::move(old_layer)),
       compositor_lock(std::move(compositor_lock)) {}
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -383,6 +393,87 @@ void ShellSurface::OnSetParent(Surface* parent, const gfx::Point& position) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+// SurfaceTreeHost overrides:
+
+void ShellSurface::MaybeActivateSurface() {
+  // Keep `host_window()`'s SurfaceId up to date in case it's queried elsewhere.
+  host_window()->UpdateLocalSurfaceIdFromEmbeddedClient(
+      GetCurrentLocalSurfaceId());
+
+  // `GetCurrentLocalSurfaceId()` may have a newer `child_sequence_number`, b/c
+  // Wayland client changed the surface hierarchy bounds or scale factor. Update
+  // `old_layer` surface range s.t. the range strictly includes
+  // `GetCurrentLocalSurfaceId()`.
+  for (auto& config : pending_configs_) {
+    if (config->old_layer) {
+      UpdateLayerSurfaceRange(config->old_layer.get(),
+                              GetCurrentLocalSurfaceId());
+    }
+  }
+
+  // Before the first CompositorFrame is submitted by SurfaceTreeHost,
+  // `host_window()`'s layer doesn't have a SurfaceId yet, so set it to embed
+  // the upcoming CompositorFrame.
+  if (!host_window()->layer()->GetSurfaceId()) {
+    DCHECK(host_window()->GetLocalSurfaceId().parent_sequence_number() ==
+               GetCurrentLocalSurfaceId().parent_sequence_number() ||
+           !pending_configs_.empty());
+    host_window()->layer()->SetShowSurface(
+        host_window()->GetSurfaceId(), host_window()->bounds().size(),
+        SK_ColorWHITE, cc::DeadlinePolicy::UseDefaultDeadline(),
+        false /* stretch_content_to_fill_bounds */);
+    host_window()->layer()->SetOldestAcceptableFallback(viz::SurfaceId{});
+  }
+
+  UpdateLayerSurfaceRange(host_window()->layer(), GetCurrentLocalSurfaceId());
+}
+
+ui::Layer* ShellSurface::GetCommitTargetLayer() {
+  return const_cast<ui::Layer*>(
+      const_cast<const ShellSurface*>(this)->GetCommitTargetLayer());
+}
+
+const ui::Layer* ShellSurface::GetCommitTargetLayer() const {
+  if (!host_window()->layer()->GetSurfaceId()) {
+    return host_window()->layer();
+  }
+  // `commit_target_layer` is the layer that will have current LSI. The order of
+  // LocalSurfaceId parent_sequence_number is:
+  //   GetCurrentLocalSurfaceId() <= pending_config->old_layer <= old_layer_ <=
+  //   host_window()->layer() <= host_window()
+  //
+  // Search from newest to oldest layers, if no parent_sequence_number matches,
+  // return nullptr, as the `commit_target_layer` is too old and already
+  // destroyed.
+  if (host_window()
+          ->layer()
+          ->GetSurfaceId()
+          ->local_surface_id()
+          .parent_sequence_number() ==
+      GetCurrentLocalSurfaceId().parent_sequence_number()) {
+    return host_window()->layer();
+  }
+
+  if (old_layer_ &&
+      old_layer_->GetSurfaceId()->local_surface_id().parent_sequence_number() ==
+          GetCurrentLocalSurfaceId().parent_sequence_number()) {
+    return old_layer_.get();
+  }
+
+  for (const auto& config : base::Reversed(pending_configs_)) {
+    if (config->old_layer &&
+        config->old_layer->GetSurfaceId()
+                ->local_surface_id()
+                .parent_sequence_number() ==
+            GetCurrentLocalSurfaceId().parent_sequence_number()) {
+      return config->old_layer.get();
+    }
+  }
+
+  return nullptr;
+}
+
+////////////////////////////////////////////////////////////////////////////////
 // ShellSurfaceBase overrides:
 
 void ShellSurface::InitializeWindowState(ash::WindowState* window_state) {
@@ -484,18 +575,32 @@ void ShellSurface::OnWindowBoundsChanged(aura::Window* window,
       return;
     }
 
-    // If size changed then give the client a chance to produce new contents
-    // before origin on screen is changed. Retain the old origin by reverting
-    // the origin delta until the next configure is acknowledged.
     gfx::Vector2d delta = new_bounds.origin() - old_bounds.origin();
     origin_offset_ -= delta;
     pending_origin_offset_accumulator_ += delta;
 
-    UpdateHostWindowOrigin();
+    if (!old_layer_) {
+      // If size changed then give the client a chance to produce new contents
+      // before origin on screen is changed. Retain the old origin by reverting
+      // the origin delta until the next configure is acknowledged.
+      UpdateHostWindowOrigin();
+    } else {
+      // `old_layer_` means the current `host_window()->layer()`'s is cloned
+      // from the `old_layer_`. In this case `host_window()->layer()`'s surface
+      // dependency won't be fulfilled until corresponding configure
+      // acknowledgement.
+      // Synchronize bounds to it, s.t. the fallback surface looks reasonable.
+      // TODO(crbug.com/1251778): Take non-zero origin introduced by geometry or
+      // clipping into account.
+      viz::ScopedSurfaceIdAllocator scoped_suppression =
+          host_window()->GetSurfaceIdAllocator(base::NullCallback());
+      host_window()->layer()->SetBounds(
+          gfx::Rect(GetClientBoundsInScreen(widget_).size()));
+    }
 
     // The shadow size may be updated to match the widget. Change it back
-    // to the shadow content size. Note that this relies on wm::ShadowController
-    // being notified of the change before |this|.
+    // to the shadow content size. Note that this relies on
+    // wm::ShadowController being notified of the change before |this|.
     UpdateShadow();
 
     // A window state change will send a configuration event. Avoid sending
@@ -744,6 +849,18 @@ ShellSurface::CreateNonClientFrameView(views::Widget* widget) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+// ui::LayerOwner::Observer overrides:
+void ShellSurface::OnLayerRecreated(ui::Layer* old_layer) {
+  DCHECK(!old_layer_);
+  // Layer recreation may happen before the first shell_surface commit with
+  // content. Disregard the old_layer in this case as the old_layer can't show
+  // anything.
+  if (old_layer->GetSurfaceId()) {
+    old_layer_ = old_layer->AsWeakPtr();
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////
 // ShellSurface, private:
 
 void ShellSurface::SetParentWindow(aura::Window* new_parent) {
@@ -807,15 +924,18 @@ void ShellSurface::Configure(bool ends_drag) {
 
   if (!configure_callback_.is_null()) {
     if (window_state) {
-      serial = configure_callback_.Run(GetClientBoundsInScreen(widget_),
-                                       window_state->GetStateType(),
-                                       IsResizing(), widget_->IsActive(),
-                                       origin_offset, pending_raster_scale_);
+      auto restore_state_type = std::optional<chromeos::WindowStateType>{
+          window_state->GetRestoreWindowState()};
+      serial = configure_callback_.Run(
+          GetClientBoundsInScreen(widget_), window_state->GetStateType(),
+          IsResizing(), widget_->IsActive(), origin_offset,
+          pending_raster_scale_, restore_state_type);
     } else {
       auto state = chromeos::ToWindowStateType(initial_show_state_);
       gfx::Rect bounds = GetInitialBoundsForState(state);
-      serial = configure_callback_.Run(bounds, state, false, false,
-                                       origin_offset, pending_raster_scale_);
+      serial =
+          configure_callback_.Run(bounds, state, false, false, origin_offset,
+                                  pending_raster_scale_, std::nullopt);
     }
   }
 
@@ -825,15 +945,23 @@ void ShellSurface::Configure(bool ends_drag) {
     return;
   }
 
+  if (widget_ && host_window()->GetLocalSurfaceId().parent_sequence_number() !=
+                     GetCurrentLocalSurfaceId().parent_sequence_number()) {
+    host_window()->layer()->SetShowSurface(
+        host_window()->GetSurfaceId(), GetClientBoundsInScreen(widget_).size(),
+        SK_ColorWHITE, cc::DeadlinePolicy::UseDefaultDeadline(),
+        /*stretch_content_to_fill_bounds=*/true);
+    host_window()->layer()->SetOldestAcceptableFallback(GetSurfaceId());
+  }
   // Apply origin offset and resize component at the first Commit() after this
   // configure request has been acknowledged.
   // `host_window()` is changing the window properties of `shell_surface`,
   // controlled by a wayland client. `shell_surface` needs to know that the
   // advanced LocalSurfaceId can be embedded, by looking at the config `serial`.
-  pending_configs_.push_back(
-      std::make_unique<Config>(serial, origin_offset, resize_component,
-                               host_window()->GetLocalSurfaceId(),
-                               std::move(configure_compositor_lock_)));
+  pending_configs_.push_back(std::make_unique<Config>(
+      serial, origin_offset, resize_component,
+      host_window()->GetLocalSurfaceId(), std::move(old_layer_),
+      std::move(configure_compositor_lock_)));
   LOG_IF(WARNING, pending_configs_.size() > 100)
       << "Number of pending configure acks for shell surface has reached: "
       << pending_configs_.size();
@@ -922,6 +1050,52 @@ display::Display ShellSurface::GetDisplayForInitialBounds() const {
     display = screen->GetDisplayMatching(*initial_bounds_);
   }
   return display;
+}
+
+void ShellSurface::UpdateLayerSurfaceRange(
+    ui::Layer* layer,
+    const viz::LocalSurfaceId& current_lsi) {
+  auto& layer_lsi = layer->GetSurfaceId()->local_surface_id();
+
+  DCHECK_EQ(layer_lsi.embed_token(), current_lsi.embed_token());
+  // `layer` with old parent seq should be consumed by config acks and not
+  // appear here.
+  DCHECK_LE(
+      layer_lsi.parent_sequence_number() - current_lsi.parent_sequence_number(),
+      (1u << 31));
+  // child seq is controlled by client so it should always be newer.
+  DCHECK_LE(
+      current_lsi.child_sequence_number() - layer_lsi.child_sequence_number(),
+      (1u << 31));
+
+  if (layer_lsi.parent_sequence_number() !=
+      current_lsi.parent_sequence_number()) {
+    // `current_lsi` is behind, specify a surface range, and stretch content.
+    if (layer_lsi.child_sequence_number() !=
+        current_lsi.child_sequence_number()) {
+      layer->SetShowSurface(
+          viz::SurfaceId(frame_sink_id_, {layer_lsi.parent_sequence_number(),
+                                          current_lsi.child_sequence_number(),
+                                          current_lsi.embed_token()}),
+          SK_ColorWHITE, cc::DeadlinePolicy::UseDefaultDeadline(),
+          true /* stretch_content_to_fill_bounds */);
+    }
+    layer->SetOldestAcceptableFallback(
+        viz::SurfaceId(frame_sink_id_, current_lsi));
+  } else {
+    viz::SurfaceId surface_id(frame_sink_id_, current_lsi);
+    // Update the surface only when the surface id changes, which indicates that
+    // the change needs to be synchronized due to size change or scale change.
+    if (!layer->GetSurfaceId() || *layer->GetSurfaceId() != surface_id) {
+      // `current_lsi` has caught up to `layer`. Allow the shell_surface to
+      // modify the surface layer bounds, clear the oldest fallback and disable
+      // stretch.
+      layer->SetShowSurface(surface_id, layer->bounds().size(), SK_ColorWHITE,
+                            cc::DeadlinePolicy::UseDefaultDeadline(),
+                            false /* stretch_content_to_fill_bounds */);
+      layer->SetOldestAcceptableFallback(viz::SurfaceId{});
+    }
+  }
 }
 
 }  // namespace exo

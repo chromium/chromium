@@ -1,17 +1,5 @@
 This is a testharness.js-based test.
-Found 229 tests; 77 PASS, 152 FAIL, 0 TIMEOUT, 0 NOTRUN.
-[PASS] idl_test setup
-[PASS] idl_test validation
-[PASS] Partial interface Window: original interface defined
-[PASS] Partial interface Window: member names are unique
-[PASS] Partial interface Window[2]: member names are unique
-[PASS] Partial interface Window[3]: member names are unique
-[PASS] Window includes GlobalEventHandlers: member names are unique
-[PASS] Window includes WindowEventHandlers: member names are unique
-[PASS] Window includes WindowOrWorkerGlobalScope: member names are unique
-[PASS] Window includes AnimationFrameProvider: member names are unique
-[PASS] Window includes WindowSessionStorage: member names are unique
-[PASS] Window includes WindowLocalStorage: member names are unique
+Found 125 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] SpeechRecognition interface: existence and properties of interface object
   assert_own_property: self does not have own property "SpeechRecognition" expected property "SpeechRecognition" missing
 [FAIL] SpeechRecognition interface object length
@@ -248,123 +236,6 @@ Found 229 tests; 77 PASS, 152 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: SpeechGrammarList is not defined"
 [FAIL] SpeechGrammarList interface: calling addFromString(DOMString, optional float) on new SpeechGrammarList() with too few arguments must throw TypeError
   assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: SpeechGrammarList is not defined"
-[FAIL] SpeechSynthesis interface: existence and properties of interface object
-  assert_own_property: self does not have own property "SpeechSynthesis" expected property "SpeechSynthesis" missing
-[FAIL] SpeechSynthesis interface object length
-  assert_own_property: self does not have own property "SpeechSynthesis" expected property "SpeechSynthesis" missing
-[FAIL] SpeechSynthesis interface object name
-  assert_own_property: self does not have own property "SpeechSynthesis" expected property "SpeechSynthesis" missing
-[FAIL] SpeechSynthesis interface: existence and properties of interface prototype object
-  assert_own_property: self does not have own property "SpeechSynthesis" expected property "SpeechSynthesis" missing
-[FAIL] SpeechSynthesis interface: existence and properties of interface prototype object's "constructor" property
-  assert_own_property: self does not have own property "SpeechSynthesis" expected property "SpeechSynthesis" missing
-[FAIL] SpeechSynthesis interface: existence and properties of interface prototype object's @@unscopables property
-  assert_own_property: self does not have own property "SpeechSynthesis" expected property "SpeechSynthesis" missing
-[FAIL] SpeechSynthesis interface: attribute pending
-  assert_own_property: self does not have own property "SpeechSynthesis" expected property "SpeechSynthesis" missing
-[FAIL] SpeechSynthesis interface: attribute speaking
-  assert_own_property: self does not have own property "SpeechSynthesis" expected property "SpeechSynthesis" missing
-[FAIL] SpeechSynthesis interface: attribute paused
-  assert_own_property: self does not have own property "SpeechSynthesis" expected property "SpeechSynthesis" missing
-[FAIL] SpeechSynthesis interface: attribute onvoiceschanged
-  assert_own_property: self does not have own property "SpeechSynthesis" expected property "SpeechSynthesis" missing
-[FAIL] SpeechSynthesis interface: operation speak(SpeechSynthesisUtterance)
-  assert_own_property: self does not have own property "SpeechSynthesis" expected property "SpeechSynthesis" missing
-[FAIL] SpeechSynthesis interface: operation cancel()
-  assert_own_property: self does not have own property "SpeechSynthesis" expected property "SpeechSynthesis" missing
-[FAIL] SpeechSynthesis interface: operation pause()
-  assert_own_property: self does not have own property "SpeechSynthesis" expected property "SpeechSynthesis" missing
-[FAIL] SpeechSynthesis interface: operation resume()
-  assert_own_property: self does not have own property "SpeechSynthesis" expected property "SpeechSynthesis" missing
-[FAIL] SpeechSynthesis interface: operation getVoices()
-  assert_own_property: self does not have own property "SpeechSynthesis" expected property "SpeechSynthesis" missing
-[FAIL] SpeechSynthesis must be primary interface of speechSynthesis
-  assert_own_property: self does not have own property "SpeechSynthesis" expected property "SpeechSynthesis" missing
-[PASS] Stringification of speechSynthesis
-[PASS] SpeechSynthesis interface: speechSynthesis must inherit property "pending" with the proper type
-[PASS] SpeechSynthesis interface: speechSynthesis must inherit property "speaking" with the proper type
-[PASS] SpeechSynthesis interface: speechSynthesis must inherit property "paused" with the proper type
-[PASS] SpeechSynthesis interface: speechSynthesis must inherit property "onvoiceschanged" with the proper type
-[PASS] SpeechSynthesis interface: speechSynthesis must inherit property "speak(SpeechSynthesisUtterance)" with the proper type
-[PASS] SpeechSynthesis interface: calling speak(SpeechSynthesisUtterance) on speechSynthesis with too few arguments must throw TypeError
-[PASS] SpeechSynthesis interface: speechSynthesis must inherit property "cancel()" with the proper type
-[PASS] SpeechSynthesis interface: speechSynthesis must inherit property "pause()" with the proper type
-[PASS] SpeechSynthesis interface: speechSynthesis must inherit property "resume()" with the proper type
-[PASS] SpeechSynthesis interface: speechSynthesis must inherit property "getVoices()" with the proper type
-[PASS] SpeechSynthesisUtterance interface: existence and properties of interface object
-[PASS] SpeechSynthesisUtterance interface object length
-[PASS] SpeechSynthesisUtterance interface object name
-[PASS] SpeechSynthesisUtterance interface: existence and properties of interface prototype object
-[PASS] SpeechSynthesisUtterance interface: existence and properties of interface prototype object's "constructor" property
-[PASS] SpeechSynthesisUtterance interface: existence and properties of interface prototype object's @@unscopables property
-[PASS] SpeechSynthesisUtterance interface: attribute text
-[PASS] SpeechSynthesisUtterance interface: attribute lang
-[PASS] SpeechSynthesisUtterance interface: attribute voice
-[PASS] SpeechSynthesisUtterance interface: attribute volume
-[PASS] SpeechSynthesisUtterance interface: attribute rate
-[PASS] SpeechSynthesisUtterance interface: attribute pitch
-[PASS] SpeechSynthesisUtterance interface: attribute onstart
-[PASS] SpeechSynthesisUtterance interface: attribute onend
-[PASS] SpeechSynthesisUtterance interface: attribute onerror
-[PASS] SpeechSynthesisUtterance interface: attribute onpause
-[PASS] SpeechSynthesisUtterance interface: attribute onresume
-[PASS] SpeechSynthesisUtterance interface: attribute onmark
-[PASS] SpeechSynthesisUtterance interface: attribute onboundary
-[PASS] SpeechSynthesisUtterance must be primary interface of new SpeechSynthesisUtterance()
-[PASS] Stringification of new SpeechSynthesisUtterance()
-[PASS] SpeechSynthesisUtterance interface: new SpeechSynthesisUtterance() must inherit property "text" with the proper type
-[PASS] SpeechSynthesisUtterance interface: new SpeechSynthesisUtterance() must inherit property "lang" with the proper type
-[PASS] SpeechSynthesisUtterance interface: new SpeechSynthesisUtterance() must inherit property "voice" with the proper type
-[PASS] SpeechSynthesisUtterance interface: new SpeechSynthesisUtterance() must inherit property "volume" with the proper type
-[PASS] SpeechSynthesisUtterance interface: new SpeechSynthesisUtterance() must inherit property "rate" with the proper type
-[PASS] SpeechSynthesisUtterance interface: new SpeechSynthesisUtterance() must inherit property "pitch" with the proper type
-[PASS] SpeechSynthesisUtterance interface: new SpeechSynthesisUtterance() must inherit property "onstart" with the proper type
-[PASS] SpeechSynthesisUtterance interface: new SpeechSynthesisUtterance() must inherit property "onend" with the proper type
-[PASS] SpeechSynthesisUtterance interface: new SpeechSynthesisUtterance() must inherit property "onerror" with the proper type
-[PASS] SpeechSynthesisUtterance interface: new SpeechSynthesisUtterance() must inherit property "onpause" with the proper type
-[PASS] SpeechSynthesisUtterance interface: new SpeechSynthesisUtterance() must inherit property "onresume" with the proper type
-[PASS] SpeechSynthesisUtterance interface: new SpeechSynthesisUtterance() must inherit property "onmark" with the proper type
-[PASS] SpeechSynthesisUtterance interface: new SpeechSynthesisUtterance() must inherit property "onboundary" with the proper type
-[PASS] SpeechSynthesisEvent interface: existence and properties of interface object
-[PASS] SpeechSynthesisEvent interface object length
-[PASS] SpeechSynthesisEvent interface object name
-[PASS] SpeechSynthesisEvent interface: existence and properties of interface prototype object
-[PASS] SpeechSynthesisEvent interface: existence and properties of interface prototype object's "constructor" property
-[PASS] SpeechSynthesisEvent interface: existence and properties of interface prototype object's @@unscopables property
-[PASS] SpeechSynthesisEvent interface: attribute utterance
-[PASS] SpeechSynthesisEvent interface: attribute charIndex
-[PASS] SpeechSynthesisEvent interface: attribute charLength
-[PASS] SpeechSynthesisEvent interface: attribute elapsedTime
-[PASS] SpeechSynthesisEvent interface: attribute name
-[PASS] SpeechSynthesisErrorEvent interface: existence and properties of interface object
-[PASS] SpeechSynthesisErrorEvent interface object length
-[PASS] SpeechSynthesisErrorEvent interface object name
-[PASS] SpeechSynthesisErrorEvent interface: existence and properties of interface prototype object
-[PASS] SpeechSynthesisErrorEvent interface: existence and properties of interface prototype object's "constructor" property
-[PASS] SpeechSynthesisErrorEvent interface: existence and properties of interface prototype object's @@unscopables property
-[PASS] SpeechSynthesisErrorEvent interface: attribute error
-[FAIL] SpeechSynthesisVoice interface: existence and properties of interface object
-  assert_own_property: self does not have own property "SpeechSynthesisVoice" expected property "SpeechSynthesisVoice" missing
-[FAIL] SpeechSynthesisVoice interface object length
-  assert_own_property: self does not have own property "SpeechSynthesisVoice" expected property "SpeechSynthesisVoice" missing
-[FAIL] SpeechSynthesisVoice interface object name
-  assert_own_property: self does not have own property "SpeechSynthesisVoice" expected property "SpeechSynthesisVoice" missing
-[FAIL] SpeechSynthesisVoice interface: existence and properties of interface prototype object
-  assert_own_property: self does not have own property "SpeechSynthesisVoice" expected property "SpeechSynthesisVoice" missing
-[FAIL] SpeechSynthesisVoice interface: existence and properties of interface prototype object's "constructor" property
-  assert_own_property: self does not have own property "SpeechSynthesisVoice" expected property "SpeechSynthesisVoice" missing
-[FAIL] SpeechSynthesisVoice interface: existence and properties of interface prototype object's @@unscopables property
-  assert_own_property: self does not have own property "SpeechSynthesisVoice" expected property "SpeechSynthesisVoice" missing
-[FAIL] SpeechSynthesisVoice interface: attribute voiceURI
-  assert_own_property: self does not have own property "SpeechSynthesisVoice" expected property "SpeechSynthesisVoice" missing
-[FAIL] SpeechSynthesisVoice interface: attribute name
-  assert_own_property: self does not have own property "SpeechSynthesisVoice" expected property "SpeechSynthesisVoice" missing
-[FAIL] SpeechSynthesisVoice interface: attribute lang
-  assert_own_property: self does not have own property "SpeechSynthesisVoice" expected property "SpeechSynthesisVoice" missing
-[FAIL] SpeechSynthesisVoice interface: attribute localService
-  assert_own_property: self does not have own property "SpeechSynthesisVoice" expected property "SpeechSynthesisVoice" missing
-[FAIL] SpeechSynthesisVoice interface: attribute default
-  assert_own_property: self does not have own property "SpeechSynthesisVoice" expected property "SpeechSynthesisVoice" missing
 [FAIL] SpeechSynthesisVoice must be primary interface of voice
   assert_equals: wrong typeof object expected "object" but got "undefined"
 [FAIL] Stringification of voice
@@ -379,7 +250,5 @@ Found 229 tests; 77 PASS, 152 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: wrong typeof object expected "object" but got "undefined"
 [FAIL] SpeechSynthesisVoice interface: voice must inherit property "default" with the proper type
   assert_equals: wrong typeof object expected "object" but got "undefined"
-[PASS] Window interface: attribute speechSynthesis
-[PASS] Window interface: self must inherit property "speechSynthesis" with the proper type
 Harness: the test ran to completion.
 

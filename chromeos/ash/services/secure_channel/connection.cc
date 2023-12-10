@@ -72,8 +72,8 @@ void Connection::RemoveObserver(ConnectionObserver* observer) {
 }
 
 void Connection::GetConnectionRssi(
-    base::OnceCallback<void(absl::optional<int32_t>)> callback) {
-  std::move(callback).Run(absl::nullopt);
+    base::OnceCallback<void(std::optional<int32_t>)> callback) {
+  std::move(callback).Run(std::nullopt);
 }
 
 void Connection::SetStatus(Status status) {

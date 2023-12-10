@@ -5,6 +5,7 @@
 /* #css_wrapper_metadata_start
  * #type=style
  * #import=../cr_shared_vars.css.js
+ * #scheme=relative
  * #css_wrapper_metadata_end */
 
       :host {
@@ -30,6 +31,8 @@
         --cr-input-focus-color: var(--color-textfield-filled-underline-focused,
             var(--cr-fallback-color-primary));
         --cr-input-hover-background-color: var(--cr-hover-background-color);
+        --cr-input-label-color: var(--color-textfield-foreground-label,
+            var(--cr-fallback-color-on-surface-subtle));
         --cr-input-padding-bottom: 10px;
         --cr-input-padding-end: 10px;
         --cr-input-padding-start: 10px;
@@ -58,10 +61,14 @@
       }
 
       :host-context([chrome-refresh-2023]) #label {
-        color: var(--color-textfield-foreground-label,
-            var(--cr-fallback-color-on-surface-subtle));
+        color: var(--cr-input-label-color);
         font-size: 11px;
         line-height: 16px;
+      }
+
+      :host-context([chrome-refresh-2023]):host([focused_]:not([readonly]):not([invalid]))
+          #label {
+        color: var(--cr-input-focus-label-color, var(--cr-input-label-color));
       }
 
       /* Input styling below. */
@@ -70,6 +77,10 @@
         overflow: hidden;
         position: relative;
         width: var(--cr-input-width, 100%);
+      }
+
+      :host-context([chrome-refresh-2023]):host([focused_]) #input-container {
+        outline: var(--cr-input-focus-outline, none);
       }
 
       #inner-input-container {

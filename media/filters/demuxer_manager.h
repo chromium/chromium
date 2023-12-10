@@ -159,7 +159,7 @@ class MEDIA_EXPORT DemuxerManager {
   void OnBufferingHaveEnough(bool enough);
   void SetPreload(DataSource::Preload preload);
 
-  void StopAndResetClient(Client* client);
+  void StopAndResetClient();
   int64_t GetDataSourceMemoryUsage();
   void OnDataSourcePlaybackRateChange(double rate, bool paused);
 

@@ -1010,7 +1010,7 @@ if (!limit_android_deps) {
   if (!defined(material_design_target)) {
     android_aar_prebuilt("com_google_android_material_material_java") {
       aar_path =
-          "libs/com_google_android_material_material/material-1.7.0-alpha02.aar"
+          "libs/com_google_android_material_material/material-1.11.0-beta01.aar"
       info_path = "libs/com_google_android_material_material/com_google_android_material_material.info"
       enable_bytecode_checks = false
 
@@ -1018,6 +1018,8 @@ if (!limit_android_deps) {
       # Please depend on //third_party/android_deps:material_design_java instead.
       visibility = [ "//third_party/android_deps:*" ]
       deps = [
+        ":com_google_errorprone_error_prone_annotations_java",
+        "//third_party/androidx:androidx_activity_activity_java",
         "//third_party/androidx:androidx_annotation_annotation_experimental_java",
         "//third_party/androidx:androidx_annotation_annotation_java",
         "//third_party/androidx:androidx_appcompat_appcompat_java",
@@ -1030,6 +1032,7 @@ if (!limit_android_deps) {
         "//third_party/androidx:androidx_fragment_fragment_java",
         "//third_party/androidx:androidx_lifecycle_lifecycle_runtime_java",
         "//third_party/androidx:androidx_recyclerview_recyclerview_java",
+        "//third_party/androidx:androidx_resourceinspection_resourceinspection_annotation_java",
         "//third_party/androidx:androidx_transition_transition_java",
         "//third_party/androidx:androidx_vectordrawable_vectordrawable_java",
         "//third_party/androidx:androidx_viewpager2_viewpager2_java",
@@ -1288,6 +1291,15 @@ if (!limit_android_deps) {
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  java_prebuilt("net_bytebuddy_byte_buddy_java") {
+    jar_path = "libs/net_bytebuddy_byte_buddy/byte-buddy-1.14.5.jar"
+    output_name = "net_bytebuddy_byte_buddy"
+    supports_android = true
+    enable_bytecode_checks = false
+    testonly = true
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("org_ccil_cowan_tagsoup_tagsoup_java") {
     jar_path = "libs/org_ccil_cowan_tagsoup_tagsoup/tagsoup-1.2.1.jar"
     output_name = "org_ccil_cowan_tagsoup_tagsoup"
@@ -1430,7 +1442,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("org_robolectric_robolectric_java") {
-    jar_path = "libs/org_robolectric_robolectric/robolectric-4.11-beta-2.jar"
+    jar_path = "libs/org_robolectric_robolectric/robolectric-4.11.1.jar"
     output_name = "org_robolectric_robolectric"
     enable_bytecode_checks = false
     testonly = true
@@ -2296,22 +2308,6 @@ if (!limit_android_deps) {
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  java_prebuilt("net_bytebuddy_byte_buddy_java") {
-    jar_path = "libs/net_bytebuddy_byte_buddy/byte-buddy-1.14.5.jar"
-    output_name = "net_bytebuddy_byte_buddy"
-    supports_android = true
-    enable_bytecode_checks = false
-
-    # To remove visibility constraint, add this dependency to
-    # //third_party/android_deps/build.gradle.
-    visibility = [
-      ":*",
-      "//third_party/androidx:*",
-    ]
-    testonly = true
-  }
-
-  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("net_bytebuddy_byte_buddy_agent_java") {
     jar_path = "libs/net_bytebuddy_byte_buddy_agent/byte-buddy-agent-1.14.5.jar"
     output_name = "net_bytebuddy_byte_buddy_agent"
@@ -2391,7 +2387,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("org_robolectric_annotations_java") {
-    jar_path = "libs/org_robolectric_annotations/annotations-4.11-beta-2.jar"
+    jar_path = "libs/org_robolectric_annotations/annotations-4.11.1.jar"
     output_name = "org_robolectric_annotations"
     enable_bytecode_checks = false
 
@@ -2407,7 +2403,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("org_robolectric_junit_java") {
-    jar_path = "libs/org_robolectric_junit/junit-4.11-beta-2.jar"
+    jar_path = "libs/org_robolectric_junit/junit-4.11.1.jar"
     output_name = "org_robolectric_junit"
     enable_bytecode_checks = false
 
@@ -2430,8 +2426,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("org_robolectric_nativeruntime_java") {
-    jar_path =
-        "libs/org_robolectric_nativeruntime/nativeruntime-4.11-beta-2.jar"
+    jar_path = "libs/org_robolectric_nativeruntime/nativeruntime-4.11.1.jar"
     output_name = "org_robolectric_nativeruntime"
     enable_bytecode_checks = false
 
@@ -2469,7 +2464,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("org_robolectric_pluginapi_java") {
-    jar_path = "libs/org_robolectric_pluginapi/pluginapi-4.11-beta-2.jar"
+    jar_path = "libs/org_robolectric_pluginapi/pluginapi-4.11.1.jar"
     output_name = "org_robolectric_pluginapi"
     enable_bytecode_checks = false
 
@@ -2489,7 +2484,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("org_robolectric_plugins_maven_dependency_resolver_java") {
-    jar_path = "libs/org_robolectric_plugins_maven_dependency_resolver/plugins-maven-dependency-resolver-4.11-beta-2.jar"
+    jar_path = "libs/org_robolectric_plugins_maven_dependency_resolver/plugins-maven-dependency-resolver-4.11.1.jar"
     output_name = "org_robolectric_plugins_maven_dependency_resolver"
     enable_bytecode_checks = false
 
@@ -2511,7 +2506,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("org_robolectric_resources_java") {
-    jar_path = "libs/org_robolectric_resources/resources-4.11-beta-2.jar"
+    jar_path = "libs/org_robolectric_resources/resources-4.11.1.jar"
     output_name = "org_robolectric_resources"
     enable_bytecode_checks = false
 
@@ -2534,7 +2529,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("org_robolectric_sandbox_java") {
-    jar_path = "libs/org_robolectric_sandbox/sandbox-4.11-beta-2.jar"
+    jar_path = "libs/org_robolectric_sandbox/sandbox-4.11.1.jar"
     output_name = "org_robolectric_sandbox"
     enable_bytecode_checks = false
 
@@ -2561,7 +2556,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("org_robolectric_shadowapi_java") {
-    jar_path = "libs/org_robolectric_shadowapi/shadowapi-4.11-beta-2.jar"
+    jar_path = "libs/org_robolectric_shadowapi/shadowapi-4.11.1.jar"
     output_name = "org_robolectric_shadowapi"
     enable_bytecode_checks = false
 
@@ -2581,7 +2576,8 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("org_robolectric_shadows_framework_java") {
-    jar_path = "libs/org_robolectric_shadows_framework/shadows-framework-4.11-beta-2.jar"
+    jar_path =
+        "libs/org_robolectric_shadows_framework/shadows-framework-4.11.1.jar"
     output_name = "org_robolectric_shadows_framework"
     enable_bytecode_checks = false
 
@@ -2614,7 +2610,8 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("org_robolectric_shadows_versioning_java") {
-    jar_path = "libs/org_robolectric_shadows_versioning/shadows-versioning-4.11-beta-2.jar"
+    jar_path =
+        "libs/org_robolectric_shadows_versioning/shadows-versioning-4.11.1.jar"
     output_name = "org_robolectric_shadows_versioning"
     enable_bytecode_checks = false
 
@@ -2631,7 +2628,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("org_robolectric_utils_java") {
-    jar_path = "libs/org_robolectric_utils/utils-4.11-beta-2.jar"
+    jar_path = "libs/org_robolectric_utils/utils-4.11.1.jar"
     output_name = "org_robolectric_utils"
     enable_bytecode_checks = false
 
@@ -2654,8 +2651,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("org_robolectric_utils_reflector_java") {
-    jar_path =
-        "libs/org_robolectric_utils_reflector/utils-reflector-4.11-beta-2.jar"
+    jar_path = "libs/org_robolectric_utils_reflector/utils-reflector-4.11.1.jar"
     output_name = "org_robolectric_utils_reflector"
     enable_bytecode_checks = false
 

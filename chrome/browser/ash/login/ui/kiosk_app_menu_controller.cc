@@ -14,9 +14,9 @@
 #include "chrome/browser/ash/app_mode/arc/arc_kiosk_app_data.h"
 #include "chrome/browser/ash/app_mode/arc/arc_kiosk_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launch_error.h"
-#include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager_observer.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
+#include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_controller.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
@@ -61,16 +61,14 @@ gfx::ImageSkia IconOrDefault(gfx::ImageSkia icon) {
 }
 
 KioskAppMenuEntry ToMenuEntry(const KioskApp& app) {
-  return KioskAppMenuEntry(ToMenuEntryType(app.id().type),
-                           app.id().account_id.value(), app.id().app_id,
-                           base::UTF8ToUTF16(app.name()),
+  return KioskAppMenuEntry(ToMenuEntryType(app.id().type), app.id().account_id,
+                           app.id().app_id, base::UTF8ToUTF16(app.name()),
                            IconOrDefault(app.icon()));
 }
 
 std::vector<KioskAppMenuEntry> BuildKioskAppMenuEntries() {
   std::vector<KioskAppMenuEntry> menu_entries;
   for (const KioskApp& app : KioskController::Get().GetApps()) {
-    CHECK(app.id().account_id.has_value());
     menu_entries.push_back(ToMenuEntry(app));
   }
   return menu_entries;
@@ -79,7 +77,7 @@ std::vector<KioskAppMenuEntry> BuildKioskAppMenuEntries() {
 }  // namespace
 
 KioskAppMenuController::KioskAppMenuController() {
-  kiosk_observations_.AddObservation(KioskAppManager::Get());
+  kiosk_observations_.AddObservation(KioskChromeAppManager::Get());
   kiosk_observations_.AddObservation(ArcKioskAppManager::Get());
   kiosk_observations_.AddObservation(WebKioskAppManager::Get());
 }

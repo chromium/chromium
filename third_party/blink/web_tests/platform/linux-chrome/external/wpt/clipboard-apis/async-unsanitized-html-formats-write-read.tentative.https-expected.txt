@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+[FAIL] Verify write and read unsanitized content to the clipboard given text/html format as input
+  assert_equals: expected "<style>p {color:blue}</style><p>Hello World</p>" but got ""
+Harness: the test ran to completion.

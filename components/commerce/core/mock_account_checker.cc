@@ -12,7 +12,6 @@ MockAccountChecker::MockAccountChecker()
   SetSignedIn(true);
   SetSyncingBookmarks(true);
   SetAnonymizedUrlDataCollectionEnabled(true);
-  SetWebAndAppActivityEnabled(true);
   SetIsSubjectToParentalControls(false);
 }
 
@@ -28,11 +27,6 @@ void MockAccountChecker::SetSyncingBookmarks(bool syncing) {
 
 void MockAccountChecker::SetAnonymizedUrlDataCollectionEnabled(bool enabled) {
   ON_CALL(*this, IsAnonymizedUrlDataCollectionEnabled)
-      .WillByDefault(testing::Return(enabled));
-}
-
-void MockAccountChecker::SetWebAndAppActivityEnabled(bool enabled) {
-  ON_CALL(*this, IsWebAndAppActivityEnabled)
       .WillByDefault(testing::Return(enabled));
 }
 

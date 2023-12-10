@@ -57,8 +57,7 @@ ExtensionFunction::ResponseAction TestNotifyPassFunction::Run() {
 TestNotifyFailFunction::~TestNotifyFailFunction() = default;
 
 ExtensionFunction::ResponseAction TestNotifyFailFunction::Run() {
-  absl::optional<NotifyFail::Params> params =
-      NotifyFail::Params::Create(args());
+  std::optional<NotifyFail::Params> params = NotifyFail::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
   TestApiObserverRegistry::GetInstance()->NotifyTestFailed(
       browser_context(), params->message);
@@ -68,7 +67,7 @@ ExtensionFunction::ResponseAction TestNotifyFailFunction::Run() {
 TestLogFunction::~TestLogFunction() = default;
 
 ExtensionFunction::ResponseAction TestLogFunction::Run() {
-  absl::optional<Log::Params> params = Log::Params::Create(args());
+  std::optional<Log::Params> params = Log::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
   VLOG(1) << params->message;
   return RespondNow(NoArguments());
@@ -77,7 +76,7 @@ ExtensionFunction::ResponseAction TestLogFunction::Run() {
 TestOpenFileUrlFunction::~TestOpenFileUrlFunction() = default;
 
 ExtensionFunction::ResponseAction TestOpenFileUrlFunction::Run() {
-  absl::optional<api::test::OpenFileUrl::Params> params =
+  std::optional<api::test::OpenFileUrl::Params> params =
       api::test::OpenFileUrl::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
   GURL file_url(params->url);
@@ -91,7 +90,7 @@ ExtensionFunction::ResponseAction TestOpenFileUrlFunction::Run() {
 TestSendMessageFunction::TestSendMessageFunction() = default;
 
 ExtensionFunction::ResponseAction TestSendMessageFunction::Run() {
-  absl::optional<PassMessage::Params> params =
+  std::optional<PassMessage::Params> params =
       PassMessage::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
   bool listener_will_respond =
@@ -131,7 +130,7 @@ TestSendScriptResultFunction::TestSendScriptResultFunction() = default;
 TestSendScriptResultFunction::~TestSendScriptResultFunction() = default;
 
 ExtensionFunction::ResponseAction TestSendScriptResultFunction::Run() {
-  absl::optional<api::test::SendScriptResult::Params> params =
+  std::optional<api::test::SendScriptResult::Params> params =
       api::test::SendScriptResult::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -166,7 +165,7 @@ ExtensionFunction::ResponseAction TestGetConfigFunction::Run() {
 TestWaitForRoundTripFunction::~TestWaitForRoundTripFunction() = default;
 
 ExtensionFunction::ResponseAction TestWaitForRoundTripFunction::Run() {
-  absl::optional<WaitForRoundTrip::Params> params =
+  std::optional<WaitForRoundTrip::Params> params =
       WaitForRoundTrip::Params::Create(args());
   return RespondNow(WithArguments(params->message));
 }

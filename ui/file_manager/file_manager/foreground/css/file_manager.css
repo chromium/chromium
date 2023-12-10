@@ -343,32 +343,25 @@ html.pointer-active #directory-tree xf-tree-item >
 }
 
 /* Splitter. */
-/* Prevent the sudden flickering when opening the Files app. "div.splitter" is
-  the legacy splitter DOM element. We need to maintain the existing DOM
-  structure to make sure it can cater both the legacy splitter style and the
-  refresh23 style. In file_manager_ui.js we will remove the legacy ".splitter"
-  element if the jelly flag is on, this sudden removal will cause a flickering
-  issue due to position change, hence setting a width here for the legacy
-  splitter to prevent that.  */
-div.splitter {
-  width: 24px;
+/* Prevent the slot children (tree and table list) to show in the wrong position
+   before host web component resolves. */
+.splitter:not(:defined) {
+  column-gap: 24px;
+  display: flex;
+  width: 100%;
 }
 
-div.splitter .splitter-button {
-  display: none;
-}
-
-.jelly-splitter {
+.splitter {
   --xf-splitter-tracker-offset: 16px;
   --xf-splitter-z-index: 500;  /* Must be below the contextmenu (600). */
 }
 
-html.pointer-active .jelly-splitter:not(.splitter-active):hover {
+html.pointer-active .splitter:not(.splitter-active):hover {
   --xf-splitter-cursor: default;
   --xf-splitter-hover-color: none;
 }
 
-html.col-resize .jelly-splitter:not(.splitter-active):hover {
+html.col-resize .splitter:not(.splitter-active):hover {
   --xf-splitter-cursor: col-resize;
   --xf-splitter-hover-color: none;
 }
@@ -2273,7 +2266,7 @@ list.autocomplete-suggestions > [lead] {
 }
 
 .error-dialog-frame .error-dialog-img {
-  background-image: -webkit-image-set(
+  background-image: image-set(
     url(chrome://theme/IDR_ERROR_NETWORK_GENERIC) 1x,
     url(chrome://theme/IDR_ERROR_NETWORK_GENERIC@2x) 2x);
   background-position: center;

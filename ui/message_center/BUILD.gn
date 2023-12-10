@@ -198,6 +198,7 @@ if (enable_message_center) {
       "//skia",
       "//testing/gmock",
       "//testing/gtest",
+      "//ui/accessibility:test_support",
       "//ui/base",
       "//ui/base:test_support",
       "//ui/events",

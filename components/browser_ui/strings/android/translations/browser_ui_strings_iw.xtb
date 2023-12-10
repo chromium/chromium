@@ -23,6 +23,7 @@
 <translation id="1415402041810619267">‏כתובת ה-URL קוצרה</translation>
 <translation id="1426410128494586442">כן</translation>
 <translation id="1448064542941920355">הקטנת הזום</translation>
+<translation id="146867109637325312">{COUNT,plural, =1{באתר אחד (<ph name="SITE_COUNT" />)}one{ב-<ph name="SITE_COUNT" /> אתרים}two{ב-<ph name="SITE_COUNT" /> אתרים}other{ב-<ph name="SITE_COUNT" /> אתרים}}</translation>
 <translation id="1510341833810331442">לאתרים אין הרשאה לשמור נתונים במכשיר שלך</translation>
 <translation id="1547123415014299762">‏מותר להשתמש בקובצי cookie של צד שלישי</translation>
 <translation id="1568470248891039841">לאתרים שמבקרים בהם יש אפשרות להטמיע תוכן מאתרים אחרים, למשל תמונות, מודעות וטקסט. האתרים האחרים האלה יכולים לבקש הרשאה להשתמש במידע שהם שמרו עליך בזמן הגלישה באתר. <ph name="BEGIN_LINK" />מידע נוסף על תוכן מוטמע<ph name="END_LINK" /></translation>
@@ -31,6 +32,7 @@
 <translation id="1633720957382884102">אתרים קשורים</translation>
 <translation id="1644574205037202324">היסטוריה</translation>
 <translation id="1647582022260550163">‏בחרת לאפס את ההרשאות ולנקות את קובצי ה-Cookie והנתונים מאתרים. להמשיך?</translation>
+<translation id="1652197001188145583">‏כשהאפשרות מופעלת, אתרים יכולים לבקש הרשאה להשתמש במכשירי NFC. כשהאפשרות מושבתת, אתרים לא יכולים להשתמש במכשירי NFC.</translation>
 <translation id="1660204651932907780">מתן הרשאה לאתרים להשמיע צלילים (מומלץ)</translation>
 <translation id="1677097821151855053">‏קובצי cookie ונתונים אחרים מאתרים משמשים כדי לזכור את הפרטים שלך, למשל כדי להכניס אותך לחשבון או להציג מודעות בהתאמה אישית. אפשר לנהל את קובצי ה-cookie מכל האתרים דרך ה<ph name="BEGIN_LINK" />הגדרות<ph name="END_LINK" />.</translation>
 <translation id="169515064810179024">חסימת הגישה של אתרים אל חיישני תנועה</translation>
@@ -39,13 +41,13 @@
 <translation id="1779089405699405702">מפענח התמונות</translation>
 <translation id="1785415724048343560">מומלץ כדי ליהנות מחוויית השימוש הטובה ביותר</translation>
 <translation id="1818308510395330587">‏כדי לאפשר ל-<ph name="APP_NAME" /> להשתמש ב-AR, צריך להפעיל את המצלמה גם ב<ph name="BEGIN_LINK" />הגדרות Android<ph name="END_LINK" />.</translation>
-<translation id="187227595286001730">לאתרים קשורים יש הרשאה לראות את הפעילות שלך בקבוצה</translation>
 <translation id="1887786770086287077">‏הגישה למיקום כבויה בשביל המכשיר הזה. יש להפעיל אותה ב<ph name="BEGIN_LINK" />הגדרות Android<ph name="END_LINK" />.</translation>
 <translation id="1915307458270490472">ניתוק</translation>
 <translation id="1919950603503897840">בחירת אנשי קשר</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / <ph name="FILE_SIZE_WITH_UNITS" /></translation>
 <translation id="1979673356880165407">הגדלה או הקטנה של הטקסט והתמונות בכל האתרים שמבקרים בהם</translation>
 <translation id="1984937141057606926">מותר, מלבד צד שלישי</translation>
+<translation id="1985247341569771101">כשהאפשרות מופעלת, אתרים יכולים להשתמש בחיישני התנועה של המכשיר. כשהאפשרות מושבתת, אתרים לא יכולים להשתמש בחיישני התנועה.</translation>
 <translation id="1989112275319619282">עיון</translation>
 <translation id="1994173015038366702">כתובת אתר</translation>
 <translation id="2004697686368036666">ייתכן שתכונות באתרים מסוימים לא יפעלו</translation>
@@ -61,7 +63,6 @@
 <translation id="2182457891543959921">תוצג שאלה לפני מתן הרשאה לאתרים ליצור מפה בתלת ממד של הסביבה שלך או לעקוב אחר מיקום המצלמה (מומלץ)</translation>
 <translation id="2185965788978862351">‏הפעולה הזו תגרום למחיקת <ph name="DATASIZE" /> של נתונים וקובצי Cookie שאוחסנו על ידי אתרים ואפליקציות במסך הבית.</translation>
 <translation id="2194856509914051091">מה כדאי לקחת בחשבון</translation>
-<translation id="2212565012507486665">‏אישור קובצי cookie</translation>
 <translation id="2228071138934252756">‏כדי לאפשר ל-<ph name="APP_NAME" /> לגשת אל המצלמה, צריך להפעיל אותה גם ב<ph name="BEGIN_LINK" />הגדרות Android<ph name="END_LINK" />.</translation>
 <translation id="2235344399760031203">‏קובצי cookie של צד שלישי חסומים</translation>
 <translation id="2238944249568001759">הצעות לחיפושים על סמך הכרטיסייה האחרונה שלך</translation>
@@ -80,6 +81,7 @@
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{הוענקו ההרשאות <ph name="PERMISSION_1" />,‏ <ph name="PERMISSION_2" /> ועוד אחת (<ph name="NUM_MORE" />)}one{הוענקו ההרשאות <ph name="PERMISSION_1" />,‏ <ph name="PERMISSION_2" /> ועוד <ph name="NUM_MORE" />}two{הוענקו ההרשאות <ph name="PERMISSION_1" />,‏ <ph name="PERMISSION_2" /> ועוד <ph name="NUM_MORE" />}other{הוענקו ההרשאות <ph name="PERMISSION_1" />,‏ <ph name="PERMISSION_2" /> ועוד <ph name="NUM_MORE" />}}</translation>
 <translation id="2410940059315936967">‏לאתרים שמבקרים בהם יש אפשרות להטמיע תוכן מאתרים אחרים, למשל תמונות, מודעות וטקסט. קובצי cookie שהוגדרו על ידי האתרים האלה נקראים 'קובצי cookie של צד שלישי'.</translation>
 <translation id="2434158240863470628">ההורדה הושלמה <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
+<translation id="2438120137003069591">‏אישרת לאתר הזה להשתמש בקובצי Cookie של צד שלישי באופן זמני. במצב כזה יש פחות הגנה במהלך הגלישה, אבל סביר יותר שהתכונות באתר יפעלו בלי בעיות. <ph name="BEGIN_LINK" />שליחת משוב<ph name="END_LINK" /></translation>
 <translation id="244264527810019436">יכול להיות שתכונות באתרים מסוימים לא יפעלו במצב פרטי</translation>
 <translation id="2442870161001914531">תמיד תוצג בקשה לגרסת האתר למחשב</translation>
 <translation id="2469312991797799607">‏הפעולה הזו תמחק את כל הנתונים וקובצי ה-Cookie של <ph name="ORIGIN" /> ושל כל אתרי המשנה שלו</translation>
@@ -101,10 +103,10 @@
 <translation id="2677748264148917807">יציאה</translation>
 <translation id="2678468611080193228">‏אפשר להפעיל קובצי cookie של צד שלישי באופן זמני. במצב כזה יש פחות הגנה, אבל סביר יותר שהתכונות באתר יפעלו</translation>
 <translation id="2683434792633810741">למחוק ולאפס?</translation>
-<translation id="2687403674020088961">‏חסימה של כל קובצי ה-cookie (לא מומלץ)</translation>
 <translation id="2713106313042589954">השבתת המצלמה</translation>
 <translation id="2717722538473713889">כתובות אימייל</translation>
 <translation id="2750481671343847896">אתרים יכולים להציג בקשות כניסה משירותי זיהוי</translation>
+<translation id="2790501146643349491">כשהאפשרות מופעלת, אתרים שנסגרו לאחרונה יכולים לסיים שליחה וקבלה של נתונים. כשהאפשרות מושבתת, אתרים שנסגרו לאחרונה לא יכולים לסיים שליחה או קבלה של נתונים.</translation>
 <translation id="2822354292072154809">לאפס את כל הרשאות האתר בשביל <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2850913818900871965">בקשה לתצוגה לנייד</translation>
 <translation id="2870560284913253234">אתר</translation>
@@ -113,6 +115,7 @@
 <translation id="2903493209154104877">כתובות</translation>
 <translation id="2910701580606108292">הצגת שאלה לפני מתן הרשאה לאתרים להפעיל תוכן מוגן</translation>
 <translation id="2932883381142163287">דיווח על שימוש לרעה</translation>
+<translation id="2939338015096024043">כשהאפשרות מופעלת, אתרים יכולים לבקש הרשאה לעקוב אחר מיקום המצלמה ולקבל מידע על הסביבה שלך. כשהאפשרות מושבתת, אתרים לא יכולים לעקוב אחר מיקום המצלמה או לקבל מידע על הסביבה שלך.</translation>
 <translation id="2968755619301702150">מציג האישורים</translation>
 <translation id="2979365474350987274">‏יש הגבלה על קובצי Cookie של צד שלישי</translation>
 <translation id="3008272652534848354">איפוס הרשאות</translation>
@@ -131,6 +134,7 @@
 <translation id="3198916472715691905">נתונים מאוחסנים בנפח <ph name="STORAGE_AMOUNT" /></translation>
 <translation id="321187648315454507">‏כדי לאפשר ל-<ph name="APP_NAME" /> לשלוח לך התראות, צריך להפעיל אותן גם ב<ph name="BEGIN_LINK" />הגדרות Android<ph name="END_LINK" />.</translation>
 <translation id="3227137524299004712">מיקרופון</translation>
+<translation id="3242646949159196181">כשהאפשרות מופעלת, אתרים יכולים להשמיע צלילים. כשהאפשרות מושבתת, אתרים לא יכולים להשמיע צלילים.</translation>
 <translation id="3277252321222022663">התרת גישה של אתרים אל החיישנים (מומלץ)</translation>
 <translation id="3285500645985761267">אישור לאתרים קשורים לראות את הפעילות שלך בקבוצה</translation>
 <translation id="3295019059349372795">פרק 11: עיר הברקת המופלאה של ארץ עוץ</translation>
@@ -141,6 +145,7 @@
 <translation id="3386292677130313581">יש לשאול לפני שמאפשרים לאתרים לדעת מה המיקום שלך (מומלץ)</translation>
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="344449859752187052">‏קובצי cookie של צד שלישי חסומים</translation>
+<translation id="3448554387819310837">כשהאפשרות מופעלת, אתרים יכולים לבקש הרשאה להשתמש במצלמה. כשהאפשרות מושבתת, אתרים לא יכולים להשתמש במצלמה.</translation>
 <translation id="3465378418721443318">{DAYS,plural, =1{‏קובצי cookie יחסמו מחר שוב ב-Chrome}one{‏יש עוד # ימים עד שקובצי cookie יחסמו שוב ב-Chrome}two{‏יש עוד # ימים עד שקובצי cookie יחסמו שוב ב-Chrome}other{‏יש עוד # ימים עד שקובצי cookie יחסמו שוב ב-Chrome}}</translation>
 <translation id="3521663503435878242">אתרים ב-<ph name="DOMAIN" /></translation>
 <translation id="3538390592868664640">חסימה של יצירת מפה בתלת ממד של הסביבה שלך או של מעקב אחר מיקום המצלמה על ידי אתרים.</translation>
@@ -149,10 +154,10 @@
 <translation id="3586500876634962664">שימוש במצלמה ובמיקרופון</translation>
 <translation id="358794129225322306">מתן הרשאה לאתר להוריד קבצים מרובים באופן אוטומטי.</translation>
 <translation id="3594780231884063836">השתקת הסרטון</translation>
-<translation id="3596414637720633074">‏חסימת קובצי cookie של צד שלישי במצב אנונימי</translation>
 <translation id="3600792891314830896">השתקת אתרים שמשמיעים צלילים</translation>
 <translation id="3602290021589620013">תצוגה מקדימה</translation>
 <translation id="3628308229821498208">הצעות לחיפוש</translation>
+<translation id="3697164069658504920">‏כשהאפשרות מופעלת, אתרים יכולים לבקש הרשאה להשתמש בהתקני USB. כשהאפשרות מושבתת, אתרים לא יכולים להשתמש בהתקני USB.</translation>
 <translation id="3707034683772193706">‏אתר כלשהו שמבקרים בו יכול לשמור כמות נתונים קטנה ב-Chrome, בעיקר כדי לאמת שלא מדובר בבוט.</translation>
 <translation id="3721953990244350188">סגירה והצגת הפעולה הזמינה הבאה</translation>
 <translation id="3744111561329211289">סנכרון ברקע</translation>
@@ -176,9 +181,7 @@
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / ?</translation>
 <translation id="3992684624889376114">מידע על הדף הזה</translation>
 <translation id="4002066346123236978">כותרת</translation>
-<translation id="4008040567710660924">‏אישור קובצי Cookie של אתר מסוים.</translation>
 <translation id="4046123991198612571">הרצועה הבאה</translation>
-<translation id="4053720452172726777">‏הגדרת Google Chrome בהתאם לרצונך</translation>
 <translation id="4149890623864272035">‏בחרת למחוק את כל הנתונים המקומיים, כולל קובצי cookie, ולאפס את כל ההרשאות של האתר הזה. להמשיך?</translation>
 <translation id="4149994727733219643">תצוגה פשוטה של דפי אינטרנט</translation>
 <translation id="4151930093518524179">ברירת מחדל של מרחק התצוגה</translation>
@@ -191,9 +194,11 @@
 <translation id="4278390842282768270">מותר</translation>
 <translation id="429312253194641664">אתר מסוים מפעיל מדיה</translation>
 <translation id="42981349822642051">הרחבה</translation>
+<translation id="4336566011000459927">‏קובצי Cookie יוגבלו היום שוב ב-Chrome</translation>
 <translation id="4338831206024587507">כל האתרים בדומיין <ph name="DOMAIN" /></translation>
 <translation id="4402755511846832236">אתרים לא יוכלו לדעת מתי המכשיר הזה משמש אותך באופן פעיל</translation>
-<translation id="4412992751769744546">‏התר קובצי Cookie של צד שלישי</translation>
+<translation id="4412992751769744546">‏אישור לקובצי Cookie של צד שלישי
+</translation>
 <translation id="4434045419905280838">חלונות קופצים והפניות אוטומטיות</translation>
 <translation id="443552056913301231">‏יימחקו כל הנתונים המקומיים, כולל קובצי cookie, ויתאפסו כל ההרשאות של <ph name="ORIGIN" /></translation>
 <translation id="4468959413250150279">השתקת צלילים באתר ספציפי.</translation>
@@ -209,13 +214,14 @@
 <translation id="4645575059429386691">מנוהל על-ידי ההורה שלך</translation>
 <translation id="4670064810192446073">מציאות מדומה</translation>
 <translation id="4751476147751820511">חיישני תנועה או אור</translation>
+<translation id="4755971844837804407">כשהאפשרות מופעלת, אתרים יכולים להציג כל מודעה. כשהאפשרות מושבתת, אתרים לא יכולים להציג מודעות מפריעות או מטעות.</translation>
 <translation id="4779083564647765204">מרחק מתצוגה</translation>
 <translation id="4811450222531576619">מידע על המקור והנושא שלו</translation>
 <translation id="4836046166855586901">תוצג שאלה כשאתר יבקש לדעת מתי המכשיר הזה משמש אותך באופן פעיל</translation>
 <translation id="483914009762354899">יש לכלול את כל האתרים בדומיין הזה</translation>
 <translation id="4883854917563148705">לא ניתן לאפס הגדרות מנוהלות</translation>
 <translation id="4887024562049524730">תוצג שאלה לפני מתן הרשאה לאתרים להשתמש במכשיר המציאות המדומה ובנתוני המציאות המדומה שלך (מומלץ)</translation>
-<translation id="4955223779495905865">‏אתר שנכנסת אליו יכול להטמיע תוכן מאתרים אחרים, למשל תמונות, מודעות וטקסט. כל אחד מהאתרים האלה יכול לשמור קובצי cookie ונתונים אחרים כדי להתאים אישית את חוויית השימוש שלך.</translation>
+<translation id="4953688446973710931">כשהאפשרות מופעלת, אתרים יכולים לבקש הרשאה להוריד מספר קבצים באופן אוטומטי. כשהאפשרות מושבתת, אתרים לא יכולים להוריד מספר קבצים באופן אוטומטי.</translation>
 <translation id="4962975101802056554">ביטול כל ההרשאות בשביל המכשיר</translation>
 <translation id="497421865427891073">ניווט קדימה</translation>
 <translation id="4976702386844183910">הכניסה האחרונה: <ph name="DATE" /></translation>
@@ -229,6 +235,7 @@
 <translation id="5063480226653192405">שימוש</translation>
 <translation id="5091013926750941408">אתר לנייד</translation>
 <translation id="509133520954049755">שליחת בקשה לתצוגה למחשב</translation>
+<translation id="5091663350197390230">‏כשהאפשרות מופעלת, אתרים יכולים להשתמש ב-JavaScript. כשהאפשרות מושבתת, אתרים לא יכולים להשתמש ב-JavaScript.</translation>
 <translation id="5099358668261120049">‏הפעולה הזו תמחק את כל הנתונים וקובצי ה-Cookie שנשמרו על ידי האתר <ph name="ORIGIN" /> או האפליקציה שלו במסך הבית.</translation>
 <translation id="5100237604440890931">מכווץ – יש ללחוץ כדי להרחיב.</translation>
 <translation id="5123685120097942451">כרטיסייה אנונימית</translation>
@@ -240,6 +247,7 @@
 <translation id="5246825184569358663">‏יימחקו כל הנתונים המקומיים, כולל קובצי cookie, ויתאפסו כל ההרשאות של <ph name="DOMAIN" /> ושל כל אתרי המשנה שלו</translation>
 <translation id="5264323282659631142">הסרת '<ph name="CHIP_LABEL" />'</translation>
 <translation id="528192093759286357">כדי לצאת ממסך מלא, יש לגרור מלמעלה ולגעת בלחצן 'הקודם'.</translation>
+<translation id="5295729974480418933">כשהאפשרות מופעלת, אתרים יכולים לבקש הרשאה להשתמש במידע עליך שנשמר בהם. כשהאפשרות מושבתת, אתרים לא יכולים לבקש הרשאה להשתמש במידע עליך שנשמר בהם.</translation>
 <translation id="5300589172476337783">הצגה</translation>
 <translation id="5301954838959518834">בסדר, הבנתי</translation>
 <translation id="5317780077021120954">שמירה</translation>
@@ -250,6 +258,7 @@
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(ועוד 1)}one{(ועוד #)}two{(ועוד #)}other{(ועוד #)}}</translation>
 <translation id="5403592356182871684">שמות</translation>
 <translation id="5438097262470833822">הבחירה הזו תגרום לאיפוס ההרשאות של <ph name="WEBSITE" /></translation>
+<translation id="5459413148890178711">כשהאפשרות מופעלת, אתרים יכולים לבקש הרשאת גישה למיקום. כשהאפשרות מושבתת, אתרים לא יכולים לראות את מיקום המכשיר.</translation>
 <translation id="5489227211564503167">צפית ב-<ph name="ELAPSED_TIME" /> מתוך <ph name="TOTAL_TIME" />.</translation>
 <translation id="5502860503640766021">פועלת: <ph name="PERMISSION_1" />, חסומה: <ph name="PERMISSION_2" /></translation>
 <translation id="5505264765875738116">אתרים לא יכולים לבקש לשלוח התראות</translation>
@@ -264,12 +273,15 @@
 <translation id="5677928146339483299">חסום</translation>
 <translation id="5689516760719285838">מיקום</translation>
 <translation id="5690795753582697420">‏המצלמה מושבתת בהגדרות Android</translation>
+<translation id="5691080386278724773">לאתר <ph name="SITE" /> יש אפשרות להשתמש בפרטים שלך בזמן הגלישה</translation>
 <translation id="5700761515355162635">‏יש אישור לקובצי cookie של צד שלישי</translation>
 <translation id="5706552988683188916">‏הפעולה הזו מוחקת קובצי cookie ונתונים אחרים מאתרים ב-<ph name="WEBSITE" /></translation>
 <translation id="5723967018671998714">‏קובצי cookie של צד שלישי חסומים במצב אנונימי</translation>
 <translation id="5740126560802162366">לאתרים יש הרשאה לשמור נתונים במכשיר שלך</translation>
 <translation id="5771720122942595109">חסומה: <ph name="PERMISSION_1" /></translation>
 <translation id="5804241973901381774">הרשאות</translation>
+<translation id="5844448279347999754">כשהאפשרות מופעלת, אתרים יכולים לבקש הרשאה לראות טקסט ותמונות שנשמרו בלוח העריכה. כשהאפשרות מושבתת, אתרים לא יכולים לראות טקסט או תמונות שנשמרו בלוח העריכה.</translation>
+<translation id="5853982612236235577">כשהאפשרות מופעלת, אתרים יכולים לבקש הרשאה לשלוח התראות. כשהאפשרות מושבתת, אתרים לא יכולים לשלוח התראות.</translation>
 <translation id="5860033963881614850">כבוי</translation>
 <translation id="5876056640971328065">השהיית הסרטון</translation>
 <translation id="5884085660368669834">ההעדפה לאתר</translation>
@@ -288,21 +300,24 @@
 <translation id="6042308850641462728">עוד</translation>
 <translation id="6064125863973209585">הורדות שהושלמו</translation>
 <translation id="6071501408666570960">יכול להיות שתבוצע יציאה מהחשבון באתר הזה</translation>
+<translation id="6120483543004435978">כשהאפשרות מופעלת, אתרים יכולים לבקש הרשאה לדעת מתי משתמשים במכשיר הזה בפועל. כשהאפשרות מושבתת, אתרים לא יכולים לדעת מתי משתמשים במכשיר הזה בפועל.</translation>
 <translation id="6165508094623778733">למידע נוסף</translation>
+<translation id="6171020522141473435">‏כשהאפשרות מופעלת, אתרים יכולים לבקש הרשאה להשתמש במכשירי Bluetooth. כשהאפשרות מושבתת, אתרים לא יכולים להשתמש במכשירי Bluetooth.</translation>
 <translation id="6177111841848151710">חסוּם למנוע החיפוש הנוכחי</translation>
 <translation id="6177128806592000436">החיבור שלך לאתר הזה לא מאובטח</translation>
 <translation id="6181444274883918285">להוספת מקרה חריג של אתר</translation>
 <translation id="6192792657125177640">יוצאי דופן</translation>
+<translation id="6194967801833346599">{DAYS,plural, =1{‏קובצי Cookie ייחסמו מחר שוב ב-Chrome}one{‏יש עוד # ימים עד שקובצי Cookie ייחסמו שוב}two{‏יש עוד יומיים עד שקובצי Cookie ייחסמו שוב}other{‏יש עוד # ימים עד שקובצי Cookie ייחסמו שוב}}</translation>
 <translation id="6195163219142236913">‏יש הגבלה על קובצי Cookie של צד שלישי</translation>
 <translation id="6196640612572343990">‏חסימת קובצי Cookie של צד שלישי</translation>
 <translation id="6205314730813004066">פרטיות בפרסום</translation>
 <translation id="6207207788774442484">מחיקת הנתונים ואיפוס ההרשאות</translation>
-<translation id="6216432067784365534">אפשרויות של <ph name="NAME_OF_LIST_ITEM" /></translation>
 <translation id="6231752747840485235">להסיר את '<ph name="APP_NAME" />'?</translation>
 <translation id="6262191102408817757">על סמך הכרטיסייה האחרונה שלך</translation>
 <translation id="6262279340360821358">ההרשאות <ph name="PERMISSION_1" /> וגם <ph name="PERMISSION_2" /> חסומות</translation>
 <translation id="6270391203985052864">אתרים יכולים לבקש לשלוח התראות</translation>
 <translation id="6295158916970320988">כל האתרים</translation>
+<translation id="6304434827459067558">לאתר <ph name="SITE" /> אין אפשרות להשתמש במידע שלך</translation>
 <translation id="6320088164292336938">רטט</translation>
 <translation id="6344622098450209924">חסימת מעקב</translation>
 <translation id="6367753977865761591">חסימת הכניסה של צד שלישי לאתר ספציפי.</translation>
@@ -314,6 +329,7 @@
 <translation id="6500423977866688905">כשהחלון צר, אפשר לבקש תצוגת נייד.</translation>
 <translation id="6527303717912515753">שיתוף</translation>
 <translation id="652937045869844725">‏אפשר להפעיל קובצי cookie של צד שלישי. במצב כזה יש פחות הגנה, אבל סביר יותר שהתכונות באתר יפעלו</translation>
+<translation id="6530703012083415527">כשהאפשרות מופעלת, אתרים יכולים להציג חלונות קופצים ולהשתמש בהפניות אוטומטיות. כשהאפשרות מושבתת, אתרים לא יכולים להציג חלונות קופצים ולהשתמש בהפניות אוטומטיות.</translation>
 <translation id="6545864417968258051">‏סריקת Bluetooth</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{נחסמו ההרשאות <ph name="PERMISSION_1" />,‏ <ph name="PERMISSION_2" /> ועוד אחת (<ph name="NUM_MORE" />)}one{נחסמו ההרשאות <ph name="PERMISSION_1" />,‏ <ph name="PERMISSION_2" /> ועוד <ph name="NUM_MORE" />}two{נחסמו ההרשאות <ph name="PERMISSION_1" />,‏ <ph name="PERMISSION_2" /> ועוד <ph name="NUM_MORE" />}other{נחסמו ההרשאות <ph name="PERMISSION_1" />,‏ <ph name="PERMISSION_2" /> ועוד <ph name="NUM_MORE" />}}</translation>
 <translation id="6554732001434021288">הביקור האחרון התבצע לפני <ph name="NUM_DAYS" /> ימים</translation>
@@ -345,6 +361,7 @@
 <translation id="7053983685419859001">חסימה</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{נבחר אחד}one{נבחרו #}two{נבחרו #}other{נבחרו #}}</translation>
 <translation id="7087918508125750058">נבחרו <ph name="ITEM_COUNT" />. האפשרויות מוצגות בחלק העליון של המסך</translation>
+<translation id="7137403271056944713">‏שליטה במכשירי MIDI ותכנות מחדש</translation>
 <translation id="7141896414559753902">חסימה של חלונות קופצים והפניות אוטומטיות באתרים (מומלץ)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="7180611975245234373">רענון</translation>
@@ -356,6 +373,7 @@
 <translation id="7243308994586599757">אפשרויות הזמינות באזור החלק התחתון של המסך</translation>
 <translation id="7250468141469952378">נבחרו <ph name="ITEM_COUNT" /></translation>
 <translation id="7260727271532453612">פועלות: <ph name="PERMISSION_1" /> וגם <ph name="PERMISSION_2" /></translation>
+<translation id="7276071417425470385">כשהאפשרות מופעלת, אתרים יכולים לבקש הרשאה להשתמש במכשירי מציאות מדומה. כשהאפשרות מושבתת, אתרים לא יכולים להשתמש במכשירי מציאות מדומה.</translation>
 <translation id="7284451015630589124">‏חסמת אתרים כך שלא יוכלו להשתמש בקובצי Cookie של צד שלישי כדי לעקוב אחריך במהלך הגלישה. בהגדרות ניתן <ph name="BEGIN_LINK" />לנהל את האמצעים לחסימת מעקב<ph name="END_LINK" />.</translation>
 <translation id="7302486331832100261">הבחירה שלך היא בדרך כלל לחסום התראות. כדי לאפשר את ההתראות, ניתן להקיש על 'פרטים'.</translation>
 <translation id="7366415735885268578">הוספת אתר</translation>
@@ -365,7 +383,9 @@
 <translation id="7423098979219808738">תופיע בקשת אישור</translation>
 <translation id="7423538860840206698">הגישה לקריאה מלוח העריכה נחסמה</translation>
 <translation id="7425915948813553151">עיצוב כהה באתרים</translation>
+<translation id="7474522811371247902">‏Chrome מגביל את השימוש בקובצי Cookie של צד שלישי ברוב האתרים. עם זאת, קובצי Cookie של צד שלישי מותרים באתר הזה כי הוא מסתמך עליהם לאספקת שירותים בסיסיים.\n\nבהגדרות <ph name="BEGIN_LINK" />ניתן לנהל את האפשרויות של חסימת המעקב<ph name="END_LINK" />.</translation>
 <translation id="7521387064766892559">JavaScript</translation>
+<translation id="7547989957535180761">כשהאפשרות מופעלת, אתרים יכולים להציג בקשות כניסה. כשהאפשרות מושבתת, אתרים לא יכולים להציג בקשות כניסה.</translation>
 <translation id="7554752735887601236">אתר כלשהו משתמש במיקרופון שלך</translation>
 <translation id="7561196759112975576">תמיד</translation>
 <translation id="757524316907819857">חסימה של הפעלת תוכן מוגן על-ידי אתרים</translation>
@@ -381,6 +401,7 @@
 <translation id="780301667611848630">לא תודה</translation>
 <translation id="7804248752222191302">אתר כלשהו משתמש במצלמה שלך</translation>
 <translation id="7807060072011926525">‏סופק על ידי Google</translation>
+<translation id="7822573154188733812">‏Chrome מונע מאתרים להשתמש בקובצי Cookie של צד שלישי כדי לעקוב אחריך במהלך הגלישה. בהגדרות ניתן <ph name="BEGIN_LINK" />לנהל את האמצעים לחסימת מעקב<ph name="END_LINK" />.</translation>
 <translation id="7835852323729233924">מדיה פועלת</translation>
 <translation id="783819812427904514">ביטול ההשתקה של הסרטון</translation>
 <translation id="7846076177841592234">ביטול הבחירה</translation>
@@ -389,6 +410,7 @@
 <translation id="7940722705963108451">קבלת תזכורת</translation>
 <translation id="7974024493641668069">{COUNT,plural, =1{אתר אחד (<ph name="FPS_MEMBERS_COUNT" />) בקבוצת האתרים של <ph name="FPS_OWNER" /> שיש לו הרשאה לראות את הפעילות שלך בקבוצה}one{<ph name="FPS_MEMBERS_COUNT" /> אתרים בקבוצת האתרים של <ph name="FPS_OWNER" /> שיש להם הרשאה לראות את הפעילות שלך בקבוצה}two{<ph name="FPS_MEMBERS_COUNT" /> אתרים בקבוצת האתרים של <ph name="FPS_OWNER" /> שיש להם הרשאה לראות את הפעילות שלך בקבוצה}other{<ph name="FPS_MEMBERS_COUNT" /> אתרים בקבוצת האתרים של <ph name="FPS_OWNER" /> שיש להם הרשאה לראות את הפעילות שלך בקבוצה}}</translation>
 <translation id="7986741934819883144">בחירת איש קשר</translation>
+<translation id="7990211076305263060">כשהאפשרות מופעלת, אתרים יכולים לבקש הרשאה להשתמש במיקרופון. כשהאפשרות מושבתת, אתרים לא יכולים להשתמש במיקרופון.</translation>
 <translation id="8007176423574883786">כבוי בשביל המכשיר הזה</translation>
 <translation id="802154636333426148">ההורדה נכשלה</translation>
 <translation id="8042586301629853791">מיון לפי:</translation>
@@ -397,10 +419,11 @@
 <translation id="8077120325605624147">לכל אתר שבו מבקרים יש הרשאה להציג כל מודעה</translation>
 <translation id="8087000398470557479">‏התוכן הזה הוא מ-<ph name="DOMAIN_NAME" />, ומוגש על-ידי Google.</translation>
 <translation id="8088603949666785339">אפשרויות נוספות ב<ph name="BANNER_TITLE" /></translation>
+<translation id="8113501330600751161">{DAYS,plural, =1{‏קובצי Cookie יוגבלו מחר שוב ב-Chrome}one{‏יש עוד # ימים עד שקובצי Cookie יוגבלו שוב ב-Chrome}two{‏יש עוד יומיים עד שקובצי Cookie יוגבלו שוב ב-Chrome}other{‏יש עוד # ימים עד שקובצי Cookie יוגבלו שוב ב-Chrome}}</translation>
 <translation id="8116925261070264013">מושתקים</translation>
+<translation id="8117244575099414087">כשהאפשרות מופעלת, אתרים יכולים להשתמש בחיישני המכשיר. כשהאפשרות מושבתת, אתרים לא יכולים להשתמש בחיישנים.</translation>
 <translation id="813082847718468539">הצגת נתוני אתר</translation>
 <translation id="8131740175452115882">אישור</translation>
-<translation id="8154912474061769055">ייתכן שהתכונות של חלק גדול מהאתרים לא יפעלו</translation>
 <translation id="8168435359814927499">תוכן</translation>
 <translation id="8186479265534291036">‏האתר לא פועל? קובצי cookie של צד שלישי חסומים</translation>
 <translation id="8197286292360124385">פועלת: <ph name="PERMISSION_1" /></translation>
@@ -414,7 +437,6 @@
 <translation id="8324158725704657629">לא לשאול שוב</translation>
 <translation id="8362795839483915693">אפשר להגדיל או להקטין את התצוגה של האתרים שבהם מבקרים</translation>
 <translation id="8372893542064058268">אישור סנכרון ברקע לאתר ספציפי.</translation>
-<translation id="8376384591331888629">‏כולל קובצי cookie של צד שלישי באתר זה</translation>
 <translation id="83792324527827022">אתר כלשהו משתמש במצלמה ובמיקרופון שלך</translation>
 <translation id="8380167699614421159">באתר הזה מוצגות מודעות מפריעות או מטעות</translation>
 <translation id="8394832520002899662">כדי לחזור לאתר, יש להקיש כאן</translation>
@@ -435,12 +457,14 @@
 <translation id="8564613706851221529">{COUNT,plural, =1{‏קובצי cookie מותרים לאתר אחד (<ph name="FPS_MEMBERS_COUNT" />) של <ph name="FPS_OWNER" />}one{‏קובצי cookie מותרים ל-<ph name="FPS_MEMBERS_COUNT" /> אתרים של <ph name="FPS_OWNER" />}two{‏קובצי cookie מותרים ל-<ph name="FPS_MEMBERS_COUNT" /> אתרים של <ph name="FPS_OWNER" />}other{‏קובצי cookie מותרים ל-<ph name="FPS_MEMBERS_COUNT" /> אתרים של <ph name="FPS_OWNER" />}}</translation>
 <translation id="857943718398505171">מותרת (מומלץ)</translation>
 <translation id="8609465669617005112">הזזה למעלה</translation>
+<translation id="8617611086246832542">כשהאפשרות מופעלת, אפשר לראות אתרים בתצוגה למחשב. כשהאפשרות מושבתת, אפשר לראות אתרים בתצוגה לנייד.</translation>
 <translation id="8649036394979866943">‏ב-Chrome יש הגבלה על השימוש של רוב האתרים בקובצי Cookie של צד שלישי לצורך מעקב אחריך במהלך הגלישה. בהגדרות ניתן <ph name="BEGIN_LINK" />לנהל את האמצעים לחסימת מעקב<ph name="END_LINK" /></translation>
 <translation id="8676374126336081632">ניקוי קלט</translation>
 <translation id="8681886425883659911">הצגת המודעות חסומה באתרים שידוע שמוצגות בהם מודעות שמפריעות או מודעות מטעות</translation>
 <translation id="868929229000858085">חיפוש באנשי הקשר</translation>
 <translation id="8712637175834984815">הבנתי</translation>
 <translation id="8719283222052720129">‏יש להעניק הרשאה עבור <ph name="APP_NAME" /> ב<ph name="BEGIN_LINK" />הגדרות Android<ph name="END_LINK" />.</translation>
+<translation id="8721719390026067591">‏כשהאפשרות מופעלת, אתרים יכולים לבקש הרשאה לחפש מכשירי Bluetooth. כשהאפשרות מושבתת, אתרים לא יכולים לחפש מכשירי Bluetooth.</translation>
 <translation id="8725066075913043281">ניסיון חוזר</translation>
 <translation id="8730621377337864115">בוצע</translation>
 <translation id="8736193154595564524">{NUM_SELECTED,plural, =1{יש אתר אחד עם הרשאה}one{יש # אתרים עם הרשאה}two{יש # אתרים עם הרשאה}other{יש # אתרים עם הרשאה}}</translation>
@@ -450,8 +474,8 @@
 <translation id="8803526663383843427">במצב מופעל</translation>
 <translation id="8805385115381080995">הגלישה מהירה יותר כי פחות סביר שאתרים יבקשו לאמת שמדובר באדם אמיתי</translation>
 <translation id="8816026460808729765">חסימת הגישה של אתרים אל חיישנים</translation>
-<translation id="8823559166155093873">‏חסימת קובצי cookie</translation>
 <translation id="8847988622838149491">USB</translation>
+<translation id="8874790741333031443">‏אפשר להפעיל קובצי cookie של צד שלישי באופן זמני. במצב כזה יש פחות הגנה במהלך הגלישה, אבל סביר יותר שהתכונות באתר יפעלו כצפוי.</translation>
 <translation id="8889294078294184559">‏במהלך הגלישה, אתרים אחרים יכולים לבדוק ב-Chrome ולאמת שסביר להניח שמדובר באדם אמיתי, לפי פרטים שנשמרו בביקור באתר קודם.</translation>
 <translation id="8899807382908246773">מודעות שמפריעות</translation>
 <translation id="8903921497873541725">התקרבות לתצוגה</translation>
@@ -459,10 +483,10 @@
 <translation id="8926666909099850184">‏קישוריות ה-NFC מושבתת במכשיר הזה. ניתן להפעיל אותה דרך <ph name="BEGIN_LINK" />הגדרות Android<ph name="END_LINK" />.</translation>
 <translation id="8928445016601307354">‏לאתרים אין הרשאה לראות ולשנות מידע במכשירי NFC.</translation>
 <translation id="8944485226638699751">יש הגבלה</translation>
-<translation id="8958424370300090006">‏חסימת קובצי Cookie של אתר מסוים.</translation>
 <translation id="8959122750345127698">הניווט לא אפשרי: <ph name="URL" /></translation>
 <translation id="8986362086234534611">לשכוח</translation>
 <translation id="8990043154272859344">תתבצע יציאה מכל האתרים</translation>
+<translation id="9002538116239926534">כשהאפשרות מופעלת, אתרים יכולים לשמור נתונים במכשיר. כשהאפשרות מושבתת, אתרים לא יכולים לשמור נתונים במכשיר.</translation>
 <translation id="9011903857143958461">יש הרשאה לאתר <ph name="SITE_NAME" /></translation>
 <translation id="9019902583201351841">מנוהל על-ידי ההורים שלך</translation>
 <translation id="9039697262778250930">יכול להיות שתבוצע יציאה מהחשבון באתרים האלה</translation>

@@ -37,6 +37,7 @@ copy("stage_generated") {
   sources = [
     "$root_gen_dir/mojo/public/mojom/base/unguessable_token.mojom-lite.js",
     "$root_gen_dir/third_party/blink/public/mojom/file_system_access/file_system_access_transfer_token.mojom-lite.js",
+    "$root_gen_dir/ui/gfx/geometry/mojom/geometry.mojom-lite.js",
     "$target_gen_dir/../../media_app_ui.mojom-lite.js",
     "$target_gen_dir/../../media_app_ui_untrusted.mojom-lite.js",
   ]
@@ -160,6 +161,7 @@ js_library("receiver") {
   deps = [
     ":app_context_test_support",
     ":message_types",
+    ":mojo_api_bootstrap_untrusted",
     ":piex_module_loader",
     "//ash/webui/system_apps/public/js:message_pipe",
     "//ash/webui/system_apps/public/js:sandboxed_load_time_data",
@@ -185,10 +187,14 @@ js_library("mojo_api_bootstrap") {
 
 js_library("mojo_api_bootstrap_untrusted") {
   sources = [
+    "$root_gen_dir/ui/gfx/geometry/mojom/geometry.mojom-lite-for-compile.js",
     "$target_gen_dir/../../media_app_ui_untrusted.mojom-lite-for-compile.js",
   ]
 
   deps = [ "//mojo/public/mojom/base:base_js_library_for_compile" ]
 
-  extra_deps = [ "//ash/webui/media_app_ui:mojo_bindings_untrusted_js" ]
+  extra_deps = [
+    "//ash/webui/media_app_ui:mojo_bindings_untrusted_js",
+    "//ui/gfx/geometry/mojom:mojom",
+  ]
 }

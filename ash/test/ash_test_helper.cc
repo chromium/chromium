@@ -12,6 +12,7 @@
 #include "ash/app_list/test/app_list_test_helper.h"
 #include "ash/assistant/assistant_controller_impl.h"
 #include "ash/assistant/test/test_assistant_service.h"
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/display/display_configuration_controller_test_api.h"
 #include "ash/display/screen_ash.h"
@@ -27,6 +28,7 @@
 #include "ash/shell.h"
 #include "ash/shell_init_params.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
+#include "ash/system/geolocation/test_geolocation_url_loader_factory.h"
 #include "ash/system/message_center/session_state_notification_blocker.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/screen_layout_observer.h"
@@ -48,6 +50,7 @@
 #include "chromeos/ash/components/dbus/typecd/typecd_client.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/ash/services/bluetooth_config/in_process_instance.h"
+#include "chromeos/ash/services/hotspot_config/public/cpp/cros_hotspot_config_test_helper.h"
 #include "chromeos/dbus/power/power_policy_controller.h"
 #include "chromeos/ui/frame/multitask_menu/multitask_menu_nudge_controller.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
@@ -143,12 +146,19 @@ AshTestHelper::AshTestHelper(ui::ContextFactory* context_factory)
   // Clears the saved state so that test doesn't use on the wrong
   // default state.
   shell::ToplevelWindow::ClearSavedStateForTest();
+
+  // SimpleGeolocationProvider has to be initialized before
+  // GeolocationController, which is constructed during Shell::Init().
+  SimpleGeolocationProvider::Initialize(
+      base::MakeRefCounted<TestGeolocationUrlLoaderFactory>());
 }
 
 AshTestHelper::~AshTestHelper() {
   if (app_list_test_helper_) {
     TearDown();
   }
+
+  SimpleGeolocationProvider::DestroyForTesting();
 
   // Ensure the next test starts with a null display::Screen.  This must be done
   // here instead of in TearDown() since some tests test access to the Screen
@@ -201,6 +211,7 @@ void AshTestHelper::TearDown() {
 
   // Destroy all owned objects to prevent tests from depending on their state
   // after this returns.
+  cros_hotspot_config_test_helper_.reset();
   test_keyboard_controller_observer_.reset();
   session_controller_client_.reset();
   test_views_delegate_.reset();
@@ -324,6 +335,12 @@ void AshTestHelper::SetUp(InitParams init_params) {
   }
   if (!views::ViewsDelegate::GetInstance()) {
     test_views_delegate_ = MakeTestViewsDelegate();
+  }
+
+  if (features::IsHotspotEnabled()) {
+    cros_hotspot_config_test_helper_ =
+        std::make_unique<hotspot_config::CrosHotspotConfigTestHelper>(
+            /*use_fake_implementation=*/true);
   }
 
   LoginState::Initialize();

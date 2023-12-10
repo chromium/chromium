@@ -15,8 +15,8 @@ namespace fuzzer {
 
 std::unique_ptr<web::ScriptMessage> ProtoToScriptMessage(
     const web::ScriptMessageProto& proto) {
-  absl::optional<base::Value> body = base::JSONReader::Read(proto.body());
-  absl::optional<GURL> url;
+  std::optional<base::Value> body = base::JSONReader::Read(proto.body());
+  std::optional<GURL> url;
   if (proto.has_url()) {
     url = GURL(proto.url());
   }
@@ -30,7 +30,7 @@ std::unique_ptr<web::ScriptMessage> ProtoToScriptMessage(
     LOG(WARNING) << "is_user_interacting: "
                  << script_message->is_user_interacting();
     LOG(WARNING) << "is_main_frame: " << script_message->is_main_frame();
-    absl::optional<GURL> request_url = script_message->request_url();
+    std::optional<GURL> request_url = script_message->request_url();
     LOG(WARNING) << "request_url: "
                  << (request_url ? request_url.value() : GURL());
   }

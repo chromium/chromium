@@ -5,10 +5,11 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_DBUS_ARC_FAKE_ARCVM_DATA_MIGRATOR_CLIENT_H_
 #define CHROMEOS_ASH_COMPONENTS_DBUS_ARC_FAKE_ARCVM_DATA_MIGRATOR_CLIENT_H_
 
+#include <optional>
+
 #include "base/observer_list.h"
 #include "chromeos/ash/components/dbus/arc/arcvm_data_migrator_client.h"
 #include "chromeos/ash/components/dbus/arcvm_data_migrator/arcvm_data_migrator.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -38,12 +39,12 @@ class COMPONENT_EXPORT(ASH_DBUS_ARC) FakeArcVmDataMigratorClient
   void SendDataMigrationProgress(
       const arc::data_migrator::DataMigrationProgress& progress);
 
-  void set_has_data_to_migrate(absl::optional<bool> has_data_to_migrate) {
+  void set_has_data_to_migrate(std::optional<bool> has_data_to_migrate) {
     has_data_to_migrate_ = has_data_to_migrate;
   }
 
   void set_get_android_data_info_response(
-      const absl::optional<arc::data_migrator::GetAndroidDataInfoResponse>&
+      const std::optional<arc::data_migrator::GetAndroidDataInfoResponse>&
           get_android_data_info_response) {
     get_android_data_info_response_ = get_android_data_info_response;
   }
@@ -57,8 +58,8 @@ class COMPONENT_EXPORT(ASH_DBUS_ARC) FakeArcVmDataMigratorClient
  private:
   base::ObserverList<Observer> observers_;
 
-  absl::optional<bool> has_data_to_migrate_ = true;
-  absl::optional<arc::data_migrator::GetAndroidDataInfoResponse>
+  std::optional<bool> has_data_to_migrate_ = true;
+  std::optional<arc::data_migrator::GetAndroidDataInfoResponse>
       get_android_data_info_response_;
 };
 

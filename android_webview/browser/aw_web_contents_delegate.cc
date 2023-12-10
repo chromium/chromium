@@ -267,16 +267,20 @@ void AwWebContentsDelegate::RequestMediaAccessPermission(
         nullptr);
     return;
   }
+  AwSettings* aw_settings = AwSettings::FromWebContents(web_contents);
+  bool allow_file_access_from_file_urls =
+      aw_settings->GetAllowFileAccessFromFileURLs();
   aw_contents->GetPermissionRequestHandler()->SendRequest(
       std::make_unique<MediaAccessPermissionRequest>(
           request, std::move(callback),
           *AwBrowserContext::FromWebContents(web_contents)
-               ->GetPermissionControllerDelegate()));
+               ->GetPermissionControllerDelegate(),
+          allow_file_access_from_file_urls));
 }
 
 bool AwWebContentsDelegate::CheckMediaAccessPermission(
     content::RenderFrameHost* render_frame_host,
-    const GURL& security_origin,
+    const url::Origin& security_origin,
     blink::mojom::MediaStreamType type) {
   if (!base::FeatureList::IsEnabled(features::kWebViewEnumerateDevicesCache)) {
     return false;
@@ -284,6 +288,11 @@ bool AwWebContentsDelegate::CheckMediaAccessPermission(
   WebContents* web_contents =
       WebContents::FromRenderFrameHost(render_frame_host);
   if (!web_contents) {
+    return false;
+  }
+  AwSettings* aw_settings = AwSettings::FromWebContents(web_contents);
+  if (!aw_settings->GetAllowFileAccessFromFileURLs() &&
+      security_origin.scheme() == url::kFileScheme) {
     return false;
   }
   AwPermissionManager* pm = AwBrowserContext::FromWebContents(web_contents)

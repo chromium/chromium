@@ -169,6 +169,21 @@ bool AAudioStreamWrapper::Open() {
   AAudioStreamBuilder_setFramesPerDataCallback(builder,
                                                params_.frames_per_buffer());
 
+  if (stream_type_ == StreamType::kInput) {
+    // Set AAUDIO_INPUT_PRESET_VOICE_COMMUNICATION when we need echo
+    // cancellation. Otherwise, we use AAUDIO_INPUT_PRESET_CAMCORDER instead
+    // of the platform default of AAUDIO_INPUT_PRESET_VOICE_RECOGNITION, since
+    // it supposedly uses a wideband signal.
+    //
+    // We do not use AAUDIO_INPUT_PRESET_UNPROCESSED, even if
+    // `params_.effects() == AudioParameters::NO_EFFECTS` because the lack of
+    // automatic gain control results in quiet, sometimes silent, streams.
+    AAudioStreamBuilder_setInputPreset(
+        builder, params_.effects() & AudioParameters::ECHO_CANCELLER
+                     ? AAUDIO_INPUT_PRESET_VOICE_COMMUNICATION
+                     : AAUDIO_INPUT_PRESET_CAMCORDER);
+  }
+
   // Callbacks
   AAudioStreamBuilder_setDataCallback(builder, OnAudioDataRequestedCallback,
                                       destruction_helper_.get());

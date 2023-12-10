@@ -78,6 +78,24 @@ public class PrefServiceTest {
     }
 
     @Test
+    public void testGetDouble() {
+        double expected = 1.23;
+
+        doReturn(expected).when(mNativeMock).getDouble(NATIVE_HANDLE, PREF);
+
+        assertEquals(expected, mPrefService.getDouble(PREF), 0.01f);
+    }
+
+    @Test
+    public void testSetDouble() {
+        double value = 12.34;
+
+        mPrefService.setDouble(PREF, value);
+
+        verify(mNativeMock).setDouble(eq(NATIVE_HANDLE), eq(PREF), eq(value));
+    }
+
+    @Test
     public void testGetString() {
         String expected = "foo";
 

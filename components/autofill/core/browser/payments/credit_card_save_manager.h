@@ -21,7 +21,7 @@
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/credit_card_save_metrics.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
-#include "components/autofill/core/browser/payments/payments_client.h"
+#include "components/autofill/core/browser/payments/payments_network_interface.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/strike_databases/payments/credit_card_save_strike_database.h"
 #include "components/autofill/core/browser/strike_databases/payments/cvc_storage_strike_database.h"
@@ -98,10 +98,11 @@ class CreditCardSaveManager {
   };
 
   // The parameters should outlive the CreditCardSaveManager.
-  CreditCardSaveManager(AutofillClient* client,
-                        payments::PaymentsClient* payments_client,
-                        const std::string& app_locale,
-                        PersonalDataManager* personal_data_manager);
+  CreditCardSaveManager(
+      AutofillClient* client,
+      payments::PaymentsNetworkInterface* payments_network_interface,
+      const std::string& app_locale,
+      PersonalDataManager* personal_data_manager);
 
   CreditCardSaveManager(const CreditCardSaveManager&) = delete;
   CreditCardSaveManager& operator=(const CreditCardSaveManager&) = delete;
@@ -175,7 +176,7 @@ class CreditCardSaveManager {
   // identifier for the card on the server. Exposed for testing.
   virtual void OnDidUploadCard(
       AutofillClient::PaymentsRpcResult result,
-      const payments::PaymentsClient::UploadCardResponseDetails&
+      const payments::PaymentsNetworkInterface::UploadCardResponseDetails&
           upload_card_response_details);
 
  private:
@@ -199,6 +200,10 @@ class CreditCardSaveManager {
 
   // Returns the CvcStorageStrikeDatabase for `client_`.
   CvcStorageStrikeDatabase* GetCvcStorageStrikeDatabase();
+
+  // Query the CvcStorageStrikeDatabase to check if the offer-to-save prompt for
+  // this CVC should be blocked.
+  bool DetermineAndLogCvcSaveStrikeDatabaseBlockDecision();
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   // Returns the GetLocalCardMigrationStrikeDatabase for |client_|.
@@ -229,7 +234,7 @@ class CreditCardSaveManager {
   // contain countries.
   void SetProfilesForCreditCardUpload(
       const CreditCard& card,
-      payments::PaymentsClient::UploadRequestDetails* upload_request);
+      payments::PaymentsNetworkInterface::UploadRequestDetails* upload_request);
 
   // Analyzes the decisions made while importing address profile and credit card
   // data in preparation for upload credit card save, in order to determine what
@@ -305,7 +310,8 @@ class CreditCardSaveManager {
   // if the user has accepted the prompt.
   void OnDidGetUploadRiskData(const std::string& risk_data);
 
-  // Finalizes the upload request and calls PaymentsClient::UploadCard().
+  // Finalizes the upload request and calls
+  // PaymentsNetworkInterface::UploadCard().
   void SendUploadCardRequest();
 
   // Called when the user ignored or declined the credit card save prompt. Logs
@@ -344,7 +350,7 @@ class CreditCardSaveManager {
 
   // Handles Payments service requests. Weak ref. In Chrome, it's owned by
   // ChromeAutofillClient and ChromeAutofillClientIOS.
-  raw_ptr<payments::PaymentsClient> payments_client_;
+  raw_ptr<payments::PaymentsNetworkInterface> payments_network_interface_;
 
   std::string app_locale_;
 
@@ -358,7 +364,7 @@ class CreditCardSaveManager {
   CreditCard card_save_candidate_;
 
   // Collected information about a pending upload request.
-  payments::PaymentsClient::UploadRequestDetails upload_request_;
+  payments::PaymentsNetworkInterface::UploadRequestDetails upload_request_;
 
   // A bitmask of |AutofillMetrics::CardUploadDecisionMetric| representing the
   // decisions made when determining if credit card upload save should be

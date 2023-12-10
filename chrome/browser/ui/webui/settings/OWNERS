@@ -1,5 +1,7 @@
 file://chrome/browser/resources/settings/OWNERS
 
+per-file accessibility_main_handler*=file://ui/accessibility/OWNERS
+
 per-file people_handler*=msalama@chromium.org
 per-file people_handler*=treib@chromium.org
 

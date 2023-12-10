@@ -19,9 +19,7 @@ import org.chromium.base.task.TaskTraits;
 import java.io.PrintWriter;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-/**
- * Bridge class for calls between Java and C++.
- */
+/** Bridge class for calls between Java and C++. */
 @JNINamespace("history_report")
 public class HistoryReportJniBridge implements SearchJniBridge {
     private static final String TAG = "historyreport";
@@ -37,10 +35,12 @@ public class HistoryReportJniBridge implements SearchJniBridge {
         if (observer == null) return false;
         if (mNativeHistoryReportJniBridge != 0) return true;
         mDataChangeObserver = observer;
-        PostTask.runSynchronously(TaskTraits.UI_DEFAULT, () -> {
-            mNativeHistoryReportJniBridge =
-                    HistoryReportJniBridgeJni.get().init(HistoryReportJniBridge.this);
-        });
+        PostTask.runSynchronously(
+                TaskTraits.UI_DEFAULT,
+                () -> {
+                    mNativeHistoryReportJniBridge =
+                            HistoryReportJniBridgeJni.get().init(HistoryReportJniBridge.this);
+                });
         if (mNativeHistoryReportJniBridge == 0) {
             Log.w(TAG, "JNI bridge initialization unsuccessful.");
             return false;
@@ -69,8 +69,13 @@ public class HistoryReportJniBridge implements SearchJniBridge {
             return new DeltaFileEntry[0];
         }
         Log.d(TAG, "query %d %d", lastSeqNo, limit);
-        DeltaFileEntry[] result = HistoryReportJniBridgeJni.get().query(
-                mNativeHistoryReportJniBridge, HistoryReportJniBridge.this, lastSeqNo, limit);
+        DeltaFileEntry[] result =
+                HistoryReportJniBridgeJni.get()
+                        .query(
+                                mNativeHistoryReportJniBridge,
+                                HistoryReportJniBridge.this,
+                                lastSeqNo,
+                                limit);
         return result;
     }
 
@@ -82,8 +87,11 @@ public class HistoryReportJniBridge implements SearchJniBridge {
             return -1;
         }
         Log.d(TAG, "trimDeltaFile %d", seqNoLowerBound);
-        return HistoryReportJniBridgeJni.get().trimDeltaFile(
-                mNativeHistoryReportJniBridge, HistoryReportJniBridge.this, seqNoLowerBound);
+        return HistoryReportJniBridgeJni.get()
+                .trimDeltaFile(
+                        mNativeHistoryReportJniBridge,
+                        HistoryReportJniBridge.this,
+                        seqNoLowerBound);
     }
 
     @Override
@@ -94,8 +102,9 @@ public class HistoryReportJniBridge implements SearchJniBridge {
             return new UsageReport[0];
         }
         Log.d(TAG, "getUsageReportsBatch %d", batchSize);
-        return HistoryReportJniBridgeJni.get().getUsageReportsBatch(
-                mNativeHistoryReportJniBridge, HistoryReportJniBridge.this, batchSize);
+        return HistoryReportJniBridgeJni.get()
+                .getUsageReportsBatch(
+                        mNativeHistoryReportJniBridge, HistoryReportJniBridge.this, batchSize);
     }
 
     @Override
@@ -109,8 +118,9 @@ public class HistoryReportJniBridge implements SearchJniBridge {
         for (int i = 0; i < reports.length; ++i) {
             reportIds[i] = reports[i].reportId;
         }
-        HistoryReportJniBridgeJni.get().removeUsageReports(
-                mNativeHistoryReportJniBridge, HistoryReportJniBridge.this, reportIds);
+        HistoryReportJniBridgeJni.get()
+                .removeUsageReports(
+                        mNativeHistoryReportJniBridge, HistoryReportJniBridge.this, reportIds);
     }
 
     @Override
@@ -120,8 +130,8 @@ public class HistoryReportJniBridge implements SearchJniBridge {
             Log.w(TAG, "clearUsageReports when JNI bridge not initialized");
             return;
         }
-        HistoryReportJniBridgeJni.get().clearUsageReports(
-                mNativeHistoryReportJniBridge, HistoryReportJniBridge.this);
+        HistoryReportJniBridgeJni.get()
+                .clearUsageReports(mNativeHistoryReportJniBridge, HistoryReportJniBridge.this);
     }
 
     @Override
@@ -131,18 +141,23 @@ public class HistoryReportJniBridge implements SearchJniBridge {
             Log.w(TAG, "addHistoricVisitsToUsageReportsBuffer when JNI bridge not initialized");
             return false;
         }
-        return HistoryReportJniBridgeJni.get().addHistoricVisitsToUsageReportsBuffer(
-                mNativeHistoryReportJniBridge, HistoryReportJniBridge.this);
+        return HistoryReportJniBridgeJni.get()
+                .addHistoricVisitsToUsageReportsBuffer(
+                        mNativeHistoryReportJniBridge, HistoryReportJniBridge.this);
     }
 
     @Override
     public void dump(PrintWriter writer) {
-        writer.append("\nHistoryReportJniBridge [").append("started: " + mStarted.get())
+        writer.append("\nHistoryReportJniBridge [")
+                .append("started: " + mStarted.get())
                 .append(", initialized: " + isInitialized());
         if (isInitialized()) {
-            writer.append(", "
-                    + HistoryReportJniBridgeJni.get().dump(
-                            mNativeHistoryReportJniBridge, HistoryReportJniBridge.this));
+            writer.append(
+                    ", "
+                            + HistoryReportJniBridgeJni.get()
+                                    .dump(
+                                            mNativeHistoryReportJniBridge,
+                                            HistoryReportJniBridge.this));
         }
         writer.append("]");
     }
@@ -153,8 +168,16 @@ public class HistoryReportJniBridge implements SearchJniBridge {
     }
 
     @CalledByNative
-    private static void setDeltaFileEntry(DeltaFileEntry[] entries, int position, long seqNo,
-            String type, String id, String url, int score, String title, String indexedUrl) {
+    private static void setDeltaFileEntry(
+            DeltaFileEntry[] entries,
+            int position,
+            long seqNo,
+            String type,
+            String id,
+            String url,
+            int score,
+            String title,
+            String indexedUrl) {
         entries[position] = new DeltaFileEntry(seqNo, type, id, url, score, title, indexedUrl);
     }
 
@@ -164,8 +187,13 @@ public class HistoryReportJniBridge implements SearchJniBridge {
     }
 
     @CalledByNative
-    private static void setUsageReport(UsageReport[] reports, int position, String reportId,
-            String pageId, long timestampMs, boolean typedVisit) {
+    private static void setUsageReport(
+            UsageReport[] reports,
+            int position,
+            String reportId,
+            String pageId,
+            long timestampMs,
+            boolean typedVisit) {
         reports[position] = new UsageReport(reportId, pageId, timestampMs, typedVisit);
     }
 
@@ -196,17 +224,31 @@ public class HistoryReportJniBridge implements SearchJniBridge {
     @NativeMethods
     interface Natives {
         long init(HistoryReportJniBridge caller);
-        long trimDeltaFile(long nativeHistoryReportJniBridge, HistoryReportJniBridge caller,
+
+        long trimDeltaFile(
+                long nativeHistoryReportJniBridge,
+                HistoryReportJniBridge caller,
                 long seqNoLowerBound);
-        DeltaFileEntry[] query(long nativeHistoryReportJniBridge, HistoryReportJniBridge caller,
-                long lastSeqNo, int limit);
+
+        DeltaFileEntry[] query(
+                long nativeHistoryReportJniBridge,
+                HistoryReportJniBridge caller,
+                long lastSeqNo,
+                int limit);
+
         UsageReport[] getUsageReportsBatch(
                 long nativeHistoryReportJniBridge, HistoryReportJniBridge caller, int batchSize);
-        void removeUsageReports(long nativeHistoryReportJniBridge, HistoryReportJniBridge caller,
+
+        void removeUsageReports(
+                long nativeHistoryReportJniBridge,
+                HistoryReportJniBridge caller,
                 String[] reportIds);
+
         void clearUsageReports(long nativeHistoryReportJniBridge, HistoryReportJniBridge caller);
+
         boolean addHistoricVisitsToUsageReportsBuffer(
                 long nativeHistoryReportJniBridge, HistoryReportJniBridge caller);
+
         String dump(long nativeHistoryReportJniBridge, HistoryReportJniBridge caller);
     }
 }

@@ -76,7 +76,6 @@ DisplaySnapshot::DisplaySnapshot(
     PrivacyScreenState privacy_screen_state,
     bool has_content_protection_key,
     bool has_color_correction_matrix,
-    bool color_correction_in_linear_space,
     const gfx::ColorSpace& color_space,
     uint32_t bits_per_channel,
     const absl::optional<gfx::HDRStaticMetadata>& hdr_static_metadata,
@@ -107,7 +106,6 @@ DisplaySnapshot::DisplaySnapshot(
       privacy_screen_state_(privacy_screen_state),
       has_content_protection_key_(has_content_protection_key),
       has_color_correction_matrix_(has_color_correction_matrix),
-      color_correction_in_linear_space_(color_correction_in_linear_space),
       color_space_(color_space),
       bits_per_channel_(bits_per_channel),
       hdr_static_metadata_(hdr_static_metadata),
@@ -153,12 +151,11 @@ std::unique_ptr<DisplaySnapshot> DisplaySnapshot::Clone() {
       display_id_, port_display_id_, edid_display_id_, connector_index_,
       origin_, physical_size_, type_, base_connector_id_, path_topology_,
       is_aspect_preserving_scaling_, has_overscan_, privacy_screen_state_,
-      has_content_protection_key_, has_color_correction_matrix_,
-      color_correction_in_linear_space_, color_space_, bits_per_channel_,
-      hdr_static_metadata_, display_name_, sys_path_, std::move(clone_modes),
-      panel_orientation_, edid_, cloned_current_mode, cloned_native_mode,
-      product_code_, year_of_manufacture_, maximum_cursor_size_,
-      variable_refresh_rate_state_, vsync_rate_min_,
+      has_content_protection_key_, has_color_correction_matrix_, color_space_,
+      bits_per_channel_, hdr_static_metadata_, display_name_, sys_path_,
+      std::move(clone_modes), panel_orientation_, edid_, cloned_current_mode,
+      cloned_native_mode, product_code_, year_of_manufacture_,
+      maximum_cursor_size_, variable_refresh_rate_state_, vsync_rate_min_,
       drm_formats_and_modifiers_);
 }
 

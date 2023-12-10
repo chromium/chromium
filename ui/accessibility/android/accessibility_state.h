@@ -66,6 +66,20 @@ class AccessibilityState {
 
   // Returns a vector containing the IDs of all running accessibility services.
   static std::vector<std::string> GetAccessibilityServiceIds();
+
+  // --------------------------------------------------------------------------
+  // Methods that call into AccessibilityAutofillHelper.java via JNI
+  // --------------------------------------------------------------------------
+
+  // Returns true if this instance should respect the displayed password text
+  // (available in the shadow DOM), false if it should return bullets. Default
+  // false.
+  static bool ShouldRespectDisplayedPasswordText();
+
+  // Returns true if this instance should expose password text to AT (e.g. as a
+  // user is typing in a field), false if it should return bullets. Default
+  // true.
+  static bool ShouldExposePasswordText();
 };
 
 }  // namespace ui

@@ -1,93 +1,30 @@
 <style include="tab-organization-shared-style">
-  :host {
-    --border-height: 220px;
-    --border-width: 100%;
-    --primary-background-color: var(--color-tab-organization-gradient1);
-    --secondary-background-color: var(--color-tab-organization-gradient2);
-  }
-
-  .background {
-    --border-thickness: 2px;
-    background-color: var(--color-sys-surface);
-    border-radius: 6px;
-    height: calc(var(--border-height)
-                     - 2 * var(--border-thickness));
-    width: calc(var(--border-width)
-                    - 2 * var(--border-thickness));
-  }
-
-  .border {
-    align-items: center;
+  #loading-container {
+    border: solid 2px var(--color-loading-gradient-border);
     border-radius: 8px;
-    display: flex;
-    height: var(--border-height);
-    justify-content: center;
-    width: var(--border-width);
-  }
-
-  .gradient {
-    animation: gradient 5s linear infinite;
-    background: linear-gradient(
-      -45deg,
-      var(--primary-background-color) 0%,
-      var(--secondary-background-color) 33%,
-      var(--primary-background-color) 66%,
-      var(--secondary-background-color) 100%);
-    background-position: 20% 0;
-    background-size: 400% 400%;
-  }
-
-  /* 20% 0% is an experimentally derived start position which allows the
-   * gradient to loop without perceivable jitter.
-   */
-  @keyframes gradient {
-    0% {
-      background-position: 20% 0;
-    }
-    100% {
-      background-position: 100% 100%;
-    }
-  }
-
-  .mask {
-    clip-path: url(#clip_path);
-    height: 100%;
-    width: 100%;
+    padding: 14px;
   }
 </style>
 
 <div class="tab-organization-container">
   <div class="tab-organization-header">$i18n{inProgressTitle}</div>
-  <div class="gradient border">
-    <div class="background">
-      <div class="gradient mask">
-        <svg>
-          <defs>
-            <clipPath id="clip_path" x="14" y="14" width="248" height="191">
-              <rect x="14" y="14" width="248" height="35" rx="8" fill="white">
-              </rect>
-              <rect x="14" y="69" width="40" height="40" rx="8" fill="white">
-              </rect>
-              <rect x="70" y="71" width="116" height="16" rx="4" fill="white">
-              </rect>
-              <rect x="70" y="119" width="116" height="16" rx="4" fill="white">
-              </rect>
-              <rect x="70" y="167" width="116" height="16" rx="4" fill="white">
-              </rect>
-              <rect x="70" y="93" width="76" height="14" rx="4" fill="white">
-              </rect>
-              <rect x="70" y="141" width="76" height="14" rx="4" fill="white">
-              </rect>
-              <rect x="70" y="189" width="76" height="14" rx="4" fill="white">
-              </rect>
-              <rect x="14" y="117" width="40" height="40" rx="8" fill="white">
-              </rect>
-              <rect x="14" y="165" width="40" height="40" rx="8" fill="white">
-              </rect>
-            </clipPath>
-          </defs>
+  <div id="loading-container">
+    <cr-loading-gradient>
+        <svg width="100%" height="191">
+          <clipPath>
+            <rect x="0" y="0" width="100%" height="35" rx="8"></rect>
+            <rect x="0" y="55" width="40" height="40" rx="8"></rect>
+            <rect x="56" y="57" width="116" height="16" rx="4"></rect>
+            <rect x="56" y="105" width="116" height="16" rx="4"></rect>
+            <rect x="56" y="153" width="116" height="16" rx="4"></rect>
+            <rect x="56" y="79" width="76" height="14" rx="4"></rect>
+            <rect x="56" y="127" width="76" height="14" rx="4"></rect>
+            <rect x="56" y="175" width="76" height="14" rx="4"></rect>
+            <rect x="0" y="103" width="40" height="40" rx="8"></rect>
+            <rect x="0" y="151" width="40" height="40" rx="8"></rect>
+          </clipPath>
         </svg>
-      </div>
+      </cr-loading-gradient>
     </div>
   </div>
 </div>

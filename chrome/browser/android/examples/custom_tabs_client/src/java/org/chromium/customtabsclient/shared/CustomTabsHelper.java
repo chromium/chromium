@@ -16,9 +16,7 @@ import android.util.Log;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Helper class for Custom Tabs.
- */
+/** Helper class for Custom Tabs. */
 public class CustomTabsHelper {
     private static final String TAG = "CustomTabsHelper";
     static final String STABLE_PACKAGE = "com.android.chrome";
@@ -35,8 +33,11 @@ public class CustomTabsHelper {
     private CustomTabsHelper() {}
 
     public static void addKeepAliveExtra(Context context, Intent intent) {
-        Intent keepAliveIntent = new Intent().setClassName(
-                context.getPackageName(), KeepAliveService.class.getCanonicalName());
+        Intent keepAliveIntent =
+                new Intent()
+                        .setClassName(
+                                context.getPackageName(),
+                                KeepAliveService.class.getCanonicalName());
         intent.putExtra(EXTRA_CUSTOM_TABS_KEEP_ALIVE, keepAliveIntent);
     }
 
@@ -104,9 +105,8 @@ public class CustomTabsHelper {
     private static boolean hasSpecializedHandlerIntents(Context context, Intent intent) {
         try {
             PackageManager pm = context.getPackageManager();
-            List<ResolveInfo> handlers = pm.queryIntentActivities(
-                    intent,
-                    PackageManager.GET_RESOLVED_FILTER);
+            List<ResolveInfo> handlers =
+                    pm.queryIntentActivities(intent, PackageManager.GET_RESOLVED_FILTER);
             if (handlers == null || handlers.size() == 0) {
                 return false;
             }
@@ -127,6 +127,6 @@ public class CustomTabsHelper {
      * @return All possible chrome package names that provide custom tabs feature.
      */
     public static String[] getPackages() {
-        return new String[]{"", STABLE_PACKAGE, BETA_PACKAGE, DEV_PACKAGE, LOCAL_PACKAGE};
+        return new String[] {"", STABLE_PACKAGE, BETA_PACKAGE, DEV_PACKAGE, LOCAL_PACKAGE};
     }
 }

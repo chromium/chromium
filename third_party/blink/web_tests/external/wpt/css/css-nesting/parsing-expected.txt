@@ -1,8 +1,4 @@
 This is a testharness.js-based test.
-[PASS] .foo { & { color: green; }}
-[PASS] .foo { &.bar { color: green; }}
-[PASS] .foo { & .bar { color: green; }}
-[PASS] .foo { & > .bar { color: green; }}
 [FAIL] .foo { > .bar { color: green; }}
   assert_equals: Inner rule's selector should be "& > .bar". expected "& > .bar" but got "> .bar"
 [FAIL] .foo { > & .bar { color: green; }}
@@ -10,29 +6,12 @@ This is a testharness.js-based test.
 [FAIL] .foo { + .bar & { color: green; }}
   assert_equals: Inner rule's selector should be "& + .bar &". expected "& + .bar &" but got "+ .bar &"
 [FAIL] .foo { + .bar, .foo, > .baz { color: green; }}
-  assert_equals: Inner rule's selector should be "& + .bar, .foo, & > .baz". expected "& + .bar, .foo, & > .baz" but got "+ .bar, .foo, > .baz"
-[PASS] .foo { .foo { color: green; }}
-[PASS] .foo { .test > & .bar { color: green; }}
-[PASS] .foo { .foo, .foo & { color: green; }}
-[PASS] .foo { :is(.bar, .baz) { color: green; }}
-[PASS] .foo { &:is(.bar, .baz) { color: green; }}
-[PASS] .foo { :is(.bar, &.baz) { color: green; }}
-[PASS] .foo { &:is(.bar, &.baz) { color: green; }}
-[PASS] .foo { div& { color: green; }}
-[PASS] INVALID: .foo { &div { color: green; }}
-[PASS] .foo { .class& { color: green; }}
-[PASS] .foo { &.class { color: green; }}
-[PASS] .foo { [attr]& { color: green; }}
-[PASS] .foo { &[attr] { color: green; }}
-[PASS] .foo { #id& { color: green; }}
-[PASS] .foo { &#id { color: green; }}
-[PASS] .foo { :hover& { color: green; }}
-[PASS] .foo { &:hover { color: green; }}
-[PASS] .foo { :is(div)& { color: green; }}
-[PASS] .foo { &:is(div) { color: green; }}
-[PASS] .foo { & .bar & .baz & .qux { color: green; }}
-[PASS] .foo { && { color: green; }}
-[PASS] .foo { & > section, & > article { color: green; }}
-[PASS] .foo, .bar { & + .baz, &.qux { color: green; }}
+  assert_equals: Inner rule's selector should be "& + .bar, & .foo, & > .baz". expected "& + .bar, & .foo, & > .baz" but got "+ .bar, .foo, > .baz"
+[FAIL] .foo { .foo { color: green; }}
+  assert_equals: Inner rule's selector should be "& .foo". expected "& .foo" but got ".foo"
+[FAIL] .foo { .foo, .foo & { color: green; }}
+  assert_equals: Inner rule's selector should be "& .foo, .foo &". expected "& .foo, .foo &" but got ".foo, .foo &"
+[FAIL] .foo { :is(.bar, .baz) { color: green; }}
+  assert_equals: Inner rule's selector should be "& :is(.bar, .baz)". expected "& :is(.bar, .baz)" but got ":is(.bar, .baz)"
 Harness: the test ran to completion.
 

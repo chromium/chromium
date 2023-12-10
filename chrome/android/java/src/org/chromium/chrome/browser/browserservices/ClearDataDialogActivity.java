@@ -36,8 +36,11 @@ public class ClearDataDialogActivity extends AppCompatActivity {
      * Creates an intent for launching this activity for the TWA client app that was uninstalled or
      * had its data cleared.
      */
-    public static Intent createIntent(Context context, String appName,
-            Collection<String> linkedDomains, Collection<String> linkedOrigins,
+    public static Intent createIntent(
+            Context context,
+            String appName,
+            Collection<String> linkedDomains,
+            Collection<String> linkedOrigins,
             boolean appUninstalled) {
         Intent intent = new Intent(context, ClearDataDialogActivity.class);
         intent.putExtra(EXTRA_APP_NAME, appName);
@@ -52,26 +55,31 @@ public class ClearDataDialogActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         AlertDialog.Builder builder =
-                new AlertDialog
-                        .Builder(this, android.R.style.Theme_DeviceDefault_Light_Dialog_Alert)
-                        .setTitle(getString(R.string.twa_clear_data_dialog_title,
-                                getAppNameFromIntent(getIntent())))
+                new AlertDialog.Builder(
+                                this, android.R.style.Theme_DeviceDefault_Light_Dialog_Alert)
+                        .setTitle(
+                                getString(
+                                        R.string.twa_clear_data_dialog_title,
+                                        getAppNameFromIntent(getIntent())))
                         .setMessage(R.string.twa_clear_data_dialog_message)
-                        .setPositiveButton(R.string.settings,
+                        .setPositiveButton(
+                                R.string.settings,
                                 (ignored1, ignored2) -> {
                                     recordDecision(true);
                                     openSettings();
                                     finish();
                                 })
-                        .setNegativeButton(R.string.twa_clear_data_dialog_keep_data,
+                        .setNegativeButton(
+                                R.string.twa_clear_data_dialog_keep_data,
                                 (ignored1, ignored2) -> {
                                     recordDecision(false);
                                     finish();
                                 })
-                        .setOnCancelListener((ignored) -> {
-                            recordDecision(false);
-                            finish();
-                        });
+                        .setOnCancelListener(
+                                (ignored) -> {
+                                    recordDecision(false);
+                                    finish();
+                                });
 
         builder.create().show();
     }

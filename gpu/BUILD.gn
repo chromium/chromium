@@ -602,7 +602,6 @@ test("gpu_unittests") {
     "config/gpu_test_config_unittest.cc",
     "config/gpu_test_expectations_parser_unittest.cc",
     "config/gpu_util_unittest.cc",
-    "config/webgpu_blocklist_unittest.cc",
     "ipc/client/command_buffer_proxy_impl_unittest.cc",
     "ipc/client/image_decode_accelerator_proxy_unittest.cc",
     "ipc/common/gpu_memory_buffer_impl_shared_memory_unittest.cc",
@@ -703,7 +702,10 @@ test("gpu_unittests") {
   }
 
   if (use_dawn) {
-    sources += [ "command_buffer/service/dawn_caching_interface_unittest.cc" ]
+    sources += [
+      "command_buffer/service/dawn_caching_interface_unittest.cc",
+      "config/webgpu_blocklist_unittest.cc",
+    ]
   }
 
   configs += [ "//build/config:precompiled_headers" ]
@@ -767,6 +769,7 @@ test("gpu_unittests") {
 
   if (use_dawn) {
     deps += [
+      "//gpu/config:webgpu_blocklist_impl",
       "//net:test_support",
       "//third_party/dawn/src/dawn:cpp",
       "//third_party/dawn/src/dawn:proc",

@@ -12,6 +12,7 @@ import '../../css/wallpaper.css.js';
 import '../../css/common.css.js';
 
 import {assert} from 'chrome://resources/js/assert.js';
+import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
 import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import {IronScrollThresholdElement} from 'chrome://resources/polymer/v3_0/iron-scroll-threshold/iron-scroll-threshold.js';
 import {afterNextRender} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -470,7 +471,7 @@ export class GooglePhotosPhotosElement extends WithPersonalizationStore {
     const sections: GooglePhotosPhotosSection[] = [];
 
     photos.forEach((photo, i) => {
-      const date = photo.date.data.map(c => String.fromCodePoint(c)).join('');
+      const date = mojoString16ToString(photo.date);
 
       // Find/create the appropriate |section| in which to insert |photo|.
       let section = sections[sections.length - 1];

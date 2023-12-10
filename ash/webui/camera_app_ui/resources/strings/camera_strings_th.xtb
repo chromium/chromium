@@ -5,7 +5,6 @@
 <translation id="1076394037877376434">ลบหน้า <ph name="PAGE_NUMBER" /></translation>
 <translation id="1113173431709655881">โหมดกล้อง</translation>
 <translation id="1153190633558910465">ปิดตารางกริด</translation>
-<translation id="1175958423215084756">ตรวจพบลิงก์ <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213">ลบหน้า <ph name="PAGE_NUMBER" /> แล้ว</translation>
 <translation id="1258009455399840361">หมุน 90 องศาตามเข็มนาฬิกา</translation>
 <translation id="1417314334557041815">แก้ไขหน้า <ph name="INDEX" /></translation>
@@ -60,14 +59,12 @@
 <translation id="3642192109456033823">กำลังประมวลผลวิดีโอ...</translation>
 <translation id="3789724198583203151">หมุน 90 องศาทวนเข็มนาฬิกา</translation>
 <translation id="3810838688059735925">วิดีโอ</translation>
-<translation id="3892148308691398805">คัดลอกข้อความ</translation>
 <translation id="4060608699153044055">คุณบันทึกไม่ได้เนื่องจากพื้นที่เก็บข้อมูลในอุปกรณ์เหลือน้อย คุณต้องเพิ่มพื้นที่ว่างในอุปกรณ์เพื่อเริ่มบันทึก</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> ล้านพิกเซล</translation>
 <translation id="4118525110028899586">หยุดบันทึกชั่วคราว</translation>
 <translation id="4121305183798804752">ตรวจพบเอกสาร</translation>
 <translation id="414641094616694804">เปลี่ยนความละเอียดของกล้องนี้ไม่ได้</translation>
 <translation id="4176463684765177261">ปิดการทำงาน</translation>
-<translation id="4269820728363426813">คัดลอกที่อยู่ลิงก์</translation>
 <translation id="428234092390943511">ภาพขนาดย่อของหน้า</translation>
 <translation id="4349714250734879769">ปรับขนาดเฟรมตาม Chrome</translation>
 <translation id="4383571725254449280">พิมพ์บันทึกประสิทธิภาพ</translation>
@@ -144,7 +141,6 @@
 <translation id="7726641833034062494">บันทึกวิดีโอทั่วไป</translation>
 <translation id="7748344063862150053">มุมขวาบนของเอกสาร</translation>
 <translation id="7933675232020478311">ย้ายไปทางด้านขวาล่าง</translation>
-<translation id="7983668134180549431">ตรวจพบข้อความ</translation>
 <translation id="8079255378695216066">เริ่มบันทึกไม่ได้</translation>
 <translation id="8120146556401698679">เลื่อน เอียง ซูม</translation>
 <translation id="8131740175452115882">ยืนยัน</translation>
@@ -163,6 +159,7 @@
 <translation id="8870695351537079478">เริ่มบันทึกวิดีโอไม่ได้</translation>
 <translation id="8880167521484863515">4 ต่อ 3</translation>
 <translation id="8903921497873541725">ขยาย</translation>
+<translation id="8926890870105777777">เข้าร่วมเครือข่าย "<ph name="WIFINAME" />"</translation>
 <translation id="9045010116236796332">จัดขอบเอกสารทุกด้านให้อยู่ภายในกรอบ</translation>
 <translation id="9045155556724273246">10 วินาที</translation>
 <translation id="906331135292332864">กำลังดำเนินการกับรูปภาพ...</translation>

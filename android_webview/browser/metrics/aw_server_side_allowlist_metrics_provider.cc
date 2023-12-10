@@ -9,13 +9,6 @@
 #include "components/embedder_support/android/metrics/android_metrics_service_client.h"
 #include "third_party/metrics_proto/system_profile.pb.h"
 
-namespace {
-bool IsServerSideAllowlistEnabled() {
-  return base::FeatureList::IsEnabled(
-      android_webview::features::kWebViewAppsPackageNamesServerSideAllowlist);
-}
-}  // namespace
-
 namespace android_webview {
 AwServerSideAllowlistMetricsProvider::AwServerSideAllowlistMetricsProvider()
     : client_(nullptr) {}
@@ -26,9 +19,6 @@ AwServerSideAllowlistMetricsProvider::AwServerSideAllowlistMetricsProvider(
 
 void AwServerSideAllowlistMetricsProvider::ProvideSystemProfileMetrics(
     metrics::SystemProfileProto* system_profile) {
-  if (!IsServerSideAllowlistEnabled()) {
-    return;
-  }
 
   if (IsAppPackageNameSystemApp()) {
     system_profile->set_app_package_name_allowlist_filter(

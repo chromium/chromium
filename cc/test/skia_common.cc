@@ -161,7 +161,7 @@ PaintImage CreateDiscardablePaintImage(
     bool allocate_encoded_data,
     PaintImage::Id id,
     SkColorType color_type,
-    absl::optional<YUVSubsampling> yuv_format,
+    std::optional<YUVSubsampling> yuv_format,
     SkYUVAPixmapInfo::DataType yuv_data_type) {
   if (!color_space)
     color_space = SkColorSpace::MakeSRGB();

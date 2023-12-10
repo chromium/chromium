@@ -31,15 +31,16 @@ KioskEnableScreen::~KioskEnableScreen() = default;
 void KioskEnableScreen::ShowImpl() {
   if (view_)
     view_->Show();
-  KioskAppManager::Get()->GetConsumerKioskAutoLaunchStatus(
+  KioskChromeAppManager::Get()->GetConsumerKioskAutoLaunchStatus(
       base::BindOnce(&KioskEnableScreen::OnGetConsumerKioskAutoLaunchStatus,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
 void KioskEnableScreen::OnGetConsumerKioskAutoLaunchStatus(
-    KioskAppManager::ConsumerKioskAutoLaunchStatus status) {
+    KioskChromeAppManager::ConsumerKioskAutoLaunchStatus status) {
   is_configurable_ =
-      (status == KioskAppManager::ConsumerKioskAutoLaunchStatus::kConfigurable);
+      (status ==
+       KioskChromeAppManager::ConsumerKioskAutoLaunchStatus::kConfigurable);
   if (!is_configurable_) {
     LOG(WARNING) << "Consumer kiosk auto launch feature is not configurable!";
     HandleClose();
@@ -69,7 +70,7 @@ void KioskEnableScreen::HandleEnable() {
     HandleClose();
     return;
   }
-  KioskAppManager::Get()->EnableConsumerKioskAutoLaunch(
+  KioskChromeAppManager::Get()->EnableConsumerKioskAutoLaunch(
       base::BindOnce(&KioskEnableScreen::OnEnableConsumerKioskAutoLaunch,
                      weak_ptr_factory_.GetWeakPtr()));
 }

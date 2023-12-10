@@ -20,7 +20,7 @@ std::string NewlineToSpaceReplacer(std::string str) {
 
 }  // namespace
 
-std::string TreeToStringHelper(const AXObject* obj, int indent, bool verbose) {
+std::string TreeToStringHelper(const AXObject* obj, bool verbose) {
   return TreeToStringWithMarkedObjectHelper(obj, nullptr, verbose);
 }
 
@@ -66,6 +66,9 @@ std::string TreeToStringWithMarkedObjectHelper(const AXObject* obj,
     return tree_str;
   }
 
+  if (!marked_object) {
+    return tree_str;
+  }
   return std::string("**** ERROR: Found marked objects was found ") +
          String::Number(marked_object_found_count).Utf8() +
          " times, should have been found exactly once.\n* Marked object: " +

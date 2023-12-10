@@ -5,7 +5,6 @@
 <translation id="1076394037877376434">Seite <ph name="PAGE_NUMBER" /> löschen</translation>
 <translation id="1113173431709655881">Kameramodus</translation>
 <translation id="1153190633558910465">Raster deaktivieren</translation>
-<translation id="1175958423215084756">Link erkannt. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213">Seite <ph name="PAGE_NUMBER" /> gelöscht</translation>
 <translation id="1258009455399840361">Um 90 Grad im Uhrzeigersinn drehen</translation>
 <translation id="1417314334557041815">Seite <ph name="INDEX" /> bearbeiten</translation>
@@ -60,14 +59,12 @@
 <translation id="3642192109456033823">Video wird verarbeitet…</translation>
 <translation id="3789724198583203151">Um 90 Grad gegen den Uhrzeigersinn drehen</translation>
 <translation id="3810838688059735925">Video</translation>
-<translation id="3892148308691398805">Text kopieren</translation>
 <translation id="4060608699153044055">Die Aufnahme ist nicht möglich, da zu wenig Gerätespeicherplatz vorhanden ist. Damit du die Aufnahme starten kannst, musst du Speicherplatz auf deinem Gerät freigeben.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
 <translation id="4118525110028899586">Aufnahme pausieren</translation>
 <translation id="4121305183798804752">Dokument erkannt</translation>
 <translation id="414641094616694804">Diese Kamera kann die Auflösung nicht ändern</translation>
 <translation id="4176463684765177261">Deaktiviert</translation>
-<translation id="4269820728363426813">URL kopieren</translation>
 <translation id="428234092390943511">Miniaturansicht der Seite</translation>
 <translation id="4349714250734879769">Frames nach Chrome skalieren</translation>
 <translation id="4383571725254449280">Leistungsprotokolle drucken</translation>
@@ -144,7 +141,6 @@ Falls sich dein Feedback auf die Bild- oder Videoqualität bezieht, hänge bitte
 <translation id="7726641833034062494">Normales Video aufzeichnen</translation>
 <translation id="7748344063862150053">Rechte obere Ecke des Dokuments</translation>
 <translation id="7933675232020478311">Wird nach unten rechts verschoben</translation>
-<translation id="7983668134180549431">Text erkannt.</translation>
 <translation id="8079255378695216066">Aufzeichnung kann nicht gestartet werden</translation>
 <translation id="8120146556401698679">Schwenken Neigen Zoomen</translation>
 <translation id="8131740175452115882">Bestätigen</translation>
@@ -163,6 +159,7 @@ Falls sich dein Feedback auf die Bild- oder Videoqualität bezieht, hänge bitte
 <translation id="8870695351537079478">Videoaufnahme konnte nicht gestartet werden</translation>
 <translation id="8880167521484863515">4 zu 3</translation>
 <translation id="8903921497873541725">Vergrößern</translation>
+<translation id="8926890870105777777">Mit Netzwerk „<ph name="WIFINAME" />“ verbinden</translation>
 <translation id="9045010116236796332">Alle Ränder des Dokuments müssen sich innerhalb des Rahmens befinden</translation>
 <translation id="9045155556724273246">10 Sekunden</translation>
 <translation id="906331135292332864">Bild wird verarbeitet…</translation>

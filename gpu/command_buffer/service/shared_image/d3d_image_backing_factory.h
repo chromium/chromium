@@ -12,9 +12,10 @@
 
 #include <memory>
 
+#include <optional>
 #include "gpu/command_buffer/service/shared_image/shared_image_backing_factory.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
 #include "gpu/gpu_gles2_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 
 namespace gfx {
@@ -32,7 +33,8 @@ class GPU_GLES2_EXPORT D3DImageBackingFactory
  public:
   D3DImageBackingFactory(
       Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device,
-      scoped_refptr<DXGISharedHandleManager> dxgi_shared_handle_manager);
+      scoped_refptr<DXGISharedHandleManager> dxgi_shared_handle_manager,
+      const GLFormatCaps& gl_format_caps);
 
   D3DImageBackingFactory(const D3DImageBackingFactory&) = delete;
   D3DImageBackingFactory& operator=(const D3DImageBackingFactory&) = delete;
@@ -153,14 +155,18 @@ class GPU_GLES2_EXPORT D3DImageBackingFactory
   // D3D11 device used for creating textures. This is also Skia's D3D11 device.
   // Can be different from |angle_d3d11_device_| when using Graphite.
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device_;
-  absl::optional<bool> map_on_default_textures_;
-  absl::optional<bool> supports_bgra8unorm_storage_;
+  std::optional<bool> map_on_default_textures_;
+  std::optional<bool> supports_bgra8unorm_storage_;
 
   scoped_refptr<DXGISharedHandleManager> dxgi_shared_handle_manager_;
 
   // D3D11 device used by ANGLE. Can be different from |d3d11_device_| when
   // using Graphite.
   Microsoft::WRL::ComPtr<ID3D11Device> angle_d3d11_device_;
+
+  // Capabilities needed for getting the correct GL format for creating GL
+  // textures.
+  const GLFormatCaps gl_format_caps_;
 };
 
 }  // namespace gpu

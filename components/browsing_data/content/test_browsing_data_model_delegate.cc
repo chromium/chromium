@@ -23,7 +23,7 @@ void TestBrowsingDataModelDelegate::GetAllDataKeys(
 }
 
 void TestBrowsingDataModelDelegate::RemoveDataKey(
-    BrowsingDataModel::DataKey data_key,
+    const BrowsingDataModel::DataKey& data_key,
     BrowsingDataModel::StorageTypeSet storage_types,
     base::OnceClosure callback) {
   if (delegated_entries.contains(data_key)) {
@@ -36,7 +36,7 @@ void TestBrowsingDataModelDelegate::RemoveDataKey(
 
 absl::optional<BrowsingDataModel::DataOwner>
 TestBrowsingDataModelDelegate::GetDataOwner(
-    BrowsingDataModel::DataKey data_key,
+    const BrowsingDataModel::DataKey& data_key,
     BrowsingDataModel::StorageType storage_type) const {
   if (static_cast<StorageType>(storage_type) ==
           StorageType::kTestDelegateType &&
@@ -48,6 +48,7 @@ TestBrowsingDataModelDelegate::GetDataOwner(
 
 absl::optional<bool>
 TestBrowsingDataModelDelegate::IsBlockedByThirdPartyCookieBlocking(
+    const BrowsingDataModel::DataKey& data_key,
     BrowsingDataModel::StorageType storage_type) const {
   switch (
       static_cast<TestBrowsingDataModelDelegate::StorageType>(storage_type)) {
@@ -58,6 +59,10 @@ TestBrowsingDataModelDelegate::IsBlockedByThirdPartyCookieBlocking(
     default:
       return absl::nullopt;
   }
+}
+
+bool TestBrowsingDataModelDelegate::IsCookieDeletionDisabled(const GURL& url) {
+  return false;
 }
 
 }  // namespace browsing_data

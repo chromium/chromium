@@ -147,7 +147,7 @@ class ASH_EXPORT ClipboardHistoryControllerImpl
   }
 
   void set_buffer_restoration_delay_for_test(
-      absl::optional<base::TimeDelta> delay) {
+      std::optional<base::TimeDelta> delay) {
     buffer_restoration_delay_for_test_ = delay;
   }
 
@@ -295,8 +295,9 @@ class ASH_EXPORT ClipboardHistoryControllerImpl
   // How the user last caused the `context_menu_` to show.
   crosapi::mojom::ClipboardHistoryControllerShowSource last_menu_source_;
 
-  // Whether a paste is currently being performed.
-  bool currently_pasting_ = false;
+  // Indicates whether the clipboard data has been replaced due to an
+  // in-progress clipboard history paste.
+  bool clipboard_data_replaced_ = false;
 
   // Used to post asynchronous tasks when opening or closing the clipboard
   // history menu. Note that those tasks have data races between each other.
@@ -322,7 +323,7 @@ class ASH_EXPORT ClipboardHistoryControllerImpl
 
   // The delay interval for restoring the clipboard buffer to its original
   // state following a paste event.
-  absl::optional<base::TimeDelta> buffer_restoration_delay_for_test_;
+  std::optional<base::TimeDelta> buffer_restoration_delay_for_test_;
 
   // Called when the first item view is selected after the clipboard history
   // menu opens.

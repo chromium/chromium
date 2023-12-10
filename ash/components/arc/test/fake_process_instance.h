@@ -6,12 +6,12 @@
 #define ASH_COMPONENTS_ARC_TEST_FAKE_PROCESS_INSTANCE_H_
 
 #include <deque>
+#include <optional>
 #include <utility>
 
 #include "ash/components/arc/mojom/process.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace arc {
 
@@ -69,10 +69,10 @@ class FakeProcessInstance : public mojom::ProcessInstance {
   int64_t host_memory_pressure_reclaim_target_;
 
   // Response to next call to  ApplyHostMemoryPressure.
-  absl::optional<std::pair<uint32_t, uint64_t>> host_memory_pressure_response_;
+  std::optional<std::pair<uint32_t, uint64_t>> host_memory_pressure_response_;
 
   // Response to next call to RequestLowMemoryKillCounts.
-  absl::optional<arc::mojom::LowMemoryKillCountsPtr>
+  std::optional<arc::mojom::LowMemoryKillCountsPtr>
       low_memory_kill_counts_response_;
 };
 

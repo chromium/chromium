@@ -98,7 +98,6 @@ void RegisterBrowserUserPrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterStringPref(prefs::kWebRTCUDPPortRange, std::string());
   registry->RegisterBooleanPref(prefs::kWebRtcEventLogCollectionAllowed, false);
   registry->RegisterListPref(prefs::kWebRtcLocalIpsAllowedUrls);
-  registry->RegisterBooleanPref(prefs::kWebRTCAllowLegacyTLSProtocols, false);
   registry->RegisterBooleanPref(prefs::kWebRtcTextLogCollectionAllowed, true);
 
   // Dictionaries to keep track of default tasks in the file browser.
@@ -166,9 +165,13 @@ void RegisterBrowserUserPrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(
       prefs::kHttpsOnlyModeEnabled, false,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  registry->RegisterBooleanPref(
+      prefs::kHttpsFirstModeIncognito, true,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   registry->RegisterListPref(prefs::kHttpAllowlist);
   registry->RegisterBooleanPref(prefs::kHttpsUpgradesEnabled, true);
 
   registry->RegisterDictionaryPref(prefs::kHttpsUpgradeFallbacks);
+  registry->RegisterDictionaryPref(prefs::kHttpsUpgradeNavigations);
   registry->RegisterBooleanPref(prefs::kHttpsOnlyModeAutoEnabled, false);
 }

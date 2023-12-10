@@ -14,9 +14,7 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import java.util.LinkedHashSet;
 import java.util.List;
 
-/**
- * Allows observing registration (e.g. add / remove) events of Tabs from a TabModelSelector.
- */
+/** Allows observing registration (e.g. add / remove) events of Tabs from a TabModelSelector. */
 public final class TabModelSelectorTabRegistrationObserver {
     private final TabModelSelectorTabModelObserver mTabModelObserver;
     private final SparseArray<Tab> mTabsToClose = new SparseArray<>();
@@ -25,9 +23,7 @@ public final class TabModelSelectorTabRegistrationObserver {
 
     private boolean mTabModelSelectorRegistrationComplete;
 
-    /**
-     * The Observer that will receive updates about a tabs registration to a tab model.
-     */
+    /** The Observer that will receive updates about a tabs registration to a tab model. */
     public interface Observer {
         /**
          * Called when a tab is registered to a tab model this selector is managing.
@@ -53,52 +49,56 @@ public final class TabModelSelectorTabRegistrationObserver {
      * @param selector The selector that owns the Tabs that should notify this observer.
      */
     public TabModelSelectorTabRegistrationObserver(TabModelSelector selector) {
-        mTabModelObserver = new TabModelSelectorTabModelObserver(selector) {
-            @Override
-            public void didAddTab(Tab tab, @TabLaunchType int type,
-                    @TabCreationState int creationState, boolean markedForSelection) {
-                // This observer is automatically removed by tab when it is destroyed.
-                onTabRegistered(tab);
-            }
-
-            @Override
-            public void willCloseTab(Tab tab, boolean animate, boolean didCloseAlone) {
-                mTabsToClose.put(tab.getId(), tab);
-            }
-
-            @Override
-            public void tabClosureUndone(Tab tab) {
-                mTabsToClose.remove(tab.getId());
-            }
-
-            @Override
-            public void onFinishingTabClosure(Tab tab) {
-                if (mTabsToClose.get(tab.getId()) != null) {
-                    mTabsToClose.remove(tab.getId());
-                    onTabUnregistered(tab);
-                }
-            }
-
-            @Override
-            public void tabRemoved(Tab tab) {
-                onTabUnregistered(tab);
-            }
-
-            @Override
-            protected void onRegistrationComplete() {
-                assert !mTabModelSelectorRegistrationComplete;
-                mTabModelSelectorRegistrationComplete = true;
-
-                List<TabModel> tabModels = selector.getModels();
-                for (int i = 0; i < tabModels.size(); i++) {
-                    TabModel tabModel = tabModels.get(i);
-                    TabList comprehensiveTabList = tabModel.getComprehensiveModel();
-                    for (int j = 0; j < comprehensiveTabList.getCount(); j++) {
-                        onTabRegistered(comprehensiveTabList.getTabAt(j));
+        mTabModelObserver =
+                new TabModelSelectorTabModelObserver(selector) {
+                    @Override
+                    public void didAddTab(
+                            Tab tab,
+                            @TabLaunchType int type,
+                            @TabCreationState int creationState,
+                            boolean markedForSelection) {
+                        // This observer is automatically removed by tab when it is destroyed.
+                        onTabRegistered(tab);
                     }
-                }
-            }
-        };
+
+                    @Override
+                    public void willCloseTab(Tab tab, boolean animate, boolean didCloseAlone) {
+                        mTabsToClose.put(tab.getId(), tab);
+                    }
+
+                    @Override
+                    public void tabClosureUndone(Tab tab) {
+                        mTabsToClose.remove(tab.getId());
+                    }
+
+                    @Override
+                    public void onFinishingTabClosure(Tab tab) {
+                        if (mTabsToClose.get(tab.getId()) != null) {
+                            mTabsToClose.remove(tab.getId());
+                            onTabUnregistered(tab);
+                        }
+                    }
+
+                    @Override
+                    public void tabRemoved(Tab tab) {
+                        onTabUnregistered(tab);
+                    }
+
+                    @Override
+                    protected void onRegistrationComplete() {
+                        assert !mTabModelSelectorRegistrationComplete;
+                        mTabModelSelectorRegistrationComplete = true;
+
+                        List<TabModel> tabModels = selector.getModels();
+                        for (int i = 0; i < tabModels.size(); i++) {
+                            TabModel tabModel = tabModels.get(i);
+                            TabList comprehensiveTabList = tabModel.getComprehensiveModel();
+                            for (int j = 0; j < comprehensiveTabList.getCount(); j++) {
+                                onTabRegistered(comprehensiveTabList.getTabAt(j));
+                            }
+                        }
+                    }
+                };
     }
 
     /**
@@ -141,9 +141,7 @@ public final class TabModelSelectorTabRegistrationObserver {
         }
     }
 
-    /**
-     * Destroys the observer and removes itself as a listener for Tab updates.
-     */
+    /** Destroys the observer and removes itself as a listener for Tab updates. */
     public void destroy() {
         mTabModelObserver.destroy();
         Tab[] tabs = mRegisteredTabs.toArray(new Tab[0]);

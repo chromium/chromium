@@ -22,13 +22,19 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-/**
- * List of properties to designate information about a single tab.
- */
+/** List of properties to designate information about a single tab. */
 public class TabProperties {
     /** IDs for possible types of UI in the tab list. */
-    @IntDef({UiType.SELECTABLE, UiType.CLOSABLE, UiType.STRIP, UiType.MESSAGE, UiType.DIVIDER,
-            UiType.NEW_TAB_TILE_DEPRECATED, UiType.LARGE_MESSAGE})
+    @IntDef({
+        UiType.SELECTABLE,
+        UiType.CLOSABLE,
+        UiType.STRIP,
+        UiType.MESSAGE,
+        UiType.DIVIDER,
+        UiType.NEW_TAB_TILE_DEPRECATED,
+        UiType.LARGE_MESSAGE,
+        UiType.CUSTOM_MESSAGE
+    })
     @Retention(RetentionPolicy.SOURCE)
     public @interface UiType {
         int SELECTABLE = 0;
@@ -38,6 +44,7 @@ public class TabProperties {
         int DIVIDER = 4;
         int NEW_TAB_TILE_DEPRECATED = 5;
         int LARGE_MESSAGE = 6;
+        int CUSTOM_MESSAGE = 7;
     }
 
     public static final PropertyModel.WritableIntPropertyKey TAB_ID =
@@ -56,9 +63,7 @@ public class TabProperties {
     public static final WritableBooleanPropertyKey FAVICON_FETCHED =
             new WritableBooleanPropertyKey();
 
-    /**
-     * Property for lazily fetching favicons when required by an item in a UI.
-     */
+    /** Property for lazily fetching favicons when required by an item in a UI. */
     public static final WritableObjectPropertyKey<TabListFaviconProvider.TabFaviconFetcher>
             FAVICON_FETCHER = new WritableObjectPropertyKey<>();
 
@@ -99,20 +104,19 @@ public class TabProperties {
     public static final PropertyModel.ReadableIntPropertyKey TABSTRIP_FAVICON_BACKGROUND_COLOR_ID =
             new PropertyModel.ReadableIntPropertyKey();
 
-    public static final PropertyModel
-            .WritableObjectPropertyKey<ColorStateList> SELECTABLE_TAB_ACTION_BUTTON_BACKGROUND =
-            new PropertyModel.WritableObjectPropertyKey<>();
+    public static final PropertyModel.WritableObjectPropertyKey<ColorStateList>
+            SELECTABLE_TAB_ACTION_BUTTON_BACKGROUND =
+                    new PropertyModel.WritableObjectPropertyKey<>();
 
     public static final PropertyModel.WritableObjectPropertyKey<ColorStateList>
             SELECTABLE_TAB_ACTION_BUTTON_SELECTED_BACKGROUND =
-            new PropertyModel.WritableObjectPropertyKey<>();
+                    new PropertyModel.WritableObjectPropertyKey<>();
 
     public static final WritableObjectPropertyKey<String> URL_DOMAIN =
             new WritableObjectPropertyKey<>();
 
-    public static final PropertyModel
-            .WritableObjectPropertyKey<AccessibilityDelegate> ACCESSIBILITY_DELEGATE =
-            new PropertyModel.WritableObjectPropertyKey<>();
+    public static final PropertyModel.WritableObjectPropertyKey<AccessibilityDelegate>
+            ACCESSIBILITY_DELEGATE = new PropertyModel.WritableObjectPropertyKey<>();
 
     public static final WritableObjectPropertyKey<TabListMediator.ShoppingPersistedTabDataFetcher>
             SHOPPING_PERSISTED_TAB_DATA_FETCHER = new WritableObjectPropertyKey<>(true);
@@ -125,18 +129,48 @@ public class TabProperties {
     public static final WritableBooleanPropertyKey SHOULD_SHOW_PRICE_DROP_TOOLTIP =
             new WritableBooleanPropertyKey();
 
-    public static final PropertyKey[] ALL_KEYS_TAB_GRID = new PropertyKey[] {TAB_ID,
-            TAB_SELECTED_LISTENER, TAB_CLOSED_LISTENER, FAVICON_FETCHED, FAVICON_FETCHER,
-            IS_SELECTED, IS_INCOGNITO, GRID_CARD_SIZE, THUMBNAIL_FETCHER, IPH_PROVIDER, TITLE,
-            CHECKED_DRAWABLE_STATE_LIST, CREATE_GROUP_LISTENER, CARD_ALPHA, CARD_ANIMATION_STATUS,
-            SELECTABLE_TAB_CLICKED_LISTENER, TAB_SELECTION_DELEGATE,
-            SELECTED_TAB_BACKGROUND_DRAWABLE_ID, TABSTRIP_FAVICON_BACKGROUND_COLOR_ID,
-            SELECTABLE_TAB_ACTION_BUTTON_BACKGROUND,
-            SELECTABLE_TAB_ACTION_BUTTON_SELECTED_BACKGROUND, URL_DOMAIN, ACCESSIBILITY_DELEGATE,
-            CARD_TYPE, CONTENT_DESCRIPTION_STRING, CLOSE_BUTTON_DESCRIPTION_STRING,
-            SHOPPING_PERSISTED_TAB_DATA_FETCHER, SHOULD_SHOW_PRICE_DROP_TOOLTIP};
+    public static final PropertyKey[] ALL_KEYS_TAB_GRID =
+            new PropertyKey[] {
+                TAB_ID,
+                TAB_SELECTED_LISTENER,
+                TAB_CLOSED_LISTENER,
+                FAVICON_FETCHED,
+                FAVICON_FETCHER,
+                IS_SELECTED,
+                IS_INCOGNITO,
+                GRID_CARD_SIZE,
+                THUMBNAIL_FETCHER,
+                IPH_PROVIDER,
+                TITLE,
+                CHECKED_DRAWABLE_STATE_LIST,
+                CREATE_GROUP_LISTENER,
+                CARD_ALPHA,
+                CARD_ANIMATION_STATUS,
+                SELECTABLE_TAB_CLICKED_LISTENER,
+                TAB_SELECTION_DELEGATE,
+                SELECTED_TAB_BACKGROUND_DRAWABLE_ID,
+                TABSTRIP_FAVICON_BACKGROUND_COLOR_ID,
+                SELECTABLE_TAB_ACTION_BUTTON_BACKGROUND,
+                SELECTABLE_TAB_ACTION_BUTTON_SELECTED_BACKGROUND,
+                URL_DOMAIN,
+                ACCESSIBILITY_DELEGATE,
+                CARD_TYPE,
+                CONTENT_DESCRIPTION_STRING,
+                CLOSE_BUTTON_DESCRIPTION_STRING,
+                SHOPPING_PERSISTED_TAB_DATA_FETCHER,
+                SHOULD_SHOW_PRICE_DROP_TOOLTIP
+            };
 
-    public static final PropertyKey[] ALL_KEYS_TAB_STRIP = new PropertyKey[] {TAB_ID,
-            TAB_SELECTED_LISTENER, TAB_CLOSED_LISTENER, FAVICON_FETCHED, FAVICON_FETCHER,
-            IS_SELECTED, TITLE, TABSTRIP_FAVICON_BACKGROUND_COLOR_ID, IS_INCOGNITO};
+    public static final PropertyKey[] ALL_KEYS_TAB_STRIP =
+            new PropertyKey[] {
+                TAB_ID,
+                TAB_SELECTED_LISTENER,
+                TAB_CLOSED_LISTENER,
+                FAVICON_FETCHED,
+                FAVICON_FETCHER,
+                IS_SELECTED,
+                TITLE,
+                TABSTRIP_FAVICON_BACKGROUND_COLOR_ID,
+                IS_INCOGNITO
+            };
 }

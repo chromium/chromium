@@ -8,6 +8,7 @@
 #include "ash/public/cpp/ash_public_export.h"
 #include "ash/public/cpp/session/session_controller.h"
 #include "ash/public/cpp/session/session_types.h"
+#include "base/files/file_path.h"
 #include "components/account_id/account_id.h"
 
 class AccountId;
@@ -32,7 +33,7 @@ class ASH_PUBLIC_EXPORT SessionControllerClient {
   // Attempts to restart the chrome browser.
   virtual void AttemptRestartChrome() = 0;
 
-  // Switch to the active user with |account_id| (if the user has already signed
+  // Switch to the active user with `account_id` (if the user has already signed
   // in).
   virtual void SwitchActiveUser(const AccountId& account_id) = 0;
 
@@ -52,13 +53,16 @@ class ASH_PUBLIC_EXPORT SessionControllerClient {
   // Returns the pref service for the given user if available.
   virtual PrefService* GetUserPrefService(const AccountId& account_id) = 0;
 
+  // Returns the profile path for `account_id` or empty if one does not exist.
+  virtual base::FilePath GetProfilePath(const AccountId& account_id) = 0;
+
   // Returns true if the device is enterprise managed.
   virtual bool IsEnterpriseManaged() const = 0;
 
   // Return the number of users that have previously logged in on the device.
   // Returns nullopt in the event where we cannot query the number of existing
   // users, for instance, when `UserManager` is uninitialized.
-  virtual absl::optional<int> GetExistingUsersCount() const = 0;
+  virtual std::optional<int> GetExistingUsersCount() const = 0;
 
  protected:
   virtual ~SessionControllerClient() = default;

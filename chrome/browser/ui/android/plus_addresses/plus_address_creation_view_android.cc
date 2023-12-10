@@ -11,7 +11,9 @@
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "chrome/browser/ui/plus_addresses/plus_address_creation_controller.h"
-#include "chrome/grit/generated_resources.h"
+#include "components/plus_addresses/features.h"
+#include "components/plus_addresses/plus_address_types.h"
+#include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/android/view_android.h"
 #include "ui/android/window_android.h"
@@ -30,9 +32,8 @@ PlusAddressCreationViewAndroid::~PlusAddressCreationViewAndroid() {
   }
 }
 
-void PlusAddressCreationViewAndroid::Show(
-    const std::string& primary_email_address,
-    const std::string& plus_address) {
+void PlusAddressCreationViewAndroid::ShowInit(
+    const std::string& primary_email_address) {
   JNIEnv* env = base::android::AttachCurrentThread();
   TabModel* tab_model = TabModelList::GetTabModelForWebContents(web_contents_);
   if (!tab_model) {
@@ -59,7 +60,10 @@ void PlusAddressCreationViewAndroid::Show(
 
   base::android::ScopedJavaLocalRef<jstring>
       j_proposed_plus_address_placeholder =
-          base::android::ConvertUTF8ToJavaString(env, plus_address);
+          base::android::ConvertUTF16ToJavaString(
+              env,
+              l10n_util::GetStringUTF16(
+                  IDS_PLUS_ADDRESS_MODAL_PROPOSED_PLUS_ADDRESS_PLACEHOLDER));
 
   base::android::ScopedJavaLocalRef<jstring> j_plus_address_modal_ok =
       base::android::ConvertUTF16ToJavaString(
@@ -69,13 +73,17 @@ void PlusAddressCreationViewAndroid::Show(
       base::android::ConvertUTF16ToJavaString(
           env, l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_MODAL_CANCEL_TEXT));
 
+  base::android::ScopedJavaLocalRef<jstring> j_manage_url =
+      base::android::ConvertUTF8ToJavaString(env,
+                                             kPlusAddressManagementUrl.Get());
+
   Java_PlusAddressCreationViewBridge_show(
       env, java_object_, j_title, j_formatted_description,
       j_proposed_plus_address_placeholder, j_plus_address_modal_ok,
-      j_plus_address_modal_cancel);
+      j_plus_address_modal_cancel, j_manage_url);
 }
 
-void PlusAddressCreationViewAndroid::OnConfirmed(
+void PlusAddressCreationViewAndroid::OnConfirmRequested(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& obj) {
   controller_->OnConfirmed();
@@ -91,5 +99,39 @@ void PlusAddressCreationViewAndroid::PromptDismissed(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& obj) {
   controller_->OnDialogDestroyed();
+}
+
+void PlusAddressCreationViewAndroid::ShowReserveResult(
+    const PlusProfileOrError& maybe_plus_profile) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  if (maybe_plus_profile.has_value()) {
+    base::android::ScopedJavaLocalRef<jstring> j_proposed_plus_address =
+        base::android::ConvertUTF8ToJavaString(
+            env, maybe_plus_profile->plus_address);
+    Java_PlusAddressCreationViewBridge_updateProposedPlusAddress(
+        env, java_object_, j_proposed_plus_address);
+  } else {
+    base::android::ScopedJavaLocalRef<jstring> j_reserve_error_message =
+        base::android::ConvertUTF8ToJavaString(
+            env,
+            l10n_util::GetStringUTF8(IDS_PLUS_ADDRESS_MODAL_ERROR_MESSAGE));
+    Java_PlusAddressCreationViewBridge_showError(env, java_object_,
+                                                 j_reserve_error_message);
+  }
+}
+
+void PlusAddressCreationViewAndroid::ShowConfirmResult(
+    const PlusProfileOrError& maybe_plus_profile) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  if (maybe_plus_profile.has_value()) {
+    Java_PlusAddressCreationViewBridge_finishConfirm(env, java_object_);
+  } else {
+    base::android::ScopedJavaLocalRef<jstring> j_confirm_error_message =
+        base::android::ConvertUTF8ToJavaString(
+            env,
+            l10n_util::GetStringUTF8(IDS_PLUS_ADDRESS_MODAL_ERROR_MESSAGE));
+    Java_PlusAddressCreationViewBridge_showError(env, java_object_,
+                                                 j_confirm_error_message);
+  }
 }
 }  // namespace plus_addresses

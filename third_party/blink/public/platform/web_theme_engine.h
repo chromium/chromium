@@ -290,6 +290,7 @@ class WebThemeEngine {
       const gfx::Rect&,
       const ExtraParams*,
       blink::mojom::ColorScheme,
+      const ui::ColorProvider*,
       const absl::optional<SkColor>& accent_color = absl::nullopt) {}
 
   virtual absl::optional<SkColor> GetSystemColor(
@@ -321,9 +322,6 @@ class WebThemeEngine {
       const ui::RendererColorMap& forced_colors_map) {
     return false;
   }
-  virtual void AdjustForcedColorsProvider(
-      ui::ColorProviderKey::ForcedColors forced_colors_state,
-      ui::ColorProviderKey::ColorMode color_mode) {}
 };
 
 }  // namespace blink

@@ -292,8 +292,10 @@ void PermissionRequest::PermissionDenied() {
 }
 
 void PermissionRequest::Cancelled(bool is_final_decision) {
-  permission_decided_callback_.Run(CONTENT_SETTING_DEFAULT,
-                                   /*is_one_time=*/false, is_final_decision);
+  if (permission_decided_callback_) {
+    permission_decided_callback_.Run(CONTENT_SETTING_DEFAULT,
+                                     /*is_one_time=*/false, is_final_decision);
+  }
 }
 
 void PermissionRequest::RequestFinished() {

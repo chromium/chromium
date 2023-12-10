@@ -479,6 +479,14 @@ inline constexpr base::TimeDelta kServerKeepAliveTime = base::Seconds(10);
 // while waiting for the first app registration.
 inline constexpr int kMaxServerStartsBeforeFirstReg = 24;
 
+// Number of tries when an installer returns `ERROR_INSTALL_ALREADY_RUNNING`.
+inline constexpr int kNumAlreadyRunningMaxTries = 4;
+
+// Initial delay between retries when an installer returns
+// `ERROR_INSTALL_ALREADY_RUNNING`.
+inline constexpr base::TimeDelta kAlreadyRunningRetryInitialDelay =
+    base::Seconds(5);
+
 // These are GoogleUpdate error codes, which must be retained by this
 // implementation in order to be backward compatible with the existing update
 // client code in Chrome.
@@ -490,6 +498,7 @@ inline constexpr int GOOPDATEINSTALL_E_FILENAME_INVALID = 0x80040900;
 inline constexpr int GOOPDATEINSTALL_E_INSTALLER_FAILED_START = 0x80040901;
 inline constexpr int GOOPDATEINSTALL_E_INSTALLER_FAILED = 0x80040902;
 inline constexpr int GOOPDATEINSTALL_E_INSTALLER_TIMED_OUT = 0x80040904;
+inline constexpr int GOOPDATEINSTALL_E_INSTALL_ALREADY_RUNNING = 0x80040907;
 
 }  // namespace updater
 

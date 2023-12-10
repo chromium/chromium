@@ -15,8 +15,11 @@ import java.lang.annotation.RetentionPolicy;
 /** Centralizes UMA data collection for Android-specific MediaSession features. */
 public class MediaSessionUma {
     // MediaSessionAction defined in tools/metrics/histograms/histograms.xml.
-    @IntDef({MediaSessionActionSource.MEDIA_NOTIFICATION, MediaSessionActionSource.MEDIA_SESSION,
-            MediaSessionActionSource.HEADSET_UNPLUG})
+    @IntDef({
+        MediaSessionActionSource.MEDIA_NOTIFICATION,
+        MediaSessionActionSource.MEDIA_SESSION,
+        MediaSessionActionSource.HEADSET_UNPLUG
+    })
     @Retention(RetentionPolicy.SOURCE)
     public @interface MediaSessionActionSource {
         int MEDIA_NOTIFICATION = 0;

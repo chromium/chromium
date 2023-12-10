@@ -106,7 +106,7 @@ class MLGraphV8TestingScope : public V8TestingScope {
 
 template <typename T>
 struct OperandInfo {
-  V8MLOperandType::Enum type;
+  V8MLOperandDataType::Enum data_type;
   Vector<uint32_t> dimensions;
   Vector<T> values;
 };
@@ -145,15 +145,15 @@ Vector<T> GetArrayBufferViewValues(
 template <typename T>
 MLOperand* BuildConstant(MLGraphBuilder* builder,
                          const Vector<uint32_t>& dimensions,
-                         V8MLOperandType::Enum type,
+                         V8MLOperandDataType::Enum data_type,
                          const Vector<T>& values,
                          ExceptionState& exception_state) {
   size_t buffer_size = std::accumulate(dimensions.begin(), dimensions.end(),
                                        size_t(1), std::multiplies<uint32_t>());
-  auto buffer = CreateDOMArrayBufferView(buffer_size, type);
+  auto buffer = CreateDOMArrayBufferView(buffer_size, data_type);
   DCHECK_EQ(buffer->byteLength(), values.size() * sizeof(T));
   memcpy(buffer->BaseAddress(), values.data(), buffer->byteLength());
-  return BuildConstant(builder, dimensions, type, exception_state, buffer);
+  return BuildConstant(builder, dimensions, data_type, exception_state, buffer);
 }
 
 }  // namespace blink

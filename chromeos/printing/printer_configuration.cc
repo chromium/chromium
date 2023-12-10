@@ -4,6 +4,8 @@
 
 #include "chromeos/printing/printer_configuration.h"
 
+#include <optional>
+
 #include "base/containers/fixed_flat_set.h"
 #include "base/logging.h"
 #include "base/notreached.h"
@@ -13,7 +15,6 @@
 #include "chromeos/printing/printing_constants.h"
 #include "chromeos/printing/uri.h"
 #include "net/base/ip_endpoint.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/third_party/mozilla/url_parse.h"
 #include "url/url_constants.h"
 
@@ -159,7 +160,7 @@ bool Printer::RequiresDriverlessUsb() const {
   // TODO(b/184293121): Replace this list with more generic logic after general
   // IPP-USB evaluation is complete.
   static constexpr auto kDriverlessUsbMakeModels =
-      base::MakeFixedFlatSetSorted<base::StringPiece>({
+      base::MakeFixedFlatSet<base::StringPiece>({
           "epson et-8550 series",    // b/301387697
           "epson wf-110 series",     // b/287159028
           "hp deskjet 4100 series",  // b/279387801

@@ -16,6 +16,7 @@
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_switches.h"
 
@@ -354,6 +355,15 @@ IN_PROC_BROWSER_TEST_F(FormControlsBrowserTest, MultiSelect) {
 IN_PROC_BROWSER_TEST_F(FormControlsBrowserTest, Progress) {
   if (SkipTestForOldAndroidVersions())
     return;
+
+#if BUILDFLAG(IS_MAC) && !defined(ARCH_CPU_ARM64)
+  // The pixel comparison fails on Mac Intel GPUs with Graphite due to MSAA
+  // issues.
+  // TODO(crbug.com/1500259): Re-enable test if possible.
+  if (features::IsSkiaGraphiteEnabled(base::CommandLine::ForCurrentProcess())) {
+    return;
+  }
+#endif
 
   RunTest("form_controls_browsertest_progress",
           R"HTML(

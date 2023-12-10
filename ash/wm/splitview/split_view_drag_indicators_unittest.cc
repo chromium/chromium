@@ -19,6 +19,7 @@
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "split_view_drag_indicators.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
@@ -65,28 +66,29 @@ class SplitViewDragIndicatorsTest : public AshTestBase {
 
     if (!overview_controller->InOverviewSession()) {
       overview_session_ = nullptr;
-      split_view_drag_indicators_ = nullptr;
       return;
     }
 
     overview_session_ = Shell::Get()->overview_controller()->overview_session();
     ASSERT_TRUE(overview_session_);
-    split_view_drag_indicators_ =
-        overview_session_->grid_list()[0]->split_view_drag_indicators();
   }
 
   SplitViewController* split_view_controller() {
     return SplitViewController::Get(Shell::GetPrimaryRootWindow());
   }
 
-  SplitViewDragIndicators::WindowDraggingState window_dragging_state() {
-    DCHECK(split_view_drag_indicators_);
-    return split_view_drag_indicators_->current_window_dragging_state();
+  const SplitViewDragIndicators* split_view_drag_indicators() const {
+    return overview_session_->grid_list()[0]->split_view_drag_indicators();
+  }
+
+  SplitViewDragIndicators::WindowDraggingState window_dragging_state() const {
+    CHECK(split_view_drag_indicators());
+    return split_view_drag_indicators()->current_window_dragging_state();
   }
 
   bool IsPreviewAreaShowing() {
     return SplitViewDragIndicators::GetSnapPosition(window_dragging_state()) !=
-           SplitViewController::SnapPosition::kNone;
+           SnapPosition::kNone;
   }
 
   float GetEdgeInset(int screen_width) const {
@@ -103,8 +105,6 @@ class SplitViewDragIndicatorsTest : public AshTestBase {
   }
 
  protected:
-  raw_ptr<SplitViewDragIndicators, DanglingUntriaged | ExperimentalAsh>
-      split_view_drag_indicators_ = nullptr;
   raw_ptr<OverviewSession, DanglingUntriaged | ExperimentalAsh>
       overview_session_ = nullptr;
 };
@@ -234,7 +234,8 @@ TEST_F(SplitViewDragIndicatorsTest, PreviewAreaVisibility) {
   // Drag horizontally to avoid activating drag to close.
   const float y = start_location.y();
   overview_session_->InitiateDrag(item, start_location,
-                                  /*is_touch_dragging=*/false);
+                                  /*is_touch_dragging=*/false,
+                                  /*event_source_item=*/item);
   EXPECT_FALSE(IsPreviewAreaShowing());
   overview_session_->Drag(item, gfx::PointF(edge_inset + 1, y));
   EXPECT_FALSE(IsPreviewAreaShowing());
@@ -265,7 +266,8 @@ TEST_F(SplitViewDragIndicatorsTest, PreviewAreaVisibilityUnsnappableWindow) {
   auto* item = GetOverviewItemForWindow(window.get());
   const gfx::PointF start_location(item->target_bounds().CenterPoint());
   overview_session_->InitiateDrag(item, start_location,
-                                  /*is_touch_dragging=*/false);
+                                  /*is_touch_dragging=*/false,
+                                  /*event_source_item=*/item);
   EXPECT_FALSE(IsPreviewAreaShowing());
   overview_session_->Drag(item, gfx::PointF(0.f, 1.f));
   EXPECT_FALSE(IsPreviewAreaShowing());
@@ -292,7 +294,8 @@ TEST_F(SplitViewDragIndicatorsTest,
   auto* item = GetOverviewItemForWindow(window1.get());
   gfx::PointF start_location(item->target_bounds().CenterPoint());
   overview_session_->InitiateDrag(item, start_location,
-                                  /*is_touch_dragging=*/false);
+                                  /*is_touch_dragging=*/false,
+                                  /*event_source_item=*/item);
   EXPECT_EQ(SplitViewDragIndicators::WindowDraggingState::kNoDrag,
             window_dragging_state());
   overview_session_->StartNormalDragMode(start_location);
@@ -305,7 +308,8 @@ TEST_F(SplitViewDragIndicatorsTest,
   // Verify the width of a snap area.
   const float y_position = start_location.y();
   overview_session_->InitiateDrag(item, start_location,
-                                  /*is_touch_dragging=*/false);
+                                  /*is_touch_dragging=*/false,
+                                  /*event_source_item=*/item);
   EXPECT_EQ(SplitViewDragIndicators::WindowDraggingState::kNoDrag,
             window_dragging_state());
   overview_session_->Drag(item, gfx::PointF(edge_inset + 1, y_position));
@@ -325,7 +329,8 @@ TEST_F(SplitViewDragIndicatorsTest,
   item = GetOverviewItemForWindow(window2.get());
   start_location = item->target_bounds().CenterPoint();
   overview_session_->InitiateDrag(item, start_location,
-                                  /*is_touch_dragging=*/false);
+                                  /*is_touch_dragging=*/false,
+                                  /*event_source_item=*/item);
   EXPECT_EQ(SplitViewDragIndicators::WindowDraggingState::kNoDrag,
             window_dragging_state());
   overview_session_->Drag(item, gfx::PointF(screen_width - 1, y_position));
@@ -343,7 +348,8 @@ TEST_F(SplitViewDragIndicatorsTest,
   auto* item = GetOverviewItemForWindow(unsnappable_window.get());
   gfx::PointF start_location(item->target_bounds().CenterPoint());
   overview_session_->InitiateDrag(item, start_location,
-                                  /*is_touch_dragging=*/false);
+                                  /*is_touch_dragging=*/false,
+                                  /*event_source_item=*/item);
   overview_session_->StartNormalDragMode(start_location);
   EXPECT_EQ(SplitViewDragIndicators::WindowDraggingState::kFromOverview,
             window_dragging_state());
@@ -505,7 +511,8 @@ TEST_F(ClamshellMultiDisplaySplitViewDragIndicatorsTest,
   auto* item = GetOverviewItemForWindow(window1.get());
   gfx::PointF start_location(item->target_bounds().CenterPoint());
   overview_session_->InitiateDrag(item, start_location,
-                                  /*is_touch_dragging=*/false);
+                                  /*is_touch_dragging=*/false,
+                                  /*event_source_item=*/item);
   EXPECT_EQ(SplitViewDragIndicators::WindowDraggingState::kNoDrag,
             window_dragging_state());
   overview_session_->Drag(item, gfx::PointF(400, 300));
@@ -526,8 +533,9 @@ TEST_F(ClamshellMultiDisplaySplitViewDragIndicatorsTest,
   overview_session_->ResetDraggedWindowGesture();
 
   // Drag a window to the portrait display.
-  overview_session_->InitiateDrag(item, start_location,
-                                  /*is_touch_dragging=*/false);
+  overview_session_->InitiateDrag(item, /*event_source_item=*/start_location,
+                                  /*is_touch_dragging=*/false,
+                                  /*event_source_item=*/item);
   Shell::Get()->cursor_manager()->SetDisplay(portrait_display);
   overview_session_->Drag(item, gfx::PointF(1100, 400));
   EXPECT_EQ(SplitViewDragIndicators::WindowDraggingState::kOtherDisplay,

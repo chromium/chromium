@@ -26,26 +26,16 @@ import androidx.annotation.RequiresOptIn;
  *     Migration specification</a>
  */
 public class ConnectionMigrationOptions {
-    @Nullable
-    private final Boolean mEnableDefaultNetworkMigration;
-    @Nullable
-    private final Boolean mEnablePathDegradationMigration;
-    @Nullable
-    private final Boolean mAllowServerMigration;
-    @Nullable
-    private final Boolean mMigrateIdleConnections;
-    @Nullable
-    private final Long mIdleMigrationPeriodSeconds;
-    @Nullable
-    private final Boolean mRetryPreHandshakeErrorsOnAlternateNetwork;
-    @Nullable
-    private final Boolean mAllowNonDefaultNetworkUsage;
-    @Nullable
-    private final Long mMaxTimeOnNonDefaultNetworkSeconds;
-    @Nullable
-    private final Integer mMaxWriteErrorEagerMigrationsCount;
-    @Nullable
-    private final Integer mMaxPathDegradingEagerMigrationsCount;
+    @Nullable private final Boolean mEnableDefaultNetworkMigration;
+    @Nullable private final Boolean mEnablePathDegradationMigration;
+    @Nullable private final Boolean mAllowServerMigration;
+    @Nullable private final Boolean mMigrateIdleConnections;
+    @Nullable private final Long mIdleMigrationPeriodSeconds;
+    @Nullable private final Boolean mRetryPreHandshakeErrorsOnAlternateNetwork;
+    @Nullable private final Boolean mAllowNonDefaultNetworkUsage;
+    @Nullable private final Long mMaxTimeOnNonDefaultNetworkSeconds;
+    @Nullable private final Integer mMaxWriteErrorEagerMigrationsCount;
+    @Nullable private final Integer mMaxPathDegradingEagerMigrationsCount;
 
     @Nullable
     public Boolean getEnableDefaultNetworkMigration() {
@@ -111,30 +101,18 @@ public class ConnectionMigrationOptions {
         this.mMaxPathDegradingEagerMigrationsCount = builder.mMaxPathDegradingEagerMigrationsCount;
     }
 
-    /**
-     * Builder for {@link ConnectionMigrationOptions}.
-     */
+    /** Builder for {@link ConnectionMigrationOptions}. */
     public static class Builder {
-        @Nullable
-        private Boolean mEnableDefaultNetworkConnectionMigration;
-        @Nullable
-        private Boolean mEnablePathDegradationMigration;
-        @Nullable
-        private Boolean mAllowServerMigration;
-        @Nullable
-        private Boolean mMigrateIdleConnections;
-        @Nullable
-        private Long mIdleConnectionMigrationPeriodSeconds;
-        @Nullable
-        private Boolean mRetryPreHandshakeErrorsOnAlternateNetwork;
-        @Nullable
-        private Boolean mAllowNonDefaultNetworkUsage;
-        @Nullable
-        private Long mMaxTimeOnNonDefaultNetworkSeconds;
-        @Nullable
-        private Integer mMaxWriteErrorEagerMigrationsCount;
-        @Nullable
-        private Integer mMaxPathDegradingEagerMigrationsCount;
+        @Nullable private Boolean mEnableDefaultNetworkConnectionMigration;
+        @Nullable private Boolean mEnablePathDegradationMigration;
+        @Nullable private Boolean mAllowServerMigration;
+        @Nullable private Boolean mMigrateIdleConnections;
+        @Nullable private Long mIdleConnectionMigrationPeriodSeconds;
+        @Nullable private Boolean mRetryPreHandshakeErrorsOnAlternateNetwork;
+        @Nullable private Boolean mAllowNonDefaultNetworkUsage;
+        @Nullable private Long mMaxTimeOnNonDefaultNetworkSeconds;
+        @Nullable private Integer mMaxWriteErrorEagerMigrationsCount;
+        @Nullable private Integer mMaxPathDegradingEagerMigrationsCount;
 
         Builder() {}
 

@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include <optional>
 #include "android_webview/browser/android_protocol_handler.h"
 #include "android_webview/browser/aw_browser_context.h"
 #include "android_webview/browser/aw_contents_client_bridge.h"
@@ -46,7 +47,6 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/early_hints.mojom.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
 #include "third_party/blink/public/mojom/origin_trial_feature/origin_trial_feature.mojom-shared.h"
 #include "url/gurl.h"
@@ -84,7 +84,7 @@ class InterceptedRequest : public network::mojom::URLLoader,
       mojo::PendingRemote<network::mojom::URLLoaderClient> client,
       mojo::PendingRemote<network::mojom::URLLoaderFactory> target_factory,
       bool intercept_only,
-      absl::optional<AwProxyingURLLoaderFactory::SecurityOptions>
+      std::optional<AwProxyingURLLoaderFactory::SecurityOptions>
           security_options,
       scoped_refptr<AwContentsOriginMatcher> xrw_allowlist_matcher,
       scoped_refptr<AwBrowserContextIoThreadHandle> browser_context_handle);
@@ -101,7 +101,7 @@ class InterceptedRequest : public network::mojom::URLLoader,
   void OnReceiveResponse(
       network::mojom::URLResponseHeadPtr head,
       mojo::ScopedDataPipeConsumerHandle body,
-      absl::optional<mojo_base::BigBuffer> cached_metadata) override;
+      std::optional<mojo_base::BigBuffer> cached_metadata) override;
   void OnReceiveRedirect(const net::RedirectInfo& redirect_info,
                          network::mojom::URLResponseHeadPtr head) override;
   void OnUploadProgress(int64_t current_position,
@@ -115,7 +115,7 @@ class InterceptedRequest : public network::mojom::URLLoader,
       const std::vector<std::string>& removed_headers,
       const net::HttpRequestHeaders& modified_headers,
       const net::HttpRequestHeaders& modified_cors_exempt_headers,
-      const absl::optional<GURL>& new_url) override;
+      const std::optional<GURL>& new_url) override;
   void SetPriority(net::RequestPriority priority,
                    int32_t intra_priority_value) override;
   void PauseReadingBodyFromNet() override;
@@ -180,7 +180,7 @@ class InterceptedRequest : public network::mojom::URLLoader,
 
   AwSettings::RequestedWithHeaderMode requested_with_header_mode;
 
-  absl::optional<AwProxyingURLLoaderFactory::SecurityOptions> security_options_;
+  std::optional<AwProxyingURLLoaderFactory::SecurityOptions> security_options_;
 
   // If the |target_loader_| called OnComplete with an error this stores it.
   // That way the destructor can send it to OnReceivedError if safe browsing
@@ -293,8 +293,7 @@ InterceptedRequest::InterceptedRequest(
     mojo::PendingRemote<network::mojom::URLLoaderClient> client,
     mojo::PendingRemote<network::mojom::URLLoaderFactory> target_factory,
     bool intercept_only,
-    absl::optional<AwProxyingURLLoaderFactory::SecurityOptions>
-        security_options,
+    std::optional<AwProxyingURLLoaderFactory::SecurityOptions> security_options,
     scoped_refptr<AwContentsOriginMatcher> xrw_allowlist_matcher,
     scoped_refptr<AwBrowserContextIoThreadHandle> browser_context_handle)
     : frame_tree_node_id_(frame_tree_node_id),
@@ -624,7 +623,7 @@ void InterceptedRequest::ContinueAfterInterceptWithOverride(
           traffic_annotation_,
           std::make_unique<InterceptResponseDelegate>(
               std::move(response), weak_factory_.GetWeakPtr()),
-          absl::nullopt);
+          std::nullopt);
   loader->Start();
 }
 
@@ -687,7 +686,7 @@ void InterceptedRequest::OnReceiveEarlyHints(
 void InterceptedRequest::OnReceiveResponse(
     network::mojom::URLResponseHeadPtr head,
     mojo::ScopedDataPipeConsumerHandle body,
-    absl::optional<mojo_base::BigBuffer> cached_metadata) {
+    std::optional<mojo_base::BigBuffer> cached_metadata) {
   // intercept response headers here
   // pause/resume |proxied_client_receiver_| if necessary
 
@@ -765,7 +764,7 @@ void InterceptedRequest::FollowRedirect(
     const std::vector<std::string>& removed_headers,
     const net::HttpRequestHeaders& modified_headers,
     const net::HttpRequestHeaders& modified_cors_exempt_headers,
-    const absl::optional<GURL>& new_url) {
+    const std::optional<GURL>& new_url) {
   if (target_loader_) {
     target_loader_->FollowRedirect(removed_headers, modified_headers,
                                    modified_cors_exempt_headers, new_url);
@@ -906,7 +905,7 @@ AwProxyingURLLoaderFactory::AwProxyingURLLoaderFactory(
     mojo::PendingReceiver<network::mojom::URLLoaderFactory> loader_receiver,
     mojo::PendingRemote<network::mojom::URLLoaderFactory> target_factory_remote,
     bool intercept_only,
-    absl::optional<SecurityOptions> security_options,
+    std::optional<SecurityOptions> security_options,
     scoped_refptr<AwContentsOriginMatcher> xrw_allowlist_matcher,
     scoped_refptr<AwBrowserContextIoThreadHandle> browser_context_handle)
     : frame_tree_node_id_(frame_tree_node_id),
@@ -935,7 +934,7 @@ void AwProxyingURLLoaderFactory::CreateProxy(
     int frame_tree_node_id,
     mojo::PendingReceiver<network::mojom::URLLoaderFactory> loader_receiver,
     mojo::PendingRemote<network::mojom::URLLoaderFactory> target_factory_remote,
-    absl::optional<SecurityOptions> security_options,
+    std::optional<SecurityOptions> security_options,
     scoped_refptr<AwContentsOriginMatcher> xrw_allowlist_matcher,
     scoped_refptr<AwBrowserContextIoThreadHandle> browser_context_handle) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
@@ -967,7 +966,7 @@ void AwProxyingURLLoaderFactory::CreateLoaderAndStart(
       AwCookieAccessPolicy::GetInstance()->GetShouldAcceptCookies();
   bool third_party_cookie_policy =
       AwCookieAccessPolicy::GetInstance()->GetShouldAcceptThirdPartyCookies(
-          /*render_process_id=*/0, MSG_ROUTING_NONE, frame_tree_node_id_);
+          std::nullopt, frame_tree_node_id_);
   if (!global_cookie_policy) {
     options |= network::mojom::kURLLoadOptionBlockAllCookies;
   } else if (!third_party_cookie_policy && !request.url.SchemeIsFile()) {

@@ -30,16 +30,17 @@
 #include "base/values.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/policy/messaging_layer/proto/synced/log_upload_event.pb.h"
-#include "chrome/browser/policy/messaging_layer/upload/dm_server_uploader.h"
 #include "chrome/browser/policy/messaging_layer/upload/event_upload_size_controller.h"
 #include "chrome/browser/policy/messaging_layer/upload/file_upload_job.h"
 #include "chrome/browser/policy/messaging_layer/upload/record_upload_request_builder.h"
+#include "chrome/browser/policy/messaging_layer/upload/server_uploader.h"
 #include "chrome/browser/policy/messaging_layer/util/reporting_server_connector.h"
 #include "components/reporting/proto/synced/configuration_file.pb.h"
 #include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/proto/synced/record_constants.pb.h"
 #include "components/reporting/proto/synced/upload_tracker.pb.h"
 #include "components/reporting/resources/resource_manager.h"
+#include "components/reporting/util/encrypted_reporting_json_keys.h"
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/status_macros.h"
 #include "components/reporting/util/statusor.h"
@@ -56,13 +57,13 @@ namespace {
 static absl::optional<Priority> GetPriorityProtoFromSequenceInformationValue(
     const base::Value::Dict& sequence_information) {
   const absl::optional<int> int_priority_result =
-      sequence_information.FindInt("priority");
+      sequence_information.FindInt(json_keys::kPriority);
   if (int_priority_result.has_value()) {
     return Priority(int_priority_result.value());
   }
 
   const std::string* str_priority_result =
-      sequence_information.FindString("priority");
+      sequence_information.FindString(json_keys::kPriority);
   if (!str_priority_result) {
     LOG(ERROR) << "Field priority is missing from SequenceInformation: "
                << sequence_information;
@@ -242,7 +243,8 @@ StatusOr<ConfigFile> GetConfigurationProtoFromDict(
   ConfigFile config_file;
 
   // Handle the version.
-  const auto config_file_version = file.FindInt("version");
+  const auto config_file_version =
+      file.FindInt(json_keys::kConfigurationFileVersion);
   if (!config_file_version.has_value()) {
     return base::unexpected(
         Status(error::INVALID_ARGUMENT,
@@ -252,7 +254,7 @@ StatusOr<ConfigFile> GetConfigurationProtoFromDict(
 
   // Handle the signature.
   const std::string* config_file_signature_str =
-      file.FindString("configFileSignature");
+      file.FindString(json_keys::kConfigurationFileSignature);
   if (!config_file_signature_str || config_file_signature_str->empty()) {
     return base::unexpected(
         Status(error::INVALID_ARGUMENT,
@@ -265,7 +267,8 @@ StatusOr<ConfigFile> GetConfigurationProtoFromDict(
   }
   config_file.set_config_file_signature(config_file_signature);
 
-  auto* const event_config_result = file.FindList("blockedEventConfigs");
+  auto* const event_config_result =
+      file.FindList(json_keys::kBlockedEventConfigs);
   if (!event_config_result) {
     return base::unexpected(
         Status(error::INVALID_ARGUMENT,
@@ -282,7 +285,8 @@ StatusOr<ConfigFile> GetConfigurationProtoFromDict(
     }
 
     // Find destination and turn it into a proto.
-    auto* const destination = dict->FindString("destination");
+    auto* const destination =
+        dict->FindString(json_keys::kConfigurationFileDestination);
     ASSIGN_OR_RETURN(const auto proto_destination,
                      GetDestinationProto(*destination));
     current_config->set_destination(proto_destination);
@@ -290,11 +294,13 @@ StatusOr<ConfigFile> GetConfigurationProtoFromDict(
     // Check if there are minimum and/or maximum release versions
     // specified, if there are then we parse them and add them to the proto.
     // This fields are optional so if they are not present it is okay.
-    const auto min_version = dict->FindInt("minimumReleaseVersion");
+    const auto min_version =
+        dict->FindInt(json_keys::kConfigurationFileMinimumReleaseVerision);
     if (min_version.has_value()) {
       current_config->set_minimum_release_version(min_version.value());
     }
-    const auto max_version = dict->FindInt("maximumReleaseVersion");
+    const auto max_version =
+        dict->FindInt(json_keys::kConfigurationFileMaximumReleaseVerision);
     if (max_version.has_value()) {
       current_config->set_maximum_release_version(max_version.value());
     }
@@ -309,11 +315,11 @@ StatusOr<SequenceInformation>
 RecordHandlerImpl::SequenceInformationValueToProto(
     const base::Value::Dict& value) {
   const std::string* sequencing_id =
-      value.FindString(UploadEncryptedReportingRequestBuilder::kSequencingId);
+      value.FindString(reporting::json_keys::kSequencingId);
   const std::string* generation_id =
-      value.FindString(UploadEncryptedReportingRequestBuilder::kGenerationId);
+      value.FindString(reporting::json_keys::kGenerationId);
   const std::string* generation_guid =
-      value.FindString(UploadEncryptedReportingRequestBuilder::kGenerationGuid);
+      value.FindString(json_keys::kGenerationGuid);
   const auto priority_result =
       GetPriorityProtoFromSequenceInformationValue(value);
   // If required sequence info fields don't exist, or are malformed,
@@ -628,7 +634,7 @@ void RecordHandlerImpl::ReportUploader::HandleSuccessfulUpload(
   //                                         // adjustment is enabled.
   //  }
   const base::Value::Dict* last_succeed_uploaded_record =
-      last_response.FindDict("lastSucceedUploadedRecord");
+      last_response.FindDict(json_keys::kLastSucceedUploadedRecord);
   if (last_succeed_uploaded_record != nullptr) {
     auto seq_info_result =
         SequenceInformationValueToProto(*last_succeed_uploaded_record);
@@ -645,14 +651,15 @@ void RecordHandlerImpl::ReportUploader::HandleSuccessfulUpload(
   }
 
   // Handle forceConfirm flag, if present.
-  const auto force_confirm_flag = last_response.FindBool("forceConfirm");
+  const auto force_confirm_flag =
+      last_response.FindBool(json_keys::kForceConfirm);
   if (force_confirm_flag.has_value() && force_confirm_flag.value()) {
     force_confirm_ = true;
   }
 
   // Handle enableUploadSizeAdjustment flag, if present.
   const auto enable_upload_size_adjustment =
-      last_response.FindBool("enableUploadSizeAdjustment");
+      last_response.FindBool(json_keys::kEnableUploadSizeAdjustment);
   if (enable_upload_size_adjustment.has_value()) {
     EventUploadSizeController::Enabler::Set(
         enable_upload_size_adjustment.value());
@@ -663,14 +670,15 @@ void RecordHandlerImpl::ReportUploader::HandleSuccessfulUpload(
   // the response indicates success or failure, and whether the client
   // set attach_encryption_settings to true in request.
   const base::Value::Dict* signed_encryption_key_record =
-      last_response.FindDict("encryptionSettings");
+      last_response.FindDict(json_keys::kEncryptionSettings);
   if (signed_encryption_key_record != nullptr) {
     const std::string* public_key_str =
-        signed_encryption_key_record->FindString("publicKey");
+        signed_encryption_key_record->FindString(json_keys::kPublicKey);
     const auto public_key_id_result =
-        signed_encryption_key_record->FindInt("publicKeyId");
+        signed_encryption_key_record->FindInt(json_keys::kPublicKeyId);
     const std::string* public_key_signature_str =
-        signed_encryption_key_record->FindString("publicKeySignature");
+        signed_encryption_key_record->FindString(
+            json_keys::kPublicKeySignature);
     std::string public_key;
     std::string public_key_signature;
     if (public_key_str != nullptr &&
@@ -692,7 +700,7 @@ void RecordHandlerImpl::ReportUploader::HandleSuccessfulUpload(
   // by the client. Adding a check to make sure to only process it if the
   // feature is enabled on the client side.
   const base::Value::Dict* signed_configuration_file_record =
-      last_response.FindDict("configurationFile");
+      last_response.FindDict(json_keys::kConfigurationFile);
   if (signed_configuration_file_record != nullptr &&
       base::FeatureList::IsEnabled(kShouldRequestConfigurationFile)) {
     auto seq_info_result =
@@ -709,7 +717,8 @@ void RecordHandlerImpl::ReportUploader::HandleSuccessfulUpload(
   // Check if a record was unprocessable on the server.
   const base::Value::Dict* failed_uploaded_record =
       last_response.FindDictByDottedPath(
-          "firstFailedUploadedRecord.failedUploadedRecord");
+          base::StrCat({json_keys::kFirstFailedUploadedRecord, ".",
+                        json_keys::kFailedUploadedRecord}));
   if (!force_confirm_ && failed_uploaded_record != nullptr) {
     // The record we uploaded previously was unprocessable by the server,
     // if the record was after the current |highest_sequence_information_|
@@ -760,7 +769,8 @@ RecordHandlerImpl::ReportUploader::HandleFailedUploadedSequenceInformation(
   auto seq_info_result = SequenceInformationValueToProto(sequence_information);
   if (!seq_info_result.has_value()) {
     LOG(ERROR) << "Server responded with an invalid SequenceInformation for "
-                  "firstFailedUploadedRecord.failedUploadedRecord:"
+               << json_keys::kFirstFailedUploadedRecord << "."
+               << json_keys::kFailedUploadedRecord << ":"
                << sequence_information;
     return absl::nullopt;
   }

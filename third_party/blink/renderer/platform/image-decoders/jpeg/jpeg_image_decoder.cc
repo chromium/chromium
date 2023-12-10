@@ -124,67 +124,6 @@ bool SubsamplingSupportedByDecodeToYUV(cc::YUVSubsampling subsampling) {
          subsampling == cc::YUVSubsampling::k420;
 }
 
-// Extracts the JPEG color space of an image for UMA purposes given |info| which
-// is assumed to have gone through a jpeg_read_header(). When the color space is
-// YCbCr, we also extract the chroma subsampling. The caveat is that the
-// extracted color space is really libjpeg_turbo's guess. According to
-// libjpeg.txt, "[t]he JPEG color space, unfortunately, is something of a guess
-// since the JPEG standard proper does not provide a way to record it. In
-// practice most files adhere to the JFIF or Adobe conventions, and the decoder
-// will recognize these correctly."
-blink::BitmapImageMetrics::JpegColorSpace ExtractUMAJpegColorSpace(
-    const jpeg_decompress_struct& info) {
-  switch (info.jpeg_color_space) {
-    case JCS_GRAYSCALE:
-      return blink::BitmapImageMetrics::JpegColorSpace::kGrayscale;
-    case JCS_RGB:
-      return blink::BitmapImageMetrics::JpegColorSpace::kRGB;
-    case JCS_CMYK:
-      return blink::BitmapImageMetrics::JpegColorSpace::kCMYK;
-    case JCS_YCCK:
-      return blink::BitmapImageMetrics::JpegColorSpace::kYCCK;
-    case JCS_YCbCr:
-      switch (YuvSubsampling(info)) {
-        case cc::YUVSubsampling::k444:
-          return blink::BitmapImageMetrics::JpegColorSpace::kYCbCr444;
-        case cc::YUVSubsampling::k422:
-          return blink::BitmapImageMetrics::JpegColorSpace::kYCbCr422;
-        case cc::YUVSubsampling::k411:
-          return blink::BitmapImageMetrics::JpegColorSpace::kYCbCr411;
-        case cc::YUVSubsampling::k440:
-          return blink::BitmapImageMetrics::JpegColorSpace::kYCbCr440;
-        case cc::YUVSubsampling::k420:
-          return blink::BitmapImageMetrics::JpegColorSpace::kYCbCr420;
-        case cc::YUVSubsampling::k410:
-          return blink::BitmapImageMetrics::JpegColorSpace::kYCbCr410;
-        case cc::YUVSubsampling::kUnknown:
-          return blink::BitmapImageMetrics::JpegColorSpace::kYCbCrOther;
-      }
-    default:
-      return blink::BitmapImageMetrics::JpegColorSpace::kUnknown;
-  }
-}
-
-constexpr base::HistogramBase::Sample kImageAreaHistogramMin = 1;
-constexpr base::HistogramBase::Sample kImageAreaHistogramMax = 8192 * 8192;
-constexpr int32_t kImageAreaHistogramBucketCount = 100;
-
-void CountJpegArea(const gfx::Size& size) {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(
-      blink::CustomCountHistogram, image_area_histogram,
-      ("Blink.ImageDecoders.Jpeg.Area", kImageAreaHistogramMin,
-       kImageAreaHistogramMax, kImageAreaHistogramBucketCount));
-  // A base::HistogramBase::Sample may not fit |size.Area()|. Hence the use of
-  // saturated_cast.
-  image_area_histogram.Count(
-      base::saturated_cast<base::HistogramBase::Sample>(size.Area64()));
-}
-
-void CountJpegColorSpace(
-    blink::BitmapImageMetrics::JpegColorSpace color_space) {
-  UMA_HISTOGRAM_ENUMERATION("Blink.ImageDecoders.Jpeg.ColorSpace", color_space);
-}
-
 // Rounds |size| to the smallest multiple of |alignment| that is greater than or
 // equal to |size|.
 // Note that base::bits::Align is not used here because the alignment is not
@@ -739,8 +678,6 @@ class JPEGImageReader final {
 
       case kJpegDone:
         // Finish decompression.
-        CountJpegArea(decoder_->Size());
-        CountJpegColorSpace(ExtractUMAJpegColorSpace(info_));
         if (info_.jpeg_color_space != JCS_GRAYSCALE &&
             decoder_->IsAllDataReceived()) {
           static constexpr char kType[] = "Jpeg";

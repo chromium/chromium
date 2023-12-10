@@ -15,7 +15,7 @@ namespace ash::local_search_service {
 
 namespace {
 
-void OnBindIndexDone(const absl::optional<std::string>& error) {
+void OnBindIndexDone(const std::optional<std::string>& error) {
   base::UmaHistogramBoolean("LocalSearchService.BindIndexHasError",
                             error.has_value());
   if (error)

@@ -16,6 +16,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/storage_partition_config.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "services/network/public/mojom/cert_verifier_service.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 
 namespace blink {
@@ -53,15 +54,17 @@ class TestStoragePartition : public StoragePartition {
   ~TestStoragePartition() override;
 
   void set_config(StoragePartitionConfig config) { config_ = config; }
-  const StoragePartitionConfig& GetConfig() override;
+  const StoragePartitionConfig& GetConfig() const override;
 
   void set_path(base::FilePath file_path) { file_path_ = file_path; }
-  base::FilePath GetPath() override;
+  const base::FilePath& GetPath() const override;
 
   void set_network_context(network::mojom::NetworkContext* context) {
     network_context_ = context;
   }
   network::mojom::NetworkContext* GetNetworkContext() override;
+  cert_verifier::mojom::CertVerifierServiceUpdater*
+  GetCertVerifierServiceUpdater() override;
 
   storage::SharedStorageManager* GetSharedStorageManager() override;
 
@@ -230,6 +233,7 @@ class TestStoragePartition : public StoragePartition {
 
   void ClearBluetoothAllowedDevicesMapForTesting() override;
   void FlushNetworkInterfaceForTesting() override;
+  void FlushCertVerifierInterfaceForTesting() override;
   void WaitForDeletionTasksForTesting() override;
   void WaitForCodeCacheShutdownForTesting() override;
   void SetNetworkContextForTesting(

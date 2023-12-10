@@ -11,13 +11,9 @@ import org.chromium.content_public.browser.LoadUrlParams;
  * compositor. Used to implement WebXR's DOM Overlay mode correctly.
  */
 public interface VrCompositorDelegate {
-    /**
-     * Enables/disables immersive VR mode in the compositor.
-     */
+    /** Enables/disables immersive VR mode in the compositor. */
     void setOverlayImmersiveVrMode(boolean enabled);
 
-    /**
-     * Opens a new tab in the current browser.
-     */
+    /** Opens a new tab in the current browser. */
     void openNewTab(LoadUrlParams url);
 }

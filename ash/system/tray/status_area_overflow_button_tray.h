@@ -64,6 +64,8 @@ class ASH_EXPORT StatusAreaOverflowButtonTray : public TrayBackgroundView {
  private:
   // The button icon of an animating arrow based on the collapse/expand state.
   class IconView : public views::ImageView, public gfx::AnimationDelegate {
+    METADATA_HEADER(IconView, views::ImageView)
+
    public:
     IconView();
     ~IconView() override;

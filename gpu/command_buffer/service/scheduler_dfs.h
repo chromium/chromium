@@ -89,11 +89,6 @@ class GPU_EXPORT SchedulerDfs {
   // If the sequence should yield so that a higher priority sequence may run.
   bool ShouldYield(SequenceId sequence_id);
 
-  // Takes and resets current accumulated blocking time. Not available on all
-  // platforms. Must be enabled with --enable-gpu-blocked-time.
-  // Returns TimeDelta::Min() when not available.
-  base::TimeDelta TakeTotalBlockingTime();
-
   base::SingleThreadTaskRunner* GetTaskRunnerForTesting(SequenceId sequence_id);
 
  private:
@@ -369,7 +364,6 @@ class GPU_EXPORT SchedulerDfs {
 
   // Accumulated time the thread was blocked during running task
   base::TimeDelta total_blocked_time_ GUARDED_BY(lock_);
-  const bool blocked_time_collection_enabled_;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(SchedulerDfsTest, StreamPriorities);

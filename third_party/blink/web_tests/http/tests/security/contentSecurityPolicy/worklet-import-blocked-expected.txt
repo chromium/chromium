@@ -1,6 +1,5 @@
 CONSOLE ERROR: Refused to load the script 'http://127.0.0.1:8000/resources/worklet.js' because it violates the following Content Security Policy directive: "script-src 'unsafe-inline'". Note that 'script-src-elem' was not explicitly set, so 'script-src' is used as a fallback.
 
 This is a testharness.js-based test.
-[PASS] Importing a script rejects the given promise with AbortError because it violated the same origin CSP policy.
 Harness: the test ran to completion.
 

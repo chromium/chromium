@@ -16,7 +16,7 @@ found in the LICENSE file.
     android:layout_height="match_parent" />
 
   <org.chromium.ui.widget.ButtonCompat
-    android:id="@+id/action_button"
+    android:id="@+id/host_action_button"
     style="@style/FilledButton.Flat"
     android:layout_width="wrap_content"
     android:layout_height="56dp"

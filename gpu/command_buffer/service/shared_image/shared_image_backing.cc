@@ -18,6 +18,10 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "ui/gfx/win/d3d_shared_fence.h"
+#endif
+
 namespace gpu {
 namespace {
 
@@ -75,7 +79,7 @@ SharedImageBacking::SharedImageBacking(
     uint32_t usage,
     size_t estimated_size,
     bool is_thread_safe,
-    absl::optional<gfx::BufferUsage> buffer_usage)
+    std::optional<gfx::BufferUsage> buffer_usage)
     : mailbox_(mailbox),
       format_(format),
       size_(size),
@@ -236,11 +240,28 @@ SharedImageBacking::ProduceVideoDecode(SharedImageManager* manager,
   return nullptr;
 }
 
+#if BUILDFLAG(ENABLE_VULKAN)
+std::unique_ptr<VulkanImageRepresentation> SharedImageBacking::ProduceVulkan(
+    SharedImageManager* manager,
+    MemoryTypeTracker* tracker,
+    gpu::VulkanDeviceQueue* vulkan_device_queue,
+    gpu::VulkanImplementation& vulkan_impl) {
+  return nullptr;
+}
+#endif
+
 #if BUILDFLAG(IS_ANDROID)
 std::unique_ptr<LegacyOverlayImageRepresentation>
 SharedImageBacking::ProduceLegacyOverlay(SharedImageManager* manager,
                                          MemoryTypeTracker* tracker) {
   return nullptr;
+}
+#endif
+
+#if BUILDFLAG(IS_WIN)
+void SharedImageBacking::UpdateExternalFence(
+    scoped_refptr<gfx::D3DSharedFence> external_fence) {
+  NOTIMPLEMENTED_LOG_ONCE();
 }
 #endif
 
@@ -384,7 +405,7 @@ ClearTrackingSharedImageBacking::ClearTrackingSharedImageBacking(
     uint32_t usage,
     size_t estimated_size,
     bool is_thread_safe,
-    absl::optional<gfx::BufferUsage> buffer_usage)
+    std::optional<gfx::BufferUsage> buffer_usage)
     : SharedImageBacking(mailbox,
                          format,
                          size,

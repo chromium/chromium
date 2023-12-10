@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include <optional>
 #include "base/containers/flat_set.h"
 #include "base/functional/callback_forward.h"
 #include "base/observer_list.h"
@@ -26,7 +27,6 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/messaging/web_message_port.h"
 #include "ui/gfx/geometry/rect.h"
 #include "url/gurl.h"

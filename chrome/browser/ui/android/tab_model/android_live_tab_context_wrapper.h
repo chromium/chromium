@@ -63,7 +63,7 @@ class AndroidLiveTabContextCloseWrapper : public AndroidLiveTabContext {
 
   // Gets the TabGroupId for the Tab at `relative_index` into `closed_tabs` or
   // returns nullopt otherwise.
-  absl::optional<tab_groups::TabGroupId> GetTabGroupForTab(
+  std::optional<tab_groups::TabGroupId> GetTabGroupForTab(
       int relative_index) const override;
 
   // Gets the visual data for `group_id` if it exists or nullptr otherwise.
@@ -131,7 +131,7 @@ class AndroidLiveTabContextRestoreWrapper : public AndroidLiveTabContext {
       int tab_index,
       int selected_navigation,
       const std::string& extension_app_id,
-      absl::optional<tab_groups::TabGroupId> group,
+      std::optional<tab_groups::TabGroupId> group,
       const tab_groups::TabGroupVisualData& group_visual_data,
       bool select,
       bool pin,

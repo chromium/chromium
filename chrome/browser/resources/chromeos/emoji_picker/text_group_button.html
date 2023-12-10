@@ -40,5 +40,5 @@
     on-click="handleClick"
     custom-tab-index="[[customTabIndex]]"
     aria-pressed$="[[getAriaPressedState(active)]]">
-  [[toUpperCase(name)]]
+  [[maybeToUpperCase(name, jellySupport)]]
 </cr-button>

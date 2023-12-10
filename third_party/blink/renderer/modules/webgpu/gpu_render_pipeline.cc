@@ -246,7 +246,8 @@ void GPUVertexStateAsWGPUVertexState(GPUDevice* device,
   dawn_vertex->dawn_desc->constantCount = dawn_vertex->constantCount;
   dawn_vertex->dawn_desc->constants = dawn_vertex->constants.get();
   dawn_vertex->dawn_desc->module = descriptor->module()->GetHandle();
-  dawn_vertex->dawn_desc->entryPoint = dawn_vertex->entry_point.c_str();
+  dawn_vertex->dawn_desc->entryPoint =
+      dawn_vertex->entry_point ? dawn_vertex->entry_point->c_str() : nullptr;
 
   if (descriptor->hasBuffers()) {
     AsDawnVertexBufferLayouts(device, descriptor, dawn_vertex);
@@ -279,7 +280,9 @@ void GPUFragmentStateAsWGPUFragmentState(GPUDevice* device,
   dawn_fragment->dawn_desc.constantCount = dawn_fragment->constantCount;
   dawn_fragment->dawn_desc.constants = dawn_fragment->constants.get();
   dawn_fragment->dawn_desc.module = descriptor->module()->GetHandle();
-  dawn_fragment->dawn_desc.entryPoint = dawn_fragment->entry_point.c_str();
+  dawn_fragment->dawn_desc.entryPoint =
+      dawn_fragment->entry_point ? dawn_fragment->entry_point->c_str()
+                                 : nullptr;
 
   dawn_fragment->dawn_desc.targets = nullptr;
   dawn_fragment->dawn_desc.targetCount = descriptor->targets().size();

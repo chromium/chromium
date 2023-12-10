@@ -9,13 +9,17 @@
 
 #include "ash/ash_export.h"
 #include "ash/wm/splitview/split_view_controller.h"
+#include "ash/wm/splitview/split_view_types.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
-#include "ui/gfx/geometry/rect.h"
 
 namespace aura {
 class Window;
 }  // namespace aura
+
+namespace gfx {
+class Rect;
+}  // namespace gfx
 
 namespace views {
 class Widget;
@@ -71,36 +75,36 @@ class ASH_EXPORT SplitViewDragIndicators {
     // snapping region but not snappable.
     kFromFloat,
 
-    // Currently dragging in the |SplitViewController::SnapPosition::kPrimary|
+    // Currently dragging in the |SnapPosition::kPrimary|
     // snap area, and the dragged window is eligible to be snapped in split
     // view.
     kToSnapPrimary,
 
-    // Currently dragging in the |SplitViewController::SnapPosition::kSecondary|
+    // Currently dragging in the |SnapPosition::kSecondary|
     // snap area, and the dragged window is eligible to be snapped in split
     // view.
     kToSnapSecondary
   };
 
-  // |SplitViewController::SnapPosition::kPrimary|, if |window_dragging_state|
-  // is |kToSnapLeft| |SplitViewController::SnapPosition::kSecondary|, if
+  // |SnapPosition::kPrimary|, if |window_dragging_state|
+  // is |kToSnapLeft| |SnapPosition::kSecondary|, if
   // |window_dragging_state| is |kToSnapRight|
-  // |SplitViewController::SnapPosition::kNone| otherwise
-  static SplitViewController::SnapPosition GetSnapPosition(
+  // |SnapPosition::kNone| otherwise
+  static SnapPosition GetSnapPosition(
       WindowDraggingState window_dragging_state);
 
   // |kNoDrag| if |is_dragging| is false or split view is unsupported. If
   // |is_dragging| is true and split view is supported, then:
   // |non_snap_state|, if |snap_position| is
-  // |SplitViewController::SnapPosition::kNone|
+  // |SnapPosition::kNone|
   // |kToSnapLeft|, if |snap_position| is
-  // |SplitViewController::SnapPosition::kPrimary|
+  // |SnapPosition::kPrimary|
   // |kToSnapRight|, if |snap_position| is
-  // |SplitViewController::SnapPosition::kSecondary|
+  // |SnapPosition::kSecondary|
   static WindowDraggingState ComputeWindowDraggingState(
       bool is_dragging,
       WindowDraggingState non_snap_state,
-      SplitViewController::SnapPosition snap_position);
+      SnapPosition snap_position);
 
   explicit SplitViewDragIndicators(aura::Window* root_window);
 

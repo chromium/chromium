@@ -14,22 +14,24 @@ import static org.mockito.Mockito.spy;
 import org.junit.Before;
 import org.robolectric.shadows.ShadowLog;
 
-/**
- * Robolectric test base class for BrowserMediaRouter.
- */
+/** Robolectric test base class for BrowserMediaRouter. */
 public class BrowserMediaRouterTestBase {
-    protected static final String SOURCE_ID1 = "cast:CCCCCCCC?"
-            + "clientId=11111111111111111&"
-            + "autoJoinPolicy=origin_scoped&"
-            + "launchTimeout=10000";
-    protected static final String SOURCE_ID2 = "cast:CCCCCCCC?"
-            + "clientId=222222222222222222&"
-            + "autoJoinPolicy=origin_scoped&"
-            + "castLaunchTimeout=10000";
-    protected static final String SINK_ID1 = "com.google.android.gms/"
-            + ".cast.media.MediaRouteProviderService:cccccccccccccccccccccccccccccccc";
-    protected static final String SINK_ID2 = "com.google.android.gms/"
-            + ".cast.media.MediaRouteProviderService:dddddddddddddddddddddddddddddddd";
+    protected static final String SOURCE_ID1 =
+            "cast:CCCCCCCC?"
+                    + "clientId=11111111111111111&"
+                    + "autoJoinPolicy=origin_scoped&"
+                    + "launchTimeout=10000";
+    protected static final String SOURCE_ID2 =
+            "cast:CCCCCCCC?"
+                    + "clientId=222222222222222222&"
+                    + "autoJoinPolicy=origin_scoped&"
+                    + "castLaunchTimeout=10000";
+    protected static final String SINK_ID1 =
+            "com.google.android.gms/"
+                    + ".cast.media.MediaRouteProviderService:cccccccccccccccccccccccccccccccc";
+    protected static final String SINK_ID2 =
+            "com.google.android.gms/"
+                    + ".cast.media.MediaRouteProviderService:dddddddddddddddddddddddddddddddd";
     protected static final String SINK_NAME1 = "sink name 1";
     protected static final String SINK_NAME2 = "sink name 2";
     protected static final String PRESENTATION_ID1 = "mr_CCCCCCCC-CCCC-CCCC-CCCC-CCCCCCCCCCCC";

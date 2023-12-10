@@ -422,9 +422,9 @@ AX_TEST_F('ChromeVoxTutorialTest', 'AutoReadTitle', async function() {
       .expectSpeech('Quick orientation')
       .call(doCmd('forceClickOnCurrentItem'))
       .expectSpeech(/Quick Orientation Tutorial, [0-9]+ Lessons/)
-      .call(doCmd('nextObject'))
-      .expectSpeech('Welcome to ChromeVox!')
-      .call(doCmd('forceClickOnCurrentItem'))
+      .call(() => {
+        tutorial.showFirstLesson_();
+      })
       .expectSpeech('Welcome to ChromeVox!')
       .expectSpeech(
           'Welcome to the ChromeVox tutorial. To exit this tutorial at any ' +

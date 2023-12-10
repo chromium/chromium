@@ -1,0 +1,30 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Cargo test",
+            "type": "shell",
+            "command": "cargo test",
+            "group": "test"
+        },
+        {
+            "label": "Bazel test",
+            "type": "shell",
+            "command": "bazel test ...",
+            "group": "test",
+            "dependsOn": ["Vendor"]
+        },
+        {
+            "label": "Buck test",
+            "type": "shell",
+            "command": "buck test ...",
+            "group": "test",
+            "dependsOn": ["Vendor"]
+        },
+        {
+            "label": "Vendor",
+            "type": "shell",
+            "command": "cp third-party/Cargo.lock . && cargo vendor --versioned-dirs --locked third-party/vendor"
+        }
+    ]
+}

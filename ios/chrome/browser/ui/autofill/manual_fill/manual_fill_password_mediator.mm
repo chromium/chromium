@@ -12,11 +12,10 @@
 #import "components/autofill/ios/form_util/form_activity_observer_bridge.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
 #import "components/password_manager/core/browser/password_manager_client.h"
-#import "components/password_manager/core/browser/password_store_interface.h"
-#import "components/password_manager/core/common/password_manager_features.h"
+#import "components/password_manager/core/browser/password_store/password_store_interface.h"
 #import "components/sync/base/model_type.h"
 #import "components/sync/service/sync_service.h"
-#import "ios/chrome/browser/autofill/manual_fill/passwords_fetcher.h"
+#import "ios/chrome/browser/autofill/model/manual_fill/passwords_fetcher.h"
 #import "ios/chrome/browser/favicon/favicon_loader.h"
 #import "ios/chrome/browser/net/crurl.h"
 #import "ios/chrome/browser/passwords/model/password_tab_helper.h"
@@ -247,9 +246,6 @@ BOOL AreCredentialsAtIndexesConnected(
         [[NSMutableArray alloc] init];
     __weak __typeof(self) weakSelf = self;
 
-    bool useUpdatedStrings = base::FeatureList::IsEnabled(
-        password_manager::features::kIOSPasswordUISplit);
-
     password_manager::PasswordManagerClient* passwordManagerClient =
         _webState ? PasswordTabHelper::FromWebState(_webState)
                         ->GetPasswordManagerClient()
@@ -260,9 +256,7 @@ BOOL AreCredentialsAtIndexesConnected(
         passwordManagerClient->IsSavingAndFillingEnabled(_URL) &&
         _activeFieldIsPassword) {
       NSString* suggestPasswordTitleString = l10n_util::GetNSString(
-          useUpdatedStrings
-              ? IDS_IOS_MANUAL_FALLBACK_SUGGEST_STRONG_PASSWORD_WITH_DOTS
-              : IDS_IOS_MANUAL_FALLBACK_SUGGEST_PASSWORD_WITH_DOTS);
+          IDS_IOS_MANUAL_FALLBACK_SUGGEST_STRONG_PASSWORD_WITH_DOTS);
       ManualFillActionItem* suggestPasswordItem = [[ManualFillActionItem alloc]
           initWithTitle:suggestPasswordTitleString
                  action:^{
@@ -276,9 +270,7 @@ BOOL AreCredentialsAtIndexesConnected(
     }
 
     NSString* otherPasswordsTitleString = l10n_util::GetNSString(
-        useUpdatedStrings
-            ? IDS_IOS_MANUAL_FALLBACK_SELECT_PASSWORD_WITH_DOTS
-            : IDS_IOS_MANUAL_FALLBACK_USE_OTHER_PASSWORD_WITH_DOTS);
+        IDS_IOS_MANUAL_FALLBACK_SELECT_PASSWORD_WITH_DOTS);
     ManualFillActionItem* otherPasswordsItem = [[ManualFillActionItem alloc]
         initWithTitle:otherPasswordsTitleString
                action:^{
@@ -304,22 +296,19 @@ BOOL AreCredentialsAtIndexesConnected(
         manual_fill::ManagePasswordsAccessibilityIdentifier;
     [actions addObject:managePasswordsItem];
 
-    // "Manage Settings..." also appears when updated strings are enabled.
-    if (useUpdatedStrings) {
-      NSString* manageSettingsTitle =
-          l10n_util::GetNSString(IDS_IOS_MANUAL_FALLBACK_MANAGE_SETTINGS);
-      ManualFillActionItem* manageSettingsItem = [[ManualFillActionItem alloc]
-          initWithTitle:manageSettingsTitle
-                 action:^{
-                   base::RecordAction(base::UserMetricsAction(
-                       "ManualFallback_Password_OpenManageSettings"));
-                   [weakSelf.navigator openPasswordSettings];
-                 }];
-      manageSettingsItem.accessibilityIdentifier =
-          manual_fill::ManageSettingsAccessibilityIdentifier;
+    NSString* manageSettingsTitle =
+        l10n_util::GetNSString(IDS_IOS_MANUAL_FALLBACK_MANAGE_SETTINGS);
+    ManualFillActionItem* manageSettingsItem = [[ManualFillActionItem alloc]
+        initWithTitle:manageSettingsTitle
+               action:^{
+                 base::RecordAction(base::UserMetricsAction(
+                     "ManualFallback_Password_OpenManageSettings"));
+                 [weakSelf.navigator openPasswordSettings];
+               }];
+    manageSettingsItem.accessibilityIdentifier =
+        manual_fill::ManageSettingsAccessibilityIdentifier;
 
-      [actions addObject:manageSettingsItem];
-    }
+    [actions addObject:manageSettingsItem];
 
     [self.consumer presentActions:actions];
   }

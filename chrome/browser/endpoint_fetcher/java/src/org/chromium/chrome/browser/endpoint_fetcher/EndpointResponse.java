@@ -6,9 +6,7 @@ package org.chromium.chrome.browser.endpoint_fetcher;
 
 import org.jni_zero.CalledByNative;
 
-/**
- * Encapsulates the response from the {@Link EndpointFetcher}
- */
+/** Encapsulates the response from the {@Link EndpointFetcher} */
 public class EndpointResponse {
     private final String mResponseString;
 
@@ -20,9 +18,7 @@ public class EndpointResponse {
         mResponseString = responseString;
     }
 
-    /**
-     * Response string acquired from calling an endpoint
-     */
+    /** Response string acquired from calling an endpoint */
     public String getResponseString() {
         return mResponseString;
     }

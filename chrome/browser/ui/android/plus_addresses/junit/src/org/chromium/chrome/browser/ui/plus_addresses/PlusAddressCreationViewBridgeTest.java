@@ -30,11 +30,13 @@ import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.layouts.LayoutManagerAppUtils;
 import org.chromium.chrome.browser.layouts.ManagedLayoutManager;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerFactory;
 import org.chromium.components.browser_ui.bottomsheet.ManagedBottomSheetController;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.url.GURL;
 
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
@@ -45,15 +47,19 @@ public class PlusAddressCreationViewBridgeTest {
             "lorem ipsum description <link>test link</link> <b>test bold</b>";
     private static final String MODAL_FORMATTED_PLUS_ADDRESS_DESCRIPTION =
             "lorem ipsum description test link test bold";
-    private static final String MODAL_PROPOSED_PLUS_ADDRESS_PLACEHOLDER = "plus+1@plus.plus";
+    private static final String MODAL_PROPOSED_PLUS_ADDRESS_PLACEHOLDER = "placeholder";
     private static final String MODAL_OK = "ok";
     private static final String MODAL_CANCEL = "cancel";
+    private static final String MODAL_PROPOSED_PLUS_ADDRESS = "plus+1@plus.plus";
+    private static final String MODAL_ERROR_MESSAGE = "error!";
+    private static final String MANAGE_URL = "manage.com";
 
     @Rule public JniMocker mJniMocker = new JniMocker();
     @Mock private Profile mProfile;
     @Mock private PlusAddressCreationViewBridge.Natives mBridgeNatives;
     @Mock private ManagedBottomSheetController mBottomSheetController;
     @Mock private ManagedLayoutManager mLayoutManager;
+    @Mock private TabModelSelector mTabModelSelector;
     @Mock private PlusAddressCreationCoordinator mCoordinator;
     @Mock private PlusAddressCreationViewBridge.CoordinatorFactory mCoordinatorFactory;
 
@@ -72,7 +78,11 @@ public class PlusAddressCreationViewBridgeTest {
         LayoutManagerAppUtils.attach(mWindow, mLayoutManager);
         mPlusAddressCreationViewBridge =
                 new PlusAddressCreationViewBridge(
-                        NATIVE_PLUS_ADDRESS_CREATION_VIEW, mWindow, mTabModel, mCoordinatorFactory);
+                        NATIVE_PLUS_ADDRESS_CREATION_VIEW,
+                        mWindow,
+                        mTabModel,
+                        mTabModelSelector,
+                        mCoordinatorFactory);
         mPlusAddressCreationViewBridge.setActivityForTesting(mActivity);
         mJniMocker.mock(PlusAddressCreationViewBridgeJni.TEST_HOOKS, mBridgeNatives);
     }
@@ -90,12 +100,14 @@ public class PlusAddressCreationViewBridgeTest {
                         mBottomSheetController,
                         mLayoutManager,
                         mTabModel,
+                        mTabModelSelector,
                         mPlusAddressCreationViewBridge,
                         MODAL_TITLE,
                         MODAL_PLUS_ADDRESS_DESCRIPTION,
                         MODAL_PROPOSED_PLUS_ADDRESS_PLACEHOLDER,
                         MODAL_OK,
-                        MODAL_CANCEL))
+                        MODAL_CANCEL,
+                        new GURL(MANAGE_URL)))
                 .thenReturn(mCoordinator);
     }
 
@@ -105,7 +117,8 @@ public class PlusAddressCreationViewBridgeTest {
                 MODAL_PLUS_ADDRESS_DESCRIPTION,
                 MODAL_PROPOSED_PLUS_ADDRESS_PLACEHOLDER,
                 MODAL_OK,
-                MODAL_CANCEL);
+                MODAL_CANCEL,
+                MANAGE_URL);
     }
 
     @Test
@@ -127,13 +140,6 @@ public class PlusAddressCreationViewBridgeTest {
 
     @Test
     @SmallTest
-    public void testDestroy_whenCoordinatorHasNotBeenCreated() {
-        mPlusAddressCreationViewBridge.destroy();
-        verifyNoInteractions(mCoordinator);
-    }
-
-    @Test
-    @SmallTest
     public void testDestroyTwice_destroysCoordinatorOnce() {
         setupCoordinatorFactory();
         showBottomSheet();
@@ -146,16 +152,17 @@ public class PlusAddressCreationViewBridgeTest {
 
     @Test
     @SmallTest
-    public void testOnConfirmed_callsNativeOnConfirmed() {
-        mPlusAddressCreationViewBridge.onConfirmed();
-        verify(mBridgeNatives, times(1)).onConfirmed(eq(NATIVE_PLUS_ADDRESS_CREATION_VIEW), any());
+    public void testOnConfirmRequested_callsNativeOnConfirmRequested() {
+        mPlusAddressCreationViewBridge.onConfirmRequested();
+        verify(mBridgeNatives, times(1))
+                .onConfirmRequested(eq(NATIVE_PLUS_ADDRESS_CREATION_VIEW), any());
     }
 
     @Test
     @SmallTest
-    public void testOnConfirmed_doesNotCallNative_afterDestroy() {
+    public void testOnConfirmRequested_doesNotCallNative_afterDestroy() {
         mPlusAddressCreationViewBridge.destroy();
-        mPlusAddressCreationViewBridge.onConfirmed();
+        mPlusAddressCreationViewBridge.onConfirmRequested();
         verifyNoInteractions(mBridgeNatives);
     }
 
@@ -188,5 +195,42 @@ public class PlusAddressCreationViewBridgeTest {
         mPlusAddressCreationViewBridge.destroy();
         mPlusAddressCreationViewBridge.onPromptDismissed();
         verifyNoInteractions(mBridgeNatives);
+    }
+
+    @Test
+    @SmallTest
+    public void testUpdateProposedPlusAddress_withPlusAddress_callsCoordinator() {
+        setupCoordinatorFactory();
+        showBottomSheet();
+        mPlusAddressCreationViewBridge.updateProposedPlusAddress(MODAL_PROPOSED_PLUS_ADDRESS);
+        verify(mCoordinator, times(1)).updateProposedPlusAddress(MODAL_PROPOSED_PLUS_ADDRESS);
+    }
+
+    @Test
+    @SmallTest
+    public void testShowError_callsCoordinator() {
+        setupCoordinatorFactory();
+        showBottomSheet();
+        mPlusAddressCreationViewBridge.showError(MODAL_ERROR_MESSAGE);
+        verify(mCoordinator, times(1)).showError(MODAL_ERROR_MESSAGE);
+    }
+
+    @Test
+    @SmallTest
+    public void testFinishConfirm_callsCoordinator() {
+        setupCoordinatorFactory();
+        showBottomSheet();
+        mPlusAddressCreationViewBridge.finishConfirm();
+        verify(mCoordinator, times(1)).finishConfirm();
+    }
+
+    @Test
+    @SmallTest
+    public void testwhenCoordinatorHasNotBeenCreated() {
+        mPlusAddressCreationViewBridge.updateProposedPlusAddress(MODAL_PROPOSED_PLUS_ADDRESS);
+        mPlusAddressCreationViewBridge.showError(MODAL_ERROR_MESSAGE);
+        mPlusAddressCreationViewBridge.finishConfirm();
+        mPlusAddressCreationViewBridge.destroy();
+        verifyNoInteractions(mCoordinator);
     }
 }

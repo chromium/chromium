@@ -151,8 +151,7 @@ void CommandServiceMv3UpgradeTest::ReloadExtensionMv3(
       kManifestTemplate, 3, manifest_values::kActionCommandEvent,
       new_suggested_keybinding, manifest_keys::kAction));
   ReloadExtension(id);
-  EXPECT_TRUE(
-      extension_registry()->GetExtensionById(id, ExtensionRegistry::ENABLED));
+  EXPECT_TRUE(extension_registry()->enabled_extensions().GetByID(id));
 }
 
 void CommandServiceMv3UpgradeTest::InstallExtensionMv2(const std::string& id,
@@ -179,8 +178,7 @@ void CommandServiceMv3UpgradeTest::InstallExtensionMv2(const std::string& id,
   } else {
     ASSERT_TRUE(InstallExtensionFromWebstore(path_mv2, 1));
   }
-  EXPECT_TRUE(
-      extension_registry()->GetExtensionById(id, ExtensionRegistry::ENABLED));
+  EXPECT_TRUE(extension_registry()->enabled_extensions().GetByID(id));
 
   // Verify it has an MV2 action command of Alt+N.
   EXPECT_TRUE(CommandHasAltPlusKeybinding(id, test_params.action_command_name,
@@ -209,8 +207,7 @@ void CommandServiceMv3UpgradeTest::UpdateExtensionMv3(
 
   // Update to MV3 with an action command instead of a browser action.
   ASSERT_TRUE(UpdateExtension(id, path_mv3, 0));
-  EXPECT_TRUE(
-      extension_registry()->GetExtensionById(id, ExtensionRegistry::ENABLED));
+  EXPECT_TRUE(extension_registry()->enabled_extensions().GetByID(id));
 }
 
 void CommandServiceMv3UpgradeTest::ChangeMv2CommandKeybinding(
@@ -414,8 +411,7 @@ IN_PROC_BROWSER_TEST_F(CommandServiceTest, RemoveShortcutSurvivesUpdate) {
 
   // Install v1 of the extension.
   ASSERT_TRUE(InstallExtension(path_v1, 1));
-  EXPECT_TRUE(
-      registry->GetExtensionById(kExtensionId, ExtensionRegistry::ENABLED));
+  EXPECT_TRUE(registry->enabled_extensions().GetByID(kExtensionId));
 
   // Verify it has a command of Alt+Shift+F.
   ui::Accelerator accelerator =
@@ -442,8 +438,7 @@ IN_PROC_BROWSER_TEST_F(CommandServiceTest, RemoveShortcutSurvivesUpdate) {
 
   // Update to version 2.
   EXPECT_TRUE(UpdateExtension(kExtensionId, path_v2, 0));
-  EXPECT_TRUE(
-      registry->GetExtensionById(kExtensionId, ExtensionRegistry::ENABLED));
+  EXPECT_TRUE(registry->enabled_extensions().GetByID(kExtensionId));
 
   // Verify it is still set to nothing.
   accelerator =

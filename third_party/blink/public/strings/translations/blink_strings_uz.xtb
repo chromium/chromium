@@ -30,6 +30,7 @@
 <translation id="2226276347425096477">Bu matnni <ph name="MAX_CHARACTERS" /> belgigacha kamaytiring (hozircha <ph name="CURRENT_LENGTH" /> ta belgi kiritdingiz).</translation>
 <translation id="2247351761944213033"><ph name="WEEKNUMBER" />-hafta , <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Musiqa <ph name="NUMBER" /></translation>
+<translation id="2353297238722298836">Kamera va mikrofondan foydalanish mumkin</translation>
 <translation id="2393030564806080191">Rangning 16 raqamli qiymati</translation>
 <translation id="2398813069815436052">oyna ochildi.</translation>
 <translation id="245932805758469625">qolgan video vaqti, soniyada</translation>
@@ -60,10 +61,12 @@
 <translation id="3822383571486410024">Matndagi belgilar soni <ph name="MIN_CHARACTERS" /> tadan ko‘p bo‘lishi kerak (siz esa <ph name="CURRENT_LENGTH" /> ta belgidan foydalanyapsiz).</translation>
 <translation id="383465348367842624">Manzilning “<ph name="ATSIGN" />” qismida “<ph name="INVALIDCHARACTER" />” belgisi bo‘lmasligi kerak.</translation>
 <translation id="3846214748874656680">To‘liq ekran rejimidan chiqish</translation>
+<translation id="4031179711345676612">Mikrofondan foydalanish mumkin</translation>
 <translation id="4103419683916926126">Millisoniyalar</translation>
 <translation id="4201051445878709314">Avvalgi oyni ko‘rsatish</translation>
 <translation id="4360991593054037559">Yaroqli qiymat kiriting. Eng yaqin yaroqli qiymatlar: <ph name="VALID_VALUE_LOW" /> va <ph name="VALID_VALUE_HIGHER" /></translation>
 <translation id="4522570452068850558">Tafsilotlar</translation>
+<translation id="4663373278480897665">Kameradan foydalanish mumkin</translation>
 <translation id="4664250907885839816">Manzillar qatorining “<ph name="ATSIGN" />” qismida “<ph name="INVALIDCHARACTER" />” belgisi bo‘lmasligi kerak.</translation>
 <translation id="4718048029184481307">Tasvir ustida tasvir rejimida ijro etilmoqda</translation>
 <translation id="4748357248530471599">belgilangan ekran qismidan butun ekranga o‘tish</translation>
@@ -137,6 +140,7 @@
 <translation id="6941933287844615239">faylni yuklab olish</translation>
 <translation id="698788488269350478">yoyilgan.</translation>
 <translation id="6989848892321993519">Matndagi belgilar soni <ph name="MIN_CHARACTERS" /> tadan ko‘p bo‘lishi kerak (siz esa 1 ta belgi kiritdingiz).</translation>
+<translation id="7080893216867146095">Joylashuvni ulashishga ruxsat berilgan</translation>
 <translation id="709897737746224366">Talab etilgan formatga rioya qiling.</translation>
 <translation id="7102274145889307184">joriy joylashuv</translation>
 <translation id="7263440858009898357">Ro‘yxat bandlaridan birini tanlang.</translation>

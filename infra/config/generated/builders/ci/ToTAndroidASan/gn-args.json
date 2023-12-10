@@ -1,0 +1,13 @@
+{
+  "gn_args": {
+    "debuggable_apks": false,
+    "is_asan": true,
+    "is_clang": true,
+    "is_component_build": true,
+    "is_debug": true,
+    "llvm_force_head_revision": true,
+    "strip_debug_info": true,
+    "symbol_level": 1,
+    "target_os": "android"
+  }
+}

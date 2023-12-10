@@ -134,8 +134,9 @@ class SolidRoundRectPainterWithShadow : public Painter {
 // library. This is a prototype of a potential way to implement such an effect
 // by overriding the hover effect to draw a new background with a shadow.
 class FabButton : public views::MdTextButton {
+  METADATA_HEADER(FabButton, views::MdTextButton)
+
  public:
-  METADATA_HEADER(FabButton);
   using MdTextButton::MdTextButton;
   FabButton(const FabButton&) = delete;
   FabButton& operator=(const FabButton&) = delete;
@@ -168,7 +169,7 @@ class FabButton : public views::MdTextButton {
   bool use_shadow_ = false;
 };
 
-BEGIN_METADATA(FabButton, views::MdTextButton)
+BEGIN_METADATA(FabButton)
 END_METADATA
 
 ButtonExample::ButtonExample() : ExampleBase("Button") {
@@ -180,7 +181,6 @@ ButtonExample::~ButtonExample() = default;
 
 void ButtonExample::CreateExampleView(View* container) {
   container->SetUseDefaultFillLayout(true);
-  ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
 
   auto view = Builder<BoxLayoutView>()
                   .SetOrientation(BoxLayout::Orientation::kVertical)
@@ -238,12 +238,12 @@ void ButtonExample::CreateExampleView(View* container) {
                           base::Unretained(this)),
       views::kLaunchIcon, u"Icon button"));
 
-  image_button_->SetImage(ImageButton::STATE_NORMAL,
-                          rb.GetImageNamed(IDR_CLOSE).ToImageSkia());
-  image_button_->SetImage(ImageButton::STATE_HOVERED,
-                          rb.GetImageNamed(IDR_CLOSE_H).ToImageSkia());
-  image_button_->SetImage(ImageButton::STATE_PRESSED,
-                          rb.GetImageNamed(IDR_CLOSE_P).ToImageSkia());
+  image_button_->SetImageModel(ImageButton::STATE_NORMAL,
+                               ui::ImageModel::FromResourceId(IDR_CLOSE));
+  image_button_->SetImageModel(ImageButton::STATE_HOVERED,
+                               ui::ImageModel::FromResourceId(IDR_CLOSE_H));
+  image_button_->SetImageModel(ImageButton::STATE_PRESSED,
+                               ui::ImageModel::FromResourceId(IDR_CLOSE_P));
 
   container->AddChildView(std::move(view));
 }

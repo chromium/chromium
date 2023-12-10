@@ -6,7 +6,7 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace gwp_asan::internal {
+namespace gwp_asan::internal::lud {
 
 namespace {
 constexpr size_t kMaxLightweightDetectorMetadata = 1;
@@ -21,7 +21,7 @@ class PoisonMetadataRecorderTest : public testing::Test {
 TEST_F(PoisonMetadataRecorderTest, PoisonAlloc) {
   uint64_t alloc;
 
-  recorder_.RecordDeallocation(&alloc, sizeof(alloc));
+  recorder_.RecordAndZap(&alloc, sizeof(alloc));
   auto metadata_id = LightweightDetectorState::ExtractMetadataId(alloc);
   EXPECT_TRUE(metadata_id.has_value());
 
@@ -34,12 +34,13 @@ TEST_F(PoisonMetadataRecorderTest, PoisonAlloc) {
 }
 
 TEST_F(PoisonMetadataRecorderTest, PoisonAllocUnaligned) {
-  // Allocations that aren't 64-bit aligned.
-  uint8_t alloc1[7];
-  uint8_t alloc2[9];
+  // Allocations that aren't 64-bit aligned in size. The addresses themselves
+  // are still expected to be aligned as if they were heap allocations.
+  alignas(4) uint8_t alloc1[7];
+  alignas(8) uint8_t alloc2[9];
 
-  recorder_.RecordDeallocation(&alloc1, sizeof(alloc1));
-  recorder_.RecordDeallocation(&alloc2, sizeof(alloc2));
+  recorder_.RecordAndZap(&alloc1, sizeof(alloc1));
+  recorder_.RecordAndZap(&alloc2, sizeof(alloc2));
 
   for (auto byte : alloc1) {
     EXPECT_EQ(byte, LightweightDetectorState::kMetadataRemainder);
@@ -52,13 +53,13 @@ TEST_F(PoisonMetadataRecorderTest, SlotReuse) {
   uint64_t alloc1;
   uint64_t alloc2;
 
-  recorder_.RecordDeallocation(&alloc1, sizeof(alloc1));
+  recorder_.RecordAndZap(&alloc1, sizeof(alloc1));
   auto alloc1_metadata_id = LightweightDetectorState::ExtractMetadataId(alloc1);
   EXPECT_TRUE(alloc1_metadata_id.has_value());
   auto& metadata_alloc1 = recorder_.state_.GetSlotMetadataById(
       *alloc1_metadata_id, recorder_.metadata_.get());
 
-  recorder_.RecordDeallocation(&alloc2, sizeof(alloc2));
+  recorder_.RecordAndZap(&alloc2, sizeof(alloc2));
   auto alloc2_metadata_id = LightweightDetectorState::ExtractMetadataId(alloc2);
   auto& metadata_alloc2 = recorder_.state_.GetSlotMetadataById(
       *alloc2_metadata_id, recorder_.metadata_.get());
@@ -69,4 +70,4 @@ TEST_F(PoisonMetadataRecorderTest, SlotReuse) {
   EXPECT_EQ(metadata_alloc2.id, alloc2_metadata_id);
 }
 
-}  // namespace gwp_asan::internal
+}  // namespace gwp_asan::internal::lud

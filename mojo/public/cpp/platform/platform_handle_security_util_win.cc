@@ -6,6 +6,7 @@
 
 #include <windows.h>
 
+#include <optional>
 #include "base/containers/span.h"
 #include "base/dcheck_is_on.h"
 #include "base/debug/stack_trace.h"
@@ -18,7 +19,6 @@
 #include "base/win/nt_status.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/security_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace mojo {
 
@@ -47,10 +47,10 @@ std::wstring GetPathFromHandle(HANDLE handle) {
   return full_path;
 }
 
-absl::optional<bool> IsReadOnlyHandle(HANDLE handle) {
-  absl::optional<ACCESS_MASK> flags = base::win::GetGrantedAccess(handle);
+std::optional<bool> IsReadOnlyHandle(HANDLE handle) {
+  std::optional<ACCESS_MASK> flags = base::win::GetGrantedAccess(handle);
   if (!flags.has_value()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   // Cannot use GENERIC_WRITE as that includes SYNCHRONIZE.
   // This is ~(all the writable permissions).
@@ -74,7 +74,7 @@ void DcheckIfFileHandleIsUnsafe(HANDLE handle) {
     return;
   }
 
-  absl::optional<bool> is_read_only = IsReadOnlyHandle(handle);
+  std::optional<bool> is_read_only = IsReadOnlyHandle(handle);
   if (!is_read_only.has_value()) {
     // If unable to obtain whether or not the handle is read-only, skip the rest
     // of the checks, since it's likely GetPathFromHandle below would fail

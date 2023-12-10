@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script>
+function loadXML()
+{
+    url = 'endlessxml.php';
+
+    try {
+        xhr = new XMLHttpRequest();
+        xhr.overrideMimeType('text/xml');
+        xhr.onreadystatechange = readyStateChanged;
+        xhr.parent = window.parent;
+        xhr.open('GET', url);
+        xhr.onabort = loadImage;
+        xhr.send(null);
+    } catch (ex) {
+        window.parent.log("Exception doing XMLHttpRequest "+ ex.message);
+    }
+}
+
+function loadImage()
+{
+    image = new Image();
+    image.src = "data:,foo";
+    document.body.appendChild(image);
+}
+
+function readyStateChanged(evt)
+{
+   evt.target.parent.dumpRequestStatus(evt.target);
+}
+</script>
+</head>
+<body onload="window.parent.subframeLoaded()" onpagehide="loadXML()">
+</body>
+</html>

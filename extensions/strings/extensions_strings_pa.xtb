@@ -8,6 +8,7 @@
 <translation id="1420684932347524586">Yikes! ਬੇਤਰਤੀਬ RSA ਨਿੱਜੀ ਕੁੰਜੀ ਬਣਾਉਣ ਵਿੱਚ ਅਸਫਲ।</translation>
 <translation id="1445572445564823378">ਇਹ ਐਕਸਟੈਂਸ਼ਨ <ph name="PRODUCT_NAME" /> ਨੂੰ ਹੌਲਾ ਕਰ ਰਿਹਾ ਹੈ। <ph name="PRODUCT_NAME" /> ਦੀ ਕਾਰਗੁਜ਼ਾਰੀ ਨੂੰ ਮੁੜ-ਬਹਾਲ ਕਰਨ ਲਈ ਐਕਸਟੈਂਸ਼ਨ ਨੂੰ ਬੰਦ ਕਰੋ।</translation>
 <translation id="1468038450257740950">WebGL ਸਮਰਥਿਤ ਨਹੀਂ ਹੈ।</translation>
+<translation id="1610570795592207282">ਸਕ੍ਰਿਪਟ ਦੇ ਲਈ css '<ph name="RELATIVE_PATH" />' ਨੂੰ ਲੋਡ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ।</translation>
 <translation id="1803557475693955505">ਬੈਕਗ੍ਰਾਊਂਡ ਪੰਨਾ '<ph name="BACKGROUND_PAGE" />' ਲੋਡ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ।</translation>
 <translation id="2159915644201199628">ਚਿੱਤਰ ਡੀਕੋਡ ਨਹੀਂ ਕਰ ਸਕਿਆ: '<ph name="IMAGE_NAME" />'</translation>
 <translation id="2350172092385603347">ਸਥਾਨੀਕਰਨ ਵਰਤਿਆ, ਪਰ default_locale ਮੈਨੀਫ਼ੈਸਟ ਵਿੱਚ ਨਹੀਂ ਦਿੱਤਾ ਹੋਇਆ ਸੀ।</translation>
@@ -18,14 +19,12 @@
 <translation id="3115238746683532089">ਵਿਕਰੇਤਾ <ph name="VENDOR_ID" /> ਤੋਂ ਅਗਿਆਤ ਉਤਪਾਦ <ph name="PRODUCT_ID" /> (ਸੀਰੀਅਲ ਨੰਬਰ <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">crx ਫ਼ਾਈਲ ਬਦਲੀ ਕਰਨਾ ਅਸਫਲ ਰਿਹਾ। ਇਹ ਦੇਖਣ ਲਈ ਜਾਂਚ ਕਰੋ ਕਿ ਫ਼ਾਈਲ ਵਰਤੋਂ ਵਿੱਚ ਹੈ ਜਾਂ ਨਹੀਂ।</translation>
 <translation id="3163201441334626963">ਵਿਕਰੇਤਾ <ph name="VENDOR_ID" /> ਤੋਂ ਅਗਿਆਤ ਉਤਪਾਦ <ph name="PRODUCT_ID" /></translation>
-<translation id="3302709122321372472">ਸਮੱਗਰੀ ਸਕ੍ਰਿਪਟ ਲਈ css '<ph name="RELATIVE_PATH" />' ਲੋਡ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ।</translation>
 <translation id="3369521687965833290">ਐਕਸਟੈਂਸ਼ਨ ਅਣਪੈਕ ਨਹੀਂ ਹੋ ਸਕਿਆ। ਇੱਕ ਐਕਸਟੈਂਸ਼ਨ ਨੂੰ ਸੁਰੱਖਿਅਤ ਰੂਪ ਨਾਲ ਅਣਪੈਕ ਕਰਨ ਲਈ, ਤੁਹਾਡੇ ਪ੍ਰੋਫਾਈਲ ਡਾਇਰੈਕਟਰੀ ਵੱਲ ਇੱਕ ਪਾਥ ਹੋਣਾ ਚਾਹੀਦਾ ਹੈ, ਜੋ ਇੱਕ ਡਰਾਈਵ ਲੈਟਰ ਨਾਲ ਸ਼ੁਰੂ ਹੁੰਦਾ ਹੋਵੇ ਅਤੇ ਇਸ ਵਿੱਚ ਕੋਈ ਜੰਕਸ਼ਨ, ਮਾਉਂਟ ਪੁਆਇੰਟ ਜਾਂ ਸਿਮਲਿੰਕ ਨਾ ਹੋਵੇ। ਤੁਹਾਡੇ ਪ੍ਰੋਫਾਈਲ ਲਈ ਕੋਈ ਅਜਿਹਾ ਪਾਥ ਮੌਜੂਦ ਨਹੀਂ ਹੈ।</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (ਸੀਰੀਅਲ ਨੰਬਰ <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397">ਵਿਕਰੇਤਾ <ph name="VENDOR_ID" /> ਤੋਂ <ph name="PRODUCT_NAME" /> (ਸੀਰੀਅਲ ਨੰਬਰ <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">ਨਿੱਜੀ ਕੁੰਜੀ ਲਈ ਇਨਪੁਟ ਵੈਲਯੂ ਇੱਕ ਪ੍ਰਮਾਣਿਕ ਮਾਰਗ ਹੋਣੀ ਚਾਹੀਦੀ ਹੈ।</translation>
 <translation id="388442998277590542">ਵਿਕਲਪ ਪੰਨਾ '<ph name="OPTIONS_PAGE" />' ਲੋਡ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ।</translation>
 <translation id="3984413272403535372">ਐਕਸਟੈਂਸ਼ਨ ਸਾਈਨ-ਇਨ ਕਰਨ ਵੇਲੇ ਗੜਬੜ।</translation>
-<translation id="39964277676607559">ਸਮੱਗਰੀ ਸਕ੍ਰਿਪਟ ਲਈ javascript '<ph name="RELATIVE_PATH" />' ਲੋਡ ਨਹੀਂ ਕੀਤੀ ਜਾ ਸਕੀ।</translation>
 <translation id="4115165561519362854">ਇਸ ਮਸ਼ੀਨ ਦੇ ਪ੍ਰਬੰਧਕ ਨੂੰ <ph name="EXTENSION_NAME" /> ਲਈ <ph name="EXTENSION_VERSION" /> ਦਾ ਇੱਕ ਨਿਊਨਤਮ ਵਰਜਨ ਰੱਖਣ ਦੀ ਲੋੜ ਹੈ। ਇਸਨੂੰ ਓਦੋਂ ਤੱਕ ਚਾਲੂ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ ਜਦੋਂ ਤੱਕ ਇਸਨੂੰ ਉਸ ਵਰਜਨ (ਜਾਂ ਉਸਤੋਂ ਬਾਅਦ ਵਾਲੇ) ਨਾਲ ਅੱਪਡੇਟ ਨਾ ਕੀਤਾ ਜਾਵੇ।</translation>
 <translation id="4233778200880751280">ਬਾਰੇ ਪੰਨਾ '<ph name="ABOUT_PAGE" />' ਲੋਡ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ।</translation>
 <translation id="471800408830181311">ਨਿੱਜੀ ਕੁੰਜੀ ਨੂੰ ਆਉਟਪੁਟ ਕਰਨ ਵਿੱਚ ਅਸਫਲ।</translation>
@@ -33,6 +32,7 @@
 <translation id="4988792151665380515">ਜਨਤਕ ਕੁੰਜੀ ਨਿਰਯਾਤ ਕਰਨ ਵਿੱਚ ਅਸਫਲ।</translation>
 <translation id="5026754133087629784">Webview: <ph name="WEBVIEW_TAG_NAME" /></translation>
 <translation id="5098647635849512368">ਪੈਕ ਲਈ ਡਾਇਰੈਕਟਰੀ ਵੱਲ ਪੂਰਾ ਪਾਥ ਨਹੀਂ ਲੱਭ ਸਕਦਾ।</translation>
+<translation id="5160071981665899014">ਸਕ੍ਰਿਪਟ ਦੇ ਲਈ JavaScript '<ph name="RELATIVE_PATH" />' ਨੂੰ ਲੋਡ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ।</translation>
 <translation id="5356315618422219272">Appview: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5436430103864390185">ਸ਼ੇਪਡ windows ਸਮਰਥਿਤ ਨਹੀਂ ਹਨ।</translation>
 <translation id="5456409301717116725">ਇਸ ਐਕਸਟੈਂਸ਼ਨ ਵਿੱਚ ਮੁੱਖ ਫਾਈਲ '<ph name="KEY_PATH" />' ਸ਼ਾਮਲ ਹੈ। ਸੰਭਵ ਤੌਰ 'ਤੇ ਤੁਸੀਂ ਇਹ ਨਹੀਂ ਚਾਹੁੰਦੇ।</translation>

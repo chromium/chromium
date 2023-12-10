@@ -47,6 +47,9 @@ BASE_FEATURE(kEnableArcIdleManager,
 const base::FeatureParam<bool> kEnableArcIdleManagerIgnoreBatteryForPLT{
     &kEnableArcIdleManager, "ignore_battery_for_test", false};
 
+const base::FeatureParam<int> kEnableArcIdleManagerDelayMs{
+    &kEnableArcIdleManager, "delay_ms", 0};
+
 // Controls whether files shared to ARC Nearby Share are shared through the
 // FuseBox filesystem, instead of the default method (through a temporary path
 // managed by file manager).
@@ -221,6 +224,10 @@ BASE_FEATURE(kPerAppLanguage,
 BASE_FEATURE(kPictureInPictureFeature,
              "ArcPictureInPicture",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kResizeCompat,
+             "ArcResizeCompat",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kRoundedWindowCompat,
              "ArcRoundedWindowCompat",
@@ -406,5 +413,5 @@ const base::FeatureParam<std::string> kPriorityAppLmkDelayList{
 // top Android apps from being killed that result in bad user experience.
 BASE_FEATURE(kLmkPerceptibleMinStateUpdate,
              "ArcLmkPerceptibleMinStateUpdate",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 }  // namespace arc

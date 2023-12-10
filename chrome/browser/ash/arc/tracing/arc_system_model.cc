@@ -6,10 +6,10 @@
 
 #include <cstdio>
 
+#include <optional>
 #include <set>
 
 #include "base/strings/stringprintf.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace arc {
 
@@ -38,7 +38,7 @@ bool LoadThreads(const base::Value* value,
     if (!name) {
       return false;
     }
-    const absl::optional<int> pid = it.second.GetDict().FindInt(kKeyPid);
+    const std::optional<int> pid = it.second.GetDict().FindInt(kKeyPid);
     if (!pid) {
       return false;
     }

@@ -28,6 +28,7 @@ PASS oldChildWindow.location.search is newChildWindow.location.search
 PASS oldChildWindow.locationbar.visible is newChildWindow.locationbar.visible
 PASS oldChildWindow.menubar.visible is newChildWindow.menubar.visible
 PASS oldChildWindow.name is newChildWindow.name
+PASS oldChildWindow.navigation.activation is newChildWindow.navigation.activation
 PASS oldChildWindow.navigation.canGoBack is newChildWindow.navigation.canGoBack
 PASS oldChildWindow.navigation.canGoForward is newChildWindow.navigation.canGoForward
 PASS oldChildWindow.navigation.currentEntry is newChildWindow.navigation.currentEntry
@@ -208,6 +209,7 @@ PASS oldChildWindow.onselectionchange is newChildWindow.onselectionchange
 PASS oldChildWindow.onselectstart is newChildWindow.onselectstart
 PASS oldChildWindow.onslotchange is newChildWindow.onslotchange
 PASS oldChildWindow.onsnapchanged is newChildWindow.onsnapchanged
+PASS oldChildWindow.onsnapchanging is newChildWindow.onsnapchanging
 PASS oldChildWindow.onstalled is newChildWindow.onstalled
 PASS oldChildWindow.onstorage is newChildWindow.onstorage
 PASS oldChildWindow.onsubmit is newChildWindow.onsubmit

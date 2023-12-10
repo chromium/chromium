@@ -276,11 +276,6 @@ void PeerConnectionTrackerHost::GetStandardStats() {
   tracker_->GetStandardStats();
 }
 
-void PeerConnectionTrackerHost::GetLegacyStats() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  tracker_->GetLegacyStats();
-}
-
 void PeerConnectionTrackerHost::GetCurrentState() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   tracker_->GetCurrentState();

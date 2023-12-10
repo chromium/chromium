@@ -123,7 +123,7 @@ void Base64UrlEncode(span<const uint8_t> input,
 void Base64UrlEncode(StringPiece input,
                      Base64UrlEncodePolicy policy,
                      std::string* output) {
-  Base64UrlEncode(base::as_bytes(base::make_span(input)), policy, output);
+  Base64UrlEncode(base::as_byte_span(input), policy, output);
 }
 
 bool Base64UrlDecode(StringPiece input,

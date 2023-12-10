@@ -22,6 +22,7 @@
 #include "ash/accessibility/ui/accessibility_panel_layout_manager.h"
 #include "ash/color_enhancement/color_enhancement_controller.h"
 #include "ash/constants/ash_constants.h"
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/events/accessibility_event_rewriter.h"
@@ -30,11 +31,14 @@
 #include "ash/keyboard/ui/keyboard_util.h"
 #include "ash/login_status.h"
 #include "ash/policy/policy_recommendation_restorer.h"
+#include "ash/public/cpp/accessibility_controller.h"
 #include "ash/public/cpp/accessibility_controller_client.h"
 #include "ash/public/cpp/ash_constants.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/public/cpp/shell_window_ids.h"
+#include "ash/public/cpp/system/anchored_nudge_data.h"
+#include "ash/public/cpp/system/anchored_nudge_manager.h"
 #include "ash/public/cpp/system_tray_client.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/root_window_controller.h"
@@ -51,7 +55,7 @@
 #include "ash/system/power/backlights_forced_off_setter.h"
 #include "ash/system/power/power_status.h"
 #include "ash/system/power/scoped_backlights_forced_off.h"
-#include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr_exclusion.h"
@@ -74,6 +78,8 @@
 #include "ui/aura/window.h"
 #include "ui/base/cursor/cursor_size.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/display/screen.h"
+#include "ui/display/tablet_state.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
 #include "ui/strings/grit/ui_strings.h"
@@ -116,14 +122,14 @@ const FeatureData kFeatures[] = {
     {FeatureType::kCursorHighlight, prefs::kAccessibilityCursorHighlightEnabled,
      nullptr, IDS_ASH_STATUS_TRAY_ACCESSIBILITY_HIGHLIGHT_MOUSE_CURSOR},
     {FeatureType::kCursorColor, prefs::kAccessibilityCursorColorEnabled,
-     nullptr, 0, /*toggleable_in_quicksettings*/ false},
+     nullptr, 0, /*toggleable_in_quicksettings=*/false},
     {FeatureType::kDictation, prefs::kAccessibilityDictationEnabled,
      &kDictationMenuIcon, IDS_ASH_STATUS_TRAY_ACCESSIBILITY_DICTATION},
     {FeatureType::kColorCorrection, prefs::kAccessibilityColorCorrectionEnabled,
      &kColorCorrectionIcon, IDS_ASH_STATUS_TRAY_ACCESSIBILITY_COLOR_CORRECTION},
     {FeatureType::kFocusHighlight, prefs::kAccessibilityFocusHighlightEnabled,
      nullptr, IDS_ASH_STATUS_TRAY_ACCESSIBILITY_HIGHLIGHT_KEYBOARD_FOCUS,
-     /*toggleable_in_quicksettings*/ true,
+     /*toggleable_in_quicksettings=*/true,
      /* conflicting_feature= */ FeatureType::kSpokenFeedback},
     {FeatureType::kFloatingMenu, prefs::kAccessibilityFloatingMenuEnabled,
      nullptr, IDS_ASH_FLOATING_ACCESSIBILITY_MAIN_MENU,
@@ -158,7 +164,11 @@ const FeatureData kFeatures[] = {
      &kSwitchAccessIcon, IDS_ASH_STATUS_TRAY_ACCESSIBILITY_SWITCH_ACCESS},
     {FeatureType::kVirtualKeyboard, prefs::kAccessibilityVirtualKeyboardEnabled,
      &kSystemMenuKeyboardLegacyIcon,
-     IDS_ASH_STATUS_TRAY_ACCESSIBILITY_VIRTUAL_KEYBOARD}};
+     IDS_ASH_STATUS_TRAY_ACCESSIBILITY_VIRTUAL_KEYBOARD},
+    {FeatureType::kFaceGaze, prefs::kAccessibilityFaceGazeEnabled, nullptr,
+     IDS_ASH_STATUS_TRAY_ACCESSIBILITY_FACEGAZE,
+     /*toggleable_in_quicksettings=*/true},
+};
 
 // An array describing the confirmation dialogs for the features which have
 // them.
@@ -175,6 +185,8 @@ const FeatureDialogData kFeatureDialogs[] = {
 
 constexpr char kNotificationId[] = "chrome://settings/accessibility";
 constexpr char kNotifierAccessibility[] = "ash.accessibility";
+constexpr char kDictationLanguageUpgradedNudgeId[] =
+    "dictation_language_upgraded.nudge_id";
 
 // TODO(warx): Signin screen has more controllable accessibility prefs. We may
 // want to expand this to a complete list. If so, merge this with
@@ -232,6 +244,7 @@ constexpr const char* const kCopiedOnSigninAccessibilityPrefs[]{
     prefs::kAccessibilityFocusHighlightEnabled,
     prefs::kAccessibilityHighContrastEnabled,
     prefs::kAccessibilityLargeCursorEnabled,
+    prefs::kAccessibilityFaceGazeEnabled,
     prefs::kAccessibilityMonoAudioEnabled,
     prefs::kAccessibilityScreenMagnifierEnabled,
     prefs::kAccessibilityScreenMagnifierFocusFollowingEnabled,
@@ -301,7 +314,7 @@ bool IsSigninPrefService(PrefService* pref_service) {
 
 // Returns true if the current session is the guest session.
 bool IsCurrentSessionGuest() {
-  const absl::optional<user_manager::UserType> user_type =
+  const std::optional<user_manager::UserType> user_type =
       Shell::Get()->session_controller()->GetUserType();
   return user_type && *user_type == user_manager::USER_TYPE_GUEST;
 }
@@ -455,7 +468,7 @@ void ShowAccessibilityNotification(
     text = l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_SWITCH_ACCESS_ENABLED);
     catalog_name = NotificationCatalogName::kSwitchAccessEnabled;
   } else {
-    bool is_tablet = Shell::Get()->tablet_mode_controller()->InTabletMode();
+    bool is_tablet = display::Screen::GetScreen()->InTabletMode();
 
     title = l10n_util::GetStringUTF16(
         type == A11yNotificationType::kSpokenFeedbackBrailleEnabled
@@ -962,7 +975,7 @@ void AccessibilityControllerImpl::FeatureWithDialog::SetEnabled(bool enabled) {
 AccessibilityControllerImpl::AccessibilityControllerImpl()
     : autoclick_delay_(AutoclickController::GetDefaultAutoclickDelay()) {
   Shell::Get()->session_controller()->AddObserver(this);
-  Shell::Get()->tablet_mode_controller()->AddObserver(this);
+  display::Screen::GetScreen()->AddObserver(this);
   CreateAccessibilityFeatures();
 
   accessibility_notification_controller_ =
@@ -1042,8 +1055,7 @@ void AccessibilityControllerImpl::RegisterProfilePrefs(
                                 false);
   registry->RegisterBooleanPref(
       prefs::kAccessibilityTabletModeShelfNavigationButtonsEnabled, false);
-  registry->RegisterBooleanPref(prefs::kAccessibilityFaceTrackingEnabled,
-                                false);
+  registry->RegisterBooleanPref(prefs::kAccessibilityFaceGazeEnabled, false);
 
   // Not syncable because it might change depending on application locale,
   // user settings, and because different languages can cause speech recognition
@@ -1271,7 +1283,7 @@ void AccessibilityControllerImpl::RegisterProfilePrefs(
 }
 
 void AccessibilityControllerImpl::Shutdown() {
-  Shell::Get()->tablet_mode_controller()->RemoveObserver(this);
+  display::Screen::GetScreen()->RemoveObserver(this);
   Shell::Get()->session_controller()->RemoveObserver(this);
 
   // Clean up any child windows and widgets that might be animating out.
@@ -1361,6 +1373,11 @@ AccessibilityControllerImpl::color_correction() const {
   return GetFeature(FeatureType::kColorCorrection);
 }
 
+AccessibilityControllerImpl::Feature& AccessibilityControllerImpl::face_gaze()
+    const {
+  return GetFeature(FeatureType::kFaceGaze);
+}
+
 AccessibilityControllerImpl::Feature&
 AccessibilityControllerImpl::focus_highlight() const {
   return GetFeature(FeatureType::kFocusHighlight);
@@ -1441,6 +1458,7 @@ bool AccessibilityControllerImpl::IsPrimarySettingsViewVisibleInTray() {
   return (IsSpokenFeedbackSettingVisibleInTray() ||
           IsSelectToSpeakSettingVisibleInTray() ||
           IsDictationSettingVisibleInTray() ||
+          IsFaceGazeSettingVisibleInTray() ||
           IsColorCorrectionSettingVisibleInTray() ||
           IsHighContrastSettingVisibleInTray() ||
           IsFullScreenMagnifierSettingVisibleInTray() ||
@@ -1473,6 +1491,14 @@ bool AccessibilityControllerImpl::IsDictationSettingVisibleInTray() {
 
 bool AccessibilityControllerImpl::IsEnterpriseIconVisibleForDictation() {
   return dictation().IsEnterpriseIconVisible();
+}
+
+bool AccessibilityControllerImpl::IsFaceGazeSettingVisibleInTray() {
+  return face_gaze().IsVisibleInTray();
+}
+
+bool AccessibilityControllerImpl::IsEnterpriseIconVisibleForFaceGaze() {
+  return face_gaze().IsEnterpriseIconVisible();
 }
 
 bool AccessibilityControllerImpl::IsFocusHighlightSettingVisibleInTray() {
@@ -1914,6 +1940,19 @@ void AccessibilityControllerImpl::OnDictationKeyboardDialogDismissed() {
 void AccessibilityControllerImpl::ShowDictationLanguageUpgradedNudge(
     const std::string& dictation_locale,
     const std::string& application_locale) {
+  if (features::IsSystemNudgeMigrationEnabled()) {
+    const std::u16string language_name = l10n_util::GetDisplayNameForLocale(
+        dictation_locale, application_locale, /*is_for_ui=*/true);
+    const std::u16string body_text = l10n_util::GetStringFUTF16(
+        IDS_ASH_DICTATION_LANGUAGE_SUPPORTED_OFFLINE_NUDGE, language_name);
+
+    AnchoredNudgeData nudge_data(kDictationLanguageUpgradedNudgeId,
+                                 NudgeCatalogName::kDictation, body_text);
+
+    AnchoredNudgeManager::Get()->Show(nudge_data);
+    return;
+  }
+
   // TODO(b:259352600): Move dictation_nudge_controller_ into
   // accessibility_notification_controller.
   dictation_nudge_controller_ = std::make_unique<DictationNudgeController>(
@@ -2059,18 +2098,17 @@ void AccessibilityControllerImpl::
   skip_switch_access_notification_ = true;
 }
 
-void AccessibilityControllerImpl::OnTabletModeStarted() {
-  if (spoken_feedback().enabled())
-    ShowAccessibilityNotification(
-        A11yNotificationWrapper(A11yNotificationType::kSpokenFeedbackEnabled,
-                                std::vector<std::u16string>()));
-}
-
-void AccessibilityControllerImpl::OnTabletModeEnded() {
-  if (spoken_feedback().enabled())
-    ShowAccessibilityNotification(
-        A11yNotificationWrapper(A11yNotificationType::kSpokenFeedbackEnabled,
-                                std::vector<std::u16string>()));
+void AccessibilityControllerImpl::OnDisplayTabletStateChanged(
+    display::TabletState state) {
+  if (spoken_feedback().enabled()) {
+    // Show accessibility notification when tablet mode transition is completed.
+    if (state == display::TabletState::kInTabletMode ||
+        state == display::TabletState::kInClamshellMode) {
+      ShowAccessibilityNotification(
+          A11yNotificationWrapper(A11yNotificationType::kSpokenFeedbackEnabled,
+                                  std::vector<std::u16string>()));
+    }
+  }
 }
 
 void AccessibilityControllerImpl::ObservePrefs(PrefService* prefs) {
@@ -2186,16 +2224,16 @@ void AccessibilityControllerImpl::ObservePrefs(PrefService* prefs) {
       base::BindRepeating(
           &AccessibilityControllerImpl::UpdateCursorColorFromPrefs,
           base::Unretained(this)));
-    pref_change_registrar_->Add(
-        prefs::kAccessibilityColorVisionCorrectionAmount,
-        base::BindRepeating(
-            &AccessibilityControllerImpl::UpdateColorCorrectionFromPrefs,
-            base::Unretained(this)));
-    pref_change_registrar_->Add(
-        prefs::kAccessibilityColorVisionCorrectionType,
-        base::BindRepeating(
-            &AccessibilityControllerImpl::UpdateColorCorrectionFromPrefs,
-            base::Unretained(this)));
+  pref_change_registrar_->Add(
+      prefs::kAccessibilityColorVisionCorrectionAmount,
+      base::BindRepeating(
+          &AccessibilityControllerImpl::UpdateColorCorrectionFromPrefs,
+          base::Unretained(this)));
+  pref_change_registrar_->Add(
+      prefs::kAccessibilityColorVisionCorrectionType,
+      base::BindRepeating(
+          &AccessibilityControllerImpl::UpdateColorCorrectionFromPrefs,
+          base::Unretained(this)));
 
   // Load current state.
   for (const std::unique_ptr<Feature>& feature : features_) {
@@ -2213,7 +2251,11 @@ void AccessibilityControllerImpl::ObservePrefs(PrefService* prefs) {
   UpdateCursorColorFromPrefs();
   UpdateShortcutsEnabledFromPref();
   UpdateTabletModeShelfNavigationButtonsFromPref();
-    UpdateColorCorrectionFromPrefs();
+  UpdateColorCorrectionFromPrefs();
+
+  if (::features::IsAccessibilityFaceGazeEnabled()) {
+    UpdateFaceGazeFromPrefs();
+  }
 }
 
 void AccessibilityControllerImpl::UpdateAutoclickDelayFromPref() {
@@ -2383,6 +2425,13 @@ void AccessibilityControllerImpl::UpdateCursorColorFromPrefs() {
               : kDefaultCursorColor);
   NotifyAccessibilityStatusChanged();
   shell->UpdateCursorCompositingEnabled();
+}
+
+void AccessibilityControllerImpl::UpdateFaceGazeFromPrefs() {
+  if (!::features::IsAccessibilityFaceGazeEnabled()) {
+    return;
+  }
+  // TODO(b/309121742): Start getting camera data.
 }
 
 void AccessibilityControllerImpl::UpdateColorCorrectionFromPrefs() {
@@ -2871,6 +2920,9 @@ void AccessibilityControllerImpl::UpdateFeatureFromPref(FeatureType feature) {
       }
       UpdateColorCorrectionFromPrefs();
       break;
+    case FeatureType::kFaceGaze:
+      UpdateFaceGazeFromPrefs();
+      break;
     case FeatureType::kFeatureCount:
     case FeatureType::kNoConflictingFeature:
       NOTREACHED();
@@ -2881,8 +2933,8 @@ void AccessibilityControllerImpl::UpdateFeatureFromPref(FeatureType feature) {
 void AccessibilityControllerImpl::UpdateDictationBubble(
     bool visible,
     DictationBubbleIconType icon,
-    const absl::optional<std::u16string>& text,
-    const absl::optional<std::vector<DictationBubbleHintType>>& hints) {
+    const std::optional<std::u16string>& text,
+    const std::optional<std::vector<DictationBubbleHintType>>& hints) {
   DCHECK(dictation().enabled());
   DCHECK(dictation_bubble_controller_);
 

@@ -208,7 +208,8 @@ class SyncServiceCrypto : public SyncEncryptionHandler::Observer,
     // want to be able to synchronously do that from the UI thread. For
     // passphrase types other than CUSTOM_PASSPHRASE, their key derivation
     // method will always be PBKDF2.
-    KeyDerivationParams passphrase_key_derivation_params;
+    KeyDerivationParams passphrase_key_derivation_params =
+        KeyDerivationParams::CreateForPbkdf2();
 
     // If an explicit passphrase is in use, the time at which the passphrase was
     // first set (if available).

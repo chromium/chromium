@@ -27,7 +27,7 @@ namespace ash {
 UnifiedBrightnessView::UnifiedBrightnessView(
     UnifiedBrightnessSliderController* controller,
     scoped_refptr<UnifiedSystemTrayModel> model,
-    absl::optional<views::Button::PressedCallback> detailed_button_callback)
+    std::optional<views::Button::PressedCallback> detailed_button_callback)
     : UnifiedSliderView(views::Button::PressedCallback(),
                         controller,
                         kUnifiedMenuBrightnessIcon,

@@ -25,6 +25,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
+import {GeolocationAccessLevel} from '../os_privacy_page/privacy_hub_geolocation_subpage.js';
 
 import {getTemplate} from './display_night_light.html.js';
 
@@ -100,20 +101,32 @@ export class SettingsDisplayNightLightElement extends
         ]),
       },
 
+      shouldShowGeolocationWarningText_: {
+        type: Boolean,
+        computed: 'computeShouldShowGeolocationWarningText_(' +
+            'prefs.ash.night_light.schedule_type.value, ' +
+            'prefs.ash.user.geolocation_access_level.value),',
+      },
+
+      shouldShowEnableGeolocationDialog_: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
   static get observers() {
     return [
       'updateNightLightScheduleSettings_(prefs.ash.night_light.schedule_type.*,' +
-          ' prefs.ash.night_light.enabled.*)',
+          ' prefs.ash.night_light.enabled.*),',
     ];
   }
 
   private nightLightScheduleSubLabel_: string;
   private scheduleTypesList_: ScheduleType[];
   private shouldOpenCustomScheduleCollapse_: boolean;
-
+  private shouldShowGeolocationDialog_: boolean;
+  private shouldShowGeolocationWarningText_: boolean;
   /**
    * Invoked when the status of Night Light or its schedule type are changed,
    * in order to update the schedule settings, such as whether to show the
@@ -132,6 +145,24 @@ export class SettingsDisplayNightLightElement extends
     } else {
       this.nightLightScheduleSubLabel_ = '';
     }
+  }
+
+  private computeShouldShowGeolocationWarningText_(): boolean {
+    const scheduleType = this.prefs.ash.night_light.schedule_type.value;
+    const geolocationAccessLevel =
+        this.prefs.ash.user.geolocation_access_level.value;
+
+    return (
+        scheduleType === NightLightScheduleType.SUNSET_TO_SUNRISE &&
+        geolocationAccessLevel === GeolocationAccessLevel.DISALLOWED);
+  }
+
+  private openGeolocationDialog_(): void {
+    this.shouldShowGeolocationDialog_ = true;
+  }
+
+  private onGeolocationDialogClose_(): void {
+    this.shouldShowGeolocationDialog_ = false;
   }
 }
 

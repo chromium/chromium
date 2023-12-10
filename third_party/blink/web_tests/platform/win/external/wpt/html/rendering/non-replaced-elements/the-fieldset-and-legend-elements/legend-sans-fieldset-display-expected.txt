@@ -11,14 +11,13 @@ This is a testharness.js-based test.
   assert_equals: .tr display expected "table-row" but got "block"
 [FAIL] .td
   assert_equals: .td display expected "table-cell" but got "block"
-[PASS] .li
 [FAIL] .inline
   assert_equals: .inline display expected "inline" but got "block"
 [FAIL] .inline-block
   assert_equals: .inline-block display expected "inline-block" but got "block"
 [FAIL] .ruby
-  assert_equals: .ruby display expected "inline" but got "block"
+  assert_equals: .ruby display expected "ruby" but got "block ruby"
 [FAIL] .rt
-  assert_equals: .rt width expected "27px" but got "800px"
+  assert_equals: .rt display expected "ruby-text" but got "inline-block"
 Harness: the test ran to completion.
 

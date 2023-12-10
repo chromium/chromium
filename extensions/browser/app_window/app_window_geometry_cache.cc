@@ -217,24 +217,33 @@ void AppWindowGeometryCache::LoadGeometryFromStorage(
       continue;
 
     WindowData& window_data = extension_data[window_id];
-    if (absl::optional<int> i = stored_window->FindInt("x"))
+    if (std::optional<int> i = stored_window->FindInt("x")) {
       window_data.bounds.set_x(*i);
-    if (absl::optional<int> i = stored_window->FindInt("y"))
+    }
+    if (std::optional<int> i = stored_window->FindInt("y")) {
       window_data.bounds.set_y(*i);
-    if (absl::optional<int> i = stored_window->FindInt("w"))
+    }
+    if (std::optional<int> i = stored_window->FindInt("w")) {
       window_data.bounds.set_width(*i);
-    if (absl::optional<int> i = stored_window->FindInt("h"))
+    }
+    if (std::optional<int> i = stored_window->FindInt("h")) {
       window_data.bounds.set_height(*i);
-    if (absl::optional<int> i = stored_window->FindInt("screen_bounds_x"))
+    }
+    if (std::optional<int> i = stored_window->FindInt("screen_bounds_x")) {
       window_data.screen_bounds.set_x(*i);
-    if (absl::optional<int> i = stored_window->FindInt("screen_bounds_y"))
+    }
+    if (std::optional<int> i = stored_window->FindInt("screen_bounds_y")) {
       window_data.screen_bounds.set_y(*i);
-    if (absl::optional<int> i = stored_window->FindInt("screen_bounds_w"))
+    }
+    if (std::optional<int> i = stored_window->FindInt("screen_bounds_w")) {
       window_data.screen_bounds.set_width(*i);
-    if (absl::optional<int> i = stored_window->FindInt("screen_bounds_h"))
+    }
+    if (std::optional<int> i = stored_window->FindInt("screen_bounds_h")) {
       window_data.screen_bounds.set_height(*i);
-    if (absl::optional<int> i = stored_window->FindInt("state"))
+    }
+    if (std::optional<int> i = stored_window->FindInt("state")) {
       window_data.window_state = static_cast<ui::WindowShowState>(*i);
+    }
     if (const std::string* ts_as_string = stored_window->FindString("ts")) {
       int64_t ts;
       if (base::StringToInt64(*ts_as_string, &ts)) {

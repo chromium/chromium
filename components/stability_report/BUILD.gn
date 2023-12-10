@@ -4,7 +4,7 @@
 
 import("//third_party/protobuf/proto_library.gni")
 
-if (is_win || is_linux || is_chromeos) {
+if (is_win || is_linux || is_chromeos || is_mac) {
   proto_library("stability_report_proto") {
     sources = [ "stability_report.proto" ]
   }
@@ -34,7 +34,7 @@ if (is_win || is_linux || is_chromeos) {
       ]
     }
 
-    if (is_linux || is_chromeos) {
+    if (is_linux || is_chromeos || is_mac) {
       sources += [
         "user_stream_data_source_posix.cc",
         "user_stream_data_source_posix.h",
@@ -63,7 +63,7 @@ if (is_win || is_linux || is_chromeos) {
       sources += [ "user_stream_data_source_win_unittest.cc" ]
     }
 
-    if (is_linux || is_chromeos) {
+    if (is_linux || is_chromeos || is_mac) {
       sources += [ "user_stream_data_source_posix_unittest.cc" ]
 
       deps += [ "//base/test:test_support" ]

@@ -2,20 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/user_education/views/help_bubble_view_ash.h"
-
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "ash/test/pixel/ash_pixel_differ.h"
 #include "ash/test/pixel/ash_pixel_test_init_params.h"
 #include "ash/user_education/user_education_types.h"
+#include "ash/user_education/views/help_bubble_view_ash.h"
 #include "ash/user_education/views/help_bubble_view_ash_test_base.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/user_education/common/help_bubble_params.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
@@ -51,7 +50,7 @@ class HelpBubbleViewAshPixelTestBase : public HelpBubbleViewAshTestBase {
 
  private:
   // HelpBubbleViewAshTestBase:
-  absl::optional<pixel_test::InitParams> CreatePixelTestInitParams()
+  std::optional<pixel_test::InitParams> CreatePixelTestInitParams()
       const override {
     return pixel_test::InitParams();
   }

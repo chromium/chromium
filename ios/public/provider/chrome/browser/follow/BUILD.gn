@@ -4,5 +4,5 @@
 
 source_set("follow_api") {
   sources = [ "follow_api.h" ]
-  deps = [ "//ios/chrome/browser/follow:service" ]
+  deps = [ "//ios/chrome/browser/follow/model:service" ]
 }

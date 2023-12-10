@@ -23,9 +23,7 @@ import org.chromium.url.GURL;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Native bridge for interacting with service worker based payment apps.
- */
+/** Native bridge for interacting with service worker based payment apps. */
 public class ServiceWorkerPaymentAppBridge {
     /** The interface for checking whether there is an installed SW payment app. */
     public static interface HasServiceWorkerPaymentAppsCallback {
@@ -58,12 +56,14 @@ public class ServiceWorkerPaymentAppBridge {
         ThreadUtils.assertOnUiThread();
 
         if (!PaymentFeatureList.isEnabled(PaymentFeatureList.SERVICE_WORKER_PAYMENT_APPS)) {
-            PostTask.postTask(TaskTraits.UI_DEFAULT, new Runnable() {
-                @Override
-                public void run() {
-                    callback.onHasServiceWorkerPaymentAppsResponse(false);
-                }
-            });
+            PostTask.postTask(
+                    TaskTraits.UI_DEFAULT,
+                    new Runnable() {
+                        @Override
+                        public void run() {
+                            callback.onHasServiceWorkerPaymentAppsResponse(false);
+                        }
+                    });
             return;
         }
         ServiceWorkerPaymentAppBridgeJni.get().hasServiceWorkerPaymentApps(callback);
@@ -79,13 +79,15 @@ public class ServiceWorkerPaymentAppBridge {
         ThreadUtils.assertOnUiThread();
 
         if (!PaymentFeatureList.isEnabled(PaymentFeatureList.SERVICE_WORKER_PAYMENT_APPS)) {
-            PostTask.postTask(TaskTraits.UI_DEFAULT, new Runnable() {
-                @Override
-                public void run() {
-                    callback.onGetServiceWorkerPaymentAppsInfo(
-                            new HashMap<String, Pair<String, Bitmap>>());
-                }
-            });
+            PostTask.postTask(
+                    TaskTraits.UI_DEFAULT,
+                    new Runnable() {
+                        @Override
+                        public void run() {
+                            callback.onGetServiceWorkerPaymentAppsInfo(
+                                    new HashMap<String, Pair<String, Bitmap>>());
+                        }
+                    });
             return;
         }
         ServiceWorkerPaymentAppBridgeJni.get().getServiceWorkerPaymentAppsInfo(callback);
@@ -101,8 +103,8 @@ public class ServiceWorkerPaymentAppBridge {
     public static void onClosingPaymentAppWindow(
             @Nullable WebContents paymentRequestWebContents, int responseType) {
         if (paymentRequestWebContents == null || paymentRequestWebContents.isDestroyed()) return;
-        ServiceWorkerPaymentAppBridgeJni.get().onClosingPaymentAppWindow(
-                paymentRequestWebContents, responseType);
+        ServiceWorkerPaymentAppBridgeJni.get()
+                .onClosingPaymentAppWindow(paymentRequestWebContents, responseType);
     }
 
     /**
@@ -114,9 +116,10 @@ public class ServiceWorkerPaymentAppBridge {
     public static void onOpeningPaymentAppWindow(
             WebContents paymentRequestWebContents, WebContents paymentHandlerWebContents) {
         if (paymentRequestWebContents == null || paymentRequestWebContents.isDestroyed()) return;
-        ServiceWorkerPaymentAppBridgeJni.get().onOpeningPaymentAppWindow(
-                /*paymentRequestWebContents=*/paymentRequestWebContents,
-                /*paymentHandlerWebContents=*/paymentHandlerWebContents);
+        ServiceWorkerPaymentAppBridgeJni.get()
+                .onOpeningPaymentAppWindow(
+                        /* paymentRequestWebContents= */ paymentRequestWebContents,
+                        /* paymentHandlerWebContents= */ paymentHandlerWebContents);
     }
 
     /**
@@ -155,13 +158,18 @@ public class ServiceWorkerPaymentAppBridge {
 
         callback.onGetServiceWorkerPaymentAppsInfo(((Map<String, Pair<String, Bitmap>>) appsInfo));
     }
+
     @NativeMethods
     interface Natives {
         void hasServiceWorkerPaymentApps(HasServiceWorkerPaymentAppsCallback callback);
+
         void getServiceWorkerPaymentAppsInfo(GetServiceWorkerPaymentAppsInfoCallback callback);
+
         void onClosingPaymentAppWindow(WebContents paymentRequestWebContents, int reason);
+
         void onOpeningPaymentAppWindow(
                 WebContents paymentRequestWebContents, WebContents paymentHandlerWebContents);
+
         long getSourceIdForPaymentAppFromScope(GURL swScope);
     }
 }

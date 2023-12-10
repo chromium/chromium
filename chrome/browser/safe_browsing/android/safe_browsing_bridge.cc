@@ -37,7 +37,7 @@ namespace safe_browsing {
 static jint JNI_SafeBrowsingBridge_UmaValueForFile(
     JNIEnv* env,
     const base::android::JavaParamRef<jstring>& path) {
-  base::FilePath file_path(ConvertJavaStringToUTF8(env, path));
+  base::FilePath file_path(base::android::ConvertJavaStringToUTF8(env, path));
   return safe_browsing::FileTypePolicies::GetInstance()->UmaValueForFile(
       file_path);
 }

@@ -59,6 +59,8 @@ if (is_win || is_mac || is_linux) {
       "activity_impl.h",
       "app/app_install.cc",
       "app/app_install.h",
+      "app/app_install_progress.cc",
+      "app/app_install_progress.h",
       "app/app_recover.cc",
       "app/app_recover.h",
       "app/app_server.cc",
@@ -257,8 +259,6 @@ if (is_win || is_mac || is_linux) {
         "win/action_handler.cc",
         "win/app_command_runner.cc",
         "win/app_command_runner.h",
-        "win/install_progress_observer.cc",
-        "win/install_progress_observer.h",
         "win/installer/exit_code.h",
         "win/installer_api.cc",
         "win/installer_api.h",
@@ -850,6 +850,8 @@ if (is_win || is_mac || is_linux) {
         "win/setup/setup_util_unittest.cc",
         "win/task_scheduler_unittest.cc",
         "win/ui/l10n_util_unittest.cc",
+        "win/ui/progress_wnd_unittest.cc",
+        "win/updater_tests.rc",
       ]
 
       deps += [
@@ -860,7 +862,8 @@ if (is_win || is_mac || is_linux) {
         "win/installer:msi_custom_action_sources",
         "win/test:test_executables",
         "win/test:test_strings",
-        "win/ui/resources:strings",
+        "win/ui/resources",
+        "//third_party/wtl",
       ]
 
       data_deps += [
@@ -903,7 +906,7 @@ if (is_win || is_mac || is_linux) {
       sources += [
         "mac/keystone/ksadmin_unittest.cc",
         "mac/privileged_helper/privileged_helper_unittests.mm",
-        "mac/setup/keystone_unittest.cc",
+        "mac/setup/keystone_unittest.mm",
         "mac/setup/ks_tickets_unittest.mm",
         "mac/setup/setup_unittest.mm",
         "mac/setup/wake_task_unittest.mm",

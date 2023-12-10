@@ -85,11 +85,12 @@ class FormCache {
   // Updates |extracted_forms_| to contain the forms that are currently in the
   // DOM.
   UpdateFormCacheResult UpdateFormCache(
-      const FieldDataManager* field_data_manager);
+      const FieldDataManager& field_data_manager);
 
   // Clears the values of all input elements in the section of the form that
   // contains |element|.  Returns false if the form is not found.
-  bool ClearSectionWithElement(const blink::WebFormControlElement& element);
+  bool ClearSectionWithElement(const blink::WebFormControlElement& element,
+                               FieldDataManager& field_data_manager);
 
   // For each field in the |form|, if |attach_predictions_to_dom| is true, sets
   // the title to include the field's heuristic type, server type, and
@@ -115,7 +116,8 @@ class FormCache {
   // |trigger_element| is the element on which the user triggered a request
   // to clear the form.
   void ClearElement(blink::WebFormControlElement& control_element,
-                    const blink::WebFormControlElement& trigger_element);
+                    const blink::WebFormControlElement& trigger_element,
+                    FieldDataManager& field_data_manager);
 
   // Clears all entries from |initial_select_values_| and
   // |initial_checked_state_| whose keys not contained in |ids_to_retain|.

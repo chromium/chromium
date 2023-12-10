@@ -110,7 +110,7 @@ public class WebViewChromiumAwInit {
         mFactory = factory;
         // Do not make calls into 'factory' in this ctor - this ctor is called from the
         // WebViewChromiumFactoryProvider ctor, so 'factory' is not properly initialized yet.
-        TraceEvent.maybeEnableEarlyTracing(/*readCommandLine=*/false);
+        TraceEvent.maybeEnableEarlyTracing(/* readCommandLine= */ false);
     }
 
     public AwTracingController getAwTracingController() {
@@ -140,7 +140,7 @@ public class WebViewChromiumAwInit {
     protected void startChromiumLocked() {
         long startTime = SystemClock.uptimeMillis();
         try (ScopedSysTraceEvent event =
-                        ScopedSysTraceEvent.scoped("WebViewChromiumAwInit.startChromiumLocked")) {
+                ScopedSysTraceEvent.scoped("WebViewChromiumAwInit.startChromiumLocked")) {
             assert Thread.holdsLock(mLock) && ThreadUtils.runningOnUiThread();
 
             // The post-condition of this method is everything is ready, so notify now to cover all
@@ -163,7 +163,7 @@ public class WebViewChromiumAwInit {
             // NOTE: Any reference to Java resources will cause a crash.
 
             try (ScopedSysTraceEvent e =
-                            ScopedSysTraceEvent.scoped("WebViewChromiumAwInit.LibraryLoader")) {
+                    ScopedSysTraceEvent.scoped("WebViewChromiumAwInit.LibraryLoader")) {
                 LibraryLoader.getInstance().ensureInitialized();
             }
 
@@ -208,7 +208,7 @@ public class WebViewChromiumAwInit {
             }
 
             AwBrowserProcess.start();
-            AwBrowserProcess.handleMinidumpsAndSetMetricsConsent(true /* updateMetricsConsent */);
+            AwBrowserProcess.handleMinidumpsAndSetMetricsConsent(/* updateMetricsConsent= */ true);
 
             // This has to be done after variations are initialized, so components could be
             // registered or not depending on the variations flags.
@@ -222,17 +222,21 @@ public class WebViewChromiumAwInit {
 
             mInitState = INIT_FINISHED;
 
-            RecordHistogram.recordSparseHistogram("Android.WebView.TargetSdkVersion",
+            RecordHistogram.recordSparseHistogram(
+                    "Android.WebView.TargetSdkVersion",
                     context.getApplicationInfo().targetSdkVersion);
 
-            try (ScopedSysTraceEvent e = ScopedSysTraceEvent.scoped(
-                         "WebViewChromiumAwInit.initThreadUnsafeSingletons")) {
+            try (ScopedSysTraceEvent e =
+                    ScopedSysTraceEvent.scoped(
+                            "WebViewChromiumAwInit.initThreadUnsafeSingletons")) {
                 // Initialize thread-unsafe singletons.
                 AwBrowserContext defaultBrowserContext = getDefaultBrowserContextOnUiThread();
-                mDefaultGeolocationPermissions = new GeolocationPermissionsAdapter(
-                        mFactory, defaultBrowserContext.getGeolocationPermissions());
-                mDefaultWebStorage = new WebStorageAdapter(
-                        mFactory, defaultBrowserContext.getQuotaManagerBridge());
+                mDefaultGeolocationPermissions =
+                        new GeolocationPermissionsAdapter(
+                                mFactory, defaultBrowserContext.getGeolocationPermissions());
+                mDefaultWebStorage =
+                        new WebStorageAdapter(
+                                mFactory, defaultBrowserContext.getQuotaManagerBridge());
                 mAwTracingController = getTracingController();
                 mDefaultServiceWorkerController =
                         defaultBrowserContext.getServiceWorkerController();
@@ -263,25 +267,28 @@ public class WebViewChromiumAwInit {
      * @param context The context.
      */
     public void setUpResourcesOnBackgroundThread(int packageId, Context context) {
-        try (ScopedSysTraceEvent e = ScopedSysTraceEvent.scoped(
-                     "WebViewChromiumAwInit.setUpResourcesOnBackgroundThread")) {
+        try (ScopedSysTraceEvent e =
+                ScopedSysTraceEvent.scoped(
+                        "WebViewChromiumAwInit.setUpResourcesOnBackgroundThread")) {
             assert mSetUpResourcesThread == null : "This method shouldn't be called twice.";
 
             // Make sure that ResourceProvider is initialized before starting the browser process.
-            mSetUpResourcesThread = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    // Run this in parallel as it takes some time.
-                    setUpResources(packageId, context);
-                }
-            });
+            mSetUpResourcesThread =
+                    new Thread(
+                            new Runnable() {
+                                @Override
+                                public void run() {
+                                    // Run this in parallel as it takes some time.
+                                    setUpResources(packageId, context);
+                                }
+                            });
             mSetUpResourcesThread.start();
         }
     }
 
     private void waitUntilSetUpResources() {
-        try (ScopedSysTraceEvent e = ScopedSysTraceEvent.scoped(
-                     "WebViewChromiumAwInit.waitUntilSetUpResources")) {
+        try (ScopedSysTraceEvent e =
+                ScopedSysTraceEvent.scoped("WebViewChromiumAwInit.waitUntilSetUpResources")) {
             mSetUpResourcesThread.join();
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
@@ -290,7 +297,7 @@ public class WebViewChromiumAwInit {
 
     private void setUpResources(int packageId, Context context) {
         try (ScopedSysTraceEvent e =
-                        ScopedSysTraceEvent.scoped("WebViewChromiumAwInit.setUpResources")) {
+                ScopedSysTraceEvent.scoped("WebViewChromiumAwInit.setUpResources")) {
             R.onResourcesLoaded(packageId);
 
             AwResource.setResources(context.getResources());
@@ -337,14 +344,15 @@ public class WebViewChromiumAwInit {
 
         // If we're not running on the UI thread (because init was triggered by a thread-safe
         // function), post init to the UI thread, since init is *not* thread-safe.
-        AwThreadUtils.postToUiThreadLooper(new Runnable() {
-            @Override
-            public void run() {
-                synchronized (mLock) {
-                    startChromiumLocked();
-                }
-            }
-        });
+        AwThreadUtils.postToUiThreadLooper(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        synchronized (mLock) {
+                            startChromiumLocked();
+                        }
+                    }
+                });
 
         // Wait for the UI thread to finish init.
         while (mInitState != INIT_FINISHED) {
@@ -367,16 +375,18 @@ public class WebViewChromiumAwInit {
         // thread, then by definition the current thread is the UI thread whether it's the main
         // looper or not.
         Looper looper = fromThreadSafeFunction ? Looper.getMainLooper() : Looper.myLooper();
-        Log.v(TAG,
+        Log.v(
+                TAG,
                 "Binding Chromium to "
                         + (Looper.getMainLooper().equals(looper) ? "main" : "background")
-                        + " looper " + looper);
+                        + " looper "
+                        + looper);
         ThreadUtils.setUiThread(looper);
     }
 
     private void initPlatSupportLibrary() {
-        try (ScopedSysTraceEvent e = ScopedSysTraceEvent.scoped(
-                     "WebViewChromiumAwInit.initPlatSupportLibrary")) {
+        try (ScopedSysTraceEvent e =
+                ScopedSysTraceEvent.scoped("WebViewChromiumAwInit.initPlatSupportLibrary")) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                 AwDrawFnImpl.setDrawFnFunctionTable(DrawFunctor.getDrawFnFunctionTable());
             }
@@ -387,10 +397,12 @@ public class WebViewChromiumAwInit {
     }
 
     private void doNetworkInitializations(Context applicationContext) {
-        try (ScopedSysTraceEvent e = ScopedSysTraceEvent.scoped(
-                     "WebViewChromiumAwInit.doNetworkInitializations")) {
+        try (ScopedSysTraceEvent e =
+                ScopedSysTraceEvent.scoped("WebViewChromiumAwInit.doNetworkInitializations")) {
             if (applicationContext.checkPermission(
-                        Manifest.permission.ACCESS_NETWORK_STATE, Process.myPid(), Process.myUid())
+                            Manifest.permission.ACCESS_NETWORK_STATE,
+                            Process.myPid(),
+                            Process.myUid())
                     == PackageManager.PERMISSION_GRANTED) {
                 NetworkChangeNotifier.init();
                 NetworkChangeNotifier.setAutoDetectConnectivityState(
@@ -399,7 +411,7 @@ public class WebViewChromiumAwInit {
 
             AwContentsStatics.setCheckClearTextPermitted(
                     applicationContext.getApplicationInfo().targetSdkVersion
-                    >= Build.VERSION_CODES.O);
+                            >= Build.VERSION_CODES.O);
         }
     }
 
@@ -497,9 +509,11 @@ public class WebViewChromiumAwInit {
         synchronized (mLock) {
             ensureChromiumStartedLocked(true);
             if (mDefaultWebViewDatabase == null) {
-                mDefaultWebViewDatabase = new WebViewDatabaseAdapter(mFactory,
-                        HttpAuthDatabase.newInstance(context, HTTP_AUTH_DATABASE_FILE),
-                        mDefaultBrowserContext);
+                mDefaultWebViewDatabase =
+                        new WebViewDatabaseAdapter(
+                                mFactory,
+                                HttpAuthDatabase.newInstance(context, HTTP_AUTH_DATABASE_FILE),
+                                mDefaultBrowserContext);
             }
         }
         return mDefaultWebViewDatabase;
@@ -516,8 +530,8 @@ public class WebViewChromiumAwInit {
     }
 
     private void finishVariationsInitLocked() {
-        try (ScopedSysTraceEvent e = ScopedSysTraceEvent.scoped(
-                     "WebViewChromiumAwInit.finishVariationsInitLocked")) {
+        try (ScopedSysTraceEvent e =
+                ScopedSysTraceEvent.scoped("WebViewChromiumAwInit.finishVariationsInitLocked")) {
             assert Thread.holdsLock(mLock);
             if (mSeedLoader == null) {
                 Log.e(TAG, "finishVariationsInitLocked() called before startVariationsInit()");
@@ -531,18 +545,20 @@ public class WebViewChromiumAwInit {
     // Log extra information, for debugging purposes. Do the work asynchronously to avoid blocking
     // startup.
     private void logCommandLineAndActiveTrials() {
-        PostTask.postTask(TaskTraits.BEST_EFFORT, () -> {
-            // TODO(ntfschr): CommandLine can change at any time. For simplicity, only log it
-            // once during startup.
-            AwContentsStatics.logCommandLineForDebugging();
-            // Field trials can be activated at any time. We'll continue logging them as they're
-            // activated.
-            FieldTrialList.logActiveTrials();
-            // SafeMode was already determined earlier during the startup sequence, this just
-            // fetches the cached boolean state. If SafeMode was enabled, we already logged detailed
-            // information about the SafeMode config.
-            Log.i(TAG, "SafeMode enabled: " + mFactory.isSafeModeEnabled());
-        });
+        PostTask.postTask(
+                TaskTraits.BEST_EFFORT,
+                () -> {
+                    // TODO(ntfschr): CommandLine can change at any time. For simplicity, only log
+                    // it once during startup.
+                    AwContentsStatics.logCommandLineForDebugging();
+                    // Field trials can be activated at any time. We'll continue logging them as
+                    // they're activated.
+                    FieldTrialList.logActiveTrials();
+                    // SafeMode was already determined earlier during the startup sequence, this
+                    // just fetches the cached boolean state. If SafeMode was enabled, we already
+                    // logged detailed information about the SafeMode config.
+                    Log.i(TAG, "SafeMode enabled: " + mFactory.isSafeModeEnabled());
+                });
     }
 
     public WebViewChromiumRunQueue getRunQueue() {

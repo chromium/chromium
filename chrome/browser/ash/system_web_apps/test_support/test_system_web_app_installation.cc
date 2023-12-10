@@ -167,7 +167,7 @@ bool UnittestingSystemAppDelegate::ShouldHaveReloadButtonInMinimalUi() const {
 bool UnittestingSystemAppDelegate::ShouldAllowScriptsToCloseWindows() const {
   return allow_scripts_to_close_windows_;
 }
-absl::optional<SystemWebAppBackgroundTaskInfo>
+std::optional<SystemWebAppBackgroundTaskInfo>
 UnittestingSystemAppDelegate::GetTimerInfo() const {
   return timer_info_;
 }
@@ -810,10 +810,10 @@ TestSystemWebAppInstallation::SetUpAppsForContestMenuTest() {
 // static
 std::unique_ptr<TestSystemWebAppInstallation>
 TestSystemWebAppInstallation::SetUpAppWithColors(
-    absl::optional<SkColor> theme_color,
-    absl::optional<SkColor> dark_mode_theme_color,
-    absl::optional<SkColor> background_color,
-    absl::optional<SkColor> dark_mode_background_color) {
+    std::optional<SkColor> theme_color,
+    std::optional<SkColor> dark_mode_theme_color,
+    std::optional<SkColor> background_color,
+    std::optional<SkColor> dark_mode_background_color) {
   std::unique_ptr<UnittestingSystemAppDelegate> delegate =
       std::make_unique<UnittestingSystemAppDelegate>(
           SystemWebAppType::MEDIA, "Test",

@@ -253,20 +253,20 @@ void HandleMediaPermissionsRequestResult(
       nullptr);
 }
 
-absl::optional<url::Origin> ParseAndValidateWebOrigin(
+std::optional<url::Origin> ParseAndValidateWebOrigin(
     const std::string& origin_str) {
   GURL origin_url(origin_str);
   if (!origin_url.username().empty() || !origin_url.password().empty() ||
       !origin_url.query().empty() || !origin_url.ref().empty()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (!origin_url.path().empty() && origin_url.path() != "/")
-    return absl::nullopt;
+    return std::nullopt;
 
   auto origin = url::Origin::Create(origin_url);
   if (origin.opaque())
-    return absl::nullopt;
+    return std::nullopt;
 
   return origin;
 }
@@ -378,7 +378,7 @@ class AudioStreamBrokerFactory final
   }
 
   std::unique_ptr<content::AudioStreamBrokerFactory> base_factory_;
-  absl::optional<fuchsia::media::AudioRenderUsage> output_usage_;
+  std::optional<fuchsia::media::AudioRenderUsage> output_usage_;
   base::WeakPtrFactory<AudioStreamBrokerFactory> weak_factory_{this};
 };
 
@@ -531,7 +531,7 @@ void FrameImpl::ExecuteJavaScriptInternal(std::vector<std::string> origins,
     return;
   }
 
-  absl::optional<std::u16string> script_utf16 =
+  std::optional<std::u16string> script_utf16 =
       base::ReadUTF8FromVMOAsUTF16(script);
   if (!script_utf16) {
     callback(fpromise::error(fuchsia::web::FrameError::BUFFER_NOT_UTF8));
@@ -945,7 +945,7 @@ void FrameImpl::AddBeforeLoadJavaScript(
     return;
   }
 
-  absl::optional<std::string> script_as_string =
+  std::optional<std::string> script_as_string =
       base::StringFromMemBuffer(script);
   if (!script_as_string) {
     LOG(ERROR) << "Couldn't read script from buffer.";
@@ -1003,11 +1003,11 @@ void FrameImpl::PostMessage(std::string origin,
     return;
   }
 
-  absl::optional<std::u16string> origin_utf16;
+  std::optional<std::u16string> origin_utf16;
   if (origin != kWildcardOrigin)
     origin_utf16 = base::UTF8ToUTF16(origin);
 
-  absl::optional<std::u16string> data_utf16 =
+  std::optional<std::u16string> data_utf16 =
       base::ReadUTF8FromVMOAsUTF16(message.data());
   if (!data_utf16) {
     callback(fpromise::error(fuchsia::web::FrameError::BUFFER_NOT_UTF8));
@@ -1514,7 +1514,7 @@ void FrameImpl::RequestMediaAccessPermission(
 
 bool FrameImpl::CheckMediaAccessPermission(
     content::RenderFrameHost* render_frame_host,
-    const GURL& security_origin,
+    const url::Origin& security_origin,
     blink::mojom::MediaStreamType type) {
   blink::PermissionType permission;
   switch (type) {
@@ -1530,8 +1530,7 @@ bool FrameImpl::CheckMediaAccessPermission(
   }
 
   // TODO(crbug.com/1321100): Remove `security_origin`.
-  if (url::Origin::Create(security_origin) !=
-      render_frame_host->GetLastCommittedOrigin()) {
+  if (security_origin != render_frame_host->GetLastCommittedOrigin()) {
     return false;
   }
 

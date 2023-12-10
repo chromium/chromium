@@ -207,10 +207,10 @@ CGRect GetBoundingRectOfElement(web::WebState* web_state,
   if (!found)
     return CGRectNull;
 
-  absl::optional<double> left = rect->FindDouble("left");
-  absl::optional<double> top = rect->FindDouble("top");
-  absl::optional<double> width = rect->FindDouble("width");
-  absl::optional<double> height = rect->FindDouble("height");
+  std::optional<double> left = rect->FindDouble("left");
+  std::optional<double> top = rect->FindDouble("top");
+  std::optional<double> width = rect->FindDouble("width");
+  std::optional<double> height = rect->FindDouble("height");
   if (!(left && top && width && height))
     return CGRectNull;
 

@@ -22,7 +22,7 @@ namespace {
 // description or they require a special one we explicitly specify. For example,
 // ui::VKEY_COMMAND could return a string "Meta", but we want to display it as
 // "Search" or "Launcher".
-absl::optional<std::u16string> GetSpecialStringForKeyboardCode(
+std::optional<std::u16string> GetSpecialStringForKeyboardCode(
     ui::KeyboardCode key_code) {
   int msg_id = 0;
   switch (key_code) {
@@ -64,7 +64,7 @@ absl::optional<std::u16string> GetSpecialStringForKeyboardCode(
       // "VKEY_OEM_PLUS", which is "+" and "VKEY_SPACE", which is "Space".
       return u"+ ";
     default:
-      return absl::nullopt;
+      return std::nullopt;
   }
   return l10n_util::GetStringUTF16(msg_id);
 }
@@ -79,7 +79,7 @@ bool IsAssistantAvailable() {
 
 std::u16string GetStringForKeyboardCode(ui::KeyboardCode key_code,
                                         bool remap_positional_key) {
-  const absl::optional<std::u16string> key_label =
+  const std::optional<std::u16string> key_label =
       GetSpecialStringForKeyboardCode(key_code);
   if (key_label)
     return key_label.value();

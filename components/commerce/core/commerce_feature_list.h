@@ -26,15 +26,6 @@ extern const char kEnableChromeCart[];
 BASE_DECLARE_FEATURE(kCommercePriceTracking);
 BASE_DECLARE_FEATURE(kCommercePriceTrackingRegionLaunched);
 
-// Feature flag for Price Tracking chip experiment
-BASE_DECLARE_FEATURE(kCommercePriceTrackingChipExperiment);
-// This indicates the Price Tracking chip experiment variation.
-enum class PriceTrackingChipExperimentVariation {
-  kDefault = 0,
-  kDelayChip = 1,
-  kWithChipIPH = 2
-};
-
 // Price tracking variations for Android.
 constexpr flags_ui::FeatureEntry::FeatureParam
     kCommercePriceTracking_PriceAlerts[] = {
@@ -100,7 +91,6 @@ BASE_DECLARE_FEATURE(kShoppingCollection);
 BASE_DECLARE_FEATURE(kShoppingList);
 BASE_DECLARE_FEATURE(kShoppingListRegionLaunched);
 BASE_DECLARE_FEATURE(kShoppingListTrackByDefault);
-BASE_DECLARE_FEATURE(kShoppingListWAARestrictionRemoval);
 BASE_DECLARE_FEATURE(kShoppingPageTypes);
 BASE_DECLARE_FEATURE(kShoppingPageTypesRegionLaunched);
 BASE_DECLARE_FEATURE(kShoppingPDPMetrics);
@@ -115,6 +105,8 @@ enum class DiscountDialogAutoPopupBehavior {
 };
 BASE_DECLARE_FEATURE(kShowDiscountOnNavigation);
 BASE_DECLARE_FEATURE(kShowDiscountOnNavigationRegionLaunched);
+BASE_DECLARE_FEATURE(kEnableDiscountInfoApi);
+BASE_DECLARE_FEATURE(kEnableDiscountInfoApiRegionLaunched);
 BASE_DECLARE_FEATURE(kDiscountDialogAutoPopupBehaviorSetting);
 extern const char kHistoryClustersBehaviorParam[];
 extern const base::FeatureParam<int> kHistoryClustersBehavior;
@@ -396,11 +388,6 @@ extern const base::FeatureParam<bool> kCodeBasedRuleDiscount;
 extern const char kCodeBasedRuleDiscountCouponDeletionTimeParam[];
 extern const base::FeatureParam<base::TimeDelta>
     kCodeBasedRuleDiscountCouponDeletionTime;
-
-// CommercePriceTrackingChipExperiment params.
-extern const char kCommercePriceTrackingChipExperimentVariationParam[];
-extern const base::FeatureParam<int>
-    kCommercePriceTrackingChipExperimentVariation;
 
 // Check if a URL belongs to a partner merchant of any type of discount.
 bool IsPartnerMerchant(const GURL& url);

@@ -44,7 +44,7 @@ class PageActionIconLoadingIndicatorView : public views::View,
   void AnimationProgressed(const gfx::Animation* animation) override;
 
  private:
-  absl::optional<base::TimeTicks> throbber_start_time_;
+  std::optional<base::TimeTicks> throbber_start_time_;
 
   gfx::ThrobAnimation animation_{this};
 

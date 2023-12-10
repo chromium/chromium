@@ -1,3 +1,0 @@
-Test	http://www.w3.org/2001/DOM-Test-Suite/level3/core/documentrenamenode08
-Status	failure
-Message	documentrenamenode08_WRONG_DOCUMENT_ERR: assertTrue failed

@@ -331,11 +331,6 @@ chromium-metrics-reviews@google.com.
       label="IsNotSupported returned and MIME type not parseable (acceptable)"/>
 </enum>
 
-<enum name="ContextProviderPhase">
-  <int value="0" label="Acquired"/>
-  <int value="1" label="Released"/>
-</enum>
-
 <enum name="ContextResult">
   <int value="0" label="Success"/>
   <int value="1" label="TransientFailure"/>
@@ -1047,6 +1042,15 @@ chromium-metrics-reviews@google.com.
 <enum name="GlobalMediaControlsEntryPoint">
   <int value="0" label="Toolbar icon"/>
   <int value="1" label="Presentation API"/>
+  <int value="2" label="ChromeOS system tray"/>
+  <int value="3" label="ChromeOS quick settings mini player"/>
+  <int value="4" label="ChromeOS quick settings mini player (Cast button)"/>
+</enum>
+
+<enum name="HighlightedTabDiscardStatus">
+  <int value="0" label="NoTabsHighlighted"/>
+  <int value="1" label="AllHighlightedTabsNonDiscarded"/>
+  <int value="2" label="DiscardedTabHighlightedAtLeastOnce"/>
 </enum>
 
 <enum name="ImageCaptureOutcome">
@@ -1054,11 +1058,6 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Succeeded using photo stream"/>
   <int value="2" label="Failed using video stream"/>
   <int value="3" label="Failed using photo stream"/>
-</enum>
-
-<enum name="LocalRendererSinkStates">
-  <int value="0" label="SinkStarted"/>
-  <int value="1" label="SinkNeverStarted"/>
 </enum>
 
 <enum name="MakeAudioInputStreamStatus">
@@ -1162,6 +1161,8 @@ chromium-metrics-reviews@google.com.
   <int value="12" label="FailedToCreateMediaEngine"/>
   <int value="13" label="FailedToCreateDCompTextureWrapper"/>
   <int value="14" label="FailedToInitDCompTextureWrapper"/>
+  <int value="15" label="FailedToSetPlaybackRate"/>
+  <int value="16" label="FailedToGetMediaEngineEx"/>
 </enum>
 
 <enum name="MediaGalleriesUsageType">
@@ -1852,6 +1853,11 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="LibreOffice"/>
 </enum>
 
+<enum name="SelectedTabDiscardStatus">
+  <int value="0" label="NonDiscarded"/>
+  <int value="1" label="Discarded"/>
+</enum>
+
 <enum name="SmoothVolatility">
   <int value="0" label="Prediction stays at NotSmooth after update"/>
   <int value="1"
@@ -2274,33 +2280,9 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="GpuMemoryBuffer"/>
 </enum>
 
-<enum name="VideoPersistenceAttemptResult">
-  <int value="0" label="Success"/>
-  <int value="1" label="No system support"/>
-  <int value="2" label="No feature"/>
-  <int value="3" label="No activity support"/>
-  <int value="4" label="Already running"/>
-  <int value="5" label="Restarting"/>
-  <int value="6" label="Finishing"/>
-  <int value="7" label="No WebContents"/>
-  <int value="8" label="(Obsolete) No video"/>
-  <int value="9" label="App tasks"/>
-</enum>
-
 <enum name="VideoPersistenceControlsType">
   <int value="0" label="Native controls"/>
   <int value="1" label="Custom controls"/>
-</enum>
-
-<enum name="VideoPersistenceEndReason">
-  <int value="0" label="Resume"/>
-  <int value="1" label="(Obsolete) Navigation"/>
-  <int value="2" label="Close"/>
-  <int value="3" label="Crash"/>
-  <int value="4" label="New tab"/>
-  <int value="5" label="Reparent"/>
-  <int value="6" label="Left fullscreen"/>
-  <int value="7" label="Left fullscreen (webcontents)"/>
 </enum>
 
 <enum name="VideoPixelFormatUnion">

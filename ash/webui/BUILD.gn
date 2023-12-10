@@ -71,7 +71,6 @@ group("closure_compile") {
     "//ash/webui/help_app_ui:closure_compile",
     "//ash/webui/media_app_ui:closure_compile",
     "//ash/webui/multidevice_debug/resources:closure_compile",
-    "//ash/webui/os_feedback_ui:closure_compile",
     "//ash/webui/projector_app/resources:closure_compile",
     "//ash/webui/shimless_rma:closure_compile",
     "//ash/webui/system_apps:closure_compile",

@@ -55,6 +55,10 @@ class HttpsFirstModeSettingsTrackerTest : public testing::Test {
         CreateProfileForIdentityTestEnvironment(builder);
   }
 
+  void TearDown() override {
+    HttpsFirstModeServiceFactory::SetClockForTesting(nullptr);
+  }
+
   void SetSiteEngagementScoreForTypicallySecureUserHeuristic() {
     // Typically Secure User heuristic requires a minimum total site engagement
     // score.
@@ -79,7 +83,102 @@ void MaybeEnableHttpsFirstModeForEngagedSitesAndWait(
   run_loop.Run();
 }
 
-TEST_F(HttpsFirstModeSettingsTrackerTest, SiteEngagementHeuristic) {
+// Check that changing the HFM pref clears Site Engagement heuristic's HTTPS
+// enforcelist and effectively disables the heuristic.
+TEST_F(HttpsFirstModeSettingsTrackerTest,
+       SiteEngagementHeuristic_ShouldNotEnableIfPrefIsSet) {
+  HttpsFirstModeService* service =
+      HttpsFirstModeServiceFactory::GetForProfile(profile());
+  ASSERT_TRUE(service);
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kHttpsFirstModeV2ForTypicallySecureUsers);
+
+  site_engagement::SiteEngagementService* engagement_service =
+      site_engagement::SiteEngagementService::Get(profile());
+  ASSERT_TRUE(engagement_service);
+
+  StatefulSSLHostStateDelegate* state =
+      StatefulSSLHostStateDelegateFactory::GetForProfile(profile());
+  ASSERT_TRUE(state);
+
+  auto clock = std::make_unique<base::SimpleTestClock>();
+  auto* clock_ptr = clock.get();
+  state->SetClockForTesting(std::move(clock));
+  clock_ptr->SetNow(base::Time::NowFromSystemTime());
+
+  // Site Engagement heuristic should enforce HTTPS on hosts with high
+  // engagement score.
+  GURL https_url("https://example.com");
+  engagement_service->ResetBaseScoreForURL(https_url, 90);
+  MaybeEnableHttpsFirstModeForEngagedSitesAndWait(service);
+  EXPECT_TRUE(state->IsHttpsEnforcedForUrl(
+      GURL("http://example.com"), profile()->GetDefaultStoragePartition()));
+  EXPECT_TRUE(state->IsHttpsEnforcedForUrl(
+      GURL("https://example.com"), profile()->GetDefaultStoragePartition()));
+
+  // Disable HFM. This should clear the enforcelist.
+  profile()->GetPrefs()->SetBoolean(prefs::kHttpsOnlyModeEnabled, false);
+  EXPECT_FALSE(state->IsHttpsEnforcedForUrl(
+      GURL("http://example.com"), profile()->GetDefaultStoragePartition()));
+  EXPECT_FALSE(state->IsHttpsEnforcedForUrl(
+      GURL("https://example.com"), profile()->GetDefaultStoragePartition()));
+
+  // Check again. Should remain unenforced.
+  MaybeEnableHttpsFirstModeForEngagedSitesAndWait(service);
+  EXPECT_FALSE(state->IsHttpsEnforcedForUrl(
+      GURL("http://example.com"), profile()->GetDefaultStoragePartition()));
+  EXPECT_FALSE(state->IsHttpsEnforcedForUrl(
+      GURL("https://example.com"), profile()->GetDefaultStoragePartition()));
+}
+
+// Check that high site engagement scores of HTTPS URLs with non-default ports
+// do not auto-enable HTTPS-First Mode.
+TEST_F(
+    HttpsFirstModeSettingsTrackerTest,
+    SiteEngagementHeuristic_ShouldIgnoreEngagementScoreOfUrlWithNonDefaultPort) {
+  HttpsFirstModeService* service =
+      HttpsFirstModeServiceFactory::GetForProfile(profile());
+  ASSERT_TRUE(service);
+
+  base::HistogramTester histograms;
+  site_engagement::SiteEngagementService* engagement_service =
+      site_engagement::SiteEngagementService::Get(profile());
+  ASSERT_TRUE(engagement_service);
+
+  StatefulSSLHostStateDelegate* state =
+      StatefulSSLHostStateDelegateFactory::GetForProfile(profile());
+  ASSERT_TRUE(state);
+
+  // HFM should initially be disabled on this site by default.
+  MaybeEnableHttpsFirstModeForEngagedSitesAndWait(service);
+  EXPECT_FALSE(state->IsHttpsEnforcedForUrl(
+      GURL("http://example.com"), profile()->GetDefaultStoragePartition()));
+  histograms.ExpectTotalCount(kSiteEngagementHeuristicStateHistogram, 0);
+  histograms.ExpectTotalCount(kSiteEngagementHeuristicHostCountHistogram, 0);
+  histograms.ExpectTotalCount(
+      kSiteEngagementHeuristicAccumulatedHostCountHistogram, 0);
+  histograms.ExpectTotalCount(
+      kSiteEngagementHeuristicEnforcementDurationHistogram, 0);
+
+  // Increase the score. Since the URL has a non-default port, HFM should remain
+  // disabled.
+  engagement_service->ResetBaseScoreForURL(GURL("https://example.com:8443"),
+                                           90);
+  MaybeEnableHttpsFirstModeForEngagedSitesAndWait(service);
+  EXPECT_FALSE(state->IsHttpsEnforcedForUrl(
+      GURL("http://example.com"), profile()->GetDefaultStoragePartition()));
+  histograms.ExpectTotalCount(kSiteEngagementHeuristicStateHistogram, 0);
+  histograms.ExpectTotalCount(kSiteEngagementHeuristicHostCountHistogram, 0);
+  histograms.ExpectTotalCount(
+      kSiteEngagementHeuristicAccumulatedHostCountHistogram, 0);
+  histograms.ExpectTotalCount(
+      kSiteEngagementHeuristicEnforcementDurationHistogram, 0);
+}
+
+TEST_F(HttpsFirstModeSettingsTrackerTest,
+       SiteEngagementHeuristic_ShouldEnforceHttps) {
   HttpsFirstModeService* service =
       HttpsFirstModeServiceFactory::GetForProfile(profile());
   ASSERT_TRUE(service);
@@ -107,8 +206,8 @@ TEST_F(HttpsFirstModeSettingsTrackerTest, SiteEngagementHeuristic) {
 
   // Step 1: HFM should initially be disabled on this site by default.
   MaybeEnableHttpsFirstModeForEngagedSitesAndWait(service);
-  EXPECT_FALSE(state->IsHttpsEnforcedForHost(
-      "example.com", profile()->GetDefaultStoragePartition()));
+  EXPECT_FALSE(state->IsHttpsEnforcedForUrl(
+      GURL("http://example.com"), profile()->GetDefaultStoragePartition()));
   histograms.ExpectTotalCount(kSiteEngagementHeuristicStateHistogram, 0);
   histograms.ExpectTotalCount(kSiteEngagementHeuristicHostCountHistogram, 0);
   histograms.ExpectTotalCount(
@@ -119,8 +218,8 @@ TEST_F(HttpsFirstModeSettingsTrackerTest, SiteEngagementHeuristic) {
   // Step 2: Increase the score, should now enable HFM.
   engagement_service->ResetBaseScoreForURL(https_url, 90);
   MaybeEnableHttpsFirstModeForEngagedSitesAndWait(service);
-  EXPECT_TRUE(state->IsHttpsEnforcedForHost(
-      "example.com", profile()->GetDefaultStoragePartition()));
+  EXPECT_TRUE(state->IsHttpsEnforcedForUrl(
+      GURL("http://example.com"), profile()->GetDefaultStoragePartition()));
   // Check events.
   histograms.ExpectTotalCount(kSiteEngagementHeuristicStateHistogram, 1);
   histograms.ExpectBucketCount(kSiteEngagementHeuristicStateHistogram,
@@ -143,15 +242,16 @@ TEST_F(HttpsFirstModeSettingsTrackerTest, SiteEngagementHeuristic) {
       kSiteEngagementHeuristicEnforcementDurationHistogram, 0);
 
   // Subdomains shouldn't be affected.
-  EXPECT_FALSE(state->IsHttpsEnforcedForHost(
-      "test.example.com", profile()->GetDefaultStoragePartition()));
+  EXPECT_FALSE(
+      state->IsHttpsEnforcedForUrl(GURL("http://test.example.com"),
+                                   profile()->GetDefaultStoragePartition()));
 
   // Step 3: Decrease the score, but only slightly. This shouldn't result in HFM
   // being disabled.
   engagement_service->ResetBaseScoreForURL(https_url, 85);
   MaybeEnableHttpsFirstModeForEngagedSitesAndWait(service);
-  EXPECT_TRUE(state->IsHttpsEnforcedForHost(
-      "example.com", profile()->GetDefaultStoragePartition()));
+  EXPECT_TRUE(state->IsHttpsEnforcedForUrl(
+      GURL("http://example.com"), profile()->GetDefaultStoragePartition()));
   // Check events.
   histograms.ExpectTotalCount(kSiteEngagementHeuristicStateHistogram, 1);
   histograms.ExpectBucketCount(kSiteEngagementHeuristicStateHistogram,
@@ -178,8 +278,8 @@ TEST_F(HttpsFirstModeSettingsTrackerTest, SiteEngagementHeuristic) {
   clock_ptr->Advance(base::Hours(1));
   engagement_service->ResetBaseScoreForURL(https_url, 25);
   MaybeEnableHttpsFirstModeForEngagedSitesAndWait(service);
-  EXPECT_FALSE(state->IsHttpsEnforcedForHost(
-      "example.com", profile()->GetDefaultStoragePartition()));
+  EXPECT_FALSE(state->IsHttpsEnforcedForUrl(
+      GURL("http://example.com"), profile()->GetDefaultStoragePartition()));
   // Check events.
   histograms.ExpectTotalCount(kSiteEngagementHeuristicStateHistogram, 2);
   histograms.ExpectBucketCount(kSiteEngagementHeuristicStateHistogram,
@@ -211,8 +311,8 @@ TEST_F(HttpsFirstModeSettingsTrackerTest, SiteEngagementHeuristic) {
   clock_ptr->Advance(base::Hours(2));
   engagement_service->ResetBaseScoreForURL(https_url, 90);
   MaybeEnableHttpsFirstModeForEngagedSitesAndWait(service);
-  EXPECT_TRUE(state->IsHttpsEnforcedForHost(
-      "example.com", profile()->GetDefaultStoragePartition()));
+  EXPECT_TRUE(state->IsHttpsEnforcedForUrl(
+      GURL("http://example.com"), profile()->GetDefaultStoragePartition()));
   // Check state.
   histograms.ExpectTotalCount(kSiteEngagementHeuristicStateHistogram, 3);
   histograms.ExpectBucketCount(kSiteEngagementHeuristicStateHistogram,
@@ -244,8 +344,8 @@ TEST_F(HttpsFirstModeSettingsTrackerTest, SiteEngagementHeuristic) {
   // the HTTPS score is still high.
   engagement_service->ResetBaseScoreForURL(http_url, 20);
   MaybeEnableHttpsFirstModeForEngagedSitesAndWait(service);
-  EXPECT_FALSE(state->IsHttpsEnforcedForHost(
-      "example.com", profile()->GetDefaultStoragePartition()));
+  EXPECT_FALSE(state->IsHttpsEnforcedForUrl(
+      GURL("http://example.com"), profile()->GetDefaultStoragePartition()));
   // Check state.
   histograms.ExpectTotalCount(kSiteEngagementHeuristicStateHistogram, 4);
   histograms.ExpectBucketCount(kSiteEngagementHeuristicStateHistogram,
@@ -281,8 +381,8 @@ TEST_F(HttpsFirstModeSettingsTrackerTest, SiteEngagementHeuristic) {
   engagement_service->ResetBaseScoreForURL(https_url, 0);
   engagement_service->ResetBaseScoreForURL(http_url, 100);
   MaybeEnableHttpsFirstModeForEngagedSitesAndWait(service);
-  EXPECT_FALSE(state->IsHttpsEnforcedForHost(
-      "example.com", profile()->GetDefaultStoragePartition()));
+  EXPECT_FALSE(state->IsHttpsEnforcedForUrl(
+      GURL("http://example.com"), profile()->GetDefaultStoragePartition()));
   // Check state.
   histograms.ExpectTotalCount(kSiteEngagementHeuristicStateHistogram, 4);
   histograms.ExpectBucketCount(kSiteEngagementHeuristicStateHistogram,
@@ -340,8 +440,8 @@ TEST_F(HttpsFirstModeSettingsTrackerTest,
   // Increase the HTTPS engagement score to enable HFM on this host.
   engagement_service->ResetBaseScoreForURL(https_url, 90);
   MaybeEnableHttpsFirstModeForEngagedSitesAndWait(service);
-  EXPECT_TRUE(state->IsHttpsEnforcedForHost(
-      "example.com", profile()->GetDefaultStoragePartition()));
+  EXPECT_TRUE(state->IsHttpsEnforcedForUrl(
+      GURL("http://example.com"), profile()->GetDefaultStoragePartition()));
 
   // Clear up the engagement scores. This should remove the enforcement.
   HostContentSettingsMap* settings_map =
@@ -352,10 +452,12 @@ TEST_F(HttpsFirstModeSettingsTrackerTest,
       http_url, GURL(), ContentSettingsType::SITE_ENGAGEMENT, base::Value());
   MaybeEnableHttpsFirstModeForEngagedSitesAndWait(service);
 
-  // TODO(crbug.com/1435222): Sites that fall outside the site engagement list
-  // should no longer have HTTPS enforced.
-  EXPECT_TRUE(state->IsHttpsEnforcedForHost(
-      "example.com", profile()->GetDefaultStoragePartition()));
+  // Sites that fall outside the site engagement list should no longer have
+  // HTTPS enforced.
+  EXPECT_FALSE(state->IsHttpsEnforcedForUrl(
+      GURL("http://example.com"), profile()->GetDefaultStoragePartition()));
+  EXPECT_FALSE(state->IsHttpsEnforcedForUrl(
+      GURL("https://example.com"), profile()->GetDefaultStoragePartition()));
 
   service->Shutdown();
 }
@@ -517,8 +619,10 @@ TEST_F(HttpsFirstModeSettingsTrackerTest, TypicallySecureUser_OldVersion) {
 class TypicallySecureUserTest : public HttpsFirstModeSettingsTrackerTest {
  public:
   TypicallySecureUserTest() {
-    feature_list_.InitAndEnableFeature(
-        features::kHttpsFirstModeV2ForTypicallySecureUsers);
+    base::FieldTrialParams feature_params;
+    feature_params["min-recent-navigations"] = "5";
+    feature_list_.InitAndEnableFeatureWithParameters(
+        features::kHttpsFirstModeV2ForTypicallySecureUsers, feature_params);
   }
 
  protected:
@@ -543,6 +647,11 @@ class TypicallySecureUserTest : public HttpsFirstModeSettingsTrackerTest {
   void RecordFallbackEventAndMaybeEnableHttpsFirstMode() {
     hfm_service()->RecordHttpsUpgradeFallbackEvent();
     hfm_service()->CheckUserIsTypicallySecureAndMaybeEnableHttpsFirstMode();
+  }
+  void IncrementRecentNavigationCount(size_t count) {
+    for (size_t i = 0; i < count; i++) {
+      hfm_service()->IncrementRecentNavigationCount();
+    }
   }
 
   HttpsFirstModeService* hfm_service() { return hfm_service_; }
@@ -585,7 +694,6 @@ TEST_F(TypicallySecureUserTest, ProfileOldEnough) {
 // a week before enabling HFM pref.
 TEST_F(TypicallySecureUserTest, EnablePrefWhenObservedForLongEnough) {
   base::Time now = clock()->Now();
-
   EXPECT_FALSE(
       profile()->GetPrefs()->HasPrefPath(prefs::kHttpsOnlyModeEnabled));
   EXPECT_FALSE(
@@ -623,7 +731,18 @@ TEST_F(TypicallySecureUserTest, EnablePrefWhenObservedForLongEnough) {
   hfm_service()->CheckUserIsTypicallySecureAndMaybeEnableHttpsFirstMode();
   EXPECT_EQ(2u, hfm_service()->GetFallbackEntryCountForTesting());
 
-  // Last fallback event is now a day old. HFM should be enabled now.
+  // Last fallback event is now a day old, but we don't have enough recent
+  // navigations. Don't enable yet.
+  EXPECT_FALSE(
+      hfm_service()->IsInterstitialEnabledByTypicallySecureUserHeuristic());
+  EXPECT_FALSE(
+      profile()->GetPrefs()->HasPrefPath(prefs::kHttpsOnlyModeEnabled));
+  EXPECT_FALSE(
+      profile()->GetPrefs()->HasPrefPath(prefs::kHttpsOnlyModeAutoEnabled));
+
+  // Do lots of navigations. Should enable HFM now.
+  IncrementRecentNavigationCount(100u);
+  hfm_service()->CheckUserIsTypicallySecureAndMaybeEnableHttpsFirstMode();
   EXPECT_TRUE(
       hfm_service()->IsInterstitialEnabledByTypicallySecureUserHeuristic());
   EXPECT_TRUE(profile()->GetPrefs()->HasPrefPath(prefs::kHttpsOnlyModeEnabled));
@@ -674,6 +793,8 @@ TEST_F(TypicallySecureUserTest,
 // from HTTPS-Upgrade fallbacks in production code. It then checks if the
 // HTTPS-First Mode pref is enabled.
 TEST_F(TypicallySecureUserTest, HFMEnabled) {
+  IncrementRecentNavigationCount(5u);
+
   base::Time now = clock()->Now();
   EXPECT_FALSE(
       profile()->GetPrefs()->HasPrefPath(prefs::kHttpsOnlyModeEnabled));
@@ -741,4 +862,76 @@ TEST_F(TypicallySecureUserTest, HFMEnabled) {
   EXPECT_TRUE(profile()->GetPrefs()->GetBoolean(prefs::kHttpsOnlyModeEnabled));
   EXPECT_TRUE(
       profile()->GetPrefs()->GetBoolean(prefs::kHttpsOnlyModeAutoEnabled));
+}
+
+// Tests the pref update observer callback.
+TEST_F(HttpsFirstModeSettingsTrackerTest, PrefUpdated) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kHttpsFirstModeIncognito);
+
+  base::HistogramTester histograms;
+  HttpsFirstModeService* service =
+      HttpsFirstModeServiceFactory::GetForProfile(profile());
+  ASSERT_TRUE(service);
+
+  // Creating the HttpsFirstModeService should emit the "setting at startup"
+  // histogram.
+  histograms.ExpectUniqueSample(
+      "Security.HttpsFirstMode.SettingEnabledAtStartup", false, 1);
+
+  // Enable HTTPS-First Mode pref, check that the setting-change histogram was
+  // emitted.
+  profile()->GetPrefs()->SetBoolean(prefs::kHttpsOnlyModeEnabled, true);
+  histograms.ExpectTotalCount("Security.HttpsFirstMode.SettingChanged", 1);
+  histograms.ExpectBucketCount("Security.HttpsFirstMode.SettingChanged", true,
+                               1);
+
+  // Disable the pref and check the histogram.
+  profile()->GetPrefs()->SetBoolean(prefs::kHttpsOnlyModeEnabled, false);
+  histograms.ExpectBucketCount("Security.HttpsFirstMode.SettingChanged", false,
+                               1);
+}
+
+// Tests the pref update observer callback, with the HttpsFirstModeIncognito
+// feature flag enabled (which changes the setting to be a tri-state that
+// controls two boolean preferences).
+TEST_F(HttpsFirstModeSettingsTrackerTest, PrefUpdatedIncognitoEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kHttpsFirstModeIncognito);
+  // Pref is registered as true by default.
+  profile()->GetPrefs()->SetBoolean(prefs::kHttpsFirstModeIncognito, true);
+
+  base::HistogramTester histograms;
+  HttpsFirstModeService* service =
+      HttpsFirstModeServiceFactory::GetForProfile(profile());
+  ASSERT_TRUE(service);
+
+  // Creating the HttpsFirstModeService should emit the "setting at startup"
+  // histogram.
+  histograms.ExpectUniqueSample(
+      "Security.HttpsFirstMode.SettingEnabledAtStartup2",
+      HttpsFirstModeSetting::kEnabledIncognito, 1);
+
+  // Set prefs as though the user had toggled on "Warn for all insecure
+  // navigations". Enable HTTPS-First Mode pref, check that the
+  // setting-change histogram was emitted.
+  profile()->GetPrefs()->SetBoolean(prefs::kHttpsOnlyModeEnabled, true);
+  profile()->GetPrefs()->SetBoolean(prefs::kHttpsFirstModeIncognito, true);
+  histograms.ExpectTotalCount("Security.HttpsFirstMode.SettingChanged2", 1);
+  histograms.ExpectBucketCount("Security.HttpsFirstMode.SettingChanged2",
+                               HttpsFirstModeSetting::kEnabledFull, 1);
+
+  // Set prefs as though the user had changed the toggle to "Warn in Incognito".
+  profile()->GetPrefs()->SetBoolean(prefs::kHttpsOnlyModeEnabled, false);
+  profile()->GetPrefs()->SetBoolean(prefs::kHttpsFirstModeIncognito, true);
+  histograms.ExpectTotalCount("Security.HttpsFirstMode.SettingChanged2", 2);
+  histograms.ExpectBucketCount("Security.HttpsFirstMode.SettingChanged2",
+                               HttpsFirstModeSetting::kEnabledIncognito, 1);
+
+  // Disable prefs as though the user had disabled HTTP warnings entirely.
+  profile()->GetPrefs()->SetBoolean(prefs::kHttpsOnlyModeEnabled, false);
+  profile()->GetPrefs()->SetBoolean(prefs::kHttpsFirstModeIncognito, false);
+  histograms.ExpectTotalCount("Security.HttpsFirstMode.SettingChanged2", 3);
+  histograms.ExpectBucketCount("Security.HttpsFirstMode.SettingChanged2",
+                               HttpsFirstModeSetting::kDisabled, 1);
 }

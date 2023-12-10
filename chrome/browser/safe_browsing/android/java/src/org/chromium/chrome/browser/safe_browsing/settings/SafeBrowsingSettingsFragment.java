@@ -22,17 +22,13 @@ import org.chromium.components.browser_ui.settings.FragmentSettingsLauncher;
 import org.chromium.components.browser_ui.settings.ManagedPreferenceDelegate;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 
-/**
- * Fragment containing Safe Browsing settings.
- */
+/** Fragment containing Safe Browsing settings. */
 public class SafeBrowsingSettingsFragment extends SafeBrowsingSettingsFragmentBase
         implements FragmentSettingsLauncher,
-                   RadioButtonGroupSafeBrowsingPreference.OnSafeBrowsingModeDetailsRequested,
-                   Preference.OnPreferenceChangeListener {
-    @VisibleForTesting
-    static final String PREF_MANAGED_DISCLAIMER_TEXT = "managed_disclaimer_text";
-    @VisibleForTesting
-    static final String PREF_SAFE_BROWSING = "safe_browsing_radio_button_group";
+                RadioButtonGroupSafeBrowsingPreference.OnSafeBrowsingModeDetailsRequested,
+                Preference.OnPreferenceChangeListener {
+    @VisibleForTesting static final String PREF_MANAGED_DISCLAIMER_TEXT = "managed_disclaimer_text";
+    @VisibleForTesting static final String PREF_SAFE_BROWSING = "safe_browsing_radio_button_group";
     public static final String ACCESS_POINT = "SafeBrowsingSettingsFragment.AccessPoint";
 
     // An instance of SettingsLauncher that is used to launch Safe Browsing subsections.
@@ -44,8 +40,7 @@ public class SafeBrowsingSettingsFragment extends SafeBrowsingSettingsFragmentBa
      * @return A summary that describes the current Safe Browsing state.
      */
     public static String getSafeBrowsingSummaryString(Context context) {
-        @SafeBrowsingState
-        int safeBrowsingState = SafeBrowsingBridge.getSafeBrowsingState();
+        @SafeBrowsingState int safeBrowsingState = SafeBrowsingBridge.getSafeBrowsingState();
         String safeBrowsingStateString = "";
         if (safeBrowsingState == SafeBrowsingState.ENHANCED_PROTECTION) {
             safeBrowsingStateString =
@@ -79,14 +74,15 @@ public class SafeBrowsingSettingsFragment extends SafeBrowsingSettingsFragmentBa
         ManagedPreferenceDelegate managedPreferenceDelegate = createManagedPreferenceDelegate();
 
         mSafeBrowsingPreference = findPreference(PREF_SAFE_BROWSING);
-        mSafeBrowsingPreference.init(SafeBrowsingBridge.getSafeBrowsingState(),
-                mAccessPoint);
+        mSafeBrowsingPreference.init(SafeBrowsingBridge.getSafeBrowsingState(), mAccessPoint);
         mSafeBrowsingPreference.setSafeBrowsingModeDetailsRequestedListener(this);
         mSafeBrowsingPreference.setManagedPreferenceDelegate(managedPreferenceDelegate);
         mSafeBrowsingPreference.setOnPreferenceChangeListener(this);
 
-        findPreference(PREF_MANAGED_DISCLAIMER_TEXT).setVisible(
-                managedPreferenceDelegate.isPreferenceClickDisabled(mSafeBrowsingPreference));
+        findPreference(PREF_MANAGED_DISCLAIMER_TEXT)
+                .setVisible(
+                        managedPreferenceDelegate.isPreferenceClickDisabled(
+                                mSafeBrowsingPreference));
 
         recordUserActionHistogram(UserAction.SHOWED);
     }
@@ -134,10 +130,8 @@ public class SafeBrowsingSettingsFragment extends SafeBrowsingSettingsFragmentBa
     public boolean onPreferenceChange(Preference preference, Object newValue) {
         String key = preference.getKey();
         assert PREF_SAFE_BROWSING.equals(key) : "Unexpected preference key.";
-        @SafeBrowsingState
-        int newState = (int) newValue;
-        @SafeBrowsingState
-        int currentState = SafeBrowsingBridge.getSafeBrowsingState();
+        @SafeBrowsingState int newState = (int) newValue;
+        @SafeBrowsingState int currentState = SafeBrowsingBridge.getSafeBrowsingState();
         if (newState == currentState) {
             return true;
         }
@@ -148,8 +142,8 @@ public class SafeBrowsingSettingsFragment extends SafeBrowsingSettingsFragmentBa
             // The user hasn't confirmed to select no protection, keep the radio button / UI checked
             // state at the currently selected level.
             mSafeBrowsingPreference.setCheckedState(currentState);
-            NoProtectionConfirmationDialog
-                    .create(getContext(),
+            NoProtectionConfirmationDialog.create(
+                            getContext(),
                             (didConfirm) -> {
                                 recordUserActionHistogramForNoProtectionConfirmation(didConfirm);
                                 if (didConfirm) {
@@ -239,7 +233,8 @@ public class SafeBrowsingSettingsFragment extends SafeBrowsingSettingsFragmentBa
                 break;
         }
         RecordHistogram.recordEnumeratedHistogram(
-                "SafeBrowsing.Settings.UserAction." + metricsSuffix, userAction,
+                "SafeBrowsing.Settings.UserAction." + metricsSuffix,
+                userAction,
                 UserAction.MAX_VALUE + 1);
 
         String userActionSuffix;

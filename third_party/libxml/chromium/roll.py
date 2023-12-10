@@ -119,6 +119,7 @@ SHARED_XML_CONFIGURE_OPTIONS = [
     ('--without-xptr', 'xptr=no'),
     ('--without-xptr-locs', 'xptr_locs=no'),
     ('--without-zlib', 'zlib=no'),
+    ('--without-tls', 'tls=no'),
 ]
 
 

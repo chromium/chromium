@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_POLICY_CORE_USER_CLOUD_POLICY_TOKEN_FORWARDER_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -16,7 +17,6 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "net/base/backoff_entry.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class Clock;
@@ -75,7 +75,7 @@ class UserCloudPolicyTokenForwarder : public KeyedService,
   bool IsTokenRefreshScheduledForTesting() const;
 
   // Returns delay to next token refresh if it is scheduled.
-  absl::optional<base::TimeDelta> GetTokenRefreshDelayForTesting() const;
+  std::optional<base::TimeDelta> GetTokenRefreshDelayForTesting() const;
 
   // Overrides elements responsible for time progression to allow testing.
   // Affects time calculation and timer objects.
@@ -96,7 +96,7 @@ class UserCloudPolicyTokenForwarder : public KeyedService,
       access_token_fetcher_;
 
   // Last fetched OAuth token.
-  absl::optional<signin::AccessTokenInfo> oauth_token_;
+  std::optional<signin::AccessTokenInfo> oauth_token_;
 
   // Timer that measures time to the next OAuth token refresh. Not initialized
   // if token refresh is not scheduled.

@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include <optional>
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -34,7 +35,6 @@
 #include "mojo/public/cpp/bindings/sync_call_restrictions.h"
 #include "mojo/public/cpp/system/buffer.h"
 #include "mojo/public/cpp/system/platform_handle.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/gpu_fence.h"

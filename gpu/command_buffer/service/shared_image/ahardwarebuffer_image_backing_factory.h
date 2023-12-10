@@ -8,6 +8,7 @@
 #include "base/containers/flat_map.h"
 #include "gpu/command_buffer/service/gles2_cmd_validation.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_backing_factory.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
 #include "gpu/gpu_gles2_export.h"
 #include "ui/gl/gl_bindings.h"
 
@@ -114,7 +115,7 @@ class GPU_GLES2_EXPORT AHardwareBufferImageBackingFactory
   static FormatInfo FormatInfoForSupportedFormat(
       viz::SharedImageFormat format,
       const gles2::Validators* validators,
-      bool use_half_float_oes);
+      const GLFormatCaps& gl_format_caps);
 
   bool ValidateUsage(uint32_t usage,
                      const gfx::Size& size,
@@ -145,7 +146,7 @@ class GPU_GLES2_EXPORT AHardwareBufferImageBackingFactory
   int32_t max_gl_texture_size_ = 0;
 
   const bool use_passthrough_;
-  const bool use_half_float_oes_;
+  const GLFormatCaps gl_format_caps_;
 };
 
 }  // namespace gpu

@@ -320,7 +320,7 @@ void FirstRunService::FinishFirstRun(FinishedReason reason) {
   SetFirstRunFinished(reason);
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  absl::optional<ProfileMetrics::ProfileSignedInFlowOutcome> outcome;
+  std::optional<ProfileMetrics::ProfileSignedInFlowOutcome> outcome;
   switch (reason) {
     case FinishedReason::kFinishedFlow:
       // No outcome to log, the flow logs it by itself.

@@ -26,14 +26,13 @@
 #include "third_party/blink/renderer/core/layout/layout_multi_column_flow_thread.h"
 
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
+#include "third_party/blink/renderer/core/layout/fragmentation_utils.h"
 #include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
 #include "third_party/blink/renderer/core/layout/layout_multi_column_set.h"
 #include "third_party/blink/renderer/core/layout/layout_multi_column_spanner_placeholder.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/multi_column_fragmentainer_group.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_fragmentation_utils.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
-#include "third_party/blink/renderer/core/layout/view_fragmentation_context.h"
+#include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 
 namespace blink {
 
@@ -55,7 +54,6 @@ LayoutMultiColumnFlowThread::~LayoutMultiColumnFlowThread() = default;
 void LayoutMultiColumnFlowThread::Trace(Visitor* visitor) const {
   visitor->Trace(last_set_worked_on_);
   LayoutFlowThread::Trace(visitor);
-  FragmentationContext::Trace(visitor);
 }
 
 LayoutMultiColumnFlowThread* LayoutMultiColumnFlowThread::CreateAnonymous(
@@ -347,8 +345,7 @@ void LayoutMultiColumnFlowThread::EvacuateAndDestroy() {
 PhysicalOffset LayoutMultiColumnFlowThread::ColumnOffset(
     const PhysicalOffset& point) const {
   NOT_DESTROYED();
-  return FlowThreadTranslationAtPoint(point,
-                                      CoordinateSpaceConversion::kContaining);
+  return FlowThreadTranslationAtPoint(point);
 }
 
 bool LayoutMultiColumnFlowThread::IsPageLogicalHeightKnown() const {
@@ -358,8 +355,7 @@ bool LayoutMultiColumnFlowThread::IsPageLogicalHeightKnown() const {
 
 PhysicalOffset LayoutMultiColumnFlowThread::FlowThreadTranslationAtOffset(
     LayoutUnit offset_in_flow_thread,
-    PageBoundaryRule rule,
-    CoordinateSpaceConversion mode) const {
+    PageBoundaryRule rule) const {
   NOT_DESTROYED();
   if (!HasValidColumnSetInfo())
     return PhysicalOffset();
@@ -367,13 +363,11 @@ PhysicalOffset LayoutMultiColumnFlowThread::FlowThreadTranslationAtOffset(
       ColumnSetAtBlockOffset(offset_in_flow_thread, rule);
   if (!column_set)
     return PhysicalOffset();
-  return column_set->FlowThreadTranslationAtOffset(offset_in_flow_thread, rule,
-                                                   mode);
+  return column_set->FlowThreadTranslationAtOffset(offset_in_flow_thread, rule);
 }
 
 PhysicalOffset LayoutMultiColumnFlowThread::FlowThreadTranslationAtPoint(
-    const PhysicalOffset& flow_thread_point,
-    CoordinateSpaceConversion mode) const {
+    const PhysicalOffset& flow_thread_point) const {
   NOT_DESTROYED();
   LayoutUnit block_offset = CreateWritingModeConverter()
                                 .ToLogical(flow_thread_point, {})
@@ -385,7 +379,7 @@ PhysicalOffset LayoutMultiColumnFlowThread::FlowThreadTranslationAtPoint(
                               ? kAssociateWithFormerPage
                               : kAssociateWithLatterPage;
 
-  return FlowThreadTranslationAtOffset(block_offset, rule, mode);
+  return FlowThreadTranslationAtOffset(block_offset, rule);
 }
 
 PhysicalOffset LayoutMultiColumnFlowThread::VisualPointToFlowThreadPoint(
@@ -529,23 +523,6 @@ LayoutMultiColumnFlowThread* LayoutMultiColumnFlowThread::EnclosingFlowThread(
       LocateFlowThreadContainingBlockOf(*MultiColumnBlockFlow(), constraint));
 }
 
-FragmentationContext*
-LayoutMultiColumnFlowThread::EnclosingFragmentationContext(
-    AncestorSearchConstraint constraint) const {
-  NOT_DESTROYED();
-  // If this multicol container is strictly unbreakable (due to having
-  // scrollbars, for instance), it's also strictly unbreakable in any outer
-  // fragmentation context. As such, what kind of fragmentation that goes on
-  // inside this multicol container is completely opaque to the ancestors.
-  if (constraint == kIsolateUnbreakableContainers &&
-      MultiColumnBlockFlow()->IsMonolithic()) {
-    return nullptr;
-  }
-  if (auto* enclosing_flow_thread = EnclosingFlowThread(constraint))
-    return enclosing_flow_thread;
-  return View()->FragmentationContext();
-}
-
 void LayoutMultiColumnFlowThread::SetColumnCountFromNG(unsigned column_count) {
   NOT_DESTROYED();
   column_count_ = column_count;
@@ -563,50 +540,6 @@ void LayoutMultiColumnFlowThread::FinishLayoutFromNG(
   ValidateColumnSets();
   ClearNeedsLayout();
   last_set_worked_on_ = nullptr;
-}
-
-void LayoutMultiColumnFlowThread::CalculateColumnCountAndWidth(
-    LayoutUnit& width,
-    unsigned& count) const {
-  NOT_DESTROYED();
-  LayoutBlock* column_block = MultiColumnBlockFlow();
-  const ComputedStyle* column_style = column_block->Style();
-  LayoutUnit available_width = column_block->ContentLogicalWidth();
-  LayoutUnit column_gap = ColumnGap(*column_style, available_width);
-  LayoutUnit computed_column_width =
-      max(LayoutUnit(1), LayoutUnit(column_style->ColumnWidth()));
-  unsigned computed_column_count = max<int>(1, column_style->ColumnCount());
-
-  DCHECK(!column_style->HasAutoColumnCount() ||
-         !column_style->HasAutoColumnWidth());
-  if (column_style->HasAutoColumnWidth() &&
-      !column_style->HasAutoColumnCount()) {
-    count = computed_column_count;
-    width = ((available_width - ((count - 1) * column_gap)) / count)
-                .ClampNegativeToZero();
-  } else if (!column_style->HasAutoColumnWidth() &&
-             column_style->HasAutoColumnCount()) {
-    count = std::max(LayoutUnit(1), (available_width + column_gap) /
-                                        (computed_column_width + column_gap))
-                .ToUnsigned();
-    width = ((available_width + column_gap) / count) - column_gap;
-  } else {
-    count = std::max(std::min(LayoutUnit(computed_column_count),
-                              (available_width + column_gap) /
-                                  (computed_column_width + column_gap)),
-                     LayoutUnit(1))
-                .ToUnsigned();
-    width = ((available_width + column_gap) / count) - column_gap;
-  }
-}
-
-LayoutUnit LayoutMultiColumnFlowThread::ColumnGap(const ComputedStyle& style,
-                                                  LayoutUnit available_width) {
-  if (const absl::optional<Length>& column_gap = style.ColumnGap())
-    return ValueForLength(*column_gap, available_width);
-
-  // "1em" is recommended as the normal gap setting. Matches <p> margins.
-  return LayoutUnit(style.GetFontDescription().ComputedSize());
 }
 
 void LayoutMultiColumnFlowThread::CreateAndInsertMultiColumnSet(
@@ -1171,10 +1104,10 @@ void LayoutMultiColumnFlowThread::UpdateGeometry() {
   const auto* first_fragment = container->GetPhysicalFragment(0);
   WritingModeConverter converter(first_fragment->Style().GetWritingDirection());
   bool has_processed_first_column_in_flow_thread = false;
-  const NGBlockBreakToken* break_token = nullptr;
+  const BlockBreakToken* break_token = nullptr;
   for (const auto& container_fragment : container->PhysicalFragments()) {
     for (const auto& link : container_fragment.Children()) {
-      const auto& child_fragment = To<NGPhysicalBoxFragment>(*link);
+      const auto& child_fragment = To<PhysicalBoxFragment>(*link);
       if (!child_fragment.IsFragmentainerBox()) {
         continue;
       }
@@ -1190,7 +1123,7 @@ void LayoutMultiColumnFlowThread::UpdateGeometry() {
         has_processed_first_column_in_flow_thread = true;
       }
     }
-    break_token = container_fragment.BreakToken();
+    break_token = container_fragment.GetBreakToken();
     if (!break_token || break_token->IsRepeated() ||
         break_token->IsAtBlockEnd()) {
       break;

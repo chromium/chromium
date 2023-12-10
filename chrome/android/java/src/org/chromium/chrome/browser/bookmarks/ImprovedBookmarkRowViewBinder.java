@@ -56,10 +56,13 @@ public class ImprovedBookmarkRowViewBinder {
         } else if (key == ImprovedBookmarkRowProperties.EDITABLE) {
             row.setBookmarkIdEditable(model.get(ImprovedBookmarkRowProperties.EDITABLE));
         } else if (key == ImprovedBookmarkRowProperties.ROW_CLICK_LISTENER) {
-            row.setRowClickListener(model.get(ImprovedBookmarkRowProperties.ROW_CLICK_LISTENER));
+            row.setRowClickListener(
+                    (ignored) -> model.get(ImprovedBookmarkRowProperties.ROW_CLICK_LISTENER).run());
         } else if (key == ImprovedBookmarkRowProperties.ROW_LONG_CLICK_LISTENER) {
             row.setRowLongClickListener(
-                    model.get(ImprovedBookmarkRowProperties.ROW_LONG_CLICK_LISTENER));
+                    (ignored) ->
+                            model.get(ImprovedBookmarkRowProperties.ROW_LONG_CLICK_LISTENER)
+                                    .getAsBoolean());
         } else if (key == ImprovedBookmarkRowProperties.END_IMAGE_VISIBILITY) {
             int endImageVisibility = model.get(ImprovedBookmarkRowProperties.END_IMAGE_VISIBILITY);
             assert endImageVisibility != ImageVisibility.FOLDER_DRAWABLE;

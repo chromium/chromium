@@ -25,6 +25,7 @@
 #include "chrome/browser/web_applications/generated_icon_fix_util.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom-shared.h"
 #include "chrome/browser/web_applications/proto/web_app_os_integration_state.pb.h"
+#include "chrome/browser/web_applications/proto/web_app_proto_package.pb.h"
 #include "chrome/browser/web_applications/web_app_chromeos_data.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -686,10 +687,9 @@ void WebApp::SetIsolationData(IsolationData isolation_data) {
   isolation_data_ = isolation_data;
 }
 
-void WebApp::SetIsUserSelectedAppForSupportedLinks(
-    bool is_user_selected_app_for_capturing_links) {
-  is_user_selected_app_for_capturing_links_ =
-      is_user_selected_app_for_capturing_links;
+void WebApp::SetLinkCapturingUserPreference(
+    proto::LinkCapturingUserPreference user_link_capturing_preference) {
+  user_link_capturing_preference_ = user_link_capturing_preference;
 }
 
 void WebApp::SetSupportedLinksOfferIgnoreCount(int ignore_count) {
@@ -989,7 +989,7 @@ bool WebApp::operator==(const WebApp& other) const {
         app.always_show_toolbar_in_fullscreen_,
         app.current_os_integration_states_,
         app.isolation_data_,
-        app.is_user_selected_app_for_capturing_links_,
+        app.user_link_capturing_preference_,
         app.latest_install_time_,
         app.generated_icon_fix_,
         app.supported_links_offer_ignore_count_,
@@ -1204,8 +1204,8 @@ base::Value WebApp::AsDebugValueWithOnlyPlatformAgnosticFields() const {
 
   root.Set("isolation_data", OptionalAsDebugValue(isolation_data_));
 
-  root.Set("is_user_selected_app_for_capturing_links",
-           is_user_selected_app_for_capturing_links_);
+  root.Set("user_link_capturing_preference",
+           base::ToString(user_link_capturing_preference_));
 
   root.Set("latest_install_time", base::ToString(latest_install_time_));
 

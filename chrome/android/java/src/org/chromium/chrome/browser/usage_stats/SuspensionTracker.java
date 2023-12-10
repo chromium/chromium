@@ -10,9 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
-/**
- * Class that tracks which sites are currently suspended.
- */
+/** Class that tracks which sites are currently suspended. */
 public class SuspensionTracker {
     private final UsageStatsBridge mBridge;
     private final NotificationSuspender mNotificationSuspender;
@@ -23,7 +21,10 @@ public class SuspensionTracker {
         mBridge = bridge;
         mNotificationSuspender = notificationSuspender;
         mRootPromise = new Promise<>();
-        mBridge.getAllSuspensions((result) -> { mRootPromise.fulfill(result); });
+        mBridge.getAllSuspensions(
+                (result) -> {
+                    mRootPromise.fulfill(result);
+                });
         mWritePromise = Promise.fulfilled(null);
     }
 
@@ -34,41 +35,47 @@ public class SuspensionTracker {
      */
     public Promise<Void> setWebsitesSuspended(List<String> fqdns, boolean suspended) {
         Promise<Void> newWritePromise = new Promise<>();
-        mWritePromise.then((placeholderResult) -> {
-            mRootPromise.then((result) -> {
-                // We copy result so that the mutation isn't reflected in result until persistence
-                // succeeds.
-                List<String> resultCopy = new ArrayList<>(result);
-                if (suspended) {
-                    UsageStatsMetricsReporter.reportMetricsEvent(
-                            UsageStatsMetricsEvent.SUSPEND_SITES);
-                    resultCopy.addAll(fqdns);
-                } else {
-                    UsageStatsMetricsReporter.reportMetricsEvent(
-                            UsageStatsMetricsEvent.UNSUSPEND_SITES);
-                    resultCopy.removeAll(fqdns);
-                }
-
-                mBridge.setSuspensions(
-                        resultCopy.toArray(new String[resultCopy.size()]), (didSucceed) -> {
-                            if (didSucceed) {
+        mWritePromise.then(
+                (placeholderResult) -> {
+                    mRootPromise.then(
+                            (result) -> {
+                                // We copy result so that the mutation isn't reflected in result
+                                // until persistence succeeds.
+                                List<String> resultCopy = new ArrayList<>(result);
                                 if (suspended) {
-                                    result.addAll(fqdns);
+                                    UsageStatsMetricsReporter.reportMetricsEvent(
+                                            UsageStatsMetricsEvent.SUSPEND_SITES);
+                                    resultCopy.addAll(fqdns);
                                 } else {
-                                    result.removeAll(fqdns);
+                                    UsageStatsMetricsReporter.reportMetricsEvent(
+                                            UsageStatsMetricsEvent.UNSUSPEND_SITES);
+                                    resultCopy.removeAll(fqdns);
                                 }
-                                mNotificationSuspender.setWebsitesSuspended(fqdns, suspended);
-                                newWritePromise.fulfill(null);
-                            } else {
-                                newWritePromise.reject();
-                            }
-                        });
-                // We need to add a placeholder exception handler so that Promise doesn't complain
-                // when we call variants of then() that don't take a single callback. These variants
-                // set an exception handler on the returned promise, so they expect there to be one
-                // on the root promise.
-            }, (e) -> {});
-        });
+
+                                mBridge.setSuspensions(
+                                        resultCopy.toArray(new String[resultCopy.size()]),
+                                        (didSucceed) -> {
+                                            if (didSucceed) {
+                                                if (suspended) {
+                                                    result.addAll(fqdns);
+                                                } else {
+                                                    result.removeAll(fqdns);
+                                                }
+                                                mNotificationSuspender.setWebsitesSuspended(
+                                                        fqdns, suspended);
+                                                newWritePromise.fulfill(null);
+                                            } else {
+                                                newWritePromise.reject();
+                                            }
+                                        });
+                                // We need to add a placeholder exception handler so that Promise
+                                // doesn't complain when we call variants of then() that don't
+                                // take a single callback. These variants set an exception handler
+                                // on the returned promise, so they expect
+                                // there to be one on the root promise.
+                            },
+                            (e) -> {});
+                });
 
         mWritePromise = newWritePromise;
         return newWritePromise;
@@ -76,7 +83,10 @@ public class SuspensionTracker {
 
     public Promise<List<String>> getAllSuspendedWebsites() {
         return mRootPromise.then(
-                (Function<List<String>, List<String>>) (result) -> { return result; });
+                (Function<List<String>, List<String>>)
+                        (result) -> {
+                            return result;
+                        });
     }
 
     public boolean isWebsiteSuspended(String fqdn) {

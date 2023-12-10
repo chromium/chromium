@@ -22,16 +22,6 @@ namespace {
 
 constexpr base::TimeDelta kSyncTaskTimeout = base::Seconds(30);
 
-std::vector<std::unique_ptr<PasswordForm>> ConvertToUniquePtr(
-    std::vector<PasswordForm> forms) {
-  std::vector<std::unique_ptr<PasswordForm>> result;
-  result.reserve(forms.size());
-  for (auto& form : forms) {
-    result.push_back(std::make_unique<PasswordForm>(std::move(form)));
-  }
-  return result;
-}
-
 }  // namespace
 
 LoginDatabaseAsyncHelper::LoginDatabaseAsyncHelper(
@@ -122,7 +112,7 @@ LoginsResultOrError LoginDatabaseAsyncHelper::GetAllLogins() {
         PasswordStoreBackendErrorType::kUncategorized,
         PasswordStoreBackendErrorRecoveryType::kUnrecoverable);
   }
-  return ConvertToUniquePtr(std::move(forms));
+  return forms;
 }
 
 LoginsResultOrError LoginDatabaseAsyncHelper::GetAutofillableLogins() {
@@ -133,7 +123,7 @@ LoginsResultOrError LoginDatabaseAsyncHelper::GetAutofillableLogins() {
         PasswordStoreBackendErrorType::kUncategorized,
         PasswordStoreBackendErrorRecoveryType::kUnrecoverable);
   }
-  return ConvertToUniquePtr(std::move(results));
+  return results;
 }
 
 LoginsResultOrError LoginDatabaseAsyncHelper::FillMatchingLogins(
@@ -143,15 +133,25 @@ LoginsResultOrError LoginDatabaseAsyncHelper::FillMatchingLogins(
   std::vector<PasswordForm> results;
   for (const auto& form : forms) {
     std::vector<PasswordForm> matched_forms;
-    if (!login_db_ || !login_db_->GetLogins(form, include_psl, &matched_forms))
+    if (!login_db_ ||
+        !login_db_->GetLogins(form, include_psl, &matched_forms)) {
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+      return PasswordStoreBackendError(
+          OSCrypt::IsEncryptionAvailable()
+              ? PasswordStoreBackendErrorType::kUncategorized
+              : PasswordStoreBackendErrorType::kKeychainError,
+          PasswordStoreBackendErrorRecoveryType::kUnrecoverable);
+#else
       return PasswordStoreBackendError(
           PasswordStoreBackendErrorType::kUncategorized,
           PasswordStoreBackendErrorRecoveryType::kUnrecoverable);
+#endif
+    }
     results.insert(results.end(),
                    std::make_move_iterator(matched_forms.begin()),
                    std::make_move_iterator(matched_forms.end()));
   }
-  return ConvertToUniquePtr(std::move(results));
+  return results;
 }
 
 PasswordChangesOrError LoginDatabaseAsyncHelper::AddLogin(

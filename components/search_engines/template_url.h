@@ -199,14 +199,6 @@ class TemplateURLRef {
     metrics::OmniboxFocusType focus_type =
         metrics::OmniboxFocusType::INTERACTION_DEFAULT;
 
-    // The optional assisted query stats, aka AQS, used for logging purposes.
-    // This string contains impressions of all autocomplete matches shown
-    // at the query submission time.  For privacy reasons, we require the
-    // search provider to support HTTPS protocol in order to receive the AQS
-    // param.
-    // For more details, see go/chrome-suggest-logging.
-    std::string assisted_query_stats;
-
     // The optional searchbox stats, reported as gs_lcrp for logging purposes.
     // This proto message contains information such as impressions of all
     // autocomplete matches shown at the query submission time.
@@ -783,9 +775,12 @@ class TemplateURL {
   base::Time last_modified() const { return data_.last_modified; }
   base::Time last_visited() const { return data_.last_visited; }
 
-  bool created_by_policy() const { return data_.created_by_policy; }
+  TemplateURLData::CreatedByPolicy created_by_policy() const {
+    return data_.created_by_policy;
+  }
   bool enforced_by_policy() const { return data_.enforced_by_policy; }
   bool created_from_play_api() const { return data_.created_from_play_api; }
+  bool featured_by_policy() const { return data_.featured_by_policy; }
 
   int usage_count() const { return data_.usage_count; }
 

@@ -53,8 +53,10 @@ public class SpnegoAuthenticatorActivity extends AccountAuthenticatorActivity {
         intent.putExtra(KEY_MODE, MODE_CONFIRM_CREDENTIALS);
         intent.putExtra(KEY_ACCOUNT, accountName);
         intent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, response);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS
-                | Intent.FLAG_ACTIVITY_NO_HISTORY);
+        intent.addFlags(
+                Intent.FLAG_ACTIVITY_NEW_TASK
+                        | Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS
+                        | Intent.FLAG_ACTIVITY_NO_HISTORY);
         return intent;
     }
 
@@ -64,8 +66,10 @@ public class SpnegoAuthenticatorActivity extends AccountAuthenticatorActivity {
         AccountData accountData = AccountData.create(accountName, this);
         accountData.save(this);
         Intent intent = accountData.getAccountAddedIntent();
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS
-                | Intent.FLAG_ACTIVITY_NO_HISTORY);
+        intent.addFlags(
+                Intent.FLAG_ACTIVITY_NEW_TASK
+                        | Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS
+                        | Intent.FLAG_ACTIVITY_NO_HISTORY);
         setAccountAuthenticatorResult(intent.getExtras());
         setResult(RESULT_OK, intent);
         finish();
@@ -94,30 +98,33 @@ public class SpnegoAuthenticatorActivity extends AccountAuthenticatorActivity {
 
         switch (mode) {
             case MODE_ADD_ACCOUNT:
-                signInButton1.setOnClickListener(new OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        addAccount(Constants.ACCOUNT_1_NAME);
-                    }
-                });
-                signInButton2.setOnClickListener(new OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        addAccount(Constants.ACCOUNT_2_NAME);
-                    }
-                });
+                signInButton1.setOnClickListener(
+                        new OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                addAccount(Constants.ACCOUNT_1_NAME);
+                            }
+                        });
+                signInButton2.setOnClickListener(
+                        new OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                addAccount(Constants.ACCOUNT_2_NAME);
+                            }
+                        });
                 confirmCredentialsButton.setEnabled(false);
                 break;
 
             case MODE_CONFIRM_CREDENTIALS:
                 signInButton1.setEnabled(false);
                 signInButton2.setEnabled(false);
-                confirmCredentialsButton.setOnClickListener(new OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        confirmCredentials(account);
-                    }
-                });
+                confirmCredentialsButton.setOnClickListener(
+                        new OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                confirmCredentials(account);
+                            }
+                        });
                 break;
 
             default:

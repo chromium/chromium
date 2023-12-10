@@ -230,10 +230,11 @@ class SyncService : public KeyedService {
     kError = 2,
   };
 
+  SyncService() = default;
+  ~SyncService() override = default;
+
   SyncService(const SyncService&) = delete;
   SyncService& operator=(const SyncService&) = delete;
-
-  ~SyncService() override {}
 
 #if BUILDFLAG(IS_ANDROID)
   // Return the java object that allows access to the SyncService.
@@ -413,8 +414,10 @@ class SyncService : public KeyedService {
 
   // Returns the datatypes which have local changes that have not yet been
   // synced with the server.
+  // Note: This only queries the datatypes in `requested_types`.
   // Note: This includes deletions as well.
   virtual void GetTypesWithUnsyncedData(
+      ModelTypeSet requested_types,
       base::OnceCallback<void(ModelTypeSet)> callback) const = 0;
 
   // Queries the count and description/preview of existing local data for
@@ -549,22 +552,6 @@ class SyncService : public KeyedService {
   virtual void RecordReasonIfWaitingForUpdates(
       ModelType type,
       const std::string& histogram_name) const = 0;
-
- protected:
-  SyncService() = default;
-
-  // This is needed here for CanSyncFeatureStart().
-  //
-  // Returns whether SyncService should consider the user opted into enabling
-  // sync-the-feature, given two alternative ways to determine it (except on
-  // Ash where both are relevant). Historically, this was referred to as NOT
-  // having DISABLE_REASON_USER_CHOICE.
-  // TODO(crbug.com/1444344): Remove this API together with
-  // CanSyncFeatureStart().
-  // TODO(crbug.com/1219990): This API may also be removed since
-  // HasSyncConsent() and GetDisableReasons() guarantee that this function
-  // returns true.
-  virtual bool IsSyncFeatureConsideredRequested() const = 0;
 };
 
 }  // namespace syncer

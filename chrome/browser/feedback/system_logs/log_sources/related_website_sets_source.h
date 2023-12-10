@@ -5,7 +5,12 @@
 #ifndef CHROME_BROWSER_FEEDBACK_SYSTEM_LOGS_LOG_SOURCES_RELATED_WEBSITE_SETS_SOURCE_H_
 #define CHROME_BROWSER_FEEDBACK_SYSTEM_LOGS_LOG_SOURCES_RELATED_WEBSITE_SETS_SOURCE_H_
 
+#include "base/memory/weak_ptr.h"
 #include "components/feedback/system_logs/system_logs_source.h"
+
+namespace first_party_sets {
+class FirstPartySetsPolicyService;
+}  // namespace first_party_sets
 
 namespace system_logs {
 
@@ -15,7 +20,9 @@ class RelatedWebsiteSetsSource : public system_logs::SystemLogsSource {
   // The field name.
   static constexpr char kSetsInfoField[] = "Related Website Sets";
 
-  RelatedWebsiteSetsSource();
+  // `service` must not be nullptr.
+  explicit RelatedWebsiteSetsSource(
+      first_party_sets::FirstPartySetsPolicyService* service);
 
   RelatedWebsiteSetsSource(const RelatedWebsiteSetsSource&) = delete;
   RelatedWebsiteSetsSource& operator=(const RelatedWebsiteSetsSource&) = delete;
@@ -26,6 +33,7 @@ class RelatedWebsiteSetsSource : public system_logs::SystemLogsSource {
   void Fetch(system_logs::SysLogsSourceCallback callback) override;
 
  private:
+  base::WeakPtr<first_party_sets::FirstPartySetsPolicyService> service_;
 };
 
 }  // namespace system_logs

@@ -93,6 +93,7 @@ public class HttpNegotiateAuthenticator {
     @VisibleForTesting
     class GetAccountsCallback implements AccountManagerCallback<Account[]> {
         private final RequestData mRequestData;
+
         public GetAccountsCallback(RequestData requestData) {
             mRequestData = requestData;
         }
@@ -104,47 +105,71 @@ public class HttpNegotiateAuthenticator {
                 accounts = future.getResult();
             } catch (OperationCanceledException | AuthenticatorException | IOException e) {
                 Log.w(TAG, "ERR_UNEXPECTED: Error while attempting to retrieve accounts.", e);
-                HttpNegotiateAuthenticatorJni.get().setResult(mRequestData.nativeResultObject,
-                        HttpNegotiateAuthenticator.this, NetError.ERR_UNEXPECTED, null);
+                HttpNegotiateAuthenticatorJni.get()
+                        .setResult(
+                                mRequestData.nativeResultObject,
+                                HttpNegotiateAuthenticator.this,
+                                NetError.ERR_UNEXPECTED,
+                                null);
                 return;
             }
 
             if (accounts.length == 0) {
-                Log.w(TAG, "ERR_MISSING_AUTH_CREDENTIALS: No account provided for the kerberos "
+                Log.w(
+                        TAG,
+                        "ERR_MISSING_AUTH_CREDENTIALS: No account provided for the kerberos "
                                 + "authentication. Please verify the configuration policies and "
                                 + "that the CONTACTS runtime permission is granted. ");
-                HttpNegotiateAuthenticatorJni.get().setResult(mRequestData.nativeResultObject,
-                        HttpNegotiateAuthenticator.this, NetError.ERR_MISSING_AUTH_CREDENTIALS,
-                        null);
+                HttpNegotiateAuthenticatorJni.get()
+                        .setResult(
+                                mRequestData.nativeResultObject,
+                                HttpNegotiateAuthenticator.this,
+                                NetError.ERR_MISSING_AUTH_CREDENTIALS,
+                                null);
                 return;
             }
 
             if (accounts.length > 1) {
-                Log.w(TAG, "ERR_MISSING_AUTH_CREDENTIALS: Found %d accounts eligible for the "
+                Log.w(
+                        TAG,
+                        "ERR_MISSING_AUTH_CREDENTIALS: Found %d accounts eligible for the "
                                 + "kerberos authentication. Please fix the configuration by "
                                 + "providing a single account.",
                         accounts.length);
-                HttpNegotiateAuthenticatorJni.get().setResult(mRequestData.nativeResultObject,
-                        HttpNegotiateAuthenticator.this, NetError.ERR_MISSING_AUTH_CREDENTIALS,
-                        null);
+                HttpNegotiateAuthenticatorJni.get()
+                        .setResult(
+                                mRequestData.nativeResultObject,
+                                HttpNegotiateAuthenticator.this,
+                                NetError.ERR_MISSING_AUTH_CREDENTIALS,
+                                null);
                 return;
             }
 
-            if (lacksPermission(ContextUtils.getApplicationContext(),
-                        "android.permission.USE_CREDENTIALS", true)) {
+            if (lacksPermission(
+                    ContextUtils.getApplicationContext(),
+                    "android.permission.USE_CREDENTIALS",
+                    true)) {
                 // Protecting the AccountManager#getAuthToken call.
                 // API  < 23 Requires the USE_CREDENTIALS permission or throws an exception.
                 // API >= 23 USE_CREDENTIALS permission is removed
-                Log.e(TAG, "ERR_MISCONFIGURED_AUTH_ENVIRONMENT: USE_CREDENTIALS permission not "
+                Log.e(
+                        TAG,
+                        "ERR_MISCONFIGURED_AUTH_ENVIRONMENT: USE_CREDENTIALS permission not "
                                 + "granted. Aborting authentication.");
-                HttpNegotiateAuthenticatorJni.get().setResult(mRequestData.nativeResultObject,
-                        HttpNegotiateAuthenticator.this,
-                        NetError.ERR_MISCONFIGURED_AUTH_ENVIRONMENT, null);
+                HttpNegotiateAuthenticatorJni.get()
+                        .setResult(
+                                mRequestData.nativeResultObject,
+                                HttpNegotiateAuthenticator.this,
+                                NetError.ERR_MISCONFIGURED_AUTH_ENVIRONMENT,
+                                null);
                 return;
             }
             mRequestData.account = accounts[0];
-            mRequestData.accountManager.getAuthToken(mRequestData.account,
-                    mRequestData.authTokenType, mRequestData.options, true /* notifyAuthFailure */,
+            mRequestData.accountManager.getAuthToken(
+                    mRequestData.account,
+                    mRequestData.authTokenType,
+                    mRequestData.options,
+                    /* notifyAuthFailure= */ true,
                     new GetTokenCallback(mRequestData),
                     new Handler(ThreadUtils.getUiThreadLooper()));
         }
@@ -153,6 +178,7 @@ public class HttpNegotiateAuthenticator {
     @VisibleForTesting
     class GetTokenCallback implements AccountManagerCallback<Bundle> {
         private final RequestData mRequestData;
+
         public GetTokenCallback(RequestData requestData) {
             mRequestData = requestData;
         }
@@ -164,8 +190,12 @@ public class HttpNegotiateAuthenticator {
                 result = future.getResult();
             } catch (OperationCanceledException | AuthenticatorException | IOException e) {
                 Log.w(TAG, "ERR_UNEXPECTED: Error while attempting to obtain a token.", e);
-                HttpNegotiateAuthenticatorJni.get().setResult(mRequestData.nativeResultObject,
-                        HttpNegotiateAuthenticator.this, NetError.ERR_UNEXPECTED, null);
+                HttpNegotiateAuthenticatorJni.get()
+                        .setResult(
+                                mRequestData.nativeResultObject,
+                                HttpNegotiateAuthenticator.this,
+                                NetError.ERR_UNEXPECTED,
+                                null);
                 return;
             }
 
@@ -178,19 +208,24 @@ public class HttpNegotiateAuthenticator {
                 // a LOGIN_ACCOUNTS_CHANGED_ACTION filter is received. It might be for something
                 // unrelated then we would wait again here. Maybe we should limit the number of
                 // retries in some way?
-                BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+                BroadcastReceiver broadcastReceiver =
+                        new BroadcastReceiver() {
 
-                    @Override
-                    public void onReceive(Context context, Intent intent) {
-                        appContext.unregisterReceiver(this);
-                        mRequestData.accountManager.getAuthToken(mRequestData.account,
-                                mRequestData.authTokenType, mRequestData.options,
-                                true /* notifyAuthFailure */, new GetTokenCallback(mRequestData),
-                                null);
-                    }
-
-                };
-                ContextUtils.registerProtectedBroadcastReceiver(appContext, broadcastReceiver,
+                            @Override
+                            public void onReceive(Context context, Intent intent) {
+                                appContext.unregisterReceiver(this);
+                                mRequestData.accountManager.getAuthToken(
+                                        mRequestData.account,
+                                        mRequestData.authTokenType,
+                                        mRequestData.options,
+                                        /* notifyAuthFailure= */ true,
+                                        new GetTokenCallback(mRequestData),
+                                        null);
+                            }
+                        };
+                ContextUtils.registerProtectedBroadcastReceiver(
+                        appContext,
+                        broadcastReceiver,
                         new IntentFilter(AccountManager.LOGIN_ACCOUNTS_CHANGED_ACTION));
             } else {
                 processResult(result, mRequestData);
@@ -222,7 +257,10 @@ public class HttpNegotiateAuthenticator {
      */
     @VisibleForTesting
     @CalledByNative
-    void getNextAuthToken(final long nativeResultObject, final String principal, String authToken,
+    void getNextAuthToken(
+            final long nativeResultObject,
+            final String principal,
+            String authToken,
             boolean canDelegate) {
         assert principal != null;
 
@@ -258,8 +296,7 @@ public class HttpNegotiateAuthenticator {
      */
     private void processResult(Bundle result, RequestData requestData) {
         mSpnegoContext = result.getBundle(HttpNegotiateConstants.KEY_SPNEGO_CONTEXT);
-        @NetError
-        int status;
+        @NetError int status;
         switch (result.getInt(
                 HttpNegotiateConstants.KEY_SPNEGO_RESULT, HttpNegotiateConstants.ERR_UNEXPECTED)) {
             case HttpNegotiateConstants.OK:
@@ -295,9 +332,12 @@ public class HttpNegotiateAuthenticator {
             default:
                 status = NetError.ERR_UNEXPECTED;
         }
-        HttpNegotiateAuthenticatorJni.get().setResult(requestData.nativeResultObject,
-                HttpNegotiateAuthenticator.this, status,
-                result.getString(AccountManager.KEY_AUTHTOKEN));
+        HttpNegotiateAuthenticatorJni.get()
+                .setResult(
+                        requestData.nativeResultObject,
+                        HttpNegotiateAuthenticator.this,
+                        status,
+                        result.getString(AccountManager.KEY_AUTHTOKEN));
     }
 
     /**
@@ -310,7 +350,7 @@ public class HttpNegotiateAuthenticator {
      */
     private void requestTokenWithoutActivity(
             Context ctx, RequestData requestData, String[] features) {
-        if (lacksPermission(ctx, Manifest.permission.GET_ACCOUNTS, true /* onlyPreM */)) {
+        if (lacksPermission(ctx, Manifest.permission.GET_ACCOUNTS, /* onlyPreM= */ true)) {
             // Protecting the AccountManager#getAccountsByTypeAndFeatures call.
             // API  < 23 Requires the GET_ACCOUNTS permission or throws an exception.
             // API >= 23 Requires the GET_ACCOUNTS permission (CONTACTS permission group) or
@@ -318,15 +358,23 @@ public class HttpNegotiateAuthenticator {
             //           matches our app. Working with this restriction and not requesting
             //           the permission is a valid use case in the context of WebView, so we
             //           don't require it on M+
-            Log.e(TAG, "ERR_MISCONFIGURED_AUTH_ENVIRONMENT: GET_ACCOUNTS permission not "
+            Log.e(
+                    TAG,
+                    "ERR_MISCONFIGURED_AUTH_ENVIRONMENT: GET_ACCOUNTS permission not "
                             + "granted. Aborting authentication.");
-            HttpNegotiateAuthenticatorJni.get().setResult(requestData.nativeResultObject,
-                    HttpNegotiateAuthenticator.this, NetError.ERR_MISCONFIGURED_AUTH_ENVIRONMENT,
-                    null);
+            HttpNegotiateAuthenticatorJni.get()
+                    .setResult(
+                            requestData.nativeResultObject,
+                            HttpNegotiateAuthenticator.this,
+                            NetError.ERR_MISCONFIGURED_AUTH_ENVIRONMENT,
+                            null);
             return;
         }
-        requestData.accountManager.getAccountsByTypeAndFeatures(mAccountType, features,
-                new GetAccountsCallback(requestData), new Handler(ThreadUtils.getUiThreadLooper()));
+        requestData.accountManager.getAccountsByTypeAndFeatures(
+                mAccountType,
+                features,
+                new GetAccountsCallback(requestData),
+                new Handler(ThreadUtils.getUiThreadLooper()));
     }
 
     /**
@@ -346,9 +394,8 @@ public class HttpNegotiateAuthenticator {
     private void requestTokenWithActivity(
             Context ctx, Activity activity, RequestData requestData, String[] features) {
         boolean isPreM = Build.VERSION.SDK_INT < Build.VERSION_CODES.M;
-        String permission = isPreM
-                ? "android.permission.MANAGE_ACCOUNTS"
-                : Manifest.permission.GET_ACCOUNTS;
+        String permission =
+                isPreM ? "android.permission.MANAGE_ACCOUNTS" : Manifest.permission.GET_ACCOUNTS;
 
         // Check if the AccountManager#getAuthTokenByFeatures call can be made.
         // API  < 23 Requires the MANAGE_ACCOUNTS permission.
@@ -358,16 +405,28 @@ public class HttpNegotiateAuthenticator {
         //           that won't be saved. This would be a bad user experience, so we also consider
         //           it a failure case.
         if (lacksPermission(ctx, permission, isPreM)) {
-            Log.e(TAG, "ERR_MISCONFIGURED_AUTH_ENVIRONMENT: %s permission not granted. "
-                       + "Aborting authentication", permission);
-            HttpNegotiateAuthenticatorJni.get().setResult(requestData.nativeResultObject,
-                    HttpNegotiateAuthenticator.this, NetError.ERR_MISCONFIGURED_AUTH_ENVIRONMENT,
-                    null);
+            Log.e(
+                    TAG,
+                    "ERR_MISCONFIGURED_AUTH_ENVIRONMENT: %s permission not granted. "
+                            + "Aborting authentication",
+                    permission);
+            HttpNegotiateAuthenticatorJni.get()
+                    .setResult(
+                            requestData.nativeResultObject,
+                            HttpNegotiateAuthenticator.this,
+                            NetError.ERR_MISCONFIGURED_AUTH_ENVIRONMENT,
+                            null);
             return;
         }
 
-        requestData.accountManager.getAuthTokenByFeatures(mAccountType, requestData.authTokenType,
-                features, activity, null, requestData.options, new GetTokenCallback(requestData),
+        requestData.accountManager.getAuthTokenByFeatures(
+                mAccountType,
+                requestData.authTokenType,
+                features,
+                activity,
+                null,
+                requestData.options,
+                new GetTokenCallback(requestData),
                 new Handler(ThreadUtils.getUiThreadLooper()));
     }
 
@@ -386,7 +445,10 @@ public class HttpNegotiateAuthenticator {
 
     @NativeMethods
     interface Natives {
-        void setResult(long nativeJavaNegotiateResultWrapper, HttpNegotiateAuthenticator caller,
-                int status, String authToken);
+        void setResult(
+                long nativeJavaNegotiateResultWrapper,
+                HttpNegotiateAuthenticator caller,
+                int status,
+                String authToken);
     }
 }

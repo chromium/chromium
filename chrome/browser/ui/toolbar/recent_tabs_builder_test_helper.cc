@@ -205,7 +205,7 @@ void RecentTabsBuilderTestHelper::ExportToSessionSync(
   model_type_state.set_initial_sync_state(
       sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
   processor->OnUpdateReceived(model_type_state, std::move(updates),
-                              /*gc_directive=*/absl::nullopt);
+                              /*gc_directive=*/std::nullopt);
   // ClientTagBasedModelTypeProcessor uses ModelTypeProcessorProxy during
   // activation, which involves task posting for receiving updates.
   base::RunLoop().RunUntilIdle();
@@ -219,9 +219,8 @@ void RecentTabsBuilderTestHelper::VerifyExport(
   ASSERT_TRUE(delegate->GetAllForeignSessions(&sessions));
   ASSERT_EQ(GetSessionCount(), static_cast<int>(sessions.size()));
   for (int s = 0; s < GetSessionCount(); ++s) {
-    std::vector<const sessions::SessionWindow*> windows;
-    ASSERT_TRUE(delegate->GetForeignSession(ToSessionTag(GetSessionID(s)),
-                                            &windows));
+    std::vector<const sessions::SessionWindow*> windows =
+        delegate->GetForeignSession(ToSessionTag(GetSessionID(s)));
     ASSERT_EQ(GetWindowCount(s), static_cast<int>(windows.size()));
     for (int w = 0; w < GetWindowCount(s); ++w)
       ASSERT_EQ(GetTabCount(s, w), static_cast<int>(windows[w]->tabs.size()));

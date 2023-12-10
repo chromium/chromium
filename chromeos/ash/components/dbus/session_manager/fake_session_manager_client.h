@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_COMPONENTS_DBUS_SESSION_MANAGER_FAKE_SESSION_MANAGER_CLIENT_H_
 
 #include <map>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -21,7 +22,6 @@
 #include "chromeos/ash/components/dbus/arc/arc.pb.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "components/policy/proto/device_management_backend.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -208,11 +208,11 @@ class COMPONENT_EXPORT(SESSION_MANAGER) FakeSessionManagerClient
     restart_job_callback_ = std::move(callback);
   }
 
-  const absl::optional<std::vector<std::string>>& restart_job_argv() const {
+  const std::optional<std::vector<std::string>>& restart_job_argv() const {
     return restart_job_argv_;
   }
 
-  absl::optional<RestartJobReason> restart_job_reason() const {
+  std::optional<RestartJobReason> restart_job_reason() const {
     return restart_job_reason_;
   }
 
@@ -349,7 +349,7 @@ class COMPONENT_EXPORT(SESSION_MANAGER) FakeSessionManagerClient
 
   const std::string& login_password() const { return login_password_; }
 
-  const absl::optional<std::string>& primary_user_id() const {
+  const std::optional<std::string>& primary_user_id() const {
     return primary_user_id_;
   }
 
@@ -383,11 +383,11 @@ class COMPONENT_EXPORT(SESSION_MANAGER) FakeSessionManagerClient
 
   // If restart job was requested, and the client supports restart job, the
   // requested restarted arguments.
-  absl::optional<std::vector<std::string>> restart_job_argv_;
+  std::optional<std::vector<std::string>> restart_job_argv_;
 
   // If restart job was requested, and the client supports restart job, the
   // requested restart reason.
-  absl::optional<RestartJobReason> restart_job_reason_;
+  std::optional<RestartJobReason> restart_job_reason_;
 
   // Callback that will be run, if set, when StopSession() is called.
   base::OnceClosure stop_session_callback_;
@@ -471,7 +471,7 @@ class COMPONENT_EXPORT(SESSION_MANAGER) FakeSessionManagerClient
   };
   std::map<cryptohome::AccountIdentifier, FlagsState> flags_for_user_;
 
-  absl::optional<std::string> primary_user_id_;
+  std::optional<std::string> primary_user_id_;
 
   base::flat_map<std::string, std::string> login_screen_storage_;
 

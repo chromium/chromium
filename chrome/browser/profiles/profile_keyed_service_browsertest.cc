@@ -11,6 +11,7 @@
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_selections.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/profile_waiter.h"
@@ -29,7 +30,7 @@
 #include "third_party/blink/public/common/features.h"
 
 #if !BUILDFLAG(IS_ANDROID)
-#include "chrome/common/companion/visual_search/features.h"
+#include "chrome/common/companion/visual_query/features.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 namespace {
@@ -168,12 +169,13 @@ class ProfileKeyedServiceBrowserTest : public InProcessBrowserTest {
         {
 #if !BUILDFLAG(IS_ANDROID)
           features::kTrustSafetySentimentSurvey,
-          companion::visual_search::features::kVisualSearchSuggestions,
+          companion::visual_query::features::kVisualQuerySuggestions,
 #endif  // !BUILDFLAG(IS_ANDROID)
           blink::features::kBrowsingTopics,
           net::features::kTpcdMetadataGrants,
           net::features::kTpcdSupportSettings,
           features::kPersistentOriginTrials,
+          features::kSidePanelPinning,
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
           omnibox::kOnDeviceTailModel,
           omnibox::kOnDeviceHeadProviderNonIncognito,
@@ -243,6 +245,9 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
 #endif
     "HidDeviceManager",
     "HostContentSettingsMap",
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+    "KAnonymityServiceFactory",
+#endif
     "MediaRouter",
     "MediaRouterUIService",
     "NotificationDisplayService",
@@ -254,6 +259,7 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
 #if BUILDFLAG(ENABLE_PDF)
     "PdfViewerPrivateEventRouter",
 #endif  // BUILDFLAG(ENABLE_PDF)
+    "PinnedToolbarActionsModel",
     "PlatformNotificationService",
     "PredictionModelHandlerProvider",
     "PrefWatcher",
@@ -418,6 +424,9 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
     "InstallVerifier",
     "InstanceIDProfileService",
     "InvalidationService",
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+    "KAnonymityServiceFactory",
+#endif
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
     "KidsChromeManagementClient",
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
@@ -457,6 +466,7 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
     "PermissionsUpdaterShutdownFactory",
     "PersonalDataManager",
     "PinnedTabService",
+    "PinnedToolbarActionsModel",
     "PlatformNotificationService",
     "PluginManager",
     "PluginPrefs",
@@ -529,7 +539,7 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
     "UserCloudPolicyInvalidator",
     "UserPolicySigninService",
 #if !BUILDFLAG(IS_ANDROID)
-    "VisualSearchSuggestionsService",
+    "VisualQuerySuggestionsService",
 #endif  // !BUILDFLAG(IS_ANDROID)
     "WarningBadgeService",
     "WarningService",
@@ -572,7 +582,6 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
     "LocalPresentationManager",
     "OmniboxInputWatcher",
     "OmniboxSuggestionsWatcher",
-    "PasswordChangeSuccessTracker",
     "PasswordManagerInternalsService",
     "PasswordRequirementsServiceFactory",
     "PolicyBlocklist",
@@ -615,7 +624,6 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
     "CanMakePaymentQuery",
     "OmniboxInputWatcher",
     "OmniboxSuggestionsWatcher",
-    "PasswordChangeSuccessTracker",
     "PolicyBlocklist",
     "PolicyClipboardRestriction",
     "SafeSearch",

@@ -16,9 +16,7 @@ import org.chromium.base.Callback;
  * Tracker is the core class for the feature engagement.
  */
 public interface Tracker {
-    /**
-     * A handle for the display lock. While this is unreleased, no in-product help can be displayed.
-     */
+    /** A handle for the display lock. While this is unreleased, no in-product help can be displayed. */
     interface DisplayLockHandle {
         /**
          * This method must be invoked when the lock should be released, and it must be invoked on
@@ -27,9 +25,7 @@ public interface Tracker {
         void release();
     }
 
-    /**
-     * Must be called whenever an event happens.
-     */
+    /** Must be called whenever an event happens. */
     void notifyEvent(String event);
 
     /**
@@ -77,7 +73,7 @@ public interface Tracker {
      * EventConfig of "event_trigger".
      * If |from_window| is set to true, the search window size will be set to
      * event_trigger.window; otherwise, the window size will be event_trigger.storage.
-
+     *
      * Calling this method requires the Tracker to already have been initialized.
      * See IsInitialized() and AddOnInitializedCallback(...) for how to ensure
      * the call to this is delayed.

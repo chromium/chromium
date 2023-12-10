@@ -10,7 +10,7 @@
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_model_factory.h"
 #import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
-#import "ios/chrome/browser/push_notification/push_notification_service.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_service.h"
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"

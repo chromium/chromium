@@ -155,7 +155,7 @@ std::ostream& operator<<(std::ostream& output, const RequestAction& action) {
 }
 
 std::ostream& operator<<(std::ostream& output,
-                         const absl::optional<RequestAction>& action) {
+                         const std::optional<RequestAction>& action) {
   if (!action)
     return output << "empty Optional<RequestAction>";
   return output << *action;
@@ -455,12 +455,12 @@ FileBackedRulesetSource CreateTemporarySource(RulesetID id,
 dnr_api::ModifyHeaderInfo CreateModifyHeaderInfo(
     dnr_api::HeaderOperation operation,
     std::string header,
-    absl::optional<std::string> value) {
+    std::optional<std::string> value) {
   dnr_api::ModifyHeaderInfo header_info;
 
-  header_info.operation = operation;
-  header_info.header = header;
-  header_info.value = value;
+  header_info.operation = std::move(operation);
+  header_info.header = std::move(header);
+  header_info.value = std::move(value);
 
   return header_info;
 }
@@ -471,6 +471,19 @@ bool EqualsForTesting(const dnr_api::ModifyHeaderInfo& lhs,
                                                  : lhs.value == rhs.value;
   return lhs.operation == rhs.operation && lhs.header == rhs.header &&
          are_values_equal;
+}
+
+dnr_api::HeaderInfo CreateHeaderInfo(
+    std::string header,
+    std::optional<std::vector<std::string>> values,
+    std::optional<std::vector<std::string>> excluded_values) {
+  dnr_api::HeaderInfo header_info;
+
+  header_info.header = std::move(header);
+  header_info.values = std::move(values);
+  header_info.excluded_values = std::move(excluded_values);
+
+  return header_info;
 }
 
 RulesetManagerObserver::RulesetManagerObserver(RulesetManager* manager)

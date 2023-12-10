@@ -1,4 +1,6 @@
-# Generating PGO Profiles
+# Profile-Guided Optimization (PGO)
+
+## Generating PGO Profiles
 
 Normally devs don't need to worry about this and can use the default profile
 for official builds.  The default profile can be fetched by adding
@@ -14,25 +16,67 @@ To produce an executable built with a custom PGO profile:
   enable_resource_allowlist_generation = false
   is_official_build = true
   symbol_level = 0
-  use_goma = true
+  use_remoteexec = true
+  ```
+
+  For android you may need in addition:
+  ```
+  target_os = "android"
+  target_cpu = "arm64"
+  is_high_end_android = true
   ```
 
 * Run representative benchmarks to produce profiles
 
-  `python3 tools/pgo/generate_profile.py -C out/builddir1`
+  `python3 tools/pgo/generate_profile.py -C out/builddir`
 
-  If this fails with `ServiceException: 401 Anonymous caller does not have storage.objects.get
-  access to the Google Cloud Storage object.`, then run `download_from_google_storage --config`
-  (with your @google address; enter 0 as project-id).
+  If collecting profiles on an android device, add a browser name like one of
+  [these][browser_names]:
 
-  This will produce `out/builddir1/prof.profdata`
+  ```
+  python3 tools/pgo/generate_profile.py -C out/builddir \
+      --android-browser android-trichrome-bundle
+  ```
 
-* Produce the final PGO'd executable with the following gn args:
+  If this fails with `ServiceException: 401 Anonymous caller does not have
+  storage.objects.get access to the Google Cloud Storage object.`, then run
+  `download_from_google_storage --config` (with your @google address; enter 0 as
+  project-id).
+
+  This will produce `out/builddir/profile.profdata`
+
+* Produce the final PGO'd executable with the following gn args (and additional
+  android args, if any):
 
   ```
   enable_resource_allowlist_generation = false
   is_official_build = true
   symbol_level = 0
-  use_goma = true
-  pgo_data_path = "//out/builddir1/prof.prodata"
+  use_remoteexec = true
+  pgo_data_path = "//out/builddir/profile.profdata"
   ```
+
+[browser_names]: https://source.chromium.org/chromium/chromium/src/+/main:third_party/catapult/telemetry/telemetry/internal/backends/android_browser_backend_settings.py;l=400;drc=bf85e76dc3467385a623e9bf11ab950cf2889ca5
+
+## How It Works
+
+`chrome_pgo_phase` is defined in [`build/config/compiler/pgo/pgo.gni`][pgo_gni].
+This GN variable can be one of 0, 1, or 2, meaning "don't use profile",
+"generating profile", and "use profile" respectively. See [pgo.gni][pgo_gni] for
+details on platform-specific GN variables that determine which phase is used in
+each build.
+
+Which file under `//chrome/build/pgo_profiles/` gets used? It depends on both
+the platform and [`_pgo_target`][pgo_target]. For example, for 64-bit android,
+the file `//chrome/build/android-arm64.pgo.txt` contains the name of the
+`*.profdata` file that is used as the PGO profile by default if no other profile
+is specified via the GN arg `pgo_data_path`.
+
+[pgo_gni]: https://source.chromium.org/chromium/chromium/src/+/main:build/config/compiler/pgo/pgo.gni
+[pgo_target]: https://source.chromium.org/chromium/chromium/src/+/main:build/config/compiler/pgo/BUILD.gn;l=88;drc=3d2e089ad74a30754376571531e00615de96061e
+
+## Background Reading
+
+https://clang.llvm.org/docs/UsersManual.html#profile-guided-optimization
+
+https://source.android.com/docs/core/perf/pgo

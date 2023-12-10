@@ -25,11 +25,6 @@ inline constexpr base::FeatureParam<base::TimeDelta>
         "kSyncTrustedVaultShortPeriodDegradedRecoverabilityPolling",
         base::Hours(1)};
 
-// Enables logging a UMA metric that requires first communicating with the
-// trusted vault server, in order to verify that the local notion of the device
-// being registered is consistent with the server-side state.
-BASE_DECLARE_FEATURE(kSyncTrustedVaultVerifyDeviceRegistration);
-
 // If enabled, degraded recoverability is polled once per minute. This overrides
 // polling period params above. Useful for manual testing.
 BASE_DECLARE_FEATURE(kTrustedVaultFrequentDegradedRecoverabilityPolling);

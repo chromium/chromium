@@ -53,8 +53,7 @@ import java.util.concurrent.atomic.AtomicReference;
 @RunWith(Parameterized.class)
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
 public class PostMessageTest extends AwParameterizedTest {
-    @Rule
-    public AwActivityTestRule mActivityTestRule;
+    @Rule public AwActivityTestRule mActivityTestRule;
 
     private static final String SOURCE_ORIGIN = "";
     // Timeout to failure, in milliseconds

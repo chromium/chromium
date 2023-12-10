@@ -101,6 +101,12 @@ GLuint TestRasterInterface::CreateAndConsumeForGpuRaster(
   return 0;
 }
 
+GLuint TestRasterInterface::CreateAndConsumeForGpuRaster(
+    const scoped_refptr<gpu::ClientSharedImage>& shared_image) {
+  NOTREACHED();
+  return 0;
+}
+
 void TestRasterInterface::DeleteGpuRasterTexture(GLuint texture) {
   NOTREACHED();
 }

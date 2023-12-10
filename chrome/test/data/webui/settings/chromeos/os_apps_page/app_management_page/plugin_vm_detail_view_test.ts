@@ -9,7 +9,7 @@ import {AppManagementStore, AppManagementToggleRowElement, CrButtonElement, CrTo
 import {App, AppType, Permission, PermissionType} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {PermissionTypeIndex} from 'chrome://resources/cr_components/app_management/permission_constants.js';
 import {createBoolPermission} from 'chrome://resources/cr_components/app_management/permission_util.js';
-import {convertOptionalBoolToBool, getPermissionValueBool} from 'chrome://resources/cr_components/app_management/util.js';
+import {getPermissionValueBool} from 'chrome://resources/cr_components/app_management/util.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
@@ -243,20 +243,14 @@ suite('<app-management-plugin-vm-detail-view>', () => {
     const toggle = toggleRow.$.toggle;
 
     assertFalse(toggle.checked);
-    assertEquals(
-        toggle.checked,
-        convertOptionalBoolToBool(getSelectedAppFromStore().isPinned));
+    assertEquals(toggle.checked, getSelectedAppFromStore().isPinned);
     pinToShelfItem.click();
     await fakeHandler.flushPipesForTesting();
     assertTrue(toggle.checked);
-    assertEquals(
-        toggle.checked,
-        convertOptionalBoolToBool(getSelectedAppFromStore().isPinned));
+    assertEquals(toggle.checked, getSelectedAppFromStore().isPinned);
     pinToShelfItem.click();
     await fakeHandler.flushPipesForTesting();
     assertFalse(toggle.checked);
-    assertEquals(
-        toggle.checked,
-        convertOptionalBoolToBool(getSelectedAppFromStore().isPinned));
+    assertEquals(toggle.checked, getSelectedAppFromStore().isPinned);
   });
 });

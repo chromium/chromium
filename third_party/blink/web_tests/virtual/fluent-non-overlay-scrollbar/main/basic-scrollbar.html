@@ -1,36 +1,38 @@
-<!DOCTYPE html>
+<!doctype html>
 <!-- The basic appearance of non-composited Fluent non-overlay scrollbar.
      Verifying regular and left side scrollbars. -->
+<meta charset="utf-8">
 <style>
   body {
     background-color: green;
   }
-  #scrollable {
-    width: 200px;
+
+  .scrollable {
     height: 200px;
     overflow: scroll;
+    width: 200px;
   }
-  #scrollable-rtl {
-    width: 200px;
-    height: 200px;
-    margin-top: 10px;
-    overflow: scroll;
+
+  .rtl {
     direction: rtl;
+    margin-block-start: 10px;
   }
+
   .content {
     background-color: lightgreen;
     height: 300px;
     width: 400px;
   }
+
   .transparent {
     height: 100px;
   }
 </style>
-<div id="scrollable">
+<div class="scrollable">
   <div class="content"></div>
   <div class="transparent"></div>
 </div>
-<div id="scrollable-rtl">
+<div class="scrollable rtl">
   <div class="content"></div>
   <div class="transparent"></div>
 </div>

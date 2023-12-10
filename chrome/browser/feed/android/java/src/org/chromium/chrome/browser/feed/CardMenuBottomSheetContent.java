@@ -10,9 +10,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 
-/**
- * Provide data that the bottom sheet manager needs to show a bottom sheet.
- */
+/** Provide data that the bottom sheet manager needs to show a bottom sheet. */
 public class CardMenuBottomSheetContent implements BottomSheetContent {
     private View mContentView;
 

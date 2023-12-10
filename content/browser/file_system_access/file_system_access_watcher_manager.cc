@@ -5,10 +5,10 @@
 #include "content/browser/file_system_access/file_system_access_watcher_manager.h"
 
 #include <algorithm>
+#include <list>
 #include <memory>
 
 #include "base/check.h"
-#include "base/containers/cxx20_erase_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -205,7 +205,7 @@ void FileSystemAccessWatcherManager::OnSourceBeingDestroyed(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   source_observations_.RemoveObservation(source);
-  size_t count_removed = base::Erase(all_sources_, *source);
+  size_t count_removed = std::erase(all_sources_, *source);
   CHECK_EQ(count_removed, 1u);
 }
 

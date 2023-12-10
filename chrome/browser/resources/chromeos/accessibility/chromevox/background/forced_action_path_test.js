@@ -87,16 +87,16 @@ AX_TEST_F('ChromeVoxForcedActionPathTest', 'UnitTest', async function() {
 
 AX_TEST_F('ChromeVoxForcedActionPathTest', 'ActionUnitTest', async function() {
   await this.runWithLoadedTree(this.simpleDoc);
-  const keySequenceActionOne = ForcedActionPath.Action.fromActionInfo(
+  const keySequenceActionOne = ForcedActionPath.createAction(
       {type: 'key_sequence', value: {keys: {keyCode: [KeyCode.SPACE]}}});
-  const keySequenceActionTwo = new ForcedActionPath.Action({
+  const keySequenceActionTwo = ForcedActionPath.createAction({
     type: 'key_sequence',
     value: new KeySequence(TestUtils.createMockKeyEvent(KeyCode.A)),
   });
-  const gestureActionOne = ForcedActionPath.Action.fromActionInfo(
+  const gestureActionOne = ForcedActionPath.createAction(
       {type: 'gesture', value: Gesture.SWIPE_UP1});
-  const gestureActionTwo =
-      new ForcedActionPath.Action({type: 'gesture', value: Gesture.SWIPE_UP2});
+  const gestureActionTwo = ForcedActionPath.createAction(
+      {type: 'gesture', value: Gesture.SWIPE_UP2});
 
   assertFalse(keySequenceActionOne.equals(keySequenceActionTwo));
   assertFalse(keySequenceActionOne.equals(gestureActionOne));
@@ -105,10 +105,10 @@ AX_TEST_F('ChromeVoxForcedActionPathTest', 'ActionUnitTest', async function() {
   assertFalse(keySequenceActionTwo.equals(gestureActionTwo));
   assertFalse(gestureActionOne.equals(gestureActionTwo));
 
-  const cloneKeySequenceActionOne = ForcedActionPath.Action.fromActionInfo(
+  const cloneKeySequenceActionOne = ForcedActionPath.createAction(
       {type: 'key_sequence', value: {keys: {keyCode: [KeyCode.SPACE]}}});
-  const cloneGestureActionOne =
-      new ForcedActionPath.Action({type: 'gesture', value: Gesture.SWIPE_UP1});
+  const cloneGestureActionOne = ForcedActionPath.createAction(
+      {type: 'gesture', value: Gesture.SWIPE_UP1});
   assertTrue(keySequenceActionOne.equals(cloneKeySequenceActionOne));
   assertTrue(gestureActionOne.equals(cloneGestureActionOne));
 });
@@ -134,24 +134,21 @@ AX_TEST_F('ChromeVoxForcedActionPathTest', 'Errors', async function() {
     monitor = new ForcedActionPath([], onFinished);
     assertTrue(false);  // Shouldn't execute.
   } catch (error) {
-    assertEquals(
-        `ForcedActionPath: actionInfos can't be empty`, error.message);
+    assertTrue(/actionInfos can't be empty/.test(error.message));
     caught = true;
   }
   assertCaughtAndReset();
   try {
-    new ForcedActionPath.Action({type: 'key_sequence', value: 'invalid'});
+    ForcedActionPath.createAction({type: 'key_sequence', value: 'invalid'});
     assertTrue(false);  // Shouldn't execute
   } catch (error) {
-    assertEquals(
-        'ForcedActionPath: Must provide a KeySequence value for Actions ' +
-            'of type ActionType.KEY_SEQUENCE',
-        error.message);
+    assertTrue(/Must provide.*KeySequence.*for.*ActionType.KEY_SEQUENCE/.test(
+        error.message));
     caught = true;
   }
   assertCaughtAndReset();
   try {
-    ForcedActionPath.Action.fromActionInfo({type: 'gesture', value: false});
+    ForcedActionPath.createAction({type: 'gesture', value: false});
     assertTrue(false);  // Shouldn't execute.
   } catch (error) {
     assertEquals(

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/page_info/page_info_main_view.h"
 
+#include <optional>
+
 #include "base/feature_list.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -35,7 +37,6 @@
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
@@ -636,14 +637,6 @@ PageInfoMainView::CreateAdPersonalizationSection() {
   ads_personalization_section
       ->SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical);
-  const auto header_id =
-      base::FeatureList::IsEnabled(privacy_sandbox::kPrivacySandboxSettings4)
-          ? IDS_PAGE_INFO_AD_PRIVACY_HEADER
-          : IDS_PAGE_INFO_AD_PERSONALIZATION_HEADER;
-  const auto tooltip_id =
-      base::FeatureList::IsEnabled(privacy_sandbox::kPrivacySandboxSettings4)
-          ? IDS_PAGE_INFO_AD_PRIVACY_TOOLTIP
-          : IDS_PAGE_INFO_AD_PERSONALIZATION_TOOLTIP;
   ads_personalization_section
       ->AddChildView(std::make_unique<RichHoverButton>(
           base::BindRepeating(
@@ -652,9 +645,10 @@ PageInfoMainView::CreateAdPersonalizationSection() {
               },
               this),
           PageInfoViewFactory::GetAdPersonalizationIcon(),
-          l10n_util::GetStringUTF16(header_id), std::u16string(),
-          l10n_util::GetStringUTF16(tooltip_id), std::u16string(),
-          PageInfoViewFactory::GetOpenSubpageIcon()))
+          l10n_util::GetStringUTF16(IDS_PAGE_INFO_AD_PRIVACY_HEADER),
+          std::u16string(),
+          l10n_util::GetStringUTF16(IDS_PAGE_INFO_AD_PRIVACY_TOOLTIP),
+          std::u16string(), PageInfoViewFactory::GetOpenSubpageIcon()))
       ->SetID(PageInfoViewFactory::VIEW_ID_PAGE_INFO_AD_PERSONALIZATION_BUTTON);
 
   return ads_personalization_section;

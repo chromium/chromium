@@ -6,8 +6,69 @@ source_set("privacy_guide") {
   sources = [
     "privacy_guide_main_coordinator.h",
     "privacy_guide_main_coordinator.mm",
+    "privacy_guide_main_coordinator_delegate.h",
+    "privacy_guide_welcome_coordinator.h",
+    "privacy_guide_welcome_coordinator.mm",
   ]
-  public_deps = [ "//ios/chrome/browser/shared/coordinator/chrome_coordinator" ]
+  deps = [
+    ":privacy_guide_ui",
+    "//base",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/common/ui/promo_style",
+  ]
+}
+
+source_set("privacy_guide_ui") {
+  sources = [
+    "privacy_guide_commands.h",
+    "privacy_guide_welcome_view_controller.h",
+    "privacy_guide_welcome_view_controller.mm",
+  ]
+  deps = [
+    ":privacy_guide_constants",
+    "resources:welcome_illustration",
+    "//base",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/ui/table_view:utils",
+    "//ios/chrome/common/ui/promo_style",
+    "//ui/base",
+  ]
+}
+
+source_set("privacy_guide_constants") {
+  sources = [
+    "privacy_guide_constants.h",
+    "privacy_guide_constants.mm",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "privacy_guide_main_coordinator_unittest.mm" ]
+  deps = [
+    ":privacy_guide",
+    "//base/test:test_support",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/test:test_support",
+    "//testing/gtest",
+  ]
+}
+
+source_set("eg2_tests") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [ "privacy_guide_egtest.mm" ]
+  deps = [
+    ":features",
+    ":privacy_guide_constants",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+  ]
+  frameworks = [ "UIKit.framework" ]
 }
 
 source_set("features") {
@@ -15,5 +76,5 @@ source_set("features") {
     "features.h",
     "features.mm",
   ]
-  public_deps = [ "//base" ]
+  deps = [ "//base" ]
 }

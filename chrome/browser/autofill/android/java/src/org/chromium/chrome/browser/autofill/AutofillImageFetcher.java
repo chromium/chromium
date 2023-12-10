@@ -24,9 +24,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-/**
- * Fetches, and caches credit card art images.
- */
+/** Fetches, and caches credit card art images. */
 public class AutofillImageFetcher {
     private final Map<String, Bitmap> mImagesCache = new HashMap<>();
     private ImageFetcher mImageFetcher;
@@ -68,8 +66,9 @@ public class AutofillImageFetcher {
      * @return Bitmap image for the passed in URL if it exists in cache, an empty object otherwise.
      */
     Optional<Bitmap> getImageIfAvailable(GURL url, CardIconSpecs cardIconSpecs) {
-        GURL urlToCache = AutofillUiUtils.getCreditCardIconUrlWithParams(
-                url, cardIconSpecs.getWidth(), cardIconSpecs.getHeight());
+        GURL urlToCache =
+                AutofillUiUtils.getCreditCardIconUrlWithParams(
+                        url, cardIconSpecs.getWidth(), cardIconSpecs.getHeight());
         // If the card art image exists in the cache, return it.
         if (mImagesCache.containsKey(urlToCache.getSpec())) {
             return Optional.of(mImagesCache.get(urlToCache.getSpec()));
@@ -91,8 +90,9 @@ public class AutofillImageFetcher {
 
         // The Capital One icon for virtual cards is available in a single size via a static
         // URL. Cache this image at different sizes so it can be used by different surfaces.
-        GURL urlToCache = AutofillUiUtils.getCreditCardIconUrlWithParams(
-                url, cardIconSpecs.getWidth(), cardIconSpecs.getHeight());
+        GURL urlToCache =
+                AutofillUiUtils.getCreditCardIconUrlWithParams(
+                        url, cardIconSpecs.getWidth(), cardIconSpecs.getHeight());
         GURL urlToFetch =
                 url.getSpec().equals(AutofillUiUtils.CAPITAL_ONE_ICON_URL) ? url : urlToCache;
 
@@ -101,8 +101,9 @@ public class AutofillImageFetcher {
             return;
         }
 
-        ImageFetcher.Params params = ImageFetcher.Params.create(
-                urlToFetch.getSpec(), ImageFetcher.AUTOFILL_CARD_ART_UMA_CLIENT_NAME);
+        ImageFetcher.Params params =
+                ImageFetcher.Params.create(
+                        urlToFetch.getSpec(), ImageFetcher.AUTOFILL_CARD_ART_UMA_CLIENT_NAME);
         mImageFetcher.fetchImage(
                 params, bitmap -> treatAndCacheImage(bitmap, urlToCache, cardIconSpecs));
     }
@@ -117,8 +118,11 @@ public class AutofillImageFetcher {
 
         // When adding new sizes for card icons, check if the corner radius needs to be added as
         // a suffix for caching (crbug.com/1431283).
-        mImagesCache.put(urlToCache.getSpec(),
-                AutofillUiUtils.resizeAndAddRoundedCornersAndGreyBorder(bitmap, cardIconSpecs,
+        mImagesCache.put(
+                urlToCache.getSpec(),
+                AutofillUiUtils.resizeAndAddRoundedCornersAndGreyBorder(
+                        bitmap,
+                        cardIconSpecs,
                         ChromeFeatureList.isEnabled(
                                 ChromeFeatureList
                                         .AUTOFILL_ENABLE_NEW_CARD_ART_AND_NETWORK_IMAGES)));

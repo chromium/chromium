@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_POLICY_ENROLLMENT_AUTO_ENROLLMENT_CONTROLLER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -15,13 +16,13 @@
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/policy/enrollment/auto_enrollment_client.h"
+#include "chrome/browser/ash/policy/enrollment/auto_enrollment_state.h"
 #include "chrome/browser/ash/policy/enrollment/auto_enrollment_type_checker.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_state_fetcher.h"
 #include "chrome/browser/ash/policy/enrollment/psm/rlwe_dmserver_client_impl.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
 #include "chromeos/ash/components/network/network_state_handler_observer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 class InstallAttributesClient;
@@ -60,7 +61,7 @@ class EnrollmentFwmpHelper {
 
   void OnGetFirmwareManagementParametersReceived(
       ResultCallback result_callback,
-      absl::optional<user_data_auth::GetFirmwareManagementParametersReply>
+      std::optional<user_data_auth::GetFirmwareManagementParametersReply>
           reply);
 
   raw_ptr<ash::InstallAttributesClient> install_attributes_client_;
@@ -117,7 +118,7 @@ class AutoEnrollmentController : public ash::NetworkStateHandlerObserver {
       const ash::NetworkState::PortalState portal_state) override;
   void OnShuttingDown() override;
 
-  AutoEnrollmentState state() const { return state_; }
+  const std::optional<AutoEnrollmentState>& state() const { return state_; }
 
   // Returns the auto-enrollment check type performed by this client.
   // The returned value will be `CheckType::kNone` before calling `Start()`.
@@ -209,7 +210,7 @@ class AutoEnrollmentController : public ash::NetworkStateHandlerObserver {
   // the FWMP is used only for newer devices.
   // This also starts the VPD clearing process.
   void OnFirmwareManagementParametersRemoved(
-      absl::optional<user_data_auth::RemoveFirmwareManagementParametersReply>
+      std::optional<user_data_auth::RemoveFirmwareManagementParametersReply>
           reply);
 
   // Makes a D-Bus call to session_manager to set block_devmode=0 and
@@ -228,6 +229,8 @@ class AutoEnrollmentController : public ash::NetworkStateHandlerObserver {
   // Handles timeout of the safeguard timer and stops waiting for a result.
   void Timeout();
 
+  bool IsInProgress() const;
+
   // Used for checking ownership.
   raw_ptr<ash::DeviceSettingsService, ExperimentalAsh> device_settings_service_;
 
@@ -240,7 +243,7 @@ class AutoEnrollmentController : public ash::NetworkStateHandlerObserver {
   // Used for checking dev boot status.
   std::unique_ptr<EnrollmentFwmpHelper> enrollment_fwmp_helper_;
 
-  AutoEnrollmentState state_ = AutoEnrollmentState::kIdle;
+  std::optional<AutoEnrollmentState> state_;
   ProgressCallbackList progress_callbacks_;
 
   std::unique_ptr<AutoEnrollmentClient> client_;
@@ -263,6 +266,8 @@ class AutoEnrollmentController : public ash::NetworkStateHandlerObserver {
   // something goes wrong, the timer will ensure that a decision gets made
   // eventually, which is crucial to not block OOBE forever. See
   // http://crbug.com/433634 for background.
+  // The timer is expected to run during the state determination. The controller
+  // is considered idle and can be restarted when the timer is not running.
   base::OneShotTimer safeguard_timer_;
 
   // Enrollment state fetcher. Invokes `UpdateState` on success or failure.

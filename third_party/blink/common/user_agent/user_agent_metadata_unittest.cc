@@ -28,7 +28,7 @@ blink::UserAgentMetadata MakeToEncode() {
   to_encode.mobile = false;
   to_encode.bitness = "8";
   to_encode.wow64 = true;
-  to_encode.form_factor = "tubular";
+  to_encode.form_factor = {"tubular"};
   return to_encode;
 }
 
@@ -45,10 +45,40 @@ TEST(UserAgentMetaDataTest, Basic) {
   blink::UserAgentMetadata to_encode = MakeToEncode();
   EXPECT_EQ(to_encode, UserAgentMetadata::Demarshal(
                            UserAgentMetadata::Marshal(to_encode)));
+}
 
+TEST(UserAgentMetaDataTest, Mobile) {
+  blink::UserAgentMetadata to_encode = MakeToEncode();
   to_encode.mobile = true;
   EXPECT_EQ(to_encode, UserAgentMetadata::Demarshal(
                            UserAgentMetadata::Marshal(to_encode)));
+}
+
+TEST(UserAgentMetaDataTest, EmptyFormFactor) {
+  blink::UserAgentMetadata to_encode = MakeToEncode();
+  to_encode.form_factor = {};
+  EXPECT_EQ(to_encode, UserAgentMetadata::Demarshal(
+                           UserAgentMetadata::Marshal(to_encode)));
+}
+
+TEST(UserAgentMetaDataTest, MultiFormFactor) {
+  blink::UserAgentMetadata to_encode = MakeToEncode();
+  to_encode.form_factor = {"a", "b"};
+  EXPECT_EQ(to_encode, UserAgentMetadata::Demarshal(
+                           UserAgentMetadata::Marshal(to_encode)));
+}
+
+TEST(UserAgentMetaDataTest, SerializeFormFactor) {
+  UserAgentMetadata uam;
+
+  uam.form_factor = {};
+  ASSERT_EQ(uam.SerializeFormFactor(), "") << "empty";
+
+  uam.form_factor = {"Desktop"};
+  ASSERT_EQ(uam.SerializeFormFactor(), "\"Desktop\"") << "empty";
+
+  uam.form_factor = {"Desktop", "Tablet"};
+  ASSERT_EQ(uam.SerializeFormFactor(), "\"Desktop\", \"Tablet\"") << "empty";
 }
 
 TEST(UserAgentMetaDataTest, MojoTraits) {

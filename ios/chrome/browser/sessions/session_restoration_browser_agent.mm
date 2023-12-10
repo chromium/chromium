@@ -26,8 +26,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/order_controller_source.h"
 #import "ios/chrome/browser/shared/model/web_state_list/removing_indexes.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/web/features.h"
-#import "ios/chrome/browser/web/session_state/web_session_state_tab_helper.h"
+#import "ios/chrome/browser/web/model/session_state/web_session_state_tab_helper.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/session/crw_session_storage.h"
@@ -237,9 +236,15 @@ SessionRestorationBrowserAgent::SessionRestorationBrowserAgent(
 }
 
 SessionRestorationBrowserAgent::~SessionRestorationBrowserAgent() {
-  // Disconnect the session factory object as it's not granteed that it will be
-  // released before it's referenced by the session service.
+  // Disconnect the session factory object as it's not garanteed that it will
+  // be released before it's referenced by the session service.
   [session_window_ios_factory_ disconnect];
+
+  // If the object is destroyed before the Browser, unregister it from the
+  // ObserverList explicitly.
+  if (browser_) {
+    BrowserDestroyed(browser_);
+  }
 }
 
 void SessionRestorationBrowserAgent::SetSessionID(
@@ -265,8 +270,7 @@ void SessionRestorationBrowserAgent::RemoveObserver(
 }
 
 void SessionRestorationBrowserAgent::RestoreSessionWindow(
-    SessionWindowIOS* window,
-    SessionRestorationScope scope) {
+    SessionWindowIOS* window) {
   // Start the session restoration.
   restoring_session_ = true;
 
@@ -277,7 +281,7 @@ void SessionRestorationBrowserAgent::RestoreSessionWindow(
   // Restore the tabs (except the invalid ones).
   const std::vector<web::WebState*> restored_web_states =
       DeserializeWebStateList(
-          browser_->GetWebStateList(), FilterInvalidTabs(window), scope,
+          browser_->GetWebStateList(), FilterInvalidTabs(window),
           enable_pinned_web_states_,
           base::BindRepeating(
               &web::WebState::CreateWithStorageSession,
@@ -307,7 +311,7 @@ void SessionRestorationBrowserAgent::RestoreSession() {
       loadSessionWithSessionID:session_identifier_
                      directory:browser_->GetBrowserState()->GetStatePath()];
 
-  RestoreSessionWindow(session_window, SessionRestorationScope::kAll);
+  RestoreSessionWindow(session_window);
   base::UmaHistogramTimes("Session.WebStates.LoadingTimeOnMainThread",
                           base::TimeTicks::Now() - start_time);
 }
@@ -334,34 +338,13 @@ void SessionRestorationBrowserAgent::SaveSession(bool immediately) {
                       directory:browser_->GetBrowserState()->GetStatePath()
                     immediately:immediately];
 
-  if (web::UseNativeSessionRestorationCache()) {
-    for (int i = 0; i < web_state_list->count(); ++i) {
-      web::WebState* web_state = web_state_list->GetWebStateAt(i);
-      WebSessionStateTabHelper::FromWebState(web_state)
-          ->SaveSessionStateIfStale();
+  for (int i = 0; i < web_state_list->count(); ++i) {
+    web::WebState* web_state = web_state_list->GetWebStateAt(i);
+    if (WebSessionStateTabHelper* tab_helper =
+            WebSessionStateTabHelper::FromWebState(web_state)) {
+      tab_helper->SaveSessionStateIfStale();
     }
   }
-}
-
-NSArray<CRWSessionStorage*>*
-SessionRestorationBrowserAgent::GetRestoredSessionStoragesForScope(
-    SessionRestorationScope scope,
-    NSArray<CRWSessionStorage*>* session_storages,
-    int restored_count) {
-  NSRange restored_sessions_range;
-
-  switch (scope) {
-    case SessionRestorationScope::kPinnedOnly:
-    case SessionRestorationScope::kAll:
-      restored_sessions_range = NSMakeRange(0, restored_count);
-      break;
-    case SessionRestorationScope::kRegularOnly:
-      restored_sessions_range =
-          NSMakeRange(session_storages.count - restored_count, restored_count);
-      break;
-  }
-
-  return [session_storages subarrayWithRange:restored_sessions_range];
 }
 
 bool SessionRestorationBrowserAgent::CanSaveSession() {

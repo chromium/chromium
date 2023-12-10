@@ -10,11 +10,11 @@ mojom("mojom") {
     "registration_eligibility.mojom",
     "source_registration_error.mojom",
     "source_registration_time_config.mojom",
+    "summary_window_operator.mojom",
     "trigger_data_matching.mojom",
     "trigger_registration_error.mojom",
   ]
   webui_module_path = "/"
-  use_typescript_sources = true
 
   # Used by Blink, so requires legacy JS bindings.
   generate_legacy_js_bindings = true
@@ -40,6 +40,8 @@ component("attribution_reporting") {
   sources = [
     "aggregatable_dedup_key.cc",
     "aggregatable_dedup_key.h",
+    "aggregatable_trigger_config.cc",
+    "aggregatable_trigger_config.h",
     "aggregatable_trigger_data.cc",
     "aggregatable_trigger_data.h",
     "aggregatable_values.cc",
@@ -49,6 +51,8 @@ component("attribution_reporting") {
     "constants.h",
     "destination_set.cc",
     "destination_set.h",
+    "event_level_epsilon.cc",
+    "event_level_epsilon.h",
     "event_report_windows.cc",
     "event_report_windows.h",
     "event_trigger_data.cc",
@@ -111,10 +115,12 @@ source_set("unit_tests") {
 
   sources = [
     "aggregatable_dedup_key_unittest.cc",
+    "aggregatable_trigger_config_unittest.cc",
     "aggregatable_trigger_data_unittest.cc",
     "aggregatable_values_unittest.cc",
     "aggregation_keys_unittest.cc",
     "destination_set_unittest.cc",
+    "event_level_epsilon_unittest.cc",
     "event_report_windows_unittest.cc",
     "event_trigger_data_unittest.cc",
     "filters_unittest.cc",
@@ -197,7 +203,6 @@ mojom("registration_mojom") {
 
   generate_java = true
   webui_module_path = "/"
-  use_typescript_sources = true
   disallow_interfaces = true
 
   # Used by Blink, so requires legacy JS bindings.
@@ -310,12 +315,6 @@ mojom("registration_mojom") {
               "namespace attribution_reporting { class EventReportWindows; }"
         },
         {
-          mojom = "attribution_reporting.mojom.TriggerConfig"
-          cpp = "::attribution_reporting::TriggerConfig"
-          forward_declaration =
-              "namespace attribution_reporting { class TriggerConfig; }"
-        },
-        {
           mojom = "attribution_reporting.mojom.TriggerSpec"
           cpp = "::attribution_reporting::TriggerSpec"
           forward_declaration =
@@ -361,7 +360,6 @@ component("registration_mojom_traits") {
 mojom("source_type_mojom") {
   sources = [ "source_type.mojom" ]
   webui_module_path = "/"
-  use_typescript_sources = true
   disallow_interfaces = true
   generate_java = false
 }

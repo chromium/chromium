@@ -16,7 +16,7 @@ class TestVirtualCardEnrollmentManager : public VirtualCardEnrollmentManager {
  public:
   TestVirtualCardEnrollmentManager(
       TestPersonalDataManager* personal_data_manager,
-      payments::TestPaymentsClient* payments_client,
+      payments::TestPaymentsNetworkInterface* payments_network_interface,
       TestAutofillClient* autofill_client);
   TestVirtualCardEnrollmentManager(const TestVirtualCardEnrollmentManager&) =
       delete;

@@ -38,7 +38,6 @@ class PrerenderCancellationReason;
 class PrerenderHostRegistry;
 class RenderFrameHostImpl;
 class WebContentsImpl;
-struct PrerenderMismatchedHeaders;
 
 // Prerender2:
 // PrerenderHost creates a new FrameTree in WebContents associated with the page
@@ -110,13 +109,19 @@ class CONTENT_EXPORT PrerenderHost : public FrameTree::Delegate,
   // `HttpRequestHeaders`.
   static bool IsActivationHeaderMatch(
       const net::HttpRequestHeaders& potential_activation_headers,
-      const net::HttpRequestHeaders& prerender_headers);
+      const net::HttpRequestHeaders& prerender_headers,
+      PrerenderCancellationReason& reaosn);
 
   static bool AreHttpRequestHeadersCompatible(
       const std::string& potential_activation_headers_str,
       const std::string& prerender_headers_str,
-      PrerenderTriggerType trigger_type,
-      const std::string& embedder_histogram_suffix);
+      PreloadingTriggerType trigger_type,
+      const std::string& embedder_histogram_suffix,
+      PrerenderCancellationReason& reason);
+
+  // Sets a callback to be called on PrerenderHost creation.
+  static void SetHostCreationCallbackForTesting(
+      base::OnceCallback<void(int host_id)> callback);
 
   PrerenderHost(const PrerenderAttributes& attributes,
                 WebContentsImpl& web_contents,
@@ -142,7 +147,6 @@ class CONTENT_EXPORT PrerenderHost : public FrameTree::Delegate,
   FrameTree* LoadingTree() override;
   int GetOuterDelegateFrameTreeNodeId() override;
   RenderFrameHostImpl* GetProspectiveOuterDocument() override;
-  bool IsPortal() override;
   void SetFocusedFrame(FrameTreeNode* node, SiteInstanceGroup* source) override;
 
   // NavigationControllerDelegate
@@ -182,14 +186,16 @@ class CONTENT_EXPORT PrerenderHost : public FrameTree::Delegate,
   // This must be called after this host gets ready for activation.
   std::unique_ptr<StoredPage> Activate(NavigationRequest& navigation_request);
 
-  // Returns PrerenderMismatchedHeaders if the navigation
-  // params that were used in the initial prerender navigation (i.e., in
-  // StartPrerendering()) do not match the navigation params in
-  // `navigation_request`. This function can be used to determine whether
-  // `navigation_request` may be eligible to activate this PrerenderHost.
-  std::unique_ptr<PrerenderMismatchedHeaders>
-  CheckInitialPrerenderNavigationParamsCompatibleWithNavigation(
-      NavigationRequest& navigation_request);
+  // Returns true if the navigation params that were used in the initial
+  // prerender navigation (i.e., in StartPrerendering()) match the navigation
+  // params in `navigation_request`. This function can be used to determine
+  // whether `navigation_request` may be eligible to activate this
+  // PrerenderHost.
+  // If the header mismatch occurred, the mismatched headers would be added
+  // into explanation_ in reason.
+  bool AreInitialPrerenderNavigationParamsCompatibleWithNavigation(
+      NavigationRequest& navigation_request,
+      PrerenderCancellationReason& reason);
 
   bool IsFramePolicyCompatibleWithPrimaryFrameTree();
 
@@ -278,7 +284,9 @@ class CONTENT_EXPORT PrerenderHost : public FrameTree::Delegate,
     return final_status_;
   }
 
-  PrerenderTriggerType trigger_type() const { return attributes_.trigger_type; }
+  PreloadingTriggerType trigger_type() const {
+    return attributes_.trigger_type;
+  }
   const std::string& embedder_histogram_suffix() const {
     return attributes_.embedder_histogram_suffix;
   }
@@ -303,7 +311,8 @@ class CONTENT_EXPORT PrerenderHost : public FrameTree::Delegate,
 
   ActivationNavigationParamsMatch
   AreBeginNavigationParamsCompatibleWithNavigation(
-      const blink::mojom::BeginNavigationParams& potential_activation);
+      const blink::mojom::BeginNavigationParams& potential_activation,
+      PrerenderCancellationReason& reason);
   ActivationNavigationParamsMatch
   AreCommonNavigationParamsCompatibleWithNavigation(
       const blink::mojom::CommonNavigationParams& potential_activation);

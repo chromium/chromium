@@ -23,4 +23,4 @@ class ScopedDefaultFontDescription {
 
 }  // namespace gfx
 
-#endif  // UI_GFX_TEST_SCOPED_DEFAULT_FONT_DESCRIOPTION_H_
+#endif  // UI_GFX_TEST_SCOPED_DEFAULT_FONT_DESCRIPTION_H_

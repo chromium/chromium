@@ -25,8 +25,7 @@ public class EmbeddedTestServerRule implements TestRule {
 
     private boolean mUseHttps;
 
-    @ServerCertificate
-    private int mCertificateType = ServerCertificate.CERT_OK;
+    @ServerCertificate private int mCertificateType = ServerCertificate.CERT_OK;
 
     @Override
     public Statement apply(Statement base, Description description) {

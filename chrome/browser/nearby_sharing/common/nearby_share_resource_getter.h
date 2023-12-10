@@ -18,6 +18,8 @@ class NearbyShareResourceGetter {
   NearbyShareResourceGetter& operator=(const NearbyShareResourceGetter&) =
       delete;
 
+  std::u16string GetFeatureName();
+
   // Assumes that caller is passing a |message_id| with a placeholder for
   // the feature name at index 0 in the placeholder list.
   std::u16string GetStringWithFeatureName(int message_id);

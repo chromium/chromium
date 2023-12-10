@@ -30,6 +30,7 @@
 #include "ui/display/display_observer.h"
 #include "ui/display/manager/display_configurator.h"
 #include "ui/display/manager/display_manager_export.h"
+#include "ui/display/manager/display_manager_observer.h"
 #include "ui/display/manager/managed_display_info.h"
 #include "ui/display/manager/touch_device_manager.h"
 #include "ui/display/manager/util/display_manager_util.h"
@@ -496,10 +497,17 @@ class DISPLAY_MANAGER_EXPORT DisplayManager
   void NotifyMetricsChanged(const Display& display, uint32_t metrics);
   void NotifyDisplayAdded(const Display& display);
   void NotifyDisplayRemoved(const Display& display);
+  void NotifyWillProcessDisplayChanges();
+  void NotifyDidProcessDisplayChanges(
+      const DisplayManagerObserver::DisplayConfigurationChange& config_change);
 
   // Delegated from the Screen implementation.
   void AddObserver(DisplayObserver* observer);
   void RemoveObserver(DisplayObserver* observer);
+
+  // Add/Remove interface for DisplayManager::Obserevrs.
+  void AddObserver(DisplayManagerObserver* observer);
+  void RemoveObserver(DisplayManagerObserver* observer);
 
   display::TabletState GetTabletState() const;
 
@@ -518,7 +526,32 @@ class DISPLAY_MANAGER_EXPORT DisplayManager
     ~BeginEndNotifier();
 
    private:
+    // Uses the pending display change data in display manager to create the
+    // config change object propagated to observers.
+    DisplayManagerObserver::DisplayConfigurationChange CreateConfigChange()
+        const;
+
     raw_ptr<DisplayManager, ExperimentalAsh> display_manager_;
+  };
+
+  // Tracks the in-progress change to the current display configuration. This is
+  // reported to observers when the last BeginEndNotifier goes out of scope.
+  struct PendingDisplayChanges {
+    PendingDisplayChanges();
+    PendingDisplayChanges(const PendingDisplayChanges&) = delete;
+    PendingDisplayChanges& operator=(const PendingDisplayChanges&) = delete;
+    ~PendingDisplayChanges();
+
+    // Store added display_ids to avoid copying potentially stale display
+    // objects while update state is accumulated.
+    DisplayIdList added_display_ids;
+
+    // Store displays by value as removed displays are no longer persisted by
+    // the manager once removed from the `active_display_list_`.
+    Displays removed_displays;
+
+    // Maps the display_id to its metrics change.
+    base::flat_map<int64_t, uint32_t> display_metrics_changes;
   };
 
   void set_change_display_upon_host_resize(bool value) {
@@ -695,7 +728,9 @@ class DISPLAY_MANAGER_EXPORT DisplayManager
   // time.
   base::OnceClosure created_mirror_window_;
 
-  base::ObserverList<DisplayObserver> observers_;
+  base::ObserverList<DisplayObserver> display_observers_;
+
+  base::ObserverList<DisplayManagerObserver> manager_observers_;
 
   // Not empty if mixed mirror mode should be turned on (the specified source
   // display is mirrored to the specified destination displays). Empty if mixed
@@ -706,6 +741,11 @@ class DISPLAY_MANAGER_EXPORT DisplayManager
   // when destroyed. BeginEndNotifier uses this to track when it should call
   // OnWillProcessDisplayChanges() and OnDidProcessDisplayChanges().
   int notify_depth_ = 0;
+
+  // State accumulated during a display configuration update. Created when
+  // BeginEndNotifier is created and propagated in OnDidProcessDisplayChanges()
+  // when the last BeginEndNotifier is destroyed.
+  absl::optional<PendingDisplayChanges> pending_display_changes_;
 
   std::unique_ptr<display::DisplayConfigurator> display_configurator_;
 

@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/constants/ash_features.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_widget.h"
 #include "ash/shell.h"
@@ -29,11 +28,9 @@
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/service_worker_context_observer.h"
 #include "content/public/browser/storage_partition.h"
-#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
 #include "ui/aura/window_delegate.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/display/test/display_manager_test_api.h"
 #include "ui/events/test/event_generator.h"
 
@@ -62,10 +59,10 @@ Profile* GetProfile() {
 }
 
 base::UnguessableToken GetUnguessableToken(base::StringPiece str) {
-  absl::optional<base::Token> token = base::Token::FromString(str);
+  std::optional<base::Token> token = base::Token::FromString(str);
   DCHECK(token.has_value());
 
-  absl::optional<base::UnguessableToken> unguessable_token =
+  std::optional<base::UnguessableToken> unguessable_token =
       base::UnguessableToken::Deserialize(token->high(), token->low());
   return unguessable_token.value();
 }
@@ -113,7 +110,7 @@ class InstanceRegistryEventWaiter : public apps::InstanceRegistry::Observer {
   // result in nested run loops which would hang the test. Allow nestable tasks
   // to get around this.
   base::RunLoop run_loop_{base::RunLoop::Type::kNestableTasksAllowed};
-  absl::optional<base::UnguessableToken> window_id_;
+  std::optional<base::UnguessableToken> window_id_;
 };
 
 // Class used by tests to perform actions on the browser side.
@@ -240,10 +237,6 @@ class CrosWindowManagementBrowserTest : public SystemExtensionsApiBrowserTest {
           this->test_helpers_.Add(std::move(test_helper),
                                   std::move(pending_receiver));
         }));
-
-    // Needed because otherwise ChromeOS remaps some accelerators e.g.
-    // to other keys e.g. "Alt + Arrow up" to "Home".
-    feature_list_.InitAndEnableFeature(::features::kDeprecateAltBasedSixPack);
   }
 
  protected:
@@ -280,8 +273,6 @@ class CrosWindowManagementBrowserTest : public SystemExtensionsApiBrowserTest {
       system_extensions_test::mojom::CrosWindowManagementTestHelper>
       test_helpers_;
   std::unique_ptr<TestSystemWebAppInstallation> installation_;
-
-  base::test::ScopedFeatureList feature_list_;
 };
 
 }  // namespace

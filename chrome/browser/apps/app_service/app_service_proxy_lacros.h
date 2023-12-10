@@ -54,6 +54,7 @@ class LacrosBrowserShortcutsController;
 
 namespace apps {
 
+class AppInstallService;
 class BrowserAppInstanceForwarder;
 class BrowserAppInstanceTracker;
 class WebsiteMetricsServiceLacros;
@@ -103,6 +104,8 @@ class AppServiceProxyLacros : public KeyedService,
   apps::BrowserAppInstanceTracker* BrowserAppInstanceTracker();
 
   apps::WebsiteMetricsServiceLacros* WebsiteMetricsService();
+
+  apps::AppInstallService& AppInstallService();
 
   // crosapi::mojom::AppServiceSubscriber overrides.
   void OnApps(std::vector<AppPtr> deltas,
@@ -281,7 +284,7 @@ class AppServiceProxyLacros : public KeyedService,
     explicit AppInnerIconLoader(AppServiceProxyLacros* host);
 
     // apps::IconLoader overrides.
-    absl::optional<IconKey> GetIconKey(const std::string& id) override;
+    std::optional<IconKey> GetIconKey(const std::string& id) override;
     std::unique_ptr<IconLoader::Releaser> LoadIconFromIconKey(
         const std::string& id,
         const IconKey& icon_key,
@@ -357,6 +360,8 @@ class AppServiceProxyLacros : public KeyedService,
   int crosapi_app_service_proxy_version_ = 0;
 
   std::unique_ptr<apps::WebsiteMetricsServiceLacros> metrics_service_;
+
+  std::unique_ptr<apps::AppInstallService> app_install_service_;
 
   base::WeakPtrFactory<AppServiceProxyLacros> weak_ptr_factory_{this};
 

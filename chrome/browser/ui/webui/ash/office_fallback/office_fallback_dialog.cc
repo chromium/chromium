@@ -123,9 +123,9 @@ bool OfficeFallbackDialog::Show(
 
   // The pointer is managed by an instance of `views::WebDialogView` and removed
   // in `SystemWebDialogDelegate::OnDialogClosed`.
-  OfficeFallbackDialog* dialog = new OfficeFallbackDialog(
-      file_urls, fallback_reason, title_text, reason_message,
-      instructions_message, std::move(callback));
+  OfficeFallbackDialog* dialog =
+      new OfficeFallbackDialog(file_urls, title_text, reason_message,
+                               instructions_message, std::move(callback));
 
   dialog->ShowSystemDialog();
   return true;
@@ -135,17 +135,15 @@ void OfficeFallbackDialog::OnDialogClosed(const std::string& choice) {
   // Save callback as local variable before member variables are deleted during
   // dialog close.
   DialogChoiceCallback callback = std::move(callback_);
-  FallbackReason fallback_reason = fallback_reason_;
   // Delete class.
   SystemWebDialogDelegate::OnDialogClosed(choice);
   // Run callback after dialog closed.
   if (callback)
-    std::move(callback).Run(choice, fallback_reason);
+    std::move(callback).Run(choice);
 }
 
 OfficeFallbackDialog::OfficeFallbackDialog(
     const std::vector<storage::FileSystemURL>& file_urls,
-    FallbackReason fallback_reason,
     const std::string& title_text,
     const std::string& reason_message,
     const std::string& instructions_message,
@@ -153,7 +151,6 @@ OfficeFallbackDialog::OfficeFallbackDialog(
     : SystemWebDialogDelegate(GURL(chrome::kChromeUIOfficeFallbackURL),
                               std::u16string() /* title */),
       file_urls_(file_urls),
-      fallback_reason_(fallback_reason),
       title_text_(title_text),
       reason_message_(reason_message),
       instructions_message_(instructions_message),

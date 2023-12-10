@@ -15,9 +15,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 
-/**
- * Provides implementations of {@link UploadDataProvider} for common use cases.
- */
+/** Provides implementations of {@link UploadDataProvider} for common use cases. */
 public final class UploadDataProviders {
     /**
      * Uploads an entire file.
@@ -26,12 +24,13 @@ public final class UploadDataProviders {
      * @return A new UploadDataProvider for the given file
      */
     public static UploadDataProvider create(final File file) {
-        return new FileUploadProvider(new FileChannelProvider() {
-            @Override
-            public FileChannel getChannel() throws IOException {
-                return new FileInputStream(file).getChannel();
-            }
-        });
+        return new FileUploadProvider(
+                new FileChannelProvider() {
+                    @Override
+                    public FileChannel getChannel() throws IOException {
+                        return new FileInputStream(file).getChannel();
+                    }
+                });
     }
 
     /**
@@ -42,17 +41,18 @@ public final class UploadDataProviders {
      * @throws IllegalArgumentException if {@code fd} is not a file.
      */
     public static UploadDataProvider create(final ParcelFileDescriptor fd) {
-        return new FileUploadProvider(new FileChannelProvider() {
-            @Override
-            public FileChannel getChannel() throws IOException {
-                if (fd.getStatSize() != -1) {
-                    return new ParcelFileDescriptor.AutoCloseInputStream(fd).getChannel();
-                } else {
-                    fd.close();
-                    throw new IllegalArgumentException("Not a file: " + fd);
-                }
-            }
-        });
+        return new FileUploadProvider(
+                new FileChannelProvider() {
+                    @Override
+                    public FileChannel getChannel() throws IOException {
+                        if (fd.getStatSize() != -1) {
+                            return new ParcelFileDescriptor.AutoCloseInputStream(fd).getChannel();
+                        } else {
+                            fd.close();
+                            throw new IllegalArgumentException("Not a file: " + fd);
+                        }
+                    }
+                });
     }
 
     /**
@@ -94,9 +94,8 @@ public final class UploadDataProviders {
     private static final class FileUploadProvider extends UploadDataProvider {
         private volatile FileChannel mChannel;
         private final FileChannelProvider mProvider;
-        /**
-         * Guards initialization of {@code mChannel}
-         */
+
+        /** Guards initialization of {@code mChannel} */
         private final Object mLock = new Object();
 
         private FileUploadProvider(FileChannelProvider provider) {

@@ -1480,26 +1480,6 @@ EVENT_TYPE(BIDIRECTIONAL_STREAM_FAILED)
 EVENT_TYPE(BIDIRECTIONAL_STREAM_BOUND_TO_QUIC_SESSION)
 
 // ------------------------------------------------------------------------
-// SERVER_PUSH_LOOKUP_TRANSACTION
-// ------------------------------------------------------------------------
-
-// The start/end of a push lookup transaction for server push.
-//
-// The START event has the parameters:
-//   {
-//     "source_dependency": <Source identifier for the server push lookp.
-//                           It can be a QUIC_SESSION or a HTTP2_SESSION>,
-//     "pushed_url": <The url that has been pushed and looked up>,
-//   }
-//
-// If the transaction doesn't find the resource in cache, then the END phase
-// has these parameters:
-//   {
-//     "net_error": <Net error code integer>,
-//   }
-EVENT_TYPE(SERVER_PUSH_LOOKUP_TRANSACTION)
-
-// ------------------------------------------------------------------------
 // SpdySession
 // ------------------------------------------------------------------------
 
@@ -3256,12 +3236,12 @@ EVENT_TYPE(CERT_VERIFIER_TASK)
 //   }
 EVENT_TYPE(CERT_VERIFIER_TASK_BOUND)
 
+// This event is created when a CertVerifyProc instance is created.
+EVENT_TYPE(CERT_VERIFY_PROC_CREATED)
+
 // This event is created when CertVerifyProc is verifying a certificate.
 // The BEGIN phase event parameters are:
 // {
-//   "additional_trust_anchors": <Optionally, a list of PEM encoded
-//                                certificates to be used as trust anchors
-//                                in addition to the trust store.>
 //   "certificates": <A list of PEM encoded certificates, the first one
 //                    being the certificate to verify and the remaining
 //                    being intermediate certificates to assist path
@@ -3334,10 +3314,16 @@ EVENT_TYPE(CERT_VERIFY_PROC_INPUT_CERT)
 //   }
 EVENT_TYPE(CERT_VERIFY_PROC_CHROME_ROOT_STORE_VERSION)
 
-// This event is created for each additional trust anchor passed into
+// This event is created for each additional certificate added to
 // CertVerifyProcBuiltin.
-// The parameters are the same as for CERT_VERIFY_PROC_TARGET_CERT.
-EVENT_TYPE(CERT_VERIFY_PROC_ADDITIONAL_TRUST_ANCHOR)
+// The event parameters are:
+//   {
+//      "certificate": <The PEM encoded certificate.>
+//      "trust": <The trust setting used for this certificate.>
+//      "errors": <Optionally, a string describing any errors or warnings
+//                 encountered while parsing the certificate.>
+//   }
+EVENT_TYPE(CERT_VERIFY_PROC_ADDITIONAL_CERT)
 
 // This event is created for each path building attempt performed by
 // CertVerifyProcBuiltin.
@@ -3373,6 +3359,14 @@ EVENT_TYPE(CERT_VERIFY_PROC_PATH_BUILD_ATTEMPT)
 //                 encountered while building or verifying the path.>
 //   }
 EVENT_TYPE(CERT_VERIFY_PROC_PATH_BUILT)
+
+// This event is created whenever a debugging message is sent from the path
+// builder.
+// parameters:
+// {
+//    "path_builder_debug": <String - message sent from the path builder>
+// }
+EVENT_TYPE(CERT_VERIFY_PROC_PATH_BUILDER_DEBUG)
 
 // -----------------------------------------------------------------------------
 // FTP events.
@@ -4029,24 +4023,6 @@ EVENT_TYPE(HTTP3_HEADERS_RECEIVED)
 //    "headers": <A dictionary of the decoded headers>
 //  }
 EVENT_TYPE(HTTP3_HEADERS_DECODED)
-
-// Event emitted when the receipt of an HTTP/3 PUSH_PROMISE frame is complete.
-//  {
-//    "stream_id": <The ID of the stream on which the PUSH_PROMISE frame is
-//                  received>
-//    "push_id": <The push_id field of the PUSH_PROMISE frame>
-//  }
-EVENT_TYPE(HTTP3_PUSH_PROMISE_RECEIVED)
-
-// Event emitted when headers received in an HTTP/3 PUSH_PROMISE frame are
-// decoded.
-//  {
-//    "stream_id": <The ID of the stream on which the PUSH_PROMISE frame had
-//                  been received>
-//    "push_id": <The push_id field of the PUSH_PROMISE frame>
-//    "headers": <A dictionary of the decoded headers>
-//  }
-EVENT_TYPE(HTTP3_PUSH_PROMISE_DECODED)
 
 // Event emitted when the frame header of an HTTP/3 frame of unknown type is
 // received.

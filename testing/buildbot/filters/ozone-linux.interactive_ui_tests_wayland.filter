@@ -17,6 +17,7 @@
 -BookmarkBarViewTest15.MenuStaysVisibleAfterDelete
 -BookmarkBarViewTest21.ContextMenusForEmptyFolder
 -BookmarkBarViewTest23.ContextMenusKeyboard
+-BookmarkBarViewTest29.DNDToEmptyMenu
 -BookmarkBarViewTest5.DND
 -BookmarkBarViewTest7.DNDToDifferentMenu
 -BookmarkBarViewTest8.DNDBackToOriginatingMenu

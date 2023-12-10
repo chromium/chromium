@@ -10,8 +10,8 @@
 #import "base/time/time.h"
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/sync/base/features.h"
-#import "ios/chrome/browser/ntp/home/features.h"
-#import "ios/chrome/browser/ntp/set_up_list_item_type.h"
+#import "ios/chrome/browser/ntp/model/set_up_list_item_type.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/elements/crossfade_label.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -336,6 +336,10 @@ struct ViewConfig {
       return l10n_util::GetNSString(IDS_IOS_SET_UP_LIST_DEFAULT_BROWSER_TITLE);
     case SetUpListItemType::kAutofill:
       return l10n_util::GetNSString(IDS_IOS_SET_UP_LIST_AUTOFILL_TITLE);
+    case SetUpListItemType::kContentNotification:
+      // TODO(b/310713830): add strings for content notifications when they are
+      // finalized.
+      return @"Get Content Notifications";
     case SetUpListItemType::kAllSet:
       return l10n_util::GetNSString(IDS_IOS_SET_UP_LIST_ALL_SET_TITLE);
     case SetUpListItemType::kFollow:
@@ -353,6 +357,10 @@ struct ViewConfig {
       return l10n_util::GetNSString(_config.default_browser_description);
     case SetUpListItemType::kAutofill:
       return l10n_util::GetNSString(_config.autofill_description);
+    case SetUpListItemType::kContentNotification:
+      // TODO(b/310713830): add strings for content notifications when they are
+      // finalized.
+      return @"Keep up with news, sports, and more based on your interest";
     case SetUpListItemType::kAllSet:
       return l10n_util::GetNSString(IDS_IOS_SET_UP_LIST_ALL_SET_DESCRIPTION);
     case SetUpListItemType::kFollow:
@@ -369,6 +377,8 @@ struct ViewConfig {
       return set_up_list::kDefaultBrowserItemID;
     case SetUpListItemType::kAutofill:
       return set_up_list::kAutofillItemID;
+    case SetUpListItemType::kContentNotification:
+      return set_up_list::kContentNotificationItemID;
     case SetUpListItemType::kAllSet:
       return set_up_list::kAllSetItemID;
     case SetUpListItemType::kFollow:

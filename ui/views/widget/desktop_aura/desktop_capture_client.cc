@@ -4,7 +4,8 @@
 
 #include "ui/views/widget/desktop_aura/desktop_capture_client.h"
 
-#include "base/containers/cxx20_erase.h"
+#include <set>
+
 #include "base/observer_list.h"
 #include "ui/aura/client/capture_client_observer.h"
 #include "ui/aura/env.h"
@@ -46,7 +47,7 @@ DesktopCaptureClient::DesktopCaptureClient(aura::Window* root) : root_(root) {
 
 DesktopCaptureClient::~DesktopCaptureClient() {
   aura::client::SetCaptureClient(root_, nullptr);
-  base::EraseIf(*clients_, [this](const auto& c) { return c.get() == this; });
+  std::erase_if(*clients_, [this](const auto& c) { return c.get() == this; });
 }
 
 void DesktopCaptureClient::SetCapture(aura::Window* new_capture_window) {

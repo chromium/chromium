@@ -12,9 +12,7 @@ import org.chromium.base.ObserverList.RewindableIterator;
 import org.chromium.content_public.browser.BrowserStartupController;
 import org.chromium.net.EffectiveConnectionType;
 
-/**
- * Provides Network Quality Estimates to observers.
- */
+/** Provides Network Quality Estimates to observers. */
 public class NetworkQualityProvider {
     protected static NetworkQualityProvider sInstance;
 
@@ -42,8 +40,10 @@ public class NetworkQualityProvider {
             observer.onEffectiveConnectionTypeChanged(provider.mEffectiveConnectionType);
         }
         if (provider.mInitializedRtt) {
-            observer.onRTTOrThroughputEstimatesComputed(provider.mHttpRttMillis,
-                    provider.mTransportRttMillis, provider.mDownstreamThroughputKbps);
+            observer.onRTTOrThroughputEstimatesComputed(
+                    provider.mHttpRttMillis,
+                    provider.mTransportRttMillis,
+                    provider.mDownstreamThroughputKbps);
         }
     }
 
@@ -92,8 +92,10 @@ public class NetworkQualityProvider {
         mInitializedRtt = true;
         mRewindableIterator.rewind();
         while (mRewindableIterator.hasNext()) {
-            mRewindableIterator.next().onRTTOrThroughputEstimatesComputed(
-                    mHttpRttMillis, mTransportRttMillis, mDownstreamThroughputKbps);
+            mRewindableIterator
+                    .next()
+                    .onRTTOrThroughputEstimatesComputed(
+                            mHttpRttMillis, mTransportRttMillis, mDownstreamThroughputKbps);
         }
     }
 

@@ -5,9 +5,11 @@
 #include "third_party/blink/renderer/core/url_pattern/url_pattern_parser.h"
 
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_url_pattern_init.h"
 #include "third_party/blink/renderer/core/url_pattern/url_pattern_component.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
 #include "third_party/liburlpattern/tokenize.h"
 
@@ -17,7 +19,7 @@ namespace url_pattern {
 Parser::Parser(const String& input, const URLPatternOptions& external_options)
     : input_(input), utf8_(input), external_options_(external_options) {}
 
-void Parser::Parse(ExceptionState& exception_state) {
+void Parser::Parse(v8::Isolate* isolate, ExceptionState& exception_state) {
   DCHECK_EQ(state_, StringParseState::kInit);
   DCHECK_EQ(token_index_, 0u);
 
@@ -34,23 +36,25 @@ void Parser::Parse(ExceptionState& exception_state) {
   token_list_ = std::move(tokenize_result.value());
   result_ = MakeGarbageCollected<URLPatternInit>();
 
+  // This enables the behavior proposed in WICG/urlpattern#179.
+  const bool more_wildcards =
+      RuntimeEnabledFeatures::URLPatternWildcardMoreOftenEnabled();
+
   // When constructing a pattern using structured input like
   // `new URLPattern({ pathname: 'foo' })` any missing components will be
-  // defaulted to wildcards.  In the constructor string case, however, all
-  // components are precisely defined as either empty string or a longer
-  // value.  This is due to there being no way to simply "leave out" a
-  // component when writing a URL.  The behavior also matches the URL
-  // constructor.
+  // defaulted to wildcards.
   //
-  // To implement this we initialize components to the empty string in advance.
+  // If |more_wildcards| is false, then the string format will make every
+  // component empty or a longer value, rather than a wildcard. This isn't done
+  // immediately, so that the base URL can be included to provide some component
+  // values for relative URLs. Therefore these values are initialized to their
+  // default values only when the parser exits the kInit state, and it is known
+  // if the pattern is relative or absolute.
   //
-  // We can't, however, do this immediately.  We want to allow the baseURL to
-  // provide information for relative URLs, so we only want to set the default
-  // empty string values for components following the first component in the
-  // relative URL.
-  //
-  // We therefore wait to set the default component values until after we exit
-  // the kInit state and have determined if we are in relative or absolute mode.
+  // If |more_wildcards| is true, components which ordinarily appear "later"
+  // than those specified are instead treated as wildcards, which avoids the
+  // need to explicitly wildcard each of them. As a result, these values are not
+  // initialized to be empty until a "later" component is seen.
 
   // Iterate through the list of tokens and update our state machine as we go.
   for (; token_index_ < token_list_.size(); token_index_ += token_increment_) {
@@ -77,11 +81,15 @@ void Parser::Parse(ExceptionState& exception_state) {
           ChangeState(StringParseState::kHash, Skip(1));
         } else if (IsSearchPrefix()) {
           ChangeState(StringParseState::kSearch, Skip(1));
-          result_->setHash(g_empty_string);
+          if (!more_wildcards) {
+            result_->setHash(g_empty_string);
+          }
         } else {
           ChangeState(StringParseState::kPathname, Skip(0));
-          result_->setSearch(g_empty_string);
-          result_->setHash(g_empty_string);
+          if (!more_wildcards) {
+            result_->setSearch(g_empty_string);
+            result_->setHash(g_empty_string);
+          }
         }
         continue;
       }
@@ -117,16 +125,18 @@ void Parser::Parse(ExceptionState& exception_state) {
     switch (state_) {
       case StringParseState::kInit:
         if (IsProtocolSuffix()) {
-          // We are in absolute mode and we know values will not be inherited
-          // from a base URL.  Therefore initialize the rest of the components
-          // to the empty string.
-          result_->setUsername(g_empty_string);
-          result_->setPassword(g_empty_string);
-          result_->setHostname(g_empty_string);
-          result_->setPort(g_empty_string);
-          result_->setPathname(g_empty_string);
-          result_->setSearch(g_empty_string);
-          result_->setHash(g_empty_string);
+          if (!more_wildcards) {
+            // We are in absolute mode and we know values will not be inherited
+            // from a base URL.  Therefore initialize the rest of the components
+            // to the empty string.
+            result_->setUsername(g_empty_string);
+            result_->setPassword(g_empty_string);
+            result_->setHostname(g_empty_string);
+            result_->setPort(g_empty_string);
+            result_->setPathname(g_empty_string);
+            result_->setSearch(g_empty_string);
+            result_->setHash(g_empty_string);
+          }
 
           // Update the state to expect the start of an absolute URL.
           RewindAndSetState(StringParseState::kProtocol);
@@ -140,12 +150,15 @@ void Parser::Parse(ExceptionState& exception_state) {
           // compute if this entire URLPattern should be treated as a
           // "standard" URL.  If any of the special schemes, like `https`,
           // match the protocol pattern then we treat it as standard.
-          ComputeShouldTreatAsStandardURL(exception_state);
+          ComputeShouldTreatAsStandardURL(isolate, exception_state);
           if (exception_state.HadException())
             return;
 
           // Standard URLs default to `/` for the pathname.
-          if (should_treat_as_standard_url_) {
+          //
+          // If |more_wildcards| is true, we wait until actually seeing the
+          // pathname or a later component to apply this default.
+          if (should_treat_as_standard_url_ && !more_wildcards) {
             result_->setPathname("/");
           }
 
@@ -268,6 +281,14 @@ void Parser::Parse(ExceptionState& exception_state) {
         break;
     };
   }
+
+  // Special case: if you specify a hostname, it is assumed that you want the
+  // default port, if you didn't specify. This is ensures that
+  // https://example.com/* does not match https://example.com:8443/, which is
+  // another origin entirely.
+  if (more_wildcards && result_->hasHostname() && !result_->hasPort()) {
+    result_->setPort(g_empty_string);
+  }
 }
 
 void Parser::ChangeState(StringParseState new_state, Skip skip) {
@@ -316,6 +337,39 @@ void Parser::ChangeState(StringParseState new_state, Skip skip) {
     case StringParseState::kDone:
       NOTREACHED();
       break;
+  }
+
+  if (RuntimeEnabledFeatures::URLPatternWildcardMoreOftenEnabled() &&
+      state_ != StringParseState::kInit &&
+      new_state != StringParseState::kDone) {
+    // If a component was skipped but a later component is present, it gets its
+    // default value, explicitly.
+    //
+    // This relies on the ordering of the states, which does correspond to the
+    // order of components (aside from authority/username/password, which are
+    // special).
+    static_assert(
+        base::ranges::is_sorted(std::initializer_list<StringParseState>{
+            StringParseState::kHostname, StringParseState::kPort,
+            StringParseState::kPathname, StringParseState::kSearch,
+            StringParseState::kHash}));
+    if (state_ < StringParseState::kHostname &&
+        new_state > StringParseState::kHostname && !result_->hasHostname()) {
+      result_->setHostname(g_empty_string);
+    }
+    if (state_ < StringParseState::kPort &&
+        new_state > StringParseState::kPort && !result_->hasPort()) {
+      result_->setPort(g_empty_string);
+    }
+    if (state_ < StringParseState::kPathname &&
+        new_state > StringParseState::kPathname && !result_->hasPathname()) {
+      result_->setPathname(should_treat_as_standard_url_ ? "/"
+                                                         : g_empty_string);
+    }
+    if (state_ < StringParseState::kSearch &&
+        new_state > StringParseState::kSearch && !result_->hasSearch()) {
+      result_->setSearch(g_empty_string);
+    }
   }
 
   ChangeStateWithoutSettingComponent(new_state, skip);
@@ -465,10 +519,11 @@ String Parser::MakeComponentString() const {
                           token.index - component_char_start);
 }
 
-void Parser::ComputeShouldTreatAsStandardURL(ExceptionState& exception_state) {
+void Parser::ComputeShouldTreatAsStandardURL(v8::Isolate* isolate,
+                                             ExceptionState& exception_state) {
   DCHECK_EQ(state_, StringParseState::kProtocol);
   protocol_component_ = Component::Compile(
-      MakeComponentString(), Component::Type::kProtocol,
+      isolate, MakeComponentString(), Component::Type::kProtocol,
       /*protocol_component=*/nullptr, external_options_, exception_state);
   if (protocol_component_ && protocol_component_->ShouldTreatAsStandardURL())
     should_treat_as_standard_url_ = true;

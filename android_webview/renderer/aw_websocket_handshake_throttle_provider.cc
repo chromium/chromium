@@ -49,7 +49,7 @@ AwWebSocketHandshakeThrottleProvider::Clone(
 
 std::unique_ptr<blink::WebSocketHandshakeThrottle>
 AwWebSocketHandshakeThrottleProvider::CreateThrottle(
-    int render_frame_id,
+    base::optional_ref<const blink::LocalFrameToken> local_frame_token,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (safe_browsing_remote_) {
@@ -57,7 +57,7 @@ AwWebSocketHandshakeThrottleProvider::CreateThrottle(
                         std::move(task_runner));
   }
   return std::make_unique<safe_browsing::WebSocketSBHandshakeThrottle>(
-      safe_browsing_.get(), render_frame_id);
+      safe_browsing_.get(), local_frame_token);
 }
 
 }  // namespace android_webview

@@ -45,8 +45,8 @@ export class MlUiElement extends CustomElement {
     const mlTable = this.getRequiredElement<MlTableElement>('ml-table');
     const mlChart = this.getRequiredElement<MlChartElement>('ml-chart');
 
-    this.getRequiredElement('#ml-sync-batch-url-scoring-disabled-warning')
-        .hidden = loadTimeData.getBoolean('isMlSyncBatchUrlScoringEnabled');
+    this.getRequiredElement('#ml-ml-url-scoring-disabled-warning').hidden =
+        loadTimeData.getBoolean('isMlUrlScoringEnabled');
     [mlCalculator, mlTable].forEach(
         el => el.addEventListener('copied', ({detail}) => {
           detail.then(() => 'Copied!')
@@ -59,7 +59,10 @@ export class MlUiElement extends CustomElement {
                     this.getRequiredElement('#copied-notification');
                 notification.textContent = text;
                 notification.classList.remove('fade-out');
-                setTimeout(() => notification.classList.add('fade-out'), 0);
+                // Querying `offsetHeight` forces a page reflow; otherwise,
+                // the classList changes above and below would be deduped.
+                notification.offsetHeight;
+                notification.classList.add('fade-out');
               });
         }));
     mlCalculator.addEventListener(

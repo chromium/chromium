@@ -13,6 +13,8 @@
 @class PinnedTabsViewController;
 @protocol TabCollectionDragDropHandler;
 @protocol TabContextMenuProvider;
+@class TabGridTransitionItem;
+
 namespace web {
 class WebStateID;
 }  // namespace web
@@ -53,6 +55,10 @@ class WebStateID;
 
 // Tells the delegate that a drop animation did end.
 - (void)pinnedViewControllerDropAnimationDidEnd:
+    (PinnedTabsViewController*)pinnedTabsViewController;
+
+// Tells the delegate that a drag session did end.
+- (void)pinnedViewControllerDragSessionWillBegin:
     (PinnedTabsViewController*)pinnedTabsViewController;
 
 // Tells the delegate that a drag session did end.
@@ -99,6 +105,9 @@ class WebStateID;
 
 // Returns the layout of the pinned tabs to be used in an animated transition.
 - (LegacyGridTransitionLayout*)transitionLayout;
+
+// Returns TabGridTransitionItem for the active cell.
+- (TabGridTransitionItem*)transitionItemForActiveCell;
 
 // Returns whether there is a selected cell in the collection.
 - (BOOL)hasSelectedCell;

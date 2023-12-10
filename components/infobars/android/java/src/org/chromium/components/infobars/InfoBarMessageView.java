@@ -33,11 +33,14 @@ public class InfoBarMessageView extends TextViewWithClickableSpans {
         boolean retVal = super.onTouchEvent(event);
         if (!mExternalOnClickListenerSet && event.getActionMasked() == MotionEvent.ACTION_UP) {
             long downDuration = event.getEventTime() - event.getDownTime();
-            boolean validClickEvent = downDuration >= ViewConfiguration.getTapTimeout()
-                    && downDuration <= ViewConfiguration.getLongPressTimeout();
+            boolean validClickEvent =
+                    downDuration >= ViewConfiguration.getTapTimeout()
+                            && downDuration <= ViewConfiguration.getLongPressTimeout();
 
             ClickableSpan[] spans = getClickableSpans();
-            if (validClickEvent && spans != null && spans.length == 1
+            if (validClickEvent
+                    && spans != null
+                    && spans.length == 1
                     && !touchIntersectsAnyClickableSpans(event)) {
                 spans[0].onClick(this);
             }

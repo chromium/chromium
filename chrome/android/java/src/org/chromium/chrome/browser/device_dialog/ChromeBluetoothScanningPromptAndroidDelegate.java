@@ -11,9 +11,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.omnibox.AutocompleteSchemeClassifier;
 import org.chromium.components.permissions.BluetoothScanningPromptAndroidDelegate;
 
-/**
- *  The implementation of {@link BluetoothScanningPromptAndroidDelegate} for Chrome.
- */
+/** The implementation of {@link BluetoothScanningPromptAndroidDelegate} for Chrome. */
 public class ChromeBluetoothScanningPromptAndroidDelegate
         implements BluetoothScanningPromptAndroidDelegate {
 
@@ -24,9 +22,7 @@ public class ChromeBluetoothScanningPromptAndroidDelegate
         mProfile = profile;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
     public AutocompleteSchemeClassifier createAutocompleteSchemeClassifier() {
         return new ChromeAutocompleteSchemeClassifier(mProfile);

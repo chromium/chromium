@@ -18,11 +18,13 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/document_service.h"
+#include "content/public/browser/isolated_context_util.h"
 #include "content/public/common/content_client.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "services/device/public/mojom/usb_device.mojom.h"
 #include "services/device/public/mojom/usb_enumeration_options.mojom.h"
 #include "services/device/public/mojom/usb_manager_client.mojom.h"
+#include "third_party/blink/public/common/features_generated.h"
 
 namespace content {
 
@@ -251,6 +253,28 @@ std::vector<uint8_t> WebUsbServiceImpl::GetProtectedInterfaceClasses() const {
                                               render_frame_host_, classes);
   }
 
+  // Isolated contexts with permission to access the policy-controlled feature
+  // "usb-unrestricted" can claim USB interfaces with classes that are
+  // normally blocked. Currently the feature is gated by
+  // `kUnrestrictedUsb`. If the feature is disabled, Isolated Apps
+  // directly have unrestricted access to any USB interface class.
+  bool is_usb_unrestricted = false;
+  if (base::FeatureList::IsEnabled(blink::features::kUnrestrictedUsb)) {
+    is_usb_unrestricted =
+        render_frame_host_ &&
+        render_frame_host_->IsFeatureEnabled(
+            blink::mojom::PermissionsPolicyFeature::kUsbUnrestricted) &&
+        HasIsolatedContextCapability(render_frame_host_);
+  } else {
+    is_usb_unrestricted =
+        render_frame_host_ &&
+        render_frame_host_->GetWebExposedIsolationLevel() >=
+            content::WebExposedIsolationLevel::kMaybeIsolatedApplication;
+  }
+  if (is_usb_unrestricted) {
+    classes.clear();
+  }
+
   return classes;
 }
 
@@ -275,8 +299,8 @@ void WebUsbServiceImpl::OnGetDevices(
 
   std::vector<device::mojom::UsbDeviceInfoPtr> device_infos;
   for (auto& device_info : device_info_list) {
-    if (delegate->HasDevicePermission(GetBrowserContext(), origin_,
-                                      *device_info)) {
+    if (delegate->HasDevicePermission(GetBrowserContext(), render_frame_host_,
+                                      origin_, *device_info)) {
       device_infos.push_back(device_info.Clone());
     }
   }
@@ -294,7 +318,8 @@ void WebUsbServiceImpl::GetDevice(
   auto* browser_context = GetBrowserContext();
   auto* device_info = delegate->GetDeviceInfo(browser_context, guid);
   if (!device_info ||
-      !delegate->HasDevicePermission(browser_context, origin_, *device_info)) {
+      !delegate->HasDevicePermission(browser_context, render_frame_host_,
+                                     origin_, *device_info)) {
     return;
   }
 
@@ -331,7 +356,8 @@ void WebUsbServiceImpl::ForgetDevice(const std::string& guid,
     auto* browser_context = GetBrowserContext();
     auto* device_info = delegate->GetDeviceInfo(browser_context, guid);
     if (device_info &&
-        delegate->HasDevicePermission(browser_context, origin_, *device_info)) {
+        delegate->HasDevicePermission(browser_context, render_frame_host_,
+                                      origin_, *device_info)) {
       delegate->RevokeDevicePermissionWebInitiated(browser_context, origin_,
                                                    *device_info);
     }
@@ -380,15 +406,15 @@ void WebUsbServiceImpl::OnPermissionRevoked(const url::Origin& origin) {
     if (!device_info)
       return true;
 
-    return !delegate->HasDevicePermission(browser_context, origin_,
-                                          *device_info);
+    return !delegate->HasDevicePermission(browser_context, render_frame_host_,
+                                          origin_, *device_info);
   });
 }
 
 void WebUsbServiceImpl::OnDeviceAdded(
     const device::mojom::UsbDeviceInfo& device_info) {
   if (!GetContentClient()->browser()->GetUsbDelegate()->HasDevicePermission(
-          GetBrowserContext(), origin_, device_info)) {
+          GetBrowserContext(), render_frame_host_, origin_, device_info)) {
     return;
   }
   for (auto& client : clients_)
@@ -402,7 +428,7 @@ void WebUsbServiceImpl::OnDeviceRemoved(
   });
 
   if (!GetContentClient()->browser()->GetUsbDelegate()->HasDevicePermission(
-          GetBrowserContext(), origin_, device_info)) {
+          GetBrowserContext(), render_frame_host_, origin_, device_info)) {
     return;
   }
   for (auto& client : clients_)

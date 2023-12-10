@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_MODEL_EXECUTION_FEATURES_H_
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_MODEL_EXECUTION_FEATURES_H_
 
+#include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
 
@@ -18,6 +19,11 @@ BASE_DECLARE_FEATURE(kWallpaperSearchSettingsVisibility);
 
 const base::Feature* GetFeatureToUseToCheckSettingsVisibility(
     proto::ModelExecutionFeature feature);
+
+// Returns the features allowed to be shown in the settings UI, and can be
+// enabled, even for unsigned users.
+base::flat_set<proto::ModelExecutionFeature>
+GetAllowedFeaturesForUnsignedUser();
 
 }  // namespace internal
 }  // namespace features

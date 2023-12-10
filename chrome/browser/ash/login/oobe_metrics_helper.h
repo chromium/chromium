@@ -11,6 +11,7 @@
 #include "base/observer_list_types.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
+#include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
 
 namespace ash {
 
@@ -57,7 +58,25 @@ class OobeMetricsHelper {
     virtual void OnOnboardingStarted() {}
 
     // Invoked when `onboarding complete` metrics are being reported.
-    virtual void OnOnboadingCompleted() {}
+    virtual void OnOnboardingCompleted() {}
+
+    // Invoked when `device registered` metrics are being reported.
+    virtual void OnDeviceRegistered() {}
+
+    // Invoked when `GAIA sign-in request` metrics are being reported.
+    virtual void OnGaiaSignInRequested(GaiaView::GaiaLoginVariant variant) {}
+
+    // Invoked when `GAIA sign-in complete` metrics are being reported.
+    virtual void OnGaiaSignInCompleted(GaiaView::GaiaLoginVariant variant) {}
+
+    // Invoked when `pre login OOBE flow resume` metrics are being reported.
+    virtual void OnPreLoginOobeResumed(OobeScreenId screen) {}
+
+    // Invoked when `onboarding resume` metrics are being reported.
+    virtual void OnOnboardingResumed(OobeScreenId screen) {}
+
+    // Invoked when `CHOOBE resume` metrics are being reported.
+    virtual void OnChoobeResumed() {}
   };
 
   OobeMetricsHelper();
@@ -92,6 +111,25 @@ class OobeMetricsHelper {
   // that the start time is not available.
   void RecordOnboadingComplete(base::Time oobe_start_time,
                                base::Time onboarding_start_time);
+
+  // Called when `StartupUtils::MarkDeviceRegistered()` is called.
+  void RecordDeviceRegistered();
+
+  // Called after the user enters the password in GAIA flow and continues to the
+  // authentication.
+  void RecordGaiaSignInRequested(GaiaView::GaiaLoginVariant variant);
+
+  // Called after GAIA authentication is completed successfully
+  void RecordGaiaSignInCompleted(GaiaView::GaiaLoginVariant variant);
+
+  // Called after the decision to resume prelogin OOBE from `screen`.
+  void RecordPreLoginOobeResume(OobeScreenId screen);
+
+  // Called after the decision to resume onboarding from `screen`.
+  void RecordOnboardingResume(OobeScreenId screen);
+
+  // Called after the decision to resume CHOOBE flow.
+  void RecordChoobeResume();
 
   // Called when `ShowEnrollmentScreen()` is called.
   void RecordEnrollingUserType();

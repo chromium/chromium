@@ -94,7 +94,7 @@ class WebAppLaunchHandlerBrowserTest : public WebAppControllerBrowserTest {
         app_id);
   }
 
-  absl::optional<LaunchHandler> GetLaunchHandler(const webapps::AppId& app_id) {
+  std::optional<LaunchHandler> GetLaunchHandler(const webapps::AppId& app_id) {
     return GetWebApp(app_id)->launch_handler();
   }
 
@@ -146,7 +146,7 @@ IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerBrowserTest, ClientModeEmpty) {
   base::HistogramTester histogram_tester;
   webapps::AppId app_id =
       InstallTestWebApp("/web_apps/basic.html", /*await_metric=*/false);
-  EXPECT_EQ(GetLaunchHandler(app_id), absl::nullopt);
+  EXPECT_EQ(GetLaunchHandler(app_id), std::nullopt);
 
   ExpectNavigateNewBehavior(app_id);
 
@@ -467,7 +467,7 @@ IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerBrowserTest,
                        MAYBE_SelectActiveBrowser) {
   webapps::AppId app_id =
       InstallTestWebApp("/web_apps/basic.html", /*await_metric=*/false);
-  EXPECT_EQ(GetLaunchHandler(app_id), absl::nullopt);
+  EXPECT_EQ(GetLaunchHandler(app_id), std::nullopt);
 
   Browser* browser_1 = LaunchWebAppBrowser(app_id);
   Browser* browser_2 = LaunchWebAppBrowser(app_id);
@@ -650,7 +650,7 @@ IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerOriginTrialBrowserTest, OriginTrial) {
   // The app should update to no longer have launch_handler defined without the
   // origin trial.
   EXPECT_EQ(provider.registrar_unsafe().GetAppById(app_id)->launch_handler(),
-            absl::nullopt);
+            std::nullopt);
 }
 
 }  // namespace web_app

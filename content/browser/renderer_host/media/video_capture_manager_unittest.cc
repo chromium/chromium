@@ -427,7 +427,7 @@ TEST_F(VideoCaptureManagerTest, CreateAndClose) {
   vcm_->UnregisterListener(listener_.get());
 }
 
-#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
 // Try to start and stop a device with an effects manager
 TEST_F(VideoCaptureManagerTest, CreateWithVideoEffectsManager) {
   base::test::ScopedFeatureList feature_list;
@@ -441,7 +441,8 @@ TEST_F(VideoCaptureManagerTest, CreateWithVideoEffectsManager) {
   auto client_id = StartClient(video_session_id, true);
   StopClient(client_id);
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID) &&
+        // !BUILDFLAG(IS_FUCHSIA)
 
 TEST_F(VideoCaptureManagerTest, CreateAndCloseMultipleTimes) {
   InSequence s;

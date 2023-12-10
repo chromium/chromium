@@ -13,9 +13,7 @@ import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.util.TraceEventVectorDrawableCompat;
 
-/**
- * The base fragment class for Preload Pages settings fragments.
- */
+/** The base fragment class for Preload Pages settings fragments. */
 public abstract class PreloadPagesSettingsFragmentBase extends ChromeBaseSettingsFragment {
     @Override
     public void onCreatePreferences(Bundle bundle, String s) {
@@ -32,8 +30,9 @@ public abstract class PreloadPagesSettingsFragmentBase extends ChromeBaseSetting
         menu.clear();
         MenuItem help =
                 menu.add(Menu.NONE, R.id.menu_id_targeted_help, Menu.NONE, R.string.menu_help);
-        help.setIcon(TraceEventVectorDrawableCompat.create(
-                getResources(), R.drawable.ic_help_and_feedback, getActivity().getTheme()));
+        help.setIcon(
+                TraceEventVectorDrawableCompat.create(
+                        getResources(), R.drawable.ic_help_and_feedback, getActivity().getTheme()));
     }
 
     @Override
@@ -41,8 +40,8 @@ public abstract class PreloadPagesSettingsFragmentBase extends ChromeBaseSetting
         if (item.getItemId() != R.id.menu_id_targeted_help) {
             return false;
         }
-        getHelpAndFeedbackLauncher().show(
-                getActivity(), getString(R.string.help_context_privacy), null);
+        getHelpAndFeedbackLauncher()
+                .show(getActivity(), getString(R.string.help_context_privacy), null);
         return true;
     }
 

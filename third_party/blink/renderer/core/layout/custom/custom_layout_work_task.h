@@ -12,11 +12,11 @@
 namespace blink {
 
 class ComputedStyle;
+class ConstraintSpace;
 class CustomLayoutChild;
 class CustomLayoutToken;
+class LayoutInputNode;
 class LayoutUnit;
-class NGConstraintSpace;
-class NGLayoutInputNode;
 class SerializedScriptValue;
 class ScriptPromiseResolver;
 
@@ -47,7 +47,7 @@ class CustomLayoutWorkTask final
   void Trace(Visitor*) const;
 
   // Runs this work task.
-  void Run(const NGConstraintSpace& parent_space,
+  void Run(const ConstraintSpace& parent_space,
            const ComputedStyle& parent_style,
            const LayoutUnit child_available_block_size,
            bool* child_depends_on_block_constraints = nullptr);
@@ -60,13 +60,13 @@ class CustomLayoutWorkTask final
   scoped_refptr<SerializedScriptValue> constraint_data_;
   TaskType type_;
 
-  void RunLayoutFragmentTask(const NGConstraintSpace& parent_space,
+  void RunLayoutFragmentTask(const ConstraintSpace& parent_space,
                              const ComputedStyle& parent_style,
-                             NGLayoutInputNode child);
-  void RunIntrinsicSizesTask(const NGConstraintSpace& parent_space,
+                             LayoutInputNode child);
+  void RunIntrinsicSizesTask(const ConstraintSpace& parent_space,
                              const ComputedStyle& parent_style,
                              const LayoutUnit child_available_block_size,
-                             NGLayoutInputNode child,
+                             LayoutInputNode child,
                              bool* child_depends_on_block_constraints);
 };
 

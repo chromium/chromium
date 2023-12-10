@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include <optional>
 #include "base/command_line.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
@@ -28,7 +29,6 @@
 #include "net/base/net_errors.h"
 #include "net/cookies/cookie_constants.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -80,7 +80,7 @@ static GoogleServiceAuthError CreateAuthError(
   if (body)
     response_body = std::move(*body);
 
-  absl::optional<base::Value> value = base::JSONReader::Read(response_body);
+  std::optional<base::Value> value = base::JSONReader::Read(response_body);
   if (!value || !value->is_dict()) {
     int http_response_code = -1;
     if (head && head->headers)
@@ -296,7 +296,7 @@ void OAuth2MintTokenFlow::ProcessApiCallSuccess(
   if (body)
     response_body = std::move(*body);
 
-  absl::optional<base::Value> value = base::JSONReader::Read(response_body);
+  std::optional<base::Value> value = base::JSONReader::Read(response_body);
   if (!value || !value->is_dict()) {
     RecordApiCallResult(OAuth2MintTokenApiCallResult::kParseJsonFailure);
     ReportFailure(GoogleServiceAuthError::FromUnexpectedServiceResponse(
@@ -452,8 +452,8 @@ bool OAuth2MintTokenFlow::ParseRemoteConsentResponse(
       const std::string* path = cookie_dict->FindString("path");
       const std::string* max_age_seconds =
           cookie_dict->FindString("maxAgeSeconds");
-      absl::optional<bool> is_secure = cookie_dict->FindBool("isSecure");
-      absl::optional<bool> is_http_only = cookie_dict->FindBool("isHttpOnly");
+      std::optional<bool> is_secure = cookie_dict->FindBool("isSecure");
+      std::optional<bool> is_http_only = cookie_dict->FindBool("isHttpOnly");
       const std::string* same_site = cookie_dict->FindString("sameSite");
 
       int64_t max_age = -1;
@@ -473,8 +473,8 @@ bool OAuth2MintTokenFlow::ParseRemoteConsentResponse(
               is_secure ? *is_secure : false,
               is_http_only ? *is_http_only : false,
               net::StringToCookieSameSite(same_site ? *same_site : ""),
-              net::COOKIE_PRIORITY_DEFAULT, /* same_party */ false,
-              /* partition_key */ absl::nullopt);
+              net::COOKIE_PRIORITY_DEFAULT,
+              /* partition_key */ std::nullopt);
       cookies.push_back(*cookie);
     }
   }

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/bookmarks/chrome_bookmark_client.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
@@ -15,6 +16,7 @@
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/bookmark_storage.h"
+#include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/bookmarks/managed/managed_bookmark_service.h"
 #include "components/bookmarks/managed/managed_bookmark_util.h"
 #include "components/commerce/core/commerce_feature_list.h"
@@ -26,6 +28,7 @@
 #include "components/history/core/browser/url_database.h"
 #include "components/offline_pages/buildflags/buildflags.h"
 #include "components/power_bookmarks/core/suggested_save_location_provider.h"
+#include "components/sync/base/features.h"
 #include "components/sync_bookmarks/bookmark_model_view.h"
 #include "components/sync_bookmarks/bookmark_sync_service.h"
 #include "components/undo/bookmark_undo_service.h"
@@ -88,7 +91,12 @@ ChromeBookmarkClient::ChromeBookmarkClient(
       local_or_syncable_bookmark_sync_service_(
           local_or_syncable_bookmark_sync_service),
       account_bookmark_sync_service_(account_bookmark_sync_service),
-      bookmark_undo_service_(bookmark_undo_service) {}
+      bookmark_undo_service_(bookmark_undo_service) {
+  CHECK(profile_);
+  base::UmaHistogramBoolean(
+      "Bookmarks.BookmarkBar.Shown",
+      profile_->GetPrefs()->GetBoolean(bookmarks::prefs::kShowBookmarkBar));
+}
 
 ChromeBookmarkClient::~ChromeBookmarkClient() {
   if (shopping_save_location_provider_) {
@@ -117,6 +125,11 @@ void ChromeBookmarkClient::Init(bookmarks::BookmarkModel* model) {
       offline_page_observer_.get());
   model_observation_->Observe(model);
 #endif
+}
+
+bool ChromeBookmarkClient::AreFoldersForAccountStorageAllowed() {
+  return base::FeatureList::IsEnabled(
+      syncer::kEnableBookmarkFoldersForAccountStorage);
 }
 
 base::CancelableTaskTracker::TaskId
@@ -204,12 +217,9 @@ void ChromeBookmarkClient::DecodeBookmarkSyncMetadata(
   // TODO(crbug.com/1494120): Pass along sync metadata once BookmarkClient API
   // is capable of reading it from BookmarkModel.
   if (account_bookmark_sync_service_) {
-    // TODO(crbug.com/1494120): `BookmarkModelViewUsingLocalOrSyncableNodes` is
-    // not the right thing to use here, because the underlying model is shared.
     account_bookmark_sync_service_->DecodeBookmarkSyncMetadata(
         std::string(), schedule_save_closure,
-        std::make_unique<
-            sync_bookmarks::BookmarkModelViewUsingLocalOrSyncableNodes>(
+        std::make_unique<sync_bookmarks::BookmarkModelViewUsingAccountNodes>(
             model_));
   }
 }

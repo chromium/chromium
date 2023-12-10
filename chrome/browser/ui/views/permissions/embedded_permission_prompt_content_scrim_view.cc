@@ -1,0 +1,85 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/ui/views/permissions/embedded_permission_prompt_content_scrim_view.h"
+
+#include "content/public/browser/web_contents.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/views/background.h"
+#include "ui/views/view_class_properties.h"
+
+namespace {
+constexpr char kWidgetName[] = "EmbeddedPermissionPromptContentScrimWidget";
+}
+
+EmbeddedPermissionPromptContentScrimView::
+    EmbeddedPermissionPromptContentScrimView(
+        base::WeakPtr<EmbeddedPermissionPromptViewDelegate> delegate,
+        views::Widget* widget)
+    : delegate_(std::move(delegate)) {
+  SetProperty(views::kElementIdentifierKey, kContentScrimViewId);
+  observation_.Observe(widget);
+}
+
+EmbeddedPermissionPromptContentScrimView::
+    ~EmbeddedPermissionPromptContentScrimView() = default;
+
+// static
+std::unique_ptr<views::Widget>
+EmbeddedPermissionPromptContentScrimView::CreateScrimWidget(
+    base::WeakPtr<EmbeddedPermissionPromptViewDelegate> delegate) {
+  views::Widget::InitParams params(
+      views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
+  auto permission_prompt_delegate = delegate->GetPermissionPromptDelegate();
+  CHECK(permission_prompt_delegate);
+  auto* web_content = permission_prompt_delegate->GetAssociatedWebContents();
+  auto* top_level_widget = views::Widget::GetTopLevelWidgetForNativeView(
+      web_content->GetContentNativeView());
+  params.parent = top_level_widget->GetNativeView();
+  params.bounds = web_content->GetContainerBounds();
+  params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
+  params.accept_events = true;
+  params.name = kWidgetName;
+  auto widget = std::make_unique<views::Widget>();
+  widget->Init(std::move(params));
+
+  auto content_scrim_view =
+      std::make_unique<EmbeddedPermissionPromptContentScrimView>(
+          delegate, top_level_widget);
+  content_scrim_view->SetBackground(views::CreateSolidBackground(
+      SkColorSetA(gfx::kGoogleGrey700, SK_AlphaOPAQUE * 0.5f)));
+  widget->SetContentsView(std::move(content_scrim_view));
+  widget->SetVisibilityChangedAnimationsEnabled(false);
+  widget->Show();
+  return widget;
+}
+
+bool EmbeddedPermissionPromptContentScrimView::OnMousePressed(
+    const ui::MouseEvent& event) {
+  delegate_->DismissScrim();
+  return true;
+}
+
+void EmbeddedPermissionPromptContentScrimView::OnWidgetDestroyed(
+    views::Widget* widget) {
+  DCHECK(observation_.IsObservingSource(widget));
+  observation_.Reset();
+}
+
+void EmbeddedPermissionPromptContentScrimView::OnWidgetBoundsChanged(
+    views::Widget* widget,
+    const gfx::Rect& new_bounds) {
+  if (auto permission_prompt_delegate =
+          delegate_->GetPermissionPromptDelegate()) {
+    GetWidget()->SetBounds(
+        permission_prompt_delegate->GetAssociatedWebContents()
+            ->GetContainerBounds());
+  }
+}
+
+BEGIN_METADATA(EmbeddedPermissionPromptContentScrimView, views::View)
+END_METADATA
+
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(EmbeddedPermissionPromptContentScrimView,
+                                      kContentScrimViewId);

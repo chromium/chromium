@@ -15,17 +15,13 @@ import org.chromium.components.browser_ui.settings.FragmentSettingsLauncher;
 import org.chromium.components.browser_ui.settings.ManagedPreferenceDelegate;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 
-/**
- * Fragment containing Preload Pages settings.
- */
+/** Fragment containing Preload Pages settings. */
 public class PreloadPagesSettingsFragment extends PreloadPagesSettingsFragmentBase
         implements FragmentSettingsLauncher,
-                   RadioButtonGroupPreloadPagesSettings.OnPreloadPagesStateDetailsRequested,
-                   Preference.OnPreferenceChangeListener {
-    @VisibleForTesting
-    static final String PREF_MANAGED_DISCLAIMER_TEXT = "managed_disclaimer_text";
-    @VisibleForTesting
-    static final String PREF_PRELOAD_PAGES = "preload_pages_radio_button_group";
+                RadioButtonGroupPreloadPagesSettings.OnPreloadPagesStateDetailsRequested,
+                Preference.OnPreferenceChangeListener {
+    @VisibleForTesting static final String PREF_MANAGED_DISCLAIMER_TEXT = "managed_disclaimer_text";
+    @VisibleForTesting static final String PREF_PRELOAD_PAGES = "preload_pages_radio_button_group";
 
     // An instance of SettingsLauncher that is used to launch Preload Pages subsections.
     private SettingsLauncher mSettingsLauncher;
@@ -35,8 +31,7 @@ public class PreloadPagesSettingsFragment extends PreloadPagesSettingsFragmentBa
      * @return A summary that describes the current Preload Pages state.
      */
     public static String getPreloadPagesSummaryString(Context context) {
-        @PreloadPagesState
-        int preloadPagesState = PreloadPagesSettingsBridge.getState();
+        @PreloadPagesState int preloadPagesState = PreloadPagesSettingsBridge.getState();
         if (preloadPagesState == PreloadPagesState.EXTENDED_PRELOADING) {
             return context.getString(R.string.preload_pages_extended_preloading_title);
         }
@@ -60,8 +55,10 @@ public class PreloadPagesSettingsFragment extends PreloadPagesSettingsFragmentBa
         mPreloadPagesPreference.setManagedPreferenceDelegate(managedPreferenceDelegate);
         mPreloadPagesPreference.setOnPreferenceChangeListener(this);
 
-        findPreference(PREF_MANAGED_DISCLAIMER_TEXT).setVisible(
-               managedPreferenceDelegate.isPreferenceClickDisabled(mPreloadPagesPreference));
+        findPreference(PREF_MANAGED_DISCLAIMER_TEXT)
+                .setVisible(
+                        managedPreferenceDelegate.isPreferenceClickDisabled(
+                                mPreloadPagesPreference));
     }
 
     @Override
@@ -92,8 +89,8 @@ public class PreloadPagesSettingsFragment extends PreloadPagesSettingsFragmentBa
             @Override
             public boolean isPreferenceControlledByPolicy(Preference preference) {
                 String key = preference.getKey();
-                assert PREF_MANAGED_DISCLAIMER_TEXT.equals(key)
-                        || PREF_PRELOAD_PAGES.equals(key) : "Wrong preference key: " + key;
+                assert PREF_MANAGED_DISCLAIMER_TEXT.equals(key) || PREF_PRELOAD_PAGES.equals(key)
+                        : "Wrong preference key: " + key;
                 return PreloadPagesSettingsBridge.isNetworkPredictionManaged();
             }
         };
@@ -103,10 +100,8 @@ public class PreloadPagesSettingsFragment extends PreloadPagesSettingsFragmentBa
     public boolean onPreferenceChange(Preference preference, Object newValue) {
         String key = preference.getKey();
         assert PREF_PRELOAD_PAGES.equals(key) : "Unexpected preference key.";
-        @PreloadPagesState
-        int newState = (int) newValue;
-        @PreloadPagesState
-        int currentState = PreloadPagesSettingsBridge.getState();
+        @PreloadPagesState int newState = (int) newValue;
+        @PreloadPagesState int currentState = PreloadPagesSettingsBridge.getState();
         if (newState == currentState) {
             return true;
         }

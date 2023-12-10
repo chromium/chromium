@@ -39,7 +39,8 @@ import java.util.Map;
 public class Options {
     public enum OptionsIdentifier {
         MIGRATE_SESSIONS_ON_NETWORK_CHANGE_V2(
-                new BooleanOption("migrate_sessions_on_network_change_v2",
+                new BooleanOption(
+                        "migrate_sessions_on_network_change_v2",
                         "Enable QUIC connection migration. This only occurs when a network has "
                                 + "completed"
                                 + " disconnected and no longer reachable. QUIC will try to migrate "
@@ -52,25 +53,31 @@ public class Options {
                             }
                         },
                         false)),
-        MIGRATION_SESSION_EARLY_V2(new BooleanOption("migrate_sessions_early_v2",
-                "Enable QUIC early session migration. This will make quic send probing"
-                        + " packets when the network is degrading, QUIC will migrate the "
-                        + "sessions to a different network even before the original network "
-                        + "has disconnected.",
-                new Action<Boolean>() {
-                    @Override
-                    @OptIn(markerClass = ConnectionMigrationOptions.Experimental.class)
-                    public void configureBuilder(ActionData data, Boolean value) {
-                        data.getMigrationBuilder().enablePathDegradationMigration(value);
-                        data.getMigrationBuilder().allowNonDefaultNetworkUsage(value);
-                    }
-                },
-                false)),
-        SLOW_DOWNLOAD(new BooleanOption("Slow Download (10s)",
-                "Hang the onReadCompleted for 10s before proceeding. This should simulate slow connection.",
-                new Action<>() {}, false));
+        MIGRATION_SESSION_EARLY_V2(
+                new BooleanOption(
+                        "migrate_sessions_early_v2",
+                        "Enable QUIC early session migration. This will make quic send probing"
+                                + " packets when the network is degrading, QUIC will migrate the "
+                                + "sessions to a different network even before the original network "
+                                + "has disconnected.",
+                        new Action<Boolean>() {
+                            @Override
+                            @OptIn(markerClass = ConnectionMigrationOptions.Experimental.class)
+                            public void configureBuilder(ActionData data, Boolean value) {
+                                data.getMigrationBuilder().enablePathDegradationMigration(value);
+                                data.getMigrationBuilder().allowNonDefaultNetworkUsage(value);
+                            }
+                        },
+                        false)),
+        SLOW_DOWNLOAD(
+                new BooleanOption(
+                        "Slow Download (10s)",
+                        "Hang the onReadCompleted for 10s before proceeding. This should simulate slow connection.",
+                        new Action<>() {},
+                        false));
 
         private final Option<?> mOption;
+
         OptionsIdentifier(Option<?> option) {
             this.mOption = option;
         }
@@ -97,6 +104,7 @@ public class Options {
         private final String mOptionDescription;
         private final Action<T> mAction;
         private T mOptionValue;
+
         private Option(
                 String optionName, String optionDescription, Action<T> action, T defaultValue) {
             this.mOptionName = optionName;
@@ -108,6 +116,7 @@ public class Options {
         public String getShortName() {
             return mOptionName;
         }
+
         public String getDescription() {
             return mOptionDescription;
         }
@@ -128,7 +137,10 @@ public class Options {
     }
 
     public static class BooleanOption extends Option<Boolean> {
-        private BooleanOption(String optionName, String optionDescription, Action<Boolean> action,
+        private BooleanOption(
+                String optionName,
+                String optionDescription,
+                Action<Boolean> action,
                 Boolean defaultValue) {
             super(optionName, optionDescription, action, defaultValue);
         }

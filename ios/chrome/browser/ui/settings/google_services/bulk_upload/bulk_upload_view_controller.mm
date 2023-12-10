@@ -62,9 +62,9 @@ const char kBulkUploadCloseUserAction[] = "Signin_BulkUpload_Close";
       PrimaryActionButton(/*pointer_interaction_enabled=*/YES);
   _saveInAccountButton.accessibilityIdentifier =
       kBulkUploadSaveButtonAccessibilityIdentifer;
-  [_saveInAccountButton
-      setTitle:l10n_util::GetNSString(IDS_IOS_BULK_UPLOAD_BUTTON_TITLE)
-      forState:UIControlStateNormal];
+  SetConfigurationTitle(
+      _saveInAccountButton,
+      l10n_util::GetNSString(IDS_IOS_BULK_UPLOAD_BUTTON_TITLE));
   _saveInAccountButton.translatesAutoresizingMaskIntoConstraints = NO;
   [_saveInAccountButton addTarget:self
                            action:@selector(saveInAccountTapped:)

@@ -69,6 +69,24 @@ TestResult::TestResult(const std::string& id,
   SetMetricsType(metrics_type);
 }
 
+TestResult::TestResult(const std::string& id,
+                       DisplayType display_type,
+                       Category category,
+                       const std::string& fileName,
+                       const std::string& path,
+                       int best_match_rank,
+                       double relevance,
+                       double ftrl_result_score) {
+  set_id(id);
+  SetTitle(base::UTF8ToUTF16(fileName));
+  SetDisplayType(display_type);
+  SetCategory(category);
+  SetFilePath(base::FilePath(path));
+  scoring().set_best_match_rank(best_match_rank);
+  set_relevance(relevance);
+  scoring().set_ftrl_result_score(ftrl_result_score);
+}
+
 TestResult::~TestResult() = default;
 
 }  // namespace app_list

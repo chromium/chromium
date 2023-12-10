@@ -39,6 +39,10 @@ void LocalTestPolicyProvider::SetUserAffiliated(bool affiliated) {
   loader_.SetUserAffiliated(affiliated);
 }
 
+const std::string& LocalTestPolicyProvider::GetPolicies() const {
+  return loader_.policies();
+}
+
 void LocalTestPolicyProvider::ClearPolicies() {
   loader_.ClearPolicies();
   RefreshPolicies(PolicyFetchReason::kUnspecified);

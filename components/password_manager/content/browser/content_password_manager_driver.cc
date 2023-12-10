@@ -177,6 +177,10 @@ void ContentPasswordManagerDriver::GeneratedPasswordAccepted(
       generation_element_id, password);
 }
 
+void ContentPasswordManagerDriver::FocusNextFieldAfterPasswords() {
+  GetPasswordGenerationAgent()->FocusNextFieldAfterPasswords();
+}
+
 void ContentPasswordManagerDriver::FillSuggestion(
     const std::u16string& username,
     const std::u16string& password) {

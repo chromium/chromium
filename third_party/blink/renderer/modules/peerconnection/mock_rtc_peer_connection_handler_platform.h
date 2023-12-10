@@ -79,7 +79,6 @@ class MockRTCPeerConnectionHandlerPlatform : public RTCPeerConnectionHandler {
       const webrtc::PeerConnectionInterface::RTCConfiguration&) override;
   void AddIceCandidate(RTCVoidRequest*, RTCIceCandidatePlatform*) override;
   void RestartIce() override;
-  void GetStats(RTCStatsRequest*) override;
   void GetStats(RTCStatsReportCallback) override;
   webrtc::RTCErrorOr<std::unique_ptr<RTCRtpTransceiverPlatform>>
   AddTransceiverWithTrack(MediaStreamComponent*,

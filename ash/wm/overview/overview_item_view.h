@@ -5,6 +5,7 @@
 #ifndef ASH_WM_OVERVIEW_OVERVIEW_ITEM_VIEW_H_
 #define ASH_WM_OVERVIEW_OVERVIEW_ITEM_VIEW_H_
 
+#include "ash/wm/overview/event_handler_delegate.h"
 #include "ash/wm/overview/overview_focusable_view.h"
 #include "ash/wm/window_mini_view.h"
 #include "base/memory/raw_ptr.h"
@@ -34,12 +35,15 @@ class ASH_EXPORT OverviewItemView : public WindowMiniView,
   // If `show_preview` is true, this class will contain a child view which
   // mirrors `window`.
   OverviewItemView(OverviewItem* overview_item,
+                   EventHandlerDelegate* event_handler_delegate,
                    views::Button::PressedCallback close_callback,
                    aura::Window* window,
                    bool show_preview);
   OverviewItemView(const OverviewItemView&) = delete;
   OverviewItemView& operator=(const OverviewItemView&) = delete;
   ~OverviewItemView() override;
+
+  CloseButton* close_button() const { return close_button_; }
 
   void SetCloseButtonVisible(bool visible);
 
@@ -65,6 +69,7 @@ class ASH_EXPORT OverviewItemView : public WindowMiniView,
 
   // OverviewFocusableView:
   views::View* GetView() override;
+  OverviewItemBase* GetOverviewItem() override;
   void MaybeActivateFocusedView() override;
   void MaybeCloseFocusedView(bool primary_action) override;
   void MaybeSwapFocusedView(bool right) override;
@@ -73,8 +78,6 @@ class ASH_EXPORT OverviewItemView : public WindowMiniView,
   void OnFocusableViewFocused() override;
   void OnFocusableViewBlurred() override;
   gfx::Point GetMagnifierFocusPointInScreen() override;
-
-  CloseButton* close_button() const { return close_button_; }
 
  protected:
   // views::View:
@@ -87,9 +90,16 @@ class ASH_EXPORT OverviewItemView : public WindowMiniView,
   void OnThemeChanged() override;
 
  private:
-  // The OverviewItem which owns the widget which houses this view. Non-null
-  // until `OnOverviewItemWindowRestoring` is called.
-  raw_ptr<OverviewItem, ExperimentalAsh> overview_item_;
+  // The `OverviewItem` whose item widget owns and hosts this view. Please note
+  // that `item_widget_` may outlive its corresponding `OverviewItem` which will
+  // make `overview_item_` null while `this` is still alive. `overview_item_`
+  // will be explicitly set to null when `OnOverviewItemWindowRestoring()` is
+  // called.
+  raw_ptr<OverviewItem> overview_item_;
+
+  // Points to the event handling delegate to handle the events forwarded from
+  // `this`.
+  raw_ptr<EventHandlerDelegate> event_handler_delegate_;
 
   raw_ptr<CloseButton, ExperimentalAsh> close_button_;
 };

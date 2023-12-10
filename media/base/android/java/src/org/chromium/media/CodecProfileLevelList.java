@@ -25,9 +25,12 @@ class CodecProfileLevelList {
     public boolean addCodecProfileLevel(String mime, CodecProfileLevel codecProfileLevel) {
         try {
             int codec = getCodecFromMime(mime);
-            mList.add(new CodecProfileLevelAdapter(codec,
-                    mediaCodecProfileToChromiumMediaProfile(codec, codecProfileLevel.profile),
-                    mediaCodecLevelToChromiumMediaLevel(codec, codecProfileLevel.level)));
+            mList.add(
+                    new CodecProfileLevelAdapter(
+                            codec,
+                            mediaCodecProfileToChromiumMediaProfile(
+                                    codec, codecProfileLevel.profile),
+                            mediaCodecLevelToChromiumMediaLevel(codec, codecProfileLevel.level)));
             return true;
         } catch (UnsupportedCodecProfileException e) {
             return false;

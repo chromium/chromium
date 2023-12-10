@@ -189,7 +189,7 @@ GenerateDefaultFeatureStatesMap() {
 void VerifyPageContentDict(
     const base::Value* value,
     multidevice_setup::mojom::HostStatus expected_host_status,
-    const absl::optional<multidevice::RemoteDeviceRef>& expected_host_device,
+    const std::optional<multidevice::RemoteDeviceRef>& expected_host_device,
     const multidevice_setup::MultiDeviceSetupClient::FeatureStatesMap&
         feature_states_map,
     bool expected_is_nearby_share_disallowed_by_policy_,
@@ -201,44 +201,44 @@ void VerifyPageContentDict(
   ASSERT_TRUE(value->is_dict());
   const base::Value::Dict& page_content_dict = value->GetDict();
 
-  absl::optional<int> mode = page_content_dict.FindInt("mode");
+  std::optional<int> mode = page_content_dict.FindInt("mode");
   ASSERT_TRUE(mode);
   EXPECT_EQ(static_cast<int>(expected_host_status), *mode);
 
-  absl::optional<int> better_together_state =
+  std::optional<int> better_together_state =
       page_content_dict.FindInt("betterTogetherState");
   ASSERT_TRUE(better_together_state);
   auto it = feature_states_map.find(
       multidevice_setup::mojom::Feature::kBetterTogetherSuite);
   EXPECT_EQ(static_cast<int>(it->second), *better_together_state);
 
-  absl::optional<int> instant_tethering_state =
+  std::optional<int> instant_tethering_state =
       page_content_dict.FindInt("instantTetheringState");
   ASSERT_TRUE(instant_tethering_state);
   it = feature_states_map.find(
       multidevice_setup::mojom::Feature::kInstantTethering);
   EXPECT_EQ(static_cast<int>(it->second), *instant_tethering_state);
 
-  absl::optional<int> smart_lock_state =
+  std::optional<int> smart_lock_state =
       page_content_dict.FindInt("smartLockState");
   ASSERT_TRUE(smart_lock_state);
   it = feature_states_map.find(multidevice_setup::mojom::Feature::kSmartLock);
   EXPECT_EQ(static_cast<int>(it->second), *smart_lock_state);
 
-  absl::optional<int> phone_hub_state =
+  std::optional<int> phone_hub_state =
       page_content_dict.FindInt("phoneHubState");
   ASSERT_TRUE(phone_hub_state);
   it = feature_states_map.find(multidevice_setup::mojom::Feature::kPhoneHub);
   EXPECT_EQ(static_cast<int>(it->second), *phone_hub_state);
 
-  absl::optional<int> phone_hub_notifications_state =
+  std::optional<int> phone_hub_notifications_state =
       page_content_dict.FindInt("phoneHubNotificationsState");
   ASSERT_TRUE(phone_hub_notifications_state);
   it = feature_states_map.find(
       multidevice_setup::mojom::Feature::kPhoneHubNotifications);
   EXPECT_EQ(static_cast<int>(it->second), *phone_hub_notifications_state);
 
-  absl::optional<int> phone_hub_camera_roll_state =
+  std::optional<int> phone_hub_camera_roll_state =
       page_content_dict.FindInt("phoneHubCameraRollState");
   ASSERT_TRUE(phone_hub_camera_roll_state);
   if (base::FeatureList::IsEnabled(ash::features::kPhoneHubCameraRoll)) {
@@ -252,14 +252,14 @@ void VerifyPageContentDict(
         *phone_hub_camera_roll_state);
   }
 
-  absl::optional<int> phone_hub_task_continuation_state =
+  std::optional<int> phone_hub_task_continuation_state =
       page_content_dict.FindInt("phoneHubTaskContinuationState");
   ASSERT_TRUE(phone_hub_task_continuation_state);
   it = feature_states_map.find(
       multidevice_setup::mojom::Feature::kPhoneHubTaskContinuation);
   EXPECT_EQ(static_cast<int>(it->second), *phone_hub_task_continuation_state);
 
-  absl::optional<int> phone_hub_apps_state =
+  std::optional<int> phone_hub_apps_state =
       page_content_dict.FindInt("phoneHubAppsState");
   ASSERT_TRUE(phone_hub_apps_state);
   if (base::FeatureList::IsEnabled(ash::features::kEcheSWA)) {
@@ -272,7 +272,7 @@ void VerifyPageContentDict(
         *phone_hub_apps_state);
   }
 
-  absl::optional<int> wifi_sync_state =
+  std::optional<int> wifi_sync_state =
       page_content_dict.FindInt("wifiSyncState");
   ASSERT_TRUE(wifi_sync_state);
   it = feature_states_map.find(multidevice_setup::mojom::Feature::kWifiSync);
@@ -507,7 +507,7 @@ class MultideviceHandlerTest : public testing::Test {
 
   void SimulateHostStatusUpdate(
       multidevice_setup::mojom::HostStatus host_status,
-      const absl::optional<multidevice::RemoteDeviceRef>& host_device) {
+      const std::optional<multidevice::RemoteDeviceRef>& host_device) {
     size_t call_data_count_before_call = test_web_ui()->call_data().size();
 
     fake_multidevice_setup_client_->SetHostStatusWithDevice(
@@ -685,7 +685,7 @@ class MultideviceHandlerTest : public testing::Test {
 
   void CallSetFeatureEnabledState(multidevice_setup::mojom::Feature feature,
                                   bool enabled,
-                                  const absl::optional<std::string>& auth_token,
+                                  const std::optional<std::string>& auth_token,
                                   bool success) {
     size_t call_data_count_before_call = test_web_ui()->call_data().size();
 
@@ -1295,7 +1295,7 @@ TEST_F(MultideviceHandlerTest, PageContentData) {
 
   SimulateHostStatusUpdate(
       multidevice_setup::mojom::HostStatus::kEligibleHostExistsButNoHostSet,
-      absl::nullopt /* host_device */);
+      std::nullopt /* host_device */);
   SimulateHostStatusUpdate(multidevice_setup::mojom::HostStatus::
                                kHostSetLocallyButWaitingForBackendConfirmation,
                            test_device_);

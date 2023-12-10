@@ -31,6 +31,7 @@
 #include "ui/accessibility/ax_text_utils.h"
 #include "ui/accessibility/ax_tree.h"
 #include "ui/accessibility/ax_tree_id.h"
+#include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/accessibility/platform/ax_unique_id.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/native_widget_types.h"
@@ -46,7 +47,6 @@ namespace ui {
 struct AXActionData;
 struct AXNodeData;
 struct AXTreeData;
-class AXPlatformNode;
 class ChildIterator;
 
 using TextAttribute = std::pair<std::string, std::string>;

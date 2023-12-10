@@ -2,35 +2,14 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//tools/typescript/ts_library.gni")
-import("//ui/webui/resources/tools/generate_grd.gni")
+import("../../build_webui_tests.gni")
 
-ts_library("build_ts") {
-  root_dir = "."
-  out_dir = "$target_gen_dir/tsc"
-  tsconfig_base = "../../tsconfig_base.json"
-  in_files = [ "office_fallback_app_test.ts" ]
-  path_mappings = [
-    "chrome://office-fallback/*|" +
+build_webui_tests("build_webui_tests") {
+  files = [ "office_fallback_app_test.ts" ]
+  ts_path_mappings =
+      [ "chrome://office-fallback/*|" +
         rebase_path(
             "$root_gen_dir/ash/webui/common/resources/office_fallback/tsc/*",
-            target_gen_dir),
-    "chrome://webui-test/*|" +
-        rebase_path("$root_gen_dir/chrome/test/data/webui/tsc/*",
-                    target_gen_dir),
-  ]
-  deps = [
-    "../..:build_ts",
-    "//ash/webui/common/resources/office_fallback:build_ts",
-  ]
-}
-
-generate_grd("build_grdp") {
-  grd_prefix = "webui_chromeos_office_fallback"
-  out_grd = "$target_gen_dir/resources.grdp"
-
-  deps = [ ":build_ts" ]
-  manifest_files =
-      filter_include(get_target_outputs(":build_ts"), [ "*_manifest.json" ])
-  resource_path_prefix = "chromeos/office_fallback"
+            target_gen_dir) ]
+  ts_deps = [ "//ash/webui/common/resources/office_fallback:build_ts" ]
 }

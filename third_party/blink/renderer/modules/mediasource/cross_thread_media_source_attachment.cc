@@ -602,8 +602,8 @@ void CrossThreadMediaSourceAttachment::CompleteAttachingToMediaElement(
 
     // In unlikely case this attachment is reused, clear the cached state of
     // previous attachment.
-    cached_buffered_.Clear();
-    cached_seekable_.Clear();
+    cached_buffered_.clear();
+    cached_seekable_.clear();
 
     // Verify the rest of the status once we're completing this in the worker
     // thread. Using WTF::RetainedRef(this) here to ensure we are still alive

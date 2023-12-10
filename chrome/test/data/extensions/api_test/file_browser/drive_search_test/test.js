@@ -103,8 +103,8 @@ chrome.test.runTests([
     };
 
     chrome.fileManagerPrivate.searchDrive(
-        {query: query, nextFeed: ''},
-        chrome.test.callbackPass((entries, nextFeed) => {
+        {query: query, nextFeed: ''}, chrome.test.callbackPass((response) => {
+          const {entries, nextFeed} = response;
           chrome.test.assertFalse(!!nextFeed);
           chrome.test.assertFalse(!entries);
 

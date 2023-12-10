@@ -56,9 +56,7 @@ const CGFloat kHorizontalSpacingToAlignWithItems = 16.0;
   }
 
   [headerFooter setSubtitle:self.subtitle];
-  headerFooter.textLabel.text = self.text;
-  headerFooter.textLabel.accessibilityTraits = UIAccessibilityTraitHeader;
-  headerFooter.isAccessibilityElement = NO;
+  [headerFooter setTitle:self.text];
 }
 
 @end
@@ -67,6 +65,9 @@ const CGFloat kHorizontalSpacingToAlignWithItems = 16.0;
 
 // UITextView corresponding to `subtitle` from the item.
 @property(nonatomic, readonly, strong) UITextView* subtitleView;
+
+// The UILabel containing the text stored in `text`.
+@property(nonatomic, readonly, strong) UILabel* textLabel;
 
 @end
 
@@ -82,6 +83,8 @@ const CGFloat kHorizontalSpacingToAlignWithItems = 16.0;
 - (instancetype)initWithReuseIdentifier:(NSString*)reuseIdentifier {
   self = [super initWithReuseIdentifier:reuseIdentifier];
   if (self) {
+    self.isAccessibilityElement = NO;
+
     _URLs = @[];
     _subtitleView = CreateUITextViewWithTextKit1();
     _subtitleView.scrollEnabled = NO;
@@ -97,11 +100,14 @@ const CGFloat kHorizontalSpacingToAlignWithItems = 16.0;
     _subtitleView.textAlignment = NSTextAlignmentLeft;
     _subtitleView.textContainer.lineFragmentPadding = 0;
     _subtitleView.textContainerInset = UIEdgeInsetsZero;
+    _subtitleView.hidden = YES;
 
     // Labels, set font sizes using dynamic type.
     _textLabel = [[UILabel alloc] init];
     _textLabel.font =
         [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
+    _textLabel.accessibilityTraits = UIAccessibilityTraitHeader;
+    _textLabel.numberOfLines = 0;
 
     // Vertical StackView.
     UIStackView* verticalStack = [[UIStackView alloc]
@@ -154,6 +160,11 @@ const CGFloat kHorizontalSpacingToAlignWithItems = 16.0;
       trailingAnchorConstraint_,
       [containerView.centerYAnchor
           constraintEqualToAnchor:self.contentView.centerYAnchor],
+      // Match container view to contentView width.
+      [containerView.leadingAnchor
+          constraintEqualToAnchor:self.contentView.leadingAnchor],
+      [containerView.trailingAnchor
+          constraintEqualToAnchor:self.contentView.trailingAnchor],
       // Vertical StackView Constraints.
       [verticalStack.leadingAnchor
           constraintEqualToAnchor:containerView.leadingAnchor],
@@ -169,7 +180,8 @@ const CGFloat kHorizontalSpacingToAlignWithItems = 16.0;
 
 - (void)prepareForReuse {
   [super prepareForReuse];
-  self.subtitleView.text = nil;
+  [self setTitle:nil];
+  [self setSubtitle:nil];
   self.delegate = nil;
   self.URLs = @[];
   self.forceIndents = NO;
@@ -177,7 +189,15 @@ const CGFloat kHorizontalSpacingToAlignWithItems = 16.0;
 
 #pragma mark - Properties
 
+- (void)setTitle:(NSString*)title {
+  self.textLabel.text = title;
+}
+
 - (void)setSubtitle:(NSString*)subtitle {
+  [self setSubtitle:subtitle withColor:nil];
+}
+
+- (void)setSubtitle:(NSString*)subtitle withColor:(UIColor*)color {
   if (!subtitle) {
     // If no subtitle, hide the subtitle view to avoid taking space for nothing.
     self.subtitleView.hidden = YES;
@@ -188,10 +208,12 @@ const CGFloat kHorizontalSpacingToAlignWithItems = 16.0;
 
   StringWithTags parsedString = ParseStringWithLinks(subtitle);
 
+  UIColor* textColor = color ? color : [UIColor colorNamed:kTextSecondaryColor];
+
   NSDictionary* textAttributes = @{
     NSFontAttributeName :
         [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote],
-    NSForegroundColorAttributeName : [UIColor colorNamed:kTextSecondaryColor]
+    NSForegroundColorAttributeName : textColor
   };
 
   NSMutableAttributedString* attributedText =

@@ -16,6 +16,7 @@
 #include <utility>
 #include <vector>
 
+#include <optional>
 #include "base/cancelable_callback.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
@@ -63,7 +64,6 @@
 #include "cc/trees/viewport_property_ids.h"
 #include "components/viz/common/surfaces/local_surface_id.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/delegated_ink_metadata.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/overlay_transform.h"
@@ -344,7 +344,7 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   // Notification that the proxy started or stopped deferring commits.
   void OnDeferCommitsChanged(bool defer_status,
                              PaintHoldingReason reason,
-                             absl::optional<PaintHoldingCommitTrigger> trigger);
+                             std::optional<PaintHoldingCommitTrigger> trigger);
 
   // Returns whether there are any outstanding ScopedDeferMainFrameUpdate,
   // though commits may be deferred also when the local_surface_id_from_parent()
@@ -693,8 +693,7 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
 
   void SetPropertyTreesNeedRebuild();
 
-  // Returns the layer with the given |element_id|. In layer-list mode, only
-  // scrollable layers are registered in this map.
+  // Returns the layer with the given |element_id|.
   Layer* LayerByElementId(ElementId element_id);
   const Layer* LayerByElementId(ElementId element_id) const;
 
@@ -990,7 +989,7 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   void UpdateScrollOffsetFromImpl(
       const ElementId&,
       const gfx::Vector2dF& delta,
-      const absl::optional<TargetSnapAreaElementIds>&);
+      const std::optional<TargetSnapAreaElementIds>&);
 
   const CompositorMode compositor_mode_;
 

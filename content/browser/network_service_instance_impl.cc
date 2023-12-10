@@ -325,8 +325,10 @@ void CreateNetworkContextInternal(
   // down anyway.
   if (!GetContentClient()->browser()->IsShuttingDown() &&
       GetContentClient()->browser()->ShouldSandboxNetworkService() &&
-      !params->socket_broker) {
-    params->socket_broker = g_client->BindSocketBroker();
+      !params->socket_brokers) {
+    params->socket_brokers = network::mojom::SocketBrokerRemotes::New();
+    params->socket_brokers->client = g_client->BindSocketBroker();
+    params->socket_brokers->server = g_client->BindSocketBroker();
   }
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -442,6 +444,8 @@ network::mojom::NetworkServiceParamsPtr CreateNetworkServiceParams() {
   }
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
 
+  network_service_params->ip_protection_proxy_bypass_policy =
+      GetContentClient()->browser()->GetIpProtectionProxyBypassPolicy();
   return network_service_params;
 }
 
@@ -876,10 +880,19 @@ GetCertVerifierServiceFactoryRemoteForTesting() {
 
   return GetCertVerifierServiceFactoryRemoteStorage();
 }
-
 network::mojom::CertVerifierServiceRemoteParamsPtr GetCertVerifierParams(
     cert_verifier::mojom::CertVerifierCreationParamsPtr
         cert_verifier_creation_params) {
+  return GetCertVerifierParamsWithUpdater(
+      std::move(cert_verifier_creation_params), mojo::NullReceiver());
+}
+
+network::mojom::CertVerifierServiceRemoteParamsPtr
+GetCertVerifierParamsWithUpdater(
+    cert_verifier::mojom::CertVerifierCreationParamsPtr
+        cert_verifier_creation_params,
+    mojo::PendingReceiver<cert_verifier::mojom::CertVerifierServiceUpdater>
+        cert_verifier_updater_remote) {
   mojo::PendingRemote<cert_verifier::mojom::CertVerifierService>
       cert_verifier_remote;
   mojo::PendingReceiver<cert_verifier::mojom::CertVerifierServiceClient>
@@ -887,6 +900,7 @@ network::mojom::CertVerifierServiceRemoteParamsPtr GetCertVerifierParams(
 
   GetCertVerifierServiceFactory()->GetNewCertVerifier(
       cert_verifier_remote.InitWithNewPipeAndPassReceiver(),
+      std::move(cert_verifier_updater_remote),
       cert_verifier_client.InitWithNewPipeAndPassRemote(),
       std::move(cert_verifier_creation_params));
 

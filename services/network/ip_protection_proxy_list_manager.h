@@ -22,7 +22,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionProxyListManager {
 
   // Return the currently cached proxy list. This list may be empty even
   // if `IsProxyListAvailable()` returned true.
-  virtual const std::vector<std::string>& ProxyList() = 0;
+  virtual const std::vector<std::vector<std::string>>& ProxyList() = 0;
 
   // Request a refresh of the proxy list. Call this when it's likely that the
   // proxy list is out of date.

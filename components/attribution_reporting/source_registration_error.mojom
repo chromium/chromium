@@ -20,6 +20,7 @@ enum SourceRegistrationError {
   kFilterDataHasSourceTypeKey = 7,
   kFilterDataHasLookbackWindowKey = 24,
   kFilterDataKeyTooLong = 8,
+  kFilterDataKeyReserved = 49,
   kFilterDataListWrongType = 9,
   kFilterDataListTooLong = 10,
   kFilterDataValueWrongType = 11,
@@ -64,4 +65,17 @@ enum SourceRegistrationError {
   kExcessiveTriggerData = 46,
   kDuplicateTriggerData = 47,
   kInvalidTriggerDataForMatchingMode = 48,
+
+  kSummaryWindowOperatorWrongType = 50,
+  kSummaryWindowOperatorUnknownValue = 51,
+
+  kSummaryBucketsWrongType = 52,
+  kSummaryBucketsEmpty = 53,
+  kSummaryBucketsTooLong = 54,
+  kSummaryBucketsValueWrongType = 55,
+  kSummaryBucketsValueOutOfRange = 56,
+  kSummaryBucketsNonIncreasing = 57,
+
+  kEventLevelEpsilonWrongType = 58,
+  kEventLevelEpsilonValueInvalid = 59,
 };

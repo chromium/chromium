@@ -11,7 +11,6 @@
 #include "chromeos/ash/components/network/network_connect.h"
 
 namespace ash {
-class NetworkPortalSigninController;
 class NetworkStateNotifier;
 class SystemTrayClient;
 }  // namespace ash
@@ -33,13 +32,12 @@ class NetworkConnectDelegate : public ash::NetworkConnect::Delegate {
   void ShowNetworkConnectError(const std::string& error_name,
                                const std::string& network_id) override;
   void ShowMobileActivationError(const std::string& network_id) override;
+  void ShowCarrierUnlockNotification() override;
 
   void SetSystemTrayClient(ash::SystemTrayClient* system_tray_client);
 
  private:
   std::unique_ptr<ash::NetworkStateNotifier> network_state_notifier_;
-  std::unique_ptr<ash::NetworkPortalSigninController>
-      network_portal_signin_controller_;
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_NETWORK_NETWORK_CONNECT_DELEGATE_H_

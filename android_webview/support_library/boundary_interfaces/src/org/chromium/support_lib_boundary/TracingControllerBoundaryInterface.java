@@ -8,9 +8,7 @@ import java.io.OutputStream;
 import java.util.Collection;
 import java.util.concurrent.Executor;
 
-/**
- * Boundary interface for TracingController.
- */
+/** Boundary interface for TracingController. */
 public interface TracingControllerBoundaryInterface {
     boolean isTracing();
 

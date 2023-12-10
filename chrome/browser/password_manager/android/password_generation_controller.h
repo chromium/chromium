@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/touch_to_fill/password_generation/android/touch_to_fill_password_generation_controller.h"
+#include "chrome/browser/touch_to_fill/password_manager/password_generation/android/touch_to_fill_password_generation_controller.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-forward.h"
 #include "components/autofill/core/common/password_generation_util.h"
 #include "content/public/browser/web_contents.h"

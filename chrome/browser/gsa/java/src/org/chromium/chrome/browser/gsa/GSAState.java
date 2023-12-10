@@ -30,9 +30,7 @@ import org.chromium.components.signin.identitymanager.IdentityManager;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/**
- * A class responsible for representing the current state of Chrome's integration with GSA.
- */
+/** A class responsible for representing the current state of Chrome's integration with GSA. */
 public class GSAState {
     public static final String PACKAGE_NAME = "com.google.android.googlequicksearchbox";
 
@@ -58,12 +56,12 @@ public class GSAState {
             String.format("%s.GsaPublicContentProvider", SEARCH_INTENT_PACKAGE);
     // AGSA-side checks for if Chrome should use Assistant for voice transcription.
     // This value is a boolean stored as a string.
-    static final String ROTI_CHROME_ENABLED_PROVIDER = String.format(
-            "content://%s/publicvalue/roti_for_chrome_enabled", GSA_PUBLIC_CONTENT_PROVIDER);
+    static final String ROTI_CHROME_ENABLED_PROVIDER =
+            String.format(
+                    "content://%s/publicvalue/roti_for_chrome_enabled",
+                    GSA_PUBLIC_CONTENT_PROVIDER);
 
-    /**
-     * An instance of GSAState class encapsulating knowledge about the current status.
-     */
+    /** An instance of GSAState class encapsulating knowledge about the current status. */
     @SuppressLint("StaticFieldLeak")
     private static GSAState sGSAState;
 
@@ -72,9 +70,7 @@ public class GSAState {
 
     private final ObserverList<Observer> mObserverList = new ObserverList<>();
 
-    /**
-     * Caches the result of a computation on whether GSA is available.
-     */
+    /** Caches the result of a computation on whether GSA is available. */
     private Boolean mGsaAvailable;
 
     /**
@@ -83,9 +79,7 @@ public class GSAState {
      */
     private @Nullable String mGsaAccount;
 
-    /**
-     * Returns the singleton instance of GSAState and creates one if necessary.
-     */
+    /** Returns the singleton instance of GSAState and creates one if necessary. */
     public static GSAState getInstance() {
         if (sGSAState == null) {
             sGSAState = new GSAState();
@@ -122,11 +116,13 @@ public class GSAState {
      */
     public boolean doesGsaAccountMatchChrome() {
         if (!ProfileManager.isInitialized()) return false;
-        IdentityManager identityManager = IdentityServicesProvider.get().getIdentityManager(
-                Profile.getLastUsedRegularProfile());
+        IdentityManager identityManager =
+                IdentityServicesProvider.get()
+                        .getIdentityManager(Profile.getLastUsedRegularProfile());
         CoreAccountInfo chromeAccountInfo =
                 identityManager.getPrimaryAccountInfo(ConsentLevel.SYNC);
-        return chromeAccountInfo != null && !TextUtils.isEmpty(mGsaAccount)
+        return chromeAccountInfo != null
+                && !TextUtils.isEmpty(mGsaAccount)
                 && TextUtils.equals(chromeAccountInfo.getEmail(), mGsaAccount);
     }
 
@@ -147,9 +143,10 @@ public class GSAState {
 
         Intent searchIntent = new Intent(SEARCH_INTENT_ACTION);
         searchIntent.setPackage(GSAState.SEARCH_INTENT_PACKAGE);
-        mGsaAvailable = PackageManagerUtils.canResolveActivity(searchIntent)
-                && isPackageAboveVersion(SEARCH_INTENT_PACKAGE, GSA_VERSION_FOR_DOCUMENT)
-                && isPackageAboveVersion(GMS_CORE_PACKAGE, GMS_CORE_VERSION);
+        mGsaAvailable =
+                PackageManagerUtils.canResolveActivity(searchIntent)
+                        && isPackageAboveVersion(SEARCH_INTENT_PACKAGE, GSA_VERSION_FOR_DOCUMENT)
+                        && isPackageAboveVersion(GMS_CORE_PACKAGE, GMS_CORE_VERSION);
 
         return mGsaAvailable;
     }

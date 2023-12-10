@@ -14,7 +14,7 @@ source_set("model") {
     "//components/signin/public/base",
     "//components/signin/public/identity_manager",
     "//components/sync_sessions",
-    "//ios/chrome/browser/history:history_utils",
+    "//ios/chrome/browser/history/model:utils",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/synced_sessions/model",
@@ -34,11 +34,11 @@ source_set("model_factory") {
     "//base",
     "//components/keyed_service/core",
     "//components/keyed_service/ios",
-    "//ios/chrome/browser/history",
+    "//ios/chrome/browser/history/model",
     "//ios/chrome/browser/sessions",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",
-    "//ios/chrome/browser/signin",
+    "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/sync/model",
   ]
 }
@@ -49,7 +49,8 @@ source_set("unit_tests") {
   deps = [
     ":model",
     ":model_factory",
-    "//ios/chrome/browser/history",
+    "//components/sessions",
+    "//ios/chrome/browser/history/model",
     "//ios/chrome/browser/sessions",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser/test:test_support",

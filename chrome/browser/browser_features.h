@@ -25,6 +25,12 @@ BASE_DECLARE_FEATURE(kDestroySystemProfiles);
 
 BASE_DECLARE_FEATURE(kDevToolsTabTarget);
 BASE_DECLARE_FEATURE(kDevToolsVeLogging);
+BASE_DECLARE_FEATURE(kDevToolsConsoleInsights);
+extern const base::FeatureParam<std::string> kDevToolsConsoleInsightsAidaScope;
+extern const base::FeatureParam<std::string>
+    kDevToolsConsoleInsightsAidaEndpoint;
+extern const base::FeatureParam<std::string> kDevToolsConsoleInsightsApiKey;
+extern const base::FeatureParam<double> kDevToolsConsoleInsightsTemperature;
 
 BASE_DECLARE_FEATURE(kNukeProfileBeforeCreateMultiAsync);
 
@@ -125,9 +131,7 @@ BASE_DECLARE_FEATURE(kAutocompleteActionPredictorConfidenceCutoff);
 
 BASE_DECLARE_FEATURE(kOmniboxTriggerForNoStatePrefetch);
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 BASE_DECLARE_FEATURE(kPayloadTestComponent);
-#endif
 
 }  // namespace features
 

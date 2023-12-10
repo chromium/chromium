@@ -361,13 +361,13 @@ void KcerImpl::DoesPrivateKeyExist(PrivateKeyHandle key,
 
 void KcerImpl::DoesPrivateKeyExistWithToken(
     DoesKeyExistCallback callback,
-    base::expected<absl::optional<Token>, Error> find_key_result) {
+    base::expected<std::optional<Token>, Error> find_key_result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   if (!find_key_result.has_value()) {
     return std::move(callback).Run(base::unexpected(find_key_result.error()));
   }
-  const absl::optional<Token>& token = find_key_result.value();
+  const std::optional<Token>& token = find_key_result.value();
   return std::move(callback).Run(token.has_value());
 }
 
@@ -702,7 +702,7 @@ base::WeakPtr<internal::KcerToken>& KcerImpl::GetToken(Token token) {
 void KcerImpl::FindKeyToken(
     bool allow_guessing,
     PrivateKeyHandle key,
-    base::OnceCallback<void(base::expected<absl::optional<Token>, Error>)>
+    base::OnceCallback<void(base::expected<std::optional<Token>, Error>)>
         callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
@@ -745,7 +745,7 @@ void KcerImpl::PopulateTokenForKey(
 void KcerImpl::PopulateTokenForKeyWithToken(
     PrivateKeyHandle key,
     base::OnceCallback<void(base::expected<PrivateKeyHandle, Error>)> callback,
-    base::expected<absl::optional<Token>, Error> find_key_result) {
+    base::expected<std::optional<Token>, Error> find_key_result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   if (!find_key_result.has_value()) {

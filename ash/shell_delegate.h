@@ -31,6 +31,10 @@ class OSExchangeData;
 
 namespace ash {
 
+namespace api {
+class TasksDelegate;
+}  // namespace api
+
 class AcceleratorPrefsDelegate;
 class AccessibilityDelegate;
 class BackGestureContextualNudgeController;
@@ -51,6 +55,7 @@ class WindowState;
 class ASH_EXPORT ShellDelegate {
  public:
   enum class FeedbackSource {
+    kFocusMode,
     kGameDashboard,
     kWindowLayoutMenu,
   };
@@ -94,6 +99,8 @@ class ASH_EXPORT ShellDelegate {
 
   virtual std::unique_ptr<SavedDeskDelegate> CreateSavedDeskDelegate()
       const = 0;
+
+  virtual std::unique_ptr<api::TasksDelegate> CreateTasksDelegate() const = 0;
 
   // Creates and returns the delegate of the System Sounds feature.
   virtual std::unique_ptr<SystemSoundsDelegate> CreateSystemSoundsDelegate()
@@ -177,6 +184,9 @@ class ASH_EXPORT ShellDelegate {
   // before they are fully launched or removed.
   virtual void OpenFeedbackDialog(FeedbackSource source,
                                   const std::string& description_template) = 0;
+
+  // Calls browser service to open the profile manager.
+  virtual void OpenProfileManager() = 0;
 
   // Returns the last committed URL from the web contents if the given |window|
   // contains a browser frame, otherwise returns GURL::EmptyURL().

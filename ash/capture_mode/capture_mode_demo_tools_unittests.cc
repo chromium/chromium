@@ -39,6 +39,7 @@
 #include "ash/shell.h"
 #include "ash/style/icon_button.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/test/ash_test_util.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -820,8 +821,7 @@ TEST_F(CaptureModeDemoToolsTest, CaptureBoundsChangeTest) {
 
   // Snap the `window` which will result in window bounds change and the key
   // combo widget will still be centered horizontally.
-  split_view_controller->SnapWindow(
-      window.get(), SplitViewController::SnapPosition::kPrimary);
+  split_view_controller->SnapWindow(window.get(), SnapPosition::kPrimary);
   EXPECT_EQ(split_view_controller->primary_window(), window.get());
   VerifyKeyComboWidgetPosition();
 }

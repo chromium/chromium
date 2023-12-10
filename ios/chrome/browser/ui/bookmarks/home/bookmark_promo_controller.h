@@ -9,6 +9,7 @@
 
 class Browser;
 @protocol SigninPresenter;
+@protocol AccountSettingsPresenter;
 @class SigninPromoViewConfigurator;
 @class SigninPromoViewMediator;
 
@@ -52,7 +53,9 @@ class SyncService;
 - (instancetype)initWithBrowser:(Browser*)browser
                     syncService:(syncer::SyncService*)syncService
                        delegate:(id<BookmarkPromoControllerDelegate>)delegate
-                      presenter:(id<SigninPresenter>)presenter
+                signinPresenter:(id<SigninPresenter>)signinPresenter
+       accountSettingsPresenter:
+           (id<AccountSettingsPresenter>)accountSettingsPresenter
     NS_DESIGNATED_INITIALIZER;
 
 // Called before the instance is deallocated.

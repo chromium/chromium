@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 /**
- * Refers to the state of an 'input-key' item.
+ * Refers to the state of an 'shortcut-input-key' item.
  */
 export enum KeyInputState {
   NOT_SELECTED = 'not-selected',

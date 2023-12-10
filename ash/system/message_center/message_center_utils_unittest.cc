@@ -58,7 +58,7 @@ TEST_F(MessageCenterUtilsTest, ResizeImageWhenLarge) {
   constexpr size_t kSizeLimit = 1000000;
 
   // The shrink scale = sqrt(3000 * 3000 / 250K) = 6.
-  absl::optional<gfx::ImageSkia> resized_image =
+  std::optional<gfx::ImageSkia> resized_image =
       ResizeImageIfExceedSizeLimit(CreateImageForSize(3000, 3000), kSizeLimit);
   EXPECT_EQ(resized_image->size(), gfx::Size(500, 500));
   EXPECT_EQ(resized_image->bitmap()->computeByteSize(), kSizeLimit);

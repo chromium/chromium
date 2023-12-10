@@ -15,7 +15,7 @@
 #include "base/time/time.h"
 #include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
 #include "components/password_manager/core/browser/password_form_digest.h"
-#include "components/password_manager/core/browser/password_store_consumer.h"
+#include "components/password_manager/core/browser/password_store/password_store_consumer.h"
 
 namespace password_manager {
 
@@ -60,7 +60,7 @@ class AffiliatedMatchHelper {
   // credentials in |forms|, sets |affiliated_web_realm|, |app_display_name| and
   // |app_icon_url| of forms, and invokes |result_callback|.
   virtual void InjectAffiliationAndBrandingInformation(
-      std::vector<std::unique_ptr<PasswordForm>> forms,
+      LoginsResult forms,
       base::OnceCallback<void(LoginsResultOrError)> result_callback);
 
   virtual void GetPSLExtensions(PSLExtensionCallback callback);
@@ -89,7 +89,7 @@ class AffiliatedMatchHelper {
 
   const raw_ptr<AffiliationService> affiliation_service_;
 
-  absl::optional<base::flat_set<std::string>> psl_extensions_;
+  std::optional<base::flat_set<std::string>> psl_extensions_;
 
   std::vector<PSLExtensionCallback> psl_extensions_callbacks_;
 

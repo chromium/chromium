@@ -7,18 +7,22 @@
 load("@builtin//struct.star", "module")
 load("./clang_mac.star", "clang")
 load("./config.star", "config")
+load("./typescript_unix.star", "typescript")
 
 def __filegroups(ctx):
     fg = {}
     fg.update(clang.filegroups(ctx))
+    fg.update(typescript.filegroups(ctx))
     return fg
 
 __handlers = {}
 __handlers.update(clang.handlers)
+__handlers.update(typescript.handlers)
 
 def __step_config(ctx, step_config):
     config.check(ctx)
     step_config = clang.step_config(ctx, step_config)
+    step_config = typescript.step_config(ctx, step_config)
     return step_config
 
 chromium = module(

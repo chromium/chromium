@@ -39,6 +39,7 @@ import {
   GetCameraAppDeviceStatus,
   MojoBlob,
   PointF,
+  PortraitModeSegResult,
   ResultMetadataObserverCallbackRouter,
   StillCaptureResultObserverCallbackRouter,
   StreamType,
@@ -615,11 +616,6 @@ export class DeviceOperator {
    *     operation is not supported.
    */
   async takePortraitModePhoto(deviceId: string): Promise<Array<Promise<Blob>>> {
-    // TODO(b/244503017): Add definitions for the portrait mode segmentation
-    // result in the mojom file.
-    const PORTRAIT_SUCCESS = 0;
-    const PORTRAIT_NO_FACES = 3;
-
     const normalCapture = new CancelableEvent<Blob>();
     const portraitCapture = new CancelableEvent<Blob>();
     const portraitEvents = new Map([
@@ -637,11 +633,12 @@ export class DeviceOperator {
             event.signalError(new Error(`Capture failed.`));
             return;
           }
-          if (effect === Effect.PORTRAIT_MODE && status !== PORTRAIT_SUCCESS) {
+          if (effect === Effect.PORTRAIT_MODE &&
+              status !== PortraitModeSegResult.kSuccess) {
             // We only appends the blob result to the output when the status
-            // code is `PORTRAIT_SUCCESS`. For any other status code, the blob
+            // code is `kSuccess`. For any other status code, the blob
             // will be the original photo and will not be shown to the user.
-            if (status === PORTRAIT_NO_FACES) {
+            if (status === PortraitModeSegResult.kNoFaces) {
               event.signalError(new PortraitErrorNoFaceDetected());
               return;
             }

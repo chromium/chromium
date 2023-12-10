@@ -31,9 +31,12 @@ class RenderProcessHostProxy {
   // no longer exists.
   content::RenderProcessHost* Get() const;
 
+  // Returns true iff the proxy has a valid RenderProcessHostId (not 0 or
+  // ChildProcessHost::kInvalidUniqueId).
+  bool is_valid() const { return !render_process_host_id_.is_null(); }
+
   // Returns the routing id of the render process (from
-  // RenderProcessHost::GetID). Can be ChildProcessHost::kInvalidUniqueID
-  // in unit tests.
+  // RenderProcessHost::GetID).
   RenderProcessHostId render_process_host_id() const {
     return render_process_host_id_;
   }

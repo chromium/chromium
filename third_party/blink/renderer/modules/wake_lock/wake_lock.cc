@@ -128,12 +128,13 @@ ScriptPromise WakeLock::request(ScriptState* script_state,
       return ScriptPromise();
     }
 
-    // Measure calls without transient activation as proposed in
+    // Measure calls without sticky activation as proposed in
     // https://github.com/w3c/screen-wake-lock/pull/351.
     if (type == V8WakeLockType::Enum::kScreen &&
-        !LocalFrame::HasTransientUserActivation(window->GetFrame())) {
+        !window->GetFrame()->HasStickyUserActivation()) {
       UseCounter::Count(
-          context, WebFeature::kWakeLockAcquireScreenLockWithoutActivation);
+          context,
+          WebFeature::kWakeLockAcquireScreenLockWithoutStickyActivation);
     }
   }
 

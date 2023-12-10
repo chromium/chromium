@@ -26,8 +26,13 @@ class WatcherImpl implements Watcher {
         if (!(handle instanceof HandleBase)) {
             return MojoResult.INVALID_ARGUMENT;
         }
-        int result = WatcherImplJni.get().start(WatcherImpl.this, mImplPtr,
-                ((HandleBase) handle).getMojoHandle(), signals.getFlags());
+        int result =
+                WatcherImplJni.get()
+                        .start(
+                                WatcherImpl.this,
+                                mImplPtr,
+                                ((HandleBase) handle).getMojoHandle(),
+                                signals.getFlags());
         if (result == MojoResult.OK) mCallback = callback;
         return result;
     }
@@ -58,8 +63,11 @@ class WatcherImpl implements Watcher {
     @NativeMethods
     interface Natives {
         long createWatcher(WatcherImpl caller);
+
         int start(WatcherImpl caller, long implPtr, long mojoHandle, int flags);
+
         void cancel(WatcherImpl caller, long implPtr);
+
         void delete(WatcherImpl caller, long implPtr);
     }
 }

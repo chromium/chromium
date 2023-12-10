@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Test exponentialRampToValueAtTime() with a moderate ratio of change
-  assert_approx_equals: scheduled value at 22 expected 4.264892619501304 +/- 0.000004067318553448967 but got 4.264896869659424
-Harness: the test ran to completion.
-

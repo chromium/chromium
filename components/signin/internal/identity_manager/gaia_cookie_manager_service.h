@@ -338,6 +338,12 @@ class GaiaCookieManagerService
 
   // Start the next request, if needed.
   void HandleNextRequest();
+  // Deduplicate list accounts requests.
+  // If logout or set accounts operation is in the requests queue, it moves list
+  // accounts request to the end of the queue.
+  // This function should be called before the front of the queue is in
+  // execution.
+  void OptimizeListAccounts();
 
   const raw_ptr<AccountTrackerService> account_tracker_service_ = nullptr;
   raw_ptr<ProfileOAuth2TokenService> token_service_;

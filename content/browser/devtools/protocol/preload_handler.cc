@@ -266,8 +266,10 @@ Preload::PrefetchStatus PrefetchStatusToProtocol(PrefetchStatus status) {
         kPrefetchIneligibleSameSiteCrossOriginPrefetchRequiredProxy:
       return Preload::PrefetchStatusEnum::
           PrefetchNotEligibleSameSiteCrossOriginPrefetchRequiredProxy;
-    case PrefetchStatus::kPrefetchEvicted:
-      return Preload::PrefetchStatusEnum::PrefetchEvicted;
+    case PrefetchStatus::kPrefetchEvictedAfterCandidateRemoved:
+      return Preload::PrefetchStatusEnum::PrefetchEvictedAfterCandidateRemoved;
+    case PrefetchStatus::kPrefetchEvictedForNewerPrefetch:
+      return Preload::PrefetchStatusEnum::PrefetchEvictedForNewerPrefetch;
   }
 }
 
@@ -374,7 +376,7 @@ void PreloadHandler::DidUpdatePrerenderStatus(
     PreloadingTriggeringOutcome status,
     absl::optional<PrerenderFinalStatus> prerender_status,
     absl::optional<std::string> disallowed_mojo_interface,
-    absl::optional<const PrerenderMismatchedHeaders*> mismatched_headers) {
+    const std::vector<PrerenderMismatchedHeaders>* mismatched_headers) {
   if (!enabled_) {
     return;
   }
@@ -400,29 +402,26 @@ void PreloadHandler::DidUpdatePrerenderStatus(
           : Maybe<std::string>();
   Maybe<protocol::Array<protocol::Preload::PrerenderMismatchedHeaders>>
       maybe_mismatched_headers;
-  // TODO(miinak): Pass a list of PrerenderMismatchedHeader instead
-  if (mismatched_headers.has_value()) {
+  if (mismatched_headers) {
     auto mismatched_headers_internal = std::make_unique<
         protocol::Array<protocol::Preload::PrerenderMismatchedHeaders>>();
-    const PrerenderMismatchedHeaders* mismatched_headers_with_values =
-        mismatched_headers.value();
-    auto protocol_mismatched_headers =
-        protocol::Preload::PrerenderMismatchedHeaders::Create()
-            .SetHeaderName(mismatched_headers_with_values->header_name)
-            .Build();
 
-    if (mismatched_headers_with_values->initial_value) {
-      protocol_mismatched_headers->SetInitialValue(
-          mismatched_headers_with_values->initial_value.value());
+    for (const auto& mismatched_headers_it : *mismatched_headers) {
+      auto protocol_mismatched_headers =
+          protocol::Preload::PrerenderMismatchedHeaders::Create()
+              .SetHeaderName(mismatched_headers_it.header_name)
+              .Build();
+      if (mismatched_headers_it.initial_value) {
+        protocol_mismatched_headers->SetInitialValue(
+            mismatched_headers_it.initial_value.value());
+      }
+      if (mismatched_headers_it.activation_value) {
+        protocol_mismatched_headers->SetActivationValue(
+            mismatched_headers_it.activation_value.value());
+      }
+      mismatched_headers_internal->push_back(
+          std::move(protocol_mismatched_headers));
     }
-
-    if (mismatched_headers_with_values->activation_value) {
-      protocol_mismatched_headers->SetActivationValue(
-          mismatched_headers_with_values->activation_value.value());
-    }
-
-    mismatched_headers_internal->push_back(
-        std::move(protocol_mismatched_headers));
     maybe_mismatched_headers = std::move(mismatched_headers_internal);
   }
 

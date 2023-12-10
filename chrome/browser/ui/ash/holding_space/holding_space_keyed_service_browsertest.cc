@@ -39,6 +39,7 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_factory.h"
+#include "chrome/browser/ui/ash/holding_space/holding_space_test_util.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_paths.h"
@@ -49,7 +50,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
-#include "ui/gfx/image/image_skia.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -89,9 +89,8 @@ drivefs::mojom::FileChangePtr CreateDriveFsChange(
 }
 
 // Creates a txt file at the path of the downloads mount point for `profile`.
-base::FilePath CreateTextFile(
-    const base::FilePath& root_path,
-    const absl::optional<std::string>& relative_path) {
+base::FilePath CreateTextFile(const base::FilePath& root_path,
+                              const std::optional<std::string>& relative_path) {
   const base::FilePath path =
       root_path.Append(relative_path.value_or(base::StringPrintf(
           "%s.txt", base::UnguessableToken::Create().ToString().c_str())));
@@ -99,8 +98,9 @@ base::FilePath CreateTextFile(
   base::ScopedAllowBlockingForTesting allow_blocking;
   if (!base::CreateDirectory(path.DirName()))
     return base::FilePath();
-  if (!base::WriteFile(path, /*content=*/std::string()))
+  if (!base::WriteFile(path, /*data=*/std::string())) {
     return base::FilePath();
+  }
 
   return path;
 }
@@ -109,7 +109,7 @@ base::FilePath CreateTextFile(
 // to the holding space model. Returns immediately if the item already exists.
 void WaitForItemAddition(
     base::RepeatingCallback<bool(const HoldingSpaceItem*)> predicate) {
-  auto* model = ash::HoldingSpaceController::Get()->model();
+  auto* const model = HoldingSpaceController::Get()->model();
   if (base::ranges::any_of(model->items(), [&predicate](const auto& item) {
         return predicate.Run(item.get());
       })) {
@@ -134,46 +134,6 @@ void WaitForItemAddition(
   run_loop.Run();
 }
 
-// Waits for a holding space item matching the provided `predicate` to be
-// removed from the holding space model. Returns immediately if the model does
-// not contain such an item.
-void WaitForItemRemoval(
-    base::RepeatingCallback<bool(const HoldingSpaceItem*)> predicate) {
-  auto* model = ash::HoldingSpaceController::Get()->model();
-  if (base::ranges::none_of(model->items(), [&predicate](const auto& item) {
-        return predicate.Run(item.get());
-      })) {
-    return;
-  }
-
-  testing::NiceMock<MockHoldingSpaceModelObserver> mock;
-  base::ScopedObservation<HoldingSpaceModel, HoldingSpaceModelObserver>
-      observer{&mock};
-  observer.Observe(model);
-
-  base::RunLoop run_loop;
-  ON_CALL(mock, OnHoldingSpaceItemsRemoved)
-      .WillByDefault([&](const std::vector<const HoldingSpaceItem*>& items) {
-        for (const HoldingSpaceItem* item : items) {
-          if (predicate.Run(item)) {
-            run_loop.Quit();
-            return;
-          }
-        }
-      });
-  run_loop.Run();
-}
-
-// Waits for a holding space item with the provided `item_id` to be removed from
-// the holding space model. Returns immediately if the model does not contain
-// such an item.
-void WaitForItemRemoval(const std::string& item_id) {
-  WaitForItemRemoval(
-      base::BindLambdaForTesting([&item_id](const HoldingSpaceItem* item) {
-        return item->id() == item_id;
-      }));
-}
-
 // Waits for a holding space item matching the provided `predicate` to be added
 // to the holding space model and initialized. Returns immediately if the item
 // already exists and is initialized.
@@ -181,7 +141,7 @@ void WaitForItemInitialization(
     base::RepeatingCallback<bool(const HoldingSpaceItem*)> predicate) {
   WaitForItemAddition(predicate);
 
-  auto* model = ash::HoldingSpaceController::Get()->model();
+  auto* const model = HoldingSpaceController::Get()->model();
   auto item_it = base::ranges::find_if(
       model->items(),
       [&predicate](const auto& item) { return predicate.Run(item.get()); });
@@ -230,9 +190,9 @@ const HoldingSpaceItem* AddHoldingSpaceItem(
     Profile* profile,
     const base::FilePath& item_path,
     const HoldingSpaceProgress& progress = HoldingSpaceProgress()) {
-  EXPECT_TRUE(ash::HoldingSpaceController::Get());
+  EXPECT_TRUE(HoldingSpaceController::Get());
 
-  auto* holding_space_model = ash::HoldingSpaceController::Get()->model();
+  auto* const holding_space_model = HoldingSpaceController::Get()->model();
   EXPECT_TRUE(holding_space_model);
 
   const GURL file_system_url =
@@ -252,9 +212,9 @@ const HoldingSpaceItem* AddHoldingSpaceItem(
                 /*async_bitmap_resolver=*/base::DoNothing());
           }));
 
-  const HoldingSpaceItem* item_ptr = item.get();
-  holding_space_model->AddItem(std::move(item));
-
+  const HoldingSpaceItem* const item_ptr = item.get();
+  HoldingSpaceKeyedServiceFactory::GetInstance()->GetService(profile)->AddItem(
+      std::move(item));
   return item_ptr;
 }
 
@@ -262,11 +222,11 @@ const HoldingSpaceItem* AddHoldingSpaceItem(
 void RemoveHoldingSpaceItemViaClosure(
     const HoldingSpaceItem* holding_space_item,
     base::OnceClosure closure) {
-  EXPECT_TRUE(ash::HoldingSpaceController::Get());
+  EXPECT_TRUE(HoldingSpaceController::Get());
 
   const std::string item_id = holding_space_item->id();
   std::move(closure).Run();
-  WaitForItemRemoval(item_id);
+  WaitForItemRemovalById(item_id);
 }
 
 }  // namespace
@@ -275,7 +235,7 @@ void RemoveHoldingSpaceItemViaClosure(
 
 class HoldingSpaceKeyedServiceBrowserTest : public InProcessBrowserTest {
  public:
-  HoldingSpaceKeyedServiceBrowserTest(
+  explicit HoldingSpaceKeyedServiceBrowserTest(
       FileSystemType file_system_type = FileSystemType::kDriveFs)
       : file_system_type_(file_system_type) {}
 
@@ -320,22 +280,23 @@ class HoldingSpaceKeyedServiceBrowserTest : public InProcessBrowserTest {
             &create_drive_integration_service_);
         break;
     }
-
-    EnsurePredefinedTestFiles();
   }
 
   base::FilePath GetTestMountPoint() { return test_mount_point_; }
 
-  base::FilePath GetPredefinedTestFile(size_t index) const {
-    DCHECK_LT(index, predefined_test_files_.size());
+  // Returns the cached file path if the file specified by `index` exists in
+  // `predefined_test_files_`. If the file is not found, a new file path is
+  // cached and returned.
+  // NOTE: `index` should not exceed than the size of `predefined_test_files_`.
+  base::FilePath GetPredefinedTestFile(size_t index) {
+    CHECK_LE(index, predefined_test_files_.size());
+    if (index == predefined_test_files_.size()) {
+      predefined_test_files_.emplace_back(
+          CreateTextFile(GetTestMountPoint(),
+                         base::StrCat({"root/test_file_",
+                                       base::NumberToString(index), ".txt"})));
+    }
     return predefined_test_files_[index];
-  }
-
-  void EnsurePredefinedTestFiles() {
-    if (!predefined_test_files_.empty())
-      return;
-    predefined_test_files_.push_back(
-        CreateTextFile(GetTestMountPoint(), "root/test_file.txt"));
   }
 
   drive::DriveIntegrationService* CreateDriveIntegrationService(
@@ -388,6 +349,47 @@ class HoldingSpaceKeyedServiceBrowserTest : public InProcessBrowserTest {
 
 // Tests -----------------------------------------------------------------------
 
+// Verifies item addition during holding space keyed service suspension.
+IN_PROC_BROWSER_TEST_F(HoldingSpaceKeyedServiceBrowserTest,
+                       AddItemDuringSuspension) {
+  // Add a holding space item before service suspension.
+  const auto* const holding_space_item = AddHoldingSpaceItem(
+      browser()->profile(), GetPredefinedTestFile(/*index=*/0));
+  const auto* const holding_space_model =
+      HoldingSpaceController::Get()->model();
+  ASSERT_TRUE(holding_space_model);
+  EXPECT_TRUE(holding_space_model->GetItem(holding_space_item->id()));
+  const std::string existing_item_id = holding_space_item->id();
+
+  // Suspend the holding space keyed service. Wait until the existing holding
+  // space item is removed.
+  auto* const fake_power_manager_client =
+      chromeos::FakePowerManagerClient::Get();
+  ASSERT_TRUE(fake_power_manager_client);
+  fake_power_manager_client->SendSuspendImminent(
+      power_manager::SuspendImminent::IDLE);
+  WaitForItemRemovalById(existing_item_id);
+  EXPECT_TRUE(holding_space_model->items().empty());
+
+  // Try to add a new holding space item.
+  AddHoldingSpaceItem(browser()->profile(), GetPredefinedTestFile(/*index=*/1));
+
+  // Verify the absence of any new items.
+  EXPECT_TRUE(holding_space_model->items().empty());
+
+  // End suspension. Wait until `holding_space_item` is restored.
+  fake_power_manager_client->SendSuspendDone();
+  WaitForItemInitialization(existing_item_id);
+  EXPECT_TRUE(holding_space_model->GetItem(existing_item_id));
+
+  // Add a holding space item after suspension. Verify that a new item is added.
+  const HoldingSpaceItem* const item = AddHoldingSpaceItem(
+      browser()->profile(), GetPredefinedTestFile(/*index=*/1));
+  ASSERT_TRUE(item);
+  WaitForItemInitialization(item->id());
+  EXPECT_TRUE(holding_space_model->GetItem(item->id()));
+}
+
 // Verifies that holding space is updated in response to DriveFs file changes.
 IN_PROC_BROWSER_TEST_F(HoldingSpaceKeyedServiceBrowserTest,
                        UpdateItemsOnDriveFsFileChange) {
@@ -402,8 +404,7 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceKeyedServiceBrowserTest,
   ASSERT_TRUE(holding_space_model);
 
   // Add an item to holding space.
-  base::FilePath src =
-      CreateTextFile(GetTestMountPoint(), /*relative_path=*/absl::nullopt);
+  base::FilePath src = GetPredefinedTestFile(/*index=*/0);
   auto* item = AddHoldingSpaceItem(browser()->profile(), src);
 
   // Verify the item exists in the model.
@@ -411,8 +412,7 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceKeyedServiceBrowserTest,
   EXPECT_EQ(holding_space_model->items()[0].get(), item);
   EXPECT_EQ(item->file().file_path, src);
 
-  base::FilePath dst =
-      CreateTextFile(GetTestMountPoint(), /*relative_path=*/absl::nullopt);
+  base::FilePath dst = GetPredefinedTestFile(/*index=*/1);
 
   // Prep a batch of `changes` to indicate that `src` has moved to `dst`. Note
   // the consistent `stable_id` to link the `kDelete` with the `kCreate` change.
@@ -455,7 +455,7 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceKeyedServiceBrowserTest,
   drivefs_delegate().FlushForTesting();
 
   // Because `src` was deleted, the holding space item should be removed.
-  WaitForItemRemoval(item->id());
+  WaitForItemRemovalById(item->id());
 
   // Add another holding space item, again pointing to `src`.
   item = AddHoldingSpaceItem(browser()->profile(), src);
@@ -483,7 +483,7 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceKeyedServiceBrowserTest,
   // Because `src` was deleted and cannot be determined to refer to the same
   // document that was created at `dst`, the holding space item should be
   // removed.
-  WaitForItemRemoval(item->id());
+  WaitForItemRemovalById(item->id());
 
   // Add another holding space item, again pointing to `src`.
   item = AddHoldingSpaceItem(browser()->profile(), src);
@@ -515,11 +515,11 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceKeyedServiceBrowserTest,
 
   // Because the document was ultimately deleted, the holding space item should
   // be removed.
-  WaitForItemRemoval(item->id());
+  WaitForItemRemovalById(item->id());
 
   // Add another holding space item, pointing to `src` in `src_dir`.
   base::FilePath src_dir = GetTestMountPoint().Append("src/");
-  src = CreateTextFile(src_dir, /*relative_path=*/absl::nullopt);
+  src = CreateTextFile(src_dir, /*relative_path=*/std::nullopt);
   item = AddHoldingSpaceItem(browser()->profile(), src);
 
   // Verify the item exists in the model.
@@ -568,17 +568,14 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceKeyedServiceBrowserTest,
 
   // Because the parent directory in which the holding space item's backing file
   // is contained has been deleted, the holding space item should be removed.
-  WaitForItemRemoval(item->id());
+  WaitForItemRemovalById(item->id());
 }
 
 // Verifies that drive files pinned to holding space are pinned for offline use.
 IN_PROC_BROWSER_TEST_F(HoldingSpaceKeyedServiceBrowserTest,
                        PinningDriveFilesOfflineAccess) {
-  const base::FilePath file_path =
-      CreateTextFile(GetTestMountPoint(),
-                     /*relative_path=*/absl::nullopt);
-  const GURL url =
-      holding_space_util::ResolveFileSystemUrl(browser()->profile(), file_path);
+  const GURL url = holding_space_util::ResolveFileSystemUrl(
+      browser()->profile(), GetPredefinedTestFile(/*index=*/0));
   storage::FileSystemURL file_system_url =
       storage::ExternalMountPoints::GetSystemInstance()->CrackURL(
           url, blink::StorageKey::CreateFirstParty(url::Origin::Create(url)));
@@ -617,6 +614,15 @@ class HoldingSpaceKeyedServiceFlexibleFsBrowserTest
  public:
   HoldingSpaceKeyedServiceFlexibleFsBrowserTest()
       : HoldingSpaceKeyedServiceBrowserTest(GetParam()) {}
+
+ private:
+  // HoldingSpaceKeyedServiceBrowserTest:
+  void SetUpInProcessBrowserTestFixture() override {
+    HoldingSpaceKeyedServiceBrowserTest::SetUpInProcessBrowserTestFixture();
+
+    // Ensure the existence of a test file to verify persistence restoration.
+    GetPredefinedTestFile(/*index=*/0);
+  }
 };
 
 INSTANTIATE_TEST_SUITE_P(FileSystem,
@@ -636,8 +642,8 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceKeyedServiceFlexibleFsBrowserTest,
   const auto* in_progress_holding_space_item_to_delete = AddHoldingSpaceItem(
       browser()->profile(),
       CreateTextFile(GetTestMountPoint(),
-                     /*relative_path=*/absl::nullopt),
-      HoldingSpaceProgress(/*received_bytes=*/0, /*total_bytes=*/100));
+                     /*relative_path=*/std::nullopt),
+      HoldingSpaceProgress(/*current_bytes=*/0, /*total_bytes=*/100));
 
   {
     // Delete its backing file. Later we will confirm that the associated
@@ -651,7 +657,7 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceKeyedServiceFlexibleFsBrowserTest,
   // Create a completed `holding_space_item_to_delete`.
   const auto* holding_space_item_to_delete = AddHoldingSpaceItem(
       browser()->profile(), CreateTextFile(GetTestMountPoint(),
-                                           /*relative_path=*/absl::nullopt));
+                                           /*relative_path=*/std::nullopt));
 
   // Delete its backing file and verify that it is removed from holding space.
   // Note that this guarantees that scheduled validity checks will have run.
@@ -671,8 +677,8 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceKeyedServiceFlexibleFsBrowserTest,
   const auto* in_progress_holding_space_item_to_move = AddHoldingSpaceItem(
       browser()->profile(),
       CreateTextFile(GetTestMountPoint(),
-                     /*relative_path=*/absl::nullopt),
-      HoldingSpaceProgress(/*received_bytes=*/0, /*total_bytes=*/100));
+                     /*relative_path=*/std::nullopt),
+      HoldingSpaceProgress(/*current_bytes=*/0, /*total_bytes=*/100));
 
   {
     // Move its backing file. Later we will confirm that the associated holding
@@ -688,7 +694,7 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceKeyedServiceFlexibleFsBrowserTest,
   // Create a completed `holding_space_item_to_move`.
   const auto* holding_space_item_to_move = AddHoldingSpaceItem(
       browser()->profile(), CreateTextFile(GetTestMountPoint(),
-                                           /*relative_path=*/absl::nullopt));
+                                           /*relative_path=*/std::nullopt));
 
   // Move its backing file and verify that it is removed from holding space.
   // Note that this guarantees that scheduled validity checks will have run.
@@ -714,14 +720,14 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceKeyedServiceFlexibleFsBrowserTest,
   const auto* in_progress_holding_space_item_to_complete = AddHoldingSpaceItem(
       browser()->profile(),
       CreateTextFile(GetTestMountPoint(),
-                     /*relative_path=*/absl::nullopt),
-      HoldingSpaceProgress(/*received_bytes=*/0, /*total_bytes=*/100));
+                     /*relative_path=*/std::nullopt),
+      HoldingSpaceProgress(/*current_bytes=*/0, /*total_bytes=*/100));
 
   // Complete the item. This should result in a file system watch being
   // registered for the backing file's parent directory.
   model->UpdateItem(in_progress_holding_space_item_to_complete->id())
       ->SetProgress(
-          HoldingSpaceProgress(/*received_bytes=*/100, /*total_bytes=*/100));
+          HoldingSpaceProgress(/*current_bytes=*/100, /*total_bytes=*/100));
 
   // Delete its backing file and verify that it is removed from holding space
   // since the now completed item will be subject to validity checks.
@@ -739,7 +745,7 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceKeyedServiceFlexibleFsBrowserTest,
   const auto* holding_space_item =
       AddHoldingSpaceItem(browser()->profile(), GetPredefinedTestFile(0));
 
-  auto* holding_space_model = ash::HoldingSpaceController::Get()->model();
+  auto* holding_space_model = HoldingSpaceController::Get()->model();
   EXPECT_TRUE(holding_space_model);
   ASSERT_TRUE(holding_space_model->GetItem(holding_space_item->id()));
   const std::string item_id = holding_space_item->id();
@@ -751,7 +757,6 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceKeyedServiceFlexibleFsBrowserTest,
   // Holding space model gets cleared on suspend.
   EXPECT_TRUE(holding_space_model->items().empty());
 
-  EnsurePredefinedTestFiles();
   // Verify that holding space model gets restored on resume.
   chromeos::FakePowerManagerClient::Get()->SendSuspendDone();
 
@@ -766,7 +771,7 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceKeyedServiceFlexibleFsBrowserTest,
   const auto* holding_space_item =
       AddHoldingSpaceItem(browser()->profile(), GetPredefinedTestFile(0));
 
-  auto* holding_space_model = ash::HoldingSpaceController::Get()->model();
+  auto* holding_space_model = HoldingSpaceController::Get()->model();
   ASSERT_TRUE(holding_space_model);
   EXPECT_TRUE(holding_space_model->GetItem(holding_space_item->id()));
 }

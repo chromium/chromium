@@ -91,11 +91,11 @@ enum class BlinkState : uint8_t {
   PAINT = 4,
 };
 
-#define ENTER_EMBEDDER_STATE(isolate, frame, state)               \
-  v8::HandleScope scope(isolate);                                 \
-  v8::Local<v8::Context> v8_context =                             \
-      ToV8ContextMaybeEmpty(frame, DOMWrapperWorld::MainWorld()); \
-  v8::EmbedderStateScope embedder_state(                          \
+#define ENTER_EMBEDDER_STATE(isolate, frame, state)                      \
+  v8::HandleScope scope(isolate);                                        \
+  v8::Local<v8::Context> v8_context =                                    \
+      ToV8ContextMaybeEmpty(frame, DOMWrapperWorld::MainWorld(isolate)); \
+  v8::EmbedderStateScope embedder_state(                                 \
       isolate, v8_context, static_cast<v8::EmbedderStateTag>(state));
 
 template <typename CallbackInfo, typename T>
@@ -465,6 +465,7 @@ CORE_EXPORT ScriptState* ToScriptState(ExecutionContext*, DOMWrapperWorld&);
 CORE_EXPORT ScriptState* ToScriptState(LocalFrame*, DOMWrapperWorld&);
 // Do not use this method unless you are sure you should use the main world's
 // ScriptState
+CORE_EXPORT ScriptState* ToScriptStateForMainWorld(ExecutionContext*);
 CORE_EXPORT ScriptState* ToScriptStateForMainWorld(LocalFrame*);
 
 // Returns the frame object of the window object associated with

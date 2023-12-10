@@ -17,6 +17,8 @@ import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.browser.customtabs.CustomTabsService;
 import androidx.browser.customtabs.CustomTabsSessionToken;
 
+import dagger.Lazy;
+
 import org.chromium.base.Log;
 import org.chromium.chrome.browser.browserservices.SessionDataHolder;
 import org.chromium.chrome.browser.browserservices.SessionHandler;
@@ -34,8 +36,6 @@ import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.content_public.browser.NavigationEntry;
 
 import javax.inject.Inject;
-
-import dagger.Lazy;
 
 /**
  * Implements {@link SessionHandler} for the given instance of Custom Tab activity; registers and
@@ -56,7 +56,8 @@ public class CustomTabSessionHandler implements SessionHandler, StartStopWithNat
     private final Activity mActivity;
 
     @Inject
-    public CustomTabSessionHandler(BrowserServicesIntentDataProvider intentDataProvider,
+    public CustomTabSessionHandler(
+            BrowserServicesIntentDataProvider intentDataProvider,
             CustomTabActivityTabProvider tabProvider,
             Lazy<CustomTabToolbarCoordinator> toolbarCoordinator,
             Lazy<CustomTabBottomBarDelegate> bottomBarDelegate,
@@ -113,8 +114,8 @@ public class CustomTabSessionHandler implements SessionHandler, StartStopWithNat
     }
 
     @Override
-    public boolean updateRemoteViews(RemoteViews remoteViews, int[] clickableIDs,
-            PendingIntent pendingIntent) {
+    public boolean updateRemoteViews(
+            RemoteViews remoteViews, int[] clickableIDs, PendingIntent pendingIntent) {
         return mBottomBarDelegate.get().updateRemoteViews(remoteViews, clickableIDs, pendingIntent);
     }
 
@@ -139,8 +140,7 @@ public class CustomTabSessionHandler implements SessionHandler, StartStopWithNat
         Tab tab = mTabProvider.getTab();
         if (tab == null || tab.getWebContents() == null) return null;
 
-        NavigationEntry entry = tab.getWebContents().getNavigationController()
-                .getPendingEntry();
+        NavigationEntry entry = tab.getWebContents().getNavigationController().getPendingEntry();
         return entry != null ? entry.getUrl().getSpec() : null;
     }
 
@@ -158,8 +158,9 @@ public class CustomTabSessionHandler implements SessionHandler, StartStopWithNat
     public boolean handleIntent(Intent intent) {
         // This method exists only for legacy reasons, see LaunchIntentDispatcher#
         // clearTopIntentsForCustomTabsEnabled.
-        CustomTabIntentDataProvider dataProvider = new CustomTabIntentDataProvider(intent,
-                mActivity, CustomTabsIntent.COLOR_SCHEME_LIGHT);
+        CustomTabIntentDataProvider dataProvider =
+                new CustomTabIntentDataProvider(
+                        intent, mActivity, CustomTabsIntent.COLOR_SCHEME_LIGHT);
 
         return mIntentHandler.onNewIntent(dataProvider);
     }

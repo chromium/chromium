@@ -44,8 +44,11 @@ public class DetailItemDecoration extends RecyclerView.ItemDecoration {
         for (int index = 0; index < parent.getChildCount(); ++index) {
             View child = parent.getChildAt(index);
             int positionInAdapter = parent.getChildAdapterPosition(child);
-            child.setBackground(AppCompatResources.getDrawable(parent.getContext(),
-                    getBackgroundDrawable(positionInAdapter, parent.getAdapter().getItemCount())));
+            child.setBackground(
+                    AppCompatResources.getDrawable(
+                            parent.getContext(),
+                            getBackgroundDrawable(
+                                    positionInAdapter, parent.getAdapter().getItemCount())));
         }
     }
 

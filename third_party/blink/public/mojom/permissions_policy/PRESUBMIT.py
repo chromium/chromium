@@ -83,6 +83,7 @@ def uma_histogram_checks_factory(mojom_file,
         end_marker = '^};'
         presubmit_error = _import_update_histogram_enum(
             input_api).CheckPresubmitErrors(
+                'tools/metrics/histograms/enums.xml',
                 histogram_enum_name=histogram_enum_name,
                 update_script_name=update_script_file,
                 source_enum_path=source_path,

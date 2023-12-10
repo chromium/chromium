@@ -7,10 +7,10 @@
 
 #include <cstdint>
 #include <memory>
+#include <optional>
 
 #include "base/functional/callback_forward.h"
 #include "chromeos/ash/services/quick_pair/quick_pair_process_manager.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 namespace quick_pair {
@@ -27,7 +27,7 @@ using ProcessStoppedCallback =
     base::OnceCallback<void(QuickPairProcessManager::ShutdownReason)>;
 
 using GetHexModelIdFromServiceDataCallback =
-    base::OnceCallback<void(const absl::optional<std::string>&)>;
+    base::OnceCallback<void(const std::optional<std::string>&)>;
 
 void GetHexModelIdFromServiceData(
     const std::vector<uint8_t>& service_data,
@@ -35,7 +35,7 @@ void GetHexModelIdFromServiceData(
     ProcessStoppedCallback process_stopped_callback);
 
 using ParseDecryptedResponseCallback =
-    base::OnceCallback<void(const absl::optional<DecryptedResponse>&)>;
+    base::OnceCallback<void(const std::optional<DecryptedResponse>&)>;
 
 void ParseDecryptedResponse(
     const std::vector<uint8_t>& aes_key,
@@ -44,7 +44,7 @@ void ParseDecryptedResponse(
     ProcessStoppedCallback process_stopped_callback);
 
 using ParseDecryptedPasskeyCallback =
-    base::OnceCallback<void(const absl::optional<DecryptedPasskey>&)>;
+    base::OnceCallback<void(const std::optional<DecryptedPasskey>&)>;
 
 void ParseDecryptedPasskey(const std::vector<uint8_t>& aes_key,
                            const std::vector<uint8_t>& encrypted_passkey_bytes,
@@ -52,7 +52,7 @@ void ParseDecryptedPasskey(const std::vector<uint8_t>& aes_key,
                            ProcessStoppedCallback process_stopped_callback);
 
 using ParseNotDiscoverableAdvertisementCallback = base::OnceCallback<void(
-    const absl::optional<NotDiscoverableAdvertisement>&)>;
+    const std::optional<NotDiscoverableAdvertisement>&)>;
 
 void ParseNotDiscoverableAdvertisement(
     const std::vector<uint8_t>& service_data,

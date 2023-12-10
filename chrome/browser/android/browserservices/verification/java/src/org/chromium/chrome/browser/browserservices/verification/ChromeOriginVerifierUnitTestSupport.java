@@ -24,7 +24,8 @@ public class ChromeOriginVerifierUnitTestSupport {
         // native being loaded (it uses Profile.getLastUsedRegularProfile()), so even with the
         // natives mocked out, it would fail to run.
 
-        ChromeVerificationResultStore.getInstance().addOverride(
-                packageName, origin, ChromeOriginVerifier.relationToRelationship(relation));
+        ChromeVerificationResultStore.getInstance()
+                .addOverride(
+                        packageName, origin, ChromeOriginVerifier.relationToRelationship(relation));
     }
 }

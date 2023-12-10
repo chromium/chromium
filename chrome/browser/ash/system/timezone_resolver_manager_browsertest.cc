@@ -4,8 +4,10 @@
 
 #include "chrome/browser/ash/system/timezone_resolver_manager.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/constants/geolocation_access_level.h"
 #include "ash/system/privacy_hub/privacy_hub_controller.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
@@ -20,6 +22,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/account_id/account_id.h"
@@ -110,18 +113,19 @@ class TimeZoneResolverManagerTestBase : public LoginManagerTest {
   }
 
   void UpdateUserGeolocationPermission(PrefService* pref_service,
-                                       bool enabled) {
-    pref_service->SetBoolean(ash::prefs::kUserGeolocationAllowed, enabled);
+                                       GeolocationAccessLevel access_level) {
+    pref_service->SetInteger(ash::prefs::kUserGeolocationAccessLevel,
+                             static_cast<int>(access_level));
   }
 
   void UpdateDeviceGeolocationPermission(bool enabled) {
     PrefService* local_state = g_browser_process->local_state();
 
-    PrivacyHubController::AccessLevel access_level;
+    GeolocationAccessLevel access_level;
     if (enabled) {
-      access_level = PrivacyHubController::AccessLevel::kAllowed;
+      access_level = GeolocationAccessLevel::kAllowed;
     } else {
-      access_level = PrivacyHubController::AccessLevel::kDisallowed;
+      access_level = GeolocationAccessLevel::kDisallowed;
     }
 
     local_state->SetInteger(ash::prefs::kDeviceGeolocationAllowed,
@@ -181,7 +185,15 @@ class TimeZoneResolverManagerEnrolledDeviceTest
 
 class TimeZoneResolverManagerUnenrolledDeviceTest
     : public TimeZoneResolverManagerTestBase {
+ protected:
+  TimeZoneResolverManagerUnenrolledDeviceTest() {
+    // Enabling Privacy Hub with location switch
+    scoped_feature_list_.InitWithFeatures(
+        {ash::features::kCrosPrivacyHubV0, ash::features::kCrosPrivacyHub}, {});
+  }
+
  private:
+  base::test::ScopedFeatureList scoped_feature_list_;
   DeviceStateMixin device_state_{
       &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_CONSUMER_OWNED};
 };
@@ -400,6 +412,7 @@ IN_PROC_BROWSER_TEST_F(TimeZoneResolverManagerUnenrolledDeviceTest,
 
   ash::system::TimeZoneResolverManager* tz_resolver_manager =
       g_browser_process->platform_part()->GetTimezoneResolverManager();
+
   TimeZoneResolver* tz_resolver =
       g_browser_process->platform_part()->GetTimezoneResolver();
   ASSERT_NE(tz_resolver_manager, nullptr);
@@ -411,39 +424,58 @@ IN_PROC_BROWSER_TEST_F(TimeZoneResolverManagerUnenrolledDeviceTest,
 
   // Log in a user.
   LoginUser(regular_primary_user_id_);
-  base::RunLoop().RunUntilIdle();
+
   PrefService* pref_service =
       g_browser_process->profile_manager()->GetActiveUserProfile()->GetPrefs();
 
-  // Check the default configuration: TZResolver should be running.
-  EXPECT_TRUE(tz_resolver_manager->IsSystemGeolocationAllowed());
-  EXPECT_TRUE(tz_resolver_manager->TimeZoneResolverShouldBeRunning());
+  // Check the default configuration: Should be set to IP-resolution.
+  EXPECT_TRUE(
+      tz_resolver_manager->TimeZoneResolverAllowedByTimeZoneConfigData());
   EXPECT_EQ(
       system::TimeZoneResolverManager::GetEffectiveUserTimeZoneResolveMethod(
           pref_service, true),
       system::TimeZoneResolverManager::TimeZoneResolveMethod::IP_ONLY);
-  EXPECT_TRUE(tz_resolver->IsRunning());
 
-  UpdateUserGeolocationPermission(pref_service, false);
-  // Change of `kUserGeolocationPermission` will trigger the
-  // `OnSystemGeolocationPermissionChanged()`, stopping the scheduler.
-  EXPECT_FALSE(tz_resolver_manager->IsSystemGeolocationAllowed());
-  EXPECT_FALSE(tz_resolver_manager->TimeZoneResolverShouldBeRunning());
-  EXPECT_FALSE(tz_resolver->IsRunning());
-
-  // Disabling geolocation permission is silently rolling back timezone setting
-  // to the static timezone.
-  EXPECT_TRUE(IsStaticTimezoneSelected(pref_service));
-
-  // Re-enable geolocation permission and select automatic timezone again.
-  // Ccheck that the resolver is working again.
-  UpdateUserGeolocationPermission(pref_service, true);
-  SetUserTimeZoneResolveMethod(
-      pref_service, system::TimeZoneResolverManager::TimeZoneResolveMethod::
-                        SEND_ALL_LOCATION_INFO);
-  EXPECT_TRUE(tz_resolver_manager->IsSystemGeolocationAllowed());
+  // Check the permission is granted and timezone resolver is actually running.
+  EXPECT_EQ(
+      SimpleGeolocationProvider::GetInstance()->GetGeolocationAccessLevel(),
+      GeolocationAccessLevel::kAllowed);
   EXPECT_TRUE(tz_resolver_manager->TimeZoneResolverShouldBeRunning());
   EXPECT_TRUE(tz_resolver->IsRunning());
+
+  // Disable geolocation permission.
+  UpdateUserGeolocationPermission(pref_service,
+                                  GeolocationAccessLevel::kDisallowed);
+  // Change of `kUserGeolocationAccessLevel` will trigger the
+  // `OnGeolocationPermissionChanged()`, stopping the scheduler.
+  EXPECT_FALSE(tz_resolver_manager->TimeZoneResolverShouldBeRunning());
+  EXPECT_FALSE(tz_resolver->IsRunning());
+  // Check the timezone configuration didn't change on permission update.
+  EXPECT_TRUE(
+      tz_resolver_manager->TimeZoneResolverAllowedByTimeZoneConfigData());
+
+  // Re-enable geolocation permission and check that the resolver is working
+  // again.
+  UpdateUserGeolocationPermission(pref_service,
+                                  GeolocationAccessLevel::kAllowed);
+  EXPECT_TRUE(tz_resolver_manager->TimeZoneResolverShouldBeRunning());
+  EXPECT_TRUE(tz_resolver->IsRunning());
+  // Check timezone configuration still hasn't changed.
+  EXPECT_TRUE(
+      tz_resolver_manager->TimeZoneResolverAllowedByTimeZoneConfigData());
+
+  // Disable and re-enable geolocation permission with `kOnlyAllowedForSystem`.
+  // Check that the resolver is working.
+  UpdateUserGeolocationPermission(pref_service,
+                                  GeolocationAccessLevel::kDisallowed);
+  UpdateUserGeolocationPermission(
+      pref_service, GeolocationAccessLevel::kOnlyAllowedForSystem);
+  // Check that resolver is actually running.
+  EXPECT_TRUE(tz_resolver_manager->TimeZoneResolverShouldBeRunning());
+  EXPECT_TRUE(tz_resolver->IsRunning());
+  // Check timezone configuration is still unchanged.
+  EXPECT_TRUE(
+      tz_resolver_manager->TimeZoneResolverAllowedByTimeZoneConfigData());
 }
 
 }  // namespace ash

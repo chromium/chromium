@@ -32,10 +32,14 @@
           if="[[shouldShowSeparator(showSeparator, modifiers)]]">
         <div id="keySeparator"> + </div>
       </template>
-      <template is="dom-if" if="[[shouldShowSelectedKey(pendingKeyEvent.*)]]">
+      <template is="dom-if"
+          if="[[shouldShowSelectedKey(pendingKeyEvent.*,
+                                      pendingPrerewrittenKeyEvent.*)]]">
         <shortcut-input-key id="confirmKey"
-            key="[[getKey(pendingKeyEvent.*)]]"
-            key-state="alpha-numeric-selected">
+            key="[[getConfirmKey(pendingKeyEvent.*,
+                                 pendingPrerewrittenKeyEvent.*)]]"
+            key-state="[[getConfirmKeyState(pendingKeyEvent.*,
+                                            pendingPrerewrittenKeyEvent.*)]]">
         </shortcut-input-key>
       </template>
     </div>
@@ -44,24 +48,31 @@
     <div id="editContainer" class="flex-row">
       <shortcut-input-key id="ctrlKey"
           key="ctrl"
-          key-state="[[getCtrlState(pendingKeyEvent.*)]]">
+          key-state="[[getCtrlState(pendingKeyEvent.*,
+                                    pendingPrerewrittenKeyEvent.*)]]">
       </shortcut-input-key>
       <shortcut-input-key id="altKey"
           key="alt"
-          key-state="[[getAltState(pendingKeyEvent.*)]]">
+          key-state="[[getAltState(pendingKeyEvent.*,
+                                   pendingPrerewrittenKeyEvent.*)]]">
       </shortcut-input-key>
       <shortcut-input-key id="shiftKey"
           key="shift"
-          key-state="[[getShiftState(pendingKeyEvent.*)]]">
+          key-state="[[getShiftState(pendingKeyEvent.*,
+                                    pendingPrerewrittenKeyEvent.*)]]">
       </shortcut-input-key>
       <shortcut-input-key id="searchKey"
           key="meta"
-          key-state="[[getSearchState(pendingKeyEvent.*)]]">
+          key-state="[[getSearchState(pendingKeyEvent.*,
+                                      pendingPrerewrittenKeyEvent.*)]]"
+          has-launcher-button="[[hasLauncherButton]]">
       </shortcut-input-key>
       <div id="keySeparator"> + </div>
       <shortcut-input-key id="pendingKey"
-          key="[[getKey(pendingKeyEvent.*)]]"
-          key-state="[[getKeyState(pendingKeyEvent.*)]]">
+          key="[[getKey(pendingKeyEvent.*, pendingPrerewrittenKeyEvent.*)]]"
+          key-state="[[getKeyState(pendingKeyEvent.*,
+                                   pendingPrerewrittenKeyEvent.*)]]"
+          has-launcher-button="[[hasLauncherButton]]">
       </shortcut-input-key>
     </div>
   </template>

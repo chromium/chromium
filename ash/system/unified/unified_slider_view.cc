@@ -5,6 +5,7 @@
 #include "ash/system/unified/unified_slider_view.h"
 
 #include <memory>
+#include <utility>
 
 #include "ash/constants/quick_settings_catalogs.h"
 #include "ash/system/tray/tray_constants.h"
@@ -61,7 +62,7 @@ UnifiedSliderView::UnifiedSliderView(views::Button::PressedCallback callback,
                                      bool is_togglable,
                                      bool read_only,
                                      QuickSettingsSlider::Style slider_style)
-    : icon_(&icon), callback_(callback), is_togglable_(is_togglable) {
+    : icon_(&icon), is_togglable_(is_togglable) {
   slider_ = AddChildView(CreateSlider(listener, read_only, slider_style));
   slider_->SetBorder(views::CreateEmptyBorder(kQsSliderBorder));
   // Sets `slider_` to have a `BoxLayout` to align the child view

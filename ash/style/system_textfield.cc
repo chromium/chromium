@@ -7,15 +7,22 @@
 #include "ash/style/ash_color_id.h"
 #include "ash/style/system_textfield_controller.h"
 #include "ash/style/typography.h"
+#include "ash/wm/work_area_insets.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "ui/aura/client/screen_position_client.h"
+#include "ui/aura/env.h"
+#include "ui/aura/window.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_provider.h"
+#include "ui/events/event_handler.h"
+#include "ui/events/types/event_type.h"
 #include "ui/gfx/canvas.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
+#include "ui/wm/core/coordinate_conversion.h"
 
 namespace ash {
 
@@ -70,7 +77,67 @@ gfx::FontList GetFontListFromType(SystemTextfield::Type type) {
 
 }  // namespace
 
-SystemTextfield::SystemTextfield(Type type) : type_(type) {
+//------------------------------------------------------------------------------
+// SystemTextfield::EventHandler:
+// Used to handle the case when user wants to commit the changes by clicking
+// outside the textfield.
+// TODO(b/312226702): should fix remaining issues: 1. it does not handle
+// the touch event, 2. the changes can only be committed when clicking within
+// the widget.
+class SystemTextfield::EventHandler : public ui::EventHandler {
+ public:
+  explicit EventHandler(SystemTextfield* textfield) : textfield_(textfield) {
+    aura::Env::GetInstance()->AddPostTargetHandler(this);
+  }
+
+  EventHandler(const EventHandler&) = delete;
+  EventHandler& operator=(const EventHandler&) = delete;
+  ~EventHandler() override {
+    aura::Env::GetInstance()->RemovePostTargetHandler(this);
+  }
+
+  // ui::EventHandler:
+  void OnMouseEvent(ui::MouseEvent* event) override { OnLocatedEvent(event); }
+  void OnTouchEvent(ui::TouchEvent* event) override { OnLocatedEvent(event); }
+
+ private:
+  void OnLocatedEvent(ui::LocatedEvent* event) {
+    if (!textfield_->IsActive()) {
+      return;
+    }
+
+    const ui::EventType event_type = event->type();
+    if (event_type != ui::ET_MOUSE_PRESSED) {
+      return;
+    }
+
+    // Get event location in screen.
+    gfx::Point event_location = event->location();
+    aura::Window* event_target = static_cast<aura::Window*>(event->target());
+
+    if (!aura::client::GetScreenPositionClient(event_target->GetRootWindow())) {
+      return;
+    }
+
+    wm::ConvertPointToScreen(event_target, &event_location);
+
+    const bool event_in_textfield =
+        textfield_->GetBoundsInScreen().Contains(event_location);
+
+    // If a clicking event happens outside the textfield, commit the
+    // changes and deactivate the textfield.
+    if (!event_in_textfield) {
+      textfield_->SetActive(false);
+    }
+  }
+
+  raw_ptr<SystemTextfield> textfield_;
+};
+
+//------------------------------------------------------------------------------
+// SystemTextfield::SystemTextfield:
+SystemTextfield::SystemTextfield(Type type)
+    : type_(type), event_handler_(std::make_unique<EventHandler>(this)) {
   SetFontList(GetFontListFromType(type_));
   SetBorder(views::CreateEmptyBorder(kBorderInsets));
   // Remove the default hover effect, since the hover effect of system textfield
@@ -123,6 +190,11 @@ void SystemTextfield::SetPlaceholderTextColorId(ui::ColorId color_id) {
                 /*is_background_color=*/false);
 }
 
+void SystemTextfield::SetActiveStateChangedCallback(
+    base::RepeatingClosure callback) {
+  active_state_changed_callback_ = std::move(callback);
+}
+
 void SystemTextfield::SetActive(bool active) {
   if (IsActive() == active) {
     return;
@@ -140,6 +212,9 @@ void SystemTextfield::SetActive(bool active) {
 
   SetShowFocusRing(active);
   UpdateBackground();
+  if (active_state_changed_callback_) {
+    active_state_changed_callback_.Run();
+  }
 }
 
 bool SystemTextfield::IsActive() const {
@@ -166,6 +241,7 @@ void SystemTextfield::RestoreText() {
 
 void SystemTextfield::SetBackgroundColorEnabled(bool enabled) {
   is_background_color_enabled_ = enabled;
+  UpdateBackground();
 }
 
 gfx::Size SystemTextfield::CalculatePreferredSize() const {
@@ -207,15 +283,11 @@ void SystemTextfield::OnThemeChanged() {
 }
 
 void SystemTextfield::OnFocus() {
-  views::Textfield::OnFocus();
-  SetShowFocusRing(true);
-  UpdateBackground();
+  SetActive(true);
 }
 
 void SystemTextfield::OnBlur() {
-  views::Textfield::OnBlur();
-  SetShowFocusRing(false);
-  UpdateBackground();
+  SetActive(false);
 }
 
 void SystemTextfield::OnEnabledStateChanged() {
@@ -224,7 +296,7 @@ void SystemTextfield::OnEnabledStateChanged() {
   SchedulePaint();
 }
 
-void SystemTextfield::UpdateColorId(absl::optional<ui::ColorId>& src,
+void SystemTextfield::UpdateColorId(std::optional<ui::ColorId>& src,
                                     ui::ColorId dst,
                                     bool is_background_color) {
   if (src && *src == dst) {
@@ -263,24 +335,21 @@ void SystemTextfield::UpdateTextColor() {
 }
 
 void SystemTextfield::UpdateBackground() {
-  if (!is_background_color_enabled_) {
-    return;
-  }
-  // Create a themed rounded rect background when the mouse hovers on the
-  // textfield or the textfield is focused.
-  if (IsMouseHovered() || HasFocus() || show_background_) {
-    ui::ColorId default_hover_state_color_id =
-        chromeos::features::IsJellyrollEnabled()
-            ? cros_tokens::kCrosSysHoverOnSubtle
-            : static_cast<ui::ColorId>(kColorAshControlBackgroundColorInactive);
-    SetBackground(views::CreateThemedRoundedRectBackground(
-        background_color_id_.value_or(default_hover_state_color_id),
-        kCornerRadius));
+  const bool has_background =
+      is_background_color_enabled_ &&
+      (IsMouseHovered() || HasFocus() || show_background_);
+  if (!has_background) {
+    SetBackground(nullptr);
     return;
   }
 
-  // In other cases, use a transparent background.
-  SetBackground(nullptr);
+  const ui::ColorId default_hover_state_color_id =
+      chromeos::features::IsJellyrollEnabled()
+          ? cros_tokens::kCrosSysHoverOnSubtle
+          : static_cast<ui::ColorId>(kColorAshControlBackgroundColorInactive);
+  SetBackground(views::CreateThemedRoundedRectBackground(
+      background_color_id_.value_or(default_hover_state_color_id),
+      kCornerRadius));
 }
 
 BEGIN_METADATA(SystemTextfield, views::Textfield)

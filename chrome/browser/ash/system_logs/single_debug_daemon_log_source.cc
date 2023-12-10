@@ -56,7 +56,7 @@ void SingleDebugDaemonLogSource::Fetch(SysLogsSourceCallback callback) {
 void SingleDebugDaemonLogSource::OnFetchComplete(
     const std::string& log_name,
     SysLogsSourceCallback callback,
-    absl::optional<std::string> result) const {
+    std::optional<std::string> result) const {
   // |result| and |response| are the same type, but |result| is passed in from
   // DebugDaemonClient, which does not use the SystemLogsResponse alias.
   auto response = std::make_unique<SystemLogsResponse>();

@@ -36,86 +36,89 @@ public class SecurePaymentConfirmationNoMatchingCredController {
 
     private InputProtector mInputProtector = new InputProtector();
 
-    private final BottomSheetObserver mBottomSheetObserver = new EmptyBottomSheetObserver() {
-        @Override
-        public void onSheetStateChanged(int newState, int reason) {
-            switch (newState) {
-                case BottomSheetController.SheetState.HIDDEN:
-                    close();
-                    break;
-            }
-        }
-    };
+    private final BottomSheetObserver mBottomSheetObserver =
+            new EmptyBottomSheetObserver() {
+                @Override
+                public void onSheetStateChanged(int newState, int reason) {
+                    switch (newState) {
+                        case BottomSheetController.SheetState.HIDDEN:
+                            close();
+                            break;
+                    }
+                }
+            };
 
-    private final BottomSheetContent mBottomSheetContent = new BottomSheetContent() {
-        @Override
-        public View getContentView() {
-            return mView.getContentView();
-        }
+    private final BottomSheetContent mBottomSheetContent =
+            new BottomSheetContent() {
+                @Override
+                public View getContentView() {
+                    return mView.getContentView();
+                }
 
-        @Override
-        public View getToolbarView() {
-            return null;
-        }
+                @Override
+                public View getToolbarView() {
+                    return null;
+                }
 
-        @Override
-        public int getVerticalScrollOffset() {
-            if (mView != null) {
-                return mView.getScrollY();
-            }
+                @Override
+                public int getVerticalScrollOffset() {
+                    if (mView != null) {
+                        return mView.getScrollY();
+                    }
 
-            return 0;
-        }
+                    return 0;
+                }
 
-        @Override
-        public float getFullHeightRatio() {
-            return HeightMode.WRAP_CONTENT;
-        }
+                @Override
+                public float getFullHeightRatio() {
+                    return HeightMode.WRAP_CONTENT;
+                }
 
-        @Override
-        public float getHalfHeightRatio() {
-            return HeightMode.DISABLED;
-        }
+                @Override
+                public float getHalfHeightRatio() {
+                    return HeightMode.DISABLED;
+                }
 
-        @Override
-        public void destroy() {}
+                @Override
+                public void destroy() {}
 
-        @Override
-        public int getPriority() {
-            return ContentPriority.HIGH;
-        }
+                @Override
+                public int getPriority() {
+                    return ContentPriority.HIGH;
+                }
 
-        @Override
-        public int getPeekHeight() {
-            return HeightMode.DISABLED;
-        }
+                @Override
+                public int getPeekHeight() {
+                    return HeightMode.DISABLED;
+                }
 
-        @Override
-        public boolean swipeToDismissEnabled() {
-            return false;
-        }
+                @Override
+                public boolean swipeToDismissEnabled() {
+                    return false;
+                }
 
-        @Override
-        public int getSheetContentDescriptionStringId() {
-            return R.string.secure_payment_confirmation_no_matching_credential_sheet_description;
-        }
+                @Override
+                public int getSheetContentDescriptionStringId() {
+                    return R.string
+                            .secure_payment_confirmation_no_matching_credential_sheet_description;
+                }
 
-        @Override
-        public int getSheetHalfHeightAccessibilityStringId() {
-            assert false : "This method should not be called";
-            return 0;
-        }
+                @Override
+                public int getSheetHalfHeightAccessibilityStringId() {
+                    assert false : "This method should not be called";
+                    return 0;
+                }
 
-        @Override
-        public int getSheetFullHeightAccessibilityStringId() {
-            return R.string.secure_payment_confirmation_no_matching_credential_sheet_opened;
-        }
+                @Override
+                public int getSheetFullHeightAccessibilityStringId() {
+                    return R.string.secure_payment_confirmation_no_matching_credential_sheet_opened;
+                }
 
-        @Override
-        public int getSheetClosedAccessibilityStringId() {
-            return R.string.secure_payment_confirmation_no_matching_credential_sheet_closed;
-        }
-    };
+                @Override
+                public int getSheetClosedAccessibilityStringId() {
+                    return R.string.secure_payment_confirmation_no_matching_credential_sheet_closed;
+                }
+            };
 
     /**
      * Constructs the SPC No Matching Credential UI controller.
@@ -187,22 +190,26 @@ public class SecurePaymentConfirmationNoMatchingCredController {
 
         bottomSheet.addObserver(mBottomSheetObserver);
 
-        String origin = UrlFormatter.formatUrlForSecurityDisplay(
-                mWebContents.getVisibleUrl().getOrigin().getSpec(),
-                SchemeDisplay.OMIT_CRYPTOGRAPHIC);
+        String origin =
+                UrlFormatter.formatUrlForSecurityDisplay(
+                        mWebContents.getVisibleUrl().getOrigin().getSpec(),
+                        SchemeDisplay.OMIT_CRYPTOGRAPHIC);
 
-        mView = new SecurePaymentConfirmationNoMatchingCredView(
-                context, origin, rpId, showOptOut, this::closePressed, this::optOutPressed);
+        mView =
+                new SecurePaymentConfirmationNoMatchingCredView(
+                        context, origin, rpId, showOptOut, this::closePressed, this::optOutPressed);
 
-        mHider = () -> {
-            bottomSheet.removeObserver(mBottomSheetObserver);
-            bottomSheet.hideContent(/*content=*/mBottomSheetContent, /*animate=*/true);
-        };
+        mHider =
+                () -> {
+                    bottomSheet.removeObserver(mBottomSheetObserver);
+                    bottomSheet.hideContent(
+                            /* content= */ mBottomSheetContent, /* animate= */ true);
+                };
 
         mResponseCallback = responseCallback;
         mOptOutCallback = showOptOut ? optOutCallback : null;
 
-        if (!bottomSheet.requestShowContent(mBottomSheetContent, /*animate=*/true)) {
+        if (!bottomSheet.requestShowContent(mBottomSheetContent, /* animate= */ true)) {
             close();
             return false;
         }

@@ -141,10 +141,6 @@ class TestWebContents : public WebContentsImpl, public WebContentsTester {
 
   base::UnguessableToken GetAudioGroupId() override;
 
-  const blink::PortalToken& CreatePortal(
-      std::unique_ptr<WebContents> portal_web_contents) override;
-  WebContents* GetPortalContents(const blink::PortalToken&) override;
-
   void OnWebPreferencesChanged() override;
 
   // If set, *web_preferences_changed_counter_ is incremented when
@@ -177,6 +173,9 @@ class TestWebContents : public WebContentsImpl, public WebContentsTester {
 
   void SetOverscrollNavigationEnabled(bool enabled) override;
   bool GetOverscrollNavigationEnabled() override;
+
+  void SetSafeAreaInsetsHost(
+      std::unique_ptr<SafeAreaInsetsHost> safe_area_insets_host);
 
  protected:
   // The deprecated WebContentsTester still needs to subclass this.

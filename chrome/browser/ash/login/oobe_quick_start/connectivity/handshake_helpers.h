@@ -6,10 +6,10 @@
 #define CHROME_BROWSER_ASH_LOGIN_OOBE_QUICK_START_CONNECTIVITY_HANDSHAKE_HELPERS_H_
 
 #include <array>
+#include <optional>
 
 #include "base/containers/span.h"
 #include "chromeos/ash/components/quick_start/quick_start_metrics.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::quick_start::handshake {
 
@@ -37,7 +37,7 @@ enum class VerifyHandshakeMessageStatus {
 std::vector<uint8_t> BuildHandshakeMessage(
     const std::string& auth_token,
     std::array<uint8_t, 32> secret,
-    absl::optional<std::array<uint8_t, 12>> nonce = absl::nullopt,
+    std::optional<std::array<uint8_t, 12>> nonce = std::nullopt,
     DeviceRole role = DeviceRole::kTarget);
 
 // Decode an AesGcmAuthenticationMessage proto, attempt to decrypt the auth

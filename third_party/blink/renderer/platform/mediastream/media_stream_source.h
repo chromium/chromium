@@ -145,6 +145,10 @@ class PLATFORM_EXPORT MediaStreamSource final
         MediaStreamTrackPlatform::FacingMode::kNone;
     String device_id;
     String group_id;
+
+    // Indicates if the device is available for use. If not, capabilities are
+    // not exposed.
+    bool is_available = true;
   };
 
   const Capabilities& GetCapabilities() { return capabilities_; }

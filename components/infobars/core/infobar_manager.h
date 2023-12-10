@@ -119,6 +119,7 @@ class InfoBarManager {
 
   InfoBars infobars_;
   bool animations_enabled_ = true;
+  const bool infobars_enabled_ = true;
 
   base::ObserverList<Observer, true>::Unchecked observer_list_;
 };

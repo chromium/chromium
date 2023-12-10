@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/public/cpp/system/anchored_nudge_data.h"
 #include "ash/public/cpp/system/scoped_nudge_pause.h"
@@ -292,7 +291,6 @@ class AnchoredNudgeManagerImpl::NudgeWidgetObserver
 };
 
 AnchoredNudgeManagerImpl::AnchoredNudgeManagerImpl() {
-  DCHECK(features::IsSystemNudgeV2Enabled());
   Shell::Get()->session_controller()->AddObserver(this);
 }
 
@@ -470,6 +468,9 @@ void AnchoredNudgeManagerImpl::OnSessionStateChanged(
   CloseAllNudges();
 }
 
+// TODO(b/311526868): Replace instances of `base::Contains()` and
+// `shown_nudges_[id]` with logic that only performs a single lookup.
+
 // TODO(b/296948349): Replace this with a new `GetNudge(id)` function as this
 // does not accurately reflect is a nudge is shown or not.
 bool AnchoredNudgeManagerImpl::IsNudgeShown(const std::string& id) {
@@ -506,8 +507,13 @@ views::LabelButton* AnchoredNudgeManagerImpl::GetNudgeSecondaryButtonForTest(
 
 AnchoredNudge* AnchoredNudgeManagerImpl::GetShownNudgeForTest(
     const std::string& id) {
-  CHECK(base::Contains(shown_nudges_, id));
-  return shown_nudges_[id];
+  return base::Contains(shown_nudges_, id) ? shown_nudges_[id] : nullptr;
+}
+
+AnchoredNudge* AnchoredNudgeManagerImpl::GetNudgeIfShown(
+    const std::string& nudge_id) const {
+  const auto iter = shown_nudges_.find(nudge_id);
+  return iter != shown_nudges_.end() ? iter->second.get() : nullptr;
 }
 
 void AnchoredNudgeManagerImpl::ResetNudgeRegistryForTesting() {

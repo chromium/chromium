@@ -5,7 +5,6 @@
 <translation id="1076394037877376434">Διαγραφή σελίδας <ph name="PAGE_NUMBER" /></translation>
 <translation id="1113173431709655881">Λειτουργία κάμερας</translation>
 <translation id="1153190633558910465">Πλέγμα ανενεργό</translation>
-<translation id="1175958423215084756">Εντοπίστηκε σύνδεσμος. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213">Η σελίδα <ph name="PAGE_NUMBER" /> διαγράφηκε</translation>
 <translation id="1258009455399840361">Περιστροφή 90 μοιρών δεξιόστροφα</translation>
 <translation id="1417314334557041815">Επεξεργασία σελίδας <ph name="INDEX" /></translation>
@@ -60,14 +59,12 @@
 <translation id="3642192109456033823">Επεξεργασία βίντεο…</translation>
 <translation id="3789724198583203151">Περιστροφή 90 μοιρών αριστερόστροφα</translation>
 <translation id="3810838688059735925">Βίντεο</translation>
-<translation id="3892148308691398805">Αντιγραφή κειμένου</translation>
 <translation id="4060608699153044055">Δεν είναι δυνατή η εγγραφή λόγω περιορισμένου αποθηκευτικού χώρου συσκευής. Για να ξεκινήσετε την εγγραφή, θα πρέπει να ελευθερώσετε χώρο στη συσκευή σας.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
 <translation id="4118525110028899586">Παύση εγγραφής</translation>
 <translation id="4121305183798804752">Εντοπίστηκε έγγραφο.</translation>
 <translation id="414641094616694804">Δεν είναι δυνατή η αλλαγή ανάλυσης αυτής της κάμερας</translation>
 <translation id="4176463684765177261">Απενεργοποιημένο</translation>
-<translation id="4269820728363426813">Αντιγρ. διεύθυνσης συνδέσμου</translation>
 <translation id="428234092390943511">Μικρογραφία σελίδας</translation>
 <translation id="4349714250734879769">Προσαρμογή καρέ από το Chrome</translation>
 <translation id="4383571725254449280">Εκτύπωση αρχείου καταγραφής απόδοσης</translation>
@@ -144,7 +141,6 @@
 <translation id="7726641833034062494">Εγγραφή κανονικού βίντεο</translation>
 <translation id="7748344063862150053">Επάνω δεξιά γωνία του εγγράφου</translation>
 <translation id="7933675232020478311">Μετακινείται με κατεύθυνση προς τα κάτω και δεξιά</translation>
-<translation id="7983668134180549431">Εντοπίστηκε κείμενο.</translation>
 <translation id="8079255378695216066">Δεν είναι δυνατή η έναρξη της εγγραφής</translation>
 <translation id="8120146556401698679">Μετακίνηση, κλίση και εστίαση</translation>
 <translation id="8131740175452115882">Επιβεβαίωση</translation>
@@ -163,6 +159,7 @@
 <translation id="8870695351537079478">Δεν είναι δυνατή η έναρξη της εγγραφής</translation>
 <translation id="8880167521484863515">4 προς 3</translation>
 <translation id="8903921497873541725">Μεγέθυνση</translation>
+<translation id="8926890870105777777">Συμμετοχή στο δίκτυο "<ph name="WIFINAME" />"</translation>
 <translation id="9045010116236796332">Τοποθετήστε όλες τις άκρες του εγγράφου μέσα στο πλαίσιο.</translation>
 <translation id="9045155556724273246">10 δευτερόλεπτα</translation>
 <translation id="906331135292332864">Επεξεργασία εικόνας…</translation>

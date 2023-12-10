@@ -5,7 +5,6 @@
 #include "ash/app_list/views/apps_grid_view.h"
 
 #include <stddef.h>
-
 #include <algorithm>
 #include <list>
 #include <memory>
@@ -112,8 +111,8 @@ gfx::RectF GetViewBoundsWithCurrentTransform(views::View* view) {
       gfx::RectF(view->GetMirroredBounds()));
 }
 
-absl::optional<gfx::Vector2d> GetOffsetBetweenLayers(ui::Layer* source,
-                                                     ui::Layer* target) {
+std::optional<gfx::Vector2d> GetOffsetBetweenLayers(ui::Layer* source,
+                                                    ui::Layer* target) {
   gfx::Vector2d offset;
   for (auto* current = source; current; current = current->parent()) {
     if (current == target) {
@@ -121,7 +120,7 @@ absl::optional<gfx::Vector2d> GetOffsetBetweenLayers(ui::Layer* source,
     }
     offset += current->bounds().OffsetFromOrigin();
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 float CalculateManhattanDistance(gfx::Point p1, gfx::Point p2) {
@@ -511,16 +510,11 @@ class AppsGridViewTest : public AshTestBase, views::WidgetObserver {
     event_generator->ClickLeftButton();
   }
 
-  ui::LayerTreeOwner* GetPendingPromiseLayerForId(
-      const std::string& promise_app_id) {
+  bool HasPendingPromiseAppRemoval(const std::string& promise_app_id) const {
     auto found =
         apps_grid_view_->pending_promise_apps_removals_.find(promise_app_id);
 
-    if (found == apps_grid_view_->pending_promise_apps_removals_.end()) {
-      return nullptr;
-    }
-
-    return found->second.get();
+    return found != apps_grid_view_->pending_promise_apps_removals_.end();
   }
 
   // Simulates a long press on the point `location` if the test is in tablet
@@ -725,6 +719,17 @@ class AppsGridViewTest : public AshTestBase, views::WidgetObserver {
     return test_api_->GetDragIconBoundsInAppsGridView().CenterPoint();
   }
 
+  ui::Layer* GetDragIconLayer(AppsGridView* apps_grid_view) {
+    ui::Layer* drag_icon_layer = nullptr;
+    if (use_drag_drop_refactor()) {
+      drag_icon_layer = apps_grid_view->drag_image_layer_for_test();
+    } else {
+      drag_icon_layer = test_api_->GetDragIconLayer();
+    }
+
+    return drag_icon_layer;
+  }
+
   std::string GetItemMoveTypeHistogramName() {
     return paged_apps_grid_view_ ? "Apps.AppListAppMovingType"
                                  : "Apps.AppListBubbleAppMovingType";
@@ -824,17 +829,6 @@ class AppsGridViewDragTestBase : public AppsGridViewTest {
   void TearDown() override {
     ShelfModel::Get()->SetShelfItemFactory(nullptr);
     AppsGridViewTest::TearDown();
-  }
-
-  ui::Layer* GetDragIconLayer(AppsGridView* apps_grid_view) {
-    ui::Layer* drag_icon_layer = nullptr;
-    if (use_drag_drop_refactor()) {
-      drag_icon_layer = apps_grid_view->drag_image_layer_for_test();
-    } else {
-      drag_icon_layer = test_api_->GetDragIconLayer();
-    }
-
-    return drag_icon_layer;
   }
 
   bool IsDragIconAnimatingForGrid(AppsGridView* apps_grid_view) {
@@ -1868,7 +1862,8 @@ TEST_P(AppsGridViewFolderIconRefreshTest, AppIconExtendState) {
   ui::LayerAnimationStoppedWaiter animation_waiter;
   animation_waiter.Wait(const_cast<ui::Layer*>(icon_background_layer));
   EXPECT_FALSE(extended_app->is_icon_extended_for_test());
-  EXPECT_FALSE(extended_app->icon_background_layer_for_test());
+  ASSERT_TRUE(extended_app->icon_background_layer_for_test());
+  EXPECT_FALSE(extended_app->icon_background_layer_for_test()->IsVisible());
   EndDrag();
 }
 
@@ -1896,6 +1891,7 @@ TEST_P(AppsGridViewFolderIconRefreshTest, FolderIconExtendState) {
   UpdateDrag(AppsGridView::MOUSE, to, apps_grid_view_, 10 /*steps*/);
   EXPECT_TRUE(folder_view->is_icon_extended_for_test());
   EXPECT_EQ(background_layer, folder_view->icon_background_layer_for_test());
+  EXPECT_TRUE(background_layer->IsVisible());
 
   // Quickly move the dragged app out and back to the folder. Make sure the
   // background layer is not recreated.
@@ -1904,6 +1900,7 @@ TEST_P(AppsGridViewFolderIconRefreshTest, FolderIconExtendState) {
   UpdateDrag(AppsGridView::MOUSE, to, apps_grid_view_, 1 /*steps*/);
   EXPECT_TRUE(folder_view->is_icon_extended_for_test());
   EXPECT_EQ(background_layer, folder_view->icon_background_layer_for_test());
+  EXPECT_TRUE(background_layer->IsVisible());
 
   // Release the drag.
   EndDrag();
@@ -1911,6 +1908,7 @@ TEST_P(AppsGridViewFolderIconRefreshTest, FolderIconExtendState) {
   animation_waiter.Wait(const_cast<ui::Layer*>(background_layer));
   EXPECT_FALSE(folder_view->is_icon_extended_for_test());
   EXPECT_EQ(background_layer, folder_view->icon_background_layer_for_test());
+  EXPECT_TRUE(background_layer->IsVisible());
 }
 
 TEST_P(AppsGridViewFolderIconRefreshTest, FolderIconItemCounter) {
@@ -1926,8 +1924,8 @@ TEST_P(AppsGridViewFolderIconRefreshTest, FolderIconItemCounter) {
   // 2. The counter shows how many items are not drawn on the icon, which is
   // (the number of items - 3).
   // 3. The maximum number that can be shown is 100.
-  std::vector<absl::optional<size_t>> expected_counts = {absl::nullopt,
-                                                         absl::nullopt, 7, 100};
+  std::vector<std::optional<size_t>> expected_counts = {std::nullopt,
+                                                        std::nullopt, 7, 100};
   UpdateLayout();
 
   for (int i = 0; i < 4; ++i) {
@@ -2152,7 +2150,7 @@ TEST_P(AppsGridViewDragTest, DragIconAnimatesToTargetItemBounds) {
     // host the drag icon.
     aura::Window* const root_window =
         item_view->GetWidget()->GetNativeWindow()->GetRootWindow();
-    const absl::optional<gfx::Vector2d> offset_to_root_window =
+    const std::optional<gfx::Vector2d> offset_to_root_window =
         GetOffsetBetweenLayers(drag_icon_layer, root_window->layer());
     ASSERT_TRUE(offset_to_root_window);
     drag_icon_target_bounds.Offset(*offset_to_root_window);
@@ -2214,7 +2212,7 @@ TEST_P(AppsGridViewDragTest,
     // host the drag icon.
     aura::Window* const root_window =
         item_view->GetWidget()->GetNativeWindow()->GetRootWindow();
-    const absl::optional<gfx::Vector2d> offset_to_root_window =
+    const std::optional<gfx::Vector2d> offset_to_root_window =
         GetOffsetBetweenLayers(drag_icon_layer, root_window->layer());
     ASSERT_TRUE(offset_to_root_window);
     drag_icon_target_bounds.Offset(*offset_to_root_window);
@@ -6509,9 +6507,7 @@ TEST_F(AppsGridViewTest, PromiseIconLayers) {
   // Simulate pushing the installed app.
   GetTestModel()->DeleteItem(item->id());
 
-  ui::LayerTreeOwner* promise_app_duplicate_layer =
-      GetPendingPromiseLayerForId(promise_app_id);
-  ASSERT_TRUE(promise_app_duplicate_layer);
+  EXPECT_TRUE(HasPendingPromiseAppRemoval(promise_app_id));
 
   auto* installed_item = GetTestModel()->CreateItem("installed_id");
   auto installed_item_metadata = installed_item->CloneMetadata();
@@ -6522,16 +6518,97 @@ TEST_F(AppsGridViewTest, PromiseIconLayers) {
   AppListItemView* installed_view = apps_grid_view_->GetItemViewAt(0);
   EXPECT_EQ(installed_view->item()->id(), "installed_id");
   ASSERT_TRUE(installed_view->layer());
-  ASSERT_TRUE(GetPendingPromiseLayerForId(promise_app_id));
+  EXPECT_TRUE(HasPendingPromiseAppRemoval(promise_app_id));
 
   // Verify that the layer is still animating.
-  EXPECT_TRUE(installed_view->layer()->GetAnimator()->is_animating());
-  EXPECT_EQ(1.0f, installed_view->layer()->GetAnimator()->GetTargetOpacity());
+  ASSERT_TRUE(installed_view->GetIconView()->layer());
   EXPECT_TRUE(
-      promise_app_duplicate_layer->root()->GetAnimator()->is_animating());
-  EXPECT_EQ(
-      0.0f,
-      promise_app_duplicate_layer->root()->GetAnimator()->GetTargetOpacity());
+      installed_view->GetIconView()->layer()->GetAnimator()->is_animating());
+
+  ui::LayerAnimationStoppedWaiter animation_waiter;
+  animation_waiter.Wait(installed_view->GetIconView()->layer());
+
+  EXPECT_FALSE(installed_view->GetIconView()->layer());
+  EXPECT_FALSE(HasPendingPromiseAppRemoval(promise_app_id));
+  EXPECT_FALSE(installed_view->layer());
+}
+
+TEST_F(AppsGridViewTest, DragEndsDuringPromiseAppReplacement) {
+  GetTestModel()->PopulateApps(1);
+  AppListItem* item = GetTestModel()->CreateAndAddPromiseItem("PromiseApp");
+  const std::string promise_app_id = item->GetMetadata()->id;
+  UpdateLayout();
+
+  AppListItemView* promise_view = apps_grid_view_->GetItemViewAt(1);
+
+  // Promise apps are created with app_status kPending.
+  EXPECT_EQ(promise_view->item()->progress(), -1.0f);
+  EXPECT_TRUE(promise_view->layer());
+
+  // Change app status to installing and send a progress update.
+  item->UpdateAppStatusForTesting(AppStatus::kInstalling);
+  item->SetProgress(0.3f);
+  EXPECT_EQ(promise_view->item()->progress(), 0.3f);
+  EXPECT_TRUE(promise_view->layer());
+
+  // Set the last status update to kInstallSuccess as if the app had finished
+  // installing.
+  item->UpdateAppStatusForTesting(AppStatus::kInstallSuccess);
+  EXPECT_TRUE(promise_view->layer());
+
+  AppListItemView* const dragged_item_view =
+      GetItemViewInCurrentPageAt(0, 0, apps_grid_view_);
+  StartDragForViewAndFireTimer(AppsGridView::MOUSE, dragged_item_view);
+
+  std::list<base::OnceClosure> tasks;
+  tasks.push_back(base::BindLambdaForTesting([&]() {
+    ASSERT_TRUE(apps_grid_view_->drag_item());
+    ASSERT_TRUE(apps_grid_view_->IsDragging());
+    ASSERT_EQ(dragged_item_view->item(), apps_grid_view_->drag_item());
+  }));
+  tasks.push_back(base::BindLambdaForTesting([&]() {
+    // Simulate promise item getting replaced.
+    {
+      ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+          ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+      // Simulate pushing the installed app.
+      GetTestModel()->DeleteItem(item->id());
+
+      EXPECT_TRUE(HasPendingPromiseAppRemoval(promise_app_id));
+
+      auto* installed_item = GetTestModel()->CreateItem("installed_id");
+      auto installed_item_metadata = installed_item->CloneMetadata();
+      installed_item_metadata->promise_package_id = promise_app_id;
+      installed_item->SetMetadata(std::move(installed_item_metadata));
+      GetTestModel()->AddItem(std::move(installed_item));
+    }
+
+    // End drag while the promise app replacement animation is still in
+    // progress.
+    EndDrag();
+  }));
+
+  MaybeRunDragAndDropSequenceForAppList(&tasks, /*is_touch=*/false);
+
+  AppListItemView* installed_view = apps_grid_view_->GetItemViewAt(1);
+  ASSERT_TRUE(installed_view);
+  EXPECT_EQ("installed_id", installed_view->item()->id());
+  ui::LayerAnimationStoppedWaiter animation_waiter;
+  animation_waiter.Wait(installed_view->GetIconView()->layer());
+
+  // Make sure the drop animation completed before checking whether the
+  // installed view has a layer (item view layers are present until the drop
+  // animation completes).
+  ui::Layer* drag_icon_layer = GetDragIconLayer(apps_grid_view_);
+  if (drag_icon_layer) {
+    ui::LayerAnimationStoppedWaiter drop_animation_waiter;
+    drop_animation_waiter.Wait(drag_icon_layer);
+  }
+
+  EXPECT_FALSE(installed_view->GetIconView()->layer());
+  EXPECT_FALSE(HasPendingPromiseAppRemoval(promise_app_id));
+  EXPECT_FALSE(installed_view->layer());
 }
 
 }  // namespace test

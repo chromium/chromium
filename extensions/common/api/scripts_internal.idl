@@ -3,14 +3,14 @@
 // found in the LICENSE file.
 
 // Internal namespace for representing content scripts.
-[modernised_enums]
 namespace scriptsInternal {
   // The source of the user script. This will also determine certain
   // capabilities of the script (such as whether it can use globs, raw strings
   // for code, etc).
   enum Source {
     DYNAMIC_CONTENT_SCRIPT,
-    DYNAMIC_USER_SCRIPT
+    DYNAMIC_USER_SCRIPT,
+    MANIFEST_CONTENT_SCRIPT
   };
 
   // The source of the script to inject.

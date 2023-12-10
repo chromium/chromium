@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+[FAIL] navigator.wakeLock.request('screen') fails when the document is hidden
+  assert_true: expected true got false
+[FAIL] Screen wake locks are released when the document the page is hidden
+  assert_true: expected true got false
+Harness: the test ran to completion.

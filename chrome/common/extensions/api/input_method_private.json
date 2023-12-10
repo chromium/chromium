@@ -6,7 +6,6 @@
   {
     "namespace": "inputMethodPrivate",
     "compiler_options": {
-      "modernised_enums": true,
       "implemented_in": "chrome/browser/ash/extensions/input_method_api.h"
     },
     "description": "none",
@@ -676,17 +675,6 @@
             "$ref": "InputContext",
             "name": "context",
             "description": "Describes the text field that has acquired focus."
-          }
-        ]
-      }, {
-        "name": "onTouch",
-        "type": "function",
-        "description": "This event is sent when a touch occurs in a text field. Should only happen after onFocus()",
-        "parameters": [
-          {
-            "$ref": "FocusReason",
-            "name": "pointerType",
-            "description": "Pointer type used to touch the text field"
           }
         ]
       }, {

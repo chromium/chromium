@@ -44,8 +44,15 @@ std::vector<TabAlertState> GetTabAlertStatesForContents(
     }
     if (indicator->IsBeingMirrored(contents))
       states.push_back(TabAlertState::TAB_CAPTURING);
-    if (indicator->IsCapturingUserMedia(contents))
+
+    if (indicator->IsCapturingAudio(contents) &&
+        indicator->IsCapturingVideo(contents)) {
       states.push_back(TabAlertState::MEDIA_RECORDING);
+    } else if (indicator->IsCapturingAudio(contents)) {
+      states.push_back(TabAlertState::AUDIO_RECORDING);
+    } else if (indicator->IsCapturingVideo(contents)) {
+      states.push_back(TabAlertState::VIDEO_RECORDING);
+    }
   }
 
   if (contents->IsConnectedToBluetoothDevice())
@@ -101,6 +108,12 @@ std::u16string GetTabAlertStateText(const TabAlertState alert_state) {
     case TabAlertState::MEDIA_RECORDING:
       return l10n_util::GetStringUTF16(
           IDS_TOOLTIP_TAB_ALERT_STATE_MEDIA_RECORDING);
+    case TabAlertState::AUDIO_RECORDING:
+      return l10n_util::GetStringUTF16(
+          IDS_TOOLTIP_TAB_ALERT_STATE_AUDIO_RECORDING);
+    case TabAlertState::VIDEO_RECORDING:
+      return l10n_util::GetStringUTF16(
+          IDS_TOOLTIP_TAB_ALERT_STATE_VIDEO_RECORDING);
     case TabAlertState::TAB_CAPTURING:
       return l10n_util::GetStringUTF16(
           IDS_TOOLTIP_TAB_ALERT_STATE_TAB_CAPTURING);

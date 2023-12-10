@@ -44,17 +44,31 @@ public class DuplicateDownloadDialogBridge {
      * @param callbackId Pointer to the native callback.
      */
     @CalledByNative
-    public void showDialog(WindowAndroid windowAndroid, String filePath, String pageUrl,
-            long totalBytes, boolean duplicateExists, OTRProfileID otrProfileID, long callbackId) {
+    public void showDialog(
+            WindowAndroid windowAndroid,
+            String filePath,
+            String pageUrl,
+            long totalBytes,
+            boolean duplicateExists,
+            OTRProfileID otrProfileID,
+            long callbackId) {
         Activity activity = windowAndroid.getActivity().get();
         if (activity == null) {
             onConfirmed(callbackId, false);
             return;
         }
-        new DuplicateDownloadDialog().show(activity,
-                ((ModalDialogManagerHolder) activity).getModalDialogManager(), filePath, pageUrl,
-                totalBytes, duplicateExists, otrProfileID,
-                (accepted) -> { onConfirmed(callbackId, accepted); });
+        new DuplicateDownloadDialog()
+                .show(
+                        activity,
+                        ((ModalDialogManagerHolder) activity).getModalDialogManager(),
+                        filePath,
+                        pageUrl,
+                        totalBytes,
+                        duplicateExists,
+                        otrProfileID,
+                        (accepted) -> {
+                            onConfirmed(callbackId, accepted);
+                        });
     }
 
     @CalledByNative
@@ -69,8 +83,8 @@ public class DuplicateDownloadDialogBridge {
      * @param callbackId Pointer to the native callback.
      */
     private void onConfirmed(long callbackId, boolean accepted) {
-        DuplicateDownloadDialogBridgeJni.get().onConfirmed(
-                mNativeDuplicateDownloadDialogBridge, callbackId, accepted);
+        DuplicateDownloadDialogBridgeJni.get()
+                .onConfirmed(mNativeDuplicateDownloadDialogBridge, callbackId, accepted);
     }
 
     @NativeMethods

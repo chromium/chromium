@@ -4,9 +4,16 @@
 
 #include "chrome/browser/ui/ash/game_dashboard/chrome_game_dashboard_delegate.h"
 
+#include "ash/components/arc/compat_mode/arc_resize_lock_manager.h"
+#include "ash/components/arc/compat_mode/compat_mode_button_controller.h"
 #include "ash/components/arc/session/connection_holder.h"
+#include "ash/public/cpp/multi_user_window_manager.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/scalable_iph/scalable_iph_factory.h"
+#include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_helper.h"
+#include "chromeos/ash/components/scalable_iph/scalable_iph.h"
+#include "components/user_manager/user_manager.h"
 
 ChromeGameDashboardDelegate::ChromeGameDashboardDelegate() {}
 
@@ -52,6 +59,63 @@ std::string ChromeGameDashboardDelegate::GetArcAppName(
     return std::string();
   }
   return app_info->name;
+}
+
+void ChromeGameDashboardDelegate::RecordGameWindowOpenedEvent(
+    aura::Window* window) {
+  user_manager::UserManager* user_manager = user_manager::UserManager::Get();
+  CHECK(user_manager);
+  if (user_manager->GetActiveUser() != user_manager->GetPrimaryUser()) {
+    return;
+  }
+
+  ash::MultiUserWindowManager* multi_user_window_manager =
+      MultiUserWindowManagerHelper::GetWindowManager();
+  if (multi_user_window_manager) {
+    // If multi user is not enabled, `MultiUserWindowManagerStub` is set. It
+    // returns an invalid account id.
+    const AccountId& account_id =
+        multi_user_window_manager->GetWindowOwner(window);
+    if (account_id.is_valid() &&
+        user_manager->GetPrimaryUser()->GetAccountId() != account_id) {
+      return;
+    }
+  }
+
+  Profile* profile = ProfileManager::GetPrimaryUserProfile();
+  CHECK(profile);
+
+  scalable_iph::ScalableIph* scalable_iph =
+      ScalableIphFactory::GetForBrowserContext(profile);
+  if (scalable_iph) {
+    scalable_iph->RecordEvent(
+        scalable_iph::ScalableIph::Event::kGameWindowOpened);
+  }
+}
+
+void ChromeGameDashboardDelegate::ShowResizeToggleMenu(aura::Window* window) {
+  DCHECK(window) << "Window needed to show compat mode toggle menu.";
+  GetCompatModeButtonController()->ShowResizeToggleMenu(
+      window,
+      /*callback=*/base::DoNothing());
+}
+
+arc::CompatModeButtonController*
+ChromeGameDashboardDelegate::GetCompatModeButtonController() {
+  if (!compat_mode_button_controller_) {
+    auto* profile = ProfileManager::GetPrimaryUserProfile();
+    CHECK(profile) << "Cannot retrieve the CompatModeButtonController without "
+                      "a valid user profile.";
+    auto* resize_lock_manager =
+        arc::ArcResizeLockManager::GetForBrowserContext(profile);
+    CHECK(resize_lock_manager) << "Received a null ArcResizeLockManager.";
+    compat_mode_button_controller_ =
+        resize_lock_manager->compat_mode_button_controller()->GetWeakPtr();
+    CHECK(compat_mode_button_controller_)
+        << "Received a null CompatModeButtonController from "
+           "ArcResizeLockManager.";
+  }
+  return compat_mode_button_controller_.get();
 }
 
 void ChromeGameDashboardDelegate::OnReceiveAppCategory(

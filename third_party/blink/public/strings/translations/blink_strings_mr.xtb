@@ -30,6 +30,7 @@
 <translation id="2226276347425096477">कृपया हा मजकूर <ph name="MAX_CHARACTERS" /> वर्ण लहान किंवा कमी करा (तुम्ही सध्या <ph name="CURRENT_LENGTH" /> वर्ण वापरत आहात).</translation>
 <translation id="2247351761944213033">आठवडा <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">ट्रॅक <ph name="NUMBER" /></translation>
+<translation id="2353297238722298836">कॅमेरा आणि मायक्रोफोनला अनुमती आहे</translation>
 <translation id="2393030564806080191">रंगाचे हेक्साडेसिमल मूल्य</translation>
 <translation id="2398813069815436052">डायलॉग उघडला.</translation>
 <translation id="245932805758469625">व्हिडिओच्या शिल्लक सेकंदांची संख्या</translation>
@@ -60,10 +61,12 @@
 <translation id="3822383571486410024">कृपया हा मजकूर <ph name="MIN_CHARACTERS" /> वर्ण किंवा त्यापेक्षा अधिक मोठा करा (तुम्ही सध्‍या <ph name="CURRENT_LENGTH" /> वर्ण वापरत आहात).</translation>
 <translation id="383465348367842624">'<ph name="ATSIGN" />' मागुन येणार्‍या भागामध्ये '<ph name="INVALIDCHARACTER" />' चिन्ह नसावे.</translation>
 <translation id="3846214748874656680">क्षेत्रेमधून बाहेर पडा</translation>
+<translation id="4031179711345676612">मायक्रोफोनला अनुमती आहे</translation>
 <translation id="4103419683916926126">मिलिसेकंद</translation>
 <translation id="4201051445878709314">मागील महिना दर्शवा</translation>
 <translation id="4360991593054037559">कृपया एक वैध मूल्य एंटर करा. दोन जवळील वैध मूल्ये <ph name="VALID_VALUE_LOW" /> आणि <ph name="VALID_VALUE_HIGHER" /> आहेत.</translation>
 <translation id="4522570452068850558">तपशील</translation>
+<translation id="4663373278480897665">कॅमेऱ्याला अनुमती आहे</translation>
 <translation id="4664250907885839816">'<ph name="ATSIGN" />' चे फॉलो करणार्‍या भागामध्ये '<ph name="INVALIDCHARACTER" />' चिन्ह नसावे.</translation>
 <translation id="4718048029184481307">चित्रात-चित्र मध्ये प्ले करत आहे</translation>
 <translation id="4748357248530471599">डिस्प्ले कटआउट फुलस्क्रीन टॉगल करा</translation>
@@ -137,6 +140,7 @@
 <translation id="6941933287844615239">मीडिया डाउनलोड करा</translation>
 <translation id="698788488269350478">विस्तार केला.</translation>
 <translation id="6989848892321993519">कृपया हा मजकूर <ph name="MIN_CHARACTERS" /> वर्ण किंवा त्यापेक्षा अधिक मोठा करा (तुम्ही सध्‍या 1 वर्ण वापरत आहात).</translation>
+<translation id="7080893216867146095">स्थान शेअर करण्याची अनुमती आहे</translation>
 <translation id="709897737746224366">कृपया विनंती केलेले स्वरूपन जुळवा.</translation>
 <translation id="7102274145889307184">सध्याचे स्थान</translation>
 <translation id="7263440858009898357">कृपया सूचीमधील आयटम निवडा.</translation>

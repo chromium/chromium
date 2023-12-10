@@ -7,7 +7,6 @@
 
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/ash/bruschetta/bruschetta_features.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_service.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_util.h"
 #include "chrome/browser/ash/guest_os/guest_id.h"

@@ -804,7 +804,7 @@ TEST_F(ProfilePickerHandlerInUserProfileTest,
   // Check that the handler replied correctly.
   const base::Value::Dict& theme_info = GetThemeInfoReply().GetDict();
   EXPECT_EQ(-1, *theme_info.FindInt("colorId"));  // -1: default color
-  EXPECT_EQ(absl::nullopt, theme_info.FindInt("color"));
+  EXPECT_EQ(std::nullopt, theme_info.FindInt("color"));
 }
 
 TEST_F(ProfilePickerHandlerInUserProfileTest,

@@ -9,10 +9,9 @@
 
 namespace component_updater {
 struct ComponentRegistration;
-}
+}  // namespace component_updater
 
 namespace android_webview {
-
 void RegisterComponentsForUpdate(
     base::RepeatingCallback<bool(
         const component_updater::ComponentRegistration&)> register_callback,

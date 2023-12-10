@@ -13,16 +13,14 @@ class SerialExecutor implements Executor {
 
     @Override
     public synchronized void execute(final Runnable r) {
-        mTasks.offer(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    r.run();
-                } finally {
-                    scheduleNext();
-                }
-            }
-        });
+        mTasks.offer(
+                () -> {
+                    try {
+                        r.run();
+                    } finally {
+                        scheduleNext();
+                    }
+                });
         if (mActive == null) {
             scheduleNext();
         }

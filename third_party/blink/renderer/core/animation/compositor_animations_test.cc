@@ -148,9 +148,6 @@ class AnimationCompositorAnimationsTest : public PaintTestConfigurations,
 
     timing_ = CreateCompositableTiming();
     compositor_timing_ = CompositorAnimations::CompositorTiming();
-    // Make sure the CompositableTiming is really compositable, otherwise
-    // most other tests will fail.
-    ASSERT_TRUE(ConvertTimingForCompositor(timing_, compositor_timing_));
 
     keyframe_vector2_ = CreateCompositableFloatKeyframeVector(2);
     keyframe_animation_effect2_ =
@@ -164,6 +161,10 @@ class AnimationCompositorAnimationsTest : public PaintTestConfigurations,
 
     timeline_ = GetDocument().Timeline();
     timeline_->ResetForTesting();
+
+    // Make sure the CompositableTiming is really compositable, otherwise
+    // most other tests will fail.
+    ASSERT_TRUE(ConvertTimingForCompositor(timing_, compositor_timing_));
 
     // Using will-change ensures that this object will need paint properties.
     // Having an animation would normally ensure this but these tests don't
@@ -1034,16 +1035,16 @@ TEST_P(AnimationCompositorAnimationsTest, ForceReduceMotion) {
   // The effect should snap between keyframes at the halfway points.
   animation->setCurrentTime(MakeGarbageCollected<V8CSSNumberish>(450),
                             ASSERT_NO_EXCEPTION);
-  EXPECT_NEAR(element_->getBoundingClientRect()->x(), 100.0, 0.001);
+  EXPECT_NEAR(element_->GetBoundingClientRect()->x(), 100.0, 0.001);
   animation->setCurrentTime(MakeGarbageCollected<V8CSSNumberish>(550),
                             ASSERT_NO_EXCEPTION);
-  EXPECT_NEAR(element_->getBoundingClientRect()->x(), 200.0, 0.001);
+  EXPECT_NEAR(element_->GetBoundingClientRect()->x(), 200.0, 0.001);
   animation->setCurrentTime(MakeGarbageCollected<V8CSSNumberish>(1450),
                             ASSERT_NO_EXCEPTION);
-  EXPECT_NEAR(element_->getBoundingClientRect()->x(), 200.0, 0.001);
+  EXPECT_NEAR(element_->GetBoundingClientRect()->x(), 200.0, 0.001);
   animation->setCurrentTime(MakeGarbageCollected<V8CSSNumberish>(1550),
                             ASSERT_NO_EXCEPTION);
-  EXPECT_NEAR(element_->getBoundingClientRect()->x(), 300.0, 0.001);
+  EXPECT_NEAR(element_->GetBoundingClientRect()->x(), 300.0, 0.001);
 }
 
 TEST_P(AnimationCompositorAnimationsTest,
@@ -1070,7 +1071,7 @@ TEST_P(AnimationCompositorAnimationsTest,
   // jump to the nearest keyframe.
   animation->setCurrentTime(MakeGarbageCollected<V8CSSNumberish>(500),
                             ASSERT_NO_EXCEPTION);
-  EXPECT_NEAR(element_->getBoundingClientRect()->x(), 150.0, 0.001);
+  EXPECT_NEAR(element_->GetBoundingClientRect()->x(), 150.0, 0.001);
 }
 
 TEST_P(AnimationCompositorAnimationsTest,
@@ -1111,7 +1112,7 @@ TEST_P(AnimationCompositorAnimationsTest,
   // to the nearest keyframe.
   animation->setCurrentTime(MakeGarbageCollected<V8CSSNumberish>(400),
                             ASSERT_NO_EXCEPTION);
-  EXPECT_NEAR(element_->getBoundingClientRect()->x(), 100.0, 0.001);
+  EXPECT_NEAR(element_->GetBoundingClientRect()->x(), 100.0, 0.001);
 
   // As the child document does support reduce motion, its animation will not be
   // snapped.
@@ -1120,7 +1121,7 @@ TEST_P(AnimationCompositorAnimationsTest,
   Animation* child_animation = child_element->getAnimations()[0];
   child_animation->setCurrentTime(MakeGarbageCollected<V8CSSNumberish>(400),
                                   ASSERT_NO_EXCEPTION);
-  EXPECT_NEAR(child_element->getBoundingClientRect()->x(), 140.0, 0.001);
+  EXPECT_NEAR(child_element->GetBoundingClientRect()->x(), 140.0, 0.001);
 }
 
 TEST_P(AnimationCompositorAnimationsTest, CheckCanStartForceReduceMotion) {

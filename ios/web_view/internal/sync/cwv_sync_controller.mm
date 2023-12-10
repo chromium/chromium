@@ -155,7 +155,7 @@ __weak id<CWVSyncControllerDataSource> gSyncDataSource;
   autofill::prefs::SetUserOptedInWalletSyncTransport(_prefService, accountId,
                                                      /*opted_in=*/true);
   CHECK(password_manager::features_util::IsOptedInForAccountStorage(
-      _prefService, _syncService));
+      _syncService));
 }
 
 - (void)stopSyncAndClearIdentity {

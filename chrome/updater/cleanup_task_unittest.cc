@@ -4,6 +4,8 @@
 
 #include "chrome/updater/cleanup_task.h"
 
+#include <optional>
+
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/memory/scoped_refptr.h"
@@ -14,7 +16,6 @@
 #include "chrome/updater/util/unit_test_util.h"
 #include "chrome/updater/util/util.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "chrome/updater/util/win_util.h"
@@ -36,13 +37,13 @@ TEST_F(CleanupTaskTest, RunCleanupObsoleteFiles) {
 #if BUILDFLAG(IS_WIN)
   // Set up a mock `GoogleUpdate.exe`, and the following mock directories:
   // `Download`, `Install`, and a versioned `1.2.3.4` directory.
-  const absl::optional<base::FilePath> google_update_exe =
+  const std::optional<base::FilePath> google_update_exe =
       GetGoogleUpdateExePath(GetTestScope());
   ASSERT_TRUE(google_update_exe.has_value());
   test::SetupMockUpdater(google_update_exe.value());
 #endif  // BUILDFLAG(IS_WIN)
 
-  absl::optional<base::FilePath> folder_path =
+  std::optional<base::FilePath> folder_path =
       GetVersionedInstallDirectory(GetTestScope(), base::Version("100"));
   ASSERT_TRUE(folder_path);
   ASSERT_TRUE(base::CreateDirectory(*folder_path));

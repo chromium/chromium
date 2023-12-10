@@ -20,4 +20,8 @@ void RegisteredWrappable::OnIsolateWillDestroy() {
   delete this;
 }
 
+void RegisteredWrappable::StopObserving() {
+  observer_.Reset();
+}
+
 }  // namespace ax

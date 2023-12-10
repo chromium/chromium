@@ -440,7 +440,7 @@ void QuotaManagerProxy::NotifyBucketAccessed(const BucketLocator& bucket,
 void QuotaManagerProxy::NotifyBucketModified(
     QuotaClientType client_id,
     const BucketLocator& bucket,
-    absl::optional<int64_t> delta,
+    std::optional<int64_t> delta,
     base::Time modification_time,
     scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
     base::OnceClosure callback) {
@@ -650,7 +650,7 @@ QuotaManagerProxy::GetQuotaOverrideHandle() {
 void QuotaManagerProxy::OverrideQuotaForStorageKey(
     int handle_id,
     const StorageKey& storage_key,
-    absl::optional<int64_t> quota_size,
+    std::optional<int64_t> quota_size,
     scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
     base::OnceClosure callback) {
   DCHECK(callback_task_runner);

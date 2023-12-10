@@ -16,7 +16,7 @@ TEST_F(DiskCacheBackendTest, CreateCorrect21) {
 
   const int kBufSize = 1234;
   scoped_refptr<net::IOBuffer> buffer =
-      base::MakeRefCounted<net::IOBuffer>(kBufSize);
+      base::MakeRefCounted<net::IOBufferWithSize>(kBufSize);
   CacheTestFillBuffer(buffer->data(), kBufSize, /*no_nulls=*/false);
 
   EXPECT_EQ(kBufSize, WriteData(entry, /*index=*/1, /*offset=*/0, buffer.get(),

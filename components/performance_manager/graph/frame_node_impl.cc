@@ -42,9 +42,7 @@ FrameNodeImpl::FrameNodeImpl(ProcessNodeImpl* process_node,
       browsing_instance_id_(browsing_instance_id),
       site_instance_id_(site_instance_id),
       render_frame_host_proxy_(content::GlobalRenderFrameHostId(
-          process_node->render_process_host_proxy()
-              .render_process_host_id()
-              .value(),
+          process_node->GetRenderProcessHostId().value(),
           render_frame_id)) {
   // Nodes are created on the UI thread, then accessed on the PM sequence.
   // `weak_this_` can be returned from GetWeakPtrOnUIThread() and dereferenced
@@ -136,12 +134,12 @@ const blink::LocalFrameToken& FrameNodeImpl::GetFrameToken() const {
 
 content::BrowsingInstanceId FrameNodeImpl::GetBrowsingInstanceId() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return browsing_instance_id();
+  return browsing_instance_id_;
 }
 
 content::SiteInstanceId FrameNodeImpl::GetSiteInstanceId() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return site_instance_id();
+  return site_instance_id_;
 }
 
 resource_attribution::FrameContext FrameNodeImpl::GetResourceContext() const {
@@ -155,87 +153,95 @@ bool FrameNodeImpl::IsMainFrame() const {
 
 FrameNodeImpl::LifecycleState FrameNodeImpl::GetLifecycleState() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return lifecycle_state();
+  return lifecycle_state_.value();
 }
 
 bool FrameNodeImpl::HasNonemptyBeforeUnload() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return has_nonempty_beforeunload();
+  return document_.has_nonempty_beforeunload;
 }
 
 const GURL& FrameNodeImpl::GetURL() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return url();
+  return document_.url.value();
 }
 
 bool FrameNodeImpl::IsCurrent() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return is_current();
+  return is_current_.value();
+}
+
+const PriorityAndReason& FrameNodeImpl::GetPriorityAndReason() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return priority_and_reason_.value();
 }
 
 bool FrameNodeImpl::GetNetworkAlmostIdle() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return network_almost_idle();
+  return document_.network_almost_idle.value();
 }
 
 bool FrameNodeImpl::IsAdFrame() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return is_ad_frame();
+  return is_ad_frame_.value();
 }
 
 bool FrameNodeImpl::IsHoldingWebLock() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return is_holding_weblock();
+  return is_holding_weblock_.value();
 }
 
 bool FrameNodeImpl::IsHoldingIndexedDBLock() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return is_holding_indexeddb_lock();
+  return is_holding_indexeddb_lock_.value();
 }
 
 bool FrameNodeImpl::HadFormInteraction() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return had_form_interaction();
+  return document_.had_form_interaction.value();
 }
 
 bool FrameNodeImpl::HadUserEdits() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return had_user_edits();
+  return document_.had_user_edits.value();
 }
 
 bool FrameNodeImpl::IsAudible() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return is_audible();
+  return is_audible_.value();
 }
 
-bool FrameNodeImpl::IsCapturingVideoStream() const {
+bool FrameNodeImpl::IsCapturingMediaStream() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return is_capturing_video_stream();
+  return is_capturing_media_stream_.value();
 }
 
 absl::optional<bool> FrameNodeImpl::IntersectsViewport() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return intersects_viewport();
+  // The intersection with the viewport of the outermost main frame or embedder
+  // is not tracked.
+  DCHECK(parent_or_outer_document_or_embedder());
+  return intersects_viewport_.value();
 }
 
 FrameNode::Visibility FrameNodeImpl::GetVisibility() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return visibility();
+  return visibility_.value();
 }
 
 const RenderFrameHostProxy& FrameNodeImpl::GetRenderFrameHostProxy() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return render_frame_host_proxy();
+  return render_frame_host_proxy_;
 }
 
 uint64_t FrameNodeImpl::GetResidentSetKbEstimate() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return resident_set_kb_estimate();
+  return resident_set_kb_estimate_;
 }
 
 uint64_t FrameNodeImpl::GetPrivateFootprintKbEstimate() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return private_footprint_kb_estimate();
+  return private_footprint_kb_estimate_;
 }
 
 FrameNodeImpl* FrameNodeImpl::parent_frame_node() const {
@@ -275,21 +281,6 @@ int FrameNodeImpl::render_frame_id() const {
   return render_frame_id_;
 }
 
-content::BrowsingInstanceId FrameNodeImpl::browsing_instance_id() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return browsing_instance_id_;
-}
-
-content::SiteInstanceId FrameNodeImpl::site_instance_id() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return site_instance_id_;
-}
-
-const RenderFrameHostProxy& FrameNodeImpl::render_frame_host_proxy() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return render_frame_host_proxy_;
-}
-
 const base::flat_set<FrameNodeImpl*>& FrameNodeImpl::child_frame_nodes() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return child_frame_nodes_;
@@ -306,98 +297,10 @@ const base::flat_set<PageNodeImpl*>& FrameNodeImpl::embedded_page_nodes()
   return embedded_page_nodes_;
 }
 
-mojom::LifecycleState FrameNodeImpl::lifecycle_state() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return lifecycle_state_.value();
-}
-
-bool FrameNodeImpl::has_nonempty_beforeunload() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return document_.has_nonempty_beforeunload;
-}
-
-const GURL& FrameNodeImpl::url() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return document_.url.value();
-}
-
-bool FrameNodeImpl::is_current() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return is_current_.value();
-}
-
-bool FrameNodeImpl::network_almost_idle() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return document_.network_almost_idle.value();
-}
-
-bool FrameNodeImpl::is_ad_frame() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return is_ad_frame_.value();
-}
-
-bool FrameNodeImpl::is_holding_weblock() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return is_holding_weblock_.value();
-}
-
-bool FrameNodeImpl::is_holding_indexeddb_lock() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return is_holding_indexeddb_lock_.value();
-}
-
 const base::flat_set<WorkerNodeImpl*>& FrameNodeImpl::child_worker_nodes()
     const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return child_worker_nodes_;
-}
-
-const PriorityAndReason& FrameNodeImpl::priority_and_reason() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return priority_and_reason_.value();
-}
-
-bool FrameNodeImpl::had_form_interaction() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return document_.had_form_interaction.value();
-}
-
-bool FrameNodeImpl::had_user_edits() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return document_.had_user_edits.value();
-}
-
-bool FrameNodeImpl::is_audible() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return is_audible_.value();
-}
-
-bool FrameNodeImpl::is_capturing_video_stream() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return is_capturing_video_stream_.value();
-}
-
-absl::optional<bool> FrameNodeImpl::intersects_viewport() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // The intersection with the viewport of the outermost main frame or embedder
-  // is not tracked.
-  DCHECK(parent_or_outer_document_or_embedder());
-  return intersects_viewport_.value();
-}
-
-FrameNode::Visibility FrameNodeImpl::visibility() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return visibility_.value();
-}
-
-uint64_t FrameNodeImpl::resident_set_kb_estimate() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return resident_set_kb_estimate_;
-}
-
-uint64_t FrameNodeImpl::private_footprint_kb_estimate() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return private_footprint_kb_estimate_;
 }
 
 void FrameNodeImpl::SetIsCurrent(bool is_current) {
@@ -437,10 +340,10 @@ void FrameNodeImpl::SetIsAudible(bool is_audible) {
   is_audible_.SetAndMaybeNotify(this, is_audible);
 }
 
-void FrameNodeImpl::SetIsCapturingVideoStream(bool is_capturing_video_stream) {
+void FrameNodeImpl::SetIsCapturingMediaStream(bool is_capturing_media_stream) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_NE(is_capturing_video_stream, is_capturing_video_stream_.value());
-  is_capturing_video_stream_.SetAndMaybeNotify(this, is_capturing_video_stream);
+  DCHECK_NE(is_capturing_media_stream, is_capturing_media_stream_.value());
+  is_capturing_media_stream_.SetAndMaybeNotify(this, is_capturing_media_stream);
 }
 
 void FrameNodeImpl::SetIntersectsViewport(bool intersects_viewport) {
@@ -681,11 +584,6 @@ bool FrameNodeImpl::VisitChildDedicatedWorkers(
   return true;
 }
 
-const PriorityAndReason& FrameNodeImpl::GetPriorityAndReason() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return priority_and_reason();
-}
-
 void FrameNodeImpl::AddChildFrame(FrameNodeImpl* child_frame_node) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(child_frame_node);
@@ -726,7 +624,7 @@ void FrameNodeImpl::OnJoiningGraph() {
   DCHECK(GetWeakPtr().get());
 
   // Enable querying this node using process and frame routing ids.
-  graph()->RegisterFrameNodeForId(process_node_->GetRenderProcessId(),
+  graph()->RegisterFrameNodeForId(process_node_->GetRenderProcessHostId(),
                                   render_frame_id_, this);
 
   // Notify the initializing observers.
@@ -764,7 +662,7 @@ void FrameNodeImpl::OnBeforeLeavingGraph() {
   graph()->NotifyFrameNodeTearingDown(this);
 
   // Disable querying this node using process and frame routing ids.
-  graph()->UnregisterFrameNodeForId(process_node_->GetRenderProcessId(),
+  graph()->UnregisterFrameNodeForId(process_node_->GetRenderProcessHostId(),
                                     render_frame_id_, this);
 }
 
@@ -798,7 +696,7 @@ void FrameNodeImpl::SeverPageRelationshipsAndMaybeReparent() {
 
   while (!embedded_page_nodes_.empty()) {
     auto* embedded_node = *embedded_page_nodes_.begin();
-    auto embedding_type = embedded_node->embedding_type();
+    auto embedding_type = embedded_node->GetEmbeddingType();
     if (parent_frame_node_) {
       embedded_node->SetEmbedderFrameNodeAndEmbeddingType(parent_frame_node_,
                                                           embedding_type);

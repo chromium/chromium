@@ -203,7 +203,7 @@ class MockFrameSinkVideoCapturer : public viz::mojom::FrameSinkVideoCapturer {
 
   MOCK_METHOD(void,
               ChangeTarget,
-              (const absl::optional<viz::VideoCaptureTarget>& target,
+              (const std::optional<viz::VideoCaptureTarget>& target,
                uint32_t sub_capture_target_version));
 
   MOCK_METHOD(void,
@@ -416,7 +416,7 @@ TEST_F(FrameSinkDesktopCapturerTest, ShouldStartByCapturingThePrimaryDisplay) {
   AddMultipleDisplays();
 
   DisplayId primary_display_id = ash_proxy().GetPrimaryDisplayId();
-  const auto expected_target = absl::optional<viz::VideoCaptureTarget>(
+  const auto expected_target = std::optional<viz::VideoCaptureTarget>(
       ash_proxy().GetFrameSinkId(primary_display_id));
 
   EXPECT_CALL(video_capturer_, ChangeTarget(expected_target, 0));
@@ -574,7 +574,7 @@ TEST_F(FrameSinkDesktopCapturerTest, ShouldUpdateSourceOnDisplayChange) {
   Size size(234, 56);
 
   StartCapturerForTesting();
-  const absl::optional<viz::VideoCaptureTarget> expected_target(
+  const std::optional<viz::VideoCaptureTarget> expected_target(
       ash_proxy().GetFrameSinkId(new_display_id));
 
   EXPECT_CALL(video_capturer_, ChangeTarget(expected_target, 0));

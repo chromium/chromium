@@ -172,9 +172,7 @@ class CORE_EXPORT StyleImage : public GarbageCollected<StyleImage> {
   ALWAYS_INLINE bool IsImageResourceSet() const {
     return is_image_resource_set_;
   }
-  ALWAYS_INLINE bool IsSVGMaskReference() const {
-    return is_svg_mask_reference_;
-  }
+  ALWAYS_INLINE bool IsMaskSource() const { return is_mask_source_; }
   ALWAYS_INLINE bool IsPaintImage() const { return is_paint_image_; }
   ALWAYS_INLINE bool IsCrossfadeImage() const { return is_crossfade_; }
 
@@ -191,7 +189,7 @@ class CORE_EXPORT StyleImage : public GarbageCollected<StyleImage> {
         is_generated_image_(false),
         is_image_resource_set_(false),
         is_crossfade_(false),
-        is_svg_mask_reference_(false),
+        is_mask_source_(false),
         is_paint_image_(false),
         is_lazyload_possibly_deferred_(false) {}
   bool is_image_resource_ : 1;
@@ -199,7 +197,7 @@ class CORE_EXPORT StyleImage : public GarbageCollected<StyleImage> {
   bool is_generated_image_ : 1;
   bool is_image_resource_set_ : 1;
   bool is_crossfade_ : 1;
-  bool is_svg_mask_reference_ : 1;
+  bool is_mask_source_ : 1;
   bool is_paint_image_ : 1;
   bool is_lazyload_possibly_deferred_ : 1;
 

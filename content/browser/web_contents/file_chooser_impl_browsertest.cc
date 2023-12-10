@@ -67,6 +67,8 @@ class FileChooserImplBrowserTestWebContentsDelegate
 
   FileSelectListener* listener() { return listener_.get(); }
 
+  void ClearListener() { listener_ = nullptr; }
+
  private:
   scoped_refptr<FileSelectListener> listener_;
 };
@@ -110,6 +112,39 @@ IN_PROC_BROWSER_TEST_F(FileChooserImplBrowserTest,
 
   // Test passes if this run_loop.Run() returns instead of timing out.
   run_loop.Run();
+}
+
+IN_PROC_BROWSER_TEST_F(FileChooserImplBrowserTest, ListenerOutlivingChooser) {
+  EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
+
+  auto delegate =
+      std::make_unique<FileChooserImplBrowserTestWebContentsDelegate>();
+  shell()->web_contents()->SetDelegate(delegate.get());
+
+  auto* rfh = static_cast<RenderFrameHostImpl*>(
+      shell()->web_contents()->GetPrimaryMainFrame());
+  auto chooser_and_remote = FileChooserImpl::CreateForTesting(rfh);
+  auto* chooser = chooser_and_remote.first;
+
+  chooser->OpenFileChooser(blink::mojom::FileChooserParams::New(),
+                           base::DoNothing());
+
+  static_cast<FileChooserImpl::FileSelectListenerImpl*>(delegate->listener())
+      ->SetListenerFunctionCalledTrueForTesting();
+  // After this, `chooser` will no longer have a reference to the listener.
+  chooser->FileSelectionCanceled();
+
+  // Destroy `chooser`.
+  chooser_and_remote.second.reset();
+  // The destruction happens asynchronously after the disconnection.
+  base::RunLoop await_chooser_destruction_run_loop;
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, await_chooser_destruction_run_loop.QuitClosure());
+  await_chooser_destruction_run_loop.Run();
+
+  // Clear the last reference to the listener, which will destroy it. It
+  // should gracefully handle being destroyed after the chooser.
+  delegate->ClearListener();
 }
 
 // Same as FileChooserCallbackAfterRfhDeathCancel but with a file selected from

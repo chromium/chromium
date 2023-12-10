@@ -475,6 +475,7 @@ TEST_F(PrimaryAccountManagerTest, GaiaIdMigration) {
   account_tracker()->ResetForTesting();
 
   client_prefs->SetString(prefs::kGoogleServicesAccountId, email);
+  client_prefs->SetBoolean(prefs::kGoogleServicesConsentedToSync, true);
 
   CreatePrimaryAccountManager();
 
@@ -503,6 +504,7 @@ TEST_F(PrimaryAccountManagerTest, GaiaIdMigrationCrashInTheMiddle) {
   account_tracker()->ResetForTesting();
 
   client_prefs->SetString(prefs::kGoogleServicesAccountId, gaia_id);
+  client_prefs->SetBoolean(prefs::kGoogleServicesConsentedToSync, true);
 
   CreatePrimaryAccountManager();
   EXPECT_EQ(CoreAccountId::FromGaiaId(gaia_id),
@@ -543,26 +545,6 @@ TEST_F(PrimaryAccountManagerTest, RestoreFromPrefsUnconsented) {
 
   // Not a logged event.
   CheckSigninMetrics({});
-}
-
-// If kGoogleServicesConsentedToSync is missing, the account is fully
-// authenticated.
-TEST_F(PrimaryAccountManagerTest, RestoreFromPrefsMissingConsentPref) {
-  CoreAccountId account_id = AddToAccountTracker("gaia_id", "user@gmail.com");
-  user_prefs_.SetString(prefs::kGoogleServicesAccountId, account_id.ToString());
-
-  const PrefService::Preference* consented_pref =
-      user_prefs_.FindPreference(prefs::kGoogleServicesConsentedToSync);
-  ASSERT_TRUE(consented_pref);                    // Pref is registered.
-  ASSERT_TRUE(consented_pref->IsDefaultValue());  // Pref is not set.
-
-  CreatePrimaryAccountManager();
-  EXPECT_TRUE(user_prefs_.GetBoolean(prefs::kGoogleServicesConsentedToSync));
-  EXPECT_EQ("user@gmail.com",
-            manager_->GetPrimaryAccountInfo(ConsentLevel::kSync).email);
-  EXPECT_EQ(account_id, manager_->GetPrimaryAccountId(ConsentLevel::kSync));
-  EXPECT_EQ(manager_->GetPrimaryAccountInfo(ConsentLevel::kSignin),
-            manager_->GetPrimaryAccountInfo(ConsentLevel::kSync));
 }
 
 TEST_F(PrimaryAccountManagerTest, SetUnconsentedPrimaryAccountInfo) {

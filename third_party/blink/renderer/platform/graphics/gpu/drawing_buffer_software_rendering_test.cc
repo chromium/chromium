@@ -11,6 +11,7 @@
 #include "gpu/config/gpu_feature_info.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/drawing_buffer_test_helpers.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 // These unit tests are separate from DrawingBufferTests.cpp because they are
 // built as a part of webkit_unittests instead blink_platform_unittests. This is
@@ -45,6 +46,7 @@ class DrawingBufferSoftwareCompositingTest : public testing::Test {
     CHECK(drawing_buffer_);
   }
 
+  test::TaskEnvironment task_environment_;
   scoped_refptr<DrawingBufferForTests> drawing_buffer_;
   TestSharedBitmapIdRegistar test_shared_bitmap_id_registrar_;
 };

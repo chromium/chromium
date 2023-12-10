@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -338,9 +339,9 @@ TEST_F(ProxyResolvingSocketMojoTest, ConnectWithFakeTLSHandshake) {
   Init("DIRECT");
   set_fake_tls_handshake(true);
 
-  base::StringPiece client_hello =
+  std::string_view client_hello =
       webrtc::FakeSSLClientSocket::GetSslClientHello();
-  base::StringPiece server_hello =
+  std::string_view server_hello =
       webrtc::FakeSSLClientSocket::GetSslServerHello();
   std::vector<net::MockRead> reads = {
       net::MockRead(net::ASYNC, server_hello.data(), server_hello.length(), 1),

@@ -17,8 +17,11 @@ html {
   --google-grey-800: rgb(60, 64, 67);  /* #3c4043 */
   --google-grey-900-white-4-percent: #292a2d;
 
+  --action-row-button-active-brightness: 92%;
   --action-row-button-background: var(--google-grey-100);
   --action-row-button-border: rgb(128, 134, 139);
+  --action-row-button-hover-brightness: 96%;
+  --element-hover: rgb(242, 242, 242);
   --text-color: black;
   --header-shadow-color: rgba(0, 0, 0, .4);
   --link-color: var(--google-blue-700);
@@ -31,13 +34,15 @@ html {
   --table-border: rgba(0, 0, 0, .06);
   --table-header: rgb(240, 240, 240);
   --table-row-expanded-background: var(--google-grey-50);
-  --table-row-hover: rgb(250, 250, 250);
 }
 
 @media (prefers-color-scheme: dark) {
   html {
+    --action-row-button-active-brightness: 85%;
     --action-row-button-background: var(--google-blue-300);
     --action-row-button-border: var(--google-blue-300);
+    --action-row-button-hover-brightness: 90%;
+    --element-hover: var(--google-grey-900-white-4-percent);
     --text-color: var(--google-grey-200);
     --header-shadow-color:  rgba(0,0,0,.4);
     --link-color: var(--google-blue-300);
@@ -52,6 +57,5 @@ html {
     --table-border: rgba(80, 80, 80, 0.6);
     --table-header: var(--google-grey-900-white-4-percent);
     --table-row-expanded-background: var(--google-grey-800);
-    --table-row-hover: var(--google-grey-900-white-4-percent);
   }
 }

@@ -9,9 +9,7 @@ import androidx.test.InstrumentationRegistry;
 import org.chromium.android_webview.AwQuotaManagerBridge;
 import org.chromium.base.test.util.CallbackHelper;
 
-/**
- * This class provides common methods for AwQuotaManagerBridge related tests
- */
+/** This class provides common methods for AwQuotaManagerBridge related tests */
 public class AwQuotaManagerBridgeTestUtil {
     private static class GetOriginsCallbackHelper extends CallbackHelper {
         private AwQuotaManagerBridge.Origins mOrigins;
@@ -32,8 +30,9 @@ public class AwQuotaManagerBridgeTestUtil {
         final GetOriginsCallbackHelper callbackHelper = new GetOriginsCallbackHelper();
 
         int callCount = callbackHelper.getCallCount();
-        InstrumentationRegistry.getInstrumentation().runOnMainSync(
-                () -> bridge.getOrigins(origins -> callbackHelper.notifyCalled(origins)));
+        InstrumentationRegistry.getInstrumentation()
+                .runOnMainSync(
+                        () -> bridge.getOrigins(origins -> callbackHelper.notifyCalled(origins)));
         callbackHelper.waitForCallback(callCount);
 
         return callbackHelper.getOrigins();

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "third_party/blink/renderer/modules/device_orientation/device_orientation_event_pump.h"
+
 #include <string.h>
 
 #include <memory>
@@ -18,9 +20,9 @@
 #include "third_party/blink/renderer/core/frame/platform_event_controller.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/modules/device_orientation/device_orientation_data.h"
-#include "third_party/blink/renderer/modules/device_orientation/device_orientation_event_pump.h"
 #include "third_party/blink/renderer/modules/device_orientation/device_sensor_entry.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace {
 
@@ -136,6 +138,7 @@ class DeviceOrientationEventPumpTest : public testing::Test {
   FakeSensorProvider* sensor_provider() { return &sensor_provider_; }
 
  private:
+  test::TaskEnvironment task_environment_;
   Persistent<MockDeviceOrientationController> controller_;
   std::unique_ptr<DummyPageHolder> page_holder_;
   FakeSensorProvider sensor_provider_;
@@ -604,6 +607,7 @@ class DeviceAbsoluteOrientationEventPumpTest : public testing::Test {
   FakeSensorProvider* sensor_provider() { return &sensor_provider_; }
 
  private:
+  test::TaskEnvironment task_environment_;
   Persistent<MockDeviceOrientationController> controller_;
   std::unique_ptr<DummyPageHolder> page_holder_;
   FakeSensorProvider sensor_provider_;

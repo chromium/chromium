@@ -6,10 +6,10 @@
 #define CHROME_BROWSER_ASH_SYSTEM_TIMEZONE_UTIL_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/values.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 
@@ -23,7 +23,7 @@ struct TimeZoneResponseData;
 
 namespace system {
 
-absl::optional<std::string> GetCountryCodeFromTimezoneIfAvailable(
+std::optional<std::string> GetCountryCodeFromTimezoneIfAvailable(
     const std::string& timezone);
 
 // Gets the current timezone's display name.

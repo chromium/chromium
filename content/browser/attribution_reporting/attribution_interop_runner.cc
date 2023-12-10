@@ -27,6 +27,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/task/updateable_sequenced_task_runner.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
@@ -49,14 +50,11 @@
 #include "content/browser/attribution_reporting/attribution_input_event.h"
 #include "content/browser/attribution_reporting/attribution_interop_parser.h"
 #include "content/browser/attribution_reporting/attribution_manager_impl.h"
-#include "content/browser/attribution_reporting/attribution_observer.h"
 #include "content/browser/attribution_reporting/attribution_os_level_manager.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_report_sender.h"
 #include "content/browser/attribution_reporting/attribution_reporting.mojom.h"
 #include "content/browser/attribution_reporting/attribution_storage_delegate_impl.h"
-#include "content/browser/attribution_reporting/attribution_trigger.h"
-#include "content/browser/attribution_reporting/create_report_result.h"
 #include "content/browser/attribution_reporting/send_result.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/global_routing_id.h"
@@ -256,8 +254,8 @@ class FakeCookieChecker : public AttributionCookieChecker {
 };
 
 // Registers sources and triggers in the `AttributionManagerImpl` and records
-// sent reports.
-class AttributionEventHandler : public AttributionObserver {
+// unparsable registrations.
+class AttributionEventHandler {
  public:
   AttributionEventHandler(std::unique_ptr<AttributionManagerImpl> manager,
                           FakeCookieChecker* fake_cookie_checker,
@@ -267,11 +265,7 @@ class AttributionEventHandler : public AttributionObserver {
             raw_ref<FakeCookieChecker>::from_ptr(fake_cookie_checker)),
         time_offset_(TimeOffset(time_origin)) {
     DCHECK(manager_);
-
-    manager_->AddObserver(this);
   }
-
-  ~AttributionEventHandler() override { manager_->RemoveObserver(this); }
 
   void Handle(AttributionSimulationEvent event) {
     fake_cookie_checker_->set_debug_cookie_set(event.debug_permission);
@@ -354,23 +348,34 @@ class AttributionEventHandler : public AttributionObserver {
     return std::move(unparsable_);
   }
 
-  base::Time max_report_time() const { return max_report_time_; }
+  void FastForwardUntilReportsConsumed(
+      BrowserTaskEnvironment& task_environment) {
+    while (true) {
+      auto delta = base::TimeDelta::Min();
+      base::RunLoop run_loop;
 
- private:
-  // AttributionObserver:
+      manager_->GetPendingReportsForInternalUse(
+          /*limit=*/-1, base::BindLambdaForTesting(
+                            [&](std::vector<AttributionReport> reports) {
+                              auto it = base::ranges::max_element(
+                                  reports, /*comp=*/{},
+                                  &AttributionReport::report_time);
+                              if (it != reports.end()) {
+                                delta = it->report_time() - base::Time::Now();
+                              }
+                              run_loop.Quit();
+                            }));
 
-  void OnTriggerHandled(const AttributionTrigger&,
-                        absl::optional<uint64_t> cleared_debug_key,
-                        const CreateReportResult& result) override {
-    if (const auto& report = result.new_event_level_report()) {
-      max_report_time_ = std::max(max_report_time_, report->report_time());
-    }
+      run_loop.Run();
 
-    if (const auto& report = result.new_aggregatable_report()) {
-      max_report_time_ = std::max(max_report_time_, report->report_time());
+      if (delta.is_negative()) {
+        break;
+      }
+      task_environment.FastForwardBy(delta);
     }
   }
 
+ private:
   void AddUnparsableRegistration(const AttributionSimulationEvent& event) {
     auto& registration = unparsable_.emplace_back();
     registration.time = event.time - time_offset_;
@@ -384,8 +389,6 @@ class AttributionEventHandler : public AttributionObserver {
 
   const base::TimeDelta time_offset_;
 
-  base::Time max_report_time_;
-
   std::vector<AttributionInteropOutput::UnparsableRegistration> unparsable_;
 };
 
@@ -395,7 +398,7 @@ base::expected<AttributionInteropOutput, std::string>
 RunAttributionInteropSimulation(base::Value::Dict input,
                                 const AttributionConfig& config) {
   // Prerequisites for using an environment with mock time.
-  content::BrowserTaskEnvironment task_environment(
+  BrowserTaskEnvironment task_environment(
       base::test::TaskEnvironment::TimeSource::MOCK_TIME);
   TestBrowserContext browser_context;
   const base::Time time_origin = base::Time::Now();
@@ -407,7 +410,8 @@ RunAttributionInteropSimulation(base::Value::Dict input,
     return AttributionInteropOutput();
   }
 
-  DCHECK(base::ranges::is_sorted(events));
+  DCHECK(base::ranges::is_sorted(events, /*comp=*/{},
+                                 &AttributionSimulationEvent::time));
   DCHECK(base::ranges::adjacent_find(
              events, /*pred=*/{},
              [](const auto& event) { return event.time; }) == events.end());
@@ -464,11 +468,7 @@ RunAttributionInteropSimulation(base::Value::Dict input,
 
   task_environment.FastForwardBy(max_event_time - base::Time::Now());
 
-  if (base::Time max_report_time = handler.max_report_time(),
-      now = base::Time::Now();
-      max_report_time >= now) {
-    task_environment.FastForwardBy(max_report_time - now);
-  }
+  handler.FastForwardUntilReportsConsumed(task_environment);
 
   output.unparsable_registrations = std::move(handler).TakeUnparsable();
   return output;

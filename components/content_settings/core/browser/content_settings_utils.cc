@@ -15,6 +15,7 @@
 #include "components/content_settings/core/browser/content_settings_registry.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/content_settings/core/common/features.h"
 
@@ -176,13 +177,21 @@ bool IsConstraintPersistent(const ContentSettingConstraints& constraints) {
 bool CanTrackLastVisit(ContentSettingsType type) {
   // Last visit is not tracked for notification permission as it shouldn't be
   // auto-revoked.
-  if (type == ContentSettingsType::NOTIFICATIONS)
+  if (type == ContentSettingsType::NOTIFICATIONS) {
     return false;
+  }
 
   // Protocol handler don't actually use their content setting and don't have
   // a valid "initial default" value.
-  if (type == ContentSettingsType::PROTOCOL_HANDLERS)
+  if (type == ContentSettingsType::PROTOCOL_HANDLERS) {
     return false;
+  }
+
+  // Chooser based content settings will not be tracked by default.
+  // Only allowlisted ones should be tracked.
+  if (IsChooserPermissionEligibleForAutoRevocation(type)) {
+    return true;
+  }
 
   auto* info =
       content_settings::ContentSettingsRegistry::GetInstance()->Get(type);
@@ -206,25 +215,39 @@ base::TimeDelta GetCoarseVisitedTimePrecision() {
 bool CanBeAutoRevoked(ContentSettingsType type,
                       ContentSetting setting,
                       bool is_one_time) {
+  return CanBeAutoRevoked(type, ContentSettingToValue(setting), is_one_time);
+}
+
+bool CanBeAutoRevoked(ContentSettingsType type,
+                      const base::Value& value,
+                      bool is_one_time) {
   // The Permissions module in Safety check will revoke permissions after
   // a finite amount of time.
-  // We're only interested in expiring permissions that:
-  // 1. Are ALLOWed.
-  // 2. Fall back to ASK.
-  // 3. Are not already a one-time grant.
-  if (setting != CONTENT_SETTING_ALLOW) {
-    return false;
+  // We're only interested in expiring permissions that are either
+  // A. regular permissions (= ContentSettingsRegistry-based), which
+  //    1. Are ALLOWed.
+  //    2. Fall back to ASK.
+  //    3. Are not already a one-time grant.
+  // B. chooser permissions (= WebsiteSettingsRegistry-based), which
+  //    1. Are allowlisted.
+  //    2. Have a non-empty value.
+
+  auto* info =
+      content_settings::ContentSettingsRegistry::GetInstance()->Get(type);
+  if (info) {
+    return !is_one_time &&
+           ValueToContentSetting(value) == CONTENT_SETTING_ALLOW &&
+           CanTrackLastVisit(type);
   }
 
-  if (!CanTrackLastVisit(type)) {
-    return false;
-  }
+  // If the value is already empty, no need to revoke the permission.
+  return IsChooserPermissionEligibleForAutoRevocation(type) && !value.is_none();
+}
 
-  if (is_one_time) {
-    return false;
-  }
-
-  return true;
+bool IsChooserPermissionEligibleForAutoRevocation(ContentSettingsType type) {
+  // Currently, only File System Access is allowlisted for auto-revoking unused
+  // site permissions among chooser-based permissions.
+  return type == ContentSettingsType::FILE_SYSTEM_ACCESS_CHOOSER_DATA;
 }
 
 bool IsGrantedByRelatedWebsiteSets(ContentSettingsType type,

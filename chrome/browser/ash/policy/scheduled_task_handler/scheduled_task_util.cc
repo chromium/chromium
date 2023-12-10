@@ -136,7 +136,7 @@ std::unique_ptr<icu::Calendar> AdvanceToNextValidTimeBasedOnPolicy(
 }  // namespace
 
 namespace scheduled_task_util {
-absl::optional<ScheduledTaskExecutor::ScheduledTaskData> ParseScheduledTask(
+std::optional<ScheduledTaskExecutor::ScheduledTaskData> ParseScheduledTask(
     const base::Value& value,
     const std::string& task_time_field_name) {
   const base::Value::Dict& dict = value.GetDict();
@@ -147,13 +147,13 @@ absl::optional<ScheduledTaskExecutor::ScheduledTaskData> ParseScheduledTask(
   const base::Value::Dict* task_time_field_dict =
       dict.FindDict(task_time_field_name);
   DCHECK(task_time_field_dict);
-  absl::optional<int> hour_opt = task_time_field_dict->FindInt("hour");
+  std::optional<int> hour_opt = task_time_field_dict->FindInt("hour");
   DCHECK(hour_opt);
   // Validated by schema validation at higher layers.
   DCHECK(*hour_opt >= 0 && *hour_opt <= 23);
   result.hour = *hour_opt;
 
-  absl::optional<int> minute_opt = task_time_field_dict->FindInt("minute");
+  std::optional<int> minute_opt = task_time_field_dict->FindInt("minute");
   DCHECK(minute_opt);
   // Validated by schema validation at higher layers.
   DCHECK(*minute_opt >= 0 && *minute_opt <= 59);
@@ -173,7 +173,7 @@ absl::optional<ScheduledTaskExecutor::ScheduledTaskData> ParseScheduledTask(
       const std::string* day_of_week = dict.FindString({"day_of_week"});
       if (!day_of_week) {
         LOG(ERROR) << "Day of week missing";
-        return absl::nullopt;
+        return std::nullopt;
       }
 
       // Validated by schema validation at higher layers.
@@ -182,10 +182,10 @@ absl::optional<ScheduledTaskExecutor::ScheduledTaskData> ParseScheduledTask(
     }
 
     case ScheduledTaskExecutor::Frequency::kMonthly: {
-      absl::optional<int> day_of_month = dict.FindInt("day_of_month");
+      std::optional<int> day_of_month = dict.FindInt("day_of_month");
       if (!day_of_month) {
         LOG(ERROR) << "Day of month missing";
-        return absl::nullopt;
+        return std::nullopt;
       }
 
       // Validated by schema validation at higher layers.
@@ -230,14 +230,14 @@ std::unique_ptr<icu::Calendar> ConvertUtcToTzIcuTime(base::Time cur_time,
   return cal_tz;
 }
 
-absl::optional<base::TimeDelta> CalculateNextScheduledTaskTimerDelay(
+std::optional<base::TimeDelta> CalculateNextScheduledTaskTimerDelay(
     const ScheduledTaskExecutor::ScheduledTaskData& data,
     base::Time time,
     const icu::TimeZone& time_zone) {
   const auto cal = ConvertUtcToTzIcuTime(time, time_zone);
   if (!cal) {
     LOG(ERROR) << "Failed to get current ICU time";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   auto scheduled_task_time = CalculateNextScheduledTimeAfter(data, *cal);

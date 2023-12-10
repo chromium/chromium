@@ -10,7 +10,6 @@
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/gfx/native_widget_types.h"
-#include "ui/ozone/buildflags.h"
 #include "ui/platform_window/wm/wm_drag_handler.h"
 #include "ui/views/views_export.h"
 #include "ui/views/widget/desktop_aura/desktop_drag_drop_client_ozone.h"
@@ -48,4 +47,4 @@ class VIEWS_EXPORT DesktopDragDropClientOzoneLinux
 
 }  // namespace views
 
-#endif  // UI_VIEWS_WIDGET_DESKTOP_AURA_DESKTOP_DRAG_DROP_CLIENT_OZONE_H_
+#endif  // UI_VIEWS_WIDGET_DESKTOP_AURA_DESKTOP_DRAG_DROP_CLIENT_OZONE_LINUX_H_

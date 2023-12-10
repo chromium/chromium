@@ -19,12 +19,6 @@ class Browser;
 // download page.
 class IOSPromoPasswordBubble {
  public:
-  // Enum for the different variants the promo can be.
-  enum PromoVariant {
-    GET_STARTED_BUTTON_VARIANT = 0,
-    QR_CODE_VARIANT,
-  };
-
   // QR code view identifier.
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kQRCodeView);
 
@@ -35,7 +29,6 @@ class IOSPromoPasswordBubble {
   // to the passwords key icon.
   static void ShowBubble(views::View* anchor_view,
                          PageActionIconView* highlighted_button,
-                         PromoVariant variant,
                          Browser* browser);
 
   // Hide closes the bubble.

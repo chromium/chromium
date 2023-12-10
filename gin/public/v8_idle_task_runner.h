@@ -6,6 +6,7 @@
 #define GIN_PUBLIC_V8_IDLE_TASK_RUNNER_H_
 
 #include <memory>
+#include "gin/gin_export.h"
 #include "v8/include/v8-platform.h"
 
 namespace gin {

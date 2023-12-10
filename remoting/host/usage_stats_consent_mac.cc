@@ -7,13 +7,13 @@
 #include <memory>
 #include <string>
 
+#include <optional>
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/notreached.h"
 #include "base/values.h"
 #include "remoting/host/config_file_watcher.h"
 #include "remoting/host/host_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace remoting {
 
@@ -28,10 +28,10 @@ bool GetUsageStatsConsent(bool& allowed, bool& set_by_policy) {
   if (command_line->HasSwitch(kHostConfigSwitchName)) {
     base::FilePath config_file_path =
         command_line->GetSwitchValuePath(kHostConfigSwitchName);
-    absl::optional<base::Value::Dict> host_config(
+    std::optional<base::Value::Dict> host_config(
         HostConfigFromJsonFile(config_file_path));
     if (host_config.has_value()) {
-      absl::optional<bool> host_config_value =
+      std::optional<bool> host_config_value =
           host_config->FindBool(kUsageStatsConsentConfigPath);
       if (host_config_value.has_value()) {
         allowed = host_config_value.value();

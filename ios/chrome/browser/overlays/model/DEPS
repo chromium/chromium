@@ -1,0 +1,12 @@
+include_rules = [
+  "+ios/chrome/browser/infobars/model",
+]
+
+specific_include_rules = {
+  "http_auth_overlay.mm": [
+    "+ios/chrome/browser/shared/ui/elements/text_field_configuration.h",
+  ],
+  "java_script_prompt_dialog_overlay.mm": [
+    "+ios/chrome/browser/shared/ui/elements/text_field_configuration.h",
+  ],
+}

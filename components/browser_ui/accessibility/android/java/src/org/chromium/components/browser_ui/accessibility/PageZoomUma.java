@@ -9,9 +9,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.metrics.RecordHistogram;
 
-/**
- * Centralizes UMA data collection for Page Zoom.
- */
+/** Centralizes UMA data collection for Page Zoom. */
 public class PageZoomUma {
     private static int sMinZoomValue = (int) (PageZoomUtils.PAGE_ZOOM_MINIMUM_ZOOM_LEVEL * 100);
     private static int sMaxZoomValue = (int) (PageZoomUtils.PAGE_ZOOM_MAXIMUM_ZOOM_LEVEL * 100);
@@ -21,11 +19,13 @@ public class PageZoomUma {
     // Add new values before MAX_VALUE.
     // These values are persisted to logs. Entries should not be renumbered and
     // numeric values should never be reused.
-    @IntDef({AccessibilityPageZoomAppMenuEnabledState.NOT_ENABLED,
-            AccessibilityPageZoomAppMenuEnabledState.USER_ENABLED,
-            AccessibilityPageZoomAppMenuEnabledState.OS_ENABLED,
-            AccessibilityPageZoomAppMenuEnabledState.USER_DISABLED,
-            AccessibilityPageZoomAppMenuEnabledState.MAX_VALUE})
+    @IntDef({
+        AccessibilityPageZoomAppMenuEnabledState.NOT_ENABLED,
+        AccessibilityPageZoomAppMenuEnabledState.USER_ENABLED,
+        AccessibilityPageZoomAppMenuEnabledState.OS_ENABLED,
+        AccessibilityPageZoomAppMenuEnabledState.USER_DISABLED,
+        AccessibilityPageZoomAppMenuEnabledState.MAX_VALUE
+    })
     public @interface AccessibilityPageZoomAppMenuEnabledState {
         int NOT_ENABLED = 0;
         int USER_ENABLED = 1;
@@ -40,18 +40,23 @@ public class PageZoomUma {
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     public static final String PAGE_ZOOM_APP_MENU_ENABLED_STATE_HISTOGRAM =
             "Accessibility.Android.PageZoom.AppMenuEnabledState";
+
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     public static final String PAGE_ZOOM_APP_MENU_SLIDER_OPENED_HISTOGRAM =
             "Accessibility.Android.PageZoom.AppMenuSliderOpened";
+
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     public static final String PAGE_ZOOM_APP_MENU_SLIDER_ZOOM_LEVEL_CHANGED_HISTOGRAM =
             "Accessibility.Android.PageZoom.AppMenuSliderZoomLevelChanged";
+
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     public static final String PAGE_ZOOM_APP_MENU_SLIDER_ZOOM_LEVEL_VALUE_HISTOGRAM =
             "Accessibility.Android.PageZoom.AppMenuSliderZoomLevelValue";
+
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     public static final String PAGE_ZOOM_SETTINGS_DEFAULT_ZOOM_LEVEL_CHANGED_HISTOGRAM =
             "Accessibility.Android.PageZoom.SettingsDefaultZoomLevelChanged";
+
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     public static final String PAGE_ZOOM_SETTINGS_DEFAULT_ZOOM_LEVEL_VALUE_HISTOGRAM =
             "Accessibility.Android.PageZoom.SettingsDefaultZoomLevelValue";
@@ -63,20 +68,18 @@ public class PageZoomUma {
      */
     public static void logAppMenuEnabledStateHistogram(
             @AccessibilityPageZoomAppMenuEnabledState int value) {
-        RecordHistogram.recordEnumeratedHistogram(PAGE_ZOOM_APP_MENU_ENABLED_STATE_HISTOGRAM, value,
+        RecordHistogram.recordEnumeratedHistogram(
+                PAGE_ZOOM_APP_MENU_ENABLED_STATE_HISTOGRAM,
+                value,
                 AccessibilityPageZoomAppMenuEnabledState.MAX_VALUE);
     }
 
-    /**
-     * Log that the user opened the slider from the app menu.
-     */
+    /** Log that the user opened the slider from the app menu. */
     public static void logAppMenuSliderOpenedHistogram() {
         RecordHistogram.recordBooleanHistogram(PAGE_ZOOM_APP_MENU_SLIDER_OPENED_HISTOGRAM, true);
     }
 
-    /**
-     * Log that the user changed the zoom level from the app menu slider.
-     */
+    /** Log that the user changed the zoom level from the app menu slider. */
     public static void logAppMenuSliderZoomLevelChangedHistogram() {
         RecordHistogram.recordBooleanHistogram(
                 PAGE_ZOOM_APP_MENU_SLIDER_ZOOM_LEVEL_CHANGED_HISTOGRAM, true);
@@ -89,13 +92,14 @@ public class PageZoomUma {
      */
     public static void logAppMenuSliderZoomLevelValueHistogram(double value) {
         RecordHistogram.recordLinearCountHistogram(
-                PAGE_ZOOM_APP_MENU_SLIDER_ZOOM_LEVEL_VALUE_HISTOGRAM, (int) Math.round(100 * value),
-                sMinZoomValue, sMaxZoomValue, sZoomValueBucketCount);
+                PAGE_ZOOM_APP_MENU_SLIDER_ZOOM_LEVEL_VALUE_HISTOGRAM,
+                (int) Math.round(100 * value),
+                sMinZoomValue,
+                sMaxZoomValue,
+                sZoomValueBucketCount);
     }
 
-    /**
-     * Log that the user changed the default zoom level from the settings page.
-     */
+    /** Log that the user changed the default zoom level from the settings page. */
     public static void logSettingsDefaultZoomLevelChangedHistogram() {
         RecordHistogram.recordBooleanHistogram(
                 PAGE_ZOOM_SETTINGS_DEFAULT_ZOOM_LEVEL_CHANGED_HISTOGRAM, true);
@@ -109,6 +113,9 @@ public class PageZoomUma {
     public static void logSettingsDefaultZoomLevelValueHistogram(double value) {
         RecordHistogram.recordLinearCountHistogram(
                 PAGE_ZOOM_SETTINGS_DEFAULT_ZOOM_LEVEL_VALUE_HISTOGRAM,
-                (int) Math.round(100 * value), sMinZoomValue, sMaxZoomValue, sZoomValueBucketCount);
+                (int) Math.round(100 * value),
+                sMinZoomValue,
+                sMaxZoomValue,
+                sZoomValueBucketCount);
     }
 }

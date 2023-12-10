@@ -40,19 +40,19 @@ html[dir='rtl'] .bubble-close {
 }
 
 .bubble-close {
-  background-image: -webkit-image-set(
+  background-image: image-set(
       url(../../../../../ui/resources/default_100_percent/close_2.png) 1x,
       url(../../../../../ui/resources/default_200_percent/close_2.png) 2x);
 }
 
 .bubble-close:hover {
-  background-image: -webkit-image-set(
+  background-image: image-set(
       url(../../../../../ui/resources/default_100_percent/close_2_hover.png) 1x,
       url(../../../../../ui/resources/default_200_percent/close_2_hover.png) 2x);
 }
 
 .bubble-close:active {
-  background-image: -webkit-image-set(
+  background-image: image-set(
       url(../../../../../ui/resources/default_100_percent/close_2_pressed.png) 1x,
       url(../../../../../ui/resources/default_200_percent/close_2_pressed.png) 2x);
 }

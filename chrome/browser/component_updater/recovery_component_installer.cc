@@ -20,7 +20,6 @@
 #include "base/json/json_file_value_serializer.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/path_service.h"
 #include "base/process/kill.h"
 #include "base/process/launch.h"
@@ -83,25 +82,6 @@ enum ChromeRecoveryExitCode {
   EXIT_CODE_ELEVATION_NEEDED = 2,
 };
 
-enum RecoveryComponentEvent {
-  RCE_RUNNING_NON_ELEVATED = 0,
-  RCE_ELEVATION_NEEDED = 1,
-  RCE_FAILED = 2,
-  RCE_SUCCEEDED = 3,
-  RCE_SKIPPED = 4,
-  RCE_RUNNING_ELEVATED = 5,
-  RCE_ELEVATED_FAILED = 6,
-  RCE_ELEVATED_SUCCEEDED = 7,
-  RCE_ELEVATED_SKIPPED = 8,
-  RCE_COMPONENT_DOWNLOAD_ERROR = 9,
-  RCE_ELEVATED_UNKNOWN_RESULT = 10,
-  RCE_COUNT
-};
-
-void RecordRecoveryComponentUMAEvent(RecoveryComponentEvent event) {
-  UMA_HISTOGRAM_ENUMERATION("RecoveryComponent.Event", event, RCE_COUNT);
-}
-
 // Checks if elevated recovery simulation switch was present on the command
 // line. This is for testing purpose.
 bool SimulatingElevatedRecovery() {
@@ -158,17 +138,8 @@ base::Value::Dict ReadManifest(const base::FilePath& manifest) {
 }
 
 void WaitForElevatedInstallToComplete(base::Process process) {
-  int installer_exit_code = 0;
   const base::TimeDelta kMaxWaitTime = base::Seconds(600);
-  if (process.WaitForExitWithTimeout(kMaxWaitTime, &installer_exit_code)) {
-    if (installer_exit_code == EXIT_CODE_RECOVERY_SUCCEEDED) {
-      RecordRecoveryComponentUMAEvent(RCE_ELEVATED_SUCCEEDED);
-    } else {
-      RecordRecoveryComponentUMAEvent(RCE_ELEVATED_SKIPPED);
-    }
-  } else {
-    RecordRecoveryComponentUMAEvent(RCE_ELEVATED_FAILED);
-  }
+  process.WaitForExitWithTimeout(kMaxWaitTime, nullptr);
 }
 
 void DoElevatedInstallRecoveryComponent(const base::FilePath& path) {
@@ -196,8 +167,6 @@ void DoElevatedInstallRecoveryComponent(const base::FilePath& path) {
   const auto cmdline = BuildRecoveryInstallCommandLine(
       main_file, manifest, is_deferred_run, version);
 
-  RecordRecoveryComponentUMAEvent(RCE_RUNNING_ELEVATED);
-
   base::LaunchOptions options;
   options.start_hidden = true;
   options.elevated = true;
@@ -206,7 +175,6 @@ void DoElevatedInstallRecoveryComponent(const base::FilePath& path) {
   base::mac::ScopedAuthorizationRef authRef =
       base::mac::AuthorizationCreateToRunAsRoot(nullptr);
   if (!authRef.get()) {
-    RecordRecoveryComponentUMAEvent(RCE_ELEVATED_FAILED);
     return;
   }
 
@@ -225,7 +193,6 @@ void DoElevatedInstallRecoveryComponent(const base::FilePath& path) {
       authRef.get(), main_file.value().c_str(), kAuthorizationFlagDefaults,
       raw_string_args.data(), nullptr, &pid);
   if (status != errAuthorizationSuccess) {
-    RecordRecoveryComponentUMAEvent(RCE_ELEVATED_FAILED);
     return;
   }
 
@@ -234,7 +201,6 @@ void DoElevatedInstallRecoveryComponent(const base::FilePath& path) {
   // for more details. When |pid| cannot be determined, we are not able to
   // get process exit code, thus bail out early.
   if (pid < 0) {
-    RecordRecoveryComponentUMAEvent(RCE_ELEVATED_UNKNOWN_RESULT);
     return;
   }
   base::Process process = base::Process::Open(pid);
@@ -313,7 +279,7 @@ void RecoveryRegisterHelper(ComponentUpdateService* cus, PrefService* prefs) {
   if (!cus->RegisterComponent(ComponentRegistration(
           update_client::GetCrxIdFromPublicKeyHash(public_key_hash), "recovery",
           public_key_hash, version, {}, {}, nullptr,
-          new RecoveryComponentInstaller(version, prefs), false, true))) {
+          new RecoveryComponentInstaller(version, prefs), false, true, true))) {
     NOTREACHED() << "Recovery component registration failed.";
   }
 }
@@ -338,7 +304,6 @@ RecoveryComponentInstaller::RecoveryComponentInstaller(
 }
 
 void RecoveryComponentInstaller::OnUpdateError(int error) {
-  RecordRecoveryComponentUMAEvent(RCE_COMPONENT_DOWNLOAD_ERROR);
   NOTREACHED() << "Recovery component update error: " << error;
 }
 
@@ -349,26 +314,16 @@ void WaitForInstallToComplete(base::Process process,
   const base::TimeDelta kMaxWaitTime = base::Seconds(600);
   if (process.WaitForExitWithTimeout(kMaxWaitTime, &installer_exit_code)) {
     if (installer_exit_code == EXIT_CODE_ELEVATION_NEEDED) {
-      RecordRecoveryComponentUMAEvent(RCE_ELEVATION_NEEDED);
-
       content::GetUIThreadTaskRunner({})->PostTask(
           FROM_HERE, base::BindOnce(&SetPrefsForElevatedRecoveryInstall,
                                     installer_folder, prefs));
-    } else if (installer_exit_code == EXIT_CODE_RECOVERY_SUCCEEDED) {
-      RecordRecoveryComponentUMAEvent(RCE_SUCCEEDED);
-    } else if (installer_exit_code == EXIT_CODE_RECOVERY_SKIPPED) {
-      RecordRecoveryComponentUMAEvent(RCE_SKIPPED);
     }
-  } else {
-    RecordRecoveryComponentUMAEvent(RCE_FAILED);
   }
 }
 
 bool RecoveryComponentInstaller::RunInstallCommand(
     const base::CommandLine& cmdline,
     const base::FilePath& installer_folder) const {
-  RecordRecoveryComponentUMAEvent(RCE_RUNNING_NON_ELEVATED);
-
   base::LaunchOptions options;
 #if BUILDFLAG(IS_WIN)
   options.start_hidden = true;

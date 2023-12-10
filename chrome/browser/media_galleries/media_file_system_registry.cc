@@ -25,7 +25,6 @@
 #include "chrome/browser/media_galleries/fileapi/media_file_system_backend.h"
 #include "chrome/browser/media_galleries/gallery_watch_manager.h"
 #include "chrome/browser/media_galleries/media_file_system_context.h"
-#include "chrome/browser/media_galleries/media_galleries_histograms.h"
 #include "chrome/browser/media_galleries/media_galleries_preferences_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/keyed_service/content/browser_context_keyed_service_shutdown_notifier_factory.h"
@@ -434,7 +433,6 @@ MediaGalleriesPreferences* MediaFileSystemRegistry::GetPreferences(
             ->Subscribe(
                 base::BindRepeating(&MediaFileSystemRegistry::OnProfileShutdown,
                                     base::Unretained(this), profile));
-    media_galleries::UsageCount(media_galleries::PROFILES_WITH_USAGE);
   }
 
   return MediaGalleriesPreferencesFactory::GetForProfile(profile);

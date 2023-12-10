@@ -14,7 +14,7 @@ StructTraits<IPC::mojom::MessageDataView, IPC::MessageView>::bytes(
 }
 
 // static
-absl::optional<std::vector<mojo::native::SerializedHandlePtr>>
+std::optional<std::vector<mojo::native::SerializedHandlePtr>>
 StructTraits<IPC::mojom::MessageDataView, IPC::MessageView>::handles(
     IPC::MessageView& view) {
   return view.TakeHandles();
@@ -27,7 +27,7 @@ bool StructTraits<IPC::mojom::MessageDataView, IPC::MessageView>::Read(
   mojo::ArrayDataView<uint8_t> bytes;
   data.GetBytesDataView(&bytes);
 
-  absl::optional<std::vector<mojo::native::SerializedHandlePtr>> handles;
+  std::optional<std::vector<mojo::native::SerializedHandlePtr>> handles;
   if (!data.ReadHandles(&handles))
     return false;
 

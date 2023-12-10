@@ -54,6 +54,11 @@ void RegisterReadAnythingProfilePrefs(
         prefs::kAccessibilityReadAnythingHighlightColor, 0,
         user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   }
+  if (features::IsReadAnythingOmniboxIconEnabled()) {
+    registry->RegisterIntegerPref(
+        prefs::kAccessibilityReadAnythingOmniboxIconLabelShownCount, 0,
+        user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  }
 }
 
 #endif  // !BUILDFLAG(IS_ANDROID)

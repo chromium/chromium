@@ -164,6 +164,11 @@ struct StructTraits<media::mojom::VideoFrameMetadataDataView,
     return input.wallclock_frame_duration;
   }
 
+  static absl::optional<uint64_t> frame_sequence(
+      const media::VideoFrameMetadata& input) {
+    return input.frame_sequence;
+  }
+
   static bool Read(media::mojom::VideoFrameMetadataDataView input,
                    media::VideoFrameMetadata* output);
 };

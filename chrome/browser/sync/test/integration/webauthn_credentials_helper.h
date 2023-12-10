@@ -24,6 +24,8 @@ class WebauthnCredentialSpecifics;
 
 namespace webauthn_credentials_helper {
 
+inline constexpr char kTestRpId[] = "example.com";
+
 // Checker to wait until the WEBAUTHN_CREDENTIAL datatype becomes active.
 class PasskeySyncActiveChecker : public SingleClientStatusChangeChecker {
  public:
@@ -171,10 +173,46 @@ MATCHER_P(EntityHasDisplayName, expected_display_name, "") {
          expected_display_name;
 }
 
+// Matches a `sync_pb::WebauthnCredentialSpecifics` against another field by
+// field.
+MATCHER_P(PasskeySpecificsEq, expected, "") {
+  return arg.sync_id() == expected.sync_id() &&
+         arg.credential_id() == expected.credential_id() &&
+         arg.rp_id() == expected.rp_id() &&
+         base::ranges::equal(arg.newly_shadowed_credential_ids().begin(),
+                             arg.newly_shadowed_credential_ids().end(),
+                             expected.newly_shadowed_credential_ids().begin(),
+                             expected.newly_shadowed_credential_ids().end()) &&
+         arg.creation_time() == expected.creation_time() &&
+         arg.user_name() == expected.user_name() &&
+         arg.user_display_name() == expected.user_display_name() &&
+         arg.third_party_payments_support() ==
+             expected.third_party_payments_support() &&
+         arg.last_used_time_windows_epoch_micros() ==
+             expected.last_used_time_windows_epoch_micros() &&
+         arg.key_version() == expected.key_version() &&
+         arg.has_private_key() == expected.has_private_key() &&
+         arg.private_key() == expected.private_key() &&
+         arg.has_encrypted() == expected.has_encrypted() &&
+         arg.encrypted() == expected.encrypted();
+}
+
 // Matches the `sync_id` of a `sync_pb::WebauthnCredentialSpecifics`. Use with
 // `LocalPasskeysMatchChecker`.
 MATCHER_P(PasskeyHasSyncId, expected_sync_id, "") {
   return arg.sync_id() == expected_sync_id;
+}
+
+// Matches the `rp_id` of a `sync_pb::WebauthnCredentialSpecifics`. Use with
+// `LocalPasskeysMatchChecker`.
+MATCHER_P(PasskeyHasRpId, expected_rp_id, "") {
+  return arg.rp_id() == expected_rp_id;
+}
+
+// Matches the `user_id` of a `sync_pb::WebauthnCredentialSpecifics`. Use with
+// `LocalPasskeysMatchChecker`.
+MATCHER_P(PasskeyHasUserId, expected_user_id, "") {
+  return arg.user_id() == expected_user_id;
 }
 
 // Matches the `display_name` of a `sync_pb::WebauthnCredentialSpecifics`. Use

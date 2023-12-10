@@ -49,7 +49,7 @@ struct TypeConverter<url_rewrite::mojom::UrlRequestRewriteRemoveHeaderPtr,
     url_rewrite::mojom::UrlRequestRewriteRemoveHeaderPtr remove_header =
         url_rewrite::mojom::UrlRequestRewriteRemoveHeader::New();
     if (input.has_query_pattern())
-      remove_header->query_pattern = absl::make_optional(input.query_pattern());
+      remove_header->query_pattern = std::make_optional(input.query_pattern());
     if (input.has_header_name()) {
       remove_header->header_name =
           std::string(BytesAsString(input.header_name()));
@@ -177,7 +177,7 @@ struct TypeConverter<url_rewrite::mojom::UrlRequestRulePtr,
     }
 
     if (input.has_schemes_filter())
-      rule->schemes_filter = absl::make_optional(input.schemes_filter());
+      rule->schemes_filter = std::make_optional(input.schemes_filter());
 
     if (input.has_rewrites()) {
       rule->actions =

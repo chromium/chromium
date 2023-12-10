@@ -43,7 +43,7 @@ class CC_EXPORT LocalLayerContext : public LayerContext,
   void OnDeferCommitsChanged(
       bool defer_status,
       PaintHoldingReason reason,
-      absl::optional<PaintHoldingCommitTrigger> trigger) override;
+      std::optional<PaintHoldingCommitTrigger> trigger) override;
   void OnCommitRequested() override;
   void BeginMainFrameNotExpectedSoon() override;
   void BeginMainFrameNotExpectedUntil(base::TimeTicks time) override;

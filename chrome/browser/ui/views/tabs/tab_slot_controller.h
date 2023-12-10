@@ -5,11 +5,11 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TABS_TAB_SLOT_CONTROLLER_H_
 #define CHROME_BROWSER_UI_VIEWS_TABS_TAB_SLOT_CONTROLLER_H_
 
+#include <optional>
 #include <string>
 
 #include "chrome/browser/ui/tabs/tab_types.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_types.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/ui_base_types.h"
 
@@ -188,7 +188,7 @@ class TabSlotController {
 
   // Returns the background tab image resource ID if the image has been
   // customized, directly or indirectly, by the theme.
-  virtual absl::optional<int> GetCustomBackgroundId(
+  virtual std::optional<int> GetCustomBackgroundId(
       BrowserFrameActiveState active_state) const = 0;
 
   // Returns the accessible tab name for this tab.

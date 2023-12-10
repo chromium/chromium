@@ -58,20 +58,20 @@ import java.util.concurrent.Callable;
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
 @DoNotBatch(reason = "GC tests require full restarts")
 public class AwContentsGarbageCollectionTest extends AwParameterizedTest {
-    @Rule
-    public AwActivityTestRule mActivityTestRule;
+    @Rule public AwActivityTestRule mActivityTestRule;
 
     public AwContentsGarbageCollectionTest(AwSettingsMutation param) {
-        mActivityTestRule = new AwActivityTestRule(param.getMutation()) {
-            @Override
-            public TestDependencyFactory createTestDependencyFactory() {
-                if (mOverriddenFactory == null) {
-                    return new TestDependencyFactory();
-                } else {
-                    return mOverriddenFactory;
-                }
-            }
-        };
+        mActivityTestRule =
+                new AwActivityTestRule(param.getMutation()) {
+                    @Override
+                    public TestDependencyFactory createTestDependencyFactory() {
+                        if (mOverriddenFactory == null) {
+                            return new TestDependencyFactory();
+                        } else {
+                            return mOverriddenFactory;
+                        }
+                    }
+                };
     }
 
     private TestDependencyFactory mOverriddenFactory;

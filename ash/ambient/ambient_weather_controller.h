@@ -6,12 +6,13 @@
 #define ASH_AMBIENT_AMBIENT_WEATHER_CONTROLLER_H_
 
 #include <memory>
+#include <optional>
 
 #include "ash/ash_export.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "chromeos/ash/components/geolocation/simple_geolocation_provider.h"
 
 namespace gfx {
 class ImageSkia;
@@ -25,7 +26,8 @@ struct WeatherInfo;
 // Handles fetching weather information from the backdrop server, including the
 // weather condition icon image (a sun, a cloud, etc.). Owns the data model that
 // caches the current weather info.
-class ASH_EXPORT AmbientWeatherController {
+class ASH_EXPORT AmbientWeatherController
+    : public SimpleGeolocationProvider::Observer {
  public:
   // Causes AmbientWeatherController to periodically refresh the weather info
   // in the model for as long as this object is alive. The latest weather is
@@ -45,10 +47,14 @@ class ASH_EXPORT AmbientWeatherController {
     const raw_ptr<AmbientWeatherController> controller_;
   };
 
-  AmbientWeatherController();
+  explicit AmbientWeatherController(
+      SimpleGeolocationProvider* const location_permission_provider);
   AmbientWeatherController(const AmbientWeatherController&) = delete;
   AmbientWeatherController& operator=(const AmbientWeatherController&) = delete;
-  ~AmbientWeatherController();
+  ~AmbientWeatherController() override;
+
+  // SimpleGeolocationProvider::Observer:
+  void OnGeolocationPermissionChanged(bool enabled) override;
 
   // Always returns non-null.
   std::unique_ptr<ScopedRefresher> CreateScopedRefresher();
@@ -61,7 +67,7 @@ class ASH_EXPORT AmbientWeatherController {
   void FetchWeather();
 
   void StartDownloadingWeatherConditionIcon(
-      const absl::optional<WeatherInfo>& weather_info);
+      const std::optional<WeatherInfo>& weather_info);
 
   // Invoked upon completion of the weather icon download, |icon| can be a null
   // image if the download attempt from the url failed.
@@ -70,6 +76,9 @@ class ASH_EXPORT AmbientWeatherController {
                                         const gfx::ImageSkia& icon);
 
   void OnScopedRefresherDestroyed();
+
+  const raw_ptr<SimpleGeolocationProvider> location_permission_provider_ =
+      nullptr;
 
   std::unique_ptr<AmbientWeatherModel> weather_model_;
 

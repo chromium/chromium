@@ -104,14 +104,12 @@ void GameDashboardContext::OnWindowBoundsChanged() {
 void GameDashboardContext::UpdateForGameControlsFlags() {
   CHECK(IsArcWindow(game_window_));
 
-  const ArcGameControlsFlag flags =
-      game_window_->GetProperty(kArcGameControlsFlagsKey);
   game_dashboard_button_->SetEnabled(
-      game_dashboard_utils::IsFlagSet(flags, ArcGameControlsFlag::kKnown) &&
-      !game_dashboard_utils::IsFlagSet(flags, ArcGameControlsFlag::kEdit));
+      game_dashboard_utils::ShouldEnableGameDashboardButton(game_window_));
 
   if (toolbar_view_) {
-    toolbar_view_->UpdateViewForGameControls(flags);
+    toolbar_view_->UpdateViewForGameControls(
+        game_window_->GetProperty(kArcGameControlsFlagsKey));
   }
 }
 

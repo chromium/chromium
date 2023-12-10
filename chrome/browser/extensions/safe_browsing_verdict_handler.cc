@@ -185,8 +185,8 @@ void SafeBrowsingVerdictHandler::UpdateGreylistedExtensions(
 
 void SafeBrowsingVerdictHandler::OnExtensionUninstalled(
     content::BrowserContext* browser_context,
-    const extensions::Extension* extension,
-    extensions::UninstallReason reason) {
+    const Extension* extension,
+    UninstallReason reason) {
   blocklist_.Remove(extension->id());
   greylist_.Remove(extension->id());
 }

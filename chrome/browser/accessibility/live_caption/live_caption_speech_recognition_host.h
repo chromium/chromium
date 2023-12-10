@@ -128,6 +128,12 @@ class LiveCaptionSpeechRecognitionHost
   // The number of requests to the translation service. Used by metrics only.
   int partial_result_count_ = 0;
 
+  // The automatically detected language of the audio stream.
+  std::string auto_detected_language_;
+
+  // The number of consecutive highly confident language identification events.
+  int language_identification_event_count_ = 0;
+
   std::unique_ptr<captions::GreedyTextStabilizer> greedy_text_stabilizer_;
 
   base::WeakPtrFactory<LiveCaptionSpeechRecognitionHost> weak_factory_{this};

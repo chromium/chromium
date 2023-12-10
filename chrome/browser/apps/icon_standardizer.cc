@@ -185,7 +185,7 @@ bool IsIconRepCircleShaped(const gfx::ImageSkiaRep& rep) {
   return (percentage_diff_pixels < kCircleShapePixelDifferenceThreshold);
 }
 
-absl::optional<gfx::ImageSkiaRep> StandardizeSizeOfImageRep(
+std::optional<gfx::ImageSkiaRep> StandardizeSizeOfImageRep(
     const gfx::ImageSkiaRep& rep,
     float scale) {
   TRACE_EVENT0("ui", "apps::StandardizeSizeOfImageRep");
@@ -194,7 +194,7 @@ absl::optional<gfx::ImageSkiaRep> StandardizeSizeOfImageRep(
   int height = unscaled_bitmap.height();
 
   if (width == height) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   int longest_side = std::max(width, height);
@@ -217,7 +217,7 @@ gfx::ImageSkia StandardizeSize(const gfx::ImageSkia& image) {
   gfx::ImageSkia final_image;
 
   for (gfx::ImageSkiaRep rep : image.image_reps()) {
-    absl::optional<gfx::ImageSkiaRep> new_rep =
+    std::optional<gfx::ImageSkiaRep> new_rep =
         StandardizeSizeOfImageRep(rep, rep.scale());
     if (!new_rep) {
       return image;
@@ -231,11 +231,11 @@ gfx::ImageSkia StandardizeSize(const gfx::ImageSkia& image) {
 
 }  // namespace
 
-absl::optional<gfx::ImageSkiaRep> CreateStandardIconImageRep(
+std::optional<gfx::ImageSkiaRep> CreateStandardIconImageRep(
     const gfx::ImageSkiaRep& base_rep,
     float scale) {
   TRACE_EVENT0("ui", "apps::CreateStandardIconImageRep");
-  absl::optional<gfx::ImageSkiaRep> resized_image_skia_rep =
+  std::optional<gfx::ImageSkiaRep> resized_image_skia_rep =
       StandardizeSizeOfImageRep(base_rep, scale);
   const gfx::ImageSkiaRep& standard_size_rep =
       resized_image_skia_rep.value_or(base_rep);
@@ -253,7 +253,7 @@ absl::optional<gfx::ImageSkiaRep> CreateStandardIconImageRep(
 
     if (icon_to_bitmap_size_ratio <= kBackgroundCircleScale) {
       // No need to scale down the icon, so just use the |unscaled_bitmap|.
-      return absl::nullopt;
+      return std::nullopt;
     }
     SkBitmap final_bitmap;
     final_bitmap.allocN32Pixels(width, height);
@@ -340,7 +340,7 @@ gfx::ImageSkia CreateStandardIconImage(const gfx::ImageSkia& image) {
   gfx::ImageSkia standard_size_image = StandardizeSize(image);
 
   for (gfx::ImageSkiaRep rep : standard_size_image.image_reps()) {
-    absl::optional<gfx::ImageSkiaRep> standard_rep =
+    std::optional<gfx::ImageSkiaRep> standard_rep =
         CreateStandardIconImageRep(rep, rep.scale());
     final_image.AddRepresentation(standard_rep.value_or(rep));
   }

@@ -7,8 +7,8 @@
 
 #include <climits>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/pointers/raw_ptr.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/pointers/raw_ptr_noop_impl.h"
+#include "partition_alloc/pointers/raw_ptr.h"
+#include "partition_alloc/pointers/raw_ptr_noop_impl.h"
 
 namespace base::test {
 

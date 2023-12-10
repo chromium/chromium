@@ -117,6 +117,7 @@ class FormTracker : public content::RenderFrameObserver,
   void AjaxSucceeded();
   void TextFieldDidChange(const blink::WebFormControlElement& element);
   void SelectControlDidChange(const blink::WebFormControlElement& element);
+  virtual void ElementDisappeared(const blink::WebElement& element);
 
   // Tells the tracker to track the autofilled `element`. Since autofilling a
   // form or field won't trigger the regular *DidChange events, the tracker
@@ -143,7 +144,7 @@ class FormTracker : public content::RenderFrameObserver,
   void DidStartNavigation(
       const GURL& url,
       absl::optional<blink::WebNavigationType> navigation_type) override;
-  void WillDetach() override;
+  void WillDetach(blink::DetachReason detach_reason) override;
   void WillSubmitForm(const blink::WebFormElement& form) override;
   void OnDestruct() override;
 

@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/containers/flat_map.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "chromeos/ash/components/settings/cros_settings_provider.h"
 

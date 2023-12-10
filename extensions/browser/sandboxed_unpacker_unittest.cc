@@ -151,7 +151,7 @@ class MockSandboxedUnpackerClient : public SandboxedUnpackerClient {
   }
 
   scoped_refptr<base::SequencedTaskRunner> callback_runner_;
-  absl::optional<CrxInstallError> error_;
+  std::optional<CrxInstallError> error_;
   base::OnceClosure quit_closure_;
   base::FilePath temp_dir_;
   raw_ptr<bool> deleted_tracker_ = nullptr;
@@ -303,7 +303,7 @@ class SandboxedUnpackerTest : public ExtensionsTest {
     sandboxed_unpacker_->extension_root_ = path;
   }
 
-  absl::optional<base::Value::Dict> RewriteManifestFile(
+  std::optional<base::Value::Dict> RewriteManifestFile(
       const base::Value::Dict& manifest) {
     return sandboxed_unpacker_->RewriteManifestFile(manifest);
   }
@@ -487,7 +487,7 @@ TEST_F(SandboxedUnpackerTest, TestRewriteManifestInjections) {
   base::WriteFile(extensions_dir_.GetPath().Append(
                       FILE_PATH_LITERAL("manifest.fingerprint")),
                   fingerprint);
-  absl::optional<base::Value::Dict> manifest(
+  std::optional<base::Value::Dict> manifest(
       RewriteManifestFile(base::Value::Dict().Set(kVersionStr, kTestVersion)));
   auto* key = manifest->FindString("key");
   auto* version = manifest->FindString(kVersionStr);
@@ -563,7 +563,7 @@ TEST_F(SandboxedUnpackerTest, UnzipperServiceFails) {
 }
 
 TEST_F(SandboxedUnpackerTest, JsonParserFails) {
-  in_process_data_decoder().service().SimulateJsonParserCrashForTesting(true);
+  in_process_data_decoder().SimulateJsonParserCrash(true);
   InitSandboxedUnpacker();
 
   SetupUnpacker("good_package.crx", "");
@@ -574,7 +574,7 @@ TEST_F(SandboxedUnpackerTest, JsonParserFails) {
 }
 
 TEST_F(SandboxedUnpackerTest, ImageDecoderFails) {
-  in_process_data_decoder().service().SimulateImageDecoderCrashForTesting(true);
+  in_process_data_decoder().SimulateImageDecoderCrash(true);
   InitSandboxedUnpacker();
   SetupUnpacker("good_package.crx", "");
   EXPECT_FALSE(InstallSucceeded());

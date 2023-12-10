@@ -47,9 +47,7 @@ struct FrameTokenWithPredecessor {
   int predecessor = -1;
 
   friend bool operator==(const FrameTokenWithPredecessor& a,
-                         const FrameTokenWithPredecessor& b);
-  friend bool operator!=(const FrameTokenWithPredecessor& a,
-                         const FrameTokenWithPredecessor& b);
+                         const FrameTokenWithPredecessor& b) = default;
 };
 
 // Autofill represents forms and fields as FormData and FormFieldData objects.

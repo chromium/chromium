@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/clipboard/data_object_item.h"
 #include "third_party/blink/renderer/core/testing/null_execution_context.h"
 #include "third_party/blink/renderer/platform/file_metadata.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
 namespace blink {
@@ -17,6 +18,8 @@ class DataObjectTest : public testing::Test {
   DataObjectTest() : data_object_(DataObject::Create()) {}
 
  protected:
+  test::TaskEnvironment task_environment;
+
   Persistent<DataObject> data_object_;
 };
 

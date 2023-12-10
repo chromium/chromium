@@ -117,15 +117,17 @@ HitTestRequest::HitTestRequestType GestureManager::GetHitTypeForGestureType(
 
 WebInputEventResult GestureManager::HandleGestureEventInFrame(
     const GestureEventWithHitTestResults& targeted_event) {
-  DCHECK(!targeted_event.Event().IsScrollEvent());
-
-  Node* event_target = targeted_event.GetHitTestResult().InnerNode();
+  const HitTestResult& hit_test_result = targeted_event.GetHitTestResult();
   const WebGestureEvent& gesture_event = targeted_event.Event();
+  DCHECK(!gesture_event.IsScrollEvent());
 
-  if (scroll_manager_->CanHandleGestureEvent(targeted_event))
-    return WebInputEventResult::kHandledSuppressed;
+  if (Scrollbar* scrollbar = hit_test_result.GetScrollbar()) {
+    if (scrollbar->HandleGestureTapOrPress(gesture_event)) {
+      return WebInputEventResult::kHandledSuppressed;
+    }
+  }
 
-  if (event_target) {
+  if (Node* event_target = hit_test_result.InnerNode()) {
     GestureEvent* gesture_dom_event = GestureEvent::Create(
         event_target->GetDocument().domWindow(), gesture_event);
     if (gesture_dom_event) {

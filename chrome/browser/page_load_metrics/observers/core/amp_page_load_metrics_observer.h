@@ -137,8 +137,8 @@ class AMPPageLoadMetricsObserver
 
   void MaybeRecordLoadingBehaviorObserved();
   void RecordNormalizedResponsivenessMetrics(
-      const page_load_metrics::NormalizedResponsivenessMetrics&
-          normalized_responsiveness_metrics,
+      const page_load_metrics::ResponsivenessMetricsNormalization&
+          responsiveness_metrics_normalization,
       ukm::builders::AmpPageLoad& builder);
   void ProcessMainFrameNavigation(content::NavigationHandle* navigation_handle);
   void MaybeRecordAmpDocumentMetrics();

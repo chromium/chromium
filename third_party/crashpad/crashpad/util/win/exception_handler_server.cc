@@ -21,6 +21,7 @@
 #include <iterator>
 #include <utility>
 
+#include "base/check.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/rand_util.h"

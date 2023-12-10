@@ -12,6 +12,7 @@
 
 #include <limits>
 #include <memory>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -78,7 +79,7 @@ void CopyPolicyToTarget(base::span<const uint8_t> source, void* dest) {
 // Checks that the impersonation token was applied successfully and hasn't been
 // reverted to an identification level token.
 bool CheckImpersonationToken(HANDLE thread) {
-  absl::optional<base::win::AccessToken> token =
+  std::optional<base::win::AccessToken> token =
       base::win::AccessToken::FromThread(thread);
   if (!token.has_value()) {
     return false;
@@ -163,7 +164,7 @@ ResultCode TargetProcess::Create(
     //    operation and tests.
     //  * "LOCALAPPDATA": Needed for App Container processes.
     //  * "CHROME_CRASHPAD_PIPE_NAME": Needed for crashpad.
-    static constexpr base::WStringPiece to_keep[] = {
+    static constexpr std::wstring_view to_keep[] = {
         L"Path",
         L"SystemDrive",
         L"SystemRoot",
@@ -251,8 +252,8 @@ ResultCode TargetProcess::TransferVariable(const char* name,
 // an IPC it will eventually call the dispatcher.
 ResultCode TargetProcess::Init(
     Dispatcher* ipc_dispatcher,
-    absl::optional<base::span<const uint8_t>> policy,
-    absl::optional<base::span<const uint8_t>> delegate_data,
+    std::optional<base::span<const uint8_t>> policy,
+    std::optional<base::span<const uint8_t>> delegate_data,
     uint32_t shared_IPC_size,
     DWORD* win_error) {
   ResultCode ret = VerifySentinels();
@@ -424,7 +425,7 @@ std::unique_ptr<TargetProcess> TargetProcess::MakeTargetProcessForTesting(
 // static
 std::wstring TargetProcess::FilterEnvironment(
     const wchar_t* env,
-    const base::span<const base::WStringPiece> to_keep) {
+    const base::span<const std::wstring_view> to_keep) {
   std::wstring result;
 
   // Iterate all of the environment strings.

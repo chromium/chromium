@@ -322,11 +322,9 @@ class NavigationEntryScreenshotBrowserTest
   void ExpectScreenshotIsColor(NavigationEntryScreenshot* screenshot,
                                SkColor color) {
     EXPECT_NE(screenshot, nullptr);
-    auto ui_resource = screenshot->GetBitmap(0, false);
-    const auto size = ui_resource.GetSize();
-    EXPECT_EQ(size, GetScaledViewportSize());
+    EXPECT_EQ(screenshot->GetDimensions(), GetScaledViewportSize());
 
-    auto bitmap = ui_resource.GetBitmapForTesting();
+    auto bitmap = screenshot->GetBitmapForTesting();
     ExpectBitmapRowsAreColor(bitmap, /*row_start=*/0,
                              /*row_end_exclusive=*/bitmap.height(), color);
   }
@@ -1013,10 +1011,8 @@ void AssertScreenshotForPageWithIFrameIs(NavigationEntry* entry,
                                          SkColor iframe) {
   auto* screenshot = PreviewScreenshotForEntry(entry);
   ASSERT_NE(screenshot, nullptr);
-  auto ui_resource = screenshot->GetBitmap(0, false);
-  const auto size = ui_resource.GetSize();
-
-  auto bitmap = ui_resource.GetBitmapForTesting();
+  const auto size = screenshot->GetDimensions();
+  auto bitmap = screenshot->GetBitmapForTesting();
 
   int half_height = size.height() / 2;
   bool is_height_odd = (size.height() % 2);

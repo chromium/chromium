@@ -50,8 +50,9 @@ class NetMetricsLogUploaderTest : public testing::Test {
         base::BindRepeating(
             &NetMetricsLogUploaderTest::OnUploadCompleteReuseUploader,
             base::Unretained(this)));
-    uploader_->UploadLog("initial_dummy_data", "initial_dummy_hash",
-                         "initial_dummy_signature", reporting_info);
+    uploader_->UploadLog("initial_dummy_data", LogMetadata(),
+                         "initial_dummy_hash", "initial_dummy_signature",
+                         reporting_info);
   }
 
   void CreateUploaderAndUploadToSecureURL(const std::string& url) {
@@ -61,8 +62,8 @@ class NetMetricsLogUploaderTest : public testing::Test {
         MetricsLogUploader::UMA,
         base::BindRepeating(&NetMetricsLogUploaderTest::DummyOnUploadComplete,
                             base::Unretained(this)));
-    uploader_->UploadLog("dummy_data", "dummy_hash", "dummy_signature",
-                         dummy_reporting_info);
+    uploader_->UploadLog("dummy_data", LogMetadata(), "dummy_hash",
+                         "dummy_signature", dummy_reporting_info);
   }
 
   void CreateUploaderAndUploadToInsecureURL() {
@@ -76,8 +77,8 @@ class NetMetricsLogUploaderTest : public testing::Test {
     // Compress the data since the encryption code expects a compressed log,
     // and tries to decompress it before encrypting it.
     compression::GzipCompress("dummy_data", &compressed_message);
-    uploader_->UploadLog(compressed_message, "dummy_hash", "dummy_signature",
-                         dummy_reporting_info);
+    uploader_->UploadLog(compressed_message, LogMetadata(), "dummy_hash",
+                         "dummy_signature", dummy_reporting_info);
   }
 
   void DummyOnUploadComplete(int response_code,
@@ -97,8 +98,8 @@ class NetMetricsLogUploaderTest : public testing::Test {
     if (on_upload_complete_count_ == 1) {
       ReportingInfo reporting_info;
       reporting_info.set_attempt_count(20);
-      uploader_->UploadLog("dummy_data", "dummy_hash", "dummy_signature",
-                           reporting_info);
+      uploader_->UploadLog("dummy_data", LogMetadata(), "dummy_hash",
+                           "dummy_signature", reporting_info);
     }
     log_was_force_discarded_ = force_discard;
   }

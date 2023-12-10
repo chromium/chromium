@@ -75,7 +75,7 @@ void FamilyInfoFeedbackSource::GetFamilyMembers() {
 }
 
 void FamilyInfoFeedbackSource::OnResponse(
-    supervised_user::ProtoFetcherStatus status,
+    const supervised_user::ProtoFetcherStatus& status,
     std::unique_ptr<kids_chrome_management::ListFamilyMembersResponse>
         response) {
   if (!status.IsOk()) {
@@ -117,7 +117,7 @@ void FamilyInfoFeedbackSource::OnSuccess(
 }
 
 void FamilyInfoFeedbackSource::OnFailure(
-    supervised_user::ProtoFetcherStatus status) {
+    const supervised_user::ProtoFetcherStatus& status) {
   DLOG(WARNING) << "ListFamilyMembers failed with status: "
                 << status.ToString();
   OnComplete();

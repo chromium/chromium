@@ -64,7 +64,7 @@ std::vector<shortcut_ui::SearchConcept> GetTestSearchConcepts() {
                 ui::Accelerator(
                     /*key_code=*/ui::KeyboardCode::VKEY_SPACE,
                     /*modifiers=*/ui::EF_CONTROL_DOWN),
-                u"Space", absl::nullopt))));
+                u"Space", std::nullopt))));
     concepts.emplace_back(
         fake_search_data::CreateFakeAcceleratorLayoutInfo(
             /*description=*/u"Open launcher",
@@ -86,7 +86,7 @@ std::vector<shortcut_ui::SearchConcept> GetTestSearchConcepts() {
                 ui::Accelerator(
                     /*key_code=*/ui::KeyboardCode::VKEY_T,
                     /*modifiers=*/ui::EF_CONTROL_DOWN),
-                u"T", absl::nullopt))));
+                u"T", std::nullopt))));
     concepts.emplace_back(
         fake_search_data::CreateFakeAcceleratorLayoutInfo(
             /*description=*/u"Open new tab",
@@ -108,7 +108,7 @@ std::vector<shortcut_ui::SearchConcept> GetTestSearchConcepts() {
                 ui::Accelerator(
                     /*key_code=*/ui::KeyboardCode::VKEY_A,
                     /*modifiers=*/ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN),
-                u"A", absl::nullopt))));
+                u"A", std::nullopt))));
     accelerator_info_list.emplace_back(ash::mojom::AcceleratorInfo::New(
         /*type=*/ash::mojom::AcceleratorType::kDefault,
         /*state=*/ash::mojom::AcceleratorState::kEnabled,
@@ -119,7 +119,7 @@ std::vector<shortcut_ui::SearchConcept> GetTestSearchConcepts() {
                 ui::Accelerator(
                     /*key_code=*/ui::KeyboardCode::VKEY_BRIGHTNESS_DOWN,
                     /*modifiers=*/ui::EF_ALT_DOWN),
-                u"BrightnessDown", absl::nullopt))));
+                u"BrightnessDown", std::nullopt))));
 
     concepts.emplace_back(
         fake_search_data::CreateFakeAcceleratorLayoutInfo(

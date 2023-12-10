@@ -188,7 +188,7 @@ void CastWebViewDefault::ActivateContents(content::WebContents* contents) {
 
 bool CastWebViewDefault::CheckMediaAccessPermission(
     content::RenderFrameHost* render_frame_host,
-    const GURL& security_origin,
+    const url::Origin& security_origin,
     blink::mojom::MediaStreamType type) {
   if (!chromecast::IsFeatureEnabled(kAllowUserMediaAccess) &&
       !params_->allow_media_access) {

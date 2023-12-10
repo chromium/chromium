@@ -3,9 +3,9 @@
 This directory contains the list implementation
 of Blink's new layout engine "LayoutNG".
 
-This README can be viewed in formatted form [here](https://chromium.googlesource.com/chromium/src/+/main/third_party/blink/renderer/core/layout/ng/list/README.md).
+This README can be viewed in formatted form [here](https://chromium.googlesource.com/chromium/src/+/main/third_party/blink/renderer/core/layout/list/README.md).
 
-Other parts of LayoutNG is explained [here](../README.md).
+Other parts of LayoutNG is explained [here](../layout_ng.md).
 
 ## Outside list marker
 
@@ -47,7 +47,7 @@ generates a box tree of:
 
 Since children except the list marker are inline-level,
 an inline formatting context is created, and therefore
-[NGInlineLayoutAlgorithm] lays out this [LayoutListItem].
+[InlineLayoutAlgorithm] lays out this [LayoutListItem].
 
 When the content is block level:
 
@@ -62,7 +62,7 @@ When the content is block level:
     - LayoutText (sample text)
 
 Since children except the list marker are block-level,
-[NGBlockLayoutAlgorithm] lays out this [LayoutListItem].
+[BlockLayoutAlgorithm] lays out this [LayoutListItem].
 
 When the content is mixed:
 
@@ -82,17 +82,17 @@ When the content is mixed:
     - LayoutText (block text)
 
 Children are block-level in this case and therefore
-[NGBlockLayoutAlgorithm] lays out this [LayoutListItem].
+[BlockLayoutAlgorithm] lays out this [LayoutListItem].
 
 ### Propagating unpositioned list markers
 
-List markers can be processed either in [NGInlineLayoutAlgorithm]
+List markers can be processed either in [InlineLayoutAlgorithm]
 if it appears within an inline formatting context,
-or in [NGBlockLayoutAlgorithm]
+or in [BlockLayoutAlgorithm]
 if it appears within a block formatting context,
 but its positioning is determined when [LayoutListItem] is laid out.
 
-To do this, algorithms can set an unpositioned list marker to [NGLayoutResult],
+To do this, algorithms can set an unpositioned list marker to [LayoutResult],
 which will be propagated to the nearest [LayoutListItem],
 similar to absolute positioned objects propagate to its containing blocks.
 
@@ -133,11 +133,11 @@ and still easy to implement across implementations.
 [list-style-position]: https://drafts.csswg.org/css-lists-3/#propdef-list-style-position
 [marker positioning]: https://drafts.csswg.org/css-lists-3/#positioning
 
-[InlineItem]: ../ng/inline/ng_inline_item.h
+[BlockLayoutAlgorithm]: ../block_layout_algorithm.h
+[InlineItem]: ../inline/inline_item.h
+[InlineLayoutAlgorithm]: ../inline/inline_layout_algorithm.h
 [LayoutListItem]: layout_list_item.h
 [LayoutInsideListMarker]: layout_inside_list_marker.h
 [LayoutOutsideListMarker]: layout_outside_list_marker.h
-[NGBlockLayoutAlgorithm]: ../ng/ng_block_layout_algorithm.h
-[NGInlineLayoutAlgorithm]: ../ng/inline/ng_inline_layout_algorithm.h
-[NGLayoutResult]: ../ng/ng_layout_result.h
-[PaintLayer]: ../../paint/PaintLayer.h
+[LayoutResult]: ../layout_result.h
+[PaintLayer]: ../../paint/paint_layer.h

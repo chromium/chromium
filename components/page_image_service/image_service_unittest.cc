@@ -343,13 +343,17 @@ TEST_F(ImageServiceTest, OptimizationGuideSalientImagesEndToEnd) {
   image_service_->FetchImageFor(
       mojom::ClientId::Journeys, GURL("https://1.com"), options,
       base::BindOnce(&StoreImageUrlResponse, &response_3));
+  image_service_->FetchImageFor(
+      mojom::ClientId::Journeys, GURL("https://httpimage.com"), options,
+      base::BindOnce(&StoreImageUrlResponse, &response_3));
   task_environment.FastForwardBy(kOptimizationGuideBatchingTimeout);
 
   // Verify that the OptimizationGuide backend got one appropriate call.
   ASSERT_EQ(test_opt_guide_->requests_received_, 1U);
-  EXPECT_THAT(test_opt_guide_->on_demand_call_urls_,
-              ElementsAre(GURL("https://1.com"), GURL("https://2.com"),
-                          GURL("https://1.com")));
+  EXPECT_THAT(
+      test_opt_guide_->on_demand_call_urls_,
+      ElementsAre(GURL("https://1.com"), GURL("https://2.com"),
+                  GURL("https://1.com"), GURL("https://httpimage.com")));
   EXPECT_THAT(test_opt_guide_->on_demand_call_optimization_types_,
               ElementsAre(optimization_guide::proto::SALIENT_IMAGE));
   EXPECT_EQ(test_opt_guide_->on_demand_call_request_context_,
@@ -359,11 +363,11 @@ TEST_F(ImageServiceTest, OptimizationGuideSalientImagesEndToEnd) {
   EXPECT_EQ(histogram_tester_.GetBucketCount(
                 "PageImageService.Backend",
                 PageImageServiceBackend::kOptimizationGuide),
-            3);
+            4);
   EXPECT_EQ(histogram_tester_.GetBucketCount(
                 "PageImageService.Backend.Journeys",
                 PageImageServiceBackend::kOptimizationGuide),
-            3);
+            4);
 
   // Verify the decision can be parsed and sent back to the original caller.
   optimization_guide::OptimizationGuideDecisionWithMetadata decision;
@@ -380,6 +384,22 @@ TEST_F(ImageServiceTest, OptimizationGuideSalientImagesEndToEnd) {
     decision.metadata.set_any_metadata(any);
   }
 
+  // Verify the decision can be parsed and sent back to the original caller.
+  optimization_guide::OptimizationGuideDecisionWithMetadata http_decision;
+  {
+    http_decision.decision =
+        optimization_guide::OptimizationGuideDecision::kTrue;
+
+    optimization_guide::proto::SalientImageMetadata salient_image_metadata;
+    auto* thumbnail = salient_image_metadata.add_thumbnails();
+    thumbnail->set_image_url("http://image-url.com/foo.png");
+
+    optimization_guide::proto::Any any;
+    any.set_type_url(salient_image_metadata.GetTypeName());
+    salient_image_metadata.SerializeToString(any.mutable_value());
+    http_decision.metadata.set_any_metadata(any);
+  }
+
   // Verify that the repeating callback can be called twice with the two
   // different URLs, the "https://1.com" one being deduplicated.
   test_opt_guide_->on_demand_call_callback_.Run(
@@ -394,16 +414,23 @@ TEST_F(ImageServiceTest, OptimizationGuideSalientImagesEndToEnd) {
   EXPECT_EQ(response_1, GURL("https://image-url.com/foo.png"));
   EXPECT_EQ(response_2, GURL("https://image-url.com/foo.png"));
   EXPECT_EQ(response_3, GURL("https://image-url.com/foo.png"));
+  test_opt_guide_->on_demand_call_callback_.Run(
+      GURL("https://httpimage.com"),
+      {{optimization_guide::proto::SALIENT_IMAGE, http_decision}});
 
   // Test histograms with literal names to validate client-sliced names.
-  EXPECT_EQ(histogram_tester_.GetBucketCount(
-                "PageImageService.Backend.OptimizationGuide.Result",
-                PageImageServiceResult::kSuccess),
-            2);
-  EXPECT_EQ(histogram_tester_.GetBucketCount(
-                "PageImageService.Backend.OptimizationGuide.Result.Journeys",
-                PageImageServiceResult::kSuccess),
-            2);
+  histogram_tester_.ExpectBucketCount(
+      "PageImageService.Backend.OptimizationGuide.Result",
+      PageImageServiceResult::kSuccess, 2);
+  histogram_tester_.ExpectBucketCount(
+      "PageImageService.Backend.OptimizationGuide.Result.Journeys",
+      PageImageServiceResult::kSuccess, 2);
+  histogram_tester_.ExpectBucketCount(
+      "PageImageService.Backend.OptimizationGuide.Result",
+      PageImageServiceResult::kResponseMalformed, 1);
+  histogram_tester_.ExpectBucketCount(
+      "PageImageService.Backend.OptimizationGuide.Result.Journeys",
+      PageImageServiceResult::kResponseMalformed, 1);
 }
 
 TEST_F(ImageServiceTest, OptimizationGuideBatchingRespectsMaxUrls) {

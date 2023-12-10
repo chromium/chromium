@@ -155,10 +155,15 @@ class ExtensionTelemetryService : public KeyedService {
   // uploads telemetry data. Runs on a delayed post task on startup.
   void StartUploadCheck();
 
-  // Collects information about any extensions present in the Chrome command
-  // line switch, --load-extension. Only creates an extension object to store
-  // this information without actually installing the extension.
-  void CollectCommandLineExtensionInfo();
+  // Callback used to receive information about any extensions present in
+  // the Chrome command line switch, --load-extension. The information is
+  // collected off the UI thread since it involves reading the manifest file of
+  // the extension. The callback stores the received information, a set of
+  // extension objects, in `commandline_extensions_`.
+  // NOTE: The extension objects are created without actually installing the
+  // extensions.
+  void OnCommandLineExtensionsInfoCollected(
+      extensions::ExtensionSet commandline_extensions);
 
   // Searches for offstore extensions, collects file data such as
   // hashes/manifest content, and saves the data to PrefService. Repeats every 2

@@ -497,6 +497,22 @@ void Desk::SetGuid(base::Uuid new_guid) {
   }
 }
 
+void Desk::SetLacrosProfileId(uint64_t lacros_profile_id,
+                              bool skip_prefs_update) {
+  if (lacros_profile_id == lacros_profile_id_) {
+    return;
+  }
+
+  lacros_profile_id_ = lacros_profile_id;
+  if (!skip_prefs_update) {
+    desks_restore_util::UpdatePrimaryUserDeskLacrosProfileIdPrefs();
+  }
+
+  for (auto& observer : observers_) {
+    observer.OnDeskProfileChanged(lacros_profile_id_);
+  }
+}
+
 void Desk::PrepareForActivationAnimation() {
   DCHECK(!is_active_);
 

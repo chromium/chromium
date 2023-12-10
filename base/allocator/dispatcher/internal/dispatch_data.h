@@ -55,4 +55,4 @@ struct BASE_EXPORT DispatchData {
 
 }  // namespace base::allocator::dispatcher::internal
 
-#endif
+#endif  // BASE_ALLOCATOR_DISPATCHER_INTERNAL_DISPATCH_DATA_H_

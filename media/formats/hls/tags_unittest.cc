@@ -11,6 +11,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
+#include "media/base/media_serializers.h"
 #include "media/formats/hls/items.h"
 #include "media/formats/hls/parse_status.h"
 #include "media/formats/hls/source_string.h"
@@ -92,7 +93,11 @@ OkTestResult<T> OkTest(absl::optional<std::string> content,
                                       SourceString::CreateForTesting(*source))
                     : TagItem::CreateEmpty(ToTagName(T::kName), 1);
   auto result = T::Parse(tag, variable_dict, sub_buffer);
-  CHECK(result.has_value()) << from.ToString();
+  if (!result.has_value()) {
+    CHECK(false) << from.ToString() << "\n"
+                 << MediaSerialize(std::move(result).error());
+    NOTREACHED_NORETURN();
+  }
   return OkTestResult<T>{.tag = std::move(result).value(),
                          .source = std::move(source)};
 }
@@ -1731,10 +1736,47 @@ TEST(HlsTagsTest, ParseXServerControlTag) {
 }
 
 TEST(HlsTagsTest, ParseXSkipTag) {
-  RunTagIdenficationTest(ToTagName(MediaPlaylistTagName::kXSkip),
-                         "#EXT-X-SKIP:SKIPPED-SEGMENTS=10\n",
-                         "SKIPPED-SEGMENTS=10");
-  // TODO(crbug.com/1266991): Implement the EXT-X-SKIP tag.
+  RunTagIdenficationTest<XSkipTag>("#EXT-X-SKIP:SKIPPED-SEGMENTS=10\n",
+                                   "SKIPPED-SEGMENTS=10");
+
+  VariableDictionary variable_dict = CreateBasicDictionary();
+  VariableDictionary::SubstitutionBuffer sub_buffer;
+
+  ErrorTest<XSkipTag>(absl::nullopt, variable_dict, sub_buffer,
+                      ParseStatusCode::kMalformedTag);
+  ErrorTest<XSkipTag>("-1", variable_dict, sub_buffer,
+                      ParseStatusCode::kMalformedTag);
+  ErrorTest<XSkipTag>("UNKNOWN=10", variable_dict, sub_buffer,
+                      ParseStatusCode::kMalformedTag);
+  ErrorTest<XSkipTag>("SKIPPED-SEGMENTS=f", variable_dict, sub_buffer,
+                      ParseStatusCode::kMalformedTag);
+  ErrorTest<XSkipTag>("RECENTLY-REMOVED-DATERANGES=\"\"", variable_dict,
+                      sub_buffer, ParseStatusCode::kMalformedTag);
+  ErrorTest<XSkipTag>("SKIPPED-SEGMENTS=1,RECENTLY-REMOVED-DATERANGES=hello",
+                      variable_dict, sub_buffer,
+                      ParseStatusCode::kMalformedTag);
+  ErrorTest<XSkipTag>("SKIPPED-SEGMENTS=1,RECENTLY-REMOVED-DATERANGES=\"\t\"",
+                      variable_dict, sub_buffer,
+                      ParseStatusCode::kMalformedTag);
+
+  auto result =
+      OkTest<XSkipTag>("SKIPPED-SEGMENTS=10", variable_dict, sub_buffer);
+  EXPECT_EQ(result.tag.skipped_segments, 10u);
+  EXPECT_EQ(result.tag.recently_removed_dateranges, std::nullopt);
+
+  auto with_empty_ranges =
+      OkTest<XSkipTag>("SKIPPED-SEGMENTS=10,RECENTLY-REMOVED-DATERANGES=\"\"",
+                       variable_dict, sub_buffer);
+  EXPECT_EQ(with_empty_ranges.tag.skipped_segments, 10u);
+  EXPECT_TRUE(with_empty_ranges.tag.recently_removed_dateranges.has_value());
+  EXPECT_EQ(with_empty_ranges.tag.recently_removed_dateranges->size(), 0u);
+
+  auto with_some_ranges = OkTest<XSkipTag>(
+      "SKIPPED-SEGMENTS=10,RECENTLY-REMOVED-DATERANGES=\"F\tT\"", variable_dict,
+      sub_buffer);
+  EXPECT_EQ(with_some_ranges.tag.skipped_segments, 10u);
+  EXPECT_TRUE(with_some_ranges.tag.recently_removed_dateranges.has_value());
+  EXPECT_EQ(with_some_ranges.tag.recently_removed_dateranges->size(), 2u);
 }
 
 TEST(HlsTagsTest, ParseXTargetDurationTag) {

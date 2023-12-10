@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/policy/test_support/embedded_policy_test_server_mixin.h"
 
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -29,7 +30,6 @@
 #include "components/policy/test_support/policy_storage.h"
 #include "components/policy/test_support/signature_provider.h"
 #include "net/http/http_status_code.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 

@@ -16,6 +16,7 @@
 #include "base/timer/timer.h"
 #include "base/types/pass_key.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/weak_document_ptr.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -41,6 +42,8 @@ namespace content {
 class BrowserContext;
 class KeepAliveURLLoaderService;
 class PolicyContainerHost;
+class RenderFrameHostImpl;
+class WeakDocumentPtr;
 
 // A URLLoader for loading a fetch keepalive request via the browser process,
 // including requests generated from the following JS API calls:
@@ -101,6 +104,8 @@ class CONTENT_EXPORT KeepAliveURLLoader
   // service if it is still connected.
   // `delete_callback` is a callback to delete this object.
   // `policy_container_host` must not be null.
+  // `weak_document_ptr` should point to the document that initiates
+  // `resource_request`.
   KeepAliveURLLoader(
       int32_t request_id,
       uint32_t options,
@@ -109,6 +114,7 @@ class CONTENT_EXPORT KeepAliveURLLoader
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
       scoped_refptr<network::SharedURLLoaderFactory> network_loader_factory,
       scoped_refptr<PolicyContainerHost> policy_container_host,
+      WeakDocumentPtr weak_document_ptr,
       BrowserContext* browser_context,
       std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles,
       base::PassKey<KeepAliveURLLoaderService>);
@@ -172,6 +178,10 @@ class CONTENT_EXPORT KeepAliveURLLoader
   // Returns true if request loading has been started, i.e. `Start()` has been
   // called. Otherwise, returns false by default.
   bool IsStarted() const;
+
+  // Returns a pointer to the RenderFrameHostImpl of the request initiator
+  // document if it is still alive. Otherwise, returns nullptr;
+  RenderFrameHostImpl* GetInitiator() const;
 
   // Receives actions from renderer.
   // `network::mojom::URLLoader` overrides:
@@ -247,6 +257,9 @@ class CONTENT_EXPORT KeepAliveURLLoader
   // The ID to identify the request being loaded by this loader.
   const int32_t request_id_;
 
+  // The ID to identify the request used by DevTools
+  const std::string devtools_request_id_;
+
   // A bitfield of the options of the request being loaded.
   // See services/network/public/mojom/url_loader_factory.mojom.
   const uint32_t options_;
@@ -297,6 +310,12 @@ class CONTENT_EXPORT KeepAliveURLLoader
   // initiates this loader alive until `this` is destroyed.
   // It is never null.
   scoped_refptr<PolicyContainerHost> policy_container_host_;
+
+  // Points to the document that initiates this loader.
+  // It may become null at any moment whenever the RenderFrameHost it points to
+  // is deleted or navigates to a different document. See its classdoc for more
+  // details.
+  WeakDocumentPtr weak_document_ptr_;
 
   // The BrowserContext that initiates this loader.
   // It is ensured to outlive this because it owns KeepAliveURLLoaderService

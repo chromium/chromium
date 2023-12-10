@@ -139,12 +139,6 @@ class FooWebUIProvider
               (override));
 };
 
-bool AddToSet(std::set<content::WebContents*>* set,
-              content::WebContents* web_contents) {
-  set->insert(web_contents);
-  return false;
-}
-
 std::unique_ptr<net::test_server::HttpResponse> EmptyHtmlResponseHandler(
     const net::test_server::HttpRequest& request) {
   auto http_response = std::make_unique<net::test_server::BasicHttpResponse>();
@@ -317,7 +311,11 @@ IN_PROC_BROWSER_TEST_F(InlineLoginUIBrowserTest, MAYBE_DifferentStorageId) {
   std::set<content::WebContents*> set;
   GuestViewManager* manager =
       GuestViewManager::FromBrowserContext(info.contents->GetBrowserContext());
-  manager->ForEachGuest(info.contents, base::BindRepeating(&AddToSet, &set));
+  manager->ForEachGuest(info.contents, [&](content::WebContents* web_contents) {
+    set.insert(web_contents);
+    return false;
+  });
+
   ASSERT_EQ(1u, set.size());
   content::WebContents* webview_contents = *set.begin();
   content::RenderProcessHost* process =

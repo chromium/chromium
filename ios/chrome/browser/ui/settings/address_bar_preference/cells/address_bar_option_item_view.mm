@@ -51,6 +51,8 @@ const CGFloat kAddressBarSymbolPointSize = 100.0;
 
   if (self) {
     UILabel* label = [[UILabel alloc] init];
+    label.font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
+    label.adjustsFontForContentSizeCategory = YES;
     [label setText:labelText];
 
     UIImageSymbolConfiguration* configuration = [UIImageSymbolConfiguration

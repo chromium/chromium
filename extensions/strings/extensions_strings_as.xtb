@@ -8,6 +8,7 @@
 <translation id="1420684932347524586">ওহোঁ! অনিয়মীত RSA ব্যক্তিগত চাবি সৃষ্টি কৰিব পৰা নগ’ল।</translation>
 <translation id="1445572445564823378">এই এক্সটেনশ্বনৰ কাৰণে <ph name="PRODUCT_NAME" />এ লেহেমীয়া ধৰণে কাম কৰিছে৷ <ph name="PRODUCT_NAME" />এ ভালকৈ কাম কৰিবলৈ আপুনি ইয়াক অক্ষম কৰা উচিত৷</translation>
 <translation id="1468038450257740950">WebGL সমর্থিত নহয়।</translation>
+<translation id="1610570795592207282">স্ক্ৰিপ্টৰ বাবে css ’<ph name="RELATIVE_PATH" />’ ল’ড কৰিব নোৱাৰিলে।</translation>
 <translation id="1803557475693955505">নেপথ্যৰ পৃষ্ঠা ’<ph name="BACKGROUND_PAGE" />’ ল’ড কৰিব পৰা নগ’ল।</translation>
 <translation id="2159915644201199628">ছবি ডিক’ড কৰিব পৰা নগ’ল: '<ph name="IMAGE_NAME" />'</translation>
 <translation id="2350172092385603347">ল’কেলাইজেশ্বন ব্যৱহাৰ কৰা হৈছে কিন্তু মেনিফেষ্টত default_locale নির্দিষ্ট কৰা হোৱা নাই।</translation>
@@ -18,14 +19,12 @@
 <translation id="3115238746683532089"><ph name="VENDOR_ID" />ৰ অজ্ঞাত প্ৰডাক্ট <ph name="PRODUCT_ID" /> (ক্ৰমিক নং <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">crx ফাইল সলনি কৰিব পৰা নগ‘ল। ফাইলটো ব্যৱহাৰ হৈ আছে নেকি চাওক।</translation>
 <translation id="3163201441334626963"><ph name="VENDOR_ID" />ৰ অজ্ঞাত প্ৰডাক্ট <ph name="PRODUCT_ID" /></translation>
-<translation id="3302709122321372472">সমলৰ স্ক্ৰিপ্টৰ বাবে css '<ph name="RELATIVE_PATH" />' ল’ড কৰিব নোৱাৰিলে।</translation>
 <translation id="3369521687965833290">এক্সটেনশ্বন আনপেক কৰিব নোৱাৰি।  এক্সটেনশ্বনটো সুৰক্ষিতভাৱে আনপেক কৰিবলৈ আপোনাৰ প্ৰ’ফাইল ডাইৰেক্টৰীলৈ এটা পথ থাকিব লাগিব যিটো ড্ৰাইভৰ এটা আখৰেৰে আৰম্ভ হয় আৰু য’ত জাংশ্বন, মাউণ্ট কৰা পইণ্ট বা symlink নাথাকে।  আপোনাৰ প্ৰ’ফাইলৰ কাৰণে তেনেকুৱা কোনো পথ নাই।</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (ক্ৰমিক নম্বৰ <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397">বিক্ৰেতা <ph name="VENDOR_ID" />ৰ <ph name="PRODUCT_NAME" /> (ক্ৰমিক নম্বৰ <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">ব্যক্তিগত কীৰ বাবে ইনপুট মান কোনো মান্য পথ হ'বই লাগিব।</translation>
 <translation id="388442998277590542">বিকল্পৰ পৃষ্ঠা ’<ph name="OPTIONS_PAGE" />’ ল’ড কৰিবপৰা নগ’ল।</translation>
 <translation id="3984413272403535372">এক্সটেনশ্বন ছাইনিং কৰি থাকোঁতে আঁসোৱাহ হ’ল।</translation>
-<translation id="39964277676607559">সমলৰ স্ক্ৰিপ্টৰ বাবে javascript '<ph name="RELATIVE_PATH" />' ল’ড কৰিব পৰা নগ’ল।</translation>
 <translation id="4115165561519362854">এই মেচিনটোৰ প্ৰশাসকে <ph name="EXTENSION_NAME" /> অতি কমেও সংস্কৰণ <ph name="EXTENSION_VERSION" /> হোৱাটো বাধ্যতামূলক কৰিছে। ইয়াক সেই সংস্কৰণ (বা তাতকৈ পিছৰ)লৈ আপডে‘ট নকৰালৈকে সক্ষম কৰিব নোৱাৰি।</translation>
 <translation id="4233778200880751280">পৃষ্ঠাৰ বিষয়ে ‘<ph name="ABOUT_PAGE" />’ তথ্য ল’ড কৰিব পৰা নগ’ল।</translation>
 <translation id="471800408830181311">ব্যক্তিগত কী আউটপুট কৰিব পৰা নগ'ল।</translation>
@@ -33,6 +32,7 @@
 <translation id="4988792151665380515">ৰাজহুৱা চাবিটো ৰপ্তানি কৰিব পৰা নগ‘ল।</translation>
 <translation id="5026754133087629784">ৱেবভিউ: <ph name="WEBVIEW_TAG_NAME" /></translation>
 <translation id="5098647635849512368">পেক কৰিবলৈ ডাইৰেক্টৰীলৈ পৰম পথটো বিচাৰি পাব নোৱাৰি।</translation>
+<translation id="5160071981665899014">স্ক্ৰিপ্টৰ বাবে javascript ’<ph name="RELATIVE_PATH" />’ ল’ড কৰিব পৰা নগ’ল।</translation>
 <translation id="5356315618422219272">Appview: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5436430103864390185">আকৃতিযুক্ত ৱিণ্ড’ সমৰ্থিত নহয়৷</translation>
 <translation id="5456409301717116725">এই এক্সটেনশ্বনত ব্যক্তিগত চাবি অন্তর্ভুক্ত '<ph name="KEY_PATH" />' আছে। আপুনি হয়তো সেয়া কৰিবলৈ নোখোজে।</translation>

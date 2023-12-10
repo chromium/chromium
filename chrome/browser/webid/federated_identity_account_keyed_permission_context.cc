@@ -146,16 +146,16 @@ void FederatedIdentityAccountKeyedPermissionContext::RevokePermission(
   std::string key = BuildKey(relying_party_requester, relying_party_embedder,
                              identity_provider);
   const auto object = GetGrantedObject(relying_party_requester, key);
-  // TODO(crbug.com/1311268): If the provided `account_id` does not match the
-  // one we used when granting the permission, early return will leave an entry
-  // in the storage that cannot be removed afterwards.
   if (!object)
     return;
 
   base::Value::Dict new_object = object->value.Clone();
   base::Value::List* account_ids = new_object.FindList(kAccountIdsKey);
-  if (account_ids)
-    account_ids->EraseValue(base::Value(account_id));
+  if (account_ids) {
+    if (!account_ids->EraseValue(base::Value(account_id))) {
+      account_ids->clear();
+    }
+  }
 
   // Remove the permission object if there is no account left.
   if (!account_ids || account_ids->size() == 0) {

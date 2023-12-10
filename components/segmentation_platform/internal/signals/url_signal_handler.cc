@@ -4,6 +4,7 @@
 
 #include "components/segmentation_platform/internal/signals/url_signal_handler.h"
 
+#include "base/check.h"
 #include "base/functional/callback.h"
 #include "components/segmentation_platform/internal/database/ukm_database.h"
 
@@ -24,14 +25,16 @@ void UrlSignalHandler::OnUkmSourceUpdated(ukm::SourceId source_id,
                                           const std::vector<GURL>& urls) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const GURL& url = urls.back();
+  // TODO(haileywang): add profile_id in here.
   auto callback = base::BindOnce(&UrlSignalHandler::OnCheckedHistory,
                                  weak_factory_.GetWeakPtr(), source_id, url);
   CheckHistoryForUrl(url, std::move(callback));
 }
 
-void UrlSignalHandler::OnHistoryVisit(const GURL& url) {
+void UrlSignalHandler::OnHistoryVisit(const GURL& url,
+                                      const std::string& profile_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  ukm_database_->OnUrlValidated(url);
+  ukm_database_->OnUrlValidated(url, profile_id);
 }
 
 void UrlSignalHandler::OnUrlsRemovedFromHistory(const std::vector<GURL>& urls,
@@ -57,18 +60,18 @@ void UrlSignalHandler::CheckHistoryForUrl(const GURL& url,
                                           FindCallback callback) {
   for (auto& history_delegate : history_delegates_) {
     if (history_delegate->FastCheckUrl(url)) {
-      std::move(callback).Run(true);
+      std::move(callback).Run(true, history_delegate->profile_id());
       return;
     }
   }
   if (skip_history_db_check_) {
-    std::move(callback).Run(false);
+    std::move(callback).Run(false, "");
   } else {
     // TODO(ssid): Add metrics on what percentage of URLs will be missed if we
     // do not do this check, and wait for notifications instead.
     ContinueCheckingHistory(
         url, std::make_unique<base::flat_set<HistoryDelegate*>>(),
-        std::move(callback), false);
+        std::move(callback), false, "");
   }
 }
 
@@ -76,10 +79,11 @@ void UrlSignalHandler::ContinueCheckingHistory(
     const GURL& url,
     std::unique_ptr<base::flat_set<HistoryDelegate*>> delegates_checked,
     FindCallback callback,
-    bool found) {
+    bool found,
+    const std::string& profile_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (found) {
-    std::move(callback).Run(true);
+    std::move(callback).Run(true, profile_id);
     return;
   }
 
@@ -94,14 +98,16 @@ void UrlSignalHandler::ContinueCheckingHistory(
       return;
     }
   }
-  std::move(callback).Run(false);
+  std::move(callback).Run(false, "");
 }
 
 void UrlSignalHandler::OnCheckedHistory(ukm::SourceId source_id,
                                         const GURL& url,
-                                        bool in_history) {
+                                        bool in_history,
+                                        const std::string& profile_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  ukm_database_->UpdateUrlForUkmSource(source_id, url, in_history);
+  DCHECK(!in_history || !profile_id.empty());
+  ukm_database_->UpdateUrlForUkmSource(source_id, url, in_history, profile_id);
 }
 
 }  // namespace segmentation_platform

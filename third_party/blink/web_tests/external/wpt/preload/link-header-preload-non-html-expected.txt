@@ -1,9 +1,5 @@
 This is a testharness.js-based test.
-[PASS] XHTML documents should respect preload Link headers
-[PASS] plain text documents should respect preload Link headers
-[PASS] image documents should respect preload Link headers
 [FAIL] media documents should respect preload Link headers
   assert_equals: verify that request was issued exactly once expected 1 but got 2
-[PASS] invalid image documents should respect preload Link headers
 Harness: the test ran to completion.
 

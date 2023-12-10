@@ -41,8 +41,12 @@ public class CreatorActionDelegateImpl implements FeedActionDelegate {
     private final CreatorCoordinator mCreatorCoordinator;
     private final int mParentID;
 
-    public CreatorActionDelegateImpl(Context activityContext, Profile profile,
-            SnackbarManager snackbarManager, CreatorCoordinator creatorCoordinator, int parentId) {
+    public CreatorActionDelegateImpl(
+            Context activityContext,
+            Profile profile,
+            SnackbarManager snackbarManager,
+            CreatorCoordinator creatorCoordinator,
+            int parentId) {
         mActivityContext = activityContext;
         mProfile = profile;
         mSnackbarManager = snackbarManager;
@@ -51,8 +55,12 @@ public class CreatorActionDelegateImpl implements FeedActionDelegate {
     }
 
     @Override
-    public void openSuggestionUrl(int disposition, LoadUrlParams params, boolean inGroup,
-            Runnable onPageLoaded, Callback<VisitResult> onVisitComplete) {
+    public void openSuggestionUrl(
+            int disposition,
+            LoadUrlParams params,
+            boolean inGroup,
+            Runnable onPageLoaded,
+            Callback<VisitResult> onVisitComplete) {
         // Back-of-card actions
         if (disposition == WindowOpenDisposition.NEW_FOREGROUND_TAB
                 || disposition == WindowOpenDisposition.NEW_BACKGROUND_TAB
@@ -81,26 +89,41 @@ public class CreatorActionDelegateImpl implements FeedActionDelegate {
         // TODO(crbug/1399617) Eliminate code duplication with
         //     FeedActionDelegateImpl
         BookmarkModel bookmarkModel = BookmarkModel.getForProfile(mProfile);
-        bookmarkModel.finishLoadingBookmarkModel(() -> {
-            assert ThreadUtils.runningOnUiThread();
-            BookmarkUtils.addToReadingList(
-                    new GURL(url), title, mSnackbarManager, bookmarkModel, mActivityContext);
-        });
+        bookmarkModel.finishLoadingBookmarkModel(
+                () -> {
+                    assert ThreadUtils.runningOnUiThread();
+                    BookmarkUtils.addToReadingList(
+                            new GURL(url),
+                            title,
+                            mSnackbarManager,
+                            bookmarkModel,
+                            mActivityContext,
+                            mProfile);
+                });
     }
 
     @Override
     public void showSyncConsentActivity(int signinAccessPoint) {
-        SyncConsentActivityLauncherImpl.get().launchActivityForPromoDefaultFlow(
-                mActivityContext, signinAccessPoint, null);
+        SyncConsentActivityLauncherImpl.get()
+                .launchActivityForPromoDefaultFlow(mActivityContext, signinAccessPoint, null);
     }
 
     @Override
-    public void showSignInInterstitial(int signinAccessPoint,
-            BottomSheetController mBottomSheetController, WindowAndroid mWindowAndroid) {
-        SigninBottomSheetCoordinator signinCoordinator = new SigninBottomSheetCoordinator(
-                mWindowAndroid, DeviceLockActivityLauncherImpl.get(), mBottomSheetController,
-                mProfile, new CormorantBottomSheetStrings(),
-                () -> { showSyncConsentActivity(signinAccessPoint); }, signinAccessPoint);
+    public void showSignInInterstitial(
+            int signinAccessPoint,
+            BottomSheetController mBottomSheetController,
+            WindowAndroid mWindowAndroid) {
+        SigninBottomSheetCoordinator signinCoordinator =
+                new SigninBottomSheetCoordinator(
+                        mWindowAndroid,
+                        DeviceLockActivityLauncherImpl.get(),
+                        mBottomSheetController,
+                        mProfile,
+                        new CormorantBottomSheetStrings(),
+                        () -> {
+                            showSyncConsentActivity(signinAccessPoint);
+                        },
+                        signinAccessPoint);
         signinCoordinator.show();
     }
 

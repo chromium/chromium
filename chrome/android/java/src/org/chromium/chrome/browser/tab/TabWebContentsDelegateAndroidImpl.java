@@ -31,9 +31,7 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.ResourceRequestBody;
 import org.chromium.url.GURL;
 
-/**
- * Implementation class of {@link TabWebContentsDelegateAndroid}.
- */
+/** Implementation class of {@link TabWebContentsDelegateAndroid}. */
 final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndroid {
     private final TabImpl mTab;
     private final TabWebContentsDelegateAndroid mDelegate;
@@ -44,10 +42,11 @@ final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndr
         mTab = tab;
         mDelegate = delegate;
         mHandler = new Handler();
-        mCloseContentsRunnable = () -> {
-            RewindableIterator<TabObserver> observers = mTab.getTabObservers();
-            while (observers.hasNext()) observers.next().onCloseContents(mTab);
-        };
+        mCloseContentsRunnable =
+                () -> {
+                    RewindableIterator<TabObserver> observers = mTab.getTabObservers();
+                    while (observers.hasNext()) observers.next().onCloseContents(mTab);
+                };
     }
 
     @CalledByNative
@@ -74,8 +73,11 @@ final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndr
     }
 
     @CalledByNative
-    private static FindNotificationDetails createFindNotificationDetails(int numberOfMatches,
-            Rect rendererSelectionRect, int activeMatchOrdinal, boolean finalUpdate) {
+    private static FindNotificationDetails createFindNotificationDetails(
+            int numberOfMatches,
+            Rect rendererSelectionRect,
+            int activeMatchOrdinal,
+            boolean finalUpdate) {
         return new FindNotificationDetails(
                 numberOfMatches, rendererSelectionRect, activeMatchOrdinal, finalUpdate);
     }
@@ -105,8 +107,12 @@ final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndr
 
     @CalledByNative
     @Override
-    protected boolean addNewContents(WebContents sourceWebContents, WebContents webContents,
-            int disposition, Rect initialPosition, boolean userGesture) {
+    protected boolean addNewContents(
+            WebContents sourceWebContents,
+            WebContents webContents,
+            int disposition,
+            Rect initialPosition,
+            boolean userGesture) {
         return mDelegate.addNewContents(
                 sourceWebContents, webContents, disposition, initialPosition, userGesture);
     }
@@ -114,8 +120,12 @@ final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndr
     // WebContentsDelegateAndroid
 
     @Override
-    public void openNewTab(GURL url, String extraHeaders, ResourceRequestBody postData,
-            int disposition, boolean isRendererInitiated) {
+    public void openNewTab(
+            GURL url,
+            String extraHeaders,
+            ResourceRequestBody postData,
+            int disposition,
+            boolean isRendererInitiated) {
         mDelegate.openNewTab(url, extraHeaders, postData, disposition, isRendererInitiated);
     }
 
@@ -187,14 +197,24 @@ final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndr
         }
         if ((flags & InvalidateTypes.TAB) != 0) {
             MediaCaptureNotificationServiceImpl.updateMediaNotificationForTab(
-                    ContextUtils.getApplicationContext(), mTab.getId(), mTab.getWebContents(),
+                    ContextUtils.getApplicationContext(),
+                    mTab.getId(),
+                    mTab.getWebContents(),
                     mTab.getUrl());
             BluetoothNotificationManager.updateBluetoothNotificationForTab(
-                    ContextUtils.getApplicationContext(), BluetoothNotificationService.class,
-                    mTab.getId(), mTab.getWebContents(), mTab.getUrl(), mTab.isIncognito());
-            UsbNotificationManager.updateUsbNotificationForTab(ContextUtils.getApplicationContext(),
-                    UsbNotificationService.class, mTab.getId(), mTab.getWebContents(),
-                    mTab.getUrl(), mTab.isIncognito());
+                    ContextUtils.getApplicationContext(),
+                    BluetoothNotificationService.class,
+                    mTab.getId(),
+                    mTab.getWebContents(),
+                    mTab.getUrl(),
+                    mTab.isIncognito());
+            UsbNotificationManager.updateUsbNotificationForTab(
+                    ContextUtils.getApplicationContext(),
+                    UsbNotificationService.class,
+                    mTab.getId(),
+                    mTab.getWebContents(),
+                    mTab.getUrl(),
+                    mTab.isIncognito());
         }
         if ((flags & InvalidateTypes.TITLE) != 0) {
             // Update cached title then notify observers.
@@ -226,11 +246,20 @@ final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndr
     }
 
     @Override
-    public void webContentsCreated(WebContents sourceWebContents, long openerRenderProcessId,
-            long openerRenderFrameId, String frameName, GURL targetUrl,
+    public void webContentsCreated(
+            WebContents sourceWebContents,
+            long openerRenderProcessId,
+            long openerRenderFrameId,
+            String frameName,
+            GURL targetUrl,
             WebContents newWebContents) {
-        mDelegate.webContentsCreated(sourceWebContents, openerRenderProcessId, openerRenderFrameId,
-                frameName, targetUrl, newWebContents);
+        mDelegate.webContentsCreated(
+                sourceWebContents,
+                openerRenderProcessId,
+                openerRenderFrameId,
+                frameName,
+                targetUrl,
+                newWebContents);
     }
 
     @Override
@@ -246,8 +275,8 @@ final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndr
     @Override
     public void rendererUnresponsive() {
         if (mTab.getWebContents() != null) {
-            TabWebContentsDelegateAndroidImplJni.get().onRendererUnresponsive(
-                    mTab.getWebContents());
+            TabWebContentsDelegateAndroidImplJni.get()
+                    .onRendererUnresponsive(mTab.getWebContents());
         }
         mTab.handleRendererResponsiveStateChanged(false);
         mDelegate.rendererUnresponsive();
@@ -395,8 +424,8 @@ final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndr
     }
 
     void showFramebustBlockInfobarForTesting(String url) {
-        TabWebContentsDelegateAndroidImplJni.get().showFramebustBlockInfoBar(
-                mTab.getWebContents(), url);
+        TabWebContentsDelegateAndroidImplJni.get()
+                .showFramebustBlockInfoBar(mTab.getWebContents(), url);
     }
 
     @Override
@@ -407,6 +436,7 @@ final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndr
     @NativeMethods
     interface Natives {
         void onRendererUnresponsive(WebContents webContents);
+
         void showFramebustBlockInfoBar(WebContents webContents, String url);
     }
 }

@@ -15,6 +15,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/platform_thread.h"
 #include "base/uuid.h"
@@ -73,18 +74,20 @@ class CorpHostStarter : public HostStarter,
  private:
   void StartHostProcess();
 
-  void OnExistingConfigLoaded(absl::optional<base::Value::Dict> config);
+  void OnExistingConfigLoaded(std::optional<base::Value::Dict> config);
 
   void OnProvisionCorpMachineResponse(
       const ProtobufHttpStatus& status,
-      std::unique_ptr<internal::RemoteAccessHostV1Proto> response);
+      std::unique_ptr<internal::ProvisionCorpMachineResponse> response);
 
   void OnHostStarted(DaemonController::AsyncResult result);
   void OnHostStopped(DaemonController::AsyncResult result);
 
   void GetOAuthTokens();
 
-  void NotifyError(const ProtobufHttpStatus& status);
+  void HandleHttpStatusError(const ProtobufHttpStatus& status);
+
+  void ReportProvisioningError(const std::string& message, Result result);
 
   Params start_host_params_;
   std::string host_refresh_token_;
@@ -136,8 +139,8 @@ void CorpHostStarter::StartHost(Params params, CompletionCallback on_done) {
 }
 
 void CorpHostStarter::OnExistingConfigLoaded(
-    absl::optional<base::Value::Dict> config) {
-  absl::optional<std::string> existing_host_id;
+    std::optional<base::Value::Dict> config) {
+  std::optional<std::string> existing_host_id;
   if (config.has_value()) {
     std::string* host_id = config->FindString("host_id");
     if (host_id) {
@@ -191,11 +194,12 @@ void CorpHostStarter::OnGetUserEmailResponse(const std::string& user_email) {
   }
 
   if (service_account_email_.compare(base::ToLowerASCII(user_email)) != 0) {
-    LOG(ERROR)
-        << "authorization_code was created for `" << user_email << "` "
-        << "which does not match the service account created for the host: `"
-        << service_account_email_ << "`";
-    std::move(on_done_).Run(OAUTH_ERROR);
+    ReportProvisioningError(
+        base::StringPrintf(
+            "authorization_code was created for `%s` which does not "
+            "match the service account created for the host: `%s`",
+            user_email.c_str(), service_account_email_.c_str()),
+        OAUTH_ERROR);
     return;
   }
 
@@ -204,7 +208,7 @@ void CorpHostStarter::OnGetUserEmailResponse(const std::string& user_email) {
 
 void CorpHostStarter::OnProvisionCorpMachineResponse(
     const ProtobufHttpStatus& status,
-    std::unique_ptr<internal::RemoteAccessHostV1Proto> response) {
+    std::unique_ptr<internal::ProvisionCorpMachineResponse> response) {
   if (!main_task_runner_->BelongsToCurrentThread()) {
     main_task_runner_->PostTask(
         FROM_HERE,
@@ -214,20 +218,33 @@ void CorpHostStarter::OnProvisionCorpMachineResponse(
   }
 
   if (!status.ok()) {
-    NotifyError(status);
-    return;
-  }
-
-  authorization_code_ = internal::GetAuthorizationCode(*response);
-  if (authorization_code_.empty()) {
-    LOG(ERROR) << "No authorization code returned by the Directory.";
-    std::move(on_done_).Run(START_ERROR);
+    HandleHttpStatusError(status);
     return;
   }
 
   service_account_email_ =
       base::ToLowerASCII(internal::GetServiceAccount(*response));
   start_host_params_.id = internal::GetHostId(*response);
+
+  // Update the owner_email to reflect the account returned by the Directory.
+  // The corp-user arg (copied to the owner_email start host param struct) can
+  // contain two types of values:
+  //   1. The email address of the user to provision the machine for
+  //   2. A user permission, defined by the service, which is used to select the
+  //      account (e.g. the account which the machine is associated with)
+  //
+  // The value returned by the Directory should match for scenario #1 and needs
+  // to be stored for scenario #2. We don't need to compare since the server
+  // will return an error for scenario #1 if the user doesn't have permission.
+  start_host_params_.owner_email =
+      base::ToLowerASCII(internal::GetOwnerEmail(*response));
+
+  authorization_code_ = internal::GetAuthorizationCode(*response);
+  if (authorization_code_.empty()) {
+    ReportProvisioningError("No authorization code returned by the Directory.",
+                            REGISTRATION_ERROR);
+    return;
+  }
 
   if (has_existing_host_instance_) {
     daemon_controller_->Stop(
@@ -301,11 +318,9 @@ void CorpHostStarter::OnHostStarted(DaemonController::AsyncResult result) {
     return;
   }
   if (result != DaemonController::RESULT_OK) {
-    LOG(ERROR) << "Failed to start host: " << result;
-    // TODO(joedow): Decide whether to delete the host instance or update its
-    // offline reason in the Directory instead.
-    // TODO(joedow): Check to see if we need to run on_done here. If so, also
-    // check to see if the OAuth-based HostStarter needs that change as well.
+    ReportProvisioningError(base::StringPrintf("Failed to start host: %d",
+                                               static_cast<int>(result)),
+                            START_ERROR);
     return;
   }
   std::move(on_done_).Run(START_COMPLETE);
@@ -332,35 +347,53 @@ void CorpHostStarter::OnNetworkError(int response_code) {
   std::move(on_done_).Run(NETWORK_ERROR);
 }
 
-void CorpHostStarter::NotifyError(const ProtobufHttpStatus& status) {
+void CorpHostStarter::HandleHttpStatusError(const ProtobufHttpStatus& status) {
   ProtobufHttpStatus::Code error_code = status.error_code();
+  std::string error_message = status.error_message();
   LOG(ERROR) << "\n  Received error code: " << static_cast<int>(error_code)
-             << ", message: " << status.error_message();
+             << ", message: " << error_message;
 
   if (!status.response_body().empty()) {
-    // TODO(joedow): Parse this output in //remoting/internal and return a
-    // concise error message and accurate error code to increase debugability.
     size_t pos = status.response_body().rfind("Caused by: ");
     if (pos != std::string::npos) {
-      LOG(ERROR) << "\n  Extended error information: \n"
-                 << status.response_body().substr(pos);
+      error_message = status.response_body().substr(pos);
+      LOG(ERROR) << "\n  Extended error information: \n" << error_message;
       VLOG(1) << "\n  Full error information: \n" << status.response_body();
     } else {
+      error_message = status.response_body();
       LOG(ERROR) << "\n  Failed to find extended error information, showing "
                  << "full output:\n"
-                 << status.response_body();
+                 << error_message;
     }
   }
 
-  // TODO(joedow): Add more error codes to HostStarter and use them here.
-  switch (error_code) {
-    case ProtobufHttpStatus::Code::PERMISSION_DENIED:
-    case ProtobufHttpStatus::Code::UNAUTHENTICATED:
-      std::move(on_done_).Run(OAUTH_ERROR);
-      return;
-    default:
-      std::move(on_done_).Run(NETWORK_ERROR);
+  auto result = NETWORK_ERROR;
+  if (error_code == ProtobufHttpStatus::Code::PERMISSION_DENIED) {
+    result = PERMISSION_DENIED;
+  } else if (error_code == ProtobufHttpStatus::Code::UNAUTHENTICATED) {
+    result = OAUTH_ERROR;
   }
+
+  ReportProvisioningError(error_message, result);
+}
+
+void CorpHostStarter::ReportProvisioningError(const std::string& message,
+                                              Result result) {
+  const std::string& host_id = start_host_params_.id;
+  LOG(ERROR) << "Reporting provisioning error for host id `" << host_id
+             << "`: " << message;
+  corp_service_client_->ReportProvisioningError(
+      host_id, message,
+      base::BindOnce(
+          [](CompletionCallback on_done, Result result,
+             const ProtobufHttpStatus& status, std::unique_ptr<Empty>) {
+            if (!status.ok()) {
+              LOG(ERROR) << "Failed to report provisioning error: "
+                         << static_cast<int>(status.error_code());
+            }
+            std::move(on_done).Run(result);
+          },
+          std::move(on_done_), result));
 }
 
 }  // namespace

@@ -7,6 +7,7 @@
 
 #include "base/logging.h"
 #include "base/test/scoped_feature_list.h"
+#include "skia/ext/skcolorspace_trfn.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/effects/SkRuntimeEffect.h"
 #include "ui/gfx/color_space.h"
@@ -598,7 +599,7 @@ TEST(ColorSpaceTest, ExtendedSRGBScale) {
   ColorSpace space_unscaled = ColorSpace::CreateSRGB();
   float scale = 3.14;
   skcms_TransferFunction scaled_trfn =
-      SkTransferFnScaled(*skcms_sRGB_TransferFunction(), scale);
+      skia::ScaleTransferFunction(*skcms_sRGB_TransferFunction(), scale);
   ColorSpace space_scaled(ColorSpace::PrimaryID::BT709,
                           ColorSpace::TransferID::CUSTOM_HDR,
                           ColorSpace::MatrixID::RGB, ColorSpace::RangeID::FULL,

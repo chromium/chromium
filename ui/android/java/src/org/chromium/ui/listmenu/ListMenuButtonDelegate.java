@@ -9,9 +9,7 @@ import android.view.View;
 import org.chromium.ui.widget.RectProvider;
 import org.chromium.ui.widget.ViewRectProvider;
 
-/**
- * A delegate used to populate the menu.
- */
+/** A delegate used to populate the menu. */
 public interface ListMenuButtonDelegate {
     /**
      * @param listMenuButton The anchor for the {@link ListMenu}.

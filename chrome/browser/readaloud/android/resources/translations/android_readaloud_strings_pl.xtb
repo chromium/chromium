@@ -2,11 +2,14 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="pl">
 <translation id="1178581264944972037">Wstrzymaj</translation>
-<translation id="2558806128245168542">Wstecz</translation>
-<translation id="3523426587027570423">Kliknij, aby zamknąć odtwarzacz „Odsłuchaj tę stronę”.</translation>
+<translation id="1921351128855867012">Przewiń do przodu o <ph name="NUMBER_OF_SECONDS" /> s</translation>
+<translation id="1984328900355667246">Odtwarzanie niedostępne</translation>
+<translation id="3023502830214299618">Teraz nie można włączyć odtwarzania na tej stronie. Spróbuj ponownie później.</translation>
+<translation id="3807208219231826020">Odtwarzanie podczas przewijania</translation>
+<translation id="385051799172605136">Wstecz</translation>
 <translation id="4431240646217225907">Zaznaczanie tekstu i automatyczne przewijanie</translation>
 <translation id="4654641641922242357">Odtwarzacz „Odsłuchaj tę stronę”.</translation>
-<translation id="4731877163452936634">Szybkość odtwarzania: <ph name="PLAYBACK_SPEED" /> Kliknij, aby to zmienić.</translation>
+<translation id="4872475766448853257">Przewiń do tyłu o <ph name="NUMBER_OF_SECONDS" /> s</translation>
 <translation id="5234971936051226002">Odtwarzacz „Odsłuchaj tę stronę” zminimalizowany.</translation>
 <translation id="5596627076506792578">Więcej opcji</translation>
 <translation id="6315170314923504164">Głos</translation>
@@ -15,8 +18,8 @@
 <translation id="6831043979455480757">Tłumacz</translation>
 <translation id="6846298663435243399">Wczytuję…</translation>
 <translation id="7587250070160020374">Chrome odtwarza stronę</translation>
-<translation id="7945822420239537236">Przewiń do przodu o <ph name="NUMBER_OF_SECONDS" /> s</translation>
-<translation id="7972866381678406344">Przewiń do tyłu o <ph name="NUMBER_OF_SECONDS" /> s</translation>
 <translation id="8136852699834914183">W przypadku tej strony odtwarzanie jest niedostępne.</translation>
+<translation id="8264989794233974275"><ph name="PLAYBACK_SPEED" />-krotne zwiększenie/zmniejszenie szybkości.</translation>
+<translation id="8407011429883244666">Zamknij odtwarzacz.</translation>
 <translation id="8953618380150219653">Odtwarzacz „Odsłuchaj tę stronę” otwarty na całą wysokość.</translation>
 </translationbundle>

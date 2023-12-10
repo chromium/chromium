@@ -286,8 +286,8 @@ suite('ListPropertyUpdateMixin', function() {
       function() {
         // Ensure that the |words| property of a |complexArray| element is
         // updated properly.
-        let newArray = JSON.parse(JSON.stringify(testElement.complexArray));
-        newArray[1].words = newArray[1].words.slice(0, 2);
+        let newArray = structuredClone(testElement.complexArray);
+        newArray[1]!.words = newArray[1]!.words.slice(0, 2);
         let result = testElement.updateComplexArray(newArray);
 
         assertFalse(result.topArrayChanged);
@@ -297,10 +297,10 @@ suite('ListPropertyUpdateMixin', function() {
         // Ensure that the array is properly updated when the |words| array of
         // multiple elements are modified.
         testElement.resetComplexArray();
-        newArray = JSON.parse(JSON.stringify(testElement.complexArray));
-        newArray[0].words.push('apricot');
-        newArray[1].words = newArray[1].words.slice(1);
-        newArray[2].words.push('circus', 'citrus', 'carrot');
+        newArray = structuredClone(testElement.complexArray);
+        newArray[0]!.words.push('apricot');
+        newArray[1]!.words = newArray[1]!.words.slice(1);
+        newArray[2]!.words.push('circus', 'citrus', 'carrot');
         result = testElement.updateComplexArray(newArray);
 
         assertFalse(result.topArrayChanged);
@@ -309,20 +309,20 @@ suite('ListPropertyUpdateMixin', function() {
       });
 
   test('first item with same uid modified', () => {
-    const newArray = JSON.parse(JSON.stringify(testElement.complexArray));
-    assertTrue(newArray[0].words.length > 0);
-    assertNotEquals('apricot', newArray[0].words[0]);
-    newArray[0].words = ['apricot'];
+    const newArray = structuredClone(testElement.complexArray);
+    assertTrue(newArray[0]!.words.length > 0);
+    assertNotEquals('apricot', newArray[0]!.words[0]);
+    newArray[0]!.words = ['apricot'];
     assertTrue(testElement.updateList(
         'complexArray', (x: ComplexArrayEntry) => x.letter, newArray));
     assertDeepEquals(['apricot'], testElement.complexArray[0]!.words);
   });
 
   test('first item modified with same uid and last item removed', () => {
-    const newArray = JSON.parse(JSON.stringify(testElement.complexArray));
-    assertTrue(newArray[0].words.length > 0);
-    assertNotEquals('apricot', newArray[0].words[0]);
-    newArray[0].words = ['apricot'];
+    const newArray = structuredClone(testElement.complexArray);
+    assertTrue(newArray[0]!.words.length > 0);
+    assertNotEquals('apricot', newArray[0]!.words[0]);
+    newArray[0]!.words = ['apricot'];
     assertTrue(newArray.length > 1);
     newArray.pop();
     assertTrue(testElement.updateList(

@@ -30,6 +30,7 @@
 <translation id="2226276347425096477">કૃપા કરીને આ ટેક્સ્ટને <ph name="MAX_CHARACTERS" /> અક્ષર અથવા તેથી ઓછા સુધી નાનો કરો (તમે હાલમાં <ph name="CURRENT_LENGTH" /> અક્ષરોનો ઉપયોગ કરી રહ્યા છો).</translation>
 <translation id="2247351761944213033">અઠવાડિયું <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">ટ્રૅક <ph name="NUMBER" /></translation>
+<translation id="2353297238722298836">કૅમેરા અને માઇક્રોફોનની મંજૂરી</translation>
 <translation id="2393030564806080191">રંગનું હેક્ઝાડેસિમલ મૂલ્ય</translation>
 <translation id="2398813069815436052">સંવાદ ખોલવામાં આવ્યો.</translation>
 <translation id="245932805758469625">વીડિયોની બાકી સેકન્ડ</translation>
@@ -60,10 +61,12 @@
 <translation id="3822383571486410024">કૃપા કરીને આ ટેક્સ્ટને <ph name="MIN_CHARACTERS" /> અક્ષર અથવા તેથી વધુ સુધી લંબાવો (તમે હાલમાં <ph name="CURRENT_LENGTH" /> અક્ષરોનો ઉપયોગ કરી રહ્યાં છો).</translation>
 <translation id="383465348367842624">'<ph name="ATSIGN" />' દ્વારા અનુસરાઈ રહેલા ભાગમાં '<ph name="INVALIDCHARACTER" />' પ્રતીક શામેલ હોવું જોઈએ નહીં.</translation>
 <translation id="3846214748874656680">પૂર્ણસ્ક્રીનથી બહાર નીકળો</translation>
+<translation id="4031179711345676612">માઇક્રોફોનને મંજૂરી</translation>
 <translation id="4103419683916926126">મીલીસેકન્ડ</translation>
 <translation id="4201051445878709314">પાછળનો મહિનો બતાવો</translation>
 <translation id="4360991593054037559">કૃપા કરીને એક માન્ય મૂલ્ય દાખલ કરો. બે નિકટતમ માન્ય મૂલ્યો <ph name="VALID_VALUE_LOW" /> અને <ph name="VALID_VALUE_HIGHER" /> છે.</translation>
 <translation id="4522570452068850558">વિગતો</translation>
+<translation id="4663373278480897665">કૅમેરાને મંજૂરી</translation>
 <translation id="4664250907885839816">'<ph name="ATSIGN" />' ને અનુસરી રહેલા ભાગમાં '<ph name="INVALIDCHARACTER" />' પ્રતીક શામેલ હોવું જોઈએ નહીં.</translation>
 <translation id="4718048029184481307">ચિત્રમાં ચિત્રમાંથી ચલાવી રહ્યાં છીએ</translation>
 <translation id="4748357248530471599">ડિસ્પ્લેમાં જ સામેલ પૂર્ણસ્ક્રીન ટૉગલ કરો</translation>
@@ -137,6 +140,7 @@
 <translation id="6941933287844615239">મીડિયા ડાઉનલોડ કરો</translation>
 <translation id="698788488269350478">મોટી કરી છે.</translation>
 <translation id="6989848892321993519">કૃપા કરીને આ ટેક્સ્ટને <ph name="MIN_CHARACTERS" /> અથવા તેથી વધુ અક્ષર સુધી લંબાવો (તમે હાલમાં 1 અક્ષરનો ઉપયોગ કરી રહ્યાં છો).</translation>
+<translation id="7080893216867146095">લોકેશન શેર કરવાની મંજૂરી આપવામાં આવી છે</translation>
 <translation id="709897737746224366">કૃપા કરીને વિનંતી કરેલા ફોર્મેટ સાથે મેળ કરો.</translation>
 <translation id="7102274145889307184">વર્તમાન સ્થાન</translation>
 <translation id="7263440858009898357">કૃપા કરીને સૂચિમાંથી એક આઇટમ પસંદ કરો.</translation>

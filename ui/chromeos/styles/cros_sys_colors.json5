@@ -96,6 +96,10 @@
       dark:  '$cros.ref.primary20',
       generate_per_mode: true,
     },
+    'inverse-on-primary': {
+      light:  '$cros.ref.primary20',
+      dark: '$cros.ref.primary100',
+    },
     /* If this is changed, please also update SampleColorScheme */
     'primary-container': {
       light: '$cros.ref.primary90',
@@ -209,6 +213,14 @@
     'app-base': {
       light: '$cros.ref.neutral99',
       dark:  '$cros.ref.neutral8',
+    },
+    'base-highlight': {
+      light: 'blend(rgba($cros.ref.primary70.rgb, 0.24), $cros.ref.neutral100)',
+      dark: 'blend(rgba($cros.ref.primary70.rgb, 0.28), $cros.ref.neutral15)',
+    },
+    'on-base-highlight': {
+      light: 'rgba($cros.ref.primary60.rgb, 0.30)',
+      dark: 'rgba($cros.ref.neutral0.rgb, 0.32)',
     },
     'base-elevated': {
       light: '$cros.ref.neutralvariant100',
@@ -422,6 +434,10 @@
       light: 'rgba($cros.ref.neutral99.rgb, 0.10)',
       dark: 'rgba($cros.ref.neutral10.rgb, 0.06)',
     },
+    'inverse-hover-on-prominent': {
+      light: 'rgba($cros.ref.neutral10.rgb, 0.06)',
+      dark: 'rgba($cros.ref.neutral99.rgb, 0.10)',
+    },
     'hover-on-subtle': {
       light: 'rgba($cros.ref.neutral10.rgb, 0.06)',
       dark: 'rgba($cros.ref.neutral99.rgb, 0.1)',
@@ -434,6 +450,10 @@
       light: 'rgba($cros.ref.primary70.rgb, 0.32)',
       dark: 'rgba($cros.ref.primary60.rgb, 0.32)',
     },
+    'inverse-ripple-primary': {
+      light: 'rgba($cros.ref.primary60.rgb, 0.32)',
+      dark:  'rgba($cros.ref.primary70.rgb, 0.32)',
+    },
     'ripple-neutral-on-prominent': {
       light: 'rgba($cros.ref.neutral99.rgb, 0.16)',
       dark: 'rgba($cros.ref.neutral10.rgb, 0.08)',
@@ -441,6 +461,10 @@
     'ripple-neutral-on-subtle': {
       light: 'rgba($cros.ref.neutral10.rgb, 0.12)',
       dark: 'rgba($cros.ref.neutral90.rgb, 0.16)',
+    },
+    'inverse-ripple-neutral-on-subtle': {
+      light: 'rgba($cros.ref.neutral90.rgb, 0.16)',
+      dark: 'rgba($cros.ref.neutral10.rgb, 0.12)',
     },
     'highlight-shape': {
       light: 'rgba($cros.ref.primary70.rgb, 0.3)',
@@ -600,6 +624,20 @@
     'illo.elevated.color1.2': '$cros.sys.illo.color1.2',
     'illo.elevated.base': '$cros.sys.illo.base',
     'illo.elevated.secondary': '$cros.sys.illo.secondary',
+
+    /*
+     * Gaming colors
+     *
+     * Gaming colors are static values here because they are always in the vibrant
+     * palette. So, they don't have a direct mapping to ref colors. Placeholder
+     * colors are in the vibrant palette with a purple seed color.
+     */
+    /* Primary 40 Vibrant */
+    'gaming-control-button-default': '#a100bc',
+    /* Primary 50 Vibrant */
+    'gaming-control-button-hover': '#c900eb',
+    /* Primary 80 Vibrant */
+    'gaming-control-button-border-hover': '#f9acff',
 
     /* Icon colors. */
     'file-ms-excel': '#16a765',

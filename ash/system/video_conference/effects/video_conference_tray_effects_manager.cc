@@ -4,6 +4,10 @@
 
 #include "ash/system/video_conference/effects/video_conference_tray_effects_manager.h"
 
+#include <memory>
+
+#include "ash/constants/ash_features.h"
+#include "ash/system/video_conference/bubble/vc_tile_ui_controller.h"
 #include "ash/system/video_conference/effects/video_conference_tray_effects_delegate.h"
 #include "ash/system/video_conference/effects/video_conference_tray_effects_manager_types.h"
 #include "base/check.h"
@@ -41,6 +45,12 @@ void VideoConferenceTrayEffectsManager::UnregisterDelegate(
       base::EraseIf(effect_delegates_,
                     [delegate](VcEffectsDelegate* d) { return delegate == d; });
   DCHECK_EQ(num_items_erased, 1UL);
+
+  if (features::IsVcDlcUiEnabled()) {
+    // Remove tile controllers for effects hosted by the delegate being
+    // unregistered.
+    RemoveTileControllers(delegate);
+  }
 }
 
 bool VideoConferenceTrayEffectsManager::IsDelegateRegistered(
@@ -104,6 +114,19 @@ VideoConferenceTrayEffectsManager::GetSetValueEffects() {
   return effects;
 }
 
+VideoConferenceTrayEffectsManager::EffectDataVector
+VideoConferenceTrayEffectsManager::GetToggleEffects() {
+  EffectDataVector effects;
+
+  for (auto* delegate : effect_delegates_) {
+    for (auto* effect : delegate->GetEffects(VcEffectType::kToggle)) {
+      effects.push_back(effect);
+    }
+  }
+
+  return effects;
+}
+
 void VideoConferenceTrayEffectsManager::NotifyEffectSupportStateChanged(
     VcEffectId effect_id,
     bool is_supported) {
@@ -118,6 +141,22 @@ void VideoConferenceTrayEffectsManager::RecordInitialStates() {
   }
 }
 
+video_conference::VcTileUiController*
+VideoConferenceTrayEffectsManager::GetUiControllerForEffectId(
+    VcEffectId effect_id) {
+  CHECK(features::IsVcDlcUiEnabled());
+  if (!base::Contains(controller_for_effect_id_, effect_id)) {
+    for (auto* effect : GetToggleEffects()) {
+      if (effect_id == effect->id()) {
+        controller_for_effect_id_[effect_id] =
+            std::make_unique<video_conference::VcTileUiController>(effect);
+        break;
+      }
+    }
+  }
+  return controller_for_effect_id_[effect_id].get();
+}
+
 VideoConferenceTrayEffectsManager::EffectDataVector
 VideoConferenceTrayEffectsManager::GetTotalToggleEffectButtons() {
   EffectDataVector effects;
@@ -129,6 +168,17 @@ VideoConferenceTrayEffectsManager::GetTotalToggleEffectButtons() {
   }
 
   return effects;
+}
+
+void VideoConferenceTrayEffectsManager::RemoveTileControllers(
+    VcEffectsDelegate* delegate) {
+  CHECK(features::IsVcDlcUiEnabled());
+  for (auto* effect : delegate->GetEffects(VcEffectType::kToggle)) {
+    const VcEffectId id = effect->id();
+    if (base::Contains(controller_for_effect_id_, id)) {
+      controller_for_effect_id_.erase(id);
+    }
+  }
 }
 
 }  // namespace ash

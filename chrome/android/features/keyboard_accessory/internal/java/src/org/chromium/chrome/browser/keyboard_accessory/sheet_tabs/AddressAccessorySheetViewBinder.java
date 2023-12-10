@@ -36,9 +36,7 @@ class AddressAccessorySheetViewBinder {
         return null;
     }
 
-    /**
-     * Holds a View representing a set of address data.
-     */
+    /** Holds a View representing a set of address data. */
     static class AddressInfoViewHolder
             extends ElementViewHolder<KeyboardAccessoryData.UserInfo, AddressAccessoryInfoView> {
         AddressInfoViewHolder(ViewGroup parent) {

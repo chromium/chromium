@@ -191,7 +191,7 @@ TEST(BrowserDataBackMigratorMetricsTest, RecordBackwardMigrationTimeDelta) {
   base::HistogramTester histogram_tester;
 
   browser_data_back_migrator_metrics::RecordBackwardMigrationTimeDelta(
-      absl::nullopt);
+      std::nullopt);
   histogram_tester.ExpectTotalCount(
       browser_data_back_migrator_metrics::kElapsedTimeBetweenDataMigrations, 0);
 
@@ -206,7 +206,7 @@ TEST(BrowserDataBackMigratorMetricsTest,
   base::HistogramTester histogram_tester;
 
   browser_data_back_migrator_metrics::
-      RecordBackwardMigrationPrecededByForwardMigration(absl::nullopt);
+      RecordBackwardMigrationPrecededByForwardMigration(std::nullopt);
   histogram_tester.ExpectBucketCount(
       browser_data_back_migrator_metrics::
           kIsBackwardMigrationPrecededByForwardMigration,

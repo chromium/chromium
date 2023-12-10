@@ -1,0 +1,27 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="th">
+<translation id="1220509181886849806">ใช้รหัสผ่านที่บันทึกไว้ไหม</translation>
+<translation id="1435940442311036198">ใช้พาสคีย์ในอุปกรณ์อื่น</translation>
+<translation id="1717486229951421299">รายการข้อมูลเข้าสู่ระบบที่จะกรอกเมื่อแตะเปิดอยู่ที่ระดับความสูงครึ่งหนึ่งของหน้าจอ</translation>
+<translation id="2359808026110333948">ต่อไป</translation>
+<translation id="2364266287022099258">ใช้พาสคีย์ที่บันทึกไว้ไหม</translation>
+<translation id="3399357656427473483">รายการข้อมูลเข้าสู่ระบบที่จะกรอกเมื่อแตะ</translation>
+<translation id="3653689374478248324">คุณจะลงชื่อเข้าใช้ <ph name="SITE_NAME" /></translation>
+<translation id="3950820424414687140">ลงชื่อเข้าใช้</translation>
+<translation id="4553044860350038560">พาสคีย์เพิ่มเติม</translation>
+<translation id="4598345735110653698">จัดการพาสคีย์</translation>
+<translation id="4722735765955348426">รหัสผ่านของ <ph name="USERNAME" /></translation>
+<translation id="4907224763885298217">ใช้การล็อกหน้าจอ</translation>
+<translation id="5012523644916800014">จัดการรหัสผ่านและพาสคีย์</translation>
+<translation id="5441504010984421144">รายการข้อมูลเข้าสู่ระบบที่จะกรอกเมื่อแตะเปิดอยู่ที่ระดับความสูงเต็มหน้าจอ</translation>
+<translation id="5591247451101092906">ใช้รหัสผ่านหรือพาสคีย์ที่บันทึกไว้ไหม</translation>
+<translation id="5624120631404540903">จัดการรหัสผ่าน</translation>
+<translation id="6560306912274274630">พาสคีย์สำหรับ <ph name="USERNAME" /> ใช้การล็อกหน้าจอ</translation>
+<translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{รหัสผ่านใหม่สำหรับเว็บไซต์นี้}other{รหัสผ่านใหม่สำหรับเว็บไซต์นี้}}</translation>
+<translation id="7286867818472074330">เลือกพาสคีย์</translation>
+<translation id="7669320311687290322"><ph name="ITEM_LABEL" /> <ph name="ITEM_POSITION" /> จาก <ph name="ITEMS_TOTAL" /> รายการ</translation>
+<translation id="7738288782501322815">คุณได้รับรหัสผ่านสำหรับ <ph name="SITE_NAME" /></translation>
+<translation id="8614995815226664591"><ph name="SENDER_NAME" /> ได้แชร์รหัสผ่านกับคุณสำหรับ <ph name="SITE_NAME" /></translation>
+<translation id="8891372124884726271">ปิดรายการข้อมูลเข้าสู่ระบบแล้ว</translation>
+</translationbundle>

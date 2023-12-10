@@ -65,7 +65,8 @@ std::vector<AutofillProfile> ExtractAutofillProfilesFromDataBatch(
 }
 
 AutofillProfile TestProfile(base::StringPiece guid) {
-  return AutofillProfile(std::string(guid), AutofillProfile::Source::kAccount);
+  return AutofillProfile(std::string(guid), AutofillProfile::Source::kAccount,
+                         i18n_model_definition::kLegacyHierarchyCountryCode);
 }
 
 }  // namespace

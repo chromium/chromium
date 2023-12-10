@@ -26,9 +26,7 @@ import java.util.Objects;
  * to notify queue manager of proper scope changes of {@link MessageScopeType#WINDOW}.
  */
 class ScopeChangeController {
-    /**
-     * A delegate which can handle the scope change.
-     */
+    /** A delegate which can handle the scope change. */
     public interface Delegate {
         void onScopeChange(MessageScopeChange change);
     }
@@ -51,9 +49,10 @@ class ScopeChangeController {
      */
     void firstMessageEnqueued(ScopeKey scopeKey) {
         assert !mObservers.containsKey(scopeKey) : "This scope key has already been observed.";
-        ScopeObserver observer = scopeKey.scopeType == MessageScopeType.WINDOW
-                ? new WindowScopeObserver(mDelegate, scopeKey)
-                : new NavigationWebContentsScopeObserver(mDelegate, scopeKey);
+        ScopeObserver observer =
+                scopeKey.scopeType == MessageScopeType.WINDOW
+                        ? new WindowScopeObserver(mDelegate, scopeKey)
+                        : new NavigationWebContentsScopeObserver(mDelegate, scopeKey);
         mObservers.put(scopeKey, observer);
     }
 
@@ -70,8 +69,8 @@ class ScopeChangeController {
      * This handles both navigation type and webContents type. Only navigation type
      * will destroy scopes on page navigation.
      */
-    static class NavigationWebContentsScopeObserver
-            extends WebContentsObserver implements ScopeObserver {
+    static class NavigationWebContentsScopeObserver extends WebContentsObserver
+            implements ScopeObserver {
         private final Delegate mDelegate;
         private final ScopeKey mScopeKey;
         // TODO(crbug.com/1340572): Replace GURL with Origin.
@@ -84,8 +83,8 @@ class ScopeChangeController {
             WebContents webContents = scopeKey.webContents;
             int changeType =
                     webContents != null && webContents.getVisibility() == Visibility.VISIBLE
-                    ? ChangeType.ACTIVE
-                    : ChangeType.INACTIVE;
+                            ? ChangeType.ACTIVE
+                            : ChangeType.INACTIVE;
             mDelegate.onScopeChange(
                     new MessageScopeChange(mScopeKey.scopeType, scopeKey, changeType));
         }
@@ -109,7 +108,8 @@ class ScopeChangeController {
                 return;
             }
 
-            if (navigationHandle.isSameDocument() || !navigationHandle.hasCommitted()
+            if (navigationHandle.isSameDocument()
+                    || !navigationHandle.hasCommitted()
                     || navigationHandle.isReload()) {
                 return;
             }
@@ -157,15 +157,17 @@ class ScopeChangeController {
         public WindowScopeObserver(Delegate delegate, ScopeKey scopeKey) {
             mDelegate = delegate;
             mScopeKey = scopeKey;
-            assert scopeKey.scopeType
-                    == MessageScopeType.WINDOW
-                : "WindowScopeObserver should only monitor window scope events.";
+            assert scopeKey.scopeType == MessageScopeType.WINDOW
+                    : "WindowScopeObserver should only monitor window scope events.";
             WindowAndroid windowAndroid = scopeKey.windowAndroid;
             windowAndroid.addActivityStateObserver(this);
-            mDelegate.onScopeChange(new MessageScopeChange(scopeKey.scopeType, scopeKey,
-                    windowAndroid.getActivityState() == ActivityState.RESUMED
-                            ? ChangeType.ACTIVE
-                            : ChangeType.INACTIVE));
+            mDelegate.onScopeChange(
+                    new MessageScopeChange(
+                            scopeKey.scopeType,
+                            scopeKey,
+                            windowAndroid.getActivityState() == ActivityState.RESUMED
+                                    ? ChangeType.ACTIVE
+                                    : ChangeType.INACTIVE));
         }
 
         @Override

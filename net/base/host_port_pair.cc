@@ -4,10 +4,12 @@
 
 #include "net/base/host_port_pair.h"
 
+#include <optional>
+#include <string_view>
+
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -15,7 +17,6 @@
 #include "base/values.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/url_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/scheme_host_port.h"
 
@@ -24,13 +25,13 @@ namespace net {
 namespace {
 
 // Value dictionary keys
-constexpr base::StringPiece kValueHostKey = "host";
-constexpr base::StringPiece kValuePortKey = "port";
+constexpr std::string_view kValueHostKey = "host";
+constexpr std::string_view kValuePortKey = "port";
 
 }  // namespace
 
 HostPortPair::HostPortPair() : port_(0) {}
-HostPortPair::HostPortPair(base::StringPiece in_host, uint16_t in_port)
+HostPortPair::HostPortPair(std::string_view in_host, uint16_t in_port)
     : host_(in_host), port_(in_port) {}
 
 // static
@@ -46,7 +47,7 @@ HostPortPair HostPortPair::FromSchemeHostPort(
 
   // HostPortPair assumes hostnames do not have surrounding brackets (as is
   // commonly used for IPv6 literals), so strip them if present.
-  base::StringPiece host = scheme_host_port.host();
+  std::string_view host = scheme_host_port.host();
   if (host.size() >= 2 && host.front() == '[' && host.back() == ']') {
     host = host.substr(1, host.size() - 2);
   }
@@ -60,7 +61,7 @@ HostPortPair HostPortPair::FromIPEndPoint(const IPEndPoint& ipe) {
 }
 
 // static
-HostPortPair HostPortPair::FromString(base::StringPiece str) {
+HostPortPair HostPortPair::FromString(std::string_view str) {
   // Input with more than one ':' is ambiguous unless it contains an IPv6
   // literal (signified by starting with a '['). ParseHostAndPort() allows such
   // input and always uses the last ':' as the host/port delimiter, but because
@@ -87,17 +88,17 @@ HostPortPair HostPortPair::FromString(base::StringPiece str) {
 }
 
 // static
-absl::optional<HostPortPair> HostPortPair::FromValue(const base::Value& value) {
+std::optional<HostPortPair> HostPortPair::FromValue(const base::Value& value) {
   const base::Value::Dict* dict = value.GetIfDict();
   if (!dict)
-    return absl::nullopt;
+    return std::nullopt;
 
   const std::string* host = dict->FindString(kValueHostKey);
-  absl::optional<int> port = dict->FindInt(kValuePortKey);
+  std::optional<int> port = dict->FindInt(kValuePortKey);
 
   if (host == nullptr || !port.has_value() ||
       !base::IsValueInRangeForNumericType<uint16_t>(port.value())) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return HostPortPair(*host, base::checked_cast<uint16_t>(port.value()));

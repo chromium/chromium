@@ -2,7 +2,13 @@
   cr-policy-indicator {
     padding: 0 var(--cr-controlled-by-spacing);
   }
+
+  :host-context(body.revamp-wayfinding-enabled) #betterTogetherSuiteIcon,
+  :host-context(body.revamp-wayfinding-enabled) #nearbyShareIcon {
+    --iron-icon-fill-color: var(--cros-sys-primary);
+  }
 </style>
+
 <os-settings-animated-pages id="pages" section="[[section_]]">
   <div route-path="default">
     <settings-card header-text="$i18n{multidevicePageTitle}">
@@ -11,9 +17,9 @@
         <div class="link-wrapper" id="suiteLinkWrapper"
             actionable$="[[doesClickOpenSubpage_(pageContentData)]]"
             on-click="handleItemClick_">
-          <iron-icon icon=
-              "[[getIconName(MultiDeviceFeature.BETTER_TOGETHER_SUITE)]]"
-              id="betterTogetherSuiteIcon">
+          <iron-icon
+              id="betterTogetherSuiteIcon"
+              icon="[[getIconName(MultiDeviceFeature.BETTER_TOGETHER_SUITE)]]">
           </iron-icon>
           <div class="middle settings-box-text"
               aria-hidden$="[[getTextAriaHidden_(pageContentData)]]">
@@ -85,16 +91,19 @@
               on-click="nearbyShareClick_">
             <if expr="_google_chrome">
               <template is="dom-if" if="[[isNameEnabled_]]" restamp>
-                <iron-icon icon="nearby-share-internal:nearby-share">
+                <iron-icon id="nearbyShareIcon"
+                    icon="nearby-share-internal:nearby-share">
                 </iron-icon>
               </template>
               <template is="dom-if" if="[[!isNameEnabled_]]" restamp>
-                <iron-icon icon="os-settings:nearby-share">
+                <iron-icon id="nearbyShareIcon"
+                    icon="os-settings:nearby-share">
                 </iron-icon>
               </template>
             </if>
             <if expr="not _google_chrome">
-              <iron-icon icon="os-settings:nearby-share">
+              <iron-icon id="nearbyShareIcon"
+                  icon="os-settings:nearby-share">
               </iron-icon>
             </if>
             <div class="middle settings-box-text">
@@ -104,12 +113,20 @@
               <template is="dom-if" if="[[showNearbyShareOnOffString_(
                         prefs.nearby_sharing.onboarding_complete.value,
                         pageContentData)]]" restamp>
-                <div class="secondary" id="nearbyShareSecondary">
-                  [[getOnOffString_(prefs.nearby_sharing.enabled.value,
-                    '$i18nPolymer{deviceOn}', '$i18nPolymer{deviceOff}')]]
-                </div>
+                <template is="dom-if" if="[[!isRevampWayfindingEnabled_]]">
+                  <div class="secondary" id="nearbyShareSecondary">
+                    [[getOnOffString_(prefs.nearby_sharing.enabled.value,
+                      '$i18nPolymer{deviceOn}', '$i18nPolymer{deviceOff}')]]
+                  </div>
+                </template>
+                <template is="dom-if" if="[[isRevampWayfindingEnabled_]]">
+                  <div class="secondary" id="nearbyShareSecondary">
+                    [[getNearbyShareDescription_(prefs.nearby_sharing.enabled.value,
+                      settings.visibility)]]
+                  </div>
+                </template>
               </template>
-              <template is="dom-if" if="[[showNearbyShareDescription_(
+              <template is="dom-if" if="[[showNearbyShareSetUpDescription_(
                         prefs.nearby_sharing.onboarding_complete.value,
                         pageContentData)]]" restamp>
                 <div class="secondary" id="nearbyShareSecondary">

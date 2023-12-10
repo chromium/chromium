@@ -1,8 +1,4 @@
 This is a testharness.js-based test.
-[PASS] Animating a custom property of type <transform-list> containing a single value
-[PASS] Animating a custom property of type <transform-list> containing a single value with a single keyframe
-[PASS] Animating a custom property of type <transform-list> containing a single value with additivity
-[PASS] Animating a custom property of type <transform-list> containing a single value with a single keyframe and additivity
 [FAIL] Animating a custom property of type <transform-list> containing a single value with iterationComposite
   assert_equals: expected "translateX(250px)" but got "translateX(50px)"
 Harness: the test ran to completion.

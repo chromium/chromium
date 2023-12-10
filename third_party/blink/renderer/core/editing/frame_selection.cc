@@ -581,6 +581,10 @@ void FrameSelection::InvalidatePaint(const LayoutBlock& block,
   frame_caret_->InvalidatePaint(block, context);
 }
 
+void FrameSelection::EnsureInvalidationOfPreviousLayoutBlock() {
+  frame_caret_->EnsureInvalidationOfPreviousLayoutBlock();
+}
+
 bool FrameSelection::ShouldPaintCaret(const LayoutBlock& block) const {
   DCHECK_GE(GetDocument().Lifecycle().GetState(),
             DocumentLifecycle::kLayoutClean);
@@ -593,7 +597,7 @@ bool FrameSelection::ShouldPaintCaret(const LayoutBlock& block) const {
 }
 
 bool FrameSelection::ShouldPaintCaret(
-    const NGPhysicalBoxFragment& box_fragment) const {
+    const PhysicalBoxFragment& box_fragment) const {
   DCHECK_GE(GetDocument().Lifecycle().GetState(),
             DocumentLifecycle::kLayoutClean);
   bool result = frame_caret_->ShouldPaintCaret(box_fragment);

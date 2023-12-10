@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_LOGIN_SCREENS_RESET_SCREEN_H_
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 
@@ -16,7 +17,6 @@
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ash/tpm_firmware_update.h"
 #include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefRegistrySimple;
 
@@ -56,7 +56,7 @@ class ResetScreen : public BaseScreen, public UpdateEngineClient::Observer {
   // TPM firmware update has to be installed, the mode of update will be passed
   // as second parameter to `callback`.
   static void CheckIfPowerwashAllowed(
-      base::OnceCallback<void(bool, absl::optional<tpm_firmware_update::Mode>)>
+      base::OnceCallback<void(bool, std::optional<tpm_firmware_update::Mode>)>
           callback);
 
  private:

@@ -138,8 +138,7 @@ net::CanonicalCookie CreateCookieWithHost(const url::Origin& origin) {
       net::CanonicalCookie::CreateUnsafeCookieForTesting(
           "A", "1", origin.host(), "/", base::Time::Now(), base::Time::Now(),
           base::Time(), base::Time(), false, false,
-          net::CookieSameSite::NO_RESTRICTION, net::COOKIE_PRIORITY_MEDIUM,
-          false);
+          net::CookieSameSite::NO_RESTRICTION, net::COOKIE_PRIORITY_MEDIUM);
   EXPECT_TRUE(cookie);
   return *cookie;
 }
@@ -381,10 +380,13 @@ class BrowsingDataRemoverImplTest : public testing::Test {
   BrowsingDataRemoverImplTest& operator=(const BrowsingDataRemoverImplTest&) =
       delete;
 
-  ~BrowsingDataRemoverImplTest() override = default;
+  ~BrowsingDataRemoverImplTest() override {
+    remover_ = nullptr;
+  }
 
   void TearDown() override {
     mock_policy_ = nullptr;
+    remover_ = nullptr;
 
     // BrowserContext contains a DOMStorageContext. BrowserContext's
     // destructor posts a message to the WEBKIT thread to delete some of its
@@ -438,7 +440,10 @@ class BrowsingDataRemoverImplTest : public testing::Test {
 
   BrowserContext* GetBrowserContext() { return browser_context_.get(); }
 
-  void DestroyBrowserContext() { browser_context_.reset(); }
+  void DestroyBrowserContext() {
+    remover_ = nullptr;
+    browser_context_.reset();
+  }
 
   const base::Time& GetBeginTime() {
     return remover_->GetLastUsedBeginTimeForTesting();
@@ -493,7 +498,7 @@ class BrowsingDataRemoverImplTest : public testing::Test {
       storage_partition_;
 
   // Cached pointer to BrowsingDataRemoverImpl for access to testing methods.
-  raw_ptr<BrowsingDataRemoverImpl, DanglingUntriaged> remover_;
+  raw_ptr<BrowsingDataRemoverImpl> remover_;
 
   BrowserTaskEnvironment task_environment_;
   std::unique_ptr<BrowserContext> browser_context_;

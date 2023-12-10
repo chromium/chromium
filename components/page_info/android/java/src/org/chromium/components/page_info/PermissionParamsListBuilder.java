@@ -78,7 +78,7 @@ public class PermissionParamsListBuilder {
                 permissionParams.warningTextResource =
                         R.string.page_info_android_permission_blocked;
             } else if (!AndroidPermissionRequester.hasRequiredAndroidPermissionsForContentSetting(
-                               mPermissionDelegate, permission.type)) {
+                    mPermissionDelegate, permission.type)) {
                 if (permission.type == ContentSettingsType.AR) {
                     permissionParams.warningTextResource =
                             R.string.page_info_android_ar_camera_blocked;
@@ -107,8 +107,11 @@ public class PermissionParamsListBuilder {
                 permissionParams.allowed = false;
                 break;
             default:
-                assert false : "Invalid setting " + permission.setting + " for permission "
-                               + permission.type;
+                assert false
+                        : "Invalid setting "
+                                + permission.setting
+                                + " for permission "
+                                + permission.type;
         }
 
         return permissionParams;

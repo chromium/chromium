@@ -62,6 +62,7 @@
 #include "third_party/blink/public/mojom/link_to_text/link_to_text.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/loader/pause_subresource_loading_handle.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/loader/resource_cache.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/navigation/renderer_content_settings.mojom.h"
 #include "third_party/blink/public/mojom/navigation/renderer_eviction_reason.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/reporting/reporting.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/script/script_evaluation_params.mojom-blink-forward.h"
@@ -95,6 +96,7 @@
 #include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "ui/gfx/geometry/transform.h"
+#include "ui/gfx/image/image_skia.h"
 
 namespace base {
 class SingleThreadTaskRunner;
@@ -263,7 +265,8 @@ class CORE_EXPORT LocalFrame final
   // BackForwardCacheLoaderHelperImpl::Delegate:
   void EvictFromBackForwardCache(
       mojom::blink::RendererEvictionReason reason) override;
-  void DidBufferLoadWhileInBackForwardCache(size_t num_bytes) override;
+  void DidBufferLoadWhileInBackForwardCache(bool update_process_wide_count,
+                                            size_t num_bytes) override;
 
   void DidChangeThemeColor(bool update_theme_color_cache);
   void DidChangeBackgroundColor(SkColor4f background_color, bool color_adjust);
@@ -319,6 +322,13 @@ class CORE_EXPORT LocalFrame final
   // Returns ContentCaptureManager in LocalFrameRoot, create or destroy it as
   // needed.
   ContentCaptureManager* GetOrResetContentCaptureManager();
+
+  class CORE_EXPORT WidgetCreationObserver : public GarbageCollectedMixin {
+   public:
+    virtual void OnLocalRootWidgetCreated() = 0;
+  };
+  void AddWidgetCreationObserver(WidgetCreationObserver* observer);
+  void NotifyFrameWidgetCreated();
 
   // Returns the current state of caret browsing mode.
   bool IsCaretBrowsingEnabled() const;
@@ -432,6 +442,9 @@ class CORE_EXPORT LocalFrame final
       StyleEnvironmentVariables& vars,
       const WebVector<gfx::Rect>& window_segments);
 
+  void OverrideDevicePostureForEmulation(
+      device::mojom::blink::DevicePostureType device_posture_param);
+  void DisableDevicePostureOverrideForEmulation();
   device::mojom::blink::DevicePostureType GetDevicePosture();
 
   String SelectedText() const;
@@ -646,6 +659,7 @@ class CORE_EXPORT LocalFrame final
   SmoothScrollSequencer* GetSmoothScrollSequencer() const;
 
   mojom::blink::ReportingServiceProxy* GetReportingService();
+  device::mojom::blink::DevicePostureProvider* GetDevicePostureProvider();
 
   // Returns the frame host ptr. The interface returned is backed by an
   // associated interface with the legacy Chrome IPC channel.
@@ -722,6 +736,11 @@ class CORE_EXPORT LocalFrame final
       const gfx::Point& viewport_position,
       const blink::mojom::blink::MediaPlayerActionType type,
       bool enable);
+  void RequestVideoFrameAt(
+      const gfx::Point& viewport_position,
+      const gfx::Size& max_size,
+      int max_area,
+      base::OnceCallback<void(const gfx::ImageSkia&)> callback);
 
   // Handle the request as a download. If the request is for a blob: URL,
   // a BlobURLToken should be provided as |blob_url_token| to ensure the
@@ -902,6 +921,10 @@ class CORE_EXPORT LocalFrame final
     return *v8_local_compile_hints_producer_;
   }
 
+  // Gets the content settings associated with the current navigation commit.
+  // Can only be called while the frame is not detached.
+  const mojom::RendererContentSettingsPtr& GetContentSettings();
+
  private:
   friend class FrameNavigationDisabler;
   // LocalFrameMojoHandler is a part of LocalFrame.
@@ -943,8 +966,7 @@ class CORE_EXPORT LocalFrame final
       BlockingDetails details) override;
   const base::UnguessableToken& GetAgentClusterId() const override;
   void OnTaskCompleted(base::TimeTicks start_time,
-                       base::TimeTicks end_time,
-                       base::TimeTicks desired_execution_time) override;
+                       base::TimeTicks end_time) override;
   void MainFrameInteractive() override;
 
   // Activates the user activation states of this frame and all its ancestors.
@@ -998,6 +1020,8 @@ class CORE_EXPORT LocalFrame final
   // Keeps track of all the registered VK observers.
   HeapHashSet<WeakMember<VirtualKeyboardOverlayChangedObserver>>
       virtual_keyboard_overlay_changed_observers_;
+
+  HeapHashSet<WeakMember<WidgetCreationObserver>> widget_creation_observers_;
 
   mutable FrameLoader loader_;
 

@@ -47,7 +47,7 @@ void ProfileCustomizationSyncedThemeWaiter::Run() {
     return;
   }
 
-  absl::optional<ThemeSyncableService::ThemeSyncState> theme_state =
+  std::optional<ThemeSyncableService::ThemeSyncState> theme_state =
       theme_service_->GetThemeSyncableService()->GetThemeSyncStartState();
   if (theme_state) {
     OnThemeSyncStarted(*theme_state);

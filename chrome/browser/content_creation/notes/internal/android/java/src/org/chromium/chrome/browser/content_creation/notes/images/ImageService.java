@@ -54,8 +54,9 @@ public class ImageService {
         // callback.
         final Counter counter = new Counter(imageBackgrounds.size());
         for (ImageBackground imageBackground : imageBackgrounds) {
-            mImageFetcher.fetchImage(ImageFetcher.Params.create(imageBackground.imageUrl,
-                                             ImageFetcher.WEB_NOTES_UMA_CLIENT_NAME),
+            mImageFetcher.fetchImage(
+                    ImageFetcher.Params.create(
+                            imageBackground.imageUrl, ImageFetcher.WEB_NOTES_UMA_CLIENT_NAME),
                     bitmap -> {
                         imageBackground.setBitmap(bitmap);
                         counter.called();

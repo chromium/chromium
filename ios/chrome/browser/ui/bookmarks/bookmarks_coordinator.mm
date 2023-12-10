@@ -10,6 +10,7 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/check_op.h"
+#import "base/feature_list.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/notreached.h"
@@ -18,11 +19,15 @@
 #import "base/time/time.h"
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "components/bookmarks/browser/bookmark_utils.h"
+#import "components/signin/public/identity_manager/account_info.h"
+#import "components/sync/base/features.h"
+#import "components/sync/service/sync_service.h"
+#import "components/sync/service/sync_service_utils.h"
 #import "ios/chrome/browser/bookmarks/model/account_bookmark_model_factory.h"
 #import "ios/chrome/browser/bookmarks/model/bookmarks_utils.h"
 #import "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_model_factory.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
-#import "ios/chrome/browser/metrics/new_tab_page_uma.h"
+#import "ios/chrome/browser/metrics/model/new_tab_page_uma.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -32,7 +37,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/shared/ui/util/url_with_title.h"
-#import "ios/chrome/browser/signin/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/tabs/model/tab_title_util.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_mediator.h"
@@ -47,6 +52,8 @@
 #import "ios/chrome/browser/ui/bookmarks/folder_editor/bookmarks_folder_editor_coordinator.h"
 #import "ios/chrome/browser/ui/bookmarks/folder_editor/bookmarks_folder_editor_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/bookmarks/home/bookmarks_home_view_controller.h"
+#import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_coordinator.h"
+#import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_table_view_controller.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_util.h"
@@ -54,6 +61,7 @@
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/navigation/referrer.h"
 #import "ios/web/public/web_state.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 
 using bookmarks::BookmarkModel;
 using bookmarks::BookmarkNode;
@@ -75,6 +83,7 @@ enum class PresentedState {
                                     BookmarksFolderEditorCoordinatorDelegate,
                                     BookmarksFolderChooserCoordinatorDelegate,
                                     BookmarksHomeViewControllerDelegate,
+                                    ManageSyncSettingsCoordinatorDelegate,
                                     UIAdaptivePresentationControllerDelegate,
                                     UINavigationControllerDelegate>
 
@@ -131,6 +140,8 @@ enum class PresentedState {
   base::WeakPtr<bookmarks::BookmarkModel> _localOrSyncableBookmarkModel;
   // Account bookmark model.
   base::WeakPtr<bookmarks::BookmarkModel> _accountBookmarkModel;
+  // Coordinator of manage sync settings.
+  ManageSyncSettingsCoordinator* _manageSyncSettingsCoordinator;
 }
 
 @synthesize applicationCommandsHandler = _applicationCommandsHandler;
@@ -427,6 +438,22 @@ enum class PresentedState {
   }
 }
 
+- (void)showAccountSettings {
+  syncer::SyncService* syncService =
+      SyncServiceFactory::GetForBrowserState(_browserState.get());
+  CHECK(!syncService->GetAccountInfo().IsEmpty())
+      << base::SysNSStringToUTF8([self description]);
+  SyncSettingsAccountState accountState =
+      syncService->HasSyncConsent() ? SyncSettingsAccountState::kSyncing
+                                    : SyncSettingsAccountState::kSignedIn;
+  _manageSyncSettingsCoordinator = [[ManageSyncSettingsCoordinator alloc]
+      initWithBaseViewController:self.baseViewController
+                         browser:self.browser
+                    accountState:accountState];
+  _manageSyncSettingsCoordinator.delegate = self;
+  [_manageSyncSettingsCoordinator start];
+}
+
 #pragma mark - BookmarksEditorCoordinatorDelegate
 
 - (void)bookmarksEditorCoordinatorShouldStop:
@@ -611,9 +638,21 @@ enum class PresentedState {
       bookmark_utils_ios::GetMostRecentlyAddedUserNodeForURL(
           URL, _localOrSyncableBookmarkModel.get(),
           _accountBookmarkModel.get());
-  [self presentBookmarksAtDisplayedFolderNode:_localOrSyncableBookmarkModel
-                                                  ->mobile_node()
-                            selectingBookmark:existingBookmark];
+  if (!base::FeatureList::IsEnabled(
+          syncer::kReplaceSyncPromosWithSignInPromos)) {
+    [self presentBookmarksAtDisplayedFolderNode:_localOrSyncableBookmarkModel
+                                                    ->mobile_node()
+                              selectingBookmark:existingBookmark];
+  } else if (existingBookmark) {
+    [self presentBookmarksAtDisplayedFolderNode:existingBookmark->parent()
+                              selectingBookmark:existingBookmark];
+  } else {
+    // Couldn't find the bookmark for the requested URL, just open mobile
+    // bookmarks.
+    [self presentBookmarksAtDisplayedFolderNode:_localOrSyncableBookmarkModel
+                                                    ->mobile_node()
+                              selectingBookmark:nil];
+  }
 }
 
 #pragma mark - Private
@@ -785,6 +824,9 @@ enum class PresentedState {
     animationControllerForOperation:(UINavigationControllerOperation)operation
                  fromViewController:(UIViewController*)fromVC
                    toViewController:(UIViewController*)toVC {
+  if ([fromVC isKindOfClass:[ManageSyncSettingsTableViewController class]]) {
+    return nil;
+  }
   if (operation == UINavigationControllerOperationPop) {
     BookmarksHomeViewController* poppedHome =
         base::apple::ObjCCastStrict<BookmarksHomeViewController>(fromVC);
@@ -797,6 +839,19 @@ enum class PresentedState {
   return nil;
 }
 
+#pragma mark - ManageSyncSettingsCoordinatorDelegate
+
+- (void)manageSyncSettingsCoordinatorWasRemoved:
+    (ManageSyncSettingsCoordinator*)coordinator {
+  DCHECK_EQ(_manageSyncSettingsCoordinator, coordinator);
+  [_manageSyncSettingsCoordinator stop];
+  _manageSyncSettingsCoordinator = nil;
+}
+
+- (NSString*)manageSyncSettingsCoordinatorTitle {
+  return l10n_util::GetNSString(IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_TITLE);
+}
+
 #pragma mark - Debugging
 
 - (NSString*)description {
@@ -805,13 +860,15 @@ enum class PresentedState {
           @"<%@: %p, state=%d bookmarkEditorCoordinator=%p, "
           @"bookmarkNavigationController=%p (presented: %@), "
           @"folderEditorCoordinator=%p, folderChooserCoordinator=%p "
-          @"localOrSyncableBookmarkModel=%p, accountBookmarkModel=%p>",
+          @"localOrSyncableBookmarkModel=%p, accountBookmarkModel=%p, "
+          @"manageSyncSettingsCoordinator=%p>",
           NSStringFromClass([self class]), self,
           static_cast<int>(self.currentPresentedState),
           self.bookmarkEditorCoordinator, self.bookmarkNavigationController,
           self.bookmarkNavigationController ? @"YES" : @"NO",
           self.folderEditorCoordinator, self.folderChooserCoordinator,
-          _localOrSyncableBookmarkModel.get(), _accountBookmarkModel.get()];
+          _localOrSyncableBookmarkModel.get(), _accountBookmarkModel.get(),
+          _manageSyncSettingsCoordinator];
 }
 
 @end

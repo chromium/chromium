@@ -16,6 +16,7 @@
 #include "components/guest_view/common/guest_view_constants.h"
 #include "components/zoom/zoom_controller.h"
 #include "content/public/browser/file_select_listener.h"
+#include "content/public/browser/isolated_web_apps_policy.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
@@ -380,7 +381,7 @@ content::NavigationController& GuestViewBase::GetController() {
   return web_contents()->GetController();
 }
 
-GuestViewManager* GuestViewBase::GetGuestViewManager() {
+GuestViewManager* GuestViewBase::GetGuestViewManager() const {
   return GuestViewManager::FromBrowserContext(browser_context());
 }
 
@@ -415,6 +416,10 @@ WebContents* GuestViewBase::GetOwnerWebContents() {
 content::RenderFrameHost* GuestViewBase::GetProspectiveOuterDocument() {
   DCHECK(!attached());
   return owner_rfh();
+}
+
+const GURL& GuestViewBase::GetOwnerLastCommittedURL() const {
+  return owner_rfh()->GetLastCommittedURL();
 }
 
 const GURL& GuestViewBase::GetOwnerSiteURL() const {
@@ -857,10 +862,35 @@ void GuestViewBase::UpdateGuestSize(const gfx::Size& new_size,
   guest_size_ = new_size;
 }
 
+bool GuestViewBase::IsOwnedByExtension() const {
+  return GetGuestViewManager()->IsOwnedByExtension(this);
+}
+
+bool GuestViewBase::IsOwnedByWebUI() const {
+  return owner_rfh()->GetMainFrame()->GetWebUI();
+}
+
+bool GuestViewBase::IsOwnedByControlledFrameEmbedder() const {
+  return GetGuestViewManager()->IsOwnedByControlledFrameEmbedder(this);
+}
+
 void GuestViewBase::SetOwnerHost() {
-  owner_host_ = GetGuestViewManager()->IsOwnedByExtension(this)
-                    ? owner_rfh()->GetLastCommittedURL().host()
-                    : std::string();
+  const GURL& url = GetOwnerLastCommittedURL();
+  if (IsOwnedByExtension()) {
+    owner_host_ = url.host();
+  } else if (IsOwnedByWebUI()) {
+    owner_host_ = std::string();
+  } else if (IsOwnedByControlledFrameEmbedder()) {
+    // TODO(cmp): This function must return an empty string currently since
+    // events that pass a non-empty string are validated and will break
+    // Controlled Frame. A future CL will modify the validation to support the
+    // Controlled Frame case and allow us to use the following:
+    // owner_host_ = url.spec();
+    owner_host_ = std::string();
+  } else {
+    owner_host_ = std::string();
+  }
+  return;
 }
 
 bool GuestViewBase::CanBeEmbeddedInsideCrossProcessFrames() const {

@@ -6,25 +6,20 @@
 
 #include "ash/shell.h"
 #include "ash/style/icon_button.h"
-#include "ash/wm/desks/expanded_desks_bar_button.h"
 #include "ash/wm/desks/legacy_desk_bar_view.h"
 #include "ash/wm/desks/templates/saved_desk_controller.h"
 #include "ash/wm/desks/templates/saved_desk_dialog_controller.h"
 #include "ash/wm/desks/templates/saved_desk_icon_container.h"
 #include "ash/wm/desks/templates/saved_desk_presenter.h"
 #include "ash/wm/desks/templates/saved_desk_util.h"
-#include "ash/wm/desks/zero_state_button.h"
 #include "ash/wm/overview/overview_grid.h"
-#include "ash/wm/overview/overview_test_util.h"
 #include "ash/wm/overview/overview_utils.h"
 #include "base/memory/raw_ref.h"
 #include "base/test/bind.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "ui/compositor/layer.h"
 #include "ui/views/animation/bounds_animator.h"
 #include "ui/views/animation/bounds_animator_observer.h"
 #include "ui/views/widget/widget_delegate.h"
-#include "ui/views/window/dialog_delegate.h"
 
 namespace ash {
 
@@ -182,7 +177,7 @@ void SavedDeskControllerTestApi::ResetAutoLaunch() {
 }
 
 std::vector<SavedDeskItemView*> GetItemViewsFromDeskLibrary(
-    const OverviewGrid* overview_grid) {
+    OverviewGrid* overview_grid) {
   SavedDeskLibraryView* saved_desk_library_view =
       overview_grid->GetSavedDeskLibraryView();
   return GetItemViewsFromDeskLibrary(saved_desk_library_view);
@@ -230,14 +225,12 @@ const views::Button* GetLibraryButton() {
 }
 
 const views::Button* GetSaveDeskAsTemplateButton() {
-  const auto* overview_grid = GetPrimaryOverviewGrid();
-  if (!overview_grid)
-    return nullptr;
-  return overview_grid->GetSaveDeskAsTemplateButton();
+  auto* overview_grid = GetPrimaryOverviewGrid();
+  return overview_grid ? overview_grid->GetSaveDeskAsTemplateButton() : nullptr;
 }
 
 const views::Button* GetSaveDeskForLaterButton() {
-  const auto* overview_grid = GetPrimaryOverviewGrid();
+  auto* overview_grid = GetPrimaryOverviewGrid();
   return overview_grid ? overview_grid->GetSaveDeskForLaterButton() : nullptr;
 }
 
@@ -254,20 +247,11 @@ const views::Button* GetSavedDeskItemDeleteButton(int index) {
 }
 
 const views::Button* GetSavedDeskDialogAcceptButton() {
-  if (chromeos::features::IsJellyEnabled()) {
-    const SystemDialogDelegateView* dialog_widget_view =
-        saved_desk_util::GetSavedDeskDialogController()
-            ->GetSystemDialogViewForTesting();
-    if (!dialog_widget_view) {
-      return nullptr;
-    }
+  if (auto* dialog_widget_view = saved_desk_util::GetSavedDeskDialogController()
+                                     ->GetSystemDialogViewForTesting()) {
     return dialog_widget_view->GetAcceptButtonForTesting();
   }
-  const views::Widget* dialog_widget =
-      saved_desk_util::GetSavedDeskDialogController()->dialog_widget();
-  if (!dialog_widget)
-    return nullptr;
-  return dialog_widget->widget_delegate()->AsDialogDelegate()->GetOkButton();
+  return nullptr;
 }
 
 void WaitForSavedDeskUI() {
@@ -282,8 +266,8 @@ void WaitForSavedDeskUI() {
 
 const app_restore::AppRestoreData* QueryRestoreData(
     const DeskTemplate& saved_desk,
-    absl::optional<std::string> app_id,
-    absl::optional<int32_t> window_id) {
+    std::optional<std::string> app_id,
+    std::optional<int32_t> window_id) {
   const auto& app_id_to_launch_list =
       saved_desk.desk_restore_data()->app_id_to_launch_list();
 

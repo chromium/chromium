@@ -37,20 +37,22 @@ namespace {
 // could break their functionality, so these heuristics are used to recognize
 // likely hidden frames and immediately load them so that they can function
 // properly.
-bool IsFrameProbablyHidden(const PhysicalRect& bounding_client_rect,
+bool IsFrameProbablyHidden(const gfx::RectF& bounding_client_rect,
                            const Element& element) {
   // Tiny frames that are 4x4 or smaller are likely not intended to be seen by
   // the user. Note that this condition includes frames marked as
   // "display:none", since those frames would have dimensions of 0x0.
-  if (bounding_client_rect.Width() <= 4.0f ||
-      bounding_client_rect.Height() <= 4.0f)
+  if (bounding_client_rect.width() <= 4.0f ||
+      bounding_client_rect.height() <= 4.0f) {
     return true;
+  }
 
   // Frames that are positioned completely off the page above or to the left are
   // likely never intended to be visible to the user.
-  if (bounding_client_rect.Right() < 0.0f ||
-      bounding_client_rect.Bottom() < 0.0f)
+  if (bounding_client_rect.right() < 0.0f ||
+      bounding_client_rect.bottom() < 0.0f) {
     return true;
+  }
 
   const ComputedStyle* style = element.GetComputedStyle();
   if (style) {
@@ -116,11 +118,16 @@ void LazyLoadFrameObserver::DeferLoadUntilNearViewport(
       std::make_unique<LazyLoadRequestInfo>(resource_request, frame_load_type);
 
   lazy_load_intersection_observer_ = IntersectionObserver::Create(
-      {Length::Fixed(GetLazyFrameLoadingViewportDistanceThresholdPx(
-          element_->GetDocument()))},
-      {std::numeric_limits<float>::min()}, &element_->GetDocument(),
+      /* (root) margin */ {Length::Fixed(
+          GetLazyFrameLoadingViewportDistanceThresholdPx(
+              element_->GetDocument()))},
+      /* scroll_margin */ Vector<Length>(),
+      /* thresholds */ {std::numeric_limits<float>::min()},
+      /* document */ &element_->GetDocument(),
+      /* callback */
       WTF::BindRepeating(&LazyLoadFrameObserver::LoadIfHiddenOrNearViewport,
                          WrapWeakPersistent(this)),
+      /* ukm_metric_id */
       LocalFrameUkmAggregator::kLazyLoadIntersectionObserver);
 
   lazy_load_intersection_observer_->observe(element_);

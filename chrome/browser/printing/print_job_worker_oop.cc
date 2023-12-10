@@ -10,6 +10,7 @@
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "chrome/browser/printing/prefs_util.h"
 #include "chrome/browser/printing/print_backend_service_manager.h"
 #include "chrome/browser/printing/print_job.h"
 #include "chrome/services/printing/public/mojom/print_backend_service.mojom.h"
@@ -20,7 +21,6 @@
 #include "printing/buildflags/buildflags.h"
 #include "printing/metafile.h"
 #include "printing/printed_document.h"
-#include "printing/printing_features.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -415,7 +415,7 @@ void PrintJobWorkerOop::FinishDocumentDone(int job_id) {
 
 void PrintJobWorkerOop::SendEstablishPrintingContext() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(features::ShouldPrintJobOop());
+  DCHECK(ShouldPrintJobOop());
 
   PrintBackendServiceManager& service_mgr =
       PrintBackendServiceManager::GetInstance();
@@ -439,7 +439,7 @@ void PrintJobWorkerOop::SendEstablishPrintingContext() {
 void PrintJobWorkerOop::SendStartPrinting(const std::string& device_name,
                                           const std::u16string& document_name) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(features::ShouldPrintJobOop());
+  DCHECK(ShouldPrintJobOop());
 
   // The device name is needed repeatedly for each call to the service, cache
   // that for this print job.

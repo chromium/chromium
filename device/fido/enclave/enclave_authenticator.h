@@ -14,8 +14,10 @@
 #include "base/memory/weak_ptr.h"
 #include "components/sync/protocol/webauthn_credential_specifics.pb.h"
 #include "device/fido/authenticator_get_assertion_response.h"
+#include "device/fido/authenticator_make_credential_response.h"
 #include "device/fido/cable/v2_constants.h"
 #include "device/fido/ctap_get_assertion_request.h"
+#include "device/fido/ctap_make_credential_request.h"
 #include "device/fido/enclave/enclave_protocol_utils.h"
 #include "device/fido/enclave/enclave_websocket_client.h"
 #include "device/fido/fido_authenticator.h"
@@ -42,6 +44,8 @@ class COMPONENT_EXPORT(DEVICE_FIDO) EnclaveAuthenticator
       const GURL& service_url,
       base::span<const uint8_t, device::kP256X962Length> peer_identity,
       std::vector<sync_pb::WebauthnCredentialSpecifics> passkeys,
+      base::RepeatingCallback<void(sync_pb::WebauthnCredentialSpecifics)>
+          save_passkey_callback,
       std::vector<uint8_t> device_id,
       const std::string& username,
       raw_ptr<network::mojom::NetworkContext> network_context,
@@ -51,10 +55,13 @@ class COMPONENT_EXPORT(DEVICE_FIDO) EnclaveAuthenticator
   EnclaveAuthenticator(const EnclaveAuthenticator&) = delete;
   EnclaveAuthenticator& operator=(const EnclaveAuthenticator&) = delete;
 
-  // TODO(kenrb): Make this private when no longer embedded in test app.
+  // TODO(kenrb): Make these private when no longer embedded in test app.
   void GetAssertion(CtapGetAssertionRequest request,
                     CtapGetAssertionOptions options,
                     GetAssertionCallback callback) override;
+  void MakeCredential(CtapMakeCredentialRequest request,
+                      MakeCredentialOptions options,
+                      MakeCredentialCallback callback) override;
 
  private:
   enum class State {
@@ -78,11 +85,22 @@ class COMPONENT_EXPORT(DEVICE_FIDO) EnclaveAuthenticator
     GetAssertionCallback callback;
   };
 
+  struct PendingMakeCredentialRequest {
+    PendingMakeCredentialRequest(const CtapMakeCredentialRequest&,
+                                 const MakeCredentialOptions&,
+                                 MakeCredentialCallback);
+    ~PendingMakeCredentialRequest();
+    PendingMakeCredentialRequest(const PendingMakeCredentialRequest&) = delete;
+    PendingMakeCredentialRequest& operator=(
+        const PendingMakeCredentialRequest&) = delete;
+
+    CtapMakeCredentialRequest request;
+    MakeCredentialOptions options;
+    MakeCredentialCallback callback;
+  };
+
   // FidoAuthenticator:
   void InitializeAuthenticator(base::OnceClosure callback) override;
-  void MakeCredential(CtapMakeCredentialRequest request,
-                      MakeCredentialOptions options,
-                      MakeCredentialCallback callback) override;
   void Cancel() override;
   AuthenticatorType GetType() const override;
   std::string GetId() const override;
@@ -90,10 +108,15 @@ class COMPONENT_EXPORT(DEVICE_FIDO) EnclaveAuthenticator
   absl::optional<FidoTransportProtocol> AuthenticatorTransport() const override;
   base::WeakPtr<FidoAuthenticator> GetWeakPtr() override;
 
+  void StartRequest();
   void OnResponseReceived(EnclaveWebSocketClient::SocketStatus status,
                           absl::optional<std::vector<uint8_t>> data);
   void BuildCommand();
   void SendCommand(std::vector<uint8_t> command_body);
+  void CompleteRequestWithError(CtapDeviceResponseCode error);
+  void CompleteMakeCredentialRequest(
+      CtapDeviceResponseCode status,
+      absl::optional<AuthenticatorMakeCredentialResponse> response);
   void CompleteGetAssertionRequest(
       CtapDeviceResponseCode status,
       std::vector<AuthenticatorGetAssertionResponse> responses);
@@ -109,6 +132,10 @@ class COMPONENT_EXPORT(DEVICE_FIDO) EnclaveAuthenticator
   // identify one from this list in the request's allowCredentials.
   std::vector<sync_pb::WebauthnCredentialSpecifics> available_passkeys_;
 
+  // Callback for storing a newly-created passkey.
+  base::RepeatingCallback<void(sync_pb::WebauthnCredentialSpecifics)>
+      save_passkey_callback_;
+
   // Identifier for this device, previously registered to the enclave.
   std::vector<uint8_t> device_id_;
 
@@ -121,7 +148,10 @@ class COMPONENT_EXPORT(DEVICE_FIDO) EnclaveAuthenticator
   std::unique_ptr<cablev2::Crypter> crypter_;
 
   // Caches the request while waiting for the connection to be established.
+  // At most one of these can be non-null at any given time.
   std::unique_ptr<PendingGetAssertionRequest> pending_get_assertion_request_;
+  std::unique_ptr<PendingMakeCredentialRequest>
+      pending_make_credential_request_;
 
   base::WeakPtrFactory<EnclaveAuthenticator> weak_factory_{this};
 };

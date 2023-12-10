@@ -21,14 +21,19 @@
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/template_url_starter_pack_data.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/url_fixer.h"
 #include "third_party/metrics_proto/omnibox_focus_type.pb.h"
 #include "third_party/metrics_proto/omnibox_input_type.pb.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/page_transition_types.h"
 #include "url/url_constants.h"
 
 const int BuiltinProvider::kRelevance = 860;
-const int BuiltinProvider::kStarterPackRelevance = 1350;
+// Scored higher than history URL provider suggestions since inputs like '@b'
+// would default 'bing.com' instead (history URL provider seems to ignore '@'
+// prefix in the input).
+const int BuiltinProvider::kStarterPackRelevance = 1450;
 
 BuiltinProvider::BuiltinProvider(AutocompleteProviderClient* client)
     : AutocompleteProvider(AutocompleteProvider::TYPE_BUILTIN),
@@ -45,13 +50,12 @@ void BuiltinProvider::Start(const AutocompleteInput& input,
     return;
   }
 
-  DoStarterPackAutocompletion(input);
-
   if (input.type() != metrics::OmniboxInputType::QUERY) {
     DoBuiltinAutocompletion(input.text());
+    UpdateRelevanceScores(input);
   }
 
-  UpdateRelevanceScores(input);
+  DoStarterPackAutocompletion(input);
 }
 
 BuiltinProvider::~BuiltinProvider() = default;
@@ -225,14 +229,24 @@ void BuiltinProvider::AddStarterPackMatch(const TemplateURL& template_url,
   match.inline_autocompletion =
       match.fill_into_edit.substr(input.text().length());
   match.destination_url = GURL(destination_url);
-  match.contents = destination_url;
-  match.contents_class.emplace_back(0, ACMatchClassification::URL);
-  match.description = template_url.short_name();
-  match.description_class.emplace_back(0, ACMatchClassification::NONE);
   match.transition = ui::PAGE_TRANSITION_GENERATED;
-  if (OmniboxFieldTrial::IsKeywordModeRefreshEnabled()) {
+  if (OmniboxFieldTrial::IsKeywordModeRefreshEnabled() &&
+      input.current_page_classification() !=
+          metrics::OmniboxEventProto::NTP_REALBOX &&
+      template_url.keyword().starts_with(u'@')) {
+    match.description = l10n_util::GetStringFUTF16(
+        IDS_OMNIBOX_INSTANT_KEYWORD_SEARCH_TEXT, template_url.short_name());
+    match.description_class.emplace_back(0, ACMatchClassification::NONE);
+    match.contents =
+        l10n_util::GetStringUTF16(IDS_OMNIBOX_INSTANT_KEYWORD_HELP);
+    match.contents_class.emplace_back(0, ACMatchClassification::DIM);
     match.allowed_to_be_default_match = false;
+    match.keyword = template_url.keyword();
   } else {
+    match.description = template_url.short_name();
+    match.description_class.emplace_back(0, ACMatchClassification::NONE);
+    match.contents = destination_url;
+    match.contents_class.emplace_back(0, ACMatchClassification::URL);
     match.SetAllowedToBeDefault(input);
   }
   matches_.push_back(match);

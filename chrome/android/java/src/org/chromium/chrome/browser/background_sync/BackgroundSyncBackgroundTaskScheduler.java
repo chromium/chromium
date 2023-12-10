@@ -30,6 +30,7 @@ public class BackgroundSyncBackgroundTaskScheduler {
     /** An observer interface for BackgroundSyncBackgroundTaskScheduler. */
     interface Observer {
         void oneOffTaskScheduledFor(@BackgroundSyncTask int taskType, long delay);
+
         void oneOffTaskCanceledFor(@BackgroundSyncTask int taskType);
     }
 
@@ -49,8 +50,10 @@ public class BackgroundSyncBackgroundTaskScheduler {
      * PERIODIC_SYNC_CHROME_WAKE_UP processes Periodic Background Sync
      * registrations.
      */
-    @IntDef({BackgroundSyncTask.ONE_SHOT_SYNC_CHROME_WAKE_UP,
-            BackgroundSyncTask.PERIODIC_SYNC_CHROME_WAKE_UP})
+    @IntDef({
+        BackgroundSyncTask.ONE_SHOT_SYNC_CHROME_WAKE_UP,
+        BackgroundSyncTask.PERIODIC_SYNC_CHROME_WAKE_UP
+    })
     public @interface BackgroundSyncTask {
         int ONE_SHOT_SYNC_CHROME_WAKE_UP = 0;
         int PERIODIC_SYNC_CHROME_WAKE_UP = 1;
@@ -117,8 +120,8 @@ public class BackgroundSyncBackgroundTaskScheduler {
     @VisibleForTesting
     @CalledByNative
     protected void cancelOneOffTask(@BackgroundSyncTask int taskType) {
-        BackgroundTaskSchedulerFactory.getScheduler().cancel(
-                ContextUtils.getApplicationContext(), getAppropriateTaskId(taskType));
+        BackgroundTaskSchedulerFactory.getScheduler()
+                .cancel(ContextUtils.getApplicationContext(), getAppropriateTaskId(taskType));
 
         for (Observer observer : mObservers) {
             observer.oneOffTaskCanceledFor(taskType);
@@ -143,20 +146,23 @@ public class BackgroundSyncBackgroundTaskScheduler {
         // We setWindowEndTime to Long.MAX_VALUE to wait a long time for network connectivity,
         // so that we can process the pending sync event. setExpiresAfterWindowEndTime ensures
         // that we never wake up Chrome without network connectivity.
-        TaskInfo.TimingInfo timingInfo = TaskInfo.OneOffInfo.create()
-                                                 .setWindowStartTimeMs(minDelayMs)
-                                                 .setWindowEndTimeMs(Long.MAX_VALUE)
-                                                 .setExpiresAfterWindowEndTime(true)
-                                                 .build();
-        TaskInfo taskInfo = TaskInfo.createTask(getAppropriateTaskId(taskType), timingInfo)
-                                    .setRequiredNetworkType(TaskInfo.NetworkType.ANY)
-                                    .setUpdateCurrent(true)
-                                    .setIsPersisted(true)
-                                    .setExtras(taskExtras)
-                                    .build();
+        TaskInfo.TimingInfo timingInfo =
+                TaskInfo.OneOffInfo.create()
+                        .setWindowStartTimeMs(minDelayMs)
+                        .setWindowEndTimeMs(Long.MAX_VALUE)
+                        .setExpiresAfterWindowEndTime(true)
+                        .build();
+        TaskInfo taskInfo =
+                TaskInfo.createTask(getAppropriateTaskId(taskType), timingInfo)
+                        .setRequiredNetworkType(TaskInfo.NetworkType.ANY)
+                        .setUpdateCurrent(true)
+                        .setIsPersisted(true)
+                        .setExtras(taskExtras)
+                        .build();
         // This will overwrite any existing task with this ID.
-        boolean didSchedule = BackgroundTaskSchedulerFactory.getScheduler().schedule(
-                ContextUtils.getApplicationContext(), taskInfo);
+        boolean didSchedule =
+                BackgroundTaskSchedulerFactory.getScheduler()
+                        .schedule(ContextUtils.getApplicationContext(), taskInfo);
 
         for (Observer observer : mObservers) {
             observer.oneOffTaskScheduledFor(taskType, minDelayMs);

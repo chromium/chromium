@@ -65,17 +65,19 @@ public class BottomSheetToolbarView {
     /** Sets the security icon click callback. */
     public void setSecurityIconClickCallback(Runnable callback) {
         ImageView securityIcon = mToolbarView.findViewById(R.id.security_icon);
-        securityIcon.setOnClickListener(v -> {
-            if (callback != null) callback.run();
-        });
+        securityIcon.setOnClickListener(
+                v -> {
+                    if (callback != null) callback.run();
+                });
     }
 
     /** Sets the close button click callback. */
     public void setCloseButtonClickCallback(Runnable callback) {
         ImageView closeButton = mToolbarView.findViewById(R.id.close);
-        closeButton.setOnClickListener(v -> {
-            if (callback != null) callback.run();
-        });
+        closeButton.setOnClickListener(
+                v -> {
+                    if (callback != null) callback.run();
+                });
     }
 
     /** Sets the progress on the progress bar. */

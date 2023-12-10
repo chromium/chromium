@@ -36,4 +36,4 @@ void SetBrowserPinnedTabs(int32_t first_non_pinned_tab_index, Browser* browser);
 
 }  // namespace chrome_desks_util
 
-#endif
+#endif  // CHROME_BROWSER_UI_ASH_DESKS_CHROME_DESKS_UTIL_H_

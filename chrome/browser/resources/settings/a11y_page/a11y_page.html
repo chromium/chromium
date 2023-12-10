@@ -51,7 +51,7 @@
 </if>
         <settings-toggle-button
             class="hr"
-            hidden$="[[!showAccessibilityLabelsSetting_]]"
+            hidden$="[[!hasScreenReader_]]"
             pref="{{prefs.settings.a11y.enable_accessibility_image_labels}}"
             on-change="onA11yImageLabelsChange_"
             label="$i18n{accessibleImageLabelsTitle}"
@@ -62,9 +62,9 @@
             class="hr"
             hidden$="[[!showPdfOcrToggle_]]"
             pref="{{prefs.settings.a11y.pdf_ocr_always_active}}"
-            on-change="onPdfOcrChange_"
             label="$i18n{pdfOcrTitle}"
-            sub-label="$i18n{pdfOcrSubtitle}">
+            sub-label="[[getPdfOcrToggleSublabel_(
+                pdfOcrStatus_, pdfOcrProgress_)]]">
         </settings-toggle-button>
 </if>
 <if expr="is_win or is_linux">

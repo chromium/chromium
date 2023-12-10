@@ -390,7 +390,8 @@ scoped_refptr<VideoFrame> Dav1dVideoDecoder::BindImageToVideoFrame(
   const bool needs_fake_uv_planes = pic->p.layout == DAV1D_PIXEL_LAYOUT_I400;
   if (needs_fake_uv_planes) {
     // UV planes are half the size of the Y plane.
-    uv_plane_stride = base::bits::AlignUp(pic->stride[0] / 2, ptrdiff_t{2});
+    uv_plane_stride =
+        base::bits::AlignUpDeprecatedDoNotUse(pic->stride[0] / 2, ptrdiff_t{2});
     const auto uv_plane_height = (pic->p.h + 1) / 2;
     const size_t size_needed = uv_plane_stride * uv_plane_height;
 

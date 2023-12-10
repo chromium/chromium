@@ -116,7 +116,7 @@ bool StructTraits<printing::mojom::PaperDataView,
   std::string display_name;
   std::string vendor_id;
   gfx::Size size_um;
-  absl::optional<gfx::Rect> maybe_printable_area_um;
+  std::optional<gfx::Rect> maybe_printable_area_um;
   if (!data.ReadDisplayName(&display_name) || !data.ReadVendorId(&vendor_id) ||
       !data.ReadSizeUm(&size_um) ||
       !data.ReadPrintableAreaUm(&maybe_printable_area_um)) {
@@ -253,9 +253,9 @@ bool StructTraits<printing::mojom::PrinterSemanticCapsAndDefaultsDataView,
                   printing::PrinterSemanticCapsAndDefaults>::
     Read(printing::mojom::PrinterSemanticCapsAndDefaultsDataView data,
          printing::PrinterSemanticCapsAndDefaults* out) {
-  absl::optional<printing::PrinterSemanticCapsAndDefaults::MediaTypes>
+  std::optional<printing::PrinterSemanticCapsAndDefaults::MediaTypes>
       media_types;
-  absl::optional<printing::PrinterSemanticCapsAndDefaults::MediaType>
+  std::optional<printing::PrinterSemanticCapsAndDefaults::MediaType>
       default_media_type;
 
   out->collate_capable = data.collate_capable();
@@ -322,7 +322,7 @@ bool StructTraits<printing::mojom::PrinterSemanticCapsAndDefaultsDataView,
   if (out->page_output_quality) {
     printing::PageOutputQualityAttributes qualities =
         out->page_output_quality->qualities;
-    absl::optional<std::string> default_quality =
+    std::optional<std::string> default_quality =
         out->page_output_quality->default_quality;
 
     // If non-null `default_quality`, there should be a matching element in

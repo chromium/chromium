@@ -1,22 +1,6 @@
 This is a testharness.js-based test.
-[PASS] audio.currentSrc initial value
-[PASS] audio.currentSrc after setting src attribute ""
-[PASS] audio.currentSrc after adding source element with src attribute ""
-[PASS] audio.currentSrc after setting src attribute "."
-[PASS] audio.currentSrc after adding source element with src attribute "."
-[PASS] audio.currentSrc after setting src attribute " "
-[PASS] audio.currentSrc after adding source element with src attribute " "
-[PASS] audio.currentSrc after setting src attribute "data:,"
 [FAIL] audio.currentSrc after adding source element with src attribute "data:,"
   assert_equals: expected "data:," but got ""
-[PASS] video.currentSrc initial value
-[PASS] video.currentSrc after setting src attribute ""
-[PASS] video.currentSrc after adding source element with src attribute ""
-[PASS] video.currentSrc after setting src attribute "."
-[PASS] video.currentSrc after adding source element with src attribute "."
-[PASS] video.currentSrc after setting src attribute " "
-[PASS] video.currentSrc after adding source element with src attribute " "
-[PASS] video.currentSrc after setting src attribute "data:,"
 [FAIL] video.currentSrc after adding source element with src attribute "data:,"
   assert_equals: expected "data:," but got ""
 Harness: the test ran to completion.

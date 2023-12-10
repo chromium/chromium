@@ -111,7 +111,7 @@ class PluginVmInstallerView : public views::BubbleDialogDelegateView,
 
   State state_ = State::kConfirmInstall;
   InstallingState installing_state_ = InstallingState::kInactive;
-  absl::optional<plugin_vm::PluginVmInstaller::FailureReason> reason_;
+  std::optional<plugin_vm::PluginVmInstaller::FailureReason> reason_;
 
   base::OnceCallback<void(bool success)> finished_callback_for_testing_;
 };

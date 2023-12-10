@@ -30,6 +30,7 @@
 <translation id="2226276347425096477">කරුණාකර මෙම පෙළ අකුරු <ph name="MAX_CHARACTERS" /> හෝ අවම වන සේ කෙටි කරන්න (ඔබ දැනට අකුරු <ph name="CURRENT_LENGTH" /> භාවිත කරයි).</translation>
 <translation id="2247351761944213033">සතිය <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">ඛණ්ඩය <ph name="NUMBER" /></translation>
+<translation id="2353297238722298836">කැමරාව සහ මයික්‍රෆෝනයට ඉඩ දෙන ලදී</translation>
 <translation id="2393030564806080191">ෂෂ්ඨ දශක වර්ණ අගය</translation>
 <translation id="2398813069815436052">සංවාදය විවෘත කරන ලදි.</translation>
 <translation id="245932805758469625">වීඩියෝවේ ඉතිරි තත්පර ගණන</translation>
@@ -60,10 +61,12 @@
 <translation id="3822383571486410024">රුණාකර මෙම පෙළ අනුලකුණු <ph name="MIN_CHARACTERS" /> කට හෝ ඊට වඩා දිගු කරන්න (ඔබ දැනට අනුලකුණු <ph name="CURRENT_LENGTH" /> ක් භාවිත කරමින් සිටී).</translation>
 <translation id="383465348367842624">'<ph name="ATSIGN" />' ට පසු කොසෙහි '<ph name="INVALIDCHARACTER" />' සංකේතය අඩංගු නොවිය යුතුය.</translation>
 <translation id="3846214748874656680">පූර්ණ තිරයෙන් ඉවත් වන්න</translation>
+<translation id="4031179711345676612">මයික්‍රෆෝනයට ඉඩ දෙන ලදී</translation>
 <translation id="4103419683916926126">මිලි තත්පර</translation>
 <translation id="4201051445878709314">පෙර මාසය පෙන්වන්න</translation>
 <translation id="4360991593054037559">කරුණාකර වලංගු අගයක් ඇතුළු කරන්න. ආසන්නතම වලංගු අගයයන් දෙක වනුයේ <ph name="VALID_VALUE_LOW" /> සහ <ph name="VALID_VALUE_HIGHER" />වේ.</translation>
 <translation id="4522570452068850558">විස්තර</translation>
+<translation id="4663373278480897665">කැමරාවට ඉඩ දෙන ලදී</translation>
 <translation id="4664250907885839816">පහත ඒවායින් කොටසක් '<ph name="ATSIGN" />' තුළ මෙම සංකේතය අඩංගු නොවිය යුතුය '<ph name="INVALIDCHARACTER" />'.</translation>
 <translation id="4718048029184481307">පින්තූරය තුළ පින්තූරයෙහි ධාවන කෙරේ</translation>
 <translation id="4748357248530471599">සංදර්ශක කටවුට් සම්පූර්ණ තීරයට ටෝගල කරන්න</translation>
@@ -137,6 +140,7 @@
 <translation id="6941933287844615239">මාධ්‍ය බාගන්න</translation>
 <translation id="698788488269350478">දිග හරින ලදී.</translation>
 <translation id="6989848892321993519">කරුණාකර මෙම පෙළ අනුලකුණු <ph name="MIN_CHARACTERS" />කට හෝ ඊට වඩා දිගු කරන්න (ඔබ දැනට අනුලකුණු 1ක් භාවිත කරමින් සිටී).</translation>
+<translation id="7080893216867146095">ස්ථානය බෙදා ගැනීමට ඉඩ දී ඇත</translation>
 <translation id="709897737746224366">කරුණාකර ඉල්ලා සිටි ආකෘතිය ඇතුල් කරන්න.</translation>
 <translation id="7102274145889307184">වත්මන් ස්ථානය</translation>
 <translation id="7263440858009898357">කරුණාකර ලැයිස්තුවෙහි අයිතමයක් තෝරන්න.</translation>

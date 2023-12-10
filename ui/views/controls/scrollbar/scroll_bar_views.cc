@@ -29,6 +29,8 @@ namespace {
 
 // Wrapper for the scroll thumb
 class ScrollBarThumb : public BaseScrollBarThumb {
+  METADATA_HEADER(ScrollBarThumb, BaseScrollBarThumb)
+
  public:
   explicit ScrollBarThumb(ScrollBar* scroll_bar);
   ~ScrollBarThumb() override;
@@ -105,6 +107,9 @@ ui::NativeTheme::State ScrollBarThumb::GetNativeThemeState() const {
       NOTREACHED_NORETURN();
   }
 }
+
+BEGIN_METADATA(ScrollBarThumb)
+END_METADATA
 
 }  // namespace
 
@@ -224,7 +229,7 @@ gfx::Rect ScrollBarViews::GetTrackBounds() const {
   return bounds;
 }
 
-BEGIN_METADATA(ScrollBarViews, ScrollBar)
+BEGIN_METADATA(ScrollBarViews)
 END_METADATA
 
 }  // namespace views

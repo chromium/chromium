@@ -7,6 +7,5 @@ This is a testharness.js-based test.
   assert_equals: :focus-visible expected false but got true
 [FAIL] FocusOptions.focusVisible: #tabindex
   assert_equals: :focus-visible expected true but got false
-[PASS] FocusOptions.focusVisible: #not_focusable
 Harness: the test ran to completion.
 

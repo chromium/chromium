@@ -9,6 +9,7 @@
 
 #include "base/json/json_writer.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "services/network/public/cpp/request_destination.h"
 #include "services/network/public/cpp/request_mode.h"
@@ -39,7 +40,8 @@ enum class ServiceWorkerRouterEvaluatorErrorEnums {
   kInvalidSource = 6,
   kInvalidCondition = 7,
   kExceedMaxConditionDepth = 8,
-  kMaxValue = kExceedMaxConditionDepth,
+  kExceedMaxRouterSize = 9,
+  kMaxValue = kExceedMaxRouterSize,
 };
 
 void RecordSetupError(ServiceWorkerRouterEvaluatorErrorEnums e) {
@@ -535,13 +537,14 @@ namespace content {
 
 class ServiceWorkerRouterEvaluator::RouterRule {
  public:
-  bool SetRule(const blink::ServiceWorkerRouterRule& rule) {
+  bool SetRule(const blink::ServiceWorkerRouterRule& rule, std::uint32_t id) {
     if (ExceedsMaxConditionDepth(rule.condition)) {
       // Too many recursion in the condition.
       RecordSetupError(
           ServiceWorkerRouterEvaluatorErrorEnums::kExceedMaxConditionDepth);
       return false;
     }
+    id_ = id;
     return condition_.Set(rule.condition) && SetSources(rule.sources);
   }
   bool Match(const network::ResourceRequest& request,
@@ -551,6 +554,10 @@ class ServiceWorkerRouterEvaluator::RouterRule {
   const std::vector<blink::ServiceWorkerRouterSource>& sources() const {
     return sources_;
   }
+  // Rule ID is allocated when the router is set. ID is unique within one
+  // service worker registration, but may overlap among other routers of other
+  // registrations.
+  std::uint32_t id() const { return id_; }
   bool need_running_status() const { return condition_.need_running_status(); }
 
  private:
@@ -566,7 +573,12 @@ class ServiceWorkerRouterEvaluator::RouterRule {
 
   ConditionObject condition_;
   std::vector<blink::ServiceWorkerRouterSource> sources_;
+  std::uint32_t id_;
 };
+
+ServiceWorkerRouterEvaluator::Result::Result() = default;
+ServiceWorkerRouterEvaluator::Result::~Result() = default;
+ServiceWorkerRouterEvaluator::Result::Result(Result&&) = default;
 
 ServiceWorkerRouterEvaluator::ServiceWorkerRouterEvaluator(
     blink::ServiceWorkerRouterRules rules)
@@ -576,9 +588,17 @@ ServiceWorkerRouterEvaluator::ServiceWorkerRouterEvaluator(
 ServiceWorkerRouterEvaluator::~ServiceWorkerRouterEvaluator() = default;
 
 void ServiceWorkerRouterEvaluator::Compile() {
-  for (const auto& r : rules_.rules) {
+  if (rules_.rules.size() >= blink::kServiceWorkerMaxRouterSize) {
+    RecordSetupError(
+        ServiceWorkerRouterEvaluatorErrorEnums::kExceedMaxRouterSize);
+    return;
+  }
+  for (size_t idx = 0; idx < rules_.rules.size(); ++idx) {
+    const auto& r = rules_.rules[idx];
     std::unique_ptr<RouterRule> rule = std::make_unique<RouterRule>();
-    if (!rule->SetRule(r)) {
+    // For now, use index as rule ID (1-indexed)
+    std::uint32_t id = idx + 1;
+    if (!rule->SetRule(r, id)) {
       return;
     }
     need_running_status_ |= rule->need_running_status();
@@ -588,7 +608,7 @@ void ServiceWorkerRouterEvaluator::Compile() {
   is_valid_ = true;
 }
 
-std::vector<blink::ServiceWorkerRouterSource>
+absl::optional<ServiceWorkerRouterEvaluator::Result>
 ServiceWorkerRouterEvaluator::EvaluateInternal(
     const network::ResourceRequest& request,
     absl::optional<blink::EmbeddedWorkerStatus> running_status) const {
@@ -597,21 +617,24 @@ ServiceWorkerRouterEvaluator::EvaluateInternal(
     if (rule->Match(request, running_status)) {
       VLOG(3) << "matched request url=" << request.url;
       RecordMatchedSourceType(rule->sources());
-      return rule->sources();
+      ServiceWorkerRouterEvaluator::Result result;
+      result.id = rule->id();
+      result.sources = rule->sources();
+      return result;
     }
   }
   VLOG(3) << "not matched request url=" << request.url;
-  return std::vector<blink::ServiceWorkerRouterSource>();
+  return absl::nullopt;
 }
 
-std::vector<blink::ServiceWorkerRouterSource>
+absl::optional<ServiceWorkerRouterEvaluator::Result>
 ServiceWorkerRouterEvaluator::Evaluate(
     const network::ResourceRequest& request,
     blink::EmbeddedWorkerStatus running_status) const {
   return EvaluateInternal(request, running_status);
 }
 
-std::vector<blink::ServiceWorkerRouterSource>
+absl::optional<ServiceWorkerRouterEvaluator::Result>
 ServiceWorkerRouterEvaluator::EvaluateWithoutRunningStatus(
     const network::ResourceRequest& request) const {
   CHECK(!need_running_status_);

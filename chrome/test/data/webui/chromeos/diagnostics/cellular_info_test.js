@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import 'chrome://diagnostics/cellular_info.js';
-import 'chrome://webui-test/mojo_webui_test_support.js';
+import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
 import {getLockType, getSignalStrength} from 'chrome://diagnostics/diagnostics_utils.js';
 import {fakeCellularNetwork} from 'chrome://diagnostics/fake_data.js';

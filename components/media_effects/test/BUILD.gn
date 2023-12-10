@@ -1,0 +1,19 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("test_support") {
+  testonly = true
+
+  sources = [
+    "fake_video_capture_service.cc",
+    "fake_video_capture_service.h",
+    "fake_video_source_provider.cc",
+    "fake_video_source_provider.h",
+  ]
+
+  deps = [
+    "//base",
+    "//services/video_capture/public/mojom",
+  ]
+}

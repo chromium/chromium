@@ -146,8 +146,6 @@ component("fido") {
       "ctap_make_credential_request.cc",
       "ctap_make_credential_request.h",
       "device_operation.h",
-      "device_public_key_extension.cc",
-      "device_public_key_extension.h",
       "device_response_converter.cc",
       "device_response_converter.h",
       "enclave/enclave_authenticator.cc",

@@ -113,6 +113,9 @@ class TabModel {
     FROM_RESTORE_TABS_UI,
     // Opened to load an omnibox search query in a new tab.
     FROM_OMNIBOX,
+    // Used for tab pre-warming where the reason for tab creation is not yet
+    // known.
+    UNSET,
     // Must be last.
     SIZE
   };

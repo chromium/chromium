@@ -16,4 +16,9 @@ std::string TestGameDashboardDelegate::GetArcAppName(
   return std::string();
 }
 
+void TestGameDashboardDelegate::RecordGameWindowOpenedEvent(
+    aura::Window* window) {}
+
+void TestGameDashboardDelegate::ShowResizeToggleMenu(aura::Window* window) {}
+
 }  // namespace ash

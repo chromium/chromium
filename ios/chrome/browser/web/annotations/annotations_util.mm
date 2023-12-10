@@ -59,3 +59,8 @@ bool IsAddressLongPressDetectionEnabled(PrefService* prefs) {
   return !IsAddressDetectionEnabled() ||
          prefs->GetBoolean(prefs::kDetectAddressesEnabled);
 }
+
+bool IsUnitAutomaticDetectionEnabled(PrefService* prefs) {
+  return (base::FeatureList::IsEnabled(web::features::kEnableMeasurements) &&
+          prefs->GetBoolean(prefs::kDetectUnitsEnabled));
+}

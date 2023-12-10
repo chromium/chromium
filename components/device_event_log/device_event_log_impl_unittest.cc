@@ -204,7 +204,13 @@ TEST_F(DeviceEventLogTest, TestStringFormat) {
             GetLogString(OLDEST_FIRST, "file,type", kDefaultLevel, 1));
 }
 
-TEST_F(DeviceEventLogTest, TestTimeFormat) {
+// TODO(crbug.com/1509459): Test is flaky on device. Re-enable the test.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_TestTimeFormat TestTimeFormat
+#else
+#define MAYBE_TestTimeFormat DISABLED_TestTimeFormat
+#endif
+TEST_F(DeviceEventLogTest, MAYBE_TestTimeFormat) {
   static constexpr base::Time::Exploded kTime = {.year = 2020,
                                                  .month = 1,
                                                  .day_of_month = 1,

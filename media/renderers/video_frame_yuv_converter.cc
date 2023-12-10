@@ -13,6 +13,7 @@
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "media/base/media_switches.h"
 #include "media/base/video_frame.h"
+#include "media/base/video_util.h"
 #include "media/renderers/video_frame_yuv_mailboxes_holder.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
@@ -101,8 +102,8 @@ VideoFrameYUVConverter::~VideoFrameYUVConverter() = default;
 
 bool VideoFrameYUVConverter::IsVideoFrameFormatSupported(
     const VideoFrame& video_frame) {
-  return std::get<0>(VideoFrameYUVMailboxesHolder::VideoPixelFormatToSkiaValues(
-             video_frame.format())) != SkYUVAInfo::PlaneConfig::kUnknown;
+  return std::get<0>(VideoPixelFormatToSkiaValues(video_frame.format())) !=
+         SkYUVAInfo::PlaneConfig::kUnknown;
 }
 
 bool VideoFrameYUVConverter::ConvertYUVVideoFrameNoCaching(

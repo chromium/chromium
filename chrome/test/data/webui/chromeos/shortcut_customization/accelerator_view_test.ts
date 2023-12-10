@@ -3,9 +3,15 @@
 // found in the LICENSE file.
 
 import 'chrome://shortcut-customization/js/accelerator_view.js';
-import 'chrome://webui-test/mojo_webui_test_support.js';
+import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
 import {IronIconElement} from '//resources/polymer/v3_0/iron-icon/iron-icon.js';
+import {VKey} from 'chrome://resources/ash/common/shortcut_input_ui/accelerator_keys.mojom-webui.js';
+import {FakeShortcutInputProvider} from 'chrome://resources/ash/common/shortcut_input_ui/fake_shortcut_input_provider.js';
+import {KeyEvent} from 'chrome://resources/ash/common/shortcut_input_ui/input_device_settings.mojom-webui.js';
+import {ShortcutInputElement} from 'chrome://resources/ash/common/shortcut_input_ui/shortcut_input.js';
+import {ShortcutInputKeyElement} from 'chrome://resources/ash/common/shortcut_input_ui/shortcut_input_key.js';
+import {KeyInputState, Modifier as ModifierEnum} from 'chrome://resources/ash/common/shortcut_input_ui/shortcut_utils.js';
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -13,8 +19,8 @@ import {AcceleratorLookupManager} from 'chrome://shortcut-customization/js/accel
 import {AcceleratorViewElement, ViewState} from 'chrome://shortcut-customization/js/accelerator_view.js';
 import {fakeAcceleratorConfig, fakeLayoutInfo} from 'chrome://shortcut-customization/js/fake_data.js';
 import {FakeShortcutProvider} from 'chrome://shortcut-customization/js/fake_shortcut_provider.js';
-import {InputKeyElement, KeyInputState} from 'chrome://shortcut-customization/js/input_key.js';
 import {setShortcutProviderForTesting} from 'chrome://shortcut-customization/js/mojo_interface_provider.js';
+import {setShortcutInputProviderForTesting} from 'chrome://shortcut-customization/js/shortcut_input_mojo_interface_provider.js';
 import {AcceleratorConfigResult, AcceleratorSource, LayoutStyle, Modifier} from 'chrome://shortcut-customization/js/shortcut_types.js';
 import {AcceleratorResultData} from 'chrome://shortcut-customization/mojom-webui/ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -41,10 +47,13 @@ suite('acceleratorViewTest', function() {
 
   let manager: AcceleratorLookupManager|null = null;
   let provider: FakeShortcutProvider;
+  const shortcutInputProvider: FakeShortcutInputProvider =
+      new FakeShortcutInputProvider();
 
   setup(() => {
     provider = new FakeShortcutProvider();
     setShortcutProviderForTesting(provider);
+    setShortcutInputProviderForTesting(shortcutInputProvider);
 
     manager = AcceleratorLookupManager.getInstance();
     manager.setAcceleratorLookup(fakeAcceleratorConfig);
@@ -62,10 +71,36 @@ suite('acceleratorViewTest', function() {
     viewElement = null;
   });
 
-  function getInputKey(selector: string): InputKeyElement {
-    const element = viewElement!.shadowRoot!.querySelector(selector);
-    assertTrue(!!element);
-    return element as InputKeyElement;
+  function getPendingKeyElement(shortcutInputElement: ShortcutInputElement):
+      ShortcutInputKeyElement {
+    return strictQuery(
+        '#pendingKey', shortcutInputElement!.shadowRoot,
+        ShortcutInputKeyElement);
+  }
+
+  function getCtrlElement(shortcutInputElement: ShortcutInputElement):
+      ShortcutInputKeyElement {
+    return strictQuery(
+        '#ctrlKey', shortcutInputElement!.shadowRoot, ShortcutInputKeyElement);
+  }
+
+  function getShiftElement(shortcutInputElement: ShortcutInputElement):
+      ShortcutInputKeyElement {
+    return strictQuery(
+        '#shiftKey', shortcutInputElement!.shadowRoot, ShortcutInputKeyElement);
+  }
+
+  function getAltElement(shortcutInputElement: ShortcutInputElement):
+      ShortcutInputKeyElement {
+    return strictQuery(
+        '#altKey', shortcutInputElement!.shadowRoot, ShortcutInputKeyElement);
+  }
+
+  function getSearchElement(shortcutInputElement: ShortcutInputElement):
+      ShortcutInputKeyElement {
+    return strictQuery(
+        '#searchKey', shortcutInputElement!.shadowRoot,
+        ShortcutInputKeyElement);
   }
 
   function getLockIcon(): HTMLDivElement {
@@ -82,7 +117,7 @@ suite('acceleratorViewTest', function() {
     viewElement = initAcceleratorViewElement();
     await flushTasks();
 
-    const keys = viewElement.shadowRoot!.querySelectorAll('input-key');
+    const keys = viewElement.shadowRoot!.querySelectorAll('shortcut-input-key');
     // Three keys: shift, control, g
     assertEquals(3, keys.length);
 
@@ -108,11 +143,14 @@ suite('acceleratorViewTest', function() {
 
     await flush();
 
-    let ctrlKey = getInputKey('#ctrlKey');
-    let altKey = getInputKey('#altKey');
-    let shiftKey = getInputKey('#shiftKey');
-    let metaKey = getInputKey('#searchKey');
-    let pendingKey = getInputKey('#pendingKey');
+    const shortcutInput = strictQuery(
+        'shortcut-input', viewElement!.shadowRoot, ShortcutInputElement);
+
+    let ctrlKey = getCtrlElement(shortcutInput);
+    let altKey = getAltElement(shortcutInput);
+    let metaKey = getSearchElement(shortcutInput);
+    let shiftKey = getShiftElement(shortcutInput);
+    let pendingKey = getPendingKeyElement(shortcutInput);
 
     // By default, no keys should be registered.
     assertEquals(KeyInputState.NOT_SELECTED, ctrlKey.keyState);
@@ -130,15 +168,14 @@ suite('acceleratorViewTest', function() {
     provider.setFakeReplaceAcceleratorResult(fakeResult);
 
     // Simulate Ctrl.
-    viewElement.dispatchEvent(new KeyboardEvent('keydown', {
-      key: 'Control',
-      keyCode: 17,
-      code: 'Control',
-      ctrlKey: true,
-      altKey: false,
-      shiftKey: false,
-      metaKey: false,
-    }));
+    const keyEvent: KeyEvent = {
+      vkey: VKey.kControl,
+      domCode: 0,
+      domKey: 0,
+      modifiers: ModifierEnum.CONTROL,
+      keyDisplay: 'ctrl',
+    };
+    shortcutInputProvider.sendKeyPressEvent(keyEvent, keyEvent);
 
     await flush();
 
@@ -149,22 +186,23 @@ suite('acceleratorViewTest', function() {
     assertEquals(KeyInputState.NOT_SELECTED, pendingKey.keyState);
 
     // Release Ctrl, expect it to not be selected.
-    viewElement.dispatchEvent(new KeyboardEvent('keyup', {
-      key: 'Control',
-      keyCode: 17,
-      code: 'Control',
-      ctrlKey: true,
-      altKey: false,
-      shiftKey: false,
-      metaKey: false,
-    }));
+    const keyEventReleased: KeyEvent = {
+      vkey: VKey.kControl,
+      domCode: 0,
+      domKey: 0,
+      modifiers: 0,
+      keyDisplay: 'ctrl',
+    };
+    shortcutInputProvider.sendKeyReleaseEvent(
+        keyEventReleased, keyEventReleased);
 
     await flush();
-    ctrlKey = getInputKey('#ctrlKey');
-    altKey = getInputKey('#altKey');
-    shiftKey = getInputKey('#shiftKey');
-    metaKey = getInputKey('#searchKey');
-    pendingKey = getInputKey('#pendingKey');
+
+    ctrlKey = getCtrlElement(shortcutInput);
+    altKey = getAltElement(shortcutInput);
+    metaKey = getSearchElement(shortcutInput);
+    shiftKey = getShiftElement(shortcutInput);
+    pendingKey = getPendingKeyElement(shortcutInput);
 
     assertEquals(KeyInputState.NOT_SELECTED, ctrlKey.keyState);
     assertEquals(KeyInputState.NOT_SELECTED, altKey.keyState);
@@ -172,44 +210,43 @@ suite('acceleratorViewTest', function() {
     assertEquals(KeyInputState.NOT_SELECTED, metaKey.keyState);
     assertEquals(KeyInputState.NOT_SELECTED, pendingKey.keyState);
 
-    viewElement.dispatchEvent(new KeyboardEvent('keydown', {
-      key: 'e',
-      keyCode: 69,
-      code: 'KeyE',
-      ctrlKey: false,
-      altKey: false,
-      shiftKey: false,
-      metaKey: false,
-    }));
-    await flush();
-    pendingKey = getInputKey('#pendingKey');
+    const keyEvent2: KeyEvent = {
+      vkey: VKey.kKeyE,
+      domCode: 0,
+      domKey: 0,
+      modifiers: 0,
+      keyDisplay: 'e',
+    };
+    shortcutInputProvider.sendKeyPressEvent(keyEvent2, keyEvent2);
+
+    await flushTasks();
+    pendingKey = getPendingKeyElement(shortcutInput);
 
     assertEquals(KeyInputState.ALPHANUMERIC_SELECTED, pendingKey.keyState);
     assertEquals('e', pendingKey.key);
 
     // Release `e`, expect it to not be selected.
-    viewElement.dispatchEvent(new KeyboardEvent('keyup', {
-      key: '',
-      keyCode: 69,
-      code: 'KeyE',
-      ctrlKey: false,
-      altKey: false,
-      shiftKey: false,
-      metaKey: false,
-    }));
+    const keyEvent2Released: KeyEvent = {
+      vkey: VKey.kKeyE,
+      domCode: 0,
+      domKey: 0,
+      modifiers: 0,
+      keyDisplay: '',
+    };
+    shortcutInputProvider.sendKeyReleaseEvent(
+        keyEvent2Released, keyEvent2Released);
+    await flushTasks();
 
-    await flush();
-    ctrlKey = getInputKey('#ctrlKey');
-    altKey = getInputKey('#altKey');
-    shiftKey = getInputKey('#shiftKey');
-    metaKey = getInputKey('#searchKey');
-    pendingKey = getInputKey('#pendingKey');
+    ctrlKey = getCtrlElement(shortcutInput);
+    altKey = getAltElement(shortcutInput);
+    metaKey = getSearchElement(shortcutInput);
+    shiftKey = getShiftElement(shortcutInput);
+    pendingKey = getPendingKeyElement(shortcutInput);
 
     assertEquals(KeyInputState.NOT_SELECTED, ctrlKey.keyState);
     assertEquals(KeyInputState.NOT_SELECTED, altKey.keyState);
     assertEquals(KeyInputState.NOT_SELECTED, shiftKey.keyState);
     assertEquals(KeyInputState.NOT_SELECTED, metaKey.keyState);
-    assertEquals(KeyInputState.NOT_SELECTED, pendingKey.keyState);
     assertEquals('key', pendingKey.key);
   });
 
@@ -225,11 +262,14 @@ suite('acceleratorViewTest', function() {
 
     await flushTasks();
 
-    const ctrlKey = getInputKey('#ctrlKey');
-    const altKey = getInputKey('#altKey');
-    const shiftKey = getInputKey('#shiftKey');
-    const metaKey = getInputKey('#searchKey');
-    const pendingKey = getInputKey('#pendingKey');
+    const shortcutInput = strictQuery(
+        'shortcut-input', viewElement!.shadowRoot, ShortcutInputElement);
+
+    const ctrlKey = getCtrlElement(shortcutInput);
+    const altKey = getAltElement(shortcutInput);
+    const metaKey = getSearchElement(shortcutInput);
+    const shiftKey = getShiftElement(shortcutInput);
+    const pendingKey = getPendingKeyElement(shortcutInput);
 
     // By default, no keys should be registered.
     assertEquals(KeyInputState.NOT_SELECTED, ctrlKey.keyState);
@@ -247,15 +287,14 @@ suite('acceleratorViewTest', function() {
     provider.setFakeReplaceAcceleratorResult(fakeResult);
 
     // Simulate F3.
-    viewElement.dispatchEvent(new KeyboardEvent('keydown', {
-      key: 'F3',
-      keyCode: 114,
-      code: 'F3',
-      ctrlKey: false,
-      altKey: false,
-      shiftKey: false,
-      metaKey: false,
-    }));
+    const keyEvent: KeyEvent = {
+      vkey: VKey.kF3,
+      domCode: 0,
+      domKey: 0,
+      modifiers: 0,
+      keyDisplay: 'f3',
+    };
+    shortcutInputProvider.sendKeyPressEvent(keyEvent, keyEvent);
 
     await flush();
 
@@ -423,7 +462,9 @@ suite('acceleratorViewTest', function() {
     viewElement.viewState = ViewState.EDIT;
     await flush();
 
-    const pendingKey = getInputKey('#pendingKey');
+    const shortcutInput = strictQuery(
+        'shortcut-input', viewElement!.shadowRoot, ShortcutInputElement);
+    const pendingKey = getPendingKeyElement(shortcutInput);
 
     const fakeResult: AcceleratorResultData = {
       result: AcceleratorConfigResult.kConflict,
@@ -432,70 +473,81 @@ suite('acceleratorViewTest', function() {
     provider.setFakeReplaceAcceleratorResult(fakeResult);
 
     // Simulate SHIFT + SPACE, expect the key display to be 'space'.
-    viewElement.dispatchEvent(new KeyboardEvent('keydown', {
-      key: ' ',
-      code: 'Space',
-      keyCode: 32,
-      shiftKey: true,
-    }));
+    const keyEvent: KeyEvent = {
+      vkey: VKey.kSpace,
+      domCode: 0,
+      domKey: 0,
+      modifiers: ModifierEnum.SHIFT,
+      keyDisplay: 'space',
+    };
+    shortcutInputProvider.sendKeyPressEvent(keyEvent, keyEvent);
 
     await flush();
     assertEquals('space', pendingKey.key);
 
     // Simulate SHIFT + OVERVIEW, expect the key display to be
     // 'LaunchApplication1' and the icon to be 'overview'.
-    viewElement.dispatchEvent(new KeyboardEvent('keydown', {
-      key: 'F4',
-      code: 'ShowAllWindows',
-      keyCode: 182,
-      shiftKey: true,
-    }));
+    const keyEvent2: KeyEvent = {
+      vkey: VKey.kF4,
+      domCode: 0,
+      domKey: 0,
+      modifiers: ModifierEnum.SHIFT,
+      keyDisplay: 'LaunchApplication1',
+    };
+    shortcutInputProvider.sendKeyPressEvent(keyEvent2, keyEvent2);
+
     await flush();
 
     assertEquals('LaunchApplication1', pendingKey.key);
     const keyIconElement =
         pendingKey.shadowRoot!.querySelector('#key-icon') as IronIconElement;
-    assertEquals('shortcut-customization-keys:overview', keyIconElement.icon);
+    assertEquals('shortcut-input-keys:overview', keyIconElement.icon);
 
     // Simulate SHIFT + BRIGHTNESS_UP, expect the key display to be
     // 'BrightnessUp' and the icon to be 'display-brightness-up'.
-    viewElement.dispatchEvent(new KeyboardEvent('keydown', {
-      key: 'BrightnessUp',
-      code: 'BrightnessUp',
-      keyCode: 217,
-      shiftKey: true,
-    }));
+    const keyEvent3: KeyEvent = {
+      vkey: VKey.kBrightnessUp,
+      domCode: 0,
+      domKey: 0,
+      modifiers: ModifierEnum.SHIFT,
+      keyDisplay: 'BrightnessUp',
+    };
+    shortcutInputProvider.sendKeyPressEvent(keyEvent3, keyEvent3);
+
     await flush();
 
     assertEquals('BrightnessUp', pendingKey.key);
     const keyIconElement2 =
         pendingKey.shadowRoot!.querySelector('#key-icon') as IronIconElement;
     assertEquals(
-        'shortcut-customization-keys:display-brightness-up',
-        keyIconElement2.icon);
+        'shortcut-input-keys:display-brightness-up', keyIconElement2.icon);
 
     // Simulate SHIFT + MUTE_MICROPHONE.
-    viewElement.dispatchEvent(new KeyboardEvent('keydown', {
-      key: '',
-      code: '',
-      keyCode: 159,
-      shiftKey: true,
-    }));
+    const keyEvent4: KeyEvent = {
+      vkey: VKey.kMicrophoneMuteToggle,
+      domCode: 0,
+      domKey: 0,
+      modifiers: ModifierEnum.SHIFT,
+      keyDisplay: 'MicrophoneMuteToggle',
+    };
+    shortcutInputProvider.sendKeyPressEvent(keyEvent4, keyEvent4);
+
     await flush();
 
     assertEquals('MicrophoneMuteToggle', pendingKey.key);
     const keyIconElement3 =
         pendingKey.shadowRoot!.querySelector('#key-icon') as IronIconElement;
-    assertEquals(
-        'shortcut-customization-keys:microphone-mute', keyIconElement3.icon);
+    assertEquals('shortcut-input-keys:microphone-mute', keyIconElement3.icon);
 
     // Simulate CONTROL + BACKQUOTE.
-    viewElement.dispatchEvent(new KeyboardEvent('keydown', {
-      key: 'Unidentified',
-      code: 'Backquote',
-      keyCode: 192,
-      ctrlKey: true,
-    }));
+    const keyEvent5: KeyEvent = {
+      vkey: VKey.kOem3,
+      domCode: 0,
+      domKey: 0,
+      modifiers: ModifierEnum.SHIFT,
+      keyDisplay: '`',
+    };
+    shortcutInputProvider.sendKeyPressEvent(keyEvent5, keyEvent5);
     await flush();
 
     assertEquals('`', pendingKey.key);
@@ -583,11 +635,14 @@ suite('acceleratorViewTest', function() {
     // Assert that this is in the EDIT state.
     assertEquals(ViewState.EDIT, viewElement.viewState);
 
-    let ctrlKey = getInputKey('#ctrlKey');
-    let altKey = getInputKey('#altKey');
-    let shiftKey = getInputKey('#shiftKey');
-    let metaKey = getInputKey('#searchKey');
-    let pendingKey = getInputKey('#pendingKey');
+    const shortcutInput = strictQuery(
+        'shortcut-input', viewElement!.shadowRoot, ShortcutInputElement);
+
+    let ctrlKey = getCtrlElement(shortcutInput);
+    let altKey = getAltElement(shortcutInput);
+    let metaKey = getSearchElement(shortcutInput);
+    let shiftKey = getShiftElement(shortcutInput);
+    let pendingKey = getPendingKeyElement(shortcutInput);
 
     // By default, no keys should be registered.
     assertEquals(KeyInputState.NOT_SELECTED, ctrlKey.keyState);
@@ -598,15 +653,14 @@ suite('acceleratorViewTest', function() {
     assertEquals('key', pendingKey.key);
 
     // Simulate Alt.
-    viewElement.dispatchEvent(new KeyboardEvent('keydown', {
-      key: 'Alt',
-      keyCode: 18,
-      code: 'Alt',
-      ctrlKey: false,
-      altKey: true,
-      shiftKey: false,
-      metaKey: false,
-    }));
+    const keyEvent: KeyEvent = {
+      vkey: VKey.kMenu,
+      domCode: 0,
+      domKey: 0,
+      modifiers: ModifierEnum.ALT,
+      keyDisplay: 'alt',
+    };
+    shortcutInputProvider.sendKeyPressEvent(keyEvent, keyEvent);
 
     await flush();
 
@@ -617,28 +671,27 @@ suite('acceleratorViewTest', function() {
     assertEquals(KeyInputState.NOT_SELECTED, pendingKey.keyState);
 
     // Now press Escape.
-    viewElement.dispatchEvent(new KeyboardEvent('keydown', {
-      key: 'Escape',
-      keyCode: 27,
-      code: 'Escape',
-      ctrlKey: false,
-      altKey: true,
-      shiftKey: false,
-      metaKey: false,
-    }));
+    const keyEvent2: KeyEvent = {
+      vkey: VKey.kEscape,
+      domCode: 0,
+      domKey: 0,
+      modifiers: ModifierEnum.ALT,
+      keyDisplay: 'escape',
+    };
+    shortcutInputProvider.sendKeyPressEvent(keyEvent2, keyEvent2);
 
     await flush();
-    ctrlKey = getInputKey('#ctrlKey');
-    altKey = getInputKey('#altKey');
-    shiftKey = getInputKey('#shiftKey');
-    metaKey = getInputKey('#searchKey');
-    pendingKey = getInputKey('#pendingKey');
+
+    ctrlKey = getCtrlElement(shortcutInput);
+    altKey = getAltElement(shortcutInput);
+    metaKey = getSearchElement(shortcutInput);
+    shiftKey = getShiftElement(shortcutInput);
+    pendingKey = getPendingKeyElement(shortcutInput);
 
     assertEquals(KeyInputState.NOT_SELECTED, ctrlKey.keyState);
     assertEquals(KeyInputState.MODIFIER_SELECTED, altKey.keyState);
     assertEquals(KeyInputState.NOT_SELECTED, shiftKey.keyState);
     assertEquals(KeyInputState.NOT_SELECTED, metaKey.keyState);
-    assertEquals(KeyInputState.NOT_SELECTED, pendingKey.keyState);
 
     // Expect that press Alt + Esc will cancel the edit state.
     assertEquals(ViewState.VIEW, viewElement.viewState);

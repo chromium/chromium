@@ -56,7 +56,9 @@ enum class ChromeLabsSelectedLab {
   // kTabSearchMediaTabsSelected = 7,
   kChromeRefresh2023Selected = 8,
   kTabGroupsSaveSelected = 9,
-  kMaxValue = kTabGroupsSaveSelected,
+  kChromeWebuiRefresh2023Selected = 10,
+  kCustomizeChromeSidePanelSelected = 11,
+  kMaxValue = kCustomizeChromeSidePanelSelected,
 };
 
 void EmitToHistogram(const std::u16string& selected_lab_state,
@@ -81,8 +83,14 @@ void EmitToHistogram(const std::u16string& selected_lab_state,
     if (internal_name == flag_descriptions::kTabGroupsSaveId) {
       return ChromeLabsSelectedLab::kTabGroupsSaveSelected;
     }
+    if (internal_name == flag_descriptions::kCustomizeChromeSidePanelId) {
+      return ChromeLabsSelectedLab::kCustomizeChromeSidePanelSelected;
+    }
     if (internal_name == flag_descriptions::kChromeRefresh2023Id) {
       return ChromeLabsSelectedLab::kChromeRefresh2023Selected;
+    }
+    if (internal_name == flag_descriptions::kChromeWebuiRefresh2023Id) {
+      return ChromeLabsSelectedLab::kChromeWebuiRefresh2023Selected;
     }
     if (internal_name == flag_descriptions::kScrollableTabStripFlagId)
       return ChromeLabsSelectedLab::kTabScrollingSelected;
@@ -218,7 +226,7 @@ bool ChromeLabsViewController::ShouldLabShowNewBadge(Profile* profile,
 #endif
 
   base::Value::Dict& new_badge_prefs = update.Get();
-  absl::optional<int> start_day = new_badge_prefs.FindInt(lab.internal_name);
+  std::optional<int> start_day = new_badge_prefs.FindInt(lab.internal_name);
   DCHECK(start_day);
   uint32_t current_day = GetCurrentDay();
   if (*start_day == chrome_labs_prefs::kChromeLabsNewExperimentPrefValue) {

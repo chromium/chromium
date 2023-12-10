@@ -55,6 +55,8 @@ class TrustSafetySentimentServiceBrowserTest : public InProcessBrowserTest {
         .WillRepeatedly(testing::Return(true));
   }
 
+  void TearDownOnMainThread() override { mock_hats_service_ = nullptr; }
+
   void OpenPageInfo() {
     ShowPageInfoDialog(browser()->tab_strip_model()->GetActiveWebContents(),
                        base::DoNothing());
@@ -93,7 +95,7 @@ class TrustSafetySentimentServiceBrowserTest : public InProcessBrowserTest {
 
  protected:
   base::test::ScopedFeatureList feature_list_;
-  raw_ptr<MockHatsService, DanglingUntriaged> mock_hats_service_;
+  raw_ptr<MockHatsService> mock_hats_service_ = nullptr;
 };
 
 IN_PROC_BROWSER_TEST_F(TrustSafetySentimentServiceBrowserTest,

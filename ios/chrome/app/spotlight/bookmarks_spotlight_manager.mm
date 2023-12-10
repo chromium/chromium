@@ -18,6 +18,7 @@
 #import "ios/chrome/app/spotlight/searchable_item_factory.h"
 #import "ios/chrome/app/spotlight/spotlight_interface.h"
 #import "ios/chrome/app/spotlight/spotlight_logger.h"
+#import "ios/chrome/browser/bookmarks/model/account_bookmark_model_factory.h"
 #import "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_model_factory.h"
 #import "ios/chrome/browser/favicon/ios_chrome_large_icon_service_factory.h"
 
@@ -132,13 +133,19 @@ class SpotlightBookmarkModelBridge : public bookmarks::BookmarkModelObserver {
 };
 
 @implementation BookmarksSpotlightManager {
-  // Bridge to register for bookmark changes.
-  std::unique_ptr<SpotlightBookmarkModelBridge> _bookmarkModelBridge;
+  // Bridge to register for local or syncable bookmark model changes.
+  std::unique_ptr<SpotlightBookmarkModelBridge>
+      _localOrSyncableBookmarkModelBridge;
+  // Bridge to register for account bookmark model changes.
+  std::unique_ptr<SpotlightBookmarkModelBridge> _accountBookmarkModelBridge;
 
-  // Keep a reference to detach before deallocing. Life cycle of _bookmarkModel
-  // is longer than life cycle of a SpotlightManager as
-  // `BookmarkModelBeingDeleted` will cause deletion of SpotlightManager.
-  bookmarks::BookmarkModel* _bookmarkModel;  // weak
+  // Keep a reference to detach before deallocing. Life cycle of
+  // `_localOrSyncalbeBookmarkModel` and `_accountBookmarkModel` is longer than
+  // life cycle of a SpotlightManager as `BookmarkModelBeingDeleted` will cause
+  // deletion of SpotlightManager.
+  bookmarks::BookmarkModel* _localOrSyncableBookmarkModel;  // weak
+  // `_accountBookmarkModel` can be `nullptr`.
+  bookmarks::BookmarkModel* _accountBookmarkModel;  // weak
 
   // Number of nodes indexed in initial scan.
   NSUInteger _nodesIndexed;
@@ -153,37 +160,54 @@ class SpotlightBookmarkModelBridge : public bookmarks::BookmarkModelObserver {
       IOSChromeLargeIconServiceFactory::GetForBrowserState(browserState);
 
   return [[BookmarksSpotlightManager alloc]
-      initWithLargeIconService:largeIconService
-                 bookmarkModel:ios::LocalOrSyncableBookmarkModelFactory::
-                                   GetForBrowserState(browserState)
-            spotlightInterface:[SpotlightInterface defaultInterface]
-         searchableItemFactory:
-             [[SearchableItemFactory alloc]
-                 initWithLargeIconService:largeIconService
-                                   domain:spotlight::DOMAIN_BOOKMARKS
-                    useTitleInIdentifiers:YES]];
+          initWithLargeIconService:largeIconService
+      localOrSyncableBookmarkModel:ios::LocalOrSyncableBookmarkModelFactory::
+                                       GetForBrowserState(browserState)
+              accountBookmarkModel:ios::AccountBookmarkModelFactory::
+                                       GetForBrowserState(browserState)
+                spotlightInterface:[SpotlightInterface defaultInterface]
+             searchableItemFactory:
+                 [[SearchableItemFactory alloc]
+                     initWithLargeIconService:largeIconService
+                                       domain:spotlight::DOMAIN_BOOKMARKS
+                        useTitleInIdentifiers:YES]];
 }
 
 - (instancetype)
-    initWithLargeIconService:(favicon::LargeIconService*)largeIconService
-               bookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel
-          spotlightInterface:(SpotlightInterface*)spotlightInterface
-       searchableItemFactory:(SearchableItemFactory*)searchableItemFactory {
+        initWithLargeIconService:(favicon::LargeIconService*)largeIconService
+    localOrSyncableBookmarkModel:
+        (bookmarks::BookmarkModel*)localOrSyncableBookmarkModel
+            accountBookmarkModel:(bookmarks::BookmarkModel*)accountBookmarkModel
+              spotlightInterface:(SpotlightInterface*)spotlightInterface
+           searchableItemFactory:(SearchableItemFactory*)searchableItemFactory {
   self = [super initWithSpotlightInterface:spotlightInterface
                      searchableItemFactory:searchableItemFactory];
   if (self) {
     _pendingLargeIconTasksCount = 0;
-    _bookmarkModelBridge.reset(new SpotlightBookmarkModelBridge(self));
-    _bookmarkModel = bookmarkModel;
-    bookmarkModel->AddObserver(_bookmarkModelBridge.get());
+    _localOrSyncableBookmarkModelBridge =
+        std::make_unique<SpotlightBookmarkModelBridge>(self);
+    _localOrSyncableBookmarkModel = localOrSyncableBookmarkModel;
+    _localOrSyncableBookmarkModel->AddObserver(
+        _localOrSyncableBookmarkModelBridge.get());
+    if (accountBookmarkModel) {
+      _accountBookmarkModelBridge =
+          std::make_unique<SpotlightBookmarkModelBridge>(self);
+      _accountBookmarkModel = accountBookmarkModel;
+      _accountBookmarkModel->AddObserver(_accountBookmarkModelBridge.get());
+    }
   }
   return self;
 }
 
 - (void)detachBookmarkModel {
-  if (_bookmarkModelBridge.get()) {
-    _bookmarkModel->RemoveObserver(_bookmarkModelBridge.get());
-    _bookmarkModelBridge.reset();
+  if (_localOrSyncableBookmarkModelBridge.get()) {
+    _localOrSyncableBookmarkModel->RemoveObserver(
+        _localOrSyncableBookmarkModelBridge.get());
+    _localOrSyncableBookmarkModelBridge.reset();
+  }
+  if (_accountBookmarkModelBridge.get()) {
+    _accountBookmarkModel->RemoveObserver(_accountBookmarkModelBridge.get());
+    _accountBookmarkModelBridge.reset();
   }
 }
 
@@ -203,8 +227,9 @@ class SpotlightBookmarkModelBridge : public bookmarks::BookmarkModelObserver {
   }
 
   NSMutableArray* parentNames = [self parentFolderNamesForNode:node->parent()];
+  bookmarks::BookmarkModel* parentModel = [self bookmarkModelForNode:node];
 
-  if (node->is_folder() && !_bookmarkModel->is_permanent_node(node)) {
+  if (node->is_folder() && !parentModel->is_permanent_node(node)) {
     [parentNames addObject:base::SysUTF16ToNSString(node->GetTitle())];
   }
 
@@ -270,10 +295,13 @@ class SpotlightBookmarkModelBridge : public bookmarks::BookmarkModelObserver {
 }
 
 - (void)reindexBookmarksIfNeeded {
-  if (self.isShuttingDown) {
+  if (self.isShuttingDown || _initialIndexDone) {
     return;
   }
-  if (!_bookmarkModel->loaded() || _initialIndexDone) {
+  if (!_localOrSyncableBookmarkModel->loaded()) {
+    return;
+  }
+  if (_accountBookmarkModel && !_accountBookmarkModel->loaded()) {
     return;
   }
   _initialIndexDone = YES;
@@ -291,7 +319,7 @@ class SpotlightBookmarkModelBridge : public bookmarks::BookmarkModelObserver {
   }
 
   std::vector<const bookmarks::BookmarkNode*> nodesMatchingURL =
-      _bookmarkModel->GetNodesByURL(URL);
+      [self nodesByURL:URL];
 
   NSMutableArray* itemKeywords = [[NSMutableArray alloc] init];
 
@@ -376,14 +404,20 @@ class SpotlightBookmarkModelBridge : public bookmarks::BookmarkModelObserver {
   // shutdown, so the reindex can't happen until next app start. In the former
   // case, unset _initialIndexDone flag. This makes sure indexing will happen
   // once the model loads.
-  if (!_bookmarkModel->loaded()) {
+  if (!_localOrSyncableBookmarkModel->loaded()) {
+    _initialIndexDone = NO;
+  }
+  if (_accountBookmarkModel && !_accountBookmarkModel->loaded()) {
     _initialIndexDone = NO;
   }
 
   const base::Time startOfReindexing = base::Time::Now();
   _nodesIndexed = 0;
   _pendingLargeIconTasksCount = 0;
-  [self refreshNodeInIndex:_bookmarkModel->root_node()];
+  [self refreshNodeInIndex:_localOrSyncableBookmarkModel->root_node()];
+  if (_accountBookmarkModel) {
+    [self refreshNodeInIndex:_accountBookmarkModel->root_node()];
+  }
   const base::Time endOfReindexing = base::Time::Now();
 
   UMA_HISTOGRAM_TIMES("IOS.Spotlight.BookmarksIndexingDuration",
@@ -398,6 +432,28 @@ class SpotlightBookmarkModelBridge : public bookmarks::BookmarkModelObserver {
   [[NSUserDefaults standardUserDefaults]
       setObject:@(spotlight::kCurrentSpotlightIndexVersion)
          forKey:@(spotlight::kSpotlightLastIndexingVersionKey)];
+}
+
+- (bookmarks::BookmarkModel*)bookmarkModelForNode:
+    (const bookmarks::BookmarkNode*)node {
+  if (node->HasAncestor(_localOrSyncableBookmarkModel->root_node())) {
+    return _localOrSyncableBookmarkModel;
+  }
+  DCHECK(_accountBookmarkModel &&
+         node->HasAncestor(_accountBookmarkModel->root_node()));
+  return _accountBookmarkModel;
+}
+
+- (std::vector<const bookmarks::BookmarkNode*>)nodesByURL:(const GURL&)url {
+  std::vector<const bookmarks::BookmarkNode*> localOrSyncableNodes =
+      _localOrSyncableBookmarkModel->GetNodesByURL(url);
+  if (_accountBookmarkModel) {
+    std::vector<const bookmarks::BookmarkNode*> accountNodes =
+        _accountBookmarkModel->GetNodesByURL(url);
+    localOrSyncableNodes.insert(localOrSyncableNodes.end(),
+                                accountNodes.begin(), accountNodes.end());
+  }
+  return localOrSyncableNodes;
 }
 
 @end

@@ -7,7 +7,6 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
-#include "ash/public/cpp/tablet_mode.h"
 #include "ash/webui/camera_app_ui/url_constants.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "base/feature_list.h"
@@ -89,24 +88,16 @@ void ChromeCameraAppUIDelegate::CameraAppDialog::ShowIntent(
 ChromeCameraAppUIDelegate::CameraAppDialog::CameraAppDialog(
     const std::string& url)
     : ash::SystemWebDialogDelegate(GURL(url),
-                                   /*title=*/std::u16string()) {}
+                                   /*title=*/std::u16string()) {
+  set_can_maximize(true);
+  // For customizing the title bar.
+  set_dialog_frame_kind(ui::WebDialogDelegate::FrameKind::kNonClient);
+  set_dialog_modal_type(ui::MODAL_TYPE_WINDOW);
+  set_dialog_size(
+      gfx::Size(kChromeCameraAppDefaultWidth, kChromeCameraAppDefaultHeight));
+}
 
 ChromeCameraAppUIDelegate::CameraAppDialog::~CameraAppDialog() = default;
-
-ui::ModalType ChromeCameraAppUIDelegate::CameraAppDialog::GetDialogModalType()
-    const {
-  return ui::MODAL_TYPE_WINDOW;
-}
-
-bool ChromeCameraAppUIDelegate::CameraAppDialog::CanMaximizeDialog() const {
-  return !ash::TabletMode::Get()->InTabletMode();
-}
-
-ui::WebDialogDelegate::FrameKind
-ChromeCameraAppUIDelegate::CameraAppDialog::GetWebDialogFrameKind() const {
-  // For customizing the title bar.
-  return ui::WebDialogDelegate::FrameKind::kNonClient;
-}
 
 void ChromeCameraAppUIDelegate::CameraAppDialog::AdjustWidgetInitParams(
     views::Widget::InitParams* params) {
@@ -121,11 +112,6 @@ void ChromeCameraAppUIDelegate::CameraAppDialog::AdjustWidgetInitParams(
       chromeos::kFrameInactiveColorKey, grey_900);
 }
 
-void ChromeCameraAppUIDelegate::CameraAppDialog::GetDialogSize(
-    gfx::Size* size) const {
-  size->SetSize(kChromeCameraAppDefaultWidth, kChromeCameraAppDefaultHeight);
-}
-
 void ChromeCameraAppUIDelegate::CameraAppDialog::RequestMediaAccessPermission(
     content::WebContents* web_contents,
     const content::MediaStreamRequest& request,
@@ -136,7 +122,7 @@ void ChromeCameraAppUIDelegate::CameraAppDialog::RequestMediaAccessPermission(
 
 bool ChromeCameraAppUIDelegate::CameraAppDialog::CheckMediaAccessPermission(
     content::RenderFrameHost* render_frame_host,
-    const GURL& security_origin,
+    const url::Origin& security_origin,
     blink::mojom::MediaStreamType type) {
   return MediaCaptureDevicesDispatcher::GetInstance()
       ->CheckMediaAccessPermission(render_frame_host, security_origin, type);
@@ -302,7 +288,7 @@ void ChromeCameraAppUIDelegate::SetLaunchDirectory() {
     return;
   }
 
-  absl::optional<webapps::AppId> app_id =
+  std::optional<webapps::AppId> app_id =
       swa_manager->GetAppIdForSystemApp(ash::SystemWebAppType::CAMERA);
   if (!app_id.has_value()) {
     return;
@@ -326,9 +312,17 @@ void ChromeCameraAppUIDelegate::SetLaunchDirectory() {
 void ChromeCameraAppUIDelegate::PopulateLoadTimeData(
     content::WebUIDataSource* source) {
   // Add strings that can be pulled in.
+  //
+  // Please also update the mocked value in _handle_strings_m_js in
+  // ash/webui/camera_app_ui/resources/utils/cca/commands/dev.py when adding or
+  // removing keys here.
   source->AddString("board_name", base::SysInfo::GetLsbReleaseBoard());
   source->AddString("device_type",
                     DeviceTypeToString(chromeos::GetDeviceType()));
+  source->AddBoolean("auto_qr", base::FeatureList::IsEnabled(
+                                    ash::features::kCameraAppAutoQRDetection));
+  source->AddBoolean("digital_zoom", base::FeatureList::IsEnabled(
+                                         ash::features::kCameraAppDigitalZoom));
 
   const PrefService* prefs = Profile::FromWebUI(web_ui_)->GetPrefs();
   source->AddBoolean("video_capture_disallowed",
@@ -407,8 +401,8 @@ std::string ChromeCameraAppUIDelegate::GetFilePathInArcByName(
 
 void ChromeCameraAppUIDelegate::OpenDevToolsWindow(
     content::WebContents* web_contents) {
-  DevToolsWindow::OpenDevToolsWindow(web_contents,
-                                     DevToolsToggleAction::NoOp());
+  DevToolsWindow::OpenDevToolsWindow(web_contents, DevToolsToggleAction::NoOp(),
+                                     DevToolsOpenedByAction::kUnknown);
 }
 
 void ChromeCameraAppUIDelegate::MonitorFileDeletion(

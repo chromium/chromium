@@ -437,11 +437,9 @@ void StoragePartitionImplMap::GarbageCollect(
 }
 
 void StoragePartitionImplMap::ForEach(
-    BrowserContext::StoragePartitionCallback callback) {
-  for (PartitionMap::const_iterator it = partitions_.begin();
-       it != partitions_.end();
-       ++it) {
-    callback.Run(it->second.get());
+    base::FunctionRef<void(StoragePartition*)> fn) {
+  for (const auto& [config, partition] : partitions_) {
+    fn(partition.get());
   }
 }
 

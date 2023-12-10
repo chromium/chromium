@@ -5,9 +5,10 @@
 import("//build/config/chrome_build.gni")
 declare_args() {
   # This enables building WebNN with XNNPACK. Currently only available for
-  # Windows and Linux on x64 or x86.
-  build_webnn_with_xnnpack =
-      (is_linux || is_win) && (current_cpu == "x64" || current_cpu == "x86")
+  # Windows, macOS and Linux on x64, x86 and arm64.
+  build_webnn_with_xnnpack = (is_linux || is_win || is_mac) &&
+                             (current_cpu == "x64" || current_cpu == "x86" ||
+                              (current_cpu == "arm64" && !is_win))
 
   # This build flag enables WebNN on ChromeOS platform to access hardware
   # acceleration by using ModelLoader mojo interface.

@@ -1,0 +1,8 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<!-- This file is generated using tools/search_engine_choice/generate_search_engine_snippets.py. Do not modify it manually. -->
+<translationbundle lang="te">
+  <translation id="IDS_BING_SEARCH_DESCRIPTION">Microsoft నుండి వేగవంతమైన, ఖచ్చితమైన, ప్రైవేట్ శోధన</translation>
+  <translation id="IDS_GOOGLE_SEARCH_DESCRIPTION">ప్రపంచంలో అత్యధికంగా ఉపయోగించే శోధన ఇంజిన్‌తో మీకు కావలసిన వాటిని కనుగొనండి.</translation>
+  <translation id="IDS_MOJEEK_SEARCH_DESCRIPTION">స్వతంత్ర, యూరోపియన్, ట్రాకింగ్ కాని శోధన ఇంజిన్</translation>
+</translationbundle>

@@ -6,11 +6,11 @@
 
 #include <windows.h>
 
+#include <optional>
 #include "base/notreached.h"
 #include "base/win/security_descriptor.h"
 #include "base/win/sid.h"
 #include "base/win/win_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace sandbox {
 
@@ -21,7 +21,7 @@ ResultCode CreateAltWindowStation(HWINSTA* winsta) {
   if (!current_winsta)
     return SBOX_ERROR_CANNOT_GET_WINSTATION;
 
-  absl::optional<base::win::SecurityDescriptor> sd =
+  std::optional<base::win::SecurityDescriptor> sd =
       base::win::SecurityDescriptor::FromHandle(
           current_winsta, base::win::SecurityObjectType::kWindowStation,
           DACL_SECURITY_INFORMATION);
@@ -69,7 +69,7 @@ ResultCode CreateAltDesktop(HWINSTA winsta, HDESK* desktop) {
 
   // Get the security attributes from the current desktop, we will use this as
   // the base security attributes for the new desktop.
-  absl::optional<base::win::SecurityDescriptor> sd =
+  std::optional<base::win::SecurityDescriptor> sd =
       base::win::SecurityDescriptor::FromHandle(
           current_desktop, base::win::SecurityObjectType::kDesktop,
           DACL_SECURITY_INFORMATION);

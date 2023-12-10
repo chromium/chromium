@@ -193,11 +193,6 @@ void FakeCrasAudioClient::GetNumberOfInputStreamsWithPermission(
   std::move(callback).Run(active_input_streams_);
 }
 
-void FakeCrasAudioClient::GetDeprioritizeBtWbsMic(
-    chromeos::DBusMethodCallback<bool> callback) {
-  std::move(callback).Run(false);
-}
-
 void FakeCrasAudioClient::GetSpeakOnMuteDetectionEnabled(
     chromeos::DBusMethodCallback<bool> callback) {
   std::move(callback).Run(false);

@@ -55,6 +55,7 @@ namespace blink {
 ScrollOffset ScrollAlignment::GetScrollOffsetToExpose(
     const PhysicalRect& scroll_snapport_rect,
     const PhysicalRect& expose_rect,
+    const PhysicalBoxStrut& expose_scroll_margin,
     const mojom::blink::ScrollAlignment& align_x,
     const mojom::blink::ScrollAlignment& align_y,
     const ScrollOffset& current_scroll_offset) {
@@ -67,14 +68,22 @@ ScrollOffset ScrollAlignment::GetScrollOffsetToExpose(
   if (non_zero_visible_rect.Height() == LayoutUnit())
     non_zero_visible_rect.SetHeight(minimum_layout_unit);
 
+  // The expose_rect includes the scroll-margin of the element that is being
+  // exposed (see LayoutObject::AbsoluteBoundingBoxRectForScrollIntoView).
+  // We want to exclude the margin for deciding whether it's already visible,
+  // but include it when calculating the scroll offset that we need to scroll
+  // to in order to achieve the desired alignment.
+  PhysicalRect expose_rect_no_margin = expose_rect;
+  expose_rect_no_margin.Contract(expose_scroll_margin);
+
   // Determine the appropriate X behavior.
   mojom::blink::ScrollAlignment::Behavior scroll_x;
-  PhysicalRect expose_rect_x(expose_rect.X(), non_zero_visible_rect.Y(),
-                             expose_rect.Width(),
-                             non_zero_visible_rect.Height());
+  PhysicalRect expose_rect_x(
+      expose_rect_no_margin.X(), non_zero_visible_rect.Y(),
+      expose_rect_no_margin.Width(), non_zero_visible_rect.Height());
   LayoutUnit intersect_width =
       Intersection(non_zero_visible_rect, expose_rect_x).Width();
-  if (intersect_width == expose_rect.Width()) {
+  if (intersect_width == expose_rect_no_margin.Width()) {
     // If the rectangle is fully visible, use the specified visible behavior.
     // If the rectangle is partially visible, but over a certain threshold,
     // then treat it as fully visible to avoid unnecessary horizontal scrolling
@@ -107,12 +116,12 @@ ScrollOffset ScrollAlignment::GetScrollOffsetToExpose(
 
   // Determine the appropriate Y behavior.
   mojom::blink::ScrollAlignment::Behavior scroll_y;
-  PhysicalRect expose_rect_y(non_zero_visible_rect.X(), expose_rect.Y(),
-                             non_zero_visible_rect.Width(),
-                             expose_rect.Height());
+  PhysicalRect expose_rect_y(
+      non_zero_visible_rect.X(), expose_rect_no_margin.Y(),
+      non_zero_visible_rect.Width(), expose_rect_no_margin.Height());
   LayoutUnit intersect_height =
       Intersection(non_zero_visible_rect, expose_rect_y).Height();
-  if (intersect_height == expose_rect.Height()) {
+  if (intersect_height == expose_rect_no_margin.Height()) {
     // If the rectangle is fully visible, use the specified visible behavior.
     scroll_y = align_y.rect_visible;
   } else if (intersect_height == non_zero_visible_rect.Height()) {
@@ -372,9 +381,13 @@ mojom::blink::ScrollIntoViewParamsPtr
 ScrollAlignment::CreateScrollIntoViewParams(
     const ScrollIntoViewOptions& options,
     const ComputedStyle& computed_style) {
-  mojom::blink::ScrollBehavior behavior =
-      (options.behavior() == "smooth") ? mojom::blink::ScrollBehavior::kSmooth
-                                       : mojom::blink::ScrollBehavior::kAuto;
+  mojom::blink::ScrollBehavior behavior = mojom::blink::ScrollBehavior::kAuto;
+  if (options.behavior() == "smooth") {
+    behavior = mojom::blink::ScrollBehavior::kSmooth;
+  }
+  if (options.behavior() == "instant") {
+    behavior = mojom::blink::ScrollBehavior::kInstant;
+  }
 
   auto align_x =
       AlignmentFromOptions(options, kHorizontalScroll, computed_style);

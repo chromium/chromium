@@ -35,13 +35,10 @@ public final class HttpFlagsInterceptor implements ContextInterceptor, AutoClose
     private static final String FLAGS_PROVIDER_PACKAGE_NAME =
             "org.chromium.net.httpflags.HttpFlagsInterceptor.FAKE_PROVIDER_PACKAGE";
 
-    @Nullable
-    private final Flags mFlagsFileContents;
+    @Nullable private final Flags mFlagsFileContents;
     private File mDataDir;
 
-    /**
-     * @param flagsFileContents the contents of the flags file, or null to simulate a missing file.
-     */
+    /** @param flagsFileContents the contents of the flags file, or null to simulate a missing file. */
     public HttpFlagsInterceptor(@Nullable Flags flagsFileContents) {
         mFlagsFileContents = flagsFileContents;
     }
@@ -61,8 +58,8 @@ public final class HttpFlagsInterceptor implements ContextInterceptor, AutoClose
             return new PackageManagerWrapper(super.getPackageManager()) {
                 @Override
                 public ResolveInfo resolveService(Intent intent, int flags) {
-                    if (!intent.getAction().equals(
-                                HttpFlagsLoader.FLAGS_FILE_PROVIDER_INTENT_ACTION)) {
+                    if (!intent.getAction()
+                            .equals(HttpFlagsLoader.FLAGS_FILE_PROVIDER_INTENT_ACTION)) {
                         return super.resolveService(intent, flags);
                     }
 
@@ -90,11 +87,13 @@ public final class HttpFlagsInterceptor implements ContextInterceptor, AutoClose
 
     private void createFlagsFile(Context context) {
         if (mDataDir != null) return;
-        mDataDir = context.getDir("org.chromium.net.httpflags.FakeFlagsFileDataDir."
-                        // Ensure different instances can't interfere with each other (e.g.
-                        // when running multiple tests).
-                        + UUID.randomUUID(),
-                Context.MODE_PRIVATE);
+        mDataDir =
+                context.getDir(
+                        "org.chromium.net.httpflags.FakeFlagsFileDataDir."
+                                // Ensure different instances can't interfere with each other (e.g.
+                                // when running multiple tests).
+                                + UUID.randomUUID(),
+                        Context.MODE_PRIVATE);
 
         File flagsFile = getFlagsFile();
         if (!flagsFile.getParentFile().mkdir()) {
@@ -130,7 +129,8 @@ public final class HttpFlagsInterceptor implements ContextInterceptor, AutoClose
     }
 
     private File getFlagsFile() {
-        return new File(new File(mDataDir, HttpFlagsLoader.FLAGS_FILE_DIR_NAME),
+        return new File(
+                new File(mDataDir, HttpFlagsLoader.FLAGS_FILE_DIR_NAME),
                 HttpFlagsLoader.FLAGS_FILE_NAME);
     }
 }

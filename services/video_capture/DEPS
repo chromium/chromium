@@ -3,6 +3,7 @@ include_rules = [
   "+chromeos/lacros",
   "+gpu/command_buffer/client",
   "+media/base",
+  "+media/device_monitors",
   "+media/mojo",
   "+media/capture",
   "+ui/gfx",

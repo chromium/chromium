@@ -36,11 +36,12 @@ import java.util.Map;
 @Batch(Batch.PER_CLASS)
 @RunWith(Parameterized.class)
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
-@CommandLineFlags.Add({"origin-trial-public-key=dRCs+TocuKkocNKa0AtZ4awrt9XKH2SQCI6o4FY6BNA=",
-        "enable-features=PersistentOriginTrials"})
+@CommandLineFlags.Add({
+    "origin-trial-public-key=dRCs+TocuKkocNKa0AtZ4awrt9XKH2SQCI6o4FY6BNA=",
+    "enable-features=PersistentOriginTrials"
+})
 public class AwPersistentOriginTrialTest extends AwParameterizedTest {
-    @Rule
-    public AwActivityTestRule mActivityTestRule;
+    @Rule public AwActivityTestRule mActivityTestRule;
 
     private TestAwContentsClient mContentsClient;
     private AwContents mAwContents;
@@ -60,8 +61,8 @@ public class AwPersistentOriginTrialTest extends AwParameterizedTest {
      */
     private static final String PERSISTENT_TRIAL_TOKEN =
             "AzZfd1vKZ0SSGRGk/8nIszQSlHYjbuYVE3jwaNZG3X4t11zRhzPWWJwTZ+JJDS3JJsyEZcpz+y20pAP6/6upOQ"
-                + "4AAABdeyJvcmlnaW4iOiAiaHR0cHM6Ly9leGFtcGxlLmNvbTo0NDMiLCAiZmVhdHVyZSI6ICJGcm9idWxhdG"
-                + "VQZXJzaXN0ZW50IiwgImV4cGlyeSI6IDIwMDAwMDAwMDB9";
+                    + "4AAABdeyJvcmlnaW4iOiAiaHR0cHM6Ly9leGFtcGxlLmNvbTo0NDMiLCAiZmVhdHVyZSI6ICJGcm9idWxhdG"
+                    + "VQZXJzaXN0ZW50IiwgImV4cGlyeSI6IDIwMDAwMDAwMDB9";
     private ShouldInterceptRequestHelper mInterceptRequestHelper;
 
     public AwPersistentOriginTrialTest(AwSettingsMutation param) {

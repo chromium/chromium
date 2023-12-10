@@ -49,8 +49,7 @@ class PageInfoUI;
 // information and allows users to change the permissions. |PageInfo|
 // objects must be created on the heap. They destroy themselves after the UI is
 // closed.
-class PageInfo : private content_settings::CookieControlsObserver,
-                 content_settings::OldCookieControlsObserver {
+class PageInfo : private content_settings::CookieControlsObserver {
  public:
   // Status of a connection to a website.
   enum SiteConnectionStatus {
@@ -353,14 +352,6 @@ class PageInfo : private content_settings::CookieControlsObserver,
   FRIEND_TEST_ALL_PREFIXES(PageInfoTest,
                            ShowInfoBarWhenBlockingThirdPartyCookies);
 
-  // OldCookieControlsObserver:
-  void OnStatusChanged(CookieControlsStatus status,
-                       CookieControlsEnforcement enforcement,
-                       int allowed_cookies,
-                       int blocked_cookies) override;
-  void OnCookiesCountChanged(int allowed_cookies, int blocked_cookies) override;
-  void OnStatefulBounceCountChanged(int bounce_count) override;
-
   // CookieControlsObserver:
   void OnStatusChanged(CookieControlsStatus status,
                        CookieControlsEnforcement enforcement,
@@ -546,9 +537,6 @@ class PageInfo : private content_settings::CookieControlsObserver,
   base::ScopedObservation<content_settings::CookieControlsController,
                           content_settings::CookieControlsObserver>
       observation_{this};
-  base::ScopedObservation<content_settings::CookieControlsController,
-                          content_settings::OldCookieControlsObserver>
-      old_observation_{this};
 
   CookieControlsStatus status_ = CookieControlsStatus::kUninitialized;
 

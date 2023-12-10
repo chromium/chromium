@@ -376,34 +376,34 @@ TEST_F(EnterpriseReportingPrivateGetDeviceInfoTest, GetDeviceInfo) {
       RunFunctionAndReturnValue(function.get(), "[]");
   ASSERT_TRUE(device_info_value);
   ASSERT_TRUE(device_info_value->is_dict());
-  enterprise_reporting_private::DeviceInfo info;
-  ASSERT_TRUE(enterprise_reporting_private::DeviceInfo::Populate(
-      device_info_value->GetDict(), info));
+  auto info = enterprise_reporting_private::DeviceInfo::FromValue(
+      device_info_value->GetDict());
+  ASSERT_TRUE(info);
 #if BUILDFLAG(IS_MAC)
-  EXPECT_EQ("macOS", info.os_name);
+  EXPECT_EQ("macOS", info->os_name);
 #elif BUILDFLAG(IS_WIN)
-  EXPECT_EQ("windows", info.os_name);
-  EXPECT_FALSE(info.device_model.empty());
+  EXPECT_EQ("windows", info->os_name);
+  EXPECT_FALSE(info->device_model.empty());
 #elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<base::Environment> env(base::Environment::Create());
   env->SetVar(base::nix::kXdgCurrentDesktopEnvVar, "XFCE");
-  EXPECT_EQ("linux", info.os_name);
+  EXPECT_EQ("linux", info->os_name);
 #else
   // Verify a stub implementation.
-  EXPECT_EQ("stubOS", info.os_name);
-  EXPECT_EQ("0.0.0.0", info.os_version);
-  EXPECT_EQ("security patch level", info.security_patch_level);
-  EXPECT_EQ("midnightshift", info.device_host_name);
-  EXPECT_EQ("topshot", info.device_model);
-  EXPECT_EQ("twirlchange", info.serial_number);
+  EXPECT_EQ("stubOS", info->os_name);
+  EXPECT_EQ("0.0.0.0", info->os_version);
+  EXPECT_EQ("security patch level", info->security_patch_level);
+  EXPECT_EQ("midnightshift", info->device_host_name);
+  EXPECT_EQ("topshot", info->device_model);
+  EXPECT_EQ("twirlchange", info->serial_number);
   EXPECT_EQ(enterprise_reporting_private::SettingValue::kEnabled,
-            info.screen_lock_secured);
+            info->screen_lock_secured);
   EXPECT_EQ(enterprise_reporting_private::SettingValue::kDisabled,
-            info.disk_encrypted);
-  ASSERT_EQ(1u, info.mac_addresses.size());
-  EXPECT_EQ("00:00:00:00:00:00", info.mac_addresses[0]);
-  EXPECT_EQ(*info.windows_machine_domain, "MACHINE_DOMAIN");
-  EXPECT_EQ(*info.windows_user_domain, "USER_DOMAIN");
+            info->disk_encrypted);
+  ASSERT_EQ(1u, info->mac_addresses.size());
+  EXPECT_EQ("00:00:00:00:00:00", info->mac_addresses[0]);
+  EXPECT_EQ(*info->windows_machine_domain, "MACHINE_DOMAIN");
+  EXPECT_EQ(*info->windows_user_domain, "USER_DOMAIN");
 #endif
 }
 
@@ -457,11 +457,12 @@ class EnterpriseReportingPrivateGetContextInfoTest
     EXPECT_TRUE(context_info_value);
     EXPECT_TRUE(context_info_value->is_dict());
 
-    enterprise_reporting_private::ContextInfo info;
-    EXPECT_TRUE(enterprise_reporting_private::ContextInfo::Populate(
-        context_info_value->GetDict(), info));
+    auto info = enterprise_reporting_private::ContextInfo::FromValue(
+        context_info_value->GetDict());
+    EXPECT_TRUE(info);
 
-    return info;
+    return std::move(info).value_or(
+        enterprise_reporting_private::ContextInfo());
   }
 
   bool BuiltInDnsClientPlatformDefault() {
@@ -926,6 +927,10 @@ class EnterpriseReportingPrivateGetContextInfoOSFirewallTest
   }
 
   void TearDown() override {
+    if (!::IsUserAnAdmin()) {
+      // Test already skipped in `SetUp`.
+      return;
+    }
     // Resetting the firewall to its initial state
     HRESULT hr =
         firewall_policy_->put_FirewallEnabled(active_profile_, enabled_);

@@ -44,8 +44,7 @@ public class CustomizationProviderDelegateUpstreamImpl implements CustomizationP
      * A completion to call after determining isValid that includes timing information. Typically
      * {@code null} on Chromium but can be set from Downstream.
      */
-    @Nullable
-    private DelegateValidationCompletion mValidationCompletion;
+    @Nullable private DelegateValidationCompletion mValidationCompletion;
 
     @Override
     public @Nullable String getHomepage() {
@@ -53,8 +52,10 @@ public class CustomizationProviderDelegateUpstreamImpl implements CustomizationP
             return null;
         }
         String homepage = null;
-        Cursor cursor = ContextUtils.getApplicationContext().getContentResolver().query(
-                buildQueryUri(PARTNER_HOMEPAGE_PATH), null, null, null, null);
+        Cursor cursor =
+                ContextUtils.getApplicationContext()
+                        .getContentResolver()
+                        .query(buildQueryUri(PARTNER_HOMEPAGE_PATH), null, null, null, null);
         if (cursor != null && cursor.moveToFirst() && cursor.getColumnCount() == 1) {
             homepage = cursor.getString(0);
         }
@@ -70,8 +71,15 @@ public class CustomizationProviderDelegateUpstreamImpl implements CustomizationP
             return false;
         }
         boolean disabled = false;
-        Cursor cursor = ContextUtils.getApplicationContext().getContentResolver().query(
-                buildQueryUri(PARTNER_DISABLE_INCOGNITO_MODE_PATH), null, null, null, null);
+        Cursor cursor =
+                ContextUtils.getApplicationContext()
+                        .getContentResolver()
+                        .query(
+                                buildQueryUri(PARTNER_DISABLE_INCOGNITO_MODE_PATH),
+                                null,
+                                null,
+                                null,
+                                null);
         if (cursor != null && cursor.moveToFirst() && cursor.getColumnCount() == 1) {
             disabled = cursor.getInt(0) == 1;
         }
@@ -87,8 +95,15 @@ public class CustomizationProviderDelegateUpstreamImpl implements CustomizationP
             return false;
         }
         boolean disabled = false;
-        Cursor cursor = ContextUtils.getApplicationContext().getContentResolver().query(
-                buildQueryUri(PARTNER_DISABLE_BOOKMARKS_EDITING_PATH), null, null, null, null);
+        Cursor cursor =
+                ContextUtils.getApplicationContext()
+                        .getContentResolver()
+                        .query(
+                                buildQueryUri(PARTNER_DISABLE_BOOKMARKS_EDITING_PATH),
+                                null,
+                                null,
+                                null,
+                                null);
         if (cursor != null && cursor.moveToFirst() && cursor.getColumnCount() == 1) {
             disabled = cursor.getInt(0) == 1;
         }
@@ -100,8 +115,9 @@ public class CustomizationProviderDelegateUpstreamImpl implements CustomizationP
 
     private boolean isValidInternal() {
         ProviderInfo providerInfo =
-                ContextUtils.getApplicationContext().getPackageManager().resolveContentProvider(
-                        sProviderAuthority, 0);
+                ContextUtils.getApplicationContext()
+                        .getPackageManager()
+                        .resolveContentProvider(sProviderAuthority, 0);
         if (providerInfo == null) {
             PartnerCustomizationsUma.logDelegateUnusedReason(
                     DelegateUnusedReason.PRELOAD_APK_CANNOT_RESOLVE_PROVIDER);
@@ -119,8 +135,10 @@ public class CustomizationProviderDelegateUpstreamImpl implements CustomizationP
             return true;
         }
 
-        Log.w(TAG,
-                "Browser Customizations content provider package, " + providerInfo.packageName
+        Log.w(
+                TAG,
+                "Browser Customizations content provider package, "
+                        + providerInfo.packageName
                         + ", is not a system package. "
                         + "This could be a malicious attempt from a third party "
                         + "app, so skip reading the browser content provider.");
@@ -128,7 +146,8 @@ public class CustomizationProviderDelegateUpstreamImpl implements CustomizationP
             return false;
         }
         if (VersionInfo.isLocalBuild()) {
-            Log.w(TAG,
+            Log.w(
+                    TAG,
                     "This is a local build of Chrome Android, "
                             + "so keep reading the browser content provider, "
                             + "to make debugging customization easier.");
@@ -158,8 +177,8 @@ public class CustomizationProviderDelegateUpstreamImpl implements CustomizationP
 
     /** Sets a function to call when validation has been performed. */
     void setValidationCompletion(DelegateValidationCompletion validationCompletion) {
-        assert mValidationCompletion
-                == null : "Coding error: setValidationCompletion may only be called once!";
+        assert mValidationCompletion == null
+                : "Coding error: setValidationCompletion may only be called once!";
         mValidationCompletion = validationCompletion;
     }
 

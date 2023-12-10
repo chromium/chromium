@@ -30,6 +30,18 @@ using WebAppInstallInfoFactory =
 
 enum class ExternalInstallSource;
 
+enum class PlaceholderResolutionBehavior {
+  // Waits for all running app instances being closed before the placeholder is
+  // resolved.
+  kWaitForAppWindowsClosed,
+  // Closes all running app instances, resolves the placeholder and relaunches
+  // the app in a separate window.
+  kCloseAndRelaunch,
+  // Closes all running app instances and resolves the placeholder. After the
+  // placeholder is resolved, the app is not relaunched.
+  kClose
+};
+
 struct ExternalInstallOptions {
   ExternalInstallOptions(
       const GURL& install_url,
@@ -151,9 +163,11 @@ struct ExternalInstallOptions {
   // app on all browser upgrades from <89 to >=89. The update happens only once.
   absl::optional<int> force_reinstall_for_milestone;
 
-  // Whether we should wait for all app windows being closed before reinstalling
-  // the placeholder.
-  bool wait_for_windows_closed = false;
+  // Defines how to handle running app instances of a placeholder app when a
+  // placeholder can be resolved. See `PlaceholderResolutionBehavior`
+  // documentation for details.
+  PlaceholderResolutionBehavior placeholder_resolution_behavior =
+      PlaceholderResolutionBehavior::kClose;
 
   // Whether a placeholder app should be installed if we fail to retrieve the
   // metadata for the app. A placeholder app uses:

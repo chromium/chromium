@@ -282,10 +282,6 @@ std::string HistogramTester::SnapshotToString(
   return tmp;
 }
 
-bool Bucket::operator==(const Bucket& other) const {
-  return min == other.min && count == other.count;
-}
-
 void PrintTo(const Bucket& bucket, std::ostream* os) {
   *os << "Bucket " << bucket.min << ": " << bucket.count;
 }

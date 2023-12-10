@@ -10,6 +10,7 @@
 
 #include <string>
 
+#include <optional>
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/win/pe_image.h"
@@ -17,7 +18,6 @@
 #include "sandbox/win/src/nt_internals.h"
 #include "sandbox/win/src/sandbox_factory.h"
 #include "sandbox/win/src/target_services.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace sandbox {
 
@@ -245,12 +245,12 @@ void* GetGlobalPolicyMemoryForTesting() {
   return g_shared_policy_memory;
 }
 
-absl::optional<base::span<const uint8_t>> GetGlobalDelegateData() {
+std::optional<base::span<const uint8_t>> GetGlobalDelegateData() {
   if (!g_delegate_data_size) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   if (!MapGlobalMemory()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return base::make_span(
       reinterpret_cast<const uint8_t*>(g_shared_delegate_data),

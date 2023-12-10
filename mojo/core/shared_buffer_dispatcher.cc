@@ -165,7 +165,7 @@ scoped_refptr<SharedBufferDispatcher> SharedBufferDispatcher::Deserialize(
 #endif
   handles[0] = std::move(platform_handles[0]);
 
-  absl::optional<base::UnguessableToken> guid =
+  std::optional<base::UnguessableToken> guid =
       base::UnguessableToken::Deserialize(serialized_state->guid_high,
                                           serialized_state->guid_low);
   if (!guid.has_value()) {

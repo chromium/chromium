@@ -76,8 +76,7 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker {
   using NativeUrlCheckNotifier =
       base::OnceCallback<void(bool /* proceed */,
                               bool /* showed_interstitial */,
-                              PerformedCheck /* performed_check */,
-                              bool /* did_check_url_real_time_allowlist */)>;
+                              PerformedCheck /* performed_check */)>;
 
   // If |slow_check_notifier| is not null, the callback is supposed to update
   // this output parameter with a callback to receive complete notification. In
@@ -86,8 +85,7 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker {
       base::OnceCallback<void(NativeUrlCheckNotifier* /* slow_check_notifier */,
                               bool /* proceed */,
                               bool /* showed_interstitial */,
-                              PerformedCheck /* performed_check */,
-                              bool /* did_check_url_real_time_allowlist */)>;
+                              PerformedCheck /* performed_check */)>;
 
   // Constructor for SafeBrowsingUrlCheckerImpl. |url_real_time_lookup_enabled|
   // indicates whether or not the profile has enabled real time URL lookups, as
@@ -117,7 +115,8 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker {
           web_contents_getter,
       base::WeakPtr<web::WebState> weak_web_state,
       security_interstitials::UnsafeResource::RenderProcessId render_process_id,
-      security_interstitials::UnsafeResource::RenderFrameId render_frame_id,
+      const security_interstitials::UnsafeResource::RenderFrameToken&
+          render_frame_token,
       security_interstitials::UnsafeResource::FrameTreeNodeId
           frame_tree_node_id,
       bool url_real_time_lookup_enabled,
@@ -172,8 +171,7 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker {
     void OnStartSlowCheck(PerformedCheck performed_check);
     void OnCompleteCheck(bool proceed,
                          bool showed_interstitial,
-                         PerformedCheck performed_check,
-                         bool did_check_url_real_time_allowlist);
+                         PerformedCheck performed_check);
 
    private:
     // Used in the mojo interface case.
@@ -269,10 +267,7 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker {
   };
 
   struct UrlInfo {
-    UrlInfo(const GURL& url,
-            const std::string& method,
-            Notifier notifier,
-            bool did_check_url_real_time_allowlist);
+    UrlInfo(const GURL& url, const std::string& method, Notifier notifier);
     UrlInfo(UrlInfo&& other);
 
     ~UrlInfo();
@@ -280,9 +275,6 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker {
     GURL url;
     std::string method;
     Notifier notifier;
-
-    // If the allowlist was checked for this URL.
-    bool did_check_url_real_time_allowlist;
   };
 
   SEQUENCE_CHECKER(sequence_checker_);
@@ -291,7 +283,7 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker {
   const network::mojom::RequestDestination request_destination_;
   const bool has_user_gesture_;
   // TODO(crbug.com/1069047): |weak_web_state_| is only used on iOS, and
-  // |web_contents_getter_|, |render_process_id_|, |render_frame_id_|, and
+  // |web_contents_getter_|, |render_process_id_|, |render_frame_token_|, and
   // |frame_tree_node_id_| are used on all other platforms.  This class should
   // be refactored to use only the common functionality can be shared across
   // platforms.
@@ -299,8 +291,8 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker {
   const security_interstitials::UnsafeResource::RenderProcessId
       render_process_id_ =
           security_interstitials::UnsafeResource::kNoRenderProcessId;
-  const security_interstitials::UnsafeResource::RenderFrameId render_frame_id_ =
-      security_interstitials::UnsafeResource::kNoRenderFrameId;
+  const security_interstitials::UnsafeResource::RenderFrameToken
+      render_frame_token_;
   const security_interstitials::UnsafeResource::FrameTreeNodeId
       frame_tree_node_id_ =
           security_interstitials::UnsafeResource::kNoFrameTreeNodeId;

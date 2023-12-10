@@ -131,7 +131,7 @@ class EnterprisePrintersProviderImpl : public EnterprisePrintersProvider,
     recommended_printers_.clear();
     std::vector<std::string> data = FromPrefs(prefs::kRecommendedPrinters);
     for (const auto& printer_json : data) {
-      absl::optional<base::Value> printer_value = base::JSONReader::Read(
+      std::optional<base::Value> printer_value = base::JSONReader::Read(
           printer_json, base::JSON_ALLOW_TRAILING_COMMAS);
       if (!printer_value.has_value() || !printer_value.value().is_dict()) {
         LOG(WARNING) << "Ignoring invalid printer.  Invalid JSON object: "

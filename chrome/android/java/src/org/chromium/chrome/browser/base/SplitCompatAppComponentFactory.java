@@ -41,10 +41,15 @@ import java.lang.annotation.RetentionPolicy;
 public class SplitCompatAppComponentFactory extends AppComponentFactory {
     private static final String TAG = "SplitCompat";
 
-    @IntDef({ProcessCreationReason.UNINITIALIZED, ProcessCreationReason.PENDING,
-            ProcessCreationReason.ACTIVITY, ProcessCreationReason.SERVICE,
-            ProcessCreationReason.CONTENT_PROVIDER, ProcessCreationReason.BROADCAST_RECEIVER,
-            ProcessCreationReason.NUM_ENTRIES})
+    @IntDef({
+        ProcessCreationReason.UNINITIALIZED,
+        ProcessCreationReason.PENDING,
+        ProcessCreationReason.ACTIVITY,
+        ProcessCreationReason.SERVICE,
+        ProcessCreationReason.CONTENT_PROVIDER,
+        ProcessCreationReason.BROADCAST_RECEIVER,
+        ProcessCreationReason.NUM_ENTRIES
+    })
     @Retention(RetentionPolicy.SOURCE)
     public @interface ProcessCreationReason {
         int UNINITIALIZED = -2;
@@ -78,8 +83,11 @@ public class SplitCompatAppComponentFactory extends AppComponentFactory {
         // other components during the launch.
         if (sProcessCreationReason == ProcessCreationReason.UNINITIALIZED) {
             sProcessCreationReason = ProcessCreationReason.PENDING;
-            PostTask.postTask(TaskTraits.UI_DEFAULT,
-                    () -> { setProcessCreationReason(ProcessCreationReason.CONTENT_PROVIDER); });
+            PostTask.postTask(
+                    TaskTraits.UI_DEFAULT,
+                    () -> {
+                        setProcessCreationReason(ProcessCreationReason.CONTENT_PROVIDER);
+                    });
         }
         return super.instantiateProvider(getComponentClassLoader(cl, className), className);
     }
@@ -106,8 +114,10 @@ public class SplitCompatAppComponentFactory extends AppComponentFactory {
         if (sProcessCreationReason > ProcessCreationReason.PENDING) return;
         sProcessCreationReason = reason;
         if (!SplitCompatApplication.isBrowserProcess()) return;
-        RecordHistogram.recordEnumeratedHistogram("Startup.Android.BrowserProcessCreationReason",
-                reason, ProcessCreationReason.NUM_ENTRIES);
+        RecordHistogram.recordEnumeratedHistogram(
+                "Startup.Android.BrowserProcessCreationReason",
+                reason,
+                ProcessCreationReason.NUM_ENTRIES);
     }
 
     public static @ProcessCreationReason int getProcessCreationReason() {
@@ -123,7 +133,8 @@ public class SplitCompatAppComponentFactory extends AppComponentFactory {
 
         ClassLoader baseClassLoader = SplitCompatAppComponentFactory.class.getClassLoader();
         ClassLoader chromeClassLoader = appContext.getClassLoader();
-        if (!cl.equals(chromeClassLoader) && !BundleUtils.canLoadClass(baseClassLoader, className)
+        if (!cl.equals(chromeClassLoader)
+                && !BundleUtils.canLoadClass(baseClassLoader, className)
                 && BundleUtils.canLoadClass(chromeClassLoader, className)) {
             Log.w(TAG, "Mismatched ClassLoaders between Application and component: %s", className);
             return chromeClassLoader;

@@ -369,7 +369,6 @@ component("platform") {
     "audio/dynamics_compressor.h",
     "audio/equal_power_panner.cc",
     "audio/equal_power_panner.h",
-    "audio/ffmpeg/fft_frame_ffmpeg.cc",
     "audio/fft_convolver.cc",
     "audio/fft_convolver.h",
     "audio/fft_frame.cc",
@@ -679,8 +678,6 @@ component("platform") {
     "fonts/generic_font_family_settings.cc",
     "fonts/generic_font_family_settings.h",
     "fonts/glyph_metrics_map.h",
-    "fonts/ng_text_fragment_paint_info.cc",
-    "fonts/ng_text_fragment_paint_info.h",
     "fonts/opentype/font_format_check.cc",
     "fonts/opentype/font_format_check.h",
     "fonts/opentype/font_settings.cc",
@@ -772,6 +769,8 @@ component("platform") {
     "fonts/string_truncator.h",
     "fonts/symbols_iterator.cc",
     "fonts/symbols_iterator.h",
+    "fonts/text_fragment_paint_info.cc",
+    "fonts/text_fragment_paint_info.h",
     "fonts/text_rendering_mode.cc",
     "fonts/text_rendering_mode.h",
     "fonts/text_run_paint_info.h",
@@ -1324,7 +1323,6 @@ component("platform") {
     "peerconnection/rtc_event_log_output_sink_proxy.h",
     "peerconnection/rtc_ice_candidate_platform.cc",
     "peerconnection/rtc_ice_candidate_platform.h",
-    "peerconnection/rtc_legacy_stats.h",
     "peerconnection/rtc_offer_options_platform.h",
     "peerconnection/rtc_peer_connection_handler_client.cc",
     "peerconnection/rtc_peer_connection_handler_client.h",
@@ -1342,8 +1340,6 @@ component("platform") {
     "peerconnection/rtc_session_description_request.h",
     "peerconnection/rtc_stats.cc",
     "peerconnection/rtc_stats.h",
-    "peerconnection/rtc_stats_request.h",
-    "peerconnection/rtc_stats_response_base.h",
     "peerconnection/rtc_video_decoder_adapter.cc",
     "peerconnection/rtc_video_decoder_adapter.h",
     "peerconnection/rtc_video_decoder_factory.cc",
@@ -1561,8 +1557,6 @@ component("platform") {
     "widget/input/main_thread_event_queue_task.h",
     "widget/input/main_thread_event_queue_task_list.cc",
     "widget/input/main_thread_event_queue_task_list.h",
-    "widget/input/momentum_scroll_jank_tracker.cc",
-    "widget/input/momentum_scroll_jank_tracker.h",
     "widget/input/prediction/filter_factory.cc",
     "widget/input/prediction/filter_factory.h",
     "widget/input/prediction/predictor_factory.cc",
@@ -1602,6 +1596,13 @@ component("platform") {
     ]
   }
 
+  if (is_apple) {
+    sources += [
+      "fonts/mac/font_platform_data_mac.h",
+      "fonts/mac/font_platform_data_mac.mm",
+    ]
+  }
+
   if (is_mac) {
     sources += [
       "audio/mac/fft_frame_mac.cc",
@@ -1611,8 +1612,6 @@ component("platform") {
       "fonts/mac/font_cache_mac.mm",
       "fonts/mac/font_matcher_mac.h",
       "fonts/mac/font_matcher_mac.mm",
-      "fonts/mac/font_platform_data_mac.h",
-      "fonts/mac/font_platform_data_mac.mm",
       "mac/color_mac.h",
       "mac/color_mac.mm",
       "mac/graphics_context_canvas.h",
@@ -1831,10 +1830,6 @@ component("platform") {
     sources += [ "audio/cpu/arm/delay_neon.cc" ]
   }
 
-  if (use_webaudio_ffmpeg) {
-    include_dirs += [ "//third_party/ffmpeg" ]
-    deps += [ "//third_party/ffmpeg" ]
-  }
   if (use_webaudio_pffft) {
     include_dirs += [ "//third_party/pffft/src" ]
     deps += [ "//third_party/pffft" ]
@@ -1857,6 +1852,8 @@ static_library("test_support") {
   testonly = true
 
   sources = [
+    "graphics/color_correction_test_utils.cc",
+    "graphics/color_correction_test_utils.h",
     "graphics/gpu/drawing_buffer_test_helpers.h",
     "graphics/paint/paint_controller_test.h",
     "graphics/test/fake_canvas_resource_host.h",
@@ -1871,6 +1868,7 @@ static_library("test_support") {
     "graphics/test/mock_frame_sink_bundle.h",
     "graphics/test/mock_image_decoder.h",
     "graphics/test/mock_paint_canvas.h",
+    "graphics/test/stub_image.h",
     "testing/compositor_test.cc",
     "testing/compositor_test.h",
     "testing/empty_web_media_player.cc",
@@ -1886,6 +1884,8 @@ static_library("test_support") {
     "testing/io_task_runner_testing_platform_support.h",
     "testing/layer_tree_host_embedder.cc",
     "testing/layer_tree_host_embedder.h",
+    "testing/main_thread_isolate.cc",
+    "testing/main_thread_isolate.h",
     "testing/message_loop_for_mojo.h",
     "testing/mock_context_lifecycle_notifier.h",
     "testing/noop_url_loader.cc",
@@ -1902,6 +1902,8 @@ static_library("test_support") {
     "testing/scoped_mocked_url.h",
     "testing/scoped_scheduler_overrider.cc",
     "testing/scoped_scheduler_overrider.h",
+    "testing/task_environment.cc",
+    "testing/task_environment.h",
     "testing/test_paint_artifact.cc",
     "testing/test_paint_artifact.h",
     "testing/testing_platform_support.cc",
@@ -1966,7 +1968,9 @@ static_library("test_support") {
     "//mojo/public/cpp/bindings",
     "//services/service_manager/public/cpp",
     "//skia",
+    "//skia:skcms",
     "//third_party/blink/public/common:common",
+    "//third_party/blink/renderer/modules:modules",
     "//third_party/blink/renderer/platform/network:test_support",
   ]
   allow_circular_includes_from =
@@ -2520,6 +2524,14 @@ fuzzer_test("layout_locale_fuzzer") {
   ]
 }
 
+fuzzer_test("segmented_string_fuzzer") {
+  sources = [ "text/segmented_string_fuzzer.cc" ]
+  deps = [
+    ":blink_fuzzer_test_support",
+    ":platform",
+  ]
+}
+
 # Fuzzer for blink::FindCategory.
 fuzzer_test("mathml_operator_dictionary_fuzzer") {
   sources = [ "text/mathml_operator_dictionary_fuzzer.cc" ]
@@ -2694,9 +2706,9 @@ source_set("unit_tests") {
     "graphics/canvas_color_params_test.cc",
     "graphics/canvas_hibernation_handler_test.cc",
     "graphics/canvas_resource_dispatcher_test.cc",
+    "graphics/canvas_resource_host_test.cc",
     "graphics/canvas_resource_provider_test.cc",
     "graphics/canvas_resource_test.cc",
-    "graphics/color_correction_test_utils.cc",
     "graphics/deferred_image_decoder_test.cc",
     "graphics/gpu/drawing_buffer_software_rendering_test.cc",
     "graphics/image_decoding_store_test.cc",
@@ -2704,7 +2716,6 @@ source_set("unit_tests") {
     "graphics/offscreen_canvas_placeholder_test.cc",
     "graphics/paint_worklet_paint_dispatcher_test.cc",
     "graphics/scoped_raster_timer_test.cc",
-    "graphics/test/stub_image.h",
 
     # Tests migrated from the web/tests directory.
     "exported/web_url_request_extra_data_test.cc",
@@ -2725,6 +2736,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//cc",
     "//components/viz/test:test_support",
+    "//skia:skcms",
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/blink/public:test_headers",

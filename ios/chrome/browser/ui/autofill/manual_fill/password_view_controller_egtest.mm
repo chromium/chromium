@@ -7,14 +7,15 @@
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "components/password_manager/core/browser/password_ui_utils.h"
-#import "components/password_manager/core/common/password_manager_features.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/sync/base/features.h"
-#import "ios/chrome/browser/signin/fake_system_identity.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/autofill/autofill_app_interface.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_constants.h"
+#import "ios/chrome/browser/ui/settings/password/password_manager_egtest_utils.h"
+#import "ios/chrome/browser/ui/settings/password/password_manager_ui_features.h"
 #import "ios/chrome/browser/ui/settings/password/password_settings_app_interface.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_table_view_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -89,6 +90,43 @@ id<GREYMatcher> CancelUsingOtherPasswordButton() {
                     grey_interactable(), nullptr);
 }
 
+// Validates that the Password Manager UI opened from the manual fallback UI is
+// dismissed when local authentication fails.
+// - manual_fallback_action_matcher: Matcher for the action button opening the
+// Password Manager UI (e.g. "Manage Passwords..." button).
+void CheckPasswordManagerUIDismissesAfterFailedAuthentication(
+    id<GREYMatcher> manual_fallback_action_matcher) {
+  // Bring up the keyboard.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:TapWebElementWithId(kFormElementUsername)];
+
+  // Tap on the passwords icon.
+  [[EarlGrey selectElementWithMatcher:ManualFallbackPasswordIconMatcher()]
+      performAction:grey_tap()];
+
+  //  // Simulate failed authentication.
+  [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
+                                    ReauthenticationResult::kFailure];
+  [PasswordSettingsAppInterface
+      mockReauthenticationModuleShouldReturnSynchronously:NO];
+
+  // Tap the action in the manual fallback UI.
+  [[EarlGrey selectElementWithMatcher:manual_fallback_action_matcher]
+      performAction:grey_tap()];
+
+  // Validate reauth UI is visible until auth result is delivered.
+  [[EarlGrey selectElementWithMatcher:password_manager_test_utils::
+                                          ReauthenticationController()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Deliver authentication result should dismiss the UI.
+  [PasswordSettingsAppInterface mockReauthenticationModuleReturnMockedResult];
+
+  // Verify that the whole navigation stack is gone.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::SettingsNavigationBar()]
+      assertWithMatcher:grey_nil()];
+}
+
 }  // namespace
 
 // Integration Tests for Mannual Fallback Passwords View Controller.
@@ -124,9 +162,6 @@ id<GREYMatcher> CancelUsingOtherPasswordButton() {
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
 
-  config.features_enabled.push_back(
-      password_manager::features::kIOSPasswordUISplit);
-
   if ([self
           isRunningTest:@selector
           (testPasswordGenerationOnManualFallbackSignedInNotSyncingAccount)] ||
@@ -139,6 +174,9 @@ id<GREYMatcher> CancelUsingOtherPasswordButton() {
     config.features_enabled.push_back(
         syncer::kReplaceSyncPromosWithSignInPromos);
   }
+
+  config.features_enabled.push_back(
+      password_manager::features::kIOSPasswordAuthOnEntryV2);
 
   return config;
 }
@@ -184,7 +222,7 @@ id<GREYMatcher> CancelUsingOtherPasswordButton() {
 }
 
 // Tests that the "Manage Passwords..." action works.
-- (void)testManagePasswordsActionOpensPasswordSettings {
+- (void)testManagePasswordsActionOpensPasswordManager {
   // Bring up the keyboard.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:TapWebElementWithId(kFormElementUsername)];
@@ -201,8 +239,15 @@ id<GREYMatcher> CancelUsingOtherPasswordButton() {
   // Changed minimum visible percentage to 70% for Passwords table view in
   // settings because subviews cover > 25% in smaller screens(eg. iPhone 6s).
   [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(kPasswordsTableViewId)]
+      selectElementWithMatcher:grey_accessibilityID(kPasswordsTableViewID)]
       assertWithMatcher:grey_minimumVisiblePercent(0.7)];
+}
+
+// Tests that the Password Manager is dismissed when local authentication fails
+// after tapping "Manage Passwords...".
+- (void)testManagePasswordsActionWithFailedAuthDismissesPasswordManager {
+  CheckPasswordManagerUIDismissesAfterFailedAuthentication(
+      ManualFallbackManagePasswordsMatcher());
 }
 
 // Tests that the "Manage Settings..." action works.
@@ -224,6 +269,13 @@ id<GREYMatcher> CancelUsingOtherPasswordButton() {
   // settings because subviews cover > 25% in smaller screens(eg. iPhone 6s).
   [[EarlGrey selectElementWithMatcher:SettingsPasswordMatcher()]
       assertWithMatcher:grey_minimumVisiblePercent(0.7)];
+}
+
+// Tests that Password Settings is dismissed when local authentication fails
+// after tapping "Manage Passwords...".
+- (void)testManageSettingsActionWithFailedAuthDismissesPasswordSettings {
+  CheckPasswordManagerUIDismissesAfterFailedAuthentication(
+      ManualFallbackManageSettingsMatcher());
 }
 
 // Tests that the "Manage Passwords..." action works in incognito mode.
@@ -250,7 +302,7 @@ id<GREYMatcher> CancelUsingOtherPasswordButton() {
   // Changed minimum visible percentage to 70% for Passwords table view in
   // settings because subviews cover > 25% in smaller screens(eg. iPhone 6s).
   [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(kPasswordsTableViewId)]
+      selectElementWithMatcher:grey_accessibilityID(kPasswordsTableViewID)]
       assertWithMatcher:grey_minimumVisiblePercent(0.7)];
 }
 
@@ -373,6 +425,61 @@ id<GREYMatcher> CancelUsingOtherPasswordButton() {
       performAction:grey_tap()];
 
   // Verify the use other passwords not opened.
+  [[EarlGrey
+      selectElementWithMatcher:ManualFallbackOtherPasswordsDismissMatcher()]
+      assertWithMatcher:grey_nil()];
+}
+
+// Tests that the "Use Other Password..." UI is dismissed after failed local
+// authentication.
+- (void)testUseOtherPasswordUIDismissedAfterFailedAuth {
+  // Bring up the keyboard.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:TapWebElementWithId(kFormElementUsername)];
+
+  // Tap on the passwords icon.
+  [[EarlGrey selectElementWithMatcher:ManualFallbackPasswordIconMatcher()]
+      performAction:grey_tap()];
+
+  // Tap the "Manage Passwords..." action.
+  [[EarlGrey selectElementWithMatcher:ManualFallbackOtherPasswordsMatcher()]
+      performAction:grey_tap()];
+
+  std::u16string origin = base::ASCIIToUTF16(
+      password_manager::GetShownOrigin(url::Origin::Create(self.URL)));
+
+  NSString* message = l10n_util::GetNSStringF(
+      IDS_IOS_MANUAL_FALLBACK_SELECT_PASSWORD_DIALOG_MESSAGE, origin);
+
+  [[EarlGrey selectElementWithMatcher:grey_text(message)]
+      assertWithMatcher:grey_notNil()];
+
+  // Setup failed authentication.
+  [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
+                                    ReauthenticationResult::kFailure];
+  [PasswordSettingsAppInterface
+      mockReauthenticationModuleShouldReturnSynchronously:NO];
+
+  // Acknowledge concerns using other passwords on a website.
+  [[EarlGrey selectElementWithMatcher:ConfirmUsingOtherPasswordButton()]
+      performAction:grey_tap()];
+
+  // Validate reauth UI is visible until auth result is delivered.
+  [[EarlGrey selectElementWithMatcher:password_manager_test_utils::
+                                          ReauthenticationController()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  // Passwords UI shouldn't be visible.
+  [[EarlGrey
+      selectElementWithMatcher:ManualFallbackOtherPasswordsDismissMatcher()]
+      assertWithMatcher:grey_notVisible()];
+
+  // Deliver authentication result should dismiss the UI.
+  [PasswordSettingsAppInterface mockReauthenticationModuleReturnMockedResult];
+
+  // Verify that the whole navigation stack is gone.
+  [[EarlGrey selectElementWithMatcher:password_manager_test_utils::
+                                          ReauthenticationController()]
+      assertWithMatcher:grey_nil()];
   [[EarlGrey
       selectElementWithMatcher:ManualFallbackOtherPasswordsDismissMatcher()]
       assertWithMatcher:grey_nil()];

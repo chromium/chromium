@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+[FAIL] visibilityState & hidden should be affected by window being minimized/restored
+  assert_equals: expected "hidden" but got "visible"
+[FAIL] visibilitychange event should be fired when minimized/restored
+  assert_array_equals: lengths differ, expected array ["hidden", "visible"] length 2, got [] length 0
+[FAIL] iframe should receive visibility events when top level window is shown/hidden
+  assert_array_equals: lengths differ, expected array ["hidden", "visible"] length 2, got [] length 0
+Harness: the test ran to completion.

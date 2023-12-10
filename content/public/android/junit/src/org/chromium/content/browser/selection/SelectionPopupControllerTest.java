@@ -61,6 +61,7 @@ import org.chromium.content_public.browser.SelectionEventProcessor;
 import org.chromium.content_public.browser.SelectionPopupController;
 import org.chromium.content_public.browser.selection.SelectionDropdownMenuDelegate;
 import org.chromium.content_public.browser.test.util.TestSelectionDropdownMenuDelegate;
+import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.ui.base.MenuSourceType;
 import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.WindowAndroid;
@@ -170,6 +171,8 @@ public class SelectionPopupControllerTest {
 
         mTestValues = new FeatureList.TestValues();
         setDropdownMenuFeatureEnabled(false);
+        mTestValues.addFeatureFlagOverride(ContentFeatures.SELECTION_MENU_ITEM_MODIFICATION, true);
+        FeatureList.setTestValues(mTestValues);
 
         SelectionPopupControllerImpl.setDisableMagnifierForTesting(true);
 
@@ -997,7 +1000,6 @@ public class SelectionPopupControllerTest {
     private void setDropdownMenuFeatureEnabled(boolean enabled) {
         mTestValues.addFeatureFlagOverride(
                 ContentFeatureList.MOUSE_AND_TRACKPAD_DROPDOWN_MENU, enabled);
-        FeatureList.setTestValues(mTestValues);
         SelectionPopupControllerImpl.setEnableTabletUiModeForTesting(enabled);
     }
 

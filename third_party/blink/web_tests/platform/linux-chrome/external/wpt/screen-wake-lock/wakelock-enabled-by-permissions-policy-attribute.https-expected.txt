@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+[FAIL] Permissions policy "screen-wake-lock" can be enabled in same-origin iframe using allow="screen-wake-lock" attribute
+  assert_true: navigator.wakeLock.request("screen") expected true got false
+[FAIL] Permissions policy "screen-wake-lock" can be enabled in cross-origin iframe using allow="screen-wake-lock" attribute
+  assert_true: navigator.wakeLock.request("screen") expected true got false
+Harness: the test ran to completion.

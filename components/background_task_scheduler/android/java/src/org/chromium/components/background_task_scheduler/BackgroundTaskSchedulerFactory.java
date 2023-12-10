@@ -8,9 +8,7 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.components.background_task_scheduler.internal.BackgroundTaskSchedulerFactoryInternal;
 import org.chromium.components.background_task_scheduler.internal.BackgroundTaskSchedulerUma;
 
-/**
- * A factory for {@link BackgroundTaskScheduler}.
- */
+/** A factory for {@link BackgroundTaskScheduler}. */
 public final class BackgroundTaskSchedulerFactory {
     private static BackgroundTaskSchedulerExternalUma sExternalUmaForTesting;
 
@@ -34,12 +32,11 @@ public final class BackgroundTaskSchedulerFactory {
         BackgroundTaskSchedulerFactoryInternal.setBackgroundTaskFactory(backgroundTaskFactory);
     }
 
-    /**
-     * @return The helper class to report UMA.
-     */
+    /** @return The helper class to report UMA. */
     public static BackgroundTaskSchedulerExternalUma getUmaReporter() {
-        return sExternalUmaForTesting == null ? BackgroundTaskSchedulerUma.getInstance()
-                                              : sExternalUmaForTesting;
+        return sExternalUmaForTesting == null
+                ? BackgroundTaskSchedulerUma.getInstance()
+                : sExternalUmaForTesting;
     }
 
     public static void setUmaReporterForTesting(BackgroundTaskSchedulerExternalUma externalUma) {

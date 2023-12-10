@@ -25,9 +25,6 @@
           "script": "//tools/perf/process_perf_results.py"
         },
         "name": "performance_test_suite_android_clank_monochrome_bundle",
-        "override_compile_targets": [
-          "performance_test_suite_android_clank_monochrome_bundle"
-        ],
         "resultdb": {
           "enable": true
         },
@@ -76,9 +73,6 @@
           "script": "//tools/perf/process_perf_results.py"
         },
         "name": "performance_test_suite_android_clank_monochrome",
-        "override_compile_targets": [
-          "performance_test_suite_android_clank_monochrome"
-        ],
         "resultdb": {
           "enable": true
         },
@@ -140,9 +134,6 @@
           "script": "//tools/perf/process_perf_results.py"
         },
         "name": "performance_test_suite",
-        "override_compile_targets": [
-          "performance_test_suite"
-        ],
         "resultdb": {
           "enable": true
         },
@@ -200,9 +191,6 @@
           "script": "//tools/perf/process_perf_results.py"
         },
         "name": "performance_web_engine_test_suite",
-        "override_compile_targets": [
-          "performance_web_engine_test_suite"
-        ],
         "resultdb": {
           "enable": true
         },
@@ -259,9 +247,6 @@
           "script": "//tools/perf/process_perf_results.py"
         },
         "name": "performance_web_engine_test_suite",
-        "override_compile_targets": [
-          "performance_web_engine_test_suite"
-        ],
         "resultdb": {
           "enable": true
         },
@@ -314,9 +299,6 @@
           "script": "//tools/perf/process_perf_results.py"
         },
         "name": "performance_test_suite",
-        "override_compile_targets": [
-          "performance_test_suite"
-        ],
         "resultdb": {
           "enable": true
         },
@@ -362,9 +344,6 @@
           "script": "//tools/perf/process_perf_results.py"
         },
         "name": "performance_test_suite",
-        "override_compile_targets": [
-          "performance_test_suite"
-        ],
         "resultdb": {
           "enable": true
         },

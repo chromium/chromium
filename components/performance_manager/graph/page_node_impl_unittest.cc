@@ -92,90 +92,92 @@ TEST_F(PageNodeImplTest, RemoveFrame) {
   EXPECT_EQ(0u, GraphImplOperations::GetFrameNodes(page_node.get()).size());
 }
 
-TEST_F(PageNodeImplTest, TimeSinceLastVisibilityChange) {
+TEST_F(PageNodeImplTest, GetTimeSinceLastVisibilityChange) {
   MockSinglePageInSingleProcessGraph mock_graph(graph());
 
   mock_graph.page->SetIsVisible(true);
-  EXPECT_TRUE(mock_graph.page->is_visible());
+  EXPECT_TRUE(mock_graph.page->IsVisible());
   AdvanceClock(base::Seconds(42));
   EXPECT_EQ(base::Seconds(42),
-            mock_graph.page->TimeSinceLastVisibilityChange());
+            mock_graph.page->GetTimeSinceLastVisibilityChange());
 
   mock_graph.page->SetIsVisible(false);
   AdvanceClock(base::Seconds(23));
   EXPECT_EQ(base::Seconds(23),
-            mock_graph.page->TimeSinceLastVisibilityChange());
-  EXPECT_FALSE(mock_graph.page->is_visible());
+            mock_graph.page->GetTimeSinceLastVisibilityChange());
+  EXPECT_FALSE(mock_graph.page->IsVisible());
 }
 
-TEST_F(PageNodeImplTest, TimeSinceLastAudibleChange) {
+TEST_F(PageNodeImplTest, GetTimeSinceLastAudibleChange) {
   MockSinglePageInSingleProcessGraph mock_graph(graph());
-  EXPECT_FALSE(mock_graph.page->is_audible());
-  EXPECT_EQ(absl::nullopt, mock_graph.page->TimeSinceLastAudibleChange());
+  EXPECT_FALSE(mock_graph.page->IsAudible());
+  EXPECT_EQ(absl::nullopt, mock_graph.page->GetTimeSinceLastAudibleChange());
 
   mock_graph.page->SetIsAudible(true);
-  EXPECT_TRUE(mock_graph.page->is_audible());
+  EXPECT_TRUE(mock_graph.page->IsAudible());
   AdvanceClock(base::Seconds(42));
-  EXPECT_EQ(base::Seconds(42), mock_graph.page->TimeSinceLastAudibleChange());
+  EXPECT_EQ(base::Seconds(42),
+            mock_graph.page->GetTimeSinceLastAudibleChange());
 
   mock_graph.page->SetIsAudible(false);
   AdvanceClock(base::Seconds(23));
-  EXPECT_EQ(base::Seconds(23), mock_graph.page->TimeSinceLastAudibleChange());
-  EXPECT_FALSE(mock_graph.page->is_audible());
+  EXPECT_EQ(base::Seconds(23),
+            mock_graph.page->GetTimeSinceLastAudibleChange());
+  EXPECT_FALSE(mock_graph.page->IsAudible());
 
   // Test a page that's audible at creation.
   auto audible_page = CreateNode<PageNodeImpl>(
       WebContentsProxy(), /*browser_context_id=*/std::string(), GURL(),
       PagePropertyFlags{PagePropertyFlag::kIsAudible});
   AdvanceClock(base::Seconds(56));
-  EXPECT_EQ(base::Seconds(56), audible_page->TimeSinceLastAudibleChange());
-  EXPECT_TRUE(audible_page->is_audible());
+  EXPECT_EQ(base::Seconds(56), audible_page->GetTimeSinceLastAudibleChange());
+  EXPECT_TRUE(audible_page->IsAudible());
 }
 
-TEST_F(PageNodeImplTest, TimeSinceLastNavigation) {
+TEST_F(PageNodeImplTest, GetTimeSinceLastNavigation) {
   MockSinglePageInSingleProcessGraph mock_graph(graph());
   // Before any commit events, timedelta should be 0.
-  EXPECT_TRUE(mock_graph.page->TimeSinceLastNavigation().is_zero());
+  EXPECT_TRUE(mock_graph.page->GetTimeSinceLastNavigation().is_zero());
 
   // 1st navigation.
   GURL url("http://www.example.org");
   mock_graph.page->OnMainFrameNavigationCommitted(false, base::TimeTicks::Now(),
                                                   10u, url, kHtmlMimeType);
-  EXPECT_EQ(url, mock_graph.page->main_frame_url());
-  EXPECT_EQ(10u, mock_graph.page->navigation_id());
-  EXPECT_EQ(kHtmlMimeType, mock_graph.page->contents_mime_type());
+  EXPECT_EQ(url, mock_graph.page->GetMainFrameUrl());
+  EXPECT_EQ(10u, mock_graph.page->GetNavigationID());
+  EXPECT_EQ(kHtmlMimeType, mock_graph.page->GetContentsMimeType());
   AdvanceClock(base::Seconds(11));
-  EXPECT_EQ(base::Seconds(11), mock_graph.page->TimeSinceLastNavigation());
+  EXPECT_EQ(base::Seconds(11), mock_graph.page->GetTimeSinceLastNavigation());
 
   // 2nd navigation.
   url = GURL("http://www.example.org/bobcat");
   mock_graph.page->OnMainFrameNavigationCommitted(false, base::TimeTicks::Now(),
                                                   20u, url, kHtmlMimeType);
-  EXPECT_EQ(url, mock_graph.page->main_frame_url());
-  EXPECT_EQ(20u, mock_graph.page->navigation_id());
-  EXPECT_EQ(kHtmlMimeType, mock_graph.page->contents_mime_type());
+  EXPECT_EQ(url, mock_graph.page->GetMainFrameUrl());
+  EXPECT_EQ(20u, mock_graph.page->GetNavigationID());
+  EXPECT_EQ(kHtmlMimeType, mock_graph.page->GetContentsMimeType());
   AdvanceClock(base::Seconds(17));
-  EXPECT_EQ(base::Seconds(17), mock_graph.page->TimeSinceLastNavigation());
+  EXPECT_EQ(base::Seconds(17), mock_graph.page->GetTimeSinceLastNavigation());
 
   // Test a same-document navigation.
   url = GURL("http://www.example.org/bobcat#fun");
   mock_graph.page->OnMainFrameNavigationCommitted(true, base::TimeTicks::Now(),
                                                   30u, url, kHtmlMimeType);
-  EXPECT_EQ(url, mock_graph.page->main_frame_url());
-  EXPECT_EQ(30u, mock_graph.page->navigation_id());
-  EXPECT_EQ(kHtmlMimeType, mock_graph.page->contents_mime_type());
+  EXPECT_EQ(url, mock_graph.page->GetMainFrameUrl());
+  EXPECT_EQ(30u, mock_graph.page->GetNavigationID());
+  EXPECT_EQ(kHtmlMimeType, mock_graph.page->GetContentsMimeType());
   AdvanceClock(base::Seconds(17));
-  EXPECT_EQ(base::Seconds(17), mock_graph.page->TimeSinceLastNavigation());
+  EXPECT_EQ(base::Seconds(17), mock_graph.page->GetTimeSinceLastNavigation());
 
   // Test a navigation to a page with a different MIME type.
   url = GURL("http://www.example.org/document.pdf");
   mock_graph.page->OnMainFrameNavigationCommitted(false, base::TimeTicks::Now(),
                                                   40u, url, kPdfMimeType);
-  EXPECT_EQ(url, mock_graph.page->main_frame_url());
-  EXPECT_EQ(40u, mock_graph.page->navigation_id());
-  EXPECT_EQ(kPdfMimeType, mock_graph.page->contents_mime_type());
+  EXPECT_EQ(url, mock_graph.page->GetMainFrameUrl());
+  EXPECT_EQ(40u, mock_graph.page->GetNavigationID());
+  EXPECT_EQ(kPdfMimeType, mock_graph.page->GetContentsMimeType());
   AdvanceClock(base::Seconds(17));
-  EXPECT_EQ(base::Seconds(17), mock_graph.page->TimeSinceLastNavigation());
+  EXPECT_EQ(base::Seconds(17), mock_graph.page->GetTimeSinceLastNavigation());
 }
 
 TEST_F(PageNodeImplTest, BrowserContextID) {
@@ -183,10 +185,8 @@ TEST_F(PageNodeImplTest, BrowserContextID) {
       base::UnguessableToken::Create().ToString();
   auto page_node =
       CreateNode<PageNodeImpl>(WebContentsProxy(), kTestBrowserContextId);
-  const PageNode* public_page_node = page_node.get();
 
-  EXPECT_EQ(page_node->browser_context_id(), kTestBrowserContextId);
-  EXPECT_EQ(public_page_node->GetBrowserContextID(), kTestBrowserContextId);
+  EXPECT_EQ(page_node->GetBrowserContextID(), kTestBrowserContextId);
 }
 
 TEST_F(PageNodeImplTest, LoadingState) {
@@ -195,20 +195,20 @@ TEST_F(PageNodeImplTest, LoadingState) {
 
   // This should start at kLoadingNotStarted.
   EXPECT_EQ(PageNode::LoadingState::kLoadingNotStarted,
-            page_node->loading_state());
+            page_node->GetLoadingState());
 
   // Set to kLoadingNotStarted and the property should stay kLoadingNotStarted.
   page_node->SetLoadingState(PageNode::LoadingState::kLoadingNotStarted);
   EXPECT_EQ(PageNode::LoadingState::kLoadingNotStarted,
-            page_node->loading_state());
+            page_node->GetLoadingState());
 
   // Set to kLoading and the property should switch to kLoading.
   page_node->SetLoadingState(PageNode::LoadingState::kLoading);
-  EXPECT_EQ(PageNode::LoadingState::kLoading, page_node->loading_state());
+  EXPECT_EQ(PageNode::LoadingState::kLoading, page_node->GetLoadingState());
 
   // Set to kLoading again and the property should stay kLoading.
   page_node->SetLoadingState(PageNode::LoadingState::kLoading);
-  EXPECT_EQ(PageNode::LoadingState::kLoading, page_node->loading_state());
+  EXPECT_EQ(PageNode::LoadingState::kLoading, page_node->GetLoadingState());
 }
 
 TEST_F(PageNodeImplTest, HadFormInteractions) {
@@ -216,13 +216,13 @@ TEST_F(PageNodeImplTest, HadFormInteractions) {
   auto* page_node = mock_graph.page.get();
 
   // This should be initialized to false.
-  EXPECT_FALSE(page_node->had_form_interaction());
+  EXPECT_FALSE(page_node->HadFormInteraction());
 
   page_node->SetHadFormInteractionForTesting(true);
-  EXPECT_TRUE(page_node->had_form_interaction());
+  EXPECT_TRUE(page_node->HadFormInteraction());
 
   page_node->SetHadFormInteractionForTesting(false);
-  EXPECT_FALSE(page_node->had_form_interaction());
+  EXPECT_FALSE(page_node->HadFormInteraction());
 }
 
 TEST_F(PageNodeImplTest, HadUserEdits) {
@@ -230,13 +230,13 @@ TEST_F(PageNodeImplTest, HadUserEdits) {
   auto* page_node = mock_graph.page.get();
 
   // This should be initialized to false.
-  EXPECT_FALSE(page_node->had_user_edits());
+  EXPECT_FALSE(page_node->HadUserEdits());
 
   page_node->SetHadUserEditsForTesting(true);
-  EXPECT_TRUE(page_node->had_user_edits());
+  EXPECT_TRUE(page_node->HadUserEdits());
 
   page_node->SetHadUserEditsForTesting(false);
-  EXPECT_FALSE(page_node->had_user_edits());
+  EXPECT_FALSE(page_node->HadUserEdits());
 }
 
 TEST_F(PageNodeImplTest, GetFreezingVote) {
@@ -244,14 +244,14 @@ TEST_F(PageNodeImplTest, GetFreezingVote) {
   auto* page_node = mock_graph.page.get();
 
   // This should be initialized to absl::nullopt.
-  EXPECT_FALSE(page_node->freezing_vote());
+  EXPECT_FALSE(page_node->GetFreezingVote());
 
   page_node->set_freezing_vote(kFreezingVote);
-  ASSERT_TRUE(page_node->freezing_vote().has_value());
-  EXPECT_EQ(kFreezingVote, page_node->freezing_vote().value());
+  ASSERT_TRUE(page_node->GetFreezingVote().has_value());
+  EXPECT_EQ(kFreezingVote, page_node->GetFreezingVote().value());
 
   page_node->set_freezing_vote(absl::nullopt);
-  EXPECT_FALSE(page_node->freezing_vote());
+  EXPECT_FALSE(page_node->GetFreezingVote());
 }
 
 namespace {
@@ -397,32 +397,52 @@ TEST_F(PageNodeImplTest, ObserverWorks) {
 }
 
 TEST_F(PageNodeImplTest, PublicInterface) {
+  auto process_node = CreateNode<ProcessNodeImpl>();
   auto page_node = CreateNode<PageNodeImpl>();
   const PageNode* public_page_node = page_node.get();
+  auto frame_node = CreateFrameNodeAutoId(process_node.get(), page_node.get());
 
   // Simply test that the public interface impls yield the same result as their
   // private counterpart.
 
-  EXPECT_EQ(page_node->browser_context_id(),
-            public_page_node->GetBrowserContextID());
-  EXPECT_EQ(page_node->is_focused(), public_page_node->IsFocused());
-  EXPECT_EQ(page_node->is_visible(), public_page_node->IsVisible());
-  EXPECT_EQ(page_node->is_audible(), public_page_node->IsAudible());
-  EXPECT_EQ(page_node->loading_state(), public_page_node->GetLoadingState());
-  EXPECT_EQ(page_node->ukm_source_id(), public_page_node->GetUkmSourceID());
-  EXPECT_EQ(page_node->lifecycle_state(),
-            public_page_node->GetLifecycleState());
-
-  page_node->OnMainFrameNavigationCommitted(false, base::TimeTicks::Now(), 10u,
-                                            GURL("https://foo.com"),
-                                            kHtmlMimeType);
-  EXPECT_EQ(page_node->navigation_id(), public_page_node->GetNavigationID());
-  EXPECT_EQ(page_node->main_frame_url(), public_page_node->GetMainFrameUrl());
-  EXPECT_EQ(page_node->contents_mime_type(),
-            public_page_node->GetContentsMimeType());
-  EXPECT_EQ(page_node->freezing_vote(), public_page_node->GetFreezingVote());
+  EXPECT_EQ(page_node->main_frame_node(), public_page_node->GetMainFrameNode());
 }
 
+TEST_F(PageNodeImplTest, OpenerFrameNode) {
+  auto process_node = CreateNode<ProcessNodeImpl>();
+  auto page_node = CreateNode<PageNodeImpl>();
+  auto opener_frame_node =
+      CreateFrameNodeAutoId(process_node.get(), page_node.get());
+
+  auto opened_page_node = CreateNode<PageNodeImpl>();
+  const PageNode* public_opened_page_node = opened_page_node.get();
+
+  opened_page_node->SetOpenerFrameNode(opener_frame_node.get());
+
+  EXPECT_EQ(opened_page_node->opener_frame_node(), opener_frame_node.get());
+  EXPECT_EQ(public_opened_page_node->GetOpenerFrameNode(),
+            opener_frame_node.get());
+}
+
+TEST_F(PageNodeImplTest, EmbedderFrameNode) {
+  auto process_node = CreateNode<ProcessNodeImpl>();
+  auto page_node = CreateNode<PageNodeImpl>();
+  auto embedder_frame_node =
+      CreateFrameNodeAutoId(process_node.get(), page_node.get());
+
+  auto embedded_page_node = CreateNode<PageNodeImpl>();
+  const PageNode* public_embedded_page_node = embedded_page_node.get();
+
+  embedded_page_node->SetEmbedderFrameNodeAndEmbeddingType(
+      embedder_frame_node.get(), PageNode::EmbeddingType::kGuestView);
+
+  EXPECT_EQ(embedded_page_node->GetEmbeddingType(),
+            PageNode::EmbeddingType::kGuestView);
+  EXPECT_EQ(embedded_page_node->embedder_frame_node(),
+            embedder_frame_node.get());
+  EXPECT_EQ(public_embedded_page_node->GetEmbedderFrameNode(),
+            embedder_frame_node.get());
+}
 TEST_F(PageNodeImplTest, GetMainFrameNodes) {
   auto process = CreateNode<ProcessNodeImpl>();
   auto page = CreateNode<PageNodeImpl>();
@@ -462,14 +482,14 @@ TEST_F(PageNodeImplTest, VisitMainFrameNodes) {
 TEST_F(PageNodeImplTest, BackForwardCache) {
   auto process = CreateNode<ProcessNodeImpl>();
   auto page = CreateNode<PageNodeImpl>();
-  EXPECT_EQ(PageNode::PageState::kActive, page->page_state());
+  EXPECT_EQ(PageNode::PageState::kActive, page->GetPageState());
 
   MockObserver obs;
   graph()->AddPageNodeObserver(&obs);
 
   EXPECT_CALL(obs, OnPageStateChanged(_, PageNode::PageState::kActive));
   page->set_page_state(PageNode::PageState::kBackForwardCache);
-  EXPECT_EQ(PageNode::PageState::kBackForwardCache, page->page_state());
+  EXPECT_EQ(PageNode::PageState::kBackForwardCache, page->GetPageState());
 
   graph()->RemovePageNodeObserver(&obs);
 }
@@ -483,14 +503,14 @@ TEST_F(PageNodeImplTest, Prerendering) {
       PagePropertyFlags{},                  // initial_property_flags
       base::TimeTicks::Now(),               // visibility_change_time
       PageNode::PageState::kPrerendering);  // page_state
-  EXPECT_EQ(PageNode::PageState::kPrerendering, page->page_state());
+  EXPECT_EQ(PageNode::PageState::kPrerendering, page->GetPageState());
 
   MockObserver obs;
   graph()->AddPageNodeObserver(&obs);
 
   EXPECT_CALL(obs, OnPageStateChanged(_, PageNode::PageState::kPrerendering));
   page->set_page_state(PageNode::PageState::kActive);
-  EXPECT_EQ(PageNode::PageState::kActive, page->page_state());
+  EXPECT_EQ(PageNode::PageState::kActive, page->GetPageState());
 
   graph()->RemovePageNodeObserver(&obs);
 }

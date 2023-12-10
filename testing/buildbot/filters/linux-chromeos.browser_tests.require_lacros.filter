@@ -4,6 +4,7 @@
 *Magn*.*
 AccessibilityExtension*
 AccessibilityHighlightsBrowserTest.*
+AppServiceAppWindowLacrosBrowserTest*
 Autoclick*
 AshTtsApiTest*
 BrowserAppShelfControllerBrowserTest*
@@ -12,13 +13,17 @@ ChromeVox*
 DemoAshRequiresLacrosTest*
 DesksTemplatesClientLacrosTest*
 Dictation*
+*DictationTest*
 ExtensionKeeplistAllowPerfettoTest*
 ExtensionKeeplistTest*
+# Note: Some of FileTaskBrowserTest* runs only on branded ash and lacros builds.
+FileTaskBrowserTest*
 NonKioskAcceleratorLacrosTest*
 SelectToSpeak*
 SwitchAccess*
 VpnExtensionObserverBrowserTest*
 WebAppsCrosapiBrowserTest*
+*WebAppsPreventCloseCrosapiBrowserTest*
 WebAppPreloadInstallerLacrosBrowserTest*
 WebAppProviderBridgeBrowserTest*
 WebKioskAcceleratorLacrosTest*
@@ -32,14 +37,16 @@ TestAsNormalAndGuestUser/SpokenFeedbackTest.*
 -ChromeVoxPortalsTest.ShouldFocusPortal
 # TODO(b/276914335): Flaky in Lacros.
 -ChromeVoxAutoScrollHandlerTest.RecyclerViewByCharacter
+# TODO(b/301475127): Remove browser() dependency for the following dictation
+# tests.
+-*DictationTest.Help*
+-*DictationTest.WorksWithSelectToSpeak*
 # TODO(b/301253962): Some Switch Access tests fail/flake on Lacros.
 -SwitchAccessItemScanManagerTest.*
 -SwitchAccessPointScanManagerTest.PointScanLeftClick
 -SwitchAccessTest.NavigateButtonsInTextFieldMenu
 # TODO(https://crbug.com/1378291) Ash and Lacros browser window sizes differ.
 -ChromeVoxEditingTest.SelectAcrossSoftLineWraps
-# TODO(crbug.com/1339456) Disabled when switch to LacrosOnly.
--DesksTemplatesClientLacrosTest.SystemUILaunchBrowser
 # TODO(b/277821091) Flaky
 -ChromeVoxEditingTest.GiantTextAreaPerformance
 # TODO(crbug.com/1478586): Flaky.

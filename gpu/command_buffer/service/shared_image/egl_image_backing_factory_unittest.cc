@@ -6,6 +6,7 @@
 
 #include <thread>
 
+#include <optional>
 #include "base/bits.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -32,7 +33,6 @@
 #include "gpu/config/gpu_test_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/gpu/GrBackendSemaphore.h"
 #include "third_party/skia/include/gpu/GrBackendSurface.h"
@@ -219,8 +219,8 @@ class EGLImageBackingFactoryThreadSafeTest
                        const wgpu::Device& device,
                        const gfx::Size& size,
                        const std::vector<uint8_t>& expected_color) const {
-    uint32_t buffer_stride =
-        static_cast<uint32_t>(base::bits::AlignUp(size.width() * 4, 256));
+    uint32_t buffer_stride = static_cast<uint32_t>(
+        base::bits::AlignUpDeprecatedDoNotUse(size.width() * 4, 256));
     size_t buffer_size = static_cast<size_t>(size.height()) * buffer_stride;
     wgpu::BufferDescriptor buffer_desc{
         .usage = wgpu::BufferUsage::CopyDst | wgpu::BufferUsage::MapRead,

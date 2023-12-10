@@ -146,6 +146,13 @@ void RTCEncodedAudioStreamTransformer::Broker::SendFrameToSink(
   }
 }
 
+void RTCEncodedAudioStreamTransformer::Broker::StartShortCircuiting() {
+  base::AutoLock locker(transformer_lock_);
+  if (transformer_) {
+    transformer_->StartShortCircuiting();
+  }
+}
+
 RTCEncodedAudioStreamTransformer::RTCEncodedAudioStreamTransformer(
     scoped_refptr<base::SingleThreadTaskRunner> realm_task_runner)
     : broker_(base::AdoptRef(new Broker(this))),
@@ -162,6 +169,9 @@ void RTCEncodedAudioStreamTransformer::RegisterTransformedFrameCallback(
     rtc::scoped_refptr<webrtc::TransformedFrameCallback> callback) {
   base::AutoLock locker(sink_lock_);
   send_frame_to_sink_cb_ = callback;
+  if (short_circuit_) {
+    callback->StartShortCircuiting();
+  }
 }
 
 void RTCEncodedAudioStreamTransformer::UnregisterTransformedFrameCallback() {
@@ -183,6 +193,14 @@ void RTCEncodedAudioStreamTransformer::SendFrameToSink(
   base::AutoLock locker(sink_lock_);
   if (send_frame_to_sink_cb_)
     send_frame_to_sink_cb_->OnTransformedFrame(std::move(frame));
+}
+
+void RTCEncodedAudioStreamTransformer::StartShortCircuiting() {
+  base::AutoLock locker(sink_lock_);
+  short_circuit_ = true;
+  if (send_frame_to_sink_cb_) {
+    send_frame_to_sink_cb_->StartShortCircuiting();
+  }
 }
 
 void RTCEncodedAudioStreamTransformer::SetTransformerCallback(

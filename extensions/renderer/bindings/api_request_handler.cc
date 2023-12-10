@@ -49,7 +49,7 @@ class APIRequestHandler::ArgumentAdapter {
  private:
   raw_ptr<const base::Value::List, ExperimentalRenderer> base_arguments_ =
       nullptr;
-  mutable absl::optional<v8::LocalVector<v8::Value>> v8_arguments_;
+  mutable std::optional<v8::LocalVector<v8::Value>> v8_arguments_;
   mojom::ExtraResponseDataPtr extra_data_ = nullptr;
 };
 
@@ -652,7 +652,7 @@ void APIRequestHandler::CompleteRequestImpl(int request_id,
 
   if (try_catch.HasCaught()) {
     v8::Local<v8::Message> v8_message = try_catch.Message();
-    absl::optional<std::string> message;
+    std::optional<std::string> message;
     if (!v8_message.IsEmpty())
       message = gin::V8ToString(isolate, v8_message->Get());
     exception_handler_->HandleException(context, "Error handling response",

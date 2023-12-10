@@ -23,9 +23,9 @@ namespace ash {
 // Renders "Showing X out of Y" label and "See all" button. Used in classroom
 // and tasks bubbles.
 class ASH_EXPORT GlanceablesListFooterView : public views::FlexLayoutView {
- public:
-  METADATA_HEADER(GlanceablesListFooterView);
+  METADATA_HEADER(GlanceablesListFooterView, views::FlexLayoutView)
 
+ public:
   GlanceablesListFooterView(const std::u16string& see_all_accessible_name,
                             base::RepeatingClosure on_see_all_pressed);
   GlanceablesListFooterView(const GlanceablesListFooterView&) = delete;

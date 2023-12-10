@@ -21,6 +21,8 @@
 #include "third_party/blink/public/platform/web_background_resource_fetch_assets.h"
 #include "third_party/blink/public/platform/web_url_error.h"
 #include "third_party/blink/public/platform/web_url_response.h"
+#include "third_party/blink/renderer/platform/back_forward_cache_buffer_limit_tracker.h"
+#include "third_party/blink/renderer/platform/loader/fetch/back_forward_cache_loader_helper.h"
 #include "third_party/blink/renderer/platform/loader/fetch/background_code_cache_host.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_utils.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loader_options.h"
@@ -157,6 +159,7 @@ class BackgroundURLLoader::Context
           const Vector<String>& cors_exempt_header_list,
           scoped_refptr<base::SingleThreadTaskRunner> freezable_task_runner,
           scoped_refptr<base::SingleThreadTaskRunner> unfreezable_task_runner,
+          BackForwardCacheLoaderHelper* back_forward_cache_loader_helper,
           Vector<std::unique_ptr<URLLoaderThrottle>> throttles,
           scoped_refptr<BackgroundCodeCacheHost> background_code_cache_host)
       : background_resource_fetch_context_(
@@ -166,13 +169,19 @@ class BackgroundURLLoader::Context
         unfreezable_task_runner_(std::move(unfreezable_task_runner)),
         background_task_runner_(
             background_resource_fetch_context_->GetTaskRunner()),
+        back_forward_cache_loader_helper_(
+            std::make_unique<WeakPersistent<BackForwardCacheLoaderHelper>>(
+                back_forward_cache_loader_helper)),
         throttles_(std::move(throttles)),
         background_code_cache_host_(std::move(background_code_cache_host)) {
     DETACH_FROM_SEQUENCE(background_sequence_checker_);
   }
 
-  ~Context() = default;
-
+  ~Context() {
+    // WeakPersistent must be destructed in the original thread.
+    unfreezable_task_runner_->DeleteSoon(
+        FROM_HERE, std::move(back_forward_cache_loader_helper_));
+  }
   scoped_refptr<base::SingleThreadTaskRunner> unfreezable_task_runner() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(main_thread_sequence_checker_);
     return unfreezable_task_runner_;
@@ -264,19 +273,25 @@ class BackgroundURLLoader::Context
         const net::RedirectInfo& redirect_info,
         network::mojom::URLResponseHeadPtr head,
         FollowRedirectCallback follow_redirect_callback) override {
+      // Wrapping `follow_redirect_callback` with base::OnTaskRunnerDeleter to
+      // make sure that `follow_redirect_callback` will be destructed in the
+      // background thread when `client_->WillFollowRedirect()` returns false
+      // in Context::OnReceivedRedirect() or the request is canceled before
+      // Context::OnReceivedRedirect() is called in the main thread.
       context_->PostTaskToMainThread(CrossThreadBindOnce(
           &Context::OnReceivedRedirect, context_, redirect_info,
-          std::move(head), std::move(follow_redirect_callback)));
+          std::move(head),
+          std::unique_ptr<FollowRedirectCallback, base::OnTaskRunnerDeleter>(
+              new FollowRedirectCallback(std::move(follow_redirect_callback)),
+              base::OnTaskRunnerDeleter(context_->background_task_runner_))));
     }
     void OnReceivedResponse(
         network::mojom::URLResponseHeadPtr head,
         mojo::ScopedDataPipeConsumerHandle body,
-        absl::optional<mojo_base::BigBuffer> cached_metadata,
-        base::TimeTicks response_arrival_at_renderer) override {
+        absl::optional<mojo_base::BigBuffer> cached_metadata) override {
       context_->PostTaskToMainThread(CrossThreadBindOnce(
           &Context::OnReceivedResponse, context_, std::move(head),
-          std::move(body), std::move(cached_metadata),
-          response_arrival_at_renderer));
+          std::move(body), std::move(cached_metadata)));
     }
     void OnTransferSizeUpdated(int transfer_size_diff) override {
       context_->PostTaskToMainThread(CrossThreadBindOnce(
@@ -404,8 +419,7 @@ class BackgroundURLLoader::Context
   void OnReceivedRedirect(
       const net::RedirectInfo& redirect_info,
       network::mojom::URLResponseHeadPtr head,
-      base::OnceCallback<void(std::vector<std::string> removed_headers,
-                              net::HttpRequestHeaders modified_headers)>
+      std::unique_ptr<FollowRedirectCallback, base::OnTaskRunnerDeleter>
           follow_redirect_callback,
       int request_id) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(main_thread_sequence_checker_);
@@ -424,26 +438,18 @@ class BackgroundURLLoader::Context
             redirect_info.insecure_scheme_was_upgraded)) {
       PostCrossThreadTask(
           *background_task_runner_, FROM_HERE,
-          CrossThreadBindOnce(std::move(follow_redirect_callback),
+          CrossThreadBindOnce(std::move(*follow_redirect_callback),
                               std::move(removed_headers),
                               std::move(modified_headers)));
-    } else {
-      // `follow_redirect_callback` must be deleted in the background thread.
-      background_task_runner_->DeleteSoon(
-          FROM_HERE, std::make_unique<base::OnceCallback<void(
-                         std::vector<std::string>, net::HttpRequestHeaders)>>(
-                         std::move(follow_redirect_callback)));
     }
   }
   void OnReceivedResponse(network::mojom::URLResponseHeadPtr head,
                           mojo::ScopedDataPipeConsumerHandle body,
                           absl::optional<mojo_base::BigBuffer> cached_metadata,
-                          base::TimeTicks response_arrival_at_renderer,
                           int request_id) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(main_thread_sequence_checker_);
     WebURLResponse response = WebURLResponse::Create(
         url_, *head, has_devtools_request_id_, request_id);
-    response.SetArrivalTimeAtRenderer(response_arrival_at_renderer);
     client_->DidReceiveResponse(response, std::move(body),
                                 std::move(cached_metadata));
   }
@@ -470,11 +476,48 @@ class BackgroundURLLoader::Context
   void EvictFromBackForwardCacheOnBackground(
       mojom::blink::RendererEvictionReason reason) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(background_sequence_checker_);
-    // TODDO(crbug.com/1379780): Implement this.
+    PostCrossThreadTask(*unfreezable_task_runner_, FROM_HERE,
+                        CrossThreadBindOnce(&Context::EvictFromBackForwardCache,
+                                            scoped_refptr(this), reason));
+  }
+  void EvictFromBackForwardCache(mojom::blink::RendererEvictionReason reason) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(main_thread_sequence_checker_);
+    if (back_forward_cache_loader_helper_ &&
+        *back_forward_cache_loader_helper_) {
+      (*back_forward_cache_loader_helper_)->EvictFromBackForwardCache(reason);
+    }
   }
   void DidBufferLoadWhileInBackForwardCacheOnBackground(size_t num_bytes) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(background_sequence_checker_);
-    // TODDO(crbug.com/1379780): Implement this.
+    // Need to update the process wide count in the background thread.
+    BackForwardCacheBufferLimitTracker::Get().DidBufferBytes(num_bytes);
+    PostCrossThreadTask(
+        *unfreezable_task_runner_, FROM_HERE,
+        CrossThreadBindOnce(&Context::DidBufferLoadWhileInBackForwardCache,
+                            scoped_refptr(this), num_bytes));
+  }
+  void DidBufferLoadWhileInBackForwardCache(size_t num_bytes) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(main_thread_sequence_checker_);
+    if (freeze_mode_ != LoaderFreezeMode::kBufferIncoming) {
+      // This happens when the page was restored from BFCache, and
+      // Context::Freeze(LoaderFreezeMode::kNone) was called in the main thread,
+      // but Context::FreezeOnBackground(LoaderFreezeMode::kNone) was not called
+      // in the background thread when MojoURLLoaderClient::BodyBuffer received
+      // the data. In that case, we need to decrease the process-wide total
+      // byte count tracked by BackForwardCacheBufferLimitTracker because we
+      // have updated it in DidBufferLoadWhileInBackForwardCacheOnBackground().
+      BackForwardCacheBufferLimitTracker::Get()
+          .DidRemoveFrameOrWorkerFromBackForwardCache(num_bytes);
+      return;
+    }
+    if (back_forward_cache_loader_helper_ &&
+        *back_forward_cache_loader_helper_) {
+      // We updated the process wide count in the background thread, so setting
+      // `update_process_wide_count` to false.
+      (*back_forward_cache_loader_helper_)
+          ->DidBufferLoadWhileInBackForwardCache(
+              /*update_process_wide_count=*/false, num_bytes);
+    }
   }
 
   scoped_refptr<WebBackgroundResourceFetchAssets>
@@ -487,6 +530,10 @@ class BackgroundURLLoader::Context
   const scoped_refptr<base::SingleThreadTaskRunner> freezable_task_runner_;
   const scoped_refptr<base::SingleThreadTaskRunner> unfreezable_task_runner_;
   const scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
+
+  std::unique_ptr<WeakPersistent<BackForwardCacheLoaderHelper>>
+      back_forward_cache_loader_helper_
+          GUARDED_BY_CONTEXT(main_thread_sequence_checker_);
 
   Vector<std::unique_ptr<URLLoaderThrottle>> throttles_
       GUARDED_BY_CONTEXT(main_thread_sequence_checker_);
@@ -531,6 +578,7 @@ BackgroundURLLoader::BackgroundURLLoader(
     const Vector<String>& cors_exempt_header_list,
     scoped_refptr<base::SingleThreadTaskRunner> freezable_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner> unfreezable_task_runner,
+    BackForwardCacheLoaderHelper* back_forward_cache_loader_helper,
     Vector<std::unique_ptr<URLLoaderThrottle>> throttles,
     scoped_refptr<BackgroundCodeCacheHost> background_code_cache_host)
     : context_(base::MakeRefCounted<Context>(
@@ -538,6 +586,7 @@ BackgroundURLLoader::BackgroundURLLoader(
           cors_exempt_header_list,
           std::move(freezable_task_runner),
           std::move(unfreezable_task_runner),
+          back_forward_cache_loader_helper,
           std::move(throttles),
           std::move(background_code_cache_host))) {
   CHECK(IsMainThread());

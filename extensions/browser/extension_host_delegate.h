@@ -65,7 +65,7 @@ class ExtensionHostDelegate {
   // or MEDIA_DEVICE_VIDEO_CAPTURE.
   virtual bool CheckMediaAccessPermission(
       content::RenderFrameHost* render_frame_host,
-      const GURL& security_origin,
+      const url::Origin& security_origin,
       blink::mojom::MediaStreamType type,
       const Extension* extension) = 0;
 

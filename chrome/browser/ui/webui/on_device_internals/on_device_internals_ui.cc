@@ -36,15 +36,18 @@ void OnDeviceInternalsUI::BindInterface(
   page_receivers_.Add(this, std::move(receiver));
 }
 
-void OnDeviceInternalsUI::LoadModel(const base::FilePath& model_path,
-                                    LoadModelCallback callback) {
+void OnDeviceInternalsUI::LoadModel(
+    const base::FilePath& model_path,
+    mojo::PendingReceiver<on_device_model::mojom::OnDeviceModel> model,
+    LoadModelCallback callback) {
   // Warm the service while assets load in the background.
   std::ignore = GetService();
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()},
-      base::BindOnce(&on_device_model::LoadModelAssets, model_path),
+      base::BindOnce(&on_device_model::LoadModelAssets, model_path, model_path),
       base::BindOnce(&OnDeviceInternalsUI::OnModelAssetsLoaded,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+                     weak_ptr_factory_.GetWeakPtr(), std::move(model),
+                     std::move(callback)));
 }
 
 on_device_model::mojom::OnDeviceModelService&
@@ -66,7 +69,10 @@ void OnDeviceInternalsUI::GetEstimatedPerformanceClass(
 }
 
 void OnDeviceInternalsUI::OnModelAssetsLoaded(
+    mojo::PendingReceiver<on_device_model::mojom::OnDeviceModel> model,
     LoadModelCallback callback,
     on_device_model::ModelAssets assets) {
-  GetService().LoadModel(std::move(assets), std::move(callback));
+  GetService().LoadModel(
+      on_device_model::mojom::LoadModelParams::New(std::move(assets), 4096),
+      std::move(model), std::move(callback));
 }

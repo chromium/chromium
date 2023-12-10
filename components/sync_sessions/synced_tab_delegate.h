@@ -44,7 +44,6 @@ class SyncedTabDelegate {
   virtual int GetCurrentEntryIndex() const = 0;
   virtual int GetEntryCount() const = 0;
   virtual GURL GetVirtualURLAtIndex(int i) const = 0;
-  virtual std::string GetPageLanguageAtIndex(int i) const = 0;
   virtual void GetSerializedNavigationAtIndex(
       int i,
       sessions::SerializedNavigationEntry* serialized_entry) const = 0;

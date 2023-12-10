@@ -96,7 +96,7 @@ const PromiseApp* PromiseAppRegistryCache::GetPromiseApp(
 
 const PromiseApp* PromiseAppRegistryCache::GetPromiseAppForStringPackageId(
     const std::string& string_package_id) const {
-  absl::optional<apps::PackageId> package_id =
+  std::optional<apps::PackageId> package_id =
       apps::PackageId::FromString(string_package_id);
   if (!package_id.has_value()) {
     return nullptr;

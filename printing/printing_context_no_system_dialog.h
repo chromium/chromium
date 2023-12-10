@@ -16,7 +16,8 @@ namespace printing {
 class COMPONENT_EXPORT(PRINTING) PrintingContextNoSystemDialog
     : public PrintingContext {
  public:
-  explicit PrintingContextNoSystemDialog(Delegate* delegate);
+  PrintingContextNoSystemDialog(Delegate* delegate,
+                                ProcessBehavior process_behavior);
   PrintingContextNoSystemDialog(const PrintingContextNoSystemDialog&) = delete;
   PrintingContextNoSystemDialog& operator=(
       const PrintingContextNoSystemDialog&) = delete;

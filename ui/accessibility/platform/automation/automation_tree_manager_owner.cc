@@ -37,10 +37,6 @@ bool AutomationTreeManagerOwner::SendTreeChangeEvent(
     ax::mojom::Mutation change_type,
     AXTree* tree,
     AXNode* node) {
-  // Don't send tree change events when it's not the active profile.
-  if (!is_active_profile_)
-    return false;
-
   // Notify custom bindings when there's an unloaded tree; js will enable the
   // renderer and wait for it to load.
   std::string child_tree_id_str;
@@ -850,6 +846,8 @@ bool AutomationTreeManagerOwner::GetChildIDAtIndex(const AXTreeID& tree_id,
   AXNode* child_node = nullptr;
   if (!child_roots.empty() && static_cast<size_t>(index) < child_roots.size()) {
     child_node = child_roots[index];
+  } else if (node->IsIgnored()) {
+    return false;
   } else if (static_cast<size_t>(index) >= node->GetUnignoredChildCount()) {
     return false;
   } else {
@@ -1007,72 +1005,6 @@ void AutomationTreeManagerOwner::SetAccessibilityFocus(AXTreeID tree_id) {
   accessibility_focused_tree_id_ = tree_id;
 }
 
-void AutomationTreeManagerOwner::OnAccessibilityEvents(
-    const AXTreeID& tree_id,
-    const std::vector<AXEvent>& events,
-    const std::vector<AXTreeUpdate>& updates,
-    const gfx::Point& mouse_location,
-    bool is_active_profile) {
-  // TODO(crbug.com/1441696): Refactor
-  // AutomationTreeManagerOwner::OnAccessibilityEvents logic into
-  // AutomationTreeManagerOwner::DispatchAccessibilityEvents.
-  is_active_profile_ = is_active_profile;
-  AutomationAXTreeWrapper* tree_wrapper =
-      GetAutomationAXTreeWrapperFromTreeID(tree_id);
-  bool is_new_tree = tree_wrapper == nullptr;
-  if (is_new_tree) {
-    tree_wrapper = new AutomationAXTreeWrapper(this);
-    CacheAutomationTreeWrapperForTreeID(tree_id, tree_wrapper);
-  }
-
-  if (!tree_wrapper->OnAccessibilityEvents(tree_id, updates, events,
-                                           mouse_location, is_active_profile)) {
-    DLOG(ERROR) << tree_wrapper->ax_tree()->error();
-    GetAutomationV8Bindings()->SendTreeSerializationError(tree_id);
-    return;
-  }
-
-  // Send an initial event to ensure the js-side objects get created for new
-  // trees.
-  if (is_new_tree) {
-    AXEvent initial_event;
-    initial_event.id = -1;
-    initial_event.event_from = ax::mojom::EventFrom::kNone;
-    initial_event.event_type = ax::mojom::Event::kNone;
-    SendAutomationEvent(tree_id, gfx::Point(), initial_event);
-  }
-
-  // After handling events in js, if the client did not add any event listeners,
-  // shut things down.
-  TreeEventListenersChanged(tree_wrapper);
-}
-
-void AutomationTreeManagerOwner::OnAccessibilityLocationChange(
-    const AXTreeID& tree_id,
-    int node_id,
-    AXRelativeBounds new_location) {
-  AutomationAXTreeWrapper* tree_wrapper =
-      GetAutomationAXTreeWrapperFromTreeID(tree_id);
-  if (!tree_wrapper)
-    return;
-  AXNode* node =
-      tree_wrapper->GetNodeFromTree(tree_wrapper->GetTreeID(), node_id);
-  if (!node)
-    return;
-
-  absl::optional<gfx::Rect> previous_accessibility_focused_global_bounds =
-      GetAccessibilityFocusedLocation();
-
-  node->SetLocation(new_location.offset_container_id, new_location.bounds,
-                    new_location.transform.get());
-
-  if (previous_accessibility_focused_global_bounds.has_value() &&
-      previous_accessibility_focused_global_bounds !=
-          GetAccessibilityFocusedLocation()) {
-    SendAccessibilityFocusedLocationChange(gfx::Point());
-  }
-}
-
 void AutomationTreeManagerOwner::CacheAutomationTreeWrapperForTreeID(
     const AXTreeID& tree_id,
     AutomationAXTreeWrapper* tree_wrapper) {
@@ -1152,15 +1084,62 @@ void AutomationTreeManagerOwner::DispatchAccessibilityEvents(
     const std::vector<ui::AXTreeUpdate>& updates,
     const gfx::Point& mouse_location,
     const std::vector<ui::AXEvent>& events) {
-  OnAccessibilityEvents(tree_id, events, updates, mouse_location,
-                        is_active_profile_);
+  AutomationAXTreeWrapper* tree_wrapper =
+      GetAutomationAXTreeWrapperFromTreeID(tree_id);
+  bool is_new_tree = tree_wrapper == nullptr;
+  if (is_new_tree) {
+    tree_wrapper = new AutomationAXTreeWrapper(this);
+    CacheAutomationTreeWrapperForTreeID(tree_id, tree_wrapper);
+  }
+
+  if (!tree_wrapper->OnAccessibilityEvents(tree_id, updates, events,
+                                           mouse_location)) {
+    DLOG(ERROR) << tree_wrapper->ax_tree()->error();
+    GetAutomationV8Bindings()->SendTreeSerializationError(tree_id);
+    return;
+  }
+
+  // Send an initial event to ensure the js-side objects get created for new
+  // trees.
+  if (is_new_tree) {
+    AXEvent initial_event;
+    initial_event.id = -1;
+    initial_event.event_from = ax::mojom::EventFrom::kNone;
+    initial_event.event_type = ax::mojom::Event::kNone;
+    SendAutomationEvent(tree_id, gfx::Point(), initial_event);
+  }
+
+  // After handling events in js, if the client did not add any event listeners,
+  // shut things down.
+  TreeEventListenersChanged(tree_wrapper);
 }
 
 void AutomationTreeManagerOwner::DispatchAccessibilityLocationChange(
     const ui::AXTreeID& tree_id,
     int32_t node_id,
     const ui::AXRelativeBounds& bounds) {
-  OnAccessibilityLocationChange(tree_id, node_id, bounds);
+  AutomationAXTreeWrapper* tree_wrapper =
+      GetAutomationAXTreeWrapperFromTreeID(tree_id);
+  if (!tree_wrapper) {
+    return;
+  }
+  AXNode* node =
+      tree_wrapper->GetNodeFromTree(tree_wrapper->GetTreeID(), node_id);
+  if (!node) {
+    return;
+  }
+
+  absl::optional<gfx::Rect> previous_accessibility_focused_global_bounds =
+      GetAccessibilityFocusedLocation();
+
+  node->SetLocation(bounds.offset_container_id, bounds.bounds,
+                    bounds.transform.get());
+
+  if (previous_accessibility_focused_global_bounds.has_value() &&
+      previous_accessibility_focused_global_bounds !=
+          GetAccessibilityFocusedLocation()) {
+    SendAccessibilityFocusedLocationChange(gfx::Point());
+  }
 }
 
 void AutomationTreeManagerOwner::DispatchActionResult(

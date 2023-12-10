@@ -111,6 +111,7 @@ class RenderingTest : public PageTestBase {
   USING_FAST_MALLOC(RenderingTest);
 
  public:
+  RenderingTest(base::test::TaskEnvironment::TimeSource time_source);
   virtual FrameSettingOverrideFunction SettingOverrider() const {
     return nullptr;
   }
@@ -173,10 +174,9 @@ class RenderingTest : public PageTestBase {
     return GetDisplayItemClientFromLayoutObject(GetLayoutObjectByElementId(id));
   }
 
-  // Create a `NGConstraintSpace` for the given available inline size. The
+  // Create a `ConstraintSpace` for the given available inline size. The
   // available block sizes is `LayoutUnit::Max()`.
-  NGConstraintSpace ConstraintSpaceForAvailableSize(
-      LayoutUnit inline_size) const;
+  ConstraintSpace ConstraintSpaceForAvailableSize(LayoutUnit inline_size) const;
 
  private:
   Persistent<LocalFrameClient> local_frame_client_;

@@ -6,7 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_INLINE_PHYSICAL_LINE_BOX_FRAGMENT_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_physical_fragment.h"
+#include "third_party/blink/renderer/core/layout/physical_fragment.h"
 #include "third_party/blink/renderer/platform/fonts/font_height.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
@@ -15,7 +15,7 @@ namespace blink {
 class FragmentItem;
 class LineBoxFragmentBuilder;
 
-class CORE_EXPORT PhysicalLineBoxFragment final : public NGPhysicalFragment {
+class CORE_EXPORT PhysicalLineBoxFragment final : public PhysicalFragment {
  public:
   enum LineBoxType {
     kNormalLineBox,
@@ -61,18 +61,18 @@ class CORE_EXPORT PhysicalLineBoxFragment final : public NGPhysicalFragment {
   // Compute the baseline metrics for this linebox.
   FontHeight BaselineMetrics() const;
 
-  // Scrollable overflow. including contents, in the local coordinate.
-  // |ScrollableOverflow| is not precomputed/cached because it cannot be
+  // Em height box. including contents, in the local coordinate.
+  // |ComputeRubyEmHeightBox| is not precomputed/cached because it cannot be
   // computed when LineBox is generated because it needs container dimensions
   // to resolve relative position of its children.
-  PhysicalRect ScrollableOverflow(const NGPhysicalBoxFragment& container,
-                                  const ComputedStyle& container_style,
-                                  TextHeightType height_type) const;
-  PhysicalRect ScrollableOverflowForLine(const NGPhysicalBoxFragment& container,
-                                         const ComputedStyle& container_style,
-                                         const FragmentItem& line,
-                                         const InlineCursor& cursor,
-                                         TextHeightType height_type) const;
+  PhysicalRect ComputeRubyEmHeightBox(
+      const PhysicalBoxFragment& container,
+      const ComputedStyle& container_style) const;
+  PhysicalRect ComputeRubyEmHeightBoxForLine(
+      const PhysicalBoxFragment& container,
+      const ComputedStyle& container_style,
+      const FragmentItem& line,
+      const InlineCursor& cursor) const;
 
   // Whether the content soft-wraps to the next line.
   bool HasSoftWrapToNextLine() const;
@@ -84,7 +84,7 @@ class CORE_EXPORT PhysicalLineBoxFragment final : public NGPhysicalFragment {
   }
 
  protected:
-  friend class NGPhysicalFragment;
+  friend class PhysicalFragment;
   void Dispose();
 
  private:
@@ -93,8 +93,8 @@ class CORE_EXPORT PhysicalLineBoxFragment final : public NGPhysicalFragment {
 
 template <>
 struct DowncastTraits<PhysicalLineBoxFragment> {
-  static bool AllowFrom(const NGPhysicalFragment& fragment) {
-    return fragment.Type() == NGPhysicalFragment::kFragmentLineBox;
+  static bool AllowFrom(const PhysicalFragment& fragment) {
+    return fragment.Type() == PhysicalFragment::kFragmentLineBox;
   }
 };
 

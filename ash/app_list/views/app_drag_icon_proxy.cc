@@ -22,6 +22,7 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/geometry/transform_util.h"
+#include "ui/gfx/image/image_skia_operations.h"
 #include "ui/views/animation/animation_builder.h"
 #include "ui/views/widget/widget.h"
 
@@ -41,6 +42,7 @@ constexpr float kShadowScaleFactor = 176.f / 192.f;
 AppDragIconProxy::AppDragIconProxy(
     aura::Window* root_window,
     const gfx::ImageSkia& icon,
+    const gfx::ImageSkia& badge_icon,
     const gfx::Point& pointer_location_in_screen,
     const gfx::Vector2d& pointer_offset_from_center,
     float scale_factor,
@@ -51,7 +53,13 @@ AppDragIconProxy::AppDragIconProxy(
 
   DragImageView* drag_image =
       static_cast<DragImageView*>(drag_image_widget_->GetContentsView());
-  drag_image->SetImage(icon);
+
+  if (badge_icon.isNull()) {
+    drag_image->SetImage(icon);
+  } else {
+    drag_image->SetImage(
+        gfx::ImageSkiaOperations::CreateIconWithBadge(icon, badge_icon));
+  }
   gfx::Size size = drag_image->GetPreferredSize();
 
   // Create the drag image layer.

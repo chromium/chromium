@@ -10,12 +10,15 @@
 #import "base/task/sequenced_task_runner.h"
 #import "base/time/time.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/ui/autofill/branding/branding_view_controller_delegate.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
 namespace {
 // The left margin of the branding logo, if visible.
-constexpr CGFloat kLeadingInset = 10;
+constexpr CGFloat kLeadingInset = 8;
+// The size of the logo image.
+constexpr CGFloat kLogoSize = 24;
 // The scale used by the "pop" animation.
 constexpr CGFloat kPopAnimationScale = ((CGFloat)4) / 3;
 // Wait time after the keyboard settles into place to perform pop animation.
@@ -52,8 +55,14 @@ constexpr NSString* kBrandingButtonAXId = @"kBrandingButtonAXId";
   button.accessibilityIdentifier = kBrandingButtonAXId;
   button.isAccessibilityElement = NO;  // Prevents VoiceOver users from tap.
   button.translatesAutoresizingMaskIntoConstraints = NO;
-  UIImage* logo = [[UIImage imageNamed:@"fullcolor_branding_icon"]
-      imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
+
+#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+  UIImage* logo = MakeSymbolMulticolor(
+      CustomSymbolWithPointSize(kMulticolorChromeballSymbol, kLogoSize));
+#else
+  UIImage* logo = CustomSymbolWithPointSize(kChromeProductSymbol, kLogoSize);
+#endif  // BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+
   [button setImage:logo forState:UIControlStateNormal];
   [button setImage:logo forState:UIControlStateHighlighted];
   button.imageView.contentMode = UIViewContentModeScaleAspectFit;

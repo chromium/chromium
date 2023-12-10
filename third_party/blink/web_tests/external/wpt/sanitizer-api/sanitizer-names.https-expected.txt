@@ -1,58 +1,63 @@
 This is a testharness.js-based test.
-[PASS] Element names in config item: allowElements
-[PASS] Element names in config item: dropElements
-[PASS] Element names in config item: blockElements
-[PASS] Attribute names in config item: allowAttributes
-[PASS] Attribute names in config item: dropAttributes
-[FAIL] Namespaced elements #0: allowElements: ["p"]
-  assert_equals: expected "<p>Hello</p>" but got ""
-[FAIL] Namespaced elements #1: allowElements: ["svg"]
-  assert_equals: expected "Hello" but got ""
-[FAIL] Namespaced elements #2: allowElements: [{"name":"svg","namespace":"http://www.w3.org/2000/svg"}]
-  assert_equals: expected "<svg>Hello</svg>" but got ""
-[FAIL] Namespaced elements #3: allowElements: ["math"]
-  assert_equals: expected "Hello" but got ""
-[FAIL] Namespaced elements #4: allowElements: [{"name":"math","namespace":"http://www.w3.org/2000/svg"}]
-  assert_equals: expected "Hello" but got ""
-[FAIL] Namespaced elements #5: allowElements: [{"name":"math","namespace":"http://www.w3.org/1998/Math/MathML"}]
-  assert_equals: expected "<math>Hello</math>" but got ""
-[FAIL] Namespaced attributes #0: allowAttributes: [{"name":"style","elements":"*"}]
-  Failed to construct 'Sanitizer': Failed to read the 'allowAttributes' property from 'SanitizerConfig': The object must have a callable @@iterator property.
-[FAIL] Namespaced attributes #1: allowAttributes: [{"name":"href","elements":"*"}]
-  Failed to construct 'Sanitizer': Failed to read the 'allowAttributes' property from 'SanitizerConfig': The object must have a callable @@iterator property.
-[FAIL] Namespaced attributes #2: allowAttributes: [{"name":"xlink:href","elements":"*"}]
-  Failed to construct 'Sanitizer': Failed to read the 'allowAttributes' property from 'SanitizerConfig': The object must have a callable @@iterator property.
-[FAIL] Namespaced attributes #3: allowAttributes: [{"name":"href","namespace":"http://www.w3.org/1999/xlink","elements":"*"}]
-  Failed to construct 'Sanitizer': Failed to read the 'allowAttributes' property from 'SanitizerConfig': The object must have a callable @@iterator property.
-[FAIL] Namespaced attributes #4: allowAttributes: [{"name":"href","namespace":"http://www.w3.org/1999/xlink","elements":"*"}]
-  Failed to construct 'Sanitizer': Failed to read the 'allowAttributes' property from 'SanitizerConfig': The object must have a callable @@iterator property.
-[FAIL] Namespaced attributes #5: allowAttributes: [{"name":"href","elements":"*"}]
-  Failed to construct 'Sanitizer': Failed to read the 'allowAttributes' property from 'SanitizerConfig': The object must have a callable @@iterator property.
+[FAIL] Element names in config item: elements
+  Cannot read properties of undefined (reading 'sort')
+[FAIL] Element names in config item: removeElements
+  Cannot read properties of undefined (reading 'sort')
+[FAIL] Element names in config item: replaceWithChildrenElements
+  Cannot read properties of undefined (reading 'sort')
+[FAIL] Attribute names in config item: attributes
+  Cannot convert undefined or null to object
+[FAIL] Attribute names in config item: removeAttributes
+  Cannot convert undefined or null to object
+[FAIL] Namespaced elements #0: elements: ["p"]
+  Failed to execute 'setHTML' on 'Element': Failed to read the 'sanitizer' property from 'ElementSetHTMLOptions': Failed to convert value to 'Sanitizer'.
+[FAIL] Namespaced elements #1: elements: ["svg"]
+  Failed to execute 'setHTML' on 'Element': Failed to read the 'sanitizer' property from 'ElementSetHTMLOptions': Failed to convert value to 'Sanitizer'.
+[FAIL] Namespaced elements #2: elements: [{"name":"svg","namespace":"http://www.w3.org/2000/svg"}]
+  Failed to execute 'setHTML' on 'Element': Failed to read the 'sanitizer' property from 'ElementSetHTMLOptions': Failed to convert value to 'Sanitizer'.
+[FAIL] Namespaced elements #3: elements: ["math"]
+  Failed to execute 'setHTML' on 'Element': Failed to read the 'sanitizer' property from 'ElementSetHTMLOptions': Failed to convert value to 'Sanitizer'.
+[FAIL] Namespaced elements #4: elements: [{"name":"math","namespace":"http://www.w3.org/2000/svg"}]
+  Failed to execute 'setHTML' on 'Element': Failed to read the 'sanitizer' property from 'ElementSetHTMLOptions': Failed to convert value to 'Sanitizer'.
+[FAIL] Namespaced elements #5: elements: [{"name":"math","namespace":"http://www.w3.org/1998/Math/MathML"}]
+  Failed to execute 'setHTML' on 'Element': Failed to read the 'sanitizer' property from 'ElementSetHTMLOptions': Failed to convert value to 'Sanitizer'.
+[FAIL] Namespaced attributes #0: attributes: [{"name":"style"}]
+  Failed to execute 'setHTML' on 'Element': Failed to read the 'sanitizer' property from 'ElementSetHTMLOptions': Failed to convert value to 'Sanitizer'.
+[FAIL] Namespaced attributes #1: attributes: [{"name":"href"}]
+  Failed to execute 'setHTML' on 'Element': Failed to read the 'sanitizer' property from 'ElementSetHTMLOptions': Failed to convert value to 'Sanitizer'.
+[FAIL] Namespaced attributes #2: attributes: [{"name":"xlink:href"}]
+  Failed to execute 'setHTML' on 'Element': Failed to read the 'sanitizer' property from 'ElementSetHTMLOptions': Failed to convert value to 'Sanitizer'.
+[FAIL] Namespaced attributes #3: attributes: [{"name":"href","namespace":"http://www.w3.org/1999/xlink"}]
+  Failed to execute 'setHTML' on 'Element': Failed to read the 'sanitizer' property from 'ElementSetHTMLOptions': Failed to convert value to 'Sanitizer'.
+[FAIL] Namespaced attributes #4: attributes: [{"name":"href","namespace":"http://www.w3.org/1999/xlink"}]
+  Failed to execute 'setHTML' on 'Element': Failed to read the 'sanitizer' property from 'ElementSetHTMLOptions': Failed to convert value to 'Sanitizer'.
+[FAIL] Namespaced attributes #5: attributes: [{"name":"href"}]
+  Failed to execute 'setHTML' on 'Element': Failed to read the 'sanitizer' property from 'ElementSetHTMLOptions': Failed to convert value to 'Sanitizer'.
 [FAIL] Namespaced attribute xlink:href inside SVG tree
-  Failed to construct 'Sanitizer': Failed to read the 'allowAttributes' property from 'SanitizerConfig': The object must have a callable @@iterator property.
+  Failed to execute 'setHTML' on 'Element': Failed to read the 'sanitizer' property from 'ElementSetHTMLOptions': Failed to convert value to 'Sanitizer'.
 [FAIL] Mixed-case element names #0: "svg:feBlend"
-  Cannot read properties of null (reading 'innerHTML')
+  Failed to execute 'setHTML' on 'Element': Failed to read the 'sanitizer' property from 'ElementSetHTMLOptions': Failed to convert value to 'Sanitizer'.
 [FAIL] Lower-case element names #0: "svg:feblend"
-  Cannot read properties of null (reading 'innerHTML')
+  Failed to execute 'setHTML' on 'Element': Failed to read the 'sanitizer' property from 'ElementSetHTMLOptions': Failed to convert value to 'Sanitizer'.
 [FAIL] Upper-case element names #0: "svg:FEBLEND"
-  Cannot read properties of null (reading 'innerHTML')
+  Failed to execute 'setHTML' on 'Element': Failed to read the 'sanitizer' property from 'ElementSetHTMLOptions': Failed to convert value to 'Sanitizer'.
 [FAIL] Mixed case element names #0: "feBlend" is preserved in config.
-  assert_array_equals: lengths differ, expected array ["svg:feBlend"] length 1, got [] length 0
+  assert_array_equals: lengths differ, expected array ["svg:feBlend"] length 1, got […, "p", "colgroup", "map", "listing", "td", "article", "body", "center", "dt", "fieldset", "br", "strike", "header", "dir", "nav", "label", "samp", "selectlist", "i", "input"] length 117
 [FAIL] Mixed-case element names #1: "svg:feColorMatrix"
-  Cannot read properties of null (reading 'innerHTML')
+  Failed to execute 'setHTML' on 'Element': Failed to read the 'sanitizer' property from 'ElementSetHTMLOptions': Failed to convert value to 'Sanitizer'.
 [FAIL] Lower-case element names #1: "svg:fecolormatrix"
-  Cannot read properties of null (reading 'innerHTML')
+  Failed to execute 'setHTML' on 'Element': Failed to read the 'sanitizer' property from 'ElementSetHTMLOptions': Failed to convert value to 'Sanitizer'.
 [FAIL] Upper-case element names #1: "svg:FECOLORMATRIX"
-  Cannot read properties of null (reading 'innerHTML')
+  Failed to execute 'setHTML' on 'Element': Failed to read the 'sanitizer' property from 'ElementSetHTMLOptions': Failed to convert value to 'Sanitizer'.
 [FAIL] Mixed case element names #1: "feColorMatrix" is preserved in config.
-  assert_array_equals: lengths differ, expected array ["svg:feColorMatrix"] length 1, got [] length 0
+  assert_array_equals: lengths differ, expected array ["svg:feColorMatrix"] length 1, got […, "p", "colgroup", "map", "listing", "td", "article", "body", "center", "dt", "fieldset", "br", "strike", "header", "dir", "nav", "label", "samp", "selectlist", "i", "input"] length 117
 [FAIL] Mixed-case element names #2: "svg:textPath"
-  Cannot read properties of null (reading 'innerHTML')
+  Failed to execute 'setHTML' on 'Element': Failed to read the 'sanitizer' property from 'ElementSetHTMLOptions': Failed to convert value to 'Sanitizer'.
 [FAIL] Lower-case element names #2: "svg:textpath"
-  Cannot read properties of null (reading 'innerHTML')
+  Failed to execute 'setHTML' on 'Element': Failed to read the 'sanitizer' property from 'ElementSetHTMLOptions': Failed to convert value to 'Sanitizer'.
 [FAIL] Upper-case element names #2: "svg:TEXTPATH"
-  Cannot read properties of null (reading 'innerHTML')
+  Failed to execute 'setHTML' on 'Element': Failed to read the 'sanitizer' property from 'ElementSetHTMLOptions': Failed to convert value to 'Sanitizer'.
 [FAIL] Mixed case element names #2: "textPath" is preserved in config.
-  assert_array_equals: lengths differ, expected array ["svg:textPath"] length 1, got [] length 0
+  assert_array_equals: lengths differ, expected array ["svg:textPath"] length 1, got […, "p", "colgroup", "map", "listing", "td", "article", "body", "center", "dt", "fieldset", "br", "strike", "header", "dir", "nav", "label", "samp", "selectlist", "i", "input"] length 117
 Harness: the test ran to completion.
 

@@ -20,6 +20,9 @@ js_library("test_api") {
 
 # Copy existing files to output directory.
 copy("copy_js") {
-  sources = [ "test_api.js" ]
+  sources = [
+    "no_test_api.js",
+    "test_api.js",
+  ]
   outputs = [ "$target_gen_dir/{{source_file_part}}" ]
 }

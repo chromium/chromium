@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "ash/components/arc/arc_util.h"
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "base/barrier_closure.h"
@@ -31,15 +32,14 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
+#include "chromeos/ash/components/demo_mode/utils/dimensions_utils.h"
+#include "chromeos/ash/components/growth/campaigns_manager.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "google_apis/gaia/google_service_auth_error.h"
-#include "third_party/abseil-cpp/absl/strings/ascii.h"
-#include "third_party/icu/source/common/unicode/bytestream.h"
-#include "third_party/icu/source/common/unicode/casemap.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace ash {
@@ -491,16 +491,7 @@ DemoSetupController::~DemoSetupController() = default;
 
 void DemoSetupController::SetAndCanonicalizeRetailerName(
     const std::string& retailer_name) {
-  icu::StringByteSink<std::string> byte_sink(&retailer_name_);
-  UErrorCode error_code = U_ZERO_ERROR;
-  icu::CaseMap::utf8Fold(/* options= */ 0, retailer_name, byte_sink,
-                         /* edits= */ nullptr, error_code);
-  retailer_name_.erase(
-      std::remove_if(retailer_name_.begin(), retailer_name_.end(),
-                     [](unsigned char c) {
-                       return absl::ascii_ispunct(c) || absl::ascii_isspace(c);
-                     }),
-      retailer_name_.end());
+  retailer_name_ = ash::demo_mode::CanonicalizeDimension(retailer_name);
 }
 
 void DemoSetupController::Enroll(
@@ -542,7 +533,9 @@ void DemoSetupController::LoadDemoComponents() {
   if (!demo_components_)
     demo_components_ = std::make_unique<DemoComponents>(demo_config_);
 
-  if (DBusThreadManager::Get()->IsUsingFakes()) {
+  // Simulate loading demo components completed for unit tests.
+  if (DBusThreadManager::Get()->IsUsingFakes() &&
+      !load_real_components_for_test_) {
     demo_components_->SetCrOSComponentLoadedForTesting(
         base::FilePath(), component_error_for_tests_);
 
@@ -551,13 +544,22 @@ void DemoSetupController::LoadDemoComponents() {
                                   weak_ptr_factory_.GetWeakPtr()));
     return;
   }
+
+  auto is_growth_campaigns_enabled_in_demo_mode =
+      features::IsGrowthCampaignsInDemoModeEnabled();
   base::OnceClosure load_callback =
       base::BindOnce(&DemoSetupController::OnDemoComponentsLoaded,
                      weak_ptr_factory_.GetWeakPtr());
   base::RepeatingClosure barrier_closure =
-      base::BarrierClosure(2, std::move(load_callback));
+      base::BarrierClosure(is_growth_campaigns_enabled_in_demo_mode ? 3 : 2,
+                           std::move(load_callback));
   demo_components_->LoadResourcesComponent(barrier_closure);
   demo_components_->LoadAppComponent(barrier_closure);
+  if (is_growth_campaigns_enabled_in_demo_mode) {
+    // Growth campaign is enabled in demo mode, also load growth campaigns
+    // component.
+    growth::CampaignsManager::Get()->LoadCampaigns(barrier_closure);
+  }
 }
 
 void DemoSetupController::OnDemoComponentsLoaded() {
@@ -645,6 +647,10 @@ void DemoSetupController::OnDeviceAttributeUpdatePermission(bool granted) {
 void DemoSetupController::SetCrOSComponentLoadErrorForTest(
     component_updater::CrOSComponentManager::Error error) {
   component_error_for_tests_ = error;
+}
+
+void DemoSetupController::EnableLoadRealComponentsForTest() {
+  load_real_components_for_test_ = true;
 }
 
 void DemoSetupController::OnDeviceRegistered() {

@@ -14,15 +14,21 @@
 #include "components/browsing_topics/browsing_topics_service.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/media_device_salt/media_device_salt_service.h"
+#include "components/supervised_user/core/common/buildflags.h"
+#include "components/supervised_user/core/common/features.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/storage_partition_config.h"
 #include "url/origin.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
-#include "chrome/browser/web_applications/isolated_web_apps/remove_isolated_web_app_browsing_data.h"
+#include "chrome/browser/web_applications/isolated_web_apps/remove_isolated_web_app_data.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#endif
+
+#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
+#include "components/permissions/permissions_client.h"
 #endif
 
 namespace {
@@ -84,7 +90,7 @@ ChromeBrowsingDataModelDelegate::CreateForStoragePartition(
 // static
 void ChromeBrowsingDataModelDelegate::BrowsingDataAccessed(
     content::RenderFrameHost* rfh,
-    BrowsingDataModel::DataKey data_key,
+    const BrowsingDataModel::DataKey& data_key,
     StorageType storage_type,
     bool blocked) {
   content_settings::PageSpecificContentSettings::BrowsingDataAccessed(
@@ -119,7 +125,7 @@ void ChromeBrowsingDataModelDelegate::GetAllDataKeys(
 }
 
 void ChromeBrowsingDataModelDelegate::RemoveDataKey(
-    BrowsingDataModel::DataKey data_key,
+    const BrowsingDataModel::DataKey& data_key,
     BrowsingDataModel::StorageTypeSet storage_types,
     base::OnceClosure callback) {
   auto dynamic_barrier_closure =
@@ -158,7 +164,7 @@ void ChromeBrowsingDataModelDelegate::RemoveDataKey(
 
 absl::optional<BrowsingDataModel::DataOwner>
 ChromeBrowsingDataModelDelegate::GetDataOwner(
-    BrowsingDataModel::DataKey data_key,
+    const BrowsingDataModel::DataKey& data_key,
     BrowsingDataModel::StorageType storage_type) const {
   switch (static_cast<StorageType>(storage_type)) {
     case StorageType::kIsolatedWebApp:
@@ -183,6 +189,7 @@ ChromeBrowsingDataModelDelegate::GetDataOwner(
 
 absl::optional<bool>
 ChromeBrowsingDataModelDelegate::IsBlockedByThirdPartyCookieBlocking(
+    const BrowsingDataModel::DataKey& data_key,
     BrowsingDataModel::StorageType storage_type) const {
   // Values below the first delegate type are handled in the model itself.
   if (static_cast<int>(storage_type) <
@@ -198,6 +205,18 @@ ChromeBrowsingDataModelDelegate::IsBlockedByThirdPartyCookieBlocking(
     default:
       NOTREACHED_NORETURN();
   }
+}
+
+bool ChromeBrowsingDataModelDelegate::IsCookieDeletionDisabled(
+    const GURL& url) {
+#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
+  CHECK(profile_);
+  if (profile_->IsChild()) {
+    auto* client = permissions::PermissionsClient::Get();
+    return client->IsCookieDeletionDisabled(profile_, url);
+  }
+#endif
+  return false;
 }
 
 void ChromeBrowsingDataModelDelegate::GetAllMediaDeviceSaltDataKeys(

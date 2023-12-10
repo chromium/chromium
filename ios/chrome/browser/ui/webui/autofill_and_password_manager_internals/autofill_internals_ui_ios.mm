@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/webui/autofill_and_password_manager_internals/autofill_internals_ui_ios.h"
 
-#import "ios/chrome/browser/autofill/autofill_log_router_factory.h"
+#import "ios/chrome/browser/autofill/model/autofill_log_router_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/ui/webui/autofill_and_password_manager_internals/internals_ui_handler.h"

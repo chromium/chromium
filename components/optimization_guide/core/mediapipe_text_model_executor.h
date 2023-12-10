@@ -36,9 +36,8 @@ class MediapipeTextModelExecutor
       TextClassifier* execution_task,
       ExecutionStatus* out_status,
       const std::string& input) override;
-  std::unique_ptr<TextClassifier> BuildModelExecutionTask(
-      base::MemoryMappedFile* model_file,
-      ExecutionStatus* out_status) override;
+  base::expected<std::unique_ptr<TextClassifier>, ExecutionStatus>
+  BuildModelExecutionTask(base::MemoryMappedFile* model_file) override;
 
   MediapipeTextModelExecutor(const MediapipeTextModelExecutor&) = delete;
   MediapipeTextModelExecutor& operator=(const MediapipeTextModelExecutor&) =

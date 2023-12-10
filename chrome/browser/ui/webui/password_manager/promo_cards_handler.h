@@ -17,16 +17,18 @@ class Profile;
 
 namespace password_manager {
 
-class PromoCardInterface;
+class PasswordPromoCardBase;
 
 // A class allowing providing PasswordManager WebUI capability to dynamically
 // display actionable promo cards depending on the current account preferences
 // and already seen promos.
 class PromoCardsHandler : public content::WebUIMessageHandler {
  public:
+  explicit PromoCardsHandler(Profile* profile);
   PromoCardsHandler(
+      base::PassKey<class PromoCardsHandlerTest>,
       Profile* profile,
-      std::vector<std::unique_ptr<PromoCardInterface>> promo_cards);
+      std::vector<std::unique_ptr<PasswordPromoCardBase>> promo_cards);
 
   PromoCardsHandler(const PromoCardsHandler&) = delete;
   PromoCardsHandler& operator=(const PromoCardsHandler&) = delete;
@@ -37,14 +39,15 @@ class PromoCardsHandler : public content::WebUIMessageHandler {
   // WebUIMessageHandler:
   void RegisterMessages() override;
 
+  void RestartChrome(const base::Value::List& args);
   void HandleGetAvailablePromoCard(const base::Value::List& args);
   void HandleRecordPromoDismissed(const base::Value::List& args);
 
-  PromoCardInterface* GetPromoToShowAndUpdatePref();
+  PasswordPromoCardBase* GetPromoToShowAndUpdatePref();
 
   raw_ptr<Profile, DanglingUntriaged> profile_;
 
-  std::vector<std::unique_ptr<PromoCardInterface>> promo_cards_;
+  std::vector<std::unique_ptr<PasswordPromoCardBase>> promo_cards_;
 };
 
 }  // namespace password_manager

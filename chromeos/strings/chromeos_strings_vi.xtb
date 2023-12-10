@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="vi">
+<translation id="1003363546227723021">Hiển thị ảnh, thời gian, thông tin về thời tiết và nội dung nghe nhìn khi ở chế độ màn hình chờ</translation>
 <translation id="1014750484722996375">Không gian làm việc</translation>
 <translation id="1018219910092211213">Không thể phân giải DNS</translation>
 <translation id="1018656279737460067">Đã hủy</translation>
@@ -28,6 +29,7 @@
 <translation id="1175697296044146566"><ph name="DEVICE_TYPE" /> này do <ph name="MANAGER" /> quản lý.</translation>
 <translation id="1175951029573070619">Trung bình (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Xóa</translation>
+<translation id="1191518099344003522">APN đã bật.</translation>
 <translation id="1195447618553298278">Lỗi chưa biết.</translation>
 <translation id="1196959502276349371">Phiên bản <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">Phát/tạm dừng</translation>
@@ -79,6 +81,7 @@
 <translation id="1515129336378114413">trang chủ trình duyệt</translation>
 <translation id="1526389707933164996">Ảnh động cho trình bảo vệ màn hình</translation>
 <translation id="152892567002884378">Tăng âm lượng</translation>
+<translation id="1539242642795599947">APN là loại mặc định và đính kèm.</translation>
 <translation id="1555130319947370107">Xanh lam</translation>
 <translation id="155865706765934889">Ô di chuột</translation>
 <translation id="1561927818299383735">màu đèn nền</translation>
@@ -134,6 +137,7 @@
 <translation id="1852934301711881861">Cài đặt ChromeOS Flex</translation>
 <translation id="1856388568474281774">Mũi tên xuống</translation>
 <translation id="1858620243986915808">Đính kèm ảnh chụp màn hình</translation>
+<translation id="1871413952174074704">APN không được có nhiều hơn <ph name="CHAR_LIMIT" /> ký tự</translation>
 <translation id="1871569928317311284">Tắt giao diện tối</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">Tắt chế độ tối</translation>
@@ -255,6 +259,7 @@
 <translation id="2872961005593481000">Tắt</translation>
 <translation id="2873483161362553159">Điều hướng trên trình duyệt</translation>
 <translation id="2874939134665556319">Bản nhạc trước</translation>
+<translation id="2875812231449496375">Bật chế độ này để hình nền này hiển thị được tốt nhất. Bạn có thể tắt chế độ cài đặt này bất cứ lúc nào.</translation>
 <translation id="2878387241690264070">Đã xả <ph name="RATE" /> pin sau <ph name="NUM_SECONDS" /> giây.</translation>
 <translation id="2880569433548999039">Trình bảo vệ màn hình Luồng đám mây</translation>
 <translation id="2926057806159140518">Nhập tên người dùng và mật khẩu hoặc quét mã QR</translation>
@@ -336,6 +341,7 @@
 <translation id="3577473026931028326">Đã xảy ra lỗi. Hãy thử lại.</translation>
 <translation id="357889014807611375">mạng Wi‑Fi có giới hạn dữ liệu</translation>
 <translation id="3583278742022654445">Cường độ tín hiệu yếu. Hãy thử di chuyển đến gần nguồn tín hiệu Wi-Fi hơn.</translation>
+<translation id="3594280220611906414"><ph name="USER_FRIENDLY_APN_NAME" /> là tên thân thiện với người dùng của <ph name="APN_NAME" />.</translation>
 <translation id="3595596368722241419">Pin đầy</translation>
 <translation id="3600339377155080675">Phản chiếu lên màn hình</translation>
 <translation id="3602290021589620013">Xem trước</translation>
@@ -434,7 +440,7 @@
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> hình ảnh</translation>
 <translation id="4333390807948134856">Đã nhấn phím <ph name="KEY_NAME" /></translation>
 <translation id="4354430579665871434">phím</translation>
-<translation id="435692326371619097">Quản lý chế độ cài đặt APN của mạng. APN thiết lập kết nối giữa mạng di động và Internet. <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
+<translation id="4361257691546579041">APN là loại mặc định.</translation>
 <translation id="437294888293595148">Đặt lại tất cả phím tắt</translation>
 <translation id="4378373042927530923">Không chạy</translation>
 <translation id="4378551569595875038">Đang kết nối…</translation>
@@ -534,7 +540,6 @@
 <translation id="4999333166442584738">Ẩn báo cáo</translation>
 <translation id="500920857929044050">Dừng kiểm tra</translation>
 <translation id="5017508259293544172">LEAP</translation>
-<translation id="5019310272469539976">Hiện ảnh, thời gian, thông tin thời tiết và nội dung phương tiện khi màn hình ở trạng thái rảnh</translation>
 <translation id="5035083460461104704">Màu giao diện</translation>
 <translation id="5038292761217083259">bàn phím nhiều màu</translation>
 <translation id="5039804452771397117">Cho phép</translation>
@@ -547,6 +552,7 @@
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
 <translation id="5137451382116112100">Toàn màn hình</translation>
 <translation id="5142961317498132443">Xác thực</translation>
+<translation id="5145081769226915336">Tự động bật chế độ tối?</translation>
 <translation id="5154917547274118687">Bộ nhớ</translation>
 <translation id="5160857336552977725">Đăng nhập vào <ph name="DEVICE_TYPE" /> của bạn</translation>
 <translation id="5166918508782100047">Chế độ cài đặt tính năng Thông tin nhanh</translation>
@@ -625,6 +631,7 @@
 <translation id="574392208103952083">Trung bình</translation>
 <translation id="5757187557809630523">bản nhạc tiếp theo</translation>
 <translation id="5760715441271661976">Trạng thái trang xác thực</translation>
+<translation id="5763838252932650682">Đang khởi động lại và cập nhật <ph name="APP_NAME" /></translation>
 <translation id="576835345334454681">Tăng độ sáng màn hình</translation>
 <translation id="57838592816432529">Tắt tiếng</translation>
 <translation id="5784136236926853061">Yêu cầu HTTP có độ trễ cao</translation>
@@ -655,6 +662,7 @@
 <translation id="5946538341867151940">Bạn chưa kết nối mạng. Nếu nhà mạng di động đề xuất thêm APN tuỳ chỉnh, hãy nhập thông tin APN bằng cách chọn "+ APN mới"</translation>
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5984145644188835034">Hình nền mặc định</translation>
+<translation id="6001235009374883388">APN là loại đính kèm.</translation>
 <translation id="6017514345406065928">Xanh lục</translation>
 <translation id="6019566113895157499">Phím tắt</translation>
 <translation id="6034694447310538551">Bật chế độ tự động đặt lại hằng tháng</translation>
@@ -821,6 +829,7 @@
 <translation id="7180611975245234373">Làm mới</translation>
 <translation id="7180865173735832675">Tùy chỉnh</translation>
 <translation id="7184043045742675738">Nhấp vào phím bất kỳ để tuỳ chỉnh nút. Đặt lại phím bằng phím chuột hoặc mũi tên.</translation>
+<translation id="7212547870105584639">Quản lý chế độ cài đặt APN của mạng. APN thiết lập kết nối giữa mạng di động và Internet. <ph name="BEGIN_LINK_LEARN_MORE" />Tìm hiểu thêm<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Cập nhật chương trình cơ sở cho thiết bị bên ngoài</translation>
 <translation id="7216409898977639127">Nhà cung cấp dịch vụ di động</translation>
 <translation id="725133483556299729">Chọn email</translation>
@@ -831,6 +840,7 @@
 <translation id="7287310195820267359">Bộ sưu tập hình nền</translation>
 <translation id="7297226631177386107">Không thể kết nối với các trang web HTTPS qua tường lửa</translation>
 <translation id="7297726121602187087">Xanh lục đậm</translation>
+<translation id="7301262279595293068">Ứng dụng này đang được cập nhật, vui lòng đợi</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7308203371573257315">Hỏi chuyên gia trong diễn đàn trợ giúp Chromebook</translation>
@@ -1103,4 +1113,5 @@
 <translation id="979450713603643090">Hồng nhạt</translation>
 <translation id="982713511914535780">Chạy quá trình Kiểm tra mức xả pin</translation>
 <translation id="987264212798334818">Chung</translation>
+<translation id="995062385528875723">Không được dùng chữ cái có dấu, bảng chữ cái không phải chữ Latinh hoặc biểu tượng</translation>
 </translationbundle>

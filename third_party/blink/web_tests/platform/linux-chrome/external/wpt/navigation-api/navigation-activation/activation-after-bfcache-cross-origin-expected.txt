@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[PRECONDITION_FAILED] navigation.activation must be updated when restored from bfcache
+  Could have been BFCached but actually wasn't
+Harness: the test ran to completion.
+

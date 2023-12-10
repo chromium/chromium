@@ -515,6 +515,7 @@
       <intent-filter>  # DIFF-ANCHOR: 48f4c2ef
         <category android:name="android.intent.category.XR"/>
       </intent-filter>  # DIFF-ANCHOR: 48f4c2ef
+      <property android:name="android.window.PROPERTY_ACTIVITY_STARTS_IN_IMMERSIVE_XR" android:value="true"/>
     </activity>  # DIFF-ANCHOR: 5d3091ca
     <activity-alias  # DIFF-ANCHOR: 9da0e5b6
         android:name="com.google.android.apps.chrome.IntentDispatcher"

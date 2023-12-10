@@ -58,11 +58,6 @@ interface IndexedDBControl {
         client_state_checker_remote,
     pending_receiver<blink.mojom.IDBFactory> receiver);
 
-  // Retrieves some basic usage information about the IndexedDB state. The
-  // returned array has one StorageUsageInfo per `storage_key` in the
-  // partition that has IndexedDB usage data.
-  GetUsage() => (array<StorageUsageInfo> info);
-
   // Deletes all indexed db files (across all buckets) for the given
   // `storage_key`.
   DeleteForStorageKey(blink.mojom.StorageKey storage_key) => (bool success);

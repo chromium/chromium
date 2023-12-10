@@ -6,11 +6,11 @@
 #define ASH_API_TASKS_TASKS_TYPES_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "ash/ash_export.h"
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::api {
 
@@ -43,10 +43,11 @@ struct ASH_EXPORT Task {
   Task(const std::string& id,
        const std::string& title,
        bool completed,
-       const absl::optional<base::Time>& due,
+       const std::optional<base::Time>& due,
        bool has_subtasks,
        bool has_email_link,
-       bool has_notes);
+       bool has_notes,
+       const base::Time& updated);
   Task(const Task&) = delete;
   Task& operator=(const Task&) = delete;
   ~Task();
@@ -62,7 +63,7 @@ struct ASH_EXPORT Task {
   const bool completed;
 
   // Optional due date of the task.
-  const absl::optional<base::Time> due;
+  const std::optional<base::Time> due;
 
   // Indicates whether the task has subtasks in it.
   const bool has_subtasks;
@@ -72,6 +73,9 @@ struct ASH_EXPORT Task {
 
   // Indicates whether the task has additional notes.
   const bool has_notes;
+
+  // When the task was last updated.
+  base::Time updated;
 };
 
 }  // namespace ash::api

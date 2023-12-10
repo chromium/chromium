@@ -152,6 +152,7 @@ source_set("unit_tests") {
   sources = [
     "audio_pipe_reader_unittest.cc",
     "certificate_watcher_unittest.cc",
+    "gnome_display_config_dbus_client_unittest.cc",
     "unicode_to_keysym_unittest.cc",
     "x11_character_injector_unittest.cc",
     "x_server_clipboard_unittest.cc",

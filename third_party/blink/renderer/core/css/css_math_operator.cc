@@ -61,6 +61,8 @@ String ToString(CSSMathOperator op) {
       return "abs";
     case CSSMathOperator::kSign:
       return "sign";
+    case CSSMathOperator::kProgress:
+      return "progress";
     default:
       NOTREACHED();
       return String();

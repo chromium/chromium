@@ -1,25 +1,4 @@
 This is a testharness.js-based test.
-[PASS] idl_test setup
-[PASS] idl_test validation
-[PASS] Partial interface RTCPeerConnection: original interface defined
-[PASS] Partial interface RTCPeerConnection: member names are unique
-[PASS] Partial dictionary RTCConfiguration: original dictionary defined
-[PASS] Partial dictionary RTCConfiguration: member names are unique
-[PASS] Partial interface RTCError: original interface defined
-[PASS] Partial interface RTCError: member names are unique
-[PASS] Partial dictionary RTCErrorInit: original dictionary defined
-[PASS] Partial dictionary RTCErrorInit: member names are unique
-[PASS] Partial dictionary MediaStreamConstraints: original dictionary defined
-[PASS] Partial dictionary MediaStreamConstraints: member names are unique
-[PASS] Partial interface MediaStreamTrack: original interface defined
-[PASS] Partial interface MediaStreamTrack: member names are unique
-[PASS] Partial interface RTCPeerConnection[2]: member names are unique
-[PASS] Partial interface RTCPeerConnection[3]: member names are unique
-[PASS] Partial interface RTCPeerConnection[4]: member names are unique
-[PASS] Partial interface RTCPeerConnection[5]: member names are unique
-[PASS] WorkerGlobalScope includes WindowOrWorkerGlobalScope: member names are unique
-[PASS] RTCIdentityProviderGlobalScope interface: existence and properties of interface object
-[PASS] RTCIdentityProviderRegistrar interface: existence and properties of interface object
 [FAIL] RTCIdentityAssertion interface: existence and properties of interface object
   assert_own_property: self does not have own property "RTCIdentityAssertion" expected property "RTCIdentityAssertion" missing
 [FAIL] RTCIdentityAssertion interface object length
@@ -66,7 +45,6 @@ This is a testharness.js-based test.
   assert_inherits: property "idpLoginUrl" not found in prototype chain
 [FAIL] RTCPeerConnection interface: new RTCPeerConnection() must inherit property "idpErrorInfo" with the proper type
   assert_inherits: property "idpErrorInfo" not found in prototype chain
-[PASS] RTCError interface: attribute httpRequestStatusCode
 [FAIL] MediaStreamTrack interface: attribute isolated
   assert_true: The prototype object must have a property "isolated" expected true got false
 [FAIL] MediaStreamTrack interface: attribute onisolationchange

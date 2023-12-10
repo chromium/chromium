@@ -30,6 +30,7 @@
 <translation id="2226276347425096477">Kérjük, rövidítse le a szöveget legfeljebb <ph name="MAX_CHARACTERS" /> karakterre (jelenleg <ph name="CURRENT_LENGTH" /> karaktert használ).</translation>
 <translation id="2247351761944213033"><ph name="WEEKNUMBER" />. hét, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904"><ph name="NUMBER" />. szám</translation>
+<translation id="2353297238722298836">Kamera és mikrofon engedélyezve</translation>
 <translation id="2393030564806080191">Szín hexadecimális értéke</translation>
 <translation id="2398813069815436052">párbeszédpanel megnyitva.</translation>
 <translation id="245932805758469625">a videóból hátralévő másodpercek száma</translation>
@@ -60,10 +61,12 @@
 <translation id="3822383571486410024">Kérjük, <ph name="MIN_CHARACTERS" /> karakter hosszú vagy annál hosszabb szöveget adjon meg (jelenleg <ph name="CURRENT_LENGTH" /> karaktert használ).</translation>
 <translation id="383465348367842624">A „<ph name="ATSIGN" />” előtti rész nem tartalmazhat „<ph name="INVALIDCHARACTER" />” karaktert.</translation>
 <translation id="3846214748874656680">Teljes képernyő – ki</translation>
+<translation id="4031179711345676612">Mikrofon engedélyezve</translation>
 <translation id="4103419683916926126">Ezredmásodperc</translation>
 <translation id="4201051445878709314">Az előző hónap megjelenítése</translation>
 <translation id="4360991593054037559">Kérjük, érvényes értéket adjon meg. A két legközelebbi érvényes érték <ph name="VALID_VALUE_LOW" /> és <ph name="VALID_VALUE_HIGHER" />.</translation>
 <translation id="4522570452068850558">Részletek</translation>
+<translation id="4663373278480897665">Kamera engedélyezve</translation>
 <translation id="4664250907885839816">A „<ph name="ATSIGN" />” utáni rész nem tartalmazhat „<ph name="INVALIDCHARACTER" />” karaktert.</translation>
 <translation id="4718048029184481307">Lejátszás kép a képben módban</translation>
 <translation id="4748357248530471599">képernyőkivágás váltása teljes képernyőn</translation>
@@ -137,6 +140,7 @@
 <translation id="6941933287844615239">médiafájlok letöltése</translation>
 <translation id="698788488269350478">kibontva.</translation>
 <translation id="6989848892321993519">Legalább <ph name="MIN_CHARACTERS" /> karakter hosszú szöveget adjon meg (jelenleg 1 karaktert használ).</translation>
+<translation id="7080893216867146095">Helymegosztás engedélyezve</translation>
 <translation id="709897737746224366">Kérjük, tartsa magát a kívánt formátumhoz.</translation>
 <translation id="7102274145889307184">aktuális hely</translation>
 <translation id="7263440858009898357">Kérjük, válasszon egyet a lista elemei közül.</translation>

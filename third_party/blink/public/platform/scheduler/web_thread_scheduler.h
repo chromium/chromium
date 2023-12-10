@@ -11,6 +11,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "ipc/urgent_message_observer.h"
 #include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 #include "third_party/blink/public/platform/web_common.h"
 
@@ -23,11 +24,12 @@ namespace scheduler {
 
 enum class WebRendererProcessType;
 
-class BLINK_PLATFORM_EXPORT WebThreadScheduler {
+class BLINK_PLATFORM_EXPORT WebThreadScheduler
+    : public IPC::UrgentMessageObserver {
  public:
   WebThreadScheduler(const WebThreadScheduler&) = delete;
   WebThreadScheduler& operator=(const WebThreadScheduler&) = delete;
-  virtual ~WebThreadScheduler();
+  ~WebThreadScheduler() override;
 
   // ==== Functions for the main thread scheduler  ============================
   //
@@ -93,6 +95,10 @@ class BLINK_PLATFORM_EXPORT WebThreadScheduler {
   // Sets the kind of renderer process. Should be called on the main thread
   // once.
   virtual void SetRendererProcessType(WebRendererProcessType type);
+
+  // IPC::Channel::UrgentMessageDelegate implementation:
+  void OnUrgentMessageReceived() override;
+  void OnUrgentMessageProcessed() override;
 
  protected:
   WebThreadScheduler() = default;

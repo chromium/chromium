@@ -400,8 +400,8 @@ void RenderViewTest::SetUp() {
       std::make_unique<base::CommandLine>(base::CommandLine::NO_PROGRAM);
   params_ = std::make_unique<MainFunctionParams>(command_line_.get());
   // Platform needs to be initialized before blink::Initialize. This is because
-  // Blink retrieves fonts for EdgeScrollbarNativeThemeFluent, but the platform
-  // expects the font manager singleton to be uninitialized.
+  // Blink retrieves fonts for NativeThemeFluent, but the platform expects the
+  // font manager singleton to be uninitialized.
   platform_ = std::make_unique<RendererMainPlatformDelegate>(*params_);
   platform_->PlatformInitialize();
 
@@ -422,9 +422,6 @@ void RenderViewTest::SetUp() {
   // Ensure that we register any necessary schemes when initializing WebKit,
   // since we are using a MockRenderThread.
   RenderThreadImpl::RegisterSchemes();
-
-  RenderThreadImpl::SetRendererBlinkPlatformImplForTesting(
-      blink_platform_impl_.Get());
 
   // This check is needed because when run under content_browsertests,
   // ResourceBundle isn't initialized (since we have to use a diferent test
@@ -514,8 +511,6 @@ void RenderViewTest::TearDown() {
   // some new tasks which need to be processed before shutting down WebKit
   // (http://crbug.com/21508).
   base::RunLoop().RunUntilIdle();
-
-  RenderThreadImpl::SetRendererBlinkPlatformImplForTesting(nullptr);
 
 #if BUILDFLAG(IS_WIN)
   ClearDWriteFontProxySenderForTesting();
@@ -616,13 +611,15 @@ gfx::Rect RenderViewTest::GetElementBounds(const std::string& element_id) {
     return gfx::Rect();
 
   v8::Local<v8::Array> array = value.As<v8::Array>();
+  v8::Local<v8::Context> v8_context =
+      array->GetCreationContext().ToLocalChecked();
+  v8::Context::Scope v8_context_scope(v8_context);
   if (array->Length() != 4)
     return gfx::Rect();
   std::vector<int> coords;
   for (int i = 0; i < 4; ++i) {
     v8::Local<v8::Number> index = v8::Number::New(isolate, i);
-    if (!array->Get(isolate->GetCurrentContext(), index).ToLocal(&value) ||
-        !value->IsInt32()) {
+    if (!array->Get(v8_context, index).ToLocal(&value) || !value->IsInt32()) {
       return gfx::Rect();
     }
     coords.push_back(value.As<v8::Int32>()->Value());

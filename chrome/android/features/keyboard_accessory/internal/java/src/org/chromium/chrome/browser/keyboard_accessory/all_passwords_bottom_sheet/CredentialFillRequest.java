@@ -4,9 +4,7 @@
 
 package org.chromium.chrome.browser.keyboard_accessory.all_passwords_bottom_sheet;
 
-/**
- * This class holds the data used to pass a fill request.
- */
+/** This class holds the data used to pass a fill request. */
 class CredentialFillRequest {
     private final Credential mCredential;
     private final boolean mRequestsToFillPassword;

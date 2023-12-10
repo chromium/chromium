@@ -194,19 +194,16 @@ ScreenOrientationController::ScreenOrientationController()
       rotation_locked_(false),
       rotation_locked_orientation_(chromeos::OrientationType::kAny),
       user_rotation_(display::Display::ROTATE_0),
-      current_rotation_(display::Display::ROTATE_0),
       window_state_change_notifier_(
           std::make_unique<WindowStateChangeNotifier>(this)) {
+  display_manager_observation_.Observe(Shell::Get()->display_manager());
   Shell::Get()->tablet_mode_controller()->AddObserver(this);
-  Shell::Get()->window_tree_host_manager()->AddObserver(this);
   AccelerometerReader::GetInstance()->AddObserver(this);
 }
 
 ScreenOrientationController::~ScreenOrientationController() {
-  Shell::Get()->window_tree_host_manager()->RemoveObserver(this);
   Shell::Get()->tablet_mode_controller()->RemoveObserver(this);
   AccelerometerReader::GetInstance()->RemoveObserver(this);
-  Shell::Get()->window_tree_host_manager()->RemoveObserver(this);
   Shell::Get()->activation_client()->RemoveObserver(this);
   for (auto& windows : lock_info_map_)
     windows.first->RemoveObserver(this);
@@ -254,8 +251,7 @@ void ScreenOrientationController::UnlockOrientationForWindow(
 
 void ScreenOrientationController::UnlockAll() {
   SetRotationLockedInternal(false);
-  // TODO(oshima): Remove if when current_rotation_ is removed.
-  if (user_rotation_ != current_rotation_) {
+  if (user_rotation_ != GetInternalDisplayTargetRotation()) {
     SetDisplayRotation(user_rotation_,
                        display::Display::RotationSource::ACCELEROMETER,
                        DisplayConfigurationController::ANIMATION_SYNC);
@@ -305,7 +301,8 @@ void ScreenOrientationController::SetLockToRotation(
 
 chromeos::OrientationType ScreenOrientationController::GetCurrentOrientation()
     const {
-  return RotationToOrientation(natural_orientation_, current_rotation_);
+  return RotationToOrientation(natural_orientation_,
+                               GetInternalDisplayTargetRotation());
 }
 
 bool ScreenOrientationController::IsAutoRotationAllowed() const {
@@ -383,72 +380,63 @@ void ScreenOrientationController::OnAccelerometerUpdated(
     HandleScreenRotation(update.get(ACCELEROMETER_SOURCE_SCREEN));
 }
 
-void ScreenOrientationController::OnDisplayConfigurationChanged() {
-  if (ignore_display_configuration_updates_)
-    return;
-  if (!display::HasInternalDisplay())
-    return;
-  if (!Shell::Get()->display_manager()->IsActiveDisplayId(
-          display::Display::InternalDisplayId())) {
-    return;
+void ScreenOrientationController::OnDisplayTabletStateChanged(
+    display::TabletState state) {
+  switch (state) {
+    case display::TabletState::kEnteringTabletMode:
+    case display::TabletState::kExitingTabletMode:
+      break;
+    case display::TabletState::kInTabletMode:
+      // Observe window activation only while in UI tablet mode, since this the
+      // only mode in which we apply apps' requested orientation locks.
+      Shell::Get()->activation_client()->AddObserver(this);
+
+      if (display::HasInternalDisplay()) {
+        ApplyLockForTopMostWindowOnInternalDisplay();
+      }
+      break;
+    case display::TabletState::kInClamshellMode:
+      Shell::Get()->activation_client()->RemoveObserver(this);
+      if (!display::HasInternalDisplay()) {
+        break;
+      }
+      if (!IsAutoRotationAllowed()) {
+        // Rotation locks should have been cleared already in
+        // `OnTabletPhysicalStateChanged()`.
+        DCHECK(!rotation_locked());
+        DCHECK_EQ(rotation_locked_orientation_,
+                  chromeos::OrientationType::kAny);
+        break;
+      }
+
+      // Auto-rotation is still allowed (since device is still in a physical
+      // tablet state). We no-longer apply app's requested orientation locks, so
+      // we'll call `ApplyLockForTopMostWindowOnInternalDisplay()` to apply the
+      // `user_locked_orientation_` if any.
+      ApplyLockForTopMostWindowOnInternalDisplay();
+      break;
   }
-  // TODO(oshima): remove current_rotation_ and always use the target rotation.
-  current_rotation_ =
-      Shell::Get()->display_configuration_controller()->GetTargetRotation(
-          display::Display::InternalDisplayId());
-}
-
-void ScreenOrientationController::OnTabletModeStarted() {
-  // Observe window activation only while in UI tablet mode, since this the only
-  // mode in which we apply apps' requested orientation locks.
-  Shell::Get()->activation_client()->AddObserver(this);
-
-  if (!display::HasInternalDisplay())
-    return;
-  ApplyLockForTopMostWindowOnInternalDisplay();
-}
-
-void ScreenOrientationController::OnTabletModeEnded() {
-  Shell::Get()->activation_client()->RemoveObserver(this);
-  if (!display::HasInternalDisplay())
-    return;
-
-  if (!IsAutoRotationAllowed()) {
-    // Rotation locks should have been cleared already in
-    // `OnTabletPhysicalStateChanged()`.
-    DCHECK(!rotation_locked());
-    DCHECK_EQ(rotation_locked_orientation_, chromeos::OrientationType::kAny);
-    return;
-  }
-
-  // Auto-rotation is still allowed (since device is still in a physical tablet
-  // state). We no-longer apply app's requested orientation locks, so we'll
-  // call `ApplyLockForTopMostWindowOnInternalDisplay()` to apply the
-  // `user_locked_orientation_` if any.
-  ApplyLockForTopMostWindowOnInternalDisplay();
 }
 
 void ScreenOrientationController::OnTabletPhysicalStateChanged() {
-  auto* shell = Shell::Get();
-
   if (IsAutoRotationAllowed()) {
     // Do not exit early, as the internal display can be determined after
     // Maximize Mode has started. (chrome-os-partner:38796) Always start
     // observing.
     if (display::HasInternalDisplay()) {
-      current_rotation_ = user_rotation_ =
-          shell->display_configuration_controller()->GetTargetRotation(
-              display::Display::InternalDisplayId());
+      user_rotation_ = GetInternalDisplayTargetRotation();
     }
-    if (!rotation_locked_)
+    if (!rotation_locked_) {
       LoadDisplayRotationProperties();
-
-    if (!display::HasInternalDisplay())
+    }
+    if (!display::HasInternalDisplay()) {
       return;
+    }
     ApplyLockForTopMostWindowOnInternalDisplay();
   } else {
-    if (!display::HasInternalDisplay())
+    if (!display::HasInternalDisplay()) {
       return;
+    }
 
     UnlockAll();
   }
@@ -461,7 +449,8 @@ void ScreenOrientationController::OnWillProcessDisplayChanges() {
   suspend_orientation_lock_refreshes_ = true;
 }
 
-void ScreenOrientationController::OnDidProcessDisplayChanges() {
+void ScreenOrientationController::OnDidProcessDisplayChanges(
+    const DisplayConfigurationChange& configuration_change) {
   suspend_orientation_lock_refreshes_ = false;
   if (is_orientation_lock_refresh_pending_) {
     // Note: We must set |is_orientation_lock_refresh_pending_| to false first
@@ -480,12 +469,20 @@ void ScreenOrientationController::SetDisplayRotation(
     DisplayConfigurationController::RotationAnimation mode) {
   if (!display::HasInternalDisplay())
     return;
-  current_rotation_ = rotation;
   base::AutoReset<bool> auto_ignore_display_configuration_updates(
       &ignore_display_configuration_updates_, true);
 
   Shell::Get()->display_configuration_controller()->SetDisplayRotation(
       display::Display::InternalDisplayId(), rotation, source, mode);
+}
+
+display::Display::Rotation
+ScreenOrientationController::GetInternalDisplayTargetRotation() const {
+  return display::HasInternalDisplay()
+             ? Shell::Get()
+                   ->display_configuration_controller()
+                   ->GetTargetRotation(display::Display::InternalDisplayId())
+             : display::Display::ROTATE_0;
 }
 
 void ScreenOrientationController::SetRotationLockedInternal(
@@ -598,18 +595,21 @@ void ScreenOrientationController::HandleScreenRotation(
   static constexpr gfx::Vector3dF rotation_reference(-1.0f, 1.0f, 0.0f);
 
   // Set the down vector to match the expected direction of gravity given the
-  // last configured rotation. This is used to enforce a stickiness that the
-  // user must overcome to rotate the display and prevents frequent rotations
-  // when holding the device near 45 degrees.
+  // internal display's target rotation. This is used to enforce a stickiness
+  // that the user must overcome to rotate the display and prevents frequent
+  // rotations when holding the device near 45 degrees.
+  display::Display::Rotation target_rotation =
+      GetInternalDisplayTargetRotation();
   gfx::Vector3dF down(0.0f, 0.0f, 0.0f);
-  if (current_rotation_ == display::Display::ROTATE_0)
+  if (target_rotation == display::Display::ROTATE_0) {
     down.set_y(1.0f);
-  else if (current_rotation_ == display::Display::ROTATE_90)
+  } else if (target_rotation == display::Display::ROTATE_90) {
     down.set_x(1.0f);
-  else if (current_rotation_ == display::Display::ROTATE_180)
+  } else if (target_rotation == display::Display::ROTATE_180) {
     down.set_y(-1.0f);
-  else
+  } else {
     down.set_x(-1.0f);
+  }
 
   // Don't rotate if the screen has not passed the threshold.
   if (gfx::AngleBetweenVectorsInDegrees(down, lid_flattened) <
@@ -628,7 +628,7 @@ void ScreenOrientationController::HandleScreenRotation(
   else if (angle < 270.0f)
     new_rotation = display::Display::ROTATE_180;
 
-  if (new_rotation != current_rotation_ &&
+  if (new_rotation != target_rotation &&
       IsRotationAllowedInLockedState(new_rotation)) {
     SetDisplayRotation(new_rotation,
                        display::Display::RotationSource::ACCELEROMETER);
@@ -650,7 +650,7 @@ void ScreenOrientationController::ApplyLockForTopMostWindowOnInternalDisplay() {
     return;
   }
 
-  current_app_requested_orientation_lock_ = absl::nullopt;
+  current_app_requested_orientation_lock_ = std::nullopt;
   if (!display::HasInternalDisplay())
     return;
 
@@ -720,9 +720,9 @@ bool ScreenOrientationController::ApplyLockForWindowIfPossible(
     if (lock_window->TargetVisibility() && window->Contains(lock_window)) {
       if (lock_info.orientation_lock == chromeos::OrientationType::kCurrent) {
         // If the app requested "current" without previously
-        // specifying an orientation, use the current rotation.
-        lock_info.orientation_lock =
-            RotationToOrientation(natural_orientation_, current_rotation_);
+        // specifying an orientation, use the target rotation.
+        lock_info.orientation_lock = RotationToOrientation(
+            natural_orientation_, GetInternalDisplayTargetRotation());
         LockRotationToOrientation(lock_info.orientation_lock);
       } else {
         const auto orientation_lock = ResolveOrientationLock(
@@ -735,7 +735,7 @@ bool ScreenOrientationController::ApplyLockForWindowIfPossible(
         }
       }
       current_app_requested_orientation_lock_ =
-          absl::make_optional<chromeos::OrientationType>(
+          std::make_optional<chromeos::OrientationType>(
               lock_info.orientation_lock);
       return true;
     }

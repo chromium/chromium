@@ -8,6 +8,7 @@
 <translation id="1420684932347524586">Не удалось создать случайный закрытый ключ RSA.</translation>
 <translation id="1445572445564823378">Это расширение замедляет работу <ph name="PRODUCT_NAME" />. Чтобы восстановить нормальную работу <ph name="PRODUCT_NAME" />, отключите его.</translation>
 <translation id="1468038450257740950">WebGL не поддерживается.</translation>
+<translation id="1610570795592207282">Не удалось загрузить CSS (<ph name="RELATIVE_PATH" />) для скрипта.</translation>
 <translation id="1803557475693955505">Не удалось загрузить страницу фона "<ph name="BACKGROUND_PAGE" />".</translation>
 <translation id="2159915644201199628">Не удалось декодировать изображение: <ph name="IMAGE_NAME" /></translation>
 <translation id="2350172092385603347">Локализация используется, однако в манифесте не указан атрибут default_locale.</translation>
@@ -18,14 +19,12 @@
 <translation id="3115238746683532089">Неизвестный продукт <ph name="PRODUCT_ID" /> от поставщика <ph name="VENDOR_ID" /> (серийный номер <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">Не удалось переместить CRX-файл. Убедитесь, что он не используется.</translation>
 <translation id="3163201441334626963">Неизвестный продукт <ph name="PRODUCT_ID" /> от поставщика <ph name="VENDOR_ID" /></translation>
-<translation id="3302709122321372472">Не удалось загрузить css '<ph name="RELATIVE_PATH" />' для скрипта содержимого.</translation>
 <translation id="3369521687965833290">Не удается распаковать расширение. Для безопасной распаковки расширения необходим путь к каталогу вашего профиля, начинающийся с буквы диска. Он не должен содержать параметр слияния папок, точку монтирования или символьную ссылку. Такого пути для вашего профиля не существует.</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (серийный номер <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> от поставщика <ph name="VENDOR_ID" /> (серийный номер <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Входное значение закрытого ключа должно предоставлять собой допустимый путь.</translation>
 <translation id="388442998277590542">Не удалось загрузить страницу параметров <ph name="OPTIONS_PAGE" />.</translation>
 <translation id="3984413272403535372">Ошибка при подписи расширения.</translation>
-<translation id="39964277676607559">Не удается загрузить javascript "<ph name="RELATIVE_PATH" />" для скрипта содержимого.</translation>
 <translation id="4115165561519362854">Администратор установил, что для запуска приложения "<ph name="EXTENSION_NAME" />" необходима версия <ph name="EXTENSION_VERSION" /> или выше. Обновите приложение.</translation>
 <translation id="4233778200880751280">Не удалось загрузить страницу <ph name="ABOUT_PAGE" />.</translation>
 <translation id="471800408830181311">Не удалось выгрузить закрытый ключ.</translation>
@@ -33,6 +32,7 @@
 <translation id="4988792151665380515">Не удалось экспортировать закрытый ключ.</translation>
 <translation id="5026754133087629784">WebView: <ph name="WEBVIEW_TAG_NAME" /></translation>
 <translation id="5098647635849512368">Не удается найти абсолютный путь к заданному каталогу.</translation>
+<translation id="5160071981665899014">Не удалось загрузить JavaScript (<ph name="RELATIVE_PATH" />) для скрипта.</translation>
 <translation id="5356315618422219272">Appview: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5436430103864390185">Система не поддерживает окна нестандартной формы</translation>
 <translation id="5456409301717116725">Это расширение содержит файл ключа <ph name="KEY_PATH" />. Вероятно, это неприемлемо.</translation>

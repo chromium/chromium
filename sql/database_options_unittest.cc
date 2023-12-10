@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <optional>
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback_helpers.h"
@@ -12,7 +13,6 @@
 #include "sql/test/test_helpers.h"
 #include "sql/transaction.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/sqlite/sqlite3.h"
 
 namespace sql {

@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+[FAIL] Invalid values for registered properties are serialized as the empty string
+  assert_equals: expected "" but got "0px"
+[FAIL] Fallback must adhere to registered syntax [<length>, 10px]
+  assert_equals: expected "10px" but got "0px"
+[FAIL] Fallback must adhere to registered syntax [<length> | none, none]
+  assert_equals: expected "none" but got "0px"
+[FAIL] Fallback must adhere to registered syntax [<length>, var(--length-1)]
+  assert_equals: expected "20px" but got "0px"
+Harness: the test ran to completion.
+

@@ -45,7 +45,7 @@ class DeviceCacheImpl : public DeviceCache,
     ~UnpairedDevice();
 
     mojom::BluetoothDevicePropertiesPtr device_properties;
-    absl::optional<int8_t> inquiry_rssi;
+    std::optional<int8_t> inquiry_rssi;
   };
 
   friend class DeviceCacheImplTest;
@@ -83,7 +83,7 @@ class DeviceCacheImpl : public DeviceCache,
   // DeviceNameManager::Observer:
   void OnDeviceNicknameChanged(
       const std::string& device_id,
-      const absl::optional<std::string>& nickname) override;
+      const std::optional<std::string>& nickname) override;
 
   // Fetches all known devices from BluetoothAdapter and populates them into
   // |paired_devices_| and |unpaired_devices_|.

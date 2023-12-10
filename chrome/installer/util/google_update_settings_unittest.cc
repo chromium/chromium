@@ -8,6 +8,7 @@
 #include <windows.h>
 
 #include <memory>
+#include <string_view>
 
 #include "base/base_paths.h"
 #include "base/hash/hash.h"
@@ -225,7 +226,7 @@ TEST_F(GoogleUpdateSettingsTest, UpdateGoogleUpdateApKey) {
 
           ASSERT_TRUE(CreateApKey(work_item_list.get(), input));
           installer::AdditionalParameters ap;
-          if (base::WStringPiece(output) == ap.value()) {
+          if (std::wstring_view(output) == ap.value()) {
             EXPECT_FALSE(GoogleUpdateSettings::UpdateGoogleUpdateApKey(
                 archive_type, result, &ap));
           } else {

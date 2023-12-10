@@ -108,10 +108,7 @@ void ProfileImportProcess::DetermineProfileImportType() {
   absl::optional<AutofillProfile> migration_candidate;
 
   // We don't offer an import if `observed_profile_` is a duplicate of an
-  // existing profile. For `kAccount` profiles:
-  // - Settings-visible updates are only possible when
-  //   `kAutofillAccountProfileStorage` is enabled.
-  // - Silent updates are allowed in any case.
+  // existing profile.
   const std::vector<AutofillProfile*> existing_profiles =
       personal_data_manager_->GetProfiles(
           PersonalDataManager::ProfileOrder::kMostRecentlyUsedFirstDesc);
@@ -157,10 +154,7 @@ void ProfileImportProcess::DetermineProfileImportType() {
     // confirmation.
     if (AutofillProfileComparator::ProfilesHaveDifferentSettingsVisibleValues(
             *existing_profile, merged_profile, app_locale_)) {
-      if (allow_only_silent_updates_ ||
-          (existing_profile->source() == AutofillProfile::Source::kAccount &&
-           !(base::FeatureList::IsEnabled(
-                 features::kAutofillAccountProfileStorage)))) {
+      if (allow_only_silent_updates_) {
         ++number_of_unchanged_profiles;
         continue;
       }

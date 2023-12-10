@@ -40,7 +40,7 @@ void FakeFastPairRepository::ClearFakeMetadata(
 }
 
 void FakeFastPairRepository::SetCheckAccountKeysResult(
-    absl::optional<PairingMetadata> result) {
+    std::optional<PairingMetadata> result) {
   check_account_keys_result_ = result;
 }
 
@@ -149,7 +149,7 @@ void FakeFastPairRepository::FetchDeviceImages(scoped_refptr<Device> device) {
 }
 
 // Unimplemented.
-absl::optional<std::string>
+std::optional<std::string>
 FakeFastPairRepository::GetDeviceDisplayNameFromCache(
     std::vector<uint8_t> account_key) {
   return nullptr;
@@ -171,9 +171,9 @@ bool FakeFastPairRepository::EvictDeviceImages(const std::string& mac_address) {
 }
 
 // Unimplemented.
-absl::optional<bluetooth_config::DeviceImageInfo>
+std::optional<bluetooth_config::DeviceImageInfo>
 FakeFastPairRepository::GetImagesForDevice(const std::string& mac_address) {
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void FakeFastPairRepository::SetSavedDevices(

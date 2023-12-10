@@ -7,12 +7,12 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string_piece.h"
 #include "net/http/structured_headers.h"
 #include "services/network/public/mojom/url_loader_network_service_observer.mojom.h"
 #include "url/origin.h"
@@ -71,7 +71,7 @@ class SharedStorageRequestHelper {
 
  private:
   bool ProcessResponse(net::URLRequest& request,
-                       base::StringPiece value,
+                       std::string_view value,
                        base::OnceClosure done);
 
   void OnOperationsQueued(base::OnceClosure done);

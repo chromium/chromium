@@ -11,12 +11,13 @@ namespace media {
 
 // A fake implementation of gpu::GpuMemoryBuffer for
 // testing purposes. It emulates a GpuMemoryBuffer that references a dma-buf
-// that uses Intel media compression (with a modifier of
-// I915_FORMAT_MOD_Y_TILED_GEN12_MC_CCS).
+// that uses Intel media compression (with a modifier of either
+// I915_FORMAT_MOD_Y_TILED_GEN12_MC_CCS or I915_FORMAT_MOD_4_TILED_MTL_MC_CCS).
 class FakeChromeOSIntelCompressedGpuMemoryBuffer : public gfx::GpuMemoryBuffer {
  public:
   FakeChromeOSIntelCompressedGpuMemoryBuffer(const gfx::Size& size,
-                                             gfx::BufferFormat format);
+                                             gfx::BufferFormat format,
+                                             uint64_t modifier);
 
   FakeChromeOSIntelCompressedGpuMemoryBuffer(
       const FakeChromeOSIntelCompressedGpuMemoryBuffer&) = delete;

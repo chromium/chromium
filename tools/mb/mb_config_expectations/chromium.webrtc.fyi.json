@@ -100,6 +100,7 @@
   "WebRTC Chromium FYI ios-device": {
     "gn_args": {
       "dcheck_always_on": false,
+      "ios_build_chrome": false,
       "ios_code_signing_identity_description": "Apple Development",
       "ios_enable_code_signing": false,
       "is_component_build": false,
@@ -114,6 +115,7 @@
   "WebRTC Chromium FYI ios-simulator": {
     "gn_args": {
       "enable_run_ios_unittests_with_xctest": true,
+      "ios_build_chrome": false,
       "is_component_build": false,
       "is_debug": true,
       "symbol_level": 1,

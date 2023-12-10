@@ -7,6 +7,7 @@
 #include <lib/sys/cpp/component_context.h>
 #include <lib/zx/vmo.h>
 
+#include "base/bits.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/process_context.h"
 #include "base/logging.h"

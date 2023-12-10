@@ -44,7 +44,7 @@ public class NullContentsClient extends AwContentsClient {
     }
 
     public NullContentsClient(Looper looper) {
-        super(looper);  // "...beams are gonna blind me".
+        super(looper); // "...beams are gonna blind me".
     }
 
     @Override
@@ -58,19 +58,16 @@ public class NullContentsClient extends AwContentsClient {
     }
 
     @Override
-    public void onUnhandledKeyEvent(KeyEvent event) {
-    }
+    public void onUnhandledKeyEvent(KeyEvent event) {}
 
     @Override
     public void getVisitedHistory(Callback<String[]> callback) {}
 
     @Override
-    public void doUpdateVisitedHistory(String url, boolean isReload) {
-    }
+    public void doUpdateVisitedHistory(String url, boolean isReload) {}
 
     @Override
-    public void onProgressChanged(int progress) {
-    }
+    public void onProgressChanged(int progress) {}
 
     @Override
     public WebResourceResponseInfo shouldInterceptRequest(
@@ -84,8 +81,7 @@ public class NullContentsClient extends AwContentsClient {
     }
 
     @Override
-    public void onLoadResource(String url) {
-    }
+    public void onLoadResource(String url) {}
 
     @Override
     public boolean onConsoleMessage(AwConsoleMessage consoleMessage) {
@@ -105,14 +101,15 @@ public class NullContentsClient extends AwContentsClient {
     @Override
     public void onReceivedClientCertRequest(
             final AwContentsClientBridge.ClientCertificateRequestCallback callback,
-            final String[] keyTypes, final Principal[] principals, final String host,
+            final String[] keyTypes,
+            final Principal[] principals,
+            final String host,
             final int port) {
         callback.proceed(null, null);
     }
 
     @Override
-    public void onReceivedLoginRequest(String realm, String account, String args) {
-    }
+    public void onReceivedLoginRequest(String realm, String account, String args) {}
 
     @Override
     public void showFileChooser(
@@ -123,8 +120,7 @@ public class NullContentsClient extends AwContentsClient {
             String origin, AwGeolocationPermissions.Callback callback) {}
 
     @Override
-    public void onGeolocationPermissionsHidePrompt() {
-    }
+    public void onGeolocationPermissionsHidePrompt() {}
 
     @Override
     public void handleJsAlert(String url, String message, JsResultReceiver receiver) {
@@ -152,34 +148,32 @@ public class NullContentsClient extends AwContentsClient {
     }
 
     @Override
-    public void onFindResultReceived(int activeMatchOrdinal, int numberOfMatches,
-            boolean isDoneCounting) {
-    }
+    public void onFindResultReceived(
+            int activeMatchOrdinal, int numberOfMatches, boolean isDoneCounting) {}
 
     @Override
-    public void onNewPicture(Picture picture) {
-    }
+    public void onNewPicture(Picture picture) {}
 
     @Override
-    public void onPageStarted(String url) {
-    }
+    public void onPageStarted(String url) {}
 
     @Override
-    public void onPageFinished(String url) {
-    }
+    public void onPageFinished(String url) {}
 
     @Override
-    public void onPageCommitVisible(String url) {
-    }
+    public void onPageCommitVisible(String url) {}
 
     @Override
     public void onReceivedError(AwWebResourceRequest request, AwWebResourceError error) {}
 
     @Override
-    public void onSafeBrowsingHit(AwWebResourceRequest request, int threatType,
+    public void onSafeBrowsingHit(
+            AwWebResourceRequest request,
+            int threatType,
             Callback<AwSafeBrowsingResponse> callback) {
-        callback.onResult(new AwSafeBrowsingResponse(SafeBrowsingAction.SHOW_INTERSTITIAL,
-                /* reporting */ true));
+        callback.onResult(
+                new AwSafeBrowsingResponse(
+                        SafeBrowsingAction.SHOW_INTERSTITIAL, /* reporting= */ true));
     }
 
     @Override
@@ -192,12 +186,12 @@ public class NullContentsClient extends AwContentsClient {
     }
 
     @Override
-    public void onDownloadStart(String url,
-                                String userAgent,
-                                String contentDisposition,
-                                String mimeType,
-                                long contentLength) {
-    }
+    public void onDownloadStart(
+            String url,
+            String userAgent,
+            String contentDisposition,
+            String mimeType,
+            long contentLength) {}
 
     @Override
     public boolean onCreateWindow(boolean isDialog, boolean isUserGesture) {
@@ -205,35 +199,28 @@ public class NullContentsClient extends AwContentsClient {
     }
 
     @Override
-    public void onCloseWindow() {
-    }
+    public void onCloseWindow() {}
 
     @Override
-    public void onRequestFocus() {
-    }
+    public void onRequestFocus() {}
 
     @Override
-    public void onReceivedTouchIconUrl(String url, boolean precomposed) {
-    }
+    public void onReceivedTouchIconUrl(String url, boolean precomposed) {}
 
     @Override
-    public void onReceivedIcon(Bitmap bitmap) {
-    }
+    public void onReceivedIcon(Bitmap bitmap) {}
 
     @Override
-    public void onReceivedTitle(String title) {
-    }
+    public void onReceivedTitle(String title) {}
 
     @Override
     public void onShowCustomView(View view, AwContentsClient.CustomViewCallback callback) {}
 
     @Override
-    public void onHideCustomView() {
-    }
+    public void onHideCustomView() {}
 
     @Override
-    public void onScaleChangedScaled(float oldScale, float newScale) {
-    }
+    public void onScaleChangedScaled(float oldScale, float newScale) {}
 
     @Override
     protected View getVideoLoadingProgressView() {
@@ -251,8 +238,7 @@ public class NullContentsClient extends AwContentsClient {
     }
 
     @Override
-    public void onPermissionRequestCanceled(AwPermissionRequest awPermissionRequest) {
-    }
+    public void onPermissionRequestCanceled(AwPermissionRequest awPermissionRequest) {}
 
     @Override
     public void onRendererUnresponsive(AwRenderProcess process) {}

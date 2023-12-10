@@ -71,11 +71,11 @@ class AdSamplerTrigger : public content::WebContentsObserver,
   void DidFinishLoad(content::RenderFrameHost* render_frame_host,
                      const GURL& validated_url) override;
 
+  static size_t GetSamplerFrequencyDenominatorForTest();
+
  private:
   friend class AdSamplerTriggerTest;
   friend class content::WebContentsUserData<AdSamplerTrigger>;
-  FRIEND_TEST_ALL_PREFIXES(AdSamplerTriggerTestFinch,
-                           FrequencyDenominatorFeature);
 
   AdSamplerTrigger(
       content::WebContents* web_contents,

@@ -54,6 +54,7 @@
   cell.metadataLabel.text = self.timeText;
   cell.isAccessibilityElement = YES;
   cell.accessibilityCustomActions = self.accessibilityActions;
+  cell.accessibilityTraits |= UIAccessibilityTraitButton;
   [cell configureUILayout];
 }
 

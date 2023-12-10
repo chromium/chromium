@@ -223,6 +223,46 @@ TEST_F(AutoPipSettingViewTest, TestOriginLabelForGURLWithLocalHost) {
                                origin_text_without_ellipsis));
 }
 
+TEST_F(AutoPipSettingViewTest, WidgetIsCenteredWhenArrowIsFloat) {
+  // Set up the anchor view.
+  views::Widget::InitParams anchor_view_widget_params =
+      CreateParams(views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
+  anchor_view_widget_params.ownership =
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+  anchor_view_widget_params.bounds = gfx::Rect(200, 200, 700, 700);
+  auto anchor_view_widget =
+      CreateTestWidget(std::move(anchor_view_widget_params));
+  auto* anchor_view =
+      anchor_view_widget->SetContentsView(std::make_unique<views::View>());
+  anchor_view_widget->Show();
+
+  // Set up the setting view.
+  auto setting_view = std::make_unique<AutoPipSettingView>(
+      result_cb().Get(), hide_view_cb().Get(), GURL("https://example.com"),
+      gfx::Rect(), anchor_view, views::BubbleBorder::FLOAT);
+
+  // Create and show bubble.
+  views::Widget* widget =
+      views::BubbleDialogDelegate::CreateBubble(std::move(setting_view));
+  widget->Show();
+
+  // Get the anchor view and widget bounds.
+  const auto anchor_bounds = anchor_view->GetBoundsInScreen();
+  const auto widget_bounds = widget->GetWindowBoundsInScreen();
+
+  // Calculate left and right distance between the widget and anchor view.
+  const auto left_distance = widget_bounds.x() - anchor_bounds.x();
+  const auto right_distance = anchor_bounds.right() - widget_bounds.right();
+
+  // Calculate top and bottom distance between the widget and anchor view.
+  const auto top_distance = widget_bounds.y() - anchor_bounds.y();
+  const auto bottom_distance = anchor_bounds.bottom() - widget_bounds.bottom();
+
+  // Verify that the widget is centered, relative to the anchor view.
+  EXPECT_EQ(left_distance, right_distance);
+  EXPECT_EQ(top_distance, bottom_distance);
+}
+
 const struct TestParams kTestParams[] = {{UiResult::kAllowOnce},
                                          {UiResult::kAllowOnEveryVisit},
                                          {UiResult::kBlock}};

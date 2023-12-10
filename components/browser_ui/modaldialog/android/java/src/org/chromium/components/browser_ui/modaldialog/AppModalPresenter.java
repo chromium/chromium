@@ -39,41 +39,48 @@ public class AppModalPresenter extends ModalDialogManager.Presenter {
                 mDialog.setCanceledOnTouchOutside(
                         model.get(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE));
             } else if (ModalDialogProperties.APP_MODAL_DIALOG_BACK_PRESS_HANDLER == propertyKey) {
-                mDialog.getOnBackPressedDispatcher().addCallback(
-                        model.get(ModalDialogProperties.APP_MODAL_DIALOG_BACK_PRESS_HANDLER));
+                mDialog.getOnBackPressedDispatcher()
+                        .addCallback(
+                                model.get(
+                                        ModalDialogProperties.APP_MODAL_DIALOG_BACK_PRESS_HANDLER));
             } else {
                 super.bind(model, view, propertyKey);
             }
         }
     }
 
-    /**
-     * @param activity The {@link Activity} on which dialog views will be created and shown.
-     */
+    /** @param activity The {@link Activity} on which dialog views will be created and shown. */
     public AppModalPresenter(Context context) {
         mContext = context;
     }
 
     private ModalDialogView loadDialogView() {
-        return (ModalDialogView) LayoutInflaterUtils.inflate(
-                mDialog.getContext(), R.layout.modal_dialog_view, null);
+        return (ModalDialogView)
+                LayoutInflaterUtils.inflate(mDialog.getContext(), R.layout.modal_dialog_view, null);
     }
 
     @Override
     protected void addDialogView(PropertyModel model) {
         int styles[][] = {
-                {R.style.ThemeOverlay_BrowserUI_ModalDialog_TextPrimaryButton,
-                        R.style.ThemeOverlay_BrowserUI_ModalDialog_TextPrimaryButton_Fullscreen,
-                        R.style.ThemeOverlay_BrowserUI_ModalDialog_TextPrimaryButton_DialogWhenLarge,
-                        R.style.ThemeOverlay_BrowserUI_ModalDialog_TextPrimaryButton_Fullscreen_Dark},
-                {R.style.ThemeOverlay_BrowserUI_ModalDialog_FilledPrimaryButton,
-                        R.style.ThemeOverlay_BrowserUI_ModalDialog_FilledPrimaryButton_Fullscreen,
-                        R.style.ThemeOverlay_BrowserUI_ModalDialog_FilledPrimaryButton_DialogWhenLarge,
-                        R.style.ThemeOverlay_BrowserUI_ModalDialog_FilledPrimaryButton_Fullscreen_Dark},
-                {R.style.ThemeOverlay_BrowserUI_ModalDialog_FilledNegativeButton,
-                        R.style.ThemeOverlay_BrowserUI_ModalDialog_FilledNegativeButton_Fullscreen,
-                        R.style.ThemeOverlay_BrowserUI_ModalDialog_FilledNegativeButton_DialogWhenLarge,
-                        R.style.ThemeOverlay_BrowserUI_ModalDialog_FilledNegativeButton_Fullscreen_Dark}};
+            {
+                R.style.ThemeOverlay_BrowserUI_ModalDialog_TextPrimaryButton,
+                R.style.ThemeOverlay_BrowserUI_ModalDialog_TextPrimaryButton_Fullscreen,
+                R.style.ThemeOverlay_BrowserUI_ModalDialog_TextPrimaryButton_DialogWhenLarge,
+                R.style.ThemeOverlay_BrowserUI_ModalDialog_TextPrimaryButton_Fullscreen_Dark
+            },
+            {
+                R.style.ThemeOverlay_BrowserUI_ModalDialog_FilledPrimaryButton,
+                R.style.ThemeOverlay_BrowserUI_ModalDialog_FilledPrimaryButton_Fullscreen,
+                R.style.ThemeOverlay_BrowserUI_ModalDialog_FilledPrimaryButton_DialogWhenLarge,
+                R.style.ThemeOverlay_BrowserUI_ModalDialog_FilledPrimaryButton_Fullscreen_Dark
+            },
+            {
+                R.style.ThemeOverlay_BrowserUI_ModalDialog_FilledNegativeButton,
+                R.style.ThemeOverlay_BrowserUI_ModalDialog_FilledNegativeButton_Fullscreen,
+                R.style.ThemeOverlay_BrowserUI_ModalDialog_FilledNegativeButton_DialogWhenLarge,
+                R.style.ThemeOverlay_BrowserUI_ModalDialog_FilledNegativeButton_Fullscreen_Dark
+            }
+        };
         int dialogIndex = 0;
         int dialogStyle = model.get(ModalDialogProperties.DIALOG_STYLES);
         if (dialogStyle == ModalDialogProperties.DialogStyles.FULLSCREEN_DIALOG) {
@@ -92,8 +99,9 @@ public class AppModalPresenter extends ModalDialogManager.Presenter {
             buttonIndex = 2;
         }
         mDialog = new ComponentDialog(mContext, styles[buttonIndex][dialogIndex]);
-        mDialog.setOnCancelListener(dialogInterface
-                -> dismissCurrentDialog(DialogDismissalCause.NAVIGATE_BACK_OR_TOUCH_OUTSIDE));
+        mDialog.setOnCancelListener(
+                dialogInterface ->
+                        dismissCurrentDialog(DialogDismissalCause.NAVIGATE_BACK_OR_TOUCH_OUTSIDE));
 
         // Cancel on touch outside should be disabled by default. The ModelChangeProcessor wouldn't
         // notify change if the property is not set during initialization.
@@ -106,9 +114,10 @@ public class AppModalPresenter extends ModalDialogManager.Presenter {
             mDialog.setContentView(dialogView);
         }
 
-        mDialog.setOnShowListener((dialogInterface) -> {
-            dialogView.onEnterAnimationStarted(ENTER_ANIMATION_ESTIMATION_MS);
-        });
+        mDialog.setOnShowListener(
+                (dialogInterface) -> {
+                    dialogView.onEnterAnimationStarted(ENTER_ANIMATION_ESTIMATION_MS);
+                });
 
         try {
             mDialog.show();

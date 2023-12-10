@@ -17,9 +17,7 @@ import org.chromium.components.version_info.Channel;
 import org.chromium.components.version_info.VersionConstants;
 import org.chromium.components.version_info.VersionInfo;
 
-/**
- * Settings fragment containing preferences aimed at Chrome and web developers.
- */
+/** Settings fragment containing preferences aimed at Chrome and web developers. */
 public class DeveloperSettings extends PreferenceFragmentCompat {
     private static final String UI_PREF_BETA_STABLE_HINT = "beta_stable_hint";
 
@@ -34,13 +32,13 @@ public class DeveloperSettings extends PreferenceFragmentCompat {
         if (sIsEnabledForTests != null) return sIsEnabledForTests;
 
         if (VersionConstants.CHANNEL <= Channel.DEV) return true;
-        return ChromeSharedPreferences.getInstance().readBoolean(
-                ChromePreferenceKeys.SETTINGS_DEVELOPER_ENABLED, false);
+        return ChromeSharedPreferences.getInstance()
+                .readBoolean(ChromePreferenceKeys.SETTINGS_DEVELOPER_ENABLED, false);
     }
 
     public static void setDeveloperSettingsEnabled() {
-        ChromeSharedPreferences.getInstance().writeBoolean(
-                ChromePreferenceKeys.SETTINGS_DEVELOPER_ENABLED, true);
+        ChromeSharedPreferences.getInstance()
+                .writeBoolean(ChromePreferenceKeys.SETTINGS_DEVELOPER_ENABLED, true);
     }
 
     public static void setIsEnabledForTests(Boolean isEnabled) {

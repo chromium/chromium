@@ -16,8 +16,7 @@ CompressionFormat LookupCompressionFormat(const AtomicString& format,
     return CompressionFormat::kGzip;
   } else if (format == "deflate") {
     return CompressionFormat::kDeflate;
-  } else if (format == "deflate-raw" &&
-             RuntimeEnabledFeatures::DeflateRawCompressionFormatEnabled()) {
+  } else if (format == "deflate-raw") {
     return CompressionFormat::kDeflateRaw;
   }
 

@@ -1,0 +1,139 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# @generated from third_party/rust/chromium_crates_io/BUILD.gn.hbs by
+# tools/crates/gnrt.
+# Do not edit!
+
+import("//build/rust/cargo_crate.gni")
+
+cargo_crate("lib") {
+  crate_name = "read_fonts"
+  epoch = "0.13"
+  crate_type = "rlib"
+  crate_root = "//third_party/rust/chromium_crates_io/vendor/read-fonts-0.13.2/src/lib.rs"
+  sources = [
+    "//third_party/rust/chromium_crates_io/vendor/read-fonts-0.13.2/src/array.rs",
+    "//third_party/rust/chromium_crates_io/vendor/read-fonts-0.13.2/src/codegen_test.rs",
+    "//third_party/rust/chromium_crates_io/vendor/read-fonts-0.13.2/src/font_data.rs",
+    "//third_party/rust/chromium_crates_io/vendor/read-fonts-0.13.2/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/read-fonts-0.13.2/src/offset.rs",
+    "//third_party/rust/chromium_crates_io/vendor/read-fonts-0.13.2/src/offset_array.rs",
+    "//third_party/rust/chromium_crates_io/vendor/read-fonts-0.13.2/src/read.rs",
+    "//third_party/rust/chromium_crates_io/vendor/read-fonts-0.13.2/src/scaler_test.rs",
+    "//third_party/rust/chromium_crates_io/vendor/read-fonts-0.13.2/src/table_provider.rs",
+    "//third_party/rust/chromium_crates_io/vendor/read-fonts-0.13.2/src/table_ref.rs",
+    "//third_party/rust/chromium_crates_io/vendor/read-fonts-0.13.2/src/tables.rs",
+    "//third_party/rust/chromium_crates_io/vendor/read-fonts-0.13.2/src/tables/avar.rs",
+    "//third_party/rust/chromium_crates_io/vendor/read-fonts-0.13.2/src/tables/base.rs",
+    "//third_party/rust/chromium_crates_io/vendor/read-fonts-0.13.2/src/tables/bitmap.rs",
+    "//third_party/rust/chromium_crates_io/vendor/read-fonts-0.13.2/src/tables/cbdt.rs",
+    "//third_party/rust/chromium_crates_io/vendor/read-fonts-0.13.2/src/tables/cblc.rs",
+    "//third_party/rust/chromium_crates_io/vendor/read-fonts-0.13.2/src/tables/cff.rs",
+    "//third_party/rust/chromium_crates_io/vendor/read-fonts-0.13.2/src/tables/cff2.rs",
+    "//third_party/rust/chromium_crates_io/vendor/read-fonts-0.13.2/src/tables/cmap.rs",
+    "//third_party/rust/chromium_crates_io/vendor/read-fonts-0.13.2/src/tables/colr.rs",
+    "//third_party/rust/chromium_crates_io/vendor/read-fonts-0.13.2/src/tables/cpal.rs",
+    "//third_party/rust/chromium_crates_io/vendor/read-fonts-0.13.2/src/tables/ebdt.rs",
+    "//third_party/rust/chromium_crates_io/vendor/read-fonts-0.13.2/src/tables/eblc.rs",
+    "//third_party/rust/chromium_crates_io/vendor/read-fonts-0.13.2/src/tables/fvar.rs",
+    "//third_party/rust/chromium_crates_io/vendor/read-fonts-0.13.2/src/tables/gdef.rs",
+    "//third_party/rust/chromium_crates_io/vendor/read-fonts-0.13.2/src/tables/glyf.rs",
+    "//third_party/rust/chromium_crates_io/vendor/read-fonts-0.13.2/src/tables/gpos.rs",
+    "//third_party/rust/chromium_crates_io/vendor/read-fonts-0.13.2/src/tables/gsub.rs",
+    "//third_party/rust/chromium_crates_io/vendor/read-fonts-0.13.2/src/tables/gvar.rs",
+    "//third_party/rust/chromium_crates_io/vendor/read-fonts-0.13.2/src/tables/head.rs",
+    "//third_party/rust/chromium_crates_io/vendor/read-fonts-0.13.2/src/tables/hhea.rs",
+    "//third_party/rust/chromium_crates_io/vendor/read-fonts-0.13.2/src/tables/hmtx.rs",
+    "//third_party/rust/chromium_crates_io/vendor/read-fonts-0.13.2/src/tables/hvar.rs",
+    "//third_party/rust/chromium_crates_io/vendor/read-fonts-0.13.2/src/tables/instance_record.rs",
+    "//third_party/rust/chromium_crates_io/vendor/read-fonts-0.13.2/src/tables/layout.rs",
+    "//third_party/rust/chromium_crates_io/vendor/read-fonts-0.13.2/src/tables/loca.rs",
+    "//third_party/rust/chromium_crates_io/vendor/read-fonts-0.13.2/src/tables/lookupflag.rs",
+    "//third_party/rust/chromium_crates_io/vendor/read-fonts-0.13.2/src/tables/maxp.rs",
+    "//third_party/rust/chromium_crates_io/vendor/read-fonts-0.13.2/src/tables/mvar.rs",
+    "//third_party/rust/chromium_crates_io/vendor/read-fonts-0.13.2/src/tables/name.rs",
+    "//third_party/rust/chromium_crates_io/vendor/read-fonts-0.13.2/src/tables/os2.rs",
+    "//third_party/rust/chromium_crates_io/vendor/read-fonts-0.13.2/src/tables/post.rs",
+    "//third_party/rust/chromium_crates_io/vendor/read-fonts-0.13.2/src/tables/postscript.rs",
+    "//third_party/rust/chromium_crates_io/vendor/read-fonts-0.13.2/src/tables/postscript/blend.rs",
+    "//third_party/rust/chromium_crates_io/vendor/read-fonts-0.13.2/src/tables/postscript/charstring.rs",
+    "//third_party/rust/chromium_crates_io/vendor/read-fonts-0.13.2/src/tables/postscript/dict.rs",
+    "//third_party/rust/chromium_crates_io/vendor/read-fonts-0.13.2/src/tables/postscript/fd_select.rs",
+    "//third_party/rust/chromium_crates_io/vendor/read-fonts-0.13.2/src/tables/postscript/index.rs",
+    "//third_party/rust/chromium_crates_io/vendor/read-fonts-0.13.2/src/tables/postscript/stack.rs",
+    "//third_party/rust/chromium_crates_io/vendor/read-fonts-0.13.2/src/tables/postscript/string.rs",
+    "//third_party/rust/chromium_crates_io/vendor/read-fonts-0.13.2/src/tables/sbix.rs",
+    "//third_party/rust/chromium_crates_io/vendor/read-fonts-0.13.2/src/tables/stat.rs",
+    "//third_party/rust/chromium_crates_io/vendor/read-fonts-0.13.2/src/tables/value_record.rs",
+    "//third_party/rust/chromium_crates_io/vendor/read-fonts-0.13.2/src/tables/variations.rs",
+    "//third_party/rust/chromium_crates_io/vendor/read-fonts-0.13.2/src/tables/vhea.rs",
+    "//third_party/rust/chromium_crates_io/vendor/read-fonts-0.13.2/src/tables/vmtx.rs",
+    "//third_party/rust/chromium_crates_io/vendor/read-fonts-0.13.2/src/tables/vvar.rs",
+    "//third_party/rust/chromium_crates_io/vendor/read-fonts-0.13.2/src/tests/layout.rs",
+    "//third_party/rust/chromium_crates_io/vendor/read-fonts-0.13.2/src/tests/test_gdef.rs",
+    "//third_party/rust/chromium_crates_io/vendor/read-fonts-0.13.2/src/tests/test_gpos.rs",
+    "//third_party/rust/chromium_crates_io/vendor/read-fonts-0.13.2/src/tests/test_gsub.rs",
+    "//third_party/rust/chromium_crates_io/vendor/read-fonts-0.13.2/src/tests/test_helpers.rs",
+    "//third_party/rust/chromium_crates_io/vendor/read-fonts-0.13.2/src/traversal.rs",
+  ]
+  inputs = [
+    "//third_party/rust/chromium_crates_io/vendor/read-fonts-0.13.2/src/../generated/font.rs",
+    "//third_party/rust/chromium_crates_io/vendor/read-fonts-0.13.2/src/../generated/generated_avar.rs",
+    "//third_party/rust/chromium_crates_io/vendor/read-fonts-0.13.2/src/../generated/generated_base.rs",
+    "//third_party/rust/chromium_crates_io/vendor/read-fonts-0.13.2/src/../generated/generated_bitmap.rs",
+    "//third_party/rust/chromium_crates_io/vendor/read-fonts-0.13.2/src/../generated/generated_cbdt.rs",
+    "//third_party/rust/chromium_crates_io/vendor/read-fonts-0.13.2/src/../generated/generated_cblc.rs",
+    "//third_party/rust/chromium_crates_io/vendor/read-fonts-0.13.2/src/../generated/generated_cff.rs",
+    "//third_party/rust/chromium_crates_io/vendor/read-fonts-0.13.2/src/../generated/generated_cff2.rs",
+    "//third_party/rust/chromium_crates_io/vendor/read-fonts-0.13.2/src/../generated/generated_cmap.rs",
+    "//third_party/rust/chromium_crates_io/vendor/read-fonts-0.13.2/src/../generated/generated_colr.rs",
+    "//third_party/rust/chromium_crates_io/vendor/read-fonts-0.13.2/src/../generated/generated_cpal.rs",
+    "//third_party/rust/chromium_crates_io/vendor/read-fonts-0.13.2/src/../generated/generated_ebdt.rs",
+    "//third_party/rust/chromium_crates_io/vendor/read-fonts-0.13.2/src/../generated/generated_eblc.rs",
+    "//third_party/rust/chromium_crates_io/vendor/read-fonts-0.13.2/src/../generated/generated_fvar.rs",
+    "//third_party/rust/chromium_crates_io/vendor/read-fonts-0.13.2/src/../generated/generated_gdef.rs",
+    "//third_party/rust/chromium_crates_io/vendor/read-fonts-0.13.2/src/../generated/generated_glyf.rs",
+    "//third_party/rust/chromium_crates_io/vendor/read-fonts-0.13.2/src/../generated/generated_gpos.rs",
+    "//third_party/rust/chromium_crates_io/vendor/read-fonts-0.13.2/src/../generated/generated_gsub.rs",
+    "//third_party/rust/chromium_crates_io/vendor/read-fonts-0.13.2/src/../generated/generated_gvar.rs",
+    "//third_party/rust/chromium_crates_io/vendor/read-fonts-0.13.2/src/../generated/generated_head.rs",
+    "//third_party/rust/chromium_crates_io/vendor/read-fonts-0.13.2/src/../generated/generated_hhea.rs",
+    "//third_party/rust/chromium_crates_io/vendor/read-fonts-0.13.2/src/../generated/generated_hmtx.rs",
+    "//third_party/rust/chromium_crates_io/vendor/read-fonts-0.13.2/src/../generated/generated_hvar.rs",
+    "//third_party/rust/chromium_crates_io/vendor/read-fonts-0.13.2/src/../generated/generated_layout.rs",
+    "//third_party/rust/chromium_crates_io/vendor/read-fonts-0.13.2/src/../generated/generated_maxp.rs",
+    "//third_party/rust/chromium_crates_io/vendor/read-fonts-0.13.2/src/../generated/generated_mvar.rs",
+    "//third_party/rust/chromium_crates_io/vendor/read-fonts-0.13.2/src/../generated/generated_name.rs",
+    "//third_party/rust/chromium_crates_io/vendor/read-fonts-0.13.2/src/../generated/generated_os2.rs",
+    "//third_party/rust/chromium_crates_io/vendor/read-fonts-0.13.2/src/../generated/generated_post.rs",
+    "//third_party/rust/chromium_crates_io/vendor/read-fonts-0.13.2/src/../generated/generated_postscript.rs",
+    "//third_party/rust/chromium_crates_io/vendor/read-fonts-0.13.2/src/../generated/generated_sbix.rs",
+    "//third_party/rust/chromium_crates_io/vendor/read-fonts-0.13.2/src/../generated/generated_stat.rs",
+    "//third_party/rust/chromium_crates_io/vendor/read-fonts-0.13.2/src/../generated/generated_test_enum.rs",
+    "//third_party/rust/chromium_crates_io/vendor/read-fonts-0.13.2/src/../generated/generated_test_flags.rs",
+    "//third_party/rust/chromium_crates_io/vendor/read-fonts-0.13.2/src/../generated/generated_test_formats.rs",
+    "//third_party/rust/chromium_crates_io/vendor/read-fonts-0.13.2/src/../generated/generated_test_offsets_arrays.rs",
+    "//third_party/rust/chromium_crates_io/vendor/read-fonts-0.13.2/src/../generated/generated_test_records.rs",
+    "//third_party/rust/chromium_crates_io/vendor/read-fonts-0.13.2/src/../generated/generated_variations.rs",
+    "//third_party/rust/chromium_crates_io/vendor/read-fonts-0.13.2/src/../generated/generated_vhea.rs",
+    "//third_party/rust/chromium_crates_io/vendor/read-fonts-0.13.2/src/../generated/generated_vmtx.rs",
+    "//third_party/rust/chromium_crates_io/vendor/read-fonts-0.13.2/src/../generated/generated_vvar.rs",
+  ]
+
+  build_native_rust_unit_tests = false
+  edition = "2021"
+  cargo_pkg_version = "0.13.2"
+  cargo_pkg_name = "read-fonts"
+  cargo_pkg_description = "Reading OpenType font files."
+  library_configs -= [ "//build/config/compiler:chromium_code" ]
+  library_configs += [ "//build/config/compiler:no_chromium_code" ]
+  executable_configs -= [ "//build/config/compiler:chromium_code" ]
+  executable_configs += [ "//build/config/compiler:no_chromium_code" ]
+  deps = [ "//third_party/rust/font_types/v0_4:lib" ]
+  features = [
+    "std",
+    "traversal",
+  ]
+}

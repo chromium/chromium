@@ -58,6 +58,7 @@
 #include "content/test/navigation_simulator_impl.h"
 #include "content/test/test_content_browser_client.h"
 #include "content/test/test_content_client.h"
+#include "content/test/test_page_broadcast.h"
 #include "content/test/test_render_frame_host.h"
 #include "content/test/test_render_view_host.h"
 #include "content/test/test_web_contents.h"
@@ -323,6 +324,46 @@ class FakeImageDownloader : public blink::mojom::ImageDownloader {
 
   mojo::Receiver<blink::mojom::ImageDownloader> receiver_{this};
   std::map<GURL, FakeResponseData> fake_response_data_per_url_;
+};
+
+class MockPageBroadcast : public TestPageBroadcast {
+ public:
+  using TestPageBroadcast::TestPageBroadcast;
+  MOCK_METHOD(void,
+              UpdateColorProviders,
+              (const blink::ColorProviderColorMaps& color_provider_colors),
+              (override));
+};
+
+class TestColorProviderSource : public ui::ColorProviderSource {
+ public:
+  TestColorProviderSource() { provider_.GenerateColorMap(); }
+
+  const ui::ColorProvider* GetColorProvider() const override {
+    return &provider_;
+  }
+
+  const ui::RendererColorMap GetRendererColorMap(
+      ui::ColorProviderKey::ColorMode color_mode,
+      ui::ColorProviderKey::ForcedColors forced_colors) const override {
+    if (forced_colors == ui::ColorProviderKey::ForcedColors::kActive) {
+      return forced_colors_map;
+    }
+    return color_mode == ui::ColorProviderKey::ColorMode::kLight ? light_colors
+                                                                 : dark_colors;
+  }
+
+  ui::ColorProviderKey GetColorProviderKey() const override { return key_; }
+
+ private:
+  ui::ColorProvider provider_;
+  ui::ColorProviderKey key_;
+  const ui::RendererColorMap light_colors{
+      {color::mojom::RendererColorId::kColorMenuBackground, SK_ColorWHITE}};
+  const ui::RendererColorMap dark_colors{
+      {color::mojom::RendererColorId::kColorMenuBackground, SK_ColorBLACK}};
+  const ui::RendererColorMap forced_colors_map{
+      {color::mojom::RendererColorId::kColorMenuBackground, SK_ColorCYAN}};
 };
 
 }  // namespace
@@ -3075,7 +3116,7 @@ TEST_F(WebContentsImplTest, CanonicalUrlSchemeChromeIsNotAllowed) {
 TEST_F(WebContentsImplTest, RequestMediaAccessPermissionNoDelegate) {
   MediaStreamRequest dummy_request(
       /*render_process_id=*/0, /*render_frame_id=*/0, /*page_request_id=*/0,
-      /*security_origin=*/GURL(""), /*user_gesture=*/false,
+      /*url_origin=*/url::Origin::Create(GURL("")), /*user_gesture=*/false,
       blink::MediaStreamRequestType::MEDIA_GENERATE_STREAM,
       /*requested_audio_device_id=*/"",
       /*requested_video_device_id=*/"",
@@ -3131,6 +3172,24 @@ TEST_F(WebContentsImplTest, IgnoreInputEvents) {
 
   // Now input should be allowed.
   EXPECT_FALSE(contents()->ShouldIgnoreInputEvents());
+}
+
+TEST_F(WebContentsImplTest, OnColorProviderChangedTriggersPageBroadcast) {
+  TestColorProviderSource color_provider_source;
+  mojo::AssociatedRemote<blink::mojom::PageBroadcast> broadcast_remote;
+  testing::NiceMock<MockPageBroadcast> mock_page_broadcast(
+      broadcast_remote.BindNewEndpointAndPassDedicatedReceiver());
+  contents()->GetRenderViewHost()->BindPageBroadcast(broadcast_remote.Unbind());
+
+  contents()->SetColorProviderSource(&color_provider_source);
+  const auto color_provider_colors = contents()->GetColorProviderColorMaps();
+  color_provider_source.NotifyColorProviderChanged();
+
+  // The page broadcast should have been called twice. Once when first set and
+  // again when the source notified of a ColorProvider change.
+  EXPECT_CALL(mock_page_broadcast, UpdateColorProviders(color_provider_colors))
+      .Times(2);
+  mock_page_broadcast.FlushForTesting();
 }
 
 }  // namespace content

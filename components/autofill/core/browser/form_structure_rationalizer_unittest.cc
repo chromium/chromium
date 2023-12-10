@@ -1055,6 +1055,17 @@ TEST_F(FormStructureRationalizerTest, RationalizeAddressBetweenStreets) {
           /*run_heuristics=*/false),
       AreFields(HasType(NAME_FULL), HasType(ADDRESS_HOME_BETWEEN_STREETS_1),
                 HasType(ADDRESS_HOME_BETWEEN_STREETS_2)));
+
+  EXPECT_THAT(
+      *BuildFormStructure(
+          {
+              {.field_type = NAME_FULL},
+              {.field_type = ADDRESS_HOME_BETWEEN_STREETS},
+              {.field_type = ADDRESS_HOME_CITY},
+          },
+          /*run_heuristics=*/false),
+      AreFields(HasType(NAME_FULL), HasType(ADDRESS_HOME_BETWEEN_STREETS),
+                HasType(ADDRESS_HOME_CITY)));
 }
 
 struct RationalizeAutocompleteTestParam {

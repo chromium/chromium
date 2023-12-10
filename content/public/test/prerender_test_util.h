@@ -7,7 +7,7 @@
 
 #include "base/functional/callback.h"
 #include "base/test/scoped_feature_list.h"
-#include "content/public/browser/prerender_trigger_type.h"
+#include "content/public/browser/preloading_trigger_type.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/isolated_world_ids.h"
@@ -79,6 +79,19 @@ class PrerenderHostObserver {
   std::unique_ptr<PrerenderHostObserverImpl> impl_;
 };
 
+// This waits for creation of PrerenderHost and then returns its host id.
+class PrerenderHostCreationWaiter {
+ public:
+  PrerenderHostCreationWaiter();
+  ~PrerenderHostCreationWaiter() = default;
+
+  int Wait();
+
+ private:
+  base::RunLoop run_loop_;
+  int created_host_id_ = content::RenderFrameHost::kNoFrameTreeNodeId;
+};
+
 // Enables appropriate features for Prerender2.
 // This also disables the memory requirement of Prerender2 on Android so that
 // test can run on any bot.
@@ -112,7 +125,11 @@ class PrerenderTestHelper {
 
   // Attempts to lookup the host for the given |gurl|. Returns
   // RenderFrameHost::kNoFrameTreeNodeId upon failure.
+  static int GetHostForUrl(WebContents& web_contents, const GURL& gurl);
   int GetHostForUrl(const GURL& gurl);
+
+  // Returns whether the registry holds the handler for prerender-into-new-tab.
+  bool HasNewTabHandle(int host_id);
 
   // Waits until a prerender has finished loading. Note: this may not be called
   // when the load fails (e.g. because it was blocked by a NavigationThrottle,
@@ -126,11 +143,14 @@ class PrerenderTestHelper {
   // Adds <script type="speculationrules"> in the current main frame and waits
   // until the completion of prerendering. Returns the id of the resulting
   // prerendering host.
-  //
-  // AddPrerenderAsync() is the same as AddPrerender(), but does not wait until
-  // the completion of prerendering.
   int AddPrerender(const GURL& prerendering_url,
                    int32_t world_id = ISOLATED_WORLD_ID_GLOBAL);
+  int AddPrerender(const GURL& prerendering_url,
+                   absl::optional<blink::mojom::SpeculationEagerness> eagerness,
+                   const std::string& target_hint,
+                   int32_t world_id = ISOLATED_WORLD_ID_GLOBAL);
+  // AddPrerenderAsync() is the same as AddPrerender(), but does not wait until
+  // the completion of prerendering.
   void AddPrerenderAsync(const GURL& prerendering_url,
                          int32_t world_id = ISOLATED_WORLD_ID_GLOBAL);
   void AddPrerendersAsync(
@@ -146,7 +166,7 @@ class PrerenderTestHelper {
   // the prerendering navigation.
   std::unique_ptr<PrerenderHandle> AddEmbedderTriggeredPrerenderAsync(
       const GURL& prerendering_url,
-      PrerenderTriggerType trigger_type,
+      PreloadingTriggerType trigger_type,
       const std::string& embedder_histogram_suffix,
       ui::PageTransition page_transition);
 
@@ -174,6 +194,9 @@ class PrerenderTestHelper {
   [[nodiscard]] ::testing::AssertionResult VerifyPrerenderingState(
       const GURL& gurl);
 
+  // Returns RenderFrameHost corresponding to `host_id`.
+  static RenderFrameHost* GetPrerenderedMainFrameHost(WebContents& web_contents,
+                                                      int host_id);
   RenderFrameHost* GetPrerenderedMainFrameHost(int host_id);
 
   int GetRequestCount(const GURL& url);
@@ -185,7 +208,7 @@ class PrerenderTestHelper {
   // Generates the histogram name by appending the trigger type and the embedder
   // suffix to the base name.
   std::string GenerateHistogramName(const std::string& histogram_base_name,
-                                    content::PrerenderTriggerType trigger_type,
+                                    content::PreloadingTriggerType trigger_type,
                                     const std::string& embedder_suffix);
 
  private:

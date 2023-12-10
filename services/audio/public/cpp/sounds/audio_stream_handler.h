@@ -5,10 +5,11 @@
 #ifndef SERVICES_AUDIO_PUBLIC_CPP_SOUNDS_AUDIO_STREAM_HANDLER_H_
 #define SERVICES_AUDIO_PUBLIC_CPP_SOUNDS_AUDIO_STREAM_HANDLER_H_
 
+#include <string_view>
+
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
 #include "base/sequence_checker.h"
-#include "base/strings/string_piece.h"
 #include "base/threading/sequence_bound.h"
 #include "base/time/time.h"
 #include "media/audio/audio_io.h"
@@ -43,7 +44,7 @@ class COMPONENT_EXPORT(AUDIO_PUBLIC_CPP) AudioStreamHandler {
   // C-tor for AudioStreamHandler. |wav_data| should be a raw
   // uncompressed WAVE data which will be sent to the audio output device.
   AudioStreamHandler(SoundsManager::StreamFactoryBinder stream_factory_binder,
-                     const base::StringPiece& audio_data,
+                     const std::string_view& audio_data,
                      media::AudioCodec codec);
 
   AudioStreamHandler(const AudioStreamHandler&) = delete;

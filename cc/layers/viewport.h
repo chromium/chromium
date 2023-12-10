@@ -106,6 +106,10 @@ class CC_EXPORT Viewport {
   // inner viewport where content is visible.
   gfx::SizeF GetInnerViewportSizeExcludingScrollbars() const;
 
+  // Performs an instant snap if the viewport is a snap container and no scroll
+  // gesture is in progress.
+  void SnapIfNeeded();
+
  private:
   explicit Viewport(LayerTreeHostImpl* host_impl);
 

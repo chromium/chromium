@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/settings/settings_secure_dns_handler.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/check.h"
@@ -26,7 +27,6 @@
 #include "net/dns/public/doh_provider_entry.h"
 #include "net/dns/public/secure_dns_mode.h"
 #include "net/dns/public/util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace secure_dns = chrome_browser_net::secure_dns;
@@ -49,7 +49,7 @@ base::Value::Dict CreateSecureDnsSettingDict() {
   dict.Set("mode", SecureDnsConfig::ModeToString(config.mode()));
   dict.Set("config", config.doh_servers().ToString());
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  absl::optional<std::string> doh_with_identifiers_servers_for_display =
+  std::optional<std::string> doh_with_identifiers_servers_for_display =
       SystemNetworkContextManager::GetStubResolverConfigReader()
           ->GetDohWithIdentifiersDisplayServers();
   dict.Set("dohWithIdentifiersActive",
@@ -199,7 +199,7 @@ void SecureDnsHandler::HandleProbeConfig(const base::Value::List& args) {
   probe_callback_id_ = args[0].GetString();
   const std::string& doh_config = args[1].GetString();
   DCHECK(!runner_);
-  absl::optional<net::DnsOverHttpsConfig> parsed =
+  std::optional<net::DnsOverHttpsConfig> parsed =
       net::DnsOverHttpsConfig::FromString(doh_config);
   DCHECK(parsed.has_value());  // `doh_config` must be valid.
   runner_ =

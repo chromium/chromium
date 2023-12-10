@@ -286,6 +286,16 @@ class FakeNearbyPresenceCredentialStorage
                             std::move(local_credentials));
   }
 
+  void UpdateLocalCredential(
+      ash::nearby::presence::mojom::LocalCredentialPtr local_credential,
+      UpdateLocalCredentialCallback callback) override {
+    if (should_local_credential_successfully_update_) {
+      std::move(callback).Run(mojo_base::mojom::AbslStatusCode::kOk);
+    } else {
+      std::move(callback).Run(mojo_base::mojom::AbslStatusCode::kAborted);
+    }
+  }
+
   void SetShouldCredentialsSuccessfullySave(bool should_succeed) {
     should_credentials_successfully_save_ = should_succeed;
   }
@@ -298,10 +308,15 @@ class FakeNearbyPresenceCredentialStorage
     should_private_credentials_successfully_retrieve_ = should_succed;
   }
 
+  void SetShouldLocalCredentialSuccessfullyUpdate(bool should_succeed) {
+    should_local_credential_successfully_update_ = should_succeed;
+  }
+
  private:
   bool should_credentials_successfully_save_ = true;
   bool should_public_credentials_successfully_retrieve_ = true;
   bool should_private_credentials_successfully_retrieve_ = true;
+  bool should_local_credential_successfully_update_ = true;
 };
 
 }  // namespace
@@ -545,6 +560,54 @@ TEST_F(CredentialStorageTest, GetLocalCredentials_Fail) {
         EXPECT_FALSE(status_or_creds.ok());
         run_loop.Quit();
       }});
+
+  run_loop.Run();
+}
+
+TEST_F(CredentialStorageTest, UpdateLocalCredential_Success) {
+  auto local_credential = CreateLocalCredentialProto(
+      kSecretId_Local, kKeySeed, kStartTimeMillis, kMetadataEncryptionKeyV0,
+      AdvertisementSigningKeyCertificateAlias, kAdvertisementPrivateKey,
+      ConnectionSigningKeyCertificateAlias, kConnectionPrivateKey,
+      kConsumedSalts, kMetadataEncryptionKeyV1);
+
+  base::RunLoop run_loop;
+
+  nearby::presence::SaveCredentialsResultCallback callback;
+  callback.credentials_saved_cb =
+      absl::AnyInvocable<void(absl::Status)>([&](const absl::Status& status) {
+        EXPECT_TRUE(status.ok());
+        run_loop.Quit();
+      });
+
+  credential_storage_->UpdateLocalCredential(kManagerAppName, kAccountName,
+                                             std::move(local_credential),
+                                             std::move(callback));
+
+  run_loop.Run();
+}
+
+TEST_F(CredentialStorageTest, UpdateLocalCredential_Fail) {
+  auto local_credential = CreateLocalCredentialProto(
+      kSecretId_Local, kKeySeed, kStartTimeMillis, kMetadataEncryptionKeyV0,
+      AdvertisementSigningKeyCertificateAlias, kAdvertisementPrivateKey,
+      ConnectionSigningKeyCertificateAlias, kConnectionPrivateKey,
+      kConsumedSalts, kMetadataEncryptionKeyV1);
+
+  base::RunLoop run_loop;
+
+  nearby::presence::SaveCredentialsResultCallback callback;
+  callback.credentials_saved_cb =
+      absl::AnyInvocable<void(absl::Status)>([&](const absl::Status& status) {
+        EXPECT_FALSE(status.ok());
+        run_loop.Quit();
+      });
+
+  fake_credential_storage_->SetShouldLocalCredentialSuccessfullyUpdate(
+      /*should_succeed=*/false);
+  credential_storage_->UpdateLocalCredential(kManagerAppName, kAccountName,
+                                             std::move(local_credential),
+                                             std::move(callback));
 
   run_loop.Run();
 }

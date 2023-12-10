@@ -102,12 +102,10 @@ std::unique_ptr<AssistantButton> AssistantButton::Create(
     return button;
   }
 
-  // `icon_color` does not change so we can set the color and icon for the
-  // button now.
-  icon_description.color = params.icon_color;
-
-  button->SetImage(views::Button::STATE_NORMAL,
-                   gfx::CreateVectorIcon(icon_description));
+  button->SetImageModel(
+      views::Button::STATE_NORMAL,
+      ui::ImageModel::FromVectorIcon(*icon_description.icon, params.icon_color,
+                                     icon_description.dip_size));
   return button;
 }
 
@@ -162,8 +160,10 @@ void AssistantButton::OnThemeChanged() {
   // This might be the first time the image is rendered since `icon_color_type_`
   // may not resolvable until now.
   icon_description_->color = GetColorProvider()->GetColor(*icon_color_type_);
-  SetImage(views::Button::STATE_NORMAL,
-           gfx::CreateVectorIcon(icon_description_.value()));
+  SetImageModel(views::Button::STATE_NORMAL,
+                ui::ImageModel::FromVectorIcon(*icon_description_->icon,
+                                               icon_description_->color,
+                                               icon_description_->dip_size));
 }
 
 void AssistantButton::OnButtonPressed() {

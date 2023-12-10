@@ -26,13 +26,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-/**
- * Implementation of {@link ICronetEngineBuilder}.
- */
+/** Implementation of {@link ICronetEngineBuilder}. */
 public abstract class CronetEngineBuilderImpl extends ICronetEngineBuilder {
-    /**
-     * A hint that a host supports QUIC.
-     */
+    /** A hint that a host supports QUIC. */
     public static class QuicHint {
         // The host.
         final String mHost;
@@ -48,9 +44,7 @@ public abstract class CronetEngineBuilderImpl extends ICronetEngineBuilder {
         }
     }
 
-    /**
-     * A public key pin.
-     */
+    /** A public key pin. */
     public static class Pkp {
         // Host to pin for.
         final String mHost;
@@ -69,9 +63,7 @@ public abstract class CronetEngineBuilderImpl extends ICronetEngineBuilder {
         }
     }
 
-    /**
-     * Mapping between public builder view of HttpCacheMode and internal builder one.
-     */
+    /** Mapping between public builder view of HttpCacheMode and internal builder one. */
     @VisibleForTesting
     static enum HttpCacheMode {
         DISABLED(HttpCacheType.DISABLED, false),
@@ -261,8 +253,12 @@ public abstract class CronetEngineBuilderImpl extends ICronetEngineBuilder {
         return mBrotiEnabled;
     }
 
-    @IntDef({CronetEngine.Builder.HTTP_CACHE_DISABLED, CronetEngine.Builder.HTTP_CACHE_IN_MEMORY,
-            CronetEngine.Builder.HTTP_CACHE_DISK_NO_HTTP, CronetEngine.Builder.HTTP_CACHE_DISK})
+    @IntDef({
+        CronetEngine.Builder.HTTP_CACHE_DISABLED,
+        CronetEngine.Builder.HTTP_CACHE_IN_MEMORY,
+        CronetEngine.Builder.HTTP_CACHE_DISK_NO_HTTP,
+        CronetEngine.Builder.HTTP_CACHE_DISK
+    })
     @Retention(RetentionPolicy.SOURCE)
     public @interface HttpCacheSetting {}
 
@@ -312,8 +308,11 @@ public abstract class CronetEngineBuilderImpl extends ICronetEngineBuilder {
     }
 
     @Override
-    public CronetEngineBuilderImpl addPublicKeyPins(String hostName, Set<byte[]> pinsSha256,
-            boolean includeSubdomains, Date expirationDate) {
+    public CronetEngineBuilderImpl addPublicKeyPins(
+            String hostName,
+            Set<byte[]> pinsSha256,
+            boolean includeSubdomains,
+            Date expirationDate) {
         if (hostName == null) {
             throw new NullPointerException("The hostname cannot be null");
         }
@@ -333,8 +332,12 @@ public abstract class CronetEngineBuilderImpl extends ICronetEngineBuilder {
             hashes.put(Base64.encodeToString(pinSha256, 0), pinSha256);
         }
         // Add new element to PKP list.
-        mPkps.add(new Pkp(idnHostName, hashes.values().toArray(new byte[hashes.size()][]),
-                includeSubdomains, expirationDate));
+        mPkps.add(
+                new Pkp(
+                        idnHostName,
+                        hashes.values().toArray(new byte[hashes.size()][]),
+                        includeSubdomains,
+                        expirationDate));
         return this;
     }
 
@@ -375,19 +378,28 @@ public abstract class CronetEngineBuilderImpl extends ICronetEngineBuilder {
     private static String validateHostNameForPinningAndConvert(String hostName)
             throws IllegalArgumentException {
         if (INVALID_PKP_HOST_NAME.matcher(hostName).matches()) {
-            throw new IllegalArgumentException("Hostname " + hostName + " is illegal."
-                    + " A hostname should not consist of digits and/or dots only.");
+            throw new IllegalArgumentException(
+                    "Hostname "
+                            + hostName
+                            + " is illegal."
+                            + " A hostname should not consist of digits and/or dots only.");
         }
         // Workaround for crash, see crbug.com/634914
         if (hostName.length() > 255) {
-            throw new IllegalArgumentException("Hostname " + hostName + " is too long."
-                    + " The name of the host does not comply with RFC 1122 and RFC 1123.");
+            throw new IllegalArgumentException(
+                    "Hostname "
+                            + hostName
+                            + " is too long."
+                            + " The name of the host does not comply with RFC 1122 and RFC 1123.");
         }
         try {
             return IDN.toASCII(hostName, IDN.USE_STD3_ASCII_RULES);
         } catch (IllegalArgumentException ex) {
-            throw new IllegalArgumentException("Hostname " + hostName + " is illegal."
-                    + " The name of the host does not comply with RFC 1122 and RFC 1123.");
+            throw new IllegalArgumentException(
+                    "Hostname "
+                            + hostName
+                            + " is illegal."
+                            + " The name of the host does not comply with RFC 1122 and RFC 1123.");
         }
     }
 
@@ -441,9 +453,7 @@ public abstract class CronetEngineBuilderImpl extends ICronetEngineBuilder {
         return this;
     }
 
-    /**
-     * @return thread priority provided by user, or {@code defaultThreadPriority} if none provided.
-     */
+    /** @return thread priority provided by user, or {@code defaultThreadPriority} if none provided. */
     @VisibleForTesting
     int threadPriority(int defaultThreadPriority) {
         return mThreadPriority == INVALID_THREAD_PRIORITY ? defaultThreadPriority : mThreadPriority;

@@ -13,15 +13,14 @@ import org.chromium.base.test.params.ParameterizedRunnerDelegateCommon;
 
 import java.util.List;
 
-/**
- * A custom runner delegate for running //content JUnit4 parameterized tests.
- */
-public final class ContentJUnit4RunnerDelegate
-        extends ContentJUnit4ClassRunner implements ParameterizedRunnerDelegate {
+/** A custom runner delegate for running //content JUnit4 parameterized tests. */
+public final class ContentJUnit4RunnerDelegate extends ContentJUnit4ClassRunner
+        implements ParameterizedRunnerDelegate {
     private final ParameterizedRunnerDelegateCommon mDelegateCommon;
 
-    public ContentJUnit4RunnerDelegate(Class<?> klass,
-            ParameterizedRunnerDelegateCommon delegateCommon) throws InitializationError {
+    public ContentJUnit4RunnerDelegate(
+            Class<?> klass, ParameterizedRunnerDelegateCommon delegateCommon)
+            throws InitializationError {
         super(klass);
         mDelegateCommon = delegateCommon;
     }

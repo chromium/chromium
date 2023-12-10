@@ -11,9 +11,7 @@ import org.chromium.base.BuildInfo;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.RestrictionSkipCheck;
 
-/**
- * Checks if any restrictions exist and skip the test if it meets those restrictions.
- */
+/** Checks if any restrictions exist and skip the test if it meets those restrictions. */
 public class DeviceRestrictionSkipCheck extends RestrictionSkipCheck {
     public DeviceRestrictionSkipCheck(Context targetContext) {
         super(targetContext);
@@ -31,8 +29,9 @@ public class DeviceRestrictionSkipCheck extends RestrictionSkipCheck {
             return false;
         }
 
-        boolean isAuto = ThreadUtils.runOnUiThreadBlockingNoException(
-                () -> BuildInfo.getInstance().isAutomotive);
+        boolean isAuto =
+                ThreadUtils.runOnUiThreadBlockingNoException(
+                        () -> BuildInfo.getInstance().isAutomotive);
         boolean autoRestrictionApplies = restrictedToAuto && !isAuto;
         boolean nonAutoRestrictionApplies = restrictedToNonAuto && isAuto;
         return autoRestrictionApplies || nonAutoRestrictionApplies;

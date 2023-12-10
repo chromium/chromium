@@ -214,11 +214,10 @@ class WebStateImpl;
 - (web::PermissionState)stateForPermission:(web::Permission)permission
     API_AVAILABLE(ios(15.0));
 - (void)setState:(web::PermissionState)state
-    forPermission:(web::Permission)permission API_AVAILABLE(ios(15.0));
+    forPermission:(web::Permission)permission;
 
 // Gets a mapping of all permissions and their states. Only works on iOS 15+.
-- (NSDictionary<NSNumber*, NSNumber*>*)
-    statesForAllPermissions API_AVAILABLE(ios(15.0));
+- (NSDictionary<NSNumber*, NSNumber*>*)statesForAllPermissions;
 
 // Downloads the file from the `request` at `destination` path.
 // `completion_handler` is used to retrieve the created CRWWebViewDownload, so
@@ -226,8 +225,8 @@ class WebStateImpl;
 - (void)downloadCurrentPageWithRequest:(NSURLRequest*)request
                        destinationPath:(NSString*)destination
                               delegate:(id<CRWWebViewDownloadDelegate>)delegate
-                               handler:(void (^)(id<CRWWebViewDownload>))handler
-    API_AVAILABLE(ios(14.5));
+                               handler:
+                                   (void (^)(id<CRWWebViewDownload>))handler;
 
 // Returns whether the Find interaction is supported and can be enabled.
 - (BOOL)findInteractionSupported;

@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/arc/input_overlay/ui/arrow_container.h"
 
 #include "cc/paint/paint_flags.h"
+#include "chrome/browser/ash/arc/input_overlay/constants.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/canvas.h"
@@ -13,14 +14,14 @@
 namespace arc::input_overlay {
 namespace {
 
-// Whole menu width with arrow.
-constexpr int kMenuWidth = 316;
-
 constexpr int kTriangleLength = 20;
 constexpr int kTriangleHeight = 14;
 constexpr int kCornerRadius = 16;
 constexpr int kBorderThickness = 2;
-constexpr int kBorderInset = 16;
+
+// Whole menu width with arrow.
+constexpr int kMenuWidth = kButtonOptionsMenuWidth + kTriangleHeight;
+
 // Draws the dialog shape path with round corner. It starts after the corner
 // radius on line #0 and draws clockwise.
 //
@@ -124,11 +125,16 @@ void ArrowContainer::SetArrowOnLeft(bool arrow_on_left) {
 
 void ArrowContainer::UpdateBorder() {
   SetBorder(views::CreateEmptyBorder(
-      arrow_on_left_
-          ? gfx::Insets::TLBR(kBorderInset, kBorderInset + kTriangleHeight,
-                              kBorderInset, kBorderInset)
-          : gfx::Insets::TLBR(kBorderInset, kBorderInset, kBorderInset,
-                              kBorderInset + kTriangleHeight)));
+      arrow_on_left_ ? gfx::Insets::TLBR(kArrowContainerHorizontalBorderInset,
+                                         kArrowContainerHorizontalBorderInset +
+                                             kTriangleHeight,
+                                         kArrowContainerHorizontalBorderInset,
+                                         kArrowContainerHorizontalBorderInset)
+                     : gfx::Insets::TLBR(kArrowContainerHorizontalBorderInset,
+                                         kArrowContainerHorizontalBorderInset,
+                                         kArrowContainerHorizontalBorderInset,
+                                         kArrowContainerHorizontalBorderInset +
+                                             kTriangleHeight)));
 }
 
 void ArrowContainer::OnPaintBackground(gfx::Canvas* canvas) {

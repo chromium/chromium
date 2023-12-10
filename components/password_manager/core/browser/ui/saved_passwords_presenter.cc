@@ -5,15 +5,16 @@
 #include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 
 #include <algorithm>
+#include <map>
 #include <memory>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/barrier_callback.h"
 #include "base/barrier_closure.h"
 #include "base/check.h"
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -369,7 +370,7 @@ std::vector<AffiliatedGroup> SavedPasswordsPresenter::GetAffiliatedGroups() {
 std::vector<CredentialUIEntry> SavedPasswordsPresenter::GetSavedPasswords()
     const {
   auto credentials = GetSavedCredentials();
-  base::EraseIf(credentials, [](const auto& credential) {
+  std::erase_if(credentials, [](const auto& credential) {
     return !credential.passkey_credential_id.empty() ||
            credential.blocked_by_user || !credential.federation_origin.opaque();
   });
@@ -452,7 +453,7 @@ void SavedPasswordsPresenter::OnLoginsRetained(
   bool is_using_account_store = store == account_store_.get();
 
   // Remove cached credentials for the current store.
-  base::EraseIf(sort_key_to_password_forms_,
+  std::erase_if(sort_key_to_password_forms_,
                 [is_using_account_store](
                     const DuplicatePasswordsMap::value_type& key_to_form) {
                   return key_to_form.second.IsUsingAccountStore() ==
@@ -514,7 +515,7 @@ void SavedPasswordsPresenter::RemoveForms(
     // is why |in_store| has to be checked as it's possible to have two
     // PasswordForms with the same unique keys but different passwords if and
     // only if they are from different stores.
-    base::EraseIf(
+    std::erase_if(
         sort_key_to_password_forms_,
         [&form](const DuplicatePasswordsMap::value_type& key_to_form) {
           return ArePasswordFormUniqueKeysEqual(key_to_form.second, form) &&
@@ -573,7 +574,7 @@ SavedPasswordsPresenter::EditResult SavedPasswordsPresenter::EditPasskey(
     const CredentialUIEntry& updated_credential) {
   CHECK(!updated_credential.passkey_credential_id.empty());
   CHECK(passkey_store_);
-  absl::optional<PasskeyCredential> original_credential =
+  std::optional<PasskeyCredential> original_credential =
       passwords_grouper_->GetPasskeyFor(updated_credential);
   if (!original_credential) {
     return EditResult::kNotFound;

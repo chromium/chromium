@@ -21,9 +21,16 @@ constexpr char kDebugButton[] = "invokeDebuggerButton";
 constexpr char kDebugOverlay[] = "debuggerOverlay";
 constexpr char kScreensPanel[] = "DebuggerPanelScreens";
 
-constexpr int kOobeScreensCount = 52;
-constexpr int kLoginScreensCount = 48;
+constexpr int kCommonScreensCount = 45;
+constexpr int kOobeOnlyScreensCount = 11;
+constexpr int kLoginOnlyScreensCount = 7;
+
+constexpr int kOobeScreensCount = kCommonScreensCount + kOobeOnlyScreensCount;
+constexpr int kLoginScreensCount = kCommonScreensCount + kLoginOnlyScreensCount;
+
+// Feature-specific screens:
 constexpr int kOsInstallScreensCount = 2;
+constexpr int kLocalPasswordScreenCount = 3;
 
 std::string ElementsInPanel(const std::string& panel) {
   return base::StrCat({"$('", panel, "').children.length"});
@@ -81,8 +88,9 @@ class DebugOverlayScreensTest : public DebugOverlayTest,
   // DebugOverlayTest:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     DebugOverlayTest::SetUpCommandLine(command_line);
-    if (!GetParam())
+    if (!GetParam()) {
       return;
+    }
     command_line->AppendSwitch(switches::kAllowOsInstall);
   }
 };
@@ -95,8 +103,13 @@ IN_PROC_BROWSER_TEST_P(DebugOverlayScreensTest, ExpectScreenButtonsCount) {
   test::OobeJS().CreateVisibilityWaiter(true, kDebugOverlay)->Wait();
 
   int screens_count = kOobeScreensCount;
-  if (switches::IsOsInstallAllowed())
+  if (switches::IsOsInstallAllowed()) {
     screens_count += kOsInstallScreensCount;
+  }
+  // Account for screens under feature flags.
+  if (features::AreLocalPasswordsEnabledForConsumers()) {
+    screens_count += kLocalPasswordScreenCount;
+  }
 
   test::OobeJS().ExpectEQ(ElementsInPanel(kScreensPanel), screens_count);
 }
@@ -110,7 +123,13 @@ IN_PROC_BROWSER_TEST_F(DebugOverlayOnLoginTest, ExpectScreenButtonsCount) {
   test::OobeJS().ExpectVisible(kDebugButton);
   test::OobeJS().ClickOn(kDebugButton);
   test::OobeJS().CreateVisibilityWaiter(true, kDebugOverlay)->Wait();
-  test::OobeJS().ExpectEQ(ElementsInPanel(kScreensPanel), kLoginScreensCount);
+
+  int screens_count = kLoginScreensCount;
+  // Account for screens under feature flags.
+  if (features::AreLocalPasswordsEnabledForConsumers()) {
+    screens_count += kLocalPasswordScreenCount;
+  }
+  test::OobeJS().ExpectEQ(ElementsInPanel(kScreensPanel), screens_count);
 }
 
 }  // namespace ash

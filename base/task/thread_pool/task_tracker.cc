@@ -25,6 +25,7 @@
 #include "base/task/scoped_set_task_priority_for_current_thread.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/task/thread_pool/job_task_source.h"
 #include "base/threading/sequence_local_storage_map.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
@@ -302,6 +303,10 @@ void TaskTracker::FlushAsyncForTesting(OnceClosure flush_callback) {
 
 void TaskTracker::SetCanRunPolicy(CanRunPolicy can_run_policy) {
   can_run_policy_.store(can_run_policy);
+}
+
+void TaskTracker::WillEnqueueJob(JobTaskSource* task_source) {
+  task_source->WillEnqueue(sequence_nums_.GetNext(), task_annotator_);
 }
 
 bool TaskTracker::WillPostTask(Task* task,

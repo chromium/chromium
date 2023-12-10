@@ -557,6 +557,7 @@ interface FileSystemHandle
     method requestPermission
 interface FileSystemWritableFileStream : WritableStream
     attribute @@toStringTag
+    getter mode
     method constructor
     method seek
     method truncate
@@ -809,12 +810,14 @@ interface MessageEvent : Event
     method initMessageEvent
 interface MessagePort : EventTarget
     attribute @@toStringTag
+    getter onclose
     getter onmessage
     getter onmessageerror
     method close
     method constructor
     method postMessage
     method start
+    setter onclose
     setter onmessage
     setter onmessageerror
 interface Mojo
@@ -1327,6 +1330,9 @@ interface Response
     method formData
     method json
     method text
+interface RestrictionTarget
+    attribute @@toStringTag
+    method constructor
 interface Scheduler
     attribute @@toStringTag
     method constructor
@@ -1411,7 +1417,9 @@ interface StorageManager : EventTarget
     setter onquotachange
 interface Subscriber
     attribute @@toStringTag
+    getter active
     getter signal
+    method addTeardown
     method complete
     method constructor
     method error
@@ -1589,6 +1597,7 @@ interface URL
 interface URLPattern
     static method compareComponent
     attribute @@toStringTag
+    getter hasRegExpGroups
     getter hash
     getter hostname
     getter password

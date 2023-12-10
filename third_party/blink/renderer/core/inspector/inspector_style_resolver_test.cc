@@ -94,7 +94,6 @@ TEST_F(InspectorStyleResolverTest, ParentRules) {
 
 TEST_F(InspectorStyleResolverTest, HighlightPseudoInheritance) {
   ScopedHighlightInheritanceForTest highlight_inheritance(true);
-  ScopedHighlightAPIForTest highlight_api(true);
 
   GetDocument().body()->setInnerHTML(R"HTML(
     <style>

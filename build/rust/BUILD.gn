@@ -23,8 +23,12 @@ if (toolchain_has_rust) {
     # on the C++ side.
     static_library("cxx_cppdeps") {
       sources = [
-        "//third_party/rust/cxx/v1/crate/include/cxx.h",
-        "//third_party/rust/cxx/v1/crate/src/cxx.cc",
+        "//third_party/rust/chromium_crates_io/vendor/cxx-1.0.110/include/cxx.h",
+        "//third_party/rust/chromium_crates_io/vendor/cxx-1.0.110/src/cxx.cc",
+
+        # Our version-independent forwarding header, which we patch cxx.cc to
+        # use since we want it to use an absolute path for its include.
+        "//third_party/rust/cxx/v1/cxx.h",
       ]
 
       defines = [ "RUST_CXX_NO_EXCEPTIONS" ]
@@ -87,4 +91,11 @@ config("panic_immediate_abort") {
       "feature=\"panic_immediate_abort\"",
     ]
   }
+}
+
+config("is_gtest_unittests") {
+  rustflags = [
+    "--cfg",
+    "is_gtest_unittests",
+  ]
 }

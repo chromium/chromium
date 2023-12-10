@@ -76,6 +76,8 @@ class BrowserPolicyConnectorAsh : public ChromeBrowserPolicyConnector,
             scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
       override;
 
+  void OnBrowserStarted() override;
+
   // Checks whether this devices is under any kind of enterprise management.
   bool IsDeviceEnterpriseManaged() const override;
 

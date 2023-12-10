@@ -7,6 +7,7 @@
 #import "base/apple/foundation_util.h"
 #import "base/functional/bind.h"
 #import "base/task/sequenced_task_runner.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/tabs/model/inactive_tabs/features.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/inactive_tabs_button_ui_swift.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/inactive_tabs_preamble_header.h"
@@ -45,6 +46,8 @@ constexpr base::TimeDelta kInactiveTabsHeaderAnimationDuration =
   return _inactiveTabsCount == 0;
 }
 
+// TODO(crbug.com/1504112): Remove this method when the compositional layout is
+// fully landed.
 - (CGSize)collectionView:(UICollectionView*)collectionView
                              layout:
                                  (UICollectionViewLayout*)collectionViewLayout
@@ -136,6 +139,26 @@ constexpr base::TimeDelta kInactiveTabsHeaderAnimationDuration =
   [super createRegistrations];
 }
 
+- (TabsSectionHeaderType)tabsSectionHeaderTypeForMode:(TabGridMode)mode {
+  if (mode == TabGridModeNormal) {
+    if (!IsInactiveTabsAvailable()) {
+      return TabsSectionHeaderType::kNone;
+    }
+    if (self.isClosingAllOrUndoRunning) {
+      return TabsSectionHeaderType::kNone;
+    }
+    if (_inactiveTabsHeaderHideAnimationInProgress) {
+      return TabsSectionHeaderType::kAnimatingOut;
+    }
+    if (_inactiveTabsCount == 0) {
+      return TabsSectionHeaderType::kNone;
+    }
+    return TabsSectionHeaderType::kInactiveTabs;
+  }
+
+  return [super tabsSectionHeaderTypeForMode:mode];
+}
+
 #pragma mark - InactiveTabsInfoConsumer
 
 - (void)updateInactiveTabsCount:(NSInteger)count {
@@ -144,6 +167,9 @@ constexpr base::TimeDelta kInactiveTabsHeaderAnimationDuration =
   }
   NSInteger oldCount = _inactiveTabsCount;
   _inactiveTabsCount = count;
+
+  // Update the layout.
+  [self updateTabsSectionHeaderType];
 
   // Update the header.
   if (oldCount == 0) {
@@ -197,6 +223,8 @@ constexpr base::TimeDelta kInactiveTabsHeaderAnimationDuration =
   // Keep a sizing header.
   static InactiveTabsButtonHeader* gHeader =
       [[InactiveTabsButtonHeader alloc] init];
+  gHeader.tabGridCompositionalLayoutEnabled =
+      IsTabGridCompositionalLayoutEnabled();
 
   // Configure it.
   [gHeader configureWithDaysThreshold:_inactiveTabsDaysThreshold];
@@ -270,6 +298,7 @@ constexpr base::TimeDelta kInactiveTabsHeaderAnimationDuration =
         [self.collectionView.collectionViewLayout invalidateLayout];
       }
       completion:^(BOOL finished) {
+        header.hidden = YES;
         self->_inactiveTabsHeaderHideAnimationInProgress = NO;
         // Update the header to make it entirely disappear once the animation is
         // done. This is done after a delay because the completion can be called
@@ -327,6 +356,8 @@ constexpr base::TimeDelta kInactiveTabsHeaderAnimationDuration =
 
 // Configures the Inactive Tabs Button header according to the current state.
 - (void)configureInactiveTabsButtonHeader:(InactiveTabsButtonHeader*)header {
+  header.tabGridCompositionalLayoutEnabled =
+      IsTabGridCompositionalLayoutEnabled();
   header.parent = self;
   __weak __typeof(self) weakSelf = self;
   header.buttonAction = ^{

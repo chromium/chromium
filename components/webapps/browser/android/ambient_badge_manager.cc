@@ -8,9 +8,6 @@
 #include <string>
 
 #include "base/feature_list.h"
-#include "components/infobars/content/content_infobar_manager.h"
-#include "components/infobars/core/infobar.h"
-#include "components/infobars/core/infobar_delegate.h"
 #include "components/messages/android/messages_feature.h"
 #include "components/prefs/pref_service.h"
 #include "components/segmentation_platform/public/constants.h"
@@ -21,7 +18,6 @@
 #include "components/webapps/browser/android/ambient_badge_metrics.h"
 #include "components/webapps/browser/android/app_banner_manager_android.h"
 #include "components/webapps/browser/android/install_prompt_prefs.h"
-#include "components/webapps/browser/android/installable/installable_ambient_badge_infobar_delegate.h"
 #include "components/webapps/browser/android/shortcut_info.h"
 #include "components/webapps/browser/banners/app_banner_settings_helper.h"
 #include "components/webapps/browser/features.h"
@@ -71,8 +67,6 @@ void AmbientBadgeManager::MaybeShow(
   show_banner_callback_ = std::move(show_banner_callback);
 
   if (!base::FeatureList::IsEnabled(
-          features::kInstallableAmbientBadgeInfoBar) &&
-      !base::FeatureList::IsEnabled(
           features::kInstallableAmbientBadgeMessage)) {
     return;
   }
@@ -118,20 +112,6 @@ void AmbientBadgeManager::BadgeIgnored() {
 
 void AmbientBadgeManager::HideAmbientBadge() {
   message_controller_.DismissMessage();
-  infobars::ContentInfoBarManager* infobar_manager =
-      webapps::WebappsClient::Get()->GetInfoBarManagerForWebContents(
-          web_contents_.get());
-  if (infobar_manager == nullptr) {
-    return;
-  }
-
-  infobars::InfoBar* ambient_badge_infobar =
-      InstallableAmbientBadgeInfoBarDelegate::GetVisibleAmbientBadgeInfoBar(
-          infobar_manager);
-
-  if (ambient_badge_infobar) {
-    infobar_manager->RemoveInfoBar(ambient_badge_infobar);
-  }
 }
 
 void AmbientBadgeManager::UpdateState(State state) {
@@ -296,15 +276,7 @@ bool AmbientBadgeManager::ShouldMessageBeBlockedByGuardrail() {
 }
 
 void AmbientBadgeManager::ShowAmbientBadge() {
-  infobars::ContentInfoBarManager* infobar_manager =
-      webapps::WebappsClient::Get()->GetInfoBarManagerForWebContents(
-          web_contents_.get());
-  bool infobar_visible =
-      infobar_manager &&
-      InstallableAmbientBadgeInfoBarDelegate::GetVisibleAmbientBadgeInfoBar(
-          infobar_manager);
-
-  if (infobar_visible || message_controller_.IsMessageEnqueued()) {
+  if (message_controller_.IsMessageEnqueued()) {
     return;
   }
 
@@ -330,11 +302,6 @@ void AmbientBadgeManager::ShowAmbientBadge() {
     message_controller_.EnqueueMessage(
         web_contents_.get(), app_name_, a2hs_params_->primary_icon,
         a2hs_params_->HasMaskablePrimaryIcon(), url);
-  } else {
-    InstallableAmbientBadgeInfoBarDelegate::Create(
-        web_contents_.get(), weak_factory_.GetWeakPtr(), app_name_,
-        a2hs_params_->primary_icon, a2hs_params_->HasMaskablePrimaryIcon(),
-        url);
   }
 }
 

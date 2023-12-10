@@ -4,10 +4,10 @@
 
 #include <limits>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/oom.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/compiler_specific.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/numerics/checked_math.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/shim/allocator_shim.h"
+#include "partition_alloc/oom.h"
+#include "partition_alloc/partition_alloc_base/compiler_specific.h"
+#include "partition_alloc/partition_alloc_base/numerics/checked_math.h"
+#include "partition_alloc/shim/allocator_shim.h"
 
 #include <dlfcn.h>
 #include <malloc.h>
@@ -117,6 +117,7 @@ const AllocatorDispatch AllocatorDispatch::default_dispatch = {
     &GlibcRealloc,         /* realloc_function */
     &GlibcFree,            /* free_function */
     &GlibcGetSizeEstimate, /* get_size_estimate_function */
+    nullptr,               /* good_size_function */
     nullptr,               /* claimed_address */
     nullptr,               /* batch_malloc_function */
     nullptr,               /* batch_free_function */

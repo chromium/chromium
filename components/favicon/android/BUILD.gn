@@ -12,6 +12,7 @@ android_library("java") {
     "//build/android:build_java",
     "//components/browser_ui/util/android:java",
     "//content/public/android:content_full_java",
+    "//net/android:net_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/jni_zero:jni_zero_java",
     "//url:gurl_java",

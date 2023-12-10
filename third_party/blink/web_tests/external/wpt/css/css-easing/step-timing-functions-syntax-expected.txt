@@ -3,17 +3,5 @@ This is a testharness.js-based test.
   assert_equals: serialization should be canonical expected "steps(1, start)" but got "step-start"
 [FAIL] e.style['animation-timing-function'] = "step-end" should set the property value
   assert_equals: serialization should be canonical expected "steps(1)" but got "step-end"
-[PASS] e.style['animation-timing-function'] = "steps(1, start)" should set the property value
-[PASS] e.style['animation-timing-function'] = "steps(1, end)" should set the property value
-[PASS] e.style['animation-timing-function'] = "steps(1, jump-start)" should set the property value
-[PASS] e.style['animation-timing-function'] = "steps(1, jump-end)" should set the property value
-[PASS] e.style['animation-timing-function'] = "steps(1, jump-both)" should set the property value
-[PASS] e.style['animation-timing-function'] = "steps(2, jump-none)" should set the property value
-[PASS] e.style['animation-timing-function'] = "steps(0, start)" should not set the property value
-[PASS] e.style['animation-timing-function'] = "steps(0, end)" should not set the property value
-[PASS] e.style['animation-timing-function'] = "steps(0, jump-start)" should not set the property value
-[PASS] e.style['animation-timing-function'] = "steps(0, jump-end)" should not set the property value
-[PASS] e.style['animation-timing-function'] = "steps(0, jump-both)" should not set the property value
-[PASS] e.style['animation-timing-function'] = "steps(1, jump-none)" should not set the property value
 Harness: the test ran to completion.
 

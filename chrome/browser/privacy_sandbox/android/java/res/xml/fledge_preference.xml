@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+Copyright 2022 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
+        android:key="fledge_toggle"
+        android:title="@string/settings_fledge_page_toggle_label"
+        android:summary="@string/settings_fledge_page_toggle_sub_label" />
+
+    <org.chromium.chrome.browser.privacy_sandbox.PreferenceCategoryWithClickableSummary
+        android:key="fledge_heading"
+        android:title="@string/settings_fledge_page_current_sites_heading"
+        android:summary="@string/settings_fledge_page_current_sites_description" />
+
+    <PreferenceCategory
+        android:key="current_fledge_sites"
+        android:layout="@layout/preference_category_no_title_or_padding" />
+
+    <org.chromium.components.browser_ui.settings.TextMessagePreference
+        android:key="fledge_disabled"
+        android:summary="@string/settings_fledge_page_current_sites_description_disabled" />
+
+    <org.chromium.components.browser_ui.settings.TextMessagePreference
+        android:key="fledge_empty"
+        android:summary="@string/settings_fledge_page_current_sites_description_empty" />
+
+    <org.chromium.components.browser_ui.settings.ChromeBasePreference
+        android:key="fledge_all_sites"
+        android:title="@string/settings_fledge_page_see_all_sites_label"
+        android:fragment="org.chromium.chrome.browser.privacy_sandbox.FledgeAllSitesFragment"
+        app:userAction="Settings.PrivacySandbox.Fledge.AllSitesOpened"/>
+
+    <org.chromium.components.browser_ui.settings.ChromeBasePreference
+        android:key="fledge_blocked_sites"
+        android:fragment="org.chromium.chrome.browser.privacy_sandbox.FledgeBlockedSitesFragment"
+        android:title="@string/settings_fledge_page_blocked_sites_heading"
+        app:userAction="Settings.PrivacySandbox.Fledge.BlockedSitesOpened" />
+
+    <org.chromium.components.browser_ui.settings.ClickableSpansTextMessagePreference
+        android:key="fledge_page_footer"
+        android:summary="@string/settings_fledge_page_footer"/>
+
+</PreferenceScreen>

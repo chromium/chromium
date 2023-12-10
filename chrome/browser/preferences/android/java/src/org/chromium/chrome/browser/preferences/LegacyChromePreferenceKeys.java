@@ -57,11 +57,6 @@ public class LegacyChromePreferenceKeys {
                 ChromePreferenceKeys.FIRST_RUN_FLOW_SIGNIN_SETUP,
                 ChromePreferenceKeys.FIRST_RUN_LIGHTWEIGHT_FLOW_COMPLETE,
                 ChromePreferenceKeys.FIRST_RUN_SKIP_WELCOME_PAGE,
-                ChromePreferenceKeys.FLAGS_CACHED_ADAPTIVE_TOOLBAR_ENABLED,
-                ChromePreferenceKeys.FLAGS_CACHED_COMMAND_LINE_ON_NON_ROOTED_ENABLED,
-                ChromePreferenceKeys.FLAGS_CACHED_GRID_TAB_SWITCHER_ENABLED,
-                ChromePreferenceKeys.FLAGS_CACHED_START_SURFACE_ENABLED,
-                ChromePreferenceKeys.FLAGS_CACHED_TAB_GROUPS_ANDROID_ENABLED,
                 ChromePreferenceKeys.FONT_USER_FONT_SCALE_FACTOR,
                 ChromePreferenceKeys.FONT_USER_SET_FORCE_ENABLE_ZOOM,
                 ChromePreferenceKeys.HISTORY_SHOW_HISTORY_INFO,
@@ -135,8 +130,7 @@ public class LegacyChromePreferenceKeys {
                 ChromePreferenceKeys.UI_THEME_SETTING,
                 ChromePreferenceKeys.VERIFIED_DIGITAL_ASSET_LINKS,
                 ChromePreferenceKeys.WEBAPK_UNINSTALLED_PACKAGES,
-                ChromePreferenceKeys.KEY_ZERO_SUGGEST_LIST_SIZE
-        );
+                ChromePreferenceKeys.KEY_ZERO_SUGGEST_LIST_SIZE);
     }
 
     static List<KeyPrefix> getPrefixesInUse() {
@@ -155,7 +149,6 @@ public class LegacyChromePreferenceKeys {
                 ChromePreferenceKeys.KEY_ZERO_SUGGEST_IS_DELETABLE_PREFIX,
                 ChromePreferenceKeys.KEY_ZERO_SUGGEST_IS_STARRED_PREFIX,
                 ChromePreferenceKeys.KEY_ZERO_SUGGEST_POST_CONTENT_TYPE_PREFIX,
-                ChromePreferenceKeys.KEY_ZERO_SUGGEST_POST_CONTENT_DATA_PREFIX
-        );
+                ChromePreferenceKeys.KEY_ZERO_SUGGEST_POST_CONTENT_DATA_PREFIX);
     }
 }

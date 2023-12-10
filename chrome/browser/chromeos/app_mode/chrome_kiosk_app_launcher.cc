@@ -27,7 +27,7 @@
 #include "extensions/common/manifest_handlers/offline_enabled_info.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
+#include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -101,21 +101,11 @@ void ChromeKioskAppLauncher::LaunchApp(LaunchCallback callback) {
 
   SYSLOG(INFO) << "Attempt to launch app.";
 
-  if (base::FeatureList::IsEnabled(features::kKioskEnableAppService)) {
-    app_service_launcher_ = std::make_unique<KioskAppServiceLauncher>(profile_);
-    app_service_launcher_->CheckAndMaybeLaunchApp(
-        extension->id(),
-        base::BindOnce(&ChromeKioskAppLauncher::OnAppServiceAppLaunched,
-                       weak_ptr_factory_.GetWeakPtr()));
-  } else {
-    // Always open the app in a window.
-    ::OpenApplication(
-        profile_,
-        apps::AppLaunchParams(
-            extension->id(), apps::LaunchContainer::kLaunchContainerWindow,
-            WindowOpenDisposition::NEW_WINDOW, apps::LaunchSource::kFromKiosk));
-  }
-
+  app_service_launcher_ = std::make_unique<KioskAppServiceLauncher>(profile_);
+  app_service_launcher_->CheckAndMaybeLaunchApp(
+      extension->id(),
+      base::BindOnce(&ChromeKioskAppLauncher::OnAppServiceAppLaunched,
+                     weak_ptr_factory_.GetWeakPtr()));
   WaitForAppWindow();
 }
 
@@ -151,9 +141,9 @@ void ChromeKioskAppLauncher::MaybeUpdateAppData() {
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  ash::KioskAppManager::Get()->ClearAppData(app_id_);
-  ash::KioskAppManager::Get()->UpdateAppDataFromProfile(app_id_, profile_,
-                                                        nullptr);
+  ash::KioskChromeAppManager::Get()->ClearAppData(app_id_);
+  ash::KioskChromeAppManager::Get()->UpdateAppDataFromProfile(app_id_, profile_,
+                                                              nullptr);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 

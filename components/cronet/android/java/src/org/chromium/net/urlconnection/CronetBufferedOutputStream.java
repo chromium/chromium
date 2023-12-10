@@ -36,15 +36,15 @@ final class CronetBufferedOutputStream extends CronetOutputStream {
      * @param contentLength The content length of the request body. It must not
      *            be smaller than 0 or bigger than {@link Integer.MAX_VALUE}.
      */
-    CronetBufferedOutputStream(final CronetHttpURLConnection connection,
-            final long contentLength) {
+    CronetBufferedOutputStream(final CronetHttpURLConnection connection, final long contentLength) {
         if (connection == null) {
             throw new NullPointerException("Argument connection cannot be null.");
         }
 
         if (contentLength > Integer.MAX_VALUE) {
-            throw new IllegalArgumentException("Use setFixedLengthStreamingMode()"
-                + " or setChunkedStreamingMode() for requests larger than 2GB.");
+            throw new IllegalArgumentException(
+                    "Use setFixedLengthStreamingMode()"
+                            + " or setChunkedStreamingMode() for requests larger than 2GB.");
         }
         if (contentLength < 0) {
             throw new IllegalArgumentException("Content length < 0.");
@@ -83,19 +83,17 @@ final class CronetBufferedOutputStream extends CronetOutputStream {
         mBuffer.put(buffer, offset, count);
     }
 
-    /**
-     * Ensures that {@code count} bytes can be written to the internal buffer.
-     */
+    /** Ensures that {@code count} bytes can be written to the internal buffer. */
     private void ensureCanWrite(int count) throws IOException {
-        if (mInitialContentLength != -1
-                && mBuffer.position() + count > mInitialContentLength) {
+        if (mInitialContentLength != -1 && mBuffer.position() + count > mInitialContentLength) {
             // Error message is to match that of the default implementation.
-            throw new ProtocolException("exceeded content-length limit of "
-                    + mInitialContentLength + " bytes");
+            throw new ProtocolException(
+                    "exceeded content-length limit of " + mInitialContentLength + " bytes");
         }
         if (mConnected) {
-            throw new IllegalStateException("Use setFixedLengthStreamingMode() or "
-                    + "setChunkedStreamingMode() for writing after connect");
+            throw new IllegalStateException(
+                    "Use setFixedLengthStreamingMode() or "
+                            + "setChunkedStreamingMode() for writing after connect");
         }
         if (mInitialContentLength != -1) {
             // If mInitialContentLength is known, the buffer should not grow.
@@ -114,9 +112,7 @@ final class CronetBufferedOutputStream extends CronetOutputStream {
 
     // Below are CronetOutputStream implementations:
 
-    /**
-     * Sets {@link #mConnected} to {@code true}.
-     */
+    /** Sets {@link #mConnected} to {@code true}. */
     @Override
     void setConnected() throws IOException {
         mConnected = true;

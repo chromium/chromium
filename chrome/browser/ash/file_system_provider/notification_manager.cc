@@ -60,8 +60,8 @@ void NotificationManager::HideUnresponsiveNotification(int id) {
   }
 }
 
-void NotificationManager::Click(const absl::optional<int>& button_index,
-                                const absl::optional<std::u16string>& reply) {
+void NotificationManager::Click(const std::optional<int>& button_index,
+                                const std::optional<std::u16string>& reply) {
   if (!button_index)
     return;
 
@@ -75,7 +75,8 @@ void NotificationManager::Close(bool by_user) {
 void NotificationManager::OnAppImageUpdated(
     const std::string& id,
     const gfx::ImageSkia& image,
-    const absl::optional<gfx::ImageSkia>& badge_image) {
+    bool is_placeholder_icon,
+    const std::optional<gfx::ImageSkia>& badge_image) {
   extension_icon_ = ui::ImageModel::FromImageSkia(image);
   ShowNotification();
 }

@@ -64,6 +64,8 @@ static_library("metrics") {
     "//components/optimization_guide/core",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/prefs",
+    "//services/metrics/public/cpp:metrics_cpp",
+    "//services/metrics/public/cpp:ukm_builders",
   ]
 }
 
@@ -232,6 +234,7 @@ static_library("shopping_service") {
     "//components/strings:components_strings_grit",
     "//components/sync/service",
     "//components/unified_consent",
+    "//services/metrics/public/cpp:metrics_cpp",
     "//services/network/public/cpp:cpp",
     "//ui/base",
     "//url:url",
@@ -320,6 +323,8 @@ source_set("shopping_service_unit_tests") {
     "webui:unit_tests",
     "//components/history/core/browser",
     "//components/search",
+    "//components/ukm:test_support",
+    "//services/metrics/public/cpp:ukm_builders",
   ]
 }
 
@@ -333,19 +338,6 @@ source_set("pref_names") {
     "//base",
     "//components/pref_registry",
     "//components/prefs",
-  ]
-}
-
-source_set("country_code_checker") {
-  sources = [
-    "country_code_checker.cc",
-    "country_code_checker.h",
-  ]
-  deps = [
-    # TODO(crbug.com/1489531): We don't need base here after this bug is resolved.
-    "//base",
-    "//components/country_codes",
-    "//components/variations/service",
   ]
 }
 

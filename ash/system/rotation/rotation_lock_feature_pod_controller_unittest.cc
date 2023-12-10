@@ -15,9 +15,9 @@
 
 namespace ash {
 
-class RotationLockFeaturePodControllerQsRevampTest : public AshTestBase {
+class RotationLockFeaturePodControllerTest : public AshTestBase {
  public:
-  RotationLockFeaturePodControllerQsRevampTest() = default;
+  RotationLockFeaturePodControllerTest() = default;
   // AshTestBase:
   void SetUp() override {
     // The Display used for testing is not an internal display. This flag
@@ -44,20 +44,20 @@ class RotationLockFeaturePodControllerQsRevampTest : public AshTestBase {
 };
 
 // Tests that when the tile is initially created it is not visible.
-TEST_F(RotationLockFeaturePodControllerQsRevampTest, CreateTile) {
+TEST_F(RotationLockFeaturePodControllerTest, CreateTile) {
   SetUpController();
   EXPECT_FALSE(feature_tile_->GetVisible());
 }
 
 // Tests that the button is created visible when tablet mode is enabled.
-TEST_F(RotationLockFeaturePodControllerQsRevampTest, CreateTileInTabletMode) {
+TEST_F(RotationLockFeaturePodControllerTest, CreateTileInTabletMode) {
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
   SetUpController();
   EXPECT_TRUE(feature_tile_->GetVisible());
 }
 
 // Tests that enabling tablet mode changes the tile visibility.
-TEST_F(RotationLockFeaturePodControllerQsRevampTest,
+TEST_F(RotationLockFeaturePodControllerTest,
        TileVisibilityChangesDuringTabletMode) {
   SetUpController();
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
@@ -74,7 +74,7 @@ TEST_F(RotationLockFeaturePodControllerQsRevampTest,
   EXPECT_TRUE(feature_tile_->GetVisible());
 }
 
-TEST_F(RotationLockFeaturePodControllerQsRevampTest, OnIconPressed) {
+TEST_F(RotationLockFeaturePodControllerTest, OnIconPressed) {
   SetUpController();
   TabletModeController* tablet_mode_controller =
       Shell::Get()->tablet_mode_controller();
@@ -100,7 +100,7 @@ TEST_F(RotationLockFeaturePodControllerQsRevampTest, OnIconPressed) {
   tablet_mode_controller->SetEnabledForTest(false);
 }
 
-TEST_F(RotationLockFeaturePodControllerQsRevampTest, IconUMATracking) {
+TEST_F(RotationLockFeaturePodControllerTest, IconUMATracking) {
   SetUpController();
 
   // No metrics logged before clicking on any views.

@@ -272,27 +272,25 @@ void ContentIndexProviderImpl::DidGetItem(
 
 void ContentIndexProviderImpl::GetAllItems(MultipleItemCallback callback) {
   // Get the number of Storage Paritions.
-  std::vector<content::StoragePartition*> storage_paritions;
-  profile_->ForEachLoadedStoragePartition(base::BindRepeating(
-      [](std::vector<content::StoragePartition*>* storage_paritions,
-         content::StoragePartition* storage_partition) {
-        storage_paritions->push_back(storage_partition);
-      },
-      &storage_paritions));
-  DCHECK(!storage_paritions.empty());
+  std::vector<content::StoragePartition*> storage_partitions;
+  profile_->ForEachLoadedStoragePartition(
+      [&](content::StoragePartition* partition) {
+        storage_partitions.push_back(partition);
+      });
+  DCHECK(!storage_partitions.empty());
 
   auto item_list = std::make_unique<OfflineItemList>();
   OfflineItemList* item_list_ptr = item_list.get();
 
   // Get the all entries from every partition.
   auto barrier_closure = base::BarrierClosure(
-      storage_paritions.size(),
+      storage_partitions.size(),
       base::BindOnce(
           &ContentIndexProviderImpl::DidGetAllEntriesAcrossStorageParitions,
           weak_ptr_factory_.GetWeakPtr(), std::move(item_list),
           std::move(callback)));
 
-  for (auto* storage_partition : storage_paritions) {
+  for (auto* storage_partition : storage_partitions) {
     if (!storage_partition || !storage_partition->GetContentIndexContext()) {
       base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, barrier_closure);

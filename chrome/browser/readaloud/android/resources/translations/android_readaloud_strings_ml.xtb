@@ -2,11 +2,14 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ml">
 <translation id="1178581264944972037">താൽക്കാലികമായി നിർത്തുക</translation>
-<translation id="2558806128245168542">തിരികെ പോകുക</translation>
-<translation id="3523426587027570423">“ഈ പേജ് കേൾക്കുക” അടയ്ക്കാൻ ടാപ്പ് ചെയ്യുക.</translation>
+<translation id="1921351128855867012">വേഗത്തിൽ <ph name="NUMBER_OF_SECONDS" /> സെക്കൻഡ് മുന്നോട്ട് നീക്കുക</translation>
+<translation id="1984328900355667246">പ്ലേബാക്ക് ലഭ്യമല്ല</translation>
+<translation id="3023502830214299618">നിർഭാഗ്യവശാൽ, ഈ പേജിന് ഇപ്പോൾ പ്ലേബാക്ക് ലഭ്യമല്ല. പിന്നീട് വീണ്ടും ശ്രമിക്കുക.</translation>
+<translation id="3807208219231826020">പ്ലേബാക്ക് സ്‌ക്രബ് ചെയ്യുക</translation>
+<translation id="385051799172605136">പിന്നോട്ട്</translation>
 <translation id="4431240646217225907">ടെക്സ്റ്റ് ഹൈലൈറ്റ് ചെയ്യലും സ്വയമേവ സ്ക്രോൾ ചെയ്യലും</translation>
 <translation id="4654641641922242357">“ഈ പേജ് കേൾക്കുക” പ്ലേയർ.</translation>
-<translation id="4731877163452936634">പ്ലേബാക്ക് വേഗത: <ph name="PLAYBACK_SPEED" />. മാറ്റാൻ ക്ലിക്ക് ചെയ്യുക.</translation>
+<translation id="4872475766448853257"><ph name="NUMBER_OF_SECONDS" /> സെക്കൻഡ് പുറകോട്ട് പോകുക</translation>
 <translation id="5234971936051226002">“ഈ പേജ് കേൾക്കുക” പ്ലേയർ ചെറുതാക്കി.</translation>
 <translation id="5596627076506792578">കൂടുതൽ‍ ഓപ്‌ഷനുകൾ</translation>
 <translation id="6315170314923504164">വോയ്സ്</translation>
@@ -15,8 +18,8 @@
 <translation id="6831043979455480757">വിവർത്തനം ചെയ്യുക</translation>
 <translation id="6846298663435243399">ലോഡുചെയ്യുന്നു...</translation>
 <translation id="7587250070160020374">Chrome ഇപ്പോൾ പ്ലേ ചെയ്യുന്നു</translation>
-<translation id="7945822420239537236"><ph name="NUMBER_OF_SECONDS" /> സെക്കൻഡ് മുന്നിലേക്ക് നീക്കുക</translation>
-<translation id="7972866381678406344"><ph name="NUMBER_OF_SECONDS" /> സെക്കൻഡ് പിന്നിലേക്ക് നീക്കുക</translation>
 <translation id="8136852699834914183">ഈ പേജിന് പ്ലേബാക്ക് ലഭ്യമല്ല.</translation>
+<translation id="8264989794233974275">വേഗത <ph name="PLAYBACK_SPEED" />x കൂട്ടുക/കുറയ്‌ക്കുക.</translation>
+<translation id="8407011429883244666">പ്ലേയർ അടയ്ക്കുക.</translation>
 <translation id="8953618380150219653">“ഈ പേജ് കേൾക്കുക” പ്ലേയർ, മുഴുവൻ ഉയരത്തിൽ തുറന്നു.</translation>
 </translationbundle>

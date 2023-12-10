@@ -18,12 +18,7 @@ static inline cc::PaintFlags::FilterQuality FilterQualityForPaint(
                                        : cc::PaintFlags::FilterQuality::kNone;
 }
 
-GraphicsContextState::GraphicsContextState()
-    : text_drawing_mode_(kTextModeFill),
-      interpolation_quality_(kInterpolationDefault),
-      dynamic_range_limit_(cc::PaintFlags::DynamicRangeLimit::kHigh),
-      save_count_(0),
-      should_antialias_(true) {
+GraphicsContextState::GraphicsContextState() {
   stroke_flags_.setStyle(cc::PaintFlags::kStroke_Style);
   stroke_flags_.setStrokeWidth(SkFloatToScalar(stroke_data_.Thickness()));
   stroke_flags_.setStrokeCap(cc::PaintFlags::kDefault_Cap);
@@ -115,8 +110,7 @@ void GraphicsContextState::SetInterpolationQuality(
   fill_flags_.setFilterQuality(FilterQualityForPaint(quality));
 }
 
-void GraphicsContextState::SetDynamicRangeLimit(
-    cc::PaintFlags::DynamicRangeLimit limit) {
+void GraphicsContextState::SetDynamicRangeLimit(DynamicRangeLimit limit) {
   dynamic_range_limit_ = limit;
   stroke_flags_.setDynamicRangeLimit(limit);
   fill_flags_.setDynamicRangeLimit(limit);

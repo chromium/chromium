@@ -19,9 +19,7 @@ import java.util.List;
 final class ChromeBluetoothScanFilter {
     private ScanFilter mScanFilter;
 
-    /**
-     * Constructs a ChromeBluetoothScanFilter
-     */
+    /** Constructs a ChromeBluetoothScanFilter */
     public ChromeBluetoothScanFilter(ScanFilter filter) {
         mScanFilter = filter;
     }

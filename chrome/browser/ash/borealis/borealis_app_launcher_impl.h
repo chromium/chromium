@@ -39,4 +39,4 @@ class BorealisAppLauncherImpl : public BorealisAppLauncher {
 
 }  // namespace borealis
 
-#endif  // CHROME_BROWSER_ASH_BOREALIS_BOREALIS_APP_LAUNCHER_H_
+#endif  // CHROME_BROWSER_ASH_BOREALIS_BOREALIS_APP_LAUNCHER_IMPL_H_

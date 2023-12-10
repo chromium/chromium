@@ -13,7 +13,6 @@ import static org.mockito.Mockito.when;
 
 import android.os.Bundle;
 
-import androidx.appcompat.widget.SwitchCompat;
 import androidx.fragment.app.testing.FragmentScenario;
 
 import org.junit.After;
@@ -30,6 +29,7 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
+import org.chromium.components.browser_ui.widget.MaterialSwitchWithText;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserSelectableType;
 
@@ -51,7 +51,7 @@ public class HistorySyncFragmentTest {
     @Captor private ArgumentCaptor<Set<Integer>> mSetCaptor;
 
     private FragmentScenario mScenario;
-    private SwitchCompat mHistorySyncButton;
+    private MaterialSwitchWithText mHistorySyncButton;
     private final UserActionTester mActionTester = new UserActionTester();
 
     @Before

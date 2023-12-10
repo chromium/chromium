@@ -1,0 +1,7 @@
+WebView textSize:16.00 style:0 bundle:[display="", htmlTag="#document"]
+++View textSize:16.00 style:0 bundle:[display="block", htmlTag="body"]
+++++View textSize:16.00 style:0 bundle:[display="inline", htmlTag="time"]
+++++++TextView text:"10:00" textSize:16.00 style:0 bundle:[display="", htmlTag=""]
+++++TextView text:" " textSize:16.00 style:0 bundle:[display="", htmlTag=""]
+++++View textSize:16.00 style:0 bundle:[datetime="2015-02-14 20:00", display="inline", htmlTag="time"]
+++++++TextView text:"Valentines day" textSize:16.00 style:0 bundle:[display="", htmlTag=""]

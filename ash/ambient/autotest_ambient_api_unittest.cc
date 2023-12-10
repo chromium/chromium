@@ -4,6 +4,7 @@
 
 #include "ash/public/cpp/autotest_ambient_api.h"
 
+#include <optional>
 #include <string>
 
 #include "ash/ambient/ambient_controller.h"
@@ -32,7 +33,6 @@
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -51,7 +51,7 @@ class AutotestAmbientApiTest : public AmbientAshTestBase {
       ASSERT_FALSE(web_view->GetVisibleURL().is_empty());
       base::Value::Dict url_fragment_dict;
       url_fragment_dict.Set("playback_started", success);
-      absl::optional<std::string> url_fragment =
+      std::optional<std::string> url_fragment =
           base::WriteJson(url_fragment_dict);
       CHECK(url_fragment);
       web_view->Navigate(
@@ -64,7 +64,6 @@ class AutotestAmbientApiTest : public AmbientAshTestBase {
         delay);
   }
 
-  data_decoder::test::InProcessDataDecoder data_decoder_;
   base::test::TestFuture<void> completion_;
   base::test::TestFuture<void> timeout_;
   base::test::TestFuture<std::string> error_;

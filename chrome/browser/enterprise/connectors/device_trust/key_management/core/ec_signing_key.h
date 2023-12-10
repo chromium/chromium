@@ -21,7 +21,7 @@ class ECSigningKeyProvider : public crypto::UnexportableKeyProvider {
   ~ECSigningKeyProvider() override;
 
   // crypto::UnexportableKeyProvider:
-  absl::optional<crypto::SignatureVerifier::SignatureAlgorithm> SelectAlgorithm(
+  std::optional<crypto::SignatureVerifier::SignatureAlgorithm> SelectAlgorithm(
       base::span<const crypto::SignatureVerifier::SignatureAlgorithm>
           acceptable_algorithms) override;
   std::unique_ptr<crypto::UnexportableSigningKey> GenerateSigningKeySlowly(

@@ -29,7 +29,6 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/rand_util.h"
 #include "base/task/current_thread.h"
@@ -482,7 +481,6 @@ int UDPSocketPosix::InternalConnect(const IPEndPoint& address) {
   // else connect() does the DatagramSocket::DEFAULT_BIND
 
   if (rv < 0) {
-    base::UmaHistogramSparse("Net.UdpSocketRandomBindErrorCode", -rv);
     return rv;
   }
 

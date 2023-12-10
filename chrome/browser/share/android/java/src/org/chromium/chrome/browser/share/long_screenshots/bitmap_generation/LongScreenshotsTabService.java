@@ -81,17 +81,25 @@ public class LongScreenshotsTabService implements NativePaintPreviewServiceProvi
             return;
         }
 
-        LongScreenshotsTabServiceJni.get().captureTabAndroid(mNativeLongScreenshotsTabService,
-                tab.getId(), tab.getUrl(), tab.getWebContents(), clipRect.left, clipRect.top,
-                clipRect.width(), clipRect.height(), inMemory);
+        LongScreenshotsTabServiceJni.get()
+                .captureTabAndroid(
+                        mNativeLongScreenshotsTabService,
+                        tab.getId(),
+                        tab.getUrl(),
+                        tab.getWebContents(),
+                        clipRect.left,
+                        clipRect.top,
+                        clipRect.width(),
+                        clipRect.height(),
+                        inMemory);
     }
 
     public void longScreenshotsClosed() {
         if (mNativeLongScreenshotsTabService == 0) {
             return;
         }
-        LongScreenshotsTabServiceJni.get().longScreenshotsClosedAndroid(
-                mNativeLongScreenshotsTabService);
+        LongScreenshotsTabServiceJni.get()
+                .longScreenshotsClosedAndroid(mNativeLongScreenshotsTabService);
     }
 
     @Override
@@ -107,10 +115,19 @@ public class LongScreenshotsTabService implements NativePaintPreviewServiceProvi
 
     @NativeMethods
     interface Natives {
-        void captureTabAndroid(long nativeLongScreenshotsTabService, int tabId, GURL url,
-                WebContents webContents, int clipX, int clipY, int clipWidth, int clipHeight,
+        void captureTabAndroid(
+                long nativeLongScreenshotsTabService,
+                int tabId,
+                GURL url,
+                WebContents webContents,
+                int clipX,
+                int clipY,
+                int clipWidth,
+                int clipHeight,
                 boolean inMemory);
+
         void longScreenshotsClosedAndroid(long nativeLongScreenshotsTabService);
+
         void releaseCaptureResultPtr(long captureResultPtr);
     }
 }

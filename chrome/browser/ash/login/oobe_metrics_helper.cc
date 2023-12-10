@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/webui/ash/login/enable_debugging_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/enrollment_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_info_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/hid_detection_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/network_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
@@ -261,7 +262,7 @@ void OobeMetricsHelper::RecordOnboadingComplete(
     base::Time oobe_start_time,
     base::Time onboarding_start_time) {
   for (auto& observer : observers_) {
-    observer.OnOnboadingCompleted();
+    observer.OnOnboardingCompleted();
   }
 
   if (!oobe_start_time.is_null()) {
@@ -283,11 +284,54 @@ void OobeMetricsHelper::RecordOnboadingComplete(
   }
 }
 
+void OobeMetricsHelper::RecordGaiaSignInRequested(
+    GaiaView::GaiaLoginVariant variant) {
+  for (auto& observer : observers_) {
+    observer.OnGaiaSignInRequested(variant);
+  }
+
+  base::UmaHistogramEnumeration("OOBE.GaiaScreen.LoginRequests", variant);
+}
+
+void OobeMetricsHelper::RecordGaiaSignInCompleted(
+    GaiaView::GaiaLoginVariant variant) {
+  for (auto& observer : observers_) {
+    observer.OnGaiaSignInCompleted(variant);
+  }
+
+  base::UmaHistogramEnumeration("OOBE.GaiaScreen.SuccessLoginRequests",
+                                variant);
+}
+
+void OobeMetricsHelper::RecordPreLoginOobeResume(OobeScreenId screen) {
+  for (auto& observer : observers_) {
+    observer.OnPreLoginOobeResumed(screen);
+  }
+}
+
+void OobeMetricsHelper::RecordOnboardingResume(OobeScreenId screen) {
+  for (auto& observer : observers_) {
+    observer.OnOnboardingResumed(screen);
+  }
+}
+
+void OobeMetricsHelper::RecordChoobeResume() {
+  for (auto& observer : observers_) {
+    observer.OnChoobeResumed();
+  }
+}
+
 void OobeMetricsHelper::RecordEnrollingUserType() {
   bool is_consumer = g_browser_process->local_state()->GetBoolean(
       prefs::kOobeIsConsumerSegment);
   base::UmaHistogramBoolean("OOBE.Enrollment.IsUserEnrollingAConsumer",
                             is_consumer);
+}
+
+void OobeMetricsHelper::RecordDeviceRegistered() {
+  for (auto& observer : observers_) {
+    observer.OnDeviceRegistered();
+  }
 }
 
 void OobeMetricsHelper::RecordChromeVersion() {

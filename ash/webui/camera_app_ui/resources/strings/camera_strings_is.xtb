@@ -5,7 +5,6 @@
 <translation id="1076394037877376434">Eyða síðu <ph name="PAGE_NUMBER" /></translation>
 <translation id="1113173431709655881">Myndavélarstilling</translation>
 <translation id="1153190633558910465">Slökkt á línum</translation>
-<translation id="1175958423215084756">Tengill greindist. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213">Síðu <ph name="PAGE_NUMBER" /> var eytt</translation>
 <translation id="1258009455399840361">Snúa um 90 gráður réttsælis</translation>
 <translation id="1417314334557041815">Breyta síðu <ph name="INDEX" /></translation>
@@ -60,14 +59,12 @@
 <translation id="3642192109456033823">Vinnur úr myndskeiði...</translation>
 <translation id="3789724198583203151">Snúa um 90 gráður rangsælis</translation>
 <translation id="3810838688059735925">Myndskeið</translation>
-<translation id="3892148308691398805">Afrita texta</translation>
 <translation id="4060608699153044055">Þú getur ekki tekið upp sökum of lítils geymslurýmis í tækinu. Til að hefja upptöku þarftu fyrst að losa um pláss í tækinu.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
 <translation id="4118525110028899586">Gera hlé á upptöku</translation>
 <translation id="4121305183798804752">Skjal greindist</translation>
 <translation id="414641094616694804">Myndavélin getur ekki breytt upplausn</translation>
 <translation id="4176463684765177261">Óvirkt</translation>
-<translation id="4269820728363426813">Afrita slóð tengils</translation>
 <translation id="428234092390943511">Smámynd síðu</translation>
 <translation id="4349714250734879769">Aðlaga ramma frá Chrome</translation>
 <translation id="4383571725254449280">Prenta afkastaannála</translation>
@@ -144,7 +141,6 @@ Ef ábendingin þín snýr að gæðum mynda eða myndskeiða máttu hengja við
 <translation id="7726641833034062494">Taka upp venjulegt vídeó</translation>
 <translation id="7748344063862150053">Efra, hægra horn skjals</translation>
 <translation id="7933675232020478311">Færist niður og til hægri</translation>
-<translation id="7983668134180549431">Texti greindist.</translation>
 <translation id="8079255378695216066">Ekki tekst að hefja upptöku</translation>
 <translation id="8120146556401698679">Hliðrun, halli og aðdráttur</translation>
 <translation id="8131740175452115882">Staðfesta</translation>
@@ -163,6 +159,7 @@ Ef ábendingin þín snýr að gæðum mynda eða myndskeiða máttu hengja við
 <translation id="8870695351537079478">Ekki tókst að hefja upptöku</translation>
 <translation id="8880167521484863515">4 á móti 3</translation>
 <translation id="8903921497873541725">Auka aðdrátt</translation>
+<translation id="8926890870105777777">Tengjast netinu „<ph name="WIFINAME" />“</translation>
 <translation id="9045010116236796332">Hafðu öll horn skjalsins innan rammans</translation>
 <translation id="9045155556724273246">10 sekúndur</translation>
 <translation id="906331135292332864">Vinnur úr mynd ...</translation>

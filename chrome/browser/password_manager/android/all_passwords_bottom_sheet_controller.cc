@@ -18,7 +18,7 @@
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_driver.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
-#include "components/password_manager/core/browser/password_store_interface.h"
+#include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/gfx/native_widget_types.h"

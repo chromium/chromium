@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/app_mode/kiosk_system_session.h"
 #include <memory>
+#include <optional>
 
 #include "ash/public/cpp/accessibility_controller.h"
 #include "base/memory/weak_ptr.h"
@@ -11,9 +12,9 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/app_mode/app_launch_utils.h"
 #include "chrome/browser/ash/app_mode/crash_recovery_launcher.h"
-#include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_update_service.h"
+#include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_mode_idle_app_name_notification.h"
 #include "chrome/browser/ash/app_mode/metrics/network_connectivity_metrics_service.h"
 #include "chrome/browser/ash/app_mode/metrics/periodic_metrics_service.h"
@@ -30,7 +31,6 @@
 #include "components/user_manager/user.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/manifest_handlers/offline_enabled_info.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -100,7 +100,7 @@ class KioskSystemSession::LacrosWatcher
   }
 
   void OnKioskRelaunchComplete(bool success,
-                               const absl::optional<std::string>& _) {
+                               const std::optional<std::string>& _) {
     recovery_launcher_.reset();
     if (!success) {
       LOG(WARNING) << "Unable to restart kiosk, ending kiosk session";
@@ -120,7 +120,7 @@ class KioskSystemSession::LacrosWatcher
 KioskSystemSession::KioskSystemSession(
     Profile* profile,
     const KioskAppId& kiosk_app_id,
-    const absl::optional<std::string>& app_name)
+    const std::optional<std::string>& app_name)
     : profile_(profile),
       browser_session_(profile),
       kiosk_app_id_(kiosk_app_id),
@@ -158,7 +158,7 @@ void KioskSystemSession::InitForChromeAppKiosk() {
 }
 
 void KioskSystemSession::InitForWebKiosk(
-    const absl::optional<std::string>& app_name) {
+    const std::optional<std::string>& app_name) {
   browser_session_.InitForWebKiosk(app_name);
   StartFloatingAccessibilityMenu();
 
@@ -181,7 +181,7 @@ void KioskSystemSession::InitKioskAppUpdateService(const std::string& app_id) {
   }
 
   // Start to monitor external update from usb stick.
-  KioskAppManager::Get()->MonitorKioskExternalUpdate();
+  KioskChromeAppManager::Get()->MonitorKioskExternalUpdate();
 }
 
 void KioskSystemSession::SetRebootAfterUpdateIfNecessary() {

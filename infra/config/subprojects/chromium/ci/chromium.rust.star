@@ -7,6 +7,7 @@ load("//lib/builder_config.star", "builder_config")
 load("//lib/builders.star", "os", "reclient")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
+load("//lib/gn_args.star", "gn_args")
 
 ci.defaults.set(
     executable = ci.DEFAULT_EXECUTABLE,
@@ -46,6 +47,16 @@ ci.builder(
         ),
         android_config = builder_config.android_config(config = "base_config"),
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "release_try_builder",
+            "minimal_symbols",
+            "reclient",
+            "enable_all_rust_features",
+            "android_builder",
+            "arm",
+        ],
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "Android 32bit",
         short_name = "rel",
@@ -70,6 +81,15 @@ ci.builder(
             target_platform = builder_config.target_platform.ANDROID,
         ),
         android_config = builder_config.android_config(config = "base_config"),
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "debug_builder",
+            "reclient",
+            "enable_all_rust_features",
+            "android_builder",
+            "arm64",
+        ],
     ),
     console_view_entry = consoles.console_view_entry(
         category = "Android 64bit",
@@ -96,6 +116,16 @@ ci.builder(
         ),
         android_config = builder_config.android_config(config = "base_config"),
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "release_try_builder",
+            "minimal_symbols",
+            "reclient",
+            "enable_all_rust_features",
+            "android_builder",
+            "arm64",
+        ],
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "Android 64bit",
         short_name = "rel",
@@ -114,6 +144,14 @@ ci.builder(
             build_config = builder_config.build_config.DEBUG,
             target_bits = 64,
         ),
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "debug_builder",
+            "reclient",
+            "enable_all_rust_features",
+            "x64",
+        ],
     ),
     console_view_entry = consoles.console_view_entry(
         category = "Linux",
@@ -136,6 +174,15 @@ ci.builder(
             target_bits = 64,
         ),
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "release_try_builder",
+            "minimal_symbols",
+            "reclient",
+            "enable_all_rust_features",
+            "x64",
+        ],
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "Linux",
         short_name = "rel",
@@ -156,6 +203,14 @@ ci.builder(
             target_bits = 64,
             target_platform = builder_config.target_platform.MAC,
         ),
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "debug_builder",
+            "reclient",
+            "enable_all_rust_features",
+            "x64",
+        ],
     ),
     cores = 12,
     os = os.MAC_DEFAULT,
@@ -179,6 +234,14 @@ ci.builder(
             target_bits = 64,
         ),
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "debug_builder",
+            "reclient",
+            "enable_all_rust_features",
+            "x64",
+        ],
+    ),
     os = os.WINDOWS_ANY,
     console_view_entry = consoles.console_view_entry(
         category = "Windows x64",
@@ -199,6 +262,15 @@ ci.builder(
             build_config = builder_config.build_config.RELEASE,
             target_bits = 64,
         ),
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "release_try_builder",
+            "minimal_symbols",
+            "reclient",
+            "enable_all_rust_features",
+            "x64",
+        ],
     ),
     os = os.WINDOWS_ANY,
     console_view_entry = consoles.console_view_entry(

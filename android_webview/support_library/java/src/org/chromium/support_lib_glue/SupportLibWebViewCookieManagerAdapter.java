@@ -12,9 +12,7 @@ import org.chromium.support_lib_boundary.WebViewCookieManagerBoundaryInterface;
 
 import java.util.List;
 
-/**
- * Adapter between WebViewCookieManagerBoundaryInterface and AwCookieManager.
- */
+/** Adapter between WebViewCookieManagerBoundaryInterface and AwCookieManager. */
 class SupportLibWebViewCookieManagerAdapter implements WebViewCookieManagerBoundaryInterface {
     private final AwCookieManager mAwCookieManager;
 
@@ -24,8 +22,8 @@ class SupportLibWebViewCookieManagerAdapter implements WebViewCookieManagerBound
 
     @Override
     public List<String> getCookieInfo(String url) {
-        try (TraceEvent event = TraceEvent.scoped(
-                     "WebView.APICall.AndroidX.COOKIE_MANAGER_GET_COOKIE_INFO")) {
+        try (TraceEvent event =
+                TraceEvent.scoped("WebView.APICall.AndroidX.COOKIE_MANAGER_GET_COOKIE_INFO")) {
             recordApiCall(SupportLibWebViewChromiumFactory.ApiCall.COOKIE_MANAGER_GET_COOKIE_INFO);
             return mAwCookieManager.getCookieInfo(url);
         }

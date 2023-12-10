@@ -2,12 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/base_grid_view_controller+Testing.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/base_grid_view_controller.h"
 
 #import "base/apple/foundation_util.h"
 #import "base/numerics/safe_conversions.h"
 #import "base/test/ios/wait_util.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/base_grid_view_controller+private.h"
+#import "base/test/with_feature_override.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_switcher_item.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/chrome/test/root_view_controller_test.h"
@@ -94,10 +96,12 @@
 
 @end
 
-class BaseGridViewControllerTest : public RootViewControllerTest {
+class BaseGridViewControllerTest : public RootViewControllerTest,
+                                   public base::test::WithFeatureOverride {
  public:
   BaseGridViewControllerTest()
-      : identifier_a_(web::WebStateID::NewUnique()),
+      : base::test::WithFeatureOverride(kTabGridCompositionalLayout),
+        identifier_a_(web::WebStateID::NewUnique()),
         identifier_b_(web::WebStateID::NewUnique()) {
     view_controller_ = [[BaseGridViewController alloc] init];
     // Load the view and notify its content will appear. This sets the data
@@ -124,7 +128,7 @@ class BaseGridViewControllerTest : public RootViewControllerTest {
 
 // Tests that items are initialized and delegate is updated with a new
 // itemCount.
-TEST_F(BaseGridViewControllerTest, InitializeItems) {
+TEST_P(BaseGridViewControllerTest, InitializeItems) {
   // Previously: The grid had 2 items and selectedIndex was 0. The delegate had
   // an itemCount of 2.
   web::WebStateID newItemID = web::WebStateID::NewUnique();
@@ -138,7 +142,7 @@ TEST_F(BaseGridViewControllerTest, InitializeItems) {
 }
 
 // Tests that an item is inserted and delegate is updated with a new itemCount.
-TEST_F(BaseGridViewControllerTest, InsertItem) {
+TEST_P(BaseGridViewControllerTest, InsertItem) {
   // Previously: The grid had 2 items and selectedIndex was 0. The delegate had
   // an itemCount of 2.
   web::WebStateID newItemID = web::WebStateID::NewUnique();
@@ -152,7 +156,7 @@ TEST_F(BaseGridViewControllerTest, InsertItem) {
 }
 
 // Tests that an item is removed and delegate is updated with a new itemCount.
-TEST_F(BaseGridViewControllerTest, RemoveItem) {
+TEST_P(BaseGridViewControllerTest, RemoveItem) {
   // Previously: The grid had 2 items and selectedIndex was 0. The delegate had
   // an itemCount of 2.
   [view_controller_ removeItemWithID:identifier_a_
@@ -163,7 +167,7 @@ TEST_F(BaseGridViewControllerTest, RemoveItem) {
 }
 
 // Tests that an item is selected.
-TEST_F(BaseGridViewControllerTest, SelectItem) {
+TEST_P(BaseGridViewControllerTest, SelectItem) {
   // Previously: The grid had 2 items and selectedIndex was 0. The delegate had
   // an itemCount of 2.
   [view_controller_ selectItemWithID:identifier_b_];
@@ -173,7 +177,7 @@ TEST_F(BaseGridViewControllerTest, SelectItem) {
 
 // Tests that when a nonexistent item is selected, the selected item index is
 // NSNotFound
-TEST_F(BaseGridViewControllerTest, SelectNonexistentItem) {
+TEST_P(BaseGridViewControllerTest, SelectNonexistentItem) {
   // Previously: The grid had 2 items and selectedIndex was 0. The delegate had
   // an itemCount of 2.
   [view_controller_ selectItemWithID:web::WebStateID::NewUnique()];
@@ -183,7 +187,7 @@ TEST_F(BaseGridViewControllerTest, SelectNonexistentItem) {
 }
 
 // Tests that an item is replaced with a new identifier.
-TEST_F(BaseGridViewControllerTest, ReplaceItem) {
+TEST_P(BaseGridViewControllerTest, ReplaceItem) {
   // Previously: The grid had 2 items and selectedIndex was 0. The delegate had
   // an itemCount of 2.
   web::WebStateID newItemID = web::WebStateID::NewUnique();
@@ -195,7 +199,7 @@ TEST_F(BaseGridViewControllerTest, ReplaceItem) {
 }
 
 // Tests that an item is replaced with same identifier.
-TEST_F(BaseGridViewControllerTest, ReplaceItemSameIdentifier) {
+TEST_P(BaseGridViewControllerTest, ReplaceItemSameIdentifier) {
   // Previously: The grid had 2 items and selectedIndex was 0. The delegate had
   // an itemCount of 2.
   TabSwitcherItem* item =
@@ -209,7 +213,7 @@ TEST_F(BaseGridViewControllerTest, ReplaceItemSameIdentifier) {
 }
 
 // Tests that an item is not replaced if it doesn't exist.
-TEST_F(BaseGridViewControllerTest, ReplaceItemNotFound) {
+TEST_P(BaseGridViewControllerTest, ReplaceItemNotFound) {
   // Previously: The grid had 2 items and selectedIndex was 0. The delegate had
   // an itemCount of 2.
   web::WebStateID notFoundItemID = web::WebStateID::NewUnique();
@@ -222,7 +226,7 @@ TEST_F(BaseGridViewControllerTest, ReplaceItemNotFound) {
 }
 
 // Tests that the selected item is moved.
-TEST_F(BaseGridViewControllerTest, MoveSelectedItem) {
+TEST_P(BaseGridViewControllerTest, MoveSelectedItem) {
   // Previously: The grid had 2 items and selectedIndex was 0. The delegate had
   // an itemCount of 2.
   [view_controller_ moveItemWithID:identifier_a_ toIndex:1];
@@ -232,7 +236,7 @@ TEST_F(BaseGridViewControllerTest, MoveSelectedItem) {
 }
 
 // Tests that a non-selected item is moved.
-TEST_F(BaseGridViewControllerTest, MoveUnselectedItem) {
+TEST_P(BaseGridViewControllerTest, MoveUnselectedItem) {
   // Previously: The grid had 2 items and selectedIndex was 0. The delegate had
   // an itemCount of 2.
   [view_controller_ moveItemWithID:identifier_b_ toIndex:0];
@@ -243,7 +247,7 @@ TEST_F(BaseGridViewControllerTest, MoveUnselectedItem) {
 
 // Tests that `-replaceItemID:withItem:` does not crash when updating an item
 // that is scrolled offscreen.
-TEST_F(BaseGridViewControllerTest, ReplaceScrolledOffScreenCell) {
+TEST_P(BaseGridViewControllerTest, ReplaceScrolledOffScreenCell) {
   // This test requires that the collection view be placed on the screen.
   SetRootViewController(view_controller_);
   EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
@@ -271,3 +275,5 @@ TEST_F(BaseGridViewControllerTest, ReplaceScrolledOffScreenCell) {
   // Do not crash due to cell being nil.
   [view_controller_ replaceItemID:identifier_b_ withItem:item];
 }
+
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(BaseGridViewControllerTest);

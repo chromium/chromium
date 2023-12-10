@@ -106,7 +106,7 @@ struct COMPONENT_EXPORT(CHROMEOS_CDM_MOJOM)
     return input->subsamples();
   }
 
-  static const absl::optional<media::EncryptionPattern>& encryption_pattern(
+  static const std::optional<media::EncryptionPattern>& encryption_pattern(
       const std::unique_ptr<media::DecryptConfig>& input) {
     return input->encryption_pattern();
   }

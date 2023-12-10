@@ -33,19 +33,22 @@ import java.util.List;
  * Currently, only URL#openConnection() is blocklisted by this BugChecker.
  */
 @AutoService(BugChecker.class)
-@BugPattern(name = "UseNetworkAnnotations",
+@BugPattern(
+        name = "UseNetworkAnnotations",
         summary = "Use wrapper network APIs with NetworkTrafficAnnotationTag",
-        severity = BugPattern.SeverityLevel.ERROR, linkType = BugPattern.LinkType.CUSTOM,
+        severity = BugPattern.SeverityLevel.ERROR,
+        linkType = BugPattern.LinkType.CUSTOM,
         link = "https://bugs.chromium.org/p/chromium/issues/detail?id=1231780")
-public class UseNetworkAnnotations
-        extends BugChecker implements BugChecker.MethodInvocationTreeMatcher {
+public class UseNetworkAnnotations extends BugChecker
+        implements BugChecker.MethodInvocationTreeMatcher {
     private static final String ERRORPRONE_PLUGIN_PATH = "tools/android/errorprone_plugin";
     private static final String URL_CLASS_NAME = "java.net.URL";
     private static final String OPEN_CONNECTION_METHOD_NAME = "openConnection";
     private static final String OPEN_STREAM_METHOD_NAME = "openStream";
 
     private static final Matcher<ExpressionTree> METHOD_MATCHER =
-            anyOf(instanceMethod()
+            anyOf(
+                    instanceMethod()
                             .onDescendantOf(URL_CLASS_NAME)
                             .namedAnyOf(OPEN_CONNECTION_METHOD_NAME, OPEN_STREAM_METHOD_NAME));
 
@@ -54,11 +57,15 @@ public class UseNetworkAnnotations
      * URL#openConnection() from Java code inside these directories, either because they're not
      * part of clank, or because they're //net implementation details.
      */
-    private static final ArrayList<String> ALLOWLISTED_FILES = new ArrayList<>(
-            List.of("net/android/java/src/org/chromium/net/ChromiumNetworkAdapter.java",
-                    "android_webview/nonembedded/java/src/org/chromium/android_webview/nonembedded/"
-                            + "NetworkFetcherTask.java",
-                    "components/cronet/", "chromecast/", "clank/test/"));
+    private static final ArrayList<String> ALLOWLISTED_FILES =
+            new ArrayList<>(
+                    List.of(
+                            "net/android/java/src/org/chromium/net/ChromiumNetworkAdapter.java",
+                            "android_webview/nonembedded/java/src/org/chromium/android_webview/nonembedded/"
+                                    + "NetworkFetcherTask.java",
+                            "components/cronet/",
+                            "chromecast/",
+                            "clank/test/"));
 
     private static String getMethodName(MethodInvocationTree tree) {
         if (tree.getMethodSelect() instanceof MemberSelectTree) {
@@ -86,8 +93,9 @@ public class UseNetworkAnnotations
         }
         if (srcDir == null) {
             return buildDescription(tree)
-                    .setMessage("Could not find the top-level src/ directory for the "
-                            + "UseNetworkAnnotations check.")
+                    .setMessage(
+                            "Could not find the top-level src/ directory for the "
+                                    + "UseNetworkAnnotations check.")
                     .build();
         }
 
@@ -100,7 +108,8 @@ public class UseNetworkAnnotations
 
         String methodName = getMethodName(tree);
         String warningMessage =
-                String.format("Direct use of URL#%1$s() is forbidden in Chromium. Use "
+                String.format(
+                        "Direct use of URL#%1$s() is forbidden in Chromium. Use "
                                 + "ChromiumNetworkAdapter#%1$s() instead.",
                         methodName);
 

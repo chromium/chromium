@@ -7,7 +7,7 @@ import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from 'chrome:/
 
 import {MockVolumeManager} from '../../../background/js/mock_volume_manager.js';
 import {FakeEntryImpl} from '../../../common/js/files_app_entry_types.js';
-import {VolumeManagerCommon} from '../../../common/js/volume_manager_types.js';
+import {RootType} from '../../../common/js/volume_manager_types.js';
 import {FileListModel} from '../file_list_model.js';
 import {MetadataModel} from '../metadata/metadata_model.js';
 import {MockMetadataModel} from '../metadata/mock_metadata.js';
@@ -106,9 +106,9 @@ export function testMultipleSelectionWithKeyboard() {
 
   // Add FileTableList file entries, then draw and focus the table list.
   const entries = [
-    new FakeEntryImpl('entry1-label', VolumeManagerCommon.RootType.CROSTINI),
-    new FakeEntryImpl('entry2-label', VolumeManagerCommon.RootType.CROSTINI),
-    new FakeEntryImpl('entry3-label', VolumeManagerCommon.RootType.CROSTINI),
+    new FakeEntryImpl('entry1-label', RootType.CROSTINI),
+    new FakeEntryImpl('entry2-label', RootType.CROSTINI),
+    new FakeEntryImpl('entry3-label', RootType.CROSTINI),
   ];
   const dataModel = new FileListModel(metadataModel);
   dataModel.splice(0, 0, ...entries);
@@ -236,9 +236,9 @@ export function testKeyboardOperations() {
 
   // Add FileTableList file entries, then draw and focus the table list.
   const entries = [
-    new FakeEntryImpl('entry1-label', VolumeManagerCommon.RootType.CROSTINI),
-    new FakeEntryImpl('entry2-label', VolumeManagerCommon.RootType.CROSTINI),
-    new FakeEntryImpl('entry3-label', VolumeManagerCommon.RootType.CROSTINI),
+    new FakeEntryImpl('entry1-label', RootType.CROSTINI),
+    new FakeEntryImpl('entry2-label', RootType.CROSTINI),
+    new FakeEntryImpl('entry3-label', RootType.CROSTINI),
   ];
   const dataModel = new FileListModel(metadataModel);
   dataModel.splice(0, 0, ...entries);
@@ -313,8 +313,7 @@ function setupFileTableList(): FileTableList {
   // Add 10 fake files.
   const entries = [];
   for (let i = 1; i <= 10; i++) {
-    entries.push(
-        new FakeEntryImpl(`${i}.txt`, VolumeManagerCommon.RootType.RECENT));
+    entries.push(new FakeEntryImpl(`${i}.txt`, RootType.RECENT));
   }
   const dataModel = new FileListModel(metadataModel);
   // Disable group by.
@@ -331,31 +330,48 @@ function setupFileTableList(): FileTableList {
 /**
  */
 function enableGroupByForDataModel(fileListModel: FileListModel) {
+  const RecentDateBucket = chrome.fileManagerPrivate.RecentDateBucket;
+
   // Mock group by information.
   fileListModel.shouldShowGroupHeading = () => true;
   fileListModel.getGroupBySnapshot = () => {
     return [
-      {startIndex: 0, endIndex: 1, label: 'today', group: 'today'},
-      {startIndex: 2, endIndex: 2, label: 'yesterday', group: 'yesterday'},
+      {
+        startIndex: 0,
+        endIndex: 1,
+        label: 'today',
+        group: RecentDateBucket.TODAY,
+      },
+      {
+        startIndex: 2,
+        endIndex: 2,
+        label: 'yesterday',
+        group: RecentDateBucket.YESTERDAY,
+      },
       {
         startIndex: 3,
         endIndex: 4,
         label: 'earlier_this_week',
-        group: 'earlier_this_week',
+        group: RecentDateBucket.EARLIER_THIS_WEEK,
       },
       {
         startIndex: 5,
         endIndex: 6,
         label: 'earlier_this_month',
-        group: 'earlier_this_month',
+        group: RecentDateBucket.EARLIER_THIS_MONTH,
       },
       {
         startIndex: 7,
         endIndex: 8,
         label: 'earlier_this_year',
-        group: 'earlier_this_year',
+        group: RecentDateBucket.EARLIER_THIS_YEAR,
       },
-      {startIndex: 9, endIndex: 9, label: 'older', group: 'older'},
+      {
+        startIndex: 9,
+        endIndex: 9,
+        label: 'older',
+        group: RecentDateBucket.OLDER,
+      },
     ];
   };
 }

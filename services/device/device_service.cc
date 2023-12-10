@@ -330,7 +330,6 @@ void DeviceService::BindSensorProvider(
   sensor_provider_->Bind(std::move(receiver));
 }
 
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)
 void DeviceService::BindDevicePostureProvider(
     mojo::PendingReceiver<mojom::DevicePostureProvider> receiver) {
   if (!device_posture_provider_) {
@@ -342,7 +341,6 @@ void DeviceService::BindDevicePostureProvider(
   }
   device_posture_provider_->Bind(std::move(receiver));
 }
-#endif
 
 void DeviceService::BindSerialPortManager(
     mojo::PendingReceiver<mojom::SerialPortManager> receiver) {

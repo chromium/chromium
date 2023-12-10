@@ -17,12 +17,14 @@ import org.chromium.base.PackageUtils;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-/**
- * Helper class to check if VrCore version is compatible with Chromium.
- */
+/** Helper class to check if VrCore version is compatible with Chromium. */
 public class VrCoreVersionChecker {
-    @IntDef({VrCoreCompatibility.VR_NOT_SUPPORTED, VrCoreCompatibility.VR_NOT_AVAILABLE,
-            VrCoreCompatibility.VR_OUT_OF_DATE, VrCoreCompatibility.VR_READY})
+    @IntDef({
+        VrCoreCompatibility.VR_NOT_SUPPORTED,
+        VrCoreCompatibility.VR_NOT_AVAILABLE,
+        VrCoreCompatibility.VR_OUT_OF_DATE,
+        VrCoreCompatibility.VR_READY
+    })
     @Retention(RetentionPolicy.SOURCE)
     public @interface VrCoreCompatibility {
         int VR_NOT_SUPPORTED = 0;

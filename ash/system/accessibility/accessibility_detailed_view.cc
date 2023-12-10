@@ -27,6 +27,7 @@
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/tray/tray_toggle_button.h"
 #include "ash/system/tray/tri_view.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/user_metrics.h"
 #include "components/live_caption/caption_util.h"
@@ -174,6 +175,11 @@ void AccessibilityDetailedView::OnAccessibilityStatusChanged() {
     UpdateFeatureState(checked, dictation_view_, dictation_top_view_);
   }
 
+  if (controller->IsFaceGazeSettingVisibleInTray()) {
+    bool checked = controller->face_gaze().enabled();
+    UpdateFeatureState(checked, facegaze_view_, facegaze_top_view_);
+  }
+
   if (controller->IsColorCorrectionSettingVisibleInTray()) {
     bool checked = controller->color_correction().enabled();
     UpdateFeatureState(checked, color_correction_view_,
@@ -286,6 +292,10 @@ void AccessibilityDetailedView::AddEnabledFeatures(views::View* container) {
       controller->dictation().enabled()) {
     dictation_top_view_ = AddDictationView(container);
   }
+  if (controller->IsFaceGazeSettingVisibleInTray() &&
+      controller->face_gaze().enabled()) {
+    facegaze_top_view_ = AddFaceGazeView(container);
+  }
   if (controller->IsColorCorrectionSettingVisibleInTray() &&
       controller->color_correction().enabled()) {
     color_correction_top_view_ = AddColorCorrectionView(container);
@@ -359,6 +369,10 @@ void AccessibilityDetailedView::AddAllFeatures(views::View* container) {
 
   if (controller->IsDictationSettingVisibleInTray()) {
     dictation_view_ = AddDictationView(container);
+  }
+
+  if (controller->IsFaceGazeSettingVisibleInTray()) {
+    facegaze_view_ = AddFaceGazeView(container);
   }
 
   if (controller->IsColorCorrectionSettingVisibleInTray()) {
@@ -451,6 +465,19 @@ HoverHighlightView* AccessibilityDetailedView::AddDictationView(
       container, kDictationMenuIcon,
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_ACCESSIBILITY_DICTATION),
       checked, controller->IsEnterpriseIconVisibleForDictation());
+}
+
+HoverHighlightView* AccessibilityDetailedView::AddFaceGazeView(
+    views::View* container) {
+  if (!base::FeatureList::IsEnabled(::features::kAccessibilityFaceGaze)) {
+    return nullptr;
+  }
+  auto* controller = Shell::Get()->accessibility_controller();
+  bool checked = controller->face_gaze().enabled();
+  return AddScrollListFeatureItem(
+      container, kFacegazeIcon,
+      l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_ACCESSIBILITY_FACEGAZE),
+      checked, controller->IsEnterpriseIconVisibleForFaceGaze());
 }
 
 HoverHighlightView* AccessibilityDetailedView::AddColorCorrectionView(
@@ -677,6 +704,12 @@ void AccessibilityDetailedView::HandleViewClicked(views::View* view) {
     RecordAction(new_state ? UserMetricsAction("StatusArea_DictationEnabled")
                            : UserMetricsAction("StatusArea_DictationDisabled"));
     controller->dictation().SetEnabled(new_state);
+  } else if ((view == facegaze_view_ || view == facegaze_top_view_) &&
+             !controller->IsEnterpriseIconVisibleForFaceGaze()) {
+    bool new_state = !controller->face_gaze().enabled();
+    RecordAction(new_state ? UserMetricsAction("StatusArea_FaceGazeEnabled")
+                           : UserMetricsAction("StatusArea_FaceGazeDisabled"));
+    controller->face_gaze().SetEnabled(new_state);
   } else if ((view == color_correction_view_ ||
               view == color_correction_top_view_) &&
              !controller->IsEnterpriseIconVisibleForColorCorrection()) {

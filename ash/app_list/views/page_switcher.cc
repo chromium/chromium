@@ -19,6 +19,8 @@
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/animation/throb_animation.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/insets.h"
@@ -43,6 +45,8 @@ constexpr SkScalar kStrokeWidth = SkIntToScalar(2);
 constexpr int kVerticalButtonPadding = 0;
 
 class PageSwitcherButton : public IconButton {
+  METADATA_HEADER(PageSwitcherButton, IconButton)
+
  public:
   PageSwitcherButton(PressedCallback callback,
                      const std::u16string& accesible_name)
@@ -122,6 +126,9 @@ class PageSwitcherButton : public IconButton {
 PageSwitcherButton* GetButtonByIndex(views::View* buttons, size_t index) {
   return static_cast<PageSwitcherButton*>(buttons->children()[index]);
 }
+
+BEGIN_METADATA(PageSwitcherButton)
+END_METADATA
 
 }  // namespace
 
@@ -220,5 +227,8 @@ void PageSwitcher::SelectedPageChanged(int old_selected, int new_selected) {
     GetButtonByIndex(buttons_, static_cast<size_t>(new_selected))
         ->SetSelected(true);
 }
+
+BEGIN_METADATA(PageSwitcher)
+END_METADATA
 
 }  // namespace ash

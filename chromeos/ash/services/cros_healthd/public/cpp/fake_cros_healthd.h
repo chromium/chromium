@@ -7,6 +7,7 @@
 
 #include <cstdint>
 #include <map>
+#include <optional>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -27,7 +28,6 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::cros_healthd {
 namespace internal {
@@ -193,11 +193,11 @@ class FakeCrosHealthd final : public mojom::CrosHealthdDiagnosticsService,
       chromeos::network_health::mojom::UInt32ValuePtr signal_strength);
 
   // Returns the last created routine by any Run*Routine method.
-  absl::optional<mojom::DiagnosticRoutineEnum> GetLastRunRoutine() const;
+  std::optional<mojom::DiagnosticRoutineEnum> GetLastRunRoutine() const;
 
   // Returns the parameters passed for the most recent call to
   // `GetRoutineUpdate`.
-  absl::optional<RoutineUpdateParams> GetRoutineUpdateParams() const;
+  std::optional<RoutineUpdateParams> GetRoutineUpdateParams() const;
 
  private:
   FakeCrosHealthd();
@@ -222,7 +222,7 @@ class FakeCrosHealthd final : public mojom::CrosHealthdDiagnosticsService,
       mojom::NullableUint32Ptr percentage_used_threshold,
       RunSmartctlCheckRoutineCallback callback) override;
   void RunAcPowerRoutine(mojom::AcPowerStatusEnum expected_status,
-                         const absl::optional<std::string>& expected_power_type,
+                         const std::optional<std::string>& expected_power_type,
                          RunAcPowerRoutineCallback callback) override;
   void RunCpuCacheRoutine(mojom::NullableUint32Ptr length_seconds,
                           RunCpuCacheRoutineCallback callback) override;
@@ -253,7 +253,7 @@ class FakeCrosHealthd final : public mojom::CrosHealthdDiagnosticsService,
       uint32_t length_seconds,
       uint32_t minimum_charge_percent_required,
       RunBatteryChargeRoutineCallback callback) override;
-  void RunMemoryRoutine(absl::optional<uint32_t> max_testing_mem_kib,
+  void RunMemoryRoutine(std::optional<uint32_t> max_testing_mem_kib,
                         RunMemoryRoutineCallback callback) override;
   void RunLanConnectivityRoutine(
       RunLanConnectivityRoutineCallback callback) override;
@@ -275,7 +275,7 @@ class FakeCrosHealthd final : public mojom::CrosHealthdDiagnosticsService,
       RunHttpsFirewallRoutineCallback callback) override;
   void RunHttpsLatencyRoutine(RunHttpsLatencyRoutineCallback callback) override;
   void RunVideoConferencingRoutine(
-      const absl::optional<std::string>& stun_server_hostname,
+      const std::optional<std::string>& stun_server_hostname,
       RunVideoConferencingRoutineCallback callback) override;
   void RunArcHttpRoutine(RunArcHttpRoutineCallback callback) override;
   void RunArcPingRoutine(RunArcPingRoutineCallback callback) override;
@@ -354,7 +354,7 @@ class FakeCrosHealthd final : public mojom::CrosHealthdDiagnosticsService,
   void ProbeProcessInfo(const uint32_t process_id,
                         ProbeProcessInfoCallback callback) override;
   void ProbeMultipleProcessInfo(
-      const absl::optional<std::vector<uint32_t>>& process_ids,
+      const std::optional<std::vector<uint32_t>>& process_ids,
       bool ignore_single_process_error,
       ProbeMultipleProcessInfoCallback callback) override;
 
@@ -370,7 +370,7 @@ class FakeCrosHealthd final : public mojom::CrosHealthdDiagnosticsService,
   // Used as the response to any GetAvailableRoutines IPCs received.
   std::vector<mojom::DiagnosticRoutineEnum> available_routines_;
   // Used to store last created routine by any Run*Routine method.
-  absl::optional<mojom::DiagnosticRoutineEnum> last_run_routine_;
+  std::optional<mojom::DiagnosticRoutineEnum> last_run_routine_;
   // Used as the response to any RunSomeRoutine IPCs received.
   mojom::RunRoutineResponsePtr run_routine_response_{
       mojom::RunRoutineResponse::New()};
@@ -412,7 +412,7 @@ class FakeCrosHealthd final : public mojom::CrosHealthdDiagnosticsService,
 
   // Contains the most recent params passed to `GetRoutineUpdate`, if it has
   // been called.
-  absl::optional<RoutineUpdateParams> routine_update_params_;
+  std::optional<RoutineUpdateParams> routine_update_params_;
 
   // Expectation of the passed parameters.
   base::Value::Dict expected_passed_parameters_;

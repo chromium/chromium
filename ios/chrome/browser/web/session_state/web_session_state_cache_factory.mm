@@ -14,7 +14,6 @@
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/web/features.h"
 #import "ios/chrome/browser/web/session_state/web_session_state_cache.h"
 #import "ios/chrome/browser/web/session_state/web_session_state_cache_web_state_list_observer.h"
 
@@ -77,7 +76,6 @@ std::unique_ptr<KeyedService> BuildWebSessionStateCacheWrapper(
 // static
 WebSessionStateCache* WebSessionStateCacheFactory::GetForBrowserState(
     ChromeBrowserState* browser_state) {
-  CHECK(web::UseNativeSessionRestorationCache());
   WebSessionStateCacheWrapper* wrapper =
       static_cast<WebSessionStateCacheWrapper*>(
           GetInstance()->GetServiceForBrowserState(browser_state, true));

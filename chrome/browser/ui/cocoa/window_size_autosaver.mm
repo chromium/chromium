@@ -79,10 +79,10 @@ const int kMinWindowHeight = 17;
   // Get the positioning information.
   const base::Value::Dict& windowPrefs = _prefService->GetDict(_path);
   if ([_window styleMask] & NSWindowStyleMaskResizable) {
-    absl::optional<int> x1 = windowPrefs.FindInt("left");
-    absl::optional<int> x2 = windowPrefs.FindInt("right");
-    absl::optional<int> y1 = windowPrefs.FindInt("top");
-    absl::optional<int> y2 = windowPrefs.FindInt("bottom");
+    std::optional<int> x1 = windowPrefs.FindInt("left");
+    std::optional<int> x2 = windowPrefs.FindInt("right");
+    std::optional<int> y1 = windowPrefs.FindInt("top");
+    std::optional<int> y2 = windowPrefs.FindInt("bottom");
     if (!x1.has_value() || !x2.has_value() || !y1.has_value() ||
         !y2.has_value()) {
       return;
@@ -106,8 +106,8 @@ const int kMinWindowHeight = 17;
       [_window cascadeTopLeftFromPoint:NSZeroPoint];
     }
   } else {
-    absl::optional<int> x = windowPrefs.FindInt("x");
-    absl::optional<int> y = windowPrefs.FindInt("y");
+    std::optional<int> x = windowPrefs.FindInt("x");
+    std::optional<int> y = windowPrefs.FindInt("y");
     if (!x.has_value() || !y.has_value())
       return;  // Nothing stored.
     // Turn the origin (lower-left) into an upper-left window point.

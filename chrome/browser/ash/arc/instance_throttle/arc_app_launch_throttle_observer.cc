@@ -62,8 +62,10 @@ void ArcAppLaunchThrottleObserver::OnArcAppLaunchRequested(
   current_requests_.insert(identifier.data());
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
+      // Create new std::string to prevent dangling pointer.
       base::BindOnce(&ArcAppLaunchThrottleObserver::OnLaunchedOrRequestExpired,
-                     weak_ptr_factory_.GetWeakPtr(), identifier.data()),
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::string(identifier.data())),
       kAppLaunchTimeout);
 }
 

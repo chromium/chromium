@@ -9,8 +9,8 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/task/sequenced_task_runner.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_generator.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_manager.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_storage.h"
-#import "ios/web/public/thread/web_task_traits.h"
 #import "ios/web/public/web_client.h"
 #import "ios/web/public/web_state.h"
 
@@ -47,19 +47,19 @@ SnapshotTabHelper::~SnapshotTabHelper() {
 }
 
 void SnapshotTabHelper::SetDelegate(id<SnapshotGeneratorDelegate> delegate) {
-  snapshot_generator_.delegate = delegate;
+  [snapshot_manager_ setDelegate:delegate];
 }
 
 void SnapshotTabHelper::SetSnapshotStorage(SnapshotStorage* snapshot_storage) {
-  snapshot_generator_.snapshotStorage = snapshot_storage;
+  snapshot_manager_.snapshotStorage = snapshot_storage;
 }
 
 void SnapshotTabHelper::RetrieveColorSnapshot(void (^callback)(UIImage*)) {
-  [snapshot_generator_ retrieveSnapshot:callback];
+  [snapshot_manager_ retrieveSnapshot:callback];
 }
 
 void SnapshotTabHelper::RetrieveGreySnapshot(void (^callback)(UIImage*)) {
-  [snapshot_generator_ retrieveGreySnapshot:callback];
+  [snapshot_manager_ retrieveGreySnapshot:callback];
 }
 
 void SnapshotTabHelper::UpdateSnapshotWithCallback(void (^callback)(UIImage*)) {
@@ -70,25 +70,20 @@ void SnapshotTabHelper::UpdateSnapshotWithCallback(void (^callback)(UIImage*)) {
   if (!showing_native_content && web_state_->CanTakeSnapshot()) {
     // Take the snapshot using the optimized WKWebView snapshotting API for
     // pages loaded in the web view when the WebState snapshot API is available.
-    [snapshot_generator_ updateWebViewSnapshotWithCompletion:callback];
+    [snapshot_manager_ updateWKWebViewSnapshotWithCompletion:callback];
     return;
   }
   // Use the UIKit-based snapshot API as a fallback when the WKWebView API is
   // unavailable.
-  UIImage* image = [snapshot_generator_ updateSnapshot];
-  dispatch_async(dispatch_get_main_queue(), ^{
-    if (callback) {
-      callback(image);
-    }
-  });
+  [snapshot_manager_ updateUIViewSnapshotWithCompletion:callback];
 }
 
 UIImage* SnapshotTabHelper::GenerateSnapshotWithoutOverlays() {
-  return [snapshot_generator_ generateSnapshotWithOverlays:NO];
+  return [snapshot_manager_ generateUIViewSnapshot];
 }
 
 void SnapshotTabHelper::RemoveSnapshot() {
-  [snapshot_generator_ removeSnapshot];
+  [snapshot_manager_ removeSnapshot];
 }
 
 void SnapshotTabHelper::IgnoreNextLoad() {
@@ -96,23 +91,23 @@ void SnapshotTabHelper::IgnoreNextLoad() {
 }
 
 void SnapshotTabHelper::WillBeSavedGreyWhenBackgrounding() {
-  [snapshot_generator_ willBeSavedGreyWhenBackgrounding];
+  [snapshot_manager_ willBeSavedGreyWhenBackgrounding];
 }
 
 void SnapshotTabHelper::SaveGreyInBackground() {
-  [snapshot_generator_ saveGreyInBackground];
+  [snapshot_manager_ saveGreyInBackground];
 }
 
 SnapshotID SnapshotTabHelper::GetSnapshotID() const {
-  return snapshot_generator_.snapshotID;
+  return snapshot_manager_.snapshotID;
 }
 
 SnapshotTabHelper::SnapshotTabHelper(web::WebState* web_state)
     : web_state_(web_state) {
   DCHECK(web_state_);
-  snapshot_generator_ = [[SnapshotGenerator alloc]
-      initWithWebState:web_state_
-            snapshotID:GenerateSnapshotID(web_state_)];
+  snapshot_manager_ = [[SnapshotManager alloc]
+      initWithGenerator:[[SnapshotGenerator alloc] initWithWebState:web_state_]
+             snapshotID:GenerateSnapshotID(web_state_)];
   web_state_observation_.Observe(web_state_);
 }
 

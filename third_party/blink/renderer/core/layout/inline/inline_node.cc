@@ -12,6 +12,9 @@
 #include "base/ranges/algorithm.h"
 #include "base/trace_event/trace_event.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
+#include "third_party/blink/renderer/core/layout/block_break_token.h"
+#include "third_party/blink/renderer/core/layout/constraint_space.h"
+#include "third_party/blink/renderer/core/layout/constraint_space_builder.h"
 #include "third_party/blink/renderer/core/layout/inline/initial_letter_utils.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_break_token.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_item.h"
@@ -26,22 +29,20 @@
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
+#include "third_party/blink/renderer/core/layout/layout_result.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
 #include "third_party/blink/renderer/core/layout/layout_text_combine.h"
+#include "third_party/blink/renderer/core/layout/legacy_layout_tree_walking.h"
+#include "third_party/blink/renderer/core/layout/length_utils.h"
 #include "third_party/blink/renderer/core/layout/list/layout_inline_list_item.h"
 #include "third_party/blink/renderer/core/layout/list/layout_list_item.h"
 #include "third_party/blink/renderer/core/layout/list/list_marker.h"
-#include "third_party/blink/renderer/core/layout/ng/legacy_layout_tree_walking.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_block_break_token.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_constraint_space.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_constraint_space_builder.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_layout_result.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_length_utils.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_positioned_float.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_space_utils.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_unpositioned_float.h"
+#include "third_party/blink/renderer/core/layout/positioned_float.h"
+#include "third_party/blink/renderer/core/layout/space_utils.h"
+#include "third_party/blink/renderer/core/layout/svg/layout_svg_inline_text.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_inline_node_data.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_text_layout_attributes_builder.h"
+#include "third_party/blink/renderer/core/layout/unpositioned_float.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/style/computed_style_base_constants.h"
 #include "third_party/blink/renderer/platform/fonts/font_performance.h"
@@ -241,6 +242,13 @@ class ReusingTextShaper final {
   const bool allow_shape_cache_;
 };
 
+const Font& ScaledFont(const LayoutText& layout_text) {
+  if (const auto* svg_text = DynamicTo<LayoutSVGInlineText>(layout_text)) {
+    return svg_text->ScaledFont();
+  }
+  return layout_text.StyleRef().GetFont();
+}
+
 // The function is templated to indicate the purpose of collected inlines:
 // - With EmptyOffsetMappingBuilder: updating layout;
 // - With OffsetMappingBuilder: building offset mapping on clean layout.
@@ -263,45 +271,49 @@ void CollectInlinesInternal(ItemsBuilder* builder,
   const LayoutObject* inline_list_item_marker = nullptr;
   while (node) {
     if (auto* counter = DynamicTo<LayoutCounter>(node)) {
-      // According to
-      // https://w3c.github.io/csswg-drafts/css-counter-styles/#simple-symbolic,
-      // disclosure-* should have special rendering paths.
-      if (counter->IsDirectionalSymbolMarker()) {
-        const String& text = counter->GetText();
-        // We assume the text representation length for a predefined symbol
-        // marker is always 1.
-        if (text.length() <= 1) {
-          builder->AppendText(counter, previous_data);
-          builder->SetIsSymbolMarker();
-        } else {
-          // The text must be in the following form:
-          // Symbol, separator, symbol, separator, symbol, ...
-          builder->AppendText(text.Substring(0, 1), counter);
-          builder->SetIsSymbolMarker();
-          const AtomicString& separator = counter->Separator();
-          for (wtf_size_t i = 1; i < text.length();) {
-            if (separator.length() > 0) {
-              DCHECK_EQ(separator, text.Substring(i, separator.length()));
-              builder->AppendText(separator, counter);
-              i += separator.length();
-              DCHECK_LT(i, text.length());
-            }
-            builder->AppendText(text.Substring(i, 1), counter);
+      // TODO(crbug.com/561873): PrimaryFont should not be nullptr.
+      if (counter->Style()->GetFont().PrimaryFont()) {
+        // According to
+        // https://w3c.github.io/csswg-drafts/css-counter-styles/#simple-symbolic,
+        // disclosure-* should have special rendering paths.
+        if (counter->IsDirectionalSymbolMarker()) {
+          const String& text = counter->GetText();
+          // We assume the text representation length for a predefined symbol
+          // marker is always 1.
+          if (text.length() <= 1) {
+            builder->AppendText(counter, previous_data);
             builder->SetIsSymbolMarker();
-            ++i;
+          } else {
+            // The text must be in the following form:
+            // Symbol, separator, symbol, separator, symbol, ...
+            builder->AppendText(text.Substring(0, 1), counter);
+            builder->SetIsSymbolMarker();
+            const AtomicString& separator = counter->Separator();
+            for (wtf_size_t i = 1; i < text.length();) {
+              if (separator.length() > 0) {
+                DCHECK_EQ(separator, text.Substring(i, separator.length()));
+                builder->AppendText(separator, counter);
+                i += separator.length();
+                DCHECK_LT(i, text.length());
+              }
+              builder->AppendText(text.Substring(i, 1), counter);
+              builder->SetIsSymbolMarker();
+              ++i;
+            }
           }
+        } else {
+          builder->AppendText(counter, previous_data);
         }
-      } else {
-        builder->AppendText(counter, previous_data);
       }
       builder->ClearNeedsLayout(counter);
     } else if (auto* layout_text = DynamicTo<LayoutText>(node)) {
-      builder->AppendText(layout_text, previous_data);
-
-      if (symbol == layout_text || inline_list_item_marker == layout_text) {
-        builder->SetIsSymbolMarker();
+      // TODO(crbug.com/561873): PrimaryFont should not be nullptr.
+      if (ScaledFont(*layout_text).PrimaryFont()) {
+        builder->AppendText(layout_text, previous_data);
+        if (symbol == layout_text || inline_list_item_marker == layout_text) {
+          builder->SetIsSymbolMarker();
+        }
       }
-
       builder->ClearNeedsLayout(layout_text);
     } else if (node->IsFloating()) {
       builder->AppendFloating(node);
@@ -494,7 +506,7 @@ bool SetParagraphTo(const String& text,
 }  // namespace
 
 InlineNode::InlineNode(LayoutBlockFlow* block)
-    : NGLayoutInputNode(block, kInline) {
+    : LayoutInputNode(block, kInline) {
   DCHECK(block);
   DCHECK(block->IsLayoutNGObject());
   if (!block->GetInlineNodeData()) {
@@ -553,7 +565,7 @@ void InlineNode::PrepareLayout(InlineNodeData* previous_data) const {
     AdjustFontForTextCombineUprightAll();
   }
 
-#if DCHECK_IS_ON()
+#if EXPENSIVE_DCHECKS_ARE_ON()
   // ComputeOffsetMappingIfNeeded() runs some integrity checks as part of
   // creating offset mapping. Run the check, and discard the result.
   DCHECK(!data->offset_mapping);
@@ -1539,7 +1551,7 @@ void InlineNode::ShapeTextForFirstLineIfNeeded(InlineNodeData* data) const {
 
   first_line_items->items.AppendVector(data->items);
   for (auto& item : first_line_items->items) {
-    item.SetStyleVariant(NGStyleVariant::kFirstLine);
+    item.SetStyleVariant(StyleVariant::kFirstLine);
   }
   if (data->segments) {
     first_line_items->segments = data->segments->Clone();
@@ -1597,10 +1609,10 @@ void InlineNode::AssociateItemsWithInlines(InlineNodeData* data) const {
   }
 }
 
-const NGLayoutResult* InlineNode::Layout(
-    const NGConstraintSpace& constraint_space,
-    const NGBreakToken* break_token,
-    const NGColumnSpannerPath* column_spanner_path,
+const LayoutResult* InlineNode::Layout(
+    const ConstraintSpace& constraint_space,
+    const BreakToken* break_token,
+    const ColumnSpannerPath* column_spanner_path,
     InlineChildLayoutContext* context) const {
   PrepareLayoutIfNeeded();
 
@@ -1656,7 +1668,7 @@ String InlineNode::TextContentForStickyImagesQuirk(
 
 static LayoutUnit ComputeContentSize(InlineNode node,
                                      WritingMode container_writing_mode,
-                                     const NGConstraintSpace& space,
+                                     const ConstraintSpace& space,
                                      const MinMaxSizesFloatInput& float_input,
                                      LineBreakerMode mode,
                                      LineBreaker::MaxSizeCache* max_size_cache,
@@ -1890,10 +1902,10 @@ static LayoutUnit ComputeContentSize(InlineNode node,
       LayoutObject* floating_object = item.GetLayoutObject();
       DCHECK(floating_object && floating_object->IsFloating());
 
-      NGBlockNode float_node(To<LayoutBox>(floating_object));
+      BlockNode float_node(To<LayoutBox>(floating_object));
 
-      NGMinMaxConstraintSpaceBuilder builder(space, style, float_node,
-                                             /* is_new_fc */ true);
+      MinMaxConstraintSpaceBuilder builder(space, style, float_node,
+                                           /* is_new_fc */ true);
       builder.SetAvailableBlockSize(space.AvailableSize().block_size);
       builder.SetPercentageResolutionBlockSize(
           space.PercentageResolutionBlockSize());
@@ -1965,7 +1977,7 @@ static LayoutUnit ComputeContentSize(InlineNode node,
 
 MinMaxSizesResult InlineNode::ComputeMinMaxSizes(
     WritingMode container_writing_mode,
-    const NGConstraintSpace& space,
+    const ConstraintSpace& space,
     const MinMaxSizesFloatInput& float_input) const {
   PrepareLayoutIfNeeded();
 
@@ -2054,6 +2066,10 @@ void InlineNode::AdjustFontForTextCombineUprightAll() const {
   for (const auto width_variant : kWidthVariants) {
     description.SetWidthVariant(width_variant);
     Font compressed_font(description, font_selector);
+    // TODO(crbug.com/561873): PrimaryFont should not be nullptr.
+    if (!compressed_font.PrimaryFont()) {
+      continue;
+    }
     ShapeText(MutableData(), nullptr, nullptr, &compressed_font);
     if (CalculateWidthForTextCombine(ItemsData(false)) <= desired_width) {
       text_combine.SetCompressedFont(compressed_font);

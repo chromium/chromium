@@ -232,8 +232,24 @@ bool ContentAnalysisDelegate::BypassRequiresJustification() const {
 }
 
 std::u16string ContentAnalysisDelegate::GetBypassJustificationLabel() const {
-  return l10n_util::GetStringUTF16(
-      IDS_DEEP_SCANNING_DIALOG_UPLOAD_BYPASS_JUSTIFICATION_LABEL);
+  int id;
+  switch (access_point_) {
+    case safe_browsing::DeepScanAccessPoint::UPLOAD:
+    case safe_browsing::DeepScanAccessPoint::DRAG_AND_DROP:
+    case safe_browsing::DeepScanAccessPoint::FILE_TRANSFER:
+      id = IDS_DEEP_SCANNING_DIALOG_UPLOAD_BYPASS_JUSTIFICATION_LABEL;
+      break;
+    case safe_browsing::DeepScanAccessPoint::DOWNLOAD:
+      id = IDS_DEEP_SCANNING_DIALOG_DOWNLOAD_BYPASS_JUSTIFICATION_LABEL;
+      break;
+    case safe_browsing::DeepScanAccessPoint::PASTE:
+      id = IDS_DEEP_SCANNING_DIALOG_PASTE_BYPASS_JUSTIFICATION_LABEL;
+      break;
+    case safe_browsing::DeepScanAccessPoint::PRINT:
+      id = IDS_DEEP_SCANNING_DIALOG_PRINT_BYPASS_JUSTIFICATION_LABEL;
+      break;
+  }
+  return l10n_util::GetStringUTF16(id);
 }
 
 absl::optional<std::u16string>
@@ -274,12 +290,10 @@ void ContentAnalysisDelegate::CreateForWebContents(
   Factory* testing_factory = GetFactoryStorage();
   bool wait_for_verdict =
       data.settings.block_until_verdict == BlockUntilVerdict::kBlock;
-
-  bool should_allow_by_default = true;
-#if BUILDFLAG(IS_WIN)
-  should_allow_by_default =
+  bool should_allow_by_default =
       data.settings.default_action == DefaultAction::kAllow;
-#endif
+  DVLOG(1) << __func__
+           << ": should_allow_by_default=" << should_allow_by_default;
 
   // Using new instead of std::make_unique<> to access non public constructor.
   auto delegate = testing_factory->is_null()
@@ -291,34 +305,47 @@ void ContentAnalysisDelegate::CreateForWebContents(
 
   UploadDataStatus upload_data_status = delegate->UploadData();
 
-  // Only show UI if work is in progress in the background, the user must
-  // wait for a verdict.
-  // TODO(b/301996782): Add UI for kNoLocalClientFound case.
-  bool show_ui = upload_data_status == UploadDataStatus::kInProgress &&
-                 wait_for_verdict && (*UIEnabledStorage());
+  // Only show UI if one of the two conditions is met:
+  // 1. work is ongoing in the background and that the user must wait for a
+  // verdict.
+  // 2. work is done and fail-closed conditions are met.
+  bool show_in_progress_ui =
+      upload_data_status == UploadDataStatus::kInProgress && wait_for_verdict &&
+      (*UIEnabledStorage());
+  bool show_fail_closed_ui =
+      delegate->IsFailClosed(upload_data_status, should_allow_by_default) &&
+      (*UIEnabledStorage());
+
+  DVLOG(1) << __func__ << ": show_fail_closed_ui=" << show_fail_closed_ui;
 
   // If the UI is enabled, create the modal dialog.
-  if (show_ui) {
+  if (show_in_progress_ui || show_fail_closed_ui) {
     ContentAnalysisDelegate* delegate_ptr = delegate.get();
     int files_count = delegate_ptr->data_.paths.size();
+
+    // Update the result early if fail-closed is determined, otherwise set it to
+    // the default state.
+    FinalContentAnalysisResult result =
+        show_fail_closed_ui ? FinalContentAnalysisResult::FAIL_CLOSED
+                            : FinalContentAnalysisResult::SUCCESS;
 
     // This dialog is owned by the constrained_window code.
     delegate_ptr->dialog_ = new ContentAnalysisDialog(
         std::move(delegate),
         delegate_ptr->data_.settings.cloud_or_local_settings
             .is_cloud_analysis(),
-        web_contents, access_point, files_count);
+        web_contents, access_point, files_count, result);
     return;
   }
 
   // If local client cannot be found, fail open on all the OS except on Windows
   // (available integration should be installed).
   if (upload_data_status == UploadDataStatus::kNoLocalClientFound) {
-    DVLOG(1) << __func__
-             << ": handled by fail-closed settings, "
-                "should_allow_by_default="
-             << should_allow_by_default;
-    delegate->FillAllResultsWith(should_allow_by_default);
+    bool should_fail_open =
+        delegate->ShouldFailOpenWithoutLocalClient(should_allow_by_default);
+    DVLOG(1) << __func__ << ": no local client found, should_fail_open="
+             << should_fail_open;
+    delegate->FillAllResultsWith(should_fail_open);
     delegate->RunCallback();
   }
 
@@ -329,6 +356,7 @@ void ContentAnalysisDelegate::CreateForWebContents(
     //
     // Supporting "wait for verdict" while not showing a UI makes writing
     // tests for callers of this code easier.
+    DCHECK(delegate->final_result_ != FinalContentAnalysisResult::FAIL_CLOSED);
     delegate->FillAllResultsWith(true);
     delegate->RunCallback();
   }
@@ -391,9 +419,7 @@ ContentAnalysisDelegate::ContentAnalysisDelegate(
   profile_ = Profile::FromBrowserContext(web_contents->GetBrowserContext());
   url_ = web_contents->GetLastCommittedURL();
   title_ = base::UTF16ToUTF8(web_contents->GetTitle());
-  std::string user_action_token = base::RandBytesAsString(128);
-  user_action_id_ =
-      base::HexEncode(user_action_token.data(), user_action_token.size());
+  user_action_id_ = base::HexEncode(base::RandBytesAsVector(128));
   page_content_type_ = web_contents->GetContentsMimeType();
   result_.text_results.resize(data_.text.size(), false);
   result_.image_result = false;
@@ -633,6 +659,28 @@ ContentAnalysisDelegate::UploadData() {
              : UploadDataStatus::kInProgress;
 }
 
+bool ContentAnalysisDelegate::IsFailClosed(UploadDataStatus upload_data_status,
+                                           bool should_allow_by_default) {
+  // Fail-closed can be triggered in two cases:
+  //   1. The final scan result is already updated to fail-closed (when LBUS or
+  //   CBUS cannot upload data and exceed max retry).
+  //   2. LCAC cannot connect to the local agent on Windows.
+  return final_result_ == FinalContentAnalysisResult::FAIL_CLOSED ||
+         (upload_data_status == UploadDataStatus::kNoLocalClientFound &&
+          !ShouldFailOpenWithoutLocalClient(should_allow_by_default));
+}
+
+bool ContentAnalysisDelegate::ShouldFailOpenWithoutLocalClient(
+    bool should_allow_by_default) {
+// Fail-closed settings should only be applied to Windows, otherwise it should
+// fail open.
+#if BUILDFLAG(IS_WIN)
+  return should_allow_by_default;
+#else
+  return true;
+#endif
+}
+
 void ContentAnalysisDelegate::PrepareTextRequest() {
   std::string full_text;
   for (const std::string& text : data_.text)
@@ -792,23 +840,28 @@ void ContentAnalysisDelegate::UploadPageForDeepScanning(
 }
 
 bool ContentAnalysisDelegate::UpdateDialog() {
-  // Only show final result UI in the case of a cloud analysis.
-  // In the local case, the local agent does that.
-  return data_.settings.cloud_or_local_settings.is_cloud_analysis()
-             ? ShowFinalResultInDialog()
-             : CancelDialog();
+  // In the case of fail-closed, show the final result UI regardless of cloud or
+  // local analysis. Otherwise, only show the result for cloud analysis.
+  bool show_ui = final_result_ == FinalContentAnalysisResult::FAIL_CLOSED ||
+                 data_.settings.cloud_or_local_settings.is_cloud_analysis();
+
+  DVLOG(1) << __func__ << ": show_ui=" << show_ui;
+  return show_ui ? ShowFinalResultInDialog() : CancelDialog();
 }
 
 void ContentAnalysisDelegate::MaybeCompleteScanRequest() {
   if (!text_request_complete_ || !image_request_complete_ ||
       !files_request_complete_ || !page_request_complete_) {
+    DVLOG(1) << __func__ << ": scan request is incomplete.";
     return;
   }
 
   // If showing the warning message, wait before running the callback. The
   // callback will be called either in BypassWarnings or Cancel.
-  if (final_result_ != FinalContentAnalysisResult::WARNING)
+  if (final_result_ != FinalContentAnalysisResult::WARNING) {
+    DVLOG(1) << __func__ << ": calling RunCallback()";
     RunCallback();
+  }
 
   AckAllRequests();
 
@@ -824,6 +877,7 @@ void ContentAnalysisDelegate::MaybeCompleteScanRequest() {
   if (!UpdateDialog() && data_uploaded_) {
     // No UI was shown.  Delete |this| to cleanup, unless UploadData isn't done
     // yet.
+    DVLOG(1) << __func__ << ": about to delete `this` to clean up.";
     delete this;
   }
 }

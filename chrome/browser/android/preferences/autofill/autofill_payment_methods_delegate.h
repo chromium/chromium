@@ -24,7 +24,7 @@ class PersonalDataManager;
 class VirtualCardEnrollmentManager;
 
 namespace payments {
-class PaymentsClient;
+class PaymentsNetworkInterface;
 }
 
 // Delegate that listens to changes made in the settings related to payment
@@ -53,10 +53,13 @@ class AutofillPaymentMethodsDelegate {
                            int64_t instrument_id,
                            const JavaParamRef<jobject>& jcallback);
 
+  void DeleteSavedCvcs(JNIEnv* env);
+
  private:
   raw_ptr<Profile> profile_;                            // weak reference
   raw_ptr<PersonalDataManager> personal_data_manager_;  // weak reference
-  std::unique_ptr<payments::PaymentsClient> payments_client_;
+  std::unique_ptr<payments::PaymentsNetworkInterface>
+      payments_network_interface_;
   std::unique_ptr<VirtualCardEnrollmentManager>
       virtual_card_enrollment_manager_;
 };

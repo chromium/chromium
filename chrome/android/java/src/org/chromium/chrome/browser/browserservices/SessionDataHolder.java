@@ -14,13 +14,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.browser.customtabs.CustomTabsSessionToken;
 
+import dagger.Lazy;
+
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-
-import dagger.Lazy;
 
 /**
  * Holds the currently active {@link SessionHandler} and redirects relevant intents
@@ -32,20 +32,16 @@ public class SessionDataHolder {
     private final Lazy<CustomTabsConnection> mConnection;
     private final SparseArray<SessionData> mTaskIdToSessionData = new SparseArray<>();
 
-    @Nullable
-    private SessionHandler mActiveSessionHandler;
+    @Nullable private SessionHandler mActiveSessionHandler;
 
-    @Nullable
-    private Callback<CustomTabsSessionToken> mSessionDisconnectCallback;
+    @Nullable private Callback<CustomTabsSessionToken> mSessionDisconnectCallback;
 
     @Inject
     public SessionDataHolder(Lazy<CustomTabsConnection> connection) {
         mConnection = connection;
     }
 
-    /**
-     * Data associated with a {@link SessionHandler} necessary to pass new intents to it.
-     */
+    /** Data associated with a {@link SessionHandler} necessary to pass new intents to it. */
     private static class SessionData {
         public final CustomTabsSessionToken session;
 
@@ -53,8 +49,8 @@ public class SessionDataHolder {
         // Activity class to be able to route new intents into it.
         public final Class<? extends Activity> activityClass;
 
-        private SessionData(CustomTabsSessionToken session,
-                Class<? extends Activity> activityClass) {
+        private SessionData(
+                CustomTabsSessionToken session, Class<? extends Activity> activityClass) {
             this.session = session;
             this.activityClass = activityClass;
         }
@@ -69,14 +65,13 @@ public class SessionDataHolder {
         CustomTabsSessionToken session = sessionHandler.getSession();
         if (session == null) return;
 
-        mTaskIdToSessionData.append(sessionHandler.getTaskId(),
+        mTaskIdToSessionData.append(
+                sessionHandler.getTaskId(),
                 new SessionData(session, sessionHandler.getActivityClass()));
         ensureSessionCleanUpOnDisconnects();
     }
 
-    /**
-     * Notifies that given {@link SessionHandler} no longer has focus.
-     */
+    /** Notifies that given {@link SessionHandler} no longer has focus. */
     public void removeActiveHandler(SessionHandler sessionHandler) {
         if (mActiveSessionHandler == sessionHandler) {
             mActiveSessionHandler = null;
@@ -92,13 +87,14 @@ public class SessionDataHolder {
      * intent is being launched from, or null if no such Activity present.
      */
     @Nullable
-    public Class<? extends Activity> getActiveHandlerClassInCurrentTask(Intent intent,
-            Context context) {
+    public Class<? extends Activity> getActiveHandlerClassInCurrentTask(
+            Intent intent, Context context) {
         if (!(context instanceof Activity)) return null;
         int taskId = ((Activity) context).getTaskId();
         SessionData handlerDataInCurrentTask = mTaskIdToSessionData.get(taskId);
-        if (handlerDataInCurrentTask == null || !handlerDataInCurrentTask.session.equals(
-                    CustomTabsSessionToken.getSessionTokenFromIntent(intent))) {
+        if (handlerDataInCurrentTask == null
+                || !handlerDataInCurrentTask.session.equals(
+                        CustomTabsSessionToken.getSessionTokenFromIntent(intent))) {
             return null;
         }
         return handlerDataInCurrentTask.activityClass;
@@ -117,9 +113,7 @@ public class SessionDataHolder {
         return handler != null && handler.handleIntent(intent);
     }
 
-    /**
-     * Returns whether the given session is the currently active session.
-     */
+    /** Returns whether the given session is the currently active session. */
     public boolean isActiveSession(@Nullable CustomTabsSessionToken session) {
         return getActiveHandler(session) != null;
     }
@@ -157,16 +151,17 @@ public class SessionDataHolder {
 
     private void ensureSessionCleanUpOnDisconnects() {
         if (mSessionDisconnectCallback != null) return;
-        mSessionDisconnectCallback = (session) -> {
-            if (session == null) {
-                return;
-            }
-            for (int i = 0; i < mTaskIdToSessionData.size(); i++) {
-                if (session.equals(mTaskIdToSessionData.valueAt(i).session)) {
-                    mTaskIdToSessionData.removeAt(i);
-                }
-            }
-        };
+        mSessionDisconnectCallback =
+                (session) -> {
+                    if (session == null) {
+                        return;
+                    }
+                    for (int i = 0; i < mTaskIdToSessionData.size(); i++) {
+                        if (session.equals(mTaskIdToSessionData.valueAt(i).session)) {
+                            mTaskIdToSessionData.removeAt(i);
+                        }
+                    }
+                };
         mConnection.get().setDisconnectCallback(mSessionDisconnectCallback);
     }
 }

@@ -1,7 +1,6 @@
 import pytest
 
 from webdriver.bidi.modules.input import Actions, get_element_origin
-from webdriver.bidi.modules.script import ContextTarget
 
 from .. import get_events
 from . import (
@@ -81,8 +80,6 @@ async def test_touch_pointer_properties(
             width=23,
             height=31,
             pressure=0.78,
-            tilt_x=21,
-            tilt_y=-8,
             twist=355,
         )
         .pointer_move(
@@ -92,8 +89,6 @@ async def test_touch_pointer_properties(
             width=39,
             height=35,
             pressure=0.91,
-            tilt_x=-19,
-            tilt_y=62,
             twist=345,
         )
         .pointer_up(button=0)
@@ -135,17 +130,13 @@ async def test_touch_pointer_properties(
     assert round(events[3]["pressure"], 2) == 0.91
 
 
-async def test_touch_pointer_properties_tilt_twist(
+async def test_touch_pointer_properties_angle_twist(
     bidi_session, top_context, get_element, load_static_test_page
 ):
-    # This test only covers the tilt/twist properties which are
-    # more specific to pen-type pointers, but which the spec allows
-    # for generic touch pointers. Seperating this out gives better
-    # coverage of the basic properties in test_touch_pointer_properties
     await load_static_test_page(page="test_actions_pointer.html")
 
     pointerArea = await get_element("#pointerArea")
-    center = await get_inview_center_bidi(
+    await get_inview_center_bidi(
         bidi_session, context=top_context, element=pointerArea
     )
 
@@ -158,8 +149,8 @@ async def test_touch_pointer_properties_tilt_twist(
             width=23,
             height=31,
             pressure=0.78,
-            tilt_x=21,
-            tilt_y=-8,
+            altitude_angle=1.2,
+            azimuth_angle=6,
             twist=355,
         )
         .pointer_move(
@@ -169,8 +160,8 @@ async def test_touch_pointer_properties_tilt_twist(
             width=39,
             height=35,
             pressure=0.91,
-            tilt_x=-19,
-            tilt_y=62,
+            altitude_angle=0.5,
+            azimuth_angle=1.8,
             twist=345,
         )
         .pointer_up(button=0)
@@ -195,10 +186,10 @@ async def test_touch_pointer_properties_tilt_twist(
         "pointerleave",
     ] == event_types
     assert events[2]["type"] == "pointerdown"
-    assert events[2]["tiltX"] == 21
-    assert events[2]["tiltY"] == -8
+    assert events[2]["tiltX"] == 20
+    assert events[2]["tiltY"] == -6
     assert events[2]["twist"] == 355
     assert events[3]["type"] == "pointermove"
-    assert events[3]["tiltX"] == -19
-    assert events[3]["tiltY"] == 62
+    assert events[3]["tiltX"] == -23
+    assert events[3]["tiltY"] == 61
     assert events[3]["twist"] == 345

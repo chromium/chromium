@@ -21,8 +21,9 @@ public class RemotingNotificationController extends BaseNotificationController {
 
     @Override
     public Intent createContentIntent() {
-        Intent contentIntent = new Intent(
-                ContextUtils.getApplicationContext(), CafExpandedControllerActivity.class);
+        Intent contentIntent =
+                new Intent(
+                        ContextUtils.getApplicationContext(), CafExpandedControllerActivity.class);
         contentIntent.putExtra(
                 MediaNotificationUma.INTENT_EXTRA_NAME, MediaNotificationUma.Source.MEDIA_FLING);
         return contentIntent;

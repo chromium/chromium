@@ -67,9 +67,13 @@ ServiceWorkerHost::ServiceWorkerHost(
   receiver_.Bind(std::move(receiver));
   receiver_.set_disconnect_handler(base::BindOnce(
       &ServiceWorkerHost::RemoteDisconnected, base::Unretained(this)));
+
+  render_process_host_->AddObserver(this);
 }
 
-ServiceWorkerHost::~ServiceWorkerHost() = default;
+ServiceWorkerHost::~ServiceWorkerHost() {
+  render_process_host_->RemoveObserver(this);
+}
 
 // static
 void ServiceWorkerHost::BindReceiver(
@@ -116,10 +120,8 @@ void ServiceWorkerHost::RemoteDisconnected() {
 #if !BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
   permissions_observer_.Reset();
 #endif
-  if (auto* service_worker_host_list = ServiceWorkerHostList::Get(
-          render_process_host_, /*create_if_not_exists=*/false)) {
-    base::EraseIf(service_worker_host_list->list, base::MatchesUniquePtr(this));
-  }
+  Destroy();
+  // This instance has now been destroyed.
 }
 
 void ServiceWorkerHost::DidInitializeServiceWorkerContext(
@@ -258,6 +260,10 @@ mojom::ServiceWorker* ServiceWorkerHost::GetServiceWorker() {
         util::GetServiceWorkerContextForExtensionId(worker_id_.extension_id,
                                                     GetBrowserContext());
     CHECK(context);
+    if (!context->IsLiveRunningServiceWorker(worker_id_.version_id)) {
+      return nullptr;
+    }
+
     context->GetRemoteAssociatedInterfaces(worker_id_.version_id)
         .GetInterface(&remote_);
   }
@@ -271,16 +277,21 @@ void ServiceWorkerHost::OnExtensionPermissionsUpdated(
   if (extension.id() != worker_id_.extension_id) {
     return;
   }
+  content::BrowserContext* browser_context = GetBrowserContext();
+  if (!browser_context) {
+    return;
+  }
   content::ServiceWorkerContext* context =
       util::GetServiceWorkerContextForExtensionId(worker_id_.extension_id,
-                                                  GetBrowserContext());
+                                                  browser_context);
   CHECK(context);
-  if (!context->IsLiveRunningServiceWorker(worker_id_.version_id)) {
+  auto* service_worker_remote = GetServiceWorker();
+  if (!service_worker_remote) {
     return;
   }
 
   const PermissionsData* permissions_data = extension.permissions_data();
-  GetServiceWorker()->UpdatePermissions(
+  service_worker_remote->UpdatePermissions(
       std::move(*permissions_data->active_permissions().Clone()),
       std::move(*permissions_data->withheld_permissions().Clone()));
 }
@@ -300,9 +311,14 @@ void ServiceWorkerHost::OpenChannelToExtension(
   bad_message::ReceivedBadMessage(render_process_host_,
                                   bad_message::LEGACY_IPC_MISMATCH);
 #else
+  content::BrowserContext* browser_context = GetBrowserContext();
+  if (!browser_context) {
+    return;
+  }
+
   MessageServiceApi::GetMessageService()->OpenChannelToExtension(
-      GetBrowserContext(), worker_id_, port_id, *info, channel_type,
-      channel_name, std::move(port), std::move(port_host));
+      browser_context, worker_id_, port_id, *info, channel_type, channel_name,
+      std::move(port), std::move(port_host));
 #endif
 }
 
@@ -318,16 +334,21 @@ void ServiceWorkerHost::OpenChannelToNativeApp(
   bad_message::ReceivedBadMessage(render_process_host_,
                                   bad_message::LEGACY_IPC_MISMATCH);
 #else
+  content::BrowserContext* browser_context = GetBrowserContext();
+  if (!browser_context) {
+    return;
+  }
+
   MessageServiceApi::GetMessageService()->OpenChannelToNativeApp(
-      GetBrowserContext(), worker_id_, port_id, native_app_name,
-      std::move(port), std::move(port_host));
+      browser_context, worker_id_, port_id, native_app_name, std::move(port),
+      std::move(port_host));
 #endif
 }
 
 void ServiceWorkerHost::OpenChannelToTab(
     int32_t tab_id,
     int32_t frame_id,
-    const absl::optional<std::string>& document_id,
+    const std::optional<std::string>& document_id,
     extensions::mojom::ChannelType channel_type,
     const std::string& channel_name,
     const PortId& port_id,
@@ -340,11 +361,36 @@ void ServiceWorkerHost::OpenChannelToTab(
   bad_message::ReceivedBadMessage(render_process_host_,
                                   bad_message::LEGACY_IPC_MISMATCH);
 #else
+  content::BrowserContext* browser_context = GetBrowserContext();
+  if (!browser_context) {
+    return;
+  }
+
   MessageServiceApi::GetMessageService()->OpenChannelToTab(
-      GetBrowserContext(), worker_id_, port_id, tab_id, frame_id,
+      browser_context, worker_id_, port_id, tab_id, frame_id,
       document_id ? *document_id : std::string(), channel_type, channel_name,
       std::move(port), std::move(port_host));
 #endif
+}
+
+void ServiceWorkerHost::Destroy() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  auto* service_worker_host_list = ServiceWorkerHostList::Get(
+      render_process_host_, /*create_if_not_exists=*/false);
+  CHECK(service_worker_host_list);
+  // base::EraseIf will lead to a call to the destructor for this object.
+  base::EraseIf(service_worker_host_list->list, base::MatchesUniquePtr(this));
+}
+
+void ServiceWorkerHost::RenderProcessExited(
+    content::RenderProcessHost* host,
+    const content::ChildProcessTerminationInfo& info) {
+  CHECK_EQ(host, render_process_host_);
+  // TODO(crbug.com/1407197): Investigate clearing the user data from
+  // RenderProcessHostImpl::Cleanup.
+  Destroy();
+  // This instance has now been deleted.
 }
 
 }  // namespace extensions

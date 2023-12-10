@@ -59,11 +59,10 @@ static_library("browser") {
       "//sandbox/linux:suid_sandbox_client",
     ]
 
-    # TODO(https://crbug.com/1299021): This dependency might be redundant
-    # given that we were able to disable it, apparently without negative
-    # consequences, for the ARM32-NaCl-on-ARM64 case.
     if (target_cpu != "arm64") {
       deps += [ "//components/nacl/loader:nacl_helper_integration" ]
+    } else {
+      deps += [ "//components/nacl/loader:nacl_helper" ]
     }
   }
 }

@@ -10,16 +10,14 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import jp.tomorrowkey.android.gifplayer.BaseGifImage;
+
 import org.chromium.base.Callback;
 import org.chromium.base.DiscardableReferencePool;
 import org.chromium.components.browser_ui.util.BitmapCache;
 import org.chromium.components.browser_ui.util.ConversionUtils;
 
-import jp.tomorrowkey.android.gifplayer.BaseGifImage;
-
-/**
- * ImageFetcher implementation with an in-memory cache. Can also be configured to use a disk cache.
- */
+/** ImageFetcher implementation with an in-memory cache. Can also be configured to use a disk cache. */
 public class InMemoryCachedImageFetcher extends ImageFetcher {
     public static final int DEFAULT_CACHE_SIZE = 20 * ConversionUtils.BYTES_PER_MEGABYTE; // 20mb
     private static final float PORTION_OF_AVAILABLE_MEMORY = 1.f / 8.f;
@@ -36,10 +34,14 @@ public class InMemoryCachedImageFetcher extends ImageFetcher {
      * @param cacheSize The cache size to use (in bytes), may be smaller depending on the device's
      *         memory.
      */
-    InMemoryCachedImageFetcher(@NonNull ImageFetcher imageFetcher,
-            @NonNull DiscardableReferencePool referencePool, int cacheSize) {
-        this(imageFetcher,
-                new BitmapCache(referencePool,
+    InMemoryCachedImageFetcher(
+            @NonNull ImageFetcher imageFetcher,
+            @NonNull DiscardableReferencePool referencePool,
+            int cacheSize) {
+        this(
+                imageFetcher,
+                new BitmapCache(
+                        referencePool,
                         InMemoryCachedImageFetcher.determineCacheSize(
                                 Runtime.getRuntime(), cacheSize)));
     }
@@ -55,11 +57,10 @@ public class InMemoryCachedImageFetcher extends ImageFetcher {
         mBitmapCache = bitmapCache;
         mImageFetcher = imageFetcher;
 
-        @ImageFetcherConfig
-        int underlyingConfig = mImageFetcher.getConfig();
+        @ImageFetcherConfig int underlyingConfig = mImageFetcher.getConfig();
         assert (underlyingConfig == ImageFetcherConfig.NETWORK_ONLY
-                || underlyingConfig == ImageFetcherConfig.DISK_CACHE_ONLY)
-            : "Invalid underlying config for InMemoryCachedImageFetcher";
+                        || underlyingConfig == ImageFetcherConfig.DISK_CACHE_ONLY)
+                : "Invalid underlying config for InMemoryCachedImageFetcher";
 
         // Determine the config based on the composited image fetcher.
         if (mImageFetcher.getConfig() == ImageFetcherConfig.NETWORK_ONLY) {
@@ -97,10 +98,17 @@ public class InMemoryCachedImageFetcher extends ImageFetcher {
         Bitmap cachedBitmap =
                 tryToGetBitmap(params.url, params.shouldResize, params.width, params.height);
         if (cachedBitmap == null) {
-            mImageFetcher.fetchImage(params, (@Nullable Bitmap bitmap) -> {
-                storeBitmap(bitmap, params.url, params.shouldResize, params.width, params.height);
-                callback.onResult(bitmap);
-            });
+            mImageFetcher.fetchImage(
+                    params,
+                    (@Nullable Bitmap bitmap) -> {
+                        storeBitmap(
+                                bitmap,
+                                params.url,
+                                params.shouldResize,
+                                params.width,
+                                params.height);
+                        callback.onResult(bitmap);
+                    });
         } else {
             reportEvent(params.clientName, ImageFetcherEvent.JAVA_IN_MEMORY_CACHE_HIT);
             callback.onResult(cachedBitmap);
@@ -151,8 +159,12 @@ public class InMemoryCachedImageFetcher extends ImageFetcher {
      *     If `url` is a multi-resolution image such as an .ico, `desiredHeight` is used to select
      *     the multi-resolution image frame.
      */
-    private void storeBitmap(@Nullable Bitmap bitmap, String url, boolean wasResized,
-            int desiredWidth, int desiredHeight) {
+    private void storeBitmap(
+            @Nullable Bitmap bitmap,
+            String url,
+            boolean wasResized,
+            int desiredWidth,
+            int desiredHeight) {
         if (bitmap == null || mBitmapCache == null) {
             return;
         }
@@ -194,8 +206,11 @@ public class InMemoryCachedImageFetcher extends ImageFetcher {
         long allocatedMemory = runtime.totalMemory() - runtime.freeMemory();
         long freeMemory = runtime.maxMemory() - allocatedMemory;
 
-        int maxCacheSize = (int) Math.max(/* Make sure the cache is at least 1 byte. */ 1,
-                freeMemory * PORTION_OF_AVAILABLE_MEMORY);
+        int maxCacheSize =
+                (int)
+                        Math.max(
+                                /* Make sure the cache is at least 1 byte. */ 1,
+                                freeMemory * PORTION_OF_AVAILABLE_MEMORY);
 
         return Math.min(maxCacheSize, preferredCacheSize);
     }

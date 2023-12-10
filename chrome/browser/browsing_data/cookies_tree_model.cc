@@ -66,10 +66,6 @@
 #include "extensions/common/extension_set.h"
 #endif
 
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-#include "chrome/browser/supervised_user/supervised_user_service_factory.h"
-#include "components/supervised_user/core/browser/supervised_user_service.h"
-#endif
 namespace {
 
 struct NodeTitleComparator {
@@ -1698,27 +1694,7 @@ void CookiesTreeModel::MaybeNotifyBatchesEnded() {
 // static
 browsing_data::CookieHelper::IsDeletionDisabledCallback
 CookiesTreeModel::GetCookieDeletionDisabledCallback(Profile* profile) {
-  if (base::FeatureList::IsEnabled(
-          supervised_user::kClearingCookiesKeepsSupervisedUsersSignedIn)) {
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-    return base::BindRepeating(
-        [](content::BrowserContext* browser_context, const GURL& url) {
-          supervised_user::SupervisedUserService* supervised_user_service =
-              SupervisedUserServiceFactory::GetForBrowserContext(
-                  browser_context);
-          if (!supervised_user_service) {
-            // For some Profiles (eg. Incognito), SupervisedUserService is not
-            // created.
-            return false;
-          }
-          return supervised_user_service->IsCookieDeletionDisabled(url);
-        },
-        profile);
-#else
-    return base::NullCallback();
-#endif
-  }
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
   if (profile->IsChild()) {
     return base::BindRepeating(
         [](permissions::PermissionsClient* client,

@@ -9,9 +9,7 @@ import org.jni_zero.JNINamespace;
 
 import org.chromium.components.segmentation_platform.proto.SegmentationProto.SegmentId;
 
-/**
- * Provides JNI conversion methods for public data types provided by segmentation platform.
- */
+/** Provides JNI conversion methods for public data types provided by segmentation platform. */
 @JNINamespace("segmentation_platform")
 public class SegmentationPlatformConversionBridge {
     @CalledByNative

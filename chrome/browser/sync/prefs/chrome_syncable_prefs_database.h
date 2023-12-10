@@ -5,6 +5,9 @@
 #ifndef CHROME_BROWSER_SYNC_PREFS_CHROME_SYNCABLE_PREFS_DATABASE_H_
 #define CHROME_BROWSER_SYNC_PREFS_CHROME_SYNCABLE_PREFS_DATABASE_H_
 
+#include <map>
+
+#include "base/strings/string_piece.h"
 #include "components/sync_preferences/common_syncable_prefs_database.h"
 #include "components/sync_preferences/syncable_prefs_database.h"
 
@@ -17,6 +20,9 @@ class ChromeSyncablePrefsDatabase
   // syncable.
   absl::optional<sync_preferences::SyncablePrefMetadata>
   GetSyncablePrefMetadata(const std::string& pref_name) const override;
+
+  std::map<base::StringPiece, sync_preferences::SyncablePrefMetadata>
+  GetAllSyncablePrefsForTest() const;
 
  private:
   // This defines the list of preferences that are syncable across all

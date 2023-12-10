@@ -161,9 +161,8 @@ void ManagedSimLockNotifier::Close(bool by_user) {
   }
 }
 
-void ManagedSimLockNotifier::Click(
-    const absl::optional<int>& button_index,
-    const absl::optional<std::u16string>& reply) {
+void ManagedSimLockNotifier::Click(const std::optional<int>& button_index,
+                                   const std::optional<std::u16string>& reply) {
   CellularMetricsLogger::RecordSimLockNotificationEvent(
       CellularMetricsLogger::SimLockNotificationEvent::kClicked);
 

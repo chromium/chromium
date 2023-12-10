@@ -23,8 +23,9 @@ public class NoSystemGestureFrameLayout extends FrameLayout {
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         super.onLayout(changed, left, top, right, bottom);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            setSystemGestureExclusionRects(Collections.singletonList(
-                    new Rect(0, 0, Math.abs(right - left), Math.abs(top - bottom))));
+            setSystemGestureExclusionRects(
+                    Collections.singletonList(
+                            new Rect(0, 0, Math.abs(right - left), Math.abs(top - bottom))));
         }
     }
 }

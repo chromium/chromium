@@ -14,9 +14,7 @@ import androidx.annotation.NonNull;
  * compositor. Used to implement WebXR's DOM Overlay mode correctly.
  */
 public interface ArCompositorDelegate {
-    /**
-     * Enables/disables immersive AR mode in the compositor.
-     */
+    /** Enables/disables immersive AR mode in the compositor. */
     void setOverlayImmersiveArMode(boolean enabled, boolean domSurfaceNeedsConfiguring);
 
     /**

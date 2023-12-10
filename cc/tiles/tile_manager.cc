@@ -10,6 +10,7 @@
 #include <limits>
 #include <string>
 
+#include <optional>
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -43,7 +44,6 @@
 #include "cc/tiles/tile_priority.h"
 #include "cc/tiles/tiles_with_resource_iterator.h"
 #include "components/viz/common/resources/resource_sizes.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/axis_transform2d.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 
@@ -1484,7 +1484,7 @@ scoped_refptr<TileTask> TileManager::CreateRasterTask(
           has_at_raster_images, has_hardware_accelerated_jpeg_candidates,
           has_hardware_accelerated_webp_candidates);
 
-  absl::optional<PlaybackImageProvider::Settings> settings;
+  std::optional<PlaybackImageProvider::Settings> settings;
   if (!skip_images) {
     settings.emplace();
     settings->images_to_skip = std::move(images_to_skip);

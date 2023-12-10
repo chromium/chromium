@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+Found 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] PerformanceResourceTiming interface: default toJSON operation on resource
+  assert_true: property "id" should be present in the output of PerformanceResourceTiming.prototype.toJSON() expected true got false
+Harness: the test ran to completion.
+

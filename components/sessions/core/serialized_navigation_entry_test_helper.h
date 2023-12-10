@@ -89,10 +89,6 @@ class SerializedNavigationEntryTestHelper {
 
   static void SetTimestamp(base::Time timestamp,
                            SerializedNavigationEntry* navigation);
-
-  static void SetReplacedEntryData(
-      const SerializedNavigationEntry::ReplacedNavigationEntryData& data,
-      SerializedNavigationEntry* navigation);
 };
 
 }  // namespace sessions

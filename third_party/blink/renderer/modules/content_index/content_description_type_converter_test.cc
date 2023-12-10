@@ -8,6 +8,7 @@
 #include "third_party/blink/public/mojom/content_index/content_index.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_content_description.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_content_icon_definition.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -63,6 +64,7 @@ bool operator==(const ContentDescription& cd1, const ContentDescription& cd2) {
 }
 
 TEST(ContentDescriptionConversionTest, RoundTrip) {
+  test::TaskEnvironment task_environment;
   auto* description = CreateDescription("homepage", "https://example.com/");
   auto mojo_description = mojom::blink::ContentDescription::From(description);
   ASSERT_TRUE(mojo_description);
@@ -72,6 +74,7 @@ TEST(ContentDescriptionConversionTest, RoundTrip) {
 }
 
 TEST(ContentDescriptionConversionTest, EnumRoundTrip) {
+  test::TaskEnvironment task_environment;
   WTF::Vector<WTF::String> categories = {"homepage", "article", "video",
                                          "audio"};
   for (const auto& category : categories) {

@@ -2,8 +2,6 @@
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file. */
 
-/* Derived from /ui/webui/resources/css/menu.css. */
-
 cr-menu {
   position: fixed;
   white-space: nowrap;

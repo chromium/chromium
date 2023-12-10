@@ -11,6 +11,8 @@ struct App {
 
   string name;
 
+  app_management.mojom.AppType type;
+
   map<app_management.mojom.PermissionType,
       app_management.mojom.Permission> permissions;
 };
@@ -22,6 +24,9 @@ interface AppPermissionsHandler {
 
   // Returns app list.
   GetApps() => (array<App> apps);
+
+  // Opens native settings page for the app with id `app_id`.
+  OpenNativeSettings(string app_id);
 
   // Updates permission of the app specified by the `app_id`.
   SetPermission(string app_id, app_management.mojom.Permission permission);

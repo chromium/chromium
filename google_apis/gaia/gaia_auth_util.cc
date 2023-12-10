@@ -134,7 +134,7 @@ bool ParseListAccountsData(base::StringPiece data,
     signed_out_accounts->clear();
 
   // Parse returned data and make sure we have data.
-  absl::optional<base::Value> value = base::JSONReader::Read(data);
+  std::optional<base::Value> value = base::JSONReader::Read(data);
   if (!value)
     return false;
 

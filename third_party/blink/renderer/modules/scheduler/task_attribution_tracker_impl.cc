@@ -60,52 +60,31 @@ TaskAttributionInfo* TaskAttributionTrackerImpl::RunningTask(
   return task_state ? task_state->GetTask() : running_task_.Get();
 }
 
-template <typename F>
-TaskAttributionTracker::AncestorStatus
-TaskAttributionTrackerImpl::IsAncestorInternal(
-    ScriptState* script_state,
-    F is_ancestor,
-    const TaskAttributionInfo* task) {
-  DCHECK(script_state);
-  if (!script_state->World().IsMainWorld()) {
-    // As RunningTask will not return a TaskAttributionInfo for
-    // non-main-world tasks, there's no point in testing their ancestry.
-    return AncestorStatus::kNotAncestor;
-  }
+bool TaskAttributionTrackerImpl::IsAncestor(const TaskAttributionInfo& task,
+                                            TaskAttributionId ancestor_id) {
+  const TaskAttributionInfo* ancestor_task = nullptr;
+  ForEachAncestor(task, [&](const TaskAttributionInfo& ancestor) {
+    if (ancestor.Id() == ancestor_id) {
+      ancestor_task = &ancestor;
+      return IterationStatus::kStop;
+    }
+    return IterationStatus::kContinue;
+  });
+  return !!ancestor_task;
+}
 
-  const TaskAttributionInfo* current_task =
-      task ? task : RunningTask(script_state);
-
+void TaskAttributionTrackerImpl::ForEachAncestor(
+    const TaskAttributionInfo& task,
+    base::FunctionRef<IterationStatus(const TaskAttributionInfo& task)>
+        visitor) {
+  const TaskAttributionInfo* current_task = &task;
   while (current_task) {
     const TaskAttributionInfo* parent_task = current_task->Parent();
-    if (is_ancestor(current_task->Id())) {
-      return AncestorStatus::kAncestor;
+    if (visitor(*current_task) == IterationStatus::kStop) {
+      return;
     }
     current_task = parent_task;
   }
-  return AncestorStatus::kNotAncestor;
-}
-
-TaskAttributionTracker::AncestorStatus TaskAttributionTrackerImpl::IsAncestor(
-    ScriptState* script_state,
-    TaskAttributionId ancestor_id) {
-  return IsAncestorInternal(
-      script_state,
-      [&](const TaskAttributionId& task_id) { return task_id == ancestor_id; },
-      /*task=*/nullptr);
-}
-
-TaskAttributionTracker::AncestorStatus
-TaskAttributionTrackerImpl::HasAncestorInSet(
-    ScriptState* script_state,
-    const WTF::HashSet<scheduler::TaskAttributionIdType>& set,
-    const TaskAttributionInfo& task) {
-  return IsAncestorInternal(
-      script_state,
-      [&](const TaskAttributionId& task_id) {
-        return set.Contains(task_id.value());
-      },
-      &task);
 }
 
 std::unique_ptr<TaskAttributionTracker::TaskScope>
@@ -126,14 +105,20 @@ TaskAttributionTrackerImpl::CreateTaskScope(ScriptState* script_state,
   ScriptWrappableTaskState* continuation_task_state_to_be_restored =
       GetCurrentTaskContinuationData(script_state);
 
-  next_task_id_ = next_task_id_.NextId();
-  running_task_ =
-      MakeGarbageCollected<TaskAttributionInfo>(next_task_id_, parent_task);
+  // This compresses the task graph when encountering long task chains.
+  // TODO(crbug.com/1501999): Consider compressing the task graph further.
+  if (!parent_task || !parent_task->MaxChainLengthReached()) {
+    next_task_id_ = next_task_id_.NextId();
+    running_task_ =
+        MakeGarbageCollected<TaskAttributionInfo>(next_task_id_, parent_task);
+  } else {
+    running_task_ = parent_task;
+  }
 
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
   for (Observer* observer : observers_) {
     if (observer->GetExecutionContext() == execution_context) {
-      observer->OnCreateTaskScope(*running_task_);
+      observer->OnCreateTaskScope(*running_task_, script_state);
     }
   }
 
@@ -142,10 +127,11 @@ TaskAttributionTrackerImpl::CreateTaskScope(ScriptState* script_state,
                         running_task_.Get(), abort_source, priority_source));
 
   return std::make_unique<TaskScopeImpl>(
-      script_state, this, next_task_id_, running_task_to_be_restored,
+      script_state, this, running_task_->Id(), running_task_to_be_restored,
       continuation_task_state_to_be_restored, type,
-      parent_task ? absl::optional<TaskAttributionId>(parent_task->Id())
-                  : absl::nullopt);
+      running_task_->Parent()
+          ? absl::optional<TaskAttributionId>(running_task_->Parent()->Id())
+          : absl::nullopt);
 }
 
 void TaskAttributionTrackerImpl::TaskScopeCompleted(

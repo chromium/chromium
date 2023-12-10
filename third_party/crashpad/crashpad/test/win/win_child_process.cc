@@ -20,6 +20,7 @@
 #include <string>
 #include <utility>
 
+#include "base/check.h"
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"

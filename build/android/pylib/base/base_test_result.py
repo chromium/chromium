@@ -15,9 +15,9 @@ from lib.results import result_types  # pylint: disable=import-error
 # This must match the source adding the suffix: bit.ly/3Zmwwyx
 MULTIPROCESS_SUFFIX = '__multiprocess_mode'
 
-# This must match the source adding the suffix (TODO(zbikowski): add link)
-_NULL_MUTATION_SUFFIX = '_null_'
-_MUTATION_SUFFIX_PATTERN = re.compile(r'^(.*)_([a-zA-Z]+)\.\.([a-zA-Z]+)_$')
+# This must match the source adding the suffix: bit.ly/3Qt0Ww4
+_NULL_MUTATION_SUFFIX = '__null_'
+_MUTATION_SUFFIX_PATTERN = re.compile(r'^(.*)__([a-zA-Z]+)\.\.([a-zA-Z]+)_$')
 
 
 class ResultType:
@@ -98,13 +98,13 @@ class BaseTestResult:
     # The name can include suffixes encoding Webview variant data:
     # a Webview multiprocess mode suffix and an AwSettings mutation suffix.
     # If both are present, the mutation suffix will come after the multiprocess
-    # suffix. The mutation suffix can either be "_null_" or "_{key}..{value}_".
+    # suffix. The mutation suffix can either be "__null_" or "__{key}..{value}_"
     #
     # Examples:
-    # (...)AwSettingsTest#testAssetUrl__multiprocess_mode_allMutations..true_
-    # (...)AwSettingsTest#testAssetUrl__multiprocess_mode_null_
-    # (...)AwSettingsTest#testAssetUrl_allMutations..true_
-    # org.chromium.android_webview.test.AwSettingsTest#testAssetUrl_null_
+    # (...)AwSettingsTest#testAssetUrl__multiprocess_mode__allMutations..true_
+    # (...)AwSettingsTest#testAssetUrl__multiprocess_mode__null_
+    # (...)AwSettingsTest#testAssetUrl__allMutations..true_
+    # org.chromium.android_webview.test.AwSettingsTest#testAssetUrl__null_
 
     # first, strip any AwSettings mutation parameter information
     # from the RHS of the raw_name

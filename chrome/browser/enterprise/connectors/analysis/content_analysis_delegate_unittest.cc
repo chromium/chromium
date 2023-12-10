@@ -46,7 +46,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
-#include "chrome/browser/enterprise/connectors/analysis/fake_content_analysis_sdk_manager.h"  // nogncheck
+#include "chrome/browser/enterprise/connectors/test/fake_content_analysis_sdk_manager.h"  // nogncheck
 #endif
 
 namespace enterprise_connectors {
@@ -1440,8 +1440,10 @@ class ContentAnalysisDelegateResultHandlingTest
     return is_cloud() ? "google" : "local_system_agent";
   }
 
+  bool should_fail_closed() const { return std::get<2>(GetParam()); }
+
   const char* default_action_setting() const {
-    return std::get<2>(GetParam()) ? "block" : "allow";
+    return should_fail_closed() ? "block" : "allow";
   }
 
   ContentAnalysisResponse ConnectorStatusCallback(const std::string& contents,
@@ -1453,6 +1455,18 @@ class ContentAnalysisDelegateResultHandlingTest
  protected:
   ScopedSetDMToken scoped_dm_token_{
       policy::DMToken::CreateValidToken(kDmToken)};
+
+  bool ResultIsFailClosed(safe_browsing::BinaryUploadService::Result result) {
+    return result ==
+               safe_browsing::BinaryUploadService::Result::UPLOAD_FAILURE ||
+           result == safe_browsing::BinaryUploadService::Result::TIMEOUT ||
+           result == safe_browsing::BinaryUploadService::Result::
+                         FAILED_TO_GET_TOKEN ||
+           result ==
+               safe_browsing::BinaryUploadService::Result::TOO_MANY_REQUESTS ||
+           result == safe_browsing::BinaryUploadService::Result::UNKNOWN;
+  }
+
 #if BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
   // This installs a fake SDK manager that creates fake SDK clients when
   // its GetClient() method is called. This is needed so that calls to
@@ -1495,8 +1509,16 @@ TEST_P(ContentAnalysisDelegateResultHandlingTest, Test) {
   RunUntilDone();
   EXPECT_TRUE(called);
 
-  EXPECT_EQ(is_cloud(), test::FakeContentAnalysisDelegate::WasDialogShown());
-  EXPECT_NE(is_cloud(), test::FakeContentAnalysisDelegate::WasDialogCanceled());
+  // Dialog should be shown for fail-close cases, regardless of local or cloud,
+  // otherwise dialog should be hidden for local analysis.
+  if (ResultIsFailClosed(result()) && should_fail_closed()) {
+    EXPECT_TRUE(test::FakeContentAnalysisDelegate::WasDialogShown());
+    EXPECT_FALSE(test::FakeContentAnalysisDelegate::WasDialogCanceled());
+  } else {
+    EXPECT_EQ(is_cloud(), test::FakeContentAnalysisDelegate::WasDialogShown());
+    EXPECT_NE(is_cloud(),
+              test::FakeContentAnalysisDelegate::WasDialogCanceled());
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(

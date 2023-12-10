@@ -78,7 +78,7 @@ class MockDecoder : public VideoDecoderMixin {
  public:
   MockDecoder()
       : VideoDecoderMixin(std::make_unique<MockMediaLog>(),
-                          base::SingleThreadTaskRunner::GetCurrentDefault(),
+                          base::SequencedTaskRunner::GetCurrentDefault(),
                           base::WeakPtr<VideoDecoderMixin::Client>(nullptr)) {}
   ~MockDecoder() override = default;
 
@@ -196,7 +196,8 @@ class VideoDecoderPipelineTest
         std::make_unique<MockMediaLog>(),
         // This callback needs to be configured in the individual tests.
         base::BindOnce(&VideoDecoderPipelineTest::CreateNullMockDecoder),
-        /*uses_oop_video_decoder=*/false));
+        /*uses_oop_video_decoder=*/false,
+        /*in_video_decoder_process=*/true));
 
     SetSupportedVideoDecoderConfigs({SupportedVideoDecoderConfig(
         /*profile_min,=*/VP8PROFILE_ANY,

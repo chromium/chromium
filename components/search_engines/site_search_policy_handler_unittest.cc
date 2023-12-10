@@ -19,6 +19,7 @@
 #include "components/prefs/pref_value_map.h"
 #include "components/search_engines/default_search_manager.h"
 #include "components/search_engines/enterprise_site_search_manager.h"
+#include "components/search_engines/template_url_data.h"
 #include "components/strings/grit/components_strings.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -37,6 +38,7 @@ struct TestProvider {
   const char* name;
   const char* shortcut;
   const char* url;
+  bool featured_by_policy = false;
   const char* favicon;
 };
 
@@ -45,6 +47,7 @@ TestProvider kValidTestProviders[] = {
     {.name = "work name",
      .shortcut = "work",
      .url = "https://work.com/{searchTerms}",
+     .featured_by_policy = true,
      .favicon = "https://work.com/favicon.ico"},
     {.name = "docs name",
      .shortcut = "docs",
@@ -83,6 +86,14 @@ TestProvider kEmptyFieldTestProviders[] = {
      .shortcut = "empty_url",
      .url = "",
      .favicon = nullptr},
+};
+
+// Used for tests that require a provider with unknown field.
+TestProvider kUnknownFieldTestProviders[] = {
+    {.name = "work name",
+     .shortcut = "work",
+     .url = "https://work.com/{searchTerms}",
+     .favicon = "https://work.com/favicon.ico"},
 };
 
 // Used for tests that require a list of providers with a duplicated shortcut,
@@ -174,14 +185,24 @@ TestProvider kShortcutSameAsDSPKeywordTestProviders[] = {
      .favicon = "https://work.com/favicon.ico"},
 };
 
+// Used for tests that require a provider with non-HTTPS URL.
+TestProvider kNonHttpsUrlTestProviders[] = {
+    {.name = "work name",
+     .shortcut = "work",
+     .url = "http://work.com/q={searchTerms}",
+     .favicon = "http://work.com/favicon.ico"},
+};
+
 // Creates a simple list item for the site search policy.
 base::Value::Dict GenerateSiteSearchPolicyEntry(const std::string& name,
                                                 const std::string& shortcut,
-                                                const std::string& url) {
+                                                const std::string& url,
+                                                bool featured_by_policy) {
   base::Value::Dict entry;
   entry.Set(SiteSearchPolicyHandler::kName, name);
   entry.Set(SiteSearchPolicyHandler::kShortcut, shortcut);
   entry.Set(SiteSearchPolicyHandler::kUrl, url);
+  entry.Set(SiteSearchPolicyHandler::kFeatured, featured_by_policy);
   return entry;
 }
 
@@ -196,6 +217,7 @@ base::Value::Dict GenerateSiteSearchPolicyEntry(TestProvider test_case) {
   if (test_case.url) {
     entry.Set(SiteSearchPolicyHandler::kUrl, test_case.url);
   }
+  entry.Set(SiteSearchPolicyHandler::kFeatured, test_case.featured_by_policy);
   return entry;
 }
 
@@ -227,6 +249,19 @@ MATCHER_P2(HasBooleanField,
 
 // Accepts a dictionary that has a double field `field_name` with non-zero
 // value.
+MATCHER_P2(HasIntegerField,
+           field_name,
+           expected_value,
+           base::StringPrintf("%s integer field `%s` with value `%d`",
+                              negation ? "does not contain" : "contains",
+                              field_name,
+                              expected_value)) {
+  absl::optional<int> dict_value = (arg).GetDict().FindInt(field_name);
+  return dict_value && *dict_value == expected_value;
+}
+
+// Accepts a dictionary that has a double field `field_name` with non-zero
+// value.
 MATCHER_P(HasDoubleField,
           field_name,
           base::StringPrintf("%s double field `%s` with non-zero value",
@@ -243,7 +278,11 @@ testing::Matcher<const base::Value&> IsSiteSearchEntry(TestProvider test_case) {
       HasStringField(DefaultSearchManager::kShortName, test_case.name),
       HasStringField(DefaultSearchManager::kKeyword, test_case.shortcut),
       HasStringField(DefaultSearchManager::kURL, test_case.url),
-      HasBooleanField(DefaultSearchManager::kCreatedByPolicy, true),
+      HasBooleanField(DefaultSearchManager::kFeaturedByPolicy,
+                      test_case.featured_by_policy),
+      HasIntegerField(
+          DefaultSearchManager::kCreatedByPolicy,
+          static_cast<int>(TemplateURLData::CreatedByPolicy::kSiteSearch)),
       HasBooleanField(DefaultSearchManager::kEnforcedByPolicy, false),
       HasStringField(DefaultSearchManager::kFaviconURL, test_case.favicon),
       HasBooleanField(DefaultSearchManager::kSafeForAutoReplace, false),
@@ -381,7 +420,8 @@ TEST(SiteSearchPolicyHandlerTest, TooManySiteSearchEntries) {
   for (int i = 0; i <= SiteSearchPolicyHandler::kMaxSiteSearchProviders; ++i) {
     policy_value.Append(GenerateSiteSearchPolicyEntry(
         base::StringPrintf("shortcut_%d", i), base::StringPrintf("name %d", i),
-        base::StringPrintf("https://site_%d.com/q={searchTerms}", i)));
+        base::StringPrintf("https://site_%d.com/q={searchTerms}", i),
+        /*featured_by_policy=*/false));
   }
 
   policies.Set(key::kSiteSearchSettings, policy::POLICY_LEVEL_MANDATORY,
@@ -394,6 +434,39 @@ TEST(SiteSearchPolicyHandlerTest, TooManySiteSearchEntries) {
                   IDS_POLICY_SITE_SEARCH_SETTINGS_MAX_PROVIDERS_LIMIT_ERROR,
                   base::NumberToString16(
                       SiteSearchPolicyHandler::kMaxSiteSearchProviders))));
+}
+
+TEST(SiteSearchPolicyHandlerTest, TooManyFeaturedSiteSearchEntries) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(omnibox::kSiteSearchSettingsPolicy);
+
+  SiteSearchPolicyHandler handler(
+      policy::Schema::Wrap(policy::GetChromeSchemaData()));
+
+  policy::PolicyMap policies;
+  PolicyErrorMap errors;
+  PrefValueMap prefs;
+
+  // Policy value has one featured list entry over the max allowed.
+  base::Value::List policy_value;
+  for (int i = 0; i <= SiteSearchPolicyHandler::kMaxFeaturedProviders; ++i) {
+    policy_value.Append(GenerateSiteSearchPolicyEntry(
+        base::StringPrintf("shortcut_%d", i), base::StringPrintf("name %d", i),
+        base::StringPrintf("https://site_%d.com/q={searchTerms}", i),
+        /*featured_by_policy=*/true));
+  }
+
+  policies.Set(key::kSiteSearchSettings, policy::POLICY_LEVEL_MANDATORY,
+               policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
+               base::Value(std::move(policy_value)), nullptr);
+
+  ASSERT_FALSE(handler.CheckPolicySettings(policies, &errors));
+  EXPECT_THAT(
+      &errors,
+      HasValidationError(l10n_util::GetStringFUTF16(
+          IDS_POLICY_SITE_SEARCH_SETTINGS_MAX_FEATURED_PROVIDERS_LIMIT_ERROR,
+          base::NumberToString16(
+              SiteSearchPolicyHandler::kMaxFeaturedProviders))));
 }
 
 TEST(SiteSearchPolicyHandlerTest, MissingRequiredField) {
@@ -513,6 +586,44 @@ TEST(SiteSearchPolicyHandlerTest, EmptyRequiredField) {
                            IDS_POLICY_SITE_SEARCH_SETTINGS_NAME_IS_EMPTY)));
   EXPECT_THAT(&errors, HasValidationError(l10n_util::GetStringUTF16(
                            IDS_POLICY_SITE_SEARCH_SETTINGS_URL_IS_EMPTY)));
+}
+
+TEST(SiteSearchPolicyHandlerTest, UnknownField) {
+  constexpr char kUnknownFieldName[] = "unknown_field";
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(omnibox::kSiteSearchSettingsPolicy);
+
+  SiteSearchPolicyHandler handler(
+      policy::Schema::Wrap(policy::GetChromeSchemaData()));
+
+  policy::PolicyMap policies;
+  PolicyErrorMap errors;
+  PrefValueMap prefs;
+
+  base::Value::Dict entry =
+      GenerateSiteSearchPolicyEntry(kUnknownFieldTestProviders[0]);
+  entry.Set(kUnknownFieldName, true);
+  base::Value::List policy_value;
+  policy_value.Append(std::move(entry));
+
+  policies.Set(key::kSiteSearchSettings, policy::POLICY_LEVEL_MANDATORY,
+               policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
+               base::Value(std::move(policy_value)), nullptr);
+
+  // A warning is registered during policy validation, but valid fields are
+  // still used for building a new template URL.
+  ASSERT_TRUE(handler.CheckPolicySettings(policies, &errors));
+  EXPECT_FALSE(errors.empty());
+
+  handler.ApplyPolicySettings(policies, &prefs);
+  base::Value* providers = nullptr;
+  ASSERT_TRUE(prefs.GetValue(
+      EnterpriseSiteSearchManager::kSiteSearchSettingsPrefName, &providers));
+  ASSERT_NE(providers, nullptr);
+  ASSERT_TRUE(providers->is_list());
+  EXPECT_THAT(providers->GetList(),
+              ElementsAre(IsSiteSearchEntry(kUnknownFieldTestProviders[0])));
 }
 
 TEST(SiteSearchPolicyHandlerTest, ShortcutWithSpace) {
@@ -743,6 +854,41 @@ TEST(SiteSearchPolicyHandlerTest, ShortcutSameAsDSPKeyword_DSPEnabled) {
   EXPECT_THAT(providers->GetList(),
               ElementsAre(IsSiteSearchEntry(
                   kShortcutSameAsDSPKeywordTestProviders[1])));
+}
+
+TEST(SiteSearchPolicyHandlerTest, NonHttpsUrl) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(omnibox::kSiteSearchSettingsPolicy);
+
+  SiteSearchPolicyHandler handler(
+      policy::Schema::Wrap(policy::GetChromeSchemaData()));
+
+  policy::PolicyMap policies;
+  PolicyErrorMap errors;
+  PrefValueMap prefs;
+
+  base::Value::List policy_value;
+  policy_value.Append(
+      GenerateSiteSearchPolicyEntry(kNonHttpsUrlTestProviders[0]));
+
+  policies.Set(key::kSiteSearchSettings, policy::POLICY_LEVEL_MANDATORY,
+               policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
+               base::Value(std::move(policy_value)), nullptr);
+
+  ASSERT_TRUE(handler.CheckPolicySettings(policies, &errors));
+  EXPECT_THAT(&errors,
+              HasValidationError(l10n_util::GetStringFUTF16(
+                  IDS_POLICY_SITE_SEARCH_SETTINGS_URL_NOT_HTTPS,
+                  base::UTF8ToUTF16(kNonHttpsUrlTestProviders[0].url))));
+
+  handler.ApplyPolicySettings(policies, &prefs);
+  base::Value* providers = nullptr;
+  ASSERT_TRUE(prefs.GetValue(
+      EnterpriseSiteSearchManager::kSiteSearchSettingsPrefName, &providers));
+  ASSERT_NE(providers, nullptr);
+  ASSERT_TRUE(providers->is_list());
+  EXPECT_THAT(providers->GetList(),
+              ElementsAre(IsSiteSearchEntry(kNonHttpsUrlTestProviders[0])));
 }
 
 TEST(SiteSearchPolicyHandlerTest, NoValidEntry) {

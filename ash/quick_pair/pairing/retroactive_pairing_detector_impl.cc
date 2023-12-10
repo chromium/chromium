@@ -9,6 +9,7 @@
 #include "ash/quick_pair/common/constants.h"
 #include "ash/quick_pair/common/device.h"
 #include "ash/quick_pair/common/protocol.h"
+#include "ash/quick_pair/fast_pair_handshake/fast_pair_gatt_service_client_lookup_impl.h"
 #include "ash/quick_pair/message_stream/message_stream.h"
 #include "ash/quick_pair/repository/fast_pair_repository.h"
 #include "ash/session/session_controller_impl.h"
@@ -219,7 +220,29 @@ void RetroactivePairingDetectorImpl::AttemptRetroactivePairing(
     return;
   }
 
+  device::BluetoothDevice* device = adapter_->GetDevice(classic_address);
+  if (!device) {
+    CD_LOG(WARNING, Feature::FP)
+        << __func__ << ": Lost device to potentially retroactively pair to.";
+    RemoveDeviceInformation(classic_address);
+    return;
+  }
+
   CD_LOG(VERBOSE, Feature::FP) << __func__ << ": device = " << classic_address;
+
+  // For BLE devices, check it supports Fast Pair. Then, since the message
+  // stream is optional for BLE HIDs, and the BLE address is already known, the
+  // only remaining parameter needed is the model ID, which we retrieve via GATT
+  // characteristic.
+  if (ash::features::IsFastPairHIDEnabled() &&
+      device->GetType() == device::BLUETOOTH_TRANSPORT_LE &&
+      base::Contains(device->GetUUIDs(), kFastPairBluetoothUuid)) {
+    CD_LOG(VERBOSE, Feature::FP)
+        << __func__
+        << ": BLE fast pair device detected, creating GATT connection";
+    CreateGattConnection(device);
+    return;
+  }
 
   // Attempt to retrieve a MessageStream instance immediately, if it was
   // already connected.
@@ -230,6 +253,98 @@ void RetroactivePairingDetectorImpl::AttemptRetroactivePairing(
 
   message_streams_[classic_address] = message_stream;
   GetModelIdAndAddressFromMessageStream(classic_address, message_stream);
+}
+
+void RetroactivePairingDetectorImpl::CreateGattConnection(
+    device::BluetoothDevice* device) {
+  auto* fast_pair_gatt_service_client =
+      FastPairGattServiceClientLookup::GetInstance()->Get(device);
+
+  if (fast_pair_gatt_service_client) {
+    if (fast_pair_gatt_service_client->IsConnected()) {
+      CD_LOG(VERBOSE, Feature::FP)
+          << __func__
+          << ": Reusing existing GATT service client to retrieve model ID";
+      fast_pair_gatt_service_client->ReadModelIdAsync(
+          base::BindOnce(&RetroactivePairingDetectorImpl::OnReadModelId,
+                         weak_ptr_factory_.GetWeakPtr(), device->GetAddress()));
+      return;
+    } else {
+      // If the previous gatt service client did not connect successfully
+      // or is no longer connected, erase it before attempting to create a new
+      // gatt connection for the device.
+      FastPairGattServiceClientLookup::GetInstance()->Erase(device);
+    }
+  }
+
+  CD_LOG(VERBOSE, Feature::FP)
+      << __func__ << ": Creating new GATT service client to retrieve model ID";
+
+  FastPairGattServiceClientLookup::GetInstance()->Create(
+      adapter_, device,
+      base::BindOnce(
+          &RetroactivePairingDetectorImpl::OnGattClientInitializedCallback,
+          weak_ptr_factory_.GetWeakPtr(), device));
+}
+
+void RetroactivePairingDetectorImpl::OnGattClientInitializedCallback(
+    device::BluetoothDevice* device,
+    std::optional<PairFailure> failure) {
+  if (failure) {
+    CD_LOG(WARNING, Feature::FP)
+        << __func__
+        << ": Failed to initialize GATT service client with failure = "
+        << failure.value();
+    return;
+  }
+
+  // If |OnGattClientInitializedCallback| is called without a failure,
+  // |device*| is expected to exist and be valid.
+  auto* fast_pair_gatt_service_client =
+      FastPairGattServiceClientLookup::GetInstance()->Get(device);
+
+  if (!fast_pair_gatt_service_client ||
+      !fast_pair_gatt_service_client->IsConnected()) {
+    CD_LOG(WARNING, Feature::FP) << __func__
+                                 << ": Fast Pair Gatt Service Client failed to "
+                                    "be created or is no longer connected.";
+    FastPairGattServiceClientLookup::GetInstance()->Erase(device);
+    return;
+  }
+
+  CD_LOG(VERBOSE, Feature::FP) << __func__
+                               << ": Fast Pair GATT service client initialized "
+                                  "successfully. Reading Model ID.";
+
+  fast_pair_gatt_service_client->ReadModelIdAsync(
+      base::BindOnce(&RetroactivePairingDetectorImpl::OnReadModelId,
+                     weak_ptr_factory_.GetWeakPtr(), device->GetAddress()));
+}
+
+void RetroactivePairingDetectorImpl::OnReadModelId(
+    const std::string& address,
+    std::optional<device::BluetoothGattService::GattErrorCode> error_code,
+    const std::vector<uint8_t>& value) {
+  if (error_code) {
+    CD_LOG(WARNING, Feature::FP)
+        << __func__ << ": Failed to read model ID with failure = "
+        << static_cast<uint32_t>(error_code.value());
+    return;
+  }
+
+  if (value.size() != 3) {
+    CD_LOG(WARNING, Feature::FP) << __func__ << ": model ID malformed.";
+    return;
+  }
+
+  std::string model_id;
+  for (auto byte : value) {
+    model_id.append(base::StringPrintf("%02X", byte));
+  }
+
+  CD_LOG(INFO, Feature::FP) << __func__ << ": Model ID " << model_id
+                            << " found for device " << address;
+  NotifyDeviceFound(model_id, address, address);
 }
 
 void RetroactivePairingDetectorImpl::OnMessageStreamConnected(
@@ -536,7 +651,7 @@ void RetroactivePairingDetectorImpl::OnPairFailure(scoped_refptr<Device> device,
 
 void RetroactivePairingDetectorImpl::OnAccountKeyWrite(
     scoped_refptr<Device> device,
-    absl::optional<AccountKeyFailure> error) {}
+    std::optional<AccountKeyFailure> error) {}
 
 }  // namespace quick_pair
 }  // namespace ash

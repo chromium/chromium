@@ -754,11 +754,12 @@ TEST_F(PasswordSuggestionHelperTest, RetrieveSuggestions_OnUsernameField) {
                                   forFrameId:main_frame_->GetFrameId()
                                    fieldType:kTextFieldType];
 
-  NSString* expected_value = SysUTF8ToNSString(kFillDataUsername);
-
   ASSERT_EQ(1ul, [suggestions count]);
 
-  EXPECT_NSEQ(expected_value, suggestions.firstObject.value);
+  FormSuggestion* suggestionToEvaluate = suggestions.firstObject;
+
+  EXPECT_NSEQ(SysUTF8ToNSString(kFillDataUsername), suggestionToEvaluate.value);
+  EXPECT_FALSE(suggestionToEvaluate.metadata.is_single_username_form);
 }
 
 // Tests retrieving suggestions on password field in form when available.
@@ -780,11 +781,40 @@ TEST_F(PasswordSuggestionHelperTest, RetrieveSuggestions_OnPasswordField) {
                                   forFrameId:main_frame_->GetFrameId()
                                    fieldType:kPasswordFieldType];
 
-  NSString* expected_value = SysUTF8ToNSString(kFillDataUsername);
+  ASSERT_EQ(1ul, [suggestions count]);
+
+  FormSuggestion* suggestionToEvaluate = suggestions.firstObject;
+
+  EXPECT_NSEQ(SysUTF8ToNSString(kFillDataUsername), suggestionToEvaluate.value);
+  EXPECT_FALSE(suggestionToEvaluate.metadata.is_single_username_form);
+}
+
+// Tests retrieving suggestions for a single username form on the username
+// field.
+TEST_F(PasswordSuggestionHelperTest, RetrieveSuggestions_OnSingleUsernameForm) {
+  FormRendererId form1_renderer_id = autofill::test::MakeFormRendererId();
+  FieldRendererId username1_renderer_id = autofill::test::MakeFieldRendererId();
+  FieldRendererId password1_renderer_id = FieldRendererId();
+
+  PasswordFormFillData form_fill_data = CreatePasswordFillData(
+      form1_renderer_id, username1_renderer_id, password1_renderer_id);
+  [helper_ processWithPasswordFormFillData:form_fill_data
+                                forFrameId:main_frame_->GetFrameId()
+                               isMainFrame:main_frame_->IsMainFrame()
+                         forSecurityOrigin:main_frame_->GetSecurityOrigin()];
+
+  NSArray<FormSuggestion*>* suggestions =
+      [helper_ retrieveSuggestionsWithFormID:form1_renderer_id
+                             fieldIdentifier:username1_renderer_id
+                                  forFrameId:main_frame_->GetFrameId()
+                                   fieldType:kTextFieldType];
 
   ASSERT_EQ(1ul, [suggestions count]);
 
-  EXPECT_NSEQ(expected_value, suggestions.firstObject.value);
+  FormSuggestion* suggestionToEvaluate = suggestions.firstObject;
+
+  EXPECT_NSEQ(SysUTF8ToNSString(kFillDataUsername), suggestionToEvaluate.value);
+  EXPECT_TRUE(suggestionToEvaluate.metadata.is_single_username_form);
 }
 
 // Tests retrieving suggestions for form when there are no suggestions.

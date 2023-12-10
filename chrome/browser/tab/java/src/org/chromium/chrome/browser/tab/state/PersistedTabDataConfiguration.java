@@ -28,15 +28,14 @@ public enum PersistedTabDataConfiguration {
     private static final Map<Class<? extends PersistedTabData>, PersistedTabDataConfiguration>
             sEncryptedLookup = new HashMap<>();
 
-    /**
-     * Ensure lazy initialization of singleton storage
-     */
+    /** Ensure lazy initialization of singleton storage */
     private static MockPersistedTabDataStorage sMockPersistedTabDataStorage;
+
     private static EmptyByteBufferPersistedTabDataStorage sEmptyByteBufferPersistedTabDataStorage;
     private static boolean sUseEmptyByteBufferTestConfig;
 
     private static EmptyByteBufferPersistedTabDataStorage
-    getEmptyByteBufferPersistedTabDataStorage() {
+            getEmptyByteBufferPersistedTabDataStorage() {
         if (sEmptyByteBufferPersistedTabDataStorage == null) {
             sEmptyByteBufferPersistedTabDataStorage = new EmptyByteBufferPersistedTabDataStorage();
         }
@@ -58,21 +57,25 @@ public enum PersistedTabDataConfiguration {
         sEncryptedLookup.put(MockPersistedTabData.class, ENCRYPTED_MOCK_PERSISTED_TAB_DATA);
         sLookup.put(ShoppingPersistedTabData.class, SHOPPING_PERSISTED_TAB_DATA);
         sEncryptedLookup.put(ShoppingPersistedTabData.class, SHOPPING_PERSISTED_TAB_DATA);
-        MOCK_PERSISTED_TAB_DATA.mStorageFactory = () -> {
-            return getMockPersistedTabDataStorage();
-        };
-        ENCRYPTED_MOCK_PERSISTED_TAB_DATA.mStorageFactory = () -> {
-            return getMockPersistedTabDataStorage();
-        };
+        MOCK_PERSISTED_TAB_DATA.mStorageFactory =
+                () -> {
+                    return getMockPersistedTabDataStorage();
+                };
+        ENCRYPTED_MOCK_PERSISTED_TAB_DATA.mStorageFactory =
+                () -> {
+                    return getMockPersistedTabDataStorage();
+                };
         SHOPPING_PERSISTED_TAB_DATA.mStorageFactory = new LevelDBPersistedTabDataStorageFactory();
 
-        TEST_CONFIG.mStorageFactory = () -> {
-            return getMockPersistedTabDataStorage();
-        };
+        TEST_CONFIG.mStorageFactory =
+                () -> {
+                    return getMockPersistedTabDataStorage();
+                };
 
-        EMPTY_BYTE_BUFFER_TEST_CONFIG.mStorageFactory = () -> {
-            return getEmptyByteBufferPersistedTabDataStorage();
-        };
+        EMPTY_BYTE_BUFFER_TEST_CONFIG.mStorageFactory =
+                () -> {
+                    return getEmptyByteBufferPersistedTabDataStorage();
+                };
     }
 
     private final String mId;
@@ -101,9 +104,7 @@ public enum PersistedTabDataConfiguration {
         return mId;
     }
 
-    /**
-     * Acquire {@link PersistedTabDataConfiguration} for a given {@link PersistedTabData} class
-     */
+    /** Acquire {@link PersistedTabDataConfiguration} for a given {@link PersistedTabData} class */
     public static PersistedTabDataConfiguration get(
             Class<? extends PersistedTabData> clazz, boolean isEncrypted) {
         if (sUseEmptyByteBufferTestConfig) {

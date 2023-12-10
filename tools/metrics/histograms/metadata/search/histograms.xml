@@ -120,8 +120,24 @@ chromium-metrics-reviews@google.com.
   <token key="AuxiliarySearchDataType" variants="AuxiliarySearchDataType"/>
 </histogram>
 
+<histogram name="Search.ChoiceReprompt{Category}"
+    enum="SearchEngineChoiceReprompt" expires_after="2024-11-30">
+  <owner>droger@chromium.org</owner>
+  <owner>chrome-waffle-eng@google.com</owner>
+  <summary>
+    Records the outcome of the search engine reprompt check at startup, based on
+    remote experiment parameters. Reported for {Category}.
+  </summary>
+  <token key="Category">
+    <variant name="" summary="all keys"/>
+    <variant name=".SpecificCountry"
+        summary="specific country keys (wildcard excluded)"/>
+    <variant name=".Wildcard" summary="the wildcard country key"/>
+  </token>
+</histogram>
+
 <histogram name="Search.ChoiceScreenDefaultSearchEngineType"
-    enum="OmniboxSearchEngineType" expires_after="2024-03-31">
+    enum="OmniboxSearchEngineType" expires_after="2024-06-02">
   <owner>dgn@chromium.org</owner>
   <owner>jyammine@google.com</owner>
   <owner>chrome-waffle-eng@google.com</owner>
@@ -135,7 +151,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.ChoiceScreenEvents"
-    enum="SearchEngineChoiceScreenEvents" expires_after="2024-03-31">
+    enum="SearchEngineChoiceScreenEvents" expires_after="2024-06-02">
   <owner>samarchehade@chromium.org</owner>
   <owner>chrome-waffle-eng@google.com</owner>
   <summary>
@@ -148,7 +164,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.ChoiceScreenNavigationConditions"
-    enum="SearchEngineChoiceScreenConditions" expires_after="2024-03-31">
+    enum="SearchEngineChoiceScreenConditions" expires_after="2024-06-02">
   <owner>dgn@chromium.org</owner>
   <owner>muellerj@chromium.org</owner>
   <owner>chrome-waffle-eng@google.com</owner>
@@ -162,7 +178,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.ChoiceScreenProfileInitConditions"
-    enum="SearchEngineChoiceScreenConditions" expires_after="2024-03-31">
+    enum="SearchEngineChoiceScreenConditions" expires_after="2024-06-02">
   <owner>dgn@chromium.org</owner>
   <owner>muellerj@chromium.org</owner>
   <owner>chrome-waffle-eng@google.com</owner>
@@ -171,6 +187,16 @@ chromium-metrics-reviews@google.com.
     search engine choice screen that the profile is in. The enum is shared with
     ChoiceScreenNavigationConditions, and individual enum members might appear
     in only one histogram.
+  </summary>
+</histogram>
+
+<histogram name="Search.ChoiceWipeReason" enum="SearchEngineChoiceWipeReason"
+    expires_after="2024-11-30">
+  <owner>droger@chromium.org</owner>
+  <owner>chrome-waffle-eng@google.com</owner>
+  <summary>
+    Records the reason for wiping the search engine choice preferences, forcing
+    a reprompt at the next startup. Recorded every time the wiping occurs.
   </summary>
 </histogram>
 
@@ -274,7 +300,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.ContextualSearch.NetError" enum="NetErrorCodes"
-    expires_after="2024-03-17">
+    expires_after="2024-05-19">
   <owner>donnd@chromium.org</owner>
   <owner>basiaz@google.com</owner>
   <summary>
@@ -284,96 +310,11 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Search.ContextualSearch.OutcomesDuration" units="days"
-    expires_after="M104">
-  <obsolete>
-    Removed 06/2022
-  </obsolete>
-  <owner>donnd@chromium.org</owner>
-  <owner>twellington@chromium.org</owner>
-  <summary>
-    Records the duration of persisted outcomes between the time they were stored
-    and the time that they were sent back to the server. Recorded when persisted
-    data is sent to the server. Implemented for Android.
-  </summary>
-</histogram>
-
-<histogram name="Search.ContextualSearch.Ranker.FeaturesAvailable"
-    enum="Boolean" expires_after="M104">
-  <obsolete>
-    Removed 06/2022
-  </obsolete>
-  <owner>donnd@chromium.org</owner>
-  <owner>twellington@chromium.org</owner>
-  <summary>
-    Logs that the UX has entered a state where features are available to be
-    recorded to Ranker. A value of true indicates that the available features
-    include outcomes, false if they are just features at inference-time. Use to
-    correlate with what actually gets recorded in the Search.
-    ContextualSearch.Ranker.Recorded histogram. Recorded when a tap gesture is
-    recognized that might trigger our UX (for pure features), and when the UX is
-    actually shown (for outcomes). Implemented for Android.
-  </summary>
-</histogram>
-
 <histogram name="Search.ContextualSearch.Ranker.Model.Status"
     enum="RankerModelStatus" expires_after="M77">
   <owner>donnd@chromium.org</owner>
   <owner>charleszhao@chromium.org</owner>
   <summary>Tracks the outcome of attempts to download a Ranker Model.</summary>
-</histogram>
-
-<histogram name="Search.ContextualSearch.Ranker.NotSuppressed.ResultsSeen"
-    enum="ContextualSearchResultsSeen" expires_after="M104">
-  <obsolete>
-    Removed 06/2022
-  </obsolete>
-  <owner>donnd@chromium.org</owner>
-  <owner>twellington@chromium.org</owner>
-  <summary>
-    Records whether the user opened the panel when a tap was not suppressed by
-    Ranker. Recorded when the UX is hidden. Implemented for Android.
-  </summary>
-</histogram>
-
-<histogram name="Search.ContextualSearch.Ranker.Recorded" enum="Boolean"
-    expires_after="M104">
-  <obsolete>
-    Removed 06/2022
-  </obsolete>
-  <owner>donnd@chromium.org</owner>
-  <owner>twellington@chromium.org</owner>
-  <summary>
-    Logs that features were recorded to Ranker and whether it was an outcome or
-    not. Recorded when the UX is shown or hidden. Implemented for Android.
-  </summary>
-</histogram>
-
-<histogram name="Search.ContextualSearch.Ranker.RecordedNative" enum="Boolean"
-    expires_after="M104">
-  <obsolete>
-    Removed 06/2022
-  </obsolete>
-  <owner>donnd@chromium.org</owner>
-  <owner>twellington@chromium.org</owner>
-  <summary>
-    Logs that features were recorded to Ranker from native code and whether it
-    was an outcome or not. Recorded when the UX is shown or hidden. Implemented
-    for Android.
-  </summary>
-</histogram>
-
-<histogram name="Search.ContextualSearch.Ranker.Suppressed" enum="Boolean"
-    expires_after="M104">
-  <obsolete>
-    Removed 06/2022
-  </obsolete>
-  <owner>donnd@chromium.org</owner>
-  <owner>twellington@chromium.org</owner>
-  <summary>
-    Records Ranker's prediction about whether a tap should be suppressed or not.
-    Recorded when the UX is hidden. Implemented for Android.
-  </summary>
 </histogram>
 
 <histogram name="Search.ContextualSearch.Ranker.Timer.DownloadModel" units="ms"
@@ -415,33 +356,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Search.ContextualSearch.Ranker.WasAbleToPredict"
-    enum="Boolean" expires_after="M104">
-  <obsolete>
-    Removed 06/2022
-  </obsolete>
-  <owner>donnd@chromium.org</owner>
-  <owner>twellington@chromium.org</owner>
-  <summary>
-    Records whether Ranker was able to make a prediction about tap suppression.
-    Recorded when the UX is triggered by tap. Implemented for Android.
-  </summary>
-</histogram>
-
-<histogram name="Search.ContextualSearch.Ranker.WouldSuppress.ResultsSeen"
-    enum="ContextualSearchResultsSeen" expires_after="M104">
-  <obsolete>
-    Removed 06/2022
-  </obsolete>
-  <owner>donnd@chromium.org</owner>
-  <owner>twellington@chromium.org</owner>
-  <summary>
-    Records whether the user opened the panel when a tap would be suppressed by
-    Ranker if suppression was enforced. Recorded when the UX is hidden.
-    Implemented for Android.
-  </summary>
-</histogram>
-
 <histogram name="Search.ContextualSearch.ResolveReceived" enum="Boolean"
     expires_after="2024-10-01">
   <owner>donnd@chromium.org</owner>
@@ -467,7 +381,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.ContextualSearch.SelectionExpanded"
-    enum="ContextualSearchGestureIsTap" expires_after="2024-03-17">
+    enum="ContextualSearchGestureIsTap" expires_after="2024-05-19">
   <owner>donnd@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <summary>
@@ -514,50 +428,6 @@ chromium-metrics-reviews@google.com.
     users only (this is an approximation for the population that logs to UKM).
     Recorded for all gestures for users with sync enabled when the UX is hidden.
     Implemented for Android. (Expired in M76. Revived in M120.)
-  </summary>
-</histogram>
-
-<histogram name="Search.ContextualSearch.TranslationNeeded"
-    enum="ContextualSearchGestureIsTap" expires_after="M106">
-  <obsolete>
-    Removed 08/2022
-  </obsolete>
-  <owner>donnd@chromium.org</owner>
-  <owner>contextual-search-eng@google.com</owner>
-  <summary>
-    Records that a translation is needed for the current Contextual Search, and
-    whether the selection was originally created by a Tap gesture. This is
-    recorded regardless of whether the user will actually be shown a translation
-    or not. Recorded any time a selection is established or changed with the
-    Contextual Search Translations feature enabled. Implemented for Android.
-  </summary>
-</histogram>
-
-<histogram name="Search.ContextualSearch.TranslationsOptInIPHShown"
-    enum="BooleanPreviouslyShown" expires_after="2022-04-04">
-  <obsolete>
-    Removed 01/2022
-  </obsolete>
-  <owner>donnd@chromium.org</owner>
-  <owner>contextual-search-eng@google.com</owner>
-  <summary>
-    Records whether an IPH promoting the Opt-in for the Translations experiment
-    has ever been shown for the current user. Recorded when the Overlay Panel is
-    closed. Implemented for Android.
-  </summary>
-</histogram>
-
-<histogram name="Search.ContextualSearch.TranslationsOptInIPHWorked"
-    enum="BooleanOptedIn" expires_after="2022-04-04">
-  <obsolete>
-    Removed 01/2022
-  </obsolete>
-  <owner>donnd@chromium.org</owner>
-  <owner>contextual-search-eng@google.com</owner>
-  <summary>
-    Records whether the user actually did Opt-in right after seeing the IPH for
-    the Translations experiment. Recorded when the Overlay Panel is closed.
-    Implemented for Android.
   </summary>
 </histogram>
 
@@ -615,222 +485,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Search.ContextualSearchDurationBetweenTriggerAndScrollNotSeen"
-    units="ms" expires_after="M105">
-  <obsolete>
-    Removed 06/2022
-  </obsolete>
-  <owner>donnd@chromium.org</owner>
-  <owner>twellington@chromium.org</owner>
-  <summary>
-    The duration between the panel being triggered and the panel being dismissed
-    due to a scroll when search results were not seen. Implemented for Android.
-    Prior to M57 this was recorded on tap and longpress; on M57+ it is only
-    recorded on tap.
-  </summary>
-</histogram>
-
-<histogram name="Search.ContextualSearchDurationBetweenTriggerAndScrollSeen"
-    units="ms" expires_after="M105">
-  <obsolete>
-    Removed 06/2022
-  </obsolete>
-  <owner>donnd@chromium.org</owner>
-  <owner>twellington@chromium.org</owner>
-  <summary>
-    The duration between the panel being triggered and the panel being dismissed
-    due to a scroll when search results were seen. Implemented for Android.
-    Prior to M57 this was recorded on tap and longpress; on M57+ it is only
-    recorded on tap.
-  </summary>
-</histogram>
-
-<histogram name="Search.ContextualSearchDurationSeen" units="ms"
-    expires_after="M105">
-  <obsolete>
-    Removed 06/2022
-  </obsolete>
-  <owner>donnd@chromium.org</owner>
-  <owner>twellington@chromium.org</owner>
-  <summary>
-    The time from initiating to ending a contextual search, when results were
-    seen as part of the search. Implemented for Android.
-  </summary>
-</histogram>
-
-<histogram name="Search.ContextualSearchDurationUnseen" units="ms"
-    expires_after="M105">
-  <obsolete>
-    Removed 06/2022
-  </obsolete>
-  <owner>donnd@chromium.org</owner>
-  <owner>twellington@chromium.org</owner>
-  <summary>
-    The time from initiating to ending a contextual search, when results were
-    not seen as part of the search and the search did not end with the beginning
-    of another contextual search. Implemented for Android.
-  </summary>
-</histogram>
-
-<histogram name="Search.ContextualSearchDurationUnseenChained" units="ms"
-    expires_after="M105">
-  <obsolete>
-    Removed 06/2022
-  </obsolete>
-  <owner>donnd@chromium.org</owner>
-  <owner>twellington@chromium.org</owner>
-  <summary>
-    The time from initiating to ending a contextual search, when results were
-    not seen as part of the search and the search ended with the beginning of
-    another contextual search. Implemented for Android.
-  </summary>
-</histogram>
-
-<histogram name="Search.ContextualSearchEnterClosed"
-    enum="ContextualSearchEnterClosedStateChange" expires_after="M103">
-  <obsolete>
-    Removed as of 05/2022
-  </obsolete>
-  <owner>donnd@chromium.org</owner>
-  <owner>twellington@chromium.org</owner>
-  <summary>
-    The details (previous state and reason) of the first entry into the closed
-    panel state within a contextual search. Implemented for Android.
-  </summary>
-</histogram>
-
-<histogram name="Search.ContextualSearchEnterExpanded"
-    enum="ContextualSearchEnterExpandedStateChange" expires_after="M103">
-  <obsolete>
-    Removed as of 05/2022
-  </obsolete>
-  <owner>donnd@chromium.org</owner>
-  <owner>twellington@chromium.org</owner>
-  <summary>
-    The details (previous state and reason) of the first entry into the expanded
-    panel state within a contextual search. Implemented for Android.
-  </summary>
-</histogram>
-
-<histogram name="Search.ContextualSearchEnterMaximized"
-    enum="ContextualSearchEnterMaximizedStateChange" expires_after="M103">
-  <obsolete>
-    Removed as of 05/2022
-  </obsolete>
-  <owner>donnd@chromium.org</owner>
-  <owner>twellington@chromium.org</owner>
-  <summary>
-    The details (previous state and reason) of the first entry into the
-    maximized panel state within a contextual search. Implemented for Android.
-  </summary>
-</histogram>
-
-<histogram name="Search.ContextualSearchEnterPeeked"
-    enum="ContextualSearchEnterPeekedStateChange" expires_after="M103">
-  <obsolete>
-    Removed as of 05/2022
-  </obsolete>
-  <owner>donnd@chromium.org</owner>
-  <owner>twellington@chromium.org</owner>
-  <summary>
-    The details (previous state and reason) of the first entry into the peeked
-    panel state within a contextual search. Implemented for Android.
-  </summary>
-</histogram>
-
-<histogram name="Search.ContextualSearchEntitySeen"
-    enum="ContextualSearchResultsSeen" expires_after="M103">
-  <obsolete>
-    Removed as of 05/2022
-  </obsolete>
-  <owner>donnd@chromium.org</owner>
-  <owner>twellington@chromium.org</owner>
-  <summary>
-    Whether search results were seen as part of a Contextual Search when a tap
-    was on a word that we think is an entity. Recorded when Contextual Search is
-    dismissed. Implemented for Android.
-  </summary>
-</histogram>
-
-<histogram name="Search.ContextualSearchExitClosed"
-    enum="ContextualSearchExitClosedStateChange" expires_after="M103">
-  <obsolete>
-    Removed as of 05/2022
-  </obsolete>
-  <owner>donnd@chromium.org</owner>
-  <owner>twellington@chromium.org</owner>
-  <summary>
-    The details (destination state and reason) of the first exit out of the
-    closed panel state within a contextual search. Implemented for Android.
-  </summary>
-</histogram>
-
-<histogram name="Search.ContextualSearchExitExpanded"
-    enum="ContextualSearchExitExpandedStateChange" expires_after="M103">
-  <obsolete>
-    Removed as of 05/2022
-  </obsolete>
-  <owner>donnd@chromium.org</owner>
-  <owner>twellington@chromium.org</owner>
-  <summary>
-    The details (destination state and reason) of the first exit out of the
-    expanded panel state within a contextual search. Implemented for Android.
-  </summary>
-</histogram>
-
-<histogram name="Search.ContextualSearchExitMaximized"
-    enum="ContextualSearchExitMaximizedStateChange" expires_after="M103">
-  <obsolete>
-    Removed as of 05/2022
-  </obsolete>
-  <owner>donnd@chromium.org</owner>
-  <owner>twellington@chromium.org</owner>
-  <summary>
-    The details (destination state and reason) of the first exit out of the
-    maximized panel state within a contextual search. Implemented for Android.
-  </summary>
-</histogram>
-
-<histogram name="Search.ContextualSearchExitPeeked"
-    enum="ContextualSearchExitPeekedStateChange" expires_after="M103">
-  <obsolete>
-    Removed as of 05/2022
-  </obsolete>
-  <owner>donnd@chromium.org</owner>
-  <owner>twellington@chromium.org</owner>
-  <summary>
-    The details (destination state and reason) of the first exit out of the
-    peeked panel state within a contextual search. Implemented for Android.
-  </summary>
-</histogram>
-
-<histogram name="Search.ContextualSearchFallbackSearchRequestStatus"
-    enum="ContextualSearchSearchRequestStatus" expires_after="M105">
-  <obsolete>
-    Removed 06/2022
-  </obsolete>
-  <owner>donnd@chromium.org</owner>
-  <owner>twellington@chromium.org</owner>
-  <summary>
-    The status of the Contextual Search fallback Search request. Implemented for
-    Android.
-  </summary>
-</histogram>
-
-<histogram name="Search.ContextualSearchFirstRunPanelSeen"
-    enum="ContextualSearchFirstRunPanelSeen" expires_after="M105">
-  <obsolete>
-    Removed 06/2022
-  </obsolete>
-  <owner>donnd@chromium.org</owner>
-  <owner>twellington@chromium.org</owner>
-  <summary>
-    Whether the first run flow's panel was seen as part of a contextual search.
-    Only logged when the user triggered the first run flow yet exited the search
-    still in the undecided preference state. Implemented for Android.
-  </summary>
-</histogram>
-
 <histogram name="Search.ContextualSearchIPHShown" enum="Boolean"
     expires_after="M77">
   <owner>donnd@chromium.org</owner>
@@ -840,59 +494,6 @@ chromium-metrics-reviews@google.com.
     The number of times the Contextual Search panel is opened, categorized by
     whether In-Product Help for Contextual Search was shown before. Logged when
     the panel is opened. Implemented for Android.
-  </summary>
-</histogram>
-
-<histogram name="Search.ContextualSearchLiteralSearchDuration" units="ms"
-    expires_after="M105">
-  <obsolete>
-    Removed 06/2022
-  </obsolete>
-  <owner>donnd@chromium.org</owner>
-  <owner>twellington@chromium.org</owner>
-  <summary>
-    The time from starting a literal search until the results in the SERP start
-    to become viewable. Applies only to prefetched requests. Implemented for
-    Android.
-  </summary>
-</histogram>
-
-<histogram name="Search.ContextualSearchLowPrioritySearchRequestStatus"
-    enum="ContextualSearchSearchRequestStatus" expires_after="M105">
-  <obsolete>
-    Removed 06/2022
-  </obsolete>
-  <owner>donnd@chromium.org</owner>
-  <owner>twellington@chromium.org</owner>
-  <summary>
-    The status of the Contextual Search low priority Search request. Implemented
-    for Android.
-  </summary>
-</histogram>
-
-<histogram name="Search.ContextualSearchNormalPrioritySearchRequestStatus"
-    enum="ContextualSearchSearchRequestStatus" expires_after="M105">
-  <obsolete>
-    Removed 06/2022
-  </obsolete>
-  <owner>donnd@chromium.org</owner>
-  <owner>twellington@chromium.org</owner>
-  <summary>
-    The status of the Contextual Search normal priority Search request.
-    Implemented for Android.
-  </summary>
-</histogram>
-
-<histogram name="Search.ContextualSearchPanelOpenDuration" units="ms"
-    expires_after="M106">
-  <obsolete>
-    Removed 08/2022
-  </obsolete>
-  <owner>donnd@chromium.org</owner>
-  <owner>contextual-search-eng@google.com</owner>
-  <summary>
-    The time from opening the panel beyond peek until the panel is closed.
-    Implemented for Android.
   </summary>
 </histogram>
 
@@ -956,19 +557,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Search.ContextualSearchPromoOpenCount" units="opens"
-    expires_after="M104">
-  <obsolete>
-    Removed as of 05/2022
-  </obsolete>
-  <owner>donnd@chromium.org</owner>
-  <owner>twellington@chromium.org</owner>
-  <summary>
-    The total count of times that the bar with the promo has been opened. Once
-    the user decides, this counter is no longer updated.
-  </summary>
-</histogram>
-
 <histogram name="Search.ContextualSearchPromoOpenCount2" units="opens"
     expires_after="2024-11-01">
   <owner>gangwu@chromium.org</owner>
@@ -978,59 +566,6 @@ chromium-metrics-reviews@google.com.
     user decides, this counter is no longer updated. Logged for each show of the
     promo card. Implemented for Android. (Expired in 2023-06-26. Revived in
     2024-11-03.)
-  </summary>
-</histogram>
-
-<histogram name="Search.ContextualSearchPromoSeenByGesture"
-    enum="ContextualSearchSeenByGesture" expires_after="M106">
-  <obsolete>
-    Removed as of 08/2022
-  </obsolete>
-  <owner>donnd@chromium.org</owner>
-  <owner>twellington@chromium.org</owner>
-  <summary>
-    Whether the promo was seen, broken down by original triggering gesture.
-    Logged each time the promo was activated. Implemented for Android.
-  </summary>
-</histogram>
-
-<histogram name="Search.ContextualSearchPromoTapsBeforeFirstOpen" units="taps"
-    expires_after="M105">
-  <obsolete>
-    Removed as of 06/2022
-  </obsolete>
-  <owner>donnd@chromium.org</owner>
-  <owner>twellington@chromium.org</owner>
-  <summary>
-    The historic number of taps that showed a peeking bar with the opt-out promo
-    before the first time the user opened the panel.
-  </summary>
-</histogram>
-
-<histogram name="Search.ContextualSearchPromoTapsForNeverOpened" units="taps"
-    expires_after="M105">
-  <obsolete>
-    Removed as of 06/2022
-  </obsolete>
-  <owner>donnd@chromium.org</owner>
-  <owner>twellington@chromium.org</owner>
-  <summary>
-    The historic number of taps that showed a peeking bar with the opt-out promo
-    for users who have never opened the panel. This count may be limited by the
-    Finch config param promo_on_limited_taps.
-  </summary>
-</histogram>
-
-<histogram name="Search.ContextualSearchPromoTapsRemaining" units="taps"
-    expires_after="M105">
-  <obsolete>
-    Removed as of 06/2022
-  </obsolete>
-  <owner>donnd@chromium.org</owner>
-  <owner>twellington@chromium.org</owner>
-  <summary>
-    The number of remaining taps that can trigger the promo for this user.
-    Implemented for Android.
   </summary>
 </histogram>
 
@@ -1082,72 +617,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Search.ContextualSearchQuickActions.Shown" enum="BooleanShown"
-    expires_after="M105">
-  <obsolete>
-    Removed as of 06/2022
-  </obsolete>
-  <owner>donnd@chromium.org</owner>
-  <owner>twellington@chromium.org</owner>
-  <summary>
-    Whether a quick action was shown in the Contextual Search bar. Recorded when
-    the quick action is set. Implemented for Android.
-  </summary>
-</histogram>
-
-<histogram name="Search.ContextualSearchQuickAnswerSeen"
-    enum="ContextualSearchQuickAnswerSeen" expires_after="M104">
-  <obsolete>
-    Removed as of 05/2022
-  </obsolete>
-  <owner>donnd@chromium.org</owner>
-  <owner>twellington@chromium.org</owner>
-  <summary>
-    Whether a Quick Answer was activated, considered an answer, and seen.
-    Implemented for Android.
-  </summary>
-</histogram>
-
-<histogram name="Search.ContextualSearchRecentScrollSuppression"
-    enum="ContextualSearchTapSuppression" expires_after="M104">
-  <obsolete>
-    Removed as of 05/2022
-  </obsolete>
-  <owner>donnd@chromium.org</owner>
-  <owner>twellington@chromium.org</owner>
-  <summary>
-    Whether showing the Tap to Search UX in response to a Tap was suppressed by
-    a recent scroll. Implemented for Android.
-  </summary>
-</histogram>
-
-<histogram name="Search.ContextualSearchResolutionDuration" units="ms"
-    expires_after="M105">
-  <obsolete>
-    Removed as of 06/2022
-  </obsolete>
-  <owner>donnd@chromium.org</owner>
-  <owner>twellington@chromium.org</owner>
-  <summary>
-    The time from starting a resolving search until the Search Term Resolves.
-    Implemented for Android.
-  </summary>
-</histogram>
-
-<histogram name="Search.ContextualSearchResolvedSearchDuration" units="ms"
-    expires_after="M105">
-  <obsolete>
-    Removed as of 06/2022
-  </obsolete>
-  <owner>donnd@chromium.org</owner>
-  <owner>twellington@chromium.org</owner>
-  <summary>
-    The time from starting a resolving search until the results in the SERP
-    start to become viewable. Applies only to prefetched requests. Implemented
-    for Android.
-  </summary>
-</histogram>
-
 <histogram name="Search.ContextualSearchResultsSeen"
     enum="ContextualSearchResultsSeen" expires_after="never">
 <!-- expires-never: dashboard metric (internal: go/cs-metrics-dashboard) -->
@@ -1172,113 +641,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Search.ContextualSearchScreenTopSuppressed"
-    enum="ContextualSearchTapSuppression" expires_after="M103">
-  <obsolete>
-    Removed as of 05/2022
-  </obsolete>
-  <owner>donnd@chromium.org</owner>
-  <owner>twellington@chromium.org</owner>
-  <summary>
-    Whether Taps near the top of the screen was suppressed. Implemented for
-    Android.
-  </summary>
-</histogram>
-
-<histogram name="Search.ContextualSearchSecondTapMlOverrideSeen" enum="Boolean"
-    expires_after="M77">
-  <obsolete>
-    Removed as of 01/2022
-  </obsolete>
-  <owner>donnd@chromium.org</owner>
-  <owner>twellington@chromium.org</owner>
-  <summary>
-    Whether results were seen for a second tap that was allowed to override ML
-    Tap Suppression. Recorded when the UX is hidden. Implemented for Android.
-  </summary>
-</histogram>
-
-<histogram name="Search.ContextualSearchSelectionLengthNotSeen" units="chars"
-    expires_after="M105">
-  <obsolete>
-    Removed as of 06/2022
-  </obsolete>
-  <owner>donnd@chromium.org</owner>
-  <owner>twellington@chromium.org</owner>
-  <summary>
-    The length of the triggering selection when search results were not seen.
-    Only logged when contextual search is triggered due to a tap. Implemented
-    for Android.
-  </summary>
-</histogram>
-
-<histogram name="Search.ContextualSearchSelectionLengthSeen" units="chars"
-    expires_after="M105">
-  <obsolete>
-    Removed as of 06/2022
-  </obsolete>
-  <owner>donnd@chromium.org</owner>
-  <owner>twellington@chromium.org</owner>
-  <summary>
-    The length of the triggering selection when search results were seen. Only
-    logged when contextual search is triggered due to a tap. Implemented for
-    Android.
-  </summary>
-</histogram>
-
-<histogram name="Search.ContextualSearchSelectionLengthSuppression"
-    enum="ContextualSearchTapSuppression" expires_after="M104">
-  <obsolete>
-    Removed as of 06/2022
-  </obsolete>
-  <owner>donnd@chromium.org</owner>
-  <owner>twellington@chromium.org</owner>
-  <summary>
-    Whether a Tap was suppressed because the selection length was less than the
-    minimum selection length. Implemented for Android.
-  </summary>
-</histogram>
-
-<histogram name="Search.ContextualSearchSelectionValid"
-    enum="ContextualSearchSelectionValid" expires_after="M105">
-  <obsolete>
-    Removed as of 06/2022
-  </obsolete>
-  <owner>donnd@chromium.org</owner>
-  <owner>twellington@chromium.org</owner>
-  <summary>
-    Whether a Contextual Search selection was valid. Implemented for Android.
-  </summary>
-</histogram>
-
-<histogram name="Search.ContextualSearchTapDurationNotSeen" units="ms"
-    expires_after="M103">
-  <obsolete>
-    Removed as of 05/2022
-  </obsolete>
-  <owner>donnd@chromium.org</owner>
-  <owner>twellington@chromium.org</owner>
-  <summary>
-    The duration of a tap that triggered a Contextual Search when the user does
-    not open the panel. Implemented for Android. Logged when the panel closes
-    after being triggered by a tap.
-  </summary>
-</histogram>
-
-<histogram name="Search.ContextualSearchTapDurationSeen" units="ms"
-    expires_after="M103">
-  <obsolete>
-    Removed as of 05/2022
-  </obsolete>
-  <owner>donnd@chromium.org</owner>
-  <owner>twellington@chromium.org</owner>
-  <summary>
-    The duration of a tap that triggered a Contextual Search when the user does
-    open the panel. Implemented for Android. Logged when the panel closes after
-    being triggered by a tap and subsequently opened.
-  </summary>
-</histogram>
-
 <histogram name="Search.ContextualSearchTapIPHShown" enum="Boolean"
     expires_after="M77">
   <owner>donnd@chromium.org</owner>
@@ -1291,111 +653,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Search.ContextualSearchTapLongDurationSeen"
-    enum="ContextualSearchResultsSeen" expires_after="M103">
-  <obsolete>
-    Removed as of 05/2022
-  </obsolete>
-  <owner>donnd@chromium.org</owner>
-  <owner>twellington@chromium.org</owner>
-  <summary>
-    Whether results were seen for a Tap that was of long duration. Recorded when
-    the UX is hidden. Implemented for Android.
-  </summary>
-</histogram>
-
-<histogram name="Search.ContextualSearchTapShortDurationSeen"
-    enum="ContextualSearchResultsSeen" expires_after="M103">
-  <obsolete>
-    Removed as of 05/2022
-  </obsolete>
-  <owner>donnd@chromium.org</owner>
-  <owner>twellington@chromium.org</owner>
-  <summary>
-    Whether results were seen for a Tap that was of short duration. Recorded
-    when the UX is hidden. Implemented for Android.
-  </summary>
-</histogram>
-
-<histogram name="Search.ContextualSearchTapsSinceOpenDecided" units="taps"
-    expires_after="M104">
-  <obsolete>
-    Removed as of 05/2022
-  </obsolete>
-  <owner>donnd@chromium.org</owner>
-  <owner>twellington@chromium.org</owner>
-  <summary>
-    The count of taps that showed a peeking bar without the opt-out promo since
-    this user has last opened the panel.
-  </summary>
-</histogram>
-
-<histogram name="Search.ContextualSearchTapsSinceOpenUndecided" units="taps"
-    expires_after="M104">
-  <obsolete>
-    Removed as of 05/2022
-  </obsolete>
-  <owner>donnd@chromium.org</owner>
-  <owner>twellington@chromium.org</owner>
-  <summary>
-    The count of taps that showed a peeking bar with the opt-out promo since
-    this user has last opened the panel.
-  </summary>
-</histogram>
-
-<histogram
-    name="Search.ContextualSearchTapSuppressionSeen.AnyHeuristicSatisfied"
-    enum="ContextualSearchSuppressionResultsSeen" expires_after="M105">
-  <obsolete>
-    Removed as of 06/2022
-  </obsolete>
-  <owner>donnd@chromium.org</owner>
-  <owner>twellington@chromium.org</owner>
-  <summary>
-    Whether results were seen for a Tap and whether any suppression heuristic
-    was satisifed. Recorded when the UX is still shown (suppression not enabled,
-    only logged). Implemented for Android.
-  </summary>
-</histogram>
-
-<histogram name="Search.ContextualSearchTimeToSearch" units="ms"
-    expires_after="M105">
-  <obsolete>
-    Removed as of 06/2022
-  </obsolete>
-  <owner>donnd@chromium.org</owner>
-  <owner>twellington@chromium.org</owner>
-  <summary>
-    The time between tapping on a word and performing a search. Implemented for
-    Android.
-  </summary>
-</histogram>
-
-<histogram name="Search.ContextualSearchTopLocationNotSeen" units="dps"
-    expires_after="M103">
-  <obsolete>
-    Removed as of 05/2022
-  </obsolete>
-  <owner>donnd@chromium.org</owner>
-  <owner>twellington@chromium.org</owner>
-  <summary>
-    The DPs count histogram for Taps that were not seen. Implemented for
-    Android.
-  </summary>
-</histogram>
-
-<histogram name="Search.ContextualSearchTopLocationSeen" units="dps"
-    expires_after="M103">
-  <obsolete>
-    Removed as of 05/2022
-  </obsolete>
-  <owner>donnd@chromium.org</owner>
-  <owner>twellington@chromium.org</owner>
-  <summary>
-    The DPs count histogram for Taps that were seen. Implemented for Android.
-  </summary>
-</histogram>
-
 <histogram name="Search.ContextualSearchTranslateCondition" enum="Boolean"
     expires_after="M77">
   <owner>donnd@chromium.org</owner>
@@ -1403,35 +660,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     For each contextual search that is triggered by tap, records whether the
     translation conditions are met. Implemented for Android.
-  </summary>
-</histogram>
-
-<histogram name="Search.DefaultSearchEngineChoiceLocation"
-    enum="ChoiceMadeLocation" expires_after="2024-03-31">
-  <owner>dgn@chromium.org</owner>
-  <owner>chrome-waffle-eng@google.com</owner>
-  <summary>
-    Records the location from which the default search engine was set. Emitted
-    when the default search engine is changed in the settings page or in the
-    search engine choice screen.
-  </summary>
-</histogram>
-
-<histogram name="Search.DefaultSearchProviderType"
-    enum="OmniboxSearchEngineType" expires_after="2023-02-12">
-  <obsolete>
-    Logged on profile open, including for profiles that do not allow the user to
-    search such as &quot;system&quot; profiles. When logged in such cases,
-    reported the default value. Replaced in M-108 with the histogram
-    Search.DefaultSearchProviderType2, which is similar but not emitted on for
-    some of those unusual/inappropriate profiles.
-  </obsolete>
-  <owner>mpearson@chromium.org</owner>
-  <owner>csharp@chromium.org</owner>
-  <summary>
-    The type of the default search engine that is loaded when a profile is
-    opened or after a profile reset. Due to an error, there was a period from
-    roughly May 9 2014 to May 23 2014 during which this was not being logged.
   </summary>
 </histogram>
 
@@ -1464,47 +692,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Search.GsaAccountChangeNotificationSource"
-    enum="GsaAccountChangeNotificationSource" expires_after="M77">
-  <owner>lizeb@chromium.org</owner>
-  <summary>
-    On Android, when GSA tells Chrome about an account change, what is the
-    notification mechanism used, which is either the service connection, or a
-    broadcast. Recorded once per account change.
-  </summary>
-</histogram>
-
-<histogram name="Search.GsaBroadcastsAccountChanges"
-    enum="BooleanAccountChange" expires_after="M77">
-  <owner>lizeb@chromium.org</owner>
-  <summary>
-    On Android, whether GSA tells Chrome about account changes through the
-    service or through a broadcast. This is reported at most once per Chrome
-    startup.
-  </summary>
-</histogram>
-
-<histogram name="Search.HistoryReport.UsageReportsBuffer.LevelDBEntries"
-    units="entries" expires_after="2019-06-01">
-  <owner>wychen@chromium.org</owner>
-  <owner>yusufo@chromium.org</owner>
-  <summary>
-    The number of entries in the usage report level DB for Icing. This is
-    measured on cold start.
-  </summary>
-</histogram>
-
-<histogram name="Search.IcingContextReportingStatus"
-    enum="IcingContextReportingStatus" expires_after="M77">
-  <owner>donnd@chromium.org</owner>
-  <summary>
-    Records the reason why a context report to Icing failed, every time Chrome
-    attemps to record the current context (tab switching, navigations, etc).
-    Also records reasons why context reporting might be disabled. Recorded on
-    Android only.
-  </summary>
-</histogram>
-
 <histogram name="Search.Image.Camera.Open" enum="CameraOpenEntryPoint"
     expires_after="2024-04-28">
   <owner>juanmojica@google.com</owner>
@@ -1518,7 +705,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.Image.Camera.Result" enum="CameraResult"
-    expires_after="2024-03-24">
+    expires_after="2024-05-26">
   <owner>juanmojica@google.com</owner>
   <owner>schechter@google.com</owner>
   <owner>stanfield@google.com</owner>
@@ -1554,7 +741,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.Lens.ViewportDimensionsSent.Success" units="Boolean"
-    expires_after="2024-03-31">
+    expires_after="2024-06-02">
   <owner>mercerd@google.com</owner>
   <owner>lens-chrome-eng@google.com</owner>
   <summary>
@@ -1744,7 +931,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.QueryTiles.TrendingTileEvent" enum="TrendingTileEvent"
-    expires_after="2024-03-17">
+    expires_after="2024-05-19">
   <owner>qinmin@chromium.org</owner>
   <owner>chrome-upboarding-eng@google.com</owner>
   <summary>
@@ -1805,7 +992,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.RelatedSearches.CarouselLastVisibleItemPosition"
-    units="position" expires_after="2024-03-03">
+    units="position" expires_after="2024-05-05">
   <owner>donnd@chromium.org</owner>
   <owner>gangwu@chromium.org</owner>
   <owner>related-searches-vteam@google.com</owner>
@@ -1831,7 +1018,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.RelatedSearches.CarouselScrolled" enum="Boolean"
-    expires_after="2024-03-03">
+    expires_after="2024-05-05">
   <owner>donnd@chromium.org</owner>
   <owner>gangwu@chromium.org</owner>
   <owner>related-searches-vteam@google.com</owner>
@@ -1870,7 +1057,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.RelatedSearches.QualifiedUsers" enum="Boolean"
-    expires_after="2024-03-03">
+    expires_after="2024-05-05">
   <owner>gangwu@chromium.org</owner>
   <owner>related-searches-vteam@google.com</owner>
   <summary>
@@ -1940,21 +1127,6 @@ chromium-metrics-reviews@google.com.
     The current state for search widget use and whether the device is a
     partnership device related with the Android Search Widget. Collected on
     every cold start.
-  </summary>
-</histogram>
-
-<histogram name="Search.TemplateURL.Events" enum="SearchTemplateURLEvent"
-    expires_after="2023-05-01">
-  <obsolete>
-    Expired and removed 05/2023.
-  </obsolete>
-  <owner>tommycli@chromium.org</owner>
-  <owner>chrome-omnibox-team@google.com</owner>
-  <summary>
-    Records when TemplateURL encounters specific events, particularly during
-    Sync or startup. There's a bunch of edge cases being handled by complicated
-    code within TemplateURLService, and we'd like to learn how often they
-    actually occur in the wild.
   </summary>
 </histogram>
 

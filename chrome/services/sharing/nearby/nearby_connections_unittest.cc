@@ -52,6 +52,7 @@ const char kServiceId[] = "NearbySharing";
 const char kConnectionToken[] = "connection_token";
 const char kFastAdvertisementServiceUuid[] =
     "0000fef3-0000-1000-8000-00805f9b34fb";
+const char kEndpointId[] = "974846";
 const size_t kEndpointIdLength = 4u;
 const char kEndpointInfo[] = {0x0d, 0x07, 0x07, 0x07, 0x07};
 const char kAccountName[] = "criscros@gmail.com";
@@ -305,11 +306,20 @@ class FakePayloadListener : public mojom::PayloadListener {
 
 class FakeConnectionListenerV3 : public mojom::ConnectionListenerV3 {
  public:
+  void OnConnectionInitiated(PresenceDevicePtr remote_device,
+                             mojom::InitialConnectionInfoV3Ptr info) override {
+    initiated_cb.Run(std::move(remote_device), std::move(info));
+  }
+
+  void OnDisconnected(PresenceDevicePtr remote_device) override {
+    disconnected_cb.Run(std::move(remote_device));
+  }
+
   // TODO(b/287336280): Introduce functions when callback implementation begins.
 
   mojo::Receiver<mojom::ConnectionListenerV3> receiver{this};
   base::RepeatingCallback<void(PresenceDevicePtr,
-                               mojom::InitialConnectionInfoV3)>
+                               mojom::InitialConnectionInfoV3Ptr)>
       initiated_cb = base::DoNothing();
   base::RepeatingCallback<void(PresenceDevicePtr, mojom::Status)> result_cb =
       base::DoNothing();
@@ -583,6 +593,7 @@ class NearbyConnectionsTest : public testing::Test {
                     options.keep_alive_timeout_millis);
           EXPECT_EQ(bluetooth_mac_address,
                     ByteArrayToMojom(options.remote_bluetooth_mac_address));
+          EXPECT_EQ(kEndpointId, nearby_device.GetEndpointId());
 
           client_proxy->OnConnectionInitiated(
               std::string{nearby_device.GetEndpointId()},
@@ -626,6 +637,9 @@ class NearbyConnectionsTest : public testing::Test {
                       ClientProxy* client, const NearbyDevice& nearby_device,
                       v3::PayloadListener listener, ResultCallback callback) {
           client_proxy = client;
+
+          EXPECT_EQ(kEndpointId, nearby_device.GetEndpointId());
+
           client_proxy->LocalEndpointAcceptedConnection(
               nearby_device.GetEndpointId(),
               ConvertPayloadListenerV3ToV1(std::move(listener)));
@@ -655,6 +669,9 @@ class NearbyConnectionsTest : public testing::Test {
                                   const NearbyDevice& nearby_device,
                                   ResultCallback callback) {
           client_proxy = client;
+
+          EXPECT_EQ(kEndpointId, nearby_device.GetEndpointId());
+
           client_proxy->CancelEndpoint(nearby_device.GetEndpointId());
           EXPECT_TRUE(callback);
           callback({Status::kConnectionRejected});
@@ -1586,25 +1603,40 @@ TEST_F(NearbyConnectionsTest, ReceiveStreamPayload) {
 }
 
 TEST_F(NearbyConnectionsTest, RequestConnectionV3Initiated) {
-  nearby::presence::PresenceDevice presence_device(CreateMetadata());
+  nearby::presence::PresenceDevice presence_device(kEndpointId);
+  presence_device.SetMetadata(CreateMetadata());
   PresenceDevicePtr presence_device_mojom =
       ash::nearby::presence::BuildPresenceMojomDevice(presence_device);
   EXPECT_EQ(presence_device_mojom->endpoint_id,
             presence_device.GetEndpointId());
 
+  base::RunLoop initiated_run_loop;
   FakeConnectionListenerV3 fake_connection_listener_v3;
+  fake_connection_listener_v3.initiated_cb =
+      base::BindLambdaForTesting([&](PresenceDevicePtr remote_device,
+                                     mojom::InitialConnectionInfoV3Ptr info) {
+        EXPECT_EQ(remote_device->metadata->device_name,
+                  presence_device.GetMetadata().device_name());
+        EXPECT_EQ(remote_device->metadata->account_name,
+                  presence_device.GetMetadata().account_name());
+        EXPECT_EQ(remote_device->metadata->user_name,
+                  presence_device.GetMetadata().user_name());
+        EXPECT_EQ(remote_device->metadata->device_profile_url,
+                  presence_device.GetMetadata().device_profile_url());
+        EXPECT_EQ(info->authentication_status,
+                  mojom::AuthenticationStatus::kSuccess);
 
-  // TODO(b/287336280): When callback functions are reintroduced, introduce an
-  // `initiated_run_loop` to check for the initiated_cb in
-  // `fake_connection_listener_v3` and run more assertions outside of the ones
-  // in `RequestConnectionV3()`.
+        initiated_run_loop.Quit();
+      });
 
   RequestConnectionV3(fake_connection_listener_v3,
                       std::move(presence_device_mojom));
+  initiated_run_loop.Run();
 }
 
 TEST_F(NearbyConnectionsTest, AcceptConnectionV3) {
-  nearby::presence::PresenceDevice presence_device(CreateMetadata());
+  nearby::presence::PresenceDevice presence_device(kEndpointId);
+  presence_device.SetMetadata(CreateMetadata());
   PresenceDevicePtr presence_device_mojom =
       ash::nearby::presence::BuildPresenceMojomDevice(presence_device);
   EXPECT_EQ(presence_device_mojom->endpoint_id,
@@ -1626,7 +1658,8 @@ TEST_F(NearbyConnectionsTest, AcceptConnectionV3) {
 }
 
 TEST_F(NearbyConnectionsTest, RejectConnectionV3) {
-  nearby::presence::PresenceDevice presence_device(CreateMetadata());
+  nearby::presence::PresenceDevice presence_device(kEndpointId);
+  presence_device.SetMetadata(CreateMetadata());
   PresenceDevicePtr presence_device_mojom =
       ash::nearby::presence::BuildPresenceMojomDevice(presence_device);
   EXPECT_EQ(presence_device_mojom->endpoint_id,
@@ -1646,7 +1679,8 @@ TEST_F(NearbyConnectionsTest, RejectConnectionV3) {
 }
 
 TEST_F(NearbyConnectionsTest, DisconnectFromDeviceV3) {
-  nearby::presence::PresenceDevice presence_device(CreateMetadata());
+  nearby::presence::PresenceDevice presence_device(kEndpointId);
+  presence_device.SetMetadata(CreateMetadata());
   PresenceDevicePtr presence_device_mojom =
       ash::nearby::presence::BuildPresenceMojomDevice(presence_device);
   EXPECT_EQ(presence_device_mojom->endpoint_id,
@@ -1669,6 +1703,8 @@ TEST_F(NearbyConnectionsTest, DisconnectFromDeviceV3) {
                                 const NearbyDevice& nearby_device,
                                 ResultCallback callback) {
         client_proxy = client;
+
+        EXPECT_EQ(kEndpointId, nearby_device.GetEndpointId());
 
         client_proxy->CancelEndpoint(nearby_device.GetEndpointId());
         EXPECT_TRUE(callback);

@@ -9,16 +9,24 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback_helpers.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/version.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/test/pixel_test_configuration_mixin.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_model.h"
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_view_controller.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_metadata.h"
+#include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
+#include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
+#include "third_party/skia/include/core/SkColor.h"
 
 namespace web_app {
 
@@ -38,9 +46,22 @@ std::string ParamToTestSuffix(const ::testing::TestParamInfo<TestParam>& info) {
   return info.param.test_suffix;
 }
 
+SignedWebBundleMetadata CreateTestMetadata() {
+  IconBitmaps icons;
+  AddGeneratedIcon(&icons.any, 32, SK_ColorBLUE);
+  return SignedWebBundleMetadata::CreateForTesting(
+      IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
+          web_package::SignedWebBundleId::CreateRandomForDevelopment()),
+      DevModeBundle(base::FilePath()), u"Test Isolated Web App",
+      base::Version("0.0.1"), icons);
+}
+
 const TestParam kTestParam[] = {
     {.test_suffix = "Disabled", .step = Step::kDisabled},
     {.test_suffix = "GetMetadata", .step = Step::kGetMetadata},
+    {.test_suffix = "ShowMetadata", .step = Step::kShowMetadata},
+    {.test_suffix = "Install", .step = Step::kInstall},
+    {.test_suffix = "Success", .step = Step::kInstallSuccess},
 };
 
 class IsolatedWebAppInstallerViewUiPixelTest
@@ -59,6 +80,7 @@ class IsolatedWebAppInstallerViewUiPixelTest
   void ShowUi(const std::string& name) override {
     IsolatedWebAppInstallerModel model{base::FilePath()};
     model.SetStep(GetParam().step);
+    model.SetSignedWebBundleMetadata(CreateTestMetadata());
 
     Profile* profile = browser()->profile();
     IsolatedWebAppInstallerViewController controller{

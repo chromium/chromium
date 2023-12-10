@@ -3,8 +3,12 @@
 // found in the LICENSE file.
 
 import 'chrome://shortcut-customization/js/shortcut_customization_app.js';
-import 'chrome://webui-test/mojo_webui_test_support.js';
+import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
+import {VKey} from 'chrome://resources/ash/common/shortcut_input_ui/accelerator_keys.mojom-webui.js';
+import {FakeShortcutInputProvider} from 'chrome://resources/ash/common/shortcut_input_ui/fake_shortcut_input_provider.js';
+import {KeyEvent} from 'chrome://resources/ash/common/shortcut_input_ui/input_device_settings.mojom-webui.js';
+import {Modifier as ModifierEnum} from 'chrome://resources/ash/common/shortcut_input_ui/shortcut_utils.js';
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
@@ -26,6 +30,7 @@ import {FakeShortcutSearchHandler} from 'chrome://shortcut-customization/js/sear
 import {SearchBoxElement} from 'chrome://shortcut-customization/js/search/search_box.js';
 import {setShortcutSearchHandlerForTesting} from 'chrome://shortcut-customization/js/search/shortcut_search_handler.js';
 import {ShortcutCustomizationAppElement} from 'chrome://shortcut-customization/js/shortcut_customization_app.js';
+import {setShortcutInputProviderForTesting} from 'chrome://shortcut-customization/js/shortcut_input_mojo_interface_provider.js';
 import {AcceleratorCategory, AcceleratorConfigResult, AcceleratorSource, AcceleratorState, AcceleratorSubcategory, AcceleratorType, LayoutInfo, LayoutStyle, Modifier, MojoAcceleratorConfig, MojoLayoutInfo, TextAcceleratorPartType} from 'chrome://shortcut-customization/js/shortcut_types.js';
 import {getSubcategoryNameStringId} from 'chrome://shortcut-customization/js/shortcut_utils.js';
 import {AcceleratorResultData, EditDialogCompletedActions, Subactions, UserAction} from 'chrome://shortcut-customization/mojom-webui/ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom-webui.js';
@@ -61,6 +66,9 @@ suite('shortcutCustomizationAppTest', function() {
 
   let handler: FakeShortcutSearchHandler;
 
+  const shortcutInputProvider: FakeShortcutInputProvider =
+      new FakeShortcutInputProvider();
+
   const jellyDisabledCssUrl =
       'chrome://resources/chromeos/colors/cros_styles.css';
   let linkEl: HTMLLinkElement|null = null;
@@ -78,6 +86,7 @@ suite('shortcutCustomizationAppTest', function() {
     provider.setFakeIsCustomizationAllowedByPolicy(true);
 
     setShortcutProviderForTesting(provider);
+    setShortcutInputProviderForTesting(shortcutInputProvider);
 
     // Set up SearchHandler.
     handler = new FakeShortcutSearchHandler();
@@ -193,9 +202,6 @@ suite('shortcutCustomizationAppTest', function() {
     // Assert no error has occurred prior to pressing a shortcut.
     assertFalse(editElement.hasError);
 
-    const viewElement =
-        editElement!.shadowRoot!.querySelector('#acceleratorItem');
-
     // Set the fake mojo return call.
     const fakeResult: AcceleratorResultData = {
       result: acceleratorConfigResult,
@@ -203,19 +209,16 @@ suite('shortcutCustomizationAppTest', function() {
     };
     provider.setFakeAddAcceleratorResult(fakeResult);
 
-    // press alt + ].
-    const fakeKeyboardEvent = new KeyboardEvent('keydown', {
-      key: ']',
-      keyCode: 221,
-      code: 'Key]',
-      ctrlKey: false,
-      altKey: true,
-      shiftKey: false,
-      metaKey: false,
-    });
-
     // Dispatch an add event, this should fail as it has a failure state.
-    viewElement!.dispatchEvent(fakeKeyboardEvent);
+    const keyEvent: KeyEvent = {
+      vkey: VKey.kOem6,
+      domCode: 0,
+      domKey: 0,
+      modifiers: ModifierEnum.ALT,
+      keyDisplay: ']',
+    };
+    shortcutInputProvider.sendKeyPressEvent(keyEvent, keyEvent);
+
     await flushTasks();
 
     assertTrue(editElement.hasError);
@@ -407,9 +410,6 @@ suite('shortcutCustomizationAppTest', function() {
         UserAction.kStartReplaceAccelerator,
         provider.getLatestRecordedAction());
 
-    const accelViewElement =
-        editView.shadowRoot!.querySelector('#acceleratorItem');
-
     // Assert no error has occurred prior to pressing a shortcut.
     assertFalse(editView.hasError);
 
@@ -421,15 +421,15 @@ suite('shortcutCustomizationAppTest', function() {
     provider.setFakeReplaceAcceleratorResult(fakeResult);
 
     // Alt + ']' is a conflict, expect the error message to appear.
-    accelViewElement!.dispatchEvent(new KeyboardEvent('keydown', {
-      key: ']',
-      keyCode: 221,
-      code: 'Key]',
-      ctrlKey: false,
-      altKey: true,
-      shiftKey: false,
-      metaKey: false,
-    }));
+    const keyEvent: KeyEvent = {
+      vkey: VKey.kOem6,
+      domCode: 0,
+      domKey: 0,
+      modifiers: ModifierEnum.ALT,
+      keyDisplay: ']',
+    };
+
+    shortcutInputProvider.sendKeyPressEvent(keyEvent, keyEvent);
 
     await flushTasks();
 
@@ -443,15 +443,7 @@ suite('shortcutCustomizationAppTest', function() {
 
     // Press the shortcut again, this time it will replace the preexsting
     // accelerator.
-    accelViewElement!.dispatchEvent(new KeyboardEvent('keydown', {
-      key: ']',
-      keyCode: 221,
-      code: 'Key]',
-      ctrlKey: false,
-      altKey: true,
-      shiftKey: false,
-      metaKey: false,
-    }));
+    shortcutInputProvider.sendKeyPressEvent(keyEvent, keyEvent);
 
     await flushTasks();
     const updatedEditView =
@@ -495,9 +487,6 @@ suite('shortcutCustomizationAppTest', function() {
     // Assert no error has occurred prior to pressing a shortcut.
     assertFalse(editElement.hasError);
 
-    const viewElement =
-        editElement!.shadowRoot!.querySelector('#acceleratorItem');
-
     // Set the fake mojo return call.
     const fakeResult: AcceleratorResultData = {
       result: AcceleratorConfigResult.kConflictCanOverride,
@@ -506,15 +495,14 @@ suite('shortcutCustomizationAppTest', function() {
     provider.setFakeAddAcceleratorResult(fakeResult);
 
     // Dispatch an add event, this should fail as it has a failure state.
-    viewElement!.dispatchEvent(new KeyboardEvent('keydown', {
-      key: ']',
-      keyCode: 221,
-      code: 'Key]',
-      ctrlKey: false,
-      altKey: true,
-      shiftKey: false,
-      metaKey: false,
-    }));
+    const keyEvent: KeyEvent = {
+      vkey: VKey.kOem6,
+      domCode: 0,
+      domKey: 0,
+      modifiers: ModifierEnum.ALT,
+      keyDisplay: ']',
+    };
+    shortcutInputProvider.sendKeyPressEvent(keyEvent, keyEvent);
 
     await flushTasks();
 
@@ -535,15 +523,14 @@ suite('shortcutCustomizationAppTest', function() {
     };
     provider.setFakeAddAcceleratorResult(fakeResult2);
 
-    viewElement!.dispatchEvent(new KeyboardEvent('keydown', {
-      key: ' ',
-      keyCode: 32,
-      code: 'space',
-      ctrlKey: false,
-      altKey: true,
-      shiftKey: false,
-      metaKey: false,
-    }));
+    const keyEventSpace: KeyEvent = {
+      vkey: VKey.kSpace,
+      domCode: 0,
+      domKey: 0,
+      modifiers: ModifierEnum.ALT,
+      keyDisplay: 'space',
+    };
+    shortcutInputProvider.sendKeyPressEvent(keyEventSpace, keyEventSpace);
 
     await flushTasks();
 
@@ -565,15 +552,15 @@ suite('shortcutCustomizationAppTest', function() {
     };
     provider.setFakeAddAcceleratorResult(fakeResult3);
 
-    viewElement!.dispatchEvent(new KeyboardEvent('keydown', {
-      key: 'BrightnessUp',
-      keyCode: 217,
-      code: 'BrightnessUp',
-      ctrlKey: false,
-      altKey: true,
-      shiftKey: false,
-      metaKey: false,
-    }));
+    const keyEventBrightnessUp: KeyEvent = {
+      vkey: VKey.kBrightnessUp,
+      domCode: 0,
+      domKey: 0,
+      modifiers: ModifierEnum.ALT,
+      keyDisplay: 'BrightnessUp',
+    };
+    shortcutInputProvider.sendKeyPressEvent(
+        keyEventBrightnessUp, keyEventBrightnessUp);
 
     await flushTasks();
 
@@ -655,15 +642,15 @@ suite('shortcutCustomizationAppTest', function() {
     const editElement =
         editDialog!.shadowRoot!.querySelector('#pendingAccelerator') as
         AcceleratorEditViewElement;
-    const viewElement =
-        editElement!.shadowRoot!.querySelector('#acceleratorItem');
 
-    viewElement!.dispatchEvent(new KeyboardEvent('keydown', {
-      key: ' ',
-      keyCode: 32,
-      code: 'space',
-      altKey: true,
-    }));
+    const keyEvent: KeyEvent = {
+      vkey: VKey.kSpace,
+      domCode: 0,
+      domKey: 0,
+      modifiers: ModifierEnum.ALT,
+      keyDisplay: 'space',
+    };
+    shortcutInputProvider.sendKeyPressEvent(keyEvent, keyEvent);
 
     await flushTasks();
 
@@ -700,18 +687,14 @@ suite('shortcutCustomizationAppTest', function() {
     };
     provider.setFakeAddAcceleratorResult(fakeResult);
 
-    const editElement =
-        editDialog!.shadowRoot!.querySelector('#pendingAccelerator') as
-        AcceleratorEditViewElement;
-    const viewElement =
-        editElement!.shadowRoot!.querySelector('#acceleratorItem');
-
-    viewElement!.dispatchEvent(new KeyboardEvent('keydown', {
-      key: ' ',
-      keyCode: 32,
-      code: 'space',
-      altKey: true,
-    }));
+    const keyEvent: KeyEvent = {
+      vkey: VKey.kSpace,
+      domCode: 0,
+      domKey: 0,
+      modifiers: ModifierEnum.ALT,
+      keyDisplay: 'space',
+    };
+    shortcutInputProvider.sendKeyPressEvent(keyEvent, keyEvent);
 
     await flushTasks();
 
@@ -746,18 +729,14 @@ suite('shortcutCustomizationAppTest', function() {
     };
     provider.setFakeAddAcceleratorResult(fakeResult);
 
-    const editElement =
-        editDialog!.shadowRoot!.querySelector('#pendingAccelerator') as
-        AcceleratorEditViewElement;
-    const viewElement =
-        editElement!.shadowRoot!.querySelector('#acceleratorItem');
-
-    viewElement!.dispatchEvent(new KeyboardEvent('keydown', {
-      key: ' ',
-      keyCode: 32,
-      code: 'space',
-      altKey: true,
-    }));
+    const keyEvent: KeyEvent = {
+      vkey: VKey.kSpace,
+      domCode: 0,
+      domKey: 0,
+      modifiers: ModifierEnum.ALT,
+      keyDisplay: 'space',
+    };
+    shortcutInputProvider.sendKeyPressEvent(keyEvent, keyEvent);
 
     await flushTasks();
 
@@ -768,12 +747,7 @@ suite('shortcutCustomizationAppTest', function() {
     };
     provider.setFakeAddAcceleratorResult(fakeResult2);
 
-    viewElement!.dispatchEvent(new KeyboardEvent('keydown', {
-      key: ' ',
-      keyCode: 32,
-      code: 'space',
-      altKey: true,
-    }));
+    shortcutInputProvider.sendKeyPressEvent(keyEvent, keyEvent);
 
     await flushTasks();
 
@@ -797,12 +771,6 @@ suite('shortcutCustomizationAppTest', function() {
         .click();
     await flushTasks();
 
-    const editElement =
-        editDialog!.shadowRoot!.querySelector('#pendingAccelerator') as
-        AcceleratorEditViewElement;
-    const viewElement =
-        editElement!.shadowRoot!.querySelector('#acceleratorItem');
-
     // Set the fake mojo return call.
     const fakeResult: AcceleratorResultData = {
       result: AcceleratorConfigResult.kConflict,
@@ -814,24 +782,23 @@ suite('shortcutCustomizationAppTest', function() {
     assertEquals(0, provider.getAddAcceleratorCallCount());
 
     // Press alt + ].
-    viewElement!.dispatchEvent(new KeyboardEvent('keydown', {
-      key: ']',
-      keyCode: 221,
-      code: 'Key]',
-      altKey: true,
-    }));
+    const keyEvent: KeyEvent = {
+      vkey: VKey.kOem6,
+      domCode: 0,
+      domKey: 0,
+      modifiers: ModifierEnum.ALT,
+      keyDisplay: 'BracketRight',
+    };
+    shortcutInputProvider.sendKeyPressEvent(keyEvent, keyEvent);
+
     await flushTasks();
 
     // getAddAcceleratorCallCount() should be increased to 1.
     assertEquals(1, provider.getAddAcceleratorCallCount());
 
     // Press alt + ] again
-    viewElement!.dispatchEvent(new KeyboardEvent('keydown', {
-      key: ']',
-      keyCode: 221,
-      code: 'Key]',
-      altKey: true,
-    }));
+    shortcutInputProvider.sendKeyPressEvent(keyEvent, keyEvent);
+
     await flushTasks();
 
     // getAddAcceleratorCallCount() should still be 1, indicating no duplicate
@@ -839,12 +806,15 @@ suite('shortcutCustomizationAppTest', function() {
     assertEquals(1, provider.getAddAcceleratorCallCount());
 
     // Press another shortcut: alt + space.
-    viewElement!.dispatchEvent(new KeyboardEvent('keydown', {
-      key: ' ',
-      keyCode: 32,
-      code: 'space',
-      altKey: true,
-    }));
+    const keyEvent2: KeyEvent = {
+      vkey: VKey.kSpace,
+      domCode: 0,
+      domKey: 0,
+      modifiers: ModifierEnum.ALT,
+      keyDisplay: 'space',
+    };
+    shortcutInputProvider.sendKeyPressEvent(keyEvent2, keyEvent2);
+
     await flushTasks();
 
     // getAddAcceleratorCallCount() should be increased to 2.
@@ -866,12 +836,6 @@ suite('shortcutCustomizationAppTest', function() {
         .click();
     await flushTasks();
 
-    const editElement =
-        editDialog!.shadowRoot!.querySelector('#pendingAccelerator') as
-        AcceleratorEditViewElement;
-    const viewElement =
-        editElement!.shadowRoot!.querySelector('#acceleratorItem');
-
     // Set the fake mojo return call, and make the result to be
     // kConflictCanOverride.
     const fakeResult: AcceleratorResultData = {
@@ -884,24 +848,23 @@ suite('shortcutCustomizationAppTest', function() {
     assertEquals(0, provider.getAddAcceleratorCallCount());
 
     // Press alt + ].
-    viewElement!.dispatchEvent(new KeyboardEvent('keydown', {
-      key: ']',
-      keyCode: 221,
-      code: 'Key]',
-      altKey: true,
-    }));
+    const keyEvent: KeyEvent = {
+      vkey: VKey.kOem6,
+      domCode: 0,
+      domKey: 0,
+      modifiers: ModifierEnum.ALT,
+      keyDisplay: 'BracketRight',
+    };
+    shortcutInputProvider.sendKeyPressEvent(keyEvent, keyEvent);
+
     await flushTasks();
 
     // getAddAcceleratorCallCount() should be increased to 1.
     assertEquals(1, provider.getAddAcceleratorCallCount());
 
     // Press alt + ] again, expect it to bypass the error.
-    viewElement!.dispatchEvent(new KeyboardEvent('keydown', {
-      key: ']',
-      keyCode: 221,
-      code: 'Key]',
-      altKey: true,
-    }));
+    shortcutInputProvider.sendKeyPressEvent(keyEvent, keyEvent);
+
     await flushTasks();
 
     // getAddAcceleratorCallCount() should be increased to 2.

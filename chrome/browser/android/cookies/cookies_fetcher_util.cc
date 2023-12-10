@@ -55,7 +55,7 @@ void OnCookiesFetchFinished(const net::CookieList& cookies) {
         i->LastAccessDate().ToDeltaSinceWindowsEpoch().InMicroseconds(),
         i->LastUpdateDate().ToDeltaSinceWindowsEpoch().InMicroseconds(),
         i->IsSecure(), i->IsHttpOnly(), static_cast<int>(i->SameSite()),
-        i->Priority(), i->IsSameParty(),
+        i->Priority(), /*sameParty=*/false,
         base::android::ConvertUTF8ToJavaString(env, pk),
         static_cast<int>(i->SourceScheme()), i->SourcePort());
     env->SetObjectArrayElement(joa.obj(), index++, java_cookie.obj());
@@ -107,7 +107,7 @@ static void JNI_CookiesFetcher_RestoreCookies(
   std::string domain_str(base::android::ConvertJavaStringToUTF8(env, domain));
   std::string path_str(base::android::ConvertJavaStringToUTF8(env, path));
 
-  absl::optional<net::CookiePartitionKey> pk;
+  std::optional<net::CookiePartitionKey> pk;
   if (!net::CookiePartitionKey::Deserialize(
           base::android::ConvertJavaStringToUTF8(env, partition_key), pk)) {
     return;
@@ -126,7 +126,7 @@ static void JNI_CookiesFetcher_RestoreCookies(
           base::Time::FromDeltaSinceWindowsEpoch(
               base::Microseconds(last_update)),
           secure, httponly, static_cast<net::CookieSameSite>(same_site),
-          static_cast<net::CookiePriority>(priority), same_party, pk,
+          static_cast<net::CookiePriority>(priority), pk,
           static_cast<net::CookieSourceScheme>(source_scheme), source_port);
   // FromStorage() uses a less strict version of IsCanonical(), we need to check
   // the stricter version as well here. This is safe because this function is

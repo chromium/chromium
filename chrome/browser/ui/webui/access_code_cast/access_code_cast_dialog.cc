@@ -143,7 +143,7 @@ void AccessCodeCastDialog::ShowWebDialog(AccessCodeCastDialogMode dialog_mode) {
   dialog_creation_timestamp_ = base::Time::Now();
   gfx::NativeWindow dialog_window = chrome::ShowWebDialogWithParams(
       GetParentView(), context_, this,
-      absl::make_optional<views::Widget::InitParams>(std::move(extra_params)));
+      std::make_optional<views::Widget::InitParams>(std::move(extra_params)));
 
   dialog_widget_ = views::Widget::GetWidgetForNativeWindow(dialog_window);
   widget_observation_.Observe(dialog_widget_.get());
@@ -251,7 +251,7 @@ void AccessCodeCastDialog::RequestMediaAccessPermission(
 
 bool AccessCodeCastDialog::CheckMediaAccessPermission(
     content::RenderFrameHost* render_frame_host,
-    const GURL& security_origin,
+    const url::Origin& security_origin,
     blink::mojom::MediaStreamType type) {
   return true;
 }

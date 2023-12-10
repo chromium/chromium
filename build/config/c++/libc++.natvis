@@ -248,6 +248,14 @@
     </Expand>
   </Type>
 
+  <Type Name="std::__Cr::optional&lt;*&gt;">
+    <DisplayString Condition="!__engaged_">nullopt</DisplayString>
+    <DisplayString>{__val_}</DisplayString>
+    <Expand>
+      <ExpandedItem Condition="__engaged_">__val_</ExpandedItem>
+    </Expand>
+  </Type>
+
   <Type Name="std::__Cr::priority_queue&lt;*&gt;">
     <DisplayString>{c}</DisplayString>
     <Expand>

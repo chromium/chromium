@@ -445,7 +445,7 @@ TEST(
     PrintBackendMojomTraitsTest,
     TestSerializeAndDeserializePrinterSemanticCapsAndDefaultsAllowableEmptyArraysXpsCapabilities) {
   const PageOutputQualityAttributes kEmptyQualities;
-  PageOutputQuality quality(kEmptyQualities, /*default_quality=*/absl::nullopt);
+  PageOutputQuality quality(kEmptyQualities, /*default_quality=*/std::nullopt);
   PrinterSemanticCapsAndDefaults input =
       GenerateSamplePrinterSemanticCapsAndDefaults({});
   input.page_output_quality = quality;
@@ -499,7 +499,7 @@ TEST(
   PageOutputQuality page_output_quality(
       {kPageOutputQualityAttribute1, kPageOutputQualityAttributePrime,
        kPageOutputQualityAttribute2},
-      /*default_quality=*/absl::nullopt);
+      /*default_quality=*/std::nullopt);
   PrinterSemanticCapsAndDefaults input =
       GenerateSamplePrinterSemanticCapsAndDefaults({});
   input.page_output_quality = page_output_quality;

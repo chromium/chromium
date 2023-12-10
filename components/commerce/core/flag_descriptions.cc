@@ -48,11 +48,6 @@ const char kShowDiscountOnNavigationName[] = "Show discount on navigation";
 const char kShowDiscountOnNavigationDescription[] =
     "Enable discount to show on navigation";
 
-const char kPriceTrackingChipExperimentName[] =
-    "Price Tracking Chip Experiment";
-const char kPriceTrackingChipExperimentDescription[] =
-    "Enable price tracking chip experiment.";
-
 const char kShoppingPageTypesName[] = "Shopping Page Types";
 const char kShoppingPageTypesDescription[] =
     "Enable shopping page types experiment.";

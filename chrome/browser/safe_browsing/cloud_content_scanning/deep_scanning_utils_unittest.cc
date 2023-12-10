@@ -29,7 +29,6 @@ constexpr BinaryUploadService::Result kAllBinaryUploadServiceResults[]{
     BinaryUploadService::Result::FAILED_TO_GET_TOKEN,
     BinaryUploadService::Result::UNAUTHORIZED,
     BinaryUploadService::Result::FILE_ENCRYPTED,
-    BinaryUploadService::Result::DLP_SCAN_UNSUPPORTED_FILE_TYPE,
 };
 
 #if !BUILDFLAG(USE_CRASH_KEY_STUBS)

@@ -4,9 +4,12 @@
 
 module android_webview.mojom;
 
+import "third_party/blink/public/mojom/tokens/tokens.mojom";
+
 // An extension to content.mojom.RenderMessageFilter and implemented in Browser.
 interface RenderMessageFilter {
 
   // Called when a subframe is created.
-  SubFrameCreated(int32 parent_render_frame_id, int32 child_render_frame_id);
+  SubFrameCreated(blink.mojom.LocalFrameToken parent_frame_token,
+                  blink.mojom.LocalFrameToken child_frame_token);
 };

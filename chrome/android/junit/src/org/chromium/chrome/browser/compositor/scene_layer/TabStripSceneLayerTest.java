@@ -19,12 +19,10 @@ import org.junit.Test;
 import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.LayerTitleCache;
@@ -41,15 +39,12 @@ import org.chromium.chrome.browser.compositor.scene_layer.TabStripSceneLayer;
 import org.chromium.chrome.browser.compositor.scene_layer.TabStripSceneLayerJni;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
-import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.test.util.browser.Features;
-import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.ui.resources.ResourceManager;
 
 /** Tests for {@link TabStripSceneLayer}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@EnableFeatures({ChromeFeatureList.TAB_STRIP_REDESIGN})
 @Config(manifest = Config.NONE, qualifiers = "sw600dp")
 public class TabStripSceneLayerTest {
     @Rule public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
@@ -85,7 +80,6 @@ public class TabStripSceneLayerTest {
                         ApplicationProvider.getApplicationContext(),
                         R.style.Theme_BrowserUI_DayNight);
         TabStripSceneLayer.setTestFlag(true);
-        TabUiFeatureUtilities.TAB_STRIP_REDESIGN_DISABLE_BUTTON_STYLE.setForTesting(false);
         initializeTest();
     }
 
@@ -96,11 +90,7 @@ public class TabStripSceneLayerTest {
 
     private void initializeTest() {
         mTabStripSceneLayer = new TabStripSceneLayer(mContext);
-        when(mTabStripSceneMock.init(
-                        mTabStripSceneLayer,
-                        ChromeFeatureList.sTabStripRedesign.isEnabled(),
-                        false))
-                .thenReturn(1L);
+        when(mTabStripSceneMock.init(mTabStripSceneLayer)).thenReturn(1L);
         mModelSelectorButton =
                 new TintedCompositorButton(
                         mContext, 32.f, 32.f, mCompositorOnClickHandler, R.drawable.ic_incognito);
@@ -110,7 +100,7 @@ public class TabStripSceneLayerTest {
                         32.f,
                         32.f,
                         mCompositorOnClickHandler,
-                        R.drawable.ic_new_tab_button_tsr);
+                        R.drawable.ic_new_tab_button);
         mStripLayoutTab =
                 new StripLayoutTab(
                         mContext,
@@ -132,13 +122,8 @@ public class TabStripSceneLayerTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.TAB_STRIP_REDESIGN)
     @EnableFeatures(ChromeFeatureList.ADVANCED_PERIPHERALS_SUPPORT_TAB_STRIP)
     public void testPushAndUpdateStrip() {
-        // Setup
-        boolean isSelected = false;
-        boolean isHovered = false;
-
         // Call the method being tested.
         mTabStripSceneLayer.pushAndUpdateStrip(
                 mStripLayoutHelperManager,
@@ -150,112 +135,6 @@ public class TabStripSceneLayerTest {
                 -1);
 
         // Verify JNI calls.
-        verify(mTabStripSceneMock).beginBuildingFrame(1L, mTabStripSceneLayer, true);
-        verify(mTabStripSceneMock)
-                .updateNewTabButton(
-                        1L,
-                        mTabStripSceneLayer,
-                        mNewTabButton.getResourceId(),
-                        mNewTabButton.getBackgroundResourceId(),
-                        false,
-                        mNewTabButton.getX(),
-                        mNewTabButton.getY(),
-                        0.f,
-                        true,
-                        mNewTabButton.getTint(),
-                        mNewTabButton.getBackgroundTint(),
-                        mNewTabButton.getOpacity(),
-                        mResourceManager);
-        verify(mTabStripSceneMock)
-                .updateModelSelectorButton(
-                        1L,
-                        mTabStripSceneLayer,
-                        mModelSelectorButton.getResourceId(),
-                        mModelSelectorButton.getX(),
-                        mModelSelectorButton.getY(),
-                        mModelSelectorButton.getWidth() * mDpToPx,
-                        mModelSelectorButton.getHeight() * mDpToPx,
-                        false,
-                        true,
-                        1.f,
-                        mResourceManager);
-        verify(mTabStripSceneMock, Mockito.never())
-                .updateModelSelectorButtonBackground(
-                        1L,
-                        mTabStripSceneLayer,
-                        mModelSelectorButton.getResourceId(),
-                        ((TintedCompositorButton) mModelSelectorButton).getBackgroundResourceId(),
-                        mModelSelectorButton.getX(),
-                        mModelSelectorButton.getY(),
-                        mModelSelectorButton.getWidth() * mDpToPx,
-                        mModelSelectorButton.getHeight() * mDpToPx,
-                        false,
-                        true,
-                        ((TintedCompositorButton) mModelSelectorButton).getTint(),
-                        ((TintedCompositorButton) mModelSelectorButton).getBackgroundTint(),
-                        false,
-                        mModelSelectorButton.getOpacity(),
-                        mResourceManager);
-        verify(mTabStripSceneMock)
-                .updateTabStripRightFade(1L, mTabStripSceneLayer, 0, 0.f, mResourceManager, 0);
-        verify(mTabStripSceneMock)
-                .putStripTabLayer(
-                        1L,
-                        mTabStripSceneLayer,
-                        mStripLayoutTab.getId(),
-                        mStripLayoutTab.getCloseButton().getResourceId(),
-                        mStripLayoutTab.getCloseButton().getBackgroundResourceId(),
-                        mStripLayoutTab.getDividerResourceId(),
-                        mStripLayoutTab.getResourceId(),
-                        mStripLayoutTab.getOutlineResourceId(),
-                        mStripLayoutTab.getCloseButton().getTint(),
-                        mStripLayoutTab.getCloseButton().getBackgroundTint(),
-                        mStripLayoutTab.getDividerTint(),
-                        mStripLayoutTab.getTint(isSelected, isHovered),
-                        mStripLayoutTab.getOutlineTint(isSelected),
-                        isSelected,
-                        mStripLayoutTab.getClosePressed(),
-                        0.f * mDpToPx,
-                        mStripLayoutTab.getDrawX() * mDpToPx,
-                        mStripLayoutTab.getDrawY() * mDpToPx,
-                        mStripLayoutTab.getWidth() * mDpToPx,
-                        mStripLayoutTab.getHeight() * mDpToPx,
-                        mStripLayoutTab.getContentOffsetY() * mDpToPx,
-                        mStripLayoutTab.getDividerOffsetX() * mDpToPx,
-                        mStripLayoutTab.getBottomMargin() * mDpToPx,
-                        mStripLayoutTab.getTopMargin() * mDpToPx,
-                        mStripLayoutTab.getCloseButtonPadding() * mDpToPx,
-                        mStripLayoutTab.getCloseButton().getOpacity(),
-                        mStripLayoutTab.isStartDividerVisible(),
-                        mStripLayoutTab.isEndDividerVisible(),
-                        mStripLayoutTab.isLoading(),
-                        mStripLayoutTab.getLoadingSpinnerRotation(),
-                        mStripLayoutTab.getBrightness(),
-                        mStripLayoutTab.getContainerOpacity(),
-                        mLayerTitleCache,
-                        mResourceManager);
-        verify(mTabStripSceneMock).finishBuildingFrame(1L, mTabStripSceneLayer);
-
-        // Verify below JNI calls are not invoked - should ONLY invoke when TSR is enabled.
-        verify(mTabStripSceneMock, Mockito.never())
-                .updateTabStripLeftFade((long) 1, mTabStripSceneLayer, 0, 0.f, mResourceManager, 0);
-    }
-
-    @Test
-    @Feature("Tab Strip Redesign")
-    @EnableFeatures(ChromeFeatureList.ADVANCED_PERIPHERALS_SUPPORT_TAB_STRIP)
-    public void testPushAndUpdateStrip_TSR() {
-        // Call the method being tested.
-        mTabStripSceneLayer.pushAndUpdateStrip(
-                mStripLayoutHelperManager,
-                mLayerTitleCache,
-                mResourceManager,
-                mStripLayoutTabs,
-                1.f,
-                0,
-                -1);
-
-        // Verify TSR JNI calls.
         verify(mTabStripSceneMock)
                 .updateModelSelectorButtonBackground(
                         1L,

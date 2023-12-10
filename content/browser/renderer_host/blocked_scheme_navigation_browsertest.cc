@@ -707,8 +707,15 @@ IN_PROC_BROWSER_TEST_P(BlockedSchemeNavigationBrowserTest,
 
 // Tests that opening a new window with a blocked scheme from a subframe is
 // blocked.
+// TODO(crbug.com/1503148): Enable the flaky test.
+#if BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_HTML_WindowOpenFromFrame_Block \
+  DISABLED_HTML_WindowOpenFromFrame_Block
+#else
+#define MAYBE_HTML_WindowOpenFromFrame_Block HTML_WindowOpenFromFrame_Block
+#endif
 IN_PROC_BROWSER_TEST_P(BlockedSchemeNavigationBrowserTest,
-                       HTML_WindowOpenFromFrame_Block) {
+                       MAYBE_HTML_WindowOpenFromFrame_Block) {
   EXPECT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL("a.com", "/simple_page.html")));
   AddIFrame(
@@ -1079,8 +1086,17 @@ IN_PROC_BROWSER_TEST_F(BlockedSchemeNavigationBrowserTest,
 // Test navigation of the main frame to a filesystem URL with an unknown
 // mimetype from a subframe. Navigations to filesystem URLs don't end up as
 // downloads.
-IN_PROC_BROWSER_TEST_F(BlockedSchemeNavigationBrowserTest,
-                       FilesystemUrl_UnknownMimeType_NavigationFromFrame) {
+// TODO(crbug.com/1503148): Enable the flaky test.
+#if BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_FilesystemUrl_UnknownMimeType_NavigationFromFrame \
+  DISABLED_FilesystemUrl_UnknownMimeType_NavigationFromFrame
+#else
+#define MAYBE_FilesystemUrl_UnknownMimeType_NavigationFromFrame \
+  FilesystemUrl_UnknownMimeType_NavigationFromFrame
+#endif
+IN_PROC_BROWSER_TEST_F(
+    BlockedSchemeNavigationBrowserTest,
+    MAYBE_FilesystemUrl_UnknownMimeType_NavigationFromFrame) {
   EXPECT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL("a.com", "/simple_page.html")));
   AddIFrame(shell()->web_contents()->GetPrimaryMainFrame(),

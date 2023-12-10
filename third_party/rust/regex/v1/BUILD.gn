@@ -2,7 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# @generated from third_party/rust/BUILD.gn.hbs by tools/crates/gnrt.
+# @generated from third_party/rust/chromium_crates_io/BUILD.gn.hbs by
+# tools/crates/gnrt.
 # Do not edit!
 
 import("//build/rust/cargo_crate.gni")
@@ -11,89 +12,29 @@ cargo_crate("lib") {
   crate_name = "regex"
   epoch = "1"
   crate_type = "rlib"
-
-  # Only for usage from third-party crates. Add the crate to
-  # third_party.toml to use it from first-party code.
-  visibility = [ "//third_party/rust/*" ]
-  crate_root = "crate/src/lib.rs"
+  crate_root =
+      "//third_party/rust/chromium_crates_io/vendor/regex-1.10.2/src/lib.rs"
   sources = [
-    "//third_party/rust/regex/v1/crate/examples/shootout-regex-dna-bytes.rs",
-    "//third_party/rust/regex/v1/crate/examples/shootout-regex-dna-cheat.rs",
-    "//third_party/rust/regex/v1/crate/examples/shootout-regex-dna-replace.rs",
-    "//third_party/rust/regex/v1/crate/examples/shootout-regex-dna-single-cheat.rs",
-    "//third_party/rust/regex/v1/crate/examples/shootout-regex-dna-single.rs",
-    "//third_party/rust/regex/v1/crate/examples/shootout-regex-dna.rs",
-    "//third_party/rust/regex/v1/crate/src/backtrack.rs",
-    "//third_party/rust/regex/v1/crate/src/compile.rs",
-    "//third_party/rust/regex/v1/crate/src/dfa.rs",
-    "//third_party/rust/regex/v1/crate/src/error.rs",
-    "//third_party/rust/regex/v1/crate/src/exec.rs",
-    "//third_party/rust/regex/v1/crate/src/expand.rs",
-    "//third_party/rust/regex/v1/crate/src/find_byte.rs",
-    "//third_party/rust/regex/v1/crate/src/freqs.rs",
-    "//third_party/rust/regex/v1/crate/src/input.rs",
-    "//third_party/rust/regex/v1/crate/src/lib.rs",
-    "//third_party/rust/regex/v1/crate/src/literal/imp.rs",
-    "//third_party/rust/regex/v1/crate/src/literal/mod.rs",
-    "//third_party/rust/regex/v1/crate/src/pattern.rs",
-    "//third_party/rust/regex/v1/crate/src/pikevm.rs",
-    "//third_party/rust/regex/v1/crate/src/pool.rs",
-    "//third_party/rust/regex/v1/crate/src/prog.rs",
-    "//third_party/rust/regex/v1/crate/src/re_builder.rs",
-    "//third_party/rust/regex/v1/crate/src/re_bytes.rs",
-    "//third_party/rust/regex/v1/crate/src/re_set.rs",
-    "//third_party/rust/regex/v1/crate/src/re_trait.rs",
-    "//third_party/rust/regex/v1/crate/src/re_unicode.rs",
-    "//third_party/rust/regex/v1/crate/src/sparse.rs",
-    "//third_party/rust/regex/v1/crate/src/utf8.rs",
-    "//third_party/rust/regex/v1/crate/tests/api.rs",
-    "//third_party/rust/regex/v1/crate/tests/api_str.rs",
-    "//third_party/rust/regex/v1/crate/tests/bytes.rs",
-    "//third_party/rust/regex/v1/crate/tests/consistent.rs",
-    "//third_party/rust/regex/v1/crate/tests/crates_regex.rs",
-    "//third_party/rust/regex/v1/crate/tests/crazy.rs",
-    "//third_party/rust/regex/v1/crate/tests/flags.rs",
-    "//third_party/rust/regex/v1/crate/tests/fowler.rs",
-    "//third_party/rust/regex/v1/crate/tests/macros.rs",
-    "//third_party/rust/regex/v1/crate/tests/macros_bytes.rs",
-    "//third_party/rust/regex/v1/crate/tests/macros_str.rs",
-    "//third_party/rust/regex/v1/crate/tests/misc.rs",
-    "//third_party/rust/regex/v1/crate/tests/multiline.rs",
-    "//third_party/rust/regex/v1/crate/tests/noparse.rs",
-    "//third_party/rust/regex/v1/crate/tests/regression.rs",
-    "//third_party/rust/regex/v1/crate/tests/regression_fuzz.rs",
-    "//third_party/rust/regex/v1/crate/tests/replace.rs",
-    "//third_party/rust/regex/v1/crate/tests/searcher.rs",
-    "//third_party/rust/regex/v1/crate/tests/set.rs",
-    "//third_party/rust/regex/v1/crate/tests/shortest_match.rs",
-    "//third_party/rust/regex/v1/crate/tests/suffix_reverse.rs",
-    "//third_party/rust/regex/v1/crate/tests/test_backtrack.rs",
-    "//third_party/rust/regex/v1/crate/tests/test_backtrack_bytes.rs",
-    "//third_party/rust/regex/v1/crate/tests/test_backtrack_utf8bytes.rs",
-    "//third_party/rust/regex/v1/crate/tests/test_crates_regex.rs",
-    "//third_party/rust/regex/v1/crate/tests/test_default.rs",
-    "//third_party/rust/regex/v1/crate/tests/test_default_bytes.rs",
-    "//third_party/rust/regex/v1/crate/tests/test_nfa.rs",
-    "//third_party/rust/regex/v1/crate/tests/test_nfa_bytes.rs",
-    "//third_party/rust/regex/v1/crate/tests/test_nfa_utf8bytes.rs",
-    "//third_party/rust/regex/v1/crate/tests/unicode.rs",
-    "//third_party/rust/regex/v1/crate/tests/word_boundary.rs",
-    "//third_party/rust/regex/v1/crate/tests/word_boundary_ascii.rs",
-    "//third_party/rust/regex/v1/crate/tests/word_boundary_unicode.rs",
+    "//third_party/rust/chromium_crates_io/vendor/regex-1.10.2/src/builders.rs",
+    "//third_party/rust/chromium_crates_io/vendor/regex-1.10.2/src/bytes.rs",
+    "//third_party/rust/chromium_crates_io/vendor/regex-1.10.2/src/error.rs",
+    "//third_party/rust/chromium_crates_io/vendor/regex-1.10.2/src/find_byte.rs",
+    "//third_party/rust/chromium_crates_io/vendor/regex-1.10.2/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/regex-1.10.2/src/pattern.rs",
+    "//third_party/rust/chromium_crates_io/vendor/regex-1.10.2/src/regex/bytes.rs",
+    "//third_party/rust/chromium_crates_io/vendor/regex-1.10.2/src/regex/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/regex-1.10.2/src/regex/string.rs",
+    "//third_party/rust/chromium_crates_io/vendor/regex-1.10.2/src/regexset/bytes.rs",
+    "//third_party/rust/chromium_crates_io/vendor/regex-1.10.2/src/regexset/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/regex-1.10.2/src/regexset/string.rs",
   ]
-  inputs = [
-    "//third_party/rust/regex/v1/crate/CHANGELOG.md",
-    "//third_party/rust/regex/v1/crate/HACKING.md",
-    "//third_party/rust/regex/v1/crate/PERFORMANCE.md",
-    "//third_party/rust/regex/v1/crate/README.md",
-    "//third_party/rust/regex/v1/crate/UNICODE.md",
-  ]
+  inputs = []
 
-  # Unit tests skipped. Generate with --with-tests to include them.
   build_native_rust_unit_tests = false
-  edition = "2018"
-  cargo_pkg_version = "1.6.0"
-  cargo_pkg_authors = "The Rust Project Developers"
+  edition = "2021"
+  cargo_pkg_version = "1.10.2"
+  cargo_pkg_authors =
+      "The Rust Project Developers, Andrew Gallant <jamslam@gmail.com>"
   cargo_pkg_name = "regex"
   cargo_pkg_description = "An implementation of regular expressions for Rust. This implementation uses finite automata and guarantees linear time matching on all inputs."
   library_configs -= [ "//build/config/compiler:chromium_code" ]
@@ -101,18 +42,19 @@ cargo_crate("lib") {
   executable_configs -= [ "//build/config/compiler:chromium_code" ]
   executable_configs += [ "//build/config/compiler:no_chromium_code" ]
   deps = [
-    "//third_party/rust/aho_corasick/v0_7:lib",
+    "//third_party/rust/aho_corasick/v1:lib",
     "//third_party/rust/memchr/v2:lib",
-    "//third_party/rust/regex_syntax/v0_6:lib",
+    "//third_party/rust/regex_automata/v0_4:lib",
+    "//third_party/rust/regex_syntax/v0_8:lib",
   ]
   features = [
-    "aho-corasick",
-    "memchr",
     "perf",
+    "perf-backtrack",
     "perf-cache",
     "perf-dfa",
     "perf-inline",
     "perf-literal",
+    "perf-onepass",
     "std",
     "unicode",
     "unicode-age",
@@ -123,125 +65,5 @@ cargo_crate("lib") {
     "unicode-script",
     "unicode-segment",
   ]
-}
-group("test_support") {
-  public_deps = [ ":lib" ]
   testonly = true
-}
-cargo_crate("buildrs_support") {
-  crate_name = "regex"
-  epoch = "1"
-  crate_type = "rlib"
-
-  # Only for usage from third-party crates. Add the crate to
-  # third_party.toml to use it from first-party code.
-  visibility = [ "//third_party/rust/*" ]
-  crate_root = "crate/src/lib.rs"
-  sources = [
-    "//third_party/rust/regex/v1/crate/examples/shootout-regex-dna-bytes.rs",
-    "//third_party/rust/regex/v1/crate/examples/shootout-regex-dna-cheat.rs",
-    "//third_party/rust/regex/v1/crate/examples/shootout-regex-dna-replace.rs",
-    "//third_party/rust/regex/v1/crate/examples/shootout-regex-dna-single-cheat.rs",
-    "//third_party/rust/regex/v1/crate/examples/shootout-regex-dna-single.rs",
-    "//third_party/rust/regex/v1/crate/examples/shootout-regex-dna.rs",
-    "//third_party/rust/regex/v1/crate/src/backtrack.rs",
-    "//third_party/rust/regex/v1/crate/src/compile.rs",
-    "//third_party/rust/regex/v1/crate/src/dfa.rs",
-    "//third_party/rust/regex/v1/crate/src/error.rs",
-    "//third_party/rust/regex/v1/crate/src/exec.rs",
-    "//third_party/rust/regex/v1/crate/src/expand.rs",
-    "//third_party/rust/regex/v1/crate/src/find_byte.rs",
-    "//third_party/rust/regex/v1/crate/src/freqs.rs",
-    "//third_party/rust/regex/v1/crate/src/input.rs",
-    "//third_party/rust/regex/v1/crate/src/lib.rs",
-    "//third_party/rust/regex/v1/crate/src/literal/imp.rs",
-    "//third_party/rust/regex/v1/crate/src/literal/mod.rs",
-    "//third_party/rust/regex/v1/crate/src/pattern.rs",
-    "//third_party/rust/regex/v1/crate/src/pikevm.rs",
-    "//third_party/rust/regex/v1/crate/src/pool.rs",
-    "//third_party/rust/regex/v1/crate/src/prog.rs",
-    "//third_party/rust/regex/v1/crate/src/re_builder.rs",
-    "//third_party/rust/regex/v1/crate/src/re_bytes.rs",
-    "//third_party/rust/regex/v1/crate/src/re_set.rs",
-    "//third_party/rust/regex/v1/crate/src/re_trait.rs",
-    "//third_party/rust/regex/v1/crate/src/re_unicode.rs",
-    "//third_party/rust/regex/v1/crate/src/sparse.rs",
-    "//third_party/rust/regex/v1/crate/src/utf8.rs",
-    "//third_party/rust/regex/v1/crate/tests/api.rs",
-    "//third_party/rust/regex/v1/crate/tests/api_str.rs",
-    "//third_party/rust/regex/v1/crate/tests/bytes.rs",
-    "//third_party/rust/regex/v1/crate/tests/consistent.rs",
-    "//third_party/rust/regex/v1/crate/tests/crates_regex.rs",
-    "//third_party/rust/regex/v1/crate/tests/crazy.rs",
-    "//third_party/rust/regex/v1/crate/tests/flags.rs",
-    "//third_party/rust/regex/v1/crate/tests/fowler.rs",
-    "//third_party/rust/regex/v1/crate/tests/macros.rs",
-    "//third_party/rust/regex/v1/crate/tests/macros_bytes.rs",
-    "//third_party/rust/regex/v1/crate/tests/macros_str.rs",
-    "//third_party/rust/regex/v1/crate/tests/misc.rs",
-    "//third_party/rust/regex/v1/crate/tests/multiline.rs",
-    "//third_party/rust/regex/v1/crate/tests/noparse.rs",
-    "//third_party/rust/regex/v1/crate/tests/regression.rs",
-    "//third_party/rust/regex/v1/crate/tests/regression_fuzz.rs",
-    "//third_party/rust/regex/v1/crate/tests/replace.rs",
-    "//third_party/rust/regex/v1/crate/tests/searcher.rs",
-    "//third_party/rust/regex/v1/crate/tests/set.rs",
-    "//third_party/rust/regex/v1/crate/tests/shortest_match.rs",
-    "//third_party/rust/regex/v1/crate/tests/suffix_reverse.rs",
-    "//third_party/rust/regex/v1/crate/tests/test_backtrack.rs",
-    "//third_party/rust/regex/v1/crate/tests/test_backtrack_bytes.rs",
-    "//third_party/rust/regex/v1/crate/tests/test_backtrack_utf8bytes.rs",
-    "//third_party/rust/regex/v1/crate/tests/test_crates_regex.rs",
-    "//third_party/rust/regex/v1/crate/tests/test_default.rs",
-    "//third_party/rust/regex/v1/crate/tests/test_default_bytes.rs",
-    "//third_party/rust/regex/v1/crate/tests/test_nfa.rs",
-    "//third_party/rust/regex/v1/crate/tests/test_nfa_bytes.rs",
-    "//third_party/rust/regex/v1/crate/tests/test_nfa_utf8bytes.rs",
-    "//third_party/rust/regex/v1/crate/tests/unicode.rs",
-    "//third_party/rust/regex/v1/crate/tests/word_boundary.rs",
-    "//third_party/rust/regex/v1/crate/tests/word_boundary_ascii.rs",
-    "//third_party/rust/regex/v1/crate/tests/word_boundary_unicode.rs",
-  ]
-  inputs = [
-    "//third_party/rust/regex/v1/crate/CHANGELOG.md",
-    "//third_party/rust/regex/v1/crate/HACKING.md",
-    "//third_party/rust/regex/v1/crate/PERFORMANCE.md",
-    "//third_party/rust/regex/v1/crate/README.md",
-    "//third_party/rust/regex/v1/crate/UNICODE.md",
-  ]
-
-  # Unit tests skipped. Generate with --with-tests to include them.
-  build_native_rust_unit_tests = false
-  edition = "2018"
-  cargo_pkg_version = "1.6.0"
-  cargo_pkg_authors = "The Rust Project Developers"
-  cargo_pkg_name = "regex"
-  cargo_pkg_description = "An implementation of regular expressions for Rust. This implementation uses finite automata and guarantees linear time matching on all inputs."
-  library_configs -= [ "//build/config/compiler:chromium_code" ]
-  library_configs += [ "//build/config/compiler:no_chromium_code" ]
-  executable_configs -= [ "//build/config/compiler:chromium_code" ]
-  executable_configs += [ "//build/config/compiler:no_chromium_code" ]
-  deps = [
-    "//third_party/rust/aho_corasick/v0_7:lib",
-    "//third_party/rust/memchr/v2:lib",
-    "//third_party/rust/regex_syntax/v0_6:lib",
-  ]
-  features = [
-    "aho-corasick",
-    "memchr",
-    "perf",
-    "perf-cache",
-    "perf-dfa",
-    "perf-inline",
-    "perf-literal",
-    "std",
-    "unicode",
-    "unicode-age",
-    "unicode-bool",
-    "unicode-case",
-    "unicode-gencat",
-    "unicode-perl",
-    "unicode-script",
-    "unicode-segment",
-  ]
 }

@@ -17,9 +17,7 @@ import org.chromium.base.Log;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.components.content_capture.PlatformSession.PlatformSessionData;
 
-/**
- * The background task to talk to the ContentCapture Service.
- */
+/** The background task to talk to the ContentCapture Service. */
 @RequiresApi(Build.VERSION_CODES.Q)
 abstract class NotificationTask extends AsyncTask<Boolean> {
     private static final String TAG = "ContentCapture";
@@ -71,16 +69,19 @@ abstract class NotificationTask extends AsyncTask<Boolean> {
 
     protected AutofillId notifyViewAppeared(
             PlatformSessionData parentPlatformSessionData, ContentCaptureDataBase data) {
-        ViewStructure viewStructure = PlatformAPIWrapper.getInstance().newVirtualViewStructure(
-                parentPlatformSessionData.contentCaptureSession,
-                parentPlatformSessionData.autofillId, data.getId());
+        ViewStructure viewStructure =
+                PlatformAPIWrapper.getInstance()
+                        .newVirtualViewStructure(
+                                parentPlatformSessionData.contentCaptureSession,
+                                parentPlatformSessionData.autofillId,
+                                data.getId());
 
         viewStructure.setText(data.getText());
         Rect rect = data.getBounds();
         // Always set scroll as (0, 0).
         viewStructure.setDimens(rect.left, rect.top, 0, 0, rect.width(), rect.height());
-        PlatformAPIWrapper.getInstance().notifyViewAppeared(
-                parentPlatformSessionData.contentCaptureSession, viewStructure);
+        PlatformAPIWrapper.getInstance()
+                .notifyViewAppeared(parentPlatformSessionData.contentCaptureSession, viewStructure);
         return viewStructure.getAutofillId();
     }
 
@@ -90,16 +91,22 @@ abstract class NotificationTask extends AsyncTask<Boolean> {
                 mPlatformSession.getFrameIdToPlatformSessionData().get(frame.getId());
         if (platformSessionData == null && !TextUtils.isEmpty(frame.getUrl())) {
             ContentCaptureSession session =
-                    PlatformAPIWrapper.getInstance().createContentCaptureSession(
-                            parentPlatformSessionData.contentCaptureSession, frame.getUrl(),
-                            frame.getFavicon());
-            AutofillId autofillId = PlatformAPIWrapper.getInstance().newAutofillId(
-                    parentPlatformSessionData.contentCaptureSession,
-                    mPlatformSession.getRootPlatformSessionData().autofillId, frame.getId());
+                    PlatformAPIWrapper.getInstance()
+                            .createContentCaptureSession(
+                                    parentPlatformSessionData.contentCaptureSession,
+                                    frame.getUrl(),
+                                    frame.getFavicon());
+            AutofillId autofillId =
+                    PlatformAPIWrapper.getInstance()
+                            .newAutofillId(
+                                    parentPlatformSessionData.contentCaptureSession,
+                                    mPlatformSession.getRootPlatformSessionData().autofillId,
+                                    frame.getId());
             autofillId = notifyViewAppeared(parentPlatformSessionData, frame);
             platformSessionData = new PlatformSessionData(session, autofillId);
-            mPlatformSession.getFrameIdToPlatformSessionData().put(
-                    frame.getId(), platformSessionData);
+            mPlatformSession
+                    .getFrameIdToPlatformSessionData()
+                    .put(frame.getId(), platformSessionData);
         }
         return platformSessionData;
     }

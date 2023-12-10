@@ -42,8 +42,8 @@ public class NonCancelableProgressBar extends DialogFragment {
         MaterialProgressBar bar =
                 (MaterialProgressBar) dialog.findViewById(R.id.passwords_progress_bar);
         bar.setIndeterminate(true);
-        return new AlertDialog
-                .Builder(activity, R.style.ThemeOverlay_BrowserUI_AlertDialog_NoActionBar)
+        return new AlertDialog.Builder(
+                        activity, R.style.ThemeOverlay_BrowserUI_AlertDialog_NoActionBar)
                 .setView(dialog)
                 .setTitle(mTitleStringId)
                 .create();

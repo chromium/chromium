@@ -15,8 +15,9 @@ class ClipboardHistory;
 
 // The menu item showing a bitmap.
 class ClipboardHistoryBitmapItemView : public ClipboardHistoryItemView {
+  METADATA_HEADER(ClipboardHistoryBitmapItemView, ClipboardHistoryItemView)
+
  public:
-  METADATA_HEADER(ClipboardHistoryBitmapItemView);
   ClipboardHistoryBitmapItemView(const base::UnguessableToken& item_id,
                                  const ClipboardHistory* clipboard_history,
                                  views::MenuItemView* container);

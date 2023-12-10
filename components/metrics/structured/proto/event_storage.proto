@@ -1,0 +1,28 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+package metrics.structured;
+
+option optimize_for = LITE_RUNTIME;
+
+import "structured_data.proto";
+
+// This proto is used for storing event information for structured
+// metrics. All changes should be backwards-compatible. This file is manually
+// synced between chromium and platform2. Any changes should first be made to
+// chromium and then copied to platform2.
+//
+// chromium path: components/metrics/structured/storage.proto
+// platform2 path: metrics/structured/proto/storage.proto
+
+// On-device storage for events that have been recorded but not yet uploaded.
+message EventsProto {
+  // Events not associated with the UMA client_id.
+  repeated StructuredEventProto non_uma_events = 1;
+
+  // Events associated with the UMA client_id.
+  repeated StructuredEventProto uma_events = 2 [deprecated = true];
+}

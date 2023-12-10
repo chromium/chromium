@@ -16,9 +16,7 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.ui.display.DisplayAndroid.DisplayAndroidObserver;
 
-/**
- * Manages {@link WindowEventObserver} instances used for WebContents.
- */
+/** Manages {@link WindowEventObserver} instances used for WebContents. */
 public final class WindowEventObserverManager implements DisplayAndroidObserver, UserData {
     private final ObserverList<WindowEventObserver> mWindowEventObservers = new ObserverList<>();
 

@@ -35,17 +35,17 @@ source_set("model") {
     "//components/sync_bookmarks",
     "//components/undo",
     "//ios/chrome/browser/favicon",
-    "//ios/chrome/browser/history",
+    "//ios/chrome/browser/history/model",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser_state",
-    "//ios/chrome/browser/signin",
-    "//ios/chrome/browser/signin:system_identity",
-    "//ios/chrome/browser/signin:system_identity_manager",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:system_identity",
+    "//ios/chrome/browser/signin/model:system_identity_manager",
     "//ios/web",
   ]
   public_deps = [ ":model_utils" ]
   allow_circular_includes_from = [
-    "//ios/chrome/browser/history",
+    "//ios/chrome/browser/history/model",
     ":model_utils",
   ]
 }
@@ -80,8 +80,8 @@ source_set("test_support") {
     "//ios/chrome/browser/bookmarks/model",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/browser_state:test_support",
-    "//ios/chrome/browser/signin",
-    "//ios/chrome/browser/signin:test_support",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:test_support",
     "//ios/chrome/test:test_support",
     "//ios/web/public/test",
   ]

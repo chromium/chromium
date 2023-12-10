@@ -4,6 +4,7 @@
 
 #include "components/password_manager/core/browser/leak_detection/bulk_leak_check_impl.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/check.h"
@@ -17,7 +18,6 @@
 #include "components/signin/public/identity_manager/access_token_fetcher.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace password_manager {
 namespace {
@@ -149,7 +149,7 @@ void BulkLeakCheckImpl::OnTokenReady(
   holder->network_request_ = network_request_factory_->CreateNetworkRequest();
   holder->network_request_->LookupSingleLeak(
       url_loader_factory_.get(), access_token_info.token,
-      /*api_key=*/absl::nullopt, std::move(holder->payload),
+      /*api_key=*/std::nullopt, std::move(holder->payload),
       base::BindOnce(&BulkLeakCheckImpl::OnLookupLeakResponse,
                      weak_ptr_factory_.GetWeakPtr(), holder.get()));
   waiting_response_.push_back(std::move(holder));
@@ -158,7 +158,7 @@ void BulkLeakCheckImpl::OnTokenReady(
 void BulkLeakCheckImpl::OnLookupLeakResponse(
     CredentialHolder* weak_holder,
     std::unique_ptr<SingleLookupResponse> response,
-    absl::optional<LeakDetectionError> error) {
+    std::optional<LeakDetectionError> error) {
   std::unique_ptr<CredentialHolder> holder =
       RemoveFromQueue(weak_holder, &waiting_response_);
 

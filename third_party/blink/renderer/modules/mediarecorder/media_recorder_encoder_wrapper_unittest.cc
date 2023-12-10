@@ -12,6 +12,7 @@
 #include "media/video/gpu_video_accelerator_factories.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 using ::testing::_;
 using ::testing::InSequence;
@@ -201,6 +202,8 @@ class MediaRecorderEncoderWrapperTest
                            media::SVCScalabilityMode::kL1T1))
         .WillByDefault(Return());
   }
+
+  test::TaskEnvironment task_environment_;
 
   const media::VideoCodecProfile profile_;
   const media::VideoCodec codec_;
@@ -587,6 +590,107 @@ TEST_P(MediaRecorderEncoderWrapperTest, InitializesAndEncodesOneAlphaFrame) {
                   media::VideoPixelFormat::PIXEL_FORMAT_I420A, k720p,
                   gfx::Rect(k720p), k720p, base::TimeDelta()),
               base::TimeTicks::Now());
+  EXPECT_CALL(*this, MockVideoEncoderWrapperDtor).Times(2);
+}
+
+TEST_P(MediaRecorderEncoderWrapperTest,
+       InitializesAndEncodesOneOpaqueFrameAndOneAlphaFrame) {
+  InSequence s;
+  if (codec_ != media::VideoCodec::kVP8 && codec_ != media::VideoCodec::kVP9) {
+    GTEST_SKIP() << "no alpha encoding is supported in"
+                 << media::GetCodecName(codec_);
+  }
+  media::VideoEncoder::OutputCB yuv_output_cb1;
+  CreateEncoderWrapper(false);
+  EXPECT_CALL(*this, CreateEncoder);
+  EXPECT_CALL(*mock_metrics_provider_, MockInitialize);
+  EXPECT_CALL(mock_encoder_, Initialize(profile_, _, _, _, _))
+      .WillOnce(WithArgs<3, 4>(
+          [&](media::VideoEncoder::OutputCB output_callback,
+              media::VideoEncoder::EncoderStatusCB initialize_done_cb) {
+            yuv_output_cb1 = output_callback;
+            std::move(initialize_done_cb).Run(media::EncoderStatus::Codes::kOk);
+          }));
+  EXPECT_CALL(mock_encoder_, Encode)
+      .WillOnce(
+          WithArgs<2>([yuv_output_cb_ptr = &yuv_output_cb1](
+                          media::VideoEncoder::EncoderStatusCB encode_done_cb) {
+            std::move(encode_done_cb).Run(media::EncoderStatus::Codes::kOk);
+            media::VideoEncoderOutput output;
+            output.data = std::make_unique<uint8_t[]>(kChunkSize);
+            output.size = kChunkSize;
+            output.key_frame = true;
+            yuv_output_cb_ptr->Run(std::move(output), absl::nullopt);
+          }));
+
+  EXPECT_CALL(*mock_metrics_provider_, MockIncrementEncodedFrameCount);
+  EXPECT_CALL(*this, OnEncodedVideo(MatchVideoParams(k720p, codec_),
+                                    MatchStringSize(kChunkSize),
+                                    MatchStringSize(0), _, _,
+                                    /*key_frame=*/true));
+  EXPECT_CALL(mock_encoder_, Flush)
+      .WillOnce(
+          WithArgs<0>([](media::VideoEncoder::EncoderStatusCB flush_done_cb) {
+            std::move(flush_done_cb).Run(media::EncoderStatus::Codes::kOk);
+          }));
+  // Encode Opaque frame.
+  constexpr size_t kAlphaChunkSize = 2345;
+  EXPECT_CALL(*this, CreateEncoder).Times(2);
+  EXPECT_CALL(*mock_metrics_provider_, MockInitialize);
+  media::VideoEncoder::OutputCB yuv_output_cb2;
+  media::VideoEncoder::OutputCB alpha_output_cb;
+  EXPECT_CALL(mock_encoder_, Initialize(profile_, _, _, _, _))
+      .WillOnce(WithArgs<3, 4>(
+          [&](media::VideoEncoder::OutputCB output_callback,
+              media::VideoEncoder::EncoderStatusCB initialize_done_cb) {
+            yuv_output_cb2 = output_callback;
+            std::move(initialize_done_cb).Run(media::EncoderStatus::Codes::kOk);
+          }));
+  EXPECT_CALL(mock_encoder_, Initialize(profile_, _, _, _, _))
+      .WillOnce(WithArgs<3, 4>(
+          [&](media::VideoEncoder::OutputCB output_callback,
+              media::VideoEncoder::EncoderStatusCB initialize_done_cb) {
+            alpha_output_cb = output_callback;
+            std::move(initialize_done_cb).Run(media::EncoderStatus::Codes::kOk);
+          }));
+
+  EXPECT_CALL(mock_encoder_, Encode)
+      .WillOnce(
+          WithArgs<2>([yuv_output_cb_ptr = &yuv_output_cb2](
+                          media::VideoEncoder::EncoderStatusCB encode_done_cb) {
+            std::move(encode_done_cb).Run(media::EncoderStatus::Codes::kOk);
+            media::VideoEncoderOutput output;
+            output.data = std::make_unique<uint8_t[]>(kChunkSize);
+            output.size = kChunkSize;
+            output.key_frame = true;
+            yuv_output_cb_ptr->Run(std::move(output), absl::nullopt);
+          }));
+  EXPECT_CALL(mock_encoder_, Encode)
+      .WillOnce(
+          WithArgs<2>([alpha_output_cb_ptr = &alpha_output_cb](
+                          media::VideoEncoder::EncoderStatusCB encode_done_cb) {
+            std::move(encode_done_cb).Run(media::EncoderStatus::Codes::kOk);
+            media::VideoEncoderOutput output;
+            output.data = std::make_unique<uint8_t[]>(kAlphaChunkSize);
+            output.size = kAlphaChunkSize;
+            output.key_frame = true;
+            alpha_output_cb_ptr->Run(std::move(output), absl::nullopt);
+          }));
+
+  EXPECT_CALL(*mock_metrics_provider_, MockIncrementEncodedFrameCount);
+  EXPECT_CALL(*this, OnEncodedVideo(MatchVideoParams(k720p, codec_),
+                                    MatchStringSize(kChunkSize),
+                                    MatchStringSize(kAlphaChunkSize), _, _,
+                                    /*key_frame=*/true));
+
+  auto opaque_frame = media::VideoFrame::CreateZeroInitializedFrame(
+      media::VideoPixelFormat::PIXEL_FORMAT_I420, k720p, gfx::Rect(k720p),
+      k720p, base::TimeDelta());
+  auto alpha_frame = media::VideoFrame::CreateZeroInitializedFrame(
+      media::VideoPixelFormat::PIXEL_FORMAT_I420A, k720p, gfx::Rect(k720p),
+      k720p, base::TimeDelta());
+  EncodeFrame(std::move(opaque_frame), base::TimeTicks::Now());
+  EncodeFrame(std::move(alpha_frame), base::TimeTicks::Now());
   EXPECT_CALL(*this, MockVideoEncoderWrapperDtor).Times(2);
 }
 

@@ -5,7 +5,6 @@
 // API for integration testing. To be used on test images with a test component
 // extension.
 [platforms=("chromeos"),
- modernised_enums,
  implemented_in="chrome/browser/ash/extensions/autotest_private/autotest_private_api.h"]
 namespace autotestPrivate {
 
@@ -288,7 +287,8 @@ namespace autotestPrivate {
     Mounting,
     Unavailable,
     Stopped,
-    CreatingLogFile,
+    PreparingForLaunch,
+    WaitingOwnerFetch,
     PreLaunched,
     Starting,
     Running,
@@ -836,6 +836,14 @@ namespace autotestPrivate {
   // Response callback to report if a field trial exists and has been activated.
   callback IsFieldTrialActiveCallback = void(boolean active);
 
+  // Request data containing the mock responses from
+  // overrideOrcaResponseForTesting.
+  dictionary OrcaResponseArray {
+    DOMString[] responses;
+  };
+
+  callback OverrideOrcaResponseForTestingCallback = void(boolean success);
+
   interface Functions {
     // Must be called to allow autotestPrivateAPI events to be fired.
     static void initializeEvents();
@@ -1152,6 +1160,10 @@ namespace autotestPrivate {
     [supportsPromises] static void setAllowedPref(DOMString pref_name,
                                                   any value,
                                                   VoidCallback callback);
+
+    // Clears value for the specified user pref in the pref tree.
+    [supportsPromises] static void clearAllowedPref(DOMString pref_name,
+                                                    VoidCallback callback);
 
     // DEPRECATED: use SetAllowedPref instead, see crbug/1262034
     // Set value for the specified user pref in the pref tree.
@@ -1593,6 +1605,12 @@ namespace autotestPrivate {
     [supportsPromises] static void getCurrentInputMethodDescriptor(
         GetCurrentInputMethodDescriptorCallback callback);
 
+    // Overrides the response from Orca Provider and returns the boolean value
+    // that indicates if the overriding is successful or not.
+    [supportsPromises] static void overrideOrcaResponseForTesting(
+        OrcaResponseArray array,
+        OverrideOrcaResponseForTestingCallback callback);
+
     // ARC set interactive enable/disable state.
     // |enabled|: Enable ARC interactive.
     // |callback|: Called when the operation sent to ARC by mojo.
@@ -1600,7 +1618,9 @@ namespace autotestPrivate {
       boolean enabled, VoidCallback callback);
 
     // Returns whether a field trial exists and has been activated.
-    [supportsPromises] static void isFieldTrialActive(DOMString feature_name,
+    [supportsPromises] static void isFieldTrialActive(
+        DOMString trial_name,
+        DOMString group_name,
         IsFieldTrialActiveCallback callback);
 
     // ARC get wakefulness mode.

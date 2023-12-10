@@ -404,7 +404,7 @@ ssize_t EncryptedSwapFile::ReadFromSwap(const Region& swap_region,
   }
   cipher_text.resize(read_bytes);
 
-  absl::optional<std::vector<uint8_t>> decrypted =
+  std::optional<std::vector<uint8_t>> decrypted =
       aead_.Open(cipher_text, nonce_,
                  /* additional data */ base::span<const uint8_t>());
   if (!decrypted) {

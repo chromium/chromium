@@ -32,7 +32,6 @@ import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvid
 import org.chromium.chrome.browser.customtabs.content.TabObserverRegistrar;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarCoordinator;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabImpl;
 import org.chromium.chrome.test.util.browser.webapps.WebApkIntentDataProviderBuilder;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.components.security_state.SecurityStateModel;
@@ -44,7 +43,7 @@ import org.chromium.components.security_state.SecurityStateModelJni;
 public class TrustedWebActivityBrowserControlsVisibilityManagerTest {
     @Mock public TabObserverRegistrar mTabObserverRegistrar;
     @Mock public CustomTabActivityTabProvider mTabProvider;
-    @Mock public TabImpl mTab;
+    @Mock public Tab mTab;
     @Mock SecurityStateModel.Natives mSecurityStateMocks;
     @Mock public CustomTabToolbarCoordinator mToolbarCoordinator;
     @Mock public CloseButtonVisibilityManager mCloseButtonVisibilityManager;

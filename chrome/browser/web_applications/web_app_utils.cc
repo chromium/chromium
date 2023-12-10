@@ -18,11 +18,10 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/functional/identity.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
@@ -146,8 +145,9 @@ class AppIconFetcherTask : public content::WebContentsObserver {
     // Loading will have started already when the error page is being
     // constructed, so if we receive this event, it means that a new navigation
     // is taking place (so we can drop any remaining work).
-    if (navigation_handle->IsInPrimaryMainFrame())
+    if (navigation_handle->IsInPrimaryMainFrame()) {
       delete this;
+    }
   }
 
   void DocumentOnLoadCompletedInPrimaryMainFrame() override {
@@ -235,8 +235,10 @@ absl::optional<DisplayMode> TryResolveUserDisplayMode(
     case mojom::UserDisplayMode::kBrowser:
       return DisplayMode::kBrowser;
     case mojom::UserDisplayMode::kTabbed:
-      if (base::FeatureList::IsEnabled(features::kDesktopPWAsTabStripSettings))
+      if (base::FeatureList::IsEnabled(
+              features::kDesktopPWAsTabStripSettings)) {
         return DisplayMode::kTabbed;
+      }
       // Treat as standalone.
       [[fallthrough]];
     case mojom::UserDisplayMode::kStandalone:
@@ -288,8 +290,9 @@ constexpr base::FilePath::CharType kTempDirectoryName[] =
     FILE_PATH_LITERAL("Temp");
 
 bool AreWebAppsEnabled(Profile* profile) {
-  if (!profile || profile->IsSystemProfile())
+  if (!profile || profile->IsSystemProfile()) {
     return false;
+  }
 
   const Profile* original_profile = profile->GetOriginalProfile();
   DCHECK(!original_profile->IsOffTheRecord());
@@ -314,11 +317,6 @@ bool AreWebAppsEnabled(Profile* profile) {
     if (user_manager && user_manager->IsLoggedInAsKioskApp()) {
       return false;
     }
-    // Don't enable for Web Kiosk if kKioskEnableAppService is disabled.
-    if (user_manager && user_manager->IsLoggedInAsWebKioskApp() &&
-        !base::FeatureList::IsEnabled(features::kKioskEnableAppService)) {
-      return false;
-    }
   }
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   // Disable web apps in the profile unless one of the following is true:
@@ -335,10 +333,12 @@ bool AreWebAppsEnabled(Profile* profile) {
 bool AreWebAppsUserInstallable(Profile* profile) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // With Lacros, web apps are not installed using the Ash browser.
-  if (IsWebAppsCrosapiEnabled())
+  if (IsWebAppsCrosapiEnabled()) {
     return false;
-  if (ash::ProfileHelper::IsLockScreenAppProfile(profile))
+  }
+  if (ash::ProfileHelper::IsLockScreenAppProfile(profile)) {
     return false;
+  }
 #endif
   return AreWebAppsEnabled(profile) && !profile->IsGuestSession() &&
          !profile->IsOffTheRecord();
@@ -352,8 +352,9 @@ content::BrowserContext* GetBrowserContextForWebApps(
     return nullptr;
   }
   Profile* original_profile = profile->GetOriginalProfile();
-  if (!AreWebAppsEnabled(original_profile))
+  if (!AreWebAppsEnabled(original_profile)) {
     return nullptr;
+  }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Use OTR profile for Guest Session.
@@ -368,12 +369,15 @@ content::BrowserContext* GetBrowserContextForWebApps(
 content::BrowserContext* GetBrowserContextForWebAppMetrics(
     content::BrowserContext* context) {
   Profile* profile = Profile::FromBrowserContext(context);
-  if (!profile)
+  if (!profile) {
     return nullptr;
-  if (!site_engagement::SiteEngagementService::IsEnabled())
+  }
+  if (!site_engagement::SiteEngagementService::IsEnabled()) {
     return nullptr;
-  if (profile->GetOriginalProfile()->IsGuestSession())
+  }
+  if (profile->GetOriginalProfile()->IsGuestSession()) {
     return nullptr;
+  }
   return GetBrowserContextForWebApps(context);
 }
 
@@ -445,8 +449,9 @@ bool AreAppsLocallyInstalledBySync() {
 
 bool AreNewFileHandlersASubsetOfOld(const apps::FileHandlers& old_handlers,
                                     const apps::FileHandlers& new_handlers) {
-  if (new_handlers.empty())
+  if (new_handlers.empty()) {
     return true;
+  }
 
   const std::set<std::string> mime_types_set =
       apps::GetMimeTypesFromFileHandlers(old_handlers);
@@ -460,8 +465,9 @@ bool AreNewFileHandlersASubsetOfOld(const apps::FileHandlers& old_handlers,
       }
 
       for (const auto& new_extension : new_handler_accept.file_extensions) {
-        if (!base::Contains(extensions_set, new_extension))
+        if (!base::Contains(extensions_set, new_extension)) {
           return false;
+        }
       }
     }
   }
@@ -473,8 +479,9 @@ std::tuple<std::u16string, size_t>
 GetFileTypeAssociationsHandledByWebAppForDisplay(Profile* profile,
                                                  const webapps::AppId& app_id) {
   auto* provider = WebAppProvider::GetForLocalAppsUnchecked(profile);
-  if (!provider)
+  if (!provider) {
     return {};
+  }
 
   const apps::FileHandlers* file_handlers =
       provider->registrar_unsafe().GetAppFileHandlers(app_id);
@@ -553,14 +560,16 @@ webapps::AppId GetAppIdFromAppSettingsUrl(const GURL& url) {
   // App Settings page is served under chrome://app-settings/<app-id>.
   // url.path() returns "/<app-id>" with a leading slash.
   std::string path = url.path();
-  if (path.size() <= 1)
+  if (path.size() <= 1) {
     return webapps::AppId();
+  }
   return path.substr(1);
 }
 
 bool IsInScope(const GURL& url, const GURL& scope) {
-  if (!scope.is_valid())
+  if (!scope.is_valid()) {
     return false;
+  }
 
   return base::StartsWith(url.spec(), scope.spec(),
                           base::CompareCase::SENSITIVE);

@@ -1,0 +1,55 @@
+# Copyright 2016 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("model") {
+  sources = [
+    "omaha_service.h",
+    "omaha_service.mm",
+  ]
+  deps = [
+    "//base",
+    "//base:i18n",
+    "//build:branding_buildflags",
+    "//components/metrics",
+    "//components/prefs",
+    "//components/profile_metrics",
+    "//components/version_info",
+    "//ios/chrome/app:tests_hook",
+    "//ios/chrome/browser/browser_state_metrics/model",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/upgrade/model",
+    "//ios/chrome/browser/upgrade/model:public",
+    "//ios/chrome/common",
+    "//ios/public/provider/chrome/browser/omaha:omaha_api",
+    "//ios/web",
+    "//net",
+    "//third_party/libxml:xml_writer",
+    "//url",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "omaha_service_unittest.mm" ]
+  deps = [
+    ":model",
+    "//base",
+    "//components/metrics",
+    "//components/prefs",
+    "//components/version_info",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/upgrade/model",
+    "//ios/chrome/browser/upgrade/model:public",
+    "//ios/chrome/common",
+    "//ios/chrome/test:test_support",
+    "//ios/public/provider/chrome/browser/omaha:omaha_api",
+    "//ios/web",
+    "//ios/web/public/test",
+    "//net:test_support",
+    "//services/network:test_support",
+    "//testing/gtest",
+  ]
+}

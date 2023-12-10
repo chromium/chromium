@@ -223,16 +223,6 @@
       obsolete_to_be_removed_after_milestone: 127,
     },
     {
-      name: "ExpectCTHeader",
-      message: "The `Expect-CT` header is deprecated and will be removed. Chrome requires Certificate Transparency for all publicly trusted certificates issued after April 30, 2018.",
-      translation_note: "This message is shown when the deprecated Expect-CT header is present.",
-      web_features: [
-        "kExpectCTHeader",
-      ],
-      chrome_status_feature: 6244547273687040,
-      milestone: 107,
-    },
-    {
       name: "GeolocationInsecureOrigin",
       message: "`getCurrentPosition()` and `watchPosition()` no longer work on insecure origins. To use this feature, you should consider switching your application to a secure origin, such as HTTPS. See https://goo.gle/chrome-insecure-origins for more details.",
       translation_note: "Warning displayed to developers when the Geolocation API is used from an insecure origin (one that isn't localhost or doesn't use HTTPS) to notify them that this use is no longer supported.",
@@ -589,6 +579,15 @@
         // This deprecation is used for Legacy Technology Report generation only.
       ],
       chrome_status_feature: 5133113939722240,
+    },
+    {
+      name: "UnloadHandler",
+      message: "Unload event listeners are deprecated and will be removed.",
+      translation_note: "A deprecation warning shown in the DevTools Issues tab. It's shown when a listener for the `unload` event is added.",
+      web_features: [
+        "kDocumentUnloadRegistered",
+      ],
+      chrome_status_feature: 5579556305502208,
     },
     {
       name: "V8SharedArrayBufferConstructedInExtensionWithoutIsolation",

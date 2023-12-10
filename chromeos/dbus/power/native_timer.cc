@@ -132,9 +132,8 @@ void NativeTimer::Start(base::TimeTicks absolute_expiration_time,
                      std::move(result_callback)));
 }
 
-void NativeTimer::OnCreateTimer(
-    base::ScopedFD expiration_fd,
-    absl::optional<std::vector<int32_t>> timer_ids) {
+void NativeTimer::OnCreateTimer(base::ScopedFD expiration_fd,
+                                std::optional<std::vector<int32_t>> timer_ids) {
   DCHECK(expiration_fd.is_valid());
   if (!timer_ids.has_value()) {
     LOG(ERROR) << "No timers returned";

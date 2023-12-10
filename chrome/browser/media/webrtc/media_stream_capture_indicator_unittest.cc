@@ -111,8 +111,6 @@ class MediaStreamCaptureIndicatorTest : public ChromeRenderViewHostTestHarness {
                      ->GetMediaStreamCaptureIndicator();
     observer_ = std::make_unique<MockObserver>();
     indicator_->AddObserver(observer());
-    portal_token_ = content::WebContentsTester::For(web_contents())
-                        ->CreatePortal(CreateTestWebContents());
   }
 
   void TearDown() override {
@@ -123,16 +121,11 @@ class MediaStreamCaptureIndicatorTest : public ChromeRenderViewHostTestHarness {
   }
 
   MediaStreamCaptureIndicator* indicator() { return indicator_.get(); }
-  content::WebContents* portal_contents() {
-    return content::WebContentsTester::For(web_contents())
-        ->GetPortalContents(portal_token_);
-  }
   MockObserver* observer() { return observer_.get(); }
 
  private:
   std::unique_ptr<MockObserver> observer_;
   scoped_refptr<MediaStreamCaptureIndicator> indicator_;
-  blink::PortalToken portal_token_;
 };
 
 struct ObserverMethodTestParam {
@@ -187,8 +180,7 @@ ObserverMethodTestParam kObserverMethodTestParams[] = {
 
 class MediaStreamCaptureIndicatorObserverMethodTest
     : public MediaStreamCaptureIndicatorTest,
-      public testing::WithParamInterface<
-          std::tuple<ObserverMethodTestParam, bool>> {};
+      public testing::WithParamInterface<ObserverMethodTestParam> {};
 
 blink::mojom::StreamDevices CreateFakeDevice(
     const ObserverMethodTestParam& param) {
@@ -239,15 +231,13 @@ StreamTypeTestParam kStreamTypeTestParams[] = {
 
 class MediaStreamCaptureIndicatorStreamTypeTest
     : public MediaStreamCaptureIndicatorTest,
-      public testing::WithParamInterface<
-          std::tuple<StreamTypeTestParam, bool>> {};
+      public testing::WithParamInterface<StreamTypeTestParam> {};
 
 }  // namespace
 
 TEST_P(MediaStreamCaptureIndicatorObserverMethodTest, AddAndRemoveDevice) {
-  const ObserverMethodTestParam& param = std::get<0>(GetParam());
-  bool is_portal = std::get<1>(GetParam());
-  content::WebContents* source = is_portal ? portal_contents() : web_contents();
+  const ObserverMethodTestParam& param = GetParam();
+  content::WebContents* source = web_contents();
 
   // By default all accessors should return false as there's no stream device.
   EXPECT_FALSE((indicator()->*(param.accessor_method))(web_contents()));
@@ -275,11 +265,10 @@ TEST_P(MediaStreamCaptureIndicatorObserverMethodTest, AddAndRemoveDevice) {
 // TODO(crbug.com/1479984): re-enable once the bug is fixed.
 TEST_P(MediaStreamCaptureIndicatorObserverMethodTest,
        DISABLED_StopMediaCapturing) {
-  const ObserverMethodTestParam& param = std::get<0>(GetParam());
+  const ObserverMethodTestParam& param = GetParam();
   const auto media_tpy =
       MediaStreamCaptureIndicator::GetMediaType(param.stream_type);
-  bool is_portal = std::get<1>(GetParam());
-  content::WebContents* source = is_portal ? portal_contents() : web_contents();
+  content::WebContents* source = web_contents();
 
   // By default all accessors should return false as there's no stream device.
   EXPECT_FALSE((indicator()->*(param.accessor_method))(web_contents()));
@@ -307,9 +296,8 @@ TEST_P(MediaStreamCaptureIndicatorObserverMethodTest,
 }
 
 TEST_P(MediaStreamCaptureIndicatorObserverMethodTest, CloseActiveWebContents) {
-  const ObserverMethodTestParam& param = std::get<0>(GetParam());
-  bool is_portal = std::get<1>(GetParam());
-  content::WebContents* source = is_portal ? portal_contents() : web_contents();
+  const ObserverMethodTestParam& param = GetParam();
+  content::WebContents* source = web_contents();
 
   // Create and start the fake stream device.
   std::unique_ptr<content::MediaStreamUI> ui =
@@ -328,25 +316,22 @@ TEST_P(MediaStreamCaptureIndicatorObserverMethodTest, CloseActiveWebContents) {
   ::testing::Mock::VerifyAndClear(observer());
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    MediaStreamCaptureIndicatorObserverMethodTest,
-    testing::Combine(testing::ValuesIn(kObserverMethodTestParams),
-                     testing::Bool()));
+INSTANTIATE_TEST_SUITE_P(All,
+                         MediaStreamCaptureIndicatorObserverMethodTest,
+                         testing::ValuesIn(kObserverMethodTestParams));
 
 TEST_P(MediaStreamCaptureIndicatorStreamTypeTest,
        CheckIsDeviceCapturingDisplay) {
   const blink::mojom::MediaStreamType& video_stream_type =
-      std::get<0>(GetParam()).video_stream_type;
-  const content::DesktopMediaID::Type& media_type =
-      std::get<0>(GetParam()).media_type;
+      GetParam().video_stream_type;
+  const content::DesktopMediaID::Type& media_type = GetParam().media_type;
 
   content::WebContents* source = web_contents();
   blink::mojom::StreamDevices devices;
   std::unique_ptr<content::MediaStreamUI> ui = GetDevicesForDesktopCapture(
       content::MediaStreamRequest(
           /*render_process_id=*/0, /*render_frame_id=*/0, /*page_request_id=*/0,
-          /*security_origin=*/GURL(),
+          /*url_origin=*/url::Origin(),
           /*user_gesture=*/false,
           blink::MediaStreamRequestType::MEDIA_GENERATE_STREAM,
           /*requested_audio_device_id=*/"",
@@ -360,15 +345,13 @@ TEST_P(MediaStreamCaptureIndicatorStreamTypeTest,
       /*display_notification=*/false, /*application_title=*/u"", devices);
   ASSERT_EQ(devices.video_device->type, video_stream_type);
 
-  (observer()->*(std::get<0>(GetParam()).observer_method))(source, 2);
+  (observer()->*(GetParam().observer_method))(source, 2);
   ui->OnStarted(base::RepeatingClosure(),
                 content::MediaStreamUI::SourceCallback(),
                 /*label=*/std::string(), /*screen_capture_ids=*/{},
                 content::MediaStreamUI::StateChangeCallback());
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    MediaStreamCaptureIndicatorStreamTypeTest,
-    testing::Combine(testing::ValuesIn(kStreamTypeTestParams),
-                     testing::Bool()));
+INSTANTIATE_TEST_SUITE_P(All,
+                         MediaStreamCaptureIndicatorStreamTypeTest,
+                         testing::ValuesIn(kStreamTypeTestParams));

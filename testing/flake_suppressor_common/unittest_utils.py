@@ -36,7 +36,7 @@ TAG_HEADER = """\
 #         debug debug-x64
 #         release release-x64
 #         fuchsia-chrome web-engine-shell ]
-# results: [ Failure RetryOnFailure Skip Slow ]
+# results: [ Failure RetryOnFailure Pass Skip Slow ]
 """
 
 

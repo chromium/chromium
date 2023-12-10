@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] getCharNumAtPosition() should return nonzero values in a c-v:hidden subtree.
+  Failed to execute 'getCharNumAtPosition' on 'SVGTextContentElement': parameter 1 is not of type 'SVGPoint'.
+[FAIL] getCTM() should return nonzero values in a c-v:hidden subtree.
+  assert_equals: a expected 2 but got 1
+[FAIL] getScreenCTM() should return nonzero values in a c-v:hidden subtree.
+  assert_equals: a expected 2 but got 1
+Harness: the test ran to completion.
+

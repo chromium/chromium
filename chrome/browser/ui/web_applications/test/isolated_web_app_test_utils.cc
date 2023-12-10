@@ -29,6 +29,7 @@
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/common/content_features.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkStream.h"
 #include "third_party/skia/include/encode/SkPngEncoder.h"
@@ -41,7 +42,9 @@ namespace web_app {
 
 IsolatedWebAppBrowserTestHarness::IsolatedWebAppBrowserTestHarness() {
   iwa_scoped_feature_list_.InitWithFeatures(
-      {features::kIsolatedWebApps, features::kIsolatedWebAppDevMode}, {});
+      {features::kIsolatedWebApps, features::kIsolatedWebAppDevMode,
+       blink::features::kUnrestrictedUsb},
+      {});
 }
 
 IsolatedWebAppBrowserTestHarness::~IsolatedWebAppBrowserTestHarness() = default;
@@ -107,7 +110,7 @@ IsolatedWebAppUrlInfo InstallDevModeProxyIsolatedWebApp(
       web_package::SignedWebBundleId::CreateRandomForDevelopment());
   WebAppProvider::GetForWebApps(profile)->scheduler().InstallIsolatedWebApp(
       url_info, DevModeProxy{.proxy_url = proxy_origin},
-      /*expected_version=*/absl::nullopt,
+      /*expected_version=*/std::nullopt,
       /*optional_keep_alive=*/nullptr,
       /*optional_profile_keep_alive=*/nullptr, future.GetCallback());
 

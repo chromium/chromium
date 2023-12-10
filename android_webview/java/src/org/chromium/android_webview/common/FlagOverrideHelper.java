@@ -74,8 +74,8 @@ public class FlagOverrideHelper {
                 }
             } else {
                 if (enabled && flag.getEnabledStateValue() != null) {
-                    CommandLine.getInstance().appendSwitchWithValue(
-                            flag.getName(), flag.getEnabledStateValue());
+                    CommandLine.getInstance()
+                            .appendSwitchWithValue(flag.getName(), flag.getEnabledStateValue());
                 } else if (enabled) {
                     CommandLine.getInstance().appendSwitch(flag.getName());
                 } else {

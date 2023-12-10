@@ -329,8 +329,8 @@ bool FillFormSplitCache(const AutofillPageQueryRequest& query_request,
       continue;
     }
     // Chrome expects the response to be base64 encoded.
-    std::string serialized_response_base64;
-    base::Base64Encode(serialized_response, &serialized_response_base64);
+    std::string serialized_response_base64 =
+        base::Base64Encode(serialized_response);
     std::string compressed_response_body;
     if (!compression::GzipCompress(serialized_response_base64,
                                    &compressed_response_body)) {
@@ -611,7 +611,7 @@ std::pair<std::string, std::string> SplitHTTP(const std::string& http_text) {
 }
 
 // Streams in text format. For consistency, taken from anonymous namespace in
-// components/autofill/core/browser/autofill_download_manager.cc
+// components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_manager.cc
 std::ostream& operator<<(std::ostream& out,
                          const autofill::AutofillPageQueryRequest& query) {
   for (const auto& form : query.forms()) {
@@ -775,9 +775,7 @@ bool GetResponseForQuery(const ServerCacheReplayer& cache_replayer,
     return false;
   }
   // The Api Environment expects the response body to be base64 encoded.
-  std::string tmp;
-  base::Base64Encode(serialized_response, &tmp);
-  serialized_response = tmp;
+  serialized_response = base::Base64Encode(serialized_response);
 
   VLOG(1) << "Retrieving stitched response for " << combined_key;
   *http_text = MakeHTTPTextFromSplit(response_header_text, serialized_response);

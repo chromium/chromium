@@ -73,7 +73,7 @@ TEST_F(AcceleratorKeycodeLookupCacheTest, ImeChanged) {
   EXPECT_TRUE(cache().empty());
   lookup_cache_->InsertOrAssign(ui::KeyboardCode::VKEY_A, expected);
   // Expect the cache to be populated.
-  absl::optional<std::u16string> found_key_string =
+  std::optional<std::u16string> found_key_string =
       lookup_cache_->Find(ui::KeyboardCode::VKEY_A);
   EXPECT_TRUE(found_key_string.has_value());
   EXPECT_EQ(expected, found_key_string.value());

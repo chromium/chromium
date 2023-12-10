@@ -9,10 +9,8 @@
 #include <string>
 
 #include "base/task/single_thread_task_runner.h"
-#include "chromecast/external_mojo/external_service_support/external_connector.h"
 #include "chromecast/media/audio/cast_audio_manager.h"
 #include "chromecast/media/audio/cast_audio_manager_helper.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
 
 namespace media {
 class AlsaWrapper;
@@ -36,7 +34,6 @@ class CastAudioManagerAlsa : public CastAudioManager {
       base::RepeatingCallback<CmaBackendFactory*()> backend_factory_getter,
       scoped_refptr<base::SingleThreadTaskRunner> browser_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> media_task_runner,
-      external_service_support::ExternalConnector* connector,
       bool use_mixer);
 
   CastAudioManagerAlsa(const CastAudioManagerAlsa&) = delete;

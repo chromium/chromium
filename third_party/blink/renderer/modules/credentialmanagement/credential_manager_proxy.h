@@ -52,8 +52,6 @@ class MODULES_EXPORT CredentialManagerProxy
 
   mojom::blink::FederatedAuthRequest* FederatedAuthRequest();
 
-  mojom::blink::FederatedAuthRequest* FedCmLogoutRpsRequest();
-
   void Trace(Visitor*) const override;
 
   // Must be called only with argument representing a valid
@@ -68,14 +66,12 @@ class MODULES_EXPORT CredentialManagerProxy
   void BindRemoteForFedCm(HeapMojoRemote<Interface>& remote,
                           base::OnceClosure disconnect_closure);
   void OnFederatedAuthRequestConnectionError();
-  void OnFedCmLogoutConnectionError();
 
   HeapMojoRemote<mojom::blink::Authenticator> authenticator_;
   HeapMojoRemote<mojom::blink::CredentialManager> credential_manager_;
   HeapMojoRemote<mojom::blink::WebOTPService> webotp_service_;
   HeapMojoRemote<payments::mojom::blink::PaymentCredential> payment_credential_;
   HeapMojoRemote<mojom::blink::FederatedAuthRequest> federated_auth_request_;
-  HeapMojoRemote<mojom::blink::FederatedAuthRequest> fedcm_logout_request_;
 };
 
 }  // namespace blink

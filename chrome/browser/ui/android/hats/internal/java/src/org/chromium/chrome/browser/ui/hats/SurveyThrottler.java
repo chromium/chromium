@@ -106,7 +106,7 @@ public class SurveyThrottler {
 
     /**
      * Rolls a random number to see if the user was eligible for the survey. The user will skip the
-     * roll if: 1. User is a first time user; 2. User has performed the roll for the survey today; 
+     * roll if: 1. User is a first time user; 2. User has performed the roll for the survey today;
      * 3. Max number is not setup correctly.
      *
      * @return Whether the user is eligible (i.e. the random number rolled was 0).
@@ -165,7 +165,6 @@ public class SurveyThrottler {
      */
     @VisibleForTesting
     int getEncodedDate() {
-        ThreadUtils.assertOnBackgroundThread();
         return getEncodedDateImpl(CalendarFactory.get());
     }
 

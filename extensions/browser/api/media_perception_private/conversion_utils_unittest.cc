@@ -239,7 +239,7 @@ void ValidateFramePerceptionResult(
   EXPECT_EQ(*entity_result_one.confidence, 7);
   EXPECT_EQ(entity_result_one.type, media_perception::EntityType::kFace);
 
-  const absl::optional<media_perception::Distance>& distance =
+  const std::optional<media_perception::Distance>& distance =
       entity_result_one.depth;
   ASSERT_TRUE(distance);
   EXPECT_EQ(media_perception::DistanceUnits::kMeters, distance->units);
@@ -255,7 +255,7 @@ void ValidateFramePerceptionResult(
   EXPECT_EQ(entity_result_two.type,
             media_perception::EntityType::kMotionRegion);
 
-  const absl::optional<media_perception::BoundingBox>& bounding_box_result_one =
+  const std::optional<media_perception::BoundingBox>& bounding_box_result_one =
       entity_result_one.bounding_box;
   ASSERT_TRUE(bounding_box_result_one);
   ASSERT_TRUE(bounding_box_result_one->top_left);
@@ -270,7 +270,7 @@ void ValidateFramePerceptionResult(
   EXPECT_EQ(*bounding_box_result_one->bottom_right->y, 13);
   EXPECT_FALSE(*bounding_box_result_one->normalized);
 
-  const absl::optional<media_perception::BoundingBox>& bounding_box_result_two =
+  const std::optional<media_perception::BoundingBox>& bounding_box_result_two =
       entity_result_two.bounding_box;
   ASSERT_TRUE(bounding_box_result_two);
   ASSERT_TRUE(bounding_box_result_two->top_left);
@@ -287,7 +287,7 @@ void ValidateFramePerceptionResult(
             media_perception::EntityType::kLabeledRegion);
 
   // Validate video human presence detection.
-  const absl::optional<media_perception::VideoHumanPresenceDetection>&
+  const std::optional<media_perception::VideoHumanPresenceDetection>&
       detection_result = frame_perception_result.video_human_presence_detection;
   ASSERT_TRUE(detection_result->human_presence_likelihood);
   EXPECT_EQ(*detection_result->human_presence_likelihood, 0.1);
@@ -314,8 +314,8 @@ void ValidateAudioPerceptionResult(
   EXPECT_EQ(*audio_perception_result.timestamp_us, 10086);
 
   // Validate audio localization.
-  const absl::optional<media_perception::AudioLocalization>&
-      audio_localization = audio_perception_result.audio_localization;
+  const std::optional<media_perception::AudioLocalization>& audio_localization =
+      audio_perception_result.audio_localization;
   ASSERT_TRUE(audio_localization);
   ASSERT_TRUE(audio_localization->azimuth_radians);
   EXPECT_EQ(*audio_localization->azimuth_radians, 1.5);
@@ -324,28 +324,28 @@ void ValidateAudioPerceptionResult(
   EXPECT_EQ(audio_localization->azimuth_scores->at(1), 5.0);
 
   // Validate audio human presence detection.
-  const absl::optional<media_perception::AudioHumanPresenceDetection>&
+  const std::optional<media_perception::AudioHumanPresenceDetection>&
       presence_detection =
           audio_perception_result.audio_human_presence_detection;
   ASSERT_TRUE(presence_detection);
   ASSERT_TRUE(presence_detection->human_presence_likelihood);
   EXPECT_EQ(*presence_detection->human_presence_likelihood, 0.4);
 
-  const absl::optional<media_perception::AudioSpectrogram>& noise_spectrogram =
+  const std::optional<media_perception::AudioSpectrogram>& noise_spectrogram =
       presence_detection->noise_spectrogram;
   ASSERT_TRUE(noise_spectrogram);
   ASSERT_EQ(2u, noise_spectrogram->values->size());
   EXPECT_EQ(noise_spectrogram->values->at(0), 0.1);
   EXPECT_EQ(noise_spectrogram->values->at(1), 0.2);
 
-  const absl::optional<media_perception::AudioSpectrogram>& frame_spectrogram =
+  const std::optional<media_perception::AudioSpectrogram>& frame_spectrogram =
       presence_detection->frame_spectrogram;
   ASSERT_TRUE(frame_spectrogram);
   ASSERT_EQ(1u, frame_spectrogram->values->size());
   EXPECT_EQ(frame_spectrogram->values->at(0), 0.3);
 
   // Validate hotword detection.
-  const absl::optional<media_perception::HotwordDetection>& hotword_detection =
+  const std::optional<media_perception::HotwordDetection>& hotword_detection =
       audio_perception_result.hotword_detection;
   ASSERT_TRUE(hotword_detection);
   ASSERT_EQ(2u, hotword_detection->hotwords->size());
@@ -385,7 +385,7 @@ void ValidateAudioVisualPerceptionResult(
   EXPECT_EQ(*perception_result.timestamp_us, 91008);
 
   // Validate audio-visual human presence detection.
-  const absl::optional<media_perception::AudioVisualHumanPresenceDetection>&
+  const std::optional<media_perception::AudioVisualHumanPresenceDetection>&
       presence_detection =
           perception_result.audio_visual_human_presence_detection;
   ASSERT_TRUE(presence_detection);
@@ -414,7 +414,7 @@ void ValidateFakeImageFrameData(
   EXPECT_EQ(image_frame_result.format, media_perception::ImageFormat::kJpeg);
 }
 
-void ValidatePointIdl(const absl::optional<media_perception::Point>& point,
+void ValidatePointIdl(const std::optional<media_perception::Point>& point,
                       float x,
                       float y) {
   ASSERT_TRUE(point);
@@ -491,15 +491,15 @@ TEST(MediaPerceptionConversionUtilsTest, DiagnosticsProtoToIdl) {
     const media_perception::PerceptionSample& perception_sample_result =
         diagnostics_result.perception_samples->at(i);
 
-    const absl::optional<media_perception::FramePerception>&
+    const std::optional<media_perception::FramePerception>&
         frame_perception_result = perception_sample_result.frame_perception;
     ASSERT_TRUE(frame_perception_result);
 
-    const absl::optional<media_perception::ImageFrame>& image_frame_result =
+    const std::optional<media_perception::ImageFrame>& image_frame_result =
         perception_sample_result.image_frame;
     ASSERT_TRUE(image_frame_result);
 
-    const absl::optional<media_perception::Metadata>& metadata_result =
+    const std::optional<media_perception::Metadata>& metadata_result =
         perception_sample_result.metadata;
     ASSERT_TRUE(metadata_result);
 
@@ -593,9 +593,7 @@ TEST(MediaPerceptionConversionUtilsTest, StateProtoToIdl) {
 
   // Empty.
   EXPECT_EQ(*state_result.named_template_arguments->at(1).name, "");
-  EXPECT_FALSE(state_result.named_template_arguments->at(1).value->as_string);
-  EXPECT_THAT(state_result.named_template_arguments->at(1).value->as_number,
-              Eq(absl::nullopt));
+  EXPECT_FALSE(state_result.named_template_arguments->at(1).value);
 
   // String.
   EXPECT_EQ(*state_result.named_template_arguments->at(2).name,
@@ -656,16 +654,14 @@ TEST(MediaPerceptionConversionUtilsTest, StateIdlToProto) {
 
   state.named_template_arguments->at(0).name = kNumericalTemplateArgumentName;
 
-  state.named_template_arguments->at(0).value.emplace();
-  media_perception::NamedTemplateArgument::Value::Populate(
-      base::Value(kNumericalTemplateArgumentValue),
-      *state.named_template_arguments->at(0).value);
+  state.named_template_arguments->at(0).value =
+      media_perception::NamedTemplateArgument::Value::FromValue(
+          base::Value(kNumericalTemplateArgumentValue));
 
   state.named_template_arguments->at(2).name = kStringTemplateArgumentName;
-  state.named_template_arguments->at(2).value.emplace();
-  media_perception::NamedTemplateArgument::Value::Populate(
-      base::Value(kStringTemplateArgumentValue),
-      *state.named_template_arguments->at(2).value);
+  state.named_template_arguments->at(2).value =
+      media_perception::NamedTemplateArgument::Value::FromValue(
+          base::Value(kStringTemplateArgumentValue));
 
   state_proto = StateIdlToProto(state);
   EXPECT_EQ(state_proto.status(), mri::State::RUNNING);

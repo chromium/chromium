@@ -1,0 +1,9 @@
+{
+  "args_file": "//build/args/chromeos/arm-generic.gni",
+  "gn_args": {
+    "dcheck_always_on": false,
+    "is_chromeos_device": true,
+    "ozone_platform_headless": true,
+    "use_remoteexec": true
+  }
+}

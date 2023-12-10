@@ -48,6 +48,8 @@ class CSSImportRule final : public CSSRule, public MediaQuerySetOwner {
 
   String layerName() const;
 
+  String supportsText() const;
+
   void Trace(Visitor*) const override;
 
  private:

@@ -21,7 +21,8 @@ XcodeIOSSimulatorRuntimeRelPath = ('Contents/Developer/Platforms/'
                                    'iPhoneOS.platform/Library/Developer/'
                                    'CoreSimulator/Profiles/Runtimes')
 XcodeCipdFiles = ['.cipd', '.xcode_versions']
-XcodeIOSSimulatorRuntimeTagRegx = r'ios_runtime_build:(.*)'
+XcodeIOSSimulatorRuntimeBuildTagRegx = r'ios_runtime_build:(.*)'
+XcodeIOSSimulatorRuntimeVersionTagRegx = r'ios_runtime_version:(.*)'
 XcodeIOSSimulatorRuntimeDMGCipdPath = 'infra_internal/ios/xcode/ios_runtime_dmg'
 
 # TODO(crbug.com/1441931): remove Legacy Download once iOS 15.5 is deprecated
@@ -381,15 +382,22 @@ def get_runtime_dmg_name(runtime_dmg_folder):
 
 
 def get_latest_runtime_build_cipd(xcode_version, ios_version):
+  # Use Xcode version first to find the matching iOS runtime,
+  # if the runtime returned is not the desired version,
+  # then use desired version to match as a fallback
   runtime_version = convert_ios_version_to_cipd_ref(ios_version)
+  output = describe_cipd_ref(XcodeIOSSimulatorRuntimeDMGCipdPath, xcode_version)
+  runtime_build_match = re.search(XcodeIOSSimulatorRuntimeBuildTagRegx, output,
+                                  re.MULTILINE)
+  runtime_version_match = re.search(XcodeIOSSimulatorRuntimeVersionTagRegx,
+                                    output, re.MULTILINE)
+  if runtime_build_match and runtime_version_match:
+    if runtime_version_match.group(1) == runtime_version:
+      return runtime_build_match.group(1)
+
   output = describe_cipd_ref(XcodeIOSSimulatorRuntimeDMGCipdPath,
                              runtime_version)
-  runtime_build_match = re.search(XcodeIOSSimulatorRuntimeTagRegx, output)
-  if runtime_build_match:
-    return runtime_build_match.group(1)
-
-  output = describe_cipd_ref(XcodeIOSSimulatorRuntimeDMGCipdPath, xcode_version)
-  runtime_build_match = re.search(XcodeIOSSimulatorRuntimeTagRegx, output)
+  runtime_build_match = re.search(XcodeIOSSimulatorRuntimeBuildTagRegx, output)
   if runtime_build_match:
     return runtime_build_match.group(1)
   return None

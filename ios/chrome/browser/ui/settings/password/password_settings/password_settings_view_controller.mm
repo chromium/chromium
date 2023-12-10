@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/ui/settings/password/password_settings/password_settings_view_controller.h"
 
+#import <optional>
+
 #import "base/apple/foundation_util.h"
 #import "base/check.h"
 #import "base/check_op.h"
@@ -28,7 +30,6 @@
 #import "ios/chrome/common/ui/util/image_util.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
-#import "third_party/abseil-cpp/absl/types/optional.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
@@ -78,7 +79,7 @@ typedef NS_ENUM(NSInteger, ModelLoadStatus) {
   // Whether or not Chromium has been enabled as a credential provider at the
   // iOS level. This may not be known at load time; the detail text showing on
   // or off status will be omitted until this is populated.
-  absl::optional<bool> _passwordsInOtherAppsEnabled;
+  std::optional<bool> _passwordsInOtherAppsEnabled;
 }
 
 // State
@@ -565,7 +566,6 @@ typedef NS_ENUM(NSInteger, ModelLoadStatus) {
   _setUpOnDeviceEncryptionItem.accessibilityTraits = UIAccessibilityTraitButton;
   _setUpOnDeviceEncryptionItem.accessibilityIdentifier =
       kPasswordSettingsOnDeviceEncryptionSetUpId;
-  _setUpOnDeviceEncryptionItem.accessibilityTraits |= UIAccessibilityTraitLink;
   return _setUpOnDeviceEncryptionItem;
 }
 

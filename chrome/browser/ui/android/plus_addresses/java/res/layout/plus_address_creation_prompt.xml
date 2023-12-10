@@ -30,7 +30,7 @@ found in the LICENSE file.
       android:textAlignment="center"
       style="@style/TextAppearance.Headline.Primary" />
 
-  <TextView
+  <org.chromium.ui.widget.TextViewWithClickableSpans
       android:id="@+id/plus_address_modal_explanation"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
@@ -50,6 +50,7 @@ found in the LICENSE file.
   <org.chromium.ui.widget.ButtonCompat
       android:id="@+id/plus_address_confirm_button"
       style="@style/FilledButton.Flat"
+      android:enabled="false"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:textAlignment="center"

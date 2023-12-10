@@ -154,7 +154,7 @@ drawn alongside the window controls as part of the Bubble's Widget's
 NonClientFrameView.
 
 [BoxLayout]: https://cs.chromium.org/chromium/src/ui/views/layout/box_layout.h
-[BubbleDialogDelegateView]: https://cs.chromium.org/chromium/src/ui/views/bubble/bubble_dialog_delegate.h
+[BubbleDialogDelegateView]: https://cs.chromium.org/chromium/src/ui/views/bubble/bubble_dialog_delegate_view.h
 [ClientView]: https://cs.chromium.org/chromium/src/ui/views/window/client_view.h
 [DialogDelegate]: https://cs.chromium.org/chromium/src/ui/views/window/dialog_delegate.h
 [DialogDelegateView]: https://cs.chromium.org/chromium/src/ui/views/window/dialog_delegate.h

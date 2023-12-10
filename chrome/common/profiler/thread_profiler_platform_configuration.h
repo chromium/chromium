@@ -8,8 +8,8 @@
 #include <memory>
 
 #include "base/functional/callback.h"
-#include "components/metrics/call_stack_profile_params.h"
-#include "components/version_info/version_info.h"
+#include "components/metrics/call_stacks/call_stack_profile_params.h"
+#include "components/version_info/channel.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 // Encapsulates the platform-specific configuration for the ThreadProfiler.

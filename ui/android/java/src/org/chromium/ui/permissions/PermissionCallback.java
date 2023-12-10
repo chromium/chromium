@@ -4,9 +4,7 @@
 
 package org.chromium.ui.permissions;
 
-/**
- * Callback for permission requests.
- */
+/** Callback for permission requests. */
 public interface PermissionCallback {
     /**
      * Called upon completing a permission request.

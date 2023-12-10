@@ -1,0 +1,24 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("phone_number") {
+  sources = [
+    "add_contacts_coordinator.h",
+    "add_contacts_coordinator.mm",
+  ]
+  deps = [
+    "//components/prefs",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/web/annotations",
+    "//ios/chrome/common:string_util",
+    "//ios/chrome/common/ui/confirmation_alert",
+    "//ios/chrome/common/ui/util",
+    "//ui/base",
+  ]
+}

@@ -59,6 +59,12 @@
 // not too much to have the cell being deleted right away.
 + (id<GREYAction>)swipeToShowDeleteButton;
 
+// Action to simulate the behaviour of swiping right using the 3-finger gesture
+// with VoiceOver. To simulate it, it is changing the content offset and
+// triggering scroll view delegate methods as there is no way to actually
+// trigger the gesture.
++ (id<GREYAction>)accessibilitySwipeRight;
+
 @end
 
 #endif  // IOS_CHROME_TEST_EARL_GREY_CHROME_ACTIONS_APP_INTERFACE_H_

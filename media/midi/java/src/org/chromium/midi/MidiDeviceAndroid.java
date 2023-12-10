@@ -11,25 +11,18 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
 @JNINamespace("midi")
-/**
- * A class implementing midi::MidiDeviceAndroid functionality.
- */
+/** A class implementing midi::MidiDeviceAndroid functionality. */
 class MidiDeviceAndroid {
-    /**
-     * The underlying device.
-     */
+    /** The underlying device. */
     private final MidiDevice mDevice;
-    /**
-     * The input ports in the device.
-     */
+
+    /** The input ports in the device. */
     private final MidiInputPortAndroid[] mInputPorts;
-    /**
-     * The output ports in the device.
-     */
+
+    /** The output ports in the device. */
     private final MidiOutputPortAndroid[] mOutputPorts;
-    /**
-     * True when the device is open.
-     */
+
+    /** True when the device is open. */
     private boolean mIsOpen;
 
     /**
@@ -52,16 +45,12 @@ class MidiDeviceAndroid {
         }
     }
 
-    /**
-     * Returns true when the device is open.
-     */
+    /** Returns true when the device is open. */
     boolean isOpen() {
         return mIsOpen;
     }
 
-    /**
-     * Closes the device.
-     */
+    /** Closes the device. */
     void close() {
         mIsOpen = false;
         for (MidiInputPortAndroid port : mInputPorts) {
@@ -72,31 +61,23 @@ class MidiDeviceAndroid {
         }
     }
 
-    /**
-     * Returns the underlying device.
-     */
+    /** Returns the underlying device. */
     MidiDevice getDevice() {
         return mDevice;
     }
 
-    /**
-     * Returns the underlying device information.
-     */
+    /** Returns the underlying device information. */
     MidiDeviceInfo getInfo() {
         return mDevice.getInfo();
     }
 
-    /**
-     * Returns the manufacturer name.
-     */
+    /** Returns the manufacturer name. */
     @CalledByNative
     String getManufacturer() {
         return getProperty(MidiDeviceInfo.PROPERTY_MANUFACTURER);
     }
 
-    /**
-     * Returns the product name.
-     */
+    /** Returns the product name. */
     @CalledByNative
     String getProduct() {
         String product = getProperty(MidiDeviceInfo.PROPERTY_PRODUCT);
@@ -111,25 +92,19 @@ class MidiDeviceAndroid {
         return product;
     }
 
-    /**
-     * Returns the version string.
-     */
+    /** Returns the version string. */
     @CalledByNative
     String getVersion() {
         return getProperty(MidiDeviceInfo.PROPERTY_VERSION);
     }
 
-    /**
-     * Returns the associated input ports.
-     */
+    /** Returns the associated input ports. */
     @CalledByNative
     MidiInputPortAndroid[] getInputPorts() {
         return mInputPorts;
     }
 
-    /**
-     * Returns the associated output ports.
-     */
+    /** Returns the associated output ports. */
     @CalledByNative
     MidiOutputPortAndroid[] getOutputPorts() {
         return mOutputPorts;

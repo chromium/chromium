@@ -6,12 +6,12 @@
 #define CHROME_BROWSER_UI_ASH_GLANCEABLES_GLANCEABLES_CLASSROOM_COURSE_WORK_ITEM_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "ash/glanceables/classroom/glanceables_classroom_types.h"
 #include "base/functional/callback_forward.h"
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace google_apis::classroom {
@@ -97,7 +97,7 @@ class GlanceablesClassroomCourseWorkItem {
   //      Note that course work item submissions state will be kGraded, or
   //      kTurned in if all submissions are in kGraded, or kTurned in state.
   bool SatisfiesPredicates(
-      base::RepeatingCallback<bool(const absl::optional<base::Time>&)>
+      base::RepeatingCallback<bool(const std::optional<base::Time>&)>
           due_predicate,
       base::RepeatingCallback<bool(GlanceablesClassroomStudentSubmissionState)>
           submission_state_predicate) const;
@@ -130,7 +130,7 @@ class GlanceablesClassroomCourseWorkItem {
 
   const std::string& title() const { return title_; }
   const GURL& link() const { return link_; }
-  const absl::optional<base::Time>& due() const { return due_; }
+  const std::optional<base::Time>& due() const { return due_; }
   const base::Time& creation_time() const { return creation_time_; }
   const base::Time& last_update() const { return last_update_; }
 
@@ -166,7 +166,7 @@ class GlanceablesClassroomCourseWorkItem {
   GURL link_;
 
   // Due date and time in UTC of this course work item.
-  absl::optional<base::Time> due_;
+  std::optional<base::Time> due_;
 
   // The timestamp when this course work was created.
   base::Time creation_time_;
@@ -179,7 +179,7 @@ class GlanceablesClassroomCourseWorkItem {
 
   // The submissions state saved when InvalidateStudentSubmissions was last
   // called.
-  absl::optional<GlanceablesClassroomAggregatedSubmissionsState>
+  std::optional<GlanceablesClassroomAggregatedSubmissionsState>
       previous_submissions_state_;
 
   // Whether the student submissions have been fetched during the latest course

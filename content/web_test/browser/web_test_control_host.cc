@@ -266,7 +266,18 @@ void ApplyWebTestDefaultPreferences(blink::web_pref::WebPreferences* prefs) {
   prefs->accelerated_2d_canvas_enabled =
       command_line.HasSwitch(switches::kEnableAccelerated2DCanvas);
   prefs->smart_insert_delete_enabled = true;
+  // On iOS platform, kEnableViewport is enabled by default (see
+  // content_main.cc::RunContentProcess). When the viewport is enabled,
+  // the visual viewport always provides its own scrollbars even if
+  // the test includes <body style=overflow:hidden>.
+  // To ensure the testing expectations are consistent with MacPort
+  // and to avoid this scrollbar behavior in web-platform-tests,
+  // set viewport_enabled to false for iOS.
+#if BUILDFLAG(IS_IOS)
+  prefs->viewport_enabled = false;
+#else
   prefs->viewport_enabled = command_line.HasSwitch(switches::kEnableViewport);
+#endif
   prefs->default_minimum_page_scale_factor = 1.f;
   prefs->default_maximum_page_scale_factor = 4.f;
   prefs->presentation_receiver =
@@ -527,7 +538,7 @@ WebTestControlHost::~WebTestControlHost() {
   // WebTestBrowserMainRunner will close all Shell windows including those.
 }
 
-bool WebTestControlHost::PrepareForWebTest(const TestInfo& test_info) {
+void WebTestControlHost::PrepareForWebTest(const TestInfo& test_info) {
   TRACE_EVENT0("shell", "WebTestControlHost::PrepareForWebTest");
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   current_working_directory_ = test_info.current_working_directory;
@@ -552,6 +563,11 @@ bool WebTestControlHost::PrepareForWebTest(const TestInfo& test_info) {
   all_observed_render_process_hosts_.clear();
   render_process_host_observations_.RemoveAllObservations();
   frame_to_layout_dump_map_.clear();
+
+  if (!test_info.trace_file.empty()) {
+    tracing_controller_.emplace(test_info.trace_file);
+    tracing_controller_->StartTracing();
+  }
 
   ShellBrowserContext* browser_context =
       ShellContentBrowserClient::Get()->browser_context();
@@ -657,11 +673,9 @@ bool WebTestControlHost::PrepareForWebTest(const TestInfo& test_info) {
     params.should_clear_history_list = true;
     main_window_->web_contents()->GetController().LoadURLWithParams(params);
   }
-
-  return true;
 }
 
-bool WebTestControlHost::ResetBrowserAfterWebTest() {
+void WebTestControlHost::ResetBrowserAfterWebTest() {
   TRACE_EVENT0("shell", "WebTestControlHost::ResetBrowserAfterWebTest");
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -674,6 +688,13 @@ bool WebTestControlHost::ResetBrowserAfterWebTest() {
   web_test_render_frame_map_.clear();
   web_test_render_thread_map_.clear();
   receiver_bindings_.Clear();
+
+  // StopTracing() must be called before the printer_ calls, to ensure the trace
+  // file is flushed to disk before control returns to the test runner
+  if (tracing_controller_.has_value()) {
+    tracing_controller_->StopTracing();
+    tracing_controller_.reset();
+  }
 
   printer_->PrintTextFooter();
   printer_->PrintImageFooter();
@@ -746,8 +767,6 @@ bool WebTestControlHost::ResetBrowserAfterWebTest() {
   }
 
   weak_factory_.InvalidateWeakPtrs();
-
-  return true;
 }
 
 void WebTestControlHost::DidCreateOrAttachWebContents(

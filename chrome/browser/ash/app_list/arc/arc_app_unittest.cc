@@ -119,7 +119,6 @@ namespace {
 
 constexpr char kTestPackageName[] = "fake.package.name2";
 constexpr char kTestPackageName4[] = "fake.package.name4";
-constexpr char kTestPackageName5[] = "fake.package.name5";
 constexpr char kFrameworkPackageName[] = "android";
 
 constexpr int kFrameworkNycVersion = 25;
@@ -171,7 +170,8 @@ class FakeAppIconLoaderDelegate : public AppIconLoaderDelegate {
   void OnAppImageUpdated(
       const std::string& app_id,
       const gfx::ImageSkia& image,
-      const absl::optional<gfx::ImageSkia>& badge_image) override {
+      bool is_placeholder_icon,
+      const std::optional<gfx::ImageSkia>& badge_image) override {
     app_id_ = app_id;
     image_ = image;
 
@@ -436,8 +436,8 @@ ArcAppListPrefs::AppInfo GetAppInfoExpectation(const arc::mojom::AppInfo& app,
       true /* resize_lock_needs_confirmation */,
       ArcAppListPrefs::WindowLayout(), true /* ready */, false /* suspended */,
       launchable /* show_in_launcher*/, false /* shortcut */, launchable,
-      false /* need_fixup */, absl::nullopt /* app_size */,
-      absl::nullopt /* data_size */, app.app_category);
+      false /* need_fixup */, std::nullopt /* app_size */,
+      std::nullopt /* data_size */, app.app_category);
 }
 
 MATCHER_P(ArcPackageInfoIs, package, "") {
@@ -795,13 +795,17 @@ class ArcAppModelBuilderTest : public extensions::ExtensionServiceTestBase,
     return arc::mojom::ArcPackageInfo::New(
         package_name, package_version, 1 /* last_backup_android_id */,
         1 /* last_backup_time */, true /* sync */, false /* system */,
-        false /* vpn_provider */, nullptr /* web_app_info */, absl::nullopt,
+        false /* vpn_provider */, nullptr /* web_app_info */, std::nullopt,
         std::move(permissions) /* permission states */);
   }
 
   void AddPackage(const arc::mojom::ArcPackageInfoPtr& package) {
     arc_test_.AddPackage(package->Clone());
     app_instance()->SendPackageAdded(package->Clone());
+  }
+
+  void UpdateTestPackage(const arc::mojom::ArcPackageInfoPtr& package) {
+    arc_test_.UpdatePackage(package->Clone());
   }
 
   void UpdatePackage(const arc::mojom::ArcPackageInfoPtr& package) {
@@ -1448,9 +1452,104 @@ TEST_P(ArcAppModelBuilderTest, ArcPackagePref_PerAppLanguageFlagDisabled) {
   app_instance()->SendRefreshPackageList(
       ArcAppTest::ClonePackages(fake_packages()));
 
-  // Update locale_info of the locale info test package to null.
-  UpdatePackage(CreatePackage(kTestPackageName5));
+  // Update fake_packages to be used as validation.
+  // Even if package was initially sent with localeInfo, the resulting saved
+  // package should not contain localeInfo.
+  // fake_packages[4] is the test package with localeInfo.
+  arc::mojom::ArcPackageInfoPtr updated_package = fake_packages()[4]->Clone();
+  updated_package->locale_info = nullptr;
+  UpdateTestPackage(updated_package);
+
   ValidateHavePackages(fake_packages());
+}
+
+TEST_P(ArcAppModelBuilderTest, SetAppLocale) {
+  // Setup.
+  SendRefreshAppList(fake_apps());
+  app_instance()->SendRefreshPackageList(
+      ArcAppTest::ClonePackages(fake_packages()));
+  ValidateHavePackages(fake_packages());
+
+  // Update fake_packages to be used as validation.
+  // fake_packages[4] is the test package with localeInfo.
+  arc::mojom::ArcPackageInfoPtr updated_package = fake_packages()[4]->Clone();
+  updated_package->locale_info->selected_locale = "ja";
+  UpdateTestPackage(updated_package);
+
+  // Run.
+  ArcAppListPrefs* prefs = ArcAppListPrefs::Get(profile_.get());
+  ASSERT_NE(nullptr, prefs);
+  prefs->SetAppLocale(fake_packages()[4]->package_name,
+                      fake_packages()[4]->locale_info->selected_locale);
+
+  // Assert.
+  ValidateHavePackages(fake_packages());
+}
+
+TEST_P(ArcAppModelBuilderTest,
+       ArcPackagePref_RejectsArcLocaleUpdateOnMismatch) {
+  // This test simulates changing app locale from ChromeOS settings
+  // (SetAppLocale), and ARC sends outdated package info
+  // (SendRefreshPackageList).
+  // Setup.
+  std::vector<arc::mojom::ArcPackageInfoPtr> outdated_fake_packages =
+      ArcAppTest::ClonePackages(fake_packages());
+  // Update fake_packages to match modified app-locale.
+  // fake_packages[4] is the test package with localeInfo.
+  arc::mojom::ArcPackageInfoPtr updated_package = fake_packages()[4]->Clone();
+  updated_package->locale_info->selected_locale = "ja";
+  UpdateTestPackage(updated_package);
+
+  // App locale should be set to "en".
+  SendRefreshAppList(fake_apps());
+  app_instance()->SendRefreshPackageList(
+      ArcAppTest::ClonePackages(outdated_fake_packages));
+  ValidateHavePackages(outdated_fake_packages);
+
+  // Run.
+  // App locale modified to "ja".
+  ArcAppListPrefs* prefs = ArcAppListPrefs::Get(profile_.get());
+  ASSERT_NE(nullptr, prefs);
+  prefs->SetAppLocale(updated_package->package_name,
+                      updated_package->locale_info->selected_locale);
+  // Re-sends ARC outdated package info
+  app_instance()->SendRefreshPackageList(
+      ArcAppTest::ClonePackages(outdated_fake_packages));
+
+  // Assert.
+  // Outdated package info is rejected, and app locale is still set to "ja".
+  ValidateHavePackages(fake_packages());
+  ASSERT_EQ(1ul, app_instance()->selected_locales().size());
+  ASSERT_EQ(updated_package->locale_info->selected_locale,
+            app_instance()->selected_locale(updated_package->package_name));
+}
+
+TEST_P(ArcAppModelBuilderTest,
+       ArcPackagePref_DontRejectArcLocaleUpdateOnPackageModified) {
+  // Setup.
+  // App locale should be set to "en".
+  SendRefreshAppList(fake_apps());
+  app_instance()->SendRefreshPackageList(
+      ArcAppTest::ClonePackages(fake_packages()));
+  ValidateHavePackages(fake_packages());
+
+  // Run.
+  // App locale modified to "ja".
+  ArcAppListPrefs* prefs = ArcAppListPrefs::Get(profile_.get());
+  ASSERT_NE(nullptr, prefs);
+  // fake_packages[4] is the test package with localeInfo.
+  prefs->SetAppLocale(fake_packages()[4]->package_name,
+                      fake_packages()[4]->locale_info->selected_locale);
+  // Update fake_packages to be used as ARC-modified package and validation.
+  arc::mojom::ArcPackageInfoPtr updated_package = fake_packages()[4]->Clone();
+  updated_package->locale_info->selected_locale = "fr";
+  UpdateTestPackage(updated_package);
+  app_instance()->SendPackageModified(updated_package->Clone());
+
+  // Assert.
+  // ChromeOS set-locale "ja" is overridden by ARC modified-locale "fr".
+  ValidateHavePackages(fake_packages());
+  ASSERT_TRUE(app_instance()->selected_locales().empty());
 }
 
 TEST_P(ArcAppModelBuilderTest, RefreshAllFillsContent) {

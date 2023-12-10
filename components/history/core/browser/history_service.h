@@ -204,7 +204,7 @@ class HistoryService : public KeyedService,
   void AddPage(const GURL& url, base::Time time, VisitSource visit_source);
 
   // All AddPage variants end up here.
-  void AddPage(const HistoryAddPageArgs& add_page_args);
+  void AddPage(HistoryAddPageArgs add_page_args);
 
   // Adds an entry for the specified url without creating a visit. This should
   // only be used when bookmarking a page, otherwise the row leaks in the

@@ -8,13 +8,13 @@
 #import <Foundation/Foundation.h>
 
 #import <map>
+#import <optional>
 
 #import "base/containers/flat_set.h"
 #import "base/containers/small_map.h"
 #import "base/time/time.h"
 #import "components/keyed_service/core/keyed_service.h"
 #import "ios/chrome/browser/promos_manager/promo_config.h"
-#import "third_party/abseil-cpp/absl/types/optional.h"
 
 @class ImpressionLimit;
 
@@ -90,7 +90,7 @@ class PromosManager : public KeyedService {
   virtual void RecordImpression(promos_manager::Promo promo) = 0;
 
   // Returns the next promo for display, if any.
-  virtual absl::optional<promos_manager::Promo> NextPromoForDisplay() = 0;
+  virtual std::optional<promos_manager::Promo> NextPromoForDisplay() = 0;
 };
 
 #endif  // IOS_CHROME_BROWSER_PROMOS_MANAGER_PROMOS_MANAGER_H_

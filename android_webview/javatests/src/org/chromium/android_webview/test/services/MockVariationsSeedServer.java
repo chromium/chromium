@@ -32,20 +32,23 @@ public class MockVariationsSeedServer extends VariationsSeedServer {
         sMetricsBundle = metricsBundle;
     }
 
-    private final IVariationsSeedServer.Stub mMockBinder = new IVariationsSeedServer.Stub() {
-        @Override
-        public void getSeed(ParcelFileDescriptor newSeedFile, long oldSeedDate,
-                IVariationsSeedServerCallback callback) {
-            if (sMetricsBundle != null) {
-                try {
-                    callback.reportVariationsServiceMetrics(sMetricsBundle);
-                } catch (RemoteException e) {
-                    throw new RuntimeException("Error reporting mock metrics", e);
+    private final IVariationsSeedServer.Stub mMockBinder =
+            new IVariationsSeedServer.Stub() {
+                @Override
+                public void getSeed(
+                        ParcelFileDescriptor newSeedFile,
+                        long oldSeedDate,
+                        IVariationsSeedServerCallback callback) {
+                    if (sMetricsBundle != null) {
+                        try {
+                            callback.reportVariationsServiceMetrics(sMetricsBundle);
+                        } catch (RemoteException e) {
+                            throw new RuntimeException("Error reporting mock metrics", e);
+                        }
+                    }
+                    sOnSeedRequested.notifyCalled();
                 }
-            }
-            sOnSeedRequested.notifyCalled();
-        }
-    };
+            };
 
     @Override
     public IBinder onBind(Intent intent) {

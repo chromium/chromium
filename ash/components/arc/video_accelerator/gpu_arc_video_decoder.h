@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <queue>
 
 #include "ash/components/arc/mojom/video_decoder.mojom.h"
@@ -20,7 +21,6 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace arc {
 
@@ -118,7 +118,7 @@ class GpuArcVideoDecoder : public mojom::VideoDecoder {
   // The protected buffer manager, used when decoding an encrypted video.
   scoped_refptr<ProtectedBufferManager> protected_buffer_manager_;
   // Whether we're decoding an encrypted video.
-  absl::optional<bool> secure_mode_;
+  std::optional<bool> secure_mode_;
 
   // The client task runner and its sequence checker. All methods should be run
   // on this task runner.

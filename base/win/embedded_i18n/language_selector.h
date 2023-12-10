@@ -9,12 +9,12 @@
 #define BASE_WIN_EMBEDDED_I18N_LANGUAGE_SELECTOR_H_
 
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
 #include "base/base_export.h"
 #include "base/containers/span.h"
-#include "base/strings/string_piece.h"
 
 namespace base {
 namespace win {
@@ -25,7 +25,7 @@ namespace i18n {
 // override selection should a corresponding translation be available.
 class BASE_EXPORT LanguageSelector {
  public:
-  using LangToOffset = std::pair<WStringPiece, size_t>;
+  using LangToOffset = std::pair<std::wstring_view, size_t>;
 
   // Constructor to be used for users of this class that will provide the actual
   // language offsets that will be used.
@@ -35,7 +35,7 @@ class BASE_EXPORT LanguageSelector {
   // |languages_to_offset_begin| and |languages_to_offset_end| point to a sorted
   // array of language identifiers (and their offsets) for which translations
   // are available.
-  LanguageSelector(WStringPiece preferred_language,
+  LanguageSelector(std::wstring_view preferred_language,
                    span<const LangToOffset> languages_to_offset);
 
   // Constructor for testing purposes.

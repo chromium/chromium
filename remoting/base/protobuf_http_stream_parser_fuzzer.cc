@@ -10,7 +10,6 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
-#include "base/strings/string_piece.h"
 #include "base/test/bind.h"
 #include "remoting/base/protobuf_http_status.h"
 #include "remoting/base/protobuf_http_stream_parser.h"
@@ -29,7 +28,14 @@ class Environment {
 };
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
+  constexpr size_t kMaxInputSize = 100 * 1000;
+
   static Environment env;
+
+  if (size > kMaxInputSize) {
+    // To avoid spurious timeout and out-of-memory fuzz reports.
+    return 0;
+  }
   FuzzedDataProvider provider(data, size);
 
   // Create a parser. `stream_closed_callback` destroys it, to satisfy the

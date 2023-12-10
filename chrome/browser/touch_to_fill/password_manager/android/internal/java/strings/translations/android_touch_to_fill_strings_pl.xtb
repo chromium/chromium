@@ -1,0 +1,27 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="pl">
+<translation id="1220509181886849806">Czy użyć zapisanego hasła?</translation>
+<translation id="1435940442311036198">Użyj klucza na innym urządzeniu</translation>
+<translation id="1717486229951421299">Lista uprawnień do wypełnienia po kliknięciu jest otwarta do połowy wysokości.</translation>
+<translation id="2359808026110333948">Dalej</translation>
+<translation id="2364266287022099258">Użyć zapisanego klucza?</translation>
+<translation id="3399357656427473483">Lista uprawnień do wypełnienia po kliknięciu.</translation>
+<translation id="3653689374478248324">Zalogujesz się w witrynie <ph name="SITE_NAME" /></translation>
+<translation id="3950820424414687140">Zaloguj się</translation>
+<translation id="4553044860350038560">Więcej kluczy dostępu</translation>
+<translation id="4598345735110653698">Zarządzaj kluczami dostępu</translation>
+<translation id="4722735765955348426">Hasło użytkownika <ph name="USERNAME" /></translation>
+<translation id="4907224763885298217">Użyj blokady ekranu</translation>
+<translation id="5012523644916800014">Zarządzaj hasłami i kluczami dostępu</translation>
+<translation id="5441504010984421144">Lista uprawnień do wypełnienia po kliknięciu jest otwarta na całą wysokość.</translation>
+<translation id="5591247451101092906">Użyć zapisanego hasła lub klucza?</translation>
+<translation id="5624120631404540903">Zarządzaj hasłami</translation>
+<translation id="6560306912274274630">Klucz dostępu dla użytkownika <ph name="USERNAME" />. Użyj blokady ekranu</translation>
+<translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{Nowe hasło do tej witryny}few{Nowe hasła do tej witryny}many{Nowe hasła do tej witryny}other{Nowe hasła do tej witryny}}</translation>
+<translation id="7286867818472074330">Wybierz klucz dostępu</translation>
+<translation id="7669320311687290322"><ph name="ITEM_LABEL" />, <ph name="ITEM_POSITION" /> z <ph name="ITEMS_TOTAL" />.</translation>
+<translation id="7738288782501322815">Ktoś przesłał Ci hasła do strony <ph name="SITE_NAME" /></translation>
+<translation id="8614995815226664591"><ph name="SENDER_NAME" /> udostępnia Ci hasło do strony <ph name="SITE_NAME" /></translation>
+<translation id="8891372124884726271">Lista danych logowania jest zamknięta.</translation>
+</translationbundle>

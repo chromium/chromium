@@ -407,7 +407,7 @@ TEST_F(DownloadSessionTaskImplTest, Cookie) {
           /*last_update=*/now,
           /*secure=*/false,
           /*httponly=*/false, net::CookieSameSite::UNSPECIFIED,
-          net::COOKIE_PRIORITY_DEFAULT, /*same_party=*/false);
+          net::COOKIE_PRIORITY_DEFAULT);
   ASSERT_TRUE(expected_cookie);
   cookie_store()->SetAllCookies({*expected_cookie});
 

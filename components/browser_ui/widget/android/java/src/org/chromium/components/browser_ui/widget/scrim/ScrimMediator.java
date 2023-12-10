@@ -45,13 +45,15 @@ class ScrimMediator implements ScrimCoordinator.TouchEventDelegate {
 
     /** Whether the scrim is in the process of hiding or is currently hidden. */
     private boolean mIsHidingOrHidden;
+
     private boolean mDisableAnimationForTesting;
 
     /**
      * @param scrimHiddenRunnable A mechanism for hiding the scrim.
      * @param systemUiScrimDelegate A means of changing the scrim over the system UI.
      */
-    ScrimMediator(@NonNull Runnable scrimHiddenRunnable,
+    ScrimMediator(
+            @NonNull Runnable scrimHiddenRunnable,
             ScrimCoordinator.SystemUiScrimDelegate systemUiScrimDelegate) {
         mScrimHiddenRunnable = scrimHiddenRunnable;
         mSystemUiScrimDelegate = systemUiScrimDelegate;
@@ -62,12 +64,12 @@ class ScrimMediator implements ScrimCoordinator.TouchEventDelegate {
         // ALPHA is a protected property for this component that will only get added to the model
         // if ScrimProperties is used to build it.
         assert model.getAllProperties().contains(ScrimProperties.ALPHA)
-            : "Use ScrimProperties to build the model used to show the scrim.";
+                : "Use ScrimProperties to build the model used to show the scrim.";
 
         // Check the anchor here rather than in the model since clearing the scrim params
         // internally allows the anchor to be null.
-        assert model.get(ScrimProperties.ANCHOR_VIEW)
-                != null : "The anchor for the scrim cannot be null.";
+        assert model.get(ScrimProperties.ANCHOR_VIEW) != null
+                : "The anchor for the scrim cannot be null.";
 
         mModel = model;
         mIsHidingOrHidden = false;
@@ -87,14 +89,17 @@ class ScrimMediator implements ScrimCoordinator.TouchEventDelegate {
             mOverlayFadeInAnimator = ValueAnimator.ofFloat(0, 1);
             mOverlayFadeInAnimator.setDuration(fadeDurationMs);
             mOverlayFadeInAnimator.setInterpolator(Interpolators.LINEAR_OUT_SLOW_IN_INTERPOLATOR);
-            mOverlayFadeInAnimator.addListener(new CancelAwareAnimatorListener() {
-                @Override
-                public void onEnd(Animator animation) {
-                    mOverlayAnimator = null;
-                }
-            });
+            mOverlayFadeInAnimator.addListener(
+                    new CancelAwareAnimatorListener() {
+                        @Override
+                        public void onEnd(Animator animation) {
+                            mOverlayAnimator = null;
+                        }
+                    });
             mOverlayFadeInAnimator.addUpdateListener(
-                    animation -> { setAlphaInternal((float) animation.getAnimatedValue()); });
+                    animation -> {
+                        setAlphaInternal((float) animation.getAnimatedValue());
+                    });
         }
 
         if (model.getAllSetProperties().contains(ScrimProperties.GESTURE_DETECTOR)) {
@@ -126,26 +131,30 @@ class ScrimMediator implements ScrimCoordinator.TouchEventDelegate {
             mOverlayFadeOutAnimator = ValueAnimator.ofFloat(1, 0);
             mOverlayFadeOutAnimator.setDuration(fadeDurationMs);
             mOverlayFadeOutAnimator.setInterpolator(Interpolators.FAST_OUT_LINEAR_IN_INTERPOLATOR);
-            mOverlayFadeOutAnimator.addListener(new CancelAwareAnimatorListener() {
-                @Override
-                public void onEnd(Animator animation) {
-                    // If the animation wasn't ended early, alpha will already be 0 and the model
-                    // will be null as a result of #setAlphaInternal().
-                    if (mModel != null) setAlphaInternal(0);
-                    mOverlayAnimator = null;
-                }
-            });
+            mOverlayFadeOutAnimator.addListener(
+                    new CancelAwareAnimatorListener() {
+                        @Override
+                        public void onEnd(Animator animation) {
+                            // If the animation wasn't ended early, alpha will already be 0 and the
+                            // model will be null as a result of #setAlphaInternal().
+                            if (mModel != null) setAlphaInternal(0);
+                            mOverlayAnimator = null;
+                        }
+                    });
             mOverlayFadeOutAnimator.addUpdateListener(
-                    animation -> { setAlphaInternal((float) animation.getAnimatedValue()); });
-            mOverlayFadeOutAnimator.addListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    // Reset the scrim color stored in the SystemUiScrimDelegate.
-                    if (mSystemUiScrimDelegate != null) {
-                        mSystemUiScrimDelegate.setScrimColor(ScrimProperties.INVALID_COLOR);
-                    }
-                }
-            });
+                    animation -> {
+                        setAlphaInternal((float) animation.getAnimatedValue());
+                    });
+            mOverlayFadeOutAnimator.addListener(
+                    new AnimatorListenerAdapter() {
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                            // Reset the scrim color stored in the SystemUiScrimDelegate.
+                            if (mSystemUiScrimDelegate != null) {
+                                mSystemUiScrimDelegate.setScrimColor(ScrimProperties.INVALID_COLOR);
+                            }
+                        }
+                    });
         }
 
         mIsHidingOrHidden = true;

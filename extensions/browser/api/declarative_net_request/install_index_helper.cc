@@ -65,7 +65,7 @@ InstallIndexHelper::Result CombineResults(
       // warnings associated.
       DCHECK(!index_result.warnings.empty());
       total_result.ruleset_install_prefs.emplace_back(
-          source->id(), absl::nullopt /* ruleset_checksum */,
+          source->id(), std::nullopt /* ruleset_checksum */,
           true /* ignored */);
       continue;
     }

@@ -7,7 +7,7 @@
 #import "base/functional/callback.h"
 #import "base/observer_list.h"
 #import "base/task/sequenced_task_runner.h"
-#import "ios/chrome/browser/follow/follow_service_observer.h"
+#import "ios/chrome/browser/follow/model/follow_service_observer.h"
 
 namespace ios {
 namespace provider {

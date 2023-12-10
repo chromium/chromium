@@ -9,6 +9,7 @@
 #include "ash/login/ui/login_user_view.h"
 #include "ash/login/ui/non_accessible_view.h"
 #include "base/memory/raw_ptr.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 namespace ash {
@@ -19,6 +20,8 @@ class HoverNotifier;
 // This is the big user view for the public account user. It wraps a UserView
 // and a arrow button below.
 class ASH_EXPORT LoginPublicAccountUserView : public NonAccessibleView {
+  METADATA_HEADER(LoginPublicAccountUserView, NonAccessibleView)
+
  public:
   // TestApi is used for tests to get internal implementation details.
   class ASH_EXPORT TestApi {

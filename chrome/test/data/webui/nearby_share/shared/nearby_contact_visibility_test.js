@@ -4,7 +4,7 @@
 
 import 'chrome://nearby/strings.m.js';
 import 'chrome://nearby/shared/nearby_contact_visibility.js';
-import 'chrome://webui-test/mojo_webui_test_support.js';
+import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
 import {setContactManagerForTesting} from 'chrome://nearby/shared/nearby_contact_manager.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';

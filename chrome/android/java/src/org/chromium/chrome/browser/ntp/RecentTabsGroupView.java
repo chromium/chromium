@@ -26,6 +26,7 @@ public class RecentTabsGroupView extends RelativeLayout {
 
     /** Drawable levels for the device type icon and the expand/collapse arrow. */
     private static final int DRAWABLE_LEVEL_COLLAPSED = 0;
+
     private static final int DRAWABLE_LEVEL_EXPANDED = 1;
 
     private RecentTabsGroupView mRow;
@@ -53,11 +54,14 @@ public class RecentTabsGroupView extends RelativeLayout {
 
         // Create drawable for expand/collapse arrow.
         LevelListDrawable collapseIcon = new LevelListDrawable();
-        collapseIcon.addLevel(DRAWABLE_LEVEL_COLLAPSED, DRAWABLE_LEVEL_COLLAPSED,
+        collapseIcon.addLevel(
+                DRAWABLE_LEVEL_COLLAPSED,
+                DRAWABLE_LEVEL_COLLAPSED,
                 TintedDrawable.constructTintedDrawable(
                         getContext(), R.drawable.ic_expand_more_black_24dp));
-        TintedDrawable collapse = TintedDrawable.constructTintedDrawable(
-                getContext(), R.drawable.ic_expand_less_black_24dp);
+        TintedDrawable collapse =
+                TintedDrawable.constructTintedDrawable(
+                        getContext(), R.drawable.ic_expand_less_black_24dp);
         collapseIcon.addLevel(DRAWABLE_LEVEL_EXPANDED, DRAWABLE_LEVEL_EXPANDED, collapse);
         mExpandCollapseIcon.setImageDrawable(collapseIcon);
     }
@@ -102,8 +106,11 @@ public class RecentTabsGroupView extends RelativeLayout {
 
     private void configureExpandedCollapsed(boolean isExpanded) {
         String description =
-                getResources().getString(isExpanded ? R.string.accessibility_collapse_section_header
-                                                    : R.string.accessibility_expand_section_header);
+                getResources()
+                        .getString(
+                                isExpanded
+                                        ? R.string.accessibility_collapse_section_header
+                                        : R.string.accessibility_expand_section_header);
         mExpandCollapseIcon.setContentDescription(description);
 
         int level = isExpanded ? DRAWABLE_LEVEL_EXPANDED : DRAWABLE_LEVEL_COLLAPSED;
@@ -111,9 +118,12 @@ public class RecentTabsGroupView extends RelativeLayout {
     }
 
     private void setGroupViewHeight(boolean isTimeLabelVisible) {
-        mRow.setMinimumHeight(getResources().getDimensionPixelOffset(isTimeLabelVisible
-                        ? R.dimen.recent_tabs_foreign_session_group_item_height
-                        : R.dimen.recent_tabs_default_group_item_height));
+        mRow.setMinimumHeight(
+                getResources()
+                        .getDimensionPixelOffset(
+                                isTimeLabelVisible
+                                        ? R.dimen.recent_tabs_foreign_session_group_item_height
+                                        : R.dimen.recent_tabs_default_group_item_height));
     }
 
     private CharSequence getTimeString(ForeignSession session) {
@@ -131,8 +141,8 @@ public class RecentTabsGroupView extends RelativeLayout {
         } else if (hoursElapsed > 0L) {
             relativeTime = res.getQuantityString(R.plurals.n_hours_ago, hoursElapsed, hoursElapsed);
         } else if (minutesElapsed > 0L) {
-            relativeTime = res.getQuantityString(R.plurals.n_minutes_ago, minutesElapsed,
-                    minutesElapsed);
+            relativeTime =
+                    res.getQuantityString(R.plurals.n_minutes_ago, minutesElapsed, minutesElapsed);
         } else {
             relativeTime = res.getString(R.string.just_now);
         }

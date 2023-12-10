@@ -14,6 +14,7 @@
 #include "ash/wm/collision_detection/collision_detection_utils.h"
 #include "ash/wm/pip/pip_controller.h"
 #include "ash/wm/pip/pip_positioner.h"
+#include "ash/wm/toplevel_window_event_handler.h"
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_event.h"
 #include "base/metrics/histogram_functions.h"
@@ -49,9 +50,6 @@ const int kPipMovementFlingThresholdSquared = 1000 * 1000;
 // Threshold for considering a swipe off the side of the screen a dismissal
 // even if less than |kPipDismissFraction| of the PIP window is off-screen.
 const int kPipSwipeToDismissFlingThresholdSquared = 800 * 800;
-// The width ratio of up to how much the PiP window size can expand or
-// shrink beyond the maximum or the minimum size during pinch gesture.
-constexpr float kPipPinchToResizeScaleFraction = 0.15;
 // The maximum angle of tilt allowed for the PiP window during pinch
 // gesture in degrees.
 constexpr float kPipTiltMaximumAngle = 10.f;
@@ -85,7 +83,10 @@ PipWindowResizer::PipWindowResizer(WindowState* window_state)
     : WindowResizer(window_state) {
   window_state->OnDragStarted(details().window_component);
 
-  bool is_resize = details().bounds_change & kBoundsChange_Resizes;
+  // TODO(b/301232629): `DragDetails::bounds_change` should be
+  // `kBoundsChange_Resizes` during pinch resizing.
+  bool is_resize = (details().bounds_change & kBoundsChange_Resizes) ||
+                   Shell::Get()->toplevel_window_event_handler()->in_pinch();
   if (is_resize) {
     UMA_HISTOGRAM_ENUMERATION(kAshPipEventsHistogramName,
                               AshPipEvents::FREE_RESIZE);
@@ -301,34 +302,7 @@ gfx::Rect PipWindowResizer::CalculateBoundsForPinch(
 }
 
 gfx::Transform PipWindowResizer::CalculateTransformForPinch() const {
-  // This is the window size that does not consider the size limits.
-  const gfx::SizeF naive_size =
-      gfx::ScaleSize(gfx::SizeF(details().initial_bounds_in_parent.size()),
-                     accumulated_scale_);
-
-  const gfx::Size max_size = GetTarget()->delegate()->GetMaximumSize();
-  const gfx::Size min_size = GetTarget()->delegate()->GetMinimumSize();
-  const float ratio_to_max_size = naive_size.width() / max_size.width();
-  const float ratio_to_min_size = naive_size.width() / min_size.width();
-
-  // If the pinch gesture is attempting to expand or shrink the window
-  // beyond its limits, we use a curve to calculate appropriate scale
-  // and apply scale transform to the window. The curve tapers off at
-  // 1.15 (1 + `kPipPinchToResizeScaleFraction`) for pinch zoom in and
-  // 0.85 (1 - `kPipPinchToResizeScaleFraction`) for pinch zoom out.
-  float scale = 1.f;
-  if (ratio_to_max_size > 1.f) {
-    scale = (1.f + kPipPinchToResizeScaleFraction) -
-            kPipPinchToResizeScaleFraction * kPipPinchToResizeScaleFraction /
-                (ratio_to_max_size + kPipPinchToResizeScaleFraction - 1.f);
-  } else if (ratio_to_min_size < 1.f) {
-    scale = (1.f - kPipPinchToResizeScaleFraction) -
-            kPipPinchToResizeScaleFraction * kPipPinchToResizeScaleFraction /
-                (ratio_to_min_size - kPipPinchToResizeScaleFraction - 1.f);
-  }
-
   gfx::Transform transform;
-  transform.Scale(scale);
   if (features::IsPipTiltEnabled()) {
     float rotate_angle;
     if (accumulated_angle_ > 0) {
@@ -346,8 +320,6 @@ gfx::Transform PipWindowResizer::CalculateTransformForPinch() const {
 }
 
 void PipWindowResizer::CompleteDrag() {
-  const bool is_resize = details().bounds_change & kBoundsChange_Resizes;
-
   window_state()->OnCompleteDrag(
       last_location_in_screen_.value_or(gfx::PointF()));
 
@@ -383,7 +355,10 @@ void PipWindowResizer::CompleteDrag() {
   } else {
     // Animate the PIP window to its resting position.
     gfx::Rect intended_bounds;
-    if (!is_resize && fling_amount > kPipMovementFlingThresholdSquared) {
+
+    // The window should be flung when the gesture is not an edge resize.
+    const bool is_edge_resize = details().bounds_change & kBoundsChange_Resizes;
+    if (!is_edge_resize && fling_amount > kPipMovementFlingThresholdSquared) {
       intended_bounds = ComputeFlungPosition();
     } else {
       if (last_location_in_screen_.has_value()) {
@@ -395,27 +370,14 @@ void PipWindowResizer::CompleteDrag() {
         intended_bounds = last_event_was_pinch_
                               ? CalculateBoundsForPinch(location_in_parent)
                               : CalculateBoundsForDrag(location_in_parent);
+        wm::ConvertRectToScreen(window_state()->window()->GetRootWindow(),
+                                &intended_bounds);
       } else {
         intended_bounds = GetTarget()->GetBoundsInScreen();
       }
       // Reset the dimmer for tucking.
       Shell::Get()->pip_controller()->SetDimOpacity(0.f);
     }
-
-    // The origin includes the offset for the scaling effect with
-    // transform's scale (to expand the window around the pinch center).
-    // It has to be centered around the finger when the window goes back
-    // to the limit size.
-    const gfx::Vector2dF scale = GetTarget()->transform().To2dScale();
-    const gfx::PointF initial_location = details().initial_location_in_parent;
-    const gfx::Rect initial_bounds = details().initial_bounds_in_parent;
-    const float left_ratio =
-        (initial_location.x() - initial_bounds.x()) / initial_bounds.width();
-    const float top_ratio =
-        (initial_location.y() - initial_bounds.y()) / initial_bounds.height();
-    intended_bounds.Offset(gfx::Vector2d(
-        intended_bounds.width() * (scale.x() - 1.f) * left_ratio,
-        intended_bounds.height() * (scale.y() - 1.f) * top_ratio));
 
     // Undo the offset translation for the tilt effect.
     if (features::IsPipTiltEnabled()) {
@@ -429,59 +391,31 @@ void PipWindowResizer::CompleteDrag() {
         CollisionDetectionUtils::RelativePriority::kPictureInPicture);
     ::wm::ConvertRectFromScreen(GetTarget()->parent(), &resting_bounds);
 
-    // Animate the window to its resting position, and also animate the
-    // size back to its limit size if it has expanded or shrunk during
-    // resistance effect with `gfx::Transform`.
-    ui::Layer* layer = GetTarget()->layer();
     base::TimeDelta duration =
         base::Milliseconds(kPipSnapToEdgeAnimationDurationMs);
-    display::Display display = window_state()->GetDisplay();
-    views::AnimationBuilder()
-        .OnEnded(base::BindOnce(
-            [](gfx::Rect bounds, display::Display display,
-               aura::Window* window) {
-              // Look for `WindowState` of the PiP window to send
-              // `SetBoundsWMEvent` after the animation is done, to make
-              // sure that bounds are in sync with client.
-              // `window_state()` cannot be used because it might be
-              // dangling by the time this animation is called.
-              auto* pip_container = Shell::GetContainer(
-                  Shell::GetRootWindowForDisplayId(display.id()),
-                  kShellWindowId_PipContainer);
-              if (!pip_container) {
-                return;
-              }
-              auto pip_window_iter = base::ranges::find_if(
-                  pip_container->children(), [](const aura::Window* window) {
-                    return WindowState::Get(window)->IsPip();
-                  });
-              if (pip_window_iter == pip_container->children().end()) {
-                return;
-              }
+    SetBoundsWMEvent event(resting_bounds, /*animate=*/true, duration);
+    window_state()->OnWMEvent(&event);
 
-              auto* window_state = WindowState::Get(*pip_window_iter);
+    ui::Layer* layer = GetTarget()->layer();
+    ui::ScopedLayerAnimationSettings settings(layer->GetAnimator());
+    settings.SetPreemptionStrategy(
+        ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
+    settings.SetTransitionDuration(duration);
 
-              // Make sure that the found window is the window we were
-              // looking for.
-              if (window_state->window() == window) {
-                SetBoundsWMEvent event(bounds, /*animate=*/false);
-                window_state->OnWMEvent(&event);
-              }
-            },
-            resting_bounds, display, window_state()->window()))
-        .SetPreemptionStrategy(
-            ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
-        .Once()
-        .SetDuration(duration)
-        .SetTransform(layer, gfx::Transform())
-        .SetBounds(GetTarget(), resting_bounds)
-        .SetOpacity(layer, 1.f);
+    // Animate opacity back to normal opacity.
+    layer->SetOpacity(1.f);
+
+    // Animate the size back to its limit size if it has expanded or
+    // shrunk beyond it.
+    layer->SetTransform(gfx::Transform());
 
     // If the pip work area changes (e.g. message center, virtual keyboard),
     // we want to restore to the last explicitly set position.
     // TODO(edcourtney): This may not be the best place for this. Consider
     // doing this a different way or saving these bounds at a later point when
     // the work area changes.
+    wm::ConvertRectToScreen(window_state()->window()->GetRootWindow(),
+                                &resting_bounds);
     PipPositioner::SaveSnapFraction(window_state(), resting_bounds);
   }
 }
@@ -494,7 +428,8 @@ void PipWindowResizer::RevertDrag() {
 }
 
 void PipWindowResizer::FlingOrSwipe(ui::GestureEvent* event) {
-  if (event->type() != ui::ET_SCROLL_FLING_START) {
+  if (event->type() != ui::ET_SCROLL_FLING_START &&
+      event->type() != ui::ET_GESTURE_SWIPE) {
     return;
   }
 

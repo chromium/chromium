@@ -173,7 +173,7 @@ void AnimatedImageView::ClearCurrentCompositor() {
   }
 }
 
-BEGIN_METADATA(AnimatedImageView, ImageViewBase)
+BEGIN_METADATA(AnimatedImageView)
 END_METADATA
 
 }  // namespace views

@@ -58,14 +58,14 @@ body.safe-browsing {
 }
 
 .safe-browsing .icon {
-  background-image: -webkit-image-set(
+  background-image: image-set(
       url(images/1x/triangle_white.png) 1x,
       url(images/2x/triangle_white.png) 2x);
   color: var(--google-red-40);
 }
 
 .safe-browsing .new-icon {
-  background-image: -webkit-image-set(
+  background-image: image-set(
       url(images/1x/stop_sign_white.svg) 1x,
       url(images/2x/stop_sign_white.svg) 2x);
   color: var(--google-red-40);
@@ -82,7 +82,7 @@ body.safe-browsing {
 }
 
 .safe-browsing-billing .icon {
-  background-image: -webkit-image-set(
+  background-image: image-set(
       url(images/1x/triangle_red.png) 1x,
       url(images/2x/triangle_red.png) 2x);
 }

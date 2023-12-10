@@ -54,27 +54,28 @@ void KeyDataProviderAsh::OnKeyReady() {
 
 KeyData* KeyDataProviderAsh::GetKeyData(const std::string& project_name) {
   auto* key_data_provider = GetKeyDataProvider(project_name);
-  if (!key_data_provider) {
+  if (!key_data_provider || !key_data_provider->IsReady()) {
     return nullptr;
   }
+
   return key_data_provider->GetKeyData(project_name);
 }
 
-absl::optional<uint64_t> KeyDataProviderAsh::GetId(
+std::optional<uint64_t> KeyDataProviderAsh::GetId(
     const std::string& project_name) {
   KeyDataProvider* key_data_provider = GetKeyDataProvider(project_name);
   if (!key_data_provider) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return key_data_provider->GetId(project_name);
 }
 
-absl::optional<uint64_t> KeyDataProviderAsh::GetSecondaryId(
+std::optional<uint64_t> KeyDataProviderAsh::GetSecondaryId(
     const std::string& project_name) {
   auto maybe_project_validator =
       validator::Validators::Get()->GetProjectValidator(project_name);
   if (!maybe_project_validator.has_value()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // If |project_name| is not of type sequence, return absl::nullopt as it
@@ -82,7 +83,7 @@ absl::optional<uint64_t> KeyDataProviderAsh::GetSecondaryId(
   const auto* project_validator = maybe_project_validator.value();
   if (project_validator->event_type() !=
       StructuredEventProto_EventType_SEQUENCE) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   DCHECK(device_key_);
@@ -90,7 +91,7 @@ absl::optional<uint64_t> KeyDataProviderAsh::GetSecondaryId(
     return device_key_->GetId(project_name);
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void KeyDataProviderAsh::OnProfileAdded(const base::FilePath& profile_path) {

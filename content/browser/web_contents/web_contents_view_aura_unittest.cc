@@ -31,6 +31,7 @@
 #include "ui/base/dragdrop/drop_target_event.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
+#include "ui/base/ozone_buildflags.h"
 #include "ui/display/display_switches.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/gfx/geometry/rect.h"
@@ -40,16 +41,13 @@
 #include "ui/base/dragdrop/os_exchange_data_provider_win.h"
 #endif
 
-#if BUILDFLAG(IS_LINUX)
-#include "ui/ozone/buildflags.h"
-#if BUILDFLAG(OZONE_PLATFORM_X11)
+#if BUILDFLAG(IS_LINUX) && BUILDFLAG(IS_OZONE_X11)
 #include "ui/base/x/selection_utils.h"
 #include "ui/base/x/x11_os_exchange_data_provider.h"
+#include "ui/gfx/x/atom_cache.h"
 #include "ui/gfx/x/connection.h"
-#include "ui/gfx/x/x11_atom_cache.h"
 #include "ui/ozone/public/ozone_platform.h"
-#endif  // BUILDFLAG(OZONE_PLATFORM_X11)
-#endif  // BUILDFLAG(IS_LINUX)
+#endif  // BUILDFLAG(IS_LINUX) && BUILDFLAG(IS_OZONE_X11)
 
 namespace content {
 namespace {
@@ -461,8 +459,7 @@ TEST_F(WebContentsViewAuraTest, MAYBE_DragDropImageFromRenderer) {
 
   auto data = std::make_unique<ui::OSExchangeData>();
 
-#if BUILDFLAG(IS_LINUX)
-#if BUILDFLAG(OZONE_PLATFORM_X11)
+#if BUILDFLAG(IS_LINUX) && BUILDFLAG(IS_OZONE_X11)
   // FileContents drag-drop in X relies on XDragDropClient::InitDrag() setting
   // window property 'XdndDirectSave0' to filename. Since XDragDropClient is not
   // created in this unittest, we will set this property manually to allow
@@ -476,8 +473,7 @@ TEST_F(WebContentsViewAuraTest, MAYBE_DragDropImageFromRenderer) {
         std::make_unique<ui::XOSExchangeDataProvider>(
             xwindow, xwindow, ui::SelectionFormatMap()));
   }
-#endif  // BUILDFLAG(OZONE_PLATFORM_X11)
-#endif  // BUILDFLAG(IS_LINUX)
+#endif  // BUILDFLAG(IS_LINUX) && BUILDFLAG(IS_OZONE_X11)
 
   // As per WebContentsViewAura::PrepareDragData(), we must call
   // SetFileContents() before SetURL() to get the expected contents since

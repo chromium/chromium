@@ -75,6 +75,8 @@ static constexpr auto kAutofillHeuristicsVsServerOverrides =
          {ADDRESS_HOME_APT_NUM, ADDRESS_HOME_LINE2},
          {ADDRESS_HOME_APT_NUM, ADDRESS_HOME_LINE3},
          {ADDRESS_HOME_APT_NUM, ADDRESS_HOME_HOUSE_NUMBER},
+         {ADDRESS_HOME_BETWEEN_STREETS, ADDRESS_HOME_LINE1},
+         {ADDRESS_HOME_BETWEEN_STREETS, ADDRESS_HOME_LINE2},
          {ADDRESS_HOME_BETWEEN_STREETS, ADDRESS_HOME_STREET_ADDRESS},
          {ADDRESS_HOME_DEPENDENT_LOCALITY, ADDRESS_HOME_CITY},
          {ADDRESS_HOME_DEPENDENT_LOCALITY, ADDRESS_HOME_STATE},
@@ -100,68 +102,19 @@ bool IsDefaultPrediction(const FieldPrediction& prediction) {
   return default_sources.contains(prediction.source());
 }
 
-// Compare two field log events of any type to check their log types and
-// their attributes related to autofill or editing. If they are the same type
-// and their key attributes of the type are the same, we consider |event2| is
-// identical to |event1|, we will not add |event2| after |event1| to
-// |field_log_events_|.
+// Returns true if for two consecutive events, the second event may be ignored.
+// In that case, if `event1` is at the back of AutofillField::field_log_events_,
+// `event2` is not supposed to be added.
 bool AreCollapsibleLogEvents(const AutofillField::FieldLogEventType& event1,
                              const AutofillField::FieldLogEventType& event2) {
-  if (event1.index() != event2.index()) {
-    return false;
-  }
-
-  static_assert(
-      absl::variant_size<AutofillField::FieldLogEventType>() == 9,
-      "If you add a new field event type, you need to update this function");
-
-  if (absl::holds_alternative<absl::monostate>(event1)) {
-    using E = absl::monostate;
-    return AreCollapsible(absl::get<E>(event1), absl::get<E>(event2));
-  }
-
-  if (absl::holds_alternative<AskForValuesToFillFieldLogEvent>(event1)) {
-    using E = AskForValuesToFillFieldLogEvent;
-    return AreCollapsible(absl::get<E>(event1), absl::get<E>(event2));
-  }
-
-  if (absl::holds_alternative<TriggerFillFieldLogEvent>(event1)) {
-    using E = TriggerFillFieldLogEvent;
-    return AreCollapsible(absl::get<E>(event1), absl::get<E>(event2));
-  }
-
-  if (absl::holds_alternative<FillFieldLogEvent>(event1)) {
-    using E = FillFieldLogEvent;
-    return AreCollapsible(absl::get<E>(event1), absl::get<E>(event2));
-  }
-
-  if (absl::holds_alternative<TypingFieldLogEvent>(event1)) {
-    using E = TypingFieldLogEvent;
-    return AreCollapsible(absl::get<E>(event1), absl::get<E>(event2));
-  }
-
-  if (absl::holds_alternative<HeuristicPredictionFieldLogEvent>(event1)) {
-    using E = HeuristicPredictionFieldLogEvent;
-    return AreCollapsible(absl::get<E>(event1), absl::get<E>(event2));
-  }
-
-  if (absl::holds_alternative<AutocompleteAttributeFieldLogEvent>(event1)) {
-    using E = AutocompleteAttributeFieldLogEvent;
-    return AreCollapsible(absl::get<E>(event1), absl::get<E>(event2));
-  }
-
-  if (absl::holds_alternative<ServerPredictionFieldLogEvent>(event1)) {
-    using E = ServerPredictionFieldLogEvent;
-    return AreCollapsible(absl::get<E>(event1), absl::get<E>(event2));
-  }
-
-  if (absl::holds_alternative<RationalizationFieldLogEvent>(event1)) {
-    using E = RationalizationFieldLogEvent;
-    return AreCollapsible(absl::get<E>(event1), absl::get<E>(event2));
-  }
-
-  NOTREACHED();
-  return false;
+  return absl::visit(
+      [](const auto& e1, const auto& e2) {
+        if constexpr (std::is_same_v<decltype(e1), decltype(e2)>) {
+          return AreCollapsible(e1, e2);
+        }
+        return false;
+      },
+      event1, event2);
 }
 
 // Returns whether the `heuristic_type` should be preferred over the
@@ -572,29 +525,9 @@ void AutofillField::AppendLogEventIfNotRepeated(
   }
 }
 
-DeprecatedFormControlType AutofillField::FormControlType() const {
-  // Keep in sync with https://html.spec.whatwg.org/#attr-input-type.
-  if (form_control_type == FormControlType::kInputText ||
-      form_control_type == FormControlType::kInputSearch ||
-      form_control_type == FormControlType::kInputTelephone ||
-      form_control_type == FormControlType::kInputUrl ||
-      form_control_type == FormControlType::kInputEmail ||
-      form_control_type == FormControlType::kInputPassword ||
-      form_control_type == FormControlType::kInputNumber) {
-    return DeprecatedFormControlType::kText;
-  } else if (form_control_type == FormControlType::kTextArea) {
-    return DeprecatedFormControlType::kTextarea;
-  } else if (form_control_type == FormControlType::kInputCheckbox) {
-    return DeprecatedFormControlType::kCheckbox;
-  } else if (form_control_type == FormControlType::kInputRadio) {
-    return DeprecatedFormControlType::kRadio;
-  } else if (form_control_type == FormControlType::kSelectOne) {
-    return DeprecatedFormControlType::kSelectOne;
-  } else if (form_control_type == FormControlType::kSelectList) {
-    return DeprecatedFormControlType::kSelectlist;
-  } else {
-    return DeprecatedFormControlType::kOther;
-  }
+bool AutofillField::WasAutofilledWithFallback() const {
+  return autofilled_type_ &&
+         autofilled_type_ != overall_type_.GetStorableType();
 }
 
 }  // namespace autofill

@@ -218,6 +218,12 @@ class IOSurfaceImageBackingFactoryDawnTest
       features.push_back(wgpu::FeatureName::MultiPlanarFormatP010);
     }
 
+    if (adapter.HasFeature(wgpu::FeatureName::SharedTextureMemoryIOSurface)) {
+      CHECK(adapter.HasFeature(wgpu::FeatureName::SharedFenceMTLSharedEvent));
+      features.push_back(wgpu::FeatureName::SharedTextureMemoryIOSurface);
+      features.push_back(wgpu::FeatureName::SharedFenceMTLSharedEvent);
+    }
+
     // We need to request internal usage to be able to do operations with
     // internal methods that would need specific usages.
     features.push_back(wgpu::FeatureName::DawnInternalUsages);
@@ -1112,9 +1118,8 @@ TEST_P(IOSurfaceImageBackingFactoryScanoutTest, TexImageTexStorageEquivalence) {
       continue;
     }
 
-    GLFormatDesc format_desc = ToGLFormatDesc(
-        format, /*plane_index=*/0,
-        feature_info->feature_flags().angle_rgbx_internal_format);
+    GLFormatCaps caps(feature_info.get());
+    GLFormatDesc format_desc = caps.ToGLFormatDesc(format, /*plane_index=*/0);
     int storage_format = format_desc.storage_internal_format;
     int image_gl_format = format_desc.data_format;
     int storage_gl_format =

@@ -113,6 +113,15 @@ TestInterestGroupBuilder& TestInterestGroupBuilder::SetTrustedBiddingSignalsUrl(
 }
 
 TestInterestGroupBuilder&
+TestInterestGroupBuilder::SetTrustedBiddingSignalsSlotSizeMode(
+    InterestGroup::TrustedBiddingSignalsSlotSizeMode
+        trusted_bidding_signals_slot_size_mode) {
+  interest_group_.trusted_bidding_signals_slot_size_mode =
+      std::move(trusted_bidding_signals_slot_size_mode);
+  return *this;
+}
+
+TestInterestGroupBuilder&
 TestInterestGroupBuilder::SetTrustedBiddingSignalsKeys(
     absl::optional<std::vector<std::string>> trusted_bidding_signals_keys) {
   interest_group_.trusted_bidding_signals_keys =

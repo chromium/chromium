@@ -70,8 +70,11 @@ public class AsyncTabCreationParams implements AsyncTabParams {
         return mComponentName;
     }
 
-    private AsyncTabCreationParams(LoadUrlParams loadUrlParams, WebContents webContents,
-            Integer requestId, ComponentName componentName) {
+    private AsyncTabCreationParams(
+            LoadUrlParams loadUrlParams,
+            WebContents webContents,
+            Integer requestId,
+            ComponentName componentName) {
         assert loadUrlParams != null;
 
         // These parameters are set in very, very specific and exclusive circumstances.

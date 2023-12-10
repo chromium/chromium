@@ -5,12 +5,13 @@
 #ifndef ASH_QUICK_PAIR_REPOSITORY_FAST_PAIR_DEVICE_METADATA_FETCHER_H_
 #define ASH_QUICK_PAIR_REPOSITORY_FAST_PAIR_DEVICE_METADATA_FETCHER_H_
 
+#include <optional>
+
 #include "ash/quick_pair/common/fast_pair/fast_pair_http_result.h"
 #include "ash/quick_pair/proto/fastpair.pb.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace nearby {
 namespace fastpair {
@@ -24,7 +25,7 @@ namespace quick_pair {
 class HttpFetcher;
 
 using GetObservedDeviceCallback = base::OnceCallback<
-    void(absl::optional<nearby::fastpair::GetObservedDeviceResponse>, bool)>;
+    void(std::optional<nearby::fastpair::GetObservedDeviceResponse>, bool)>;
 
 class DeviceMetadataFetcher {
  public:

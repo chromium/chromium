@@ -35,9 +35,13 @@ class COMPONENT_EXPORT(NETWORK_CPP_ATTRIBUTION) TriggerVerification {
   TriggerVerification& operator=(TriggerVerification&&);
 
   const std::string& token() const { return token_; }
+
   const base::Uuid& aggregatable_report_id() const {
     return aggregatable_report_id_;
   }
+
+  friend bool operator==(const TriggerVerification&,
+                         const TriggerVerification&) = default;
 
  private:
   TriggerVerification(std::string token, base::Uuid aggregatable_report_id);

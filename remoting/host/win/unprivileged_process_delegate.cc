@@ -14,6 +14,7 @@
 #include <string>
 #include <utility>
 
+#include <optional>
 #include "base/command_line.h"
 #include "base/files/file.h"
 #include "base/logging.h"
@@ -36,7 +37,6 @@
 #include "remoting/host/win/launch_process_with_token.h"
 #include "remoting/host/win/security_descriptor.h"
 #include "remoting/host/win/window_station_and_desktop.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using base::win::ScopedHandle;
 using base::win::Sid;
@@ -107,7 +107,7 @@ bool CreateRestrictedToken(ScopedHandle* token_out) {
   }
 
   ScopedHandle restricted_token(temp_handle);
-  absl::optional<Sid> sid = Sid::FromIntegrityLevel(SECURITY_MANDATORY_LOW_RID);
+  std::optional<Sid> sid = Sid::FromIntegrityLevel(SECURITY_MANDATORY_LOW_RID);
   if (!sid) {
     LOG(ERROR) << "Failed to get integrity level SID";
     return false;

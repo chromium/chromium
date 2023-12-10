@@ -16,7 +16,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "components/prefs/pref_member.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"

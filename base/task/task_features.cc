@@ -8,7 +8,6 @@
 
 #include "base/base_export.h"
 #include "base/feature_list.h"
-#include "base/threading/platform_thread.h"
 #include "build/build_config.h"
 
 namespace base {
@@ -29,15 +28,6 @@ BASE_FEATURE(kUseUtilityThreadGroup,
 
 BASE_FEATURE(kNoWorkerThreadReclaim,
              "NoWorkerThreadReclaim",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// static
-BASE_FEATURE(kNoWakeUpsForCanceledTasks,
-             "NoWakeUpsForCanceledTasks",
-             FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kRemoveCanceledTasksInTaskQueue,
-             "RemoveCanceledTasksInTaskQueue2",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kDelayFirstWorkerWake,
@@ -78,32 +68,15 @@ BASE_FEATURE(kThreadPoolCap2,
 const base::FeatureParam<int> kThreadPoolCapRestrictedCount{
     &kThreadPoolCap2, "restricted_count", 3};
 
-// Leeway value applied to delayed tasks. An atomic is used here because the
-// value is queried from multiple threads.
-std::atomic<TimeDelta> g_task_leeway{kDefaultLeeway};
-
-BASE_EXPORT void InitializeTaskLeeway() {
-  g_task_leeway.store(kTaskLeewayParam.Get(), std::memory_order_relaxed);
-}
-
-BASE_EXPORT TimeDelta GetTaskLeewayForCurrentThread() {
-  // For some threads, there might be a override of the leeway, so check it
-  // first.
-  auto leeway_override = PlatformThread::GetThreadLeewayOverride();
-  if (leeway_override.has_value())
-    return leeway_override.value();
-  return g_task_leeway.load(std::memory_order_relaxed);
-}
-
-BASE_EXPORT TimeDelta GetDefaultTaskLeeway() {
-  return g_task_leeway.load(std::memory_order_relaxed);
-}
-
 BASE_FEATURE(kMaxDelayedStarvationTasks,
              "MaxDelayedStarvationTasks",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 const base::FeatureParam<int> kMaxDelayedStarvationTasksParam{
     &kMaxDelayedStarvationTasks, "count", 3};
+
+BASE_FEATURE(kUseNewJobImplementation,
+             "UseNewJobImplementation",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace base

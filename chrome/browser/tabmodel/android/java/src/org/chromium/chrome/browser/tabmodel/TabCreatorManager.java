@@ -4,9 +4,7 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
-/**
- * An interface to return a {@link TabCreator} either for regular or incognito tabs.
- */
+/** An interface to return a {@link TabCreator} either for regular or incognito tabs. */
 public interface TabCreatorManager {
     /**
      * @return A {@link TabCreator} that will create either regular or incognito tabs.

@@ -22,17 +22,23 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
-import org.chromium.chrome.browser.tab.TabImpl;
+import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
+import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.url.GURL;
 
 @RunWith(BaseRobolectricTestRunner.class)
 public final class PlusAddressCreationMediatorTest {
 
     private static final int TAB1_ID = 1;
     private static final int TAB2_ID = 2;
+    private static final String PROPOSED_PLUS_ADDRESS = "foo@bar.com";
+    private static final String ERROR_MESSAGE = "error!";
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -40,6 +46,7 @@ public final class PlusAddressCreationMediatorTest {
     @Mock private BottomSheetController mBottomSheetController;
     @Mock private LayoutStateProvider mLayoutStateProvider;
     @Mock private TabModel mTabModel;
+    @Mock private TabModelSelector mTabModelSelector;
     @Mock private PlusAddressCreationViewBridge mBridge;
 
     private PlusAddressCreationMediator mMediator;
@@ -52,6 +59,7 @@ public final class PlusAddressCreationMediatorTest {
                         mBottomSheetController,
                         mLayoutStateProvider,
                         mTabModel,
+                        mTabModelSelector,
                         mBridge);
     }
 
@@ -71,6 +79,18 @@ public final class PlusAddressCreationMediatorTest {
     }
 
     @Test
+    public void testUpdateProposedPlusAddress_callsBottomSheetSetProposedPlusAddress() {
+        mMediator.updateProposedPlusAddress(PROPOSED_PLUS_ADDRESS);
+        verify(mBottomSheetContent).setProposedPlusAddress(PROPOSED_PLUS_ADDRESS);
+    }
+
+    @Test
+    public void testShowError_callsBottomSheetShowError() {
+        mMediator.showError(ERROR_MESSAGE);
+        verify(mBottomSheetContent).showError(ERROR_MESSAGE);
+    }
+
+    @Test
     public void testDestroy_hidesBottomSheetContentAndRemovesObservers() {
         mMediator.destroy();
 
@@ -81,15 +101,19 @@ public final class PlusAddressCreationMediatorTest {
     }
 
     @Test
-    public void testDidClickConfirm_hidesBottomSheetAndCallsOnConfirmed() {
-        mMediator.onConfirmed();
+    public void testDidClickConfirm_callsOnConfirmRequested() {
+        mMediator.onConfirmRequested();
+        verify(mBridge).onConfirmRequested();
+    }
 
+    @Test
+    public void testOnConfirmFinished_hidesBottomSheet() {
+        mMediator.onConfirmFinished();
         verify(mBottomSheetController)
                 .hideContent(
                         mBottomSheetContent,
                         /* animate= */ true,
                         StateChangeReason.INTERACTION_COMPLETE);
-        verify(mBridge).onConfirmed();
     }
 
     @Test
@@ -120,7 +144,7 @@ public final class PlusAddressCreationMediatorTest {
 
     @Test
     public void testDidSelectTab_doesNotHideContent_whenIsSameTab() {
-        TabImpl tab1 = mock(TabImpl.class);
+        Tab tab1 = mock(Tab.class);
         doReturn(TAB1_ID).when(tab1).getId();
         mMediator.didSelectTab(tab1, TabSelectionType.FROM_USER, TAB1_ID);
 
@@ -130,7 +154,7 @@ public final class PlusAddressCreationMediatorTest {
 
     @Test
     public void testDidSelectTab_hidesContent_whenIsNotSameTab() {
-        TabImpl tab1 = mock(TabImpl.class);
+        Tab tab1 = mock(Tab.class);
         doReturn(TAB1_ID).when(tab1).getId();
         mMediator.didSelectTab(tab1, TabSelectionType.FROM_USER, TAB2_ID);
 
@@ -150,5 +174,18 @@ public final class PlusAddressCreationMediatorTest {
         mMediator.onStartedShowing(LayoutType.TAB_SWITCHER);
 
         verify(mBottomSheetController).hideContent(mBottomSheetContent, /* animate= */ true);
+    }
+
+    @Test
+    public void testOpenManagementPage_openNewTab() {
+        GURL url = new GURL("manage.com");
+        mMediator.openManagementPage(url);
+
+        verify(mTabModelSelector)
+                .openNewTab(
+                        new LoadUrlParams(url),
+                        TabLaunchType.FROM_LINK,
+                        mTabModelSelector.getCurrentTab(),
+                        false);
     }
 }

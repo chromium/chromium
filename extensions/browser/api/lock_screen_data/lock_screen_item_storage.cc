@@ -541,7 +541,7 @@ std::set<std::string> LockScreenItemStorage::GetExtensionsWithDataItems(
     if (it.second.is_int() && (include_empty || it.second.GetInt() > 0)) {
       result.insert(it.first);
     } else if (it.second.is_dict()) {
-      absl::optional<int> count =
+      std::optional<int> count =
           it.second.GetDict().FindInt(kExtensionItemCountPrefKey);
       if (include_empty || (count && *count > 0)) {
         result.insert(it.first);

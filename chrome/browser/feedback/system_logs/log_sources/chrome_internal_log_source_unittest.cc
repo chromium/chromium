@@ -158,7 +158,7 @@ TEST_F(ChromeInternalLogSourceTest, FreeAndTotalDiskSpacePresent) {
 }
 
 TEST_F(ChromeInternalLogSourceTest, KnowledgeFactorAuthFailuresPresent) {
-  auth_events_recorder_->OnKnowledgeFactorAuthFailue();
+  auth_events_recorder_->OnKnowledgeFactorAuthFailure();
 
   std::unique_ptr<SystemLogsResponse> response = GetChromeInternalLogs();
   auto knowledge_factor_auth_failure_count =

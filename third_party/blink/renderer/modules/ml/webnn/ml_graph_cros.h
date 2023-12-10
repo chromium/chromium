@@ -57,7 +57,8 @@ class MODULES_EXPORT MLGraphCrOS final : public MLGraph {
                       ScriptPromiseResolver* resolver) override;
 
   // Load the converted model with synchronous call of `ModelLoader` interface.
-  MLGraph* BuildSyncImpl(const MLNamedOperands& named_outputs,
+  MLGraph* BuildSyncImpl(ScriptState* script_state,
+                         const MLNamedOperands& named_outputs,
                          ExceptionState& exception_state) override;
 
   // Compute the converted model with asynchronous call of `Model` interface.

@@ -132,9 +132,18 @@ preprocess_if_expr("preprocess_generated") {
     ":html_wrapper_files",
     "//ui/file_manager/base/gn:file_types_data_gen_js",
     "//ui/file_manager/file_manager/foreground/elements:polymer_elements",
-    "//ui/file_manager/file_manager/foreground/elements:web_components",
   ]
 }
+
+common_path_mappings = [
+  "chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/*|preprocessed/image_loader/*",
+  "tslib|" + rebase_path(
+          "//third_party/material_web_components/components-chromium/node_modules/tslib/tslib.d.ts",
+          target_gen_dir),
+  "chrome://resources/mwc/*|" + rebase_path(
+          "//third_party/material_web_components/components-chromium/node_modules/*",
+          target_gen_dir),
+]
 
 ts_library("build_ts") {
   root_dir = preprocess_folder
@@ -146,15 +155,7 @@ ts_library("build_ts") {
   tsconfig_base = "tsconfig_base.json"
   composite = true
 
-  path_mappings = [
-    "chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/*|preprocessed/image_loader/*",
-    "tslib|" + rebase_path(
-            "//third_party/material_web_components/components-chromium/node_modules/tslib/tslib.d.ts",
-            target_gen_dir),
-    "chrome://resources/mwc/*|" + rebase_path(
-            "//third_party/material_web_components/components-chromium/node_modules/*",
-            target_gen_dir),
-  ]
+  path_mappings = common_path_mappings
 
   extra_deps = [
     ":copy_definitions_to_gen",
@@ -196,13 +197,7 @@ ts_library("build_ts") {
 
   manifest_excludes = [ "file_manager/externs/file_manager_private.js" ]
 
-  definitions = [
-    "//tools/typescript/definitions/chrome_event.d.ts",
-    "//tools/typescript/definitions/chrome_test.d.ts",
-    "//tools/typescript/definitions/metrics_private.d.ts",
-    "//tools/typescript/definitions/runtime.d.ts",
-    "//tools/typescript/definitions/tabs.d.ts",
-  ]
+  definitions = other_dts_files
   foreach(_file, generate_definitions_js_files) {
     definitions +=
         [ "$target_gen_dir/" + string_replace(_file, ".js", ".d.ts") ]
@@ -243,19 +238,18 @@ ts_library("test_build_ts") {
 
   manifest_excludes = [ "file_manager/externs/test/file_manager_private.js" ]
 
-  path_mappings = [
-    "chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/*|preprocessed/image_loader/*",
+  path_mappings =
+      common_path_mappings + [
+        # for chai_assert.js.
+        "chrome://webui-test/chromeos/*|" +
+            rebase_path("$root_gen_dir/chrome/test/data/webui/chromeos/tsc/*",
+                        target_gen_dir),
+        "chrome://webui-test/*|" +
+            rebase_path("$root_gen_dir/chrome/test/data/webui/tsc/*",
+                        target_gen_dir),
+      ]
 
-    # for chai_assert.js.
-    "chrome://webui-test/chromeos/*|" +
-        rebase_path("$root_gen_dir/chrome/test/data/webui/chromeos/tsc/*",
-                    target_gen_dir),
-    "chrome://webui-test/*|" +
-        rebase_path("$root_gen_dir/chrome/test/data/webui/tsc/*",
-                    target_gen_dir),
-  ]
-
-  definitions = []
+  definitions = other_dts_files
   foreach(_file, generate_definitions_js_files) {
     definitions +=
         [ "$target_gen_dir/" + string_replace(_file, ".js", ".d.ts") ]
@@ -269,6 +263,10 @@ ts_library("test_build_ts") {
     "//ash/webui/common/resources:build_ts",
     "//chrome/test/data/webui:build_ts",
     "//chrome/test/data/webui/chromeos:build_ts",
+    "//third_party/cros-components:cros_components_ts",
+    "//third_party/material_web_components:bundle_lit_ts",
+    "//third_party/material_web_components:library",
+    "//third_party/polymer/v3_0:library",
     "//ui/webui/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
   ]

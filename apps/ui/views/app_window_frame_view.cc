@@ -54,18 +54,17 @@ AppWindowFrameView::~AppWindowFrameView() = default;
 
 void AppWindowFrameView::Init() {
   if (draw_frame_) {
-    ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
     auto close_button = std::make_unique<views::ImageButton>(
         base::BindRepeating(&views::Widget::Close, base::Unretained(widget_)));
-    close_button->SetImage(
+    close_button->SetImageModel(
         views::Button::STATE_NORMAL,
-        rb.GetNativeImageNamed(IDR_APP_WINDOW_CLOSE).ToImageSkia());
-    close_button->SetImage(
+        ui::ImageModel::FromResourceId(IDR_APP_WINDOW_CLOSE));
+    close_button->SetImageModel(
         views::Button::STATE_HOVERED,
-        rb.GetNativeImageNamed(IDR_APP_WINDOW_CLOSE_H).ToImageSkia());
-    close_button->SetImage(
+        ui::ImageModel::FromResourceId(IDR_APP_WINDOW_CLOSE_H));
+    close_button->SetImageModel(
         views::Button::STATE_PRESSED,
-        rb.GetNativeImageNamed(IDR_APP_WINDOW_CLOSE_P).ToImageSkia());
+        ui::ImageModel::FromResourceId(IDR_APP_WINDOW_CLOSE_P));
     close_button->SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
     close_button->SetAccessibleName(
         l10n_util::GetStringUTF16(IDS_APP_ACCNAME_CLOSE));
@@ -74,15 +73,15 @@ void AppWindowFrameView::Init() {
     auto maximize_button =
         std::make_unique<views::ImageButton>(base::BindRepeating(
             &views::Widget::Maximize, base::Unretained(widget_)));
-    maximize_button->SetImage(
+    maximize_button->SetImageModel(
         views::Button::STATE_HOVERED,
-        rb.GetNativeImageNamed(IDR_APP_WINDOW_MAXIMIZE_H).ToImageSkia());
-    maximize_button->SetImage(
+        ui::ImageModel::FromResourceId(IDR_APP_WINDOW_MAXIMIZE_H));
+    maximize_button->SetImageModel(
         views::Button::STATE_PRESSED,
-        rb.GetNativeImageNamed(IDR_APP_WINDOW_MAXIMIZE_P).ToImageSkia());
-    maximize_button->SetImage(
+        ui::ImageModel::FromResourceId(IDR_APP_WINDOW_MAXIMIZE_P));
+    maximize_button->SetImageModel(
         views::Button::STATE_DISABLED,
-        rb.GetNativeImageNamed(IDR_APP_WINDOW_MAXIMIZE_D).ToImageSkia());
+        ui::ImageModel::FromResourceId(IDR_APP_WINDOW_MAXIMIZE_D));
     maximize_button->SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
     maximize_button->SetAccessibleName(
         l10n_util::GetStringUTF16(IDS_APP_ACCNAME_MAXIMIZE));
@@ -90,12 +89,12 @@ void AppWindowFrameView::Init() {
     auto restore_button =
         std::make_unique<views::ImageButton>(base::BindRepeating(
             &views::Widget::Restore, base::Unretained(widget_)));
-    restore_button->SetImage(
+    restore_button->SetImageModel(
         views::Button::STATE_HOVERED,
-        rb.GetNativeImageNamed(IDR_APP_WINDOW_RESTORE_H).ToImageSkia());
-    restore_button->SetImage(
+        ui::ImageModel::FromResourceId(IDR_APP_WINDOW_RESTORE_H));
+    restore_button->SetImageModel(
         views::Button::STATE_PRESSED,
-        rb.GetNativeImageNamed(IDR_APP_WINDOW_RESTORE_P).ToImageSkia());
+        ui::ImageModel::FromResourceId(IDR_APP_WINDOW_RESTORE_P));
     restore_button->SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
     restore_button->SetAccessibleName(
         l10n_util::GetStringUTF16(IDS_APP_ACCNAME_RESTORE));
@@ -103,12 +102,12 @@ void AppWindowFrameView::Init() {
     auto minimize_button =
         std::make_unique<views::ImageButton>(base::BindRepeating(
             &views::Widget::Minimize, base::Unretained(widget_)));
-    minimize_button->SetImage(
+    minimize_button->SetImageModel(
         views::Button::STATE_HOVERED,
-        rb.GetNativeImageNamed(IDR_APP_WINDOW_MINIMIZE_H).ToImageSkia());
-    minimize_button->SetImage(
+        ui::ImageModel::FromResourceId(IDR_APP_WINDOW_MINIMIZE_H));
+    minimize_button->SetImageModel(
         views::Button::STATE_PRESSED,
-        rb.GetNativeImageNamed(IDR_APP_WINDOW_MINIMIZE_P).ToImageSkia());
+        ui::ImageModel::FromResourceId(IDR_APP_WINDOW_MINIMIZE_P));
     minimize_button->SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
     minimize_button->SetAccessibleName(
         l10n_util::GetStringUTF16(IDS_APP_ACCNAME_MINIMIZE));
@@ -306,15 +305,14 @@ void AppWindowFrameView::OnPaint(gfx::Canvas* canvas) {
   if (!draw_frame_)
     return;
 
-  ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
   if (ShouldPaintAsActive()) {
-    close_button_->SetImage(
+    close_button_->SetImageModel(
         views::Button::STATE_NORMAL,
-        rb.GetNativeImageNamed(IDR_APP_WINDOW_CLOSE).ToImageSkia());
+        ui::ImageModel::FromResourceId(IDR_APP_WINDOW_CLOSE));
   } else {
-    close_button_->SetImage(
+    close_button_->SetImageModel(
         views::Button::STATE_NORMAL,
-        rb.GetNativeImageNamed(IDR_APP_WINDOW_CLOSE_U).ToImageSkia());
+        ui::ImageModel::FromResourceId(IDR_APP_WINDOW_CLOSE_U));
   }
 
   SetButtonImagesForFrame();
@@ -385,27 +383,26 @@ void AppWindowFrameView::SetButtonImagesForFrame() {
 
   // If the frame is dark, we should use the light images so they have some
   // contrast.
-  ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
   if (color_utils::IsDark(CurrentFrameColor())) {
-    maximize_button_->SetImage(
+    maximize_button_->SetImageModel(
         views::Button::STATE_NORMAL,
-        rb.GetNativeImageNamed(IDR_APP_WINDOW_MAXIMIZE_L).ToImageSkia());
-    restore_button_->SetImage(
+        ui::ImageModel::FromResourceId(IDR_APP_WINDOW_MAXIMIZE_L));
+    restore_button_->SetImageModel(
         views::Button::STATE_NORMAL,
-        rb.GetNativeImageNamed(IDR_APP_WINDOW_RESTORE_L).ToImageSkia());
-    minimize_button_->SetImage(
+        ui::ImageModel::FromResourceId(IDR_APP_WINDOW_RESTORE_L));
+    minimize_button_->SetImageModel(
         views::Button::STATE_NORMAL,
-        rb.GetNativeImageNamed(IDR_APP_WINDOW_MINIMIZE_L).ToImageSkia());
+        ui::ImageModel::FromResourceId(IDR_APP_WINDOW_MINIMIZE_L));
   } else {
-    maximize_button_->SetImage(
+    maximize_button_->SetImageModel(
         views::Button::STATE_NORMAL,
-        rb.GetNativeImageNamed(IDR_APP_WINDOW_MAXIMIZE).ToImageSkia());
-    restore_button_->SetImage(
+        ui::ImageModel::FromResourceId(IDR_APP_WINDOW_MAXIMIZE));
+    restore_button_->SetImageModel(
         views::Button::STATE_NORMAL,
-        rb.GetNativeImageNamed(IDR_APP_WINDOW_RESTORE).ToImageSkia());
-    minimize_button_->SetImage(
+        ui::ImageModel::FromResourceId(IDR_APP_WINDOW_RESTORE));
+    minimize_button_->SetImageModel(
         views::Button::STATE_NORMAL,
-        rb.GetNativeImageNamed(IDR_APP_WINDOW_MINIMIZE).ToImageSkia());
+        ui::ImageModel::FromResourceId(IDR_APP_WINDOW_MINIMIZE));
   }
 }
 

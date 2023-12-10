@@ -8,7 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/supervised_user/core/browser/fetcher_config.h"
 #include "components/supervised_user/core/browser/proto/kidschromemanagement_messages.pb.h"
@@ -48,14 +48,25 @@ void SetHttpEndpointsForKidsManagementApis(
       {{"service_endpoint", base::StrCat({"http://", hostname})}});
 }
 
-KidsManagementApiServerMock::KidsManagementApiServerMock() = default;
-KidsManagementApiServerMock::~KidsManagementApiServerMock() {
-  // Without this check, some tests could silently pass or fail without
-  // interacting this mock. Strict accounting ensures that all expected
-  // classifications have happened.
-  CHECK(classifications_.empty())
-      << "All expected classifications must be exhausted.";
+KidsManagementClassifyUrlMock::KidsManagementClassifyUrlMock() {
+  ON_CALL(*this, ClassifyUrl)
+      .WillByDefault([this](const net::test_server::HttpRequest& request) {
+        CHECK(display_classification_.has_value())
+            << "Set response value (see `set_display_classification`) before "
+               "first use";
+        return *display_classification_;
+      });
 }
+KidsManagementClassifyUrlMock::~KidsManagementClassifyUrlMock() = default;
+
+void KidsManagementClassifyUrlMock::set_display_classification(
+    kids_chrome_management::ClassifyUrlResponse::DisplayClassification
+        classification) {
+  display_classification_ = classification;
+}
+
+KidsManagementApiServerMock::KidsManagementApiServerMock() = default;
+KidsManagementApiServerMock::~KidsManagementApiServerMock() = default;
 
 void KidsManagementApiServerMock::InstallOn(
     net::test_server::EmbeddedTestServer& test_server_) {
@@ -105,29 +116,9 @@ KidsManagementApiServerMock::ClassifyUrl(
     return nullptr;
   }
 
-  CHECK(!classifications_.empty())
-      << "Expected classification. Perhaps no classifications are queued? "
-         "Consult ::Queue*UrlClassification.";
-
-  kids_chrome_management::ClassifyUrlResponse::DisplayClassification
-      classification = classifications_.front();
-  classifications_.pop_front();
-
-  return FromProtoData(ClassifyUrlResponse(classification).SerializeAsString());
-}
-
-void KidsManagementApiServerMock::QueueAllowedUrlClassification() {
-  QueueUrlClassification(kids_chrome_management::ClassifyUrlResponse::ALLOWED);
-}
-void KidsManagementApiServerMock::QueueRestrictedUrlClassification() {
-  QueueUrlClassification(
-      kids_chrome_management::ClassifyUrlResponse::RESTRICTED);
-}
-
-void KidsManagementApiServerMock::QueueUrlClassification(
-    kids_chrome_management::ClassifyUrlResponse::DisplayClassification
-        display_classification) {
-  classifications_.push_back(display_classification);
+  return FromProtoData(
+      ClassifyUrlResponse(classify_url_mock_.ClassifyUrl(request))
+          .SerializeAsString());
 }
 
 base::CallbackListSubscription KidsManagementApiServerMock::Subscribe(
@@ -138,6 +129,18 @@ base::CallbackListSubscription KidsManagementApiServerMock::Subscribe(
 void KidsManagementApiServerMock::RequestMonitorDispatcher(
     const net::test_server::HttpRequest& request) {
   request_monitors_.Notify(request.GetURL().path(), request.content);
+}
+
+void KidsManagementApiServerMock::AllowSubsequentClassifyUrl() {
+  classify_url_mock_.set_display_classification(
+      kids_chrome_management::ClassifyUrlResponse::DisplayClassification::
+          ClassifyUrlResponse_DisplayClassification_ALLOWED);
+}
+
+void KidsManagementApiServerMock::RestrictSubsequentClassifyUrl() {
+  classify_url_mock_.set_display_classification(
+      kids_chrome_management::ClassifyUrlResponse::DisplayClassification::
+          ClassifyUrlResponse_DisplayClassification_RESTRICTED);
 }
 
 }  // namespace supervised_user

@@ -19,8 +19,10 @@ public class PriceTrackingActionProvider implements ContextualPageActionControll
     private final Supplier<Profile> mProfileSupplier;
 
     /** Constructor. */
-    public PriceTrackingActionProvider(Supplier<ShoppingService> shoppingServiceSupplier,
-            Supplier<BookmarkModel> bookmarkModelSupplier, Supplier<Profile> profileSupplier) {
+    public PriceTrackingActionProvider(
+            Supplier<ShoppingService> shoppingServiceSupplier,
+            Supplier<BookmarkModel> bookmarkModelSupplier,
+            Supplier<Profile> profileSupplier) {
         mShoppingServiceSupplier = shoppingServiceSupplier;
         mBookmarkModelSupplier = bookmarkModelSupplier;
         mProfileSupplier = profileSupplier;
@@ -29,32 +31,41 @@ public class PriceTrackingActionProvider implements ContextualPageActionControll
     @Override
     public void getAction(Tab tab, SignalAccumulator signalAccumulator) {
         final BookmarkModel bookmarkModel = mBookmarkModelSupplier.get();
-        bookmarkModel.finishLoadingBookmarkModel(() -> {
-            ShoppingService shoppingService = mShoppingServiceSupplier.get();
+        bookmarkModel.finishLoadingBookmarkModel(
+                () -> {
+                    ShoppingService shoppingService = mShoppingServiceSupplier.get();
 
-            // If the user isn't allowed to have the shopping list feature, don't do any more work.
-            if (!shoppingService.isShoppingListEligible()) {
-                signalAccumulator.setHasPriceTracking(false);
-                signalAccumulator.notifySignalAvailable();
-                return;
-            }
+                    // If the user isn't allowed to have the shopping list feature, don't do any
+                    // more work.
+                    if (!shoppingService.isShoppingListEligible()) {
+                        signalAccumulator.setHasPriceTracking(false);
+                        signalAccumulator.notifySignalAvailable();
+                        return;
+                    }
 
-            shoppingService.getProductInfoForUrl(tab.getUrl(), (url, info) -> {
-                BookmarkId bookmarkId = bookmarkModel.getUserBookmarkIdForTab(tab);
-                boolean canTrackPrice = info != null && info.productClusterId.isPresent();
+                    shoppingService.getProductInfoForUrl(
+                            tab.getUrl(),
+                            (url, info) -> {
+                                BookmarkId bookmarkId = bookmarkModel.getUserBookmarkIdForTab(tab);
+                                boolean canTrackPrice =
+                                        info != null && info.productClusterId.isPresent();
 
-                if (bookmarkId == null) {
-                    signalAccumulator.setHasPriceTracking(canTrackPrice);
-                    signalAccumulator.notifySignalAvailable();
-                } else {
-                    PriceTrackingUtils.isBookmarkPriceTracked(
-                            mProfileSupplier.get(), bookmarkId.getId(), (isTracked) -> {
-                                // If the product is already tracked, don't make the icon available.
-                                signalAccumulator.setHasPriceTracking(canTrackPrice && !isTracked);
-                                signalAccumulator.notifySignalAvailable();
+                                if (bookmarkId == null) {
+                                    signalAccumulator.setHasPriceTracking(canTrackPrice);
+                                    signalAccumulator.notifySignalAvailable();
+                                } else {
+                                    PriceTrackingUtils.isBookmarkPriceTracked(
+                                            mProfileSupplier.get(),
+                                            bookmarkId.getId(),
+                                            (isTracked) -> {
+                                                // If the product is already tracked, don't make the
+                                                // icon available.
+                                                signalAccumulator.setHasPriceTracking(
+                                                        canTrackPrice && !isTracked);
+                                                signalAccumulator.notifySignalAvailable();
+                                            });
+                                }
                             });
-                }
-            });
-        });
+                });
     }
 }

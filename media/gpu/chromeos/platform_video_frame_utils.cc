@@ -28,6 +28,7 @@
 #include "media/base/video_frame_layout.h"
 #include "media/base/video_util.h"
 #include "media/gpu/buffer_validation.h"
+#include "media/gpu/chromeos/chromeos_compressed_gpu_memory_buffer_video_frame_utils.h"
 #include "media/gpu/macros.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/buffer_types.h"
@@ -40,6 +41,7 @@
 #include "ui/gfx/linux/gbm_wrapper.h"
 #include "ui/gfx/linux/native_pixmap_dmabuf.h"
 #include "ui/gfx/native_pixmap.h"
+#include "ui/gfx/switches.h"
 
 namespace media {
 
@@ -115,7 +117,15 @@ class GbmDeviceWrapper {
       base::FilePath dev_path(FILE_PATH_LITERAL(
           base::StringPrintf(kRenderNodeFilePattern, i).c_str()));
       render_node_file_ =
-          base::File(dev_path, base::File::FLAG_OPEN | base::File::FLAG_READ);
+          base::File(dev_path, base::File::FLAG_OPEN | base::File::FLAG_READ
+// TODO(b/313513760): don't guard base::File::FLAG_WRITE behind
+// BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_V4L2_CODEC) once the hardware video
+// decoding sandbox allows R+W access to the render nodes.
+#if BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_V4L2_CODEC)
+                         // Needed on Linux for gbm_create_device().
+                         | base::File::FLAG_WRITE
+#endif
+          );
       if (!render_node_file_.IsValid())
         return;
       // Skip the virtual graphics memory manager device.
@@ -205,6 +215,18 @@ scoped_refptr<VideoFrame> CreateGpuMemoryBufferVideoFrame(
 
   auto buffer_format = VideoPixelFormatToGfxBufferFormat(pixel_format);
   DCHECK(buffer_format);
+  const uint64_t modifier = gmb_handle.native_pixmap_handle.modifier;
+  const bool is_intel_media_compressed_buffer =
+      IsIntelMediaCompressedModifier(modifier);
+  const bool is_intel_media_compression_enabled =
+#if BUILDFLAG(IS_CHROMEOS)
+      base::FeatureList::IsEnabled(features::kEnableIntelMediaCompression);
+#elif BUILDFLAG(IS_LINUX)
+      false;
+#endif
+
+  CHECK(!is_intel_media_compressed_buffer ||
+        is_intel_media_compression_enabled);
   gpu::GpuMemoryBufferSupport support;
   std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer =
       support.CreateGpuMemoryBufferImplFromHandle(
@@ -213,11 +235,20 @@ scoped_refptr<VideoFrame> CreateGpuMemoryBufferVideoFrame(
   if (!gpu_memory_buffer)
     return nullptr;
 
-  // The empty mailbox is ok because this VideoFrame is not rendered.
-  const gpu::MailboxHolder mailbox_holders[VideoFrame::kMaxPlanes] = {};
-  auto frame = VideoFrame::WrapExternalGpuMemoryBuffer(
-      visible_rect, natural_size, std::move(gpu_memory_buffer), mailbox_holders,
-      base::NullCallback(), timestamp);
+  scoped_refptr<VideoFrame> frame;
+  if (is_intel_media_compressed_buffer) {
+    CHECK(pixel_format == PIXEL_FORMAT_NV12 ||
+          pixel_format == PIXEL_FORMAT_P016LE);
+    frame = WrapChromeOSCompressedGpuMemoryBufferAsVideoFrame(
+        visible_rect, natural_size, std::move(gpu_memory_buffer), timestamp);
+  } else {
+    // The empty mailbox is ok because this VideoFrame is not rendered.
+    const gpu::MailboxHolder mailbox_holders[VideoFrame::kMaxPlanes] = {};
+    frame = VideoFrame::WrapExternalGpuMemoryBuffer(
+        visible_rect, natural_size, std::move(gpu_memory_buffer),
+        mailbox_holders, base::NullCallback(), timestamp);
+  }
+
   if (!frame)
     return nullptr;
 

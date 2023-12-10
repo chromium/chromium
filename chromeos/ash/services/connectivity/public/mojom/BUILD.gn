@@ -12,5 +12,4 @@ mojom("mojom") {
   public_deps = [ "//mojo/public/mojom/base" ]
   webui_module_path =
       "chrome://resources/mojo/chromeos/ash/services/connectivity/public/mojom"
-  use_typescript_sources = true
 }

@@ -13,6 +13,7 @@
 #include "services/tracing/perfetto/perfetto_service.h"
 #include "services/tracing/public/cpp/perfetto/producer_client.h"
 #include "services/tracing/public/cpp/perfetto/shared_memory.h"
+#include "third_party/perfetto/include/perfetto/ext/tracing/core/client_identity.h"
 #include "third_party/perfetto/include/perfetto/ext/tracing/core/commit_data_request.h"
 #include "third_party/perfetto/include/perfetto/tracing/core/data_source_descriptor.h"
 #include "third_party/perfetto/include/perfetto/tracing/core/trace_config.h"
@@ -50,7 +51,10 @@ ProducerHost::InitializationResult ProducerHost::Initialize(
 
   // TODO(oysteine): Figure out a uid once we need it.
   producer_endpoint_ = service->ConnectProducer(
-      this, 0 /* uid */, /*pid=*/::perfetto::base::kInvalidPid, name, shm_size,
+      this,
+      perfetto::ClientIdentity(/*uid=*/0,
+                               /*pid=*/perfetto::base::kInvalidPid),
+      name, shm_size,
       /*in_process=*/false,
       perfetto::TracingService::ProducerSMBScrapingMode::kDefault,
       shared_memory_buffer_page_size_bytes, std::move(shm));

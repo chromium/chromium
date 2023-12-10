@@ -65,6 +65,7 @@ class SegmentationPlatformServiceImpl : public SegmentationPlatformService {
     bool IsValid();
 
     // Profile data:
+    std::string profile_id;
     raw_ptr<leveldb_proto::ProtoDatabaseProvider> db_provider = nullptr;
     raw_ptr<history::HistoryService> history_service = nullptr;
     base::FilePath storage_dir;

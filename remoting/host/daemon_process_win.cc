@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include <optional>
 #include "base/base_switches.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
@@ -51,7 +52,6 @@
 #include "remoting/host/win/security_descriptor.h"
 #include "remoting/host/win/unprivileged_process_delegate.h"
 #include "remoting/host/win/worker_process_launcher.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using base::win::ScopedHandle;
 
@@ -296,7 +296,7 @@ void DaemonProcessWin::SendHostConfigToNetworkProcess(
   LOG_IF(ERROR, !remoting_host_control_.is_connected())
       << "IPC channel not connected. HostConfig message will be dropped.";
 
-  absl::optional<base::Value::Dict> config(
+  std::optional<base::Value::Dict> config(
       HostConfigFromJson(serialized_config));
   if (!config.has_value()) {
     LOG(ERROR) << "Invalid host config, shutting down.";

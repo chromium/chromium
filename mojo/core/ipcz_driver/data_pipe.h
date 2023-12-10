@@ -10,6 +10,7 @@
 #include <memory>
 #include <utility>
 
+#include <optional>
 #include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/synchronization/lock.h"
@@ -19,7 +20,6 @@
 #include "mojo/core/scoped_ipcz_handle.h"
 #include "mojo/public/c/system/data_pipe.h"
 #include "mojo/public/c/system/types.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/ipcz/include/ipcz/ipcz.h"
 
 namespace mojo::core::ipcz_driver {
@@ -103,7 +103,7 @@ class DataPipe : public Object<DataPipe> {
     scoped_refptr<DataPipe> consumer;
     scoped_refptr<DataPipe> producer;
   };
-  static absl::optional<Pair> CreatePair(const Config& config);
+  static std::optional<Pair> CreatePair(const Config& config);
 
   bool is_producer() const { return endpoint_type_ == EndpointType::kProducer; }
   bool is_consumer() const { return endpoint_type_ == EndpointType::kConsumer; }
@@ -181,8 +181,8 @@ class DataPipe : public Object<DataPipe> {
   // data pipe endpoint's local cache of the buffer state.
   scoped_refptr<SharedBuffer> buffer_ GUARDED_BY(lock_);
   RingBuffer data_ GUARDED_BY(lock_);
-  absl::optional<RingBuffer::DirectWriter> two_phase_writer_;
-  absl::optional<RingBuffer::DirectReader> two_phase_reader_;
+  std::optional<RingBuffer::DirectWriter> two_phase_writer_;
+  std::optional<RingBuffer::DirectReader> two_phase_reader_;
 
   // Indicates whether this endpoint is in the process of being serialized and
   // transmitted elsewhere.

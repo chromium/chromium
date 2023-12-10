@@ -8,6 +8,7 @@
 <translation id="1420684932347524586">ओह! अनियमित RSA निजी कुञ्जी उत्पन्न गर्न असफल भयो।</translation>
 <translation id="1445572445564823378">यस एक्स्टेन्शनले <ph name="PRODUCT_NAME" /> लाई सुस्त बनाइरहेको छ। तपाईंले <ph name="PRODUCT_NAME" /> को कार्यसम्पादन पुन: स्थापना गर्न यसलाई असक्षम पार्नुपर्छ।</translation>
 <translation id="1468038450257740950">WebGL समर्थित छैन।</translation>
+<translation id="1610570795592207282">स्क्रिप्टको css '<ph name="RELATIVE_PATH" />' लोड गर्न सकिएन।</translation>
 <translation id="1803557475693955505">पृष्ठभूमि पृष्ठ '<ph name="BACKGROUND_PAGE" />' लोड गर्न सकिएन।</translation>
 <translation id="2159915644201199628">छवि डिकोड गर्न सकिएन: '<ph name="IMAGE_NAME" />'</translation>
 <translation id="2350172092385603347">अनुवाद प्रयोग गरिएको, तर सूचीमा पूर्वनिर्धारित_लोकेल तोकिएको</translation>
@@ -18,14 +19,12 @@
 <translation id="3115238746683532089">बिक्रेता <ph name="VENDOR_ID" /> (क्रम नम्बर <ph name="SERIAL_NUMBER" /> ) बाट अज्ञात उत्पादन <ph name="PRODUCT_ID" /></translation>
 <translation id="3144135466825225871">crx फाइललाई प्रतिस्थापन गर्न असफल भयो। फाइल प्रयोगमा भए नभएको हेर्न जाँच गर्नुहोस्।</translation>
 <translation id="3163201441334626963">बिक्रेता <ph name="VENDOR_ID" /> बाट अज्ञात उत्पादन <ph name="PRODUCT_ID" /></translation>
-<translation id="3302709122321372472">सामग्री स्क्रिप्टका लागि css '<ph name="RELATIVE_PATH" />' लोड गर्न सकिएन।</translation>
 <translation id="3369521687965833290">विस्तार खोल्न सकिँदैन।  विस्तारलाई सुरक्षित साथ खोल्नको लागि, तपाइँको डाइरेक्टरीमा एउटा बाटो हुनु पर्छ जुन एक ड्राइभ अक्षरद्वारा सुरु हुन्छ र जसले एक जङ्कसन, माउन्ट विन्दु, वा सिमलिङ्क समावेश गर्दैन।  तपाइँको प्रोफाइको लागि त्यस्तो कुनै पनि बाटो अवस्थित छैन।</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (क्रम नम्बर <ph name="SERIAL_NUMBER" /> )</translation>
 <translation id="3466070586188012397">बिक्रेता <ph name="VENDOR_ID" /> (क्रम नम्बर <ph name="SERIAL_NUMBER" /> ) बाट <ph name="PRODUCT_NAME" /></translation>
 <translation id="3561217442734750519">निजी कुञ्जीको लागि आगत मूल्य वैध मार्ग हुनैपर्छ।</translation>
 <translation id="388442998277590542">विकल्पहरूको पृष्ठ '<ph name="OPTIONS_PAGE" />' लोड गर्न सकिएन।</translation>
 <translation id="3984413272403535372">विस्तार साइनइन गर्दा त्रुटि भयो।</translation>
-<translation id="39964277676607559">सामग्री स्क्रिप्टको लागि जाभास्क्रिप्ट '<ph name="RELATIVE_PATH" />' लोड गर्न सकिएन</translation>
 <translation id="4115165561519362854">यो मेसिनको व्यवस्थापकलाई <ph name="EXTENSION_VERSION" /> को एक न्यूनतम संस्करण हुनको लागि <ph name="EXTENSION_NAME" /> को आवश्यकता छ। यो त्यो संस्करण (वा माथि) मा अद्यावधिक नभएसम्म सक्षम हुन सक्दैन।</translation>
 <translation id="4233778200880751280">पृष्ठ बारे '<ph name="ABOUT_PAGE" />'लाई लोड गर्न सकिएन।</translation>
 <translation id="471800408830181311">निजी कुञ्जी निर्यात गर्न असफल।</translation>
@@ -33,6 +32,7 @@
 <translation id="4988792151665380515">सार्वजनिक कुञ्जी निर्यात गर्न असफल भयो।</translation>
 <translation id="5026754133087629784">वेबदृश्य: <ph name="WEBVIEW_TAG_NAME" /></translation>
 <translation id="5098647635849512368">प्याक गर्नको लागि डाइरेक्टरीमा वस्तुत: पथ फेला पार्न सक्दैन।</translation>
+<translation id="5160071981665899014">स्क्रिप्टको javascript '<ph name="RELATIVE_PATH" />' लोड गर्न सकिएन।</translation>
 <translation id="5356315618422219272">अनुप्रयोगदृश्य: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5436430103864390185">आकार विण्डोहरू समर्थित छैनन्।</translation>
 <translation id="5456409301717116725">विस्तारले कुञ्जी फाइल '<ph name="KEY_PATH" />' समावेश गर्छ। तपाइँले सम्भव्य रूपमा त्यो गर्न चाहनुहुन्न।</translation>

@@ -29,6 +29,7 @@
 #include <memory>
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/css/css_font_palette_values_rule.h"
 #include "third_party/blink/renderer/core/css/css_property_source_data.h"
 #include "third_party/blink/renderer/core/css/css_scope_rule.h"
 #include "third_party/blink/renderer/core/css/css_style_declaration.h"
@@ -70,7 +71,8 @@ class InspectorStyle final : public GarbageCollected<InspectorStyle> {
   InspectorStyleSheetBase* InspectorStyleSheet() {
     return parent_style_sheet_.Get();
   }
-  std::unique_ptr<protocol::CSS::CSSStyle> BuildObjectForStyle();
+  std::unique_ptr<protocol::CSS::CSSStyle> BuildObjectForStyle(
+      Element* element = nullptr);
   bool StyleText(String* result);
   bool TextForRange(const SourceRange&, String* result);
 
@@ -78,7 +80,11 @@ class InspectorStyle final : public GarbageCollected<InspectorStyle> {
 
  private:
   void PopulateAllProperties(Vector<CSSPropertySourceData>& result);
-  std::unique_ptr<protocol::CSS::CSSStyle> StyleWithProperties();
+  bool CheckRegisteredPropertySyntaxWithVarSubstitution(
+      Element* element,
+      const CSSPropertySourceData& property) const;
+  std::unique_ptr<protocol::CSS::CSSStyle> StyleWithProperties(
+      Element* element);
   String ShorthandValue(const String& shorthand_property);
   std::unique_ptr<protocol::Array<protocol::CSS::CSSProperty>>
   LonghandProperties(const CSSPropertySourceData& property_entry);
@@ -108,7 +114,8 @@ class InspectorStyleSheetBase
   virtual const Document* GetDocument() = 0;
 
   std::unique_ptr<protocol::CSS::CSSStyle> BuildObjectForStyle(
-      CSSStyleDeclaration*);
+      CSSStyleDeclaration*,
+      Element* element);
   std::unique_ptr<protocol::CSS::SourceRange> BuildSourceRangeObject(
       const SourceRange&);
   bool LineNumberAndColumnToOffset(unsigned line_number,
@@ -203,14 +210,18 @@ class InspectorStyleSheet : public InspectorStyleSheetBase {
   std::unique_ptr<protocol::CSS::CSSStyleSheetHeader>
   BuildObjectForStyleSheetInfo();
   std::unique_ptr<protocol::CSS::CSSRule> BuildObjectForRuleWithoutAncestorData(
-      CSSStyleRule*);
+      CSSStyleRule*,
+      Element* element);
   std::unique_ptr<protocol::CSS::RuleUsage> BuildObjectForRuleUsage(CSSRule*,
                                                                     bool);
   std::unique_ptr<protocol::CSS::CSSTryRule> BuildObjectForTryRule(CSSTryRule*);
+  std::unique_ptr<protocol::CSS::CSSFontPaletteValuesRule>
+  BuildObjectForFontPaletteValuesRule(CSSFontPaletteValuesRule*);
   std::unique_ptr<protocol::CSS::CSSPropertyRule> BuildObjectForPropertyRule(
       CSSPropertyRule*);
   std::unique_ptr<protocol::CSS::CSSKeyframeRule> BuildObjectForKeyframeRule(
-      CSSKeyframeRule*);
+      CSSKeyframeRule*,
+      Element*);
   std::unique_ptr<protocol::CSS::SelectorList> BuildObjectForSelectorList(
       CSSStyleRule*);
 

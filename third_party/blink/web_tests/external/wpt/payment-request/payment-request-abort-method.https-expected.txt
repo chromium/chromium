@@ -1,6 +1,4 @@
 This is a testharness.js-based test.
-[PASS] Throws if the promise [[state]] is not "interactive"
-[PASS] Calling abort() multiple times is always a new object.
 [FAIL] The same request cannot be shown multiple times.
   promise_test: Unhandled rejection with value: object "InvalidStateError: Failed to execute 'abort' on 'PaymentRequest': No show() or retry() in progress, so nothing to abort"
 [FAIL] Aborting a request before it is shown doesn't prevent it from being shown later.

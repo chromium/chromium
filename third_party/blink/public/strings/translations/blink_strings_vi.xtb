@@ -30,6 +30,7 @@
 <translation id="2226276347425096477">Hãy cắt ngắn văn bản này thành <ph name="MAX_CHARACTERS" /> ký tự hoặc ít hơn (bạn hiện đang sử dụng <ph name="CURRENT_LENGTH" /> ký tự).</translation>
 <translation id="2247351761944213033">Tuần <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Bản nhạc <ph name="NUMBER" /></translation>
+<translation id="2353297238722298836">Cho phép máy ảnh và micrô</translation>
 <translation id="2393030564806080191">Giá trị màu thập lục phân</translation>
 <translation id="2398813069815436052">đã mở hộp thoại.</translation>
 <translation id="245932805758469625">số giây còn lại của video</translation>
@@ -60,10 +61,12 @@
 <translation id="3822383571486410024">Hãy kéo dài văn bản này thành <ph name="MIN_CHARACTERS" /> ký tự trở lên (bạn hiện đang sử dụng <ph name="CURRENT_LENGTH" /> ký tự).</translation>
 <translation id="383465348367842624">Phần đứng trước '<ph name="ATSIGN" />' không được chứa biểu tượng '<ph name="INVALIDCHARACTER" />'.</translation>
 <translation id="3846214748874656680">Thoát chế độ toàn màn hình</translation>
+<translation id="4031179711345676612">Cho phép micrô</translation>
 <translation id="4103419683916926126">Mili giây</translation>
 <translation id="4201051445878709314">Hiển thị tháng trước</translation>
 <translation id="4360991593054037559">Vui lòng nhập giá trị hợp lệ. Hai giá trị hợp lệ gần nhất là <ph name="VALID_VALUE_LOW" /> và <ph name="VALID_VALUE_HIGHER" />.</translation>
 <translation id="4522570452068850558">Chi tiết</translation>
+<translation id="4663373278480897665">Cho phép máy ảnh</translation>
 <translation id="4664250907885839816">Phần đứng sau '<ph name="ATSIGN" />' không được chứa biểu tượng '<ph name="INVALIDCHARACTER" />'.</translation>
 <translation id="4718048029184481307">Đang phát ở chế độ hình trong hình</translation>
 <translation id="4748357248530471599">bật/tắt chế độ toàn màn hình có vết cắt</translation>
@@ -137,6 +140,7 @@
 <translation id="6941933287844615239">tải xuống phương tiện</translation>
 <translation id="698788488269350478">đã mở rộng.</translation>
 <translation id="6989848892321993519">Vui lòng kéo dài văn bản này thành <ph name="MIN_CHARACTERS" /> ký tự trở lên (bạn hiện đang sử dụng 1 ký tự).</translation>
+<translation id="7080893216867146095">Đã cho phép chia sẻ thông tin vị trí</translation>
 <translation id="709897737746224366">Vui lòng khớp với định dạng được yêu cầu.</translation>
 <translation id="7102274145889307184">vị trí hiện tại</translation>
 <translation id="7263440858009898357">Vui lòng chọn một mục trong danh sách.</translation>

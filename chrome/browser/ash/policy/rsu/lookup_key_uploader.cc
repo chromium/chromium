@@ -73,7 +73,7 @@ void LookupKeyUploader::OnStoreError(CloudPolicyStore* store) {
 }
 
 void LookupKeyUploader::OnRsuDeviceIdReceived(
-    absl::optional<user_data_auth::GetRsuDeviceIdReply> result) {
+    std::optional<user_data_auth::GetRsuDeviceIdReply> result) {
   if (!result.has_value()) {
     Result(std::string(), false /* success */);
     return;

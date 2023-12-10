@@ -97,7 +97,7 @@ HoldingSpaceModel::ScopedItemUpdate::~ScopedItemUpdate() {
 
 HoldingSpaceModel::ScopedItemUpdate&
 HoldingSpaceModel::ScopedItemUpdate::SetAccessibleName(
-    const absl::optional<std::u16string>& accessible_name) {
+    const std::optional<std::u16string>& accessible_name) {
   accessible_name_ = accessible_name;
   return *this;
 }
@@ -137,21 +137,21 @@ HoldingSpaceModel::ScopedItemUpdate::SetProgress(
 
 HoldingSpaceModel::ScopedItemUpdate&
 HoldingSpaceModel::ScopedItemUpdate::SetSecondaryText(
-    const absl::optional<std::u16string>& secondary_text) {
+    const std::optional<std::u16string>& secondary_text) {
   secondary_text_ = secondary_text;
   return *this;
 }
 
 HoldingSpaceModel::ScopedItemUpdate&
 HoldingSpaceModel::ScopedItemUpdate::SetSecondaryTextColorId(
-    const absl::optional<ui::ColorId>& secondary_text_color_id) {
+    const std::optional<ui::ColorId>& secondary_text_color_id) {
   secondary_text_color_id_ = secondary_text_color_id;
   return *this;
 }
 
 HoldingSpaceModel::ScopedItemUpdate&
 HoldingSpaceModel::ScopedItemUpdate::SetText(
-    const absl::optional<std::u16string>& text) {
+    const std::optional<std::u16string>& text) {
   text_ = text;
   return *this;
 }

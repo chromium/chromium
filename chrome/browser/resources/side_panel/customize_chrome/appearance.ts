@@ -19,6 +19,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './appearance.html.js';
+import {CustomizeChromeAction, recordCustomizeChromeAction} from './common.js';
 import {CustomizeChromePageCallbackRouter, CustomizeChromePageHandlerInterface, Theme} from './customize_chrome.mojom-webui.js';
 import {CustomizeChromeApiProxy} from './customize_chrome_api_proxy.js';
 
@@ -32,6 +33,7 @@ export interface AppearanceElement {
     followThemeToggle: HTMLElement,
     followThemeToggleControl: CrToggleElement,
     uploadedImageButton: HTMLButtonElement,
+    searchedImageButton: HTMLButtonElement,
   };
 }
 
@@ -102,6 +104,12 @@ export class AppearanceElement extends PolymerElement {
         type: Boolean,
         value: false,
         computed: 'computeShowUploadedImageButton_(theme_)',
+      },
+
+      showSearchedImageButton_: {
+        type: Boolean,
+        value: false,
+        computed: 'computeShowSearchedImageButton_(theme_)',
       },
 
       showManagedDialog_: Boolean,
@@ -200,10 +208,19 @@ export class AppearanceElement extends PolymerElement {
     return !!(
         this.chromeRefresh2023Enabled_ && this.theme_ &&
         this.theme_.backgroundImage &&
-        this.theme_.backgroundImage.isUploadedImage);
+        this.theme_.backgroundImage.isUploadedImage &&
+        !this.theme_.backgroundImage.localBackgroundId);
+  }
+
+  private computeShowSearchedImageButton_(): boolean {
+    return !!(
+        this.chromeRefresh2023Enabled_ && this.theme_ &&
+        this.theme_.backgroundImage &&
+        this.theme_.backgroundImage.localBackgroundId);
   }
 
   private onEditThemeClicked_() {
+    recordCustomizeChromeAction(CustomizeChromeAction.EDIT_THEME_CLICKED);
     if (this.handleClickForManagedThemes_()) {
       return;
     }
@@ -218,6 +235,10 @@ export class AppearanceElement extends PolymerElement {
 
   private onUploadedImageButtonClick_() {
     this.pageHandler_.chooseLocalCustomBackground();
+  }
+
+  private onSearchedImageButtonClick_() {
+    this.dispatchEvent(new CustomEvent('wallpaper-search-click'));
   }
 
   private onSetClassicChromeClicked_() {

@@ -15,6 +15,7 @@
 #include "net/base/proxy_chain.h"
 #include "net/dns/public/resolve_error_info.h"
 #include "net/http/alternate_protocol_usage.h"
+#include "net/http/http_connection_info.h"
 #include "net/http/http_vary_data.h"
 #include "net/ssl/ssl_info.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -30,66 +31,6 @@ class SSLCertRequestInfo;
 
 class NET_EXPORT HttpResponseInfo {
  public:
-  // Describes the kind of connection used to fetch this response.
-  //
-  // NOTE: Please keep in sync with ConnectionInfo enum in
-  // tools/metrics/histograms/enums.xml.
-  // Because of that, and also because these values are persisted to
-  // the cache, please make sure not to delete or reorder values.
-  enum ConnectionInfo {
-    CONNECTION_INFO_UNKNOWN = 0,
-    CONNECTION_INFO_HTTP1_1 = 1,
-    CONNECTION_INFO_DEPRECATED_SPDY2 = 2,
-    CONNECTION_INFO_DEPRECATED_SPDY3 = 3,
-    CONNECTION_INFO_HTTP2 = 4,  // HTTP/2.
-    CONNECTION_INFO_QUIC_UNKNOWN_VERSION = 5,
-    CONNECTION_INFO_DEPRECATED_HTTP2_14 = 6,  // HTTP/2 draft-14.
-    CONNECTION_INFO_DEPRECATED_HTTP2_15 = 7,  // HTTP/2 draft-15.
-    CONNECTION_INFO_HTTP0_9 = 8,
-    CONNECTION_INFO_HTTP1_0 = 9,
-    CONNECTION_INFO_QUIC_32 = 10,
-    CONNECTION_INFO_QUIC_33 = 11,
-    CONNECTION_INFO_QUIC_34 = 12,
-    CONNECTION_INFO_QUIC_35 = 13,
-    CONNECTION_INFO_QUIC_36 = 14,
-    CONNECTION_INFO_QUIC_37 = 15,
-    CONNECTION_INFO_QUIC_38 = 16,
-    CONNECTION_INFO_QUIC_39 = 17,
-    CONNECTION_INFO_QUIC_40 = 18,
-    CONNECTION_INFO_QUIC_41 = 19,
-    CONNECTION_INFO_QUIC_42 = 20,
-    CONNECTION_INFO_QUIC_43 = 21,
-    CONNECTION_INFO_QUIC_Q099 = 22,
-    CONNECTION_INFO_QUIC_44 = 23,
-    CONNECTION_INFO_QUIC_45 = 24,
-    CONNECTION_INFO_QUIC_46 = 25,
-    CONNECTION_INFO_QUIC_47 = 26,
-    CONNECTION_INFO_QUIC_999 = 27,
-    CONNECTION_INFO_QUIC_Q048 = 28,
-    CONNECTION_INFO_QUIC_Q049 = 29,
-    CONNECTION_INFO_QUIC_Q050 = 30,
-    CONNECTION_INFO_QUIC_T048 = 31,
-    CONNECTION_INFO_QUIC_T049 = 32,
-    CONNECTION_INFO_QUIC_T050 = 33,
-    CONNECTION_INFO_QUIC_T099 = 34,
-    CONNECTION_INFO_QUIC_DRAFT_25 = 35,
-    CONNECTION_INFO_QUIC_DRAFT_27 = 36,
-    CONNECTION_INFO_QUIC_DRAFT_28 = 37,
-    CONNECTION_INFO_QUIC_DRAFT_29 = 38,
-    CONNECTION_INFO_QUIC_T051 = 39,
-    CONNECTION_INFO_QUIC_RFC_V1 = 40,
-    CONNECTION_INFO_DEPRECATED_QUIC_2_DRAFT_1 = 41,
-    CONNECTION_INFO_QUIC_2_DRAFT_8 = 42,
-    NUM_OF_CONNECTION_INFOS,
-  };
-
-  enum ConnectionInfoCoarse {
-    CONNECTION_INFO_COARSE_HTTP1,  // HTTP/0.9, 1.0 and 1.1
-    CONNECTION_INFO_COARSE_HTTP2,
-    CONNECTION_INFO_COARSE_QUIC,
-    CONNECTION_INFO_COARSE_OTHER,
-  };
-
   // Used for categorizing transactions for reporting in histograms.
   // CacheEntryStatus covers relatively common use cases being measured and
   // considered for optimization. Many use cases that are more complex or
@@ -117,10 +58,6 @@ class NET_EXPORT HttpResponseInfo {
     ENTRY_CANT_CONDITIONALIZE,
     ENTRY_MAX,
   };
-
-  // Returns a more coarse-grained description of the protocol used to fetch the
-  // response.
-  static ConnectionInfoCoarse ConnectionInfoToCoarse(ConnectionInfo info);
 
   HttpResponseInfo();
   HttpResponseInfo(const HttpResponseInfo& rhs);
@@ -189,6 +126,12 @@ class NET_EXPORT HttpResponseInfo {
   // `InitFromPickle()`.
   bool was_ip_protected = false;
 
+  // Whether this request was eligible for IP Protection based on the request
+  // being a match to the masked domain list, if available.
+  // This field is not persisted by `Persist()` and not restored by
+  // `InitFromPickle()`.
+  bool was_mdl_match = false;
+
   // Whether the request use http proxy or server authentication.
   bool did_use_http_auth = false;
 
@@ -229,7 +172,7 @@ class NET_EXPORT HttpResponseInfo {
       net::AlternateProtocolUsage::ALTERNATE_PROTOCOL_USAGE_UNSPECIFIED_REASON;
 
   // The type of connection used for this response.
-  ConnectionInfo connection_info = CONNECTION_INFO_UNKNOWN;
+  HttpConnectionInfo connection_info = HttpConnectionInfo::kUNKNOWN;
 
   // The time at which the request was made that resulted in this response.
   // For cached responses, this is the last time the cache entry was validated.
@@ -276,8 +219,6 @@ class NET_EXPORT HttpResponseInfo {
 
   // True if the response used a shared dictionary for decoding its body.
   bool did_use_shared_dictionary = false;
-
-  static std::string ConnectionInfoToString(ConnectionInfo connection_info);
 };
 
 }  // namespace net

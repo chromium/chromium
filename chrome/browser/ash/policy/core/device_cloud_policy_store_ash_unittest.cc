@@ -345,6 +345,24 @@ TEST_F(DeviceCloudPolicyStoreAshTest, InstallInitialPolicyNotEnterprise) {
   EXPECT_EQ(std::string(), store_->policy_signature_public_key());
 }
 
+TEST_F(DeviceCloudPolicyStoreAshTest, InstallInitialPolicyBadDomain) {
+  PrepareNewSigningKey();
+  device_policy_->policy_data().set_username("bad_owner@bad_domain.com");
+  device_policy_->Build();
+  store_->InstallInitialPolicy(device_policy_->policy());
+  FlushDeviceSettings();
+  ExpectFailure(CloudPolicyStore::STATUS_VALIDATION_ERROR);
+}
+
+TEST_F(DeviceCloudPolicyStoreAshTest, InstallInitialPolicyBadDeviceId) {
+  PrepareNewSigningKey();
+  device_policy_->policy_data().set_device_id("bad_device_id");
+  device_policy_->Build();
+  store_->InstallInitialPolicy(device_policy_->policy());
+  FlushDeviceSettings();
+  ExpectFailure(CloudPolicyStore::STATUS_VALIDATION_ERROR);
+}
+
 TEST_F(DeviceCloudPolicyStoreAshTest, StoreDeviceBlockDevmodeAllowed) {
   PrepareExistingPolicy();
   device_policy_->payload().mutable_system_settings()->set_block_devmode(true);

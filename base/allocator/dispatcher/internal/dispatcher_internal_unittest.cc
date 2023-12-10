@@ -66,6 +66,11 @@ struct AllocationEventDispatcherInternalTest : public DispatcherTest {
                                            void*) {
     return GetEstimatedSize();
   }
+  static size_t good_size_function(const AllocatorDispatch*,
+                                   size_t size,
+                                   void*) {
+    return size;
+  }
   static bool claimed_address_function(const AllocatorDispatch*, void*, void*) {
     return GetEstimatedSize();
   }
@@ -98,6 +103,7 @@ struct AllocationEventDispatcherInternalTest : public DispatcherTest {
       &realloc_function,
       [](const AllocatorDispatch*, void*, void*) {},
       &get_size_estimate_function,
+      &good_size_function,
       &claimed_address_function,
       &batch_malloc_function,
       [](const AllocatorDispatch*, void**, unsigned, void*) {},

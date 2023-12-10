@@ -47,14 +47,14 @@ void WebSessionStateCacheWebStateListObserver::WebStateListDidChange(
     case WebStateListChange::Type::kMove:
       // Do nothing when a WebState is moved.
       break;
-    case WebStateListChange::Type::kReplace: {
-      const WebStateListChangeReplace& replace_change =
-          change.As<WebStateListChangeReplace>();
-      WebSessionStateTabHelper::FromWebState(
-          replace_change.inserted_web_state())
-          ->SaveSessionState();
+    case WebStateListChange::Type::kReplace:
+      if (WebSessionStateTabHelper* tab_helper =
+              WebSessionStateTabHelper::FromWebState(
+                  change.As<WebStateListChangeReplace>()
+                      .inserted_web_state())) {
+        tab_helper->SaveSessionState();
+      }
       break;
-    }
     case WebStateListChange::Type::kInsert:
       // Do nothing when a new WebState is inserted.
       break;

@@ -1,8 +1,6 @@
 This is a testharness.js-based test.
-[PASS] flexbox > item 1
 [FAIL] flexbox > item 2
   assert_equals: \n<item data-expected-margin-right="0" data-offset-x="68"></item>\nmargin-right expected "0" but got "-10"
-[PASS] flexbox > item 3
 [FAIL] flexbox > item 4
   assert_equals: \n<item data-expected-margin-right="0" data-offset-x="68"></item>\noffsetLeft expected 68 but got 8
 Harness: the test ran to completion.

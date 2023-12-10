@@ -15,6 +15,8 @@ struct Operand {
     kFloat16,
     kInt32,
     kUint32,
+    kInt64,
+    kUint64,
     kInt8,
     kUint8,
   };
@@ -28,6 +30,70 @@ struct Operand {
   array<uint32> dimensions;
   // The name field is only required for input/output operands of graph.
   string? name;
+};
+
+// Computes the indices of the max or min elements of the input tensor's
+// element along the provided axis.
+struct ArgMinMax {
+  enum Kind {
+    kMin,
+    kMax,
+  };
+
+  // The kind of operation.
+  Kind kind;
+  // The input operand referenced by the input id must be distinct from the
+  // output operand referenced by the output id and the output sizes must be
+  // the same as the input sizes, except for the reduced axis.
+  uint64 input_operand_id;
+  uint64 output_operand_id;
+
+  // Axes indicates the dimensions to reduce. The values in the sequence must
+  // be in the range [0, N-1] where N is the rank of the input tensor.
+  array<uint32> axes;
+  // True is to retain reduced dimensions with size 1.
+  bool keep_dimensions = false;
+  // True is to select the last index rather than the first find along axis.
+  bool select_last_index = false;
+};
+
+// Represents normalizing the tensor values of input features across
+// the batch dimension.
+//
+// This operator performs the following batch normalization, defined as:
+// Output = Scale * ((Input - Mean) / sqrt(Variance + Epsilon)) + Bias
+//
+// If Activation is provided, the output will be further processed:
+// Output = Activation(Output)
+struct BatchNormalization {
+  // The id of input operand is used to get the `Operand` description from
+  // `GraphInfo.id_to_operand_map`.
+  uint64 input_operand_id;
+  // The id of mean operand is used to get the `Operand` description from
+  // `GraphInfo.id_to_operand_map`.
+  uint64 mean_operand_id;
+  // The id of variance operand is used to get the `Operand` description from
+  // `GraphInfo.id_to_operand_map`.
+  uint64 variance_operand_id;
+  // The id of output operand is used to get the `Operand` description from
+  // `GraphInfo.id_to_operand_map`.
+  uint64 output_operand_id;
+
+  // The optional 1-D tensor of the bias values whose size is equal to the
+  // size of the input dimension denoted by axis.
+  uint64? scale_operand_id;
+  // The optional 1-D tensor of the scaling values whose is equal to the size
+  // of the input dimension denoted by axis.
+  uint64? bias_operand_id;
+  // A scalar which specifies the index to the feature count dimension of the
+  // input shape for which the mean and variance values are.
+  uint32 axis = 1;
+  // A float scalar which specifies a small value to prevent computational
+  // error due to divide-by-zero.
+  float epsilon = 1e-5;
+  // The optional activation function that immediately follows the
+  // batchNormalization.
+  Activation? activation;
 };
 
 // Clamp the input tensor element-wise within a range specified by the minimum
@@ -83,10 +149,23 @@ struct Padding2d {
 
 // Represents a 2-D convolution given the input and filter tensors.
 //
-// Only `oihw` (output_channels, input_channels/groups, height, width) filter
-// layout is supported, other variants are being discussed in the working group
+// * conv2d (Type == kDirect) only supports `oihw` (output_channels,
+//   input_channels/groups, height, width) filter layout
+// * convTranspose2d (Type == kTransposed) only supports `iohw` (input_channels,
+//   output_channels/groups, height, width) filter layout
+// Support for other layouts are being discussed in the working group
 // https://github.com/webmachinelearning/webnn/issues/324.
 struct Conv2d {
+  enum Type {
+    // Represents a 2-D convolution given 4-D input and filter tensors.
+    kDirect,
+    // Represents a 2-D transposed convolution given 4-D input and filter
+    // tensors.
+    kTransposed,
+  };
+
+  // The type of 2-D convolution.
+  Type type;
   // The id of input operand is used to get the `Operand` description from
   // `GraphInfo.id_to_operand_map`.
   uint64 input_operand_id;
@@ -131,6 +210,11 @@ struct ElementWiseBinary  {
     kMax,
     kMin,
     kPow,
+    kEqual,
+    kGreater,
+    kGreaterOrEqual,
+    kLesser,
+    kLesserOrEqual,
   };
 
   // The kind of binary operation.
@@ -150,11 +234,21 @@ struct ElementWiseBinary  {
 // <output_operand> = <operation_kind>(<input_operand>);
 struct ElementWiseUnary  {
   enum Kind {
+    kAbs,
+    kCeil,
+    kCos,
+    kExp,
+    kFloor,
+    kLog,
+    kNeg,
+    kSin,
+    kTan,
     kLogicalNot,
     kIdentity,
     kSqrt,
     kErf,
     kReciprocal,
+    kCast,
   };
 
   // The kind of unary operation.
@@ -164,6 +258,17 @@ struct ElementWiseUnary  {
   uint64 input_operand_id;
   // The id of output operand is used to get the `Operand` description from
   // `GraphInfo.id_to_operand_map`.
+  uint64 output_operand_id;
+};
+
+// Expands the shape of input operand to the output shape according to
+// numpy-broadcasting-rule:
+// https://www.w3.org/TR/webnn/#biblio-numpy-broadcasting-rule
+struct Expand {
+  // The input operand referenced by the input id must be distinct from the
+  // output operand referenced by the output id, and the input shape must be
+  // broadcastable to the output shape.
+  uint64 input_operand_id;
   uint64 output_operand_id;
 };
 
@@ -312,6 +417,70 @@ struct Elu {
   float alpha = 1.0;
 };
 
+// Represents an operation of gathering elements from the axis dimension of
+// the input tensor indexed by the indices tensor.
+//
+// Specifically, Gather operation returns a new `MLOperand` by replacing the
+// axis dimension of input with the lookup result of `input[...indices...]` as
+// the equation below:
+//
+// output[..., dIndex0, ..., dIndexN, ...] = input[..., indices[], ...]
+//             ^                                        ^ Look up the value
+//             |                                          of `indices` in input
+//      This is dAxis, indicated by `axis` parameter.
+//      This dimension expands to `indices.dimensions`
+//
+// Example 1, given an input = [[ 0,  1,  2],
+//                              [10, 11, 12]] with shape (2, 3),
+// an indices = [1, 0, 1] with shape (3),
+// and axis = 0,
+// the output should be [[10, 11, 12],
+//                       [ 0,  1,  2],
+//                       [10, 11, 12]] with shape (3, 3).
+//
+// Example 2, given an input = [[ 0,  1,  2],
+//                              [10, 11, 12]] with shape (2, 3),
+// an indices = [[0, 1],
+//               [2, 1]] with shape (2, 2),
+// and axis = 1,
+// the output should be [[[ 0,  1],
+//                        [ 2,  1]],
+//                       [[10, 11],
+//                        [12, 11]]] with shape (2, 2, 2).
+//
+// Note the values in `indices` are computed at runtime, so they can exceed
+// the boundary of the `axis` dimension of input. If unchecked, such indices
+// will cause out-of-bounds access.
+//
+// Therefore, the implementation must "sanitize" `indices` before using it to
+// perform memory addressing operations on `input`.
+//
+// For some backends like DirectML, the native ML APIs have already done the
+// "sanitization" so `indices` can be passed directly to the API. For other
+// backends, the specific "sanitization" relies on the browser implementation.
+//
+// Typically, the implementation clamps the values in `indices` to be in range
+// of `-N` (inclusive) to `N` (exclusive), where `N = input.dimensions[axis]`,
+// and negative index means indexing from the end of the `axis` dimension.
+//
+// TODO(crbug.com/1273291): Spec issue, finalize out-of-bounds indices
+// sanitization behavior.
+//
+// TODO(crbug.com/1273291): Add conformance test cases for gather's
+// out-of-bounds access. Tracked by issue
+// https://github.com/webmachinelearning/webnn/issues/244#issuecomment-1820092158
+struct Gather {
+  // The input operand (referenced by input_operand_id) and the indices operand
+  // (referenced by indices_operand_id) must be distinct from the output
+  // operand (referenced by output_operand_id).
+  uint64 input_operand_id;
+  uint64 indices_operand_id;
+  uint64 output_operand_id;
+
+  // The axis dimension of the input tensor to gather on.
+  uint32 axis = 0;
+};
+
 // Represents general matrix multiplication (gemm) operation in the expression
 // `alpha * A * B + beta * C`.
 struct Gemm {
@@ -336,6 +505,32 @@ struct Gemm {
   bool a_transpose = false;
   // True is to transpose the second tensor before matrix multiplication.
   bool b_transpose = false;
+};
+
+// Represents an operation of normalizing the input across the feature
+// dimensions for each individual sample in a batch, where the feature
+// dimensions are the input dimensions indexed by `axes`.
+//
+// The normalization follows the expression below:
+//     Scale * ((Input - Mean) / sqrt(Variance + Epsilon)) + Bias
+// where the mean and variance values are computed on the fly across the
+// feature dimensions.
+struct LayerNormalization {
+  // The input operand (referenced by input_operand_id) must be distinct from
+  // the output operand (referenced by output_operand_id).
+  uint64 input_operand_id;
+  uint64 output_operand_id;
+
+  // The scale operand (referenced by scale_operand_id) includes the scaling
+  // values.
+  uint64? scale_operand_id;
+  // The bias operand (referenced by bias_operand_id) includes the bias values.
+  uint64? bias_operand_id;
+  // The indices to the input dimensions to reduce along.
+  array<uint32> axes;
+  // A float scalar which specifies a small value to prevent computational
+  // error due to divide-by-zero.
+  float epsilon = 1e-5;
 };
 
 // Represents a leaky version of relu operation whose calculation follows the
@@ -479,6 +674,29 @@ struct Resample2d {
   array<uint32, 2> axes;
 };
 
+// Select the values from the true value or the false value tensor depending
+// on the corresponding Boolean values of the condition tensor. Non-zero
+// elements of condition tensor select from true value tensor, while
+// zero-valued elements select from false value tensor.
+struct Where {
+  // Constraints:
+  // * The shapes of all input operands must be bidirectionally broadcastable.
+  // * The data type of condition operand must be uint8.
+  // * The data types of true value, false value and output operands must be
+  // the same.
+  // * The output operand must be a different operand from condition, true
+  // value and false value operands.
+
+  // The id of condition operand.
+  uint64 condition_operand_id;
+  // The id of true value operand.
+  uint64 true_value_operand_id;
+  // The id of false value operand.
+  uint64 false_value_operand_id;
+  // The id of output operand.
+  uint64 output_operand_id;
+};
+
 // Represents the `MLActivation` which describes an activation function type
 // to create other operations (Conv2d, BatchNormalization, for example).
 union Activation {
@@ -494,13 +712,18 @@ union Activation {
 // Holds one of operator.
 union Operation {
   // Keep the order as the same as build methods of `MLGraphBuilder`.
+  ArgMinMax arg_min_max;
+  BatchNormalization batch_normalization;
   Clamp clamp;
   Concat concat;
   Conv2d conv2d;
   ElementWiseBinary element_wise_binary;
   Elu elu;
   ElementWiseUnary element_wise_unary;
+  Expand expand;
+  Gather gather;
   Gemm gemm;
+  LayerNormalization layer_normalization;
   LeakyRelu leaky_relu;
   Matmul matmul;
   Pad pad;
@@ -516,6 +739,7 @@ union Operation {
   Split split;
   Tanh tanh;
   Transpose transpose;
+  Where where;
 };
 
 // Describes an entire WebNN graph information.

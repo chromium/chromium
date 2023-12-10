@@ -138,11 +138,16 @@ void ImageDocumentParser::AppendBytes(const char* data, size_t length) {
 
   LocalFrame* frame = GetDocument()->GetFrame();
   Settings* settings = frame->GetSettings();
-  bool allow_image = !settings || settings->GetImagesEnabled();
-  if (auto* client = frame->GetContentSettingsClient())
-    allow_image = client->AllowImage(allow_image, GetDocument()->Url());
-  if (!allow_image)
+  bool allow_image_renderer = !settings || settings->GetImagesEnabled();
+  bool allow_image_content_setting = frame->GetContentSettings()->allow_image;
+  bool allow_image = allow_image_renderer && allow_image_content_setting;
+  if (!allow_image) {
+    auto* client = frame->GetContentSettingsClient();
+    if (client) {
+      client->DidNotAllowImage();
+    }
     return;
+  }
 
   if (!image_resource_) {
     ResourceRequest request(GetDocument()->Url());
@@ -220,8 +225,7 @@ gfx::Size ImageDocument::ImageSize() const {
   DCHECK(image_element_);
   DCHECK(image_element_->CachedImage());
   return image_element_->CachedImage()->IntrinsicSize(
-      LayoutObject::ShouldRespectImageOrientation(
-          image_element_->GetLayoutObject()));
+      LayoutObject::GetImageOrientation(image_element_->GetLayoutObject()));
 }
 
 void ImageDocument::CreateDocumentStructure(

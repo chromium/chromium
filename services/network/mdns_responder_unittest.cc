@@ -16,7 +16,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -57,11 +56,6 @@ const base::TimeDelta kDefaultTtl = base::Seconds(120);
 
 const int kNumAnnouncementsPerInterface = 2;
 const int kNumMaxRetriesPerResponse = 2;
-
-// Keep in sync with the histogram name in ReportServiceError in
-// mdns_responder.cc
-const char kServiceErrorHistogram[] =
-    "NetworkService.MdnsResponder.ServiceError";
 
 // Keep in sync with |kMdnsNameGeneratorServiceInstanceName| in
 // mdns_responder.cc.
@@ -721,10 +715,6 @@ TEST_F(MdnsResponderTest,
   EXPECT_CALL(socket_factory_, OnSendTo(_)).Times(0);
   CreateNameForAddress(0, addr);
   EXPECT_FALSE(client_[0].is_bound());
-
-  tester.ExpectBucketCount(kServiceErrorHistogram,
-                           ServiceError::kInvalidIpToRegisterName, 1);
-  tester.ExpectTotalCount(kServiceErrorHistogram, 1);
 }
 
 // Test that the responder manager closes the connection after observing
@@ -1385,11 +1375,6 @@ TEST_F(MdnsResponderTest, ManagerCanRestartAfterAllSocketHandlersFailToRead) {
   // returns an empty vector of sockets, thus failing the restart again.
   EXPECT_CALL(failing_socket_factory_, CreateSockets(_)).Times(1);
   RunUntilNoTasksRemain();
-  tester.ExpectBucketCount(kServiceErrorHistogram,
-                           ServiceError::kFatalSocketHandlerError, 1);
-  tester.ExpectBucketCount(kServiceErrorHistogram,
-                           ServiceError::kFailToStartManager, 1);
-  tester.ExpectTotalCount(kServiceErrorHistogram, 2);
 }
 
 // Test that sending packets on an interface can be blocked by an incomplete

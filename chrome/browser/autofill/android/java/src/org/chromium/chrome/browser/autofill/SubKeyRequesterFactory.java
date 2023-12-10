@@ -10,9 +10,7 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.components.autofill.SubKeyRequester;
 
-/**
- * Provides access to SubKeyRequester with the necessary //chrome dependencies.
- */
+/** Provides access to SubKeyRequester with the necessary //chrome dependencies. */
 @JNINamespace("autofill")
 public class SubKeyRequesterFactory {
     private static SubKeyRequester sSubKeyRequesterForTest;

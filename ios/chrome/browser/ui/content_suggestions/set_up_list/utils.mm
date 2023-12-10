@@ -5,9 +5,9 @@
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/utils.h"
 
 #import "base/time/time.h"
-#import "ios/chrome/browser/first_run/first_run.h"
-#import "ios/chrome/browser/ntp/home/features.h"
-#import "ios/chrome/browser/ntp/set_up_list_prefs.h"
+#import "ios/chrome/browser/first_run/model/first_run.h"
+#import "ios/chrome/browser/ntp/model/set_up_list_prefs.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/first_run/first_run_util.h"
 
 namespace set_up_list_utils {
@@ -21,7 +21,7 @@ bool IsSetUpListActive(PrefService* local_state, bool include_disable_pref) {
     return false;
   }
   // Check if we are within 14 days of FRE
-  absl::optional<base::Time> first_run_time = GetFirstRunTime();
+  std::optional<base::Time> first_run_time = GetFirstRunTime();
   if (!first_run_time) {
     // If this is the first time the app has been opened, First Run will not
     // have been completed yet. In this case, we will wait until the next run.
@@ -43,7 +43,7 @@ bool IsSetUpListActive(PrefService* local_state, bool include_disable_pref) {
 }
 
 bool ShouldShowCompactedSetUpListModule() {
-  absl::optional<base::Time> firstRunTime = GetFirstRunTime();
+  std::optional<base::Time> firstRunTime = GetFirstRunTime();
   base::Time expiry_time =
       firstRunTime.value() + base::Days(TimeUntilShowingCompactedSetUpList());
   if (base::Time::Now() > expiry_time) {

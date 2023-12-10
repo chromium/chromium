@@ -37,11 +37,19 @@ class ExperimentManagerImpl : public ExperimentManager {
 
   bool DidVersionChange() const override;
 
+  void NotifyProfileTrackingProtectionOnboarded() override;
+
  protected:
   static ExperimentManagerImpl* GetInstance();
 
   ExperimentManagerImpl();
   ~ExperimentManagerImpl() override;
+
+  // When both "disable_3p_cookies" and "need_onboarding_for_synthetic_trial"
+  // feature params are true , the synthetic trial can be registered when the
+  // client is either ineligible or onboarded. Otherwise, the synthetical trial
+  // can be registered as long as the client eligibility is set.
+  bool CanRegisterSyntheticTrial() const;
 
  private:
   friend base::NoDestructor<ExperimentManagerImpl>;
@@ -60,7 +68,7 @@ class ExperimentManagerImpl : public ExperimentManager {
   // Register for the synthetic trial (or unregister using the "invalid" group).
   // Uses IsClientEligible() to determine eligibility, so the local state pref
   // must be set when this function is called.
-  void UpdateSyntheticTrialRegistration();
+  void MaybeUpdateSyntheticTrialRegistration();
 };
 
 }  // namespace tpcd::experiment

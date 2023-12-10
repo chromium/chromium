@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+[FAIL] [dedicated_worker] unsafe-none => credentialless
+  assert_equals: expected "error" but got "retrieved"
+[FAIL] [dedicated_worker] unsafe-none => require-corp
+  assert_equals: expected "error" but got "retrieved"
+[FAIL] [dedicated_worker] unsafe-none => require-corp (omit)
+  assert_equals: expected "error" but got "retrieved"
+[FAIL] [dedicated_worker] credentialless => require-corp
+  assert_equals: expected "error" but got "retrieved"
+Harness: the test ran to completion.
+

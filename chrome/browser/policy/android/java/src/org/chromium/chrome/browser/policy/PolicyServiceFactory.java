@@ -52,6 +52,7 @@ public class PolicyServiceFactory {
     @NativeMethods
     public interface Natives {
         PolicyService getGlobalPolicyService();
+
         PolicyService getProfilePolicyService(Profile profile);
     }
 }

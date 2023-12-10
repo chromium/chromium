@@ -29,9 +29,7 @@ import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
 
-/**
- * Provides wrappers for AndroidX classes that can be mocked in tests.
- */
+/** Provides wrappers for AndroidX classes that can be mocked in tests. */
 public class TrustedWebActivityClientWrappers {
     private static final String TAG = "TWAClient";
     private static final Executor UI_THREAD_EXECUTOR =
@@ -41,20 +39,28 @@ public class TrustedWebActivityClientWrappers {
     public interface Connection {
         /** See implementation on {@link TrustedWebActivityServiceConnection}. */
         ComponentName getComponentName();
+
         /** See implementation on {@link TrustedWebActivityServiceConnection}. */
         boolean areNotificationsEnabled(String channelName) throws RemoteException;
+
         /** See implementation on {@link TrustedWebActivityServiceConnection}. */
-        boolean notify(String platformTag, int platformId, Notification notification,
-                String channel) throws RemoteException;
+        boolean notify(
+                String platformTag, int platformId, Notification notification, String channel)
+                throws RemoteException;
+
         /** See implementation on {@link TrustedWebActivityServiceConnection}. */
         void cancel(String platformTag, int platformId) throws RemoteException;
+
         /** See implementation on {@link TrustedWebActivityServiceConnection}. */
         int getSmallIconId() throws RemoteException;
+
         /** See implementation on {@link TrustedWebActivityServiceConnection}. */
         Bitmap getSmallIconBitmap() throws RemoteException;
+
         /** See implementation on {@link TrustedWebActivityServiceConnection}. */
-        Bundle sendExtraCommand(String commandName, Bundle args,
-                TrustedWebActivityCallback callback) throws RemoteException;
+        Bundle sendExtraCommand(
+                String commandName, Bundle args, TrustedWebActivityCallback callback)
+                throws RemoteException;
     }
 
     /** Wrapper around {@link TrustedWebActivityServiceConnectionPool}. */
@@ -75,28 +81,34 @@ public class TrustedWebActivityClientWrappers {
             }
 
             @Override
-            public void connectAndExecute(Uri scope, Origin origin, Set<Token> possiblePackages,
+            public void connectAndExecute(
+                    Uri scope,
+                    Origin origin,
+                    Set<Token> possiblePackages,
                     ExecutionCallback callback) {
                 ListenableFuture<TrustedWebActivityServiceConnection> connection =
                         pool.connect(scope, possiblePackages, AsyncTask.THREAD_POOL_EXECUTOR);
 
-                connection.addListener(() -> {
-                    try {
-                        callback.onConnected(origin, wrap(connection.get()));
-                    } catch (RemoteException | InterruptedException e) {
-                        // These failures could be transient - a RemoteException indicating that the
-                        // TWA got killed as it was answering and an InterruptedException to do with
-                        // threading on our side. In this case, there's not anything necessarily
-                        // wrong with the TWA.
-                        Log.w(TAG, "Failed to execute TWA command.", e);
-                    } catch (ExecutionException | SecurityException e) {
-                        // An ExecutionException means that we could not find a TWA to connect to
-                        // and a SecurityException means that the TWA doesn't trust this app. In
-                        // either cases we consider that there is no TWA for the scope.
-                        Log.w(TAG, "Failed to connect to TWA to execute command", e);
-                        callback.onNoTwaFound();
-                    }
-                }, UI_THREAD_EXECUTOR);
+                connection.addListener(
+                        () -> {
+                            try {
+                                callback.onConnected(origin, wrap(connection.get()));
+                            } catch (RemoteException | InterruptedException e) {
+                                // These failures could be transient - a RemoteException indicating
+                                // that the TWA got killed as it was answering and an
+                                // InterruptedException to do with threading on our side. In this
+                                // case, there's not anything necessarily wrong with the TWA.
+                                Log.w(TAG, "Failed to execute TWA command.", e);
+                            } catch (ExecutionException | SecurityException e) {
+                                // An ExecutionException means that we could not find a TWA to
+                                // connect to and a SecurityException means that the TWA doesn't
+                                // trust this app. In either cases we consider that there is no
+                                // TWA for the scope.
+                                Log.w(TAG, "Failed to connect to TWA to execute command", e);
+                                callback.onNoTwaFound();
+                            }
+                        },
+                        UI_THREAD_EXECUTOR);
             }
         };
     }
@@ -114,8 +126,9 @@ public class TrustedWebActivityClientWrappers {
             }
 
             @Override
-            public boolean notify(String platformTag, int platformId, Notification notification,
-                    String channel) throws RemoteException {
+            public boolean notify(
+                    String platformTag, int platformId, Notification notification, String channel)
+                    throws RemoteException {
                 return connection.notify(platformTag, platformId, notification, channel);
             }
 
@@ -135,8 +148,9 @@ public class TrustedWebActivityClientWrappers {
             }
 
             @Override
-            public Bundle sendExtraCommand(String commandName, Bundle args,
-                    TrustedWebActivityCallback callback) throws RemoteException {
+            public Bundle sendExtraCommand(
+                    String commandName, Bundle args, TrustedWebActivityCallback callback)
+                    throws RemoteException {
                 return connection.sendExtraCommand(commandName, args, callback);
             }
         };

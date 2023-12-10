@@ -7,10 +7,12 @@
 #include <memory>
 
 #include "base/functional/callback_helpers.h"
+#include "build/build_config.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_track.h"
 #include "third_party/blink/public/platform/modules/webrtc/webrtc_logging.h"
 #include "third_party/blink/public/web/modules/mediastream/media_stream_video_source.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_captured_wheel_action.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_double_range.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_long_range.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_track_capabilities.h"
@@ -312,6 +314,19 @@ void TransferredMediaStreamTrack::UnregisterMediaStream(MediaStream* stream) {
   // TODO(https://crbug.com/1288839): Save and forward to track_ once it's
   // initialized.
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+void TransferredMediaStreamTrack::SendWheel(
+    CapturedWheelAction* action,
+    base::OnceCallback<void(bool, const String&)> callback) {
+  NOTREACHED_NORETURN();
+}
+
+void TransferredMediaStreamTrack::GetZoomLevel(
+    base::OnceCallback<void(absl::optional<int>, const String&)> callback) {
+  NOTREACHED_NORETURN();
+}
+#endif
 
 // EventTarget
 const AtomicString& TransferredMediaStreamTrack::InterfaceName() const {

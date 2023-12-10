@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/autofill/bottom_sheet/payments_suggestion_bottom_sheet_view_controller.h"
 
 #import "base/metrics/histogram_functions.h"
+#import "base/strings/sys_string_conversions.h"
 #import "build/branding_buildflags.h"
 #import "components/autofill/core/browser/data_model/credit_card.h"
 #import "components/grit/components_scaled_resources.h"
@@ -83,7 +84,7 @@ NSString* const kCustomDetentIdentifier = @"customDetent";
 @property(nonatomic, assign) BOOL expandSizeTooLarge;
 
 // Keep track of the minimized state height.
-@property(nonatomic, assign) absl::optional<CGFloat> minimizedStateHeight;
+@property(nonatomic, assign) std::optional<CGFloat> minimizedStateHeight;
 
 @end
 
@@ -108,6 +109,7 @@ NSString* const kCustomDetentIdentifier = @"customDetent";
   // minimized bottom sheet.
   _tableViewIsMinimized = _creditCardData.count > 2;
 
+  self.view.accessibilityViewIsModal = YES;
   self.image = [self titleImage];
   self.imageViewAccessibilityLabel = [NSString
       stringWithFormat:@"%@. %@",
@@ -144,6 +146,12 @@ NSString* const kCustomDetentIdentifier = @"customDetent";
   [self selectFirstRow];
 }
 
+- (void)viewDidAppear:(BOOL)animated {
+  [super viewDidAppear:animated];
+  UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification,
+                                  self.imageViewAccessibilityLabel);
+}
+
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
 
@@ -155,7 +163,7 @@ NSString* const kCustomDetentIdentifier = @"customDetent";
 
   if (self.traitCollection.preferredContentSizeCategory !=
       previousTraitCollection.preferredContentSizeCategory) {
-    self.minimizedStateHeight = absl::nullopt;
+    self.minimizedStateHeight = std::nullopt;
     [self updateHeight];
   }
 }
@@ -169,6 +177,7 @@ NSString* const kCustomDetentIdentifier = @"customDetent";
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
+  [super viewDidDisappear:animated];
   if (self.disableBottomSheetOnExit) {
     [self.delegate disableBottomSheet];
   }
@@ -287,7 +296,7 @@ NSString* const kCustomDetentIdentifier = @"customDetent";
   UIImage* image;
 #if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
   image = MakeSymbolMulticolor(
-      CustomSymbolWithPointSize(kChromeSymbol, kTitleLogoHeight));
+      CustomSymbolWithPointSize(kMulticolorChromeballSymbol, kTitleLogoHeight));
 #else
   image = DefaultSymbolTemplateWithPointSize(kDefaultBrowserSymbol,
                                              kTitleLogoHeight);
@@ -301,14 +310,16 @@ NSString* const kCustomDetentIdentifier = @"customDetent";
     // Using kTitleLogoHeight (24pt) returns a GPay logo too small, so we are
     // using 28pt to ressemble the mocks.
     CGFloat gPayLogoSize = 28;
-    CGFloat ratio = gPayLogoSize / image.size.height;
-    CGSize imageSize = CGSizeMake(image.size.width * ratio, gPayLogoSize);
-    UIGraphicsImageRenderer* renderer =
-        [[UIGraphicsImageRenderer alloc] initWithSize:imageSize];
-    image =
-        [renderer imageWithActions:^(UIGraphicsImageRendererContext* context) {
-          [image drawInRect:(CGRect){.origin = CGPointZero, .size = imageSize}];
-        }];
+    if (image.size.height > 0.0 && image.size.height < gPayLogoSize &&
+        image.scale > 1.0) {
+      // If the image is smaller than desired, but is scaled, reduce the scale
+      // (to a minimum of 1.0) in order to attempt to achieve the desired size.
+      image = [UIImage
+          imageWithCGImage:[image CGImage]
+                     scale:MAX((image.scale * image.size.height / gPayLogoSize),
+                               1.0)
+               orientation:(image.imageOrientation)];
+    }
   }
 
   return image;
@@ -331,7 +342,11 @@ NSString* const kCustomDetentIdentifier = @"customDetent";
 
 // Returns an accessible card name at a given row in the table view.
 - (NSString*)accessibleCardNameAtRow:(NSInteger)row {
-  return [_creditCardData[row] accessibleCardName];
+  return l10n_util::GetNSStringF(
+      IDS_IOS_AUTOFILL_ACCNAME_SUGGESTION,
+      base::SysNSStringToUTF16([_creditCardData[row] accessibleCardName]), u"",
+      base::NumberToString16(row + 1),
+      base::NumberToString16(_creditCardData.count));
 }
 
 // Creates the payments bottom sheet's table view.
@@ -363,7 +378,7 @@ NSString* const kCustomDetentIdentifier = @"customDetent";
 
   if (_creditCardData.count) {
     [self.view layoutIfNeeded];
-    CGFloat fullHeight = [self computeTableViewHeightForAllCells];
+    CGFloat fullHeight = [self computeTableViewHeightForAllCells] + kSpacing;
     if (fullHeight > 0) {
       // Update height constraints for the table view.
       _heightConstraint.constant = fullHeight;
@@ -537,6 +552,7 @@ NSString* const kCustomDetentIdentifier = @"customDetent";
   cell.customAccessibilityLabel = [self accessibleCardNameAtRow:indexPath.row];
 
   cell.textLabel.text = [self suggestionAtRow:indexPath.row];
+  cell.accessibilityIdentifier = cell.textLabel.text;
   [cell setDetailText:[self descriptionAtRow:indexPath.row]];
   [cell setIconImage:[self iconAtRow:indexPath.row]
             tintColor:nil

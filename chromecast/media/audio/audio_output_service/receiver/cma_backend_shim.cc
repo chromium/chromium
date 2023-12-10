@@ -13,8 +13,6 @@
 #include "base/logging.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
-#include "chromecast/common/mojom/constants.mojom.h"
-#include "chromecast/external_mojo/external_service_support/external_connector.h"
 #include "chromecast/media/api/cma_backend_factory.h"
 #include "chromecast/media/api/decoder_buffer_base.h"
 #include "chromecast/media/audio/net/conversions.h"
@@ -45,8 +43,7 @@ CmaBackendShim::CmaBackendShim(
     scoped_refptr<base::SequencedTaskRunner> delegate_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner> media_task_runner,
     const audio_output_service::CmaBackendParams& params,
-    CmaBackendFactory* cma_backend_factory,
-    external_service_support::ExternalConnector* connector)
+    CmaBackendFactory* cma_backend_factory)
     : delegate_(std::move(delegate)),
       delegate_task_runner_(std::move(delegate_task_runner)),
       cma_backend_factory_(cma_backend_factory),
@@ -57,17 +54,8 @@ CmaBackendShim::CmaBackendShim(
   DCHECK(delegate_task_runner_);
   DCHECK(cma_backend_factory_);
   DCHECK(media_task_runner_);
-  DCHECK(connector);
 
-  connector->BindInterface(chromecast::mojom::kChromecastServiceName,
-                           multiroom_manager_.BindNewPipeAndPassReceiver());
-  multiroom_manager_.set_disconnect_handler(base::BindOnce(
-      &CmaBackendShim::OnGetMultiroomInfo, base::Unretained(this),
-      chromecast::mojom::MultiroomInfo::New()));
-  multiroom_manager_->GetMultiroomInfo(
-      backend_params_.application_media_info().application_session_id(),
-      base::BindOnce(&CmaBackendShim::OnGetMultiroomInfo,
-                     base::Unretained(this)));
+  POST_MEDIA_TASK(&CmaBackendShim::InitializeOnMediaThread);
 }
 
 CmaBackendShim::~CmaBackendShim() {
@@ -81,36 +69,14 @@ void CmaBackendShim::Remove() {
   POST_MEDIA_TASK(&CmaBackendShim::DestroyOnMediaThread);
 }
 
-void CmaBackendShim::OnGetMultiroomInfo(
-    chromecast::mojom::MultiroomInfoPtr multiroom_info) {
-  DCHECK(multiroom_info);
-  LOG(INFO) << __FUNCTION__ << ": " << this << " session_id="
-            << backend_params_.application_media_info().application_session_id()
-            << ", multiroom=" << multiroom_info->multiroom
-            << ", audio_channel=" << multiroom_info->audio_channel;
-  // Close the MultiroomManager message pipe so that a connection error does not
-  // trigger a second call to this function.
-  multiroom_manager_.reset();
-  POST_MEDIA_TASK(&CmaBackendShim::InitializeOnMediaThread,
-                  std::move(multiroom_info));
-}
-
-void CmaBackendShim::InitializeOnMediaThread(
-    chromecast::mojom::MultiroomInfoPtr multiroom_info) {
+void CmaBackendShim::InitializeOnMediaThread() {
   DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
-
-  const std::string& device_id = (multiroom_info->output_device_id.empty()
-                                      ? kDefaultDeviceId
-                                      : multiroom_info->output_device_id);
 
   MediaPipelineDeviceParams device_params(
       MediaPipelineDeviceParams::kModeSyncPts, &backend_task_runner_,
-      AudioContentType::kMedia, device_id);
+      AudioContentType::kMedia, kDefaultDeviceId);
   device_params.session_id =
       backend_params_.application_media_info().application_session_id();
-  device_params.audio_channel = multiroom_info->audio_channel;
-  device_params.multiroom = multiroom_info->multiroom;
-  device_params.output_delay_us = multiroom_info->output_delay.InMicroseconds();
   cma_backend_ = cma_backend_factory_->CreateBackend(device_params);
 
   audio_decoder_ = cma_backend_->CreateAudioDecoder();

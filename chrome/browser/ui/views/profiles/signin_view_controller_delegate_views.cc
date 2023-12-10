@@ -138,7 +138,7 @@ SigninViewControllerDelegateViews::CreateSyncConfirmationWebView(
 std::unique_ptr<views::WebView>
 SigninViewControllerDelegateViews::CreateSigninErrorWebView(Browser* browser) {
   return CreateDialogWebView(browser, GURL(chrome::kChromeUISigninErrorURL),
-                             kSigninErrorDialogHeight, absl::nullopt,
+                             kSigninErrorDialogHeight, std::nullopt,
                              InitializeSigninWebDialogUI(true));
 }
 
@@ -196,15 +196,15 @@ SigninViewControllerDelegateViews::CreateEnterpriseConfirmationWebView(
       kEnterpriseConfirmationDialogHeight, kEnterpriseConfirmationDialogWidth,
       InitializeSigninWebDialogUI(false));
 
-  EnterpriseProfileWelcomeUI* web_dialog_ui =
+  ManagedUserProfileNoticeUI* web_dialog_ui =
       web_view->GetWebContents()
           ->GetWebUI()
           ->GetController()
-          ->GetAs<EnterpriseProfileWelcomeUI>();
+          ->GetAs<ManagedUserProfileNoticeUI>();
   DCHECK(web_dialog_ui);
   web_dialog_ui->Initialize(
       browser,
-      EnterpriseProfileWelcomeUI::ScreenType::kEnterpriseAccountCreation,
+      ManagedUserProfileNoticeUI::ScreenType::kEnterpriseAccountCreation,
       account_info, profile_creation_required_by_policy, show_link_data_option,
       std::move(callback));
 
@@ -360,7 +360,7 @@ SigninViewControllerDelegateViews::CreateDialogWebView(
     Browser* browser,
     const GURL& url,
     int dialog_height,
-    absl::optional<int> opt_width,
+    std::optional<int> opt_width,
     InitializeSigninWebDialogUI initialize_signin_web_dialog_ui) {
   int dialog_width = opt_width.value_or(kModalDialogWidth);
   views::WebView* web_view = new views::WebView(browser->profile());

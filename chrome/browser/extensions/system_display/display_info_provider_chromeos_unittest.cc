@@ -13,7 +13,6 @@
 #include "ash/display/cros_display_config.h"
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/display/screen_orientation_controller_test_api.h"
-#include "ash/public/cpp/tablet_mode.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/shell.h"
 #include "base/command_line.h"
@@ -31,6 +30,7 @@
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/manager/test/touch_transform_controller_test_api.h"
 #include "ui/display/manager/touch_transform_setter.h"
+#include "ui/display/screen.h"
 #include "ui/display/test/display_manager_test_api.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/gfx/geometry/rect.h"
@@ -85,7 +85,7 @@ class DisplayInfoProviderChromeosTest : public ChromeAshTestBase {
     // Wait for TabletModeController to take its initial state from the power
     // manager.
     base::RunLoop().RunUntilIdle();
-    EXPECT_FALSE(ash::TabletMode::Get()->InTabletMode());
+    EXPECT_FALSE(display::Screen::GetScreen()->InTabletMode());
   }
 
   void TearDown() override {

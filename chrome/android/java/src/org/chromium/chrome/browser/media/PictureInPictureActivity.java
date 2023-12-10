@@ -113,29 +113,36 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     MediaActionButtonsManager mMediaActionsButtonsManager;
 
-    /**
-     * A helper class for managing media action buttons in PictureInPicture window.
-     */
+    /** A helper class for managing media action buttons in PictureInPicture window. */
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     class MediaActionButtonsManager {
         @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
         final RemoteAction mPreviousSlide;
+
         @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
         final RemoteAction mPreviousTrack;
+
         @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
         final RemoteAction mPlay;
+
         @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
         final RemoteAction mPause;
+
         @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
         final RemoteAction mReplay;
+
         @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
         final RemoteAction mNextTrack;
+
         @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
         final RemoteAction mNextSlide;
+
         @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
         final RemoteAction mHangUp;
+
         @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
         final ToggleRemoteAction mMicrophone;
+
         @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
         final ToggleRemoteAction mCamera;
 
@@ -147,8 +154,7 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
             private final RemoteAction mActionOff;
             private boolean mState;
 
-            private ToggleRemoteAction(
-                    RemoteAction actionOn, RemoteAction actionOff) {
+            private ToggleRemoteAction(RemoteAction actionOn, RemoteAction actionOff) {
                 mActionOn = actionOn;
                 mActionOff = actionOff;
                 mState = false;
@@ -169,44 +175,102 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
 
         private MediaActionButtonsManager() {
             int requestCode = 0;
-            mPreviousTrack = createRemoteAction(requestCode++, MediaSessionAction.PREVIOUS_TRACK,
-                    R.drawable.ic_skip_previous_white_24dp, R.string.accessibility_previous_track,
-                    /**controlState=*/null);
-            mPreviousSlide = createRemoteAction(requestCode++, MediaSessionAction.PREVIOUS_SLIDE,
-                    R.drawable.ic_skip_previous_white_24dp, R.string.accessibility_previous_slide,
-                    /**controlState=*/null);
-            mPlay = createRemoteAction(requestCode++, MediaSessionAction.PLAY,
-                    R.drawable.ic_play_arrow_white_24dp, R.string.accessibility_play,
-                    /**controlState=*/null);
-            mPause = createRemoteAction(requestCode++, MediaSessionAction.PAUSE,
-                    R.drawable.ic_pause_white_24dp, R.string.accessibility_pause,
-                    /**controlState=*/null);
-            mReplay = createRemoteAction(requestCode++, MediaSessionAction.PLAY,
-                    R.drawable.ic_replay_white_24dp, R.string.accessibility_replay,
-                    /**controlState=*/null);
-            mNextTrack = createRemoteAction(requestCode++, MediaSessionAction.NEXT_TRACK,
-                    R.drawable.ic_skip_next_white_24dp, R.string.accessibility_next_track,
-                    /**controlState=*/null);
-            mNextSlide = createRemoteAction(requestCode++, MediaSessionAction.NEXT_SLIDE,
-                    R.drawable.ic_skip_next_white_24dp, R.string.accessibility_next_slide,
-                    /**controlState=*/null);
-            mHangUp = createRemoteAction(requestCode++, MediaSessionAction.HANG_UP,
-                    R.drawable.ic_call_end_white_24dp, R.string.accessibility_hang_up,
-                    /**controlState=*/null);
-            mMicrophone = new ToggleRemoteAction(
-                    createRemoteAction(requestCode++, MediaSessionAction.TOGGLE_MICROPHONE,
-                            R.drawable.ic_mic_white_24dp, R.string.accessibility_mute_microphone,
-                            /**controlState=*/true),
-                    createRemoteAction(requestCode++, MediaSessionAction.TOGGLE_MICROPHONE,
-                            R.drawable.ic_mic_off_white_24dp,
-                            R.string.accessibility_unmute_microphone, /**controlState=*/false));
-            mCamera = new ToggleRemoteAction(
-                    createRemoteAction(requestCode++, MediaSessionAction.TOGGLE_CAMERA,
-                            R.drawable.ic_videocam_24dp, R.string.accessibility_turn_off_camera,
-                            /**controlState=*/true),
-                    createRemoteAction(requestCode++, MediaSessionAction.TOGGLE_CAMERA,
-                            R.drawable.ic_videocam_off_white_24dp,
-                            R.string.accessibility_turn_on_camera, /**controlState=*/false));
+            mPreviousTrack =
+                    createRemoteAction(
+                            requestCode++,
+                            MediaSessionAction.PREVIOUS_TRACK,
+                            R.drawable.ic_skip_previous_white_24dp,
+                            R.string.accessibility_previous_track,
+                            /**controlState=*/
+                            null);
+            mPreviousSlide =
+                    createRemoteAction(
+                            requestCode++,
+                            MediaSessionAction.PREVIOUS_SLIDE,
+                            R.drawable.ic_skip_previous_white_24dp,
+                            R.string.accessibility_previous_slide,
+                            /**controlState=*/
+                            null);
+            mPlay =
+                    createRemoteAction(
+                            requestCode++,
+                            MediaSessionAction.PLAY,
+                            R.drawable.ic_play_arrow_white_24dp,
+                            R.string.accessibility_play,
+                            /**controlState=*/
+                            null);
+            mPause =
+                    createRemoteAction(
+                            requestCode++,
+                            MediaSessionAction.PAUSE,
+                            R.drawable.ic_pause_white_24dp,
+                            R.string.accessibility_pause,
+                            /**controlState=*/
+                            null);
+            mReplay =
+                    createRemoteAction(
+                            requestCode++,
+                            MediaSessionAction.PLAY,
+                            R.drawable.ic_replay_white_24dp,
+                            R.string.accessibility_replay,
+                            /**controlState=*/
+                            null);
+            mNextTrack =
+                    createRemoteAction(
+                            requestCode++,
+                            MediaSessionAction.NEXT_TRACK,
+                            R.drawable.ic_skip_next_white_24dp,
+                            R.string.accessibility_next_track,
+                            /**controlState=*/
+                            null);
+            mNextSlide =
+                    createRemoteAction(
+                            requestCode++,
+                            MediaSessionAction.NEXT_SLIDE,
+                            R.drawable.ic_skip_next_white_24dp,
+                            R.string.accessibility_next_slide,
+                            /**controlState=*/
+                            null);
+            mHangUp =
+                    createRemoteAction(
+                            requestCode++,
+                            MediaSessionAction.HANG_UP,
+                            R.drawable.ic_call_end_white_24dp,
+                            R.string.accessibility_hang_up,
+                            /**controlState=*/
+                            null);
+            mMicrophone =
+                    new ToggleRemoteAction(
+                            createRemoteAction(
+                                    requestCode++,
+                                    MediaSessionAction.TOGGLE_MICROPHONE,
+                                    R.drawable.ic_mic_white_24dp,
+                                    R.string.accessibility_mute_microphone,
+                                    /**controlState=*/
+                                    true),
+                            createRemoteAction(
+                                    requestCode++,
+                                    MediaSessionAction.TOGGLE_MICROPHONE,
+                                    R.drawable.ic_mic_off_white_24dp,
+                                    R.string.accessibility_unmute_microphone,
+                                    /**controlState=*/
+                                    false));
+            mCamera =
+                    new ToggleRemoteAction(
+                            createRemoteAction(
+                                    requestCode++,
+                                    MediaSessionAction.TOGGLE_CAMERA,
+                                    R.drawable.ic_videocam_24dp,
+                                    R.string.accessibility_turn_off_camera,
+                                    /**controlState=*/
+                                    true),
+                            createRemoteAction(
+                                    requestCode++,
+                                    MediaSessionAction.TOGGLE_CAMERA,
+                                    R.drawable.ic_videocam_off_white_24dp,
+                                    R.string.accessibility_turn_on_camera,
+                                    /**controlState=*/
+                                    false));
 
             mPlaybackState = PlaybackState.END_OF_VIDEO;
             mVisibleActions = new HashSet<>();
@@ -219,7 +283,7 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
 
             final boolean shouldShowPreviousNextTrack =
                     mVisibleActions.contains(MediaSessionAction.PREVIOUS_TRACK)
-                    || mVisibleActions.contains(MediaSessionAction.NEXT_TRACK);
+                            || mVisibleActions.contains(MediaSessionAction.NEXT_TRACK);
             if (shouldShowPreviousNextTrack) {
                 mPreviousTrack.setEnabled(
                         mVisibleActions.contains(MediaSessionAction.PREVIOUS_TRACK));
@@ -228,7 +292,7 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
 
             final boolean shouldShowPreviousNextSlide =
                     mVisibleActions.contains(MediaSessionAction.PREVIOUS_SLIDE)
-                    || mVisibleActions.contains(MediaSessionAction.NEXT_SLIDE);
+                            || mVisibleActions.contains(MediaSessionAction.NEXT_SLIDE);
             if (shouldShowPreviousNextSlide) {
                 mPreviousSlide.setEnabled(
                         mVisibleActions.contains(MediaSessionAction.PREVIOUS_SLIDE));
@@ -277,12 +341,21 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
             // TODO (jazzhsu): Remove this when android picture-in-picture can accept empty list and
             // not fallback to default MediaSession.
             if (actions.isEmpty()) {
-                RemoteAction placeholderAction = new RemoteAction(
-                        Icon.createWithBitmap(Bitmap.createBitmap(
-                                new int[] {Color.TRANSPARENT}, 1, 1, Bitmap.Config.ARGB_8888)),
-                        "", "",
-                        PendingIntent.getBroadcast(getApplicationContext(), -1,
-                                new Intent(MEDIA_ACTION), PendingIntent.FLAG_IMMUTABLE));
+                RemoteAction placeholderAction =
+                        new RemoteAction(
+                                Icon.createWithBitmap(
+                                        Bitmap.createBitmap(
+                                                new int[] {Color.TRANSPARENT},
+                                                1,
+                                                1,
+                                                Bitmap.Config.ARGB_8888)),
+                                "",
+                                "",
+                                PendingIntent.getBroadcast(
+                                        getApplicationContext(),
+                                        -1,
+                                        new Intent(MEDIA_ACTION),
+                                        PendingIntent.FLAG_IMMUTABLE));
                 placeholderAction.setEnabled(false);
                 actions.add(placeholderAction);
             }
@@ -322,8 +395,12 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
          * applicable
          */
         @SuppressLint("NewApi")
-        private RemoteAction createRemoteAction(int requestCode, int action, int iconResourceId,
-                int titleResourceId, Boolean controlState) {
+        private RemoteAction createRemoteAction(
+                int requestCode,
+                int action,
+                int iconResourceId,
+                int titleResourceId,
+                Boolean controlState) {
             Intent intent = new Intent(MEDIA_ACTION);
             intent.setPackage(getApplicationContext().getPackageName());
             IntentUtils.addTrustedIntentExtras(intent);
@@ -334,12 +411,16 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
             }
 
             PendingIntent pendingIntent =
-                    PendingIntent.getBroadcast(getApplicationContext(), requestCode, intent,
+                    PendingIntent.getBroadcast(
+                            getApplicationContext(),
+                            requestCode,
+                            intent,
                             PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
 
             return new RemoteAction(
                     Icon.createWithResource(getApplicationContext(), iconResourceId),
-                    getApplicationContext().getResources().getText(titleResourceId), "",
+                    getApplicationContext().getResources().getText(titleResourceId),
+                    "",
                     pendingIntent);
         }
     }
@@ -357,18 +438,25 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
 
             if (intent.getAction() == null || !intent.getAction().equals(MEDIA_ACTION)) return;
 
-            Boolean controlState = intent.hasExtra(CONTROL_STATE)
-                    ? intent.getBooleanExtra(CONTROL_STATE, true)
-                    : null;
+            Boolean controlState =
+                    intent.hasExtra(CONTROL_STATE)
+                            ? intent.getBooleanExtra(CONTROL_STATE, true)
+                            : null;
 
             switch (intent.getIntExtra(CONTROL_TYPE, -1)) {
                 case MediaSessionAction.PLAY:
-                    PictureInPictureActivityJni.get().togglePlayPause(
-                            nativeOverlayWindowAndroid, /**toggleOn=*/true);
+                    PictureInPictureActivityJni.get()
+                            .togglePlayPause(
+                                    nativeOverlayWindowAndroid,
+                                    /**toggleOn=*/
+                                    true);
                     return;
                 case MediaSessionAction.PAUSE:
-                    PictureInPictureActivityJni.get().togglePlayPause(
-                            nativeOverlayWindowAndroid, /**toggleOn=*/false);
+                    PictureInPictureActivityJni.get()
+                            .togglePlayPause(
+                                    nativeOverlayWindowAndroid,
+                                    /**toggleOn=*/
+                                    false);
                     return;
                 case MediaSessionAction.PREVIOUS_TRACK:
                     PictureInPictureActivityJni.get().previousTrack(nativeOverlayWindowAndroid);
@@ -383,12 +471,12 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
                     PictureInPictureActivityJni.get().nextSlide(nativeOverlayWindowAndroid);
                     return;
                 case MediaSessionAction.TOGGLE_MICROPHONE:
-                    PictureInPictureActivityJni.get().toggleMicrophone(
-                            nativeOverlayWindowAndroid, !controlState);
+                    PictureInPictureActivityJni.get()
+                            .toggleMicrophone(nativeOverlayWindowAndroid, !controlState);
                     return;
                 case MediaSessionAction.TOGGLE_CAMERA:
-                    PictureInPictureActivityJni.get().toggleCamera(
-                            nativeOverlayWindowAndroid, !controlState);
+                    PictureInPictureActivityJni.get()
+                            .toggleCamera(nativeOverlayWindowAndroid, !controlState);
                     return;
                 case MediaSessionAction.HANG_UP:
                     PictureInPictureActivityJni.get().hangUp(nativeOverlayWindowAndroid);
@@ -397,26 +485,26 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
                     return;
             }
         }
-    };
+    }
 
     private class InitiatorTabObserver extends EmptyTabObserver {
         @Override
         public void onClosingStateChanged(Tab tab, boolean closing) {
             if (closing) {
-                PictureInPictureActivity.this.onExitPictureInPicture(/*closeByNative=*/false);
+                PictureInPictureActivity.this.onExitPictureInPicture(/* closeByNative= */ false);
             }
         }
 
         @Override
         public void onDestroyed(Tab tab) {
             if (tab.isClosing()) {
-                PictureInPictureActivity.this.onExitPictureInPicture(/*closeByNative=*/false);
+                PictureInPictureActivity.this.onExitPictureInPicture(/* closeByNative= */ false);
             }
         }
 
         @Override
         public void onCrash(Tab tab) {
-            PictureInPictureActivity.this.onExitPictureInPicture(/*closeByNative=*/false);
+            PictureInPictureActivity.this.onExitPictureInPicture(/* closeByNative= */ false);
         }
     }
 
@@ -433,20 +521,22 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
 
     // Default implementation that tries to `makeLaunchIntoPiP` via reflection.  Does nothing,
     // successfully, if this is not Android T or later.
-    static LaunchIntoPipHelper sLaunchIntoPipHelper = new LaunchIntoPipHelper() {
-        @Override
-        public Bundle build(final Context activityContext, final Rect bounds) {
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) return null;
+    static LaunchIntoPipHelper sLaunchIntoPipHelper =
+            new LaunchIntoPipHelper() {
+                @Override
+                public Bundle build(final Context activityContext, final Rect bounds) {
+                    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) return null;
 
-            Bundle optionsBundle = null;
-            final Rational aspectRatio = new Rational(bounds.width(), bounds.height());
-            final PictureInPictureParams params = new PictureInPictureParams.Builder()
-                                                          .setSourceRectHint(bounds)
-                                                          .setAspectRatio(aspectRatio)
-                                                          .build();
-            return ActivityOptions.makeLaunchIntoPip(params).toBundle();
-        }
-    };
+                    Bundle optionsBundle = null;
+                    final Rational aspectRatio = new Rational(bounds.width(), bounds.height());
+                    final PictureInPictureParams params =
+                            new PictureInPictureParams.Builder()
+                                    .setSourceRectHint(bounds)
+                                    .setAspectRatio(aspectRatio)
+                                    .build();
+                    return ActivityOptions.makeLaunchIntoPip(params).toBundle();
+                }
+            };
 
     @Override
     protected void triggerLayoutInflation() {
@@ -492,32 +582,48 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
         // resizes messages that are above it, since they're spurious.
         mMaxWidth = (int) ((getWindowAndroid().getDisplay().getDisplayWidth()) * 0.95);
 
-        mCompositorView = CompositorViewFactory.create(
-                this, getWindowAndroid(), new ThinWebViewConstraints());
-        addContentView(mCompositorView.getView(),
+        mCompositorView =
+                CompositorViewFactory.create(
+                        this, getWindowAndroid(), new ThinWebViewConstraints());
+        addContentView(
+                mCompositorView.getView(),
                 new ViewGroup.LayoutParams(
                         ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
-        mCompositorView.getView().addOnLayoutChangeListener(new OnLayoutChangeListener() {
-            @Override
-            public void onLayoutChange(View v, int left, int top, int right, int bottom,
-                    int oldLeft, int oldTop, int oldRight, int oldBottom) {
-                if (mNativeOverlayWindowAndroid == 0) return;
-                // We sometimes get an initial update of zero before getting something reasonable.
-                if (top == bottom || left == right) return;
+        mCompositorView
+                .getView()
+                .addOnLayoutChangeListener(
+                        new OnLayoutChangeListener() {
+                            @Override
+                            public void onLayoutChange(
+                                    View v,
+                                    int left,
+                                    int top,
+                                    int right,
+                                    int bottom,
+                                    int oldLeft,
+                                    int oldTop,
+                                    int oldRight,
+                                    int oldBottom) {
+                                if (mNativeOverlayWindowAndroid == 0) return;
+                                // We sometimes get an initial update of zero before getting
+                                // something reasonable.
+                                if (top == bottom || left == right) return;
 
-                // On close, sometimes we get a size update that's almost the entire display width.
-                // Pip window's can't be that big, so ignore it.
-                final int width = right - left;
-                if (width > mMaxWidth) return;
+                                // On close, sometimes we get a size update that's almost the entire
+                                // display width.
+                                // Pip window's can't be that big, so ignore it.
+                                final int width = right - left;
+                                if (width > mMaxWidth) return;
 
-                PictureInPictureActivityJni.get().onViewSizeChanged(
-                        mNativeOverlayWindowAndroid, width, bottom - top);
-            }
-        });
+                                PictureInPictureActivityJni.get()
+                                        .onViewSizeChanged(
+                                                mNativeOverlayWindowAndroid, width, bottom - top);
+                            }
+                        });
 
-        PictureInPictureActivityJni.get().compositorViewCreated(
-                mNativeOverlayWindowAndroid, mCompositorView);
+        PictureInPictureActivityJni.get()
+                .compositorViewCreated(mNativeOverlayWindowAndroid, mCompositorView);
     }
 
     @Override
@@ -540,7 +646,7 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
         // or InitiatorTab has been destroyed by user or crashed.
         if (mNativeOverlayWindowAndroid != sPendingNativeOverlayWindowAndroid
                 || TabUtils.getActivity(mInitiatorTab) == null) {
-            onExitPictureInPicture(/*closeByNative=*/false);
+            onExitPictureInPicture(/* closeByNative= */ false);
             return;
         }
         sPendingNativeOverlayWindowAndroid = 0;
@@ -554,12 +660,14 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
 
         mMediaActionsButtonsManager = new MediaActionButtonsManager();
 
-        PictureInPictureActivityJni.get().onActivityStart(
-                mNativeOverlayWindowAndroid, this, getWindowAndroid());
+        PictureInPictureActivityJni.get()
+                .onActivityStart(mNativeOverlayWindowAndroid, this, getWindowAndroid());
 
         // See if there are PiP hints in the extras.
-        Size size = new Size(
-                intent.getIntExtra(SOURCE_WIDTH_KEY, 0), intent.getIntExtra(SOURCE_HEIGHT_KEY, 0));
+        Size size =
+                new Size(
+                        intent.getIntExtra(SOURCE_WIDTH_KEY, 0),
+                        intent.getIntExtra(SOURCE_HEIGHT_KEY, 0));
         if (size.getWidth() > 0 && size.getHeight() > 0) {
             clampAndStoreAspectRatio(size.getWidth(), size.getHeight());
         }
@@ -578,7 +686,7 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
         super.onPictureInPictureModeChanged(isInPictureInPictureMode, newConfig);
         if (isInPictureInPictureMode) return;
         PictureInPictureActivityJni.get().onBackToTab(mNativeOverlayWindowAndroid);
-        onExitPictureInPicture(/*closeByNative=*/false);
+        onExitPictureInPicture(/* closeByNative= */ false);
     }
 
     @Override
@@ -589,7 +697,7 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
 
     @CalledByNative
     public void close() {
-        onExitPictureInPicture(/*closeByNative=*/true);
+        onExitPictureInPicture(/* closeByNative= */ true);
     }
 
     private void onExitPictureInPicture(boolean closeByNative) {
@@ -696,8 +804,13 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
     }
 
     @CalledByNative
-    public static void createActivity(long nativeOverlayWindowAndroid, Object initiatorTab,
-            int sourceX, int sourceY, int sourceWidth, int sourceHeight) {
+    public static void createActivity(
+            long nativeOverlayWindowAndroid,
+            Object initiatorTab,
+            int sourceX,
+            int sourceY,
+            int sourceWidth,
+            int sourceHeight) {
         // Dissociate OverlayWindowAndroid if there is one already.
         if (sPendingNativeOverlayWindowAndroid != 0) {
             PictureInPictureActivityJni.get().destroy(sPendingNativeOverlayWindowAndroid);
@@ -759,7 +872,7 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
             PictureInPictureActivity pipActivity = (PictureInPictureActivity) activity;
             if (nativeOverlayWindowAndroid == pipActivity.getNativeOverlayWindowAndroid()) {
                 pipActivity.resetNativeOverlayWindowAndroid();
-                pipActivity.onExitPictureInPicture(/*closeByNative=*/true);
+                pipActivity.onExitPictureInPicture(/* closeByNative= */ true);
             }
         }
     }
@@ -778,23 +891,33 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
 
     @NativeMethods
     public interface Natives {
-        void onActivityStart(long nativeOverlayWindowAndroid, PictureInPictureActivity self,
+        void onActivityStart(
+                long nativeOverlayWindowAndroid,
+                PictureInPictureActivity self,
                 WindowAndroid window);
 
         void destroy(long nativeOverlayWindowAndroid);
 
         void togglePlayPause(long nativeOverlayWindowAndroid, boolean toggleOn);
+
         void nextTrack(long nativeOverlayWindowAndroid);
+
         void previousTrack(long nativeOverlayWindowAndroid);
+
         void nextSlide(long nativeOverlayWindowAndroid);
+
         void previousSlide(long nativeOverlayWindowAndroid);
+
         void toggleMicrophone(long nativeOverlayWindowAndroid, boolean toggleOn);
+
         void toggleCamera(long nativeOverlayWindowAndroid, boolean toggleOn);
+
         void hangUp(long nativeOverlayWindowAndroid);
 
         void compositorViewCreated(long nativeOverlayWindowAndroid, CompositorView compositorView);
 
         void onViewSizeChanged(long nativeOverlayWindowAndroid, int width, int height);
+
         void onBackToTab(long nativeOverlayWindowAndroid);
     }
 }

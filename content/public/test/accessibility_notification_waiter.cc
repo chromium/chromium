@@ -92,18 +92,12 @@ void AccessibilityNotificationWaiter::ListenToAllFrames(
   BrowserPluginGuestManager* guest_manager =
       web_contents_impl->GetBrowserContext()->GetGuestManager();
   if (guest_manager) {
-    guest_manager->ForEachGuest(
-        web_contents_impl,
-        base::BindRepeating(
-            &AccessibilityNotificationWaiter::ListenToGuestWebContents,
-            base::Unretained(this)));
+    guest_manager->ForEachGuest(web_contents_impl,
+                                [&](WebContents* web_contents) {
+                                  ListenToAllFrames(web_contents);
+                                  return true;
+                                });
   }
-}
-
-bool AccessibilityNotificationWaiter::ListenToGuestWebContents(
-    WebContents* web_contents) {
-  ListenToAllFrames(web_contents);
-  return true;
 }
 
 void AccessibilityNotificationWaiter::ListenToFrame(

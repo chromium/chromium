@@ -32,10 +32,13 @@ public interface ResourceFetcher {
     public class Request {
         /** Uri of the resource to be fetched. */
         public String uri;
+
         /** Http method used to fetch the resource. */
         public String method;
+
         /** List of headers for this request. */
         public List<Header> headers;
+
         /** Post data that needs to be sent along with the POST request. */
         public @Nullable byte[] postData;
     }
@@ -44,10 +47,13 @@ public interface ResourceFetcher {
     public interface Response {
         /** Whether the request was successful. */
         public boolean getSuccess();
+
         /** HTTP status code. */
         public int getStatusCode();
+
         /** List of headers for this response. */
         public List<Header> getHeaders();
+
         /** Raw data received. */
         public byte[] getRawData();
     }

@@ -2,12 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/**
- * @fileoverview
- * This file is checked via TS, so we suppress Closure checks.
- * @suppress {checkTypes}
- */
-
 import 'chrome://resources/cros_components/button/button.js';
 
 import {isCrosComponentsEnabled} from '../../../../common/js/flags.js';
@@ -31,7 +25,7 @@ import {type AllowedVolumeOrType, Banner, BannerEvent, DismissedForeverEventSour
  *
  *    class ConcreteEducationalBanner extends EducationalBanner {
  *      allowedVolumes() {
- *        return [{type: VolumeManagerCommon.VolumeType.DOWNLOADS}];
+ *        return [{type: VolumeType.DOWNLOADS}];
  *      }
  *    }
  *

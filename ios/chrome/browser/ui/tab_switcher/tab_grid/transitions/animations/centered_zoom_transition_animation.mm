@@ -60,37 +60,25 @@ AnimationParameters CreateExpandedAnimationParametersForView(UIView* view) {
   return self;
 }
 
+#pragma mark - TabGridTransitionAnimation
+
 - (void)animateWithCompletion:(ProceduralBlock)completion {
   [self setupAnimationParameters];
   [self setInitialAnimationParameters];
 
   __weak __typeof(self) weakSelf = self;
   ProceduralBlock animationsBlock = ^{
-    __typeof(self) strongSelf = weakSelf;
-    if (!strongSelf) {
-      return;
-    }
-
-    strongSelf->_animatedView.alpha =
-        strongSelf->_finalAnimationParameters.alpha;
-    strongSelf->_animatedView.transform =
-        strongSelf->_finalAnimationParameters.transform;
-    strongSelf->_animatedView.layer.cornerRadius =
-        strongSelf->_finalAnimationParameters.cornerRadius;
+    [weakSelf performAnimation];
   };
 
   void (^completionBlock)(BOOL) = ^(BOOL finished) {
-    __typeof(self) strongSelf = weakSelf;
-    if (!strongSelf) {
-      return;
-    }
-
     // When presenting the FirstRun ViewController, this can be called with
     // `finished` to NO on official builds. For now, the animation not
     // finishing isn't handled anywhere.
-    strongSelf->_animatedView.clipsToBounds =
-        strongSelf->_finalAnimationParameters.clipsToBounds;
-
+    if (weakSelf) {
+      [weakSelf performAnimationCompletion:completion];
+      return;
+    }
     if (completion) {
       completion();
     }
@@ -104,6 +92,23 @@ AnimationParameters CreateExpandedAnimationParametersForView(UIView* view) {
 }
 
 #pragma mark - Private
+
+// Performs the animation for the `animateWithCompletion` method.
+- (void)performAnimation {
+  _animatedView.alpha = _finalAnimationParameters.alpha;
+  _animatedView.transform = _finalAnimationParameters.transform;
+  _animatedView.layer.cornerRadius = _finalAnimationParameters.cornerRadius;
+}
+
+// Performs the animation completion block for the `animateWithCompletion:`
+// method.
+- (void)performAnimationCompletion:(ProceduralBlock)completion {
+  _animatedView.clipsToBounds = _finalAnimationParameters.clipsToBounds;
+
+  if (completion) {
+    completion();
+  }
+}
 
 // Creates animation parameters.
 - (void)setupAnimationParameters {

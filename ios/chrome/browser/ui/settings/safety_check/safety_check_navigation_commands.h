@@ -12,9 +12,6 @@
 // Shows the Password Checkup page.
 - (void)showPasswordCheckupPage;
 
-// Shows password issues page.
-- (void)showPasswordIssuesPage;
-
 // Opens update page at `location`.
 - (void)showUpdateAtLocation:(NSString*)location;
 

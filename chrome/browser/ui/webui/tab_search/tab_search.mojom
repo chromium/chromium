@@ -24,6 +24,13 @@ enum TabOrganizationError {
   kGeneric,
 };
 
+//TODO(b/311697865) move this to a common location.
+enum UserFeedback {
+  kUserFeedBackUnspecified,
+  kUserFeedBackPositive,
+  kUserFeedBackNegative,
+};
+
 // Collection of tab searching details associated with a profile.
 struct ProfileData {
   array<Window> windows;
@@ -219,6 +226,12 @@ interface PageHandler {
   // Manually trigger a new tab organization request.
   RequestTabOrganization();
 
+  // Remove the tab from the tab organization.
+  RemoveTabFromOrganization(int32 session_id, int32 organization_id, Tab tab);
+
+  // Clear the current tab organization session state.
+  ResetSession();
+
   // Save a user's preference for the state of the expandable 'Recently Closed'
   // list section.
   SaveRecentlyClosedExpandedPref(bool expanded);
@@ -229,6 +242,26 @@ interface PageHandler {
 
   // Force trigger the tab group tutorial.
   StartTabGroupTutorial();
+
+  // Initiate the feedback flow.
+  TriggerFeedback(int32 session_id);
+
+  // Initiate the sync flow.
+  TriggerSync();
+
+  // Initiate the sign in flow.
+  TriggerSignIn();
+
+  // Open the help page associated with tab organization.
+  OpenHelpPage();
+
+  // Open the user's sync settings in a new tab.
+  OpenSyncSettings();
+
+  // Store the user feedback supplied by the user.
+  SetUserFeedback(int32 session_id,
+                  int32 organization_id,
+                  UserFeedback feedback);
 
   // Notify the backend that the UI is ready to be shown.
   ShowUI();

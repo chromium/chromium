@@ -4,11 +4,11 @@
 
 #import "ios/chrome/browser/ui/overlays/infobar_modal/permissions/permissions_infobar_modal_overlay_mediator.h"
 
-#import "ios/chrome/browser/infobars/infobar_ios.h"
-#import "ios/chrome/browser/infobars/infobar_type.h"
-#import "ios/chrome/browser/infobars/overlays/default_infobar_overlay_request_factory.h"
-#import "ios/chrome/browser/overlays/public/default/default_infobar_overlay_request_config.h"
-#import "ios/chrome/browser/overlays/public/overlay_request.h"
+#import "ios/chrome/browser/infobars/model/infobar_ios.h"
+#import "ios/chrome/browser/infobars/model/infobar_type.h"
+#import "ios/chrome/browser/infobars/model/overlays/default_infobar_overlay_request_factory.h"
+#import "ios/chrome/browser/overlays/model/public/default/default_infobar_overlay_request_config.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_request.h"
 #import "ios/chrome/browser/permissions/model/permissions_infobar_delegate.h"
 #import "ios/chrome/browser/ui/permissions/permission_info.h"
 #import "ios/chrome/browser/ui/permissions/permissions_consumer.h"
@@ -86,7 +86,7 @@ class PermissionsInfobarModalOverlayMediatorTest : public PlatformTest {
   }
 
  protected:
-  PermissionsInfobarModalOverlayMediator* mediator_ API_AVAILABLE(ios(15.0));
+  PermissionsInfobarModalOverlayMediator* mediator_;
   std::unique_ptr<OverlayRequest> request_;
   web::FakeWebState web_state_;
   std::unique_ptr<InfoBarIOS> infobar_;

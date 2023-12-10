@@ -36,6 +36,11 @@
       =1 {To send this file using Nearby Share, free up space (<ph name="DISK_SPACE_SIZE">$1<ex>20MB</ex></ph>) on your device}
       other {To send these files using Nearby Share, free up space (<ph name="DISK_SPACE_SIZE">$1<ex>20MB</ex></ph>) on your device}}
   </message>
+  <message name="IDS_ASH_ARC_NEARBY_SHARE_LOW_DISK_SPACE_DIALOG_MESSAGE_PH" desc="Feature name placeholder: Dialog body that tells the user Nearby Share failed due to low disk space while sharing a file(s).">
+    {NUM_FILES, plural,
+      =1 {To send this file using <ph name="FEATURE_NAME">{1}<ex>Nearby Share</ex></ph>, free up space (<ph name="DISK_SPACE_SIZE">{2}<ex>20MB</ex></ph>) on your device}
+      other {To send these files using <ph name="FEATURE_NAME">{1}<ex>Nearby Share</ex></ph>, free up space (<ph name="DISK_SPACE_SIZE">{2}<ex>20MB</ex></ph>) on your device}}
+  </message>
   <message name="IDS_ASH_ARC_NEARBY_SHARE_LOW_DISK_SPACE_DIALOG_STORAGE_BUTTON" desc="Label for button to acknowledge Nearby Share failed due to low disk space and open the Storage management settings page.">
     Storage management
   </message>

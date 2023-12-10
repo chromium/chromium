@@ -32,7 +32,7 @@ FakeNearbyShareLocalDeviceDataManager::Factory::CreateInstance(
 }
 
 FakeNearbyShareLocalDeviceDataManager::UploadContactsCall::UploadContactsCall(
-    std::vector<nearbyshare::proto::Contact> contacts,
+    std::vector<nearby::sharing::proto::Contact> contacts,
     UploadCompleteCallback callback)
     : contacts(std::move(contacts)), callback(std::move(callback)) {}
 
@@ -44,7 +44,7 @@ FakeNearbyShareLocalDeviceDataManager::UploadContactsCall::
 
 FakeNearbyShareLocalDeviceDataManager::UploadCertificatesCall::
     UploadCertificatesCall(
-        std::vector<nearbyshare::proto::PublicCertificate> certificates,
+        std::vector<nearby::sharing::proto::PublicCertificate> certificates,
         UploadCompleteCallback callback)
     : certificates(std::move(certificates)), callback(std::move(callback)) {}
 
@@ -107,13 +107,13 @@ void FakeNearbyShareLocalDeviceDataManager::DownloadDeviceData() {
 }
 
 void FakeNearbyShareLocalDeviceDataManager::UploadContacts(
-    std::vector<nearbyshare::proto::Contact> contacts,
+    std::vector<nearby::sharing::proto::Contact> contacts,
     UploadCompleteCallback callback) {
   upload_contacts_calls_.emplace_back(std::move(contacts), std::move(callback));
 }
 
 void FakeNearbyShareLocalDeviceDataManager::UploadCertificates(
-    std::vector<nearbyshare::proto::PublicCertificate> certificates,
+    std::vector<nearby::sharing::proto::PublicCertificate> certificates,
     UploadCompleteCallback callback) {
   upload_certificates_calls_.emplace_back(std::move(certificates),
                                           std::move(callback));

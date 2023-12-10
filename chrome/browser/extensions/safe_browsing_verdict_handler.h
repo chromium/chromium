@@ -51,8 +51,8 @@ class SafeBrowsingVerdictHandler : public ExtensionRegistryObserver {
 
   // ExtensionRegistryObserver overrides.
   void OnExtensionUninstalled(content::BrowserContext* browser_context,
-                              const extensions::Extension* extension,
-                              extensions::UninstallReason reason) override;
+                              const Extension* extension,
+                              UninstallReason reason) override;
 
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
       extension_registry_observation_{this};

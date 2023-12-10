@@ -6,10 +6,10 @@
 #define CHROME_BROWSER_APPS_LINK_CAPTURING_LINK_CAPTURING_NAVIGATION_THROTTLE_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/functional/callback_forward.h"
 #include "content/public/browser/navigation_throttle.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
 
@@ -50,7 +50,7 @@ class LinkCapturingNavigationThrottle : public content::NavigationThrottle {
     // If the return value is a nullopt, then no capture was possible.
     // Otherwise, the returned closure will launch the application at the
     // appropriate URL.
-    virtual absl::optional<LaunchCallback> CreateLinkCaptureLaunchClosure(
+    virtual std::optional<LaunchCallback> CreateLinkCaptureLaunchClosure(
         Profile* profile,
         content::WebContents* web_contents,
         const GURL& url,

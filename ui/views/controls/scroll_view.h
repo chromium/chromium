@@ -50,9 +50,9 @@ enum class OverflowIndicatorAlignment { kLeft, kTop, kRight, kBottom };
 /////////////////////////////////////////////////////////////////////////////
 
 class VIEWS_EXPORT ScrollView : public View, public ScrollBarController {
- public:
-  METADATA_HEADER(ScrollView);
+  METADATA_HEADER(ScrollView, View)
 
+ public:
   // Indicates whether or not scroll view is initialized with layer-scrolling.
   enum class ScrollWithLayers { kDisabled, kEnabled };
 

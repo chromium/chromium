@@ -243,4 +243,26 @@ TEST_F(UnifiedVolumeViewTest, SliderFocusToggleMute) {
   EXPECT_EQ(CrasAudioHandler::Get()->IsOutputMuted(), !is_muted);
 }
 
+// Regression test for b/310804814.
+TEST_F(UnifiedVolumeViewTest, MultipleDisplay) {
+  // Add a secondary display to the left of the primary one.
+  UpdateDisplay("1280x1024,1980x1080");
+
+  // Sets the volume level by user.
+  const float level = 0.5;
+  volume_slider_controller()->SliderValueChanged(
+      slider(), level, slider()->GetValue(),
+      views::SliderChangeReason::kByUser);
+
+  EXPECT_EQ(slider()->GetValue(), level);
+  CheckSliderIcon(level);
+
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_VOLUME_UP);
+  // The slider level should increase by `kVolumeStepChange` and the icon should
+  // change accordingly. The mute state toggles back to the original state.
+  const float new_level = level + kVolumeStepChange;
+  EXPECT_FLOAT_EQ(slider()->GetValue(), new_level);
+  CheckSliderIcon(new_level);
+}
+
 }  // namespace ash

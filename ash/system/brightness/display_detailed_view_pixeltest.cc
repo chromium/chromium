@@ -18,7 +18,7 @@ class DisplayDetailedViewPixelTest : public AshTestBase {
   DisplayDetailedViewPixelTest() = default;
 
   // AshTestBase:
-  absl::optional<pixel_test::InitParams> CreatePixelTestInitParams()
+  std::optional<pixel_test::InitParams> CreatePixelTestInitParams()
       const override {
     return pixel_test::InitParams();
   }
@@ -41,7 +41,7 @@ TEST_F(DisplayDetailedViewPixelTest, Basics) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "qs_display_detailed_view",
-      /*revision_number=*/7, detailed_view));
+      /*revision_number=*/11, detailed_view));
 }
 
 }  // namespace ash

@@ -17,6 +17,10 @@ const char kVersionName[] = "version";
 const char kDisable3PCookiesName[] = "disable_3p_cookies";
 const char kForceEligibleForTestingName[] = "force_eligible";
 const char kDecisionDelayTimeName[] = "decision_delay_time";
+const char kNeedOnboardingForSyntheticTrialName[] =
+    "need_onboarding_for_synthetic_trial";
+const char kNeedOnboardingForLabelName[] = "need_onboarding_for_label";
+const char kEnableSilentOnboardingName[] = "enable_silent_onboarding";
 const char kExclude3PCBlockedName[] = "exclude_3pc_blocked";
 const char kExcludeNotSeenAdsAPIsNoticeName[] = "exclude_has_not_seen_notice";
 const char kExcludeDasherAccountName[] = "exclude_dasher_account";
@@ -43,10 +47,35 @@ const base::FeatureParam<base::TimeDelta> kDecisionDelayTime{
     /*name=*/kDecisionDelayTimeName,
     /*default_value=*/base::Seconds(1)};
 
-// Set whether to force client being eligible for manual testing.
+// Set whether to force client being eligible for manual testing. When
+// "disable_3p_cookies" feature param is false, this feature param is only
+// meaningful when "enable_silent_onboarding" feature param is true.
 const base::FeatureParam<bool> kForceEligibleForTesting{
     &features::kCookieDeprecationFacilitatedTesting,
     /*name=*/kForceEligibleForTestingName,
+    /*default_value=*/false};
+
+// Set whether to wait for onboarding to register the synthetic trial. When
+// "disable_3p_cookies" feature param is false, this feature param is only
+// meaningful when "enable_silent_onboarding" feature param is true.
+const base::FeatureParam<bool> kNeedOnboardingForSyntheticTrial{
+    &features::kCookieDeprecationFacilitatedTesting,
+    /*name=*/kNeedOnboardingForSyntheticTrialName,
+    /*default_value=*/false};
+
+// Set whether to wait for onboarding to send the label.
+const base::FeatureParam<bool> kNeedOnboardingForLabel{
+    &features::kCookieDeprecationFacilitatedTesting,
+    /*name=*/kNeedOnboardingForLabelName,
+    /*default_value=*/false};
+
+// Set whether to enable silent onboarding. Only meaningful when
+// "disable_3p_cookies" feature param is false, and should be enabled if
+// either "need_onboarding_for_synthetic_trial" or "need_onboarding_for_label"
+// feature param is enabled.
+const base::FeatureParam<bool> kEnableSilentOnboarding{
+    &features::kCookieDeprecationFacilitatedTesting,
+    /*name=*/kEnableSilentOnboardingName,
     /*default_value=*/false};
 
 const base::FeatureParam<bool> kExclude3PCBlocked{
@@ -87,12 +116,21 @@ const char kTpcdWritePopupPastInteractionHeuristicsGrantsName[] =
     "TpcdWritePopupPastInteractionHeuristicsGrants";
 const char kTpcdBackfillPopupHeuristicsGrantsName[] =
     "TpcdBackfillPopupHeuristicsGrants";
+const char kTpcdPopupHeuristicDisableForAdTaggedPopupsName[] =
+    "TpcdPopupHeuristicDisableForAdTaggedPopups";
+const char kTpcdPopupHeuristicEnableForIframeInitiatorName[] =
+    "TpcdPopupHeuristicEnableForIframeInitiator";
+const char kTpcdWriteRedirectHeuristicGrantsName[] =
+    "TpcdWriteRedirectHeuristicGrants";
+const char kTpcdRedirectHeuristicRequireABAFlowName[] =
+    "TpcdRedirectHeuristicRequireABAFlow";
+const char kTpcdRedirectHeuristicRequireCurrentInteractionName[] =
+    "TpcdRedirectHeuristicRequireCurrentInteraction";
 
 const base::FeatureParam<base::TimeDelta>
     kTpcdWritePopupCurrentInteractionHeuristicsGrants{
         &content_settings::features::kTpcdHeuristicsGrants,
-        kTpcdWritePopupCurrentInteractionHeuristicsGrantsName,
-        base::TimeDelta()};
+        kTpcdWritePopupCurrentInteractionHeuristicsGrantsName, base::Days(30)};
 
 const base::FeatureParam<base::TimeDelta>
     kTpcdWritePopupPastInteractionHeuristicsGrants{
@@ -101,18 +139,28 @@ const base::FeatureParam<base::TimeDelta>
 
 const base::FeatureParam<base::TimeDelta> kTpcdBackfillPopupHeuristicsGrants{
     &content_settings::features::kTpcdHeuristicsGrants,
-    /*name=*/"TpcdBackfillPopupHeuristicsGrants", base::TimeDelta()};
+    kTpcdBackfillPopupHeuristicsGrantsName, base::Days(30)};
+
+const base::FeatureParam<bool> kTpcdPopupHeuristicDisableForAdTaggedPopups{
+    &content_settings::features::kTpcdHeuristicsGrants,
+    kTpcdPopupHeuristicDisableForAdTaggedPopupsName, false};
+
+const base::FeatureParam<EnableForIframeTypes>
+    kTpcdPopupHeuristicEnableForIframeInitiator{
+        &content_settings::features::kTpcdHeuristicsGrants,
+        kTpcdPopupHeuristicEnableForIframeInitiatorName,
+        EnableForIframeTypes::kAll, &kEnableForIframeTypesOptions};
 
 const base::FeatureParam<base::TimeDelta> kTpcdWriteRedirectHeuristicGrants{
     &content_settings::features::kTpcdHeuristicsGrants,
-    /*name=*/"TpcdWriteRedirectHeuristicGrants", base::TimeDelta()};
+    kTpcdWriteRedirectHeuristicGrantsName, base::Minutes(30)};
 
 const base::FeatureParam<bool> kTpcdRedirectHeuristicRequireABAFlow{
     &content_settings::features::kTpcdHeuristicsGrants,
-    /*name=*/"TpcdRedirectHeuristicRequireABAFlow", true};
+    kTpcdRedirectHeuristicRequireABAFlowName, true};
 
 const base::FeatureParam<bool> kTpcdRedirectHeuristicRequireCurrentInteraction{
     &content_settings::features::kTpcdHeuristicsGrants,
-    /*name=*/"TpcdRedirectHeuristicRequireCurrentInteraction", true};
+    kTpcdRedirectHeuristicRequireCurrentInteractionName, true};
 
 }  // namespace tpcd::experiment

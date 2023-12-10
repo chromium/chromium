@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_ASH_SETTINGS_SEARCH_HIERARCHY_H_
 #define CHROME_BROWSER_UI_WEBUI_ASH_SETTINGS_SEARCH_HIERARCHY_H_
 
+#include <optional>
 #include <string>
 #include <unordered_map>
 #include <utility>
@@ -15,7 +16,6 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/webui/ash/settings/os_settings_identifier.h"
 #include "chrome/browser/ui/webui/ash/settings/search/mojom/search.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::settings {
 
@@ -81,7 +81,7 @@ class Hierarchy {
     chromeos::settings::mojom::Section section;
 
     // The parent subpage, if applicable. Only applies to nested subpages.
-    absl::optional<chromeos::settings::mojom::Subpage> parent_subpage;
+    std::optional<chromeos::settings::mojom::Subpage> parent_subpage;
 
    private:
     chromeos::settings::mojom::Subpage subpage_;
@@ -108,11 +108,11 @@ class Hierarchy {
   // no associated subpage.
   struct SettingLocation {
     SettingLocation(chromeos::settings::mojom::Section section,
-                    absl::optional<chromeos::settings::mojom::Subpage> subpage)
+                    std::optional<chromeos::settings::mojom::Subpage> subpage)
         : section(section), subpage(subpage) {}
     ~SettingLocation() = default;
     chromeos::settings::mojom::Section section;
-    absl::optional<chromeos::settings::mojom::Subpage> subpage;
+    std::optional<chromeos::settings::mojom::Subpage> subpage;
   };
 
   struct SettingMetadata {

@@ -17,9 +17,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 
 import java.io.File;
 
-/**
- * junit tests for {@link PathUtils}.
- */
+/** junit tests for {@link PathUtils}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class PathUtilsTest {
     static final String THUMBNAIL_DIRECTORY_NAME = "textures";

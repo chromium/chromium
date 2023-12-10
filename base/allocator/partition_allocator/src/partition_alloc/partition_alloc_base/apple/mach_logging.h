@@ -7,10 +7,10 @@
 
 #include <mach/mach.h>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/component_export.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/debug/debugging_buildflags.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/logging.h"
 #include "build/build_config.h"
+#include "partition_alloc/partition_alloc_base/component_export.h"
+#include "partition_alloc/partition_alloc_base/debug/debugging_buildflags.h"
+#include "partition_alloc/partition_alloc_base/logging.h"
 
 // Use the PA_MACH_LOG family of macros along with a mach_error_t
 // (kern_return_t) containing a Mach error. The error value will be decoded so
@@ -54,7 +54,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE) MachLogMessage
 #endif
 
 #define PA_MACH_LOG_STREAM(severity, mach_err) \
-  PA_COMPACT_GOOGLE_LOG_EX_##severity(MachLogMessage, mach_err).stream()
+  PA_COMPACT_GOOGLE_PLOG_EX_##severity(MachLogMessage, mach_err).stream()
 #define PA_MACH_VLOG_STREAM(verbose_level, mach_err)    \
   ::partition_alloc::internal::logging::MachLogMessage( \
       __FILE__, __LINE__, -verbose_level, mach_err)     \

@@ -173,13 +173,10 @@ void FakeSyncService::RecordReasonIfWaitingForUpdates(
 
 void FakeSyncService::SetInvalidationsForSessionsEnabled(bool enabled) {}
 
-bool FakeSyncService::IsSyncFeatureConsideredRequested() const {
-  return HasSyncConsent();
-}
-
 void FakeSyncService::Shutdown() {}
 
 void FakeSyncService::GetTypesWithUnsyncedData(
+    ModelTypeSet requested_types,
     base::OnceCallback<void(ModelTypeSet)> cb) const {
   std::move(cb).Run(ModelTypeSet());
 }

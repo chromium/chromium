@@ -39,9 +39,9 @@ GURL TestPermissionBubbleViewDelegate::GetEmbeddingOrigin() const {
   return GURL("https://embedder.example.com");
 }
 
-absl::optional<permissions::PermissionUiSelector::QuietUiReason>
+std::optional<permissions::PermissionUiSelector::QuietUiReason>
 TestPermissionBubbleViewDelegate::ReasonForUsingQuietUi() const {
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 bool TestPermissionBubbleViewDelegate::ShouldCurrentRequestUseQuietUI() const {

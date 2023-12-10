@@ -47,10 +47,6 @@ class WebMediaStreamAudioRenderer
   // when paused.
   virtual base::TimeDelta GetCurrentRenderTime() = 0;
 
-  // Returns true if the implementation is a local renderer and false
-  // otherwise.
-  virtual bool IsLocalRenderer() = 0;
-
  protected:
   friend class base::RefCountedThreadSafe<WebMediaStreamAudioRenderer>;
 

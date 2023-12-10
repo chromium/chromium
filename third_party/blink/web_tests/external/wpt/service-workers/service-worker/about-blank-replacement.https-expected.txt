@@ -5,7 +5,6 @@ This is a testharness.js-based test.
   assert_false: result: failure: could not find about:blank client expected false got true
 [FAIL] Popup initial about:blank is controlled, exposed to clients.matchAll(), and matches final Client.
   assert_false: result: failure: could not find about:blank client expected false got true
-[PASS] Initial about:blank is controlled, exposed to clients.matchAll(), and final Client is not controlled by a service worker.
 [FAIL] Simple about:blank is controlled and is exposed to clients.matchAll().
   promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'scriptURL')"
 [FAIL] Nested about:srcdoc is controlled and is exposed to clients.matchAll().

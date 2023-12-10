@@ -38,11 +38,8 @@ namespace extensions {
 const char RulesCacheDelegate::kRulesStoredKey[] =
     "has_declarative_rules";
 
-RulesCacheDelegate::RulesCacheDelegate(Type type, bool log_storage_init_delay)
-    : type_(type),
-      browser_context_(nullptr),
-      log_storage_init_delay_(log_storage_init_delay),
-      notified_registry_(false) {}
+RulesCacheDelegate::RulesCacheDelegate(Type type)
+    : type_(type), browser_context_(nullptr), notified_registry_(false) {}
 
 RulesCacheDelegate::~RulesCacheDelegate() = default;
 
@@ -66,12 +63,8 @@ void RulesCacheDelegate::Init(RulesRegistry* registry) {
   // WARNING: The first use of |registry_| will bind it to the calling thread
   // so don't use this here.
   registry_ = registry->GetWeakPtr();
-  rules_registry_thread_ = registry->owner_thread();
   browser_context_ = registry->browser_context();
   extension_registry_ = ExtensionRegistry::Get(browser_context_);
-
-  if (browser_context_->IsOffTheRecord())
-    log_storage_init_delay_ = false;
 
   ExtensionSystem& system = *ExtensionSystem::Get(browser_context_);
 
@@ -147,9 +140,7 @@ void RulesCacheDelegate::CheckIfReady() {
   if (notified_registry_ || !waiting_for_extensions_.empty())
     return;
 
-  content::BrowserThread::GetTaskRunnerForThread(rules_registry_thread_)
-      ->PostTask(FROM_HERE, base::BindOnce(&RulesRegistry::MarkReady, registry_,
-                                           storage_init_time_));
+  registry_->MarkReady();
   notified_registry_ = true;
 }
 
@@ -187,9 +178,6 @@ void RulesCacheDelegate::ReadFromStorage(const std::string& extension_id) {
   if (!browser_context_)
     return;
 
-  if (log_storage_init_delay_ && storage_init_time_.is_null())
-    storage_init_time_ = base::Time::Now();
-
   if (!GetDeclarativeRulesStored(extension_id)) {
     ExtensionSystem::Get(browser_context_)
         ->ready()
@@ -210,13 +198,10 @@ void RulesCacheDelegate::ReadFromStorage(const std::string& extension_id) {
 
 void RulesCacheDelegate::ReadFromStorageCallback(
     const std::string& extension_id,
-    absl::optional<base::Value> value) {
+    std::optional<base::Value> value) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK_EQ(Type::kPersistent, type_);
-  content::BrowserThread::GetTaskRunnerForThread(rules_registry_thread_)
-      ->PostTask(FROM_HERE,
-                 base::BindOnce(&RulesRegistry::DeserializeAndAddRules,
-                                registry_, extension_id, std::move(value)));
+  registry_->DeserializeAndAddRules(extension_id, std::move(value));
 
   waiting_for_extensions_.erase(extension_id);
 

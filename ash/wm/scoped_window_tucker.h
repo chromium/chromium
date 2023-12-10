@@ -27,7 +27,8 @@ constexpr char kUntuckUserAction[] = "FloatWindowUntucked";
 // tuck handle widget that will bring the hidden window back onscreen. Users of
 // the class need to ensure that window outlives instance of this class.
 class ScopedWindowTucker : public wm::ActivationChangeObserver,
-                           public OverviewObserver {
+                           public OverviewObserver,
+                           public aura::WindowObserver {
  public:
   static constexpr int kTuckHandleWidth = 20;
   static constexpr int kTuckHandleHeight = 92;
@@ -137,6 +138,12 @@ class ScopedWindowTucker : public wm::ActivationChangeObserver,
   void OnOverviewModeStarting() override;
   void OnOverviewModeEndingAnimationComplete(bool canceled) override;
 
+  // aura::WindowObserver:
+  void OnWindowBoundsChanged(aura::Window* window,
+                             const gfx::Rect& old_bounds,
+                             const gfx::Rect& new_bounds,
+                             ui::PropertyChangeReason reason) override;
+
  private:
   // Initializes the tuck handle widget.
   void InitializeTuckHandleWidget();
@@ -162,6 +169,9 @@ class ScopedWindowTucker : public wm::ActivationChangeObserver,
 
   base::ScopedObservation<OverviewController, OverviewObserver>
       overview_observer_{this};
+
+  base::ScopedObservation<aura::Window, aura::WindowObserver>
+      window_observation_{this};
 
   base::WeakPtrFactory<ScopedWindowTucker> weak_factory_{this};
 };

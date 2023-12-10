@@ -36,7 +36,7 @@
 namespace blink {
 namespace {
 
-PhysicalRect InitialLayoutOverflow() {
+PhysicalRect InitialScrollableOverflow() {
   return PhysicalRect(10, 10, 80, 80);
 }
 
@@ -47,14 +47,15 @@ PhysicalRect InitialVisualOverflow() {
 class BoxOverflowModelTest : public testing::Test {
  protected:
   BoxOverflowModelTest()
-      : layout_overflow_(InitialLayoutOverflow()),
+      : scrollable_overflow_(InitialScrollableOverflow()),
         visual_overflow_(InitialVisualOverflow()) {}
-  BoxLayoutOverflowModel layout_overflow_;
+  BoxScrollableOverflowModel scrollable_overflow_;
   BoxVisualOverflowModel visual_overflow_;
 };
 
 TEST_F(BoxOverflowModelTest, InitialOverflowRects) {
-  EXPECT_EQ(InitialLayoutOverflow(), layout_overflow_.LayoutOverflowRect());
+  EXPECT_EQ(InitialScrollableOverflow(),
+            scrollable_overflow_.ScrollableOverflowRect());
   EXPECT_EQ(InitialVisualOverflow(), visual_overflow_.SelfVisualOverflowRect());
   EXPECT_TRUE(visual_overflow_.ContentsVisualOverflowRect().IsEmpty());
 }

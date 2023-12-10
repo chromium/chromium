@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/ash/parent_access/parent_access_ui_handler_impl.h"
 
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -27,7 +28,6 @@
 #include "components/signin/public/identity_manager/scope_set.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -67,7 +67,7 @@ void ParentAccessUiHandlerImpl::RecordParentAccessWidgetError(
   // Always record metric for "all" flow type.
   base::UmaHistogramEnumeration(
       parent_access::GetHistogramTitleForFlowType(
-          parent_access::kParentAccessWidgetErrorHistogramBase, absl::nullopt),
+          parent_access::kParentAccessWidgetErrorHistogramBase, std::nullopt),
       error);
 }
 

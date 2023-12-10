@@ -44,8 +44,7 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 @RunWith(Parameterized.class)
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
 public class AwImeTest extends AwParameterizedTest {
-    @Rule
-    public AwActivityTestRule mActivityTestRule;
+    @Rule public AwActivityTestRule mActivityTestRule;
 
     private static class TestJavascriptInterface {
         private final CallbackHelper mFocusCallbackHelper = new CallbackHelper();
@@ -117,9 +116,25 @@ public class AwImeTest extends AwParameterizedTest {
     private void loadBottomInputHtml() throws Throwable {
         // Shows an input at the bottom of the screen.
         final String htmlDocument =
-                "<html><head><style>html, body{background-color:beige} "
-                        + "div{position:absolute;top:10000px;}</style></head><body>Test<div"
-                        + " id='footer'><input id='input_text'><br/></div></body></html>";
+                """
+                        <html>
+                        <head>
+                            <style>
+                                html,
+                                body {
+                                    background-color: beige
+                                }
+
+                                div {
+                                    position: absolute;
+                                    top: 10000px;
+                                }
+                            </style>
+                        </head>
+
+                        <body>Test<div id='footer'><input id='input_text'><br /></div>
+                        </body>
+                        </html>""";
         final CallbackHelper loadHelper = mContentsClient.getOnPageFinishedHelper();
 
         mActivityTestRule.loadHtmlSync(
@@ -148,16 +163,17 @@ public class AwImeTest extends AwParameterizedTest {
         mActivityTestRule.executeJavaScriptAndWaitForResult(
                 mTestContainerView.getAwContents(),
                 mContentsClient,
-                "function onDocumentFocused() {\n"
-                        + "  document.getElementById('editor').focus();\n"
-                        + "  test.onEditorFocused();\n"
-                        + "}\n"
-                        + "(function() {\n"
-                        + "if (document.hasFocus()) {\n"
-                        + "  onDocumentFocused();"
-                        + "} else {\n"
-                        + "  window.addEventListener('focus', onDocumentFocused);\n"
-                        + "}})();");
+                """
+                function onDocumentFocused() {
+                        document.getElementById('editor').focus();
+                        test.onEditorFocused();
+                }
+                (function() {
+                if (document.hasFocus()) {
+                        onDocumentFocused();
+                } else {
+                        window.addEventListener('focus', onDocumentFocused)
+                }})();""");
         mTestJavascriptInterface.getFocusCallbackHelper().waitForCallback(0);
     }
 

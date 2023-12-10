@@ -208,18 +208,15 @@ class CrosapiSessionSyncNotifierTest : public testing::Test {
       const base::StringPiece& session_tag,
       const SessionID window_id,
       const SessionID tab_id) {
-    std::vector<const sessions::SessionWindow*> windows;
-    if (synced_session_tracker_.LookupSessionWindows(session_tag.data(),
-                                                     &windows)) {
-      for (const sessions::SessionWindow* window : windows) {
-        if (window_id == window->window_id) {
-          // This can be done without checking for tab existence in the window
-          // because the tab's existence is checked in the session in
-          // `CreateForeignPhonePresentableTabInSession()`.
-          CreateForeignPhonePresentableTab(session_tag.data(), window_id,
-                                           tab_id);
-          return;
-        }
+    std::vector<const sessions::SessionWindow*> windows =
+        synced_session_tracker_.LookupSessionWindows(session_tag.data());
+    for (const sessions::SessionWindow* window : windows) {
+      if (window_id == window->window_id) {
+        // This can be done without checking for tab existence in the window
+        // because the tab's existence is checked in the session in
+        // `CreateForeignPhonePresentableTabInSession()`.
+        CreateForeignPhonePresentableTab(session_tag.data(), window_id, tab_id);
+        return;
       }
     }
 
@@ -253,12 +250,10 @@ class CrosapiSessionSyncNotifierTest : public testing::Test {
       const std::string& sent_session_tag,
       const std::vector<crosapi::mojom::SyncedSessionWindowPtr>&
           received_windows) {
-    std::vector<const sessions::SessionWindow*> sent_windows;
-    bool session_windows_list_empty =
-        !synced_session_tracker_.LookupSessionWindows(sent_session_tag,
-                                                      &sent_windows);
-    EXPECT_EQ(session_windows_list_empty, received_windows.empty());
-    if (session_windows_list_empty) {
+    std::vector<const sessions::SessionWindow*> sent_windows =
+        synced_session_tracker_.LookupSessionWindows(sent_session_tag);
+    EXPECT_EQ(sent_windows.empty(), received_windows.empty());
+    if (sent_windows.empty()) {
       return;
     }
 

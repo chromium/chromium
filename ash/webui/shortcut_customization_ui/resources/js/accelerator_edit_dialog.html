@@ -28,8 +28,8 @@
     padding-top: 16px;
   }
 
-  #pendingAccelerator {
-    padding-top: 8px;
+  #emptyStateContainer {
+    padding-block-start: 8px;
   }
 
   [slot='button-container'] {
@@ -73,9 +73,14 @@
     padding-block-end: 8px;
   }
 
-  #shortcutDescription {
+  #shortcutDescription, #noShortcutAssigned {
     font: var(--cros-body-2-font);
     color: var(--cros-text-color-secondary);
+  }
+
+  #noShortcutAssigned {
+    padding-block: 16px;
+    padding-inline-start: 8px;
   }
 
   [slot='button-container'] {
@@ -109,15 +114,28 @@
             on-edit-action-completed="onEditActionCompleted">
         </accelerator-edit-view>
       </template>
+      <!-- Using 'restamp' ensures the correct display of the separator line,
+           as it can remove 'pendingAccelerator' from the DOM rather than just
+           hiding it, preventing it from affecting the separator line
+           placement. -->
       <template id="newAccelerator" is="dom-if"
-          if="[[showNewAccelerator(pendingNewAcceleratorState, acceleratorInfos)]]"
-          restamp>
+          if="[[showNewAccelerator(pendingNewAcceleratorState,
+                                   acceleratorInfos)]]" restamp>
         <accelerator-edit-view id="pendingAccelerator"
             view-state="{{pendingNewAcceleratorState}}"
             action="[[action]]"
             source="[[source]]"
             on-edit-action-completed="onEditActionCompleted">
         </accelerator-edit-view>
+      </template>
+      <template id="emptyState" is="dom-if"
+          if="[[isEmptyState(pendingNewAcceleratorState, acceleratorInfos)]]"
+          restamp>
+        <div id="emptyStateContainer">
+          <div id="noShortcutAssigned">
+            [[i18n('noShortcutAssigned')]]
+          </div>
+        </div>
       </template>
     </div>
     <div id="addAcceleratorContainer"

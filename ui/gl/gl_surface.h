@@ -293,105 +293,11 @@ class GL_EXPORT GLSurface : public base::RefCounted<GLSurface>,
   friend class GLContext;
 };
 
-// Implementation of GLSurface that forwards all calls through to another
-// GLSurface.
-class GL_EXPORT GLSurfaceAdapter : public GLSurface {
- public:
-  explicit GLSurfaceAdapter(GLSurface* surface);
-
-  GLSurfaceAdapter(const GLSurfaceAdapter&) = delete;
-  GLSurfaceAdapter& operator=(const GLSurfaceAdapter&) = delete;
-
-  bool Initialize(GLSurfaceFormat format) override;
-  void Destroy() override;
-  bool Resize(const gfx::Size& size,
-              float scale_factor,
-              const gfx::ColorSpace& color_space,
-              bool has_alpha) override;
-  bool Recreate() override;
-  bool DeferDraws() override;
-  bool IsOffscreen() override;
-  gfx::SwapResult SwapBuffers(PresentationCallback callback,
-                              gfx::FrameData data) override;
-  void SwapBuffersAsync(SwapCompletionCallback completion_callback,
-                        PresentationCallback presentation_callback,
-                        gfx::FrameData data) override;
-  gfx::SwapResult SwapBuffersWithBounds(const std::vector<gfx::Rect>& rects,
-                                        PresentationCallback callback,
-                                        gfx::FrameData data) override;
-  gfx::SwapResult PostSubBuffer(int x,
-                                int y,
-                                int width,
-                                int height,
-                                PresentationCallback callback,
-                                gfx::FrameData data) override;
-  void PostSubBufferAsync(int x,
-                          int y,
-                          int width,
-                          int height,
-                          SwapCompletionCallback completion_callback,
-                          PresentationCallback presentation_callback,
-                          gfx::FrameData data) override;
-  bool SupportsSwapBuffersWithBounds() override;
-  bool SupportsPostSubBuffer() override;
-  bool SupportsAsyncSwap() override;
-  gfx::Size GetSize() override;
-  void* GetHandle() override;
-  unsigned int GetBackingFramebufferObject() override;
-  bool OnMakeCurrent(GLContext* context) override;
-  bool SetBackbufferAllocation(bool allocated) override;
-  void SetFrontbufferAllocation(bool allocated) override;
-  void* GetShareHandle() override;
-  GLDisplay* GetGLDisplay() override;
-  void* GetConfig() override;
-  GLSurfaceFormat GetFormat() override;
-  gfx::VSyncProvider* GetVSyncProvider() override;
-  void SetVSyncEnabled(bool enabled) override;
-  bool ScheduleDCLayer(std::unique_ptr<DCLayerOverlayParams> params) override;
-  bool SetEnableDCLayers(bool enable) override;
-  bool IsSurfaceless() const override;
-  gfx::SurfaceOrigin GetOrigin() const override;
-  bool BuffersFlipped() const override;
-  bool SupportsDCLayers() const override;
-  bool SupportsProtectedVideo() const override;
-  bool SupportsOverridePlatformSize() const override;
-  bool SetDrawRectangle(const gfx::Rect& rect) override;
-  gfx::Vector2d GetDrawOffset() const override;
-  bool SupportsSwapTimestamps() const override;
-  void SetEnableSwapTimestamps() override;
-  bool SupportsPlaneGpuFences() const override;
-  int GetBufferCount() const override;
-  bool SupportsGpuVSync() const override;
-  void SetGpuVSyncEnabled(bool enabled) override;
-  void SetFrameRate(float frame_rate) override;
-  void SetCurrent() override;
-  bool IsCurrent() override;
-
-  bool SupportsDelegatedInk() override;
-  void SetDelegatedInkTrailStartPoint(
-      std::unique_ptr<gfx::DelegatedInkMetadata> metadata) override;
-  void InitDelegatedInkPointRendererReceiver(
-      mojo::PendingReceiver<gfx::mojom::DelegatedInkPointRenderer>
-          pending_receiver) override;
-
-  GLSurface* surface() const { return surface_.get(); }
-
- protected:
-  ~GLSurfaceAdapter() override;
-
- private:
-  scoped_refptr<GLSurface> surface_;
-};
-
 // Wraps GLSurface in scoped_refptr and tries to initializes it. Returns a
 // scoped_refptr containing the initialized GLSurface or nullptr if
 // initialization fails.
 GL_EXPORT scoped_refptr<GLSurface> InitializeGLSurface(
     scoped_refptr<GLSurface> surface);
-
-GL_EXPORT scoped_refptr<GLSurface> InitializeGLSurfaceWithFormat(
-    scoped_refptr<GLSurface> surface,
-    GLSurfaceFormat format);
 
 }  // namespace gl
 

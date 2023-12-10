@@ -60,7 +60,8 @@ public class InsetObserverTest {
     private InsetObserver mInsetObserver;
 
     private void setCutout(boolean hasCutout) {
-        DisplayCutoutCompat cutout = hasCutout ? new DisplayCutoutCompat(new Rect(1, 1, 1, 1), null) : null;
+        DisplayCutoutCompat cutout =
+                hasCutout ? new DisplayCutoutCompat(new Rect(1, 1, 1, 1), null) : null;
         doReturn(cutout).when(mInsets).getDisplayCutout();
     }
 
@@ -69,8 +70,12 @@ public class InsetObserverTest {
         MockitoAnnotations.initMocks(this);
         doReturn(mNonCompatInsets).when(mInsets).toWindowInsets();
         doReturn(mModifiedNonCompatInsets).when(mModifiedInsets).toWindowInsets();
-        doReturn(WindowInsetsCompat.CONSUMED.toWindowInsets()).when(mContentView).onApplyWindowInsets(mNonCompatInsets);
-        doReturn(WindowInsetsCompat.CONSUMED.toWindowInsets()).when(mContentView).onApplyWindowInsets(mModifiedNonCompatInsets);
+        doReturn(WindowInsetsCompat.CONSUMED.toWindowInsets())
+                .when(mContentView)
+                .onApplyWindowInsets(mNonCompatInsets);
+        doReturn(WindowInsetsCompat.CONSUMED.toWindowInsets())
+                .when(mContentView)
+                .onApplyWindowInsets(mModifiedNonCompatInsets);
 
         mInsetObserver = new InsetObserver(mContentView);
         mInsetObserver.addObserver(mObserver);
@@ -101,24 +106,20 @@ public class InsetObserverTest {
     public void applyInsets_withInsetConsumer() {
         mInsetObserver.addInsetsConsumer(mInsetsConsumer);
 
-        doReturn(mModifiedInsets)
-                .when(mInsetsConsumer)
-                .onApplyWindowInsets(mContentView, mInsets);
+        doReturn(mModifiedInsets).when(mInsetsConsumer).onApplyWindowInsets(mContentView, mInsets);
         doReturn(14).when(mModifiedInsets).getSystemWindowInsetLeft();
         doReturn(17).when(mModifiedInsets).getSystemWindowInsetTop();
         doReturn(31).when(mModifiedInsets).getSystemWindowInsetRight();
         doReturn(43).when(mModifiedInsets).getSystemWindowInsetBottom();
 
-
         mInsetObserver.onApplyWindowInsets(mContentView, mInsets);
-        verify(mInsetsConsumer)
-                .onApplyWindowInsets(mContentView, mInsets);
+        verify(mInsetsConsumer).onApplyWindowInsets(mContentView, mInsets);
         verify(mObserver, times(1))
                 .onInsetChanged(
-                    mModifiedInsets.getSystemWindowInsetLeft(),
-                    mModifiedInsets.getSystemWindowInsetTop(),
-                    mModifiedInsets.getSystemWindowInsetRight(),
-                    mModifiedInsets.getSystemWindowInsetBottom());
+                        mModifiedInsets.getSystemWindowInsetLeft(),
+                        mModifiedInsets.getSystemWindowInsetTop(),
+                        mModifiedInsets.getSystemWindowInsetRight(),
+                        mModifiedInsets.getSystemWindowInsetBottom());
     }
 
     @Test

@@ -12,12 +12,6 @@ Test that the Storage.attributionReportingSourceRegistered event is fired.
             [0] : https://a.example
         ]
         eventId : 123
-        eventReportWindows : {
-            ends : [
-                [0] : 86400
-            ]
-            start : 0
-        }
         expiry : 2592000
         filterData : [
             [0] : {
@@ -33,6 +27,20 @@ Test that the Storage.attributionReportingSourceRegistered event is fired.
         sourceOrigin : <string>
         time : <number>
         triggerDataMatching : modulus
+        triggerSpecs : [
+            [0] : {
+                eventReportWindows : {
+                    ends : [
+                        [0] : 86400
+                    ]
+                    start : 0
+                }
+                triggerData : [
+                    [0] : 0
+                    [1] : 1
+                ]
+            }
+        ]
         type : event
     }
     result : success

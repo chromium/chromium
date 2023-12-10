@@ -102,7 +102,7 @@ class NearbyShareSessionImpl : public mojom::NearbyShareSessionHost,
   // Calls |SharesheetService.ShowNearbyShareBubble()| to start the Chrome
   // Nearby Share user flow and display bubble in ARC window.
   void ShowNearbyShareBubbleInArcWindow(
-      absl::optional<base::File::Error> result = absl::nullopt);
+      std::optional<base::File::Error> result = std::nullopt);
 
   // Called back once the session duration exceeds the maximum duration.
   void OnTimerFired();

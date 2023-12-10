@@ -86,7 +86,7 @@ enum class RequestTypeForUma {
   NUM
 };
 
-// Any new values should be inserted immediately prior to NUM.
+// Any new values should be inserted immediately prior to kMaxValue.
 enum class PermissionSourceUI {
   // Permission prompt.
   PROMPT = 0,
@@ -115,8 +115,16 @@ enum class PermissionSourceUI {
   // Permission settings changes as part of the abusive origins revocation.
   AUTO_REVOCATION = 6,
 
+  // Permission changes due to automatic revocations of permissions from unused
+  // sites, as part of Safety Hub.
+  SAFETY_HUB_AUTO_REVOCATION = 7,
+
+  // The permission status changed, but we're unsure from what source.
+  // This is likely ANDROID_SETTINGS above though.
+  UNIDENTIFIED = 8,
+
   // Always keep this at the end.
-  NUM,
+  kMaxValue = UNIDENTIFIED,
 };
 
 // Any new values should be inserted immediately prior to NUM.
@@ -659,6 +667,9 @@ class PermissionUmaUtil {
                              PermissionSourceUI source_ui);
 
     ~ScopedRevocationReporter();
+
+    // Returns true if a ScopedRevocationReporter instance is in scope.
+    static bool IsInstanceInScope();
 
    private:
     raw_ptr<content::BrowserContext> browser_context_;

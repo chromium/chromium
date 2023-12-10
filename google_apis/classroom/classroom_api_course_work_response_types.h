@@ -9,8 +9,8 @@
 #include <string>
 #include <vector>
 
+#include <optional>
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace base {
@@ -68,7 +68,7 @@ class CourseWorkItem {
   const std::string& title() const { return title_; }
   State state() const { return state_; }
   const GURL& alternate_link() const { return alternate_link_; }
-  const absl::optional<DueDateTime>& due_date_time() const {
+  const std::optional<DueDateTime>& due_date_time() const {
     return due_date_time_;
   }
   const base::Time& creation_time() const { return creation_time_; }
@@ -93,7 +93,7 @@ class CourseWorkItem {
   // specifying zeroes in different date components (e.g. a month and day with
   // a zero year means a repeating annual assignment). That is why it was safer,
   // more flexible and forward compatible to use the same approach here.
-  absl::optional<DueDateTime> due_date_time_ = absl::nullopt;
+  std::optional<DueDateTime> due_date_time_ = std::nullopt;
 
   // The timestamp when this course work was created.
   base::Time creation_time_;

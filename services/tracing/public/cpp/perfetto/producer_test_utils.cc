@@ -24,12 +24,14 @@ namespace tracing {
 
 namespace {
 
+constexpr size_t kChunkSize = 4096;
+
 // For sequences/threads other than our own, we just want to ignore
 // any events coming in.
 class DummyTraceWriter : public perfetto::TraceWriter {
  public:
   DummyTraceWriter()
-      : delegate_(perfetto::base::kPageSize), stream_(&delegate_) {}
+      : delegate_(kChunkSize), stream_(&delegate_) {}
 
   perfetto::TraceWriter::TracePacketHandle NewTracePacket() override {
     stream_.Reset(delegate_.GetNewBuffer());
@@ -60,7 +62,7 @@ TestProducerClient::TestProducerClient(
     std::unique_ptr<base::tracing::PerfettoTaskRunner> main_thread_task_runner,
     bool log_only_main_thread)
     : ProducerClient(main_thread_task_runner.get()),
-      delegate_(perfetto::base::kPageSize),
+      delegate_(kChunkSize),
       stream_(&delegate_),
       main_thread_task_runner_(std::move(main_thread_task_runner)),
       log_only_main_thread_(log_only_main_thread) {}

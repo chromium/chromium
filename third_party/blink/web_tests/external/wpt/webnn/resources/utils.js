@@ -2,13 +2,30 @@
 
 const ExecutionArray = ['sync', 'async'];
 
-// https://webmachinelearning.github.io/webnn/#enumdef-mloperandtype
+// https://webmachinelearning.github.io/webnn/#enumdef-mloperanddatatype
 const TypedArrayDict = {
+  // workaround use Uint16 for Float16
+  float16: Uint16Array,
+
   float32: Float32Array,
   int32: Int32Array,
   uint32: Uint32Array,
   int8: Int8Array,
   uint8: Uint8Array,
+};
+
+const getTypedArrayData = (type, data) => {
+  let outData;
+  if (type === 'float16') {
+    // workaround to convert Float16 to Uint16
+    outData = new TypedArrayDict[type](data.length);
+    for (let i = 0; i < data.length; i++) {
+      outData[i] = toHalf(data[i]);
+    }
+  } else {
+    outData = new TypedArrayDict[type](data);
+  }
+  return outData;
 };
 
 const sizeOfShape = (array) => {
@@ -277,15 +294,26 @@ const PrecisionMetrics = {
   min: {ULP: {float32: 0, float16: 0}},
   pow: {ULP: {float32: 32, float16: 2}},
   // End Element-wise binary operations
+  // Begin Element-wise logical operations
+  equal: {ULP: {uint8: 0}},
+  greater: {ULP: {uint8: 0}},
+  greaterOrEqual: {ULP: {uint8: 0}},
+  lesser: {ULP: {uint8: 0}},
+  lesserOrEqual: {ULP: {uint8: 0}},
+  logicalNot: {ULP: {uint8: 0}},
+  // End Element-wise logical operations
   // Begin Element-wise unary operations
   abs: {ULP: {float32: 0, float16: 0}},
   ceil: {ULP: {float32: 0, float16: 0}},
   cos: {ATOL: {float32: 1/1024, float16: 1/512}},
   exp: {ULP: {float32: 32, float16: 1}},
   floor: {ULP: {float32: 0, float16: 0}},
+  identity: {ULP: {float32: 0, float16: 0}},
   log: {ATOL: {float32: 1/1024, float16:  1/1024}},
   neg: {ULP: {float32: 0, float16: 0}},
+  reciprocal: {ULP: {float32: 2, float16: 2}},
   sin: {ATOL: {float32: 1/1024, float16: 1/512}},
+  sqrt: {ULP: {float32: 1, float16: 1}},
   tan: {ATOL: {float32: 1/1024, float16: 1/512}},
   // End Element-wise unary operations
   elu: {ULP: {float32: 18, float16: 18}},
@@ -349,7 +377,7 @@ const getPrecisonTolerance = (operationName, metricType, resources) => {
  * @param {Number} value
  * @param {String} dataType - A data type string, like "float32", "float16",
  *     more types, please see:
- *     https://webmachinelearning.github.io/webnn/#enumdef-mloperandtype
+ *     https://webmachinelearning.github.io/webnn/#enumdef-mloperanddatatype
  * @return {Number} A 64-bit signed integer.
  */
 const getBitwise = (value, dataType) => {
@@ -375,7 +403,7 @@ const getBitwise = (value, dataType) => {
  * @param {Number} nulp - A BigInt value indicates acceptable ULP distance.
  * @param {String} dataType - A data type string, value: "float32",
  *     more types, please see:
- *     https://webmachinelearning.github.io/webnn/#enumdef-mloperandtype
+ *     https://webmachinelearning.github.io/webnn/#enumdef-mloperanddatatype
  * @param {String} description - Description of the condition being tested.
  */
 const assert_array_approx_equals_ulp = (actual, expected, nulp, dataType, description) => {
@@ -390,8 +418,14 @@ const assert_array_approx_equals_ulp = (actual, expected, nulp, dataType, descri
       continue;
     } else {
       // measure the ULP distance
-      actualBitwise = getBitwise(actual[i], dataType);
-      expectedBitwise = getBitwise(expected[i], dataType);
+      if (dataType === 'float32') {
+        actualBitwise = getBitwise(actual[i], dataType);
+        expectedBitwise = getBitwise(expected[i], dataType);
+      } else if (dataType === 'float16') {
+        actualBitwise = actual[i];
+        // convert expected data of Float16 to Uint16
+        expectedBitwise = toHalf(expected[i]);
+      }
       distance = actualBitwise - expectedBitwise;
       distance = distance >= 0 ? distance : -distance;
       assert_true(distance <= nulp,
@@ -408,7 +442,7 @@ const assert_array_approx_equals_ulp = (actual, expected, nulp, dataType, descri
  * @param {Number} tolerance
  * @param {String} operandType  - An operand type string, value: "float32",
  *     more types, please see:
- *     https://webmachinelearning.github.io/webnn/#enumdef-mloperandtype
+ *     https://webmachinelearning.github.io/webnn/#enumdef-mloperanddatatype
  * @param {String} metricType - Value: 'ULP', 'ATOL'
  */
 const doAssert = (operationName, actual, expected, tolerance, operandType, metricType) => {
@@ -465,7 +499,7 @@ const checkResults = (operationName, namedOutputOperands, outputs, resources) =>
  */
 const createConstantOperand = (builder, resources) => {
   const bufferView = new TypedArrayDict[resources.type](resources.data);
-  return builder.constant({type: resources.type, dimensions: resources.shape}, bufferView);
+  return builder.constant({dataType: resources.type, type: resources.type, dimensions: resources.shape}, bufferView);
 };
 
 /**
@@ -478,7 +512,7 @@ const createConstantOperand = (builder, resources) => {
 const createSingleInputOperand = (builder, resources, inputOperandName) => {
   inputOperandName = inputOperandName ? inputOperandName : Object.keys(resources.inputs)[0];
   const inputResources = resources.inputs[inputOperandName];
-  return builder.input(inputOperandName, {type: inputResources.type, dimensions: inputResources.shape});
+  return builder.input(inputOperandName, {dataType: inputResources.type, type: inputResources.type, dimensions: inputResources.shape});
 };
 
 /**
@@ -525,13 +559,135 @@ const buildOperationWithSingleInput = (operationName, builder, resources) => {
  * @param {Object} resources - Resources used for building a graph
  * @returns {MLNamedOperands}
  */
-const buildOperationWithTwoInputs= (operationName, builder, resources) => {
+const buildOperationWithTwoInputs = (operationName, builder, resources) => {
   // For example: MLOperand matmul(MLOperand a, MLOperand b);
   const namedOutputOperand = {};
   const [inputOperandA, inputOperandB] = createMultiInputOperands(builder, resources);
   const outputOperand = resources.options ?
       builder[operationName](inputOperandA, inputOperandB, resources.options) : builder[operationName](inputOperandA, inputOperandB);
   namedOutputOperand[resources.expected.name] = outputOperand;
+  return namedOutputOperand;
+};
+
+const buildBatchNorm = (operationName, builder, resources) => {
+  // MLOperand batchNormalization(MLOperand input, MLOperand mean, MLOperand variance,
+  //                              optional MLBatchNormalizationOptions options = {});
+  const namedOutputOperand = {};
+  const [inputOperand, meanOperand, varianceOperand] = createMultiInputOperands(builder, resources);
+  const batchNormOptions = {...resources.options};
+  if (batchNormOptions.scale) {
+    batchNormOptions.scale = createConstantOperand(builder, batchNormOptions.scale);
+  }
+  if (batchNormOptions.bias) {
+    batchNormOptions.bias = createConstantOperand(builder, batchNormOptions.bias);
+  }
+  if (batchNormOptions.activation) {
+    batchNormOptions.activation = builder[batchNormOptions.activation]();
+  }
+  // invoke builder.batchNormalization()
+  namedOutputOperand[resources.expected.name] =
+      builder[operationName](inputOperand, meanOperand, varianceOperand, batchNormOptions);
+  return namedOutputOperand;
+};
+
+const buildConcat = (operationName, builder, resources) => {
+  // MLOperand concat(sequence<MLOperand> inputs, unsigned long axis);
+  const namedOutputOperand = {};
+  const inputOperands = [];
+  for (let input of resources.inputs) {
+    inputOperands.push(builder.input(input.name, {dataType: input.type, type: input.type, dimensions: input.shape}));
+  }
+  // invoke builder.concat()
+  namedOutputOperand[resources.expected.name] = builder[operationName](inputOperands, resources.axis);
+  return namedOutputOperand;
+};
+
+const buildConvTranspose2d = (operationName, builder, resources) => {
+  // MLOperand convTranspose2d(MLOperand input, MLOperand filter, optional MLConvTranspose2dOptions options = {});
+  const namedOutputOperand = {};
+  const [inputOperand, filterOperand] = createMultiInputOperands(builder, resources);
+  let convTranspose2dOptions = {...resources.options};
+  if (convTranspose2dOptions.bias) {
+    convTranspose2dOptions.bias = createConstantOperand(builder, convTranspose2dOptions.bias);
+  }
+  if (convTranspose2dOptions.activation) {
+    convTranspose2dOptions.activation = builder[convTranspose2dOptions.activation]();
+  }
+  namedOutputOperand[resources.expected.name] = builder[operationName](inputOperand, filterOperand, convTranspose2dOptions);
+  return namedOutputOperand;
+};
+
+const buildConv2d = (operationName, builder, resources) => {
+  // MLOperand conv2d(MLOperand input, MLOperand filter, optional MLConv2dOptions options = {});
+  const namedOutputOperand = {};
+  const [inputOperand, filterOperand] = createMultiInputOperands(builder, resources);
+  let conv2dOptions = {...resources.options};
+  if (conv2dOptions.bias) {
+    conv2dOptions.bias = createConstantOperand(builder, conv2dOptions.bias);
+  }
+  if (conv2dOptions.activation) {
+    conv2dOptions.activation = builder[conv2dOptions.activation]();
+  }
+  namedOutputOperand[resources.expected.name] = builder[operationName](inputOperand, filterOperand, conv2dOptions);
+  return namedOutputOperand;
+};
+
+const buildGemm = (operationName, builder, resources) => {
+  // MLOperand gemm(MLOperand a, MLOperand b, optional MLGemmOptions options = {});
+  const namedOutputOperand = {};
+  const [inputOperandA, inputOperandB] = createMultiInputOperands(builder, resources);
+  let gemmOptions = {...resources.options};
+  if (gemmOptions.c) {
+    if (gemmOptions.c.shape) {
+      gemmOptions.c = createConstantOperand(builder, gemmOptions.c);
+    } else {
+      // MLOperand c;
+      // Create a single-value operand when c is a scalar
+      gemmOptions.c = builder.constant({dataType: 'float32', type: 'float32', dimensions: [1]}, new Float32Array([gemmOptions.c]));
+    }
+  }
+  namedOutputOperand[resources.expected.name] = builder[operationName](inputOperandA, inputOperandB, gemmOptions);
+  return namedOutputOperand;
+};
+
+const buildPad = (operationName, builder, resources) => {
+  // MLOperand pad(MLOperand input, sequence<unsigned long> beginningPadding, sequence<unsigned long> endingPadding, optional MLPadOptions options = {});
+  const namedOutputOperand = {};
+  const inputOperand = createSingleInputOperand(builder, resources);
+  // invoke builder.pad()
+  namedOutputOperand[resources.expected.name] = builder[operationName](inputOperand, resources.beginningPadding, resources.endingPadding, resources.options);
+  return namedOutputOperand;
+};
+
+const buildReshape = (operationName, builder, resources) => {
+  // MLOperand reshape(MLOperand input, sequence<unsigned long?> newShape);
+  const namedOutputOperand = {};
+  const inputOperand = createSingleInputOperand(builder, resources);
+  // invoke builder.reshape()
+  namedOutputOperand[resources.expected.name] = builder[operationName](inputOperand, resources.newShape);
+  return namedOutputOperand;
+};
+
+const buildSlice = (operationName, builder, resources) => {
+  // MLOperand slice(MLOperand input, sequence<unsigned long> starts, sequence<unsigned long> sizes);
+  const namedOutputOperand = {};
+  const inputOperand = createSingleInputOperand(builder, resources);
+  // invoke builder.slice()
+  namedOutputOperand[resources.expected.name] = builder[operationName](inputOperand, resources.starts, resources.sizes);
+  return namedOutputOperand;
+};
+
+const buildSplit = (operationName, builder, resources) => {
+  // sequence<MLOperand> split(MLOperand input,
+  //                           (unsigned long or sequence<unsigned long>) splits,
+  //                           optional MLSplitOptions options = {});
+  const namedOutputOperand = {};
+  const inputOperand = createSingleInputOperand(builder, resources);
+  // invoke builder.split()
+  const outputOperands = builder[operationName](inputOperand, resources.splits, resources.options);
+  resources.expected.forEach((resourceDict, index) => {
+    namedOutputOperand[resourceDict.name] = outputOperands[index];
+  });
   return namedOutputOperand;
 };
 
@@ -550,14 +706,14 @@ const buildGraph = (operationName, builder, resources, buildFunc) => {
     // the inputs of concat() is a sequence
     for (let subInput of resources.inputs) {
       if (!subInput.hasOwnProperty('constant') || !subInput.constant) {
-        inputs[subInput.name] = new TypedArrayDict[subInput.type](subInput.data);
+        inputs[subInput.name] = getTypedArrayData(subInput.type, subInput.data);
       }
     }
   } else {
     for (let inputName in resources.inputs) {
       const subTestByName = resources.inputs[inputName];
       if (!subTestByName.hasOwnProperty('constant') || !subTestByName.constant) {
-        inputs[inputName] = new TypedArrayDict[subTestByName.type](subTestByName.data);
+        inputs[inputName] = getTypedArrayData(subTestByName.type, subTestByName.data);
       }
     }
   }
@@ -616,8 +772,9 @@ const run = async (operationName, context, builder, resources, buildFunc) => {
  * Run WebNN operation tests.
  * @param {(String[]|String)} operationName - An operation name array or an operation name
  * @param {Function} buildFunc - A build function for an operation
+ * @param {String} deviceType - The execution device type for this test
  */
-const testWebNNOperation = (operationName, buildFunc) => {
+const testWebNNOperation = (operationName, buildFunc, deviceType = 'cpu') => {
   let operationNameArray;
   if (typeof operationName === 'string') {
     operationNameArray = [operationName];
@@ -637,7 +794,7 @@ const testWebNNOperation = (operationName, buildFunc) => {
       operationNameArray.forEach((subOperationName) => {
         const tests = loadTests(subOperationName);
         setup(() => {
-          context = navigator.ml.createContextSync();
+          context = navigator.ml.createContextSync({deviceType});
           builder = new MLGraphBuilder(context);
         });
         for (const subTest of tests) {
@@ -651,7 +808,7 @@ const testWebNNOperation = (operationName, buildFunc) => {
       operationNameArray.forEach((subOperationName) => {
         const tests = loadTests(subOperationName);
         promise_setup(async () => {
-          context = await navigator.ml.createContext();
+          context = await navigator.ml.createContext({deviceType});
           builder = new MLGraphBuilder(context);
         });
         for (const subTest of tests) {
@@ -662,4 +819,51 @@ const testWebNNOperation = (operationName, buildFunc) => {
       });
     }
   });
+};
+
+// ref: http://stackoverflow.com/questions/32633585/how-do-you-convert-to-half-floats-in-javascript
+const toHalf = (value) => {
+  let floatView = new Float32Array(1);
+  let int32View = new Int32Array(floatView.buffer);
+
+  /* This method is faster than the OpenEXR implementation (very often
+   * used, eg. in Ogre), with the additional benefit of rounding, inspired
+   * by James Tursa's half-precision code. */
+
+  floatView[0] = value;
+  let x = int32View[0];
+
+  let bits = (x >> 16) & 0x8000; /* Get the sign */
+  let m = (x >> 12) & 0x07ff; /* Keep one extra bit for rounding */
+  let e = (x >> 23) & 0xff; /* Using int is faster here */
+
+  /* If zero, or denormal, or exponent underflows too much for a denormal
+    * half, return signed zero. */
+  if (e < 103) {
+    return bits;
+  }
+
+  /* If NaN, return NaN. If Inf or exponent overflow, return Inf. */
+  if (e > 142) {
+    bits |= 0x7c00;
+    /* If exponent was 0xff and one mantissa bit was set, it means NaN,
+      * not Inf, so make sure we set one mantissa bit too. */
+    bits |= ((e == 255) ? 0 : 1) && (x & 0x007fffff);
+    return bits;
+  }
+
+  /* If exponent underflows but not too much, return a denormal */
+  if (e < 113) {
+    m |= 0x0800;
+    /* Extra rounding may overflow and set mantissa to 0 and exponent
+      * to 1, which is OK. */
+    bits |= (m >> (114 - e)) + ((m >> (113 - e)) & 1);
+    return bits;
+  }
+
+  bits |= ((e - 112) << 10) | (m >> 1);
+  /* Extra rounding. An overflow will set mantissa to 0 and increment
+    * the exponent, which is OK. */
+  bits += m & 1;
+  return bits;
 };

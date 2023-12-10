@@ -43,6 +43,31 @@ export class AutomationEditableText extends ChromeVoxEditableTextBase {
   }
 
   /**
+   * Update the state of the text and selection and describe any changes as
+   * appropriate.
+   *
+   * @param {TextChangeEvent} evt The text change event.
+   */
+  changed(evt) {
+    if (!this.shouldDescribeChange(evt)) {
+      this.lastChangeDescribed = false;
+      return;
+    }
+
+    if (evt.value === this.value) {
+      this.describeSelectionChanged(evt);
+    } else {
+      this.describeTextChanged(
+          new TextChangeEvent(this.value, this.start, this.end, true), evt);
+    }
+    this.lastChangeDescribed = true;
+
+    this.value = evt.value;
+    this.start = evt.start;
+    this.end = evt.end;
+  }
+
+  /**
    * Called when the text field has been updated.
    * @param {!Array<AutomationIntent>} intents
    */

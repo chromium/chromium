@@ -53,9 +53,14 @@ class ScreenshotShareSheetMediator {
      * @param installCallback The action to take when install is called, will call runnable on
      *         success.
      */
-    ScreenshotShareSheetMediator(Context context, PropertyModel propertyModel,
-            Runnable closeDialogRunnable, Runnable saveRunnable, WindowAndroid windowAndroid,
-            String shareUrl, ChromeOptionShareCallback chromeOptionShareCallback,
+    ScreenshotShareSheetMediator(
+            Context context,
+            PropertyModel propertyModel,
+            Runnable closeDialogRunnable,
+            Runnable saveRunnable,
+            WindowAndroid windowAndroid,
+            String shareUrl,
+            ChromeOptionShareCallback chromeOptionShareCallback,
             @Nullable Callback<Runnable> installCallback) {
         mCloseDialogRunnable = closeDialogRunnable;
         mSaveRunnable = saveRunnable;
@@ -65,10 +70,14 @@ class ScreenshotShareSheetMediator {
         mShareUrl = shareUrl;
         mChromeOptionShareCallback = chromeOptionShareCallback;
         mInstallCallback = installCallback;
-        mModel.set(ScreenshotShareSheetViewProperties.SCREENSHOT_EDIT_DISABLED,
+        mModel.set(
+                ScreenshotShareSheetViewProperties.SCREENSHOT_EDIT_DISABLED,
                 mInstallCallback == null);
-        mModel.set(ScreenshotShareSheetViewProperties.NO_ARG_OPERATION_LISTENER,
-                operation -> { performNoArgOperation(operation); });
+        mModel.set(
+                ScreenshotShareSheetViewProperties.NO_ARG_OPERATION_LISTENER,
+                operation -> {
+                    performNoArgOperation(operation);
+                });
     }
 
     /**
@@ -98,31 +107,35 @@ class ScreenshotShareSheetMediator {
         }
     }
 
-    /**
-     * Sends the current image to the share target.
-     */
+    /** Sends the current image to the share target. */
     private void share() {
         Bitmap bitmap = mModel.get(ScreenshotShareSheetViewProperties.SCREENSHOT_BITMAP);
 
-        String isoDate = new SimpleDateFormat(sIsoDateFormat, Locale.getDefault())
-                                 .format(new Date(System.currentTimeMillis()));
+        String isoDate =
+                new SimpleDateFormat(sIsoDateFormat, Locale.getDefault())
+                        .format(new Date(System.currentTimeMillis()));
         String title = mContext.getString(R.string.screenshot_title_for_share, isoDate);
-        Callback<Uri> callback = (bitmapUri) -> {
-            ShareParams params = new ShareParams.Builder(mWindowAndroid, title, /*url=*/"")
-                                         .setSingleImageUri(bitmapUri)
-                                         .setFileContentType(mWindowAndroid.getApplicationContext()
-                                                                     .getContentResolver()
-                                                                     .getType(bitmapUri))
-                                         .build();
+        Callback<Uri> callback =
+                (bitmapUri) -> {
+                    ShareParams params =
+                            new ShareParams.Builder(mWindowAndroid, title, /* url= */ "")
+                                    .setSingleImageUri(bitmapUri)
+                                    .setFileContentType(
+                                            mWindowAndroid
+                                                    .getApplicationContext()
+                                                    .getContentResolver()
+                                                    .getType(bitmapUri))
+                                    .build();
 
-            mChromeOptionShareCallback.showThirdPartyShareSheet(params,
-                    new ChromeShareExtras.Builder()
-                            .setContentUrl(new GURL(mShareUrl))
-                            .setDetailedContentType(
-                                    ChromeShareExtras.DetailedContentType.SCREENSHOT)
-                            .build(),
-                    System.currentTimeMillis());
-        };
+                    mChromeOptionShareCallback.showThirdPartyShareSheet(
+                            params,
+                            new ChromeShareExtras.Builder()
+                                    .setContentUrl(new GURL(mShareUrl))
+                                    .setDetailedContentType(
+                                            ChromeShareExtras.DetailedContentType.SCREENSHOT)
+                                    .build(),
+                            System.currentTimeMillis());
+                };
 
         generateTemporaryUriFromBitmap(title, bitmap, callback);
         mCloseDialogRunnable.run();

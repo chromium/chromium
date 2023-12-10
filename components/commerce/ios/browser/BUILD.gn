@@ -18,11 +18,26 @@ static_library("browser") {
     "//base",
     "//components/commerce/core:shopping_service",
     "//components/resources:components_resources_grit",
+    "//components/ukm/ios:ukm_url_recorder",
     "//ios/web",
     "//ios/web/public",
     "//ios/web/public/js_messaging",
     "//ios/web/public/webui",
+    "//services/data_decoder/public/cpp",
   ]
 
   public_deps = [ "//components/commerce/core/internals" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "web_extractor_impl_unittest.mm" ]
+  deps = [
+    ":browser",
+    "//base/test:test_support",
+    "//components/commerce/core:commerce_constants",
+    "//ios/web/public/test",
+    "//ios/web/public/test:test_fixture",
+    "//services/data_decoder/public/cpp:test_support",
+  ]
 }

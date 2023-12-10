@@ -24,6 +24,8 @@ import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/beha
 import {OOBE_UI_STATE} from '../../components/display_manager_types.js';
 import {Oobe} from '../../cr_ui.js';
 
+import {getTemplate} from './error_message.html.js';
+
 
 const USER_ACTION_LAUNCH_OOBE_GUEST = 'launch-oobe-guest';
 const USER_ACTION_SHOW_CAPTIVE_PORTAL = 'show-captive-portal';
@@ -105,7 +107,7 @@ class ErrorMessageScreen extends ErrorMessageScreenBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   /** @override */

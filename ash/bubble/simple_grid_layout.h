@@ -5,8 +5,9 @@
 #ifndef ASH_BUBBLE_SIMPLE_GRID_LAYOUT_H_
 #define ASH_BUBBLE_SIMPLE_GRID_LAYOUT_H_
 
+#include <optional>
+
 #include "ash/ash_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/layout/layout_manager_base.h"
 #include "ui/views/layout/proposed_layout.h"
@@ -33,7 +34,7 @@ class ASH_EXPORT SimpleGridLayout : public views::LayoutManagerBase {
   gfx::Size GetChildPreferredSize() const;
   gfx::Size CalculatePreferredSize() const;
 
-  mutable absl::optional<gfx::Size> cached_child_preferred_size_;
+  mutable std::optional<gfx::Size> cached_child_preferred_size_;
 
   const int column_count_;
   const int column_spacing_;

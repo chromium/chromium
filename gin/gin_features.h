@@ -34,7 +34,6 @@ GIN_EXPORT BASE_DECLARE_FEATURE(kV8LazyFeedbackAllocation);
 GIN_EXPORT BASE_DECLARE_FEATURE(kV8Maglev);
 GIN_EXPORT BASE_DECLARE_FEATURE(kV8MemoryReducer);
 GIN_EXPORT extern const base::FeatureParam<int> kV8MemoryReducerGCCount;
-GIN_EXPORT BASE_DECLARE_FEATURE(kV8MidtierRegallocFallback);
 GIN_EXPORT BASE_DECLARE_FEATURE(kV8MinorMS);
 GIN_EXPORT BASE_DECLARE_FEATURE(kV8MegaDomIC);
 GIN_EXPORT BASE_DECLARE_FEATURE(kV8NoReclaimUnmodifiedWrappers);
@@ -58,7 +57,6 @@ GIN_EXPORT BASE_DECLARE_FEATURE(kV8TurboFastApiCalls);
 GIN_EXPORT BASE_DECLARE_FEATURE(kV8UseLibmTrigFunctions);
 GIN_EXPORT extern const base::FeatureParam<base::TimeDelta>
     kV8MemoryReducerStartDelay;
-GIN_EXPORT BASE_DECLARE_FEATURE(kJavaScriptChangeArrayByCopy);
 GIN_EXPORT BASE_DECLARE_FEATURE(kJavaScriptRabGsab);
 GIN_EXPORT BASE_DECLARE_FEATURE(kJavaScriptRegExpUnicodeSets);
 GIN_EXPORT BASE_DECLARE_FEATURE(kJavaScriptSymbolAsWeakMapKey);
@@ -73,6 +71,17 @@ GIN_EXPORT BASE_DECLARE_FEATURE(kWebAssemblyInlining);
 GIN_EXPORT BASE_DECLARE_FEATURE(kWebAssemblyGenericWrapper);
 GIN_EXPORT BASE_DECLARE_FEATURE(kWebAssemblyMultipleMemories);
 GIN_EXPORT BASE_DECLARE_FEATURE(kWebAssemblyTurboshaft);
+GIN_EXPORT BASE_DECLARE_FEATURE(kWebAssemblyTurboshaftInstructionSelection);
+
+// Feature for more aggressive code caching (https://crbug.com/v8/14411) and
+// three parameters to control caching behavior.
+GIN_EXPORT BASE_DECLARE_FEATURE(kWebAssemblyMoreAggressiveCodeCaching);
+GIN_EXPORT extern const base::FeatureParam<int>
+    kWebAssemblyMoreAggressiveCodeCachingThreshold;
+GIN_EXPORT extern const base::FeatureParam<int>
+    kWebAssemblyMoreAggressiveCodeCachingTimeoutMs;
+GIN_EXPORT extern const base::FeatureParam<int>
+    kWebAssemblyMoreAggressiveCodeCachingHardThreshold;
 
 }  // namespace features
 

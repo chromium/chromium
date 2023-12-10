@@ -62,6 +62,11 @@ class DeviceSettingsProviderTest : public DeviceSettingsTestBase {
   void SetUp() override {
     DeviceSettingsTestBase::SetUp();
 
+    // Disable owner key migration.
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kStoreOwnerKeyInPrivateSlot},
+        /*disabled_features=*/{features::kMigrateOwnerKeyToPrivateSlot});
+
     EXPECT_CALL(*this, SettingChanged(_)).Times(AnyNumber());
     provider_ = std::make_unique<DeviceSettingsProvider>(
         base::BindRepeating(&DeviceSettingsProviderTest::SettingChanged,
@@ -443,6 +448,8 @@ class DeviceSettingsProviderTest : public DeviceSettingsTestBase {
     EXPECT_EQ(expected_value,
               *provider_->Get(kDeviceShowLowDiskSpaceNotification));
   }
+
+  base::test::ScopedFeatureList feature_list_;
 
   ScopedTestingLocalState local_state_;
 

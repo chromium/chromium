@@ -28,9 +28,7 @@ import org.chromium.ui.widget.Toast;
 
 import java.util.concurrent.TimeUnit;
 
-/**
- * Controls the strategy to start branding, and the duration to show branding.
- */
+/** Controls the strategy to start branding, and the duration to show branding. */
 public class BrandingController {
     private static final String TAG = "CctBrand";
     private static final String PARAM_BRANDING_CADENCE_NAME = "branding_cadence";
@@ -40,25 +38,32 @@ public class BrandingController {
             "animate_toolbar_transition";
     private static final int DEFAULT_BRANDING_CADENCE_MS = (int) TimeUnit.HOURS.toMillis(1);
     private static final int DEFAULT_MAX_BLANK_TOOLBAR_TIMEOUT_MS = 500;
+
     /**
      * The maximum time allowed from CCT Toolbar initialized until it should show the URL and title.
      */
-    @VisibleForTesting
-    static final int TOTAL_BRANDING_DELAY_MS = 1800;
+    @VisibleForTesting static final int TOTAL_BRANDING_DELAY_MS = 1800;
+
     /**
      * The maximum time allowed to leave CCT Toolbar blank until showing branding or URL and title.
      */
     public static final IntCachedFieldTrialParameter MAX_BLANK_TOOLBAR_TIMEOUT_MS =
-            new IntCachedFieldTrialParameter(ChromeFeatureList.CCT_BRAND_TRANSPARENCY,
-                    PARAM_MAX_BLANK_TOOLBAR_TIMEOUT_MS, DEFAULT_MAX_BLANK_TOOLBAR_TIMEOUT_MS);
+            new IntCachedFieldTrialParameter(
+                    ChromeFeatureList.CCT_BRAND_TRANSPARENCY,
+                    PARAM_MAX_BLANK_TOOLBAR_TIMEOUT_MS,
+                    DEFAULT_MAX_BLANK_TOOLBAR_TIMEOUT_MS);
+
     /**
      * The minimum time required between two branding events to shown. If time elapse since last
      * branding is less than this cadence, the branding check decision will be {@link
      * BrandingDecision.NONE}.
      */
     public static final IntCachedFieldTrialParameter BRANDING_CADENCE_MS =
-            new IntCachedFieldTrialParameter(ChromeFeatureList.CCT_BRAND_TRANSPARENCY,
-                    PARAM_BRANDING_CADENCE_NAME, DEFAULT_BRANDING_CADENCE_MS);
+            new IntCachedFieldTrialParameter(
+                    ChromeFeatureList.CCT_BRAND_TRANSPARENCY,
+                    PARAM_BRANDING_CADENCE_NAME,
+                    DEFAULT_BRANDING_CADENCE_MS);
+
     /**
      * Use temporary storage for branding launch time. The launch time will not persists to the
      * shared pref, but instead only lasts as long as Chrome is alive. This param is added for
@@ -73,8 +78,10 @@ public class BrandingController {
      * If set to false, the icon transition will be disabled.
      */
     public static final BooleanCachedFieldTrialParameter ANIMATE_TOOLBAR_ICON_TRANSITION =
-            new BooleanCachedFieldTrialParameter(ChromeFeatureList.CCT_BRAND_TRANSPARENCY,
-                    PARAM_ANIMATE_TOOLBAR_ICON_TRANSITION, true);
+            new BooleanCachedFieldTrialParameter(
+                    ChromeFeatureList.CCT_BRAND_TRANSPARENCY,
+                    PARAM_ANIMATE_TOOLBAR_ICON_TRANSITION,
+                    true);
 
     private final CallbackController mCallbackController = new CallbackController();
     private final @BrandingDecision OneshotSupplierImpl<Integer> mBrandingDecision =
@@ -83,8 +90,7 @@ public class BrandingController {
     private final Context mContext;
     private final String mBrowserName;
     private final boolean mEnableIconAnimation;
-    @Nullable
-    private final PureJavaExceptionReporter mExceptionReporter;
+    @Nullable private final PureJavaExceptionReporter mExceptionReporter;
     private ToolbarBrandingDelegate mToolbarBrandingDelegate;
     private @Nullable Toast mToast;
     private long mToolbarInitializedTime;
@@ -98,7 +104,10 @@ public class BrandingController {
      * @param browserName The browser name shown on the branding toast.
      * @param exceptionReporter Optional reporter that reports wrong state quietly.
      */
-    public BrandingController(Context context, String appId, String browserName,
+    public BrandingController(
+            Context context,
+            String appId,
+            String browserName,
             @Nullable PureJavaExceptionReporter exceptionReporter) {
         mContext = context;
         mBrowserName = browserName;
@@ -110,9 +119,13 @@ public class BrandingController {
                 ChromeFeatureList.sCctBrandTransparencyMemoryImprovement.isEnabled();
 
         // TODO(https://crbug.com/1350661): Start branding checker during CCT warm up.
-        mBrandingChecker = new BrandingChecker(appId,
-                SharedPreferencesBrandingTimeStorage.getInstance(), mBrandingDecision::set,
-                BRANDING_CADENCE_MS.getValue(), BrandingDecision.TOAST);
+        mBrandingChecker =
+                new BrandingChecker(
+                        appId,
+                        SharedPreferencesBrandingTimeStorage.getInstance(),
+                        mBrandingDecision::set,
+                        BRANDING_CADENCE_MS.getValue(),
+                        BrandingDecision.TOAST);
         mBrandingChecker.executeWithTaskTraits(TaskTraits.USER_VISIBLE_MAY_BLOCK);
     }
 
@@ -133,9 +146,10 @@ public class BrandingController {
         // Start the task to timeout the branding check. If mBrandingChecker already finished,
         // canceling the task does nothing. Does not interrupt if the task is running, since the
         // BrandingChecker#doInBackground will collect metrics at the end.
-        PostTask.postDelayedTask(TaskTraits.UI_USER_VISIBLE,
+        PostTask.postDelayedTask(
+                TaskTraits.UI_USER_VISIBLE,
                 mCallbackController.makeCancelable(
-                        () -> mBrandingChecker.cancel(/*mayInterruptIfRunning*/ false)),
+                        () -> mBrandingChecker.cancel(/* mayInterruptIfRunning= */ false)),
                 MAX_BLANK_TOOLBAR_TIMEOUT_MS.getValue());
 
         // Set location bar to empty as controller is waiting for mBrandingDecision.
@@ -146,17 +160,14 @@ public class BrandingController {
         maybeMakeBrandingDecision();
     }
 
-    /**
-     * Make decision after BrandingChecker and mToolbarBrandingDelegate is ready.
-     */
+    /** Make decision after BrandingChecker and mToolbarBrandingDelegate is ready. */
     private void maybeMakeBrandingDecision() {
         if (mToolbarBrandingDelegate == null || mBrandingDecision.get() == null) return;
 
         long timeToolbarEmpty = SystemClock.elapsedRealtime() - mToolbarInitializedTime;
         long remainingBrandingTime = TOTAL_BRANDING_DELAY_MS - timeToolbarEmpty;
 
-        @BrandingDecision
-        int brandingDecision = mBrandingDecision.get();
+        @BrandingDecision int brandingDecision = mBrandingDecision.get();
         switch (brandingDecision) {
             case BrandingDecision.NONE:
                 mToolbarBrandingDelegate.showRegularToolbar();
@@ -178,11 +189,14 @@ public class BrandingController {
     private void showToolbarBranding(long durationMs) {
         mToolbarBrandingDelegate.showBrandingLocationBar();
 
-        Runnable hideToolbarBranding = () -> {
-            mToolbarBrandingDelegate.showRegularToolbar();
-        };
-        PostTask.postDelayedTask(TaskTraits.UI_DEFAULT,
-                mCallbackController.makeCancelable(hideToolbarBranding), durationMs);
+        Runnable hideToolbarBranding =
+                () -> {
+                    mToolbarBrandingDelegate.showRegularToolbar();
+                };
+        PostTask.postDelayedTask(
+                TaskTraits.UI_DEFAULT,
+                mCallbackController.makeCancelable(hideToolbarBranding),
+                durationMs);
     }
 
     private void showToastBranding(long durationMs) {
@@ -191,19 +205,24 @@ public class BrandingController {
             return;
         }
 
-        String toastText = mContext.getResources().getString(
-                R.string.twa_running_in_chrome_template, mBrowserName);
-        TextView runInChromeTextView = (TextView) LayoutInflater.from(mContext).inflate(
-                R.layout.custom_tabs_toast_branding_layout, null, false);
+        String toastText =
+                mContext.getResources()
+                        .getString(R.string.twa_running_in_chrome_template, mBrowserName);
+        TextView runInChromeTextView =
+                (TextView)
+                        LayoutInflater.from(mContext)
+                                .inflate(R.layout.custom_tabs_toast_branding_layout, null, false);
         runInChromeTextView.setText(toastText);
 
         Toast toast =
-                new Toast(mContext.getApplicationContext(), /*toastView*/ runInChromeTextView);
+                new Toast(mContext.getApplicationContext(), /* toastView= */ runInChromeTextView);
         if (mReleaseStorageOnFinished) {
             toast.setDuration(Toast.LENGTH_LONG);
             toast.show();
-            PostTask.postDelayedTask(TaskTraits.UI_BEST_EFFORT,
-                    mCallbackController.makeCancelable(toast::cancel), durationMs);
+            PostTask.postDelayedTask(
+                    TaskTraits.UI_BEST_EFFORT,
+                    mCallbackController.makeCancelable(toast::cancel),
+                    durationMs);
             return;
         }
         mToast = toast;
@@ -230,18 +249,23 @@ public class BrandingController {
 
     private void finish() {
         // Post the task as it's not important to be complete during branding check.
-        PostTask.postTask(TaskTraits.BEST_EFFORT, mCallbackController.makeCancelable(() -> {
-            int numberOfPackages = SharedPreferencesBrandingTimeStorage.getInstance().getSize();
-            RecordHistogram.recordCount100Histogram(
-                    "CustomTabs.Branding.NumberOfClients", numberOfPackages);
+        PostTask.postTask(
+                TaskTraits.BEST_EFFORT,
+                mCallbackController.makeCancelable(
+                        () -> {
+                            int numberOfPackages =
+                                    SharedPreferencesBrandingTimeStorage.getInstance().getSize();
+                            RecordHistogram.recordCount100Histogram(
+                                    "CustomTabs.Branding.NumberOfClients", numberOfPackages);
 
-            // Release the in-memory share pref from the current session if branding checker didn't
-            // timeout.
-            if (mReleaseStorageOnFinished && !mBrandingChecker.isCancelled()
-                    && !USE_TEMPORARY_STORAGE.getValue()) {
-                SharedPreferencesBrandingTimeStorage.resetInstance();
-            }
-        }));
+                            // Release the in-memory share pref from the current session if branding
+                            // checker didn't timeout.
+                            if (mReleaseStorageOnFinished
+                                    && !mBrandingChecker.isCancelled()
+                                    && !USE_TEMPORARY_STORAGE.getValue()) {
+                                SharedPreferencesBrandingTimeStorage.resetInstance();
+                            }
+                        }));
     }
 
     @BrandingDecision

@@ -36,15 +36,17 @@ public final class PackageReplacedBroadcastReceiver extends BroadcastReceiver {
         VrModuleProvider.maybeRequestModuleIfDaydreamReady();
 
         final PendingResult result = goAsync();
-        PostTask.postTask(TaskTraits.BEST_EFFORT_MAY_BLOCK, () -> {
-            if (ChannelsUpdater.getInstance().shouldUpdateChannels()) {
-                ChannelsUpdater.getInstance().updateChannels();
-            }
+        PostTask.postTask(
+                TaskTraits.BEST_EFFORT_MAY_BLOCK,
+                () -> {
+                    if (ChannelsUpdater.getInstance().shouldUpdateChannels()) {
+                        ChannelsUpdater.getInstance().updateChannels();
+                    }
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                DexFixer.fixDexInBackground();
-            }
-            result.finish();
-        });
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        DexFixer.fixDexInBackground();
+                    }
+                    result.finish();
+                });
     }
 }

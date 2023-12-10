@@ -19,10 +19,9 @@ class RichAnswersTranslationView : public RichAnswersView {
  public:
   METADATA_HEADER(RichAnswersTranslationView);
 
-  explicit RichAnswersTranslationView(
-      const gfx::Rect& anchor_view_bounds,
-      base::WeakPtr<QuickAnswersUiController> controller,
-      const quick_answers::QuickAnswer& result);
+  RichAnswersTranslationView(const gfx::Rect& anchor_view_bounds,
+                             base::WeakPtr<QuickAnswersUiController> controller,
+                             TranslationResult& translation_result);
 
   RichAnswersTranslationView(const RichAnswersTranslationView&) = delete;
   RichAnswersTranslationView& operator=(const RichAnswersTranslationView&) =
@@ -32,6 +31,10 @@ class RichAnswersTranslationView : public RichAnswersView {
 
  private:
   void InitLayout();
+
+  raw_ptr<views::View> content_view_ = nullptr;
+
+  TranslationResult translation_result_;
 
   base::WeakPtrFactory<RichAnswersTranslationView> weak_factory_{this};
 };

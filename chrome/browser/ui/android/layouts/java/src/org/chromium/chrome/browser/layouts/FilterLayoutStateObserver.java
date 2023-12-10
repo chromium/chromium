@@ -16,8 +16,7 @@ public final class FilterLayoutStateObserver implements LayoutStateObserver {
     private final LayoutStateObserver mObserver;
 
     /** The type to filter on. */
-    @LayoutType
-    private final int mType;
+    @LayoutType private final int mType;
 
     /**
      * Create a filtered observer that only filters on a single layout type.

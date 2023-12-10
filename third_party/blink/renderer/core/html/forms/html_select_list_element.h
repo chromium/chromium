@@ -146,8 +146,6 @@ class CORE_EXPORT HTMLSelectListElement final
   void ResetOptionParts();
   void ResetToDefaultSelection();
   void DispatchInputAndChangeEventsIfNeeded();
-  void DispatchInputEvent();
-  void DispatchChangeEvent();
 
   bool IsValidButtonPart(const Node* node, bool show_warning) const;
   bool IsValidListboxPart(const Node* node, bool show_warning) const;
@@ -170,7 +168,7 @@ class CORE_EXPORT HTMLSelectListElement final
   bool MayTriggerVirtualKeyboard() const override;
   bool AlwaysCreateUserAgentShadowRoot() const override { return false; }
   void AppendToFormData(FormData&) override;
-  bool SupportsFocus() const override { return false; }
+  bool SupportsFocus(UpdateBehavior) const override { return false; }
   FormControlState SaveFormControlState() const override;
   void RestoreFormControlState(const FormControlState&) override;
 

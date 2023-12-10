@@ -8,6 +8,7 @@
 #include <inttypes.h>
 
 #include "base/memory/raw_ptr.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "chromeos/ash/components/dbus/audio/fake_cras_audio_client.h"
@@ -42,8 +43,16 @@ class AudioDeviceSelectionTestBase : public testing::Test {
   void Unplug(const AudioNode& node);
   void Select(const AudioNode& node);
 
+  void SystemBootsWith(const AudioNodeList& new_nodes);
+
   uint64_t ActiveInputNodeId();
   uint64_t ActiveOutputNodeId();
+
+  void FastForwardBy(base::TimeDelta delta) {
+    task_environment_.FastForwardBy(delta);
+  }
+
+  const base::HistogramTester& histogram_tester() { return histogram_tester_; }
 
  private:
   AudioNode NewNode(bool is_input, const std::string& type);
@@ -54,7 +63,8 @@ class AudioDeviceSelectionTestBase : public testing::Test {
  private:
   // Test services
   std::unique_ptr<ActiveNodeObserver> active_node_observer_;
-  base::test::SingleThreadTaskEnvironment task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   raw_ptr<CrasAudioHandler, DanglingUntriaged | ExperimentalAsh>
       cras_audio_handler_ = nullptr;  // Not owned.
   raw_ptr<FakeCrasAudioClient, DanglingUntriaged | ExperimentalAsh>
@@ -64,6 +74,8 @@ class AudioDeviceSelectionTestBase : public testing::Test {
   // Counters
   uint64_t node_count_ = 0;
   uint64_t plugged_time_ = 0;
+
+  base::HistogramTester histogram_tester_;
 };
 }  // namespace ash
 

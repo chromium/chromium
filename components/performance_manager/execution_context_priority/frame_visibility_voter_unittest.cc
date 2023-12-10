@@ -95,7 +95,7 @@ TEST_F(FrameVisibilityVoterTest, ChangeFrameVisibility) {
   // visibility should be kNotVisible, resulting in a low priority.
   MockSinglePageInSingleProcessGraph mock_graph(graph());
   auto& frame_node = mock_graph.frame;
-  EXPECT_EQ(frame_node->visibility(), FrameNode::Visibility::kNotVisible);
+  EXPECT_EQ(frame_node->GetVisibility(), FrameNode::Visibility::kNotVisible);
   EXPECT_EQ(observer().GetVoteCount(), 1u);
   EXPECT_TRUE(observer().HasVote(voter_id(),
                                  GetExecutionContext(frame_node.get()),

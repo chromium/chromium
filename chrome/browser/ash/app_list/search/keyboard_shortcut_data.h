@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_ASH_APP_LIST_SEARCH_KEYBOARD_SHORTCUT_DATA_H_
 #define CHROME_BROWSER_ASH_APP_LIST_SEARCH_KEYBOARD_SHORTCUT_DATA_H_
 
+#include <optional>
+
 #include "ash/public/cpp/keyboard_shortcut_item.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/keycodes/keyboard_codes.h"
@@ -41,7 +43,7 @@ struct KeyboardShortcutData {
 
   // ID of the message template resource used to list the keys making up the
   // shortcut.
-  absl::optional<int> shortcut_message_id;
+  std::optional<int> shortcut_message_id;
 
   // The VKEY codes of the key and each modifier comprising the shortcut. See
   // ash/public/cpp/keyboard_shortcut_item.h for more detail.

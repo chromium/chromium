@@ -5,7 +5,6 @@
 <translation id="1076394037877376434">Suprimeix la pàgina <ph name="PAGE_NUMBER" /></translation>
 <translation id="1113173431709655881">Mode de càmera</translation>
 <translation id="1153190633558910465">Quadrícula desactivada</translation>
-<translation id="1175958423215084756">Enllaç detectat. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213">S'ha suprimit la pàgina <ph name="PAGE_NUMBER" /></translation>
 <translation id="1258009455399840361">Gira 90 graus en sentit horari</translation>
 <translation id="1417314334557041815">Edita la pàgina <ph name="INDEX" /></translation>
@@ -60,14 +59,12 @@
 <translation id="3642192109456033823">S'està processant el vídeo...</translation>
 <translation id="3789724198583203151">Gira 90 graus en sentit antihorari</translation>
 <translation id="3810838688059735925">Vídeo</translation>
-<translation id="3892148308691398805">Copia el text</translation>
 <translation id="4060608699153044055">No pots gravar perquè queda poc espai d'emmagatzematge al dispositiu. Per començar a gravar, has d'alliberar espai al dispositiu.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> Mpx</translation>
 <translation id="4118525110028899586">Posa en pausa la gravació</translation>
 <translation id="4121305183798804752">S'ha detectat un document</translation>
 <translation id="414641094616694804">Aquesta càmera no pot canviar la resolució</translation>
 <translation id="4176463684765177261">Desactivat</translation>
-<translation id="4269820728363426813">Copia l'adreça de l'enllaç</translation>
 <translation id="428234092390943511">Miniatura de la pàgina</translation>
 <translation id="4349714250734879769">Ajusta els fotogrames amb Chrome</translation>
 <translation id="4383571725254449280">Registres de rendiment d'impressió</translation>
@@ -144,7 +141,6 @@ Si els teus suggeriments fan referència a la qualitat d'imatge o de vídeo, adj
 <translation id="7726641833034062494">Grava un vídeo normal</translation>
 <translation id="7748344063862150053">Extrem superior dret del document</translation>
 <translation id="7933675232020478311">S'està movent cap a la part inferior dreta</translation>
-<translation id="7983668134180549431">Text detectat.</translation>
 <translation id="8079255378695216066">No es pot iniciar la gravació</translation>
 <translation id="8120146556401698679">Panoràmica, inclinació i zoom</translation>
 <translation id="8131740175452115882">Confirma</translation>
@@ -163,6 +159,7 @@ Si els teus suggeriments fan referència a la qualitat d'imatge o de vídeo, adj
 <translation id="8870695351537079478">No es pot iniciar la gravació</translation>
 <translation id="8880167521484863515">4:3</translation>
 <translation id="8903921497873541725">Amplia</translation>
+<translation id="8926890870105777777">Uneix-te a la xarxa "<ph name="WIFINAME" />"</translation>
 <translation id="9045010116236796332">Col·loca totes les vores del document dins del marc</translation>
 <translation id="9045155556724273246">10 segons</translation>
 <translation id="906331135292332864">S'està processant la imatge...</translation>

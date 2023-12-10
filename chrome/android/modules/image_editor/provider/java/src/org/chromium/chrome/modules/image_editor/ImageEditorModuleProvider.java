@@ -7,20 +7,15 @@ package org.chromium.chrome.modules.image_editor;
 import org.chromium.chrome.browser.image_editor.ImageEditorDialogCoordinator;
 import org.chromium.components.module_installer.engine.InstallListener;
 
-/**
- * Interface for installing and loading the image_editor module.
- */
+/** Interface for installing and loading the image_editor module. */
 public interface ImageEditorModuleProvider {
-    /**
-     * Returns true if the module is installed.
-     */
+    /** Returns true if the module is installed. */
     public boolean isModuleInstalled();
 
     /**
      * Requests deferred installation of the module, i.e. when on unmetered network connection and
      * device is charging.
      */
-
     public void maybeInstallModuleDeferred();
 
     /**

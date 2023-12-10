@@ -99,14 +99,14 @@ COMPONENT_EXPORT(LENS_FEATURES)
 extern const base::FeatureParam<bool> kEnableFullscreenSearch;
 
 // Enables encoding to WebP for region search queries. This param takes
-// precedence over kUseJpegInRegionSearch.
+// precedence over kUseJpegForImageSearch.
 COMPONENT_EXPORT(LENS_FEATURES)
-extern const base::FeatureParam<bool> kUseWebpInRegionSearch;
+extern const base::FeatureParam<bool> kUseWebpForImageSearch;
 
 // Enables encoding to JPEG for region search queries. This param does
-// nothing if kUseWebpInRegionSearch is enabled.
+// nothing if kUseWebpForImageSearch is enabled.
 COMPONENT_EXPORT(LENS_FEATURES)
-extern const base::FeatureParam<bool> kUseJpegInRegionSearch;
+extern const base::FeatureParam<bool> kUseJpegForImageSearch;
 
 // Value in range 0-100 that dictates the encoding quality for jpeg
 // format.
@@ -137,14 +137,9 @@ extern bool GetEnableLatencyLogging();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool GetEnableImageSearchUnifiedSidePanelFor3PDse();
 
-// Returns the max pixel width/height for the image to be sent to Lens via
-// region search. The images are sent at 1x as PNGs.
+// Returns the max area for the image to be sent to Lens.
 COMPONENT_EXPORT(LENS_FEATURES)
-extern int GetMaxPixelsForRegionSearch();
-
-// Returns the max area for the image to be sent to Lens via region search.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern int GetMaxAreaForRegionSearch();
+extern int GetMaxAreaForImageSearch();
 
 // Returns the max pixel width/height for the image to be sent to Lens.
 COMPONENT_EXPORT(LENS_FEATURES)
@@ -205,10 +200,6 @@ extern bool IsLensInScreenshotSharingEnabled();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool IsLensRegionSearchStaticPageEnabled();
 
-// Returns whether to use WebP encoding for image search queries.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern bool IsWebpForImageSearchEnabled();
-
 // Get the encoding quality for jpeg search queries.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern int GetEncodingQualityJpeg();
@@ -217,13 +208,13 @@ extern int GetEncodingQualityJpeg();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern int GetEncodingQualityWebp();
 
-// Returns whether to use WebP encoding for region search queries.
+// Returns whether to use WebP encoding for image search queries.
 COMPONENT_EXPORT(LENS_FEATURES)
-extern bool IsWebpForRegionSearchEnabled();
+extern bool IsWebpForImageSearchEnabled();
 
-// Returns whether to use JPEG encoding for region search queries.
+// Returns whether to use JPEG encoding for image search queries.
 COMPONENT_EXPORT(LENS_FEATURES)
-extern bool IsJpegForRegionSearchEnabled();
+extern bool IsJpegForImageSearchEnabled();
 
 // Returns whether to enable the context menu in the Lens side panel.
 COMPONENT_EXPORT(LENS_FEATURES)

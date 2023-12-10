@@ -8,9 +8,7 @@ import android.os.Handler;
 
 import org.chromium.base.ThreadUtils;
 
-/**
- * Provides WebView-specific threading utilities.
- */
+/** Provides WebView-specific threading utilities. */
 public class AwThreadUtils {
     /**
      * Post a task to the current thread, ensuring that it runs on the underlying Android looper

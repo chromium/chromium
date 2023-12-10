@@ -64,8 +64,14 @@ class AccountSelectionMediator {
      * sync with SheetType in chrome/browser/ui/views/webid/fedcm_account_selection_view_desktop.h
      * as well as with FedCmSheetType in tools/metrics/histograms/enums.xml.
      */
-    @IntDef({SheetType.ACCOUNT_SELECTION, SheetType.VERIFYING, SheetType.AUTO_REAUTHN,
-            SheetType.SIGN_IN_TO_IDP_STATIC, SheetType.SIGN_IN_ERROR, SheetType.NUM_ENTRIES})
+    @IntDef({
+        SheetType.ACCOUNT_SELECTION,
+        SheetType.VERIFYING,
+        SheetType.AUTO_REAUTHN,
+        SheetType.SIGN_IN_TO_IDP_STATIC,
+        SheetType.SIGN_IN_ERROR,
+        SheetType.NUM_ENTRIES
+    })
     @Retention(RetentionPolicy.SOURCE)
     private @interface SheetType {
         int ACCOUNT_SELECTION = 0;
@@ -135,10 +141,14 @@ class AccountSelectionMediator {
                 }
             };
 
-    AccountSelectionMediator(Tab tab, AccountSelectionComponent.Delegate delegate,
-            PropertyModel model, ModelList sheetAccountItems,
+    AccountSelectionMediator(
+            Tab tab,
+            AccountSelectionComponent.Delegate delegate,
+            PropertyModel model,
+            ModelList sheetAccountItems,
             BottomSheetController bottomSheetController,
-            AccountSelectionBottomSheetContent bottomSheetContent, ImageFetcher imageFetcher,
+            AccountSelectionBottomSheetContent bottomSheetContent,
+            ImageFetcher imageFetcher,
             @Px int desiredAvatarSize) {
         assert tab != null;
         mTab = tab;
@@ -152,94 +162,100 @@ class AccountSelectionMediator {
         mBottomSheetContent = bottomSheetContent;
         mLastSheetSeen = mBottomSheetContent;
 
-        mBottomSheetObserver = new EmptyBottomSheetObserver() {
-            // Sends focus events to the relevant views for accessibility.
-            // TODO(crbug.com/1429345): Add tests for TalkBack on FedCM.
-            private void focusForAccessibility() {
-                View contentView = mBottomSheetController.getCurrentSheetContent().getContentView();
-                assert contentView != null;
-                View continueButton = contentView.findViewById(R.id.account_selection_continue_btn);
+        mBottomSheetObserver =
+                new EmptyBottomSheetObserver() {
+                    // Sends focus events to the relevant views for accessibility.
+                    // TODO(crbug.com/1429345): Add tests for TalkBack on FedCM.
+                    private void focusForAccessibility() {
+                        View contentView =
+                                mBottomSheetController.getCurrentSheetContent().getContentView();
+                        assert contentView != null;
+                        View continueButton =
+                                contentView.findViewById(R.id.account_selection_continue_btn);
 
-                // TODO(crbug.com/1430240): Update SheetType and focus views for accessibility
-                // according to SheetType instead of number of accounts.
-                boolean isSingleAccountChooser = mAccounts != null && mAccounts.size() == 1;
-                View focusView = continueButton != null && continueButton.isShown()
-                                && !isSingleAccountChooser
-                        ? continueButton
-                        : contentView.findViewById(R.id.header);
+                        // TODO(crbug.com/1430240): Update SheetType and focus views for
+                        // accessibility according to SheetType instead of number of accounts.
+                        boolean isSingleAccountChooser = mAccounts != null && mAccounts.size() == 1;
+                        View focusView =
+                                continueButton != null
+                                                && continueButton.isShown()
+                                                && !isSingleAccountChooser
+                                        ? continueButton
+                                        : contentView.findViewById(R.id.header);
 
-                if (focusView == null) return;
+                        if (focusView == null) return;
 
-                focusView.requestFocus();
-                focusView.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED);
-            }
-
-            @Override
-            public void onSheetStateChanged(@SheetState int state, int reason) {
-                if (mLastSheetSeen != mBottomSheetContent) return;
-                if (mWasDismissed) return;
-
-                if (state == SheetState.HIDDEN) {
-                    // BottomSheetController.StateChangeReason.NONE happens for instance when the
-                    // user opens the tab switcher or when the user leaves Chrome. We do not want to
-                    // dismiss in those cases.
-                    if (reason == BottomSheetController.StateChangeReason.NONE) {
-                        mBottomSheetController.hideContent(mBottomSheetContent, true);
-                    } else {
-                        super.onSheetClosed(reason);
-                        @IdentityRequestDialogDismissReason
-                        int dismissReason =
-                                (reason == BottomSheetController.StateChangeReason.SWIPE)
-                                ? IdentityRequestDialogDismissReason.SWIPE
-                                : IdentityRequestDialogDismissReason.OTHER;
-                        onDismissed(dismissReason);
+                        focusView.requestFocus();
+                        focusView.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED);
                     }
-                    return;
-                }
 
-                if (state != SheetState.FULL) return;
+                    @Override
+                    public void onSheetStateChanged(@SheetState int state, int reason) {
+                        if (mLastSheetSeen != mBottomSheetContent) return;
+                        if (mWasDismissed) return;
 
-                // The bottom sheet programmatically requests focuses for accessibility when its
-                // contents are changed. If we call focusForAccessibility prior to
-                // onSheetStateChanged, the bottom sheet announcement would override the title or
-                // continue button announcement. Hence, focusForAccessibility is called here after
-                // the bottom sheet's focus-taking actions.
-                focusForAccessibility();
-            }
+                        if (state == SheetState.HIDDEN) {
+                            // BottomSheetController.StateChangeReason.NONE happens for instance
+                            // when the user opens the tab switcher or when the user leaves
+                            // Chrome. We do not want to dismiss in those cases.
+                            if (reason == BottomSheetController.StateChangeReason.NONE) {
+                                mBottomSheetController.hideContent(mBottomSheetContent, true);
+                            } else {
+                                super.onSheetClosed(reason);
+                                @IdentityRequestDialogDismissReason
+                                int dismissReason =
+                                        (reason == BottomSheetController.StateChangeReason.SWIPE)
+                                                ? IdentityRequestDialogDismissReason.SWIPE
+                                                : IdentityRequestDialogDismissReason.OTHER;
+                                onDismissed(dismissReason);
+                            }
+                            return;
+                        }
 
-            @Override
-            public void onSheetContentChanged(BottomSheetContent bottomSheet) {
-                // Keep track of the latest sheet seen. Since this method is invoked before
-                // onSheetStateChanged() when the sheet is swiped out, we do not clear
-                // |mLastSheetSeen| if |bottomSheet| is null.
-                if (bottomSheet != null) {
-                    mLastSheetSeen = bottomSheet;
-                }
-            }
-        };
+                        if (state != SheetState.FULL) return;
 
-        mTabObserver = new EmptyTabObserver() {
-            @Override
-            public void onDidStartNavigationInPrimaryMainFrame(
-                    Tab tab, NavigationHandle navigationHandle) {
-                assert tab == mTab;
-                onDismissed(IdentityRequestDialogDismissReason.OTHER);
-            }
+                        // The bottom sheet programmatically requests focuses for accessibility when
+                        // its contents are changed. If we call focusForAccessibility prior to
+                        // onSheetStateChanged, the bottom sheet announcement would override the
+                        // title or continue button announcement. Hence, focusForAccessibility is
+                        // called here after the bottom sheet's focus-taking actions.
+                        focusForAccessibility();
+                    }
 
-            @Override
-            public void onInteractabilityChanged(Tab tab, boolean isInteractable) {
-                assert tab == mTab;
-                // |isInteractable| is true when the tab is not hidden and its view is attached to
-                // the window. We use this method instead of onShown() and onHidden() because this
-                // one is correctly invoked when the user enters tab switcher (the current tab is no
-                // longer interactable in this case).
-                if (isInteractable) {
-                    showContent();
-                } else {
-                    mBottomSheetController.hideContent(mBottomSheetContent, false);
-                }
-            }
-        };
+                    @Override
+                    public void onSheetContentChanged(BottomSheetContent bottomSheet) {
+                        // Keep track of the latest sheet seen. Since this method is invoked before
+                        // onSheetStateChanged() when the sheet is swiped out, we do not clear
+                        // |mLastSheetSeen| if |bottomSheet| is null.
+                        if (bottomSheet != null) {
+                            mLastSheetSeen = bottomSheet;
+                        }
+                    }
+                };
+
+        mTabObserver =
+                new EmptyTabObserver() {
+                    @Override
+                    public void onDidStartNavigationInPrimaryMainFrame(
+                            Tab tab, NavigationHandle navigationHandle) {
+                        assert tab == mTab;
+                        onDismissed(IdentityRequestDialogDismissReason.OTHER);
+                    }
+
+                    @Override
+                    public void onInteractabilityChanged(Tab tab, boolean isInteractable) {
+                        assert tab == mTab;
+                        // |isInteractable| is true when the tab is not hidden and its view is
+                        // attached to the window. We use this method instead of onShown() and
+                        // onHidden() because this one is correctly invoked when the user enters
+                        // tab switcher (the current tab is no longer interactable in this case).
+                        if (isInteractable) {
+                            showContent();
+                        } else {
+                            mBottomSheetController.hideContent(mBottomSheetContent, false);
+                        }
+                    }
+                };
     }
 
     private void updateBackPressBehavior() {
@@ -251,20 +267,35 @@ class AccountSelectionMediator {
 
     private void handleBackPress() {
         mSelectedAccount = null;
-        showAccountsInternal(mTopFrameForDisplay, mIframeForDisplay, mIdpForDisplay, mAccounts,
-                mIdpMetadata, mClientMetadata, /*isAutoReauthn=*/false, mRpContext);
+        showAccountsInternal(
+                mTopFrameForDisplay,
+                mIframeForDisplay,
+                mIdpForDisplay,
+                mAccounts,
+                mIdpMetadata,
+                mClientMetadata,
+                /* isAutoReauthn= */ false,
+                mRpContext);
     }
 
-    private PropertyModel createHeaderItem(HeaderType headerType, String topFrameForDisplay,
-            String iframeForDisplay, String idpForDisplay, String rpContext) {
-        Runnable closeOnClickRunnable = () -> {
-            onDismissed(IdentityRequestDialogDismissReason.CLOSE_BUTTON);
+    private PropertyModel createHeaderItem(
+            HeaderType headerType,
+            String topFrameForDisplay,
+            String iframeForDisplay,
+            String idpForDisplay,
+            String rpContext) {
+        Runnable closeOnClickRunnable =
+                () -> {
+                    onDismissed(IdentityRequestDialogDismissReason.CLOSE_BUTTON);
 
-            RecordHistogram.recordBooleanHistogram(
-                    "Blink.FedCm.CloseVerifySheet.Android", mHeaderType == HeaderType.VERIFY);
-            RecordHistogram.recordEnumeratedHistogram(
-                    "Blink.FedCm.ClosedSheetType.Android", getSheetType(), SheetType.NUM_ENTRIES);
-        };
+                    RecordHistogram.recordBooleanHistogram(
+                            "Blink.FedCm.CloseVerifySheet.Android",
+                            mHeaderType == HeaderType.VERIFY);
+                    RecordHistogram.recordEnumeratedHistogram(
+                            "Blink.FedCm.ClosedSheetType.Android",
+                            getSheetType(),
+                            SheetType.NUM_ENTRIES);
+                };
 
         return new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
                 .with(HeaderProperties.IDP_BRAND_ICON, mBrandIcon)
@@ -331,24 +362,30 @@ class AccountSelectionMediator {
         if (!TextUtils.isEmpty(idpMetadata.getBrandIconUrl())) {
             int brandIconIdealSize = AccountSelectionBridge.getBrandIconIdealSize();
             ImageFetcher.Params params =
-                    ImageFetcher.Params.createNoResizing(new GURL(idpMetadata.getBrandIconUrl()),
+                    ImageFetcher.Params.createNoResizing(
+                            new GURL(idpMetadata.getBrandIconUrl()),
                             ImageFetcher.WEB_ID_ACCOUNT_SELECTION_UMA_CLIENT_NAME,
-                            brandIconIdealSize, brandIconIdealSize);
+                            brandIconIdealSize,
+                            brandIconIdealSize);
 
-            mImageFetcher.fetchImage(params, bitmap -> {
-                if (bitmap != null && bitmap.getWidth() == bitmap.getHeight()
-                        && bitmap.getWidth() >= AccountSelectionBridge.getBrandIconMinimumSize()) {
-                    mBrandIcon = bitmap;
-                    updateHeader();
-                }
-            });
+            mImageFetcher.fetchImage(
+                    params,
+                    bitmap -> {
+                        if (bitmap != null
+                                && bitmap.getWidth() == bitmap.getHeight()
+                                && bitmap.getWidth()
+                                        >= AccountSelectionBridge.getBrandIconMinimumSize()) {
+                            mBrandIcon = bitmap;
+                            updateHeader();
+                        }
+                    });
         }
     }
 
     void showVerifySheet(Account account) {
         if (mHeaderType == HeaderType.SIGN_IN) {
             mHeaderType = HeaderType.VERIFY;
-            updateSheet(Arrays.asList(account), /*areAccountsClickable=*/false);
+            updateSheet(Arrays.asList(account), /* areAccountsClickable= */ false);
         } else {
             // We call showVerifySheet() from updateSheet()->onAccountSelected() in this case, so do
             // not invoked updateSheet() as that would cause a loop and isn't needed.
@@ -361,19 +398,39 @@ class AccountSelectionMediator {
         if (!mWasDismissed) dismissContent();
     }
 
-    void showAccounts(String topFrameForDisplay, String iframeForDisplay, String idpForDisplay,
-            List<Account> accounts, IdentityProviderMetadata idpMetadata,
-            ClientIdMetadata clientMetadata, boolean isAutoReauthn, String rpContext) {
+    void showAccounts(
+            String topFrameForDisplay,
+            String iframeForDisplay,
+            String idpForDisplay,
+            List<Account> accounts,
+            IdentityProviderMetadata idpMetadata,
+            ClientIdMetadata clientMetadata,
+            boolean isAutoReauthn,
+            String rpContext) {
         showPlaceholderIcon(idpMetadata);
-        mSelectedAccount = accounts.size() == 1 ? accounts.get(0) : null;
-        showAccountsInternal(topFrameForDisplay, iframeForDisplay, idpForDisplay, accounts,
-                idpMetadata, clientMetadata, isAutoReauthn, rpContext);
+        mSelectedAccount = null;
+        if (accounts.size() == 1 && (isAutoReauthn || !idpMetadata.supportsAddAccount())) {
+            mSelectedAccount = accounts.get(0);
+        }
+        showAccountsInternal(
+                topFrameForDisplay,
+                iframeForDisplay,
+                idpForDisplay,
+                accounts,
+                idpMetadata,
+                clientMetadata,
+                isAutoReauthn,
+                rpContext);
         setComponentShowTime(SystemClock.elapsedRealtime());
         showBrandIcon(idpMetadata);
     }
 
-    void showFailureDialog(String topFrameForDisplay, String iframeForDisplay, String idpForDisplay,
-            IdentityProviderMetadata idpMetadata, String rpContext) {
+    void showFailureDialog(
+            String topFrameForDisplay,
+            String iframeForDisplay,
+            String idpForDisplay,
+            IdentityProviderMetadata idpMetadata,
+            String rpContext) {
         showPlaceholderIcon(idpMetadata);
         mTopFrameForDisplay = topFrameForDisplay;
         mIframeForDisplay = iframeForDisplay;
@@ -381,13 +438,17 @@ class AccountSelectionMediator {
         mIdpMetadata = idpMetadata;
         mRpContext = rpContext;
         mHeaderType = HeaderProperties.HeaderType.SIGN_IN_TO_IDP_STATIC;
-        updateSheet(/*accounts=*/null, /*areAccountsClickable=*/false);
+        updateSheet(/* accounts= */ null, /* areAccountsClickable= */ false);
         setComponentShowTime(SystemClock.elapsedRealtime());
         showBrandIcon(idpMetadata);
     }
 
-    void showErrorDialog(String topFrameForDisplay, String iframeForDisplay, String idpForDisplay,
-            IdentityProviderMetadata idpMetadata, String rpContext,
+    void showErrorDialog(
+            String topFrameForDisplay,
+            String iframeForDisplay,
+            String idpForDisplay,
+            IdentityProviderMetadata idpMetadata,
+            String rpContext,
             IdentityCredentialTokenError error) {
         showPlaceholderIcon(idpMetadata);
         mTopFrameForDisplay = topFrameForDisplay;
@@ -397,7 +458,7 @@ class AccountSelectionMediator {
         mRpContext = rpContext;
         mError = error;
         mHeaderType = HeaderProperties.HeaderType.SIGN_IN_ERROR;
-        updateSheet(/*accounts=*/null, /*areAccountsClickable=*/false);
+        updateSheet(/* accounts= */ null, /* areAccountsClickable= */ false);
         setComponentShowTime(SystemClock.elapsedRealtime());
         showBrandIcon(idpMetadata);
     }
@@ -417,9 +478,15 @@ class AccountSelectionMediator {
         return mTabObserver;
     }
 
-    private void showAccountsInternal(String topFrameForDisplay, String iframeForDisplay,
-            String idpForDisplay, List<Account> accounts, IdentityProviderMetadata idpMetadata,
-            ClientIdMetadata clientMetadata, boolean isAutoReauthn, String rpContext) {
+    private void showAccountsInternal(
+            String topFrameForDisplay,
+            String iframeForDisplay,
+            String idpForDisplay,
+            List<Account> accounts,
+            IdentityProviderMetadata idpMetadata,
+            ClientIdMetadata clientMetadata,
+            boolean isAutoReauthn,
+            String rpContext) {
         mTopFrameForDisplay = topFrameForDisplay;
         mIframeForDisplay = iframeForDisplay;
         mIdpForDisplay = idpForDisplay;
@@ -433,7 +500,7 @@ class AccountSelectionMediator {
         }
 
         mHeaderType = isAutoReauthn ? HeaderType.VERIFY_AUTO_REAUTHN : HeaderType.SIGN_IN;
-        updateSheet(accounts, /*areAccountsClickable=*/mSelectedAccount == null);
+        updateSheet(accounts, /* areAccountsClickable= */ mSelectedAccount == null);
         updateBackPressBehavior();
     }
 
@@ -459,7 +526,15 @@ class AccountSelectionMediator {
         if (mHeaderType == HeaderType.SIGN_IN_TO_IDP_STATIC) {
             assert !isDataSharingConsentVisible;
             assert mSelectedAccount == null;
-            continueButtonCallback = this::onSignInToIdp;
+            continueButtonCallback = this::onLoginToIdP;
+        }
+
+        if (mHeaderType == HeaderType.SIGN_IN
+                && areAccountsClickable
+                && mIdpMetadata.supportsAddAccount()) {
+            assert !isDataSharingConsentVisible;
+            assert mSelectedAccount == null;
+            continueButtonCallback = this::onLoginToIdP;
         }
 
         if (mHeaderType == HeaderType.SIGN_IN_ERROR) {
@@ -473,15 +548,18 @@ class AccountSelectionMediator {
                         ? createContinueBtnItem(
                                 mSelectedAccount, mIdpMetadata, continueButtonCallback)
                         : null);
-        mModel.set(ItemProperties.DATA_SHARING_CONSENT,
+        mModel.set(
+                ItemProperties.DATA_SHARING_CONSENT,
                 isDataSharingConsentVisible
                         ? createDataSharingConsentItem(mIdpForDisplay, mClientMetadata)
                         : null);
-        mModel.set(ItemProperties.IDP_SIGNIN,
+        mModel.set(
+                ItemProperties.IDP_SIGNIN,
                 mHeaderType == HeaderType.SIGN_IN_TO_IDP_STATIC
                         ? createIdpSignInItem(mIdpForDisplay)
                         : null);
-        mModel.set(ItemProperties.ERROR_TEXT,
+        mModel.set(
+                ItemProperties.ERROR_TEXT,
                 mHeaderType == HeaderType.SIGN_IN_ERROR
                         ? createErrorTextItem(mIdpForDisplay, mTopFrameForDisplay, mError)
                         : null);
@@ -491,8 +569,13 @@ class AccountSelectionMediator {
     }
 
     private void updateHeader() {
-        PropertyModel headerModel = createHeaderItem(
-                mHeaderType, mTopFrameForDisplay, mIframeForDisplay, mIdpForDisplay, mRpContext);
+        PropertyModel headerModel =
+                createHeaderItem(
+                        mHeaderType,
+                        mTopFrameForDisplay,
+                        mIframeForDisplay,
+                        mIdpForDisplay,
+                        mRpContext);
         mModel.set(ItemProperties.HEADER, headerModel);
     }
 
@@ -509,21 +592,19 @@ class AccountSelectionMediator {
 
             mRegisteredObservers = true;
             mBottomSheetController.addObserver(mBottomSheetObserver);
-            KeyboardVisibilityDelegate.getInstance().addKeyboardVisibilityListener(
-                    mKeyboardVisibilityListener);
+            KeyboardVisibilityDelegate.getInstance()
+                    .addKeyboardVisibilityListener(mKeyboardVisibilityListener);
             mTab.addObserver(mTabObserver);
         } else {
             onDismissed(IdentityRequestDialogDismissReason.OTHER);
         }
     }
 
-    /**
-     * Requests to dismiss bottomsheet.
-     */
+    /** Requests to dismiss bottomsheet. */
     void dismissContent() {
         mWasDismissed = true;
-        KeyboardVisibilityDelegate.getInstance().removeKeyboardVisibilityListener(
-                mKeyboardVisibilityListener);
+        KeyboardVisibilityDelegate.getInstance()
+                .removeKeyboardVisibilityListener(mKeyboardVisibilityListener);
         mTab.removeObserver(mTabObserver);
         mBottomSheetController.hideContent(mBottomSheetContent, true);
         mBottomSheetController.removeObserver(mBottomSheetObserver);
@@ -536,16 +617,23 @@ class AccountSelectionMediator {
         final String avatarURL = account.getPictureUrl().getSpec();
 
         if (!avatarURL.isEmpty()) {
-            ImageFetcher.Params params = ImageFetcher.Params.create(avatarURL,
-                    ImageFetcher.WEB_ID_ACCOUNT_SELECTION_UMA_CLIENT_NAME, mDesiredAvatarSize,
-                    mDesiredAvatarSize);
+            ImageFetcher.Params params =
+                    ImageFetcher.Params.create(
+                            avatarURL,
+                            ImageFetcher.WEB_ID_ACCOUNT_SELECTION_UMA_CLIENT_NAME,
+                            mDesiredAvatarSize,
+                            mDesiredAvatarSize);
 
-            mImageFetcher.fetchImage(params, bitmap -> {
-                accountModel.set(AccountProperties.AVATAR,
-                        new AccountProperties.Avatar(name, bitmap, mDesiredAvatarSize));
-            });
+            mImageFetcher.fetchImage(
+                    params,
+                    bitmap -> {
+                        accountModel.set(
+                                AccountProperties.AVATAR,
+                                new AccountProperties.Avatar(name, bitmap, mDesiredAvatarSize));
+                    });
         } else {
-            accountModel.set(AccountProperties.AVATAR,
+            accountModel.set(
+                    AccountProperties.AVATAR,
                     new AccountProperties.Avatar(name, null, mDesiredAvatarSize));
         }
     }
@@ -558,16 +646,14 @@ class AccountSelectionMediator {
      * Event listener for when the user taps on an account or the continue button of the
      * bottomsheet, when it is an IdP sign-in sheet.
      */
-    void onSignInToIdp(Account account) {
+    void onLoginToIdP(Account account) {
         // This method only has an Account to match the type of the event listener.
         assert account == null;
         if (!shouldInputBeProcessed()) return;
-        mDelegate.onSignInToIdp(mIdpMetadata.getLoginUrl());
+        mDelegate.onLoginToIdP(mIdpMetadata.getLoginUrl());
     }
 
-    /**
-     * Event listener for when the user taps on the more details button of the bottomsheet.
-     */
+    /** Event listener for when the user taps on the more details button of the bottomsheet. */
     void onMoreDetails() {
         if (!shouldInputBeProcessed()) return;
         mDelegate.onMoreDetails();
@@ -603,8 +689,15 @@ class AccountSelectionMediator {
         Account oldSelectedAccount = mSelectedAccount;
         mSelectedAccount = selectedAccount;
         if (oldSelectedAccount == null && !mSelectedAccount.isSignIn()) {
-            showAccountsInternal(mTopFrameForDisplay, mIframeForDisplay, mIdpForDisplay, mAccounts,
-                    mIdpMetadata, mClientMetadata, /*isAutoReauthn=*/false, mRpContext);
+            showAccountsInternal(
+                    mTopFrameForDisplay,
+                    mIframeForDisplay,
+                    mIdpForDisplay,
+                    mAccounts,
+                    mIdpMetadata,
+                    mClientMetadata,
+                    /* isAutoReauthn= */ false,
+                    mRpContext);
             return;
         }
 
@@ -621,7 +714,8 @@ class AccountSelectionMediator {
     private PropertyModel createAccountItem(Account account, boolean isAccountClickable) {
         return new PropertyModel.Builder(AccountProperties.ALL_KEYS)
                 .with(AccountProperties.ACCOUNT, account)
-                .with(AccountProperties.ON_CLICK_LISTENER,
+                .with(
+                        AccountProperties.ON_CLICK_LISTENER,
                         isAccountClickable ? this::onClickAccountSelected : null)
                 .build();
     }
@@ -632,7 +726,8 @@ class AccountSelectionMediator {
             Callback<Account> onClickListener) {
         assert account != null
                 || mHeaderType == HeaderProperties.HeaderType.SIGN_IN_TO_IDP_STATIC
-                || mHeaderType == HeaderProperties.HeaderType.SIGN_IN_ERROR;
+                || mHeaderType == HeaderProperties.HeaderType.SIGN_IN_ERROR
+                || mHeaderType == HeaderProperties.HeaderType.SIGN_IN;
 
         ContinueButtonProperties.Properties properties = new ContinueButtonProperties.Properties();
         properties.mAccount = account;
@@ -651,13 +746,16 @@ class AccountSelectionMediator {
         properties.mIdpForDisplay = idpForDisplay;
         properties.mTermsOfServiceUrl = metadata.getTermsOfServiceUrl();
         properties.mPrivacyPolicyUrl = metadata.getPrivacyPolicyUrl();
-        properties.mTermsOfServiceClickRunnable = () -> {
-            RecordHistogram.recordBooleanHistogram(
-                    "Blink.FedCm.SignUp.TermsOfServiceClicked", true);
-        };
-        properties.mPrivacyPolicyClickRunnable = () -> {
-            RecordHistogram.recordBooleanHistogram("Blink.FedCm.SignUp.PrivacyPolicyClicked", true);
-        };
+        properties.mTermsOfServiceClickRunnable =
+                () -> {
+                    RecordHistogram.recordBooleanHistogram(
+                            "Blink.FedCm.SignUp.TermsOfServiceClicked", true);
+                };
+        properties.mPrivacyPolicyClickRunnable =
+                () -> {
+                    RecordHistogram.recordBooleanHistogram(
+                            "Blink.FedCm.SignUp.PrivacyPolicyClicked", true);
+                };
 
         return new PropertyModel.Builder(DataSharingConsentProperties.ALL_KEYS)
                 .with(DataSharingConsentProperties.PROPERTIES, properties)

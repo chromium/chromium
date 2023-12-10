@@ -492,8 +492,12 @@ ReadbackTestConfig const kTestConfigs[] = {
     ReadbackTestConfig{viz::RendererType::kSkiaVk, TestReadBackType::kTexture},
 #endif  // BUILDFLAG(ENABLE_VULKAN_BACKEND_TESTS)
 #if BUILDFLAG(ENABLE_SKIA_GRAPHITE_TESTS)
-    ReadbackTestConfig{viz::RendererType::kSkiaGraphite,
+    ReadbackTestConfig{viz::RendererType::kSkiaGraphiteDawn,
                        TestReadBackType::kBitmap},
+#if BUILDFLAG(IS_IOS)
+    ReadbackTestConfig{viz::RendererType::kSkiaGraphiteMetal,
+                       TestReadBackType::kBitmap},
+#endif  // BUILDFLAG(IS_IOS)
 #endif  // BUILDFLAG(ENABLE_SKIA_GRAPHITE_TESTS)
 };
 

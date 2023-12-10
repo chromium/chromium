@@ -29,9 +29,7 @@ public final class DownloadForegroundServiceObservers {
      * Implementing classes may never be renamed, as class names are persisted between app updates.
      */
     public interface Observer {
-        /**
-         * Called when any task (service or activity) is removed from the service's application.
-         */
+        /** Called when any task (service or activity) is removed from the service's application. */
         void onForegroundServiceTaskRemoved();
 
         /**
@@ -56,8 +54,9 @@ public final class DownloadForegroundServiceObservers {
         observers = new HashSet<>(observers);
         observers.add(observerClassName);
 
-        ChromeSharedPreferences.getInstance().writeStringSet(
-                ChromePreferenceKeys.DOWNLOAD_FOREGROUND_SERVICE_OBSERVERS, observers);
+        ChromeSharedPreferences.getInstance()
+                .writeStringSet(
+                        ChromePreferenceKeys.DOWNLOAD_FOREGROUND_SERVICE_OBSERVERS, observers);
     }
 
     /**
@@ -81,8 +80,9 @@ public final class DownloadForegroundServiceObservers {
             return;
         }
 
-        ChromeSharedPreferences.getInstance().writeStringSet(
-                ChromePreferenceKeys.DOWNLOAD_FOREGROUND_SERVICE_OBSERVERS, observers);
+        ChromeSharedPreferences.getInstance()
+                .writeStringSet(
+                        ChromePreferenceKeys.DOWNLOAD_FOREGROUND_SERVICE_OBSERVERS, observers);
     }
 
     static void alertObserversServiceDestroyed() {
@@ -105,13 +105,13 @@ public final class DownloadForegroundServiceObservers {
     }
 
     private static Set<String> getAllObservers() {
-        return ChromeSharedPreferences.getInstance().readStringSet(
-                ChromePreferenceKeys.DOWNLOAD_FOREGROUND_SERVICE_OBSERVERS);
+        return ChromeSharedPreferences.getInstance()
+                .readStringSet(ChromePreferenceKeys.DOWNLOAD_FOREGROUND_SERVICE_OBSERVERS);
     }
 
     private static void removeAllObservers() {
-        ChromeSharedPreferences.getInstance().removeKey(
-                ChromePreferenceKeys.DOWNLOAD_FOREGROUND_SERVICE_OBSERVERS);
+        ChromeSharedPreferences.getInstance()
+                .removeKey(ChromePreferenceKeys.DOWNLOAD_FOREGROUND_SERVICE_OBSERVERS);
     }
 
     private static @Nullable Observer getObserverFromClassName(String observerClassName) {

@@ -29,10 +29,16 @@ public final class GlueApiHelperForOMR1 {
      * See {@link WebViewClient#onSafeBrowsingHit(WebView, WebResourceRequest, int,
      * SafeBrowsingResponse)}, which was added in OMR1.
      */
-    public static void onSafeBrowsingHit(WebViewClient webViewClient, WebView webView,
-            AwWebResourceRequest request, int threatType,
+    public static void onSafeBrowsingHit(
+            WebViewClient webViewClient,
+            WebView webView,
+            AwWebResourceRequest request,
+            int threatType,
             Callback<AwSafeBrowsingResponse> callback) {
-        webViewClient.onSafeBrowsingHit(webView, new WebResourceRequestAdapter(request), threatType,
+        webViewClient.onSafeBrowsingHit(
+                webView,
+                new WebResourceRequestAdapter(request),
+                threatType,
                 new SafeBrowsingResponseAdapter(callback));
     }
 }

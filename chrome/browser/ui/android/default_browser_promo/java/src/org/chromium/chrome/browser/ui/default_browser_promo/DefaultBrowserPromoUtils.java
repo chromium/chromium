@@ -17,21 +17,24 @@ import org.chromium.ui.base.WindowAndroid;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-/**
- * A utility class providing information regarding states of default browser.
- */
+/** A utility class providing information regarding states of default browser. */
 public class DefaultBrowserPromoUtils {
-    @IntDef({DefaultBrowserState.CHROME_DEFAULT, DefaultBrowserState.NO_DEFAULT,
-            DefaultBrowserState.OTHER_DEFAULT})
+    @IntDef({
+        DefaultBrowserState.CHROME_DEFAULT,
+        DefaultBrowserState.NO_DEFAULT,
+        DefaultBrowserState.OTHER_DEFAULT
+    })
     @Retention(RetentionPolicy.SOURCE)
     public @interface DefaultBrowserState {
         int NO_DEFAULT = 0;
         int OTHER_DEFAULT = 1;
+
         /**
          * CHROME_DEFAULT means the currently running Chrome as opposed to
          * #isCurrentDefaultBrowserChrome() which looks for any Chrome.
          */
         int CHROME_DEFAULT = 2;
+
         int NUM_ENTRIES = 3;
     }
 
@@ -51,8 +54,9 @@ public class DefaultBrowserPromoUtils {
         if (!shouldShowPromo(deps, activity, ignoreMaxCount)) return false;
         deps.incrementPromoCount();
         deps.recordPromoTime();
-        DefaultBrowserPromoManager manager = new DefaultBrowserPromoManager(
-                activity, windowAndroid, deps.getCurrentDefaultBrowserState());
+        DefaultBrowserPromoManager manager =
+                new DefaultBrowserPromoManager(
+                        activity, windowAndroid, deps.getCurrentDefaultBrowserState());
         manager.promoByRoleManager();
         return true;
     }
@@ -99,11 +103,9 @@ public class DefaultBrowserPromoUtils {
         }
     }
 
-    /**
-     * Increment session count for triggering feature in the future.
-     */
+    /** Increment session count for triggering feature in the future. */
     public static void incrementSessionCount() {
-        ChromeSharedPreferences.getInstance().incrementInt(
-                ChromePreferenceKeys.DEFAULT_BROWSER_PROMO_SESSION_COUNT);
+        ChromeSharedPreferences.getInstance()
+                .incrementInt(ChromePreferenceKeys.DEFAULT_BROWSER_PROMO_SESSION_COUNT);
     }
 }

@@ -31,7 +31,7 @@ class NET_EXPORT_PRIVATE QuicChromiumPacketWriter
   // repeated memory allocations.  This packet writer only ever has a
   // single write in flight, a constraint inherited from the interface
   // of the underlying datagram Socket.
-  class NET_EXPORT_PRIVATE ReusableIOBuffer : public IOBuffer {
+  class NET_EXPORT_PRIVATE ReusableIOBuffer : public IOBufferWithSize {
    public:
     explicit ReusableIOBuffer(size_t capacity);
 

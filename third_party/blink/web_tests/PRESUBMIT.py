@@ -297,6 +297,11 @@ def _CheckForUnlistedTestFolder(input_api, output_api):
 def _CheckForExtraVirtualBaselines(input_api, output_api):
     """Checks that expectations in virtual test suites are for virtual test suites that exist
     """
+    # This test fails on Windows because win32pipe is not available and
+    # other errors.
+    if os.name == 'nt':
+        return []
+
     os_path = input_api.os_path
 
     local_dir = os_path.relpath(
@@ -321,11 +326,6 @@ def _CheckForExtraVirtualBaselines(input_api, output_api):
             check_all = True
 
     if not check_all and len(check_files) == 0:
-        return []
-
-    # The rest of this test fails on Windows because win32pipe is not available
-    # and other errors.
-    if os.name == 'nt':
         return []
 
     from blinkpy.common.host import Host

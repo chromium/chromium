@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_backing_factory.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
 #include "gpu/command_buffer/service/texture_manager.h"
 
 namespace gfx {
@@ -82,16 +83,20 @@ class GPU_GLES2_EXPORT GLCommonImageBackingFactory
   // passthrough textures.
   bool use_passthrough_ = false;
 
-  // Map of supported SharedImageFormats and associated GL format info for them.
-  std::map<viz::SharedImageFormat, std::vector<FormatInfo>> supported_formats_;
   int32_t max_texture_size_ = 0;
   bool texture_usage_angle_ = false;
   GpuDriverBugWorkarounds workarounds_;
+  const GLFormatCaps gl_format_caps_;
   WebGPUAdapterName use_webgpu_adapter_ = WebGPUAdapterName::kDefault;
 
   // Used to notify the watchdog before a buffer allocation in case it takes
   // long.
   const raw_ptr<gl::ProgressReporter> progress_reporter_ = nullptr;
+
+ private:
+  // Map of supported single planar SharedImageFormats and associated GL format
+  // info for them.
+  std::map<viz::SharedImageFormat, FormatInfo> supported_formats_;
 };
 
 }  // namespace gpu

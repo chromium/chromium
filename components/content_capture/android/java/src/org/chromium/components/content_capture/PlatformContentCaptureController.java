@@ -76,8 +76,9 @@ public class PlatformContentCaptureController {
 
         mIsAiai = AIAI_PACKAGE_NAME.equals(componentName.getPackageName());
         if (!mIsAiai) {
-            log("Package doesn't match, current one is "
-                    + mContentCaptureManager.getServiceComponentName().getPackageName());
+            log(
+                    "Package doesn't match, current one is "
+                            + mContentCaptureManager.getServiceComponentName().getPackageName());
             // Disable the ContentCapture if there is no testing flag.
             if (!BuildInfo.isDebugAndroid() && !ContentCaptureFeatures.isDumpForTestingEnabled()) {
                 return;
@@ -130,15 +131,14 @@ public class PlatformContentCaptureController {
 
         DataRemovalRequest.Builder builder = new DataRemovalRequest.Builder();
         for (String url : urlsToDelete) {
-            builder = builder.addLocusId(
-                    new LocusId(url), /* Signals that we aren't using extra flags */ 0);
+            builder =
+                    builder.addLocusId(
+                            new LocusId(url), /* Signals that we aren't using extra flags */ 0);
         }
         mContentCaptureManager.removeData(builder.build());
     }
 
-    /**
-     * @return  @return if any of the given allows to be captured.
-     */
+    /** @return  @return if any of the given allows to be captured. */
     public boolean shouldCapture(String[] urls) {
         if (mAllowlist == null) return true;
         return mAllowlist.isAllowed(urls);

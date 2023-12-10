@@ -24,9 +24,7 @@ import java.util.Map;
 public class MockNotificationManagerProxy implements NotificationManagerProxy {
     private static final String KEY_SEPARATOR = ":";
 
-    /**
-     * Holds a notification and the arguments passed to #notify and #cancel.
-     */
+    /** Holds a notification and the arguments passed to #notify and #cancel. */
     public static class NotificationEntry {
         public final Notification notification;
         public final String tag;
@@ -87,7 +85,7 @@ public class MockNotificationManagerProxy implements NotificationManagerProxy {
 
     @Override
     public void cancel(int id) {
-        cancel(null /* tag */, id);
+        cancel(/* tag= */ null, id);
     }
 
     @Override
@@ -105,7 +103,7 @@ public class MockNotificationManagerProxy implements NotificationManagerProxy {
 
     @Override
     public void notify(int id, Notification notification) {
-        notify(null /* tag */, id, notification);
+        notify(/* tag= */ null, id, notification);
     }
 
     @Override
@@ -116,7 +114,9 @@ public class MockNotificationManagerProxy implements NotificationManagerProxy {
 
     @Override
     public void notify(NotificationWrapper notification) {
-        notify(notification.getMetadata().tag, notification.getMetadata().id,
+        notify(
+                notification.getMetadata().tag,
+                notification.getMetadata().id,
                 notification.getNotification());
     }
 

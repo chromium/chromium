@@ -363,7 +363,7 @@ void SavedDeskItemView::ReplaceSavedDesk(const base::Uuid& uuid) {
   // since we only record the delete operation when the user specifically
   // deletes an entry.
   if (auto* presenter = saved_desk_util::GetSavedDeskPresenter()) {
-    presenter->DeleteEntry(uuid, /*record_for_type=*/absl::nullopt);
+    presenter->DeleteEntry(uuid, /*record_for_type=*/std::nullopt);
     UpdateSavedDeskName();
     RecordReplaceSavedDeskHistogram(saved_desk_->type());
   }

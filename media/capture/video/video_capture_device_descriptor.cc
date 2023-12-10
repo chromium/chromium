@@ -41,10 +41,12 @@ VideoCaptureDeviceDescriptor::VideoCaptureDeviceDescriptor(
     VideoCaptureApi capture_api,
     const VideoCaptureControlSupport& control_support,
     VideoCaptureTransportType transport_type,
-    VideoFacingMode facing)
+    VideoFacingMode facing,
+    absl::optional<CameraAvailability> availability)
     : device_id(device_id),
       model_id(model_id),
       facing(facing),
+      availability(std::move(availability)),
       capture_api(capture_api),
       transport_type(transport_type),
       display_name_(TrimDisplayName(display_name)),

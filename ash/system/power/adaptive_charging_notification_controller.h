@@ -5,11 +5,12 @@
 #ifndef ASH_SYSTEM_POWER_ADAPTIVE_CHARGING_NOTIFICATION_CONTROLLER_H_
 #define ASH_SYSTEM_POWER_ADAPTIVE_CHARGING_NOTIFICATION_CONTROLLER_H_
 
+#include <optional>
 #include <string>
 
 #include "ash/ash_export.h"
 #include "base/memory/weak_ptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "base/time/time.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 
 namespace ash {
@@ -27,20 +28,20 @@ class ASH_EXPORT AdaptiveChargingNotificationController
   // Show the adaptive charging notification. There are two possible
   // scenarios:
   // 1. When the battery is kept at 80% indefinitely (i.e. no value of
-  // |hours_to_full| is provided), the notification is a
+  // |time_to_full| is provided), the notification is a
   // normal notification.
-  // 2. When the battery is temporary kept at 80% (i.e. |hours_to_full| has
-  // a value), the notification will have higher priority (SYSTEM_PRIORITY).
+  // 2. When the battery is temporary kept at 80% (i.e. |time_to_full| has
+  // a value), the estimated time to full will be shown.
   void ShowAdaptiveChargingNotification(
-      absl::optional<int> hours_to_full = absl::nullopt);
+      std::optional<base::TimeDelta> time_to_full = std::nullopt);
 
   void CloseAdaptiveChargingNotification(bool by_user = false);
 
   bool ShouldShowNotification();
 
   // message_center::NotificationObserver:
-  void Click(const absl::optional<int>& button_index,
-             const absl::optional<std::u16string>& reply) override;
+  void Click(const std::optional<int>& button_index,
+             const std::optional<std::u16string>& reply) override;
 
  private:
   base::WeakPtrFactory<AdaptiveChargingNotificationController>

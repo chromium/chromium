@@ -11,8 +11,8 @@
 <translation id="1352919863522755794">Google Adgangskodeadministrator kunne ikke tjekke dine adgangskoder. Prøv at tjekke din internetforbindelse.</translation>
 <translation id="1407843355326180937">Log ind på dette website og i Chrome for at få adgang til dine bogmærker og meget mere på alle dine enheder.</translation>
 <translation id="1436059927646026729">Åbn min seneste fane i Chrome</translation>
+<translation id="1449241544691504574">Føj bogmærker til Chrome</translation>
 <translation id="1462727070346936664">Log ind for at få mest muligt ud af Chrome.</translation>
-<translation id="1479202195792305274">Chrome kan tjekke dine adgangskoder, når du er logget ind med din Google-konto.</translation>
 <translation id="1491435845014430217">Aktivér "Lås inkognitofaner, når du lukker Chrome".</translation>
 <translation id="1493827051843127077">Angiv Chrome som standardbrowser for at synkronisere faner, adgangskoder og betalingsoplysninger på alle dine enheder</translation>
 <translation id="1504372625950710826">Chrome kunne ikke søge efter opdateringer. Prøv at tjekke din internetforbindelse.</translation>
@@ -33,10 +33,10 @@ Vær opmærksom på følgende:
         Prøv at vente et par minutter, før du logger ud. Hvis du logger ud nu, slettes disse data.</translation>
 <translation id="1682483655351012182">Synkroniser dine Chrome-data</translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1790080846677398234">Føjer de angivne webadresser til dine bogmærker i Chrome.</translation>
 <translation id="1843217788865538014">Brug automatisk Chrome, når du trykker på links i beskeder, dokumenter og andre apps.</translation>
 <translation id="1917964099031477364">Denne konto og data, som ikke er gemt, fjernes fra Chrome og andre Google-apps på denne enhed.</translation>
 <translation id="1987779152850321833">Udfør de foreslåede handlinger nedenfor for at få mest muligt ud af Chrome.</translation>
-<translation id="2009224836393115614">Chrome kunne ikke tjekke dine adgangskoder. Prøv at tjekke din internetforbindelse.</translation>
 <translation id="2056123005618757196">Få mere fra hånden med Google Chrome, der er enkelt, sikkert og hurtigere end nogensinde.</translation>
 <translation id="2120238739383482109">Åbner Chrome-bogmærkerne.</translation>
 <translation id="2147651015520127414">Chrome verificerede, at <ph name="ISSUER" /> har udstedt certifikatet for dette website.</translation>
@@ -58,7 +58,7 @@ Vær opmærksom på følgende:
 <translation id="2671426118752779020">Du kan bruge de adgangskoder, du har gemt i Google Adgangskodeadministrator, i andre apps på din iPhone.</translation>
 <translation id="2689064829982324496">Hvis du vil logge ud af din Google-konto på alle websites, skal du <ph name="BEGIN_LINK" />logge ud af Chrome<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Chrome kunne ikke søge efter opdateringer. Prøv igen senere.</translation>
-<translation id="2732745070297234559">Chrome kunne ikke tjekke alle adgangskoder. Prøv igen i morgen.</translation>
+<translation id="2702250627063295552">Føj et element til læselisten i Chrome</translation>
 <translation id="2736805085127235148">Chrome-notifikationer er i øjeblikket deaktiveret i enhedsindstillingerne.</translation>
 <translation id="2767464022270041271">Der er ingen gemte adgangskoder. Google Adgangskodeadministrator kan tjekke dine adgangskoder, når du gemmer dem.</translation>
 <translation id="2868822340714096138">Ryd browserdata i Chrome</translation>
@@ -76,7 +76,6 @@ Vær opmærksom på følgende:
 <translation id="3472587960215700950">Chrome bruger Google Maps til at give dig rutevejledninger og lokale oplysninger om registrerede adresser.</translation>
 <translation id="3503014945441706099">Få også Udvidet beskyttet browsing til denne Chrome-profil</translation>
 <translation id="3522659714780527202">Aktivér synkronisering for at se dine faner på alle de enheder, hvor du bruger Chrome</translation>
-<translation id="3533694711092285624">Der er ingen gemte adgangskoder. Chrome kan tjekke dine adgangskoder, når du gemmer dem.</translation>
 <translation id="3577555362230509265">Brug Chrome i andre apps.</translation>
 <translation id="3594076341410558780">Skjul "Få mest muligt ud af Chrome"</translation>
 <translation id="3655656110921623717">Det betyder, at Chrome anmoder om mobilwebsitet hver gang.</translation>
@@ -85,6 +84,7 @@ Vær opmærksom på følgende:
 <translation id="3744018071945602754">Administrer adgangskoder i Chrome</translation>
 <translation id="3827545470516145620">Du får standardbeskyttelse på denne enhed</translation>
 <translation id="384394811301901750">Google Chrome kan ikke bruge dit kamera lige nu</translation>
+<translation id="3863841106411295595">Føjer de angivne webadresser til din læseliste i Chrome.</translation>
 <translation id="3901001113120561395">Få mest muligt ud af Chrome.</translation>
 <translation id="3967382818307165056">Administrer betalingsmetoder i Chrome</translation>
 <translation id="3980220367029651214">Du er ved at skifte synkroniseringskonto fra <ph name="USER_EMAIL1" /> til <ph name="USER_EMAIL2" />. Dine eksisterende Chrome-data administreres af <ph name="DOMAIN" />. Denne handling sletter dine data fra denne enhed, men dine data forbliver på <ph name="USER_EMAIL1" />.</translation>
@@ -98,12 +98,10 @@ Vær opmærksom på følgende:
 <translation id="424864128008805179">Vil du logge ud af Chrome?</translation>
 <translation id="4251174643044751591">Åbner siden med indstillinger for betalingsmetoder i Chrome.</translation>
 <translation id="4453284704333523777">Administrer indstillinger for Chrome</translation>
-<translation id="4471662743048412085">Spor registrerede pakker i Chrome</translation>
 <translation id="4508370294876102450">Åbn Chrome fra en hvilken som helst app</translation>
 <translation id="4523886039239821078">Nogle tilføjelser får Chrome til at gå ned. Prøv at afinstallere:</translation>
 <translation id="4633328489441962921">Chrome kan ikke søge efter opdateringer</translation>
 <translation id="4636900170638246267">Log ind på dette website og Chrome.</translation>
-<translation id="4698415050768537821">Chrome kunne ikke tjekke alle adgangskoder. Prøv igen i morgen, eller <ph name="BEGIN_LINK" />tjek adgangskoder på din Google-konto<ph name="END_LINK" />.</translation>
 <translation id="4761869838909035636">Kør Chrome-sikkerhedstjekket</translation>
 <translation id="4819268619367838612">Chrome sender data om brug og nedbrud til Google for at hjælpe med at forbedre appen. <ph name="BEGIN_LINK" />Administrer<ph name="END_LINK" /></translation>
 <translation id="4831642696589369971">Nogle af dine Chrome-data er endnu ikke gemt på din Google-konto.
@@ -161,7 +159,6 @@ Vær opmærksom på følgende:
 <translation id="6815466750807582739">Betalingsmetoder og adresser krypteres ikke. Browserhistorik fra Chrome synkroniseres ikke.
 
 Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssætningen bliver ikke sendt til eller gemt af Google. Hvis du glemmer din adgangssætning eller vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />rydde Chrome-dataene på din konto<ph name="END_LINK" />.</translation>
-<translation id="6822673484890854830">Chrome kunne ikke tjekke alle adgangskoder. Prøv igen senere.</translation>
 <translation id="6851982868877411675">Åbn Chrome-indstillingerne i iOS, tryk på "Standardbrowserapp", og vælg Chrome.</translation>
 <translation id="6916015246697034114">Søg med stemmen i Chrome</translation>
 <translation id="6964931465519938134">Du kan nu bruge Chrome, hver gang du trykker på links i meddelelser, dokumenter og andre apps.</translation>

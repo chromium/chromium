@@ -179,8 +179,6 @@ bool CanGetCommitsFromExtensions(ModelType model_type) {
 
 }  // namespace
 
-WaitInterval::WaitInterval() : mode(BlockingMode::kUnknown) {}
-
 WaitInterval::WaitInterval(BlockingMode mode, base::TimeDelta length)
     : mode(mode), length(length) {}
 
@@ -188,19 +186,15 @@ WaitInterval::~WaitInterval() = default;
 
 DataTypeTracker::DataTypeTracker(ModelType type)
     : type_(type),
-      local_nudge_count_(0),
-      local_refresh_request_count_(0),
-      initial_sync_required_(false),
-      sync_required_to_resolve_conflict_(false),
       local_change_nudge_delay_(GetDefaultLocalChangeNudgeDelay(type)),
+      quota_(
+          CanGetCommitsFromExtensions(type)
+              ? std::make_unique<CommitQuota>(kInitialTokensForExtensionTypes,
+                                              kRefillIntervalForExtensionTypes)
+              : nullptr),
       depleted_quota_nudge_delay_(kDepletedQuotaNudgeDelayForExtensionTypes) {
   // Sanity check the hardcode value for kMinLocalChangeNudgeDelay.
   DCHECK_GE(local_change_nudge_delay_, kMinLocalChangeNudgeDelay);
-
-  if (CanGetCommitsFromExtensions(type)) {
-    quota_ = std::make_unique<CommitQuota>(kInitialTokensForExtensionTypes,
-                                           kRefillIntervalForExtensionTypes);
-  }
 }
 
 DataTypeTracker::~DataTypeTracker() = default;

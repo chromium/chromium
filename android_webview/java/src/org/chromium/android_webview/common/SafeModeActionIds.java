@@ -15,7 +15,6 @@ public class SafeModeActionIds {
     public static final String FAST_VARIATIONS_SEED = "fast_variations_seed";
     public static final String NOOP = "noop";
     public static final String DISABLE_ANDROID_AUTOFILL = "disable_android_autofill";
-    public static final String DISABLE_CHROME_AUTOCOMPLETE = "disable_chrome_autocomplete";
     public static final String DISABLE_ORIGIN_TRIALS = "disable_origin_trials";
     public static final String DISABLE_AW_SAFE_BROWSING = "disable_safe_browsing";
     public static final String RESET_COMPONENT_UPDATER = "reset_component_updater";

@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/permissions_policy/iframe_policy.h"
 #include "third_party/blink/renderer/core/permissions_policy/permissions_policy_parser.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 
 namespace blink {
@@ -52,6 +53,7 @@ class PolicyTest : public testing::Test {
       PolicyParserMessageBuffer("", true /* discard_message */);
 
  protected:
+  test::TaskEnvironment task_environment_;
   std::unique_ptr<DummyPageHolder> page_holder_;
   Persistent<DOMFeaturePolicy> policy_;
 };
@@ -317,3 +319,4 @@ TEST_F(IFramePolicyTest, TestCombinedPolicyOnOriginBSubdomain) {
 }
 
 }  // namespace blink
+

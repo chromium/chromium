@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_SIGNIN_ASH_USER_CLOUD_SIGNIN_RESTRICTION_POLICY_FETCHER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/values.h"
@@ -13,7 +14,6 @@
 #include "google_apis/gaia/oauth2_access_token_consumer.h"
 #include "google_apis/gaia/oauth2_access_token_fetcher.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
 class SimpleURLLoader;
@@ -37,9 +37,9 @@ namespace ash {
 // After fetching the policy value, it will run `callback` with the fetched
 // value, `Status::kSuccess` status and the hosted domain of the account. If any
 // error occurs during the process of fetching the policy value, `callback` will
-// run with `absl::nullopt` and a proper error status value to inform about the
+// run with `std::nullopt` and a proper error status value to inform about the
 // error. If the account is not an Enterprise account, `callback` will run with
-// `absl::nullopt` and `Status::kUnsupportedAccountTypeError`.
+// `std::nullopt` and `Status::kUnsupportedAccountTypeError`.
 //
 // Note: This class is meant to be used in a one-shot fashion and cannot handle
 // multiple requests at the same time.
@@ -49,7 +49,7 @@ namespace ash {
 // std::unique_ptr<GaiaAccessTokenFetcher> access_token_fetcher = ...;
 // base::OnceCallback<void(
 // UserCloudSigninRestrictionPolicyFetcher::Status,
-// absl::optional<std::string>, const std::string&)> callback = ...;
+// std::optional<std::string>, const std::string&)> callback = ...;
 //
 // UserCloudSigninRestrictionPolicyFetcher
 //  restriction_fetcher("alice@example.com", url_loader_factory);
@@ -85,7 +85,7 @@ class UserCloudSigninRestrictionPolicyFetcher
   // Enterprise account hosted domain.
   using PolicyInfoCallback =
       base::OnceCallback<void(Status status,
-                              absl::optional<std::string> policy,
+                              std::optional<std::string> policy,
                               const std::string& domain)>;
 
   // `email` can be a raw email (abc.123.4@gmail.com) or a canonicalized email
@@ -106,10 +106,10 @@ class UserCloudSigninRestrictionPolicyFetcher
   // Fetches the value of the SecondaryGoogleAccountUsage policy and runs
   // `callback` with the fetched value and `Status::kSuccess` status.
   //
-  // If the policy was not set, `callback` will run with `absl::nullopt` and
+  // If the policy was not set, `callback` will run with `std::nullopt` and
   // `Status::kSuccess` status.
   // If there was an error in fetching the policy, `callback` will run with
-  // `absl::nullopt` and the proper error status.
+  // `std::nullopt` and the proper error status.
   void GetSecondaryGoogleAccountUsage(
       std::unique_ptr<OAuth2AccessTokenFetcher> access_token_fetcher,
       PolicyInfoCallback callback);
@@ -128,7 +128,7 @@ class UserCloudSigninRestrictionPolicyFetcher
   // Retrieves the policy value from `response_body` and runs `callback` with
   // the retrieved value and `Status::kSuccess` status if successful.
   // If there was an error in fetching the policy, it will runs `callback` with
-  // `absl::nullopt` and the proper error status.
+  // `std::nullopt` and the proper error status.
   void OnSecondaryGoogleAccountUsageResult(
       std::unique_ptr<std::string> response_body);
 

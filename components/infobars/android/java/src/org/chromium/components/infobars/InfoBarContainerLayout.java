@@ -61,10 +61,10 @@ import java.util.ArrayList;
  * TODO(newt): finalize animation timings and interpolators.
  */
 public class InfoBarContainerLayout extends OptimizedFrameLayout {
-    /**
-     * Creates an empty InfoBarContainerLayout.
-     */
-    public InfoBarContainerLayout(Context context, Runnable makeContainerVisibleRunnable,
+    /** Creates an empty InfoBarContainerLayout. */
+    public InfoBarContainerLayout(
+            Context context,
+            Runnable makeContainerVisibleRunnable,
             InfoBarAnimationListener animationListener) {
         super(context, null);
         Resources res = context.getResources();
@@ -115,9 +115,7 @@ public class InfoBarContainerLayout extends OptimizedFrameLayout {
         processPendingAnimations();
     }
 
-    /**
-     * Returns true if any animations are pending or in progress.
-     */
+    /** Returns true if any animations are pending or in progress. */
     public boolean isAnimating() {
         return mAnimation != null;
     }
@@ -149,15 +147,16 @@ public class InfoBarContainerLayout extends OptimizedFrameLayout {
         }
 
         final void start() {
-            Animator.AnimatorListener listener = new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    InfoBarAnimation.this.onAnimationEnd();
-                    mAnimation = null;
-                    mAnimationListener.notifyAnimationFinished(getAnimationType());
-                    processPendingAnimations();
-                }
-            };
+            Animator.AnimatorListener listener =
+                    new AnimatorListenerAdapter() {
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                            InfoBarAnimation.this.onAnimationEnd();
+                            mAnimation = null;
+                            mAnimationListener.notifyAnimationFinished(getAnimationType());
+                            processPendingAnimations();
+                        }
+                    };
 
             mAnimator = createAnimator();
             mAnimator.addListener(listener);
@@ -170,13 +169,14 @@ public class InfoBarContainerLayout extends OptimizedFrameLayout {
          */
         ValueAnimator createTranslationYAnimator(final InfoBarWrapper wrapper, float endValue) {
             ValueAnimator animator = ValueAnimator.ofFloat(wrapper.getTranslationY(), endValue);
-            animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                @Override
-                public void onAnimationUpdate(ValueAnimator animation) {
-                    wrapper.setTranslationY((float) animation.getAnimatedValue());
-                    mFloatingBehavior.updateShadowPosition();
-                }
-            });
+            animator.addUpdateListener(
+                    new ValueAnimator.AnimatorUpdateListener() {
+                        @Override
+                        public void onAnimationUpdate(ValueAnimator animation) {
+                            wrapper.setTranslationY((float) animation.getAnimatedValue());
+                            mFloatingBehavior.updateShadowPosition();
+                        }
+                    });
             return animator;
         }
 
@@ -305,8 +305,9 @@ public class InfoBarContainerLayout extends OptimizedFrameLayout {
             mMakeContainerVisibleRunnable.run();
 
             AnimatorSet animator = new AnimatorSet();
-            animator.play(createTranslationYAnimator(mFrontWrapper, newFrontEnd)
-                                  .setDuration(DURATION_SLIDE_UP_MS));
+            animator.play(
+                    createTranslationYAnimator(mFrontWrapper, newFrontEnd)
+                            .setDuration(DURATION_SLIDE_UP_MS));
 
             // If the container is shrinking, the back infobars need to animate down (from 0 to the
             // positive delta). Otherwise they have to animate up (from the negative delta to 0).
@@ -314,11 +315,13 @@ public class InfoBarContainerLayout extends OptimizedFrameLayout {
             int backEnd = Math.max(-heightDelta, 0);
             for (int i = 1; i < mInfoBarWrappers.size(); i++) {
                 mInfoBarWrappers.get(i).setTranslationY(backStart);
-                animator.play(createTranslationYAnimator(mInfoBarWrappers.get(i), backEnd)
-                                      .setDuration(DURATION_SLIDE_UP_MS));
+                animator.play(
+                        createTranslationYAnimator(mInfoBarWrappers.get(i), backEnd)
+                                .setDuration(DURATION_SLIDE_UP_MS));
             }
 
-            animator.play(ObjectAnimator.ofFloat(mFrontContents, View.ALPHA, 1f)
+            animator.play(
+                            ObjectAnimator.ofFloat(mFrontContents, View.ALPHA, 1f)
                                     .setDuration(DURATION_FADE_MS))
                     .after(DURATION_SLIDE_UP_MS);
 
@@ -401,28 +404,33 @@ public class InfoBarContainerLayout extends OptimizedFrameLayout {
         @Override
         Animator createAnimator() {
             // The amount by which mNewFrontWrapper will grow (negative value indicates shrinking).
-            int deltaHeight = (mNewFrontWrapper.getHeight() - mBackInfobarHeight)
-                    - mOldFrontWrapper.getHeight();
+            int deltaHeight =
+                    (mNewFrontWrapper.getHeight() - mBackInfobarHeight)
+                            - mOldFrontWrapper.getHeight();
             int startTranslationY = Math.max(deltaHeight, 0);
             int endTranslationY = Math.max(-deltaHeight, 0);
 
             // Slide the front infobar down and away.
             AnimatorSet animator = new AnimatorSet();
             mOldFrontWrapper.setTranslationY(startTranslationY);
-            animator.play(createTranslationYAnimator(
-                    mOldFrontWrapper, startTranslationY + mOldFrontWrapper.getHeight())
-                                  .setDuration(DURATION_SLIDE_UP_MS));
+            animator.play(
+                    createTranslationYAnimator(
+                                    mOldFrontWrapper,
+                                    startTranslationY + mOldFrontWrapper.getHeight())
+                            .setDuration(DURATION_SLIDE_UP_MS));
 
             // Slide the other infobars to their new positions.
             // Note: animator.play() causes these animations to run simultaneously.
             for (int i = 1; i < mInfoBarWrappers.size(); i++) {
                 mInfoBarWrappers.get(i).setTranslationY(startTranslationY);
-                animator.play(createTranslationYAnimator(mInfoBarWrappers.get(i), endTranslationY)
-                                      .setDuration(DURATION_SLIDE_UP_MS));
+                animator.play(
+                        createTranslationYAnimator(mInfoBarWrappers.get(i), endTranslationY)
+                                .setDuration(DURATION_SLIDE_UP_MS));
             }
 
             mNewFrontContents.setAlpha(0f);
-            animator.play(ObjectAnimator.ofFloat(mNewFrontContents, View.ALPHA, 1f)
+            animator.play(
+                            ObjectAnimator.ofFloat(mNewFrontContents, View.ALPHA, 1f)
                                     .setDuration(DURATION_FADE_MS))
                     .after(DURATION_SLIDE_UP_MS);
 
@@ -460,7 +468,7 @@ public class InfoBarContainerLayout extends OptimizedFrameLayout {
         @Override
         Animator createAnimator() {
             return createTranslationYAnimator(
-                    mDisappearingWrapper, mDisappearingWrapper.getHeight())
+                            mDisappearingWrapper, mDisappearingWrapper.getHeight())
                     .setDuration(DURATION_SLIDE_DOWN_MS);
         }
 
@@ -500,10 +508,12 @@ public class InfoBarContainerLayout extends OptimizedFrameLayout {
             mNewContents.setAlpha(0f);
 
             AnimatorSet animator = new AnimatorSet();
-            animator.playSequentially(ObjectAnimator.ofFloat(mOldContents, View.ALPHA, 0f)
-                                              .setDuration(DURATION_FADE_OUT_MS),
-                    ObjectAnimator
-                            .ofFloat(InfoBarContainerLayout.this, View.TRANSLATION_Y,
+            animator.playSequentially(
+                    ObjectAnimator.ofFloat(mOldContents, View.ALPHA, 0f)
+                            .setDuration(DURATION_FADE_OUT_MS),
+                    ObjectAnimator.ofFloat(
+                                    InfoBarContainerLayout.this,
+                                    View.TRANSLATION_Y,
                                     Math.max(0, -deltaHeight))
                             .setDuration(DURATION_SLIDE_UP_MS),
                     ObjectAnimator.ofFloat(mNewContents, View.ALPHA, 1f)
@@ -552,6 +562,7 @@ public class InfoBarContainerLayout extends OptimizedFrameLayout {
 
         /** The shadows that appear on the sides of the infobars in floating mode. */
         private View mLeftShadowView;
+
         private View mRightShadowView;
 
         FloatingBehavior(FrameLayout layout) {
@@ -581,9 +592,7 @@ public class InfoBarContainerLayout extends OptimizedFrameLayout {
             return widthMeasureSpec;
         }
 
-        /**
-         * This should be called in onMeasure() after super.onMeasure().
-         */
+        /** This should be called in onMeasure() after super.onMeasure(). */
         void afterOnMeasure(int measuredHeight) {
             if (!mIsFloating) return;
             // Measure side shadows to match the parent view's height.
@@ -593,9 +602,7 @@ public class InfoBarContainerLayout extends OptimizedFrameLayout {
             mRightShadowView.measure(widthSpec, heightSpec);
         }
 
-        /**
-         * This should be called whenever the Y-position of an infobar changes.
-         */
+        /** This should be called whenever the Y-position of an infobar changes. */
         void updateShadowPosition() {
             if (!mIsFloating) return;
             float minY = mLayout.getHeight();
@@ -656,9 +663,7 @@ public class InfoBarContainerLayout extends OptimizedFrameLayout {
      */
     private final ArrayList<InfoBarUiItem> mItems = new ArrayList<>();
 
-    /**
-     * The currently visible InfoBarWrappers, in front to back order.
-     */
+    /** The currently visible InfoBarWrappers, in front to back order. */
     private final ArrayList<InfoBarWrapper> mInfoBarWrappers = new ArrayList<>();
 
     /** A observer that is notified when animations finish. */
@@ -748,7 +753,8 @@ public class InfoBarContainerLayout extends OptimizedFrameLayout {
         int desiredChildCount = Math.min(mItems.size(), MAX_STACK_DEPTH);
         if (mInfoBarWrappers.size() < desiredChildCount) {
             InfoBarUiItem itemToShow = mItems.get(mInfoBarWrappers.size());
-            runAnimation(mInfoBarWrappers.isEmpty()
+            runAnimation(
+                    mInfoBarWrappers.isEmpty()
                             ? new FirstInfoBarAppearingAnimation(itemToShow)
                             : new BackInfoBarAppearingAnimation(itemToShow));
             return;
@@ -827,7 +833,8 @@ public class InfoBarContainerLayout extends OptimizedFrameLayout {
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
         // Trap any attempts to fiddle with the infobars while we're animating.
-        return super.onInterceptTouchEvent(ev) || mAnimation != null
+        return super.onInterceptTouchEvent(ev)
+                || mAnimation != null
                 || (!mInfoBarWrappers.isEmpty()
                         && !mInfoBarWrappers.get(0).getItem().areControlsEnabled());
     }

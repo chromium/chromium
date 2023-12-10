@@ -5,13 +5,12 @@
 package org.chromium.components.browser_ui.device_lock;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.metrics.RecordHistogram;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-
-import androidx.annotation.VisibleForTesting;
 
 /** Helper class for emitting metrics to the Android.Automotive.DeviceLockDialogAction histogram. */
 public class DeviceLockDialogMetrics {

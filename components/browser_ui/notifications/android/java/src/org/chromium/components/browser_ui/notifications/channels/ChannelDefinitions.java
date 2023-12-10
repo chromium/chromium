@@ -26,24 +26,16 @@ import java.util.Set;
  */
 @RequiresApi(Build.VERSION_CODES.O)
 public abstract class ChannelDefinitions {
-    /**
-     * @return A set of all known channel group ids that can be used for {@link #getChannelGroup}.
-     */
+    /** @return A set of all known channel group ids that can be used for {@link #getChannelGroup}. */
     public abstract Set<String> getAllChannelGroupIds();
 
-    /**
-     * @return A set of all known channel ids that can be used for {@link #getChannelFromId}.
-     */
+    /** @return A set of all known channel ids that can be used for {@link #getChannelFromId}. */
     public abstract Set<String> getAllChannelIds();
 
-    /**
-     * @return A set of channel ids of channels that should be initialized on startup.
-     */
+    /** @return A set of channel ids of channels that should be initialized on startup. */
     public abstract Set<String> getStartupChannelIds();
 
-    /**
-     * @return A set of channel group ids of channel groups that should be initialized on startup.
-     */
+    /** @return A set of channel group ids of channel groups that should be initialized on startup. */
     public Set<String> getStartupChannelGroupIds() {
         Set<String> groupIds = new HashSet<>();
         for (String id : getStartupChannelIds()) {
@@ -90,26 +82,36 @@ public abstract class ChannelDefinitions {
         private final boolean mShowNotificationBadges;
         private final boolean mSuppressSound;
 
-        public static PredefinedChannel create(String id, int nameResId, int importance,
-                String groupId) {
-            return new PredefinedChannel(id, nameResId, importance, groupId,
-                    SHOW_NOTIFICATION_BADGES_DEFAULT, SUPPRESS_SOUND_DEFAULT);
+        public static PredefinedChannel create(
+                String id, int nameResId, int importance, String groupId) {
+            return new PredefinedChannel(
+                    id,
+                    nameResId,
+                    importance,
+                    groupId,
+                    SHOW_NOTIFICATION_BADGES_DEFAULT,
+                    SUPPRESS_SOUND_DEFAULT);
         }
 
-        public static PredefinedChannel createBadged(String id, int nameResId, int importance,
-                String groupId) {
-            return new PredefinedChannel(id, nameResId, importance, groupId,
-                    true, SUPPRESS_SOUND_DEFAULT);
+        public static PredefinedChannel createBadged(
+                String id, int nameResId, int importance, String groupId) {
+            return new PredefinedChannel(
+                    id, nameResId, importance, groupId, true, SUPPRESS_SOUND_DEFAULT);
         }
 
-        public static PredefinedChannel createSilenced(String id, int nameResId, int importance,
-                String groupId) {
-            return new PredefinedChannel(id, nameResId, importance, groupId,
-                    SHOW_NOTIFICATION_BADGES_DEFAULT, true);
+        public static PredefinedChannel createSilenced(
+                String id, int nameResId, int importance, String groupId) {
+            return new PredefinedChannel(
+                    id, nameResId, importance, groupId, SHOW_NOTIFICATION_BADGES_DEFAULT, true);
         }
 
-        private PredefinedChannel(String id, int nameResId, int importance, String groupId,
-                boolean showNotificationBadges, boolean suppressSound) {
+        private PredefinedChannel(
+                String id,
+                int nameResId,
+                int importance,
+                String groupId,
+                boolean showNotificationBadges,
+                boolean suppressSound) {
             this.mId = id;
             this.mNameResId = nameResId;
             this.mImportance = importance;
@@ -125,10 +127,11 @@ public abstract class ChannelDefinitions {
             channel.setShowBadge(mShowNotificationBadges);
 
             if (mSuppressSound) {
-                AudioAttributes attributes = new AudioAttributes.Builder()
-                        .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
-                        .setUsage(AudioAttributes.USAGE_NOTIFICATION)
-                        .build();
+                AudioAttributes attributes =
+                        new AudioAttributes.Builder()
+                                .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                                .setUsage(AudioAttributes.USAGE_NOTIFICATION)
+                                .build();
 
                 // Passing a null sound causes no sound to be played.
                 Uri sound = null;

@@ -43,7 +43,7 @@ class PasswordManagerPorter : public PasswordManagerPorterInterface,
   ~PasswordManagerPorter() override;
 
   // PasswordManagerPorterInterface:
-  bool Export(content::WebContents* web_contents) override;
+  bool Export(base::WeakPtr<content::WebContents> web_contents) override;
   void CancelExport() override;
   password_manager::ExportProgressStatus GetExportProgressStatus() override;
   void Import(content::WebContents* web_contents,
@@ -69,7 +69,8 @@ class PasswordManagerPorter : public PasswordManagerPorterInterface,
 
   // Display the file-picker dialogue for either importing or exporting
   // passwords.
-  void PresentFileSelector(content::WebContents* web_contents, Type type);
+  void PresentFileSelector(base::WeakPtr<content::WebContents> web_contents,
+                           Type type);
 
   // Callback from the file selector dialogue when a file has been picked (for
   // either import or export).

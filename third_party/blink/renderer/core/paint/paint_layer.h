@@ -133,7 +133,7 @@ enum PaintLayerIteration {
 //   PaintLayers.
 // - If the flag is false, the LayoutObject is painted like normal children (ie
 //   as if it didn't have a PaintLayer). The paint order is handled by
-//   NGBoxFragmentPainter.
+//   BoxFragmentPainter.
 // This means that the self-painting flag changes the painting order in a subtle
 // way, which can potentially have visible consequences. Those bugs are called
 // painting inversion as we invert the order of painting for 2 elements
@@ -601,7 +601,7 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
       const HitTestingTransformState* root_transform_state) const;
 
   bool HitTestFragmentWithPhase(HitTestResult&,
-                                const NGPhysicalBoxFragment*,
+                                const PhysicalBoxFragment*,
                                 const PhysicalOffset& fragment_offset,
                                 const HitTestLocation&,
                                 HitTestPhase phase) const;

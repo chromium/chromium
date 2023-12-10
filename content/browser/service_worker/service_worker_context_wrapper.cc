@@ -84,7 +84,7 @@ BASE_FEATURE(kServiceWorkerStorageControlOnIOThread,
 
 BASE_FEATURE(kServiceWorkerStorageControlOnThreadPool,
              "ServiceWorkerStorageControlOnThreadPool",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 const base::FeatureParam<int> kUpdateDelayParam{
     &blink::features::kServiceWorkerUpdateDelay, "update_delay_in_ms", 1000};
@@ -567,6 +567,23 @@ void ServiceWorkerContextWrapper::UnregisterServiceWorker(
     const GURL& scope,
     const blink::StorageKey& key,
     ResultCallback callback) {
+  UnregisterServiceWorkerImpl(scope, key, /*is_immediate=*/false,
+                              std::move(callback));
+}
+
+void ServiceWorkerContextWrapper::UnregisterServiceWorkerImmediately(
+    const GURL& scope,
+    const blink::StorageKey& key,
+    ResultCallback callback) {
+  UnregisterServiceWorkerImpl(scope, key, /*is_immediate=*/true,
+                              std::move(callback));
+}
+
+void ServiceWorkerContextWrapper::UnregisterServiceWorkerImpl(
+    const GURL& scope,
+    const blink::StorageKey& key,
+    bool is_immediate,
+    ResultCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   if (!context_core_) {
@@ -575,7 +592,7 @@ void ServiceWorkerContextWrapper::UnregisterServiceWorker(
     return;
   }
   context()->UnregisterServiceWorker(
-      net::SimplifyUrlForRequest(scope), key, /*is_immediate=*/false,
+      net::SimplifyUrlForRequest(scope), key, is_immediate,
       WrapResultCallbackToTakeStatusCode(std::move(callback)));
 }
 

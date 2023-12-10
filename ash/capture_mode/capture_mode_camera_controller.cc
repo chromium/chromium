@@ -14,7 +14,6 @@
 #include "ash/capture_mode/capture_mode_metrics.h"
 #include "ash/capture_mode/capture_mode_session.h"
 #include "ash/capture_mode/capture_mode_util.h"
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/capture_mode/capture_mode_delegate.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/root_window_controller.h"
@@ -550,8 +549,8 @@ void CaptureModeCameraController::MaybeUpdatePreviewWidget(bool animate) {
   const bool did_visibility_change = capture_mode_util::SetWidgetVisibility(
       camera_preview_widget_.get(), size_specs.should_be_visible,
       !should_animate_visibility
-          ? absl::nullopt
-          : absl::make_optional<capture_mode_util::AnimationParams>(
+          ? std::nullopt
+          : std::make_optional<capture_mode_util::AnimationParams>(
                 BuildCameraVisibilityAnimationParams(
                     /*target_visibility=*/size_specs.should_be_visible,
                     /*apply_scale_up_animation=*/is_first_bounds_update_)));

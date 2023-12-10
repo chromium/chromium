@@ -26,7 +26,8 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeMac
   // AXPlatformNode.
   gfx::NativeViewAccessible GetNativeViewAccessible() override;
   void NotifyAccessibilityEvent(ax::mojom::Event event_type) override;
-  void AnnounceText(const std::u16string& text) override;
+  void AnnounceTextAs(const std::u16string& text,
+                      AnnouncementType announcement_type) override;
 
   // AXPlatformNodeBase.
   void Destroy() override;

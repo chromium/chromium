@@ -5,8 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_DOWNLOAD_MODEL_CONFIRM_DOWNLOAD_REPLACING_OVERLAY_H_
 #define IOS_CHROME_BROWSER_DOWNLOAD_MODEL_CONFIRM_DOWNLOAD_REPLACING_OVERLAY_H_
 
-#include "ios/chrome/browser/overlays/public/overlay_request_config.h"
-#include "ios/chrome/browser/overlays/public/overlay_response_info.h"
+#include "ios/chrome/browser/overlays/model/public/overlay_request_config.h"
+#include "ios/chrome/browser/overlays/model/public/overlay_response_info.h"
 
 // Name of UMA User Action recorded when the user confirms replacing.
 extern const char kDownloadReplaceActionName[];

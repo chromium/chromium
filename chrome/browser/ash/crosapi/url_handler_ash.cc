@@ -50,8 +50,8 @@ void UrlHandlerAsh::GetExternalHandler(const GURL& url,
   Profile* profile = Profile::FromBrowserContext(
       ash::BrowserContextHelper::Get()->GetBrowserContextByUser(
           user_manager::UserManager::Get()->GetPrimaryUser()));
-  absl::optional<std::string> name;
-  absl::optional<guest_os::GuestOsUrlHandler> registration =
+  std::optional<std::string> name;
+  std::optional<guest_os::GuestOsUrlHandler> registration =
       guest_os::GuestOsUrlHandler::GetForUrl(profile, url);
   if (registration) {
     name = registration->name();
@@ -68,11 +68,11 @@ void UrlHandlerAsh::OpenExternal(const GURL& url) {
 
 namespace {
 
-absl::optional<ash::SystemWebAppType> GetSystemAppForURL(Profile* profile,
-                                                         const GURL& url) {
+std::optional<ash::SystemWebAppType> GetSystemAppForURL(Profile* profile,
+                                                        const GURL& url) {
   ash::SystemWebAppManager* swa_manager =
       ash::SystemWebAppManager::Get(profile);
-  return swa_manager ? swa_manager->GetSystemAppForURL(url) : absl::nullopt;
+  return swa_manager ? swa_manager->GetSystemAppForURL(url) : std::nullopt;
 }
 
 void OpenUrlInternalContinue(Profile* profile, const GURL& url) {

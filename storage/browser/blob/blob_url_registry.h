@@ -62,7 +62,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobUrlRegistry {
       const blink::StorageKey& storage_key,
       // TODO(https://crbug.com/1224926): Remove these once experiment is over.
       const base::UnguessableToken& unsafe_agent_cluster_id,
-      const absl::optional<net::SchemefulSite>& unsafe_top_level_site);
+      const std::optional<net::SchemefulSite>& unsafe_top_level_site);
 
   // Removes the given URL mapping associated with `storage_key` (unless the
   // kSupportPartitionedBlobUrl flag is disabled, in which case `storage_key` is
@@ -76,9 +76,9 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobUrlRegistry {
                    const blink::StorageKey& storage_key) const;
 
   // TODO(https://crbug.com/1224926): Remove this once experiment is over.
-  absl::optional<base::UnguessableToken> GetUnsafeAgentClusterID(
+  std::optional<base::UnguessableToken> GetUnsafeAgentClusterID(
       const GURL& blob_url) const;
-  absl::optional<net::SchemefulSite> GetUnsafeTopLevelSite(
+  std::optional<net::SchemefulSite> GetUnsafeTopLevelSite(
       const GURL& blob_url) const;
 
   // Returns the blob from the given url. Returns a null remote if the mapping

@@ -11,6 +11,10 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
+namespace ash {
+class AnchoredNudge;
+}  // namespace ash
+
 namespace ui {
 class LocatedEvent;
 }  // namespace ui
@@ -47,7 +51,7 @@ class EditingList : public views::View, public TouchInjectorObserver {
 
   void UpdateWidget();
 
-  void ShowEduNudgeForEditingTip();
+  void MayShowEduNudgeForEditingTip();
 
   // views::View:
   bool OnMousePressed(const ui::MouseEvent& event) override;
@@ -107,7 +111,6 @@ class EditingList : public views::View, public TouchInjectorObserver {
 
   // views::View:
   gfx::Size CalculatePreferredSize() const override;
-  void VisibilityChanged(View* starting_from, bool is_visible) override;
   void OnThemeChanged() override;
 
   // TouchInjectorObserver:
@@ -117,6 +120,10 @@ class EditingList : public views::View, public TouchInjectorObserver {
   void OnActionInputBindingUpdated(const Action& action) override;
   void OnActionNameUpdated(const Action& action) override;
   void OnActionNewStateRemoved(const Action& action) override;
+
+  // For test.
+  bool IsKeyEditNudgeShownForTesting() const;
+  ash::AnchoredNudge* GetKeyEditNudgeForTesting() const;
 
   raw_ptr<DisplayOverlayController> controller_;
 
@@ -135,6 +142,8 @@ class EditingList : public views::View, public TouchInjectorObserver {
 
   // Used to tell if the zero state view shows up.
   bool is_zero_state_ = false;
+  // Show nudge once after adding the first action.
+  bool show_nudge_ = false;
 
   // LocatedEvent's position when drag starts.
   gfx::Point start_drag_event_pos_;

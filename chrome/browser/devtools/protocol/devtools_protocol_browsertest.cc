@@ -859,6 +859,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, UntrustedClient) {
       "Memory.prepareForLeakDetection"));        // Implemented in content
   EXPECT_FALSE(SendCommandSync("Cast.enable"));  // Implemented in content
   EXPECT_FALSE(SendCommandSync("Storage.getCookies"));
+  EXPECT_FALSE(SendCommandSync("Network.getAllCookies"));
   EXPECT_TRUE(SendCommandSync("Accessibility.enable"));
 }
 

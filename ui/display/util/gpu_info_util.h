@@ -5,7 +5,7 @@
 #ifndef UI_DISPLAY_UTIL_GPU_INFO_UTIL_H_
 #define UI_DISPLAY_UTIL_GPU_INFO_UTIL_H_
 
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/values.h"
 
 namespace display {

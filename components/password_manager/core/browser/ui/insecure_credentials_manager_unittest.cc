@@ -5,7 +5,7 @@
 #include "components/password_manager/core/browser/ui/insecure_credentials_manager.h"
 
 #include "base/memory/scoped_refptr.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -20,7 +20,6 @@
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
-#include "components/password_manager/core/common/password_manager_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -1088,10 +1087,6 @@ TEST_F(InsecureCredentialsManagerTest, UpdateCompromisedPassword) {
 // Test verifies that editing a weak credential to another weak credential
 // continues to be treated weak.
 TEST_F(InsecureCredentialsManagerTest, UpdatedWeakPasswordBecomesStrong) {
-#if BUILDFLAG(IS_IOS)
-  base::test::ScopedFeatureList feature_list(
-      password_manager::features::kIOSPasswordCheckup);
-#endif
   PasswordForm password_form =
       MakeSavedPassword(kExampleCom, kUsername1, kWeakPassword1);
 
@@ -1115,10 +1110,6 @@ TEST_F(InsecureCredentialsManagerTest, UpdatedWeakPasswordBecomesStrong) {
 // Test verifies that editing a weak credential to another weak credential
 // continues to be treated weak.
 TEST_F(InsecureCredentialsManagerTest, UpdatedWeakPasswordRemainsWeak) {
-#if BUILDFLAG(IS_IOS)
-  base::test::ScopedFeatureList feature_list(
-      password_manager::features::kIOSPasswordCheckup);
-#endif
   PasswordForm password_form =
       MakeSavedPassword(kExampleCom, kUsername1, kWeakPassword1);
 
@@ -1205,11 +1196,6 @@ TEST_F(InsecureCredentialsManagerTest, GetInsecureCredentialsReused) {
 }
 
 TEST_F(InsecureCredentialsManagerTest, UpdatingReusedPasswordFixesTheIssue) {
-#if BUILDFLAG(IS_IOS)
-  base::test::ScopedFeatureList scoped_feature_list(
-      password_manager::features::kIOSPasswordCheckup);
-#endif
-
   PasswordForm form1 = MakeSavedPassword(kExampleCom, kUsername1, kPassword1);
   PasswordForm form2 =
       MakeSavedPassword("https://example2.com/", kUsername2, kPassword1);
@@ -1233,11 +1219,6 @@ TEST_F(InsecureCredentialsManagerTest, UpdatingReusedPasswordFixesTheIssue) {
 }
 
 TEST_F(InsecureCredentialsManagerTest, IrrelevantUpdatesDontCauseReuseCheck) {
-#if BUILDFLAG(IS_IOS)
-  base::test::ScopedFeatureList scoped_feature_list(
-      password_manager::features::kIOSPasswordCheckup);
-#endif
-
   PasswordForm form1 = MakeSavedPassword(kExampleCom, kUsername1, kPassword1);
   PasswordForm form2 = MakeSavedPassword(kExampleCom, kUsername2, kPassword216);
 
@@ -1291,7 +1272,7 @@ TEST_F(InsecureCredentialsManagerTest, ReuseCheckUsesAffiliationInfo) {
   facet.uri = FacetURI::FromPotentiallyInvalidSpec(form2.signon_realm);
   grouped_facets[0].facets.push_back(facet);
   EXPECT_CALL(mock_affiliation_service, GetGroupingInfo)
-      .WillRepeatedly(base::test::RunOnceCallback<1>(grouped_facets));
+      .WillRepeatedly(base::test::RunOnceCallbackRepeatedly<1>(grouped_facets));
 
   store().AddLogin(form1);
   store().AddLogin(form2);

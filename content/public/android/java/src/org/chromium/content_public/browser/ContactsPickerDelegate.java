@@ -6,9 +6,7 @@ package org.chromium.content_public.browser;
 
 import org.chromium.ui.base.WindowAndroid;
 
-/**
- * A delegate interface for the contacts picker.
- */
+/** A delegate interface for the contacts picker. */
 public interface ContactsPickerDelegate {
     /**
      * Called to display the contacts picker.
@@ -25,7 +23,14 @@ public interface ContactsPickerDelegate {
      *                        with the scheme omitted.
      * @return the contacts picker object.
      */
-    Object showContactsPicker(WindowAndroid windowAndroid, ContactsPickerListener listener,
-            boolean allowMultiple, boolean includeNames, boolean includeEmails, boolean includeTel,
-            boolean includeAddresses, boolean includeIcons, String formattedOrigin);
+    Object showContactsPicker(
+            WindowAndroid windowAndroid,
+            ContactsPickerListener listener,
+            boolean allowMultiple,
+            boolean includeNames,
+            boolean includeEmails,
+            boolean includeTel,
+            boolean includeAddresses,
+            boolean includeIcons,
+            String formattedOrigin);
 }

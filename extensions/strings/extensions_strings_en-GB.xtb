@@ -8,6 +8,7 @@
 <translation id="1420684932347524586">Yikes! Failed to generate random RSA private key.</translation>
 <translation id="1445572445564823378">This extension is slowing down <ph name="PRODUCT_NAME" />. You should disable it to restore <ph name="PRODUCT_NAME" />'s performance.</translation>
 <translation id="1468038450257740950">WebGL is not supported.</translation>
+<translation id="1610570795592207282">Could not load CSS '<ph name="RELATIVE_PATH" />' for script.</translation>
 <translation id="1803557475693955505">Could not load background page '<ph name="BACKGROUND_PAGE" />'.</translation>
 <translation id="2159915644201199628">Could not decode image: '<ph name="IMAGE_NAME" />'</translation>
 <translation id="2350172092385603347">Localisation used, but default_locale wasn't specified in the manifest.</translation>
@@ -18,14 +19,12 @@
 <translation id="3115238746683532089">Unknown product <ph name="PRODUCT_ID" /> from vendor <ph name="VENDOR_ID" /> (serial number <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">Failed to replace crx file. Check to see if the file is in use.</translation>
 <translation id="3163201441334626963">Unknown product <ph name="PRODUCT_ID" /> from vendor <ph name="VENDOR_ID" /></translation>
-<translation id="3302709122321372472">Could not load css '<ph name="RELATIVE_PATH" />' for content script.</translation>
 <translation id="3369521687965833290">Cannot unpack extension.  To safely unpack an extension, there must be a path to your profile directory that starts with a drive letter and does not contain a junction, mount point or symlink.  No such path exists for your profile.</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (serial number <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> from vendor <ph name="VENDOR_ID" /> (serial number <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Input value for private key must be a valid path.</translation>
 <translation id="388442998277590542">Could not load options page '<ph name="OPTIONS_PAGE" />'.</translation>
 <translation id="3984413272403535372">Error while signing extension.</translation>
-<translation id="39964277676607559">Could not load JavaScript '<ph name="RELATIVE_PATH" />' for content script.</translation>
 <translation id="4115165561519362854">The administrator of this machine requires <ph name="EXTENSION_NAME" /> to have a minimum version of <ph name="EXTENSION_VERSION" />. It cannot be enabled until it has updated to that version (or higher).</translation>
 <translation id="4233778200880751280">Could not load about page '<ph name="ABOUT_PAGE" />'.</translation>
 <translation id="471800408830181311">Failed to output private key.</translation>
@@ -33,6 +32,7 @@
 <translation id="4988792151665380515">Failed to export public key.</translation>
 <translation id="5026754133087629784">Webview: <ph name="WEBVIEW_TAG_NAME" /></translation>
 <translation id="5098647635849512368">Can't find the absolute path to the directory to pack.</translation>
+<translation id="5160071981665899014">Could not load JavaScript '<ph name="RELATIVE_PATH" />' for script.</translation>
 <translation id="5356315618422219272">Appview: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5436430103864390185">Shaped windows are not supported.</translation>
 <translation id="5456409301717116725">This extension includes the key file '<ph name="KEY_PATH" />'. You probably don't want to do that.</translation>

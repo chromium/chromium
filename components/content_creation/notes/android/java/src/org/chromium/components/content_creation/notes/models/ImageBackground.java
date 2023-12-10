@@ -11,9 +11,7 @@ import android.view.View;
 import androidx.core.graphics.drawable.RoundedBitmapDrawable;
 import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory;
 
-/**
- * Model class for a template's image background.
- */
+/** Model class for a template's image background. */
 public final class ImageBackground implements Background {
     public final String imageUrl;
 

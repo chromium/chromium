@@ -29,28 +29,22 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 
-/**
- * Represents the dialog containing the page info view.
- */
+/** Represents the dialog containing the page info view. */
 public class PageInfoDialog {
     private static final int ENTER_START_DELAY_MS = 100;
     private static final int ENTER_EXIT_DURATION_MS = 200;
     private static final int CLOSE_CLEANUP_DELAY_MS = 10;
 
-    @NonNull
-    private final PageInfoContainer mPageInfoContainer;
-    @NonNull
-    private final ViewGroup mScrollView;
+    @NonNull private final PageInfoContainer mPageInfoContainer;
+    @NonNull private final ViewGroup mScrollView;
 
     private final boolean mIsSheet;
     // The dialog implementation.
     // mSheetDialog is set if the dialog appears as a sheet. Otherwise, mModalDialog is set.
     private final Dialog mSheetDialog;
     private final PropertyModel mModalDialogModel;
-    @NonNull
-    private final ModalDialogManager mManager;
-    @NonNull
-    private final ModalDialogProperties.Controller mController;
+    @NonNull private final ModalDialogManager mManager;
+    @NonNull private final ModalDialogProperties.Controller mController;
 
     // Animation which is currently running, if there is one.
     private Animator mCurrentAnimation;
@@ -68,8 +62,12 @@ public class PageInfoDialog {
      * @param controller The dialog's controller.
      *
      */
-    public PageInfoDialog(Context context, @NonNull PageInfoContainer pageInfoContainer,
-            View containerView, boolean isSheet, @NonNull ModalDialogManager manager,
+    public PageInfoDialog(
+            Context context,
+            @NonNull PageInfoContainer pageInfoContainer,
+            View containerView,
+            boolean isSheet,
+            @NonNull ModalDialogManager manager,
             @NonNull ModalDialogProperties.Controller controller) {
         mPageInfoContainer = pageInfoContainer;
         mIsSheet = isSheet;
@@ -85,17 +83,18 @@ public class PageInfoDialog {
         }
 
         mScrollView.setVisibility(View.INVISIBLE);
-        mScrollView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
-            @Override
-            public void onLayoutChange(
-                    View v, int l, int t, int r, int b, int ol, int ot, int or, int ob) {
-                // Trigger the entrance animations once the main container has been laid out and has
-                // a height.
-                mScrollView.removeOnLayoutChangeListener(this);
-                mScrollView.setVisibility(View.VISIBLE);
-                createDialogSlideAnimaton(true, null).start();
-            }
-        });
+        mScrollView.addOnLayoutChangeListener(
+                new View.OnLayoutChangeListener() {
+                    @Override
+                    public void onLayoutChange(
+                            View v, int l, int t, int r, int b, int ol, int ot, int or, int ob) {
+                        // Trigger the entrance animations once the main container has been laid out
+                        // and has a height.
+                        mScrollView.removeOnLayoutChangeListener(this);
+                        mScrollView.setVisibility(View.VISIBLE);
+                        createDialogSlideAnimaton(true, null).start();
+                    }
+                });
 
         mScrollView.addView(pageInfoContainer);
 
@@ -136,35 +135,42 @@ public class PageInfoDialog {
     }
 
     private Dialog createSheetDialog(Context context, View container) {
-        Dialog sheetDialog = new Dialog(context) {
-            private void superDismiss() {
-                super.dismiss();
-            }
+        Dialog sheetDialog =
+                new Dialog(context) {
+                    private void superDismiss() {
+                        super.dismiss();
+                    }
 
-            // Cancels any animation or queued callbacks for dismissing the dialog.
-            private void cancelAnimatedDismiss() {
-                if (mCurrentAnimation != null && mCurrentAnimation.isRunning()) {
-                    mCurrentAnimation.cancel();
-                }
-                mScrollView.removeCallbacks(null);
-            }
+                    // Cancels any animation or queued callbacks for dismissing the dialog.
+                    private void cancelAnimatedDismiss() {
+                        if (mCurrentAnimation != null && mCurrentAnimation.isRunning()) {
+                            mCurrentAnimation.cancel();
+                        }
+                        mScrollView.removeCallbacks(null);
+                    }
 
-            @Override
-            public void dismiss() {
-                if (mDismissWithoutAnimation) {
-                    cancelAnimatedDismiss();
-                    // Dismiss the modal dialogs without any custom animations.
-                    super.dismiss();
-                } else {
-                    createDialogSlideAnimaton(false, () -> {
-                        // onAnimationEnd is called during the final frame of the animation.
-                        // Delay the cleanup by a tiny amount to give this frame a chance to
-                        // be displayed before we destroy the dialog.
-                        mScrollView.postDelayed(this::superDismiss, CLOSE_CLEANUP_DELAY_MS);
-                    }).start();
-                }
-            }
-        };
+                    @Override
+                    public void dismiss() {
+                        if (mDismissWithoutAnimation) {
+                            cancelAnimatedDismiss();
+                            // Dismiss the modal dialogs without any custom animations.
+                            super.dismiss();
+                        } else {
+                            createDialogSlideAnimaton(
+                                            false,
+                                            () -> {
+                                                // onAnimationEnd is called during the final frame
+                                                // of the animation.
+                                                // Delay the cleanup by a tiny amount to give this
+                                                // frame a chance to be displayed before we
+                                                // destroy the dialog.
+                                                mScrollView.postDelayed(
+                                                        this::superDismiss, CLOSE_CLEANUP_DELAY_MS);
+                                            })
+                                    .start();
+                        }
+                    }
+                };
         sheetDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         sheetDialog.setCanceledOnTouchOutside(true);
 
@@ -175,8 +181,10 @@ public class PageInfoDialog {
         sheetDialog.setOnDismissListener(
                 dialog -> mController.onDismiss(null, DialogDismissalCause.UNKNOWN));
 
-        sheetDialog.addContentView(container,
-                new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
+        sheetDialog.addContentView(
+                container,
+                new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
                         LinearLayout.LayoutParams.MATCH_PARENT));
 
         // This must be called after addContentView, or it won't fully fill to the edge.
@@ -193,26 +201,28 @@ public class PageInfoDialog {
                 .build();
     }
 
-    /**
-     * Create a container for PageInfo when it is shown as a top-sheet.
-     */
+    /** Create a container for PageInfo when it is shown as a top-sheet. */
     private ViewGroup createSheetContainer(Context context, View containerView) {
         return new FadingEdgeScrollView(context, null) {
             {
                 if (mPageInfoContainer != null) {
-                    int padding = (int) context.getResources().getDimension(
-                            R.dimen.page_info_popup_corners_radius);
+                    int padding =
+                            (int)
+                                    context.getResources()
+                                            .getDimension(R.dimen.page_info_popup_corners_radius);
                     Drawable background =
                             AppCompatResources.getDrawable(getContext(), R.drawable.page_info_bg);
                     setBackground(background);
                     setPadding(0, 0, 0, padding);
                 }
             }
+
             @Override
             protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-                heightMeasureSpec = MeasureSpec.makeMeasureSpec(
-                        containerView != null ? containerView.getHeight() * 90 / 100 : 0,
-                        MeasureSpec.AT_MOST);
+                heightMeasureSpec =
+                        MeasureSpec.makeMeasureSpec(
+                                containerView != null ? containerView.getHeight() * 90 / 100 : 0,
+                                MeasureSpec.AT_MOST);
                 super.onMeasure(widthMeasureSpec, heightMeasureSpec);
             }
         };
@@ -242,14 +252,15 @@ public class PageInfoDialog {
         }
 
         if (isEnter) dialogAnimation.setStartDelay(ENTER_START_DELAY_MS);
-        dialogAnimation.addListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                mCurrentAnimation = null;
-                if (onAnimationEnd == null) return;
-                onAnimationEnd.run();
-            }
-        });
+        dialogAnimation.addListener(
+                new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        mCurrentAnimation = null;
+                        if (onAnimationEnd == null) return;
+                        onAnimationEnd.run();
+                    }
+                });
         if (mCurrentAnimation != null) mCurrentAnimation.cancel();
         mCurrentAnimation = dialogAnimation;
         return dialogAnimation;

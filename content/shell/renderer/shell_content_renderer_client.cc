@@ -155,19 +155,20 @@ class ShellContentRendererUrlLoaderThrottleProvider
   }
 
   blink::WebVector<std::unique_ptr<blink::URLLoaderThrottle>> CreateThrottles(
-      int render_frame_id,
+      base::optional_ref<const blink::LocalFrameToken> local_frame_token,
       const blink::WebURLRequest& request) override {
     blink::WebVector<std::unique_ptr<blink::URLLoaderThrottle>> throttles;
     // Workers can call us on a background thread. We don't care about such
     // requests because we purposefully only look at resources from frames
     // that the user can interact with.`
-    content::RenderFrame* frame =
-        RenderThread::IsMainThread()
-            ? content::RenderFrame::FromRoutingID(render_frame_id)
-            : nullptr;
+    blink::WebLocalFrame* frame = nullptr;
+    if (content::RenderThread::IsMainThread() &&
+        local_frame_token.has_value()) {
+      frame = blink::WebLocalFrame::FromFrameToken(local_frame_token.value());
+    }
     if (frame) {
       auto throttle = content::MaybeCreateIdentityUrlLoaderThrottle(
-          base::BindRepeating(blink::SetIdpSigninStatus, frame->GetWebFrame()));
+          base::BindRepeating(blink::SetIdpSigninStatus, frame));
       if (throttle)
         throttles.push_back(std::move(throttle));
     }

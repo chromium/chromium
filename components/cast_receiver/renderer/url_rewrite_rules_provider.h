@@ -26,7 +26,8 @@ class UrlRewriteRulesProvider final : public content::RenderFrameObserver {
   // |on_render_frame_deleted_callback| must delete |this|.
   UrlRewriteRulesProvider(
       content::RenderFrame* render_frame,
-      base::OnceCallback<void(int)> on_render_frame_deleted_callback);
+      base::OnceCallback<void(const blink::LocalFrameToken&)>
+          on_render_frame_deleted_callback);
   ~UrlRewriteRulesProvider() override;
 
   UrlRewriteRulesProvider(const UrlRewriteRulesProvider&) = delete;
@@ -38,8 +39,10 @@ class UrlRewriteRulesProvider final : public content::RenderFrameObserver {
   // content::RenderFrameObserver implementation.
   void OnDestruct() override;
 
+  blink::LocalFrameToken frame_token_;
   url_rewrite::UrlRequestRulesReceiver url_request_rules_receiver_;
-  base::OnceCallback<void(int)> on_render_frame_deleted_callback_;
+  base::OnceCallback<void(const blink::LocalFrameToken&)>
+      on_render_frame_deleted_callback_;
 };
 
 }  // namespace cast_receiver

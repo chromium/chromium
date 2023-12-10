@@ -41,6 +41,8 @@ std::string ToResultHistogram(WallpaperType type) {
       return "Ash.Wallpaper.Device.Result2";
     case WallpaperType::kOobe:
       return "Ash.Wallpaper.Oobe.Result2";
+    case WallpaperType::kSeaPen:
+      return "Ash.Wallpaper.SeaPen.Result2";
     case WallpaperType::kOneShot:
     case WallpaperType::kCount:
       NOTREACHED();
@@ -59,7 +61,7 @@ WallpaperMetricsManager::~WallpaperMetricsManager() = default;
 void WallpaperMetricsManager::OnOnlineWallpaperSet(
     const OnlineWallpaperParams& params) {
   if (params.from_user) {
-    const absl::optional<uint64_t>& unit_id = params.unit_id;
+    const std::optional<uint64_t>& unit_id = params.unit_id;
     DCHECK(unit_id.has_value());
     const int unit_id_val = unit_id.value();
     base::UmaHistogramSparse("Ash.Wallpaper.Image", unit_id_val);

@@ -127,6 +127,7 @@ history::URLRow ScoredHistoryMatchTest::MakeURLRow(const char* url,
                                                    int days_since_last_visit,
                                                    int typed_count) {
   history::URLRow row(GURL(url), 0);
+  EXPECT_TRUE(row.url().is_valid());
   row.set_title(ASCIIToUTF16(title));
   row.set_visit_count(visit_count);
   row.set_typed_count(typed_count);
@@ -901,7 +902,7 @@ TEST_F(ScoredHistoryMatchTest, GetHQPBucketsFromString) {
 TEST_F(ScoredHistoryMatchTest, GetDomainRelevancyScore) {
   auto domain_relevancy_score = [&](base::TimeDelta time_since_last_visit) {
     auto now = base::Time::Now();
-    history::URLRow row;
+    history::URLRow row(GURL("http://foo.com"));
     ScoredHistoryMatchPublic match(row, {}, u"", Make1Term("x"), {}, {}, false,
                                    1, false, {});
     match.url_info.set_last_visit(now - time_since_last_visit);

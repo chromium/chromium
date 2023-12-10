@@ -43,6 +43,8 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_TPM_MANAGER) TpmManagerClient {
       base::OnceCallback<void(const ::tpm_manager::TakeOwnershipReply&)>;
   using ClearStoredOwnerPasswordCallback = base::OnceCallback<void(
       const ::tpm_manager::ClearStoredOwnerPasswordReply&)>;
+  using ClearTpmCallback =
+      base::OnceCallback<void(const ::tpm_manager::ClearTpmReply&)>;
 
   // Interface with testing functionality. Accessed through GetTestInterface(),
   // only implemented in the fake implementation.
@@ -70,6 +72,8 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_TPM_MANAGER) TpmManagerClient {
     virtual int take_ownership_count() const = 0;
     // Gets the count of `ClearStoredOwnerPassword()` being called.
     virtual int clear_stored_owner_password_count() const = 0;
+    // Gets the count of `ClearTpm()` being called.
+    virtual int clear_tpm_count() const = 0;
     // Emits ownership taken signal.
     virtual void EmitOwnershipTakenSignal() = 0;
   };
@@ -124,6 +128,9 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_TPM_MANAGER) TpmManagerClient {
   virtual void ClearStoredOwnerPassword(
       const ::tpm_manager::ClearStoredOwnerPasswordRequest& request,
       ClearStoredOwnerPasswordCallback callback) = 0;
+  // Requests tpm manager to clear TPM after reboot.
+  virtual void ClearTpm(const ::tpm_manager::ClearTpmRequest& request,
+                        ClearTpmCallback callback) = 0;
 
   // Adds an observer.
   virtual void AddObserver(Observer* observer) = 0;

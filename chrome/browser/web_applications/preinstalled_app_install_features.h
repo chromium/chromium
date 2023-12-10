@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_WEB_APPLICATIONS_PREINSTALLED_APP_INSTALL_FEATURES_H_
 
 #include "base/auto_reset.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 
 class Profile;
 

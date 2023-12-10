@@ -6,11 +6,11 @@
 
 #include <algorithm>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
 #include "base/containers/cxx20_erase_vector.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "net/base/url_util.h"
 #include "url/gurl.h"

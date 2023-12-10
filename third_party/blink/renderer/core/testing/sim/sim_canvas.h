@@ -15,7 +15,7 @@ namespace blink {
 
 class SimCanvas : public SkCanvas {
  public:
-  SimCanvas(int width, int height);
+  SimCanvas();
 
   enum CommandType {
     kRect,

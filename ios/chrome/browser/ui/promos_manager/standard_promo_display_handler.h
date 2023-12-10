@@ -16,6 +16,10 @@
 //
 // When the Promos Manager determines it's time to display the promo
 // `identifier`, it will call `handleDisplay`.
+// If this method is used to display promos, the promo must alert the Promos
+// Manager when it is dismissed by calling the `PromosManagerCoordinator`'s
+// `promoWasDismissed` method. the `PromosManagerUIHandler` protocol can be used
+// for this purpose.
 @protocol StandardPromoDisplayHandler <PromoProtocol>
 
 @required

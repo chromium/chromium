@@ -202,7 +202,7 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(ReadPlatformSharedBuffer,
   EXPECT_EQ(MOJO_PLATFORM_SHARED_MEMORY_REGION_ACCESS_MODE_UNSAFE, access_mode);
 
   auto mode = base::subtle::PlatformSharedMemoryRegion::Mode::kUnsafe;
-  absl::optional<base::UnguessableToken> guid =
+  std::optional<base::UnguessableToken> guid =
       base::UnguessableToken::Deserialize(mojo_guid.high, mojo_guid.low);
   ASSERT_TRUE(guid.has_value());
 #if BUILDFLAG(IS_WIN)

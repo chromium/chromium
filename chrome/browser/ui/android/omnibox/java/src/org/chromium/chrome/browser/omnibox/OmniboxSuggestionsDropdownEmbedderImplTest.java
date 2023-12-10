@@ -100,7 +100,11 @@ public class OmniboxSuggestionsDropdownEmbedderImplTest {
         doReturn(DIP_SCALE).when(mDisplay).getDipScale();
         mImpl =
                 new OmniboxSuggestionsDropdownEmbedderImpl(
-                        mWindowAndroid, mWindowDelegate, mAnchorView, mHorizontalAlignmentView);
+                        mWindowAndroid,
+                        mWindowDelegate,
+                        mAnchorView,
+                        mHorizontalAlignmentView,
+                        false);
     }
 
     @Test
@@ -225,7 +229,7 @@ public class OmniboxSuggestionsDropdownEmbedderImplTest {
     })
     public void testRecalculateOmniboxAlignment_tabletToPhoneSwitch() {
         OmniboxFeatures.ENABLE_MODERNIZE_VISUAL_UPDATE_ON_TABLET.setForTesting(true);
-        int sideSpacing = OmniboxResourceProvider.getSideSpacing(mContextWeakRef.get());
+        int sideSpacing = OmniboxResourceProvider.getDropdownSideSpacing(mContextWeakRef.get());
         doReturn(mAnchorView).when(mHorizontalAlignmentView).getParent();
         assertTrue(mImpl.isTablet());
         mImpl.recalculateOmniboxAlignment();
@@ -267,7 +271,6 @@ public class OmniboxSuggestionsDropdownEmbedderImplTest {
     @Config(qualifiers = "ldltr-sw600dp")
     public void testRecalculateOmniboxAlignment_phoneToTabletSwitch() {
         OmniboxFeatures.ENABLE_MODERNIZE_VISUAL_UPDATE_ON_TABLET.setForTesting(true);
-        int sideSpacing = OmniboxResourceProvider.getSideSpacing(mContextWeakRef.get());
         Configuration newConfig = getConfiguration();
         newConfig.screenWidthDp = DeviceFormFactor.MINIMUM_TABLET_WIDTH_DP - 1;
         mImpl.onConfigurationChanged(newConfig);
@@ -286,6 +289,7 @@ public class OmniboxSuggestionsDropdownEmbedderImplTest {
                 alignment);
 
         newConfig.screenWidthDp = DeviceFormFactor.MINIMUM_TABLET_WIDTH_DP + 1;
+        int sideSpacing = OmniboxResourceProvider.getDropdownSideSpacing(mContextWeakRef.get());
         mImpl.onConfigurationChanged(newConfig);
         assertTrue(mImpl.isTablet());
         OmniboxAlignment newAlignment = mImpl.getCurrentAlignment();
@@ -355,7 +359,7 @@ public class OmniboxSuggestionsDropdownEmbedderImplTest {
     })
     public void testRecalculateOmniboxAlignment_tabletRevampEnabled_ltr() {
         OmniboxFeatures.ENABLE_MODERNIZE_VISUAL_UPDATE_ON_TABLET.setForTesting(true);
-        int sideSpacing = OmniboxResourceProvider.getSideSpacing(mContextWeakRef.get());
+        int sideSpacing = OmniboxResourceProvider.getDropdownSideSpacing(mContextWeakRef.get());
         doReturn(mAnchorView).when(mHorizontalAlignmentView).getParent();
         doReturn(60).when(mHorizontalAlignmentView).getTop();
         mImpl.recalculateOmniboxAlignment();
@@ -382,7 +386,7 @@ public class OmniboxSuggestionsDropdownEmbedderImplTest {
     })
     public void testRecalculateOmniboxAlignment_tabletRevampEnabled_rtl() {
         OmniboxFeatures.ENABLE_MODERNIZE_VISUAL_UPDATE_ON_TABLET.setForTesting(true);
-        int sideSpacing = OmniboxResourceProvider.getSideSpacing(mContextWeakRef.get());
+        int sideSpacing = OmniboxResourceProvider.getDropdownSideSpacing(mContextWeakRef.get());
         doReturn(View.LAYOUT_DIRECTION_RTL).when(mAnchorView).getLayoutDirection();
         doReturn(mAnchorView).when(mHorizontalAlignmentView).getParent();
         doReturn(60).when(mHorizontalAlignmentView).getTop();
@@ -406,13 +410,13 @@ public class OmniboxSuggestionsDropdownEmbedderImplTest {
     @EnableFeatures(ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE)
     public void testRecalculateOmniboxAlignment_tabletRevampEnabled_mainSpaceAboveWindowBottom() {
         OmniboxFeatures.ENABLE_MODERNIZE_VISUAL_UPDATE_ON_TABLET.setForTesting(true);
-        int sideSpacing = OmniboxResourceProvider.getSideSpacing(mContextWeakRef.get());
         doReturn(mAnchorView).when(mHorizontalAlignmentView).getParent();
         doReturn(60).when(mHorizontalAlignmentView).getTop();
 
         Configuration newConfig = getConfiguration();
         newConfig.screenWidthDp = DeviceFormFactor.MINIMUM_TABLET_WIDTH_DP + 1;
         newConfig.screenHeightDp = DeviceFormFactor.MINIMUM_TABLET_WIDTH_DP;
+        int sideSpacing = OmniboxResourceProvider.getDropdownSideSpacing(mContextWeakRef.get());
         mImpl.onConfigurationChanged(newConfig);
 
         mImpl.recalculateOmniboxAlignment();

@@ -701,7 +701,7 @@ void SubmenuView::SetBorderColorId(absl::optional<ui::ColorId> color_id) {
   border_color_id_ = color_id;
 }
 
-BEGIN_METADATA(SubmenuView, View)
+BEGIN_METADATA(SubmenuView)
 END_METADATA
 
 }  // namespace views

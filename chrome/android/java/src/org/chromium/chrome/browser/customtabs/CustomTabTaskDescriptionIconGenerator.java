@@ -10,9 +10,7 @@ import android.graphics.Bitmap;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
 import org.chromium.url.GURL;
 
-/**
- * Generates icons suitable for Custom Tabs in the recent tasks list.
- */
+/** Generates icons suitable for Custom Tabs in the recent tasks list. */
 public class CustomTabTaskDescriptionIconGenerator {
     private static final int APP_ICON_MIN_SIZE_DP = 32;
     private static final int APP_ICON_SIZE_DP = 64;
@@ -23,19 +21,13 @@ public class CustomTabTaskDescriptionIconGenerator {
     private Context mContext;
     private int mMinSizePx;
 
-    /**
-     * The page URL for which {@link #mGeneratedIcon} was generated.
-     */
+    /** The page URL for which {@link #mGeneratedIcon} was generated. */
     private GURL mGeneratedPageUrl;
 
-    /**
-     * The most recently generated icon.
-     */
+    /** The most recently generated icon. */
     private Bitmap mGeneratedIcon;
 
-    /**
-     * Generates the icon if there is no adequate favicon.
-     */
+    /** Generates the icon if there is no adequate favicon. */
     private RoundedIconGenerator mGenerator;
 
     public CustomTabTaskDescriptionIconGenerator(Context context) {
@@ -54,7 +46,8 @@ public class CustomTabTaskDescriptionIconGenerator {
      * @return The icon to use in the recent tasks list.
      */
     public Bitmap getBitmap(GURL pageUrl, Bitmap largestFavicon) {
-        if (largestFavicon != null && largestFavicon.getWidth() >= mMinSizePx
+        if (largestFavicon != null
+                && largestFavicon.getWidth() >= mMinSizePx
                 && largestFavicon.getHeight() >= mMinSizePx) {
             return largestFavicon;
         }
@@ -64,9 +57,14 @@ public class CustomTabTaskDescriptionIconGenerator {
         }
 
         if (mGenerator == null) {
-            mGenerator = new RoundedIconGenerator(mContext.getResources(), APP_ICON_SIZE_DP,
-                    APP_ICON_SIZE_DP, APP_ICON_CORNER_RADIUS_DP, APP_ICON_DEFAULT_BACKGROUND_COLOR,
-                    APP_ICON_TEXT_SIZE_DP);
+            mGenerator =
+                    new RoundedIconGenerator(
+                            mContext.getResources(),
+                            APP_ICON_SIZE_DP,
+                            APP_ICON_SIZE_DP,
+                            APP_ICON_CORNER_RADIUS_DP,
+                            APP_ICON_DEFAULT_BACKGROUND_COLOR,
+                            APP_ICON_TEXT_SIZE_DP);
         }
 
         mGeneratedPageUrl = pageUrl;

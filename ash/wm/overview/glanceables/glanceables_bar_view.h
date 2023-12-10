@@ -5,6 +5,8 @@
 #ifndef ASH_WM_OVERVIEW_GLANCEABLES_GLANCEABLES_BAR_VIEW_H_
 #define ASH_WM_OVERVIEW_GLANCEABLES_GLANCEABLES_BAR_VIEW_H_
 
+#include "ash/wm/overview/glanceables/glanceables_chip_button.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/view.h"
@@ -17,7 +19,10 @@ class IconButton;
 // be shown in a row with a hiding chips button at the end. When pressing the
 // hiding button, the glanceables chips will fade out and the showing chips
 // button will appear in the center.
-class GlanceablesBarView : public views::View {
+class GlanceablesBarView : public views::View,
+                           public GlanceablesChipButton::Delegate {
+  METADATA_HEADER(GlanceablesBarView, views::View)
+
  public:
   // TODO(zxdan): When the data model is implemented, pass in the model to
   // generate glanceable chips.
@@ -38,14 +43,17 @@ class GlanceablesBarView : public views::View {
                const std::u16string& title,
                const std::u16string& sub_title,
                views::Button::PressedCallback callback,
-               absl::optional<std::u16string> button_title = absl::nullopt,
-               absl::optional<views::Button::PressedCallback> button_callback =
-                   absl::nullopt);
+               std::optional<std::u16string> button_title = std::nullopt,
+               std::optional<views::Button::PressedCallback> button_callback =
+                   std::nullopt);
 
   // views::View:
   gfx::Size CalculatePreferredSize() const override;
   int GetHeightForWidth(int width) const override;
   void Layout() override;
+
+  // GlanceablesChipButton::Delegate:
+  void RemoveChip(GlanceablesChipButton* chip) override;
 
  private:
   class GlanceablesChipsContainer;
@@ -55,8 +63,12 @@ class GlanceablesBarView : public views::View {
 
   // The container of the glanceables chips with the hiding chips button.
   raw_ptr<GlanceablesChipsContainer> chips_container_ = nullptr;
-  // The showing chips button.
-  raw_ptr<IconButton> show_glanceables_button_ = nullptr;
+  // A view contains the show chips button. To sync the scaling and opacity
+  // animations of the show chips button and its blurred background shield
+  // (which is stacked below the button's layer during animation), we set the
+  // button in this container view and animate the container instead of the
+  // button.
+  raw_ptr<views::View> show_chips_button_container_ = nullptr;
   // Indicating whether there is a showing/hiding animation in progress.
   bool animation_in_progress_ = false;
 };

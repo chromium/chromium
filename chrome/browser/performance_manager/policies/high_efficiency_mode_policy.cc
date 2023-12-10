@@ -6,15 +6,24 @@
 
 #include "base/containers/contains.h"
 #include "chrome/browser/performance_manager/policies/page_discarding_helper.h"
+#include "components/performance_manager/public/decorators/tab_page_decorator.h"
 #include "components/performance_manager/public/features.h"
+#include "components/performance_manager/public/user_tuning/tab_revisit_tracker.h"
 
 namespace performance_manager::policies {
 
 namespace {
-
 HighEfficiencyModePolicy* g_high_efficiency_mode_policy = nullptr;
 
+HighEfficiencyModePolicy::MemorySaverMode GetCurrentMode() {
+  int mode_value = performance_manager::features::kModalMemorySaverMode.Get();
+  CHECK_GE(mode_value, 0);
+  CHECK_LE(
+      mode_value,
+      static_cast<int>(HighEfficiencyModePolicy::MemorySaverMode::kMaxValue));
+  return static_cast<HighEfficiencyModePolicy::MemorySaverMode>(mode_value);
 }
+}  // namespace
 
 HighEfficiencyModePolicy::HighEfficiencyModePolicy()
     : time_before_discard_(base::TimeDelta::Max()) {
@@ -39,7 +48,7 @@ void HighEfficiencyModePolicy::OnPageNodeAdded(const PageNode* page_node) {
     // so that the pages are discarded if they don't ever become visible.
     // TODO(anthonyvd): High Efficiency Mode should make it so non-visible pages
     // are simply not loaded until they become visible.
-    StartDiscardTimerIfEnabled(page_node, time_before_discard_);
+    StartDiscardTimerIfEnabled(page_node, GetTimeBeforeDiscardForCurrentMode());
   }
 }
 
@@ -63,7 +72,7 @@ void HighEfficiencyModePolicy::OnIsVisibleChanged(const PageNode* page_node) {
   if (page_node->IsVisible()) {
     RemoveActiveTimer(page_node);
   } else {
-    StartDiscardTimerIfEnabled(page_node, time_before_discard_);
+    StartDiscardTimerIfEnabled(page_node, GetTimeBeforeDiscardForCurrentMode());
   }
 }
 
@@ -75,7 +84,7 @@ void HighEfficiencyModePolicy::OnTypeChanged(const PageNode* page_node,
     // If the page is a tab now, it wasn't before so it doesn't yet have a timer
     // running. Add it to the timer map if it's not visible, otherwise it will
     // be added as needed when its OnVisibleChange event fires.
-    StartDiscardTimerIfEnabled(page_node, time_before_discard_);
+    StartDiscardTimerIfEnabled(page_node, GetTimeBeforeDiscardForCurrentMode());
   }
 }
 
@@ -107,7 +116,7 @@ void HighEfficiencyModePolicy::OnHighEfficiencyModeChanged(bool enabled) {
 
 base::TimeDelta HighEfficiencyModePolicy::GetTimeBeforeDiscardForTesting()
     const {
-  return time_before_discard_;
+  return GetTimeBeforeDiscardForCurrentMode();
 }
 
 void HighEfficiencyModePolicy::SetTimeBeforeDiscard(
@@ -126,7 +135,8 @@ bool HighEfficiencyModePolicy::IsHighEfficiencyDiscardingEnabled() const {
 void HighEfficiencyModePolicy::StartAllDiscardTimers() {
   for (const PageNode* page_node : graph_->GetAllPageNodes()) {
     if (page_node->GetType() == PageType::kTab && !page_node->IsVisible()) {
-      StartDiscardTimerIfEnabled(page_node, time_before_discard_);
+      StartDiscardTimerIfEnabled(page_node,
+                                 GetTimeBeforeDiscardForCurrentMode());
     }
   }
 }
@@ -136,9 +146,29 @@ void HighEfficiencyModePolicy::StartDiscardTimerIfEnabled(
     base::TimeDelta time_before_discard) {
   DCHECK_EQ(page_node->GetType(), PageType::kTab);
   if (IsHighEfficiencyDiscardingEnabled()) {
+    TabRevisitTracker* revisit_tracker =
+        graph_->GetRegisteredObjectAs<TabRevisitTracker>();
+    CHECK(revisit_tracker);
+
+    TabPageDecorator::TabHandle* tab_handle =
+        TabPageDecorator::FromPageNode(page_node);
+    CHECK(tab_handle);
+
+    TabRevisitTracker::StateBundle state =
+        revisit_tracker->GetStateForTabHandle(tab_handle);
+
+    if (state.num_revisits > GetMaxNumRevisitsForCurrentMode()) {
+      // Don't start the discard timer if the tab has been revisited more times
+      // than the max allowable for the current mode. It's impossible for
+      // `num_revisits` to decrease. This condition is only checked here (not in
+      // the timer callback) because `num_revisits` can only increase by
+      // revisiting the tab, which would delete the timer.
+      return;
+    }
+
     // High Efficiency mode is enabled, so the tab should be discarded after the
     // amount of time specified by finch is elapsed.
-    CHECK_NE(time_before_discard_, base::TimeDelta::Max());
+    CHECK_NE(time_before_discard, base::TimeDelta::Max());
     active_discard_timers_[page_node].Start(
         FROM_HERE, time_before_discard,
         base::BindOnce(&HighEfficiencyModePolicy::DiscardPageTimerCallback,
@@ -180,6 +210,37 @@ void HighEfficiencyModePolicy::DiscardPageTimerCallback(
     PageDiscardingHelper::GetFromGraph(graph_)->ImmediatelyDiscardSpecificPage(
         page_node, PageDiscardingHelper::DiscardReason::PROACTIVE);
   }
+}
+
+base::TimeDelta HighEfficiencyModePolicy::GetTimeBeforeDiscardForCurrentMode()
+    const {
+  if (base::FeatureList::IsEnabled(features::kModalMemorySaver)) {
+    MemorySaverMode mode = GetCurrentMode();
+
+    if (mode == MemorySaverMode::kConservative) {
+      return base::Hours(6);
+    } else if (mode == MemorySaverMode::kMedium) {
+      return base::Hours(4);
+    } else if (mode == MemorySaverMode::kAggressive) {
+      return base::Hours(2);
+    }
+  }
+
+  return time_before_discard_;
+}
+
+int HighEfficiencyModePolicy::GetMaxNumRevisitsForCurrentMode() const {
+  MemorySaverMode mode = GetCurrentMode();
+
+  if (mode == MemorySaverMode::kConservative) {
+    return 15;
+  } else if (mode == MemorySaverMode::kMedium) {
+    return 15;
+  } else if (mode == MemorySaverMode::kAggressive) {
+    return 5;
+  }
+
+  return std::numeric_limits<int>::max();
 }
 
 }  // namespace performance_manager::policies

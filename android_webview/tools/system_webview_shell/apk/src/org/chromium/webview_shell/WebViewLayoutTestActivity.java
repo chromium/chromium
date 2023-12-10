@@ -45,62 +45,69 @@ public class WebViewLayoutTestActivity extends Activity {
         WebSettings settings = mWebView.getSettings();
         initializeSettings(settings);
 
-        mWebView.setWebViewClient(new WebViewClientCompat() {
-            @SuppressWarnings("deprecation") // because we support api level 19 and up.
-            @Override
-            public boolean shouldOverrideUrlLoading(WebView webView, String url) {
-                return false;
-            }
+        mWebView.setWebViewClient(
+                new WebViewClientCompat() {
+                    @SuppressWarnings("deprecation") // because we support api level 19 and up.
+                    @Override
+                    public boolean shouldOverrideUrlLoading(WebView webView, String url) {
+                        return false;
+                    }
 
-            @SuppressWarnings("deprecation") // because we support api level 19 and up.
-            @Override
-            public void onReceivedError(WebView view, int errorCode, String description,
-                    String failingUrl) {
-                mConsoleLog.append("WebView error: " + description + ", " + failingUrl + "\n");
-                mConsoleLog.append(TEST_FINISHED_SENTINEL + "\n");
-                finishTest();
-            }
-        });
+                    @SuppressWarnings("deprecation") // because we support api level 19 and up.
+                    @Override
+                    public void onReceivedError(
+                            WebView view, int errorCode, String description, String failingUrl) {
+                        mConsoleLog.append(
+                                "WebView error: " + description + ", " + failingUrl + "\n");
+                        mConsoleLog.append(TEST_FINISHED_SENTINEL + "\n");
+                        finishTest();
+                    }
+                });
 
-        mWebView.setWebChromeClient(new WebChromeClient() {
-            @Override
-            public void onGeolocationPermissionsShowPrompt(String origin,
-                    GeolocationPermissions.Callback callback) {
-                mConsoleLog.append("onGeolocationPermissionsShowPrompt" + "\n");
-                if (mGrantPermission) {
-                    mConsoleLog.append("geolocation request granted" + "\n");
-                    callback.invoke(origin, true /* allow */, false);
-                } else {
-                    mConsoleLog.append("geolocation request denied" + "\n");
-                    callback.invoke(origin, false /* allow */, false);
-                }
-            }
+        mWebView.setWebChromeClient(
+                new WebChromeClient() {
+                    @Override
+                    public void onGeolocationPermissionsShowPrompt(
+                            String origin, GeolocationPermissions.Callback callback) {
+                        mConsoleLog.append("onGeolocationPermissionsShowPrompt" + "\n");
+                        if (mGrantPermission) {
+                            mConsoleLog.append("geolocation request granted" + "\n");
+                            callback.invoke(origin, /* allow= */ true, false);
+                        } else {
+                            mConsoleLog.append("geolocation request denied" + "\n");
+                            callback.invoke(origin, /* allow= */ false, false);
+                        }
+                    }
 
-            @Override
-            @SuppressLint("NewApi") // PermissionRequest#deny requires API level 21.
-            public void onPermissionRequest(PermissionRequest request) {
-                mConsoleLog.append("onPermissionRequest: "
-                        + TextUtils.join(",", request.getResources()) + "\n");
-                if (mGrantPermission) {
-                    mConsoleLog.append("request granted: "
-                            + TextUtils.join(",", request.getResources()) + "\n");
-                    request.grant(request.getResources());
-                } else {
-                    mConsoleLog.append("request denied" + "\n");
-                    request.deny();
-                }
-            }
+                    @Override
+                    @SuppressLint("NewApi") // PermissionRequest#deny requires API level 21.
+                    public void onPermissionRequest(PermissionRequest request) {
+                        mConsoleLog.append(
+                                "onPermissionRequest: "
+                                        + TextUtils.join(",", request.getResources())
+                                        + "\n");
+                        if (mGrantPermission) {
+                            mConsoleLog.append(
+                                    "request granted: "
+                                            + TextUtils.join(",", request.getResources())
+                                            + "\n");
+                            request.grant(request.getResources());
+                        } else {
+                            mConsoleLog.append("request denied" + "\n");
+                            request.deny();
+                        }
+                    }
 
-            @Override
-            public boolean onConsoleMessage(ConsoleMessage consoleMessage) {
-                // TODO(timvolodine): put log and warnings in separate string builders.
-                mConsoleLog.append(consoleMessage.message() + "\n");
-                if (consoleMessage.message().equals(TEST_FINISHED_SENTINEL)) {
-                    finishTest();
-                }
-                return true;
-            }
-        });
+                    @Override
+                    public boolean onConsoleMessage(ConsoleMessage consoleMessage) {
+                        // TODO(timvolodine): put log and warnings in separate string builders.
+                        mConsoleLog.append(consoleMessage.message() + "\n");
+                        if (consoleMessage.message().equals(TEST_FINISHED_SENTINEL)) {
+                            finishTest();
+                        }
+                        return true;
+                    }
+                });
 
         // The WebView permissions layout tests depend on results from the console and permissions
         // logs which is highly order specific.
@@ -123,8 +130,8 @@ public class WebViewLayoutTestActivity extends Activity {
         mWebView.addJavascriptInterface(new SynchronousConsole(), "awConsole");
     }
 
-    public void waitForFinish(long timeout, TimeUnit unit) throws InterruptedException,
-            TimeoutException {
+    public void waitForFinish(long timeout, TimeUnit unit)
+            throws InterruptedException, TimeoutException {
         synchronized (mLock) {
             long deadline = System.currentTimeMillis() + unit.toMillis(timeout);
             while (!mFinished && System.currentTimeMillis() < deadline) {

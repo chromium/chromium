@@ -12,7 +12,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
-#include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_scheduler_post_task_callback.h"
@@ -57,7 +56,7 @@ void SchedulePostTaskCallbackTraceEventData(perfetto::TracedValue trace_context,
   GenericTaskData(dict, execution_context, task_id);
   dict.Add("priority", priority);
   dict.Add("delay", delay);
-  SetCallStack(dict);
+  SetCallStack(execution_context->GetIsolate(), dict);
 }
 
 void RunPostTaskCallbackTraceEventData(perfetto::TracedValue trace_context,
@@ -76,7 +75,7 @@ void AbortPostTaskCallbackTraceEventData(perfetto::TracedValue trace_context,
                                          uint64_t task_id) {
   auto dict = std::move(trace_context).WriteDictionary();
   GenericTaskData(dict, execution_context, task_id);
-  SetCallStack(dict);
+  SetCallStack(execution_context->GetIsolate(), dict);
 }
 
 }  // namespace
@@ -241,10 +240,8 @@ void DOMTask::OnAbort() {
                                 task_id_for_tracing_);
 
   // TODO(crbug.com/1293949): Add an error message.
-  resolver_->Reject(
-      ToV8Traits<IDLAny>::ToV8(resolver_script_state,
-                               abort_source_->reason(resolver_script_state))
-          .ToLocalChecked());
+  resolver_->Reject(abort_source_->reason(resolver_script_state)
+                        .V8ValueFor(resolver_script_state));
 }
 
 void DOMTask::RemoveAbortAlgorithm() {

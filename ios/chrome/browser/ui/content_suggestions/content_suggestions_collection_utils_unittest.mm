@@ -7,7 +7,7 @@
 #import <memory>
 
 #import "base/test/scoped_feature_list.h"
-#import "ios/chrome/browser/ntp/features.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_features.h"
 #import "ios/testing/scoped_block_swizzler.h"
 #import "testing/platform_test.h"

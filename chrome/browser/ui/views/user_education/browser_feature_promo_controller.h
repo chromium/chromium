@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_USER_EDUCATION_BROWSER_FEATURE_PROMO_CONTROLLER_H_
 #define CHROME_BROWSER_UI_VIEWS_USER_EDUCATION_BROWSER_FEATURE_PROMO_CONTROLLER_H_
 
+#include <memory>
 #include <string>
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
@@ -23,6 +24,7 @@ class TrackedElement;
 
 namespace user_education {
 class FeaturePromoRegistry;
+class FeaturePromoSessionPolicy;
 class FeaturePromoStorageService;
 class HelpBubbleFactoryRegistry;
 class TutorialService;
@@ -43,15 +45,24 @@ class BrowserView;
 class BrowserFeaturePromoController
     : public user_education::FeaturePromoControllerCommon {
  public:
-  // Create the instance for the given |browser_view|.
+  // Create the instance for the given |browser_view|. Prefer to call
+  // `MaybeCreateForBrowserView()` instead.
   BrowserFeaturePromoController(
       BrowserView* browser_view,
       feature_engagement::Tracker* feature_engagement_tracker,
       user_education::FeaturePromoRegistry* registry,
       user_education::HelpBubbleFactoryRegistry* help_bubble_registry,
       user_education::FeaturePromoStorageService* storage_service,
+      user_education::FeaturePromoSessionPolicy* session_policy,
       user_education::TutorialService* tutorial_service);
   ~BrowserFeaturePromoController() override;
+
+  // Creates (or doesn't create) a FeaturePromoController for the specified
+  // `browser_view`. Not all browser windows can do promos; specifically,
+  // headless, kiosk, guest, incognito, and other off-the-record browsers do
+  // _not_ show IPH.
+  static std::unique_ptr<BrowserFeaturePromoController>
+  MaybeCreateForBrowserView(BrowserView* browser_view);
 
   // Get the appropriate instance for |view|. This finds the BrowserView
   // that contains |view| and returns its instance. May return nullptr,

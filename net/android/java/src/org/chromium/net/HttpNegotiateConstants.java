@@ -4,9 +4,7 @@
 
 package org.chromium.net;
 
-/**
- * Constants used by Chrome in SPNEGO authentication requests to the Android Account Manager.
- */
+/** Constants used by Chrome in SPNEGO authentication requests to the Android Account Manager. */
 public class HttpNegotiateConstants {
     // Option bundle keys
     //

@@ -11,10 +11,10 @@
 #import "build/build_config.h"
 #import "components/infobars/core/infobar.h"
 #import "ios/chrome/browser/credential_provider_promo/model/features.h"
-#import "ios/chrome/browser/infobars/infobar_ios.h"
-#import "ios/chrome/browser/overlays/public/default/default_infobar_overlay_request_config.h"
-#import "ios/chrome/browser/overlays/public/overlay_request.h"
-#import "ios/chrome/browser/overlays/public/overlay_response.h"
+#import "ios/chrome/browser/infobars/model/infobar_ios.h"
+#import "ios/chrome/browser/overlays/model/public/default/default_infobar_overlay_request_config.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_request.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_response.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_save_password_infobar_delegate.h"
 #import "ios/chrome/browser/passwords/model/test/mock_ios_chrome_save_passwords_infobar_delegate.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
@@ -48,7 +48,7 @@ class PasswordInfobarBannerOverlayMediatorTest : public PlatformTest {
   }
 
   void InitInfobar(
-      absl::optional<std::string> account_to_store_password = absl::nullopt) {
+      std::optional<std::string> account_to_store_password = std::nullopt) {
     infobar_ = std::make_unique<InfoBarIOS>(
         InfobarType::kInfobarTypePasswordSave,
         MockIOSChromeSavePasswordInfoBarDelegate::Create(

@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/browser_view/browser_coordinator.h"
 
 #import "base/files/file_util.h"
+#import "base/test/scoped_feature_list.h"
 #import "components/bookmarks/test/bookmark_test_helpers.h"
 #import "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_model_factory.h"
 #import "ios/chrome/browser/download/model/download_directory_util.h"
@@ -12,15 +13,12 @@
 #import "ios/chrome/browser/favicon/favicon_service_factory.h"
 #import "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/favicon/ios_chrome_large_icon_service_factory.h"
-#import "ios/chrome/browser/history/history_service_factory.h"
-#import "ios/chrome/browser/lens/lens_browser_agent.h"
-#import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
+#import "ios/chrome/browser/history/model/history_service_factory.h"
+#import "ios/chrome/browser/lens/model/lens_browser_agent.h"
+#import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/prerender/model/prerender_service_factory.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
-#import "ios/chrome/browser/sessions/session_restoration_browser_agent.h"
-#import "ios/chrome/browser/sessions/test_session_service.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
-#import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
@@ -31,9 +29,9 @@
 #import "ios/chrome/browser/shared/public/commands/promos_manager_commands.h"
 #import "ios/chrome/browser/shared/public/commands/save_image_to_photos_command.h"
 #import "ios/chrome/browser/shared/public/commands/save_to_photos_commands.h"
-#import "ios/chrome/browser/signin/authentication_service.h"
-#import "ios/chrome/browser/signin/authentication_service_factory.h"
-#import "ios/chrome/browser/signin/fake_authentication_service_delegate.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
 #import "ios/chrome/browser/sync/model/sync_error_browser_agent.h"
 #import "ios/chrome/browser/tab_insertion/model/tab_insertion_browser_agent.h"
 #import "ios/chrome/browser/tabs/model/tab_helper_util.h"
@@ -50,8 +48,8 @@
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_notifier_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
-#import "ios/chrome/browser/web/web_navigation_browser_agent.h"
-#import "ios/chrome/browser/web/web_state_delegate_browser_agent.h"
+#import "ios/chrome/browser/web/model/web_navigation_browser_agent.h"
+#import "ios/chrome/browser/web/model/web_state_delegate_browser_agent.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
@@ -62,19 +60,12 @@
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
-
-// To get access to web::features::kEnableSessionSerializationOptimizations.
-// TODO(crbug.com/1383087): remove once the feature is fully launched.
-#import "base/test/scoped_feature_list.h"
-#import "ios/web/common/features.h"
+#import "ui/base/device_form_factor.h"
 
 // Test fixture for BrowserCoordinator testing.
 class BrowserCoordinatorTest : public PlatformTest {
  protected:
   BrowserCoordinatorTest() {
-    scoped_feature_list_.InitAndDisableFeature(
-        web::features::kEnableSessionSerializationOptimizations);
-
     base_view_controller_ = [[UIViewController alloc] init];
     scene_state_ = [[SceneState alloc] initWithAppState:nil];
 
@@ -105,10 +96,10 @@ class BrowserCoordinatorTest : public PlatformTest {
         base::BindRepeating(AuthenticationServiceFactory::GetDefaultFactory()));
 
     chrome_browser_state_ = test_cbs_builder.Build();
-    browser_ = std::make_unique<TestBrowser>(chrome_browser_state_.get());
+    browser_ = std::make_unique<TestBrowser>(chrome_browser_state_.get(),
+                                             scene_state_);
     UrlLoadingNotifierBrowserAgent::CreateForBrowser(browser_.get());
     UrlLoadingBrowserAgent::CreateForBrowser(browser_.get());
-    SceneStateBrowserAgent::CreateForBrowser(browser_.get(), scene_state_);
     LensBrowserAgent::CreateForBrowser(browser_.get());
     WebNavigationBrowserAgent::CreateForBrowser(browser_.get());
     TabInsertionBrowserAgent::CreateForBrowser(browser_.get());
@@ -119,10 +110,6 @@ class BrowserCoordinatorTest : public PlatformTest {
     AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
         chrome_browser_state_.get(),
         std::make_unique<FakeAuthenticationServiceDelegate>());
-    SessionRestorationBrowserAgent::CreateForBrowser(
-        browser_.get(), [[TestSessionService alloc] init], false);
-    SessionRestorationBrowserAgent::FromBrowser(browser_.get())
-        ->SetSessionID([[NSUUID UUID] UUIDString]);
 
     IncognitoReauthSceneAgent* reauthAgent = [[IncognitoReauthSceneAgent alloc]
         initWithReauthModule:[[ReauthenticationModule alloc] init]];
@@ -189,7 +176,6 @@ class BrowserCoordinatorTest : public PlatformTest {
     ntpHelper->PageLoaded(web_state, web::PageLoadCompletionStatus::SUCCESS);
   }
 
-  base::test::ScopedFeatureList scoped_feature_list_;
   IOSChromeScopedTestingLocalState local_state_;
   web::WebTaskEnvironment task_environment_;
   UIViewController* base_view_controller_;
@@ -417,6 +403,30 @@ TEST_F(BrowserCoordinatorTest, DisplayDefaultBrowserPromoAfterRemindMeLater) {
       HandlerForProtocol(dispatcher, PromosManagerCommands);
 
   [handler displayDefaultBrowserPromoAfterRemindMeLater];
+
+  [browser_coordinator stop];
+}
+
+// Tests that the showOmniboxPositionChoice command does not
+// crash.
+TEST_F(BrowserCoordinatorTest, ShowOmniboxPositionChoice) {
+  // OmniboxPositionChoice is only available on phones.
+  if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_PHONE) {
+    return;
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kBottomOmniboxPromoAppLaunch);
+
+  // Start the BrowserCoordinator
+  BrowserCoordinator* browser_coordinator = GetBrowserCoordinator();
+  [browser_coordinator start];
+
+  CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();
+  id<PromosManagerCommands> handler =
+      HandlerForProtocol(dispatcher, PromosManagerCommands);
+
+  [handler showOmniboxPositionChoicePromo];
 
   [browser_coordinator stop];
 }

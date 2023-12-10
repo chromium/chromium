@@ -53,19 +53,16 @@ public class HubPaneHostViewRenderTest {
         mActivityTestRule.launchActivity(null);
         mActivity = mActivityTestRule.getActivity();
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
+        TestThreadUtils.runOnUiThreadBlocking(this::setUpOnUi);
+    }
 
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    LayoutInflater inflater = LayoutInflater.from(mActivity);
-                    mPaneHost =
-                            (HubPaneHostView)
-                                    inflater.inflate(R.layout.hub_pane_host_layout, null, false);
-                    mActivity.setContentView(mPaneHost);
+    private void setUpOnUi() {
+        LayoutInflater inflater = LayoutInflater.from(mActivity);
+        mPaneHost = (HubPaneHostView) inflater.inflate(R.layout.hub_pane_host_layout, null, false);
+        mActivity.setContentView(mPaneHost);
 
-                    mPropertyModel = new PropertyModel(HubPaneHostProperties.ALL_KEYS);
-                    PropertyModelChangeProcessor.create(
-                            mPropertyModel, mPaneHost, HubPaneHostViewBinder::bind);
-                });
+        mPropertyModel = new PropertyModel(HubPaneHostProperties.ALL_KEYS);
+        PropertyModelChangeProcessor.create(mPropertyModel, mPaneHost, HubPaneHostViewBinder::bind);
     }
 
     @Test
@@ -73,7 +70,8 @@ public class HubPaneHostViewRenderTest {
     @Feature({"RenderTest"})
     public void test() throws Exception {
         DisplayButtonData displayButtonData =
-                new ResourceButtonData(R.string.button_new_tab, R.drawable.ic_add);
+                new ResourceButtonData(
+                        R.string.button_new_tab, R.string.button_new_tab, R.drawable.ic_add);
         FullButtonData fullButtonData = new DelegateButtonData(displayButtonData, () -> {});
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {

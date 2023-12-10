@@ -19,7 +19,6 @@
 #include "chrome/updater/constants.h"
 #include "chrome/updater/registration_data.h"
 #include "chrome/updater/update_service.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
 namespace {

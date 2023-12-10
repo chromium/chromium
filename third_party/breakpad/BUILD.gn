@@ -77,11 +77,6 @@ if (use_fuzzing_engine) {
   default_breakpad_configs += [ ":default_logging_severity_config" ]
 }
 
-config("no_fortify_source") {
-  # TODO(crbug.com/1476401): Fix libdisasm/x86_format.c
-  cflags = [ "-Wno-fortify-source" ]
-}
-
 # {micro,mini}dump_stackwalk and minidump_dump are tool-type executables
 # that do not build on Windows.
 if (!is_win) {
@@ -181,7 +176,6 @@ if (!is_win) {
       configs -= [ "//build/config/compiler:chromium_code" ]
       configs += [ "//build/config/compiler:no_chromium_code" ]
       configs += default_breakpad_configs
-      configs += [ ":no_fortify_source" ]
     }
 
     fuzzer_test("minidump_fuzzer") {
@@ -363,8 +357,8 @@ if (is_mac) {
       if (enable_rust_crash) {
         deps = [ "//third_party/rust/rustc_demangle_capi/v0_1:lib" ]
         defines += [ "HAVE_RUSTC_DEMANGLE" ]
-        include_dirs +=
-            [ "//third_party/rust/rustc_demangle_capi/v0_1/crate/include" ]
+        include_dirs += [ "//third_party/rust/chromium_crates_io/vendor/rustc-demangle-capi-0.1.0/include" ]
+        sources += [ "//third_party/rust/chromium_crates_io/vendor/rustc-demangle-capi-0.1.0/include/rustc_demangle.h" ]
       }
     }
     test("breakpad_unittests") {
@@ -565,8 +559,8 @@ if (is_linux || is_chromeos || is_android) {
       if (enable_rust_crash) {
         deps = [ "//third_party/rust/rustc_demangle_capi/v0_1:lib" ]
         defines += [ "HAVE_RUSTC_DEMANGLE" ]
-        include_dirs +=
-            [ "//third_party/rust/rustc_demangle_capi/v0_1/crate/include" ]
+        include_dirs += [ "//third_party/rust/chromium_crates_io/vendor/rustc-demangle-capi-0.1.0/include" ]
+        sources += [ "//third_party/rust/chromium_crates_io/vendor/rustc-demangle-capi-0.1.0/include/rustc_demangle.h" ]
       }
 
       libs = [ "z" ]

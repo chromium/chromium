@@ -102,7 +102,7 @@ void NetworkLogsMessageHandler::OnStoreLogs(const base::Value::List& list) {
 void NetworkLogsMessageHandler::OnWriteSystemLogs(
     const std::string& callback_id,
     base::Value::Dict&& options,
-    absl::optional<base::FilePath> syslogs_path) {
+    std::optional<base::FilePath> syslogs_path) {
   if (!syslogs_path) {
     Respond(callback_id, "Error writing system logs file.", /*is_error=*/true);
     return;
@@ -133,7 +133,7 @@ void NetworkLogsMessageHandler::MaybeWriteDebugLogs(
 void NetworkLogsMessageHandler::OnWriteDebugLogs(
     const std::string& callback_id,
     base::Value::Dict&& options,
-    absl::optional<base::FilePath> logs_path) {
+    std::optional<base::FilePath> logs_path) {
   if (!logs_path) {
     Respond(callback_id, "Error writing debug logs.", /*is_error=*/true);
     return;

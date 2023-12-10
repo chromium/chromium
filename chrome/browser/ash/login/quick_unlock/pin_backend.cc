@@ -53,7 +53,7 @@ void PostResponse(PinBackend::BoolCallback result, bool value) {
 void PostResponse(AuthOperationCallback result,
                   std::unique_ptr<UserContext> user_context,
                   bool success) {
-  absl::optional<AuthenticationError> error = absl::nullopt;
+  std::optional<AuthenticationError> error = std::nullopt;
   if (!success) {
     error = AuthenticationError{AuthFailure::UNLOCK_FAILED};
   }
@@ -206,28 +206,14 @@ void PinBackend::Set(const AccountId& account_id,
   DCHECK(storage);
 
   if (cryptohome_backend_) {
-    std::unique_ptr<UserContext> user_context;
-    if (ash::features::ShouldUseAuthSessionStorage()) {
-      if (!ash::AuthSessionStorage::Get()->IsValid(token)) {
-        PostResponse(std::move(did_set), false);
-        return;
-      }
-      ash::AuthSessionStorage::Get()->BorrowAsync(
-          FROM_HERE, token,
-          base::BindOnce(&PinBackend::SetWithContext, base::Unretained(this),
-                         account_id, token, pin, std::move(did_set)));
+    if (!ash::AuthSessionStorage::Get()->IsValid(token)) {
+      PostResponse(std::move(did_set), false);
       return;
-    } else {
-      // If `user_context` is null, then the token timed out.
-      const UserContext* maybe_context = storage->GetUserContext(token);
-      if (!maybe_context) {
-        PostResponse(std::move(did_set), false);
-        return;
-      }
-      user_context = std::make_unique<UserContext>(*maybe_context);
-      SetWithContext(account_id, token, pin, std::move(did_set),
-                     std::make_unique<UserContext>(*maybe_context));
     }
+    ash::AuthSessionStorage::Get()->BorrowAsync(
+        FROM_HERE, token,
+        base::BindOnce(&PinBackend::SetWithContext, base::Unretained(this),
+                       account_id, token, pin, std::move(did_set)));
   } else {
     storage->pin_storage_prefs()->SetPin(pin);
     storage->MarkStrongAuth();
@@ -251,7 +237,7 @@ void PinBackend::SetWithContext(const AccountId& account_id,
   // cryptohome-based PIN.
   storage->pin_storage_prefs()->RemovePin();
   cryptohome_backend_->SetPin(
-      std::move(user_context), pin, absl::nullopt,
+      std::move(user_context), pin, std::nullopt,
       base::BindOnce(&PinBackend::OnAuthOperation, token, std::move(did_set)));
   UpdatePinAutosubmitOnSet(account_id, pin.length());
 }
@@ -319,27 +305,14 @@ void PinBackend::Remove(const AccountId& account_id,
   UpdatePinAutosubmitOnRemove(account_id);
 
   if (cryptohome_backend_) {
-    std::unique_ptr<UserContext> user_context;
-    if (ash::features::ShouldUseAuthSessionStorage()) {
-      if (!ash::AuthSessionStorage::Get()->IsValid(token)) {
-        PostResponse(std::move(did_remove), false);
-        return;
-      }
-      ash::AuthSessionStorage::Get()->BorrowAsync(
-          FROM_HERE, token,
-          base::BindOnce(&PinBackend::RemoveWithContext, base::Unretained(this),
-                         account_id, token, std::move(did_remove)));
+    if (!ash::AuthSessionStorage::Get()->IsValid(token)) {
+      PostResponse(std::move(did_remove), false);
       return;
-    } else {
-      // If `user_context` is null, then the token timed out.
-      const UserContext* maybe_context = storage->GetUserContext(token);
-      if (!maybe_context) {
-        PostResponse(std::move(did_remove), false);
-        return;
-      }
-      RemoveWithContext(account_id, token, std::move(did_remove),
-                        std::make_unique<UserContext>(*maybe_context));
     }
+    ash::AuthSessionStorage::Get()->BorrowAsync(
+        FROM_HERE, token,
+        base::BindOnce(&PinBackend::RemoveWithContext, base::Unretained(this),
+                       account_id, token, std::move(did_remove)));
   } else {
     const bool had_pin = storage->pin_storage_prefs()->IsPinSet();
     storage->pin_storage_prefs()->RemovePin();
@@ -467,7 +440,7 @@ void PinBackend::OnIsCryptohomeBackendSupported(bool is_supported) {
 void PinBackend::OnPinMigrationAttemptComplete(
     Profile* profile,
     std::unique_ptr<UserContext> user_context,
-    absl::optional<AuthenticationError> error) {
+    std::optional<AuthenticationError> error) {
   if (!error.has_value()) {
     QuickUnlockStorage* storage = QuickUnlockFactory::GetForProfile(profile);
     storage->pin_storage_prefs()->RemovePin();
@@ -480,7 +453,7 @@ void PinBackend::OnCryptohomeAuthenticationResponse(
     const Key& key,
     AuthOperationCallback result,
     std::unique_ptr<UserContext> user_context,
-    absl::optional<AuthenticationError> error) {
+    std::optional<AuthenticationError> error) {
   // Regardless of the outcome, discard the session in user_context. This
   // session was only meant to be used for checking the PIN.
   user_context->ResetAuthSessionIds();
@@ -507,7 +480,7 @@ void PinBackend::OnPinAutosubmitCheckComplete(
     size_t pin_length,
     BoolCallback result,
     std::unique_ptr<UserContext> user_context,
-    absl::optional<AuthenticationError> error) {
+    std::optional<AuthenticationError> error) {
   const bool success = !error.has_value();
   const AccountId& account_id = user_context->GetAccountId();
   user_manager::KnownUser known_user(g_browser_process->local_state());
@@ -621,15 +594,8 @@ void PinBackend::PinAutosubmitBackfill(const AccountId& account_id,
 void PinBackend::OnAuthOperation(std::string auth_token,
                                  BoolCallback callback,
                                  std::unique_ptr<UserContext> user_context,
-                                 absl::optional<AuthenticationError> error) {
-  if (ash::features::ShouldUseAuthSessionStorage()) {
-    ash::AuthSessionStorage::Get()->Return(auth_token, std::move(user_context));
-  } else {
-    QuickUnlockStorage* storage = GetPrefsBackend(user_context->GetAccountId());
-    if (storage) {
-      storage->ReplaceUserContext(auth_token, std::move(user_context));
-    }
-  }
+                                 std::optional<AuthenticationError> error) {
+  ash::AuthSessionStorage::Get()->Return(auth_token, std::move(user_context));
   std::move(callback).Run(!error.has_value());
 }
 

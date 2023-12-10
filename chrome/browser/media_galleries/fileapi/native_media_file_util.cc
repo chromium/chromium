@@ -277,7 +277,7 @@ void NativeMediaFileUtil::CreateDirectory(
 void NativeMediaFileUtil::GetFileInfo(
     std::unique_ptr<storage::FileSystemOperationContext> context,
     const storage::FileSystemURL& url,
-    int /* fields */,
+    GetMetadataFieldSet fields,
     GetFileInfoCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   storage::FileSystemOperationContext* context_ptr = context.get();

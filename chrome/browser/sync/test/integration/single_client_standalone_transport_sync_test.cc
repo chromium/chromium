@@ -16,6 +16,7 @@
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/common/chrome_paths.h"
 #include "components/password_manager/core/browser/features/password_features.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/service/glue/sync_transport_data_prefs.h"
@@ -65,8 +66,14 @@ class SyncConsentDisabledChecker : public SingleClientStatusChangeChecker {
 
 class SingleClientStandaloneTransportSyncTest : public SyncTest {
  public:
-  SingleClientStandaloneTransportSyncTest() : SyncTest(SINGLE_CLIENT) {}
+  SingleClientStandaloneTransportSyncTest() : SyncTest(SINGLE_CLIENT) {
+    feature_list_.InitAndDisableFeature(switches::kUnoDesktop);
+  }
+
   ~SingleClientStandaloneTransportSyncTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // On Chrome OS sync auto-starts on sign-in.
@@ -131,8 +138,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientStandaloneTransportSyncTest,
       << syncer::ModelTypeSetToDebugString(bad_types);
 
   // Turn Sync-the-feature on.
-  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount(signin::ConsentLevel::kSync));
-  ASSERT_TRUE(GetClient(0)->EnableSyncFeature());
+  ASSERT_TRUE(GetClient(0)->SetupSync());
   ASSERT_EQ(syncer::SyncService::TransportState::ACTIVE,
             GetSyncService(0)->GetTransportState());
   EXPECT_TRUE(GetSyncService(0)->IsSyncFeatureEnabled());
@@ -269,7 +275,8 @@ class SingleClientStandaloneTransportWithReplaceSyncWithSigninSyncTest
         {syncer::kEnablePreferencesAccountStorage,
          syncer::kSyncEnableContactInfoDataTypeInTransportMode,
          syncer::kSyncEnableContactInfoDataTypeForCustomPassphraseUsers,
-         syncer::kReplaceSyncPromosWithSignInPromos},
+         syncer::kReplaceSyncPromosWithSignInPromos,
+         syncer::kSyncAutofillWalletCredentialData},
         /*disabled_features=*/{});
   }
   ~SingleClientStandaloneTransportWithReplaceSyncWithSigninSyncTest() override =
@@ -326,6 +333,8 @@ IN_PROC_BROWSER_TEST_F(
       syncer::AUTOFILL_WALLET_DATA));
   EXPECT_TRUE(
       GetSyncService(0)->GetActiveDataTypes().Has(syncer::CONTACT_INFO));
+  EXPECT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(
+      syncer::AUTOFILL_WALLET_CREDENTIAL));
 }
 
 // TODO(crbug.com/1117345): Android currently doesn't support PRE_ tests.
@@ -382,11 +391,14 @@ IN_PROC_BROWSER_TEST_F(
       GetSyncService(0)->GetActiveDataTypes().Has(syncer::CONTACT_INFO));
   if (!base::FeatureList::IsEnabled(
           syncer::kSyncDecoupleAddressPaymentSettings)) {
-    // AUTOFILL_WALLET_DATA should be disabled when CONTACT_INFO is disabled.
+    // AUTOFILL_WALLET_DATA and AUTOFILL_WALLET_CREDENTIAL should be disabled
+    // when CONTACT_INFO is disabled.
     // TODO(crbug.com/1435431): It shouldn't be disabled once kPayments is
     // decoupled from kAutofill.
     EXPECT_FALSE(GetSyncService(0)->GetActiveDataTypes().Has(
         syncer::AUTOFILL_WALLET_DATA));
+    EXPECT_FALSE(GetSyncService(0)->GetActiveDataTypes().Has(
+        syncer::AUTOFILL_WALLET_CREDENTIAL));
   }
 
   // Enabling kAutofill to enable CONTACT_INFO.
@@ -404,11 +416,14 @@ IN_PROC_BROWSER_TEST_F(
             GetSyncService(0)->GetTransportState());
   ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
 
-  // CONTACT_INFO and AUTOFILL_WALLET_DATA should be enabled.
+  // CONTACT_INFO, AUTOFILL_WALLET_DATA, and AUTOFILL_WALLET_CREDENTIAL should
+  // be enabled.
   EXPECT_TRUE(
       GetSyncService(0)->GetActiveDataTypes().Has(syncer::CONTACT_INFO));
   EXPECT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(
       syncer::AUTOFILL_WALLET_DATA));
+  EXPECT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(
+      syncer::AUTOFILL_WALLET_CREDENTIAL));
 }
 
 // Tests that a custom passphrase user's opt-in to kAutofill (which happened in
@@ -423,13 +438,16 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_EQ(syncer::SyncService::TransportState::ACTIVE,
             GetSyncService(0)->GetTransportState());
 
-  // CONTACT_INFO and AUTOFILL_WALLET_DATA should be enabled after restarting.
+  // CONTACT_INFO, AUTOFILL_WALLET_DATA, and AUTOFILL_WALLET_CREDENTIAL should
+  // be enabled after restarting.
   EXPECT_TRUE(
       GetSyncService(0)->GetActiveDataTypes().Has(syncer::CONTACT_INFO));
   // TODO(crbug.com/1435431): This should be removed once kPayments is decoupled
   // from kAutofill.
   EXPECT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(
       syncer::AUTOFILL_WALLET_DATA));
+  EXPECT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(
+      syncer::AUTOFILL_WALLET_CREDENTIAL));
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -504,11 +522,11 @@ class SingleClientStandaloneTransportReplaceSyncWithSigninMigrationSyncTest
   SingleClientStandaloneTransportReplaceSyncWithSigninMigrationSyncTest() {
     // Various features that are required for types to be supported in transport
     // mode are unconditionally enabled.
+    // TODO(crbug.com/1494120): Re-enable
+    // `syncer::kEnableBookmarksAccountStorage` when possible.
     default_features_.InitWithFeatures(
         /*enabled_features=*/
-        {syncer::kEnableBookmarksAccountStorage,
-         syncer::kReadingListEnableDualReadingListModel,
-         syncer::kReadingListEnableSyncTransportModeUponSignIn,
+        {syncer::kReadingListEnableSyncTransportModeUponSignIn,
          password_manager::features::kEnablePasswordsAccountStorage,
          syncer::kSyncEnableContactInfoDataTypeInTransportMode,
          syncer::kEnablePreferencesAccountStorage},
@@ -536,29 +554,23 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
   ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureEnabled());
 
-  // E.g. Bookmarks and Passwords are enabled by default (based on the Features
-  // set by the fixture).
+  // E.g. Autofill and Payments are enabled by default (based on the
+  // Features set by the fixture).
   ASSERT_TRUE(GetSyncService(0)->GetUserSettings()->GetSelectedTypes().Has(
-      syncer::UserSelectableType::kBookmarks));
+      syncer::UserSelectableType::kAutofill));
   ASSERT_TRUE(GetSyncService(0)->GetUserSettings()->GetSelectedTypes().Has(
-      syncer::UserSelectableType::kPasswords));
+      syncer::UserSelectableType::kPayments));
   // Preferences is not supported in transport mode (based on the Features
   // set by the fixture), so it should be reported as non-selected.
   ASSERT_FALSE(GetSyncService(0)->GetUserSettings()->GetSelectedTypes().Has(
       syncer::UserSelectableType::kPreferences));
 
-  // The user opts out of Passwords.
-  syncer::UserSelectableTypeSet selected_types =
-      GetSyncService(0)->GetUserSettings()->GetRegisteredSelectableTypes();
-  selected_types.Remove(syncer::UserSelectableType::kPasswords);
-  GetSyncService(0)->GetUserSettings()->SetSelectedTypes(
-      /*sync_everything=*/false, selected_types);
-
-  // Even though Preferences was explicitly set to true, it's still considered
-  // non-selected since it's not supported in transport mode.
-  ASSERT_TRUE(selected_types.Has(syncer::UserSelectableType::kPreferences));
-  ASSERT_FALSE(GetSyncService(0)->GetUserSettings()->GetSelectedTypes().Has(
-      syncer::UserSelectableType::kPreferences));
+  // The user disabled Payments, e.g. via a temporary toggle predating the
+  // "unified settings panel" introduced by kReplaceSyncPromosWithSignInPromos.
+  // Note that SyncUserSettings is already reading/writing from/to the
+  // account-scoped prefs!
+  GetSyncService(0)->GetUserSettings()->SetSelectedType(
+      syncer::UserSelectableType::kPayments, false);
 
   ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
   ASSERT_EQ(syncer::SyncService::TransportState::ACTIVE,
@@ -575,13 +587,13 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_EQ(syncer::SyncService::TransportState::ACTIVE,
             GetSyncService(0)->GetTransportState());
 
-  // Bookmarks and Passwords should still be enabled and disabled, respectively.
-  // Note that GetSelectedTypes() now reads from the account-scoped prefs!
+  // Autofill and Payments should still be enabled and disabled, respectively.
   EXPECT_TRUE(GetSyncService(0)->GetUserSettings()->GetSelectedTypes().Has(
-      syncer::UserSelectableType::kBookmarks));
+      syncer::UserSelectableType::kAutofill));
   EXPECT_FALSE(GetSyncService(0)->GetUserSettings()->GetSelectedTypes().Has(
-      syncer::UserSelectableType::kPasswords));
-  // Preferences should've been disabled by the migration.
+      syncer::UserSelectableType::kPayments));
+  // Preferences is supported in transport mode now but should've been disabled
+  // by the migration.
   EXPECT_FALSE(GetSyncService(0)->GetUserSettings()->GetSelectedTypes().Has(
       syncer::UserSelectableType::kPreferences));
   // But it's supported now, and the user can set it to true.
@@ -608,9 +620,9 @@ IN_PROC_BROWSER_TEST_F(
                                     syncer::PassphraseType::kCustomPassphrase)
                   .Wait());
 
-  // E.g. Passwords and Autofill are enabled by default.
+  // E.g. Payments and Autofill are enabled by default.
   ASSERT_TRUE(GetSyncService(0)->GetUserSettings()->GetSelectedTypes().Has(
-      syncer::UserSelectableType::kPasswords));
+      syncer::UserSelectableType::kPayments));
   ASSERT_TRUE(GetSyncService(0)->GetUserSettings()->GetSelectedTypes().Has(
       syncer::UserSelectableType::kAutofill));
   // Preferences is not supported without `kReplaceSyncPromosWithSignInPromos`.
@@ -631,16 +643,19 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_EQ(GetSyncService(0)->GetUserSettings()->GetPassphraseType(),
             syncer::PassphraseType::kCustomPassphrase);
 
-  // Passwords is still enabled (not affected by the migration).
-  ASSERT_TRUE(GetSyncService(0)->GetUserSettings()->GetSelectedTypes().Has(
-      syncer::UserSelectableType::kPasswords));
-  // Preferences got disabled by the migration (same as for
-  // non-custom-passphrase users).
+  // Preferences is supported now, but got disabled by the migration (same as
+  // for non-custom-passphrase users).
   ASSERT_FALSE(GetSyncService(0)->GetUserSettings()->GetSelectedTypes().Has(
       syncer::UserSelectableType::kPreferences));
   // Autofill should've been disabled specifically for custom passphrase users.
   EXPECT_FALSE(GetSyncService(0)->GetUserSettings()->GetSelectedTypes().Has(
       syncer::UserSelectableType::kAutofill));
+  // If Payments it coupled to Autofill, it should've been disabled along with
+  // Autofill. Otherwise it should not be affected by the migration.
+  ASSERT_EQ(GetSyncService(0)->GetUserSettings()->GetSelectedTypes().Has(
+                syncer::UserSelectableType::kPayments),
+            base::FeatureList::IsEnabled(
+                syncer::kSyncDecoupleAddressPaymentSettings));
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 

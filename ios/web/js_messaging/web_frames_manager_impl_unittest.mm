@@ -16,6 +16,9 @@ namespace web {
 
 namespace {
 
+const std::string kLowercaseFrameId = "abba1234beef1234cafe1234deed1234";
+const std::string kUppercaseFrameId = "ABBA1234BEEF1234CAFE1234DEED1234";
+
 class FakeWebFramesManagerObserver : public WebFramesManagerImpl::Observer {
  public:
   // The current available frames as tracked by the WebFramesManage Observer
@@ -216,6 +219,41 @@ TEST_F(WebFramesManagerImplTest, RemoveNonexistantFrame) {
   WebFrame* observed_main_frame = main_frame_it->second;
   EXPECT_TRUE(observed_main_frame);
   EXPECT_EQ(main_frame, observed_main_frame);
+}
+
+// Tests that frame lookup is not case-sensitive.
+TEST_F(WebFramesManagerImplTest, CaseInsensitiveLookup) {
+  auto frame = FakeWebFrame::Create(kLowercaseFrameId,
+                                    /*is_main_frame=*/true,
+                                    GURL("https://www.main.test"));
+  SendFrameBecameAvailableMessage(std::move(frame));
+
+  EXPECT_EQ(1ul, GetPageWorldWebFramesManager().GetAllWebFrames().size());
+
+  WebFrame* frame_by_uppercase_id =
+      GetPageWorldWebFramesManager().GetFrameWithId(kUppercaseFrameId);
+  EXPECT_TRUE(frame_by_uppercase_id);
+
+  WebFrame* frame_by_lowercase_id =
+      GetPageWorldWebFramesManager().GetFrameWithId(kLowercaseFrameId);
+  EXPECT_TRUE(frame_by_lowercase_id);
+
+  EXPECT_EQ(frame_by_uppercase_id, frame_by_lowercase_id);
+}
+
+// By convention, the frame ID should be stored in lowercase internally, even if
+// it was passed as uppercase at construct-time.
+TEST_F(WebFramesManagerImplTest, CaseInsensitiveConstruct) {
+  auto frame_with_uppercase_id = FakeWebFrame::Create(
+      kUppercaseFrameId, /*is_main_frame=*/true, GURL("https://www.main.test"));
+
+  SendFrameBecameAvailableMessage(std::move(frame_with_uppercase_id));
+
+  WebFrame* frame_by_lowercase_id =
+      GetPageWorldWebFramesManager().GetFrameWithId(kLowercaseFrameId);
+  ASSERT_TRUE(frame_by_lowercase_id);
+
+  EXPECT_EQ(frame_by_lowercase_id->GetFrameId(), kLowercaseFrameId);
 }
 
 }  // namespace web

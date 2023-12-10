@@ -81,9 +81,15 @@ public class AutocompleteController implements Destroyable {
         assert mNativeController != 0 : "Failed to instantiate native AutocompleteController";
     }
 
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @CalledByNative
+    void notifyNativeDestroyed() {
+        mNativeController = 0;
+    }
+
     /**
-     * @param listener The listener to be notified when new suggestions are available.
-     */
+      * @param listener The listener to be notified when new suggestions are available.
+      */
     public void addOnSuggestionsReceivedListener(@NonNull OnSuggestionsReceivedListener listener) {
         mListeners.add(listener);
     }
@@ -344,8 +350,8 @@ public class AutocompleteController implements Destroyable {
     }
 
     /**
-     * Updates AQS/SBS parameters on the selected match that we will navigate to and returns the
-     * updated URL.
+     * Updates searchbox stats parameters on the selected match that we will navigate to and
+     * returns the updated URL.
      *
      * @param match the AutocompleteMatch object to get the updated destination URL for
      * @param elapsedTimeSinceInputChange the number of ms between the time the user started typing
@@ -358,7 +364,7 @@ public class AutocompleteController implements Destroyable {
         if (!hasValidNativeObjectRef(match, VerificationPoint.UPDATE_MATCH)) return null;
 
         return AutocompleteControllerJni.get()
-                .updateMatchDestinationURLWithAdditionalAssistedQueryStats(
+                .updateMatchDestinationURLWithAdditionalSearchboxStats(
                         mNativeController, match.getNativeObjectRef(), elapsedTimeSinceInputChange);
     }
 
@@ -428,7 +434,7 @@ public class AutocompleteController implements Destroyable {
 
         void deleteMatch(long nativeAutocompleteControllerAndroid, long nativeAutocompleteMatch);
 
-        GURL updateMatchDestinationURLWithAdditionalAssistedQueryStats(
+        GURL updateMatchDestinationURLWithAdditionalSearchboxStats(
                 long nativeAutocompleteControllerAndroid,
                 long nativeAutocompleteMatch,
                 long elapsedTimeSinceInputChange);

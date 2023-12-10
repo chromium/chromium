@@ -8,11 +8,11 @@
 #include <fidl/fuchsia.media.sessions2/cpp/fidl.h>
 #include <string>
 
+#include <optional>
 #include "base/functional/callback.h"
 #include "fuchsia_web/webengine/web_engine_export.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class MediaSession;
@@ -63,7 +63,7 @@ class WEB_ENGINE_EXPORT MediaPlayerImpl final
   void MediaSessionInfoChanged(
       media_session::mojom::MediaSessionInfoPtr info) override;
   void MediaSessionMetadataChanged(
-      const absl::optional<media_session::MediaMetadata>& metadata) override;
+      const std::optional<media_session::MediaMetadata>& metadata) override;
   void MediaSessionActionsChanged(
       const std::vector<media_session::mojom::MediaSessionAction>& action)
       override;
@@ -72,7 +72,7 @@ class WEB_ENGINE_EXPORT MediaPlayerImpl final
                            std::vector<media_session::MediaImage>>& images)
       override;
   void MediaSessionPositionChanged(
-      const absl::optional<media_session::MediaPosition>& position) override;
+      const std::optional<media_session::MediaPosition>& position) override;
 
   // Sends changes accumulated in |pending_info_delta_|, if any, to the
   // |pending_info_change_callback_|, if it is set.
@@ -95,7 +95,7 @@ class WEB_ENGINE_EXPORT MediaPlayerImpl final
   mojo::Receiver<media_session::mojom::MediaSessionObserver> observer_receiver_;
 
   // Pending PlayerInfo deltas and info-change callback.
-  absl::optional<WatchInfoChangeCompleter::Async> pending_info_change_callback_;
+  std::optional<WatchInfoChangeCompleter::Async> pending_info_change_callback_;
   fuchsia_media_sessions2::PlayerInfoDelta pending_info_delta_;
 };
 

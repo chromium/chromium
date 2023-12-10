@@ -270,7 +270,7 @@ class ASH_EXPORT NotificationListView
   const std::unique_ptr<gfx::LinearAnimation> animation_;
 
   // Measure animation smoothness metrics for `animation_`.
-  absl::optional<ui::ThroughputTracker> throughput_tracker_;
+  std::optional<ui::ThroughputTracker> throughput_tracker_;
 
   State state_ = State::IDLE;
 

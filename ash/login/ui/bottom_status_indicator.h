@@ -8,6 +8,7 @@
 #include "ash/style/ash_color_id.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/accessibility/ax_enums.mojom.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/view.h"
 
@@ -20,6 +21,8 @@ namespace ash {
 class BottomStatusIndicator
     : public views::LabelButton,
       public base::SupportsWeakPtr<BottomStatusIndicator> {
+  METADATA_HEADER(BottomStatusIndicator, views::LabelButton)
+
  public:
   using TappedCallback = base::RepeatingClosure;
 

@@ -7,6 +7,7 @@
 
 #include <algorithm>
 #include <cstdint>
+#include <optional>
 #include <vector>
 
 #include "chromeos/ash/services/quick_pair/public/cpp/battery_notification.h"
@@ -17,7 +18,6 @@
 #include "chromeos/ash/services/quick_pair/public/mojom/fast_pair_data_parser.mojom-shared.h"
 #include "mojo/public/cpp/bindings/enum_traits.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace mojo {
 
@@ -128,7 +128,7 @@ class StructTraits<NotDiscoverableAdvertisementDataView,
     return r.salt;
   }
 
-  static absl::optional<BatteryNotification> battery_notification(
+  static std::optional<BatteryNotification> battery_notification(
       const NotDiscoverableAdvertisement& r) {
     return r.battery_notification;
   }

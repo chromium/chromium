@@ -30,6 +30,7 @@
 <translation id="2226276347425096477">يُرجى اختصار هذا النص حتى يصل إلى <ph name="MAX_CHARACTERS" /> من الحروف أو أقل (أنت الآن تستخدم <ph name="CURRENT_LENGTH" /> من الحروف).</translation>
 <translation id="2247351761944213033">الأسبوع <ph name="WEEKNUMBER" />، <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">المقطع الصوتي <ph name="NUMBER" /></translation>
+<translation id="2353297238722298836">تم السماح باستخدام الكاميرا والميكروفون</translation>
 <translation id="2393030564806080191">قيمة اللون السداسية العشرية</translation>
 <translation id="2398813069815436052">تم فتح مربع الحوار.</translation>
 <translation id="245932805758469625">عدد الثواني المتبقية من الفيديو</translation>
@@ -60,10 +61,12 @@
 <translation id="3822383571486410024">يُرجى إطالة هذا النص إلى <ph name="MIN_CHARACTERS" /> من الحروف أو أكثر (أنت تستخدم حاليًا <ph name="CURRENT_LENGTH" /> من الحروف).</translation>
 <translation id="383465348367842624">الجزء المتبوع بالعلامة "<ph name="ATSIGN" />" يجب ألا يشتمل على الرمز "<ph name="INVALIDCHARACTER" />".</translation>
 <translation id="3846214748874656680">خروج من عرض ملء الشاشة</translation>
+<translation id="4031179711345676612">تم السماح باستخدام الميكروفون</translation>
 <translation id="4103419683916926126">مللي ثانية</translation>
 <translation id="4201051445878709314">عرض الشهر السابق</translation>
 <translation id="4360991593054037559">يُرجى إدخال قيمة صالحة. علمًا بأن القيم الصالحة تتراوح بين <ph name="VALID_VALUE_LOW" /> و<ph name="VALID_VALUE_HIGHER" />.</translation>
 <translation id="4522570452068850558">التفاصيل</translation>
+<translation id="4663373278480897665">تم السماح باستخدام الكاميرا</translation>
 <translation id="4664250907885839816">يجب ألا يشتمل الجزء الذي يلي العلامة "<ph name="ATSIGN" />" على الرمز "<ph name="INVALIDCHARACTER" />".</translation>
 <translation id="4718048029184481307">تشغيل في وضع "نافذة ضمن النافذة"</translation>
 <translation id="4748357248530471599">تبديل صورة مقطوعة للشاشة إلى وضع ملء الشاشة</translation>
@@ -78,6 +81,7 @@
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> محددة</translation>
 <translation id="4992066212339426712">إعادة الصوت</translation>
 <translation id="49969490063480558">يُرجى إدخال الجزء الذي يلي العلامة "<ph name="ATSIGN" />"، حيث إن "<ph name="INVALIDADDRESS" />" غير مكتمل.</translation>
+<translation id="5037575921016181960">كلمة مرور قوية</translation>
 <translation id="5090250355906949916">شريط تمرير وقت الفيديو</translation>
 <translation id="509897012892853729">درجات اللون الأزرق</translation>
 <translation id="5117590920725113268">عرض الشهر التالي</translation>
@@ -137,6 +141,7 @@
 <translation id="6941933287844615239">تنزيل وسائط</translation>
 <translation id="698788488269350478">موسّع</translation>
 <translation id="6989848892321993519">يُرجى إطالة هذا النص إلى <ph name="MIN_CHARACTERS" /> من الحروف أو أكثر (أنت الآن تستخدم حرفًا واحدًا).</translation>
+<translation id="7080893216867146095">تم السماح بمشاركة الموقع الجغرافي.</translation>
 <translation id="709897737746224366">يُرجى مطابقة التنسيق المطلوب.</translation>
 <translation id="7102274145889307184">الموقع الجغرافي الحالي</translation>
 <translation id="7263440858009898357">يُرجى اختيار عنصر من القائمة.</translation>

@@ -205,6 +205,10 @@ std::map<uint32_t, Thread> ProcessTypeCollector::ParseThreadTypes(
       thread = Thread::AUDIO_THREAD;
     } else if (comm_cmd.starts_with("AudioOutputDevi")) {
       thread = Thread::AUDIO_DEVICE_THREAD;
+    } else if (comm_cmd.starts_with("StackSamplingPr")) {
+      thread = Thread::STACK_SAMPLING_THREAD;
+    } else if (comm_cmd.starts_with("VideoFrameCompo")) {
+      thread = Thread::VIDEO_FRAME_COMPOSITOR_THREAD;
     }
 
     thread_types.emplace(tid, thread);

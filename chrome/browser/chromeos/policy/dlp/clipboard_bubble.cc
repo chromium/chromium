@@ -293,8 +293,7 @@ gfx::Size ClipboardBlockBubble::GetBubbleSize() const {
                             kButtonLabelSpacing + button_->height()};
 }
 
-void ClipboardBlockBubble::SetDismissCallback(
-    base::RepeatingCallback<void()> cb) {
+void ClipboardBlockBubble::SetDismissCallback(base::OnceClosure cb) {
   DCHECK(button_);
   button_->SetCallback(std::move(cb));
 }
@@ -342,14 +341,12 @@ gfx::Size ClipboardWarnBubble::GetBubbleSize() const {
                             kButtonLabelSpacing + paste_button_->height()};
 }
 
-void ClipboardWarnBubble::SetDismissCallback(
-    base::RepeatingCallback<void()> cb) {
+void ClipboardWarnBubble::SetDismissCallback(base::OnceClosure cb) {
   DCHECK(cancel_button_);
   cancel_button_->SetCallback(std::move(cb));
 }
 
-void ClipboardWarnBubble::SetProceedCallback(
-    base::RepeatingCallback<void()> cb) {
+void ClipboardWarnBubble::SetProceedCallback(base::OnceClosure cb) {
   DCHECK(paste_button_);
   paste_button_->SetCallback(std::move(cb));
 }

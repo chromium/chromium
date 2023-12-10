@@ -15,9 +15,6 @@ enum class FedCmIdpSigninStatusMode { DISABLED, METRICS_ONLY, ENABLED };
 // Whether the AuthZ is enabled or not.
 bool IsFedCmAuthzEnabled();
 
-// Whether FedCM IDP sign-out is enabled.
-bool IsFedCmIdpSignoutEnabled();
-
 // Whether multiple identity providers are enabled.
 bool IsFedCmMultipleIdentityProvidersEnabled();
 
@@ -50,9 +47,17 @@ bool IsFedCmDomainHintEnabled();
 // Whether the Error API is enabled.
 bool IsFedCmErrorEnabled();
 
-// Whether the revoke API is enabled.
-bool IsFedCmRevokeEnabled();
+// Whether the disconnect API is enabled.
+bool IsFedCmDisconnectEnabled();
 
+// Whether "Add Account" is enabled.
+bool IsFedCmAddAccountEnabled();
+
+// Whether the ExemptIdpWithThirdPartyCookies feature is enabled.
+bool IsFedCmExemptIdpWithThirdPartyCookiesEnabled();
+
+// Whether the ButtonMode feature is enabled.
+bool IsFedCmButtonModeEnabled();
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_WEBID_FLAGS_H_

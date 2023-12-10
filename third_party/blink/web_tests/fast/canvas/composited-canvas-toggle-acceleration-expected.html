@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<p>
+  Regression test for crbug.com/1500272.
+  Toggles between accelerated and non-accelerated canvas..
+</p>
+<canvas id="canvas" width="100" height="100"></canvas>
+<script>
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+
+ctx.fillStyle = 'blue';
+ctx.fillRect(0, 0, 16, 16);
+
+ctx.fillStyle = 'green';
+ctx.fillRect(32, 0, 16, 16);
+
+ctx.fillStyle = 'green';
+ctx.fillRect(64, 0, 16, 16);
+</script>

@@ -24,4 +24,4 @@ MaybeGetIsolatedWebAppErrorPageInfo(const GURL& url,
 
 }
 
-#endif
+#endif  // CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_ISOLATED_WEB_APP_ERROR_PAGE_H_

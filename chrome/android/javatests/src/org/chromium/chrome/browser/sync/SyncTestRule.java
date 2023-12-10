@@ -67,7 +67,6 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
             finish();
         }
     }
-    ;
 
     /**
      * Simple activity that mimics a trusted vault degraded recoverability fix flow that succeeds
@@ -82,7 +81,6 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
             finish();
         }
     }
-    ;
 
     /**
      * A fake implementation of TrustedVaultClient.Backend. Allows to specify keys to be fetched.

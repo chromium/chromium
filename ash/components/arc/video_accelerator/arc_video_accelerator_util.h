@@ -5,6 +5,7 @@
 #ifndef ASH_COMPONENTS_ARC_VIDEO_ACCELERATOR_ARC_VIDEO_ACCELERATOR_UTIL_H_
 #define ASH_COMPONENTS_ARC_VIDEO_ACCELERATOR_ARC_VIDEO_ACCELERATOR_UTIL_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -13,7 +14,6 @@
 #include "media/base/color_plane_layout.h"
 #include "media/base/video_types.h"
 #include "mojo/public/cpp/system/handle.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 
@@ -31,14 +31,14 @@ std::vector<base::ScopedFD> DuplicateFD(base::ScopedFD fd, size_t num_fds);
 
 // Return GpuMemoryBufferHandle iff |planes| are valid for a video frame located
 // on |scoped_fds| and of |pixel_format| and |coded_size|. Otherwise
-// returns absl::nullopt.
-absl::optional<gfx::GpuMemoryBufferHandle> CreateGpuMemoryBufferHandle(
+// returns std::nullopt.
+std::optional<gfx::GpuMemoryBufferHandle> CreateGpuMemoryBufferHandle(
     media::VideoPixelFormat pixel_format,
     uint64_t modifier,
     const gfx::Size& coded_size,
     std::vector<base::ScopedFD> scoped_fds,
     const std::vector<VideoFramePlane>& planes);
-absl::optional<gfx::GpuMemoryBufferHandle> CreateGpuMemoryBufferHandle(
+std::optional<gfx::GpuMemoryBufferHandle> CreateGpuMemoryBufferHandle(
     media::VideoPixelFormat pixel_format,
     uint64_t modifier,
     const gfx::Size& coded_size,

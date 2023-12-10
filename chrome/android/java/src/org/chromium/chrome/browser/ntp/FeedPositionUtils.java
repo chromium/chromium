@@ -20,9 +20,7 @@ import org.chromium.components.segmentation_platform.prediction_status.Predictio
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-/**
- * A class to handle the state of flags for Feed position experiment.
- */
+/** A class to handle the state of flags for Feed position experiment. */
 public class FeedPositionUtils {
     // The key is used to decide whether the user likes to use Feed. Should be consistent with
     // |kFeedUserSegmentationKey| in config.h in components/segmentation_platform/.
@@ -35,10 +33,12 @@ public class FeedPositionUtils {
     // Constants with FeedPositionSegmentationResult in enums.xml.
     // These values are persisted to logs. Entries should not be renumbered and
     // numeric values should never be reused.
-    @IntDef({FeedPositionSegmentationResult.UNINITIALIZED,
-            FeedPositionSegmentationResult.IS_FEED_ACTIVE_USER,
-            FeedPositionSegmentationResult.IS_NON_FEED_ACTIVE_USER,
-            FeedPositionSegmentationResult.NUM_ENTRIES})
+    @IntDef({
+        FeedPositionSegmentationResult.UNINITIALIZED,
+        FeedPositionSegmentationResult.IS_FEED_ACTIVE_USER,
+        FeedPositionSegmentationResult.IS_NON_FEED_ACTIVE_USER,
+        FeedPositionSegmentationResult.NUM_ENTRIES
+    })
     @Retention(RetentionPolicy.SOURCE)
     public @interface FeedPositionSegmentationResult {
         int UNINITIALIZED = 0;
@@ -47,30 +47,24 @@ public class FeedPositionUtils {
         int NUM_ENTRIES = 3;
     }
 
-    /**
-     * Returns whether the pushing down (small) Feed experiment is enabled.
-     */
+    /** Returns whether the pushing down (small) Feed experiment is enabled. */
     public static boolean isFeedPushDownSmallEnabled() {
         return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                       ChromeFeatureList.FEED_POSITION_ANDROID, PUSH_DOWN_FEED_SMALL, false)
+                        ChromeFeatureList.FEED_POSITION_ANDROID, PUSH_DOWN_FEED_SMALL, false)
                 && getBehaviourResultFromSegmentation();
     }
 
-    /**
-     * Returns whether the pushing down (large) Feed experiment is enabled.
-     */
+    /** Returns whether the pushing down (large) Feed experiment is enabled. */
     public static boolean isFeedPushDownLargeEnabled() {
         return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                       ChromeFeatureList.FEED_POSITION_ANDROID, PUSH_DOWN_FEED_LARGE, false)
+                        ChromeFeatureList.FEED_POSITION_ANDROID, PUSH_DOWN_FEED_LARGE, false)
                 && getBehaviourResultFromSegmentation();
     }
 
-    /**
-     * Returns whether the pulling up Feed experiment is enabled.
-     */
+    /** Returns whether the pulling up Feed experiment is enabled. */
     public static boolean isFeedPullUpEnabled() {
         return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                       ChromeFeatureList.FEED_POSITION_ANDROID, PULL_UP_FEED, false)
+                        ChromeFeatureList.FEED_POSITION_ANDROID, PULL_UP_FEED, false)
                 && getBehaviourResultFromSegmentation();
     }
 
@@ -95,10 +89,11 @@ public class FeedPositionUtils {
         String targetFeedOrNonFeedUsersParam = getTargetFeedOrNonFeedUsersParam();
         if (targetFeedOrNonFeedUsersParam == null) return true;
 
-        @FeedPositionSegmentationResult
-        int resultEnum = FeedPositionUtils.getSegmentationResult();
-        RecordHistogram.recordEnumeratedHistogram("NewTabPage.FeedPositionSegmentationResult",
-                resultEnum, FeedPositionSegmentationResult.NUM_ENTRIES);
+        @FeedPositionSegmentationResult int resultEnum = FeedPositionUtils.getSegmentationResult();
+        RecordHistogram.recordEnumeratedHistogram(
+                "NewTabPage.FeedPositionSegmentationResult",
+                resultEnum,
+                FeedPositionSegmentationResult.NUM_ENTRIES);
         switch (targetFeedOrNonFeedUsersParam) {
             case "active":
                 return resultEnum == FeedPositionSegmentationResult.IS_FEED_ACTIVE_USER;
@@ -113,9 +108,10 @@ public class FeedPositionUtils {
      * @return The segmentation result.
      */
     public static @FeedPositionSegmentationResult int getSegmentationResult() {
-        return ChromeSharedPreferences.getInstance().readInt(
-                ChromePreferenceKeys.SEGMENTATION_FEED_ACTIVE_USER,
-                FeedPositionSegmentationResult.IS_NON_FEED_ACTIVE_USER);
+        return ChromeSharedPreferences.getInstance()
+                .readInt(
+                        ChromePreferenceKeys.SEGMENTATION_FEED_ACTIVE_USER,
+                        FeedPositionSegmentationResult.IS_NON_FEED_ACTIVE_USER);
     }
 
     /**

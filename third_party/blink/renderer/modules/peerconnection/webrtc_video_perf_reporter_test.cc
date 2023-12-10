@@ -14,6 +14,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/renderer/platform/peerconnection/stats_collector.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 using ::testing::_;
 
@@ -51,6 +52,7 @@ class WebrtcVideoPerfReporterTest : public ::testing::Test {
   }
 
  protected:
+  test::TaskEnvironment task_environment_;
   std::unique_ptr<MockWebrtcVideoPerfRecorder> mock_recorder_;
   WebrtcVideoPerfReporter reporter_;
 };

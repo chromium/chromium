@@ -49,6 +49,7 @@ class KeyboardAccessoryView extends LinearLayout {
          */
         void onFadeInEnd();
     }
+
     private AnimationListener mAnimationListener;
 
     protected static class HorizontalDividerItemDecoration extends RecyclerView.ItemDecoration {
@@ -74,9 +75,7 @@ class KeyboardAccessoryView extends LinearLayout {
         }
     }
 
-    /**
-     * Constructor for inflating from XML.
-     */
+    /** Constructor for inflating from XML. */
     public KeyboardAccessoryView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
@@ -96,10 +95,12 @@ class KeyboardAccessoryView extends LinearLayout {
         mBarItemsView.setLayoutDirection(layoutDirection);
 
         // Set listener's to touch/click events so they are not propagated to the page below.
-        setOnTouchListener((view, motionEvent) -> {
-            performClick(); // Setting a touch listener requires this call which is a NoOp.
-            return true; // Return that the motionEvent was consumed and needs no further handling.
-        });
+        setOnTouchListener(
+                (view, motionEvent) -> {
+                    performClick(); // Setting a touch listener requires this call which is a NoOp.
+                    // Return that the motionEvent was consumed and needs no further handling.
+                    return true;
+                });
         setOnClickListener(view -> {});
         setClickable(false); // Disables the "Double-tap to activate" Talkback reading.
         setSoundEffectsEnabled(false);
@@ -132,15 +133,16 @@ class KeyboardAccessoryView extends LinearLayout {
 
     void setBarItemsAdapter(RecyclerView.Adapter adapter) {
         // Make sure the view updates the fallback icon padding whenever new items arrive.
-        adapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
-            @Override
-            public void onItemRangeChanged(int positionStart, int itemCount) {
-                super.onItemRangeChanged(positionStart, itemCount);
-                mBarItemsView.scrollToPosition(0);
-                mBarItemsView.invalidateItemDecorations();
-                onItemsChanged();
-            }
-        });
+        adapter.registerAdapterDataObserver(
+                new RecyclerView.AdapterDataObserver() {
+                    @Override
+                    public void onItemRangeChanged(int positionStart, int itemCount) {
+                        super.onItemRangeChanged(positionStart, itemCount);
+                        mBarItemsView.scrollToPosition(0);
+                        mBarItemsView.invalidateItemDecorations();
+                        onItemsChanged();
+                    }
+                });
         mBarItemsView.setAdapter(adapter);
     }
 
@@ -165,15 +167,17 @@ class KeyboardAccessoryView extends LinearLayout {
             return;
         }
         if (getVisibility() != View.VISIBLE) setAlpha(0f);
-        mRunningAnimation = animate()
-                                    .alpha(1f)
-                                    .setDuration(FADE_ANIMATION_DURATION_MS)
-                                    .setInterpolator(new AccelerateInterpolator())
-                                    .withStartAction(() -> setVisibility(View.VISIBLE))
-                                    .withEndAction(() -> {
-                                        mAnimationListener.onFadeInEnd();
-                                        mRunningAnimation = null;
-                                    });
+        mRunningAnimation =
+                animate()
+                        .alpha(1f)
+                        .setDuration(FADE_ANIMATION_DURATION_MS)
+                        .setInterpolator(new AccelerateInterpolator())
+                        .withStartAction(() -> setVisibility(View.VISIBLE))
+                        .withEndAction(
+                                () -> {
+                                    mAnimationListener.onFadeInEnd();
+                                    mRunningAnimation = null;
+                                });
         announceForAccessibility(getContentDescription());
         TraceEvent.end("KeyboardAccessoryView#show");
     }
@@ -194,10 +198,11 @@ class KeyboardAccessoryView extends LinearLayout {
                         .setInterpolator(new AccelerateInterpolator())
                         .setStartDelay(HIDING_ANIMATION_DELAY_MS)
                         .setDuration(FADE_ANIMATION_DURATION_MS - HIDING_ANIMATION_DELAY_MS)
-                        .withEndAction(() -> {
-                            setVisibility(View.GONE);
-                            mRunningAnimation = null;
-                        });
+                        .withEndAction(
+                                () -> {
+                                    setVisibility(View.GONE);
+                                    mRunningAnimation = null;
+                                });
     }
 
     void setSkipClosingAnimation(boolean shouldSkipClosingAnimation) {

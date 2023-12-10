@@ -9,6 +9,7 @@
 #include "ash/system/tray/tri_view.h"
 #include "ash/system/tray/view_click_listener.h"
 #include "base/memory/raw_ptr.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 namespace ash {
@@ -19,6 +20,8 @@ class HoverHighlightView;
 // responsible for initializing the core views for a header.
 class ASH_EXPORT NetworkListHeaderView : public views::View,
                                          public ViewClickListener {
+  METADATA_HEADER(NetworkListHeaderView, views::View)
+
  public:
   NetworkListHeaderView(const NetworkListHeaderView&) = delete;
   NetworkListHeaderView& operator=(const NetworkListHeaderView&) = delete;

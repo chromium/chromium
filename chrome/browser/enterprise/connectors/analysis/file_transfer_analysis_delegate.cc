@@ -82,7 +82,7 @@ class GetFileURLsDelegate : public storage::RecursiveOperationDelegate {
     }
 
     file_system_context()->operation_runner()->GetMetadata(
-        url, storage::FileSystemOperation::GET_METADATA_FIELD_IS_DIRECTORY,
+        url, {storage::FileSystemOperation::GetMetadataField::kIsDirectory},
         base::BindOnce(&GetFileURLsDelegate::OnGetMetadata,
                        weak_ptr_factory_.GetWeakPtr(), url,
                        std::move(callback)));

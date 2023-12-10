@@ -47,7 +47,7 @@ class MockReportQueueProvider : public ReportQueueProvider {
   MOCK_METHOD(
       (StatusOr<std::unique_ptr<ReportQueue, base::OnTaskRunnerDeleter>>),
       CreateNewSpeculativeQueueMock,
-      (),
+      (const ReportQueue::SpeculativeConfigSettings& config_settings),
       ());
 
   MOCK_METHOD(void, OnInitCompletedMock, (), ());
@@ -66,7 +66,8 @@ class MockReportQueueProvider : public ReportQueueProvider {
   void CreateNewQueue(std::unique_ptr<ReportQueueConfiguration> config,
                       CreateReportQueueCallback cb) override;
   StatusOr<std::unique_ptr<ReportQueue, base::OnTaskRunnerDeleter>>
-  CreateNewSpeculativeQueue() override;
+  CreateNewSpeculativeQueue(
+      const ReportQueue::SpeculativeConfigSettings& config_settings) override;
   void ConfigureReportQueue(
       std::unique_ptr<ReportQueueConfiguration> report_queue_config,
       ReportQueueConfiguredCallback completion_cb) override;

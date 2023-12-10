@@ -55,6 +55,8 @@ const char* GetDownloadDangerTypeString(const DownloadDangerType& danger_type) {
       return "AllowlistedByPolicy";
     case download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_LOCAL_PASSWORD_SCANNING:
       return "PromptForLocalPasswordScanning";
+    case download::DOWNLOAD_DANGER_TYPE_ASYNC_LOCAL_PASSWORD_SCANNING:
+      return "AsyncLocalPasswordScanning";
     case download::DOWNLOAD_DANGER_TYPE_MAX:
       break;
   }

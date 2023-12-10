@@ -6,9 +6,7 @@ package org.chromium.chrome.browser.settings;
 
 import org.chromium.chrome.browser.profiles.Profile;
 
-/**
- * Specifies that this settings entry is dependent on the current profile.
- */
+/** Specifies that this settings entry is dependent on the current profile. */
 public interface ProfileDependentSetting {
     /**
      * @param profile The currently selected profile.

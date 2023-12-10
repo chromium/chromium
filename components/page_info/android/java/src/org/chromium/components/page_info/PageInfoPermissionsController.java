@@ -28,11 +28,9 @@ import org.chromium.content_public.browser.BrowserContextHandle;
 import java.util.Collection;
 import java.util.List;
 
-/**
- * Class for controlling the page info permissions section.
- */
-public class PageInfoPermissionsController
-        extends PageInfoPreferenceSubpageController implements SingleWebsiteSettings.Observer {
+/** Class for controlling the page info permissions section. */
+public class PageInfoPermissionsController extends PageInfoPreferenceSubpageController
+        implements SingleWebsiteSettings.Observer {
     /**  Parameters to represent a single permission. */
     public static class PermissionObject {
         public @ContentSettingsType int type;
@@ -49,13 +47,13 @@ public class PageInfoPermissionsController
     private boolean mHasSoundPermission;
     private boolean mDataIsStale;
     private SingleWebsiteSettings mSubPage;
-    @ContentSettingsType
-    private int mHighlightedPermission;
-    @ColorRes
-    private int mHighlightColor;
+    @ContentSettingsType private int mHighlightedPermission;
+    @ColorRes private int mHighlightColor;
 
-    public PageInfoPermissionsController(PageInfoMainController mainController,
-            PageInfoRowView view, PageInfoControllerDelegate delegate,
+    public PageInfoPermissionsController(
+            PageInfoMainController mainController,
+            PageInfoRowView view,
+            PageInfoControllerDelegate delegate,
             @ContentSettingsType int highlightedPermission) {
         super(delegate);
         mMainController = mainController;
@@ -85,8 +83,12 @@ public class PageInfoPermissionsController
         Bundle fragmentArgs = SingleWebsiteSettings.createFragmentArgsForSite(mPageUrl);
         fragmentArgs.putBoolean(SingleWebsiteSettings.EXTRA_SHOW_SOUND, mHasSoundPermission);
 
-        mSubPage = (SingleWebsiteSettings) Fragment.instantiate(
-                mRowView.getContext(), SingleWebsiteSettings.class.getName(), fragmentArgs);
+        mSubPage =
+                (SingleWebsiteSettings)
+                        Fragment.instantiate(
+                                mRowView.getContext(),
+                                SingleWebsiteSettings.class.getName(),
+                                fragmentArgs);
         mSubPage.setHideNonPermissionPreferences(true);
         mSubPage.setWebsiteSettingsObserver(this);
         if (mHighlightedPermission != ContentSettingsType.DEFAULT) {
@@ -124,9 +126,7 @@ public class PageInfoPermissionsController
         }
     }
 
-    /**
-     * Returns the most comprehensive subtitle summary string.
-     */
+    /** Returns the most comprehensive subtitle summary string. */
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     public static String getPermissionSummaryString(
             List<PermissionObject> permissions, Resources resources) {
@@ -140,50 +140,69 @@ public class PageInfoPermissionsController
         for (PermissionObject perm : permissions) {
             if (perm.warningTextResource != 0) {
                 // Show the first (most important warning) only, if there is one.
-                return resources.getString(R.string.page_info_permissions_os_warning,
-                        perm.name.toString(), resources.getString(perm.warningTextResource));
+                return resources.getString(
+                        R.string.page_info_permissions_os_warning,
+                        perm.name.toString(),
+                        resources.getString(perm.warningTextResource));
             }
             // Whether all permissions have had the same status so far.
             same = same && (perm1.allowed == perm.allowed);
         }
 
         if (numPermissions == 1) {
-            int resId = perm1.allowed ? R.string.page_info_permissions_summary_1_allowed
-                                      : R.string.page_info_permissions_summary_1_blocked;
+            int resId =
+                    perm1.allowed
+                            ? R.string.page_info_permissions_summary_1_allowed
+                            : R.string.page_info_permissions_summary_1_blocked;
             return resources.getString(resId, perm1.name.toString());
         }
 
         PermissionObject perm2 = permissions.get(1);
         if (numPermissions == 2) {
             if (same) {
-                int resId = perm1.allowed ? R.string.page_info_permissions_summary_2_allowed
-                                          : R.string.page_info_permissions_summary_2_blocked;
+                int resId =
+                        perm1.allowed
+                                ? R.string.page_info_permissions_summary_2_allowed
+                                : R.string.page_info_permissions_summary_2_blocked;
                 return resources.getString(
                         resId, perm1.name.toString(), perm2.nameMidSentence.toString());
             }
             int resId = R.string.page_info_permissions_summary_2_mixed;
             // Put the allowed permission first.
-            return resources.getString(resId,
+            return resources.getString(
+                    resId,
                     perm1.allowed ? perm1.name.toString() : perm2.name.toString(),
-                    perm1.allowed ? perm2.nameMidSentence.toString()
-                                  : perm1.nameMidSentence.toString());
+                    perm1.allowed
+                            ? perm2.nameMidSentence.toString()
+                            : perm1.nameMidSentence.toString());
         }
 
         // More than 2 permissions.
         if (same) {
-            int resId = perm1.allowed ? R.plurals.page_info_permissions_summary_more_allowed
-                                      : R.plurals.page_info_permissions_summary_more_blocked;
-            return resources.getQuantityString(resId, numPermissions - 2, perm1.name.toString(),
-                    perm2.nameMidSentence.toString(), numPermissions - 2);
+            int resId =
+                    perm1.allowed
+                            ? R.plurals.page_info_permissions_summary_more_allowed
+                            : R.plurals.page_info_permissions_summary_more_blocked;
+            return resources.getQuantityString(
+                    resId,
+                    numPermissions - 2,
+                    perm1.name.toString(),
+                    perm2.nameMidSentence.toString(),
+                    numPermissions - 2);
         }
         int resId = R.plurals.page_info_permissions_summary_more_mixed;
-        return resources.getQuantityString(resId, numPermissions - 2, perm1.name.toString(),
-                perm2.nameMidSentence.toString(), numPermissions - 2);
+        return resources.getQuantityString(
+                resId,
+                numPermissions - 2,
+                perm1.name.toString(),
+                perm2.nameMidSentence.toString(),
+                numPermissions - 2);
     }
 
     @Override
     public void clearData() {
-        RecordHistogram.recordEnumeratedHistogram("Privacy.DeleteBrowsingData.Action",
+        RecordHistogram.recordEnumeratedHistogram(
+                "Privacy.DeleteBrowsingData.Action",
                 DeleteBrowsingDataAction.PAGE_INFO_RESET_PERMISSIONS,
                 DeleteBrowsingDataAction.MAX_VALUE);
         // Need to fetch data in order to clear it.
@@ -193,12 +212,14 @@ public class PageInfoPermissionsController
         WebsiteAddress address = WebsiteAddress.create(origin);
 
         // Asynchronous function, callback will clear the data.
-        fetcher.fetchAllPreferences((Collection<Website> sites) -> {
-            Website site = SingleWebsiteSettings.mergePermissionAndStorageInfoForTopLevelOrigin(
-                    address, sites);
-            SiteDataCleaner.resetPermissions(browserContext, site);
-            mMainController.refreshPermissions();
-        });
+        fetcher.fetchAllPreferences(
+                (Collection<Website> sites) -> {
+                    Website site =
+                            SingleWebsiteSettings.mergePermissionAndStorageInfoForTopLevelOrigin(
+                                    address, sites);
+                    SiteDataCleaner.resetPermissions(browserContext, site);
+                    mMainController.refreshPermissions();
+                });
     }
 
     @Override

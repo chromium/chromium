@@ -189,6 +189,7 @@ static_library("extensions") {
     "api/identity/identity_remove_cached_auth_token_function.h",
     "api/identity/identity_token_cache.cc",
     "api/identity/identity_token_cache.h",
+    "api/identity/launch_web_auth_flow_delegate.h",
     "api/identity/web_auth_flow.cc",
     "api/identity/web_auth_flow.h",
     "api/identity/web_auth_flow_info_bar_delegate.cc",
@@ -496,8 +497,6 @@ static_library("extensions") {
     "cws_info_service_factory.h",
     "data_deleter.cc",
     "data_deleter.h",
-    "dev_mode_bubble_delegate.cc",
-    "dev_mode_bubble_delegate.h",
     "device_permissions_dialog_controller.cc",
     "device_permissions_dialog_controller.h",
     "devtools_util.cc",
@@ -553,8 +552,8 @@ static_library("extensions") {
     "extension_management_constants.h",
     "extension_management_internal.cc",
     "extension_management_internal.h",
-    "extension_message_bubble_controller.cc",
-    "extension_message_bubble_controller.h",
+    "extension_menu_icon_loader.cc",
+    "extension_menu_icon_loader.h",
     "extension_migrator.cc",
     "extension_migrator.h",
     "extension_service.cc",
@@ -641,12 +640,13 @@ static_library("extensions") {
     "launch_util.h",
     "load_error_reporter.cc",
     "load_error_reporter.h",
+    "menu_icon_loader.h",
     "menu_manager.cc",
     "menu_manager.h",
     "menu_manager_factory.cc",
     "menu_manager_factory.h",
-    "navigation_observer.cc",
-    "navigation_observer.h",
+    "navigation_extension_enabler.cc",
+    "navigation_extension_enabler.h",
     "omaha_attributes_handler.cc",
     "omaha_attributes_handler.h",
     "pack_extension_job.cc",
@@ -666,16 +666,12 @@ static_library("extensions") {
     "pref_transformer_interface.h",
     "profile_util.cc",
     "profile_util.h",
-    "proxy_overridden_bubble_delegate.cc",
-    "proxy_overridden_bubble_delegate.h",
     "safe_browsing_verdict_handler.cc",
     "safe_browsing_verdict_handler.h",
     "scoped_active_install.cc",
     "scoped_active_install.h",
     "scripting_permissions_modifier.cc",
     "scripting_permissions_modifier.h",
-    "settings_api_bubble_delegate.cc",
-    "settings_api_bubble_delegate.h",
     "settings_api_helpers.cc",
     "settings_api_helpers.h",
     "shared_module_service.cc",
@@ -686,8 +682,6 @@ static_library("extensions") {
     "standard_management_policy_provider.h",
     "startup_helper.cc",
     "startup_helper.h",
-    "suspicious_extension_bubble_delegate.cc",
-    "suspicious_extension_bubble_delegate.h",
     "sync_bundle.cc",
     "sync_bundle.h",
     "system_display/display_info_provider.h",
@@ -956,7 +950,6 @@ static_library("extensions") {
     "//services/audio/public/cpp",
     "//services/data_decoder/public/cpp",
     "//services/device/public/mojom",
-    "//services/metrics/public/cpp:ukm_builders",
     "//services/network/public/mojom",
     "//services/service_manager/public/cpp",
     "//services/service_manager/public/mojom",
@@ -978,6 +971,7 @@ static_library("extensions") {
     "//third_party/zlib/google:zip",
     "//ui/accessibility:ax_enums_mojo",
     "//ui/base",
+    "//ui/base:ozone_buildflags",
     "//ui/base/clipboard",
     "//ui/base/dragdrop/mojom:mojom_shared",
     "//ui/base/idle",
@@ -994,7 +988,10 @@ static_library("extensions") {
   ]
 
   if (enable_supervised_users) {
-    deps += [ "//components/supervised_user/core/browser" ]
+    deps += [
+      "//components/supervised_user/core/browser",
+      "//components/supervised_user/core/browser:supervised_user_preferences",
+    ]
   }
 
   if (is_linux || is_mac || is_win) {
@@ -1018,6 +1015,10 @@ static_library("extensions") {
       "api/document_scan/document_scan_api.h",
       "api/document_scan/document_scan_api_handler.cc",
       "api/document_scan/document_scan_api_handler.h",
+      "api/document_scan/document_scan_type_converters.cc",
+      "api/document_scan/document_scan_type_converters.h",
+      "api/document_scan/scanner_discovery_runner.cc",
+      "api/document_scan/scanner_discovery_runner.h",
       "api/enterprise_device_attributes/enterprise_device_attributes_api.cc",
       "api/enterprise_device_attributes/enterprise_device_attributes_api.h",
       "api/enterprise_networking_attributes/enterprise_networking_attributes_api.cc",
@@ -1136,6 +1137,8 @@ static_library("extensions") {
       "api/file_handlers/non_native_file_system_delegate_chromeos.h",
       "api/file_system/chrome_file_system_delegate_ash.cc",
       "api/file_system/chrome_file_system_delegate_ash.h",
+      "api/identity/launch_web_auth_flow_delegate_ash.cc",
+      "api/identity/launch_web_auth_flow_delegate_ash.h",
       "api/image_writer_private/operation_chromeos.cc",
       "api/image_writer_private/removable_storage_provider_chromeos.cc",
       "api/input_ime/input_ime_api.cc",
@@ -1393,6 +1396,7 @@ static_library("extensions") {
       "//chrome/browser/pdf",
       "//components/pdf/browser",
       "//pdf:buildflags",
+      "//pdf:features",
     ]
   }
 
@@ -1458,8 +1462,6 @@ static_library("test_support") {
     "test_blocklist.h",
     "test_blocklist_state_fetcher.cc",
     "test_blocklist_state_fetcher.h",
-    "test_extension_message_bubble_delegate.cc",
-    "test_extension_message_bubble_delegate.h",
     "test_extension_service.cc",
     "test_extension_service.h",
     "test_extension_system.cc",
@@ -1497,6 +1499,13 @@ static_library("test_support") {
     ]
   }
 
+  if (is_chromeos) {
+    sources += [
+      "api/document_scan/document_scan_test_utils.cc",
+      "api/document_scan/document_scan_test_utils.h",
+    ]
+  }
+
   if (is_chromeos_ash) {
     deps += [ "//components/user_manager:test_support" ]
   }
@@ -1507,6 +1516,7 @@ fuzzer_test("extension_management_internal_fuzzer") {
   deps = [
     ":extensions",
     "//base",
+    "//third_party/icu/fuzzers:fuzzer_support",
 
     # While //c/b/extensions should've been sufficient, there are cyclic
     # dependencies that require us linking against the whole //c/b.

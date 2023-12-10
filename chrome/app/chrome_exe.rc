@@ -46,6 +46,8 @@ IDR_MAINFRAME_4         ICON       "theme\\google_chrome\\win\\placeholder.ico"
 // The SXS icon must have an index of 4, the constant is used in Chrome code to
 // identify it.
 IDR_SXS                 ICON       "theme\\google_chrome\\win\\chrome_sxs.ico"
+#elif BUILDFLAG(GOOGLE_CHROME_FOR_TESTING_BRANDING)
+IDR_MAINFRAME           ICON       "theme\\google_chrome\\google_chrome_for_testing\\win\\chrome.ico"
 #else
 IDR_MAINFRAME           ICON       "theme\\chromium\\win\\chromium.ico"
 #endif

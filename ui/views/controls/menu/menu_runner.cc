@@ -4,9 +4,12 @@
 
 #include "ui/views/controls/menu/menu_runner.h"
 
+#include <memory>
 #include <utility>
 
+#include "base/memory/ptr_util.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
+#include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/menu_runner_handler.h"
 #include "ui/views/controls/menu/menu_runner_impl.h"
 #include "ui/views/views_delegate.h"
@@ -23,21 +26,24 @@ MenuRunner::MenuRunner(ui::MenuModel* menu_model,
           run_types,
           std::move(on_menu_closed_callback))) {}
 
-MenuRunner::MenuRunner(MenuItemView* menu_view, int32_t run_types)
-    : run_types_(run_types), impl_(new internal::MenuRunnerImpl(menu_view)) {}
+MenuRunner::MenuRunner(std::unique_ptr<MenuItemView> menu, int32_t run_types)
+    : run_types_(run_types),
+      impl_(new internal::MenuRunnerImpl(std::move(menu))) {}
 
 MenuRunner::~MenuRunner() {
   // Release causes the deletion of the object.
   impl_.ExtractAsDangling()->Release();
 }
 
-void MenuRunner::RunMenuAt(Widget* parent,
-                           MenuButtonController* button_controller,
-                           const gfx::Rect& bounds,
-                           MenuAnchorPosition anchor,
-                           ui::MenuSourceType source_type,
-                           gfx::NativeView native_view_for_gestures,
-                           absl::optional<gfx::RoundedCornersF> corners) {
+void MenuRunner::RunMenuAt(
+    Widget* parent,
+    MenuButtonController* button_controller,
+    const gfx::Rect& bounds,
+    MenuAnchorPosition anchor,
+    ui::MenuSourceType source_type,
+    gfx::NativeView native_view_for_gestures,
+    absl::optional<gfx::RoundedCornersF> corners,
+    absl::optional<std::string> show_menu_host_duration_histogram) {
   // Do not attempt to show the menu if the application is currently shutting
   // down. MenuDelegate::OnMenuClosed would not be called.
   if (ViewsDelegate::GetInstance() &&
@@ -83,7 +89,8 @@ void MenuRunner::RunMenuAt(Widget* parent,
   }
 
   impl_->RunMenuAt(parent, button_controller, bounds, anchor, run_types_,
-                   native_view_for_gestures, corners);
+                   native_view_for_gestures, corners,
+                   std::move(show_menu_host_duration_histogram));
 }
 
 bool MenuRunner::IsRunning() const {

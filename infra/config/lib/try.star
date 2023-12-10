@@ -232,6 +232,9 @@ def try_builder(
     # TODO(crbug.com/1346781): Remove when the experiment is the default.
     experiments.setdefault("chromium_swarming.expose_merge_script_failures", 100)
 
+    # TODO(crbug.com/1466962): Remove when the experiment is the default.
+    experiments.setdefault("swarming.prpc.cli", 100)
+
     merged_resultdb_bigquery_exports = [
         resultdb.export_test_results(
             bq_table = "chrome-luci-data.chromium.try_test_results",

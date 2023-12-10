@@ -1,5 +1,4 @@
 This is a testharness.js-based test.
-[PASS] permissions policy allow="battery" allows same-origin relocation.
 [FAIL] permissions policy allow="battery" disallows cross-origin relocation.
   assert_false: navigator.getBattery() expected false got true
 Harness: the test ran to completion.

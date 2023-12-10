@@ -40,6 +40,13 @@ const CGFloat kSymbolSize = 16;
   return self;
 }
 
+- (GURL)URL {
+  if (!_webState) {
+    return GURL();
+  }
+  return _webState->GetVisibleURL();
+}
+
 - (NSString*)title {
   if (!_webState) {
     return nil;

@@ -1,2 +1,1 @@
-CONSOLE MESSAGE: Blink Test Plugin: initializing
 Test for bug 47956: Crash when mouse is over plugin inside a frame.

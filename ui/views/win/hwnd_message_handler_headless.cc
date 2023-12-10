@@ -238,8 +238,8 @@ void HWNDMessageHandlerHeadless::Maximize() {
     return;
   }
 
-  window_state_ = WindowState::kMaximized;
   restored_bounds_ = bounds_;
+  window_state_ = WindowState::kMaximized;
 
   gfx::Rect bounds = GetZoomedWindowBounds(bounds_);
   SetBoundsInternal(bounds, /*force_size_changed=*/false);
@@ -266,11 +266,7 @@ void HWNDMessageHandlerHeadless::Restore() {
   auto prev_state = window_state_;
   window_state_ = WindowState::kNormal;
 
-  if (restored_bounds_) {
-    gfx::Rect bounds = restored_bounds_.value();
-    restored_bounds_.reset();
-    SetBoundsInternal(bounds, /*force_size_changed=*/false);
-  }
+  RestoreBounds();
 
   if (prev_state == WindowState::kMinimized) {
     delegate_->HandleWindowMinimizedOrRestored(/*restored=*/true);
@@ -340,14 +336,35 @@ bool HWNDMessageHandlerHeadless::HasCapture() const {
 }
 
 FullscreenHandler* HWNDMessageHandlerHeadless::fullscreen_handler() {
-  // TODO(kvitekp): headless windows don't go fullscreen yet.
+  // Headless windows don't use the fullscreen handler.
   return nullptr;
 }
 
 void HWNDMessageHandlerHeadless::SetFullscreen(bool fullscreen,
                                                int64_t target_display_id) {
-  // Just track the requested state, but don't change window size for now.
-  window_state_ = fullscreen ? WindowState::kFullscreen : WindowState::kNormal;
+  if (fullscreen) {
+    if (window_state_ == WindowState::kFullscreen) {
+      return;
+    }
+
+    if (window_state_ != WindowState::kMaximized) {
+      restored_bounds_ = bounds_;
+    }
+
+    window_state_ = WindowState::kFullscreen;
+
+    gfx::Rect bounds = GetZoomedWindowBounds(bounds_);
+    SetBoundsInternal(bounds, /*force_size_changed=*/false);
+
+  } else {
+    if (window_state_ != WindowState::kFullscreen) {
+      return;
+    }
+
+    window_state_ = WindowState::kNormal;
+
+    RestoreBounds();
+  }
 }
 
 void HWNDMessageHandlerHeadless::SizeConstraintsChanged() {
@@ -373,6 +390,14 @@ void HWNDMessageHandlerHeadless::SetBoundsInternal(
   SetHeadlessWindowBounds(bounds_in_pixels);
   if (old_size != bounds_in_pixels.size() || force_size_changed) {
     delegate_->HandleClientSizeChanged(GetClientAreaBounds().size());
+  }
+}
+
+void HWNDMessageHandlerHeadless::RestoreBounds() {
+  if (restored_bounds_) {
+    gfx::Rect bounds = restored_bounds_.value();
+    restored_bounds_.reset();
+    SetBoundsInternal(bounds, /*force_size_changed=*/false);
   }
 }
 

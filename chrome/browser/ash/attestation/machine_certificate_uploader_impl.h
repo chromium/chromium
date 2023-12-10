@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_ATTESTATION_MACHINE_CERTIFICATE_UPLOADER_IMPL_H_
 #define CHROME_BROWSER_ASH_ATTESTATION_MACHINE_CERTIFICATE_UPLOADER_IMPL_H_
 
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -16,7 +17,6 @@
 #include "chromeos/ash/components/dbus/attestation/interface.pb.h"
 #include "chromeos/ash/components/dbus/constants/attestation_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 namespace attestation {
@@ -113,7 +113,7 @@ class MachineCertificateUploaderImpl : public MachineCertificateUploader {
   int num_retries_ = 0;
   int retry_limit_ = 0;
   base::TimeDelta retry_delay_;
-  absl::optional<bool> certificate_uploaded_;
+  std::optional<bool> certificate_uploaded_;
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate the weak pointers before any other members are destroyed.

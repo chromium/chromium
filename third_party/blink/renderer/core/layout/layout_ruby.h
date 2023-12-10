@@ -36,6 +36,7 @@
 namespace blink {
 
 class LayoutRubyColumn;
+class RubyContainer;
 
 // Following the HTML 5 spec, the box object model for a <ruby> element allows
 // several runs of ruby
@@ -60,6 +61,7 @@ class LayoutRubyAsInline final : public LayoutInline {
  public:
   LayoutRubyAsInline(Element*);
   ~LayoutRubyAsInline() override;
+  void Trace(Visitor* visitor) const override;
 
   void AddChild(LayoutObject* child,
                 LayoutObject* before_child = nullptr) override;
@@ -69,6 +71,8 @@ class LayoutRubyAsInline final : public LayoutInline {
     NOT_DESTROYED();
     return "LayoutRuby (inline)";
   }
+
+  void DidRemoveChildFromColumn(LayoutObject& child);
 
   static LayoutRubyColumn* LastRubyColumn(const LayoutObject& ruby);
   static LayoutRubyColumn* FindRubyColumnParent(LayoutObject* child);
@@ -80,6 +84,15 @@ class LayoutRubyAsInline final : public LayoutInline {
   bool IsOfType(LayoutObjectType type) const override {
     NOT_DESTROYED();
     return type == kLayoutObjectRuby || LayoutInline::IsOfType(type);
+  }
+
+  Member<RubyContainer> ruby_container_;
+};
+
+template <>
+struct DowncastTraits<LayoutRubyAsInline> {
+  static bool AllowFrom(const LayoutObject& object) {
+    return object.IsRuby() && object.IsLayoutInline();
   }
 };
 

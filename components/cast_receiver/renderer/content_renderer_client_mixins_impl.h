@@ -58,16 +58,16 @@ class ContentRendererClientMixinsImpl
  private:
   // Called by UrlRewriteRulesProvider instances as part of frame RenderFrame
   // deletion.
-  void OnRenderFrameRemoved(int render_frame_id);
+  void OnRenderFrameRemoved(const blink::LocalFrameToken& frame_token);
 
   // WrappingURLLoaderThrottleProvider::Client implementation.
   UrlRewriteRulesProvider* GetUrlRewriteRulesProvider(
-      int render_frame_id) override;
+      const blink::LocalFrameToken& frame_token) override;
   bool IsCorsExemptHeader(base::StringPiece header) override;
 
   IsCorsExemptHeadersCallback is_cors_exempt_header_callback_;
 
-  base::flat_map<int /* render_frame_id */,
+  base::flat_map<blink::LocalFrameToken /* frame_token */,
                  std::unique_ptr<UrlRewriteRulesProvider>>
       url_rewrite_rules_providers_;
 };

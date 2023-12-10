@@ -3,7 +3,7 @@ import webdriver.bidi.error as error
 
 pytestmark = pytest.mark.asyncio
 
-PAGE_EMPTY_TEXT = "/webdriver/tests/bidi/network/support/empty.txt"
+from .. import PAGE_EMPTY_TEXT, RESPONSE_COMPLETED_EVENT
 
 
 @pytest.mark.parametrize("value", [None, False, 42, {}, []])
@@ -19,16 +19,17 @@ async def test_params_request_invalid_value(bidi_session, value):
 
 
 async def test_params_request_no_such_request(bidi_session, setup_network_test,
-                                              wait_for_event, fetch, url):
+                                              wait_for_event, wait_for_future_safe,
+                                              fetch, url):
     await setup_network_test(events=[
-        "network.responseCompleted",
+        RESPONSE_COMPLETED_EVENT,
     ])
-    on_response_completed = wait_for_event("network.responseCompleted")
+    on_response_completed = wait_for_event(RESPONSE_COMPLETED_EVENT)
 
     text_url = url(PAGE_EMPTY_TEXT)
     await fetch(text_url)
 
-    response_completed_event = await on_response_completed
+    response_completed_event = await wait_for_future_safe(on_response_completed)
     request = response_completed_event["request"]["request"]
 
     with pytest.raises(error.NoSuchRequestException):

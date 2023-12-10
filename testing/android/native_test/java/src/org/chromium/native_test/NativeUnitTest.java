@@ -14,9 +14,7 @@ import org.chromium.base.PowerMonitor;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.build.NativeLibraries;
 
-/**
- * A helper for running native unit tests (i.e., not browser tests)
- */
+/** A helper for running native unit tests (i.e., not browser tests) */
 public class NativeUnitTest extends NativeTest {
     private static final String TAG = "NativeTest";
 
@@ -43,9 +41,8 @@ public class NativeUnitTest extends NativeTest {
         // Needed by system_monitor_unittest.cc
         PowerMonitor.createForTests();
 
-        // For NativeActivity based tests,
-        // dependency libraries must be loaded before NativeActivity::OnCreate,
-        // otherwise loading android.app.lib_name will fail
+        // For NativeActivity based tests, dependency libraries must be loaded before
+        // NativeActivity::OnCreate, otherwise loading android.app.lib_name will fail
         loadLibraries();
     }
 

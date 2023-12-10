@@ -64,7 +64,7 @@ class ASH_EXPORT SilencePhoneQuickActionController
   ActionState state_;
 
   // State that user requests when clicking the button.
-  absl::optional<ActionState> requested_state_;
+  std::optional<ActionState> requested_state_;
 
   // Timer that fires to prevent showing wrong state in the item. It will check
   // if the requested state is similar to the current state after the button is

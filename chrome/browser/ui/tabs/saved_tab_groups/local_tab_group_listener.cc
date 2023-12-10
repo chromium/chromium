@@ -101,7 +101,7 @@ void LocalTabGroupListener::AddWebContentsFromLocal(
   CHECK(model_->Contains(saved_guid_));
   CHECK(tab_strip_model->group_model()->ContainsTabGroup(local_id_));
 
-  const absl::optional<int> tabstrip_index_of_first_tab_in_group =
+  const std::optional<int> tabstrip_index_of_first_tab_in_group =
       tab_strip_model->group_model()->GetTabGroup(local_id_)->GetFirstTab();
   CHECK(tabstrip_index_of_first_tab_in_group.has_value());
 
@@ -142,7 +142,7 @@ void LocalTabGroupListener::MoveWebContentsFromLocal(
   // at index 2. For the tab group, C is at index 0.
   // Moving C to index 4 in the tabstrip means it will now have an index of 2 in
   // the tab group and SavedTabGroupModel.
-  const absl::optional<int> tabstrip_index_of_first_tab_in_group =
+  const std::optional<int> tabstrip_index_of_first_tab_in_group =
       tab_strip_model->group_model()->GetTabGroup(local_id_)->GetFirstTab();
   CHECK(tabstrip_index_of_first_tab_in_group.has_value());
 

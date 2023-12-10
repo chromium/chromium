@@ -24,7 +24,6 @@
 #include "ash/test/ash_test_helper.h"
 #include "ash/test/test_window_builder.h"
 #include "ash/wm/desks/legacy_desk_bar_view.h"
-#include "ash/wm/desks/zero_state_button.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_item.h"
@@ -524,18 +523,8 @@ TEST_F(DockedMagnifierTest, OverviewTabbing) {
                                   ->GetGridWithRootWindow(root_window)
                                   ->desks_bar_view();
 
-  views::LabelButton* default_desk_button = nullptr;
-  views::LabelButton* new_desk_button = nullptr;
-  if (chromeos::features::IsJellyrollEnabled()) {
-    default_desk_button = const_cast<CrOSNextDefaultDeskButton*>(
-        desk_bar_view->default_desk_button());
-    new_desk_button =
-        const_cast<CrOSNextDeskIconButton*>(desk_bar_view->new_desk_button());
-  } else {
-    ASSERT_TRUE(desk_bar_view->IsZeroState());
-    default_desk_button = desk_bar_view->zero_state_default_desk_button();
-    new_desk_button = desk_bar_view->zero_state_new_desk_button();
-  }
+  auto* default_desk_button = desk_bar_view->default_desk_button();
+  auto* new_desk_button = desk_bar_view->new_desk_button();
 
   // Tab once. The viewport should be centered on the beginning of the overview
   // item's title.
@@ -563,7 +552,7 @@ TEST_F(DockedMagnifierTest, OverviewTabbing) {
 TEST_F(DockedMagnifierTest, DisplaysWorkAreasSingleSplitView) {
   // Verify that we're in tablet mode.
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
-  EXPECT_TRUE(Shell::Get()->tablet_mode_controller()->InTabletMode());
+  EXPECT_TRUE(display::Screen::GetScreen()->InTabletMode());
 
   std::unique_ptr<aura::Window> window =
       TestWindowBuilder()
@@ -581,8 +570,7 @@ TEST_F(DockedMagnifierTest, DisplaysWorkAreasSingleSplitView) {
   auto* overview_controller = Shell::Get()->overview_controller();
   EnterOverview();
   EXPECT_TRUE(overview_controller->InOverviewSession());
-  split_view_controller()->SnapWindow(
-      window.get(), SplitViewController::SnapPosition::kPrimary);
+  split_view_controller()->SnapWindow(window.get(), SnapPosition::kPrimary);
   EXPECT_EQ(split_view_controller()->state(),
             SplitViewController::State::kPrimarySnapped);
   EXPECT_EQ(split_view_controller()->primary_window(), window.get());
@@ -612,7 +600,7 @@ TEST_F(DockedMagnifierTest, DisplaysWorkAreasSingleSplitView) {
 TEST_F(DockedMagnifierTest, DisplaysWorkAreasDoubleSplitView) {
   // Verify that we're in tablet mode.
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
-  EXPECT_TRUE(Shell::Get()->tablet_mode_controller()->InTabletMode());
+  EXPECT_TRUE(display::Screen::GetScreen()->InTabletMode());
 
   std::unique_ptr<aura::Window> window1 =
       TestWindowBuilder()
@@ -630,10 +618,8 @@ TEST_F(DockedMagnifierTest, DisplaysWorkAreasDoubleSplitView) {
   EXPECT_TRUE(overview_controller->InOverviewSession());
 
   EXPECT_EQ(split_view_controller()->InSplitViewMode(), false);
-  split_view_controller()->SnapWindow(
-      window1.get(), SplitViewController::SnapPosition::kPrimary);
-  split_view_controller()->SnapWindow(
-      window2.get(), SplitViewController::SnapPosition::kSecondary);
+  split_view_controller()->SnapWindow(window1.get(), SnapPosition::kPrimary);
+  split_view_controller()->SnapWindow(window2.get(), SnapPosition::kSecondary);
   EXPECT_EQ(split_view_controller()->InSplitViewMode(), true);
   EXPECT_EQ(split_view_controller()->state(),
             SplitViewController::State::kBothSnapped);

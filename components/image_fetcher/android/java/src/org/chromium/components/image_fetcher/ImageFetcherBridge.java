@@ -17,9 +17,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
 import org.chromium.components.embedder_support.simple_factory_key.SimpleFactoryKeyHandle;
 
-/**
- * Provides access to native implementations of ImageFetcher for the given browser context.
- */
+/** Provides access to native implementations of ImageFetcher for the given browser context. */
 @JNINamespace("image_fetcher")
 public class ImageFetcherBridge {
     private final SimpleFactoryKeyHandle mSimpleFactoryKeyHandle;
@@ -67,17 +65,25 @@ public class ImageFetcherBridge {
      * @param callback The callback to call when the gif is ready. The callback will be invoked on
      *      the same thread it was called on.
      */
-    public void fetchGif(@ImageFetcherConfig int config, final ImageFetcher.Params params,
+    public void fetchGif(
+            @ImageFetcherConfig int config,
+            final ImageFetcher.Params params,
             Callback<BaseGifImage> callback) {
-        ImageFetcherBridgeJni.get().fetchImageData(mSimpleFactoryKeyHandle, config, params.url,
-                params.clientName, params.expirationIntervalMinutes, (byte[] data) -> {
-                    if (data == null || data.length == 0) {
-                        callback.onResult(null);
-                        return;
-                    }
+        ImageFetcherBridgeJni.get()
+                .fetchImageData(
+                        mSimpleFactoryKeyHandle,
+                        config,
+                        params.url,
+                        params.clientName,
+                        params.expirationIntervalMinutes,
+                        (byte[] data) -> {
+                            if (data == null || data.length == 0) {
+                                callback.onResult(null);
+                                return;
+                            }
 
-                    callback.onResult(new BaseGifImage(data));
-                });
+                            callback.onResult(new BaseGifImage(data));
+                        });
     }
 
     /**
@@ -88,18 +94,28 @@ public class ImageFetcherBridge {
      * @param callback The callback to call when the image is ready. The callback will be invoked on
      *      the same thread that it was called on.
      */
-    public void fetchImage(@ImageFetcherConfig int config, final ImageFetcher.Params params,
+    public void fetchImage(
+            @ImageFetcherConfig int config,
+            final ImageFetcher.Params params,
             Callback<Bitmap> callback) {
-        ImageFetcherBridgeJni.get().fetchImage(mSimpleFactoryKeyHandle, config, params.url,
-                params.clientName, params.width, params.height, params.expirationIntervalMinutes,
-                (bitmap) -> {
-                    if (params.shouldResize) {
-                        callback.onResult(
-                                ImageFetcher.resizeImage(bitmap, params.width, params.height));
-                    } else {
-                        callback.onResult(bitmap);
-                    }
-                });
+        ImageFetcherBridgeJni.get()
+                .fetchImage(
+                        mSimpleFactoryKeyHandle,
+                        config,
+                        params.url,
+                        params.clientName,
+                        params.width,
+                        params.height,
+                        params.expirationIntervalMinutes,
+                        (bitmap) -> {
+                            if (params.shouldResize) {
+                                callback.onResult(
+                                        ImageFetcher.resizeImage(
+                                                bitmap, params.width, params.height));
+                            } else {
+                                callback.onResult(bitmap);
+                            }
+                        });
     }
 
     /**
@@ -138,14 +154,29 @@ public class ImageFetcherBridge {
     interface Natives {
         // Native methods
         String getFilePath(SimpleFactoryKeyHandle simpleFactoryKeyHandle, String url);
-        void fetchImageData(SimpleFactoryKeyHandle simpleFactoryKeyHandle,
-                @ImageFetcherConfig int config, String url, String clientName,
-                int expirationIntervalMinutes, Callback<byte[]> callback);
-        void fetchImage(SimpleFactoryKeyHandle simpleFactoryKeyHandle,
-                @ImageFetcherConfig int config, String url, String clientName, int frameWidth,
-                int frameHeight, int expirationIntervalMinutes, Callback<Bitmap> callback);
+
+        void fetchImageData(
+                SimpleFactoryKeyHandle simpleFactoryKeyHandle,
+                @ImageFetcherConfig int config,
+                String url,
+                String clientName,
+                int expirationIntervalMinutes,
+                Callback<byte[]> callback);
+
+        void fetchImage(
+                SimpleFactoryKeyHandle simpleFactoryKeyHandle,
+                @ImageFetcherConfig int config,
+                String url,
+                String clientName,
+                int frameWidth,
+                int frameHeight,
+                int expirationIntervalMinutes,
+                Callback<Bitmap> callback);
+
         void reportEvent(String clientName, int eventId);
+
         void reportCacheHitTime(String clientName, long startTimeMillis);
+
         void reportTotalFetchTimeFromNative(String clientName, long startTimeMillis);
     }
 }

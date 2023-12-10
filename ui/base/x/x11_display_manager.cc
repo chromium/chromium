@@ -10,9 +10,9 @@
 #include "base/task/single_thread_task_runner.h"
 #include "components/device_event_log/device_event_log.h"
 #include "ui/base/x/x11_display_util.h"
+#include "ui/gfx/x/atom_cache.h"
 #include "ui/gfx/x/future.h"
 #include "ui/gfx/x/randr.h"
-#include "ui/gfx/x/x11_atom_cache.h"
 #include "ui/gfx/x/xproto.h"
 
 #if BUILDFLAG(IS_LINUX)
@@ -23,7 +23,8 @@ namespace ui {
 
 namespace {
 
-constexpr int kMinXrandrVersion = 103;  // Need at least xrandr version 1.3
+// Need at least xrandr version 1.3
+constexpr std::pair<uint32_t, uint32_t> kMinXrandrVersion{1, 3};
 
 }  // namespace
 
@@ -32,7 +33,6 @@ XDisplayManager::XDisplayManager(Delegate* delegate)
       displays_{display::Display()},
       connection_(x11::Connection::Get()),
       x_root_window_(connection_->default_screen().root),
-      xrandr_version_(GetXrandrVersion()),
       workspace_handler_(this) {}
 
 XDisplayManager::~XDisplayManager() = default;
@@ -50,7 +50,7 @@ void XDisplayManager::Init() {
 
 // Need at least xrandr version 1.3
 bool XDisplayManager::IsXrandrAvailable() const {
-  return xrandr_version_ >= kMinXrandrVersion;
+  return connection_->randr_version() >= kMinXrandrVersion;
 }
 
 const display::Display& XDisplayManager::GetPrimaryDisplay() const {
@@ -98,8 +98,8 @@ void XDisplayManager::FetchDisplayList() {
 #endif
   size_t primary_display_index = 0;
   if (IsXrandrAvailable()) {
-    displays = BuildDisplaysFromXRandRInfo(xrandr_version_, *display_config,
-                                           &primary_display_index);
+    displays =
+        BuildDisplaysFromXRandRInfo(*display_config, &primary_display_index);
   } else {
     displays = GetFallbackDisplayList(display_config->primary_scale,
                                       &primary_display_index);
@@ -134,8 +134,9 @@ void XDisplayManager::DispatchDelayedDisplayListUpdate() {
 }
 
 gfx::Point XDisplayManager::GetCursorLocation() const {
-  if (auto response = connection_->QueryPointer({x_root_window_}).Sync())
+  if (auto response = connection_->QueryPointer({x_root_window_}).Sync()) {
     return {response->root_x, response->root_y};
+  }
   return {};
 }
 

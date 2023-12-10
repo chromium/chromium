@@ -147,7 +147,9 @@ class ChromeDriver(object):
     options['args'] = chrome_switches
 
     # TODO(crbug.com/1011000): Work around a bug with headless on Mac.
-    if util.GetPlatformName() == 'mac' and '--headless' in chrome_switches:
+    if (util.GetPlatformName() == 'mac' and
+        browser_name == 'chrome-headless-shell' and
+        debugger_address is None):
       options['excludeSwitches'] = ['--enable-logging']
 
     if mobile_emulation:
@@ -746,9 +748,9 @@ class ChromeDriver(object):
     params = {'accountIndex': index}
     return self.ExecuteCommand(Command.SELECT_ACCOUNT, params)
 
-  def ConfirmIdpLogin(self, vendorId):
-    params = {'vendorId': vendorId}
-    return self.ExecuteCommand(Command.CONFIRM_IDP_LOGIN, params)
+  def ClickFedCmDialogButton(self, dialogButton):
+    params = {'dialogButton': dialogButton}
+    return self.ExecuteCommand(Command.CLICK_FEDCM_DIALOG_BUTTON, params)
 
   def GetAccounts(self):
     return self.ExecuteCommand(Command.GET_ACCOUNTS, {})

@@ -370,6 +370,9 @@ Revision: ${revision}
 EOF
 }
 
+# Fetch the latest tags; used in creating vpx_version.h.
+git -C "${LIBVPX_SRC_DIR}" fetch --tags
+
 find_duplicates
 
 echo "Create temporary directory."
@@ -594,10 +597,9 @@ echo "Remove temporary directory."
 cd $BASE_DIR
 rm -rf $TEMP_DIR
 
-gn format --in-place $BASE_DIR/BUILD.gn
-gn format --in-place $BASE_DIR/libvpx_srcs.gni
-
 cd $BASE_DIR/$LIBVPX_SRC_DIR
 update_readme
 
 cd $BASE_DIR
+git cl format > /dev/null \
+  || echo "ERROR: 'git cl format' failed. Please run 'git cl format' manually."

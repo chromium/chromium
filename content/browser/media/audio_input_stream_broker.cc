@@ -16,6 +16,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "content/browser/browser_main_loop.h"
+#include "content/browser/media/audio_stream_broker_helper.h"
 #include "content/browser/media/media_internals.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -61,7 +62,7 @@ AudioInputStreamBroker::AudioInputStreamBroker(
   renderer_factory_client_.set_disconnect_handler(base::BindOnce(
       &AudioInputStreamBroker::ClientBindingLost, base::Unretained(this)));
 
-  NotifyProcessHostOfStartedStream(render_process_id);
+  NotifyFrameHostOfAudioStreamStarted(render_process_id, render_frame_id);
 
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kUseFakeDeviceForMediaStream)) {
@@ -77,7 +78,7 @@ AudioInputStreamBroker::~AudioInputStreamBroker() {
   if (user_input_monitor_)
     user_input_monitor_->DisableKeyPressMonitoring();
 
-  NotifyProcessHostOfStoppedStream(render_process_id());
+  NotifyFrameHostOfAudioStreamStopped(render_process_id(), render_frame_id());
 
   // TODO(https://crbug.com/829317) update tab recording indicator.
 

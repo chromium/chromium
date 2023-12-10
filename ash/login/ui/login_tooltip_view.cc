@@ -9,6 +9,7 @@
 #include "ash/style/ash_color_id.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/accessibility/ax_enums.mojom.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/display/display.h"
@@ -49,5 +50,8 @@ LoginTooltipView::~LoginTooltipView() = default;
 void LoginTooltipView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->role = ax::mojom::Role::kTooltip;
 }
+
+BEGIN_METADATA(LoginTooltipView)
+END_METADATA
 
 }  // namespace ash

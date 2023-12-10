@@ -63,6 +63,13 @@ class BlockingModelTypeStoreImpl : public BlockingModelTypeStore {
   static std::unique_ptr<WriteBatch> CreateWriteBatch(ModelType model_type,
                                                       StorageType storage_type);
 
+  // Returns the common prefix for all records (data, metadata, and global
+  // metadata aka model type state) with a given ModelType and StorageType. Can
+  // be useful for data migrations; should not be required otherwise.
+  static std::string FormatPrefixForModelTypeAndStorageType(
+      ModelType model_type,
+      StorageType storage_type);
+
  private:
   const ModelType model_type_;
   const StorageType storage_type_;

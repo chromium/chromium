@@ -43,12 +43,5 @@
               e => e.args.data.url ===
                   'http://127.0.0.1:8000/inspector-protocol/prerender/resources/empty.html');
   testRunner.log('Got prerender frame: ' + !!prerenderFrameCommitted);
-  const prerenderFrameId = prerenderFrameCommitted.args.data.frame;
-
-  const parsePrerenderHTML =
-      tracingHelper.findEvents('ParseHTML', TracingHelper.Phase.COMPLETE)
-          .find(e => e.args.beginData.frame === prerenderFrameId);
-
-  testRunner.log('Got parse prerender HTML: ' + !!parsePrerenderHTML);
   testRunner.completeTest();
 });

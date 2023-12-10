@@ -10,6 +10,7 @@
 #include "base/check_op.h"
 #include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
+#include "third_party/blink/renderer/modules/peerconnection/peer_connection_features.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_dtmf_sender_handler.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_encoded_audio_stream_transformer.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_encoded_video_stream_transformer.h"
@@ -191,7 +192,7 @@ class RTCRtpSenderImpl::RTCRtpSenderInternal
           native_peer_connection,
       scoped_refptr<blink::WebRtcMediaStreamTrackAdapterMap> track_map,
       RtpSenderState state,
-      bool encoded_insertable_streams)
+      bool require_encoded_insertable_streams)
       : native_peer_connection_(std::move(native_peer_connection)),
         track_map_(std::move(track_map)),
         main_task_runner_(state.main_task_runner()),
@@ -200,19 +201,23 @@ class RTCRtpSenderImpl::RTCRtpSenderInternal
         state_(std::move(state)) {
     DCHECK(track_map_);
     DCHECK(state_.is_initialized());
-    if (encoded_insertable_streams &&
-        webrtc_sender_->media_type() == cricket::MEDIA_TYPE_AUDIO) {
-      encoded_audio_transformer_ =
-          std::make_unique<RTCEncodedAudioStreamTransformer>(main_task_runner_);
-      webrtc_sender_->SetEncoderToPacketizerFrameTransformer(
-          encoded_audio_transformer_->Delegate());
-    }
-    if (encoded_insertable_streams &&
-        webrtc_sender_->media_type() == cricket::MEDIA_TYPE_VIDEO) {
-      encoded_video_transformer_ =
-          std::make_unique<RTCEncodedVideoStreamTransformer>(main_task_runner_);
-      webrtc_sender_->SetEncoderToPacketizerFrameTransformer(
-          encoded_video_transformer_->Delegate());
+    if (require_encoded_insertable_streams ||
+        base::FeatureList::IsEnabled(
+            kWebRtcEncodedTransformsPerStreamCreation)) {
+      if (webrtc_sender_->media_type() == cricket::MEDIA_TYPE_AUDIO) {
+        encoded_audio_transformer_ =
+            std::make_unique<RTCEncodedAudioStreamTransformer>(
+                main_task_runner_);
+        webrtc_sender_->SetEncoderToPacketizerFrameTransformer(
+            encoded_audio_transformer_->Delegate());
+      }
+      if (webrtc_sender_->media_type() == cricket::MEDIA_TYPE_VIDEO) {
+        encoded_video_transformer_ =
+            std::make_unique<RTCEncodedVideoStreamTransformer>(
+                main_task_runner_);
+        webrtc_sender_->SetEncoderToPacketizerFrameTransformer(
+            encoded_video_transformer_->Delegate());
+      }
     }
     DCHECK(!encoded_audio_transformer_ || !encoded_video_transformer_);
   }
@@ -451,12 +456,12 @@ RTCRtpSenderImpl::RTCRtpSenderImpl(
     rtc::scoped_refptr<webrtc::PeerConnectionInterface> native_peer_connection,
     scoped_refptr<blink::WebRtcMediaStreamTrackAdapterMap> track_map,
     RtpSenderState state,
-    bool encoded_insertable_streams)
+    bool require_encoded_insertable_streams)
     : internal_(base::MakeRefCounted<RTCRtpSenderInternal>(
           std::move(native_peer_connection),
           std::move(track_map),
           std::move(state),
-          encoded_insertable_streams)) {}
+          require_encoded_insertable_streams)) {}
 
 RTCRtpSenderImpl::RTCRtpSenderImpl(const RTCRtpSenderImpl& other)
     : internal_(other.internal_) {}

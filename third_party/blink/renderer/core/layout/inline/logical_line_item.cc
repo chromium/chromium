@@ -12,16 +12,18 @@ namespace blink {
 const LayoutObject* LogicalLineItem::GetLayoutObject() const {
   if (inline_item)
     return inline_item->GetLayoutObject();
-  if (const NGPhysicalFragment* fragment = PhysicalFragment())
+  if (const auto* fragment = GetPhysicalFragment()) {
     return fragment->GetLayoutObject();
+  }
   return nullptr;
 }
 
 LayoutObject* LogicalLineItem::GetMutableLayoutObject() const {
   if (inline_item)
     return inline_item->GetLayoutObject();
-  if (const NGPhysicalFragment* fragment = PhysicalFragment())
+  if (const auto* fragment = GetPhysicalFragment()) {
     return fragment->GetMutableLayoutObject();
+  }
   return nullptr;
 }
 
@@ -32,8 +34,9 @@ const Node* LogicalLineItem::GetNode() const {
 }
 
 const ComputedStyle* LogicalLineItem::Style() const {
-  if (const auto* fragment = PhysicalFragment())
+  if (const auto* fragment = GetPhysicalFragment()) {
     return &fragment->Style();
+  }
   if (inline_item)
     return inline_item->Style();
   return nullptr;
@@ -46,8 +49,9 @@ std::ostream& operator<<(std::ostream& stream, const LogicalLineItem& item) {
   stream << " inline_size=" << item.inline_size;
   if (item.inline_item)
     stream << " " << item.inline_item->ToString().Utf8().c_str();
-  if (item.PhysicalFragment())
-    stream << " Fragment=" << *item.PhysicalFragment();
+  if (item.GetPhysicalFragment()) {
+    stream << " Fragment=" << *item.GetPhysicalFragment();
+  }
   if (item.GetLayoutObject())
     stream << " LayoutObject=" << *item.GetLayoutObject();
   stream << ")";
@@ -71,11 +75,12 @@ LogicalLineItem* LogicalLineItems::LastInFlowChild() {
   return nullptr;
 }
 
-const NGLayoutResult* LogicalLineItems::BlockInInlineLayoutResult() const {
+const LayoutResult* LogicalLineItems::BlockInInlineLayoutResult() const {
   for (const LogicalLineItem& item : *this) {
     if (item.layout_result &&
-        item.layout_result->PhysicalFragment().IsBlockInInline())
+        item.layout_result->GetPhysicalFragment().IsBlockInInline()) {
       return item.layout_result.Get();
+    }
   }
   return nullptr;
 }

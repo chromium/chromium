@@ -46,16 +46,25 @@ import java.util.List;
 /**
  * Fragment containing the Privacy Guide (a walk-through of the most important privacy settings).
  */
-public class PrivacyGuideFragment
-        extends Fragment implements BackPressHandler, BackPressHelper.ObsoleteBackPressedHandler,
-                                    ProfileDependentSetting, FragmentSettingsLauncher {
+public class PrivacyGuideFragment extends Fragment
+        implements BackPressHandler,
+                BackPressHelper.ObsoleteBackPressedHandler,
+                ProfileDependentSetting,
+                FragmentSettingsLauncher {
     /**
      * The types of fragments supported. Each fragment corresponds to a step in the privacy guide.
      */
     @Retention(RetentionPolicy.SOURCE)
-    @IntDef({FragmentType.WELCOME, FragmentType.MSBB, FragmentType.HISTORY_SYNC,
-            FragmentType.SAFE_BROWSING, FragmentType.COOKIES, FragmentType.SEARCH_SUGGESTIONS,
-            FragmentType.PRELOAD, FragmentType.DONE})
+    @IntDef({
+        FragmentType.WELCOME,
+        FragmentType.MSBB,
+        FragmentType.HISTORY_SYNC,
+        FragmentType.SAFE_BROWSING,
+        FragmentType.COOKIES,
+        FragmentType.SEARCH_SUGGESTIONS,
+        FragmentType.PRELOAD,
+        FragmentType.DONE
+    })
     @interface FragmentType {
         int WELCOME = 0;
         int MSBB = 1;
@@ -67,13 +76,27 @@ public class PrivacyGuideFragment
         int DONE = 7;
         int MAX_VALUE = DONE;
     }
-    public static final List<Integer> ALL_FRAGMENT_TYPE_ORDER = Collections.unmodifiableList(
-            Arrays.asList(FragmentType.WELCOME, FragmentType.MSBB, FragmentType.HISTORY_SYNC,
-                    FragmentType.SAFE_BROWSING, FragmentType.COOKIES, FragmentType.DONE));
+
+    public static final List<Integer> ALL_FRAGMENT_TYPE_ORDER =
+            Collections.unmodifiableList(
+                    Arrays.asList(
+                            FragmentType.WELCOME,
+                            FragmentType.MSBB,
+                            FragmentType.HISTORY_SYNC,
+                            FragmentType.SAFE_BROWSING,
+                            FragmentType.COOKIES,
+                            FragmentType.DONE));
     public static final List<Integer> ALL_FRAGMENT_TYPE_ORDER_PG3 =
-            Collections.unmodifiableList(Arrays.asList(FragmentType.WELCOME, FragmentType.MSBB,
-                    FragmentType.HISTORY_SYNC, FragmentType.COOKIES, FragmentType.SAFE_BROWSING,
-                    FragmentType.SEARCH_SUGGESTIONS, FragmentType.PRELOAD, FragmentType.DONE));
+            Collections.unmodifiableList(
+                    Arrays.asList(
+                            FragmentType.WELCOME,
+                            FragmentType.MSBB,
+                            FragmentType.HISTORY_SYNC,
+                            FragmentType.COOKIES,
+                            FragmentType.SAFE_BROWSING,
+                            FragmentType.SEARCH_SUGGESTIONS,
+                            FragmentType.PRELOAD,
+                            FragmentType.DONE));
     private OneshotSupplier<BottomSheetController> mBottomSheetControllerSupplier;
     private ObservableSupplierImpl<Boolean> mHandleBackPressChangedSupplier;
     private CustomTabIntentHelper mCustomTabHelper;
@@ -106,15 +129,21 @@ public class PrivacyGuideFragment
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+    public View onCreateView(
+            @NonNull LayoutInflater inflater,
+            @Nullable ViewGroup container,
             @Nullable Bundle savedInstanceState) {
         modifyAppBar();
         mView = inflater.inflate(R.layout.privacy_guide_steps, container, false);
 
         mViewPager = (ViewPager2) mView.findViewById(R.id.review_viewpager);
-        mPagerAdapter = new PrivacyGuidePagerAdapter(this, new StepDisplayHandlerImpl(mProfile),
-                ChromeFeatureList.sPrivacyGuideAndroid3.isEnabled() ? ALL_FRAGMENT_TYPE_ORDER_PG3
-                                                                    : ALL_FRAGMENT_TYPE_ORDER);
+        mPagerAdapter =
+                new PrivacyGuidePagerAdapter(
+                        this,
+                        new StepDisplayHandlerImpl(mProfile),
+                        ChromeFeatureList.sPrivacyGuideAndroid3.isEnabled()
+                                ? ALL_FRAGMENT_TYPE_ORDER_PG3
+                                : ALL_FRAGMENT_TYPE_ORDER);
         mNavbarVisibilityDelegate = new NavbarVisibilityDelegate(mPagerAdapter.getItemCount());
         mViewPager.setAdapter(mPagerAdapter);
         if (ChromeFeatureList.sPrivacyGuidePostMVP.isEnabled()) {
@@ -123,13 +152,18 @@ public class PrivacyGuideFragment
         mViewPager.setUserInputEnabled(false);
 
         mTabLayout = mView.findViewById(R.id.tab_layout);
-        new TabLayoutMediator(mTabLayout, mViewPager, (tab, position) -> {
-            tab.view.setClickable(false);
-            tab.view.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
-            if (position == 0 || position == mPagerAdapter.getItemCount() - 1) {
-                tab.view.setVisibility(View.GONE);
-            }
-        }).attach();
+        new TabLayoutMediator(
+                        mTabLayout,
+                        mViewPager,
+                        (tab, position) -> {
+                            tab.view.setClickable(false);
+                            tab.view.setImportantForAccessibility(
+                                    View.IMPORTANT_FOR_ACCESSIBILITY_NO);
+                            if (position == 0 || position == mPagerAdapter.getItemCount() - 1) {
+                                tab.view.setVisibility(View.GONE);
+                            }
+                        })
+                .attach();
 
         mStartButton = (ButtonCompat) mView.findViewById(R.id.start_button);
         mStartButton.setOnClickListener((View v) -> nextStep());
@@ -144,10 +178,11 @@ public class PrivacyGuideFragment
         mFinishButton.setOnClickListener((View v) -> nextStep());
 
         mDoneButton = (ButtonCompat) mView.findViewById(R.id.done_button);
-        mDoneButton.setOnClickListener((View v) -> {
-            PrivacyGuideMetricsDelegate.recordMetricsForDoneButton();
-            getActivity().finish();
-        });
+        mDoneButton.setOnClickListener(
+                (View v) -> {
+                    PrivacyGuideMetricsDelegate.recordMetricsForDoneButton();
+                    getActivity().finish();
+                });
 
         return mView;
     }

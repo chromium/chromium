@@ -12,23 +12,17 @@ import android.view.View;
  * provided in the native.
  */
 public interface CompositorView {
-    /**
-     *@return The android {@link View} representing this widget.
-     */
+    /**@return The android {@link View} representing this widget. */
     View getView();
 
-    /**
-     * Should be called for cleanup when the CompositorView instance is no longer used.
-     */
+    /** Should be called for cleanup when the CompositorView instance is no longer used. */
     void destroy();
 
-    /**
-     * Request compositor view to render a frame.
-     */
+    /** Request compositor view to render a frame. */
     void requestRender();
 
     /**
-     /**
+     * /**
      * Sets opacity for the view. {@link ThinWebViewConstraints#supportsOpacity} must be true for
      * using this method.
      */

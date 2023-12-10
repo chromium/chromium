@@ -72,7 +72,7 @@ void PasswordSharingRecipientsDownloader::Start(base::OnceClosure on_complete) {
   StartFetchingAccessToken();
 }
 
-absl::optional<sync_pb::PasswordSharingRecipientsResponse>
+std::optional<sync_pb::PasswordSharingRecipientsResponse>
 PasswordSharingRecipientsDownloader::TakeResponse() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return std::move(response_);

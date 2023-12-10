@@ -8,7 +8,6 @@
 
 #include "base/numerics/safe_conversions.h"
 #include "mojo/public/cpp/base/string16_mojom_traits.h"
-#include "mojo/public/cpp/bindings/array_traits_wtf_vector.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/mojom/blob/blob.mojom-blink.h"
 #include "third_party/blink/public/platform/web_blob_info.h"

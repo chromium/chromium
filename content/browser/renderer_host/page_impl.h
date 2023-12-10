@@ -40,7 +40,11 @@ class RenderFrameHostImpl;
 // Please refer to content/public/browser/page.h for more details.
 class CONTENT_EXPORT PageImpl : public Page {
  public:
-  explicit PageImpl(RenderFrameHostImpl& rfh, PageDelegate& delegate);
+  enum class ActivationType {
+    kPrerendering,
+    kPreview,
+  };
+  PageImpl(RenderFrameHostImpl& rfh, PageDelegate& delegate);
 
   ~PageImpl() override;
 
@@ -52,6 +56,12 @@ class CONTENT_EXPORT PageImpl : public Page {
   base::WeakPtr<Page> GetWeakPtr() override;
   bool IsPageScaleFactorOne() override;
   const std::string& GetContentsMimeType() const override;
+  void SetResizableForTesting(absl::optional<bool> resizable) override;
+  absl::optional<bool> GetResizable() override;
+
+  // Setter for the `window.setResizable(bool)` API's value defining whether the
+  // window can be resized or not. `absl::nullopt` means the value is not set.
+  void SetResizable(absl::optional<bool> resizable);
 
   base::WeakPtr<PageImpl> GetWeakPtrImpl();
 
@@ -137,13 +147,15 @@ class CONTENT_EXPORT PageImpl : public Page {
   // RenderFrameHostManager::CommitPending and remove this.
   void SetActivationStartTime(base::TimeTicks activation_start);
 
-  // Called during the prerender activation navigation. Sends an IPC to the
-  // RenderViews in the renderers, instructing them to transition their
-  // documents from prerendered to activated. Tells the corresponding
-  // RenderFrameHostImpls that the renderer will be activating their documents.
-  void ActivateForPrerendering(
+  // Called during the activation navigation. Sends an IPC to the RenderViews in
+  // the renderers, instructing them to transition their documents from
+  // prerendered to activated. Tells the corresponding RenderFrameHostImpls that
+  // the renderer will be activating their documents.
+  void Activate(
+      ActivationType type,
       StoredPage::RenderViewHostImplSafeRefSet& render_view_hosts_to_activate,
-      absl::optional<blink::ViewTransitionState> view_transition_state);
+      absl::optional<blink::ViewTransitionState> view_transition_state,
+      base::OnceCallback<void(base::TimeTicks)> completion_callback);
 
   // Prerender2:
   // Dispatches load events that were deferred to be dispatched after
@@ -188,7 +200,8 @@ class CONTENT_EXPORT PageImpl : public Page {
                                           double bits_to_charge);
 
  private:
-  void DidActivateAllRenderViewsForPrerendering();
+  void DidActivateAllRenderViewsForPrerenderingOrPreview(
+      base::OnceCallback<void(base::TimeTicks)> completion_callback);
 
   // This method is needed to ensure that PageImpl can both implement a Page's
   // method and define a new GetMainDocument(). Please refer to page.h for more
@@ -230,6 +243,10 @@ class CONTENT_EXPORT PageImpl : public Page {
 
   // Whether the first visually non-empty paint has occurred.
   bool did_first_visually_non_empty_paint_ = false;
+
+  // Stores the value set by `window.setResizable(bool)` API for whether the
+  // window can be resized or not. `absl::nullopt` means the value is not set.
+  absl::optional<bool> resizable_ = absl::nullopt;
 
   // The theme color for the underlying document as specified
   // by theme-color meta tag.
@@ -291,9 +308,9 @@ class CONTENT_EXPORT PageImpl : public Page {
   // which is passed to the renderer process, and will be accessible in the
   // prerendered page as PerformanceNavigationTiming.activationStart. Set after
   // navigation commit.
-  // TODO(falken): Plumb NavigationRequest to
+  // TODO(b:291867362): Plumb NavigationRequest to
   // RenderFrameHostManager::CommitPending and remove this.
-  absl::optional<base::TimeTicks> activation_start_time_for_prerendering_;
+  absl::optional<base::TimeTicks> activation_start_time_;
 
   // The resizing mode requested by Blink for the virtual keyboard.
   ui::mojom::VirtualKeyboardMode virtual_keyboard_mode_ =

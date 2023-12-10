@@ -2,11 +2,14 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="cy">
 <translation id="1178581264944972037">Seibio</translation>
-<translation id="2558806128245168542">Llywio yn ôl</translation>
-<translation id="3523426587027570423">Tapiwch i gau 'Gwrando ar y dudalen hon'.</translation>
+<translation id="1921351128855867012">Mynd ymlaen <ph name="NUMBER_OF_SECONDS" /> eiliad</translation>
+<translation id="1984328900355667246">Nid yw chwarae yn ôl ar gael</translation>
+<translation id="3023502830214299618">Yn anffodus, nid yw chwarae yn ôl ar gael ar gyfer y dudalen hon ar hyn o bryd. Rhowch gynnig arall arni'n nes ymlaen.</translation>
+<translation id="3807208219231826020">Sgrwbio'r Chwarae</translation>
+<translation id="385051799172605136">Nôl</translation>
 <translation id="4431240646217225907">Amlygu testun a sgrolio awtomatig</translation>
 <translation id="4654641641922242357">Chwaraewr 'Gwrando ar y dudalen hon'.</translation>
-<translation id="4731877163452936634">Cyflymder chwarae: <ph name="PLAYBACK_SPEED" />. Cliciwch i newid.</translation>
+<translation id="4872475766448853257">Mynd yn ôl <ph name="NUMBER_OF_SECONDS" /> eiliad</translation>
 <translation id="5234971936051226002">Chwaraewr 'Gwrando ar y dudalen hon' wedi'i leihau.</translation>
 <translation id="5596627076506792578">Rhagor o ddewisiadau</translation>
 <translation id="6315170314923504164">Llais</translation>
@@ -15,8 +18,8 @@
 <translation id="6831043979455480757">Cyfieithu</translation>
 <translation id="6846298663435243399">Yn llwytho…</translation>
 <translation id="7587250070160020374">Chrome nawr yn chwarae</translation>
-<translation id="7945822420239537236">Ymlaen <ph name="NUMBER_OF_SECONDS" /> eiliad</translation>
-<translation id="7972866381678406344">Yn ôl <ph name="NUMBER_OF_SECONDS" /> eiliad</translation>
 <translation id="8136852699834914183">Nid yw chwarae yn ôl ar gael ar gyfer y dudalen hon.</translation>
+<translation id="8264989794233974275"><ph name="PLAYBACK_SPEED" />x o gynnydd/gostyngiad cyflymder.</translation>
+<translation id="8407011429883244666">Cau'r chwaraewr.</translation>
 <translation id="8953618380150219653">Chwaraewr 'Gwrando ar y dudalen hon' wedi'i agor ar uchder llawn.</translation>
 </translationbundle>

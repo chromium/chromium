@@ -42,20 +42,15 @@
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_paths.h"
 #include "extensions/common/file_util.h"
-#include "extensions/common/identifiability_metrics.h"
 #include "extensions/test/test_extension_dir.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
-#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/test/test_url_loader_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/loader/referrer_utils.h"
-#include "third_party/blink/public/common/privacy_budget/identifiability_metrics.h"
-#include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
-#include "third_party/blink/public/common/privacy_budget/scoped_identifiability_test_sample_collector.h"
 
 using extensions::ExtensionRegistry;
 using network::mojom::URLLoader;
@@ -76,7 +71,7 @@ base::FilePath GetTestPath(const std::string& name) {
 
 base::FilePath GetContentVerifierTestPath() {
   base::FilePath path;
-  EXPECT_TRUE(base::PathService::Get(extensions::DIR_TEST_DATA, &path));
+  EXPECT_TRUE(base::PathService::Get(DIR_TEST_DATA, &path));
   return path.AppendASCII("content_hash_fetcher")
       .AppendASCII("different_sized_files");
 }
@@ -190,8 +185,7 @@ class ExtensionProtocolsTestBase : public testing::Test {
   explicit ExtensionProtocolsTestBase(bool force_incognito)
       : task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP),
         rvh_test_enabler_(new content::RenderViewHostTestEnabler()),
-        force_incognito_(force_incognito),
-        test_ukm_id_(ukm::SourceIdObj::New()) {}
+        force_incognito_(force_incognito) {}
 
   void SetUp() override {
     testing::Test::SetUp();
@@ -218,8 +212,8 @@ class ExtensionProtocolsTestBase : public testing::Test {
   }
 
   void SetProtocolHandler(bool is_incognito) {
-    loader_factory_.Bind(extensions::CreateExtensionNavigationURLLoaderFactory(
-        browser_context(), test_ukm_id_, false));
+    loader_factory_.Bind(
+        CreateExtensionNavigationURLLoaderFactory(browser_context(), false));
   }
 
   GetResult RequestOrLoad(const GURL& url,
@@ -288,22 +282,6 @@ class ExtensionProtocolsTestBase : public testing::Test {
     }
   }
 
-  void ExpectExtensionAccessResult(
-      scoped_refptr<Extension> extension,
-      const std::vector<
-          blink::test::ScopedIdentifiabilityTestSampleCollector::Entry>&
-          entries,
-      ExtensionResourceAccessResult expected) {
-    ASSERT_EQ(1u, entries.size());
-    EXPECT_EQ(test_ukm_id_.ToInt64(), entries[0].source);
-    ASSERT_EQ(1u, entries[0].metrics.size());
-    EXPECT_EQ(blink::IdentifiableSurface::FromTypeAndToken(
-                  blink::IdentifiableSurface::Type::kExtensionFileAccess,
-                  base::as_bytes(base::make_span(extension->id()))),
-              entries[0].metrics[0].surface);
-    EXPECT_EQ(blink::IdentifiableToken(expected), entries[0].metrics[0].value);
-  }
-
  protected:
   scoped_refptr<ContentVerifier> content_verifier_;
 
@@ -345,7 +323,6 @@ class ExtensionProtocolsTestBase : public testing::Test {
   std::unique_ptr<TestingProfile> testing_profile_;
   std::unique_ptr<content::WebContents> contents_;
   const bool force_incognito_;
-  const ukm::SourceIdObj test_ukm_id_;
 
   absl::optional<base::test::ScopedPowerMonitorTestSource>
       power_monitor_source_;
@@ -393,29 +370,19 @@ TEST_F(ExtensionProtocolsIncognitoTest, IncognitoRequest) {
     AddExtension(extension, cases[i].incognito_enabled, false);
 
     // First test a main frame request.
-    {
-      blink::test::ScopedIdentifiabilityTestSampleCollector metrics;
+    // It doesn't matter that the resource doesn't exist. If the resource
+    // is blocked, we should see BLOCKED_BY_CLIENT. Otherwise, the request
+    // should just fail because the file doesn't exist.
+    auto get_result =
+        RequestOrLoad(extension->GetResourceURL("404.html"),
+                      network::mojom::RequestDestination::kDocument);
 
-      // It doesn't matter that the resource doesn't exist. If the resource
-      // is blocked, we should see BLOCKED_BY_CLIENT. Otherwise, the request
-      // should just fail because the file doesn't exist.
-      auto get_result =
-          RequestOrLoad(extension->GetResourceURL("404.html"),
-                        network::mojom::RequestDestination::kDocument);
-
-      if (cases[i].should_allow_main_frame_load) {
-        EXPECT_EQ(net::ERR_FILE_NOT_FOUND, get_result.result())
-            << cases[i].name;
-      } else {
-        EXPECT_EQ(net::ERR_BLOCKED_BY_CLIENT, get_result.result())
-            << cases[i].name;
-      }
-
-      // Either way it's a failure to the outside.
-      ExpectExtensionAccessResult(extension, metrics.entries(),
-                                  ExtensionResourceAccessResult::kFailure);
+    if (cases[i].should_allow_main_frame_load) {
+      EXPECT_EQ(net::ERR_FILE_NOT_FOUND, get_result.result()) << cases[i].name;
+    } else {
+      EXPECT_EQ(net::ERR_BLOCKED_BY_CLIENT, get_result.result())
+          << cases[i].name;
     }
-
     // Subframe navigation requests are blocked in ExtensionNavigationThrottle
     // which isn't added in this unit test. This is tested in an integration
     // test in ExtensionResourceRequestPolicyTest.IframeNavigateToInaccessible.
@@ -444,8 +411,6 @@ TEST_F(ExtensionProtocolsTest, ComponentResourceRequest) {
 
   // First test it with the extension enabled.
   {
-    blink::test::ScopedIdentifiabilityTestSampleCollector metrics;
-
     auto get_result =
         RequestOrLoad(extension->GetResourceURL("webstore_icon_16.png"),
                       network::mojom::RequestDestination::kVideo);
@@ -453,16 +418,11 @@ TEST_F(ExtensionProtocolsTest, ComponentResourceRequest) {
     CheckForContentLengthHeader(get_result);
     EXPECT_EQ("image/png", get_result.GetResponseHeaderByName(
                                net::HttpRequestHeaders::kContentType));
-
-    ExpectExtensionAccessResult(extension, metrics.entries(),
-                                ExtensionResourceAccessResult::kSuccess);
   }
 
   // And then test it with the extension disabled.
   RemoveExtension(extension, UnloadedExtensionReason::DISABLE);
   {
-    blink::test::ScopedIdentifiabilityTestSampleCollector metrics;
-
     auto get_result =
         RequestOrLoad(extension->GetResourceURL("webstore_icon_16.png"),
                       network::mojom::RequestDestination::kVideo);
@@ -470,9 +430,6 @@ TEST_F(ExtensionProtocolsTest, ComponentResourceRequest) {
     CheckForContentLengthHeader(get_result);
     EXPECT_EQ("image/png", get_result.GetResponseHeaderByName(
                                net::HttpRequestHeaders::kContentType));
-
-    ExpectExtensionAccessResult(extension, metrics.entries(),
-                                ExtensionResourceAccessResult::kSuccess);
   }
 }
 
@@ -520,15 +477,10 @@ TEST_F(ExtensionProtocolsTest, AllowFrameRequests) {
   // explicitly listed in web_accessible_resources or same-origin to the parent
   // should not succeed.
   {
-    blink::test::ScopedIdentifiabilityTestSampleCollector metrics;
-
     auto get_result =
         RequestOrLoad(extension->GetResourceURL("test.dat"),
                       network::mojom::RequestDestination::kDocument);
     EXPECT_EQ(net::OK, get_result.result());
-
-    ExpectExtensionAccessResult(extension, metrics.entries(),
-                                ExtensionResourceAccessResult::kSuccess);
   }
 
   // Subframe navigation requests are blocked in ExtensionNavigationThrottle
@@ -537,14 +489,9 @@ TEST_F(ExtensionProtocolsTest, AllowFrameRequests) {
 
   // And subresource types, such as media, should fail.
   {
-    blink::test::ScopedIdentifiabilityTestSampleCollector metrics;
-
     auto get_result = RequestOrLoad(extension->GetResourceURL("test.dat"),
                                     network::mojom::RequestDestination::kVideo);
     EXPECT_EQ(net::ERR_BLOCKED_BY_CLIENT, get_result.result());
-
-    ExpectExtensionAccessResult(extension, metrics.entries(),
-                                ExtensionResourceAccessResult::kFailure);
   }
 }
 
@@ -705,7 +652,7 @@ TEST_F(ExtensionProtocolsTest, VerifyScriptListedAsIcon) {
   base::FilePath unzipped_path = temp_dir.GetPath();
 
   base::FilePath path;
-  EXPECT_TRUE(base::PathService::Get(extensions::DIR_TEST_DATA, &path));
+  EXPECT_TRUE(base::PathService::Get(DIR_TEST_DATA, &path));
 
   scoped_refptr<Extension> extension =
       content_verifier_test_utils::UnzipToDirAndLoadExtension(

@@ -8,7 +8,7 @@ import {COLOR_PROVIDER_CHANGED, ColorChangeUpdater} from '//resources/cr_compone
 
 import {assertCast, MessagePipe} from './message_pipe.js';
 import {EditInPhotosMessage, FileContext, IsFileArcWritableMessage, IsFileArcWritableResponse, IsFileBrowserWritableMessage, IsFileBrowserWritableResponse, LoadFilesMessage, Message, OpenAllowedFileMessage, OpenAllowedFileResponse, OpenFilesWithPickerMessage, OverwriteFileMessage, OverwriteViaFilePickerResponse, RenameFileResponse, RenameResult, RequestSaveFileMessage, RequestSaveFileResponse, SaveAsMessage, SaveAsResponse} from './message_types.js';
-import {untrustedPageHandler} from './mojo_api_bootstrap_untrusted.js';
+import {ocrCallbackRouter} from './mojo_api_bootstrap_untrusted.js';
 import {loadPiex} from './piex_module_loader.js';
 
 /** A pipe through which we can send messages to the parent frame. */
@@ -319,6 +319,20 @@ parentMessagePipe.registerHandler(Message.LOAD_EXTRA_FILES, async (message) => {
 // As soon as the LOAD_FILES handler is installed, signal readiness to the
 // parent frame (privileged context).
 parentMessagePipe.sendMessage(Message.IFRAME_READY);
+
+ocrCallbackRouter.setViewport.addListener(
+    (viewportBox) => {
+      const app = getApp();
+      if (app) {
+        app.setViewport(/** @type {!mediaApp.Rect} */ ({
+          left: viewportBox.x,
+          top: viewportBox.y,
+          width: viewportBox.width,
+          height: viewportBox.height,
+        }));
+      }
+    },
+);
 
 /**
  * A delegate which exposes privileged WebUI functionality to the media

@@ -2,6 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// This should match the DialogButton enum in browser_protocol.pdl
+enum DialogButton {
+  "ConfirmIdpLoginContinue",
+  "ErrorGotIt",
+  "ErrorMoreDetails",
+};
+
 [
   ImplementedAs=InternalsFedCm
 ] partial interface Internals {
@@ -9,5 +16,5 @@
   [CallWith=ScriptState] Promise<DOMString> getFedCmTitle();
   [CallWith=ScriptState, RaisesException] Promise<void> selectFedCmAccount(long accountIndex);
   [CallWith=ScriptState] Promise<void> dismissFedCmDialog();
-  [CallWith=ScriptState] Promise<void> confirmIdpLogin();
+  [CallWith=ScriptState] Promise<void> clickFedCmDialogButton(DialogButton dialogButton);
 };

@@ -1,0 +1,62 @@
+<style include="md-select settings-shared input-device-settings-shared">
+  iron-list {
+    max-height: 50vh;
+    width: 200px;
+  }
+
+  #menuContainer {
+    background-color: var(--cros-bg-color-elevation-3);
+    border-radius: 2px;
+    box-shadow: var(--cr-elevation-3);
+    outline: 1px solid var(--cros-separator-color);
+    display: table;
+  }
+
+  .label-container {
+    display: flex;
+    gap: 8px;
+    line-height: 16px;
+  }
+
+  .label-container > iron-icon {
+    --iron-icon-height: 16px;
+    --iron-icon-width: 16px;
+  }
+
+  .md-select {
+    background-position-x: 175px;
+    padding: 10px 16px;
+    width: 168px;
+  }
+</style>
+<div tabindex="0" id="selectDropdown"
+    class="md-select label-container"
+    on-click="showDropdownMenu_">
+  <template is="dom-if" if="[[remappedToKeyCombination_]]">
+    <template is="dom-repeat" items="[[inputKeys_]]">
+      <template is="dom-if" if="[[getIconIdForKey_(item)]]">
+        <iron-icon icon="[[getIconIdForKey_(item)]]"
+            aria-hidden="true">
+        </iron-icon>
+      </template>
+      <template is="dom-if" if="[[!getIconIdForKey_(item)]]">
+        <span>[[item]]</span>
+      </template>
+    </template>
+  </template>
+  <template is="dom-if" if="[[!remappedToKeyCombination_]]">
+    [[label_]]
+  </template>
+</div>
+<iron-dropdown opened="[[shouldShowDropdownMenu_]]"
+    no-cancel-on-outside-click>
+  <div id="menuContainer" slot="dropdown-content">
+    <iron-list items="[[menu]]">
+      <template>
+        <customize-button-dropdown-item option="[[item]]"
+            selected="[[isItemSelected_(item, selectedItem)]]">
+        </customize-button-dropdown-item>
+      </template>
+    </iron-list>
+  </div>
+</iron-dropdown>

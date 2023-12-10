@@ -30,6 +30,7 @@
 <translation id="2226276347425096477">Mae angen cwtogi'r testun hwn i <ph name="MAX_CHARACTERS" /> o nodau neu lai (rydych yn defnyddio <ph name="CURRENT_LENGTH" /> nod ar hyn o bryd).</translation>
 <translation id="2247351761944213033">Wythnos <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Olrhain <ph name="NUMBER" /></translation>
+<translation id="2353297238722298836">Caniateir y camera a'r meicroffon</translation>
 <translation id="2393030564806080191">Gwerth lliw hecsadegol</translation>
 <translation id="2398813069815436052">cafodd deialog ei agor.</translation>
 <translation id="245932805758469625">nifer yr eiliadau o fideo sydd ar ôl</translation>
@@ -60,10 +61,12 @@
 <translation id="3822383571486410024">Estynnwch y testun hwn i <ph name="MIN_CHARACTERS" /> nod neu fwy (rydych yn defnyddio <ph name="CURRENT_LENGTH" /> nod ar hyn o bryd).</translation>
 <translation id="383465348367842624">Ni ddylai rhan sy'n dilyn '<ph name="ATSIGN" />' gynnwys y symbol '<ph name="INVALIDCHARACTER" />'.</translation>
 <translation id="3846214748874656680">Gadael y sgrîn lawn</translation>
+<translation id="4031179711345676612">Caniateir meicroffon</translation>
 <translation id="4103419683916926126">Milieiliadau</translation>
 <translation id="4201051445878709314">Dangos y mis blaenorol</translation>
 <translation id="4360991593054037559">Rhowch werth dilys. Y ddau werth dilys agosaf yw <ph name="VALID_VALUE_LOW" /> a <ph name="VALID_VALUE_HIGHER" />.</translation>
 <translation id="4522570452068850558">Manylion</translation>
+<translation id="4663373278480897665">Caniateir camera</translation>
 <translation id="4664250907885839816">Ni ddylai rhan sy'n dilyn '<ph name="ATSIGN" />' gynnwys y symbol '<ph name="INVALIDCHARACTER" />'.</translation>
 <translation id="4718048029184481307">Wrthi'n chwarae llun-mewn-llun</translation>
 <translation id="4748357248530471599">toglo dangos llun torri sgrîn lawn</translation>
@@ -137,6 +140,7 @@
 <translation id="6941933287844615239">lawrlwytho cyfryngau</translation>
 <translation id="698788488269350478">wedi'i ehangu.</translation>
 <translation id="6989848892321993519">Estynnwch y testun hwn i <ph name="MIN_CHARACTERS" /> nod neu fwy (rydych yn defnyddio 1 nod ar hyn o bryd).</translation>
+<translation id="7080893216867146095">Caniateir rhannu lleoliad</translation>
 <translation id="709897737746224366">Defnyddiwch y fformat y gofynnwyd amdano.</translation>
 <translation id="7102274145889307184">lleoliad presennol</translation>
 <translation id="7263440858009898357">Dewiswch eitem yn y rhestr.</translation>

@@ -1,0 +1,3 @@
+This is a testharness.js-based test.
+Harness Error. harness_status.status = 1 , harness_status.message = Traceback (most recent call last):\n  File "/b/s/w/ir/third_party/wpt_tools/wpt/tools/wptrunner/wptrunner/executors/executorwebdriver.py", line 511, in run_func\n    self.result = True, self.func(self.protocol, self.url, self.timeout)\n  File "/b/s/w/ir/third_party/wpt_tools/wpt/tools/wptrunner/wptrunner/executors/executorwebdriver.py", line 612, in do_testharness\n    done, rv = handler(result)\n  File "/b/s/w/ir/third_party/wpt_tools/wpt/tools/wptrunner/wptrunner/executors/base.py", line 732, in __call__\n    url, command, payload = result\nTypeError: cannot unpack non-iterable NoneType object\n
+Harness: the test ran to completion.

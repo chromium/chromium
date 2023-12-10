@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/lazy_instance.h"
+#include "base/logging.h"
 
 using base::android::JavaParamRef;
 using base::android::JavaRef;

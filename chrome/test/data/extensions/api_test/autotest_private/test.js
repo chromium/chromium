@@ -1550,17 +1550,33 @@ var holdingSpaceTests = [
 ];
 
 var isFieldTrialActiveTests = [
-  function getActiveTrial() {
-    chrome.autotestPrivate.isFieldTrialActive("ActiveTrialForTest",
-      chrome.test.callbackPass(enabled => {
-        chrome.test.assertTrue(enabled);
-      }));
+  function getActiveTrialActiveGroup() {
+    chrome.autotestPrivate.isFieldTrialActive(
+        'ActiveTrialForTest', 'GroupForTest',
+        chrome.test.callbackPass(enabled => {
+          chrome.test.assertTrue(enabled);
+        }));
+  },
+  function getActiveTrialInactiveGroup() {
+    chrome.autotestPrivate.isFieldTrialActive(
+        'ActiveTrialForTest', 'WrongGroupForTest',
+        chrome.test.callbackPass(enabled => {
+          chrome.test.assertFalse(enabled);
+        }));
   },
   function getInactiveTrial() {
-    chrome.autotestPrivate.isFieldTrialActive("InactiveTrialForTest",
-      chrome.test.callbackPass(enabled => {
-        chrome.test.assertFalse(enabled);
-      }));
+    chrome.autotestPrivate.isFieldTrialActive(
+        'InactiveTrialForTest', 'GroupForTest',
+        chrome.test.callbackPass(enabled => {
+          chrome.test.assertFalse(enabled);
+        }));
+  }
+];
+
+var clearAllowedPrefTests = [
+  function clearAllowedPrefs(pref_name) {
+    chrome.autotestPrivate.clearAllowedPref(pref_name,
+        chrome.test.callbackPass());
   }
 ];
 
@@ -1653,6 +1669,7 @@ var systemWebAppsTests = [
       'lacrosEnabled': lacrosEnabledTests,
       'launcherSearchBoxState': launcherSearchBoxStateTests,
       'isFieldTrialActive': isFieldTrialActiveTests,
+      'clearAllowedPref': clearAllowedPrefTests
     };
 
 chrome.test.getConfig(function(config) {

@@ -29,6 +29,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/color_palette.h"
@@ -73,6 +74,15 @@ bool ShouldShowPlaceholder(PrefService* prefs) {
     return true;
   }
 
+  // If the model is empty and the holding space wallpaper nudge is enabled,
+  // then we need to show the placeholder so that there is something when the
+  // user clicks the force-shown tray.
+  if (features::IsHoldingSpaceWallpaperNudgeEnabled() &&
+      HoldingSpaceController::Get()->model() &&
+      HoldingSpaceController::Get()->model()->items().empty()) {
+    return true;
+  }
+
   // The placeholder should only be shown if:
   // * a holding space item has been added at some point in time,
   // * a holding space item has *never* been pinned, and
@@ -97,6 +107,8 @@ std::u16string GetPlaceholderText(bool drive_disabled) {
 // FilesAppChip ----------------------------------------------------------------
 
 class FilesAppChip : public views::Button {
+  METADATA_HEADER(FilesAppChip, views::Button)
+
  public:
   explicit FilesAppChip(views::Button::PressedCallback pressed_callback)
       : views::Button(std::move(pressed_callback)) {
@@ -165,6 +177,9 @@ class FilesAppChip : public views::Button {
   }
 };
 
+BEGIN_METADATA(FilesAppChip, views::Button)
+END_METADATA
+
 }  // namespace
 
 // PinnedFilesSection ----------------------------------------------------------
@@ -176,10 +191,6 @@ PinnedFilesSection::PinnedFilesSection(HoldingSpaceViewDelegate* delegate)
 }
 
 PinnedFilesSection::~PinnedFilesSection() = default;
-
-const char* PinnedFilesSection::GetClassName() const {
-  return "PinnedFilesSection";
-}
 
 gfx::Size PinnedFilesSection::GetMinimumSize() const {
   // The pinned files section is scrollable so can be laid out smaller than its
@@ -287,5 +298,8 @@ void PinnedFilesSection::OnFilesAppChipPressed(const ui::Event& event) {
     delegate()->UpdateTrayVisibility();
   }
 }
+
+BEGIN_METADATA(PinnedFilesSection, HoldingSpaceItemViewsSection)
+END_METADATA
 
 }  // namespace ash

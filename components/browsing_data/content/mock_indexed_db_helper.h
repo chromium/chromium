@@ -24,7 +24,7 @@ namespace browsing_data {
 // Mock for IndexedDBHelper.
 // Use AddIndexedDBSamples() or add directly to response_ list, then
 // call Notify().
-class MockIndexedDBHelper : public IndexedDBHelper {
+class MockIndexedDBHelper : public CannedIndexedDBHelper {
  public:
   explicit MockIndexedDBHelper(content::StoragePartition* storage_partition);
 

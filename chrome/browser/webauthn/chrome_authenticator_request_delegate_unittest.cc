@@ -404,7 +404,7 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, CableConfiguration) {
           content::AuthenticatorRequestClientDelegate::RequestSource::
               kWebAuthentication,
           test.request_type, test.resident_key_requirement, test.extensions,
-          &discovery_factory);
+          /*is_enclave_authenticator_available=*/false, &discovery_factory);
 
       switch (windows_has_hybrid == kWinHybridNoPasskeySyncing
                   ? test.expected_result_with_system_hybrid
@@ -459,12 +459,13 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, NoExtraDiscoveriesWithoutUI) {
       delegate.DisableUI();
     }
     MockCableDiscoveryFactory discovery_factory;
-    delegate.ConfigureDiscoveries(url::Origin::Create(GURL(origin)), origin,
-                                  content::AuthenticatorRequestClientDelegate::
-                                      RequestSource::kWebAuthentication,
-                                  device::FidoRequestType::kMakeCredential,
-                                  device::ResidentKeyRequirement::kPreferred,
-                                  {}, &discovery_factory);
+    delegate.ConfigureDiscoveries(
+        url::Origin::Create(GURL(origin)), origin,
+        content::AuthenticatorRequestClientDelegate::RequestSource::
+            kWebAuthentication,
+        device::FidoRequestType::kMakeCredential,
+        device::ResidentKeyRequirement::kPreferred, {},
+        /*is_enclave_authenticator_available=*/false, &discovery_factory);
 
     EXPECT_EQ(discovery_factory.qr_key.has_value(), !disable_ui);
     EXPECT_EQ(discovery_factory.aoa_configured, !disable_ui);
@@ -592,7 +593,7 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, GpmPasskeys) {
       device::FidoRequestType::kGetAssertion,
       /*resident_key_requirement=*/absl::nullopt,
       /*pairings_from_extension=*/std::vector<device::CableDiscoveryData>(),
-      &discovery_factory);
+      /*is_enclave_authenticator_available=*/false, &discovery_factory);
 
   // Add a synced passkey for example.com and another for othersite.com.
   webauthn::PasskeyModel* passkey_model =
@@ -654,7 +655,7 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, GpmPasskeys_NoSyncPairedPhones) {
       device::FidoRequestType::kGetAssertion,
       /*resident_key_requirement=*/absl::nullopt,
       /*pairings_from_extension=*/std::vector<device::CableDiscoveryData>(),
-      &discovery_factory);
+      /*is_enclave_authenticator_available=*/false, &discovery_factory);
 
   // Add a synced passkey for example.com.
   webauthn::PasskeyModel* passkey_model =
@@ -707,7 +708,7 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, GpmPasskeys_ShadowedPasskeys) {
       device::FidoRequestType::kGetAssertion,
       /*resident_key_requirement=*/absl::nullopt,
       /*pairings_from_extension=*/std::vector<device::CableDiscoveryData>(),
-      &discovery_factory);
+      /*is_enclave_authenticator_available=*/false, &discovery_factory);
 
   // Add a synced passkey for example.com and another that shadows it.
   webauthn::PasskeyModel* passkey_model =

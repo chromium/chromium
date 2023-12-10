@@ -4,10 +4,9 @@
 import 'chrome://resources/cr_components/app_management/toggle_row.js';
 
 import {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
-import {AppManagementUserAction, OptionalBool} from 'chrome://resources/cr_components/app_management/constants.js';
+import {AppManagementUserAction} from 'chrome://resources/cr_components/app_management/constants.js';
 import {AppManagementToggleRowElement} from 'chrome://resources/cr_components/app_management/toggle_row.js';
-import {convertOptionalBoolToBool, recordAppManagementUserAction, toggleOptionalBool} from 'chrome://resources/cr_components/app_management/util.js';
-import {assert} from 'chrome://resources/js/assert.js';
+import {recordAppManagementUserAction} from 'chrome://resources/cr_components/app_management/util.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {castExists} from '../../assert_extras.js';
@@ -55,7 +54,7 @@ export class AppManagementPinToShelfItemElement extends PolymerElement {
   }
 
   private getValue_(app: App): boolean {
-    return app.isPinned === OptionalBool.kTrue;
+    return !!app.isPinned;
   }
 
   private isAvailable_(app: App): boolean {
@@ -63,19 +62,17 @@ export class AppManagementPinToShelfItemElement extends PolymerElement {
   }
 
   private isManaged_(app: App): boolean {
-    return app.isPolicyPinned === OptionalBool.kTrue;
+    return !!app.isPolicyPinned;
   }
 
   private toggleSetting_(): void {
-    const newState = castExists(toggleOptionalBool(this.app.isPinned));
-    const newStateBool = convertOptionalBoolToBool(newState);
-    assert(newStateBool === this.getToggleRow_().isChecked());
+    const newState = this.getToggleRow_().isChecked();
     AppManagementBrowserProxy.getInstance().handler.setPinned(
         this.app.id,
         newState,
     );
     recordSettingChange();
-    const userAction = newStateBool ?
+    const userAction = newState ?
         AppManagementUserAction.PIN_TO_SHELF_TURNED_ON :
         AppManagementUserAction.PIN_TO_SHELF_TURNED_OFF;
     recordAppManagementUserAction(this.app.type, userAction);

@@ -6,12 +6,12 @@
 #define CHROME_BROWSER_ASH_APP_MODE_KIOSK_SYSTEM_SESSION_H_
 
 #include <memory>
+#include <optional>
 
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/ash/app_mode/metrics/low_disk_metrics_service.h"
 #include "chrome/browser/ash/app_mode/metrics/periodic_metrics_service.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_browser_session.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -25,7 +25,7 @@ class KioskSystemSession {
   explicit KioskSystemSession(
       Profile* profile,
       const KioskAppId& kiosk_app_id,
-      const absl::optional<std::string>& app_name = absl::nullopt);
+      const std::optional<std::string>& app_name = std::nullopt);
   KioskSystemSession(const KioskSystemSession&) = delete;
   KioskSystemSession& operator=(const KioskSystemSession&) = delete;
   ~KioskSystemSession();
@@ -46,7 +46,7 @@ class KioskSystemSession {
   class LacrosWatcher;
 
   void InitForChromeAppKiosk();
-  void InitForWebKiosk(const absl::optional<std::string>& app_name);
+  void InitForWebKiosk(const std::optional<std::string>& app_name);
 
   // Initialize the Kiosk app update service. The external update will be
   // triggered if a USB stick is used.

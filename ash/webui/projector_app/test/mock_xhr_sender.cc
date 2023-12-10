@@ -19,12 +19,12 @@ MockXhrSender::~MockXhrSender() = default;
 void MockXhrSender::Send(
     const GURL& url,
     projector::mojom::RequestType method,
-    const absl::optional<std::string>& request_body,
+    const std::optional<std::string>& request_body,
     bool use_credentials,
     bool use_api_key,
     SendRequestCallback callback,
-    const absl::optional<base::flat_map<std::string, std::string>>& headers,
-    const absl::optional<std::string>& account_email) {
+    const std::optional<base::flat_map<std::string, std::string>>& headers,
+    const std::optional<std::string>& account_email) {
   std::move(quit_closure_).Run(url, method, request_body);
 }
 }  // namespace ash

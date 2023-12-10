@@ -39,8 +39,11 @@ public final class BackPressHelper {
      * possible.
      */
     @Deprecated
-    public static void create(LifecycleOwner lifecycleOwner, OnBackPressedDispatcher dispatcher,
-            ObsoleteBackPressedHandler handler, @SecondaryActivity int activity) {
+    public static void create(
+            LifecycleOwner lifecycleOwner,
+            OnBackPressedDispatcher dispatcher,
+            ObsoleteBackPressedHandler handler,
+            @SecondaryActivity int activity) {
         new BackPressHelper(lifecycleOwner, dispatcher, handler, activity);
     }
 
@@ -52,15 +55,19 @@ public final class BackPressHelper {
      * @param handler {@link BackPressHandler} observing back press state and consuming back press.
      * @param activity {@link SecondaryActivity} handling the back press.
      */
-    public static void create(LifecycleOwner lifecycleOwner, OnBackPressedDispatcher dispatcher,
-            BackPressHandler handler, @SecondaryActivity int activity) {
-        var callback = new OnBackPressedCallback(/* enabled */ false) {
-            @Override
-            public void handleOnBackPressed() {
-                SecondaryActivityBackPressUma.record(activity);
-                handler.handleBackPress();
-            }
-        };
+    public static void create(
+            LifecycleOwner lifecycleOwner,
+            OnBackPressedDispatcher dispatcher,
+            BackPressHandler handler,
+            @SecondaryActivity int activity) {
+        var callback =
+                new OnBackPressedCallback(/* enabled= */ false) {
+                    @Override
+                    public void handleOnBackPressed() {
+                        SecondaryActivityBackPressUma.record(activity);
+                        handler.handleBackPress();
+                    }
+                };
         handler.getHandleBackPressChangedSupplier().addObserver(callback::setEnabled);
         dispatcher.addCallback(lifecycleOwner, callback);
     }
@@ -78,8 +85,11 @@ public final class BackPressHelper {
      * press.
      * @param activity {@link SecondaryActivity} handling the back press.
      */
-    public static void create(LifecycleOwner lifecycleOwner, OnBackPressedDispatcher dispatcher,
-            BackPressHandler[] handlers, @SecondaryActivity int activity) {
+    public static void create(
+            LifecycleOwner lifecycleOwner,
+            OnBackPressedDispatcher dispatcher,
+            BackPressHandler[] handlers,
+            @SecondaryActivity int activity) {
         // OnBackPressedDispatcher triggers handlers in a reversed order.
         for (int i = handlers.length - 1; i >= 0; i--) {
             create(lifecycleOwner, dispatcher, handlers[i], activity);
@@ -102,17 +112,22 @@ public final class BackPressHelper {
         dispatcher.onBackPressed();
     }
 
-    private BackPressHelper(LifecycleOwner lifecycleOwner, OnBackPressedDispatcher dispatcher,
-            ObsoleteBackPressedHandler handler, @SecondaryActivity int activity) {
-        dispatcher.addCallback(lifecycleOwner, new OnBackPressedCallback(true) {
-            @Override
-            public void handleOnBackPressed() {
-                if (handler.onBackPressed()) {
-                    SecondaryActivityBackPressUma.record(activity);
-                } else {
-                    onBackPressed(dispatcher, this);
-                }
-            }
-        });
+    private BackPressHelper(
+            LifecycleOwner lifecycleOwner,
+            OnBackPressedDispatcher dispatcher,
+            ObsoleteBackPressedHandler handler,
+            @SecondaryActivity int activity) {
+        dispatcher.addCallback(
+                lifecycleOwner,
+                new OnBackPressedCallback(true) {
+                    @Override
+                    public void handleOnBackPressed() {
+                        if (handler.onBackPressed()) {
+                            SecondaryActivityBackPressUma.record(activity);
+                        } else {
+                            onBackPressed(dispatcher, this);
+                        }
+                    }
+                });
     }
 }

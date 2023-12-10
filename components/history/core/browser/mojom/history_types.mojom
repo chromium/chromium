@@ -7,45 +7,14 @@ module history.mojom;
 import "mojo/public/mojom/base/time.mojom";
 import "url/mojom/url.mojom";
 
-// Represents a session from other devices that holds a session and other
-// metadata to be displayed on pages such as NTP.
-struct Session {
-  // Id for a sync client. Used to look up session in session map.
-  // See components/sync_sessions/synced_session_tracker.cc.
-  string tag;
-
-  // Name of session to be displayed on surfaces such as NTP.
-  string name;
-
-  // Relative time from last access in ms.
-  mojo_base.mojom.TimeDelta modified_time;
-
-  // Time of last access.
-  mojo_base.mojom.Time timestamp;
-
-  // Whether the windows are collapsed.
-  bool collapsed;
-
-  // Windows associated with a session.
-  array<Window> windows;
-};
-
-// Represent a window which contains tabs from other devices.
-struct Window {
-  // Last active time.
-  mojo_base.mojom.Time timestamp;
-
-  // Id of related session.
-  uint32 session_id;
-
-  // Tabs associated with the window.
-  array<Tab> tabs;
-};
-
 // Represents a tab generated from synced sessions.
 struct Tab {
-  // Id corresponding to related window.
-  uint32 window_id;
+  // Id for a sync client. Used to look up session in session map.
+  // See components/sync_sessions/synced_session_tracker.cc.
+  string session_tag;
+
+  // Name of session to be displayed on surfaces such as NTP.
+  string session_name;
 
   // URL of tab for display.
   url.mojom.Url url;
@@ -53,6 +22,6 @@ struct Tab {
   // String to display.
   string title;
 
-  // Last active time.
-  mojo_base.mojom.Time timestamp;
+  // Relative time to display. e.g. 2 hours ago
+  string relative_time;
 };

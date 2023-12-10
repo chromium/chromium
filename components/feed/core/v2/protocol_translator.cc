@@ -229,6 +229,35 @@ absl::optional<ConvertedDataOperation> TranslateDataOperationInternal(
   return result;
 }
 
+// Returns StreamStructure to append a feature.
+feedstore::StreamStructure FeatureStreamStructure(int id) {
+  feedstore::StreamStructure feature;
+  feature.set_type(feedstore::StreamStructure::CONTENT);
+  feature.set_operation(feedstore::StreamStructure::UPDATE_OR_APPEND);
+
+  feedwire::ContentId content;
+  content.set_id(id);
+  content.set_type(ContentId::FEATURE);
+
+  *feature.mutable_content_id() = content;
+  return feature;
+}
+
+// Returns StreamStructure to append a root stream.
+feedstore::StreamStructure RootStreamStructure(int id) {
+  feedstore::StreamStructure root;
+  root.set_type(feedstore::StreamStructure::STREAM);
+  root.set_operation(feedstore::StreamStructure::UPDATE_OR_APPEND);
+  root.set_is_root(true);
+
+  feedwire::ContentId content_id;
+  content_id.set_id(id);
+  content_id.set_type(ContentId::TYPE_UNDEFINED);
+
+  *root.mutable_content_id() = content_id;
+  return root;
+}
+
 }  // namespace
 
 StreamModelUpdateRequest::StreamModelUpdateRequest() = default;
@@ -389,6 +418,42 @@ RefreshResponseData TranslateWireResponse(
   response_data.discover_personalization_enabled =
       chrome_response_metadata.discover_personalization_enabled();
 
+  return response_data;
+}
+
+RefreshResponseData TranslateWireResponse(
+    supervised_user::GetDiscoverFeedResponse response,
+    StreamModelUpdateRequest::Source source,
+    const AccountInfo& account_info,
+    base::Time current_time) {
+  auto result = std::make_unique<StreamModelUpdateRequest>();
+  result->source = source;
+
+  feedstore::StreamStructure root = RootStreamStructure(/*id=*/1);
+  feedwire::ContentId root_content_id = root.content_id();
+  result->stream_structures.push_back(std::move(root));
+  // TODO(b/306594797): Use unique identifier sent by the server once this has
+  // been configured.
+  int result_id = 2;
+  for (supervised_user::RenderedResult supervised_result :
+       response.discover_feed().rendered_result()) {
+    feedstore::StreamStructure stream_structure =
+        FeatureStreamStructure(result_id);
+    *stream_structure.mutable_parent_id() = root_content_id;
+
+    feedstore::Content content;
+    content.set_allocated_frame(supervised_result.release_elements_output());
+    *content.mutable_content_id() = stream_structure.content_id();
+
+    result->stream_structures.push_back(std::move(stream_structure));
+    result->content.push_back(std::move(content));
+    result_id++;
+  }
+
+  RefreshResponseData response_data;
+  response_data.model_update_request = std::move(result);
+  response_data.last_fetch_timestamp = current_time;
+  response_data.discover_personalization_enabled = false;
   return response_data;
 }
 

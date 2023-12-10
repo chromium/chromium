@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/core/dom/node_traversal.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/dom/whitespace_attacher.h"
+#include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
 #include "third_party/blink/renderer/core/layout/layout_text_fragment.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_inline_text.h"
@@ -143,8 +144,8 @@ Text* Text::splitText(unsigned offset, ExceptionState& exception_state) {
 
   // [NewObject] must always create a new wrapper.  Check that a wrapper
   // does not exist yet.
-  DCHECK(
-      DOMDataStore::GetWrapper(new_text, v8::Isolate::GetCurrent()).IsEmpty());
+  DCHECK(DOMDataStore::GetWrapper(new_text, GetDocument().GetAgent().isolate())
+             .IsEmpty());
 
   return new_text;
 }

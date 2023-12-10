@@ -19,14 +19,11 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManager;
-import org.chromium.chrome.browser.xsurface.ColorProvider;
 import org.chromium.chrome.browser.xsurface.ImageFetchClient;
 import org.chromium.chrome.browser.xsurface.ProcessScopeDependencyProvider;
 import org.chromium.components.version_info.VersionConstants;
 
-/**
- * Provides logging and context for all surfaces.
- */
+/** Provides logging and context for all surfaces. */
 @JNINamespace("feed::android")
 public class FeedProcessScopeDependencyProvider implements ProcessScopeDependencyProvider {
     private static final String FEED_SPLIT_NAME = "feedv2";
@@ -46,9 +43,10 @@ public class FeedProcessScopeDependencyProvider implements ProcessScopeDependenc
         mPrivacyPreferencesManager = privacyPreferencesManager;
         mApiKey = apiKey;
         if (BundleUtils.isIsolatedSplitInstalled(FEED_SPLIT_NAME)) {
-            mLibraryResolver = (libName) -> {
-                return BundleUtils.getNativeLibraryPath(libName, FEED_SPLIT_NAME);
-            };
+            mLibraryResolver =
+                    (libName) -> {
+                        return BundleUtils.getNativeLibraryPath(libName, FEED_SPLIT_NAME);
+                    };
         }
     }
 
@@ -74,8 +72,7 @@ public class FeedProcessScopeDependencyProvider implements ProcessScopeDependenc
 
     @Override
     public void postTask(int taskType, Runnable task, long delayMs) {
-        @TaskTraits
-        int traits;
+        @TaskTraits int traits;
         switch (taskType) {
             case ProcessScopeDependencyProvider.TASK_TYPE_UI_THREAD:
                 traits = TaskTraits.UI_DEFAULT;
@@ -130,7 +127,7 @@ public class FeedProcessScopeDependencyProvider implements ProcessScopeDependenc
         return ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
                 ChromeFeatureList.FEED_IMAGE_MEMORY_CACHE_SIZE_PERCENTAGE,
                 "image_memory_cache_size_percentage",
-                /*default=*/100);
+                /* default= */ 100);
     }
 
     @Override
@@ -138,7 +135,7 @@ public class FeedProcessScopeDependencyProvider implements ProcessScopeDependenc
         return ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
                 ChromeFeatureList.FEED_IMAGE_MEMORY_CACHE_SIZE_PERCENTAGE,
                 "bitmap_pool_size_percentage",
-                /*default=*/100);
+                /* default= */ 100);
     }
 
     @Override
@@ -208,14 +205,6 @@ public class FeedProcessScopeDependencyProvider implements ProcessScopeDependenc
         return sEnableAppFlowDebugging;
     }
 
-    @Override
-    public ColorProvider getColorProvider() {
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.FEED_DYNAMIC_COLORS)) {
-            return new ColorProviderImpl(mContext);
-        }
-        return null;
-    }
-
     @VisibleForTesting
     public static void setEnableAppFlowDebugging(boolean enable) {
         sEnableAppFlowDebugging = enable;
@@ -225,7 +214,9 @@ public class FeedProcessScopeDependencyProvider implements ProcessScopeDependenc
     @NativeMethods
     public interface Natives {
         int[] getExperimentIds();
+
         String getSessionId();
+
         void processViewAction(byte[] actionData, byte[] loggingParameters);
     }
 }

@@ -41,6 +41,7 @@ enum Setting {
   kWifiHidden = 29,
   kHotspotOnOff = 30,
   kHotspotAutoDisabled = 31,
+  kCellularAddApn = 32,
 
   // Bluetooth section.
   kBluetoothOnOff = 100,

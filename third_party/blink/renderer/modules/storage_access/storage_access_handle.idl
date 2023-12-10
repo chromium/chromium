@@ -10,8 +10,8 @@ interface StorageAccessHandle {
     [LogActivity=GetterOnly, RaisesException=Getter] readonly attribute LockManager locks;
     [LogActivity=GetterOnly, RaisesException=Getter] readonly attribute CacheStorage caches;
     [CallWith=ScriptState, LogActivity, RaisesException] Promise<FileSystemDirectoryHandle> getDirectory();
-    // TODO(crbug.com/1484966): Add quota
-    // TODO(crbug.com/1484966): Add blob storage
-    // TODO(crbug.com/1484966): Add broadcast channel
-    // TODO(crbug.com/1484966): Add shared worker
+    [CallWith=ScriptState, LogActivity, RaisesException] Promise<StorageEstimate> estimate();
+    [LogActivity, RaisesException] DOMString createObjectURL(Blob blob);
+    [LogActivity, RaisesException] void revokeObjectURL(DOMString url);
+    [CallWith=ExecutionContext, LogActivity, RaisesException] BroadcastChannel BroadcastChannel(DOMString name);
 };

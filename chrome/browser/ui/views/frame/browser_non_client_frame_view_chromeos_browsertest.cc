@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/apps/app_service/app_registry_cache_waiter.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/sessions/session_restore_test_helper.h"
 #include "chrome/browser/sessions/session_service_test_helper.h"
@@ -17,13 +18,13 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/prevent_close_test_base.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view.h"
 #include "chrome/browser/ui/views/frame/browser_non_client_frame_view_chromeos_test_utils.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_tester.h"
+#include "chrome/browser/web_applications/test/prevent_close_test_base.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -32,6 +33,7 @@
 #include "chromeos/ui/frame/caption_buttons/frame_size_button.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
+#include "components/services/app_service/public/cpp/app_update.h"
 #include "content/public/test/browser_test.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/aura/client/aura_constants.h"
@@ -138,6 +140,10 @@
 #include "ui/views/window/frame_caption_button.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/web_applications/app_service/test/loopback_crosapi_app_service_proxy.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
 using views::Widget;
 
 // TODO(crbug.com/1235203): Identify tests that should also run under Lacros.
@@ -239,17 +245,12 @@ class BrowserNonClientFrameViewChromeOSThemeChangeTest
   // Toggles the color mode, triggering propagation of theme change events.
   void ToggleColorMode() {
     auto* native_theme = ui::NativeTheme::GetInstanceForNativeUi();
-    auto* native_theme_web = ui::NativeTheme::GetInstanceForWeb();
 
-    const bool is_dark_mode_enabled = native_theme->ShouldUseDarkColors();
-
-    native_theme->set_use_dark_colors(!is_dark_mode_enabled);
-    native_theme_web->set_preferred_color_scheme(
-        is_dark_mode_enabled ? ui::NativeTheme::PreferredColorScheme::kLight
-                             : ui::NativeTheme::PreferredColorScheme::kDark);
+    native_theme->set_use_dark_colors(!native_theme->ShouldUseDarkColors());
+    native_theme->set_preferred_color_scheme(
+        native_theme->CalculatePreferredColorScheme());
 
     native_theme->NotifyOnNativeThemeUpdated();
-    native_theme_web->NotifyOnNativeThemeUpdated();
   }
 
   // Installs the web app under test, blocking until installation is complete,
@@ -446,7 +447,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_NO_FATAL_FAILURE(
       ash::ShellTestApi().SetTabletModeEnabledForTest(true));
   ash::SplitViewTestApi().SnapWindow(widget->GetNativeWindow(),
-                                     ash::SplitViewTestApi::SnapPosition::LEFT);
+                                     ash::SnapPosition::kPrimary);
 
   // Touch on the top of the window is interpreted as client hit.
   gfx::Point top_point(widget->GetWindowBoundsInScreen().width() / 2, 0);
@@ -467,7 +468,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_NO_FATAL_FAILURE(
       ash::ShellTestApi().SetTabletModeEnabledForTest(true));
   ash::SplitViewTestApi().SnapWindow(widget->GetNativeWindow(),
-                                     ash::SplitViewTestApi::SnapPosition::LEFT);
+                                     ash::SnapPosition::kPrimary);
 
   // A point above the window, but not in the center horizontally, as a swipe
   // down from the top center will show the chromeos tablet mode multitask menu.
@@ -1182,13 +1183,7 @@ IN_PROC_BROWSER_TEST_P(WebAppNonClientFrameViewAshTest, PopupHasNoToolbar) {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Test the normal type browser's kTopViewInset is always 0.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_TopViewInset DISABLED_TopViewInset
-#else
-#define MAYBE_TopViewInset TopViewInset
-#endif
-IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewChromeOSTest,
-                       MAYBE_TopViewInset) {
+IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewChromeOSTest, TopViewInset) {
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
   ImmersiveModeController* immersive_mode_controller =
       browser_view->immersive_mode_controller();
@@ -1257,7 +1252,7 @@ IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewChromeOSTest,
   EndOverview();
   EXPECT_FALSE(frame_view->caption_button_container()->GetVisible());
   ash::SplitViewTestApi().SnapWindow(widget->GetNativeWindow(),
-                                     ash::SplitViewTestApi::SnapPosition::LEFT);
+                                     ash::SnapPosition::kPrimary);
   EXPECT_FALSE(frame_view->caption_button_container()->GetVisible());
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -1316,7 +1311,24 @@ class PreventCloseBrowserNonClientFrameViewChromeOSTest
 
   ~PreventCloseBrowserNonClientFrameViewChromeOSTest() override = default;
 
-  views::Button* getWindowCloseButton(Browser* browser) {
+  void SetUpOnMainThread() override {
+    PreventCloseTestBase::SetUpOnMainThread();
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    loopback_crosapi_ =
+        std::make_unique<web_app::LoopbackCrosapiAppServiceProxy>(profile());
+#endif
+  }
+
+  void TearDownOnMainThread() override {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    loopback_crosapi_ = nullptr;
+#endif
+
+    PreventCloseTestBase::TearDownOnMainThread();
+  }
+
+  views::Button* GetWindowCloseButton(Browser* browser) {
     auto* const browser_view = BrowserView::GetBrowserViewForBrowser(browser);
     auto* const frame_view = GetFrameViewChromeOS(browser_view);
 
@@ -1324,6 +1336,11 @@ class PreventCloseBrowserNonClientFrameViewChromeOSTest
         frame_view->caption_button_container());
     return test_api.close_button();
   }
+
+ private:
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  std::unique_ptr<web_app::LoopbackCrosapiAppServiceProxy> loopback_crosapi_;
+#endif
 };
 
 IN_PROC_BROWSER_TEST_F(PreventCloseBrowserNonClientFrameViewChromeOSTest,
@@ -1335,11 +1352,27 @@ IN_PROC_BROWSER_TEST_F(PreventCloseBrowserNonClientFrameViewChromeOSTest,
       LaunchPWA(web_app::kCalculatorAppId, /*launch_in_window=*/true);
   ASSERT_TRUE(browser);
 
-  auto* const close_button = getWindowCloseButton(browser);
-  ASSERT_TRUE(close_button);
-  EXPECT_FALSE(close_button->GetEnabled());
+  {
+    auto* const close_button = GetWindowCloseButton(browser);
+    ASSERT_TRUE(close_button);
+    EXPECT_FALSE(close_button->GetEnabled());
+  }
 
-  ClearWebAppSettings();
+  {
+    apps::AppUpdateWaiter waiter(
+        browser->profile(), web_app::kCalculatorAppId,
+        base::BindRepeating([](const apps::AppUpdate& update) {
+          return update.AllowClose().has_value() && update.AllowClose().value();
+        }));
+    ClearWebAppSettings();
+    waiter.Wait();
+  }
+
+  {
+    auto* const close_button = GetWindowCloseButton(browser);
+    ASSERT_TRUE(close_button);
+    EXPECT_TRUE(close_button->GetEnabled());
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(PreventCloseBrowserNonClientFrameViewChromeOSTest,
@@ -1350,7 +1383,7 @@ IN_PROC_BROWSER_TEST_F(PreventCloseBrowserNonClientFrameViewChromeOSTest,
       LaunchPWA(web_app::kCalculatorAppId, /*launch_in_window=*/true);
   ASSERT_TRUE(browser);
 
-  auto* const close_button = getWindowCloseButton(browser);
+  auto* const close_button = GetWindowCloseButton(browser);
   ASSERT_TRUE(close_button);
   EXPECT_TRUE(close_button->GetEnabled());
 
@@ -1514,8 +1547,8 @@ IN_PROC_BROWSER_TEST_P(FloatBrowserNonClientFrameViewChromeOSTest,
       views::Widget::GetWidgetForNativeView(widget->GetNativeWindow()));
 
   // Snap a window. No immersive mode from regular browsers.
-  ash::SplitViewTestApi().SnapWindow(
-      widget->GetNativeWindow(), ash::SplitViewTestApi::SnapPosition::RIGHT);
+  ash::SplitViewTestApi().SnapWindow(widget->GetNativeWindow(),
+                                     ash::SnapPosition::kSecondary);
   EXPECT_FALSE(frame_view->caption_button_container()->GetVisible());
   EXPECT_FALSE(immersive_controller->IsEnabled());
 
@@ -1565,8 +1598,8 @@ IN_PROC_BROWSER_TEST_P(FloatBrowserNonClientFrameViewChromeOSTest,
       views::Widget::GetWidgetForNativeView(widget2->GetNativeWindow()));
 
   // Snap a window. Immersive mode is enabled so its title bar is not visible.
-  ash::SplitViewTestApi().SnapWindow(
-      widget2->GetNativeWindow(), ash::SplitViewTestApi::SnapPosition::RIGHT);
+  ash::SplitViewTestApi().SnapWindow(widget2->GetNativeWindow(),
+                                     ash::SnapPosition::kSecondary);
   EXPECT_TRUE(frame_view2->caption_button_container()->GetVisible());
   EXPECT_TRUE(immersive_controller->IsEnabled());
 

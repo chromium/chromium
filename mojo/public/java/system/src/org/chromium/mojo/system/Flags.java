@@ -50,9 +50,7 @@ public abstract class Flags<F extends Flags<F>> {
         return f;
     }
 
-    /**
-     * Makes this flag immutable. This is a non-reversable operation.
-     */
+    /** Makes this flag immutable. This is a non-reversable operation. */
     protected F immutable() {
         mImmutable = true;
         @SuppressWarnings("unchecked")

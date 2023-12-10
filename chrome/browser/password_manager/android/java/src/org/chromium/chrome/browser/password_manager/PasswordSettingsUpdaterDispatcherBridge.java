@@ -42,7 +42,8 @@ public class PasswordSettingsUpdaterDispatcherBridge {
     @CalledByNative
     static PasswordSettingsUpdaterDispatcherBridge create(
             PasswordSettingsUpdaterReceiverBridge settingsUpdaterReceiverBridge) {
-        return new PasswordSettingsUpdaterDispatcherBridge(settingsUpdaterReceiverBridge,
+        return new PasswordSettingsUpdaterDispatcherBridge(
+                settingsUpdaterReceiverBridge,
                 PasswordSettingsAccessorFactoryImpl.getOrCreate().createAccessor());
     }
 
@@ -59,22 +60,26 @@ public class PasswordSettingsUpdaterDispatcherBridge {
                         setting, PasswordSettingsUpdaterMetricsRecorder.GET_VALUE_FUNCTION_SUFFIX);
         switch (setting) {
             case OFFER_TO_SAVE_PASSWORDS:
-                mSettingsAccessor.getOfferToSavePasswords(getAccount(account),
-                        offerToSavePasswords
-                        -> mReceiverBridge.onSettingValueFetched(
-                                OFFER_TO_SAVE_PASSWORDS, offerToSavePasswords, metricsRecorder),
-                        exception
-                        -> handleFetchingExceptionOnUiThread(
-                                OFFER_TO_SAVE_PASSWORDS, exception, metricsRecorder));
+                mSettingsAccessor.getOfferToSavePasswords(
+                        getAccount(account),
+                        offerToSavePasswords ->
+                                mReceiverBridge.onSettingValueFetched(
+                                        OFFER_TO_SAVE_PASSWORDS,
+                                        offerToSavePasswords,
+                                        metricsRecorder),
+                        exception ->
+                                handleFetchingExceptionOnUiThread(
+                                        OFFER_TO_SAVE_PASSWORDS, exception, metricsRecorder));
                 break;
             case AUTO_SIGN_IN:
-                mSettingsAccessor.getAutoSignIn(getAccount(account),
-                        autoSignIn
-                        -> mReceiverBridge.onSettingValueFetched(
-                                AUTO_SIGN_IN, autoSignIn, metricsRecorder),
-                        exception
-                        -> handleFetchingExceptionOnUiThread(
-                                AUTO_SIGN_IN, exception, metricsRecorder));
+                mSettingsAccessor.getAutoSignIn(
+                        getAccount(account),
+                        autoSignIn ->
+                                mReceiverBridge.onSettingValueFetched(
+                                        AUTO_SIGN_IN, autoSignIn, metricsRecorder),
+                        exception ->
+                                handleFetchingExceptionOnUiThread(
+                                        AUTO_SIGN_IN, exception, metricsRecorder));
                 break;
             default:
                 assert false : "All settings need to be handled.";
@@ -89,44 +94,53 @@ public class PasswordSettingsUpdaterDispatcherBridge {
                         setting, PasswordSettingsUpdaterMetricsRecorder.SET_VALUE_FUNCTION_SUFFIX);
         switch (setting) {
             case OFFER_TO_SAVE_PASSWORDS:
-                mSettingsAccessor.setOfferToSavePasswords(value, getAccount(account),
-                        unused
-                        -> mReceiverBridge.onSettingValueSet(
-                                OFFER_TO_SAVE_PASSWORDS, metricsRecorder),
-                        exception
-                        -> handleSettingExceptionOnUiThread(
-                                OFFER_TO_SAVE_PASSWORDS, exception, metricsRecorder));
+                mSettingsAccessor.setOfferToSavePasswords(
+                        value,
+                        getAccount(account),
+                        unused ->
+                                mReceiverBridge.onSettingValueSet(
+                                        OFFER_TO_SAVE_PASSWORDS, metricsRecorder),
+                        exception ->
+                                handleSettingExceptionOnUiThread(
+                                        OFFER_TO_SAVE_PASSWORDS, exception, metricsRecorder));
                 break;
             case AUTO_SIGN_IN:
-                mSettingsAccessor.setAutoSignIn(value, getAccount(account),
-                        unused
-                        -> mReceiverBridge.onSettingValueSet(AUTO_SIGN_IN, metricsRecorder),
-                        exception
-                        -> handleSettingExceptionOnUiThread(
-                                AUTO_SIGN_IN, exception, metricsRecorder));
+                mSettingsAccessor.setAutoSignIn(
+                        value,
+                        getAccount(account),
+                        unused -> mReceiverBridge.onSettingValueSet(AUTO_SIGN_IN, metricsRecorder),
+                        exception ->
+                                handleSettingExceptionOnUiThread(
+                                        AUTO_SIGN_IN, exception, metricsRecorder));
                 break;
             default:
                 assert false : "All settings need to be handled.";
         }
     }
 
-    private void handleFetchingExceptionOnUiThread(@PasswordManagerSetting int setting,
-            Exception exception, PasswordSettingsUpdaterMetricsRecorder metricsRecorder) {
+    private void handleFetchingExceptionOnUiThread(
+            @PasswordManagerSetting int setting,
+            Exception exception,
+            PasswordSettingsUpdaterMetricsRecorder metricsRecorder) {
         // Error callback could be either triggered
         // - by the GMS Core on the UI thread
         // - by the downstream backend on the operation thread if preconditions are not met
         // |runOrPostTask| ensures callback will always be executed on the UI thread.
-        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT,
+        PostTask.runOrPostTask(
+                TaskTraits.UI_DEFAULT,
                 () -> mReceiverBridge.handleFetchingException(setting, exception, metricsRecorder));
     }
 
-    private void handleSettingExceptionOnUiThread(@PasswordManagerSetting int setting,
-            Exception exception, PasswordSettingsUpdaterMetricsRecorder metricsRecorder) {
+    private void handleSettingExceptionOnUiThread(
+            @PasswordManagerSetting int setting,
+            Exception exception,
+            PasswordSettingsUpdaterMetricsRecorder metricsRecorder) {
         // Error callback could be either triggered
         // - by the GMS Core on the UI thread
         // - by the downstream backend on the operation thread if preconditions are not met
         // |runOrPostTask| ensures callback will always be executed on the UI thread.
-        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT,
+        PostTask.runOrPostTask(
+                TaskTraits.UI_DEFAULT,
                 () -> mReceiverBridge.handleSettingException(setting, exception, metricsRecorder));
     }
 

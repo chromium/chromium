@@ -51,7 +51,8 @@ class TestAutofillProvider : public AutofillProvider {
                                  const FormData& form,
                                  base::TimeTicks timestamp) override {}
   void OnHidePopup(AndroidAutofillManager* manager) override {}
-  void OnServerPredictionsAvailable(FormGlobalId form) override {}
+  void OnServerPredictionsAvailable(AndroidAutofillManager&,
+                                    FormGlobalId form) override {}
   void OnServerQueryRequestError(AndroidAutofillManager* manager,
                                  FormSignature form_signature) override {}
   void OnManagerResetOrDestroyed(AndroidAutofillManager* manager) override {}

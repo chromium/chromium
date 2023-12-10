@@ -150,15 +150,20 @@ IN_PROC_BROWSER_TEST_F(LacrosExtensionAppsControllerTest, LaunchPinnedApp) {
                                          success_future.GetCallback());
   ASSERT_TRUE(success_future.Take());
 
-  // Close all app windows.
+  // WaitForShelfItem above does not guarantee that the app window is already
+  // shown. Wait for that explicitly, in order to satisfy
+  // WaitForWindowDestruction's precondition.
   extensions::AppWindowRegistry::AppWindowList app_windows =
       extensions::AppWindowRegistry::Get(profile())->app_windows();
-  for (extensions::AppWindow* app_window : app_windows) {
-    std::string window_id = lacros_window_utility::GetRootWindowUniqueId(
-        app_window->GetNativeWindow()->GetRootWindow());
-    app_window->GetBaseWindow()->Close();
-    ASSERT_TRUE(browser_test_util::WaitForWindowDestruction(window_id));
-  }
+  ASSERT_EQ(1u, app_windows.size());
+  extensions::AppWindow* app_window = app_windows.front();
+  std::string window_id = lacros_window_utility::GetRootWindowUniqueId(
+      app_window->GetNativeWindow()->GetRootWindow());
+  ASSERT_TRUE(browser_test_util::WaitForWindowCreation(window_id));
+
+  // Close the app window.
+  app_window->GetBaseWindow()->Close();
+  ASSERT_TRUE(browser_test_util::WaitForWindowDestruction(window_id));
 
   // Confirm that there are no open windows.
   ASSERT_TRUE(

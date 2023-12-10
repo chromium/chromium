@@ -8,6 +8,7 @@
 #include <set>
 #include <utility>
 
+#include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
@@ -36,6 +37,7 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 #include "skia/ext/skia_utils_base.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/mojom/clipboard/clipboard.mojom.h"
 #include "third_party/blink/public/mojom/drag/drag.mojom-forward.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -421,16 +423,15 @@ void ClipboardHostImpl::ReadFiles(ui::ClipboardBuffer clipboard_buffer,
   auto data_dst = CreateDataEndpoint();
   clipboard->ReadFilenames(clipboard_buffer, data_dst.get(), &filenames);
 
-  // Convert the vector of ui::FileInfo into a vector of std::string so that
+  // Convert the vector of ui::FileInfo into a vector of base::FilePath so that
   // it can be passed to PerformPasteIfContentAllowed() for analysis.  When
   // the latter is called with ui::ClipboardFormatType::FilenamesType() the
   // data to be analyzed is expected to be a newline-separated list of full
   // paths.
-  std::vector<std::string> paths;
+  std::vector<base::FilePath> paths;
   paths.reserve(filenames.size());
-  base::ranges::transform(
-      filenames, std::back_inserter(paths),
-      [](const ui::FileInfo& info) { return info.path.AsUTF8Unsafe(); });
+  base::ranges::transform(filenames, std::back_inserter(paths),
+                          [](const ui::FileInfo& info) { return info.path; });
   ClipboardPasteData clipboard_paste_data =
       ClipboardPasteData(std::string(), std::string(), std::move(paths));
 
@@ -453,9 +454,9 @@ void ClipboardHostImpl::ReadFiles(ui::ClipboardBuffer clipboard_buffer,
           process->GetID());
   std::move(files.begin(), files.end(), std::back_inserter(result->files));
 
-  PerformPasteIfContentAllowed(
-      clipboard->GetSequenceNumber(clipboard_buffer),
-      ui::ClipboardFormatType::FilenamesType(), std::move(clipboard_paste_data),
+  PasteIfPolicyAllowed(
+      clipboard_buffer, ui::ClipboardFormatType::FilenamesType(),
+      std::move(clipboard_paste_data),
       base::BindOnce(
           [](blink::mojom::ClipboardFilesPtr result, ReadFilesCallback callback,
              absl::optional<ClipboardPasteData> clipboard_paste_data) {
@@ -466,15 +467,13 @@ void ClipboardHostImpl::ReadFiles(ui::ClipboardBuffer clipboard_buffer,
               // A subset of the files can be copied.  Remove any files that
               // should be blocked.  First build a list of the files that are
               // allowed.
-              std::vector<std::string> allowed_files_vector =
-                  std::move(clipboard_paste_data->file_paths);
-              std::set<std::string> allowed_files(
-                  std::move_iterator(allowed_files_vector.begin()),
-                  std::move_iterator(allowed_files_vector.end()));
+              std::set<base::FilePath> allowed_files(
+                  std::move_iterator(clipboard_paste_data->file_paths.begin()),
+                  std::move_iterator(clipboard_paste_data->file_paths.end()));
 
               for (auto it = result->files.begin();
                    it != result->files.end();) {
-                if (allowed_files.find(it->get()->path.AsUTF8Unsafe()) !=
+                if (allowed_files.find(it->get()->path) !=
                     allowed_files.end()) {
                   it = std::next(it);
                 } else {
@@ -663,13 +662,16 @@ void ClipboardHostImpl::PasteIfPolicyAllowed(
     return;
   }
 
-  size_t data_size =
-      clipboard_paste_data.text.size() + clipboard_paste_data.image.size();
-  // When the paste data includes files, update data_size to be int_max to
-  // enforce data transfer scanning.
+  // If files are copied, `pasted_content` holds the associated file paths,
+  // otherwise the size of clipboard data.
+  absl::variant<size_t, std::vector<base::FilePath>> pasted_content;
   if (!clipboard_paste_data.file_paths.empty()) {
-    data_size = INT_MAX;
+    pasted_content = clipboard_paste_data.file_paths;
+  } else {
+    pasted_content =
+        clipboard_paste_data.text.size() + clipboard_paste_data.image.size();
   }
+
   auto policy_cb = base::BindOnce(
       &ClipboardHostImpl::PasteIfPolicyAllowedCallback,
       weak_ptr_factory_.GetWeakPtr(), clipboard_buffer, data_type,
@@ -679,7 +681,7 @@ void ClipboardHostImpl::PasteIfPolicyAllowed(
     auto source =
         ui::Clipboard::GetForCurrentThread()->GetSource(clipboard_buffer);
     ui::DataTransferPolicyController::Get()->PasteIfAllowed(
-        base::OptionalToPtr(source), CreateDataEndpoint().get(), data_size,
+        source, CreateDataEndpoint().get(), std::move(pasted_content),
         &render_frame_host(), std::move(policy_cb));
     return;
   }

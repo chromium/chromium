@@ -8,8 +8,6 @@ source_set("safety_check") {
     "safety_check_item_icon.mm",
     "safety_check_item_view.h",
     "safety_check_item_view.mm",
-    "safety_check_prefs.h",
-    "safety_check_prefs.mm",
     "safety_check_state.h",
     "safety_check_state.mm",
     "safety_check_view.h",
@@ -21,13 +19,10 @@ source_set("safety_check") {
   public_deps = [
     "//base",
     "//ios/chrome/browser/safety_check/model:constants",
-    "//third_party/abseil-cpp:absl",
   ]
   deps = [
     ":constants",
     "//components/password_manager/core/browser",
-    "//components/password_manager/core/common:features",
-    "//components/prefs",
     "//components/version_info",
     "//components/version_info",
     "//ios/chrome/app/strings",
@@ -56,6 +51,14 @@ source_set("constants") {
   frameworks = [ "Foundation.framework" ]
 }
 
+source_set("prefs") {
+  sources = [
+    "safety_check_prefs.h",
+    "safety_check_prefs.mm",
+  ]
+  deps = [ "//components/prefs" ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [ "safety_check_view_unittest.mm" ]
@@ -75,11 +78,15 @@ source_set("eg2_tests") {
   sources = [ "safety_check_view_egtest.mm" ]
   deps = [
     ":constants",
+    ":prefs",
     "//base/test:test_support",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/ntp/home:features",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/ui/content_suggestions:constants",
+    "//ios/chrome/browser/ui/settings/password:eg_test_support",
+    "//ios/chrome/browser/ui/settings/password:eg_test_support+eg2",
+    "//ios/chrome/browser/ui/settings/password:features",
+    "//ios/chrome/browser/ui/settings/password/password_checkup:password_checkup_constants",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
     "//ui/base",

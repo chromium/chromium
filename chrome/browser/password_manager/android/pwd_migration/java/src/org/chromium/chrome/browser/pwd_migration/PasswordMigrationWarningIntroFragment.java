@@ -21,8 +21,10 @@ public class PasswordMigrationWarningIntroFragment extends Fragment {
     private Runnable mAcknowledgeCallback;
     private Runnable mMoreOptionsCallback;
 
-    public PasswordMigrationWarningIntroFragment(String introScreenSubtitle,
-            Runnable acknowledgeCallback, Runnable moreOptionsCallback) {
+    public PasswordMigrationWarningIntroFragment(
+            String introScreenSubtitle,
+            Runnable acknowledgeCallback,
+            Runnable moreOptionsCallback) {
         super(R.layout.pwd_migration_warning_intro_fragment);
         mSubtitleText = introScreenSubtitle;
         mAcknowledgeCallback = acknowledgeCallback;

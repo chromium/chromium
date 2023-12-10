@@ -1,0 +1,27 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="eu">
+<translation id="1220509181886849806">Gordetako pasahitza erabili nahi duzu?</translation>
+<translation id="1435940442311036198">Erabili sarbide-gako bat beste gailu batean</translation>
+<translation id="1717486229951421299">Ukitzean bete beharreko kredentzialen zerrenda altuera erdian irekita dago.</translation>
+<translation id="2359808026110333948">Egin aurrera</translation>
+<translation id="2364266287022099258">Gordetako sarbide-gakoa erabili nahi duzu?</translation>
+<translation id="3399357656427473483">Ukitzean bete beharreko kredentzialen zerrenda.</translation>
+<translation id="3653689374478248324"><ph name="SITE_NAME" /> webgunean hasiko duzu saioa</translation>
+<translation id="3950820424414687140">Hasi saioa</translation>
+<translation id="4553044860350038560">Sarbide-gako gehiago</translation>
+<translation id="4598345735110653698">Kudeatu sarbide-gakoak</translation>
+<translation id="4722735765955348426"><ph name="USERNAME" /> kontuko pasahitza</translation>
+<translation id="4907224763885298217">Erabili pantailaren blokeoa</translation>
+<translation id="5012523644916800014">Kudeatu pasahitzak eta sarbide-gakoak</translation>
+<translation id="5441504010984421144">Ukitzean bete beharreko kredentzialen zerrenda altuera osoan irekita dago.</translation>
+<translation id="5591247451101092906">Gordetako pasahitza edo sarbide-gakoa erabili nahi duzu?</translation>
+<translation id="5624120631404540903">Kudeatu pasahitzak</translation>
+<translation id="6560306912274274630"><ph name="USERNAME" /> erabiltzaile-kontuko sarbide-gakoa. Erabili pantailaren blokeoa.</translation>
+<translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{Webgunerako pasahitz berria}other{Webgunerako pasahitz berriak}}</translation>
+<translation id="7286867818472074330">Hautatu sarbide-gakoa</translation>
+<translation id="7669320311687290322"><ph name="ITEM_LABEL" />, <ph name="ITEMS_TOTAL" /> posiziotatik <ph name="ITEM_POSITION" />garrena.</translation>
+<translation id="7738288782501322815"><ph name="SITE_NAME" /> webgunerako pasahitzak jaso dituzu</translation>
+<translation id="8614995815226664591"><ph name="SENDER_NAME" /> erabiltzaileak <ph name="SITE_NAME" /> webgunerako pasahitz bat partekatu du zurekin</translation>
+<translation id="8891372124884726271">Kredentzialen zerrenda itxita dago.</translation>
+</translationbundle>

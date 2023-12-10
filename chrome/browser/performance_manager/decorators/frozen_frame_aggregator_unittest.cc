@@ -86,11 +86,11 @@ class FrozenFrameAggregatorTest : public GraphTestHarness {
   }
 
   void ExpectRunning() {
-    EXPECT_EQ(LifecycleState::kRunning, page_node_.get()->lifecycle_state());
+    EXPECT_EQ(LifecycleState::kRunning, page_node_.get()->GetLifecycleState());
   }
 
   void ExpectFrozen() {
-    EXPECT_EQ(LifecycleState::kFrozen, page_node_.get()->lifecycle_state());
+    EXPECT_EQ(LifecycleState::kFrozen, page_node_.get()->GetLifecycleState());
   }
 
   TestNodeWrapper<FrameNodeImpl> CreateFrame(FrameNodeImpl* parent_frame_node) {

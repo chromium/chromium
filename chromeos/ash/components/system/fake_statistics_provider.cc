@@ -27,11 +27,11 @@ void FakeStatisticsProvider::ScheduleOnMachineStatisticsLoaded(
                                                            std::move(callback));
 }
 
-absl::optional<base::StringPiece> FakeStatisticsProvider::GetMachineStatistic(
+std::optional<base::StringPiece> FakeStatisticsProvider::GetMachineStatistic(
     base::StringPiece name) {
   const auto match = machine_statistics_.find(name);
   if (match == machine_statistics_.end())
-    return absl::nullopt;
+    return std::nullopt;
 
   return base::StringPiece(match->second);
 }

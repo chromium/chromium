@@ -160,19 +160,19 @@ class UkmDataManagerImplTest : public testing::Test {
   void SetUp() override {
     SegmentationPlatformService::RegisterLocalStatePrefs(prefs_.registry());
     LocalStateHelper::GetInstance().Initialize(&prefs_);
-    data_manager_ = std::make_unique<UkmDataManagerImpl>();
     ukm_recorder_ = std::make_unique<ukm::TestUkmRecorder>();
     auto ukm_db = std::make_unique<MockUkmDatabase>();
     ukm_database_ = ukm_db.get();
     ukm_observer_ = std::make_unique<UkmObserver>(ukm_recorder_.get());
+    data_manager_ = std::make_unique<UkmDataManagerImpl>();
     data_manager_->InitializeForTesting(std::move(ukm_db), ukm_observer_.get());
   }
 
   void TearDown() override {
-    ukm_observer_.reset();
-    ukm_recorder_.reset();
     ukm_database_ = nullptr;
     data_manager_.reset();
+    ukm_observer_.reset();
+    ukm_recorder_.reset();
   }
 
   void RecordUkmAndWaitForDatabase(ukm::mojom::UkmEntryPtr entry) {}
@@ -229,7 +229,7 @@ TEST_F(UkmDataManagerImplTest, HistoryNotification) {
   // Add a page to history and check that the notification is sent to
   // UkmDatabase. All notifications should be sent.
   base::RunLoop wait_for_add1;
-  EXPECT_CALL(*ukm_database_, OnUrlValidated(kUrl1))
+  EXPECT_CALL(*ukm_database_, OnUrlValidated(kUrl1, kTestProfileId))
       .WillOnce([&wait_for_add1]() { wait_for_add1.QuitClosure().Run(); });
   platform1.history_service->AddPage(kUrl1, base::Time::Now(),
                                      history::VisitSource::SOURCE_BROWSED);
@@ -264,9 +264,11 @@ TEST_F(UkmDataManagerImplTest, UkmSourceObservation) {
   // Source updates are notified to the database.
   base::RunLoop wait_for_source;
   EXPECT_CALL(*ukm_database_,
-              UpdateUrlForUkmSource(kSourceId, kUrl1, /*is_validated=*/false))
+              UpdateUrlForUkmSource(kSourceId, kUrl1, /*is_validated=*/false,
+                                    /*profile_id*/ ""))
       .WillOnce([&wait_for_source](ukm::SourceId source_id, const GURL& url,
-                                   bool is_validated) {
+                                   bool is_validated,
+                                   const std::string& profile_id) {
         wait_for_source.QuitClosure().Run();
       });
   ukm_recorder_->UpdateSourceURL(kSourceId, kUrl1);
@@ -320,9 +322,11 @@ TEST_F(UkmDataManagerImplTest, UkmServiceCreatedBeforePlatform) {
   // Source updates should be notified.
   base::RunLoop wait_for_source;
   EXPECT_CALL(*ukm_database_,
-              UpdateUrlForUkmSource(kSourceId, kUrl1, /*is_validated=*/false))
+              UpdateUrlForUkmSource(kSourceId, kUrl1, /*is_validated=*/false,
+                                    /*profile_id*/ ""))
       .WillOnce([&wait_for_source](ukm::SourceId source_id, const GURL& url,
-                                   bool is_validated) {
+                                   bool is_validated,
+                                   const std::string& profile_id) {
         wait_for_source.QuitClosure().Run();
       });
   ukm_recorder_->UpdateSourceURL(kSourceId, kUrl1);
@@ -339,7 +343,7 @@ TEST_F(UkmDataManagerImplTest, UrlValidationWithHistory) {
 
   // History page is added before source update.
   base::RunLoop wait_for_add1;
-  EXPECT_CALL(*ukm_database_, OnUrlValidated(kUrl1))
+  EXPECT_CALL(*ukm_database_, OnUrlValidated(kUrl1, kTestProfileId))
       .WillOnce([&wait_for_add1]() { wait_for_add1.QuitClosure().Run(); });
   platform1.history_service->AddPage(kUrl1, base::Time::Now(),
                                      history::VisitSource::SOURCE_BROWSED);
@@ -348,9 +352,11 @@ TEST_F(UkmDataManagerImplTest, UrlValidationWithHistory) {
   // Source update should have a validated URL.
   base::RunLoop wait_for_source;
   EXPECT_CALL(*ukm_database_,
-              UpdateUrlForUkmSource(kSourceId, kUrl1, /*is_validated=*/true))
+              UpdateUrlForUkmSource(kSourceId, kUrl1, /*is_validated=*/true,
+                                    kTestProfileId))
       .WillOnce([&wait_for_source](ukm::SourceId source_id, const GURL& url,
-                                   bool is_validated) {
+                                   bool is_validated,
+                                   const std::string& profile_id) {
         wait_for_source.QuitClosure().Run();
       });
   ukm_recorder_->UpdateSourceURL(kSourceId, kUrl1);
@@ -389,9 +395,11 @@ TEST_F(UkmDataManagerImplTest, MultiplePlatforms) {
   // Sources should still be updated.
   base::RunLoop wait_for_source;
   EXPECT_CALL(*ukm_database_,
-              UpdateUrlForUkmSource(kSourceId, kUrl1, /*is_validated=*/false))
+              UpdateUrlForUkmSource(kSourceId, kUrl1, /*is_validated=*/false,
+                                    /*profile_id*/ ""))
       .WillOnce([&wait_for_source](ukm::SourceId source_id, const GURL& url,
-                                   bool is_validated) {
+                                   bool is_validated,
+                                   const std::string& profile_id) {
         wait_for_source.QuitClosure().Run();
       });
   ukm_recorder_->UpdateSourceURL(kSourceId, kUrl1);
@@ -409,7 +417,7 @@ TEST_F(UkmDataManagerImplTest, MultiplePlatforms) {
   // Update history service on one of the platforms, and the database should get
   // a validated URL.
   base::RunLoop wait_for_add1;
-  EXPECT_CALL(*ukm_database_, OnUrlValidated(kUrl2))
+  EXPECT_CALL(*ukm_database_, OnUrlValidated(kUrl2, kTestProfileId))
       .WillOnce([&wait_for_add1]() { wait_for_add1.QuitClosure().Run(); });
   platform2.history_service->AddPage(kUrl2, base::Time::Now(),
                                      history::VisitSource::SOURCE_BROWSED);
@@ -417,9 +425,11 @@ TEST_F(UkmDataManagerImplTest, MultiplePlatforms) {
 
   base::RunLoop wait_for_source2;
   EXPECT_CALL(*ukm_database_,
-              UpdateUrlForUkmSource(kSourceId2, kUrl2, /*is_validated=*/true))
+              UpdateUrlForUkmSource(kSourceId2, kUrl2, /*is_validated=*/true,
+                                    kTestProfileId))
       .WillOnce([&wait_for_source2](ukm::SourceId source_id, const GURL& url,
-                                    bool is_validated) {
+                                    bool is_validated,
+                                    const std::string& profile_id) {
         wait_for_source2.QuitClosure().Run();
       });
   ukm_recorder_->UpdateSourceURL(kSourceId2, kUrl2);

@@ -750,6 +750,12 @@ Permissions you've already given to websites and apps may apply to this account.
         Chrome blocked this download because you turned Safe Browsing off and the file can't be verified
       </message>
 
+      <!-- chrome://downloads page bypass dangerous download warning dialog -->
+      <message name="IDS_DOWNLOAD_WARNING_BYPASS_DIALOG_LEARN_MORE_LINK"
+               desc="On the downloads page, the label for the link to the help center in the dialog to bypass a dangerous download warning.">
+        Learn why Chrome blocks some files
+      </message>
+
       <!-- Abandon in-progress downloads confirmation dialog -->
       <if expr="not is_macosx">
         <message name="IDS_ABANDON_DOWNLOAD_DIALOG_BROWSER_MESSAGE" desc="Message on a dialog shown when the user closes the browser while one or more downloads are in progress. This string is shown on Windows, ChromeOS, and Linux, which all use 'Exit' to refer to closing a browser.">
@@ -1008,13 +1014,16 @@ Permissions you've already given to websites and apps may apply to this account.
           Another account is already signed in. To keep your browsing separate, Chrome can create your own profile for you.
         </message>
         <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_TITLE" desc="Title of the Chrome Signin Bubble intercept that is shown when a signed out user signs in on the web with it's first account.">
-          Get the most out of Chrome
+          Make Chrome your own
         </message>
         <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_SUBTITLE" desc="Subtitle of the Chrome Signin Bubble intercept that is shown when a signed out user signs in on the web with it's first account.">
-          Sign in to get your Chrome stuff across devices
+          Sign in to get the most out of Chrome
         </message>
         <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_DECLINE_TEXT" desc="Label of the Decline button of the Chrome Signin Bubble intercept that is shown when a signed out user signs in on the web with it's first account.">
           Use Chrome without an account
+        </message>
+        <message name="IDS_AVATAR_BUTTON_INTERCEPT_BUBBLE_CHROME_SIGNIN_TEXT" desc="Text asking the user to sign into Chrome while the Chrome Signin Bubble intercept is shown.">
+          Sign in to Chrome?
         </message>
       </if>
 
@@ -1191,17 +1200,8 @@ Permissions you've already given to websites and apps may apply to this account.
       </if>
 
       <!-- Settings API bubble -->
-      <message name="IDS_EXTENSIONS_SETTINGS_API_FIRST_LINE_START_PAGES_SPECIFIC" desc="Text displayed in the Settings API bubble as first line when an extension has changed the start pages, and we are pointing to its icon.">
-        This extension has changed what page is shown when you start Chrome.
-      </message>
-      <message name="IDS_EXTENSIONS_SETTINGS_API_FIRST_LINE_START_PAGES" desc="Text displayed in the Settings API bubble as first line when an extension has changed the start pages, and we are not pointing to its icon.">
-        The extension "<ph name="EXTENSION_NAME">$1<ex>AdBlock</ex></ph>" has changed what page is shown when you start Chrome.
-      </message>
       <message name="IDS_EXTENSIONS_SETTINGS_API_SECOND_LINE_START_PAGES" desc="Second line in the Settings API bubble. Only shown if the secondary change by the extension was just the start pages. The triple single quotes are needed to preserve the space before and after the sentence which is needed when the language (Chrome is being translated to) uses space as word separator. Please preserve them, unless the language being translated to does not use space as word separator.">
         ''' It also controls what page is shown when you start Chrome. '''
-      </message>
-      <message name="IDS_EXTENSIONS_SETTINGS_API_SECOND_LINE_START_AND_HOME" desc="Second line in the Settings API bubble. Only shown if the secondary change by the extension was both the start page and the home page. See IDS_EXTENSIONS_SETTINGS_API_SECOND_LINE_START_PAGES for reason for triple quotes.">
-        ''' It also controls what page is shown when you start Chrome or click the Home button. '''
       </message>
       <message name="IDS_EXTENSIONS_SETTINGS_API_SECOND_LINE_START_AND_SEARCH" desc="Second line in the Settings API bubble. Only shown if the secondary change by the extension was both the start page and the search engine. See IDS_EXTENSIONS_SETTINGS_API_SECOND_LINE_START_PAGES for reason for triple quotes.">
         ''' It also controls what page is shown when you start Chrome or search from the Omnibox. '''
@@ -1891,6 +1891,26 @@ Permissions you've already given to websites and apps may apply to this account.
                  desc="Error message displayed in the main dialog when the user is in a export-restricted country.">
           Installation failed because access is restricted in this country.
         </message>
+        <message name="IDS_OS_NOT_SUPPORTED"
+                 desc="Error message displayed in the main dialog when the OS does not meet the application's requirements.">
+          Installation failed because this version of the operating system is not supported.
+        </message>
+        <message name="IDS_HW_NOT_SUPPORTED"
+                 desc="Error message displayed in the main dialog when the computer does not meet the application's minimum hardware requirements.">
+          Installation failed because your computer does not meet the minimum hardware requirements.
+        </message>
+        <message name="IDS_NO_HASH"
+                 desc="Error message displayed in the main dialog when the server does not have the application installer's hash.">
+          Installation failed because the update server does not have any hash data for the application.
+        </message>
+        <message name="IDS_UNSUPPORTED_PROTOCOL"
+                 desc="Error message displayed in the main dialog for protocols that do not support multiple packages.">
+          Installation failed because of an unsupported protocol error.
+        </message>
+        <message name="IDS_INTERNAL"
+                 desc="Error message displayed in the main dialog when the update server encounters an internal error.">
+          Installation failed because of an update server internal error.
+        </message>
         <message name="IDS_GENERIC_UPDATE_CHECK_ERROR"
                  desc="Error message displayed in the main dialog when the update client returns an error in the update check.">
           Update check error: <ph name="UPDATE_CHECK_ERROR">$1<ex>error-internal</ex></ph>.
@@ -1977,6 +1997,11 @@ Permissions you've already given to websites and apps may apply to this account.
           </message>
         </if>
       </if>
+
+      <!-- Clear Browsing Data -->
+      <message name="IDS_SETTINGS_CLEAR_BROWSING_DATA_SIGNED_IN" desc="Description in the footer of the Clear Browsing Data dialog when the user is signed.">
+        To clear browsing data from this device only, while keeping it in your Google Account, <ph name="BEGIN_LINK">&lt;a href="#" target=&quot;_blank&quot;&gt;</ph>sign out of Chrome<ph name="END_LINK">&lt;/a&gt;</ph>.
+      </message>
     </messages>
   </release>
 </grit>

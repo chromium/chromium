@@ -60,10 +60,11 @@ void MenuModelAdapter::BuildMenu(MenuItemView* menu) {
   menu->ChildrenChanged();
 }
 
-MenuItemView* MenuModelAdapter::CreateMenu() {
-  menu_ = new MenuItemView(this);
-  BuildMenu(menu_);
-  return menu_;
+std::unique_ptr<MenuItemView> MenuModelAdapter::CreateMenu() {
+  auto menu = std::make_unique<MenuItemView>(/*delegate=*/this);
+  menu_ = menu.get();
+  BuildMenu(menu.get());
+  return menu;
 }
 
 // Static.

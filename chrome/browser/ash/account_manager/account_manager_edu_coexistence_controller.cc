@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/account_manager/account_manager_edu_coexistence_controller.h"
 
+#include <optional>
+
 #include "ash/constants/ash_pref_names.h"
 #include "base/containers/contains.h"
 #include "base/logging.h"
@@ -16,7 +18,6 @@
 #include "components/account_manager_core/chromeos/account_manager.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 

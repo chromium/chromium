@@ -16,7 +16,8 @@ class SearchResumptionModuleViewBinder implements ViewBinder<PropertyModel, View
         SearchResumptionModuleView moduleView = (SearchResumptionModuleView) view;
 
         if (SearchResumptionModuleProperties.IS_VISIBLE == propertyKey) {
-            moduleView.setVisibility(model.get(SearchResumptionModuleProperties.IS_VISIBLE)
+            moduleView.setVisibility(
+                    model.get(SearchResumptionModuleProperties.IS_VISIBLE)
                             ? View.VISIBLE
                             : View.GONE);
         } else if (SearchResumptionModuleProperties.EXPAND_COLLAPSE_CLICK_CALLBACK == propertyKey) {

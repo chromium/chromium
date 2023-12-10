@@ -36,7 +36,7 @@ void UserInterfaceImpl::OpenSettingsSubpage(const std::string& subpage) {
 void UserInterfaceImpl::ShowConfirmationDialog(
     const std::string& title,
     const std::string& description,
-    const absl::optional<std::string>& cancel_name,
+    const std::optional<std::string>& cancel_name,
     ShowConfirmationDialogCallback callback) {
   // If a dialog is already being shown we do not show a new one.
   // Instead, return false through the callback on the new dialog

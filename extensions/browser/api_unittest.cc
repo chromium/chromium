@@ -57,7 +57,7 @@ void ApiUnitTest::CreateBackgroundPage() {
   }
 }
 
-absl::optional<base::Value> ApiUnitTest::RunFunctionAndReturnValue(
+std::optional<base::Value> ApiUnitTest::RunFunctionAndReturnValue(
     ExtensionFunction* function,
     api_test_utils::ArgsType args) {
   function->set_extension(extension());

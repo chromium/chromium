@@ -63,7 +63,7 @@ void EcheNotificationClickHandler::HandleNotificationClick(
       break;
     case LaunchAppHelper::AppLaunchProhibitedReason::kDisabledByScreenLock:
       launch_app_helper_->ShowNotification(
-          app_metadata.visible_app_name, /* message= */ absl::nullopt,
+          app_metadata.visible_app_name, /* message= */ std::nullopt,
           std::make_unique<LaunchAppHelper::NotificationInfo>(
               LaunchAppHelper::NotificationInfo::Category::kNative,
               LaunchAppHelper::NotificationInfo::NotificationType::

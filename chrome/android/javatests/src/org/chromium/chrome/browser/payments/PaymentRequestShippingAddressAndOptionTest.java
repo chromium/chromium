@@ -145,8 +145,8 @@ public class PaymentRequestShippingAddressAndOptionTest {
                         .toString()
                         .equals(
                                 "Jon Doe\n"
-                                    + "Google, 340 Main St, Los Angeles, CA 90291, United States\n"
-                                    + "555-555-5555"));
+                                        + "Google, 340 Main St, Los Angeles, CA 90291, United States\n"
+                                        + "555-555-5555"));
 
         // Make sure that the second profile's shipping label also includes the country.
         Assert.assertTrue(
@@ -156,8 +156,8 @@ public class PaymentRequestShippingAddressAndOptionTest {
                         .toString()
                         .equals(
                                 "Fred Doe\n"
-                                    + "Google, 340 Main St, Los Angeles, CA 90291, United States\n"
-                                    + "555-555-5555"));
+                                        + "Google, 340 Main St, Los Angeles, CA 90291, United States\n"
+                                        + "555-555-5555"));
     }
 
     /** Verifies that the shipping address format of a new address is as expected. */

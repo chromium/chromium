@@ -471,7 +471,7 @@ void FrameSerializer::SerializeCSSRule(CSSRule* rule) {
     case CSSRule::kLayerStatementRule:
     case CSSRule::kPositionFallbackRule:
     case CSSRule::kTryRule:
-    case CSSRule::kViewTransitionsRule:
+    case CSSRule::kViewTransitionRule:
       break;
   }
 }

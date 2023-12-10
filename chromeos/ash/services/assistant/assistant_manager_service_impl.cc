@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "ash/constants/ash_features.h"
@@ -49,7 +50,6 @@
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "chromeos/version/version_loader.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/mojom/ax_assistant_structure.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
@@ -65,7 +65,7 @@ static bool is_first_init = true;
 constexpr char kAndroidSettingsAppPackage[] = "com.android.settings";
 
 std::vector<libassistant::mojom::AuthenticationTokenPtr> ToAuthenticationTokens(
-    const absl::optional<AssistantManagerService::UserInfo>& user) {
+    const std::optional<AssistantManagerService::UserInfo>& user) {
   std::vector<libassistant::mojom::AuthenticationTokenPtr> result;
 
   if (user.has_value()) {
@@ -80,8 +80,8 @@ std::vector<libassistant::mojom::AuthenticationTokenPtr> ToAuthenticationTokens(
 }
 
 libassistant::mojom::BootupConfigPtr CreateBootupConfig(
-    const absl::optional<std::string>& s3_server_uri_override,
-    const absl::optional<std::string>& device_id_override) {
+    const std::optional<std::string>& s3_server_uri_override,
+    const std::optional<std::string>& device_id_override) {
   auto result = libassistant::mojom::BootupConfig::New();
   result->s3_server_uri_override = s3_server_uri_override;
   result->device_id_override = device_id_override;
@@ -177,8 +177,8 @@ AssistantManagerServiceImpl::AssistantManagerServiceImpl(
     ServiceContext* context,
     std::unique_ptr<network::PendingSharedURLLoaderFactory>
         pending_url_loader_factory,
-    absl::optional<std::string> s3_server_uri_override,
-    absl::optional<std::string> device_id_override,
+    std::optional<std::string> s3_server_uri_override,
+    std::optional<std::string> device_id_override,
     std::unique_ptr<LibassistantServiceHost> libassistant_service_host)
     : assistant_settings_(std::make_unique<AssistantSettingsImpl>(context)),
       assistant_host_(std::make_unique<AssistantHost>(this)),
@@ -214,7 +214,7 @@ AssistantManagerServiceImpl::~AssistantManagerServiceImpl() {
   assistant_host_ = nullptr;
 }
 
-void AssistantManagerServiceImpl::Start(const absl::optional<UserInfo>& user,
+void AssistantManagerServiceImpl::Start(const std::optional<UserInfo>& user,
                                         bool enable_hotword) {
   DCHECK(!IsServiceStarted());
   DCHECK(GetState() == State::STOPPED || GetState() == State::DISCONNECTED);
@@ -260,8 +260,7 @@ AssistantManagerService::State AssistantManagerServiceImpl::GetState() const {
   return state_;
 }
 
-void AssistantManagerServiceImpl::SetUser(
-    const absl::optional<UserInfo>& user) {
+void AssistantManagerServiceImpl::SetUser(const std::optional<UserInfo>& user) {
   if (!IsServiceStarted())
     return;
 
@@ -477,7 +476,7 @@ void AssistantManagerServiceImpl::Initialize() {
 }
 
 void AssistantManagerServiceImpl::InitAssistant(
-    const absl::optional<UserInfo>& user) {
+    const std::optional<UserInfo>& user) {
   DCHECK(!IsServiceStarted());
 
   auto bootup_config = bootup_config_.Clone();

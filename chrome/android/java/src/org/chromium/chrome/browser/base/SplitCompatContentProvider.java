@@ -47,7 +47,11 @@ public class SplitCompatContentProvider extends ContentProvider {
     }
 
     @Override
-    public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs,
+    public Cursor query(
+            Uri uri,
+            String[] projection,
+            String selection,
+            String[] selectionArgs,
             String sortOrder) {
         return getImpl().query(uri, projection, selection, selectionArgs, sortOrder);
     }
@@ -96,13 +100,22 @@ public class SplitCompatContentProvider extends ContentProvider {
             return mContentProvider.getCallingPackage();
         }
 
-        public abstract Cursor query(Uri uri, String[] projection, String selection,
-                String[] selectionArgs, String sortOrder);
+        public abstract Cursor query(
+                Uri uri,
+                String[] projection,
+                String selection,
+                String[] selectionArgs,
+                String sortOrder);
+
         public abstract Uri insert(Uri uri, ContentValues values);
+
         public abstract int delete(Uri uri, String selection, String[] selectionArgs);
+
         public abstract int update(
                 Uri uri, ContentValues values, String selection, String[] selectionArgs);
+
         public abstract String getType(Uri uri);
+
         public void dump(FileDescriptor fd, PrintWriter writer, String[] args) {}
     }
 }

@@ -64,6 +64,13 @@ HttpsUpgradesNavigationThrottle::MaybeCreateThrottleFor(
   interstitial_state.enabled_by_pref =
       prefs && prefs->GetBoolean(prefs::kHttpsOnlyModeEnabled);
 
+  if (base::FeatureList::IsEnabled(features::kHttpsFirstModeIncognito)) {
+    if (profile->IsIncognitoProfile() && prefs &&
+        prefs->GetBoolean(prefs::kHttpsFirstModeIncognito)) {
+      interstitial_state.enabled_by_pref = true;
+    }
+  }
+
   StatefulSSLHostStateDelegate* state =
       static_cast<StatefulSSLHostStateDelegate*>(
           profile->GetSSLHostStateDelegate());
@@ -74,13 +81,14 @@ HttpsUpgradesNavigationThrottle::MaybeCreateThrottleFor(
       HttpsFirstModeServiceFactory::GetForProfile(profile);
   if (hfm_service) {
     // Can be null in some cases, e.g. when using Ash sign-in profile.
+    hfm_service->IncrementRecentNavigationCount();
     interstitial_state.enabled_by_typically_secure_browsing =
         hfm_service->IsInterstitialEnabledByTypicallySecureUserHeuristic();
   }
 
   // StatefulSSLHostStateDelegate can be null during tests.
-  if (state && state->IsHttpsEnforcedForHost(handle->GetURL().host(),
-                                             storage_partition)) {
+  if (state &&
+      state->IsHttpsEnforcedForUrl(handle->GetURL(), storage_partition)) {
     interstitial_state.enabled_by_engagement_heuristic = true;
   }
 

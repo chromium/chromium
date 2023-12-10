@@ -21,14 +21,12 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/extensions/extension_management.h"
-#include "chrome/browser/extensions/extension_message_bubble_controller.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/profile_util.h"
 #include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/extensions/extension_action_view_controller.h"
-#include "chrome/browser/ui/extensions/extension_message_bubble_factory.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model_factory.h"
@@ -55,8 +53,7 @@ ToolbarActionsModel::ToolbarActionsModel(
       extension_registry_(extensions::ExtensionRegistry::Get(profile_)),
       extension_action_manager_(
           extensions::ExtensionActionManager::Get(profile_)),
-      actions_initialized_(false),
-      has_active_bubble_(false) {
+      actions_initialized_(false) {
   extensions::ExtensionSystem::Get(profile_)->ready().Post(
       FROM_HERE, base::BindOnce(&ToolbarActionsModel::OnReady,
                                 weak_ptr_factory_.GetWeakPtr()));
@@ -210,17 +207,6 @@ void ToolbarActionsModel::RemoveAction(const ActionId& action_id) {
 
   for (Observer& observer : observers_)
     observer.OnToolbarActionRemoved(action_id);
-}
-
-std::unique_ptr<extensions::ExtensionMessageBubbleController>
-ToolbarActionsModel::GetExtensionMessageBubbleController(Browser* browser) {
-  std::unique_ptr<extensions::ExtensionMessageBubbleController> controller;
-  if (has_active_bubble())
-    return controller;
-  controller = ExtensionMessageBubbleFactory(browser).GetController();
-  if (controller)
-    controller->SetIsActiveBubble();
-  return controller;
 }
 
 const std::u16string ToolbarActionsModel::GetExtensionName(

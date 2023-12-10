@@ -139,7 +139,7 @@ class WebDatabaseMigrationTest : public testing::Test {
   base::ScopedTempDir temp_dir_;
 };
 
-const int WebDatabaseMigrationTest::kCurrentTestedVersionNumber = 120;
+const int WebDatabaseMigrationTest::kCurrentTestedVersionNumber = 122;
 
 void WebDatabaseMigrationTest::LoadDatabase(
     const base::FilePath::StringType& file) {
@@ -155,21 +155,32 @@ void WebDatabaseMigrationTest::LoadDatabase(
 // schema as migrating from an empty database.
 TEST_F(WebDatabaseMigrationTest, VersionXxSqlFilesAreGolden) {
   DoMigration();
-  sql::Database connection;
-  ASSERT_TRUE(connection.Open(GetDatabasePath()));
-  const std::string& expected_schema = connection.GetSchema();
+
+  // Initialize the database and retrieve the initial schema. The database needs
+  // to be closed.
+  const base::FilePath db_path = GetDatabasePath();
+  std::string expected_schema;
+  {
+    sql::Database connection;
+    ASSERT_TRUE(connection.Open(db_path));
+    expected_schema = connection.GetSchema();
+    ASSERT_TRUE(connection.Raze());
+  }
+
   for (int i = WebDatabase::kDeprecatedVersionNumber + 1;
        i < kCurrentTestedVersionNumber; ++i) {
-    connection.Raze();
-    const base::FilePath& file_name = base::FilePath::FromUTF8Unsafe(
+    const base::FilePath file_name = base::FilePath::FromUTF8Unsafe(
         "version_" + base::NumberToString(i) + ".sql");
     ASSERT_NO_FATAL_FAILURE(LoadDatabase(file_name.value()))
         << "Failed to load " << file_name.MaybeAsASCII();
     DoMigration();
 
+    sql::Database connection;
+    ASSERT_TRUE(connection.Open(db_path));
     EXPECT_EQ(NormalizeSchemaForComparison(expected_schema),
               NormalizeSchemaForComparison(connection.GetSchema()))
         << "For version " << i;
+    ASSERT_TRUE(connection.Raze());
   }
 }
 
@@ -1263,5 +1274,51 @@ TEST_F(WebDatabaseMigrationTest, MigrationVersion119ToCurrent) {
     EXPECT_TRUE(connection.DoesTableExist("payment_instruments_metadata"));
     EXPECT_TRUE(
         connection.DoesTableExist("payment_instrument_supported_rails"));
+  }
+}
+
+// Tests that the server_address* tables are dropped.
+TEST_F(WebDatabaseMigrationTest, MigrateVersion120ToCurrent) {
+  ASSERT_NO_FATAL_FAILURE(LoadDatabase(FILE_PATH_LITERAL("version_120.sql")));
+  {
+    sql::Database connection;
+    ASSERT_TRUE(connection.Open(GetDatabasePath()));
+    ASSERT_TRUE(sql::MetaTable::DoesTableExist(&connection));
+
+    EXPECT_EQ(120, VersionFromConnection(&connection));
+    EXPECT_TRUE(connection.DoesTableExist("server_addresses"));
+    EXPECT_TRUE(connection.DoesTableExist("server_address_metadata"));
+  }
+  DoMigration();
+  {
+    sql::Database connection;
+    ASSERT_TRUE(connection.Open(GetDatabasePath()));
+    ASSERT_TRUE(sql::MetaTable::DoesTableExist(&connection));
+
+    EXPECT_EQ(kCurrentTestedVersionNumber, VersionFromConnection(&connection));
+    EXPECT_FALSE(connection.DoesTableExist("server_addresses"));
+    EXPECT_FALSE(connection.DoesTableExist("server_address_metadata"));
+  }
+}
+
+// Tests that the `featured_by_policy` column is added to the keywords table.
+TEST_F(WebDatabaseMigrationTest, MigrateVersion121ToCurrent) {
+  ASSERT_NO_FATAL_FAILURE(LoadDatabase(FILE_PATH_LITERAL("version_121.sql")));
+  {
+    sql::Database connection;
+    ASSERT_TRUE(connection.Open(GetDatabasePath()));
+    ASSERT_TRUE(sql::MetaTable::DoesTableExist(&connection));
+
+    EXPECT_EQ(121, VersionFromConnection(&connection));
+    EXPECT_FALSE(connection.DoesColumnExist("keywords", "featured_by_policy"));
+  }
+  DoMigration();
+  {
+    sql::Database connection;
+    ASSERT_TRUE(connection.Open(GetDatabasePath()));
+    ASSERT_TRUE(sql::MetaTable::DoesTableExist(&connection));
+
+    EXPECT_EQ(kCurrentTestedVersionNumber, VersionFromConnection(&connection));
+    EXPECT_TRUE(connection.DoesColumnExist("keywords", "featured_by_policy"));
   }
 }

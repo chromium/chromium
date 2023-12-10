@@ -52,7 +52,7 @@ class GPU_GLES2_EXPORT OzoneImageBacking final
       scoped_refptr<gfx::NativePixmap> pixmap,
       const GpuDriverBugWorkarounds& workarounds,
       bool use_passthrough,
-      absl::optional<gfx::BufferUsage> buffer_usage = absl::nullopt);
+      std::optional<gfx::BufferUsage> buffer_usage = std::nullopt);
 
   OzoneImageBacking(const OzoneImageBacking&) = delete;
   OzoneImageBacking& operator=(const OzoneImageBacking&) = delete;
@@ -93,10 +93,19 @@ class GPU_GLES2_EXPORT OzoneImageBacking final
       MemoryTypeTracker* tracker,
       VaapiDependenciesFactory* dep_factory) override;
 
+#if BUILDFLAG(ENABLE_VULKAN)
+  std::unique_ptr<VulkanImageRepresentation> ProduceVulkan(
+      SharedImageManager* manager,
+      MemoryTypeTracker* tracker,
+      gpu::VulkanDeviceQueue* vulkan_device_queue,
+      gpu::VulkanImplementation& vulkan_impl) override;
+#endif
+
  private:
   friend class GLOzoneImageRepresentationShared;
   friend class DawnOzoneImageRepresentation;
   friend class SkiaVkOzoneImageRepresentation;
+  friend class VulkanOzoneImageRepresentation;
   class VaapiOzoneImageRepresentation;
   class OverlayOzoneImageRepresentation;
 
@@ -110,6 +119,10 @@ class GPU_GLES2_EXPORT OzoneImageBacking final
                            MarksContextLostOnContextLost2);
   FRIEND_TEST_ALL_PREFIXES(OzoneImageBackingFactoryTest,
                            RemovesTextureHoldersOnContextDestroy);
+  FRIEND_TEST_ALL_PREFIXES(OzoneImageBackingFactoryTest,
+                           FindsCompatibleContextAndReusesTexture);
+  FRIEND_TEST_ALL_PREFIXES(OzoneImageBackingFactoryTest,
+                           CorrectlyDestroysAndMarksContextLost);
 
   bool VaSync();
 
@@ -130,18 +143,25 @@ class GPU_GLES2_EXPORT OzoneImageBacking final
                                               MemoryTypeTracker* tracker,
                                               bool is_passthrough);
 
+  scoped_refptr<OzoneImageGLTexturesHolder> RetainGLTexture(
+      bool is_passthrough);
+  scoped_refptr<OzoneImageGLTexturesHolder> RetainGLTextureForCacheWorkaround(
+      bool is_passthrough);
+  scoped_refptr<OzoneImageGLTexturesHolder> RetainGLTexturePerContextCache(
+      bool is_passthrough);
+
   // gl::GLContext::GLContextObserver:
   void OnGLContextLost(gl::GLContext* context) override;
   void OnGLContextWillDestroy(gl::GLContext* context) override;
 
   void OnGLContextLostOrDestroy(gl::GLContext* context, bool mark_context_lost);
 
-  scoped_refptr<OzoneImageGLTexturesHolder> RetainGLTexture(
-      bool is_passthrough);
-
   // Returns a GpuMemoryBufferHandle for a single plane of the backing pixmap.
   gfx::GpuMemoryBufferHandle GetSinglePlaneGpuMemoryBufferHandle(
       uint32_t index);
+
+  void DestroyTexturesOnContext(OzoneImageGLTexturesHolder* holder,
+                                gl::GLContext* context);
 
   // Indicates if this backing produced a VASurface that may have pending work.
   bool has_pending_va_writes_ = false;

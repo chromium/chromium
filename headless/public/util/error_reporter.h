@@ -6,9 +6,10 @@
 #define HEADLESS_PUBLIC_UTIL_ERROR_REPORTER_H_
 
 #include <string>
+#include <string_view>
 #include <vector>
 
-#include "base/strings/string_piece.h"
+#include "base/dcheck_is_on.h"
 #include "headless/public/headless_export.h"
 
 namespace headless {
@@ -32,7 +33,7 @@ class HEADLESS_EXPORT ErrorReporter {
   void SetName(const char* name);
 
   // Report an error in the current parsing context.
-  void AddError(base::StringPiece description);
+  void AddError(std::string_view description);
 
   // Returns true if any errors have been reported so far.
   bool HasErrors() const;
@@ -46,7 +47,7 @@ class HEADLESS_EXPORT ErrorReporter {
   void Push() {}
   void Pop() {}
   void SetName(const char* name) {}
-  void AddError(base::StringPiece description) {}
+  void AddError(std::string_view description) {}
   bool HasErrors() const { return false; }
   std::vector<std::string> errors() const { return {}; }
   std::string ToString() const { return ""; }

@@ -6,21 +6,24 @@
 #define ASH_SYSTEM_HOLDING_SPACE_HOLDING_SPACE_VIEW_DELEGATE_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "ash/ash_export.h"
-#include "ash/public/cpp/tablet_mode.h"
-#include "ash/public/cpp/tablet_mode_observer.h"
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/scoped_observation.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/models/simple_menu_model.h"
+#include "ui/display/display_observer.h"
 #include "ui/views/context_menu_controller.h"
 #include "ui/views/drag_controller.h"
 #include "ui/views/view.h"
+
+namespace display {
+enum class TabletState;
+}  // namespace display
 
 namespace ui {
 class GestureEvent;
@@ -45,7 +48,7 @@ class ASH_EXPORT HoldingSpaceViewDelegate
     : public views::ContextMenuController,
       public views::DragController,
       public ui::SimpleMenuModel::Delegate,
-      public TabletModeObserver {
+      public display::DisplayObserver {
  public:
   // A class which caches the current selection of holding space item views on
   // creation and restores that selection on destruction.
@@ -59,8 +62,8 @@ class ASH_EXPORT HoldingSpaceViewDelegate
    private:
     const raw_ptr<HoldingSpaceViewDelegate, ExperimentalAsh> delegate_;
     std::vector<std::string> selected_item_ids_;
-    absl::optional<std::string> selected_range_start_item_id_;
-    absl::optional<std::string> selected_range_end_item_id_;
+    std::optional<std::string> selected_range_start_item_id_;
+    std::optional<std::string> selected_range_end_item_id_;
   };
 
   explicit HoldingSpaceViewDelegate(HoldingSpaceTrayBubble* bubble);
@@ -153,9 +156,8 @@ class ASH_EXPORT HoldingSpaceViewDelegate
   // SimpleMenuModel::Delegate:
   void ExecuteCommand(int command_id, int event_flags) override;
 
-  // TabletModeObserver:
-  void OnTabletModeStarted() override;
-  void OnTabletModeEnded() override;
+  // display::DisplayObserver:
+  void OnDisplayTabletStateChanged(display::TabletState state) override;
 
   // Builds and returns a raw pointer to `context_menu_model_`.
   ui::SimpleMenuModel* BuildMenuModel();
@@ -217,8 +219,7 @@ class ASH_EXPORT HoldingSpaceViewDelegate
   // Cached size of the selection of holding space item views.
   size_t selection_size_ = 0u;
 
-  base::ScopedObservation<TabletMode, TabletModeObserver> tablet_mode_observer_{
-      this};
+  display::ScopedDisplayObserver display_observer_{this};
 
   base::WeakPtrFactory<HoldingSpaceViewDelegate> weak_factory_{this};
 };

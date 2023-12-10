@@ -25,11 +25,16 @@
 #include "crypto/ec_signature_creator.h"
 #include "crypto/sha2.h"
 #include "device/fido/authenticator_get_assertion_response.h"
+#include "device/fido/authenticator_make_credential_response.h"
 #include "device/fido/cable/v2_constants.h"
 #include "device/fido/ctap_get_assertion_request.h"
+#include "device/fido/ctap_make_credential_request.h"
 #include "device/fido/enclave/enclave_authenticator.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/public_key_credential_descriptor.h"
+#include "device/fido/public_key_credential_params.h"
+#include "device/fido/public_key_credential_rp_entity.h"
+#include "device/fido/public_key_credential_user_entity.h"
 #include "mojo/core/embedder/embedder.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/cert_verifier/cert_verifier_service_factory.h"
@@ -74,47 +79,114 @@ std::vector<uint8_t> Sign(crypto::ECPrivateKey* signing_key,
 
 // This is an executable test harness that wraps EnclaveAuthenticator and can
 // initiate transactions.
-// TODO(kenrb): Delete class and file this when EnclaveAuthenticator is properly
+// TODO(kenrb): Delete class and this file when EnclaveAuthenticator is properly
 // integrated as a FIDO authenticator and has proper unit tests.
 class EnclaveTestClient {
  public:
-  EnclaveTestClient();
+  EnclaveTestClient() = default;
 
-  int StartTransaction(const std::string& device_id,
-                       const std::string& signing_key,
-                       const std::string& service_url,
-                       const std::string& username,
-                       const std::string& sync_entity);
+  bool Initialize(const std::string& device_id,
+                  const std::string& signing_key,
+                  const std::string& service_url,
+                  const std::string& username,
+                  const std::string& sync_entity);
+  int StartRegisterTransaction();
+  int StartAssertTransaction();
 
  private:
   network::mojom::CertVerifierServiceRemoteParamsPtr GetCertVerifierParams();
   void CreateInProcessNetworkServiceAndContext();
 
-  void Terminate(CtapDeviceResponseCode result,
-                 std::vector<AuthenticatorGetAssertionResponse> response);
+  void OnMakeCredentialComplete(
+      CtapDeviceResponseCode result,
+      absl::optional<AuthenticatorMakeCredentialResponse> response);
+  void OnGetAssertionComplete(
+      CtapDeviceResponseCode result,
+      std::vector<AuthenticatorGetAssertionResponse> response);
 
+  std::vector<uint8_t> device_id_bytes_;
   std::unique_ptr<enclave::EnclaveAuthenticator> device_;
   std::unique_ptr<crypto::ECPrivateKey> signing_key_;
+  std::string service_url_;
+  std::string username_;
+  std::string sync_entity_;
 
   mojo::Remote<network::mojom::NetworkService> network_service_remote_;
   mojo::Remote<network::mojom::NetworkContext> network_context_;
   std::unique_ptr<network::NetworkService> in_process_network_service_;
   std::unique_ptr<cert_verifier::CertVerifierServiceFactoryImpl> factory_;
 
-  base::RunLoop run_loop_;
+  int status_ = 0;
+
+  std::unique_ptr<base::RunLoop> run_loop_;
 };
 
-EnclaveTestClient::EnclaveTestClient() {
+bool EnclaveTestClient::Initialize(const std::string& device_id,
+                                   const std::string& signing_key,
+                                   const std::string& service_url,
+                                   const std::string& username,
+                                   const std::string& sync_entity) {
   CreateInProcessNetworkServiceAndContext();
+  if (!base::HexStringToBytes(device_id, &device_id_bytes_)) {
+    std::cout << "Invalid device ID\n";
+    return false;
+  }
+
+  std::vector<uint8_t> signing_key_bytes;
+  if (!base::HexStringToBytes(signing_key, &signing_key_bytes)) {
+    std::cout << "Invalid signing key hex string\n";
+    return false;
+  }
+
+  signing_key_ =
+      crypto::ECPrivateKey::CreateFromPrivateKeyInfo(signing_key_bytes);
+  if (!signing_key_) {
+    std::cout << "Invalid signing key\n";
+    return false;
+  }
+
+  service_url_ = service_url;
+  username_ = username;
+  sync_entity_ = sync_entity;
+
+  return true;
 }
 
-int EnclaveTestClient::StartTransaction(const std::string& device_id,
-                                        const std::string& signing_key,
-                                        const std::string& service_url,
-                                        const std::string& username,
-                                        const std::string& sync_entity) {
+int EnclaveTestClient::StartRegisterTransaction() {
+  CHECK(!run_loop_);
+  // The field values are ignored.
+  CtapMakeCredentialRequest request(
+      "client_data_json", PublicKeyCredentialRpEntity("rp_id"),
+      PublicKeyCredentialUserEntity(std::vector<uint8_t>()),
+      PublicKeyCredentialParams(
+          std::vector<PublicKeyCredentialParams::CredentialInfo>()));
+  MakeCredentialOptions options;
+  absl::optional<base::Value> parsed_json = base::JSONReader::Read(
+      R"({"attestation":"direct","authenticatorSelection":{"authenticatorAttachment":"platform","residentKey":"required","userVerification":"required"},"challenge":"dGVzdCBjaGFsbGVuZ2U","excludeCredentials":[{"id":"FBUW","transports":["usb"],"type":"public-key"},{"id":"Hh8g","type":"public-key"}],"extensions":{"appIdExclude":"https://example.test/appid.json","credBlob":"dGVzdCBjcmVkIGJsb2I","credProps":true,"credentialProtectionPolicy":"userVerificationRequired","enforceCredentialProtectionPolicy":true,"hmacCreateSecret":true,"largeBlob":{"support":"required"},"minPinLength":true,"payment":{"isPayment":true},"prf":{"eval":{"first":"AQIDBA","second":"BQYHCA"}},"remoteDesktopClientOverride":{"origin":"https://login.example.test","sameOriginWithAncestors":true}},"pubKeyCredParams":[{"alg":-7,"type":"public-key"},{"alg":-257,"type":"public-key"}],"rp":{"id":"example.test","name":"Example LLC"},"user":{"displayName":"Example User","id":"dGVzdCB1c2VyIGlk","name":"user@example.test"}})");
+  options.json = base::MakeRefCounted<JSONRequest>(std::move(*parsed_json));
+
+  device_ = std::make_unique<enclave::EnclaveAuthenticator>(
+      service_url_.empty() ? kLocalUrl : GURL(service_url_), kPeerPublicKey,
+      std::vector<sync_pb::WebauthnCredentialSpecifics>(),
+      base::BindRepeating([](sync_pb::WebauthnCredentialSpecifics) {}),
+      device_id_bytes_, username_.empty() ? "testuser" : username_,
+      network_context_.get(), base::BindRepeating(&Sign, signing_key_.get()));
+  device_->MakeCredential(
+      request, options,
+      base::BindOnce(&EnclaveTestClient::OnMakeCredentialComplete,
+                     base::Unretained(this)));
+
+  run_loop_ = std::make_unique<base::RunLoop>();
+  run_loop_->Run();
+  device_.reset();
+  run_loop_.reset();
+  return status_;
+}
+
+int EnclaveTestClient::StartAssertTransaction() {
+  CHECK(!run_loop_);
   sync_pb::WebauthnCredentialSpecifics entity;
-  auto decoded_entity = base::Base64Decode(sync_entity);
+  auto decoded_entity = base::Base64Decode(sync_entity_);
   CHECK(decoded_entity);
   entity.ParseFromArray(decoded_entity->data(), decoded_entity->size());
   std::vector<sync_pb::WebauthnCredentialSpecifics> passkeys{std::move(entity)};
@@ -131,36 +203,22 @@ int EnclaveTestClient::StartTransaction(const std::string& device_id,
       R"({"allowCredentials":[{"id":"FBUW","transports":["usb"],"type":"public-key"},{"id":"Hh8g","type":"public-key"}],"challenge":"dGVzdCBjaGFsbGVuZ2U","rpId":"webauth.io","userVerification":"required"})");
   options.json = base::MakeRefCounted<JSONRequest>(std::move(*parsed_json));
 
-  std::vector<uint8_t> device_id_bytes;
-  if (!base::HexStringToBytes(device_id, &device_id_bytes)) {
-    std::cout << "Invalid device ID\n";
-    return -1;
-  }
-
-  std::vector<uint8_t> signing_key_bytes;
-  if (!base::HexStringToBytes(signing_key, &signing_key_bytes)) {
-    std::cout << "Invalid signing key hex string\n";
-    return -1;
-  }
-
-  signing_key_ =
-      crypto::ECPrivateKey::CreateFromPrivateKeyInfo(signing_key_bytes);
-  if (!signing_key_) {
-    std::cout << "Invalid signing key\n";
-    return -1;
-  }
-
   device_ = std::make_unique<enclave::EnclaveAuthenticator>(
-      service_url.empty() ? kLocalUrl : GURL(service_url), kPeerPublicKey,
-      std::move(passkeys), std::move(device_id_bytes),
-      username.empty() ? "testuser" : username, network_context_.get(),
-      base::BindRepeating(&Sign, signing_key_.get()));
+      service_url_.empty() ? kLocalUrl : GURL(service_url_), kPeerPublicKey,
+      std::move(passkeys),
+      base::BindRepeating([](sync_pb::WebauthnCredentialSpecifics) {}),
+      device_id_bytes_, username_.empty() ? "testuser" : username_,
+      network_context_.get(), base::BindRepeating(&Sign, signing_key_.get()));
   device_->GetAssertion(
       request, options,
-      base::BindOnce(&EnclaveTestClient::Terminate, base::Unretained(this)));
+      base::BindOnce(&EnclaveTestClient::OnGetAssertionComplete,
+                     base::Unretained(this)));
 
-  run_loop_.Run();
-  return 0;
+  run_loop_ = std::make_unique<base::RunLoop>();
+  run_loop_->Run();
+  device_.reset();
+  run_loop_.reset();
+  return status_;
 }
 
 network::mojom::CertVerifierServiceRemoteParamsPtr
@@ -175,6 +233,7 @@ EnclaveTestClient::GetCertVerifierParams() {
       factory_remote.BindNewPipeAndPassReceiver());
   factory_->GetNewCertVerifier(
       cert_verifier_remote.InitWithNewPipeAndPassReceiver(),
+      /*updater_receiver=*/mojo::NullReceiver(),
       cert_verifier_client.InitWithNewPipeAndPassRemote(),
       cert_verifier::mojom::CertVerifierCreationParams::New());
 
@@ -193,17 +252,34 @@ void EnclaveTestClient::CreateInProcessNetworkServiceAndContext() {
       network_context_.BindNewPipeAndPassReceiver(), std::move(context_params));
 }
 
-void EnclaveTestClient::Terminate(
+void EnclaveTestClient::OnMakeCredentialComplete(
+    CtapDeviceResponseCode result,
+    absl::optional<AuthenticatorMakeCredentialResponse> response) {
+  if (result == CtapDeviceResponseCode::kSuccess) {
+    CHECK(response);
+    std::cout << "Registered a credential successfully.\n";
+    status_ = 0;
+  } else {
+    std::cout << "MakeCredential request completed with error: "
+              << static_cast<int>(result) << "\n";
+    status_ = -1;
+  }
+  run_loop_->Quit();
+}
+
+void EnclaveTestClient::OnGetAssertionComplete(
     CtapDeviceResponseCode result,
     std::vector<AuthenticatorGetAssertionResponse> responses) {
   if (result == CtapDeviceResponseCode::kSuccess) {
     CHECK(responses.size() == 1u);
     std::cout << "Returned 1 assertion successfully.\n";
+    status_ = 0;
   } else {
-    std::cout << "Request completed with error: " << static_cast<int>(result)
-              << "\n";
+    std::cout << "GetAssertion request completed with error: "
+              << static_cast<int>(result) << "\n";
+    status_ = -1;
   }
-  run_loop_.Quit();
+  run_loop_->Quit();
 }
 
 }  // namespace
@@ -248,6 +324,13 @@ int main(int argc, char** argv) {
   }
 
   device::EnclaveTestClient client;
-  return client.StartTransaction(device_id, private_key, service_url, username,
-                                 entity);
+  if (!client.Initialize(device_id, private_key, service_url, username,
+                         entity)) {
+    return -1;
+  }
+  int err = client.StartRegisterTransaction();
+  if (err != 0) {
+    return err;
+  }
+  return client.StartAssertTransaction();
 }

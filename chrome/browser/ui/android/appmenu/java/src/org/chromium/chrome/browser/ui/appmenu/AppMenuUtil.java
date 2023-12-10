@@ -17,12 +17,11 @@ import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
-/**
- * This is a helper class for app menu.
- */
+/** This is a helper class for app menu. */
 public class AppMenuUtil {
     /** MenuItem Animation Constants */
     static final int ENTER_ITEM_DURATION_MS = 350;
+
     static final int ENTER_ITEM_BASE_DELAY_MS = 80;
     static final int ENTER_ITEM_ADDL_DELAY_MS = 30;
     static final float ENTER_STANDARD_ITEM_OFFSET_Y_DP = -10.f;
@@ -42,18 +41,20 @@ public class AppMenuUtil {
 
         AnimatorSet animation = new AnimatorSet();
         final float offsetYPx = ENTER_STANDARD_ITEM_OFFSET_Y_DP * dpToPx;
-        animation.playTogether(ObjectAnimator.ofFloat(view, View.ALPHA, 0.f, 1.f),
+        animation.playTogether(
+                ObjectAnimator.ofFloat(view, View.ALPHA, 0.f, 1.f),
                 ObjectAnimator.ofFloat(view, View.TRANSLATION_Y, offsetYPx, 0.f));
         animation.setStartDelay(startDelay);
         animation.setDuration(ENTER_ITEM_DURATION_MS);
         animation.setInterpolator(Interpolators.EMPHASIZED);
 
-        animation.addListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationStart(Animator animation) {
-                view.setAlpha(0.f);
-            }
-        });
+        animation.addListener(
+                new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationStart(Animator animation) {
+                        view.setAlpha(0.f);
+                    }
+                });
         return animation;
     }
 
@@ -97,14 +98,15 @@ public class AppMenuUtil {
         animation.setStartDelay(ENTER_ITEM_BASE_DELAY_MS);
         animation.setInterpolator(Interpolators.LINEAR_OUT_SLOW_IN_INTERPOLATOR);
 
-        animation.addListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationStart(Animator animation) {
-                for (int i = 0; i < maxViewsToAnimate; i++) {
-                    buttons[i].setAlpha(0.f);
-                }
-            }
-        });
+        animation.addListener(
+                new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationStart(Animator animation) {
+                        for (int i = 0; i < maxViewsToAnimate; i++) {
+                            buttons[i].setAlpha(0.f);
+                        }
+                    }
+                });
         return animation;
     }
 
@@ -138,7 +140,8 @@ public class AppMenuUtil {
         if (key == AppMenuItemProperties.SUPPORT_ENTER_ANIMATION) {
             if (model.get(AppMenuItemProperties.SUPPORT_ENTER_ANIMATION)) {
                 int position = model.get(AppMenuItemProperties.POSITION);
-                view.setTag(R.id.menu_item_enter_anim_id,
+                view.setTag(
+                        R.id.menu_item_enter_anim_id,
                         buildStandardItemEnterAnimator(view, position));
             } else {
                 view.setTag(R.id.menu_item_enter_anim_id, null);

@@ -8,6 +8,7 @@
 <translation id="1420684932347524586">糟糕！无法生成随机的 RSA 私有密钥。</translation>
 <translation id="1445572445564823378">此扩展程序拖慢了 <ph name="PRODUCT_NAME" />的运行速度。您应将其停用，以恢复 <ph name="PRODUCT_NAME" />的性能。</translation>
 <translation id="1468038450257740950">WebGL 不受支持。</translation>
+<translation id="1610570795592207282">无法为脚本加载重叠样式表“<ph name="RELATIVE_PATH" />”。</translation>
 <translation id="1803557475693955505">无法加载背景页“<ph name="BACKGROUND_PAGE" />”。</translation>
 <translation id="2159915644201199628">无法对图片解码：“<ph name="IMAGE_NAME" />”</translation>
 <translation id="2350172092385603347">已使用本地化功能，但未在清单中指定 default_locale。</translation>
@@ -18,14 +19,12 @@
 <translation id="3115238746683532089">来自供应商 <ph name="VENDOR_ID" /> 的未知产品 <ph name="PRODUCT_ID" />（序列号为 <ph name="SERIAL_NUMBER" />）</translation>
 <translation id="3144135466825225871">未能替换 CRX 文件。请检查该文件是否正在使用。</translation>
 <translation id="3163201441334626963">来自供应商 <ph name="VENDOR_ID" /> 的未知产品 <ph name="PRODUCT_ID" /></translation>
-<translation id="3302709122321372472">无法为内容脚本加载重叠样式表“<ph name="RELATIVE_PATH" />”。</translation>
 <translation id="3369521687965833290">无法将扩展程序解包。要安全地将扩展程序解包，您的个人资料目录中的解包路径必须以驱动器号开头，并且不能包含交接点、装入点或符号链接。您的个人资料中不存在这样的路径。</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" />（序列号为 <ph name="SERIAL_NUMBER" />）</translation>
 <translation id="3466070586188012397">来自供应商 <ph name="VENDOR_ID" /> 的<ph name="PRODUCT_NAME" />（序列号为 <ph name="SERIAL_NUMBER" />）</translation>
 <translation id="3561217442734750519">私有密钥的输入值必须是有效的路径。</translation>
 <translation id="388442998277590542">无法加载选项页“<ph name="OPTIONS_PAGE" />”。</translation>
 <translation id="3984413272403535372">为扩展程序签名时出错。</translation>
-<translation id="39964277676607559">无法为内容脚本加载 JavaScript“<ph name="RELATIVE_PATH" />”。</translation>
 <translation id="4115165561519362854">此设备的管理员要求“<ph name="EXTENSION_NAME" />”的最低版本为 <ph name="EXTENSION_VERSION" />。此扩展程序必须更新到该版本（或更高版本）后才能启用。</translation>
 <translation id="4233778200880751280">无法加载简介页面“<ph name="ABOUT_PAGE" />”。</translation>
 <translation id="471800408830181311">无法输出私有密钥。</translation>
@@ -33,6 +32,7 @@
 <translation id="4988792151665380515">无法导出公共密钥。</translation>
 <translation id="5026754133087629784">网页视图：<ph name="WEBVIEW_TAG_NAME" /></translation>
 <translation id="5098647635849512368">找不到指向待打包目录的绝对路径。</translation>
+<translation id="5160071981665899014">无法为脚本加载 JavaScript“<ph name="RELATIVE_PATH" />”。</translation>
 <translation id="5356315618422219272">应用视图：<ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5436430103864390185">不支持成形的窗口。</translation>
 <translation id="5456409301717116725">此扩展程序包含密钥文件“<ph name="KEY_PATH" />”，您最好不要执行此操作。</translation>

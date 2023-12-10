@@ -7,14 +7,14 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/content_settings/core/browser/host_content_settings_map.h"
 #import "components/content_settings/core/common/content_settings.h"
-#import "components/supervised_user/core/common/supervised_user_utils.h"
+#import "components/supervised_user/core/browser/supervised_user_preferences.h"
 #import "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
-#import "ios/chrome/browser/overlays/public/overlay_callback_manager.h"
-#import "ios/chrome/browser/overlays/public/overlay_modality.h"
-#import "ios/chrome/browser/overlays/public/overlay_request.h"
-#import "ios/chrome/browser/overlays/public/overlay_request_queue.h"
-#import "ios/chrome/browser/overlays/public/overlay_response.h"
-#import "ios/chrome/browser/overlays/public/web_content_area/http_auth_overlay.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_callback_manager.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_modality.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_request.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_request_queue.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_response.h"
+#import "ios/chrome/browser/overlays/model/public/web_content_area/http_auth_overlay.h"
 #import "ios/chrome/browser/permissions/model/permissions_tab_helper.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
@@ -56,8 +56,8 @@ void OnHTTPAuthOverlayFinished(web::WebStateDelegate::AuthCallback callback,
 bool IsMicOrCameraAccessSubjectToParentalControls(
     ChromeBrowserState* browser_state,
     NSArray<NSNumber*>* permissions) {
-  if (!supervised_user::IsSubjectToParentalControls(
-          browser_state->GetPrefs())) {
+  if (!browser_state || !supervised_user::IsSubjectToParentalControls(
+                            *browser_state->GetPrefs())) {
     return false;
   }
 
@@ -258,7 +258,9 @@ web::WebState* WebStateDelegateBrowserAgent::OpenURLFromWebState(
 
 void WebStateDelegateBrowserAgent::ShowRepostFormWarningDialog(
     web::WebState* source,
+    web::FormWarningType warning_type,
     base::OnceCallback<void(bool)> callback) {
+  CHECK_EQ(warning_type, web::FormWarningType::kRepost);
   if (!container_view_provider_) {
     // There's no way to show the dialog so treat it as if the user said no.
     std::move(callback).Run(false);
@@ -267,6 +269,8 @@ void WebStateDelegateBrowserAgent::ShowRepostFormWarningDialog(
   // TODO(crbug.com/1266052) : Clean up this API.
   RepostFormTabHelper::FromWebState(source)->PresentDialog(
       [container_view_provider_ dialogLocation], std::move(callback));
+
+  // TODO(crbug.com/1501150): Handle FormWarningType::kInsecureForm.
 }
 
 web::JavaScriptDialogPresenter*

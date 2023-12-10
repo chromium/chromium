@@ -37,7 +37,7 @@ class CupsProxyServiceDelegateImpl
 
   // Look for a printer with the given id in any class.  Returns a copy of the
   // printer if found, nullptr otherwise.
-  absl::optional<chromeos::Printer> GetPrinter(const std::string& id) override;
+  std::optional<chromeos::Printer> GetPrinter(const std::string& id) override;
 
   // Get the currently known list of printers.
   std::vector<chromeos::Printer> GetPrinters(

@@ -21,7 +21,6 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabImpl;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -55,9 +54,9 @@ public class TabGroupUtilsUnitTest {
     @Mock TabModelFilterProvider mTabModelFilterProvider;
     @Mock TabGroupModelFilter mTabGroupModelFilter;
 
-    private TabImpl mTab1;
-    private TabImpl mTab2;
-    private TabImpl mTab3;
+    private Tab mTab1;
+    private Tab mTab2;
+    private Tab mTab3;
 
     @Before
     public void setUp() {
@@ -83,10 +82,10 @@ public class TabGroupUtilsUnitTest {
         doReturn(POSITION1).when(mTabGroupModelFilter).indexOf(mTab2);
 
         assertThat(
-                TabGroupUtils.getSelectedTabInGroupForTab(mTabModelSelector, mTab1),
+                TabGroupUtils.getSelectedTabInGroupForTab(mTabGroupModelFilter, mTab1),
                 equalTo(mTab1));
         assertThat(
-                TabGroupUtils.getSelectedTabInGroupForTab(mTabModelSelector, mTab2),
+                TabGroupUtils.getSelectedTabInGroupForTab(mTabGroupModelFilter, mTab2),
                 equalTo(mTab1));
     }
 

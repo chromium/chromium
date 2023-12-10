@@ -76,6 +76,12 @@ void CreateHistogramNoticeServiceEvent(
           "PrivacySandbox.TrackingProtection.Offboarding.NoticeServiceEvent",
           event);
       break;
+    case TrackingProtectionOnboarding::NoticeType::kSilentOnboarding:
+      base::UmaHistogramEnumeration(
+          "PrivacySandbox.TrackingProtection.SilentOnboarding."
+          "NoticeServiceEvent",
+          event);
+      break;
   }
 }
 
@@ -260,8 +266,11 @@ void TrackingProtectionNoticeService::ResetTabStripTracker() {
 
 TrackingProtectionNoticeService::BaseIPHNotice::BaseIPHNotice(
     Profile* profile,
-    TrackingProtectionOnboarding* onboarding_service)
-    : profile_(profile), onboarding_service_(onboarding_service) {}
+    TrackingProtectionOnboarding* onboarding_service,
+    TrackingProtectionNoticeService* notice_service)
+    : profile_(profile),
+      onboarding_service_(onboarding_service),
+      notice_service_(notice_service) {}
 
 TrackingProtectionNoticeService::BaseIPHNotice::~BaseIPHNotice() = default;
 
@@ -362,7 +371,7 @@ bool TrackingProtectionNoticeService::BaseIPHNotice::MaybeShowPromo(
   base::Time shown_when = base::Time::Now();
   user_education::FeaturePromoParams params(GetIPHFeature());
   params.close_callback = base::BindOnce(
-      &TrackingProtectionNoticeService::OnboardingNotice::OnNoticeClosed,
+      &TrackingProtectionNoticeService::BaseIPHNotice::OnNoticeClosed,
       base::Unretained(this), shown_when,
       browser->window()->GetFeaturePromoController());
   return browser->window()->MaybeShowFeaturePromo(std::move(params));
@@ -381,8 +390,9 @@ bool TrackingProtectionNoticeService::BaseIPHNotice::IsPromoShowing(
 
 TrackingProtectionNoticeService::OnboardingNotice::OnboardingNotice(
     Profile* profile,
-    TrackingProtectionOnboarding* onboarding_service)
-    : BaseIPHNotice(profile, onboarding_service) {
+    TrackingProtectionOnboarding* onboarding_service,
+    TrackingProtectionNoticeService* notice_service)
+    : BaseIPHNotice(profile, onboarding_service, notice_service) {
   CreateHistogramNoticeServiceEvent(
       GetNoticeType(),
       TrackingProtectionMetricsNoticeEvent::kNoticeObjectCreated);
@@ -399,8 +409,9 @@ TrackingProtectionNoticeService::OnboardingNotice::GetIPHFeature() {
 
 TrackingProtectionNoticeService::OffboardingNotice::OffboardingNotice(
     Profile* profile,
-    TrackingProtectionOnboarding* onboarding_service)
-    : BaseIPHNotice(profile, onboarding_service) {
+    TrackingProtectionOnboarding* onboarding_service,
+    TrackingProtectionNoticeService* notice_service)
+    : BaseIPHNotice(profile, onboarding_service, notice_service) {
   CreateHistogramNoticeServiceEvent(
       GetNoticeType(),
       TrackingProtectionMetricsNoticeEvent::kNoticeObjectCreated);
@@ -425,12 +436,66 @@ void TrackingProtectionNoticeService::BaseIPHNotice::OnNoticeClosed(
   user_education::FeaturePromoClosedReason close_reason;
   bool has_been_dismissed =
       promo_controller->HasPromoBeenDismissed(GetIPHFeature(), &close_reason);
-
   if (!has_been_dismissed) {
     return;
   }
   onboarding_service_->NoticeActionTaken(GetNoticeType(),
                                          ToNoticeAction(close_reason));
+}
+
+void TrackingProtectionNoticeService::OffboardingNotice::OnNoticeClosed(
+    base::Time showed_when,
+    user_education::FeaturePromoController* promo_controller) {
+  BaseIPHNotice::OnNoticeClosed(showed_when, promo_controller);
+  // At this point, the user is offboarded and we no longer
+  // need to show the notice, so we can stop observing the tab strip model
+  notice_service()->ResetTabStripTracker();
+}
+
+TrackingProtectionNoticeService::SilentOnboardingNotice::SilentOnboardingNotice(
+    Profile* profile,
+    TrackingProtectionOnboarding* onboarding_service,
+    TrackingProtectionNoticeService* notice_service)
+    : BaseIPHNotice(profile, onboarding_service, notice_service) {
+  CreateHistogramNoticeServiceEvent(
+      GetNoticeType(),
+      TrackingProtectionMetricsNoticeEvent::kNoticeObjectCreated);
+}
+
+NoticeType
+TrackingProtectionNoticeService::SilentOnboardingNotice::GetNoticeType() {
+  return NoticeType::kSilentOnboarding;
+}
+
+const base::Feature&
+TrackingProtectionNoticeService::SilentOnboardingNotice::GetIPHFeature() {
+  return feature_engagement::kIPHTrackingProtectionOnboardingFeature;
+}
+
+bool TrackingProtectionNoticeService::SilentOnboardingNotice::
+    WasPromoPreviouslyDismissed(Browser* browser) {
+  return false;
+}
+
+bool TrackingProtectionNoticeService::SilentOnboardingNotice::IsPromoShowing(
+    Browser* browser) {
+  return false;
+}
+
+bool TrackingProtectionNoticeService::SilentOnboardingNotice::MaybeShowPromo(
+    Browser* browser) {
+  // Check whether the onboarding promo can be shown but not actually showing
+  // the promo.
+  return browser->window()->CanShowFeaturePromo(GetIPHFeature());
+}
+
+void TrackingProtectionNoticeService::SilentOnboardingNotice::HidePromo(
+    Browser* browser) {}
+
+void TrackingProtectionNoticeService::SilentOnboardingNotice::OnNoticeClosed(
+    base::Time showed_when,
+    user_education::FeaturePromoController* promo_controller) {
+  NOTREACHED();
 }
 
 void TrackingProtectionNoticeService::OnShouldShowNoticeUpdated() {
@@ -442,13 +507,18 @@ void TrackingProtectionNoticeService::OnShouldShowNoticeUpdated() {
       ResetTabStripTracker();
       return;
     case NoticeType::kOnboarding:
-      onboarding_notice_ =
-          std::make_unique<OnboardingNotice>(profile_, onboarding_service_);
+      onboarding_notice_ = std::make_unique<OnboardingNotice>(
+          profile_, onboarding_service_, this);
       InitializeTabStripTracker();
       return;
     case TrackingProtectionOnboarding::NoticeType::kOffboarding:
-      offboarding_notice_ =
-          std::make_unique<OffboardingNotice>(profile_, onboarding_service_);
+      offboarding_notice_ = std::make_unique<OffboardingNotice>(
+          profile_, onboarding_service_, this);
+      InitializeTabStripTracker();
+      return;
+    case TrackingProtectionOnboarding::NoticeType::kSilentOnboarding:
+      silent_onboarding_notice_ = std::make_unique<SilentOnboardingNotice>(
+          profile_, onboarding_service_, this);
       InitializeTabStripTracker();
       return;
   }
@@ -511,6 +581,13 @@ void TrackingProtectionNoticeService::OnTabStripModelChanged(
         TrackingProtectionOnboarding::NoticeType::kOnboarding,
         TrackingProtectionNoticeService::TrackingProtectionMetricsNoticeEvent::
             kActiveTabChanged);
+  } else if (silent_onboarding_notice_) {
+    silent_onboarding_notice_->MaybeUpdateNoticeVisibility(
+        selection.new_contents);
+    CreateHistogramNoticeServiceEvent(
+        TrackingProtectionOnboarding::NoticeType::kSilentOnboarding,
+        TrackingProtectionNoticeService::TrackingProtectionMetricsNoticeEvent::
+            kActiveTabChanged);
   }
 }
 
@@ -557,6 +634,13 @@ void TrackingProtectionNoticeService::TabHelper::DidFinishNavigation(
         web_contents());
     CreateHistogramNoticeServiceEvent(
         TrackingProtectionOnboarding::NoticeType::kOnboarding,
+        TrackingProtectionNoticeService::TrackingProtectionMetricsNoticeEvent::
+            kNavigationFinished);
+  } else if (notice_service->silent_onboarding_notice_) {
+    notice_service->silent_onboarding_notice_->MaybeUpdateNoticeVisibility(
+        web_contents());
+    CreateHistogramNoticeServiceEvent(
+        TrackingProtectionOnboarding::NoticeType::kSilentOnboarding,
         TrackingProtectionNoticeService::TrackingProtectionMetricsNoticeEvent::
             kNavigationFinished);
   }

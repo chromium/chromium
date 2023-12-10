@@ -68,6 +68,10 @@ using BrowserPermissionCallback = base::OnceCallback<void(ContentSetting)>;
 //   - Create a class that inherits from PermissionContextBase and passes the
 //     new permission.
 //   - Edit the PermissionRequest methods to add the new text.
+//   - Make sure to update
+//     third_party/blink/public/devtools_protocol/browser_protocol.pdl
+//     even if you don't intend to do anything DevTools-specific; you will
+//     run into problems with generated code otherwise.
 //   - Hit several asserts for the missing plumbing and fix them :)
 // After this you can override several other methods to customize behavior,
 // in particular it is advised to override UpdateTabContext in order to manage

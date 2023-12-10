@@ -1449,14 +1449,59 @@ message ScrollPredictorMetrics {
   optional bool is_slow_scroll = 6;
 };
 
+//
+// Critical User Interaction metrics
+//
+
 message PageLoad {
   optional int64 navigation_id = 1;
   optional string url = 2;
 }
 
+message StartUp {
+  // This enum must be kept up to date with LaunchCauseMetrics.LaunchCause.
+  enum LaunchCauseType {
+    OTHER = 0;
+    CUSTOM_TAB = 1;
+    TWA = 2;
+    RECENTS = 3;
+    RECENTS_OR_BACK = 4;
+    FOREGROUND_WHEN_LOCKED = 5;
+    MAIN_LAUNCHER_ICON = 6;
+    MAIN_LAUNCHER_ICON_SHORTCUT = 7;
+    HOME_SCREEN_WIDGET = 8;
+    OPEN_IN_BROWSER_FROM_MENU = 9;
+    EXTERNAL_SEARCH_ACTION_INTENT = 10;
+    NOTIFICATION = 11;
+    EXTERNAL_VIEW_INTENT = 12;
+    OTHER_CHROME = 13;
+    WEBAPK_CHROME_DISTRIBUTOR = 14;
+    WEBAPK_OTHER_DISTRIBUTOR = 15;
+    HOME_SCREEN_SHORTCUT = 16;
+    SHARE_INTENT = 17;
+    NFC = 18;
+  }
+
+  optional int64 activity_id = 1;
+  // deprecated field 2.
+  optional LaunchCauseType launch_cause = 3;
+}
+
+message WebContentInteraction {
+  enum Type {
+    INTERACTION_UNSPECIFIED = 0;
+    INTERACTION_KEYBOARD = 1;
+    INTERACTION_CLICK_TAP = 2;
+    INTERACTION_DRAG = 3;
+  }
+
+  optional Type type = 1;
+  optional int64 total_duration_ms = 2;
+}
+
 message ChromeTrackEvent {
   // Extension range for Chrome: 1000-1999
-  // Next ID: 1057
+  // Next ID: 1059
   extend TrackEvent {
     optional ChromeAppState chrome_app_state = 1000;
 
@@ -1576,5 +1621,9 @@ message ChromeTrackEvent {
     optional ScrollPredictorMetrics scroll_predictor_metrics = 1055;
 
     optional PageLoad page_load = 1056;
+
+    optional StartUp startup = 1057;
+
+    optional WebContentInteraction web_content_interaction = 1058;
   }
 }

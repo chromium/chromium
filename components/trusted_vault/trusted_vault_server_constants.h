@@ -11,7 +11,7 @@
 
 #include "base/containers/fixed_flat_set.h"
 #include "base/containers/span.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
@@ -42,7 +42,7 @@ enum class SecurityDomainId {
 };
 
 inline constexpr auto kAllSecurityDomainIdValues =
-    base::MakeFixedFlatSetSorted<SecurityDomainId>(
+    base::MakeFixedFlatSet<SecurityDomainId>(
         {SecurityDomainId::kChromeSync, SecurityDomainId::kPasskeys});
 static_assert(static_cast<int>(SecurityDomainId::kMaxValue) ==
                   kAllSecurityDomainIdValues.size() - 1,

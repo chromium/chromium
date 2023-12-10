@@ -4,9 +4,10 @@
 
 #include "chrome/browser/ash/arc/accessibility/arc_accessibility_util.h"
 
+#include <optional>
+
 #include "ash/components/arc/arc_util.h"
 #include "ash/public/cpp/app_types_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window.h"
 
 namespace arc {

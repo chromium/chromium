@@ -6,10 +6,10 @@
 #define CHROME_BROWSER_UI_VIEWS_PAYMENTS_SECURE_PAYMENT_CONFIRMATION_VIEWS_UTIL_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/functional/callback_forward.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace views {
 class Label;
@@ -79,8 +79,8 @@ CreateSecurePaymentConfirmationInstrumentIconView(const gfx::ImageSkia& bitmap);
 
 // Formats the merchant label by combining the name and origin for display.
 std::u16string FormatMerchantLabel(
-    const absl::optional<std::u16string>& merchant_name,
-    const absl::optional<std::u16string>& merchant_origin);
+    const std::optional<std::u16string>& merchant_name,
+    const std::optional<std::u16string>& merchant_origin);
 
 // Creates a label with a link to allow the user to delete their payment related
 // data from the relying party.

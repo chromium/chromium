@@ -34,6 +34,7 @@ import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedBridgeJni;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.native_page.NativePageNavigationDelegate;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.SyncConsentActivityLauncherImpl;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -60,6 +61,8 @@ public final class FeedActionDelegateImplTest {
 
     @Mock private TabModelSelector mTabModelSelector;
 
+    @Mock private Profile mProfile;
+
     @Captor ArgumentCaptor<Intent> mIntentCaptor;
 
     private FeedActionDelegateImpl mFeedActionDelegateImpl;
@@ -76,7 +79,8 @@ public final class FeedActionDelegateImplTest {
                         mMockNavigationDelegate,
                         mMockBookmarkModel,
                         BrowserUiUtils.HostSurface.NOT_SET,
-                        mTabModelSelector);
+                        mTabModelSelector,
+                        mProfile);
         jniMocker.mock(WebFeedBridgeJni.TEST_HOOKS, mWebFeedBridgeJniMock);
 
         when(mWebFeedBridgeJniMock.isCormorantEnabledForLocale()).thenReturn(true);

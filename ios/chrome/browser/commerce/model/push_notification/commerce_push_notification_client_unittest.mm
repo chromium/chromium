@@ -23,8 +23,7 @@
 #import "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_model_factory.h"
 #import "ios/chrome/browser/commerce/model/session_proto_db_factory.h"
 #import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
-#import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
-#import "ios/chrome/browser/shared/coordinator/scene/test/fake_scene_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -119,7 +118,7 @@ const bookmarks::BookmarkNode* PrepareSubscription(
 
   commerce::ProductInfo product_info;
   product_info.title = kBookmarkTitle;
-  absl::optional<commerce::ProductInfo> optional_product_info;
+  std::optional<commerce::ProductInfo> optional_product_info;
   optional_product_info.emplace(product_info);
   shopping_service->SetResponseForGetProductInfoForUrl(optional_product_info);
   return product;
@@ -154,9 +153,16 @@ class CommercePushNotificationClientTest : public PlatformTest {
     chrome_browser_state_ = builder.Build();
     browser_list_ =
         BrowserListFactory::GetForBrowserState(chrome_browser_state_.get());
-    browser_ = std::make_unique<TestBrowser>(chrome_browser_state_.get());
-    background_browser_ =
-        std::make_unique<TestBrowser>(chrome_browser_state_.get());
+    app_state_ = [[AppState alloc] initWithStartupInformation:nil];
+    scene_state_foreground_ = [[SceneState alloc] initWithAppState:app_state_];
+    scene_state_foreground_.activationLevel =
+        SceneActivationLevelForegroundActive;
+    browser_ = std::make_unique<TestBrowser>(chrome_browser_state_.get(),
+                                             scene_state_foreground_);
+    scene_state_background_ = [[SceneState alloc] initWithAppState:app_state_];
+    scene_state_background_.activationLevel = SceneActivationLevelBackground;
+    background_browser_ = std::make_unique<TestBrowser>(
+        chrome_browser_state_.get(), scene_state_background_);
     browser_list_->AddBrowser(browser_.get());
     UrlLoadingNotifierBrowserAgent::CreateForBrowser(browser_.get());
     FakeUrlLoadingBrowserAgent::InjectForBrowser(browser_.get());
@@ -169,21 +175,6 @@ class CommercePushNotificationClientTest : public PlatformTest {
     shopping_service_ = static_cast<commerce::MockShoppingService*>(
         commerce::ShoppingServiceFactory::GetForBrowserState(
             chrome_browser_state_.get()));
-    app_state_ = [[AppState alloc] initWithStartupInformation:nil];
-
-    scene_state_foreground_ =
-        [[FakeSceneState alloc] initWithAppState:app_state_
-                                    browserState:chrome_browser_state_.get()];
-    scene_state_foreground_.activationLevel =
-        SceneActivationLevelForegroundActive;
-    SceneStateBrowserAgent::CreateForBrowser(browser_.get(),
-                                             scene_state_foreground_);
-    scene_state_background_ =
-        [[FakeSceneState alloc] initWithAppState:app_state_
-                                    browserState:chrome_browser_state_.get()];
-    scene_state_background_.activationLevel = SceneActivationLevelBackground;
-    SceneStateBrowserAgent::CreateForBrowser(background_browser_.get(),
-                                             scene_state_background_);
   }
 
   CommercePushNotificationClient* GetCommercePushNotificationClient() {
@@ -224,8 +215,8 @@ class CommercePushNotificationClientTest : public PlatformTest {
   BrowserList* browser_list_;
   bookmarks::BookmarkModel* bookmark_model_;
   commerce::MockShoppingService* shopping_service_;
-  FakeSceneState* scene_state_foreground_;
-  FakeSceneState* scene_state_background_;
+  SceneState* scene_state_foreground_;
+  SceneState* scene_state_background_;
   AppState* app_state_;
 };
 
@@ -337,9 +328,7 @@ TEST_F(CommercePushNotificationClientTest,
   // When active foregrounded and active backgrounded browser is availalbe,
   // should choose foregrounded browser.
   EXPECT_EQ(SceneActivationLevelForegroundActive,
-            SceneStateBrowserAgent::FromBrowser(browser)
-                ->GetSceneState()
-                .activationLevel);
+            browser->GetSceneState().activationLevel);
 }
 
 TEST_F(CommercePushNotificationClientTest, TestBackgroundFallback) {

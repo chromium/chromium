@@ -12,9 +12,7 @@ import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
-/**
- * A helper class to decode and expose relevant 9-patch data from a Bitmap.
- */
+/** A helper class to decode and expose relevant 9-patch data from a Bitmap. */
 public class NinePatchData {
     private final int mWidth;
     private final int mHeight;
@@ -39,8 +37,12 @@ public class NinePatchData {
     private NinePatchData(int width, int height, Rect padding, int[] divX, int[] divY) {
         mWidth = width;
         mHeight = height;
-        mPadding = new Rect(
-                padding.left, padding.top, mWidth - padding.right, mHeight - padding.bottom);
+        mPadding =
+                new Rect(
+                        padding.left,
+                        padding.top,
+                        mWidth - padding.right,
+                        mHeight - padding.bottom);
 
         mDivX = new int[divX.length];
         mDivY = new int[divY.length];

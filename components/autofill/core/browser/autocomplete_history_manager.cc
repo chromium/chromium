@@ -9,7 +9,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/cxx20_erase.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
@@ -29,8 +28,6 @@
 #include "components/version_info/version_info.h"
 
 namespace autofill {
-
-using NotificationType = AutofillObserver::NotificationType;
 
 namespace {
 
@@ -80,21 +77,20 @@ AutocompleteHistoryManager::~AutocompleteHistoryManager() {
 }
 
 bool AutocompleteHistoryManager::OnGetSingleFieldSuggestions(
-    AutofillSuggestionTriggerSource trigger_source,
     const FormFieldData& field,
     const AutofillClient& client,
-    base::WeakPtr<SuggestionsHandler> handler,
+    OnSuggestionsReturnedCallback on_suggestions_returned,
     const SuggestionsContext& context) {
   if (!field.should_autocomplete)
     return false;
 
-  CancelPendingQueries(handler.get());
+  CancelPendingQueries();
 
   if (!IsMeaningfulFieldName(field.name) || !client.IsAutocompleteEnabled() ||
       field.form_control_type == FormControlType::kTextArea ||
       IsInAutofillSuggestionsDisabledExperiment()) {
-    SendSuggestions({}, QueryHandler(field.global_id(), trigger_source,
-                                     field.value, handler));
+    SendSuggestions({}, QueryHandler(field.global_id(), field.value,
+                                     std::move(on_suggestions_returned)));
     return true;
   }
 
@@ -104,8 +100,8 @@ bool AutocompleteHistoryManager::OnGetSingleFieldSuggestions(
 
     // We can simply insert, since |query_handle| is always unique.
     pending_queries_.insert(
-        {query_handle, QueryHandler(field.global_id(), trigger_source,
-                                    field.value, handler)});
+        {query_handle, QueryHandler(field.global_id(), field.value,
+                                    std::move(on_suggestions_returned))});
     return true;
   }
 
@@ -119,7 +115,6 @@ void AutocompleteHistoryManager::OnWillSubmitFormWithFields(
     const std::vector<FormFieldData>& fields,
     bool is_autocomplete_enabled) {
   if (!is_autocomplete_enabled || is_off_the_record_) {
-    Notify(NotificationType::AutocompleteFormSkipped);
     return;
   }
   std::vector<FormFieldData> autocomplete_saveable_fields;
@@ -131,23 +126,16 @@ void AutocompleteHistoryManager::OnWillSubmitFormWithFields(
   }
   if (!autocomplete_saveable_fields.empty() && profile_database_.get()) {
     profile_database_->AddFormFields(autocomplete_saveable_fields);
-    Notify(NotificationType::AutocompleteFormSubmitted);
   }
 }
 
-void AutocompleteHistoryManager::CancelPendingQueries(
-    const SuggestionsHandler* handler) {
-  if (handler && profile_database_) {
+void AutocompleteHistoryManager::CancelPendingQueries() {
+  if (profile_database_) {
     for (const auto& [handle, query_handler] : pending_queries_) {
-      if (query_handler.handler_ && query_handler.handler_.get() == handler) {
-        profile_database_->CancelRequest(handle);
-      }
+      profile_database_->CancelRequest(handle);
     }
   }
-
-  // Cleaning up the map with the cancelled handler to remove cancelled
-  // requests.
-  CleanupEntries(handler);
+  pending_queries_.clear();
 }
 
 void AutocompleteHistoryManager::OnRemoveCurrentSingleFieldSuggestion(
@@ -231,14 +219,22 @@ void AutocompleteHistoryManager::OnWebDataServiceRequestDone(
   request_callbacks_iter->second.Run(current_handle, std::move(result));
 }
 
+AutocompleteHistoryManager::QueryHandler::QueryHandler(
+    FieldGlobalId field_id,
+    std::u16string prefix,
+    OnSuggestionsReturnedCallback on_suggestions_returned)
+    : field_id_(field_id),
+      prefix_(std::move(prefix)),
+      on_suggestions_returned_(std::move(on_suggestions_returned)) {}
+
+AutocompleteHistoryManager::QueryHandler::QueryHandler(QueryHandler&&) =
+    default;
+
+AutocompleteHistoryManager::QueryHandler::~QueryHandler() = default;
+
 void AutocompleteHistoryManager::SendSuggestions(
     const std::vector<AutocompleteEntry>& entries,
-    const QueryHandler& query_handler) {
-  if (!query_handler.handler_) {
-    // Either the handler has been destroyed, or it is invalid.
-    return;
-  }
-
+    QueryHandler query_handler) {
   // If there is only one suggestion that is the exact same string as
   // what is in the input box, then don't show the suggestion.
   bool hide_suggestions =
@@ -254,8 +250,8 @@ void AutocompleteHistoryManager::SendSuggestions(
     }
   }
 
-  query_handler.handler_->OnSuggestionsReturned(
-      query_handler.field_id_, query_handler.trigger_source_, suggestions);
+  std::move(query_handler.on_suggestions_returned_)
+      .Run(query_handler.field_id_, suggestions);
 }
 
 void AutocompleteHistoryManager::CancelAllPendingQueries() {
@@ -266,14 +262,6 @@ void AutocompleteHistoryManager::CancelAllPendingQueries() {
   }
 
   pending_queries_.clear();
-}
-
-void AutocompleteHistoryManager::CleanupEntries(
-    const SuggestionsHandler* handler) {
-  base::EraseIf(pending_queries_, [handler](const auto& pending_query) {
-    const QueryHandler& query_handler = pending_query.second;
-    return !query_handler.handler_ || query_handler.handler_.get() == handler;
-  });
 }
 
 void AutocompleteHistoryManager::OnAutofillValuesReturned(
@@ -298,7 +286,7 @@ void AutocompleteHistoryManager::OnAutofillValuesReturned(
       static_cast<const WDResult<std::vector<AutocompleteEntry>>*>(
           result.get());
   std::vector<AutocompleteEntry> entries = autocomplete_result->GetValue();
-  SendSuggestions(entries, query_handler);
+  SendSuggestions(entries, std::move(query_handler));
 }
 
 void AutocompleteHistoryManager::OnAutofillCleanupReturned(
@@ -310,8 +298,6 @@ void AutocompleteHistoryManager::OnAutofillCleanupReturned(
   // Cleanup was successful, update the latest run milestone.
   pref_service_->SetInteger(prefs::kAutocompleteLastVersionRetentionPolicy,
                             CHROME_VERSION_MAJOR);
-
-  Notify(NotificationType::AutocompleteCleanupDone);
 }
 
 // We put the following restriction on stored FormFields:

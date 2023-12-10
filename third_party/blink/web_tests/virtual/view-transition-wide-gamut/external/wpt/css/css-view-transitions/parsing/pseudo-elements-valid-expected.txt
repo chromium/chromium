@@ -1,0 +1,68 @@
+This is a testharness.js-based test.
+Found 32 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] "::view-transition-group(*)" should be a valid selector
+  assert_equals: serialization should be canonical expected "::view-transition-group(*)" but got "::view-transition-group()"
+[FAIL] ":root::view-transition-group(*)" should be a valid selector
+  assert_equals: serialization should be canonical expected ":root::view-transition-group(*)" but got ":root::view-transition-group()"
+[FAIL] ".a::view-transition-group(*)" should be a valid selector
+  assert_equals: serialization should be canonical expected ".a::view-transition-group(*)" but got ".a::view-transition-group()"
+[FAIL] "div ::view-transition-group(*)" should be a valid selector
+  assert_equals: serialization should be canonical expected "div ::view-transition-group(*)" but got "div ::view-transition-group()"
+[FAIL] "::view-transition-group(*):only-child" should be a valid selector
+  assert_equals: serialization should be canonical expected "::view-transition-group(*):only-child" but got "::view-transition-group():only-child"
+[FAIL] ":root::view-transition-group(*):only-child" should be a valid selector
+  assert_equals: serialization should be canonical expected ":root::view-transition-group(*):only-child" but got ":root::view-transition-group():only-child"
+[FAIL] ".a::view-transition-group(*):only-child" should be a valid selector
+  assert_equals: serialization should be canonical expected ".a::view-transition-group(*):only-child" but got ".a::view-transition-group():only-child"
+[FAIL] "div ::view-transition-group(*):only-child" should be a valid selector
+  assert_equals: serialization should be canonical expected "div ::view-transition-group(*):only-child" but got "div ::view-transition-group():only-child"
+[FAIL] "::view-transition-image-pair(*)" should be a valid selector
+  assert_equals: serialization should be canonical expected "::view-transition-image-pair(*)" but got "::view-transition-image-pair()"
+[FAIL] ":root::view-transition-image-pair(*)" should be a valid selector
+  assert_equals: serialization should be canonical expected ":root::view-transition-image-pair(*)" but got ":root::view-transition-image-pair()"
+[FAIL] ".a::view-transition-image-pair(*)" should be a valid selector
+  assert_equals: serialization should be canonical expected ".a::view-transition-image-pair(*)" but got ".a::view-transition-image-pair()"
+[FAIL] "div ::view-transition-image-pair(*)" should be a valid selector
+  assert_equals: serialization should be canonical expected "div ::view-transition-image-pair(*)" but got "div ::view-transition-image-pair()"
+[FAIL] "::view-transition-image-pair(*):only-child" should be a valid selector
+  assert_equals: serialization should be canonical expected "::view-transition-image-pair(*):only-child" but got "::view-transition-image-pair():only-child"
+[FAIL] ":root::view-transition-image-pair(*):only-child" should be a valid selector
+  assert_equals: serialization should be canonical expected ":root::view-transition-image-pair(*):only-child" but got ":root::view-transition-image-pair():only-child"
+[FAIL] ".a::view-transition-image-pair(*):only-child" should be a valid selector
+  assert_equals: serialization should be canonical expected ".a::view-transition-image-pair(*):only-child" but got ".a::view-transition-image-pair():only-child"
+[FAIL] "div ::view-transition-image-pair(*):only-child" should be a valid selector
+  assert_equals: serialization should be canonical expected "div ::view-transition-image-pair(*):only-child" but got "div ::view-transition-image-pair():only-child"
+[FAIL] "::view-transition-old(*)" should be a valid selector
+  assert_equals: serialization should be canonical expected "::view-transition-old(*)" but got "::view-transition-old()"
+[FAIL] ":root::view-transition-old(*)" should be a valid selector
+  assert_equals: serialization should be canonical expected ":root::view-transition-old(*)" but got ":root::view-transition-old()"
+[FAIL] ".a::view-transition-old(*)" should be a valid selector
+  assert_equals: serialization should be canonical expected ".a::view-transition-old(*)" but got ".a::view-transition-old()"
+[FAIL] "div ::view-transition-old(*)" should be a valid selector
+  assert_equals: serialization should be canonical expected "div ::view-transition-old(*)" but got "div ::view-transition-old()"
+[FAIL] "::view-transition-old(*):only-child" should be a valid selector
+  assert_equals: serialization should be canonical expected "::view-transition-old(*):only-child" but got "::view-transition-old():only-child"
+[FAIL] ":root::view-transition-old(*):only-child" should be a valid selector
+  assert_equals: serialization should be canonical expected ":root::view-transition-old(*):only-child" but got ":root::view-transition-old():only-child"
+[FAIL] ".a::view-transition-old(*):only-child" should be a valid selector
+  assert_equals: serialization should be canonical expected ".a::view-transition-old(*):only-child" but got ".a::view-transition-old():only-child"
+[FAIL] "div ::view-transition-old(*):only-child" should be a valid selector
+  assert_equals: serialization should be canonical expected "div ::view-transition-old(*):only-child" but got "div ::view-transition-old():only-child"
+[FAIL] "::view-transition-new(*)" should be a valid selector
+  assert_equals: serialization should be canonical expected "::view-transition-new(*)" but got "::view-transition-new()"
+[FAIL] ":root::view-transition-new(*)" should be a valid selector
+  assert_equals: serialization should be canonical expected ":root::view-transition-new(*)" but got ":root::view-transition-new()"
+[FAIL] ".a::view-transition-new(*)" should be a valid selector
+  assert_equals: serialization should be canonical expected ".a::view-transition-new(*)" but got ".a::view-transition-new()"
+[FAIL] "div ::view-transition-new(*)" should be a valid selector
+  assert_equals: serialization should be canonical expected "div ::view-transition-new(*)" but got "div ::view-transition-new()"
+[FAIL] "::view-transition-new(*):only-child" should be a valid selector
+  assert_equals: serialization should be canonical expected "::view-transition-new(*):only-child" but got "::view-transition-new():only-child"
+[FAIL] ":root::view-transition-new(*):only-child" should be a valid selector
+  assert_equals: serialization should be canonical expected ":root::view-transition-new(*):only-child" but got ":root::view-transition-new():only-child"
+[FAIL] ".a::view-transition-new(*):only-child" should be a valid selector
+  assert_equals: serialization should be canonical expected ".a::view-transition-new(*):only-child" but got ".a::view-transition-new():only-child"
+[FAIL] "div ::view-transition-new(*):only-child" should be a valid selector
+  assert_equals: serialization should be canonical expected "div ::view-transition-new(*):only-child" but got "div ::view-transition-new():only-child"
+Harness: the test ran to completion.
+

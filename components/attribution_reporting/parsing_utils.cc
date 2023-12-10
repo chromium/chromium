@@ -6,12 +6,13 @@
 
 #include <stdint.h>
 
+#include <cmath>
 #include <sstream>
 #include <string>
 
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/abseil_string_number_conversions.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
@@ -55,7 +56,7 @@ std::string HexEncodeAggregationKey(absl::uint128 value) {
 }
 
 bool ParseUint64(const base::Value::Dict& dict,
-                 base::StringPiece key,
+                 std::string_view key,
                  absl::optional<uint64_t>& out) {
   const base::Value* value = dict.Find(key);
   if (!value) {
@@ -77,7 +78,7 @@ bool ParseUint64(const base::Value::Dict& dict,
 }
 
 bool ParseInt64(const base::Value::Dict& dict,
-                base::StringPiece key,
+                std::string_view key,
                 absl::optional<int64_t>& out) {
   const base::Value* value = dict.Find(key);
   if (!value) {
@@ -145,13 +146,13 @@ ParseLegacyDuration(const base::Value& value,
 }
 
 void SerializeUint64(base::Value::Dict& dict,
-                     base::StringPiece key,
+                     std::string_view key,
                      uint64_t value) {
   dict.Set(key, base::NumberToString(value));
 }
 
 void SerializeInt64(base::Value::Dict& dict,
-                    base::StringPiece key,
+                    std::string_view key,
                     int64_t value) {
   dict.Set(key, base::NumberToString(value));
 }
@@ -179,7 +180,7 @@ void SerializeDeduplicationKey(base::Value::Dict& dict,
 }
 
 void SerializeTimeDeltaInSeconds(base::Value::Dict& dict,
-                                 base::StringPiece key,
+                                 std::string_view key,
                                  base::TimeDelta value) {
   int64_t seconds = value.InSeconds();
   if (base::IsValueInRangeForNumericType<int>(seconds)) {
@@ -187,6 +188,40 @@ void SerializeTimeDeltaInSeconds(base::Value::Dict& dict,
   } else {
     SerializeInt64(dict, key, seconds);
   }
+}
+
+base::expected<uint32_t, mojom::SourceRegistrationError> ParseUint32(
+    const base::Value& value,
+    const mojom::SourceRegistrationError wrong_type_error,
+    const mojom::SourceRegistrationError out_of_range_error) {
+  // We use `base::Value::GetIfDouble()`, which coerces if the value is an
+  // integer, because not all `uint32_t` can be represented by 32-bit `int`.
+  // We use `std::modf` to check that the fractional part of the `double` is 0.
+  //
+  // Assumes that all `uint32_t` can be represented either by `int` or `double`,
+  // and that when represented internally by `base::Value` as an `int`, can be
+  // precisely represented by `double`.
+  //
+  // TODO(apaseltiner): Consider test coverage for all `uint32_t` values, or
+  // some kind of fuzzer.
+  absl::optional<double> double_value = value.GetIfDouble();
+  if (double int_part;
+      !double_value.has_value() || std::modf(*double_value, &int_part) != 0) {
+    return base::unexpected(wrong_type_error);
+  }
+
+  if (!base::IsValueInRangeForNumericType<uint32_t>(*double_value)) {
+    return base::unexpected(out_of_range_error);
+  }
+
+  return static_cast<uint32_t>(*double_value);
+}
+
+base::Value Uint32ToJson(uint32_t value) {
+  // All `uint32_t` can be represented exactly by `double`.
+  return base::IsValueInRangeForNumericType<int>(value)
+             ? base::Value(static_cast<int>(value))
+             : base::Value(static_cast<double>(value));
 }
 
 }  // namespace attribution_reporting

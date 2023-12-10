@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <tuple>
 #include <utility>
@@ -60,7 +61,6 @@
 #include "net/dns/mock_host_resolver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using chromeos::MissiveClient;
 using chromeos::MissiveClientTestObserver;
@@ -88,7 +88,7 @@ Record GetNextLoginLogoutRecord(MissiveClientTestObserver* observer) {
   return record;
 }
 
-absl::optional<Record> MaybeGetEnqueuedLoginLogoutRecord() {
+std::optional<Record> MaybeGetEnqueuedLoginLogoutRecord() {
   const std::vector<Record>& records =
       MissiveClient::Get()->GetTestInterface()->GetEnqueuedRecords(
           Priority::SECURITY);
@@ -97,7 +97,7 @@ absl::optional<Record> MaybeGetEnqueuedLoginLogoutRecord() {
       return record;
     }
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 class PublicSessionUserCreationWaiter
@@ -295,7 +295,7 @@ IN_PROC_BROWSER_TEST_F(LoginLogoutReporterBrowserTest, GuestLogin) {
 
   // Check if the record is already enqueued in case it was enqueued before the
   // |observer| initialization.
-  absl::optional<Record> login_record = MaybeGetEnqueuedLoginLogoutRecord();
+  std::optional<Record> login_record = MaybeGetEnqueuedLoginLogoutRecord();
 
   if (!login_record.has_value()) {
     // Record is not enqueued yet, so wait for it.
@@ -473,7 +473,7 @@ IN_PROC_BROWSER_TEST_F(LoginLogoutReporterKioskBrowserTest,
 
   // Check if the record is already enqueued in case it was enqueued before the
   // |observer| initialization.
-  absl::optional<Record> login_record = MaybeGetEnqueuedLoginLogoutRecord();
+  std::optional<Record> login_record = MaybeGetEnqueuedLoginLogoutRecord();
   if (!login_record.has_value()) {
     // Record is not enqueued yet, so wait for it.
     login_record = GetNextLoginLogoutRecord(&observer);
@@ -547,7 +547,7 @@ IN_PROC_BROWSER_TEST_F(LoginLogoutReporterKioskFailedBrowserTest,
 
   // Check if the record is already enqueued in case it was enqueued before the
   // |observer| initialization.
-  absl::optional<Record> login_record = MaybeGetEnqueuedLoginLogoutRecord();
+  std::optional<Record> login_record = MaybeGetEnqueuedLoginLogoutRecord();
 
   if (!login_record.has_value()) {
     // Record is not enqueued yet, so wait for it.

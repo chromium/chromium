@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_COMPONENTS_DBUS_SYSTEM_CLOCK_SYSTEM_CLOCK_SYNC_OBSERVATION_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/component_export.h"
 #include "base/functional/callback.h"
@@ -14,7 +15,6 @@
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "chromeos/ash/components/dbus/system_clock/system_clock_client.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 

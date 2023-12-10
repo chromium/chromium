@@ -65,16 +65,21 @@ class ArcPackageSyncableService : public syncer::SyncableService,
 
   // syncer::SyncableService:
   void WaitUntilReadyToSync(base::OnceClosure done) override;
-  absl::optional<syncer::ModelError> MergeDataAndStartSyncing(
+  std::optional<syncer::ModelError> MergeDataAndStartSyncing(
       syncer::ModelType type,
       const syncer::SyncDataList& initial_sync_data,
       std::unique_ptr<syncer::SyncChangeProcessor> sync_processor) override;
   void StopSyncing(syncer::ModelType type) override;
-  absl::optional<syncer::ModelError> ProcessSyncChanges(
+  std::optional<syncer::ModelError> ProcessSyncChanges(
       const base::Location& from_here,
       const syncer::SyncChangeList& change_list) override;
 
   bool SyncStarted();
+
+  // Tries to install/resinstall a package that is in the pending list.
+  // Sends the request to Android.
+  void InstallPendingPackage(const std::string& package_name,
+                             arc::mojom::InstallPriority priority);
 
  private:
   using SyncItemMap =
@@ -102,9 +107,6 @@ class ArcPackageSyncableService : public syncer::SyncableService,
   // Deletes local syncItem corresponding to data change from sync server.
   // Sends request to uninstall package to Android.
   bool DeleteSyncItemSpecifics(const sync_pb::ArcPackageSpecifics& specifics);
-
-  // Sends install notification for given package to Android.
-  void InstallPackage(const SyncItem* sync_item);
 
   // Sends uninstall notification for given package to Android.
   void UninstallPackage(const SyncItem* sync_item);

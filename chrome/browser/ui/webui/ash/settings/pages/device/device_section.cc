@@ -204,41 +204,50 @@ const std::vector<SearchConcept>& GetPerDeviceKeyboardSearchConcepts() {
 }
 
 const std::vector<SearchConcept>& GetTouchpadSearchConcepts() {
+  const bool kIsRevampEnabled =
+      ash::features::IsOsSettingsRevampWayfindingEnabled();
+
   static const base::NoDestructor<std::vector<SearchConcept>> tags({
       {IDS_OS_SETTINGS_TAG_TOUCHPAD_SPEED,
        mojom::kPointersSubpagePath,
-       mojom::SearchResultIcon::kLaptop,
+       kIsRevampEnabled ? mojom::SearchResultIcon::kTouchpad
+                        : mojom::SearchResultIcon::kLaptop,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kTouchpadSpeed}},
       {IDS_OS_SETTINGS_TAG_TOUCHPAD_TAP_DRAGGING,
        mojom::kPointersSubpagePath,
-       mojom::SearchResultIcon::kLaptop,
+       kIsRevampEnabled ? mojom::SearchResultIcon::kTouchpad
+                        : mojom::SearchResultIcon::kLaptop,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kTouchpadTapDragging}},
       {IDS_OS_SETTINGS_TAG_TOUCHPAD_TAP_TO_CLICK,
        mojom::kPointersSubpagePath,
-       mojom::SearchResultIcon::kLaptop,
+       kIsRevampEnabled ? mojom::SearchResultIcon::kTouchpad
+                        : mojom::SearchResultIcon::kLaptop,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kTouchpadTapToClick}},
       {IDS_OS_SETTINGS_TAG_TOUCHPAD,
        mojom::kPointersSubpagePath,
-       mojom::SearchResultIcon::kLaptop,
+       kIsRevampEnabled ? mojom::SearchResultIcon::kTouchpad
+                        : mojom::SearchResultIcon::kLaptop,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSubpage,
        {.subpage = mojom::Subpage::kPointers},
        {IDS_OS_SETTINGS_TAG_TOUCHPAD_ALT1, SearchConcept::kAltTagEnd}},
       {IDS_OS_SETTINGS_TAG_TOUCHPAD_REVERSE_SCROLLING,
        mojom::kPointersSubpagePath,
-       mojom::SearchResultIcon::kLaptop,
+       kIsRevampEnabled ? mojom::SearchResultIcon::kTouchpad
+                        : mojom::SearchResultIcon::kLaptop,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kTouchpadReverseScrolling}},
       {IDS_OS_SETTINGS_TAG_TOUCHPAD_ACCELERATION,
        mojom::kPointersSubpagePath,
-       mojom::SearchResultIcon::kLaptop,
+       kIsRevampEnabled ? mojom::SearchResultIcon::kTouchpad
+                        : mojom::SearchResultIcon::kLaptop,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kTouchpadAcceleration}},
@@ -247,41 +256,50 @@ const std::vector<SearchConcept>& GetTouchpadSearchConcepts() {
 }
 
 const std::vector<SearchConcept>& GetPerDeviceTouchpadSearchConcepts() {
+  const bool kIsRevampEnabled =
+      ash::features::IsOsSettingsRevampWayfindingEnabled();
+
   static const base::NoDestructor<std::vector<SearchConcept>> tags({
       {IDS_OS_SETTINGS_TAG_TOUCHPAD_SPEED,
        mojom::kPerDeviceTouchpadSubpagePath,
-       mojom::SearchResultIcon::kLaptop,
+       kIsRevampEnabled ? mojom::SearchResultIcon::kTouchpad
+                        : mojom::SearchResultIcon::kLaptop,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kTouchpadSpeed}},
       {IDS_OS_SETTINGS_TAG_TOUCHPAD_TAP_DRAGGING,
        mojom::kPerDeviceTouchpadSubpagePath,
-       mojom::SearchResultIcon::kLaptop,
+       kIsRevampEnabled ? mojom::SearchResultIcon::kTouchpad
+                        : mojom::SearchResultIcon::kLaptop,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kTouchpadTapDragging}},
       {IDS_OS_SETTINGS_TAG_TOUCHPAD_TAP_TO_CLICK,
        mojom::kPerDeviceTouchpadSubpagePath,
-       mojom::SearchResultIcon::kLaptop,
+       kIsRevampEnabled ? mojom::SearchResultIcon::kTouchpad
+                        : mojom::SearchResultIcon::kLaptop,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kTouchpadTapToClick}},
       {IDS_OS_SETTINGS_TAG_TOUCHPAD,
        mojom::kPerDeviceTouchpadSubpagePath,
-       mojom::SearchResultIcon::kLaptop,
+       kIsRevampEnabled ? mojom::SearchResultIcon::kTouchpad
+                        : mojom::SearchResultIcon::kLaptop,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSubpage,
        {.subpage = mojom::Subpage::kPerDeviceTouchpad},
        {IDS_OS_SETTINGS_TAG_TOUCHPAD_ALT1, SearchConcept::kAltTagEnd}},
       {IDS_OS_SETTINGS_TAG_TOUCHPAD_REVERSE_SCROLLING,
        mojom::kPerDeviceTouchpadSubpagePath,
-       mojom::SearchResultIcon::kLaptop,
+       kIsRevampEnabled ? mojom::SearchResultIcon::kTouchpad
+                        : mojom::SearchResultIcon::kLaptop,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kTouchpadReverseScrolling}},
       {IDS_OS_SETTINGS_TAG_TOUCHPAD_ACCELERATION,
        mojom::kPerDeviceTouchpadSubpagePath,
-       mojom::SearchResultIcon::kLaptop,
+       kIsRevampEnabled ? mojom::SearchResultIcon::kTouchpad
+                        : mojom::SearchResultIcon::kLaptop,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kTouchpadAcceleration}},
@@ -290,16 +308,21 @@ const std::vector<SearchConcept>& GetPerDeviceTouchpadSearchConcepts() {
 }
 
 const std::vector<SearchConcept>& GetTouchpadHapticSearchConcepts() {
+  const bool kIsRevampEnabled =
+      ash::features::IsOsSettingsRevampWayfindingEnabled();
+
   static const base::NoDestructor<std::vector<SearchConcept>> tags({
       {IDS_OS_SETTINGS_TAG_TOUCHPAD_HAPTIC_FEEDBACK,
        mojom::kPointersSubpagePath,
-       mojom::SearchResultIcon::kLaptop,
+       kIsRevampEnabled ? mojom::SearchResultIcon::kTouchpad
+                        : mojom::SearchResultIcon::kLaptop,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kTouchpadHapticFeedback}},
       {IDS_OS_SETTINGS_TAG_TOUCHPAD_HAPTIC_CLICK_SENSITIVITY,
        mojom::kPointersSubpagePath,
-       mojom::SearchResultIcon::kLaptop,
+       kIsRevampEnabled ? mojom::SearchResultIcon::kTouchpad
+                        : mojom::SearchResultIcon::kLaptop,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kTouchpadHapticClickSensitivity}},
@@ -308,16 +331,21 @@ const std::vector<SearchConcept>& GetTouchpadHapticSearchConcepts() {
 }
 
 const std::vector<SearchConcept>& GetPerDeviceTouchpadHapticSearchConcepts() {
+  const bool kIsRevampEnabled =
+      ash::features::IsOsSettingsRevampWayfindingEnabled();
+
   static const base::NoDestructor<std::vector<SearchConcept>> tags({
       {IDS_OS_SETTINGS_TAG_TOUCHPAD_HAPTIC_FEEDBACK,
        mojom::kPerDeviceTouchpadSubpagePath,
-       mojom::SearchResultIcon::kLaptop,
+       kIsRevampEnabled ? mojom::SearchResultIcon::kTouchpad
+                        : mojom::SearchResultIcon::kLaptop,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kTouchpadHapticFeedback}},
       {IDS_OS_SETTINGS_TAG_TOUCHPAD_HAPTIC_CLICK_SENSITIVITY,
        mojom::kPerDeviceTouchpadSubpagePath,
-       mojom::SearchResultIcon::kLaptop,
+       kIsRevampEnabled ? mojom::SearchResultIcon::kTouchpad
+                        : mojom::SearchResultIcon::kLaptop,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kTouchpadHapticClickSensitivity}},
@@ -423,22 +451,28 @@ const std::vector<SearchConcept>& GetPerDeviceMouseSearchConcepts() {
 }
 
 const std::vector<SearchConcept>& GetPointingStickSearchConcepts() {
+  const bool kIsRevampEnabled =
+      ash::features::IsOsSettingsRevampWayfindingEnabled();
+
   static const base::NoDestructor<std::vector<SearchConcept>> tags({
       {IDS_OS_SETTINGS_TAG_POINTING_STICK_PRIMARY_BUTTON,
        mojom::kPointersSubpagePath,
-       mojom::SearchResultIcon::kLaptop,
+       kIsRevampEnabled ? mojom::SearchResultIcon::kPointingStick
+                        : mojom::SearchResultIcon::kLaptop,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kPointingStickSwapPrimaryButtons}},
       {IDS_OS_SETTINGS_TAG_POINTING_STICK_ACCELERATION,
        mojom::kPointersSubpagePath,
-       mojom::SearchResultIcon::kLaptop,
+       kIsRevampEnabled ? mojom::SearchResultIcon::kPointingStick
+                        : mojom::SearchResultIcon::kLaptop,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kPointingStickAcceleration}},
       {IDS_OS_SETTINGS_TAG_POINTING_STICK_SPEED,
        mojom::kPointersSubpagePath,
-       mojom::SearchResultIcon::kLaptop,
+       kIsRevampEnabled ? mojom::SearchResultIcon::kPointingStick
+                        : mojom::SearchResultIcon::kLaptop,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kPointingStickSpeed}},
@@ -447,22 +481,28 @@ const std::vector<SearchConcept>& GetPointingStickSearchConcepts() {
 }
 
 const std::vector<SearchConcept>& GetPerDevicePointingStickSearchConcepts() {
+  const bool kIsRevampEnabled =
+      ash::features::IsOsSettingsRevampWayfindingEnabled();
+
   static const base::NoDestructor<std::vector<SearchConcept>> tags({
       {IDS_OS_SETTINGS_TAG_POINTING_STICK_PRIMARY_BUTTON,
        mojom::kPerDevicePointingStickSubpagePath,
-       mojom::SearchResultIcon::kLaptop,
+       kIsRevampEnabled ? mojom::SearchResultIcon::kPointingStick
+                        : mojom::SearchResultIcon::kLaptop,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kPointingStickSwapPrimaryButtons}},
       {IDS_OS_SETTINGS_TAG_POINTING_STICK_ACCELERATION,
        mojom::kPerDevicePointingStickSubpagePath,
-       mojom::SearchResultIcon::kLaptop,
+       kIsRevampEnabled ? mojom::SearchResultIcon::kPointingStick
+                        : mojom::SearchResultIcon::kLaptop,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kPointingStickAcceleration}},
       {IDS_OS_SETTINGS_TAG_POINTING_STICK_SPEED,
        mojom::kPerDevicePointingStickSubpagePath,
-       mojom::SearchResultIcon::kLaptop,
+       kIsRevampEnabled ? mojom::SearchResultIcon::kPointingStick
+                        : mojom::SearchResultIcon::kLaptop,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kPointingStickSpeed}},
@@ -972,27 +1012,26 @@ DeviceSection::DeviceSection(Profile* profile,
     : OsSettingsSection(profile, search_tag_registry),
       inputs_subsection_(
           ash::features::IsOsSettingsRevampWayfindingEnabled()
-              ? absl::make_optional<InputsSection>(profile,
-                                                   search_tag_registry,
-                                                   pref_service)
-              : absl::nullopt),
-      power_subsection_(
-          !ash::features::IsOsSettingsRevampWayfindingEnabled()
-              ? absl::make_optional<PowerSection>(profile,
+              ? std::make_optional<InputsSection>(profile,
                                                   search_tag_registry,
                                                   pref_service)
-              : absl::nullopt),
+              : std::nullopt),
+      power_subsection_(
+          !ash::features::IsOsSettingsRevampWayfindingEnabled()
+              ? std::make_optional<PowerSection>(profile,
+                                                 search_tag_registry,
+                                                 pref_service)
+              : std::nullopt),
       printing_subsection_(
           ash::features::IsOsSettingsRevampWayfindingEnabled()
-              ? absl::make_optional<PrintingSection>(profile,
-                                                     search_tag_registry,
-                                                     printers_manager)
-              : absl::nullopt),
+              ? std::make_optional<PrintingSection>(profile,
+                                                    search_tag_registry,
+                                                    printers_manager)
+              : std::nullopt),
       storage_subsection_(
           !ash::features::IsOsSettingsRevampWayfindingEnabled()
-              ? absl::make_optional<StorageSection>(profile,
-                                                    search_tag_registry)
-              : absl::nullopt) {
+              ? std::make_optional<StorageSection>(profile, search_tag_registry)
+              : std::nullopt) {
   CHECK(profile);
   CHECK(search_tag_registry);
   CHECK(pref_service);
@@ -1767,6 +1806,8 @@ void DeviceSection::AddDeviceDisplayStrings(
        IDS_SETTINGS_DISPLAY_NIGHT_LIGHT_SCHEDULE_NEVER},
       {"displayNightLightScheduleSunsetToSunRise",
        IDS_SETTINGS_DISPLAY_NIGHT_LIGHT_SCHEDULE_SUNSET_TO_SUNRISE},
+      {"displayNightLightGeolocationWarningText",
+       IDS_SETTINGS_DISPLAY_NIGHT_LIGHT_GEOLOCATION_WARNING_TEXT},
       {"displayNightLightTemperatureLabel",
        IDS_SETTINGS_DISPLAY_NIGHT_LIGHT_TEMPERATURE_LABEL},
       {"displayNightLightTempSliderMaxLabel",

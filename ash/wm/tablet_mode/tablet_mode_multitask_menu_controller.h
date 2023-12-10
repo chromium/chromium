@@ -5,7 +5,8 @@
 #ifndef ASH_WM_TABLET_MODE_TABLET_MODE_MULTITASK_MENU_CONTROLLER_H_
 #define ASH_WM_TABLET_MODE_TABLET_MODE_MULTITASK_MENU_CONTROLLER_H_
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
 #include "ui/aura/window_observer.h"
 #include "ui/events/event_handler.h"
 #include "ui/gfx/geometry/rect_f.h"

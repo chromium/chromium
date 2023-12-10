@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_table_view_controller.h"
+#import "ios/chrome/browser/ui/settings/password/password_details/password_details_table_view_controller+Testing.h"
 
 #import "base/apple/foundation_util.h"
 #import "base/ios/ios_util.h"
@@ -12,7 +13,6 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/password_manager/core/browser/password_manager_metrics_util.h"
 #import "components/password_manager/core/common/password_manager_constants.h"
-#import "components/password_manager/core/common/password_manager_features.h"
 #import "components/sync/base/features.h"
 #import "ios/chrome/browser/passwords/model/password_checkup_metrics.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
@@ -38,7 +38,6 @@
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_menu_item.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_metrics_utils.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_table_view_constants.h"
-#import "ios/chrome/browser/ui/settings/password/password_details/password_details_table_view_controller+private.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_table_view_controller_delegate.h"
 #import "ios/chrome/browser/ui/settings/password/password_manager_ui_features.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_table_view_constants.h"
@@ -54,7 +53,6 @@ using base::UmaHistogramEnumeration;
 using password_manager::GetWarningTypeForDetailsContext;
 using password_manager::constants::kMaxPasswordNoteLength;
 using password_manager::features::IsAuthOnEntryV2Enabled;
-using password_manager::features::IsPasswordCheckupEnabled;
 using password_manager::metrics_util::LogPasswordNoteActionInSettings;
 using password_manager::metrics_util::PasswordNoteAction;
 
@@ -86,7 +84,7 @@ bool ShouldAllowToDismissWarning(DetailsContext context, bool is_compromised) {
     case DetailsContext::kOutsideSettings:
     case DetailsContext::kCompromisedIssues:
     case DetailsContext::kDismissedWarnings:
-      return IsPasswordCheckupEnabled() && is_compromised;
+      return is_compromised;
     case DetailsContext::kReusedIssues:
     case DetailsContext::kWeakIssues:
       return false;
@@ -103,7 +101,7 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
     case DetailsContext::kWeakIssues:
       return false;
     case DetailsContext::kDismissedWarnings:
-      return IsPasswordCheckupEnabled() && is_muted;
+      return is_muted;
   }
 }
 
@@ -224,13 +222,12 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
 - (void)viewDidLoad {
   [super viewDidLoad];
 
-  self.tableView.accessibilityIdentifier = kPasswordDetailsViewControllerId;
+  self.tableView.accessibilityIdentifier = kPasswordDetailsViewControllerID;
   self.tableView.allowsSelectionDuringEditing = YES;
 
   if (base::FeatureList::IsEnabled(kEnableUIEditMenuInteraction)) {
     if (@available(iOS 16.0, *)) {
       _interactionMenu = [[UIEditMenuInteraction alloc] initWithDelegate:self];
-      [self.tableView addInteraction:self.interactionMenu];
     }
   }
   [self setOrExtendAuthValidityTimer];
@@ -343,7 +340,7 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
   // more than one password shown on the Password Details.
   if (_passwords.count > 1) {
     item.customTextfieldAccessibilityIdentifier = [NSString
-        stringWithFormat:@"%@%@%@", kUsernameTextfieldForPasswordDetailsId,
+        stringWithFormat:@"%@%@%@", kUsernameTextfieldForPasswordDetailsID,
                          passwordDetails.username, passwordDetails.websites[0]];
   }
   return item;
@@ -388,7 +385,7 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
   // more than one password shown on the Password Details.
   if (_passwords.count > 1) {
     item.customTextfieldAccessibilityIdentifier = [NSString
-        stringWithFormat:@"%@%@%@", kPasswordTextfieldForPasswordDetailsId,
+        stringWithFormat:@"%@%@%@", kPasswordTextfieldForPasswordDetailsID,
                          passwordDetails.username, passwordDetails.websites[0]];
   }
   return item;
@@ -436,7 +433,7 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
       IDS_IOS_CHANGE_COMPROMISED_PASSWORD_DESCRIPTION_BRANDED);
   item.image = [self compromisedIcon];
   item.imageViewTintColor = [UIColor colorNamed:kRed500Color];
-  item.accessibilityIdentifier = kCompromisedWarningId;
+  item.accessibilityIdentifier = kCompromisedWarningID;
   return item;
 }
 
@@ -472,7 +469,7 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
   item.textColor = [UIColor colorNamed:kRedColor];
   item.accessibilityTraits = UIAccessibilityTraitButton;
   item.accessibilityIdentifier = [NSString
-      stringWithFormat:@"%@%@%@", kDeleteButtonForPasswordDetailsId,
+      stringWithFormat:@"%@%@%@", kDeleteButtonForPasswordDetailsID,
                        passwordDetails.username, passwordDetails.websites[0]];
   return item;
 }
@@ -485,7 +482,7 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
                        ? [UIColor colorNamed:kTextSecondaryColor]
                        : [UIColor colorNamed:kBlueColor];
   item.enabled = !self.tableView.editing;
-  item.accessibilityIdentifier = kMovePasswordToAccountButtonId;
+  item.accessibilityIdentifier = kMovePasswordToAccountButtonID;
   return item;
 }
 
@@ -840,7 +837,7 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
               style:UIBarButtonItemStylePlain
              target:self
              action:@selector(onShareButtonPressed)];
-  shareButton.accessibilityIdentifier = kPasswordShareButtonId;
+  shareButton.accessibilityIdentifier = kPasswordShareButtonID;
   self.navigationItem.rightBarButtonItems =
       @[ self.navigationItem.rightBarButtonItem, shareButton ];
 }

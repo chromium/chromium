@@ -85,6 +85,23 @@ base::flat_set<std::string> SupportedProtocolsFromSSLConfig(
                                         NextProtoToString);
 }
 
+void MaybeForceHttp11(const ProxyServer& proxy_server,
+                      const CommonConnectJobParams* common_connect_job_params,
+                      const NetworkAnonymizationKey& network_anonymization_key,
+                      SSLConfig* proxy_server_ssl_config) {
+  HttpServerProperties* http_server_properties =
+      common_connect_job_params->http_server_properties;
+  if (http_server_properties) {
+    if (proxy_server.is_https()) {
+      http_server_properties->MaybeForceHTTP11(
+          url::SchemeHostPort(url::kHttpsScheme,
+                              proxy_server.host_port_pair().host(),
+                              proxy_server.host_port_pair().port()),
+          network_anonymization_key, proxy_server_ssl_config);
+    }
+  }
+}
+
 }  // namespace
 
 ConnectJobFactory::ConnectJobFactory(
@@ -173,75 +190,109 @@ std::unique_ptr<ConnectJob> ConnectJobFactory::CreateConnectJob(
 
   DCHECK(proxy_chain.IsValid());
   if (!proxy_chain.is_direct()) {
-    SSLConfig first_proxy_server_ssl_config;
-    if (proxy_chain.proxy_server().is_secure_http_like()) {
-      DCHECK(base_ssl_config_for_proxies);
-      first_proxy_server_ssl_config = *base_ssl_config_for_proxies;
+    // The first iteration of this loop is taken for all types of proxies and
+    // creates a TransportSocketParams and other socket params based on the
+    // proxy type. For nested proxies, we then create additional SSLSocketParam
+    // and HttpProxySocketParam objects for the remaining hops. This is done by
+    // working backwards through the proxy chain and creating socket params
+    // such that connect jobs will be created recursively with dependencies in
+    // the correct order (in other words, the inner-most connect job will
+    // establish a connection to the first proxy, and then that connection
+    // will get used to establish a connection to the second proxy).
+    for (size_t proxy_index = 0; proxy_index < proxy_chain.length();
+         ++proxy_index) {
+      const ProxyServer& proxy_server = proxy_chain.GetProxyServer(proxy_index);
 
-      HttpServerProperties* http_server_properties =
-          common_connect_job_params->http_server_properties;
-      if (http_server_properties) {
-        // TODO(https://crbug.com/1491092): Also do this for the other hops if
-        // the proxy chain is multi-hop.
-        if (proxy_chain.proxy_server().is_https()) {
-          http_server_properties->MaybeForceHTTP11(
-              url::SchemeHostPort(
-                  url::kHttpsScheme,
-                  proxy_chain.proxy_server().host_port_pair().host(),
-                  proxy_chain.proxy_server().host_port_pair().port()),
-              network_anonymization_key, &first_proxy_server_ssl_config);
+      SSLConfig proxy_server_ssl_config;
+      if (proxy_server.is_secure_http_like()) {
+        DCHECK(base_ssl_config_for_proxies);
+        proxy_server_ssl_config = *base_ssl_config_for_proxies;
+        // Disable cert verification network fetches for secure proxies, since
+        // those network requests are probably going to need to go through the
+        // proxy chain too.
+        //
+        // Any proxy-specific SSL behavior here should also be configured for
+        // QUIC proxies.
+        //
+        proxy_server_ssl_config.disable_cert_verification_network_fetches =
+            true;
+        MaybeForceHttp11(proxy_server, common_connect_job_params,
+                         network_anonymization_key, &proxy_server_ssl_config);
+      }
+
+      scoped_refptr<TransportSocketParams> proxy_tcp_params;
+      if (proxy_index == 0) {
+        // In the first iteration create the only TransportSocketParams object,
+        // corresponding to the transport socket we want to create to the first
+        // proxy.
+        // TODO(crbug.com/1206799): For an http-like proxy, should this pass a
+        // `SchemeHostPort`, so proxies can participate in ECH? Note doing so
+        // with `SCHEME_HTTP` requires handling the HTTPS record upgrade.
+        proxy_tcp_params = base::MakeRefCounted<TransportSocketParams>(
+            proxy_server.host_port_pair(), proxy_dns_network_anonymization_key_,
+            secure_dns_policy, resolution_callback,
+            proxy_server.is_secure_http_like()
+                ? SupportedProtocolsFromSSLConfig(proxy_server_ssl_config)
+                : no_alpn_protocols);
+      } else {
+        // TODO(https://crbug.com/1491092): For now we will assume that proxy
+        // chains with multiple proxies must all use HTTPS.
+        CHECK(http_proxy_params);
+        CHECK(http_proxy_params->ssl_params());
+        CHECK(
+            proxy_chain.GetProxyServer(proxy_index - 1).is_secure_http_like());
+      }
+
+      if (proxy_server.is_http_like()) {
+        scoped_refptr<SSLSocketParams> ssl_params;
+        if (proxy_server.is_secure_http_like()) {
+          // Set `ssl_params`, and unset `proxy_tcp_params`.
+          ssl_params = base::MakeRefCounted<SSLSocketParams>(
+              std::move(proxy_tcp_params), /*socks_proxy_params=*/nullptr,
+              std::move(http_proxy_params), proxy_server.host_port_pair(),
+              proxy_server_ssl_config, PRIVACY_MODE_DISABLED,
+              network_anonymization_key);
+          proxy_tcp_params = nullptr;
         }
+
+        // The endpoint parameter for this HttpProxySocketParams, which is what
+        // we will CONNECT to, should correspond to either `endpoint` (for
+        // one-hop proxies) or the proxy server at index 1 (for n-hop proxies).
+        HostPortPair connect_host_port_pair;
+        bool should_tunnel;
+        if (proxy_index + 1 == proxy_chain.length()) {
+          connect_host_port_pair = ToHostPortPair(endpoint);
+          should_tunnel = force_tunnel || UsingSsl(endpoint);
+        } else {
+          const auto& next_proxy_server =
+              proxy_chain.GetProxyServer(proxy_index + 1);
+          connect_host_port_pair = next_proxy_server.host_port_pair();
+          // TODO(https://crbug.com/1491092): For now we will assume that proxy
+          // chains with multiple proxies must all use HTTPS.
+          CHECK(next_proxy_server.is_secure_http_like());
+          should_tunnel = true;
+        }
+
+        // TODO(crbug.com/1206799): Pass `endpoint` directly (preserving
+        // scheme when available)?
+        http_proxy_params = base::MakeRefCounted<HttpProxySocketParams>(
+            std::move(proxy_tcp_params), std::move(ssl_params),
+            connect_host_port_pair, proxy_chain, proxy_index, should_tunnel,
+            *proxy_annotation_tag, network_anonymization_key,
+            secure_dns_policy);
+      } else {
+        DCHECK(proxy_server.is_socks());
+        DCHECK_EQ(1u, proxy_chain.length());
+        // TODO(crbug.com/1206799): Pass `endpoint` directly (preserving scheme
+        // when available)?
+        socks_params = base::MakeRefCounted<SOCKSSocketParams>(
+            std::move(proxy_tcp_params),
+            proxy_server.scheme() == ProxyServer::SCHEME_SOCKS5,
+            ToHostPortPair(endpoint), network_anonymization_key,
+            *proxy_annotation_tag);
       }
-    }
-
-    // TODO(crbug.com/1206799): For an http-like proxy, should this pass a
-    // `SchemeHostPort`, so proxies can participate in ECH? Note doing so with
-    // `SCHEME_HTTP` requires handling the HTTPS record upgrade.
-    const ProxyServer& first_proxy_server =
-        proxy_chain.GetProxyServer(/*chain_index=*/0);
-    auto proxy_tcp_params = base::MakeRefCounted<TransportSocketParams>(
-        first_proxy_server.host_port_pair(),
-        proxy_dns_network_anonymization_key_, secure_dns_policy,
-        resolution_callback,
-        first_proxy_server.is_secure_http_like()
-            ? SupportedProtocolsFromSSLConfig(first_proxy_server_ssl_config)
-            : no_alpn_protocols);
-
-    if (first_proxy_server.is_http_like()) {
-      scoped_refptr<SSLSocketParams> ssl_params;
-      if (first_proxy_server.is_secure_http_like()) {
-        // Set `ssl_params`, and unset `proxy_tcp_params`.
-        ssl_params = base::MakeRefCounted<SSLSocketParams>(
-            std::move(proxy_tcp_params), nullptr, nullptr,
-            first_proxy_server.host_port_pair(), first_proxy_server_ssl_config,
-            PRIVACY_MODE_DISABLED, network_anonymization_key);
-        proxy_tcp_params = nullptr;
-      }
-
-      // TODO(crbug.com/1206799): Pass `endpoint` directly (preserving scheme
-      // when available)?
-      // TODO(https://crbug.com/1491092): The endpoint parameter here should
-      // correspond to either `endpoint` (for one-hop proxies) or the proxy
-      // server at index 1 (for n-hop proxies).
-      http_proxy_params = base::MakeRefCounted<HttpProxySocketParams>(
-          std::move(proxy_tcp_params), std::move(ssl_params),
-          ToHostPortPair(endpoint), proxy_chain, /*proxy_chain_index=*/0,
-          force_tunnel || UsingSsl(endpoint), *proxy_annotation_tag,
-          network_anonymization_key, secure_dns_policy);
-    } else {
-      DCHECK(first_proxy_server.is_socks());
-      // TODO(crbug.com/1206799): Pass `endpoint` directly (preserving scheme
-      // when available)?
-      socks_params = base::MakeRefCounted<SOCKSSocketParams>(
-          std::move(proxy_tcp_params),
-          first_proxy_server.scheme() == ProxyServer::SCHEME_SOCKS5,
-          ToHostPortPair(endpoint), network_anonymization_key,
-          *proxy_annotation_tag);
     }
   }
-
-  // TODO(https://crbug.com/1491092): For nested proxies, create additional
-  // SSLSocketParam and HttpProxySocketParam objects for the remaining hops.
 
   // Deal with SSL - which layers on top of any given proxy.
   if (UsingSsl(endpoint)) {

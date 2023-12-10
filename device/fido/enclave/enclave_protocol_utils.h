@@ -6,6 +6,7 @@
 #define DEVICE_FIDO_ENCLAVE_ENCLAVE_PROTOCOL_UTILS_H_
 
 #include <string>
+#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -15,7 +16,9 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/values.h"
 #include "device/fido/authenticator_get_assertion_response.h"
+#include "device/fido/authenticator_make_credential_response.h"
 #include "device/fido/ctap_get_assertion_request.h"
+#include "device/fido/ctap_make_credential_request.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace sync_pb {
@@ -45,19 +48,33 @@ using EnclaveRequestSigningCallback =
     base::RepeatingCallback<std::vector<uint8_t>(base::span<const uint8_t>,
                                                  base::span<const uint8_t>)>;
 
-// Parses a decrypted command response from the enclave.
+// Parses a decrypted assertion command response from the enclave.
 std::pair<absl::optional<AuthenticatorGetAssertionResponse>, std::string>
-ParseGetAssertionResponse(const std::vector<uint8_t>& response_cbor,
-                          base::span<uint8_t> credential_id);
+    COMPONENT_EXPORT(DEVICE_FIDO)
+        ParseGetAssertionResponse(const std::vector<uint8_t>& response_cbor,
+                                  base::span<uint8_t> credential_id);
+
+// Parses a decrypted registration command response from the enclave.
+std::tuple<absl::optional<AuthenticatorMakeCredentialResponse>,
+           absl::optional<sync_pb::WebauthnCredentialSpecifics>,
+           std::string>
+    COMPONENT_EXPORT(DEVICE_FIDO)
+        ParseMakeCredentialResponse(const std::vector<uint8_t>& response_cbor,
+                                    const CtapMakeCredentialRequest& request);
 
 // Returns a CBOR value with the provided GetAssertion request and associated
 // passkey. The return value can be serialized into a Command request according
 // to the enclave protocol.
-cbor::Value BuildGetAssertionCommand(
+cbor::Value COMPONENT_EXPORT(DEVICE_FIDO) BuildGetAssertionCommand(
     const sync_pb::WebauthnCredentialSpecifics& passkey,
     scoped_refptr<JSONRequest> request,
-    std::string client_data_hash,
-    std::string rp_id);
+    std::string client_data_hash);
+
+// Returns a CBOR value with the provided MakeCredential request. The return
+// value can be serialized into a Command request according to the enclave
+// protocol.
+cbor::Value COMPONENT_EXPORT(DEVICE_FIDO)
+    BuildMakeCredentialCommand(scoped_refptr<JSONRequest> request);
 
 // Builds a CBOR serialization of the command to be sent to the enclave
 // service which can then be encrypted and sent over HTTPS.
@@ -68,7 +85,7 @@ cbor::Value BuildGetAssertionCommand(
 // |device_id| is the unique identifier for this device which the server uses
 //     to look up the previously-registered public key.
 // |complete_callback| is invoked with the finished serialized command.
-void BuildCommandRequestBody(
+void COMPONENT_EXPORT(DEVICE_FIDO) BuildCommandRequestBody(
     base::OnceCallback<cbor::Value()> command_callback,
     EnclaveRequestSigningCallback signing_callback,
     base::span<uint8_t> handshake_hash,

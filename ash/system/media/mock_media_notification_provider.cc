@@ -14,8 +14,8 @@ MockMediaNotificationProvider::MockMediaNotificationProvider()
     : old_provider_(MediaNotificationProvider::Get()) {
   MediaNotificationProvider::Set(this);
 
-  ON_CALL(*this, GetMediaNotificationListView(_, _, _, _))
-      .WillByDefault([](auto, auto, const auto&, const auto&) {
+  ON_CALL(*this, GetMediaNotificationListView)
+      .WillByDefault([](auto, auto, auto, const auto&) {
         return std::make_unique<views::View>();
       });
 }

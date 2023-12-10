@@ -33,7 +33,7 @@ TEST(ChildProcessFieldTrialSyncerTest, FieldTrialState) {
 
   std::string states_string;
   base::FieldTrialList::AllStatesToString(&states_string);
-  EXPECT_EQ("*A/G1/B/G2/C/G3/", states_string);
+  EXPECT_EQ("*A/G1/B/G2/C/G3", states_string);
 
   // Active trial 2 before creating the syncer.
   trial2->Activate();

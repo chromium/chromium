@@ -2,11 +2,14 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="sr">
 <translation id="1178581264944972037">Паузирај</translation>
-<translation id="2558806128245168542">Идите назад</translation>
-<translation id="3523426587027570423">Додирните да бисте затворили плејер Слушајте ову страницу.</translation>
+<translation id="1921351128855867012">Премотајте <ph name="NUMBER_OF_SECONDS" /> сек унапред</translation>
+<translation id="1984328900355667246">Репродукција није доступна</translation>
+<translation id="3023502830214299618">Нажалост, репродукција тренутно није доступна за ову страницу. Пробајте поново касније.</translation>
+<translation id="3807208219231826020">Репродукција превлачењем</translation>
+<translation id="385051799172605136">Назад</translation>
 <translation id="4431240646217225907">Истакни текст и омогући аутоматско скроловање</translation>
 <translation id="4654641641922242357">Плејер Слушајте ову страницу.</translation>
-<translation id="4731877163452936634">Брзина репродукције: <ph name="PLAYBACK_SPEED" /> Кликните да бисте променили.</translation>
+<translation id="4872475766448853257">Вратите се <ph name="NUMBER_OF_SECONDS" /> сек</translation>
 <translation id="5234971936051226002">Плејер Слушајте ову страницу је умањен.</translation>
 <translation id="5596627076506792578">Још опција</translation>
 <translation id="6315170314923504164">Глас</translation>
@@ -15,8 +18,8 @@
 <translation id="6831043979455480757">Преведи</translation>
 <translation id="6846298663435243399">Учитава се...</translation>
 <translation id="7587250070160020374">Chrome тренутно пушта</translation>
-<translation id="7945822420239537236">Премотајте <ph name="NUMBER_OF_SECONDS" /> сек унапред</translation>
-<translation id="7972866381678406344">Премотајте <ph name="NUMBER_OF_SECONDS" /> сек уназад</translation>
 <translation id="8136852699834914183">Репродукција није доступна за ову страницу.</translation>
+<translation id="8264989794233974275"><ph name="PLAYBACK_SPEED" /> пута повећајте или смањите брзину.</translation>
+<translation id="8407011429883244666">Затворите плејер.</translation>
 <translation id="8953618380150219653">Плејер Слушајте ову страницу је отворен у пуној висини.</translation>
 </translationbundle>

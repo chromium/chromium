@@ -6,11 +6,17 @@
 
 #import <memory>
 
+#import "base/files/scoped_temp_dir.h"
 #import "base/functional/bind.h"
 #import "base/memory/ptr_util.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
+#import "base/values.h"
+#import "components/policy/core/common/mock_configuration_policy_provider.h"
+#import "components/policy/core/common/policy_loader_ios_constants.h"
+#import "components/policy/core/common/policy_map.h"
+#import "components/policy/core/common/policy_types.h"
 #import "components/pref_registry/pref_registry_syncable.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/signin/public/identity_manager/tribool.h"
@@ -18,17 +24,18 @@
 #import "components/sync_preferences/pref_service_mock_factory.h"
 #import "components/sync_preferences/pref_service_syncable.h"
 #import "ios/chrome/browser/policy/cloud/user_policy_constants.h"
+#import "ios/chrome/browser/policy/enterprise_policy_test_helper.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
-#import "ios/chrome/browser/signin/authentication_service.h"
-#import "ios/chrome/browser/signin/authentication_service_factory.h"
-#import "ios/chrome/browser/signin/chrome_account_manager_service.h"
-#import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
-#import "ios/chrome/browser/signin/fake_authentication_service_delegate.h"
-#import "ios/chrome/browser/signin/fake_system_identity.h"
-#import "ios/chrome/browser/signin/fake_system_identity_manager.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
+#import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
+#import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
 #import "ios/chrome/browser/ui/authentication/authentication_flow_performer.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -42,6 +49,7 @@ namespace {
 
 NSString* const kFakeDMToken = @"fake_dm_token";
 NSString* const kFakeClientID = @"fake_client_id";
+NSString* const kFakeUserAffiliationID = @"fake_user_affiliation_id";
 
 class AuthenticationFlowTest : public PlatformTest {
  protected:
@@ -465,8 +473,74 @@ TEST_F(AuthenticationFlowTest,
                                 syncConsent:NO];
 
   [[[performer_ expect] andDo:^(NSInvocation*) {
+    [authentication_flow_
+        didRegisterForUserPolicyWithDMToken:kFakeDMToken
+                                   clientID:kFakeClientID
+                         userAffiliationIDs:@[ kFakeUserAffiliationID ]];
+  }] registerUserPolicy:browser_state_.get() forIdentity:managed_identity_];
+
+  [[[performer_ expect] andDo:^(NSInvocation*) {
+    [authentication_flow_ didFetchUserPolicyWithSuccess:YES];
+  }] fetchUserPolicy:browser_state_.get()
+             withDmToken:kFakeDMToken
+                clientID:kFakeClientID
+      userAffiliationIDs:@[ kFakeUserAffiliationID ]
+                identity:managed_identity_];
+
+  SetSigninSuccessExpectations(
+      managed_identity_,
+      signin_metrics::AccessPoint::ACCESS_POINT_SUPERVISED_USER, @"foo.com");
+
+  [authentication_flow_ startSignInWithCompletion:sign_in_completion_];
+
+  CheckSignInCompletion(/*expected_signed_in=*/true);
+  histogram_tester_.ExpectUniqueSample(
+      "Signin.AccountType.SigninConsent",
+      signin_metrics::SigninAccountType::kManaged, 1);
+  histogram_tester_.ExpectTotalCount("Signin.AccountType.SyncConsent", 0);
+}
+
+// Tests that the management confirmation dialog is not shown and the user
+// policies still fetched when the browser is already managed at the machine
+// level. This only applies to the sign-in consent level.
+TEST_F(AuthenticationFlowTest,
+       TestSkipManagedConfirmationWhenAlreadyManagedAtMachineLevel) {
+  // Enable user policy and sign-in consent only.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {syncer::kReplaceSyncPromosWithSignInPromos,
+       policy::kUserPolicyForSigninAndNoSyncConsentLevel},
+      {});
+
+  // Set a machine level policy.
+  base::ScopedTempDir state_directory;
+  ASSERT_TRUE(state_directory.CreateUniqueTempDir());
+  EnterprisePolicyTestHelper enterprise_policy_helper(
+      state_directory.GetPath());
+  policy::PolicyMap map;
+  map.Set("test-policy", policy::POLICY_LEVEL_MANDATORY,
+          policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_PLATFORM,
+          base::Value("hello"), nullptr);
+  enterprise_policy_helper.GetPolicyProvider()->UpdateChromePolicy(map);
+
+  CreateAuthenticationFlow(
+      PostSignInAction::kNone, managed_identity_,
+      signin_metrics::AccessPoint::ACCESS_POINT_SUPERVISED_USER);
+
+  [[[performer_ expect] andDo:^(NSInvocation*) {
+    [authentication_flow_ didFetchManagedStatus:@"foo.com"];
+  }] fetchManagedStatus:browser_state_.get() forIdentity:managed_identity_];
+
+  // Make sure that the is no attempt to show the dialg.
+  [[performer_ reject] showManagedConfirmationForHostedDomain:@"foo.com"
+                                               viewController:view_controller_
+                                                      browser:browser_.get()
+                                                  syncConsent:NO];
+
+  [[[performer_ expect] andDo:^(NSInvocation*) {
     [authentication_flow_ didRegisterForUserPolicyWithDMToken:kFakeDMToken
-                                                     clientID:kFakeClientID];
+                                                     clientID:kFakeClientID
+                                           userAffiliationIDs:@[ kFakeUserAffiliationID ]];
   }] registerUserPolicy:browser_state_.get() forIdentity:managed_identity_];
 
   [[[performer_ expect] andDo:^(NSInvocation*) {
@@ -474,6 +548,7 @@ TEST_F(AuthenticationFlowTest,
   }] fetchUserPolicy:browser_state_.get()
          withDmToken:kFakeDMToken
             clientID:kFakeClientID
+  userAffiliationIDs:@[ kFakeUserAffiliationID ]
             identity:managed_identity_];
 
   SetSigninSuccessExpectations(
@@ -533,7 +608,8 @@ TEST_F(AuthenticationFlowTest,
        TestUserPolicyForManagedAccountForSigninConsentLevelWhenEligible) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
-      {policy::kUserPolicyForSigninAndNoSyncConsentLevel}, {});
+      {policy::kUserPolicyForSigninAndNoSyncConsentLevel},
+      {syncer::kReplaceSyncPromosWithSignInPromos});
 
   CreateAuthenticationFlow(
       PostSignInAction::kNone, managed_identity_,
@@ -548,16 +624,19 @@ TEST_F(AuthenticationFlowTest,
       signin_metrics::AccessPoint::ACCESS_POINT_SUPERVISED_USER, @"foo.com");
 
   [[[performer_ expect] andDo:^(NSInvocation*) {
-    [authentication_flow_ didRegisterForUserPolicyWithDMToken:kFakeDMToken
-                                                     clientID:kFakeClientID];
+    [authentication_flow_
+        didRegisterForUserPolicyWithDMToken:kFakeDMToken
+                                   clientID:kFakeClientID
+                         userAffiliationIDs:@[ kFakeUserAffiliationID ]];
   }] registerUserPolicy:browser_state_.get() forIdentity:managed_identity_];
 
   [[[performer_ expect] andDo:^(NSInvocation*) {
     [authentication_flow_ didFetchUserPolicyWithSuccess:YES];
   }] fetchUserPolicy:browser_state_.get()
-         withDmToken:kFakeDMToken
-            clientID:kFakeClientID
-            identity:managed_identity_];
+             withDmToken:kFakeDMToken
+                clientID:kFakeClientID
+      userAffiliationIDs:@[ kFakeUserAffiliationID ]
+                identity:managed_identity_];
 
   [authentication_flow_ startSignInWithCompletion:sign_in_completion_];
 
@@ -601,16 +680,19 @@ TEST_F(AuthenticationFlowTest,
                                 syncConsent:YES];
 
   [[[performer_ expect] andDo:^(NSInvocation*) {
-    [authentication_flow_ didRegisterForUserPolicyWithDMToken:kFakeDMToken
-                                                     clientID:kFakeClientID];
+    [authentication_flow_
+        didRegisterForUserPolicyWithDMToken:kFakeDMToken
+                                   clientID:kFakeClientID
+                         userAffiliationIDs:@[ kFakeUserAffiliationID ]];
   }] registerUserPolicy:browser_state_.get() forIdentity:managed_identity_];
 
   [[[performer_ expect] andDo:^(NSInvocation*) {
     [authentication_flow_ didFetchUserPolicyWithSuccess:YES];
   }] fetchUserPolicy:browser_state_.get()
-         withDmToken:kFakeDMToken
-            clientID:kFakeClientID
-            identity:managed_identity_];
+             withDmToken:kFakeDMToken
+                clientID:kFakeClientID
+      userAffiliationIDs:@[ kFakeUserAffiliationID ]
+                identity:managed_identity_];
 
   [authentication_flow_ startSignInWithCompletion:sign_in_completion_];
 
@@ -656,13 +738,16 @@ TEST_F(AuthenticationFlowTest,
                                 syncConsent:YES];
 
   [[[performer_ expect] andDo:^(NSInvocation*) {
-    [authentication_flow_ didRegisterForUserPolicyWithDMToken:@""
-                                                     clientID:kFakeClientID];
+    [authentication_flow_
+        didRegisterForUserPolicyWithDMToken:@""
+                                   clientID:kFakeClientID
+                         userAffiliationIDs:@[ kFakeUserAffiliationID ]];
   }] registerUserPolicy:browser_state_.get() forIdentity:managed_identity_];
 
   [[performer_ reject] fetchUserPolicy:browser_state_.get()
                            withDmToken:@""
                               clientID:kFakeClientID
+                    userAffiliationIDs:@[ kFakeUserAffiliationID ]
                               identity:managed_identity_];
 
   [authentication_flow_ startSignInWithCompletion:sign_in_completion_];
@@ -708,16 +793,19 @@ TEST_F(AuthenticationFlowTest, TestCanSyncWithUserPolicyFetchFailure) {
                                 syncConsent:YES];
 
   [[[performer_ expect] andDo:^(NSInvocation*) {
-    [authentication_flow_ didRegisterForUserPolicyWithDMToken:kFakeDMToken
-                                                     clientID:kFakeClientID];
+    [authentication_flow_
+        didRegisterForUserPolicyWithDMToken:kFakeDMToken
+                                   clientID:kFakeClientID
+                         userAffiliationIDs:@[ kFakeUserAffiliationID ]];
   }] registerUserPolicy:browser_state_.get() forIdentity:managed_identity_];
 
   [[[performer_ expect] andDo:^(NSInvocation*) {
     [authentication_flow_ didFetchUserPolicyWithSuccess:NO];
   }] fetchUserPolicy:browser_state_.get()
-         withDmToken:kFakeDMToken
-            clientID:kFakeClientID
-            identity:managed_identity_];
+             withDmToken:kFakeDMToken
+                clientID:kFakeClientID
+      userAffiliationIDs:@[ kFakeUserAffiliationID ]
+                identity:managed_identity_];
 
   [authentication_flow_ startSignInWithCompletion:sign_in_completion_];
 

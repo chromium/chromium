@@ -720,7 +720,7 @@ void CaptureModeSession::MaybeUpdateSettingsBounds() {
 }
 
 void CaptureModeSession::MaybeUpdateCaptureUisOpacity(
-    absl::optional<gfx::Point> cursor_screen_location) {
+    std::optional<gfx::Point> cursor_screen_location) {
   if (is_shutting_down_) {
     return;
   }
@@ -1399,22 +1399,22 @@ void CaptureModeSession::OnTouchEvent(ui::TouchEvent* event) {
   OnLocatedEvent(event, /*is_touch=*/true);
 }
 
-void CaptureModeSession::OnTabletModeStarted() {
-  UpdateCaptureLabelWidget(CaptureLabelAnimation::kNone);
-  UpdateCursor(display::Screen::GetScreen()->GetCursorScreenPoint(),
-               /*is_touch=*/false);
-}
-
-void CaptureModeSession::OnTabletModeEnded() {
-  UpdateCaptureLabelWidget(CaptureLabelAnimation::kNone);
-  UpdateCursor(display::Screen::GetScreen()->GetCursorScreenPoint(),
-               /*is_touch=*/false);
-}
-
 void CaptureModeSession::OnWindowDestroying(aura::Window* window) {
   DCHECK_EQ(window, input_capture_window_);
   input_capture_window_->RemoveObserver(this);
   input_capture_window_ = nullptr;
+}
+
+void CaptureModeSession::OnDisplayTabletStateChanged(
+    display::TabletState state) {
+  if (display::IsTabletStateChanging(state)) {
+    // Do nothing when tablet state is still in the process of transition.
+    return;
+  }
+
+  UpdateCaptureLabelWidget(CaptureLabelAnimation::kNone);
+  UpdateCursor(display::Screen::GetScreen()->GetCursorScreenPoint(),
+               /*is_touch=*/false);
 }
 
 void CaptureModeSession::OnDisplayMetricsChanged(
@@ -2594,7 +2594,7 @@ void CaptureModeSession::ClampCaptureRegionToRootWindowSize() {
 }
 
 void CaptureModeSession::EndSelection(
-    absl::optional<gfx::Point> cursor_screen_location) {
+    std::optional<gfx::Point> cursor_screen_location) {
   fine_tune_position_ = FineTunePosition::kNone;
   anchor_points_.clear();
 
@@ -2876,7 +2876,6 @@ void CaptureModeSession::InitInternal() {
 
   Observe(ColorUtil::GetColorProviderSourceForWindow(current_root_));
 
-  TabletModeController::Get()->AddObserver(this);
   display_observer_.emplace(this);
   // Our event handling code assumes the capture bar widget has been initialized
   // already. So we start handling events after everything has been setup.
@@ -2902,7 +2901,6 @@ void CaptureModeSession::ShutdownInternal() {
   display_observer_.reset();
   user_nudge_controller_.reset();
   capture_window_observer_.reset();
-  TabletModeController::Get()->RemoveObserver(this);
 
   Observe(nullptr);
 

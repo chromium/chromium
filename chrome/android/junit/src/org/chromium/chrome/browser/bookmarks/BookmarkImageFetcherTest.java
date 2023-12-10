@@ -49,14 +49,11 @@ import org.chromium.components.favicon.IconType;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.favicon.LargeIconBridge.LargeIconCallback;
 import org.chromium.components.image_fetcher.ImageFetcher;
-import org.chromium.components.sync.ModelType;
-import org.chromium.components.sync.SyncService;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
 import java.util.Arrays;
-import java.util.Collections;
 
 /** Unit tests for {@link BookmarkImageFetcher}. */
 @Batch(Batch.UNIT_TESTS)
@@ -78,7 +75,6 @@ public class BookmarkImageFetcherTest {
     @Mock private ImageFetcher mImageFetcher;
     @Mock private Callback<Drawable> mDrawableCallback;
     @Mock private Callback<Pair<Drawable, Drawable>> mFolderDrawablesCallback;
-    @Mock private SyncService mSyncService;
 
     @Captor private ArgumentCaptor<Drawable> mDrawableCaptor;
     @Captor private ArgumentCaptor<Pair<Drawable, Drawable>> mFolderDrawablesCaptor;
@@ -169,12 +165,6 @@ public class BookmarkImageFetcherTest {
                                     .when(mImageFetcher)
                                     .fetchImage(any(), any());
 
-                            // Setup SyncService.
-                            doReturn(true).when(mSyncService).isSyncFeatureActive();
-                            doReturn(Collections.singleton(ModelType.BOOKMARKS))
-                                    .when(mSyncService)
-                                    .getActiveDataTypes();
-
                             mBookmarkImageFetcher =
                                     new BookmarkImageFetcher(
                                             mActivity,
@@ -183,8 +173,7 @@ public class BookmarkImageFetcherTest {
                                             mLargeIconBridge,
                                             mIconGenerator,
                                             1,
-                                            1,
-                                            mSyncService);
+                                            1);
                             mBookmarkImageFetcher.setupFetchProperties(mIconGenerator, 100, 100);
                         });
     }

@@ -42,6 +42,7 @@
 #include "third_party/blink/renderer/platform/bindings/callback_method_retriever.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "v8/include/v8-context.h"
+#include "v8/include/v8-isolate.h"
 #include "v8/include/v8-local-handle.h"
 #include "v8/include/v8-primitive.h"
 #include "v8/include/v8-value.h"
@@ -574,9 +575,8 @@ int64_t SharedStorageWorkletGlobalScope::GetCurrentOperationId() {
   ScriptState* script_state = ScriptController()->GetScriptState();
   DCHECK(script_state);
 
-  v8::Local<v8::Context> context = script_state->GetContext();
-
-  v8::Local<v8::Value> data = context->GetContinuationPreservedEmbedderData();
+  v8::Local<v8::Value> data =
+      script_state->GetIsolate()->GetContinuationPreservedEmbedderData();
   return data.As<v8::BigInt>()->Int64Value();
 }
 
@@ -693,11 +693,11 @@ base::OnceClosure SharedStorageWorkletGlobalScope::StartOperation(
   ScriptState* script_state = ScriptController()->GetScriptState();
   DCHECK(script_state);
 
-  v8::HandleScope handle_scope(script_state->GetIsolate());
-  v8::Local<v8::Context> context = script_state->GetContext();
+  v8::Isolate* isolate = script_state->GetIsolate();
+  v8::HandleScope handle_scope(isolate);
 
-  context->SetContinuationPreservedEmbedderData(
-      v8::BigInt::New(context->GetIsolate(), operation_id));
+  isolate->SetContinuationPreservedEmbedderData(
+      v8::BigInt::New(isolate, operation_id));
 
   if (ShouldDefinePrivateAggregationInSharedStorage()) {
     GetOrCreatePrivateAggregation()->OnOperationStarted(

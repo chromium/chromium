@@ -10,7 +10,6 @@
 #import "components/autofill/core/common/autofill_prefs.h"
 #import "components/enterprise/browser/enterprise_switches.h"
 #import "components/history/core/common/pref_names.h"
-#import "components/password_manager/core/common/password_manager_features.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"
 #import "components/policy/core/common/cloud/cloud_policy_constants.h"
 #import "components/policy/core/common/policy_loader_ios_constants.h"
@@ -21,14 +20,13 @@
 #import "components/safe_browsing/core/common/features.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/sync/base/features.h"
-#import "ios/chrome/browser/ntp/features.h"
-#import "ios/chrome/browser/ntp/home/features.h"
 #import "ios/chrome/browser/policy/cloud/user_policy_constants.h"
 #import "ios/chrome/browser/policy/policy_app_interface.h"
 #import "ios/chrome/browser/policy/policy_earl_grey_utils.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
-#import "ios/chrome/browser/signin/fake_system_identity.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/translate/model/translate_app_interface.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
@@ -160,13 +158,14 @@ NSString* const kDomain2 = @"domain2.com";
   // "com.apple.configuration.managed" key.
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
   config.relaunch_policy = NoForceRelaunchAndResetState;
-  config.features_enabled.push_back(
-      password_manager::features::kIOSPasswordUISplit);
 
   if ([self isRunningTest:@selector(testPopupMenuItemWithUserPolicy)] ||
       [self isRunningTest:@selector(testManagementPageManagedWithUserPolicy)]) {
     config.features_enabled.push_back(
-        policy::kUserPolicyForSigninOrSyncConsentLevel);
+        policy::kUserPolicyForSigninAndNoSyncConsentLevel);
+  } else {
+    config.features_disabled.push_back(
+        policy::kUserPolicyForSigninAndNoSyncConsentLevel);
   }
 
   if ([self isRunningTest:@selector

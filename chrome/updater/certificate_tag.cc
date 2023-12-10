@@ -4,6 +4,12 @@
 
 #include "chrome/updater/certificate_tag.h"
 
+#include <cstdint>
+#include <cstring>
+#include <optional>
+#include <utility>
+#include <vector>
+
 #include "base/notreached.h"
 #include "third_party/boringssl/src/include/openssl/bytestring.h"
 #include "third_party/boringssl/src/include/openssl/crypto.h"
@@ -41,7 +47,7 @@ static constexpr uint16_t kAttributeCertificateRevision = 0x200;
 static constexpr uint16_t kAttributeCertificateTypePKCS7SignedData = 2;
 
 // static
-absl::optional<Binary> Binary::Parse(base::span<const uint8_t> binary) {
+std::optional<Binary> Binary::Parse(base::span<const uint8_t> binary) {
   // Parse establishes some offsets into |binary| for structures that |GetTag|
   // and |SetTag| will both need.
 
@@ -83,7 +89,7 @@ absl::optional<Binary> Binary::Parse(base::span<const uint8_t> binary) {
       !CBS_get_bytes(&bin_for_header, &optional_header,
                      size_of_optional_header) ||
       !CBS_get_u16le(&optional_header, &optional_header_magic)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   size_t address_size = 0, extra_header_bytes = 0;
@@ -97,7 +103,7 @@ absl::optional<Binary> Binary::Parse(base::span<const uint8_t> binary) {
       extra_header_bytes = 4;
       break;
     default:
-      return absl::nullopt;
+      return std::nullopt;
   }
 
   // Skip the Windows-specific header section up until the number of data
@@ -119,14 +125,14 @@ absl::optional<Binary> Binary::Parse(base::span<const uint8_t> binary) {
       !CBS_get_u32le(&optional_header, &cert_entry_size) ||
       size_t{cert_entry_virtual_addr} + cert_entry_size < cert_entry_size ||
       size_t{cert_entry_virtual_addr} + cert_entry_size != CBS_len(&bin)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   CBS bin_for_certs = bin;
   CBS certs;
   if (!CBS_skip(&bin_for_certs, cert_entry_virtual_addr) ||
       !CBS_get_bytes(&bin_for_certs, &certs, cert_entry_size)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // See the WIN_CERTIFICATE structure from
@@ -141,7 +147,7 @@ absl::optional<Binary> Binary::Parse(base::span<const uint8_t> binary) {
       !CBS_get_u16le(&certs, &certs_type) ||
       certs_type != kAttributeCertificateTypePKCS7SignedData ||
       !CBS_get_asn1_element(&certs, &signed_data, CBS_ASN1_SEQUENCE)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   Binary ret;
@@ -157,7 +163,7 @@ absl::optional<Binary> Binary::Parse(base::span<const uint8_t> binary) {
       !CBS_get_u32le(&bin_for_check, &cert_entry_size_duplicate) ||
       cert_entry_size_duplicate != cert_entry_size) {
     NOTREACHED();
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   ret.binary_ = binary;
@@ -165,13 +171,13 @@ absl::optional<Binary> Binary::Parse(base::span<const uint8_t> binary) {
   ret.attr_cert_offset_ = cert_entry_virtual_addr;
 
   if (!ret.ParseTag()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return ret;
 }
 
-const absl::optional<base::span<const uint8_t>>& Binary::tag() const {
+const std::optional<base::span<const uint8_t>>& Binary::tag() const {
   return tag_;
 }
 
@@ -204,24 +210,127 @@ static bool CopyASN1(CBB* out, CBS* in) {
          CBB_add_bytes(out, CBS_data(&element), CBS_len(&element)) == 1;
 }
 
-absl::optional<std::vector<uint8_t>> Binary::SetTag(
-    base::span<const uint8_t> tag) const {
+struct ParseResult {
+  bool success = false;
+  std::optional<base::span<const uint8_t>> tag;
+};
+
+// Parses the `signed_data` PKCS7 object to find the final certificate in the
+// list and see whether it has an extension with `kTagOID`, and if so, returns a
+// `base::span` of the tag within this `signed_data`. `success` is set to `true`
+// if there were no parse errors, even if a tag could not be found.
+ParseResult ParseTagImpl(base::span<const uint8_t> signed_data) {
+  CBS content_info = CBSFromSpan(signed_data);
+  CBS pkcs7, certs;
+  // See https://tools.ietf.org/html/rfc2315#section-7
+  if (!CBS_get_asn1(&content_info, &content_info, CBS_ASN1_SEQUENCE) ||
+      // type
+      !CBS_get_asn1(&content_info, nullptr, CBS_ASN1_OBJECT) ||
+      !CBS_get_asn1(&content_info, &pkcs7,
+                    0 | CBS_ASN1_CONSTRUCTED | CBS_ASN1_CONTEXT_SPECIFIC) ||
+      // See https://tools.ietf.org/html/rfc2315#section-9.1
+      !CBS_get_asn1(&pkcs7, &pkcs7, CBS_ASN1_SEQUENCE) ||
+      // version
+      !CBS_get_asn1(&pkcs7, nullptr, CBS_ASN1_INTEGER) ||
+      // digests
+      !CBS_get_asn1(&pkcs7, nullptr, CBS_ASN1_SET) ||
+      // contentInfo
+      !CBS_get_asn1(&pkcs7, nullptr, CBS_ASN1_SEQUENCE) ||
+      !CBS_get_asn1(&pkcs7, &certs,
+                    0 | CBS_ASN1_CONSTRUCTED | CBS_ASN1_CONTEXT_SPECIFIC)) {
+    return {};
+  }
+
+  bool have_last_cert = false;
+  CBS last_cert;
+
+  while (CBS_len(&certs) > 0) {
+    if (!CBS_get_asn1(&certs, &last_cert, CBS_ASN1_SEQUENCE)) {
+      return {};
+    }
+    have_last_cert = true;
+  }
+
+  if (!have_last_cert) {
+    return {};
+  }
+
+  // See https://tools.ietf.org/html/rfc5280#section-4.1 for the X.509 structure
+  // being parsed here.
+  CBS tbs_cert, outer_extensions;
+  int has_extensions = 0;
+  if (!CBS_get_asn1(&last_cert, &tbs_cert, CBS_ASN1_SEQUENCE) ||
+      // version
+      !CBS_get_optional_asn1(
+          &tbs_cert, nullptr, nullptr,
+          CBS_ASN1_CONSTRUCTED | CBS_ASN1_CONTEXT_SPECIFIC | 0) ||
+      // serialNumber
+      !CBS_get_asn1(&tbs_cert, nullptr, CBS_ASN1_INTEGER) ||
+      // signature algorithm
+      !CBS_get_asn1(&tbs_cert, nullptr, CBS_ASN1_SEQUENCE) ||
+      // issuer
+      !CBS_get_asn1(&tbs_cert, nullptr, CBS_ASN1_SEQUENCE) ||
+      // validity
+      !CBS_get_asn1(&tbs_cert, nullptr, CBS_ASN1_SEQUENCE) ||
+      // subject
+      !CBS_get_asn1(&tbs_cert, nullptr, CBS_ASN1_SEQUENCE) ||
+      // subjectPublicKeyInfo
+      !CBS_get_asn1(&tbs_cert, nullptr, CBS_ASN1_SEQUENCE) ||
+      // issuerUniqueID
+      !CBS_get_optional_asn1(&tbs_cert, nullptr, nullptr,
+                             CBS_ASN1_CONTEXT_SPECIFIC | 1) ||
+      // subjectUniqueID
+      !CBS_get_optional_asn1(&tbs_cert, nullptr, nullptr,
+                             CBS_ASN1_CONTEXT_SPECIFIC | 2) ||
+      !CBS_get_optional_asn1(
+          &tbs_cert, &outer_extensions, &has_extensions,
+          CBS_ASN1_CONSTRUCTED | CBS_ASN1_CONTEXT_SPECIFIC | 3)) {
+    return {};
+  }
+
+  if (!has_extensions) {
+    return {};
+  }
+
+  CBS extensions;
+  if (!CBS_get_asn1(&outer_extensions, &extensions, CBS_ASN1_SEQUENCE)) {
+    return {};
+  }
+
+  while (CBS_len(&extensions) > 0) {
+    CBS extension, oid, contents;
+    if (!CBS_get_asn1(&extensions, &extension, CBS_ASN1_SEQUENCE) ||
+        !CBS_get_asn1(&extension, &oid, CBS_ASN1_OBJECT) ||
+        (CBS_peek_asn1_tag(&extension, CBS_ASN1_BOOLEAN) &&
+         !CBS_get_asn1(&extension, nullptr, CBS_ASN1_BOOLEAN)) ||
+        !CBS_get_asn1(&extension, &contents, CBS_ASN1_OCTETSTRING) ||
+        CBS_len(&extension) != 0) {
+      return {};
+    }
+
+    if (CBS_len(&oid) == sizeof(kTagOID) &&
+        memcmp(CBS_data(&oid), kTagOID, sizeof(kTagOID)) == 0) {
+      return {true, SpanFromCBS(&contents)};
+    }
+  }
+
+  return {true, std::nullopt};
+}
+
+// Returns an updated version of the ContentInfo signedData PKCS7 object with
+// the given `new_tag` added, or `nullopt` on error. If the input `signed_data`
+// already contains a tag, then it will be replaced with `new_tag`.
+std::optional<std::vector<uint8_t>> SetTagImpl(
+    base::span<const uint8_t> signed_data,
+    base::span<const uint8_t> new_tag) {
   bssl::ScopedCBB cbb;
-  if (!CBB_init(cbb.get(), binary_.size() + 1024) ||
-      // Copy the binary up to the |WIN_CERTIFICATE| structure directly to the
-      // output.
-      !CBB_add_bytes(cbb.get(), binary_.data(), attr_cert_offset_) ||
-      // See the WIN_CERTIFICATE structure from
-      // http://msdn.microsoft.com/en-us/library/ms920091.aspx.
-      !CBB_add_u32(cbb.get(), 0 /* Length. Filled in later. */) ||
-      !CBB_add_u16le(cbb.get(), kAttributeCertificateRevision) ||
-      !CBB_add_u16le(cbb.get(), kAttributeCertificateTypePKCS7SignedData)) {
-    return absl::nullopt;
+  if (!CBB_init(cbb.get(), signed_data.size() + 1024)) {
+    return std::nullopt;
   }
 
   // Walk the PKCS SignedData structure from the input and copy elements to the
   // output until the list of certificates is reached.
-  CBS content_info = CBSFromSpan(content_info_);
+  CBS content_info = CBSFromSpan(signed_data);
   CBS pkcs7, certs;
   CBB content_info_cbb, outer_pkcs7_cbb, pkcs7_cbb, certs_cbb;
   if (!CBS_get_asn1(&content_info, &content_info, CBS_ASN1_SEQUENCE) ||
@@ -246,7 +355,7 @@ absl::optional<std::vector<uint8_t>> Binary::SetTag(
                     0 | CBS_ASN1_CONSTRUCTED | CBS_ASN1_CONTEXT_SPECIFIC) ||
       !CBB_add_asn1(&pkcs7_cbb, &certs_cbb,
                     0 | CBS_ASN1_CONSTRUCTED | CBS_ASN1_CONTEXT_SPECIFIC)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Copy the certificates from the input to the output, potentially omitting
@@ -258,17 +367,22 @@ absl::optional<std::vector<uint8_t>> Binary::SetTag(
     if ((have_last_cert && !CBB_add_bytes(&certs_cbb, CBS_data(&last_cert),
                                           CBS_len(&last_cert))) ||
         !CBS_get_asn1_element(&certs, &last_cert, CBS_ASN1_SEQUENCE)) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     have_last_cert = true;
+  }
+
+  if (!have_last_cert) {
+    return std::nullopt;
   }
 
   // If there's not already a tag then we need to keep the last certificate.
   // Otherwise it's the certificate with the tag in and we're going to replace
   // it.
-  if (!tag_.has_value() &&
+  const ParseResult result = ParseTagImpl(signed_data);
+  if (!result.tag &&
       !CBB_add_bytes(&certs_cbb, CBS_data(&last_cert), CBS_len(&last_cert))) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // These values are DER-encoded OIDs needed in the X.509 certificate that's
@@ -347,7 +461,7 @@ absl::optional<std::vector<uint8_t>> Binary::SetTag(
       // Not critical.
       !CBB_add_bytes(&critical_flag, reinterpret_cast<const uint8_t*>(""), 1) ||
       !CBB_add_asn1(&extension, &tag_cbb, CBS_ASN1_OCTETSTRING) ||
-      !CBB_add_bytes(&tag_cbb, tag.data(), tag.size()) ||
+      !CBB_add_bytes(&tag_cbb, new_tag.data(), new_tag.size()) ||
       !CBB_add_asn1(&cert, &sigalg, CBS_ASN1_SEQUENCE) ||
       !CBB_add_asn1(&sigalg, &sigalg_oid, CBS_ASN1_OBJECT) ||
       !CBB_add_bytes(&sigalg_oid, kSHA256RSAEncryption,
@@ -359,7 +473,7 @@ absl::optional<std::vector<uint8_t>> Binary::SetTag(
       // Copy signerInfos from the input PKCS#7 structure.
       !CopyASN1(&pkcs7_cbb, &pkcs7) || CBS_len(&pkcs7) != 0 ||
       !CBB_finish(cbb.get(), &cbb_data, &cbb_len)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Copy the CBB result into a std::vector, padding to 8-byte alignment.
@@ -370,13 +484,33 @@ absl::optional<std::vector<uint8_t>> Binary::SetTag(
   ret.insert(ret.end(), padding, 0);
   OPENSSL_free(cbb_data);
 
-  // Inject the updated length in a couple of places:
-  const uint32_t certs_size = cbb_len + padding - attr_cert_offset_;
-  //   1) The |IMAGE_DATA_DIRECTORY| structure that delineates the
-  //      |WIN_CERTIFICATE| structure.
-  memcpy(&ret[certs_size_offset_], &certs_size, sizeof(certs_size));
-  //   2) The first word of the |WIN_CERTIFICATE| structure itself.
-  memcpy(&ret[attr_cert_offset_], &certs_size, sizeof(certs_size));
+  return ret;
+}
+
+std::optional<std::vector<uint8_t>> Binary::SetTag(
+    base::span<const uint8_t> tag) const {
+  std::optional<std::vector<uint8_t>> ret = SetTagImpl(content_info_, tag);
+  if (!ret) {
+    return std::nullopt;
+  }
+
+  // Recreate the header for the `WIN_CERTIFICATE` structure.
+  constexpr size_t kSizeofWinCertificateHeader = 8;
+  std::vector<uint8_t> win_certificate_header(kSizeofWinCertificateHeader);
+  const uint32_t certs_size = kSizeofWinCertificateHeader + ret->size();
+  memcpy(&win_certificate_header[0], &certs_size, sizeof(certs_size));
+  memcpy(&win_certificate_header[4], &kAttributeCertificateRevision,
+         sizeof(kAttributeCertificateRevision));
+  memcpy(&win_certificate_header[6], &kAttributeCertificateTypePKCS7SignedData,
+         sizeof(kAttributeCertificateTypePKCS7SignedData));
+
+  ret->insert(ret->begin(), win_certificate_header.begin(),
+              win_certificate_header.end());
+  ret->insert(ret->begin(), binary_.data(), binary_.data() + attr_cert_offset_);
+
+  // Inject the updated length in the `IMAGE_DATA_DIRECTORY` structure that
+  // delineates the `WIN_CERTIFICATE` structure.
+  memcpy(ret->data() + certs_size_offset_, &certs_size, sizeof(certs_size));
 
   return ret;
 }
@@ -384,106 +518,9 @@ absl::optional<std::vector<uint8_t>> Binary::SetTag(
 Binary::Binary() = default;
 
 bool Binary::ParseTag() {
-  // Parse the |WIN_CERTIFICATE| structure to find the final certificate in the
-  // list and see whether it has an extension with |kTagOID|. If so, that's the
-  // tag for this binary.
-
-  CBS content_info = CBSFromSpan(content_info_);
-  CBS pkcs7, certs;
-  // See https://tools.ietf.org/html/rfc2315#section-7
-  if (!CBS_get_asn1(&content_info, &content_info, CBS_ASN1_SEQUENCE) ||
-      // type
-      !CBS_get_asn1(&content_info, nullptr, CBS_ASN1_OBJECT) ||
-      !CBS_get_asn1(&content_info, &pkcs7,
-                    0 | CBS_ASN1_CONSTRUCTED | CBS_ASN1_CONTEXT_SPECIFIC) ||
-      // See https://tools.ietf.org/html/rfc2315#section-9.1
-      !CBS_get_asn1(&pkcs7, &pkcs7, CBS_ASN1_SEQUENCE) ||
-      // version
-      !CBS_get_asn1(&pkcs7, nullptr, CBS_ASN1_INTEGER) ||
-      // digests
-      !CBS_get_asn1(&pkcs7, nullptr, CBS_ASN1_SET) ||
-      // contentInfo
-      !CBS_get_asn1(&pkcs7, nullptr, CBS_ASN1_SEQUENCE) ||
-      !CBS_get_asn1(&pkcs7, &certs,
-                    0 | CBS_ASN1_CONSTRUCTED | CBS_ASN1_CONTEXT_SPECIFIC)) {
-    return false;
-  }
-
-  bool have_last_cast = false;
-  CBS last_cert;
-
-  while (CBS_len(&certs) > 0) {
-    if (!CBS_get_asn1(&certs, &last_cert, CBS_ASN1_SEQUENCE)) {
-      return false;
-    }
-    have_last_cast = true;
-  }
-
-  if (!have_last_cast) {
-    return false;
-  }
-
-  // See https://tools.ietf.org/html/rfc5280#section-4.1 for the X.509 structure
-  // being parsed here.
-  CBS tbs_cert, outer_extensions;
-  int has_extensions = 0;
-  if (!CBS_get_asn1(&last_cert, &tbs_cert, CBS_ASN1_SEQUENCE) ||
-      // version
-      !CBS_get_optional_asn1(
-          &tbs_cert, nullptr, nullptr,
-          CBS_ASN1_CONSTRUCTED | CBS_ASN1_CONTEXT_SPECIFIC | 0) ||
-      // serialNumber
-      !CBS_get_asn1(&tbs_cert, nullptr, CBS_ASN1_INTEGER) ||
-      // signature algorithm
-      !CBS_get_asn1(&tbs_cert, nullptr, CBS_ASN1_SEQUENCE) ||
-      // issuer
-      !CBS_get_asn1(&tbs_cert, nullptr, CBS_ASN1_SEQUENCE) ||
-      // validity
-      !CBS_get_asn1(&tbs_cert, nullptr, CBS_ASN1_SEQUENCE) ||
-      // subject
-      !CBS_get_asn1(&tbs_cert, nullptr, CBS_ASN1_SEQUENCE) ||
-      // subjectPublicKeyInfo
-      !CBS_get_asn1(&tbs_cert, nullptr, CBS_ASN1_SEQUENCE) ||
-      // issuerUniqueID
-      !CBS_get_optional_asn1(&tbs_cert, nullptr, nullptr,
-                             CBS_ASN1_CONTEXT_SPECIFIC | 1) ||
-      // subjectUniqueID
-      !CBS_get_optional_asn1(&tbs_cert, nullptr, nullptr,
-                             CBS_ASN1_CONTEXT_SPECIFIC | 2) ||
-      !CBS_get_optional_asn1(
-          &tbs_cert, &outer_extensions, &has_extensions,
-          CBS_ASN1_CONSTRUCTED | CBS_ASN1_CONTEXT_SPECIFIC | 3)) {
-    return false;
-  }
-
-  if (!has_extensions) {
-    return true;
-  }
-
-  CBS extensions;
-  if (!CBS_get_asn1(&outer_extensions, &extensions, CBS_ASN1_SEQUENCE)) {
-    return false;
-  }
-
-  while (CBS_len(&extensions) > 0) {
-    CBS extension, oid, contents;
-    if (!CBS_get_asn1(&extensions, &extension, CBS_ASN1_SEQUENCE) ||
-        !CBS_get_asn1(&extension, &oid, CBS_ASN1_OBJECT) ||
-        (CBS_peek_asn1_tag(&extension, CBS_ASN1_BOOLEAN) &&
-         !CBS_get_asn1(&extension, nullptr, CBS_ASN1_BOOLEAN)) ||
-        !CBS_get_asn1(&extension, &contents, CBS_ASN1_OCTETSTRING) ||
-        CBS_len(&extension) != 0) {
-      return false;
-    }
-
-    if (CBS_len(&oid) == sizeof(kTagOID) &&
-        memcmp(CBS_data(&oid), kTagOID, sizeof(kTagOID)) == 0) {
-      tag_ = SpanFromCBS(&contents);
-      break;
-    }
-  }
-
-  return true;
+  const auto [success, tag] = ParseTagImpl(content_info_);
+  tag_ = std::move(tag);
+  return success;
 }
 
 }  // namespace updater::tagging

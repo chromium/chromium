@@ -207,28 +207,28 @@ void aom_upsampled_pred_neon(MACROBLOCKD* xd,
                              int subpel_search);
 #define aom_upsampled_pred aom_upsampled_pred_neon
 
-void av1_apply_selfguided_restoration_c(const uint8_t* dat,
-                                        int width,
-                                        int height,
-                                        int stride,
-                                        int eps,
-                                        const int* xqd,
-                                        uint8_t* dst,
-                                        int dst_stride,
-                                        int32_t* tmpbuf,
-                                        int bit_depth,
-                                        int highbd);
-void av1_apply_selfguided_restoration_neon(const uint8_t* dat,
-                                           int width,
-                                           int height,
-                                           int stride,
-                                           int eps,
-                                           const int* xqd,
-                                           uint8_t* dst,
-                                           int dst_stride,
-                                           int32_t* tmpbuf,
-                                           int bit_depth,
-                                           int highbd);
+int av1_apply_selfguided_restoration_c(const uint8_t* dat,
+                                       int width,
+                                       int height,
+                                       int stride,
+                                       int eps,
+                                       const int* xqd,
+                                       uint8_t* dst,
+                                       int dst_stride,
+                                       int32_t* tmpbuf,
+                                       int bit_depth,
+                                       int highbd);
+int av1_apply_selfguided_restoration_neon(const uint8_t* dat,
+                                          int width,
+                                          int height,
+                                          int stride,
+                                          int eps,
+                                          const int* xqd,
+                                          uint8_t* dst,
+                                          int dst_stride,
+                                          int32_t* tmpbuf,
+                                          int bit_depth,
+                                          int highbd);
 #define av1_apply_selfguided_restoration av1_apply_selfguided_restoration_neon
 
 int64_t av1_block_error_c(const tran_low_t* coeff,
@@ -1705,7 +1705,7 @@ void av1_wiener_convolve_add_src_c(const uint8_t* src,
                                    int y_step_q4,
                                    int w,
                                    int h,
-                                   const ConvolveParams* conv_params);
+                                   const WienerConvolveParams* conv_params);
 void av1_wiener_convolve_add_src_neon(const uint8_t* src,
                                       ptrdiff_t src_stride,
                                       uint8_t* dst,
@@ -1716,7 +1716,7 @@ void av1_wiener_convolve_add_src_neon(const uint8_t* src,
                                       int y_step_q4,
                                       int w,
                                       int h,
-                                      const ConvolveParams* conv_params);
+                                      const WienerConvolveParams* conv_params);
 #define av1_wiener_convolve_add_src av1_wiener_convolve_add_src_neon
 
 void cdef_copy_rect8_16bit_to_16bit_c(uint16_t* dst,

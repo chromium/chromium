@@ -10,6 +10,7 @@
 
 #include <limits>
 #include <memory>
+#include <string_view>
 #include <type_traits>
 #include <utility>
 #include <vector>
@@ -17,7 +18,6 @@
 #include "base/component_export.h"
 #include "base/files/file_path.h"
 #include "base/notreached.h"
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "base/types/strong_alias.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -43,9 +43,9 @@ class COMPONENT_EXPORT(NETWORK_CPP_BASE) DataElementBytes final {
 
   const std::vector<uint8_t>& bytes() const { return bytes_; }
 
-  base::StringPiece AsStringPiece() const {
-    return base::StringPiece(reinterpret_cast<const char*>(bytes_.data()),
-                             bytes_.size());
+  std::string_view AsStringPiece() const {
+    return std::string_view(reinterpret_cast<const char*>(bytes_.data()),
+                            bytes_.size());
   }
 
   DataElementBytes Clone() const;

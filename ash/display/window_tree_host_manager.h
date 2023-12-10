@@ -215,6 +215,10 @@ class ASH_EXPORT WindowTreeHostManager
   // are rendered on the correct display.
   void UpdateHostOfDisplayProviders();
 
+  // True if display addition happens, and restore the windows back to it if
+  // they were previously inside it.
+  bool should_restore_windows_on_display_added_ = false;
+
   typedef std::map<int64_t, AshWindowTreeHost*> WindowTreeHostMap;
   // The mapping from display ID to its window tree host.
   WindowTreeHostMap window_tree_hosts_;
@@ -248,7 +252,7 @@ class ASH_EXPORT WindowTreeHostManager
   int64_t cursor_display_id_for_restore_;
 
   // Receive DisplayObserver callbacks between Start and Shutdown.
-  absl::optional<display::ScopedDisplayObserver> display_observer_;
+  std::optional<display::ScopedDisplayObserver> display_observer_;
 
   // A repeating timer to trigger sending UMA metrics for primary display's
   // effective resolution at fixed intervals.

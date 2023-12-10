@@ -71,6 +71,7 @@ class AwSettings : public content::WebContentsObserver {
   AwSettings(JNIEnv* env, jobject obj, content::WebContents* web_contents);
   ~AwSettings() override;
 
+  bool GetAllowFileAccessFromFileURLs();
   bool GetJavaScriptEnabled();
   bool GetJavaScriptCanOpenWindowsAutomatically();
   bool GetAllowThirdPartyCookies();
@@ -98,9 +99,6 @@ class AwSettings : public content::WebContentsObserver {
   void UpdateUserAgentLocked(JNIEnv* env,
                              const base::android::JavaParamRef<jobject>& obj);
   void UpdateWebkitPreferencesLocked(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj);
-  void UpdateFormDataPreferencesLocked(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj);
   void UpdateRendererPreferencesLocked(
@@ -163,6 +161,7 @@ class AwSettings : public content::WebContentsObserver {
   bool javascript_can_open_windows_automatically_{false};
   bool allow_third_party_cookies_{false};
   bool allow_file_access_{false};
+  bool allow_file_access_from_file_urls_{false};
   // TODO(b/222053757,ayushsha): Change this policy to be by
   // default false from next Android version(Maybe Android U).
   bool enterprise_authentication_app_link_policy_enabled_{true};

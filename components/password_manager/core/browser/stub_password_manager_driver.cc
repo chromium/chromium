@@ -21,6 +21,8 @@ void StubPasswordManagerDriver::SetPasswordFillData(
 void StubPasswordManagerDriver::GeneratedPasswordAccepted(
     const std::u16string& password) {}
 
+void StubPasswordManagerDriver::FocusNextFieldAfterPasswords() {}
+
 void StubPasswordManagerDriver::FillSuggestion(const std::u16string& username,
                                                const std::u16string& password) {
 }

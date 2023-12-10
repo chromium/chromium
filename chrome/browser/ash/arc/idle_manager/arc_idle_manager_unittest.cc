@@ -152,9 +152,9 @@ class ArcIdleManagerTest : public testing::Test {
     TestDelegateImpl(const TestDelegateImpl&) = delete;
     TestDelegateImpl& operator=(const TestDelegateImpl&) = delete;
 
-    void SetInteractiveMode(ArcPowerBridge* arc_power_bridge,
-                            ArcBridgeService* bridge,
-                            bool enable) override {
+    void SetIdleState(ArcPowerBridge* arc_power_bridge,
+                      ArcBridgeService* bridge,
+                      bool enable) override {
       // enable means "interactive enabled", so "true" is "not idle".
       if (enable) {
         ++(test_->interactive_enabled_counter_);

@@ -22,11 +22,9 @@ import org.chromium.components.media_router.R;
 import org.chromium.components.media_router.caf.BaseSessionController;
 import org.chromium.third_party.android.media.MediaController;
 
-/**
- * The activity that's opened by clicking the video flinging (casting) notification.
- */
-public class CafExpandedControllerActivity
-        extends FragmentActivity implements BaseSessionController.Callback {
+/** The activity that's opened by clicking the video flinging (casting) notification. */
+public class CafExpandedControllerActivity extends FragmentActivity
+        implements BaseSessionController.Callback {
     private static final int PROGRESS_UPDATE_PERIOD_IN_MS = 1000;
 
     private Handler mHandler;
@@ -38,63 +36,63 @@ public class CafExpandedControllerActivity
     private TextView mTitleView;
     private Runnable mUpdateProgressRunnable;
 
-    /**
-     * Handle actions from on-screen media controls.
-     */
-    private MediaController.Delegate mControllerDelegate = new MediaController.Delegate() {
-        @Override
-        public void play() {
-            if (!mSessionController.isConnected()) return;
+    /** Handle actions from on-screen media controls. */
+    private MediaController.Delegate mControllerDelegate =
+            new MediaController.Delegate() {
+                @Override
+                public void play() {
+                    if (!mSessionController.isConnected()) return;
 
-            mSessionController.getSession().getRemoteMediaClient().play();
-        }
+                    mSessionController.getSession().getRemoteMediaClient().play();
+                }
 
-        @Override
-        public void pause() {
-            if (!mSessionController.isConnected()) return;
+                @Override
+                public void pause() {
+                    if (!mSessionController.isConnected()) return;
 
-            mSessionController.getSession().getRemoteMediaClient().pause();
-        }
+                    mSessionController.getSession().getRemoteMediaClient().pause();
+                }
 
-        @Override
-        public long getDuration() {
-            if (!mSessionController.isConnected()) return 0;
-            return mSessionController.getFlingingController().getDuration();
-        }
+                @Override
+                public long getDuration() {
+                    if (!mSessionController.isConnected()) return 0;
+                    return mSessionController.getFlingingController().getDuration();
+                }
 
-        @Override
-        public long getPosition() {
-            if (!mSessionController.isConnected()) return 0;
-            return mSessionController.getFlingingController().getApproximateCurrentTime();
-        }
+                @Override
+                public long getPosition() {
+                    if (!mSessionController.isConnected()) return 0;
+                    return mSessionController.getFlingingController().getApproximateCurrentTime();
+                }
 
-        @Override
-        public void seekTo(long pos) {
-            if (!mSessionController.isConnected()) return;
+                @Override
+                public void seekTo(long pos) {
+                    if (!mSessionController.isConnected()) return;
 
-            mSessionController.getSession().getRemoteMediaClient().seek(pos);
-        }
+                    mSessionController.getSession().getRemoteMediaClient().seek(pos);
+                }
 
-        @Override
-        public boolean isPlaying() {
-            if (!mSessionController.isConnected()) return false;
+                @Override
+                public boolean isPlaying() {
+                    if (!mSessionController.isConnected()) return false;
 
-            return mSessionController.getSession().getRemoteMediaClient().isPlaying();
-        }
+                    return mSessionController.getSession().getRemoteMediaClient().isPlaying();
+                }
 
-        @Override
-        public long getActionFlags() {
-            long flags =
-                    PlaybackStateCompat.ACTION_REWIND | PlaybackStateCompat.ACTION_FAST_FORWARD;
-            if (mSessionController.isConnected()
-                    && mSessionController.getSession().getRemoteMediaClient().isPlaying()) {
-                flags |= PlaybackStateCompat.ACTION_PAUSE;
-            } else {
-                flags |= PlaybackStateCompat.ACTION_PLAY;
-            }
-            return flags;
-        }
-    };
+                @Override
+                public long getActionFlags() {
+                    long flags =
+                            PlaybackStateCompat.ACTION_REWIND
+                                    | PlaybackStateCompat.ACTION_FAST_FORWARD;
+                    if (mSessionController.isConnected()
+                            && mSessionController.getSession().getRemoteMediaClient().isPlaying()) {
+                        flags |= PlaybackStateCompat.ACTION_PAUSE;
+                    } else {
+                        flags |= PlaybackStateCompat.ACTION_PLAY;
+                    }
+                    return flags;
+                }
+            };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -113,8 +111,10 @@ public class CafExpandedControllerActivity
 
         // Make the activity full screen.
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        getWindow()
+                .setFlags(
+                        WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                        WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         // requestWindowFeature must be called before adding content.
         setContentView(R.layout.expanded_cast_controller);
@@ -126,8 +126,9 @@ public class CafExpandedControllerActivity
         mMediaController = (MediaController) findViewById(R.id.cast_media_controller);
         mMediaController.setDelegate(mControllerDelegate);
 
-        View castButtonView = getLayoutInflater().inflate(
-                R.layout.caf_controller_media_route_button, rootView, false);
+        View castButtonView =
+                getLayoutInflater()
+                        .inflate(R.layout.caf_controller_media_route_button, rootView, false);
         if (castButtonView instanceof MediaRouteButton) {
             mMediaRouteButton = (MediaRouteButton) castButtonView;
             rootView.addView(mMediaRouteButton);

@@ -828,6 +828,10 @@ std::unique_ptr<SSLClientSocket> MockClientSocketFactory::CreateSSLClientSocket(
   if (next_ssl_data->expected_host_and_port) {
     EXPECT_EQ(*next_ssl_data->expected_host_and_port, host_and_port);
   }
+  if (next_ssl_data->expected_ignore_certificate_errors) {
+    EXPECT_EQ(*next_ssl_data->expected_ignore_certificate_errors,
+              ssl_config.ignore_certificate_errors);
+  }
   if (next_ssl_data->expected_network_anonymization_key) {
     EXPECT_EQ(*next_ssl_data->expected_network_anonymization_key,
               ssl_config.network_anonymization_key);
@@ -897,10 +901,6 @@ int MockClientSocket::GetLocalAddress(IPEndPoint* address) const {
 
 const NetLogWithSource& MockClientSocket::NetLog() const {
   return net_log_;
-}
-
-bool MockClientSocket::WasAlpnNegotiated() const {
-  return false;
 }
 
 NextProto MockClientSocket::GetNegotiatedProtocol() const {
@@ -1387,10 +1387,6 @@ int MockSSLClientSocket::GetLocalAddress(IPEndPoint* address) const {
 
 int MockSSLClientSocket::GetPeerAddress(IPEndPoint* address) const {
   return stream_socket_->GetPeerAddress(address);
-}
-
-bool MockSSLClientSocket::WasAlpnNegotiated() const {
-  return data_->next_proto != kProtoUnknown;
 }
 
 NextProto MockSSLClientSocket::GetNegotiatedProtocol() const {
@@ -2029,10 +2025,6 @@ const NetLogWithSource& WrappedStreamSocket::NetLog() const {
 
 bool WrappedStreamSocket::WasEverUsed() const {
   return transport_->WasEverUsed();
-}
-
-bool WrappedStreamSocket::WasAlpnNegotiated() const {
-  return transport_->WasAlpnNegotiated();
 }
 
 NextProto WrappedStreamSocket::GetNegotiatedProtocol() const {

@@ -38,4 +38,4 @@ class FastCheckoutPersonalDataHelperImpl
   raw_ptr<content::WebContents> web_contents_;
 };
 
-#endif
+#endif  // CHROME_BROWSER_FAST_CHECKOUT_FAST_CHECKOUT_PERSONAL_DATA_HELPER_IMPL_H_

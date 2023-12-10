@@ -8,7 +8,7 @@
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
-#include "third_party/blink/renderer/core/layout/ng/legacy_layout_tree_walking.h"
+#include "third_party/blink/renderer/core/layout/legacy_layout_tree_walking.h"
 
 namespace blink {
 

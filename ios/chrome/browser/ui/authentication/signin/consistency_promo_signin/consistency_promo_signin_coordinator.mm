@@ -14,12 +14,12 @@
 #import "ios/chrome/browser/shared/public/commands/browsing_data_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/signin/authentication_service_factory.h"
-#import "ios/chrome/browser/signin/chrome_account_manager_service.h"
-#import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
-#import "ios/chrome/browser/signin/constants.h"
-#import "ios/chrome/browser/signin/identity_manager_factory.h"
-#import "ios/chrome/browser/signin/system_identity.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
+#import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
+#import "ios/chrome/browser/signin/model/constants.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
+#import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/browser/ui/authentication/authentication_flow.h"
 #import "ios/chrome/browser/ui/authentication/authentication_ui_util.h"
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_account_chooser/consistency_account_chooser_coordinator.h"
@@ -57,8 +57,6 @@
 @property(nonatomic, strong, readonly) id<SystemIdentity> selectedIdentity;
 // Coordinator to add an account to the device.
 @property(nonatomic, strong) SigninCoordinator* addAccountCoordinator;
-// The access point that triggered sign-in.
-@property(nonatomic, assign, readonly) signin_metrics::AccessPoint accessPoint;
 
 @property(nonatomic, strong)
     ConsistencyPromoSigninMediator* consistencyPromoSigninMediator;
@@ -91,16 +89,6 @@
                      accessPoint:accessPoint];
 }
 
-- (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
-                                   browser:(Browser*)browser
-                               accessPoint:
-                                   (signin_metrics::AccessPoint)accessPoint {
-  self = [super initWithBaseViewController:baseViewController browser:browser];
-  if (self) {
-    _accessPoint = accessPoint;
-  }
-  return self;
-}
 
 #pragma mark - SigninCoordinator
 
@@ -122,7 +110,7 @@
 
 - (void)start {
   [super start];
-  signin_metrics::LogSignInStarted(_accessPoint);
+  signin_metrics::LogSignInStarted(self.accessPoint);
   base::RecordAction(base::UserMetricsAction("Signin_BottomSheet_Opened"));
   // Create ConsistencyPromoSigninMediator.
   ChromeBrowserState* browserState = self.browser->GetBrowserState();
@@ -217,12 +205,12 @@
   if (hasAccounts) {
     RecordConsistencyPromoUserAction(
         signin_metrics::AccountConsistencyPromoAction::ADD_ACCOUNT_COMPLETED,
-        _accessPoint);
+        self.accessPoint);
   } else {
     RecordConsistencyPromoUserAction(
         signin_metrics::AccountConsistencyPromoAction::
             ADD_ACCOUNT_COMPLETED_WITH_NO_DEVICE_ACCOUNT,
-        _accessPoint);
+        self.accessPoint);
   }
 
   [self.addAccountCoordinator stop];
@@ -249,12 +237,12 @@
   if (hasAccounts) {
     RecordConsistencyPromoUserAction(
         signin_metrics::AccountConsistencyPromoAction::ADD_ACCOUNT_STARTED,
-        _accessPoint);
+        self.accessPoint);
   } else {
     RecordConsistencyPromoUserAction(
         signin_metrics::AccountConsistencyPromoAction::
             ADD_ACCOUNT_STARTED_WITH_NO_DEVICE_ACCOUNT,
-        _accessPoint);
+        self.accessPoint);
   }
   DCHECK(!self.addAccountCoordinator);
   self.addAccountCoordinator = [SigninCoordinator
@@ -484,6 +472,11 @@
                          }];
 }
 
+- (void)consistencyPromoSigninMediatorSignInCancelled:
+    (ConsistencyPromoSigninMediator*)mediator {
+  [self.defaultAccountCoordinator stopSigninSpinner];
+}
+
 - (void)consistencyPromoSigninMediator:(ConsistencyPromoSigninMediator*)mediator
                         errorDidHappen:
                             (ConsistencyPromoSigninMediatorError)error {
@@ -491,7 +484,6 @@
   NSString* errorMessage = nil;
   switch (error) {
     case ConsistencyPromoSigninMediatorErrorGeneric:
-    case ConsistencyPromoSigninMediatorErrorFailedToSignin:
       errorMessage =
           l10n_util::GetNSString(IDS_IOS_WEBSIGN_ERROR_GENERIC_ERROR);
       break;

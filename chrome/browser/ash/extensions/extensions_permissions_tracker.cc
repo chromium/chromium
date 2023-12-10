@@ -213,7 +213,7 @@ void ExtensionsPermissionsTracker::OnForcedExtensionsPrefChanged() {
     // it'll be marked safe (true)
     extension_safety_ratings_.insert(make_pair(extension_id, false));
     const Extension* extension =
-        registry_->GetExtensionById(extension_id, ExtensionRegistry::ENABLED);
+        registry_->enabled_extensions().GetByID(extension_id);
     if (extension)
       ParseExtensionPermissions(extension);
     else

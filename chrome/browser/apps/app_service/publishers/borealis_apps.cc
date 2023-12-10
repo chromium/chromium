@@ -135,6 +135,7 @@ void BorealisApps::SetUpSpecialApps(bool allowed) {
   installer_app->show_in_management = false;
   installer_app->show_in_search = false;
   installer_app->allow_uninstall = false;
+  installer_app->allow_close = true;
   AppPublisher::Publish(std::move(installer_app));
 
   // A "steam" app, which is shown in launcher searches. This app is essentially
@@ -154,6 +155,7 @@ void BorealisApps::SetUpSpecialApps(bool allowed) {
   initial_steam_app->show_in_launcher = false;
   initial_steam_app->show_in_management = false;
   initial_steam_app->allow_uninstall = false;
+  initial_steam_app->allow_close = true;
   AppPublisher::Publish(std::move(initial_steam_app));
 }
 

@@ -13,6 +13,7 @@
 #include "components/permissions/features.h"
 #include "components/permissions/permission_request.h"
 #include "components/permissions/permissions_client.h"
+#include "content/public/common/content_features.h"
 #include "ui/base/ui_base_features.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -213,7 +214,7 @@ absl::optional<RequestType> ContentSettingsTypeToRequestTypeIfExists(
     case ContentSettingsType::MEDIASTREAM_MIC:
       return RequestType::kMicStream;
     case ContentSettingsType::MIDI:
-      if (base::FeatureList::IsEnabled(features::kBlockMidiByDefault)) {
+      if (base::FeatureList::IsEnabled(::features::kBlockMidiByDefault)) {
         return RequestType::kMidi;
       } else {
         return absl::nullopt;
@@ -283,7 +284,7 @@ absl::optional<ContentSettingsType> RequestTypeToContentSettingsType(
     case RequestType::kMicStream:
       return ContentSettingsType::MEDIASTREAM_MIC;
     case RequestType::kMidi:
-      if (base::FeatureList::IsEnabled(features::kBlockMidiByDefault)) {
+      if (base::FeatureList::IsEnabled(::features::kBlockMidiByDefault)) {
         return ContentSettingsType::MIDI;
       } else {
         return absl::nullopt;
@@ -377,7 +378,7 @@ const char* PermissionKeyForRequestType(permissions::RequestType request_type) {
     case permissions::RequestType::kMicStream:
       return "mic_stream";
     case permissions::RequestType::kMidi:
-      if (base::FeatureList::IsEnabled(features::kBlockMidiByDefault)) {
+      if (base::FeatureList::IsEnabled(::features::kBlockMidiByDefault)) {
         return "midi";
       } else {
         return nullptr;

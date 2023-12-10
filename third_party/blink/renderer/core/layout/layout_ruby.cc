@@ -31,7 +31,9 @@
 #include "third_party/blink/renderer/core/layout/layout_ruby.h"
 
 #include "third_party/blink/renderer/core/frame/web_feature.h"
+#include "third_party/blink/renderer/core/layout/layout_ruby_base.h"
 #include "third_party/blink/renderer/core/layout/layout_ruby_column.h"
+#include "third_party/blink/renderer/core/layout/ruby_container.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 
 namespace blink {
@@ -55,11 +57,19 @@ LayoutRubyColumn* LayoutRubyAsInline::FindRubyColumnParent(
 // === ruby as inline object ===
 
 LayoutRubyAsInline::LayoutRubyAsInline(Element* element)
-    : LayoutInline(element) {
+    : LayoutInline(element),
+      ruby_container_(RuntimeEnabledFeatures::RubySimplePairingEnabled()
+                          ? MakeGarbageCollected<RubyContainer>(*this)
+                          : nullptr) {
   UseCounter::Count(GetDocument(), WebFeature::kRenderRuby);
 }
 
 LayoutRubyAsInline::~LayoutRubyAsInline() = default;
+
+void LayoutRubyAsInline::Trace(Visitor* visitor) const {
+  visitor->Trace(ruby_container_);
+  LayoutInline::Trace(visitor);
+}
 
 void LayoutRubyAsInline::StyleDidChange(StyleDifference diff,
                                         const ComputedStyle* old_style) {
@@ -74,6 +84,11 @@ void LayoutRubyAsInline::AddChild(LayoutObject* child,
   // If the child is a ruby column, just add it normally.
   if (child->IsRubyColumn()) {
     LayoutInline::AddChild(child, before_child);
+    return;
+  }
+
+  if (RuntimeEnabledFeatures::RubySimplePairingEnabled()) {
+    ruby_container_->AddChild(child, before_child);
     return;
   }
 
@@ -117,10 +132,19 @@ void LayoutRubyAsInline::RemoveChild(LayoutObject* child) {
     return;
   }
 
+  if (RuntimeEnabledFeatures::RubySimplePairingEnabled()) {
+    NOTREACHED();
+    return;
+  }
+
   // Otherwise find the containing column and remove it from there.
   auto* column = FindRubyColumnParent(child);
   DCHECK(column);
   column->RemoveChild(child);
+}
+
+void LayoutRubyAsInline::DidRemoveChildFromColumn(LayoutObject& child) {
+  ruby_container_->DidRemoveChildFromColumn(child);
 }
 
 }  // namespace blink

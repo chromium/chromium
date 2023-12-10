@@ -125,7 +125,7 @@ class UIProxyConfigServiceTest : public testing::Test {
   ~UIProxyConfigServiceTest() override = default;
 
   void ConfigureService(const std::string& shill_json_string) {
-    absl::optional<base::Value::Dict> shill_json_dict =
+    std::optional<base::Value::Dict> shill_json_dict =
         chromeos::onc::ReadDictionaryFromJson(shill_json_string);
     CHECK(shill_json_dict.has_value());
     ShillManagerClient::Get()->ConfigureService(

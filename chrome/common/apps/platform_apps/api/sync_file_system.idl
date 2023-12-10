@@ -8,7 +8,6 @@
 // caching usage so that the same data can be available across different
 // clients. Read <a href="app_storage.html">Manage Data</a> for more on using
 // this API.
-[modernised_enums]
 namespace syncFileSystem {
   enum SyncAction {
     added, updated, deleted

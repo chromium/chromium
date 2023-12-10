@@ -6,9 +6,7 @@ package org.chromium.support_lib_boundary;
 
 import java.util.List;
 
-/**
- * Boundary interface for CookieManagerCompat.
- */
+/** Boundary interface for CookieManagerCompat. */
 public interface WebViewCookieManagerBoundaryInterface {
     List<String> getCookieInfo(String url);
 }

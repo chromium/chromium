@@ -301,21 +301,6 @@ void WorkerMainScriptLoader::HandleRedirections(
     auto& redirect_info = redirect_infos[i];
     auto& redirect_response = redirect_responses[i];
     last_request_url_ = KURL(redirect_info.new_url);
-
-    std::unique_ptr<ResourceRequest> new_request =
-        initial_request_.CreateRedirectRequest(
-            KURL(redirect_info.new_url),
-            AtomicString::FromUTF8(redirect_info.new_method.data(),
-                                   redirect_info.new_method.length()),
-            redirect_info.new_site_for_cookies,
-            AtomicString::FromUTF8(redirect_info.new_referrer.data(),
-                                   redirect_info.new_referrer.length()),
-            ReferrerUtils::NetToMojoReferrerPolicy(
-                redirect_info.new_referrer_policy),
-            /*skip_service_worker=*/false);
-    WebURLResponse response = WebURLResponse::Create(
-        WebURL(last_request_url_), *redirect_response,
-        redirect_response->ssl_info.has_value(), request_id_);
     resource_load_info_notifier_wrapper_->NotifyResourceRedirectReceived(
         redirect_info, std::move(redirect_response));
   }

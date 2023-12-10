@@ -18,7 +18,6 @@
 #include "ios/chrome/browser/browsing_data/model/browsing_data_remover.h"
 
 class ChromeBrowserState;
-@class SessionServiceIOS;
 @class WKWebView;
 
 namespace net {
@@ -31,8 +30,7 @@ class BrowsingDataRemoverImpl : public BrowsingDataRemover {
  public:
   // Creates a BrowsingDataRemoverImpl to remove browser data from the
   // specified ChromeBrowserstate. Use Remove to initiate the removal.
-  BrowsingDataRemoverImpl(ChromeBrowserState* browser_state,
-                          SessionServiceIOS* session_service);
+  explicit BrowsingDataRemoverImpl(ChromeBrowserState* browser_state);
 
   BrowsingDataRemoverImpl(const BrowsingDataRemoverImpl&) = delete;
   BrowsingDataRemoverImpl& operator=(const BrowsingDataRemoverImpl&) = delete;
@@ -47,7 +45,6 @@ class BrowsingDataRemoverImpl : public BrowsingDataRemover {
   void Remove(browsing_data::TimePeriod time_period,
               BrowsingDataRemoveMask remove_mask,
               base::OnceClosure callback) override;
-  void RemoveSessionsData(NSArray<NSString*>* session_ids) override;
 
  private:
   // Represents a single removal task. Contains all parameters to execute it.
@@ -110,9 +107,6 @@ class BrowsingDataRemoverImpl : public BrowsingDataRemover {
 
   // ChromeBrowserState we're to remove from.
   ChromeBrowserState* browser_state_ = nullptr;
-
-  // SessionService to use (allow injection of a specific instance for testing).
-  SessionServiceIOS* session_service_ = nil;
 
   // Used to delete data from HTTP cache.
   scoped_refptr<net::URLRequestContextGetter> context_getter_;

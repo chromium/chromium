@@ -222,6 +222,11 @@ class HTMLConstructionSite final {
 
   void FinishedTemplateElement(DocumentFragment* content_fragment);
 
+  static CustomElementDefinition* LookUpCustomElementDefinition(
+      Document&,
+      const QualifiedName&,
+      const AtomicString& is);
+
   class RedirectToFosterParentGuard {
     STACK_ALLOCATED();
 
@@ -269,11 +274,6 @@ class HTMLConstructionSite final {
 
   void ExecuteTask(HTMLConstructionSiteTask&);
   void QueueTask(const HTMLConstructionSiteTask&, bool flush_pending_text);
-
-  CustomElementDefinition* LookUpCustomElementDefinition(
-      Document&,
-      const QualifiedName&,
-      const AtomicString& is);
 
   void SetAttributes(Element* element, AtomicHTMLToken* token);
 

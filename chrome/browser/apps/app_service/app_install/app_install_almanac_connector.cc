@@ -66,24 +66,24 @@ std::string BuildRequestBody(const DeviceInfo& info,
   return request_proto.SerializeAsString();
 }
 
-absl::optional<AppInstallData> ParseAppInstallResponseProto(
+std::optional<AppInstallData> ParseAppInstallResponseProto(
     const proto::AppInstallResponse& app_install_response) {
   if (!app_install_response.has_app_instance()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   const proto::AppInstallResponse_AppInstance& instance =
       app_install_response.app_instance();
 
-  absl::optional<PackageId> package_id =
+  std::optional<PackageId> package_id =
       PackageId::FromString(instance.package_id());
   if (!package_id.has_value()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   AppInstallData result(std::move(package_id).value());
 
   if (!instance.has_name()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   result.name = instance.name();
 
@@ -104,25 +104,25 @@ absl::optional<AppInstallData> ParseAppInstallResponseProto(
         result.app_type_data.emplace<WebAppInstallData>();
     web_app_data.manifest_id = GURL(result.package_id.identifier());
     if (!web_app_data.manifest_id.is_valid()) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     web_app_data.document_url = GURL(instance.web_extras().document_url());
     if (!web_app_data.document_url.is_valid()) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     web_app_data.original_manifest_url =
         GURL(instance.web_extras().original_manifest_url());
     if (!web_app_data.original_manifest_url.is_valid()) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     web_app_data.proxied_manifest_url = GURL(instance.web_extras().scs_url());
     if (!web_app_data.proxied_manifest_url.is_valid()) {
-      return absl::nullopt;
+      return std::nullopt;
     }
   } else if (instance.has_android_extras()) {
     result.app_type_data.emplace<AndroidAppInstallData>();
   } else {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return result;
@@ -166,13 +166,13 @@ void AppInstallAlmanacConnector::OnAppInstallResponse(
       loader->NetError(), loader->ResponseInfo(), response_body.get());
   if (!error.ok()) {
     LOG(ERROR) << error.message();
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
 
   proto::AppInstallResponse response;
   if (!response.ParseFromString(*response_body)) {
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
 

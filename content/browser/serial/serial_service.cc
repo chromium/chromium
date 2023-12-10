@@ -4,9 +4,9 @@
 
 #include "content/browser/serial/serial_service.h"
 
+#include <map>
 #include <utility>
 
-#include "base/containers/cxx20_erase.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "content/browser/renderer_host/back_forward_cache_disable.h"
@@ -201,7 +201,7 @@ void SerialService::OnPermissionRevoked(const url::Origin& origin) {
 
   SerialDelegate* delegate = GetContentClient()->browser()->GetSerialDelegate();
   size_t watchers_removed =
-      base::EraseIf(watcher_ids_, [&](const auto& watcher_entry) {
+      std::erase_if(watcher_ids_, [&](const auto& watcher_entry) {
         const auto* port =
             delegate->GetPortInfo(&render_frame_host(), watcher_entry.first);
         if (port && delegate->HasPortPermission(&render_frame_host(), *port))
@@ -249,7 +249,7 @@ void SerialService::OnWatcherConnectionError() {
     DecrementActiveFrameCount();
 
   // Clean up any associated |watcher_ids_| entries.
-  base::EraseIf(watcher_ids_, [&](const auto& watcher_entry) {
+  std::erase_if(watcher_ids_, [&](const auto& watcher_entry) {
     return watcher_entry.second == watchers_.current_receiver();
   });
 }

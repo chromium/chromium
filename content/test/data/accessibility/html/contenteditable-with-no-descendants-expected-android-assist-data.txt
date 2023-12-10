@@ -1,0 +1,6 @@
+WebView textSize:16.00 style:0 bundle:[display="", htmlTag="#document"]
+++View text:"label" textSize:16.00 style:0 bundle:[aria-label="label", contenteditable="", display="block", htmlTag="div"]
+++View text:"description" textSize:16.00 style:0 bundle:[aria-describedby="description", contenteditable="", display="block", htmlTag="div"]
+++View text:"title" textSize:16.00 style:0 bundle:[contenteditable="", display="block", htmlTag="div", title="title"]
+++View textSize:16.00 style:0 bundle:[display="block", htmlTag="p", id="description"]
+++++TextView text:"description" textSize:16.00 style:0 bundle:[display="", htmlTag=""]

@@ -18,7 +18,7 @@
 #include "base/functional/callback.h"
 #include "base/sequence_checker.h"
 #include "media/gpu/h265_decoder.h"
-#include "media/gpu/mac/video_toolbox_decode_metadata.h"
+#include "media/gpu/mac/video_toolbox_decompression_metadata.h"
 #include "media/gpu/media_gpu_export.h"
 
 namespace media {
@@ -30,7 +30,7 @@ class MEDIA_GPU_EXPORT VideoToolboxH265Accelerator
  public:
   using DecodeCB = base::RepeatingCallback<void(
       base::apple::ScopedCFTypeRef<CMSampleBufferRef>,
-      VideoToolboxSessionMetadata,
+      VideoToolboxDecompressionSessionMetadata,
       scoped_refptr<CodecPicture>)>;
   using OutputCB = base::RepeatingCallback<void(scoped_refptr<CodecPicture>)>;
 
@@ -82,7 +82,7 @@ class MEDIA_GPU_EXPORT VideoToolboxH265Accelerator
       base::flat_map<int, std::vector<uint8_t>>* active_parameter_set_data_out,
       std::vector<const uint8_t*>* parameter_set_data_out,
       std::vector<size_t>* parameter_set_size_out);
-  bool CreateFormat();
+  bool CreateFormat(scoped_refptr<H265Picture> pic);
   bool ExtractChangedParameterSetData(
       const char* parameter_set_name,
       const base::flat_set<int>& parameter_set_ids,
@@ -112,7 +112,7 @@ class MEDIA_GPU_EXPORT VideoToolboxH265Accelerator
   base::flat_map<int, std::vector<uint8_t>> active_pps_data_;
 
   base::apple::ScopedCFTypeRef<CMFormatDescriptionRef> active_format_;
-  VideoToolboxSessionMetadata active_session_metadata_;
+  VideoToolboxDecompressionSessionMetadata active_session_metadata_;
 
   // Accumulated data for the current frame.
   base::flat_set<int> frame_vps_ids_;  // Note: there should be exactly one VPS.

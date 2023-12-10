@@ -1,11 +1,8 @@
 This is a wdspec test.
 [FAIL] test_no_browsing_context
   AssertionError: assert 'no such element' == 'no such window'
-[PASS] test_no_such_element_with_invalid_value
 [FAIL] test_no_such_element_with_shadow_root
   assert 200 == 404
-[PASS] test_no_such_element_from_other_window_handle[open]
-[PASS] test_no_such_element_from_other_window_handle[closed]
 [FAIL] test_no_such_element_from_other_frame[open]
   assert 200 == 404
 [FAIL] test_no_such_element_from_other_frame[closed]
@@ -14,7 +11,4 @@ This is a wdspec test.
   assert 200 == 404
 [FAIL] test_stale_element_reference[child_context]
   assert 200 == 404
-[PASS] test_computed_roles[<article>foo</article>-article-article]
-[PASS] test_computed_roles[<input role=searchbox>-input-searchbox]
-[PASS] test_computed_roles[<img role=button tabindex=0>-img-button]
 Harness: the test ran to completion.

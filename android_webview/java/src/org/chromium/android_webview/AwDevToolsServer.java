@@ -9,9 +9,7 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.android_webview.common.Lifetime;
 
-/**
- * Controller for Remote Web Debugging (Developer Tools).
- */
+/** Controller for Remote Web Debugging (Developer Tools). */
 @Lifetime.Singleton
 @JNINamespace("android_webview")
 public class AwDevToolsServer {
@@ -24,20 +22,22 @@ public class AwDevToolsServer {
     }
 
     public void destroy() {
-        AwDevToolsServerJni.get().destroyRemoteDebugging(
-                AwDevToolsServer.this, mNativeDevToolsServer);
+        AwDevToolsServerJni.get()
+                .destroyRemoteDebugging(AwDevToolsServer.this, mNativeDevToolsServer);
         mNativeDevToolsServer = 0;
     }
 
     public void setRemoteDebuggingEnabled(boolean enabled) {
-        AwDevToolsServerJni.get().setRemoteDebuggingEnabled(
-                AwDevToolsServer.this, mNativeDevToolsServer, enabled);
+        AwDevToolsServerJni.get()
+                .setRemoteDebuggingEnabled(AwDevToolsServer.this, mNativeDevToolsServer, enabled);
     }
 
     @NativeMethods
     interface Natives {
         long initRemoteDebugging(AwDevToolsServer caller);
+
         void destroyRemoteDebugging(AwDevToolsServer caller, long devToolsServer);
+
         void setRemoteDebuggingEnabled(
                 AwDevToolsServer caller, long devToolsServer, boolean enabled);
     }

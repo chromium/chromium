@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "chrome/browser/ash/login/test/user_auth_config.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "chromeos/ash/components/login/auth/stub_authenticator_builder.h"
@@ -40,13 +41,14 @@ LoggedInUserMixin::LoggedInUserMixin(
     net::EmbeddedTestServer* embedded_test_server,
     InProcessBrowserTest* test_base,
     bool should_launch_browser,
-    absl::optional<AccountId> account_id,
+    std::optional<AccountId> account_id,
     bool include_initial_user,
     bool use_embedded_policy_server)
     : InProcessBrowserTestMixin(mixin_host),
       user_(account_id.value_or(
                 AccountId::FromUserEmailGaiaId(FakeGaiaMixin::kFakeUserEmail,
                                                FakeGaiaMixin::kFakeUserGaiaId)),
+            test::kDefaultAuthSetup,
             ConvertUserType(type)),
       login_manager_(mixin_host,
                      GetInitialUsers(user_, include_initial_user),

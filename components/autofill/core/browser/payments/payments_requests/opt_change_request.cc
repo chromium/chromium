@@ -16,10 +16,10 @@ const char kOptChangeRequestPath[] =
 }  // namespace
 
 OptChangeRequest::OptChangeRequest(
-    const PaymentsClient::OptChangeRequestDetails& request_details,
-    base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
-                            PaymentsClient::OptChangeResponseDetails&)>
-        callback,
+    const PaymentsNetworkInterface::OptChangeRequestDetails& request_details,
+    base::OnceCallback<
+        void(AutofillClient::PaymentsRpcResult,
+             PaymentsNetworkInterface::OptChangeResponseDetails&)> callback,
     const bool full_sync_enabled)
     : request_details_(request_details),
       callback_(std::move(callback)),
@@ -48,13 +48,14 @@ std::string OptChangeRequest::GetRequestContent() {
 
   std::string reason;
   switch (request_details_.reason) {
-    case PaymentsClient::OptChangeRequestDetails::ENABLE_FIDO_AUTH:
+    case PaymentsNetworkInterface::OptChangeRequestDetails::ENABLE_FIDO_AUTH:
       reason = "ENABLE_FIDO_AUTH";
       break;
-    case PaymentsClient::OptChangeRequestDetails::DISABLE_FIDO_AUTH:
+    case PaymentsNetworkInterface::OptChangeRequestDetails::DISABLE_FIDO_AUTH:
       reason = "DISABLE_FIDO_AUTH";
       break;
-    case PaymentsClient::OptChangeRequestDetails::ADD_CARD_FOR_FIDO_AUTH:
+    case PaymentsNetworkInterface::OptChangeRequestDetails::
+        ADD_CARD_FOR_FIDO_AUTH:
       reason = "ADD_CARD_FOR_FIDO_AUTH";
       break;
     default:

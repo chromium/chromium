@@ -10,13 +10,14 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.share.link_to_text.LinkToTextCoordinator.LinkGeneration;
 
-/**
- * Helper for metrics related to the Link to Text feature.
- */
+/** Helper for metrics related to the Link to Text feature. */
 public final class LinkToTextMetricsHelper {
-    @IntDef({LinkToTextDiagnoseStatus.SHOW_SHARINGHUB_FOR_HIGHLIGHT,
-            LinkToTextDiagnoseStatus.REQUEST_SELECTOR, LinkToTextDiagnoseStatus.SELECTOR_RECEIVED,
-            LinkToTextDiagnoseStatus.MAX})
+    @IntDef({
+        LinkToTextDiagnoseStatus.SHOW_SHARINGHUB_FOR_HIGHLIGHT,
+        LinkToTextDiagnoseStatus.REQUEST_SELECTOR,
+        LinkToTextDiagnoseStatus.SELECTOR_RECEIVED,
+        LinkToTextDiagnoseStatus.MAX
+    })
     public @interface LinkToTextDiagnoseStatus {
         int SHOW_SHARINGHUB_FOR_HIGHLIGHT = 0;
         int REQUEST_SELECTOR = 1;
@@ -24,9 +25,7 @@ public final class LinkToTextMetricsHelper {
         int MAX = 3;
     }
 
-    /**
-     *  Private constructor since all the methods in this class are static.
-     */
+    /** Private constructor since all the methods in this class are static. */
     private LinkToTextMetricsHelper() {}
 
     /**
@@ -50,8 +49,10 @@ public final class LinkToTextMetricsHelper {
             default:
                 break;
         }
-        RecordHistogram.recordEnumeratedHistogram("SharedHighlights.AndroidShareSheet.SharedState",
-                linkGenerationStatus, LinkGeneration.MAX);
+        RecordHistogram.recordEnumeratedHistogram(
+                "SharedHighlights.AndroidShareSheet.SharedState",
+                linkGenerationStatus,
+                LinkGeneration.MAX);
     }
 
     /**
@@ -61,7 +62,9 @@ public final class LinkToTextMetricsHelper {
      */
     public static void recordLinkToTextDiagnoseStatus(
             @LinkToTextDiagnoseStatus int linkToTextDiagnoseStatus) {
-        RecordHistogram.recordEnumeratedHistogram("SharedHighlights.LinkToTextDiagnoseStatus",
-                linkToTextDiagnoseStatus, LinkToTextDiagnoseStatus.MAX);
+        RecordHistogram.recordEnumeratedHistogram(
+                "SharedHighlights.LinkToTextDiagnoseStatus",
+                linkToTextDiagnoseStatus,
+                LinkToTextDiagnoseStatus.MAX);
     }
 }

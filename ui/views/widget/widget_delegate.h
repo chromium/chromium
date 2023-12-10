@@ -446,9 +446,9 @@ class VIEWS_EXPORT WidgetDelegate
 // implementation is-a View. Note that WidgetDelegateView is not owned by
 // view's hierarchy and is expected to be deleted on DeleteDelegate call.
 class VIEWS_EXPORT WidgetDelegateView : public WidgetDelegate, public View {
- public:
-  METADATA_HEADER(WidgetDelegateView);
+  METADATA_HEADER(WidgetDelegateView, View)
 
+ public:
   WidgetDelegateView();
   WidgetDelegateView(const WidgetDelegateView&) = delete;
   WidgetDelegateView& operator=(const WidgetDelegateView&) = delete;

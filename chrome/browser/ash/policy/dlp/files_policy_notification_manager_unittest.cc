@@ -255,13 +255,13 @@ TEST_F(FilesPolicyNotificationManagerTest, NotificationIdsAreUnique) {
   EXPECT_FALSE(display_service_tester.GetNotification(notification_id_2));
   EXPECT_FALSE(display_service_tester.GetNotification(notification_id_3));
   // Show first notification for upload.
-  fpnm_->ShowDlpBlockedFiles(/*task_id=*/absl::nullopt, files_1,
+  fpnm_->ShowDlpBlockedFiles(/*task_id=*/std::nullopt, files_1,
                              dlp::FileAction::kUpload);
   EXPECT_TRUE(display_service_tester.GetNotification(notification_id_1));
   EXPECT_FALSE(display_service_tester.GetNotification(notification_id_2));
   EXPECT_FALSE(display_service_tester.GetNotification(notification_id_3));
   // Show another notification for the same action - should get a new ID.
-  fpnm_->ShowDlpBlockedFiles(/*task_id=*/absl::nullopt, files_1,
+  fpnm_->ShowDlpBlockedFiles(/*task_id=*/std::nullopt, files_1,
                              dlp::FileAction::kUpload);
   EXPECT_TRUE(display_service_tester.GetNotification(notification_id_1));
   EXPECT_TRUE(display_service_tester.GetNotification(notification_id_2));
@@ -269,7 +269,7 @@ TEST_F(FilesPolicyNotificationManagerTest, NotificationIdsAreUnique) {
   // Show a notification for a different action & files - should still increment
   // the ID.
   fpnm_->ShowDlpBlockedFiles(
-      /*task_id=*/absl::nullopt,
+      /*task_id=*/std::nullopt,
       {base::FilePath(kFile1), base::FilePath(kFile2)}, dlp::FileAction::kOpen);
   EXPECT_TRUE(display_service_tester.GetNotification(notification_id_1));
   EXPECT_TRUE(display_service_tester.GetNotification(notification_id_2));
@@ -296,7 +296,7 @@ class FPNMIOTaskTest : public FilesPolicyNotificationManagerTest {
       file_manager::io_task::IOTaskId task_id,
       std::vector<base::FilePath> blocked_files,
       dlp::FileAction action,
-      absl::optional<FilesPolicyDialog::Info> dialog_info = absl::nullopt) {
+      std::optional<FilesPolicyDialog::Info> dialog_info = std::nullopt) {
     if (block_reason == FilesPolicyDialog::BlockReason::kDlp) {
       fpnm_->ShowDlpBlockedFiles(task_id, std::move(blocked_files), action);
     } else {
@@ -315,7 +315,7 @@ class FPNMIOTaskTest : public FilesPolicyNotificationManagerTest {
       file_manager::io_task::IOTaskId task_id,
       std::vector<base::FilePath> warned_files,
       dlp::FileAction action,
-      absl::optional<FilesPolicyDialog::Info> dialog_info = absl::nullopt) {
+      std::optional<FilesPolicyDialog::Info> dialog_info = std::nullopt) {
     switch (policy) {
       case Policy::kDlp:
         fpnm_->ShowDlpWarning(std::move(cb), task_id, std::move(warned_files),
@@ -452,7 +452,7 @@ TEST_F(FPNMIOTaskTest,
   status.type = type;
   status.sources.emplace_back(
       CreateFileSystemURL(kTestStorageKey, src_file_path.value()),
-      absl::nullopt);
+      std::nullopt);
   status.pause_params.policy_params = file_manager::io_task::PolicyPauseParams(
       Policy::kEnterpriseConnectors, /*warning_files_count=*/1);
 
@@ -507,7 +507,7 @@ TEST_F(FPNMIOTaskTest,
   status.type = type;
   status.sources.emplace_back(
       CreateFileSystemURL(kTestStorageKey, src_file_path.value()),
-      absl::nullopt);
+      std::nullopt);
   status.policy_error.emplace(
       file_manager::io_task::PolicyErrorType::kEnterpriseConnectors,
       /*blocked_files=*/1);
@@ -606,7 +606,7 @@ TEST_P(FilesPolicyNotificationManagerDlpAndConnectorsWarningTest,
       .Times(::testing::AtLeast(1));
 
   EXPECT_CALL(mock_cb,
-              Run(/*user_justification=*/absl::optional<std::u16string>(),
+              Run(/*user_justification=*/std::optional<std::u16string>(),
                   /*should_proceed=*/false));
   io_task_controller_->CompleteWithError(
       task_id,
@@ -678,7 +678,7 @@ TEST_P(FilesPolicyNotificationManagerDlpAndConnectorsWarningTest,
   // Warning callback is run with should_proceed set to false when the task is
   // cancelled.
   EXPECT_CALL(mock_cb,
-              Run(/*user_justification=*/absl::optional<std::u16string>(),
+              Run(/*user_justification=*/std::optional<std::u16string>(),
                   /*should_proceed=*/false))
       .Times(1);
   io_task_controller_->Cancel(task_id);
@@ -743,7 +743,7 @@ TEST_P(FilesPolicyNotificationManagerDlpAndConnectorsWarningTest,
   // Warning callback is run with should_proceed set to true when the task is
   // resumed.
   EXPECT_CALL(mock_cb,
-              Run(/*user_justification=*/absl::optional<std::u16string>(),
+              Run(/*user_justification=*/std::optional<std::u16string>(),
                   /*should_proceed=*/true))
       .Times(1);
   fpnm_->OnIOTaskResumed(task_id);
@@ -980,7 +980,7 @@ TEST_P(FPNMPausedStatusNotification, PausedShowsWarningNotification_Single) {
   status.type = type;
   status.sources.emplace_back(
       CreateFileSystemURL(kTestStorageKey, src_file_path.value()),
-      absl::nullopt);
+      std::nullopt);
   status.pause_params.policy_params = file_manager::io_task::PolicyPauseParams(
       policy, /*warning_files_count=*/1);
 
@@ -1034,10 +1034,10 @@ TEST_P(FPNMPausedStatusNotification, PausedShowsWarningNotification_Multi) {
   ASSERT_FALSE(src_file_path_2.empty());
   status.sources.emplace_back(
       CreateFileSystemURL(kTestStorageKey, src_file_path_1.value()),
-      absl::nullopt);
+      std::nullopt);
   status.sources.emplace_back(
       CreateFileSystemURL(kTestStorageKey, src_file_path_2.value()),
-      absl::nullopt);
+      std::nullopt);
   status.pause_params.policy_params = file_manager::io_task::PolicyPauseParams(
       policy, /*warning_files_count=*/2);
 
@@ -1118,7 +1118,7 @@ TEST_P(FPNMErrorStatusNotification, ErrorShowsBlockNotification_Single) {
   status.type = type;
   status.sources.emplace_back(
       CreateFileSystemURL(kTestStorageKey, src_file_path.value()),
-      absl::nullopt);
+      std::nullopt);
   status.policy_error.emplace(policy, /*blocked_files=*/1);
 
   fpnm_->ShowFilesPolicyNotification(notification_id, status);
@@ -1181,10 +1181,10 @@ TEST_P(FPNMErrorStatusNotification, ErrorShowsBlockNotification_Multi) {
   ASSERT_FALSE(src_file_path_2.empty());
   status.sources.emplace_back(
       CreateFileSystemURL(kTestStorageKey, src_file_path_1.value()),
-      absl::nullopt);
+      std::nullopt);
   status.sources.emplace_back(
       CreateFileSystemURL(kTestStorageKey, src_file_path_2.value()),
-      absl::nullopt);
+      std::nullopt);
   status.policy_error.emplace(policy, 2);
 
   fpnm_->ShowFilesPolicyNotification(notification_id, status);
@@ -1270,10 +1270,10 @@ TEST_P(FPNMTimeoutStatusNotification, TimeoutErrorShowsTimeoutNotification) {
   ASSERT_FALSE(src_file_path_2.empty());
   status.sources.emplace_back(
       CreateFileSystemURL(kTestStorageKey, src_file_path_1.value()),
-      absl::nullopt);
+      std::nullopt);
   status.sources.emplace_back(
       CreateFileSystemURL(kTestStorageKey, src_file_path_2.value()),
-      absl::nullopt);
+      std::nullopt);
   status.policy_error.emplace(
       file_manager::io_task::PolicyErrorType::kDlpWarningTimeout);
 
@@ -1315,9 +1315,8 @@ TEST_P(FPNMShowBlockTest, ShowDlpBlockNotification_Single) {
 
   EXPECT_FALSE(display_service_tester.GetNotification(kNotificationId));
   auto src_file_path = base::FilePath(kFile1);
-  fpnm_->ShowDlpBlockedFiles(/*task_id=*/absl::nullopt, {src_file_path},
-                             action);
-  absl::optional<message_center::Notification> notification =
+  fpnm_->ShowDlpBlockedFiles(/*task_id=*/std::nullopt, {src_file_path}, action);
+  std::optional<message_center::Notification> notification =
       display_service_tester.GetNotification(kNotificationId);
   EXPECT_TRUE(notification.has_value());
   EXPECT_EQ(notification->title(),
@@ -1349,10 +1348,10 @@ TEST_P(FPNMShowBlockTest, ShowDlpBlockNotification_Multi) {
 
   EXPECT_FALSE(display_service_tester.GetNotification(kNotificationId));
   fpnm_->ShowDlpBlockedFiles(
-      /*task_id=*/absl::nullopt,
+      /*task_id=*/std::nullopt,
       {base::FilePath(kFile1), base::FilePath(kFile2), base::FilePath(kFile3)},
       action);
-  absl::optional<message_center::Notification> notification =
+  std::optional<message_center::Notification> notification =
       display_service_tester.GetNotification(kNotificationId);
   EXPECT_TRUE(notification.has_value());
   EXPECT_EQ(notification->title(),
@@ -1413,10 +1412,10 @@ TEST_P(FPNMShowWarningTest, ShowDlpWarningNotification_Single) {
   testing::StrictMock<base::MockCallback<WarningWithJustificationCallback>>
       mock_cb;
   fpnm_->ShowDlpWarning(
-      mock_cb.Get(), /*task_id=*/absl::nullopt, {src_file_path},
+      mock_cb.Get(), /*task_id=*/std::nullopt, {src_file_path},
       DlpFileDestination(GURL("https://example.com")), action);
 
-  absl::optional<message_center::Notification> notification =
+  std::optional<message_center::Notification> notification =
       display_service_tester.GetNotification(kNotificationId);
   EXPECT_TRUE(notification.has_value());
   EXPECT_EQ(notification->title(), GetWarningTitle(action));
@@ -1433,7 +1432,7 @@ TEST_P(FPNMShowWarningTest, ShowDlpWarningNotification_Single) {
   // Warning callback is run with should_proceed set to false when the warning
   // times out.
   EXPECT_CALL(mock_cb,
-              Run(/*user_justification=*/absl::optional<std::u16string>(),
+              Run(/*user_justification=*/std::optional<std::u16string>(),
                   /*should_proceed=*/false))
       .Times(1);
   task_environment_.FastForwardBy(base::Minutes(5));
@@ -1452,12 +1451,12 @@ TEST_P(FPNMShowWarningTest, ShowDlpWarningNotification_Multi) {
   EXPECT_FALSE(display_service_tester.GetNotification(kNotificationId));
   testing::StrictMock<base::MockCallback<WarningWithJustificationCallback>>
       mock_cb;
-  fpnm_->ShowDlpWarning(mock_cb.Get(), /*task_id=*/absl::nullopt,
+  fpnm_->ShowDlpWarning(mock_cb.Get(), /*task_id=*/std::nullopt,
                         {base::FilePath(kFile1), base::FilePath(kFile2)},
                         DlpFileDestination(GURL("https://example.com")),
                         action);
 
-  absl::optional<message_center::Notification> notification =
+  std::optional<message_center::Notification> notification =
       display_service_tester.GetNotification(kNotificationId);
   EXPECT_TRUE(notification.has_value());
   EXPECT_EQ(notification->title(), GetWarningTitle(action));
@@ -1475,7 +1474,7 @@ TEST_P(FPNMShowWarningTest, ShowDlpWarningNotification_Multi) {
   // Warning callback is run with should_proceed set to false when the warning
   // times out.
   EXPECT_CALL(mock_cb,
-              Run(/*user_justification=*/absl::optional<std::u16string>(),
+              Run(/*user_justification=*/std::optional<std::u16string>(),
                   /*should_proceed=*/false))
       .Times(1);
   task_environment_.FastForwardBy(base::Minutes(5));
@@ -1506,7 +1505,7 @@ TEST_P(FPNMShowTimeoutTest, TimeoutErrorShowsTimeoutNotification) {
 
   EXPECT_FALSE(display_service_tester.GetNotification(kNotificationId));
   fpnm_->ShowDlpWarningTimeoutNotification(action,
-                                           /*notification_id=*/absl::nullopt);
+                                           /*notification_id=*/std::nullopt);
   auto notification = display_service_tester.GetNotification(kNotificationId);
   ASSERT_TRUE(notification.has_value());
   EXPECT_EQ(notification->title(), l10n_util::GetStringUTF16(title_id));

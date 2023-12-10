@@ -18,6 +18,7 @@
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_service.h"
 #include "components/content_settings/core/browser/content_settings_observer.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -25,6 +26,7 @@
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
@@ -46,8 +48,8 @@ class Page;
 
 // This class keeps track of unused permissions, updates their last_visit date
 // on navigations and clears them periodically.
-class UnusedSitePermissionsService : public SafetyHubService,
-                                     public content_settings::Observer {
+class UnusedSitePermissionsService final : public SafetyHubService,
+                                           public content_settings::Observer {
  public:
   struct RevokedPermission {
    public:
@@ -144,8 +146,9 @@ class UnusedSitePermissionsService : public SafetyHubService,
     WEB_CONTENTS_USER_DATA_KEY_DECL();
   };
 
-  explicit UnusedSitePermissionsService(HostContentSettingsMap* hcsm,
-                                        PrefService* prefs);
+  explicit UnusedSitePermissionsService(
+      content::BrowserContext* browser_context,
+      PrefService* prefs);
 
   UnusedSitePermissionsService(const UnusedSitePermissionsService&) = delete;
   UnusedSitePermissionsService& operator=(const UnusedSitePermissionsService&) =
@@ -174,7 +177,7 @@ class UnusedSitePermissionsService : public SafetyHubService,
   // the removed permissions list and resets its permissions.
   void UndoRegrantPermissionsForOrigin(
       const std::set<ContentSettingsType> permissions,
-      const absl::optional<content_settings::ContentSettingConstraints>
+      const std::optional<content_settings::ContentSettingConstraints>
           constraint,
       const url::Origin origin);
 
@@ -185,7 +188,7 @@ class UnusedSitePermissionsService : public SafetyHubService,
   // Stores revoked permissions data on HCSM.
   void StorePermissionInRevokedPermissionSetting(
       const std::set<ContentSettingsType> permissions,
-      const absl::optional<content_settings::ContentSettingConstraints>
+      const std::optional<content_settings::ContentSettingConstraints>
           constraint,
       const url::Origin origin);
 
@@ -206,6 +209,11 @@ class UnusedSitePermissionsService : public SafetyHubService,
   // SafetyHubService implementation
   // Returns a weak pointer to the service.
   base::WeakPtr<SafetyHubService> GetAsWeakRef() override;
+
+  // TabHelper needs a weak pointer to the implementation type.
+  base::WeakPtr<UnusedSitePermissionsService> AsWeakPtr() {
+    return weak_factory_.GetWeakPtr();
+  }
 
   // Test support:
   void SetClockForTesting(base::Clock* clock);
@@ -231,10 +239,14 @@ class UnusedSitePermissionsService : public SafetyHubService,
   // Stores revoked permissions data on HCSM.
   void StorePermissionInRevokedPermissionSetting(
       const std::set<ContentSettingsType> permissions,
-      const absl::optional<content_settings::ContentSettingConstraints>
+      const std::optional<content_settings::ContentSettingConstraints>
           constraint,
       const ContentSettingsPattern& primary_pattern,
       const ContentSettingsPattern& secondary_pattern);
+
+  HostContentSettingsMap* hcsm() {
+    return HostContentSettingsMapFactory::GetForProfile(browser_context_.get());
+  }
 
   // SafetyHubService implementation
 
@@ -261,7 +273,7 @@ class UnusedSitePermissionsService : public SafetyHubService,
   // Set of permissions that haven't been used for at least a week.
   UnusedPermissionMap recently_unused_permissions_;
 
-  const scoped_refptr<HostContentSettingsMap> hcsm_;
+  raw_ptr<content::BrowserContext> browser_context_;
 
   // Observer to watch for content settings changed.
   base::ScopedObservation<HostContentSettingsMap, content_settings::Observer>

@@ -8,17 +8,19 @@
 #include "base/dcheck_is_on.h"
 #include "base/notreached.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/layout/box_fragment_builder.h"
+#include "third_party/blink/renderer/core/layout/constraint_space_builder.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_node.h"
 #include "third_party/blink/renderer/core/layout/inline/logical_line_item.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_box_fragment_builder.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_constraint_space_builder.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_layout_algorithm.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_unpositioned_float.h"
+#include "third_party/blink/renderer/core/layout/layout_algorithm.h"
+#include "third_party/blink/renderer/core/layout/unpositioned_float.h"
 #include "third_party/blink/renderer/platform/fonts/font_baseline.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
+class ColumnSpannerPath;
+class ConstraintSpace;
 class ExclusionSpace;
 class InlineBreakToken;
 class InlineChildLayoutContext;
@@ -26,8 +28,6 @@ class InlineItem;
 class InlineLayoutStateStack;
 class InlineNode;
 class LineInfo;
-class NGColumnSpannerPath;
-class NGConstraintSpace;
 struct InlineBoxState;
 struct InlineItemResult;
 struct LeadingFloats;
@@ -39,14 +39,14 @@ struct LeadingFloats;
 //
 // Uses LineBreaker to find InlineItems to form a line.
 class CORE_EXPORT InlineLayoutAlgorithm final
-    : public NGLayoutAlgorithm<InlineNode,
-                               LineBoxFragmentBuilder,
-                               InlineBreakToken> {
+    : public LayoutAlgorithm<InlineNode,
+                             LineBoxFragmentBuilder,
+                             InlineBreakToken> {
  public:
   InlineLayoutAlgorithm(InlineNode,
-                        const NGConstraintSpace&,
+                        const ConstraintSpace&,
                         const InlineBreakToken*,
-                        const NGColumnSpannerPath*,
+                        const ColumnSpannerPath*,
                         InlineChildLayoutContext* context);
   ~InlineLayoutAlgorithm() override;
 
@@ -54,7 +54,7 @@ class CORE_EXPORT InlineLayoutAlgorithm final
                   LineInfo*,
                   LogicalLineItems* line_box);
 
-  const NGLayoutResult* Layout() override;
+  const LayoutResult* Layout() override;
 
   MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&) override {
     NOTREACHED();
@@ -65,9 +65,9 @@ class CORE_EXPORT InlineLayoutAlgorithm final
   friend class LineWidthsTest;
 
   void PositionLeadingFloats(ExclusionSpace&, LeadingFloats&);
-  NGPositionedFloat PositionFloat(LayoutUnit origin_block_bfc_offset,
-                                  LayoutObject* floating_object,
-                                  ExclusionSpace*);
+  PositionedFloat PositionFloat(LayoutUnit origin_block_bfc_offset,
+                                LayoutObject* floating_object,
+                                ExclusionSpace*);
 
   void PrepareBoxStates(const LineInfo&, const InlineBreakToken*);
   void RebuildBoxStates(const LineInfo&,
@@ -140,7 +140,7 @@ class CORE_EXPORT InlineLayoutAlgorithm final
   InlineLayoutStateStack* box_states_;
   InlineChildLayoutContext* context_;
 
-  const NGColumnSpannerPath* column_spanner_path_;
+  const ColumnSpannerPath* column_spanner_path_;
 
   MarginStrut end_margin_strut_;
   absl::optional<int> lines_until_clamp_;

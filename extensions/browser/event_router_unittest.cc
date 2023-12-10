@@ -89,7 +89,8 @@ class MockEventDispatcher : public mojom::EventDispatcher {
   void DispatchEvent(mojom::DispatchEventParamsPtr params,
                      base::Value::List event_args,
                      DispatchEventCallback callback) override {
-    std::move(callback).Run();
+    std::move(callback).Run(
+        /*event_will_run_in_lazy_background_page_script=*/false);
   }
 
  private:
@@ -820,7 +821,7 @@ TEST_F(EventRouterDispatchTest, DISABLED_TestDispatchCallback) {
       mojom::EventListener::New(
           mojom::EventListenerOwner::NewExtensionId(ext3), event_name,
           mojom::ServiceWorkerContext::New(GURL(), sw_version_id, sw_thread_id),
-          /*event_filter=*/absl::nullopt),
+          /*event_filter=*/std::nullopt),
       process4.get());
   event_router()->BindServiceWorkerEventDispatcher(
       process4->GetID(), sw_thread_id, sw_event_dispatcher.BindAndPassRemote());

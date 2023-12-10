@@ -71,11 +71,7 @@ class LayerTreeTest : public testing::Test, public TestHooks {
   // TODO(kylechar): This shouldn't be SkiaRenderer/GL for platforms with no GL
   // support.
   static constexpr viz::RendererType kDefaultRendererType =
-#if BUILDFLAG(IS_IOS) && BUILDFLAG(SKIA_USE_METAL)
-      viz::RendererType::kSkiaGraphite;
-#else
       viz::RendererType::kSkiaGL;
-#endif  // BUILDFLAG(IS_IOS)
 
   std::string TestTypeToString() {
     switch (renderer_type_) {
@@ -83,8 +79,10 @@ class LayerTreeTest : public testing::Test, public TestHooks {
         return "Skia GL";
       case viz::RendererType::kSkiaVk:
         return "Skia Vulkan";
-      case viz::RendererType::kSkiaGraphite:
-        return "Skia Graphite";
+      case viz::RendererType::kSkiaGraphiteDawn:
+        return "Skia Graphite Dawn";
+      case viz::RendererType::kSkiaGraphiteMetal:
+        return "Skia Graphite Metal";
       case viz::RendererType::kSoftware:
         return "Software";
     }
@@ -227,7 +225,8 @@ class LayerTreeTest : public testing::Test, public TestHooks {
     return renderer_type_ == viz::RendererType::kSkiaVk;
   }
   bool use_skia_graphite() const {
-    return renderer_type_ == viz::RendererType::kSkiaGraphite;
+    return renderer_type_ == viz::RendererType::kSkiaGraphiteDawn ||
+           renderer_type_ == viz::RendererType::kSkiaGraphiteMetal;
   }
 
   const viz::RendererType renderer_type_;

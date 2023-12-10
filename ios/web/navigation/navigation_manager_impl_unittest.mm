@@ -3244,7 +3244,10 @@ TEST_F(NavigationManagerSerialisationTest, RestoreFromProto_IndexOutOfBound) {
     }
     // Set an out-of-bound value for last committed item index.
     navigation_storage->set_last_committed_item_index(std::size(kTestURLs));
-    session_storage = [[CRWSessionStorage alloc] initWithProto:storage];
+    session_storage =
+        [[CRWSessionStorage alloc] initWithProto:storage
+                                uniqueIdentifier:web::WebStateID::NewUnique()
+                                stableIdentifier:[[NSUUID UUID] UUIDString]];
   }
 
   NSError* error = nil;

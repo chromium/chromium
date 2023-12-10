@@ -7,7 +7,7 @@ found in the LICENSE file.
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:drawable="@drawable/primary_gray_rounded"/>
     <item
-        android:drawable="@drawable/ic_pause_white_24dp"
+        android:drawable="@drawable/pause_24"
         android:left="40dp"
         android:top="24dp"
         android:right="40dp"

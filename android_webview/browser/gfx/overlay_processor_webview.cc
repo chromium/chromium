@@ -393,10 +393,10 @@ class OverlayProcessorWebView::Manager
     }
   }
 
-  absl::optional<gfx::SurfaceControl::Transaction> TakeHWUITransaction() {
+  std::optional<gfx::SurfaceControl::Transaction> TakeHWUITransaction() {
     DCHECK_CALLED_ON_VALID_THREAD(render_thread_checker_);
 
-    absl::optional<gfx::SurfaceControl::Transaction> result;
+    std::optional<gfx::SurfaceControl::Transaction> result;
     if (hwui_transaction_) {
       DCHECK(gpu_task_runner_);
       if (!pending_resource_update_.empty() || !pending_removals_.empty()) {
@@ -657,7 +657,7 @@ class OverlayProcessorWebView::Manager
   base::flat_set<uint64_t> pending_removals_;
 
   scoped_refptr<gfx::SurfaceControl::Surface> parent_surface_;
-  absl::optional<gfx::SurfaceControl::Transaction> hwui_transaction_;
+  std::optional<gfx::SurfaceControl::Transaction> hwui_transaction_;
 
   GetSurfaceControlFn get_surface_control_ = nullptr;
 
@@ -721,7 +721,7 @@ void OverlayProcessorWebView::RemoveOverlays() {
   overlays_.clear();
 }
 
-absl::optional<gfx::SurfaceControl::Transaction>
+std::optional<gfx::SurfaceControl::Transaction>
 OverlayProcessorWebView::TakeSurfaceTransactionOnRT() {
   DCHECK(manager_);
   return manager_->TakeHWUITransaction();

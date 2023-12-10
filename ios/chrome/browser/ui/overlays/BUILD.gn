@@ -32,11 +32,11 @@ source_set("overlays") {
     ":coordinators",
     ":ui",
     "//base",
-    "//ios/chrome/browser/infobars",
-    "//ios/chrome/browser/infobars:public",
-    "//ios/chrome/browser/main",
-    "//ios/chrome/browser/overlays",
-    "//ios/chrome/browser/overlays/public/default",
+    "//ios/chrome/browser/infobars/model",
+    "//ios/chrome/browser/infobars/model:public",
+    "//ios/chrome/browser/main/model",
+    "//ios/chrome/browser/overlays/model",
+    "//ios/chrome/browser/overlays/model/public/default",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/ui/fullscreen",
     "//ios/chrome/browser/ui/overlays/infobar_banner:coordinators",
@@ -87,7 +87,7 @@ source_set("coordinators") {
 
   deps = [
     "//base",
-    "//ios/chrome/browser/overlays",
+    "//ios/chrome/browser/overlays/model",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
   ]
 }
@@ -105,7 +105,7 @@ source_set("util") {
   deps = [
     ":coordinators",
     "//base",
-    "//ios/chrome/browser/overlays",
+    "//ios/chrome/browser/overlays/model",
     "//ios/chrome/browser/ui/infobars/presentation:positioner",
   ]
 }
@@ -132,10 +132,10 @@ source_set("unit_tests") {
     ":util",
     "//base/test:test_support",
     "//build:branding_buildflags",
-    "//ios/chrome/browser/overlays",
-    "//ios/chrome/browser/overlays/public/test_modality",
-    "//ios/chrome/browser/overlays/public/web_content_area",
-    "//ios/chrome/browser/overlays/test",
+    "//ios/chrome/browser/overlays/model",
+    "//ios/chrome/browser/overlays/model/public/test_modality",
+    "//ios/chrome/browser/overlays/model/public/web_content_area",
+    "//ios/chrome/browser/overlays/model/test",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/browser/shared/model/web_state_list",

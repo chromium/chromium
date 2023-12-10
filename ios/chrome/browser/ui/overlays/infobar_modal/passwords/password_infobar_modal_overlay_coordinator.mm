@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/ui/overlays/infobar_modal/passwords/password_infobar_modal_overlay_coordinator.h"
 
 #import "base/check.h"
-#import "ios/chrome/browser/overlays/public/default/default_infobar_overlay_request_config.h"
+#import "ios/chrome/browser/overlays/model/public/default/default_infobar_overlay_request_config.h"
 #import "ios/chrome/browser/ui/infobars/modals/infobar_password_table_view_controller.h"
 #import "ios/chrome/browser/ui/overlays/infobar_modal/infobar_modal_overlay_coordinator+modal_configuration.h"
 #import "ios/chrome/browser/ui/overlays/infobar_modal/passwords/password_infobar_modal_overlay_mediator.h"

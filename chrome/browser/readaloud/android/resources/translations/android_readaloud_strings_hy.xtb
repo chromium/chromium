@@ -2,11 +2,14 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="hy">
 <translation id="1178581264944972037">Դադար</translation>
-<translation id="2558806128245168542">Հետ գնալ</translation>
-<translation id="3523426587027570423">Հպեք՝ «Հնչեցնել այս էջը» գործառույթի նվագարկիչը փակելու համար։</translation>
+<translation id="1921351128855867012"><ph name="NUMBER_OF_SECONDS" /> վայրկյան առաջ տալ</translation>
+<translation id="1984328900355667246">Նվագարկումը հասանելի չէ</translation>
+<translation id="3023502830214299618">Ցավոք, նվագարկումը ներկայումս անհասանելի է այս էջի համար։ Փորձեք ավելի ուշ։</translation>
+<translation id="3807208219231826020">Ոլորել նվագարկումը</translation>
+<translation id="385051799172605136">Հետ</translation>
 <translation id="4431240646217225907">Տեքստի առանձնացում և ավտոմատ ոլորում</translation>
 <translation id="4654641641922242357">«Հնչեցնել այս էջը» գործառույթի նվագարկիչ։</translation>
-<translation id="4731877163452936634">Նվագարկման արագությունը՝ <ph name="PLAYBACK_SPEED" />։ Փոխելու համար սեղմեք։</translation>
+<translation id="4872475766448853257"><ph name="NUMBER_OF_SECONDS" /> վայրկյան հետ գնալ</translation>
 <translation id="5234971936051226002">«Հնչեցնել այս էջը» գործառույթի նվագարկիչը ծալվեց։</translation>
 <translation id="5596627076506792578">Լրացուցիչ ընտրանքներ</translation>
 <translation id="6315170314923504164">Ձայնային</translation>
@@ -15,8 +18,8 @@
 <translation id="6831043979455480757">Թարգմանել</translation>
 <translation id="6846298663435243399">Բեռնում…</translation>
 <translation id="7587250070160020374">Chrome-ում էջ է նվագարկվում</translation>
-<translation id="7945822420239537236"><ph name="NUMBER_OF_SECONDS" /> վայրկյան առաջ տալ</translation>
-<translation id="7972866381678406344"><ph name="NUMBER_OF_SECONDS" /> վայրկյան հետ անցնել</translation>
 <translation id="8136852699834914183">Այս էջի համար նվագարկումը հասանելի չէ։</translation>
+<translation id="8264989794233974275">Ավելացնել/նվազեցնել արագությունը <ph name="PLAYBACK_SPEED" /> անգամ։</translation>
+<translation id="8407011429883244666">Փակել նվագարկիչը։</translation>
 <translation id="8953618380150219653">«Հնչեցնել այս էջը» գործառույթի նվագարկիչը բացված է ամբողջությամբ։</translation>
 </translationbundle>

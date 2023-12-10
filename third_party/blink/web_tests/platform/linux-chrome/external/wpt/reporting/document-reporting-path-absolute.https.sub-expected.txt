@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+[FAIL] Reporting-Endpoints defined endpoint received reports.
+  assert_unreached: A report of deprecation from https://web-platform.test:8444/reporting/document-reporting-path-absolute.https.sub.html is not found. Reached unreachable code
+Harness: the test ran to completion.

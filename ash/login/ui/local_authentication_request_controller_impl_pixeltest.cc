@@ -58,7 +58,7 @@ class LocalAuthenticationRequestControllerImplPixelTest : public AshTestBase {
   LocalAuthenticationRequestControllerImplPixelTest() = default;
   ~LocalAuthenticationRequestControllerImplPixelTest() override = default;
 
-  absl::optional<pixel_test::InitParams> CreatePixelTestInitParams()
+  std::optional<pixel_test::InitParams> CreatePixelTestInitParams()
       const override {
     return pixel_test::InitParams();
   }
@@ -92,8 +92,8 @@ class LocalAuthenticationRequestControllerImplPixelTest : public AshTestBase {
     LocalAuthenticationRequestWidget* local_authentication_request_widget =
         LocalAuthenticationRequestWidget::Get();
     if (local_authentication_request_widget) {
-      local_authentication_request_widget->Close(
-          false /* validation success */);
+      local_authentication_request_widget->Close(false /* validation success */,
+                                                 nullptr);
     }
     scoped_user_manager_.reset();
     SystemSaltGetter::Shutdown();
@@ -135,7 +135,7 @@ class LocalAuthenticationRequestControllerImplPixelTest : public AshTestBase {
   }
 
   // Called when LocalAuthenticationRequestView finished processing.
-  void OnFinished(bool access_granted) {
+  void OnFinished(bool access_granted, std::unique_ptr<UserContext> context) {
     access_granted ? ++successful_validation_ : ++close_action_;
   }
 
@@ -219,12 +219,12 @@ TEST_F(LocalAuthenticationRequestControllerImplPixelTest, FailedValidation) {
 
   // Verify the UI.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "Ready", /*revision_number=*/0, view));
+      "Ready", /*revision_number=*/2, view));
 
   SimulateValidation(false);
   // Verify the UI.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "Fail", /*revision_number=*/0, view));
+      "Fail", /*revision_number=*/2, view));
 }
 
 // Tests local authentication dialog theme change
@@ -246,7 +246,7 @@ TEST_F(LocalAuthenticationRequestControllerImplPixelTest, ThemeChange) {
   DarkLightModeControllerImpl::Get()->SetDarkModeEnabledForTest(false);
   // Verify the UI.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "Light", /*revision_number=*/0, view));
+      "Light", /*revision_number=*/1, view));
 }
 
 }  // namespace

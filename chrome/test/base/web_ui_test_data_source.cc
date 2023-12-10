@@ -4,12 +4,14 @@
 
 #include "chrome/test/base/web_ui_test_data_source.h"
 
+#include "base/strings/stringprintf.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/data/grit/webui_test_resources.h"
 #include "chrome/test/data/grit/webui_test_resources_map.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "content/public/common/url_constants.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/resources/grit/webui_resources.h"
 
@@ -17,13 +19,10 @@
 #include "ash/webui/common/trusted_types_util.h"
 #endif
 
-namespace webui {
+namespace {
 
-content::WebUIDataSource* CreateAndAddWebUITestDataSource(
-    content::BrowserContext* browser_context) {
-  content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
-      browser_context, chrome::kChromeUIWebUITestHost);
-
+void SetupTestDataSource(content::WebUIDataSource* source,
+                         const std::string& scheme) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ash::EnableTrustedTypesCSP(source);
 #else
@@ -32,13 +31,15 @@ content::WebUIDataSource* CreateAndAddWebUITestDataSource(
 
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ScriptSrc,
-      "script-src chrome://* 'self';");
+      base::StringPrintf("script-src %s://* 'self';", scheme.c_str()));
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::WorkerSrc,
-      "worker-src blob: chrome://* 'self';");
+      base::StringPrintf("worker-src blob: %s://* 'self';", scheme.c_str()));
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::FrameAncestors,
-      "frame-ancestors chrome://* 'self';");
+      base::StringPrintf("frame-ancestors %s://* 'self';", scheme.c_str()));
+  source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::FrameSrc, "frame-src 'self';");
 
   source->AddResourcePaths(
       base::make_span(kWebuiTestResources, kWebuiTestResourcesSize));
@@ -46,7 +47,27 @@ content::WebUIDataSource* CreateAndAddWebUITestDataSource(
   source->AddResourcePath("test_loader_util.js",
                           IDR_WEBUI_JS_TEST_LOADER_UTIL_JS);
   source->AddResourcePath("test_loader.html", IDR_WEBUI_TEST_LOADER_HTML);
+}
 
+}  // namespace
+
+namespace webui {
+
+content::WebUIDataSource* CreateAndAddWebUITestDataSource(
+    content::BrowserContext* browser_context) {
+  content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
+      browser_context, chrome::kChromeUIWebUITestHost);
+
+  SetupTestDataSource(source, content::kChromeUIScheme);
+  return source;
+}
+
+content::WebUIDataSource* CreateAndAddUntrustedWebUITestDataSource(
+    content::BrowserContext* browser_context) {
+  content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
+      browser_context, chrome::kChromeUIUntrustedWebUITestURL);
+
+  SetupTestDataSource(source, content::kChromeUIUntrustedScheme);
   return source;
 }
 

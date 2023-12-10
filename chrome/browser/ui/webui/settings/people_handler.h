@@ -79,6 +79,8 @@ class PeopleHandler : public SettingsPageUIHandler,
   FRIEND_TEST_ALL_PREFIXES(PeopleHandlerTest,
                            ShowSetupCustomPassphraseRequired);
   FRIEND_TEST_ALL_PREFIXES(PeopleHandlerTest,
+                           OngoingSetupCustomPassphraseRequired);
+  FRIEND_TEST_ALL_PREFIXES(PeopleHandlerTest,
                            ShowSetupTrustedVaultKeysRequired);
   FRIEND_TEST_ALL_PREFIXES(PeopleHandlerTest, ShowSetupEncryptAll);
   FRIEND_TEST_ALL_PREFIXES(PeopleHandlerTest, ShowSetupEncryptAllDisallowed);

@@ -37,6 +37,9 @@ class PasswordGenerationPopupView {
   // Called when the password selection state has changed.
   virtual void PasswordSelectionUpdated() = 0;
 
+  // Called when the edit password selection state has changed.
+  virtual void EditPasswordSelectionUpdated() = 0;
+
   // Note that PasswordGenerationPopupView owns itself, and will only be deleted
   // when Hide() is called.
   static PasswordGenerationPopupView* Create(

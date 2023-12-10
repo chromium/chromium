@@ -28,7 +28,7 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/signin/signin_util.h"
+#import "ios/chrome/browser/signin/model/signin_util.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -102,7 +102,8 @@ IOSChromeProfilePasswordStoreFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
   std::unique_ptr<password_manager::LoginDatabase> login_db(
       password_manager::CreateLoginDatabaseForProfileStorage(
-          context->GetStatePath()));
+          context->GetStatePath(),
+          /*is_empty_cb=*/base::NullCallback()));
 
   scoped_refptr<password_manager::PasswordStore> store =
       base::MakeRefCounted<password_manager::PasswordStore>(

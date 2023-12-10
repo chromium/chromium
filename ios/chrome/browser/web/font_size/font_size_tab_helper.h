@@ -5,12 +5,12 @@
 #ifndef IOS_CHROME_BROWSER_WEB_FONT_SIZE_FONT_SIZE_TAB_HELPER_H_
 #define IOS_CHROME_BROWSER_WEB_FONT_SIZE_FONT_SIZE_TAB_HELPER_H_
 
+#include <optional>
 #include <string>
 
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #include "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefService;
 
@@ -93,7 +93,7 @@ class FontSizeTabHelper : public web::WebFramesManager::Observer,
 
   // Returns the new multiplier after zooming in the given direction. Returns
   // nullopt if it is impossible to zoom in the given direction;
-  absl::optional<double> NewMultiplierAfterZoom(Zoom zoom) const;
+  std::optional<double> NewMultiplierAfterZoom(Zoom zoom) const;
   // Returns the current user zoom multiplier (i.e. not counting any additional
   // zoom due to the system accessibility settings).
   double GetCurrentUserZoomMultiplier() const;

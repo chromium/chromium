@@ -184,11 +184,6 @@ void SkiaOutputSurfaceDependencyImpl::DidLoseContext(
   gpu_service_impl_->DidLoseContext(reason, active_url);
 }
 
-base::TimeDelta
-SkiaOutputSurfaceDependencyImpl::GetGpuBlockedTimeSinceLastSwap() {
-  return gpu_service_impl_->GetGpuScheduler()->TakeTotalBlockingTime();
-}
-
 bool SkiaOutputSurfaceDependencyImpl::NeedsSupportForExternalStencil() {
   return false;
 }

@@ -53,7 +53,8 @@ public class SyncTrustedVaultProxyActivity extends AsyncInitializationActivity {
      *
      * @return the intent for launching SyncTrustedVaultProxyActivity
      */
-    public static Intent createKeyRetrievalProxyIntent(PendingIntent keyRetrievalIntent,
+    public static Intent createKeyRetrievalProxyIntent(
+            PendingIntent keyRetrievalIntent,
             @TrustedVaultUserActionTriggerForUMA int userActionTrigger) {
         return createProxyIntent(
                 keyRetrievalIntent, userActionTrigger, REQUEST_CODE_TRUSTED_VAULT_KEY_RETRIEVAL);
@@ -72,14 +73,19 @@ public class SyncTrustedVaultProxyActivity extends AsyncInitializationActivity {
     public static Intent createRecoverabilityDegradedProxyIntent(
             PendingIntent recoverabilityDegradedIntent,
             @TrustedVaultUserActionTriggerForUMA int userActionTrigger) {
-        return createProxyIntent(recoverabilityDegradedIntent, userActionTrigger,
+        return createProxyIntent(
+                recoverabilityDegradedIntent,
+                userActionTrigger,
                 REQUEST_CODE_TRUSTED_VAULT_RECOVERABILITY_DEGRADED);
     }
 
-    private static Intent createProxyIntent(PendingIntent proxiedIntent,
-            @TrustedVaultUserActionTriggerForUMA int userActionTrigger, int requestCode) {
-        Intent proxyIntent = new Intent(
-                ContextUtils.getApplicationContext(), SyncTrustedVaultProxyActivity.class);
+    private static Intent createProxyIntent(
+            PendingIntent proxiedIntent,
+            @TrustedVaultUserActionTriggerForUMA int userActionTrigger,
+            int requestCode) {
+        Intent proxyIntent =
+                new Intent(
+                        ContextUtils.getApplicationContext(), SyncTrustedVaultProxyActivity.class);
         proxyIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         proxyIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         proxyIntent.putExtra(EXTRA_KEY_PROXIED_INTENT, proxiedIntent);
@@ -107,10 +113,14 @@ public class SyncTrustedVaultProxyActivity extends AsyncInitializationActivity {
         assert mUserActionTrigger != -1;
 
         try {
-            startIntentSenderForResult(proxiedIntent.getIntentSender(), mRequestCode,
-                    /* fillInIntent */ null, /* flagsMask */ 0,
-                    /* flagsValues */ 0, /* extraFlags */ 0,
-                    /* options */ null);
+            startIntentSenderForResult(
+                    proxiedIntent.getIntentSender(),
+                    mRequestCode,
+                    /* fillInIntent= */ null,
+                    /* flagsMask= */ 0,
+                    /* flagsValues= */ 0,
+                    /* extraFlags= */ 0,
+                    /* options= */ null);
         } catch (IntentSender.SendIntentException exception) {
             Log.w(TAG, "Error sending trusted vault intent: ", exception);
         }

@@ -18,13 +18,13 @@
 #include "ash/system/tray/tray_background_view.h"
 #include "ash/system/tray/tray_bubble_view.h"
 #include "ash/system/tray/tray_constants.h"
-#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/work_area_insets.h"
 #include "base/check.h"
 #include "base/strings/string_number_conversions.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/display/screen.h"
 #include "ui/gfx/font_list.h"
 #include "ui/views/controls/label.h"
 
@@ -40,11 +40,11 @@ void SetupLabelForTray(views::Label* label) {
 }
 
 void SetupConnectedScrollListItem(HoverHighlightView* view) {
-  SetupConnectedScrollListItem(view, absl::nullopt /* battery_percentage */);
+  SetupConnectedScrollListItem(view, std::nullopt /* battery_percentage */);
 }
 
 void SetupConnectedScrollListItem(HoverHighlightView* view,
-                                  absl::optional<uint8_t> battery_percentage) {
+                                  std::optional<uint8_t> battery_percentage) {
   DCHECK(view->is_populated());
 
   std::u16string status;
@@ -101,10 +101,9 @@ gfx::Insets GetTrayBubbleInsets(aura::Window* window) {
   // The work area in tablet mode always uses the in-app shelf height, which is
   // shorter than the standard shelf height. In this state, we need to add back
   // the difference to compensate (see crbug.com/1033302).
-  bool in_tablet_mode = Shell::Get()->tablet_mode_controller() &&
-                        Shell::Get()->tablet_mode_controller()->InTabletMode();
-  if (!in_tablet_mode)
+  if (!display::Screen::GetScreen()->InTabletMode()) {
     return insets;
+  }
 
   Shelf* shelf = Shelf::ForWindow(window);
   bool is_bottom_alignment =
@@ -161,9 +160,7 @@ int CalculateMaxTrayBubbleHeight(aura::Window* window) {
       WorkAreaInsets::ForWindow(shelf->GetWindow()->GetRootWindow());
   int free_space_height_above_anchor =
       anchor_rect_top - work_area->user_work_area_bounds().y();
-  bool in_tablet_mode = Shell::Get()->tablet_mode_controller() &&
-                        Shell::Get()->tablet_mode_controller()->InTabletMode();
-  if (in_tablet_mode) {
+  if (display::Screen::GetScreen()->InTabletMode()) {
     free_space_height_above_anchor -= GetBubbleInsetHotseatCompensation(window);
   }
   return free_space_height_above_anchor - kBubbleMenuPadding * 2;

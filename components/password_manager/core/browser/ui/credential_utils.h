@@ -5,10 +5,8 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_UI_CREDENTIAL_UTILS_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_UI_CREDENTIAL_UTILS_H_
 
+#include <compare>
 #include <string>
-#include <tuple>
-#include <type_traits>
-#include <utility>
 
 #include "base/template_util.h"
 #include "components/password_manager/core/browser/leak_detection/bulk_leak_check.h"
@@ -34,15 +32,14 @@ struct CanonicalizedCredential {
       : canonicalized_username(CanonicalizeUsername(credential.username())),
         password(credential.password()) {}
 
+  friend auto operator<=>(const CanonicalizedCredential&,
+                          const CanonicalizedCredential&) = default;
+  friend bool operator==(const CanonicalizedCredential&,
+                         const CanonicalizedCredential&) = default;
+
   std::u16string canonicalized_username;
   std::u16string password;
 };
-
-inline bool operator<(const CanonicalizedCredential& lhs,
-                      const CanonicalizedCredential& rhs) {
-  return std::tie(lhs.canonicalized_username, lhs.password) <
-         std::tie(rhs.canonicalized_username, rhs.password);
-}
 
 // Returns whether `url` has valid format (either an HTTP or HTTPS scheme) or
 // Android credential.

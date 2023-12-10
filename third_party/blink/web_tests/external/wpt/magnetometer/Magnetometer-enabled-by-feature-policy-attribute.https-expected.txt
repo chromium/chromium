@@ -1,6 +1,4 @@
 This is a testharness.js-based test.
-[PASS] Magnetometer: Feature-Policy allow='magnetometer' attribute allows same-origin iframe
-[PASS] Magnetometer: Feature-Policy allow='magnetometer' attribute allows cross-origin iframe
 [FAIL] UncalibratedMagnetometer: Feature-Policy allow='magnetometer' attribute allows same-origin iframe
   assert_implements: UncalibratedMagnetometer is not supported. undefined
 [FAIL] UncalibratedMagnetometer: Feature-Policy allow='magnetometer' attribute allows cross-origin iframe

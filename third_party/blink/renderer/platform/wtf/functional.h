@@ -182,10 +182,10 @@ struct CheckGCedTypeRestriction {
                 "WrapCrossThreadWeakPersistent.");
   static_assert(!WTF::IsGarbageCollectedType<T>::value,
                 "GCed types are forbidden as bound parameters.");
-  static_assert(!WTF::IsStackAllocatedType<T>::value,
+  static_assert(!WTF::IsStackAllocatedType<T>,
                 "Stack allocated types are forbidden as bound parameters.");
   static_assert(
-      !(WTF::IsDisallowNew<T>::value && WTF::IsTraceable<T>::value),
+      !(WTF::IsDisallowNew<T> && WTF::IsTraceable<T>::value),
       "Traceable disallow new types are forbidden as bound parameters.");
 };
 

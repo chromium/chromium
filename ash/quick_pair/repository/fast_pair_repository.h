@@ -5,6 +5,8 @@
 #ifndef ASH_QUICK_PAIR_REPOSITORY_FAST_PAIR_REPOSITORY_H_
 #define ASH_QUICK_PAIR_REPOSITORY_FAST_PAIR_REPOSITORY_H_
 
+#include <optional>
+
 #include "ash/quick_pair/common/device.h"
 #include "ash/quick_pair/proto/fastpair.pb.h"
 #include "ash/quick_pair/repository/fast_pair/device_metadata.h"
@@ -12,7 +14,6 @@
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
 #include "chromeos/ash/services/bluetooth_config/public/cpp/device_image_info.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 namespace bluetooth_config {
@@ -26,7 +27,7 @@ namespace quick_pair {
 class AccountKeyFilter;
 
 using CheckAccountKeysCallback =
-    base::OnceCallback<void(absl::optional<PairingMetadata>)>;
+    base::OnceCallback<void(std::optional<PairingMetadata>)>;
 using DeviceMetadataCallback = base::OnceCallback<void(DeviceMetadata*, bool)>;
 using ValidModelIdCallback = base::OnceCallback<void(bool)>;
 using CheckOptInStatusCallback =
@@ -115,7 +116,7 @@ class FastPairRepository {
   // filter has been matched to an account_key. Therefore the account_key and
   // associated display_name should already be in the cache so no need for a
   // server call.
-  virtual absl::optional<std::string> GetDeviceDisplayNameFromCache(
+  virtual std::optional<std::string> GetDeviceDisplayNameFromCache(
       std::vector<uint8_t> account_key) = 0;
 
   // Persists the images and device ID belonging to |device| to
@@ -127,7 +128,7 @@ class FastPairRepository {
   virtual bool EvictDeviceImages(const std::string& mac_address) = 0;
 
   // Returns device images belonging to |mac_address|, if found.
-  virtual absl::optional<bluetooth_config::DeviceImageInfo> GetImagesForDevice(
+  virtual std::optional<bluetooth_config::DeviceImageInfo> GetImagesForDevice(
       const std::string& mac_address) = 0;
 
   // Fetches the opt in status from Footprints to determine the status for

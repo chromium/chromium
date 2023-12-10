@@ -14,8 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
-   Receives test status broadcasts sent from
-    {@link org.chromium.test.reporter.TestStatusReporter}.
+ * Receives test status broadcasts sent from {@link org.chromium.test.reporter.TestStatusReporter}.
  */
 public class TestStatusReceiver extends BroadcastReceiver {
     private static final String TAG = "test_reporter";
@@ -24,6 +23,7 @@ public class TestStatusReceiver extends BroadcastReceiver {
 
     /** An IntentFilter that matches the intents that this class can receive. */
     private static final IntentFilter INTENT_FILTER;
+
     static {
         IntentFilter filter = new IntentFilter();
         filter.addAction(TestStatusIntent.ACTION_TEST_RUN_STARTED);
@@ -40,7 +40,9 @@ public class TestStatusReceiver extends BroadcastReceiver {
     /** A callback used when a test run has started or finished. */
     public interface TestRunCallback {
         void testRunStarted(int pid);
+
         void testRunFinished(int pid);
+
         void uncaughtException(int pid, String stackTrace);
     }
 

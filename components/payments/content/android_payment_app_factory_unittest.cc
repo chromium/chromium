@@ -68,7 +68,8 @@ class AndroidPaymentAppFactoryTest : public testing::Test {
 // loop - however the first call would end up deleting |this| and cause a UAF.
 TEST_F(AndroidPaymentAppFactoryTest, NullRenderFrameHost) {
   EXPECT_CALL(*delegate_, GetTwaPackageName)
-      .WillRepeatedly(RunOnceCallback<0>("com.example.app"));
+      .WillRepeatedly(
+          base::test::RunOnceCallbackRepeatedly<0>("com.example.app"));
 
   // In order to reach the problematic code, we need a null RenderFrameHost and
   // also to be in off the record mode.
@@ -146,7 +147,8 @@ class AndroidPaymentAppFactoryIntegrationTest : public testing::Test {
 TEST_F(AndroidPaymentAppFactoryIntegrationTest,
        FactoryReturnsErrorWithoutPaymentAppInstance) {
   EXPECT_CALL(*delegate_, GetTwaPackageName)
-      .WillRepeatedly(RunOnceCallback<0>("com.example.app"));
+      .WillRepeatedly(
+          base::test::RunOnceCallbackRepeatedly<0>("com.example.app"));
   base::RunLoop runloop;
   EXPECT_CALL(*delegate_, OnDoneCreatingPaymentApps()).WillOnce([&runloop] {
     runloop.Quit();
@@ -173,7 +175,8 @@ TEST_F(AndroidPaymentAppFactoryIntegrationTest, NoErrorsWhenNoApps) {
   auto scoped_initialization_ = support_->CreateScopedInitialization();
 
   EXPECT_CALL(*delegate_, GetTwaPackageName)
-      .WillRepeatedly(RunOnceCallback<0>("com.example.app"));
+      .WillRepeatedly(
+          base::test::RunOnceCallbackRepeatedly<0>("com.example.app"));
   base::RunLoop runloop;
   EXPECT_CALL(*delegate_, OnDoneCreatingPaymentApps()).WillOnce([&runloop] {
     runloop.Quit();
@@ -205,7 +208,8 @@ TEST_F(AndroidPaymentAppFactoryIntegrationTest,
   auto scoped_initialization_ = support_->CreateScopedInitialization();
 
   EXPECT_CALL(*delegate_, GetTwaPackageName)
-      .WillRepeatedly(RunOnceCallback<0>("com.example.app"));
+      .WillRepeatedly(
+          base::test::RunOnceCallbackRepeatedly<0>("com.example.app"));
   base::RunLoop runloop;
   EXPECT_CALL(*delegate_, OnDoneCreatingPaymentApps()).WillOnce([&runloop] {
     runloop.Quit();
@@ -251,7 +255,8 @@ TEST_F(AndroidPaymentAppFactoryIntegrationTest,
   delegate_->set_is_off_the_record();
 
   EXPECT_CALL(*delegate_, GetTwaPackageName)
-      .WillRepeatedly(RunOnceCallback<0>("com.example.app"));
+      .WillRepeatedly(
+          base::test::RunOnceCallbackRepeatedly<0>("com.example.app"));
   base::RunLoop runloop;
   EXPECT_CALL(*delegate_, OnDoneCreatingPaymentApps()).WillOnce([&runloop] {
     runloop.Quit();
@@ -295,7 +300,7 @@ TEST_F(AndroidPaymentAppFactoryIntegrationTest,
   auto scoped_initialization_ = support_->CreateScopedInitialization();
 
   EXPECT_CALL(*delegate_, GetTwaPackageName)
-      .WillRepeatedly(RunOnceCallback<0>("com.twa.app"));
+      .WillRepeatedly(base::test::RunOnceCallbackRepeatedly<0>("com.twa.app"));
   base::RunLoop runloop;
   EXPECT_CALL(*delegate_, OnDoneCreatingPaymentApps()).WillOnce([&runloop] {
     runloop.Quit();
@@ -336,7 +341,8 @@ TEST_F(AndroidPaymentAppFactoryIntegrationTest,
   auto scoped_initialization_ = support_->CreateScopedInitialization();
 
   EXPECT_CALL(*delegate_, GetTwaPackageName)
-      .WillRepeatedly(RunOnceCallback<0>("com.example.app"));
+      .WillRepeatedly(
+          base::test::RunOnceCallbackRepeatedly<0>("com.example.app"));
   base::RunLoop runloop;
   EXPECT_CALL(*delegate_, OnDoneCreatingPaymentApps()).WillOnce([&runloop] {
     runloop.Quit();
@@ -369,7 +375,8 @@ TEST_F(AndroidPaymentAppFactoryIntegrationTest, FindTheCorrectTwaAppInTwaMode) {
   auto scoped_initialization_ = support_->CreateScopedInitialization();
 
   EXPECT_CALL(*delegate_, GetTwaPackageName)
-      .WillRepeatedly(RunOnceCallback<0>("com.correct-twa.app"));
+      .WillRepeatedly(
+          base::test::RunOnceCallbackRepeatedly<0>("com.correct-twa.app"));
   base::RunLoop runloop;
   EXPECT_CALL(*delegate_, OnDoneCreatingPaymentApps()).WillOnce([&runloop] {
     runloop.Quit();
@@ -424,7 +431,7 @@ TEST_F(AndroidPaymentAppFactoryIntegrationTest, IgnoreNonTwaAppsInTwaMode) {
   auto scoped_initialization_ = support_->CreateScopedInitialization();
 
   EXPECT_CALL(*delegate_, GetTwaPackageName)
-      .WillRepeatedly(RunOnceCallback<0>("com.twa.app"));
+      .WillRepeatedly(base::test::RunOnceCallbackRepeatedly<0>("com.twa.app"));
   base::RunLoop runloop;
   EXPECT_CALL(*delegate_, OnDoneCreatingPaymentApps()).WillOnce([&runloop] {
     runloop.Quit();
@@ -458,7 +465,7 @@ TEST_F(AndroidPaymentAppFactoryIntegrationTest,
   auto scoped_initialization_ = support_->CreateScopedInitialization();
 
   EXPECT_CALL(*delegate_, GetTwaPackageName)
-      .WillRepeatedly(RunOnceCallback<0>(""));
+      .WillRepeatedly(base::test::RunOnceCallbackRepeatedly<0>(""));
   base::RunLoop runloop;
   EXPECT_CALL(*delegate_, OnDoneCreatingPaymentApps()).WillOnce([&runloop] {
     runloop.Quit();
@@ -487,7 +494,8 @@ TEST_F(AndroidPaymentAppFactoryIntegrationTest,
   delegate_->SetRequestedPaymentMethod(std::move(method_data));
 
   EXPECT_CALL(*delegate_, GetTwaPackageName)
-      .WillRepeatedly(RunOnceCallback<0>("com.example.app"));
+      .WillRepeatedly(
+          base::test::RunOnceCallbackRepeatedly<0>("com.example.app"));
   base::RunLoop runloop;
   EXPECT_CALL(*delegate_, OnDoneCreatingPaymentApps()).WillOnce([&runloop] {
     runloop.Quit();
@@ -511,7 +519,7 @@ TEST_F(AndroidPaymentAppFactoryIntegrationTest, IgnoreNonTwaMethodInTheTwa) {
   auto scoped_initialization_ = support_->CreateScopedInitialization();
 
   EXPECT_CALL(*delegate_, GetTwaPackageName)
-      .WillRepeatedly(RunOnceCallback<0>("com.twa.app"));
+      .WillRepeatedly(base::test::RunOnceCallbackRepeatedly<0>("com.twa.app"));
   base::RunLoop runloop;
   EXPECT_CALL(*delegate_, OnDoneCreatingPaymentApps()).WillOnce([&runloop] {
     runloop.Quit();
@@ -546,7 +554,7 @@ TEST_F(AndroidPaymentAppFactoryIntegrationTest,
   auto scoped_initialization_ = support_->CreateScopedInitialization();
 
   EXPECT_CALL(*delegate_, GetTwaPackageName)
-      .WillRepeatedly(RunOnceCallback<0>("com.twa.app"));
+      .WillRepeatedly(base::test::RunOnceCallbackRepeatedly<0>("com.twa.app"));
   base::RunLoop runloop;
   EXPECT_CALL(*delegate_, OnDoneCreatingPaymentApps()).WillOnce([&runloop] {
     runloop.Quit();
@@ -596,7 +604,8 @@ TEST_F(AndroidPaymentAppFactoryIntegrationTest,
   auto scoped_initialization_ = support_->CreateScopedInitialization();
 
   EXPECT_CALL(*delegate_, GetTwaPackageName)
-      .WillRepeatedly(RunOnceCallback<0>("com.example.app"));
+      .WillRepeatedly(
+          base::test::RunOnceCallbackRepeatedly<0>("com.example.app"));
   base::RunLoop runloop;
   EXPECT_CALL(*delegate_, OnDoneCreatingPaymentApps()).WillOnce([&runloop] {
     runloop.Quit();

@@ -17,6 +17,7 @@
 #import "base/task/thread_pool.h"
 #import "components/history/core/browser/history_constants.h"
 #import "components/optimization_guide/core/optimization_guide_constants.h"
+#import "ios/chrome/browser/shared/model/paths/paths.h"
 
 // Key for last stored time that size metrics of the documents directory were
 // logged.
@@ -188,12 +189,12 @@ void LogLibraryDirectorySize(scoped_refptr<base::SequencedTaskRunner>) {
 // Logs the optimization guide model downloads directory size. Accepts a task
 // runner as a parameter in order to keep it in scope throughout the execution.
 void LogOptimizationGuideModelDownloadsMetrics(
-    base::FilePath profile_path,
     scoped_refptr<base::SequencedTaskRunner>) {
   int items = 0;
 
-  base::FilePath models_dir = profile_path.Append(
-      optimization_guide::kOptimizationGuidePredictionModelDownloads);
+  base::FilePath models_dir =
+      base::PathService::CheckedGet(ios::DIR_USER_DATA)
+          .Append(optimization_guide::kOptimizationGuideModelStoreDirPrefix);
   if (base::PathExists(models_dir)) {
     int total_size_bytes = CalculateTotalSize(models_dir);
     UMA_HISTOGRAM_MEMORY_MEDIUM_MB(
@@ -325,8 +326,8 @@ void LogApplicationStorageMetrics(base::FilePath profile_path,
   task_runner->PostTask(FROM_HERE,
                         base::BindOnce(&LogLibraryDirectorySize, task_runner));
   task_runner->PostTask(
-      FROM_HERE, base::BindOnce(&LogOptimizationGuideModelDownloadsMetrics,
-                                profile_path, task_runner));
+      FROM_HERE,
+      base::BindOnce(&LogOptimizationGuideModelDownloadsMetrics, task_runner));
   task_runner->PostTask(FROM_HERE, base::BindOnce(&LogTmpDirectorySizes,
                                                   profile_path, task_runner));
   task_runner->PostTask(FROM_HERE, base::BindOnce(&LogWebsiteLocalDataSize,

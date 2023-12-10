@@ -5,12 +5,13 @@
 #ifndef CHROME_BROWSER_UI_WEB_APPLICATIONS_DIAGNOSTICS_WEB_APP_ICON_DIAGNOSTIC_H_
 #define CHROME_BROWSER_UI_WEB_APPLICATIONS_DIAGNOSTICS_WEB_APP_ICON_DIAGNOSTIC_H_
 
+#include <optional>
+
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "components/webapps/common/web_app_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 
@@ -44,7 +45,7 @@ class WebAppIconDiagnostic {
   WebAppIconDiagnostic(Profile* profile, webapps::AppId app_id);
   ~WebAppIconDiagnostic();
 
-  void Run(base::OnceCallback<void(absl::optional<Result>)> result_callback);
+  void Run(base::OnceCallback<void(std::optional<Result>)> result_callback);
 
  private:
   base::WeakPtr<WebAppIconDiagnostic> GetWeakPtr();
@@ -70,10 +71,10 @@ class WebAppIconDiagnostic {
   const raw_ptr<WebAppProvider> provider_;
   const raw_ptr<const WebApp> app_;
 
-  absl::optional<SquareSizePx> icon_size_;
+  std::optional<SquareSizePx> icon_size_;
 
-  absl::optional<Result> result_;
-  base::OnceCallback<void(absl::optional<Result>)> result_callback_;
+  std::optional<Result> result_;
+  base::OnceCallback<void(std::optional<Result>)> result_callback_;
 
   base::WeakPtrFactory<WebAppIconDiagnostic> weak_ptr_factory_{this};
 };

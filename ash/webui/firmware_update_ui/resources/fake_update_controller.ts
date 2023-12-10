@@ -35,9 +35,9 @@ export class FakeUpdateController implements FakeInstallControllerInterface {
   }
 
   /*
-   * Implements InstallControllerInterface.addObserver.
+   * Implements InstallControllerInterface.addUpdateProgressObserver.
    */
-  addObserver(remote: UpdateProgressObserverRemote): void {
+  addUpdateProgressObserver(remote: UpdateProgressObserverRemote): void {
     this.isUpdateInProgress = true;
     this.updateCompletedPromise = new PromiseResolver();
     this.startUpdatePromise = this.observeWithArg(

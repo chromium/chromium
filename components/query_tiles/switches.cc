@@ -21,11 +21,11 @@ BASE_FEATURE(kQueryTilesRemoveTrendingTilesAfterInactivity,
 
 BASE_FEATURE(kQueryTilesSegmentation,
              "QueryTilesSegmentation",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kQueryTilesDisableCountryOverride,
              "QueryTilesDisableCountryOverride",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kQueryTilesOnStart,
              "QueryTilesOnStart",

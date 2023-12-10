@@ -67,7 +67,7 @@ bool BrowserLoader::WillLoadStatefulComponentBuilds() {
 
   // If the lacros selection is forced by the user or by policy to rootfs it
   // will always be loaded and stateful component manager builds are ignored.
-  absl::optional<browser_util::LacrosSelection> lacros_selection =
+  std::optional<browser_util::LacrosSelection> lacros_selection =
       browser_util::DetermineLacrosSelection();
   if (lacros_selection == browser_util::LacrosSelection::kRootfs) {
     return false;
@@ -124,7 +124,7 @@ void BrowserLoader::Load(LoadCompletionCallback callback) {
   // If the LacrosSelection policy or the user have specified to force using
   // stateful or rootfs lacros-chrome binary, force the selection. Otherwise,
   // load the newest available binary.
-  if (absl::optional<browser_util::LacrosSelection> lacros_selection =
+  if (std::optional<browser_util::LacrosSelection> lacros_selection =
           browser_util::DetermineLacrosSelection()) {
     // TODO(crbug.com/1293250): We should check the version compatibility here,
     // too.

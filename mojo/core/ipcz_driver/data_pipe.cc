@@ -11,6 +11,7 @@
 #include <limits>
 #include <tuple>
 
+#include <optional>
 #include "base/check.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/unsafe_shared_memory_region.h"
@@ -18,7 +19,6 @@
 #include "base/synchronization/lock.h"
 #include "mojo/core/ipcz_api.h"
 #include "mojo/core/ipcz_driver/ring_buffer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/ipcz/include/ipcz/ipcz.h"
 
 namespace mojo::core::ipcz_driver {
@@ -140,7 +140,7 @@ DataPipe::~DataPipe() {
 }
 
 // static
-absl::optional<DataPipe::Pair> DataPipe::CreatePair(const Config& config) {
+std::optional<DataPipe::Pair> DataPipe::CreatePair(const Config& config) {
   ScopedIpczHandle producer;
   ScopedIpczHandle consumer;
   const IpczResult result =
@@ -152,12 +152,12 @@ absl::optional<DataPipe::Pair> DataPipe::CreatePair(const Config& config) {
   base::UnsafeSharedMemoryRegion consumer_region =
       base::UnsafeSharedMemoryRegion::Create(config.byte_capacity);
   if (!consumer_region.IsValid()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   base::UnsafeSharedMemoryRegion producer_region = consumer_region.Duplicate();
   if (!producer_region.IsValid()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   scoped_refptr<SharedBuffer> consumer_buffer =
@@ -169,7 +169,7 @@ absl::optional<DataPipe::Pair> DataPipe::CreatePair(const Config& config) {
   auto producer_mapping =
       SharedBufferMapping::Create(producer_buffer->region());
   if (!consumer_mapping || !producer_mapping) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   Pair pair;

@@ -6,7 +6,9 @@
 #define IOS_CHROME_BROWSER_COMMERCE_MODEL_SHOPPING_PERSISTED_DATA_TAB_HELPER_H_
 
 #import <Foundation/Foundation.h>
+
 #include <map>
+#include <optional>
 
 #include "base/time/time.h"
 #include "components/commerce/core/proto/price_tracking.pb.h"
@@ -49,9 +51,9 @@ class ShoppingPersistedDataTabHelper
 
    private:
     friend class ShoppingPersistedDataTabHelper;
-    friend class GridMediatorTestClass;
+    friend class BaseGridMediatorWithPriceDropIndicatorsTest;
     // Offer ID for the price drop
-    absl::optional<int64_t> offer_id;
+    std::optional<int64_t> offer_id;
     // URL corresponding to the price drop.
     GURL url;
     // Time price drop was acquired.
@@ -69,7 +71,7 @@ class ShoppingPersistedDataTabHelper
   SEQUENCE_CHECKER(sequence_checker_);
   friend class web::WebStateUserData<ShoppingPersistedDataTabHelper>;
   friend class ShoppingPersistedDataTabHelperTest;
-  friend class GridMediatorTestClass;
+  friend class BaseGridMediatorWithPriceDropIndicatorsTest;
 
   explicit ShoppingPersistedDataTabHelper(web::WebState* web_state);
 
@@ -105,7 +107,7 @@ class ShoppingPersistedDataTabHelper
   // `price_drop_`.
   void ParseProto(
       const GURL& url,
-      const absl::optional<commerce::PriceTrackingData>& price_metadata);
+      const std::optional<commerce::PriceTrackingData>& price_metadata);
 
   // Resets `price_drop_` when it is determined to no longer be valid.
   void ResetPriceDrop();

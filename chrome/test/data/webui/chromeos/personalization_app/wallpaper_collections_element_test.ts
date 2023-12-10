@@ -541,6 +541,30 @@ suite('WallpaperCollectionsElementTest', function() {
         'time of day is in promoted tiles');
   });
 
+  test('shows single promoted tile section for SeaPen', async () => {
+    loadTimeData.overrideValues(
+        {isSeaPenEnabled: true, isTimeOfDayWallpaperEnabled: false});
+    wallpaperCollectionsElement = initElement(WallpaperCollectionsElement);
+    await waitAfterNextRender(wallpaperCollectionsElement);
+
+    const loadingTiles =
+        wallpaperCollectionsElement.shadowRoot!
+            .querySelectorAll<WallpaperGridItemElement>(
+                `${WallpaperGridItemElement.is}[data-is-promoted-tile]`);
+    assertEquals(1, loadingTiles.length, 'expected single loading tile');
+
+    await loadWallpapers(/* isTimeOfDayWallpaperEnabled= */ false);
+
+    const promotedTiles =
+        wallpaperCollectionsElement.shadowRoot!
+            .querySelectorAll<WallpaperGridItemElement>(
+                `${WallpaperGridItemElement.is}[data-is-promoted-tile]`);
+    assertEquals(1, promotedTiles.length, 'expected single promoted tile');
+    assertTrue(
+        promotedTiles[0]!.hasAttribute('data-sea-pen'),
+        'expected sea pen promoted tile');
+  });
+
   test('shows time of day tile once', async () => {
     loadTimeData.overrideValues(
         {isSeaPenEnabled: true, isTimeOfDayWallpaperEnabled: true});

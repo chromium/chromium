@@ -52,4 +52,7 @@ void FakeFwupdClient::InstallUpdate(const std::string& device_id,
     observer.OnInstallResponse(install_success_);
 }
 
+// Implement stub method to satisfy interface.
+void FakeFwupdClient::SetFwupdFeatureFlags() {}
+
 }  // namespace ash

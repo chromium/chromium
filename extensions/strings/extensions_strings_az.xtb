@@ -8,6 +8,7 @@
 <translation id="1420684932347524586">Təsadüfi RSA şəxsi kilidini yaratmaq alınmadı.</translation>
 <translation id="1445572445564823378">Bu artırma yavaşlaşır <ph name="PRODUCT_NAME" />. <ph name="PRODUCT_NAME" /> məhsulunun performansını bərpa etmək üçün onu deaktiv etməlisiniz.</translation>
 <translation id="1468038450257740950">WebGL dəstəklənmir.</translation>
+<translation id="1610570795592207282">Skript üçün css "<ph name="RELATIVE_PATH" />" yüklənmədi.</translation>
 <translation id="1803557475693955505">'<ph name="BACKGROUND_PAGE" />' arxa fon səhifəsini yükləmək alınmadı.</translation>
 <translation id="2159915644201199628">Təsviri deşifrələmək olmadı: '<ph name="IMAGE_NAME" />'</translation>
 <translation id="2350172092385603347">Lokalizasiya işlənir, lakin defolt default_locale manifestdə göstərilməyib.</translation>
@@ -18,14 +19,12 @@
 <translation id="3115238746683532089"><ph name="VENDOR_ID" /> vendorundan naməlum <ph name="PRODUCT_ID" /> məhsulu  (seriya nömrəsi <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">Crx faylını əvəz etmək alınmadı. Faylın istifadədə olduğunu yoxlayın.</translation>
 <translation id="3163201441334626963"><ph name="VENDOR_ID" /> vendorundan naməlum <ph name="PRODUCT_ID" /> məhsulu</translation>
-<translation id="3302709122321372472">Kontent skript üçün '<ph name="RELATIVE_PATH" />' css endirilə bilmədi.</translation>
 <translation id="3369521687965833290">Artırmanı paketdən çıxarmaq olmur.</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (seriya nömrəsi <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="VENDOR_ID" /> <ph name="PRODUCT_NAME" /> vendordan (seriya nömrəsi <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Şəxsi açar üçün giriş dəyəri düzgün yol olmalıdır.</translation>
 <translation id="388442998277590542">'<ph name="OPTIONS_PAGE" />' variantlar səhifəsini yükləmək olmadı.</translation>
 <translation id="3984413272403535372">Artırmaya daxil olarkən xəta baş verdi.</translation>
-<translation id="39964277676607559">'<ph name="RELATIVE_PATH" />' java skriptini kontent skripti üçün yükləmək olmadı.</translation>
 <translation id="4115165561519362854">Bu cihazın administratoru <ph name="EXTENSION_NAME" /> artırmasının minimum <ph name="EXTENSION_VERSION" /> versiyasına malik olmasını tələb edir.</translation>
 <translation id="4233778200880751280">'<ph name="ABOUT_PAGE" />' səhifəsi haqqında endirmək alınmadı.</translation>
 <translation id="471800408830181311">Gizli açar çıxışı uğursuz oldu.</translation>
@@ -33,6 +32,7 @@
 <translation id="4988792151665380515">İctimai açarı eksport etmək alınmadı.</translation>
 <translation id="5026754133087629784">Veb baxış: <ph name="WEBVIEW_TAG_NAME" /></translation>
 <translation id="5098647635849512368">Paketə istiqamət üçün mütləq yol tapmaq olmur</translation>
+<translation id="5160071981665899014">Skript üçün JavaScript "<ph name="RELATIVE_PATH" />" yüklənmədi.</translation>
 <translation id="5356315618422219272">Tətbiqə baxış: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5436430103864390185">Fiqurlu pəncərələr dəstəklənmir.</translation>
 <translation id="5456409301717116725">Bu artırma <ph name="KEY_PATH" /> açar faylını içərir.</translation>

@@ -12,9 +12,7 @@ import androidx.preference.PreferenceDialogFragmentCompat;
 
 import org.chromium.chrome.browser.download.R;
 
-/**
- * The dialog used to display the download directory preference choices.
- */
+/** The dialog used to display the download directory preference choices. */
 public class DownloadLocationPreferenceDialog extends PreferenceDialogFragmentCompat {
     public static final String TAG = "DownloadLocationPreferenceDialog";
 

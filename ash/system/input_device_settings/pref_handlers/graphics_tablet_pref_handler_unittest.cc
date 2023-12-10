@@ -12,6 +12,7 @@
 #include "ash/system/input_device_settings/input_device_settings_pref_names.h"
 #include "ash/system/input_device_settings/input_device_settings_utils.h"
 #include "ash/test/ash_test_base.h"
+#include "base/strings/strcat.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -161,12 +162,12 @@ TEST_F(GraphicsTabletPrefHandlerTest,
   known_user().SetPath(
       account_id_1,
       prefs::kGraphicsTabletLoginScreenTabletButtonRemappingListPref,
-      absl::optional<base::Value>(ConvertButtonRemappingArrayToList(
+      std::optional<base::Value>(ConvertButtonRemappingArrayToList(
           tablet_button_remappings,
           mojom::CustomizationRestriction::kAllowCustomizations)));
   known_user().SetPath(
       account_id_1, prefs::kGraphicsTabletLoginScreenPenButtonRemappingListPref,
-      absl::optional<base::Value>(ConvertButtonRemappingArrayToList(
+      std::optional<base::Value>(ConvertButtonRemappingArrayToList(
           pen_button_remappings,
           mojom::CustomizationRestriction::kAllowCustomizations)));
 
@@ -237,6 +238,58 @@ TEST_F(GraphicsTabletPrefHandlerTest, UpdateLoginScreenGraphicsTabletSettings) {
   ASSERT_EQ(0u, updated_pen_button_remapping_list->size());
 }
 
+TEST_F(GraphicsTabletPrefHandlerTest, LastUpdated) {
+  std::vector<mojom::ButtonRemappingPtr> tablet_button_remappings1;
+  std::vector<mojom::ButtonRemappingPtr> pen_button_remappings1;
+  tablet_button_remappings1.push_back(button_remapping1.Clone());
+  tablet_button_remappings1.push_back(button_remapping2.Clone());
+  pen_button_remappings1.push_back(button_remapping2.Clone());
+
+  const mojom::GraphicsTabletSettings kGraphicsTabletSettings1(
+      /*tablet_button_remappings=*/mojo::Clone(tablet_button_remappings1),
+      /*pen_button_remappings=*/mojo::Clone(pen_button_remappings1));
+
+  CallUpdateGraphicsTabletSettings(kGraphicsTabletKey1,
+                                   kGraphicsTabletSettings1);
+
+  auto time_stamp_path =
+      base::StrCat({prefs::kLastUpdatedKey, ".", kGraphicsTabletKey1});
+  auto* pen_button_remapping_time_stamp =
+      pref_service_->GetDict(prefs::kGraphicsTabletPenButtonRemappingsDictPref)
+          .FindByDottedPath(time_stamp_path);
+  auto* tablet_button_remapping_time_stamp =
+      pref_service_
+          ->GetDict(prefs::kGraphicsTabletTabletButtonRemappingsDictPref)
+          .FindByDottedPath(time_stamp_path);
+  ASSERT_NE(nullptr, tablet_button_remapping_time_stamp);
+  ASSERT_NE(nullptr, pen_button_remapping_time_stamp);
+
+  std::vector<mojom::ButtonRemappingPtr> tablet_button_remappings2;
+  std::vector<mojom::ButtonRemappingPtr> pen_button_remappings2;
+
+  const mojom::GraphicsTabletSettings kGraphicsTabletSettings2(
+      /*tablet_button_remappings=*/mojo::Clone(tablet_button_remappings2),
+      /*pen_button_remappings=*/mojo::Clone(pen_button_remappings2));
+
+  // Update settings will update the time stamp.
+  CallUpdateGraphicsTabletSettings(kGraphicsTabletKey1,
+                                   kGraphicsTabletSettings2);
+
+  auto* updated_pen_button_remapping_time_stamp =
+      pref_service_->GetDict(prefs::kGraphicsTabletPenButtonRemappingsDictPref)
+          .FindByDottedPath(time_stamp_path);
+  auto* updated_tablet_button_remapping_time_stamp =
+      pref_service_
+          ->GetDict(prefs::kGraphicsTabletTabletButtonRemappingsDictPref)
+          .FindByDottedPath(time_stamp_path);
+  ASSERT_NE(nullptr, updated_tablet_button_remapping_time_stamp);
+  ASSERT_NE(nullptr, updated_pen_button_remapping_time_stamp);
+  ASSERT_NE(tablet_button_remapping_time_stamp,
+            updated_tablet_button_remapping_time_stamp);
+  ASSERT_NE(pen_button_remapping_time_stamp,
+            updated_pen_button_remapping_time_stamp);
+}
+
 TEST_F(GraphicsTabletPrefHandlerTest, UpdateSettings) {
   std::vector<mojom::ButtonRemappingPtr> tablet_button_remappings1;
   std::vector<mojom::ButtonRemappingPtr> pen_button_remappings1;
@@ -265,7 +318,8 @@ TEST_F(GraphicsTabletPrefHandlerTest, UpdateSettings) {
   // Verify tablet button remapping pref dicts.
   const auto& tablet_button_remappings_dict = pref_service_->GetDict(
       prefs::kGraphicsTabletTabletButtonRemappingsDictPref);
-  ASSERT_EQ(2u, tablet_button_remappings_dict.size());
+  // A dict of last updated time stamps is added.
+  ASSERT_EQ(3u, tablet_button_remappings_dict.size());
   auto* graphics_tablet1_tablet_button_remappings =
       tablet_button_remappings_dict.FindList(kGraphicsTabletKey1);
   ASSERT_NE(nullptr, graphics_tablet1_tablet_button_remappings);
@@ -278,7 +332,8 @@ TEST_F(GraphicsTabletPrefHandlerTest, UpdateSettings) {
   // Verify pen button remapping pref dicts.
   const auto& pen_button_remappings_dict =
       pref_service_->GetDict(prefs::kGraphicsTabletPenButtonRemappingsDictPref);
-  ASSERT_EQ(2u, pen_button_remappings_dict.size());
+  // A dict of last updated time stamps is added.
+  ASSERT_EQ(3u, pen_button_remappings_dict.size());
   auto* graphics_tablet1_pen_button_remappings =
       pen_button_remappings_dict.FindList(kGraphicsTabletKey1);
   ASSERT_NE(nullptr, graphics_tablet1_pen_button_remappings);

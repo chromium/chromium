@@ -339,7 +339,7 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
   (*s_allowlist)[::prefs::kHttpsOnlyModeEnabled] =
       settings_api::PrefType::kBoolean;
   (*s_allowlist)[::kGeneratedHttpsFirstModePref] =
-      settings_api::PrefType::kBoolean;
+      settings_api::PrefType::kNumber;
 
   // Cookies page
   (*s_allowlist)[::prefs::kCookieControlsMode] =
@@ -695,7 +695,7 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::kBoolean;
   (*s_allowlist)[ash::prefs::kAccessibilitySelectToSpeakWordHighlight] =
       settings_api::PrefType::kBoolean;
-  (*s_allowlist)[ash::prefs::kAccessibilityFaceTrackingEnabled] =
+  (*s_allowlist)[ash::prefs::kAccessibilityFaceGazeEnabled] =
       settings_api::PrefType::kBoolean;
 
   // Text to Speech.
@@ -975,8 +975,8 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::kBoolean;
   (*s_allowlist)[ash::prefs::kUserSpeakOnMuteDetectionEnabled] =
       settings_api::PrefType::kBoolean;
-  (*s_allowlist)[ash::prefs::kUserGeolocationAllowed] =
-      settings_api::PrefType::kBoolean;
+  (*s_allowlist)[ash::prefs::kUserGeolocationAccessLevel] =
+      settings_api::PrefType::kNumber;
 #else
   // System settings.
   (*s_allowlist)[::prefs::kBackgroundModeEnabled] =

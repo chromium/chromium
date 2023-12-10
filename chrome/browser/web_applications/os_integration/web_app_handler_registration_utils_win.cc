@@ -4,6 +4,7 @@
 
 #include "chrome/browser/web_applications/os_integration/web_app_handler_registration_utils_win.h"
 
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -327,9 +328,9 @@ void CheckAndUpdateExternalInstallations(const base::FilePath& cur_profile_path,
     std::wstring external_installation_extension =
         GetAppNameExtensionForProfile(external_installation_profile_path);
     updated_name = std::wstring(
-        base::WStringPiece(external_installation_name.c_str(),
-                           external_installation_name.size() -
-                               external_installation_extension.size()));
+        std::wstring_view(external_installation_name.c_str(),
+                          external_installation_name.size() -
+                              external_installation_extension.size()));
     updated_extension = std::wstring();
   }
 

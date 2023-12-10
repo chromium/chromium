@@ -42,14 +42,14 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_model.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
-#import "ios/chrome/browser/signin/authentication_service.h"
-#import "ios/chrome/browser/signin/authentication_service_factory.h"
-#import "ios/chrome/browser/signin/chrome_account_manager_service.h"
-#import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
-#import "ios/chrome/browser/signin/chrome_account_manager_service_observer_bridge.h"
-#import "ios/chrome/browser/signin/identity_manager_factory.h"
-#import "ios/chrome/browser/signin/system_identity.h"
-#import "ios/chrome/browser/signin/system_identity_manager.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
+#import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
+#import "ios/chrome/browser/signin/model/chrome_account_manager_service_observer_bridge.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
+#import "ios/chrome/browser/signin/model/system_identity.h"
+#import "ios/chrome/browser/signin/model/system_identity_manager.h"
 #import "ios/chrome/browser/sync/model/sync_observer_bridge.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/ui/authentication/authentication_ui_util.h"
@@ -958,7 +958,10 @@ constexpr CGFloat kErrorSymbolSize = 22.;
       syncer::TrustedVaultUserActionTriggerForUMA::kSettings;
   [self.applicationCommandsHandler
       showTrustedVaultReauthForFetchKeysFromViewController:self
-                                                   trigger:trigger];
+                                                   trigger:trigger
+                                               accessPoint:
+                                                   AccessPoint::
+                                                       ACCESS_POINT_SETTINGS];
 }
 
 // Opens the trusted vault reauth dialog for degraded recoverability.
@@ -967,8 +970,10 @@ constexpr CGFloat kErrorSymbolSize = 22.;
       syncer::TrustedVaultUserActionTriggerForUMA::kSettings;
   [self.applicationCommandsHandler
       showTrustedVaultReauthForDegradedRecoverabilityFromViewController:self
-                                                                trigger:
-                                                                    trigger];
+                                                                trigger:trigger
+                                                            accessPoint:
+                                                                AccessPoint::
+                                                                    ACCESS_POINT_SETTINGS];
 }
 
 // Opens the passphrase dialog.

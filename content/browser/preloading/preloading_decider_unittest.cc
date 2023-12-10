@@ -56,15 +56,8 @@ class TestPrefetchService : public PrefetchService {
     ASSERT_LT(index, prefetches_.size());
     ASSERT_TRUE(prefetches_[index]);
     base::WeakPtr<PrefetchContainer> prefetch_container = prefetches_[index];
-    std::unique_ptr<PrefetchContainer> owned_prefetch_container =
-        prefetch_container->GetPrefetchDocumentManager()
-            ->ReleasePrefetchContainer(prefetch_container->GetURL());
     prefetches_.erase(prefetches_.begin() + index);
-    PreloadingDecider::GetForCurrentDocument(
-        RenderFrameHost::FromID(
-            prefetch_container->GetReferringRenderFrameHostId()))
-        ->OnPreloadDiscarded({prefetch_container->GetURL(),
-                              blink::mojom::SpeculationAction::kPrefetch});
+    ResetPrefetch(prefetch_container);
   }
 
   std::vector<base::WeakPtr<PrefetchContainer>> prefetches_;
@@ -174,11 +167,6 @@ enum class EventType {
 
 class PreloadingDeciderTest : public RenderViewHostTestHarness {
  public:
-  PreloadingDeciderTest() {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kPrefetchUseContentRefactor,
-        {{"proxy_host", "https://testproxyhost.com"}});
-  }
   void SetUp() override {
     RenderViewHostTestHarness::SetUp();
 
@@ -196,9 +184,16 @@ class PreloadingDeciderTest : public RenderViewHostTestHarness {
         prefetch_service_.get());
   }
   void TearDown() override {
+    // The PrefetchService we created for the test contains a
+    // PrefetchOriginProber, which holds a raw pointer to the BrowserContext.
+    // When tearing down, it's important to free our PrefetchService
+    // before freeing the BrowserContext, to avoid any chance of a use after
+    // free.
+    PrefetchDocumentManager::SetPrefetchServiceForTesting(nullptr);
+    prefetch_service_.reset();
+
     web_contents_.reset();
     browser_context_.reset();
-    PrefetchDocumentManager::SetPrefetchServiceForTesting(nullptr);
     RenderViewHostTestHarness::TearDown();
   }
 
@@ -221,7 +216,6 @@ class PreloadingDeciderTest : public RenderViewHostTestHarness {
   std::unique_ptr<TestBrowserContext> browser_context_;
   std::unique_ptr<TestWebContents> web_contents_;
   std::unique_ptr<TestPrefetchService> prefetch_service_;
-  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<test::ScopedPrerenderWebContentsDelegate>
       web_contents_delegate_;
 };
@@ -800,9 +794,6 @@ TEST_P(PreloadingDeciderWithParameterizedSpeculationActionTest,
 // Tests that candidate removal causes a prefetch to be destroyed, and that
 // a reinserted candidate with the same url is re-processed.
 TEST_F(PreloadingDeciderTest, ProcessCandidates_EagerCandidateRemoval) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({::features::kPrefetchNewLimits}, {});
-
   auto* preloading_decider =
       PreloadingDecider::GetOrCreateForCurrentDocument(&GetPrimaryMainFrame());
   ASSERT_TRUE(preloading_decider);
@@ -852,9 +843,6 @@ TEST_F(PreloadingDeciderTest, ProcessCandidates_EagerCandidateRemoval) {
 // Tests that candidate removal works correctly for non-eager candidates, and
 // that a non-eager candidate is reprocessed correctly after re-insertion.
 TEST_F(PreloadingDeciderTest, ProcessCandidates_NonEagerCandidateRemoval) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({::features::kPrefetchNewLimits}, {});
-
   auto* preloading_decider =
       PreloadingDecider::GetOrCreateForCurrentDocument(&GetPrimaryMainFrame());
   ASSERT_TRUE(preloading_decider);
@@ -916,9 +904,6 @@ TEST_F(PreloadingDeciderTest, ProcessCandidates_NonEagerCandidateRemoval) {
 // URL.
 TEST_F(PreloadingDeciderTest,
        ProcessCandidates_SecondCandidateWithSameUrlKeepsPrefetchAlive) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({::features::kPrefetchNewLimits}, {});
-
   auto* preloading_decider =
       PreloadingDecider::GetOrCreateForCurrentDocument(&GetPrimaryMainFrame());
   ASSERT_TRUE(preloading_decider);

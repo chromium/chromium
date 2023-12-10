@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="cs">
 <translation id="1075622780330595106">Tento počet vašich karet v poslední době nebyl použit: <ph name="NUMBER_OF_TABS" />. Chcete je zavřít?</translation>
+<translation id="1155815720264022949">Chcete zavřít staré karty?</translation>
 <translation id="1215127405478249895">Zkontrolovat karty</translation>
 <translation id="125153950246128346">Další kartu zobrazíte klepnutím</translation>
 <translation id="1499635324672558517">Zavřít všechny anonymní karty?</translation>
@@ -46,9 +47,11 @@
 <translation id="5073204694187207510">Skrýt celoobrazovkovou mřížku</translation>
 <translation id="5076161749301278626">Zobrazit recenze obchodu?</translation>
 <translation id="5082793167783849073">Rychle stránky porovnejte tím, že vytvoříte skupinu. Chcete-li začít, podržte odkaz.</translation>
+<translation id="5303274951032363933">{TABS_COUNT,plural, =1{Máte <ph name="TABS_COUNT_ONE" /> kartu, se kterou jste delší dobu nepracovali}few{Máte <ph name="TABS_COUNT_MANY" /> karty, se kterými jste delší dobu nepracovali}many{Máte <ph name="TABS_COUNT_MANY" /> karty, se kterými jste delší dobu nepracovali}other{Máte <ph name="TABS_COUNT_MANY" /> karet, se kterými jste delší dobu nepracovali}}</translation>
 <translation id="5339733443032484186">Vaše poslední karta</translation>
 <translation id="5490235265819901748">Skupina byla rozbalena</translation>
 <translation id="5494920125229734069">Vybrat vše</translation>
+<translation id="5545379293264651575">Zavřít bez kontroly</translation>
 <translation id="5556417849629758491">Zobrazit informace o obchodu, možnost dostupná v horní části obrazovky</translation>
 <translation id="5558362125926932819">Zavřít skupinu karet s <ph name="NUMBER_OF_TABS" /> kartami</translation>
 <translation id="5580090775658607195">Seskupené karty: <ph name="TAB_COUNT" /></translation>
@@ -85,7 +88,6 @@
 <translation id="7885132941432959125">Přesunout kartu doprava</translation>
 <translation id="7966321538264951561">Zavřít návrhy.</translation>
 <translation id="8029301326595421733">Informace o této prodejně jsou otevřeny na celou výšku</translation>
-<translation id="814503310257431685">Zobrazit vše</translation>
 <translation id="8205266828577616993">Posunout kartu nahoru</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Zavřít <ph name="TABS_COUNT_ONE" /> vybranou kartu}few{Zavřít <ph name="TABS_COUNT_MANY" /> vybrané karty}many{Zavřít <ph name="TABS_COUNT_MANY" /> vybrané karty}other{Zavřít <ph name="TABS_COUNT_MANY" /> vybraných karet}}</translation>
 <translation id="8398929769197326728">Nová složka – <ph name="CURRENT_TIMESTAMP_MS" /></translation>

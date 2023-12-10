@@ -36,8 +36,7 @@ void WaitForOmniboxSuggestion(NSString* suggestion, int section, int row) {
                                      grey_descendant(
                                          grey_accessibilityLabel(suggestion)),
                                      grey_accessibilityID(accessibilityID),
-                                     grey_kindOfClassName(
-                                         @"OmniboxPopupRowCell"),
+                                     chrome_test_util::OmniboxPopupRow(),
                                      grey_sufficientlyVisible(), nil)]
         assertWithMatcher:grey_sufficientlyVisible()
                     error:&error];

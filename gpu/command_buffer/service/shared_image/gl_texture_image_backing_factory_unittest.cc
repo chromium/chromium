@@ -221,9 +221,8 @@ TEST_F(GLTextureImageBackingFactoryTest, TexImageTexStorageEquivalence) {
       continue;
     }
 
-    GLFormatDesc format_desc = ToGLFormatDesc(
-        format, /*plane_index=*/0,
-        feature_info->feature_flags().angle_rgbx_internal_format);
+    GLFormatCaps caps(feature_info.get());
+    GLFormatDesc format_desc = caps.ToGLFormatDesc(format, /*plane_index=*/0);
     int storage_format = format_desc.storage_internal_format;
     int image_gl_format = format_desc.data_format;
     int storage_gl_format =

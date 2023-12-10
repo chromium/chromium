@@ -35,8 +35,8 @@ void FakeModelConfigLoader::RemoveObserver(Observer* const observer) {
 void FakeModelConfigLoader::NotifyObserver(Observer* const observer) {
   DCHECK(observer);
   observer->OnModelConfigLoaded(is_model_config_valid_
-                                    ? absl::optional<ModelConfig>(model_config_)
-                                    : absl::nullopt);
+                                    ? std::optional<ModelConfig>(model_config_)
+                                    : std::nullopt);
 }
 
 }  // namespace auto_screen_brightness

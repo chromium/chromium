@@ -62,13 +62,13 @@ class AuxiliarySearchProvider : public KeyedService {
   FRIEND_TEST_ALL_PREFIXES(AuxiliarySearchProviderBrowserTest, NativeTabTest);
   FRIEND_TEST_ALL_PREFIXES(AuxiliarySearchProviderBrowserTest, FilterTabsTest);
 
-  using NonSensitiveTabsCallback =
-      base::OnceCallback<void(std::unique_ptr<std::vector<TabAndroid*>>)>;
+  using NonSensitiveTabsCallback = base::OnceCallback<void(
+      std::unique_ptr<std::vector<base::WeakPtr<TabAndroid>>>)>;
 
   auxiliary_search::AuxiliarySearchBookmarkGroup GetBookmarks(
       bookmarks::BookmarkModel* model) const;
 
-  static std::vector<TabAndroid*> FilterTabsByScheme(
+  static std::vector<base::WeakPtr<TabAndroid>> FilterTabsByScheme(
       const std::vector<TabAndroid*>& tabs);
 
   void GetNonSensitiveTabsInternal(const std::vector<TabAndroid*>& all_tabs,

@@ -2,11 +2,14 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ka">
 <translation id="1178581264944972037">პაუზა</translation>
-<translation id="2558806128245168542">გადასვლა უკან</translation>
-<translation id="3523426587027570423">შეეხეთ „ამ გვერდის მოსმენის“ დასახურად.</translation>
+<translation id="1921351128855867012">წინ გადახვევა <ph name="NUMBER_OF_SECONDS" /> წამით</translation>
+<translation id="1984328900355667246">დაკვრა მიუწვდომელია</translation>
+<translation id="3023502830214299618">სამწუხაროდ, დაკვრა ამჟამად მიუწვდომელია ამ გვერდისთვის. ცადეთ მოგვიანებით.</translation>
+<translation id="3807208219231826020">სკრაბინგით დაკვრა</translation>
+<translation id="385051799172605136">უკან</translation>
 <translation id="4431240646217225907">ტექსტის გამოყოფა და ავტომატური გადაადგილება</translation>
 <translation id="4654641641922242357">„ამ გვერდის მოსმენის“ დამკვრელი.</translation>
-<translation id="4731877163452936634">დაკვრის სიჩქარე: <ph name="PLAYBACK_SPEED" />. დააწკაპუნეთ შესაცვლელად.</translation>
+<translation id="4872475766448853257">უკან გადახვევა <ph name="NUMBER_OF_SECONDS" /> წამით</translation>
 <translation id="5234971936051226002">„ამ გვერდის მოსმენის“ დამკვრელი ჩაკეცილია.</translation>
 <translation id="5596627076506792578">დამატებითი ვარიანტები</translation>
 <translation id="6315170314923504164">ხმა</translation>
@@ -15,8 +18,8 @@
 <translation id="6831043979455480757">თარგმნა</translation>
 <translation id="6846298663435243399">იტვირთება…</translation>
 <translation id="7587250070160020374">Chrome ახლა უკრავს</translation>
-<translation id="7945822420239537236">წინ გადახვევა <ph name="NUMBER_OF_SECONDS" /> წამით</translation>
-<translation id="7972866381678406344">უკან გადახვევა <ph name="NUMBER_OF_SECONDS" /> წამით</translation>
 <translation id="8136852699834914183">დაკვრა მიუწვდომელია ამ გვერდისთვის.</translation>
+<translation id="8264989794233974275">სიჩქარის <ph name="PLAYBACK_SPEED" />-ჯერ გაზრდა/შემცირება.</translation>
+<translation id="8407011429883244666">დამკვრელის დახურვა.</translation>
 <translation id="8953618380150219653">„ამ გვერდის მოსმენის“ დამკვრელი გახსნილია სრულ სიმაღლეზე.</translation>
 </translationbundle>

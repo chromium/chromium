@@ -226,12 +226,12 @@ void ChromeAppListModelUpdater::AddAppItemToFolder(
   app_item->SetChromeFolderId(folder_id);
   ChromeAppListItem* item_added =
       item_manager_->AddChromeItem(std::move(app_item));
-  const bool is_placeholder_icon = item_data->is_placeholder_icon;
   item_data->folder_id.clear();
   model_.AddItemToFolder(CreateAppListItem(std::move(item_data), this),
                          folder_id);
   // Set the item's default icon if it has one.
   if (!item_added->icon().isNull()) {
+    const bool is_placeholder_icon = item_added->is_placeholder_icon();
     ash::AppListItem* item = model_.FindItem(item_added->id());
     item->SetDefaultIconAndColor(item_added->icon(), item_added->icon_color(),
                                  is_placeholder_icon);
@@ -1169,7 +1169,7 @@ void ChromeAppListModelUpdater::EndTemporarySortAndTakeAction(
 
   const bool animate = !update_position_closure.is_null();
   ash::AppListController::Get()->UpdateAppListWithNewTemporarySortOrder(
-      /*new_order=*/absl::nullopt, animate, std::move(update_position_closure));
+      /*new_order=*/std::nullopt, animate, std::move(update_position_closure));
 }
 
 void ChromeAppListModelUpdater::CommitTemporaryPositions() {

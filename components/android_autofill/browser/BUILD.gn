@@ -42,6 +42,8 @@ android_library("java") {
     "java/src/org/chromium/components/autofill/AutofillSelectionMenuItemProvider.java",
     "java/src/org/chromium/components/autofill/FormData.java",
     "java/src/org/chromium/components/autofill/FormFieldData.java",
+    "java/src/org/chromium/components/autofill/PrefillRequest.java",
+    "java/src/org/chromium/components/autofill/SparseArrayWithWorkaround.java",
     "java/src/org/chromium/components/autofill_public/ViewType.java",
   ]
 }
@@ -110,7 +112,9 @@ static_library("android") {
   deps = [
     ":features",
     ":jni_headers",
+    "//components/autofill/android:keyboard_suppressor",
     "//components/autofill/content/browser",
+    "//components/password_manager/core/browser/form_parsing",
     "//content/public/browser",
     "//ui/android",
   ]
@@ -156,6 +160,8 @@ source_set("test_support") {
   testonly = true
   sources = [
     "autofill_provider_android_test_api.h",
+    "mock_form_data_android_bridge.cc",
+    "mock_form_data_android_bridge.h",
     "mock_form_field_data_android_bridge.cc",
     "mock_form_field_data_android_bridge.h",
     "test_autofill_provider.cc",

@@ -68,7 +68,7 @@ class COMPONENT_EXPORT(VARIATIONS) ChildProcessFieldTrialSyncer
   void Init(const std::set<std::string>& initially_active_trials);
 
   // base::FieldTrialList::Observer:
-  void OnFieldTrialGroupFinalized(const std::string& trial_name,
+  void OnFieldTrialGroupFinalized(const base::FieldTrial& trial,
                                   const std::string& group_name) override;
 
   // Callback to invoke when a field trial is activated.

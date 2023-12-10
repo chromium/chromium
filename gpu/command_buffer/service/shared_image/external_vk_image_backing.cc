@@ -37,6 +37,7 @@
 #include "third_party/skia/include/gpu/GrDirectContext.h"
 #include "third_party/skia/include/gpu/GrTypes.h"
 #include "third_party/skia/include/gpu/MutableTextureState.h"
+#include "third_party/skia/include/gpu/ganesh/vk/GrVkBackendSemaphore.h"
 #include "third_party/skia/include/gpu/ganesh/vk/GrVkBackendSurface.h"
 #include "third_party/skia/include/gpu/vk/GrVkTypes.h"
 #include "third_party/skia/include/private/chromium/GrPromiseImageTexture.h"
@@ -137,13 +138,13 @@ bool UseMinimalUsageFlags(SharedContextState* context_state) {
 void WaitSemaphoresOnGrContext(GrDirectContext* gr_context,
                                std::vector<ExternalSemaphore>* semaphores) {
   DCHECK(!gr_context->abandoned());
-  std::vector<GrBackendSemaphore> backend_senampres;
-  backend_senampres.reserve(semaphores->size());
+  std::vector<GrBackendSemaphore> backend_semaphores;
+  backend_semaphores.reserve(semaphores->size());
   for (auto& semaphore : *semaphores) {
-    backend_senampres.emplace_back();
-    backend_senampres.back().initVulkan(semaphore.GetVkSemaphore());
+    backend_semaphores.emplace_back(
+        GrBackendSemaphores::MakeVk(semaphore.GetVkSemaphore()));
   }
-  gr_context->wait(backend_senampres.size(), backend_senampres.data(),
+  gr_context->wait(backend_semaphores.size(), backend_semaphores.data(),
                    /*deleteSemaphoresAfterWait=*/false);
 }
 
@@ -267,7 +268,7 @@ std::unique_ptr<ExternalVkImageBacking> ExternalVkImageBacking::CreateFromGMB(
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
     uint32_t usage,
-    absl::optional<gfx::BufferUsage> buffer_usage) {
+    std::optional<gfx::BufferUsage> buffer_usage) {
   if (!gpu::IsImageSizeValidForGpuMemoryBufferFormat(size,
                                                      ToBufferFormat(format))) {
     DLOG(ERROR) << "Invalid image size for format.";
@@ -368,7 +369,7 @@ ExternalVkImageBacking::ExternalVkImageBacking(
     VulkanCommandPool* command_pool,
     bool use_separate_gl_texture,
     gfx::GpuMemoryBufferHandle handle,
-    absl::optional<gfx::BufferUsage> buffer_usage)
+    std::optional<gfx::BufferUsage> buffer_usage)
     : ClearTrackingSharedImageBacking(mailbox,
                                       format,
                                       size,
@@ -513,8 +514,8 @@ bool ExternalVkImageBacking::BeginAccess(
 
     ExternalSemaphore external_semaphore =
         external_semaphore_pool()->GetOrCreateSemaphore();
-    GrBackendSemaphore semaphore;
-    semaphore.initVulkan(external_semaphore.GetVkSemaphore());
+    GrBackendSemaphore semaphore =
+        GrBackendSemaphores::MakeVk(external_semaphore.GetVkSemaphore());
 
     GrFlushInfo flush_info;
     flush_info.fNumSemaphores = 1;
@@ -754,7 +755,7 @@ bool ExternalVkImageBacking::CreateGLTexture(bool is_passthrough,
   auto& gl_texture = gl_textures_.emplace_back(plane_format, plane_size,
                                                is_passthrough, nullptr);
 
-  absl::optional<ScopedDedicatedMemoryObject> memory_object;
+  std::optional<ScopedDedicatedMemoryObject> memory_object;
   if (!use_separate_gl_texture()) {
     GrVkImageInfo image_info = vk_texture.GetGrVkImageInfo();
 
@@ -790,11 +791,8 @@ bool ExternalVkImageBacking::CreateGLTexture(bool is_passthrough,
 #endif
   }
 
-  bool use_rgbx = context_state()
-                      ->feature_info()
-                      ->feature_flags()
-                      .angle_rgbx_internal_format;
-  GLFormatDesc format_desc = ToGLFormatDesc(format(), plane_index, use_rgbx);
+  GLFormatDesc format_desc =
+      context_state()->GetGLFormatCaps().ToGLFormatDesc(format(), plane_index);
 
   GLuint texture_service_id = 0;
   api->glGenTexturesFn(1, &texture_service_id);
@@ -1238,8 +1236,8 @@ bool ExternalVkImageBacking::UploadToVkImage(
 
   auto end_access_semaphore = external_semaphore_pool()->GetOrCreateSemaphore();
   VkSemaphore vk_end_access_semaphore = end_access_semaphore.GetVkSemaphore();
-  GrBackendSemaphore end_access_backend_semaphore;
-  end_access_backend_semaphore.initVulkan(vk_end_access_semaphore);
+  GrBackendSemaphore end_access_backend_semaphore =
+      GrBackendSemaphores::MakeVk(vk_end_access_semaphore);
   GrFlushInfo flush_info = {
       .fNumSemaphores = 1,
       .fSignalSemaphores = &end_access_backend_semaphore,

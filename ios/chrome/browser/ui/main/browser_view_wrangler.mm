@@ -11,15 +11,13 @@
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/browser/crash_report/model/crash_report_helper.h"
-#import "ios/chrome/browser/device_sharing/device_sharing_browser_agent.h"
+#import "ios/chrome/browser/device_sharing/model/device_sharing_browser_agent.h"
 #import "ios/chrome/browser/sessions/ios_chrome_tab_restore_service_factory.h"
-#import "ios/chrome/browser/sessions/session_migration.h"
-#import "ios/chrome/browser/sessions/session_restoration_browser_agent.h"
 #import "ios/chrome/browser/sessions/session_restoration_service.h"
 #import "ios/chrome/browser/sessions/session_restoration_service_factory.h"
+#import "ios/chrome/browser/sessions/session_util.h"
 #import "ios/chrome/browser/settings/model/sync/utils/sync_presenter.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
-#import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
@@ -37,17 +35,6 @@
 #import "ios/chrome/browser/ui/browser_view/browser_view_controller.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_scene_agent.h"
 #import "ios/chrome/browser/ui/main/wrangled_browser.h"
-
-// To get access to UseSessionSerializationOptimizations().
-// TODO(crbug.com/1383087): remove once the feature is fully launched.
-#import "ios/web/common/features.h"
-
-namespace {
-
-// Suffix to append to the session ID when creating an inactive browser.
-NSString* kInactiveSessionIDSuffix = @"-Inactive";
-
-}  // namespace
 
 @implementation BrowserViewWrangler {
   raw_ptr<ChromeBrowserState> _browserState;
@@ -78,13 +65,13 @@ NSString* kInactiveSessionIDSuffix = @"-Inactive";
     _browsingDataCommandEndpoint = browsingDataCommandEndpoint;
 
     // Create all browsers.
-    _mainBrowser = Browser::Create(_browserState);
+    _mainBrowser = Browser::Create(_browserState, _sceneState);
     [self setupBrowser:_mainBrowser.get()];
     [self setupBrowser:_mainBrowser->CreateInactiveBrowser()];
 
     ChromeBrowserState* otrBrowserState =
         _browserState->GetOffTheRecordChromeBrowserState();
-    _otrBrowser = Browser::Create(otrBrowserState);
+    _otrBrowser = Browser::Create(otrBrowserState, _sceneState);
     [self setupBrowser:_otrBrowser.get()];
   }
   return self;
@@ -234,7 +221,7 @@ NSString* kInactiveSessionIDSuffix = @"-Inactive";
   ChromeBrowserState* incognitoBrowserState =
       _browserState->GetOffTheRecordChromeBrowserState();
 
-  _otrBrowser = Browser::Create(incognitoBrowserState);
+  _otrBrowser = Browser::Create(incognitoBrowserState, _sceneState);
   [self setupBrowser:_otrBrowser.get()];
 
   // Recreate the off-the-record interface, but do not load the session as
@@ -314,9 +301,6 @@ NSString* kInactiveSessionIDSuffix = @"-Inactive";
     browserList->AddBrowser(browser);
   }
 
-  // Associate the current SceneState with the new browser.
-  SceneStateBrowserAgent::CreateForBrowser(browser, _sceneState);
-
   [self dispatchToEndpointsForBrowser:browser];
 
   [self setSessionIDForBrowser:browser];
@@ -363,10 +347,8 @@ NSString* kInactiveSessionIDSuffix = @"-Inactive";
   }
 
   // Stop serializing the state of `browser`.
-  if (web::features::UseSessionSerializationOptimizations()) {
-    SessionRestorationServiceFactory::GetForBrowserState(browserState)
-        ->Disconnect(browser);
-  }
+  SessionRestorationServiceFactory::GetForBrowserState(browserState)
+      ->Disconnect(browser);
 
   WebStateList* webStateList = browser->GetWebStateList();
   crash_report_helper::StopMonitoringTabStateForWebStateList(webStateList);
@@ -386,45 +368,20 @@ NSString* kInactiveSessionIDSuffix = @"-Inactive";
 
 // Configures the BrowserAgent with the session identifier for `browser`.
 - (void)setSessionIDForBrowser:(Browser*)browser {
-  NSString* browserSessionID = _sceneState.sceneSessionID;
-  if (browser->IsInactive()) {
-    browserSessionID =
-        [browserSessionID stringByAppendingString:kInactiveSessionIDSuffix];
-  }
+  const std::string identifier = session_util::GetSessionIdentifier(browser);
 
-  SnapshotBrowserAgent::FromBrowser(browser)->SetSessionID(browserSessionID);
+  SnapshotBrowserAgent::FromBrowser(browser)->SetSessionID(identifier);
 
   ChromeBrowserState* browserState = browser->GetBrowserState();
-  const base::FilePath browserStatePath = browserState->GetStatePath();
-  const std::string sessionID = base::SysNSStringToUTF8(browserSessionID);
-  if (web::features::UseSessionSerializationOptimizations()) {
-    // Migrate the storage to optimized format before trying to load.
-    ios::sessions::MigrateNamedSessionToOptimized(
-        browserStatePath, sessionID,
-        IOSChromeTabRestoreServiceFactory::GetForBrowserState(browserState));
-
-    SessionRestorationServiceFactory::GetForBrowserState(browserState)
-        ->SetSessionID(browser, sessionID);
-  } else {
-    // Migrate the storage to legacy format before trying to load.
-    ios::sessions::MigrateNamedSessionToLegacy(
-        browserStatePath, sessionID,
-        IOSChromeTabRestoreServiceFactory::GetForBrowserState(browserState));
-
-    SessionRestorationBrowserAgent::FromBrowser(browser)->SetSessionID(
-        browserSessionID);
-  }
+  SessionRestorationServiceFactory::GetForBrowserState(browserState)
+      ->SetSessionID(browser, identifier);
 }
 
 // Load session for `browser`.
 - (void)loadSessionForBrowser:(Browser*)browser {
-  if (web::features::UseSessionSerializationOptimizations()) {
-    ChromeBrowserState* browserState = browser->GetBrowserState();
-    SessionRestorationServiceFactory::GetForBrowserState(browserState)
-        ->LoadSession(browser);
-  } else {
-    SessionRestorationBrowserAgent::FromBrowser(browser)->RestoreSession();
-  }
+  ChromeBrowserState* browserState = browser->GetBrowserState();
+  SessionRestorationServiceFactory::GetForBrowserState(browserState)
+      ->LoadSession(browser);
 }
 
 @end

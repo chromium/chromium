@@ -371,13 +371,13 @@ This will otherwise be blocked by your privacy settings. This will allow the con
     You have allowed <ph name="permission">$1<ex>camera</ex></ph> on <ph name="Origin">$2<ex>www.google.com</ex></ph>
   </message>
     <message name="IDS_EMBEDDED_PROMPT_PREVIOUSLY_NOT_ALLOWED" desc="Text informing the user that they previously denied permission to the site">
-    You previously didn't allow <ph name="permission">$1<ex>camera</ex></ph> on <ph name="Origin">$1<ex>www.google.com</ex></ph>
+    You previously didn't allow <ph name="permission">$1<ex>camera</ex></ph> on <ph name="Origin">$2<ex>www.google.com</ex></ph>
   </message>
   <message name ="IDS_PERMISSION_OFF_FOR_CHROME" desc="Text informing the user that they have turned the permission off for chrome">
     You've turned <ph name="permission">$1<ex>camera</ex></ph> off for Chrome.
   </message>
-    <message name ="IDS_PERMISSION_CHROME_NEEDS_PERMISSION" desc="Text informing the user in the background that Chrome needs a permission in order to use it on the site the user is visiting">
-    Chrome needs your <ph name="permission">$1<ex>camera</ex></ph> to use it on <ph name="Origin">$1<ex>www.google.com</ex></ph>
+  <message name ="IDS_PERMISSION_CHROME_NEEDS_PERMISSION" desc="Text informing the user in the background that Chrome needs a permission in order to use it on the site the user is visiting">
+      To use your <ph name="permission">$1<ex>camera</ex></ph> on this site, you need to give Chrome access
   </message>
   <message name="IDS_CAMERA_PERMISSION_NAME_FRAGMENT" desc="Text fragment identifying the camera permission">
     camera

@@ -10,6 +10,7 @@ import {MultiDeviceBrowserProxyImpl, MultiDeviceFeature, MultiDeviceFeatureState
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
+import {Visibility} from 'chrome://resources/mojo/chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertNotEquals, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {FakeContactManager} from 'chrome://webui-test/nearby_share/shared/fake_nearby_contact_manager.js';
@@ -238,6 +239,134 @@ suite('<settings-multidevice-page>', () => {
     return multidevicePage.shadowRoot!.querySelector(
         'settings-multidevice-subpage');
   }
+
+  suite('nearby share description updates with isRevampWayfindingEnabled enabled', () => {
+    setup(async () => {
+      loadTimeData.overrideValues(
+          {isNearbyShareSupported: true, isRevampWayfindingEnabled: true});
+
+      await init();
+
+      setNearbyShareDisallowedByPolicy(false);
+      setNearbyShareIsOnboardingComplete(true);
+      await flushTasks();
+    });
+
+    test(
+        'nearby share off description shows when nearby share is disabled',
+        () => {
+          setNearbyShareEnabled(false);
+          flush();
+
+          const nearbyShareSecondary =
+              multidevicePage.shadowRoot!.querySelector(
+                  '#nearbyShareSecondary');
+          assertTrue(!!nearbyShareSecondary);
+          assertEquals(
+              'Share files and more with nearby devices',
+              nearbyShareSecondary.textContent!.trim());
+        });
+
+    test(
+        'nearby share visible to all description shows when visible to all contacts is selected',
+        async () => {
+          setNearbyShareEnabled(true);
+          fakeSettings.setVisibility(Visibility.kAllContacts);
+          await flushTasks();
+
+          const nearbyShareSecondary =
+              multidevicePage.shadowRoot!.querySelector(
+                  '#nearbyShareSecondary');
+          assertTrue(!!nearbyShareSecondary);
+          assertEquals(
+              'Visible to all contacts',
+              nearbyShareSecondary.textContent!.trim());
+        });
+
+    test(
+        'nearby share visible to all description shows when it is only visible to selected contacts',
+        async () => {
+          setNearbyShareEnabled(true);
+          fakeSettings.setVisibility(Visibility.kSelectedContacts);
+          await flushTasks();
+
+          const nearbyShareSecondary =
+              multidevicePage.shadowRoot!.querySelector(
+                  '#nearbyShareSecondary');
+          assertTrue(!!nearbyShareSecondary);
+          assertEquals(
+              'Visible to some contacts',
+              nearbyShareSecondary.textContent!.trim());
+        });
+
+    test(
+        'nearby share visible to your devices shows when it is only visible to your devices',
+        async () => {
+          setNearbyShareEnabled(true);
+          fakeSettings.setVisibility(Visibility.kYourDevices);
+          await flushTasks();
+
+          const nearbyShareSecondary =
+              multidevicePage.shadowRoot!.querySelector(
+                  '#nearbyShareSecondary');
+          assertTrue(!!nearbyShareSecondary);
+          assertEquals(
+              'Visible to your devices',
+              nearbyShareSecondary.textContent!.trim());
+        });
+
+    test(
+        'nearby share hidden description shows when no contact is selected',
+        async () => {
+          setNearbyShareEnabled(true);
+          fakeSettings.setVisibility(Visibility.kNoOne);
+          await flushTasks();
+
+          const nearbyShareSecondary =
+              multidevicePage.shadowRoot!.querySelector(
+                  '#nearbyShareSecondary');
+          assertTrue(!!nearbyShareSecondary);
+          assertEquals('Hidden', nearbyShareSecondary.textContent!.trim());
+        });
+
+    test(
+        'nearby share description updates on visibility or enable states change',
+        async () => {
+          setNearbyShareEnabled(true);
+          fakeSettings.setVisibility(Visibility.kNoOne);
+          await flushTasks();
+
+          const nearbyShareSecondary =
+              multidevicePage.shadowRoot!.querySelector(
+                  '#nearbyShareSecondary');
+          assertTrue(!!nearbyShareSecondary);
+          assertEquals('Hidden', nearbyShareSecondary.textContent!.trim());
+
+          fakeSettings.setVisibility(Visibility.kAllContacts);
+          await flushTasks();
+          assertEquals(
+              'Visible to all contacts',
+              nearbyShareSecondary.textContent!.trim());
+
+          fakeSettings.setVisibility(Visibility.kYourDevices);
+          await flushTasks();
+          assertEquals(
+              'Visible to your devices',
+              nearbyShareSecondary.textContent!.trim());
+
+          setNearbyShareEnabled(false);
+          flush();
+          assertEquals(
+              'Share files and more with nearby devices',
+              nearbyShareSecondary.textContent!.trim());
+
+          setNearbyShareEnabled(true);
+          fakeSettings.setVisibility(Visibility.kSelectedContacts);
+          assertEquals(
+              'Visible to some contacts',
+              nearbyShareSecondary.textContent!.trim());
+        });
+  });
 
   test('clicking setup shows multidevice setup dialog', async () => {
     setHostData(MultiDeviceSettingsMode.NO_HOST_SET);

@@ -19,7 +19,7 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/bluetooth_delegate.h"
 #include "content/public/browser/bluetooth_scanning_prompt.h"
-#include "content/public/browser/document_service.h"
+#include "content/public/browser/document_user_data.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
@@ -64,10 +64,9 @@ bool HasValidFilter(
 // UI thread as required by device/bluetooth.
 // This class is instantiated on-demand via Mojo's ConnectToRemoteService
 // from the renderer when the first Web Bluetooth API request is handled.
-// RenderFrameHostImpl will create an instance of this class and keep
-// ownership of it through content::DocumentService.
 class CONTENT_EXPORT WebBluetoothServiceImpl
-    : public content::DocumentService<blink::mojom::WebBluetoothService>,
+    : public blink::mojom::WebBluetoothService,
+      public DocumentUserData<WebBluetoothServiceImpl>,
       public WebContentsObserver,
       public device::BluetoothAdapter::Observer,
       public BluetoothDelegate::FramePermissionObserver,
@@ -76,11 +75,16 @@ class CONTENT_EXPORT WebBluetoothServiceImpl
   static blink::mojom::WebBluetoothResult TranslateConnectErrorAndRecord(
       device::BluetoothDevice::ConnectErrorCode error_code);
 
-  // Tries to attach |receiver| to an implementation of the
-  // WebBluetoothService for |render_frame_host|. The object returned is
-  // bound to the lifetime of |render_frame_host| and the Mojo connection.
-  // See DocumentService for details.
-  static WebBluetoothServiceImpl* Create(
+  // Binds `receiver` to `WebBluetoothServiceImpl` for the currently active
+  // document for `render_frame_host`, if no security checks fail. See
+  // `DocumentUserData` for additional details about lifetime.
+  static void BindIfAllowed(
+      RenderFrameHost* render_frame_host,
+      mojo::PendingReceiver<blink::mojom::WebBluetoothService> receiver);
+
+  // Wrapper around `BindIfAllowed()` that also returns the created
+  // WebBluetoothServiceImpl, if any.
+  static WebBluetoothServiceImpl* CreateForTesting(
       RenderFrameHost* render_frame_host,
       mojo::PendingReceiver<blink::mojom::WebBluetoothService> receiver);
 
@@ -90,12 +94,14 @@ class CONTENT_EXPORT WebBluetoothServiceImpl
   // prevent flakiness.
   static void IgnoreVisibilityRequirementsForTesting();
 
+  ~WebBluetoothServiceImpl() override;
+
   WebBluetoothServiceImpl(const WebBluetoothServiceImpl&) = delete;
   WebBluetoothServiceImpl& operator=(const WebBluetoothServiceImpl&) = delete;
 
-  // Prefer `DocumentService::ReportBadMessageAndDeleteThis()` in new code.
-  // Existing callers should be migrated as well.
-  void TerminateRendererAndDeleteThis(bad_message::BadMessageReason reason);
+  // Prefer `receiver_.ReportBadMessage()` in new code. Existing callers should
+  // be migrated as well.
+  void ReceivedBadMessage(bad_message::BadMessageReason reason);
 
   // Checks the current requesting and embedding origins as well as the policy
   // or global Web Bluetooth block to determine if Web Bluetooth is allowed.
@@ -122,13 +128,12 @@ class CONTENT_EXPORT WebBluetoothServiceImpl
 #endif  // PAIR_BLUETOOTH_ON_DEMAND()
 
  private:
-  // |render_frame_host|: The RFH that owns this instance.
-  // |receiver|: The instance will be bound to this receiver's pipe.
-  WebBluetoothServiceImpl(
-      RenderFrameHost& render_frame_host,
-      mojo::PendingReceiver<blink::mojom::WebBluetoothService> receiver);
+  friend DocumentUserData;
 
-  ~WebBluetoothServiceImpl() override;
+  DOCUMENT_USER_DATA_KEY_DECL();
+
+  // `render_frame_host`: The RFH of the document that owns this instance.
+  explicit WebBluetoothServiceImpl(RenderFrameHost* render_frame_host);
 
   FRIEND_TEST_ALL_PREFIXES(WebBluetoothServiceImplTest,
                            DestroyedDuringRequestDevice);
@@ -178,6 +183,9 @@ class CONTENT_EXPORT WebBluetoothServiceImpl
   class WatchAdvertisementsClient;
   class ScanningClient;
   struct DeferredStartNotificationData;
+
+  // Returns false if `this` is already bound.
+  bool Bind(mojo::PendingReceiver<blink::mojom::WebBluetoothService> receiver);
 
   // WebContentsObserver:
   // These functions should always check that the affected RenderFrameHost
@@ -473,6 +481,9 @@ class CONTENT_EXPORT WebBluetoothServiceImpl
       BluetoothDelegate::PairingKind pairing_kind,
       const absl::optional<std::u16string>& pin) override;
   void PairConfirmed(const blink::WebBluetoothDeviceId& device_id) override;
+
+  mojo::Receiver<blink::mojom::WebBluetoothService> receiver_;
+
   // Used to open a BluetoothChooser and start a device discovery session.
   std::unique_ptr<BluetoothDeviceChooserController> device_chooser_controller_;
 

@@ -9,10 +9,10 @@
 #include <functional>
 #include <iterator>
 #include <limits>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
-
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/lazy_instance.h"
@@ -33,7 +33,6 @@
 #include "services/device/public/cpp/hid/hid_report_type.h"
 #include "services/device/public/cpp/hid/hid_report_utils.h"
 #include "services/device/public/mojom/hid.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace hid = extensions::api::hid;
 
@@ -127,7 +126,7 @@ bool WillDispatchDeviceEvent(
     Feature::Context target_context,
     const Extension* extension,
     const base::Value::Dict* listener_filter,
-    absl::optional<base::Value::List>& event_args_out,
+    std::optional<base::Value::List>& event_args_out,
     mojom::EventFilteringInfoPtr& event_filtering_info_out) {
   if (device_manager && extension) {
     return device_manager->HasPermission(extension, device_info, false);

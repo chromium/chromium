@@ -217,12 +217,31 @@ PerformanceMeasure* UserTiming::Measure(ScriptState* script_state,
     WTF::AddFloatToHash(hash, start_time);
     WTF::AddFloatToHash(hash, end_time);
 
-    TRACE_EVENT_COPY_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP1(
-        "blink.user_timing", measure_name.Utf8().c_str(), hash,
-        unsafe_start_time, "startTime", start_time);
-    TRACE_EVENT_COPY_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
-        "blink.user_timing", measure_name.Utf8().c_str(), hash,
-        unsafe_end_time);
+    v8::Isolate* isolate = performance_->GetExecutionContext()->GetIsolate();
+    v8::Local<v8::Context> context = isolate->GetCurrentContext();
+    String serialized_detail = "";
+    if (!(detail.IsEmpty() || detail.V8Value()->IsNullOrUndefined())) {
+      v8::Local<v8::String> v8_string;
+      if (v8::JSON::Stringify(context, detail.V8Value()).ToLocal(&v8_string)) {
+        serialized_detail = ToCoreString(isolate, v8_string);
+      }
+    }
+
+    if (serialized_detail.length()) {
+      TRACE_EVENT_BEGIN("blink.user_timing", nullptr, perfetto::Track(hash),
+                        unsafe_start_time, "startTime", start_time, "detail",
+                        serialized_detail, [&](perfetto::EventContext ctx) {
+                          ctx.event()->set_name(measure_name.Utf8().c_str());
+                        });
+    } else {
+      TRACE_EVENT_BEGIN("blink.user_timing", nullptr, perfetto::Track(hash),
+                        unsafe_start_time, "startTime", start_time,
+                        [&](perfetto::EventContext ctx) {
+                          ctx.event()->set_name(measure_name.Utf8().c_str());
+                        });
+    }
+    TRACE_EVENT_END("blink.user_timing", perfetto::Track(hash),
+                    unsafe_end_time);
   }
 
   PerformanceMeasure* measure =

@@ -4,7 +4,6 @@
 
 // Use the <code>chrome.safeBrowsingPrivate</code> API to observe events
 // or retrieve referrer chain.
-[modernised_enums]
 namespace safeBrowsingPrivate {
 
   enum URLType {

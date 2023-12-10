@@ -607,7 +607,7 @@ void FlossSocketManager::CompleteRegisterCallback(
 
 void FlossSocketManager::CompleteUnregisterCallback(DBusResult<bool> result) {
   if (!result.has_value() || *result == false) {
-    LOG(WARNING) << __func__ << "Failed to unregister callback";
+    LOG(WARNING) << __func__ << ": Failed to unregister callback";
   }
 }
 

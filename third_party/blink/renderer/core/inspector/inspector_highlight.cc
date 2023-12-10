@@ -33,8 +33,8 @@
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_box_fragment.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
+#include "third_party/blink/renderer/core/layout/logical_box_fragment.h"
+#include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/shapes/shape_outside_info.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
@@ -380,7 +380,7 @@ std::unique_ptr<protocol::DictionaryValue> BuildElementInfo(Element* element) {
   if (!layout_object || !containing_view)
     return element_info;
 
-  // layoutObject the getBoundingClientRect() data in the tooltip
+  // layoutObject the GetBoundingClientRect() data in the tooltip
   // to be consistent with the rulers (see http://crbug.com/262338).
 
   DCHECK(element->GetDocument().Lifecycle().GetState() >=
@@ -1081,7 +1081,7 @@ DevtoolsFlexInfo GetFlexLinesAndItems(LayoutBox* layout_box,
     LayoutUnit progression;
 
     for (const auto& child : fragment.Children()) {
-      const NGPhysicalFragment* child_fragment = child.get();
+      const PhysicalFragment* child_fragment = child.get();
       if (!child_fragment || child_fragment->IsOutOfFlowPositioned())
         continue;
 
@@ -1092,8 +1092,8 @@ DevtoolsFlexInfo GetFlexLinesAndItems(LayoutBox* layout_box,
       const auto* box = To<LayoutBox>(object);
 
       LayoutUnit baseline =
-          NGBoxFragment(layout_box->StyleRef().GetWritingDirection(),
-                        *To<NGPhysicalBoxFragment>(child_fragment))
+          LogicalBoxFragment(layout_box->StyleRef().GetWritingDirection(),
+                             *To<PhysicalBoxFragment>(child_fragment))
               .FirstBaselineOrSynthesize(
                   layout_box->StyleRef().GetFontBaseline());
       float adjusted_baseline = AdjustForAbsoluteZoom::AdjustFloat(
@@ -1512,8 +1512,7 @@ PhysicalRect TextFragmentRectInRootFrame(
     const LayoutObject* layout_object,
     const LayoutText::TextBoxInfo& text_box) {
   PhysicalRect absolute_coords_text_box_rect =
-      layout_object->LocalToAbsoluteRect(layout_object->FlipForWritingMode(
-          text_box.local_rect.ToLayoutRect()));
+      layout_object->LocalToAbsoluteRect(text_box.local_rect);
   LocalFrameView* local_frame_view = layout_object->GetFrameView();
   return local_frame_view ? local_frame_view->ConvertToRootFrame(
                                 absolute_coords_text_box_rect)

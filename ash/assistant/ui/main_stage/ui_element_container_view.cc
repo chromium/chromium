@@ -264,4 +264,7 @@ SkColor UiElementContainerView::GetOverflowIndicatorBackgroundColor() const {
       ColorProvider::ContentLayerType::kSeparatorColor);
 }
 
+BEGIN_METADATA(UiElementContainerView)
+END_METADATA
+
 }  // namespace ash

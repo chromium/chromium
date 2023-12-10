@@ -28,9 +28,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-/**
- * Refocus on previously selected tab if the selected tab closure was undone.
- */
+/** Refocus on previously selected tab if the selected tab closure was undone. */
 public class UndoRefocusHelper implements DestroyObserver {
     private final Set<Integer> mTabsClosedFromTabStrip;
     private final TabModelSelector mModelSelector;
@@ -53,7 +51,9 @@ public class UndoRefocusHelper implements DestroyObserver {
      *         observe the layout state when it's available.
      * @param isTablet Whether the current device is a tablet.
      */
-    public static void initialize(Context context, TabModelSelector modelSelector,
+    public static void initialize(
+            Context context,
+            TabModelSelector modelSelector,
             ObservableSupplier<LayoutManagerImpl> layoutManagerObservableSupplier,
             boolean isTablet) {
         if (!DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)) {
@@ -64,7 +64,8 @@ public class UndoRefocusHelper implements DestroyObserver {
     }
 
     @VisibleForTesting
-    protected UndoRefocusHelper(TabModelSelector modelSelector,
+    protected UndoRefocusHelper(
+            TabModelSelector modelSelector,
             ObservableSupplier<LayoutManagerImpl> layoutManagerObservableSupplier,
             boolean isTablet) {
         mLayoutManagerObservableSupplier = layoutManagerObservableSupplier;
@@ -85,120 +86,125 @@ public class UndoRefocusHelper implements DestroyObserver {
     }
 
     private void observeTabModel() {
-        mTabModelSelectorTabModelObserver = new TabModelSelectorTabModelObserver(mModelSelector) {
-            @Override
-            public void willCloseTab(Tab tab, boolean animate, boolean didCloseAlone) {
-                // Tabs not closed alone are handled in #willCloseMultipleTabs and #willCloseAllTabs
-                if (!didCloseAlone || tab.isIncognito()) return;
+        mTabModelSelectorTabModelObserver =
+                new TabModelSelectorTabModelObserver(mModelSelector) {
+                    @Override
+                    public void willCloseTab(Tab tab, boolean animate, boolean didCloseAlone) {
+                        // Tabs not closed alone are handled in #willCloseMultipleTabs and
+                        // #willCloseAllTabs
+                        if (!didCloseAlone || tab.isIncognito()) return;
 
-                int tabId = tab.getId();
-                if (!mTabSwitcherActive && mIsTablet) {
-                    mTabsClosedFromTabStrip.add(tabId);
-                }
+                        int tabId = tab.getId();
+                        if (!mTabSwitcherActive && mIsTablet) {
+                            mTabsClosedFromTabStrip.add(tabId);
+                        }
 
-                maybeSetSelectedTabId(tab);
-            }
-
-            @Override
-            public void willCloseMultipleTabs(boolean allowUndo, List<Tab> tabs) {
-                if (!allowUndo || tabs.size() < 1) return;
-
-                // Record metric only once for the set.
-                // Use the first id to track the set.
-                if (!mTabSwitcherActive && mIsTablet) {
-                    mTabsClosedFromTabStrip.add(tabs.get(0).getId());
-                }
-                for (Tab tab : tabs) {
-                    if (maybeSetSelectedTabId(tab)) {
-                        break;
+                        maybeSetSelectedTabId(tab);
                     }
-                }
-            }
 
-            @Override
-            public void willCloseAllTabs(boolean incognito) {
-                if (incognito) return;
-                int selectedTabIdx = mModelSelector.getModel(false).index();
-                // Selected tab will be invalid when there are already no tabs in a window when
-                // this method is invoked.
-                if (selectedTabIdx == TabList.INVALID_TAB_INDEX) return;
+                    @Override
+                    public void willCloseMultipleTabs(boolean allowUndo, List<Tab> tabs) {
+                        if (!allowUndo || tabs.size() < 1) return;
 
-                Tab selectedTab = mModelSelector.getModel(false).getTabAt(selectedTabIdx);
-                maybeSetSelectedTabId(selectedTab);
-                // Record metric only once for the set.
-                // Use the selected id to track the set.
-                if (!mTabSwitcherActive && mIsTablet) {
-                    mTabsClosedFromTabStrip.add(selectedTab.getId());
-                }
-            }
-
-            @Override
-            public void didSelectTab(Tab tab, int type, int lastId) {
-                // Undoing a selected tab closure, after manually switching tabs shouldn't switch
-                // focus to the reopened tab.
-                if (type == TabSelectionType.FROM_USER || type == TabSelectionType.FROM_OMNIBOX
-                        || type == TabSelectionType.FROM_NEW) {
-                    resetSelectionsForUndo();
-                }
-            }
-
-            @Override
-            public void tabClosureUndone(Tab tab) {
-                int id = tab.getId();
-                recordClosureCancellation(id);
-                if (mSelectedTabIdWhenTabClosed != null && mSelectedTabIdWhenTabClosed == id) {
-                    selectPreviouslySelectedTab();
-                }
-            }
-
-            @Override
-            public void allTabsClosureUndone() {
-                if (mSelectedTabIdWhenTabClosed != null) {
-                    selectPreviouslySelectedTab();
-                }
-
-                resetSelectionsForUndo();
-                mTabsClosedFromTabStrip.clear();
-            }
-
-            @Override
-            public void tabClosureCommitted(Tab tab) {
-                if (!tab.isIncognito()) {
-                    resetSelectionsForUndo();
-                    mTabsClosedFromTabStrip.clear();
-                }
-            }
-
-            @Override
-            public void allTabsClosureCommitted(boolean isIncognito) {
-                if (!isIncognito) {
-                    resetSelectionsForUndo();
-                    mTabsClosedFromTabStrip.clear();
-                }
-            }
-
-            private boolean maybeSetSelectedTabId(Tab tab) {
-                TabModel model = mModelSelector.getModel(false);
-                int tabId = tab.getId();
-                int selTabIndex = model.index();
-                if (selTabIndex > -1 && selTabIndex < model.getCount()) {
-                    Tab selectedTab = model.getTabAt(selTabIndex);
-                    if (selectedTab != null && tabId == selectedTab.getId()) {
-                        mSelectedTabIdWhenTabClosed = tabId;
-                        return true;
+                        // Record metric only once for the set.
+                        // Use the first id to track the set.
+                        if (!mTabSwitcherActive && mIsTablet) {
+                            mTabsClosedFromTabStrip.add(tabs.get(0).getId());
+                        }
+                        for (Tab tab : tabs) {
+                            if (maybeSetSelectedTabId(tab)) {
+                                break;
+                            }
+                        }
                     }
-                }
-                return false;
-            }
 
-            private void recordClosureCancellation(int id) {
-                // Only record the action if the tab was previously closed from the tab strip.
-                if (mTabsClosedFromTabStrip.contains(id)) {
-                    RecordUserAction.record("TabletTabStrip.UndoCloseTab");
-                    mTabsClosedFromTabStrip.remove(id);
-                }
-            }
-        };
+                    @Override
+                    public void willCloseAllTabs(boolean incognito) {
+                        if (incognito) return;
+                        int selectedTabIdx = mModelSelector.getModel(false).index();
+                        // Selected tab will be invalid when there are already no tabs in a window
+                        // when this method is invoked.
+                        if (selectedTabIdx == TabList.INVALID_TAB_INDEX) return;
+
+                        Tab selectedTab = mModelSelector.getModel(false).getTabAt(selectedTabIdx);
+                        maybeSetSelectedTabId(selectedTab);
+                        // Record metric only once for the set.
+                        // Use the selected id to track the set.
+                        if (!mTabSwitcherActive && mIsTablet) {
+                            mTabsClosedFromTabStrip.add(selectedTab.getId());
+                        }
+                    }
+
+                    @Override
+                    public void didSelectTab(Tab tab, int type, int lastId) {
+                        // Undoing a selected tab closure, after manually switching tabs shouldn't
+                        // switch focus to the reopened tab.
+                        if (type == TabSelectionType.FROM_USER
+                                || type == TabSelectionType.FROM_OMNIBOX
+                                || type == TabSelectionType.FROM_NEW) {
+                            resetSelectionsForUndo();
+                        }
+                    }
+
+                    @Override
+                    public void tabClosureUndone(Tab tab) {
+                        int id = tab.getId();
+                        recordClosureCancellation(id);
+                        if (mSelectedTabIdWhenTabClosed != null
+                                && mSelectedTabIdWhenTabClosed == id) {
+                            selectPreviouslySelectedTab();
+                        }
+                    }
+
+                    @Override
+                    public void allTabsClosureUndone() {
+                        if (mSelectedTabIdWhenTabClosed != null) {
+                            selectPreviouslySelectedTab();
+                        }
+
+                        resetSelectionsForUndo();
+                        mTabsClosedFromTabStrip.clear();
+                    }
+
+                    @Override
+                    public void tabClosureCommitted(Tab tab) {
+                        if (!tab.isIncognito()) {
+                            resetSelectionsForUndo();
+                            mTabsClosedFromTabStrip.clear();
+                        }
+                    }
+
+                    @Override
+                    public void allTabsClosureCommitted(boolean isIncognito) {
+                        if (!isIncognito) {
+                            resetSelectionsForUndo();
+                            mTabsClosedFromTabStrip.clear();
+                        }
+                    }
+
+                    private boolean maybeSetSelectedTabId(Tab tab) {
+                        TabModel model = mModelSelector.getModel(false);
+                        int tabId = tab.getId();
+                        int selTabIndex = model.index();
+                        if (selTabIndex > -1 && selTabIndex < model.getCount()) {
+                            Tab selectedTab = model.getTabAt(selTabIndex);
+                            if (selectedTab != null && tabId == selectedTab.getId()) {
+                                mSelectedTabIdWhenTabClosed = tabId;
+                                return true;
+                            }
+                        }
+                        return false;
+                    }
+
+                    private void recordClosureCancellation(int id) {
+                        // Only record the action if the tab was previously closed from the tab
+                        // strip.
+                        if (mTabsClosedFromTabStrip.contains(id)) {
+                            RecordUserAction.record("TabletTabStrip.UndoCloseTab");
+                            mTabsClosedFromTabStrip.remove(id);
+                        }
+                    }
+                };
     }
 
     private void observeLayoutState() {
@@ -208,32 +214,31 @@ public class UndoRefocusHelper implements DestroyObserver {
 
     private void onLayoutManagerAvailable(LayoutManagerImpl layoutManager) {
         mLayoutManager = layoutManager;
-        mLayoutStateObserver = new LayoutStateProvider.LayoutStateObserver() {
-            @Override
-            public void onFinishedShowing(int layoutType) {
-                if (layoutType != LayoutType.TAB_SWITCHER
-                        && layoutType != LayoutType.START_SURFACE) {
-                    return;
-                }
-                mTabSwitcherActive = true;
-            }
+        mLayoutStateObserver =
+                new LayoutStateProvider.LayoutStateObserver() {
+                    @Override
+                    public void onFinishedShowing(int layoutType) {
+                        if (layoutType != LayoutType.TAB_SWITCHER
+                                && layoutType != LayoutType.START_SURFACE) {
+                            return;
+                        }
+                        mTabSwitcherActive = true;
+                    }
 
-            @Override
-            public void onFinishedHiding(int layoutType) {
-                if (layoutType != LayoutType.TAB_SWITCHER
-                        && layoutType != LayoutType.START_SURFACE) {
-                    return;
-                }
-                mTabSwitcherActive = false;
-            }
-        };
+                    @Override
+                    public void onFinishedHiding(int layoutType) {
+                        if (layoutType != LayoutType.TAB_SWITCHER
+                                && layoutType != LayoutType.START_SURFACE) {
+                            return;
+                        }
+                        mTabSwitcherActive = false;
+                    }
+                };
 
         mLayoutManager.addObserver(mLayoutStateObserver);
     }
 
-    /**
-     * If a tab closure is undone, this selects tab if it was previously selected.
-     */
+    /** If a tab closure is undone, this selects tab if it was previously selected. */
     private void selectPreviouslySelectedTab() {
         TabModel model = mModelSelector.getCurrentModel();
         if (model == null || mSelectedTabIdWhenTabClosed == null) return;

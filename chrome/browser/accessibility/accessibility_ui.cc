@@ -5,6 +5,7 @@
 #include "chrome/browser/accessibility/accessibility_ui.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -41,7 +42,6 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_ui_data_source.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/accessibility/platform/ax_platform_node_delegate.h"
@@ -691,7 +691,7 @@ void AccessibilityUIMessageHandler::Callback(const std::string& str) {
 
 void AccessibilityUIMessageHandler::StopRecording(
     content::WebContents* web_contents) {
-  web_contents->RecordAccessibilityEvents(false, absl::nullopt);
+  web_contents->RecordAccessibilityEvents(false, std::nullopt);
   observer_.reset(nullptr);
 }
 

@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/message_center_observer.h"
 #include "ui/message_center/views/notification_input_container.h"
@@ -35,7 +36,6 @@ namespace ash {
 class RoundedImageView;
 class AshNotificationExpandButton;
 class IconButton;
-class NotificationGroupingController;
 
 // Customized NotificationView for notification on ChromeOS. This view is used
 // to displays all current types of notification on ChromeOS (web, basic, image,
@@ -44,27 +44,15 @@ class ASH_EXPORT AshNotificationView
     : public message_center::NotificationViewBase,
       public message_center::MessageCenterObserver,
       public views::WidgetObserver {
- public:
-  static const char kViewClassName[];
+  METADATA_HEADER(AshNotificationView, message_center::NotificationViewBase)
 
+ public:
   // TODO(crbug/1241983): Add metadata and builder support to this view.
   explicit AshNotificationView(const message_center::Notification& notification,
                                bool shown_in_popup);
   AshNotificationView(const AshNotificationView&) = delete;
   AshNotificationView& operator=(const AshNotificationView&) = delete;
   ~AshNotificationView() override;
-
-  // Update the expanded state for grouped child notification.
-  void SetGroupedChildExpanded(bool expanded);
-
-  // Animate the grouped child notification when switching between expand and
-  // collapse state.
-  void AnimateGroupedChildExpandedCollapse(bool expanded);
-
-  // Animations when converting from single to group notification.
-  void AnimateSingleToGroup(NotificationGroupingController* grouping_controller,
-                            const std::string& notification_id,
-                            std::string parent_id);
 
   // Toggle the expand state of the notification. This function should only be
   // used to handle user manually expand/collapse a notification.
@@ -77,12 +65,12 @@ class ASH_EXPORT AshNotificationView
 
   // Returns the bounds of the area where the drag can be initiated. The
   // returned bounds are in `AshNotificationView` local coordinates. Returns
-  // `absl::nullopt` if the notification view is not draggable.
-  absl::optional<gfx::Rect> GetDragAreaBounds() const;
+  // `std::nullopt` if the notification view is not draggable.
+  std::optional<gfx::Rect> GetDragAreaBounds() const;
 
   // Returns the drag image shown when the ash notification is under drag.
-  // Returns `absl::nullopt` if the notification view is not draggable.
-  absl::optional<gfx::ImageSkia> GetDragImage();
+  // Returns `std::nullopt` if the notification view is not draggable.
+  std::optional<gfx::ImageSkia> GetDragImage();
 
   // Attaches the drop data. This method should be called only if this
   // notification view is draggable.
@@ -92,13 +80,16 @@ class ASH_EXPORT AshNotificationView
   bool IsDraggable() const;
 
   // message_center::MessageView:
+  void AnimateGroupedChildExpandedCollapse(bool expanded) override;
+  void AnimateSingleToGroup(const std::string& notification_id,
+                            std::string parent_id) override;
   void AddGroupNotification(
       const message_center::Notification& notification) override;
   void PopulateGroupNotifications(
       const std::vector<const message_center::Notification*>& notifications)
       override;
   void RemoveGroupNotification(const std::string& notification_id) override;
-  const char* GetClassName() const override;
+  void SetGroupedChildExpanded(bool expanded) override;
   // Called after `PreferredSizeChanged()`, so the current state is the target
   // state.
   base::TimeDelta GetBoundsAnimationDuration(
@@ -161,6 +152,8 @@ class ASH_EXPORT AshNotificationView
   // View containing all grouped notifications, propagates size changes
   // to the parent notification view.
   class GroupedNotificationsContainer : public views::BoxLayoutView {
+    METADATA_HEADER(GroupedNotificationsContainer, views::BoxLayoutView)
+
    public:
     GroupedNotificationsContainer() = default;
     GroupedNotificationsContainer(const GroupedNotificationsContainer&) =
@@ -183,6 +176,7 @@ class ASH_EXPORT AshNotificationView
 
  private:
   friend class AshNotificationViewTestBase;
+  friend class MessageCenterMetricsUtilsTest;
   friend class NotificationGroupingControllerTest;
 
   // Customized title row for this notification view with added timestamp in
@@ -231,7 +225,7 @@ class ASH_EXPORT AshNotificationView
 
     // Timer that updates the timestamp over time.
     base::OneShotTimer timestamp_update_timer_;
-    absl::optional<base::Time> timestamp_;
+    std::optional<base::Time> timestamp_;
   };
 
   // message_center::MessageCenterObserver:

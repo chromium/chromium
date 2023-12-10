@@ -377,43 +377,6 @@ void HistoryTabHelper::DidFinishNavigation(
   }
 }
 
-// We update history upon the associated WebContents becoming the top level
-// contents of a tab from portal activation.
-// TODO(mcnee): Investigate whether the early return cases in
-// DidFinishNavigation apply to portal activation. See https://crbug.com/1072762
-void HistoryTabHelper::DidActivatePortal(
-    content::WebContents* predecessor_contents,
-    base::TimeTicks activation_time) {
-  history::HistoryService* hs = GetHistoryService();
-  if (!hs)
-    return;
-
-  content::NavigationEntry* last_committed_entry =
-      web_contents()->GetController().GetLastCommittedEntry();
-
-  // TODO(1058504): Update this when portal activations can be done with
-  // replacement.
-  const bool did_replace_entry = false;
-
-  const history::HistoryAddPageArgs add_page_args(
-      last_committed_entry->GetVirtualURL(),
-      last_committed_entry->GetTimestamp(),
-      history::ContextIDForWebContents(web_contents()),
-      last_committed_entry->GetUniqueID(),
-      /*local_navigation_id=*/absl::nullopt,
-      last_committed_entry->GetReferrer().url,
-      /* redirects */ {}, ui::PAGE_TRANSITION_LINK,
-      /* hidden */ false, history::SOURCE_BROWSED, did_replace_entry,
-      /* consider_for_ntp_most_visited */ true,
-      last_committed_entry->GetTitle(),
-      // TODO(crbug.com/1475670): Investigate portal activation and determine if
-      // we need to populate top_level_url correctly to record this navigation
-      // in the VisitedLinkDatabase.
-      /*top_level_url=*/absl::nullopt);
-  // TODO(crbug.com/1347012): Add on-visit ContextAnnotation fields here.
-  hs->AddPage(add_page_args);
-}
-
 void HistoryTabHelper::DidFinishLoad(
     content::RenderFrameHost* render_frame_host,
     const GURL& validated_url) {

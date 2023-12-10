@@ -83,11 +83,15 @@ class RequestHandler:
     def _handle_strings_m_js(self, request_path: str) -> bytes:
         load_time_data = {
             "board_name": "local-dev",
-            "browser_version": "unknown",
-            "device_type": "unknown",
+            "browser_version": "local-dev",
+            "device_type": "local-dev",
             "is_test_image": True,
+            "os_version": "local-dev",
             "textdirection": "ltr",
+            "video_capture_disallowed": False,
             "timeLapse": True,
+            "auto_qr": True,
+            "digital_zoom": True,
         }
         load_time_data.update(self._load_grd_strings())
         relative_path = _get_root_relative_path(request_path)

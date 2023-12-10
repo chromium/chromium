@@ -16,6 +16,7 @@
 
 #include "base/callback_list.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
@@ -144,8 +145,9 @@ class TemplateURLService : public WebDataServiceConsumer,
                                   const GURL& url);
 
   // Returns whether the engine is a "pre-existing" engine, either from the
-  // prepopulate list or created by policy.
-  bool IsPrepopulatedOrCreatedByPolicy(const TemplateURL* template_url) const;
+  // prepopulate list or created by DefaultSearchProvider* policies.
+  bool IsPrepopulatedOrDefaultProviderByPolicy(
+      const TemplateURL* template_url) const;
 
   // Returns whether |template_url| should be shown in the list of engines
   // most likely to be selected as a default engine. This is meant to highlight
@@ -601,6 +603,10 @@ class TemplateURLService : public WebDataServiceConsumer,
   // the scope of a code block.
   class Scoper;
 
+  // Helper class that stores DSP and enterprise site search engines set before
+  // the keywords table has been fully loaded.
+  class PreLoadingProviders;
+
   void Init(const Initializer* initializers, int num_initializers);
 
   // Removes |template_url| from various internal maps
@@ -627,12 +633,17 @@ class TemplateURLService : public WebDataServiceConsumer,
 
   // Applies site search changes and reports metrics if appropriate.
   void EnterpriseSiteSearchChanged(
-      const OwnedTemplateURLDataVector& site_search_engines);
+      OwnedTemplateURLDataVector&& site_search_engines);
 
   // Applies a DSE change. May be called at startup or after transitioning to
   // the loaded state. Returns true if a change actually occurred.
   bool ApplyDefaultSearchChangeNoMetrics(const TemplateURLData* new_dse_data,
                                          DefaultSearchManager::Source source);
+
+  // Applies changes due to Enterprise policy `SiteSearchSettings`. Called after
+  // transitioning to the loaded state.
+  void ApplyEnterpriseSiteSearchChanges(
+      OwnedTemplateURLVector&& site_search_engines);
 
   // Returns false if there is a TemplateURL that has a search url with the
   // specified host and that TemplateURL has been manually modified.
@@ -686,12 +697,13 @@ class TemplateURLService : public WebDataServiceConsumer,
   TemplateURL* Add(std::unique_ptr<TemplateURL> template_url,
                    bool newly_adding);
 
-  // Updates |template_urls| so that the only "created by policy" entry is
-  // |default_from_prefs|. |default_from_prefs| may be NULL if there is no
-  // policy-defined DSE in effect.
-  void UpdateProvidersCreatedByPolicy(OwnedTemplateURLVector* template_urls,
-                                      const TemplateURLData* default_from_prefs,
-                                      bool is_mandatory);
+  // Updates |template_urls| so that the only entry corresponding to default
+  // provider set by policy is |default_from_prefs|. |default_from_prefs| may be
+  // NULL if there is no policy-defined DSE in effect.
+  void UpdateDefaultProvidersCreatedByPolicy(
+      OwnedTemplateURLVector* template_urls,
+      const TemplateURLData* default_from_prefs,
+      bool is_mandatory);
 
   // Resets the sync GUID of the specified TemplateURL and persists the change
   // to the database. This does not notify observers.
@@ -806,6 +818,11 @@ class TemplateURLService : public WebDataServiceConsumer,
   // Mapping from Sync GUIDs to the TemplateURL.
   GUIDToTURL guid_to_turl_;
 
+  // Mapping from keyword to TemplateURLs created by the `SiteSearchSettings`
+  // policy.
+  base::flat_map<std::u16string, TemplateURL*>
+      enterprise_site_search_keyword_to_turl_;
+
   OwnedTemplateURLVector template_urls_;
 
   base::ObserverList<TemplateURLServiceObserver> model_observers_;
@@ -841,9 +858,9 @@ class TemplateURLService : public WebDataServiceConsumer,
   // Example of a regression due to this mistake: https://crbug.com/1164024.
   raw_ptr<TemplateURL, DanglingUntriaged> default_search_provider_ = nullptr;
 
-  // A temporary location for the DSE until Web Data has been loaded and it can
-  // be merged into |template_urls_|.
-  std::unique_ptr<TemplateURL> initial_default_search_provider_;
+  // Temporary location for the DSE and enterprise site search engines until
+  // Web Data has been loaded, so it can be merged into `template_urls_`.
+  std::unique_ptr<PreLoadingProviders> pre_loading_providers_;
 
   // Source of the default search provider.
   DefaultSearchManager::Source default_search_provider_source_;

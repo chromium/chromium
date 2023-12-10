@@ -75,12 +75,15 @@ public class TopToolbarOverlayMediator {
     /** Whether a layout that this overlay can be displayed on is showing. */
     private boolean mIsOnValidLayout;
 
-    TopToolbarOverlayMediator(PropertyModel model, Context context,
+    TopToolbarOverlayMediator(
+            PropertyModel model,
+            Context context,
             LayoutStateProvider layoutStateProvider,
             Callback<ClipDrawableProgressBar.DrawingInfo> progressInfoCallback,
             ObservableSupplier<Tab> tabSupplier,
             BrowserControlsStateProvider browserControlsStateProvider,
-            TopUiThemeColorProvider topUiThemeColorProvider, int layoutsToShowOn,
+            TopUiThemeColorProvider topUiThemeColorProvider,
+            int layoutsToShowOn,
             boolean manualVisibilityControl) {
         mContext = context;
         mLayoutStateProvider = layoutStateProvider;
@@ -92,42 +95,48 @@ public class TopToolbarOverlayMediator {
         mIsOnValidLayout = (mLayoutStateProvider.getActiveLayoutType() & layoutsToShowOn) > 0;
         updateVisibility();
 
-        mSceneChangeObserver = new LayoutStateObserver() {
-            @Override
-            public void onStartedShowing(@LayoutType int layoutType) {
-                mIsOnValidLayout = (layoutType & layoutsToShowOn) > 0;
-                updateVisibility();
-            }
-        };
+        mSceneChangeObserver =
+                new LayoutStateObserver() {
+                    @Override
+                    public void onStartedShowing(@LayoutType int layoutType) {
+                        mIsOnValidLayout = (layoutType & layoutsToShowOn) > 0;
+                        updateVisibility();
+                    }
+                };
         mLayoutStateProvider.addObserver(mSceneChangeObserver);
 
         // Keep an observer attached to the visible tab (and only the visible tab) to update
         // properties including theme color.
-        Callback<Tab> activityTabCallback = (tab) -> {
-            if (tab == null) return;
-            updateVisibility();
-            updateThemeColor(tab);
-            updateProgress();
-            updateAnonymize(tab);
-        };
-        mTabObserver = new CurrentTabObserver(tabSupplier, new EmptyTabObserver() {
-            @Override
-            public void onDidChangeThemeColor(Tab tab, int color) {
-                updateThemeColor(tab);
-            }
+        Callback<Tab> activityTabCallback =
+                (tab) -> {
+                    if (tab == null) return;
+                    updateVisibility();
+                    updateThemeColor(tab);
+                    updateProgress();
+                    updateAnonymize(tab);
+                };
+        mTabObserver =
+                new CurrentTabObserver(
+                        tabSupplier,
+                        new EmptyTabObserver() {
+                            @Override
+                            public void onDidChangeThemeColor(Tab tab, int color) {
+                                updateThemeColor(tab);
+                            }
 
-            @Override
-            public void onLoadProgressChanged(Tab tab, float progress) {
-                updateProgress();
-            }
+                            @Override
+                            public void onLoadProgressChanged(Tab tab, float progress) {
+                                updateProgress();
+                            }
 
-            @Override
-            public void onContentChanged(Tab tab) {
-                updateVisibility();
-                updateThemeColor(tab);
-                updateAnonymize(tab);
-            }
-        }, activityTabCallback);
+                            @Override
+                            public void onContentChanged(Tab tab) {
+                                updateVisibility();
+                                updateThemeColor(tab);
+                                updateAnonymize(tab);
+                            }
+                        },
+                        activityTabCallback);
 
         activityTabCallback.onResult(tabSupplier.get());
         mTabObserver.triggerWithCurrentTab();
@@ -191,8 +200,10 @@ public class TopToolbarOverlayMediator {
             drawControlsAsTexture =
                     BrowserControlsUtils.drawControlsAsTexture(mBrowserControlsStateProvider);
         }
-        boolean showShadow = drawControlsAsTexture || !mIsToolbarAndroidViewVisible
-                || mIsVisibilityManuallyControlled;
+        boolean showShadow =
+                drawControlsAsTexture
+                        || !mIsToolbarAndroidViewVisible
+                        || mIsVisibilityManuallyControlled;
 
         mModel.set(TopToolbarOverlayProperties.SHOW_SHADOW, showShadow);
     }
@@ -202,8 +213,7 @@ public class TopToolbarOverlayMediator {
      * @param tab The tab to base the colors on.
      */
     private void updateThemeColor(Tab tab) {
-        @ColorInt
-        int color = getToolbarBackgroundColor(tab);
+        @ColorInt int color = getToolbarBackgroundColor(tab);
         mModel.set(TopToolbarOverlayProperties.TOOLBAR_BACKGROUND_COLOR, color);
         mModel.set(TopToolbarOverlayProperties.URL_BAR_COLOR, getUrlBarBackgroundColor(tab, color));
     }
@@ -233,14 +243,16 @@ public class TopToolbarOverlayMediator {
         if (isTablet()) return;
 
         if (mModel.get(TopToolbarOverlayProperties.PROGRESS_BAR_INFO) == null) {
-            mModel.set(TopToolbarOverlayProperties.PROGRESS_BAR_INFO,
+            mModel.set(
+                    TopToolbarOverlayProperties.PROGRESS_BAR_INFO,
                     new ClipDrawableProgressBar.DrawingInfo());
         }
 
         // Update and set the progress info to trigger an update; the PROGRESS_BAR_INFO
         // property skips the object equality check.
         mProgressInfoCallback.onResult(mModel.get(TopToolbarOverlayProperties.PROGRESS_BAR_INFO));
-        mModel.set(TopToolbarOverlayProperties.PROGRESS_BAR_INFO,
+        mModel.set(
+                TopToolbarOverlayProperties.PROGRESS_BAR_INFO,
                 mModel.get(TopToolbarOverlayProperties.PROGRESS_BAR_INFO));
     }
 
@@ -265,7 +277,7 @@ public class TopToolbarOverlayMediator {
         } else {
             boolean visibility =
                     !BrowserControlsUtils.areBrowserControlsOffScreen(mBrowserControlsStateProvider)
-                    && mIsOnValidLayout;
+                            && mIsOnValidLayout;
             mModel.set(TopToolbarOverlayProperties.VISIBLE, visibility);
         }
     }

@@ -1,0 +1,60 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("tab_groups") {
+  sources = [
+    "tab_group_coordinator.h",
+    "tab_group_coordinator.mm",
+    "tab_group_mediator.h",
+    "tab_group_mediator.mm",
+  ]
+  deps = [
+    ":tab_group_consumer",
+    ":tab_groups_ui",
+    "//base",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/common/ui/colors",
+  ]
+}
+
+source_set("tab_groups_ui") {
+  sources = [
+    "tab_group_view_controller.h",
+    "tab_group_view_controller.mm",
+    "tab_groups_commands.h",
+  ]
+  deps = [
+    ":tab_group_consumer",
+    "//base",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_ui_constants",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/util",
+  ]
+}
+
+source_set("tab_group_consumer") {
+  sources = [ "tab_group_consumer.h" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "tab_group_coordinator_unittest.mm" ]
+  deps = [
+    ":tab_groups",
+    ":tab_groups_ui",
+    "//base/test:test_support",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/web/public/test/fakes",
+    "//testing/gtest",
+    "//third_party/ocmock",
+  ]
+}

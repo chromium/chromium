@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
@@ -42,7 +43,6 @@
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/template_url_service_client.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/compositor/layer_tree_owner.h"
@@ -550,16 +550,16 @@ TEST_F(BookmarkBarViewTest, OnSavedTabGroupUpdateBookmarkBarCallsLayout) {
   // Add 3 saved tab groups.
   keyed_service->model()->Add(SavedTabGroup(std::u16string(u"tab group 1"),
                                             tab_groups::TabGroupColorId::kGrey,
-                                            {}, absl::nullopt));
+                                            {}, std::nullopt));
 
   base::Uuid button_2_id = base::Uuid::GenerateRandomV4();
   keyed_service->model()->Add(SavedTabGroup(std::u16string(u"tab group 2"),
                                             tab_groups::TabGroupColorId::kGrey,
-                                            {}, absl::nullopt, button_2_id));
+                                            {}, std::nullopt, button_2_id));
 
   keyed_service->model()->Add(SavedTabGroup(std::u16string(u"tab group 3"),
                                             tab_groups::TabGroupColorId::kGrey,
-                                            {}, absl::nullopt));
+                                            {}, std::nullopt));
 
   // Save the position of the 3rd button. The 4th button is an overflow menu
   // that is only visible when there are more than 4 groups saved.

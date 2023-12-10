@@ -122,7 +122,7 @@ class WebRequestEventRouter {
     std::unique_ptr<extension_web_request_api_helpers::ResponseHeaders>
         response_headers;
 
-    absl::optional<net::AuthCredentials> auth_credentials;
+    std::optional<net::AuthCredentials> auth_credentials;
   };
 
   // AuthRequiredResponse indicates how an OnAuthRequired call is handled.
@@ -512,8 +512,8 @@ class WebRequestEventRouter {
       Listeners& listeners,
       const ExtensionId& extension_id,
       const std::string& sub_event_name,
-      absl::optional<int> worker_thread_id,
-      absl::optional<int64_t> service_worker_version_id,
+      std::optional<int> worker_thread_id,
+      std::optional<int64_t> service_worker_version_id,
       BrowserContextID browser_context_id);
 
   // Cleans up for a listener being removed, unblocking any requests and

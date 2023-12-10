@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/shell_integration.h"
 #include "chrome/browser/ui/profiles/profile_picker.h"
+#include "chrome/browser/ui/views/profiles/profile_management_flow_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_management_flow_controller_impl.h"
 #include "chrome/browser/ui/views/profiles/profile_management_types.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_web_contents_host.h"
@@ -43,17 +44,18 @@ class FirstRunFlowControllerDice : public ProfileManagementFlowControllerImpl {
   void CancelPostSignInFlow() override;
 
  protected:
+  // ProfileManagementFlowControllerImpl
   bool PreFinishWithBrowser() override;
-
   std::unique_ptr<ProfilePickerDiceSignInProvider> CreateDiceSignInProvider()
       override;
-
   // `account_info` may not be set as the primary account yet.
   std::unique_ptr<ProfilePickerSignedInFlowController>
   CreateSignedInFlowController(
       Profile* signed_in_profile,
       const CoreAccountInfo& account_info,
       std::unique_ptr<content::WebContents> contents) override;
+  base::queue<ProfileManagementFlowController::Step> RegisterPostIdentitySteps()
+      override;
 
  private:
   void HandleIntroSigninChoice(IntroChoice choice);
@@ -68,26 +70,12 @@ class FirstRunFlowControllerDice : public ProfileManagementFlowControllerImpl {
       PostHostClearedCallback post_host_cleared_callback,
       bool is_continue_callback = false);
 
-  // Checks the conditions and timeouts to display the default browser step.
-  void HandleSwitchToDefaultBrowserStep(bool is_continue_callback);
-
-  void MaybeShowDefaultBrowserStep(bool should_show_default_browser_step);
-
-  // Callbacks to be called after checking if the browser is already set as
-  // default, in case the verification is completed or in case of timeout.
-  void OnDefaultBrowserCheckFinished(
-      shell_integration::DefaultWebClientState state);
-  void OnDefaultBrowserCheckTimeout();
-
   const raw_ptr<Profile> profile_;
   ProfilePicker::FirstRunExitedCallback first_run_exited_callback_;
 
   // Callback that will be run when the whole flow is completed, after the
   // host is cleared.
   PostHostClearedCallback post_host_cleared_callback_;
-
-  base::CancelableOnceClosure default_browser_check_timeout_closure_;
-  base::OnceCallback<void(bool)> maybe_show_default_browser_callback_;
 
   base::WeakPtrFactory<FirstRunFlowControllerDice> weak_ptr_factory_{this};
 };

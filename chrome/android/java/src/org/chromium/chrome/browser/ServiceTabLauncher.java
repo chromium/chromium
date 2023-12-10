@@ -66,8 +66,14 @@ public class ServiceTabLauncher {
      * @param postData       Post-data to include in the tab URL's request body.
      */
     @CalledByNative
-    public static void launchTab(final int requestId, boolean incognito, GURL url, int disposition,
-            String referrerUrl, int referrerPolicy, String extraHeaders,
+    public static void launchTab(
+            final int requestId,
+            boolean incognito,
+            GURL url,
+            int disposition,
+            String referrerUrl,
+            int referrerPolicy,
+            String extraHeaders,
             ResourceRequestBody postData) {
         // Open popup window in custom tab.
         // Note that this is used by PaymentRequestEvent.openWindow().
@@ -77,20 +83,32 @@ public class ServiceTabLauncher {
             if (paymentHandlerWebContent != null) {
                 onWebContentsForRequestAvailable(requestId, paymentHandlerWebContent);
             } else {
-                PostTask.postTask(TaskTraits.UI_DEFAULT,
+                PostTask.postTask(
+                        TaskTraits.UI_DEFAULT,
                         () -> onWebContentsForRequestAvailable(requestId, null));
             }
             return;
         }
 
-        dispatchLaunch(requestId, incognito, url.getSpec(), referrerUrl, referrerPolicy,
-                extraHeaders, postData);
+        dispatchLaunch(
+                requestId,
+                incognito,
+                url.getSpec(),
+                referrerUrl,
+                referrerPolicy,
+                extraHeaders,
+                postData);
     }
 
     /** Dispatches the launch event. */
-    private static void dispatchLaunch(final int requestId, final boolean incognito,
-            final String url, final String referrerUrl, final int referrerPolicy,
-            final String extraHeaders, final ResourceRequestBody postData) {
+    private static void dispatchLaunch(
+            final int requestId,
+            final boolean incognito,
+            final String url,
+            final String referrerUrl,
+            final int referrerPolicy,
+            final String extraHeaders,
+            final ResourceRequestBody postData) {
         Context context = ContextUtils.getApplicationContext();
 
         List<ResolveInfo> resolveInfos = WebApkValidator.resolveInfosForUrl(context, url);
@@ -100,28 +118,50 @@ public class ServiceTabLauncher {
             final List<ResolveInfo> resolveInfosFinal = resolveInfos;
             WebApkIdentityServiceClient.CheckBrowserBacksWebApkCallback callback =
                     (doesBrowserBackWebApk, browserPackageName) -> {
-                if (doesBrowserBackWebApk) {
-                    Intent intent = WebApkNavigationClient.createLaunchWebApkIntent(
-                            webApkPackageName, url, true /* forceNavigation */);
-                    intent.putExtra(WebappConstants.EXTRA_SOURCE, ShortcutSource.NOTIFICATION);
-                    ContextUtils.getApplicationContext().startActivity(intent);
-                    return;
-                }
-                launchTabOrWebapp(requestId, incognito, url, referrerUrl, referrerPolicy,
-                        extraHeaders, postData, resolveInfosFinal);
-            };
+                        if (doesBrowserBackWebApk) {
+                            Intent intent =
+                                    WebApkNavigationClient.createLaunchWebApkIntent(
+                                            webApkPackageName, url, /* forceNavigation= */ true);
+                            intent.putExtra(
+                                    WebappConstants.EXTRA_SOURCE, ShortcutSource.NOTIFICATION);
+                            ContextUtils.getApplicationContext().startActivity(intent);
+                            return;
+                        }
+                        launchTabOrWebapp(
+                                requestId,
+                                incognito,
+                                url,
+                                referrerUrl,
+                                referrerPolicy,
+                                extraHeaders,
+                                postData,
+                                resolveInfosFinal);
+                    };
             ChromeWebApkHost.checkChromeBacksWebApkAsync(webApkPackageName, callback);
             return;
         }
 
-        launchTabOrWebapp(requestId, incognito, url, referrerUrl, referrerPolicy, extraHeaders,
-                postData, resolveInfos);
+        launchTabOrWebapp(
+                requestId,
+                incognito,
+                url,
+                referrerUrl,
+                referrerPolicy,
+                extraHeaders,
+                postData,
+                resolveInfos);
     }
 
     /** Launches WebappActivity or a tab for the |url|. */
-    private static void launchTabOrWebapp(int requestId, boolean incognito, String url,
-            String referrerUrl, int referrerPolicy, String extraHeaders,
-            ResourceRequestBody postData, List<ResolveInfo> resolveInfosForUrl) {
+    private static void launchTabOrWebapp(
+            int requestId,
+            boolean incognito,
+            String url,
+            String referrerUrl,
+            int referrerPolicy,
+            String extraHeaders,
+            ResourceRequestBody postData,
+            List<ResolveInfo> resolveInfosForUrl) {
         // Launch WebappActivity if one matches the target URL and was opened recently.
         // Otherwise, open the URL in a tab.
         WebappDataStorage storage = WebappRegistry.getInstance().getWebappDataStorageForUrl(url);
@@ -130,8 +170,9 @@ public class ServiceTabLauncher {
         // Launch into a TrustedWebActivity if one exists for the URL.
         Context appContext = ContextUtils.getApplicationContext();
         if (!incognito) {
-            Intent twaIntent = TrustedWebActivityClient
-                    .createLaunchIntentForTwa(appContext, url, resolveInfosForUrl);
+            Intent twaIntent =
+                    TrustedWebActivityClient.createLaunchIntentForTwa(
+                            appContext, url, resolveInfosForUrl);
 
             if (twaIntent != null) {
                 appContext.startActivity(twaIntent);
@@ -149,8 +190,8 @@ public class ServiceTabLauncher {
             loadUrlParams.setVerbatimHeaders(extraHeaders);
             loadUrlParams.setReferrer(new Referrer(referrerUrl, referrerPolicy));
 
-            AsyncTabCreationParams asyncParams = new AsyncTabCreationParams(loadUrlParams,
-                    requestId);
+            AsyncTabCreationParams asyncParams =
+                    new AsyncTabCreationParams(loadUrlParams, requestId);
             chromeAsyncTabLauncher.launchNewTab(
                     asyncParams, TabLaunchType.FROM_CHROME_UI, Tab.INVALID_TAB_ID);
         } else {

@@ -17,11 +17,11 @@
 #import "components/autofill/ios/form_util/form_activity_observer_bridge.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
 #import "components/password_manager/core/browser/password_counter.h"
-#import "ios/chrome/browser/autofill/bottom_sheet/autofill_bottom_sheet_observer_bridge.h"
-#import "ios/chrome/browser/autofill/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
-#import "ios/chrome/browser/autofill/form_input_accessory_view_handler.h"
-#import "ios/chrome/browser/autofill/form_input_suggestions_provider.h"
-#import "ios/chrome/browser/autofill/form_suggestion_tab_helper.h"
+#import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_observer_bridge.h"
+#import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
+#import "ios/chrome/browser/autofill/model/form_input_accessory_view_handler.h"
+#import "ios/chrome/browser/autofill/model/form_input_suggestions_provider.h"
+#import "ios/chrome/browser/autofill/model/form_suggestion_tab_helper.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_backed_boolean.h"
@@ -339,7 +339,7 @@ class PasswordCounterDelegateBridge
   }
 
   // Return early if the URL can't be verified.
-  absl::optional<GURL> pageURL = webState->GetLastCommittedURLIfTrusted();
+  std::optional<GURL> pageURL = webState->GetLastCommittedURLIfTrusted();
   if (!pageURL) {
     [self reset];
     return;
@@ -465,7 +465,7 @@ class PasswordCounterDelegateBridge
   }
 
   // Return early if the URL can't be verified.
-  absl::optional<GURL> pageURL = _webState->GetLastCommittedURLIfTrusted();
+  std::optional<GURL> pageURL = _webState->GetLastCommittedURLIfTrusted();
   if (!pageURL) {
     return NO;
   }

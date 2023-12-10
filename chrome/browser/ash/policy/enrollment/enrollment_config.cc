@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/policy/enrollment/enrollment_config.h"
 
+#include <optional>
 #include <string>
 
 #include "base/logging.h"
@@ -18,7 +19,6 @@
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
 #include "components/prefs/pref_service.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 

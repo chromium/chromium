@@ -31,8 +31,12 @@ InterpolableColor* CSSColorInterpolationType::CreateInterpolableColor(
 
 InterpolableColor* CSSColorInterpolationType::CreateInterpolableColor(
     const StyleColor& color) {
-  if (!color.IsNumeric())
-    return CreateInterpolableColor(color.GetColorKeyword());
+  if (!color.IsNumeric()) {
+    CSSValueID color_keyword = color.GetColorKeyword();
+    DCHECK(StyleColor::IsColorKeyword(color_keyword))
+        << color << " is not a recognized color keyword";
+    return CreateInterpolableColor(color_keyword);
+  }
   return CreateInterpolableColor(color.GetColor());
 }
 

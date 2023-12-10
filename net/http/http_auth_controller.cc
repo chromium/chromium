@@ -521,7 +521,6 @@ bool HttpAuthController::SelectNextAuthIdentityToTry() {
     embedded_identity_used_ = true;
     // TODO(eroman): If the password is blank, should we also try combining
     // with a password from the cache?
-    UMA_HISTOGRAM_BOOLEAN("net.HttpIdentSrcURL", true);
     return true;
   }
 

@@ -7,13 +7,13 @@
 
 #include <utility>
 
+#include <optional>
 #include "base/functional/callback.h"
 #include "base/types/optional_util.h"
 #include "cc/paint/decoded_draw_image.h"
 #include "cc/paint/draw_image.h"
 #include "cc/paint/paint_export.h"
 #include "cc/paint/paint_op_buffer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace cc {
 class PaintImage;
@@ -28,7 +28,7 @@ class CC_PAINT_EXPORT ImageProvider {
 
     ScopedResult();
     explicit ScopedResult(DecodedDrawImage image);
-    explicit ScopedResult(absl::optional<PaintRecord> record);
+    explicit ScopedResult(std::optional<PaintRecord> record);
     ScopedResult(DecodedDrawImage image, DestructionCallback callback);
     ScopedResult(const ScopedResult&) = delete;
     ScopedResult(ScopedResult&& other);
@@ -51,7 +51,7 @@ class CC_PAINT_EXPORT ImageProvider {
     void DestroyDecode();
 
     DecodedDrawImage image_;
-    absl::optional<PaintRecord> record_;
+    std::optional<PaintRecord> record_;
     DestructionCallback destruction_callback_;
   };
 

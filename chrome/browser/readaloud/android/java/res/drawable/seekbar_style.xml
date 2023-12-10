@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape>
+            <size android:height="@dimen/readaloud_expanded_player_seek_bar_height"/>
+            <corners
+                android:radius="5dp"/>
+            <solid android:color="@macro/divider_line_bg_color"/>
+        </shape>
+    </item>
+    <item
+        android:id="@android:id/progress">
+        <clip
+            android:drawable="@drawable/seekbar_progress"/>
+    </item>
+</layer-list>

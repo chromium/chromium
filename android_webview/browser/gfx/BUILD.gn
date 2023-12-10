@@ -64,8 +64,6 @@ source_set("gfx") {
     "task_queue_webview.h",
     "viz_compositor_thread_runner_webview.cc",
     "viz_compositor_thread_runner_webview.h",
-    "vulkan_gl_interop.cc",
-    "vulkan_gl_interop.h",
   ]
 
   deps = [

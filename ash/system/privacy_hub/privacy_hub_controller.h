@@ -6,6 +6,7 @@
 #define ASH_SYSTEM_PRIVACY_HUB_PRIVACY_HUB_CONTROLLER_H_
 
 #include "ash/ash_export.h"
+#include "ash/constants/geolocation_access_level.h"
 #include "ash/public/cpp/privacy_hub_delegate.h"
 #include "ash/system/privacy_hub/camera_privacy_switch_controller.h"
 #include "ash/system/privacy_hub/geolocation_privacy_switch_controller.h"
@@ -38,18 +39,6 @@ class ASH_EXPORT ScopedLedFallbackForTesting {
 
 class ASH_EXPORT PrivacyHubController {
  public:
-  // This enum defines the access levels of the signals of the Privacy Hub
-  // features (namely microphone, camera and geolocation) for the entire
-  // ChromeOS ecosystem.
-  // Don't modify or reorder the enum elements. New values can be added at the
-  // end. These values shall be in sync with the
-  // DeviceLoginScreenGeolocationAccessLevelProto::GeolocationAccessLevel.
-  enum class AccessLevel {
-    kDisallowed = 0,
-    kAllowed = 1,
-    kMaxValue = kAllowed,
-  };
-
   explicit PrivacyHubController(base::PassKey<PrivacyHubController>);
 
   PrivacyHubController(const PrivacyHubController&) = delete;
@@ -74,7 +63,7 @@ class ASH_EXPORT PrivacyHubController {
   // Gets the speak-on-mute controller if available.
   SpeakOnMuteDetectionPrivacySwitchController* speak_on_mute_controller();
 
-  // Gets the geolocation controller if available.
+  // Gets the geolocation controller.
   GeolocationPrivacySwitchController* geolocation_controller();
 
   CameraPrivacySwitchSynchronizer* CameraSynchronizerForTest();
@@ -102,6 +91,15 @@ class ASH_EXPORT PrivacyHubController {
   // disabled). Should be used only in that case to avoid repeated blocking
   // calls to the filesystem.
   static bool CheckCameraLEDFallbackDirectly();
+
+  // ARC++ geolocation toggle is migrating to ChromeOS. ChromeOS has 3 states
+  // for geolocation access level, while ARC++ has 2. These functions implement
+  // the mappings between ARC++ boolean values and ChromeOS's
+  // `GeolocationAccessLevel`s.
+  static GeolocationAccessLevel ArcToCrosGeolocationPermissionMapping(
+      bool enabled);
+  static bool CrosToArcGeolocationPermissionMapping(
+      GeolocationAccessLevel access_level);
 
  private:
   // Used for first time initialization of the cached value.

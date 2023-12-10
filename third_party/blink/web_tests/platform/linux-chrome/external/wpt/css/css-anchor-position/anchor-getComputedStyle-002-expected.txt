@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+[FAIL] getComputedStyle() with fragmented containing block in inline layout
+  assert_equals: expected "20px" but got "0px"
+Harness: the test ran to completion.

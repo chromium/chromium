@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/i18n/break_iterator.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 
 // Breaks on an underscore and numbers. Otherwise, it behaves like its parent
 // class with `BreakIterator::BREAK_WORD`.

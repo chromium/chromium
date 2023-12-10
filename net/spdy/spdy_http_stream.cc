@@ -23,6 +23,7 @@
 #include "net/http/http_response_info.h"
 #include "net/log/net_log_event_type.h"
 #include "net/log/net_log_with_source.h"
+#include "net/socket/next_proto.h"
 #include "net/spdy/spdy_http_utils.h"
 #include "net/spdy/spdy_session.h"
 #include "net/third_party/quiche/src/quiche/spdy/core/http2_header_block.h"
@@ -308,11 +309,12 @@ void SpdyHttpStream::OnHeadersReceived(
   response_info_->response_time = stream_->response_time();
   // Don't store the SSLInfo in the response here, HttpNetworkTransaction
   // will take care of that part.
-  response_info_->was_alpn_negotiated = was_alpn_negotiated_;
+  CHECK_EQ(stream_->GetNegotiatedProtocol(), kProtoHTTP2);
+  response_info_->was_alpn_negotiated = true;
   response_info_->request_time = stream_->GetRequestTime();
-  response_info_->connection_info = HttpResponseInfo::CONNECTION_INFO_HTTP2;
+  response_info_->connection_info = HttpConnectionInfo::kHTTP2;
   response_info_->alpn_negotiated_protocol =
-      HttpResponseInfo::ConnectionInfoToString(response_info_->connection_info);
+      HttpConnectionInfoToString(response_info_->connection_info);
 
   // Invalidate HttpRequestInfo pointer. This is to allow |this| to be
   // shared across multiple consumers at the cache layer which might require
@@ -444,13 +446,12 @@ void SpdyHttpStream::SendEmptyBody() {
   CHECK(!HasUploadData());
   CHECK(spdy_session_->EndStreamWithDataFrame());
 
-  auto buffer = base::MakeRefCounted<IOBuffer>(/* buffer_size = */ 0);
+  auto buffer = base::MakeRefCounted<IOBufferWithSize>(/* buffer_size = */ 0);
   stream_->SendData(buffer.get(), /* length = */ 0, NO_MORE_DATA_TO_SEND);
 }
 
 void SpdyHttpStream::InitializeStreamHelper() {
   stream_->SetDelegate(this);
-  was_alpn_negotiated_ = stream_->WasAlpnNegotiated();
 }
 
 void SpdyHttpStream::ResetStream(int error) {
@@ -575,7 +576,7 @@ int SpdyHttpStream::GetRemoteEndpoint(IPEndPoint* endpoint) {
 }
 
 void SpdyHttpStream::PopulateNetErrorDetails(NetErrorDetails* details) {
-  details->connection_info = HttpResponseInfo::CONNECTION_INFO_HTTP2;
+  details->connection_info = HttpConnectionInfo::kHTTP2;
   return;
 }
 

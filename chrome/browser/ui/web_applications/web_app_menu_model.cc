@@ -39,6 +39,22 @@
 #include "ui/views/widget/widget.h"
 #endif
 
+namespace {
+
+bool ShouldAllowOpenInChrome(Browser* browser) {
+  // Isolated Web Apps shouldn't be opened in Chrome.
+  const bool is_isolated_web_app =
+      browser->app_controller() &&
+      browser->app_controller()->IsIsolatedWebApp();
+  // Web Apps with enabled prevent close shouldn't be opened in Chrome.
+  const bool prevent_close_enabled =
+      browser->app_controller() &&
+      browser->app_controller()->IsPreventCloseEnabled();
+  return !is_isolated_web_app && !prevent_close_enabled;
+}
+
+}  // namespace
+
 constexpr int WebAppMenuModel::kUninstallAppCommandId;
 constexpr int WebAppMenuModel::kExtensionsMenuCommandId;
 
@@ -57,6 +73,9 @@ bool WebAppMenuModel::IsCommandIdEnabled(int command_id) const {
                  features::kDesktopPWAsElidedExtensionsMenu) &&
              browser()->window()->GetExtensionsContainer() &&
              browser()->window()->GetExtensionsContainer()->HasAnyExtensions();
+    case IDC_OPEN_IN_CHROME: {
+      return ShouldAllowOpenInChrome(browser());
+    }
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     case chromeos::MoveToDesksMenuModel::kMenuCommandId:
       return chromeos::MoveToDesksMenuDelegate::ShouldShowMoveToDesksMenu(
@@ -68,13 +87,17 @@ bool WebAppMenuModel::IsCommandIdEnabled(int command_id) const {
 }
 
 bool WebAppMenuModel::IsCommandIdVisible(int command_id) const {
+  switch (command_id) {
+    case IDC_OPEN_IN_CHROME:
+      return ShouldAllowOpenInChrome(browser());
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (command_id == chromeos::MoveToDesksMenuModel::kMenuCommandId) {
-    return chromeos::MoveToDesksMenuDelegate::ShouldShowMoveToDesksMenu(
-        browser()->window()->GetNativeWindow());
-  }
+    case chromeos::MoveToDesksMenuModel::kMenuCommandId:
+      return chromeos::MoveToDesksMenuDelegate::ShouldShowMoveToDesksMenu(
+          browser()->window()->GetNativeWindow());
 #endif
-  return AppMenuModel::IsCommandIdVisible(command_id);
+    default:
+      return AppMenuModel::IsCommandIdVisible(command_id);
+  }
 }
 
 void WebAppMenuModel::ExecuteCommand(int command_id, int event_flags) {
@@ -86,6 +109,11 @@ void WebAppMenuModel::ExecuteCommand(int command_id, int event_flags) {
       break;
     case kExtensionsMenuCommandId:
       browser()->window()->GetExtensionsContainer()->ToggleExtensionsMenu();
+      break;
+    case IDC_OPEN_IN_CHROME:
+      if (ShouldAllowOpenInChrome(browser())) {
+        AppMenuModel::ExecuteCommand(command_id, event_flags);
+      }
       break;
     default:
       AppMenuModel::ExecuteCommand(command_id, event_flags);
@@ -146,9 +174,7 @@ void WebAppMenuModel::Build() {
   }
   AddItemWithStringId(IDC_COPY_URL, IDS_COPY_URL);
 
-  // Isolated Web Apps shouldn't be opened in Chrome.
-  if (!is_isolated_web_app)
-    AddItemWithStringId(IDC_OPEN_IN_CHROME, IDS_OPEN_IN_CHROME);
+  AddItemWithStringId(IDC_OPEN_IN_CHROME, IDS_OPEN_IN_CHROME);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (chromeos::MoveToDesksMenuDelegate::ShouldShowMoveToDesksMenu(

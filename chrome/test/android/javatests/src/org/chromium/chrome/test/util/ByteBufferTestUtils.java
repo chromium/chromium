@@ -8,9 +8,7 @@ import org.junit.Assert;
 
 import java.nio.ByteBuffer;
 
-/**
- * Utility functions for tests using ByteBuffers.
- */
+/** Utility functions for tests using ByteBuffers. */
 public final class ByteBufferTestUtils {
     /**
      * Verify a ByteBuffer is equal to a byte array.

@@ -136,7 +136,8 @@ struct ImportScenarioTestCase {
   AutofillProfile observed_profile;
   bool is_prompt_expected;
   UserDecision user_decision;
-  AutofillProfile edited_profile{};
+  AutofillProfile edited_profile{
+      i18n_model_definition::kLegacyHierarchyCountryCode};
   AutofillProfileImportType expected_import_type;
   bool is_profile_change_expected;
   absl::optional<AutofillProfile> merge_candidate;
@@ -1205,7 +1206,8 @@ TEST_P(AddressProfileSaveManagerTest,
 // Silent Update is enabled for the test.
 TEST_P(AddressProfileSaveManagerTest,
        SilentlyUpdateProfile_UpdateStructuredName) {
-  AutofillProfile updateable_profile;
+  AutofillProfile updateable_profile(
+      i18n_model_definition::kLegacyHierarchyCountryCode);
   test::SetProfileTestValues(
       &updateable_profile,
       {{NAME_FULL, "AAA BBB CCC", VerificationStatus::kObserved},
@@ -1219,7 +1221,8 @@ TEST_P(AddressProfileSaveManagerTest,
        {ADDRESS_HOME_ZIP, "99666", VerificationStatus::kObserved},
        {ADDRESS_HOME_CITY, "Los Angeles", VerificationStatus::kObserved}});
 
-  AutofillProfile observed_profile;
+  AutofillProfile observed_profile(
+      i18n_model_definition::kLegacyHierarchyCountryCode);
   test::SetProfileTestValues(
       &observed_profile,
       {{NAME_FULL, "AAA BBB CCC", VerificationStatus::kObserved},
@@ -1255,7 +1258,8 @@ TEST_P(AddressProfileSaveManagerTest,
 // Silent Update is enabled for the test.
 TEST_P(AddressProfileSaveManagerTest,
        SilentlyUpdateProfile_UpdateStructuredNameWithIncompleteProfile) {
-  AutofillProfile updateable_profile;
+  AutofillProfile updateable_profile(
+      i18n_model_definition::kLegacyHierarchyCountryCode);
   test::SetProfileTestValues(
       &updateable_profile,
       {{NAME_FULL, "AAA BBB CCC", VerificationStatus::kObserved},
@@ -1269,7 +1273,8 @@ TEST_P(AddressProfileSaveManagerTest,
        {ADDRESS_HOME_ZIP, "99666", VerificationStatus::kObserved},
        {ADDRESS_HOME_CITY, "Los Angeles", VerificationStatus::kObserved}});
 
-  AutofillProfile observed_profile;
+  AutofillProfile observed_profile(
+      i18n_model_definition::kLegacyHierarchyCountryCode);
   test::SetProfileTestValues(
       &observed_profile,
       {{NAME_FULL, "AAA BBB CCC", VerificationStatus::kObserved},
@@ -1277,7 +1282,8 @@ TEST_P(AddressProfileSaveManagerTest,
        {NAME_MIDDLE, "", VerificationStatus::kParsed},
        {NAME_LAST, "BBB CCC", VerificationStatus::kParsed}});
 
-  AutofillProfile final_profile;
+  AutofillProfile final_profile(
+      i18n_model_definition::kLegacyHierarchyCountryCode);
   test::SetProfileTestValues(
       &final_profile,
       {{NAME_FULL, "AAA BBB CCC", VerificationStatus::kObserved},

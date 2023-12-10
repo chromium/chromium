@@ -5,17 +5,13 @@
 import {dispatchSimpleEvent} from 'chrome://resources/ash/common/cr_deprecated.js';
 import {NativeEventTarget as EventTarget} from 'chrome://resources/ash/common/event_target.js';
 
-/**
- * @fileoverview
- * This file is checked via TS, so we suppress Closure checks.
- * @suppress {checkTypes}
- */
+import type {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 
 /**
  * Quick view model that doesn't fit into properties of quick view element.
  */
 export class QuickViewModel extends EventTarget {
-  private selectedEntry_?: FileEntry|Entry;
+  private selectedEntry_?: Entry|FilesAppEntry;
 
   constructor() {
     super();
@@ -32,7 +28,7 @@ export class QuickViewModel extends EventTarget {
    * Sets the selected file entry. Emits a synchronous selected-entry-changed
    * event to immediately call MetadataBoxController.updateView_().
    */
-  setSelectedEntry(entry: Entry) {
+  setSelectedEntry(entry: Entry|FilesAppEntry) {
     this.selectedEntry_ = entry;
     dispatchSimpleEvent(this, 'selected-entry-changed');
   }

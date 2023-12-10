@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <deque>
 #include <memory>
+#include <string_view>
 
 #include "base/barrier_closure.h"
 #include "base/containers/circular_deque.h"
@@ -93,7 +94,7 @@ void VerifyActualMyIpAddresses(const net::IPAddressList& test_list) {
     EXPECT_EQ(1u, candidates.count(ip));
 }
 
-net::IPAddress CreateIPAddress(base::StringPiece literal) {
+net::IPAddress CreateIPAddress(std::string_view literal) {
   net::IPAddress result;
   if (!result.AssignFromIPLiteral(literal)) {
     ADD_FAILURE() << "Failed parsing IP: " << literal;
@@ -106,7 +107,7 @@ class MockHostResolverProc : public net::HostResolverProc {
  public:
   MockHostResolverProc() : HostResolverProc(nullptr) {}
 
-  void SetDnsResult(const std::vector<base::StringPiece>& ip_literals) {
+  void SetDnsResult(const std::vector<std::string_view>& ip_literals) {
     result_.clear();
     for (const auto& ip : ip_literals)
       result_.push_back(net::IPEndPoint(CreateIPAddress(ip), 8080));
@@ -275,8 +276,8 @@ class MockSocketFactory : public net::ClientSocketFactory {
   MockSocketFactory() = default;
 
   // Connect successes and failures that complete asynchronously
-  void AddUDPConnectSuccess(base::StringPiece peer_ip_literal,
-                            base::StringPiece local_ip_literal,
+  void AddUDPConnectSuccess(std::string_view peer_ip_literal,
+                            std::string_view local_ip_literal,
                             int connect_order = -1) {
     auto peer_ip = CreateIPAddress(peer_ip_literal);
     auto local_ip = CreateIPAddress(local_ip_literal);
@@ -288,7 +289,7 @@ class MockSocketFactory : public net::ClientSocketFactory {
                         connect_order);
   }
 
-  void AddUDPConnectFailure(base::StringPiece peer_ip, int connect_order = -1) {
+  void AddUDPConnectFailure(std::string_view peer_ip, int connect_order = -1) {
     AddUDPConnectResult(CreateIPAddress(peer_ip), net::IPAddress(),
                         net::ERR_ADDRESS_UNREACHABLE, connect_order);
   }

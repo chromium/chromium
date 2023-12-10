@@ -6,7 +6,13 @@
 
 namespace ui {
 
-ColorProviderSourceObserver::ColorProviderSourceObserver() = default;
+ColorProviderSourceObserver::ColorProviderSourceObserver(
+    ColorProviderSource* source)
+    : source_(source) {
+  if (source) {
+    color_provider_source_observation_.Observe(source);
+  }
+}
 
 ColorProviderSourceObserver::~ColorProviderSourceObserver() = default;
 

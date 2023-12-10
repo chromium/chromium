@@ -193,7 +193,8 @@ TEST_F(IpProtectionConfigHttpTest, GetProxyConfigSuccess) {
 
   base::test::TestFuture<absl::StatusOr<ip_protection::GetProxyConfigResponse>>
       result_future;
-  http_fetcher_->GetProxyConfig(result_future.GetCallback());
+  http_fetcher_->GetProxyConfig(result_future.GetCallback(),
+                                /*for_testing=*/true);
 
   absl::StatusOr<ip_protection::GetProxyConfigResponse> result =
       result_future.Get();
@@ -217,7 +218,8 @@ TEST_F(IpProtectionConfigHttpTest, GetProxyConfigEmpty) {
 
   base::test::TestFuture<absl::StatusOr<ip_protection::GetProxyConfigResponse>>
       result_future;
-  http_fetcher_->GetProxyConfig(result_future.GetCallback());
+  http_fetcher_->GetProxyConfig(result_future.GetCallback(),
+                                /*for_testing=*/true);
 
   absl::StatusOr<ip_protection::GetProxyConfigResponse> result =
       result_future.Get();
@@ -235,7 +237,8 @@ TEST_F(IpProtectionConfigHttpTest, GetProxyConfigFails) {
 
   base::test::TestFuture<absl::StatusOr<ip_protection::GetProxyConfigResponse>>
       result_future;
-  http_fetcher_->GetProxyConfig(result_future.GetCallback());
+  http_fetcher_->GetProxyConfig(result_future.GetCallback(),
+                                /*for_testing=*/true);
 
   absl::StatusOr<ip_protection::GetProxyConfigResponse> result =
       result_future.Get();

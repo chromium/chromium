@@ -28,16 +28,19 @@ import org.chromium.components.download.internal.BatteryStatusListenerAndroid;
  */
 @JNINamespace("download::android")
 public class DownloadBackgroundTask extends NativeBackgroundTask {
-    @DownloadTaskType
-    private int mCurrentTaskType;
+    @DownloadTaskType private int mCurrentTaskType;
 
     @Override
     protected @StartBeforeNativeResult int onStartTaskBeforeNativeLoaded(
             Context context, TaskParameters taskParameters, TaskFinishedCallback callback) {
-        boolean requiresCharging = taskParameters.getExtras().getBoolean(
-                DownloadTaskScheduler.EXTRA_BATTERY_REQUIRES_CHARGING);
-        int optimalBatteryPercentage = taskParameters.getExtras().getInt(
-                DownloadTaskScheduler.EXTRA_OPTIMAL_BATTERY_PERCENTAGE);
+        boolean requiresCharging =
+                taskParameters
+                        .getExtras()
+                        .getBoolean(DownloadTaskScheduler.EXTRA_BATTERY_REQUIRES_CHARGING);
+        int optimalBatteryPercentage =
+                taskParameters
+                        .getExtras()
+                        .getInt(DownloadTaskScheduler.EXTRA_OPTIMAL_BATTERY_PERCENTAGE);
         mCurrentTaskType = taskParameters.getExtras().getInt(DownloadTaskScheduler.EXTRA_TASK_TYPE);
         // Reschedule if minimum battery level is not satisfied.
         if (!requiresCharging
@@ -59,12 +62,17 @@ public class DownloadBackgroundTask extends NativeBackgroundTask {
             // In case of user-initiated jobs, we need to ensure that notifications are attached to
             // the job life cycle.
             ensureNotificationBridgeInitialized();
-            DownloadNotificationService.getInstance().setBackgroundTaskNotificationCallback(
-                    taskParameters.getTaskId(), callback);
+            DownloadNotificationService.getInstance()
+                    .setBackgroundTaskNotificationCallback(taskParameters.getTaskId(), callback);
         }
-        DownloadBackgroundTaskJni.get().startBackgroundTask(DownloadBackgroundTask.this,
-                getProfileKey(), mCurrentTaskType,
-                needsReschedule -> { finishTask(taskParameters, callback, needsReschedule); });
+        DownloadBackgroundTaskJni.get()
+                .startBackgroundTask(
+                        DownloadBackgroundTask.this,
+                        getProfileKey(),
+                        mCurrentTaskType,
+                        needsReschedule -> {
+                            finishTask(taskParameters, callback, needsReschedule);
+                        });
     }
 
     @Override
@@ -80,21 +88,21 @@ public class DownloadBackgroundTask extends NativeBackgroundTask {
     @Override
     protected boolean onStopTaskWithNative(Context context, TaskParameters taskParameters) {
         if (DownloadUtils.isUserInitiatedJob(mTaskId)) {
-            DownloadNotificationService.getInstance().setBackgroundTaskNotificationCallback(
-                    taskParameters.getTaskId(), null);
+            DownloadNotificationService.getInstance()
+                    .setBackgroundTaskNotificationCallback(taskParameters.getTaskId(), null);
         }
         @DownloadTaskType
         int taskType = taskParameters.getExtras().getInt(DownloadTaskScheduler.EXTRA_TASK_TYPE);
-        return DownloadBackgroundTaskJni.get().stopBackgroundTask(
-                DownloadBackgroundTask.this, getProfileKey(), taskType);
+        return DownloadBackgroundTaskJni.get()
+                .stopBackgroundTask(DownloadBackgroundTask.this, getProfileKey(), taskType);
     }
 
     @VisibleForTesting
     protected void finishTask(
             TaskParameters taskParameters, TaskFinishedCallback callback, boolean needsReschedule) {
         if (DownloadUtils.isUserInitiatedJob(mTaskId)) {
-            DownloadNotificationService.getInstance().setBackgroundTaskNotificationCallback(
-                    taskParameters.getTaskId(), null);
+            DownloadNotificationService.getInstance()
+                    .setBackgroundTaskNotificationCallback(taskParameters.getTaskId(), null);
         }
         callback.taskFinished(needsReschedule);
     }
@@ -112,8 +120,12 @@ public class DownloadBackgroundTask extends NativeBackgroundTask {
     @NativeMethods
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public interface Natives {
-        void startBackgroundTask(DownloadBackgroundTask caller, ProfileKey key, int taskType,
+        void startBackgroundTask(
+                DownloadBackgroundTask caller,
+                ProfileKey key,
+                int taskType,
                 Callback<Boolean> callback);
+
         boolean stopBackgroundTask(DownloadBackgroundTask caller, ProfileKey key, int taskType);
     }
 }

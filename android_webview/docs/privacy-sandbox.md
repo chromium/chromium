@@ -33,8 +33,9 @@ be shipped anywhere or used as the basis for implementing a browser.
 Ensure you are testing with a device/emulator that supports Privacy Sandbox
 (https://developer.android.com/design-for-safety/privacy-sandbox/download#device).
 You will need to add the following to your GN args:
+```
 target_os = "android"
-android_sdk_release = "tprivacysandbox"
+```
 
 
 ### Building the app and sdk

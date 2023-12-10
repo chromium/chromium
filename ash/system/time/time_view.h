@@ -32,6 +32,8 @@ class ClockModel;
 // The Date view, which is a date in a calendar icon, for vertical time view.
 // For horizontal time view, there's no Date Icon View and it shows a text date.
 class VerticalDateView : public views::View {
+  METADATA_HEADER(VerticalDateView, views::View)
+
  public:
   VerticalDateView();
   VerticalDateView(const VerticalDateView& other) = delete;

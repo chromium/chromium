@@ -65,6 +65,8 @@
 #include <stdint.h>
 #include <time.h>
 
+#include <compare>
+#include <concepts>
 #include <iosfwd>
 #include <limits>
 #include <ostream>
@@ -315,24 +317,9 @@ class BASE_EXPORT TimeDelta {
   }
 
   // Comparison operators.
-  constexpr bool operator==(TimeDelta other) const {
-    return delta_ == other.delta_;
-  }
-  constexpr bool operator!=(TimeDelta other) const {
-    return delta_ != other.delta_;
-  }
-  constexpr bool operator<(TimeDelta other) const {
-    return delta_ < other.delta_;
-  }
-  constexpr bool operator<=(TimeDelta other) const {
-    return delta_ <= other.delta_;
-  }
-  constexpr bool operator>(TimeDelta other) const {
-    return delta_ > other.delta_;
-  }
-  constexpr bool operator>=(TimeDelta other) const {
-    return delta_ >= other.delta_;
-  }
+  friend constexpr bool operator==(TimeDelta, TimeDelta) = default;
+  friend constexpr std::strong_ordering operator<=>(TimeDelta,
+                                                    TimeDelta) = default;
 
   // Returns this delta, ceiled/floored/rounded-away-from-zero to the nearest
   // multiple of |interval|.
@@ -482,24 +469,9 @@ class TimeBase {
   }
 
   // Comparison operators
-  constexpr bool operator==(const TimeBase<TimeClass>& other) const {
-    return us_ == other.us_;
-  }
-  constexpr bool operator!=(const TimeBase<TimeClass>& other) const {
-    return us_ != other.us_;
-  }
-  constexpr bool operator<(const TimeBase<TimeClass>& other) const {
-    return us_ < other.us_;
-  }
-  constexpr bool operator<=(const TimeBase<TimeClass>& other) const {
-    return us_ <= other.us_;
-  }
-  constexpr bool operator>(const TimeBase<TimeClass>& other) const {
-    return us_ > other.us_;
-  }
-  constexpr bool operator>=(const TimeBase<TimeClass>& other) const {
-    return us_ >= other.us_;
-  }
+  friend constexpr bool operator==(const TimeBase&, const TimeBase&) = default;
+  friend constexpr std::strong_ordering operator<=>(const TimeBase&,
+                                                    const TimeBase&) = default;
 
  protected:
   constexpr explicit TimeBase(int64_t us) : us_(us) {}
@@ -692,11 +664,10 @@ class BASE_EXPORT Time : public time_internal::TimeBase<Time> {
   // version; otherwise such calls would need to manually cast their args to
   // int64_t, since the compiler isn't sure whether to promote to int64_t or
   // double.
-  template <typename T,
-            typename = std::enable_if_t<
-                std::is_integral_v<T> && !std::is_same_v<T, int64_t> &&
-                (sizeof(T) < sizeof(int64_t) ||
-                 (sizeof(T) == sizeof(int64_t) && std::is_signed_v<T>))>>
+  template <typename T>
+    requires(std::integral<T> && !std::same_as<T, int64_t> &&
+             (sizeof(T) < sizeof(int64_t) ||
+              (sizeof(T) == sizeof(int64_t) && std::is_signed_v<T>)))
   static constexpr Time FromMillisecondsSinceUnixEpoch(T ms_since_epoch) {
     return FromMillisecondsSinceUnixEpoch(int64_t{ms_since_epoch});
   }

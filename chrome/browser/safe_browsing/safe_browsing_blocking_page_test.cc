@@ -364,7 +364,17 @@ class FakeSafeBrowsingUIManager : public TestSafeBrowsingUIManager {
     }
   }
 
+  void MaybeSendClientSafeBrowsingWarningShownReport(
+      std::unique_ptr<ClientSafeBrowsingReportRequest> report,
+      WebContents* web_contents) override {
+    if (SafeBrowsingUIManager::ShouldSendClientSafeBrowsingWarningShownReport(
+            report.get(), web_contents)) {
+      report_sent_ = true;
+    }
+  }
+
   bool hit_report_sent() { return hit_report_sent_; }
+  bool report_sent() { return report_sent_; }
   absl::optional<ThreatSource> hit_report_sent_threat_source() {
     return hit_report_sent_threat_source_;
   }
@@ -401,6 +411,7 @@ class FakeSafeBrowsingUIManager : public TestSafeBrowsingUIManager {
   base::OnceClosure threat_details_done_callback_;
   bool threat_details_done_ = false;
   bool hit_report_sent_ = false;
+  bool report_sent_ = false;
   bool expect_empty_report_for_hats_ = true;
   bool expect_report_url_for_hats_ = false;
   bool expect_interstitial_interactions_ = false;
@@ -610,8 +621,12 @@ class SafeBrowsingBlockingPageBrowserTest
         safe_browsing::kThreatDomDetailsTagAndAttributeFeature, parameters);
     base::test::FeatureRefAndParams add_warning_shown_timestamp_csbrrs(
         safe_browsing::kAddWarningShownTSToClientSafeBrowsingReport, {});
+    base::test::FeatureRefAndParams create_warning_shown_csbrrs(
+        safe_browsing::kCreateWarningShownClientSafeBrowsingReports, {});
     scoped_feature_list_.InitWithFeaturesAndParameters(
-        {tag_and_attribute, add_warning_shown_timestamp_csbrrs}, {});
+        {tag_and_attribute, add_warning_shown_timestamp_csbrrs,
+         create_warning_shown_csbrrs},
+        {});
   }
 
   SafeBrowsingBlockingPageBrowserTest(
@@ -968,6 +983,12 @@ class SafeBrowsingBlockingPageBrowserTest
     return static_cast<FakeSafeBrowsingUIManager*>(
                factory_.test_safe_browsing_service()->ui_manager().get())
         ->hit_report_sent();
+  }
+
+  bool report_sent() {
+    return static_cast<FakeSafeBrowsingUIManager*>(
+               factory_.test_safe_browsing_service()->ui_manager().get())
+        ->report_sent();
   }
 
   // Helper method for LearnMore test below. Implemented as a test fixture
@@ -1909,6 +1930,7 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
       prefs::kSafeBrowsingScoutReportingEnabled, true);
   GURL url = SetupWarningAndNavigate(browser());  // not incognito
   EXPECT_TRUE(hit_report_sent());
+  EXPECT_TRUE(report_sent());
 }
 
 IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
@@ -1933,6 +1955,7 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
                         incognito_browser, "enhanced-protection-message"));
 
   EXPECT_FALSE(hit_report_sent());
+  EXPECT_FALSE(report_sent());
 }
 
 IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
@@ -1950,6 +1973,7 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
       prefs::kSafeBrowsingScoutReportingEnabled, false);  // set up SBER
   GURL url = SetupWarningAndNavigate(browser());          // not incognito
   EXPECT_FALSE(hit_report_sent());
+  EXPECT_FALSE(report_sent());
 }
 
 namespace {
@@ -2885,11 +2909,7 @@ class SafeBrowsingBlockingPageDelayedWarningBrowserTest
       const SafeBrowsingBlockingPageDelayedWarningBrowserTest&) = delete;
 
   void SetUp() override {
-    std::vector<base::test::FeatureRefAndParams> enabled_features{
-        base::test::FeatureRefAndParams(blink::features::kPortals, {}),
-        base::test::FeatureRefAndParams(blink::features::kPortalsCrossOrigin,
-                                        {}),
-    };
+    std::vector<base::test::FeatureRefAndParams> enabled_features;
     if (warning_on_mouse_click_enabled()) {
       enabled_features.push_back(base::test::FeatureRefAndParams(
           kDelayedWarnings, {{"mouse", "true"}}));
@@ -3541,9 +3561,11 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageDelayedWarningBrowserTest,
                        PasswordSaveDisabled) {
   base::HistogramTester histograms;
 
+  // This is needed for tests using BubbleObserver
+  content::WebContents* contents = nullptr;
+  PasswordManagerBrowserTestBase::GetNewTab(browser(), &contents);
+
   // Navigate to the page.
-  content::WebContents* contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
   content::TestNavigationObserver observer1(contents);
   const GURL url =
       embedded_test_server()->GetURL("/password/password_form.html");
@@ -3590,15 +3612,16 @@ class SafeBrowsingBlockingPageIDNTest
 
     SafeBrowsingService* sb_service =
         g_browser_process->safe_browsing_service();
+    auto* primary_main_frame = contents->GetPrimaryMainFrame();
     const content::GlobalRenderFrameHostId primary_main_frame_id =
-        contents->GetPrimaryMainFrame()->GetGlobalId();
+        primary_main_frame->GetGlobalId();
     SafeBrowsingBlockingPage::UnsafeResource resource;
 
     resource.url = request_url;
     resource.is_subresource = is_subresource;
     resource.threat_type = testing::get<1>(GetParam());
     resource.render_process_id = primary_main_frame_id.child_id;
-    resource.render_frame_id = primary_main_frame_id.frame_routing_id;
+    resource.render_frame_token = primary_main_frame->GetFrameToken().value();
     resource.threat_source = safe_browsing::ThreatSource::LOCAL_PVER4;
 
     auto* ui_manager = sb_service->ui_manager().get();
@@ -3623,57 +3646,6 @@ INSTANTIATE_TEST_SUITE_P(
                      testing::Values(SB_THREAT_TYPE_URL_MALWARE,
                                      SB_THREAT_TYPE_URL_PHISHING,
                                      SB_THREAT_TYPE_URL_UNWANTED)));
-
-// Tests with the <portal> tag.
-class SafeBrowsingBlockingPageDelayedWarningWithPortalBrowserTest
-    : public SafeBrowsingBlockingPageDelayedWarningBrowserTest {
- public:
-  SafeBrowsingBlockingPageDelayedWarningWithPortalBrowserTest() = default;
-
-  void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{kDelayedWarnings, blink::features::kPortals,
-                              blink::features::kPortalsCrossOrigin},
-        /*disabled_features=*/{});
-    InProcessBrowserTest::SetUp();
-  }
-};
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    SafeBrowsingBlockingPageDelayedWarningWithPortalBrowserTest,
-    testing::Combine(
-        testing::Values(false, true), /* IsolateAllSitesForTesting */
-        testing::Values(false, true) /* Show warning on mouse click */));
-
-// Tests that if a page embeds a portal whose contents are considered dangerous
-// by Safe Browsing, the embedder is also treated as dangerous, and the
-// interstitial isn't delayed. This is similar to
-// PortalBrowserTest.EmbedderOfDangerousPortalConsideredDangerous.
-// TODO(crbug.com/1222099): Flaky.
-IN_PROC_BROWSER_TEST_P(
-    SafeBrowsingBlockingPageDelayedWarningWithPortalBrowserTest,
-    DISABLED_Portal_WarningNotDelayed) {
-  GURL main_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
-  GURL dangerous_url(
-      embedded_test_server()->GetURL("evil.com", "/title2.html"));
-  SetURLThreatType(dangerous_url, SB_THREAT_TYPE_URL_PHISHING);
-
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
-  WebContents* contents = browser()->tab_strip_model()->GetActiveWebContents();
-
-  content::TestNavigationObserver observer(contents);
-  ASSERT_TRUE(content::ExecJs(
-      contents,
-      content::JsReplace("let portal = document.createElement('portal');"
-                         "portal.src = $1;"
-                         "document.body.appendChild(portal);",
-                         dangerous_url)));
-  observer.WaitForNavigationFinished();
-  // The interstitial should be shown immediately.
-  EXPECT_TRUE(WaitForReady(browser()));
-  EXPECT_TRUE(IsShowingInterstitial(contents));
-}
 
 class SafeBrowsingBlockingPageEnhancedProtectionMessageTest
     : public policy::PolicyTest {

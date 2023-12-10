@@ -39,10 +39,13 @@ class MEDIA_EXPORT HlsRenditionHost {
   virtual void ReadStream(std::unique_ptr<HlsDataSourceStream> stream,
                           HlsDataSourceProvider::ReadCb cb) = 0;
 
-  virtual hls::ParseStatus::Or<scoped_refptr<hls::MediaPlaylist>>
-  ParseMediaPlaylistFromStringSource(base::StringPiece source,
-                                     GURL uri,
-                                     hls::types::DecimalInteger version) = 0;
+  // Fetch a new playlist for live content at the requested URI.
+  virtual void UpdateRenditionManifestUri(std::string role,
+                                          GURL uri,
+                                          base::OnceClosure cb) = 0;
+
+  // Used to set network speed (bits per second) for the adaptation selector.
+  virtual void UpdateNetworkSpeed(uint64_t bps) = 0;
 };
 
 class MEDIA_EXPORT HlsRendition {
@@ -70,7 +73,11 @@ class MEDIA_EXPORT HlsRendition {
   // `CheckState` and `Seek` should be no-ops.
   virtual void Stop() = 0;
 
-  static HlsDemuxerStatus::Or<std::unique_ptr<HlsRendition>> CreateRendition(
+  // Update playlist because we've adapted to a network or resolution change.
+  virtual void UpdatePlaylist(scoped_refptr<hls::MediaPlaylist> playlist,
+                              std::optional<GURL> new_playlist_uri) = 0;
+
+  static std::unique_ptr<HlsRendition> CreateRendition(
       ManifestDemuxerEngineHost* engine_host,
       HlsRenditionHost* rendition_host,
       std::string role,

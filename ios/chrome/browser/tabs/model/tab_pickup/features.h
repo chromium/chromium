@@ -25,6 +25,7 @@ extern const char kTabPickupThresholdParameterName[];
 extern const char kTabPickupThresholdTenMinutesParam[];
 extern const char kTabPickupThresholdOneHourParam[];
 extern const char kTabPickupThresholdTwoHoursParam[];
+extern const char kTabPickupNoFaviconParam[];
 
 // Convenience method for determining if the tab pickup feature is available.
 bool IsTabPickupEnabled();
@@ -36,6 +37,10 @@ bool IsTabPickupMinimumDelayEnabled();
 // Convenience method for determining if the tab pickup feature has been
 // disabled by the user.
 bool IsTabPickupDisabledByUser();
+
+// Convenience method for determining if the tab pickup favicon should be
+// displayed.
+bool IsTabPickupFaviconAvaible();
 
 // Convenience method for determining the tab pickup threshold.
 // The default is 10 minutes.

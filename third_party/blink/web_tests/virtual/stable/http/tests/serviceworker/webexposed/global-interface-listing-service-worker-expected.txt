@@ -537,6 +537,7 @@ interface FileSystemHandle
     method requestPermission
 interface FileSystemWritableFileStream : WritableStream
     attribute @@toStringTag
+    getter mode
     method constructor
     method seek
     method truncate
@@ -1445,6 +1446,7 @@ interface URL
     setter username
 interface URLPattern
     attribute @@toStringTag
+    getter hasRegExpGroups
     getter hash
     getter hostname
     getter password

@@ -329,7 +329,7 @@ TEST_F(MediaPlayerImplTest, WatchInfoChangeWaitsForNextChange) {
   // Calling WatchInfoChange() now should succeed, but not immediately return
   // any new data.
   base::RunLoop change_loop;
-  absl::optional<fuchsia_media_sessions2::PlayerState> state_after_change;
+  std::optional<fuchsia_media_sessions2::PlayerState> state_after_change;
 
   player_->WatchInfoChange().Then(
       [&change_loop, &state_after_change](

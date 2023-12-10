@@ -130,7 +130,7 @@ TEST_F(CrosBluetoothConfigTest, CallPairingFunction) {
 TEST_F(CrosBluetoothConfigTest, CallDeviceManagementFunctions) {
   mojo::Remote<mojom::CrosBluetoothConfig> remote = BindToInterface();
   const std::string device_id = "device_id";
-  absl::optional<bool> result;
+  std::optional<bool> result;
 
   remote->Connect(device_id,
                   base::BindLambdaForTesting(

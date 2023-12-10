@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "ash/components/arc/arc_browser_context_keyed_service_factory_base.h"
@@ -25,7 +26,6 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/mojom/wake_lock.mojom.h"
 #include "services/device/public/mojom/wake_lock_provider.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/display/manager/display_configurator.h"
 
 namespace content {
@@ -146,7 +146,8 @@ class ArcPowerBridge : public KeyedService,
   // Notify ARC and patchpanel about change in power state, notification to
   // patchpanel is used to decide whether to start/stop forwarding multicast
   // traffic to ARC.
-  void NotifyAndroidInteractiveState(ArcBridgeService* bridge, bool enabled);
+  void NotifyAndroidIdleState(ArcBridgeService* bridge,
+                              ::arc::mojom::IdleState enabled);
 
  private:
   class WakeLockRequestor;
@@ -155,7 +156,7 @@ class ArcPowerBridge : public KeyedService,
   WakeLockRequestor* GetWakeLockRequestor(device::mojom::WakeLockType type);
 
   // Called on PowerManagerClient::GetScreenBrightnessPercent() completion.
-  void OnGetScreenBrightnessPercent(absl::optional<double> percent);
+  void OnGetScreenBrightnessPercent(std::optional<double> percent);
 
   // Called by Android when ready to suspend.
   void OnAndroidSuspendReady(base::UnguessableToken token);
@@ -164,17 +165,17 @@ class ArcPowerBridge : public KeyedService,
   // SuspendVm D-Bus call.
   void OnConciergeSuspendVmResponse(
       base::UnguessableToken token,
-      absl::optional<vm_tools::concierge::SuspendVmResponse> reply);
+      std::optional<vm_tools::concierge::SuspendVmResponse> reply);
 
   // Called by ConciergeClient when a response has been receive for the
   // ResumeVm D-Bus call.
   void OnConciergeResumeVmResponse(
-      absl::optional<vm_tools::concierge::ResumeVmResponse> reply);
+      std::optional<vm_tools::concierge::ResumeVmResponse> reply);
 
   // Called on PowerManagerClient::GetBatterySaverModeState() completion.
   void OnBatterySaverModeStateReceived(
       GetBatterySaverModeStateCallback callback,
-      absl::optional<power_manager::BatterySaverModeState> state);
+      std::optional<power_manager::BatterySaverModeState> state);
 
   // Sends a PowerInstance::UpdateScreenBrightnessSettings mojo call to Android.
   void UpdateAndroidScreenBrightness(double percent);

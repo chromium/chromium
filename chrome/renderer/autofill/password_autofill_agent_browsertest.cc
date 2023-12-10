@@ -377,7 +377,6 @@ class PasswordAutofillAgentTest : public ChromeRenderViewTest {
 
     // TODO(crbug/862989): Remove workaround preventing non-test classes to bind
     // fake_driver_ or fake_pw_client_.
-    password_autofill_agent_->Init(autofill_agent_);
     password_autofill_agent_->GetPasswordManagerDriver();
     password_generation_->RequestPasswordManagerClientForTesting();
     base::RunLoop().RunUntilIdle();  // Executes binding the interfaces.
@@ -1914,7 +1913,7 @@ TEST_F(PasswordAutofillAgentTest, KeyboardReplacingSurfaceClosed) {
 
   // Touch to fill will be shown multiple times until
   // KeyboardReplacingSurfaceClosed() gets called.
-  FocusElement(kPasswordName);
+  autofill_agent_->FormControlElementClicked(password_element_);
   EXPECT_TRUE(password_autofill_agent_->ShouldSuppressKeyboard());
   EXPECT_EQ(WebAutofillState::kNotFilled, password_element_.GetAutofillState());
 
@@ -1932,7 +1931,7 @@ TEST_F(PasswordAutofillAgentTest, KeyboardReplacingSurfaceClosed) {
   UpdateUrlForHTML(kFormHTML);
   UpdateUsernameAndPasswordElements();
   SimulateOnFillPasswordForm(fill_data_);
-  FocusElement(kPasswordName);
+  autofill_agent_->FormControlElementClicked(password_element_);
 
   // After the reload touch to fill is shown again.
   EXPECT_TRUE(password_autofill_agent_->ShouldSuppressKeyboard());

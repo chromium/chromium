@@ -28,8 +28,7 @@ import java.util.Map;
 class SharedPreferencesBrandingTimeStorage implements BrandingChecker.BrandingLaunchTimeStorage {
     private static final String KEY_SHARED_PREF = "pref_cct_brand_show_time";
     private static final String NON_PACKAGE_PREFIX = "REFERRER_";
-    @VisibleForTesting
-    static final int MAX_NON_PACKAGE_ENTRIES = 50;
+    @VisibleForTesting static final int MAX_NON_PACKAGE_ENTRIES = 50;
 
     private static SharedPreferencesBrandingTimeStorage sInstance;
 
@@ -63,13 +62,15 @@ class SharedPreferencesBrandingTimeStorage implements BrandingChecker.BrandingLa
     @Override
     @SuppressLint({"ApplySharedPref"})
     public void put(String appId, long brandingLaunchTime) {
-        PostTask.postTask(TaskTraits.USER_VISIBLE_MAY_BLOCK, () -> {
-            SharedPreferences.Editor pref = getSharedPref().edit();
-            String entry = getOldEntryToTrim();
-            if (entry != null) pref.remove(entry);
-            pref.putLong(getKey(appId), brandingLaunchTime);
-            pref.commit();
-        });
+        PostTask.postTask(
+                TaskTraits.USER_VISIBLE_MAY_BLOCK,
+                () -> {
+                    SharedPreferences.Editor pref = getSharedPref().edit();
+                    String entry = getOldEntryToTrim();
+                    if (entry != null) pref.remove(entry);
+                    pref.putLong(getKey(appId), brandingLaunchTime);
+                    pref.commit();
+                });
     }
 
     private String getKey(String appId) {
@@ -120,8 +121,9 @@ class SharedPreferencesBrandingTimeStorage implements BrandingChecker.BrandingLa
 
     private SharedPreferences getSharedPref() {
         if (mSharedPref == null) {
-            mSharedPref = ContextUtils.getApplicationContext().getSharedPreferences(
-                    KEY_SHARED_PREF, Context.MODE_PRIVATE);
+            mSharedPref =
+                    ContextUtils.getApplicationContext()
+                            .getSharedPreferences(KEY_SHARED_PREF, Context.MODE_PRIVATE);
         }
         return mSharedPref;
     }

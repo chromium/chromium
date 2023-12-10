@@ -18,6 +18,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/view_targeter_delegate.h"
@@ -35,6 +36,8 @@ class ASH_EXPORT DragHandle : public views::Button,
                               public ui::ImplicitAnimationObserver,
                               public SplitViewObserver,
                               public ShelfObserver {
+  METADATA_HEADER(DragHandle, views::Button)
+
  public:
   DragHandle(float drag_handle_corner_radius, Shelf* shelf);
   DragHandle(const DragHandle&) = delete;

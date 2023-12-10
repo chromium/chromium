@@ -53,7 +53,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="Bluetooth.BlueZ.DBus.{MethodName}.Latency" units="ms"
-    expires_after="2024-03-01">
+    expires_after="2024-05-05">
   <owner>jonmann@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>Tracks the latency of the BlueZ {MethodName} DBus method.</summary>
@@ -61,7 +61,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bluetooth.BlueZ.DBus.{MethodName}.Result" enum="DBusResult"
-    expires_after="2024-03-01">
+    expires_after="2024-05-05">
   <owner>jonmann@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>Tracks the result for BlueZ {MethodName} DBus method calls.</summary>
@@ -69,7 +69,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bluetooth.ChromeOS.DeviceConnected.{ConnectionType}"
-    enum="BluetoothDeviceType" expires_after="2024-03-01">
+    enum="BluetoothDeviceType" expires_after="2024-05-05">
   <owner>khorimoto@chromium.org</owner>
   <owner>cros-connectivity@google.com</owner>
   <summary>
@@ -331,7 +331,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bluetooth.ChromeOS.FastPair.ConnectDevice.Result"
-    enum="BooleanSuccess" expires_after="2024-03-31">
+    enum="BooleanSuccess" expires_after="2024-06-02">
   <owner>jackshira@google.com</owner>
   <owner>dclasson@google.com</owner>
   <owner>brandosocarras@google.com</owner>
@@ -385,7 +385,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bluetooth.ChromeOS.FastPair.DeviceMetadataFetcher.Result"
-    enum="BooleanSuccess" expires_after="2024-03-31">
+    enum="BooleanSuccess" expires_after="2024-06-02">
   <owner>jackshira@google.com</owner>
   <owner>dclasson@google.com</owner>
   <owner>brandosocarras@google.com</owner>
@@ -397,7 +397,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bluetooth.ChromeOS.FastPair.Discovered.Version"
-    enum="FastPairVersion" expires_after="2024-03-31">
+    enum="FastPairVersion" expires_after="2024-06-02">
   <owner>jackshira@google.com</owner>
   <owner>dclasson@google.com</owner>
   <owner>brandosocarras@google.com</owner>
@@ -635,7 +635,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bluetooth.ChromeOS.FastPair.FootprintsFetcher.Delete.Result"
-    enum="BooleanSuccess" expires_after="2024-03-31">
+    enum="BooleanSuccess" expires_after="2024-06-02">
   <owner>jackshira@google.com</owner>
   <owner>dclasson@google.com</owner>
   <owner>brandosocarras@google.com</owner>
@@ -649,7 +649,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bluetooth.ChromeOS.FastPair.FootprintsFetcher.Get.Result"
-    enum="BooleanSuccess" expires_after="2024-03-31">
+    enum="BooleanSuccess" expires_after="2024-06-02">
   <owner>jackshira@google.com</owner>
   <owner>dclasson@google.com</owner>
   <owner>brandosocarras@google.com</owner>
@@ -663,7 +663,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bluetooth.ChromeOS.FastPair.FootprintsFetcher.Post.Result"
-    enum="BooleanSuccess" expires_after="2024-03-31">
+    enum="BooleanSuccess" expires_after="2024-06-02">
   <owner>jackshira@google.com</owner>
   <owner>dclasson@google.com</owner>
   <owner>brandosocarras@google.com</owner>
@@ -729,7 +729,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Bluetooth.ChromeOS.FastPair.GattConnection.EffectiveSuccessRate"
-    enum="BooleanSuccess" expires_after="2024-03-31">
+    enum="BooleanSuccess" expires_after="2024-06-02">
   <owner>jackshira@google.com</owner>
   <owner>dclasson@google.com</owner>
   <owner>brandosocarras@google.com</owner>
@@ -904,7 +904,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bluetooth.ChromeOS.FastPair.KeyBasedPairing.Write.Result"
-    enum="BooleanSuccess" expires_after="2024-03-31">
+    enum="BooleanSuccess" expires_after="2024-06-02">
   <owner>jackshira@google.com</owner>
   <owner>dclasson@google.com</owner>
   <owner>brandosocarras@google.com</owner>
@@ -946,7 +946,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Bluetooth.ChromeOS.FastPair.MessageStream.ConnectToService.Result"
-    enum="BooleanSuccess" expires_after="2024-03-17">
+    enum="BooleanSuccess" expires_after="2024-05-19">
   <owner>jackshira@google.com</owner>
   <owner>dclasson@google.com</owner>
   <owner>brandosocarras@google.com</owner>
@@ -1014,7 +1014,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bluetooth.ChromeOS.FastPair.PairDevice.ErrorReason"
-    enum="BluetoothDeviceConnectErrorCode" expires_after="2023-12-24">
+    enum="BluetoothDeviceConnectErrorCode" expires_after="2024-04-28">
   <owner>jackshira@google.com</owner>
   <owner>dclasson@google.com</owner>
   <owner>brandosocarras@google.com</owner>
@@ -1086,7 +1086,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bluetooth.ChromeOS.FastPair.PairingMethod"
-    enum="FastPairPairingMethod" expires_after="2024-03-17">
+    enum="FastPairPairingMethod" expires_after="2024-05-19">
   <owner>jackshira@google.com</owner>
   <owner>dclasson@google.com</owner>
   <owner>brandosocarras@google.com</owner>
@@ -1183,7 +1183,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bluetooth.ChromeOS.FastPair.Passkey.Write.Result"
-    enum="BooleanSuccess" expires_after="2024-03-31">
+    enum="BooleanSuccess" expires_after="2024-06-02">
   <owner>jackshira@google.com</owner>
   <owner>dclasson@google.com</owner>
   <owner>brandosocarras@google.com</owner>
@@ -1371,7 +1371,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bluetooth.ChromeOS.FastPair.RetroactivePairing.Result"
-    enum="BooleanSuccess" expires_after="2024-03-17">
+    enum="BooleanSuccess" expires_after="2024-05-19">
   <owner>jackshira@google.com</owner>
   <owner>dclasson@google.com</owner>
   <owner>brandosocarras@google.com</owner>
@@ -1384,7 +1384,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bluetooth.ChromeOS.FastPair.SavedDevices.DeviceCount"
-    units="devices" expires_after="2024-03-31">
+    units="devices" expires_after="2024-06-02">
   <owner>jackshira@google.com</owner>
   <owner>dclasson@google.com</owner>
   <owner>brandosocarras@google.com</owner>
@@ -1398,7 +1398,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Bluetooth.ChromeOS.FastPair.SavedDevices.GetSavedDevices.Result"
-    enum="BooleanSuccess" expires_after="2024-03-31">
+    enum="BooleanSuccess" expires_after="2024-06-02">
   <owner>jackshira@google.com</owner>
   <owner>dclasson@google.com</owner>
   <owner>brandosocarras@google.com</owner>
@@ -1489,7 +1489,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bluetooth.ChromeOS.FastPair.Scanner.StartSession.Result"
-    enum="BooleanSuccess" expires_after="2024-01-28">
+    enum="BooleanSuccess" expires_after="2024-06-02">
   <owner>jackshira@google.com</owner>
   <owner>dclasson@google.com</owner>
   <owner>brandosocarras@google.com</owner>
@@ -1502,7 +1502,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bluetooth.ChromeOS.FastPair.TotalGattConnectionTime"
-    units="ms" expires_after="2024-03-31">
+    units="ms" expires_after="2024-06-02">
   <owner>jackshira@google.com</owner>
   <owner>dclasson@google.com</owner>
   <owner>brandosocarras@google.com</owner>
@@ -1514,33 +1514,6 @@ chromium-metrics-reviews@google.com.
     state. If the connection attempt fails or takes longer than 5 seconds, no
     value is logged to this metric,
   </summary>
-</histogram>
-
-<histogram
-    name="Bluetooth.ChromeOS.FastPair.TotalUxPairTime.{FastPairPairingProtocol}"
-    units="ms" expires_after="2024-01-28">
-  <obsolete>
-    Deprecated April 2022. Use
-    Bluetooth.ChromeOS.FastPair.TotalUxPairTime.{FastPairPairingProtocol}2
-    instead.
-  </obsolete>
-  <owner>jackshira@google.com</owner>
-  <owner>dclasson@google.com</owner>
-  <owner>brandosocarras@google.com</owner>
-  <owner>chromeos-cross-device-eng@google.com</owner>
-  <summary>
-    Records the time necessary to reach a terminal Fast Pair pair state, either
-    success or failure, after pairing begins to a device, from the user's
-    perspective. Time is calculated as the difference between when the user
-    selects to pair a device via Fast Pair, and when it reaches a pair failure
-    or pair succeeded state. The metric is emitted after a final pairing state
-    has been reached.
-  </summary>
-  <token key="FastPairPairingProtocol">
-    <variant name="InitialPairingProtocol" summary="initial pairing protocol"/>
-    <variant name="SubsequentPairingProtocol"
-        summary="subsequent pairing protocol"/>
-  </token>
 </histogram>
 
 <histogram
@@ -1590,7 +1563,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Bluetooth.ChromeOS.Pairing.Duration.Success{BluetoothTransportTypes}"
-    units="ms" expires_after="2024-03-01">
+    units="ms" expires_after="2024-05-05">
   <owner>khorimoto@chromium.org</owner>
   <owner>cros-connectivity@google.com</owner>
   <summary>
@@ -1606,7 +1579,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Bluetooth.ChromeOS.Pairing.Result.FailureReason{BluetoothTransportTypes}"
-    enum="BluetoothConnectionFailureReason" expires_after="2024-03-01">
+    enum="BluetoothConnectionFailureReason" expires_after="2024-05-05">
   <owner>khorimoto@chromium.org</owner>
   <owner>cros-connectivity@google.com</owner>
   <summary>
@@ -1643,7 +1616,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bluetooth.ChromeOS.Pairing.Result{BluetoothTransportTypes}"
-    enum="BooleanSuccess" expires_after="2024-03-01">
+    enum="BooleanSuccess" expires_after="2024-05-05">
   <owner>khorimoto@chromium.org</owner>
   <owner>cros-connectivity@google.com</owner>
   <summary>
@@ -1683,7 +1656,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bluetooth.ChromeOS.PoweredState.{Operation}.Result"
-    enum="BooleanSuccess" expires_after="2024-03-01">
+    enum="BooleanSuccess" expires_after="2024-05-05">
   <owner>khorimoto@chromium.org</owner>
   <owner>cros-connectivity@google.com</owner>
   <summary>Record emitted when an {Operation}.</summary>
@@ -1695,14 +1668,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bluetooth.ChromeOS.SetNickname.Result"
-    enum="SetNicknameResult" expires_after="2024-03-01">
+    enum="SetNicknameResult" expires_after="2024-05-05">
   <owner>khorimoto@chromium.org</owner>
   <owner>cros-connectivity@google.com</owner>
   <summary>Emitted each time a nickname change attempt completes.</summary>
 </histogram>
 
 <histogram name="Bluetooth.ChromeOS.UiSurfaceDisplayed"
-    enum="BluetoothUiSurface" expires_after="2024-03-01">
+    enum="BluetoothUiSurface" expires_after="2024-05-12">
   <owner>khorimoto@chromium.org</owner>
   <owner>cros-connectivity@google.com</owner>
   <summary>Metric emmitted each time a UI surface is shown.</summary>
@@ -1738,7 +1711,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Bluetooth.ChromeOS.UserInitiatedReconnectionAttempt.Duration.Success{BluetoothTransportTypes}"
-    units="ms" expires_after="2024-03-01">
+    units="ms" expires_after="2024-05-05">
   <owner>khorimoto@chromium.org</owner>
   <owner>cros-connectivity@google.com</owner>
   <summary>
@@ -1752,7 +1725,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Bluetooth.ChromeOS.UserInitiatedReconnectionAttempt.Result.FailureReason{UserInitiatedReconnectionUISurfaces}"
-    enum="BluetoothConnectionFailureReason" expires_after="2024-03-01">
+    enum="BluetoothConnectionFailureReason" expires_after="2024-05-05">
   <owner>khorimoto@chromium.org</owner>
   <owner>cros-connectivity@google.com</owner>
   <summary>
@@ -1771,7 +1744,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Bluetooth.ChromeOS.UserInitiatedReconnectionAttempt.Result{UserInitiatedReconnectionUISurfaces}"
-    enum="BooleanSuccess" expires_after="2024-03-01">
+    enum="BooleanSuccess" expires_after="2024-05-05">
   <owner>khorimoto@chromium.org</owner>
   <owner>cros-connectivity@google.com</owner>
   <summary>
@@ -1791,7 +1764,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bluetooth.ConnectedDeviceCount" units="devices"
-    expires_after="2024-03-17">
+    expires_after="2024-05-19">
   <owner>adlr@chromium.org</owner>
   <summary>
     Counts the number of simulataneously connected Bluetooth devices. Used to
@@ -1845,7 +1818,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bluetooth.Mojo.PendingConnectAtShutdown.DurationWaiting"
-    units="ms" expires_after="2024-03-01">
+    units="ms" expires_after="2024-05-05">
   <owner>jonmann@chromium.org</owner>
   <owner>cros-system-services-networking@google.com</owner>
   <summary>
@@ -1857,7 +1830,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Bluetooth.Mojo.PendingConnectAtShutdown.NumberOfServiceDiscoveriesInProgress"
-    units="count" expires_after="2024-03-01">
+    units="count" expires_after="2024-05-05">
   <owner>jonmann@chromium.org</owner>
   <owner>cros-system-services-networking@google.com</owner>
   <summary>
@@ -1881,7 +1854,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bluetooth.Web.Characteristic.ReadValue.Outcome"
-    enum="WebBluetoothGATTOperationOutcome" expires_after="2024-03-24">
+    enum="WebBluetoothGATTOperationOutcome" expires_after="2024-05-26">
   <owner>cmumford@chromium.org</owner>
   <owner>deviceapi-team@google.com</owner>
   <summary>
@@ -1905,7 +1878,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bluetooth.Web.Characteristic.WriteValue.Outcome"
-    enum="WebBluetoothGATTOperationOutcome" expires_after="2024-03-17">
+    enum="WebBluetoothGATTOperationOutcome" expires_after="2024-05-19">
   <owner>cmumford@chromium.org</owner>
   <owner>deviceapi-team@google.com</owner>
   <summary>
@@ -1917,7 +1890,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bluetooth.Web.ConnectGATT.Outcome"
-    enum="WebBluetoothConnectGATTOutcome" expires_after="2024-03-17">
+    enum="WebBluetoothConnectGATTOutcome" expires_after="2024-05-19">
   <owner>reillyg@chromium.org</owner>
   <owner>deviceapi-team@google.com</owner>
   <summary>

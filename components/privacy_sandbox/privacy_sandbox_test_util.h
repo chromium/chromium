@@ -102,6 +102,18 @@ class MockPrivacySandboxSettingsDelegate
         });
   }
 
+  void SetUpIsCookieDeprecationLabelAllowedResponse(bool allowed) {
+    ON_CALL(*this, IsCookieDeprecationLabelAllowed).WillByDefault([=]() {
+      return allowed;
+    });
+  }
+
+  void SetUpAreThirdPartyCookiesBlockedByCookieDeprecationExperimentResponse(
+      bool result) {
+    ON_CALL(*this, AreThirdPartyCookiesBlockedByCookieDeprecationExperiment)
+        .WillByDefault([=]() { return result; });
+  }
+
   MOCK_METHOD(bool, IsPrivacySandboxRestricted, (), (const, override));
   MOCK_METHOD(bool,
               IsPrivacySandboxCurrentlyUnrestricted,
@@ -117,6 +129,11 @@ class MockPrivacySandboxSettingsDelegate
               (const, override));
   MOCK_METHOD(privacy_sandbox::TpcdExperimentEligibility,
               GetCookieDeprecationExperimentCurrentEligibility,
+              (),
+              (const, override));
+  MOCK_METHOD(bool, IsCookieDeprecationLabelAllowed, (), (const, override));
+  MOCK_METHOD(bool,
+              AreThirdPartyCookiesBlockedByCookieDeprecationExperiment,
               (),
               (const, override));
 };
@@ -141,16 +158,16 @@ enum class StateKey {
   kApisEnabledV2 = 13,
   kTrialsConsentDecisionMade = 14,
   kTrialsNoticeDisplayed = 15,
-  kM1ConsentDecisionMade = 16,
-  kM1EEANoticeAcknowledged = 17,
-  kM1RowNoticeAcknowledged = 18,
-  kM1PromptSuppressedReason = 19,
+  kM1ConsentDecisionPreviouslyMade = 16,
+  kM1EEANoticePreviouslyAcknowledged = 17,
+  kM1RowNoticePreviouslyAcknowledged = 18,
+  kM1PromptPreviouslySuppressedReason = 19,
   kM1PromptDisabledByPolicy = 20,
   kM1TopicsDisabledByPolicy = 21,
   kM1FledgeDisabledByPolicy = 22,
   kM1AdMesaurementDisabledByPolicy = 23,
   kHasAppropriateTopicsConsent = 24,
-  kM1RestrictedNoticeAcknowledged = 25,
+  kM1RestrictedNoticePreviouslyAcknowledged = 25,
   kAttestationsMap = 26,
   kBlockFledgeJoiningForEtldplus1 = 27,
 };

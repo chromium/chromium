@@ -10,7 +10,6 @@
 #include "base/i18n/char_iterator.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
-#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversion_utils.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/autofill_data_util.h"
@@ -202,12 +201,6 @@ ServerFieldTypeSet GetUserVisibleTypes() {
   return user_visible_type;
 }
 
-bool ProfileValueDifference::operator==(
-    const ProfileValueDifference& right) const {
-  return (type == right.type) && (first_value == right.first_value) &&
-         (second_value == right.second_value);
-}
-
 AutofillProfileComparator::AutofillProfileComparator(
     const base::StringPiece& app_locale)
     : app_locale_(app_locale.data(), app_locale.size()) {}
@@ -282,19 +275,18 @@ bool AutofillProfileComparator::Compare(base::StringPiece16 text1,
     return true;
   }
 
-  NormalizingIterator normalizing_iter1{text1, whitespace_spec};
-  NormalizingIterator normalizing_iter2{text2, whitespace_spec};
+  // We transliterate the entire text as it's non-trivial to go character
+  // by character (eg. a "ß" is transliterated to "ss").
+  std::u16string normalized_text1 =
+      RemoveDiacriticsAndConvertToLowerCase(text1);
+  std::u16string normalized_text2 =
+      RemoveDiacriticsAndConvertToLowerCase(text2);
 
-  BorrowedTransliterator transliterator;
+  NormalizingIterator normalizing_iter1{normalized_text1, whitespace_spec};
+  NormalizingIterator normalizing_iter2{normalized_text2, whitespace_spec};
+
   while (!normalizing_iter1.End() && !normalizing_iter2.End()) {
-    icu::UnicodeString char1 =
-        icu::UnicodeString(normalizing_iter1.GetNextChar());
-    icu::UnicodeString char2 =
-        icu::UnicodeString(normalizing_iter2.GetNextChar());
-
-    transliterator.Transliterate(&char1);
-    transliterator.Transliterate(&char2);
-    if (char1 != char2) {
+    if (normalizing_iter1.GetNextChar() != normalizing_iter2.GetNextChar()) {
       return false;
     }
     normalizing_iter1.Advance();
@@ -704,7 +696,7 @@ bool AutofillProfileComparator::MergePhoneNumbers(
   // include the country code prefix.
   if (merged_number.country_code() == 1 &&
       merged_number.national_number() <= 9999999 &&
-      base::StartsWith(new_number, "+1", base::CompareCase::SENSITIVE)) {
+      new_number.starts_with("+1")) {
     size_t offset = 2;  // The char just after "+1".
     while (offset < new_number.size() &&
            base::IsAsciiWhitespace(new_number[offset])) {

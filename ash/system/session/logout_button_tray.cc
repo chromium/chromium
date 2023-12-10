@@ -25,6 +25,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/controls/button/md_text_button.h"
@@ -87,10 +88,6 @@ void LogoutButtonTray::OnActiveUserPrefServiceChanged(PrefService* prefs) {
   UpdateLogoutDialogDuration();
 }
 
-const char* LogoutButtonTray::GetClassName() const {
-  return "LogoutButtonTray";
-}
-
 void LogoutButtonTray::OnThemeChanged() {
   TrayBackgroundView::OnThemeChanged();
   auto* color_provider = AshColorProvider::Get();
@@ -143,14 +140,14 @@ void LogoutButtonTray::UpdateButtonTextAndImage() {
       user::GetLocalizedSignOutStringForStatus(login_status, false);
   if (shelf()->IsHorizontalAlignment()) {
     button_->SetText(title);
-    button_->SetImage(views::Button::STATE_NORMAL, gfx::ImageSkia());
+    button_->SetImageModel(views::Button::STATE_NORMAL, ui::ImageModel());
     button_->SetMinSize(gfx::Size(0, kTrayItemSize));
   } else {
     button_->SetText(std::u16string());
     button_->SetAccessibleName(title);
-    button_->SetImage(
+    button_->SetImageModel(
         views::Button::STATE_NORMAL,
-        gfx::CreateVectorIcon(
+        ui::ImageModel::FromVectorIcon(
             kShelfLogoutIcon,
             AshColorProvider::Get()->GetContentLayerColor(
                 AshColorProvider::ContentLayerType::kIconColorPrimary)));
@@ -171,5 +168,8 @@ void LogoutButtonTray::ButtonPressed() {
         LogoutConfirmationController::Source::kShelfExitButton);
   }
 }
+
+BEGIN_METADATA(LogoutButtonTray)
+END_METADATA
 
 }  // namespace ash

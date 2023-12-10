@@ -35,14 +35,16 @@ class TabletCaptureStateToken {
 
     private static ButtonCaptureStateToken buttonTokenUseDrawableInstance(
             @Nullable ImageButton imageButton) {
-        return imageButton == null ? null
-                                   : new DrawableInstanceButtonCaptureStateToken(imageButton);
+        return imageButton == null
+                ? null
+                : new DrawableInstanceButtonCaptureStateToken(imageButton);
     }
 
     private static ButtonCaptureStateToken buttonTokenWithDrawableRes(
             @Nullable ImageButton imageButton, @DrawableRes int iconRes) {
-        return imageButton == null ? null
-                                   : new DrawableResButtonCaptureStateToken(imageButton, iconRes);
+        return imageButton == null
+                ? null
+                : new DrawableResButtonCaptureStateToken(imageButton, iconRes);
     }
 
     /**
@@ -60,9 +62,10 @@ class TabletCaptureStateToken {
             mVisibility = imageButton.getVisibility();
             mIsEnabled = imageButton.isEnabled();
             mLevel = imageButton.getDrawable() == null ? 0 : imageButton.getDrawable().getLevel();
-            mImageTint = imageButton.getImageTintList() == null
-                    ? 0
-                    : imageButton.getImageTintList().getDefaultColor();
+            mImageTint =
+                    imageButton.getImageTintList() == null
+                            ? 0
+                            : imageButton.getImageTintList().getDefaultColor();
         }
 
         @Override
@@ -70,19 +73,25 @@ class TabletCaptureStateToken {
             if (this == o) return true;
             if (!(o instanceof ButtonCaptureStateToken)) return false;
             ButtonCaptureStateToken that = (ButtonCaptureStateToken) o;
-            return mVisibility == that.mVisibility && mIsEnabled == that.mIsEnabled
-                    && mLevel == that.mLevel && mImageTint == that.mImageTint;
+            return mVisibility == that.mVisibility
+                    && mIsEnabled == that.mIsEnabled
+                    && mLevel == that.mLevel
+                    && mImageTint == that.mImageTint;
         }
 
         @Override
         public int hashCode() {
-            return super.hashCode() + Integer.hashCode(mVisibility) + Boolean.hashCode(mIsEnabled)
-                    + Integer.hashCode(mLevel) + Integer.hashCode(mImageTint);
+            return super.hashCode()
+                    + Integer.hashCode(mVisibility)
+                    + Boolean.hashCode(mIsEnabled)
+                    + Integer.hashCode(mLevel)
+                    + Integer.hashCode(mImageTint);
         }
     }
 
     private static class DrawableInstanceButtonCaptureStateToken extends ButtonCaptureStateToken {
         private final Drawable mImageDrawable;
+
         private DrawableInstanceButtonCaptureStateToken(@NonNull ImageButton imageButton) {
             super(imageButton);
             mImageDrawable = imageButton.getDrawable();
@@ -105,6 +114,7 @@ class TabletCaptureStateToken {
 
     private static class DrawableResButtonCaptureStateToken extends ButtonCaptureStateToken {
         private final @DrawableRes int mDrawableRes;
+
         private DrawableResButtonCaptureStateToken(
                 @NonNull ImageButton imageButton, @DrawableRes int drawableRes) {
             super(imageButton);
@@ -125,12 +135,18 @@ class TabletCaptureStateToken {
         }
     }
 
-    public TabletCaptureStateToken(@Nullable ImageButton homeButton,
-            @Nullable ImageButton backwardButton, @Nullable ImageButton forwardButton,
-            @Nullable ImageButton reloadButton, @DrawableRes int securityIcon,
-            @Nullable VisibleUrlText visibleUrlText, @Nullable ImageButton bookmarkButton,
-            @DrawableRes int bookmarkButtonImageRes, @Nullable ImageButton optionalButton,
-            int tabCount, int viewWidth) {
+    public TabletCaptureStateToken(
+            @Nullable ImageButton homeButton,
+            @Nullable ImageButton backwardButton,
+            @Nullable ImageButton forwardButton,
+            @Nullable ImageButton reloadButton,
+            @DrawableRes int securityIcon,
+            @Nullable VisibleUrlText visibleUrlText,
+            @Nullable ImageButton bookmarkButton,
+            @DrawableRes int bookmarkButtonImageRes,
+            @Nullable ImageButton optionalButton,
+            int tabCount,
+            int viewWidth) {
         mHomeButtonToken = buttonTokenUseDrawableInstance(homeButton);
         mBackwardButtonToken = buttonTokenUseDrawableInstance(backwardButton);
         mForwardButtonToken = buttonTokenUseDrawableInstance(forwardButton);

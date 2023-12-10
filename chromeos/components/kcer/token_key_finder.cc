@@ -4,6 +4,8 @@
 
 #include "chromeos/components/kcer/token_key_finder.h"
 
+#include <optional>
+
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
@@ -11,14 +13,13 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/types/expected.h"
 #include "chromeos/components/kcer/kcer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace kcer::internal {
 
 // static
 scoped_refptr<TokenKeyFinder> TokenKeyFinder::Create(
     int results_to_receive,
-    base::OnceCallback<void(base::expected<absl::optional<Token>, Error>)>
+    base::OnceCallback<void(base::expected<std::optional<Token>, Error>)>
         callback) {
   return base::MakeRefCounted<TokenKeyFinder>(
       base::PassKey<TokenKeyFinder>(), results_to_receive, std::move(callback));
@@ -27,7 +28,7 @@ scoped_refptr<TokenKeyFinder> TokenKeyFinder::Create(
 TokenKeyFinder::TokenKeyFinder(
     base::PassKey<TokenKeyFinder>,
     int results_to_receive,
-    base::OnceCallback<void(base::expected<absl::optional<Token>, Error>)>
+    base::OnceCallback<void(base::expected<std::optional<Token>, Error>)>
         callback)
     : callbacks_to_create_(results_to_receive),
       results_to_receive_(results_to_receive),
@@ -77,7 +78,7 @@ void TokenKeyFinder::HandleOneResult(Token token,
     // simplicity.
     return std::move(callback_).Run(base::unexpected(errors_.begin()->second));
   }
-  return std::move(callback_).Run(/*token=*/absl::nullopt);
+  return std::move(callback_).Run(/*token=*/std::nullopt);
 }
 
 }  // namespace kcer::internal

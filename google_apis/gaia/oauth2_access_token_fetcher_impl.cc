@@ -244,7 +244,7 @@ void OAuth2AccessTokenFetcherImpl::EndGetAccessToken(
                                      &error_subtype, &error_description);
   OAuth2Response response = OAuth2ResponseErrorToOAuth2Response(oauth2_error);
   RecordOAuth2Response(response);
-  absl::optional<GoogleServiceAuthError> error;
+  std::optional<GoogleServiceAuthError> error;
 
   switch (response) {
     case kOk:
@@ -396,7 +396,7 @@ bool OAuth2AccessTokenFetcherImpl::ParseGetAccessTokenSuccessResponse(
   if (access_token)
     token_response->access_token = *access_token;
 
-  absl::optional<int> expires_in = dict->FindInt(kExpiresInKey);
+  std::optional<int> expires_in = dict->FindInt(kExpiresInKey);
   bool ok = access_token && expires_in.has_value();
   if (ok) {
     // The token will expire in |expires_in| seconds. Take a 10% error margin to

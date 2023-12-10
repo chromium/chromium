@@ -16,11 +16,15 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/task_environment.h"
 #include "components/crx_file/crx_verifier.h"
+#include "components/services/patch/in_process_file_patcher.h"
+#include "components/services/unzip/in_process_unzipper.h"
 #include "components/update_client/component_unpacker.h"
+#include "components/update_client/patch/patch_impl.h"
 #include "components/update_client/patcher.h"
 #include "components/update_client/test_configurator.h"
 #include "components/update_client/test_installer.h"
 #include "components/update_client/test_utils.h"
+#include "components/update_client/unzip/unzip_impl.h"
 #include "components/update_client/unzipper.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -48,13 +52,16 @@ class ComponentUnpackerTest : public testing::Test {
 };
 
 TEST_F(ComponentUnpackerTest, UnpackFullCrx) {
-  auto config = base::MakeRefCounted<TestConfigurator>();
   scoped_refptr<ComponentUnpacker> component_unpacker =
       base::MakeRefCounted<ComponentUnpacker>(
           std::vector<uint8_t>(std::begin(jebg_hash), std::end(jebg_hash)),
           GetTestFilePath("jebgalgnebhfojomionfpkfelancnnkf.crx"), nullptr,
-          config->GetUnzipperFactory()->Create(),
-          config->GetPatcherFactory()->Create(),
+          base::MakeRefCounted<update_client::UnzipChromiumFactory>(
+              base::BindRepeating(&unzip::LaunchInProcessUnzipper))
+              ->Create(),
+          base::MakeRefCounted<update_client::PatchChromiumFactory>(
+              base::BindRepeating(&patch::LaunchInProcessFilePatcher))
+              ->Create(),
           crx_file::VerifierFormat::CRX3);
   component_unpacker->Unpack(base::BindOnce(
       &ComponentUnpackerTest::UnpackComplete, base::Unretained(this)));
@@ -116,13 +123,15 @@ TEST_F(ComponentUnpackerTest, UnpackFileHashMismatch) {
 }
 
 TEST_F(ComponentUnpackerTest, UnpackWithVerifiedContents) {
-  auto config = base::MakeRefCounted<TestConfigurator>();
   scoped_refptr<ComponentUnpacker> component_unpacker =
       base::MakeRefCounted<ComponentUnpacker>(
           std::vector<uint8_t>(),
           GetTestFilePath("gndmhdcefbhlchkhipcnnbkcmicncehk_22_314.crx3"),
-          nullptr, config->GetUnzipperFactory()->Create(), nullptr,
-          crx_file::VerifierFormat::CRX3);
+          nullptr,
+          base::MakeRefCounted<update_client::UnzipChromiumFactory>(
+              base::BindRepeating(&unzip::LaunchInProcessUnzipper))
+              ->Create(),
+          nullptr, crx_file::VerifierFormat::CRX3);
   component_unpacker->Unpack(base::BindOnce(
       &ComponentUnpackerTest::UnpackComplete, base::Unretained(this)));
   RunThreads();

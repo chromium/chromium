@@ -1,0 +1,6 @@
+WebView textSize:16.00 style:0 bundle:[display="", htmlTag="#document"]
+++View textSize:16.00 style:0 bundle:[display="block", htmlTag="body"]
+++++EditText text:"The textarea tag defines a multi-line text input control.\n" textSize:13.33 style:0 bundle:[cols="50", display="inline-block", htmlTag="textarea", readonly="", rows="4", style="font-family: monospace"]
+++++++View textSize:13.33 style:0 bundle:[display="block", htmlTag="div"]
+++++++++TextView text:"The textarea tag defines a multi-line text input control.\n" textSize:13.33 style:0 bundle:[display="", htmlTag=""]
+++++++++View text:"\n" textSize:13.33 style:0 bundle:[display="", htmlTag="br"]

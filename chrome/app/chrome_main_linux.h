@@ -15,4 +15,8 @@ class CommandLine;
 // Chromium's CHROME_VERSION_EXTRA environment variable.
 void AppendExtraArgumentsToCommandLine(base::CommandLine* command_line);
 
+// For Chrome-branded builds, attempts to determine the correct channel to use
+// when Chrome is launched outside of the "google-chrome" wrapper script.
+void PossiblyDetermineFallbackChromeChannel(const char* launched_binary_path);
+
 #endif  // CHROME_APP_CHROME_MAIN_LINUX_H_

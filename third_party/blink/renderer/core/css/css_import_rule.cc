@@ -64,6 +64,13 @@ String CSSImportRule::cssText() const {
     }
   }
 
+  if (String supports = import_rule_->GetSupportsString();
+      supports != g_null_atom) {
+    result.Append(" supports(");
+    result.Append(supports);
+    result.Append(")");
+  }
+
   if (import_rule_->MediaQueries()) {
     String media_text = import_rule_->MediaQueries()->MediaText();
     if (!media_text.empty()) {
@@ -95,6 +102,10 @@ String CSSImportRule::layerName() const {
     return g_null_atom;
   }
   return import_rule_->GetLayerNameAsString();
+}
+
+String CSSImportRule::supportsText() const {
+  return import_rule_->GetSupportsString();
 }
 
 void CSSImportRule::Reattach(StyleRuleBase*) {

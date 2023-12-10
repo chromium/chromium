@@ -11,9 +11,6 @@
 
 class PromosManager;
 
-// Feature flag that enables version 2 of What's New.
-BASE_DECLARE_FEATURE(kWhatsNewIOSM116);
-
 // Returns whether What's New was used in the overflow menu. This is used to
 // decide on the location of the What's New entry point in the overflow menu.
 bool WasWhatsNewUsed();
@@ -29,13 +26,7 @@ void setWhatsNewPromoRegistration();
 // more than once.
 bool ShouldRegisterWhatsNewPromo();
 
-// Returns whether What's New M116 is enabled.
-bool IsWhatsNewM116Enabled();
-
 // Returns a string version of WhatsNewType.
 const char* WhatsNewTypeToString(WhatsNewType type);
-
-// Returns a string version of WhatsNewType only for M116 content.
-const char* WhatsNewTypeToStringM116(WhatsNewType type);
 
 #endif  // IOS_CHROME_BROWSER_UI_WHATS_NEW_WHATS_NEW_UTIL_H_

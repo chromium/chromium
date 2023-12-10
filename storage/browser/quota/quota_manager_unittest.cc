@@ -596,7 +596,7 @@ class QuotaManagerImplTest : public testing::Test {
   int64_t quota() const { return quota_; }
   int64_t total_space() const { return total_space_; }
   int64_t available_space() const { return available_space_; }
-  const absl::optional<BucketLocator>& eviction_bucket() const {
+  const std::optional<BucketLocator>& eviction_bucket() const {
     return eviction_bucket_;
   }
   const QuotaSettings& settings() const { return settings_; }
@@ -623,8 +623,8 @@ class QuotaManagerImplTest : public testing::Test {
     explicit ObserverNotification(BucketLocator locator)
         : type(ObserverNotifyType::kDelete), bucket_locator(locator) {}
     ObserverNotifyType type;
-    absl::optional<BucketInfo> bucket_info;
-    absl::optional<BucketLocator> bucket_locator;
+    std::optional<BucketInfo> bucket_info;
+    std::optional<BucketLocator> bucket_locator;
   };
 
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -681,7 +681,7 @@ class QuotaManagerImplTest : public testing::Test {
   int64_t quota_;
   int64_t total_space_;
   int64_t available_space_;
-  absl::optional<BucketLocator> eviction_bucket_;
+  std::optional<BucketLocator> eviction_bucket_;
   QuotaSettings settings_;
   std::unique_ptr<QuotaManagerObserverTest> quota_manager_observer_test_;
   std::unique_ptr<base::RunLoop> quota_manager_observer_run_loop_;
@@ -869,7 +869,7 @@ TEST_F(QuotaManagerImplTest, UpdateUsageInfo) {
   // Dirty the cache by passing a null delta.
   quota_manager_impl()->NotifyBucketModified(
       QuotaClientType::kFileSystem, first_bucket_locator,
-      /*delta=*/absl::nullopt, base::Time::Now(), base::DoNothing());
+      /*delta=*/std::nullopt, base::Time::Now(), base::DoNothing());
 
   {
     base::test::TestFuture<UsageInfoEntries> future;
@@ -2515,7 +2515,7 @@ TEST_F(QuotaManagerImplTest, DeleteHostDataMultiple) {
       continue;
     }
 
-    absl::optional<StorageKey> storage_key =
+    std::optional<StorageKey> storage_key =
         StorageKey::Deserialize(entry->storage_key);
     ASSERT_TRUE(storage_key.has_value());
 
@@ -2612,7 +2612,7 @@ TEST_F(QuotaManagerImplTest, DeleteHostDataMultipleClientsDifferentTypes) {
       continue;
     }
 
-    absl::optional<StorageKey> storage_key =
+    std::optional<StorageKey> storage_key =
         StorageKey::Deserialize(entry->storage_key);
     ASSERT_TRUE(storage_key.has_value());
 
@@ -3442,7 +3442,7 @@ TEST_F(QuotaManagerImplTest, OverrideQuotaForStorageKey_Disable) {
 
   base::RunLoop run_loop3;
   handle2->OverrideQuotaForStorageKey(
-      storage_key, absl::nullopt,
+      storage_key, std::nullopt,
       base::BindLambdaForTesting([&]() { run_loop3.Quit(); }));
   run_loop3.Run();
 

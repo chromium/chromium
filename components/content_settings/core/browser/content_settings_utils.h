@@ -79,11 +79,17 @@ base::Time GetCoarseVisitedTime(base::Time time);
 // Returns a TimeDelta representing a week.
 base::TimeDelta GetCoarseVisitedTimePrecision();
 
-// Return whether the given permission can be auto-revoked using
-// ContentSettingConstraints::track_last_visit_for_autoexpiration.
+// Returns whether ContentSettingsType is an eligible permission for
+// auto-revocation.
 bool CanBeAutoRevoked(ContentSettingsType type,
                       ContentSetting setting,
                       bool is_one_time = false);
+bool CanBeAutoRevoked(ContentSettingsType type,
+                      const base::Value& value,
+                      bool is_one_time = false);
+
+// Returns whether the chooser permission is allowlisted for auto-revoking.
+bool IsChooserPermissionEligibleForAutoRevocation(ContentSettingsType type);
 
 // Returns true if the type and metadata correspond
 // to a permission decision that was made by Related Website Sets.

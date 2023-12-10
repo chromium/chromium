@@ -15,6 +15,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_source.h"
+#include "chrome/browser/apps/app_service/app_install/app_install_service_lacros.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/browser_app_instance_forwarder.h"
 #include "chrome/browser/apps/app_service/browser_app_instance_tracker.h"
@@ -112,6 +113,10 @@ AppServiceProxyLacros::BrowserAppInstanceTracker() {
 apps::WebsiteMetricsServiceLacros*
 AppServiceProxyLacros::WebsiteMetricsService() {
   return metrics_service_.get();
+}
+
+AppInstallService& AppServiceProxyLacros::AppInstallService() {
+  return *app_install_service_;
 }
 
 void AppServiceProxyLacros::OnApps(std::vector<AppPtr> deltas,
@@ -447,17 +452,17 @@ AppServiceProxyLacros::AppInnerIconLoader::AppInnerIconLoader(
     AppServiceProxyLacros* host)
     : host_(host) {}
 
-absl::optional<IconKey> AppServiceProxyLacros::AppInnerIconLoader::GetIconKey(
+std::optional<IconKey> AppServiceProxyLacros::AppInnerIconLoader::GetIconKey(
     const std::string& id) {
   if (overriding_icon_loader_for_testing_) {
     return overriding_icon_loader_for_testing_->GetIconKey(id);
   }
 
   if (!host_->crosapi_receiver_.is_bound()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
-  absl::optional<IconKey> icon_key;
+  std::optional<IconKey> icon_key;
   host_->app_registry_cache_.ForOneApp(
       id,
       [&icon_key](const AppUpdate& update) { icon_key = update.IconKey(); });
@@ -564,6 +569,9 @@ void AppServiceProxyLacros::Initialize() {
           crosapi_receiver_.BindNewPipeAndPassRemote());
   remote_crosapi_app_service_proxy_ =
       service->GetRemote<crosapi::mojom::AppServiceProxy>().get();
+
+  app_install_service_ = std::make_unique<AppInstallServiceLacros>(
+      *remote_crosapi_app_service_proxy_);
 }
 
 void AppServiceProxyLacros::Shutdown() {

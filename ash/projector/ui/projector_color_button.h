@@ -9,12 +9,15 @@
 
 #include "ash/ash_export.h"
 #include "ash/projector/ui/projector_button.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 
 namespace ash {
 
 // A view that shows a button with a color view which is used for start/stop
 // recording buttons and color picker buttons.
 class ASH_EXPORT ProjectorColorButton : public ProjectorButton {
+  METADATA_HEADER(ProjectorColorButton, ProjectorButton)
+
  public:
   ProjectorColorButton(views::Button::PressedCallback callback,
                        SkColor color,

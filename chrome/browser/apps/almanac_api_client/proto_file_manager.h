@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_APPS_ALMANAC_API_CLIENT_PROTO_FILE_MANAGER_H_
 #define CHROME_BROWSER_APPS_ALMANAC_API_CLIENT_PROTO_FILE_MANAGER_H_
 
+#include <optional>
+
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/callback_forward.h"
@@ -13,7 +15,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace apps {
 // Writes a file to a given `path` on disk. If the write operation fails,
@@ -50,22 +51,22 @@ class ProtoFileManager {
   }
 
   // Reads proto data from the file path on disk using another thread.
-  void ReadProtoFromFile(base::OnceCallback<void(absl::optional<M>)> callback) {
+  void ReadProtoFromFile(base::OnceCallback<void(std::optional<M>)> callback) {
     // Read is a blocking function, so the task is posted to another thread.
     task_runner_->PostTaskAndReplyWithResult(
         FROM_HERE,
         base::BindOnce(
-            [](const base::FilePath& path) -> absl::optional<M> {
+            [](const base::FilePath& path) -> std::optional<M> {
               std::string serialized_data;
               if (!base::ReadFileToString(path, &serialized_data)) {
                 LOG(ERROR) << "Reading file from disk failed: " << path.value();
-                return absl::nullopt;
+                return std::nullopt;
               }
 
               M proto;
               if (!proto.ParseFromString(serialized_data)) {
                 LOG(ERROR) << "Parsing proto failed: " << path.value();
-                return absl::nullopt;
+                return std::nullopt;
               }
 
               return proto;

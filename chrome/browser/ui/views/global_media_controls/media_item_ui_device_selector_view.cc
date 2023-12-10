@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/global_media_controls/media_item_ui_device_selector_view.h"
 
+#include <utility>
+
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
@@ -111,7 +113,7 @@ void ExpandDeviceSelectorLabel::OnColorsChanged(SkColor foreground_color,
 
 ExpandDeviceSelectorButton::ExpandDeviceSelectorButton(PressedCallback callback,
                                                        SkColor foreground_color)
-    : ToggleImageButton(callback) {
+    : ToggleImageButton(std::move(callback)) {
   SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
   SetBorder(views::CreateEmptyBorder(kDropdownButtonBorderInsets));
 
@@ -153,7 +155,7 @@ MediaItemUIDeviceSelectorView::MediaItemUIDeviceSelectorView(
     global_media_controls::GlobalMediaControlsEntryPoint entry_point,
     bool show_expand_button,
     bool show_devices,
-    absl::optional<media_message_center::MediaColorTheme> media_color_theme)
+    std::optional<media_message_center::MediaColorTheme> media_color_theme)
     : item_id_(item_id),
       delegate_(delegate),
       entry_point_(entry_point),
@@ -174,9 +176,7 @@ MediaItemUIDeviceSelectorView::MediaItemUIDeviceSelectorView(
           views::BoxLayout::Orientation::kVertical));
   device_entry_views_container_->SetVisible(false);
 
-  if (entry_point_ ==
-          global_media_controls::GlobalMediaControlsEntryPoint::kPresentation ||
-      show_devices) {
+  if (show_devices) {
     ShowDevices();
   }
   SetBackground(views::CreateSolidBackground(background_color_));
@@ -603,5 +603,5 @@ void MediaItemUIDeviceSelectorView::RegisterAudioDeviceCallbacks() {
                                         weak_ptr_factory_.GetWeakPtr()));
 }
 
-BEGIN_METADATA(MediaItemUIDeviceSelectorView, views::View)
+BEGIN_METADATA(MediaItemUIDeviceSelectorView)
 END_METADATA

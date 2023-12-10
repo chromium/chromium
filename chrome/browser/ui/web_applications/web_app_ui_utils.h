@@ -37,7 +37,7 @@ void OpenAppSettingsForParentApp(const webapps::AppId& parent_app_id,
 // Returns an App ID if a link to app settings should be shown in the page info
 // bubble for the given `web_contents`. This will return null when the tab was
 // not launched as an app.
-// absl::optional<webapps::AppId> GetAppIdForAppManagementLinkInPageInfo(
+// std::optional<webapps::AppId> GetAppIdForAppManagementLinkInPageInfo(
 //    content::WebContents* web_contents);
 
 }  // namespace web_app

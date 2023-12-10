@@ -8,8 +8,8 @@
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/task_environment.h"
-#import "components/password_manager/core/browser/mock_password_store_interface.h"
 #import "components/password_manager/core/browser/password_form.h"
+#import "components/password_manager/core/browser/password_store/mock_password_store_interface.h"
 #import "ios/chrome/browser/credential_provider/model/archivable_credential+password_form.h"
 #import "ios/chrome/common/credential_provider/archivable_credential.h"
 #import "ios/chrome/common/credential_provider/user_defaults_credential_store.h"
@@ -27,12 +27,12 @@ using ::testing::_;
 
 ArchivableCredential* TestCredential() {
   NSString* username = @"username_value";
-  NSString* keychainIdentifier = @"keychain_identifier_value";
+  NSString* password = @"qwerty123";
   NSString* url = @"http://www.alpha.example.com/path/and?args=8";
   NSString* recordIdentifier = @"recordIdentifier";
   NSString* note = @"note";
   return [[ArchivableCredential alloc] initWithFavicon:nil
-                                    keychainIdentifier:keychainIdentifier
+                                              password:password
                                                   rank:1
                                       recordIdentifier:recordIdentifier
                                      serviceIdentifier:url

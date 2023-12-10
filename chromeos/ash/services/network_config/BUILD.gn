@@ -19,6 +19,7 @@ static_library("network_config") {
   ]
   deps = [
     "//ash/constants",
+    "//chromeos/ash/components/carrier_lock",
     "//chromeos/ash/components/dbus/hermes",
     "//chromeos/ash/components/dbus/shill",
     "//chromeos/ash/components/login/login_state",
@@ -81,6 +82,7 @@ source_set("unit_tests") {
     "//ash/constants",
     "//base",
     "//base/test:test_support",
+    "//chromeos/ash/components/carrier_lock",
     "//chromeos/ash/components/dbus/shill:test_support",
     "//chromeos/ash/components/login/login_state",
     "//chromeos/ash/components/network",

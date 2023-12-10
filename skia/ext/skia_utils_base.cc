@@ -9,10 +9,12 @@
 #include "base/pickle.h"
 #include "base/strings/stringprintf.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkData.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/core/SkSerialProcs.h"
+#include "third_party/skia/modules/skcms/skcms.h"
 
 namespace skia {
 
@@ -119,4 +121,32 @@ std::string SkColorToHexString(SkColor color) {
   return base::StringPrintf("#%02X%02X%02X", SkColorGetR(color),
                             SkColorGetG(color), SkColorGetB(color));
 }
+
+std::string SkColorSpaceToString(const SkColorSpace* cs) {
+  if (!cs) {
+    return "null";
+  }
+  skcms_TransferFunction trfn;
+  skcms_Matrix3x3 to_xyzd50;
+  cs->toXYZD50(&to_xyzd50);
+  cs->transferFn(&trfn);
+  return base::StringPrintf("{trfn:%s, toXYZD50:%s}",
+                            SkcmsTransferFunctionToString(trfn).c_str(),
+                            SkcmsMatrix3x3ToString(to_xyzd50).c_str());
+}
+
+std::string SkcmsTransferFunctionToString(const skcms_TransferFunction& fn) {
+  return base::StringPrintf(
+      "{%1.4f*x + %1.4f if abs(x) < %1.4f else "
+      "sign(x)*((%1.4f*abs(x) + %1.4f)**%1.4f + %1.4f)}",
+      fn.c, fn.f, fn.d, fn.a, fn.b, fn.g, fn.e);
+}
+
+std::string SkcmsMatrix3x3ToString(const skcms_Matrix3x3& m) {
+  return base::StringPrintf(
+      "{rows:[[%1.4f,%1.4f,%1.4f],[%1.4f,%1.4f,%1.4f],[%1.4f,%1.4f,%1.4f]]}",
+      m.vals[0][0], m.vals[0][1], m.vals[0][2], m.vals[1][0], m.vals[1][1],
+      m.vals[1][2], m.vals[2][0], m.vals[2][1], m.vals[2][2]);
+}
+
 }  // namespace skia

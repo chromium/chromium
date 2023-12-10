@@ -412,7 +412,7 @@ SkPath GetHighlightPath(const View* view, float halo_thickness) {
   return path;
 }
 
-BEGIN_METADATA(FocusRing, View)
+BEGIN_METADATA(FocusRing)
 ADD_PROPERTY_METADATA(absl::optional<ui::ColorId>, ColorId)
 ADD_PROPERTY_METADATA(float, HaloInset)
 ADD_PROPERTY_METADATA(float, HaloThickness)

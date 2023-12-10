@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <memory>
+#include <optional>
 
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
@@ -27,7 +28,6 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 #include "ui/gfx/image/image.h"
 
@@ -116,7 +116,7 @@ class Observer : public BrowserListObserver, public AvatarMenuObserver {
 }
 
 - (IBAction)editProfile:(id)sender {
-  absl::optional<size_t> active_profile_index =
+  std::optional<size_t> active_profile_index =
       _avatarMenu->GetActiveProfileIndex();
   DCHECK(active_profile_index);
   _avatarMenu->EditProfile(*active_profile_index);

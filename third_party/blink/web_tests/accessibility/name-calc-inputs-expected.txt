@@ -1,20 +1,4 @@
 This is a testharness.js-based test.
 Harness Error. harness_status.status = 1 , harness_status.message = 1 duplicate test name: "Text input with title and aria-placeholder"
-[PASS] Text input
-[PASS] Text input with title
-[PASS] Text input with title and placeholder
-[PASS] Text input with title, placeholder and label-for
-[PASS] Text input with title, placeholder, label-for and aria-label
-[PASS] Text input with title, placeholder, label-for, aria-label and aria-labelledby
-[PASS] Text input with title and label-wrapped
-[PASS] Text input with wrapped label with wrong ID
-[PASS] Text input with title, placeholder, label-for and label-wrapped
-[PASS] Text input with placeholder and label-wrapped
-[PASS] Text input with multiple label-for
-[PASS] Text input with title and aria-placeholder
-[PASS] Text input with title and aria-placeholder
-[PASS] Div with textbox role and aria-placeholder
-[PASS] Div with textbox role and title and aria-placeholder
-[PASS] Div without textbox role and aria-placeholder
 Harness: the test ran to completion.
 

@@ -6,9 +6,11 @@ import("//build/config/android/rules.gni")
 
 android_library("java") {
   sources = [
+    "java/src/org/chromium/components/browser_ui/util/AutomotiveUtils.java",
     "java/src/org/chromium/components/browser_ui/util/AvatarGenerator.java",
     "java/src/org/chromium/components/browser_ui/util/BitmapCache.java",
     "java/src/org/chromium/components/browser_ui/util/BrowserControlsVisibilityDelegate.java",
+    "java/src/org/chromium/components/browser_ui/util/BrowserUiUtilsCachedFlags.java",
     "java/src/org/chromium/components/browser_ui/util/ComposedBrowserControlsVisibilityDelegate.java",
     "java/src/org/chromium/components/browser_ui/util/ConversionUtils.java",
     "java/src/org/chromium/components/browser_ui/util/DimensionCompat.java",
@@ -27,6 +29,7 @@ android_library("java") {
     "//base:base_java",
     "//build/android:build_java",
     "//cc:cc_java",
+    "//components/browser_ui/widget/android:java_resources",
     "//components/embedder_support/android:util_java",
     "//components/url_formatter/android:url_formatter_java",
     "//content/public/android:content_main_dex_java",
@@ -35,13 +38,17 @@ android_library("java") {
     "//third_party/androidx:androidx_collection_collection_java",
     "//third_party/androidx:androidx_core_core_java",
     "//third_party/androidx:androidx_vectordrawable_vectordrawable_java",
+    "//ui/android:ui_java",
     "//url:gurl_java",
   ]
   resources_package = "org.chromium.components.browser_ui.util"
 }
 
 android_resources("java_resources") {
-  sources = []
+  sources = [
+    "java/res/values-sw600dp-w840dp/bools.xml",
+    "java/res/values/bools.xml",
+  ]
   deps = [ "//components/browser_ui/strings/android:browser_ui_strings_grd" ]
 }
 

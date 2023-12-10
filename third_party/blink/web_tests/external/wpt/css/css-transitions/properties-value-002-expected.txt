@@ -1,20 +1,4 @@
 This is a testharness.js-based test.
-[PASS] margin-bottom percentage(%) / values
-[PASS] margin-bottom percentage(%) / events
-[PASS] margin-left percentage(%) / values
-[PASS] margin-left percentage(%) / events
-[PASS] margin-right percentage(%) / values
-[PASS] margin-right percentage(%) / events
-[PASS] margin-top percentage(%) / values
-[PASS] margin-top percentage(%) / events
-[PASS] padding-bottom percentage(%) / values
-[PASS] padding-bottom percentage(%) / events
-[PASS] padding-left percentage(%) / values
-[PASS] padding-left percentage(%) / events
-[PASS] padding-right percentage(%) / values
-[PASS] padding-right percentage(%) / events
-[PASS] padding-top percentage(%) / values
-[PASS] padding-top percentage(%) / events
 [FAIL] vertical-align vertical(keyword) / values
   assert_not_equals: must not be target value after start got disallowed value "bottom"
 [FAIL] vertical-align vertical(keyword) / events

@@ -14,14 +14,10 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 
-/**
- * Test class for {@link CommandLineInitUtil}.
- */
+/** Test class for {@link CommandLineInitUtil}. */
 @RunWith(AndroidJUnit4.class)
 public class CommandLineInitUtilTest {
-    /**
-     * Verifies that the default command line flags get set for Chrome Public tests.
-     */
+    /** Verifies that the default command line flags get set for Chrome Public tests. */
     @Test
     @SmallTest
     @Feature({"CommandLine"})

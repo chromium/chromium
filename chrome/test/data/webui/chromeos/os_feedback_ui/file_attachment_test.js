@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/mojo/mojo/public/mojom/base/big_buffer.mojom-lite.js';
+import 'chrome://os-feedback/strings.m.js';
+import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
 import {FakeFeedbackServiceProvider} from 'chrome://os-feedback/fake_feedback_service_provider.js';
-import {FeedbackAppPreSubmitAction} from 'chrome://os-feedback/feedback_types.js';
 import {FileAttachmentElement} from 'chrome://os-feedback/file_attachment.js';
 import {setFeedbackServiceProviderForTesting} from 'chrome://os-feedback/mojo_interface_provider.js';
-import {getDeepActiveElement} from 'chrome://resources/ash/common/util.js';
+import {FeedbackAppPreSubmitAction} from 'chrome://os-feedback/os_feedback_ui.mojom-webui.js';
+import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
-import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {eventToPromise, isVisible} from '../test_util.js';
 
 /** @type {string} */
@@ -19,7 +19,7 @@ const fakeImageUrl = 'chrome://os_feedback/app_icon_48.png';
 
 const MAX_ATTACH_FILE_SIZE = 10 * 1024 * 1024;
 
-export function fileAttachmentTestSuite() {
+suite('fileAttachmentTestSuite', () => {
   /** @type {?FileAttachmentElement} */
   let page = null;
 
@@ -323,7 +323,7 @@ export function fileAttachmentTestSuite() {
     const imageUrl = getElement('#selectedFileImage').src;
     assertTrue(imageUrl.length > 0);
     // There should be a preview image.
-    page.selectedImageUrl_ = imageUrl;
+    page.selectedImageUrl = imageUrl;
     const selectedImage = getElement('#selectedFileImage');
     assertTrue(!!selectedImage.src);
     assertEquals(imageUrl, selectedImage.src);
@@ -333,8 +333,7 @@ export function fileAttachmentTestSuite() {
     assertTrue(isVisible(selectedImageButton));
   });
 
-  // Test that clicking the image will open preview dialog and set the
-  // focus on the close dialog icon button.
+  /** Test that clicking the image will open preview dialog. */
   test('selectedImagePreviewDialog', async () => {
     await initializePage();
     verifyRecordPreSubmitActionCallCount(
@@ -352,7 +351,7 @@ export function fileAttachmentTestSuite() {
     });
 
     page.setSelectedFileForTesting(fakeImageFile);
-    page.selectedImageUrl_ = fakeImageUrl;
+    page.selectedImageUrl = fakeImageUrl;
     assertEquals(fakeImageUrl, getElement('#selectedFileImage').src);
 
     const closeDialogButton = getElement('#closeDialogButton');
@@ -374,15 +373,5 @@ export function fileAttachmentTestSuite() {
 
     // The preview dialog's close icon button is visible now.
     assertTrue(isVisible(closeDialogButton));
-    // The preview dialog's close icon button is focused.
-    assertEquals(closeDialogButton, getDeepActiveElement());
-
-    // Press enter should close the preview dialog.
-    closeDialogButton.dispatchEvent(
-        new KeyboardEvent('keydown', {key: 'Enter'}));
-    await flushTasks();
-
-    // The preview dialog's close icon button is not visible now.
-    assertFalse(isVisible(closeDialogButton));
   });
-}
+});

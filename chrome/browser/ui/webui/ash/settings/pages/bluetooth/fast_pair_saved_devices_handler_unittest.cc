@@ -164,7 +164,7 @@ class FastPairSavedDevicesHandlerTest : public testing::Test {
     mock_decoder_ = mock_decoder.get();
     // On call to DecodeImage, run the third argument callback with test_image_.
     ON_CALL(*mock_decoder, DecodeImage(testing::_, testing::_, testing::_))
-        .WillByDefault(base::test::RunOnceCallback<2>(test_image_));
+        .WillByDefault(base::test::RunOnceCallbackRepeatedly<2>(test_image_));
 
     handler_ = std::make_unique<TestFastPairSavedDevicesHandler>(
         std::move(mock_decoder));
@@ -535,7 +535,7 @@ TEST_F(FastPairSavedDevicesHandlerTest, EmptyImageSentToWebUi) {
   histogram_tester().ExpectTotalCount(kSavedDevicesTotalUxLoadTimeMetricName,
                                       0);
   ON_CALL(*mock_decoder_, DecodeImage(testing::_, testing::_, testing::_))
-      .WillByDefault(base::test::RunOnceCallback<2>(gfx::Image()));
+      .WillByDefault(base::test::RunOnceCallbackRepeatedly<2>(gfx::Image()));
   InitializeSavedDevicesList(
       /*device_name1=*/kDeviceName1, /*device_image_bytes1=*/kImageBytes1,
       /*account_key1=*/kAccountKey1, /*device_name2=*/kDeviceName2,

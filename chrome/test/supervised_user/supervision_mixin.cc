@@ -10,7 +10,7 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/notreached.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/ui/browser.h"

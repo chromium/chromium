@@ -21,7 +21,6 @@
 #include "base/compiler_specific.h"
 #include "base/containers/circular_deque.h"
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/linked_list.h"
 #include "base/debug/debugger.h"
@@ -29,7 +28,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
-#include "base/functional/identity.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -187,8 +185,7 @@ bool ContainsIcannNameCollisionIp(const std::vector<IPEndPoint>& endpoints) {
 
 // True if |hostname| ends with either ".local" or ".local.".
 bool ResemblesMulticastDNSName(base::StringPiece hostname) {
-  return base::EndsWith(hostname, ".local") ||
-         base::EndsWith(hostname, ".local.");
+  return hostname.ends_with(".local") || hostname.ends_with(".local.");
 }
 
 bool ConfigureAsyncDnsNoFallbackFieldTrial() {
@@ -1410,8 +1407,7 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
       int net_error,
       const DnsResponse* response) {
     DCHECK(transaction_info_it != transactions_in_progress_.end());
-    DCHECK(transactions_in_progress_.find(*transaction_info_it) !=
-           transactions_in_progress_.end());
+    DCHECK(base::Contains(transactions_in_progress_, *transaction_info_it));
 
     // Pull the TransactionInfo out of `transactions_in_progress_` now, so it
     // and its underlying DnsTransaction will be deleted on completion of
@@ -1737,7 +1733,7 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
     };
 
     base::EraseIf(transactions_needed_, has_non_fatal_or_empty_error);
-    base::EraseIf(transactions_in_progress_, has_non_fatal_or_empty_error);
+    std::erase_if(transactions_in_progress_, has_non_fatal_or_empty_error);
   }
 
   void OnFailure(

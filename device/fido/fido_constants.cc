@@ -225,7 +225,6 @@ const char kExtensionLargeBlob[] = "largeBlob";
 const char kExtensionLargeBlobKey[] = "largeBlobKey";
 const char kExtensionCredBlob[] = "credBlob";
 const char kExtensionMinPINLength[] = "minPinLength";
-const char kExtensionDevicePublicKey[] = "devicePubKey";
 const char kExtensionPRF[] = "prf";
 
 const char kExtensionPRFEnabled[] = "enabled";
@@ -244,14 +243,6 @@ const char kExtensionLargeBlobSupportPreferred[] = "preferred";
 const char kExtensionLargeBlobSupportRequired[] = "required";
 const char kExtensionLargeBlobWrite[] = "write";
 const char kExtensionLargeBlobWritten[] = "written";
-
-const char kDevicePublicKeyAttestationKey[] = "attestation";
-const char kDevicePublicKeyAttestationFormatsKey[] = "attestationFormats";
-const char kDevicePublicKeyAAGUIDKey[] = "aaguid";
-const char kDevicePublicKeyDPKKey[] = "dpk";
-const char kDevicePublicKeyScopeKey[] = "scope";
-const char kDevicePublicKeyNonceKey[] = "nonce";
-const char kDevicePublicKeyEPKey[] = "epAtt";
 
 const base::TimeDelta kBleDevicePairingModeWaitingInterval = base::Seconds(2);
 

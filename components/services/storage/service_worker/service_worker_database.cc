@@ -663,6 +663,11 @@ bool WriteToBlinkCondition(
             request.destination =
                 network::mojom::RequestDestination::kDictionary;
             break;
+          case ServiceWorkerRegistrationData::RouterRules::RuleV1::Condition::
+              Request::kSpeculationRulesDestination:
+            request.destination =
+                network::mojom::RequestDestination::kSpeculationRules;
+            break;
         }
       }
       out_request = request;
@@ -978,6 +983,11 @@ void WriteConditionToProtoWithHelper(
           mutable_request->set_destination(
               ServiceWorkerRegistrationData::RouterRules::RuleV1::Condition::
                   Request::kDictionaryDestination);
+          break;
+        case network::mojom::RequestDestination::kSpeculationRules:
+          mutable_request->set_destination(
+              ServiceWorkerRegistrationData::RouterRules::RuleV1::Condition::
+                  Request::kSpeculationRulesDestination);
           break;
       }
     }
@@ -2518,7 +2528,6 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::ParseRegistrationData(
         (*out)->fetch_handler_type =
             blink::mojom::ServiceWorkerFetchHandlerType::kEmptyFetchHandler;
         break;
-        // TODO(crbug.com/1347319): implement other fetch_handler_type.
     }
   }
   (*out)->last_update_check = base::Time::FromDeltaSinceWindowsEpoch(
@@ -2847,11 +2856,8 @@ void ServiceWorkerDatabase::WriteRegistrationDataInBatch(
         data.set_fetch_handler_skippable_type(
             ServiceWorkerRegistrationData::SKIPPABLE_EMPTY_FETCH_HANDLER);
         break;
-      // TODO(crbug.com/1347319): implement other fetch_handler_type.
-      // TODO(crbug.com/1351246): remove default if possible.
-      default:
-        DCHECK(false) << "Unknown fetch_handler_type is used."
-                      << registration.fetch_handler_type;
+      case blink::mojom::ServiceWorkerFetchHandlerType::kNoHandler:
+        NOTREACHED();
     }
   }
   data.set_last_update_check_time(

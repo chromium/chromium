@@ -35,7 +35,7 @@
 
 namespace blink {
 
-// Must not grow beyond 3 bits, due to packing in CSSPropertyValueSet.
+// Must not grow beyond 4 bits, due to packing in CSSPropertyValueSet.
 enum CSSParserMode : uint8_t {
   kHTMLStandardMode,
   kHTMLQuirksMode,
@@ -50,6 +50,9 @@ enum CSSParserMode : uint8_t {
   // @property rules are specially tagged so modifications through the
   // inspector don't treat them as style rules.
   kCSSPropertyRuleMode,
+  // @font-palette-values rules are specially tagged so modifications through
+  // the inspector don't treat them as style rules.
+  kCSSFontPaletteValuesRuleMode,
   // User agent stylesheets are parsed in standards mode but also allows
   // internal properties and values.
   kUASheetMode,

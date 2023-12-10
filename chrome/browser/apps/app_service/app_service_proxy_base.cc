@@ -62,13 +62,13 @@ AppServiceProxyBase::AppInnerIconLoader::AppInnerIconLoader(
     AppServiceProxyBase* host)
     : host_(host), overriding_icon_loader_for_testing_(nullptr) {}
 
-absl::optional<IconKey> AppServiceProxyBase::AppInnerIconLoader::GetIconKey(
+std::optional<IconKey> AppServiceProxyBase::AppInnerIconLoader::GetIconKey(
     const std::string& id) {
   if (overriding_icon_loader_for_testing_) {
     return overriding_icon_loader_for_testing_->GetIconKey(id);
   }
 
-  absl::optional<IconKey> icon_key;
+  std::optional<IconKey> icon_key;
   host_->app_registry_cache_.ForOneApp(
       id,
       [&icon_key](const AppUpdate& update) { icon_key = update.IconKey(); });
@@ -108,6 +108,10 @@ AppServiceProxyBase::AppInnerIconLoader::LoadIconFromIconKey(
                       allow_placeholder_icon, std::move(callback));
   return nullptr;
 }
+
+AppServiceProxyBase::LaunchParams::LaunchParams() = default;
+
+AppServiceProxyBase::LaunchParams::~LaunchParams() = default;
 
 AppServiceProxyBase::AppServiceProxyBase(Profile* profile)
     : app_inner_icon_loader_(this),
@@ -173,6 +177,15 @@ AppPublisher* AppServiceProxyBase::GetPublisher(AppType app_type) {
   return it == publishers_.end() ? nullptr : it->second;
 }
 
+void AppServiceProxyBase::OnPublisherNotReadyForLaunch(
+    const std::string& app_id,
+    std::unique_ptr<LaunchParams> launch_request) {
+  if (launch_request && !launch_request->call_back_.is_null()) {
+    std::move(launch_request->call_back_).Run(LaunchResult(State::FAILED));
+  }
+  return;
+}
+
 apps::AppRegistryCache& AppServiceProxyBase::AppRegistryCache() {
   return app_registry_cache_;
 }
@@ -223,8 +236,7 @@ std::unique_ptr<IconLoader::Releaser> AppServiceProxyBase::LoadIcon(
 }
 
 uint32_t AppServiceProxyBase::GetIconEffects(const std::string& app_id) {
-  absl::optional<apps::IconKey> icon_key =
-      app_icon_loader()->GetIconKey(app_id);
+  std::optional<apps::IconKey> icon_key = app_icon_loader()->GetIconKey(app_id);
   if (!icon_key.has_value()) {
     return IconEffects::kNone;
   }
@@ -239,8 +251,7 @@ AppServiceProxyBase::LoadIconWithIconEffects(AppType app_type,
                                              int32_t size_hint_in_dip,
                                              bool allow_placeholder_icon,
                                              LoadIconCallback callback) {
-  absl::optional<apps::IconKey> icon_key =
-      app_icon_loader()->GetIconKey(app_id);
+  std::optional<apps::IconKey> icon_key = app_icon_loader()->GetIconKey(app_id);
   if (!icon_key.has_value()) {
     std::move(callback).Run(std::make_unique<IconValue>());
     return nullptr;
@@ -262,6 +273,12 @@ void AppServiceProxyBase::Launch(const std::string& app_id,
                &window_info](const apps::AppUpdate& update) {
         auto* publisher = GetPublisher(update.AppType());
         if (!publisher) {
+          std::unique_ptr<LaunchParams> params =
+              std::make_unique<LaunchParams>();
+          params->event_flags_ = event_flags;
+          params->launch_source_ = launch_source;
+          params->window_info_ = std::move(window_info);
+          OnPublisherNotReadyForLaunch(update.AppId(), std::move(params));
           return;
         }
 
@@ -290,6 +307,12 @@ void AppServiceProxyBase::LaunchAppWithFiles(
                &file_paths](const apps::AppUpdate& update) {
         auto* publisher = GetPublisher(update.AppType());
         if (!publisher) {
+          std::unique_ptr<LaunchParams> params =
+              std::make_unique<LaunchParams>();
+          params->event_flags_ = event_flags;
+          params->launch_source_ = launch_source;
+          params->file_paths_ = std::move(file_paths);
+          OnPublisherNotReadyForLaunch(update.AppId(), std::move(params));
           return;
         }
 
@@ -328,7 +351,14 @@ void AppServiceProxyBase::LaunchAppWithIntent(const std::string& app_id,
        callback = std::move(callback)](const AppUpdate& update) mutable {
         auto* publisher = GetPublisher(update.AppType());
         if (!publisher) {
-          std::move(callback).Run(LaunchResult(State::FAILED));
+          std::unique_ptr<LaunchParams> params =
+              std::make_unique<LaunchParams>();
+          params->event_flags_ = event_flags;
+          params->intent_ = std::move(intent);
+          params->launch_source_ = launch_source;
+          params->window_info_ = std::move(window_info);
+          params->call_back_ = std::move(callback);
+          OnPublisherNotReadyForLaunch(update.AppId(), std::move(params));
           return;
         }
 
@@ -372,7 +402,12 @@ void AppServiceProxyBase::LaunchAppWithParams(AppLaunchParams&& params,
   auto app_type = app_registry_cache_.GetAppType(params.app_id);
   auto* publisher = GetPublisher(app_type);
   if (!publisher) {
-    std::move(callback).Run(LaunchResult());
+    std::string app_id = params.app_id;
+    std::unique_ptr<LaunchParams> launch_params =
+        std::make_unique<LaunchParams>();
+    launch_params->params_ = std::move(params);
+    launch_params->call_back_ = std::move(callback);
+    OnPublisherNotReadyForLaunch(app_id, std::move(launch_params));
     return;
   }
 

@@ -30,23 +30,17 @@ extern const char kHatsSurveyTriggerPerformanceControlsPerformance[];
 extern const char kHatsSurveyTriggerPerformanceControlsBatteryPerformance[];
 extern const char kHatsSurveyTriggerPerformanceControlsHighEfficiencyOptOut[];
 extern const char kHatsSurveyTriggerPerformanceControlsBatterySaverOptOut[];
-extern const char kHatsSurveyTriggerPermissionsPrompt[];
 extern const char kHatsSurveyTriggerPrivacyGuide[];
 extern const char kHatsSurveyTriggerPrivacySandbox[];
 extern const char kHatsSurveyTriggerRedWarning[];
 extern const char kHatsSurveyTriggerSettings[];
 extern const char kHatsSurveyTriggerSettingsPrivacy[];
+extern const char kHatsSurveyTriggerSuggestedPasswordsExperiment[];
 extern const char kHatsSurveyTriggerTrackingProtectionControlImmediate[];
 extern const char kHatsSurveyTriggerTrackingProtectionTreatmentImmediate[];
 extern const char kHatsSurveyTriggerTrackingProtectionControlDelayed[];
 extern const char kHatsSurveyTriggerTrackingProtectionTreatmentDelayed[];
-extern const char kHatsSurveyTriggerTrustSafetyPrivacySandbox3ConsentAccept[];
 extern const char kHatsSurveyTriggerSettingsSecurity[];
-extern const char kHatsSurveyTriggerTrustSafetyPrivacySandbox3ConsentDecline[];
-extern const char kHatsSurveyTriggerTrustSafetyPrivacySandbox3NoticeDismiss[];
-extern const char kHatsSurveyTriggerTrustSafetyPrivacySandbox3NoticeOk[];
-extern const char kHatsSurveyTriggerTrustSafetyPrivacySandbox3NoticeSettings[];
-extern const char kHatsSurveyTriggerTrustSafetyPrivacySandbox3NoticeLearnMore[];
 extern const char kHatsSurveyTriggerTrustSafetyPrivacySandbox4ConsentAccept[];
 extern const char kHatsSurveyTriggerTrustSafetyPrivacySandbox4ConsentDecline[];
 extern const char kHatsSurveyTriggerTrustSafetyPrivacySandbox4NoticeOk[];
@@ -74,6 +68,8 @@ extern const char kHatsSurveyTriggerWhatsNew[];
 extern const char kHatsSurveyTriggerAndroidStartupSurvey[];
 #endif
 
+extern const char kHatsSurveyTriggerPermissionsPrompt[];
+
 extern const char kHatsSurveyTriggerTesting[];
 // The Trigger ID for a test HaTS Next survey which is available for testing
 // and demo purposes when the migration feature flag is enabled.
@@ -89,7 +85,7 @@ struct SurveyConfig {
   SurveyConfig(
       const base::Feature* feature,
       const std::string& trigger,
-      const absl::optional<std::string>& presupplied_trigger_id = absl::nullopt,
+      const std::optional<std::string>& presupplied_trigger_id = std::nullopt,
       const std::vector<std::string>& product_specific_bits_data_fields = {},
       const std::vector<std::string>& product_specific_string_data_fields = {});
 
@@ -129,4 +125,4 @@ void GetActiveSurveyConfigs(SurveyConfigs& survey_configs_by_triggers_);
 
 }  // namespace hats
 
-#endif  // def CHROME_BROWSER_UI_HATS_SURVEY_CONFIG_H_
+#endif  // CHROME_BROWSER_UI_HATS_SURVEY_CONFIG_H_

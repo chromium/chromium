@@ -23,30 +23,14 @@
 
 namespace performance_manager {
 
-namespace {
-
-// Returns a new RenderProcessHostProxy with a unique RenderProcessHostId.
-RenderProcessHostProxy CreateRenderProcessHostProxy() {
-  static RenderProcessHostId::Generator id_generator;
-  return RenderProcessHostProxy::CreateForTesting(
-      id_generator.GenerateNextId());
-}
-
-// Returns a new BrowserChildProcessHostProxy with a unique
-// BrowserChildProcessHostId.
-BrowserChildProcessHostProxy CreateBrowserChildProcessHostProxy() {
-  static BrowserChildProcessHostId::Generator id_generator;
-  return BrowserChildProcessHostProxy::CreateForTesting(
-      id_generator.GenerateNextId());
-}
-
-}  // namespace
-
 TestProcessNodeImpl::TestProcessNodeImpl()
-    : ProcessNodeImpl(CreateRenderProcessHostProxy()) {}
+    : ProcessNodeImpl(RenderProcessHostProxy::CreateForTesting(
+          NextTestRenderProcessHostId())) {}
 
 TestProcessNodeImpl::TestProcessNodeImpl(content::ProcessType process_type)
-    : ProcessNodeImpl(process_type, CreateBrowserChildProcessHostProxy()) {}
+    : ProcessNodeImpl(process_type,
+                      BrowserChildProcessHostProxy::CreateForTesting(
+                          NextTestBrowserChildProcessHostId())) {}
 
 void TestProcessNodeImpl::SetProcessWithPid(base::ProcessId pid,
                                             base::Process process,

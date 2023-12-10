@@ -8,6 +8,7 @@
 <translation id="1420684932347524586">Jæks! Það mistókst að útbúa RSA-einkalykil af handahófi.</translation>
 <translation id="1445572445564823378">Þessi viðbót hægir á <ph name="PRODUCT_NAME" />. Þú ættir að slökkva á henni til að <ph name="PRODUCT_NAME" /> starfi betur.</translation>
 <translation id="1468038450257740950">WebGL er ekki stutt.</translation>
+<translation id="1610570795592207282">Ekki tókst að hlaða CSS-stílsniðið" „<ph name="RELATIVE_PATH" />“ fyrir skriftu.</translation>
 <translation id="1803557475693955505">Ekki var hægt að hlaða bakgrunnssíðuna „<ph name="BACKGROUND_PAGE" />“.</translation>
 <translation id="2159915644201199628">Ekki var hægt að afkóða mynd: „<ph name="IMAGE_NAME" />“</translation>
 <translation id="2350172092385603347">Staðfærsla notuð en default_locale var ekki tilgreint í upplýsingaskránni.</translation>
@@ -18,14 +19,12 @@
 <translation id="3115238746683532089">Óþekkt vara <ph name="PRODUCT_ID" /> frá framleiðandanum <ph name="VENDOR_ID" /> (raðnúmer <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">Mistókst að skipta út crx-skrá. Athugaðu hvort skráin er í notkun.</translation>
 <translation id="3163201441334626963">Óþekkt vara <ph name="PRODUCT_ID" /> frá framleiðandanum <ph name="VENDOR_ID" /></translation>
-<translation id="3302709122321372472">Ekki var hægt að hlaða CSS-stílsniðið „<ph name="RELATIVE_PATH" />“ fyrir efnisskriftu.</translation>
 <translation id="3369521687965833290">Ekki er hægt að afpakka viðbót. Til að afpakka viðbót á öruggan hátt verður slóð á prófílsmöppuna að hefjast á einkennisstaf drifs og má ekki innihalda virkjunarstað (mount point) eða möppustaðgengil (junction eða symlink). Engin slóð sem uppfyllir þessi skilyrði er til staðar fyrir prófílinn þinn.</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (raðnúmer <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> frá framleiðandanum <ph name="VENDOR_ID" /> (raðnúmer <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Inntaksgildi einkalykils verður að vera gild slóð.</translation>
 <translation id="388442998277590542">Ekki var hægt að hlaða valkostasíðuna „<ph name="OPTIONS_PAGE" />“.</translation>
 <translation id="3984413272403535372">Villa við að undirrita viðbót.</translation>
-<translation id="39964277676607559">Ekki var hægt að hlaða JavaScript-skriftuna „<ph name="RELATIVE_PATH" />“ fyrir efnisskriftu.</translation>
 <translation id="4115165561519362854">Stjórnandi þessarar vélar krefst þess að útgáfa <ph name="EXTENSION_NAME" /> sé að minnsta kosti <ph name="EXTENSION_VERSION" />. Ekki er hægt að gera viðbótina virka fyrr en hún hefur verið uppfærð í þá útgáfu (eða nýrri).</translation>
 <translation id="4233778200880751280">Ekki var hægt að hlaða upplýsingasíðuna „<ph name="ABOUT_PAGE" />“.</translation>
 <translation id="471800408830181311">Mistókst að skila einkalykli.</translation>
@@ -33,6 +32,7 @@
 <translation id="4988792151665380515">Mistókst að flytja út opinberan lykil.</translation>
 <translation id="5026754133087629784">Vefgluggi: <ph name="WEBVIEW_TAG_NAME" /></translation>
 <translation id="5098647635849512368">Nákvæm slóð að möppunni sem á að pakka fannst ekki.</translation>
+<translation id="5160071981665899014">Ekki tókst að hlaða JavaScript-skriftuna „<ph name="RELATIVE_PATH" />“ fyrir skriftu.</translation>
 <translation id="5356315618422219272">Forritsgluggi: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5436430103864390185">Aðlagaðir gluggar eru ekki studdir.</translation>
 <translation id="5456409301717116725">Þessi viðbót inniheldur lykilskrána „<ph name="KEY_PATH" />“. Þetta er líklega eitthvað sem þú vilt ekki.</translation>

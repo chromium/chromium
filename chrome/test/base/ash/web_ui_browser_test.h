@@ -12,11 +12,11 @@
 
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ui/webui/web_ui_test_handler.h"
+#include "chrome/browser/ui/webui/ash/web_ui_test_handler.h"
+#include "chrome/test/base/ash/javascript_browser_test.h"
 #include "chrome/test/base/devtools_agent_coverage_observer.h"
 #include "chrome/test/base/devtools_listener.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "chrome/test/base/ash/javascript_browser_test.h"
 #include "services/network/public/mojom/clear_data_filter.mojom.h"
 
 namespace {
@@ -135,6 +135,9 @@ class BaseWebUIBrowserTest : public JavaScriptBrowserTest {
   void set_test_handler(std::unique_ptr<WebUITestHandler> test_handler) {
     test_handler_ = std::move(test_handler);
   }
+
+  // Clears captured console error messages. Returns false if there were any.
+  bool EnsureNoCapturedConsoleErrorMessages();
 
   // Handles collection of code coverage.
   std::unique_ptr<DevToolsAgentCoverageObserver> coverage_handler_;

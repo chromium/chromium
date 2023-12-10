@@ -28,17 +28,17 @@ AnalysisServiceSettings::AnalysisServiceSettings(
   // an existing provider.
   const std::string* service_provider_name =
       settings_dict.FindString(kKeyServiceProvider);
-  if (service_provider_name) {
-    service_provider_name_ = *service_provider_name;
-    if (service_provider_config.count(service_provider_name_)) {
-      analysis_config_ =
-          service_provider_config.at(service_provider_name_).analysis;
-    }
-    if (!analysis_config_) {
-      DLOG(ERROR) << "No analysis config for corresponding service provider";
-      return;
-    }
-  } else {
+  if (!service_provider_name) {
+    return;
+  }
+
+  service_provider_name_ = *service_provider_name;
+  if (service_provider_config.count(service_provider_name_)) {
+    analysis_config_ =
+        service_provider_config.at(service_provider_name_).analysis;
+  }
+  if (!analysis_config_) {
+    DLOG(ERROR) << "No analysis config for corresponding service provider";
     return;
   }
 
@@ -104,8 +104,6 @@ AnalysisServiceSettings::AnalysisServiceSettings(
       settings_dict.FindBool(kKeyBlockPasswordProtected).value_or(false);
   block_large_files_ =
       settings_dict.FindBool(kKeyBlockLargeFiles).value_or(false);
-  block_unsupported_file_types_ =
-      settings_dict.FindBool(kKeyBlockUnsupportedFileTypes).value_or(false);
   minimum_data_size_ = settings_dict.FindInt(kKeyMinimumDataSize).value_or(100);
 
   const base::Value::List* custom_messages =
@@ -147,6 +145,7 @@ AnalysisServiceSettings::AnalysisServiceSettings(
     }
   }
 
+#if BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
 #if BUILDFLAG(IS_WIN)
   const char* verification_key = kKeyWindowsVerification;
 #elif BUILDFLAG(IS_MAC)
@@ -155,7 +154,6 @@ AnalysisServiceSettings::AnalysisServiceSettings(
   const char* verification_key = kKeyLinuxVerification;
 #endif
 
-#if BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
   const base::Value::Dict& dict = settings_value.GetDict();
   const base::Value::List* signatures =
       dict.FindListByDottedPath(verification_key);
@@ -199,7 +197,6 @@ AnalysisSettings AnalysisServiceSettings::GetAnalysisSettingsWithTags(
   settings.default_action = default_action_;
   settings.block_password_protected_files = block_password_protected_files_;
   settings.block_large_files = block_large_files_;
-  settings.block_unsupported_file_types = block_unsupported_file_types_;
   if (is_cloud_analysis()) {
     CloudAnalysisSettings cloud_settings;
     cloud_settings.analysis_url = GURL(analysis_config_->url);

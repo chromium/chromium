@@ -30,6 +30,7 @@
 <translation id="2226276347425096477">Скратете го текстот на <ph name="MAX_CHARACTERS" /> знаци или помалку (тековно користите <ph name="CURRENT_LENGTH" /> знаци).</translation>
 <translation id="2247351761944213033"><ph name="WEEKNUMBER" /> недела, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Песна <ph name="NUMBER" /></translation>
+<translation id="2353297238722298836">Камерата и микрофонот се дозволени</translation>
 <translation id="2393030564806080191">Хексадецимална вредност на бојата</translation>
 <translation id="2398813069815436052">дијалогот е отворен.</translation>
 <translation id="245932805758469625">број на преостанати секунди од видеото</translation>
@@ -60,10 +61,12 @@
 <translation id="3822383571486410024">Продолжете го текстот на <ph name="MIN_CHARACTERS" /> знаци или повеќе (во моментов користите <ph name="CURRENT_LENGTH" /> знаци).</translation>
 <translation id="383465348367842624">Дел по кој следува „<ph name="ATSIGN" />“ не треба да го содржи симболот „<ph name="INVALIDCHARACTER" />“.</translation>
 <translation id="3846214748874656680">Излези од цел екран</translation>
+<translation id="4031179711345676612">Микрофон е дозволен</translation>
 <translation id="4103419683916926126">Милисекунди</translation>
 <translation id="4201051445878709314">Прикажи го претходниот месец</translation>
 <translation id="4360991593054037559">Внесете важечка вредност. Двете најблиски важечки вредности се <ph name="VALID_VALUE_LOW" /> и <ph name="VALID_VALUE_HIGHER" />.</translation>
 <translation id="4522570452068850558">Детали</translation>
+<translation id="4663373278480897665">Камерата е дозволена</translation>
 <translation id="4664250907885839816">Следниот дел „<ph name="ATSIGN" />“ не треба да го содржи симболот „<ph name="INVALIDCHARACTER" />“.</translation>
 <translation id="4718048029184481307">Пуштено е во „Слика во слика“</translation>
 <translation id="4748357248530471599">префрли од исечокот на екранот во цел екран</translation>
@@ -137,6 +140,7 @@
 <translation id="6941933287844615239">преземи аудио-визуелни содржини</translation>
 <translation id="698788488269350478">Проширено.</translation>
 <translation id="6989848892321993519">Продолжете го текстот на <ph name="MIN_CHARACTERS" /> знаци или повеќе (во моментов користите 1 знак).</translation>
+<translation id="7080893216867146095">Споделувањето локација е дозволено</translation>
 <translation id="709897737746224366">Усогласете го бараниот формат.</translation>
 <translation id="7102274145889307184">тековна локација</translation>
 <translation id="7263440858009898357">Изберете ставка од листата.</translation>

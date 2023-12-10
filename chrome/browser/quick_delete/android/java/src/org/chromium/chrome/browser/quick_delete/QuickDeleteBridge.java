@@ -16,9 +16,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 class QuickDeleteBridge {
     private long mNativeQuickDeleteBridge;
 
-    /**
-     * Interface for a class that is fetching visited domains information.
-     */
+    /** Interface for a class that is fetching visited domains information. */
     public interface DomainVisitsCallback {
         /**
          * Called when the domain count and last visited domain are fetched from local history.
@@ -41,9 +39,7 @@ class QuickDeleteBridge {
         mNativeQuickDeleteBridge = QuickDeleteBridgeJni.get().init(QuickDeleteBridge.this, profile);
     }
 
-    /**
-     * Destroys this instance so no further calls can be executed.
-     */
+    /** Destroys this instance so no further calls can be executed. */
     public void destroy() {
         if (mNativeQuickDeleteBridge != 0) {
             QuickDeleteBridgeJni.get().destroy(mNativeQuickDeleteBridge, QuickDeleteBridge.this);
@@ -58,8 +54,9 @@ class QuickDeleteBridge {
      */
     public void getLastVisitedDomainAndUniqueDomainCount(
             @TimePeriod int timePeriod, @NonNull DomainVisitsCallback callback) {
-        QuickDeleteBridgeJni.get().getLastVisitedDomainAndUniqueDomainCount(
-                mNativeQuickDeleteBridge, timePeriod, callback);
+        QuickDeleteBridgeJni.get()
+                .getLastVisitedDomainAndUniqueDomainCount(
+                        mNativeQuickDeleteBridge, timePeriod, callback);
     }
 
     @CalledByNative
@@ -71,7 +68,9 @@ class QuickDeleteBridge {
     @NativeMethods
     interface Natives {
         long init(QuickDeleteBridge caller, Profile profile);
+
         void destroy(long nativeQuickDeleteBridge, QuickDeleteBridge caller);
+
         void getLastVisitedDomainAndUniqueDomainCount(
                 long nativeQuickDeleteBridge, int timePeriod, DomainVisitsCallback callback);
     }

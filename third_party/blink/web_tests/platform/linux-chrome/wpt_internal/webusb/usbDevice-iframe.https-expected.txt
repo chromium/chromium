@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+Harness Error. harness_status.status = 1 , harness_status.message = Uncaught ReferenceError: GCController is not defined
+[TIMEOUT] events are not delivered to detached frames
+  Test timed out
+[NOTRUN] forget() rejects in a detached context
+Harness: the test ran to completion.

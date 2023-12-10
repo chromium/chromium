@@ -219,6 +219,9 @@ def add_configuration_options_group(parser: argparse.ArgumentParser,
                        const='Release',
                        dest='configuration',
                        help='Set the configuration to Release')
+    group.add_argument('--chrome-branded',
+                       action='store_true',
+                       help='Set the configuration as chrome_branded.')
     add_common_wpt_options(group)
     if rwt:
         group.add_argument('--no-xvfb',
@@ -536,7 +539,16 @@ def add_testing_options_group(parser: argparse.ArgumentParser,
             help=(
                 'Capture and write a trace file with the specified '
                 'categories for each test. Passes appropriate --trace-startup '
-                'flags to the driver. If in doubt, use "*".'))
+                'flags to the driver. If in doubt, use "*". '
+                'This implies --restart-shell-between-tests=always.'))
+        testing_group.add_argument(
+            '--enable-per-test-tracing',
+            action='store_true',
+            help=(
+                'Capture and write a trace file with all tracing '
+                'categories enabled for each test. Unlike --enable-tracing, '
+                'this excludes driver startup/shutdown in the trace, and does '
+                'not imply --restart-shell-between-tests=always.'))
         testing_group.add_argument(
             '--fuzzy-diff',
             action='store_true',
@@ -821,6 +833,12 @@ def _read_configuration_from_gn(fs, options):
     args = fs.read_text_file(path)
     for line in args.splitlines():
         if re.match(r'^\s*is_debug\s*=\s*false(\s*$|\s*#.*$)', line):
+            return 'Release'
+
+    # If is_debug is not set, the default is based on if is_official_build
+    # is set to true.
+    for line in args.splitlines():
+        if re.match(r'^\s*is_official_build\s*=\s*true(\s*$|\s*#.*$)', line):
             return 'Release'
 
     # If is_debug is set to anything other than false, or if it

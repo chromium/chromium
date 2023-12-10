@@ -37,6 +37,8 @@ namespace blink {
 typedef uintptr_t DisplayItemClientId;
 static const DisplayItemClientId kInvalidDisplayItemClientId = 0u;
 
+using DynamicRangeLimit = ::cc::PaintFlags::DynamicRangeLimitMixture;
+
 enum AlphaDisposition {
   kPremultiplyAlpha,
   kUnpremultiplyAlpha,

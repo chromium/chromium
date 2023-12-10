@@ -1,0 +1,12 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module network.mojom;
+
+// Represents information about ServiceWorker Static Routing API, especially,
+// details of the matched static router rule.
+struct ServiceWorkerRouterInfo {
+  // ID of the rule matchhed. Zero (invalid) by default.
+  uint32 rule_id_matched = 0;
+};

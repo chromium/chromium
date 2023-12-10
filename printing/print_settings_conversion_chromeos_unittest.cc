@@ -6,10 +6,10 @@
 
 #include <string>
 
+#include <optional>
 #include "base/test/values_test_util.h"
 #include "base/values.h"
 #include "printing/mojom/print.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace printing {
 
@@ -38,9 +38,9 @@ const std::vector<mojom::IppClientInfo> kClientInfo{
                          "version"),
     mojom::IppClientInfo(mojom::IppClientInfo::ClientType::kOther,
                          "chromebook-{DEVICE_ASSET_ID}",
-                         absl::nullopt,
+                         std::nullopt,
                          "",
-                         absl::nullopt)};
+                         std::nullopt)};
 
 TEST(PrintSettingsConversionChromeosTest, ConvertClientInfoToJobSetting) {
   base::Value::List job_setting = ConvertClientInfoToJobSetting(kClientInfo);

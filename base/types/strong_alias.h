@@ -5,6 +5,7 @@
 #ifndef BASE_TYPES_STRONG_ALIAS_H_
 #define BASE_TYPES_STRONG_ALIAS_H_
 
+#include <compare>
 #include <ostream>
 #include <type_traits>
 #include <utility>
@@ -100,24 +101,17 @@ class StrongAlias {
 
   constexpr explicit operator const UnderlyingType&() const& { return value_; }
 
-  constexpr bool operator==(const StrongAlias& other) const {
-    return value_ == other.value_;
-  }
-  constexpr bool operator!=(const StrongAlias& other) const {
-    return value_ != other.value_;
-  }
-  constexpr bool operator<(const StrongAlias& other) const {
-    return value_ < other.value_;
-  }
-  constexpr bool operator<=(const StrongAlias& other) const {
-    return value_ <= other.value_;
-  }
-  constexpr bool operator>(const StrongAlias& other) const {
-    return value_ > other.value_;
-  }
-  constexpr bool operator>=(const StrongAlias& other) const {
-    return value_ >= other.value_;
-  }
+  // Comparison operators that default to the behavior of `UnderlyingType`.
+  // Note that if you wish to compare `StrongAlias<UnderlyingType>`, e.g.,
+  // by using `operator<` in a `std::set`, then `UnderlyingType` must
+  // implement `operator<=>`. If you cannot modify `UnderlyingType` (e.g.,
+  // because it is from an external library), then a work-around is to create a
+  // thin wrapper `W` around it, define `operator<=>` for the wrapper and create
+  // a `StrongAlias<W>`.
+  friend constexpr auto operator<=>(const StrongAlias& lhs,
+                                    const StrongAlias& rhs) = default;
+  friend constexpr bool operator==(const StrongAlias& lhs,
+                                   const StrongAlias& rhs) = default;
 
   // Hasher to use in std::unordered_map, std::unordered_set, etc.
   //
@@ -151,10 +145,8 @@ class StrongAlias {
 };
 
 // Stream operator for convenience, streams the UnderlyingType.
-template <typename TagType,
-          typename UnderlyingType,
-          typename = std::enable_if_t<
-              internal::SupportsOstreamOperator<UnderlyingType>>>
+template <typename TagType, typename UnderlyingType>
+  requires(internal::SupportsOstreamOperator<UnderlyingType>)
 std::ostream& operator<<(std::ostream& stream,
                          const StrongAlias<TagType, UnderlyingType>& alias) {
   return stream << alias.value();

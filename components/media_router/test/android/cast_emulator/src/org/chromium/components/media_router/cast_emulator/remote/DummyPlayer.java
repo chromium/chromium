@@ -16,12 +16,12 @@ import org.chromium.base.Log;
 
 import java.io.IOException;
 
-/**
- * Handles playback of a single media item using MediaPlayer.
- */
-public class DummyPlayer implements MediaPlayer.OnPreparedListener,
-                                    MediaPlayer.OnCompletionListener, MediaPlayer.OnErrorListener,
-                                    MediaPlayer.OnSeekCompleteListener {
+/** Handles playback of a single media item using MediaPlayer. */
+public class DummyPlayer
+        implements MediaPlayer.OnPreparedListener,
+                MediaPlayer.OnCompletionListener,
+                MediaPlayer.OnErrorListener,
+                MediaPlayer.OnSeekCompleteListener {
     private static final String TAG = "CastEmulator";
 
     private static final int STATE_IDLE = 0;
@@ -37,13 +37,14 @@ public class DummyPlayer implements MediaPlayer.OnPreparedListener,
     private int mSeekToPos;
     private Callback mCallback;
 
-    /**
-     * Callback interface for the session manager
-     */
+    /** Callback interface for the session manager */
     public static interface Callback {
         void onError();
+
         void onCompletion();
+
         void onSeekComplete();
+
         void onPrepared();
     }
 
@@ -98,8 +99,7 @@ public class DummyPlayer implements MediaPlayer.OnPreparedListener,
             mMediaPlayer.seekTo(pos);
             mSeekToPos = pos;
         } else if (mState == STATE_IDLE || mState == STATE_PLAY_PENDING) {
-            // Seek before onPrepared() arrives,
-            // need to performed delayed seek in onPrepared()
+            // Seek before onPrepared() arrives, need to performed delayed seek in onPrepared()
             mSeekToPos = pos;
         }
     }
@@ -144,50 +144,53 @@ public class DummyPlayer implements MediaPlayer.OnPreparedListener,
     @Override
     public void onPrepared(MediaPlayer mp) {
         Log.v(TAG, "onPrepared");
-        mHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                if (mState == STATE_IDLE) {
-                    mState = STATE_READY;
-                } else if (mState == STATE_PLAY_PENDING) {
-                    mState = STATE_PLAYING;
-                    if (mSeekToPos > 0) {
-                        Log.v(TAG, "seek to initial pos: %d", mSeekToPos);
-                        mMediaPlayer.seekTo(mSeekToPos);
+        mHandler.post(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        if (mState == STATE_IDLE) {
+                            mState = STATE_READY;
+                        } else if (mState == STATE_PLAY_PENDING) {
+                            mState = STATE_PLAYING;
+                            if (mSeekToPos > 0) {
+                                Log.v(TAG, "seek to initial pos: %d", mSeekToPos);
+                                mMediaPlayer.seekTo(mSeekToPos);
+                            }
+                            mMediaPlayer.start();
+                        }
+                        if (mCallback != null) {
+                            mCallback.onPrepared();
+                        }
                     }
-                    mMediaPlayer.start();
-                }
-                if (mCallback != null) {
-                    mCallback.onPrepared();
-                }
-            }
-        });
+                });
     }
 
     @Override
     public void onCompletion(MediaPlayer mp) {
         Log.v(TAG, "onCompletion");
-        mHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                if (mCallback != null) {
-                    mCallback.onCompletion();
-                }
-            }
-        });
+        mHandler.post(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        if (mCallback != null) {
+                            mCallback.onCompletion();
+                        }
+                    }
+                });
     }
 
     @Override
     public boolean onError(MediaPlayer mp, int what, int extra) {
         Log.v(TAG, "onError");
-        mHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                if (mCallback != null) {
-                    mCallback.onError();
-                }
-            }
-        });
+        mHandler.post(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        if (mCallback != null) {
+                            mCallback.onError();
+                        }
+                    }
+                });
         // return true so that onCompletion is not called
         return true;
     }
@@ -195,15 +198,16 @@ public class DummyPlayer implements MediaPlayer.OnPreparedListener,
     @Override
     public void onSeekComplete(MediaPlayer mp) {
         Log.v(TAG, "onSeekComplete");
-        mHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                mSeekToPos = 0;
-                if (mCallback != null) {
-                    mCallback.onSeekComplete();
-                }
-            }
-        });
+        mHandler.post(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        mSeekToPos = 0;
+                        if (mCallback != null) {
+                            mCallback.onSeekComplete();
+                        }
+                    }
+                });
     }
 
     protected Context getContext() {

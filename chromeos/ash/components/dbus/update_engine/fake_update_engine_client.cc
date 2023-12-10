@@ -4,10 +4,11 @@
 
 #include "chromeos/ash/components/dbus/update_engine/fake_update_engine_client.h"
 
+#include <optional>
+
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/task/single_thread_task_runner.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -119,7 +120,7 @@ void FakeUpdateEngineClient::IsFeatureEnabled(
     IsFeatureEnabledCallback callback) {
   is_feature_enabled_count_++;
   std::move(callback).Run(features_.count(feature) ? features_[feature]
-                                                   : absl::nullopt);
+                                                   : std::nullopt);
 }
 
 void FakeUpdateEngineClient::ApplyDeferredUpdate(
@@ -138,9 +139,8 @@ void FakeUpdateEngineClient::set_update_check_result(
   update_check_result_ = result;
 }
 
-void FakeUpdateEngineClient::SetToggleFeature(
-    const std::string& feature,
-    absl::optional<bool> opt_enabled) {
+void FakeUpdateEngineClient::SetToggleFeature(const std::string& feature,
+                                              std::optional<bool> opt_enabled) {
   features_[feature] = opt_enabled;
 }
 

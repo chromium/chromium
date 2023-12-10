@@ -29,7 +29,8 @@ public class GCMBackgroundServiceImpl extends GCMBackgroundService.Impl {
             return;
         }
 
-        PostTask.runSynchronously(TaskTraits.UI_DEFAULT,
+        PostTask.runSynchronously(
+                TaskTraits.UI_DEFAULT,
                 () -> ChromeGcmListenerServiceImpl.dispatchMessageToDriver(message));
     }
 }

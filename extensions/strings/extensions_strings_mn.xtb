@@ -8,6 +8,7 @@
 <translation id="1420684932347524586">Өө өө! Түр зуурын RSA хувийн түлхүүрийг үүсгэж чадсангүй.</translation>
 <translation id="1445572445564823378">Энэ өргөтгөл <ph name="PRODUCT_NAME" /> удааширч байна. Та <ph name="PRODUCT_NAME" />-ийн гүйцэтгэлийг дахин сэргээхийн тулд идэвхгүй болгох хэрэгтэй.</translation>
 <translation id="1468038450257740950">WebGL-ийг дэмжихгүй байна.</translation>
+<translation id="1610570795592207282">Скриптэд css '<ph name="RELATIVE_PATH" />'-г ачаалж чадсангүй.</translation>
 <translation id="1803557475693955505">'<ph name="BACKGROUND_PAGE" />' үндсэн хуудсыг ачаалж чадсангүй.</translation>
 <translation id="2159915644201199628">Дүрсний кодыг тайлах боломжгүй байна: <ph name="IMAGE_NAME" /> '</translation>
 <translation id="2350172092385603347">Байрлалыг ашигласан, анхдагч байрлалыг контентын жагсаалтанд зааж өгсөн.</translation>
@@ -18,14 +19,12 @@
 <translation id="3115238746683532089"><ph name="VENDOR_ID" /> борлуулагчийн <ph name="PRODUCT_ID" /> тодорхойгүй бүтээгдэхүүн (серийн дугаар <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">crx файлыг солих боломжгүй байна.Файл нээлттэй байгаа эсэхийг шалгана уу.</translation>
 <translation id="3163201441334626963"><ph name="PRODUCT_ID" /> үйлдвэрлэгчийн <ph name="VENDOR_ID" /> тодорхойгүй бүтээгдэхүүн</translation>
-<translation id="3302709122321372472">Контентын бичвэрт css "<ph name="RELATIVE_PATH" />'-ыг ачаалж чадсангүй.</translation>
 <translation id="3369521687965833290">Өргөтгөлийг задалж чадахгүй байна. Өргөтгөлийг аюулгүй задлахын тулд таны профайл drive letter-р эхэлсэн байх шаардлагатай бөгөөд junction, mount point эсвэл symlink гэх мэт зүйлсийг агуулаагүй байх зайлшгүй шаардлагатай. Ийм төрлийн урсгал таны профайлд байхгүй болно.</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (серийн дугаар <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> борлуулагчийн <ph name="VENDOR_ID" /> (сериалын дугаар <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Хувийн түлхүүрт оруулах оролтын утга нь хүчин төгөлдөр байх ёстой.</translation>
 <translation id="388442998277590542">Сонголтууд хуудсыг '<ph name="OPTIONS_PAGE" />' ачаалж чадсангүй.</translation>
 <translation id="3984413272403535372">Өргөтгөл рүү нэвтрэх үед алдаа гарлаа</translation>
-<translation id="39964277676607559">Контентын бичвэрт JavaScript '<ph name="RELATIVE_PATH" />'-ийг ачаалж чадсангүй.</translation>
 <translation id="4115165561519362854">Энэхүү төхөөрөмжийн администратор нь <ph name="EXTENSION_VERSION" /> -ны хамгийн бага хувилбарыг авах үүднээс <ph name="EXTENSION_NAME" /> авах хүсэлт гаргаж байна. Хувилбарыг шинэчлэх (дараах хувилбараар) хүртэл энэ үйлдлийг идэвхжүүлэх боломжгүй болно.</translation>
 <translation id="4233778200880751280">'<ph name="ABOUT_PAGE" />' Тухай хуудсыг ачаалж чадсангүй.</translation>
 <translation id="471800408830181311">Хувийн түлхүүрийг тооцоолох ажиллагаа бүтэлгүйтэв.</translation>
@@ -33,6 +32,7 @@
 <translation id="4988792151665380515">Нийтийн түлхүүрийг экспортлох ажиллагаа амжилтгүй боллоо</translation>
 <translation id="5026754133087629784">Webview: <ph name="WEBVIEW_TAG_NAME" /></translation>
 <translation id="5098647635849512368">Өргөтгөлийн директорын гол замыг олж чадсангүй.</translation>
+<translation id="5160071981665899014">Скриптэд '<ph name="RELATIVE_PATH" />' javaScript-г ачаалж чадсангүй.</translation>
 <translation id="5356315618422219272">Appview: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5436430103864390185">Тодорхой хэлбэртэй цонхнуудыг дэмжихгүй.</translation>
 <translation id="5456409301717116725">Энэхүү өргөтгөлд <ph name="KEY_PATH" /> түлхүүр файл багтана. Та магадгүй энэ үйлдлийг хийх хүсэлгүй байж болох юм.</translation>

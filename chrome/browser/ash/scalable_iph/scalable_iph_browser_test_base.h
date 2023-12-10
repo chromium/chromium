@@ -64,6 +64,9 @@ class ScalableIphBrowserTestBase : public CustomizableTestEnvBrowserTestBase {
   // TODO(b/297565024): Abstract this as we initialize more than just IPH
   //                    configs in this method.
   virtual void InitializeScopedFeatureList();
+  virtual void AppendTestSpecificFeatures(
+      std::vector<base::test::FeatureRefAndParams>& enabled_features,
+      std::vector<base::test::FeatureRef>& disabled_features) {}
   void AppendVersionNumber(base::FieldTrialParams& params,
                            const base::Feature& feature,
                            const std::string& version_number);
@@ -101,6 +104,13 @@ class ScalableIphBrowserTestBase : public CustomizableTestEnvBrowserTestBase {
   void TriggerConditionsCheckWithAFakeEvent(
       scalable_iph::ScalableIph::Event event);
 
+  // Returns a user context of primary user.
+  ash::UserContext GetPrimaryUserContext();
+
+  // Returns a user context of secondary user. Note that `enable_multi_user_`
+  // has to be true to use this method.
+  ash::UserContext GetSecondaryUserContext();
+
   // A sub-class might override this from `InitializeScopedFeatureList`.
   base::test::ScopedFeatureList scoped_feature_list_;
 
@@ -117,6 +127,9 @@ class ScalableIphBrowserTestBase : public CustomizableTestEnvBrowserTestBase {
   // Set false in the constructor to not enforce scalable IPH set-up.
   // If `enable_scalable_iph_` is set to false, this should also be false.
   bool setup_scalable_iph_ = true;
+
+  // Set true in the constructor to enable multi user in this test case.
+  bool enable_multi_user_ = false;
 
  private:
   static void SetTestingFactories(bool enable_mock_tracker,

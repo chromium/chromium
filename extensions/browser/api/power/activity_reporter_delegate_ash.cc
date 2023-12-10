@@ -12,10 +12,9 @@ ActivityReporterDelegateAsh::ActivityReporterDelegateAsh() = default;
 
 ActivityReporterDelegateAsh::~ActivityReporterDelegateAsh() = default;
 
-absl::optional<std::string> ActivityReporterDelegateAsh::ReportActivity()
-    const {
+std::optional<std::string> ActivityReporterDelegateAsh::ReportActivity() const {
   ui::UserActivityDetector::Get()->HandleExternalUserActivity();
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 }  // namespace extensions

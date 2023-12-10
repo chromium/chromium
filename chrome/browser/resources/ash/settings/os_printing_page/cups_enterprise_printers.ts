@@ -33,7 +33,7 @@ import {CupsPrintersEntryListMixin} from './cups_printers_entry_list_mixin.js';
  * If the Show more button is visible, the minimum number of printers we show
  * is 3.
  */
-const MIN_VISIBLE_PRINTERS: number = 3;
+const MIN_VISIBLE_PRINTERS = 3;
 
 /**
  * Move a printer's position in |printerArr| from |fromIndex| to |toIndex|.

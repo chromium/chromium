@@ -44,26 +44,18 @@ PageInfoAdPersonalizationContentView::PageInfoAdPersonalizationContentView(
   AddChildView(PageInfoViewFactory::CreateSeparator(
       ChromeLayoutProvider::Get()->GetDistanceMetric(
           DISTANCE_HORIZONTAL_SEPARATOR_PADDING_PAGE_INFO_VIEW)));
-  const auto manage_button_id =
-      base::FeatureList::IsEnabled(privacy_sandbox::kPrivacySandboxSettings4)
-          ? IDS_PAGE_INFO_AD_PRIVACY_SUBPAGE_MANAGE_BUTTON
-          : IDS_PAGE_INFO_AD_PERSONALIZATION_SUBPAGE_MANAGE_BUTTON;
   AddChildView(std::make_unique<RichHoverButton>(
       base::BindRepeating(
           [](PageInfoAdPersonalizationContentView* view) {
             view->presenter_->RecordPageInfoAction(
                 PageInfo::PageInfoAction::
                     PAGE_INFO_AD_PERSONALIZATION_SETTINGS_OPENED);
-            if (base::FeatureList::IsEnabled(
-                    privacy_sandbox::kPrivacySandboxSettings4)) {
-              view->ui_delegate_->ShowPrivacySandboxSettings();
-            } else {
-              view->ui_delegate_->ShowPrivacySandboxAdPersonalization();
-            }
+            view->ui_delegate_->ShowPrivacySandboxSettings();
           },
           this),
       PageInfoViewFactory::GetSiteSettingsIcon(),
-      l10n_util::GetStringUTF16(manage_button_id), std::u16string(),
+      l10n_util::GetStringUTF16(IDS_PAGE_INFO_AD_PRIVACY_SUBPAGE_MANAGE_BUTTON),
+      std::u16string(),
       /*tooltip_text=*/std::u16string(), std::u16string(),
       PageInfoViewFactory::GetLaunchIcon()));
 
@@ -80,20 +72,11 @@ void PageInfoAdPersonalizationContentView::SetAdPersonalizationInfo(
 
   int message_id;
   if (info.has_joined_user_to_interest_group && !info.accessed_topics.empty()) {
-    message_id =
-        base::FeatureList::IsEnabled(privacy_sandbox::kPrivacySandboxSettings4)
-            ? IDS_PAGE_INFO_AD_PRIVACY_TOPICS_AND_FLEDGE_DESCRIPTION
-            : IDS_PAGE_INFO_AD_PERSONALIZATION_TOPICS_AND_INTEREST_GROUP_DESCRIPTION;
+    message_id = IDS_PAGE_INFO_AD_PRIVACY_TOPICS_AND_FLEDGE_DESCRIPTION;
   } else if (info.has_joined_user_to_interest_group) {
-    message_id =
-        base::FeatureList::IsEnabled(privacy_sandbox::kPrivacySandboxSettings4)
-            ? IDS_PAGE_INFO_AD_PRIVACY_FLEDGE_DESCRIPTION
-            : IDS_PAGE_INFO_AD_PERSONALIZATION_INTEREST_GROUP_DESCRIPTION;
+    message_id = IDS_PAGE_INFO_AD_PRIVACY_FLEDGE_DESCRIPTION;
   } else {
-    message_id =
-        base::FeatureList::IsEnabled(privacy_sandbox::kPrivacySandboxSettings4)
-            ? IDS_PAGE_INFO_AD_PRIVACY_TOPICS_DESCRIPTION
-            : IDS_PAGE_INFO_AD_PERSONALIZATION_TOPICS_DESCRIPTION;
+    message_id = IDS_PAGE_INFO_AD_PRIVACY_TOPICS_DESCRIPTION;
   }
   auto* description_label =
       info_container_->AddChildView(std::make_unique<views::Label>(

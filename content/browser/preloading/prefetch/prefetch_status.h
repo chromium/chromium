@@ -13,8 +13,6 @@ namespace content {
 // UKM logging so don't remove or reorder values. Update
 // |PrefetchProxyPrefetchStatus| in //tools/metrics/histograms/enums.xml
 // whenever this is changed.
-// These are also mapped onto the first content internal range of
-// `PreloadingEligibility` and onto `PreloadingFailureReason`.
 //
 // If you change this, please follow the process
 // https://docs.google.com/document/d/1PnrfowsZMt62PX1EvvTp2Nqs3ji1zrklrAEe1JYbkTk
@@ -210,10 +208,12 @@ enum class PrefetchStatus {
 
   // The prefetch was evicted to make room for a newer prefetch. This currently
   // only happens when |kPrefetchNewLimits| is enabled.
-  kPrefetchEvicted = 49,
+  // kPrefetchEvicted = 49, DEPRECATED
+  kPrefetchEvictedAfterCandidateRemoved = 50,
+  kPrefetchEvictedForNewerPrefetch = 51,
 
   // The max value of the PrefetchStatus. Update this when new enums are added.
-  kMaxValue = kPrefetchEvicted,
+  kMaxValue = kPrefetchEvictedForNewerPrefetch,
 };
 
 // Mapping from `PrefetchStatus` to `PreloadingFailureReason`.

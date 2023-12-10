@@ -22,9 +22,12 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
+#include "ui/display/screen.h"
+#include "ui/display/tablet_state.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/background.h"
@@ -82,10 +85,6 @@ constexpr int kPinRequestViewMinimumHeightDp =
     kAccessCodeToPinKeyboardDistanceDp + kPinKeyboardToFooterDistanceDp +
     kArrowButtonSizeDp + kPinRequestViewMainHorizontalInsetDp;  // = 266
 
-bool IsTabletMode() {
-  return Shell::Get()->tablet_mode_controller()->InTabletMode();
-}
-
 }  // namespace
 
 PinRequest::PinRequest() = default;
@@ -95,6 +94,8 @@ PinRequest::~PinRequest() = default;
 
 // Label button that displays focus ring.
 class PinRequestView::FocusableLabelButton : public views::LabelButton {
+  METADATA_HEADER(FocusableLabelButton, views::LabelButton)
+
  public:
   FocusableLabelButton(PressedCallback callback, const std::u16string& text)
       : views::LabelButton(std::move(callback), text) {
@@ -107,6 +108,9 @@ class PinRequestView::FocusableLabelButton : public views::LabelButton {
   FocusableLabelButton& operator=(const FocusableLabelButton&) = delete;
   ~FocusableLabelButton() override = default;
 };
+
+BEGIN_METADATA(PinRequestView, FocusableLabelButton, views::LabelButton)
+END_METADATA
 
 PinRequestView::TestApi::TestApi(PinRequestView* view) : view_(view) {
   DCHECK(view_);
@@ -412,8 +416,6 @@ PinRequestView::PinRequestView(PinRequest request, Delegate* delegate)
 
   pin_keyboard_view_->SetVisible(PinKeyboardVisible());
 
-  tablet_mode_observation_.Observe(Shell::Get()->tablet_mode_controller());
-
   SetPreferredSize(GetPinRequestViewSize());
 }
 
@@ -435,33 +437,37 @@ std::u16string PinRequestView::GetAccessibleWindowTitle() const {
   return default_accessible_title_;
 }
 
-void PinRequestView::OnTabletModeStarted() {
-  if (!pin_keyboard_always_enabled_) {
-    VLOG(1) << "Showing PIN keyboard in PinRequestView";
-    pin_keyboard_view_->SetVisible(true);
-    // This will trigger ChildPreferredSizeChanged in parent view and Layout()
-    // in view. As the result whole hierarchy will go through re-layout.
-    UpdatePreferredSize();
+void PinRequestView::OnDisplayTabletStateChanged(display::TabletState state) {
+  switch (state) {
+    case display::TabletState::kEnteringTabletMode:
+    case display::TabletState::kExitingTabletMode:
+      break;
+    case display::TabletState::kInTabletMode:
+      if (!pin_keyboard_always_enabled_) {
+        VLOG(1) << "Showing PIN keyboard in PinRequestView";
+        pin_keyboard_view_->SetVisible(true);
+        // This will trigger ChildPreferredSizeChanged in parent view and
+        // Layout() in view. As the result whole hierarchy will go through
+        // re-layout.
+        UpdatePreferredSize();
+      }
+      break;
+    case display::TabletState::kInClamshellMode:
+      if (!pin_keyboard_always_enabled_) {
+        VLOG(1) << "Hiding PIN keyboard in PinRequestView";
+        DCHECK(pin_keyboard_view_);
+        pin_keyboard_view_->SetVisible(false);
+        // This will trigger ChildPreferredSizeChanged in parent view and
+        // Layout() in view. As the result whole hierarchy will go through
+        // re-layout.
+        UpdatePreferredSize();
+      }
+      break;
   }
-}
-
-void PinRequestView::OnTabletModeEnded() {
-  if (!pin_keyboard_always_enabled_) {
-    VLOG(1) << "Hiding PIN keyboard in PinRequestView";
-    DCHECK(pin_keyboard_view_);
-    pin_keyboard_view_->SetVisible(false);
-    // This will trigger ChildPreferredSizeChanged in parent view and Layout()
-    // in view. As the result whole hierarchy will go through re-layout.
-    UpdatePreferredSize();
-  }
-}
-
-void PinRequestView::OnTabletControllerDestroyed() {
-  tablet_mode_observation_.Reset();
 }
 
 void PinRequestView::SubmitCode() {
-  absl::optional<std::string> code = access_code_view_->GetCode();
+  std::optional<std::string> code = access_code_view_->GetCode();
   DCHECK(code.has_value());
 
   SubmissionResult result = delegate_->OnPinSubmitted(*code);
@@ -571,7 +577,8 @@ void PinRequestView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
 // If |pin_keyboard_always_enabled_| is not set, pin keyboard is only shown in
 // tablet mode.
 bool PinRequestView::PinKeyboardVisible() const {
-  return pin_keyboard_always_enabled_ || IsTabletMode();
+  return pin_keyboard_always_enabled_ ||
+         display::Screen::GetScreen()->InTabletMode();
 }
 
 gfx::Size PinRequestView::GetPinRequestViewSize() const {

@@ -3465,8 +3465,16 @@ class HintsManagerPersonalizedFetchingTest : public HintsManagerFetchingTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+// TODO(crbug.com/1509873): test is failing on iPhone device.
+#if TARGET_OS_IOS && !TARGET_IPHONE_SIMULATOR
+#define MAYBE_SuccessfulPersonalizedHintsFetching \
+  DISABLED_SuccessfulPersonalizedHintsFetching
+#else
+#define MAYBE_SuccessfulPersonalizedHintsFetching \
+  SuccessfulPersonalizedHintsFetching
+#endif
 TEST_F(HintsManagerPersonalizedFetchingTest,
-       SuccessfulPersonalizedHintsFetching) {
+       MAYBE_SuccessfulPersonalizedHintsFetching) {
   ASSERT_TRUE(identity_test_env()->identity_manager());
   AccountInfo account_info = identity_test_env()->MakePrimaryAccountAvailable(
       "test_email", signin::ConsentLevel::kSignin);

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_UI_PASSWORD_GROUPING_UTIL_H_
-#define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_UI_PASSWORD_GROUPING_UTIL_H_
+#ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_UI_PASSWORDS_GROUPER_H_
+#define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_UI_PASSWORDS_GROUPER_H_
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
@@ -57,8 +57,8 @@ class PasswordsGrouper {
       const CredentialUIEntry& credential) const;
 
   // Returns the passkey corresponding to the given |credential| entry. If there
-  // is no corresponding entry, returns absl::nullopt.
-  absl::optional<PasskeyCredential> GetPasskeyFor(
+  // is no corresponding entry, returns std::nullopt.
+  std::optional<PasskeyCredential> GetPasskeyFor(
       const CredentialUIEntry& credential);
 
   void ClearCache();
@@ -118,4 +118,4 @@ class PasswordsGrouper {
 
 }  // namespace password_manager
 
-#endif  // COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_UI_PASSWORD_GROUPING_UTIL_H_
+#endif  // COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_UI_PASSWORDS_GROUPER_H_

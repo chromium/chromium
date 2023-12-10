@@ -166,11 +166,6 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <variants name="OOBENetworkError">
-  <variant name="AuthExtTimeout">
-    <obsolete>
-      This histogram is replaced by `LoadingTimeout` histogram.
-    </obsolete>
-  </variant>
   <variant name="LoadingTimeout"/>
   <variant name="None"/>
   <variant name="Offline"/>
@@ -225,6 +220,7 @@ chromium-metrics-reviews@google.com.
   <variant name="Consolidated-consent.AcceptedRegular"/>
   <variant name="Consolidated-consent.BackDemo"/>
   <variant name="Consumer-update.Back"/>
+  <variant name="Consumer-update.UpdateCheckTimeout"/>
   <variant name="Consumer-update.Updated"/>
   <variant name="Consumer-update.UpdateDeclineCellular"/>
   <variant name="Consumer-update.UpdateError"/>
@@ -282,6 +278,7 @@ chromium-metrics-reviews@google.com.
   <variant name="Network-selection.Connected"/>
   <variant name="Offline-login.Back"/>
   <variant name="Offline-login.ReloadOnlineLogin"/>
+  <variant name="Oobe-update.UpdateCheckTimeout"/>
   <variant name="Oobe-update.UpdateError"/>
   <variant name="Oobe-update.UpdateNotRequired"/>
   <variant name="Oobe-update.UpdateNotRequired_OptOutInfo"/>
@@ -309,33 +306,10 @@ chromium-metrics-reviews@google.com.
   <variant name="Terms-of-service.Declined"/>
   <variant name="Theme-selection.Proceed"/>
   <variant name="User-creation.Cancel"/>
-  <variant name="User-creation.CreateChildAccount">
-    <obsolete>
-      This histogram was available before introducing software update sreen
-      which requiered split the add child step into it is own screen this
-      changes is implemented in M-117. Add-child.CreateChildAccount is replacing
-      this one.
-    </obsolete>
-  </variant>
-  <variant name="User-creation.EnterpriseEnroll">
-    <obsolete>
-      This histogram was available before introducing software update sreen.
-      This is replaced by `User-creation.EnterpriseEnrollTriage` and
-      `User-creation.EnterpriseEnrollShortcut` starting from M-117.
-    </obsolete>
-  </variant>
   <variant name="User-creation.EnterpriseEnrollShortcut"/>
   <variant name="User-creation.EnterpriseEnrollTriage"/>
   <variant name="User-creation.KioskEnterpriseEnroll"/>
   <variant name="User-creation.SignIn"/>
-  <variant name="User-creation.SignInAsChild">
-    <obsolete>
-      This histogram was available before introducing software update sreen
-      which requiered split the add child step into it is own screen this
-      changes is implemented in M-117. Add-child.SignInAsChild histogram is
-      replacing this one.
-    </obsolete>
-  </variant>
   <variant name="User-creation.SignInSchool"/>
   <variant name="User-creation.SignInTriage"/>
   <variant name="Wrong-hwid.Next"/>
@@ -358,34 +332,8 @@ chromium-metrics-reviews@google.com.
   <variant name="Verify"/>
 </variants>
 
-<histogram name="OOBE.ArcTermsOfServiceScreen.ReviewFollowingSetup"
-    enum="BooleanChecked" expires_after="2023-11-01">
-  <obsolete>
-    Obsoleted in M-106.
-  </obsolete>
-  <owner>dkuzmin@google.com</owner>
-  <owner>cros-oac@google.com</owner>
-  <summary>
-    Whether the review Google Play following setup box is checked. Recorded when
-    user leaves ArcTermsOfService screeen.
-  </summary>
-</histogram>
-
-<histogram name="OOBE.ArcTermsOfServiceScreen.UserActions"
-    enum="ArcTosScreenUserActions" expires_after="2023-11-01">
-  <obsolete>
-    Obsoleted in M-106.
-  </obsolete>
-  <owner>osamafathy@google.com</owner>
-  <owner>cros-oac@google.com</owner>
-  <summary>
-    Tracks all user actions on the ArcTermsOfService screen. Recorded when user
-    clicks on buttons on the ArcTermsOfService screen.
-  </summary>
-</histogram>
-
 <histogram name="OOBE.BootToOOBECompleted.{CompletedOobeFlowType}" units="ms"
-    expires_after="2024-03-03">
+    expires_after="2024-05-05">
   <owner>osamafathy@chromium.org</owner>
   <owner>cros-oobe@google.com</owner>
   <summary>
@@ -400,7 +348,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.BootToSignInCompleted" units="ms"
-    expires_after="2024-03-03">
+    expires_after="2024-05-05">
   <owner>alemate@chromium.org</owner>
   <owner>rsorokin@chromium.org</owner>
   <owner>cros-oac@google.com</owner>
@@ -413,7 +361,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.CHOOBE.FlowSkipped" enum="BooleanSkipped"
-    expires_after="2024-03-24">
+    expires_after="2024-05-26">
   <owner>osamafathy@google.com</owner>
   <owner>cros-oobe@google.com</owner>
   <summary>
@@ -423,7 +371,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.CHOOBE.ScreenCompleted.{OOBEOptionalScreens}"
-    enum="BooleanSelected" expires_after="2024-03-24">
+    enum="BooleanSelected" expires_after="2024-05-26">
   <owner>osamafathy@google.com</owner>
   <owner>cros-oobe@google.com</owner>
   <summary>
@@ -439,7 +387,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.CHOOBE.SettingChanged.{OOBEOptionalScreens}"
-    enum="BooleanChanged" expires_after="2024-03-24">
+    enum="BooleanChanged" expires_after="2024-05-26">
   <owner>osamafathy@google.com</owner>
   <owner>cros-oobe@google.com</owner>
   <summary>
@@ -454,7 +402,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.ChromeVersionBeforeUpdate" units="custom"
-    expires_after="2024-03-24">
+    expires_after="2024-05-26">
   <owner>osamafathy@google.com</owner>
   <owner>cros-oobe@google.com</owner>
   <summary>
@@ -463,7 +411,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.ConsolidatedConsentScreen.RecoveryOptInResult"
-    enum="RecoveryOptInResult" expires_after="2024-03-03">
+    enum="RecoveryOptInResult" expires_after="2024-05-05">
   <owner>anastasiian@chromium.org</owner>
   <owner>cros-lurs@google.com</owner>
   <owner>cros-oobe@google.com</owner>
@@ -474,7 +422,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.ConsolidatedConsentScreen.UserActions"
-    enum="ConsolidatedConsentScreenUserAction" expires_after="2024-03-03">
+    enum="ConsolidatedConsentScreenUserAction" expires_after="2024-05-05">
   <owner>osamafathy@google.com</owner>
   <owner>cros-oobe@google.com</owner>
   <summary>
@@ -484,7 +432,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.ConsumerUpdateScreen.IsMandatory" enum="Boolean"
-    expires_after="2023-12-31">
+    expires_after="2024-05-05">
   <owner>osamafathy@google.com</owner>
   <owner>cros-oobe@google.com</owner>
   <summary>
@@ -496,7 +444,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.ConsumerUpdateScreen.IsOptionalUpdateSkipped"
-    enum="Boolean" expires_after="2023-12-31">
+    enum="Boolean" expires_after="2024-05-05">
   <owner>osamafathy@google.com</owner>
   <owner>cros-oobe@google.com</owner>
   <summary>
@@ -506,7 +454,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.ConsumerUpdateScreen.SkipReason"
-    enum="OobeConsumerUpdateScreenSkippedReason" expires_after="2023-12-31">
+    enum="OobeConsumerUpdateScreenSkippedReason" expires_after="2024-05-05">
   <owner>osamafathy@google.com</owner>
   <owner>cros-oobe@google.com</owner>
   <summary>
@@ -538,7 +486,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.Enrollment.IsUserEnrollingAConsumer" enum="Boolean"
-    expires_after="2024-03-03">
+    expires_after="2024-05-05">
   <owner>osamafathy@google.com</owner>
   <owner>cros-oobe@google.com</owner>
   <summary>
@@ -563,7 +511,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.FingerprintSetupScreen.UserActions"
-    enum="FingerprintSetupScreenUserAction" expires_after="2024-03-03">
+    enum="FingerprintSetupScreenUserAction" expires_after="2024-05-05">
   <owner>dkuzmin@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
@@ -572,7 +520,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="OOBE.GaiaLoginTime" units="ms" expires_after="2024-03-03">
+<histogram name="OOBE.GaiaLoginTime" units="ms" expires_after="2024-05-05">
   <owner>dkuzmin@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
@@ -583,7 +531,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.GaiaPasswordChangedScreen.UserActions"
-    enum="GaiaPasswordChangedScreenUserAction" expires_after="2024-03-03">
+    enum="GaiaPasswordChangedScreenUserAction" expires_after="2024-05-05">
   <owner>dkuzmin@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
@@ -593,7 +541,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.GaiaScreen.LoginRequests" enum="GaiaLoginVariant"
-    expires_after="2024-03-03">
+    expires_after="2024-05-05">
   <owner>dkuzmin@google.com</owner>
   <owner>rsorokin@google.com</owner>
   <owner>cros-oobe@google.com</owner>
@@ -608,7 +556,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.GaiaScreen.PasswordIgnoredChars" enum="Boolean"
-    expires_after="2024-03-03">
+    expires_after="2024-05-05">
   <owner>anastasiian@chromium.org</owner>
   <owner>cros-lurs@google.com</owner>
   <summary>
@@ -618,7 +566,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.GaiaScreen.SuccessLoginRequests" enum="GaiaLoginVariant"
-    expires_after="2024-03-03">
+    expires_after="2024-05-05">
   <owner>dkuzmin@google.com</owner>
   <owner>rsorokin@google.com</owner>
   <owner>cros-oobe@google.com</owner>
@@ -666,7 +614,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.HidDetectionScreen.BluetoothPairing.Result"
-    enum="HidDetectionBluetoothPairingResult" expires_after="2024-03-17">
+    enum="HidDetectionBluetoothPairingResult" expires_after="2024-05-19">
   <owner>gordonseto@google.com</owner>
   <owner>cros-connectivity@google.com</owner>
   <summary>
@@ -689,7 +637,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.HidDetectionScreen.BluetoothPairingAttempts"
-    units="attempts" expires_after="2024-03-10">
+    units="attempts" expires_after="2024-05-19">
   <owner>gordonseto@google.com</owner>
   <owner>cros-connectivity@google.com</owner>
   <summary>
@@ -725,7 +673,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.HidDetectionScreen.InitialHidsMissing" enum="HidsMissing"
-    expires_after="2024-03-10">
+    expires_after="2024-05-12">
   <owner>gordonseto@google.com</owner>
   <owner>cros-connectivity@google.com</owner>
   <summary>
@@ -761,7 +709,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.MarketingOptInScreen.GeolocationResolve"
-    enum="MarketingOptInGeolocationEvent" expires_after="2024-03-10">
+    enum="MarketingOptInGeolocationEvent" expires_after="2024-05-12">
   <owner>rrsilva@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
@@ -782,7 +730,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.OnboardingFlowDuration.{OnboardingType}" units="ms"
-    expires_after="2024-03-18">
+    expires_after="2024-05-19">
   <owner>osamafathy@google.com</owner>
   <owner>cros-oobe@google.com</owner>
   <summary>
@@ -796,7 +744,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.OnboardingFlowStatus.{OnboardingType}"
-    enum="BooleanStartedCompleted" expires_after="2024-03-18">
+    enum="BooleanStartedCompleted" expires_after="2024-05-19">
   <owner>osamafathy@google.com</owner>
   <owner>cros-oobe@google.com</owner>
   <summary>
@@ -809,7 +757,7 @@ chromium-metrics-reviews@google.com.
   <token key="OnboardingType" variants="OnboardingType"/>
 </histogram>
 
-<histogram name="OOBE.OobeFlowDuration" units="ms" expires_after="2024-03-18">
+<histogram name="OOBE.OobeFlowDuration" units="ms" expires_after="2024-05-19">
   <owner>osamafathy@google.com</owner>
   <owner>cros-oobe@google.com</owner>
   <summary>
@@ -822,7 +770,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.OobeFlowStatus" enum="BooleanStartedCompleted"
-    expires_after="2024-03-18">
+    expires_after="2024-05-19">
   <owner>osamafathy@google.com</owner>
   <owner>cros-oobe@google.com</owner>
   <summary>
@@ -835,7 +783,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.OobeStartToOnboardingStartTime" units="ms"
-    expires_after="2024-03-18">
+    expires_after="2024-05-19">
   <owner>osamafathy@google.com</owner>
   <owner>cros-oobe@google.com</owner>
   <summary>
@@ -874,7 +822,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.RecommendApps.Screen.Action"
-    enum="RecommendAppsScreenAction" expires_after="2024-03-03">
+    enum="RecommendAppsScreenAction" expires_after="2024-05-05">
   <owner>dkuzmin@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <owner>chromesky-eng@google.com</owner>
@@ -882,7 +830,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.RecommendApps.Screen.SelectedAppCount" units="apps"
-    expires_after="2024-03-03">
+    expires_after="2024-05-05">
   <owner>dkuzmin@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <owner>chromesky-eng@google.com</owner>
@@ -890,7 +838,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.RecommendApps.Screen.SelectedRecommendedPercentage"
-    units="%" expires_after="2023-12-01">
+    units="%" expires_after="2024-06-01">
   <owner>dkuzmin@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <owner>chromesky-eng@google.com</owner>
@@ -898,7 +846,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.RecommendApps.Screen.State"
-    enum="RecommendAppsScreenState" expires_after="2024-03-03">
+    enum="RecommendAppsScreenState" expires_after="2024-05-05">
   <owner>dkuzmin@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <owner>chromesky-eng@google.com</owner>
@@ -918,7 +866,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.StepCompletionTime2.{CommonScreenName}.{OnboardingType}"
-    units="ms" expires_after="2024-03-26">
+    units="ms" expires_after="2024-05-26">
   <owner>osamafathy@google.com</owner>
   <owner>cros-oobe@google.com</owner>
   <summary>
@@ -950,7 +898,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.StepShownStatus.Multidevice-setup-screen.Skipped"
-    enum="OobeMultideviceScreenSkippedReason" expires_after="2024-03-03">
+    enum="OobeMultideviceScreenSkippedReason" expires_after="2024-05-05">
   <owner>bhartmire@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -975,7 +923,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.StepShownStatus2.{CommonScreenName}.{OnboardingType}"
-    enum="BooleanShown" expires_after="2024-03-26">
+    enum="BooleanShown" expires_after="2024-05-26">
   <owner>osamafathy@google.com</owner>
   <owner>cros-oobe@google.com</owner>
   <summary>
@@ -991,7 +939,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.StepShownStatus2.{OOBEOnlyScreenName}"
-    enum="BooleanShown" expires_after="2024-03-26">
+    enum="BooleanShown" expires_after="2024-06-02">
   <owner>osamafathy@google.com</owner>
   <owner>cros-oobe@google.com</owner>
   <summary>
@@ -1006,7 +954,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.SyncConsentScreen.Behavior" enum="SyncConsentBehavior"
-    expires_after="2024-03-03">
+    expires_after="2024-05-05">
   <owner>osamafathy@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
@@ -1028,7 +976,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.SyncConsentScreen.IsMinorUser" enum="Boolean"
-    expires_after="2024-03-03">
+    expires_after="2024-05-05">
   <owner>osamafathy@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
@@ -1065,7 +1013,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.SyncConsentScreen.LoadingTime" units="ms"
-    expires_after="2024-03-03">
+    expires_after="2024-05-05">
   <owner>osamafathy@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
@@ -1075,7 +1023,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.SyncConsentScreen.ReviewFollowingSetup"
-    enum="BooleanChecked" expires_after="2024-03-03">
+    enum="BooleanChecked" expires_after="2024-05-05">
   <owner>dkuzmin@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
@@ -1085,7 +1033,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.SyncConsentScreen.SyncEnabled" enum="BooleanEnabled"
-    expires_after="2024-03-03">
+    expires_after="2024-05-05">
   <owner>osamafathy@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
@@ -1096,7 +1044,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.SyncConsentScreen.UserChoice"
-    enum="SyncConsentUserChoice" expires_after="2024-03-03">
+    enum="SyncConsentUserChoice" expires_after="2024-05-05">
   <owner>osamafathy@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
@@ -1127,7 +1075,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.UpdateScreen.UpdateDownloadingTime" units="ms"
-    expires_after="2023-12-01">
+    expires_after="2024-06-01">
   <owner>dkuzmin@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
@@ -1137,8 +1085,43 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="OOBE.VersionUpdater.UpdateCheckDuration" units="ms"
+    expires_after="2024-08-01">
+  <owner>bchikhaoui@google.com</owner>
+  <owner>cros-oobe@google.com</owner>
+  <summary>
+    Records the total time it took the version updater to receive a non idle
+    state from the update engine.
+  </summary>
+</histogram>
+
+<histogram name="OOBE.VersionUpdater.UpdateCheckRetriesCount" units="retries"
+    expires_after="2024-08-01">
+  <owner>bchikhaoui@google.com</owner>
+  <owner>cros-oobe@google.com</owner>
+  <summary>
+    Records the total number of retires attempts with VersionUpdater checking
+    for update in OOBE (both ConsumerUpdateScreen and CriticalUpdateScreen).
+  </summary>
+</histogram>
+
+<histogram
+    name="OOBE.VersionUpdater.UpdateEngineOperation.{UpdateEngineOperationType}"
+    enum="UpdateEngineOperation" expires_after="2024-08-01">
+  <owner>bchikhaoui@google.com</owner>
+  <owner>cros-oobe@google.com</owner>
+  <summary>
+    Recorded the update engine operation received during OOBE when the operation
+    type is {UpdateEngineOperationType}.
+  </summary>
+  <token key="UpdateEngineOperationType">
+    <variant name="DLCInstall"/>
+    <variant name="Update"/>
+  </token>
+</histogram>
+
 <histogram name="OOBE.WebUI.LoadTime.FirstRun" units="ms"
-    expires_after="2024-03-03">
+    expires_after="2024-05-05">
   <owner>rsorokin@chromium.org</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
@@ -1169,7 +1152,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.WelcomeScreen.A11yUserActions"
-    enum="WelcomeScreenA11yUserAction" expires_after="2024-03-03">
+    enum="WelcomeScreenA11yUserAction" expires_after="2024-05-05">
   <owner>dkuzmin@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
@@ -1180,7 +1163,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.WelcomeScreen.AcceptChromeVoxHint" enum="BooleanEnabled"
-    expires_after="2024-03-03">
+    expires_after="2024-05-05">
   <owner>akihiroota@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
@@ -1190,7 +1173,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.WelcomeScreen.ChromeVoxHintSpokenSuccess"
-    enum="BooleanEnabled" expires_after="2024-03-03">
+    enum="BooleanEnabled" expires_after="2024-05-05">
   <owner>akihiroota@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <summary>

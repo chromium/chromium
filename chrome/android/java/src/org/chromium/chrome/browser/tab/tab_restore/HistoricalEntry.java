@@ -9,9 +9,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import java.util.Collections;
 import java.util.List;
 
-/**
- * Base class representing a historical entry. Can be used for either a group or single tab.
- */
+/** Base class representing a historical entry. Can be used for either a group or single tab. */
 public class HistoricalEntry {
     private final int mGroupId;
     private final String mGroupTitle;

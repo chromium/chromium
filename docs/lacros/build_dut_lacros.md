@@ -60,7 +60,7 @@ The gn args for amd64-generic would be:
 % cat out_amd64-generic/Release/args.gn
 
 import("//build/args/chromeos/amd64-generic.gni")
-use_goma = true
+use_remoteexec=true
 ```
 Build with:
 ```
@@ -121,13 +121,13 @@ Generate your args.gn, and then build Chrome.
 target_os="chromeos"
 is_chromeos_device=true
 chromeos_is_browser_only=true
-use_goma=true
+use_remoteexec=true
 is_chrome_branded=true
 is_official_build=false
 is_debug=false
-use_thin_lto = false
-is_cfi = false
-is_component_build = false' > out_device_lacros/Release/args.gn
+use_thin_lto=false
+is_cfi=false
+is_component_build=false' > out_device_lacros/Release/args.gn
 % gn gen out_device_lacros/Release
 % autoninja -C out_device_lacros/Release chrome
 ```

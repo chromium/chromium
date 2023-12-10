@@ -55,11 +55,8 @@ class BASE_EXPORT TraceConfig {
 
     // Specifies the triggers in the memory dump config.
     struct Trigger {
-      bool operator==(const Trigger& rhs) const {
-        return min_time_between_dumps_ms == rhs.min_time_between_dumps_ms &&
-               level_of_detail == rhs.level_of_detail &&
-               trigger_type == rhs.trigger_type;
-      }
+      friend bool operator==(const Trigger&, const Trigger&) = default;
+
       uint32_t min_time_between_dumps_ms;
       MemoryDumpLevelOfDetail level_of_detail;
       MemoryDumpType trigger_type;
@@ -75,15 +72,14 @@ class BASE_EXPORT TraceConfig {
       // Reset the options to default.
       void Clear();
 
+      friend bool operator==(const HeapProfiler&,
+                             const HeapProfiler&) = default;
+
       uint32_t breakdown_threshold_bytes;
     };
 
-    bool operator==(const MemoryDumpConfig& rhs) const {
-      return allowed_dump_modes == rhs.allowed_dump_modes &&
-             triggers == rhs.triggers &&
-             heap_profiler_options.breakdown_threshold_bytes ==
-                 rhs.heap_profiler_options.breakdown_threshold_bytes;
-    }
+    friend bool operator==(const MemoryDumpConfig&,
+                           const MemoryDumpConfig&) = default;
 
     // Reset the values in the config.
     void Clear();
@@ -120,9 +116,8 @@ class BASE_EXPORT TraceConfig {
       return included_process_ids_;
     }
 
-    bool operator==(const ProcessFilterConfig& other) const {
-      return included_process_ids_ == other.included_process_ids_;
-    }
+    friend bool operator==(const ProcessFilterConfig&,
+                           const ProcessFilterConfig&) = default;
 
    private:
     std::unordered_set<base::ProcessId> included_process_ids_;

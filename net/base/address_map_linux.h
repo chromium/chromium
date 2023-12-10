@@ -6,13 +6,13 @@
 #define NET_BASE_ADDRESS_MAP_LINUX_H_
 
 #include <map>
+#include <optional>
 #include <unordered_set>
 
 #include "base/containers/flat_map.h"
 #include "base/functional/callback_forward.h"
 #include "net/base/ip_address.h"
 #include "net/base/net_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 struct ifaddrmsg;
 
@@ -35,10 +35,10 @@ class NET_EXPORT AddressMapOwnerLinux {
   using AddressMap = std::map<IPAddress, struct ifaddrmsg>;
 
   // Represents a diff between one AddressMap and a new one. IPAddresses that
-  // map to absl::nullopt have been deleted from the map, and IPAddresses that
+  // map to std::nullopt have been deleted from the map, and IPAddresses that
   // map to non-nullopt have been added or updated.
   using AddressMapDiff =
-      base::flat_map<IPAddress, absl::optional<struct ifaddrmsg>>;
+      base::flat_map<IPAddress, std::optional<struct ifaddrmsg>>;
   // Represents a diff between one set of online links and new one. Interface
   // indices that map to true are newly online and indices that map to false are
   // newly offline.

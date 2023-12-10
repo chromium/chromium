@@ -7,9 +7,9 @@
 #include <fuchsia/sysmem/cpp/fidl.h>
 #include <lib/zx/eventpair.h>
 
+#include <bit>
 #include <tuple>
 
-#include "base/bits.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/koid.h"
 #include "base/task/current_thread.h"
@@ -426,7 +426,7 @@ bool FlatlandSysmemBufferCollection::CreateVkImage(
 
   uint32_t viable_memory_types =
       properties.memoryTypeBits & requirements.memoryTypeBits;
-  uint32_t memory_type = base::bits::CountTrailingZeroBits(viable_memory_types);
+  uint32_t memory_type = std::countr_zero(viable_memory_types);
 
   VkMemoryDedicatedAllocateInfoKHR dedicated_allocate = {
       VK_STRUCTURE_TYPE_MEMORY_DEDICATED_ALLOCATE_INFO_KHR};

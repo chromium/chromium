@@ -5,7 +5,6 @@
 <translation id="1076394037877376434">पेज <ph name="PAGE_NUMBER" /> मेटाउनुहोस्</translation>
 <translation id="1113173431709655881">क्यामेरा मोड</translation>
 <translation id="1153190633558910465">ग्रिड अफ गर्नुहोस्</translation>
-<translation id="1175958423215084756">लिंक भेट्टियो। <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213">पेज <ph name="PAGE_NUMBER" /> मेटाइयो</translation>
 <translation id="1258009455399840361">घडी घुम्ने दिशामा ९० डिग्री घुमाउनुहोस्</translation>
 <translation id="1417314334557041815">पेज <ph name="INDEX" /> सम्पादन गर्नुहोस्</translation>
@@ -60,14 +59,12 @@
 <translation id="3642192109456033823">भिडियो प्रोसेस गरिँदै छ…</translation>
 <translation id="3789724198583203151">घडी घुम्ने दिशाको विपरीत दिशामा ९० डिग्री घुमाउनुहोस्</translation>
 <translation id="3810838688059735925">भिडियो</translation>
-<translation id="3892148308691398805">पाठ कपी गर्नुहोस्</translation>
 <translation id="4060608699153044055">डिभाइसको भण्डारणमा खाली ठाउँ कम भएकाले तपाईं रेकर्ड गर्न सक्नुहुन्न। तपाईं रेकर्डिङ सुरु गर्न चाहनुहुन्छ भने तपाईंले आफ्नो डिभाइसको भण्डारणमा ठाउँ खाली गर्नु पर्ने हुन्छ।</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> मेगापिक्सेल</translation>
 <translation id="4118525110028899586">रेकर्डिङ पज गर्नुहोस्</translation>
 <translation id="4121305183798804752">कागजात भेटियो</translation>
 <translation id="414641094616694804">यो क्यामेरामा रिजोल्युसन बदल्न मिल्दैन</translation>
 <translation id="4176463684765177261">असक्षम गरिएको</translation>
-<translation id="4269820728363426813">लिङ्क ठेगाना कपी गर्नुहोस्</translation>
 <translation id="428234092390943511">पेजको थम्बनेल</translation>
 <translation id="4349714250734879769">फ्रेमहरू Chrome अनुसार मिलाउनुहोस्</translation>
 <translation id="4383571725254449280">प्रिन्ट सम्पादनका लगहरू</translation>
@@ -144,7 +141,6 @@
 <translation id="7726641833034062494">सामान्य भिडियो रेकर्ड गर्नुहोस्</translation>
 <translation id="7748344063862150053">कागजातको सिरानको दायाँ कुना</translation>
 <translation id="7933675232020478311">पुछारको दायाँतिर सारिँदै छ</translation>
-<translation id="7983668134180549431">टेक्स्ट भेट्टियो।</translation>
 <translation id="8079255378695216066">रेकर्डिङ सुरु गर्न मिल्दैन</translation>
 <translation id="8120146556401698679">प्यान गर्नुहोस्, ढल्काउनुहोस्, जुम गर्नुहोस्</translation>
 <translation id="8131740175452115882">निश्चित</translation>
@@ -163,6 +159,7 @@
 <translation id="8870695351537079478">रेकर्डिङ सुरु गर्न सकिएन</translation>
 <translation id="8880167521484863515">४ बाई ३</translation>
 <translation id="8903921497873541725">जुम इन</translation>
+<translation id="8926890870105777777">"<ph name="WIFINAME" />" नेटवर्कमा कनेक्ट गर्नुहोस्</translation>
 <translation id="9045010116236796332">डकुमेन्टका सबै किनारा फ्रेमभित्र पार्नुहोस्</translation>
 <translation id="9045155556724273246">१० सेकेन्ड</translation>
 <translation id="906331135292332864">फोटो प्रोसेस गरिँदै छ...</translation>

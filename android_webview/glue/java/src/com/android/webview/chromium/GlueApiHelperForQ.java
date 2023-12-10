@@ -34,8 +34,10 @@ public final class GlueApiHelperForQ {
      * @see {@link WebView#setWebViewRenderProcessClient(Executor,
      * WebViewRenderProcessClient)}
      */
-    public static void setWebViewRenderProcessClient(SharedWebViewChromium sharedWebViewChromium,
-            Executor executor, WebViewRenderProcessClient client) {
+    public static void setWebViewRenderProcessClient(
+            SharedWebViewChromium sharedWebViewChromium,
+            Executor executor,
+            WebViewRenderProcessClient client) {
         sharedWebViewChromium.setWebViewRendererClientAdapter(
                 new WebViewRenderProcessClientAdapter(executor, client));
     }

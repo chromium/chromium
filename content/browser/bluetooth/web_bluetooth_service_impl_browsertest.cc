@@ -12,6 +12,7 @@
 #include "base/run_loop.h"
 #include "build/build_config.h"
 #include "content/browser/bluetooth/bluetooth_adapter_factory_wrapper.h"
+#include "content/browser/bluetooth/web_bluetooth_service_impl.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/bluetooth_delegate.h"
 #include "content/public/common/content_client.h"
@@ -362,8 +363,7 @@ class WebBluetoothServiceImplBrowserTest : public ContentBrowserTest {
 
   WebBluetoothServiceImpl* GetWebBluetoothServiceForTesting(
       RenderFrameHost* render_frame_host) {
-    return static_cast<RenderFrameHostImpl*>(render_frame_host)
-        ->GetWebBluetoothServiceForTesting();
+    return WebBluetoothServiceImpl::GetForCurrentDocument(render_frame_host);
   }
 
   WebContents* GetWebContents() { return shell()->web_contents(); }

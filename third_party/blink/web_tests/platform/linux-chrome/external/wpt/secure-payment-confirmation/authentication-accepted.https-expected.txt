@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+[FAIL] Successful SPC authentication
+  promise_test: Unhandled rejection with value: "error: Action set_spc_transaction_mode not implemented"
+Harness: the test ran to completion.

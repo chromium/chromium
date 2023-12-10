@@ -20,7 +20,7 @@ const char kUnenrollRequestPath[] = "payments/apis/virtualcardservice/unenroll";
 }  // namespace
 
 UpdateVirtualCardEnrollmentRequest::UpdateVirtualCardEnrollmentRequest(
-    const PaymentsClient::UpdateVirtualCardEnrollmentRequestDetails&
+    const PaymentsNetworkInterface::UpdateVirtualCardEnrollmentRequestDetails&
         request_details,
     base::OnceCallback<void(AutofillClient::PaymentsRpcResult)> callback)
     : request_details_(request_details), callback_(std::move(callback)) {}
@@ -63,7 +63,8 @@ std::string UpdateVirtualCardEnrollmentRequest::GetRequestContent() {
 void UpdateVirtualCardEnrollmentRequest::ParseResponse(
     const base::Value::Dict& response) {
   // Only enroll requests have a response to parse, unenroll request responses
-  // are empty except for possible errors which are parsed in PaymentsClient.
+  // are empty except for possible errors which are parsed in
+  // PaymentsNetworkInterface.
   if (request_details_.virtual_card_enrollment_request_type ==
       VirtualCardEnrollmentRequestType::kEnroll) {
     auto* enroll_result = response.FindString("enroll_result");
@@ -82,10 +83,10 @@ bool UpdateVirtualCardEnrollmentRequest::IsResponseComplete() {
       return enroll_result_.has_value() && enroll_result_ == "ENROLL_SUCCESS";
     case VirtualCardEnrollmentRequestType::kUnenroll:
       // Unenroll responses are empty except for having an error. In
-      // PaymentsClient, if the response has an error it will be handled before
-      // we check IsResponseComplete(), so if we ever reach this branch we know
-      // the response completed successfully as there is no error. Thus, we
-      // always return true.
+      // PaymentsNetworkInterface, if the response has an error it will be
+      // handled before we check IsResponseComplete(), so if we ever reach this
+      // branch we know the response completed successfully as there is no
+      // error. Thus, we always return true.
       return true;
     case VirtualCardEnrollmentRequestType::kNone:
       NOTREACHED();

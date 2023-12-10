@@ -98,8 +98,7 @@ public class HomeButtonCoordinator {
                             @Override
                             public void onPageLoadFinished(Tab tab, GURL url) {
                                 // Part of scroll jank investigation http://crbug.com/1311003. Will
-                                // remove
-                                // TraceEvent after the investigation is complete.
+                                // remove TraceEvent after the investigation is complete.
                                 try (TraceEvent te =
                                         TraceEvent.scoped(
                                                 "HomeButtonCoordinator::onPageLoadFinished")) {
@@ -126,7 +125,7 @@ public class HomeButtonCoordinator {
     void handlePageLoadFinished(GURL url) {
         if (!mHomeButton.isShown()) return;
         if (mIsIncognitoSupplier.getAsBoolean()) return;
-        if (UrlUtilities.isNTPUrl(url)) return;
+        if (UrlUtilities.isNtpUrl(url)) return;
         if (mIsHomepageNonNtpSupplier.get()) return;
         if (mPromoShownOneshotSupplier.get() == null || mPromoShownOneshotSupplier.get()) return;
 

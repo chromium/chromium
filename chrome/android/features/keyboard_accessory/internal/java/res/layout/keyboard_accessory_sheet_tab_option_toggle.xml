@@ -39,7 +39,7 @@ found in the LICENSE file.
             android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
     </LinearLayout>
 
-    <com.google.android.material.switchmaterial.SwitchMaterial
+    <com.google.android.material.materialswitch.MaterialSwitch
         android:id="@+id/option_toggle_switch"
         android:layout_marginStart="16dp"
         android:layout_width="48dp"

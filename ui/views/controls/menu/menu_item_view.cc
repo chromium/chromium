@@ -67,9 +67,9 @@ namespace {
 // VerticalSeparator ----------------------------------------------------------
 
 class VerticalSeparator : public Separator {
- public:
-  METADATA_HEADER(VerticalSeparator);
+  METADATA_HEADER(VerticalSeparator, Separator)
 
+ public:
   VerticalSeparator();
   VerticalSeparator(const VerticalSeparator&) = delete;
   VerticalSeparator& operator=(const VerticalSeparator&) = delete;
@@ -90,7 +90,7 @@ VerticalSeparator::VerticalSeparator() {
   SetColorId(id);
 }
 
-BEGIN_METADATA(VerticalSeparator, Separator)
+BEGIN_METADATA(VerticalSeparator)
 END_METADATA
 
 }  // namespace
@@ -110,7 +110,6 @@ MenuItemView::~MenuItemView() {
   if (GetMenuController()) {
     GetMenuController()->OnMenuItemDestroying(this);
   }
-  delete submenu_;
   for (auto* item : removed_items_) {
     delete item;
   }
@@ -367,7 +366,7 @@ MenuItemView* MenuItemView::AddMenuItemAt(
 void MenuItemView::RemoveMenuItem(View* item) {
   DCHECK(item);
   DCHECK(submenu_);
-  DCHECK_EQ(submenu_, item->parent());
+  DCHECK_EQ(submenu_.get(), item->parent());
   removed_items_.push_back(item);
   submenu_->RemoveChildView(item);
 }
@@ -424,9 +423,9 @@ MenuItemView* MenuItemView::AppendMenuItemImpl(int item_id,
 
 SubmenuView* MenuItemView::CreateSubmenu() {
   if (submenu_)
-    return submenu_;
+    return submenu_.get();
 
-  submenu_ = new SubmenuView(this);
+  submenu_ = std::make_unique<SubmenuView>(/*parent=*/this);
   submenu_->SetProperty(kElementIdentifierKey, submenu_id_);
 
 #if BUILDFLAG(IS_MAC)
@@ -452,7 +451,7 @@ SubmenuView* MenuItemView::CreateSubmenu() {
 
   SchedulePaint();
 
-  return submenu_;
+  return submenu_.get();
 }
 
 bool MenuItemView::HasSubmenu() const {
@@ -460,7 +459,7 @@ bool MenuItemView::HasSubmenu() const {
 }
 
 SubmenuView* MenuItemView::GetSubmenu() const {
-  return submenu_;
+  return submenu_.get();
 }
 
 bool MenuItemView::SubmenuIsShowing() const {
@@ -549,8 +548,7 @@ void MenuItemView::SetIconView(std::unique_ptr<ImageView> icon_view) {
     base::AutoReset setter(
         &update_selection_based_state_in_view_herarchy_changed_, false);
     if (icon_view_) {
-      RemoveChildViewT(icon_view_.get());
-      icon_view_ = nullptr;
+      RemoveChildViewT(icon_view_.ExtractAsDangling());
     }
 
     if (icon_view)
@@ -697,7 +695,7 @@ void MenuItemView::ChildrenChanged() {
       submenu_->Layout();
       submenu_->SchedulePaint();
       // Update the menu selection after layout.
-      controller->UpdateSubmenuSelection(submenu_);
+      controller->UpdateSubmenuSelection(submenu_.get());
     }
   }
 
@@ -1420,17 +1418,17 @@ void MenuItemView::UpdateSelectionBasedState(bool paint_as_selected) {
   last_paint_as_selected_ = paint_as_selected;
   const Colors colors = CalculateColors(paint_as_selected);
   if (submenu_arrow_image_view_) {
-    submenu_arrow_image_view_->SetImage(
-        gfx::CreateVectorIcon(features::IsChromeRefresh2023()
-                                  ? vector_icons::kSubmenuArrowChromeRefreshIcon
-                                  : vector_icons::kSubmenuArrowIcon,
-                              colors.icon_color));
+    submenu_arrow_image_view_->SetImage(ui::ImageModel::FromVectorIcon(
+        features::IsChromeRefresh2023()
+            ? vector_icons::kSubmenuArrowChromeRefreshIcon
+            : vector_icons::kSubmenuArrowIcon,
+        colors.icon_color));
   }
   MenuDelegate* delegate = GetDelegate();
   if (type_ == Type::kCheckbox && delegate &&
       delegate->IsItemChecked(GetCommand())) {
     radio_check_image_view_->SetImage(
-        gfx::CreateVectorIcon(kMenuCheckIcon, colors.icon_color));
+        ui::ImageModel::FromVectorIcon(kMenuCheckIcon, colors.icon_color));
   } else if (type_ == Type::kRadio) {
     const bool toggled = delegate && delegate->IsItemChecked(GetCommand());
     const gfx::VectorIcon& radio_icon =
@@ -1486,7 +1484,7 @@ int MenuItemView::GetVerticalMargin() const {
              : config.item_vertical_margin;
 }
 
-BEGIN_METADATA(MenuItemView, View)
+BEGIN_METADATA(MenuItemView)
 END_METADATA
 
 // EmptyMenuMenuItem ----------------------------------------------------------
@@ -1497,7 +1495,7 @@ EmptyMenuMenuItem::EmptyMenuMenuItem(MenuItemView* parent)
   SetEnabled(false);
 }
 
-BEGIN_METADATA(EmptyMenuMenuItem, MenuItemView)
+BEGIN_METADATA(EmptyMenuMenuItem)
 END_METADATA
 
 }  // namespace views

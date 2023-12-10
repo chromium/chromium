@@ -11,8 +11,8 @@ source_set("inactive_tabs") {
   ]
   deps = [
     ":features",
-    "//ios/chrome/browser/main",
-    "//ios/chrome/browser/ntp:util",
+    "//ios/chrome/browser/main/model",
+    "//ios/chrome/browser/ntp/model:util",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/web/public",
@@ -40,7 +40,7 @@ source_set("unit_tests") {
     ":features",
     ":inactive_tabs",
     "//base/test:test_support",
-    "//ios/chrome/browser/ntp",
+    "//ios/chrome/browser/ntp/model",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
@@ -48,7 +48,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/model/web_state_list/test:test_support",
     "//ios/chrome/browser/snapshots/model",
-    "//ios/chrome/browser/web",
+    "//ios/chrome/browser/web/model",
     "//ios/chrome/test:test_support",
     "//ios/web/public/session",
     "//ios/web/public/test",

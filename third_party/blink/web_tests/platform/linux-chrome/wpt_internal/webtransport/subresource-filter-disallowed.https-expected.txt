@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+[FAIL] Request suffixed with "headers.py" should be blocked.
+  assert_unreached: Should have rejected: undefined Reached unreachable code
+Harness: the test ran to completion.

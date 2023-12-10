@@ -18,7 +18,7 @@ SpeculationRule::SpeculationRule(
     absl::optional<network::mojom::ReferrerPolicy> referrer_policy,
     mojom::blink::SpeculationEagerness eagerness,
     network::mojom::blink::NoVarySearchPtr no_vary_search_expected,
-    mojom::blink::SpeculationInjectionWorld injection_world)
+    mojom::blink::SpeculationInjectionType injection_type)
     : urls_(std::move(urls)),
       predicate_(predicate),
       requires_anonymous_client_ip_(requires_anonymous_client_ip),
@@ -26,7 +26,7 @@ SpeculationRule::SpeculationRule(
       referrer_policy_(referrer_policy),
       eagerness_(eagerness),
       no_vary_search_expected_(std::move(no_vary_search_expected)),
-      injection_world_(injection_world) {}
+      injection_type_(injection_type) {}
 
 SpeculationRule::~SpeculationRule() = default;
 

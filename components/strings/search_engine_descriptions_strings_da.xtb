@@ -1,0 +1,14 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<!-- This file is generated using tools/search_engine_choice/generate_search_engine_snippets.py. Do not modify it manually. -->
+<translationbundle lang="da">
+  <translation id="IDS_BING_SEARCH_DESCRIPTION">Hurtig, præcis og privat søgning fra Microsoft</translation>
+  <translation id="IDS_DUCKDUCKGO_SEARCH_DESCRIPTION">Vi sporer dig ikke. Privatliv, forenklet.</translation>
+  <translation id="IDS_GOOGLE_SEARCH_DESCRIPTION">Find det, du leder efter, med verdens mest anvendte søgemaskine.</translation>
+  <translation id="IDS_INFOCOM_SEARCH_DESCRIPTION">Hurtig og nem søgning</translation>
+  <translation id="IDS_MOJEEK_SEARCH_DESCRIPTION">Uafhængig, europæisk søgemaskine uden sporing</translation>
+  <translation id="IDS_OCEANHERO_SEARCH_DESCRIPTION">Hjælp med at stoppe plastikforurening af havet med OceanHero.</translation>
+  <translation id="IDS_PRIVACYWALL_SEARCH_DESCRIPTION">En søgemaskine der beskytter dit privatliv.</translation>
+  <translation id="IDS_YANDEX_SEARCH_DESCRIPTION">Hurtig og sikker søgning efter websteder, billeder og videoer</translation>
+  <translation id="IDS_YEP_SEARCH_DESCRIPTION">Web-søgemaskine, der sigter mod at dele annonceindtægter med skabere.</translation>
+</translationbundle>

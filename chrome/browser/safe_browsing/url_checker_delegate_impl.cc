@@ -59,11 +59,10 @@ void CreateSafeBrowsingUserInteractionObserver(
     scoped_refptr<SafeBrowsingUIManager> ui_manager) {
   content::WebContents* web_contents =
       security_interstitials::GetWebContentsForResource(resource);
-  // Don't delay the interstitial for prerender pages and portals.
+  // Don't delay the interstitial for prerender pages.
   if (!web_contents ||
       prerender::ChromeNoStatePrefetchContentsDelegate::FromWebContents(
-          web_contents) ||
-      web_contents->IsPortal()) {
+          web_contents)) {
     ui_manager->StartDisplayingBlockingPage(resource);
     return;
   }
@@ -149,7 +148,7 @@ bool UrlCheckerDelegateImpl::ShouldSkipRequestCheck(
     const GURL& original_url,
     int frame_tree_node_id,
     int render_process_id,
-    int render_frame_id,
+    base::optional_ref<const base::UnguessableToken> render_frame_token,
     bool originated_from_service_worker) {
   // Check for whether the URL matches the Safe Browsing allowlist domains
   // (a.k. a prefs::kSafeBrowsingAllowlistDomains).

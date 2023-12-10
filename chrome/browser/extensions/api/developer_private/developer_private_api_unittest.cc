@@ -26,6 +26,7 @@
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/error_console/error_console.h"
 #include "chrome/browser/extensions/extension_action_test_util.h"
+#include "chrome/browser/extensions/extension_install_prompt_show_params.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/extension_management_test_util.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -43,6 +44,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/crx_file/id_util.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/common/buildflags.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/mock_render_process_host.h"
@@ -75,10 +77,9 @@
 #include "services/service_manager/public/cpp/test/test_connector_factory.h"
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-#include "chrome/browser/supervised_user/supervised_user_service_factory.h"
-#include "components/supervised_user/core/browser/supervised_user_service.h"
+#include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/common/features.h"
-#endif
+#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
 namespace extensions {
 
@@ -118,9 +119,8 @@ bool WasItemChangedEventDispatched(
 
   const Event& event = *iter->second;
   CHECK_GE(1u, event.event_args.size());
-  std::unique_ptr<api::developer_private::EventData> event_data =
-      api::developer_private::EventData::FromValueDeprecated(
-          event.event_args[0]);
+  std::optional<api::developer_private::EventData> event_data =
+      api::developer_private::EventData::FromValue(event.event_args[0]);
   if (!event_data)
     return false;
 
@@ -145,8 +145,7 @@ bool WasUserSiteSettingsChangedEventDispatched(
   const Event& event = *iter->second;
   CHECK_GE(1u, event.event_args.size());
   auto site_settings =
-      api::developer_private::UserSiteSettings::FromValueDeprecated(
-          event.event_args[0]);
+      api::developer_private::UserSiteSettings::FromValue(event.event_args[0]);
   if (!site_settings)
     return false;
 
@@ -222,9 +221,9 @@ void GetMatchingExtensionsForSite(
 
   infos->clear();
   for (const auto& value : (*results)[0].GetList()) {
+    ASSERT_TRUE(value.is_dict());
     infos->push_back(std::move(
-        *api::developer_private::MatchingExtensionInfo::FromValueDeprecated(
-            value)));
+        *api::developer_private::MatchingExtensionInfo::FromValue(value)));
   }
 }
 
@@ -329,7 +328,7 @@ class DeveloperPrivateApiUnitTest : public ExtensionServiceTestWithInstall {
   // Will reset the profile_info unique_ptr.
   // Uses ASSERT_* inside - callers should use ASSERT_NO_FATAL_FAILURE.
   void GetProfileConfiguration(
-      std::unique_ptr<api::developer_private::ProfileInfo>* profile_info);
+      std::optional<api::developer_private::ProfileInfo>* profile_info);
 
   // Runs the API function to update host access for the given |extension| to
   // |new_access|.
@@ -345,6 +344,11 @@ class DeveloperPrivateApiUnitTest : public ExtensionServiceTestWithInstall {
   }
 
  private:
+  // This test does not create a root window. Because of this,
+  // ScopedDisableRootChecking needs to be used (which disables the root window
+  // check).
+  test::ScopedDisableRootChecking disable_root_checking_;
+
   // The browser (and accompanying window).
   std::unique_ptr<TestBrowserWindow> browser_window_;
   std::unique_ptr<Browser> browser_;
@@ -471,9 +475,8 @@ testing::AssertionResult DeveloperPrivateApiUnitTest::TestPackExtensionFunction(
   // Extract the result. We don't have to test this here, since it's verified as
   // part of the general extension api system.
   const base::Value& response_value = (*function->GetResultListForTest())[0];
-  std::unique_ptr<api::developer_private::PackDirectoryResponse> response =
-      api::developer_private::PackDirectoryResponse::FromValueDeprecated(
-          response_value);
+  std::optional<api::developer_private::PackDirectoryResponse> response =
+      api::developer_private::PackDirectoryResponse::FromValue(response_value);
   CHECK(response);
 
   if (response->status != expected_status) {
@@ -503,7 +506,7 @@ void DeveloperPrivateApiUnitTest::UpdateProfileConfigurationDevMode(
 }
 
 void DeveloperPrivateApiUnitTest::GetProfileConfiguration(
-    std::unique_ptr<api::developer_private::ProfileInfo>* profile_info) {
+    std::optional<api::developer_private::ProfileInfo>* profile_info) {
   auto function = base::MakeRefCounted<
       api::DeveloperPrivateGetProfileConfigurationFunction>();
   base::Value::List args;
@@ -513,7 +516,7 @@ void DeveloperPrivateApiUnitTest::GetProfileConfiguration(
   ASSERT_EQ(1u, function->GetResultListForTest()->size());
   const base::Value& response_value = (*function->GetResultListForTest())[0];
   *profile_info =
-      api::developer_private::ProfileInfo::FromValueDeprecated(response_value);
+      api::developer_private::ProfileInfo::FromValue(response_value);
 }
 
 void DeveloperPrivateApiUnitTest::RunUpdateHostAccess(
@@ -807,8 +810,8 @@ TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivateLoadUnpackedLoadError) {
             "[{\"failQuietly\": true, \"populateError\": true}]", profile());
     // The loadError result should be populated.
     ASSERT_TRUE(result);
-    std::unique_ptr<api::developer_private::LoadError> error =
-        api::developer_private::LoadError::FromValueDeprecated(*result);
+    std::optional<api::developer_private::LoadError> error =
+        api::developer_private::LoadError::FromValue(*result);
     ASSERT_TRUE(error);
     ASSERT_TRUE(error->source);
     // The source should have *something* (rely on file highlighter tests for
@@ -834,8 +837,8 @@ TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivateLoadUnpackedLoadError) {
             "[{\"failQuietly\": true, \"populateError\": true}]", profile());
     // The load error should be populated.
     ASSERT_TRUE(result);
-    std::unique_ptr<api::developer_private::LoadError> error =
-        api::developer_private::LoadError::FromValueDeprecated(*result);
+    std::optional<api::developer_private::LoadError> error =
+        api::developer_private::LoadError::FromValue(*result);
     ASSERT_TRUE(error);
     // The file source should be empty.
     ASSERT_TRUE(error->source);
@@ -898,8 +901,8 @@ TEST_F(DeveloperPrivateApiUnitTest, LoadUnpackedRetryId) {
             function.get(),
             "[{\"failQuietly\": true, \"populateError\": true}]", profile());
     ASSERT_TRUE(result);
-    std::unique_ptr<api::developer_private::LoadError> error =
-        api::developer_private::LoadError::FromValueDeprecated(*result);
+    std::optional<api::developer_private::LoadError> error =
+        api::developer_private::LoadError::FromValue(*result);
     ASSERT_TRUE(error);
     EXPECT_FALSE(error->retry_guid.empty());
     retry_guid = error->retry_guid;
@@ -918,8 +921,8 @@ TEST_F(DeveloperPrivateApiUnitTest, LoadUnpackedRetryId) {
             function.get(),
             "[{\"failQuietly\": true, \"populateError\": true}]", profile());
     ASSERT_TRUE(result);
-    std::unique_ptr<api::developer_private::LoadError> error =
-        api::developer_private::LoadError::FromValueDeprecated(*result);
+    std::optional<api::developer_private::LoadError> error =
+        api::developer_private::LoadError::FromValue(*result);
     ASSERT_TRUE(error);
     EXPECT_EQ(retry_guid, error->retry_guid);
   }
@@ -948,8 +951,8 @@ TEST_F(DeveloperPrivateApiUnitTest, LoadUnpackedRetryId) {
             "[{\"failQuietly\": true, \"populateError\": true}]", profile());
     // The loadError result should be populated.
     ASSERT_TRUE(result);
-    std::unique_ptr<api::developer_private::LoadError> error =
-        api::developer_private::LoadError::FromValueDeprecated(*result);
+    std::optional<api::developer_private::LoadError> error =
+        api::developer_private::LoadError::FromValue(*result);
     ASSERT_TRUE(error);
     EXPECT_NE(retry_guid, error->retry_guid);
   }
@@ -1098,8 +1101,8 @@ TEST_F(DeveloperPrivateApiUnitTest, ReloadBadExtensionToLoadUnpackedRetry) {
         api_test_utils::RunFunctionAndReturnSingleResult(
             function.get(), reload_args, profile());
     ASSERT_TRUE(result);
-    std::unique_ptr<api::developer_private::LoadError> error =
-        api::developer_private::LoadError::FromValueDeprecated(*result);
+    std::optional<api::developer_private::LoadError> error =
+        api::developer_private::LoadError::FromValue(*result);
     ASSERT_TRUE(error);
     EXPECT_FALSE(error->retry_guid.empty());
     retry_guid = error->retry_guid;
@@ -1200,8 +1203,7 @@ TEST_F(DeveloperPrivateApiUnitTest,
         api_test_utils::RunFunctionAndReturnSingleResult(
             function.get(), kLoadUnpackedArgs, profile());
     ASSERT_TRUE(result);
-    EXPECT_TRUE(
-        api::developer_private::LoadError::FromValueDeprecated(*result));
+    EXPECT_TRUE(api::developer_private::LoadError::FromValue(*result));
   }
 
   // Cleanup.
@@ -1230,8 +1232,8 @@ TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivateRequestFileSource) {
   EXPECT_TRUE(RunFunction(function, file_source_args)) << function->GetError();
 
   const base::Value& response_value = (*function->GetResultListForTest())[0];
-  std::unique_ptr<api::developer_private::RequestFileSourceResponse> response =
-      api::developer_private::RequestFileSourceResponse::FromValueDeprecated(
+  std::optional<api::developer_private::RequestFileSourceResponse> response =
+      api::developer_private::RequestFileSourceResponse::FromValue(
           response_value);
   EXPECT_FALSE(response->before_highlight.empty());
   EXPECT_EQ("\"name\": \"foo\"", response->highlight);
@@ -1257,8 +1259,8 @@ TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivateGetExtensionsInfo) {
   ASSERT_TRUE((*results)[0].is_list());
   const base::Value::List& list = (*results)[0].GetList();
   ASSERT_EQ(1u, list.size());
-  std::unique_ptr<api::developer_private::ExtensionInfo> info =
-      api::developer_private::ExtensionInfo::FromValueDeprecated(list[0]);
+  std::optional<api::developer_private::ExtensionInfo> info =
+      api::developer_private::ExtensionInfo::FromValue(list[0]);
   ASSERT_TRUE(info);
 }
 
@@ -1380,7 +1382,7 @@ TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivateDevModeDisabledPolicy) {
   EXPECT_FALSE(
       profile()->GetPrefs()->GetBoolean(prefs::kExtensionsUIDeveloperMode));
 
-  std::unique_ptr<api::developer_private::ProfileInfo> profile_info;
+  std::optional<api::developer_private::ProfileInfo> profile_info;
   ASSERT_NO_FATAL_FAILURE(GetProfileConfiguration(&profile_info));
   EXPECT_FALSE(profile_info->in_developer_mode);
   EXPECT_TRUE(profile_info->is_developer_mode_controlled_by_policy);
@@ -1393,7 +1395,7 @@ TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivateDevMode) {
   EXPECT_FALSE(
       profile()->GetPrefs()->GetBoolean(prefs::kExtensionsUIDeveloperMode));
   {
-    std::unique_ptr<api::developer_private::ProfileInfo> profile_info;
+    std::optional<api::developer_private::ProfileInfo> profile_info;
     ASSERT_NO_FATAL_FAILURE(GetProfileConfiguration(&profile_info));
     EXPECT_FALSE(profile_info->in_developer_mode);
     EXPECT_FALSE(profile_info->is_developer_mode_controlled_by_policy);
@@ -1403,7 +1405,7 @@ TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivateDevMode) {
   EXPECT_TRUE(
       profile()->GetPrefs()->GetBoolean(prefs::kExtensionsUIDeveloperMode));
   {
-    std::unique_ptr<api::developer_private::ProfileInfo> profile_info;
+    std::optional<api::developer_private::ProfileInfo> profile_info;
     ASSERT_NO_FATAL_FAILURE(GetProfileConfiguration(&profile_info));
     EXPECT_TRUE(profile_info->in_developer_mode);
     EXPECT_FALSE(profile_info->is_developer_mode_controlled_by_policy);
@@ -2078,9 +2080,8 @@ TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivateGetUserSiteSettings) {
       api_test_utils::RunFunctionAndReturnSingleResult(
           function.get(), /*args=*/"[]", profile());
   ASSERT_TRUE(result.has_value());
-  std::unique_ptr<api::developer_private::UserSiteSettings> settings =
-      api::developer_private::UserSiteSettings::FromValueDeprecated(
-          result.value());
+  std::optional<api::developer_private::UserSiteSettings> settings =
+      api::developer_private::UserSiteSettings::FromValue(result.value());
 
   ASSERT_TRUE(settings);
   EXPECT_THAT(settings->permitted_sites, testing::IsEmpty());
@@ -2202,9 +2203,8 @@ TEST_F(DeveloperPrivateApiWithPermittedSitesUnitTest,
   ASSERT_TRUE(function->GetResultListForTest());
   ASSERT_EQ(1u, function->GetResultListForTest()->size());
   const base::Value& response_value = (*function->GetResultListForTest())[0];
-  std::unique_ptr<api::developer_private::UserSiteSettings> settings =
-      api::developer_private::UserSiteSettings::FromValueDeprecated(
-          response_value);
+  std::optional<api::developer_private::UserSiteSettings> settings =
+      api::developer_private::UserSiteSettings::FromValue(response_value);
 
   ASSERT_TRUE(settings);
   EXPECT_THAT(settings->permitted_sites,
@@ -3114,11 +3114,9 @@ TEST_P(DeveloperPrivateApiSupervisedUserUnitTest,
   base::FilePath path = data_dir().AppendASCII("simple_with_popup");
   api::EntryPicker::SkipPickerAndAlwaysSelectPathForTest(&path);
 
-  supervised_user::SupervisedUserService* service =
-      SupervisedUserServiceFactory::GetForProfile(profile());
-  EXPECT_NE(service, nullptr);
   if (extensions_permissions_for_supervised_users_on_desktop()) {
-    EXPECT_TRUE(service->AreExtensionsPermissionsEnabled());
+    EXPECT_TRUE(supervised_user::AreExtensionsPermissionsEnabled(
+        *profile()->GetPrefs()));
     auto function =
         base::MakeRefCounted<api::DeveloperPrivateLoadUnpackedFunction>();
     function->SetRenderFrameHost(web_contents->GetPrimaryMainFrame());
@@ -3127,7 +3125,8 @@ TEST_P(DeveloperPrivateApiSupervisedUserUnitTest,
     EXPECT_THAT(error, testing::HasSubstr("Child account"));
   } else {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
-    EXPECT_TRUE(service->AreExtensionsPermissionsEnabled());
+    EXPECT_TRUE(supervised_user::AreExtensionsPermissionsEnabled(
+        *profile()->GetPrefs()));
     auto function =
         base::MakeRefCounted<api::DeveloperPrivateLoadUnpackedFunction>();
     function->SetRenderFrameHost(web_contents->GetPrimaryMainFrame());
@@ -3135,7 +3134,8 @@ TEST_P(DeveloperPrivateApiSupervisedUserUnitTest,
         function.get(), "[]", profile());
     EXPECT_THAT(error, testing::HasSubstr("Child account"));
 #else
-    EXPECT_FALSE(service->AreExtensionsPermissionsEnabled());
+    EXPECT_FALSE(supervised_user::AreExtensionsPermissionsEnabled(
+        *profile()->GetPrefs()));
 #endif
   }
 }

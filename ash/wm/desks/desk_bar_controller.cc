@@ -22,7 +22,6 @@
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_utils.h"
-#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/auto_reset.h"
 #include "base/check.h"
 #include "base/containers/contains.h"
@@ -30,6 +29,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/presentation_time_recorder.h"
+#include "ui/display/tablet_state.h"
 #include "ui/events/event.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/point.h"
@@ -140,7 +140,6 @@ views::View* DeskBarController::BarWidgetAndView::GetLastFocusableView() const {
 
 DeskBarController::DeskBarController() {
   Shell::Get()->overview_controller()->AddObserver(this);
-  Shell::Get()->tablet_mode_controller()->AddObserver(this);
   DesksController::Get()->AddObserver(this);
   Shell::Get()->activation_client()->AddObserver(this);
   // TODO(b/301274861): DeskBarController should only be doing pre-target
@@ -155,7 +154,6 @@ DeskBarController::~DeskBarController() {
   Shell::Get()->RemovePreTargetHandler(this);
   Shell::Get()->activation_client()->RemoveObserver(this);
   DesksController::Get()->RemoveObserver(this);
-  Shell::Get()->tablet_mode_controller()->RemoveObserver(this);
   Shell::Get()->overview_controller()->RemoveObserver(this);
 }
 
@@ -327,7 +325,12 @@ void DeskBarController::OnShellDestroying() {
   desk_bars_.clear();
 }
 
-void DeskBarController::OnTabletModeStarting() {
+void DeskBarController::OnDisplayTabletStateChanged(
+    display::TabletState state) {
+  if (state != display::TabletState::kEnteringTabletMode) {
+    return;
+  }
+
   CloseAllDeskBars();
 }
 

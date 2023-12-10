@@ -21,6 +21,7 @@
 #include "services/accessibility/public/mojom/speech_recognition.mojom-forward.h"
 #include "services/accessibility/public/mojom/speech_recognition.mojom.h"
 #include "services/accessibility/public/mojom/tts.mojom.h"
+#include "services/accessibility/public/mojom/user_input.mojom.h"
 #include "services/accessibility/public/mojom/user_interface.mojom.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_event.h"
@@ -69,7 +70,7 @@ class FakeAccessibilityService
       const ui::AXRelativeBounds& bounds) override;
   void DispatchGetTextLocationResult(
       const ui::AXActionData& data,
-      const absl::optional<gfx::Rect>& rect) override;
+      const std::optional<gfx::Rect>& rect) override;
 
   // ax::mojom::AssistiveTechnologyController:
   void EnableAssistiveTechnology(
@@ -103,6 +104,7 @@ class FakeAccessibilityService
   void BindAnotherAutoclickClient();
   void BindAnotherSpeechRecognition();
   void BindAnotherTts();
+  void BindAnotherUserInput();
   void BindAnotherUserInterface();
 
   //
@@ -123,8 +125,9 @@ class FakeAccessibilityService
       ax::mojom::StartOptionsPtr options,
       base::OnceCallback<void(ax::mojom::SpeechRecognitionStartInfoPtr)>
           callback);
-  void RequestSpeechRecognitionStop(ax::mojom::StopOptionsPtr options,
-                                    base::OnceCallback<void()> callback);
+  void RequestSpeechRecognitionStop(
+      ax::mojom::StopOptionsPtr options,
+      base::OnceCallback<void(const std::optional<std::string>&)> callback);
 
   //
   // Methods to pretend a TTS request came from the service.
@@ -158,6 +161,14 @@ class FakeAccessibilityService
   void RequestTtsVoices(ax::mojom::Tts::GetVoicesCallback callback);
 
   //
+  // Methods to pretend a UserInput request came from the service.
+  //
+
+  // Sends a request to send a synthetic key event.
+  void RequestSendSyntheticKeyEventForShortcutOrNavigation(
+      ax::mojom::SyntheticKeyEventPtr key_event);
+
+  //
   // Methods to pretend a UserInterface request came from the service.
   //
 
@@ -168,7 +179,7 @@ class FakeAccessibilityService
   void RequestShowConfirmationDialog(
       const std::string& title,
       const std::string& description,
-      const absl::optional<std::string>& cancel_name,
+      const std::optional<std::string>& cancel_name,
       ax::mojom::UserInterface::ShowConfirmationDialogCallback callback);
 
   void RequestSetFocusRings(
@@ -233,6 +244,7 @@ class FakeAccessibilityService
   mojo::RemoteSet<ax::mojom::AutoclickClient> autoclick_client_remotes_;
   mojo::ReceiverSet<ax::mojom::Autoclick> autoclick_receivers_;
   mojo::RemoteSet<ax::mojom::Tts> tts_remotes_;
+  mojo::RemoteSet<ax::mojom::UserInput> ui_remotes_;
   mojo::RemoteSet<ax::mojom::UserInterface> ux_remotes_;
 
   mojo::ReceiverSet<ax::mojom::AssistiveTechnologyController>

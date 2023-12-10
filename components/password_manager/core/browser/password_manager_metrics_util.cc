@@ -110,7 +110,7 @@ void LogGeneralUIDismissalReason(UIDismissalReason reason) {
 
 void LogSaveUIDismissalReason(
     UIDismissalReason reason,
-    absl::optional<
+    std::optional<
         password_manager::features_util::PasswordAccountStorageUserState>
         user_state) {
   base::UmaHistogramEnumeration("PasswordManager.SaveUIDismissalReason", reason,
@@ -404,13 +404,11 @@ void LogProcessIncomingPasswordSharingInvitationResult(
 }
 
 void LogGroupedPasswordsResults(
-    const std::vector<std::unique_ptr<password_manager::PasswordForm>>&
-        logins) {
-  auto is_grouped_match =
-      [](const std::unique_ptr<password_manager::PasswordForm>& form) {
-        return form->match_type ==
-               password_manager::PasswordForm::MatchType::kGrouped;
-      };
+    const std::vector<password_manager::PasswordForm>& logins) {
+  auto is_grouped_match = [](const password_manager::PasswordForm& form) {
+    return form.match_type ==
+           password_manager::PasswordForm::MatchType::kGrouped;
+  };
   GroupedPasswordFetchResult result = GroupedPasswordFetchResult::kNoMatches;
   if (!logins.empty() && base::ranges::all_of(logins, is_grouped_match)) {
     result = GroupedPasswordFetchResult::kOnlyGroupedMatches;

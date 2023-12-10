@@ -88,12 +88,15 @@ public class VariationsSeedLoader {
 
     @VisibleForTesting
     public static final String APP_SEED_FRESHNESS_HISTOGRAM_NAME = "Variations.AppSeedFreshness";
+
     @VisibleForTesting
     public static final String DOWNLOAD_JOB_INTERVAL_HISTOGRAM_NAME =
             "Variations.WebViewDownloadJobInterval";
+
     @VisibleForTesting
     public static final String DOWNLOAD_JOB_QUEUE_TIME_HISTOGRAM_NAME =
             "Variations.WebViewDownloadJobQueueTime";
+
     private static final String SEED_LOAD_BLOCKING_TIME_HISTOGRAM_NAME =
             "Variations.SeedLoadBlockingTime";
     // This metric is also written by VariationsSeedStore::LoadSeed and is used by other platforms.
@@ -114,9 +117,12 @@ public class VariationsSeedLoader {
     private static void recordAppSeedFreshness(long freshnessMinutes) {
         // Bucket parameters should match Variations.SeedFreshness.
         // See variations::RecordSeedFreshness.
-        RecordHistogram.recordCustomCountHistogram(APP_SEED_FRESHNESS_HISTOGRAM_NAME,
-                (int) freshnessMinutes, /*min=*/1, /*max=*/(int) TimeUnit.DAYS.toMinutes(30),
-                /*numBuckets=*/50);
+        RecordHistogram.recordCustomCountHistogram(
+                APP_SEED_FRESHNESS_HISTOGRAM_NAME,
+                (int) freshnessMinutes,
+                /* min= */ 1,
+                /* max= */ (int) TimeUnit.DAYS.toMinutes(30),
+                /* numBuckets= */ 50);
     }
 
     private static void recordMinuteHistogram(String name, long value, long maxValue) {
@@ -129,14 +135,16 @@ public class VariationsSeedLoader {
         if (lastRequestTime == 0) {
             return false;
         }
-        long maxRequestPeriodMillis = VariationsUtils.getDurationSwitchValueInMillis(
-                AwSwitches.FINCH_SEED_MIN_UPDATE_PERIOD, MAX_REQUEST_PERIOD_MILLIS);
+        long maxRequestPeriodMillis =
+                VariationsUtils.getDurationSwitchValueInMillis(
+                        AwSwitches.FINCH_SEED_MIN_UPDATE_PERIOD, MAX_REQUEST_PERIOD_MILLIS);
         return now < lastRequestTime + maxRequestPeriodMillis;
     }
 
     private boolean isSeedExpired(long seedFileTime) {
-        long expirationDuration = VariationsUtils.getDurationSwitchValueInMillis(
-                AwSwitches.FINCH_SEED_EXPIRATION_AGE, SEED_EXPIRATION_MILLIS);
+        long expirationDuration =
+                VariationsUtils.getDurationSwitchValueInMillis(
+                        AwSwitches.FINCH_SEED_EXPIRATION_AGE, SEED_EXPIRATION_MILLIS);
         return getCurrentTimeMillis() > seedFileTime + expirationDuration;
     }
 
@@ -180,41 +188,45 @@ public class VariationsSeedLoader {
         private long mCurrentSeedDate = Long.MIN_VALUE;
         private long mSeedFileTime;
 
-        private FutureTask<Boolean> mLoadTask = new FutureTask<>(() -> {
-            File newSeedFile = VariationsUtils.getNewSeedFile();
-            File oldSeedFile = VariationsUtils.getSeedFile();
+        private FutureTask<Boolean> mLoadTask =
+                new FutureTask<>(
+                        () -> {
+                            File newSeedFile = VariationsUtils.getNewSeedFile();
+                            File oldSeedFile = VariationsUtils.getSeedFile();
 
-            // First check for a new seed.
-            boolean loadedSeed = false;
-            if (parseAndSaveSeedFile(newSeedFile)) {
-                loadedSeed = true;
-                mSeedFileTime = newSeedFile.lastModified();
+                            // First check for a new seed.
+                            boolean loadedSeed = false;
+                            if (parseAndSaveSeedFile(newSeedFile)) {
+                                loadedSeed = true;
+                                mSeedFileTime = newSeedFile.lastModified();
 
-                // If a valid new seed was found, make a note to replace the old seed with
-                // the new seed. (Don't do it now, to avoid delaying FutureTask.get().)
-                mFoundNewSeed = true;
-            } else if (parseAndSaveSeedFile(oldSeedFile)) { // If no new seed, check for an old one.
-                loadedSeed = true;
-                mSeedFileTime = oldSeedFile.lastModified();
-            }
+                                // If a valid new seed was found, make a note to replace the old
+                                // seed with the new seed. (Don't do it now, to avoid delaying
+                                // FutureTask.get().)
+                                mFoundNewSeed = true;
+                            } else if (parseAndSaveSeedFile(
+                                    oldSeedFile)) { // If no new seed, check for an old one.
+                                loadedSeed = true;
+                                mSeedFileTime = oldSeedFile.lastModified();
+                            }
 
-            // Make a note to request a new seed if necessary. (Don't request it now, to
-            // avoid delaying FutureTask.get().)
-            if (!loadedSeed || isSeedExpired(mSeedFileTime)) {
-                mNeedNewSeed = true;
+                            // Make a note to request a new seed if necessary. (Don't request it
+                            // now, to avoid delaying FutureTask.get().)
+                            if (!loadedSeed || isSeedExpired(mSeedFileTime)) {
+                                mNeedNewSeed = true;
 
-                // Rate-limit the requests.
-                if (shouldThrottleRequests(getCurrentTimeMillis())) {
-                    mNeedNewSeed = false;
-                }
-            }
+                                // Rate-limit the requests.
+                                if (shouldThrottleRequests(getCurrentTimeMillis())) {
+                                    mNeedNewSeed = false;
+                                }
+                            }
 
-            // Save the date field of whatever seed was loaded, if any.
-            if (loadedSeed) {
-                mCurrentSeedDate = VariationsSeedLoaderJni.get().getSavedSeedDate();
-            }
-            return loadedSeed;
-        });
+                            // Save the date field of whatever seed was loaded, if any.
+                            if (loadedSeed) {
+                                mCurrentSeedDate = VariationsSeedLoaderJni.get().getSavedSeedDate();
+                            }
+                            return loadedSeed;
+                        });
 
         @Override
         public void run() {
@@ -264,16 +276,20 @@ public class VariationsSeedLoader {
 
         public void start() {
             try {
-                if (!bind(ContextUtils.getApplicationContext(), getServerIntent(),
-                            Context.BIND_AUTO_CREATE)) {
+                if (!bind(
+                        ContextUtils.getApplicationContext(),
+                        getServerIntent(),
+                        Context.BIND_AUTO_CREATE)) {
                     Log.e(TAG, "Failed to bind to WebView service");
                 }
                 // Connect to nonembedded metrics Service at the same time we connect to variation
                 // service.
                 AwBrowserProcess.collectNonembeddedMetrics();
             } catch (NameNotFoundException e) {
-                Log.e(TAG,
-                        "WebView provider \"" + AwBrowserProcess.getWebViewPackageName()
+                Log.e(
+                        TAG,
+                        "WebView provider \""
+                                + AwBrowserProcess.getWebViewPackageName()
                                 + "\" not found!");
             }
         }
@@ -282,8 +298,8 @@ public class VariationsSeedLoader {
         public void onServiceConnectedImpl(ComponentName name, IBinder service) {
             try {
                 if (mNewSeedFd.getFd() >= 0) {
-                    IVariationsSeedServer.Stub.asInterface(service).getSeed(
-                            mNewSeedFd, mOldSeedDate, mSeedServerCallback);
+                    IVariationsSeedServer.Stub.asInterface(service)
+                            .getSeed(mNewSeedFd, mOldSeedDate, mSeedServerCallback);
                 }
             } catch (RemoteException e) {
                 Log.e(TAG, "Faild requesting seed", e);
@@ -304,13 +320,15 @@ public class VariationsSeedLoader {
                     VariationsServiceMetricsHelper.fromBundle(metricsBundle);
             if (metrics.hasJobInterval()) {
                 // Variations.DownloadJobInterval records time in minutes.
-                recordMinuteHistogram(DOWNLOAD_JOB_INTERVAL_HISTOGRAM_NAME,
+                recordMinuteHistogram(
+                        DOWNLOAD_JOB_INTERVAL_HISTOGRAM_NAME,
                         TimeUnit.MILLISECONDS.toMinutes(metrics.getJobInterval()),
                         TimeUnit.DAYS.toMinutes(30));
             }
             if (metrics.hasJobQueueTime()) {
                 // Variations.DownloadJobQueueTime records time in minutes.
-                recordMinuteHistogram(DOWNLOAD_JOB_QUEUE_TIME_HISTOGRAM_NAME,
+                recordMinuteHistogram(
+                        DOWNLOAD_JOB_QUEUE_TIME_HISTOGRAM_NAME,
                         TimeUnit.MILLISECONDS.toMinutes(metrics.getJobQueueTime()),
                         TimeUnit.DAYS.toMinutes(30));
             }
@@ -344,9 +362,12 @@ public class VariationsSeedLoader {
         File newSeedFile = VariationsUtils.getNewSeedFile();
         ParcelFileDescriptor newSeedFd = null;
         try {
-            newSeedFd = ParcelFileDescriptor.open(newSeedFile,
-                    ParcelFileDescriptor.MODE_WRITE_ONLY | ParcelFileDescriptor.MODE_TRUNCATE
-                            | ParcelFileDescriptor.MODE_CREATE);
+            newSeedFd =
+                    ParcelFileDescriptor.open(
+                            newSeedFile,
+                            ParcelFileDescriptor.MODE_WRITE_ONLY
+                                    | ParcelFileDescriptor.MODE_TRUNCATE
+                                    | ParcelFileDescriptor.MODE_CREATE);
         } catch (FileNotFoundException e) {
             Log.e(TAG, "Failed to open seed file " + newSeedFile);
             return false;

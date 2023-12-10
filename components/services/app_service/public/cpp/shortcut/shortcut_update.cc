@@ -71,10 +71,12 @@ void ShortcutUpdate::Merge(Shortcut* state, const Shortcut* delta) {
   SET_OPTIONAL_VALUE(name);
   SET_ENUM_VALUE(shortcut_source, ShortcutSource::kUnknown);
 
-  if (delta->icon_key.has_value()) {
-    state->icon_key = std::move(*delta->icon_key->Clone());
-  }
+  state->icon_key = MergeIconKey(
+      state && state->icon_key.has_value() ? &state->icon_key.value() : nullptr,
+      delta && delta->icon_key.has_value() ? &delta->icon_key.value()
+                                           : nullptr);
 
+  SET_OPTIONAL_VALUE(allow_removal);
   // When adding new fields to the Shortcut struct, this function should also
   // be updated.
 }
@@ -109,17 +111,30 @@ bool ShortcutUpdate::ShortcutSourceChanged() const {
 }
 
 absl::optional<apps::IconKey> ShortcutUpdate::IconKey() const {
-  if (delta_ && delta_->icon_key.has_value()) {
-    return std::move(*delta_->icon_key->Clone());
-  }
-  if (state_ && state_->icon_key.has_value()) {
-    return std::move(*state_->icon_key->Clone());
-  }
-  return absl::nullopt;
+  return MergeIconKey(
+      state_ && state_->icon_key.has_value() ? &state_->icon_key.value()
+                                             : nullptr,
+      delta_ && delta_->icon_key.has_value() ? &delta_->icon_key.value()
+                                             : nullptr);
 }
 
 bool ShortcutUpdate::IconKeyChanged() const {
-  RETURN_OPTIONAL_VALUE_CHANGED(icon_key);
+  if (!delta_ || !delta_->icon_key.has_value()) {
+    return false;
+  }
+  if (!state_ || !state_->icon_key.has_value()) {
+    return true;
+  }
+  return MergeIconKey(&(state_->icon_key.value()),
+                      &(delta_->icon_key.value())) != state_->icon_key;
+}
+
+absl::optional<bool> ShortcutUpdate::AllowRemoval() const {
+  GET_VALUE_WITH_FALLBACK(allow_removal, absl::nullopt)
+}
+
+bool ShortcutUpdate::AllowRemovalChanged() const {
+  RETURN_OPTIONAL_VALUE_CHANGED(allow_removal);
 }
 
 bool ShortcutUpdate::ShortcutInitialized() const {
@@ -135,6 +150,8 @@ std::ostream& operator<<(std::ostream& out,
   out << "LocalId: " << shortcut_update.LocalId() << std::endl;
   out << "Name: " << shortcut_update.Name() << std::endl;
   out << "ShortcutSource: " << EnumToString(shortcut_update.ShortcutSource())
+      << std::endl;
+  out << "AllowRemoval: " << PRINT_OPTIONAL_BOOL(shortcut_update.AllowRemoval())
       << std::endl;
   return out;
 }

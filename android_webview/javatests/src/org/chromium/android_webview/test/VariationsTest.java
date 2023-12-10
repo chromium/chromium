@@ -39,18 +39,18 @@ import java.util.Date;
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
 @OnlyRunIn(SINGLE_PROCESS)
 public class VariationsTest extends AwParameterizedTest {
-    @Rule
-    public AwActivityTestRule mActivityTestRule;
+    @Rule public AwActivityTestRule mActivityTestRule;
 
     public VariationsTest(AwSettingsMutation param) {
-        mActivityTestRule = new AwActivityTestRule(param.getMutation()) {
-            @Override
-            public boolean needsBrowserProcessStarted() {
-                // Don't start the browser process automatically so we can do some setup in the test
-                // beforehand.
-                return false;
-            }
-        };
+        mActivityTestRule =
+                new AwActivityTestRule(param.getMutation()) {
+                    @Override
+                    public boolean needsBrowserProcessStarted() {
+                        // Don't start the browser process automatically so we can do some setup in
+                        // the test beforehand.
+                        return false;
+                    }
+                };
     }
 
     private void createAndLoadSeedFile(FeatureAssociation features) throws FileNotFoundException {

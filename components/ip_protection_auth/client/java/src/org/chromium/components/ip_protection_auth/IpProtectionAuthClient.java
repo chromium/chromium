@@ -41,11 +41,9 @@ public final class IpProtectionAuthClient implements AutoCloseable {
             "org.chromium.components.ip_protection_auth.mock_service.IpProtectionAuthServiceMock";
 
     // mService being null signifies that the object has been closed by calling close().
-    @Nullable
-    private IIpProtectionAuthService mService;
+    @Nullable private IIpProtectionAuthService mService;
     // We need to store this to unbind from the service.
-    @Nullable
-    private ConnectionSetup mConnection;
+    @Nullable private ConnectionSetup mConnection;
 
     private static final class ConnectionSetup implements ServiceConnection {
         private final IpProtectionAuthServiceCallback mCallback;
@@ -59,8 +57,9 @@ public final class IpProtectionAuthClient implements AutoCloseable {
 
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-            IpProtectionAuthClient ipProtectionClient = new IpProtectionAuthClient(
-                    this, IIpProtectionAuthService.Stub.asInterface(iBinder));
+            IpProtectionAuthClient ipProtectionClient =
+                    new IpProtectionAuthClient(
+                            this, IIpProtectionAuthService.Stub.asInterface(iBinder));
             mCallback.onResult(ipProtectionClient);
         }
 
@@ -150,7 +149,8 @@ public final class IpProtectionAuthClient implements AutoCloseable {
         void onError(byte[] error);
     }
 
-    IpProtectionAuthClient(@NonNull ConnectionSetup connectionSetup,
+    IpProtectionAuthClient(
+            @NonNull ConnectionSetup connectionSetup,
             @NonNull IIpProtectionAuthService ipProtectionAuthService) {
         mConnection = connectionSetup;
         mService = ipProtectionAuthService;

@@ -9,13 +9,11 @@ import android.os.Build;
 import org.jni_zero.CalledByNative;
 
 import org.chromium.base.PackageUtils;
-import org.chromium.components.version_info.VersionInfo;
 import org.chromium.device.DeviceFeatureList;
 import org.chromium.device.DeviceFeatureMap;
 
 public class CredManSupportProvider {
-    private static final int GMSCORE_MIN_VERSION_CREDMAN =
-            (VersionInfo.isBetaBuild() || VersionInfo.isStableBuild()) ? 234600000 : 234100000;
+    private static final int GMSCORE_MIN_VERSION_CREDMAN = 234600000;
 
     private static @CredManSupport int sCredManSupport;
 

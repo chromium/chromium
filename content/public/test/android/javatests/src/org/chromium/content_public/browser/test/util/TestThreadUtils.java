@@ -12,9 +12,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
 
-/**
- * Helper methods to deal with threading related tasks.
- */
+/** Helper methods to deal with threading related tasks. */
 public class TestThreadUtils {
     /**
      * Run the supplied Runnable on the main thread. The method will block until the Runnable

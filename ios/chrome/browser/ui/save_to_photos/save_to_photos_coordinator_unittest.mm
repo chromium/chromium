@@ -23,11 +23,11 @@
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
-#import "ios/chrome/browser/signin/fake_system_identity.h"
-#import "ios/chrome/browser/signin/fake_system_identity_manager.h"
-#import "ios/chrome/browser/signin/identity_manager_factory.h"
-#import "ios/chrome/browser/signin/identity_test_environment_browser_state_adaptor.h"
+#import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
+#import "ios/chrome/browser/signin/model/identity_test_environment_browser_state_adaptor.h"
 #import "ios/chrome/browser/store_kit/model/store_kit_coordinator.h"
 #import "ios/chrome/browser/ui/account_picker/account_picker_configuration.h"
 #import "ios/chrome/browser/ui/account_picker/account_picker_coordinator.h"
@@ -250,6 +250,7 @@ TEST_F(SaveToPhotosCoordinatorTest, ShowsAndHidesStoreKit) {
       [coordinator conformsToProtocol:@protocol(SaveToPhotosMediatorDelegate)]);
 
   NSString* productIdentifier = @"product_identifier";
+  NSString* providerToken = @"provider_token";
   NSString* campaignToken = @"campaign_token";
 
   id mock_store_kit_coordinator = OCMClassMock([StoreKitCoordinator class]);
@@ -263,6 +264,7 @@ TEST_F(SaveToPhotosCoordinatorTest, ShowsAndHidesStoreKit) {
       setDelegate:static_cast<id<SaveToPhotosMediatorDelegate>>(coordinator)]);
   NSDictionary* expectedITunesProductParameters = @{
     SKStoreProductParameterITunesItemIdentifier : productIdentifier,
+    SKStoreProductParameterProviderToken : providerToken,
     SKStoreProductParameterCampaignToken : campaignToken
   };
   OCMExpect([mock_store_kit_coordinator
@@ -272,6 +274,7 @@ TEST_F(SaveToPhotosCoordinatorTest, ShowsAndHidesStoreKit) {
 
   [static_cast<id<SaveToPhotosMediatorDelegate>>(coordinator)
       showStoreKitWithProductIdentifier:productIdentifier
+                          providerToken:providerToken
                           campaignToken:campaignToken];
   EXPECT_OCMOCK_VERIFY(mock_store_kit_coordinator);
 

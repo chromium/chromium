@@ -87,12 +87,13 @@ UndoWindow::UndoWindow(gfx::NativeView parent, AssistiveDelegate* delegate)
 }
 
 void UndoWindow::OnThemeChanged() {
-  undo_button_->SetImage(
+  undo_button_->SetImageModel(
       views::Button::ButtonState::STATE_NORMAL,
-      gfx::CreateVectorIcon(
-          kAutocorrectUndoIcon, kIconSize,
+      ui::ImageModel::FromVectorIcon(
+          kAutocorrectUndoIcon,
           ash::ColorProvider::Get()->GetContentLayerColor(
-              ash::ColorProvider::ContentLayerType::kIconColorPrimary)));
+              ash::ColorProvider::ContentLayerType::kIconColorPrimary),
+          kIconSize));
   undo_button_->SetEnabledTextColors(
       ash::ColorProvider::Get()->GetContentLayerColor(
           ash::ColorProvider::ContentLayerType::kTextColorSecondary));

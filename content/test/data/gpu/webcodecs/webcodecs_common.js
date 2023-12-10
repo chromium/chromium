@@ -198,7 +198,7 @@ class CanvasSource extends FrameSource {
     super();
     this.width = width;
     this.height = height;
-    this.canvas = new OffscreenCanvas(width, height);
+    this.canvas = new OffscreenCanvas(width, height, {colorSpace: 'srgb'});
     this.ctx = this.canvas.getContext('2d');
     this.timestamp = 0;
     this.duration = 16666;  // 1/60 s
@@ -239,26 +239,39 @@ class StreamSource extends FrameSource {
 class ArrayBufferSource extends FrameSource {
   constructor(width, height) {
     super();
-    this.inner_src = new CanvasSource(width, height);
     this.width = width;
     this.height = height;
+    this.canvas = new OffscreenCanvas(width, height);
+    this.ctx = this.canvas.getContext(
+        '2d', {willReadFrequently: true, colorSpace: 'srgb'});
+    this.timestamp = 0;
+    this.duration = 16666;  // 1/60 s
+    this.frame_index = 0;
   }
 
   async getNextFrame() {
-    let prototype_frame = await this.inner_src.getNextFrame();
-    let size = prototype_frame.allocationSize();
-    let buf = new ArrayBuffer(size);
-    let layout = await prototype_frame.copyTo(buf);
+    fourColorsFrame(
+        this.ctx, this.width, this.height, this.timestamp.toString());
+    putBlackDots(this.ctx, this.width, this.height, this.frame_index);
+    const imageData = this.ctx.getImageData(0, 0, this.width, this.height);
+    const buffer = imageData.data;
     let init = {
-      format: prototype_frame.format,
-      timestamp: prototype_frame.timestamp,
-      codedWidth: prototype_frame.codedWidth,
-      codedHeight: prototype_frame.codedHeight,
-      colorSpace: prototype_frame.colorSpace,
-      layout: layout,
-      transfer: [buf]
+      format: 'RGBA',
+      timestamp: this.timestamp,
+      codedWidth: this.width,
+      codedHeight: this.height,
+      // This describes sRGB color-space used by the canvas
+      colorSpace: {
+        fullRange: true,
+        matrix: 'rgb',
+        primaries: 'bt709',
+        transfer: 'iec61966-2-1'
+      },
+      transfer: [buffer.buffer]
     };
-    return new VideoFrame(buf, init);
+    this.timestamp += this.duration;
+    this.frame_index++;
+    return new VideoFrame(buffer, init);
   }
 }
 
@@ -348,7 +361,7 @@ async function prepareDecoderSource(
     codec: codec,
     width: width,
     height: height,
-    bitrate: 1000000,
+    bitrate: 10000000,
     framerate: 24
   };
 
@@ -393,17 +406,17 @@ async function prepareDecoderSource(
 
   let encoder = new VideoEncoder(init);
   encoder.configure(encoder_config);
-  let canvasSource = new CanvasSource(width, height);
+  let innerSource = new ArrayBufferSource(width, height);
 
   for (let i = 0; i < frames_to_encode; i++) {
-    let frame = await canvasSource.getNextFrame();
+    let frame = await innerSource.getNextFrame();
     encoder.encode(frame, {keyFrame: false});
     frame.close();
   }
   try {
     await encoder.flush();
     encoder.close();
-    canvasSource.close();
+    innerSource.close();
   } catch (e) {
     errors++;
     TEST.log(e);

@@ -6,7 +6,7 @@
 #define COMPONENTS_WEB_PACKAGE_SIGNED_WEB_BUNDLES_SIGNED_WEB_BUNDLE_ID_H_
 
 #include "base/functional/callback.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/types/expected.h"
 #include "components/web_package/signed_web_bundles/ed25519_public_key.h"
 
@@ -81,7 +81,7 @@ class SignedWebBundleId {
  private:
   SignedWebBundleId(Type type,
                     base::StringPiece encoded_id,
-                    std::array<uint8_t, kDecodedIdLength> decoded_id);
+                    base::span<const uint8_t, kDecodedIdLength> decoded_id);
 
   Type type_;
   std::string encoded_id_;

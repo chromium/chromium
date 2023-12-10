@@ -40,27 +40,33 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
      * @param tabModelSelectorSupplier Supplies the tab model selector when it's ready.
      * @param delegate The callbacks for user actions.
      */
-    AutofillVcnEnrollBottomSheetCoordinator(Context context, PropertyModel.Builder modelBuilder,
+    AutofillVcnEnrollBottomSheetCoordinator(
+            Context context,
+            PropertyModel.Builder modelBuilder,
             LayoutStateProvider layoutStateProvider,
-            ObservableSupplier<TabModelSelector> tabModelSelectorSupplier, Delegate delegate) {
+            ObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
+            Delegate delegate) {
         mView = new AutofillVcnEnrollBottomSheetView(context);
-        mView.mAcceptButton.setOnClickListener((View button) -> {
-            delegate.onAccept();
-            hide();
-        });
-        mView.mCancelButton.setOnClickListener((View button) -> {
-            delegate.onCancel();
-            hide();
-        });
+        mView.mAcceptButton.setOnClickListener(
+                (View button) -> {
+                    delegate.onAccept();
+                    hide();
+                });
+        mView.mCancelButton.setOnClickListener(
+                (View button) -> {
+                    delegate.onCancel();
+                    hide();
+                });
 
         PropertyModelChangeProcessor.create(
                 modelBuilder.build(), mView, AutofillVcnEnrollBottomSheetViewBinder::bind);
 
-        mMediator = new AutofillVcnEnrollBottomSheetMediator(
-                new AutofillVcnEnrollBottomSheetContent(
-                        mView.mContentView, mView.mScrollView, delegate::onDismiss),
-                new AutofillVcnEnrollBottomSheetLifecycle(
-                        layoutStateProvider, tabModelSelectorSupplier));
+        mMediator =
+                new AutofillVcnEnrollBottomSheetMediator(
+                        new AutofillVcnEnrollBottomSheetContent(
+                                mView.mContentView, mView.mScrollView, delegate::onDismiss),
+                        new AutofillVcnEnrollBottomSheetLifecycle(
+                                layoutStateProvider, tabModelSelectorSupplier));
     }
 
     /**

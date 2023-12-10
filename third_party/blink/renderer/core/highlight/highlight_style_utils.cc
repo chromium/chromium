@@ -43,8 +43,7 @@ mojom::blink::ColorScheme UsedColorScheme(
 
 Color PreviousLayerColor(const ComputedStyle& originating_style,
                          absl::optional<Color> previous_layer_color) {
-  if (previous_layer_color &&
-      RuntimeEnabledFeatures::HighlightOverlayPaintingEnabled()) {
+  if (previous_layer_color) {
     return *previous_layer_color;
   }
   return originating_style.VisitedDependentColor(GetCSSPropertyColor());
@@ -122,20 +121,10 @@ absl::optional<Color> DefaultForegroundColor(
     const Document& document,
     PseudoId pseudo,
     mojom::blink::ColorScheme color_scheme) {
-  // TODO(crbug.com/1295264): unstyled custom highlights should not change
-  // the foreground color, but for now the best we can do is defaulting to
-  // transparent (pre-HighlightOverlayPainting with double painting). The
-  // correct behaviour is to use the ‘color’ of the next topmost active
-  // highlight (equivalent to 'currentColor').
-  absl::optional<Color> previous_layer_color =
-      RuntimeEnabledFeatures::HighlightOverlayPaintingEnabled()
-          ? absl::nullopt
-          : absl::make_optional(Color::kTransparent);
-
   switch (pseudo) {
     case kPseudoIdSelection:
       if (!LayoutTheme::GetTheme().SupportsSelectionForegroundColors()) {
-        return previous_layer_color;
+        return absl::nullopt;
       }
       if (document.GetFrame()->Selection().FrameIsFocusedAndActive()) {
         return LayoutTheme::GetTheme().ActiveSelectionForegroundColor(
@@ -149,7 +138,7 @@ absl::optional<Color> DefaultForegroundColor(
     case kPseudoIdSpellingError:
     case kPseudoIdGrammarError:
     case kPseudoIdHighlight:
-      return previous_layer_color;
+      return absl::nullopt;
     default:
       NOTREACHED();
       return absl::nullopt;
@@ -506,7 +495,7 @@ bool HighlightStyleUtils::ShouldInvalidateVisualOverflow(
     const Node& node,
     DocumentMarker::MarkerType type) {
   if ((type == DocumentMarker::kSpelling || type == DocumentMarker::kGrammar) &&
-      RuntimeEnabledFeatures::CSSPaintingForSpellingGrammarErrorsEnabled()) {
+      RuntimeEnabledFeatures::CSSSpellingGrammarErrorsEnabled()) {
     return true;
   }
 
@@ -521,9 +510,7 @@ bool HighlightStyleUtils::ShouldInvalidateVisualOverflow(
   const ComputedStyle* pseudo_style = nullptr;
   switch (type) {
     case DocumentMarker::kTextFragment:
-      if (RuntimeEnabledFeatures::HighlightOverlayPaintingEnabled()) {
-        pseudo_style = style->HighlightData().TargetText();
-      }
+      pseudo_style = style->HighlightData().TargetText();
       break;
 
     case DocumentMarker::kSpelling:

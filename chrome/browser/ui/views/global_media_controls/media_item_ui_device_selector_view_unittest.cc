@@ -318,14 +318,6 @@ TEST_F(MediaItemUIDeviceSelectorViewTest, DeviceEntryContainerVisibility) {
   view_ = CreateDeviceSelectorView(&delegate);
   EXPECT_FALSE(view_->GetDeviceEntryViewVisibilityForTesting());
 
-  // The device entry container should be expanded if the media dialog is opened
-  // for a presentation request.
-  view_ = CreateDeviceSelectorView(
-      &delegate, "1",
-      /*has_audio_output=*/true,
-      global_media_controls::GlobalMediaControlsEntryPoint::kPresentation);
-  EXPECT_TRUE(view_->GetDeviceEntryViewVisibilityForTesting());
-
   // The device entry container should be expanded if it is requested to show
   // devices.
   view_ = CreateDeviceSelectorView(

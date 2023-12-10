@@ -49,4 +49,4 @@ class HelpBubbleDelegate {
 
 }  // namespace user_education
 
-#endif  // COMPONENTS_USER_EDUCATION_VIEWS_HELP_BUBBLE_FACTORY_DELEGATE_H_
+#endif  // COMPONENTS_USER_EDUCATION_VIEWS_HELP_BUBBLE_DELEGATE_H_

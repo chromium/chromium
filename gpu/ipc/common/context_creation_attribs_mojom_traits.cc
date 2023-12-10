@@ -14,8 +14,7 @@ bool StructTraits<gpu::mojom::ContextCreationAttribsDataView,
     Read(gpu::mojom::ContextCreationAttribsDataView data,
          gpu::ContextCreationAttribs* out) {
   if (!data.ReadGpuPreference(&out->gpu_preference) ||
-      !data.ReadContextType(&out->context_type) ||
-      !data.ReadColorSpace(&out->color_space)) {
+      !data.ReadContextType(&out->context_type)) {
     return false;
   }
 
@@ -29,8 +28,6 @@ bool StructTraits<gpu::mojom::ContextCreationAttribsDataView,
   out->enable_grcontext = data.enable_grcontext();
   out->enable_raster_interface = data.enable_raster_interface();
   out->enable_oop_rasterization = data.enable_oop_rasterization();
-  out->enable_swap_timestamps_if_supported =
-      data.enable_swap_timestamps_if_supported();
   return true;
 }
 

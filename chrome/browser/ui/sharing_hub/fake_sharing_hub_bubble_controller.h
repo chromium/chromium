@@ -7,10 +7,11 @@
 
 #include "chrome/browser/ui/sharing_hub/sharing_hub_bubble_controller.h"
 
+#include <optional>
+
 #include "base/callback_list.h"
 #include "base/functional/callback.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace sharing_hub {
 

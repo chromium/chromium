@@ -5,7 +5,6 @@
 <translation id="1076394037877376434">Dileu tudalen <ph name="PAGE_NUMBER" /></translation>
 <translation id="1113173431709655881">Modd camera</translation>
 <translation id="1153190633558910465">Grid wedi'i ddiffodd</translation>
-<translation id="1175958423215084756">Mae dolen wedi'i chanfod. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213">Tudalen <ph name="PAGE_NUMBER" /> wedi'i dileu</translation>
 <translation id="1258009455399840361">Cylchdroi 90 gradd yn glocwedd</translation>
 <translation id="1417314334557041815">Golygu tudalen <ph name="INDEX" /></translation>
@@ -60,14 +59,12 @@
 <translation id="3642192109456033823">Yn prosesu fideo…</translation>
 <translation id="3789724198583203151">Cylchdroi 90 gradd yn wrthglocwedd</translation>
 <translation id="3810838688059735925">Fideo</translation>
-<translation id="3892148308691398805">Copïo'r testun</translation>
 <translation id="4060608699153044055">Ni allwch recordio oherwydd lle storio dyfais isel. I ddechrau recordio, mae angen i chi ryddhau le storio ar eich dyfais.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
 <translation id="4118525110028899586">Seibio recordio</translation>
 <translation id="4121305183798804752">Mae dogfen wedi'i chanfod</translation>
 <translation id="414641094616694804">Ni all y camera hwn newid cydraniad</translation>
 <translation id="4176463684765177261">Mae wedi'i analluogi</translation>
-<translation id="4269820728363426813">Copïo cyfeiriad y ddolen</translation>
 <translation id="428234092390943511">Mân-lun tudalen</translation>
 <translation id="4349714250734879769">Graddio fframiau gan Chrome</translation>
 <translation id="4383571725254449280">Argraffu logiau perfformiad</translation>
@@ -144,7 +141,6 @@ Os yw'ch adborth yn ymwneud ag ansawdd lluniau neu fideos, atodwch lun neu fideo
 <translation id="7726641833034062494">Recordio fideo normal</translation>
 <translation id="7748344063862150053">Cornel dde uchaf y ddogfen</translation>
 <translation id="7933675232020478311">yn symud i'r cyfeiriad de isaf</translation>
-<translation id="7983668134180549431">Mae testun wedi'i ganfod.</translation>
 <translation id="8079255378695216066">Methu â dechrau recordio</translation>
 <translation id="8120146556401698679">Panio gogwyddo chwyddo</translation>
 <translation id="8131740175452115882">Cadarnhau</translation>
@@ -163,6 +159,7 @@ Os yw'ch adborth yn ymwneud ag ansawdd lluniau neu fideos, atodwch lun neu fideo
 <translation id="8870695351537079478">Methu â dechrau recordio</translation>
 <translation id="8880167521484863515">4 i 3</translation>
 <translation id="8903921497873541725">Chwyddo</translation>
+<translation id="8926890870105777777">Ymuno â Rhwydwaith "<ph name="WIFINAME" />"</translation>
 <translation id="9045010116236796332">Rhowch holl ymylon y ddogfen o fewn y ffrâm</translation>
 <translation id="9045155556724273246">10 eiliad</translation>
 <translation id="906331135292332864">Wrthi'n prosesu llun...</translation>

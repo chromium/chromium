@@ -309,7 +309,8 @@ class ChromeOsFeedbackDelegateTest : public InProcessBrowserTest {
         /*show_questionnaire=*/false,
         /*from_chrome_labs_or_kaleidoscope=*/false,
         /*from_autofill=*/false,
-        /*autofill_metadata=*/base::Value::Dict());
+        /*autofill_metadata=*/base::Value::Dict(),
+        /*ai_metadata=*/base::Value::Dict());
 
     base::test::TestFuture<void> test_future;
     // Open the feedback dialog.

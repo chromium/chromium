@@ -5,6 +5,7 @@
 #include "components/gwp_asan/client/guarded_page_allocator.h"
 
 #include <algorithm>
+#include <bit>
 #include <memory>
 #include <random>
 #include <utility>
@@ -271,10 +272,9 @@ void* GuardedPageAllocator::Allocate(size_t size,
   // Default alignment is size's next smallest power-of-two, up to
   // kGpaAllocAlignment.
   if (!align) {
-    align =
-        std::min(size_t{1} << base::bits::Log2Floor(size), kGpaAllocAlignment);
+    align = std::min(std::bit_floor(size), kGpaAllocAlignment);
   }
-  CHECK(base::bits::IsPowerOfTwo(align));
+  CHECK(std::has_single_bit(align));
 
   AllocatorState::SlotIdx free_slot;
   AllocatorState::MetadataIdx free_metadata;

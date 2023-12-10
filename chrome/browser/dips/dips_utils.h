@@ -8,7 +8,7 @@
 #include <ostream>
 
 #include "base/files/file_path.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "content/public/browser/navigation_handle.h"

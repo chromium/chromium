@@ -1634,6 +1634,40 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
     self.check_composition_type_test_suites('matrix_compound_suites',
                                             [check_matrix_identifier])
     self.resolve_test_id_prefixes()
+
+    # All test suites must be referenced. Check this before flattening the test
+    # suites so that we can transitively check the basic suites for compound
+    # suites and matrix compound suites (otherwise we would determine a basic
+    # suite is used if it shared a name with a test present in a basic suite
+    # that is used).
+    all_suites = set(
+        itertools.chain(*(self.test_suites.get(a, {}) for a in (
+            'basic_suites',
+            'compound_suites',
+            'matrix_compound_suites',
+        ))))
+    unused_suites = set(all_suites)
+    generator_map = self.get_test_generator_map()
+    for waterfall in self.waterfalls:
+      for bot_name, tester in waterfall['machines'].items():
+        for suite_type, suite in tester.get('test_suites', {}).items():
+          if suite_type not in generator_map:
+            raise self.unknown_test_suite_type(suite_type, bot_name,
+                                               waterfall['name'])
+          if suite not in all_suites:
+            raise self.unknown_test_suite(suite, bot_name, waterfall['name'])
+          unused_suites.discard(suite)
+    # For each compound suite or matrix compound suite, if the suite was used,
+    # remove all of the basic suites that it composes from the set of unused
+    # suites
+    for a in ('compound_suites', 'matrix_compound_suites'):
+      for suite, sub_suites in self.test_suites.get(a, {}).items():
+        if suite not in unused_suites:
+          unused_suites.difference_update(sub_suites)
+    if unused_suites:
+      raise BBGenErr('The following test suites were unreferenced by bots on '
+                     'the waterfalls: ' + str(unused_suites))
+
     self.flatten_test_suites()
 
     # All bots should exist.
@@ -1663,32 +1697,6 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
             if waterfall['name'] in ['client.openscreen.chromium']:
               continue  # pragma: no cover
             raise self.unknown_bot(bot_name, waterfall['name'])
-
-    # All test suites must be referenced.
-    suites_seen = set()
-    generator_map = self.get_test_generator_map()
-    for waterfall in self.waterfalls:
-      for bot_name, tester in waterfall['machines'].items():
-        for suite_type, suite in tester.get('test_suites', {}).items():
-          if suite_type not in generator_map:
-            raise self.unknown_test_suite_type(suite_type, bot_name,
-                                               waterfall['name'])
-          if suite not in self.test_suites:
-            raise self.unknown_test_suite(suite, bot_name, waterfall['name'])
-          suites_seen.add(suite)
-    # Since we didn't resolve the configuration files, this set
-    # includes both composition test suites and regular ones.
-    resolved_suites = set()
-    for suite_name in suites_seen:
-      suite = self.test_suites[suite_name]
-      for sub_suite in suite:
-        resolved_suites.add(sub_suite)
-      resolved_suites.add(suite_name)
-    # At this point, every key in test_suites.pyl should be referenced.
-    missing_suites = set(self.test_suites.keys()) - resolved_suites
-    if missing_suites:
-      raise BBGenErr('The following test suites were unreferenced by bots on '
-                     'the waterfalls: ' + str(missing_suites))
 
     # All test suite exceptions must refer to bots on the waterfall.
     all_bots = set()

@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/ui/overlays/web_content_area/alerts/alert_overlay_coordinator.h"
 
 #import "base/apple/foundation_util.h"
-#import "ios/chrome/browser/overlays/public/web_content_area/alert_overlay.h"
+#import "ios/chrome/browser/overlays/model/public/web_content_area/alert_overlay.h"
 #import "ios/chrome/browser/ui/alert_view/alert_view_controller.h"
 #import "ios/chrome/browser/ui/overlays/overlay_request_coordinator+subclassing.h"
 #import "ios/chrome/browser/ui/overlays/overlay_request_coordinator_delegate.h"

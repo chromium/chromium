@@ -7,11 +7,11 @@
 
 #include <stddef.h>
 
+#include <optional>
 #include <string>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class MediaView;
 
@@ -28,11 +28,15 @@ class ComboboxModel;
 // views.
 class MediaViewControllerBase {
  public:
-  // `on_selection_changed` runs on a combobox selection.
+  // Gets the combobox selected camera / mic index.
+  using SourceChangeCallback =
+      base::RepeatingCallback<void(std::optional<size_t> selected_index)>;
+
+  // `source_change_callback` runs on a combobox selection.
   MediaViewControllerBase(MediaView& base_view,
                           bool needs_borders,
                           ui::ComboboxModel* model,
-                          base::RepeatingClosure on_selection_changed,
+                          SourceChangeCallback source_change_callback,
                           const std::u16string& combobox_accessible_name,
                           const std::u16string& no_device_connected_label_text);
   MediaViewControllerBase(const MediaViewControllerBase&) = delete;
@@ -40,28 +44,23 @@ class MediaViewControllerBase {
   ~MediaViewControllerBase();
 
   // Returns the immediate parent view of the live camera/mic feeds.
-  MediaView& GetLiveFeedContainer();
+  MediaView& GetLiveFeedContainer() { return live_feed_container_.get(); }
 
   // Enables the combobox if there are connected devices (e.g.`has_devices` is
   // true).
   void AdjustComboboxEnabledState(bool has_devices);
 
-  absl::optional<size_t> GetComboboxSelectedIndex() const;
-
-  // Updates `active_device_id_` to `device_id`.
-  // Returns false, if `active_device_id_` is already equal to `device_id`.
-  // Otherwise returns true.
-  bool UpdateActiveDeviceId(const std::string& device_id);
-
  private:
   friend class MediaViewControllerBaseTest;
 
+  void OnComboboxSelection();
+
   const raw_ref<MediaView> base_view_;
+  const raw_ref<MediaView> live_feed_container_;
   const raw_ref<views::Label> no_device_connected_label_;
   const raw_ref<views::Combobox> device_selector_combobox_;
 
-  std::string active_device_id_;
-  const base::RepeatingClosure combobox_selection_change_callback_;
+  const SourceChangeCallback source_change_callback_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_MEDIA_PREVIEW_MEDIA_VIEW_CONTROLLER_BASE_H_

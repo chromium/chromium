@@ -10,18 +10,21 @@
 #import "base/ios/ios_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/sequenced_task_runner.h"
+#import "components/enterprise/idle/idle_features.h"
+#import "components/enterprise/idle/idle_pref_names.h"
+#import "components/prefs/pref_service.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
 #import "ios/chrome/browser/crash_report/model/crash_keys_helper.h"
-#import "ios/chrome/browser/discover_feed/feed_constants.h"
+#import "ios/chrome/browser/discover_feed/model/feed_constants.h"
 #import "ios/chrome/browser/find_in_page/model/util.h"
 #import "ios/chrome/browser/intents/intents_donation_helper.h"
-#import "ios/chrome/browser/metrics/tab_usage_recorder_browser_agent.h"
-#import "ios/chrome/browser/ntp/features.h"
-#import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
-#import "ios/chrome/browser/ntp/new_tab_page_util.h"
+#import "ios/chrome/browser/metrics/model/tab_usage_recorder_browser_agent.h"
+#import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
+#import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_browser_agent.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -33,10 +36,9 @@
 #import "ios/chrome/browser/shared/public/commands/text_zoom_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/named_guide.h"
-#import "ios/chrome/browser/shared/ui/util/named_guide_util.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/shared/ui/util/url_with_title.h"
-#import "ios/chrome/browser/signin/identity_manager_factory.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/chrome/browser/ui/authentication/re_signin_infobar_delegate.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmarks_coordinator.h"
@@ -61,7 +63,7 @@
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_coordinator.h"
 #import "ios/chrome/browser/ui/side_swipe/side_swipe_mediator.h"
 #import "ios/chrome/browser/ui/side_swipe/swipe_view.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_strip/tab_strip_coordinator.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_strip/coordinator/tab_strip_coordinator.h"
 #import "ios/chrome/browser/ui/tabs/background_tab_animation_view.h"
 #import "ios/chrome/browser/ui/tabs/foreground_tab_animation_view.h"
 #import "ios/chrome/browser/ui/tabs/requirements/tab_strip_presentation.h"
@@ -75,13 +77,11 @@
 #import "ios/chrome/browser/ui/toolbar/fullscreen/toolbar_ui_broadcasting_util.h"
 #import "ios/chrome/browser/ui/toolbar/toolbar_coordinator.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
-#import "ios/chrome/browser/url_loading/model/url_loading_notifier_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
-#import "ios/chrome/browser/web/page_placeholder_browser_agent.h"
-#import "ios/chrome/browser/web/page_placeholder_tab_helper.h"
-#import "ios/chrome/browser/web/web_navigation_browser_agent.h"
-#import "ios/chrome/browser/web/web_navigation_util.h"
-#import "ios/chrome/browser/web/web_state_update_browser_agent.h"
+#import "ios/chrome/browser/web/model/page_placeholder_browser_agent.h"
+#import "ios/chrome/browser/web/model/page_placeholder_tab_helper.h"
+#import "ios/chrome/browser/web/model/web_navigation_browser_agent.h"
+#import "ios/chrome/browser/web/model/web_navigation_util.h"
 #import "ios/chrome/browser/web_state_list/model/web_usage_enabler/web_usage_enabler_browser_agent.h"
 #import "ios/chrome/browser/webui/model/show_mail_composer_context.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -218,14 +218,8 @@ enum HeaderBehaviour {
   // The service used to load url parameters in current or new tab.
   UrlLoadingBrowserAgent* _urlLoadingBrowserAgent;
 
-  // Used to notify observers of url loading state change.
-  UrlLoadingNotifierBrowserAgent* _urlLoadingNotifierBrowserAgent;
-
   // Used to report usage of a single Browser's tab.
   TabUsageRecorderBrowserAgent* _tabUsageRecorderBrowserAgent;
-
-  // Used for updates in web state.
-  WebStateUpdateBrowserAgent* _webStateUpdateBrowserAgent;
 
   // Used to get the layout guide center.
   LayoutGuideCenter* _layoutGuideCenter;
@@ -370,15 +364,12 @@ enum HeaderBehaviour {
     self.findInPageCommandsHandler = dependencies.findInPageCommandsHandler;
     _isOffTheRecord = dependencies.isOffTheRecord;
     _urlLoadingBrowserAgent = dependencies.urlLoadingBrowserAgent;
-    _urlLoadingNotifierBrowserAgent =
-        dependencies.urlLoadingNotifierBrowserAgent;
     _tabUsageRecorderBrowserAgent = dependencies.tabUsageRecorderBrowserAgent;
     _layoutGuideCenter = dependencies.layoutGuideCenter;
     _webStateList = dependencies.webStateList;
     _voiceSearchController = dependencies.voiceSearchController;
     self.safeAreaProvider = dependencies.safeAreaProvider;
     _pagePlaceholderBrowserAgent = dependencies.pagePlaceholderBrowserAgent;
-    _webStateUpdateBrowserAgent = dependencies.webStateUpdateBrowserAgent;
 
     self.inNewTabAnimation = NO;
     self.fullscreenController = dependencies.fullscreenController;
@@ -1519,12 +1510,10 @@ enum HeaderBehaviour {
                                  .secondaryToolbarViewController.view
                 aboveSubview:primaryToolbarView];
 
-    // Create the NamedGuides and add them to the browser view.
-    NSArray<GuideName*>* guideNames = @[
-      // TODO(crbug.com/1450600): Migrate kContentAreaGuide to LayoutGuideCenter
-      kContentAreaGuide,
-    ];
-    AddNamedGuidesToView(guideNames, self.view);
+    // TODO(crbug.com/1450600): Migrate kContentAreaGuide to LayoutGuideCenter.
+    // Add guide kContentAreaGuide to the browser view.
+    [self.view
+        addLayoutGuide:[[NamedGuide alloc] initWithName:kContentAreaGuide]];
 
     // Configure the content area guide.
     NamedGuide* contentAreaGuide = [NamedGuide guideWithName:kContentAreaGuide
@@ -1777,6 +1766,12 @@ enum HeaderBehaviour {
   _lastTapPoint = [[view superview] convertPoint:viewCoordinate
                                           toView:self.view];
   _lastTapTime = CACurrentMediaTime();
+  if (base::FeatureList::IsEnabled(enterprise_idle::kIdleTimeout)) {
+    // Last tap timestamp will be consumed by `IdleService` if IdleTimeout
+    // policy is set.
+    GetApplicationContext()->GetLocalState()->SetTime(
+        enterprise_idle::prefs::kLastActiveTimestamp, base::Time::Now());
+  }
 }
 
 #pragma mark - ** Protocol Implementations and Helpers **
@@ -2201,7 +2196,6 @@ enum HeaderBehaviour {
   // Add animations only if the tab strip isn't shown.
   UIView* snapshotView = [self.view snapshotViewAfterScreenUpdates:NO];
 
-  // TODO(crbug.com/904992): Do not repurpose SnapshotGeneratorDelegate.
   SwipeView* swipeView = [[SwipeView alloc]
       initWithFrame:self.contentArea.frame
           topMargin:[self snapshotEdgeInsetsForNTPHelper:NTPHelper].top];

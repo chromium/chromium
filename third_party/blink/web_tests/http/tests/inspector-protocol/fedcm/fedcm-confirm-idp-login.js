@@ -29,16 +29,29 @@
   }
 
   testRunner.log(msg.params, "msg.params: ", ["dialogId"]);
-  if (msg.params.dialogType != "ConfirmIdpLogin") {
+  if (msg.params.dialogType !== "ConfirmIdpLogin") {
     testRunner.fail("Wrong dialog type");
     return;
   }
-  dp.FedCm.confirmIdpLogin({dialogId: msg.params.dialogId});
+  dp.FedCm.clickDialogButton({dialogId: msg.params.dialogId, dialogButton: "ConfirmIdpLoginContinue"});
+  let previousId = msg.params.dialogId;
+  msg = await dp.FedCm.onceDialogClosed();
+  if (msg.params.dialogId !== previousId) {
+    testRunner.fail("Dialog ID mismatch in close event");
+    return;
+  }
 
   // Now wait for the account chooser dialog.
   msg = await dp.FedCm.onceDialogShown();
   testRunner.log(msg.params, "msg.params: ", ["dialogId"]);
   dp.FedCm.selectAccount({dialogId: msg.params.dialogId, accountIndex: 0});
+  previousId = msg.params.dialogId;
+  msg = await dp.FedCm.onceDialogClosed();
+  if (msg.params.dialogId !== previousId) {
+    testRunner.fail("Dialog ID mismatch in close event");
+    return;
+  }
+
   const token = await dialogPromise;
   testRunner.log("token: " + token);
   testRunner.completeTest();

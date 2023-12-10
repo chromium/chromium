@@ -7,7 +7,7 @@
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
+#include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/mobile_metrics/mobile_friendliness_checker.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/platform/graphics/paint/scoped_paint_chunk_properties.h"
@@ -35,7 +35,7 @@ class ScopedPaintState {
                          paint_info,
                          DetermineFragmentToPaint(object, paint_info)) {}
 
-  ScopedPaintState(const NGPhysicalBoxFragment& fragment,
+  ScopedPaintState(const PhysicalBoxFragment& fragment,
                    const PaintInfo& paint_info)
       : ScopedPaintState(*fragment.GetLayoutObject(),
                          paint_info,

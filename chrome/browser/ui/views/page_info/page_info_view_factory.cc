@@ -154,13 +154,10 @@ std::unique_ptr<views::View> PageInfoViewFactory::CreatePermissionPageView(
 
 std::unique_ptr<views::View>
 PageInfoViewFactory::CreateAdPersonalizationPageView() {
-  const auto header_id =
-      base::FeatureList::IsEnabled(privacy_sandbox::kPrivacySandboxSettings4)
-          ? IDS_PAGE_INFO_AD_PRIVACY_HEADER
-          : IDS_PAGE_INFO_AD_PERSONALIZATION_HEADER;
   return std::make_unique<PageInfoSubpageView>(
-      CreateSubpageHeader(l10n_util::GetStringUTF16(header_id),
-                          presenter_->GetSubjectNameForDisplay()),
+      CreateSubpageHeader(
+          l10n_util::GetStringUTF16(IDS_PAGE_INFO_AD_PRIVACY_HEADER),
+          presenter_->GetSubjectNameForDisplay()),
       std::make_unique<PageInfoAdPersonalizationContentView>(presenter_,
                                                              ui_delegate_));
 }
@@ -224,6 +221,7 @@ std::unique_ptr<views::View> PageInfoViewFactory::CreateSubpageHeader(
     title_label->SetTextStyle(views::style::STYLE_HEADLINE_4);
   }
   title_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  title_label->SetID(VIEW_ID_PAGE_INFO_SUBPAGE_TITLE);
 
   if (!subtitle.empty()) {
     auto* subtitle_label =

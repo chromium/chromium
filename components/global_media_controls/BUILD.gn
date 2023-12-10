@@ -55,6 +55,8 @@ component("global_media_controls") {
     "public/media_item_ui_observer_set.cc",
     "public/media_session_item_producer.cc",
     "public/media_session_notification_item.cc",
+    "public/views/media_item_ui_device_selector.cc",
+    "public/views/media_item_ui_footer.cc",
     "public/views/media_item_ui_list_view.cc",
     "public/views/media_item_ui_view.cc",
     "public/views/media_notification_view_ash_impl.cc",

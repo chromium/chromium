@@ -1,6 +1,13 @@
 {
+  "$build/chromium_orchestrator": {
+    "compilator": "lacros-amd64-generic-rel-compilator",
+    "compilator_watcher_git_revision": "27c191f304c8d7329a393d8a69020fc14032c3c3"
+  },
   "$build/chromium_tests_builder_config": {
     "builder_config": {
+      "additional_exclusions": [
+        "infra/config/generated/builders/try/lacros-amd64-generic-rel/gn-args.json"
+      ],
       "builder_db": {
         "entries": [
           {
@@ -53,12 +60,6 @@
     "check_for_flakiness": true,
     "check_for_flakiness_with_resultdb": true
   },
-  "$build/reclient": {
-    "instance": "rbe-chromium-untrusted",
-    "jobs": 150,
-    "metrics_project": "chromium-reclient-metrics",
-    "scandeps_server": true
-  },
   "$recipe_engine/resultdb/test_presentation": {
     "column_keys": [],
     "grouping_keys": [
@@ -68,5 +69,5 @@
   },
   "builder_group": "tryserver.chromium.chromiumos",
   "cq": "required",
-  "recipe": "chromium_trybot"
+  "recipe": "chromium/orchestrator"
 }

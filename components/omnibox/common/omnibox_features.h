@@ -22,7 +22,6 @@ BASE_DECLARE_FEATURE(kGroupingFrameworkForZPS);
 BASE_DECLARE_FEATURE(kGroupingFrameworkForNonZPS);
 BASE_DECLARE_FEATURE(kOmniboxDemoteByType);
 BASE_DECLARE_FEATURE(kPreferNonShortcutMatchesWhenDeduping);
-BASE_DECLARE_FEATURE(kSingleSortAndCullPass);
 
 // Features below this line should be sorted alphabetically by their comments.
 
@@ -130,10 +129,6 @@ BASE_DECLARE_FEATURE(kUpdatedConnectionSecurityIndicators);
 // Navigation experiments.
 BASE_DECLARE_FEATURE(kDefaultTypedNavigationsToHttps);
 extern const char kDefaultTypedNavigationsToHttpsTimeoutParam[];
-
-// Omnibox Logging.
-BASE_DECLARE_FEATURE(kReportAssistedQueryStats);
-BASE_DECLARE_FEATURE(kReportSearchboxStats);
 
 // Omnibox ML scoring.
 BASE_DECLARE_FEATURE(kLogUrlScoringSignals);

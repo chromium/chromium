@@ -72,7 +72,8 @@ class PrintingContextTest : public testing::Test,
     EXPECT_CALL(*connection, GetPrinter(kPrinterName))
         .WillOnce(Return(ByMove(std::move(unique_printer))));
     printing_context_ = PrintingContextChromeos::CreateForTesting(
-        this, std::move(unique_connection));
+        this, PrintingContext::ProcessBehavior::kOopDisabled,
+        std::move(unique_connection));
     auto settings = std::make_unique<PrintSettings>();
     settings->set_device_name(kPrinterName16);
     settings->set_send_user_info(send_user_info);
@@ -366,7 +367,7 @@ TEST_F(PrintingContextTest, SettingsToIPPOptionsClientInfoEmpty) {
   EXPECT_FALSE(HasAttribute(kIppClientInfo));
 
   mojom::IppClientInfo invalid_client_info(
-      mojom::IppClientInfo::ClientType::kOther, "$", " ", "{}", absl::nullopt);
+      mojom::IppClientInfo::ClientType::kOther, "$", " ", "{}", std::nullopt);
 
   settings_.set_client_infos({invalid_client_info});
   EXPECT_FALSE(HasAttribute(kIppClientInfo));

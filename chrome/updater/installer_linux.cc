@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <optional>
+
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/process/launch.h"
@@ -16,7 +18,7 @@ AppInstallerResult RunApplicationInstaller(
     const AppInfo& app_info,
     const base::FilePath& installer_path,
     const std::string& arguments,
-    const absl::optional<base::FilePath>& install_data_file,
+    const std::optional<base::FilePath>& install_data_file,
     bool usage_stats_enabled,
     const base::TimeDelta& timeout,
     InstallProgressCallback /*progress_callback*/) {

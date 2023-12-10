@@ -15,6 +15,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/app_service_test.h"
 #include "chrome/browser/ash/child_accounts/time_limits/app_time_limit_utils.h"
 #include "chrome/browser/ash/child_accounts/time_limits/app_time_test_utils.h"
 #include "chrome/browser/ash/child_accounts/time_limits/app_types.h"
@@ -69,6 +70,8 @@ class FamilyUserChromeActivityMetricsTest
     chromeos::PowerManagerClient::InitializeFake();
     ChromeRenderViewHostTestHarness::SetUp();
     InitiateFamilyUserChromeActivityMetrics();
+    WaitForAppServiceProxyReady(
+        apps::AppServiceProxyFactory::GetForProfile(profile()));
 
     extensions::TestExtensionSystem* extension_system(
         static_cast<extensions::TestExtensionSystem*>(

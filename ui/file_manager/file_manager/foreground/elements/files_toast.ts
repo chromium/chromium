@@ -138,6 +138,3 @@ declare global {
 }
 
 customElements.define(FilesToast.is, FilesToast);
-
-
-// # sourceURL=//ui/file_manager/file_manager/foreground/elements/files_toast.ts

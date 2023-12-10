@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "content/public/renderer/render_frame.h"
+#include "third_party/blink/public/web/web_local_frame.h"
 
 namespace chromecast {
 
@@ -71,9 +72,9 @@ CastActivityUrlFilterManager::CastActivityUrlFilterManager()
 CastActivityUrlFilterManager::~CastActivityUrlFilterManager() = default;
 
 ActivityUrlFilter*
-CastActivityUrlFilterManager::GetActivityUrlFilterForRenderFrameID(
-    int render_frame_id) {
-  const auto& it = activity_url_filters_.find(render_frame_id);
+CastActivityUrlFilterManager::GetActivityUrlFilterForRenderFrameToken(
+    const blink::LocalFrameToken& frame_token) {
+  const auto& it = activity_url_filters_.find(frame_token);
   if (it == activity_url_filters_.end())
     return nullptr;
 
@@ -82,24 +83,25 @@ CastActivityUrlFilterManager::GetActivityUrlFilterForRenderFrameID(
 
 void CastActivityUrlFilterManager::OnRenderFrameCreated(
     content::RenderFrame* render_frame) {
-  int render_frame_id = render_frame->GetRoutingID();
+  auto frame_token = render_frame->GetWebFrame()->GetLocalFrameToken();
 
   // Lifetime is tied to |render_frame| via content::RenderFrameObserver.
   auto* filter_receiver = new CastActivityUrlFilterManager::UrlFilterReceiver(
       render_frame,
       base::BindOnce(&CastActivityUrlFilterManager::OnRenderFrameRemoved,
-                     weak_this_, render_frame->GetRoutingID()));
+                     weak_this_, frame_token));
 
-  auto result = activity_url_filters_.emplace(render_frame_id, filter_receiver);
+  auto result = activity_url_filters_.emplace(frame_token, filter_receiver);
 
   if (!result.second)
     LOG(ERROR)
-        << "A URL filter for Activity already exists for Render frame ID "
-        << render_frame_id;
+        << "A URL filter for Activity already exists for Render frame token "
+        << frame_token;
 }
 
-void CastActivityUrlFilterManager::OnRenderFrameRemoved(int render_frame_id) {
-  const auto& it = activity_url_filters_.find(render_frame_id);
+void CastActivityUrlFilterManager::OnRenderFrameRemoved(
+    const blink::LocalFrameToken& frame_token) {
+  const auto& it = activity_url_filters_.find(frame_token);
 
   if (it != activity_url_filters_.end())
     activity_url_filters_.erase(it);

@@ -16,6 +16,7 @@
 #include <utility>
 #include <vector>
 
+#include <optional>
 #include "base/compiler_specific.h"
 #include "base/containers/queue.h"
 #include "base/memory/raw_ptr.h"
@@ -39,7 +40,6 @@
 #include "gpu/command_buffer/common/context_creation_attribs.h"
 #include "gpu/command_buffer/common/context_result.h"
 #include "gpu/command_buffer/common/debug_marker_manager.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace gpu {
 
@@ -814,8 +814,8 @@ class GLES2_IMPL_EXPORT GLES2Implementation : public GLES2Interface,
   std::unique_ptr<BufferTracker> buffer_tracker_;
   std::unique_ptr<ReadbackBufferShadowTracker> readback_buffer_shadow_tracker_;
 
-  absl::optional<ScopedMappedMemoryPtr> font_mapped_buffer_;
-  absl::optional<ScopedTransferBufferPtr> raster_mapped_buffer_;
+  std::optional<ScopedMappedMemoryPtr> font_mapped_buffer_;
+  std::optional<ScopedTransferBufferPtr> raster_mapped_buffer_;
 
   base::RepeatingCallback<void(const char*, int32_t)> error_message_callback_;
   bool deferring_error_callbacks_ = false;

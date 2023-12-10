@@ -44,7 +44,7 @@ class MODULES_EXPORT MLGraph : public ScriptWrappable {
   // MLOperandDescriptor because neither byte length calculation from dimensions
   // nor GC support is needed for the implementation.
   struct ResourceInfo {
-    V8MLOperandType::Enum type;
+    V8MLOperandDataType::Enum data_type;
     size_t byte_length;
   };
   const HashMap<String, ResourceInfo>& GetInputResourcesInfo() const;
@@ -97,14 +97,16 @@ class MODULES_EXPORT MLGraph : public ScriptWrappable {
   // is if there are no validation errors, it calls BuildSyncImpl() implemented
   // by an MLGraph backend that builds the platform specific graph in the
   // caller's thread synchronously.
-  MLGraph* BuildSync(const MLNamedOperands& named_outputs,
+  MLGraph* BuildSync(ScriptState* script_state,
+                     const MLNamedOperands& named_outputs,
                      ExceptionState& exception_state);
 
   // An MLGraph backend should implement this method to build and compile a
   // platform specific graph synchronously in the caller's thread. Once the
   // platform graph is compiled, it should return a concrete MLGraph object.
   // Otherwise, it should return a nullptr and throw a DOMException accordingly.
-  virtual MLGraph* BuildSyncImpl(const MLNamedOperands& named_outputs,
+  virtual MLGraph* BuildSyncImpl(ScriptState* script_state,
+                                 const MLNamedOperands& named_outputs,
                                  ExceptionState& exception_state) = 0;
 
   // An MLGraph backend should implement this method to execute the compiled

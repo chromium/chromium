@@ -3,11 +3,14 @@
 # found in the LICENSE file.
 """Definitions of builders in the blink.infra builder group."""
 
+load("//lib/builders.star", "os")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
 
 ci.defaults.set(
     pool = ci.DEFAULT_POOL,
+    builderless = True,
+    os = os.LINUX_DEFAULT,
     console_view = "blink.infra",
     execution_timeout = 10 * time.hour,
 )
@@ -22,7 +25,6 @@ ci.builder(
     # Run once daily at 12 AM Pacific/7 AM UTC.
     schedule = "0 7 * * *",
     triggered_by = [],
-    builderless = True,
     cores = 16,
     console_view_entry = consoles.console_view_entry(
         short_name = "upf",
@@ -62,6 +64,85 @@ ci.builder(
                     # the bot due to swap space not being enabled.
                     "--jobs",
                     "2",
+                ],
+            },
+        ],
+    },
+    service_account = "chromium-automated-expectation@chops-service-accounts.iam.gserviceaccount.com",
+)
+
+ci.builder(
+    name = "blink-flake-suppressor",
+    description_html = "Runs Flake Suppressor on all sheriff builders to generate test suppression cl.",
+    executable = "recipe:chromium_expectation_files/expectation_file_scripts",
+    # Run once at 4 PM Pacific on weekdays.
+    schedule = "0 0 * * 1-5",
+    triggered_by = [],
+    cores = 8,
+    console_view_entry = consoles.console_view_entry(
+        short_name = "bfs",
+    ),
+    contact_team_email = "chrome-blink-engprod@google.com",
+    properties = {
+        "scripts": [
+            {
+                "step_name": "generate_test_suppression_cl",
+                "script": "third_party/blink/tools/suppress_flakes.py",
+                "script_type": "FLAKE_FINDER",
+                "submit_type": "MANUAL",
+                "reviewer_list": {
+                    "reviewer": [
+                        "jiesheng@google.com",
+                    ],
+                },
+                "cl_title": "Blink web tests suppression",
+                "args": [
+                    # TODO(crbug.com/1358735): Create a new project to avoid
+                    # capacity issue.
+                    "--project",
+                    "chrome-unexpected-pass-data",
+                    "--no-prompt-for-user-input",
+                    # Only suppress tests that in the past 10 days, causes
+                    # build failures in 3 consecutive days and at least 10
+                    # times.
+                    "--sample-period",
+                    "10",
+                    "--non-hidden-failures-only",
+                    "--build-fail-consecutive-days-threshold",
+                    "3",
+                    "--build-fail-total-number-threshold",
+                    "10",
+                ],
+            },
+        ],
+    },
+    service_account = "chromium-automated-expectation@chops-service-accounts.iam.gserviceaccount.com",
+)
+
+ci.builder(
+    name = "blink-fuzzy-diff-analyzer",
+    description_html = "Runs Fuzzy Diff Analyzer on flaky image web tests bugs.",
+    executable = "recipe:chromium/generic_script_runner",
+    # Run every 6 hours.
+    schedule = "0 */6 * * *",
+    triggered_by = [],
+    cores = 8,
+    console_view_entry = consoles.console_view_entry(
+        short_name = "fda",
+    ),
+    contact_team_email = "chrome-blink-engprod@google.com",
+    properties = {
+        "scripts": [
+            {
+                "step_name": "analyze_flaky_image_web_tests",
+                "script": "third_party/blink/tools/run_fuzzy_diff_analyzer.py",
+                "args": [
+                    "--project",
+                    "chrome-unexpected-pass-data",
+                    "--sample-period",
+                    "3",
+                    "--check-bugs-only",
+                    "--attach-analysis-result",
                 ],
             },
         ],

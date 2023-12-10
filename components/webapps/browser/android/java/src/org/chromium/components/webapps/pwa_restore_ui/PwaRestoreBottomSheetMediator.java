@@ -5,16 +5,17 @@
 package org.chromium.components.webapps.pwa_restore_ui;
 
 import android.app.Activity;
+import android.text.TextUtils;
+import android.view.View;
 
 import org.chromium.components.webapps.R;
 import org.chromium.components.webapps.pwa_restore_ui.PwaRestoreProperties.ViewState;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.ArrayList;
+import java.util.List;
 
-/**
- * The Mediator for the PWA Restore bottom sheet.
- */
+/** The Mediator for the PWA Restore bottom sheet. */
 class PwaRestoreBottomSheetMediator {
     // The current activity.
     private final Activity mActivity;
@@ -23,26 +24,39 @@ class PwaRestoreBottomSheetMediator {
     private final PropertyModel mModel;
 
     PwaRestoreBottomSheetMediator(
-            Activity activity, Runnable onReviewButtonClicked, Runnable onBackButtonClicked) {
+            ArrayList apps,
+            Activity activity,
+            Runnable onReviewButtonClicked,
+            Runnable onBackButtonClicked) {
         mActivity = activity;
-        mModel = PwaRestoreProperties.createModel(onReviewButtonClicked, onBackButtonClicked,
-                this::onDeselectButtonClicked, this::onRestoreButtonClicked);
+        mModel =
+                PwaRestoreProperties.createModel(
+                        onReviewButtonClicked,
+                        onBackButtonClicked,
+                        this::onDeselectButtonClicked,
+                        this::onRestoreButtonClicked,
+                        this::onSelectionToggled);
 
-        initializeState();
+        initializeState(apps);
         setPeekingState();
     }
 
-    private void initializeState() {
-        mModel.set(PwaRestoreProperties.PEEK_TITLE,
+    private void initializeState(ArrayList apps) {
+        mModel.set(
+                PwaRestoreProperties.PEEK_TITLE,
                 mActivity.getString(R.string.pwa_restore_title_peeking));
-        mModel.set(PwaRestoreProperties.PEEK_DESCRIPTION,
+        mModel.set(
+                PwaRestoreProperties.PEEK_DESCRIPTION,
                 mActivity.getString(R.string.pwa_restore_description_peeking));
-        mModel.set(PwaRestoreProperties.PEEK_BUTTON_LABEL,
+        mModel.set(
+                PwaRestoreProperties.PEEK_BUTTON_LABEL,
                 mActivity.getString(R.string.pwa_restore_button_peeking));
 
-        mModel.set(PwaRestoreProperties.EXPANDED_TITLE,
+        mModel.set(
+                PwaRestoreProperties.EXPANDED_TITLE,
                 mActivity.getString(R.string.pwa_restore_title_expanded));
-        mModel.set(PwaRestoreProperties.EXPANDED_DESCRIPTION,
+        mModel.set(
+                PwaRestoreProperties.EXPANDED_DESCRIPTION,
                 mActivity.getString(R.string.pwa_restore_description_expanded));
         mModel.set(
                 PwaRestoreProperties.RECENT_APPS_TITLE,
@@ -50,16 +64,13 @@ class PwaRestoreBottomSheetMediator {
         mModel.set(
                 PwaRestoreProperties.OLDER_APPS_TITLE,
                 mActivity.getString(R.string.pwa_restore_older_apps_list));
-        mModel.set(PwaRestoreProperties.EXPANDED_BUTTON_LABEL,
+        mModel.set(
+                PwaRestoreProperties.EXPANDED_BUTTON_LABEL,
                 mActivity.getString(R.string.pwa_restore_button_expanded));
-        mModel.set(PwaRestoreProperties.DESELECT_BUTTON_LABEL,
+        mModel.set(
+                PwaRestoreProperties.DESELECT_BUTTON_LABEL,
                 mActivity.getString(R.string.pwa_restore_button_deselect));
 
-        // TODO(finnur): Replace with actual apps, queried from profile.
-        ArrayList apps = new ArrayList();
-        apps.add(new PwaRestoreProperties.AppInfo("foo", "Bar"));
-        apps.add(new PwaRestoreProperties.AppInfo("bar", "Foo"));
-        apps.add(new PwaRestoreProperties.AppInfo("foobar", "Barfoo"));
         mModel.set(PwaRestoreProperties.APPS, apps);
     }
 
@@ -72,11 +83,26 @@ class PwaRestoreBottomSheetMediator {
     }
 
     private void onDeselectButtonClicked() {
-        // TODO(finnur): Implement.
+        List<PwaRestoreProperties.AppInfo> appList = mModel.get(PwaRestoreProperties.APPS);
+        for (PwaRestoreProperties.AppInfo app : appList) {
+            if (app.isSelected()) app.toggleSelection();
+        }
+        mModel.set(PwaRestoreProperties.APPS, appList);
     }
 
     private void onRestoreButtonClicked() {
         // TODO(finnur): Implement.
+    }
+
+    private void onSelectionToggled(View view) {
+        String appId = (String) view.getTag();
+
+        for (PwaRestoreProperties.AppInfo app : mModel.get(PwaRestoreProperties.APPS)) {
+            if (TextUtils.equals(app.getId(), appId)) {
+                app.toggleSelection();
+                break;
+            }
+        }
     }
 
     PropertyModel getModel() {

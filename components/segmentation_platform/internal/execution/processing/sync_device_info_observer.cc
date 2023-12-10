@@ -148,7 +148,7 @@ std::map<OsType, int> SyncDeviceInfoObserver::CountActiveDevicesByOsType(
 
 void SyncDeviceInfoObserver::Process(
     const proto::CustomInput& input,
-    const FeatureProcessorState& feature_processor_state,
+    FeatureProcessorState& feature_processor_state,
     ProcessedCallback callback) {
   int wait_for_device_info_in_seconds = 0;
 

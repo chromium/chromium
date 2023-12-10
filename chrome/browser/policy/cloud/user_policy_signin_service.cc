@@ -37,6 +37,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "user_policy_signin_service.h"
 
 namespace policy {
 namespace internal {
@@ -267,6 +268,14 @@ bool UserPolicySigninService::CanApplyPolicies(bool check_for_refresh_token) {
 
   return (profile_can_be_managed_for_testing_ ||
           chrome::enterprise_util::ProfileCanBeManaged(profile_));
+}
+
+CloudPolicyClient::DeviceDMTokenCallback
+UserPolicySigninService::GetDeviceDMTokenIfAffiliatedCallback() {
+  if (device_dm_token_callback_for_testing_) {
+    return device_dm_token_callback_for_testing_;
+  }
+  return base::BindRepeating(&GetDeviceDMTokenIfAffiliated);
 }
 
 }  // namespace policy

@@ -19,6 +19,7 @@
 #include "base/scoped_observation.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/test_mock_time_task_runner.h"
@@ -60,6 +61,7 @@
 #include "components/signin/public/base/signin_client.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
@@ -83,7 +85,6 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-#include "components/signin/public/base/signin_switches.h"
 #include "crypto/scoped_mock_unexportable_key_provider.h"
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
@@ -133,18 +134,17 @@ class BlockedHttpResponse : public net::test_server::BasicHttpResponse {
   void SendResponse(
       base::WeakPtr<net::test_server::HttpResponseDelegate> delegate) override {
     // Called on the IO thread to unblock the response.
-    base::OnceClosure unblock_io_thread =
+    base::OnceClosure unblock_response =
         base::BindOnce(&BlockedHttpResponse::SendResponseInternal,
                        weak_factory_.GetWeakPtr(), delegate);
-    // Unblock the response from any thread by posting a task to the IO thread.
-    base::OnceClosure unblock_any_thread =
-        base::BindOnce(base::IgnoreResult(&base::TaskRunner::PostTask),
-                       base::SingleThreadTaskRunner::GetCurrentDefault(),
-                       FROM_HERE, std::move(unblock_io_thread));
+    // Bind the callback to the current sequence to ensure invoking `Run()` from
+    // any thread will run the callback on the current sequence.
+    base::OnceClosure unblock_from_any_thread =
+        base::BindPostTaskToCurrentDefault(std::move(unblock_response));
     // Pass |unblock_any_thread| to the caller on the UI thread.
     content::GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(callback_), std::move(unblock_any_thread)));
+        FROM_HERE, base::BindOnce(std::move(callback_),
+                                  std::move(unblock_from_any_thread)));
   }
 
  private:
@@ -367,6 +367,7 @@ class DiceBrowserTest : public InProcessBrowserTest,
         reconcilor_blocked_count_(0),
         reconcilor_unblocked_count_(0),
         reconcilor_started_count_(0) {
+    feature_list_.InitAndDisableFeature(switches::kUnoDesktop);
     https_server_.RegisterDefaultHandler(base::BindRepeating(
         &FakeGaia::HandleSigninURL, main_email_,
         base::BindRepeating(&DiceBrowserTest::OnSigninRequest,
@@ -685,6 +686,9 @@ class DiceBrowserTest : public InProcessBrowserTest,
   base::OnceClosure tokens_loaded_quit_closure_;
   base::OnceClosure on_primary_account_set_quit_closure_;
   base::OnceClosure signin_requested_quit_closure_;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // Checks that signin on Gaia triggers the fetch for a refresh token.

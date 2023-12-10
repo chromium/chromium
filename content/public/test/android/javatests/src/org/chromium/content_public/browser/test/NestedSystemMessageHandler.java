@@ -41,7 +41,9 @@ public class NestedSystemMessageHandler {
     private static boolean dispatchOneMessage() {
         try {
             LooperUtils.runSingleNestedLooperTask();
-        } catch (IllegalArgumentException | IllegalAccessException | SecurityException
+        } catch (IllegalArgumentException
+                | IllegalAccessException
+                | SecurityException
                 | InvocationTargetException e) {
             e.printStackTrace();
             return false;

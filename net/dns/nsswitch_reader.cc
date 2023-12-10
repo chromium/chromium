@@ -66,16 +66,16 @@ base::StringPiece FindDatabase(base::StringPiece text,
                                base::StringPiece database_name) {
   DCHECK(!text.empty());
   DCHECK(!database_name.empty());
-  DCHECK(!base::StartsWith(database_name, "#"));
+  DCHECK(!database_name.starts_with("#"));
   DCHECK(!base::IsAsciiWhitespace(database_name.front()));
-  DCHECK(base::EndsWith(database_name, ":"));
+  DCHECK(database_name.ends_with(":"));
 
   while (!text.empty()) {
     text = base::TrimWhitespaceASCII(text, base::TrimPositions::TRIM_LEADING);
 
     if (base::StartsWith(text, database_name,
                          base::CompareCase::INSENSITIVE_ASCII)) {
-      DCHECK(!base::StartsWith(text, "#"));
+      DCHECK(!text.starts_with("#"));
 
       text = text.substr(database_name.size());
       base::StringPiece::size_type line_end = text.find('\n');

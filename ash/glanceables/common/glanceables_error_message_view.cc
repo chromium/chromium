@@ -13,6 +13,7 @@
 #include "ash/style/typography.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/text_constants.h"
@@ -39,6 +40,8 @@ constexpr gfx::Insets kLabelInsets = gfx::Insets::VH(10, 16);
 namespace ash {
 
 class DismissErrorLabelButton : public views::LabelButton {
+  METADATA_HEADER(DismissErrorLabelButton, views::LabelButton)
+
  public:
   explicit DismissErrorLabelButton(PressedCallback callback)
       : views::LabelButton(std::move(callback)) {
@@ -54,6 +57,9 @@ class DismissErrorLabelButton : public views::LabelButton {
   }
   ~DismissErrorLabelButton() override = default;
 };
+
+BEGIN_METADATA(DismissErrorLabelButton, views::LabelButton)
+END_METADATA
 
 GlanceablesErrorMessageView::GlanceablesErrorMessageView(
     views::Button::PressedCallback callback,

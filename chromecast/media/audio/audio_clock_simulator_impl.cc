@@ -8,13 +8,13 @@
 #include <cstdint>
 #include <memory>
 
+#include <optional>
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "chromecast/media/api/audio_clock_simulator.h"
 #include "chromecast/media/api/audio_provider.h"
 #include "media/base/audio_bus.h"
 #include "media/base/multi_channel_resampler.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromecast {
 namespace media {
@@ -133,7 +133,7 @@ class AudioClockSimulatorImpl : public AudioClockSimulator {
   int64_t request_timestamp_ = 0;
   double resampler_buffered_frames_ = 0.0;
   bool in_fill_ = false;
-  absl::optional<double> pending_rate_;
+  std::optional<double> pending_rate_;
 };
 
 }  // namespace

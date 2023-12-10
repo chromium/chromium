@@ -19,6 +19,7 @@ include_rules = [
   "+third_party/re2",
   "+third_party/updater",
   "+third_party/zlib/google",
+  "+third_party/wtl",
 
   # The metainstaller should not depend on ICU, to minimize binary size.
   "-base/i18n",

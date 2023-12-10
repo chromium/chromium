@@ -24,6 +24,7 @@
 #include <string.h>
 
 #include <algorithm>
+#include <concepts>
 #include <functional>
 #include <initializer_list>
 #include <iterator>
@@ -33,7 +34,6 @@
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/dcheck_is_on.h"
-#include "base/functional/identity.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/template_util.h"
 #include "build/build_config.h"
@@ -325,7 +325,7 @@ struct VectorTypeOperations {
     }
   }
 
-  template <typename U, typename Proj = base::identity>
+  template <typename U, typename Proj = std::identity>
   static void UninitializedCopy(const U* src,
                                 const U* src_end,
                                 T* dst,
@@ -334,8 +334,7 @@ struct VectorTypeOperations {
     if (!LIKELY(dst && src)) {
       return;
     }
-    if constexpr (std::is_same_v<T, U> &&
-                  std::is_same_v<Proj, base::identity> &&
+    if constexpr (std::is_same_v<T, U> && std::is_same_v<Proj, std::identity> &&
                   VectorTraits<T>::kCanCopyWithMemcpy) {
       Copy(src, src_end, dst, origin);
     } else if (origin == VectorOperationOrigin::kConstruction) {
@@ -1082,6 +1081,20 @@ struct VectorNeedsDestructor<T, inlineCapacity, true> {
   static constexpr bool value = true;
 };
 
+namespace internal {
+
+template <typename Collection>
+concept VectorCanConstructFromCollection = requires(Collection c) {
+  // TODO(crbug.com/1502036): In theory we should be able to require that these
+  // conform to std::input_iterator, but HashTableConstIteratorAdapter actually
+  // doesn't.
+  c.begin();
+  c.end();
+  { c.size() } -> std::unsigned_integral;
+};
+
+}  // namespace internal
+
 template <typename T, wtf_size_t inlineCapacity, typename Allocator>
 class Vector
     : private VectorBuffer<T, INLINE_CAPACITY, Allocator>,
@@ -1098,6 +1111,7 @@ class Vector
  public:
   using ValueType = T;
   using value_type = T;
+  using size_type = wtf_size_t;
   using reference = value_type&;
   using const_reference = const value_type&;
   using pointer = value_type*;
@@ -1148,22 +1162,14 @@ class Vector
 
   // Creates a vector with items copied from a collection. |Collection| must
   // have size(), begin() and end() methods.
-  template <typename Collection,
-            // This prevents this constructor from being chosen for e.g.
-            // Vector(3).
-            typename = std::enable_if_t<std::disjunction_v<
-                std::is_same<value_type, typename Collection::value_type>,
-                std::is_constructible<value_type,
-                                      typename Collection::const_reference>>>>
+  template <typename Collection>
+    requires internal::VectorCanConstructFromCollection<Collection>
   explicit Vector(const Collection& collection) : Vector() {
     assign(collection);
   }
   // Replaces the vector with items copied from a collection.
-  template <typename Collection,
-            typename = std::enable_if_t<std::disjunction_v<
-                std::is_same<value_type, typename Collection::value_type>,
-                std::is_constructible<value_type,
-                                      typename Collection::const_reference>>>>
+  template <typename Collection>
+    requires internal::VectorCanConstructFromCollection<Collection>
   void assign(const Collection&);
 
   // Moving.
@@ -1405,10 +1411,11 @@ class Vector
   //
   // The implementation of Fill uses std::fill which is not yet supported for
   // garbage collected vectors.
-  template <typename A = Allocator>
-  std::enable_if_t<!A::kIsGarbageCollected> Fill(const T&, wtf_size_t);
-  template <typename A = Allocator>
-  std::enable_if_t<!A::kIsGarbageCollected> Fill(const T& val) {
+  void Fill(const T&, wtf_size_t)
+    requires(!Allocator::kIsGarbageCollected);
+  void Fill(const T& val)
+    requires(!Allocator::kIsGarbageCollected)
+  {
     Fill(val, size());
   }
 
@@ -1446,8 +1453,8 @@ class Vector
     Base::Destruct();
   }
 
-  template <typename VisitorDispatcher, typename A = Allocator>
-  std::enable_if_t<A::kIsGarbageCollected> Trace(VisitorDispatcher) const;
+  void Trace(auto visitor) const
+    requires Allocator::kIsGarbageCollected;
 
   class GCForbiddenScope {
     STACK_ALLOCATED();
@@ -1506,7 +1513,7 @@ constexpr void Vector<T, inlineCapacity, Allocator>::CheckTypeConstraints() {
   static_assert(!std::is_polymorphic<T>::value ||
                     !VectorTraits<T>::kCanInitializeWithMemset,
                 "Cannot initialize with memset if there is a vtable.");
-  static_assert(Allocator::kIsGarbageCollected || !IsDisallowNew<T>::value ||
+  static_assert(Allocator::kIsGarbageCollected || !IsDisallowNew<T> ||
                     !IsTraceable<T>::value,
                 "Cannot put DISALLOW_NEW() objects that have trace methods "
                 "into an off-heap Vector.");
@@ -1656,7 +1663,8 @@ operator=(const Vector<T, otherCapacity, Allocator>& other) {
 }
 
 template <typename T, wtf_size_t inlineCapacity, typename Allocator>
-template <typename Collection, typename SFINAE>
+template <typename Collection>
+  requires internal::VectorCanConstructFromCollection<Collection>
 void Vector<T, inlineCapacity, Allocator>::assign(const Collection& other) {
   static_assert(
       !std::is_same_v<Vector<T, inlineCapacity, Allocator>, Collection>,
@@ -1764,9 +1772,10 @@ wtf_size_t Vector<T, inlineCapacity, Allocator>::ReverseFind(
 }
 
 template <typename T, wtf_size_t inlineCapacity, typename Allocator>
-template <typename A>
-std::enable_if_t<!A::kIsGarbageCollected>
-Vector<T, inlineCapacity, Allocator>::Fill(const T& val, wtf_size_t new_size) {
+void Vector<T, inlineCapacity, Allocator>::Fill(const T& val,
+                                                wtf_size_t new_size)
+  requires(!Allocator::kIsGarbageCollected)
+{
   if (size() > new_size) {
     Shrink(new_size);
   } else if (new_size > capacity()) {
@@ -2268,9 +2277,9 @@ void DeferredTraceImpl(VisitorDispatcher visitor, const void* object) {
 
 // Only defined for HeapAllocator. Used when visiting vector object.
 template <typename T, wtf_size_t inlineCapacity, typename Allocator>
-template <typename VisitorDispatcher, typename A>
-std::enable_if_t<A::kIsGarbageCollected>
-Vector<T, inlineCapacity, Allocator>::Trace(VisitorDispatcher visitor) const {
+void Vector<T, inlineCapacity, Allocator>::Trace(auto visitor) const
+  requires Allocator::kIsGarbageCollected
+{
   static_assert(Allocator::kIsGarbageCollected,
                 "Garbage collector must be enabled.");
 
@@ -2295,7 +2304,7 @@ Vector<T, inlineCapacity, Allocator>::Trace(VisitorDispatcher visitor) const {
     if (!VectorTraits<T>::kCanTraceConcurrently) {
       if (Allocator::DeferTraceToMutatorThreadIfConcurrent(
               visitor, buffer,
-              internal::DeferredTraceImpl<Allocator, VisitorDispatcher, T,
+              internal::DeferredTraceImpl<Allocator, decltype(visitor), T,
                                           inlineCapacity>,
               inlineCapacity * sizeof(T))) {
         return;

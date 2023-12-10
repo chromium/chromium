@@ -23,7 +23,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {loadTimeData} from '../i18n_setup.js';
 
 import {getTemplate} from './add_site_dialog.html.js';
-import {ContentSetting, ContentSettingsTypes, CookiesExceptionType, SITE_EXCEPTION_WILDCARD} from './constants.js';
+import {ContentSetting, CookiesExceptionType, SITE_EXCEPTION_WILDCARD} from './constants.js';
 import {SiteSettingsMixin, SiteSettingsMixinInterface} from './site_settings_mixin.js';
 
 export interface AddSiteDialogElement {
@@ -32,7 +32,6 @@ export interface AddSiteDialogElement {
     dialog: CrDialogElement,
     incognito: CrCheckboxElement,
     site: CrInputElement,
-    thirdParties: CrCheckboxElement,
   };
 }
 
@@ -133,8 +132,7 @@ export class AddSiteDialogElement extends AddSiteDialogElementBase {
     let primaryPattern = this.site_;
     let secondaryPattern = SITE_EXCEPTION_WILDCARD;
 
-    if (this.$.thirdParties.checked ||
-        this.cookiesExceptionType === CookiesExceptionType.THIRD_PARTY) {
+    if (this.cookiesExceptionType === CookiesExceptionType.THIRD_PARTY) {
       primaryPattern = SITE_EXCEPTION_WILDCARD;
       secondaryPattern = this.site_;
     }
@@ -155,16 +153,6 @@ export class AddSiteDialogElement extends AddSiteDialogElementBase {
     if (!this.hasIncognito) {
       this.$.incognito.checked = false;
     }
-  }
-
-  private shouldHideThirdPartyCookieCheckbox_(): boolean {
-    // TODO(crbug.com/1378703): Remove checkbox support after feature is
-    // launched.
-    if (loadTimeData.getBoolean('isPrivacySandboxSettings4')) {
-      return true;
-    }
-    return this.cookiesExceptionType !== CookiesExceptionType.COMBINED ||
-        this.category !== ContentSettingsTypes.COOKIES;
   }
 }
 

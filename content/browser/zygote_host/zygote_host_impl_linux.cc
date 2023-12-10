@@ -158,12 +158,13 @@ pid_t ZygoteHostImpl::LaunchZygote(
     base::ScopedFD* control_fd,
     base::FileHandleMappingVector additional_remapped_fds) {
   int fds[2];
-  CHECK_EQ(0, socketpair(AF_UNIX, SOCK_SEQPACKET, 0, fds));
+  CHECK_EQ(0, socketpair(AF_UNIX, SOCK_SEQPACKET | SOCK_CLOEXEC, 0, fds));
   CHECK(base::UnixDomainSocket::EnableReceiveProcessId(fds[0]));
 
   base::LaunchOptions options;
   options.fds_to_remap = std::move(additional_remapped_fds);
   options.fds_to_remap.emplace_back(fds[1], kZygoteSocketPairFd);
+  options.fds_to_remove_cloexec.push_back(fds[1]);
 
   const bool is_sandboxed_zygote =
       !cmd_line->HasSwitch(sandbox::policy::switches::kNoZygoteSandbox);

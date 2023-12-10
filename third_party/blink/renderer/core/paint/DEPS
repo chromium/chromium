@@ -13,7 +13,7 @@ specific_include_rules = {
   ".*test\.cc": [
     "+base/test/trace_event_analyzer.h",
   ],
-  "ng_box_fragment_painter_test.cc": [
+  "box_fragment_painter_test.cc": [
     "+components/paint_preview/common/paint_preview_tracker.h",
   ],
   "video_painter_test.cc": [

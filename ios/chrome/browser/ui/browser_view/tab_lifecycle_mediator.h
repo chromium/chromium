@@ -24,7 +24,6 @@ class WebStateList;
 @protocol NewTabPageTabHelperDelegate;
 @protocol OverscrollActionsControllerDelegate;
 @protocol PriceNotificationsIPHPresenter;
-@protocol SnapshotGeneratorDelegate;
 
 // Mediator that handles the setup of tab helpers that require UI-layer
 // dependencies not available when AttachTabHelpers() is called.

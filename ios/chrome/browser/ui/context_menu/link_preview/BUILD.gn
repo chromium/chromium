@@ -12,7 +12,7 @@ source_set("link_preview") {
   deps = [
     ":link_preview_ui",
     "//components/url_formatter",
-    "//ios/chrome/browser/history:tab_helper",
+    "//ios/chrome/browser/history/model:tab_helper",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",

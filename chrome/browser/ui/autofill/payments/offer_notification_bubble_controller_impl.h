@@ -106,7 +106,7 @@ class OfferNotificationBubbleControllerImpl
 
   // The timestamp that the bubble has been shown. Used to check if the bubble
   // has been shown for longer than kAutofillBubbleSurviveNavigationTime.
-  absl::optional<base::Time> bubble_shown_timestamp_;
+  std::optional<base::Time> bubble_shown_timestamp_;
 
   // The Autofill offer being displayed as a bubble. Set when the bubble is
   // requested to be shown via ShowOfferNotificationIfApplicable(~).
@@ -118,7 +118,7 @@ class OfferNotificationBubbleControllerImpl
 
   // The related credit card for a card linked offer. This can be nullopt for
   // offer types other than card linked offers.
-  absl::optional<CreditCard> card_;
+  std::optional<CreditCard> card_;
 
   // Denotes whether the promo code label button was clicked yet or not.
   // Determines the appropriate hover tooltip for the button.

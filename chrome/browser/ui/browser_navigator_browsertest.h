@@ -9,6 +9,8 @@
 
 #include <string>
 
+#include "base/test/scoped_feature_list.h"
+#include "chrome/browser/file_system_access/file_system_access_features.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -60,6 +62,10 @@ class BrowserNavigatorTest : public InProcessBrowserTest {
       content::WebContents* expected_web_contents = nullptr);
 
   size_t created_tab_contents_count_;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::kFileSystemAccessPersistentPermissions};
 };
 
 #endif  // CHROME_BROWSER_UI_BROWSER_NAVIGATOR_BROWSERTEST_H_

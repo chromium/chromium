@@ -301,7 +301,7 @@ class HighContrast {
   /** @const {string} */
   static cssTemplate = `
       html[hc="a0"] {
-        -webkit-filter: url("#hc_extension_off");
+        filter: url("#hc_extension_off");
       }
 
       html[hcx="0"] img[src*="jpg"],
@@ -311,11 +311,11 @@ class HighContrast {
       html[hcx="0"] embed,
       html[hcx="0"] object,
       html[hcx="0"] video {
-        -webkit-filter: url("#hc_extension_off");
+        filter: url("#hc_extension_off");
       }
 
       html[hc="a1"] {
-        -webkit-filter: url("#hc_extension_highcontrast");
+        filter: url("#hc_extension_highcontrast");
       }
 
       html[hcx="1"] img[src*="jpg"],
@@ -325,11 +325,11 @@ class HighContrast {
       html[hcx="1"] embed,
       html[hcx="1"] object,
       html[hcx="1"] video {
-        -webkit-filter: url("#hc_extension_highcontrast_back");
+        filter: url("#hc_extension_highcontrast_back");
       }
 
       html[hc="a2"] {
-        -webkit-filter: url("#hc_extension_grayscale");
+        filter: url("#hc_extension_grayscale");
       }
 
       html[hcx="2"] img[src*="jpg"],
@@ -339,11 +339,11 @@ class HighContrast {
       html[hcx="2"] embed,
       html[hcx="2"] object,
       html[hcx="2"] video {
-        -webkit-filter: url("#hc_extension_grayscale_back");
+        filter: url("#hc_extension_grayscale_back");
       }
 
       html[hc="a3"] {
-        -webkit-filter: url("#hc_extension_invert");
+        filter: url("#hc_extension_invert");
       }
 
       html[hcx="3"] img[src*="jpg"],
@@ -353,11 +353,11 @@ class HighContrast {
       html[hcx="3"] embed,
       html[hcx="3"] object,
       html[hcx="3"] video {
-        -webkit-filter: url("#hc_extension_invert_back");
+        filter: url("#hc_extension_invert_back");
       }
 
       html[hc="a4"] {
-        -webkit-filter: url("#hc_extension_invert_grayscale");
+        filter: url("#hc_extension_invert_grayscale");
       }
 
       html[hcx="4"] img[src*="jpg"],
@@ -367,11 +367,11 @@ class HighContrast {
       html[hcx="4"] embed,
       html[hcx="4"] object,
       html[hcx="4"] video {
-        -webkit-filter: url("#hc_extension_invert_back");
+        filter: url("#hc_extension_invert_back");
       }
 
       html[hc="a5"] {
-        -webkit-filter: url("#hc_extension_yellow_on_black");
+        filter: url("#hc_extension_yellow_on_black");
       }
 
       html[hcx="5"] img[src*="jpg"],
@@ -381,7 +381,7 @@ class HighContrast {
       html[hcx="5"] embed,
       html[hcx="5"] object,
       html[hcx="5"] video {
-        -webkit-filter: url("#hc_extension_yellow_on_black_back");
+        filter: url("#hc_extension_yellow_on_black_back");
       }`;
 }
 

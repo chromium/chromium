@@ -25,10 +25,10 @@
 #include <stdint.h>
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/base_export.h"
-#include "base/strings/string_piece.h"
 #include "base/win/windows_types.h"
 
 struct IPropertyStore;
@@ -223,7 +223,7 @@ BASE_EXPORT std::wstring GetWindowObjectName(HANDLE handle);
 // Checks if the calling thread is running under a desktop with the name
 // given by |desktop_name|. |desktop_name| is ASCII case insensitive (non-ASCII
 // characters will be compared with exact matches).
-BASE_EXPORT bool IsRunningUnderDesktopName(WStringPiece desktop_name);
+BASE_EXPORT bool IsRunningUnderDesktopName(std::wstring_view desktop_name);
 
 // Returns true if current session is a remote session.
 BASE_EXPORT bool IsCurrentSessionRemote();

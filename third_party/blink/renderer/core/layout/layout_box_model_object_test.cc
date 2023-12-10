@@ -10,7 +10,7 @@
 #include "third_party/blink/renderer/core/dom/dom_token_list.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
+#include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/page/scrolling/sticky_position_scrolling_constraints.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"

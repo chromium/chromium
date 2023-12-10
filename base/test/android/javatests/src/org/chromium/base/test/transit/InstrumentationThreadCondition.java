@@ -7,6 +7,6 @@ package org.chromium.base.test.transit;
 /** A {@link Condition} that is checked in the instrumentation thread. */
 public abstract class InstrumentationThreadCondition extends Condition {
     public InstrumentationThreadCondition() {
-        super(/*shouldRunOnUiThread*/ false);
+        super(/* isRunOnUiThread= */ false);
     }
 }

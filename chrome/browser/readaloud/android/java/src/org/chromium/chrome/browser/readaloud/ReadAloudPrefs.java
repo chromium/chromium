@@ -4,10 +4,9 @@
 
 package org.chromium.chrome.browser.readaloud;
 
-import org.json.JSONException;
-import org.json.JSONObject;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
 
-import org.chromium.base.Log;
 import org.chromium.components.prefs.PrefService;
 
 import java.util.Collections;
@@ -15,19 +14,19 @@ import java.util.HashMap;
 import java.util.Map;
 
 /** Methods for storing and retrieving Read Aloud user settings in prefs. */
+@JNINamespace("readaloud")
 public class ReadAloudPrefs {
     private static final String TAG = "ReadAloudSettings";
 
+    // Keep these names in sync with those in //chrome/common/pref_names.h.
     private static final String PREF_PATH_PREFIX = "readaloud";
-    private static final String VOICES_PATH = PREF_PATH_PREFIX + ".voices";
     private static final String SPEED_PATH = PREF_PATH_PREFIX + ".speed";
-    private static final String HIGHLIGHTING_ENABLED_PATH =
-            PREF_PATH_PREFIX + ".highlighting_enabled";
+    static final String HIGHLIGHTING_ENABLED_PATH = PREF_PATH_PREFIX + ".highlighting_enabled";
 
     private static final float DEFAULT_SPEED = 1f;
     private static final boolean DEFAULT_HIGHLIGHTING_ENABLED = true;
 
-    private static JSONObject sVoices;
+    private ReadAloudPrefs() {}
 
     /**
      * Get the language-to-voiceId map.
@@ -36,12 +35,8 @@ public class ReadAloudPrefs {
      * @return Read-only voice map. Voice settings should be updated with setVoice() instead.
      */
     public static Map<String, String> getVoices(PrefService prefs) {
-        ensureVoicesInit(prefs);
         var languageToVoice = new HashMap<String, String>();
-        sVoices.keys()
-                .forEachRemaining(
-                        (language) -> languageToVoice.put(language, sVoices.optString(language)));
-
+        ReadAloudPrefsJni.get().getVoices(prefs, languageToVoice);
         return Collections.unmodifiableMap(languageToVoice);
     }
 
@@ -56,14 +51,7 @@ public class ReadAloudPrefs {
         if (language == null || language.isEmpty() || voiceId == null || voiceId.isEmpty()) {
             return;
         }
-
-        ensureVoicesInit(prefs);
-        try {
-            sVoices.put(language, voiceId);
-            prefs.setString(VOICES_PATH, sVoices.toString());
-        } catch (JSONException exception) {
-            Log.e(TAG, "Failed to store voice setting: %s", exception.getMessage());
-        }
+        ReadAloudPrefsJni.get().setVoice(prefs, language, voiceId);
     }
 
     /**
@@ -73,18 +61,8 @@ public class ReadAloudPrefs {
      * @return Playback speed setting.
      */
     public static float getSpeed(PrefService prefs) {
-        float speed = DEFAULT_SPEED;
-        if (prefs.hasPrefPath(SPEED_PATH)) {
-            try {
-                speed = Float.parseFloat(prefs.getString(SPEED_PATH));
-            } catch (NumberFormatException exception) {
-                Log.e(
-                        TAG,
-                        "Failed to parse speed setting, using default. Details: %s",
-                        exception.getMessage());
-            }
-        }
-        return speed;
+        return (float)
+                (prefs.hasPrefPath(SPEED_PATH) ? prefs.getDouble(SPEED_PATH) : DEFAULT_SPEED);
     }
 
     /**
@@ -94,7 +72,7 @@ public class ReadAloudPrefs {
      * @param speed Playback speed to store.
      */
     public static void setSpeed(PrefService prefs, float speed) {
-        prefs.setString(SPEED_PATH, Float.toString(speed));
+        prefs.setDouble(SPEED_PATH, (double) speed);
     }
 
     /**
@@ -119,26 +97,10 @@ public class ReadAloudPrefs {
         prefs.setBoolean(HIGHLIGHTING_ENABLED_PATH, enabled);
     }
 
-    private static void ensureVoicesInit(PrefService prefs) {
-        if (sVoices != null) {
-            return;
-        }
+    @NativeMethods
+    public interface Natives {
+        void getVoices(PrefService prefService, Map<String, String> output);
 
-        sVoices = new JSONObject();
-
-        if (prefs.hasPrefPath(VOICES_PATH)) {
-            try {
-                sVoices = new JSONObject(prefs.getString(VOICES_PATH));
-            } catch (JSONException exception) {
-                Log.e(
-                        TAG,
-                        "Failed to parse voice settings, using defaults. Details: %s",
-                        exception.getMessage());
-            }
-        }
-    }
-
-    static void resetForTesting() {
-        sVoices = null;
+        void setVoice(PrefService prefService, String language, String voiceId);
     }
 }

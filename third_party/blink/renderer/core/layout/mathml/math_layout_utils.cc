@@ -4,11 +4,11 @@
 
 #include "third_party/blink/renderer/core/layout/mathml/math_layout_utils.h"
 
+#include "third_party/blink/renderer/core/layout/block_node.h"
+#include "third_party/blink/renderer/core/layout/constraint_space_builder.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_block_node.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_constraint_space_builder.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_length_utils.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_space_utils.h"
+#include "third_party/blink/renderer/core/layout/length_utils.h"
+#include "third_party/blink/renderer/core/layout/space_utils.h"
 #include "third_party/blink/renderer/core/mathml/mathml_fraction_element.h"
 #include "third_party/blink/renderer/core/mathml/mathml_operator_element.h"
 #include "third_party/blink/renderer/core/mathml/mathml_radical_element.h"
@@ -17,19 +17,19 @@
 
 namespace blink {
 
-NGConstraintSpace CreateConstraintSpaceForMathChild(
-    const NGBlockNode& parent_node,
+ConstraintSpace CreateConstraintSpaceForMathChild(
+    const BlockNode& parent_node,
     const LogicalSize& child_available_size,
-    const NGConstraintSpace& parent_space,
-    const NGLayoutInputNode& child,
-    NGCacheSlot cache_slot,
-    const absl::optional<NGConstraintSpace::MathTargetStretchBlockSizes>
+    const ConstraintSpace& parent_space,
+    const LayoutInputNode& child,
+    LayoutResultCacheSlot cache_slot,
+    const absl::optional<ConstraintSpace::MathTargetStretchBlockSizes>
         target_stretch_block_sizes,
     const absl::optional<LayoutUnit> target_stretch_inline_size) {
   const ComputedStyle& parent_style = parent_node.Style();
   const ComputedStyle& child_style = child.Style();
   DCHECK(child.CreatesNewFormattingContext());
-  NGConstraintSpaceBuilder builder(
+  ConstraintSpaceBuilder builder(
       parent_space, child_style.GetWritingDirection(), true /* is_new_fc */);
   SetOrthogonalFallbackInlineSizeIfNeeded(parent_style, child, &builder);
   builder.SetAvailableSize(child_available_size);
@@ -46,12 +46,12 @@ NGConstraintSpace CreateConstraintSpaceForMathChild(
 
 MinMaxSizesResult ComputeMinAndMaxContentContributionForMathChild(
     const ComputedStyle& parent_style,
-    const NGConstraintSpace& parent_space,
-    const NGBlockNode& child,
+    const ConstraintSpace& parent_space,
+    const BlockNode& child,
     LayoutUnit child_available_block_size) {
   DCHECK(child.CreatesNewFormattingContext());
-  NGMinMaxConstraintSpaceBuilder builder(parent_space, parent_style, child,
-                                         true /* is_new_fc */);
+  MinMaxConstraintSpaceBuilder builder(parent_space, parent_style, child,
+                                       true /* is_new_fc */);
   builder.SetAvailableBlockSize(child_available_block_size);
   builder.SetPercentageResolutionBlockSize(child_available_block_size);
   const auto space = builder.ToConstraintSpace();
@@ -65,35 +65,35 @@ MinMaxSizesResult ComputeMinAndMaxContentContributionForMathChild(
   return result;
 }
 
-NGLayoutInputNode FirstChildInFlow(const NGBlockNode& node) {
-  NGLayoutInputNode child = node.FirstChild();
+LayoutInputNode FirstChildInFlow(const BlockNode& node) {
+  LayoutInputNode child = node.FirstChild();
   while (child && child.IsOutOfFlowPositioned())
     child = child.NextSibling();
   return child;
 }
 
-NGLayoutInputNode NextSiblingInFlow(const NGBlockNode& node) {
-  NGLayoutInputNode sibling = node.NextSibling();
+LayoutInputNode NextSiblingInFlow(const BlockNode& node) {
+  LayoutInputNode sibling = node.NextSibling();
   while (sibling && sibling.IsOutOfFlowPositioned())
     sibling = sibling.NextSibling();
   return sibling;
 }
 
-inline bool InFlowChildCountIs(const NGBlockNode& node, unsigned count) {
+inline bool InFlowChildCountIs(const BlockNode& node, unsigned count) {
   DCHECK(count == 2 || count == 3);
-  auto child = To<NGBlockNode>(FirstChildInFlow(node));
+  auto child = To<BlockNode>(FirstChildInFlow(node));
   while (count && child) {
-    child = To<NGBlockNode>(NextSiblingInFlow(child));
+    child = To<BlockNode>(NextSiblingInFlow(child));
     count--;
   }
   return !count && !child;
 }
 
-bool IsValidMathMLFraction(const NGBlockNode& node) {
+bool IsValidMathMLFraction(const BlockNode& node) {
   return InFlowChildCountIs(node, 2);
 }
 
-static bool IsPrescriptDelimiter(const NGBlockNode& block_node) {
+static bool IsPrescriptDelimiter(const BlockNode& block_node) {
   auto* node = block_node.GetDOMNode();
   return node && IsA<MathMLElement>(node) &&
          node->HasTagName(mathml_names::kMprescriptsTag);
@@ -101,14 +101,14 @@ static bool IsPrescriptDelimiter(const NGBlockNode& block_node) {
 
 // Valid according to:
 // https://w3c.github.io/mathml-core/#prescripts-and-tensor-indices-mmultiscripts
-inline bool IsValidMultiscript(const NGBlockNode& node) {
-  auto child = To<NGBlockNode>(FirstChildInFlow(node));
+inline bool IsValidMultiscript(const BlockNode& node) {
+  auto child = To<BlockNode>(FirstChildInFlow(node));
   if (!child || IsPrescriptDelimiter(child))
     return false;
   bool number_of_scripts_is_even = true;
   bool prescript_delimiter_found = false;
   while (child) {
-    child = To<NGBlockNode>(NextSiblingInFlow(child));
+    child = To<BlockNode>(NextSiblingInFlow(child));
     if (!child)
       continue;
     if (IsPrescriptDelimiter(child)) {
@@ -122,7 +122,7 @@ inline bool IsValidMultiscript(const NGBlockNode& node) {
   return number_of_scripts_is_even;
 }
 
-bool IsValidMathMLScript(const NGBlockNode& node) {
+bool IsValidMathMLScript(const BlockNode& node) {
   switch (node.ScriptType()) {
     case MathScriptType::kUnder:
     case MathScriptType::kOver:
@@ -140,7 +140,7 @@ bool IsValidMathMLScript(const NGBlockNode& node) {
   }
 }
 
-bool IsValidMathMLRadical(const NGBlockNode& node) {
+bool IsValidMathMLRadical(const BlockNode& node) {
   auto* radical =
       DynamicTo<MathMLRadicalElement>(node.GetDOMNode());
   return !radical->HasIndex() || InFlowChildCountIs(node, 2);
@@ -223,18 +223,18 @@ MinMaxSizes GetMinMaxSizesForVerticalStretchyOperator(
   return sizes;
 }
 
-bool IsUnderOverLaidOutAsSubSup(const NGBlockNode& node) {
+bool IsUnderOverLaidOutAsSubSup(const BlockNode& node) {
   DCHECK(IsValidMathMLScript(node));
   if (HasDisplayStyle(node.Style()))
     return false;
   if (!node.IsBlock() || !node.IsMathML())
     return false;
-  const auto base = To<NGBlockNode>(FirstChildInFlow(node));
+  const auto base = To<BlockNode>(FirstChildInFlow(node));
   const auto base_properties = GetMathMLEmbellishedOperatorProperties(base);
   return base_properties && base_properties->has_movablelimits;
 }
 
-bool IsTextOnlyToken(const NGBlockNode& node) {
+bool IsTextOnlyToken(const BlockNode& node) {
   if (!node.IsBlock() || !node.IsMathML() || !node.FirstChild().IsInline())
     return false;
   if (auto* element = DynamicTo<MathMLTokenElement>(node.GetDOMNode()))
@@ -242,7 +242,7 @@ bool IsTextOnlyToken(const NGBlockNode& node) {
   return false;
 }
 
-bool IsOperatorWithSpecialShaping(const NGBlockNode& node) {
+bool IsOperatorWithSpecialShaping(const BlockNode& node) {
   if (!IsTextOnlyToken(node))
     return false;
   // https://w3c.github.io/mathml-core/#layout-of-operators
@@ -302,7 +302,7 @@ namespace {
 // This function has bad theoretical worst-case complexity. However, real-life
 // MathML formulas don't use deeply nested space-like expressions so it should
 // be fine in in practice. See https://github.com/w3c/mathml/issues/115
-static bool IsSpaceLike(const NGBlockNode& node) {
+static bool IsSpaceLike(const BlockNode& node) {
   DCHECK(node);
   if (!node.IsMathML())
     return false;
@@ -319,8 +319,8 @@ static bool IsSpaceLike(const NGBlockNode& node) {
   if ((element && (element->IsGroupingElement() ||
                    element->HasTagName(mathml_names::kMpaddedTag))) ||
       node.IsAnonymous()) {
-    for (auto child = To<NGBlockNode>(FirstChildInFlow(node)); child;
-         child = To<NGBlockNode>(NextSiblingInFlow(child))) {
+    for (auto child = To<BlockNode>(FirstChildInFlow(node)); child;
+         child = To<BlockNode>(NextSiblingInFlow(child))) {
       if (!IsSpaceLike(child))
         return false;
     }
@@ -333,7 +333,7 @@ static bool IsSpaceLike(const NGBlockNode& node) {
 // MathML formulas don't use deeply nested expressions that are embellished
 // operators or that are essentially made of space-like descendants, so it
 // should be fine in in practice. See https://github.com/w3c/mathml/issues/115
-MathMLOperatorElement* GetCoreOperator(const NGBlockNode& node) {
+MathMLOperatorElement* GetCoreOperator(const BlockNode& node) {
   if (!node || !node.IsMathML())
     return nullptr;
 
@@ -348,8 +348,8 @@ MathMLOperatorElement* GetCoreOperator(const NGBlockNode& node) {
     // 2. A scripted element or an <mfrac>, whose first in-flow child exists
     // and is an embellished operator;
     auto first_child = FirstChildInFlow(node);
-    return IsA<NGBlockNode>(first_child)
-               ? GetCoreOperator(To<NGBlockNode>(first_child))
+    return IsA<BlockNode>(first_child)
+               ? GetCoreOperator(To<BlockNode>(first_child))
                : nullptr;
   }
   if ((element && (element->IsGroupingElement() ||
@@ -361,8 +361,8 @@ MathMLOperatorElement* GetCoreOperator(const NGBlockNode& node) {
     // Note: This also handles the case of anonymous <mrow>'s generated by
     // <msqrt> and <mpadded> elements.
     MathMLOperatorElement* core_operator = nullptr;
-    for (auto child = To<NGBlockNode>(FirstChildInFlow(node)); child;
-         child = To<NGBlockNode>(NextSiblingInFlow(child))) {
+    for (auto child = To<BlockNode>(FirstChildInFlow(node)); child;
+         child = To<BlockNode>(NextSiblingInFlow(child))) {
       // Skip space-like children as they don't affect whether the parent is an
       // embellished operator.
       if (IsSpaceLike(child))
@@ -387,7 +387,7 @@ MathMLOperatorElement* GetCoreOperator(const NGBlockNode& node) {
 }  // namespace
 
 absl::optional<MathMLEmbellishedOperatorProperties>
-GetMathMLEmbellishedOperatorProperties(const NGBlockNode& node) {
+GetMathMLEmbellishedOperatorProperties(const BlockNode& node) {
   auto* core_operator = GetCoreOperator(node);
   if (!core_operator)
     return absl::nullopt;
@@ -423,8 +423,7 @@ GetMathMLEmbellishedOperatorProperties(const NGBlockNode& node) {
   return properties;
 }
 
-bool IsStretchyOperator(const NGBlockNode& node,
-                        bool stretch_axis_is_vertical) {
+bool IsStretchyOperator(const BlockNode& node, bool stretch_axis_is_vertical) {
   const auto properties = GetMathMLEmbellishedOperatorProperties(node);
   return properties && properties->is_stretchy &&
          properties->is_vertical == stretch_axis_is_vertical;

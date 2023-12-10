@@ -105,7 +105,7 @@ class COMPONENT_EXPORT(GOOGLE_APIS) GaiaOAuthClient {
 
   // Call the userinfo API, returning the user gaia ID associated
   // with the given access token. The provided access token must have
-  // https://www.googleapis.com/auth/userinfo as one of its scopes.
+  // https://www.googleapis.com/auth/userinfo.email as one of its scopes.
   // See |max_retries| docs above.
   void GetUserId(const std::string& oauth_access_token,
                  int max_retries,

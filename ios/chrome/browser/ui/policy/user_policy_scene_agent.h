@@ -14,6 +14,7 @@ class PrefService;
 class Browser;
 
 namespace policy {
+class UserCloudPolicyManager;
 class UserPolicySigninService;
 }  // namespace policy
 
@@ -63,6 +64,8 @@ class UserPolicySigninService;
                             mainBrowser:(Browser*)mainBrowser
                           policyService:
                               (policy::UserPolicySigninService*)policyService
+                      userPolicyManager:
+                          (policy::UserCloudPolicyManager*)userPolicyManager
     NS_DESIGNATED_INITIALIZER;
 
 @end

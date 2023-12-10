@@ -140,7 +140,7 @@ const char kErrorUnconfiguredNetwork[] = "Error.UnconfiguredNetwork";
 
 ExtensionFunction::ResponseAction
 NetworkingPrivateGetPropertiesFunction::Run() {
-  absl::optional<private_api::GetProperties::Params> params =
+  std::optional<private_api::GetProperties::Params> params =
       private_api::GetProperties::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -156,8 +156,8 @@ NetworkingPrivateGetPropertiesFunction::Run() {
 }
 
 void NetworkingPrivateGetPropertiesFunction::Result(
-    absl::optional<base::Value::Dict> result,
-    const absl::optional<std::string>& error) {
+    std::optional<base::Value::Dict> result,
+    const std::optional<std::string>& error) {
   if (!result) {
     Respond(Error(error.value_or("Failed")));
     return;
@@ -173,7 +173,7 @@ void NetworkingPrivateGetPropertiesFunction::Result(
 
 ExtensionFunction::ResponseAction
 NetworkingPrivateGetManagedPropertiesFunction::Run() {
-  absl::optional<private_api::GetManagedProperties::Params> params =
+  std::optional<private_api::GetManagedProperties::Params> params =
       private_api::GetManagedProperties::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -189,8 +189,8 @@ NetworkingPrivateGetManagedPropertiesFunction::Run() {
 }
 
 void NetworkingPrivateGetManagedPropertiesFunction::Result(
-    absl::optional<base::Value::Dict> result,
-    const absl::optional<std::string>& error) {
+    std::optional<base::Value::Dict> result,
+    const std::optional<std::string>& error) {
   if (!result) {
     Respond(Error(error.value_or("Failed")));
     return;
@@ -205,7 +205,7 @@ void NetworkingPrivateGetManagedPropertiesFunction::Result(
 // NetworkingPrivateGetStateFunction
 
 ExtensionFunction::ResponseAction NetworkingPrivateGetStateFunction::Run() {
-  absl::optional<private_api::GetState::Params> params =
+  std::optional<private_api::GetState::Params> params =
       private_api::GetState::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -236,7 +236,7 @@ void NetworkingPrivateGetStateFunction::Failure(const std::string& error) {
 
 ExtensionFunction::ResponseAction
 NetworkingPrivateSetPropertiesFunction::Run() {
-  absl::optional<private_api::SetProperties::Params> params =
+  std::optional<private_api::SetProperties::Params> params =
       private_api::SetProperties::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -276,7 +276,7 @@ void NetworkingPrivateSetPropertiesFunction::Failure(const std::string& error) {
 
 ExtensionFunction::ResponseAction
 NetworkingPrivateCreateNetworkFunction::Run() {
-  absl::optional<private_api::CreateNetwork::Params> params =
+  std::optional<private_api::CreateNetwork::Params> params =
       private_api::CreateNetwork::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -320,7 +320,7 @@ void NetworkingPrivateCreateNetworkFunction::Failure(const std::string& error) {
 
 ExtensionFunction::ResponseAction
 NetworkingPrivateForgetNetworkFunction::Run() {
-  absl::optional<private_api::ForgetNetwork::Params> params =
+  std::optional<private_api::ForgetNetwork::Params> params =
       private_api::ForgetNetwork::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -350,7 +350,7 @@ void NetworkingPrivateForgetNetworkFunction::Failure(const std::string& error) {
 // NetworkingPrivateGetNetworksFunction
 
 ExtensionFunction::ResponseAction NetworkingPrivateGetNetworksFunction::Run() {
-  absl::optional<private_api::GetNetworks::Params> params =
+  std::optional<private_api::GetNetworks::Params> params =
       private_api::GetNetworks::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -387,7 +387,7 @@ void NetworkingPrivateGetNetworksFunction::Failure(const std::string& error) {
 
 ExtensionFunction::ResponseAction
 NetworkingPrivateGetVisibleNetworksFunction::Run() {
-  absl::optional<private_api::GetVisibleNetworks::Params> params =
+  std::optional<private_api::GetVisibleNetworks::Params> params =
       private_api::GetVisibleNetworks::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -483,14 +483,14 @@ NetworkingPrivateGetDeviceStatesFunction::Run() {
 }
 
 void NetworkingPrivateGetDeviceStatesFunction::Result(
-    std::unique_ptr<NetworkingPrivateDelegate::DeviceStateList> device_states) {
+    std::optional<NetworkingPrivateDelegate::DeviceStateList> device_states) {
   if (!device_states) {
     return Respond(Error(networking_private::kErrorNotSupported));
   }
 
   base::Value::List device_state_list;
   for (const auto& properties : *device_states) {
-    device_state_list.Append(properties->ToValue());
+    device_state_list.Append(properties.ToValue());
   }
   return Respond(WithArguments(std::move(device_state_list)));
 }
@@ -500,7 +500,7 @@ void NetworkingPrivateGetDeviceStatesFunction::Result(
 
 ExtensionFunction::ResponseAction
 NetworkingPrivateEnableNetworkTypeFunction::Run() {
-  absl::optional<private_api::EnableNetworkType::Params> params =
+  std::optional<private_api::EnableNetworkType::Params> params =
       private_api::EnableNetworkType::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -524,7 +524,7 @@ void NetworkingPrivateEnableNetworkTypeFunction::Result(bool success) {
 
 ExtensionFunction::ResponseAction
 NetworkingPrivateDisableNetworkTypeFunction::Run() {
-  absl::optional<private_api::DisableNetworkType::Params> params =
+  std::optional<private_api::DisableNetworkType::Params> params =
       private_api::DisableNetworkType::Params::Create(args());
 
   GetDelegate(browser_context())
@@ -547,7 +547,7 @@ void NetworkingPrivateDisableNetworkTypeFunction::Result(bool success) {
 
 ExtensionFunction::ResponseAction
 NetworkingPrivateRequestNetworkScanFunction::Run() {
-  absl::optional<private_api::RequestNetworkScan::Params> params =
+  std::optional<private_api::RequestNetworkScan::Params> params =
       private_api::RequestNetworkScan::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
   std::string network_type = private_api::ToString(params->network_type);
@@ -570,7 +570,7 @@ void NetworkingPrivateRequestNetworkScanFunction::Result(bool success) {
 // NetworkingPrivateStartConnectFunction
 
 ExtensionFunction::ResponseAction NetworkingPrivateStartConnectFunction::Run() {
-  absl::optional<private_api::StartConnect::Params> params =
+  std::optional<private_api::StartConnect::Params> params =
       private_api::StartConnect::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -600,7 +600,7 @@ void NetworkingPrivateStartConnectFunction::Failure(const std::string& guid,
 
 ExtensionFunction::ResponseAction
 NetworkingPrivateStartDisconnectFunction::Run() {
-  absl::optional<private_api::StartDisconnect::Params> params =
+  std::optional<private_api::StartDisconnect::Params> params =
       private_api::StartDisconnect::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -637,7 +637,7 @@ NetworkingPrivateStartActivateFunction::Run() {
     return RespondNow(Error(kPrivateOnlyError));
   }
 
-  absl::optional<private_api::StartActivate::Params> params =
+  std::optional<private_api::StartActivate::Params> params =
       private_api::StartActivate::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -667,7 +667,7 @@ void NetworkingPrivateStartActivateFunction::Failure(const std::string& error) {
 
 ExtensionFunction::ResponseAction
 NetworkingPrivateGetCaptivePortalStatusFunction::Run() {
-  absl::optional<private_api::GetCaptivePortalStatus::Params> params =
+  std::optional<private_api::GetCaptivePortalStatus::Params> params =
       private_api::GetCaptivePortalStatus::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -706,7 +706,7 @@ NetworkingPrivateUnlockCellularSimFunction::Run() {
     return RespondNow(Error(kPrivateOnlyError));
   }
 
-  absl::optional<private_api::UnlockCellularSim::Params> params =
+  std::optional<private_api::UnlockCellularSim::Params> params =
       private_api::UnlockCellularSim::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -743,7 +743,7 @@ NetworkingPrivateSetCellularSimStateFunction::Run() {
     return RespondNow(Error(kPrivateOnlyError));
   }
 
-  absl::optional<private_api::SetCellularSimState::Params> params =
+  std::optional<private_api::SetCellularSimState::Params> params =
       private_api::SetCellularSimState::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -782,7 +782,7 @@ NetworkingPrivateSelectCellularMobileNetworkFunction::Run() {
     return RespondNow(Error(kPrivateOnlyError));
   }
 
-  absl::optional<private_api::SelectCellularMobileNetwork::Params> params =
+  std::optional<private_api::SelectCellularMobileNetwork::Params> params =
       private_api::SelectCellularMobileNetwork::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -823,12 +823,11 @@ NetworkingPrivateGetGlobalPolicyFunction::Run() {
 }
 
 void NetworkingPrivateGetGlobalPolicyFunction::Result(
-    absl::optional<base::Value::Dict> policy_dict) {
+    std::optional<base::Value::Dict> policy_dict) {
   // private_api::GlobalPolicy is a subset of the global policy dictionary
   // (by definition), so use the api setter/getter to generate the subset.
-  std::unique_ptr<private_api::GlobalPolicy> policy(
-      private_api::GlobalPolicy::FromValueDeprecated(
-          base::Value(std::move(policy_dict.value()))));
+  std::optional<private_api::GlobalPolicy> policy =
+      private_api::GlobalPolicy::FromValue(policy_dict.value());
   DCHECK(policy);
   return Respond(
       ArgumentList(private_api::GetGlobalPolicy::Results::Create(*policy)));

@@ -219,7 +219,7 @@ class DemoSession : public session_manager::SessionManagerObserver,
   // Once received the keyboard brightness percentage, increase the keyboard
   // brightness to the max level.
   void SetKeyboardBrightnessToOneHundredPercentFromCurrentLevel(
-      absl::optional<double> keyboard_brightness_percentage);
+      std::optional<double> keyboard_brightness_percentage);
 
   // Allocate the device to a group in the experiment and register the
   // synthetic field trial.

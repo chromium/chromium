@@ -34,22 +34,24 @@ public class ChildProcessLauncherTestHelperService extends Service {
     public static final int MSG_UNBIND_SERVICE = MSG_BIND_SERVICE_REPLY + 1;
     public static final int MSG_UNBIND_SERVICE_REPLY = MSG_UNBIND_SERVICE + 1;
 
-    private final Handler.Callback mHandlerCallback = new Handler.Callback() {
-        @Override
-        @SuppressWarnings("checkstyle:SystemExitCheck") // Allowed due to ChildProcessService.
-        public boolean handleMessage(Message msg) {
-            switch (msg.what) {
-                case MSG_BIND_SERVICE:
-                    doBindService(msg);
-                    return true;
-                case MSG_UNBIND_SERVICE:
-                    unbindService(msg);
-                    System.exit(0);
-                    return true;
-            }
-            return false;
-        }
-    };
+    private final Handler.Callback mHandlerCallback =
+            new Handler.Callback() {
+                @Override
+                @SuppressWarnings(
+                        "checkstyle:SystemExitCheck") // Allowed due to ChildProcessService.
+                public boolean handleMessage(Message msg) {
+                    switch (msg.what) {
+                        case MSG_BIND_SERVICE:
+                            doBindService(msg);
+                            return true;
+                        case MSG_UNBIND_SERVICE:
+                            unbindService(msg);
+                            System.exit(0);
+                            return true;
+                    }
+                    return false;
+                }
+            };
 
     private final HandlerThread mHandlerThread = new HandlerThread("Helper Service Handler");
 
@@ -70,42 +72,57 @@ public class ChildProcessLauncherTestHelperService extends Service {
     }
 
     private void doBindService(final Message msg) {
-        String[] commandLine = { "_", "--" + BaseSwitches.RENDERER_WAIT_FOR_JAVA_DEBUGGER };
+        String[] commandLine = {"_", "--" + BaseSwitches.RENDERER_WAIT_FOR_JAVA_DEBUGGER};
         final boolean bindToCaller = true;
-        ChildProcessCreationParams.set(getPackageName(), null /* privilegedServicesName */,
-                getPackageName(), null /* sandboxedServicesName */, false,
-                LibraryProcessType.PROCESS_CHILD, bindToCaller,
-                false /* ignoreVisibilityForImportance */);
-        mProcessLauncher = ChildProcessLauncherTestUtils.startForTesting(true /* sandboxed */,
-                commandLine, new FileDescriptorInfo[0], true /* doSetupConnection */);
+        ChildProcessCreationParams.set(
+                getPackageName(),
+                /* privilegedServicesName= */ null,
+                getPackageName(),
+                /* sandboxedServicesName= */ null,
+                false,
+                LibraryProcessType.PROCESS_CHILD,
+                bindToCaller,
+                /* ignoreVisibilityForImportance= */ false);
+        mProcessLauncher =
+                ChildProcessLauncherTestUtils.startForTesting(
+                        /* sandboxed= */ true,
+                        commandLine,
+                        new FileDescriptorInfo[0],
+                        /* doSetupConnection= */ true);
 
         // Poll the launcher until the connection is set up. The main test in
         // ChildProcessLauncherTest, which has bound the connection to this service, manages the
         // timeout via the lifetime of this service.
         final Handler handler = new Handler();
-        final Runnable task = new Runnable() {
-            final Messenger mReplyTo = msg.replyTo;
+        final Runnable task =
+                new Runnable() {
+                    final Messenger mReplyTo = msg.replyTo;
 
-            @Override
-            public void run() {
-                int pid = 0;
-                ChildProcessConnection conn = mProcessLauncher.getChildProcessConnection();
-                if (conn != null) {
-                    pid = ChildProcessLauncherTestUtils.getConnectionPid(conn);
-                }
-                if (pid == 0) {
-                    handler.postDelayed(this, 10 /* milliseconds */);
-                    return;
-                }
+                    @Override
+                    public void run() {
+                        int pid = 0;
+                        ChildProcessConnection conn = mProcessLauncher.getChildProcessConnection();
+                        if (conn != null) {
+                            pid = ChildProcessLauncherTestUtils.getConnectionPid(conn);
+                        }
+                        if (pid == 0) {
+                            handler.postDelayed(this, /* milliseconds= */ 10);
+                            return;
+                        }
 
-                try {
-                    mReplyTo.send(Message.obtain(null, MSG_BIND_SERVICE_REPLY, pid,
-                            ChildProcessLauncherTestUtils.getConnectionServiceNumber(conn)));
-                } catch (RemoteException ex) {
-                    throw new RuntimeException(ex);
-                }
-            }
-        };
+                        try {
+                            mReplyTo.send(
+                                    Message.obtain(
+                                            null,
+                                            MSG_BIND_SERVICE_REPLY,
+                                            pid,
+                                            ChildProcessLauncherTestUtils
+                                                    .getConnectionServiceNumber(conn)));
+                        } catch (RemoteException ex) {
+                            throw new RuntimeException(ex);
+                        }
+                    }
+                };
         handler.postDelayed(task, 10);
     }
 

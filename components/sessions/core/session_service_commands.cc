@@ -170,6 +170,13 @@ enum PersistedWindowShowState {
   PERSISTED_SHOW_STATE_END = 8,
 };
 
+// TODO(crbug.com/1506068): Remove this around December 2024. This is part of a
+// workaround added to support the transition from storing the last_active_time
+// as TimeTicks to Time that was added in December 2023. This is the threshold
+// at which we consider that if a tab is so far in the past, it must be a tab
+// serialized with TimeTicks and not Time.
+const base::TimeDelta kLastActiveWorkaroundThreshold = base::Days(366 * 15);
+
 // Assert to ensure PersistedWindowShowState is updated if ui::WindowShowState
 // is changed.
 static_assert(ui::SHOW_STATE_END ==
@@ -791,8 +798,33 @@ void CreateTabsAndWindows(
         }
         SessionTab* tab =
             GetTab(SessionID::FromSerializedValue(payload.tab_id), tabs);
-        tab->last_active_time = base::Time::FromDeltaSinceWindowsEpoch(
+        base::Time deserialized_time = base::Time::FromDeltaSinceWindowsEpoch(
             base::Microseconds(payload.last_active_time));
+
+        if (base::Time::Now() - deserialized_time >
+            kLastActiveWorkaroundThreshold) {
+          // TODO(crbug.com/1506068): Remove this once enough time has passed
+          // (added in December 2023, can be removed after ~1 year). This is a
+          // workaround put in place during the migration from base::TimeTicks
+          // internal representation to microseconds since Windows epoch. As the
+          // origin point may be vastely different, the values stored in the old
+          // format appear as really old when deserialized in the new format. So
+          // checking all value older than 15 years should be a good enough
+          // filter to catch them. If it is a value stored in the old format, it
+          // should be correctly decoded.
+          base::TimeTicks time_tick_value =
+              base::TimeTicks::FromInternalValue(payload.last_active_time);
+          base::TimeDelta delta_since_epoch =
+              time_tick_value - base::TimeTicks::UnixEpoch();
+          base::Time corrected_time =
+              base::Time::UnixEpoch() + delta_since_epoch;
+          if (base::Time::Now() < corrected_time) {
+            // If the correction is giving a time in the future, set it to now.
+            corrected_time = base::Time::Now();
+          }
+          deserialized_time = corrected_time;
+        }
+        tab->last_active_time = deserialized_time;
         break;
       }
 

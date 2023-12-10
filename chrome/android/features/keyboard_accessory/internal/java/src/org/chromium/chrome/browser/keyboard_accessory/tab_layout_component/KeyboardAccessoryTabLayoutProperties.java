@@ -24,7 +24,7 @@ class KeyboardAccessoryTabLayoutProperties {
     static final WritableObjectPropertyKey<TabLayout.OnTabSelectedListener>
             TAB_SELECTION_CALLBACKS = new WritableObjectPropertyKey<>("tab_selection_callback");
     static final WritableObjectPropertyKey<
-            KeyboardAccessoryButtonGroupView.KeyboardAccessoryButtonGroupListener>
+                    KeyboardAccessoryButtonGroupView.KeyboardAccessoryButtonGroupListener>
             BUTTON_SELECTION_CALLBACKS =
                     new WritableObjectPropertyKey<>("button_selection_callback");
 

@@ -5,11 +5,10 @@
 #include "ash/wm/drag_details.h"
 
 #include "ash/public/cpp/window_properties.h"
-#include "ash/shell.h"
-#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_resizer.h"
 #include "ui/aura/window.h"
 #include "ui/base/hit_test.h"
+#include "ui/display/screen.h"
 #include "ui/wm/core/coordinate_conversion.h"
 
 namespace ash {
@@ -49,7 +48,7 @@ gfx::Rect GetWindowInitialBoundsInParent(aura::Window* window) {
   if (WindowState::Get(window)->IsFloated())
     return window->bounds();
 
-  if (Shell::Get()->tablet_mode_controller()->InTabletMode()) {
+  if (display::Screen::GetScreen()->InTabletMode()) {
     gfx::Rect* override_bounds = window->GetProperty(kRestoreBoundsOverrideKey);
     if (override_bounds && !override_bounds->IsEmpty()) {
       wm::ConvertRectFromScreen(window->GetRootWindow(), override_bounds);
@@ -68,7 +67,7 @@ gfx::Rect GetRestoreBoundsInParent(aura::Window* window, int window_component) {
   // TODO(xdai): Move these logic to WindowState::GetRestoreBoundsInScreen()
   // and let it return the right value.
   gfx::Rect restore_bounds;
-  if (Shell::Get()->tablet_mode_controller()->InTabletMode()) {
+  if (display::Screen::GetScreen()->InTabletMode()) {
     gfx::Rect* override_bounds = window->GetProperty(kRestoreBoundsOverrideKey);
     if (override_bounds && !override_bounds->IsEmpty()) {
       restore_bounds = *override_bounds;

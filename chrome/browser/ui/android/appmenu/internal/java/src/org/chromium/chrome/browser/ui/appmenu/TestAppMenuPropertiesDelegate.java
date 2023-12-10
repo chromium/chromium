@@ -95,14 +95,20 @@ class TestAppMenuPropertiesDelegate implements AppMenuPropertiesDelegate {
         menu.findItem(R.id.icon_row_menu_id).setVisible(enableAppIconRow);
         if (enableAppIconRow) {
             menu.findItem(R.id.icon_one)
-                    .setIcon(AppCompatResources.getDrawable(ContextUtils.getApplicationContext(),
-                            R.drawable.test_ic_arrow_forward_black_24dp));
+                    .setIcon(
+                            AppCompatResources.getDrawable(
+                                    ContextUtils.getApplicationContext(),
+                                    R.drawable.test_ic_arrow_forward_black_24dp));
             menu.findItem(R.id.icon_two)
-                    .setIcon(AppCompatResources.getDrawable(ContextUtils.getApplicationContext(),
-                            R.drawable.test_ic_arrow_forward_black_24dp));
+                    .setIcon(
+                            AppCompatResources.getDrawable(
+                                    ContextUtils.getApplicationContext(),
+                                    R.drawable.test_ic_arrow_forward_black_24dp));
             menu.findItem(R.id.icon_three)
-                    .setIcon(AppCompatResources.getDrawable(ContextUtils.getApplicationContext(),
-                            R.drawable.test_ic_arrow_forward_black_24dp));
+                    .setIcon(
+                            AppCompatResources.getDrawable(
+                                    ContextUtils.getApplicationContext(),
+                                    R.drawable.test_ic_arrow_forward_black_24dp));
             menu.findItem(R.id.icon_three).setEnabled(false);
         }
     }

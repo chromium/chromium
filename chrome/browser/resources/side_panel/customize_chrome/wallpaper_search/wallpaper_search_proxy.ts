@@ -2,18 +2,36 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {WallpaperSearchHandler, WallpaperSearchHandlerInterface} from '../wallpaper_search.mojom-webui.js';
+import {WallpaperSearchClientCallbackRouter, WallpaperSearchHandlerFactory, WallpaperSearchHandlerInterface, WallpaperSearchHandlerRemote} from '../wallpaper_search.mojom-webui.js';
 
-let handler: WallpaperSearchHandlerInterface|null = null;
+let instance: WallpaperSearchProxy|null = null;
 
 export class WallpaperSearchProxy {
-  static getHandler(): WallpaperSearchHandlerInterface {
-    return handler || (handler = WallpaperSearchHandler.getRemote());
+  static getInstance(): WallpaperSearchProxy {
+    if (!instance) {
+      const handler = new WallpaperSearchHandlerRemote();
+      const callbackRouter = new WallpaperSearchClientCallbackRouter();
+      WallpaperSearchHandlerFactory.getRemote().createWallpaperSearchHandler(
+          callbackRouter.$.bindNewPipeAndPassRemote(),
+          handler.$.bindNewPipeAndPassReceiver());
+      instance = new WallpaperSearchProxy(handler, callbackRouter);
+    }
+    return instance;
   }
 
-  static setHandler(newHandler: WallpaperSearchHandlerInterface) {
-    handler = newHandler;
+  static setInstance(
+      handler: WallpaperSearchHandlerInterface,
+      callbackRouter: WallpaperSearchClientCallbackRouter) {
+    instance = new WallpaperSearchProxy(handler, callbackRouter);
   }
 
-  private constructor() {}
+  handler: WallpaperSearchHandlerInterface;
+  callbackRouter: WallpaperSearchClientCallbackRouter;
+
+  private constructor(
+      handler: WallpaperSearchHandlerInterface,
+      callbackRouter: WallpaperSearchClientCallbackRouter) {
+    this.handler = handler;
+    this.callbackRouter = callbackRouter;
+  }
 }

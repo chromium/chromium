@@ -4,16 +4,16 @@
 
 #include "chromeos/ash/components/chaps_util/chaps_util_impl.h"
 
-#include "base/base64.h"
-#include "base/files/file_util.h"
-
 #include <pkcs11t.h>
 #include <secmodt.h>
 
 #include <map>
+#include <optional>
 #include <utility>
 #include <vector>
 
+#include "base/base64.h"
+#include "base/files/file_util.h"
 #include "chromeos/ash/components/chaps_util/chaps_slot_session.h"
 #include "chromeos/ash/components/chaps_util/pkcs12_reader.h"
 #include "crypto/nss_key_util.h"
@@ -24,7 +24,6 @@
 #include "net/test/test_data_directory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/boringssl/src/include/openssl/bn.h"
 #include "third_party/boringssl/src/include/openssl/x509.h"
 
@@ -41,10 +40,10 @@ constexpr CK_ATTRIBUTE_TYPE kKeyInSoftware = CKA_VENDOR_DEFINED + 5;
 
 enum AttrValueType { kNotDefined, kCkBool, kCkUlong, kCkBytes };
 const char kPkcs12FilePassword[] = "12345";
-const absl::optional<std::vector<CK_BYTE>> default_encoded_cert_label =
+const std::optional<std::vector<CK_BYTE>> default_encoded_cert_label =
     base::Base64Decode("dGVzdHVzZXJjZXJ0");
 // python print(base64.b64encode("default nickname".encode('utf-8'))).
-const absl::optional<std::vector<CK_BYTE>> default_encoded_label =
+const std::optional<std::vector<CK_BYTE>> default_encoded_label =
     base::Base64Decode("VW5rbm93biBvcmc=");
 
 // Class helper to keep relations between all possible attribute's types,
@@ -142,45 +141,45 @@ class AttributeData {
   }
   ~AttributeData() = default;
 
-  absl::optional<CK_BBOOL> CkBool() { return ck_bool_value_; }
+  std::optional<CK_BBOOL> CkBool() { return ck_bool_value_; }
 
-  absl::optional<CK_ULONG> CkULong() { return ck_ulong_value_; }
+  std::optional<CK_ULONG> CkULong() { return ck_ulong_value_; }
 
-  absl::optional<std::vector<CK_BYTE>> CkByte() { return ck_bytes_value_; }
+  std::optional<std::vector<CK_BYTE>> CkByte() { return ck_bytes_value_; }
 
  private:
   std::string name_;
-  absl::optional<CK_BBOOL> ck_bool_value_;
-  absl::optional<CK_ULONG> ck_ulong_value_;
-  absl::optional<std::vector<CK_BYTE>> ck_bytes_value_;
+  std::optional<CK_BBOOL> ck_bool_value_;
+  std::optional<CK_ULONG> ck_ulong_value_;
+  std::optional<std::vector<CK_BYTE>> ck_bytes_value_;
 
-  static absl::optional<CK_BBOOL> ParseCkBBool(
+  static std::optional<CK_BBOOL> ParseCkBBool(
       const CK_ATTRIBUTE& attribute,
       const std::string& attribute_name) {
     if (attribute.ulValueLen < sizeof(CK_BBOOL)) {
       ADD_FAILURE() << "Size to small for CK_BBOOL for attribute "
                     << attribute_name << ": " << attribute.ulValueLen;
-      return absl::nullopt;
+      return std::nullopt;
     }
     CK_BBOOL value;
     memcpy(&value, attribute.pValue, sizeof(CK_BBOOL));
     return value;
   }
 
-  static absl::optional<CK_ULONG> ParseCkULong(
+  static std::optional<CK_ULONG> ParseCkULong(
       const CK_ATTRIBUTE& attribute,
       const std::string& attribute_name) {
     if (attribute.ulValueLen < sizeof(CK_ULONG)) {
       ADD_FAILURE() << "Size to small for CK_ULONG for attribute "
                     << attribute_name << ": " << attribute.ulValueLen;
-      return absl::nullopt;
+      return std::nullopt;
     }
     CK_ULONG value;
     memcpy(&value, attribute.pValue, sizeof(CK_ULONG));
     return value;
   }
 
-  static absl::optional<std::vector<CK_BYTE>> ParseCkBytes(
+  static std::optional<std::vector<CK_BYTE>> ParseCkBytes(
       const CK_ATTRIBUTE& attribute) {
     std::vector<CK_BYTE> result(attribute.ulValueLen);
     memcpy(result.data(), attribute.pValue, result.size());
@@ -206,15 +205,15 @@ struct ObjectAttributes {
     return result;
   }
 
-  absl::optional<CK_BBOOL> GetCkBool(const CK_ATTRIBUTE_TYPE attribute_type) {
+  std::optional<CK_BBOOL> GetCkBool(const CK_ATTRIBUTE_TYPE attribute_type) {
     return parsed_attributes_map[attribute_type].CkBool();
   }
 
-  absl::optional<CK_ULONG> GetCkULong(const CK_ATTRIBUTE_TYPE attribute_type) {
+  std::optional<CK_ULONG> GetCkULong(const CK_ATTRIBUTE_TYPE attribute_type) {
     return parsed_attributes_map[attribute_type].CkULong();
   }
 
-  absl::optional<std::vector<CK_BYTE>> GetCkByte(
+  std::optional<std::vector<CK_BYTE>> GetCkByte(
       const CK_ATTRIBUTE_TYPE attribute_type) {
     return parsed_attributes_map[attribute_type].CkByte();
   }
@@ -246,7 +245,7 @@ struct PassedData {
   int reopen_session_call_count = 0;
 
   // The slot_id passed into FakeChapsSlotSessionFactory.
-  absl::optional<CK_SLOT_ID> slot_id;
+  std::optional<CK_SLOT_ID> slot_id;
 
   // Attributes passed for the secret key template to GenerateKey.
   ObjectAttributes secret_key_gen_attributes;
@@ -716,10 +715,10 @@ class FakePkcs12Reader : public Pkcs12Reader {
   Pkcs12ReaderStatusCode check_relation_status_ =
       Pkcs12ReaderStatusCode::kSuccess;
   mutable int find_key_by_cert_called_ = 0;
-  absl::optional<Pkcs12ReaderStatusCode> find_key_by_cert_status_;
-  absl::optional<Pkcs12ReaderStatusCode> find_key_by_der_cert_status_;
+  std::optional<Pkcs12ReaderStatusCode> find_key_by_cert_status_;
+  std::optional<Pkcs12ReaderStatusCode> find_key_by_der_cert_status_;
 
-  absl::optional<std::vector<uint8_t>> bignum_to_bytes_value_ = absl::nullopt;
+  std::optional<std::vector<uint8_t>> bignum_to_bytes_value_ = std::nullopt;
 };
 
 class ChapsUtilImplTest : public ::testing::Test {
@@ -740,7 +739,7 @@ class ChapsUtilImplTest : public ::testing::Test {
   static std::vector<uint8_t> ReadTestFile(const std::string& file_name) {
     base::FilePath file_path =
         net::GetTestCertsDirectory().AppendASCII(file_name);
-    absl::optional<std::vector<uint8_t>> file_data = ReadFileToBytes(file_path);
+    std::optional<std::vector<uint8_t>> file_data = ReadFileToBytes(file_path);
     EXPECT_TRUE(file_data.has_value());
     if (!file_data.has_value()) {
       return {};
@@ -844,7 +843,7 @@ TEST_F(ChapsUtilImplTest, ImportPkcs12CertificateSuccessSlotOk) {
 // Successfully import public key and single certificate from PKCS12 file to
 // Chaps software slot.
 TEST_F(ChapsUtilImplTest, ImportPkcs12EnforceSoftwareBackedSuccess) {
-  using OPTIONAL_CK_BYTE_VECTOR = absl::optional<std::vector<CK_BYTE>>;
+  using OPTIONAL_CK_BYTE_VECTOR = std::optional<std::vector<CK_BYTE>>;
   std::map<CK_ATTRIBUTE_TYPE, OPTIONAL_CK_BYTE_VECTOR> expected_key_data;
   // Strings below have hardcoded fields from "client.p12" which is referenced
   // by GetPkcs12Data(), they are Base64Encoded for the shorter representation.

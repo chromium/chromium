@@ -67,7 +67,7 @@ StreamPipelineDescriptor::StreamPipelineDescriptor(
     base::Value prerender_pipeline_in,
     base::Value pipeline_in,
     const base::Value* stream_types_in,
-    const absl::optional<int> num_input_channels_in,
+    const std::optional<int> num_input_channels_in,
     const base::Value* volume_limits_in)
     : prerender_pipeline(std::move(prerender_pipeline_in)),
       pipeline(std::move(pipeline_in)),
@@ -179,7 +179,7 @@ StreamPipelineDescriptor PostProcessingPipelineParser::GetPipelineByKey(
                  << "\" in " << file_path_ << ". Using passthrough.";
     return StreamPipelineDescriptor(base::Value(base::Value::Type::LIST),
                                     base::Value(base::Value::Type::LIST),
-                                    nullptr, absl::nullopt, nullptr);
+                                    nullptr, std::nullopt, nullptr);
   }
 
   const base::Value::Dict& stream_dict = stream_value->GetDict();

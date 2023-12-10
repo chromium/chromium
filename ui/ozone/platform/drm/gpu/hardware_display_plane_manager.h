@@ -141,10 +141,9 @@ class HardwareDisplayPlaneManager {
   void SetBackgroundColor(uint32_t crtc_id, const uint64_t background_color);
 
   // Sets the degamma/gamma luts on the CRTC object with ID |crtc_id|.
-  virtual bool SetGammaCorrection(
-      uint32_t crtc_id,
-      const std::vector<display::GammaRampRGBEntry>& degamma_lut,
-      const std::vector<display::GammaRampRGBEntry>& gamma_lut);
+  virtual bool SetGammaCorrection(uint32_t crtc_id,
+                                  const display::GammaCurve& degamma,
+                                  const display::GammaCurve& gamma);
 
   // Assign hardware planes from the |planes_| list to |overlay_list| entries,
   // recording the plane IDs in the |plane_list|. Only planes compatible with

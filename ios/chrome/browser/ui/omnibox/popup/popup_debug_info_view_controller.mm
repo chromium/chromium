@@ -3,11 +3,17 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/omnibox/popup/popup_debug_info_view_controller.h"
+#import "base/apple/foundation_util.h"
 #import "components/omnibox/browser/autocomplete_match_type.h"
 #import "components/omnibox/browser/autocomplete_provider.h"
 #import "components/variations/variations_switches.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/ui/omnibox/popup/autocomplete_match_formatter.h"
+#import "ios/chrome/browser/ui/omnibox/popup/debugger/omnibox_autocomplete_event.h"
+#import "ios/chrome/browser/ui/omnibox/popup/debugger/omnibox_autocomplete_event_view_controller.h"
+#import "ios/chrome/browser/ui/omnibox/popup/debugger/omnibox_event.h"
+#import "ios/chrome/browser/ui/omnibox/popup/debugger/omnibox_remote_suggestion_event.h"
+#import "ios/chrome/browser/ui/omnibox/popup/debugger/omnibox_remote_suggestion_event_view_controller.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
 namespace {
@@ -110,7 +116,7 @@ UITableView* SuggestionsTableView() {
 @property(nonatomic, strong) UITextField* variationIDTextField;
 @property(nonatomic, strong) UITextView* enableVariationIDTextView;
 @property(nonatomic, strong) UITextView* disableVariationIDsTextView;
-@property(nonatomic, strong) UITableView* suggestions;
+@property(nonatomic, strong) UITableView* tableView;
 
 @property(nonatomic, strong) UILabel* variationInstructionLabel;
 @property(nonatomic, strong) UIButton* settingsButton;
@@ -121,7 +127,8 @@ UITableView* SuggestionsTableView() {
 @end
 
 @implementation PopupDebugInfoViewController {
-  NSMutableArray<AutocompleteMatchFormatter*>* _suggestionsList;
+  // In reverse chronological order: index 0 is most recent.
+  NSMutableArray<id<OmniboxEvent>>* _events;
 }
 
 - (instancetype)init {
@@ -135,12 +142,12 @@ UITableView* SuggestionsTableView() {
     _variationInstructionLabel = VariationInstructionLabel();
     _enableVariationIDTextView = DebugTextView();
     _disableVariationIDsTextView = DebugTextView();
-    _suggestions = SuggestionsTableView();
+    _tableView = SuggestionsTableView();
 
-    [_suggestions setDelegate:self];
-    [_suggestions setDataSource:self];
+    [_tableView setDelegate:self];
+    [_tableView setDataSource:self];
 
-    _suggestionsList = [[NSMutableArray alloc] init];
+    _events = [[NSMutableArray alloc] init];
 
     [_variationIDTextField addTarget:self
                               action:@selector(textFieldDidChange:)
@@ -175,15 +182,15 @@ UITableView* SuggestionsTableView() {
   [stackView addArrangedSubview:self.variationInstructionLabel];
   [stackView addArrangedSubview:self.enableVariationIDTextView];
   [stackView addArrangedSubview:self.disableVariationIDsTextView];
-  [stackView addArrangedSubview:_suggestions];
+  [stackView addArrangedSubview:_tableView];
 
   [NSLayoutConstraint activateConstraints:@[
-    [_suggestions.widthAnchor constraintEqualToAnchor:stackView.widthAnchor],
-    [_suggestions.topAnchor
+    [_tableView.widthAnchor constraintEqualToAnchor:stackView.widthAnchor],
+    [_tableView.topAnchor
         constraintEqualToAnchor:self.disableVariationIDsTextView.bottomAnchor
                        constant:16],
-    [_suggestions.bottomAnchor constraintEqualToAnchor:stackView.bottomAnchor
-                                              constant:-16]
+    [_tableView.bottomAnchor constraintEqualToAnchor:stackView.bottomAnchor
+                                            constant:-16]
   ]];
 
   self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]
@@ -247,62 +254,92 @@ UITableView* SuggestionsTableView() {
 
 - (void)autocompleteController:(AutocompleteController*)controller
              didStartWithInput:(const AutocompleteInput&)input {
+  [_events removeAllObjects];
+  [_tableView reloadData];
 }
 
 - (void)autocompleteController:(AutocompleteController*)controller
     didUpdateResultChangingDefaultMatch:(BOOL)defaultMatchChanged {
-  [_suggestionsList removeAllObjects];
+  OmniboxAutocompleteEvent* event = [[OmniboxAutocompleteEvent alloc]
+      initWithAutocompleteController:controller];
 
-  for (auto acm : controller->result()) {
-    AutocompleteMatchFormatter* matcher =
-        [[AutocompleteMatchFormatter alloc] initWithMatch:acm];
-    [_suggestionsList addObject:matcher];
-  }
+  [_events insertObject:event atIndex:0];
 
-  [_suggestions reloadData];
+  [_tableView reloadData];
 }
 
 #pragma mark - RemoteSuggestionsServiceObserver
 
 - (void)remoteSuggestionsService:(RemoteSuggestionsService*)service
-                 startingRequest:(const network::ResourceRequest*)request
-                uniqueIdentifier:
-                    (const base::UnguessableToken&)requestIdentifier {
+    createdRequestWithIdentifier:
+        (const base::UnguessableToken&)requestIdentifier
+                         request:(const network::ResourceRequest*)request {
+  OmniboxRemoteSuggestionEvent* event = [[OmniboxRemoteSuggestionEvent alloc]
+      initWithUniqueIdentifier:requestIdentifier];
+
+  [_events insertObject:event atIndex:0];
+
+  [_tableView reloadData];
+}
+
+- (void)remoteSuggestionsService:(RemoteSuggestionsService*)service
+    startedRequestWithIdentifier:
+        (const base::UnguessableToken&)requestIdentifier
+                     requestBody:(NSString*)requestBody
+                       URLLoader:(network::SimpleURLLoader*)URLLoader {
+  NSUInteger indexOfFoundEventElement =
+      [_events indexOfObjectPassingTest:^BOOL(id<OmniboxEvent> event,
+                                              NSUInteger, BOOL*) {
+        return event.type == kRemoteSuggestionUpdate &&
+               base::apple::ObjCCastStrict<OmniboxRemoteSuggestionEvent>(event)
+                       .uniqueIdentifier == requestIdentifier;
+      }];
+  if (indexOfFoundEventElement != NSNotFound) {
+    base::apple::ObjCCastStrict<OmniboxRemoteSuggestionEvent>(
+        _events[indexOfFoundEventElement])
+        .requestBody = requestBody;
+    NSIndexPath* indexPath =
+        [NSIndexPath indexPathForRow:indexOfFoundEventElement inSection:0];
+    [_tableView reloadRowsAtIndexPaths:@[ indexPath ]
+                      withRowAnimation:UITableViewRowAnimationNone];
+  }
 }
 
 - (void)remoteSuggestionsService:(RemoteSuggestionsService*)service
     completedRequestWithIdentifier:
         (const base::UnguessableToken&)requestIdentifier
-                  receivedResponse:(NSString*)response {
+                      responseCode:(NSInteger)code
+                      responseBody:(NSString*)responseBody {
+  NSUInteger indexOfFoundEventElement =
+      [_events indexOfObjectPassingTest:^BOOL(id<OmniboxEvent> event,
+                                              NSUInteger, BOOL*) {
+        return event.type == kRemoteSuggestionUpdate &&
+               base::apple::ObjCCastStrict<OmniboxRemoteSuggestionEvent>(event)
+                       .uniqueIdentifier == requestIdentifier;
+      }];
+  if (indexOfFoundEventElement != NSNotFound) {
+    OmniboxRemoteSuggestionEvent* event =
+        base::apple::ObjCCastStrict<OmniboxRemoteSuggestionEvent>(
+            _events[indexOfFoundEventElement]);
+
+    event.responseBody = responseBody;
+    event.responseCode = code;
+    NSIndexPath* indexPath =
+        [NSIndexPath indexPathForRow:indexOfFoundEventElement inSection:0];
+    [_tableView reloadRowsAtIndexPaths:@[ indexPath ]
+                      withRowAnimation:UITableViewRowAnimationNone];
+  }
 }
 
 #pragma mark - UITableViewDataSource
 
 - (NSInteger)tableView:(UITableView*)tableView
     numberOfRowsInSection:(NSInteger)section {
-  return SectionRowsCount;
+  return _events.count;
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView*)tableView {
-  return [_suggestionsList count];
-}
-
-- (UIView*)tableView:(UITableView*)tableView
-    viewForHeaderInSection:(NSInteger)section {
-  AutocompleteMatchFormatter* match = _suggestionsList[section];
-
-  UITableViewHeaderFooterView* header =
-      [tableView dequeueReusableHeaderFooterViewWithIdentifier:
-                     NSStringFromClass([UITableViewHeaderFooterView class])];
-
-  UIListContentConfiguration* contentConfiguration =
-      header.defaultContentConfiguration;
-
-  contentConfiguration.text = match.text.string;
-  contentConfiguration.textProperties.font =
-      [UIFont systemFontOfSize:18 weight:UIFontWeightSemibold];
-  header.contentConfiguration = contentConfiguration;
-  return header;
+  return 1;
 }
 
 - (UITableViewCell*)tableView:(UITableView*)tableView
@@ -311,56 +348,31 @@ UITableView* SuggestionsTableView() {
       [tableView dequeueReusableCellWithIdentifier:@"Cell"
                                       forIndexPath:indexPath];
   UIListContentConfiguration* content = cell.defaultContentConfiguration;
-
-  AutocompleteMatchFormatter* match = _suggestionsList[indexPath.section];
-
-  switch (indexPath.row) {
-    case SuggestionDetailsRow:
-      content.text = [NSString
-          stringWithFormat:@"Detail text: %@", match.detailText.string];
-      break;
-    case RelevanceRow:
-      content.text = [NSString
-          stringWithFormat:@"Relevance: %d", match.autocompleteMatch.relevance];
-
-      break;
-    case GroupIdRow:
-      content.text =
-          [NSString stringWithFormat:@"Group Id: %@", match.suggestionGroupId];
-      break;
-    case IsTabMatchRow:
-      content.text =
-          [NSString stringWithFormat:@"Open in a tab: %@",
-                                     match.isTabMatch ? @"YES" : @"NO"];
-      break;
-    case SupportsDeletionRow:
-      content.text =
-          [NSString stringWithFormat:@"Supports deletion: %@",
-                                     match.supportsDeletion ? @"YES" : @"NO"];
-      break;
-    case ProviderRow: {
-      NSString* provider =
-          base::SysUTF8ToNSString(AutocompleteProvider::TypeToString(
-              match.autocompleteMatch.provider->type()));
-
-      content.text = [NSString stringWithFormat:@"Provider: %@", provider];
-      break;
-    }
-    case SuggestionTypeRow: {
-      NSString* type = base::SysUTF8ToNSString(
-          AutocompleteMatchType::ToString(match.autocompleteMatch.type));
-
-      content.text = [NSString stringWithFormat:@"Type: %@", type];
-      break;
-    }
-    default:
-      NOTREACHED();
-      break;
-  }
+  id<OmniboxEvent> event = _events[indexPath.row];
+  content.text = event.title;
 
   cell.contentConfiguration = content;
 
   return cell;
+}
+
+#pragma mark - UITableViewDelegate
+
+- (void)tableView:(UITableView*)tableView
+    didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
+  id<OmniboxEvent> event = _events[indexPath.row];
+
+  if (event.type == kAutocompleteUpdate) {
+    OmniboxAutocompleteEventViewController* vc =
+        [[OmniboxAutocompleteEventViewController alloc] init];
+    vc.event = (OmniboxAutocompleteEvent*)event;
+    [self.navigationController pushViewController:vc animated:YES];
+  } else {
+    OmniboxRemoteSuggestionEventViewController* vc =
+        [[OmniboxRemoteSuggestionEventViewController alloc] init];
+    vc.event = (OmniboxRemoteSuggestionEvent*)event;
+    [self.navigationController pushViewController:vc animated:YES];
+  }
 }
 
 #pragma mark - private

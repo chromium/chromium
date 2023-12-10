@@ -91,6 +91,12 @@ struct AXMovementOptions {
 
   AXBoundaryBehavior boundary_behavior;
   AXBoundaryDetection boundary_detection;
+
+  // If true, indicates that an upstream position should not be crossed when
+  // moving forward and should skip its initial check when moving backward. This
+  // primarily applies to getting a pair of positions around a line from an
+  // upstream caret.
+  bool upstream_bounded = false;
 };
 
 // Describes in further detail what type of boundary a current position is on.
@@ -2823,6 +2829,8 @@ class AXPosition {
   bool AllowsCharacterStopsOnGeneratedNewline() const {
     return g_ax_embedded_object_behavior ==
                AXEmbeddedObjectBehavior::kExposeCharacterForHypertext ||
+           g_ax_embedded_object_behavior ==
+               AXEmbeddedObjectBehavior::kUIAExposeCharacterForTextContent ||
            !IsInUnignoredEmptyObject();
   }
 
@@ -2905,8 +2913,9 @@ class AXPosition {
       return Clone();
 
     AXPositionInstance leaf_text_position = AsLeafTextPosition();
-    if (leaf_text_position->IsFollowedByGeneratedNewline())
+    if (leaf_text_position->IsFollowedByGeneratedNewline()) {
       return leaf_text_position;
+    }
 
     AXPositionInstance text_position = AsTextPosition();
 
@@ -3038,8 +3047,9 @@ class AXPosition {
       return text_position;
     }
 
-    if (text_position->IsFollowedByGeneratedNewline())
+    if (text_position->IsFollowedByGeneratedNewline()) {
       return CreateNextPositionAtAnchorWithText();
+    }
 
     // Calling "AsLeafTextPositionBeforeCharacter" should have created a text
     // position that is either at a grapheme boundary, or a null position. If
@@ -3227,6 +3237,7 @@ class AXPosition {
 
   AXPositionInstance CreateNextLineStartPosition(
       AXMovementOptions options) const {
+    options.upstream_bounded = true;
     return CreateBoundaryStartPosition(
         options, ax::mojom::MoveDirection::kForward,
         base::BindRepeating(&AtStartOfLinePredicate),
@@ -3235,6 +3246,7 @@ class AXPosition {
 
   AXPositionInstance CreatePreviousLineStartPosition(
       AXMovementOptions options) const {
+    options.upstream_bounded = true;
     return CreateBoundaryStartPosition(
         options, ax::mojom::MoveDirection::kBackward,
         base::BindRepeating(&AtStartOfLinePredicate),
@@ -3433,24 +3445,41 @@ class AXPosition {
       text_position = AsLeafTextPosition();
     }
 
-    if (text_position->IsNullPosition())
+    if (text_position->IsNullPosition()) {
       return text_position;
+    }
 
-    if (options.boundary_detection ==
-        AXBoundaryDetection::kDontCheckInitialPosition) {
+    // If true, we should not move the position any further.
+    bool forward_upstream =
+        options.upstream_bounded &&
+        move_direction == ax::mojom::MoveDirection::kForward &&
+        affinity() == ax::mojom::TextAffinity::kUpstream;
+
+    // If true, we should skip the initial position and move at least once.
+    bool backward_upstream =
+        options.upstream_bounded &&
+        move_direction == ax::mojom::MoveDirection::kBackward &&
+        affinity() == ax::mojom::TextAffinity::kUpstream;
+
+    if (backward_upstream ||
+        (options.boundary_detection ==
+             AXBoundaryDetection::kDontCheckInitialPosition &&
+         !forward_upstream)) {
       text_position =
           text_position->CreateAdjacentLeafTextPosition(move_direction);
       if (text_position->IsNullPosition()) {
         // There is no adjacent position to move to; in such case, CrossBoundary
         // behavior shall return a null position, while any other behavior shall
         // fallback to return the initial position.
-        if (options.boundary_behavior == AXBoundaryBehavior::kCrossBoundary)
+        if (options.boundary_behavior == AXBoundaryBehavior::kCrossBoundary) {
           return text_position;
+        }
+
         return Clone();
       }
     }
 
-    if (!at_start_condition.Run(text_position)) {
+    if (!forward_upstream && !at_start_condition.Run(text_position)) {
       text_position = text_position->CreatePositionAtNextOffsetBoundary(
           move_direction, get_start_offsets);
 
@@ -3536,21 +3565,29 @@ class AXPosition {
           NOTREACHED();
           return CreateNullPosition();
         case ax::mojom::MoveDirection::kBackward:
-          return CreatePositionAtStartOfAnchor()->AsUnignoredPosition(
+          text_position = CreatePositionAtStartOfAnchor()->AsUnignoredPosition(
               AXPositionAdjustmentBehavior::kMoveBackward);
+          break;
         case ax::mojom::MoveDirection::kForward:
-          return CreatePositionAtEndOfAnchor()->AsUnignoredPosition(
+          text_position = CreatePositionAtEndOfAnchor()->AsUnignoredPosition(
               AXPositionAdjustmentBehavior::kMoveForward);
       }
+
+      // Preserve affinity for forward upstream positions.
+      if (forward_upstream) {
+        text_position->affinity_ = ax::mojom::TextAffinity::kUpstream;
+      }
+
+      return text_position;
     }
 
-    // Affinity is only upstream at the end of a line, and so a start boundary
-    // will never have an upstream affinity.
-    text_position->affinity_ = ax::mojom::TextAffinity::kDownstream;
-    if (IsTreePosition())
+    if (IsTreePosition()) {
       text_position = text_position->AsTreePosition();
+    }
+
     AXPositionInstance unignored_position = text_position->AsUnignoredPosition(
         AXPositionAdjustmentBehavior::kMoveForward);
+
     // If there are no unignored positions then `text_position` is anchored in
     // ignored content at the end of the whole content. For
     // `kStopAtLastAnchorBoundary`, try to adjust in the opposite direction to
@@ -3562,6 +3599,11 @@ class AXPosition {
       unignored_position = text_position->AsUnignoredPosition(
           AXPositionAdjustmentBehavior::kMoveBackward);
     }
+
+    unignored_position->affinity_ = forward_upstream
+                                        ? ax::mojom::TextAffinity::kUpstream
+                                        : ax::mojom::TextAffinity::kDownstream;
+
     return unignored_position;
   }
 
@@ -4249,6 +4291,18 @@ class AXPosition {
     return GetAnchor() && !GetAnchor()->IsIgnored() && IsInEmptyObject();
   }
 
+  // Returns whether the position is anchored in an unignored and empty object,
+  // has an author specified name that is not empty, and it is not anchored in
+  // an image. This is because in UIA we want to expose embedded object
+  // characters for image elements, even if they have an author specified name.
+  // Only used for UIA.
+  bool EmptyObjectShouldProvideNameFromAttribute() const {
+    DCHECK(IsInUnignoredEmptyObject());
+    return GetAnchor()->GetNameFrom() == ax::mojom::NameFrom::kAttribute &&
+           !IsImage(GetAnchor()->GetRole()) &&
+           !GetAnchor()->GetNameUTF16().empty();
+  }
+
   AXNode* GetEmptyObjectAncestorNode() const {
     if (!GetAnchor())
       return nullptr;
@@ -4303,7 +4357,7 @@ class AXPosition {
   // text representation. Some platforms use an embedded object replacement
   // character that replaces the text coming from most child nodes and empty
   // objects.
-  const std::u16string& GetText(
+  const std::u16string GetText(
       const AXEmbeddedObjectBehavior embedded_object_behavior =
           g_ax_embedded_object_behavior) const {
     // Note that the use of `base::EmptyString16()` is a special case here. For
@@ -4335,7 +4389,29 @@ class AXPosition {
         // text navigation purposes. I.e. when AT's need to navigate around
         // nodes and elements which are empty and should then be exposed as
         // embedded object characters.
+        //
+        // According to the spec, we should favor author supplied names over
+        // names from content. However, trying to fulfill this in every case
+        // leads to bugs in the UIA implementation in the TextRangeProvider
+        // since we create leaf text positions, which means that they will
+        // always have name from content. As such, for now we are
+        // implementing this special case where we will only return the author
+        // specified name if NameFrom is kAttribute and the name is not empty.
+        // Even though a case like:
+        // <button aria-label="label">hello</button>
+        // Should have its name exposed as "label" according to the spec
+        // but we will expose "hello" instead.
+        // Exposing the aria label here would make us expose text that isn't on
+        // a leaf position, and throughout our UIA implementation, we always
+        // assume and expect to be on leaf positions. Exposing the label
+        // when it has text from content would effectively hide the subtree
+        // from UIA ATs
+        // https://www.w3.org/TR/accname-1.1/#mapping_additional_nd_te
+
         if (IsInUnignoredEmptyObject()) {
+          if (EmptyObjectShouldProvideNameFromAttribute()) {
+            return GetAnchor()->GetNameUTF16();
+          }
           return *embedded_character_str;
         }
         // However, for UIA, we don't want to expose the Hypertext like the
@@ -4383,6 +4459,14 @@ class AXPosition {
     if (IsNullPosition())
       return false;
     return GetAnchor()->IsText();
+  }
+
+  // Determines if the anchor containing this position is a text field object.
+  bool IsInTextField() const {
+    if (IsNullPosition()) {
+      return false;
+    }
+    return GetAnchor()->data().IsTextField();
   }
 
   // Determines if the text representation of this position's anchor contains
@@ -4440,7 +4524,18 @@ class AXPosition {
         // embedded object characters, and as such we need to return the length
         // of the embedded object character when calculating the `MaxTextOffset`
         // for these nodes.
+        //
+        // According to the spec, we should favor author supplied names over
+        // names from content. However, trying to fulfill this in every case
+        // leads to bugs in the UIA implementation in the TextRangeProvider
+        // since we create leaf text positions, which means that they will
+        // always have name from content. As such, for now we are
+        // implementing this special case where we will only return the author
+        // specified name if NameFrom is kAttribute and the name is not empty.
         if (IsInUnignoredEmptyObject()) {
+          if (EmptyObjectShouldProvideNameFromAttribute()) {
+            return (int)GetAnchor()->GetNameUTF16().length();
+          }
           return AXNode::kEmbeddedObjectCharacterLengthUTF16;
         }
         // However, for UIA, we don't want to expose the Hypertext like the
@@ -4767,9 +4862,16 @@ class AXPosition {
     // control has no text, no word start offsets are present in the
     // `ax::mojom::IntListAttribute::kWordStarts` attribute, so we need to
     // special case them here.
-    if (g_ax_embedded_object_behavior ==
-            AXEmbeddedObjectBehavior::kExposeCharacterForHypertext &&
-        IsInUnignoredEmptyObject()) {
+    //
+    // For the kUIAExposeCharacterForHypertext case, we only want to return a
+    // vector with {0} if the empty object does not have an author specified
+    // name that we are exposing.
+    if (IsInUnignoredEmptyObject() &&
+        (g_ax_embedded_object_behavior ==
+             AXEmbeddedObjectBehavior::kExposeCharacterForHypertext ||
+         (g_ax_embedded_object_behavior ==
+              AXEmbeddedObjectBehavior::kUIAExposeCharacterForTextContent &&
+          !EmptyObjectShouldProvideNameFromAttribute()))) {
       // Using braces ensures that the vector will contain the given value, and
       // not create a vector of size 0.
       static const base::NoDestructor<std::vector<int32_t>>
@@ -4799,9 +4901,12 @@ class AXPosition {
     // is positioned at 1. Because we want to treat embedded object replacement
     // characters as ordinary characters, it wouldn't be consistent to assume
     // they have no length and return 0 instead of 1.
-    if (g_ax_embedded_object_behavior ==
-            AXEmbeddedObjectBehavior::kExposeCharacterForHypertext &&
-        IsInUnignoredEmptyObject()) {
+    if (IsInUnignoredEmptyObject() &&
+        (g_ax_embedded_object_behavior ==
+             AXEmbeddedObjectBehavior::kExposeCharacterForHypertext ||
+         (g_ax_embedded_object_behavior ==
+              AXEmbeddedObjectBehavior::kUIAExposeCharacterForTextContent &&
+          !EmptyObjectShouldProvideNameFromAttribute()))) {
       // Using braces ensures that the vector will contain the given value, and
       // not create a vector of size 1.
       static const base::NoDestructor<std::vector<int32_t>> embedded_word_ends{

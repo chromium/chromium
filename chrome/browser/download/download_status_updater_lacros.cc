@@ -57,23 +57,7 @@ bool IsCommandEnabled(DownloadItemModel& model,
         command == DownloadCommands::PAUSE ||
         command == DownloadCommands::RESUME);
 
-  const bool is_download_bubble_v2_enabled =
-      download::IsDownloadBubbleV2Enabled(Profile::FromBrowserContext(
-          content::DownloadItemUtils::GetBrowserContext(
-              model.GetDownloadItem())));
-
-  // `BubbleUIInfo` contains at most one of either `CANCEL`, `PAUSE`, or
-  // `RESUME` when download bubble v2 is disabled, despite the fact that a
-  // download may be simultaneously cancellable and pausable/resumable. For
-  // this reason, do not use `BubbleUIInfo`-based determination of command
-  // enablement when download bubble v2 is disabled.
-  if (!is_download_bubble_v2_enabled) {
-    DownloadCommands commands(model.GetWeakPtr());
-    return model.IsCommandEnabled(&commands, command);
-  }
-
-  const DownloadUIModel::BubbleUIInfo info =
-      model.GetBubbleUIInfo(/*is_download_bubble_v2_enabled=*/true);
+  const DownloadUIModel::BubbleUIInfo info = model.GetBubbleUIInfo();
 
   // A command is enabled if `BubbleUIInfo` contains a quick action for it. This
   // is preferred over non-`BubbleUIInfo`-based determination of command

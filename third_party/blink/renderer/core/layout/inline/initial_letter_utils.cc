@@ -10,8 +10,8 @@
 #include "third_party/blink/renderer/core/layout/inline/line_info.h"
 #include "third_party/blink/renderer/core/layout/inline/line_utils.h"
 #include "third_party/blink/renderer/core/layout/inline/logical_line_item.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_fragment.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
+#include "third_party/blink/renderer/core/layout/logical_fragment.h"
+#include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/platform/text/writing_direction_mode.h"
 
 namespace blink {
@@ -22,7 +22,7 @@ namespace {
 // letter text and shift down amount of surrounding text in
 // `initial_letter_block_start_adjust`,
 LayoutUnit ComputeInitialLetterBoxBlockOffset(
-    const NGPhysicalBoxFragment& initial_letter_box_fragment,
+    const PhysicalBoxFragment& initial_letter_box_fragment,
     const LayoutUnit block_size,
     const ComputedStyle& initial_letter_box_style,
     const ComputedStyle& paragraph_style,
@@ -138,7 +138,7 @@ const ExclusionArea* CreateExclusionSpaceForInitialLetterBox(
     const LogicalSize& border_box_size,
     const BoxStrut& margins) {
   // Note: In case of `margins.inline_start` or `margins.line_over` are
-  // negative, left top of `NGExclusionSpace` are out of `ConstraintSpace`.
+  // negative, left top of `ExclusionSpace` are out of `ConstraintSpace`.
   const BfcOffset local_start_offset(
       border_box_offset.line_offset - margins.inline_start,
       border_box_offset.block_offset - margins.block_start);
@@ -149,7 +149,7 @@ const ExclusionArea* CreateExclusionSpaceForInitialLetterBox(
       (border_box_size.inline_size + margins.InlineSum()).ClampNegativeToZero(),
       (border_box_size.block_size + margins.BlockSum()).ClampNegativeToZero());
 
-  // Note: The block offset of `NGExclusionSpace` is `origin.block_offset`
+  // Note: The block offset of `ExclusionSpace` is `origin.block_offset`
   // when initial letter positioned below the first line.
   //
   // Example:
@@ -256,7 +256,7 @@ const ExclusionArea* PostPlaceInitialLetterBox(
       [](const auto& line_item) { return line_item.IsInitialLetterBox(); });
 
   const auto& initial_letter_box_fragment =
-      *To<NGPhysicalBoxFragment>(initial_letter_line_item->PhysicalFragment());
+      *To<PhysicalBoxFragment>(initial_letter_line_item->GetPhysicalFragment());
 
   DCHECK(initial_letter_box_fragment.IsInitialLetterBox());
   DCHECK(!initial_letter_box_fragment.Style().InitialLetter().IsNormal());
@@ -266,7 +266,8 @@ const ExclusionArea* PostPlaceInitialLetterBox(
       line_style.GetWritingDirection();
 
   const LogicalSize initial_letter_box_size =
-      NGFragment(writing_direction_mode, initial_letter_box_fragment).Size();
+      LogicalFragment(writing_direction_mode, initial_letter_box_fragment)
+          .Size();
 
   LayoutUnit initial_letter_block_start_adjust;
   const LayoutUnit initial_letter_border_box_block_offset =

@@ -36,7 +36,7 @@ void FileReader::ReadFilesOnFileSequence() {
 
   std::vector<std::unique_ptr<std::string>> data;
   data.reserve(resources_.size());
-  absl::optional<std::string> error;
+  std::optional<std::string> error;
 
   size_t remaining_length = max_resources_length_;
   for (const auto& resource : resources_) {

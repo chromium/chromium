@@ -26,6 +26,7 @@
 using content::BrowserThread;
 using content::NavigationEntry;
 using content::WebContents;
+using safe_browsing::ClientSafeBrowsingReportRequest;
 using safe_browsing::HitReport;
 using safe_browsing::SBThreatType;
 
@@ -224,21 +225,6 @@ void BaseUIManager::OnBlockingPageDone(
   }
 }
 
-namespace {
-// In the case of nested WebContents, returns the WebContents where it is
-// suitable to show an interstitial.
-content::WebContents* GetEmbeddingWebContentsForInterstitial(
-    content::WebContents* source_contents) {
-  content::WebContents* top_level_contents = source_contents;
-  // Note that |WebContents::GetResponsibleWebContents| is not suitable here
-  // since we want to stay within any GuestViews.
-  while (top_level_contents->IsPortal()) {
-    top_level_contents = top_level_contents->GetPortalHostWebContents();
-  }
-  return top_level_contents;
-}
-}  // namespace
-
 void BaseUIManager::DisplayBlockingPage(const UnsafeResource& resource) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   bool is_frame = resource.is_subframe ||
@@ -291,6 +277,10 @@ void BaseUIManager::DisplayBlockingPage(const UnsafeResource& resource) {
     // TODO(vakh): crbug/883462: The reports for SB_THREAT_TYPE_BILLING should
     // be disabled for M70 but enabled for a later release (M71?).
     CreateAndSendHitReport(resource);
+    if (base::FeatureList::IsEnabled(
+            safe_browsing::kCreateWarningShownClientSafeBrowsingReports)) {
+      CreateAndSendClientSafeBrowsingWarningShownReport(resource);
+    }
   }
 
   AddToAllowlistUrlSet(GetMainFrameAllowlistUrlForResource(resource),
@@ -301,19 +291,8 @@ void BaseUIManager::DisplayBlockingPage(const UnsafeResource& resource) {
   // via javascript without a navigation.
   content::NavigationEntry* entry = GetNavigationEntryForResource(resource);
 
-  // If unsafe content is loaded in a portal, we treat its embedder as
-  // dangerous.
-  // TODO(https://crbug.com/1254770): This will have to be updated for Portals
-  // on MPArch.
-  content::WebContents* outermost_contents =
-      GetEmbeddingWebContentsForInterstitial(web_contents);
-
   GURL unsafe_url = resource.url;
-  if (outermost_contents != web_contents) {
-    DCHECK(outermost_contents->GetController().GetLastCommittedEntry());
-    unsafe_url =
-        outermost_contents->GetController().GetLastCommittedEntry()->GetURL();
-  } else if (entry && !resource.IsMainPageLoadBlocked()) {
+  if (entry && !resource.IsMainPageLoadBlocked()) {
     unsafe_url = entry->GetURL();
   }
 
@@ -331,19 +310,19 @@ void BaseUIManager::DisplayBlockingPage(const UnsafeResource& resource) {
   // - Delayed Warning Experiment: When enabled, this method is only called
   //   after the navigation completes and a user action occurs so the throttle
   //   cannot be used.
-  const bool load_post_commit_error_page = !resource.IsMainPageLoadBlocked() ||
-                                           resource.is_delayed_warning ||
-                                           outermost_contents != web_contents;
+  const bool load_post_commit_error_page =
+      !resource.IsMainPageLoadBlocked() || resource.is_delayed_warning;
   if (!load_post_commit_error_page) {
     AddUnsafeResource(unsafe_url, resource);
   }
 
-  // `showed_interstitial` is set to false for subresources since this
-  // cancellation doesn't correspond to the navigation that triggers the error
-  // page (the call to LoadPostCommitErrorPage creates another navigation).
+  // `showed_interstitial` is only set to true if the top-document navigation
+  // has not yet committed. For other cases, the cancellation doesn't correspond
+  // to the navigation that triggers the error page (the call to
+  // LoadPostCommitErrorPage creates another navigation).
   resource.DispatchCallback(
       FROM_HERE, false /* proceed */,
-      resource.IsMainPageLoadBlocked() /* showed_interstitial */);
+      !load_post_commit_error_page /* showed_interstitial */);
 
   if (!base::FeatureList::IsEnabled(safe_browsing::kDelayedWarnings)) {
     DCHECK(!resource.is_delayed_warning);
@@ -354,7 +333,7 @@ void BaseUIManager::DisplayBlockingPage(const UnsafeResource& resource) {
 
     security_interstitials::SecurityInterstitialTabHelper* helper =
         security_interstitials::SecurityInterstitialTabHelper::FromWebContents(
-            outermost_contents);
+            web_contents);
     if (helper && helper->HasPendingOrActiveInterstitial()) {
       // If a blocking page exists for the current navigation or an interstitial
       // is being displayed, do not create a new error page. This is to ensure
@@ -366,12 +345,11 @@ void BaseUIManager::DisplayBlockingPage(const UnsafeResource& resource) {
 
     // In some cases the interstitial must be loaded here since there will be
     // no navigation to intercept in the throttle.
-    std::unique_ptr<BaseBlockingPage> blocking_page =
-        base::WrapUnique(CreateBlockingPageForSubresource(
-            outermost_contents, unsafe_url, resource));
+    std::unique_ptr<BaseBlockingPage> blocking_page = base::WrapUnique(
+        CreateBlockingPageForSubresource(web_contents, unsafe_url, resource));
     base::WeakPtr<content::NavigationHandle> error_page_navigation_handle =
-        outermost_contents->GetController().LoadPostCommitErrorPage(
-            outermost_contents->GetPrimaryMainFrame(), unsafe_url,
+        web_contents->GetController().LoadPostCommitErrorPage(
+            web_contents->GetPrimaryMainFrame(), unsafe_url,
             blocking_page->GetHTMLContents());
     if (error_page_navigation_handle) {
       blocking_page->CreatedPostCommitErrorPageNavigation(
@@ -388,6 +366,8 @@ void BaseUIManager::EnsureAllowlistCreated(WebContents* web_contents) {
 }
 
 void BaseUIManager::CreateAndSendHitReport(const UnsafeResource& resource) {}
+void BaseUIManager::CreateAndSendClientSafeBrowsingWarningShownReport(
+    const UnsafeResource& resource) {}
 
 BaseBlockingPage* BaseUIManager::CreateBlockingPageForSubresource(
     content::WebContents* contents,
@@ -406,6 +386,16 @@ BaseBlockingPage* BaseUIManager::CreateBlockingPageForSubresource(
 // users who are not in incognito mode.
 void BaseUIManager::MaybeReportSafeBrowsingHit(
     std::unique_ptr<HitReport> hit_report,
+    content::WebContents* web_contents) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  return;
+}
+
+// A client safe browsing report is sent after a blocking page for
+// malware/phishing or after the warning dialog for download urls, only for
+// extended_reporting users who are not in incognito mode.
+void BaseUIManager::MaybeSendClientSafeBrowsingWarningShownReport(
+    std::unique_ptr<ClientSafeBrowsingReportRequest> report,
     content::WebContents* web_contents) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return;

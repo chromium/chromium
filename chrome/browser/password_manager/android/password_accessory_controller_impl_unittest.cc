@@ -32,11 +32,11 @@
 #include "components/password_manager/content/browser/content_password_manager_driver_factory.h"
 #include "components/password_manager/core/browser/credential_cache.h"
 #include "components/password_manager/core/browser/features/password_features.h"
-#include "components/password_manager/core/browser/mock_password_store_interface.h"
 #include "components/password_manager/core/browser/mock_webauthn_credentials_delegate.h"
 #include "components/password_manager/core/browser/origin_credential_store.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
+#include "components/password_manager/core/browser/password_store/mock_password_store_interface.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/password_manager/core/browser/stub_password_manager_driver.h"
@@ -96,8 +96,7 @@ constexpr char kExampleSignonRealm[] = "https://example.com/";
 constexpr char16_t kExampleDomain[] = u"example.com";
 constexpr char16_t kUsername[] = u"alice";
 constexpr char16_t kPassword[] = u"password123";
-const absl::optional<std::vector<PasskeyCredential>> kNoPasskeys =
-    absl::nullopt;
+const std::optional<std::vector<PasskeyCredential>> kNoPasskeys = std::nullopt;
 
 class MockPasswordGenerationController
     : public PasswordGenerationControllerImpl {
@@ -1225,7 +1224,7 @@ TEST_F(PasswordAccessoryControllerTest, ShowAndSelectPasskey) {
       PasskeyCredential::CredentialId({21, 22, 23, 24}),
       PasskeyCredential::UserId({81, 28, 83, 84}),
       PasskeyCredential::Username("someone@example.com"));
-  const absl::optional<std::vector<PasskeyCredential>> kTestPasskeys(
+  const std::optional<std::vector<PasskeyCredential>> kTestPasskeys(
       {kTestPasskey});
   ON_CALL(*webauthn_credentials_delegate(), GetPasskeys)
       .WillByDefault(ReturnRef(kTestPasskeys));
@@ -1281,7 +1280,8 @@ TEST_F(PasswordAccessoryControllerTest,
   if (base::android::BuildInfo::GetInstance()->is_automotive()) {
     auto mock_authenticator = std::make_unique<MockDeviceAuthenticator>();
     ON_CALL(*mock_authenticator, AuthenticateWithMessage)
-        .WillByDefault(RunOnceCallback<1>(/*auth_succeeded=*/true));
+        .WillByDefault(
+            base::test::RunOnceCallbackRepeatedly<1>(/*auth_succeeded=*/true));
     EXPECT_CALL(*password_client(), GetDeviceAuthenticator)
         .WillOnce(Return(testing::ByMove(std::move(mock_authenticator))))
         .RetiresOnSaturation();
@@ -1318,7 +1318,8 @@ TEST_F(PasswordAccessoryControllerTest, DontShowMigrationSheetlIfDisabled) {
   if (base::android::BuildInfo::GetInstance()->is_automotive()) {
     auto mock_authenticator = std::make_unique<MockDeviceAuthenticator>();
     ON_CALL(*mock_authenticator, AuthenticateWithMessage)
-        .WillByDefault(RunOnceCallback<1>(/*auth_succeeded=*/true));
+        .WillByDefault(
+            base::test::RunOnceCallbackRepeatedly<1>(/*auth_succeeded=*/true));
     EXPECT_CALL(*password_client(), GetDeviceAuthenticator)
         .WillOnce(Return(testing::ByMove(std::move(mock_authenticator))))
         .RetiresOnSaturation();

@@ -513,7 +513,7 @@ void MessageWriter::AppendDouble(double value) {
   AppendBasic(DBUS_TYPE_DOUBLE, &value);
 }
 
-void MessageWriter::AppendString(base::StringPiece value) {
+void MessageWriter::AppendString(std::string_view value) {
   // D-Bus Specification (0.19) says a string "must be valid UTF-8".
   CHECK(base::IsStringUTF8(value));
   const char* pointer = value.data() ? value.data() : "";

@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_PRIVATE_AGGREGATION_PRIVATE_AGGREGATION_HOST_H_
 
 #include <map>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -17,7 +18,6 @@
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/shared_storage/shared_storage_utils.h"
 #include "third_party/blink/public/mojom/private_aggregation/private_aggregation_host.mojom.h"
 
@@ -110,9 +110,9 @@ class CONTENT_EXPORT PrivateAggregationHost
       url::Origin worklet_origin,
       url::Origin top_frame_origin,
       PrivateAggregationBudgetKey::Api api_for_budgeting,
-      absl::optional<std::string> context_id,
-      absl::optional<base::TimeDelta> timeout,
-      absl::optional<url::Origin> aggregation_coordinator_origin,
+      std::optional<std::string> context_id,
+      std::optional<base::TimeDelta> timeout,
+      std::optional<url::Origin> aggregation_coordinator_origin,
       mojo::PendingReceiver<blink::mojom::PrivateAggregationHost>
           pending_receiver);
 
@@ -138,8 +138,8 @@ class CONTENT_EXPORT PrivateAggregationHost
       base::Uuid report_id,
       const url::Origin& reporting_origin,
       PrivateAggregationBudgetKey::Api api_for_budgeting,
-      absl::optional<std::string> context_id,
-      absl::optional<url::Origin> aggregation_coordinator_origin,
+      std::optional<std::string> context_id,
+      std::optional<url::Origin> aggregation_coordinator_origin,
       std::vector<blink::mojom::AggregatableReportHistogramContribution>
           contributions);
 

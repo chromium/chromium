@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -29,7 +30,6 @@
 #include "chrome/browser/ui/views/tabs/tab_group_views.h"
 #include "chrome/browser/ui/views/tabs/tab_slot_controller.h"
 #include "components/tab_groups/tab_group_visual_data.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/gfx/color_palette.h"
@@ -118,7 +118,7 @@ class TabStrip : public views::View,
   // Returns information about tabs at given indices.
   bool IsTabCrashed(int tab_index) const;
   bool TabHasNetworkError(int tab_index) const;
-  absl::optional<TabAlertState> GetTabAlertState(int tab_index) const;
+  std::optional<TabAlertState> GetTabAlertState(int tab_index) const;
 
   // Updates the loading animations displayed by tabs in the tabstrip to the
   // next frame. The |elapsed_time| parameter is shared between tabs and used to
@@ -143,7 +143,7 @@ class TabStrip : public views::View,
   void SetTabData(int model_index, TabRendererData data);
 
   // Sets the tab group at the specified model index.
-  void AddTabToGroup(absl::optional<tab_groups::TabGroupId> group,
+  void AddTabToGroup(std::optional<tab_groups::TabGroupId> group,
                      int model_index);
 
   // Creates the views associated with a newly-created tab group.
@@ -192,9 +192,9 @@ class TabStrip : public views::View,
   }
 
   // Returns the index of the specified view in the model coordinate system, or
-  // absl::nullopt if view is closing not a tab, or is not in this tabstrip.
+  // std::nullopt if view is closing not a tab, or is not in this tabstrip.
   // TODO(tbergquist): This should return an optional<size_t>.
-  absl::optional<int> GetModelIndexOf(const TabSlotView* view) const;
+  std::optional<int> GetModelIndexOf(const TabSlotView* view) const;
 
   // Gets the number of Tabs in the tab strip.
   int GetTabCount() const;
@@ -218,7 +218,7 @@ class TabStrip : public views::View,
   void StopAnimating(bool layout);
 
   // Returns the index of the focused tab, if any.
-  absl::optional<int> GetFocusedTabIndex() const;
+  std::optional<int> GetFocusedTabIndex() const;
 
   // Returns a view for anchoring an in-product help promo. |index_hint|
   // indicates at which tab the promo should be displayed, but is not
@@ -230,10 +230,10 @@ class TabStrip : public views::View,
 
   // TabContainerController:
   bool IsValidModelIndex(int index) const override;
-  absl::optional<int> GetActiveIndex() const override;
+  std::optional<int> GetActiveIndex() const override;
   int NumPinnedTabsInModel() const override;
-  void OnDropIndexUpdate(absl::optional<int> index, bool drop_before) override;
-  absl::optional<int> GetFirstTabInGroup(
+  void OnDropIndexUpdate(std::optional<int> index, bool drop_before) override;
+  std::optional<int> GetFirstTabInGroup(
       const tab_groups::TabGroupId& group) const override;
   gfx::Range ListTabsInGroup(
       const tab_groups::TabGroupId& group) const override;
@@ -295,7 +295,7 @@ class TabStrip : public views::View,
   SkColor GetTabSeparatorColor() const override;
   SkColor GetTabForegroundColor(TabActive active) const override;
   std::u16string GetAccessibleTabName(const Tab* tab) const override;
-  absl::optional<int> GetCustomBackgroundId(
+  std::optional<int> GetCustomBackgroundId(
       BrowserFrameActiveState active_state) const override;
   float GetHoverOpacityForTab(float range_parameter) const override;
   float GetHoverOpacityForRadialHighlight() const override;
@@ -434,10 +434,10 @@ class TabStrip : public views::View,
   gfx::Point last_mouse_move_location_;
 
   // Used to track the time needed to create a new tab from the new tab button.
-  absl::optional<base::TimeTicks> new_tab_button_pressed_start_time_;
+  std::optional<base::TimeTicks> new_tab_button_pressed_start_time_;
 
   // Used for seek time metrics from the time the mouse enters the tabstrip.
-  absl::optional<base::TimeTicks> mouse_entered_tabstrip_time_;
+  std::optional<base::TimeTicks> mouse_entered_tabstrip_time_;
 
   // Used to track if the time from mouse entered to tab switch has been
   // reported.
@@ -447,7 +447,7 @@ class TabStrip : public views::View,
   bool has_reported_tab_drag_metrics_ = false;
 
   // Used to track the time of last tab dragging.
-  absl::optional<base::TimeTicks> last_tab_drag_time_;
+  std::optional<base::TimeTicks> last_tab_drag_time_;
 
   // Used to count the number of tab dragging in the last 30 minutes and 5
   // minutes.

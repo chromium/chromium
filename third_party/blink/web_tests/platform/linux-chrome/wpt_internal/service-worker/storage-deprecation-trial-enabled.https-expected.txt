@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+[FAIL] Services workers under different top-level sites are not partitioned when the deprecation trial is enabled.
+  assert_false: The 1p iframe saw a pending promise in the service worker. expected false got true
+[FAIL] Services workers with cross-site ancestors are not partitioned when the deprecation trial is enabled.
+  assert_false: The 1p iframe saw a pending promise in the service worker. expected false got true
+Harness: the test ran to completion.

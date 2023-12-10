@@ -14,6 +14,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/lib/multiplex_router.h"
+#include "mojo/public/cpp/bindings/runtime_features.h"
 #include "mojo/public/cpp/bindings/scoped_interface_endpoint_handle.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 
@@ -135,6 +136,9 @@ namespace mojo {
 template <typename Interface>
 PendingAssociatedRemote<Interface>
 PendingAssociatedReceiver<Interface>::InitWithNewEndpointAndPassRemote() {
+  if (!internal::GetRuntimeFeature_ExpectEnabled<Interface>()) {
+    return PendingAssociatedRemote<Interface>();
+  }
   ScopedInterfaceEndpointHandle remote_handle;
   ScopedInterfaceEndpointHandle::CreatePairPendingAssociation(&handle_,
                                                               &remote_handle);

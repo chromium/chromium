@@ -13,9 +13,7 @@ import org.chromium.chrome.browser.metrics.UmaUtils;
 import org.chromium.native_test.NativeBrowserTestApplication;
 import org.chromium.ui.base.ResourceBundle;
 
-/**
- * A basic chrome.browser.tests {@link android.app.Application}.
- */
+/** A basic chrome.browser.tests {@link android.app.Application}. */
 public class ChromeBrowserTestsApplication extends NativeBrowserTestApplication {
     static final String PRIVATE_DATA_DIRECTORY_SUFFIX = "android_browsertests";
 
@@ -26,9 +24,11 @@ public class ChromeBrowserTestsApplication extends NativeBrowserTestApplication 
         if (isBrowserProcess) UmaUtils.recordMainEntryPointTime();
 
         super.attachBaseContext(base);
-        LibraryLoader.getInstance().setLibraryProcessType(isBrowserProcess
-                        ? LibraryProcessType.PROCESS_BROWSER
-                        : LibraryProcessType.PROCESS_CHILD);
+        LibraryLoader.getInstance()
+                .setLibraryProcessType(
+                        isBrowserProcess
+                                ? LibraryProcessType.PROCESS_BROWSER
+                                : LibraryProcessType.PROCESS_CHILD);
         if (isBrowserProcess) {
             // Test-only stuff, see also NativeUnitTest.java.
             PathUtils.setPrivateDataDirectorySuffix(PRIVATE_DATA_DIRECTORY_SUFFIX);

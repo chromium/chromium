@@ -87,6 +87,7 @@
 <translation id="4195557071150719219">Chromium चे अलीकडील टॅब पहा</translation>
 <translation id="4408912345039114853">Chromium सुरक्षितता तपासणी रन करा</translation>
 <translation id="4432744876818348753">Chromium चा पुरेपूर वापर करण्यासाठी साइन इन करा.</translation>
+<translation id="4498832288620833153">इनपुट केलेल्या URLs या Chromium मधील तुमच्या वाचन सूचीमध्ये जोडते.</translation>
 <translation id="452436063477828504">तुम्ही तुमच्या Google खाते मधील Chromium डेटा कधीही वापरू शकता याची खात्री करा</translation>
 <translation id="4555020257205549924">हे वैशिष्ट्य सुरू केल्यावर, Chromium Google भाषांतर वापरून अन्य भाषामध्ये लिहिलेल्या पृष्ठांचा भाषांतर ऑफर करेल. <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="4576283463017113841">Chromium मध्ये पेमेंट पद्धती सेटिंग पेज उघडते.</translation>
@@ -107,6 +108,7 @@
 <translation id="5048795749726991615">इतर अ‍ॅप्समध्ये तुमचे पासवर्ड सहजरीत्या सेव्ह करण्यासाठी, AutoFill साठी Chromium वापरा</translation>
 <translation id="5076601183701536878">Chromium मधील ब्राउझिंग डेटा साफ करा</translation>
 <translation id="5131565040785979529">तुमची संस्था, <ph name="DOMAIN" />, तुम्ही साइन इन केलेले खाते आणि Chromium कसे वापरले जाते हे व्यवस्थापित करते.</translation>
+<translation id="5146749061471423558">Chromium वर बुकमार्क जोडा</translation>
 <translation id="5171868502429358653">Chromium वर साइन इन करा</translation>
 <translation id="5213683223491576284">Chromium मध्ये Password Manager उघडते.</translation>
 <translation id="5224391634244552924">सेव्ह केलेले पासवर्ड नाहीत. तुम्ही तुमचे पासवर्ड सेव्ह केल्यावर Chromium ते तपासू शकते.</translation>
@@ -114,6 +116,7 @@
 
         साइन आउट करण्यापूर्वी काही मिनिटे प्रतीक्षा करून पहा. तुम्ही आता साइन आउट केल्यास, हा डेटा हटवला जाईल.</translation>
 <translation id="5308226104666789935">Chromium अपडेट तपासू शकत नाही</translation>
+<translation id="5311557153294205270">Chromium मधील तुमच्या बुकमार्कमध्ये इनपुट केलेल्या URLs जोडते.</translation>
 <translation id="5396916991083608703">Chromium ला डीफॉल्ट म्हणून सेट करायचे आहे का?</translation>
 <translation id="5453478652154926037">Chromium तुमचे पासवर्ड तपासू शकत नाही.</translation>
 <translation id="5521125884468363740">तुम्ही जेथून Chromium वापरत असाल तेथून तुमचे टॅब पाहण्यासाठी, साइन इन करा आणि सिंक सुरू करा</translation>
@@ -165,7 +168,6 @@
 <translation id="6911341667534646387">तुमच्या Google खाते मधील Chromium डेटा वापरणे सुरू ठेवा</translation>
 <translation id="7006920032187763988">तुम्ही पासवर्ड व्यवस्थापक यामध्ये सेव्ह केलेले पासवर्ड तुमच्या iPad वरील इतर अ‍ॅप्समध्ये वापरू शकता.</translation>
 <translation id="7018284295775193585">Chromium अपडेट करू शकत नाही</translation>
-<translation id="7025471822960602362">Chromium वर डिटेक्ट केलेली पॅकेज ट्रॅक करा</translation>
 <translation id="7045244423563602563">Chromium ला तुमचे हक्काचे ठिकाण बनवा</translation>
 <translation id="7055269218854630176">तुमची संस्था, <ph name="DOMAIN" />, तुम्ही साइन इन करत असलेले खाते आणि Chromium कसे वापरले जाऊ शकते हे व्यवस्थापित करते. तुमचा अ‍ॅडमिनिस्ट्रेटर काही वैशिष्ट्ये सेट करू शकतो किंवा प्रतिबंधित करू शकतो.</translation>
 <translation id="7099326575020694068">Chromium विभाजित दृश्य मोड मध्ये तुमचा कॅमेरा वापरू शकत नाही</translation>
@@ -195,6 +197,7 @@
 <translation id="7928628054454574139">तुम्ही इतर अ‍ॅप्सवरील लिंकवर जेव्हा टॅप करता तेव्हा Chromium उघडा</translation>
 <translation id="7931842119211730154">तुम्ही Chromium बंद करता तेव्हा गुप्त टॅब लॉक करा</translation>
 <translation id="7934404985878918282">Chromium वाचन सूची पहा</translation>
+<translation id="7971753607796745700">Chromium मध्ये वाचन सूची आयटम जोडा</translation>
 <translation id="7980860476903281594">Chromium तुमचे स्थान तुम्ही अनुमती दिलेल्या साइटसोबत शेअर करते.</translation>
 <translation id="7995166854192397899">सूचना या तुमच्या इतर डिव्हाइसवरील तुमच्या ब्राउझिंग ॲक्टिव्हिटीवर आधारित असतात. सूचना मिळवण्यासाठी, तुमच्या सर्व डिव्हाइसवर Chromium मध्ये साइन इन करा.</translation>
 <translation id="800195749539500647">Chromium चा पुरेपूर वापर करा</translation>

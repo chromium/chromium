@@ -159,7 +159,7 @@ void AppListTestModel::RequestCommitTemporarySortOrder() {
   // Committing the temporary sort order should not introduce item reorder so
   // reset the sort order without reorder animation.
   AppListController::Get()->UpdateAppListWithNewTemporarySortOrder(
-      /*new_order=*/absl::nullopt, /*animate=*/false, base::NullCallback());
+      /*new_order=*/std::nullopt, /*animate=*/false, base::NullCallback());
 }
 
 AppListItem* AppListTestModel::AddItemToFolder(AppListItem* item,

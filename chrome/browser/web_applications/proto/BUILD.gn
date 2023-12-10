@@ -10,6 +10,7 @@ proto_library("proto") {
     "web_app.proto",
     "web_app_launch_handler.proto",
     "web_app_os_integration_state.proto",
+    "web_app_proto_package.proto",
     "web_app_share_target.proto",
     "web_app_tab_strip.proto",
     "web_app_translations.proto",

@@ -15,7 +15,7 @@ import {FakeShortcutInputProvider} from './fake_shortcut_input_provider.js';
 import {KeyEvent} from './input_device_settings.mojom-webui.js';
 import {getTemplate} from './shortcut_input.html.js';
 import {ShortcutInputObserverReceiver, ShortcutInputProviderInterface} from './shortcut_input_provider.mojom-webui.js';
-import {AllowedModifierKeyCodes, getSortedModifiers, KeyInputState, KeyToIconNameMap, Modifier, ModifierKeyCodes, Modifiers} from './shortcut_utils.js';
+import {getSortedModifiers, KeyInputState, KeyToIconNameMap, Modifier, ModifierKeyCodes, Modifiers} from './shortcut_utils.js';
 
 export interface ShortcutInputElement {
   $: {
@@ -37,17 +37,49 @@ export class ShortcutInputElement extends ShortcutInputElementBase {
 
   static get properties(): PolymerElementProperties {
     return {
+      // Event after event rewrites.
       pendingKeyEvent: {type: Object},
+
+      // Event before event rewrites.
+      pendingPrerewrittenKeyEvent: {type: Object},
 
       shortcutInputProvider: {type: Object},
 
       modifiers: {
         type: Array,
-        computed: 'getModifiers(pendingKeyEvent)',
+        computed: 'getModifiers(pendingKeyEvent, pendingPrerewrittenKeyEvent)',
         value: [],
       },
 
       showSeparator: {
+        type: Boolean,
+      },
+
+      hasLauncherButton: {
+        type: Boolean,
+      },
+
+      // When `updateOnKeyPress` is true, always show edit-view and and updates
+      // occur on key press events rather than on key release.
+      updateOnKeyPress: {
+        type: Boolean,
+        value: false,
+      },
+
+      // If true, will display the `pendingPrerewrittenKeyEvents` instead of
+      // `pendingKeyEvent`.
+      displayPrerewrittenKeyEvents: {
+        type: Boolean,
+      },
+
+      // If true, this element will continue to observe for inputs even after
+      // an `on-blur`. Allows parent element to handle blur events.
+      ignoreBlur: {
+        type: Boolean,
+      },
+
+      // If true, `onShortcutInputEventPressed` will be a no-op.
+      shouldIgnoreKeyRelease: {
         type: Boolean,
       },
     };
@@ -56,9 +88,14 @@ export class ShortcutInputElement extends ShortcutInputElementBase {
   hasLauncherButton: boolean = true;
   shortcutInputProvider: ShortcutInputProviderInterface|null = null;
   pendingKeyEvent: KeyEvent|null = null;
+  pendingPrerewrittenKeyEvent: KeyEvent|null = null;
   modifiers: Modifier[] = [];
   showSeparator: boolean = false;
   isCapturing: boolean = false;
+  updateOnKeyPress: boolean = false;
+  displayPrerewrittenKeyEvents: boolean = false;
+  ignoreBlur: boolean = false;
+  shouldIgnoreKeyRelease: boolean = false;
   private shortcutInputObserverReceiver: ShortcutInputObserverReceiver|null =
       null;
   private eventTracker: EventTracker = new EventTracker();
@@ -82,34 +119,82 @@ export class ShortcutInputElement extends ShortcutInputElementBase {
   /**
    * Updates UI to the newly received KeyEvent.
    */
-  onShortcutInputEventPressed(event: KeyEvent): void {
-    this.pendingKeyEvent = event;
+  onShortcutInputEventPressed(
+      prerewrittenKeyEvent: KeyEvent, keyEvent: KeyEvent): void {
+    this.pendingKeyEvent = keyEvent;
+    this.pendingPrerewrittenKeyEvent = prerewrittenKeyEvent;
+
+    if (this.updateOnKeyPress) {
+      // TODO(jimmyxgong): Should be able to do this unconditionally, but for
+      // now the modifiers trigger observable events that may unintentionally
+      // update the UI.
+      this.pendingKeyEvent.modifiers = keyEvent.modifiers;
+      this.pendingPrerewrittenKeyEvent.modifiers =
+          prerewrittenKeyEvent.modifiers;
+      this.dispatchEvent(new CustomEvent('shortcut-input-event', {
+        bubbles: true,
+        composed: true,
+        detail: {
+          keyEvent: this.pendingKeyEvent,
+        },
+      }));
+    }
   }
 
   /**
    * Updates the UI to the new KeyEvent and dispatches and event to notify
    * parent elements.
    */
-  onShortcutInputEventReleased(event: KeyEvent): void {
-    // Only update the UI if the released key is the last key pressed OR if its
-    // a modifier.
-    if (this.pendingKeyEvent && event.vkey !== this.pendingKeyEvent.vkey) {
-      if (!ModifierKeyCodes.includes(event.vkey as number)) {
-        return;
-      }
-
-      this.pendingKeyEvent.modifiers = event.modifiers;
+  onShortcutInputEventReleased(
+      prerewrittenKeyEvent: KeyEvent, keyEvent: KeyEvent): void {
+    if (this.shouldIgnoreKeyRelease) {
       return;
     }
 
-    this.pendingKeyEvent = event;
-    this.dispatchEvent(new CustomEvent('shortcut-input-event', {
-      bubbles: true,
-      composed: true,
-      detail: {
-        keyEvent: this.pendingKeyEvent,
-      },
-    }));
+    if (this.updateOnKeyPress) {
+      // If the key released is not a modifier and is the same as the previously
+      // released key, remove it from the `keyDisplay`.
+      if (this.pendingKeyEvent!.keyDisplay === keyEvent.keyDisplay &&
+          !ModifierKeyCodes.includes(keyEvent.vkey as number)) {
+        this.pendingKeyEvent!.keyDisplay = '';
+      }
+
+      if (this.pendingPrerewrittenKeyEvent!.keyDisplay ===
+              prerewrittenKeyEvent.keyDisplay &&
+          !ModifierKeyCodes.includes(prerewrittenKeyEvent.vkey as number)) {
+        this.pendingPrerewrittenKeyEvent!.keyDisplay = '';
+      }
+
+      this.pendingKeyEvent!.modifiers = keyEvent.modifiers;
+      this.pendingPrerewrittenKeyEvent!.modifiers =
+          prerewrittenKeyEvent.modifiers;
+    } else {
+      // Only update the UI if the released key is the last key pressed OR if
+      // its a modifier.
+      if (this.pendingKeyEvent && keyEvent.vkey !== this.pendingKeyEvent.vkey) {
+        if (!ModifierKeyCodes.includes(keyEvent.vkey as number)) {
+          return;
+        }
+
+        this.pendingKeyEvent.modifiers = keyEvent.modifiers;
+        this.pendingPrerewrittenKeyEvent!.modifiers =
+            prerewrittenKeyEvent.modifiers;
+        return;
+      }
+    }
+
+    this.pendingKeyEvent = keyEvent;
+    this.pendingPrerewrittenKeyEvent = prerewrittenKeyEvent;
+
+    if (!this.updateOnKeyPress) {
+      this.dispatchEvent(new CustomEvent('shortcut-input-event', {
+        bubbles: true,
+        composed: true,
+        detail: {
+          keyEvent: this.pendingKeyEvent,
+        },
+      }));
+    }
   }
 
   override connectedCallback(): void {
@@ -132,9 +217,17 @@ export class ShortcutInputElement extends ShortcutInputElementBase {
         this, 'keydown', (e: KeyboardEvent) => this.stopEvent(e));
     this.eventTracker.add(
         this, 'keyup', (e: KeyboardEvent) => this.stopEvent(e));
-    this.eventTracker.add(this, 'blur', () => this.stopObserving());
+    this.eventTracker.add(this, 'blur', () => this.onBlur());
     this.$.container.focus();
     this.dispatchCaptureStateEvent();
+  }
+
+  onBlur(): void {
+    if (this.ignoreBlur) {
+      return;
+    }
+
+    this.stopObserving();
   }
 
   stopObserving(): void {
@@ -146,6 +239,7 @@ export class ShortcutInputElement extends ShortcutInputElementBase {
 
   reset(): void {
     this.pendingKeyEvent = null;
+    this.pendingPrerewrittenKeyEvent = null;
   }
 
   /**
@@ -156,9 +250,15 @@ export class ShortcutInputElement extends ShortcutInputElementBase {
     e.stopPropagation();
   }
 
+
+  private isModifier(keyEvent: KeyEvent): boolean {
+    return ModifierKeyCodes.includes(keyEvent.vkey as number);
+  }
+
   getKey(): string {
-    if (this.pendingKeyEvent && this.pendingKeyEvent.keyDisplay != '') {
-      const keyDisplay = this.pendingKeyEvent.keyDisplay;
+    const keyEvent = this.getPendingKeyEvent();
+    if (keyEvent && keyEvent.keyDisplay != '' && !this.isModifier(keyEvent)) {
+      const keyDisplay = keyEvent.keyDisplay;
       if (keyDisplay in KeyToIconNameMap) {
         return keyDisplay;
       }
@@ -169,27 +269,52 @@ export class ShortcutInputElement extends ShortcutInputElementBase {
   }
 
   getKeyState(): string {
-    if (this.pendingKeyEvent && this.pendingKeyEvent.keyDisplay != '') {
+    const keyEvent = this.getPendingKeyEvent();
+    if (keyEvent && keyEvent.keyDisplay != '' && !this.isModifier(keyEvent)) {
       return KeyInputState.ALPHANUMERIC_SELECTED;
     }
     return KeyInputState.NOT_SELECTED;
   }
 
+  getConfirmKey(): string {
+    const keyEvent = this.getPendingKeyEvent();
+    if (keyEvent && keyEvent.keyDisplay != '') {
+      const keyDisplay = keyEvent.keyDisplay;
+      if (keyDisplay in KeyToIconNameMap) {
+        return keyDisplay;
+      }
+      return keyDisplay.toLowerCase();
+    }
+    // TODO(dpad, b/286930911): Reset to localized default empty state.
+    return 'key';
+  }
+
+  getConfirmKeyState(): string {
+    const keyEvent = this.getPendingKeyEvent();
+    if (keyEvent && keyEvent.keyDisplay != '' && this.isModifier(keyEvent)) {
+      return KeyInputState.MODIFIER_SELECTED;
+    }
+
+    if (keyEvent && keyEvent.keyDisplay != '') {
+      return KeyInputState.ALPHANUMERIC_SELECTED;
+    }
+
+    return KeyInputState.NOT_SELECTED;
+  }
+
   shouldShowEditView(): boolean {
-    return this.isCapturing;
+    return this.isCapturing || this.updateOnKeyPress;
   }
 
   shouldShowConfirmView(): boolean {
-    return this.pendingKeyEvent !== null && !this.isCapturing;
+    return this.getPendingKeyEvent() !== null && !this.isCapturing &&
+        !this.updateOnKeyPress;
   }
 
   /**
    * Returns the specified CSS state of the modifier key element.
    */
   protected getCtrlState(): string {
-    if (this.pendingKeyEvent?.vkey as number === AllowedModifierKeyCodes.CTRL) {
-      return KeyInputState.NOT_SELECTED;
-    }
     return this.getModifierState(Modifier.CONTROL);
   }
 
@@ -197,9 +322,6 @@ export class ShortcutInputElement extends ShortcutInputElementBase {
    * Returns the specified CSS state of the modifier key element.
    */
   protected getAltState(): string {
-    if (this.pendingKeyEvent?.vkey as number === AllowedModifierKeyCodes.ALT) {
-      return KeyInputState.NOT_SELECTED;
-    }
     return this.getModifierState(Modifier.ALT);
   }
 
@@ -207,10 +329,6 @@ export class ShortcutInputElement extends ShortcutInputElementBase {
    * Returns the specified CSS state of the modifier key element.
    */
   protected getShiftState(): string {
-    if (this.pendingKeyEvent?.vkey as number ===
-        AllowedModifierKeyCodes.SHIFT) {
-      return KeyInputState.NOT_SELECTED;
-    }
     return this.getModifierState(Modifier.SHIFT);
   }
 
@@ -218,12 +336,6 @@ export class ShortcutInputElement extends ShortcutInputElementBase {
    * Returns the specified CSS state of the modifier key element.
    */
   protected getSearchState(): string {
-    if (this.pendingKeyEvent?.vkey as number ===
-            AllowedModifierKeyCodes.META_LEFT ||
-        this.pendingKeyEvent?.vkey as number ===
-            AllowedModifierKeyCodes.META_RIGHT) {
-      return KeyInputState.NOT_SELECTED;
-    }
     return this.getModifierState(Modifier.COMMAND);
   }
 
@@ -231,7 +343,8 @@ export class ShortcutInputElement extends ShortcutInputElementBase {
    * Returns the specified CSS state of the modifier key element.
    */
   private getModifierState(modifier: Modifier): KeyInputState {
-    if (this.pendingKeyEvent && this.pendingKeyEvent?.modifiers & modifier) {
+    const keyEvent = this.getPendingKeyEvent();
+    if (keyEvent && keyEvent?.modifiers & modifier) {
       return KeyInputState.MODIFIER_SELECTED;
     }
 
@@ -274,7 +387,7 @@ export class ShortcutInputElement extends ShortcutInputElementBase {
   }
 
   shouldShowSelectedKey() {
-    return this.pendingKeyEvent !== null;
+    return this.getPendingKeyEvent() !== null;
   }
 
   private dispatchCaptureStateEvent() {
@@ -285,6 +398,12 @@ export class ShortcutInputElement extends ShortcutInputElementBase {
         capturing: this.isCapturing,
       },
     }));
+  }
+
+  private getPendingKeyEvent(): KeyEvent|null {
+    return this.displayPrerewrittenKeyEvents ?
+        this.pendingPrerewrittenKeyEvent :
+        this.pendingKeyEvent;
   }
 
   static get template(): HTMLTemplateElement {

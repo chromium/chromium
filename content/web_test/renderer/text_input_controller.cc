@@ -52,8 +52,8 @@ class TextInputControllerBindings
   void DoCommand(const std::string& text);
   void ExtendSelectionAndDelete(int before, int after);
   void DeleteSurroundingText(int before, int after);
-  void SetMarkedText(const std::string& text, int start, int length);
-  void SetMarkedTextFromExistingText(int start, int end);
+  void SetMarkedText(const std::string& text, uint32_t start, uint32_t length);
+  void SetMarkedTextFromExistingText(uint32_t start, uint32_t end);
   bool HasMarkedText();
   std::vector<int> MarkedRange();
   std::vector<int> SelectedRange();
@@ -161,14 +161,14 @@ void TextInputControllerBindings::DeleteSurroundingText(int before, int after) {
 }
 
 void TextInputControllerBindings::SetMarkedText(const std::string& text,
-                                                int start,
-                                                int length) {
+                                                uint32_t start,
+                                                uint32_t length) {
   if (controller_)
     controller_->SetMarkedText(text, start, length);
 }
 
-void TextInputControllerBindings::SetMarkedTextFromExistingText(int start,
-                                                                int end) {
+void TextInputControllerBindings::SetMarkedTextFromExistingText(uint32_t start,
+                                                                uint32_t end) {
   if (controller_)
     controller_->SetMarkedTextFromExistingText(start, end);
 }
@@ -272,39 +272,43 @@ void TextInputController::DeleteSurroundingText(int before, int after) {
 }
 
 void TextInputController::SetMarkedText(const std::string& text,
-                                        int start,
-                                        int length) {
+                                        uint32_t start,
+                                        uint32_t length) {
   blink::WebString web_text(blink::WebString::FromUTF8(text));
 
   // Split underline into up to 3 elements (before, selection, and after).
   std::vector<ui::ImeTextSpan> ime_text_spans;
-  ui::ImeTextSpan ime_text_span;
-  if (!start) {
-    ime_text_span.end_offset = length;
+  ui::ImeTextSpan selection;
+  if (start) {
+    ui::ImeTextSpan before;
+    before.end_offset = start;
+    ime_text_spans.push_back(before);
+
+    selection.start_offset = start;
+    selection.end_offset = base::ClampedNumeric(start) + length;
   } else {
-    ime_text_span.end_offset = start;
-    ime_text_spans.push_back(ime_text_span);
-    ime_text_span.start_offset = start;
-    ime_text_span.end_offset = start + length;
+    selection.end_offset = length;
   }
-  ime_text_span.thickness = ui::ImeTextSpan::Thickness::kThick;
-  ime_text_span.underline_style = ui::ImeTextSpan::UnderlineStyle::kSolid;
-  ime_text_spans.push_back(ime_text_span);
-  if (start + length < static_cast<int>(web_text.length())) {
-    ime_text_span.start_offset = ime_text_span.end_offset;
-    ime_text_span.end_offset = web_text.length();
-    ime_text_span.thickness = ui::ImeTextSpan::Thickness::kThin;
-    ime_text_span.underline_style = ui::ImeTextSpan::UnderlineStyle::kSolid;
-    ime_text_spans.push_back(ime_text_span);
+  if (selection.end_offset != selection.start_offset) {
+    selection.thickness = ui::ImeTextSpan::Thickness::kThick;
+    selection.underline_style = ui::ImeTextSpan::UnderlineStyle::kSolid;
+    ime_text_spans.push_back(selection);
+  }
+  if (selection.end_offset < web_text.length()) {
+    ui::ImeTextSpan after;
+    after.start_offset = selection.end_offset;
+    after.end_offset = web_text.length();
+    ime_text_spans.push_back(after);
   }
 
   if (auto* controller = GetInputMethodController()) {
     controller->SetComposition(web_text, ime_text_spans, blink::WebRange(),
-                               start, start + length);
+                               selection.start_offset, selection.end_offset);
   }
 }
 
-void TextInputController::SetMarkedTextFromExistingText(int start, int end) {
+void TextInputController::SetMarkedTextFromExistingText(uint32_t start,
+                                                        uint32_t end) {
   if (!view()->MainFrame())
     return;
 

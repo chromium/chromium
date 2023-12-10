@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <set>
 #include <string>
 
@@ -23,7 +24,6 @@
 #include "net/first_party_sets/first_party_set_metadata.h"
 #include "net/first_party_sets/first_party_sets_cache_filter.h"
 #include "net/proxy_resolution/proxy_retry_info.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 
@@ -62,7 +62,7 @@ class NET_EXPORT NetworkDelegate {
                              CompletionOnceCallback callback,
                              GURL* new_url);
   using OnBeforeStartTransactionCallback =
-      base::OnceCallback<void(int, const absl::optional<HttpRequestHeaders>&)>;
+      base::OnceCallback<void(int, const std::optional<HttpRequestHeaders>&)>;
   int NotifyBeforeStartTransaction(URLRequest* request,
                                    const HttpRequestHeaders& headers,
                                    OnBeforeStartTransactionCallback callback);
@@ -72,7 +72,7 @@ class NET_EXPORT NetworkDelegate {
       const HttpResponseHeaders* original_response_headers,
       scoped_refptr<HttpResponseHeaders>* override_response_headers,
       const IPEndPoint& remote_endpoint,
-      absl::optional<GURL>* preserve_fragment_on_redirect_url);
+      std::optional<GURL>* preserve_fragment_on_redirect_url);
   void NotifyBeforeRedirect(URLRequest* request,
                             const GURL& new_location);
   void NotifyResponseStarted(URLRequest* request, int net_error);
@@ -213,7 +213,7 @@ class NET_EXPORT NetworkDelegate {
       const HttpResponseHeaders* original_response_headers,
       scoped_refptr<HttpResponseHeaders>* override_response_headers,
       const IPEndPoint& remote_endpoint,
-      absl::optional<GURL>* preserve_fragment_on_redirect_url) = 0;
+      std::optional<GURL>* preserve_fragment_on_redirect_url) = 0;
 
   // Called right after a redirect response code was received. |new_location| is
   // only valid for the duration of the call.

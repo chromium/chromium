@@ -35,9 +35,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-/**
- * Provides {@code PropertyModel}s of Chrome-provided sharing options.
- */
+/** Provides {@code PropertyModel}s of Chrome-provided sharing options. */
 public class ChromeProvidedSharingOptionsProvider extends ChromeProvidedSharingOptionsProviderBase {
     // ComponentName used for Chrome share options in ShareParams.TargetChosenCallback
     public static final ComponentName CHROME_PROVIDED_FEATURE_COMPONENT_NAME =
@@ -79,17 +77,36 @@ public class ChromeProvidedSharingOptionsProvider extends ChromeProvidedSharingO
      * @param profile The current profile of the User.
      * @param deviceLockActivityLauncher The launcher to start up the device lock page.
      */
-    ChromeProvidedSharingOptionsProvider(Activity activity, WindowAndroid windowAndroid,
-            Supplier<Tab> tabProvider, BottomSheetController bottomSheetController,
-            ShareSheetBottomSheetContent bottomSheetContent, ShareParams shareParams,
-            Callback<Tab> printTab, boolean isIncognito, long shareStartTime,
+    ChromeProvidedSharingOptionsProvider(
+            Activity activity,
+            WindowAndroid windowAndroid,
+            Supplier<Tab> tabProvider,
+            BottomSheetController bottomSheetController,
+            ShareSheetBottomSheetContent bottomSheetContent,
+            ShareParams shareParams,
+            Callback<Tab> printTab,
+            boolean isIncognito,
+            long shareStartTime,
             ChromeOptionShareCallback chromeOptionShareCallback,
-            ImageEditorModuleProvider imageEditorModuleProvider, Tracker featureEngagementTracker,
-            String url, @LinkGeneration int linkGenerationStatusForMetrics,
-            LinkToggleMetricsDetails linkToggleMetricsDetails, Profile profile,
+            ImageEditorModuleProvider imageEditorModuleProvider,
+            Tracker featureEngagementTracker,
+            String url,
+            @LinkGeneration int linkGenerationStatusForMetrics,
+            LinkToggleMetricsDetails linkToggleMetricsDetails,
+            Profile profile,
             DeviceLockActivityLauncher deviceLockActivityLauncher) {
-        super(activity, windowAndroid, tabProvider, bottomSheetController, shareParams, printTab,
-                isIncognito, chromeOptionShareCallback, featureEngagementTracker, url, profile,
+        super(
+                activity,
+                windowAndroid,
+                tabProvider,
+                bottomSheetController,
+                shareParams,
+                printTab,
+                isIncognito,
+                chromeOptionShareCallback,
+                featureEngagementTracker,
+                url,
+                profile,
                 deviceLockActivityLauncher);
         mBottomSheetContent = bottomSheetContent;
         mShareStartTime = shareStartTime;
@@ -109,8 +126,10 @@ public class ChromeProvidedSharingOptionsProvider extends ChromeProvidedSharingO
      * @param isMultiWindow if in multi-window mode.
      * @return a list of {@link PropertyModel}s.
      */
-    List<PropertyModel> getPropertyModels(Set<Integer> contentTypes,
-            @DetailedContentType int detailedContentType, boolean isMultiWindow) {
+    List<PropertyModel> getPropertyModels(
+            Set<Integer> contentTypes,
+            @DetailedContentType int detailedContentType,
+            boolean isMultiWindow) {
         List<PropertyModel> propertyModels = new ArrayList<>();
         for (FirstPartyOption firstPartyOption :
                 getFirstPartyOptions(contentTypes, detailedContentType, isMultiWindow)) {
@@ -126,16 +145,21 @@ public class ChromeProvidedSharingOptionsProvider extends ChromeProvidedSharingO
         return ShareSheetPropertyModelBuilder.createPropertyModel(
                 AppCompatResources.getDrawable(mActivity, option.icon),
                 mActivity.getResources().getString(option.iconLabel),
-                option.iconContentDescription, (view) -> {
-                    ShareSheetCoordinator.recordShareMetrics(option.featureNameForMetrics,
-                            mLinkGenerationStatusForMetrics, mLinkToggleMetricsDetails,
-                            mShareStartTime, mProfile);
+                option.iconContentDescription,
+                (view) -> {
+                    ShareSheetCoordinator.recordShareMetrics(
+                            option.featureNameForMetrics,
+                            mLinkGenerationStatusForMetrics,
+                            mLinkToggleMetricsDetails,
+                            mShareStartTime,
+                            mProfile);
                     if (hideBottomSheetContentOnTap) {
                         mBottomSheetController.hideContent(mBottomSheetContent, true);
                     }
                     option.onClickCallback.onResult(view);
                     callTargetChosenCallback();
-                }, setShowNewBadge);
+                },
+                setShowNewBadge);
     }
 
     private boolean showNewBadge(FirstPartyOption firstPartyOption) {
@@ -163,41 +187,63 @@ public class ChromeProvidedSharingOptionsProvider extends ChromeProvidedSharingO
 
     @Override
     protected FirstPartyOption createScreenshotFirstPartyOption() {
-        return new FirstPartyOptionBuilder(ContentType.LINK_PAGE_VISIBLE, ContentType.TEXT,
-                ContentType.HIGHLIGHTED_TEXT, ContentType.IMAGE)
+        return new FirstPartyOptionBuilder(
+                        ContentType.LINK_PAGE_VISIBLE,
+                        ContentType.TEXT,
+                        ContentType.HIGHLIGHTED_TEXT,
+                        ContentType.IMAGE)
                 .setDetailedContentTypesToDisableFor(DetailedContentType.WEB_NOTES)
                 .setIcon(R.drawable.screenshot, R.string.sharing_screenshot)
                 .setFeatureNameForMetrics(USER_ACTION_SCREENSHOT_SELECTED)
                 .setDisableForMultiWindow(true)
-                .setOnClickCallback((view) -> {
-                    mFeatureEngagementTracker.notifyEvent(EventConstants.SHARE_SCREENSHOT_SELECTED);
-                    ScreenshotCoordinator coordinator = new ScreenshotCoordinator(mActivity,
-                            mShareParams.getWindow(), mUrl, mChromeOptionShareCallback,
-                            mBottomSheetController,
-                            usePolishedActionOrderedList() ? null : mImageEditorModuleProvider);
-                    mBottomSheetController.addObserver(coordinator);
-                    mBottomSheetController.hideContent(mBottomSheetContent, true);
-                })
+                .setOnClickCallback(
+                        (view) -> {
+                            mFeatureEngagementTracker.notifyEvent(
+                                    EventConstants.SHARE_SCREENSHOT_SELECTED);
+                            ScreenshotCoordinator coordinator =
+                                    new ScreenshotCoordinator(
+                                            mActivity,
+                                            mShareParams.getWindow(),
+                                            mUrl,
+                                            mChromeOptionShareCallback,
+                                            mBottomSheetController,
+                                            usePolishedActionOrderedList()
+                                                    ? null
+                                                    : mImageEditorModuleProvider);
+                            mBottomSheetController.addObserver(coordinator);
+                            mBottomSheetController.hideContent(mBottomSheetContent, true);
+                        })
                 .build();
     }
 
     @Override
     protected FirstPartyOption createLongScreenshotsFirstPartyOption() {
-        return new FirstPartyOptionBuilder(ContentType.LINK_PAGE_VISIBLE, ContentType.TEXT,
-                ContentType.HIGHLIGHTED_TEXT, ContentType.IMAGE)
+        return new FirstPartyOptionBuilder(
+                        ContentType.LINK_PAGE_VISIBLE,
+                        ContentType.TEXT,
+                        ContentType.HIGHLIGHTED_TEXT,
+                        ContentType.IMAGE)
                 .setDetailedContentTypesToDisableFor(DetailedContentType.WEB_NOTES)
                 .setIcon(R.drawable.long_screenshot, R.string.sharing_long_screenshot)
                 .setFeatureNameForMetrics(USER_ACTION_LONG_SCREENSHOT_SELECTED)
                 .setDisableForMultiWindow(true)
-                .setOnClickCallback((view) -> {
-                    mFeatureEngagementTracker.notifyEvent(EventConstants.SHARE_SCREENSHOT_SELECTED);
-                    LongScreenshotsCoordinator coordinator = LongScreenshotsCoordinator.create(
-                            mActivity, mTabProvider.get(), mUrl, mChromeOptionShareCallback,
-                            mBottomSheetController,
-                            usePolishedActionOrderedList() ? null : mImageEditorModuleProvider);
-                    mBottomSheetController.addObserver(coordinator);
-                    mBottomSheetController.hideContent(mBottomSheetContent, true);
-                })
+                .setOnClickCallback(
+                        (view) -> {
+                            mFeatureEngagementTracker.notifyEvent(
+                                    EventConstants.SHARE_SCREENSHOT_SELECTED);
+                            LongScreenshotsCoordinator coordinator =
+                                    LongScreenshotsCoordinator.create(
+                                            mActivity,
+                                            mTabProvider.get(),
+                                            mUrl,
+                                            mChromeOptionShareCallback,
+                                            mBottomSheetController,
+                                            usePolishedActionOrderedList()
+                                                    ? null
+                                                    : mImageEditorModuleProvider);
+                            mBottomSheetController.addObserver(coordinator);
+                            mBottomSheetController.hideContent(mBottomSheetContent, true);
+                        })
                 .build();
     }
 

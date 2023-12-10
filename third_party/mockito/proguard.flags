@@ -9,8 +9,3 @@
 -keep class org.mockito.** {
   *;
 }
-
-# Packages that Mockito depends on:
--keep class com.android.dx.**, net.bytebuddy.** {
-  *;
-}

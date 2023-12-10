@@ -71,14 +71,15 @@ public class FindResultBar extends View {
 
     private boolean mWaitingForActivateAck;
 
-    private static Comparator<RectF> sComparator = new Comparator<RectF>() {
-        @Override
-        public int compare(RectF a, RectF b) {
-            int top = Float.compare(a.top, b.top);
-            if (top != 0) return top;
-            return Float.compare(a.left, b.left);
-        }
-    };
+    private static Comparator<RectF> sComparator =
+            new Comparator<RectF>() {
+                @Override
+                public int compare(RectF a, RectF b) {
+                    int top = Float.compare(a.top, b.top);
+                    if (top != 0) return top;
+                    return Float.compare(a.left, b.left);
+                }
+            };
 
     /**
      * Creates an instance of a {@link FindResultBar}. Also adds it to a parent {@link FrameLayout}
@@ -88,7 +89,10 @@ public class FindResultBar extends View {
      * @param windowAndroid The WindowAndroid hosting the WebContents under search.
      * @param findInPageBridge Facilitator for user interactions.
      */
-    public FindResultBar(Context context, FrameLayout parent, WindowAndroid windowAndroid,
+    public FindResultBar(
+            Context context,
+            FrameLayout parent,
+            WindowAndroid windowAndroid,
             FindInPageBridge findInPageBridge) {
         super(context);
 
@@ -100,8 +104,9 @@ public class FindResultBar extends View {
         mActiveColor = context.getColor(R.color.find_result_bar_active_color);
         mActiveBorderColor = context.getColor(R.color.find_result_bar_active_border_color);
         mBarTouchWidth = res.getDimensionPixelSize(R.dimen.find_result_bar_touch_width);
-        mBarDrawWidth = res.getDimensionPixelSize(R.dimen.find_result_bar_draw_width)
-                + res.getDimensionPixelSize(R.dimen.find_result_bar_separator_width);
+        mBarDrawWidth =
+                res.getDimensionPixelSize(R.dimen.find_result_bar_draw_width)
+                        + res.getDimensionPixelSize(R.dimen.find_result_bar_separator_width);
         mResultMinHeight = res.getDimensionPixelSize(R.dimen.find_result_bar_result_min_height);
         mActiveMinHeight = res.getDimensionPixelSize(R.dimen.find_result_bar_active_min_height);
         mBarVerticalPadding = res.getDimensionPixelSize(R.dimen.find_result_bar_vertical_padding);
@@ -120,7 +125,8 @@ public class FindResultBar extends View {
 
         mFindInPageBridge = findInPageBridge;
 
-        parent.addView(this,
+        parent.addView(
+                this,
                 new FrameLayout.LayoutParams(
                         mBarTouchWidth, ViewGroup.LayoutParams.MATCH_PARENT, Gravity.END));
         setTranslationX(MathUtils.flipSignIf(mBarTouchWidth, LocalizationUtils.isLayoutRtl()));
@@ -144,19 +150,25 @@ public class FindResultBar extends View {
             mVisibilityAnimation.cancel();
         }
 
-        mVisibilityAnimation = ObjectAnimator.ofFloat(this, TRANSLATION_X,
-                MathUtils.flipSignIf(mBarTouchWidth, LocalizationUtils.isLayoutRtl()));
+        mVisibilityAnimation =
+                ObjectAnimator.ofFloat(
+                        this,
+                        TRANSLATION_X,
+                        MathUtils.flipSignIf(mBarTouchWidth, LocalizationUtils.isLayoutRtl()));
         mVisibilityAnimation.setDuration(VISIBILITY_ANIMATION_DURATION_MS);
         mVisibilityAnimation.setInterpolator(Interpolators.FAST_OUT_LINEAR_IN_INTERPOLATOR);
         mWindowAndroid.startAnimationOverContent(mVisibilityAnimation);
-        mVisibilityAnimation.addListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                super.onAnimationEnd(animation);
+        mVisibilityAnimation.addListener(
+                new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        super.onAnimationEnd(animation);
 
-                if (getParent() != null) ((ViewGroup) getParent()).removeView(FindResultBar.this);
-            }
-        });
+                        if (getParent() != null) {
+                            ((ViewGroup) getParent()).removeView(FindResultBar.this);
+                        }
+                    }
+                });
     }
 
     /** Setup the tickmarks to draw using the rects of the find results. */
@@ -191,8 +203,11 @@ public class FindResultBar extends View {
     @Override
     @SuppressLint("ClickableViewAccessibility")
     public boolean onTouchEvent(MotionEvent event) {
-        if (!mDismissing && mTickmarks.size() > 0 && mTickmarks.size() == mMatches.length
-                && !mWaitingForActivateAck && event.getAction() != MotionEvent.ACTION_CANCEL) {
+        if (!mDismissing
+                && mTickmarks.size() > 0
+                && mTickmarks.size() == mMatches.length
+                && !mWaitingForActivateAck
+                && event.getAction() != MotionEvent.ACTION_CANCEL) {
             // We decided it's more important to get the keyboard out of the
             // way asap; the user can compensate if their next MotionEvent
             // scrolls somewhere unintended.
@@ -247,8 +262,10 @@ public class FindResultBar extends View {
         mFillPaint.setColor(mBackgroundColor);
         mStrokePaint.setColor(mBackgroundBorderColor);
         canvas.drawRect(leftMargin, 0, leftMargin + mBarDrawWidth, getHeight(), mFillPaint);
-        float lineX = LocalizationUtils.isLayoutRtl() ? leftMargin + mBarDrawWidth - 0.5f
-                                                      : leftMargin + 0.5f;
+        float lineX =
+                LocalizationUtils.isLayoutRtl()
+                        ? leftMargin + mBarDrawWidth - 0.5f
+                        : leftMargin + 0.5f;
         canvas.drawLine(lineX, 0, lineX, getHeight(), mStrokePaint);
 
         if (mMatches.length == 0) {
@@ -331,9 +348,10 @@ public class FindResultBar extends View {
                     lastGroupEnd - (cn - 1) * mStackedResultHeight - mResultMinHeight;
             float maxStart = cluster.get(0).mTop;
             float start = Math.round(MathUtils.clamp(preferredStart, minStart, maxStart));
-            float scale = start >= preferredStart
-                    ? 1.0f
-                    : (lastGroupEnd - start) / (lastGroupEnd - preferredStart);
+            float scale =
+                    start >= preferredStart
+                            ? 1.0f
+                            : (lastGroupEnd - start) / (lastGroupEnd - preferredStart);
             float spacing =
                     cn == 1 ? 0 : (lastGroupEnd - start - scale * mResultMinHeight) / (cn - 1);
             for (int j = 0; j < cn; j++) {
@@ -350,8 +368,10 @@ public class FindResultBar extends View {
     private Tickmark tickmarkForRect(RectF r, boolean active) {
         // Ratio of results bar height to page height
         float vScale = mBarHeightForWhichTickmarksWereCached - 2 * mBarVerticalPadding;
-        Tickmark tickmark = new Tickmark(
-                r.top * vScale + mBarVerticalPadding, r.bottom * vScale + mBarVerticalPadding);
+        Tickmark tickmark =
+                new Tickmark(
+                        r.top * vScale + mBarVerticalPadding,
+                        r.bottom * vScale + mBarVerticalPadding);
         return expandTickmarkToMinHeight(tickmark, active);
     }
 
@@ -369,16 +389,20 @@ public class FindResultBar extends View {
     private class Tickmark implements Comparable<Tickmark> {
         float mTop;
         float mBottom;
+
         Tickmark(float top, float bottom) {
             this.mTop = top;
             this.mBottom = bottom;
         }
+
         float height() {
             return mBottom - mTop;
         }
+
         float centerY() {
             return (mTop + mBottom) * 0.5f;
         }
+
         RectF toRectF() {
             int leftMargin = getLeftMargin();
             RectF rect = new RectF(leftMargin, mTop, leftMargin + mBarDrawWidth, mBottom);
@@ -386,6 +410,7 @@ public class FindResultBar extends View {
             rect.offset(LocalizationUtils.isLayoutRtl() ? -0.5f : 0.5f, 0);
             return rect;
         }
+
         @Override
         public int compareTo(Tickmark other) {
             return Float.compare(centerY(), other.centerY());

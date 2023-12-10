@@ -524,7 +524,7 @@ TEST_P(VisualRectMappingTest, ContainerFlippedWritingModeAndOverflowScroll) {
   EXPECT_EQ(0, scrollable_area->ScrollPosition().y());
   // The initial scroll offset is to the left-most because of flipped blocks
   // writing mode.
-  // 150 = total_layout_overflow(100 + 100) - width(50)
+  // 150 = total_scrollable_overflow(100 + 100) - width(50)
   EXPECT_EQ(150, scrollable_area->ScrollPosition().x());
   // Scroll to the right by 8 pixels.
   scrollable_area->ScrollToAbsolutePosition(gfx::PointF(142, 7));
@@ -619,7 +619,7 @@ TEST_P(VisualRectMappingTest, ContainerFlippedWritingModeAndOverflowHidden) {
   EXPECT_EQ(0, scrollable_area->ScrollPosition().y());
   // The initial scroll offset is to the left-most because of flipped blocks
   // writing mode.
-  // 150 = total_layout_overflow(100 + 100) - width(50)
+  // 150 = total_scrollable_overflow(100 + 100) - width(50)
   EXPECT_EQ(150, scrollable_area->ScrollPosition().x());
   scrollable_area->ScrollToAbsolutePosition(gfx::PointF(82, 7));
   UpdateAllLifecyclePhasesForTest();
@@ -658,7 +658,7 @@ TEST_P(VisualRectMappingTest, ContainerAndTargetDifferentFlippedWritingMode) {
   EXPECT_EQ(0, scrollable_area->ScrollPosition().y());
   // The initial scroll offset is to the left-most because of flipped blocks
   // writing mode.
-  // 150 = total_layout_overflow(100 + 100) - width(50)
+  // 150 = total_scrollable_overflow(100 + 100) - width(50)
   EXPECT_EQ(150, scrollable_area->ScrollPosition().x());
   // Scroll to the right by 8 pixels.
   scrollable_area->ScrollToAbsolutePosition(gfx::PointF(142, 7));

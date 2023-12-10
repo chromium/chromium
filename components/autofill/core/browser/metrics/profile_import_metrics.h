@@ -59,12 +59,9 @@ enum class AddressProfileImportRequirementMetric {
   // line 1 or a house number.
   kLine1OrHouseNumberRequirementFulfilled = 26,
   kLine1OrHouseNumberRequirementViolated = 27,
-  // If required by `kAutofillRequireNameForProfileImportsFromForms` feature,
-  // the form must contain a non-empty name.
-  kNameRequirementFulfilled = 28,
-  kNameRequirementViolated = 29,
-  // Must be set to the last entry.
-  kMaxValue = kNameRequirementViolated,
+  kDeprecatedNameRequirementFulfilled = 28,
+  kDeprecatedNameRequirementViolated = 29,
+  kMaxValue = kDeprecatedNameRequirementViolated,
 };
 
 // Represents the status of the field type requirements that are specific to
@@ -117,13 +114,9 @@ void LogAddressProfileImportUkm(
 void LogAddressFormImportRequirementMetric(
     AddressProfileImportRequirementMetric metric);
 
-// Logs the overall status of the country specific field requirements for
-// importing an address profile from a submitted form.
-void LogAddressFormImportCountrySpecificFieldRequirementsMetric(
-    bool is_zip_missing,
-    bool is_state_missing,
-    bool is_city_missing,
-    bool is_line1_missing);
+// Validates the profile import requirements and emits all the results.
+// Additionally, logs country-specific field requirement metrics.
+void LogAddressFormImportRequirementMetric(const AutofillProfile& profile);
 
 // Logs the overall status of an address import upon form submission.
 void LogAddressFormImportStatusMetric(AddressProfileImportStatusMetric metric);

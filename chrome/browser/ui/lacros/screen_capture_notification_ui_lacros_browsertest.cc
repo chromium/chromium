@@ -67,6 +67,6 @@ IN_PROC_BROWSER_TEST_F(ScreenCaptureNotificationUILacrosTest, OnStarted) {
       static_cast<ScreenCaptureNotificationUILacros*>(
           screen_capture_notification_ui.get());
   test->bridge_delegate_->HandleNotificationButtonClicked(
-      screen_capture_notification_profile_id, 0, absl::nullopt);
+      screen_capture_notification_profile_id, 0, std::nullopt);
   EXPECT_TRUE(stop_callback_called_);
 }

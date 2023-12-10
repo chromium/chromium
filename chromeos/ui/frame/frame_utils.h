@@ -50,7 +50,12 @@ bool CanPropertyEffectFrameRadius(const void* class_property_key);
 // Returns true if window should have rounded corners for a given
 // `window_state`.
 COMPONENT_EXPORT(CHROMEOS_UI_FRAME)
-bool ShouldHaveRoundedWindow(WindowStateType window_state);
+bool ShouldWindowStateHaveRoundedCorners(WindowStateType window_state);
+
+// Returns true if the `native_window` that is associated with the frame should
+// have rounded corners.
+COMPONENT_EXPORT(CHROMEOS_UI_FRAME)
+bool ShouldWindowHaveRoundedCorners(const aura::Window* native_window);
 
 }  // namespace chromeos
 

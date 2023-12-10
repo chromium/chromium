@@ -9,7 +9,6 @@
 
 #include "base/base64.h"
 #include "base/containers/span.h"
-#include "base/strings/string_piece.h"
 #include "services/network/trust_tokens/boringssl_trust_token_state.h"
 #include "services/network/trust_tokens/scoped_boringssl_bytes.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -40,7 +39,7 @@ bool BoringsslTrustTokenIssuanceCryptographer::Initialize(
   return !!state_;
 }
 
-bool BoringsslTrustTokenIssuanceCryptographer::AddKey(base::StringPiece key) {
+bool BoringsslTrustTokenIssuanceCryptographer::AddKey(std::string_view key) {
   if (!state_) {
     return false;
   }
@@ -75,7 +74,7 @@ BoringsslTrustTokenIssuanceCryptographer::BeginIssuance(size_t num_tokens) {
 
 std::unique_ptr<UnblindedTokens>
 BoringsslTrustTokenIssuanceCryptographer::ConfirmIssuance(
-    base::StringPiece response_header) {
+    std::string_view response_header) {
   if (!state_) {
     return nullptr;
   }

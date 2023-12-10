@@ -3,8 +3,9 @@
 // found in the LICENSE file.
 
 #include "content/browser/preloading/prefetch/prefetch_features.h"
+#include "base/feature_list.h"
 
-namespace content::features {
+namespace features {
 
 BASE_FEATURE(kPrefetchUseContentRefactor,
              "PrefetchUseContentRefactor",
@@ -21,4 +22,12 @@ BASE_FEATURE(kPrefetchReusable,
 const base::FeatureParam<int> kPrefetchReusableBodySizeLimit{
     &kPrefetchReusable, "prefetch_reusable_body_size_limit", 65536};
 
-}  // namespace content::features
+BASE_FEATURE(kPrefetchNIKScope,
+             "PrefetchNIKScope",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kPrefetchDocumentManagerEarlyCookieCopySkipped,
+             "PrefetchDocumentManagerEarlyCookieCopySkipped",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+}  // namespace features

@@ -252,6 +252,25 @@ static inline bool IsColorPropertyID(CSSPropertyID property_id) {
       CSSPropertyID::kWebkitTextFillColor,
       CSSPropertyID::kWebkitTextStrokeColor,
       CSSPropertyID::kTextDecorationColor,
+
+      // -internal-visited for all of the above that have them.
+      CSSPropertyID::kInternalVisitedCaretColor,
+      CSSPropertyID::kInternalVisitedColor,
+      CSSPropertyID::kInternalVisitedBackgroundColor,
+      CSSPropertyID::kInternalVisitedBorderBottomColor,
+      CSSPropertyID::kInternalVisitedBorderLeftColor,
+      CSSPropertyID::kInternalVisitedBorderRightColor,
+      CSSPropertyID::kInternalVisitedBorderTopColor,
+      CSSPropertyID::kInternalVisitedFill,
+      CSSPropertyID::kInternalVisitedOutlineColor,
+      CSSPropertyID::kInternalVisitedStroke,
+      CSSPropertyID::kInternalVisitedBorderBlockEndColor,
+      CSSPropertyID::kInternalVisitedBorderBlockStartColor,
+      CSSPropertyID::kInternalVisitedBorderInlineEndColor,
+      CSSPropertyID::kInternalVisitedBorderInlineStartColor,
+      CSSPropertyID::kInternalVisitedColumnRuleColor,
+      CSSPropertyID::kInternalVisitedTextEmphasisColor,
+      CSSPropertyID::kInternalVisitedTextDecorationColor,
   }};
   return properties.Has(property_id);
 }
@@ -1166,7 +1185,6 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
     case CSSPropertyID::kAll:
       return false;  // Only accepts css-wide keywords
     case CSSPropertyID::kBaselineSource:
-      DCHECK(RuntimeEnabledFeatures::CSSBaselineSourceEnabled());
       return value_id == CSSValueID::kAuto || value_id == CSSValueID::kFirst ||
              value_id == CSSValueID::kLast;
     case CSSPropertyID::kBorderCollapse:
@@ -1443,8 +1461,7 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
              value_id == CSSValueID::kSaturation ||
              value_id == CSSValueID::kColor ||
              value_id == CSSValueID::kLuminosity ||
-             (RuntimeEnabledFeatures::CSSMixBlendModePlusLighterEnabled() &&
-              value_id == CSSValueID::kPlusLighter);
+             value_id == CSSValueID::kPlusLighter;
     case CSSPropertyID::kWebkitBoxAlign:
       return value_id == CSSValueID::kStretch ||
              value_id == CSSValueID::kStart || value_id == CSSValueID::kEnd ||
@@ -1453,7 +1470,6 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
     case CSSPropertyID::kWebkitBoxDecorationBreak:
       return value_id == CSSValueID::kClone || value_id == CSSValueID::kSlice;
     case CSSPropertyID::kWebkitBoxDirection:
-    case CSSPropertyID::kWebkitBoxDirectionAlternative:
       return value_id == CSSValueID::kNormal ||
              value_id == CSSValueID::kReverse;
     case CSSPropertyID::kWebkitBoxOrient:
@@ -1747,7 +1763,6 @@ CSSBitset CSSParserFastPaths::handled_by_keyword_fast_paths_properties_{{
     CSSPropertyID::kWebkitBoxAlign,
     CSSPropertyID::kWebkitBoxDecorationBreak,
     CSSPropertyID::kWebkitBoxDirection,
-    CSSPropertyID::kWebkitBoxDirectionAlternative,
     CSSPropertyID::kWebkitBoxOrient,
     CSSPropertyID::kWebkitBoxPack,
     CSSPropertyID::kColumnFill,

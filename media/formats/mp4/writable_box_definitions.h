@@ -129,7 +129,7 @@ struct MEDIA_EXPORT SampleDescription : FullBox {
   SampleDescription(const SampleDescription&);
   SampleDescription& operator=(const SampleDescription&);
 
-  uint32_t entry_count;
+  uint32_t entry_count = 0;
 
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
   absl::optional<VisualSampleEntry> visual_sample_entry;
@@ -209,7 +209,7 @@ struct MEDIA_EXPORT MediaHandler : FullBox {
 struct MEDIA_EXPORT MediaHeader : FullBox {
   base::Time creation_time;
   base::Time modification_time;
-  uint32_t timescale;
+  uint32_t timescale = 0;
   base::TimeDelta duration;
   std::string language;  // 3 letters code ISO-639-2/T language.
 };
@@ -239,10 +239,10 @@ struct MEDIA_EXPORT Track : Box {
 
 // Track Extends (`trex`) box.
 struct MEDIA_EXPORT TrackExtends : FullBox {
-  uint32_t track_id;
-  uint32_t default_sample_description_index;
+  uint32_t track_id = 0;
+  uint32_t default_sample_description_index = 0;
   base::TimeDelta default_sample_duration;
-  uint32_t default_sample_size;
+  uint32_t default_sample_size = 0;
 
   // The sample flags field in sample fragments is coded as a 32-bit value.
   // bit(4) reserved=0;
@@ -253,7 +253,7 @@ struct MEDIA_EXPORT TrackExtends : FullBox {
   // bit(3) sample_padding_value;
   // bit(1) sample_is_non_sync_sample;
   // unsigned int(16) sample_degradation_priority;
-  uint32_t default_sample_flags;
+  uint32_t default_sample_flags = 0;
 };
 
 // Movie Extends (`mvex`) box.
@@ -274,9 +274,9 @@ struct MEDIA_EXPORT MovieHeader : FullBox {
   base::Time modification_time;
 
   // This is the number of time units that pass in one second.
-  uint32_t timescale;
+  uint32_t timescale = 0;
   base::TimeDelta duration;
-  uint32_t next_track_id;
+  uint32_t next_track_id = 0;
 };
 
 // Movie (`moov`) box.
@@ -368,10 +368,10 @@ struct MEDIA_EXPORT FileType : Box {
 // Movie Track Fragment Random Access Box Entry.
 struct TrackFragmentRandomAccessEntry {
   base::TimeDelta time;
-  uint64_t moof_offset;
-  uint32_t traf_number;
-  uint32_t trun_number;
-  uint32_t sample_number;
+  uint64_t moof_offset = 0;
+  uint32_t traf_number = 0;
+  uint32_t trun_number = 0;
+  uint32_t sample_number = 0;
 };
 
 // Movie Track Fragment Random Access Box (`tfra`) box.

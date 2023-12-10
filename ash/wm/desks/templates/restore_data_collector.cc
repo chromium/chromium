@@ -8,12 +8,15 @@
 #include "ash/public/cpp/multi_user_window_manager.h"
 #include "ash/public/cpp/saved_desk_delegate.h"
 #include "ash/shell.h"
+#include "ash/wm/desks/desk.h"
+#include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/templates/saved_desk_dialog_controller.h"
 #include "ash/wm/desks/templates/saved_desk_util.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/window_restore/window_restore_util.h"
 #include "base/uuid.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/app_restore/app_launch_info.h"
 #include "components/app_restore/restore_data.h"
 #include "components/app_restore/window_info.h"
@@ -46,6 +49,13 @@ void RestoreDataCollector::CaptureActiveDeskAsSavedDesk(
   call.root_window_to_show = root_window_to_show;
   call.template_type = template_type;
   call.template_name = template_name;
+  // Lacros profile IDs cannot be transferred between devices and is therefore
+  // only enabled for save & recall (which is not synced between devices).
+  if (template_type == DeskTemplateType::kSaveAndRecall &&
+      chromeos::features::IsDeskProfilesEnabled()) {
+    call.lacros_profile_id =
+        DesksController::Get()->active_desk()->lacros_profile_id();
+  }
   auto* window_manager = MultiUserWindowManagerImpl::Get();
   auto* const shell = Shell::Get();
   auto mru_windows =
@@ -88,7 +98,7 @@ void RestoreDataCollector::CaptureActiveDeskAsSavedDesk(
     has_supported_apps = true;
 
     std::unique_ptr<app_restore::WindowInfo> window_info =
-        BuildWindowInfo(window, /*activation_index=*/absl::nullopt,
+        BuildWindowInfo(window, /*activation_index=*/std::nullopt,
                         /*for_saved_desks=*/true, mru_windows);
 
     // Clear the desk ID and uuid in the WindowInfo that is to be stored in
@@ -168,6 +178,9 @@ void RestoreDataCollector::SendDeskTemplate(uint32_t serial) {
       base::Uuid::GenerateRandomV4(), DeskTemplateSource::kUser,
       call.template_name, base::Time::Now(), call.template_type);
   desk_template->set_desk_restore_data(std::move(call.data));
+  if (call.lacros_profile_id) {
+    desk_template->set_lacros_profile_id(call.lacros_profile_id);
+  }
 
   if (!call.unsupported_apps.empty() &&
       Shell::Get()->overview_controller()->InOverviewSession()) {

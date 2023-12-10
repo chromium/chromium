@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+[PRECONDITION_FAILED] RemoteContextHelper navigation using BFCache
+  BFCache not supported.
+Harness: the test ran to completion.

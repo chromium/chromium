@@ -70,7 +70,7 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 }  // namespace
 
 QuicChromiumPacketWriter::ReusableIOBuffer::ReusableIOBuffer(size_t capacity)
-    : IOBuffer(capacity), capacity_(capacity) {}
+    : IOBufferWithSize(capacity), capacity_(capacity) {}
 
 QuicChromiumPacketWriter::ReusableIOBuffer::~ReusableIOBuffer() = default;
 

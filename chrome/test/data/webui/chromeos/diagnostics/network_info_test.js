@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import 'chrome://diagnostics/network_info.js';
-import 'chrome://webui-test/mojo_webui_test_support.js';
+import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
 import {fakeCellularNetwork, fakeEthernetNetwork, fakeWifiNetwork} from 'chrome://diagnostics/fake_data.js';
 import {Network} from 'chrome://diagnostics/network_health_provider.mojom-webui.js';

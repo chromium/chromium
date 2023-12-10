@@ -35,9 +35,14 @@ class AccessorySheetProperties {
     static final int NO_ACTIVE_TAB = -1;
 
     static PropertyModel.Builder defaultPropertyModel() {
-        return new PropertyModel
-                .Builder(TABS, ACTIVE_TAB_INDEX, VISIBLE, HEIGHT, TOP_SHADOW_VISIBLE,
-                        PAGE_CHANGE_LISTENER, SHOW_KEYBOARD_CALLBACK)
+        return new PropertyModel.Builder(
+                        TABS,
+                        ACTIVE_TAB_INDEX,
+                        VISIBLE,
+                        HEIGHT,
+                        TOP_SHADOW_VISIBLE,
+                        PAGE_CHANGE_LISTENER,
+                        SHOW_KEYBOARD_CALLBACK)
                 .with(TABS, new ListModel<>())
                 .with(ACTIVE_TAB_INDEX, NO_ACTIVE_TAB)
                 .with(VISIBLE, false)

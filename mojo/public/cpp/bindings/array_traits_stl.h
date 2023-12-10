@@ -10,7 +10,6 @@
 #include <set>
 #include <type_traits>
 #include <unordered_set>
-#include <vector>
 
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr_exclusion.h"
@@ -40,58 +39,6 @@ struct ArrayTraits<std::unordered_set<T>> {
   static void AdvanceIterator(ConstIterator& iterator) { ++iterator; }
 
   static const T& GetValue(ConstIterator& iterator) { return *iterator; }
-};
-
-template <typename T>
-struct ArrayTraits<std::vector<T>> {
-  using Element = T;
-
-  static bool IsNull(const std::vector<T>& input) {
-    // std::vector<> is always converted to non-null mojom array.
-    return false;
-  }
-
-  static void SetToNull(std::vector<T>* output) {
-    // std::vector<> doesn't support null state. Set it to empty instead.
-    output->clear();
-  }
-
-  static size_t GetSize(const std::vector<T>& input) { return input.size(); }
-
-  static T* GetData(std::vector<T>& input) { return input.data(); }
-
-  static const T* GetData(const std::vector<T>& input) { return input.data(); }
-
-  static typename std::vector<T>::reference GetAt(std::vector<T>& input,
-                                                  size_t index) {
-    return input[index];
-  }
-
-  static typename std::vector<T>::const_reference GetAt(
-      const std::vector<T>& input,
-      size_t index) {
-    return input[index];
-  }
-
-  static inline bool Resize(std::vector<T>& input, size_t size) {
-    if (input.size() == size) {
-      return true;
-    }
-
-    if constexpr (std::is_constructible_v<T, ::mojo::DefaultConstruct::Tag>) {
-      std::vector<T> temp;
-      temp.reserve(size);
-      for (size_t i = 0; i < size; ++i) {
-        temp.emplace_back(internal::DefaultConstructTag());
-      }
-      input.swap(temp);
-    } else {
-      std::vector<T> temp(size);
-      input.swap(temp);
-    }
-
-    return true;
-  }
 };
 
 // This ArrayTraits specialization is used only for serialization.

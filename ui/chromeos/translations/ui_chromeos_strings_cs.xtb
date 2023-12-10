@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="cs">
 <translation id="1000498691615767391">Vyberte složku, kterou chcete otevřít</translation>
+<translation id="1014208178561091457">Soubor <ph name="FILE_NAME" /> nelze zkopírovat, protože je zašifrovaný.</translation>
 <translation id="1047956942837015229">Mazání <ph name="COUNT" /> položek...</translation>
 <translation id="1049926623896334335">Dokument aplikace Word</translation>
 <translation id="1056775291175587022">Žádné sítě</translation>
@@ -55,6 +56,7 @@
 <translation id="1435838927755162558">Sdílení složky s nástrojem Parallels Desktop</translation>
 <translation id="1439919885608649279">Člověk s květinami</translation>
 <translation id="1458457385801829801">Odpojit <ph name="TARGET_NAME" /></translation>
+<translation id="146691674290220697">Některé soubory (celkem <ph name="NUMBER_OF_FILES" />) nelze zkopírovat, protože jsou zašifrované.</translation>
 <translation id="1471718551822868769">slovenština</translation>
 <translation id="1482884275703521657">finština</translation>
 <translation id="148466539719134488">Švýcarská klávesnice</translation>
@@ -276,6 +278,7 @@
 <translation id="3253225298092156258">Nedostupné</translation>
 <translation id="3254434849914415189">Vyberte pro soubory <ph name="FILE_TYPE" /> výchozí aplikaci:</translation>
 <translation id="3255159654094949700">arabština</translation>
+<translation id="326396468955264502">Některé soubory (celkem <ph name="NUMBER_OF_FILES" />) nelze přesunout, protože jsou zašifrované.</translation>
 <translation id="3264582393905923483">Kontext</translation>
 <translation id="3272909651715601089">Soubor „<ph name="PATH" />“ nelze otevřít</translation>
 <translation id="3280431534455935878">Příprava</translation>
@@ -313,6 +316,7 @@
 <translation id="3523225005467146490">1 složka je sdílena s nástrojem <ph name="VM_NAME" /></translation>
 <translation id="3524311639100184459">Upozornění: Tyto soubory jsou dočasné a mohou být automaticky smazány kvůli uvolnění místa na disku.  <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Složka</translation>
+<translation id="3529424493985988200">Podrobnosti vám sdělí váš administrátor.</translation>
 <translation id="3548125359243647069">Příliš mnohokrát jste zadali nesprávný PIN.</translation>
 <translation id="3549797760399244642">Přejít na stránky drive.google.com...</translation>
 <translation id="3553048479571901246">Pokud soubory chcete otevřít pomocí aplikace <ph name="APP_NAME" />, nejdříve je zkopírujte do složky souborů Windows.</translation>
@@ -700,6 +704,7 @@
 <translation id="637062427944097960">Tento soubor je otevřen na jiné ploše. Chcete-li jej zobrazit, přejděte do profilu <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />).</translation>
 <translation id="6394388407447716302">Pouze pro čtení</translation>
 <translation id="6395575651121294044">Počet položek: <ph name="NUMBER_OF_FILES" /></translation>
+<translation id="6407769893376380348">Soubor <ph name="FILE_NAME" /> nelze přesunout, protože je zašifrovaný.</translation>
 <translation id="642282551015776456">Tento název nelze použít k pojmenování souboru ani složky.</translation>
 <translation id="6423031066725912715">vietnamština s klávesnicí TCVN</translation>
 <translation id="6430271654280079150">Zbývá vám jeden pokus.</translation>

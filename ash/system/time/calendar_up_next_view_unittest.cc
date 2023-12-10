@@ -4,6 +4,8 @@
 
 #include "ash/system/time/calendar_up_next_view.h"
 
+#include <utility>
+
 #include "ash/public/cpp/test/test_system_tray_client.h"
 #include "ash/shell.h"
 #include "ash/system/model/system_tray_model.h"
@@ -90,8 +92,8 @@ class CalendarUpNextViewTest : public AshTestBase {
         google_apis::ApiErrorCode::HTTP_SUCCESS,
         calendar_test_utils::CreateMockEventList(std::move(events)).get());
 
-    auto up_next_view =
-        std::make_unique<CalendarUpNextView>(controller_.get(), callback);
+    auto up_next_view = std::make_unique<CalendarUpNextView>(
+        controller_.get(), std::move(callback));
     up_next_view_ = widget_->SetContentsView(std::move(up_next_view));
     // Set the widget to reflect the CalendarUpNextView size in reality. If we
     // don't then the view will never be scrollable.

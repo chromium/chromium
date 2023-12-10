@@ -125,7 +125,7 @@ PowerSection::PowerSection(Profile* profile,
   if (power_manager_client) {
     power_manager_client->AddObserver(this);
 
-    const absl::optional<power_manager::PowerSupplyProperties>& last_status =
+    const std::optional<power_manager::PowerSupplyProperties>& last_status =
         power_manager_client->GetLastStatus();
     if (last_status) {
       PowerChanged(*last_status);
@@ -278,7 +278,7 @@ void PowerSection::PowerChanged(
 }
 
 void PowerSection::OnGotSwitchStates(
-    absl::optional<chromeos::PowerManagerClient::SwitchStates> result) {
+    std::optional<chromeos::PowerManagerClient::SwitchStates> result) {
   SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
 
   if (result && result->lid_state !=

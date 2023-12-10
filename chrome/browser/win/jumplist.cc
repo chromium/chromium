@@ -13,7 +13,6 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
@@ -29,7 +28,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/history/top_sites_factory.h"
-#include "chrome/browser/metrics/jumplist_metrics_win.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -96,6 +94,11 @@ constexpr base::TimeDelta kTimeOutForAddCustomCategory =
 
 // The maximum allowed time for JumpListUpdater::CommitUpdate.
 constexpr base::TimeDelta kTimeOutForCommitUpdate = base::Milliseconds(1000);
+
+// The category types that can be logged with the `--win-jumplist-action`
+// switch.
+constexpr char kMostVisitedCategory[] = "most-visited";
+constexpr char kRecentlyClosedCategory[] = "recently-closed";
 
 // Appends the common switches to each shell link.
 void AppendCommonSwitches(const base::FilePath& cmd_line_profile_dir,
@@ -464,7 +467,7 @@ void JumpList::OnMostVisitedURLsAvailable(
     std::wstring url_string_wide = base::UTF8ToWide(url_string);
     link->GetCommandLine()->AppendArgNative(url_string_wide);
     link->GetCommandLine()->AppendSwitchASCII(switches::kWinJumplistAction,
-                                              jumplist::kMostVisitedCategory);
+                                              kMostVisitedCategory);
     link->set_title(!url.title.empty() ? url.title
                                        : base::AsString16(url_string_wide));
     link->set_url(url_string);
@@ -495,7 +498,7 @@ bool JumpList::AddTab(const sessions::TabRestoreService::Tab& tab,
   std::string url = current_navigation.virtual_url().spec();
   link->GetCommandLine()->AppendArgNative(base::UTF8ToWide(url));
   link->GetCommandLine()->AppendSwitchASCII(switches::kWinJumplistAction,
-                                            jumplist::kRecentlyClosedCategory);
+                                            kRecentlyClosedCategory);
   link->set_title(current_navigation.title());
   link->set_url(url);
   recently_closed_pages_.push_back(link);
@@ -599,7 +602,7 @@ void JumpList::PostRunUpdate() {
 
   // Parameter evaluation order is unspecified in C++. Do the first bind and
   // then move it into PostTaskAndReply to ensure the pointer value is obtained
-  // before base::Passed() is called.
+  // before std::move() is called.
   auto run_update = base::BindOnce(
       &JumpList::RunUpdateJumpList, app_id_, profile_dir, most_visited_pages_,
       recently_closed_pages_, GetCmdLineProfileDir(),

@@ -50,29 +50,47 @@ public class FilterChipsProvider implements OfflineItemFilterObserver {
         Callback<PropertyModel> chipSelectedCallback =
                 (model) -> onChipSelected(model.get(ChipProperties.ID));
 
-        ListItem noneChip = ChipsCoordinator.buildChipListItem(Filters.FilterType.NONE,
-                context.getString(R.string.download_manager_ui_all_downloads), chipSelectedCallback,
-                R.drawable.settings_all_sites);
+        ListItem noneChip =
+                ChipsCoordinator.buildChipListItem(
+                        Filters.FilterType.NONE,
+                        context.getString(R.string.download_manager_ui_all_downloads),
+                        chipSelectedCallback,
+                        R.drawable.settings_all_sites);
 
-        ListItem videosChip = ChipsCoordinator.buildChipListItem(Filters.FilterType.VIDEOS,
-                context.getString(R.string.download_manager_ui_video), chipSelectedCallback,
-                R.drawable.ic_videocam_24dp);
+        ListItem videosChip =
+                ChipsCoordinator.buildChipListItem(
+                        Filters.FilterType.VIDEOS,
+                        context.getString(R.string.download_manager_ui_video),
+                        chipSelectedCallback,
+                        R.drawable.ic_videocam_24dp);
 
-        ListItem musicChip = ChipsCoordinator.buildChipListItem(Filters.FilterType.MUSIC,
-                context.getString(R.string.download_manager_ui_audio), chipSelectedCallback,
-                R.drawable.ic_music_note_24dp);
+        ListItem musicChip =
+                ChipsCoordinator.buildChipListItem(
+                        Filters.FilterType.MUSIC,
+                        context.getString(R.string.download_manager_ui_audio),
+                        chipSelectedCallback,
+                        R.drawable.ic_music_note_24dp);
 
-        ListItem imagesChip = ChipsCoordinator.buildChipListItem(Filters.FilterType.IMAGES,
-                context.getString(R.string.download_manager_ui_images), chipSelectedCallback,
-                R.drawable.ic_drive_image_24dp);
+        ListItem imagesChip =
+                ChipsCoordinator.buildChipListItem(
+                        Filters.FilterType.IMAGES,
+                        context.getString(R.string.download_manager_ui_images),
+                        chipSelectedCallback,
+                        R.drawable.ic_drive_image_24dp);
 
-        ListItem sitesChip = ChipsCoordinator.buildChipListItem(Filters.FilterType.SITES,
-                context.getString(R.string.download_manager_ui_pages), chipSelectedCallback,
-                R.drawable.ic_globe_24dp);
+        ListItem sitesChip =
+                ChipsCoordinator.buildChipListItem(
+                        Filters.FilterType.SITES,
+                        context.getString(R.string.download_manager_ui_pages),
+                        chipSelectedCallback,
+                        R.drawable.ic_globe_24dp);
 
-        ListItem otherChip = ChipsCoordinator.buildChipListItem(Filters.FilterType.OTHER,
-                context.getString(R.string.download_manager_ui_other), chipSelectedCallback,
-                R.drawable.ic_drive_file_24dp);
+        ListItem otherChip =
+                ChipsCoordinator.buildChipListItem(
+                        Filters.FilterType.OTHER,
+                        context.getString(R.string.download_manager_ui_other),
+                        chipSelectedCallback,
+                        R.drawable.ic_drive_file_24dp);
 
         // By default select the none chip.
         noneChip.model.set(ChipProperties.SELECTED, true);
@@ -168,7 +186,8 @@ public class FilterChipsProvider implements OfflineItemFilterObserver {
             boolean shouldEnable = filters.containsKey(chipId);
             chip.model.set(ChipProperties.ENABLED, shouldEnable);
             if (chip.model.get(ChipProperties.ENABLED)) {
-                chip.model.set(ChipProperties.CONTENT_DESCRIPTION,
+                chip.model.set(
+                        ChipProperties.CONTENT_DESCRIPTION,
                         UiUtils.getChipContentDescription(
                                 mContext.getResources(), chipId, filters.get(chipId)));
             }

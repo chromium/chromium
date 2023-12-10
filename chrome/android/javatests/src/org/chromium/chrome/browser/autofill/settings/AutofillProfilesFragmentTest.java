@@ -67,10 +67,7 @@ import java.util.concurrent.TimeoutException;
 /** Unit test suite for AutofillProfilesFragment. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
-@EnableFeatures({
-    ChromeFeatureList.AUTOFILL_ACCOUNT_PROFILE_STORAGE,
-    ChromeFeatureList.SYNC_ENABLE_CONTACT_INFO_DATA_TYPE_IN_TRANSPORT_MODE
-})
+@EnableFeatures({ChromeFeatureList.SYNC_ENABLE_CONTACT_INFO_DATA_TYPE_IN_TRANSPORT_MODE})
 @DisabledTest(message = "https://crbug.com/1496405")
 public class AutofillProfilesFragmentTest {
     private static final AutofillProfile sLocalOrSyncProfile =
@@ -706,10 +703,7 @@ public class AutofillProfilesFragmentTest {
     @Test
     @MediumTest
     @Feature({"Preferences"})
-    @DisableFeatures({
-        ChromeFeatureList.AUTOFILL_ACCOUNT_PROFILE_STORAGE,
-        ChromeFeatureList.SYNC_ENABLE_CONTACT_INFO_DATA_TYPE_IN_TRANSPORT_MODE
-    })
+    @DisableFeatures({ChromeFeatureList.SYNC_ENABLE_CONTACT_INFO_DATA_TYPE_IN_TRANSPORT_MODE})
     public void testLocalProfiles_NoRequiredFeatureFlags() throws Exception {
         setUpMockPrimaryAccount("test@account.com");
         setUpMockSyncService(false, new HashSet());

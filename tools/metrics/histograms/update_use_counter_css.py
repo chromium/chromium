@@ -78,5 +78,6 @@ if __name__ == '__main__':
     update_use_counter_feature_enum.PrintEnumForDashboard(enum_dict)
   else:
     update_histogram_enum.UpdateHistogramFromDict(
-        'MappedCSSProperties', ReadCssProperties(USE_COUNTER_MOJOM_PATH),
-        USE_COUNTER_MOJOM_PATH, os.path.basename(__file__))
+        'tools/metrics/histograms/enums.xml', 'MappedCSSProperties',
+        ReadCssProperties(USE_COUNTER_MOJOM_PATH), USE_COUNTER_MOJOM_PATH,
+        os.path.basename(__file__))

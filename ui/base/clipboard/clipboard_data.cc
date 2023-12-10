@@ -28,8 +28,7 @@ ClipboardData::ClipboardData(const ClipboardData& other) {
   maybe_bitmap_ = other.maybe_bitmap_;
   bookmark_title_ = other.bookmark_title_;
   bookmark_url_ = other.bookmark_url_;
-  custom_data_format_ = other.custom_data_format_;
-  custom_data_data_ = other.custom_data_data_;
+  custom_data_ = other.custom_data_;
   web_smart_paste_ = other.web_smart_paste_;
   svg_data_ = other.svg_data_;
   filenames_ = other.filenames_;
@@ -59,8 +58,7 @@ bool ClipboardData::operator==(const ClipboardData& that) const {
       rtf_data_ == that.rtf_data() &&
       bookmark_title_ == that.bookmark_title() &&
       bookmark_url_ == that.bookmark_url() &&
-      custom_data_format_ == that.custom_data_format() &&
-      custom_data_data_ == that.custom_data_data() &&
+      custom_data_ == that.custom_data_ &&
       web_smart_paste_ == that.web_smart_paste() &&
       svg_data_ == that.svg_data() && filenames_ == that.filenames() &&
       (src_ ? (that.source().has_value() && *src_ == *that.source())
@@ -98,8 +96,9 @@ bool ClipboardData::operator!=(const ClipboardData& that) const {
   return !(*this == that);
 }
 
-absl::optional<size_t> ClipboardData::size(
-    const absl::optional<ClipboardInternalFormat>& format) const {
+absl::optional<size_t> ClipboardData::CalculateSize(
+    const absl::optional<ClipboardInternalFormat>& format,
+    const absl::optional<ClipboardFormatType>& custom_data_format) const {
   size_t total_size = 0;
   if (format_ & static_cast<int>(ClipboardInternalFormat::kText)) {
     if (format.has_value() && *format == ClipboardInternalFormat::kText)
@@ -141,9 +140,21 @@ absl::optional<size_t> ClipboardData::size(
     total_size += image_size;
   }
   if (format_ & static_cast<int>(ClipboardInternalFormat::kCustom)) {
-    if (format.has_value() && *format == ClipboardInternalFormat::kCustom)
-      return custom_data_data_.size();
-    total_size += custom_data_data_.size();
+    size_t custom_data_size = 0;
+    if (custom_data_format) {
+      const auto& it = custom_data_.find(*custom_data_format);
+      if (it != custom_data_.end()) {
+        custom_data_size = it->second.size();
+      }
+    } else {
+      for (const auto& data : custom_data_) {
+        custom_data_size += data.second.size();
+      }
+    }
+    if (format.has_value() && *format == ClipboardInternalFormat::kCustom) {
+      return custom_data_size;
+    }
+    total_size += custom_data_size;
   }
 
   if (format.has_value() ||
@@ -180,15 +191,24 @@ absl::optional<SkBitmap> ClipboardData::GetBitmapIfPngNotEncoded() const {
   return maybe_png_.has_value() ? absl::nullopt : maybe_bitmap_;
 }
 
-void ClipboardData::SetCustomData(const std::string& data_format,
-                                  const std::string& data_data) {
-  if (data_data.size() == 0) {
-    custom_data_data_.clear();
-    custom_data_format_.clear();
-    return;
-  }
-  custom_data_data_ = data_data;
-  custom_data_format_ = data_format;
+bool ClipboardData::HasCustomDataFormat(
+    const ClipboardFormatType& format) const {
+  return custom_data_.find(format) != custom_data_.end();
+}
+
+std::string ClipboardData::GetCustomData(
+    const ClipboardFormatType& format) const {
+  auto it = custom_data_.find(format);
+  return it != custom_data_.end() ? it->second : std::string();
+}
+
+std::string ClipboardData::GetWebCustomData() const {
+  return GetCustomData(ClipboardFormatType::WebCustomDataType());
+}
+
+void ClipboardData::SetCustomData(const ClipboardFormatType& format,
+                                  const std::string& data) {
+  custom_data_[format] = data;
   format_ |= static_cast<int>(ClipboardInternalFormat::kCustom);
 }
 

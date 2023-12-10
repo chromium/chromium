@@ -1,5 +1,4 @@
 This is a testharness.js-based test.
-[PASS] SVGAElement.text setting
 [FAIL] Test for anchor 0
   assert_equals: expected "x" but got "a b c"
 [FAIL] Test for anchor 1

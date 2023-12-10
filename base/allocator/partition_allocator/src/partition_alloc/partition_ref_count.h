@@ -5,25 +5,27 @@
 #ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_REF_COUNT_H_
 #define BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_REF_COUNT_H_
 
-#include <atomic>
-#include <cstdint>
+#include <stddef.h>
+#include <stdint.h>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/dangling_raw_ptr_checks.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/compiler_specific.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/component_export.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/debug/debugging_buildflags.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/immediate_crash.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_check.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_config.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_constants.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_forward.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/tagging.h"
+#include <atomic>
+
 #include "build/build_config.h"
+#include "partition_alloc/dangling_raw_ptr_checks.h"
+#include "partition_alloc/partition_alloc_base/compiler_specific.h"
+#include "partition_alloc/partition_alloc_base/component_export.h"
+#include "partition_alloc/partition_alloc_base/debug/debugging_buildflags.h"
+#include "partition_alloc/partition_alloc_base/immediate_crash.h"
+#include "partition_alloc/partition_alloc_buildflags.h"
+#include "partition_alloc/partition_alloc_check.h"
+#include "partition_alloc/partition_alloc_config.h"
+#include "partition_alloc/partition_alloc_constants.h"
+#include "partition_alloc/partition_alloc_forward.h"
+#include "partition_alloc/tagging.h"
 
 #if BUILDFLAG(IS_MAC)
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/bits.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/mac/mac_util.h"
+#include "partition_alloc/partition_alloc_base/bits.h"
+#include "partition_alloc/partition_alloc_base/mac/mac_util.h"
 #endif  // BUILDFLAG(IS_MAC)
 
 namespace partition_alloc::internal {
@@ -40,7 +42,7 @@ PA_ALWAYS_INLINE size_t AlignUpRefCountSizeForMac(size_t ref_count_size) {
 #if BUILDFLAG(IS_MAC)
   if (internal::base::mac::MacOSMajorVersion() == 13 ||
       internal::base::mac::MacOSMajorVersion() == 14) {
-    return internal::base::bits::AlignUp(ref_count_size, 8);
+    return internal::base::bits::AlignUp<size_t>(ref_count_size, 8);
   }
 #endif  // BUILDFLAG(IS_MAC)
   return ref_count_size;

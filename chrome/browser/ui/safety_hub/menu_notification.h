@@ -6,13 +6,13 @@
 #define CHROME_BROWSER_UI_SAFETY_HUB_MENU_NOTIFICATION_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_constants.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_service.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 constexpr base::TimeDelta kSafetyHubMenuNotificationMinNotificationDuration =
     base::Days(3);
@@ -22,7 +22,8 @@ constexpr int kSafetyHubMenuNotificationMinImpressionCount = 5;
 // Chrome menu.
 class SafetyHubMenuNotification {
  public:
-  SafetyHubMenuNotification();
+  SafetyHubMenuNotification() = delete;
+  explicit SafetyHubMenuNotification(safety_hub::SafetyHubModuleType type);
   explicit SafetyHubMenuNotification(const base::Value::Dict& dict,
                                      safety_hub::SafetyHubModuleType type);
 
@@ -72,6 +73,9 @@ class SafetyHubMenuNotification {
   // three-dot menu.
   int GetNotificationCommandId() const;
 
+  // Returns the module type this menu notification is for.
+  safety_hub::SafetyHubModuleType GetModuleType() const;
+
   SafetyHubService::Result* GetResultForTesting() const;
 
  private:
@@ -101,16 +105,18 @@ class SafetyHubMenuNotification {
   int impression_count_ = 0;
   // The first time that the notification was shown to the user, will be nullopt
   // when the notification has never been shown.
-  absl::optional<base::Time> first_impression_time_;
+  std::optional<base::Time> first_impression_time_;
   // Indicates the last time that a notification was shown, even when it is
   // related to a different result.
-  absl::optional<base::Time> last_impression_time_;
+  std::optional<base::Time> last_impression_time_;
   // The result for which the notification may be shown.
   std::unique_ptr<SafetyHubService::Result> result_ = nullptr;
   // Menu notifications should only be shown after this time.
-  absl::optional<base::Time> show_only_after_;
+  std::optional<base::Time> show_only_after_;
   // The total number of time in total that a notification has been shown.
   int all_time_notification_count_ = 0;
+  // The type of the module this menu notification is for.
+  safety_hub::SafetyHubModuleType module_type_;
 };
 
 #endif  // CHROME_BROWSER_UI_SAFETY_HUB_MENU_NOTIFICATION_H_

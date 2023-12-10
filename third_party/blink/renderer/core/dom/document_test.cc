@@ -938,7 +938,7 @@ TEST_F(DocumentTest, CanExecuteScriptsWithSandboxAndIsolatedWorld) {
 }
 
 TEST_F(DocumentTest, ElementFromPointOnScrollbar) {
-  USE_NON_OVERLAY_SCROLLBARS();
+  USE_NON_OVERLAY_SCROLLBARS_OR_QUIT();
 
   GetDocument().SetCompatibilityMode(Document::kQuirksMode);
   // This test requires that scrollbars take up space.
@@ -1679,7 +1679,6 @@ TEST_F(DocumentSimTest, LastModified) {
 }
 
 TEST_F(DocumentSimTest, DuplicatedDocumentPolicyViolationsAreIgnored) {
-  blink::ScopedDocumentPolicyForTest scoped_document_policy(true);
   SimRequest::Params params;
   params.response_http_headers = {
       {"Document-Policy", "lossless-images-max-bpp=1.0"}};

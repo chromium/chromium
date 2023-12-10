@@ -59,7 +59,7 @@ void FileStreamReaderToDataPipe::ReadMore() {
                                  read_length_ - transferred_bytes_);
 
   auto buffer =
-      base::MakeRefCounted<network::NetToMojoIOBuffer>(pending_write_.get());
+      base::MakeRefCounted<network::NetToMojoIOBuffer>(pending_write_);
   int result =
       reader_->Read(buffer.get(), base::checked_cast<int>(read_bytes),
                     base::BindOnce(&FileStreamReaderToDataPipe::DidRead,

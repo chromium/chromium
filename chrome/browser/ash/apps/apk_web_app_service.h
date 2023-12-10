@@ -20,6 +20,7 @@
 #include "chrome/browser/ash/crosapi/web_app_service_ash.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
+#include "components/webapps/browser/uninstall_result_code.h"
 #include "components/webapps/common/web_app_id.h"
 
 class ArcAppListPrefs;
@@ -58,8 +59,11 @@ class ApkWebAppService : public KeyedService,
     using WebAppInstallCallback = base::OnceCallback<void(
         const webapps::AppId& web_app_id,
         bool is_web_only_twa,
-        const absl::optional<std::string> sha256_fingerprint,
+        const std::optional<std::string> sha256_fingerprint,
         webapps::InstallResultCode code)>;
+
+    using WebAppUninstallCallback =
+        base::OnceCallback<void(webapps::UninstallResultCode code)>;
 
     virtual ~Delegate();
 
@@ -76,7 +80,8 @@ class ApkWebAppService : public KeyedService,
     // with ID |web_app_id|. If no other sources left, the web app will be
     // uninstalled. Does nothing if Lacros is not connected.
     virtual void MaybeUninstallWebAppInLacros(
-        const webapps::AppId& web_app_id) = 0;
+        const webapps::AppId& web_app_id,
+        WebAppUninstallCallback callback) = 0;
 
     // Tells ARC to uninstall a package identified by |package_name|. Returns
     // true if the call to ARC was successful, false if ARC is not running.
@@ -100,16 +105,16 @@ class ApkWebAppService : public KeyedService,
 
   bool IsWebAppShellPackage(const std::string& package_name);
 
-  absl::optional<std::string> GetPackageNameForWebApp(
+  std::optional<std::string> GetPackageNameForWebApp(
       const webapps::AppId& app_id,
       bool include_installing_apks = false);
 
-  absl::optional<std::string> GetPackageNameForWebApp(const GURL& url);
+  std::optional<std::string> GetPackageNameForWebApp(const GURL& url);
 
-  absl::optional<std::string> GetWebAppIdForPackageName(
+  std::optional<std::string> GetWebAppIdForPackageName(
       const std::string& package_name);
 
-  absl::optional<std::string> GetCertificateSha256Fingerprint(
+  std::optional<std::string> GetCertificateSha256Fingerprint(
       const webapps::AppId& app_id);
 
   // Save a mapping of the web app ID to the package name for a web-only TWA
@@ -180,8 +185,10 @@ class ApkWebAppService : public KeyedService,
   void OnDidFinishInstall(const std::string& package_name,
                           const webapps::AppId& web_app_id,
                           bool is_web_only_twa,
-                          const absl::optional<std::string> sha256_fingerprint,
+                          const std::optional<std::string> sha256_fingerprint,
                           webapps::InstallResultCode code);
+  void OnDidRemoveInstallSource(const webapps::AppId& app_id,
+                                webapps::UninstallResultCode code);
   void UpdatePackageInfo(const std::string& app_id,
                          const arc::mojom::WebAppInfoPtr& web_app_info);
   const base::Value::Dict& WebAppToApks() const;

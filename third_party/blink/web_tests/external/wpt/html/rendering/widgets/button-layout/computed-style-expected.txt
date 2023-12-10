@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 135 tests; 50 PASS, 85 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 75 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] computed display of <input type=reset> with display: inline
   assert_equals: expected "inline" but got "inline-block"
 [FAIL] computed display of <input type=button> with display: inline
@@ -10,11 +10,6 @@ Found 135 tests; 50 PASS, 85 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: expected "inline" but got "inline-block"
 [FAIL] computed display of <button type=submit> with display: inline
   assert_equals: expected "inline" but got "inline-block"
-[PASS] computed display of <input type=reset> with display: block
-[PASS] computed display of <input type=button> with display: block
-[PASS] computed display of <input type=submit> with display: block
-[PASS] computed display of <input type=color> with display: block
-[PASS] computed display of <button type=submit> with display: block
 [FAIL] computed display of <input type=reset> with display: list-item
   assert_equals: expected "list-item" but got "block"
 [FAIL] computed display of <input type=button> with display: list-item
@@ -25,11 +20,6 @@ Found 135 tests; 50 PASS, 85 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: expected "list-item" but got "block"
 [FAIL] computed display of <button type=submit> with display: list-item
   assert_equals: expected "list-item" but got "block"
-[PASS] computed display of <input type=reset> with display: inline-block
-[PASS] computed display of <input type=button> with display: inline-block
-[PASS] computed display of <input type=submit> with display: inline-block
-[PASS] computed display of <input type=color> with display: inline-block
-[PASS] computed display of <button type=submit> with display: inline-block
 [FAIL] computed display of <input type=reset> with display: table
   assert_equals: expected "table" but got "block"
 [FAIL] computed display of <input type=button> with display: table
@@ -130,46 +120,6 @@ Found 135 tests; 50 PASS, 85 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: expected "table-caption" but got "inline-block"
 [FAIL] computed display of <button type=submit> with display: table-caption
   assert_equals: expected "table-caption" but got "inline-block"
-[PASS] computed display of <input type=reset> with display: none
-[PASS] computed display of <input type=button> with display: none
-[PASS] computed display of <input type=submit> with display: none
-[PASS] computed display of <input type=color> with display: none
-[PASS] computed display of <button type=submit> with display: none
-[PASS] computed display of <input type=reset> with display: contents
-[PASS] computed display of <input type=button> with display: contents
-[PASS] computed display of <input type=submit> with display: contents
-[PASS] computed display of <input type=color> with display: contents
-[PASS] computed display of <button type=submit> with display: contents
-[PASS] computed display of <input type=reset> with display: flow
-[PASS] computed display of <input type=button> with display: flow
-[PASS] computed display of <input type=submit> with display: flow
-[PASS] computed display of <input type=color> with display: flow
-[PASS] computed display of <button type=submit> with display: flow
-[PASS] computed display of <input type=reset> with display: flow-root
-[PASS] computed display of <input type=button> with display: flow-root
-[PASS] computed display of <input type=submit> with display: flow-root
-[PASS] computed display of <input type=color> with display: flow-root
-[PASS] computed display of <button type=submit> with display: flow-root
-[PASS] computed display of <input type=reset> with display: flex
-[PASS] computed display of <input type=button> with display: flex
-[PASS] computed display of <input type=submit> with display: flex
-[PASS] computed display of <input type=color> with display: flex
-[PASS] computed display of <button type=submit> with display: flex
-[PASS] computed display of <input type=reset> with display: grid
-[PASS] computed display of <input type=button> with display: grid
-[PASS] computed display of <input type=submit> with display: grid
-[PASS] computed display of <input type=color> with display: grid
-[PASS] computed display of <button type=submit> with display: grid
-[FAIL] computed display of <input type=reset> with display: ruby
-  assert_not_equals: display: ruby is not supported got disallowed value ""
-[FAIL] computed display of <input type=button> with display: ruby
-  assert_not_equals: display: ruby is not supported got disallowed value ""
-[FAIL] computed display of <input type=submit> with display: ruby
-  assert_not_equals: display: ruby is not supported got disallowed value ""
-[FAIL] computed display of <input type=color> with display: ruby
-  assert_not_equals: display: ruby is not supported got disallowed value ""
-[FAIL] computed display of <button type=submit> with display: ruby
-  assert_not_equals: display: ruby is not supported got disallowed value ""
 [FAIL] computed display of <input type=reset> with display: ruby-base
   assert_not_equals: display: ruby-base is not supported got disallowed value ""
 [FAIL] computed display of <input type=button> with display: ruby-base
@@ -180,16 +130,6 @@ Found 135 tests; 50 PASS, 85 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_not_equals: display: ruby-base is not supported got disallowed value ""
 [FAIL] computed display of <button type=submit> with display: ruby-base
   assert_not_equals: display: ruby-base is not supported got disallowed value ""
-[FAIL] computed display of <input type=reset> with display: ruby-text
-  assert_not_equals: display: ruby-text is not supported got disallowed value ""
-[FAIL] computed display of <input type=button> with display: ruby-text
-  assert_not_equals: display: ruby-text is not supported got disallowed value ""
-[FAIL] computed display of <input type=submit> with display: ruby-text
-  assert_not_equals: display: ruby-text is not supported got disallowed value ""
-[FAIL] computed display of <input type=color> with display: ruby-text
-  assert_not_equals: display: ruby-text is not supported got disallowed value ""
-[FAIL] computed display of <button type=submit> with display: ruby-text
-  assert_not_equals: display: ruby-text is not supported got disallowed value ""
 [FAIL] computed display of <input type=reset> with display: ruby-base-container
   assert_not_equals: display: ruby-base-container is not supported got disallowed value ""
 [FAIL] computed display of <input type=button> with display: ruby-base-container
@@ -210,15 +150,5 @@ Found 135 tests; 50 PASS, 85 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_not_equals: display: ruby-text-container is not supported got disallowed value ""
 [FAIL] computed display of <button type=submit> with display: ruby-text-container
   assert_not_equals: display: ruby-text-container is not supported got disallowed value ""
-[PASS] computed display of <input type=reset> with display: inline-flex
-[PASS] computed display of <input type=button> with display: inline-flex
-[PASS] computed display of <input type=submit> with display: inline-flex
-[PASS] computed display of <input type=color> with display: inline-flex
-[PASS] computed display of <button type=submit> with display: inline-flex
-[PASS] computed display of <input type=reset> with display: inline-grid
-[PASS] computed display of <input type=button> with display: inline-grid
-[PASS] computed display of <input type=submit> with display: inline-grid
-[PASS] computed display of <input type=color> with display: inline-grid
-[PASS] computed display of <button type=submit> with display: inline-grid
 Harness: the test ran to completion.
 

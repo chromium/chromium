@@ -23,9 +23,6 @@ constexpr base::FeatureParam<std::string> kKidFriendlyContentFeedEndpoint{
 
 // Enables local parent approvals for the blocked website on the Family Link
 // user's device.
-// The feature includes one experiment parameter: "preferred_button", which
-// determines which button is displayed as the preferred option in the
-// interstitial UI (i.e. dark blue button).
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
 BASE_FEATURE(kLocalWebApprovals,
              "LocalWebApprovals",
@@ -39,10 +36,12 @@ BASE_FEATURE(kLocalWebApprovals,
 // Proto fetcher experiments.
 BASE_FEATURE(kEnableProtoApiForClassifyUrl,
              "EnableProtoApiForClassifyUrl",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kUseBuiltInRetryingMechanismForListFamilyMembers,
-             "UseBuiltInRetryingMechanismForListFamilyMembers",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Request priority experiment for ClassifyUrl (for critical path of rendering).
+BASE_FEATURE(kHighestRequestPriorityForClassifyUrl,
+             "HighestRequestPriorityForClassifyUrl",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsGoogleBrandedBuild() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -56,7 +55,7 @@ bool IsLocalWebApprovalsEnabled() {
   // TODO(crbug.com/1272462, b/261729051):
   // Move this logic to SupervisedUserService, once it's migrated to
   // components, and de-release the intended usage of
-  // WebsiteParentApproval::IsLocalApprovalSupported for Andoird.
+  // WebsiteParentApproval::IsLocalApprovalSupported for Android.
 #if BUILDFLAG(IS_ANDROID)
   return base::FeatureList::IsEnabled(kLocalWebApprovals) &&
          IsGoogleBrandedBuild();
@@ -69,27 +68,36 @@ bool IsProtoApiForClassifyUrlEnabled() {
   return base::FeatureList::IsEnabled(kEnableProtoApiForClassifyUrl);
 }
 
-bool IsRetryMechanismForListFamilyMembersEnabled() {
-  return base::FeatureList::IsEnabled(
-      kUseBuiltInRetryingMechanismForListFamilyMembers);
-}
-
 // The following flags control whether supervision features are enabled on
 // desktop and iOS. There are granular sub-feature flags, which control
 // particular aspects. If one or more of these sub-feature flags are enabled,
 // then child account detection logic is implicitly enabled.
 BASE_FEATURE(kFilterWebsitesForSupervisedUsersOnDesktopAndIOS,
              "FilterWebsitesForSupervisedUsersOnDesktopAndIOS",
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(IS_IOS)
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#else
              base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 BASE_FEATURE(kSupervisedPrefsControlledBySupervisedStore,
              "SupervisedPrefsControlledBySupervisedStore",
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#else
              base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
 
 // Whether to display a "Managed by your parent" or similar text for supervised
 // users in various UI surfaces.
 BASE_FEATURE(kEnableManagedByParentUi,
              "EnableManagedByParentUi",
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#else
              base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 BASE_FEATURE(kEnableExtensionsPermissionsForSupervisedUsersOnDesktop,
@@ -112,7 +120,11 @@ bool CanDisplayFirstTimeInterstitialBanner() {
 // their google account when cookies are cleared
 BASE_FEATURE(kClearingCookiesKeepsSupervisedUsersSignedIn,
              "ClearingCookiesKeepsSupervisedUsersSignedIn",
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#else
              base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
 
 BASE_FEATURE(kForceGoogleSafeSearchForSupervisedUsers,
              "ForceGoogleSafeSearchForSupervisedUsers",

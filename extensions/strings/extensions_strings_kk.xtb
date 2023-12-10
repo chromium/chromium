@@ -8,6 +8,7 @@
 <translation id="1420684932347524586">Кездейсоқ RSA жеке кілтін жасау сәтсіз аяқталды.</translation>
 <translation id="1445572445564823378">Бұл кеңейтім <ph name="PRODUCT_NAME" /> жұмысын баяулатады. <ph name="PRODUCT_NAME" /> жұмысын қалпына келтіру үшін кеңейтімді өшіруіңіз керек.</translation>
 <translation id="1468038450257740950">WebGL қолдау көрсетілмеген.</translation>
+<translation id="1610570795592207282">Скриптіге арналған CSS "<ph name="RELATIVE_PATH" />" жүктелмеді.</translation>
 <translation id="1803557475693955505">"<ph name="BACKGROUND_PAGE" />" фондық бетін жүктеу мүмкін болмады.</translation>
 <translation id="2159915644201199628">Кескінді шифрсыздандыру мүмкін емес: "<ph name="IMAGE_NAME" />"</translation>
 <translation id="2350172092385603347">Локализациялау пайдаланылды, бірақ default_locale манифестте көрсетілмеген.</translation>
@@ -18,14 +19,12 @@
 <translation id="3115238746683532089">Жеткізуші <ph name="VENDOR_ID" /> ұсынған белгісіз өнім <ph name="PRODUCT_ID" /> (сериялық нөмірі <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">CRX файлын ауыстыру мүмкін болмады. Файл пайдаланылып жатқан болуы мүмкін.</translation>
 <translation id="3163201441334626963">Жеткізуші <ph name="VENDOR_ID" /> ұсынған белгісіз өнім <ph name="PRODUCT_ID" /></translation>
-<translation id="3302709122321372472">Контент сценарийіне арналған CSS "<ph name="RELATIVE_PATH" />" жүктеу мүмкін емес.</translation>
 <translation id="3369521687965833290">Кеңейтімді пакеттен шығару мүмкін емес. Кеңейтімді қауіпсіз түрде пакеттен шығару үшін диск әрібінен басталатын профиль каталогіңіздің жолы болу керек және қосындыны, бекіту нүктесін немесе таңбалық сілтемені қамтымайды. Профиліңіз үшін мұндай жол жоқ.</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (сериялық нөмірі <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="VENDOR_ID" /> ұсынған <ph name="PRODUCT_NAME" /> (сериялық нөмірі <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Жеке кілт үшін енгізілетін мән жарамды жол болуы керек.</translation>
 <translation id="388442998277590542">"<ph name="OPTIONS_PAGE" />" опциялар бетін жүктеу мүмкін емес.</translation>
 <translation id="3984413272403535372">Кеңейтімді белгілеу кезіндегі қате.</translation>
-<translation id="39964277676607559">Контент сценарийне арналған javascript "<ph name="RELATIVE_PATH" />" жүктелмеді.</translation>
 <translation id="4115165561519362854">Бұл машинаның әкімшісі <ph name="EXTENSION_NAME" /> кеңейтімінде кемінде <ph name="EXTENSION_VERSION" /> нұсқасы болуын қажет етеді. Аталмыш нұсқаға жаңартылмайынша оны қосу мүмкін емес.</translation>
 <translation id="4233778200880751280">"<ph name="ABOUT_PAGE" />" анықтама бетін жүктеу мүмкін емес.</translation>
 <translation id="471800408830181311">Жеке кілтті шығару әрекеті сәтсіз аяқталды.</translation>
@@ -33,6 +32,7 @@
 <translation id="4988792151665380515">Ортақ кілтті экспорттау сәтсіз аяқталды.</translation>
 <translation id="5026754133087629784">Веб-көрініс: <ph name="WEBVIEW_TAG_NAME" /></translation>
 <translation id="5098647635849512368">Пакетке қосу үшін каталогтің абсолютті жолын табу мүмкін емес.</translation>
+<translation id="5160071981665899014">Скриптіге арналған JavaScript "<ph name="RELATIVE_PATH" />" жүктелмеді.</translation>
 <translation id="5356315618422219272">Қолданба көрінісі: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5436430103864390185">Пішінделген терезелерге қолдау көрсетілмейді.</translation>
 <translation id="5456409301717116725">Бұл кеңейтім "<ph name="KEY_PATH" />" кілт файлын қамтиды. Оны қолданбаған дұрыс шығар.</translation>

@@ -6,14 +6,12 @@
 
 #import "base/notreached.h"
 #import "components/password_manager/core/browser/features/password_manager_features_util.h"
-#import "components/prefs/pref_service.h"
 #import "components/sync/service/sync_service.h"
 
 namespace ios_web_view {
 WebViewPasswordFeatureManager::WebViewPasswordFeatureManager(
-    PrefService* pref_service,
     const syncer::SyncService* sync_service)
-    : pref_service_(pref_service), sync_service_(sync_service) {}
+    : sync_service_(sync_service) {}
 
 bool WebViewPasswordFeatureManager::IsGenerationEnabled() const {
   return true;
@@ -24,7 +22,7 @@ bool WebViewPasswordFeatureManager::IsOptedInForAccountStorage() const {
   // still be controlled on a per user basis to ensure that the logged out user
   // remains opted out.
   return password_manager::features_util::IsOptedInForAccountStorage(
-      pref_service_, sync_service_);
+      sync_service_);
 }
 
 bool WebViewPasswordFeatureManager::ShouldShowAccountStorageOptIn() const {

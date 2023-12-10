@@ -5,6 +5,7 @@
 #include "ash/webui/eche_app_ui/eche_recent_app_click_handler.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "ash/constants/ash_features.h"
@@ -19,7 +20,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/components/phonehub/fake_phone_hub_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/image/image.h"
 
@@ -75,10 +75,10 @@ class EcheRecentAppClickHandlerTest : public testing::Test {
   }
 
   void FakeLaunchEcheAppFunction(
-      const absl::optional<int64_t>& notification_id,
+      const std::optional<int64_t>& notification_id,
       const std::string& package_name,
       const std::u16string& visible_name,
-      const absl::optional<int64_t>& user_id,
+      const std::optional<int64_t>& user_id,
       const gfx::Image& icon,
       const std::u16string& phone_name,
       AppsLaunchInfoProvider* apps_launch_info_provider) {
@@ -88,8 +88,8 @@ class EcheRecentAppClickHandlerTest : public testing::Test {
   }
 
   void FakeLaunchNotificationFunction(
-      const absl::optional<std::u16string>& title,
-      const absl::optional<std::u16string>& message,
+      const std::optional<std::u16string>& title,
+      const std::optional<std::u16string>& message,
       std::unique_ptr<LaunchAppHelper::NotificationInfo> info) {
     num_notifications_shown_++;
   }
@@ -193,7 +193,7 @@ TEST_F(EcheRecentAppClickHandlerTest, LaunchEcheAppFunction) {
   auto fake_app_metadata = phonehub::Notification::AppMetadata(
       app_visible_name, package_name, /*color_icon=*/gfx::Image(),
       /*monochrome_icon_mask=*/gfx::Image(),
-      /*icon_color=*/absl::nullopt, /*icon_is_monochrome=*/true, user_id);
+      /*icon_color=*/std::nullopt, /*icon_is_monochrome=*/true, user_id);
 
   std::vector<phonehub::Notification::AppMetadata> app_metadata =
       FetchRecentAppMetadataList();
@@ -242,7 +242,7 @@ TEST_F(EcheRecentAppClickHandlerTest, HandleNotificationClick) {
   auto fake_app_metadata = phonehub::Notification::AppMetadata(
       app_visible_name, package_name, /*color_icon=*/gfx::Image(),
       /*monochrome_icon_mask=*/gfx::Image(),
-      /*icon_color=*/absl::nullopt, /*icon_is_monochrome=*/true, user_id);
+      /*icon_color=*/std::nullopt, /*icon_is_monochrome=*/true, user_id);
 
   // Keep notification's metadata in handler if the stream has not started yet.
   HandleNotificationClick(notification_id, fake_app_metadata);
@@ -270,7 +270,7 @@ TEST_F(EcheRecentAppClickHandlerTest,
   auto fake_app_metadata = phonehub::Notification::AppMetadata(
       app_visible_name, package_name, /*color_icon=*/gfx::Image(),
       /*monochrome_icon_mask=*/gfx::Image(),
-      /*icon_color=*/absl::nullopt, /*icon_is_monochrome=*/true, user_id);
+      /*icon_color=*/std::nullopt, /*icon_is_monochrome=*/true, user_id);
 
   // Update notification's metadata to recents list directly when the stream is
   // started.
@@ -294,7 +294,7 @@ TEST_F(EcheRecentAppClickHandlerTest,
   auto fake_app_metadata = phonehub::Notification::AppMetadata(
       app_visible_name, package_name, /*color_icon=*/gfx::Image(),
       /*monochrome_icon_mask=*/gfx::Image(),
-      /*icon_color=*/absl::nullopt, /*icon_is_monochrome=*/true, user_id);
+      /*icon_color=*/std::nullopt, /*icon_is_monochrome=*/true, user_id);
 
   SetAppLaunchProhibitedReason(
       LaunchAppHelper::AppLaunchProhibitedReason::kDisabledByScreenLock);

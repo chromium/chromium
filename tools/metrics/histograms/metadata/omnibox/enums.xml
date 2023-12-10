@@ -59,6 +59,22 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Unknown"/>
 </enum>
 
+<enum name="DocumentProviderAllowedReason">
+  <int value="0" label="Allowed"/>
+  <int value="1" label="Unknown"/>
+  <int value="2" label="Not allowed because feature disabled"/>
+  <int value="3" label="Not allowed because the suggest setting is disabled"/>
+  <int value="4" label="Not allowed because the Drive setting is disabled"/>
+  <int value="5" label="Not allowed because the profile is off the record"/>
+  <int value="6" label="Not allowed because the user is not logged in"/>
+  <int value="7" label="Not allowed because the user is not Syncing"/>
+  <int value="8" label="Not allowed because the server requested backoff"/>
+  <int value="9" label="Not allowed because Google is not the DSE"/>
+  <int value="10" label="Not allowed because the input is a focus or is empty"/>
+  <int value="11" label="Not allowed because the input length is too short"/>
+  <int value="12" label="Not allowed because the input looks like a URL"/>
+</enum>
+
 <enum name="GroupId">
   <summary>
     Suggestion group IDs toggled visible or hidden in the omnibox result list.

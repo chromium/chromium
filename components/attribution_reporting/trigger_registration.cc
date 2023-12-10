@@ -11,20 +11,19 @@
 #include "base/functional/function_ref.h"
 #include "base/json/json_reader.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/strings/string_piece.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "base/values.h"
 #include "components/aggregation_service/features.h"
 #include "components/aggregation_service/parsing_utils.h"
 #include "components/attribution_reporting/aggregatable_dedup_key.h"
+#include "components/attribution_reporting/aggregatable_trigger_config.h"
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
 #include "components/attribution_reporting/aggregatable_values.h"
 #include "components/attribution_reporting/event_trigger_data.h"
 #include "components/attribution_reporting/features.h"
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/parsing_utils.h"
-#include "components/attribution_reporting/source_registration_time_config.mojom.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "components/attribution_reporting/trigger_registration_error.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -42,11 +41,6 @@ constexpr char kAggregatableDeduplicationKeys[] =
 constexpr char kAggregatableTriggerData[] = "aggregatable_trigger_data";
 constexpr char kAggregatableValues[] = "aggregatable_values";
 constexpr char kEventTriggerData[] = "event_trigger_data";
-constexpr char kAggregatableSourceRegistrationTime[] =
-    "aggregatable_source_registration_time";
-
-constexpr char kInclude[] = "include";
-constexpr char kExclude[] = "exclude";
 
 base::expected<absl::optional<SuitableOrigin>, TriggerRegistrationError>
 ParseAggregationCoordinator(const base::Value* value) {
@@ -77,7 +71,7 @@ ParseAggregationCoordinator(const base::Value* value) {
 
 template <typename T>
 void SerializeListIfNotEmpty(base::Value::Dict& dict,
-                             base::StringPiece key,
+                             std::string_view key,
                              const std::vector<T>& vec) {
   if (vec.empty()) {
     return;
@@ -116,40 +110,6 @@ base::expected<std::vector<T>, TriggerRegistrationError> ParseList(
   return vec;
 }
 
-base::expected<mojom::SourceRegistrationTimeConfig, TriggerRegistrationError>
-ParseAggregatableSourceRegistrationTime(const base::Value* value) {
-  if (!value) {
-    return mojom::SourceRegistrationTimeConfig::kExclude;
-  }
-
-  const std::string* str = value->GetIfString();
-  if (!str) {
-    return base::unexpected(
-        TriggerRegistrationError::kAggregatableSourceRegistrationTimeWrongType);
-  }
-
-  if (*str == kInclude) {
-    return mojom::SourceRegistrationTimeConfig::kInclude;
-  }
-
-  if (*str == kExclude) {
-    return mojom::SourceRegistrationTimeConfig::kExclude;
-  }
-
-  return base::unexpected(TriggerRegistrationError::
-                              kAggregatableSourceRegistrationTimeUnknownValue);
-}
-
-std::string SerializeAggregatableSourceRegistrationTime(
-    mojom::SourceRegistrationTimeConfig config) {
-  switch (config) {
-    case mojom::SourceRegistrationTimeConfig::kInclude:
-      return kInclude;
-    case mojom::SourceRegistrationTimeConfig::kExclude:
-      return kExclude;
-  }
-}
-
 }  // namespace
 
 // static
@@ -186,21 +146,19 @@ TriggerRegistration::Parse(base::Value::Dict registration) {
   absl::optional<uint64_t> debug_key = ParseDebugKey(registration);
   bool debug_reporting = ParseDebugReporting(registration);
 
-  ASSIGN_OR_RETURN(
-      mojom::SourceRegistrationTimeConfig source_registration_time_config,
-      ParseAggregatableSourceRegistrationTime(
-          registration.Find(kAggregatableSourceRegistrationTime)));
+  ASSIGN_OR_RETURN(auto aggregatable_trigger_config,
+                   AggregatableTriggerConfig::Parse(registration));
 
   return TriggerRegistration(
       std::move(filters), debug_key, std::move(aggregatable_dedup_keys),
       std::move(event_triggers), std::move(aggregatable_trigger_data),
       std::move(aggregatable_values), debug_reporting, aggregation_coordinator,
-      source_registration_time_config);
+      std::move(aggregatable_trigger_config));
 }
 
 // static
 base::expected<TriggerRegistration, TriggerRegistrationError>
-TriggerRegistration::Parse(base::StringPiece json) {
+TriggerRegistration::Parse(std::string_view json) {
   base::expected<TriggerRegistration, TriggerRegistrationError> trigger =
       base::unexpected(TriggerRegistrationError::kInvalidJson);
 
@@ -216,7 +174,12 @@ TriggerRegistration::Parse(base::StringPiece json) {
   }
 
   if (!trigger.has_value()) {
-    base::UmaHistogramEnumeration("Conversions.TriggerRegistrationError7",
+    static_assert(
+        TriggerRegistrationError::kMaxValue ==
+            TriggerRegistrationError::
+                kTriggerContextIdInvalidSourceRegistrationTimeConfig,
+        "Bump version of Conversions.TriggerRegistrationError9 histogram.");
+    base::UmaHistogramEnumeration("Conversions.TriggerRegistrationError9",
                                   trigger.error());
   }
 
@@ -234,7 +197,7 @@ TriggerRegistration::TriggerRegistration(
     AggregatableValues aggregatable_values,
     bool debug_reporting,
     absl::optional<SuitableOrigin> aggregation_coordinator_origin,
-    mojom::SourceRegistrationTimeConfig source_registration_time_config)
+    AggregatableTriggerConfig aggregatable_trigger_config)
     : filters(std::move(filters)),
       debug_key(debug_key),
       aggregatable_dedup_keys(std::move(aggregatable_dedup_keys)),
@@ -243,7 +206,7 @@ TriggerRegistration::TriggerRegistration(
       aggregatable_values(std::move(aggregatable_values)),
       debug_reporting(debug_reporting),
       aggregation_coordinator_origin(std::move(aggregation_coordinator_origin)),
-      source_registration_time_config(source_registration_time_config) {}
+      aggregatable_trigger_config(std::move(aggregatable_trigger_config)) {}
 
 TriggerRegistration::~TriggerRegistration() = default;
 
@@ -283,9 +246,7 @@ base::Value::Dict TriggerRegistration::ToJson() const {
              aggregation_coordinator_origin->Serialize());
   }
 
-    dict.Set(kAggregatableSourceRegistrationTime,
-             SerializeAggregatableSourceRegistrationTime(
-                 source_registration_time_config));
+  aggregatable_trigger_config.Serialize(dict);
 
   return dict;
 }

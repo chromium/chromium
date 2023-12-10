@@ -32,11 +32,19 @@ class PhoneCaptureStateToken {
     private final boolean mIsPaintPreview;
     private final int mUnfocusedLocationBarLayoutWidth;
 
-    public PhoneCaptureStateToken(@ColorInt int tint, int tabCount, ButtonData optionalButtonData,
-            @VisualState int visualState, VisibleUrlText visibleUrlText,
-            @DrawableRes int securityIcon, ColorStateList homeButtonColorStateList,
-            boolean homeButtonIsVisible, boolean isShowingUpdateBadgeDuringLastCapture,
-            boolean isPaintPreview, float progress, int unfocusedLocationBarLayoutWidth) {
+    public PhoneCaptureStateToken(
+            @ColorInt int tint,
+            int tabCount,
+            ButtonData optionalButtonData,
+            @VisualState int visualState,
+            VisibleUrlText visibleUrlText,
+            @DrawableRes int securityIcon,
+            ColorStateList homeButtonColorStateList,
+            boolean homeButtonIsVisible,
+            boolean isShowingUpdateBadgeDuringLastCapture,
+            boolean isPaintPreview,
+            float progress,
+            int unfocusedLocationBarLayoutWidth) {
         mTint = tint;
         mTabCount = tabCount;
         mOptionalButtonDataHashCode = Objects.hashCode(optionalButtonData);

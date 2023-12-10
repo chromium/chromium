@@ -6,13 +6,18 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_ML_WEBNN_ML_GRAPH_BUILDER_TEST_H_
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_batch_normalization_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_clamp_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_conv_2d_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_conv_transpose_2d_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_elu_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_gather_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_gemm_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_instance_normalization_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_layer_normalization_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_leaky_relu_options.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_operand_type.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_linear_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_operand_data_type.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_pad_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_pool_2d_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_reduce_options.h"
@@ -34,6 +39,14 @@ class V8TestingScope;
 NotShared<DOMArrayBufferView> CreateArrayBufferViewForOperand(
     const MLOperand* operand);
 
+MLOperand* BuildBatchNormalization(V8TestingScope& scope,
+                                   MLGraphBuilder* builder,
+                                   const MLOperand* input,
+                                   const MLOperand* mean,
+                                   const MLOperand* variance,
+                                   const MLBatchNormalizationOptions* options =
+                                       MLBatchNormalizationOptions::Create());
+
 MLOperand* BuildClamp(V8TestingScope& scope,
                       MLGraphBuilder* builder,
                       const MLOperand* input,
@@ -53,13 +66,31 @@ MLOperand* BuildConvTranspose2d(V8TestingScope& scope,
                                 const MLConvTranspose2dOptions* options =
                                     MLConvTranspose2dOptions::Create());
 
+MLOperand* BuildGather(
+    V8TestingScope& scope,
+    MLGraphBuilder* builder,
+    const MLOperand* input,
+    const MLOperand* indices,
+    const MLGatherOptions* options = MLGatherOptions::Create());
+
 MLOperand* BuildLeakyRelu(
     V8TestingScope& scope,
     MLGraphBuilder* builder,
     const MLOperand* input,
     const MLLeakyReluOptions* options = MLLeakyReluOptions::Create());
 
-enum class ElementWiseBinaryKind { kAdd, kSub, kMul, kDiv, kMin, kMax, kPow };
+enum class ElementWiseBinaryKind {
+  kAdd,
+  kSub,
+  kMul,
+  kDiv,
+  kMin,
+  kMax,
+  kPow,
+  kEqual,
+  kGreater,
+  kLesser
+};
 
 MLOperand* BuildElementWiseBinary(V8TestingScope& scope,
                                   MLGraphBuilder* builder,
@@ -67,7 +98,22 @@ MLOperand* BuildElementWiseBinary(V8TestingScope& scope,
                                   const MLOperand* a,
                                   const MLOperand* b);
 
-enum class ElementWiseUnaryKind { kAbs, kCeil, kFloor, kNeg };
+enum class ElementWiseUnaryKind {
+  kAbs,
+  kCeil,
+  kCos,
+  kExp,
+  kFloor,
+  kLog,
+  kNeg,
+  kSin,
+  kTan,
+  kErf,
+  kIdentity,
+  kLogicalNot,
+  kReciprocal,
+  kSqrt,
+};
 
 MLOperand* BuildPad(V8TestingScope& scope,
                     MLGraphBuilder* builder,
@@ -90,6 +136,19 @@ MLOperand* BuildGemm(V8TestingScope& scope,
                      const MLOperand* a,
                      const MLOperand* b,
                      const MLGemmOptions* options = MLGemmOptions::Create());
+
+MLOperand* BuildInstanceNormalization(
+    V8TestingScope& scope,
+    MLGraphBuilder* builder,
+    const MLOperand* input,
+    const MLInstanceNormalizationOptions* options =
+        MLInstanceNormalizationOptions::Create());
+
+MLOperand* BuildLayerNormalization(V8TestingScope& scope,
+                                   MLGraphBuilder* builder,
+                                   const MLOperand* input,
+                                   const MLLayerNormalizationOptions* options =
+                                       MLLayerNormalizationOptions::Create());
 
 enum class ReduceKind {
   kL1,

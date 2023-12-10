@@ -139,5 +139,36 @@ TEST_F(ConsentThrottleTest, InitializationDisabledCase) {
   EXPECT_FALSE(results[0]);
 }
 
+// In production, sometimes the callback to a request enqueues a new request.
+// This tests this case and fixes the crash in https://crbug.com/1483454.
+TEST_F(ConsentThrottleTest, CallbacksMakingNewRequests) {
+  auto helper = std::make_unique<TestUrlKeyedDataCollectionConsentHelper>();
+  ASSERT_EQ(helper->GetConsentState(),
+            UrlKeyedDataCollectionConsentHelper::State::kInitializing);
+
+  auto consent_throttle = ConsentThrottle(std::move(helper));
+  std::vector<bool> results;
+
+  // These two blocks are identical. The crash is reliably triggered when
+  // adding two of these. Probably having two pushes the vector to reallocate
+  // while iterating.
+  consent_throttle.EnqueueRequest(base::BindLambdaForTesting([&](bool result) {
+    results.push_back(result);
+    consent_throttle.EnqueueRequest(base::BindLambdaForTesting(
+        [&](bool result2) { results.push_back(result2); }));
+  }));
+  consent_throttle.EnqueueRequest(base::BindLambdaForTesting([&](bool result) {
+    results.push_back(result);
+    consent_throttle.EnqueueRequest(base::BindLambdaForTesting(
+        [&](bool result2) { results.push_back(result2); }));
+  }));
+
+  // New requests added during iteration live as long as the NEXT timeout.
+  task_environment_.FastForwardBy(base::Seconds(6));
+  EXPECT_EQ(results.size(), 2U);
+  task_environment_.FastForwardBy(base::Seconds(6));
+  EXPECT_EQ(results.size(), 4U);
+}
+
 }  // namespace
 }  // namespace unified_consent

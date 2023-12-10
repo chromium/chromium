@@ -84,7 +84,7 @@ class ONCValidatorTest : public ::testing::Test {
  private:
   Validator::Result validation_result_;
   base::Value::Dict original_object_;
-  absl::optional<base::Value::Dict> repaired_object_;
+  std::optional<base::Value::Dict> repaired_object_;
 };
 
 namespace {
@@ -118,7 +118,7 @@ struct OncParams {
 // Ensure that the constant |kEmptyUnencryptedConfiguration| describes a valid
 // ONC toplevel object.
 TEST_F(ONCValidatorTest, EmptyUnencryptedConfiguration) {
-  absl::optional<base::Value::Dict> dict =
+  std::optional<base::Value::Dict> dict =
       ReadDictionaryFromJson(kEmptyUnencryptedConfiguration);
   EXPECT_TRUE(dict.has_value());
   Validate(true, std::move(dict.value()), &kToplevelConfigurationSignature,

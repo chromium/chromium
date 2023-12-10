@@ -60,9 +60,7 @@ public class PageZoomMediator {
         return mLatestZoomValue;
     }
 
-    /**
-     * Logs UKM for the user changing the zoom level on the page from the slider.
-     */
+    /** Logs UKM for the user changing the zoom level on the page from the slider. */
     protected void logZoomLevelUKM(double value) {
         PageZoomMetrics.logZoomLevelUKM(mWebContents, value);
     }
@@ -112,7 +110,8 @@ public class PageZoomMediator {
         double currentZoomFactor = getZoomLevel(mWebContents);
 
         // The seekbar should start at the seek value that corresponds to this zoom factor.
-        mModel.set(PageZoomProperties.CURRENT_SEEK_VALUE,
+        mModel.set(
+                PageZoomProperties.CURRENT_SEEK_VALUE,
                 convertZoomFactorToSeekBarValue(currentZoomFactor));
 
         mDefaultZoomFactor = mModel.get(PageZoomProperties.DEFAULT_ZOOM_FACTOR);
@@ -134,11 +133,13 @@ public class PageZoomMediator {
 
     private void updateButtonStates(double newZoomFactor) {
         // If the new zoom factor is greater than the minimum zoom factor, enable decrease button.
-        mModel.set(PageZoomProperties.DECREASE_ZOOM_ENABLED,
+        mModel.set(
+                PageZoomProperties.DECREASE_ZOOM_ENABLED,
                 newZoomFactor > AVAILABLE_ZOOM_FACTORS[0]);
 
         // If the new zoom factor is less than the maximum zoom factor, enable increase button.
-        mModel.set(PageZoomProperties.INCREASE_ZOOM_ENABLED,
+        mModel.set(
+                PageZoomProperties.INCREASE_ZOOM_ENABLED,
                 newZoomFactor < AVAILABLE_ZOOM_FACTORS[AVAILABLE_ZOOM_FACTORS.length - 1]);
     }
 

@@ -61,7 +61,7 @@ bool AudioEffectsController::IsEffectSupported(VcEffectId effect_id) {
   }
 }
 
-absl::optional<int> AudioEffectsController::GetEffectState(
+std::optional<int> AudioEffectsController::GetEffectState(
     VcEffectId effect_id) {
   switch (effect_id) {
     case VcEffectId::kNoiseCancellation:
@@ -75,13 +75,13 @@ absl::optional<int> AudioEffectsController::GetEffectState(
     case VcEffectId::kCameraFraming:
     case VcEffectId::kTestEffect:
       NOTREACHED();
-      return absl::nullopt;
+      return std::nullopt;
   }
 }
 
 void AudioEffectsController::OnEffectControlActivated(
     VcEffectId effect_id,
-    absl::optional<int> value) {
+    std::optional<int> value) {
   switch (effect_id) {
     case VcEffectId::kNoiseCancellation: {
       // Toggle noise cancellation.

@@ -1,0 +1,17 @@
+
+network_resource {
+  which_server: HTTPS_ORIGIN1
+  path: "/foo.html"
+  http_status: 200
+  content_type: "text/html"
+  reason: "OK"
+  body: "<html><head><title>Page</title><body><p>Hello!</p><iframe src=\"$HTTPS_ORIGIN2/bar.html\"></iframe></body></html>"
+}
+network_resource {
+  which_server: HTTPS_ORIGIN2
+  path: "/bar.html"
+  http_status: 200
+  content_type: "text/html"
+  reason: "OK"
+  body: "<html><body>Cross-origin iframe!</body></html>"
+}

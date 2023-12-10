@@ -23,7 +23,7 @@ ml-calculator {
   margin-right: 15px;
 }
 
-#ml-sync-batch-url-scoring-disabled-warning {
+#ml-ml-url-scoring-disabled-warning {
   color: var(--red-text);
   font-weight: bold;
 }

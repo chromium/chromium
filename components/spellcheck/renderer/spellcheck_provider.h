@@ -55,10 +55,8 @@ class SpellCheckProvider : public content::RenderFrameObserver,
   };
 #endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
 
-  SpellCheckProvider(
-      content::RenderFrame* render_frame,
-      SpellCheck* spellcheck,
-      service_manager::LocalInterfaceProvider* embedder_provider);
+  SpellCheckProvider(content::RenderFrame* render_frame,
+                     SpellCheck* spellcheck);
 
   SpellCheckProvider(const SpellCheckProvider&) = delete;
   SpellCheckProvider& operator=(const SpellCheckProvider&) = delete;
@@ -84,6 +82,9 @@ class SpellCheckProvider : public content::RenderFrameObserver,
   // content::RenderFrameObserver:
   void FocusedElementChanged(const blink::WebElement& element) override;
 
+  // Returns the SpellCheckHost.
+  spellcheck::mojom::SpellCheckHost& GetSpellCheckHost();
+
  private:
   friend class TestingSpellCheckProvider;
   class DictionaryUpdateObserverImpl;
@@ -96,9 +97,6 @@ class SpellCheckProvider : public content::RenderFrameObserver,
 
   // Reset dictionary_update_observer_ in TestingSpellCheckProvider dtor.
   void ResetDictionaryUpdateObserverForTesting();
-
-  // Returns the SpellCheckHost.
-  spellcheck::mojom::SpellCheckHost& GetSpellCheckHost();
 
   // Tries to satisfy a spellcheck request from the cache in |last_request_|.
   // Returns true (and cancels/finishes the completion) if it can, false

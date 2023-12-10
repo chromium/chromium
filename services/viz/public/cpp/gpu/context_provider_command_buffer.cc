@@ -64,7 +64,6 @@ ContextProviderCommandBuffer::ContextProviderCommandBuffer(
     const GURL& active_url,
     bool automatic_flushes,
     bool support_locking,
-    bool support_grcontext,
     const gpu::SharedMemoryLimits& memory_limits,
     const gpu::ContextCreationAttribs& attributes,
     command_buffer_metrics::ContextType type,
@@ -77,7 +76,6 @@ ContextProviderCommandBuffer::ContextProviderCommandBuffer(
       active_url_(active_url),
       automatic_flushes_(automatic_flushes),
       support_locking_(support_locking),
-      support_grcontext_(support_grcontext),
       memory_limits_(memory_limits),
       attributes_(attributes),
       context_type_(type),
@@ -176,13 +174,13 @@ gpu::ContextResult ContextProviderCommandBuffer::BindToCurrentSequence() {
     }
 
     // The transfer buffer is used to serialize Dawn commands
-    transfer_buffer_ =
+    auto transfer_buffer =
         std::make_unique<gpu::TransferBuffer>(webgpu_helper.get());
 
     // The WebGPUImplementation exposes the WebGPUInterface, as well as the
     // gpu::ContextSupport interface.
     auto webgpu_impl = std::make_unique<gpu::webgpu::WebGPUImplementation>(
-        webgpu_helper.get(), transfer_buffer_.get(), command_buffer_.get());
+        webgpu_helper.get(), transfer_buffer.get(), command_buffer_.get());
     bind_result_ = webgpu_impl->Initialize(memory_limits_);
     if (bind_result_ != gpu::ContextResult::kSuccess) {
       DLOG(ERROR) << "Failed to initialize WebGPUImplementation.";
@@ -194,13 +192,15 @@ gpu::ContextResult ContextProviderCommandBuffer::BindToCurrentSequence() {
     std::string unique_context_name =
         base::StringPrintf("%s-%p", type_name.c_str(), webgpu_impl.get());
 
+    // IMPORTANT: These hold raw_ptrs to each other, so must be set together.
+    // See note in the header (and keep it up to date if things change).
     impl_ = webgpu_impl.get();
     webgpu_interface_ = std::move(webgpu_impl);
+    transfer_buffer_ = std::move(transfer_buffer);
     helper_ = std::move(webgpu_helper);
   } else if (attributes_.enable_raster_interface &&
              !attributes_.enable_gles2_interface &&
              !attributes_.enable_grcontext) {
-    DCHECK(!support_grcontext_);
     // The raster helper writes the command buffer protocol.
     auto raster_helper =
         std::make_unique<gpu::raster::RasterCmdHelper>(command_buffer_.get());
@@ -213,14 +213,14 @@ gpu::ContextResult ContextProviderCommandBuffer::BindToCurrentSequence() {
     }
     // The transfer buffer is used to copy resources between the client
     // process and the GPU process.
-    transfer_buffer_ =
+    auto transfer_buffer =
         std::make_unique<gpu::TransferBuffer>(raster_helper.get());
 
     // The RasterImplementation exposes the RasterInterface, as well as the
     // gpu::ContextSupport interface.
     DCHECK(channel_);
     auto raster_impl = std::make_unique<gpu::raster::RasterImplementation>(
-        raster_helper.get(), transfer_buffer_.get(),
+        raster_helper.get(), transfer_buffer.get(),
         attributes_.bind_generates_resource,
         attributes_.lose_context_when_out_of_memory, command_buffer_.get(),
         channel_->image_decode_accelerator_proxy());
@@ -237,8 +237,11 @@ gpu::ContextResult ContextProviderCommandBuffer::BindToCurrentSequence() {
     raster_impl->TraceBeginCHROMIUM("gpu_toplevel",
                                     unique_context_name.c_str());
 
+    // IMPORTANT: These hold raw_ptrs to each other, so must be set together.
+    // See note in the header (and keep it up to date if things change).
     impl_ = raster_impl.get();
     raster_interface_ = std::move(raster_impl);
+    transfer_buffer_ = std::move(transfer_buffer);
     helper_ = std::move(raster_helper);
   } else {
     // The GLES2 helper writes the command buffer protocol.
@@ -253,7 +256,7 @@ gpu::ContextResult ContextProviderCommandBuffer::BindToCurrentSequence() {
 
     // The transfer buffer is used to copy resources between the client
     // process and the GPU process.
-    transfer_buffer_ =
+    auto transfer_buffer =
         std::make_unique<gpu::TransferBuffer>(gles2_helper.get());
 
     // The GLES2Implementation exposes the OpenGLES2 API, as well as the
@@ -261,18 +264,18 @@ gpu::ContextResult ContextProviderCommandBuffer::BindToCurrentSequence() {
     constexpr bool support_client_side_arrays = false;
 
     std::unique_ptr<gpu::gles2::GLES2Implementation> gles2_impl;
-    if (support_grcontext_) {
+    if (attributes_.enable_grcontext) {
       // GLES2ImplementationWithGrContextSupport adds a bit of overhead, so
       // we only use it if grcontext_support was requested.
       gles2_impl = std::make_unique<
           skia_bindings::GLES2ImplementationWithGrContextSupport>(
-          gles2_helper.get(), /*share_group=*/nullptr, transfer_buffer_.get(),
+          gles2_helper.get(), /*share_group=*/nullptr, transfer_buffer.get(),
           attributes_.bind_generates_resource,
           attributes_.lose_context_when_out_of_memory,
           support_client_side_arrays, command_buffer_.get());
     } else {
       gles2_impl = std::make_unique<gpu::gles2::GLES2Implementation>(
-          gles2_helper.get(), /*share_group=*/nullptr, transfer_buffer_.get(),
+          gles2_helper.get(), /*share_group=*/nullptr, transfer_buffer.get(),
           attributes_.bind_generates_resource,
           attributes_.lose_context_when_out_of_memory,
           support_client_side_arrays, command_buffer_.get());
@@ -283,8 +286,11 @@ gpu::ContextResult ContextProviderCommandBuffer::BindToCurrentSequence() {
       return bind_result_;
     }
 
+    // IMPORTANT: These hold raw_ptrs to each other, so must be set together.
+    // See note in the header (and keep it up to date if things change).
     impl_ = gles2_impl.get();
     gles2_impl_ = std::move(gles2_impl);
+    transfer_buffer_ = std::move(transfer_buffer);
     helper_ = std::move(gles2_helper);
   }
 
@@ -318,6 +324,7 @@ gpu::ContextResult ContextProviderCommandBuffer::BindToCurrentSequence() {
             switches::kEnableGpuClientTracing)) {
       // This wraps the real GLES2Implementation and we should always use this
       // instead when it's present.
+      // IMPORTANT: This holds a raw_ptr to gles2_impl_.
       trace_impl_ = std::make_unique<gpu::gles2::GLES2TraceImplementation>(
           gles2_impl_.get());
       gl = trace_impl_.get();
@@ -391,7 +398,8 @@ gpu::ContextSupport* ContextProviderCommandBuffer::ContextSupport() {
 class GrDirectContext* ContextProviderCommandBuffer::GrContext() {
   DCHECK(bind_tried_);
   DCHECK_EQ(bind_result_, gpu::ContextResult::kSuccess);
-  if (!support_grcontext_ || !ContextSupport()->HasGrContextSupport()) {
+  if (!attributes_.enable_grcontext ||
+      !ContextSupport()->HasGrContextSupport()) {
     return nullptr;
   }
   CheckValidSequenceOrLockAcquired();

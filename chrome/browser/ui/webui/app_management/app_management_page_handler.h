@@ -68,8 +68,7 @@ class AppManagementPageHandler : public app_management::mojom::PageHandler,
   void GetExtensionAppPermissionMessages(
       const std::string& app_id,
       GetExtensionAppPermissionMessagesCallback callback) override;
-  void SetPinned(const std::string& app_id,
-                 app_management::mojom::OptionalBool pinned) override;
+  void SetPinned(const std::string& app_id, bool pinned) override;
   void SetPermission(const std::string& app_id,
                      apps::PermissionPtr permission) override;
   void SetResizeLocked(const std::string& app_id, bool locked) override;
@@ -89,6 +88,8 @@ class AppManagementPageHandler : public app_management::mojom::PageHandler,
   void SetFileHandlingEnabled(const std::string& app_id, bool enabled) override;
   void ShowDefaultAppAssociationsUi() override;
   void OpenStorePage(const std::string& app_id) override;
+  void SetAppLocale(const std::string& app_id,
+                    const std::string& locale_tag) override;
 
   // web_app::WebAppRegistrarObserver:
   void OnWebAppFileHandlerApprovalStateChanged(

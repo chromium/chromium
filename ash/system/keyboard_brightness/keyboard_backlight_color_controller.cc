@@ -5,6 +5,7 @@
 #include "ash/system/keyboard_brightness/keyboard_backlight_color_controller.h"
 
 #include <memory>
+#include <optional>
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
@@ -23,7 +24,6 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/session_manager/session_manager_types.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/color_utils.h"
 
@@ -415,7 +415,7 @@ void KeyboardBacklightColorController::MaybeToggleOnKeyboardBrightness() {
 }
 
 void KeyboardBacklightColorController::KeyboardBrightnessPercentReceived(
-    absl::optional<double> percentage) {
+    std::optional<double> percentage) {
   if (!percentage.has_value() || percentage.value() == 0.0) {
     DVLOG(1) << __func__ << " Toggling on the keyboard brightness.";
     power_manager::SetBacklightBrightnessRequest request;

@@ -135,6 +135,10 @@ class COMPONENT_EXPORT(NETWORK_CPP_NETWORK_PARAM)
     return c.proxy_servers_if_valid();
   }
 
+  static bool is_for_ip_protection(const net::ProxyChain& c) {
+    return c.is_for_ip_protection();
+  }
+
   static bool Read(network::mojom::ProxyChainDataView data,
                    net::ProxyChain* out);
 };

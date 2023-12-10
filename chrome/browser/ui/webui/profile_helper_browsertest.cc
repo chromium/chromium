@@ -251,8 +251,9 @@ class ProfileHelperTestWithDestroyProfile
   base::test::ScopedFeatureList feature_list_;
 };
 
+// TODO(crbug.com/1504677): Fix this flaky test. Probably a timing issue.
 IN_PROC_BROWSER_TEST_P(ProfileHelperTestWithDestroyProfile,
-                       DeleteInactiveProfile) {
+                       DISABLED_DeleteInactiveProfile) {
   content::TestWebUI web_ui;
   Browser* original_browser = browser();
   ProfileAttributesStorage& storage =

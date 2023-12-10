@@ -4,11 +4,12 @@
 
 #include "ash/system/human_presence/lock_on_leave_controller.h"
 
+#include <optional>
+
 #include "ash/shell.h"
 #include "base/functional/bind.h"
 #include "chromeos/ash/components/dbus/human_presence/human_presence_dbus_client.h"
 #include "chromeos/ash/components/human_presence/human_presence_configuration.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 namespace {

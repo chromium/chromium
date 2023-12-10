@@ -33,18 +33,6 @@ BASE_FEATURE(kForgotPasswordFormSupport,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_IOS)
-// Removes the list of passwords from the Settings UI and adds a separate
-// Password Manager view.
-BASE_FEATURE(kIOSPasswordUISplit,
-             "IOSPasswordUISplit",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enables displaying and managing compromised, weak and reused credentials in
-// the Password Manager.
-BASE_FEATURE(kIOSPasswordCheckup,
-             "IOSPasswordCheckup",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables password bottom sheet to be displayed (on iOS) when a user is
 // signed-in and taps on a username or password field on a website that has at
 // least one credential saved in their password manager.
@@ -56,7 +44,7 @@ BASE_FEATURE(kIOSPasswordBottomSheet,
 // local passwords in the iOS password settings.
 BASE_FEATURE(kIOSPasswordSettingsBulkUploadLocalPasswords,
              "IOSPasswordSettingsBulkUploadLocalPasswords",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // IS_IOS
 
 // Killswitch for changes regarding password issues in
@@ -91,10 +79,6 @@ BASE_FEATURE(kRecoverFromNeverSaveAndroid,
 // Use GMS AccountSettings to manage passkeys when UPM is not available.
 BASE_FEATURE(kPasskeyManagementUsingAccountSettingsAndroid,
              "PasskeyManagementUsingAccountSettingsAndroid",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kPasswordEditDialogWithDetails,
-             "PasswordEditDialogWithDetails",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables the Password generation bottom sheet.
@@ -162,11 +146,6 @@ const char kGenerationRequirementsPrefixLength[] = "prefix_length";
 const char kGenerationRequirementsTimeout[] = "timeout";
 
 #if BUILDFLAG(IS_IOS)
-bool IsPasswordCheckupEnabled() {
-  return base::FeatureList::IsEnabled(
-      password_manager::features::kIOSPasswordCheckup);
-}
-
 bool IsBulkUploadLocalPasswordsEnabled() {
   return base::FeatureList::IsEnabled(
       kIOSPasswordSettingsBulkUploadLocalPasswords);

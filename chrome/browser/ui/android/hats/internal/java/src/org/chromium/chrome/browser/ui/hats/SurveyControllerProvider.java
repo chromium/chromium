@@ -6,9 +6,7 @@ package org.chromium.chrome.browser.ui.hats;
 
 import org.chromium.chrome.browser.profiles.Profile;
 
-/**
- * Util class that creates a new SurveyController.
- */
+/** Util class that creates a new SurveyController. */
 // TODO(crbug/1400731): Change to package private once public references are removed.
 public class SurveyControllerProvider {
     private SurveyControllerProvider() {}

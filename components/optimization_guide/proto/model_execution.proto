@@ -21,15 +21,32 @@ message ExecuteRequest {
 }
 
 message ExecuteResponse {
+  reserved 3;
+
   optional int64 model_version = 1;
 
   oneof response {
     // The metadata for the response returned for the feature.
     Any response_metadata = 2;
-    string error_message = 3;
+    ErrorResponse error_response = 5;
   }
 
   optional string server_execution_id = 4;
+}
+
+message ErrorResponse {
+  optional ErrorState error_state = 1;
+}
+
+// Possible failure modes of the service
+enum ErrorState {
+  ERROR_STATE_UNSPECIFIED = 0;
+  ERROR_STATE_INTERNAL_SERVER_ERROR_RETRY = 1;
+  ERROR_STATE_INTERNAL_SERVER_ERROR_NO_RETRY = 2;
+  ERROR_STATE_UNSUPPORTED_LANGUAGE = 3;
+  ERROR_STATE_FILTERED = 4;
+  ERROR_STATE_REQUEST_THROTTLED = 5;
+  ERROR_STATE_DISABLED = 6;
 }
 
 enum ModelExecutionFeature {
@@ -49,4 +66,135 @@ message OnDeviceModelExecutionConfig {
 message OnDeviceModelExecutionFeatureConfig {
   // The feature this configuration is for.
   optional ModelExecutionFeature feature = 1;
+
+  // The config used to construct the input for on-device model execution.
+  optional OnDeviceModelExecutionInputConfig input_config = 2;
+
+  // The config used to construct the output for on-device model execution.
+  optional OnDeviceModelExecutionOutputConfig output_config = 3;
+}
+
+message OnDeviceModelExecutionInputConfig {
+  // The base name of the request metadata proto this input config is applicable
+  // for.
+  optional string request_base_name = 1;
+
+  // An ordered list of substituted strings to apply for input context.
+  //
+  // These will be concatenated in the order they appear here if the conditions
+  // apply based on the input request.
+  repeated SubstitutedString input_context_substitutions = 3;
+
+  // An ordered list of substituted strings to apply when the model is executed.
+  //
+  // These will be concatenated in the order they appear here if the conditions
+  // apply based on the input request.
+  //
+  // It is expected that the resulting string here will be concatenated with the
+  // resulting string for the input context if `should_ignore_input_context` is
+  // not set on any of the used substitutions.
+  repeated SubstitutedString execute_substitutions = 2;
+}
+
+message SubstitutedString {
+  reserved 2, 3;
+
+  // String template with %s as the delimiter for substitutions.
+  optional string string_template = 1;
+
+  // The strings to be substituted in `string_template`.
+  repeated StringSubstitution substitutions = 6;
+
+  // The conditions for which to apply this substituted string.
+  optional ConditionList conditions = 4;
+
+  // Whether the input context should be ignored if this substituted string is
+  // applied.
+  optional bool should_ignore_input_context = 5;
+}
+
+message StringSubstitution {
+  // The candidates to use for this string substitution.
+  //
+  // The first candidate that passes all conditions will be the one that is used
+  // for the substitution.
+  repeated StringArg candidates = 1;
+}
+
+message StringArg {
+  oneof arg {
+    string raw_string = 1;
+    ProtoField proto_field = 2;
+  }
+
+  // TODO(b/302402959): Add support for max number of characters to apply.
+
+  // The conditions for which to apply this substituted string.
+  optional ConditionList conditions = 3;
+}
+
+message ProtoDescriptor {
+  // The tag number of the proto field.
+  optional int32 tag_number = 1;
+}
+
+message ProtoField {
+  // The descriptors to get to the desired field.
+  //
+  // If more than one entry, it is expected that all entries prior to the last
+  // one are message types.
+  repeated ProtoDescriptor proto_descriptors = 1;
+}
+
+message Value {
+  oneof type {
+    // int64 type.
+    int64 int64_value = 1;
+    // int32 type. Enums are int32s.
+    int32 int32_value = 2;
+    // float type.
+    double float_value = 3;
+    // string type.
+    string string_value = 4;
+    // boolean type.
+    bool boolean_value = 5;
+  }
+}
+
+// Operators available for comparing the value of fields.
+enum OperatorType {
+  OPERATOR_TYPE_UNSPECIFIED = 0;
+  // Equal.
+  OPERATOR_TYPE_EQUAL_TO = 1;
+  // Not Equal.
+  OPERATOR_TYPE_NOT_EQUAL_TO = 2;
+}
+
+enum ConditionEvaluationType {
+  CONDITION_EVALUATION_TYPE_UNSPECIFIED = 0;
+  CONDITION_EVALUATION_TYPE_AND = 1;
+  CONDITION_EVALUATION_TYPE_OR = 2;
+}
+
+message ConditionList {
+  // How to evaluate the below conditions.
+  optional ConditionEvaluationType condition_evaluation_type = 1;
+
+  // The set of conditions to evaluate.
+  repeated Condition conditions = 2;
+}
+
+// Evaluated as "value at proto_field" "operator_type" "value".
+message Condition {
+  optional ProtoField proto_field = 1;
+  optional OperatorType operator_type = 2;
+  optional Value value = 3;
+}
+
+message OnDeviceModelExecutionOutputConfig {
+  // The proto type to use for the response metadata.
+  optional string proto_type = 1;
+
+  // The proto field to populate the output string with.
+  optional ProtoField proto_field = 2;
 }

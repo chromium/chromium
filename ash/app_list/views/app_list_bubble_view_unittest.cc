@@ -29,7 +29,6 @@
 #include "ash/app_list/views/scrollable_apps_grid_view.h"
 #include "ash/app_list/views/search_box_view.h"
 #include "ash/assistant/model/assistant_ui_model.h"
-#include "ash/constants/ash_features.h"
 #include "ash/controls/gradient_layer_delegate.h"
 #include "ash/controls/scroll_view_gradient_helper.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
@@ -177,6 +176,13 @@ class AppListBubbleViewTest : public AshTestBase {
         ->GetBubbleView()
         ->GetFocusManager()
         ->GetFocusedView();
+  }
+
+  bool IsNotificationBubbleShown() {
+    return GetPrimaryShelf()
+        ->GetStatusAreaWidget()
+        ->notification_center_tray()
+        ->IsBubbleShown();
   }
 
   const char* GetFocusedViewName() {
@@ -492,7 +498,7 @@ TEST_F(AppListBubbleViewTest, AssistantScreenshotClosesBubbleWithoutAnimation) {
   // Simulate the app list being closed by taking a screenshot with assistant.
   // This makes AppListControllerImpl::ShouldDismissImmediately() return true.
   AssistantUiController::Get()->ToggleUi(
-      absl::nullopt, assistant::AssistantExitPoint::kScreenshot);
+      std::nullopt, assistant::AssistantExitPoint::kScreenshot);
 
   // The bubble dismissed immediately so it is not animating.
   ui::Layer* bubble_layer = GetAppListTestHelper()->GetBubbleView()->layer();
@@ -1627,39 +1633,8 @@ TEST_F(AppListBubbleViewTest, HiddenAppListPageNotSetDuringShutdown) {
             GetAppListTestHelper()->GetBubbleView()->current_page_for_test());
 }
 
-class AppListBubbleViewWithQsRevampTest
-    : public AppListBubbleViewTest,
-      public testing::WithParamInterface<bool> {
- public:
-  void SetUp() override {
-    scoped_feature_list_.InitWithFeatureState(features::kQsRevamp,
-                                              IsQsRevampEnabled());
-
-    AshTestBase::SetUp();
-  }
-
-  bool IsNotificationBubbleShown() {
-    return features::IsQsRevampEnabled()
-               ? GetPrimaryShelf()
-                     ->GetStatusAreaWidget()
-                     ->notification_center_tray()
-                     ->IsBubbleShown()
-               : GetPrimaryUnifiedSystemTray()->IsMessageCenterBubbleShown();
-  }
-  // TODO(b/305075031) clean up after the flag is removed.
-  bool IsQsRevampEnabled() { return true; }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         AppListBubbleViewWithQsRevampTest,
-                         testing::Bool());
-
 // Regression test for https://crbug.com/1313140
-TEST_P(AppListBubbleViewWithQsRevampTest,
-       CanOpenMessageCenterWithKeyboardShortcut) {
+TEST_F(AppListBubbleViewTest, CanOpenMessageCenterWithKeyboardShortcut) {
   // Add a notification so there's something to focus in the message center.
   auto notification = std::make_unique<message_center::Notification>(
       message_center::NOTIFICATION_TYPE_SIMPLE, "id", u"Title", u"Message",

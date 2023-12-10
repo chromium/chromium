@@ -4,6 +4,8 @@
 
 #include "chromeos/ash/components/network/cellular_esim_uninstall_handler.h"
 
+#include <optional>
+
 #include "base/containers/flat_set.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
@@ -19,7 +21,6 @@
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_state.h"
 #include "components/device_event_log/device_event_log.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/hermes/dbus-constants.h"
 
 namespace ash {
@@ -29,9 +30,9 @@ const base::TimeDelta CellularESimUninstallHandler::kNetworkListWaitTimeout =
     base::Seconds(20);
 
 CellularESimUninstallHandler::UninstallRequest::UninstallRequest(
-    const absl::optional<std::string>& iccid,
-    const absl::optional<dbus::ObjectPath>& esim_profile_path,
-    const absl::optional<dbus::ObjectPath>& euicc_path,
+    const std::optional<std::string>& iccid,
+    const std::optional<dbus::ObjectPath>& esim_profile_path,
+    const std::optional<dbus::ObjectPath>& euicc_path,
     bool reset_euicc,
     UninstallRequestCallback callback)
     : iccid(iccid),
@@ -78,7 +79,7 @@ void CellularESimUninstallHandler::ResetEuiccMemory(
     const dbus::ObjectPath& euicc_path,
     UninstallRequestCallback callback) {
   uninstall_requests_.push_back(std::make_unique<UninstallRequest>(
-      /*iccid=*/absl::nullopt, /*esim_profile_path=*/absl::nullopt, euicc_path,
+      /*iccid=*/std::nullopt, /*esim_profile_path=*/std::nullopt, euicc_path,
       /*reset_euicc=*/true, std::move(callback)));
   ProcessPendingUninstallRequests();
 }
@@ -144,7 +145,7 @@ void CellularESimUninstallHandler::CompleteCurrentRequest(
 
 const NetworkState*
 CellularESimUninstallHandler::GetNetworkStateForCurrentRequest() const {
-  absl::optional<std::string> current_request_iccid =
+  std::optional<std::string> current_request_iccid =
       uninstall_requests_.front()->iccid;
 
   if (!current_request_iccid) {
@@ -266,7 +267,7 @@ void CellularESimUninstallHandler::OnRefreshProfileListResult(
 
 void CellularESimUninstallHandler::AttemptDisableProfile() {
   DCHECK_EQ(state_, UninstallState::kDisablingProfile);
-  absl::optional<dbus::ObjectPath> esim_profile_path;
+  std::optional<dbus::ObjectPath> esim_profile_path;
   if (uninstall_requests_.front()->reset_euicc) {
     esim_profile_path = GetEnabledCellularESimProfilePath();
     // Skip disabling profile if there are no enabled profiles.
@@ -343,7 +344,7 @@ void CellularESimUninstallHandler::OnUninstallProfile(
 
   if (managed_cellular_pref_handler_) {
     for (const auto& iccid : removed_iccids) {
-      if (ash::features::IsSmdsSupportEuiccUploadEnabled()) {
+      if (ash::features::IsSmdsSupportEnabled()) {
         managed_cellular_pref_handler_->RemoveESimMetadata(iccid);
       } else {
         managed_cellular_pref_handler_->RemovePairWithIccid(iccid);
@@ -385,7 +386,7 @@ void CellularESimUninstallHandler::AttemptRemoveShillService() {
   NET_LOG(EVENT) << "Attempting to remove Shill service for network: "
                  << network->path();
   network_configuration_handler_->RemoveConfiguration(
-      network->path(), absl::nullopt,
+      network->path(), std::nullopt,
       base::BindOnce(&CellularESimUninstallHandler::OnRemoveServiceSuccess,
                      weak_ptr_factory_.GetWeakPtr(), network->path()),
       base::BindOnce(&CellularESimUninstallHandler::OnRemoveServiceFailure,
@@ -445,7 +446,7 @@ CellularESimUninstallHandler::GetESimCellularNetworks() const {
   return network_list;
 }
 
-absl::optional<dbus::ObjectPath>
+std::optional<dbus::ObjectPath>
 CellularESimUninstallHandler::GetEnabledCellularESimProfilePath() {
   for (const auto& esim_profile :
        cellular_esim_profile_handler_->GetESimProfiles()) {
@@ -453,7 +454,7 @@ CellularESimUninstallHandler::GetEnabledCellularESimProfilePath() {
       return esim_profile.path();
     }
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 base::flat_set<std::string> CellularESimUninstallHandler::GetAllIccidsOnEuicc(

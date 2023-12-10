@@ -250,7 +250,6 @@ void ThreadControllerImpl::DoWork(WorkType work_type) {
   work_deduplicator_.WillCheckForMoreWork();
 
   LazyNow lazy_now_after_work(time_source_);
-  sequence_->RemoveAllCanceledDelayedTasksFromFront(&lazy_now_after_work);
   absl::optional<WakeUp> next_wake_up =
       sequence_->GetPendingWakeUp(&lazy_now_after_work);
   // The OnSystemIdle callback allows the TimeDomains to advance virtual time

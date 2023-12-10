@@ -25,7 +25,9 @@ BlinkFuzzerTestSupport::BlinkFuzzerTestSupport(int argc, char** argv) {
 
   TestTimeouts::Initialize();
 
-  content::SetUpBlinkTestEnvironment();
+  test_environment_ =
+      std::make_unique<content::BlinkTestEnvironmentWithIsolate>();
+  test_environment_->SetUp();
 }
 
 BlinkFuzzerTestSupport::~BlinkFuzzerTestSupport() {
@@ -34,10 +36,11 @@ BlinkFuzzerTestSupport::~BlinkFuzzerTestSupport() {
   // incorrectly as a memory leak.
   blink::ThreadState::Current()->CollectAllGarbageForTesting();
 #endif  // defined(ADDRESS_SANITIZER)
+  test_environment_->TearDown();
 }
 
 v8::Isolate* BlinkFuzzerTestSupport::GetIsolate() {
-  return content::GetMainThreadIsolateForTestEnvironment();
+  return test_environment_->GetMainThreadIsolate();
 }
 
 }  // namespace blink

@@ -59,8 +59,15 @@ class TtsPlatformImpl {
         float mPitch;
         float mVolume;
 
-        private PendingUtterance(TtsPlatformImpl impl, int utteranceId, String text, String lang,
-                String engineId, float rate, float pitch, float volume) {
+        private PendingUtterance(
+                TtsPlatformImpl impl,
+                int utteranceId,
+                String text,
+                String lang,
+                String engineId,
+                float rate,
+                float pitch,
+                float volume) {
             mImpl = impl;
             mUtteranceId = utteranceId;
             mText = text;
@@ -84,17 +91,19 @@ class TtsPlatformImpl {
         private @Nullable PendingUtterance mPendingUtterance;
         private long mNativeTtsPlatformImplAndroid;
 
-        /**
-         * Constructor with the default TTS Engine
-         */
+        /** Constructor with the default TTS Engine */
         private TtsEngine(long nativeTtsPlatformImplAndroid) {
             mNativeTtsPlatformImplAndroid = nativeTtsPlatformImplAndroid;
             mInitialized = false;
-            mTextToSpeech = new TextToSpeech(ContextUtils.getApplicationContext(), status -> {
-                if (status == TextToSpeech.SUCCESS) {
-                    PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> initializeDefault());
-                }
-            });
+            mTextToSpeech =
+                    new TextToSpeech(
+                            ContextUtils.getApplicationContext(),
+                            status -> {
+                                if (status == TextToSpeech.SUCCESS) {
+                                    PostTask.runOrPostTask(
+                                            TaskTraits.UI_DEFAULT, () -> initializeDefault());
+                                }
+                            });
         }
 
         /**
@@ -103,16 +112,18 @@ class TtsPlatformImpl {
          */
         private TtsEngine(String engineId) {
             mInitialized = false;
-            mTextToSpeech = new TextToSpeech(ContextUtils.getApplicationContext(), status -> {
-                if (status == TextToSpeech.SUCCESS) {
-                    initializeNonDefault();
-                }
-            }, engineId);
+            mTextToSpeech =
+                    new TextToSpeech(
+                            ContextUtils.getApplicationContext(),
+                            status -> {
+                                if (status == TextToSpeech.SUCCESS) {
+                                    initializeNonDefault();
+                                }
+                            },
+                            engineId);
         }
 
-        /**
-         * Initialization for non-default TTS Engine does not enumerate voices.
-         */
+        /** Initialization for non-default TTS Engine does not enumerate voices. */
         private void initializeNonDefault() {
             mInitialized = true;
             if (mPendingUtterance != null) mPendingUtterance.speak();
@@ -131,7 +142,7 @@ class TtsPlatformImpl {
                     assert mNativeTtsPlatformImplAndroid != 0;
 
                     try (TraceEvent te =
-                                    TraceEvent.scoped("TtsEngine:initialize_default.async_task")) {
+                            TraceEvent.scoped("TtsEngine:initialize_default.async_task")) {
                         Locale[] locales = Locale.getAvailableLocales();
                         final List<TtsVoice> voices = new ArrayList<>();
                         for (Locale locale : locales) {
@@ -203,8 +214,9 @@ class TtsPlatformImpl {
             if (volume != 1.0) {
                 params.putFloat(TextToSpeech.Engine.KEY_PARAM_VOLUME, volume);
             }
-            int result = mTextToSpeech.speak(
-                    text, TextToSpeech.QUEUE_FLUSH, params, Integer.toString(utteranceId));
+            int result =
+                    mTextToSpeech.speak(
+                            text, TextToSpeech.QUEUE_FLUSH, params, Integer.toString(utteranceId));
             return (result == TextToSpeech.SUCCESS);
         }
 
@@ -242,7 +254,8 @@ class TtsPlatformImpl {
     }
 
     private TtsEngine getOrCreateTtsEngine(String engineId) {
-        if (!mDefaultTtsEngine.isInitialized() || TextUtils.isEmpty(engineId)
+        if (!mDefaultTtsEngine.isInitialized()
+                || TextUtils.isEmpty(engineId)
                 || TextUtils.equals(
                         engineId, mDefaultTtsEngine.getTextToSpeech().getDefaultEngine())
                 || !isEngineInstalled(engineId)) {
@@ -331,13 +344,20 @@ class TtsPlatformImpl {
      * @return true on success.
      */
     @CalledByNative
-    private boolean speak(int utteranceId, String text, String lang, String engineId, float rate,
-            float pitch, float volume) {
+    private boolean speak(
+            int utteranceId,
+            String text,
+            String lang,
+            String engineId,
+            float rate,
+            float pitch,
+            float volume) {
         TtsEngine ttsEngine = getOrCreateTtsEngine(engineId);
         if (!ttsEngine.isInitialized()) {
             clearPendingUtterances();
-            PendingUtterance pendingUtterance = new PendingUtterance(
-                    this, utteranceId, text, lang, engineId, rate, pitch, volume);
+            PendingUtterance pendingUtterance =
+                    new PendingUtterance(
+                            this, utteranceId, text, lang, engineId, rate, pitch, volume);
             ttsEngine.setPendingUtterance(pendingUtterance);
             return true;
         }
@@ -345,9 +365,7 @@ class TtsPlatformImpl {
         return ttsEngine.speak(utteranceId, text, lang, rate, pitch, volume);
     }
 
-    /**
-     * Stop the current utterance.
-     */
+    /** Stop the current utterance. */
     @CalledByNative
     private void stop() {
         mDefaultTtsEngine.stop();
@@ -363,71 +381,81 @@ class TtsPlatformImpl {
         }
     }
 
-    /**
-     * Post a task to the UI thread to send the TTS "end" event.
-     */
+    /** Post a task to the UI thread to send the TTS "end" event. */
     private void sendEndEventOnUiThread(final String utteranceId) {
-        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> {
-            if (mNativeTtsPlatformImplAndroid != 0) {
-                TtsPlatformImplJni.get().onEndEvent(
-                        mNativeTtsPlatformImplAndroid, Integer.parseInt(utteranceId));
-            }
-        });
+        PostTask.runOrPostTask(
+                TaskTraits.UI_DEFAULT,
+                () -> {
+                    if (mNativeTtsPlatformImplAndroid != 0) {
+                        TtsPlatformImplJni.get()
+                                .onEndEvent(
+                                        mNativeTtsPlatformImplAndroid,
+                                        Integer.parseInt(utteranceId));
+                    }
+                });
     }
 
-    /**
-     * Post a task to the UI thread to send the TTS "error" event.
-     */
+    /** Post a task to the UI thread to send the TTS "error" event. */
     private void sendErrorEventOnUiThread(final String utteranceId) {
-        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> {
-            if (mNativeTtsPlatformImplAndroid != 0) {
-                TtsPlatformImplJni.get().onErrorEvent(
-                        mNativeTtsPlatformImplAndroid, Integer.parseInt(utteranceId));
-            }
-        });
+        PostTask.runOrPostTask(
+                TaskTraits.UI_DEFAULT,
+                () -> {
+                    if (mNativeTtsPlatformImplAndroid != 0) {
+                        TtsPlatformImplJni.get()
+                                .onErrorEvent(
+                                        mNativeTtsPlatformImplAndroid,
+                                        Integer.parseInt(utteranceId));
+                    }
+                });
     }
 
-    /**
-     * Post a task to the UI thread to send the TTS "start" event.
-     */
+    /** Post a task to the UI thread to send the TTS "start" event. */
     private void sendStartEventOnUiThread(final String utteranceId) {
-        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> {
-            if (mNativeTtsPlatformImplAndroid != 0) {
-                TtsPlatformImplJni.get().onStartEvent(
-                        mNativeTtsPlatformImplAndroid, Integer.parseInt(utteranceId));
-            }
-        });
+        PostTask.runOrPostTask(
+                TaskTraits.UI_DEFAULT,
+                () -> {
+                    if (mNativeTtsPlatformImplAndroid != 0) {
+                        TtsPlatformImplJni.get()
+                                .onStartEvent(
+                                        mNativeTtsPlatformImplAndroid,
+                                        Integer.parseInt(utteranceId));
+                    }
+                });
     }
 
     @SuppressWarnings("deprecation")
     private void addOnUtteranceProgressListener(TextToSpeech tts) {
-        tts.setOnUtteranceProgressListener(new UtteranceProgressListener() {
-            @Override
-            public void onDone(final String utteranceId) {
-                sendEndEventOnUiThread(utteranceId);
-            }
+        tts.setOnUtteranceProgressListener(
+                new UtteranceProgressListener() {
+                    @Override
+                    public void onDone(final String utteranceId) {
+                        sendEndEventOnUiThread(utteranceId);
+                    }
 
-            @Override
-            public void onError(final String utteranceId, int errorCode) {
-                sendErrorEventOnUiThread(utteranceId);
-            }
+                    @Override
+                    public void onError(final String utteranceId, int errorCode) {
+                        sendErrorEventOnUiThread(utteranceId);
+                    }
 
-            @Override
-            @Deprecated
-            public void onError(final String utteranceId) {}
+                    @Override
+                    @Deprecated
+                    public void onError(final String utteranceId) {}
 
-            @Override
-            public void onStart(final String utteranceId) {
-                sendStartEventOnUiThread(utteranceId);
-            }
-        });
+                    @Override
+                    public void onStart(final String utteranceId) {
+                        sendStartEventOnUiThread(utteranceId);
+                    }
+                });
     }
 
     @NativeMethods
     interface Natives {
         void voicesChanged(long nativeTtsPlatformImplAndroid);
+
         void onEndEvent(long nativeTtsPlatformImplAndroid, int utteranceId);
+
         void onStartEvent(long nativeTtsPlatformImplAndroid, int utteranceId);
+
         void onErrorEvent(long nativeTtsPlatformImplAndroid, int utteranceId);
     }
 }

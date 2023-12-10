@@ -45,4 +45,4 @@ class WebAppRunOnOsLoginManager {
 
 }  // namespace web_app
 
-#endif  // CHROME_BROWSER_WEB_APPLICATIONS_RUN_ON_OS_LOGIN_MANAGER_H_
+#endif  // CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_RUN_ON_OS_LOGIN_MANAGER_H_

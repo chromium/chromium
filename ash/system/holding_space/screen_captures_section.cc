@@ -13,6 +13,7 @@
 #include "ash/system/holding_space/holding_space_item_screen_capture_view.h"
 #include "ash/system/holding_space/holding_space_ui.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/label.h"
@@ -26,10 +27,6 @@ ScreenCapturesSection::ScreenCapturesSection(HoldingSpaceViewDelegate* delegate)
                                    HoldingSpaceSectionId::kScreenCaptures) {}
 
 ScreenCapturesSection::~ScreenCapturesSection() = default;
-
-const char* ScreenCapturesSection::GetClassName() const {
-  return "ScreenCapturesSection";
-}
 
 std::unique_ptr<views::View> ScreenCapturesSection::CreateHeader() {
   auto header =
@@ -56,5 +53,8 @@ std::unique_ptr<HoldingSpaceItemView> ScreenCapturesSection::CreateView(
     const HoldingSpaceItem* item) {
   return std::make_unique<HoldingSpaceItemScreenCaptureView>(delegate(), item);
 }
+
+BEGIN_METADATA(ScreenCapturesSection, HoldingSpaceItemViewsSection)
+END_METADATA
 
 }  // namespace ash

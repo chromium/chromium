@@ -48,6 +48,7 @@ void DestroyPulse(pa_threaded_mainloop* mainloop, pa_context* context);
 
 // Triggers pa_threaded_mainloop_signal() to avoid deadlocks.
 void StreamSuccessCallback(pa_stream* s, int error, void* mainloop);
+void ContextSuccessCallback(pa_context* context, int success, void* mainloop);
 void ContextStateCallback(pa_context* context, void* mainloop);
 
 pa_channel_map ChannelLayoutToPAChannelMap(ChannelLayout channel_layout);
@@ -100,6 +101,11 @@ std::string GetOutputCorrespondingTo(pa_threaded_mainloop* mainloop,
 std::string GetRealDefaultDeviceId(pa_threaded_mainloop* mainloop,
                                    pa_context* context,
                                    RequestType type);
+
+// Get the name of the monitor associated with the given sink.
+std::string GetMonitorSourceNameForSink(pa_threaded_mainloop* mainloop,
+                                        pa_context* context,
+                                        const std::string& sink_name);
 }  // namespace pulse
 
 }  // namespace media

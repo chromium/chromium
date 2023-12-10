@@ -7,6 +7,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
@@ -14,7 +15,6 @@
 #include "chromeos/ash/components/string_matching/tokenized_string.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/favicon_cache.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class AppListControllerDelegate;
 class AutocompleteController;
@@ -58,7 +58,7 @@ class OmniboxProvider : public SearchProvider,
   raw_ptr<AppListControllerDelegate, ExperimentalAsh> list_controller_;
 
   std::u16string last_query_;
-  absl::optional<ash::string_matching::TokenizedString> last_tokenized_query_;
+  std::optional<ash::string_matching::TokenizedString> last_tokenized_query_;
   base::TimeTicks query_start_time_;
   AutocompleteInput input_;
 

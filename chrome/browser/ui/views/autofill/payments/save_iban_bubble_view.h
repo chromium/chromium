@@ -9,9 +9,7 @@
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "chrome/browser/ui/autofill/payments/iban_bubble_controller.h"
 #include "chrome/browser/ui/views/autofill/payments/payments_view_util.h"
-#include "chrome/browser/ui/views/controls/obscurable_label_with_toggle_button.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
-#include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
 
@@ -79,10 +77,6 @@ class SaveIbanBubbleView : public AutofillBubbleBase,
 
   raw_ptr<views::Textfield> nickname_textfield_ = nullptr;
   raw_ptr<views::Label> nickname_length_label_ = nullptr;
-
-  // The view that toggles the masking/unmasking of the IBAN value displayed in
-  // the bubble.
-  raw_ptr<ObscurableLabelWithToggleButton> iban_value_and_toggle_;
 
   raw_ptr<IbanBubbleController> controller_;
 };

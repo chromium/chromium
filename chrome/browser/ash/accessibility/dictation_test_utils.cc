@@ -185,7 +185,7 @@ void DictationTestUtils::EnableDictation(
   // Increase Dictation's NO_FOCUSED_IME timeout to reduce flakiness on slower
   // builds.
   std::string script =
-      "dictationTestSupport.setNoFocusedImeTimeout(20 * 1000);";
+      "dictationTestSupport.setNoFocusedImeTimeout(1000 * 1000);";
   ExecuteAccessibilityCommonScript(script);
 
   // Dictation will request a Pumpkin install when it starts up. Wait for

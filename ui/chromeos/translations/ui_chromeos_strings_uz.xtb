@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="uz">
 <translation id="1000498691615767391">Jildni tanlang</translation>
+<translation id="1014208178561091457"><ph name="FILE_NAME" /> shifrlangani uchun nusxalanmadi.</translation>
 <translation id="1047956942837015229">Fayllar (<ph name="COUNT" /> ta) o‘chirilmoqda...</translation>
 <translation id="1049926623896334335">Word hujjati</translation>
 <translation id="1056775291175587022">Tarmoq topilmadi</translation>
@@ -55,6 +56,7 @@
 <translation id="1435838927755162558">Jildni Parallels Desktopga ulashish</translation>
 <translation id="1439919885608649279">Gullari bor odam</translation>
 <translation id="1458457385801829801">Chiqarib olish: <ph name="TARGET_NAME" /></translation>
+<translation id="146691674290220697"><ph name="NUMBER_OF_FILES" /> fa fayl shifrlangani uchun nusxalanmadi.</translation>
 <translation id="1471718551822868769">Slovak</translation>
 <translation id="1482884275703521657">Fin</translation>
 <translation id="148466539719134488">Shveytsariya</translation>
@@ -276,6 +278,7 @@
 <translation id="3253225298092156258">Mavjud emas</translation>
 <translation id="3254434849914415189"><ph name="FILE_TYPE" /> fayllari uchun standart ilovani tanlang:</translation>
 <translation id="3255159654094949700">Arab</translation>
+<translation id="326396468955264502"><ph name="NUMBER_OF_FILES" /> fa fayl shifrlangani uchun koʻchirilmadi.</translation>
 <translation id="3264582393905923483">Kontekst</translation>
 <translation id="3272909651715601089">“<ph name="PATH" />” ochilmadi</translation>
 <translation id="3280431534455935878">Fayl tayyorlanmoqda</translation>
@@ -313,6 +316,7 @@
 <translation id="3523225005467146490">1 ta jild <ph name="VM_NAME" />ga ulashilgan</translation>
 <translation id="3524311639100184459">Diqqat! Bu vaqtinchalik fayllar diskda joy boʻshatish uchun avtomatik oʻchirib yuborilishi mumkin.  <ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Jild</translation>
+<translation id="3529424493985988200">Tafsilotlar uchun administratorga murojaat qiling.</translation>
 <translation id="3548125359243647069">PIN kod juda koʻp marta xato kiritildi.</translation>
 <translation id="3549797760399244642">drive.google.com manziliga o‘tish...</translation>
 <translation id="3553048479571901246">Fayllarni <ph name="APP_NAME" /> ilovasidan ochishdan avval ularni Windows fayllari jildiga nusxalang.</translation>
@@ -701,6 +705,7 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="637062427944097960">Ushbu fayl boshqa ish stolida ochilgan. Uni ko‘rish uchun <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) profiliga o‘tib oling.</translation>
 <translation id="6394388407447716302">Faqat oʻqish</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> ta fayl</translation>
+<translation id="6407769893376380348"><ph name="FILE_NAME" /> shifrlangani uchun koʻchirilmadi.</translation>
 <translation id="642282551015776456">Fayl yoki jildga noto‘g‘ri nom berildi</translation>
 <translation id="6423031066725912715">Vyetnam (TCVN klaviaturasi)</translation>
 <translation id="6430271654280079150">Sizda 1 ta urinish qoldi.</translation>

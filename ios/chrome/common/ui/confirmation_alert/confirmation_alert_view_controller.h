@@ -100,6 +100,9 @@
 // Value to determine whether or not the image's size should be scaled.
 @property(nonatomic) BOOL imageHasFixedSize;
 
+// Always show the image view, regardless of size or orientation. Default is NO.
+@property(nonatomic) BOOL alwaysShowImage;
+
 // Controls if there is a help button in the view. Must be set before the
 // view is loaded.
 @property(nonatomic) BOOL helpButtonAvailable;

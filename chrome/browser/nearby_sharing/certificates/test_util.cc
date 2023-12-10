@@ -8,8 +8,8 @@
 
 #include "base/no_destructor.h"
 #include "chrome/browser/nearby_sharing/certificates/constants.h"
-#include "chromeos/ash/components/nearby/common/proto/timestamp.pb.h"
 #include "device/bluetooth/public/cpp/bluetooth_address.h"
+#include "third_party/nearby/sharing/proto/timestamp.pb.h"
 
 namespace {
 
@@ -194,13 +194,13 @@ base::TimeDelta GetNearbyShareTestValidityOffset() {
   return offset;
 }
 
-const nearbyshare::proto::EncryptedMetadata& GetNearbyShareTestMetadata() {
-  static const base::NoDestructor<nearbyshare::proto::EncryptedMetadata>
+const nearby::sharing::proto::EncryptedMetadata& GetNearbyShareTestMetadata() {
+  static const base::NoDestructor<nearby::sharing::proto::EncryptedMetadata>
       metadata([] {
         std::array<uint8_t, 6> bytes;
         device::ParseBluetoothAddress(kTestUnparsedBluetoothMacAddress, bytes);
 
-        nearbyshare::proto::EncryptedMetadata metadata;
+        nearby::sharing::proto::EncryptedMetadata metadata;
         metadata.set_device_name(kTestDeviceName);
         metadata.set_full_name(kTestMetadataFullName);
         metadata.set_icon_url(kTestMetadataIconUrl);
@@ -250,10 +250,10 @@ NearbySharePrivateCertificate GetNearbyShareTestPrivateCertificate(
   return cert;
 }
 
-nearbyshare::proto::PublicCertificate GetNearbyShareTestPublicCertificate(
+nearby::sharing::proto::PublicCertificate GetNearbyShareTestPublicCertificate(
     nearby_share::mojom::Visibility visibility,
     base::Time not_before) {
-  nearbyshare::proto::PublicCertificate cert;
+  nearby::sharing::proto::PublicCertificate cert;
   cert.set_secret_id(std::string(GetNearbyShareTestCertificateId().begin(),
                                  GetNearbyShareTestCertificateId().end()));
   cert.set_secret_key(GetNearbyShareTestSecretKey()->key());
@@ -294,10 +294,10 @@ GetNearbyShareTestPrivateCertificateList(
   return list;
 }
 
-std::vector<nearbyshare::proto::PublicCertificate>
+std::vector<nearby::sharing::proto::PublicCertificate>
 GetNearbyShareTestPublicCertificateList(
     nearby_share::mojom::Visibility visibility) {
-  std::vector<nearbyshare::proto::PublicCertificate> list;
+  std::vector<nearby::sharing::proto::PublicCertificate> list;
   for (size_t i = 0; i < kNearbyShareNumPrivateCertificates; ++i) {
     list.push_back(GetNearbyShareTestPublicCertificate(
         visibility, GetNearbyShareTestNotBefore() +

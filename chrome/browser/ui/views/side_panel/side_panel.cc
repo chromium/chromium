@@ -21,6 +21,7 @@
 #include "chrome/common/pref_names.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/color_palette.h"
@@ -154,7 +155,8 @@ class SidePanelBorder : public views::Border {
     // If there is a header we want to increase the top inset to give room for
     // the header to paint on top of the border area.
     int top_inset = views::Separator::kThickness + header_height_;
-    if (base::FeatureList::IsEnabled(features::kSidePanelPinning)) {
+    if (base::FeatureList::IsEnabled(features::kSidePanelPinning) &&
+        features::IsChromeRefresh2023()) {
       top_inset -= kBorderThickness;
     }
     return kBorderInsets + gfx::Insets::TLBR(top_inset, 0, 0, 0);
@@ -278,7 +280,8 @@ bool SidePanel::IsRightAligned() {
 }
 
 gfx::Size SidePanel::GetMinimumSize() const {
-  const int min_side_panel_contents_width = 320;
+  const int min_side_panel_contents_width =
+      features::GetSidePanelMinimumWidth();
   const int min_height = 0;
   return gfx::Size(min_side_panel_contents_width + kBorderInsets.width(),
                    min_height);
@@ -369,7 +372,7 @@ void SidePanel::OnResize(int resize_amount, bool done_resizing) {
 
 void SidePanel::RecordMetricsIfResized() {
   if (did_resize_) {
-    absl::optional<SidePanelEntry::Id> id =
+    std::optional<SidePanelEntry::Id> id =
         SidePanelUI::GetSidePanelUIForBrowser(browser_view_->browser())
             ->GetCurrentEntryId();
     CHECK(id.has_value());

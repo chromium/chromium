@@ -8,6 +8,7 @@
 #include <windows.h>
 #include <wrl/implements.h>
 
+#include <optional>
 #include <string>
 #include <vector>
 

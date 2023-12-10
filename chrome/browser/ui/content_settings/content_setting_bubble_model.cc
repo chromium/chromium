@@ -40,7 +40,6 @@
 #include "chrome/browser/ui/url_identity.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/blocked_content/popup_blocker_tab_helper.h"
@@ -59,7 +58,6 @@
 #include "components/permissions/permission_uma_util.h"
 #include "components/permissions/permission_util.h"
 #include "components/permissions/permissions_client.h"
-#include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/subresource_filter/content/browser/content_subresource_filter_throttle_manager.h"
 #include "components/subresource_filter/core/browser/subresource_filter_constants.h"
@@ -132,7 +130,7 @@ const std::u16string& GetDefaultDisplayURLForTesting() {
 }
 
 // An override display URL in content setting bubble UI for testing.
-absl::optional<bool> g_display_url_override_for_testing = absl::nullopt;
+std::optional<bool> g_display_url_override_for_testing = std::nullopt;
 
 // Returns a boolean indicating whether the setting should be managed by the
 // user (i.e. it is not controlled by policy). Also takes a (nullable) out-param
@@ -226,9 +224,9 @@ std::u16string GetUrlForDisplay(Profile* profile, const GURL& url) {
 }  // namespace
 
 // static
-base::AutoReset<absl::optional<bool>>
+base::AutoReset<std::optional<bool>>
 ContentSettingBubbleModel::CreateScopedDisplayURLOverrideForTesting() {
-  return base::AutoReset<absl::optional<bool>>(
+  return base::AutoReset<std::optional<bool>>(
       &g_display_url_override_for_testing, true);
 }
 
@@ -280,6 +278,7 @@ void ContentSettingSimpleBubbleModel::SetTitle() {
       {ContentSettingsType::SOUND, IDS_BLOCKED_SOUND_TITLE},
       {ContentSettingsType::CLIPBOARD_READ_WRITE, IDS_BLOCKED_CLIPBOARD_TITLE},
       {ContentSettingsType::GEOLOCATION, IDS_BLOCKED_GEOLOCATION_TITLE},
+      {ContentSettingsType::MIDI, IDS_BLOCKED_MIDI_TITLE},
       {ContentSettingsType::MIDI_SYSEX, IDS_BLOCKED_MIDI_SYSEX_TITLE},
       {ContentSettingsType::SENSORS, IDS_BLOCKED_SENSORS_TITLE},
   };
@@ -288,6 +287,7 @@ void ContentSettingSimpleBubbleModel::SetTitle() {
       {ContentSettingsType::COOKIES, IDS_ACCESSED_ON_DEVICE_SITE_DATA_TITLE},
       {ContentSettingsType::CLIPBOARD_READ_WRITE, IDS_ALLOWED_CLIPBOARD_TITLE},
       {ContentSettingsType::GEOLOCATION, IDS_ALLOWED_GEOLOCATION_TITLE},
+      {ContentSettingsType::MIDI, IDS_ALLOWED_MIDI_TITLE},
       {ContentSettingsType::MIDI_SYSEX, IDS_ALLOWED_MIDI_SYSEX_TITLE},
       {ContentSettingsType::SENSORS, IDS_ALLOWED_SENSORS_TITLE},
   };
@@ -317,6 +317,7 @@ void ContentSettingSimpleBubbleModel::SetMessage() {
       {ContentSettingsType::MIXEDSCRIPT,
        IDS_BLOCKED_DISPLAYING_INSECURE_CONTENT},
       {ContentSettingsType::GEOLOCATION, IDS_BLOCKED_GEOLOCATION_MESSAGE},
+      {ContentSettingsType::MIDI, IDS_BLOCKED_MIDI_MESSAGE},
       {ContentSettingsType::MIDI_SYSEX, IDS_BLOCKED_MIDI_SYSEX_MESSAGE},
       {ContentSettingsType::CLIPBOARD_READ_WRITE,
        IDS_BLOCKED_CLIPBOARD_MESSAGE},
@@ -329,6 +330,7 @@ void ContentSettingSimpleBubbleModel::SetMessage() {
   const ContentSettingsTypeIdEntry kAccessedMessageIDs[] = {
       {ContentSettingsType::COOKIES, IDS_ACCESSED_ON_DEVICE_SITE_DATA_MESSAGE},
       {ContentSettingsType::GEOLOCATION, IDS_ALLOWED_GEOLOCATION_MESSAGE},
+      {ContentSettingsType::MIDI, IDS_ALLOWED_MIDI_MESSAGE},
       {ContentSettingsType::MIDI_SYSEX, IDS_ALLOWED_MIDI_SYSEX_MESSAGE},
       {ContentSettingsType::CLIPBOARD_READ_WRITE,
        IDS_ALLOWED_CLIPBOARD_MESSAGE},
@@ -629,6 +631,7 @@ void ContentSettingSingleRadioGroup::SetRadioGroup() {
       {ContentSettingsType::POPUPS, IDS_BLOCKED_POPUPS_REDIRECTS_UNBLOCK},
       {ContentSettingsType::SOUND, IDS_BLOCKED_SOUND_UNBLOCK},
       {ContentSettingsType::GEOLOCATION, IDS_BLOCKED_GEOLOCATION_UNBLOCK},
+      {ContentSettingsType::MIDI, IDS_BLOCKED_MIDI_UNBLOCK},
       {ContentSettingsType::MIDI_SYSEX, IDS_BLOCKED_MIDI_SYSEX_UNBLOCK},
       {ContentSettingsType::CLIPBOARD_READ_WRITE,
        IDS_BLOCKED_CLIPBOARD_UNBLOCK},
@@ -638,6 +641,7 @@ void ContentSettingSingleRadioGroup::SetRadioGroup() {
   static const ContentSettingsTypeIdEntry kAllowedAllowIDs[] = {
       {ContentSettingsType::COOKIES, IDS_ALLOWED_ON_DEVICE_SITE_DATA_NO_ACTION},
       {ContentSettingsType::GEOLOCATION, IDS_ALLOWED_GEOLOCATION_NO_ACTION},
+      {ContentSettingsType::MIDI, IDS_ALLOWED_MIDI_NO_ACTION},
       {ContentSettingsType::MIDI_SYSEX, IDS_ALLOWED_MIDI_SYSEX_NO_ACTION},
       {ContentSettingsType::CLIPBOARD_READ_WRITE,
        IDS_ALLOWED_CLIPBOARD_NO_ACTION},
@@ -666,6 +670,7 @@ void ContentSettingSingleRadioGroup::SetRadioGroup() {
       {ContentSettingsType::POPUPS, IDS_BLOCKED_POPUPS_REDIRECTS_NO_ACTION},
       {ContentSettingsType::SOUND, IDS_BLOCKED_SOUND_NO_ACTION},
       {ContentSettingsType::GEOLOCATION, IDS_BLOCKED_GEOLOCATION_NO_ACTION},
+      {ContentSettingsType::MIDI, IDS_BLOCKED_MIDI_NO_ACTION},
       {ContentSettingsType::MIDI_SYSEX, IDS_BLOCKED_MIDI_SYSEX_NO_ACTION},
       {ContentSettingsType::CLIPBOARD_READ_WRITE,
        IDS_BLOCKED_CLIPBOARD_NO_ACTION},
@@ -674,6 +679,7 @@ void ContentSettingSingleRadioGroup::SetRadioGroup() {
   static const ContentSettingsTypeIdEntry kAllowedBlockIDs[] = {
       {ContentSettingsType::COOKIES, IDS_ALLOWED_ON_DEVICE_SITE_DATA_BLOCK},
       {ContentSettingsType::GEOLOCATION, IDS_ALLOWED_GEOLOCATION_BLOCK},
+      {ContentSettingsType::MIDI, IDS_ALLOWED_MIDI_BLOCK},
       {ContentSettingsType::MIDI_SYSEX, IDS_ALLOWED_MIDI_SYSEX_BLOCK},
       {ContentSettingsType::CLIPBOARD_READ_WRITE, IDS_ALLOWED_CLIPBOARD_BLOCK},
       {ContentSettingsType::SENSORS, IDS_ALLOWED_SENSORS_BLOCK},
@@ -923,25 +929,6 @@ ContentSettingPopupBubbleModel::~ContentSettingPopupBubbleModel() = default;
 
 // ContentSettingMediaStreamBubbleModel ----------------------------------------
 
-namespace {
-
-const blink::MediaStreamDevice& GetMediaDeviceById(
-    const std::string& device_id,
-    const blink::MediaStreamDevices& devices) {
-  DCHECK(!devices.empty());
-  for (const blink::MediaStreamDevice& device : devices) {
-    if (device.id == device_id)
-      return device;
-  }
-
-  // A device with the |device_id| was not found. It is likely that the device
-  // has been unplugged from the OS. Return the first device as the default
-  // device.
-  return *devices.begin();
-}
-
-}  // namespace
-
 ContentSettingMediaStreamBubbleModel::ContentSettingMediaStreamBubbleModel(
     Delegate* delegate,
     WebContents* web_contents)
@@ -983,7 +970,6 @@ ContentSettingMediaStreamBubbleModel::ContentSettingMediaStreamBubbleModel(
   SetTitle();
   SetMessage();
   SetRadioGroup();
-  SetMediaMenus();
   SetManageText();
   SetCustomLink();
   SetIsUserModifiable();
@@ -1008,12 +994,6 @@ void ContentSettingMediaStreamBubbleModel::CommitChanges() {
 
   if (content_settings->media_stream_access_origin().is_empty()) {
     return;
-  }
-
-  for (const auto& media_menu : bubble_content().media_menus) {
-    const MediaMenu& menu = media_menu.second;
-    if (menu.selected_device.id != menu.default_device.id)
-      UpdateDefaultDeviceForType(media_menu.first, menu.selected_device.id);
   }
 
   // No need for radio group in the bubble UI shown when permission is blocked
@@ -1302,83 +1282,6 @@ bool ContentSettingMediaStreamBubbleModel::ShouldShowSystemMediaPermissions() {
 #endif  // BUILDFLAG(IS_MAC)
 }
 
-void ContentSettingMediaStreamBubbleModel::UpdateDefaultDeviceForType(
-    blink::mojom::MediaStreamType type,
-    const std::string& device) {
-  PrefService* prefs = GetProfile()->GetPrefs();
-  if (type == blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE) {
-    prefs->SetString(prefs::kDefaultAudioCaptureDevice, device);
-  } else {
-    DCHECK_EQ(blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE, type);
-    prefs->SetString(prefs::kDefaultVideoCaptureDevice, device);
-  }
-}
-
-void ContentSettingMediaStreamBubbleModel::SetMediaMenus() {
-  PageSpecificContentSettings* content_settings =
-      PageSpecificContentSettings::GetForFrame(&GetPage().GetMainDocument());
-  const std::string& requested_microphone =
-      content_settings->media_stream_requested_audio_device();
-  const std::string& requested_camera =
-      content_settings->media_stream_requested_video_device();
-
-  // Add microphone menu.
-  PrefService* prefs = GetProfile()->GetPrefs();
-  MediaCaptureDevicesDispatcher* dispatcher =
-      MediaCaptureDevicesDispatcher::GetInstance();
-
-  if (MicrophoneAccessed()) {
-    const blink::MediaStreamDevices& microphones =
-        dispatcher->GetAudioCaptureDevices();
-    MediaMenu mic_menu;
-    mic_menu.label = l10n_util::GetStringUTF16(IDS_MEDIA_SELECTED_MIC_LABEL);
-    if (!microphones.empty()) {
-      std::string preferred_mic;
-      if (requested_microphone.empty()) {
-        preferred_mic = prefs->GetString(prefs::kDefaultAudioCaptureDevice);
-        mic_menu.disabled = false;
-      } else {
-        // Set the |disabled| to true in order to disable the device selection
-        // menu on the media settings bubble. This must be done if the website
-        // manages the microphone devices itself.
-        preferred_mic = requested_microphone;
-        mic_menu.disabled = true;
-      }
-
-      mic_menu.default_device = GetMediaDeviceById(preferred_mic, microphones);
-      mic_menu.selected_device = mic_menu.default_device;
-    }
-    add_media_menu(blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE,
-                   mic_menu);
-  }
-
-  if (CameraAccessed()) {
-    const blink::MediaStreamDevices& cameras =
-        dispatcher->GetVideoCaptureDevices();
-    MediaMenu camera_menu;
-    camera_menu.label =
-        l10n_util::GetStringUTF16(IDS_MEDIA_SELECTED_CAMERA_LABEL);
-    if (!cameras.empty()) {
-      std::string preferred_camera;
-      if (requested_camera.empty()) {
-        preferred_camera = prefs->GetString(prefs::kDefaultVideoCaptureDevice);
-        camera_menu.disabled = false;
-      } else {
-        // Disable the menu since the website is managing the camera devices
-        // itself.
-        preferred_camera = requested_camera;
-        camera_menu.disabled = true;
-      }
-
-      camera_menu.default_device =
-          GetMediaDeviceById(preferred_camera, cameras);
-      camera_menu.selected_device = camera_menu.default_device;
-    }
-    add_media_menu(blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE,
-                   camera_menu);
-  }
-}
-
 void ContentSettingMediaStreamBubbleModel::SetManageText() {
   DCHECK(CameraAccessed() || MicrophoneAccessed());
   set_manage_text(l10n_util::GetStringUTF16(IDS_MANAGE));
@@ -1391,21 +1294,6 @@ void ContentSettingMediaStreamBubbleModel::SetCustomLink() {
     set_custom_link(
         l10n_util::GetStringUTF16(IDS_MEDIASTREAM_SETTING_CHANGED_MESSAGE));
   }
-}
-
-void ContentSettingMediaStreamBubbleModel::OnMediaMenuClicked(
-    blink::mojom::MediaStreamType type,
-    const std::string& selected_device_id) {
-  DCHECK(type == blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE ||
-         type == blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE);
-  DCHECK_EQ(1U, bubble_content().media_menus.count(type));
-  MediaCaptureDevicesDispatcher* dispatcher =
-      MediaCaptureDevicesDispatcher::GetInstance();
-  const blink::MediaStreamDevices& devices =
-      (type == blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE)
-          ? dispatcher->GetAudioCaptureDevices()
-          : dispatcher->GetVideoCaptureDevices();
-  set_selected_device(GetMediaDeviceById(selected_device_id, devices));
 }
 
 // ContentSettingGeolocationBubbleModel --------------------------------------
@@ -1632,7 +1520,7 @@ void ContentSettingDownloadsBubbleModel::SetRadioGroup() {
       radio_group.default_item = 1;
       break;
     case DownloadRequestLimiter::DOWNLOAD_UI_DEFAULT:
-      NOTREACHED();
+      DUMP_WILL_BE_NOTREACHED_NORETURN();
       return;
   }
   set_radio_group(radio_group);
@@ -1975,6 +1863,7 @@ ContentSettingBubbleModel::CreateContentSettingBubbleModel(
     case ContentSettingsType::JAVASCRIPT:
     case ContentSettingsType::SOUND:
     case ContentSettingsType::CLIPBOARD_READ_WRITE:
+    case ContentSettingsType::MIDI:
     case ContentSettingsType::MIDI_SYSEX:
     case ContentSettingsType::SENSORS:
       return std::make_unique<ContentSettingSingleRadioGroup>(

@@ -56,6 +56,7 @@ class MODULES_EXPORT BaseConstraint {
   virtual bool HasMax() const { return false; }
   virtual bool HasExact() const = 0;
   const char* GetName() const { return name_; }
+  virtual void ResetToUnconstrained() = 0;
   virtual String ToString() const = 0;
 
  private:
@@ -94,6 +95,7 @@ class MODULES_EXPORT LongConstraint : public BaseConstraint {
   bool HasMin() const override { return has_min_; }
   bool HasMax() const override { return has_max_; }
   bool HasExact() const override { return has_exact_; }
+  void ResetToUnconstrained() override;
   String ToString() const override;
   int32_t Min() const { return min_; }
   int32_t Max() const { return max_; }
@@ -146,6 +148,7 @@ class MODULES_EXPORT DoubleConstraint : public BaseConstraint {
   bool HasMin() const override { return has_min_; }
   bool HasMax() const override { return has_max_; }
   bool HasExact() const override { return has_exact_; }
+  void ResetToUnconstrained() override;
   String ToString() const override;
   double Min() const { return min_; }
   double Max() const { return max_; }
@@ -181,6 +184,7 @@ class MODULES_EXPORT StringConstraint : public BaseConstraint {
   bool Matches(String value) const;
   bool IsUnconstrained() const override;
   bool HasExact() const override { return !exact_.empty(); }
+  void ResetToUnconstrained() override;
   String ToString() const override;
   bool HasIdeal() const { return !ideal_.empty(); }
   const Vector<String>& Exact() const;
@@ -210,6 +214,7 @@ class MODULES_EXPORT BooleanConstraint : public BaseConstraint {
   bool Matches(bool value) const;
   bool IsUnconstrained() const override;
   bool HasExact() const override { return has_exact_; }
+  void ResetToUnconstrained() override;
   String ToString() const override;
   bool HasIdeal() const { return has_ideal_; }
 
@@ -240,11 +245,18 @@ struct MediaTrackConstraintSetPlatform {
   StringConstraint device_id;
   BooleanConstraint disable_local_echo;
   BooleanConstraint suppress_local_audio_playback;
+  StringConstraint group_id;
+  StringConstraint display_surface;
+
+  // W3C Image Capture
   DoubleConstraint pan;
   DoubleConstraint tilt;
   DoubleConstraint zoom;
-  StringConstraint group_id;
-  StringConstraint display_surface;
+  BooleanConstraint torch;
+
+  // W3C Media Capture Extensions
+  BooleanConstraint background_blur;
+
   // Constraints not exposed in Blink at the moment, only through
   // the legacy name interface.
   StringConstraint media_stream_source;  // tab, screen, desktop, system
@@ -294,6 +306,7 @@ class MediaConstraints {
       const Vector<MediaTrackConstraintSetPlatform>& advanced);
 
   MODULES_EXPORT const MediaTrackConstraintSetPlatform& Basic() const;
+  MODULES_EXPORT MediaTrackConstraintSetPlatform& MutableBasic();
   MODULES_EXPORT const Vector<MediaTrackConstraintSetPlatform>& Advanced()
       const;
 

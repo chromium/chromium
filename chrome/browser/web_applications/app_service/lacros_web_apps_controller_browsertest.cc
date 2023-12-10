@@ -20,7 +20,7 @@
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -42,6 +42,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
@@ -763,9 +764,10 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, OpenNativeSettings) {
   AsAppController(lacros_web_apps_controller).OpenNativeSettings(app_id);
   content::WebContents* const web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
+  std::string expected_url = base::StrCat(
+      {chrome::kChromeUISettingsURL, chrome::kContentSettingsSubPage});
   EXPECT_TRUE(base::StartsWith(web_contents->GetVisibleURL().spec(),
-                               chrome::kChromeUIContentSettingsURL,
-                               base::CompareCase::SENSITIVE));
+                               expected_url, base::CompareCase::SENSITIVE));
 }
 
 IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, WindowMode) {

@@ -11,6 +11,7 @@
 
 #include <algorithm>
 #include <functional>
+#include <string_view>
 
 #include "base/check_op.h"
 #include "base/memory/raw_ptr.h"
@@ -304,7 +305,7 @@ void SelectLanguageMatchingCandidate(
 }
 
 std::vector<std::wstring> GetCandidatesFromSystem(
-    WStringPiece preferred_language) {
+    std::wstring_view preferred_language) {
   std::vector<std::wstring> candidates;
 
   // Get the initial candidate list for this particular implementation (if
@@ -320,7 +321,7 @@ std::vector<std::wstring> GetCandidatesFromSystem(
 
 }  // namespace
 
-LanguageSelector::LanguageSelector(WStringPiece preferred_language,
+LanguageSelector::LanguageSelector(std::wstring_view preferred_language,
                                    span<const LangToOffset> languages_to_offset)
     : LanguageSelector(GetCandidatesFromSystem(preferred_language),
                        languages_to_offset) {}

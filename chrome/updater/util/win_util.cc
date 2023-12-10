@@ -17,6 +17,7 @@
 #include <algorithm>
 #include <cstdlib>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -24,7 +25,6 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/debug/alias.h"
@@ -67,7 +67,6 @@
 #include "chrome/updater/win/user_info.h"
 #include "chrome/updater/win/win_constants.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
 
@@ -230,32 +229,32 @@ NamedObjectAttributes GetNamedObjectAttributes(const wchar_t* base_name,
   }
 }
 
-absl::optional<CSecurityDesc> GetCurrentUserDefaultSecurityDescriptor() {
+std::optional<CSecurityDesc> GetCurrentUserDefaultSecurityDescriptor() {
   CAccessToken token;
   if (!token.GetProcessToken(TOKEN_QUERY))
-    return absl::nullopt;
+    return std::nullopt;
 
   CSecurityDesc security_desc;
   CSid sid_owner;
   if (!token.GetOwner(&sid_owner))
-    return absl::nullopt;
+    return std::nullopt;
 
   security_desc.SetOwner(sid_owner);
   CSid sid_group;
   if (!token.GetPrimaryGroup(&sid_group))
-    return absl::nullopt;
+    return std::nullopt;
 
   security_desc.SetGroup(sid_group);
 
   CDacl dacl;
   if (!token.GetDefaultDacl(&dacl))
-    return absl::nullopt;
+    return std::nullopt;
 
   CSid sid_user;
   if (!token.GetUser(&sid_user))
-    return absl::nullopt;
+    return std::nullopt;
   if (!dacl.AddAllowedAce(sid_user, GENERIC_ALL))
-    return absl::nullopt;
+    return std::nullopt;
 
   security_desc.SetDacl(dacl);
 
@@ -460,7 +459,7 @@ std::string GetUACState() {
 
 std::wstring GetServiceName(bool is_internal_service) {
   std::wstring service_name = GetServiceDisplayName(is_internal_service);
-  base::EraseIf(service_name, base::IsAsciiWhitespace<wchar_t>);
+  std::erase_if(service_name, base::IsAsciiWhitespace<wchar_t>);
   return service_name;
 }
 
@@ -521,8 +520,8 @@ HResultOr<DWORD> ShellExecuteAndWait(const base::FilePath& file_path,
 
   // Allow the spawned process to show windows in the foreground.
   if (!::AllowSetForegroundWindow(pid)) {
-    LOG(WARNING) << __func__
-                 << ": ::AllowSetForegroundWindow failed: " << ::GetLastError();
+    VLOG(1) << __func__
+            << ": ::AllowSetForegroundWindow failed: " << ::GetLastError();
   }
 
   int ret_val = 0;
@@ -595,14 +594,14 @@ HRESULT RunDeElevated(const std::wstring& path,
       base::win::ScopedVariant::kEmptyVariant);
 }
 
-absl::optional<base::FilePath> GetGoogleUpdateExePath(UpdaterScope scope) {
+std::optional<base::FilePath> GetGoogleUpdateExePath(UpdaterScope scope) {
   base::FilePath goopdate_base_dir;
   if (!base::PathService::Get(IsSystemInstall(scope)
                                   ? base::DIR_PROGRAM_FILESX86
                                   : base::DIR_LOCAL_APP_DATA,
                               &goopdate_base_dir)) {
     LOG(ERROR) << "Can't retrieve GoogleUpdate base directory.";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return goopdate_base_dir.AppendASCII(COMPANY_SHORTNAME_STRING)
@@ -622,7 +621,7 @@ HRESULT DisableCOMExceptionHandling() {
 
 std::wstring BuildMsiCommandLine(
     const std::wstring& arguments,
-    const absl::optional<base::FilePath>& installer_data_file,
+    const std::optional<base::FilePath>& installer_data_file,
     const base::FilePath& msi_installer) {
   if (!msi_installer.MatchesExtension(L".msi")) {
     return std::wstring();
@@ -647,7 +646,7 @@ std::wstring BuildMsiCommandLine(
 
 std::wstring BuildExeCommandLine(
     const std::wstring& arguments,
-    const absl::optional<base::FilePath>& installer_data_file,
+    const std::optional<base::FilePath>& installer_data_file,
     const base::FilePath& exe_installer) {
   if (!exe_installer.MatchesExtension(L".exe")) {
     return std::wstring();
@@ -655,7 +654,7 @@ std::wstring BuildExeCommandLine(
 
   return base::StrCat(
       {base::CommandLine::QuoteForCommandLineToArgvW(exe_installer.value()),
-       L" ", arguments, [&installer_data_file]() {
+       L" ", arguments, [&installer_data_file] {
          if (!installer_data_file)
            return std::wstring();
 
@@ -699,7 +698,7 @@ HKEY UpdaterScopeToHKeyRoot(UpdaterScope scope) {
   return IsSystemInstall(scope) ? HKEY_LOCAL_MACHINE : HKEY_CURRENT_USER;
 }
 
-absl::optional<OSVERSIONINFOEX> GetOSVersion() {
+std::optional<OSVERSIONINFOEX> GetOSVersion() {
   // `::RtlGetVersion` is being used here instead of `::GetVersionEx`, because
   // the latter function can return the incorrect version if it is shimmed using
   // an app compat shim.
@@ -707,14 +706,14 @@ absl::optional<OSVERSIONINFOEX> GetOSVersion() {
   static const RtlGetVersion rtl_get_version = reinterpret_cast<RtlGetVersion>(
       ::GetProcAddress(::GetModuleHandle(L"ntdll.dll"), "RtlGetVersion"));
   if (!rtl_get_version)
-    return absl::nullopt;
+    return std::nullopt;
 
   OSVERSIONINFOEX os_out = {};
   os_out.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
 
   rtl_get_version(&os_out);
   if (!os_out.dwMajorVersion)
-    return absl::nullopt;
+    return std::nullopt;
 
   return os_out;
 }
@@ -761,7 +760,7 @@ bool EnableProcessHeapMetadataProtection() {
   return true;
 }
 
-absl::optional<base::ScopedTempDir> CreateSecureTempDir() {
+std::optional<base::ScopedTempDir> CreateSecureTempDir() {
   // This function uses `base::CreateNewTempDirectory` and then a
   // `base::ScopedTempDir` as owner, instead of just
   // `base::ScopedTempDir::CreateUniqueTempDir`, because the former allows
@@ -770,14 +769,14 @@ absl::optional<base::ScopedTempDir> CreateSecureTempDir() {
   base::FilePath temp_dir;
   if (!base::CreateNewTempDirectory(FILE_PATH_LITERAL(COMPANY_SHORTNAME_STRING),
                                     &temp_dir)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   base::ScopedTempDir temp_dir_owner;
   if (temp_dir_owner.Set(temp_dir)) {
     return temp_dir_owner;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 base::ScopedClosureRunner SignalShutdownEvent(UpdaterScope scope) {
@@ -855,13 +854,13 @@ void StopProcessesUnderPath(const base::FilePath& path,
   }
 }
 
-absl::optional<base::CommandLine> CommandLineForLegacyFormat(
+std::optional<base::CommandLine> CommandLineForLegacyFormat(
     const std::wstring& cmd_string) {
   int num_args = 0;
   base::win::ScopedLocalAllocTyped<wchar_t*> args(
       ::CommandLineToArgvW(cmd_string.c_str(), &num_args));
   if (!args)
-    return absl::nullopt;
+    return std::nullopt;
 
   auto is_switch = [](const std::wstring& arg) { return arg[0] == L'-'; };
 
@@ -877,7 +876,7 @@ absl::optional<base::CommandLine> CommandLineForLegacyFormat(
 
     if (is_switch(args.get()[i]) || is_switch(next_arg)) {
       // Won't parse Chromium-style command line.
-      return absl::nullopt;
+      return std::nullopt;
     }
 
     if (!is_legacy_switch(args.get()[i])) {
@@ -889,7 +888,7 @@ absl::optional<base::CommandLine> CommandLineForLegacyFormat(
     const std::string switch_name = base::WideToASCII(&args.get()[i][1]);
     if (switch_name.empty()) {
       VLOG(1) << "Empty switch in command line: [" << cmd_string << "]";
-      return absl::nullopt;
+      return std::nullopt;
     }
 
     if (is_legacy_switch(next_arg) || next_arg.empty()) {
@@ -904,13 +903,13 @@ absl::optional<base::CommandLine> CommandLineForLegacyFormat(
   return command_line;
 }
 
-absl::optional<base::FilePath> GetInstallDirectory(UpdaterScope scope) {
+std::optional<base::FilePath> GetInstallDirectory(UpdaterScope scope) {
   base::FilePath app_data_dir;
   if (!base::PathService::Get(IsSystemInstall(scope) ? base::DIR_PROGRAM_FILES
                                                      : base::DIR_LOCAL_APP_DATA,
                               &app_data_dir)) {
     LOG(ERROR) << "Can't retrieve app data directory.";
-    return absl::nullopt;
+    return std::nullopt;
   }
   return app_data_dir.AppendASCII(COMPANY_SHORTNAME_STRING)
       .AppendASCII(PRODUCT_FULLNAME_STRING);
@@ -1047,20 +1046,20 @@ void LogClsidEntries(REFCLSID clsid) {
   }
 }
 
-absl::optional<base::FilePath> GetInstallDirectoryX86(UpdaterScope scope) {
+std::optional<base::FilePath> GetInstallDirectoryX86(UpdaterScope scope) {
   if (!IsSystemInstall(scope)) {
     return GetInstallDirectory(scope);
   }
   base::FilePath install_dir;
   if (!base::PathService::Get(base::DIR_PROGRAM_FILESX86, &install_dir)) {
     LOG(ERROR) << "Can't retrieve directory for DIR_PROGRAM_FILESX86.";
-    return absl::nullopt;
+    return std::nullopt;
   }
   return install_dir.AppendASCII(COMPANY_SHORTNAME_STRING)
       .AppendASCII(PRODUCT_FULLNAME_STRING);
 }
 
-absl::optional<std::wstring> GetRegKeyContents(const std::wstring& reg_key) {
+std::optional<std::wstring> GetRegKeyContents(const std::wstring& reg_key) {
   base::FilePath system_path;
   if (!base::PathService::Get(base::DIR_SYSTEM, &system_path)) {
     return {};

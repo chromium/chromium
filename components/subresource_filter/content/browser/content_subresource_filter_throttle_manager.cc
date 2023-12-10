@@ -649,7 +649,8 @@ ContentSubresourceFilterThrottleManager::
       GetParentFrameFilter(navigation_handle);
   return parent_filter
              ? std::make_unique<ChildFrameNavigationFilteringThrottle>(
-                   navigation_handle, parent_filter)
+                   navigation_handle, parent_filter,
+                   EnsureFrameAdEvidence(navigation_handle))
              : nullptr;
 }
 

@@ -21,7 +21,6 @@
 #include "ash/style/ash_color_id.h"
 #include "ash/style/typography.h"
 #include "ash/system/privacy/privacy_indicators_controller.h"
-#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/check.h"
 #include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
@@ -32,6 +31,7 @@
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_provider_manager.h"
 #include "ui/compositor/layer.h"
+#include "ui/display/screen.h"
 #include "ui/events/ash/keyboard_capability.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
@@ -367,7 +367,7 @@ std::unique_ptr<views::View> CreateBannerView() {
                                                *label);
   }
 
-  if (!Shell::Get()->tablet_mode_controller()->InTabletMode()) {
+  if (!display::Screen::GetScreen()->InTabletMode()) {
     banner_view->AddChildView(CreateClipboardShortcutView());
     layout->SetFlexForView(label, 1);
 
@@ -468,7 +468,7 @@ bool GetWidgetCurrentVisibility(views::Widget* widget) {
 
 bool SetWidgetVisibility(views::Widget* widget,
                          bool target_visibility,
-                         absl::optional<AnimationParams> animation_params) {
+                         std::optional<AnimationParams> animation_params) {
   DCHECK(widget);
   if (target_visibility == GetWidgetCurrentVisibility(widget))
     return false;
@@ -488,7 +488,7 @@ bool SetWidgetVisibility(views::Widget* widget,
 }
 
 aura::Window* GetPreferredRootWindow(
-    absl::optional<gfx::Point> location_in_screen) {
+    std::optional<gfx::Point> location_in_screen) {
   const int64_t display_id =
       (location_in_screen
            ? display::Screen::GetScreen()->GetDisplayNearestPoint(
@@ -520,7 +520,8 @@ views::BoxLayout* CreateAndInitBoxLayoutForView(views::View* view) {
 }
 
 void MaybeUpdateCaptureModePrivacyIndicators() {
-  if (!features::IsPrivacyIndicatorsEnabled()) {
+  // Privacy indicator is only enabled when Video Conference is disabled.
+  if (features::IsVideoConferenceEnabled()) {
     return;
   }
 

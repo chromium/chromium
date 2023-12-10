@@ -18,7 +18,6 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/system/tray/tray_popup_utils.h"
-#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/command_line.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
@@ -26,6 +25,7 @@
 #include "base/timer/timer.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/callback_layer_animation_observer.h"
 #include "ui/compositor/layer_animation_element.h"
 #include "ui/compositor/layer_animation_observer.h"
@@ -221,5 +221,8 @@ void AssistantOverlay::OnThemeChanged() {
 void AssistantOverlay::OnImplicitAnimationsCompleted() {
   scoped_no_clip_rect_.reset();
 }
+
+BEGIN_METADATA(AssistantOverlay)
+END_METADATA
 
 }  // namespace ash

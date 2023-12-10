@@ -114,13 +114,13 @@
     <h1 class="page-title">[[i18n('pageTitle')]]</h1>
   </div>
   <div id="shadowElevation"></div>
-  <div id="content" on-scroll="onContainerScroll_">
+  <div id="content" on-scroll="onContainerScroll">
     <div id="descriptionPane">
       <div id="descriptionHeader">
         <h2 id="descriptionTitle">[[i18n('descriptionLabel')]]</h2>
-        <a id="feedbackWritingGuidance" href="[[feedbackWritingGuidanceUrl_()]]"
+        <a id="feedbackWritingGuidance" href="[[feedbackWritingGuidanceUrl()]]"
             target="_blank"
-            hidden$="[[!isUserLoggedIn_(feedbackContext)]]">
+            hidden$="[[!isUserLoggedIn(feedbackContext)]]">
             [[i18n('feedbackHelpLinkLabel')]]
         </a>
       </div>
@@ -129,7 +129,7 @@
       </span>
       <textarea id="descriptionText"
           aria-labelledby="descriptionTitle suggestionExplainAriaLabel"
-          aria-required="true" on-input="handleInputChanged_">
+          aria-required="true" on-input="handleInputChanged">
       </textarea>
       <div id='emptyErrorContainer' aria-hidden="true" hidden>
         <iron-icon icon="cr:error-outline" id="emptyErrorIcon"></iron-icon>
@@ -139,9 +139,9 @@
       </div>
     </div>
     <div>
-      <iframe on-load="resolveIframeLoaded_"
+      <iframe on-load="resolveIframeLoaded"
           src="chrome-untrusted://os-feedback/untrusted_index.html"
-          scrolling="no" hidden$="[[!isUserLoggedIn_(feedbackContext)]]">
+          scrolling="no" hidden$="[[!isUserLoggedIn(feedbackContext)]]">
       </iframe>
     </div>
     <div id="shadowShield"></div>
@@ -149,7 +149,7 @@
   <div id="separator"></div>
   <div id="navButtons">
     <cr-button id="buttonContinue" class="action-button"
-        on-click="handleContinueButtonClicked_">
+        on-click="handleContinueButtonClicked">
       [[i18n('continueButtonLabel')]]
     </cr-button>
   </div>

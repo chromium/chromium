@@ -55,7 +55,7 @@ TEST(LockTest, LockThenTryLockInThreadFail) {
         EXPECT_FALSE(
             ScopedLock::Create("foobar", GetTestScope(), base::Seconds(0)));
       }),
-      base::BindLambdaForTesting([&run_loop]() { run_loop.Quit(); }));
+      base::BindLambdaForTesting([&run_loop] { run_loop.Quit(); }));
   run_loop.Run();
 }
 
@@ -68,7 +68,7 @@ TEST(LockTest, TryLockInThreadSuccess) {
         EXPECT_TRUE(
             ScopedLock::Create("foobar", GetTestScope(), base::Seconds(0)));
       }),
-      base::BindLambdaForTesting([&run_loop]() { run_loop.Quit(); }));
+      base::BindLambdaForTesting([&run_loop] { run_loop.Quit(); }));
   run_loop.Run();
 
   EXPECT_TRUE(ScopedLock::Create("foobar", GetTestScope(), base::Seconds(0)));

@@ -1207,6 +1207,58 @@ TEST_F(CertProvisioningSchedulerTest, HoldBackNotifications) {
   }
 }
 
+TEST_F(CertProvisioningSchedulerTest, ResetOneWorker) {
+  const CertScope kCertScope = CertScope::kUser;
+
+  CertProvisioningSchedulerImpl scheduler(
+      kCertScope, GetProfile(), &pref_service_,
+      std::make_unique<MockCertProvisioningClient>(), &platform_keys_service_,
+      network_state_test_helper_.network_state_handler(),
+      MakeFakeInvalidationFactory());
+
+  CertProfile cert_profile(kCertProfileId, kCertProfileName,
+                           kCertProfileVersion,
+                           /*is_va_enabled=*/true, kCertProfileRenewalPeriod,
+                           ProtocolVersion::kStatic);
+
+  FastForwardBy(base::Seconds(1));
+
+  // From CertProvisioningScheduler::CleanVaKeysIfIdle.
+  VerifyDeleteKeysByPrefixCalledOnce(kCertScope);
+
+  // There is no policies yet, |kCertProfileId| will not be found.
+  scheduler.UpdateOneWorker(kCertProfileId);
+  FastForwardBy(base::Seconds(1));
+  ASSERT_TRUE(scheduler.GetWorkers().empty());
+
+  MockCertProvisioningWorker* worker =
+      mock_factory_.ExpectCreateReturnMock(kCertScope, cert_profile);
+  worker->SetExpectations(/*do_step_times=*/Exactly(1),
+                          /*is_waiting=*/false, cert_profile,
+                          /*failure_message=*/"");
+
+  // Add 1 certificate profile to the policy (the values are the same as
+  // in |cert_profile|).
+  base::Value config = ParseJson(
+      R"([{"name": "Certificate Profile 1",
+           "cert_profile_id":"cert_profile_id_1",
+           "policy_version":"cert_profile_version_1",
+           "key_algorithm":"rsa"}])");
+  pref_service_.Set(GetPrefNameForCertProfiles(kCertScope), config);
+  FastForwardBy(base::Seconds(1));
+
+  {
+    worker->ResetExpected();
+    scheduler.ResetOneWorker(kCertProfileId);
+    ASSERT_EQ(scheduler.GetWorkers().size(), 1U);
+    MockCertProvisioningWorker* second_worker =
+        mock_factory_.ExpectCreateReturnMock(kCertScope, cert_profile);
+    second_worker->SetExpectations(Exactly(1), false, cert_profile, "");
+    scheduler.OnProfileFinished(cert_profile,
+                                CertProvisioningWorkerState::kCanceled);
+    ASSERT_EQ(scheduler.GetWorkers().size(), 1U);
+  }
+}
 }  // namespace
 }  // namespace cert_provisioning
 }  // namespace ash

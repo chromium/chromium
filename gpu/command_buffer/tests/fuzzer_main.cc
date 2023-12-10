@@ -116,7 +116,6 @@ constexpr const char* kExtensions[] = {
     "GL_CHROMIUM_color_buffer_float_rgba",
     "GL_CHROMIUM_copy_compressed_texture",
     "GL_CHROMIUM_copy_texture",
-    "GL_CHROMIUM_texture_filtering_hint",
     "GL_EXT_blend_func_extended",
     "GL_EXT_blend_minmax",
     "GL_EXT_float_blend",
@@ -383,7 +382,7 @@ class CommandBufferSetup {
     context_->MakeCurrent(surface_.get());
     GpuFeatureInfo gpu_feature_info;
 #if defined(GPU_FUZZER_USE_RASTER_DECODER)
-    gpu_feature_info.status_values[GPU_FEATURE_TYPE_GPU_RASTERIZATION] =
+    gpu_feature_info.status_values[GPU_FEATURE_TYPE_GPU_TILE_RASTERIZATION] =
         kGpuFeatureStatusEnabled;
 #endif
     auto feature_info = base::MakeRefCounted<gles2::FeatureInfo>(

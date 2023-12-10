@@ -54,9 +54,12 @@ void OnGotInnerText(base::TimeTicks start_time,
   if (internal::IsInnerTextFrameValid(mojo_frame)) {
     result = internal::CreateInnerTextResult(*mojo_frame);
     const base::TimeDelta total_time = base::TimeTicks::Now() - start_time;
-    base::UmaHistogramTimes("InnerText.Time", total_time);
+    base::UmaHistogramTimes("ContentExtraction.InnerText.Time", total_time);
+    base::UmaHistogramCounts10M("ContentExtraction.InnerText.Size",
+                                result->inner_text.size());
   }
-  base::UmaHistogramBoolean("InnerText.ValidResults", result != nullptr);
+  base::UmaHistogramBoolean("ContentExtraction.InnerText.ValidResults",
+                            result != nullptr);
   std::move(callback).Run(std::move(result));
 }
 
@@ -75,9 +78,10 @@ void GetInnerText(content::RenderFrameHost& host,
   auto* agent_ptr = agent.get();
   agent_ptr->GetInnerText(
       std::move(params),
-      base::BindOnce(&OnGotInnerText, start_time, std::move(agent),
-                     mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-                         std::move(callback), nullptr)));
+      mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+          base::BindOnce(&OnGotInnerText, start_time, std::move(agent),
+                         std::move(callback)),
+          nullptr));
 }
 
 namespace internal {

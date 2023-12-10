@@ -14,6 +14,7 @@
 #include "components/autofill/core/browser/autofill_manager.h"
 #include "components/autofill/core/browser/autofill_manager_test_api.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/crowdsourcing/mock_autofill_crowdsourcing_manager.h"
 #include "components/autofill/core/browser/mock_autofill_manager_observer.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/test_autofill_driver.h"
@@ -31,52 +32,24 @@
 #include "components/autofill/core/browser/ml_model/autofill_ml_prediction_model_handler.h"
 #endif
 
-using testing::_;
-using testing::AtLeast;
-using testing::ElementsAre;
-using testing::Eq;
-using testing::Field;
-using testing::Invoke;
-using testing::NiceMock;
-using testing::Pair;
-using testing::Property;
-using testing::Ref;
-using testing::Return;
-using testing::UnorderedElementsAreArray;
-using testing::VariantWith;
-
 namespace autofill {
-
-using FieldTypeSource = AutofillManager::Observer::FieldTypeSource;
 
 namespace {
 
-class MockAutofillDownloadManager : public AutofillDownloadManager {
- public:
-  explicit MockAutofillDownloadManager(AutofillClient* client)
-      : AutofillDownloadManager(client,
-                                /*api_key=*/"",
-                                /*log_manager=*/nullptr) {}
-
-  MockAutofillDownloadManager(const MockAutofillDownloadManager&) = delete;
-  MockAutofillDownloadManager& operator=(const MockAutofillDownloadManager&) =
-      delete;
-
-  MOCK_METHOD(bool,
-              StartQueryRequest,
-              (const std::vector<FormStructure*>&,
-               net::IsolationInfo,
-               base::WeakPtr<Observer>),
-              (override));
-};
-
-class MockAutofillClient : public TestAutofillClient {
- public:
-  MockAutofillClient() = default;
-  MockAutofillClient(const MockAutofillClient&) = delete;
-  MockAutofillClient& operator=(const MockAutofillClient&) = delete;
-  ~MockAutofillClient() override = default;
-};
+using ::testing::_;
+using ::testing::AtLeast;
+using ::testing::ElementsAre;
+using ::testing::Eq;
+using ::testing::Field;
+using ::testing::Invoke;
+using ::testing::NiceMock;
+using ::testing::Pair;
+using ::testing::Property;
+using ::testing::Ref;
+using ::testing::Return;
+using ::testing::UnorderedElementsAreArray;
+using ::testing::VariantWith;
+using FieldTypeSource = AutofillManager::Observer::FieldTypeSource;
 
 class MockAutofillDriver : public TestAutofillDriver {
  public:
@@ -110,10 +83,6 @@ class MockAutofillManager : public AutofillManager {
                const FormFieldData& field,
                const std::u16string& value,
                PopupItemId popup_item_id),
-              (override));
-  MOCK_METHOD(CreditCardAccessManager*,
-              GetCreditCardAccessManager,
-              (),
               (override));
   MOCK_METHOD(void,
               OnFocusNoLongerOnFormImpl,
@@ -218,9 +187,10 @@ class MockAutofillMlPredictionModelHandler
 // Creates a vector of test forms which differ in their FormGlobalIds
 // and FieldGlobalIds.
 std::vector<FormData> CreateTestForms(size_t num_forms) {
-  std::vector<FormData> forms(num_forms);
-  for (FormData& form : forms)
-    test::CreateTestAddressFormData(&form);
+  std::vector<FormData> forms;
+  for (size_t i = 0; i < num_forms; ++i) {
+    forms.push_back(test::CreateTestAddressFormData());
+  }
   return forms;
 }
 
@@ -289,12 +259,12 @@ class AutofillManagerTest : public testing::Test {
     driver_.reset();
   }
 
-  void SetUpObserverAndDownloadManager(bool successful_request) {
-    auto download_manager =
-        std::make_unique<MockAutofillDownloadManager>(&client_);
-    ON_CALL(*download_manager, StartQueryRequest)
+  void SetUpObserverAndCrowdsourcingManager(bool successful_request) {
+    auto crowdsourcing_manager =
+        std::make_unique<MockAutofillCrowdsourcingManager>(&client_);
+    ON_CALL(*crowdsourcing_manager, StartQueryRequest)
         .WillByDefault(Return(successful_request));
-    client_.set_download_manager(std::move(download_manager));
+    client_.set_crowdsourcing_manager(std::move(crowdsourcing_manager));
     manager_->AddObserver(&observer_);
   }
 
@@ -302,7 +272,7 @@ class AutofillManagerTest : public testing::Test {
   base::test::ScopedFeatureList scoped_feature_list_async_parse_form_;
   base::test::TaskEnvironment task_environment_;
   test::AutofillUnitTestEnvironment autofill_test_environment_;
-  NiceMock<MockAutofillClient> client_;
+  TestAutofillClient client_;
   std::unique_ptr<MockAutofillDriver> driver_;
   std::unique_ptr<MockAutofillManager> manager_;
   MockAutofillManagerObserver observer_;
@@ -323,12 +293,12 @@ INSTANTIATE_TEST_SUITE_P(AutofillManagerTest,
 class AutofillManagerTest_OnLoadedServerPredictionsObserver
     : public AutofillManagerTest {
  public:
-  void SetUpObserverAndDownloadManager(bool successful_request) {
-    auto download_manager =
-        std::make_unique<MockAutofillDownloadManager>(&client_);
-    ON_CALL(*download_manager, StartQueryRequest)
+  void SetUpObserverAndCrowdsourcingManager(bool successful_request) {
+    auto crowdsourcing_manager =
+        std::make_unique<MockAutofillCrowdsourcingManager>(&client_);
+    ON_CALL(*crowdsourcing_manager, StartQueryRequest)
         .WillByDefault(Return(successful_request));
-    client_.set_download_manager(std::move(download_manager));
+    client_.set_crowdsourcing_manager(std::move(crowdsourcing_manager));
     manager_->AddObserver(&observer_);
   }
 };
@@ -555,7 +525,7 @@ TEST_F(AutofillManagerTest, GetMlModelPredictionsForForm) {
 TEST_F(
     AutofillManagerTest_OnLoadedServerPredictionsObserver,
     OnFormsSeen_SuccessfulQueryRequest_NotifiesBeforeLoadedServerPredictionsObserver) {
-  SetUpObserverAndDownloadManager(/*successful_request=*/true);
+  SetUpObserverAndCrowdsourcingManager(/*successful_request=*/true);
 
   std::vector<FormData> forms = CreateTestForms(1);
   EXPECT_CALL(observer_, OnBeforeLoadedServerPredictions(Ref(*manager_)));
@@ -573,7 +543,7 @@ TEST_F(
 TEST_F(
     AutofillManagerTest_OnLoadedServerPredictionsObserver,
     OnFormsSeen_FailedQueryRequest_NotifiesBothLoadedServerPredictionsObservers) {
-  SetUpObserverAndDownloadManager(/*successful_request=*/false);
+  SetUpObserverAndCrowdsourcingManager(/*successful_request=*/false);
 
   std::vector<FormData> forms = CreateTestForms(1);
   EXPECT_CALL(observer_, OnBeforeLoadedServerPredictions(Ref(*manager_)));
@@ -591,7 +561,7 @@ TEST_F(
 TEST_F(
     AutofillManagerTest_OnLoadedServerPredictionsObserver,
     OnLoadedServerPredictions_EmptyQueriedFormSignatures_NotifiesAfterLoadedServerPredictionsObserver) {
-  SetUpObserverAndDownloadManager(/*successful_request=*/true);
+  SetUpObserverAndCrowdsourcingManager(/*successful_request=*/true);
 
   std::vector<FormData> forms = CreateTestForms(1);
   EXPECT_CALL(observer_, OnBeforeLoadedServerPredictions(Ref(*manager_)));
@@ -611,7 +581,7 @@ TEST_F(
 TEST_F(
     AutofillManagerTest_OnLoadedServerPredictionsObserver,
     OnLoadedServerPredictions_NonEmptyQueriedFormSignatures_NotifiesAfterLoadedServerPredictionsObserver) {
-  SetUpObserverAndDownloadManager(/*successful_request=*/true);
+  SetUpObserverAndCrowdsourcingManager(/*successful_request=*/true);
 
   std::vector<FormData> forms = CreateTestForms(1);
   EXPECT_CALL(observer_, OnBeforeLoadedServerPredictions(Ref(*manager_)));

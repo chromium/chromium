@@ -54,8 +54,7 @@ std::string GetResponseHeadersAsString(
 
 namespace google_apis {
 
-absl::optional<std::string> MapJsonErrorToReason(
-    const std::string& error_body) {
+std::optional<std::string> MapJsonErrorToReason(const std::string& error_body) {
   DVLOG(1) << error_body;
   const char kErrorKey[] = "error";
   const char kErrorErrorsKey[] = "errors";
@@ -70,7 +69,7 @@ absl::optional<std::string> MapJsonErrorToReason(
   if (error) {
     // Get error message and code.
     const std::string* message = error->FindString(kErrorMessageKey);
-    absl::optional<int> code = error->FindInt(kErrorCodeKey);
+    std::optional<int> code = error->FindInt(kErrorCodeKey);
     DLOG(ERROR) << "code: " << (code ? code.value() : OTHER_ERROR)
                 << ", message: " << (message ? *message : "");
 
@@ -85,7 +84,7 @@ absl::optional<std::string> MapJsonErrorToReason(
       }
     }
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 std::unique_ptr<base::Value> ParseJson(const std::string& json) {
@@ -378,7 +377,7 @@ void UrlFetchRequestBase::OnOutputFileClosed(bool success) {
     }
     if (!download_data_->response_body.empty()) {
       if (!IsSuccessfulErrorCode(error_code_.value())) {
-        absl::optional<std::string> reason =
+        std::optional<std::string> reason =
             MapJsonErrorToReason(download_data_->response_body);
         if (reason.has_value())
           error_code_ = MapReasonToError(error_code_.value(), reason.value());

@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_LCP_CRITICAL_PATH_PREDICTOR_PAGE_LOAD_METRICS_OBSERVER_H_
 #define CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_LCP_CRITICAL_PATH_PREDICTOR_PAGE_LOAD_METRICS_OBSERVER_H_
 
+#include <vector>
+
 #include "chrome/browser/predictors/lcp_critical_path_predictor/lcp_critical_path_predictor_util.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "content/public/browser/page_user_data.h"
@@ -14,7 +16,29 @@ namespace internal {
 // Expose metrics for tests.
 extern const char kHistogramLCPPFirstContentfulPaint[];
 extern const char kHistogramLCPPLargestContentfulPaint[];
-extern const char kHistogramLCPPPredictSuccess[];
+extern const char kHistogramLCPPPredictResult[];
+extern const char kHistogramLCPPPredictHitIndex[];
+extern const char kHistogramLCPPActualLCPIndex[];
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class LCPPPredictResult {
+  kSuccess = 0,
+  // Prediction failed. No learned locator hit the actual LCP.
+  kFailureNoHit = 1,
+  // Below three failures are false positive cases.
+  // The actual LCP is unrecorded one.
+  kFailureActuallyUnrecordedLCP = 2,
+  // The actual LCP is one with the same locator.
+  kFailureActuallySameButLaterLCP = 3,
+  // The actual LCP is one with another leaned locator.
+  kFailureActuallySecondaryLCP = 4,
+  kMaxValue = kFailureActuallySecondaryLCP,
+};
+
+// Since histogram counts only positive numbers but the indexes origin 0,
+// add 1 for offset.
+const int kLCPIndexHistogramOffset = 1;
 }  // namespace internal
 
 // PageLoadMetricsObserver responsible for:
@@ -55,7 +79,8 @@ class LcpCriticalPathPredictorPageLoadMetricsObserver
       const LcpCriticalPathPredictorPageLoadMetricsObserver&) = delete;
   ~LcpCriticalPathPredictorPageLoadMetricsObserver() override;
 
-  void SetLcpElementLocator(const std::string& lcp_element_locator);
+  void SetLcpElementLocator(const std::string& lcp_element_locator,
+                            absl::optional<uint32_t> predicted_lcp_index);
   void SetLcpInfluencerScriptUrls(
       const std::vector<GURL>& lcp_influencer_scripts);
   // Append fetched font URLs to the list to be passed to LCPP.
@@ -93,6 +118,12 @@ class LcpCriticalPathPredictorPageLoadMetricsObserver
   bool is_lcpp_hinted_navigation_ = false;
 
   absl::optional<predictors::LcppDataInputs> lcpp_data_inputs_;
+
+  // Prediction result. This keeps SetLcpElementLocator's second argument.
+  // `predicted_lcp_index` is predicted index of `lcp_element_locators` in
+  // LCPCriticalPathPredictorNavigationTimeHint.
+  // absl::nullopt value means the LCP didn't hit any of `lcp_element_locators`.
+  std::vector<absl::optional<uint32_t>> predicted_lcp_indexes_;
 
   base::WeakPtrFactory<LcpCriticalPathPredictorPageLoadMetricsObserver>
       weak_factory_{this};

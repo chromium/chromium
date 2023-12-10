@@ -29,4 +29,4 @@ class UntrustedBubbleWebUIController : public MojoBubbleWebUIController {
 
 }  // namespace ui
 
-#endif  // UI_WEBUI_UNTRUSTED_WEB_UI_CONTROLLER_H_
+#endif  // UI_WEBUI_UNTRUSTED_BUBBLE_WEB_UI_CONTROLLER_H_

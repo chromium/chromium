@@ -6,11 +6,11 @@
 #define ASH_WM_OVERVIEW_OVERVIEW_FOCUS_CYCLER_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "ash/ash_export.h"
 #include "base/memory/raw_ptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 class OverviewFocusableView;
@@ -119,7 +119,7 @@ class ASH_EXPORT OverviewFocusCycler {
 
   // If an item that is selected is deleted, store its index, so the next
   // traversal can pick up where it left off.
-  absl::optional<int> deleted_index_ = absl::nullopt;
+  std::optional<int> deleted_index_ = std::nullopt;
 
   // The current view that is being focused, if any.
   raw_ptr<OverviewFocusableView, LeakedDanglingUntriaged> focused_view_ =

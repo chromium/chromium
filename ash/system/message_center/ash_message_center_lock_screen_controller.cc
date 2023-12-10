@@ -24,7 +24,7 @@
 namespace ash {
 
 // static private
-absl::optional<AshMessageCenterLockScreenController::Mode>
+std::optional<AshMessageCenterLockScreenController::Mode>
     AshMessageCenterLockScreenController::overridden_mode_for_testing_;
 
 // static
@@ -69,7 +69,7 @@ AshMessageCenterLockScreenController::GetMode() {
 
 // static, only for testing
 void AshMessageCenterLockScreenController::OverrideModeForTest(
-    absl::optional<AshMessageCenterLockScreenController::Mode> new_mode) {
+    std::optional<AshMessageCenterLockScreenController::Mode> new_mode) {
   overridden_mode_for_testing_ = new_mode;
 }
 

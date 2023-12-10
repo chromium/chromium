@@ -237,8 +237,8 @@ class CORE_EXPORT StyleResolverState {
 
   void UpdateLengthConversionData();
 
-  void SetIsResolvingPositionFallbackStyle() {
-    is_resolving_position_fallback_style_ = true;
+  void SetIsResolvingPositionFallbackStyle(bool is_resolving = true) {
+    is_resolving_position_fallback_style_ = is_resolving;
   }
   bool IsResolvingPositionFallbackStyle() const {
     return is_resolving_position_fallback_style_;

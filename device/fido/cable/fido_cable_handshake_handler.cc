@@ -4,6 +4,7 @@
 
 #include "device/fido/cable/fido_cable_handshake_handler.h"
 
+#include <string_view>
 #include <tuple>
 #include <utility>
 
@@ -48,7 +49,7 @@ constexpr size_t kClientHelloMessageSize = 58;
 constexpr size_t kCableHandshakeMacMessageSize = 16;
 
 absl::optional<std::array<uint8_t, kClientHelloMessageSize>>
-ConstructHandshakeMessage(base::StringPiece handshake_key,
+ConstructHandshakeMessage(std::string_view handshake_key,
                           base::span<const uint8_t, 16> client_random_nonce) {
   cbor::Value::MapValue map;
   map.emplace(0, kCableClientHelloMessage);
@@ -61,7 +62,7 @@ ConstructHandshakeMessage(base::StringPiece handshake_key,
     return absl::nullopt;
 
   std::array<uint8_t, kCableHandshakeMacMessageSize> client_hello_mac;
-  if (!hmac.Sign(fido_parsing_utils::ConvertToStringPiece(*client_hello),
+  if (!hmac.Sign(fido_parsing_utils::ConvertToStringView(*client_hello),
                  client_hello_mac.data(), client_hello_mac.size())) {
     return absl::nullopt;
   }
@@ -88,8 +89,8 @@ FidoCableV1HandshakeHandler::FidoCableV1HandshakeHandler(
       nonce_(fido_parsing_utils::Materialize(nonce)),
       session_pre_key_(fido_parsing_utils::Materialize(session_pre_key)),
       handshake_key_(crypto::HkdfSha256(
-          fido_parsing_utils::ConvertToStringPiece(session_pre_key_),
-          fido_parsing_utils::ConvertToStringPiece(nonce_),
+          fido_parsing_utils::ConvertToStringView(session_pre_key_),
+          fido_parsing_utils::ConvertToStringView(nonce_),
           kCableHandshakeKeyInfo,
           /*derived_key_size=*/32)) {
   crypto::RandBytes(client_session_random_.data(),
@@ -126,8 +127,8 @@ bool FidoCableV1HandshakeHandler::ValidateAuthenticatorHandshakeMessage(
   const auto authenticator_hello = response.first(
       kCableAuthenticatorHandshakeMessageSize - kCableHandshakeMacMessageSize);
   if (!hmac.VerifyTruncated(
-          fido_parsing_utils::ConvertToStringPiece(authenticator_hello),
-          fido_parsing_utils::ConvertToStringPiece(
+          fido_parsing_utils::ConvertToStringView(authenticator_hello),
+          fido_parsing_utils::ConvertToStringView(
               response.subspan(authenticator_hello.size())))) {
     return false;
   }

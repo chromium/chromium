@@ -30,6 +30,7 @@
 <translation id="2226276347425096477">Бул текстти <ph name="MAX_CHARACTERS" /> белгиге же андан кыскараак кылып кыскартыңыз (учурда <ph name="CURRENT_LENGTH" /> белги турат).</translation>
 <translation id="2247351761944213033"><ph name="WEEKNUMBER" />-апта, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904"><ph name="NUMBER" />-трек</translation>
+<translation id="2353297238722298836">Камера менен микрофонду колдонууга уруксат берилди</translation>
 <translation id="2393030564806080191">Он алты түстүү код</translation>
 <translation id="2398813069815436052">диалог ачылды.</translation>
 <translation id="245932805758469625">видеонун бүтөөрүнө канча секунд калды</translation>
@@ -60,10 +61,12 @@
 <translation id="3822383571486410024">Бул текстти <ph name="MIN_CHARACTERS" /> белгиге же андан көбүрөөк кылып узартыңыз (учурда <ph name="CURRENT_LENGTH" /> белги турат).</translation>
 <translation id="383465348367842624">'<ph name="ATSIGN" />' дегенден кийинки бөлүктө '<ph name="INVALIDCHARACTER" />' символу камтылбашы керек.</translation>
 <translation id="3846214748874656680">Толук экран режиминен чыгуу</translation>
+<translation id="4031179711345676612">Микрофонду колдонууга уруксат берилди</translation>
 <translation id="4103419683916926126">Миллисекунддар</translation>
 <translation id="4201051445878709314">Мурунку айды көрсөтүү</translation>
 <translation id="4360991593054037559">Жарактуу маанини киргизиңиз. Эң жакын жарактуу эки маани <ph name="VALID_VALUE_LOW" /> жана <ph name="VALID_VALUE_HIGHER" />.</translation>
 <translation id="4522570452068850558">Чоо-жайлары</translation>
+<translation id="4663373278480897665">Камераны колдонууга уруксат берилди</translation>
 <translation id="4664250907885839816">'<ph name="ATSIGN" />' дегенден кийинки бөлүктө '<ph name="INVALIDCHARACTER" />' символу болбошу керек.</translation>
 <translation id="4718048029184481307">Сүрөт ичиндеги сүрөт режиминде ойнотулууда</translation>
 <translation id="4748357248530471599">кесилген аймактан толук экранга которулуу</translation>
@@ -137,6 +140,7 @@
 <translation id="6941933287844615239">медианы жүктөп алуу</translation>
 <translation id="698788488269350478">жайылып көрсөтүлдү.</translation>
 <translation id="6989848892321993519">Бул текстти <ph name="MIN_CHARACTERS" /> белгиге же андан көбүрөөк кылып узартыңыз (учурда 1 белги турат).</translation>
+<translation id="7080893216867146095">Жүргөн жерди бөлүшүүгө уруксат берилди</translation>
 <translation id="709897737746224366">Суралган форматка туураланыз.</translation>
 <translation id="7102274145889307184">учурдагы жер</translation>
 <translation id="7263440858009898357">Тизмедеги нерсени тандап алыңыз.</translation>

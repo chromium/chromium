@@ -23,6 +23,7 @@ struct PlusProfile {
 enum class PlusAddressRequestErrorType {
   kParsingError = 0,
   kNetworkError = 1,
+  kOAuthError = 2,
 };
 
 // TODO: crbug.com/1467623 - This should have more structured information (e.g.

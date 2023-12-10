@@ -69,7 +69,7 @@ void ArcKioskAppData::SetCache(const std::string& name,
   SaveToDictionary(dict_update);
 }
 
-void ArcKioskAppData::OnIconLoadDone(absl::optional<gfx::ImageSkia> icon) {
+void ArcKioskAppData::OnIconLoadDone(std::optional<gfx::ImageSkia> icon) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   kiosk_app_icon_loader_.reset();
 

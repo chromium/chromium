@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -53,6 +54,7 @@
 #include "ash/style/tab_slider_button.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/test/ash_test_util.h"
 #include "ash/test/test_widget_builder.h"
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desks_controller.h"
@@ -85,7 +87,6 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/viz/privileged/mojom/compositing/frame_sink_video_capture.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/capture_client.h"
 #include "ui/aura/client/capture_client_observer.h"
@@ -100,6 +101,7 @@
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "ui/display/screen.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/display/util/display_util.h"
 #include "ui/events/event_constants.h"
@@ -245,7 +247,7 @@ class CaptureModeTest : public AshTestBase {
     return widget ? widget->GetNativeWindow() : nullptr;
   }
 
-  absl::optional<gfx::Point> GetMagnifierGlassCenterPoint() const {
+  std::optional<gfx::Point> GetMagnifierGlassCenterPoint() const {
     auto* controller = CaptureModeController::Get();
     DCHECK(controller->IsActive());
     auto& magnifier =
@@ -256,7 +258,7 @@ class CaptureModeTest : public AshTestBase {
           ->GetWindowBoundsInScreen()
           .CenterPoint();
     }
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Start Capture Mode with source region and type image.
@@ -795,7 +797,7 @@ TEST_F(CaptureModeTest, CaptureRegionMagnifierWhenFineTuning) {
   // visible yet.
   gfx::Rect capture_region{200, 200, 400, 400};
   SelectRegion(capture_region);
-  EXPECT_EQ(absl::nullopt, GetMagnifierGlassCenterPoint());
+  EXPECT_EQ(std::nullopt, GetMagnifierGlassCenterPoint());
 
   auto check_magnifier_shows_properly = [this](const gfx::Point& origin,
                                                const gfx::Point& destination,
@@ -805,11 +807,10 @@ TEST_F(CaptureModeTest, CaptureRegionMagnifierWhenFineTuning) {
     // If not |should_show_magnifier|, check that the magnifying glass never
     // shows. Should always be not visible when mouse button is released.
     auto* event_generator = GetEventGenerator();
-    absl::optional<gfx::Point> expected_origin =
-        should_show_magnifier ? absl::make_optional(origin) : absl::nullopt;
-    absl::optional<gfx::Point> expected_destination =
-        should_show_magnifier ? absl::make_optional(destination)
-                              : absl::nullopt;
+    std::optional<gfx::Point> expected_origin =
+        should_show_magnifier ? std::make_optional(origin) : std::nullopt;
+    std::optional<gfx::Point> expected_destination =
+        should_show_magnifier ? std::make_optional(destination) : std::nullopt;
 
     auto* cursor_manager = Shell::Get()->cursor_manager();
     EXPECT_TRUE(cursor_manager->IsCursorVisible());
@@ -832,7 +833,7 @@ TEST_F(CaptureModeTest, CaptureRegionMagnifierWhenFineTuning) {
 
     // Release left button.
     event_generator->ReleaseLeftButton();
-    EXPECT_EQ(absl::nullopt, GetMagnifierGlassCenterPoint());
+    EXPECT_EQ(std::nullopt, GetMagnifierGlassCenterPoint());
     EXPECT_TRUE(cursor_manager->IsCursorVisible());
   };
 
@@ -3393,7 +3394,7 @@ TEST_F(CaptureModeTest, CaptureModeBarButtonTypeHistograms) {
   // Enter tablet mode and test the bar buttons.
   auto* tablet_mode_controller = Shell::Get()->tablet_mode_controller();
   tablet_mode_controller->SetEnabledForTest(true);
-  ASSERT_TRUE(tablet_mode_controller->InTabletMode());
+  ASSERT_TRUE(display::Screen::GetScreen()->InTabletMode());
 
   ClickOnView(GetImageToggleButton(), event_generator);
   histogram_tester.ExpectBucketCount(
@@ -3545,7 +3546,7 @@ TEST_F(CaptureModeTest, NumberOfCaptureRegionAdjustmentsHistogram) {
   // should be remembered.
   auto* tablet_mode_controller = Shell::Get()->tablet_mode_controller();
   tablet_mode_controller->SetEnabledForTest(true);
-  ASSERT_TRUE(tablet_mode_controller->InTabletMode());
+  ASSERT_TRUE(display::Screen::GetScreen()->InTabletMode());
   StartImageRegionCapture();
   ASSERT_EQ(target_region, controller->user_capture_region());
 
@@ -4438,7 +4439,7 @@ TEST_F(CaptureModeTest, QuickActionHistograms) {
     waiter.Wait();
   }
   // Click on the notification body. This should take us to the files app.
-  ClickOnNotification(absl::nullopt);
+  ClickOnNotification(std::nullopt);
   EXPECT_FALSE(GetPreviewNotification());
   histogram_tester.ExpectBucketCount(kQuickActionHistogramName,
                                      CaptureQuickAction::kFiles, 1);
@@ -4917,6 +4918,7 @@ class TestVideoCaptureOverlay : public Overlay {
     last_bounds_ = bounds;
   }
   void SetBounds(const gfx::RectF& bounds) override { last_bounds_ = bounds; }
+  void OnCapturedMouseEvent(const gfx::Point& coordinates) override {}
 
  private:
   mojo::Receiver<viz::mojom::FrameSinkVideoCaptureOverlay> receiver_;
@@ -4995,9 +4997,8 @@ class CaptureModeCursorOverlayTest : public CaptureModeTest {
       CaptureModeController* controller) {
     EXPECT_EQ(controller->type(), CaptureModeType::kImage);
 
-    auto* shell = Shell::Get();
-    auto* cursor_manager = shell->cursor_manager();
-    bool in_tablet_mode = shell->tablet_mode_controller()->InTabletMode();
+    auto* cursor_manager = Shell::Get()->cursor_manager();
+    bool in_tablet_mode = display::Screen::GetScreen()->InTabletMode();
 
     // The capture mode session locks the cursor for the whole active session
     // except in the tablet mode unless the cursor is visible.
@@ -5190,9 +5191,9 @@ class FakeCursorShapeClient : public aura::client::CursorShapeClient {
   ~FakeCursorShapeClient() override = default;
 
   // aura::client::CursorShapeClient:
-  absl::optional<ui::CursorData> GetCursorData(
+  std::optional<ui::CursorData> GetCursorData(
       const ui::Cursor& cursor) const override {
-    return absl::nullopt;
+    return std::nullopt;
   }
 };
 

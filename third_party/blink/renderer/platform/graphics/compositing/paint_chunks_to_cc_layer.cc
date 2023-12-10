@@ -6,6 +6,7 @@
 
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/numerics/safe_conversions.h"
 #include "cc/input/layer_selection_bound.h"
 #include "cc/layers/layer.h"
@@ -234,13 +235,15 @@ class ConversionContext {
     bool IsEffect() const { return type_ == kEffect; }
     bool NeedsRestore() const { return type_ != kClipOmitted; }
 
-    // These fields are neve nullptr.
-    raw_ptr<const TransformPaintPropertyNode, ExperimentalRenderer> transform;
-    raw_ptr<const ClipPaintPropertyNode, ExperimentalRenderer> clip;
-    raw_ptr<const EffectPaintPropertyNode, ExperimentalRenderer> effect;
+    // These fields are never nullptr.
+    //
+    // Excluded from being `raw_ptr` for visible regressions in
+    // MotionMark (crbug.com/1495275#c116).
+    RAW_PTR_EXCLUSION const TransformPaintPropertyNode* transform;
+    RAW_PTR_EXCLUSION const ClipPaintPropertyNode* clip;
+    RAW_PTR_EXCLUSION const EffectPaintPropertyNode* effect;
     // See ConversionContext<Result>::previous_transform_.
-    raw_ptr<const TransformPaintPropertyNode, ExperimentalRenderer>
-        previous_transform;
+    RAW_PTR_EXCLUSION const TransformPaintPropertyNode* previous_transform;
 #if DCHECK_IS_ON()
     bool has_pre_cap_effect_hierarchy_issue = false;
 #endif

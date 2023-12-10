@@ -34,6 +34,9 @@ bool SplitSignalingIdResource(const std::string& full_id,
                               std::string* email,
                               std::string* resource);
 
+// Returns whether |signaling_id| represents a valid FTL signaling ID.
+bool IsValidFtlSignalingId(const std::string& signaling_id);
+
 }  // namespace remoting
 
 #endif  // REMOTING_SIGNALING_SIGNALING_ID_UTIL_H_

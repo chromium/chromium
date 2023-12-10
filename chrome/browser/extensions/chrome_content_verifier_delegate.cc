@@ -76,8 +76,7 @@ ChromeContentVerifierDelegate::GetDefaultMode() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
 
 #if BUILDFLAG(PLATFORM_CFM)
-  if (command_line->HasSwitch(
-          extensions::switches::kDisableAppContentVerification)) {
+  if (command_line->HasSwitch(switches::kDisableAppContentVerification)) {
     return VerifyInfo::Mode::NONE;
   }
 #endif  // BUILDFLAG(PLATFORM_CFM)
@@ -186,7 +185,7 @@ GURL ChromeContentVerifierDelegate::GetSignatureFetchUrl(
 }
 
 std::set<base::FilePath> ChromeContentVerifierDelegate::GetBrowserImagePaths(
-    const extensions::Extension* extension) {
+    const Extension* extension) {
   return ExtensionsClient::Get()->GetBrowserImagePaths(extension);
 }
 
@@ -195,7 +194,7 @@ void ChromeContentVerifierDelegate::VerifyFailed(
     ContentVerifyJob::FailureReason reason) {
   ExtensionRegistry* registry = ExtensionRegistry::Get(context_);
   const Extension* extension =
-      registry->GetExtensionById(extension_id, ExtensionRegistry::ENABLED);
+      registry->enabled_extensions().GetByID(extension_id);
   if (!extension)
     return;
 
@@ -272,8 +271,7 @@ void ChromeContentVerifierDelegate::VerifyFailed(
 
   DCHECK(should_disable);
   service->DisableExtension(extension_id, disable_reason::DISABLE_CORRUPTED);
-  ExtensionPrefs::Get(context_)->IncrementPref(
-      extensions::kCorruptedDisableCount);
+  ExtensionPrefs::Get(context_)->IncrementPref(kCorruptedDisableCount);
   UMA_HISTOGRAM_ENUMERATION("Extensions.CorruptExtensionDisabledReason", reason,
                             ContentVerifyJob::FAILURE_REASON_MAX);
 }

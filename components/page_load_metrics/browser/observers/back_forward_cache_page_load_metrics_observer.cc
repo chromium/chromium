@@ -335,38 +335,41 @@ void BackForwardCachePageLoadMetricsObserver::
   if (!has_ever_entered_back_forward_cache_)
     return;
   // Normalized Responsiveness Metrics.
-  const page_load_metrics::NormalizedResponsivenessMetrics&
-      normalized_responsiveness_metrics =
-          GetDelegate().GetNormalizedResponsivenessMetrics();
+  const page_load_metrics::ResponsivenessMetricsNormalization&
+      responsiveness_metrics_normalization =
+          GetDelegate().GetResponsivenessMetricsNormalization();
 
-  if (!normalized_responsiveness_metrics.num_user_interactions)
+  if (!responsiveness_metrics_normalization.num_user_interactions()) {
     return;
+  }
 
-  auto& max_event_durations =
-      normalized_responsiveness_metrics.normalized_max_event_durations;
   // HistoryNavigation is a singular event, and we share the same instance as
   // long as we use the same source ID.
   ukm::builders::HistoryNavigation builder(
       GetLastUkmSourceIdForBackForwardCacheRestore());
   builder
       .SetWorstUserInteractionLatencyAfterBackForwardCacheRestore_MaxEventDuration2(
-          max_event_durations.worst_latency.InMilliseconds());
+          responsiveness_metrics_normalization.worst_latency()
+              .value()
+              .interaction_latency.InMilliseconds());
   UmaHistogramCustomTimes(
       internal::
           kWorstUserInteractionLatency_MaxEventDuration_AfterBackForwardCacheRestore,
-      max_event_durations.worst_latency, base::Milliseconds(1),
-      base::Seconds(60), 50);
+      responsiveness_metrics_normalization.worst_latency()
+          .value()
+          .interaction_latency,
+      base::Milliseconds(1), base::Seconds(60), 50);
 
-  base::TimeDelta high_percentile2_max_event_duration = page_load_metrics::
-      ResponsivenessMetricsNormalization::ApproximateHighPercentile(
-          normalized_responsiveness_metrics.num_user_interactions,
-          max_event_durations.worst_ten_latencies);
+  base::TimeDelta high_percentile2_max_event_duration =
+      responsiveness_metrics_normalization.ApproximateHighPercentile()
+          .value()
+          .interaction_latency;
   builder
       .SetUserInteractionLatencyAfterBackForwardCacheRestore_HighPercentile2_MaxEventDuration(
           high_percentile2_max_event_duration.InMilliseconds());
   builder.SetNumInteractionsAfterBackForwardCacheRestore(
       ukm::GetExponentialBucketMinForCounts1000(
-          normalized_responsiveness_metrics.num_user_interactions));
+          responsiveness_metrics_normalization.num_user_interactions()));
 
   UmaHistogramCustomTimes(
       internal::
@@ -375,7 +378,7 @@ void BackForwardCachePageLoadMetricsObserver::
       base::Seconds(60), 50);
   base::UmaHistogramCounts1000(
       internal::kNumInteractions_AfterBackForwardCacheRestore,
-      normalized_responsiveness_metrics.num_user_interactions);
+      responsiveness_metrics_normalization.num_user_interactions());
 
   builder.Record(ukm::UkmRecorder::Get());
 }

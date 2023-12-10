@@ -14,6 +14,9 @@
 namespace content_settings {
 
 // A content settings provider which manages settings defined by extensions.
+//
+// PartitionKey is ignored by this provider because the content settings should
+// apply across partitions.
 class CustomExtensionProvider : public ObservableProvider,
                           public extensions::ContentSettingsStore::Observer {
  public:
@@ -29,17 +32,23 @@ class CustomExtensionProvider : public ObservableProvider,
   // ProviderInterface methods:
   std::unique_ptr<RuleIterator> GetRuleIterator(
       ContentSettingsType content_type,
-      bool incognito) const override;
+      bool incognito,
+      const content_settings::PartitionKey& partition_key =
+          content_settings::PartitionKey::WipGetDefault()) const override;
 
   bool SetWebsiteSetting(
       const ContentSettingsPattern& primary_pattern,
       const ContentSettingsPattern& secondary_pattern,
       ContentSettingsType content_type,
       base::Value&& value,
-      const ContentSettingConstraints& constraint = {}) override;
+      const ContentSettingConstraints& constraint = {},
+      const content_settings::PartitionKey& partition_key =
+          content_settings::PartitionKey::WipGetDefault()) override;
 
-  void ClearAllContentSettingsRules(ContentSettingsType content_type) override {
-  }
+  void ClearAllContentSettingsRules(
+      ContentSettingsType content_type,
+      const content_settings::PartitionKey& partition_key =
+          content_settings::PartitionKey::WipGetDefault()) override {}
 
   void ShutdownOnUIThread() override;
 

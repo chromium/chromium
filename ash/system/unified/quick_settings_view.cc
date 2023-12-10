@@ -14,19 +14,17 @@
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_detailed_view.h"
 #include "ash/system/unified/detailed_view_controller.h"
-#include "ash/system/unified/feature_pod_button.h"
 #include "ash/system/unified/feature_tile.h"
 #include "ash/system/unified/feature_tiles_container_view.h"
-#include "ash/system/unified/page_indicator_view.h"
 #include "ash/system/unified/quick_settings_footer.h"
 #include "ash/system/unified/quick_settings_header.h"
-#include "ash/system/unified/unified_system_info_view.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "media/base/media_switches.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/insets.h"
@@ -48,6 +46,8 @@ constexpr auto kPaginationViewMargin = gfx::Insets::TLBR(0, 0, 8, 0);
 constexpr auto kSlidersContainerMargin = gfx::Insets::TLBR(4, 0, 0, 0);
 
 class AccessibilityFocusHelperView : public views::View {
+  METADATA_HEADER(AccessibilityFocusHelperView, views::View)
+
  public:
   explicit AccessibilityFocusHelperView(UnifiedSystemTrayController* controller)
       : controller_(controller) {}
@@ -55,7 +55,6 @@ class AccessibilityFocusHelperView : public views::View {
   bool HandleAccessibleAction(const ui::AXActionData& action_data) override {
     GetFocusManager()->ClearFocus();
     GetFocusManager()->SetStoredFocusView(nullptr);
-    controller_->FocusOut(false);
     return true;
   }
 
@@ -67,6 +66,9 @@ class AccessibilityFocusHelperView : public views::View {
  private:
   raw_ptr<UnifiedSystemTrayController, ExperimentalAsh> controller_;
 };
+
+BEGIN_METADATA(AccessibilityFocusHelperView)
+END_METADATA
 
 }  // namespace
 
@@ -114,7 +116,7 @@ QuickSettingsView::QuickSettingsView(UnifiedSystemTrayController* controller)
 
   auto* scroll_view = AddChildView(std::make_unique<views::ScrollView>());
   scroll_view->SetAllowKeyboardScrolling(false);
-  scroll_view->SetBackgroundColor(absl::nullopt);
+  scroll_view->SetBackgroundColor(std::nullopt);
   scroll_view->ClipHeightTo(0, INT_MAX);
   scroll_view->SetDrawOverflowIndicator(false);
   scroll_view->SetVerticalScrollBarMode(
@@ -300,12 +302,6 @@ bool QuickSettingsView::IsDetailedViewShown() const {
 void QuickSettingsView::TotalPagesChanged(int previous_page_count,
                                           int new_page_count) {
   pagination_view_->SetVisible(new_page_count > 1);
-}
-
-void QuickSettingsView::OnGestureEvent(ui::GestureEvent* event) {
-  if (event->type() == ui::ET_SCROLL_FLING_START) {
-    controller_->Fling(event->details().velocity_y());
-  }
 }
 
 BEGIN_METADATA(QuickSettingsView, views::View)

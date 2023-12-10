@@ -676,7 +676,6 @@ PasswordAutofillAgent::PasswordAutofillAgent(
     blink::AssociatedInterfaceRegistry* registry)
     : content::RenderFrameObserver(render_frame),
       last_supplied_password_info_iter_(web_input_to_password_info_.end()),
-      field_data_manager_(base::MakeRefCounted<FieldDataManager>()),
       logging_state_active_(false),
       username_autofill_state_(WebAutofillState::kNotFilled),
       password_autofill_state_(WebAutofillState::kNotFilled),
@@ -770,17 +769,10 @@ bool PasswordAutofillAgent::TextDidChangeInTextField(
   return ShowSuggestions(element, ShowAll(false));
 }
 
-void PasswordAutofillAgent::UpdateStateForTextChange(
+void PasswordAutofillAgent::UpdatePasswordStateForTextChange(
     const WebInputElement& element) {
-  if (!element.IsTextField())
-    return;
   // TODO(crbug.com/415449): Do this through const WebInputElement.
   WebInputElement mutable_element = element;  // We need a non-const.
-
-  const std::u16string element_value = element.Value().Utf16();
-  field_data_manager_->UpdateFieldDataMap(
-      form_util::GetFieldRendererId(element), element_value,
-      FieldPropertiesFlags::kUserTyped);
 
   InformBrowserAboutUserInput(element.Form(), element);
 
@@ -806,6 +798,7 @@ void PasswordAutofillAgent::UpdateStateForTextChange(
   // Exclude 1-symbol inputs, as they are unlikely to be usernames and likely
   // to be characters/digits of OTPs.
   // Exclude too large inputs, as they are usually not usernames.
+  const std::u16string element_value = element.Value().Utf16();
   if (element_value.size() == 1 || element_value.size() > 100) {
     return;
   }
@@ -918,7 +911,7 @@ void PasswordAutofillAgent::FillField(WebInputElement* input,
   DCHECK(input);
   DCHECK(!input->IsNull());
   input->SetAutofillValue(WebString::FromUTF16(credential));
-  field_data_manager_->UpdateFieldDataMap(
+  field_data_manager().UpdateFieldDataMap(
       form_util::GetFieldRendererId(*input), credential,
       FieldPropertiesFlags::kAutofilledOnUserTrigger);
   TrackAutofilledElement(*input);
@@ -1395,20 +1388,6 @@ void PasswordAutofillAgent::DidCommitProvisionalLoad(
   recorded_first_filling_result_ = false;
 }
 
-void PasswordAutofillAgent::OnFrameDetached() {
-  // If a sub frame has been destroyed while the user was entering information
-  // into a password form, try to save the data. See https://crbug.com/450806
-  // for examples of sites that perform login using this technique.
-  // We are treating primary main frame and the root of embedded frames the same
-  // on purpose.
-  if (FrameCanAccessPasswordManager() &&
-      render_frame()->GetWebFrame()->Parent()) {
-    GetPasswordManagerDriver().DynamicFormSubmission(
-        SubmissionIndicatorEvent::FRAME_DETACHED);
-  }
-  CleanupOnDocumentShutdown();
-}
-
 void PasswordAutofillAgent::OnDestruct() {
   receiver_.reset();
 }
@@ -1535,7 +1514,7 @@ void PasswordAutofillAgent::InformNoSavedCredentials(
   }
   all_autofilled_elements_.clear();
 
-  field_data_manager_->ClearData();
+  field_data_manager().ClearData();
 }
 
 #if BUILDFLAG(IS_ANDROID)
@@ -1581,7 +1560,7 @@ void PasswordAutofillAgent::TriggerFormSubmission() {
 
 std::unique_ptr<FormData> PasswordAutofillAgent::GetFormDataFromWebForm(
     const WebFormElement& web_form) {
-  return CreateFormDataFromWebForm(web_form, field_data_manager_.get(),
+  return CreateFormDataFromWebForm(web_form, field_data_manager(),
                                    &username_detector_cache_,
                                    &button_titles_cache_);
 }
@@ -1599,7 +1578,7 @@ PasswordAutofillAgent::GetFormDataFromUnownedInputElements() {
   if (!web_frame)
     return nullptr;
   return CreateFormDataFromUnownedInputElements(
-      *web_frame, field_data_manager_.get(), &username_detector_cache_,
+      *web_frame, field_data_manager(), &username_detector_cache_,
       autofill_agent_->is_heavy_form_data_scraping_enabled()
           ? &button_titles_cache_
           : nullptr);
@@ -1626,8 +1605,8 @@ void PasswordAutofillAgent::InformAboutFieldClearing(
   DCHECK(cleared_element.Value().IsEmpty());
   FieldRendererId field_id = form_util::GetFieldRendererId(cleared_element);
   // Ignore fields that had no user input or autofill on user trigger.
-  if (!field_data_manager_->DidUserType(field_id) &&
-      !field_data_manager_->WasAutofilledOnUserTrigger(field_id)) {
+  if (!field_data_manager().DidUserType(field_id) &&
+      !field_data_manager().WasAutofilledOnUserTrigger(field_id)) {
     return;
   }
 
@@ -1661,8 +1640,7 @@ void PasswordAutofillAgent::ShowSuggestionPopup(
   FormData form;
   FormFieldData field;
   form_util::FindFormAndFieldForFormControlElement(
-      user_input, field_data_manager_.get(), /*extract_options=*/{}, &form,
-      &field);
+      user_input, field_data_manager(), /*extract_options=*/{}, &form, &field);
 
   int options = 0;
   if (show_all)
@@ -1691,7 +1669,7 @@ void PasswordAutofillAgent::CleanupOnDocumentShutdown() {
   password_to_username_.clear();
   last_supplied_password_info_iter_ = web_input_to_password_info_.end();
   should_show_popup_without_passwords_ = false;
-  field_data_manager_.get()->ClearData();
+  field_data_manager().ClearData();
   username_autofill_state_ = WebAutofillState::kNotFilled;
   password_autofill_state_ = WebAutofillState::kNotFilled;
   sent_request_to_store_ = false;
@@ -1892,21 +1870,15 @@ void PasswordAutofillAgent::OnProvisionallySaveForm(
     const WebFormElement& form,
     const WebFormControlElement& element,
     ElementChangeSource source) {
-  // PasswordAutofillAgent isn't interested in SELECT control change.
-  if (source == ElementChangeSource::SELECT_CHANGED)
-    return;
+  // ElementChangeSource::TEXTFIELD_CHANGED is handled in
+  // AutofillAgent::OnTextFieldDidChange(). For the sake of code clarity, please
+  // don't add handling for ElementChangeSource::TEXTFIELD_CHANGED here if
+  // possible.
 
-  WebInputElement input_element = element.DynamicTo<WebInputElement>();
-  if (source == ElementChangeSource::TEXTFIELD_CHANGED) {
-    // Keeps track of all text changes even if it isn't displaying UI.
-    if (!input_element.IsNull()) {
-      UpdateStateForTextChange(input_element);
-    }
-    return;
+  if (source == ElementChangeSource::WILL_SEND_SUBMIT_EVENT) {
+    WebInputElement input_element = element.DynamicTo<WebInputElement>();
+    InformBrowserAboutUserInput(form, input_element);
   }
-
-  DCHECK_EQ(ElementChangeSource::WILL_SEND_SUBMIT_EVENT, source);
-  InformBrowserAboutUserInput(form, input_element);
 }
 
 void PasswordAutofillAgent::OnFormSubmitted(const WebFormElement& form) {
@@ -1931,7 +1903,7 @@ void PasswordAutofillAgent::OnFormSubmitted(const WebFormElement& form) {
       SubmissionIndicatorEvent::HTML_FORM_SUBMISSION;
 
   FillNonTypedOrFilledPropertiesMasks(&submitted_form_data->fields,
-                                      *field_data_manager_);
+                                      field_data_manager());
 
   GetPasswordManagerDriver().PasswordFormSubmitted(*submitted_form_data);
 }
@@ -1943,7 +1915,17 @@ void PasswordAutofillAgent::OnInferredFormSubmission(SubmissionSource source) {
     case mojom::SubmissionSource::FORM_SUBMISSION:
       NOTREACHED_NORETURN();
     case mojom::SubmissionSource::FRAME_DETACHED:
-      OnFrameDetached();
+      // If a sub frame has been destroyed while the user was entering
+      // information into a password form, try to save the data. See
+      // https://crbug.com/450806 or examples of sites that perform login using
+      // this technique. We are treating primary main frame and the root of
+      // embedded frames the same on purpose.
+      if (FrameCanAccessPasswordManager() &&
+          render_frame()->GetWebFrame()->Parent()) {
+        GetPasswordManagerDriver().DynamicFormSubmission(
+            SubmissionIndicatorEvent::FRAME_DETACHED);
+      }
+      CleanupOnDocumentShutdown();
       return;
     case mojom::SubmissionSource::DOM_MUTATION_AFTER_XHR:
     case mojom::SubmissionSource::SAME_DOCUMENT_NAVIGATION:
@@ -2140,8 +2122,9 @@ void PasswordAutofillAgent::AutofillField(const std::u16string& value,
                                           WebInputElement field) {
   // Do not autofill on load fields that have any user typed input.
   const FieldRendererId field_id = form_util::GetFieldRendererId(field);
-  if (field_data_manager_->DidUserType(field_id))
+  if (field_data_manager().DidUserType(field_id)) {
     return;
+  }
 
   if (field.Value().Utf16() == value)
     return;
@@ -2152,7 +2135,7 @@ void PasswordAutofillAgent::AutofillField(const std::u16string& value,
   // not fill in the DOM with a password until we believe the user is
   // intentionally interacting with the page.
   gatekeeper_.RegisterElement(&field);
-  field_data_manager_.get()->UpdateFieldDataMap(
+  field_data_manager().UpdateFieldDataMap(
       field_id, value, FieldPropertiesFlags::kAutofilledOnPageLoad);
   autofilled_elements_cache_.emplace(field_id, WebString::FromUTF16(value));
   all_autofilled_elements_.insert(field_id);
@@ -2177,8 +2160,8 @@ bool PasswordAutofillAgent::IsPasswordFieldFilledByUser(
   FieldRendererId element_id = form_util::GetFieldRendererId(element);
   return element.FormControlTypeForAutofill() ==
              blink::mojom::FormControlType::kInputPassword &&
-         (field_data_manager_->DidUserType(element_id) ||
-          field_data_manager_->WasAutofilledOnUserTrigger(element_id));
+         (field_data_manager().DidUserType(element_id) ||
+          field_data_manager().WasAutofilledOnUserTrigger(element_id));
 }
 
 void PasswordAutofillAgent::NotifyPasswordManagerAboutClearedForm(
@@ -2186,7 +2169,7 @@ void PasswordAutofillAgent::NotifyPasswordManagerAboutClearedForm(
   const auto extract_options = {ExtractOption::kValue, ExtractOption::kOptions};
   FormData form_data;
   if (WebFormElementToFormData(cleared_form, WebFormControlElement(),
-                               field_data_manager_.get(), extract_options,
+                               field_data_manager(), extract_options,
                                &form_data, /*field=*/nullptr)) {
     GetPasswordManagerDriver().PasswordFormCleared(form_data);
   }

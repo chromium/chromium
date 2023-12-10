@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_large_blob_outputs.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_prf_outputs.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_prf_values.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_supplemental_pub_keys_outputs.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer_base.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_piece.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
@@ -79,6 +80,16 @@ AuthenticationExtensionsClientOutputsToJSON(
                             WebAuthnBase64UrlEncode(prf.results()->second()));
       }
     }
+    json->setPrf(builder.GetScriptValue());
+  }
+  if (in.hasSupplementalPubKeys()) {
+    const AuthenticationExtensionsSupplementalPubKeysOutputs&
+        supplemental_pub_keys = *in.supplementalPubKeys();
+    V8ObjectBuilder builder(script_state);
+    if (supplemental_pub_keys.hasSignatures()) {
+      builder.Add("signatures", supplemental_pub_keys.signatures());
+    }
+    json->setSupplementalPubKeys(builder.GetScriptValue());
   }
   return json;
 }

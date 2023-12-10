@@ -91,7 +91,7 @@ class CompanionAppParserUnitTest : public testing::Test {
 };
 
 TEST_F(CompanionAppParserUnitTest, MetadataContainsCompanionApp) {
-  base::MockCallback<base::OnceCallback<void(absl::optional<std::string>)>>
+  base::MockCallback<base::OnceCallback<void(std::optional<std::string>)>>
       on_companion_app_parsed;
   EXPECT_CALL(on_companion_app_parsed, Run(testing::Eq("com.bose.monet")))
       .Times(1);
@@ -102,10 +102,9 @@ TEST_F(CompanionAppParserUnitTest, MetadataContainsCompanionApp) {
 }
 
 TEST_F(CompanionAppParserUnitTest, MetadataIsEmpty) {
-  base::MockCallback<base::OnceCallback<void(absl::optional<std::string>)>>
+  base::MockCallback<base::OnceCallback<void(std::optional<std::string>)>>
       on_companion_app_parsed;
-  EXPECT_CALL(on_companion_app_parsed, Run(testing::Eq(absl::nullopt)))
-      .Times(1);
+  EXPECT_CALL(on_companion_app_parsed, Run(testing::Eq(std::nullopt))).Times(1);
 
   parser_->GetAppPackageName(deviceWithEmptyMetadata_,
                              on_companion_app_parsed.Get());
@@ -113,10 +112,9 @@ TEST_F(CompanionAppParserUnitTest, MetadataIsEmpty) {
 }
 
 TEST_F(CompanionAppParserUnitTest, MetadataIsValid) {
-  base::MockCallback<base::OnceCallback<void(absl::optional<std::string>)>>
+  base::MockCallback<base::OnceCallback<void(std::optional<std::string>)>>
       on_companion_app_parsed;
-  EXPECT_CALL(on_companion_app_parsed, Run(testing::Eq(absl::nullopt)))
-      .Times(1);
+  EXPECT_CALL(on_companion_app_parsed, Run(testing::Eq(std::nullopt))).Times(1);
 
   parser_->GetAppPackageName(deviceWithValidMetadata_,
                              on_companion_app_parsed.Get());
@@ -124,10 +122,9 @@ TEST_F(CompanionAppParserUnitTest, MetadataIsValid) {
 }
 
 TEST_F(CompanionAppParserUnitTest, MetadataHasEmptyParameter) {
-  base::MockCallback<base::OnceCallback<void(absl::optional<std::string>)>>
+  base::MockCallback<base::OnceCallback<void(std::optional<std::string>)>>
       on_companion_app_parsed;
-  EXPECT_CALL(on_companion_app_parsed, Run(testing::Eq(absl::nullopt)))
-      .Times(1);
+  EXPECT_CALL(on_companion_app_parsed, Run(testing::Eq(std::nullopt))).Times(1);
 
   parser_->GetAppPackageName(deviceWithEmptyParameterMetadata_,
                              on_companion_app_parsed.Get());
@@ -135,10 +132,9 @@ TEST_F(CompanionAppParserUnitTest, MetadataHasEmptyParameter) {
 }
 
 TEST_F(CompanionAppParserUnitTest, NoMetadata) {
-  base::MockCallback<base::OnceCallback<void(absl::optional<std::string>)>>
+  base::MockCallback<base::OnceCallback<void(std::optional<std::string>)>>
       on_companion_app_parsed;
-  EXPECT_CALL(on_companion_app_parsed, Run(testing::Eq(absl::nullopt)))
-      .Times(0);
+  EXPECT_CALL(on_companion_app_parsed, Run(testing::Eq(std::nullopt))).Times(0);
 
   parser_->GetAppPackageName(deviceWithNoMetadata_,
                              on_companion_app_parsed.Get());

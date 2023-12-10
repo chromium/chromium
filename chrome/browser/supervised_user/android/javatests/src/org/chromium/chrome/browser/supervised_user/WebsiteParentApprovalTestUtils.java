@@ -1,8 +1,8 @@
-
 // Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 package org.chromium.chrome.browser.supervised_user;
+
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
@@ -54,7 +54,10 @@ class WebsiteParentApprovalTestUtils {
         ViewUtils.waitForViewCheckingState(
                 withId(R.id.local_parent_approval_layout), ViewUtils.VIEW_VISIBLE);
         // Ensure all animations have ended before allowing interaction with the view.
-        TestThreadUtils.runOnUiThreadBlocking(() -> { bottomSheetTestSupport.endAllAnimations(); });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    bottomSheetTestSupport.endAllAnimations();
+                });
     }
 
     static void clickApprove(BottomSheetTestSupport bottomSheetTestSupport) {

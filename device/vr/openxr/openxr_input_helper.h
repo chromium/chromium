@@ -26,9 +26,12 @@ class OpenXRInputHelper {
       const OpenXrExtensionHelper& extension_helper,
       XrSession session,
       XrSpace local_space,
+      bool hand_input_enabled,
       std::unique_ptr<OpenXRInputHelper>* helper);
 
-  OpenXRInputHelper(XrSession session, XrSpace local_space);
+  OpenXRInputHelper(XrSession session,
+                    XrSpace local_space,
+                    bool hand_input_enabled);
 
   OpenXRInputHelper(const OpenXRInputHelper&) = delete;
   OpenXRInputHelper& operator=(const OpenXRInputHelper&) = delete;
@@ -36,7 +39,6 @@ class OpenXRInputHelper {
   ~OpenXRInputHelper();
 
   std::vector<mojom::XRInputSourceStatePtr> GetInputState(
-      bool hand_input_enabled,
       XrTime predicted_display_time);
 
   XrResult OnInteractionProfileChanged();
@@ -44,8 +46,6 @@ class OpenXRInputHelper {
   bool ReceivedExitGesture() { return received_exit_gesture_; }
 
  private:
-  absl::optional<Gamepad> GetWebXRGamepad(const OpenXrController& controller);
-
   XrResult Initialize(XrInstance instance,
                       XrSystemId system,
                       const OpenXrExtensionHelper& extension_helper);
@@ -72,6 +72,7 @@ class OpenXRInputHelper {
 
   std::unique_ptr<OpenXRPathHelper> path_helper_;
   bool received_exit_gesture_ = false;
+  bool hand_input_enabled_ = false;
 };
 
 }  // namespace device

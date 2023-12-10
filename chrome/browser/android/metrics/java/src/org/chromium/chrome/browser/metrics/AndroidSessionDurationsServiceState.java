@@ -59,9 +59,11 @@ public class AndroidSessionDurationsServiceState {
         long lastReportedDuration = inState.getLong(INCOGNITO_SESSION_LAST_REPORTED_DURATION, -1);
         assert lastReportedDuration != -1;
 
-        AndroidSessionDurationsServiceStateJni.get().restoreAndroidSessionDurationsServiceState(
-                profile,
-                new AndroidSessionDurationsServiceState(sessionStartTime, lastReportedDuration));
+        AndroidSessionDurationsServiceStateJni.get()
+                .restoreAndroidSessionDurationsServiceState(
+                        profile,
+                        new AndroidSessionDurationsServiceState(
+                                sessionStartTime, lastReportedDuration));
     }
 
     /**
@@ -74,8 +76,8 @@ public class AndroidSessionDurationsServiceState {
      */
     public static void serializeFromNative(Bundle outState, Profile profile) {
         AndroidSessionDurationsServiceState data =
-                AndroidSessionDurationsServiceStateJni.get().getAndroidSessionDurationsServiceState(
-                        profile);
+                AndroidSessionDurationsServiceStateJni.get()
+                        .getAndroidSessionDurationsServiceState(profile);
         outState.putLong(INCOGNITO_SESSION_STARTUP_TIME, data.getSessionStartTime());
         outState.putLong(INCOGNITO_SESSION_LAST_REPORTED_DURATION, data.getLastReportedDuration());
     }
@@ -83,6 +85,7 @@ public class AndroidSessionDurationsServiceState {
     @NativeMethods
     public interface Natives {
         AndroidSessionDurationsServiceState getAndroidSessionDurationsServiceState(Profile profile);
+
         void restoreAndroidSessionDurationsServiceState(
                 Profile profile, AndroidSessionDurationsServiceState durationService);
     }

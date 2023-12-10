@@ -9,7 +9,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/task/common/lazy_now.h"
 #include "base/task/common/scoped_defer_task_posting.h"
 #include "base/task/common/task_annotator.h"
@@ -306,7 +305,6 @@ void FrameSchedulerImpl::SetFrameVisible(bool frame_visible) {
   DCHECK(parent_page_scheduler_);
   if (frame_visible_ == frame_visible)
     return;
-  UMA_HISTOGRAM_BOOLEAN("RendererScheduler.IPC.FrameVisibility", frame_visible);
   frame_visible_ = frame_visible;
 
   MoveTaskQueuesToCorrectWakeUpBudgetPool();
@@ -746,12 +744,9 @@ void FrameSchedulerImpl::OnRemovedAggressiveThrottlingOptOut() {
     parent_page_scheduler_->OnThrottlingStatusUpdated();
 }
 
-void FrameSchedulerImpl::OnTaskCompleted(
-    TaskQueue::TaskTiming* timing,
-    base::TimeTicks desired_execution_time) {
+void FrameSchedulerImpl::OnTaskCompleted(TaskQueue::TaskTiming* timing) {
   if (delegate_) {
-    delegate_->OnTaskCompleted(timing->start_time(), timing->end_time(),
-                               desired_execution_time);
+    delegate_->OnTaskCompleted(timing->start_time(), timing->end_time());
   }
 }
 

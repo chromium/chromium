@@ -15,8 +15,6 @@ public interface StartStopWithNativeObserver extends LifecycleObserver {
      */
     void onStartWithNative();
 
-    /**
-     * Similar to {@link #onStartWithNative}, but for the stop event.
-     */
+    /** Similar to {@link #onStartWithNative}, but for the stop event. */
     void onStopWithNative();
 }

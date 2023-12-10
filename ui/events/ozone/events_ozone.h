@@ -9,6 +9,7 @@
 
 #include "base/functional/callback.h"
 #include "ui/events/event.h"
+#include "ui/events/event_constants.h"
 #include "ui/events/events_export.h"
 #include "ui/events/platform_event.h"
 
@@ -31,10 +32,10 @@ namespace ui {
 // We are trying to fix both of these issues, but in the meantime we
 // define NativeEvent == ui::Event.
 //
-// Returns true iff the event was handled.
-EVENTS_EXPORT bool DispatchEventFromNativeUiEvent(
-    const PlatformEvent& native_event,
-    base::OnceCallback<void(ui::Event*)> callback);
+// Returns `ui::EventResult` for the `ui::Event`.
+EVENTS_EXPORT EventResult
+DispatchEventFromNativeUiEvent(const PlatformEvent& native_event,
+                               base::OnceCallback<void(ui::Event*)> callback);
 
 // Disable native level event handling including dispatch,
 // capture or mouse movements for tests.

@@ -7,7 +7,6 @@
 #import "base/test/ios/wait_util.h"
 #import "base/test/scoped_feature_list.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
-#import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
@@ -33,6 +32,9 @@
 // Set when `willPushReauthenticationViewController` is called.
 @property(nonatomic) BOOL willPushReauthVCCalled;
 
+// Set when `dismissUIAfterFailedReauthenticationWithCoordinator` is called.
+@property(nonatomic) BOOL dismissUICalled;
+
 @end
 
 @implementation FakeReauthenticationCoordinatorDelegate
@@ -46,6 +48,11 @@
   self.willPushReauthVCCalled = YES;
 }
 
+- (void)dismissUIAfterFailedReauthenticationWithCoordinator:
+    (ReauthenticationCoordinator*)coordinator {
+  _dismissUICalled = YES;
+}
+
 @end
 
 // Test fixture for ReauthenticationCoordinator.
@@ -57,8 +64,12 @@ class ReauthenticationCoordinatorTest : public PlatformTest {
     scoped_feature_list_.InitAndEnableFeature(
         password_manager::features::kIOSPasswordAuthOnEntryV2);
 
+    scene_state_ = [[SceneState alloc] initWithAppState:nil];
+    scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+
     browser_state_ = TestChromeBrowserState::Builder().Build();
-    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+    browser_ =
+        std::make_unique<TestBrowser>(browser_state_.get(), scene_state_);
     mocked_application_commands_handler_ =
         OCMStrictProtocolMock(@protocol(ApplicationCommands));
     [browser_->GetCommandDispatcher()
@@ -76,10 +87,6 @@ class ReauthenticationCoordinatorTest : public PlatformTest {
                   reauthenticationModule:mock_reauth_module_
                              authOnStart:NO];
     coordinator_.delegate = delegate_;
-
-    scene_state_ = [[SceneState alloc] initWithAppState:nil];
-    scene_state_.activationLevel = SceneActivationLevelForegroundActive;
-    SceneStateBrowserAgent::CreateForBrowser(browser_.get(), scene_state_);
 
     scoped_window_.Get().rootViewController = base_navigation_controller_;
 
@@ -243,9 +250,7 @@ TEST_F(ReauthenticationCoordinatorTest,
   // Reauth vc should still be there.
   CheckReauthenticationViewControllerIsPresented();
   ASSERT_FALSE(delegate_.successfulReauth);
-
-  // Cancelling reauth should close settings.
-  OCMExpect([mocked_application_commands_handler_ closeSettingsUI]);
+  ASSERT_FALSE(delegate_.dismissUICalled);
 
   // Mock reauth result when app is in the foreground and active again.
   mock_reauth_module_.expectedResult = ReauthenticationResult::kFailure;
@@ -256,6 +261,6 @@ TEST_F(ReauthenticationCoordinatorTest,
 
   ASSERT_FALSE(delegate_.successfulReauth);
 
-  // Verify command was dispatched.
-  EXPECT_OCMOCK_VERIFY(mocked_application_commands_handler_);
+  // Cancelling reauth should close settings.
+  ASSERT_TRUE(delegate_.dismissUICalled);
 }

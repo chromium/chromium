@@ -5,16 +5,16 @@
 #include "third_party/blink/renderer/core/loader/modulescript/worklet_module_script_fetcher.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/script_source_location_type.h"
+#include "third_party/blink/renderer/core/workers/worklet_global_scope.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/weborigin/security_policy.h"
 
 namespace blink {
 
 WorkletModuleScriptFetcher::WorkletModuleScriptFetcher(
-    WorkletModuleResponsesMap* module_responses_map,
+    WorkletGlobalScope* global_scope,
     base::PassKey<ModuleScriptLoader> pass_key)
-    : ModuleScriptFetcher(pass_key),
-      module_responses_map_(module_responses_map) {}
+    : ModuleScriptFetcher(pass_key), global_scope_(global_scope) {}
 
 void WorkletModuleScriptFetcher::Fetch(
     FetchParameters& fetch_params,
@@ -23,7 +23,7 @@ void WorkletModuleScriptFetcher::Fetch(
     ModuleGraphLevel level,
     ModuleScriptFetcher::Client* client) {
   DCHECK_EQ(fetch_params.GetScriptType(), mojom::blink::ScriptType::kModule);
-  if (module_responses_map_->GetEntry(
+  if (global_scope_->GetModuleResponsesMap()->GetEntry(
           fetch_params.Url(), expected_module_type, client,
           fetch_client_settings_object_fetcher->GetTaskRunner())) {
     return;
@@ -31,14 +31,14 @@ void WorkletModuleScriptFetcher::Fetch(
 
   // TODO(japhet): This worklet global scope will drive the fetch of this
   // module. If another global scope requests the same module,
-  // module_responses_map_ will ensure that it is notified when this fetch
-  // completes. Currently, all worklet global scopes are destroyed when the
-  // Document is destroyed, so we won't end up in a situation where this global
-  // scope is being destroyed and needs to cancel the fetch, but some other
-  // global scope is still alive and still wants to complete the fetch. When we
-  // support worklet global scopes being created and destroyed flexibly, we'll
-  // need to handle that case, maybe by having a way to restart fetches in a
-  // different global scope?
+  // global_scope_->GetModuleResponsesMap() will ensure that it is notified when
+  // this fetch completes. Currently, all worklet global scopes are destroyed
+  // when the Document is destroyed, so we won't end up in a situation where
+  // this global scope is being destroyed and needs to cancel the fetch, but
+  // some other global scope is still alive and still wants to complete the
+  // fetch. When we support worklet global scopes being created and destroyed
+  // flexibly, we'll need to handle that case, maybe by having a way to restart
+  // fetches in a different global scope?
   url_ = fetch_params.Url();
   expected_module_type_ = expected_module_type;
 
@@ -84,7 +84,13 @@ void WorkletModuleScriptFetcher::NotifyFinished(Resource* resource) {
 
   // This will eventually notify |client| passed to
   // WorkletModuleScriptFetcher::Fetch().
-  module_responses_map_->SetEntryParams(url_, expected_module_type_, params);
+  global_scope_->GetModuleResponsesMap()->SetEntryParams(
+      url_, expected_module_type_, params);
+}
+
+void WorkletModuleScriptFetcher::Trace(Visitor* visitor) const {
+  ModuleScriptFetcher::Trace(visitor);
+  visitor->Trace(global_scope_);
 }
 
 }  // namespace blink

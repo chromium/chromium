@@ -190,7 +190,8 @@ void MenuRunnerImplCocoa::RunMenuAt(
     MenuAnchorPosition anchor,
     int32_t run_types,
     gfx::NativeView native_view_for_gestures,
-    absl::optional<gfx::RoundedCornersF> corners) {
+    absl::optional<gfx::RoundedCornersF> corners,
+    absl::optional<std::string> show_menu_host_duration_histogram) {
   DCHECK(!IsRunning());
   DCHECK(parent);
 

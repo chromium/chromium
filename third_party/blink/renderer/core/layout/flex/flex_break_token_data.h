@@ -5,12 +5,12 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_FLEX_FLEX_BREAK_TOKEN_DATA_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_FLEX_FLEX_BREAK_TOKEN_DATA_H_
 
+#include "third_party/blink/renderer/core/layout/block_break_token_data.h"
 #include "third_party/blink/renderer/core/layout/flex/ng_flex_line.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_block_break_token_data.h"
 
 namespace blink {
 
-struct FlexBreakTokenData final : NGBlockBreakTokenData {
+struct FlexBreakTokenData final : BlockBreakTokenData {
   // FlexBreakBeforeRow is used to maintain the state of break before rows
   // during flex fragmentation. kNotBreakBeforeRow implies that we are either
   // fragmenting a column-based flex container, or the current break token does
@@ -25,13 +25,13 @@ struct FlexBreakTokenData final : NGBlockBreakTokenData {
     kPastStartOfBreakBeforeRow
   };
 
-  FlexBreakTokenData(const NGBlockBreakTokenData* break_token_data,
+  FlexBreakTokenData(const BlockBreakTokenData* break_token_data,
                      const HeapVector<NGFlexLine>& flex_lines,
                      const Vector<EBreakBetween>& row_break_between,
                      const HeapVector<Member<LayoutBox>>& oof_children,
                      LayoutUnit intrinsic_block_size,
                      FlexBreakBeforeRow break_before_row)
-      : NGBlockBreakTokenData(kFlexBreakTokenData, break_token_data),
+      : BlockBreakTokenData(kFlexBreakTokenData, break_token_data),
         flex_lines(flex_lines),
         row_break_between(row_break_between),
         oof_children(oof_children),
@@ -41,7 +41,7 @@ struct FlexBreakTokenData final : NGBlockBreakTokenData {
   void Trace(Visitor* visitor) const override {
     visitor->Trace(flex_lines);
     visitor->Trace(oof_children);
-    NGBlockBreakTokenData::Trace(visitor);
+    BlockBreakTokenData::Trace(visitor);
   }
 
   HeapVector<NGFlexLine> flex_lines;
@@ -63,7 +63,7 @@ struct FlexBreakTokenData final : NGBlockBreakTokenData {
 
 template <>
 struct DowncastTraits<FlexBreakTokenData> {
-  static bool AllowFrom(const NGBlockBreakTokenData& token_data) {
+  static bool AllowFrom(const BlockBreakTokenData& token_data) {
     return token_data.IsFlexType();
   }
 };

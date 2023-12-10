@@ -1,27 +1,8 @@
 This is a testharness.js-based test.
-[PASS] Serialization of basic shapes
-[PASS] Serialization of basic shapes 1
-[PASS] Serialization of basic shapes 2
-[PASS] Serialization of basic shapes 3
-[PASS] Serialization of basic shapes 4
-[PASS] Serialization of basic shapes 5
-[PASS] Serialization of basic shapes 6
-[PASS] Serialization of basic shapes 7
-[PASS] Serialization of basic shapes 8
-[PASS] Serialization of basic shapes 9
-[PASS] Serialization of basic shapes 10
-[PASS] Serialization of basic shapes 11
 [FAIL] Serialization of basic shapes 12
   assert_equals: circle(at top 0% right 5px) expected "circle(at calc(100% - 5px) 0%)" but got "circle(at right 5px top 0%)"
 [FAIL] Serialization of basic shapes 13
   assert_equals: ellipse(at top 0% right 10px) expected "ellipse(at calc(100% - 10px) 0%)" but got "ellipse(at right 10px top 0%)"
-[PASS] Serialization of basic shapes 14
-[PASS] Serialization of basic shapes 15
-[PASS] Serialization of basic shapes 16
-[PASS] Serialization of basic shapes 17
-[PASS] Serialization of basic shapes 18
-[PASS] Serialization of basic shapes 19
-[PASS] Serialization of basic shapes 20
 [FAIL] Serialization of basic shapes 21
   assert_equals: circle(at right 5px bottom 10px) expected "circle(at calc(100% - 5px) calc(100% - 10px))" but got "circle(at right 5px bottom 10px)"
 [FAIL] Serialization of basic shapes 22

@@ -23,7 +23,6 @@ import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileJni;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabImpl;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -91,9 +90,9 @@ public class TabContextTest {
         doReturn(mTabModelFilter).when(mTabModelFilterProvider).getCurrentTabModelFilter();
     }
 
-    private static TabImpl mockTab(
+    private static Tab mockTab(
             int id, int rootId, String title, GURL url, GURL originalUrl, long timestampMillis) {
-        TabImpl tab = mock(TabImpl.class);
+        Tab tab = mock(Tab.class);
         doReturn(id).when(tab).getId();
         doReturn(rootId).when(tab).getRootId();
         doReturn(title).when(tab).getTitle();

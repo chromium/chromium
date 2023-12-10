@@ -26,7 +26,7 @@
 BubbleSyncPromoSigninButtonView::BubbleSyncPromoSigninButtonView(
     views::Button::PressedCallback callback,
     bool prominent)
-    : account_(absl::nullopt) {
+    : account_(std::nullopt) {
   views::Builder<BubbleSyncPromoSigninButtonView>(this)
       .SetUseDefaultFillLayout(true)
       .AddChild(

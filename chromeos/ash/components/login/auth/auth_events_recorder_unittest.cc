@@ -303,11 +303,12 @@ TEST_F(AuthEventsRecorderTest, AuthEventsCrashKeyOnSuccessfullLogin) {
   recorder_->OnLoginSuccess(SuccessReason::OFFLINE_ONLY,
                             /*is_new_user=*/false, /*is_login_offline=*/true,
                             /*is_ephemeral=*/false);
+  recorder_->OnAuthComplete(true);
   recorder_->OnExistingUserLoginScreenExit(
       AuthEventsRecorder::AuthenticationOutcome::kSuccess, 1);
   EXPECT_EQ(GetAuthEventsCrashKeyValue(),
             "auth_surface_change_Login,update_lock_screen_view,auth_submit,"
-            "login_offline,login_screen_exit_success,");
+            "login_offline,auth_complete_success,login_screen_exit_success,");
   // Lock screen:
   recorder_->OnAuthenticationSurfaceChange(
       AuthEventsRecorder::AuthenticationSurface::kLock);
@@ -316,25 +317,58 @@ TEST_F(AuthEventsRecorderTest, AuthEventsCrashKeyOnSuccessfullLogin) {
   recorder_->OnAuthSubmit();
   recorder_->OnAuthFailure(
       AuthFailure::FailureReason::COULD_NOT_MOUNT_CRYPTOHOME);
+  recorder_->OnAuthComplete(false);
   recorder_->OnAuthSubmit();
   recorder_->OnAuthFailure(
       AuthFailure::FailureReason::COULD_NOT_MOUNT_CRYPTOHOME);
+  recorder_->OnAuthComplete(false);
   recorder_->OnAuthSubmit();
   recorder_->OnAuthFailure(
       AuthFailure::FailureReason::COULD_NOT_MOUNT_CRYPTOHOME);
+  recorder_->OnAuthComplete(false);
   // 1 successfull attempt:
   recorder_->OnAuthSubmit();
   recorder_->OnLoginSuccess(SuccessReason::OFFLINE_ONLY,
                             /*is_new_user=*/false, /*is_login_offline=*/true,
                             /*is_ephemeral=*/false);
+  recorder_->OnAuthComplete(true);
+  recorder_->OnExistingUserLoginScreenExit(
+      AuthEventsRecorder::AuthenticationOutcome::kSuccess, 4);
+  EXPECT_EQ(
+      GetAuthEventsCrashKeyValue(),
+      "auth_surface_change_Login,update_lock_screen_view,auth_submit,"
+      "login_offline,auth_complete_success,login_screen_exit_success,"
+      "auth_surface_change_Lock,update_lock_screen_view,auth_submit,"
+      "login_failure,auth_complete_failure,auth_submit,login_failure,"
+      "auth_complete_failure,auth_submit,login_failure,auth_complete_failure,"
+      "auth_submit,login_offline,auth_complete_success,"
+      "login_screen_exit_success,");
+}
+
+TEST_F(AuthEventsRecorderTest, AuthEventsCrashKeyOnSuccessfullUnlock) {
+  // Lock screen:
+  recorder_->OnAuthenticationSurfaceChange(
+      AuthEventsRecorder::AuthenticationSurface::kLock);
+  recorder_->OnLockContentsViewUpdate();
+  recorder_->OnAuthSubmit();
+  recorder_->OnAuthComplete(true);
   recorder_->OnExistingUserLoginScreenExit(
       AuthEventsRecorder::AuthenticationOutcome::kSuccess, 4);
   EXPECT_EQ(GetAuthEventsCrashKeyValue(),
-            "auth_surface_change_Login,update_lock_screen_view,auth_submit,"
-            "login_offline,login_screen_exit_success,auth_surface_change_Lock,"
-            "update_lock_screen_view,auth_submit,login_failure,auth_submit,"
-            "login_failure,auth_submit,login_failure,auth_submit,login_offline,"
-            "login_screen_exit_success,");
+            "auth_surface_change_Lock,update_lock_screen_view,auth_submit,"
+            "auth_complete_success,login_screen_exit_success,");
+}
+
+TEST_F(AuthEventsRecorderTest, AuthEventsCrashKeyOnFailureUnlock) {
+  // Lock screen:
+  recorder_->OnAuthenticationSurfaceChange(
+      AuthEventsRecorder::AuthenticationSurface::kLock);
+  recorder_->OnLockContentsViewUpdate();
+  recorder_->OnAuthSubmit();
+  recorder_->OnAuthComplete(false);
+  EXPECT_EQ(GetAuthEventsCrashKeyValue(),
+            "auth_surface_change_Lock,update_lock_screen_view,auth_submit,"
+            "auth_complete_failure,");
 }
 
 }  // namespace ash

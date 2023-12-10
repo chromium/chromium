@@ -8,12 +8,12 @@
 #include <memory>
 #include <vector>
 
+#include <optional>
 #include "base/containers/circular_deque.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "components/viz/common/surfaces/surface_id.h"
 #include "content/public/browser/android/synchronous_compositor.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/transform.h"
 
@@ -55,7 +55,7 @@ class ChildFrame {
   scoped_refptr<content::SynchronousCompositor::FrameFuture> frame_future;
   uint32_t layer_tree_frame_sink_id = 0u;
   std::unique_ptr<viz::CompositorFrame> frame;
-  absl::optional<viz::HitTestRegionList> hit_test_region_list;
+  std::optional<viz::HitTestRegionList> hit_test_region_list;
   // The id of the compositor this |frame| comes from.
   const viz::FrameSinkId frame_sink_id;
   // Local surface id of the frame. Invalid if |frame| is null.

@@ -11,7 +11,7 @@
 #include "remoting/host/linux/wayland_manager.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_options.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
-#include "third_party/webrtc/modules/desktop_capture/linux/wayland/xdg_session_details.h"
+#include "third_party/webrtc/modules/portal/xdg_session_details.h"
 
 namespace remoting {
 

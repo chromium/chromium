@@ -87,6 +87,7 @@ class CC_EXPORT AnimatedPaintWorkletTracker {
     // value of the animation, after it finishes on the impl thread, until the
     // next commit.
     PaintWorkletInput::PropertyValue animation_value;
+    PaintWorkletInput::PropertyValue last_animation_value;
     base::flat_set<PictureLayerImpl*> associated_layers;
   };
 

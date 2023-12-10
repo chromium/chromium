@@ -73,8 +73,10 @@ void AccessibilityLabelsBubbleModel::Accept() {
     SetPref(true);
     return;
   }
-  AccessibilityLabelsServiceFactory::GetForProfile(profile_)
-      ->EnableLabelsServiceOnce();
+  if (auto* const web_contents = web_contents_.get(); web_contents) {
+    AccessibilityLabelsServiceFactory::GetForProfile(profile_)
+        ->EnableLabelsServiceOnce(web_contents);
+  }
 }
 
 void AccessibilityLabelsBubbleModel::Cancel() {

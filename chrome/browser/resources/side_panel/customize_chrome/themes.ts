@@ -19,6 +19,7 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {FocusOutlineManager} from 'chrome://resources/js/focus_outline_manager.js';
 import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {CustomizeChromeAction, recordCustomizeChromeAction} from './common.js';
 import {BackgroundCollection, CollectionImage, CustomizeChromePageCallbackRouter, CustomizeChromePageHandlerInterface, Theme} from './customize_chrome.mojom-webui.js';
 import {CustomizeChromeApiProxy} from './customize_chrome_api_proxy.js';
 import {getTemplate} from './themes.html.js';
@@ -151,6 +152,8 @@ export class ThemesElement extends ThemesElementBase {
   }
 
   private onSelectTheme_(e: DomRepeatEvent<CollectionImage>) {
+    recordCustomizeChromeAction(
+        CustomizeChromeAction.FIRST_PARTY_COLLECTION_THEME_SELECTED);
     const {
       attribution1,
       attribution2,

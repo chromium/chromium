@@ -13,6 +13,7 @@
 #include "chrome/browser/policy/messaging_layer/upload/record_upload_request_builder.h"
 #include "chrome/browser/policy/messaging_layer/util/reporting_server_connector.h"
 #include "components/reporting/proto/synced/record.pb.h"
+#include "components/reporting/util/encrypted_reporting_json_keys.h"
 #include "components/reporting/util/status.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -65,9 +66,10 @@ void FakeUploadClient::OnUploadComplete(
     return;
   }
   const base::Value::Dict* last_success =
-      response.value().FindDict("lastSucceedUploadedRecord");
+      response.value().FindDict(json_keys::kLastSucceedUploadedRecord);
   if (last_success != nullptr) {
-    const auto force_confirm_flag = last_success->FindBool("forceConfirm");
+    const auto force_confirm_flag =
+        last_success->FindBool(json_keys::kForceConfirm);
     bool force_confirm =
         force_confirm_flag.has_value() && force_confirm_flag.value();
     auto seq_info_result =
@@ -79,14 +81,15 @@ void FakeUploadClient::OnUploadComplete(
   }
 
   const base::Value::Dict* signed_encryption_key_record =
-      response.value().FindDict("encryptionSettings");
+      response.value().FindDict(json_keys::kEncryptionSettings);
   if (signed_encryption_key_record != nullptr) {
     const std::string* public_key_str =
-        signed_encryption_key_record->FindString("publicKey");
+        signed_encryption_key_record->FindString(json_keys::kPublicKey);
     const auto public_key_id_result =
-        signed_encryption_key_record->FindInt("publicKeyId");
+        signed_encryption_key_record->FindInt(json_keys::kPublicKeyId);
     const std::string* public_key_signature_str =
-        signed_encryption_key_record->FindString("publicKeySignature");
+        signed_encryption_key_record->FindString(
+            json_keys::kPublicKeySignature);
     std::string public_key;
     std::string public_key_signature;
     if (public_key_str != nullptr &&

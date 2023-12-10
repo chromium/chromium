@@ -14,15 +14,12 @@
 namespace ash::auth {
 
 PinFactorEditor::PinFactorEditor(AuthFactorConfig* auth_factor_config,
-                                 PinBackendDelegate* pin_backend,
-                                 QuickUnlockStorageDelegate* storage)
+                                 PinBackendDelegate* pin_backend)
     : auth_factor_config_(auth_factor_config),
       pin_backend_(pin_backend),
-      quick_unlock_storage_(storage),
       auth_factor_editor_(UserDataAuthClient::Get()) {
   CHECK(auth_factor_config_);
   CHECK(pin_backend_);
-  CHECK(quick_unlock_storage_);
 }
 
 PinFactorEditor::~PinFactorEditor() = default;
@@ -49,18 +46,6 @@ void PinFactorEditor::RemovePin(
 void PinFactorEditor::ObtainContext(
     const std::string& auth_token,
     base::OnceCallback<void(std::unique_ptr<UserContext>)> callback) {
-  if (!ash::features::ShouldUseAuthSessionStorage()) {
-    const auto* user = ::user_manager::UserManager::Get()->GetPrimaryUser();
-    CHECK(user);
-    auto* user_context_ptr =
-        quick_unlock_storage_->GetUserContext(user, auth_token);
-    if (!user_context_ptr) {
-      std::move(callback).Run(nullptr);
-      return;
-    }
-    std::move(callback).Run(std::make_unique<UserContext>(*user_context_ptr));
-    return;
-  }
 
   if (!ash::AuthSessionStorage::Get()->IsValid(auth_token)) {
     std::move(callback).Run(nullptr);
@@ -81,9 +66,7 @@ void PinFactorEditor::SetPinWithContext(
     return;
   }
   AccountId account_id = context->GetAccountId();
-  if (ash::features::ShouldUseAuthSessionStorage()) {
-    ash::AuthSessionStorage::Get()->Return(auth_token, std::move(context));
-  }
+  ash::AuthSessionStorage::Get()->Return(auth_token, std::move(context));
   pin_backend_->Set(account_id, auth_token, pin,
                     base::BindOnce(&PinFactorEditor::OnPinConfigured,
                                    weak_factory_.GetWeakPtr(), auth_token,
@@ -102,9 +85,7 @@ void PinFactorEditor::RemovePinWithContext(
 
   AccountId account_id = context->GetAccountId();
 
-  if (ash::features::ShouldUseAuthSessionStorage()) {
-    ash::AuthSessionStorage::Get()->Return(auth_token, std::move(context));
-  }
+  ash::AuthSessionStorage::Get()->Return(auth_token, std::move(context));
   auth_factor_config_->IsConfigured(
       auth_token, mojom::AuthFactor::kPin,
       base::BindOnce(&PinFactorEditor::OnIsPinConfiguredForRemove,

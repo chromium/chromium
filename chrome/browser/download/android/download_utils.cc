@@ -21,6 +21,8 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
+using base::android::ConvertJavaStringToUTF16;
+using base::android::ConvertJavaStringToUTF8;
 using base::android::ConvertUTF16ToJavaString;
 using base::android::ConvertUTF8ToJavaString;
 using base::android::JavaParamRef;

@@ -8,6 +8,7 @@
 #include <cstdint>
 #include <functional>
 #include <map>
+#include <optional>
 #include <random>
 #include <set>
 #include <vector>
@@ -35,7 +36,6 @@
 #include "chromeos/ash/components/memory/userspace_swap/userspace_swap.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/os_metrics.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/utility/utility.h"
 
 namespace ash {
@@ -138,7 +138,7 @@ class RendererSwapDataImpl : public RendererSwapData {
   // for a call to MovePTEs. This makes swapping easier, because now we just
   // wait to observe the remap event as our indicator that we can read the
   // memory from the process.
-  absl::optional<Region> AllocFromSwapRegion();
+  std::optional<Region> AllocFromSwapRegion();
   void DeallocFromSwapRegion(const Region& region);
 
   // Swap at most |size_limit| bytes worth of memory on this renderer.
@@ -242,9 +242,9 @@ void RendererSwapDataImpl::UnaccountSwapSpace(int64_t reclaimed,
   AccountSwapSpace(-reclaimed, -swap_size);
 }
 
-absl::optional<Region> RendererSwapDataImpl::AllocFromSwapRegion() {
+std::optional<Region> RendererSwapDataImpl::AllocFromSwapRegion() {
   if (free_swap_dest_areas_.empty()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   Region r = free_swap_dest_areas_.top();
@@ -518,7 +518,7 @@ bool GetPartitionAllocSuperPagesInUse(
         current_area_length += partition_alloc::kSuperPageSize;
       } else {
         if (current_area) {
-          regions.emplace_back(absl::in_place, current_area,
+          regions.emplace_back(std::in_place, current_area,
                                current_area_length);
           current_area = 0;
           current_area_length = 0;
@@ -527,7 +527,7 @@ bool GetPartitionAllocSuperPagesInUse(
     }
 
     if (current_area) {
-      regions.emplace_back(absl::in_place, current_area, current_area_length);
+      regions.emplace_back(std::in_place, current_area, current_area_length);
     }
 
     if (!superpages_remaining)

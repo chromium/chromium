@@ -97,8 +97,7 @@ SmartDimComponentInstallerPolicy::SmartDimComponentInstallerPolicy(
 SmartDimComponentInstallerPolicy::~SmartDimComponentInstallerPolicy() = default;
 
 const std::string SmartDimComponentInstallerPolicy::GetExtensionId() {
-  return crx_file::id_util::GenerateIdFromHash(
-      kSmartDimPublicKeySHA256, sizeof(kSmartDimPublicKeySHA256));
+  return crx_file::id_util::GenerateIdFromHash(kSmartDimPublicKeySHA256);
 }
 
 bool SmartDimComponentInstallerPolicy::
@@ -191,7 +190,8 @@ SmartDimComponentInstallerPolicy::GetInstallerAttributes() const {
   return attrs;
 }
 
-void RegisterSmartDimComponent(ComponentUpdateService* cus) {
+void RegisterSmartDimComponent(ComponentUpdateService* cus,
+                               base::OnceClosure callback) {
   DVLOG(1) << "Registering smart dim component.";
   const std::string expected_version = kVersion.Get();
 
@@ -208,7 +208,7 @@ void RegisterSmartDimComponent(ComponentUpdateService* cus) {
 
   auto installer = base::MakeRefCounted<ComponentInstaller>(
       std::make_unique<SmartDimComponentInstallerPolicy>(expected_version));
-  installer->Register(cus, base::OnceClosure());
+  installer->Register(cus, std::move(callback));
 }
 
 }  // namespace component_updater

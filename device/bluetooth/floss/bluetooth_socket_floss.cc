@@ -291,6 +291,20 @@ void BluetoothSocketFloss::CompleteConnect(
     FlossDBusClient::BtifStatus status,
     absl::optional<FlossSocketManager::FlossSocket>&& socket) {
   DCHECK(ui_task_runner()->RunsTasksInCurrentSequence());
+
+  if (status == FlossDBusClient::BtifStatus::kSuccess && socket) {
+    device::BluetoothDevice* device = adapter_->GetDevice(device_address_);
+    if (device) {
+      // Set discovery completed here because a connected socket implies it.
+      // This is necessary for the Mojo Adapter implementation because it always
+      // waits for the discovery complete before requesting the next connection.
+      device->SetGattServicesDiscoveryComplete(true);
+    } else {
+      LOG(ERROR) << device_address_
+                 << ": Outgoing socket connected to an unknown device";
+    }
+  }
+
   socket_task_tracker_.PostTask(
       socket_thread()->task_runner().get(), FROM_HERE,
       base::BindOnce(&BluetoothSocketFloss::CompleteConnectionInSocketThread,
@@ -415,6 +429,16 @@ void BluetoothSocketFloss::CompleteListeningConnect() {
 
   device::BluetoothDevice* device =
       adapter_->GetDevice(sock->remote_device.address);
+
+  if (device) {
+    // Set discovery completed here because a connected socket implies it.
+    // This is necessary for the Mojo Adapter implementation because it always
+    // waits for the discovery complete before requesting the next connection.
+    device->SetGattServicesDiscoveryComplete(true);
+  } else {
+    LOG(ERROR) << device_address_
+               << ": Incoming socket connected to an unknown device";
+  }
 
   socket_task_tracker_.PostTask(
       socket_thread()->task_runner().get(), FROM_HERE,

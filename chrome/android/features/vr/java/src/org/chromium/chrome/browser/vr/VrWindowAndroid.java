@@ -29,8 +29,8 @@ import java.util.Arrays;
  * The class provides the WindowAndroid's implementation which requires Activity Instance. It is
  * only intended to be used when in VR.
  */
-public class VrWindowAndroid
-        extends WindowAndroid implements ApplicationStatus.ActivityStateListener {
+public class VrWindowAndroid extends WindowAndroid
+        implements ApplicationStatus.ActivityStateListener {
     /**
      * @param activity The current application {@link Activity}.
      * @param display The application {@link DisplayAndroid}.
@@ -78,8 +78,11 @@ public class VrWindowAndroid
     private class ActivityAndroidPermissionDelegate implements AndroidPermissionDelegate {
         @Override
         public boolean hasPermission(String permission) {
-            return ApiCompatibilityUtils.checkPermission(ContextUtils.getApplicationContext(),
-                           permission, Process.myPid(), Process.myUid())
+            return ApiCompatibilityUtils.checkPermission(
+                            ContextUtils.getApplicationContext(),
+                            permission,
+                            Process.myPid(),
+                            Process.myUid())
                     == PackageManager.PERMISSION_GRANTED;
         }
 

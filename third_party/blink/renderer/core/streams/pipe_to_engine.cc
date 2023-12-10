@@ -117,7 +117,7 @@ ScriptPromise PipeToEngine::Start(ReadableStream* readable,
   // 3. Assert: preventClose, preventAbort, and preventCancel are all
   // booleans.
 
-  // TODO(ricea): Implement |signal|.
+  // Already done by WebIDL bindings:
   // 4. If signal was not given, let signal be undefined.
   // 5. Assert: either signal is undefined, or signal implements AbortSignal.
 

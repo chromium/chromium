@@ -61,7 +61,6 @@ specific_include_rules = {
     "+ash/shell.h",
     "+ash/test/ash_test_base.h",
     "+ash/test/ash_test_views_delegate.h",
-    "+ash/wm/tablet_mode/tablet_mode_controller.h",
     "+base/test/scoped_feature_list.h",
     "+cc/test/pixel_comparator.h",
     "+chromeos/ash/services/assistant/test_support/mock_assistant.h",

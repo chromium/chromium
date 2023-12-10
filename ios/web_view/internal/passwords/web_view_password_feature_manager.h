@@ -11,15 +11,13 @@ namespace syncer {
 class SyncService;
 }  // namespace syncer
 
-class PrefService;
-
 namespace ios_web_view {
 // An //ios/web_view implementation of password_manager::PasswordFeatureManager.
 class WebViewPasswordFeatureManager
     : public password_manager::PasswordFeatureManager {
  public:
-  WebViewPasswordFeatureManager(PrefService* pref_service,
-                                const syncer::SyncService* sync_service);
+  explicit WebViewPasswordFeatureManager(
+      const syncer::SyncService* sync_service);
 
   WebViewPasswordFeatureManager(const WebViewPasswordFeatureManager&) = delete;
   WebViewPasswordFeatureManager& operator=(
@@ -45,7 +43,6 @@ class WebViewPasswordFeatureManager
   bool IsBiometricAuthenticationBeforeFillingEnabled() const override;
 
  private:
-  PrefService* const pref_service_;
   const syncer::SyncService* const sync_service_;
 };
 }  // namespace ios_web_view

@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="pt-PT">
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> dos seus separadores não foram utilizados recentemente. Quer fechá-los?</translation>
+<translation id="1155815720264022949">Quer fechar os separadores antigos?</translation>
 <translation id="1215127405478249895">Reveja os separadores</translation>
 <translation id="125153950246128346">Toque para ver outro separador.</translation>
 <translation id="1499635324672558517">Fechar todos os separadores anónimos?</translation>
@@ -46,9 +47,11 @@
 <translation id="5073204694187207510">Ocultar grelha em ecrã inteiro</translation>
 <translation id="5076161749301278626">Ver críticas de lojas?</translation>
 <translation id="5082793167783849073">Compare páginas rapidamente através da criação de um grupo. Para começar, toque sem soltar num link.</translation>
+<translation id="5303274951032363933">{TABS_COUNT,plural, =1{Tem <ph name="TABS_COUNT_ONE" /> separador que não usou recentemente}other{Tem <ph name="TABS_COUNT_MANY" /> separadores que não usou recentemente}}</translation>
 <translation id="5339733443032484186">O seu último separador</translation>
 <translation id="5490235265819901748">Grupo de separadores expandido</translation>
 <translation id="5494920125229734069">Selecionar tudo</translation>
+<translation id="5545379293264651575">Fechar sem rever</translation>
 <translation id="5556417849629758491">Veja informações da loja, opção disponível junto à parte superior do ecrã</translation>
 <translation id="5558362125926932819">Feche o grupo de separadores com <ph name="NUMBER_OF_TABS" /> separadores.</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" /> separadores agrupados</translation>
@@ -85,7 +88,6 @@
 <translation id="7885132941432959125">Mover separador para a direita</translation>
 <translation id="7966321538264951561">Ignore as sugestões.</translation>
 <translation id="8029301326595421733">Informações acerca desta loja abertas à altura total</translation>
-<translation id="814503310257431685">Ver todos</translation>
 <translation id="8205266828577616993">Mover separador para cima</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Fechar <ph name="TABS_COUNT_ONE" /> separador selecionado}other{Fechar <ph name="TABS_COUNT_MANY" /> separadores selecionados}}</translation>
 <translation id="8398929769197326728">Nova pasta – <ph name="CURRENT_TIMESTAMP_MS" /></translation>

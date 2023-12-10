@@ -23,6 +23,7 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/message_loop/message_pump_type.h"
+#include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -96,6 +97,15 @@ int APP_SHIM_ENTRY_POINT_NAME(const app_mode::ChromeAppModeInfo* info) {
     ChromeCrashReporterClient::Create();
     crash_reporter::InitializeCrashpad(true, "app_shim");
 
+    base::PathService::OverrideAndCreateIfNeeded(
+        chrome::DIR_USER_DATA, user_data_dir, /*is_absolute=*/false,
+        /*create=*/false);
+
+    // Initialize features and field trials, either from command line or from
+    // file in user data dir.
+    AppShimController::PreInitFeatureState(
+        *base::CommandLine::ForCurrentProcess());
+
     // Calculate the preferred locale used by Chrome. We can't use
     // l10n_util::OverrideLocaleWithCocoaLocale() because it calls
     // [base::apple::OuterBundle() preferredLocalizations] which gets
@@ -139,31 +149,13 @@ int APP_SHIM_ENTRY_POINT_NAME(const app_mode::ChromeAppModeInfo* info) {
     base::Thread* io_thread = new base::Thread("CrAppShimIO");
     io_thread->StartWithOptions(std::move(io_thread_options));
 
-    // It's necessary to initialize a FeatureList and call Mojo's InitFeatures()
-    // to ensure we're using the same IPC implementation as the browser.
-    auto feature_list = std::make_unique<base::FeatureList>();
-    if (info->mojo_ipcz_config ==
-        app_mode::MojoIpczConfig::kUseCommandLineFeatures) {
-      const auto& command_line = *base::CommandLine::ForCurrentProcess();
-      feature_list->InitializeFromCommandLine(
-          command_line.GetSwitchValueASCII(switches::kEnableFeatures),
-          command_line.GetSwitchValueASCII(switches::kDisableFeatures));
-
-    } else {
-      const bool mojo_ipcz_enabled =
-          info->mojo_ipcz_config == app_mode::MojoIpczConfig::kEnabled;
-      feature_list->RegisterExtraFeatureOverrides(
-          {{mojo::core::kMojoIpcz,
-            mojo_ipcz_enabled ? base::FeatureList::OVERRIDE_ENABLE_FEATURE
-                              : base::FeatureList::OVERRIDE_DISABLE_FEATURE}});
-    }
-    base::FeatureList::SetInstance(std::move(feature_list));
+    // It's necessary to call Mojo's InitFeatures() to ensure we're using the
+    // same IPC implementation as the browser.
     mojo::core::InitFeatures();
 
-    // Create and start a ThreadPool using default parameters, matching for
-    // example utility processes.
+    // Create a ThreadPool, but don't start it yet until we have fully
+    // initialized base::Feature and field trial support.
     base::ThreadPoolInstance::Create("AppShim");
-    base::ThreadPoolInstance::Get()->StartWithDefaultParams();
 
     // We're using an isolated Mojo connection between the browser and this
     // process, so this process must act as a broker.
@@ -196,6 +188,7 @@ int APP_SHIM_ENTRY_POINT_NAME(const app_mode::ChromeAppModeInfo* info) {
     controller_params.app_id = info->app_mode_id;
     controller_params.app_name = base::UTF8ToUTF16(info->app_mode_name);
     controller_params.app_url = GURL(info->app_mode_url);
+    controller_params.io_thread_runner = io_thread->task_runner();
 
     AppShimController controller(controller_params);
     base::RunLoop().Run();

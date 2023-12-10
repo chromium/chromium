@@ -86,6 +86,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="4195557071150719219">Zuletzt geöffnete Tabs in Chromium ansehen</translation>
 <translation id="4408912345039114853">Chromium-Sicherheitscheck ausführen</translation>
 <translation id="4432744876818348753">Wenn du Chromium optimal nutzen möchtest, melde dich an.</translation>
+<translation id="4498832288620833153">Fügt die eingegebenen URLs deiner Leseliste in Chromium hinzu.</translation>
 <translation id="452436063477828504">Achte darauf, dass du die Chromium-Daten in deinem Google-Konto jederzeit verwenden kannst</translation>
 <translation id="4555020257205549924">Wenn diese Funktion aktiviert ist, hast du in Chromium die Möglichkeit, Seiten in anderen Sprachen mithilfe von Google Übersetzer zu übersetzen. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="4576283463017113841">Dadurch wird die Seite mit den Einstellungen für Zahlungsmethoden in Chromium geöffnet.</translation>
@@ -106,6 +107,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="5048795749726991615">Verwende „Autofill“ in Chromium, um deine gespeicherten Passwörter ganz einfach in deinen anderen Apps abzurufen</translation>
 <translation id="5076601183701536878">Browserdaten in Chromium löschen</translation>
 <translation id="5131565040785979529">Deine Organisation, <ph name="DOMAIN" />, verwaltet das Konto, in dem du angemeldet bist, und die Nutzung von Chromium.</translation>
+<translation id="5146749061471423558">Lesezeichen zu Chromium hinzufügen</translation>
 <translation id="5171868502429358653">In Chromium anmelden</translation>
 <translation id="5213683223491576284">Dadurch wird der Passwortmanager in Chromium geöffnet.</translation>
 <translation id="5224391634244552924">Keine gespeicherten Passwörter. Chromium kann deine Passwörter prüfen, wenn du sie speicherst.</translation>
@@ -113,6 +115,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 
         Warte einige Minuten, bevor du dich abmeldest. Wenn du dich jetzt abmeldest, werden diese Daten gelöscht.</translation>
 <translation id="5308226104666789935">Chromium kann nicht nach Aktualisierungen suchen</translation>
+<translation id="5311557153294205270">Fügt die eingegebenen URLs zu deinen Lesezeichen in Chromium hinzu.</translation>
 <translation id="5396916991083608703">Chromium als Standardbrowser festlegen?</translation>
 <translation id="5453478652154926037">Chromium kann deine Passwörter nicht prüfen.</translation>
 <translation id="5521125884468363740">Melde dich an und aktiviere die Synchronisierung, um deine Tabs überall dort aufzurufen, wo du Chromium verwendest</translation>
@@ -164,7 +167,6 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="6911341667534646387">Chromium-Daten in deinem Google-Konto weiterhin verwenden</translation>
 <translation id="7006920032187763988">Du kannst die im Passwortmanager gespeicherten Passwörter in anderen Apps auf deinem iPad verwenden.</translation>
 <translation id="7018284295775193585">Chromium kann nicht aktualisiert werden</translation>
-<translation id="7025471822960602362">Erkannte Pakete in Chromium verfolgen</translation>
 <translation id="7045244423563602563">Chromium personalisieren</translation>
 <translation id="7055269218854630176">Deine Organisation, <ph name="DOMAIN" />, verwaltet dieses Konto und die Nutzung von Chromium. Dein Administrator kann einzelne Funktionen einrichten oder einschränken.</translation>
 <translation id="7099326575020694068">Chromium kann die Kamera nicht im Modus "Geteilte Ansicht" nutzen</translation>
@@ -194,6 +196,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="7928628054454574139">Chromium immer öffnen, wenn du auf Links in anderen Apps tippst</translation>
 <translation id="7931842119211730154">Inkognitotabs sperren, wenn Chromium geschlossen wird</translation>
 <translation id="7934404985878918282">Chromium-Leseliste ansehen</translation>
+<translation id="7971753607796745700">Leselisteneintrag zu Chromium hinzufügen</translation>
 <translation id="7980860476903281594">Chromium teilt deinen Standort mit Websites, für die du das zulässt.</translation>
 <translation id="7995166854192397899">Die Vorschläge basieren auf deinen Browseraktivitäten auf deinen anderen Geräten. Melde dich auf allen deinen Geräten in Chromium an, um Vorschläge zu erhalten.</translation>
 <translation id="800195749539500647">Chromium optimal nutzen</translation>

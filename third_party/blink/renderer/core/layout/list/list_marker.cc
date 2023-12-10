@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/layout/list/list_marker.h"
 
+#include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/css/counter_style.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_rect.h"
@@ -35,6 +36,17 @@ namespace {
 
 LayoutUnit DisclosureSymbolSize(const ComputedStyle& style) {
   return LayoutUnit(style.SpecifiedFontSize() * style.EffectiveZoom() * 0.66);
+}
+
+void DestroyLayoutObject(LayoutObject* layout_object) {
+  // AXObjects are normally removed from destroyed layout objects in
+  // Node::DetachLayoutTree(), but as the list marker implementation manually
+  // destroys the layout objects, it must manually remove the accessibility
+  // objects for them as well.
+  if (auto* cache = layout_object->GetDocument().ExistingAXObjectCache()) {
+    cache->RemoveAXObjectsInLayoutSubtree(layout_object);
+  }
+  layout_object->Destroy();
 }
 
 }  // namespace
@@ -255,9 +267,9 @@ void ListMarker::UpdateMarkerContentIfNeeded(LayoutObject& marker) {
           To<LayoutImage>(child)->ImageResource()->ImagePtr() !=
               list_style_image->Data()) {
         if (UNLIKELY(IsA<LayoutTextCombine>(child->Parent()))) {
-          child->Parent()->Destroy();
+          DestroyLayoutObject(child->Parent());
         } else {
-          child->Destroy();
+          DestroyLayoutObject(child);
         }
         child = nullptr;
       }
@@ -295,8 +307,9 @@ void ListMarker::UpdateMarkerContentIfNeeded(LayoutObject& marker) {
           style_parent.StyleRef(), marker.StyleRef().Display());
   if (IsA<LayoutTextFragment>(child))
     return child->SetStyle(text_style);
-  if (child)
-    child->Destroy();
+  if (child) {
+    DestroyLayoutObject(child);
+  }
 
   auto* const new_text = LayoutTextFragment::CreateAnonymous(
       marker.GetDocument(), StringImpl::empty_, 0, 0);

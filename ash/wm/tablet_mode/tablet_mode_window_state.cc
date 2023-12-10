@@ -211,14 +211,14 @@ gfx::Rect TabletModeWindowState::GetBoundsInTabletMode(
   if (state_object->GetStateType() == WindowStateType::kPrimarySnapped) {
     return SplitViewController::Get(Shell::GetPrimaryRootWindow())
         ->GetSnappedWindowBoundsInParent(
-            SplitViewController::SnapPosition::kPrimary, window,
+            SnapPosition::kPrimary, window,
             state_object->snap_ratio().value_or(chromeos::kDefaultSnapRatio));
   }
 
   if (state_object->GetStateType() == WindowStateType::kSecondarySnapped) {
     return SplitViewController::Get(Shell::GetPrimaryRootWindow())
         ->GetSnappedWindowBoundsInParent(
-            SplitViewController::SnapPosition::kSecondary, window,
+            SnapPosition::kSecondary, window,
             state_object->snap_ratio().value_or(chromeos::kDefaultSnapRatio));
   }
 
@@ -344,12 +344,10 @@ void TabletModeWindowState::OnWMEvent(WindowState* window_state,
                    event->AsSnapEvent()->snap_action_source());
       break;
     case WM_EVENT_CYCLE_SNAP_PRIMARY:
-      CycleTabletSnap(window_state,
-                      SplitViewController::SnapPosition::kPrimary);
+      CycleTabletSnap(window_state, SnapPosition::kPrimary);
       break;
     case WM_EVENT_CYCLE_SNAP_SECONDARY:
-      CycleTabletSnap(window_state,
-                      SplitViewController::SnapPosition::kSecondary);
+      CycleTabletSnap(window_state, SnapPosition::kSecondary);
       break;
     case WM_EVENT_MINIMIZE:
       UpdateWindow(window_state, WindowStateType::kMinimized,
@@ -593,9 +591,8 @@ void TabletModeWindowState::UpdateBounds(
   }
 }
 
-void TabletModeWindowState::CycleTabletSnap(
-    WindowState* window_state,
-    SplitViewController::SnapPosition snap_position) {
+void TabletModeWindowState::CycleTabletSnap(WindowState* window_state,
+                                            SnapPosition snap_position) {
   aura::Window* window = window_state->window();
   SplitViewController* split_view_controller = SplitViewController::Get(window);
   // If |window| is already snapped in |snap_position|, then unsnap |window|.
@@ -611,7 +608,7 @@ void TabletModeWindowState::CycleTabletSnap(
     split_view_controller->SnapWindow(
         window, snap_position, WindowSnapActionSource::kKeyboardShortcutToSnap);
     window_state->ReadOutWindowCycleSnapAction(
-        snap_position == SplitViewController::SnapPosition::kPrimary
+        snap_position == SnapPosition::kPrimary
             ? IDS_WM_SNAP_WINDOW_TO_LEFT_ON_SHORTCUT
             : IDS_WM_SNAP_WINDOW_TO_RIGHT_ON_SHORTCUT);
     return;

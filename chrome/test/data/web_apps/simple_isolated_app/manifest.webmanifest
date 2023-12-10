@@ -10,7 +10,8 @@
     "clipboard-write": [ "*" ],
     "cross-origin-isolated": [ "*" ],
     "direct-sockets": [ "*" ],
-    "usb": [ "*" ]
+    "usb": [ "*" ],
+    "web-printing": [ "*" ]
   },
   "icons": [
     {

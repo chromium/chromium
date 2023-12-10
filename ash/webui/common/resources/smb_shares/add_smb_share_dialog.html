@@ -1,22 +1,9 @@
     <style include="cr-shared-style md-select">
-      :host-context([theme='legacy']) cr-dialog::part(wrapper) {
-        /* Subtract the internal padding in <cr-dialog>. */
-        padding: calc(24px - 20px);
-      }
-
-      :host-context([theme='legacy']) cr-dialog::part(dialog) {
-        background-color: var(--cros-bg-color-elevation-3);
-      }
-
-      :host-context([theme='refresh23']) cr-dialog::part(dialog) {
+      cr-dialog::part(dialog) {
         background-color: var(--cros-sys-dialog_container);
       }
 
-      :host-context([theme='legacy']) [slot=title] {
-        --cr-primary-text-color: var(--cros-text-color-primary);
-      }
-
-      :host-context([theme='refresh23']) [slot=title] {
+      [slot=title] {
         --cr-dialog-title-slot-padding-bottom: 32px;
         --cr-dialog-title-slot-padding-end: 32px;
         --cr-dialog-title-slot-padding-start: 32px;
@@ -25,30 +12,18 @@
         font: var(--cros-display-7-font);
       }
 
-      :host-context([theme='legacy']) [slot='button-container']  {
-        padding-bottom: 20px;
-        padding-top: 32px;
-      }
-
-      :host-context([theme='refresh23']) [slot='button-container'] {
+      [slot='button-container'] {
         --cr-dialog-button-container-padding-bottom: 28px;
         --cr-dialog-button-container-padding-horizontal: 32px;
         padding-top: 0;
       }
 
-      :host-context([theme='refresh23']) #dialog [slot=body] {
+      #dialog [slot=body] {
         --cr-dialog-body-padding-horizontal: 32px;
         --cr-form-field-bottom-spacing: 8px;
       }
 
-      :host-context([theme='legacy']) .md-select {
-        --md-select-bg-color: var(--cros-textfield-background-color);
-        --md-select-focus-shadow-color: var(--cros-focus-ring-color);
-        --md-select-text-color: var(--cros-text-color-primary);
-        width: 100%;
-      }
-
-      :host-context([theme='refresh23']) .md-select {
+      .md-select {
         --md-select-bg-color: var(--cros-sys-input_field_on_base);
         --md-select-focus-shadow-color: var(--cros-sys-focus_ring);
         --md-select-text-color: var(--cros-sys-on_surface);
@@ -58,28 +33,7 @@
         width: 100%;
       }
 
-      :host-context([theme='legacy']) cr-searchable-drop-down {
-        --cr-searchable-drop-down-bg-color: var(--cros-bg-color-elevation-2);
-        --cr-searchable-drop-down-icon-color-focus:
-            var(--cros-textfield-label-color);
-        --cr-searchable-drop-down-list-item-color:
-            var(--cros-text-color-primary);
-        --cr-searchable-drop-down-list-bg-color-selected:
-            var(--cros-ripple-color);
-        --cr-searchable-drop-down-list-bg-color-active:
-            var(--cros-ripple-color);
-        --cr-searchable-drop-down-shadow: var(--cros-elevation-2-shadow);
-        --cr-searchable-drop-down-spinner-color:
-            var(--cros-icon-color-prominent);
-        /* cr_searchable_drop_down will hard code its width without this
-          variable. */
-        --cr-searchable-drop-down-width: auto;
-        --cr-secondary-text-color: var(--cros-text-color-secondary);
-        --iron-icon-fill-color: var(--cros-textfield-label-color);
-        display: block;
-      }
-
-      :host-context([theme='refresh23']) cr-searchable-drop-down {
+      cr-searchable-drop-down {
         --cr-searchable-drop-down-bg-color: var(--cros-sys-base_elevated);
         --cr-searchable-drop-down-icon-color-focus:
             var(--cros-sys-on_surface);
@@ -97,17 +51,8 @@
         display: block;
       }
 
-      :host-context([theme='legacy']) cr-input,
-      :host-context([theme='legacy']) cr-searchable-drop-down::part(input) {
-        --cr-form-field-label-color: var(--cros-textfield-label-color);
-        --cr-input-background-color: var(--cros-textfield-background-color);
-        --cr-input-color: var(--cros-textfield-input-color);
-        --cr-input-error-color: var(--cros-textfield-label-color-error);
-        --cr-input-focus-color: var(--cros-textfield-label-color-focus);
-      }
-
-      :host-context([theme='refresh23']) cr-input,
-      :host-context([theme='refresh23']) cr-searchable-drop-down::part(input) {
+      cr-input,
+      cr-searchable-drop-down::part(input) {
         --cr-form-field-label-color: var(--cros-sys-on_surface);
         --cr-input-background-color: var(--cros-sys-input_field_on_base);
         --cr-input-border-radius: 8px;
@@ -127,17 +72,7 @@
         margin-bottom: var(--cr-form-field-bottom-spacing);
       }
 
-      :host-context([theme='legacy']) #saveCredentialsCheckbox {
-        --cr-checkbox-checked-box-color: var(--cros-icon-color-prominent);
-        --cr-checkbox-label-color: var(--cros-textfield-label-color);
-        --cr-checkbox-mark-color: var(--cros-bg-color);
-        --cr-checkbox-ripple-checked-color: var(--cros-focus-aura-color);
-        --cr-checkbox-ripple-opacity: 1;
-        --cr-checkbox-ripple-unchecked-color: var(--cros-ripple-color);
-        --cr-checkbox-unchecked-box-color: var(--cros-icon-color-primary);
-      }
-
-      :host-context([theme='refresh23']) #saveCredentialsCheckbox {
+      #saveCredentialsCheckbox {
         --cr-checkbox-checked-box-color: var(--cros-sys-primary);
         --cr-checkbox-label-color: var(--cros-sys-on_surface);
         --cr-checkbox-mark-color: var(--cros-sys-on_primary);
@@ -147,12 +82,7 @@
         --cr-checkbox-unchecked-box-color: var(--cros-sys-on_surface);
       }
 
-      :host-context([theme='legacy']):host-context(.focus-outline-visible)
-          #saveCredentialsCheckbox:focus-within {
-        --cr-checkbox-ripple-ring: 2px solid var(--cros-focus-ring-color);
-      }
-
-      :host-context([theme='refresh23']):host-context(.focus-outline-visible)
+      :host-context(.focus-outline-visible)
           #saveCredentialsCheckbox:focus-within {
         --cr-checkbox-ripple-ring: 2px solid var(--cros-sys-focus_ring);
       }
@@ -161,36 +91,7 @@
         --cros-checkbox-reserve-inline-start: 0px;
       }
 
-      :host-context([theme='legacy']) cr-button {
-        --active-bg: transparent;
-        --active-shadow:
-            0 1px 2px var(--cros-button-active-shadow-color-key-secondary),
-            0 1px 3px var(--cros-button-active-shadow-color-ambient-secondary);
-        --active-shadow-action:
-            0 1px 2px var(--cros-button-active-shadow-color-key-primary),
-            0 1px 3px var(--cros-button-active-shadow-color-ambient-primary);
-        --bg-action: var(--cros-button-background-color-primary);
-        --border-color: var(--cros-button-stroke-color-secondary);
-        --disabled-bg-action:
-            var(--cros-button-background-color-primary-disabled);
-        --disabled-bg: var(--cros-button-background-color-primary-disabled);
-        --disabled-border-color:
-            var(--cros-button-stroke-color-secondary-disabled);
-        --disabled-text-color:
-            var(--cros-button-label-color-secondary-disabled);
-        --hover-bg-action:
-            var(--cros-button-background-color-primary-hover-preblended);
-        --hover-bg-color: var(--cros-button-background-color-secondary-hover);
-        --hover-border-color: var(--cros-button-stroke-color-secondary-hover);
-        --ink-color: var(--cros-button-ripple-color-secondary);
-        --ripple-opacity-action: var(--cros-button-primary-ripple-opacity);
-        --ripple-opacity: var(--cros-button-secondary-ripple-opacity);
-        --text-color-action: var(--cros-button-label-color-primary);
-        --text-color: var(--cros-button-label-color-secondary);
-        position: relative;
-      }
-
-      :host-context([theme='refresh23']) cr-button {
+      cr-button {
         --active-bg: transparent;
         --active-shadow: none;
         --active-shadow-action: none;
@@ -215,36 +116,21 @@
         position: relative;
       }
 
-      :host-context([theme='refresh23']) cr-button.cancel-button {
+      cr-button.cancel-button {
         background-color: var(--cros-sys-primary_container);
       }
 
-      :host-context([theme='refresh23'])
-          cr-button.cancel-button:hover::part(hoverBackground) {
+      cr-button.cancel-button:hover::part(hoverBackground) {
         background-color: var(--cros-sys-hover_on_subtle);
         display: block;
       }
 
-      :host-context([theme='refresh23'])
-          cr-button.action-button:hover::part(hoverBackground) {
+      cr-button.action-button:hover::part(hoverBackground) {
         background-color: var(--cros-sys-hover_on_prominent);
         display: block;
       }
 
-      :host-context([theme='legacy']) cr-button.action-button {
-        --ink-color: var(--cros-button-ripple-color-primary);
-      }
-
-      :host-context([theme='legacy']):host-context(.focus-outline-visible)
-          cr-button:focus {
-        /* disable the focus shadow because we use outline below */
-        box-shadow: none;
-        outline: 2px solid var(--cros-focus-ring-color);
-        outline-offset: 2px;
-      }
-
-      :host-context([theme='refresh23']):host-context(.focus-outline-visible)
-          cr-button:focus {
+      :host-context(.focus-outline-visible) cr-button:focus {
         /* disable the focus shadow because we use outline below */
         box-shadow: none;
         outline: 2px solid var(--cros-sys-focus_ring);
@@ -264,21 +150,11 @@
         height: 32px;
       }
 
-      :host-context([theme='legacy']) #general-error-icon {
-        --iron-icon-fill-color: var(--cros-icon-color-alert);
-      }
-
-      :host-context([theme='refresh23']) #general-error-icon {
+      #general-error-icon {
         --iron-icon-fill-color: var(--cros-sys-error);
       }
 
-      :host-context([theme='legacy']) #general-error-message {
-        color: var(--cros-text-color-alert);
-        display: inline-block;
-        font-size: 10px;
-      }
-
-      :host-context([theme='refresh23']) #general-error-message {
+      #general-error-message {
         color: var(--cros-sys-error);
         display: inline-block;
         font-size: 10px;

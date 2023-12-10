@@ -32,6 +32,7 @@ class UkmDataManagerImpl : public UkmDataManager {
 
   // UkmDataManager implementation:
   void Initialize(const base::FilePath& database_path,
+                  bool in_memory,
                   UkmObserver* ukm_observer) override;
   bool IsUkmEngineEnabled() override;
   void StartObservingUkm(const UkmConfig& config) override;
@@ -53,7 +54,7 @@ class UkmDataManagerImpl : public UkmDataManager {
   void RunCleanupTask();
 
   int ref_count_ = 0;
-  raw_ptr<UkmObserver, DanglingUntriaged> ukm_observer_ = nullptr;
+  raw_ptr<UkmObserver> ukm_observer_ = nullptr;
   std::unique_ptr<UkmDatabase> ukm_database_;
   std::unique_ptr<UrlSignalHandler> url_signal_handler_;
   std::unique_ptr<UkmConfig> pending_ukm_config_;

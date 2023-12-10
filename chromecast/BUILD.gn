@@ -475,7 +475,7 @@ if (is_android) {
       "//content/public/android:content_junit_tests",
       "//net/android:net_junit_tests",
       "//testing/android/junit:junit_unit_tests",
-      "//ui/android:ui_junit_tests",
+      "//ui:ui_junit_tests",
     ]
   }
 

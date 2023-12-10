@@ -155,7 +155,7 @@ IN_PROC_BROWSER_TEST_F(ProfileNetworkContextServiceBrowsertest,
                                        TRAFFIC_ANNOTATION_FOR_TESTS);
 
   simple_loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
-      loader_factory(), simple_loader_helper.GetCallback());
+      loader_factory(), simple_loader_helper.GetCallbackDeprecated());
   simple_loader_helper.WaitForCallback();
   ASSERT_TRUE(simple_loader_helper.response_body());
 
@@ -237,7 +237,7 @@ IN_PROC_BROWSER_TEST_F(ProfileNetworkContextServiceBrowsertest, BrotliEnabled) {
       network::SimpleURLLoader::Create(std::move(request),
                                        TRAFFIC_ANNOTATION_FOR_TESTS);
   simple_loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
-      loader_factory(), simple_loader_helper.GetCallback());
+      loader_factory(), simple_loader_helper.GetCallbackDeprecated());
   simple_loader_helper.WaitForCallback();
   ASSERT_TRUE(simple_loader_helper.response_body());
   std::vector<std::string> encodings =
@@ -647,7 +647,7 @@ IN_PROC_BROWSER_TEST_F(ProfileNetworkContextServiceDiskCacheBrowsertest,
                                        TRAFFIC_ANNOTATION_FOR_TESTS);
 
   simple_loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
-      loader_factory(), simple_loader_helper.GetCallback());
+      loader_factory(), simple_loader_helper.GetCallbackDeprecated());
   simple_loader_helper.WaitForCallback();
   ASSERT_TRUE(simple_loader_helper.response_body());
 
@@ -746,8 +746,7 @@ class ProfileNetworkContextTrustTokensBrowsertest
         network::features::kTrustTokenOperationsRequiringOriginTrial;
     feature_list_.InitWithFeaturesAndParameters(
         // Enabled Features:
-        {{privacy_sandbox::kPrivacySandboxSettings3, {}},
-         {network::features::kPrivateStateTokens,
+        {{network::features::kPrivateStateTokens,
           {{field_trial_param.name,
             field_trial_param.GetName(
                 network::features::TrustTokenOriginTrialSpec::

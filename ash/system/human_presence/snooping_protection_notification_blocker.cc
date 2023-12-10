@@ -209,8 +209,8 @@ void SnoopingProtectionNotificationBlocker::OnBlockingStateChanged(
 void SnoopingProtectionNotificationBlocker::Close(bool by_user) {}
 
 void SnoopingProtectionNotificationBlocker::Click(
-    const absl::optional<int>& button_index,
-    const absl::optional<std::u16string>& reply) {
+    const std::optional<int>& button_index,
+    const std::optional<std::u16string>& reply) {
   if (!button_index.has_value())
     return;
   switch (button_index.value()) {

@@ -127,7 +127,7 @@ void TaskSession::DocumentSession::Trace(Visitor* visitor) const {
 void TaskSession::DocumentSession::Reset() {
   changed_content_.clear();
   captured_content_.clear();
-  detached_nodes_.Clear();
+  detached_nodes_.clear();
   sent_nodes_.clear();
   visible_sent_nodes_.clear();
   changed_nodes_.clear();

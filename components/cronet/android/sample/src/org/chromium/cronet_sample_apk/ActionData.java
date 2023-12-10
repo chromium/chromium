@@ -8,11 +8,13 @@ import org.chromium.net.ConnectionMigrationOptions;
 import org.chromium.net.CronetEngine;
 import org.chromium.net.DnsOptions;
 import org.chromium.net.QuicOptions;
+
 public class ActionData {
     private final CronetEngine.Builder mCronetEngineBuilder;
     private final ConnectionMigrationOptions.Builder mMigrationBuilder;
     private final QuicOptions.Builder mQuicBuilder;
     private final DnsOptions.Builder mDnsBuilder;
+
     private ActionData(ActionData.Builder builder) {
         this.mCronetEngineBuilder = builder.mCronetEngineBuilder;
         this.mMigrationBuilder = builder.mMigrationBuilder;

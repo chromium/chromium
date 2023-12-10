@@ -20,7 +20,6 @@
 #include "chrome/browser/segmentation_platform/ukm_data_manager_test_utils.h"
 #include "chrome/browser/segmentation_platform/ukm_database_client.h"
 #include "chrome/test/base/chrome_test_utils.h"
-#include "components/metrics_services_manager/metrics_services_manager.h"
 #include "components/optimization_guide/core/model_info.h"
 #include "components/optimization_guide/core/test_model_info_builder.h"
 #include "components/optimization_guide/proto/models.pb.h"
@@ -37,7 +36,6 @@
 #include "components/segmentation_platform/internal/segmentation_platform_service_impl.h"
 #include "components/segmentation_platform/internal/stats.h"
 #include "components/segmentation_platform/internal/ukm_data_manager.h"
-#include "components/segmentation_platform/public/config.h"
 #include "components/segmentation_platform/public/constants.h"
 #include "components/segmentation_platform/public/database_client.h"
 #include "components/segmentation_platform/public/features.h"
@@ -46,7 +44,6 @@
 #include "components/segmentation_platform/public/proto/model_metadata.pb.h"
 #include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 #include "components/segmentation_platform/public/result.h"
-#include "components/segmentation_platform/public/segment_selection_result.h"
 #include "components/segmentation_platform/public/segmentation_platform_service.h"
 #include "components/ukm/ukm_service.h"
 #include "content/public/test/browser_test.h"
@@ -110,8 +107,8 @@ class SegmentationPlatformTest : public PlatformBrowserTest {
     PrefService* pref_service = chrome_test_utils::GetProfile(this)->GetPrefs();
     std::unique_ptr<ClientResultPrefs> result_prefs_ =
         std::make_unique<ClientResultPrefs>(pref_service);
-    return result_prefs_->ReadClientResultFromPrefs(segmentation_key)
-        .has_value();
+    return result_prefs_->ReadClientResultFromPrefs(segmentation_key) !=
+           nullptr;
   }
 
   void OnClientResultPrefUpdated() {
@@ -508,7 +505,8 @@ IN_PROC_BROWSER_TEST_F(SegmentationPlatformTest,
 
 class SegmentationPlatformUkmModelTest : public SegmentationPlatformTest {
  public:
-  SegmentationPlatformUkmModelTest() : utils_(&ukm_recorder_) {}
+  SegmentationPlatformUkmModelTest()
+      : utils_(&ukm_recorder_, /*owned_db_client=*/false) {}
 
   void CreatedBrowserMainParts(content::BrowserMainParts* parts) override {
     PlatformBrowserTest::CreatedBrowserMainParts(parts);
@@ -567,7 +565,8 @@ IN_PROC_BROWSER_TEST_F(SegmentationPlatformUkmModelTest,
   while (!utils_.IsUrlInDatabase(kUrl1)) {
     base::RunLoop().RunUntilIdle();
   }
-  UkmDatabaseClient::GetInstance()
+  UkmDatabaseClientHolder::GetClientInstance(
+      chrome_test_utils::GetProfile(this))
       .GetUkmDataManager()
       ->GetUkmDatabase()
       ->CommitTransactionForTesting();

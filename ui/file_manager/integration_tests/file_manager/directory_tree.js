@@ -542,3 +542,64 @@ testcase.directoryTreeExpandFolderOnDelayExpansionVolume = async () => {
   await directoryTree.waitForItemToHaveChildrenByLabel(
       'middle-child-folder', /* hasChildren= */ true);
 };
+
+/**
+ * When drag a file and hover over the directory tree item, the item should be
+ * expanded and selected, current directory should also change to that folder.
+ */
+testcase.directoryTreeExpandAndSelectedOnDragMove = async () => {
+  // Create a file and a folder.
+  const entries = [
+    // file to drag.
+    ENTRIES.hello,
+    // folder to drag over and drop.
+    createFolderTestEntry('aaa'),
+  ];
+
+  // Open Files app.
+  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS, entries, []);
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.waitForSelectedItemByLabel('Downloads');
+
+  // File to drag.
+  const source =
+      `#file-list li[file-name="${ENTRIES.hello.nameText}"] .entry-name`;
+
+  // Drag file to the Downloads folder without drop.
+  const finishDragToDownloads = await directoryTree.dragFilesToItemByLabel(
+      source, 'Downloads', /* skipDrop= */ true);
+
+  // Downloads folder should be expanded.
+  await directoryTree.waitForItemToExpandByLabel('Downloads');
+
+  // Send dragleave on the Downloads folder and move the drag to aaa folder.
+  await finishDragToDownloads(
+      directoryTree.itemSelectorByLabel('Downloads'), /* dragleave= */ true);
+  await directoryTree.dragFilesToItemByLabel(
+      source, 'aaa', /* skipDrop= */ true);
+
+  // aaa folder should be expanded and selected.
+  await remoteCall.waitUntilCurrentDirectoryIsChanged(
+      appId, '/My files/Downloads/aaa');
+  await directoryTree.waitForSelectedItemByLabel('aaa');
+};
+
+
+/**
+ * When My Drive is active, clicking Google Drive shouldn't change the current
+ * directory.
+ */
+testcase.directoryTreeClickDriveRootWhenMyDriveIsActive = async () => {
+  // Open Files app.
+  const appId = await setupAndWaitUntilReady(RootPath.DRIVE, []);
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.waitForSelectedItemByLabel('My Drive');
+
+  // Select Google Drive.
+  await directoryTree.selectItemByLabel('Google Drive');
+
+  // My Drive should still be selected.
+  await directoryTree.waitForSelectedItemByLabel('My Drive');
+  // Current directory is still My Drive, not Google Drive.
+  await remoteCall.waitUntilCurrentDirectoryIsChanged(appId, '/My Drive');
+};

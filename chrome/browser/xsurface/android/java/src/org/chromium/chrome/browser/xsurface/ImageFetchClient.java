@@ -11,24 +11,19 @@ package org.chromium.chrome.browser.xsurface;
  * only be used for fetching images.
  */
 public interface ImageFetchClient {
-    /**
-     * HTTP response.
-     */
+    /** HTTP response. */
     public interface HttpResponse {
-        /**
-         * HTTP status code if there was a response, or a net::Error if not.
-         */
+        /** HTTP status code if there was a response, or a net::Error if not. */
         default int status() {
             return -2; // net::FAILED
         }
+
         default byte[] body() {
             return new byte[0];
         }
     }
 
-    /**
-     * HTTP response callback interface.
-     */
+    /** HTTP response callback interface. */
     public interface HttpResponseConsumer {
         default void requestComplete(HttpResponse response) {}
     }

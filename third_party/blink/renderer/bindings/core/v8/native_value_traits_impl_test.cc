@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/testing/internals.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -37,6 +38,7 @@ v8::Local<v8::Array> EvaluateScriptForArray(V8TestingScope& scope,
 }
 
 TEST(NativeValueTraitsImplTest, IDLInterface) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   DummyExceptionStateForTesting exception_state;
   Internals* internals = NativeValueTraits<Internals>::NativeValue(
@@ -49,6 +51,7 @@ TEST(NativeValueTraitsImplTest, IDLInterface) {
 }
 
 TEST(NativeValueTraitsImplTest, IDLRecord) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   {
     v8::Local<v8::Object> v8_object = v8::Object::New(scope.GetIsolate());
@@ -209,6 +212,7 @@ TEST(NativeValueTraitsImplTest, IDLRecord) {
 }
 
 TEST(NativeValueTraitsImplTest, IDLSequence) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   {
     v8::Local<v8::Array> v8_array = v8::Array::New(scope.GetIsolate());
@@ -325,6 +329,7 @@ TEST(NativeValueTraitsImplTest, IDLSequence) {
 }
 
 TEST(NativeValueTraitsImplTest, IDLBigint) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   {
     v8::Local<v8::BigInt> v8_bigint = v8::BigInt::New(scope.GetIsolate(), 123);

@@ -1,12 +1,5 @@
 This is a testharness.js-based test.
-[PASS] ImageData(w, h), width cannot be 0
-[PASS] ImageData(w, h), height cannot be 0
-[PASS] ImageData(w, h), exposed attributes check
-[PASS] ImageData(buffer, w), the buffer size must be a multiple of 4
-[PASS] ImageData(buffer, w), buffer size must be a multiple of the image width
-[PASS] ImageData(buffer, w, h), buffer.length == 4 * w * h must be true
 [FAIL] ImageData(buffer, w, opt h), Uint8ClampedArray argument type check
   assert_throws_js: function "function() {\n        new ImageData(new Int8Array(1), 1);\n    }" threw object "IndexSizeError: Failed to construct 'ImageData': The source width is zero or not a number." ("IndexSizeError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
-[PASS] ImageData(buffer, w, opt h), exposed attributes check
 Harness: the test ran to completion.
 

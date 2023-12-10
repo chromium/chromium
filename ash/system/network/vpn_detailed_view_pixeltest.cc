@@ -65,7 +65,7 @@ class VpnDetailedViewPixelTest : public AshTestBase {
     vpn_detailed_view_ = static_cast<VpnDetailedView*>(detailed_view);
   }
 
-  absl::optional<pixel_test::InitParams> CreatePixelTestInitParams()
+  std::optional<pixel_test::InitParams> CreatePixelTestInitParams()
       const override {
     return pixel_test::InitParams();
   }
@@ -122,7 +122,7 @@ TEST_F(VpnDetailedViewPixelTest, OnlyBuiltInVpn) {
   // Compare pixels.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "check_view",
-      /*revision_number=*/6, vpn_detailed_view_));
+      /*revision_number=*/10, vpn_detailed_view_));
 }
 
 TEST_F(VpnDetailedViewPixelTest, MultipleVpns) {
@@ -131,7 +131,7 @@ TEST_F(VpnDetailedViewPixelTest, MultipleVpns) {
   // Compare pixels.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "check_view",
-      /*revision_number=*/6, vpn_detailed_view_));
+      /*revision_number=*/10, vpn_detailed_view_));
 }
 
 }  // namespace ash

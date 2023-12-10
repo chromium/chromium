@@ -124,7 +124,13 @@ var TestRunner = class {
   }
 
   url(relative) {
-    if (relative.startsWith('http://') || relative.startsWith('https://') || relative.startsWith('file://'))
+    if (
+      relative.startsWith('http://') ||
+      relative.startsWith('https://') ||
+      relative.startsWith('file://') ||
+      relative.startsWith('chrome://') ||
+      relative === 'about:blank'
+    )
       return relative;
     return this._targetBaseURL + relative;
   }

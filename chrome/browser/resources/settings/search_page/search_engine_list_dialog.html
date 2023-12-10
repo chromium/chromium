@@ -1,4 +1,8 @@
 <style include="cr-shared-style settings-shared">
+  :host{
+    --icon-size: var(--search-engine-icon-size, 24px);
+  }
+
   .subtitle {
     font-size: 0.75rem;
     line-height: 22px;
@@ -21,8 +25,8 @@
 
   site-favicon {
     --site-favicon-border-radius: 4px;
-    --site-favicon-height: 24px;
-    --site-favicon-width: 24px;
+    --site-favicon-height: var(--icon-size);
+    --site-favicon-width: var(--icon-size);
   }
 
   #setAsDefaultButton {

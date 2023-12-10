@@ -13,12 +13,9 @@ namespace extensions {
 // This is a trivial test RulesRegistry that can only store and retrieve rules.
 class TestRulesRegistry : public RulesRegistry {
  public:
-  TestRulesRegistry(content::BrowserThread::ID owner_thread,
-                    const std::string& event_name,
-                    int rules_registry_id);
+  TestRulesRegistry(const std::string& event_name, int rules_registry_id);
   TestRulesRegistry(content::BrowserContext* browser_context,
                     const std::string& event_name,
-                    content::BrowserThread::ID owner_thread,
                     RulesCacheDelegate* cache_delegate,
                     int rules_registry_id);
 

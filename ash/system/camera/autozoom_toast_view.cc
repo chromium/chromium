@@ -10,6 +10,7 @@
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/unified/feature_pod_button.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
@@ -68,5 +69,8 @@ void AutozoomToastView::OnViewBlurred(views::View* observed_view) {
   DCHECK(observed_view == button_);
   controller_->StartAutoCloseTimer();
 }
+
+BEGIN_METADATA(AutozoomToastView)
+END_METADATA
 
 }  // namespace ash

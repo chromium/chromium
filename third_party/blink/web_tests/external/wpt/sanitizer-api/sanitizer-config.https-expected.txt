@@ -1,20 +1,23 @@
 This is a testharness.js-based test.
-Harness Error. harness_status.status = 1 , harness_status.message = Uncaught TypeError: Failed to construct 'Sanitizer': Failed to read the 'allowAttributes' property from 'SanitizerConfig': The object must have a callable @@iterator property.
-[PASS] SanitizerAPI creator without config.
-[PASS] SanitizerAPI creator with empty config.
-[PASS] SanitizerAPI creator with null as config.
-[PASS] SanitizerAPI creator with undefined as config.
-[PASS] SanitizerAPI creator with config ignore unknown values.
-[PASS] SanitizerAPI: allowElements stays is okay.
-[PASS] SanitizerAPI: allowElements modify is okay.
-[PASS] SanitizerAPI: allowElements config is not kept as reference.
-[PASS] SanitizerAPI: blockElements stays is okay.
-[PASS] SanitizerAPI: blockElements modify is okay.
-[PASS] SanitizerAPI: blockElements config is not kept as reference.
-[PASS] SanitizerAPI: dropElements stays is okay.
-[PASS] SanitizerAPI: dropElements modify is okay.
-[PASS] SanitizerAPI: dropElements config is not kept as reference.
-[FAIL] SanitizerAPI: allowAttributes stays is okay.
-  Failed to construct 'Sanitizer': Failed to read the 'allowAttributes' property from 'SanitizerConfig': The object must have a callable @@iterator property.
+[FAIL] SanitizerAPI: elements modify is okay.
+  assert_false: expected false got true
+[FAIL] SanitizerAPI: elements config is not kept as reference.
+  assert_false: expected false got true
+[FAIL] SanitizerAPI: replaceWithChildrenElements modify is okay.
+  assert_false: expected false got true
+[FAIL] SanitizerAPI: replaceWithChildrenElements config is not kept as reference.
+  assert_false: expected false got true
+[FAIL] SanitizerAPI: removeElements modify is okay.
+  assert_false: expected false got true
+[FAIL] SanitizerAPI: removeElements config is not kept as reference.
+  assert_false: expected false got true
+[FAIL] SanitizerAPI: attributes modify is okay.
+  assert_false: expected false got true
+[FAIL] SanitizerAPI: attributes config is not kept as reference.
+  assert_false: expected false got true
+[FAIL] SanitizerAPI: removeAttributes modify is okay.
+  assert_false: expected false got true
+[FAIL] SanitizerAPI: removeAttributes config is not kept as reference.
+  assert_false: expected false got true
 Harness: the test ran to completion.
 

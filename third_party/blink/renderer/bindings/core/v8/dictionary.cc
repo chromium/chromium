@@ -164,18 +164,20 @@ HashMap<String, String> Dictionary::GetOwnPropertiesAsStringHashMap(
       exception_state.RethrowV8Exception(try_catch.Exception());
       return HashMap<String, String>();
     }
-    V8StringResource<> string_key(key);
-    if (!string_key.Prepare(GetIsolate(), exception_state))
+    V8StringResource<> string_key(GetIsolate(), key);
+    if (!string_key.Prepare(exception_state)) {
       return HashMap<String, String>();
+    }
 
     v8::Local<v8::Value> value;
     if (!dictionary_object_->Get(V8Context(), key).ToLocal(&value)) {
       exception_state.RethrowV8Exception(try_catch.Exception());
       return HashMap<String, String>();
     }
-    V8StringResource<> string_value(value);
-    if (!string_value.Prepare(GetIsolate(), exception_state))
+    V8StringResource<> string_value(GetIsolate(), value);
+    if (!string_value.Prepare(exception_state)) {
       return HashMap<String, String>();
+    }
 
     if (!static_cast<const String&>(string_key).empty())
       own_properties.Set(string_key, string_value);
@@ -204,9 +206,10 @@ Vector<String> Dictionary::GetPropertyNames(
       exception_state.RethrowV8Exception(try_catch.Exception());
       return Vector<String>();
     }
-    V8StringResource<> string_key(key);
-    if (!string_key.Prepare(GetIsolate(), exception_state))
+    V8StringResource<> string_key(GetIsolate(), key);
+    if (!string_key.Prepare(exception_state)) {
       return Vector<String>();
+    }
 
     names.push_back(string_key);
   }

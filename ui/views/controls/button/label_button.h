@@ -14,6 +14,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/views/action_view_interface.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/label_button_label.h"
 #include "ui/views/controls/focus_ring.h"
@@ -25,6 +26,10 @@
 #include "ui/views/style/typography.h"
 #include "ui/views/widget/widget.h"
 
+namespace actions {
+class ActionItem;
+}
+
 namespace views {
 
 class InkDropContainerView;
@@ -32,9 +37,9 @@ class LabelButtonBorder;
 
 // LabelButton is a button with text and an icon.
 class VIEWS_EXPORT LabelButton : public Button, public NativeThemeDelegate {
- public:
-  METADATA_HEADER(LabelButton);
+  METADATA_HEADER(LabelButton, Button)
 
+ public:
   // Creates a LabelButton with pressed events sent to |callback| and label
   // |text|. |button_context| is a value from views::style::TextContext and
   // determines the appearance of |text|.
@@ -48,8 +53,6 @@ class VIEWS_EXPORT LabelButton : public Button, public NativeThemeDelegate {
   // Gets or sets the image shown for the specified button state.
   // GetImage returns the image for STATE_NORMAL if the state's image is empty.
   virtual gfx::ImageSkia GetImage(ButtonState for_state) const;
-  // TODO(http://crbug.com/1100034) prefer SetImageModel over SetImage().
-  void SetImage(ButtonState for_state, const gfx::ImageSkia& image);
 
   const ui::ImageModel& GetImageModel(ButtonState for_state) const;
   virtual void SetImageModel(ButtonState for_state,
@@ -148,6 +151,7 @@ class VIEWS_EXPORT LabelButton : public Button, public NativeThemeDelegate {
   void AddLayerToRegion(ui::Layer* new_layer,
                         views::LayerRegion region) override;
   void RemoveLayerFromRegions(ui::Layer* old_layer) override;
+  std::unique_ptr<ActionViewInterface> GetActionViewInterface() override;
 
   // NativeThemeDelegate:
   ui::NativeTheme::Part GetThemePart() const override;
@@ -301,6 +305,19 @@ class VIEWS_EXPORT LabelButton : public Button, public NativeThemeDelegate {
       AddFlipCanvasOnPaintForRTLUIChangedCallback(
           base::BindRepeating(&LabelButton::FlipCanvasOnPaintForRTLUIChanged,
                               base::Unretained(this)));
+};
+
+class VIEWS_EXPORT LabelButtonActionViewInterface
+    : public ButtonActionViewInterface {
+ public:
+  explicit LabelButtonActionViewInterface(LabelButton* action_view);
+  ~LabelButtonActionViewInterface() override = default;
+
+  // ButtonActionViewInterface:
+  void ActionItemChangedImpl(actions::ActionItem* action_item) override;
+
+ private:
+  raw_ptr<LabelButton> action_view_;
 };
 
 BEGIN_VIEW_BUILDER(VIEWS_EXPORT, LabelButton, Button)

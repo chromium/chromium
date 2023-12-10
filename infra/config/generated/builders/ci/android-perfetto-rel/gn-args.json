@@ -1,0 +1,14 @@
+{
+  "gn_args": {
+    "dcheck_always_on": false,
+    "debuggable_apks": false,
+    "ffmpeg_branding": "Chrome",
+    "is_component_build": false,
+    "is_debug": false,
+    "proprietary_codecs": true,
+    "target_cpu": "x64",
+    "target_os": "android",
+    "use_perfetto_client_library": true,
+    "use_remoteexec": true
+  }
+}

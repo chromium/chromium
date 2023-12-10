@@ -100,6 +100,7 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
       const GURL& script_source_url,
       const absl::optional<GURL>& bidding_wasm_helper_url,
       const absl::optional<GURL>& trusted_bidding_signals_url,
+      const std::string& trusted_bidding_signals_slot_size_param,
       const url::Origin& top_window_origin,
       mojom::AuctionWorkletPermissionsPolicyStatePtr permissions_policy_state,
       absl::optional<uint16_t> experiment_group_id);

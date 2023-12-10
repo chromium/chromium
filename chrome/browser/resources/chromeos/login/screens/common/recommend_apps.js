@@ -24,6 +24,8 @@ import {OobeAdaptiveDialog} from '../../components/dialogs/oobe_adaptive_dialog.
 import {OOBE_UI_STATE} from '../../components/display_manager_types.js';
 import {OobeAppsList} from '../../components/oobe_apps_list.js';
 
+import {getTemplate} from './recommend_apps.html.js';
+
 
 
 /**
@@ -73,7 +75,7 @@ class RecommendAppsElement extends RecommendAppsElementBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

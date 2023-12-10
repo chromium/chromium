@@ -6,12 +6,12 @@
 
 #include <utility>
 
+#include <optional>
 #include "base/json/json_string_value_serializer.h"
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "base/win/registry.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #include <windows.h>
 
@@ -41,15 +41,15 @@ bool DuplicateKeyHandle(HKEY source, base::win::RegKey* dest) {
 
 // Reads value |value_name| from |key| as a JSON string and returns it as
 // |base::Value|.
-absl::optional<base::Value::Dict> ReadValue(const base::win::RegKey& key,
-                                            const wchar_t* value_name) {
+std::optional<base::Value::Dict> ReadValue(const base::win::RegKey& key,
+                                           const wchar_t* value_name) {
   // presubmit: allow wstring
   std::wstring value_json;
   LONG result = key.ReadValue(value_name, &value_json);
   if (result != ERROR_SUCCESS) {
     SetLastError(result);
     PLOG(ERROR) << "Cannot read value '" << value_name << "'";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Parse the value.
@@ -62,12 +62,12 @@ absl::optional<base::Value::Dict> ReadValue(const base::win::RegKey& key,
   if (!value) {
     LOG(ERROR) << "Failed to parse '" << value_name << "': " << error_message
                << " (" << error_code << ").";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (!value->is_dict()) {
     LOG(ERROR) << "Failed to parse '" << value_name << "': not a dictionary.";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return std::move(*value).TakeDict();
@@ -192,7 +192,7 @@ PairingRegistry::Pairing PairingRegistryDelegateWin::Load(
   std::wstring value_name = base::UTF8ToWide(client_id);
 
   // Read unprivileged fields first.
-  absl::optional<base::Value::Dict> pairing =
+  std::optional<base::Value::Dict> pairing =
       ReadValue(unprivileged_, value_name.c_str());
   if (!pairing) {
     return PairingRegistry::Pairing();
@@ -200,7 +200,7 @@ PairingRegistry::Pairing PairingRegistryDelegateWin::Load(
 
   // Read the shared secret.
   if (privileged_.Valid()) {
-    absl::optional<base::Value::Dict> secret =
+    std::optional<base::Value::Dict> secret =
         ReadValue(privileged_, value_name.c_str());
     if (!secret) {
       return PairingRegistry::Pairing();
@@ -224,7 +224,7 @@ bool PairingRegistryDelegateWin::Save(const PairingRegistry::Pairing& pairing) {
   base::Value::Dict pairing_json = pairing.ToValue();
 
   // Extract the shared secret to a separate dictionary.
-  absl::optional<base::Value> secret_key =
+  std::optional<base::Value> secret_key =
       pairing_json.Extract(PairingRegistry::kSharedSecretKey);
   CHECK(secret_key.has_value());
   base::Value::Dict secret_json;

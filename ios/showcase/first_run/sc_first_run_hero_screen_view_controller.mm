@@ -68,32 +68,26 @@
 }
 
 - (UIButton*)createButton {
-  // TODO(crbug.com/1418068): Simplify after minimum version required is >=
-  // iOS 15.
   UIButton* button = [UIButton buttonWithType:UIButtonTypeSystem];
-  [button setTitle:@"Custom button" forState:UIControlStateNormal];
+  NSString* buttonTitle = @"Custom button";
 
-  if (@available(iOS 15, *)) {
-    UIButtonConfiguration* buttonConfiguration =
-        [UIButtonConfiguration plainButtonConfiguration];
-    button.configuration.contentInsets = NSDirectionalEdgeInsetsMake(
-        kButtonVerticalInsets, 0, kButtonVerticalInsets, 0);
-    button.configuration = buttonConfiguration;
-  }
-#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
-  else {
-    button.contentEdgeInsets =
-        UIEdgeInsetsMake(kButtonVerticalInsets, 0, kButtonVerticalInsets, 0);
-  }
-#endif  // __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
-
-  [button setBackgroundColor:[UIColor clearColor]];
+  UIButtonConfiguration* buttonConfiguration =
+      [UIButtonConfiguration plainButtonConfiguration];
+  buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
+      kButtonVerticalInsets, 0, kButtonVerticalInsets, 0);
+  buttonConfiguration.background.backgroundColor = [UIColor clearColor];
   UIColor* titleColor = [UIColor colorNamed:kBlueColor];
-  [button setTitleColor:titleColor forState:UIControlStateNormal];
-  button.titleLabel.font =
-      [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
+  buttonConfiguration.baseForegroundColor = titleColor;
+
+  UIFont* font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
+  NSDictionary* attributes = @{NSFontAttributeName : font};
+  NSMutableAttributedString* string =
+      [[NSMutableAttributedString alloc] initWithString:buttonTitle];
+  [string addAttributes:attributes range:NSMakeRange(0, string.length)];
+  buttonConfiguration.attributedTitle = string;
+  button.configuration = buttonConfiguration;
+
   button.translatesAutoresizingMaskIntoConstraints = NO;
-  button.titleLabel.adjustsFontForContentSizeCategory = YES;
   [button addTarget:self
                 action:@selector(didTapCustomActionButton)
       forControlEvents:UIControlEventTouchUpInside];

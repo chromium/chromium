@@ -7,8 +7,8 @@
 #include <math.h>
 
 #include "build/build_config.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_text_decoration_offset.h"
-#include "third_party/blink/renderer/core/paint/ng/ng_inline_paint_context.h"
+#include "third_party/blink/renderer/core/layout/text_decoration_offset.h"
+#include "third_party/blink/renderer/core/paint/inline_paint_context.h"
 #include "third_party/blink/renderer/core/paint/text_paint_style.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/geometry/length_functions.h"
@@ -60,7 +60,7 @@ static ResolvedUnderlinePosition ResolveUnderlinePosition(
 
 inline bool ShouldUseDecoratingBox(const ComputedStyle& style) {
   // Disable the decorating box for styles not in the tree, because they can't
-  // find the decorating box. For example, |NGHighlightPainter| creates a
+  // find the decorating box. For example, |HighlightPainter| creates a
   // |kPseudoIdHighlight| pseudo style on the fly.
   const PseudoId pseudo_id = style.StyleType();
   if (IsHighlightPseudoElement(pseudo_id))
@@ -267,7 +267,7 @@ TextDecorationInfo::TextDecorationInfo(
     LineRelativeOffset local_origin,
     LayoutUnit width,
     const ComputedStyle& target_style,
-    const NGInlinePaintContext* inline_context,
+    const InlinePaintContext* inline_context,
     const absl::optional<AppliedTextDecoration> selection_text_decoration,
     const AppliedTextDecoration* decoration_override,
     const Font* font_override,
@@ -458,7 +458,7 @@ LayoutUnit TextDecorationInfo::OffsetFromDecoratingBox() const {
 }
 
 void TextDecorationInfo::SetUnderlineLineData(
-    const NGTextDecorationOffset& decoration_offset) {
+    const TextDecorationOffset& decoration_offset) {
   DCHECK(HasUnderline());
   // Don't apply text-underline-offset to overlines. |line_offset| is zero.
   const Length line_offset = UNLIKELY(flip_underline_and_overline_)
@@ -475,7 +475,7 @@ void TextDecorationInfo::SetUnderlineLineData(
 }
 
 void TextDecorationInfo::SetOverlineLineData(
-    const NGTextDecorationOffset& decoration_offset) {
+    const TextDecorationOffset& decoration_offset) {
   DCHECK(HasOverline());
   // Don't apply text-underline-offset to overline.
   const Length line_offset = UNLIKELY(flip_underline_and_overline_)
@@ -502,7 +502,7 @@ void TextDecorationInfo::SetLineThroughLineData() {
 }
 
 void TextDecorationInfo::SetSpellingOrGrammarErrorLineData(
-    const NGTextDecorationOffset& decoration_offset) {
+    const TextDecorationOffset& decoration_offset) {
   DCHECK(HasSpellingOrGrammerError());
   DCHECK(!HasUnderline());
   DCHECK(!HasOverline());

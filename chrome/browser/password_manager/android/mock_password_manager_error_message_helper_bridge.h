@@ -21,8 +21,14 @@ class MockPasswordManagerErrorMessageHelperBridge
               (content::WebContents * web_contents),
               (override));
 
-  MOCK_METHOD(bool, ShouldShowErrorUI, (), (override));
-  MOCK_METHOD(void, SaveErrorUIShownTimestamp, (), (override));
+  MOCK_METHOD(bool,
+              ShouldShowErrorUI,
+              (content::WebContents * web_contents),
+              (override));
+  MOCK_METHOD(void,
+              SaveErrorUIShownTimestamp,
+              (content::WebContents * web_contents),
+              (override));
 };
 
 #endif  // CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_MOCK_PASSWORD_MANAGER_ERROR_MESSAGE_HELPER_BRIDGE_H_

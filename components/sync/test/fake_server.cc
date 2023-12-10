@@ -17,6 +17,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/test_file_util.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -34,40 +35,19 @@ using syncer::ModelTypeSet;
 
 namespace fake_server {
 
+FakeServer::FakeServer(const base::FilePath& loopback_server_dir) {
+  CHECK(!loopback_server_dir.empty());
+  // Needed by syncer::LoopbackServer.
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  loopback_server_ = std::make_unique<syncer::LoopbackServer>(
+      loopback_server_dir.AppendASCII("profile.pb"));
+  loopback_server_->set_observer_for_tests(this);
+}
+
 FakeServer::FakeServer()
-    : commit_error_type_(sync_pb::SyncEnums::SUCCESS),
-      error_type_(sync_pb::SyncEnums::SUCCESS),
-      alternate_triggered_errors_(false),
-      request_counter_(0),
-      disallow_sending_encryption_keys_(false) {
-  base::ScopedAllowBlockingForTesting allow_blocking;
-  loopback_server_storage_ = std::make_unique<base::ScopedTempDir>();
-  if (!loopback_server_storage_->CreateUniqueTempDir()) {
-    NOTREACHED() << "Creating temp dir failed.";
-  }
-  loopback_server_ = std::make_unique<syncer::LoopbackServer>(
-      loopback_server_storage_->GetPath().AppendASCII("profile.pb"));
-  loopback_server_->set_observer_for_tests(this);
-}
+    : FakeServer(base::CreateUniqueTempDirectoryScopedToTest()) {}
 
-FakeServer::FakeServer(const base::FilePath& user_data_dir)
-    : commit_error_type_(sync_pb::SyncEnums::SUCCESS),
-      error_type_(sync_pb::SyncEnums::SUCCESS),
-      alternate_triggered_errors_(false),
-      request_counter_(0),
-      disallow_sending_encryption_keys_(false) {
-  base::ScopedAllowBlockingForTesting allow_blocking;
-  base::FilePath loopback_server_path =
-      user_data_dir.AppendASCII("FakeSyncServer");
-  loopback_server_ = std::make_unique<syncer::LoopbackServer>(
-      loopback_server_path.AppendASCII("profile.pb"));
-  loopback_server_->set_observer_for_tests(this);
-}
-
-FakeServer::~FakeServer() {
-  base::ScopedAllowBlockingForTesting allow_blocking;
-  loopback_server_storage_.reset();
-}
+FakeServer::~FakeServer() = default;
 
 namespace {
 

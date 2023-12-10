@@ -8,7 +8,7 @@
 #include <fuchsia/web/cpp/fidl.h>
 #include <memory>
 
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 
 namespace cast_api_bindings {
 

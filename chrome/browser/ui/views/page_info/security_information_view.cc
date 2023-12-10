@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/page_info/security_information_view.h"
 
+#include <utility>
+
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/views/accessibility/non_accessible_image_view.h"
@@ -205,14 +207,14 @@ void SecurityInformationView::AddPasswordReuseButtons(
   std::unique_ptr<views::MdTextButton> change_password_button;
   if (change_password_template) {
     change_password_button = std::make_unique<views::MdTextButton>(
-        change_password_callback,
+        std::move(change_password_callback),
         l10n_util::GetStringUTF16(change_password_template));
     change_password_button->SetProminent(true);
     change_password_button->SetID(
         PageInfoViewFactory::VIEW_ID_PAGE_INFO_BUTTON_CHANGE_PASSWORD);
   }
   auto allowlist_password_reuse_button = std::make_unique<views::MdTextButton>(
-      password_reuse_callback,
+      std::move(password_reuse_callback),
       l10n_util::GetStringUTF16(IDS_PAGE_INFO_ALLOWLIST_PASSWORD_REUSE_BUTTON));
   allowlist_password_reuse_button->SetID(
       PageInfoViewFactory::VIEW_ID_PAGE_INFO_BUTTON_ALLOWLIST_PASSWORD_REUSE);

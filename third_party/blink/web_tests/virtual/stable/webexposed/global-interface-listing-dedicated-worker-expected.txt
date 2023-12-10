@@ -539,6 +539,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method requestPermission
 [Worker] interface FileSystemSyncAccessHandle
 [Worker]     attribute @@toStringTag
+[Worker]     getter mode
 [Worker]     method close
 [Worker]     method constructor
 [Worker]     method flush
@@ -548,6 +549,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method write
 [Worker] interface FileSystemWritableFileStream : WritableStream
 [Worker]     attribute @@toStringTag
+[Worker]     getter mode
 [Worker]     method constructor
 [Worker]     method seek
 [Worker]     method truncate
@@ -667,7 +669,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method popDebugGroup
 [Worker]     method pushDebugGroup
 [Worker]     method resolveQuerySet
-[Worker]     method writeTimestamp
 [Worker]     setter label
 [Worker] interface GPUCompilationInfo
 [Worker]     attribute @@toStringTag
@@ -1858,6 +1859,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     setter username
 [Worker] interface URLPattern
 [Worker]     attribute @@toStringTag
+[Worker]     getter hasRegExpGroups
 [Worker]     getter hash
 [Worker]     getter hostname
 [Worker]     getter password

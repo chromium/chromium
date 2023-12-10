@@ -21,10 +21,7 @@ const char kTestVmConfig[] = "vm_config";
 
 class BruschettaUninstallerViewBrowserTest : public DialogBrowserTest {
  public:
-  BruschettaUninstallerViewBrowserTest() {
-    feature_list_.InitWithFeatures({ash::features::kBruschetta}, {});
-  }
-
+  BruschettaUninstallerViewBrowserTest() = default;
   BruschettaUninstallerViewBrowserTest(
       const BruschettaUninstallerViewBrowserTest&) = delete;
   BruschettaUninstallerViewBrowserTest& operator=(
@@ -50,8 +47,6 @@ class BruschettaUninstallerViewBrowserTest : public DialogBrowserTest {
     run_loop.Run();
     EXPECT_EQ(nullptr, ActiveView());
   }
-
-  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(BruschettaUninstallerViewBrowserTest, InvokeUi_default) {

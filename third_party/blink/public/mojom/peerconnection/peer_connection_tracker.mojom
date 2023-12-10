@@ -57,9 +57,6 @@ interface PeerConnectionManager {
     // Requests standard PeerConnection stats for webrtc-internals.
     GetStandardStats();
 
-    // Requests legacy PeerConnection stats for webrtc-internals.
-    GetLegacyStats();
-
     // Requests a state dump for webrtc-internals.
     GetCurrentState();
 };

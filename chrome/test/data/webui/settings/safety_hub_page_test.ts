@@ -7,7 +7,7 @@ import 'chrome://settings/lazy_load.js';
 
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {CardInfo, CardState, ContentSettingsTypes, SafetyHubBrowserProxyImpl, SafetyHubEvent,SettingsSafetyHubPageElement} from 'chrome://settings/lazy_load.js';
-import {LifetimeBrowserProxyImpl, PasswordManagerImpl, PasswordManagerPage, Router, routes} from 'chrome://settings/settings.js';
+import {LifetimeBrowserProxyImpl, MetricsBrowserProxyImpl, PasswordManagerImpl, PasswordManagerPage, Router, routes} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isChildVisible} from 'chrome://webui-test/test_util.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -15,6 +15,7 @@ import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestLifetimeBrowserProxy} from './test_lifetime_browser_proxy.js';
 import {TestSafetyHubBrowserProxy} from './test_safety_hub_browser_proxy.js';
 import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
+import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 // clang-format on
 
 suite('SafetyHubPage', function() {
@@ -22,6 +23,7 @@ suite('SafetyHubPage', function() {
   let lifetimeBrowserProxy: TestLifetimeBrowserProxy;
   let safetyHubBrowserProxy: TestSafetyHubBrowserProxy;
   let passwordManagerProxy: TestPasswordManagerProxy;
+  let metricsBrowserProxy: TestMetricsBrowserProxy;
 
   const notificationPermissionMockData = [{
     origin: 'www.example.com',
@@ -58,6 +60,8 @@ suite('SafetyHubPage', function() {
     safetyHubBrowserProxy.setVersionCardData(versionCardMockData);
     safetyHubBrowserProxy.setSafeBrowsingCardData(safeBrowsingCardMockData);
     SafetyHubBrowserProxyImpl.setInstance(safetyHubBrowserProxy);
+    metricsBrowserProxy = new TestMetricsBrowserProxy();
+    MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
 
     passwordManagerProxy = new TestPasswordManagerProxy();
     PasswordManagerImpl.setInstance(passwordManagerProxy);
@@ -226,6 +230,12 @@ suite('SafetyHubPage', function() {
     // Ensure the Password Manager Check-up page is shown.
     const param = await passwordManagerProxy.whenCalled('showPasswordManager');
     assertEquals(PasswordManagerPage.CHECKUP, param);
+
+    // Ensure the card state on click metrics are recorded.
+    const result =
+        await metricsBrowserProxy.whenCalled('recordSafetyHubCardStateClicked');
+    assertEquals('Settings.SafetyHub.PasswordsCard.StatusOnClick', result[0]);
+    assertEquals(passwordCardMockData.state, result[1]);
   });
 
   test('Password Card Clicked via Enter', async function() {
@@ -258,11 +268,17 @@ suite('SafetyHubPage', function() {
         versionCardMockData.subheader);
   });
 
-  test('Version Card Clicked When No Update Waiting', function() {
+  test('Version Card Clicked When No Update Waiting', async function() {
     testElement.$.version.click();
 
     // Ensure the About page is shown.
     assertEquals(routes.ABOUT, Router.getInstance().getCurrentRoute());
+
+    // Ensure the card state on click metrics are recorded.
+    const result =
+        await metricsBrowserProxy.whenCalled('recordSafetyHubCardStateClicked');
+    assertEquals('Settings.SafetyHub.VersionCard.StatusOnClick', result[0]);
+    assertEquals(versionCardMockData.state, result[1]);
   });
 
   test('Version Card Clicked When Update Waiting', async function() {
@@ -277,6 +293,12 @@ suite('SafetyHubPage', function() {
     await flushTasks();
 
     testElement.$.version.click();
+
+    // Ensure the card state on click metrics are recorded.
+    const result =
+        await metricsBrowserProxy.whenCalled('recordSafetyHubCardStateClicked');
+    assertEquals('Settings.SafetyHub.VersionCard.StatusOnClick', result[0]);
+    assertEquals(versionCardMockData.state, result[1]);
 
     // Ensure the browser is restarted.
     return lifetimeBrowserProxy.whenCalled('relaunch');
@@ -310,11 +332,18 @@ suite('SafetyHubPage', function() {
         safeBrowsingCardMockData.subheader);
   });
 
-  test('Safe Browsing Card Clicked', function() {
+  test('Safe Browsing Card Clicked', async function() {
     testElement.$.safeBrowsing.click();
 
     // Ensure the Security Settings page is shown.
     assertEquals(routes.SECURITY, Router.getInstance().getCurrentRoute());
+
+    // Ensure the card state on click metrics are recorded.
+    const result =
+        await metricsBrowserProxy.whenCalled('recordSafetyHubCardStateClicked');
+    assertEquals(
+        'Settings.SafetyHub.SafeBrowsingCard.StatusOnClick', result[0]);
+    assertEquals(safeBrowsingCardMockData.state, result[1]);
   });
 
   test('Safe Browsing Card Clicked via Enter', async function() {
@@ -329,5 +358,10 @@ suite('SafetyHubPage', function() {
         new KeyboardEvent('keydown', {key: ' ', bubbles: true}));
     // Ensure the Security Settings page is shown.
     assertEquals(routes.SECURITY, Router.getInstance().getCurrentRoute());
+  });
+
+  test('Dismiss all menu notifications on page load', async function() {
+    Router.getInstance().navigateTo(routes.SAFETY_HUB);
+    await safetyHubBrowserProxy.whenCalled('dismissActiveMenuNotification');
   });
 });

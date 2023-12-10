@@ -14,9 +14,9 @@
 #import "components/sync/base/features.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/signin/authentication_service.h"
-#import "ios/chrome/browser/signin/authentication_service_factory.h"
-#import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/ui/authentication/history_sync/history_sync_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_coordinator+protected.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_sync_screen_provider.h"
@@ -37,8 +37,6 @@ using base::UserMetricsAction;
 @end
 
 @implementation TwoScreensSigninCoordinator {
-  // The accessPoint and promoAction used for signin merics.
-  signin_metrics::AccessPoint _accessPoint;
   signin_metrics::PromoAction _promoAction;
 
   // This can be either the SigninScreenCoordinator or the
@@ -58,11 +56,12 @@ using base::UserMetricsAction;
                    accessPoint:(signin_metrics::AccessPoint)accessPoint
                    promoAction:(signin_metrics::PromoAction)promoAction {
   DCHECK(!browser->GetBrowserState()->IsOffTheRecord());
-  self = [super initWithBaseViewController:viewController browser:browser];
+  self = [super initWithBaseViewController:viewController
+                                   browser:browser
+                               accessPoint:accessPoint];
   if (self) {
     // This coordinator should not be used in the FRE.
     CHECK_NE(accessPoint, signin_metrics::AccessPoint::ACCESS_POINT_START_PAGE);
-    _accessPoint = accessPoint;
     _promoAction = promoAction;
   }
   return self;
@@ -74,14 +73,14 @@ using base::UserMetricsAction;
   [super start];
   if (base::FeatureList::IsEnabled(
           syncer::kReplaceSyncPromosWithSignInPromos)) {
-    if (_accessPoint ==
+    if (self.accessPoint ==
         signin_metrics::AccessPoint::ACCESS_POINT_SIGNIN_PROMO) {
       ChromeAccountManagerService* accountManagerService =
           ChromeAccountManagerServiceFactory::GetForBrowserState(
               self.browser->GetBrowserState());
       // TODO(crbug.com/779791): Need to add `CHECK(accountManagerService)`.
       [UpgradeSigninLogger
-          logSigninStartedWithAccessPoint:_accessPoint
+          logSigninStartedWithAccessPoint:self.accessPoint
                     accountManagerService:accountManagerService];
     }
     _screenProvider = [[UnoSigninScreenProvider alloc] init];
@@ -160,7 +159,7 @@ using base::UserMetricsAction;
           initWithBaseNavigationController:_navigationController
                                    browser:self.browser
                                   delegate:self
-                               accessPoint:_accessPoint
+                               accessPoint:self.accessPoint
                                promoAction:_promoAction];
     case kTangibleSync:
       return [[TangibleSyncScreenCoordinator alloc]
@@ -176,9 +175,10 @@ using base::UserMetricsAction;
                                   firstRun:NO
                              showUserEmail:NO
                                 isOptional:YES
-                               accessPoint:_accessPoint];
+                               accessPoint:self.accessPoint];
     case kDefaultBrowserPromo:
     case kChoice:
+    case kOmniboxPosition:
     case kStepsCompleted:
       break;
   }
@@ -191,7 +191,8 @@ using base::UserMetricsAction;
                 identity:(id<SystemIdentity>)identity {
   if (base::FeatureList::IsEnabled(
           syncer::kReplaceSyncPromosWithSignInPromos) &&
-      _accessPoint == signin_metrics::AccessPoint::ACCESS_POINT_SIGNIN_PROMO) {
+      self.accessPoint ==
+          signin_metrics::AccessPoint::ACCESS_POINT_SIGNIN_PROMO) {
     // TODO(crbug.com/1491419): `addedAccount` is not always `NO`. Need to fix
     // that call to have the right value.
     [UpgradeSigninLogger logSigninCompletedWithResult:result addedAccount:NO];

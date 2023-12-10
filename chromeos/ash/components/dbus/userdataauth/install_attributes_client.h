@@ -5,13 +5,14 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_DBUS_USERDATAAUTH_INSTALL_ATTRIBUTES_CLIENT_H_
 #define CHROMEOS_ASH_COMPONENTS_DBUS_USERDATAAUTH_INSTALL_ATTRIBUTES_CLIENT_H_
 
+#include <optional>
+
 #include "base/component_export.h"
 #include "base/functional/callback.h"
 #include "base/observer_list_types.h"
 #include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
 #include "chromeos/ash/components/dbus/cryptohome/rpc.pb.h"
 #include "chromeos/dbus/common/dbus_method_call_status.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace dbus {
 class Bus;
@@ -95,22 +96,22 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) InstallAttributesClient {
       GetFirmwareManagementParametersCallback callback) = 0;
 
   // Blocking version of InstallAttributesGet().
-  virtual absl::optional<::user_data_auth::InstallAttributesGetReply>
+  virtual std::optional<::user_data_auth::InstallAttributesGetReply>
   BlockingInstallAttributesGet(
       const ::user_data_auth::InstallAttributesGetRequest& request) = 0;
 
   // Blocking version of InstallAttributesSet().
-  virtual absl::optional<::user_data_auth::InstallAttributesSetReply>
+  virtual std::optional<::user_data_auth::InstallAttributesSetReply>
   BlockingInstallAttributesSet(
       const ::user_data_auth::InstallAttributesSetRequest& request) = 0;
 
   // Blocking version of InstallAttributesFinalize().
-  virtual absl::optional<::user_data_auth::InstallAttributesFinalizeReply>
+  virtual std::optional<::user_data_auth::InstallAttributesFinalizeReply>
   BlockingInstallAttributesFinalize(
       const ::user_data_auth::InstallAttributesFinalizeRequest& request) = 0;
 
   // Blocking version of InstallAttributesGetStatus().
-  virtual absl::optional<::user_data_auth::InstallAttributesGetStatusReply>
+  virtual std::optional<::user_data_auth::InstallAttributesGetStatusReply>
   BlockingInstallAttributesGetStatus(
       const ::user_data_auth::InstallAttributesGetStatusRequest& request) = 0;
 

@@ -5,11 +5,10 @@
 import {getDriveQuotaMetadata, getSizeStats} from '../../common/js/api.js';
 import {isRecentRoot} from '../../common/js/entry_utils.js';
 import {str} from '../../common/js/translations.js';
-import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
-import {DirectoryChangeEvent} from '../../externs/directory_change_event.js';
+import {VolumeType} from '../../common/js/volume_manager_types.js';
 
+import {CommandHandler} from './command_handler.js';
 import {DirectoryModel} from './directory_model.js';
-import {CommandHandler} from './file_manager_commands.js';
 import {ProvidersModel} from './providers_model.js';
 import {GearMenu} from './ui/gear_menu.js';
 import {MultiMenuButton} from './ui/multi_menu_button.js';
@@ -74,10 +73,12 @@ export class GearMenuController {
    * @private
    */
   onDirectoryChanged_(event) {
-    event = /** @type {DirectoryChangeEvent} */ (event);
-    // @ts-ignore: error TS2339: Property 'volumeChanged' does not exist on type
-    // 'Event'.
-    if (event.volumeChanged) {
+    const
+        customEvent = /**
+                         @type {import('./directory_model.js').DirectoryChangeEvent}
+                           */
+        (event);
+    if (customEvent.detail.volumeChanged) {
       this.refreshRemainingSpace_(true);
     }  // Show loading caption.
 
@@ -113,19 +114,16 @@ export class GearMenuController {
 
     // TODO(mtomasz): Add support for remaining space indication for provided
     // file systems.
-    if (currentVolumeInfo.volumeType ==
-            VolumeManagerCommon.VolumeType.PROVIDED ||
-        currentVolumeInfo.volumeType ==
-            VolumeManagerCommon.VolumeType.MEDIA_VIEW ||
-        currentVolumeInfo.volumeType ==
-            VolumeManagerCommon.VolumeType.ARCHIVE) {
+    if (currentVolumeInfo.volumeType == VolumeType.PROVIDED ||
+        currentVolumeInfo.volumeType == VolumeType.MEDIA_VIEW ||
+        currentVolumeInfo.volumeType == VolumeType.ARCHIVE) {
       // @ts-ignore: error TS2345: Argument of type 'null' is not assignable to
       // parameter of type 'Promise<SpaceInfo | undefined>'.
       this.gearMenu_.setSpaceInfo(null, false);
       return;
     }
 
-    if (currentVolumeInfo.volumeType == VolumeManagerCommon.VolumeType.DRIVE) {
+    if (currentVolumeInfo.volumeType == VolumeType.DRIVE) {
       this.gearMenu_.setSpaceInfo(
           // @ts-ignore: error TS2345: Argument of type 'Promise<SpaceInfo | {
           // totalSize: number; usedSize: number; warningMessage: string | null;

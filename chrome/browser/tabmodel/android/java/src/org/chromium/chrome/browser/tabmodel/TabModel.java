@@ -4,8 +4,10 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
@@ -68,8 +70,12 @@ public interface TabModel extends TabList {
      *
      * @return true if the tab was found.
      */
-    public boolean closeTab(Tab tab, @Nullable Tab recommendedNextTab, boolean animate,
-            boolean uponExit, boolean canUndo);
+    public boolean closeTab(
+            Tab tab,
+            @Nullable Tab recommendedNextTab,
+            boolean animate,
+            boolean uponExit,
+            boolean canUndo);
 
     /**
      * Returns which tab would be selected if the specified tab {@code id} were closed.
@@ -119,9 +125,7 @@ public interface TabModel extends TabList {
      */
     boolean isClosurePending(int tabId);
 
-    /**
-     * Commits all pending closures, closing all tabs that had a chance to be undone.
-     */
+    /** Commits all pending closures, closing all tabs that had a chance to be undone. */
     public void commitAllTabClosures();
 
     /**
@@ -157,6 +161,13 @@ public interface TabModel extends TabList {
     public TabList getComprehensiveModel();
 
     /**
+     * Returns a supplier of the current {@link Tab}. The tab may be null if no tab is present in
+     * the model or selected. The contained tab should always match the result of {@code
+     * getTabAt(index())}.
+     */
+    public @NonNull ObservableSupplier<Tab> getCurrentTabSupplier();
+
+    /**
      * Selects a tab by its index.
      * @param i    The index of the tab to select.
      * @param type The type of selection.
@@ -185,6 +196,12 @@ public interface TabModel extends TabList {
      * As a result of this call, all {@link Tab}s owned by this model should be destroyed.
      */
     public void destroy();
+
+    /**
+     * Returns a supplier for the number of tabs in this tab model. This does not count tabs that
+     * are pending closure.
+     */
+    public @NonNull ObservableSupplier<Integer> getTabCountSupplier();
 
     /**
      * Adds a newly created tab to this model.

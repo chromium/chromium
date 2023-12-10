@@ -37,7 +37,7 @@ class MLGraphTfLiteConverter final {
   // operand of graph if the `graph_output_name` is specified, returns the index
   // in the `tflite::Tensor` array if it's successful.
   int32_t SerializeTensor(
-      const Member<const MLOperand>& operand,
+      const MLOperand* operand,
       absl::optional<String> graph_output_name = absl::nullopt);
 
   // The following steps implement the `SerializeOperation` function:
@@ -63,7 +63,7 @@ class MLGraphTfLiteConverter final {
   // The `Buffer` in TF-Lite schema is the table of raw data buffers, it is used
   // for WebNN constant operations. Referenced by tensors with the index of
   // buffer.
-  uint32_t SerializeBuffer(const Member<const MLOperand>& constant);
+  uint32_t SerializeBuffer(const MLOperand* constant);
 
   flatbuffers::FlatBufferBuilder builder_;
   // `is_created_model_` indicates whether the tflite model is created and the

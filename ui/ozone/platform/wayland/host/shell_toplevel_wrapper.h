@@ -13,6 +13,7 @@
 
 namespace gfx {
 class Rect;
+class RoundedCornersF;
 }
 
 namespace ui {
@@ -90,7 +91,12 @@ class ShellToplevelWrapper {
   // Sets the top inset (header) height which is reserved or occupied by the top
   // window frame.
   virtual void SetTopInset(int height) = 0;
-#endif
+
+  // Sets the radius of each corner of the drop shadow associated with the
+  // window.
+  virtual void SetShadowCornersRadii(const gfx::RoundedCornersF& radii) = 0;
+
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   // Sets a native window to minimized state.
   virtual void SetMinimized() = 0;

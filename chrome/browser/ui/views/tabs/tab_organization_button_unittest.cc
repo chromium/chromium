@@ -18,7 +18,9 @@ class TabOrganizationButtonTest : public ChromeViewsTestBase {
 
     tab_strip_controller_ = std::make_unique<FakeBaseTabStripController>();
     button_ = std::make_unique<TabOrganizationButton>(
-        tab_strip_controller_.get(), nullptr,
+        tab_strip_controller_.get(),
+        base::BindRepeating(&TabOrganizationButtonTest::MockButtonCallback,
+                            base::Unretained(this)),
         base::BindRepeating(&TabOrganizationButtonTest::MockButtonCallback,
                             base::Unretained(this)),
         Edge::kRight);
@@ -47,15 +49,4 @@ TEST_F(TabOrganizationButtonTest, AppliesWidthFactor) {
   const int half_full_width = full_width / 2;
   ASSERT_LT(0, full_width);
   ASSERT_EQ(half_width, half_full_width);
-}
-
-TEST_F(TabOrganizationButtonTest, ClickInvokesCallback) {
-  ASSERT_EQ(0, button_callback_count_);
-
-  const gfx::Point origin(0, 0);
-  ui::MouseEvent event(ui::ET_MOUSE_PRESSED, origin, origin,
-                       base::TimeTicks::Now(), 0, 0);
-  button_->ButtonPressed(event);
-
-  ASSERT_EQ(1, button_callback_count_);
 }

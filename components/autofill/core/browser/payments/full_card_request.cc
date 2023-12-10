@@ -28,16 +28,17 @@
 namespace autofill {
 namespace payments {
 
-FullCardRequest::FullCardRequest(AutofillClient* autofill_client,
-                                 payments::PaymentsClient* payments_client,
-                                 PersonalDataManager* personal_data_manager)
+FullCardRequest::FullCardRequest(
+    AutofillClient* autofill_client,
+    payments::PaymentsNetworkInterface* payments_network_interface,
+    PersonalDataManager* personal_data_manager)
     : autofill_client_(CHECK_DEREF(autofill_client)),
-      payments_client_(payments_client),
+      payments_network_interface_(payments_network_interface),
       personal_data_manager_(personal_data_manager),
       result_delegate_(nullptr),
       ui_delegate_(nullptr),
       should_unmask_card_(false) {
-  DCHECK(payments_client_);
+  DCHECK(payments_network_interface_);
   DCHECK(personal_data_manager_);
 }
 
@@ -141,7 +142,8 @@ void FullCardRequest::GetFullCardImpl(
     return;
   }
 
-  request_ = std::make_unique<payments::PaymentsClient::UnmaskRequestDetails>();
+  request_ = std::make_unique<
+      payments::PaymentsNetworkInterface::UnmaskRequestDetails>();
   request_->card = card;
   request_->last_committed_primary_main_frame_origin =
       last_committed_primary_main_frame_origin;
@@ -158,7 +160,7 @@ void FullCardRequest::GetFullCardImpl(
                          card.ShouldUpdateExpiration()) ||
                         (card_type == CreditCard::RecordType::kVirtualCard);
   if (should_unmask_card_) {
-    payments_client_->Prepare();
+    payments_network_interface_->Prepare();
     request_->billing_customer_number =
         GetBillingCustomerId(personal_data_manager_);
   }
@@ -258,14 +260,15 @@ void FullCardRequest::OnDidGetUnmaskRiskData(const std::string& risk_data) {
 
 void FullCardRequest::SendUnmaskCardRequest() {
   real_pan_request_timestamp_ = AutofillTickClock::NowTicks();
-  payments_client_->UnmaskCard(*request_,
-                               base::BindOnce(&FullCardRequest::OnDidGetRealPan,
-                                              weak_ptr_factory_.GetWeakPtr()));
+  payments_network_interface_->UnmaskCard(
+      *request_, base::BindOnce(&FullCardRequest::OnDidGetRealPan,
+                                weak_ptr_factory_.GetWeakPtr()));
 }
 
 void FullCardRequest::OnDidGetRealPan(
     AutofillClient::PaymentsRpcResult result,
-    payments::PaymentsClient::UnmaskResponseDetails& response_details) {
+    payments::PaymentsNetworkInterface::UnmaskResponseDetails&
+        response_details) {
   // If the CVC field is populated, that means the user performed a CVC check.
   // If FIDO AssertionInfo is populated, then the user must have performed FIDO
   // authentication. Exactly one of these fields must be populated.
@@ -392,12 +395,13 @@ void FullCardRequest::OnFIDOVerificationCancelled() {
 
 void FullCardRequest::Reset() {
   weak_ptr_factory_.InvalidateWeakPtrs();
-  payments_client_->CancelRequest();
+  payments_network_interface_->CancelRequest();
   result_delegate_ = nullptr;
   ui_delegate_ = nullptr;
   request_.reset();
   should_unmask_card_ = false;
-  unmask_response_details_ = payments::PaymentsClient::UnmaskResponseDetails();
+  unmask_response_details_ =
+      payments::PaymentsNetworkInterface::UnmaskResponseDetails();
 }
 
 }  // namespace payments

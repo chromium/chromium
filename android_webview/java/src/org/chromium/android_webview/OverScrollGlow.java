@@ -9,9 +9,7 @@ import android.graphics.Canvas;
 import android.view.View;
 import android.widget.EdgeEffect;
 
-/**
- * This class manages the edge glow effect when a WebView is flung or pulled beyond the edges.
- */
+/** This class manages the edge glow effect when a WebView is flung or pulled beyond the edges. */
 class OverScrollGlow {
     private View mHostView;
 
@@ -101,8 +99,8 @@ class OverScrollGlow {
      * @param rangeY Maximum range for vertical scrolling
      * @param currentFlingVelocity Current fling velocity
      */
-    public void absorbGlow(int x, int y, int oldX, int oldY, int rangeX, int rangeY,
-            float currentFlingVelocity) {
+    public void absorbGlow(
+            int x, int y, int oldX, int oldY, int rangeX, int rangeY, float currentFlingVelocity) {
         if (mShouldPull) {
             // Not absorb the glow because the user is pulling the glow now.
             // TODO(hush): crbug.com/501556. Do not use "mShouldPull" to switch
@@ -202,17 +200,15 @@ class OverScrollGlow {
         return invalidateForGlow;
     }
 
-    /**
-     * @return True if any glow is still animating
-     */
+    /** @return True if any glow is still animating */
     public boolean isAnimating() {
-        return (!mEdgeGlowTop.isFinished() || !mEdgeGlowBottom.isFinished()
-                || !mEdgeGlowLeft.isFinished() || !mEdgeGlowRight.isFinished());
+        return (!mEdgeGlowTop.isFinished()
+                || !mEdgeGlowBottom.isFinished()
+                || !mEdgeGlowLeft.isFinished()
+                || !mEdgeGlowRight.isFinished());
     }
 
-    /**
-     * Release all glows from any touch pulls in progress.
-     */
+    /** Release all glows from any touch pulls in progress. */
     public void releaseAll() {
         mEdgeGlowTop.onRelease();
         mEdgeGlowBottom.onRelease();

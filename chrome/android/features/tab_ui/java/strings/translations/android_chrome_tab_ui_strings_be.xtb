@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="be">
 <translation id="1075622780330595106">Некалькі (<ph name="NUMBER_OF_TABS" />) укладак пэўны час не выкарыстоўваліся. Закрыць іх?</translation>
+<translation id="1155815720264022949">Хочаце закрыць старыя ўкладкі?</translation>
 <translation id="1215127405478249895">Прагляд укладак</translation>
 <translation id="125153950246128346">Націсніце, каб паглядзець іншую ўкладку</translation>
 <translation id="1499635324672558517">Закрыць усе ўкладкі ў рэжыме інкогніта?</translation>
@@ -46,9 +47,11 @@
 <translation id="5073204694187207510">Схаваць поўнаэкранную сетку</translation>
 <translation id="5076161749301278626">Паказаць водгукі аб краме?</translation>
 <translation id="5082793167783849073">Каб хутка параўнаць старонкі, можна стварыць групу. Для гэтага дакраніцеся да спасылкі і ўтрымлівайце яе.</translation>
+<translation id="5303274951032363933">{TABS_COUNT,plural, =1{Вы даўно не выкарыстоўвалі <ph name="TABS_COUNT_ONE" /> укладку}one{Вы даўно не выкарыстоўвалі <ph name="TABS_COUNT_MANY" /> укладку}few{Вы даўно не выкарыстоўвалі <ph name="TABS_COUNT_MANY" /> укладкі}many{Вы даўно не выкарыстоўвалі <ph name="TABS_COUNT_MANY" /> укладак}other{Вы даўно не выкарыстоўвалі <ph name="TABS_COUNT_MANY" /> укладкі}}</translation>
 <translation id="5339733443032484186">Ваша апошняя ўкладка</translation>
 <translation id="5490235265819901748">Група ўкладак разгорнута</translation>
 <translation id="5494920125229734069">Выбраць усё</translation>
+<translation id="5545379293264651575">Закрыць без разгляду</translation>
 <translation id="5556417849629758491">Прагледзець звесткі пра краму; гэты варыянт выбару даступны ўверсе экрана</translation>
 <translation id="5558362125926932819">Закрыць групу з наступнай колькасцю ўкладак: <ph name="NUMBER_OF_TABS" /></translation>
 <translation id="5580090775658607195">Укладак згрупавана: <ph name="TAB_COUNT" /></translation>
@@ -85,7 +88,6 @@
 <translation id="7885132941432959125">Перамясціць укладку ўправа</translation>
 <translation id="7966321538264951561">Адхіліць прапановы.</translation>
 <translation id="8029301326595421733">Інфармацыя пра гэту краму разгорнута на ўвесь экран</translation>
-<translation id="814503310257431685">Праглядзець усе</translation>
 <translation id="8205266828577616993">Перамясціць укладку ўверх</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Закрыць <ph name="TABS_COUNT_ONE" /> выбраную ўкладку}one{Закрыць <ph name="TABS_COUNT_MANY" /> выбраную ўкладку}few{Закрыць <ph name="TABS_COUNT_MANY" /> выбраныя ўкладкі}many{Закрыць <ph name="TABS_COUNT_MANY" /> выбраных укладак}other{Закрыць <ph name="TABS_COUNT_MANY" /> выбранай укладкі}}</translation>
 <translation id="8398929769197326728">Новая папка – <ph name="CURRENT_TIMESTAMP_MS" /></translation>

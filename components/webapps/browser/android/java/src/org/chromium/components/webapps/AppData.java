@@ -7,9 +7,7 @@ package org.chromium.components.webapps;
 import android.app.PendingIntent;
 import android.content.Intent;
 
-/**
- * Stores information about a particular app.
- */
+/** Stores information about a particular app. */
 public class AppData {
     // Immutable data about this app.
     private final String mSiteUrl;
@@ -25,7 +23,8 @@ public class AppData {
 
     /**
      * Creates a new AppData for the given page and package.
-     * @param siteUrl     URL for the site requesting the banner.
+     *
+     * @param siteUrl URL for the site requesting the banner.
      * @param packageName Name of the package associated with the app.
      */
     public AppData(String siteUrl, String packageName) {
@@ -35,6 +34,7 @@ public class AppData {
 
     /**
      * Returns the URL of the website requesting the banner.
+     *
      * @return The URL of the website.
      */
     public String siteUrl() {
@@ -43,6 +43,7 @@ public class AppData {
 
     /**
      * Returns the package name of the app.
+     *
      * @return The String containing the package name.
      */
     public String packageName() {
@@ -51,6 +52,7 @@ public class AppData {
 
     /**
      * Returns the title to display for the app in the banner.
+     *
      * @return The String to display.
      */
     public String title() {
@@ -59,6 +61,7 @@ public class AppData {
 
     /**
      * Returns the URL where the app icon can be retrieved from.
+     *
      * @return The URL to grab the icon from.
      */
     public String imageUrl() {
@@ -67,6 +70,7 @@ public class AppData {
 
     /**
      * Returns how well the app was rated, on a scale from 0 to 5.
+     *
      * @return The rating of the app.
      */
     public float rating() {
@@ -75,6 +79,7 @@ public class AppData {
 
     /**
      * Returns text to display on the install button when the app is not installed on the system.
+     *
      * @return The String to display.
      */
     public String installButtonText() {
@@ -82,8 +87,9 @@ public class AppData {
     }
 
     /**
-     * Returns the Intent used to send a user to a details page about the app.
-     * The IntentSender stored inside dictates what package needs to be launched.
+     * Returns the Intent used to send a user to a details page about the app. The IntentSender
+     * stored inside dictates what package needs to be launched.
+     *
      * @return Intent that triggers the details page.
      */
     public PendingIntent detailsIntent() {
@@ -92,6 +98,7 @@ public class AppData {
 
     /**
      * Returns the Intent that triggers the install.
+     *
      * @return Intent used to trigger the install.
      */
     public Intent installIntent() {
@@ -100,15 +107,21 @@ public class AppData {
 
     /**
      * Stores all of the data about the given app after it's been retrieved.
-     * @param title             App title.
-     * @param imageUrl          URL where the icon is located.
-     * @param rating            Rating of the app.
+     *
+     * @param title App title.
+     * @param imageUrl URL where the icon is located.
+     * @param rating Rating of the app.
      * @param installButtonText Text to display on the install button if it's not installed yet.
-     * @param detailsIntent     Intent to fire to launch the details page for the app
-     * @param installIntent     Intent to fire to trigger the purchase/install process.
+     * @param detailsIntent Intent to fire to launch the details page for the app
+     * @param installIntent Intent to fire to trigger the purchase/install process.
      */
-    public void setPackageInfo(String title, String imageUrl, float rating,
-            String installButtonText, PendingIntent detailsIntent, Intent installIntent) {
+    public void setPackageInfo(
+            String title,
+            String imageUrl,
+            float rating,
+            String installButtonText,
+            PendingIntent detailsIntent,
+            Intent installIntent) {
         mTitle = title;
         mImageUrl = imageUrl;
         mRating = rating;

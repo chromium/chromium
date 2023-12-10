@@ -117,15 +117,6 @@ void RecordTrustedVaultDownloadKeysStatus(
     TrustedVaultDownloadKeysStatusForUMA status,
     bool also_log_with_v1_suffix);
 
-// Records the outcome of verifying a device registration status, which is
-// achieved by trying to download keys (without actually having the need to
-// download keys), which is the reason why the same enum is used.
-// |also_log_with_v1_suffix| allows the caller to determine whether the local
-// device's registration is a V1 registration (that is, more reliable), which
-// causes a second histogram to be logged as well.
-void RecordVerifyRegistrationStatus(TrustedVaultDownloadKeysStatusForUMA status,
-                                    bool also_log_with_v1_suffix);
-
 void RecordTrustedVaultFileReadStatus(TrustedVaultFileReadStatusForUMA status);
 
 enum class IsOffTheRecord { kNo, kYes };

@@ -101,6 +101,7 @@ namespace http://www.w3.org/1999/xhtml
     property dir
     property dispatchEvent
     property draggable
+    property editContext
     property elementTiming
     property enterKeyHint
     property firstChild
@@ -952,6 +953,7 @@ html element select
     property selectedIndex
     property selectedOptions
     property setCustomValidity
+    property showPicker
     property size
     property type
     property validationMessage

@@ -57,6 +57,9 @@ class CONTENT_EXPORT AttributionTrigger {
     return verifications_;
   }
 
+  friend bool operator==(const AttributionTrigger&,
+                         const AttributionTrigger&) = default;
+
  private:
   attribution_reporting::SuitableOrigin reporting_origin_;
 

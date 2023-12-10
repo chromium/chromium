@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <optional>
 
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
@@ -34,7 +35,6 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/extension_dialog_auto_confirm.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/widget/any_widget_observer.h"
 

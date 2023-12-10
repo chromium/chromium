@@ -9,6 +9,7 @@ include_rules = [
   "+components/crash/core/app",
   "+components/crash/core/common",
   "+components/download/public/background_service/background_download_service.h",
+  "+components/enterprise/idle",
   "+components/favicon_base",
   "+components/favicon/core",
   "+components/feature_engagement",

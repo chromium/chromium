@@ -130,7 +130,6 @@ ChromeVoxEditableTextUnitTest = class extends AccessibilityTestBase {
 
 ChromeVoxEditableTextUnitTest.prototype.extraLibraries = [
   '../../../common/testing/assert_additions.js',
-  '../../../common/closure_shim.js',
 ];
 
 function createEditableText(value, start, end, isPassword, tts) {

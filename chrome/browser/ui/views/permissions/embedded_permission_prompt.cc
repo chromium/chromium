@@ -9,12 +9,14 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/views/permissions/embedded_permission_prompt_ask_view.h"
 #include "chrome/browser/ui/views/permissions/embedded_permission_prompt_base_view.h"
+#include "chrome/browser/ui/views/permissions/embedded_permission_prompt_content_scrim_view.h"
 #include "chrome/browser/ui/views/permissions/embedded_permission_prompt_policy_view.h"
 #include "chrome/browser/ui/views/permissions/embedded_permission_prompt_previously_denied_view.h"
 #include "chrome/browser/ui/views/permissions/embedded_permission_prompt_previously_granted_view.h"
 #include "chrome/browser/ui/views/permissions/embedded_permission_prompt_show_system_prompt_view.h"
 #include "chrome/browser/ui/views/permissions/embedded_permission_prompt_system_settings_view.h"
 #include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "content/public/browser/web_contents.h"
 
 #if BUILDFLAG(IS_MAC)
@@ -24,10 +26,17 @@
 
 namespace {
 
-EmbeddedPermissionPrompt::Variant HigherPriorityVariant(
-    EmbeddedPermissionPrompt::Variant a,
-    EmbeddedPermissionPrompt::Variant b) {
-  return std::max(a, b);
+bool CanGroupVariants(EmbeddedPermissionPrompt::Variant a,
+                      EmbeddedPermissionPrompt::Variant b) {
+  // Ask and PreviouslyDenied are a special case and can be grouped together.
+  if ((a == EmbeddedPermissionPrompt::Variant::kPreviouslyDenied &&
+       b == EmbeddedPermissionPrompt::Variant::kAsk) ||
+      (a == EmbeddedPermissionPrompt::Variant::kAsk &&
+       b == EmbeddedPermissionPrompt::Variant::kPreviouslyDenied)) {
+    return true;
+  }
+
+  return (a == b);
 }
 
 bool IsPermissionSetByAdministator(ContentSetting setting,
@@ -89,11 +98,6 @@ EmbeddedPermissionPrompt::~EmbeddedPermissionPrompt() {
   CloseView();
 }
 
-base::WeakPtr<permissions::PermissionPrompt::Delegate>
-EmbeddedPermissionPrompt::GetPermissionPromptDelegate() const {
-  return delegate_->GetWeakPtr();
-}
-
 // static
 EmbeddedPermissionPrompt::Variant
 EmbeddedPermissionPrompt::DeterminePromptVariant(
@@ -144,7 +148,6 @@ void EmbeddedPermissionPrompt::CloseCurrentViewAndMaybeShowNext(
       Profile::FromBrowserContext(web_contents()->GetBrowserContext()));
   content_settings::SettingInfo info;
 
-  embedded_prompt_variant_ = Variant::kUninitialized;
   for (const auto* request : delegate()->Requests()) {
     ContentSettingsType type = request->GetContentSettingsType();
     ContentSetting setting =
@@ -152,18 +155,19 @@ void EmbeddedPermissionPrompt::CloseCurrentViewAndMaybeShowNext(
                                delegate()->GetEmbeddingOrigin(), type, &info);
     Variant current_request_variant =
         DeterminePromptVariant(setting, info, type);
-    embedded_prompt_variant_ = HigherPriorityVariant(embedded_prompt_variant_,
-                                                     current_request_variant);
+    PrioritizeAndMergeNewVariant(current_request_variant, type);
   }
+
+  raw_ptr<EmbeddedPermissionPromptBaseView> prompt_view = nullptr;
 
   switch (embedded_prompt_variant_) {
     case Variant::kAsk:
-      prompt_view_ = new EmbeddedPermissionPromptAskView(
+      prompt_view = new EmbeddedPermissionPromptAskView(
           browser(), weak_factory_.GetWeakPtr());
       break;
     case Variant::kPreviouslyGranted:
       if (first_prompt) {
-        prompt_view_ = new EmbeddedPermissionPromptPreviouslyGrantedView(
+        prompt_view = new EmbeddedPermissionPromptPreviouslyGrantedView(
             browser(), weak_factory_.GetWeakPtr());
       } else {
         delegate()->FinalizeCurrentRequests();
@@ -171,24 +175,29 @@ void EmbeddedPermissionPrompt::CloseCurrentViewAndMaybeShowNext(
       }
       break;
     case Variant::kPreviouslyDenied:
-      prompt_view_ = new EmbeddedPermissionPromptPreviouslyDeniedView(
+      prompt_view = new EmbeddedPermissionPromptPreviouslyDeniedView(
           browser(), weak_factory_.GetWeakPtr());
       break;
     case Variant::kOsPrompt:
-      prompt_view_ = new EmbeddedPermissionPromptShowSystemPromptView(
+      prompt_view = new EmbeddedPermissionPromptShowSystemPromptView(
           browser(), weak_factory_.GetWeakPtr());
+// This view has no buttons, so the OS level prompt should be triggered at the
+// same time as the |EmbeddedPermissionPromptShowSystemPromptView|.
+#if BUILDFLAG(IS_MAC)
+      PromptForOsPermission();
+#endif
       break;
     case Variant::kOsSystemSettings:
-      prompt_view_ = new EmbeddedPermissionPromptSystemSettingsView(
+      prompt_view = new EmbeddedPermissionPromptSystemSettingsView(
           browser(), weak_factory_.GetWeakPtr());
       break;
     case Variant::kAdministratorGranted:
-      prompt_view_ = new EmbeddedPermissionPromptPolicyView(
+      prompt_view = new EmbeddedPermissionPromptPolicyView(
           browser(), weak_factory_.GetWeakPtr(),
           /*is_permission_allowed=*/true);
       break;
     case Variant::kAdministratorDenied:
-      prompt_view_ = new EmbeddedPermissionPromptPolicyView(
+      prompt_view = new EmbeddedPermissionPromptPolicyView(
           browser(), weak_factory_.GetWeakPtr(),
           /*is_permission_allowed=*/false);
       break;
@@ -196,24 +205,20 @@ void EmbeddedPermissionPrompt::CloseCurrentViewAndMaybeShowNext(
       NOTREACHED();
   }
 
-  if (prompt_view_) {
-    prompt_view_->Show();
+  if (prompt_view) {
+    RebuildRequests();
+    prompt_view_tracker_.SetView(prompt_view);
+    content_scrim_widget_ =
+        EmbeddedPermissionPromptContentScrimView::CreateScrimWidget(
+            weak_factory_.GetWeakPtr());
+    prompt_view->UpdateAnchor(content_scrim_widget_.get());
+    prompt_view->Show();
   }
-}
-
-void EmbeddedPermissionPrompt::CloseView() {
-  if (!prompt_view_) {
-    return;
-  }
-
-  prompt_view_->PrepareToClose();
-  prompt_view_->GetWidget()->Close();
-  prompt_view_ = nullptr;
 }
 
 EmbeddedPermissionPrompt::TabSwitchingBehavior
 EmbeddedPermissionPrompt::GetTabSwitchingBehavior() {
-  return TabSwitchingBehavior::kKeepPromptAlive;
+  return TabSwitchingBehavior::kDestroyPromptButKeepRequestPending;
 }
 
 permissions::PermissionPromptDisposition
@@ -243,27 +248,168 @@ void EmbeddedPermissionPrompt::Dismiss() {
 void EmbeddedPermissionPrompt::Acknowledge() {
   // TOOO(crbug.com/1462930): Find how to distinguish between a dismiss and an
   // acknowledge.
+  CloseView();
   delegate_->FinalizeCurrentRequests();
 }
 
 void EmbeddedPermissionPrompt::StopAllowing() {
-  // TODO(crbug.com/1462930): Implement.
-  NOTREACHED();
+  delegate_->Deny();
+  delegate_->FinalizeCurrentRequests();
 }
 
 void EmbeddedPermissionPrompt::ShowSystemSettings() {
   const auto& requests = delegate()->Requests();
   CHECK_GT(requests.size(), 0U);
-
 // TODO(crbug.com/1462930) Chrome always shows the first permission in a group,
 // as it is not possible to open multiple System Setting pages. Figure out a
 // better way to handle this scenario.
 #if BUILDFLAG(IS_MAC)
-  if (requests[0]->request_type() == permissions::RequestType::kCameraStream) {
+  if (requests_[0]->request_type() == permissions::RequestType::kCameraStream) {
     OpenCameraSystemSettingsOnMacOS();
-  } else if (requests[0]->request_type() ==
+  } else if (requests_[0]->request_type() ==
              permissions::RequestType::kMicStream) {
     OpenMicSystemSettingsOnMacOS();
   }
 #endif
+}
+
+void EmbeddedPermissionPrompt::DismissScrim() {
+  CloseView();
+  Dismiss();
+}
+
+base::WeakPtr<permissions::PermissionPrompt::Delegate>
+EmbeddedPermissionPrompt::GetPermissionPromptDelegate() const {
+  return delegate_->GetWeakPtr();
+}
+
+const std::vector<permissions::PermissionRequest*>&
+EmbeddedPermissionPrompt::Requests() const {
+  return requests_;
+}
+
+void EmbeddedPermissionPrompt::PromptForOsPermission() {
+#if BUILDFLAG(IS_MAC)
+  // We currently support <=2 grouped permissions.
+  CHECK_LE(prompt_types_.size(), 2U);
+
+  for (const auto prompt : prompt_types_) {
+    RequestMacOSMediaSystemPermission(prompt, prompt_types_.size() == 2U);
+  }
+#endif
+}
+
+#if BUILDFLAG(IS_MAC)
+void EmbeddedPermissionPrompt::OnRequestSystemMediaPermissionResponse(
+    const ContentSettingsType request_type,
+    bool grouped_permissions) {
+  system_media_permissions::SystemPermission permission,
+      other_permission =
+          system_media_permissions::SystemPermission::kNotDetermined;
+
+  if (request_type == ContentSettingsType::MEDIASTREAM_MIC) {
+    permission = system_media_permissions::CheckSystemAudioCapturePermission();
+    other_permission =
+        grouped_permissions
+            ? system_media_permissions::CheckSystemVideoCapturePermission()
+            : system_media_permissions::SystemPermission::kNotDetermined;
+  }
+
+  if (request_type == ContentSettingsType::MEDIASTREAM_CAMERA) {
+    permission = system_media_permissions::CheckSystemVideoCapturePermission();
+    other_permission =
+        grouped_permissions
+            ? system_media_permissions::CheckSystemAudioCapturePermission()
+            : system_media_permissions::SystemPermission::kNotDetermined;
+  }
+
+  switch (permission) {
+    case system_media_permissions::SystemPermission::kRestricted:
+    case system_media_permissions::SystemPermission::kDenied:
+    case system_media_permissions::SystemPermission::kAllowed:
+      // Do not finalize request until all the necessary system permissions are
+      // granted.
+      if (!grouped_permissions ||
+          other_permission !=
+              system_media_permissions::SystemPermission::kNotDetermined) {
+        CloseView();
+        delegate_->FinalizeCurrentRequests();
+      }
+      break;
+    default:
+      NOTREACHED();
+  }
+}
+
+// TODO: Refactor this logic for PEPC and other permission prompts, to avoid
+// code duplication.
+void EmbeddedPermissionPrompt::RequestMacOSMediaSystemPermission(
+    const ContentSettingsType request_type,
+    bool grouped_permissions) {
+  if (request_type == ContentSettingsType::MEDIASTREAM_MIC) {
+    system_media_permissions::RequestSystemAudioCapturePermission(
+        base::BindOnce(
+            &EmbeddedPermissionPrompt::OnRequestSystemMediaPermissionResponse,
+            weak_factory_.GetWeakPtr(), request_type, grouped_permissions));
+    return;
+  }
+
+  if (request_type == ContentSettingsType::MEDIASTREAM_CAMERA) {
+    system_media_permissions::RequestSystemVideoCapturePermission(
+        base::BindOnce(
+            &EmbeddedPermissionPrompt::OnRequestSystemMediaPermissionResponse,
+            weak_factory_.GetWeakPtr(), request_type, grouped_permissions));
+    return;
+  }
+}
+#endif
+
+void EmbeddedPermissionPrompt::PrioritizeAndMergeNewVariant(
+    EmbeddedPermissionPrompt::Variant new_variant,
+    ContentSettingsType new_type) {
+  // The new variant can be grouped with the already existing one.
+  if (CanGroupVariants(embedded_prompt_variant_, new_variant)) {
+    prompt_types_.insert(new_type);
+    embedded_prompt_variant_ = std::max(embedded_prompt_variant_, new_variant);
+    return;
+  }
+
+  // The existing variant is higher priority than the new one.
+  if (embedded_prompt_variant_ > new_variant) {
+    return;
+  }
+
+  // The new variant has higher priority than the existing one.
+  prompt_types_.clear();
+  prompt_types_.insert(new_type);
+  embedded_prompt_variant_ = new_variant;
+}
+
+void EmbeddedPermissionPrompt::RebuildRequests() {
+  if (requests_.size() != prompt_types_.size()) {
+    const auto& requests = delegate()->Requests();
+    for (auto* request : requests) {
+      if (prompt_types_.contains(request->GetContentSettingsType())) {
+        requests_.push_back(request);
+      }
+    }
+  }
+}
+
+void EmbeddedPermissionPrompt::CloseView() {
+  if (auto* prompt_view = static_cast<EmbeddedPermissionPromptBaseView*>(
+          prompt_view_tracker_.view())) {
+    prompt_view->PrepareToClose();
+    prompt_view->GetWidget()->Close();
+    prompt_view_tracker_.SetView(nullptr);
+
+    requests_.clear();
+    prompt_types_.clear();
+    embedded_prompt_variant_ = Variant::kUninitialized;
+  }
+
+  if (content_scrim_widget_) {
+    content_scrim_widget_->Close();
+    content_scrim_widget_.reset();
+  }
 }

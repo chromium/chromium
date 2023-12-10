@@ -82,6 +82,10 @@ export function domAttrSetter(self: any, name: string, value: unknown) {
  */
 export function decorate<T extends HTMLElement>(
     el: T, implementationClass: any): T {
+  if (implementationClass.prototype.isPrototypeOf(el)) {
+    return el as unknown as T;
+  }
+
   Object.setPrototypeOf(el, implementationClass.prototype);
   if ('decorate' in el) {
     // Calling instance decorate().
@@ -89,4 +93,9 @@ export function decorate<T extends HTMLElement>(
   }
 
   return el as unknown as T;
+}
+
+export interface DecoratableElement<T> {
+  new(...args: any): T;
+  decorate(el: HTMLElement): void;
 }

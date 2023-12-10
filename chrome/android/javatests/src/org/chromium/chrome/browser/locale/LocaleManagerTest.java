@@ -30,6 +30,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.search_engines.DefaultSearchEnginePromoDialog;
 import org.chromium.chrome.browser.search_engines.SearchEnginePromoType;
+import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.Features;
@@ -57,6 +58,9 @@ public class LocaleManagerTest {
 
     @BeforeClass
     public static void setUpClass() throws ExecutionException {
+        // Prevents recreating Chrome when the default search engine is changed.
+        ToolbarManager.setSkipRecreateActivityWhenStartSurfaceEnabledStateChangesForTesting(true);
+
         // Launch any activity as an Activity ref is required to attempt to show the activity.
         sActivityTestRule.startMainActivityOnBlankPage();
         sActivityTestRule.waitForActivityNativeInitializationComplete();

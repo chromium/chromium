@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {MetadataParserLogger} from '../../../externs/metadata_worker_window.js';
-
 import {ExifParser} from './exif_parser.js';
 import {Id3Parser} from './id3_parser.js';
 import {BmpParser, GifParser, IcoParser, PngParser, WebpParser} from './image_parsers.js';
@@ -12,7 +10,7 @@ import {MpegParser} from './mpeg_parser.js';
 
 /**
  * Dispatches metadata requests to the correct parser.
- * @implements {MetadataParserLogger}
+ * TODO(TS): Implements MetadataParserLogger!
  */
 class MetadataDispatcher {
   /***
@@ -36,7 +34,10 @@ class MetadataDispatcher {
 
     this.parserInstances_ = [];
 
-    /** @type {!Array<function(new:MetadataParser, !MetadataParserLogger)>} */
+    /**
+     * @type {!Array<function(new:MetadataParser,
+     *     !import("./metadata_parser.js").MetadataParserLogger)>}
+     */
     const parserClasses = [
       BmpParser,
       ExifParser,
@@ -69,6 +70,8 @@ class MetadataDispatcher {
   init_() {
     // Inform our owner that we're done initializing.
     // If we need to pass more data back, we can add it to the param array.
+    // TODO(cleanup): parserRegexp_ looks unused in content_metadata_provider
+    // and in this file, too.
     this.postMessage('initialized', [this.parserRegexp_]);
     this.vlog('initialized with URL filter ' + this.parserRegexp_);
   }
@@ -103,6 +106,9 @@ class MetadataDispatcher {
   // @ts-ignore: error TS6133: 'var_args' is declared but its value is never
   // read.
   error(var_args) {
+    // TODO(cleanup): Strictly type these arguments to the [url, step, cause]
+    // format that ContentMetadataProvider expects.
+
     // @ts-ignore: error TS2345: Argument of type 'IArguments' is not assignable
     // to parameter of type 'unknown[]'.
     const ary = Array.apply(null, arguments);

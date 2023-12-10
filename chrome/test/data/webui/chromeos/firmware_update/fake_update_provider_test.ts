@@ -8,7 +8,7 @@ import {FakeUpdateProvider} from 'chrome://accessory-update/fake_update_provider
 import {UpdateObserverRemote} from 'chrome://accessory-update/firmware_update.mojom-webui.js';
 import {assertDeepEquals} from 'chrome://webui-test/chromeos/chai_assert.js';
 
-export function fakeUpdateProviderTest() {
+suite('FakeUpdateProviderTest', () => {
   let provider: FakeUpdateProvider|null = null;
 
   setup(() => provider = new FakeUpdateProvider());
@@ -31,4 +31,4 @@ export function fakeUpdateProviderTest() {
     provider.observePeripheralUpdates(updateObserverRemote);
     return provider.getObservePeripheralUpdatesPromiseForTesting();
   });
-}
+});

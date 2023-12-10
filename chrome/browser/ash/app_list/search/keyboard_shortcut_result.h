@@ -51,13 +51,13 @@ class KeyboardShortcutResult : public ChromeSearchResult {
   // ash::SearchResultTextItem::IconCode represents icon codes in the frontend.
   // The supported front-end icon codes are a small subset of the existing
   // backend icon codes. Returns nullopt for unsupported codes.
-  static absl::optional<ash::SearchResultTextItem::IconCode>
+  static std::optional<ash::SearchResultTextItem::IconCode>
       GetIconCodeFromKeyboardCode(ui::KeyboardCode);
   // The `key_string` represents the keyboard code's string representation.
   // ash::SearchResultTextItem::IconCode represents icon codes in the frontend.
   // The supported front-end icon codes are a small subset of the existing
   // backend icon codes. Returns nullopt for unsupported codes.
-  static absl::optional<ash::SearchResultTextItem::IconCode>
+  static std::optional<ash::SearchResultTextItem::IconCode>
   GetIconCodeByKeyString(base::StringPiece16 key_string);
 
   // Parse a |template_string| (containing placeholders of the form $i). The
@@ -101,6 +101,11 @@ class KeyboardShortcutResult : public ChromeSearchResult {
       std::vector<std::u16string>& accessible_strings,
       const ash::mojom::AcceleratorInfoPtr& accelerator_1,
       const ash::mojom::AcceleratorInfoPtr& accelerator_2);
+
+  // Populate text vector for 'No shortcut assigned' case.
+  void PopulateTextVectorForNoShortcut(
+      TextVector* text_vector,
+      std::vector<std::u16string>& accessible_strings);
 
   void UpdateIcon();
 

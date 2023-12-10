@@ -293,7 +293,7 @@ void ApplySystemDestination(const std::u16string& device_name,
                             const base::Value::Dict& system_print_dialog_data,
                             PMPrintSession& print_session,
                             PMPrintSettings& print_settings) {
-  absl::optional<int> destination_type = system_print_dialog_data.FindInt(
+  std::optional<int> destination_type = system_print_dialog_data.FindInt(
       kMacSystemPrintDialogDataDestinationType);
 
   CHECK(destination_type.has_value());
@@ -361,17 +361,13 @@ void ApplySystemPrintDialogData(
 // static
 std::unique_ptr<PrintingContext> PrintingContext::CreateImpl(
     Delegate* delegate,
-    bool skip_system_calls) {
-  auto context = std::make_unique<PrintingContextMac>(delegate);
-#if BUILDFLAG(ENABLE_OOP_PRINTING)
-  if (skip_system_calls)
-    context->set_skip_system_calls();
-#endif
-  return context;
+    ProcessBehavior process_behavior) {
+  return std::make_unique<PrintingContextMac>(delegate, process_behavior);
 }
 
-PrintingContextMac::PrintingContextMac(Delegate* delegate)
-    : PrintingContext(delegate),
+PrintingContextMac::PrintingContextMac(Delegate* delegate,
+                                       ProcessBehavior process_behavior)
+    : PrintingContext(delegate, process_behavior),
       print_info_([NSPrintInfo.sharedPrintInfo copy]) {}
 
 PrintingContextMac::~PrintingContextMac() {
@@ -427,7 +423,11 @@ void PrintingContextMac::AskUserForSettings(int max_pages,
         InitPrintSettingsFromPrintInfo();
         mojom::ResultCode result = mojom::ResultCode::kSuccess;
 #if BUILDFLAG(ENABLE_OOP_PRINTING_NO_OOP_BASIC_PRINT_DIALOG)
-        if (features::ShouldPrintJobOop()) {
+        if (process_behavior() == ProcessBehavior::kOopEnabledSkipSystemCalls) {
+          // This is running in the browser process, where system calls are
+          // normally not allowed except for this system dialog exception.
+          // Capture the setting here to be transmitted to a PrintBackend
+          // service when the document is printed.
           result = CaptureSystemPrintDialogData(print_info_, settings_.get());
         }
 #endif
@@ -767,12 +767,19 @@ mojom::ResultCode PrintingContextMac::NewDocument(
 
   in_print_job_ = true;
 
-  if (skip_system_calls())
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
+  if (process_behavior() == ProcessBehavior::kOopEnabledSkipSystemCalls) {
     return mojom::ResultCode::kSuccess;
+  }
+#endif
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING_NO_OOP_BASIC_PRINT_DIALOG)
-  if (features::ShouldPrintJobOop() &&
+  if (process_behavior() == ProcessBehavior::kOopEnabledPerformSystemCalls &&
       !settings_->system_print_dialog_data().empty()) {
+    // Settings which the browser process captured from the system dialog now
+    // need to be applied to the printing context here which is running in a
+    // PrintBackend service.
+
     // NOTE: Reset `print_info_` with a copy of `sharedPrintInfo` so as to
     // start with a clean slate.
     print_info_ = [[NSPrintInfo sharedPrintInfo] copy];

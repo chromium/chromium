@@ -89,7 +89,8 @@ suite('internet-detail-dialog', () => {
   }
 
   async function setupCellularNetwork(
-      isPrimary, isInhibited, connectedApn, customApnList, errorState) {
+      isPrimary, isInhibited, connectedApn, customApnList, errorState,
+      portalState) {
     await mojoApi_.setNetworkTypeEnabledState(NetworkType.kCellular, true);
 
     const cellularNetwork =
@@ -104,6 +105,7 @@ suite('internet-detail-dialog', () => {
     cellularNetwork.typeProperties.cellular.connectedApn = connectedApn;
     cellularNetwork.typeProperties.cellular.customApnList = customApnList;
     cellularNetwork.errorState = errorState;
+    cellularNetwork.portalState = portalState;
 
     mojoApi_.setManagedPropertiesForTest(cellularNetwork);
     mojoApi_.setDeviceStateForTest({
@@ -309,7 +311,7 @@ suite('internet-detail-dialog', () => {
       await setupCellularNetwork(
           /* isPrimary= */ true, /* isInhibited= */ false,
           /* connectedApn= */ undefined, /* customApnList= */ undefined,
-          errorState);
+          errorState, PortalState.kNoInternet);
 
       await init();
       const legacyApnElement =
@@ -333,6 +335,7 @@ suite('internet-detail-dialog', () => {
         assertTrue(!!getApnList());
         assertTrue(getApnList().shouldOmitLinks);
         assertEquals(errorState, getApnList().errorState);
+        assertEquals(PortalState.kNoInternet, getApnList().portalState);
         const isApnListShowing = () =>
             internetDetailDialog.shadowRoot.querySelector('iron-collapse')
                 .opened;
@@ -348,18 +351,27 @@ suite('internet-detail-dialog', () => {
         internetDetailDialog.onDeviceStateListChanged();
         await flushAsync();
         assertEquals(accessPointName, getApnSectionSublabel());
+        assertFalse(
+            internetDetailDialog.shadowRoot.querySelector('#apnRowSublabel')
+                .hasAttribute('warning'));
         assertFalse(isApnListShowing());
 
-        // Update the APN's name property.
+        // Update the APN's name property and add a restricted connectivity
+        // state.
         const name = 'name';
         await setupCellularNetwork(
             /* isPrimary= */ true, /* isInhibited= */ false,
-            {accessPointName: accessPointName, name: name});
+            {accessPointName: accessPointName, name: name},
+            /* customApnList= */ undefined, /* errorState= */ undefined,
+            PortalState.kNoInternet);
 
         // Force a refresh.
         internetDetailDialog.onDeviceStateListChanged();
         await flushAsync();
         assertEquals(name, getApnSectionSublabel());
+        assertTrue(
+            internetDetailDialog.shadowRoot.querySelector('#apnRowSublabel')
+                .hasAttribute('warning'));
         assertFalse(isApnListShowing());
 
         // Expand the section, the sublabel should no longer show.
@@ -494,4 +506,37 @@ suite('internet-detail-dialog', () => {
         await flushAsync();
         assertFalse(!!getErrorToast());
       });
+
+  test('MacAddress not shown when invalid', async function() {
+    mojoApi_.setNetworkTypeEnabledState(NetworkType.kWiFi, true);
+    const wifiNetwork = getManagedProperties(NetworkType.kWiFi, 'wifi_user');
+    wifiNetwork.source = OncSource.kUser;
+    wifiNetwork.connectable = true;
+    wifiNetwork.connectionState = ConnectionStateType.kConnected;
+
+    mojoApi_.setManagedPropertiesForTest(wifiNetwork);
+    mojoApi_.setDeviceStateForTest({
+      type: NetworkType.kWiFi,
+      deviceState: DeviceStateType.kEnabled,
+      macAddress: '01:10:10:10:10:10',
+    });
+    await flushAsync();
+
+    init();
+    await flushAsync();
+    let macAddress = getElement('#macAddress');
+
+    assertTrue(!!macAddress);
+    assertFalse(macAddress.hidden);
+
+    mojoApi_.setDeviceStateForTest({
+      type: NetworkType.kWiFi,
+      deviceState: DeviceStateType.kEnabled,
+      macAddress: '00:00:00:00:00:00',
+    });
+    await flushAsync();
+
+    macAddress = getElement('#macAddress');
+    assertTrue(macAddress.hidden);
+  });
 });

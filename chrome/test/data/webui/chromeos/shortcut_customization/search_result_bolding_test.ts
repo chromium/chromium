@@ -1,7 +1,7 @@
 // Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-import 'chrome://webui-test/mojo_webui_test_support.js';
+import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
 import {getBoldedDescription} from 'chrome://shortcut-customization/js/search/search_result_bolding.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';

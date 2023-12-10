@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // Stub namespace for the "content_scripts" manifest key.
-[generate_error_messages, modernised_enums]
+[generate_error_messages]
 namespace contentScripts {
   // The stage in the document lifecycle when the javascript file is injected.
   enum RunAt {

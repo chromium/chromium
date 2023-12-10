@@ -66,18 +66,20 @@ public class NfcSystemLevelSetting {
         WindowAndroid window = webContents.getTopLevelNativeWindow();
         if (window == null) {
             // Consuming code may not expect a sync callback to happen.
-            PostTask.postTask(TaskTraits.UI_DEFAULT,
-                    ()
-                            -> NfcSystemLevelSettingJni.get().onNfcSystemLevelPromptCompleted(
-                                    nativeCallback));
+            PostTask.postTask(
+                    TaskTraits.UI_DEFAULT,
+                    () ->
+                            NfcSystemLevelSettingJni.get()
+                                    .onNfcSystemLevelPromptCompleted(nativeCallback));
             return;
         }
 
         NfcSystemLevelPrompt prompt = new NfcSystemLevelPrompt();
-        prompt.show(window,
-                ()
-                        -> NfcSystemLevelSettingJni.get().onNfcSystemLevelPromptCompleted(
-                                nativeCallback));
+        prompt.show(
+                window,
+                () ->
+                        NfcSystemLevelSettingJni.get()
+                                .onNfcSystemLevelPromptCompleted(nativeCallback));
     }
 
     public static Intent getNfcSystemLevelSettingIntent() {

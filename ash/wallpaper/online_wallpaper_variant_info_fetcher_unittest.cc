@@ -105,7 +105,7 @@ class OnlineWallpaperVariantInfoFetcherTest : public testing::Test {
 // Verify that variants in params is populated.
 TEST_F(OnlineWallpaperVariantInfoFetcherTest,
        FetchDailyWallpaper_VariantsPopulated) {
-  base::test::TestFuture<absl::optional<OnlineWallpaperParams>> test_future;
+  base::test::TestFuture<std::optional<OnlineWallpaperParams>> test_future;
   WallpaperInfo info("", WallpaperLayout::WALLPAPER_LAYOUT_CENTER,
                      WallpaperType::kDaily, base::Time::Now());
   info.collection_id = kDummyCollectionId;
@@ -128,7 +128,7 @@ TEST_F(OnlineWallpaperVariantInfoFetcherTest,
                         ImageSet(backdrop::Image::IMAGE_TYPE_UNKNOWN, 6u));
 
   // First fetch
-  base::test::TestFuture<absl::optional<OnlineWallpaperParams>> test_future;
+  base::test::TestFuture<std::optional<OnlineWallpaperParams>> test_future;
   WallpaperInfo info("", WallpaperLayout::WALLPAPER_LAYOUT_CENTER,
                      WallpaperType::kDaily, base::Time::Now());
   info.collection_id = kCollectionId;
@@ -140,7 +140,7 @@ TEST_F(OnlineWallpaperVariantInfoFetcherTest,
 
   // Calling FetchDaily with the same arguments should yield a different params
   // object if there is more than one wallpaper in the collection.
-  base::test::TestFuture<absl::optional<OnlineWallpaperParams>> test_future2;
+  base::test::TestFuture<std::optional<OnlineWallpaperParams>> test_future2;
   wallpaper_fetcher_->FetchDailyWallpaper(kAccount1, info,
                                           test_future2.GetCallback());
 
@@ -188,7 +188,7 @@ TEST_F(OnlineWallpaperVariantInfoFetcherTest,
                      WallpaperType::kOnline, base::Time::Now());
   info.collection_id = kCollectionId;
 
-  base::test::TestFuture<absl::optional<OnlineWallpaperParams>> test_future;
+  base::test::TestFuture<std::optional<OnlineWallpaperParams>> test_future;
   wallpaper_fetcher_->FetchOnlineWallpaper(kAccount1, info,
                                            test_future.GetCallback());
   auto result = test_future.Get();
@@ -208,7 +208,7 @@ TEST_F(OnlineWallpaperVariantInfoFetcherTest, FetchTimeOfDayWallpaper) {
   auto images = TimeOfDayImageSet();
   client_.AddCollection(wallpaper_constants::kTimeOfDayWallpaperCollectionId,
                         images);
-  base::test::TestFuture<absl::optional<OnlineWallpaperParams>> test_future;
+  base::test::TestFuture<std::optional<OnlineWallpaperParams>> test_future;
   wallpaper_fetcher_->FetchTimeOfDayWallpaper(kAccount1, images[0].unit_id(),
                                               test_future.GetCallback());
   auto result = test_future.Get();
@@ -225,7 +225,7 @@ TEST_F(OnlineWallpaperVariantInfoFetcherTest,
   client_.AddCollection(wallpaper_constants::kTimeOfDayWallpaperCollectionId,
                         images);
 
-  base::test::TestFuture<absl::optional<OnlineWallpaperParams>> test_future;
+  base::test::TestFuture<std::optional<OnlineWallpaperParams>> test_future;
   // Verifies that checkpoint and the variant matches.
   wallpaper_fetcher_->FetchTimeOfDayWallpaper(kAccount1, 123,
                                               test_future.GetCallback());
@@ -247,7 +247,7 @@ TEST_F(OnlineWallpaperVariantInfoFetcherTest, FetchOnlineWallpaper_FromInfo) {
       /*daily_refresh_enabled=*/false, kUnitId, kVariants);
   WallpaperInfo info(params, kVariants.front());
 
-  base::test::TestFuture<absl::optional<OnlineWallpaperParams>> test_future;
+  base::test::TestFuture<std::optional<OnlineWallpaperParams>> test_future;
   wallpaper_fetcher_->FetchOnlineWallpaper(kAccount1, info,
                                            test_future.GetCallback());
 
@@ -266,7 +266,7 @@ TEST_F(OnlineWallpaperVariantInfoFetcherTest,
                                      WallpaperLayout::WALLPAPER_LAYOUT_CENTER,
                                      WallpaperType::kOnline, base::Time::Now());
 
-  base::test::TestFuture<absl::optional<OnlineWallpaperParams>> test_future;
+  base::test::TestFuture<std::optional<OnlineWallpaperParams>> test_future;
   wallpaper_fetcher_->FetchOnlineWallpaper(kAccount1, info,
                                            test_future.GetCallback());
 

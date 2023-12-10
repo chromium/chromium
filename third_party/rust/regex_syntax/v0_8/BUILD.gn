@@ -1,0 +1,80 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# @generated from third_party/rust/chromium_crates_io/BUILD.gn.hbs by
+# tools/crates/gnrt.
+# Do not edit!
+
+import("//build/rust/cargo_crate.gni")
+
+cargo_crate("lib") {
+  crate_name = "regex_syntax"
+  epoch = "0.8"
+  crate_type = "rlib"
+  crate_root = "//third_party/rust/chromium_crates_io/vendor/regex-syntax-0.8.2/src/lib.rs"
+  sources = [
+    "//third_party/rust/chromium_crates_io/vendor/regex-syntax-0.8.2/src/ast/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/regex-syntax-0.8.2/src/ast/parse.rs",
+    "//third_party/rust/chromium_crates_io/vendor/regex-syntax-0.8.2/src/ast/print.rs",
+    "//third_party/rust/chromium_crates_io/vendor/regex-syntax-0.8.2/src/ast/visitor.rs",
+    "//third_party/rust/chromium_crates_io/vendor/regex-syntax-0.8.2/src/debug.rs",
+    "//third_party/rust/chromium_crates_io/vendor/regex-syntax-0.8.2/src/either.rs",
+    "//third_party/rust/chromium_crates_io/vendor/regex-syntax-0.8.2/src/error.rs",
+    "//third_party/rust/chromium_crates_io/vendor/regex-syntax-0.8.2/src/hir/interval.rs",
+    "//third_party/rust/chromium_crates_io/vendor/regex-syntax-0.8.2/src/hir/literal.rs",
+    "//third_party/rust/chromium_crates_io/vendor/regex-syntax-0.8.2/src/hir/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/regex-syntax-0.8.2/src/hir/print.rs",
+    "//third_party/rust/chromium_crates_io/vendor/regex-syntax-0.8.2/src/hir/translate.rs",
+    "//third_party/rust/chromium_crates_io/vendor/regex-syntax-0.8.2/src/hir/visitor.rs",
+    "//third_party/rust/chromium_crates_io/vendor/regex-syntax-0.8.2/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/regex-syntax-0.8.2/src/parser.rs",
+    "//third_party/rust/chromium_crates_io/vendor/regex-syntax-0.8.2/src/rank.rs",
+    "//third_party/rust/chromium_crates_io/vendor/regex-syntax-0.8.2/src/unicode.rs",
+    "//third_party/rust/chromium_crates_io/vendor/regex-syntax-0.8.2/src/unicode_tables/age.rs",
+    "//third_party/rust/chromium_crates_io/vendor/regex-syntax-0.8.2/src/unicode_tables/case_folding_simple.rs",
+    "//third_party/rust/chromium_crates_io/vendor/regex-syntax-0.8.2/src/unicode_tables/general_category.rs",
+    "//third_party/rust/chromium_crates_io/vendor/regex-syntax-0.8.2/src/unicode_tables/grapheme_cluster_break.rs",
+    "//third_party/rust/chromium_crates_io/vendor/regex-syntax-0.8.2/src/unicode_tables/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/regex-syntax-0.8.2/src/unicode_tables/perl_decimal.rs",
+    "//third_party/rust/chromium_crates_io/vendor/regex-syntax-0.8.2/src/unicode_tables/perl_space.rs",
+    "//third_party/rust/chromium_crates_io/vendor/regex-syntax-0.8.2/src/unicode_tables/perl_word.rs",
+    "//third_party/rust/chromium_crates_io/vendor/regex-syntax-0.8.2/src/unicode_tables/property_bool.rs",
+    "//third_party/rust/chromium_crates_io/vendor/regex-syntax-0.8.2/src/unicode_tables/property_names.rs",
+    "//third_party/rust/chromium_crates_io/vendor/regex-syntax-0.8.2/src/unicode_tables/property_values.rs",
+    "//third_party/rust/chromium_crates_io/vendor/regex-syntax-0.8.2/src/unicode_tables/script.rs",
+    "//third_party/rust/chromium_crates_io/vendor/regex-syntax-0.8.2/src/unicode_tables/script_extension.rs",
+    "//third_party/rust/chromium_crates_io/vendor/regex-syntax-0.8.2/src/unicode_tables/sentence_break.rs",
+    "//third_party/rust/chromium_crates_io/vendor/regex-syntax-0.8.2/src/unicode_tables/word_break.rs",
+    "//third_party/rust/chromium_crates_io/vendor/regex-syntax-0.8.2/src/utf8.rs",
+  ]
+  inputs = []
+
+  build_native_rust_unit_tests = false
+  edition = "2021"
+  cargo_pkg_version = "0.8.2"
+  cargo_pkg_authors =
+      "The Rust Project Developers, Andrew Gallant <jamslam@gmail.com>"
+  cargo_pkg_name = "regex-syntax"
+  cargo_pkg_description = "A regular expression parser."
+  library_configs -= [ "//build/config/compiler:chromium_code" ]
+  library_configs += [ "//build/config/compiler:no_chromium_code" ]
+  executable_configs -= [ "//build/config/compiler:chromium_code" ]
+  executable_configs += [ "//build/config/compiler:no_chromium_code" ]
+  features = [
+    "std",
+    "unicode",
+    "unicode-age",
+    "unicode-bool",
+    "unicode-case",
+    "unicode-gencat",
+    "unicode-perl",
+    "unicode-script",
+    "unicode-segment",
+  ]
+
+  # Only for usage from third-party crates. Add the crate to
+  # third_party.toml to use it from first-party code.
+  visibility = [ "//third_party/rust/*" ]
+  testonly = true
+}

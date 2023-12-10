@@ -105,15 +105,6 @@ export class SettingsCupsPrintersEntryElement extends
         },
         readOnly: true,
       },
-
-      /** @protected {boolean} */
-      isJellyEnabled_: {
-        type: Boolean,
-        value: () => {
-          return loadTimeData.getBoolean('isJellyEnabled');
-        },
-        readOnly: true,
-      },
     };
   }
 
@@ -126,7 +117,6 @@ export class SettingsCupsPrintersEntryElement extends
   private isPrinterSettingsRevampEnabled_: boolean;
   private isPrinterSettingsPrinterStatusEnabled_: boolean;
   private isPrintPreviewDiscoveredPrintersEnabled_: boolean;
-  private isJellyEnabled_: boolean;
 
   /**
    * Fires a custom event when the menu button is clicked. Sends the details of
@@ -240,15 +230,12 @@ export class SettingsCupsPrintersEntryElement extends
   }
 
   private getPrinterIcon_(): string {
-    const printerStatusIcon = this.isJellyEnabled_ ?
-        `os-settings:printer-status-illo` :
-        `os-settings:printer-status`;
-
     // Only saved printers need to display an icon with printer status.
     if (!this.isSavedPrinter_()) {
       return 'os-settings:printer-plain';
     }
 
+    const printerStatusIcon = 'os-settings:printer-status-illo';
     const printerStatusReason = this.printerStatusReasonCache.get(
         this.printerEntry.printerInfo.printerId);
     if (printerStatusReason === undefined || printerStatusReason === null) {

@@ -10,7 +10,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "chrome/browser/enterprise/connectors/analysis/analysis_settings.h"
-#include "chrome/browser/enterprise/connectors/analysis/fake_content_analysis_sdk_manager.h"
+#include "chrome/browser/enterprise/connectors/test/fake_content_analysis_sdk_manager.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/device_signals/core/browser/mock_system_signals_service_host.h"
 #include "content/public/test/browser_task_environment.h"

@@ -6,11 +6,11 @@
 #define CHROME_BROWSER_APPS_APP_SERVICE_APP_INSTALL_APP_INSTALL_TYPES_H_
 
 #include <iosfwd>
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "components/services/app_service/public/cpp/package_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/gurl.h"
 

@@ -4,28 +4,22 @@
 
 #include "ash/system/unified/date_tray.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/shelf/shelf.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/pixel/ash_pixel_differ.h"
 #include "ash/test/pixel/ash_pixel_test_init_params.h"
-#include "base/test/scoped_feature_list.h"
-#include "chromeos/constants/chromeos_features.h"
 
 namespace ash {
 
 class DateTrayPixelTest : public AshTestBase {
  public:
-  DateTrayPixelTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kQsRevamp, chromeos::features::kJelly}, {});
-  }
+  DateTrayPixelTest() = default;
   DateTrayPixelTest(const DateTrayPixelTest&) = delete;
   DateTrayPixelTest& operator=(const DateTrayPixelTest&) = delete;
   ~DateTrayPixelTest() override = default;
 
   // AshTestBase:
-  absl::optional<pixel_test::InitParams> CreatePixelTestInitParams()
+  std::optional<pixel_test::InitParams> CreatePixelTestInitParams()
       const override {
     return pixel_test::InitParams();
   }
@@ -34,9 +28,6 @@ class DateTrayPixelTest : public AshTestBase {
   DateTray* GetDateTray() {
     return GetPrimaryShelf()->GetStatusAreaWidget()->date_tray();
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests the inactive date tray UI for bottom shelf alignment and side shelf

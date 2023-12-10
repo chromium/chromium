@@ -136,7 +136,8 @@ class CORE_EXPORT DedicatedWorkerGlobalScope final : public WorkerGlobalScope {
   // Implements BackForwardCacheLoaderHelperImpl::Delegate.
   void EvictFromBackForwardCache(
       mojom::blink::RendererEvictionReason reason) override;
-  void DidBufferLoadWhileInBackForwardCache(size_t num_bytes) override;
+  void DidBufferLoadWhileInBackForwardCache(bool update_process_wide_count,
+                                            size_t num_bytes) override;
 
   // Called by the bindings (dedicated_worker_global_scope.idl).
   const String name() const;

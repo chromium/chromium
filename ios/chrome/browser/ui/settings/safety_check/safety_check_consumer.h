@@ -26,6 +26,9 @@
 // Initializes the footer with timestamp of last completed run.
 - (void)setTimestampFooterItem:(TableViewLinkHeaderFooterItem*)item;
 
+- (void)performBatchTableViewUpdates:(void (^)(void))updates
+                          completion:(void (^)(BOOL finished))completion;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_SAFETY_CHECK_SAFETY_CHECK_CONSUMER_H_

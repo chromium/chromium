@@ -7,8 +7,9 @@
 
 #include <stdint.h>
 
+#include <optional>
+
 #include "ash/ash_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -70,7 +71,7 @@ class ASH_EXPORT PersistentWindowInfo {
   bool is_landscape_;
 
   // Stores the restore bounds in its parent coordinates if they exist.
-  absl::optional<gfx::Rect> restore_bounds_in_parent_;
+  std::optional<gfx::Rect> restore_bounds_in_parent_;
 };
 
 }  // namespace ash

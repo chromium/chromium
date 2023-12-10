@@ -57,19 +57,19 @@ TEST_F(RemotingServiceTest,
        ShouldReturnNoSessionIdIdIfThereIsNoReconnectableSession) {
   EnsureNoReconnectableSession();
 
-  TestFuture<absl::optional<SessionId>> future;
+  TestFuture<std::optional<SessionId>> future;
   remoting_service().GetReconnectableEnterpriseSessionId(future.GetCallback());
-  absl::optional<SessionId> result = future.Take();
+  std::optional<SessionId> result = future.Take();
 
-  EXPECT_EQ(result, absl::nullopt);
+  EXPECT_EQ(result, std::nullopt);
 }
 
 TEST_F(RemotingServiceTest, ShouldReturnEnterpriseSessionIdIfSessionIsStored) {
   CreateReconnectableSession();
 
-  TestFuture<absl::optional<SessionId>> future;
+  TestFuture<std::optional<SessionId>> future;
   remoting_service().GetReconnectableEnterpriseSessionId(future.GetCallback());
-  absl::optional<SessionId> result = future.Take();
+  std::optional<SessionId> result = future.Take();
 
   EXPECT_EQ(result, kEnterpriseSessionId);
 }

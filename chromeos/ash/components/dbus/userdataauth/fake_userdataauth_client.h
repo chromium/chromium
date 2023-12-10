@@ -5,22 +5,22 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_DBUS_USERDATAAUTH_FAKE_USERDATAAUTH_CLIENT_H_
 #define CHROMEOS_ASH_COMPONENTS_DBUS_USERDATAAUTH_FAKE_USERDATAAUTH_CLIENT_H_
 
+#include <optional>
 #include <string>
 #include <utility>
-
-#include "base/memory/raw_ptr.h"
-#include "chromeos/ash/components/dbus/cryptohome/rpc.pb.h"
-#include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 
 #include "base/component_export.h"
 #include "base/containers/enum_set.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/timer/timer.h"
+#include "chromeos/ash/components/cryptohome/error_types.h"
 #include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
 #include "chromeos/ash/components/dbus/cryptohome/account_identifier_operators.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "chromeos/ash/components/dbus/cryptohome/rpc.pb.h"
+#include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "third_party/protobuf/src/google/protobuf/message_lite.h"
 
 namespace ash {
@@ -36,6 +36,7 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
     kAuthenticateAuthFactor,
     kPrepareGuestVault,
     kPrepareEphemeralVault,
+    kRestoreDeviceKey,
     kCreatePersistentUser,
     kPreparePersistentVault,
     kPrepareVaultForMigration,
@@ -124,7 +125,7 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
 
     // Returns the user's home directory, or an empty optional if the user data
     // directory is not initialized or the user doesn't exist.
-    absl::optional<base::FilePath> GetUserProfileDir(
+    std::optional<base::FilePath> GetUserProfileDir(
         const cryptohome::AccountIdentifier& account_id) const;
 
     // Creates user directories once UserDataDir is available.
@@ -155,7 +156,7 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
 
     // Sets the CryptohomeError value to return during next operation.
     void SetNextOperationError(Operation operation,
-                               ::user_data_auth::CryptohomeErrorCode error);
+                               ::cryptohome::ErrorWrapper error);
 
    private:
     FakeUserDataAuthClient::UserCryptohomeState& GetUserState(
@@ -219,8 +220,6 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
                UnmountCallback callback) override;
   void Remove(const ::user_data_auth::RemoveRequest& request,
               RemoveCallback callback) override;
-  void CheckKey(const ::user_data_auth::CheckKeyRequest& request,
-                CheckKeyCallback callback) override;
   void StartMigrateToDircrypto(
       const ::user_data_auth::StartMigrateToDircryptoRequest& request,
       StartMigrateToDircryptoCallback callback) override;
@@ -245,6 +244,9 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
   void CreatePersistentUser(
       const ::user_data_auth::CreatePersistentUserRequest& request,
       CreatePersistentUserCallback callback) override;
+  void RestoreDeviceKey(
+      const ::user_data_auth::RestoreDeviceKeyRequest& request,
+      RestoreDeviceKeyCallback callback) override;
   void PreparePersistentVault(
       const ::user_data_auth::PreparePersistentVaultRequest& request,
       PreparePersistentVaultCallback callback) override;
@@ -289,12 +291,6 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
       const ::user_data_auth::GetArcDiskFeaturesRequest& request,
       GetArcDiskFeaturesCallback callback) override;
 
-  // Returns the `unlock_webauthn_secret` parameter passed in the last
-  // CheckKeyEx call (either successful or not).
-  bool get_last_unlock_webauthn_secret() {
-    return last_unlock_webauthn_secret_;
-  }
-
   int get_prepare_guest_request_count() const {
     return prepare_guest_request_count_;
   }
@@ -316,6 +312,7 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
   FUDAC_OPERATION_TYPES(kPrepareGuestVault, PrepareGuestVaultRequest);
   FUDAC_OPERATION_TYPES(kPrepareEphemeralVault, PrepareEphemeralVaultRequest);
   FUDAC_OPERATION_TYPES(kCreatePersistentUser, CreatePersistentUserRequest);
+  FUDAC_OPERATION_TYPES(kRestoreDeviceKey, RestoreDeviceKeyRequest);
   FUDAC_OPERATION_TYPES(kPreparePersistentVault, PreparePersistentVaultRequest);
   FUDAC_OPERATION_TYPES(kPrepareVaultForMigration,
                         PrepareVaultForMigrationRequest);
@@ -330,7 +327,7 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
 
   // Sets the CryptohomeError value to return during next operation.
   void SetNextOperationError(Operation operation,
-                             ::user_data_auth::CryptohomeErrorCode error);
+                             ::cryptohome::ErrorWrapper error);
 
   // Checks if operation was called.
   template <Operation Op>
@@ -392,7 +389,7 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
   void OnDircryptoMigrationProgressUpdated();
 
   // Returns a path to home directory for account.
-  absl::optional<base::FilePath> GetUserProfileDir(
+  std::optional<base::FilePath> GetUserProfileDir(
       const cryptohome::AccountIdentifier& account_id) const;
 
   // The method takes serialized auth session id and returns an authenticated
@@ -401,7 +398,7 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
   // returned.
   const AuthSessionData* GetAuthenticatedAuthSession(
       const std::string& auth_session_id,
-      ::user_data_auth::CryptohomeErrorCode* error) const;
+      ::cryptohome::ErrorWrapper* error) const;
 
   void RunPendingWaitForServiceToBeAvailableCallbacks();
 
@@ -417,16 +414,12 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
       std::string* matched_factor_label = nullptr) const;
 
   // Checks if there is a per-operation error defined, and uses it.
-  ::user_data_auth::CryptohomeErrorCode TakeOperationError(Operation operation);
+  ::cryptohome::ErrorWrapper TakeOperationError(Operation operation);
 
   int prepare_guest_request_count_ = 0;
 
-  // The `unlock_webauthn_secret` parameter passed in the last CheckKeyEx call.
-  bool last_unlock_webauthn_secret_;
-
   // The error that would be triggered once operation is called.
-  base::flat_map<Operation, ::user_data_auth::CryptohomeErrorCode>
-      operation_errors_;
+  base::flat_map<Operation, ::cryptohome::ErrorWrapper> operation_errors_;
 
   // Remembered requests.
   base::flat_map<Operation, std::unique_ptr<::google::protobuf::MessageLite>>
@@ -459,7 +452,7 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
   // Other stuff/miscellaneous:
 
   // Base directory of user directories.
-  absl::optional<base::FilePath> user_data_dir_;
+  std::optional<base::FilePath> user_data_dir_;
 
   // List of observers.
   base::ObserverList<Observer> observer_list_;

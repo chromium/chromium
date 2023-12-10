@@ -12,6 +12,7 @@ import org.chromium.chrome.browser.customtabs.CustomTabLocator;
 import org.chromium.components.background_task_scheduler.NativeBackgroundTask;
 import org.chromium.components.background_task_scheduler.TaskIds;
 import org.chromium.components.background_task_scheduler.TaskParameters;
+import org.chromium.components.webapps.WebappsUtils;
 
 import java.lang.ref.WeakReference;
 import java.util.List;
@@ -35,6 +36,8 @@ public class WebApkUpdateTask extends NativeBackgroundTask {
         try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
             WebappRegistry.warmUpSharedPrefs();
         }
+
+        WebappsUtils.prepareIsRequestPinShortcutSupported();
 
         List<String> ids = WebappRegistry.getInstance().findWebApksWithPendingUpdate();
         for (String id : ids) {

@@ -17,6 +17,10 @@
 #include "components/prefs/pref_service.h"
 #include "extensions/browser/pref_names.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/extensions/api/identity/launch_web_auth_flow_delegate_ash.h"
+#endif
+
 namespace extensions {
 
 namespace {
@@ -80,8 +84,11 @@ BASE_FEATURE(kNonInteractiveTimeoutForWebAuthFlow,
              "NonInteractiveTimeoutForWebAuthFlow",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-IdentityLaunchWebAuthFlowFunction::IdentityLaunchWebAuthFlowFunction() =
-    default;
+IdentityLaunchWebAuthFlowFunction::IdentityLaunchWebAuthFlowFunction() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  delegate_ = std::make_unique<LaunchWebAuthFlowDelegateAsh>();
+#endif
+}
 
 IdentityLaunchWebAuthFlowFunction::~IdentityLaunchWebAuthFlowFunction() {
   if (auth_flow_)
@@ -139,15 +146,37 @@ ExtensionFunction::ResponseAction IdentityLaunchWebAuthFlowFunction::Run() {
 
   AddRef();  // Balanced in OnAuthFlowSuccess/Failure.
 
+  if (delegate_) {
+    delegate_->GetOptionalWindowBounds(
+        profile, extension_id(),
+        base::BindOnce(&IdentityLaunchWebAuthFlowFunction::StartAuthFlow, this,
+                       profile, auth_url, mode,
+                       abort_on_load_for_non_interactive,
+                       timeout_for_non_interactive));
+    return RespondLater();
+  }
+
+  StartAuthFlow(profile, auth_url, mode, abort_on_load_for_non_interactive,
+                timeout_for_non_interactive, absl::nullopt);
+  return RespondLater();
+}
+
+void IdentityLaunchWebAuthFlowFunction::StartAuthFlow(
+    Profile* profile,
+    GURL auth_url,
+    WebAuthFlow::Mode mode,
+    WebAuthFlow::AbortOnLoad abort_on_load_for_non_interactive,
+    absl::optional<base::TimeDelta> timeout_for_non_interactive,
+    absl::optional<gfx::Rect> popup_bounds) {
   auth_flow_ = std::make_unique<WebAuthFlow>(
       this, profile, auth_url, mode, user_gesture(),
-      abort_on_load_for_non_interactive, timeout_for_non_interactive);
+      abort_on_load_for_non_interactive, timeout_for_non_interactive,
+      popup_bounds);
   // An extension might call `launchWebAuthFlow()` with any URL. Add an infobar
   // to attribute displayed URL to the extension.
   auth_flow_->SetShouldShowInfoBar(extension()->name());
 
   auth_flow_->Start();
-  return RespondLater();
 }
 
 bool IdentityLaunchWebAuthFlowFunction::ShouldKeepWorkerAliveIndefinitely() {
@@ -206,6 +235,11 @@ void IdentityLaunchWebAuthFlowFunction::OnAuthFlowURLChange(
 
 WebAuthFlow* IdentityLaunchWebAuthFlowFunction::GetWebAuthFlowForTesting() {
   return auth_flow_.get();
+}
+
+void IdentityLaunchWebAuthFlowFunction::SetLaunchWebAuthFlowDelegateForTesting(
+    std::unique_ptr<LaunchWebAuthFlowDelegate> delegate) {
+  delegate_ = std::move(delegate);
 }
 
 }  // namespace extensions

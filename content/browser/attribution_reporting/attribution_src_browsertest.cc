@@ -758,6 +758,64 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
                               "Attribution-Reporting-Support"));
 }
 
+// Regression test for https://crbug.com/1498717.
+IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
+                       ResponseReceivedInDetachedFrame_NoCrash) {
+  // Create a separate server as we cannot register a `ControllableHttpResponse`
+  // after the server starts.
+  std::unique_ptr<EmbeddedTestServer> https_server =
+      CreateAttributionTestHttpsServer();
+
+  auto register_response =
+      std::make_unique<net::test_server::ControllableHttpResponse>(
+          https_server.get(), "/register_source");
+  ASSERT_TRUE(https_server->Start());
+
+  GURL page_url = https_server->GetURL("b.test", "/page_with_iframe.html");
+  ASSERT_TRUE(NavigateToURL(web_contents(), page_url));
+
+  GURL subframe_url =
+      https_server->GetURL("c.test", "/page_with_impression_creator.html");
+  NavigateIframeToURL(web_contents(), "test_iframe", subframe_url);
+
+  std::unique_ptr<MockDataHost> data_host;
+  base::RunLoop loop;
+  EXPECT_CALL(mock_attribution_host(), RegisterDataHost)
+      .WillOnce(
+          [&](mojo::PendingReceiver<blink::mojom::AttributionDataHost> host,
+              RegistrationEligibility) {
+            data_host = GetRegisteredDataHost(std::move(host));
+            loop.Quit();
+          });
+
+  RenderFrameHost* subframe =
+      ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0);
+
+  GURL register_url = https_server->GetURL("d.test", "/register_source");
+  ASSERT_TRUE(ExecJs(subframe,
+                     JsReplace("createAttributionSrcImg($1);", register_url)));
+  register_response->WaitForRequest();
+
+  ASSERT_TRUE(ExecJs(web_contents(),
+                     R"(
+                       const iframe = document.getElementById('test_iframe');
+                       iframe.remove();
+                     )"));
+
+  auto http_response = std::make_unique<net::test_server::BasicHttpResponse>();
+  http_response->set_code(net::HTTP_OK);
+  http_response->AddCustomHeader(
+      kAttributionReportingRegisterSourceHeader,
+      R"({"destination":"https://d.test"})");
+  register_response->Send(http_response->ToResponseString());
+  register_response->Done();
+
+  if (!data_host) {
+    loop.Run();
+  }
+  data_host->WaitForSourceData(/*num_source_data=*/1);
+}
+
 class AttributionSrcMultipleBackgroundRequestTest
     : public AttributionSrcBrowserTest,
       public ::testing::WithParamInterface<
@@ -1451,6 +1509,49 @@ IN_PROC_BROWSER_TEST_P(
 
   EXPECT_EQ(data_host->os_sources(), test_case.expected_os_sources);
   EXPECT_EQ(data_host->os_triggers(), test_case.expected_os_triggers);
+}
+
+class AttributionSrcInBrowserMigrationEnabledBrowserTest
+    : public AttributionSrcBrowserTest {
+ public:
+  AttributionSrcInBrowserMigrationEnabledBrowserTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {blink::features::kKeepAliveInBrowserMigration,
+         blink::features::kAttributionReportingInBrowserMigration},
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(AttributionSrcInBrowserMigrationEnabledBrowserTest,
+                       BackgroundSourceRegistrationRequestSent) {
+  // Create a separate server as we cannot register a `ControllableHttpResponse`
+  // after the server starts.
+  std::unique_ptr<EmbeddedTestServer> https_server =
+      CreateAttributionTestHttpsServer();
+
+  auto register_response =
+      std::make_unique<net::test_server::ControllableHttpResponse>(
+          https_server.get(), "/register_source");
+  ASSERT_TRUE(https_server->Start());
+
+  GURL page_url =
+      https_server->GetURL("b.test", "/page_with_impression_creator.html");
+  EXPECT_TRUE(NavigateToURL(web_contents(), page_url));
+
+  // There should be no attempt to register a data host as it won't be needed.
+  EXPECT_CALL(mock_attribution_host(), RegisterDataHost).Times(0);
+
+  GURL register_url = https_server->GetURL("d.test", "/register_source");
+  EXPECT_TRUE(ExecJs(web_contents(),
+                     JsReplace("createAttributionSrcImg($1);", register_url)));
+
+  register_response->WaitForRequest();
+  ASSERT_TRUE(register_response->has_received_request());
+  EXPECT_TRUE(register_response->http_request()->headers.contains(
+      "Attribution-Reporting-Eligible"));
 }
 
 }  // namespace content

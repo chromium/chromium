@@ -16,6 +16,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_provider.h"
@@ -66,6 +67,8 @@ END_METADATA
 class StackedNotificationBar::StackedNotificationBarIcon
     : public views::ImageView,
       public ui::LayerAnimationObserver {
+  METADATA_HEADER(StackedNotificationBarIcon, views::ImageView)
+
  public:
   explicit StackedNotificationBarIcon(const std::string& id) : id_(id) {
     SetPaintToLayer();
@@ -205,6 +208,11 @@ class StackedNotificationBar::StackedNotificationBarIcon
   // Registered in `AnimateOut()`.
   AnimationCompleteCallback animation_complete_callback_;
 };
+
+BEGIN_METADATA(StackedNotificationBar,
+               StackedNotificationBarIcon,
+               views::ImageView)
+END_METADATA
 
 StackedNotificationBar::StackedNotificationBar(
     NotificationCenterView* notification_center_view)
@@ -430,10 +438,6 @@ void StackedNotificationBar::UpdateStackedNotifications(
   }
 }
 
-const char* StackedNotificationBar::GetClassName() const {
-  return "StackedNotificationBar";
-}
-
 void StackedNotificationBar::OnNotificationAdded(const std::string& id) {
   // Reset the stacked icons bar if a notification is added since we don't
   // know the position where it may have been added.
@@ -453,5 +457,8 @@ void StackedNotificationBar::OnNotificationRemoved(const std::string& id,
 }
 
 void StackedNotificationBar::OnNotificationUpdated(const std::string& id) {}
+
+BEGIN_METADATA(StackedNotificationBar)
+END_METADATA
 
 }  // namespace ash

@@ -100,7 +100,7 @@ int main(int argc, char** argv) {
   // --disable-features.
   std::unique_ptr<base::FeatureList> feature_list =
       std::make_unique<base::FeatureList>();
-  feature_list->InitializeFromCommandLine(
+  feature_list->InitFromCommandLine(
       command_line->GetSwitchValueASCII(switches::kEnableFeatures),
       command_line->GetSwitchValueASCII(switches::kDisableFeatures));
 

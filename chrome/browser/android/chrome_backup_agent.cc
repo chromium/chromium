@@ -66,7 +66,7 @@ static void JNI_ChromeBackupAgentImpl_SetBoolBackupPrefs(
   std::vector<std::string> pref_names;
   base::android::AppendJavaStringArrayToStringVector(env, names, &pref_names);
   std::vector<bool> pref_values;
-  JavaBooleanArrayToBoolVector(env, values, &pref_values);
+  base::android::JavaBooleanArrayToBoolVector(env, values, &pref_values);
   std::unordered_set<std::string> valid_prefs(
       std::begin(backed_up_preferences_), std::end(backed_up_preferences_));
 

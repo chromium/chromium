@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2019 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<org.chromium.chrome.browser.tasks.tab_management.TabListEditorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/selectable_list"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@macro/default_bg_color"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
+    android:contentDescription="@string/accessibility_tab_selection_editor"/>

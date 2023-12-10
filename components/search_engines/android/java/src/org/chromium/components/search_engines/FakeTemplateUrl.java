@@ -23,6 +23,7 @@ public class FakeTemplateUrl extends TemplateUrl {
     public String getShortName() {
         return mShortName;
     }
+
     @Override
     public String getKeyword() {
         return mKeyword;

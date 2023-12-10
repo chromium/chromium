@@ -168,7 +168,7 @@ void HotspotCapabilitiesProvider::ResetNetworkStateHandler() {
 }
 
 void HotspotCapabilitiesProvider::OnManagerProperties(
-    absl::optional<base::Value::Dict> properties) {
+    std::optional<base::Value::Dict> properties) {
   if (!properties) {
     NET_LOG(ERROR)
         << "HotspotCapabilitiesProvider: Failed to get manager properties.";

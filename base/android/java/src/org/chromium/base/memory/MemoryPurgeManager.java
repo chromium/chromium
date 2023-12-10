@@ -33,9 +33,9 @@ public class MemoryPurgeManager implements ApplicationStatus.ApplicationStateLis
     // for freezing.
     // TODO(crbug.com/1356242): Should ideally be tuned according to the distribution of background
     // time residency.
-    @VisibleForTesting
-    static final long PURGE_DELAY_MS = 4 * 60 * 1000;
+    @VisibleForTesting static final long PURGE_DELAY_MS = 4 * 60 * 1000;
     private static final long NEVER = -1;
+
     @VisibleForTesting
     static final String BACKGROUND_DURATION_HISTOGRAM_NAME =
             "Android.ApplicationState.TimeInBackgroundBeforeForegroundedAgain";
@@ -122,10 +122,12 @@ public class MemoryPurgeManager implements ApplicationStatus.ApplicationStateLis
         ThreadUtils.assertOnUiThread();
         if (mDelayedPurgeTaskPending) return;
 
-        ThreadUtils.postOnUiThreadDelayed(() -> {
-            mDelayedPurgeTaskPending = false;
-            delayedPurge();
-        }, delayMillis);
+        ThreadUtils.postOnUiThreadDelayed(
+                () -> {
+                    mDelayedPurgeTaskPending = false;
+                    delayedPurge();
+                },
+                delayMillis);
         mDelayedPurgeTaskPending = true;
     }
 }

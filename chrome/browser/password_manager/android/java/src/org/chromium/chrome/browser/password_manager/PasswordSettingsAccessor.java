@@ -9,9 +9,7 @@ import org.chromium.base.Callback;
 
 import java.util.Optional;
 
-/**
- * Interface for the object mediating access to the password settings.
- */
+/** Interface for the object mediating access to the password settings. */
 public interface PasswordSettingsAccessor {
     /**
      * Asynchronously retrieves the value of the "Offer to save passwords" setting.
@@ -22,8 +20,10 @@ public interface PasswordSettingsAccessor {
      *        or no value if none was set
      * @param failureCallback called with an error if the retrieval did not succeed
      */
-    void getOfferToSavePasswords(Optional<Account> account,
-            Callback<Optional<Boolean>> successCallback, Callback<Exception> failureCallback);
+    void getOfferToSavePasswords(
+            Optional<Account> account,
+            Callback<Optional<Boolean>> successCallback,
+            Callback<Exception> failureCallback);
 
     /**
      * Asynchronously sets the value of the "Offer to save passwords" setting.
@@ -34,8 +34,11 @@ public interface PasswordSettingsAccessor {
      * @param successCallback called if the modification was successful
      * @param failureCallback called with an error if the modification did not succeed
      */
-    void setOfferToSavePasswords(boolean offerToSavePasswordsEnabled, Optional<Account> account,
-            Callback<Void> successCallback, Callback<Exception> failureCallback);
+    void setOfferToSavePasswords(
+            boolean offerToSavePasswordsEnabled,
+            Optional<Account> account,
+            Callback<Void> successCallback,
+            Callback<Exception> failureCallback);
 
     /**
      * Asynchronously retrieves the value of the "Auto Sign In" setting.
@@ -46,7 +49,9 @@ public interface PasswordSettingsAccessor {
      *        or no value if none was set
      * @param failureCallback called with an error if the retrieval did not succeed
      */
-    void getAutoSignIn(Optional<Account> account, Callback<Optional<Boolean>> successCallback,
+    void getAutoSignIn(
+            Optional<Account> account,
+            Callback<Optional<Boolean>> successCallback,
             Callback<Exception> failureCallback);
 
     /**
@@ -58,6 +63,9 @@ public interface PasswordSettingsAccessor {
      * @param successCallback called if the modification was successful
      * @param failureCallback called with an error if the modification did not succeed
      */
-    void setAutoSignIn(boolean autoSignInEnabled, Optional<Account> account,
-            Callback<Void> successCallback, Callback<Exception> failureCallback);
+    void setAutoSignIn(
+            boolean autoSignInEnabled,
+            Optional<Account> account,
+            Callback<Void> successCallback,
+            Callback<Exception> failureCallback);
 }

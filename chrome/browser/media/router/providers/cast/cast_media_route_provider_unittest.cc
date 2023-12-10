@@ -307,7 +307,7 @@ TEST_F(CastMediaRouteProviderTest, GetState) {
     ASSERT_EQ(cast_state.session_state.size(), 1UL);
     const mojom::CastSessionState& session_state =
         *(cast_state.session_state[0]);
-    EXPECT_EQ(session_state.sink_id, "cast:<id1>");
+    EXPECT_EQ(session_state.sink_id, "cast:id1");
     EXPECT_EQ(session_state.app_id, "ABCDEFGH");
     EXPECT_EQ(session_state.session_id, "theSessionId");
     EXPECT_EQ(session_state.route_description, "App status");

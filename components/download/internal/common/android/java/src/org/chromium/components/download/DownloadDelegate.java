@@ -6,9 +6,7 @@ package org.chromium.components.download;
 
 import android.net.Uri;
 
-/**
- * Helper class for providering some helper method needed by DownloadCollectionBridge.
- */
+/** Helper class for providering some helper method needed by DownloadCollectionBridge. */
 public class DownloadDelegate {
     public DownloadDelegate() {}
 

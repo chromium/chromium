@@ -116,6 +116,8 @@ struct COMPONENT_EXPORT(APP_RESTORE) AppRestoreData {
   // in full restore are persistsed by sessions.  This field is not converted to
   // base::value in base value conversions.
   std::vector<tab_groups::TabGroupInfo> tab_group_infos;
+  // Lacros only, the ID of the lacros profile that this browser uses.
+  std::optional<uint64_t> lacros_profile_id;
   // The GUID of the desk that this window was on.
   base::Uuid desk_guid;
 

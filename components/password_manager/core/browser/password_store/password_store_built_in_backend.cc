@@ -15,8 +15,8 @@
 #include "components/password_manager/core/browser/password_store/login_database_async_helper.h"
 #include "components/password_manager/core/browser/password_store/password_store_backend.h"
 #include "components/password_manager/core/browser/password_store/password_store_backend_metrics_recorder.h"
-#include "components/password_manager/core/browser/password_store_consumer.h"
-#include "components/password_manager/core/browser/password_store_util.h"
+#include "components/password_manager/core/browser/password_store/password_store_consumer.h"
+#include "components/password_manager/core/browser/password_store/password_store_util.h"
 #include "components/sync/model/proxy_model_type_controller_delegate.h"
 
 namespace password_manager {
@@ -39,7 +39,7 @@ base::OnceCallback<Result(Result)> ReportMetricsForResultCallback(
           reporter.RecordMetrics(SuccessStatus::kError,
                                  absl::get<PasswordStoreBackendError>(result));
         } else {
-          reporter.RecordMetrics(SuccessStatus::kSuccess, absl::nullopt);
+          reporter.RecordMetrics(SuccessStatus::kSuccess, std::nullopt);
         }
         return result;
       },
@@ -134,7 +134,7 @@ void PasswordStoreBuiltInBackend::GetAutofillableLoginsAsync(
 }
 
 void PasswordStoreBuiltInBackend::GetAllLoginsForAccountAsync(
-    absl::optional<std::string> account,
+    std::string account,
     LoginsOrErrorReply callback) {
   NOTREACHED();
 }
@@ -158,7 +158,6 @@ void PasswordStoreBuiltInBackend::FillMatchingLoginsAsync(
           forms, include_psl),
       ReportMetricsForResultCallback<LoginsResultOrError>(
           MetricInfix("FillMatchingLoginsAsync"))
-          .Then(base::BindOnce(&GetLoginsOrEmptyListOnFailure))
           .Then(std::move(callback)));
 }
 

@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+[FAIL] share() is disabled by default 'self' by permissions policy for cross-origin iframes
+  assert_equals: expected "NotAllowedError" but got "Error"
+[FAIL] share() is disabled explicitly by permissions policy for cross-origin iframe
+  assert_equals: expected "NotAllowedError" but got "Error"
+[FAIL] share() not allowed, as only allowed to share with self
+  assert_equals: expected "NotAllowedError" but got "Error"
+Harness: the test ran to completion.

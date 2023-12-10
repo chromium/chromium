@@ -635,7 +635,8 @@ class IsolatedWebAppUsbBrowserTest
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppUsbBrowserTest, ClaimInterface) {
   // Verifies that non-IWA main frames and cross-origin iframes in an IWA can
   // access normal USB devices, but not devices from a protected class. IWA
-  // frames can access both.
+  // frames without usb-unrestricted permission can only access non-protected
+  // class too.
   GURL frame_url = https_server()->GetURL("/banners/isolated/simple.html");
   auto* non_app_main_frame = ui_test_utils::NavigateToURL(browser(), frame_url);
 
@@ -680,8 +681,9 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUsbBrowserTest, ClaimInterface) {
 
   EXPECT_EQ("Success",
             EvalJs(app_frame, JsReplace(kClaimInterface, kPrinterProductId)));
-  EXPECT_EQ("Success",
-            EvalJs(app_frame, JsReplace(kClaimInterface, kSmartCardProductId)));
+  EXPECT_THAT(
+      EvalJs(app_frame, JsReplace(kClaimInterface, kSmartCardProductId)),
+      FailedWithSubstr("requested interface implements a protected class"));
 
   EXPECT_EQ("Success", EvalJs(non_app_main_frame,
                               JsReplace(kClaimInterface, kPrinterProductId)));
@@ -727,7 +729,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppPermissionsPolicyBrowserTest,
                         permissions_policy);
   auto* iframe = ChildFrameAt(app_frame, 0);
 
-  auto fake_device_info = CreateUsbDevice(device::mojom::kUsbSmartCardClass);
+  auto fake_device_info = CreateUsbDevice(kUsbPrinterClass);
   auto device_info = device_manager().AddDevice(std::move(fake_device_info));
   chooser_context()->GrantDevicePermission(app_frame->GetLastCommittedOrigin(),
                                            *device_info);
@@ -762,7 +764,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppPermissionsPolicyBrowserTest,
                         permissions_policy);
   auto* iframe = ChildFrameAt(app_frame, 0);
 
-  auto fake_device_info = CreateUsbDevice(device::mojom::kUsbSmartCardClass);
+  auto fake_device_info = CreateUsbDevice(kUsbPrinterClass);
   auto device_info = device_manager().AddDevice(std::move(fake_device_info));
   chooser_context()->GrantDevicePermission(app_frame->GetLastCommittedOrigin(),
                                            *device_info);
@@ -839,7 +841,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppPermissionsPolicyBrowserTest,
                         permissions_policy);
   auto* iframe = ChildFrameAt(app_frame, 0);
 
-  auto fake_device_info = CreateUsbDevice(device::mojom::kUsbSmartCardClass);
+  auto fake_device_info = CreateUsbDevice(kUsbPrinterClass);
   auto device_info = device_manager().AddDevice(std::move(fake_device_info));
   chooser_context()->GrantDevicePermission(app_frame->GetLastCommittedOrigin(),
                                            *device_info);
@@ -940,7 +942,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppPermissionsPolicyBrowserTest,
   web_app::CreateIframe(app_frame, "child", app_url, permissions_policy);
   auto* iframe = ChildFrameAt(app_frame, 0);
 
-  auto fake_device_info = CreateUsbDevice(device::mojom::kUsbSmartCardClass);
+  auto fake_device_info = CreateUsbDevice(kUsbPrinterClass);
   auto device_info = device_manager().AddDevice(std::move(fake_device_info));
   chooser_context()->GrantDevicePermission(app_frame->GetLastCommittedOrigin(),
                                            *device_info);
@@ -993,6 +995,104 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppPermissionsPolicyBrowserTest,
   iframe = ChildFrameAt(app_frame, 1);
 
   EXPECT_EQ("Success", EvalJs(iframe, OpenAndClaimDeviceScript));
+}
+
+IN_PROC_BROWSER_TEST_F(IsolatedWebAppPermissionsPolicyBrowserTest,
+                       PermissionsPolicy_Usb_Unrestricted_CrossOrigin_Iframe) {
+  std::unique_ptr<net::EmbeddedTestServer> isolated_web_app_dev_server =
+      CreateAndStartServer(
+          FILE_PATH_LITERAL("web_apps/unrestricted_usb_isolated_app"));
+  web_app::IsolatedWebAppUrlInfo url_info = InstallDevModeProxyIsolatedWebApp(
+      isolated_web_app_dev_server->GetOrigin());
+  content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
+
+  // Create a fake device with protected class and grant permission.
+  auto fake_device_info = CreateUsbDevice(device::mojom::kUsbSmartCardClass);
+  auto device_info = device_manager().AddDevice(std::move(fake_device_info));
+  chooser_context()->GrantDevicePermission(app_frame->GetLastCommittedOrigin(),
+                                           *device_info);
+
+  // With "usb-unrestricted" permission, when main frame claims protected class
+  // device it should succeed.
+  EXPECT_EQ("Success", EvalJs(app_frame, OpenAndClaimDeviceScript));
+
+  GURL cross_origin_iframe_url =
+      https_server()->GetURL(kNonAppHost, "/banners/isolated/simple.html");
+
+  // Create a cross-origin Iframe without any permission and request to
+  // protected class device should be denied due to "usb" feature is not
+  // enabled on iframe's document.
+  web_app::CreateIframe(app_frame, "child0", cross_origin_iframe_url, "");
+  auto* cross_origin_iframe0 = ChildFrameAt(app_frame, 0);
+  EXPECT_THAT(
+      EvalJs(cross_origin_iframe0, OpenAndClaimDeviceScript).ExtractString(),
+      testing::EndsWith("permissions policy."));
+
+  // Create a cross-origin Iframe with only "usb-unrestricted" permission,
+  // request to protected class device should be denied due to "usb" feature is
+  // not enabled on iframe's document.
+  web_app::CreateIframe(app_frame, "child1", cross_origin_iframe_url,
+                        "usb-unrestricted");
+  auto* cross_origin_iframe1 = ChildFrameAt(app_frame, 1);
+  EXPECT_THAT(
+      EvalJs(cross_origin_iframe1, OpenAndClaimDeviceScript).ExtractString(),
+      testing::EndsWith("permissions policy."));
+
+  // Create a cross-origin Iframe with only "usb" permission, request to
+  // protected class device should be denied due to "usb-unrestricted" is not
+  // enabled.
+  web_app::CreateIframe(app_frame, "child2", cross_origin_iframe_url, "usb");
+  auto* cross_origin_iframe2 = ChildFrameAt(app_frame, 2);
+  EXPECT_THAT(
+      EvalJs(cross_origin_iframe2, OpenAndClaimDeviceScript).ExtractString(),
+      testing::EndsWith("requested interface implements a protected class."));
+
+  // Create a cross-origin Iframe with "usb + usb-unrestricted" and request to
+  // protected class device should be denied due to iframe's isolation level =
+  // 0.
+  web_app::CreateIframe(app_frame, "child3", cross_origin_iframe_url,
+                        "usb; usb-unrestricted");
+  auto* cross_origin_iframe3 = ChildFrameAt(app_frame, 3);
+  EXPECT_THAT(
+      EvalJs(cross_origin_iframe3, OpenAndClaimDeviceScript).ExtractString(),
+      testing::EndsWith("requested interface implements a protected class."));
+}
+
+IN_PROC_BROWSER_TEST_F(IsolatedWebAppPermissionsPolicyBrowserTest,
+                       PermissionsPolicy_Usb_Unrestricted_Iframe) {
+  std::unique_ptr<net::EmbeddedTestServer> isolated_web_app_dev_server =
+      CreateAndStartServer(
+          FILE_PATH_LITERAL("web_apps/unrestricted_usb_isolated_app"));
+  web_app::IsolatedWebAppUrlInfo url_info = InstallDevModeProxyIsolatedWebApp(
+      isolated_web_app_dev_server->GetOrigin());
+  content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
+
+  // Create a fake device with protected class and grant permission.
+  auto fake_device_info = CreateUsbDevice(device::mojom::kUsbSmartCardClass);
+  auto device_info = device_manager().AddDevice(std::move(fake_device_info));
+  chooser_context()->GrantDevicePermission(app_frame->GetLastCommittedOrigin(),
+                                           *device_info);
+
+  // With "usb + usb-unrestricted" permission, when main frame claims protected
+  // class device it should succeed.
+  EXPECT_EQ("Success", EvalJs(app_frame, OpenAndClaimDeviceScript));
+
+  // Create a same-origin iframe without any permissions in attribute, request
+  // to protected class device should still succeed due to "usb +
+  // usb-unrestricted" feature is inherited from main frame and same-origin
+  // iframe is still isolated.
+  web_app::CreateIframe(app_frame, "child0", GURL("empty.html"), "");
+  auto* iframe0 = ChildFrameAt(app_frame, 0);
+  EXPECT_EQ("Success", EvalJs(iframe0, OpenAndClaimDeviceScript));
+
+  // Create a same-origin iframe with "usb-unrestricted" permissions disabled,
+  // request to protected class device should fail.
+  web_app::CreateIframe(app_frame, "child1", GURL("empty.html"),
+                        "usb-unrestricted 'none'");
+  auto* iframe1 = ChildFrameAt(app_frame, 1);
+  EXPECT_THAT(
+      EvalJs(iframe1, OpenAndClaimDeviceScript).ExtractString(),
+      testing::EndsWith("requested interface implements a protected class."));
 }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)

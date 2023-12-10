@@ -30,6 +30,7 @@
 #include "net/url_request/url_request_context_builder.h"
 #include "net/url_request/url_request_context_getter.h"
 #include "third_party/boringssl/src/pki/trust_store.h"
+#include "third_party/boringssl/src/pki/trust_store_collection.h"
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "net/proxy_resolution/proxy_config.h"
@@ -193,6 +194,22 @@ class CertVerifyImplUsingPathBuilder : public CertVerifyImpl {
   std::unique_ptr<net::SystemTrustStore> system_trust_store_;
 };
 
+class DummySystemTrustStore : public net::SystemTrustStore {
+ public:
+  bssl::TrustStore* GetTrustStore() override { return &trust_store_; }
+
+  bool IsKnownRoot(const bssl::ParsedCertificate* trust_anchor) const override {
+    return false;
+  }
+
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+  int64_t chrome_root_store_version() const override { return 0; }
+#endif
+
+ private:
+  bssl::TrustStoreCollection trust_store_;
+};
+
 std::unique_ptr<net::SystemTrustStore> CreateSystemTrustStore(
     base::StringPiece impl_name,
     RootStoreType root_store_type) {
@@ -217,7 +234,7 @@ std::unique_ptr<net::SystemTrustStore> CreateSystemTrustStore(
     case RootStoreType::kEmpty:
     default:
       std::cerr << impl_name << ": only using --roots specified.\n";
-      return net::CreateEmptySystemTrustStore();
+      return std::make_unique<DummySystemTrustStore>();
   }
 }
 
@@ -247,7 +264,7 @@ std::unique_ptr<CertVerifyImpl> CreateCertVerifyImplFromName(
         "CertVerifyProcBuiltin",
         net::CreateCertVerifyProcBuiltin(
             std::move(cert_net_fetcher), std::move(crl_set),
-            CreateSystemTrustStore(impl_name, root_store_type)));
+            CreateSystemTrustStore(impl_name, root_store_type), {}));
   }
 
   if (impl_name == "pathbuilder") {

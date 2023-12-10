@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_SIGNIN_PROFILE_PICKER_HANDLER_H_
 
 #include <memory>
+#include <optional>
 #include <unordered_map>
 
 #include "base/files/file_path.h"
@@ -22,7 +23,6 @@
 #include "chrome/browser/profiles/profile_statistics_common.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_ui_message_handler.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/lacros/account_manager/account_profile_mapper.h"
@@ -123,7 +123,7 @@ class ProfilePickerHandler : public content::WebUIMessageHandler,
                                  bool open_settings,
                                  Browser* browser);
   void OnSwitchToProfileCompleteOpenCustomization(Browser* browser);
-  void OnLocalProfileInitialized(absl::optional<SkColor> profile_color,
+  void OnLocalProfileInitialized(std::optional<SkColor> profile_color,
                                  Profile* profile);
   void PushProfilesList();
   base::Value::List GetProfilesList();
@@ -191,7 +191,7 @@ class ProfilePickerHandler : public content::WebUIMessageHandler,
 
   // Called when a new Lacros signed-in profile is created. The profile is
   // omitted, ephemeral, and has a primary kSignin account.
-  void OnLacrosSignedInProfileCreated(absl::optional<SkColor> profile_color,
+  void OnLacrosSignedInProfileCreated(std::optional<SkColor> profile_color,
                                       Profile* profile);
 
   // `AddAccountCallback` used with `ResultAccountInPersistentError`.
@@ -237,7 +237,7 @@ class ProfilePickerHandler : public content::WebUIMessageHandler,
   // Adds an existing account (if gaia_id has a value) or initiates the
   // signin flow to add a new account in a new/existing profile.
   void SelectAccountLacrosInternal(const std::string& gaia_id,
-                                   absl::optional<SkColor> profile_color);
+                                   std::optional<SkColor> profile_color);
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   // Returns the list of profiles in the same order as when the picker

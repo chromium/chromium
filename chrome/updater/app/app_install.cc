@@ -4,6 +4,7 @@
 
 #include "chrome/updater/app/app_install.h"
 
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -30,7 +31,6 @@
 #include "chrome/updater/updater_version.h"
 #include "chrome/updater/util/util.h"
 #include "components/prefs/pref_service.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
 
@@ -59,8 +59,8 @@ class AppInstallControllerImpl : public AppInstallController {
     RegistrationRequest request;
     request.app_id = app_id;
     request.version = base::Version(kNullVersion);
-    absl::optional<tagging::AppArgs> app_args = GetAppArgs(app_id);
-    absl::optional<tagging::TagArgs> tag_args = GetTagArgs().tag_args;
+    std::optional<tagging::AppArgs> app_args = GetAppArgs(app_id);
+    std::optional<tagging::TagArgs> tag_args = GetTagArgs().tag_args;
     if (app_args) {
       request.ap = app_args->ap;
     }

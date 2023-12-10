@@ -17,6 +17,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
 #include "base/time/time.h"
+#include "base/uuid.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -38,8 +39,8 @@
 #include "remoting/host/xmpp_register_support_host_request.h"
 #include "remoting/protocol/ice_config.h"
 #include "remoting/signaling/delegating_signal_strategy.h"
-#include "remoting/signaling/ftl_client_uuid_device_id_provider.h"
 #include "remoting/signaling/ftl_signal_strategy.h"
+#include "remoting/signaling/ftl_support_host_device_id_provider.h"
 #include "remoting/signaling/remoting_log_to_server.h"
 #include "remoting/signaling/server_log_entry.h"
 #include "remoting/signaling/xmpp_log_to_server.h"
@@ -116,6 +117,51 @@ ChromeOsEnterpriseParams BuildEnterpriseParams(
 }
 #endif
 
+std::unique_ptr<It2MeHost::DeferredConnectContext>
+CreateDelegatedSignalingDeferredConnectContext(
+    std::unique_ptr<remoting::SignalStrategy> signal_strategy,
+    ChromotingHostContext* context) {
+  auto connection_context =
+      std::make_unique<It2MeHost::DeferredConnectContext>();
+  connection_context->register_request =
+      std::make_unique<XmppRegisterSupportHostRequest>(kDirectoryBotJidValue);
+  connection_context->log_to_server = std::make_unique<XmppLogToServer>(
+      ServerLogEntry::IT2ME, signal_strategy.get(), kDirectoryBotJidValue,
+      context->network_task_runner());
+  connection_context->signal_strategy = std::move(signal_strategy);
+  return connection_context;
+}
+
+std::unique_ptr<It2MeHost::DeferredConnectContext>
+CreateNativeSignalingDeferredConnectContext(
+    const std::string& username,
+    const std::string& access_token,
+    const std::string& ftl_device_id,
+    ChromotingHostContext* host_context) {
+  std::string device_id =
+      ftl_device_id.empty() ? base::Uuid::GenerateRandomV4().AsLowercaseString()
+                            : ftl_device_id;
+  auto connection_context =
+      std::make_unique<It2MeHost::DeferredConnectContext>();
+  connection_context->use_ftl_signaling = true;
+  connection_context->signal_strategy = std::make_unique<FtlSignalStrategy>(
+      std::make_unique<PassthroughOAuthTokenGetter>(username, access_token),
+      host_context->url_loader_factory(),
+      std::make_unique<FtlSupportHostDeviceIdProvider>(device_id));
+  connection_context->ftl_device_id = std::move(device_id);
+  connection_context->register_request =
+      std::make_unique<RemotingRegisterSupportHostRequest>(
+          std::make_unique<PassthroughOAuthTokenGetter>(username, access_token),
+          host_context->url_loader_factory());
+  connection_context->log_to_server = std::make_unique<RemotingLogToServer>(
+      ServerLogEntry::IT2ME,
+      std::make_unique<PassthroughOAuthTokenGetter>(username, access_token),
+      host_context->url_loader_factory());
+  connection_context->oauth_token_getter =
+      std::make_unique<PassthroughOAuthTokenGetter>(username, access_token);
+  return connection_context;
+}
+
 }  // namespace
 
 It2MeNativeMessagingHost::It2MeNativeMessagingHost(
@@ -160,7 +206,7 @@ void It2MeNativeMessagingHost::OnMessage(const std::string& message) {
     return;
   }
 
-  absl::optional<base::Value::Dict> response =
+  std::optional<base::Value::Dict> response =
       CreateNativeMessageResponse(request);
   if (!response.has_value()) {
     SendErrorAndExit(base::Value::Dict(), ErrorCode::INCOMPATIBLE_PROTOCOL);
@@ -283,6 +329,20 @@ void It2MeNativeMessagingHost::ProcessConnect(base::Value::Dict message,
     }
   }
 
+  absl::optional<ReconnectParams> reconnect_params;
+#if BUILDFLAG(IS_CHROMEOS_ASH) || !defined(NDEBUG)
+  bool is_enterprise_admin_user =
+      message.FindBool(kIsEnterpriseAdminUser).value_or(false);
+  if (is_enterprise_admin_user) {
+    const auto* reconnect_params_ptr = message.FindDict(kReconnectParamsDict);
+    if (reconnect_params_ptr) {
+      CHECK(message.FindBool(kAllowReconnections).value_or(false));
+      reconnect_params.emplace(
+          ReconnectParams::FromDict(*reconnect_params_ptr));
+    }
+  }
+#endif
+
   It2MeHost::CreateDeferredConnectContext create_connection_context;
   if (use_signaling_proxy) {
     if (username.empty()) {
@@ -291,57 +351,22 @@ void It2MeNativeMessagingHost::ProcessConnect(base::Value::Dict message,
     }
     auto signal_strategy = CreateDelegatedSignalStrategy(message);
     if (signal_strategy) {
-      create_connection_context = base::BindOnce(
-          [](std::unique_ptr<remoting::SignalStrategy> signal_strategy,
-             ChromotingHostContext* context) {
-            auto connection_context =
-                std::make_unique<It2MeHost::DeferredConnectContext>();
-            connection_context->register_request =
-                std::make_unique<XmppRegisterSupportHostRequest>(
-                    kDirectoryBotJidValue);
-            connection_context->log_to_server =
-                std::make_unique<XmppLogToServer>(
-                    ServerLogEntry::IT2ME, signal_strategy.get(),
-                    kDirectoryBotJidValue, context->network_task_runner());
-            connection_context->signal_strategy = std::move(signal_strategy);
-            return connection_context;
-          },
-          std::move(signal_strategy));
+      create_connection_context =
+          base::BindOnce(&CreateDelegatedSignalingDeferredConnectContext,
+                         std::move(signal_strategy));
     }
   } else {
     if (!username.empty()) {
       std::string access_token = ExtractAccessToken(message);
-      create_connection_context = base::BindOnce(
-          [](const std::string& username, const std::string& access_token,
-             ChromotingHostContext* host_context) {
-            auto connection_context =
-                std::make_unique<It2MeHost::DeferredConnectContext>();
-            connection_context->use_ftl_signaling = true;
-            connection_context->signal_strategy =
-                std::make_unique<FtlSignalStrategy>(
-                    std::make_unique<PassthroughOAuthTokenGetter>(username,
-                                                                  access_token),
-                    host_context->url_loader_factory(),
-                    std::make_unique<FtlClientUuidDeviceIdProvider>());
-            connection_context->register_request =
-                std::make_unique<RemotingRegisterSupportHostRequest>(
-                    std::make_unique<PassthroughOAuthTokenGetter>(username,
-                                                                  access_token),
-                    host_context->url_loader_factory());
-            connection_context->log_to_server =
-                std::make_unique<RemotingLogToServer>(
-                    ServerLogEntry::IT2ME,
-                    std::make_unique<PassthroughOAuthTokenGetter>(username,
-                                                                  access_token),
-                    host_context->url_loader_factory());
-            connection_context->oauth_token_getter =
-                std::make_unique<PassthroughOAuthTokenGetter>(username,
-                                                              access_token);
-            return connection_context;
-          },
-          username, access_token);
+      std::string ftl_device_id;
+      if (reconnect_params.has_value()) {
+        ftl_device_id = reconnect_params->ftl_device_id;
+      }
+      create_connection_context =
+          base::BindOnce(&CreateNativeSignalingDeferredConnectContext, username,
+                         access_token, ftl_device_id);
     } else {
-      LOG(ERROR) << "'userName' not found in request.";
+      LOG(ERROR) << kUserName << " not found in request.";
     }
   }
   if (!create_connection_context) {
@@ -365,19 +390,20 @@ void It2MeNativeMessagingHost::ProcessConnect(base::Value::Dict message,
     return;
   }
 
-  // Create the It2Me host and start connecting. Note that disabling dialogs is
-  // only supported on ChromeOS.
+  // Create the It2Me host and start connecting.
   it2me_host_ = factory_->CreateIt2MeHost();
   it2me_host_->set_authorized_helper(authorized_helper);
 
   auto dialog_style = It2MeConfirmationDialog::DialogStyle::kConsumer;
 #if BUILDFLAG(IS_CHROMEOS_ASH) || !defined(NDEBUG)
-  bool is_enterprise_admin_user =
-      message.FindBool(kIsEnterpriseAdminUser).value_or(false);
   if (is_enterprise_admin_user) {
     dialog_style = It2MeConfirmationDialog::DialogStyle::kEnterprise;
     it2me_host_->set_chrome_os_enterprise_params(
         BuildEnterpriseParams(message));
+
+    if (reconnect_params.has_value()) {
+      it2me_host_->set_reconnect_params(std::move(*reconnect_params));
+    }
   }
 #endif
 
@@ -495,10 +521,15 @@ void It2MeNativeMessagingHost::OnStateChanged(It2MeHostState state,
                   static_cast<int>(access_code_lifetime_.InSeconds()));
       break;
 
-    case It2MeHostState::kConnected:
+    case It2MeHostState::kConnected: {
       message.Set(kClient, client_username_);
+      auto reconnect_params = it2me_host_->CreateReconnectParams();
+      if (reconnect_params.has_value()) {
+        message.Set(kReconnectParamsDict,
+                    ReconnectParams::ToDict(std::move(*reconnect_params)));
+      }
       break;
-
+    }
     case It2MeHostState::kDisconnected:
       message.Set(kDisconnectReason, ErrorCodeToString(error_code));
       client_username_.clear();
@@ -578,7 +609,7 @@ void It2MeNativeMessagingHost::OnPolicyUpdate(base::Value::Dict policies) {
   }
 }
 
-absl::optional<bool>
+std::optional<bool>
 It2MeNativeMessagingHost::GetAllowElevatedHostPolicyValue() {
   DCHECK(policy_received_);
 #if BUILDFLAG(IS_WIN)
@@ -593,7 +624,7 @@ It2MeNativeMessagingHost::GetAllowElevatedHostPolicyValue() {
   }
 #endif  // BUILDFLAG(IS_WIN)
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void It2MeNativeMessagingHost::OnPolicyError() {
@@ -638,25 +669,44 @@ It2MeNativeMessagingHost::CreateDelegatedSignalStrategy(
 
 std::string It2MeNativeMessagingHost::ExtractAccessToken(
     const base::Value::Dict& message) {
+  // TODO(b/309958013): Remove this function, code, and unused constants after
+  // M124 and we no longer need to deal with the kAuthServiceWithToken field.
+  const std::string* access_token = message.FindString(kAccessToken);
+  if (access_token) {
+    if (access_token->empty()) {
+      LOG(ERROR) << "Empty token stored in " << kAccessToken << " field";
+      return {};
+    }
+    return *access_token;
+  }
+
   const std::string* auth_service_with_token =
       message.FindString(kAuthServiceWithToken);
-  if (!auth_service_with_token) {
+  if (!auth_service_with_token || auth_service_with_token->empty()) {
     LOG(ERROR) << "'authServiceWithToken' not found in request.";
     return {};
   }
 
-  // For backward compatibility the webapp still passes OAuth service as part
-  // of the authServiceWithToken field. But auth service part is always
-  // expected to be set to oauth2.
+  // We are migrating away from requiring the oauth2 prefix in the
+  // kAuthServiceWithToken field, however ash-chrome needs to support different
+  // versions of lacros-chrome which may not have been updated. Therefore, we
+  // need to support messages which are prefixed with oauth2: as well as those
+  // which pass a raw access token.
   const char kOAuth2ServicePrefix[] = "oauth2:";
-  if (!base::StartsWith(*auth_service_with_token, kOAuth2ServicePrefix,
-                        base::CompareCase::SENSITIVE)) {
-    LOG(ERROR) << "Invalid 'authServiceWithToken': "
-               << *auth_service_with_token;
-    return {};
+  if (base::StartsWith(*auth_service_with_token, kOAuth2ServicePrefix,
+                       base::CompareCase::SENSITIVE)) {
+    return auth_service_with_token->substr(strlen(kOAuth2ServicePrefix));
   }
 
-  return auth_service_with_token->substr(strlen(kOAuth2ServicePrefix));
+  // Log an error if an access token is provided which does not match the
+  // expected format. Though this prefix is effectively stable, there is are no
+  // guarantees so we shouldn't reject requests based on it.
+  if (!auth_service_with_token->starts_with("ya29.")) {
+    LOG(ERROR) << "Potentially invalid auth_service_with_token value: "
+               << *auth_service_with_token;
+  }
+
+  return *auth_service_with_token;
 }
 
 #if BUILDFLAG(IS_WIN)

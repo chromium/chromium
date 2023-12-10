@@ -13,6 +13,10 @@
 
 namespace chromeos::features {
 
+namespace {
+bool g_app_install_service_uri_enabled_for_testing = false;
+}
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Enables triggering app installs from a specific URI.
 BASE_FEATURE(kAppInstallServiceUri,
@@ -73,9 +77,6 @@ BASE_FEATURE(kCrosWebAppInstallDialog,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // With this feature enabled, the shortcut app badge is painted in the UI
 // instead of being part of the shortcut app icon.
-BASE_FEATURE(kSeparateWebAppShortcutBadgeIcon,
-             "SeparateWebAppShortcutBadgeIcon",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables the new UI for browser created shortcut backed by web app system
 // on Chrome OS.
@@ -83,6 +84,11 @@ BASE_FEATURE(kCrosWebAppShortcutUiUpdate,
              "CrosWebAppShortcutUiUpdate",
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+// Enables denying file access to dlp protected files in MyFiles.
+BASE_FEATURE(kDataControlsFileAccessDefaultDeny,
+             "DataControlsFileAccessDefaultDeny",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables the desk profiles feature.
 BASE_FEATURE(kDeskProfiles, "DeskProfiles", base::FEATURE_DISABLED_BY_DEFAULT);
@@ -108,6 +114,11 @@ BASE_FEATURE(kDisableQuickAnswersV2Translation,
              "DisableQuickAnswersV2Translation",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables Essential Search in Omnibox for both launcher and browser.
+BASE_FEATURE(kEssentialSearch,
+             "EssentialSearch",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enable experimental goldfish web app isolation.
 BASE_FEATURE(kExperimentalWebAppStoragePartitionIsolation,
              "ExperimentalWebAppStoragePartitionIsolation",
@@ -124,6 +135,13 @@ BASE_FEATURE(kJelly, "Jelly", base::FEATURE_ENABLED_BY_DEFAULT);
 // Enables Jellyroll features. Jellyroll is a feature flag for CrOSNext, which
 // controls all system UI updates and new system components. go/jelly-flags
 BASE_FEATURE(kJellyroll, "Jellyroll", base::FEATURE_ENABLED_BY_DEFAULT);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// Enables Kiosk Heartbeats to be sent via Encrypted Reporting Pipeline
+BASE_FEATURE(kKioskHeartbeatsViaERP,
+             "KioskHeartbeatsViaERP",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Controls enabling / disabling the orca feature.
 BASE_FEATURE(kOrca, "Orca", base::FEATURE_DISABLED_BY_DEFAULT);
@@ -152,6 +170,12 @@ BASE_FEATURE(kUploadOfficeToCloudForEnterprise,
              "UploadOfficeToCloudForEnterprise",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables the Microsoft OneDrive integration workflow for enterprise users to
+// cloud integration support.
+BASE_FEATURE(kMicrosoftOneDriveIntegrationForEnterprise,
+             "MicrosoftOneDriveIntegrationForEnterprise",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kRoundedWindows,
              "RoundedWindows",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -159,6 +183,9 @@ BASE_FEATURE(kRoundedWindows,
 const char kRoundedWindowsRadius[] = "window_radius";
 
 bool IsAppInstallServiceUriEnabled() {
+  if (g_app_install_service_uri_enabled_for_testing) {
+    return true;
+  }
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   return chromeos::BrowserParamsProxy::Get()->IsAppInstallServiceUriEnabled();
 #else
@@ -196,19 +223,9 @@ bool IsCrosComponentsEnabled() {
   return base::FeatureList::IsEnabled(kCrosComponents) && IsJellyEnabled();
 }
 
-bool IsSeparateWebAppShortcutBadgeIconEnabled() {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // TODO(b/304661502): Pass the value to lacros.
-  return false;
-#else
-  return base::FeatureList::IsEnabled(kSeparateWebAppShortcutBadgeIcon);
-#endif
-}
-
 bool IsCrosShortstandEnabled() {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // TODO(b/300570785): Pass the value to lacros.
-  return false;
+  return chromeos::BrowserParamsProxy::Get()->IsCrosShortstandEnabled();
 #else
   return base::FeatureList::IsEnabled(kCrosShortstand);
 #endif
@@ -223,12 +240,20 @@ bool IsCrosWebAppShortcutUiUpdateEnabled() {
 #endif
 }
 
+bool IsDataControlsFileAccessDefaultDenyEnabled() {
+  return base::FeatureList::IsEnabled(kDataControlsFileAccessDefaultDeny);
+}
+
 bool IsDeskProfilesEnabled() {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   return chromeos::BrowserParamsProxy::Get()->IsDeskProfilesEnabled();
 #else
   return base::FeatureList::IsEnabled(kDeskProfiles);
 #endif
+}
+
+bool IsEssentialSearchEnabled() {
+  return base::FeatureList::IsEnabled(kEssentialSearch);
 }
 
 bool IsIWAForTelemetryExtensionAPIEnabled() {
@@ -245,6 +270,8 @@ bool IsJellyrollEnabled() {
   return IsJellyEnabled() && base::FeatureList::IsEnabled(kJellyroll);
 }
 
+// TODO:b/312592767 - Remove this function in favor of the equivalent ash
+// function.
 bool IsOrcaEnabled() {
   return base::FeatureList::IsEnabled(kOrca) ||
          base::FeatureList::IsEnabled(kOrcaDogfood);
@@ -280,6 +307,11 @@ bool IsUploadOfficeToCloudForEnterpriseEnabled() {
 #endif
 }
 
+bool IsMicrosoftOneDriveIntegrationForEnterpriseEnabled() {
+  return base::FeatureList::IsEnabled(
+      kMicrosoftOneDriveIntegrationForEnterprise);
+}
+
 bool IsRoundedWindowsEnabled() {
   // Rounded windows are under the Jelly feature.
   return base::FeatureList::IsEnabled(kRoundedWindows) &&
@@ -293,6 +325,10 @@ int RoundedWindowsRadius() {
 
   return base::GetFieldTrialParamByFeatureAsInt(
       kRoundedWindows, kRoundedWindowsRadius, /*default_value=*/12);
+}
+
+base::AutoReset<bool> SetAppInstallServiceUriEnabledForTesting() {
+  return {&g_app_install_service_uri_enabled_for_testing, true};
 }
 
 }  // namespace chromeos::features

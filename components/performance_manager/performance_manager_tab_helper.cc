@@ -50,11 +50,6 @@ bool ConnectWindowOpenRelationshipIfExists(PerformanceManagerTabHelper* helper,
   if (!opener_rfh)
     return false;
 
-  // You can't simultaneously be a portal (an embedded child element of a
-  // document loaded via the <portal> tag) and a popup (a child document
-  // loaded in a new window).
-  DCHECK(!web_contents->IsPortal());
-
   // Connect this new page to its opener.
   auto* opener_wc = content::WebContents::FromRenderFrameHost(opener_rfh);
   auto* opener_helper = PerformanceManagerTabHelper::FromWebContents(opener_wc);
@@ -342,7 +337,14 @@ void PerformanceManagerTabHelper::OnFrameAudioStateChanged(
     content::RenderFrameHost* render_frame_host,
     bool is_audible) {
   auto frame_it = frames_.find(render_frame_host);
-  CHECK(frame_it != frames_.end());
+  // Ideally this would be a DCHECK, but it's possible to receive a notification
+  // for an unknown frame.
+  // TODO(1499525): Figure out how.
+  if (frame_it == frames_.end()) {
+    // We should only ever see this for a frame transitioning to *not* audible.
+    DCHECK(!is_audible);
+    return;
+  }
   auto* frame_node = frame_it->second.get();
   PerformanceManagerImpl::CallOnGraphImpl(
       FROM_HERE, base::BindOnce(&FrameNodeImpl::SetIsAudible,
@@ -368,6 +370,22 @@ void PerformanceManagerTabHelper::OnFrameVisibilityChanged(
       base::BindOnce(
           &FrameNodeImpl::SetIntersectsViewport, base::Unretained(frame_node),
           visibility == blink::mojom::FrameVisibility::kRenderedInViewport));
+}
+
+void PerformanceManagerTabHelper::OnFrameIsCapturingMediaStreamChanged(
+    content::RenderFrameHost* render_frame_host,
+    bool is_capturing_media_stream) {
+  // Ignore notifications that are received after the frame was deleted.
+  auto frame_it = frames_.find(render_frame_host);
+  if (frame_it == frames_.end()) {
+    return;
+  }
+
+  auto* frame_node = frame_it->second.get();
+  PerformanceManagerImpl::CallOnGraphImpl(
+      FROM_HERE,
+      base::BindOnce(&FrameNodeImpl::SetIsCapturingMediaStream,
+                     base::Unretained(frame_node), is_capturing_media_stream));
 }
 
 void PerformanceManagerTabHelper::DidFinishNavigation(
@@ -443,24 +461,9 @@ void PerformanceManagerTabHelper::InnerWebContentsAttached(
   DCHECK(page);
   auto* frame = GetFrameNode(render_frame_host);
 
-  // Determine the embedded type.
-  auto embedding_type = PageNode::EmbeddingType::kInvalid;
-  if (inner_web_contents->IsPortal()) {
-    embedding_type = PageNode::EmbeddingType::kPortal;
-
-    // In the case of portals there can be a temporary RFH that is created that
-    // will never actually be committed to the frame tree (for which we'll never
-    // see RenderFrameCreated and RenderFrameDestroyed notifications). Find a
-    // parent that we do know about instead. Note that this is not *always*
-    // true, because portals are reusable.
-    if (!frame)
-      frame = GetFrameNode(render_frame_host->GetParent());
-  } else {
-    embedding_type = PageNode::EmbeddingType::kGuestView;
-    // For a guest view, the RFH should already have been seen.
-    // Note that guest views can simultaneously have openers *and* be embedded.
-  }
-  DCHECK_NE(PageNode::EmbeddingType::kInvalid, embedding_type);
+  // For a guest view, the RFH should already have been seen.
+  // Note that guest views can simultaneously have openers *and* be embedded.
+  auto embedding_type = PageNode::EmbeddingType::kGuestView;
   DCHECK(frame);
 
   PerformanceManagerImpl::CallOnGraphImpl(

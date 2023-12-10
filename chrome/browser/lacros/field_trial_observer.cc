@@ -4,8 +4,10 @@
 
 #include "chrome/browser/lacros/field_trial_observer.h"
 
+#include "base/strings/strcat.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chromeos/lacros/lacros_service.h"
+#include "components/variations/active_field_trials.h"
 
 namespace {
 // Prefix prepended by Lacros before sending ash field trials as
@@ -38,6 +40,9 @@ void FieldTrialObserver::OnFieldTrialGroupActivated(
     std::vector<crosapi::mojom::FieldTrialGroupInfoPtr> infos) {
   for (const auto& info : infos) {
     ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
-        ASH_FIELD_TRIAL_PREFIX + info->trial_name, info->group_name);
+        ASH_FIELD_TRIAL_PREFIX + info->trial_name,
+        info->is_overridden.value_or(false)
+            ? base::StrCat({info->group_name, variations::kOverrideSuffix})
+            : info->group_name);
   }
 }

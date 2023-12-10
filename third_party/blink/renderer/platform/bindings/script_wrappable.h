@@ -104,15 +104,6 @@ class PLATFORM_EXPORT ScriptWrappable
   ScriptWrappable& operator=(const ScriptWrappable&) = delete;
   ~ScriptWrappable() override = default;
 
-  // The following methods may override lifetime of ScriptWrappable objects when
-  // needed. In particular if `HasPendingActivity()` returns true *and* the
-  // child type also inherits from `ActiveScriptWrappable`, the objects will not
-  // be reclaimed by the GC, even if they are otherwise unreachable.
-  //
-  // Note: These methods are queried during garbage collection and *must not*
-  // allocate any new objects.
-  virtual bool HasPendingActivity() const { return false; }
-
   const char* NameInHeapSnapshot() const override;
 
   virtual void Trace(Visitor*) const;
@@ -201,16 +192,20 @@ class PLATFORM_EXPORT ScriptWrappable
   }
 
   bool SetReturnValue(v8::ReturnValue<v8::Value> return_value) {
-    return_value.Set(main_world_wrapper_);
-    return ContainsWrapper();
+    const bool contains_wrapper = ContainsWrapper();
+    if (contains_wrapper) {
+      return_value.SetNonEmpty(main_world_wrapper_);
+    }
+    return contains_wrapper;
   }
 
-  bool ContainsWrapper() const { return !main_world_wrapper_.IsEmpty(); }
 
  protected:
   ScriptWrappable() = default;
 
  private:
+  bool ContainsWrapper() const { return !main_world_wrapper_.IsEmpty(); }
+
   v8::Local<v8::Object> MainWorldWrapper(v8::Isolate* isolate) const {
     return main_world_wrapper_.Get(isolate);
   }

@@ -30,6 +30,8 @@ class MockApiPermissionDelegate
                    const url::Origin&));
   MOCK_METHOD1(RecordDismissAndEmbargo, void(const url::Origin&));
   MOCK_METHOD1(RemoveEmbargoAndResetCounts, void(const url::Origin&));
+  MOCK_CONST_METHOD3(HasThirdPartyCookiesAccess,
+                     bool(RenderFrameHost&, const GURL&, const url::Origin&));
 };
 
 }  // namespace content

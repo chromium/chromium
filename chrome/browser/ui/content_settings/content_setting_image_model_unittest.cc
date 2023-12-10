@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/content_settings/content_setting_image_model.h"
 
+#include <optional>
+
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -45,7 +47,6 @@
 #include "net/cookies/cookie_options.h"
 #include "services/device/public/cpp/device_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -79,7 +80,7 @@ class TestQuietNotificationPermissionUiSelector
   void SelectUiToUse(permissions::PermissionRequest* request,
                      DecisionMadeCallback callback) override {
     std::move(callback).Run(
-        Decision(simulated_reason_for_quiet_ui_, absl::nullopt));
+        Decision(simulated_reason_for_quiet_ui_, std::nullopt));
   }
 
   bool IsPermissionRequestSupported(
@@ -212,8 +213,8 @@ TEST_F(ContentSettingImageModelTest, CookieAccessed) {
 
   GURL origin("http://google.com");
   std::unique_ptr<net::CanonicalCookie> cookie(net::CanonicalCookie::Create(
-      origin, "A=B", base::Time::Now(), absl::nullopt /* server_time */,
-      absl::nullopt /* cookie_partition_key */));
+      origin, "A=B", base::Time::Now(), std::nullopt /* server_time */,
+      std::nullopt /* cookie_partition_key */));
   ASSERT_TRUE(cookie);
   PageSpecificContentSettings::GetForFrame(
       web_contents()->GetPrimaryMainFrame())

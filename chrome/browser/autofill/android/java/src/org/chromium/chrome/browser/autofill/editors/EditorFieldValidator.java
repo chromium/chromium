@@ -24,14 +24,10 @@ import java.util.function.Predicate;
  * 3. Message to show when field contains invalid input.
  */
 public class EditorFieldValidator {
-    @Nullable
-    private String mInitialErrorMessage;
-    @Nullable
-    private String mRequiredErrorMessage;
-    @Nullable
-    private String mInvalidErrorMessage;
-    @Nullable
-    private Predicate<String> mValidationPredicate;
+    @Nullable private String mInitialErrorMessage;
+    @Nullable private String mRequiredErrorMessage;
+    @Nullable private String mInvalidErrorMessage;
+    @Nullable private Predicate<String> mValidationPredicate;
 
     public EditorFieldValidator() {}
 
@@ -39,11 +35,10 @@ public class EditorFieldValidator {
         return new Builder();
     }
 
-    /**
-     * Builder for the {@link EditorFieldValidator}.
-     */
+    /** Builder for the {@link EditorFieldValidator}. */
     public static class Builder {
         private EditorFieldValidator mValidator;
+
         public Builder() {
             mValidator = new EditorFieldValidator();
         }

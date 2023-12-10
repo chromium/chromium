@@ -51,8 +51,7 @@ import java.util.concurrent.atomic.AtomicReference;
 @RunWith(Parameterized.class)
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
 public class VisualStateTest extends AwParameterizedTest {
-    @Rule
-    public AwActivityTestRule mActivityTestRule;
+    @Rule public AwActivityTestRule mActivityTestRule;
 
     private static final String WAIT_FOR_JS_TEST_URL =
             "file:///android_asset/visual_state_waits_for_js_test.html";

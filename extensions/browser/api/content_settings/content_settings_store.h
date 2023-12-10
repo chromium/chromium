@@ -69,6 +69,8 @@ class ContentSettingsStore
   // incognito mode only.
   // Precondition: the extension must be registered.
   // This method should only be called on the UI thread.
+  // This method is called on startup to load from extension prefs. This method
+  // is called each time an extension changes content settings.
   void SetExtensionContentSetting(
       const std::string& ext_id,
       const ContentSettingsPattern& embedded_pattern,

@@ -22,9 +22,6 @@ namespace {
 using ListReadyRepeatingCallback = component_updater::
     MaskedDomainListComponentInstallerPolicy::ListReadyRepeatingCallback;
 
-constexpr base::FilePath::CharType kMaskedDomainListFileName[] =
-    FILE_PATH_LITERAL("list.pb");
-
 // The SHA256 of the SubjectPublicKeyInfo used to sign the extension.
 // The extension id is: cffplpkejcbdpfnfabnjikeicbedmifn
 constexpr uint8_t kMaskedDomainListPublicKeySHA256[32] = {
@@ -40,12 +37,16 @@ constexpr char kExperimentalVersionAttributeName[] =
 constexpr base::FilePath::CharType kMaskedDomainListRelativeInstallDir[] =
     FILE_PATH_LITERAL("MaskedDomainListPreloaded");
 
-std::string ReadFile(const base::FilePath& pb_path) {
+absl::optional<std::string> ReadFile(const base::FilePath& pb_path) {
   std::string raw_list;
-  base::ScopedFILE file(FileToFILE(
-      base::File(pb_path, base::File::FLAG_OPEN | base::File::FLAG_READ), "r"));
-  CHECK(base::ReadStreamToString(file.get(), &raw_list));
-  return raw_list;
+  if (base::ReadStreamToString(
+          FileToFILE(base::File(pb_path,
+                                base::File::FLAG_OPEN | base::File::FLAG_READ),
+                     "r"),
+          &raw_list)) {
+    return raw_list;
+  }
+  return nullptr;
 }
 
 }  // namespace
@@ -67,6 +68,7 @@ bool MaskedDomainListComponentInstallerPolicy::
   return true;
 }
 
+// static
 bool MaskedDomainListComponentInstallerPolicy::IsEnabled() {
   return base::FeatureList::IsEnabled(network::features::kMaskedDomainList);
 }
@@ -124,6 +126,12 @@ base::FilePath MaskedDomainListComponentInstallerPolicy::GetRelativeInstallDir()
 
 void MaskedDomainListComponentInstallerPolicy::GetHash(
     std::vector<uint8_t>* hash) const {
+  GetPublicKeyHash(hash);
+}
+
+// static
+void MaskedDomainListComponentInstallerPolicy::GetPublicKeyHash(
+    std::vector<uint8_t>* hash) {
   hash->assign(kMaskedDomainListPublicKeySHA256,
                kMaskedDomainListPublicKeySHA256 +
                    std::size(kMaskedDomainListPublicKeySHA256));

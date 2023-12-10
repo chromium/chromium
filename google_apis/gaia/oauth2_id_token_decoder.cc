@@ -6,13 +6,13 @@
 
 #include <memory>
 
+#include <optional>
 #include "base/base64url.h"
 #include "base/containers/contains.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/strings/string_split.h"
 #include "base/values.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -28,13 +28,13 @@ const char kServicesKey[] = "services";
 
 // Decodes the JWT ID token to a dictionary. Returns whether the decoding was
 // successful.
-absl::optional<base::Value::Dict> DecodeIdToken(const std::string id_token) {
+std::optional<base::Value::Dict> DecodeIdToken(const std::string id_token) {
   const std::vector<base::StringPiece> token_pieces =
       base::SplitStringPiece(base::StringPiece(id_token), ".",
                              base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
   if (token_pieces.size() != 3) {
     VLOG(1) << "Invalid id_token: not in JWT format";
-    return absl::nullopt;
+    return std::nullopt;
   }
   // Only the payload is used. The header is ignored, and signature
   // verification is not needed since the token was obtained directly from LSO.
@@ -43,13 +43,13 @@ absl::optional<base::Value::Dict> DecodeIdToken(const std::string id_token) {
                              base::Base64UrlDecodePolicy::IGNORE_PADDING,
                              &payload)) {
     VLOG(1) << "Invalid id_token: not in Base64Url encoding";
-    return absl::nullopt;
+    return std::nullopt;
   }
-  absl::optional<base::Value> decoded_payload = base::JSONReader::Read(payload);
+  std::optional<base::Value> decoded_payload = base::JSONReader::Read(payload);
   if (!decoded_payload.has_value() ||
       decoded_payload->type() != base::Value::Type::DICT) {
     VLOG(1) << "Invalid id_token: paylod is not a well-formed JSON";
-    return absl::nullopt;
+    return std::nullopt;
   }
   return std::move(decoded_payload->GetDict());
 }
@@ -61,7 +61,7 @@ bool GetServiceFlags(const std::string id_token,
                      std::vector<std::string>* out_service_flags) {
   DCHECK(out_service_flags->empty());
 
-  absl::optional<base::Value::Dict> decoded_payload = DecodeIdToken(id_token);
+  std::optional<base::Value::Dict> decoded_payload = DecodeIdToken(id_token);
   if (!decoded_payload.has_value()) {
     VLOG(1) << "Failed to decode the id_token";
     return false;

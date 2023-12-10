@@ -9,9 +9,7 @@ import org.jni_zero.JNINamespace;
 
 import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
 
-/**
- * The response information that is to be returned for a particular resource fetch.
- */
+/** The response information that is to be returned for a particular resource fetch. */
 @JNINamespace("android_webview")
 public class AwWebResourceInterceptResponse {
     private WebResourceResponseInfo mResponse;

@@ -33,6 +33,9 @@ using HandleType = content::FileSystemAccessPermissionContext::HandleType;
 int GetMessageText(const FileRequestData& file_request_data) {
   switch (file_request_data.access) {
     case AccessType::kRead:
+      // TODO(crbug.com/1467574): Remove
+      // `kFileSystemAccessPersistentPermissions`
+      // flag after FSA Persistent Permissions feature launch.
       if (base::FeatureList::IsEnabled(
               features::kFileSystemAccessPersistentPermissions)) {
         return file_request_data.handle_type == HandleType::kDirectory
@@ -47,6 +50,9 @@ int GetMessageText(const FileRequestData& file_request_data) {
     case AccessType::kReadWrite:
       // Only difference between write and read-write access dialog is in button
       // label and dialog title.
+      // TODO(crbug.com/1467574): Remove
+      // `kFileSystemAccessPersistentPermissions`
+      // flag after FSA Persistent Permissions feature launch.
       if (base::FeatureList::IsEnabled(
               features::kFileSystemAccessPersistentPermissions)) {
         return file_request_data.handle_type == HandleType::kDirectory

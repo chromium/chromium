@@ -142,14 +142,18 @@ class WaylandDataDragController : public WaylandDataDevice::DragDelegate,
   void OnDragOffer(std::unique_ptr<WaylandDataOffer> offer) override;
   void OnDragEnter(WaylandWindow* window,
                    const gfx::PointF& location,
+                   base::TimeTicks timestamp,
                    uint32_t serial) override;
-  void OnDragMotion(const gfx::PointF& location) override;
-  void OnDragLeave() override;
-  void OnDragDrop() override;
+  void OnDragMotion(const gfx::PointF& location,
+                    base::TimeTicks timestamp) override;
+  void OnDragLeave(base::TimeTicks timestamp) override;
+  void OnDragDrop(base::TimeTicks timestamp) override;
   const WaylandWindow* GetDragTarget() const override;
 
   // WaylandDataSource::Delegate:
-  void OnDataSourceFinish(WaylandDataSource* source, bool completed) override;
+  void OnDataSourceFinish(WaylandDataSource* source,
+                          base::TimeTicks timestamp,
+                          bool completed) override;
   void OnDataSourceSend(WaylandDataSource* source,
                         const std::string& mime_type,
                         std::string* contents) override;
@@ -167,6 +171,7 @@ class WaylandDataDragController : public WaylandDataDevice::DragDelegate,
   // Calls the window's OnDragEnter with the given location and data,
   // then immediately calls OnDragMotion to get the actual operation.
   void PropagateOnDragEnter(const gfx::PointF& location,
+                            base::TimeTicks timestamp,
                             std::unique_ptr<OSExchangeData> data);
 
   absl::optional<wl::Serial> GetAndValidateSerialForDrag(
@@ -187,7 +192,7 @@ class WaylandDataDragController : public WaylandDataDevice::DragDelegate,
   // Sends an ET_MOUSE_RELEASED event to the window that currently has capture.
   // Must only be called if |pointer_grabber_for_window_drag_| is valid. This
   // resets |pointer_grabber_for_window_drag_|.
-  void DispatchPointerRelease();
+  void DispatchPointerRelease(base::TimeTicks timestamp);
 
   // PlatformEventDispatcher:
   bool CanDispatchEvent(const PlatformEvent& event) override;

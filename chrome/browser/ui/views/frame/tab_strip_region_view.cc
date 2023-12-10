@@ -491,7 +491,7 @@ void TabStripRegionView::UpdateTabStripMargin() {
   //  If the new tab button or tab search button are positioned over the
   //  tabstrip, then buttons are rendered to a layer, and the margins are set to
   //  take up the rest of the space under the buttons.
-  absl::optional<int> tab_strip_right_margin;
+  std::optional<int> tab_strip_right_margin;
   if (new_tab_button_) {
     if (render_new_tab_button_over_tab_strip_) {
       new_tab_button_->SetPaintToLayer();
@@ -505,7 +505,7 @@ void TabStripRegionView::UpdateTabStripMargin() {
     }
   }
 
-  absl::optional<int> tab_strip_left_margin;
+  std::optional<int> tab_strip_left_margin;
   if (tab_search_container_ && render_tab_search_before_tab_strip_) {
     // The `tab_search_container_` is being laid out manually.
     CHECK(layout_manager_->IsChildViewIgnoredByLayout(tab_search_container_));

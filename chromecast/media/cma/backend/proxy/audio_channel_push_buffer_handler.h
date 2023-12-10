@@ -5,8 +5,8 @@
 #ifndef CHROMECAST_MEDIA_CMA_BACKEND_PROXY_AUDIO_CHANNEL_PUSH_BUFFER_HANDLER_H_
 #define CHROMECAST_MEDIA_CMA_BACKEND_PROXY_AUDIO_CHANNEL_PUSH_BUFFER_HANDLER_H_
 
+#include <optional>
 #include "chromecast/media/api/cma_backend.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cast_core/public/src/proto/runtime/cast_audio_channel_service.pb.h"
 
 namespace chromecast {
@@ -62,7 +62,7 @@ class AudioChannelPushBufferHandler {
   // true.
   //
   // May only be called by the CONSUMER.
-  virtual absl::optional<PushBufferRequest> GetBufferedData() = 0;
+  virtual std::optional<PushBufferRequest> GetBufferedData() = 0;
 };
 
 }  // namespace media

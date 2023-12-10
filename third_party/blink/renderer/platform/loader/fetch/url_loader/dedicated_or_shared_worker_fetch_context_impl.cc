@@ -289,8 +289,9 @@ DedicatedOrSharedWorkerFetchContextImpl::CloneForNestedWorker(
   return new_context;
 }
 
-void DedicatedOrSharedWorkerFetchContextImpl::set_ancestor_frame_id(int id) {
-  ancestor_frame_id_ = id;
+void DedicatedOrSharedWorkerFetchContextImpl::SetAncestorFrameToken(
+    const LocalFrameToken& token) {
+  ancestor_frame_token_ = token;
 }
 
 void DedicatedOrSharedWorkerFetchContextImpl::set_site_for_cookies(
@@ -390,7 +391,7 @@ WebVector<std::unique_ptr<URLLoaderThrottle>>
 DedicatedOrSharedWorkerFetchContextImpl::CreateThrottles(
     const WebURLRequest& request) {
   if (throttle_provider_) {
-    return throttle_provider_->CreateThrottles(ancestor_frame_id_, request);
+    return throttle_provider_->CreateThrottles(ancestor_frame_token_, request);
   }
   return {};
 }
@@ -442,7 +443,7 @@ DedicatedOrSharedWorkerFetchContextImpl::CreateWebSocketHandshakeThrottle(
   if (!websocket_handshake_throttle_provider_)
     return nullptr;
   return websocket_handshake_throttle_provider_->CreateThrottle(
-      ancestor_frame_id_, std::move(task_runner));
+      ancestor_frame_token_, std::move(task_runner));
 }
 
 void DedicatedOrSharedWorkerFetchContextImpl::SetIsOfflineMode(
@@ -535,7 +536,7 @@ DedicatedOrSharedWorkerFetchContextImpl::CloneForNestedWorkerInternal(
       cors_exempt_header_list_,
       std::move(pending_resource_load_info_notifier)));
   new_context->is_on_sub_frame_ = is_on_sub_frame_;
-  new_context->ancestor_frame_id_ = ancestor_frame_id_;
+  new_context->ancestor_frame_token_ = ancestor_frame_token_;
   new_context->site_for_cookies_ = site_for_cookies_;
   new_context->top_frame_origin_ = top_frame_origin_;
   child_preference_watchers_.Add(std::move(preference_watcher));

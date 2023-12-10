@@ -49,16 +49,11 @@ class SodaInstallerImplChromeOSTest : public testing::Test {
         ash::prefs::kProjectorCreationFlowLanguage, kUsEnglishLocale);
     pref_service_->registry()->RegisterStringPref(
         prefs::kLiveCaptionLanguageCode, kUsEnglishLocale);
-
-    ash::DlcserviceClient::InitializeFake();
-    fake_dlcservice_client_ =
-        static_cast<ash::FakeDlcserviceClient*>(ash::DlcserviceClient::Get());
   }
 
   void TearDown() override {
     soda_installer_impl_.reset();
     pref_service_.reset();
-    ash::DlcserviceClient::Shutdown();
   }
 
   SodaInstallerImplChromeOS* GetInstance() {
@@ -92,7 +87,7 @@ class SodaInstallerImplChromeOSTest : public testing::Test {
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
 
   void SetInstallError() {
-    fake_dlcservice_client_->set_install_error(dlcservice::kErrorNeedReboot);
+    fake_dlcservice_client_.set_install_error(dlcservice::kErrorNeedReboot);
   }
 
   void SetUninstallTimer() {
@@ -129,8 +124,7 @@ class SodaInstallerImplChromeOSTest : public testing::Test {
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<TestingPrefServiceSimple> pref_service_;
-  raw_ptr<ash::FakeDlcserviceClient, DanglingUntriaged | ExperimentalAsh>
-      fake_dlcservice_client_;
+  ash::FakeDlcserviceClient fake_dlcservice_client_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 

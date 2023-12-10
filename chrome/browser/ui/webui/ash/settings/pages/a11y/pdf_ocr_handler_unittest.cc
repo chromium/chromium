@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/webui/ash/settings/pages/a11y/pdf_ocr_handler.h"
+
 #include <memory>
 
 #include "base/memory/raw_ptr.h"

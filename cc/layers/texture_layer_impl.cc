@@ -98,8 +98,17 @@ bool TextureLayerImpl::WillDraw(
   if (own_resource_) {
     DCHECK(!resource_id_);
     if (!transferable_resource_.mailbox_holder.mailbox.IsZero()) {
+      // Currently only Canvas supports releases resources in response to
+      // eviction. Other sources will be add once they can support this. Some
+      // complexity arises here from WebGL/WebGPU textures, as they do not
+      // necessarily maintain the data needed to rebuild the resources.
       resource_id_ = resource_provider->ImportResource(
-          transferable_resource_, std::move(release_callback_));
+          transferable_resource_, std::move(release_callback_),
+          transferable_resource_.resource_source ==
+                  viz::TransferableResource::ResourceSource::kCanvas
+              ? base::BindOnce(&TextureLayerImpl::OnResourceEvicted,
+                               base::Unretained(this))
+              : viz::ResourceEvictedCallback());
       DCHECK(resource_id_);
     }
     own_resource_ = false;
@@ -301,6 +310,18 @@ void TextureLayerImpl::FreeTransferableResource() {
     resource_provider->RemoveImportedResource(resource_id_);
     resource_id_ = viz::kInvalidResourceId;
   }
+}
+
+void TextureLayerImpl::OnResourceEvicted() {
+  // Once we are evicted we want to remove it to unlock the memory. This will
+  // allow it to be released upon the next return. We also clear out the
+  // `resource_id_` so we don't attempt to delete it a second time when any
+  // future resource is pushed and ready to be imported.
+  if (resource_id_) {
+    auto* resource_provider = layer_tree_impl()->resource_provider();
+    resource_provider->RemoveImportedResource(resource_id_);
+  }
+  resource_id_ = viz::kInvalidResourceId;
 }
 
 }  // namespace cc

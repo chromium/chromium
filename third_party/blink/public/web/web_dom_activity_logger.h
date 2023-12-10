@@ -37,24 +37,32 @@
 #include "v8/include/v8-forward.h"
 
 namespace blink {
+class WebLocalFrame;
 
 class WebDOMActivityLogger {
  public:
   virtual ~WebDOMActivityLogger() = default;
 
-  virtual void LogGetter(const WebString& api_name,
+  virtual void LogGetter(v8::Isolate* isolate,
+                         v8::Local<v8::Context> context,
+                         const WebString& api_name,
                          const WebURL& url,
                          const WebString& title) {}
-  virtual void LogSetter(const WebString& api_name,
+  virtual void LogSetter(v8::Isolate* isolate,
+                         v8::Local<v8::Context> context,
+                         const WebString& api_name,
                          const v8::Local<v8::Value>& new_value,
                          const WebURL& url,
                          const WebString& title) {}
-  virtual void LogMethod(const WebString& api_name,
+  virtual void LogMethod(v8::Isolate* isolate,
+                         v8::Local<v8::Context> context,
+                         const WebString& api_name,
                          int argc,
                          const v8::Local<v8::Value>* argv,
                          const WebURL& url,
                          const WebString& title) {}
-  virtual void LogEvent(const WebString& event_name,
+  virtual void LogEvent(WebLocalFrame& frame,
+                        const WebString& event_name,
                         int argc,
                         const WebString* argv,
                         const WebURL& url,

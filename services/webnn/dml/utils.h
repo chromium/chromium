@@ -10,8 +10,10 @@
 #include <wrl.h>
 #include <vector>
 
+#include "base/component_export.h"
 #include "base/containers/span.h"
 #include "services/webnn/dml/command_recorder.h"
+#include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 
 namespace webnn::dml {
 
@@ -40,16 +42,21 @@ DML_FEATURE_LEVEL GetMaxSupportedDMLFeatureLevel(IDMLDevice* dml_device);
 
 // Creates a transition barrier which is used to specify the resource is
 // transitioning from `before` to `after` states.
-D3D12_RESOURCE_BARRIER CreateTransitionBarrier(ID3D12Resource* resource,
-                                               D3D12_RESOURCE_STATES before,
-                                               D3D12_RESOURCE_STATES after);
+D3D12_RESOURCE_BARRIER COMPONENT_EXPORT(WEBNN_SERVICE)
+    CreateTransitionBarrier(ID3D12Resource* resource,
+                            D3D12_RESOURCE_STATES before,
+                            D3D12_RESOURCE_STATES after);
 
 // Helper function to upload data from CPU to GPU, the resource can be created
 // for a single buffer or a big buffer combined from multiple buffers.
-void UploadBufferWithBarrier(CommandRecorder* command_recorder,
-                             ComPtr<ID3D12Resource> dst_buffer,
-                             ComPtr<ID3D12Resource> src_buffer,
-                             size_t buffer_size);
+void COMPONENT_EXPORT(WEBNN_SERVICE)
+    UploadBufferWithBarrier(CommandRecorder* command_recorder,
+                            ComPtr<ID3D12Resource> dst_buffer,
+                            ComPtr<ID3D12Resource> src_buffer,
+                            size_t buffer_size);
+
+mojom::ErrorPtr CreateError(mojom::Error::Code error_code,
+                            std::string error_messages);
 
 }  // namespace webnn::dml
 

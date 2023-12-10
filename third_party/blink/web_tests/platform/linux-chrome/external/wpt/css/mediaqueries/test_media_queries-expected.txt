@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+Found 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] 'or' keyword: should_not_apply: (height) or (height)
+  assert_true: expected true got false
+[FAIL] nesting: should_not_apply: ((height))
+  assert_true: expected true got false
+Harness: the test ran to completion.

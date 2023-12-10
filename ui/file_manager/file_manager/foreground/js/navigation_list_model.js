@@ -5,14 +5,13 @@
 import {assertNotReached} from 'chrome://resources/ash/common/assert.js';
 import {NativeEventTarget as EventTarget} from 'chrome://resources/ash/common/event_target.js';
 
-import {DialogType} from '../../common/js/dialog_type.js';
 import {isOneDrive} from '../../common/js/entry_utils.js';
 import {EntryList, VolumeEntry} from '../../common/js/files_app_entry_types.js';
 import {isArcVmEnabled, isGuestOsEnabled, isSinglePartitionFormatEnabled} from '../../common/js/flags.js';
 import {str} from '../../common/js/translations.js';
-import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
+import {RootType, VolumeType} from '../../common/js/volume_manager_types.js';
 import {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
-import {VolumeManager} from '../../externs/volume_manager.js';
+import {DialogType} from '../../externs/ts/state.js';
 import {getStore} from '../../state/store.js';
 
 import {AndroidAppListModel} from './android_app_list_model.js';
@@ -207,7 +206,8 @@ export class NavigationModelFakeItem extends NavigationModelItem {
  */
 export class NavigationListModel extends EventTarget {
   /**
-   * @param {!VolumeManager} volumeManager VolumeManager instance.
+   * @param {!import('../../externs/volume_manager.js').VolumeManager}
+   *     volumeManager VolumeManager instance.
    * @param {!FolderShortcutsDataModel} shortcutListModel The list of folder
    *     shortcut.
    * @param {?NavigationModelFakeItem} recentModelItem Recent folder.
@@ -221,7 +221,7 @@ export class NavigationListModel extends EventTarget {
     super();
 
     /**
-     * @private @type {!VolumeManager}
+     * @private @type {!import('../../externs/volume_manager.js').VolumeManager}
      * @const
      */
     this.volumeManager_ = volumeManager;
@@ -347,7 +347,9 @@ export class NavigationListModel extends EventTarget {
 
     this.androidAppList_ = [];
     for (let i = 0; i < this.androidAppListModel_.length(); i++) {
-      this.androidAppList_.push(this.androidAppListModel_.item(i));
+      this.androidAppList_.push(
+          /** @type {chrome.fileManagerPrivate.AndroidApp} */ (
+              this.androidAppListModel_.item(i)));
     }
 
     // Reorder volumes, shortcuts, and optional items for initial display.
@@ -365,15 +367,15 @@ export class NavigationListModel extends EventTarget {
         const newList = [];
 
         // Use the old instances if they just move.
-        for (let i = 0; i < event.permutation.length; i++) {
-          if (event.permutation[i] >= 0) {
+        for (let i = 0; i < event.detail.permutation.length; i++) {
+          if (event.detail.permutation[i] >= 0) {
             // @ts-ignore: error TS2532: Object is possibly 'undefined'.
-            newList[event.permutation[i]] = this.volumeList_[i];
+            newList[event.detail.permutation[i]] = this.volumeList_[i];
           }
         }
 
         // Create missing instances.
-        for (let i = 0; i < event.newLength; i++) {
+        for (let i = 0; i < event.detail.newLength; i++) {
           if (!newList[i]) {
             newList[i] = volumeInfoToModelItem(
                 // @ts-ignore: error TS2339: Property 'volumeManager_' does not
@@ -383,7 +385,7 @@ export class NavigationListModel extends EventTarget {
         }
         this.volumeList_ = newList;
 
-        permutation = event.permutation.slice();
+        permutation = event.detail.permutation.slice();
 
         // shortcutList part has not been changed, so the permutation should be
         // just identity mapping with a shift.
@@ -475,14 +477,15 @@ export class NavigationListModel extends EventTarget {
       this.refreshNavigationItems();
 
       // Dispatch permuted event.
-      const permutedEvent = new Event('permuted');
-      // @ts-ignore: error TS2532: Object is possibly 'undefined'.
-      permutedEvent.newLength = this.volumeList_.length +
-          // @ts-ignore: error TS2532: Object is possibly 'undefined'.
-          this.shortcutList_.length + this.androidAppList_.length;
-      // @ts-ignore: error TS2339: Property 'permutation' does not exist on type
-      // 'Event'.
-      permutedEvent.permutation = permutation;
+      const permutedEvent = new CustomEvent('permuted', {
+        detail: {
+          // @ts-ignore: error TS2532: Object is possibly 'undefined'
+          newLength: this.volumeList_.length + this.shortcutList_.length +
+              // @ts-ignore: error TS2532: Object is possibly 'undefined'
+              this.androidAppList_.length,
+          permutation,
+        },
+      });
       // @ts-ignore: error TS2339: Property 'dispatchEvent' does not exist on
       // type 'permutedHandler'.
       this.dispatchEvent(permutedEvent);
@@ -589,23 +592,23 @@ export class NavigationListModel extends EventTarget {
       // read.
       let volumeId;
       switch (volumeType) {
-        case VolumeManagerCommon.VolumeType.CROSTINI:
-        case VolumeManagerCommon.VolumeType.DOWNLOADS:
-        case VolumeManagerCommon.VolumeType.ANDROID_FILES:
+        case VolumeType.CROSTINI:
+        case VolumeType.DOWNLOADS:
+        case VolumeType.ANDROID_FILES:
           // @ts-ignore: error TS7053: Element implicitly has an 'any' type
           // because expression of type 'string' can't be used to index type
           // '{}'.
           volumeIndexes[volumeType] = i;
           break;
-        case VolumeManagerCommon.VolumeType.PROVIDED:
-        case VolumeManagerCommon.VolumeType.REMOVABLE:
-        case VolumeManagerCommon.VolumeType.ARCHIVE:
-        case VolumeManagerCommon.VolumeType.MTP:
-        case VolumeManagerCommon.VolumeType.DRIVE:
-        case VolumeManagerCommon.VolumeType.MEDIA_VIEW:
-        case VolumeManagerCommon.VolumeType.DOCUMENTS_PROVIDER:
-        case VolumeManagerCommon.VolumeType.SMB:
-        case VolumeManagerCommon.VolumeType.GUEST_OS:
+        case VolumeType.PROVIDED:
+        case VolumeType.REMOVABLE:
+        case VolumeType.ARCHIVE:
+        case VolumeType.MTP:
+        case VolumeType.DRIVE:
+        case VolumeType.MEDIA_VIEW:
+        case VolumeType.DOCUMENTS_PROVIDER:
+        case VolumeType.SMB:
+        case VolumeType.GUEST_OS:
           // @ts-ignore: error TS7053: Element implicitly has an 'any' type
           // because expression of type 'string' can't be used to index type
           // '{}'.
@@ -628,7 +631,7 @@ export class NavigationListModel extends EventTarget {
     }
 
     /**
-     * @param {!VolumeManagerCommon.VolumeType} volumeType the desired volume
+     * @param {!VolumeType} volumeType the desired volume
      *     type to be filtered from volumeList.
      * @return {NavigationModelVolumeItem}
      */
@@ -639,7 +642,7 @@ export class NavigationListModel extends EventTarget {
     };
 
     /**
-     * @param {!VolumeManagerCommon.VolumeType} volumeType the desired volume
+     * @param {!VolumeType} volumeType the desired volume
      *     type to be filtered from volumeList.
      * @return Array<!NavigationModelVolumeItem>
      */
@@ -658,8 +661,7 @@ export class NavigationListModel extends EventTarget {
      */
     const groupRemovables = () => {
       const removableGroups = new Map();
-      const removableVolumes =
-          getVolumes(VolumeManagerCommon.VolumeType.REMOVABLE);
+      const removableVolumes = getVolumes(VolumeType.REMOVABLE);
 
       for (const removable of removableVolumes) {
         // Partitions on the same physical device share device path and drive
@@ -694,8 +696,7 @@ export class NavigationListModel extends EventTarget {
     if (!this.myFilesModel_) {
       // When MyFilesVolume is enabled we use the Downloads volume to be the
       // MyFiles volume.
-      const myFilesVolumeModel =
-          getSingleVolume(VolumeManagerCommon.VolumeType.DOWNLOADS);
+      const myFilesVolumeModel = getSingleVolume(VolumeType.DOWNLOADS);
       if (myFilesVolumeModel) {
         myFilesEntry = new VolumeEntry(myFilesVolumeModel.volumeInfo);
         myFilesModel = new NavigationModelFakeItem(
@@ -707,8 +708,8 @@ export class NavigationListModel extends EventTarget {
         // When MyFiles volume isn't available we create a empty EntryList to
         // be MyFiles to be able to display Linux or Play volumes. However we
         // don't save it back to this.MyFilesModel_ so it's always re-created.
-        myFilesEntry = new EntryList(
-            str('MY_FILES_ROOT_LABEL'), VolumeManagerCommon.RootType.MY_FILES);
+        myFilesEntry =
+            new EntryList(str('MY_FILES_ROOT_LABEL'), RootType.MY_FILES);
         myFilesModel = new NavigationModelFakeItem(
             myFilesEntry.label, NavigationModelItemType.ENTRY_LIST,
             myFilesEntry);
@@ -721,16 +722,15 @@ export class NavigationListModel extends EventTarget {
     this.navigationItems_.push(myFilesModel);
 
     // Add Android to My Files.
-    const androidVolume =
-        getSingleVolume(VolumeManagerCommon.VolumeType.ANDROID_FILES);
+    const androidVolume = getSingleVolume(VolumeType.ANDROID_FILES);
     if (androidVolume) {
       // Only add volume if MyFiles doesn't have it yet.
       // @ts-ignore: error TS2339: Property 'findIndexByVolumeInfo' does not
       // exist on type 'FilesAppEntry | EntryList | VolumeEntry'.
       if (myFilesEntry.findIndexByVolumeInfo(androidVolume.volumeInfo) === -1) {
         const volumeEntry = new VolumeEntry(androidVolume.volumeInfo);
-        volumeEntry.disabled = this.volumeManager_.isDisabled(
-            VolumeManagerCommon.VolumeType.ANDROID_FILES);
+        volumeEntry.disabled =
+            this.volumeManager_.isDisabled(VolumeType.ANDROID_FILES);
         // @ts-ignore: error TS2339: Property 'addEntry' does not exist on type
         // 'FilesAppEntry | EntryList | VolumeEntry'.
         myFilesEntry.addEntry(volumeEntry);
@@ -738,18 +738,16 @@ export class NavigationListModel extends EventTarget {
     } else {
       // @ts-ignore: error TS2339: Property 'removeByVolumeType' does not exist
       // on type 'FilesAppEntry | EntryList | VolumeEntry'.
-      myFilesEntry.removeByVolumeType(
-          VolumeManagerCommon.VolumeType.ANDROID_FILES);
+      myFilesEntry.removeByVolumeType(VolumeType.ANDROID_FILES);
     }
 
     // Add Linux to My Files.
-    const crostiniVolume =
-        getSingleVolume(VolumeManagerCommon.VolumeType.CROSTINI);
+    const crostiniVolume = getSingleVolume(VolumeType.CROSTINI);
 
     // Remove Crostini FakeEntry, it's re-added below if needed.
     // @ts-ignore: error TS2339: Property 'removeAllByRootType' does not exist
     // on type 'FilesAppEntry | EntryList | VolumeEntry'.
-    myFilesEntry.removeAllByRootType(VolumeManagerCommon.RootType.CROSTINI);
+    myFilesEntry.removeAllByRootType(RootType.CROSTINI);
     if (crostiniVolume) {
       // Crostini is mounted so add it if MyFiles doesn't have it yet.
       // @ts-ignore: error TS2339: Property 'findIndexByVolumeInfo' does not
@@ -757,8 +755,8 @@ export class NavigationListModel extends EventTarget {
       if (myFilesEntry.findIndexByVolumeInfo(crostiniVolume.volumeInfo) ===
           -1) {
         const volumeEntry = new VolumeEntry(crostiniVolume.volumeInfo);
-        volumeEntry.disabled = this.volumeManager_.isDisabled(
-            VolumeManagerCommon.VolumeType.CROSTINI);
+        volumeEntry.disabled =
+            this.volumeManager_.isDisabled(VolumeType.CROSTINI);
         // @ts-ignore: error TS2339: Property 'addEntry' does not exist on type
         // 'FilesAppEntry | EntryList | VolumeEntry'.
         myFilesEntry.addEntry(volumeEntry);
@@ -766,7 +764,7 @@ export class NavigationListModel extends EventTarget {
     } else {
       // @ts-ignore: error TS2339: Property 'removeByVolumeType' does not exist
       // on type 'FilesAppEntry | EntryList | VolumeEntry'.
-      myFilesEntry.removeByVolumeType(VolumeManagerCommon.VolumeType.CROSTINI);
+      myFilesEntry.removeByVolumeType(VolumeType.CROSTINI);
       if (this.linuxFilesItem_) {
         // Here it's just a fake item, we link the navigation model so
         // DirectoryTree can choose the correct DirectoryItem for it.
@@ -786,22 +784,20 @@ export class NavigationListModel extends EventTarget {
       // Remove all GuestOs placeholders, we readd any if they're needed.
       // @ts-ignore: error TS2339: Property 'removeAllByRootType' does not exist
       // on type 'FilesAppEntry | EntryList | VolumeEntry'.
-      myFilesEntry.removeAllByRootType(VolumeManagerCommon.RootType.GUEST_OS);
+      myFilesEntry.removeAllByRootType(RootType.GUEST_OS);
 
       // For each volume, add any which aren't already in the list.
-      let guestOsVolumes = getVolumes(VolumeManagerCommon.VolumeType.GUEST_OS);
+      let guestOsVolumes = getVolumes(VolumeType.GUEST_OS);
       if (isArcVmEnabled()) {
         // Remove GuestOs Android placeholder, similar to what we did for
         // GuestOs placeholders. This should be readded if needed.
         // @ts-ignore: error TS2339: Property 'removeAllByRootType' does not
         // exist on type 'FilesAppEntry | EntryList | VolumeEntry'.
-        myFilesEntry.removeAllByRootType(
-            VolumeManagerCommon.RootType.ANDROID_FILES);
-        const androidVolume =
-            getSingleVolume(VolumeManagerCommon.VolumeType.ANDROID_FILES);
+        myFilesEntry.removeAllByRootType(RootType.ANDROID_FILES);
+        const androidVolume = getSingleVolume(VolumeType.ANDROID_FILES);
         if (androidVolume) {
-          androidVolume.disabled = this.volumeManager_.isDisabled(
-              VolumeManagerCommon.VolumeType.ANDROID_FILES);
+          androidVolume.disabled =
+              this.volumeManager_.isDisabled(VolumeType.ANDROID_FILES);
           guestOsVolumes = guestOsVolumes.concat(androidVolume);
         }
       }
@@ -810,8 +806,8 @@ export class NavigationListModel extends EventTarget {
         // exist on type 'FilesAppEntry | EntryList | VolumeEntry'.
         if (myFilesEntry.findIndexByVolumeInfo(volume.volumeInfo) === -1) {
           const volumeEntry = new VolumeEntry(volume.volumeInfo);
-          volumeEntry.disabled = this.volumeManager_.isDisabled(
-              VolumeManagerCommon.VolumeType.GUEST_OS);
+          volumeEntry.disabled =
+              this.volumeManager_.isDisabled(VolumeType.GUEST_OS);
           // @ts-ignore: error TS2339: Property 'addEntry' does not exist on
           // type 'FilesAppEntry | EntryList | VolumeEntry'.
           myFilesEntry.addEntry(volumeEntry);
@@ -819,12 +815,11 @@ export class NavigationListModel extends EventTarget {
       }
       // For each entry in the list, remove any for volumes that no longer
       // exist.
-      // @ts-ignore: error TS2339: Property 'getUIChildren' does not exist on
+      // @ts-ignore: error TS2339: Property 'getUiChildren' does not exist on
       // type 'FilesAppEntry | EntryList | VolumeEntry'.
-      for (const volume of myFilesEntry.getUIChildren()) {
+      for (const volume of myFilesEntry.getUiChildren()) {
         if (!volume.volumeInfo ||
-            volume.volumeInfo.volumeType !=
-                VolumeManagerCommon.VolumeType.GUEST_OS) {
+            volume.volumeInfo.volumeType != VolumeType.GUEST_OS) {
           continue;
         }
         // @ts-ignore: error TS7006: Parameter 'v' implicitly has an 'any' type.
@@ -853,9 +848,8 @@ export class NavigationListModel extends EventTarget {
 
     // Add Google Drive - the only Drive.
     let hasDrive = false;
-    for (const driveItem of getVolumes(VolumeManagerCommon.VolumeType.DRIVE)) {
-      driveItem.disabled =
-          this.volumeManager_.isDisabled(VolumeManagerCommon.VolumeType.DRIVE);
+    for (const driveItem of getVolumes(VolumeType.DRIVE)) {
+      driveItem.disabled = this.volumeManager_.isDisabled(VolumeType.DRIVE);
       this.navigationItems_.push(driveItem);
       driveItem.section = NavigationSection.GOOGLE_DRIVE;
       hasDrive = true;
@@ -866,8 +860,7 @@ export class NavigationListModel extends EventTarget {
     }
 
     // Add ODFS.
-    for (const provided of getVolumes(
-             VolumeManagerCommon.VolumeType.PROVIDED)) {
+    for (const provided of getVolumes(VolumeType.PROVIDED)) {
       if (isOneDrive(provided.volumeInfo)) {
         provided.section = NavigationSection.ODFS;
         const {volumes} = getStore().getState();
@@ -882,14 +875,13 @@ export class NavigationListModel extends EventTarget {
     }
 
     // Add SMB.
-    for (const provided of getVolumes(VolumeManagerCommon.VolumeType.SMB)) {
+    for (const provided of getVolumes(VolumeType.SMB)) {
       this.navigationItems_.push(provided);
       provided.section = NavigationSection.CLOUD;
     }
 
     // Add other FSPs.
-    for (const provided of getVolumes(
-             VolumeManagerCommon.VolumeType.PROVIDED)) {
+    for (const provided of getVolumes(VolumeType.PROVIDED)) {
       // ODFS added already.
       if (isOneDrive(provided.volumeInfo)) {
         continue;
@@ -899,16 +891,15 @@ export class NavigationListModel extends EventTarget {
     }
 
     // Add DocumentsProviders to the same section of FSP.
-    for (const provider of getVolumes(
-             VolumeManagerCommon.VolumeType.DOCUMENTS_PROVIDER)) {
+    for (const provider of getVolumes(VolumeType.DOCUMENTS_PROVIDER)) {
       this.navigationItems_.push(provider);
       provider.section = NavigationSection.CLOUD;
     }
 
     // Add REMOVABLE volumes and partitions.
     const removableModels = new Map();
-    const disableRemovables = this.volumeManager_.isDisabled(
-        VolumeManagerCommon.VolumeType.REMOVABLE);
+    const disableRemovables =
+        this.volumeManager_.isDisabled(VolumeType.REMOVABLE);
     for (const [devicePath, removableGroup] of groupRemovables().entries()) {
       if (removableGroup.length == 1 && !isSinglePartitionFormatEnabled()) {
         // Add unpartitioned removable device as a regular volume.
@@ -934,7 +925,7 @@ export class NavigationListModel extends EventTarget {
             removableGroup[0].volumeInfo.driveLabel :
             /*default*/ 'External Drive';
         removableEntry = new EntryList(
-            rootLabel, VolumeManagerCommon.RootType.REMOVABLE,
+            rootLabel, RootType.REMOVABLE,
             removableGroup[0].volumeInfo.devicePath);
         removableModel = new NavigationModelFakeItem(
             removableEntry.label, NavigationModelItemType.ENTRY_LIST,
@@ -948,9 +939,9 @@ export class NavigationListModel extends EventTarget {
           // @ts-ignore: error TS7006: Parameter 'p' implicitly has an 'any'
           // type.
           new Set(removableGroup.map(p => p.volumeInfo));
-      // @ts-ignore: error TS2339: Property 'getUIChildren' does not exist on
+      // @ts-ignore: error TS2339: Property 'getUiChildren' does not exist on
       // type 'FilesAppEntry | EntryList'.
-      for (const partition of removableEntry.getUIChildren()) {
+      for (const partition of removableEntry.getUiChildren()) {
         if (!existingVolumeInfos.has(partition.volumeInfo)) {
           // @ts-ignore: error TS2339: Property 'removeChildEntry' does not
           // exist on type 'FilesAppEntry | EntryList'.
@@ -982,9 +973,7 @@ export class NavigationListModel extends EventTarget {
     // @ts-ignore: error TS7005: Variable 'otherVolumes' implicitly has an
     // 'any[]' type.
     const otherVolumes =
-        [].concat(
-              getVolumes(VolumeManagerCommon.VolumeType.ARCHIVE),
-              getVolumes(VolumeManagerCommon.VolumeType.MTP))
+        [].concat(getVolumes(VolumeType.ARCHIVE), getVolumes(VolumeType.MTP))
             .sort((volume1, volume2) => {
               // @ts-ignore: error TS2339: Property 'originalOrder' does not
               // exist on type 'never'.
@@ -1068,8 +1057,7 @@ export class NavigationListModel extends EventTarget {
   findDownloadsVolumeIndex_() {
     for (let i = 0; i < this.volumeList_.length; i++) {
       // @ts-ignore: error TS2532: Object is possibly 'undefined'.
-      if (this.volumeList_[i].volumeInfo.volumeType ==
-          VolumeManagerCommon.VolumeType.DOWNLOADS) {
+      if (this.volumeList_[i].volumeInfo.volumeType == VolumeType.DOWNLOADS) {
         return i;
       }
     }

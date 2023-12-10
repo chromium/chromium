@@ -46,7 +46,7 @@ function sendCommand(cmd) {
 }
 
 function makeImageSet(url1x, url2x) {
-  return '-webkit-image-set(url(' + url1x + ') 1x, url(' + url2x + ') 2x)';
+  return 'image-set(url(' + url1x + ') 1x, url(' + url2x + ') 2x)';
 }
 
 /** Perform all initialization that can be done at DOMContentLoaded time. */

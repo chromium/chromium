@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
+#include "chrome/browser/web_applications/app_service/publisher_helper.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app.h"
@@ -73,7 +74,7 @@ const extensions::Extension* GetExtensionForWebContents(
 }  // namespace
 
 #if BUILDFLAG(IS_CHROMEOS)
-absl::optional<std::string> GetInstanceAppIdForWebContents(
+std::optional<std::string> GetInstanceAppIdForWebContents(
     content::WebContents* tab) {
   Profile* profile = Profile::FromBrowserContext(tab->GetBrowserContext());
   // Note: It is possible to come here after a tab got removed from the browser
@@ -91,7 +92,7 @@ absl::optional<std::string> GetInstanceAppIdForWebContents(
       }
     }
 
-    absl::optional<webapps::AppId> app_id =
+    std::optional<webapps::AppId> app_id =
         provider->registrar_unsafe().FindAppWithUrlInScope(
             tab->GetVisibleURL());
     if (app_id) {
@@ -100,7 +101,8 @@ absl::optional<std::string> GetInstanceAppIdForWebContents(
       DCHECK(web_app);
       if (web_app->user_display_mode() ==
               web_app::mojom::UserDisplayMode::kBrowser &&
-          !web_app->is_uninstalling()) {
+          !web_app->is_uninstalling() &&
+          !web_app::IsAppServiceShortcut(web_app->app_id(), *provider)) {
         return app_id;
       }
     }
@@ -116,7 +118,7 @@ absl::optional<std::string> GetInstanceAppIdForWebContents(
   if (extension) {
     return extension->id();
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -147,14 +149,14 @@ void SetAppIdForWebContents(Profile* profile,
   if (extension) {
     DCHECK(extension->is_app());
     web_app::WebAppTabHelper::FromWebContents(web_contents)
-        ->SetAppId(absl::nullopt);
+        ->SetAppId(std::nullopt);
     extensions::TabHelper::FromWebContents(web_contents)
         ->SetExtensionAppById(app_id);
   } else {
     bool app_installed = IsAppReady(profile, app_id);
     web_app::WebAppTabHelper::FromWebContents(web_contents)
-        ->SetAppId(app_installed ? absl::optional<webapps::AppId>(app_id)
-                                 : absl::nullopt);
+        ->SetAppId(app_installed ? std::optional<webapps::AppId>(app_id)
+                                 : std::nullopt);
     extensions::TabHelper::FromWebContents(web_contents)
         ->SetExtensionAppById(std::string());
   }

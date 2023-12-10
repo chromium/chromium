@@ -10,7 +10,19 @@ bool FakeBrowsingDataRemover::IsRemoving() const {
 
 void FakeBrowsingDataRemover::Remove(browsing_data::TimePeriod time_period,
                                      BrowsingDataRemoveMask remove_mask,
-                                     base::OnceClosure callback) {}
+                                     base::OnceClosure callback) {
+  last_remove_mask_ = remove_mask;
+  if (success) {
+    NotifyBrowsingDataRemoved(last_remove_mask_);
+  } else {
+    NotifyBrowsingDataRemoved(BrowsingDataRemoveMask::REMOVE_NOTHING);
+  }
+}
 
-void FakeBrowsingDataRemover::RemoveSessionsData(
-    NSArray<NSString*>* session_ids) {}
+BrowsingDataRemoveMask FakeBrowsingDataRemover::GetLastUsedRemovalMask() {
+  return last_remove_mask_;
+}
+
+void FakeBrowsingDataRemover::SetFailedForTesting() {
+  success = false;
+}

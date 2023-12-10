@@ -6,8 +6,8 @@
 #define NET_BASE_PARSE_NUMBER_H_
 
 #include <cstdint>
+#include <string_view>
 
-#include "base/strings/string_piece.h"
 #include "net/base/net_export.h"
 
 // This file contains utility functions for parsing numbers, in the context of
@@ -92,13 +92,13 @@ enum class ParseIntError {
 // |optional_error| was non-null, then it is filled with the reason for the
 // failure.
 [[nodiscard]] NET_EXPORT bool ParseInt32(
-    base::StringPiece input,
+    std::string_view input,
     ParseIntFormat format,
     int32_t* output,
     ParseIntError* optional_error = nullptr);
 
 [[nodiscard]] NET_EXPORT bool ParseInt64(
-    base::StringPiece input,
+    std::string_view input,
     ParseIntFormat format,
     int64_t* output,
     ParseIntError* optional_error = nullptr);
@@ -108,13 +108,13 @@ enum class ParseIntError {
 // These are equivalent to calling ParseInt*(), except with unsigned output
 // types. ParseIntFormat may only be one of {NON_NEGATIVE, STRICT_NON_NEGATIVE}.
 [[nodiscard]] NET_EXPORT bool ParseUint32(
-    base::StringPiece input,
+    std::string_view input,
     ParseIntFormat format,
     uint32_t* output,
     ParseIntError* optional_error = nullptr);
 
 [[nodiscard]] NET_EXPORT bool ParseUint64(
-    base::StringPiece input,
+    std::string_view input,
     ParseIntFormat format,
     uint64_t* output,
     ParseIntError* optional_error = nullptr);

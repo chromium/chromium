@@ -11,7 +11,7 @@
 
 #include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/test/test_future.h"
 #include "base/token.h"
 #include "content/public/browser/web_contents.h"

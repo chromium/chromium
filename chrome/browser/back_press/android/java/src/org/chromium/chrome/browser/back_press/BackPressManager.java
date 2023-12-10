@@ -40,10 +40,14 @@ public class BackPressManager implements Destroyable {
     public static final BooleanCachedFieldTrialParameter TAB_HISTORY_RECOVER =
             new BooleanCachedFieldTrialParameter(
                     ChromeFeatureList.BACK_GESTURE_REFACTOR, "tab_history_recover", false);
+    public static final BooleanCachedFieldTrialParameter START_UP_MOVE_TO_BACK =
+            new BooleanCachedFieldTrialParameter(
+                    ChromeFeatureList.BACK_GESTURE_REFACTOR, "move_task_to_back", true);
     private static final SparseIntArray sMetricsMap;
     private static final int sMetricsMaxValue;
+
     static {
-        // Max value is 21 - 1 obsolete value +1 for 0 indexing = 20 elements.
+        // Max value is 22 - 1 obsolete value +1 for 0 indexing = 21 elements.
         SparseIntArray map = new SparseIntArray(20);
         map.put(Type.TEXT_BUBBLE, 0);
         map.put(Type.VR_DELEGATE, 1);
@@ -68,41 +72,43 @@ public class BackPressManager implements Destroyable {
         // handling logic.
         map.put(Type.PAGE_INSIGHTS_BOTTOM_SHEET, 19);
         map.put(Type.BOTTOM_CONTROLS, 20);
-        sMetricsMaxValue = 21;
+        map.put(Type.HUB, 21);
         // Add new one here and update array size.
+        sMetricsMaxValue = 22;
         sMetricsMap = map;
     }
 
-    private final OnBackPressedCallback mCallback = new OnBackPressedCallback(false) {
-        private BackPressHandler mActiveHandler;
+    private final OnBackPressedCallback mCallback =
+            new OnBackPressedCallback(false) {
+                private BackPressHandler mActiveHandler;
 
-        @Override
-        public void handleOnBackPressed() {
-            BackPressManager.this.handleBackPress();
-            mActiveHandler = null;
-        }
+                @Override
+                public void handleOnBackPressed() {
+                    BackPressManager.this.handleBackPress();
+                    mActiveHandler = null;
+                }
 
-        // Following methods are only triggered on API 34+.
-        @Override
-        public void handleOnBackStarted(@NonNull BackEventCompat backEvent) {
-            mActiveHandler = getEnabledBackPressHandler();
-            assert mActiveHandler != null;
-            mActiveHandler.handleOnBackStarted(backEvent);
-        }
+                // Following methods are only triggered on API 34+.
+                @Override
+                public void handleOnBackStarted(@NonNull BackEventCompat backEvent) {
+                    mActiveHandler = getEnabledBackPressHandler();
+                    assert mActiveHandler != null;
+                    mActiveHandler.handleOnBackStarted(backEvent);
+                }
 
-        @Override
-        public void handleOnBackCancelled() {
-            if (mActiveHandler == null) return;
-            mActiveHandler.handleOnBackCancelled();
-            mActiveHandler = null;
-        }
+                @Override
+                public void handleOnBackCancelled() {
+                    if (mActiveHandler == null) return;
+                    mActiveHandler.handleOnBackCancelled();
+                    mActiveHandler = null;
+                }
 
-        @Override
-        public void handleOnBackProgressed(@NonNull BackEventCompat backEvent) {
-            if (mActiveHandler == null) return;
-            mActiveHandler.handleOnBackProgressed(backEvent);
-        }
-    };
+                @Override
+                public void handleOnBackProgressed(@NonNull BackEventCompat backEvent) {
+                    if (mActiveHandler == null) return;
+                    mActiveHandler.handleOnBackProgressed(backEvent);
+                }
+            };
 
     static final String HISTOGRAM = "Android.BackPress.Intercept";
     static final String FAILURE_HISTOGRAM = "Android.BackPress.Failure";
@@ -144,6 +150,14 @@ public class BackPressManager implements Destroyable {
      */
     public static boolean correctTabNavigationOnFallback() {
         return isEnabled() && TAB_HISTORY_RECOVER.getValue();
+    }
+
+    /**
+     * @return True if app should be moved to back by manually calling `moveTaskToBack` when back is
+     *     pressed during start up. Otherwise, call `onBackPressed` to trigger default behavior.
+     */
+    public static boolean shouldMoveToBackDuringStartup() {
+        return START_UP_MOVE_TO_BACK.getValue();
     }
 
     /**
@@ -232,6 +246,7 @@ public class BackPressManager implements Destroyable {
     public OnBackPressedCallback getCallback() {
         return mCallback;
     }
+
     /*
      * @param fallbackOnBackPressed Callback executed when a handler claims to intercept back press
      *         but no handler succeeds.
@@ -333,7 +348,8 @@ public class BackPressManager implements Destroyable {
         if (failed.isEmpty()) return;
         var msg = String.join(", ", failed);
         assert false
-            : String.format("%s didn't correctly handle back press; handled by %s.", msg, succeed);
+                : String.format(
+                        "%s didn't correctly handle back press; handled by %s.", msg, succeed);
     }
 
     public BackPressHandler[] getHandlersForTesting() {

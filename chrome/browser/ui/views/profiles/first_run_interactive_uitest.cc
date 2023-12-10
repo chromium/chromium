@@ -63,6 +63,7 @@ namespace {
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kProfilePickerViewId);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsId);
 DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kButtonEnabled);
+DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kButtonDisabled);
 
 using DeepQuery = WebContentsInteractionTestUtil::DeepQuery;
 const DeepQuery kSignInButton{"intro-app", "sign-in-promo",
@@ -76,8 +77,8 @@ const DeepQuery kDontSyncButton{"sync-confirmation-app", "#notNowButton"};
 const DeepQuery kSettingsButton{"sync-confirmation-app", "#settingsButton"};
 const DeepQuery kConfirmDefaultBrowserButton{"default-browser-app",
                                              "#confirmButton"};
-const DeepQuery kSubmitSearchEngineChoiceButton{"search-engine-choice-app",
-                                                "#submitButton"};
+const DeepQuery kSearchEngineChoiceActionButton{"search-engine-choice-app",
+                                                "#actionButton"};
 
 struct TestParam {
   std::string test_suffix;
@@ -140,6 +141,7 @@ class FirstRunInteractiveUiTestBase
         identity_manager,
         signin::AccountAvailabilityOptionsBuilder(test_url_loader_factory())
             .WithCookie()
+            .AsPrimary(signin::ConsentLevel::kSignin)
             .WithAccessPoint(
                 signin_metrics::AccessPoint::ACCESS_POINT_FOR_YOU_FRE)
             .Build(account_email));
@@ -218,6 +220,16 @@ class FirstRunInteractiveUiTestBase
     return WaitForStateChange(web_contents_id, button_enabled);
   }
 
+  auto WaitForButtonDisabled(const ui::ElementIdentifier web_contents_id,
+                             const DeepQuery& button_query) {
+    StateChange button_disabled;
+    button_disabled.event = kButtonDisabled;
+    button_disabled.where = button_query;
+    button_disabled.type = StateChange::Type::kExistsAndConditionTrue;
+    button_disabled.test_function = "(btn) => btn.disabled";
+    return WaitForStateChange(web_contents_id, button_disabled);
+  }
+
   // Waits for the intro buttons to be shown and presses to proceed according
   // to the value of `sign_in`.
   auto CompleteIntroStep(bool sign_in) {
@@ -247,13 +259,14 @@ class FirstRunParameterizedInteractiveUiTest
  public:
   FirstRunParameterizedInteractiveUiTest() {
     std::vector<base::test::FeatureRefAndParams> enabled_features_and_params;
+    std::vector<base::test::FeatureRef> disabled_features;
     enabled_features_and_params.push_back(
         {kForYouFre,
          {{kForYouFreWithDefaultBrowserStep.name,
            WithDefaultBrowserStep() ? "forced" : "no"}}});
 
-#if BUILDFLAG(ENABLE_SEARCH_ENGINE_CHOICE)
     if (WithSearchEngineChoiceStep()) {
+#if BUILDFLAG(ENABLE_SEARCH_ENGINE_CHOICE)
       scoped_chrome_build_override_ = std::make_unique<base::AutoReset<bool>>(
           SearchEngineChoiceServiceFactory::ScopedChromeBuildOverrideForTesting(
               /*force_chrome_build=*/true));
@@ -261,9 +274,17 @@ class FirstRunParameterizedInteractiveUiTest
       enabled_features_and_params.push_back(
           {switches::kSearchEngineChoiceFre, {}});
       enabled_features_and_params.push_back(
-          {switches::kSearchEngineChoice, {}});
-    }
+          {switches::kSearchEngineChoice, {
+             { switches::kWithForcedScrollEnabled.name,
+               "true" }
+           }});
+#else
+      NOTREACHED_NORETURN();
 #endif
+    } else {
+      disabled_features.push_back(switches::kSearchEngineChoice);
+      disabled_features.push_back(switches::kSearchEngineChoiceFre);
+    }
 
     if (WithPrivacySandboxEnabled()) {
       enabled_features_and_params.push_back(
@@ -274,7 +295,7 @@ class FirstRunParameterizedInteractiveUiTest
     }
 
     scoped_feature_list_.InitWithFeaturesAndParameters(
-        enabled_features_and_params, {});
+        enabled_features_and_params, disabled_features);
   }
 
   // FirstRunInteractiveUiTestBase:
@@ -320,11 +341,9 @@ class FirstRunParameterizedInteractiveUiTest
     return GetParam().with_default_browser_step;
   }
 
-#if BUILDFLAG(ENABLE_SEARCH_ENGINE_CHOICE)
   bool WithSearchEngineChoiceStep() const {
     return GetParam().with_search_engine_choice_step;
   }
-#endif
 
   bool WithPrivacySandboxEnabled() const {
     return GetParam().with_privacy_sandbox_enabled;
@@ -334,12 +353,18 @@ class FirstRunParameterizedInteractiveUiTest
   auto CompleteSearchEngineChoiceStep() {
     const DeepQuery first_search_engine = {"search-engine-choice-app",
                                            "cr-radio-button"};
+    const DeepQuery searchEngineChoiceList{"search-engine-choice-app",
+                                           "#choiceList"};
     return Steps(
         WaitForWebContentsNavigation(
             kWebContentsId, GURL(chrome::kChromeUISearchEngineChoiceURL)),
+        // Click on "More" to scroll to the bottom of the search engine list.
+        PressJsButton(kWebContentsId, kSearchEngineChoiceActionButton),
+        // The button should become disabled because we didn't make a choice.
+        WaitForButtonDisabled(kWebContentsId, kSearchEngineChoiceActionButton),
         PressJsButton(kWebContentsId, first_search_engine),
-        WaitForButtonEnabled(kWebContentsId, kSubmitSearchEngineChoiceButton),
-        PressJsButton(kWebContentsId, kSubmitSearchEngineChoiceButton));
+        WaitForButtonEnabled(kWebContentsId, kSearchEngineChoiceActionButton),
+        PressJsButton(kWebContentsId, kSearchEngineChoiceActionButton));
   }
 #endif
 

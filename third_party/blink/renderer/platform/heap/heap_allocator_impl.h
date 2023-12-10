@@ -225,8 +225,8 @@ class PLATFORM_EXPORT HeapAllocator {
 
   template <typename T, typename Traits>
   static void Trace(Visitor* visitor, const T& t) {
-    TraceCollectionIfEnabled<WTF::WeakHandlingTrait<T>::value, T,
-                             Traits>::Trace(visitor, &t);
+    TraceCollectionIfEnabled<WTF::kWeakHandlingTrait<T>, T, Traits>::Trace(
+        visitor, &t);
   }
 
   template <typename T>

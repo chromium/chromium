@@ -75,7 +75,7 @@ bool OncCertificatePattern::Matches(
 }
 
 // static
-absl::optional<OncCertificatePattern>
+std::optional<OncCertificatePattern>
 OncCertificatePattern::ReadFromONCDictionary(const base::Value::Dict& dict) {
   // All of these are optional.
   const base::Value::List* pem_encoded_issuer_cas_value =
@@ -84,7 +84,7 @@ OncCertificatePattern::ReadFromONCDictionary(const base::Value::Dict& dict) {
   if (pem_encoded_issuer_cas_value &&
       !GetAsListOfStrings(*pem_encoded_issuer_cas_value,
                           &pem_encoded_issuer_cas)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   const base::Value::List* enrollment_uri_list_value =
@@ -92,7 +92,7 @@ OncCertificatePattern::ReadFromONCDictionary(const base::Value::Dict& dict) {
   std::vector<std::string> enrollment_uri_list;
   if (enrollment_uri_list_value &&
       !GetAsListOfStrings(*enrollment_uri_list_value, &enrollment_uri_list)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   auto issuer_pattern =

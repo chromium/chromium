@@ -5,6 +5,7 @@
 #ifndef ASH_PUBLIC_CPP_ACCESSIBILITY_CONTROLLER_H_
 #define ASH_PUBLIC_CPP_ACCESSIBILITY_CONTROLLER_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -12,7 +13,6 @@
 #include "ash/public/cpp/accessibility_controller_enums.h"
 #include "ash/public/cpp/ash_public_export.h"
 #include "base/functional/callback.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace gfx {
 class Rect;
@@ -204,8 +204,8 @@ class ASH_PUBLIC_EXPORT AccessibilityController {
   virtual void UpdateDictationBubble(
       bool visible,
       DictationBubbleIconType icon,
-      const absl::optional<std::u16string>& text,
-      const absl::optional<std::vector<DictationBubbleHintType>>& hints) = 0;
+      const std::optional<std::u16string>& text,
+      const std::optional<std::vector<DictationBubbleHintType>>& hints) = 0;
 
   // Cancels all of spoken feedback's current and queued speech immediately.
   virtual void SilenceSpokenFeedback() = 0;

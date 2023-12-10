@@ -19,6 +19,7 @@
 #include <string.h>
 #include <sys/types.h>
 
+#include "base/check.h"
 #include "base/logging.h"
 
 namespace crashpad {

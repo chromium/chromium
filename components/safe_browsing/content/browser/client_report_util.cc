@@ -9,36 +9,56 @@
 
 namespace safe_browsing::client_report_utils {
 
-ClientSafeBrowsingReportRequest::ReportType GetReportTypeFromSBThreatType(
-    SBThreatType threat_type) {
+CSBRR::SafeBrowsingUrlApiType GetUrlApiTypeForThreatSource(
+    safe_browsing::ThreatSource source) {
+  switch (source) {
+    case safe_browsing::ThreatSource::LOCAL_PVER4:
+      return CSBRR::PVER4_NATIVE;
+    case safe_browsing::ThreatSource::REMOTE:
+      return CSBRR::ANDROID_SAFETYNET;
+    case safe_browsing::ThreatSource::URL_REAL_TIME_CHECK:
+      return CSBRR::REAL_TIME;
+    case safe_browsing::ThreatSource::NATIVE_PVER5_REAL_TIME:
+      return CSBRR::PVER5_NATIVE_REAL_TIME;
+    case safe_browsing::ThreatSource::ANDROID_SAFEBROWSING_REAL_TIME:
+      return CSBRR::ANDROID_SAFEBROWSING_REAL_TIME;
+    case safe_browsing::ThreatSource::ANDROID_SAFEBROWSING:
+      return CSBRR::ANDROID_SAFEBROWSING;
+    case safe_browsing::ThreatSource::UNKNOWN:
+    case safe_browsing::ThreatSource::CLIENT_SIDE_DETECTION:
+      return CSBRR::SAFE_BROWSING_URL_API_TYPE_UNSPECIFIED;
+  }
+}
+
+CSBRR::ReportType GetReportTypeFromSBThreatType(SBThreatType threat_type) {
   switch (threat_type) {
     case SB_THREAT_TYPE_URL_PHISHING:
-      return ClientSafeBrowsingReportRequest::URL_PHISHING;
+      return CSBRR::URL_PHISHING;
     case SB_THREAT_TYPE_URL_MALWARE:
-      return ClientSafeBrowsingReportRequest::URL_MALWARE;
+      return CSBRR::URL_MALWARE;
     case SB_THREAT_TYPE_URL_UNWANTED:
-      return ClientSafeBrowsingReportRequest::URL_UNWANTED;
+      return CSBRR::URL_UNWANTED;
     case SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING:
-      return ClientSafeBrowsingReportRequest::URL_CLIENT_SIDE_PHISHING;
+      return CSBRR::URL_CLIENT_SIDE_PHISHING;
     case SB_THREAT_TYPE_URL_CLIENT_SIDE_MALWARE:
-      return ClientSafeBrowsingReportRequest::URL_CLIENT_SIDE_MALWARE;
+      return CSBRR::URL_CLIENT_SIDE_MALWARE;
     case SB_THREAT_TYPE_BLOCKED_AD_POPUP:
-      return ClientSafeBrowsingReportRequest::BLOCKED_AD_POPUP;
+      return CSBRR::BLOCKED_AD_POPUP;
     case SB_THREAT_TYPE_AD_SAMPLE:
-      return ClientSafeBrowsingReportRequest::AD_SAMPLE;
+      return CSBRR::AD_SAMPLE;
     case SB_THREAT_TYPE_BLOCKED_AD_REDIRECT:
-      return ClientSafeBrowsingReportRequest::BLOCKED_AD_REDIRECT;
+      return CSBRR::BLOCKED_AD_REDIRECT;
     case SB_THREAT_TYPE_SAVED_PASSWORD_REUSE:
     case SB_THREAT_TYPE_SIGNED_IN_SYNC_PASSWORD_REUSE:
     case SB_THREAT_TYPE_SIGNED_IN_NON_SYNC_PASSWORD_REUSE:
     case SB_THREAT_TYPE_ENTERPRISE_PASSWORD_REUSE:
-      return ClientSafeBrowsingReportRequest::URL_PASSWORD_PROTECTION_PHISHING;
+      return CSBRR::URL_PASSWORD_PROTECTION_PHISHING;
     case SB_THREAT_TYPE_SUSPICIOUS_SITE:
-      return ClientSafeBrowsingReportRequest::URL_SUSPICIOUS;
+      return CSBRR::URL_SUSPICIOUS;
     case SB_THREAT_TYPE_BILLING:
-      return ClientSafeBrowsingReportRequest::BILLING;
+      return CSBRR::BILLING;
     case SB_THREAT_TYPE_APK_DOWNLOAD:
-      return ClientSafeBrowsingReportRequest::APK_DOWNLOAD;
+      return CSBRR::APK_DOWNLOAD;
     case SB_THREAT_TYPE_UNUSED:
     case SB_THREAT_TYPE_SAFE:
     case SB_THREAT_TYPE_URL_BINARY_MALWARE:
@@ -54,126 +74,155 @@ ClientSafeBrowsingReportRequest::ReportType GetReportTypeFromSBThreatType(
       // Gated by SafeBrowsingBlockingPage::ShouldReportThreatDetails.
       NOTREACHED() << "We should not send report for threat type: "
                    << threat_type;
-      return ClientSafeBrowsingReportRequest::UNKNOWN;
+      return CSBRR::UNKNOWN;
   }
 }
 
-ClientSafeBrowsingReportRequest::UrlRequestDestination
+CSBRR::WarningShownInfo::WarningUXType GetWarningUXTypeFromSBThreatType(
+    SBThreatType threat_type) {
+  switch (threat_type) {
+    case SB_THREAT_TYPE_URL_PHISHING:
+      return CSBRR::WarningShownInfo::PHISHING_INTERSTITIAL;
+    case SB_THREAT_TYPE_URL_MALWARE:
+      return CSBRR::WarningShownInfo::MALWARE_INTERSTITIAL;
+    case SB_THREAT_TYPE_URL_UNWANTED:
+      return CSBRR::WarningShownInfo::UWS_INTERSTITIAL;
+    case SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING:
+      return CSBRR::WarningShownInfo::CLIENT_SIDE_PHISHING_INTERSTITIAL;
+    case SB_THREAT_TYPE_URL_CLIENT_SIDE_MALWARE:
+      return CSBRR::WarningShownInfo::MALWARE_INTERSTITIAL;
+    case SB_THREAT_TYPE_BILLING:
+      return CSBRR::WarningShownInfo::BILLING_INTERSTITIAL;
+    case SB_THREAT_TYPE_BLOCKED_AD_POPUP:
+    case SB_THREAT_TYPE_AD_SAMPLE:
+    case SB_THREAT_TYPE_BLOCKED_AD_REDIRECT:
+    case SB_THREAT_TYPE_SAVED_PASSWORD_REUSE:
+    case SB_THREAT_TYPE_SIGNED_IN_SYNC_PASSWORD_REUSE:
+    case SB_THREAT_TYPE_SIGNED_IN_NON_SYNC_PASSWORD_REUSE:
+    case SB_THREAT_TYPE_ENTERPRISE_PASSWORD_REUSE:
+    case SB_THREAT_TYPE_SUSPICIOUS_SITE:
+    case SB_THREAT_TYPE_APK_DOWNLOAD:
+    case SB_THREAT_TYPE_UNUSED:
+    case SB_THREAT_TYPE_SAFE:
+    case SB_THREAT_TYPE_URL_BINARY_MALWARE:
+    case SB_THREAT_TYPE_EXTENSION:
+    case SB_THREAT_TYPE_BLOCKLISTED_RESOURCE:
+    case SB_THREAT_TYPE_API_ABUSE:
+    case SB_THREAT_TYPE_SUBRESOURCE_FILTER:
+    case SB_THREAT_TYPE_CSD_ALLOWLIST:
+    case SB_THREAT_TYPE_HIGH_CONFIDENCE_ALLOWLIST:
+    case DEPRECATED_SB_THREAT_TYPE_URL_PASSWORD_PROTECTION_PHISHING:
+    case SB_THREAT_TYPE_MANAGED_POLICY_WARN:
+    case SB_THREAT_TYPE_MANAGED_POLICY_BLOCK:
+      NOTREACHED() << "We should not send report for threat type: "
+                   << threat_type;
+      return CSBRR::WarningShownInfo::UNKNOWN;
+  }
+}
+
+CSBRR::UrlRequestDestination
 GetUrlRequestDestinationFromMojomRequestDestination(
     network::mojom::RequestDestination request_destination) {
   switch (request_destination) {
     case network::mojom::RequestDestination::kEmpty:
-      return ClientSafeBrowsingReportRequest::EMPTY;
+      return CSBRR::EMPTY;
     case network::mojom::RequestDestination::kAudio:
-      return ClientSafeBrowsingReportRequest::AUDIO;
+      return CSBRR::AUDIO;
     case network::mojom::RequestDestination::kAudioWorklet:
-      return ClientSafeBrowsingReportRequest::AUDIO_WORKLET;
+      return CSBRR::AUDIO_WORKLET;
     case network::mojom::RequestDestination::kDocument:
-      return ClientSafeBrowsingReportRequest::DOCUMENT;
+      return CSBRR::DOCUMENT;
     case network::mojom::RequestDestination::kEmbed:
-      return ClientSafeBrowsingReportRequest::EMBED;
+      return CSBRR::EMBED;
     case network::mojom::RequestDestination::kFont:
-      return ClientSafeBrowsingReportRequest::FONT;
+      return CSBRR::FONT;
     case network::mojom::RequestDestination::kFrame:
-      return ClientSafeBrowsingReportRequest::FRAME;
+      return CSBRR::FRAME;
     case network::mojom::RequestDestination::kIframe:
-      return ClientSafeBrowsingReportRequest::IFRAME;
+      return CSBRR::IFRAME;
     case network::mojom::RequestDestination::kImage:
-      return ClientSafeBrowsingReportRequest::IMAGE;
+      return CSBRR::IMAGE;
     case network::mojom::RequestDestination::kManifest:
-      return ClientSafeBrowsingReportRequest::MANIFEST;
+      return CSBRR::MANIFEST;
     case network::mojom::RequestDestination::kObject:
-      return ClientSafeBrowsingReportRequest::OBJECT;
+      return CSBRR::OBJECT;
     case network::mojom::RequestDestination::kPaintWorklet:
-      return ClientSafeBrowsingReportRequest::PAINT_WORKLET;
+      return CSBRR::PAINT_WORKLET;
     case network::mojom::RequestDestination::kReport:
-      return ClientSafeBrowsingReportRequest::REPORT;
+      return CSBRR::REPORT;
     case network::mojom::RequestDestination::kScript:
-      return ClientSafeBrowsingReportRequest::SCRIPT;
+      return CSBRR::SCRIPT;
     case network::mojom::RequestDestination::kServiceWorker:
-      return ClientSafeBrowsingReportRequest::SERVICE_WORKER;
+      return CSBRR::SERVICE_WORKER;
     case network::mojom::RequestDestination::kSharedWorker:
-      return ClientSafeBrowsingReportRequest::SHARED_WORKER;
+      return CSBRR::SHARED_WORKER;
     case network::mojom::RequestDestination::kStyle:
-      return ClientSafeBrowsingReportRequest::STYLE;
+      return CSBRR::STYLE;
     case network::mojom::RequestDestination::kTrack:
-      return ClientSafeBrowsingReportRequest::TRACK;
+      return CSBRR::TRACK;
     case network::mojom::RequestDestination::kVideo:
-      return ClientSafeBrowsingReportRequest::VIDEO;
+      return CSBRR::VIDEO;
     case network::mojom::RequestDestination::kWebBundle:
-      return ClientSafeBrowsingReportRequest::WEB_BUNDLE;
+      return CSBRR::WEB_BUNDLE;
     case network::mojom::RequestDestination::kWorker:
-      return ClientSafeBrowsingReportRequest::WORKER;
+      return CSBRR::WORKER;
     case network::mojom::RequestDestination::kXslt:
-      return ClientSafeBrowsingReportRequest::XSLT;
+      return CSBRR::XSLT;
     case network::mojom::RequestDestination::kFencedframe:
-      return ClientSafeBrowsingReportRequest::FENCED_FRAME;
+      return CSBRR::FENCED_FRAME;
     case network::mojom::RequestDestination::kWebIdentity:
-      return ClientSafeBrowsingReportRequest::WEB_IDENTITY;
+      return CSBRR::WEB_IDENTITY;
     case network::mojom::RequestDestination::kDictionary:
-      return ClientSafeBrowsingReportRequest::DICTIONARY;
+      return CSBRR::DICTIONARY;
+    case network::mojom::RequestDestination::kSpeculationRules:
+      return CSBRR::SPECULATION_RULES;
   }
 }
 
 // Helper function that converts SecurityInterstitialCommand to CSBRR
 // SecurityInterstitialInteraction.
-ClientSafeBrowsingReportRequest::InterstitialInteraction::
-    SecurityInterstitialInteraction
-    GetSecurityInterstitialInteractionFromCommand(
-        security_interstitials::SecurityInterstitialCommand command) {
+CSBRR::InterstitialInteraction::SecurityInterstitialInteraction
+GetSecurityInterstitialInteractionFromCommand(
+    security_interstitials::SecurityInterstitialCommand command) {
   switch (command) {
     case security_interstitials::CMD_DONT_PROCEED:
-      return ClientSafeBrowsingReportRequest::InterstitialInteraction::
-          CMD_DONT_PROCEED;
+      return CSBRR::InterstitialInteraction::CMD_DONT_PROCEED;
     case security_interstitials::CMD_PROCEED:
-      return ClientSafeBrowsingReportRequest::InterstitialInteraction::
-          CMD_PROCEED;
+      return CSBRR::InterstitialInteraction::CMD_PROCEED;
     case security_interstitials::CMD_SHOW_MORE_SECTION:
-      return ClientSafeBrowsingReportRequest::InterstitialInteraction::
-          CMD_SHOW_MORE_SECTION;
+      return CSBRR::InterstitialInteraction::CMD_SHOW_MORE_SECTION;
     case security_interstitials::CMD_OPEN_HELP_CENTER:
-      return ClientSafeBrowsingReportRequest::InterstitialInteraction::
-          CMD_OPEN_HELP_CENTER;
+      return CSBRR::InterstitialInteraction::CMD_OPEN_HELP_CENTER;
     case security_interstitials::CMD_OPEN_DIAGNOSTIC:
-      return ClientSafeBrowsingReportRequest::InterstitialInteraction::
-          CMD_OPEN_DIAGNOSTIC;
+      return CSBRR::InterstitialInteraction::CMD_OPEN_DIAGNOSTIC;
     case security_interstitials::CMD_RELOAD:
-      return ClientSafeBrowsingReportRequest::InterstitialInteraction::
-          CMD_RELOAD;
+      return CSBRR::InterstitialInteraction::CMD_RELOAD;
     case security_interstitials::CMD_OPEN_DATE_SETTINGS:
-      return ClientSafeBrowsingReportRequest::InterstitialInteraction::
-          CMD_OPEN_DATE_SETTINGS;
+      return CSBRR::InterstitialInteraction::CMD_OPEN_DATE_SETTINGS;
     case security_interstitials::CMD_OPEN_LOGIN:
-      return ClientSafeBrowsingReportRequest::InterstitialInteraction::
-          CMD_OPEN_LOGIN;
+      return CSBRR::InterstitialInteraction::CMD_OPEN_LOGIN;
     case security_interstitials::CMD_DO_REPORT:
-      return ClientSafeBrowsingReportRequest::InterstitialInteraction::
-          CMD_DO_REPORT;
+      return CSBRR::InterstitialInteraction::CMD_DO_REPORT;
     case security_interstitials::CMD_DONT_REPORT:
-      return ClientSafeBrowsingReportRequest::InterstitialInteraction::
-          CMD_DONT_REPORT;
+      return CSBRR::InterstitialInteraction::CMD_DONT_REPORT;
     case security_interstitials::CMD_OPEN_REPORTING_PRIVACY:
-      return ClientSafeBrowsingReportRequest::InterstitialInteraction::
-          CMD_OPEN_REPORTING_PRIVACY;
+      return CSBRR::InterstitialInteraction::CMD_OPEN_REPORTING_PRIVACY;
     case security_interstitials::CMD_OPEN_WHITEPAPER:
-      return ClientSafeBrowsingReportRequest::InterstitialInteraction::
-          CMD_OPEN_WHITEPAPER;
+      return CSBRR::InterstitialInteraction::CMD_OPEN_WHITEPAPER;
     case security_interstitials::CMD_REPORT_PHISHING_ERROR:
-      return ClientSafeBrowsingReportRequest::InterstitialInteraction::
-          CMD_REPORT_PHISHING_ERROR;
+      return CSBRR::InterstitialInteraction::CMD_REPORT_PHISHING_ERROR;
     case security_interstitials::CMD_OPEN_ENHANCED_PROTECTION_SETTINGS:
-      return ClientSafeBrowsingReportRequest::InterstitialInteraction::
+      return CSBRR::InterstitialInteraction::
           CMD_OPEN_ENHANCED_PROTECTION_SETTINGS;
     case security_interstitials::CMD_CLOSE_INTERSTITIAL_WITHOUT_UI:
-      return ClientSafeBrowsingReportRequest::InterstitialInteraction::
-          CMD_CLOSE_INTERSTITIAL_WITHOUT_UI;
+      return CSBRR::InterstitialInteraction::CMD_CLOSE_INTERSTITIAL_WITHOUT_UI;
     case security_interstitials::CMD_TEXT_FOUND:
     case security_interstitials::CMD_TEXT_NOT_FOUND:
     case security_interstitials::CMD_ERROR:
     case security_interstitials::CMD_REQUEST_SITE_ACCESS_PERMISSION:
       break;
   }
-  return ClientSafeBrowsingReportRequest::InterstitialInteraction::UNSPECIFIED;
+  return CSBRR::InterstitialInteraction::UNSPECIFIED;
 }
 
 bool IsReportableUrl(const GURL& url) {
@@ -216,7 +265,7 @@ GURL GetReferrerUrl(const security_interstitials::UnsafeResource& resource) {
 }
 
 void FillReportBasicResourceDetails(
-    ClientSafeBrowsingReportRequest* report,
+    CSBRR* report,
     const security_interstitials::UnsafeResource& resource) {
   if (IsReportableUrl(resource.url)) {
     report->set_url(resource.url.spec());
@@ -241,7 +290,7 @@ void FillReportBasicResourceDetails(
 }
 
 void FillInterstitialInteractionsHelper(
-    ClientSafeBrowsingReportRequest* report,
+    CSBRR* report,
     security_interstitials::InterstitialInteractionMap*
         interstitial_interactions) {
   if (report == nullptr || interstitial_interactions == nullptr) {
@@ -249,8 +298,7 @@ void FillInterstitialInteractionsHelper(
   }
   for (auto const& interaction : *interstitial_interactions) {
     // Create InterstitialInteraction object.
-    ClientSafeBrowsingReportRequest::InterstitialInteraction
-        new_interstitial_interaction;
+    CSBRR::InterstitialInteraction new_interstitial_interaction;
     new_interstitial_interaction.set_security_interstitial_interaction(
         GetSecurityInterstitialInteractionFromCommand(interaction.first));
     new_interstitial_interaction.set_occurrence_count(

@@ -13,16 +13,14 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 
-/**
- * Fragment containing enhanced protection settings.
- */
+/** Fragment containing enhanced protection settings. */
 public class EnhancedProtectionSettingsFragment extends SafeBrowsingSettingsFragmentBase {
-    @VisibleForTesting
-    static final String PREF_LEARN_MORE = "learn_more";
+    @VisibleForTesting static final String PREF_LEARN_MORE = "learn_more";
     private static final String SAFE_BROWSING_IN_CHROME_URL =
             "https://support.google.com/chrome?p=safebrowsing_in_chrome";
-    private boolean mIsEnhancedFriendlierSettingsEnabled = ChromeFeatureList.isEnabled(
-            ChromeFeatureList.FRIENDLIER_SAFE_BROWSING_SETTINGS_ENHANCED_PROTECTION);
+    private boolean mIsEnhancedFriendlierSettingsEnabled =
+            ChromeFeatureList.isEnabled(
+                    ChromeFeatureList.FRIENDLIER_SAFE_BROWSING_SETTINGS_ENHANCED_PROTECTION);
 
     @Override
     protected int getPreferenceResource() {
@@ -38,12 +36,17 @@ public class EnhancedProtectionSettingsFragment extends SafeBrowsingSettingsFrag
         if (!mIsEnhancedFriendlierSettingsEnabled) return;
 
         findPreference(PREF_LEARN_MORE)
-                .setSummary(SpanApplier.applySpans(
-                        getResources().getString(
-                                R.string.safe_browsing_enhanced_protection_learn_more_label),
-                        new SpanApplier.SpanInfo("<link>", "</link>",
-                                new NoUnderlineClickableSpan(
-                                        getContext(), this::onLearnMoreClicked))));
+                .setSummary(
+                        SpanApplier.applySpans(
+                                getResources()
+                                        .getString(
+                                                R.string
+                                                        .safe_browsing_enhanced_protection_learn_more_label),
+                                new SpanApplier.SpanInfo(
+                                        "<link>",
+                                        "</link>",
+                                        new NoUnderlineClickableSpan(
+                                                getContext(), this::onLearnMoreClicked))));
     }
 
     private void onLearnMoreClicked(View view) {

@@ -1771,7 +1771,7 @@ class PdfViewWebPluginWithDocInfoTest : public PdfViewWebPluginTest {
       return bookmarks;
     }
 
-    absl::optional<gfx::Size> GetUniformPageSizePoints() override {
+    std::optional<gfx::Size> GetUniformPageSizePoints() override {
       return gfx::Size(1000, 1200);
     }
 

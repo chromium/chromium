@@ -6,6 +6,7 @@
 #define ASH_DRAG_DROP_DRAG_DROP_CONTROLLER_H_
 
 #include <memory>
+#include <optional>
 
 #include "ash/ash_export.h"
 #include "ash/display/window_tree_host_manager.h"
@@ -16,7 +17,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/client/drag_drop_client.h"
 #include "ui/aura/client/drag_drop_delegate.h"
 #include "ui/aura/window_observer.h"

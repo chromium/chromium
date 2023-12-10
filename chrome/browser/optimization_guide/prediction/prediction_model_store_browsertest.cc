@@ -651,6 +651,13 @@ class PredictionModelStoreMigrationBrowserTest
           features::kOptimizationGuideInstallWideModelStore);
     }
   }
+
+  void CheckOldModelStoreDirectory(bool should_exist) {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    EXPECT_EQ(should_exist,
+              base::DirectoryExists(browser()->profile()->GetPath().Append(
+                  kOldOptimizationGuidePredictionModelDownloads)));
+  }
 };
 
 IN_PROC_BROWSER_TEST_F(PredictionModelStoreMigrationBrowserTest,
@@ -663,6 +670,7 @@ IN_PROC_BROWSER_TEST_F(PredictionModelStoreMigrationBrowserTest,
   histogram_tester_.ExpectUniqueSample(
       "OptimizationGuide.PredictionModelDownloadManager.DownloadStatus",
       PredictionModelDownloadStatus::kSuccess, 1);
+  CheckOldModelStoreDirectory(true);
 }
 
 IN_PROC_BROWSER_TEST_F(PredictionModelStoreMigrationBrowserTest,
@@ -675,6 +683,7 @@ IN_PROC_BROWSER_TEST_F(PredictionModelStoreMigrationBrowserTest,
   histogram_tester_.ExpectUniqueSample(
       "OptimizationGuide.PredictionModelDownloadManager.DownloadStatus",
       PredictionModelDownloadStatus::kSuccess, 1);
+  CheckOldModelStoreDirectory(false);
 }
 
 IN_PROC_BROWSER_TEST_F(PredictionModelStoreMigrationBrowserTest,
@@ -683,10 +692,11 @@ IN_PROC_BROWSER_TEST_F(PredictionModelStoreMigrationBrowserTest,
   ModelFileObserver model_file_observer;
   RegisterAndWaitForModelUpdate(&model_file_observer);
 
-  // The model saved in the old model store will be used, and no download will
-  // happen.
-  histogram_tester_.ExpectTotalCount(
-      "OptimizationGuide.PredictionModelDownloadManager.DownloadStatus", 0);
+  // The model will be downloaded again.
+  histogram_tester_.ExpectUniqueSample(
+      "OptimizationGuide.PredictionModelDownloadManager.DownloadStatus",
+      PredictionModelDownloadStatus::kSuccess, 1);
+  CheckOldModelStoreDirectory(true);
 }
 
 }  // namespace optimization_guide

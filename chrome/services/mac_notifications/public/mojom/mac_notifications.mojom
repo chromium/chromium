@@ -4,7 +4,6 @@
 
 module mac_notifications.mojom;
 
-import "mojo/public/mojom/base/process_id.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 import "sandbox/policy/mojom/sandbox.mojom";
 import "ui/gfx/image/mojom/image.mojom";
@@ -46,10 +45,10 @@ struct NotificationMetadata {
   // if requested through a chrome app or extension or if it's a system
   // notification.
   url.mojom.Url origin_url;
-  // Contains the browser process id that created this notification. We use this
-  // to make sure we handle notification events in the correct browser instance
-  // as multiple may run with different user data dirs.
-  mojo_base.mojom.ProcessId creator_pid;
+  // The user data dir for the browser process that created this
+  // notification. We use this to make sure we handle notification events in the
+  // correct browser instance as multiple may run with different user data dirs.
+  string user_data_dir;
 };
 
 // The operation taken on a notification.

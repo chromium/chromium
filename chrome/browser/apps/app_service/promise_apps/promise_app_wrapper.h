@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_APPS_APP_SERVICE_PROMISE_APPS_PROMISE_APP_WRAPPER_H_
 #define CHROME_BROWSER_APPS_APP_SERVICE_PROMISE_APPS_PROMISE_APP_WRAPPER_H_
 
+#include <optional>
 #include <ostream>
 #include <string>
 #include <vector>
@@ -12,7 +13,6 @@
 #include "chrome/browser/apps/app_service/promise_apps/proto/promise_app.pb.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/package_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace apps {
@@ -21,7 +21,7 @@ class IconWrapper {
  public:
   explicit IconWrapper(proto::PromiseAppResponse::Icon icon_proto);
   GURL GetUrl() const;
-  absl::optional<int> GetWidthInPixels() const;
+  std::optional<int> GetWidthInPixels() const;
   std::string GetMimeType() const;
   bool IsMaskingAllowed() const;
 
@@ -38,13 +38,13 @@ class PromiseAppWrapper {
   PromiseAppWrapper& operator=(const PromiseAppWrapper&);
   ~PromiseAppWrapper();
 
-  absl::optional<PackageId> GetPackageId() const;
-  absl::optional<std::string> GetName() const;
+  std::optional<PackageId> GetPackageId() const;
+  std::optional<std::string> GetName() const;
   std::vector<IconWrapper> GetIcons() const;
 
  private:
   proto::PromiseAppResponse promise_app_proto_;
-  absl::optional<PackageId> package_id_;
+  std::optional<PackageId> package_id_;
 };
 
 std::ostream& operator<<(std::ostream& os, const IconWrapper& icon);

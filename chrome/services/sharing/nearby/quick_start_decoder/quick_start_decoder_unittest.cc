@@ -32,6 +32,11 @@ constexpr char kBootstrapConfigurationsKey[] = "bootstrapConfigurations";
 constexpr char kDeviceDetailsKey[] = "deviceDetails";
 constexpr char kInstanceIdKey[] = "instanceId";
 constexpr char kExampleInstanceId[] = "helloworld";
+constexpr char kNameKey[] = "name";
+constexpr char kExampleEmail[] = "fakeEmail";
+constexpr char kBootstrapAccountsKey[] = "bootstrapAccounts";
+constexpr char kIsTransferUnicornKey[] = "isTransferUnicorn";
+constexpr char kSecondDeviceAuthPayloadKey[] = "secondDeviceAuthPayload";
 constexpr char kFidoMessageKey[] = "fidoMessage";
 constexpr uint8_t kSuccess = 0x00;
 
@@ -602,9 +607,8 @@ TEST_F(QuickStartDecoderTest,
   EXPECT_EQ(future.Get<1>(), absl::nullopt);
 }
 
-TEST_F(QuickStartDecoderTest, DecodeBootstrapConfigurations_EmptyInstanceId) {
+TEST_F(QuickStartDecoderTest, DecodeBootstrapConfigurations_EmptyValues) {
   base::Value::Dict device_details;
-  device_details.Set(kInstanceIdKey, "");
   base::Value::Dict bootstrap_configurations;
   bootstrap_configurations.Set(kDeviceDetailsKey, std::move(device_details));
 
@@ -622,6 +626,8 @@ TEST_F(QuickStartDecoderTest, DecodeBootstrapConfigurations_EmptyInstanceId) {
 
   EXPECT_FALSE(future.Get<0>().is_null());
   EXPECT_EQ(future.Get<0>()->instance_id, "");
+  EXPECT_EQ(future.Get<0>()->is_supervised_account, false);
+  EXPECT_EQ(future.Get<0>()->email, "");
   EXPECT_EQ(future.Get<1>(), absl::nullopt);
 }
 
@@ -632,9 +638,21 @@ TEST_F(QuickStartDecoderTest,
   base::Value::Dict bootstrap_configurations;
   bootstrap_configurations.Set(kDeviceDetailsKey, std::move(device_details));
 
+  base::Value::Dict account;
+  account.Set(kNameKey, kExampleEmail);
+  base::Value::List accounts_list;
+  accounts_list.Append(std::move(account));
+  bootstrap_configurations.Set(kBootstrapAccountsKey, std::move(accounts_list));
+
   QuickStartMessage message(QuickStartMessageType::kBootstrapConfigurations);
   message.GetPayload()->Set(kBootstrapConfigurationsKey,
                             std::move(bootstrap_configurations));
+
+  base::Value::Dict second_device_auth_payload;
+  bool is_supervised_account = true;
+  second_device_auth_payload.Set(kIsTransferUnicornKey, is_supervised_account);
+  message.GetPayload()->Set(kSecondDeviceAuthPayloadKey,
+                            std::move(second_device_auth_payload));
 
   base::test::TestFuture<
       ::ash::quick_start::mojom::BootstrapConfigurationsPtr,
@@ -645,6 +663,8 @@ TEST_F(QuickStartDecoderTest,
                                 future.GetCallback());
   EXPECT_FALSE(future.Get<0>().is_null());
   EXPECT_EQ(future.Get<0>()->instance_id, kExampleInstanceId);
+  EXPECT_EQ(future.Get<0>()->is_supervised_account, is_supervised_account);
+  EXPECT_EQ(future.Get<0>()->email, kExampleEmail);
   EXPECT_EQ(future.Get<1>(), absl::nullopt);
 }
 

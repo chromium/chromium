@@ -22,9 +22,7 @@ import org.chromium.chrome.R;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 
-/**
- * Utility class that provides theme related attributes for Tab UI.
- */
+/** Utility class that provides theme related attributes for Tab UI. */
 public class TabUiThemeProvider {
     private static final String TAG = "TabUiThemeProvider";
 
@@ -41,16 +39,20 @@ public class TabUiThemeProvider {
         if (isIncognito) {
             // Incognito does not use dynamic colors, so it can use colors from resources.
             @ColorRes
-            int colorRes = isSelected ? R.color.incognito_tab_bg_selected_color
-                                      : R.color.incognito_tab_bg_color;
+            int colorRes =
+                    isSelected
+                            ? R.color.incognito_tab_bg_selected_color
+                            : R.color.incognito_tab_bg_color;
             return ContextCompat.getColor(context, colorRes);
         } else {
             float tabElevation = context.getResources().getDimension(R.dimen.tab_bg_elevation);
             @ColorInt
-            int colorInt = isSelected
-                    ? MaterialColors.getColor(context, org.chromium.chrome.R.attr.colorPrimary, TAG)
-                    : new ElevationOverlayProvider(context)
-                              .compositeOverlayWithThemeSurfaceColorIfNeeded(tabElevation);
+            int colorInt =
+                    isSelected
+                            ? MaterialColors.getColor(
+                                    context, org.chromium.chrome.R.attr.colorPrimary, TAG)
+                            : new ElevationOverlayProvider(context)
+                                    .compositeOverlayWithThemeSurfaceColorIfNeeded(tabElevation);
             return colorInt;
         }
     }
@@ -77,12 +79,15 @@ public class TabUiThemeProvider {
             Context context, boolean isIncognito, boolean isSelected) {
         if (isIncognito) {
             @ColorRes
-            int colorRes = isSelected ? R.color.incognito_tab_tile_number_selected_color
-                                      : R.color.incognito_tab_tile_number_color;
+            int colorRes =
+                    isSelected
+                            ? R.color.incognito_tab_tile_number_selected_color
+                            : R.color.incognito_tab_tile_number_color;
             return context.getColor(colorRes);
         } else {
-            return isSelected ? MaterialColors.getColor(context, R.attr.colorOnPrimary, TAG)
-                              : MaterialColors.getColor(context, R.attr.colorOnSurface, TAG);
+            return isSelected
+                    ? MaterialColors.getColor(context, R.attr.colorOnPrimary, TAG)
+                    : MaterialColors.getColor(context, R.attr.colorOnSurface, TAG);
         }
     }
 
@@ -97,12 +102,15 @@ public class TabUiThemeProvider {
             Context context, boolean isIncognito, boolean isSelected) {
         if (isIncognito) {
             @ColorRes
-            int colorRes = isSelected ? R.color.incognito_tab_title_selected_color
-                                      : R.color.incognito_tab_title_color;
+            int colorRes =
+                    isSelected
+                            ? R.color.incognito_tab_title_selected_color
+                            : R.color.incognito_tab_title_color;
             return context.getColor(colorRes);
         } else {
-            return isSelected ? MaterialColors.getColor(context, R.attr.colorOnPrimary, TAG)
-                              : MaterialColors.getColor(context, R.attr.colorOnSurface, TAG);
+            return isSelected
+                    ? MaterialColors.getColor(context, R.attr.colorOnPrimary, TAG)
+                    : MaterialColors.getColor(context, R.attr.colorOnSurface, TAG);
         }
     }
 
@@ -119,14 +127,17 @@ public class TabUiThemeProvider {
             Context context, boolean isIncognito, boolean isSelected) {
         if (isIncognito) {
             @ColorRes
-            int colorRes = isSelected ? R.color.incognito_tab_action_button_selected_color
-                                      : R.color.incognito_tab_action_button_color;
+            int colorRes =
+                    isSelected
+                            ? R.color.incognito_tab_action_button_selected_color
+                            : R.color.incognito_tab_action_button_color;
             return AppCompatResources.getColorStateList(context, colorRes);
         } else {
             @ColorInt
-            int colorInt = isSelected
-                    ? MaterialColors.getColor(context, R.attr.colorOnPrimary, TAG)
-                    : MaterialColors.getColor(context, R.attr.colorOnSurfaceVariant, TAG);
+            int colorInt =
+                    isSelected
+                            ? MaterialColors.getColor(context, R.attr.colorOnPrimary, TAG)
+                            : MaterialColors.getColor(context, R.attr.colorOnSurfaceVariant, TAG);
             return ColorStateList.valueOf(colorInt);
         }
     }
@@ -176,23 +187,32 @@ public class TabUiThemeProvider {
             Context context, boolean isIncognito, boolean isSelected) {
         if (isIncognito) {
             @ColorRes
-            int colorRes = isSelected ? R.color.incognito_tab_thumbnail_placeholder_selected_color
-                                      : R.color.incognito_tab_thumbnail_placeholder_color;
+            int colorRes =
+                    isSelected
+                            ? R.color.incognito_tab_thumbnail_placeholder_selected_color
+                            : R.color.incognito_tab_thumbnail_placeholder_color;
             return context.getColor(colorRes);
         } else {
-            int alpha = context.getResources().getInteger(isSelected
-                            ? R.integer.tab_thumbnail_placeholder_selected_color_alpha
-                            : R.integer.tab_thumbnail_placeholder_color_alpha);
+            int alpha =
+                    context.getResources()
+                            .getInteger(
+                                    isSelected
+                                            ? R.integer
+                                                    .tab_thumbnail_placeholder_selected_color_alpha
+                                            : R.integer.tab_thumbnail_placeholder_color_alpha);
 
             @StyleRes
-            int styleRes = isSelected ? R.style.TabThumbnailPlaceholderStyle_Selected
-                                      : R.style.TabThumbnailPlaceholderStyle;
+            int styleRes =
+                    isSelected
+                            ? R.style.TabThumbnailPlaceholderStyle_Selected
+                            : R.style.TabThumbnailPlaceholderStyle;
             TypedArray ta =
                     context.obtainStyledAttributes(styleRes, R.styleable.TabThumbnailPlaceholder);
 
             @ColorInt
-            int baseColor = ta.getColor(
-                    R.styleable.TabThumbnailPlaceholder_colorTileBase, Color.TRANSPARENT);
+            int baseColor =
+                    ta.getColor(
+                            R.styleable.TabThumbnailPlaceholder_colorTileBase, Color.TRANSPARENT);
             float tileSurfaceElevation =
                     ta.getDimension(R.styleable.TabThumbnailPlaceholder_elevationTileBase, 0);
 
@@ -215,8 +235,9 @@ public class TabUiThemeProvider {
      * @return The mini-thumbnail frame color.
      */
     public static @ColorInt int getMiniThumbnailFrameColor(Context context, boolean isIncognito) {
-        return isIncognito ? context.getColor(R.color.tab_grid_card_divider_tint_color_incognito)
-                           : SemanticColorUtils.getTabGridCardDividerTintColor(context);
+        return isIncognito
+                ? context.getColor(R.color.tab_grid_card_divider_tint_color_incognito)
+                : SemanticColorUtils.getTabGridCardDividerTintColor(context);
     }
 
     /**
@@ -227,8 +248,10 @@ public class TabUiThemeProvider {
      * @return The favicon background color.
      */
     public static @ColorInt int getFaviconBackgroundColor(Context context, boolean isIncognito) {
-        return context.getColor(isIncognito ? R.color.favicon_background_color_incognito
-                                            : R.color.favicon_background_color);
+        return context.getColor(
+                isIncognito
+                        ? R.color.favicon_background_color_incognito
+                        : R.color.favicon_background_color);
     }
 
     /**
@@ -257,16 +280,22 @@ public class TabUiThemeProvider {
             Context context, boolean isIncognito, boolean isSelected) {
         if (isIncognito) {
             @ColorRes
-            int colorRes = isSelected ? R.color.incognito_tab_group_hovered_bg_selected_color
-                                      : R.color.incognito_tab_group_hovered_bg_color;
+            int colorRes =
+                    isSelected
+                            ? R.color.incognito_tab_group_hovered_bg_selected_color
+                            : R.color.incognito_tab_group_hovered_bg_color;
             return AppCompatResources.getColorStateList(context, colorRes);
         } else {
             if (isSelected) {
                 @ColorInt
-                int baseColor = MaterialColors.getColor(
-                        context, org.chromium.chrome.R.attr.colorPrimary, TAG);
-                int alpha = context.getResources().getInteger(
-                        R.integer.tab_grid_hovered_card_background_selected_color_alpha);
+                int baseColor =
+                        MaterialColors.getColor(
+                                context, org.chromium.chrome.R.attr.colorPrimary, TAG);
+                int alpha =
+                        context.getResources()
+                                .getInteger(
+                                        R.integer
+                                                .tab_grid_hovered_card_background_selected_color_alpha);
                 return ColorStateList.valueOf(
                         MaterialColors.compositeARGBWithAlpha(baseColor, alpha));
             } else {
@@ -276,8 +305,9 @@ public class TabUiThemeProvider {
                 int baseColor =
                         new ElevationOverlayProvider(context)
                                 .compositeOverlayWithThemeSurfaceColorIfNeeded(backgroundElevation);
-                int alpha = context.getResources().getInteger(
-                        R.integer.tab_grid_hovered_card_background_color_alpha);
+                int alpha =
+                        context.getResources()
+                                .getInteger(R.integer.tab_grid_hovered_card_background_color_alpha);
                 return ColorStateList.valueOf(
                         MaterialColors.compositeARGBWithAlpha(baseColor, alpha));
             }
@@ -303,11 +333,13 @@ public class TabUiThemeProvider {
     private static @ColorInt int getTabGridDialogUngroupBarBackgroundColor(
             Context context, boolean isIncognito, boolean isTabHovered) {
         if (isIncognito) {
-            return context.getColor(isTabHovered
+            return context.getColor(
+                    isTabHovered
                             ? R.color.incognito_tab_grid_dialog_ungroup_bar_bg_hovered_color
                             : R.color.incognito_tab_grid_dialog_background_color);
         } else {
-            return MaterialColors.getColor(context,
+            return MaterialColors.getColor(
+                    context,
                     isTabHovered ? org.chromium.chrome.R.attr.colorPrimary : R.attr.colorSurface,
                     TAG);
         }
@@ -316,11 +348,13 @@ public class TabUiThemeProvider {
     private static @ColorInt int getTabGridDialogUngroupBarTextColor(
             Context context, boolean isIncognito, boolean isTabHovered) {
         if (isIncognito) {
-            return context.getColor(isTabHovered
+            return context.getColor(
+                    isTabHovered
                             ? R.color.incognito_tab_grid_dialog_ungroup_bar_text_hovered_color
                             : R.color.incognito_tab_grid_dialog_ungroup_bar_text_color);
         } else {
-            return MaterialColors.getColor(context,
+            return MaterialColors.getColor(
+                    context,
                     isTabHovered ? R.attr.colorOnPrimary : org.chromium.chrome.R.attr.colorPrimary,
                     TAG);
         }
@@ -385,9 +419,12 @@ public class TabUiThemeProvider {
      */
     public static ColorStateList getStripTabHoverCardBackgroundTintList(
             Context context, boolean isIncognito) {
-        int backgroundTint = isIncognito
-                ? ContextCompat.getColor(context, R.color.default_bg_color_dark_elev_5_baseline)
-                : ChromeColors.getSurfaceColor(context, R.dimen.tab_hover_card_bg_color_elev);
+        int backgroundTint =
+                isIncognito
+                        ? ContextCompat.getColor(
+                                context, R.color.default_bg_color_dark_elev_5_baseline)
+                        : ChromeColors.getSurfaceColor(
+                                context, R.dimen.tab_hover_card_bg_color_elev);
         return ColorStateList.valueOf(backgroundTint);
     }
 
@@ -400,8 +437,9 @@ public class TabUiThemeProvider {
      */
     public static @ColorInt int getStripTabHoverCardTextColorPrimary(
             Context context, boolean isIncognito) {
-        return isIncognito ? context.getColor(R.color.default_text_color_light)
-                           : SemanticColorUtils.getDefaultTextColor(context);
+        return isIncognito
+                ? context.getColor(R.color.default_text_color_light)
+                : SemanticColorUtils.getDefaultTextColor(context);
     }
 
     /**
@@ -413,8 +451,9 @@ public class TabUiThemeProvider {
      */
     public static @ColorInt int getStripTabHoverCardTextColorSecondary(
             Context context, boolean isIncognito) {
-        return isIncognito ? context.getColor(R.color.default_text_color_secondary_light)
-                           : SemanticColorUtils.getDefaultTextColorSecondary(context);
+        return isIncognito
+                ? context.getColor(R.color.default_text_color_secondary_light)
+                : SemanticColorUtils.getDefaultTextColorSecondary(context);
     }
 
     /**
@@ -427,7 +466,7 @@ public class TabUiThemeProvider {
     public static @ColorInt int getTabSelectionToolbarBackground(
             Context context, boolean isIncognito) {
         if (isIncognito) {
-            return context.getColor(R.color.incognito_tab_selection_editor_toolbar_bg_color);
+            return context.getColor(R.color.incognito_tab_list_editor_toolbar_bg_color);
         } else {
             return MaterialColors.getColor(context, R.attr.colorSurface, TAG);
         }
@@ -443,9 +482,11 @@ public class TabUiThemeProvider {
      */
     public static ColorStateList getTabSelectionToolbarIconTintList(
             Context context, boolean isIncognito) {
-        return AppCompatResources.getColorStateList(context,
-                isIncognito ? R.color.default_text_color_light_list
-                            : R.color.default_text_color_list);
+        return AppCompatResources.getColorStateList(
+                context,
+                isIncognito
+                        ? R.color.default_text_color_light_list
+                        : R.color.default_text_color_list);
     }
 
     /**
@@ -465,8 +506,9 @@ public class TabUiThemeProvider {
      * @return The text appearance for the message card title.
      */
     public static int getMessageCardTitleTextAppearance(boolean isIncognito) {
-        return isIncognito ? R.style.TextAppearance_TextLarge_Primary_Baseline_Light
-                           : R.style.TextAppearance_TextLarge_Primary;
+        return isIncognito
+                ? R.style.TextAppearance_TextLarge_Primary_Baseline_Light
+                : R.style.TextAppearance_TextLarge_Primary;
     }
 
     /**
@@ -476,8 +518,9 @@ public class TabUiThemeProvider {
      * @return The text appearance for the message card description.
      */
     public static int getMessageCardDescriptionTextAppearance(boolean isIncognito) {
-        return isIncognito ? R.style.TextAppearance_TextMedium_Primary_Baseline_Light
-                           : R.style.TextAppearance_TextMedium_Primary;
+        return isIncognito
+                ? R.style.TextAppearance_TextMedium_Primary_Baseline_Light
+                : R.style.TextAppearance_TextMedium_Primary;
     }
 
     /**
@@ -487,8 +530,9 @@ public class TabUiThemeProvider {
      * @return The text appearance for the message card action button.
      */
     public static int getMessageCardActionButtonTextAppearance(boolean isIncognito) {
-        return isIncognito ? R.style.TextAppearance_Button_Text_Blue_Dark
-                           : R.style.TextAppearance_Button_Text_Blue;
+        return isIncognito
+                ? R.style.TextAppearance_Button_Text_Blue_Dark
+                : R.style.TextAppearance_Button_Text_Blue;
     }
 
     /**
@@ -498,8 +542,9 @@ public class TabUiThemeProvider {
      * @return The text appearance for the message card title.
      */
     public static int getLargeMessageCardTitleTextAppearance(boolean isIncognito) {
-        return isIncognito ? R.style.TextAppearance_TextLarge_Primary_Baseline_Light
-                           : R.style.TextAppearance_TextLarge_Primary;
+        return isIncognito
+                ? R.style.TextAppearance_TextLarge_Primary_Baseline_Light
+                : R.style.TextAppearance_TextLarge_Primary;
     }
 
     /**
@@ -509,8 +554,9 @@ public class TabUiThemeProvider {
      * @return The text appearance for the message card description.
      */
     public static int getLargeMessageCardDescriptionTextAppearance(boolean isIncognito) {
-        return isIncognito ? R.style.TextAppearance_TextMedium_Secondary_Baseline_Light
-                           : R.style.TextAppearance_TextMedium_Secondary;
+        return isIncognito
+                ? R.style.TextAppearance_TextMedium_Secondary_Baseline_Light
+                : R.style.TextAppearance_TextMedium_Secondary;
     }
 
     /**
@@ -521,8 +567,9 @@ public class TabUiThemeProvider {
      * @return The appearance for the message card action button text.
      */
     public static int getLargeMessageCardActionButtonTextAppearance(boolean isIncognito) {
-        return isIncognito ? R.style.TextAppearance_Button_Text_Filled_Baseline_Dark
-                           : R.style.TextAppearance_Button_Text_Filled;
+        return isIncognito
+                ? R.style.TextAppearance_Button_Text_Filled_Baseline_Dark
+                : R.style.TextAppearance_Button_Text_Filled;
     }
 
     /**
@@ -536,8 +583,9 @@ public class TabUiThemeProvider {
      */
     public static @ColorInt int getLargeMessageCardActionButtonColor(
             Context context, boolean isIncognito) {
-        return isIncognito ? context.getColor(R.color.filled_button_bg_color_light)
-                           : context.getColor(R.color.filled_button_bg_color);
+        return isIncognito
+                ? context.getColor(R.color.filled_button_bg_color_light)
+                : context.getColor(R.color.filled_button_bg_color);
     }
 
     /**
@@ -551,8 +599,9 @@ public class TabUiThemeProvider {
      */
     public static @ColorInt int getMessageCardSecondaryActionButtonColor(
             Context context, boolean isIncognito) {
-        return isIncognito ? context.getColor(R.color.default_text_color_link_light)
-                           : SemanticColorUtils.getDefaultTextColorLink(context);
+        return isIncognito
+                ? context.getColor(R.color.default_text_color_link_light)
+                : SemanticColorUtils.getDefaultTextColorLink(context);
     }
 
     /**
@@ -565,9 +614,11 @@ public class TabUiThemeProvider {
      */
     public static ColorStateList getMessageCardCloseButtonTintList(
             Context context, boolean isIncognito) {
-        return AppCompatResources.getColorStateList(context,
-                isIncognito ? R.color.default_icon_color_light
-                            : R.color.default_icon_color_tint_list);
+        return AppCompatResources.getColorStateList(
+                context,
+                isIncognito
+                        ? R.color.default_icon_color_light
+                        : R.color.default_icon_color_tint_list);
     }
 
     /**

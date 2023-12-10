@@ -10,6 +10,7 @@
 #import "ios/chrome/app/application_delegate/tab_opening.h"
 #import "ios/chrome/browser/shared/coordinator/scene/connection_information.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state_observer.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 

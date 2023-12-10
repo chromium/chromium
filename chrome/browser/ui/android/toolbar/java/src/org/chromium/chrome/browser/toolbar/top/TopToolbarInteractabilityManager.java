@@ -72,9 +72,9 @@ public class TopToolbarInteractabilityManager {
      */
     private void onNewTabButtonTokenUpdate() {
         if (mNewTabInteractabilityTokenHolder.hasTokens()) {
-            mDelegate.setNewTabButtonEnabled(/*enabled=*/false);
+            mDelegate.setNewTabButtonEnabled(/* enabled= */ false);
         } else {
-            mDelegate.setNewTabButtonEnabled(/*enabled=*/true);
+            mDelegate.setNewTabButtonEnabled(/* enabled= */ true);
         }
     }
 }

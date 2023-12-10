@@ -54,6 +54,8 @@ class GuestOsRegistryServiceTest : public testing::Test {
                       const std::vector<std::string>&,
                       const std::vector<std::string>&,
                       const std::vector<std::string>&));
+    MOCK_METHOD3(OnAppLastLaunchTimeUpdated,
+                 void(VmType, const std::string&, const base::Time&));
   };
 
   guest_os::GuestOsRegistryService* service() { return service_.get(); }
@@ -150,7 +152,6 @@ TEST_F(GuestOsRegistryServiceTest, SetAndGetRegistration) {
   EXPECT_EQ(result->VmName(), vm_name);
   EXPECT_EQ(result->ContainerName(), container_name);
   EXPECT_EQ(result->Name(), name[""]);
-  EXPECT_EQ(result->Comment(), comment[""]);
   EXPECT_EQ(result->Keywords(), keywords[""]);
   EXPECT_EQ(result->MimeTypes(), mime_types);
   EXPECT_EQ(result->NoDisplay(), no_display);
@@ -303,6 +304,9 @@ TEST_F(GuestOsRegistryServiceTest, InstallAndLaunchTime) {
 
   // Launch the app
   test_clock_.Advance(base::Hours(1));
+  EXPECT_CALL(observer,
+              OnAppLastLaunchTimeUpdated(VmType::TERMINA, app_id,
+                                         base::Time() + base::Hours(3)));
   service()->AppLaunched(app_id);
   result = service()->GetRegistration(app_id);
   EXPECT_EQ(result->InstallTime(), install_time);

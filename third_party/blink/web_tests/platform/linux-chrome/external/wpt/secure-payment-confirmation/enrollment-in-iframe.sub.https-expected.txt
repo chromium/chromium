@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+[FAIL] SPC enrollment in cross-origin iframe
+  assert_equals: expected null but got object "NotSupportedError: The user agent does not support public key credentials."
+Harness: the test ran to completion.

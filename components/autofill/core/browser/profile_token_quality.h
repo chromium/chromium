@@ -48,6 +48,8 @@ class ProfileTokenQuality {
  public:
   // Describes the different types of observations, derived from an autofilled
   // field at form submission.
+  // Keep in sync with AutofillProfileTokenQualityObservationType in
+  // tools/metrics/histograms/enums.xml.
   enum class ObservationType : uint8_t {
     // An observation type that this client doesn't understand. This is possible
     // if a newer client synced a new enum value that this client doesn't
@@ -100,10 +102,6 @@ class ProfileTokenQuality {
 
   bool operator==(const ProfileTokenQuality& other) const;
   bool operator!=(const ProfileTokenQuality& other) const;
-
-  // Determines if a `type` is considered stored. Observations are only tracked
-  // for stored types.
-  static bool IsStoredType(ServerFieldType type);
 
   // Derives an observation from every field of the `form_structure` that was
   // autofilled with the `profile_`. Only fields with no existing observation
@@ -213,8 +211,7 @@ class ProfileTokenQuality {
     std::underlying_type_t<ObservationType> type;
     FormSignatureHash form_hash = FormSignatureHash(0);
 
-    bool operator==(const Observation& other) const;
-    bool operator!=(const Observation& other) const;
+    bool operator==(const Observation& other) const = default;
   };
 
   // Returns a low-entry hash of the `form_signature`.
@@ -251,7 +248,7 @@ class ProfileTokenQuality {
   // The profile for which observations are collected.
   raw_ref<AutofillProfile> profile_;
 
-  // Maps from `AutofillTable::GetStoredTypesForAutofillProfile()` to the
+  // Maps from `AutofillTable::GetDatabaseStoredTypesOfAutofillProfile()` to the
   // observations for this stored type. The following invariants hold for the
   // `circular_deque`:
   // - The observations are ordered from oldest (`front()`) to newest

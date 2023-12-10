@@ -47,7 +47,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Variations.AppSeedFreshness" units="minutes"
-    expires_after="2024-03-03">
+    expires_after="2024-05-05">
   <owner>ntfschr@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
@@ -225,7 +225,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Variations.Headers.HasLowEntropySourceValue"
-    enum="BooleanPresent" expires_after="2024-03-17">
+    enum="BooleanPresent" expires_after="2024-05-19">
   <owner>mpearson@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
@@ -235,7 +235,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Variations.Headers.RequestContextCategory"
-    enum="VariationsHeadersRequestContextCategory" expires_after="2024-04-01">
+    enum="VariationsHeadersRequestContextCategory" expires_after="2024-06-02">
   <owner>asvitkine@chromium.org</owner>
   <owner>jwd@chromium.org</owner>
   <owner>caitlinfischer@google.com</owner>
@@ -394,7 +394,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Variations.SafeMode.StoreSafeSeed.Result"
-    enum="VariationsSeedStoreResult" expires_after="2024-03-17">
+    enum="VariationsSeedStoreResult" expires_after="2024-05-19">
   <owner>isherman@chromium.org</owner>
   <owner>asvitkine@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
@@ -446,7 +446,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Variations.SafeModeCachedFlags.Streak.Crashes" units="crashes"
-    expires_after="2024-03-25">
+    expires_after="2024-05-26">
   <owner>hnakashima@chromium.org</owner>
   <owner>src/chrome/browser/flags/OWNERS</owner>
   <summary>
@@ -459,7 +459,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Variations.SafeModeCachedFlags.{Event}"
-    enum="VariationsSafeModeCachedFlagsBehavior" expires_after="2024-03-25">
+    enum="VariationsSafeModeCachedFlagsBehavior" expires_after="2024-05-26">
   <owner>hnakashima@chromium.org</owner>
   <owner>src/chrome/browser/flags/OWNERS</owner>
   <summary>
@@ -668,16 +668,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Variations.StringsOverridden" units="strings"
-    expires_after="2018-08-30">
-  <owner>asvitkine@chromium.org</owner>
-  <owner>src/base/metrics/OWNERS</owner>
-  <summary>
-    Records the number of UI strings overriden for each study that overrides
-    strings. Recorded at start up when each study is evaluated.
-  </summary>
-</histogram>
-
 <histogram name="Variations.TimeSinceLastFetchAttempt" units="minutes"
     expires_after="2024-11-01">
   <owner>asvitkine@chromium.org</owner>
@@ -702,7 +692,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Variations.WebViewDownloadJobInterval" units="minutes"
-    expires_after="2024-03-03">
+    expires_after="2024-05-05">
   <owner>ntfschr@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
@@ -713,7 +703,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Variations.WebViewDownloadJobQueueTime" units="minutes"
-    expires_after="2024-03-03">
+    expires_after="2024-05-05">
   <owner>ntfschr@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>

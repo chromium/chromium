@@ -21,4 +21,4 @@ class ChromeAcceleratorPrefsDelegate : public ash::AcceleratorPrefsDelegate {
   bool IsUserEnterpriseManaged() const override;
 };
 
-#endif  // CHROME_BROWSER_UI_ASH_CHROME_ACCESSIBILITY_DELEGATE_H_
+#endif  // CHROME_BROWSER_UI_ASH_CHROME_ACCELERATOR_PREFS_DELEGATE_H_

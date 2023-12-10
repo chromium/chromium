@@ -12,7 +12,7 @@
 #             android-pixel-6 android-shield-android-tv android-sm-a135m
 #             android-sm-a235m
 #         chromeos-board-amd64-generic chromeos-board-eve chromeos-board-jacuzzi
-#             chromeos-board-octopus
+#             chromeos-board-octopus chromeos-board-volteer
 #         fuchsia-board-astro fuchsia-board-nelson fuchsia-board-sherlock
 #             fuchsia-board-qemu-x64 ]
 # Platform
@@ -137,7 +137,6 @@ crbug.com/1378476 [ mac mac-arm64 ] GpuProcess_swiftshader_for_webgl [ Skip ]
 ###################
 # Non-"Skip" expectations go here to suppress regular flakes/failures.
 
-crbug.com/1487800 [ android android-sm-a135m ] GpuProcess_visibility [ RetryOnFailure ]
 
 
 

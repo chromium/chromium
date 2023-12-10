@@ -33,8 +33,10 @@ import java.util.function.Consumer;
     /*package*/ interface Delegate {
         /** Called when a legal message link is clicked from the legal message. */
         void didClickLegalMessageUrl(String url);
+
         /** Called when the bottom sheet is submitted. E.g. through a button click. */
         void didClickConfirm();
+
         /** Called when the bottom sheet is cancelled. E.g. through a button click. */
         void didClickCancel();
     }
@@ -45,8 +47,9 @@ import java.util.function.Consumer;
      * @param context The activity context of the window.
      */
     /*package*/ AutofillSaveCardBottomSheetContent(Context context) {
-        mView = LayoutInflater.from(context).inflate(
-                R.layout.autofill_save_card_bottom_sheet, /*root=*/null);
+        mView =
+                LayoutInflater.from(context)
+                        .inflate(R.layout.autofill_save_card_bottom_sheet, /* root= */ null);
         setButtonDelegateAction(R.id.autofill_save_card_confirm_button, Delegate::didClickConfirm);
         setButtonDelegateAction(R.id.autofill_save_card_cancel_button, Delegate::didClickCancel);
         setLinkMovementMethod(R.id.legal_message);
@@ -125,11 +128,13 @@ import java.util.function.Consumer;
     }
 
     private void setLegalMessage(List<LegalMessageLine> legalMessageLines) {
-        setTextViewText(R.id.legal_message,
-                AutofillUiUtils.getSpannableStringForLegalMessageLines(mView.getContext(),
+        setTextViewText(
+                R.id.legal_message,
+                AutofillUiUtils.getSpannableStringForLegalMessageLines(
+                        mView.getContext(),
                         legalMessageLines,
-                        /*underlineLinks=*/true,
-                        /*onClickCallback=*/(url) -> mDelegate.didClickLegalMessageUrl(url)));
+                        /* underlineLinks= */ true,
+                        /* onClickCallback= */ (url) -> mDelegate.didClickLegalMessageUrl(url)));
     }
 
     // BottomSheetContent implementation follows:

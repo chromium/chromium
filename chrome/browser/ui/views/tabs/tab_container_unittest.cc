@@ -83,7 +83,7 @@ class FakeTabContainerController final : public TabContainerController {
     return tab_strip_controller_->IsValidIndex(index);
   }
 
-  absl::optional<int> GetActiveIndex() const override {
+  std::optional<int> GetActiveIndex() const override {
     return tab_strip_controller_->GetActiveIndex();
   }
 
@@ -98,7 +98,7 @@ class FakeTabContainerController final : public TabContainerController {
     return tab_strip_controller_->GetCount();
   }
 
-  void OnDropIndexUpdate(absl::optional<int> index, bool drop_before) override {
+  void OnDropIndexUpdate(std::optional<int> index, bool drop_before) override {
     tab_strip_controller_->OnDropIndexUpdate(index, drop_before);
   }
 
@@ -106,7 +106,7 @@ class FakeTabContainerController final : public TabContainerController {
     return tab_strip_controller_->IsGroupCollapsed(group);
   }
 
-  absl::optional<int> GetFirstTabInGroup(
+  std::optional<int> GetFirstTabInGroup(
       const tab_groups::TabGroupId& group) const override {
     return tab_strip_controller_->GetFirstTabInGroup(group);
   }
@@ -194,7 +194,7 @@ class TabContainerTest : public ChromeViewsTestBase {
 
  protected:
   Tab* AddTab(int model_index,
-              absl::optional<tab_groups::TabGroupId> group = absl::nullopt,
+              std::optional<tab_groups::TabGroupId> group = std::nullopt,
               TabActive active = TabActive::kInactive,
               TabPinned pinned = TabPinned::kUnpinned) {
     Tab* tab = tab_container_->AddTab(
@@ -237,10 +237,10 @@ class TabContainerTest : public ChromeViewsTestBase {
 
   void RemoveTabFromGroup(int model_index) {
     Tab* tab = tab_container_->GetTabAtModelIndex(model_index);
-    absl::optional<tab_groups::TabGroupId> old_group = tab->group();
+    std::optional<tab_groups::TabGroupId> old_group = tab->group();
     DCHECK(old_group);
 
-    tab->set_group(absl::nullopt);
+    tab->set_group(std::nullopt);
     tab_strip_controller_->RemoveTabFromGroup(model_index);
 
     bool group_is_empty = true;
@@ -257,8 +257,8 @@ class TabContainerTest : public ChromeViewsTestBase {
   }
 
   void MoveTabIntoGroup(int index,
-                        absl::optional<tab_groups::TabGroupId> new_group) {
-    absl::optional<tab_groups::TabGroupId> old_group =
+                        std::optional<tab_groups::TabGroupId> new_group) {
+    std::optional<tab_groups::TabGroupId> old_group =
         tab_container_->GetTabAtModelIndex(index)->group();
 
     if (old_group.has_value())
@@ -294,14 +294,14 @@ class TabContainerTest : public ChromeViewsTestBase {
   views::View::Views GetTabSlotViewsInVisualOrder() {
     views::View::Views ordered_views;
 
-    absl::optional<tab_groups::TabGroupId> prev_group = absl::nullopt;
+    std::optional<tab_groups::TabGroupId> prev_group = std::nullopt;
 
     for (int i = 0; i < tab_container_->GetTabCount(); ++i) {
       Tab* tab = tab_container_->GetTabAtModelIndex(i);
 
       // If the current Tab is the first one in a group, first add the
       // TabGroupHeader to the list of views.
-      absl::optional<tab_groups::TabGroupId> curr_group = tab->group();
+      std::optional<tab_groups::TabGroupId> curr_group = tab->group();
       if (curr_group.has_value() && curr_group != prev_group) {
         ordered_views.push_back(
             tab_container_->GetGroupViews(curr_group.value())->header());
@@ -369,7 +369,7 @@ class TabContainerTest : public ChromeViewsTestBase {
 };
 
 TEST_F(TabContainerTest, ExitsClosingModeAtStandardWidth) {
-  AddTab(0, absl::nullopt, TabActive::kActive);
+  AddTab(0, std::nullopt, TabActive::kActive);
 
   // Create just enough tabs so tabs are not full size.
   const int standard_width = TabStyle::Get()->GetStandardWidth();
@@ -383,7 +383,7 @@ TEST_F(TabContainerTest, ExitsClosingModeAtStandardWidth) {
 
   // Enter tab closing mode manually; this would normally happen as the result
   // of a mouse/touch-based tab closure action.
-  tab_container_->EnterTabClosingMode(absl::nullopt,
+  tab_container_->EnterTabClosingMode(std::nullopt,
                                       CloseTabSource::CLOSE_TAB_FROM_MOUSE);
 
   // Close the second-to-last tab; tab closing mode should remain active,
@@ -403,7 +403,7 @@ TEST_F(TabContainerTest, ExitsClosingModeAtStandardWidth) {
 // Should bring the subsequent tab to its place as expected in
 // tab closing mode.
 TEST_F(TabContainerTest, RemoveTabInGroupWithTabClosingMode) {
-  AddTab(0, absl::nullopt, TabActive::kActive);
+  AddTab(0, std::nullopt, TabActive::kActive);
 
   // Create enough tabs so tabs are not full size.
   const int standard_width = TabStyle::Get()->GetStandardWidth();
@@ -425,7 +425,7 @@ TEST_F(TabContainerTest, RemoveTabInGroupWithTabClosingMode) {
   AddTabToGroup(3, group1);
 
   // Remove the second from last tab
-  tab_container_->EnterTabClosingMode(absl::nullopt,
+  tab_container_->EnterTabClosingMode(std::nullopt,
                                       CloseTabSource::CLOSE_TAB_FROM_MOUSE);
   RemoveTab(tab_container_->GetTabCount() - 2);
   tab_container_->CompleteAnimationAndLayout();
@@ -436,7 +436,7 @@ TEST_F(TabContainerTest, RemoveTabInGroupWithTabClosingMode) {
   gfx::Point tab_center = tab_close_button->GetBoundsInScreen().CenterPoint();
 
   // Remove the tab
-  tab_container_->EnterTabClosingMode(absl::nullopt,
+  tab_container_->EnterTabClosingMode(std::nullopt,
                                       CloseTabSource::CLOSE_TAB_FROM_MOUSE);
   tab_container_->OnGroupContentsChanged(group1);
   RemoveTab(1);
@@ -508,7 +508,7 @@ ui::DropTargetEvent MakeEventForDragLocation(const gfx::Point& p) {
 
 TEST_F(TabContainerTest, DropIndexForDragLocationIsCorrect) {
   auto group = tab_groups::TabGroupId::GenerateNew();
-  Tab* tab1 = AddTab(0, absl::nullopt, TabActive::kActive);
+  Tab* tab1 = AddTab(0, std::nullopt, TabActive::kActive);
   Tab* tab2 = AddTab(1, group);
   Tab* tab3 = AddTab(2, group);
   tab_container_->CompleteAnimationAndLayout();
@@ -563,7 +563,7 @@ TEST_F(TabContainerTest, DropIndexForDragLocationIsCorrect) {
 TEST_F(TabContainerTest, AccessibilityData) {
   // When adding tabs, indices should be set.
   AddTab(0);
-  AddTab(1, absl::nullopt, TabActive::kActive);
+  AddTab(1, std::nullopt, TabActive::kActive);
   VerifyTabIndices();
 
   AddTab(0);
@@ -578,7 +578,7 @@ TEST_F(TabContainerTest, AccessibilityData) {
 
 TEST_F(TabContainerTest, GetEventHandlerForOverlappingArea) {
   Tab* left_tab = AddTab(0);
-  Tab* active_tab = AddTab(1, absl::nullopt, TabActive::kActive);
+  Tab* active_tab = AddTab(1, std::nullopt, TabActive::kActive);
   Tab* right_tab = AddTab(2);
   Tab* most_right_tab = AddTab(3);
   tab_container_->CompleteAnimationAndLayout();
@@ -633,7 +633,7 @@ TEST_F(TabContainerTest, GetEventHandlerForOverlappingArea) {
 
 TEST_F(TabContainerTest, GetTooltipHandler) {
   Tab* left_tab = AddTab(0);
-  Tab* active_tab = AddTab(1, absl::nullopt, TabActive::kActive);
+  Tab* active_tab = AddTab(1, std::nullopt, TabActive::kActive);
   Tab* right_tab = AddTab(2);
   Tab* most_right_tab = AddTab(3);
   tab_container_->CompleteAnimationAndLayout();
@@ -862,7 +862,7 @@ TEST_F(TabContainerTest, GroupUnderlineBasics) {
   EXPECT_EQ(underline->height(), TabGroupUnderline::kStrokeThickness);
 
   // Endpoints are different if the last grouped tab is active.
-  AddTab(1, absl::nullopt, TabActive::kActive);
+  AddTab(1, std::nullopt, TabActive::kActive);
   MoveTabIntoGroup(1, group);
   tab_container_->CompleteAnimationAndLayout();
   views[0]->UpdateBounds();
@@ -920,7 +920,7 @@ TEST_F(TabContainerTest, UnderlineBoundsCollapsedGroupHeaderVisibilityChange) {
   SetTabContainerWidth(200);
   // Create a tab group with one tab and collapse it.
   tab_groups::TabGroupId group = tab_groups::TabGroupId::GenerateNew();
-  AddTab(0, absl::nullopt, TabActive::kActive);
+  AddTab(0, std::nullopt, TabActive::kActive);
   AddTab(1, group);
   tab_strip_controller_->ToggleTabGroupCollapsedState(
       group, ToggleTabGroupCollapsedStateOrigin::kMouse);
@@ -1055,8 +1055,8 @@ TEST_F(TabContainerTest, TabDestroyedWhileOutOfContainerDoesNotActuallyReturn) {
 
 TEST_F(TabContainerTest, GetLeadingTrailingElementsForZOrdering) {
   // An empty TabContainer has no leading/trailing views.
-  EXPECT_EQ(tab_container_->GetLeadingElementForZOrdering(), absl::nullopt);
-  EXPECT_EQ(tab_container_->GetTrailingElementForZOrdering(), absl::nullopt);
+  EXPECT_EQ(tab_container_->GetLeadingElementForZOrdering(), std::nullopt);
+  EXPECT_EQ(tab_container_->GetTrailingElementForZOrdering(), std::nullopt);
 
   // Leading/trailing views could be tabs.
   Tab* const first_tab = AddTab(0);

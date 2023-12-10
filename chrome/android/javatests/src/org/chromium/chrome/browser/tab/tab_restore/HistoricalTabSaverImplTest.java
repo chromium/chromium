@@ -23,10 +23,10 @@ import org.chromium.chrome.browser.ntp.RecentlyClosedEntry;
 import org.chromium.chrome.browser.ntp.RecentlyClosedGroup;
 import org.chromium.chrome.browser.ntp.RecentlyClosedTab;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabImpl;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tab.TabStateExtractor;
+import org.chromium.chrome.browser.tab.TabTestUtils;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -137,9 +137,7 @@ public class HistoricalTabSaverImplTest {
         final Tab frozenTab = freezeTab(tab);
 
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    ((TabImpl) frozenTab).setWebContentsState(null);
-                });
+                () -> TabTestUtils.setWebContentsState(frozenTab, null));
         // Clear the entry created by freezing the tab.
         TabRestoreServiceUtils.clearEntries(mTabModelSelector);
 
@@ -212,13 +210,9 @@ public class HistoricalTabSaverImplTest {
         final Tab frozenTab1 = freezeTab(tab1);
 
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    ((TabImpl) frozenTab0).setWebContentsState(null);
-                });
+                () -> TabTestUtils.setWebContentsState(frozenTab0, null));
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    ((TabImpl) frozenTab1).setWebContentsState(null);
-                });
+                () -> TabTestUtils.setWebContentsState(frozenTab1, null));
         // Clear the entry created by freezing the tab.
         TabRestoreServiceUtils.clearEntries(mTabModelSelector);
 
@@ -319,13 +313,9 @@ public class HistoricalTabSaverImplTest {
         final Tab frozenTab1 = freezeTab(tab1);
 
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    ((TabImpl) frozenTab0).setWebContentsState(null);
-                });
+                () -> TabTestUtils.setWebContentsState(frozenTab0, null));
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    ((TabImpl) frozenTab1).setWebContentsState(null);
-                });
+                () -> TabTestUtils.setWebContentsState(frozenTab1, null));
         // Clear the entry created by freezing the tab.
         TabRestoreServiceUtils.clearEntries(mTabModelSelector);
 

@@ -20,7 +20,17 @@
         if (!!window.sessionStorage.getItem("test")) {
           message = "Handle should not override window Session Storage";
         }
-        handle.sessionStorage.clear();
+        window.onstorage = (e) => {
+          if (e.key == "window_event") {
+            if (e.newValue != id) {
+              handle.sessionStorage.setItem("handle_event", "wrong data " + e.newValue);
+            } else if (e.storageArea != handle.sessionStorage) {
+              handle.sessionStorage.setItem("handle_event", "storage area mismatch");
+            } else {
+              handle.sessionStorage.setItem("handle_event", id);
+            }
+          }
+        };
         break;
       }
       case "localStorage": {
@@ -31,7 +41,17 @@
         if (!!window.localStorage.getItem("test")) {
           message = "Handle should not override window Local Storage";
         }
-        handle.localStorage.clear();
+        window.onstorage = (e) => {
+          if (e.key == "window_event") {
+            if (e.newValue != id) {
+              handle.localStorage.setItem("handle_event", "wrong data " + e.newValue);
+            } else if (e.storageArea != handle.localStorage) {
+              handle.localStorage.setItem("handle_event", "storage area mismatch");
+            } else {
+              handle.localStorage.setItem("handle_event", id);
+            }
+          }
+        };
         break;
       }
       case "indexedDB": {
@@ -86,6 +106,66 @@
           message = "Handle should not override window Origin Private File System";
         }
         await handle_root.removeEntry(id);
+        break;
+      }
+      case "estimate": {
+        const handle = await document.requestStorageAccess({estimate: true});
+        const handle_estimate = await handle.estimate();
+        if (handle_estimate.usage  <= 0) {
+          message = "No first-party quota access";
+        }
+        const local_estimate = await window.navigator.storage.estimate();
+        if (local_estimate > 0) {
+          message = "Handle should not override window quota";
+        }
+        break;
+      }
+      case "blobStorage": {
+        const handle = await document.requestStorageAccess({createObjectURL: true, revokeObjectURL: true});
+        let blob = await fetch(atob(id)).then(
+          (response) => response.text(),
+          () => "");
+        if (blob != "TEST") {
+          message = "Blob storage should be readable in this context";
+        }
+        URL.revokeObjectURL(atob(id));
+        blob = await fetch(atob(id)).then(
+          (response) => response.text(),
+          () => "");
+        if (blob != "TEST") {
+          message = "Handle should not override window blob storage";
+        }
+        handle.revokeObjectURL(atob(id));
+        blob = await fetch(atob(id)).then(
+          (response) => response.text(),
+          () => "");
+        if (blob != "") {
+          message = "No first-party blob access";
+        }
+        const url = handle.createObjectURL(new Blob(["TEST2"]));
+        blob = await fetch(url).then(
+          (response) => response.text(),
+          () => "");
+        if (blob != "TEST2") {
+          message = "A blob url created via the handle should be readable";
+        }
+        handle.revokeObjectURL(url);
+        blob = await fetch(url).then(
+          (response) => response.text(),
+          () => "");
+        if (blob != "") {
+          message = "A blob url removed via the handle should be cleared";
+        }
+        break;
+      }
+      case "BroadcastChannel": {
+        const handle = await document.requestStorageAccess({BroadcastChannel: true});
+        const handle_channel = handle.BroadcastChannel(id);
+        handle_channel.postMessage("Same-origin handle access");
+        handle_channel.close();
+        const local_channel = new BroadcastChannel(id);
+        local_channel.postMessage("Same-origin local access");
+        local_channel.close();
         break;
       }
       default: {

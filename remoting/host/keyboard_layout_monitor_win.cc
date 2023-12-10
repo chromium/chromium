@@ -8,6 +8,7 @@
 #include <ime.h>
 
 #include <memory>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -286,7 +287,7 @@ void KeyboardLayoutMonitorWin::QueryLayoutOnInputThread(
         }
         // The key generated at least one character.
         key_actions[shift_level].set_character(
-            base::WideToUTF8(base::WStringPiece(char_buffer, size)));
+            base::WideToUTF8(std::wstring_view(char_buffer, size)));
         if (shift_level > 2) {
           has_altgr = true;
         }

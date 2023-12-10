@@ -25,30 +25,39 @@ import org.chromium.components.browser_ui.notifications.NotificationManagerProxy
 
     /** Shows immersive notification informing the user that the VR browser is not ready yet. */
     public static void showFailureNotification(Context context) {
-        PostTask.postDelayedTask(TaskTraits.UI_DEFAULT, () -> {
-            NotificationManagerProxy notificationManager =
-                    new NotificationManagerProxyImpl(context);
-            Notification notification =
-                    NotificationWrapperBuilderFactory
-                            .createNotificationWrapperBuilder(ChromeChannelDefinitions.ChannelId.VR)
-                            .setContentTitle(context.getResources().getString(
-                                    R.string.vr_preparing_vr_notification_title))
-                            .setContentText(context.getResources().getString(
-                                    R.string.vr_preparing_vr_notification_body))
-                            .setSmallIcon(R.drawable.ic_chrome)
-                            // Need to set category and max priority. Otherwise, notification
-                            // won't show up.
-                            .setCategory(Notification.CATEGORY_MESSAGE)
-                            .setPriorityBeforeO(NotificationCompat.PRIORITY_MAX)
-                            .build();
-            notificationManager.notify(
-                    NotificationConstants.NOTIFICATION_ID_PREPARING_VR, notification);
+        PostTask.postDelayedTask(
+                TaskTraits.UI_DEFAULT,
+                () -> {
+                    NotificationManagerProxy notificationManager =
+                            new NotificationManagerProxyImpl(context);
+                    var resources = context.getResources();
+                    String title = resources.getString(R.string.vr_preparing_vr_notification_title);
+                    String message =
+                            resources.getString(R.string.vr_preparing_vr_notification_body);
+                    Notification notification =
+                            NotificationWrapperBuilderFactory.createNotificationWrapperBuilder(
+                                            ChromeChannelDefinitions.ChannelId.VR)
+                                    .setContentTitle(title)
+                                    .setContentText(message)
+                                    .setSmallIcon(R.drawable.ic_chrome)
+                                    // Need to set category and max priority. Otherwise,
+                                    // notification won't show up.
+                                    .setCategory(Notification.CATEGORY_MESSAGE)
+                                    .setPriorityBeforeO(NotificationCompat.PRIORITY_MAX)
+                                    .build();
+                    notificationManager.notify(
+                            NotificationConstants.NOTIFICATION_ID_PREPARING_VR, notification);
 
-            // Close notification after a few seconds as it is only really relevant right after
-            // accessing the VR browser failed.
-            PostTask.postDelayedTask(TaskTraits.UI_DEFAULT, () -> {
-                notificationManager.cancel(NotificationConstants.NOTIFICATION_ID_PREPARING_VR);
-            }, PREPARING_VR_NOTIFICATION_TIMEOUT_MS);
-        }, PREPARING_VR_NOTIFICATION_DELAY_MS);
+                    // Close notification after a few seconds as it is only really relevant right
+                    // after accessing the VR browser failed.
+                    PostTask.postDelayedTask(
+                            TaskTraits.UI_DEFAULT,
+                            () -> {
+                                notificationManager.cancel(
+                                        NotificationConstants.NOTIFICATION_ID_PREPARING_VR);
+                            },
+                            PREPARING_VR_NOTIFICATION_TIMEOUT_MS);
+                },
+                PREPARING_VR_NOTIFICATION_DELAY_MS);
     }
 }

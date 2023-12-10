@@ -40,3 +40,7 @@ per-file fenced_frame*=file://third_party/blink/renderer/core/html/fenced_frame/
 
 # For Service Worker tests support review.
 per-file embedded_worker_instance_test_harness.*=file://content/browser/service_worker/OWNERS
+
+# For preloading changes.
+per-file preloading*=file://content/browser/preloading/OWNERS
+per-file prerender*=file://content/browser/preloading/OWNERS

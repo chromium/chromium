@@ -48,12 +48,16 @@ source_set("lib") {
       "features/registered_wrappable.h",
       "features/speech_recognition_interface_binder.cc",
       "features/speech_recognition_interface_binder.h",
+      "features/sync_os_state_api_bindings.cc",
+      "features/sync_os_state_api_bindings.h",
       "features/text_decoder.cc",
       "features/text_decoder.h",
       "features/text_encoder.cc",
       "features/text_encoder.h",
       "features/tts_interface_binder.cc",
       "features/tts_interface_binder.h",
+      "features/user_input_interface_binder.cc",
+      "features/user_input_interface_binder.h",
       "features/user_interface_interface_binder.cc",
       "features/user_interface_interface_binder.h",
       "features/v8_bindings_utils.cc",
@@ -141,9 +145,13 @@ source_set("tests") {
         "//third_party/inspector_protocol:crdtp",
       ]
       data_deps = [
+        "//mojo/public/mojom/base",
         "//services/accessibility/features/javascript:js_api_files",
         "//services/accessibility/features/mojo/test:test_support_data",
         "//services/accessibility/public/mojom:os_accessibility_service_js",
+        "//skia/public/mojom:mojom_js",
+        "//ui/events/mojom:mojom_js",
+        "//ui/gfx/geometry/mojom:mojom_js",
       ]
     }
   } else {

@@ -28,14 +28,13 @@ import java.util.List;
  * based on data received from GCM, or serialized and deserialized to and from a Bundle.
  */
 public class GCMMessage {
-    @VisibleForTesting
-    static final String VERSION = "v1";
+    @VisibleForTesting static final String VERSION = "v1";
     private static final String TAG = "GCMMessage";
     private static final String SERIALIZATION_CHARSET = "ISO-8859-1";
-    /**
-     * Keys used to store information for serialization purposes.
-     */
+
+    /** Keys used to store information for serialization purposes. */
     private static final String KEY_VERSION = "version";
+
     private static final String KEY_APP_ID = "appId";
     private static final String KEY_COLLAPSE_KEY = "collapseKey";
     private static final String KEY_DATA = "data";
@@ -47,17 +46,12 @@ public class GCMMessage {
     private final String mSenderId;
     private final String mAppId;
 
-    @Nullable
-    private final String mMessageId;
+    @Nullable private final String mMessageId;
 
-    @Nullable
-    private final String mCollapseKey;
-    @Nullable
-    private final byte[] mRawData;
+    @Nullable private final String mCollapseKey;
+    @Nullable private final byte[] mRawData;
 
-    /**
-     * A list of possible priority values the GCMMessage can have.
-     */
+    /** A list of possible priority values the GCMMessage can have. */
     @IntDef({Priority.NONE, Priority.NORMAL, Priority.HIGH})
     @Retention(RetentionPolicy.SOURCE)
     public @interface Priority {
@@ -67,20 +61,13 @@ public class GCMMessage {
         int NUM_ENTRIES = 3;
     }
 
-    /**
-     * The priority at which this GCMMessage was originally sent.
-     */
-    @Nullable
-    private final String mOriginalPriority;
+    /** The priority at which this GCMMessage was originally sent. */
+    @Nullable private final String mOriginalPriority;
 
-    /**
-     * Array that contains pairs of entries in the format of {key, value}.
-     */
+    /** Array that contains pairs of entries in the format of {key, value}. */
     private final String[] mDataKeysAndValuesArray;
 
-    /**
-     * Creates a GCMMessage object based on data received from GCM. The extras will be filtered.
-     */
+    /** Creates a GCMMessage object based on data received from GCM. The extras will be filtered. */
     public GCMMessage(String senderId, Bundle extras) {
         String bundleCollapseKey = "collapse_key";
         String bundleGcmplex = "com.google.ipc.invalidation.gcmmplex.";
@@ -104,9 +91,12 @@ public class GCMMessage {
 
         List<String> dataKeysAndValues = new ArrayList<String>();
         for (String key : extras.keySet()) {
-            if (key.equals(bundleSubtype) || key.equals(bundleSenderId)
-                    || key.equals(bundleCollapseKey) || key.equals(bundleRawData)
-                    || key.equals(bundleOriginalPriority) || key.startsWith(bundleGcmplex)
+            if (key.equals(bundleSubtype)
+                    || key.equals(bundleSenderId)
+                    || key.equals(bundleCollapseKey)
+                    || key.equals(bundleRawData)
+                    || key.equals(bundleOriginalPriority)
+                    || key.startsWith(bundleGcmplex)
                     || key.equals(bundleMessageId)) {
                 continue;
             }
@@ -164,13 +154,14 @@ public class GCMMessage {
         return new GCMMessage(in, reader);
     }
 
-    /**
-     * Validates that all required fields have been set in the given object.
-     */
+    /** Validates that all required fields have been set in the given object. */
     private static <T> boolean validate(T in, Reader<T> reader) {
-        return reader.hasKey(in, KEY_APP_ID) && reader.hasKey(in, KEY_COLLAPSE_KEY)
-                && reader.hasKey(in, KEY_DATA) && reader.hasKey(in, KEY_RAW_DATA)
-                && reader.hasKey(in, KEY_SENDER_ID) && reader.hasKey(in, KEY_ORIGINAL_PRIORITY)
+        return reader.hasKey(in, KEY_APP_ID)
+                && reader.hasKey(in, KEY_COLLAPSE_KEY)
+                && reader.hasKey(in, KEY_DATA)
+                && reader.hasKey(in, KEY_RAW_DATA)
+                && reader.hasKey(in, KEY_SENDER_ID)
+                && reader.hasKey(in, KEY_ORIGINAL_PRIORITY)
                 && reader.hasKey(in, KEY_MESSAGE_ID);
     }
 
@@ -213,9 +204,7 @@ public class GCMMessage {
         return mCollapseKey;
     }
 
-    /**
-     * Callers are expected to not modify values in the returned byte array.
-     */
+    /** Callers are expected to not modify values in the returned byte array. */
     @Nullable
     public byte[] getRawData() {
         return mRawData;
@@ -236,9 +225,7 @@ public class GCMMessage {
         }
     }
 
-    /**
-     * Callers are expected to not modify values in the returned byte array.
-     */
+    /** Callers are expected to not modify values in the returned byte array. */
     public String[] getDataKeysAndValuesArray() {
         return mDataKeysAndValuesArray;
     }
@@ -302,7 +289,9 @@ public class GCMMessage {
         // The rawData field needs to distinguish between {not set, set but empty, set with data}.
         if (mRawData != null) {
             if (mRawData.length > 0) {
-                writer.writeString(out, KEY_RAW_DATA,
+                writer.writeString(
+                        out,
+                        KEY_RAW_DATA,
                         new String(mRawData, Charset.forName(SERIALIZATION_CHARSET)));
             } else {
                 writer.writeString(out, KEY_RAW_DATA, "");
@@ -317,7 +306,9 @@ public class GCMMessage {
 
     private interface Reader<T> {
         public boolean hasKey(T in, String key);
+
         public String readString(T in, String key);
+
         @Nullable
         public String[] readStringArray(T in, String key);
     }
@@ -367,7 +358,7 @@ public class GCMMessage {
             if (JSONObject.NULL.equals(jsonObj.opt(key))) {
                 return null;
             }
-            return jsonObj.optString(key, /*fallback=*/null);
+            return jsonObj.optString(key, /* fallback= */ null);
         }
 
         @Override
@@ -386,7 +377,9 @@ public class GCMMessage {
 
     private interface Writer<T> {
         public T createOutputObject();
+
         public void writeString(T out, String key, String value);
+
         public void writeStringArray(T out, String key, String[] value);
     }
 

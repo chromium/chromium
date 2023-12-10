@@ -10,7 +10,6 @@
 #include <set>
 #include <string>
 
-#include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -31,7 +30,7 @@
 #include "components/favicon/core/favicon_service.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/password_manager/core/browser/password_form.h"
-#include "components/password_manager/core/browser/password_store_interface.h"
+#include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/template_url.h"
@@ -101,15 +100,10 @@ void ProfileWriter::AddPasswordForm(
 
 void ProfileWriter::AddHistoryPage(const history::URLRows& page,
                                    history::VisitSource visit_source) {
-  if (!page.empty())
+  if (!page.empty()) {
     HistoryServiceFactory::GetForProfile(profile_,
                                          ServiceAccessType::EXPLICIT_ACCESS)
         ->AddPagesWithDetails(page, visit_source);
-  // Measure the size of the history page after Auto Import on first run.
-  if (first_run::IsChromeFirstRun() &&
-      visit_source == history::SOURCE_IE_IMPORTED) {
-    UMA_HISTOGRAM_COUNTS_1M("Import.ImportedHistorySize.AutoImportFromIE",
-                            page.size());
   }
 }
 

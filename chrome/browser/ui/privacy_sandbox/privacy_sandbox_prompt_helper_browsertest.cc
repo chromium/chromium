@@ -164,11 +164,8 @@ class PrivacySandboxPromptHelperTestWithParam
         [[fallthrough]];
       case PrivacySandboxService::PromptType::kNotice:
         [[fallthrough]];
-      case PrivacySandboxService::PromptType::kConsent: {
-        enabled_features.push_back(privacy_sandbox::kPrivacySandboxSettings3);
-        disabled_features.push_back(privacy_sandbox::kPrivacySandboxSettings4);
-        break;
-      }
+      case PrivacySandboxService::PromptType::kConsent:
+        NOTREACHED_NORETURN();
       case PrivacySandboxService::PromptType::kM1Consent:
         [[fallthrough]];
       case PrivacySandboxService::PromptType::kM1NoticeROW:
@@ -177,7 +174,6 @@ class PrivacySandboxPromptHelperTestWithParam
         [[fallthrough]];
       case PrivacySandboxService::PromptType::kM1NoticeRestricted: {
         enabled_features.push_back(privacy_sandbox::kPrivacySandboxSettings4);
-        disabled_features.push_back(privacy_sandbox::kPrivacySandboxSettings3);
         break;
       }
     }
@@ -514,9 +510,7 @@ INSTANTIATE_TEST_SUITE_P(
     PrivacySandboxPromptHelperTestWithParam,
     testing::Values(PrivacySandboxService::PromptType::kM1Consent,
                     PrivacySandboxService::PromptType::kM1NoticeEEA,
-                    PrivacySandboxService::PromptType::kM1NoticeROW,
-                    PrivacySandboxService::PromptType::kConsent,
-                    PrivacySandboxService::PromptType::kNotice));
+                    PrivacySandboxService::PromptType::kM1NoticeROW));
 
 struct PrivacySandboxNonNormalBrowserTestData {
   const PrivacySandboxService::PromptType prompt_type;
@@ -739,7 +733,5 @@ INSTANTIATE_TEST_SUITE_P(
     PrivacySandboxPromptHelperTestWithSearchEngineChoiceEnabled,
     testing::Values(PrivacySandboxService::PromptType::kM1Consent,
                     PrivacySandboxService::PromptType::kM1NoticeEEA,
-                    PrivacySandboxService::PromptType::kM1NoticeROW,
-                    PrivacySandboxService::PromptType::kConsent,
-                    PrivacySandboxService::PromptType::kNotice));
+                    PrivacySandboxService::PromptType::kM1NoticeROW));
 #endif  // BUILDFLAG(ENABLE_SEARCH_ENGINE_CHOICE)

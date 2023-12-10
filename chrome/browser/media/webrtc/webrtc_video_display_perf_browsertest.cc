@@ -468,14 +468,15 @@ INSTANTIATE_TEST_SUITE_P(WebRtcVideoDisplayPerfBrowserTests,
                                           testing::Values(30, 60),
                                           testing::Bool()));
 
+// TODO(crbug.com/1509755): Rewrite these tests to not use legacy GetStats API.
 IN_PROC_BROWSER_TEST_P(WebRtcVideoDisplayPerfBrowserTest,
-                       MANUAL_TestVideoDisplayPerfVP9) {
+                       DISABLED_TestVideoDisplayPerfVP9) {
   TestVideoDisplayPerf("VP9");
 }
 
 #if BUILDFLAG(RTC_USE_H264)
 IN_PROC_BROWSER_TEST_P(WebRtcVideoDisplayPerfBrowserTest,
-                       MANUAL_TestVideoDisplayPerfH264) {
+                       DISABLED_TestVideoDisplayPerfH264) {
   if (!base::FeatureList::IsEnabled(
           blink::features::kWebRtcH264WithOpenH264FFmpeg)) {
     LOG(WARNING) << "Run-time feature WebRTC-H264WithOpenH264FFmpeg disabled. "

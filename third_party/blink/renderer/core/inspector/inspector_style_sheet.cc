@@ -30,6 +30,7 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/script_regexp.h"
 #include "third_party/blink/renderer/core/css/css_container_rule.h"
+#include "third_party/blink/renderer/core/css/css_font_palette_values_rule.h"
 #include "third_party/blink/renderer/core/css/css_grouping_rule.h"
 #include "third_party/blink/renderer/core/css/css_import_rule.h"
 #include "third_party/blink/renderer/core/css/css_keyframe_rule.h"
@@ -52,13 +53,17 @@
 #include "third_party/blink/renderer/core/css/parser/css_parser_observer.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
 #include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
+#include "third_party/blink/renderer/core/css/properties/longhands/custom_property.h"
 #include "third_party/blink/renderer/core/css/properties/shorthand.h"
 #include "third_party/blink/renderer/core/css/property_registry.h"
+#include "third_party/blink/renderer/core/css/resolver/style_cascade.h"
+#include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css/style_rule.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/html_style_element.h"
@@ -68,6 +73,7 @@
 #include "third_party/blink/renderer/core/inspector/inspector_css_agent.h"
 #include "third_party/blink/renderer/core/inspector/inspector_network_agent.h"
 #include "third_party/blink/renderer/core/inspector/inspector_resource_container.h"
+#include "third_party/blink/renderer/core/inspector/protocol/css.h"
 #include "third_party/blink/renderer/core/svg/svg_style_element.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -363,6 +369,24 @@ CSSRuleSourceData* StyleSheetHandler::PopRuleData() {
   return data;
 }
 
+wtf_size_t FindColonIndex(const String& property_string) {
+  wtf_size_t index = 0;
+  while (index != kNotFound && index < property_string.length()) {
+    index = std::min(property_string.Find("/*", index),
+                     property_string.Find(":", index));
+    if (index == kNotFound || property_string[index] == ':')
+      return index;
+    if (index >= property_string.length() - 2)
+      return kNotFound;
+    // We're in a comment inside the property name, skip past it.
+    index = property_string.Find("*/", index + 2);
+    if (index != kNotFound) {
+      index += 2;
+    }
+  }
+  return kNotFound;
+}
+
 void StyleSheetHandler::ObserveProperty(unsigned start_offset,
                                         unsigned end_offset,
                                         bool is_important,
@@ -389,7 +413,7 @@ void StyleSheetHandler::ObserveProperty(unsigned start_offset,
           .StripWhiteSpace();
   if (property_string.EndsWith(';'))
     property_string = property_string.Left(property_string.length() - 1);
-  wtf_size_t colon_index = property_string.find(':');
+  wtf_size_t colon_index = FindColonIndex(property_string);
   DCHECK_NE(colon_index, kNotFound);
 
   String name = property_string.Left(colon_index).StripWhiteSpace();
@@ -869,7 +893,7 @@ void FlattenSourceData(const CSSRuleSourceDataList& data_list,
       case StyleRule::kKeyframe:
       case StyleRule::kFontFeature:
       case StyleRule::kTry:
-      case StyleRule::kViewTransitions:
+      case StyleRule::kViewTransition:
         result->push_back(data);
         break;
       case StyleRule::kStyle:
@@ -882,6 +906,7 @@ void FlattenSourceData(const CSSRuleSourceDataList& data_list,
       case StyleRule::kFontFeatureValues:
       case StyleRule::kPositionFallback:
       case StyleRule::kProperty:
+      case StyleRule::kFontPaletteValues:
         result->push_back(data);
         FlattenSourceData(data->child_rules, result);
         break;
@@ -924,6 +949,10 @@ CSSRuleList* AsCSSRuleList(CSSRule* rule) {
   if (auto* property_rule = DynamicTo<CSSPropertyRule>(rule))
     return property_rule->cssRules();
 
+  if (auto* font_palette_values_rule =
+          DynamicTo<CSSFontPaletteValuesRule>(rule))
+    return font_palette_values_rule->cssRules();
+
   return nullptr;
 }
 
@@ -946,7 +975,8 @@ void CollectFlatRules(RuleList rule_list, CSSRuleVector* result) {
       case CSSRule::kKeyframeRule:
       case CSSRule::kFontFeatureRule:
       case CSSRule::kTryRule:
-      case CSSRule::kViewTransitionsRule:
+      case CSSRule::kViewTransitionRule:
+      case CSSRule::kFontPaletteValuesRule:
         result->push_back(rule);
         break;
       case CSSRule::kStyleRule:
@@ -1043,8 +1073,10 @@ InspectorStyle::InspectorStyle(CSSStyleDeclaration* style,
   DCHECK(style_);
 }
 
-std::unique_ptr<protocol::CSS::CSSStyle> InspectorStyle::BuildObjectForStyle() {
-  std::unique_ptr<protocol::CSS::CSSStyle> result = StyleWithProperties();
+std::unique_ptr<protocol::CSS::CSSStyle> InspectorStyle::BuildObjectForStyle(
+    Element* element) {
+  std::unique_ptr<protocol::CSS::CSSStyle> result =
+      StyleWithProperties(element);
   if (source_data_) {
     if (parent_style_sheet_ && !parent_style_sheet_->Id().empty())
       result->setStyleSheetId(parent_style_sheet_->Id());
@@ -1106,7 +1138,72 @@ void InspectorStyle::PopulateAllProperties(
   }
 }
 
-std::unique_ptr<protocol::CSS::CSSStyle> InspectorStyle::StyleWithProperties() {
+bool InspectorStyle::CheckRegisteredPropertySyntaxWithVarSubstitution(
+    Element* element,
+    const CSSPropertySourceData& property) const {
+  if (!element) {
+    return false;
+  }
+  const Document* document = parent_style_sheet_->GetDocument();
+  if (!document) {
+    return false;
+  }
+  if (!property.name.StartsWith("--")) {
+    return false;
+  }
+  const PropertyRegistry* registry = document->GetPropertyRegistry();
+  if (!registry) {
+    return false;
+  }
+  AtomicString atomic_name(property.name);
+  const PropertyRegistration* registration =
+      registry->Registration(atomic_name);
+  if (!registration) {
+    return false;
+  }
+  const ComputedStyle* style = element->EnsureComputedStyle();
+  if (!style) {
+    return false;
+  }
+
+  CSSTokenizer tokenizer(property.value);
+  Vector<CSSParserToken, 32> tokens = tokenizer.TokenizeToEOF();
+  CSSTokenizedValue tokenized_value{CSSParserTokenRange(tokens),
+                                    property.value};
+
+  PropertyRegistry empty_registry;
+  CustomProperty p(atomic_name, &empty_registry);
+
+  const CSSParserContext* parser_context = ParserContextForDocument(document);
+  const CSSValue* result = p.Parse(tokenized_value, *parser_context, {});
+  if (!result) {
+    return false;
+  }
+
+  CSSPropertyName property_name(atomic_name);
+  // Substitute var()s in the property value from element's computed style.
+  const auto* computed_value =
+      StyleResolver::ResolveValue(*element, property_name, *result);
+  if (!computed_value) {
+    return false;
+  }
+
+  // Now check the substitution result against the registered syntax.
+  String computed_text = computed_value->CssText();
+  CSSTokenizer computed_text_tokenizer(computed_text);
+  Vector<CSSParserToken, 32> computed_text_tokens =
+      computed_text_tokenizer.TokenizeToEOF();
+  CSSTokenizedValue tokenized_computed_value{
+      CSSParserTokenRange(computed_text_tokens), computed_text};
+  if (!registration->Syntax().Parse(tokenized_computed_value, *parser_context,
+                                    false)) {
+    return false;
+  }
+  return true;
+}
+
+std::unique_ptr<protocol::CSS::CSSStyle> InspectorStyle::StyleWithProperties(
+    Element* element) {
   auto properties_object =
       std::make_unique<protocol::Array<protocol::CSS::CSSProperty>>();
   auto shorthand_entries =
@@ -1127,8 +1224,11 @@ std::unique_ptr<protocol::CSS::CSSStyle> InspectorStyle::StyleWithProperties() {
             .build();
 
     // Default "parsedOk" == true.
-    if (!property_entry.parsed_ok)
-      property->setParsedOk(false);
+    if (!property_entry.parsed_ok) {
+      property->setParsedOk(CheckRegisteredPropertySyntaxWithVarSubstitution(
+          element, property_entry));
+    }
+
     String text;
     if (style_property.range.length() &&
         TextForRange(style_property.range, &text))
@@ -1272,8 +1372,9 @@ void InspectorStyleSheetBase::OnStyleSheetTextChanged() {
 }
 
 std::unique_ptr<protocol::CSS::CSSStyle>
-InspectorStyleSheetBase::BuildObjectForStyle(CSSStyleDeclaration* style) {
-  return GetInspectorStyle(style)->BuildObjectForStyle();
+InspectorStyleSheetBase::BuildObjectForStyle(CSSStyleDeclaration* style,
+                                             Element* element) {
+  return GetInspectorStyle(style)->BuildObjectForStyle(element);
 }
 
 const LineEndings* InspectorStyleSheetBase::GetLineEndings() {
@@ -1513,7 +1614,8 @@ CSSRule* InspectorStyleSheet::SetStyleText(const SourceRange& range,
   CSSRule* rule = RuleForSourceData(source_data);
   if (!rule || !rule->parentStyleSheet() ||
       (!IsA<CSSStyleRule>(rule) && !IsA<CSSKeyframeRule>(rule) &&
-       !IsA<CSSPropertyRule>(rule) && !IsA<CSSTryRule>(rule))) {
+       !IsA<CSSPropertyRule>(rule) && !IsA<CSSFontPaletteValuesRule>(rule) &&
+       !IsA<CSSTryRule>(rule))) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotFoundError,
         "Source range didn't match existing style source range");
@@ -1527,6 +1629,9 @@ CSSRule* InspectorStyleSheet::SetStyleText(const SourceRange& range,
     style = try_rule->style();
   } else if (auto* property_rule = DynamicTo<CSSPropertyRule>(rule)) {
     style = property_rule->Style();
+  } else if (auto* font_palette_values_rule =
+                 DynamicTo<CSSFontPaletteValuesRule>(rule)) {
+    style = font_palette_values_rule->Style();
   } else {
     style = To<CSSKeyframeRule>(rule)->style();
   }
@@ -2166,8 +2271,12 @@ std::unique_ptr<protocol::Array<protocol::CSS::Value>>
 InspectorStyleSheet::SelectorsFromSource(CSSRuleSourceData* source_data,
                                          const String& sheet_text,
                                          CSSStyleRule* rule) {
-  auto* comment = MakeGarbageCollected<ScriptRegexp>(
-      "/\\*[^]*?\\*/", kTextCaseSensitive, MultilineMode::kMultilineEnabled);
+  ScriptRegexp* comment = nullptr;
+  if (page_style_sheet_->OwnerDocument()) {
+    comment = MakeGarbageCollected<ScriptRegexp>(
+        page_style_sheet_->OwnerDocument()->GetAgent().isolate(),
+        "/\\*[^]*?\\*/", kTextCaseSensitive, MultilineMode::kMultilineEnabled);
+  }
   auto result = std::make_unique<protocol::Array<protocol::CSS::Value>>();
   const Vector<SourceRange>& ranges = source_data->selector_ranges;
   const CSSSelector* obj_selector = rule->GetStyleRule()->FirstSelector();
@@ -2177,12 +2286,15 @@ InspectorStyleSheet::SelectorsFromSource(CSSRuleSourceData* source_data,
     const SourceRange& range = ranges.at(i);
     String selector = sheet_text.Substring(range.start, range.length());
 
-    // We don't want to see any comments in the selector components, only the
-    // meaningful parts.
-    int match_length;
-    int offset = 0;
-    while ((offset = comment->Match(selector, offset, &match_length)) >= 0)
-      selector.replace(offset, match_length, "");
+    if (comment) {
+      // We don't want to see any comments in the selector components, only the
+      // meaningful parts.
+      int match_length;
+      int offset = 0;
+      while ((offset = comment->Match(selector, offset, &match_length)) >= 0) {
+        selector.replace(offset, match_length, "");
+      }
+    }
 
     std::unique_ptr<protocol::CSS::Value> simple_selector =
         protocol::CSS::Value::create()
@@ -2247,12 +2359,13 @@ static bool CanBind(const String& origin) {
 }
 
 std::unique_ptr<protocol::CSS::CSSRule>
-InspectorStyleSheet::BuildObjectForRuleWithoutAncestorData(CSSStyleRule* rule) {
+InspectorStyleSheet::BuildObjectForRuleWithoutAncestorData(CSSStyleRule* rule,
+                                                           Element* element) {
   std::unique_ptr<protocol::CSS::CSSRule> result =
       protocol::CSS::CSSRule::create()
           .setSelectorList(BuildObjectForSelectorList(rule))
           .setOrigin(origin_)
-          .setStyle(BuildObjectForStyle(rule->style()))
+          .setStyle(BuildObjectForStyle(rule->style(), element))
           .build();
 
   if (CanBind(origin_)) {
@@ -2294,11 +2407,30 @@ InspectorStyleSheet::BuildObjectForTryRule(CSSTryRule* try_rule) {
   std::unique_ptr<protocol::CSS::CSSTryRule> result =
       protocol::CSS::CSSTryRule::create()
           .setOrigin(origin_)
-          .setStyle(BuildObjectForStyle(try_rule->style()))
+          .setStyle(BuildObjectForStyle(try_rule->style(), nullptr))
           .build();
   if (CanBind(origin_) && !Id().empty()) {
     result->setStyleSheetId(Id());
   }
+  return result;
+}
+
+std::unique_ptr<protocol::CSS::CSSFontPaletteValuesRule>
+InspectorStyleSheet::BuildObjectForFontPaletteValuesRule(
+    CSSFontPaletteValuesRule* values_rule) {
+  std::unique_ptr<protocol::CSS::Value> name_text =
+      protocol::CSS::Value::create().setText(values_rule->name()).build();
+  CSSRuleSourceData* source_data = SourceDataForRule(values_rule);
+  if (source_data)
+    name_text->setRange(BuildSourceRangeObject(source_data->rule_header_range));
+  std::unique_ptr<protocol::CSS::CSSFontPaletteValuesRule> result =
+      protocol::CSS::CSSFontPaletteValuesRule::create()
+          .setFontPaletteName(std::move(name_text))
+          .setOrigin(origin_)
+          .setStyle(BuildObjectForStyle(values_rule->Style(), nullptr))
+          .build();
+  if (CanBind(origin_) && !Id().empty())
+    result->setStyleSheetId(Id());
   return result;
 }
 
@@ -2314,7 +2446,7 @@ InspectorStyleSheet::BuildObjectForPropertyRule(
       protocol::CSS::CSSPropertyRule::create()
           .setPropertyName(std::move(name_text))
           .setOrigin(origin_)
-          .setStyle(BuildObjectForStyle(property_rule->Style()))
+          .setStyle(BuildObjectForStyle(property_rule->Style(), nullptr))
           .build();
   if (CanBind(origin_) && !Id().empty())
     result->setStyleSheetId(Id());
@@ -2322,8 +2454,8 @@ InspectorStyleSheet::BuildObjectForPropertyRule(
 }
 
 std::unique_ptr<protocol::CSS::CSSKeyframeRule>
-InspectorStyleSheet::BuildObjectForKeyframeRule(
-    CSSKeyframeRule* keyframe_rule) {
+InspectorStyleSheet::BuildObjectForKeyframeRule(CSSKeyframeRule* keyframe_rule,
+                                                Element* element) {
   std::unique_ptr<protocol::CSS::Value> key_text =
       protocol::CSS::Value::create().setText(keyframe_rule->keyText()).build();
   CSSRuleSourceData* source_data = SourceDataForRule(keyframe_rule);
@@ -2334,7 +2466,7 @@ InspectorStyleSheet::BuildObjectForKeyframeRule(
           // TODO(samli): keyText() normalises 'from' and 'to' keyword values.
           .setKeyText(std::move(key_text))
           .setOrigin(origin_)
-          .setStyle(BuildObjectForStyle(keyframe_rule->style()))
+          .setStyle(BuildObjectForStyle(keyframe_rule->style(), element))
           .build();
   if (CanBind(origin_) && !Id().empty())
     result->setStyleSheetId(Id());

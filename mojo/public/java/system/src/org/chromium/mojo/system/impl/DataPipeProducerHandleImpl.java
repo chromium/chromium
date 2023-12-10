@@ -10,9 +10,7 @@ import org.chromium.mojo.system.ResultAnd;
 
 import java.nio.ByteBuffer;
 
-/**
- * Implementation of {@link ProducerHandle}.
- */
+/** Implementation of {@link ProducerHandle}. */
 class DataPipeProducerHandleImpl extends HandleBase implements ProducerHandle {
     /**
      * @see HandleBase#HandleBase(CoreImpl, long)

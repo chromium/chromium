@@ -30,8 +30,8 @@ using bookmarks::BookmarkNode;
 
 namespace {
 
-using BackToJavaCallback =
-    base::OnceCallback<void(std::unique_ptr<std::vector<TabAndroid*>>)>;
+using BackToJavaCallback = base::OnceCallback<void(
+    std::unique_ptr<std::vector<base::WeakPtr<TabAndroid>>>)>;
 
 class AuxiliarySearchProviderFactory : public ProfileKeyedServiceFactory {
  public:
@@ -66,10 +66,13 @@ class AuxiliarySearchProviderFactory : public ProfileKeyedServiceFactory {
 void callJavaCallbackWithTabList(
     JNIEnv* env,
     const base::android::ScopedJavaGlobalRef<jobject>& j_callback_obj,
-    std::unique_ptr<std::vector<TabAndroid*>> non_sensitive_tabs) {
+    std::unique_ptr<std::vector<base::WeakPtr<TabAndroid>>>
+        non_sensitive_tabs) {
   std::vector<base::android::ScopedJavaLocalRef<jobject>> j_tabs_list;
-  for (TabAndroid* tab_android : *non_sensitive_tabs.get()) {
-    j_tabs_list.push_back(tab_android->GetJavaObject());
+  for (base::WeakPtr<TabAndroid> tab_android : *non_sensitive_tabs.get()) {
+    if (tab_android) {
+      j_tabs_list.push_back(tab_android->GetJavaObject());
+    }
   }
   base::android::RunObjectCallbackAndroid(
       j_callback_obj, base::android::ToJavaArrayOfObjects(env, j_tabs_list));
@@ -80,10 +83,10 @@ bool IsSchemeAllowed(const GURL& url) {
 }
 
 void FilterNonSensitiveSearchableTabs(
-    std::unique_ptr<std::vector<TabAndroid*>> all_tabs,
+    std::unique_ptr<std::vector<base::WeakPtr<TabAndroid>>> all_tabs,
     int current_tab_index,
     size_t max_tab_count,
-    std::unique_ptr<std::vector<TabAndroid*>> non_sensitive_tabs,
+    std::unique_ptr<std::vector<base::WeakPtr<TabAndroid>>> non_sensitive_tabs,
     BackToJavaCallback callback,
     PersistedTabDataAndroid* persisted_tab_data) {
   SensitivityPersistedTabDataAndroid* sensitivity_persisted_tab_data_android =
@@ -95,14 +98,21 @@ void FilterNonSensitiveSearchableTabs(
   }
   int next_tab_index = current_tab_index - 1;
 
+  // Make sure the next tab index is valid, and the next tab's week pointer is
+  // still available.
+  while (next_tab_index >= 0 && max_tab_count > non_sensitive_tabs->size() &&
+         !all_tabs->at(next_tab_index)) {
+    --next_tab_index;
+  }
+
   if (next_tab_index < 0 || max_tab_count <= non_sensitive_tabs->size()) {
     std::move(callback).Run(std::move(non_sensitive_tabs));
     return;
   }
 
-  TabAndroid* next_tab = all_tabs->at(next_tab_index);
+  base::WeakPtr<TabAndroid> next_tab = all_tabs->at(next_tab_index);
   SensitivityPersistedTabDataAndroid::From(
-      next_tab,
+      next_tab.get(),
       base::BindOnce(&FilterNonSensitiveSearchableTabs, std::move(all_tabs),
                      next_tab_index, max_tab_count,
                      std::move(non_sensitive_tabs), std::move(callback)));
@@ -139,11 +149,12 @@ AuxiliarySearchProvider::GetSearchableTabs(
     const base::android::JavaParamRef<jobjectArray>& j_tabs_android) const {
   std::vector<TabAndroid*> all_tabs = TabAndroid::GetAllNativeTabs(
       env, base::android::ScopedJavaLocalRef(j_tabs_android));
-  std::vector<TabAndroid*> filtered_tabs = FilterTabsByScheme(all_tabs);
+  std::vector<base::WeakPtr<TabAndroid>> filtered_tabs =
+      FilterTabsByScheme(all_tabs);
 
   std::vector<base::android::ScopedJavaLocalRef<jobject>> j_filtered_tabs;
   j_filtered_tabs.reserve(filtered_tabs.size());
-  for (TabAndroid* tab : filtered_tabs) {
+  for (base::WeakPtr<TabAndroid> tab : filtered_tabs) {
     j_filtered_tabs.push_back(tab->GetJavaObject());
   }
   return base::android::ToJavaArrayOfObjects(env, j_filtered_tabs);
@@ -191,12 +202,13 @@ AuxiliarySearchProvider::GetBookmarks(bookmarks::BookmarkModel* model) const {
 }
 
 // static
-std::vector<TabAndroid*> AuxiliarySearchProvider::FilterTabsByScheme(
+std::vector<base::WeakPtr<TabAndroid>>
+AuxiliarySearchProvider::FilterTabsByScheme(
     const std::vector<TabAndroid*>& tabs) {
-  std::vector<TabAndroid*> filtered_tabs;
+  std::vector<base::WeakPtr<TabAndroid>> filtered_tabs;
   for (TabAndroid* tab : tabs) {
     if (IsSchemeAllowed(tab->GetURL())) {
-      filtered_tabs.push_back(tab);
+      filtered_tabs.push_back(tab->GetWeakPtr());
     }
   }
   return filtered_tabs;
@@ -205,19 +217,22 @@ std::vector<TabAndroid*> AuxiliarySearchProvider::FilterTabsByScheme(
 void AuxiliarySearchProvider::GetNonSensitiveTabsInternal(
     const std::vector<TabAndroid*>& all_tabs,
     NonSensitiveTabsCallback callback) const {
-  std::unique_ptr<std::vector<TabAndroid*>> non_sensitive_tabs =
-      std::make_unique<std::vector<TabAndroid*>>();
-  std::vector<TabAndroid*> filtered_tabs = FilterTabsByScheme(all_tabs);
+  std::unique_ptr<std::vector<base::WeakPtr<TabAndroid>>> non_sensitive_tabs =
+      std::make_unique<std::vector<base::WeakPtr<TabAndroid>>>();
+  std::vector<base::WeakPtr<TabAndroid>> filtered_tabs =
+      FilterTabsByScheme(all_tabs);
   if (filtered_tabs.size() == 0) {
     std::move(callback).Run(std::move(non_sensitive_tabs));
     return;
   }
 
-  TabAndroid* next_tab = filtered_tabs.at(filtered_tabs.size() - 1);
+  base::WeakPtr<TabAndroid> next_tab =
+      filtered_tabs.at(filtered_tabs.size() - 1);
   SensitivityPersistedTabDataAndroid::From(
-      next_tab,
+      next_tab.get(),
       base::BindOnce(&FilterNonSensitiveSearchableTabs,
-                     std::make_unique<std::vector<TabAndroid*>>(filtered_tabs),
+                     std::make_unique<std::vector<base::WeakPtr<TabAndroid>>>(
+                         filtered_tabs),
                      filtered_tabs.size() - 1, max_tab_donation_count_,
                      std::move(non_sensitive_tabs), std::move(callback)));
 }

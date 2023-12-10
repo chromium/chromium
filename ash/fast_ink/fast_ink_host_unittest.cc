@@ -24,6 +24,7 @@
 #include "components/viz/common/quads/compositor_render_pass.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
 #include "components/viz/common/resources/resource_id.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
@@ -41,9 +42,13 @@ namespace {
 
 class FastInkHostTest
     : public AshTestBase,
-      public ::testing::WithParamInterface<
-          std::
-              tuple<std::string, bool, gfx::Rect, gfx::Rect, gfx::Rect, bool>> {
+      public ::testing::WithParamInterface<std::tuple<std::string,
+                                                      bool,
+                                                      gfx::Rect,
+                                                      gfx::Rect,
+                                                      gfx::Rect,
+                                                      bool,
+                                                      bool>> {
  public:
   FastInkHostTest()
       : first_display_specs_(std::get<0>(GetParam())),
@@ -51,7 +56,8 @@ class FastInkHostTest
         content_rect_(std::get<2>(GetParam())),
         expected_quad_rect_(std::get<3>(GetParam())),
         expected_quad_layer_rect_(std::get<4>(GetParam())),
-        use_one_si_for_fast_ink_host_resources_(std::get<5>(GetParam())) {
+        use_one_si_for_fast_ink_host_resources_(std::get<5>(GetParam())),
+        enable_mappable_si_for_fast_ink_host_(std::get<6>(GetParam())) {
     std::vector<base::test::FeatureRef> enabled_features = {};
     std::vector<base::test::FeatureRef> disabled_features = {};
     if (use_one_si_for_fast_ink_host_resources_) {
@@ -60,6 +66,12 @@ class FastInkHostTest
     } else {
       disabled_features.push_back(
           features::kUseOneSharedImageForFastInkHostResources);
+    }
+
+    if (enable_mappable_si_for_fast_ink_host_) {
+      enabled_features.push_back(features::kEnableMappableSIForFastInkHost);
+    } else {
+      disabled_features.push_back(features::kEnableMappableSIForFastInkHost);
     }
 
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
@@ -113,6 +125,7 @@ class FastInkHostTest
   gfx::Rect expected_quad_rect_;
   gfx::Rect expected_quad_layer_rect_;
   bool use_one_si_for_fast_ink_host_resources_;
+  bool enable_mappable_si_for_fast_ink_host_;
 
   std::unique_ptr<views::Widget> widget_;
   raw_ptr<aura::Window, DanglingUntriaged> host_window_;
@@ -180,7 +193,7 @@ TEST_P(FastInkHostTest, CorrectFrameSubmittedToLayerTreeFrameSink) {
 TEST_P(FastInkHostTest, DelayPaintingUntilReceivingFirstBeginFrame) {
   // Buffer is not initialized when there is no begin frame received.
   ASSERT_FALSE(fast_ink_host_->gpu_memory_buffer_for_test());
-  ASSERT_TRUE(fast_ink_host_->mailbox_for_test().IsZero());
+  ASSERT_FALSE(fast_ink_host_->client_si_for_test());
   EXPECT_EQ(fast_ink_host_->get_pending_bitmaps_size_for_test(), 0);
 
   int pending_bitmaps_size = 0;
@@ -201,24 +214,39 @@ TEST_P(FastInkHostTest, DelayPaintingUntilReceivingFirstBeginFrame) {
   // Request the first frame.
   OnBeginFrame();
 
-  // Buffer should be initialized after receiving the first begin frame.
-  gfx::GpuMemoryBuffer* gpu_memory_buffer =
-      fast_ink_host_->gpu_memory_buffer_for_test();
-  if (use_one_si_for_fast_ink_host_resources_) {
-    ASSERT_FALSE(fast_ink_host_->mailbox_for_test().IsZero());
+  bool should_be_using_gmb = !use_one_si_for_fast_ink_host_resources_ ||
+                             !enable_mappable_si_for_fast_ink_host_;
+
+  if (should_be_using_gmb) {
+    // Buffer should be initialized after receiving the first begin frame.
+    gfx::GpuMemoryBuffer* gpu_memory_buffer =
+        fast_ink_host_->gpu_memory_buffer_for_test();
+    if (use_one_si_for_fast_ink_host_resources_) {
+      ASSERT_TRUE(fast_ink_host_->client_si_for_test());
+    } else {
+      ASSERT_FALSE(fast_ink_host_->client_si_for_test());
+    }
+
+    ASSERT_TRUE(gpu_memory_buffer);
+    // Pending bitmaps should be drawn and cleared.
+    EXPECT_EQ(fast_ink_host_->get_pending_bitmaps_size_for_test(), 0);
+
+    ASSERT_TRUE(gpu_memory_buffer->Map());
+    // Pending bitmaps should be correctly copied to the gpu memory buffer.
+    EXPECT_EQ(*static_cast<SkColor*>(gpu_memory_buffer->memory(0)),
+              SK_ColorGREEN);
+    gpu_memory_buffer->Unmap();
   } else {
-    ASSERT_TRUE(fast_ink_host_->mailbox_for_test().IsZero());
+    // MappableSI should be initialized after receiving the first begin frame.
+    ASSERT_TRUE(fast_ink_host_->client_si_for_test());
+    // Pending bitmaps should be drawn and cleared.
+    EXPECT_EQ(fast_ink_host_->get_pending_bitmaps_size_for_test(), 0);
+
+    auto mapping = fast_ink_host_->client_si_for_test()->Map();
+    ASSERT_TRUE(mapping);
+    // Pending bitmaps should be correctly copied to the MappableSI's buffer.
+    EXPECT_EQ(*static_cast<SkColor*>(mapping->Memory(0)), SK_ColorGREEN);
   }
-
-  ASSERT_TRUE(gpu_memory_buffer);
-  // Pending bitmaps should be drawn and cleared.
-  EXPECT_EQ(fast_ink_host_->get_pending_bitmaps_size_for_test(), 0);
-
-  ASSERT_TRUE(gpu_memory_buffer->Map());
-  // Pending bitmaps should be correctly copied to the gpu memory buffer.
-  EXPECT_EQ(*static_cast<SkColor*>(gpu_memory_buffer->memory(0)),
-            SK_ColorGREEN);
-  gpu_memory_buffer->Unmap();
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -233,7 +261,8 @@ INSTANTIATE_TEST_SUITE_P(
             /*content_rect=*/gfx::Rect(10, 10),
             /*expected_quad_rect=*/gfx::Rect(0, 0, 1000, 500),
             /*expected_quad_layer_rect=*/gfx::Rect(0, 0, 1000, 500),
-            /*use_one_si_for_fast_ink_host_resources=*/false),
+            /*use_one_si_for_fast_ink_host_resources=*/false,
+            /*enable_mappable_si_for_fast_ink_host=*/false),
         // Run a test with `use_one_si_for_fast_ink_host_resources` set to true.
         std::make_tuple(
             /*first_display_specs=*/"1000x500",
@@ -241,21 +270,43 @@ INSTANTIATE_TEST_SUITE_P(
             /*content_rect=*/gfx::Rect(10, 10),
             /*expected_quad_rect=*/gfx::Rect(0, 0, 1000, 500),
             /*expected_quad_layer_rect=*/gfx::Rect(0, 0, 1000, 500),
-            /*use_one_si_for_fast_ink_host_resources=*/true),
+            /*use_one_si_for_fast_ink_host_resources=*/true,
+            /*enable_mappable_si_for_fast_ink_host=*/false),
+        // Run a test to verify that MappableSI is not used if we are not using
+        // a single SharedImage for FastInkHost UiResources.
+        std::make_tuple(
+            /*first_display_specs=*/"1000x500",
+            /*auto_update=*/true,
+            /*content_rect=*/gfx::Rect(10, 10),
+            /*expected_quad_rect=*/gfx::Rect(0, 0, 1000, 500),
+            /*expected_quad_layer_rect=*/gfx::Rect(0, 0, 1000, 500),
+            /*use_one_si_for_fast_ink_host_resources=*/false,
+            /*enable_mappable_si_for_fast_ink_host=*/true),
+        // Run a test with MappableSI used.
+        std::make_tuple(
+            /*first_display_specs=*/"1000x500",
+            /*auto_update=*/true,
+            /*content_rect=*/gfx::Rect(10, 10),
+            /*expected_quad_rect=*/gfx::Rect(0, 0, 1000, 500),
+            /*expected_quad_layer_rect=*/gfx::Rect(0, 0, 1000, 500),
+            /*use_one_si_for_fast_ink_host_resources=*/true,
+            /*enable_mappable_si_for_fast_ink_host=*/true),
         std::make_tuple(
             /*first_display_specs=*/"1000x500*2",
             /*auto_update=*/true,
             /*content_rect=*/gfx::Rect(10, 10),
             /*expected_quad_rect=*/gfx::Rect(0, 0, 1000, 500),
             /*expected_quad_layer_rect=*/gfx::Rect(0, 0, 1000, 500),
-            /*use_one_si_for_fast_ink_host_resources=*/false),
+            /*use_one_si_for_fast_ink_host_resources=*/false,
+            /*enable_mappable_si_for_fast_ink_host=*/false),
         std::make_tuple(
             /*first_display_specs=*/"1000x500*2/r",
             /*auto_update=*/true,
             /*content_rect=*/gfx::Rect(10, 10),
             /*expected_quad_rect=*/gfx::Rect(0, 0, 1000, 500),
             /*expected_quad_layer_rect=*/gfx::Rect(0, 0, 500, 1000),
-            /*use_one_si_for_fast_ink_host_resources=*/false),
+            /*use_one_si_for_fast_ink_host_resources=*/false,
+            /*enable_mappable_si_for_fast_ink_host=*/false),
         // When auto updating is off, we update the surface enclosed by
         // content_rect.
         std::make_tuple(
@@ -264,21 +315,24 @@ INSTANTIATE_TEST_SUITE_P(
             /*content_rect=*/gfx::Rect(10, 10),
             /*expected_quad_rect=*/gfx::Rect(0, 0, 10, 10),
             /*expected_quad_layer_rect=*/gfx::Rect(0, 0, 1000, 500),
-            /*use_one_si_for_fast_ink_host_resources=*/false),
+            /*use_one_si_for_fast_ink_host_resources=*/false,
+            /*enable_mappable_si_for_fast_ink_host=*/false),
         std::make_tuple(
             /*first_display_specs=*/"1000x500*2",
             /*auto_update=*/false,
             /*content_rect=*/gfx::Rect(10, 10),
             /*expected_quad_rect=*/gfx::Rect(0, 0, 20, 20),
             /*expected_quad_layer_rect=*/gfx::Rect(0, 0, 1000, 500),
-            /*use_one_si_for_fast_ink_host_resources=*/false),
+            /*use_one_si_for_fast_ink_host_resources=*/false,
+            /*enable_mappable_si_for_fast_ink_host=*/false),
         std::make_tuple(
             /*first_display_specs=*/"1000x500*2/l",
             /*auto_update=*/false,
             /*content_rect=*/gfx::Rect(10, 15),
             /*expected_quad_rect=*/gfx::Rect(0, 480, 30, 20),
             /*expected_quad_layer_rect=*/gfx::Rect(0, 0, 500, 1000),
-            /*use_one_si_for_fast_ink_host_resources=*/false),
+            /*use_one_si_for_fast_ink_host_resources=*/false,
+            /*enable_mappable_si_for_fast_ink_host=*/false),
         // If content rect is partially outside of the buffer, quad rect is
         // clipped by buffer size.
         std::make_tuple(
@@ -287,7 +341,8 @@ INSTANTIATE_TEST_SUITE_P(
             /*content_rect=*/gfx::Rect(995, 0, 10, 10),
             /*expected_quad_rect=*/gfx::Rect(995, 0, 5, 10),
             /*expected_quad_layer_rect=*/gfx::Rect(0, 0, 1000, 500),
-            /*use_one_si_for_fast_ink_host_resources=*/false)));
+            /*use_one_si_for_fast_ink_host_resources=*/false,
+            /*enable_mappable_si_for_fast_ink_host=*/false)));
 
 }  // namespace
 }  // namespace ash

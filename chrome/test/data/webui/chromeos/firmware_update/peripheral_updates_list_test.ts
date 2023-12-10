@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://accessory-update/peripheral_updates_list.js';
+
 import {fakeFirmwareUpdates} from 'chrome://accessory-update/fake_data.js';
 import {FakeUpdateProvider} from 'chrome://accessory-update/fake_update_provider.js';
 import {FirmwareUpdate} from 'chrome://accessory-update/firmware_update.mojom-webui.js';
@@ -14,7 +16,7 @@ import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeo
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
-export function peripheralUpdatesListTest() {
+suite('PeripheralUpdatesListTest', () => {
   let peripheralUpdateListElement: PeripheralUpdateListElement|null = null;
 
   let provider: FakeUpdateProvider|null = null;
@@ -90,4 +92,4 @@ export function peripheralUpdatesListTest() {
           assertTrue(isVisible(upToDateText));
         });
   });
-}
+});

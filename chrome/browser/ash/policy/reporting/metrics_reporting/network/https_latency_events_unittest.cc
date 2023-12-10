@@ -4,6 +4,7 @@
 
 #include <sys/types.h>
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
@@ -32,7 +33,6 @@
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using HttpsLatencyProblemMojom =
     ::chromeos::network_diagnostics::mojom::HttpsLatencyProblem;
@@ -96,11 +96,13 @@ class FakeMetricReportingManagerDelegate
       Destination destination,
       Priority priority,
       std::unique_ptr<RateLimiterInterface> rate_limiter,
-      absl::optional<SourceInfo> source_info) override {
+      std::optional<SourceInfo> source_info) override {
     if (event_type != EventType::kDevice ||
         destination != Destination::EVENT_METRIC ||
         priority != Priority::SLOW_BATCH) {
-      return nullptr;
+      // Return a fake metric report queue so we do not block initialization of
+      // other downstream metric reporting components.
+      return std::make_unique<test::FakeMetricReportQueue>();
     }
 
     return std::move(metric_report_queue_);

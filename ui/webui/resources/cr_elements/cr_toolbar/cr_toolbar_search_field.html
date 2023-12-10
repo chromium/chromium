@@ -8,6 +8,9 @@
       }
 
       :host-context([chrome-refresh-2023]):host {
+        --cr-toolbar-search-field-hover-background:
+            var(--color-toolbar-search-field-background-hover,
+                var(--cr-hover-background-color))
         isolation: isolate;
       }
 
@@ -205,8 +208,8 @@
       }
 
       :host-context([chrome-refresh-2023]):host(:not([narrow])) {
+        --cr-toolbar-search-field-border-radius: 100px;
         background: none;
-        border-radius: 100px;
         height: 36px;
         overflow: hidden;
         padding: 0 6px;
@@ -246,8 +249,7 @@
 
       :host-context([chrome-refresh-2023]):host(
           :hover:not([search-focused_], [narrow])) #stateBackground {
-        background: var(--color-toolbar-search-field-background-hover,
-            var(--cr-hover-background-color));
+        background: var(--cr-toolbar-search-field-hover-background);
         z-index: 1;
       }
 

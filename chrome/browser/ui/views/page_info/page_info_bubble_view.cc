@@ -244,11 +244,8 @@ void PageInfoBubbleView::OpenAdPersonalizationPage() {
   ad_personalization_page_view->SetID(
       PageInfoViewFactory::VIEW_ID_PAGE_INFO_CURRENT_VIEW);
   page_container_->SwitchToPage(std::move(ad_personalization_page_view));
-  const auto header_id =
-      base::FeatureList::IsEnabled(privacy_sandbox::kPrivacySandboxSettings4)
-          ? IDS_PAGE_INFO_AD_PRIVACY_HEADER
-          : IDS_PAGE_INFO_AD_PERSONALIZATION_HEADER;
-  AnnouncePageOpened(l10n_util::GetStringUTF16(header_id));
+  AnnouncePageOpened(
+      l10n_util::GetStringUTF16(IDS_PAGE_INFO_AD_PRIVACY_HEADER));
 }
 
 void PageInfoBubbleView::OpenCookiesPage() {
@@ -311,13 +308,7 @@ void PageInfoBubbleView::ChildPreferredSizeChanged(views::View* child) {
 void PageInfoBubbleView::AnnouncePageOpened(std::u16string announcement) {
   // Announce that the subpage was opened to inform the user about the changes
   // in the UI.
-#if BUILDFLAG(IS_MAC)
-  GetViewAccessibility().OverrideRole(ax::mojom::Role::kAlert);
-  GetViewAccessibility().OverrideName(announcement);
-  NotifyAccessibilityEvent(ax::mojom::Event::kAlert, true);
-#else
   GetViewAccessibility().AnnounceText(announcement);
-#endif
 
   // Focus the back button by default to ensure that focus is set when new
   // content is displayed.

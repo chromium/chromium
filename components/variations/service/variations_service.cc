@@ -37,6 +37,7 @@
 #include "components/variations/pref_names.h"
 #include "components/variations/proto/variations_seed.pb.h"
 #include "components/variations/seed_response.h"
+#include "components/variations/service/limited_entropy_synthetic_trial.h"
 #include "components/variations/variations_safe_seed_store_local_state.h"
 #include "components/variations/variations_seed_simulator.h"
 #include "components/variations/variations_switches.h"
@@ -339,6 +340,7 @@ VariationsService::VariationsService(
     : client_(std::move(client)),
       local_state_(local_state),
       state_manager_(state_manager),
+      limited_entropy_synthetic_trial_(local_state),
       policy_pref_service_(local_state),
       resource_request_allowed_notifier_(std::move(notifier)),
       safe_seed_manager_(local_state),
@@ -524,6 +526,7 @@ std::string VariationsService::GetDefaultVariationsServerURLForTesting() {
 void VariationsService::RegisterPrefs(PrefRegistrySimple* registry) {
   SafeSeedManager::RegisterPrefs(registry);
   VariationsSeedStore::RegisterPrefs(registry);
+  LimitedEntropySyntheticTrial::RegisterPrefs(registry);
 
   registry->RegisterIntegerPref(
       prefs::kDeviceVariationsRestrictionsByPolicy,
@@ -973,11 +976,11 @@ void VariationsService::OverridePlatform(
   osname_server_param_override_ = osname_server_param_override;
 }
 
-std::string VariationsService::GetOverriddenPermanentCountry() {
+std::string VariationsService::GetOverriddenPermanentCountry() const {
   return local_state_->GetString(prefs::kVariationsPermanentOverriddenCountry);
 }
 
-std::string VariationsService::GetStoredPermanentCountry() {
+std::string VariationsService::GetStoredPermanentCountry() const {
   const std::string variations_overridden_country =
       GetOverriddenPermanentCountry();
   if (!variations_overridden_country.empty())

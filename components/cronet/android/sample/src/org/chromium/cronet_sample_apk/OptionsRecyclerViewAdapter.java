@@ -17,6 +17,7 @@ import java.util.List;
 
 public class OptionsRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private final List<Options.Option> mOptions;
+
     public OptionsRecyclerViewAdapter() {
         this.mOptions = Options.getOptions();
     }
@@ -25,6 +26,7 @@ public class OptionsRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVie
         private final TextView mOptionShortName;
         private final TextView mOptionDescription;
         private final Switch mOptionSwitch;
+
         public ToggleOptionViewHolder(@NonNull View itemView) {
             super(itemView);
 
@@ -49,8 +51,9 @@ public class OptionsRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVie
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new ToggleOptionViewHolder(LayoutInflater.from(parent.getContext())
-                                                  .inflate(R.layout.toggle_view, parent, false));
+        return new ToggleOptionViewHolder(
+                LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.toggle_view, parent, false));
     }
 
     @Override
@@ -60,9 +63,10 @@ public class OptionsRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVie
         toggleOptionViewHolder.setOptionDescription(mOptions.get(position).getDescription());
         toggleOptionViewHolder.setOptionSwitch(
                 ((Options.BooleanOption) mOptions.get(position)).getValue());
-        toggleOptionViewHolder.mOptionSwitch.setOnClickListener(v
-                -> mOptions.get(position).setValue(
-                        toggleOptionViewHolder.mOptionSwitch.isChecked()));
+        toggleOptionViewHolder.mOptionSwitch.setOnClickListener(
+                v ->
+                        mOptions.get(position)
+                                .setValue(toggleOptionViewHolder.mOptionSwitch.isChecked()));
     }
 
     @Override

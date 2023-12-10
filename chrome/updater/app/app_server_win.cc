@@ -8,6 +8,7 @@
 #include <wrl/module.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <tuple>
 #include <utility>
@@ -46,7 +47,6 @@
 #include "chrome/updater/win/setup/uninstall.h"
 #include "chrome/updater/win/task_scheduler.h"
 #include "chrome/updater/win/win_constants.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
 namespace {
@@ -128,7 +128,7 @@ bool SwapGoogleUpdate(UpdaterScope scope,
                       WorkItemList* list) {
   CHECK(list);
 
-  const absl::optional<base::FilePath> target_path =
+  const std::optional<base::FilePath> target_path =
       GetGoogleUpdateExePath(scope);
   if (!target_path || !base::CreateDirectory(target_path->DirName())) {
     return false;
@@ -155,7 +155,7 @@ bool SwapGoogleUpdate(UpdaterScope scope,
       base::ASCIIToWide(PRODUCT_FULLNAME_STRING), true);
   list->AddSetRegValueWorkItem(
       root, UPDATER_KEY, KEY_WOW64_32KEY, kRegValueUninstallCmdLine,
-      [scope, &updater_path]() {
+      [scope, &updater_path] {
         base::CommandLine uninstall_if_unused_command(updater_path);
         uninstall_if_unused_command.AppendSwitch(kWakeSwitch);
         if (IsSystemInstall(scope)) {
@@ -215,7 +215,7 @@ bool UninstallGoogleUpdate(UpdaterScope scope) {
   return DeleteExcept(GetGoogleUpdateExePath(scope));
 }
 
-absl::optional<int> DaynumFromDWORD(DWORD value) {
+std::optional<int> DaynumFromDWORD(DWORD value) {
   const int daynum = static_cast<int>(value);
 
   // When daynum is positive, it is the number of days since January 1, 2007.
@@ -223,8 +223,8 @@ absl::optional<int> DaynumFromDWORD(DWORD value) {
   // and 50000 (maps to Nov 24, 2143).
   // -1 is special value for first install.
   return daynum == -1 || (daynum >= 3000 && daynum <= 50000)
-             ? absl::make_optional(daynum)
-             : absl::nullopt;
+             ? std::make_optional(daynum)
+             : std::nullopt;
 }
 
 }  // namespace
@@ -360,7 +360,7 @@ void AppServerWin::UninstallSelf() {
 bool AppServerWin::SwapInNewVersion() {
   std::unique_ptr<WorkItemList> list(WorkItem::CreateWorkItemList());
 
-  const absl::optional<base::FilePath> versioned_directory =
+  const std::optional<base::FilePath> versioned_directory =
       GetVersionedInstallDirectory(updater_scope());
   if (!versioned_directory) {
     return false;
@@ -373,7 +373,7 @@ bool AppServerWin::SwapInNewVersion() {
     return false;
   }
 
-  absl::optional<base::ScopedTempDir> temp_dir = CreateSecureTempDir();
+  std::optional<base::ScopedTempDir> temp_dir = CreateSecureTempDir();
   if (!temp_dir) {
     return false;
   }
@@ -392,7 +392,7 @@ bool AppServerWin::SwapInNewVersion() {
   const base::ScopedClosureRunner reset_shutdown_event(
       SignalShutdownEvent(updater_scope()));
 
-  absl::optional<base::FilePath> target =
+  std::optional<base::FilePath> target =
       GetGoogleUpdateExePath(updater_scope());
   if (target) {
     StopProcessesUnderPath(target->DirName(), base::Seconds(45));
@@ -501,6 +501,13 @@ bool AppServerWin::MigrateLegacyUpdaters(
   }
 
   return true;
+}
+
+void AppServerWin::RepairUpdater(UpdaterScope scope, bool is_internal) {
+  if (AreComInterfacesPresent(scope, is_internal)) {
+    return;
+  }
+  InstallComInterfaces(scope, is_internal);
 }
 
 }  // namespace updater

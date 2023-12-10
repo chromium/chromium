@@ -4,10 +4,11 @@
 
 #include "ash/system/tray/tray_toggle_button.h"
 
+#include <optional>
+
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/tray/tray_constants.h"
 #include "chromeos/utils/haptics_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
@@ -19,7 +20,7 @@
 namespace ash {
 
 TrayToggleButton::TrayToggleButton(PressedCallback callback,
-                                   absl::optional<int> accessible_name_id,
+                                   std::optional<int> accessible_name_id,
                                    bool use_empty_border)
     : ToggleButton(std::move(callback)) {
   if (!use_empty_border) {

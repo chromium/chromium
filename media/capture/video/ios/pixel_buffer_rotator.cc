@@ -45,11 +45,11 @@ bool PixelBufferRotator::Rotate(CVPixelBufferRef source,
       default:
         NOTREACHED();
     }
-    OSStatus error = VTSessionSetProperty(rotation_session_,
+    OSStatus error = VTSessionSetProperty(rotation_session_.get(),
                                           kVTPixelRotationPropertyKey_Rotation,
                                           rotation_angle);
     CHECK(error == noErr) << "Unexpected RotationPropertyKey error: " << error;
-    error = VTPixelRotationSessionRotateImage(rotation_session_, source,
+    error = VTPixelRotationSessionRotateImage(rotation_session_.get(), source,
                                               destination);
     if (error == kVTPixelRotationNotSupportedErr) {
       return false;
@@ -63,7 +63,7 @@ bool PixelBufferRotator::Rotate(CVPixelBufferRef source,
 
 PixelBufferRotator::~PixelBufferRotator() {
   if (__builtin_available(iOS 16, *)) {
-    VTPixelRotationSessionInvalidate(rotation_session_);
+    VTPixelRotationSessionInvalidate(rotation_session_.get());
   }
 }
 

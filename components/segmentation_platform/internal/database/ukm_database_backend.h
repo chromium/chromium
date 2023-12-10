@@ -33,6 +33,7 @@ class UkmDatabaseBackend : public UkmDatabase {
  public:
   UkmDatabaseBackend(
       const base::FilePath& database_path,
+      bool in_memory,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner);
   ~UkmDatabaseBackend() override;
 
@@ -45,8 +46,9 @@ class UkmDatabaseBackend : public UkmDatabase {
   void StoreUkmEntry(ukm::mojom::UkmEntryPtr ukm_entry) override;
   void UpdateUrlForUkmSource(ukm::SourceId source_id,
                              const GURL& url,
-                             bool is_validated) override;
-  void OnUrlValidated(const GURL& url) override;
+                             bool is_validated,
+                             const std::string& profile_id) override;
+  void OnUrlValidated(const GURL& url, const std::string& profile_id) override;
   void RemoveUrls(const std::vector<GURL>& urls, bool all_urls) override;
   void RunReadonlyQueries(QueryList&& queries, QueryCallback callback) override;
   void DeleteEntriesOlderThan(base::Time time) override;
@@ -81,6 +83,7 @@ class UkmDatabaseBackend : public UkmDatabase {
   void RestartTransaction();
 
   const base::FilePath database_path_;
+  const bool in_memory_;
   scoped_refptr<base::SequencedTaskRunner> callback_task_runner_
       GUARDED_BY_CONTEXT(sequence_checker_);
   sql::Database db_ GUARDED_BY_CONTEXT(sequence_checker_);

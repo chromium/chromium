@@ -37,6 +37,7 @@
 #include "third_party/blink/renderer/platform/image-decoders/segment_reader.h"
 #include "third_party/blink/renderer/platform/scheduler/public/non_main_thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
@@ -130,6 +131,7 @@ class ImageFrameGeneratorTest : public testing::Test,
     UseMockImageDecoderFactory();
   }
 
+  test::TaskEnvironment task_environment_;
   scoped_refptr<SharedBuffer> data_;
   scoped_refptr<SegmentReader> segment_reader_;
   scoped_refptr<ImageFrameGenerator> generator_;

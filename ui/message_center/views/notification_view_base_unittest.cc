@@ -23,6 +23,7 @@
 #include "ui/events/test/test_event.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
+#include "ui/gfx/image/image_unittest_util.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/message_center_constants.h"
 #include "ui/message_center/views/notification_control_buttons_view.h"
@@ -50,17 +51,7 @@ namespace message_center {
 
 namespace {
 
-// Used to fill bitmaps returned by CreateBitmap().
-static const SkColor kBitmapColor = SK_ColorGREEN;
-
 constexpr char kDefaultNotificationId[] = "notification id";
-
-SkBitmap CreateSolidColorBitmap(int width, int height, SkColor solid_color) {
-  SkBitmap bitmap;
-  bitmap.allocN32Pixels(width, height);
-  bitmap.eraseColor(solid_color);
-  return bitmap;
-}
 
 class TestNotificationView : public NotificationViewBase {
  public:
@@ -195,8 +186,6 @@ class NotificationViewBaseTest : public views::ViewsTestBase,
   }
 
  protected:
-  const gfx::Image CreateTestImage(int width, int height) const;
-  const SkBitmap CreateBitmap(int width, int height) const;
   std::vector<ButtonInfo> CreateButtons(int number);
   std::unique_ptr<Notification> CreateSimpleNotification() const;
   std::unique_ptr<Notification> CreateSimpleNotificationWithRichData(
@@ -233,11 +222,12 @@ NotificationViewBaseTest::CreateSimpleNotificationWithRichData(
     const RichNotificationData& data) const {
   std::unique_ptr<Notification> notification = std::make_unique<Notification>(
       NOTIFICATION_TYPE_SIMPLE, std::string(kDefaultNotificationId), u"title",
-      u"message", ui::ImageModel::FromImage(CreateTestImage(80, 80)),
+      u"message",
+      ui::ImageModel::FromImage(gfx::test::CreateImage(/*size=*/80)),
       u"display source", GURL(),
       NotifierId(NotifierType::APPLICATION, "extension_id"), data, delegate_);
-  notification->set_small_image(CreateTestImage(16, 16));
-  notification->set_image(CreateTestImage(320, 240));
+  notification->set_small_image(gfx::test::CreateImage(/*size=*/16));
+  notification->set_image(gfx::test::CreateImage(320, 240));
 
   return notification;
 }
@@ -275,16 +265,6 @@ void NotificationViewBaseTest::OnViewPreferredSizeChanged(
   }
   notification_view_->GetWidget()->SetSize(
       notification_view()->GetPreferredSize());
-}
-
-const gfx::Image NotificationViewBaseTest::CreateTestImage(int width,
-                                                           int height) const {
-  return gfx::Image::CreateFrom1xBitmap(CreateBitmap(width, height));
-}
-
-const SkBitmap NotificationViewBaseTest::CreateBitmap(int width,
-                                                      int height) const {
-  return CreateSolidColorBitmap(width, height, kBitmapColor);
 }
 
 std::vector<ButtonInfo> NotificationViewBaseTest::CreateButtons(int number) {
@@ -874,7 +854,7 @@ TEST_F(NotificationViewBaseTest, UseImageAsIcon) {
   std::unique_ptr<Notification> notification = CreateSimpleNotification();
   notification->set_type(NotificationType::NOTIFICATION_TYPE_IMAGE);
   notification->set_icon(
-      ui::ImageModel::FromImage(CreateTestImage(kIconSize, kIconSize)));
+      ui::ImageModel::FromImage(gfx::test::CreateImage(kIconSize)));
 
   // Test normal notification.
   UpdateNotificationViews(*notification);
@@ -931,7 +911,7 @@ TEST_F(NotificationViewBaseTest, UpdateAddingIcon) {
 
   // Update the notification, adding an icon.
   notification->set_icon(
-      ui::ImageModel::FromImage(CreateTestImage(kIconSize, kIconSize)));
+      ui::ImageModel::FromImage(gfx::test::CreateImage(kIconSize)));
   UpdateNotificationViews(*notification);
 
   // Notification should now have an icon.
@@ -1145,7 +1125,7 @@ TEST_F(NotificationViewBaseTest, AppNameWebAppNotification) {
   NotifierId notifier_id(web_app_url, /*title=*/u"web app title",
                          /*web_app_id=*/absl::nullopt);
 
-  SkBitmap small_bitmap = CreateSolidColorBitmap(16, 16, SK_ColorYELLOW);
+  SkBitmap small_bitmap = gfx::test::CreateBitmap(/*size=*/16, SK_ColorYELLOW);
   // Makes the center area transparent.
   small_bitmap.eraseArea(SkIRect::MakeXYWH(4, 4, 8, 8), SK_ColorTRANSPARENT);
 
@@ -1154,10 +1134,11 @@ TEST_F(NotificationViewBaseTest, AppNameWebAppNotification) {
 
   std::unique_ptr<Notification> notification = std::make_unique<Notification>(
       NOTIFICATION_TYPE_SIMPLE, std::string(kDefaultNotificationId), u"title",
-      u"message", ui::ImageModel::FromImage(CreateTestImage(80, 80)),
+      u"message",
+      ui::ImageModel::FromImage(gfx::test::CreateImage(/*size=*/80)),
       u"display source", GURL(), notifier_id, data, delegate_);
   notification->set_small_image(gfx::Image::CreateFrom1xBitmap(small_bitmap));
-  notification->set_image(CreateTestImage(320, 240));
+  notification->set_image(gfx::test::CreateImage(320, 240));
 
   notification->set_origin_url(web_app_url);
 

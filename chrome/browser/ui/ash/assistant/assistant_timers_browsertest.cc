@@ -56,13 +56,13 @@ constexpr int kVersion = 1;
     if (!FindVisibleNotificationsByPrefixedId(prefix_).empty()) {             \
       return;                                                                 \
     }                                                                         \
-    MockMessageCenterObserver mock;                                           \
+    MockMessageCenterObserver mock_observer;                                  \
     base::ScopedObservation<MessageCenter, MessageCenterObserver>             \
-        observation_{&mock};                                                  \
+        observation_{&mock_observer};                                         \
     observation_.Observe(MessageCenter::Get());                               \
                                                                               \
     base::RunLoop run_loop;                                                   \
-    EXPECT_CALL(mock, OnNotificationAdded)                                    \
+    EXPECT_CALL(mock_observer, OnNotificationAdded)                           \
         .WillOnce(                                                            \
             testing::Invoke([&run_loop](const std::string& notification_id) { \
               if (!FindVisibleNotificationsByPrefixedId(prefix_).empty())     \

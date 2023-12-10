@@ -29,11 +29,13 @@ PrintingContextFactoryForTest* g_printing_context_factory_for_test = nullptr;
 
 }  // namespace
 
-PrintingContext::PrintingContext(Delegate* delegate)
+PrintingContext::PrintingContext(Delegate* delegate,
+                                 ProcessBehavior process_behavior)
     : settings_(std::make_unique<PrintSettings>()),
       delegate_(delegate),
       in_print_job_(false),
-      abort_printing_(false) {
+      abort_printing_(false),
+      process_behavior_(process_behavior) {
   DCHECK(delegate_);
 }
 
@@ -42,11 +44,11 @@ PrintingContext::~PrintingContext() = default;
 // static
 std::unique_ptr<PrintingContext> PrintingContext::Create(
     Delegate* delegate,
-    bool skip_system_calls) {
+    ProcessBehavior process_behavior) {
   return g_printing_context_factory_for_test
              ? g_printing_context_factory_for_test->CreatePrintingContext(
-                   delegate, skip_system_calls)
-             : PrintingContext::CreateImpl(delegate, skip_system_calls);
+                   delegate, process_behavior)
+             : PrintingContext::CreateImpl(delegate, process_behavior);
 }
 
 // static

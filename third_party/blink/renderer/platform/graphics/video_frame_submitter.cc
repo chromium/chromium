@@ -93,9 +93,16 @@ class VideoFrameSubmitter::FrameSinkBundleProxy
     bundle_->SetNeedsBeginFrame(frame_sink_id_.sink_id(), needs_begin_frame);
   }
 
+  void SetWantsBeginFrameAcks() override {
+    if (!bundle_) {
+      return;
+    }
+
+    bundle_->SetWantsBeginFrameAcks(frame_sink_id_.sink_id());
+  }
+
   // Not used by VideoFrameSubmitter.
   void SetWantsAnimateOnlyBeginFrames() override { NOTREACHED(); }
-  void SetWantsBeginFrameAcks() override { NOTREACHED(); }
   void SetAutoNeedsBeginFrame() override { NOTREACHED(); }
 
   void SubmitCompositorFrame(
@@ -550,6 +557,7 @@ void VideoFrameSubmitter::StartSubmitting() {
         remote_frame_sink_.BindNewPipeAndPassReceiver());
     compositor_frame_sink_ = remote_frame_sink_.get();
   }
+  compositor_frame_sink_->SetWantsBeginFrameAcks();
 
   if (!surface_embedder_.is_bound()) {
     provider->ConnectToEmbedder(frame_sink_id_,

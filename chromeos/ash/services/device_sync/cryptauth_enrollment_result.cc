@@ -10,7 +10,7 @@ namespace device_sync {
 
 CryptAuthEnrollmentResult::CryptAuthEnrollmentResult(
     ResultCode result_code,
-    const absl::optional<cryptauthv2::ClientDirective>& client_directive)
+    const std::optional<cryptauthv2::ClientDirective>& client_directive)
     : result_code_(result_code), client_directive_(client_directive) {}
 
 CryptAuthEnrollmentResult::CryptAuthEnrollmentResult(

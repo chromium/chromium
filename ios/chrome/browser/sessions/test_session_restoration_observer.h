@@ -11,8 +11,11 @@
 // calls and their parameters for use in test.
 class TestSessionRestorationObserver : public SessionRestorationObserver {
  public:
-  bool restore_started() { return restore_started_; }
-  int restored_web_states_count() { return restored_web_states_count_; }
+  bool restore_started() const { return restore_started_; }
+  int restored_web_states_count() const { return restored_web_states_count_; }
+  int session_restoration_call_count() const {
+    return session_restoration_call_count_;
+  }
 
   // SessionRestorationObserver implementation.
   void WillStartSessionRestoration(Browser* browser) override;
@@ -23,6 +26,7 @@ class TestSessionRestorationObserver : public SessionRestorationObserver {
  private:
   bool restore_started_ = false;
   int restored_web_states_count_ = -1;
+  int session_restoration_call_count_ = 0;
 };
 
 #endif  // IOS_CHROME_BROWSER_SESSIONS_TEST_SESSION_RESTORATION_OBSERVER_H_

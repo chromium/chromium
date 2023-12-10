@@ -5,6 +5,7 @@
 #include "chromeos/ash/components/dbus/rmad/rmad_client.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/functional/bind.h"
@@ -20,7 +21,6 @@
 #include "dbus/object_path.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 using ::testing::_;
@@ -409,7 +409,7 @@ TEST_F(RmadClientTest, GetCurrentState) {
 
   base::RunLoop run_loop;
   client_->GetCurrentState(base::BindLambdaForTesting(
-      [&](absl::optional<rmad::GetStateReply> response) {
+      [&](std::optional<rmad::GetStateReply> response) {
         EXPECT_TRUE(response.has_value());
         EXPECT_EQ(response->error(), rmad::RMAD_ERROR_RMA_NOT_REQUIRED);
         EXPECT_FALSE(response->has_state());
@@ -427,7 +427,7 @@ TEST_F(RmadClientTest, GetCurrentState_NullResponse) {
 
   base::RunLoop run_loop;
   client_->GetCurrentState(base::BindLambdaForTesting(
-      [&](absl::optional<rmad::GetStateReply> response) {
+      [&](std::optional<rmad::GetStateReply> response) {
         EXPECT_FALSE(response.has_value());
         run_loop.Quit();
       }));
@@ -445,7 +445,7 @@ TEST_F(RmadClientTest, GetCurrentState_EmptyResponse) {
 
   base::RunLoop run_loop;
   client_->GetCurrentState(base::BindLambdaForTesting(
-      [&](absl::optional<rmad::GetStateReply> response) {
+      [&](std::optional<rmad::GetStateReply> response) {
         EXPECT_FALSE(response.has_value());
         run_loop.Quit();
       }));
@@ -475,7 +475,7 @@ TEST_F(RmadClientTest, TransitionNextState) {
   base::RunLoop run_loop;
   client_->TransitionNextState(
       request, base::BindLambdaForTesting(
-                   [&](absl::optional<rmad::GetStateReply> response) {
+                   [&](std::optional<rmad::GetStateReply> response) {
                      EXPECT_TRUE(response.has_value());
                      EXPECT_EQ(response->error(), rmad::RMAD_ERROR_OK);
                      EXPECT_TRUE(response->has_state());
@@ -497,7 +497,7 @@ TEST_F(RmadClientTest, TransitionNextState_NullResponse) {
   base::RunLoop run_loop;
   client_->TransitionNextState(
       request, base::BindLambdaForTesting(
-                   [&](absl::optional<rmad::GetStateReply> response) {
+                   [&](std::optional<rmad::GetStateReply> response) {
                      EXPECT_FALSE(response.has_value());
                      run_loop.Quit();
                    }));
@@ -518,7 +518,7 @@ TEST_F(RmadClientTest, TransitionNextState_EmptyResponse) {
   base::RunLoop run_loop;
   client_->TransitionNextState(
       request, base::BindLambdaForTesting(
-                   [&](absl::optional<rmad::GetStateReply> response) {
+                   [&](std::optional<rmad::GetStateReply> response) {
                      EXPECT_FALSE(response.has_value());
                      run_loop.Quit();
                    }));
@@ -543,7 +543,7 @@ TEST_F(RmadClientTest, TransitionPreviousState) {
 
   base::RunLoop run_loop;
   client_->TransitionPreviousState(base::BindLambdaForTesting(
-      [&](absl::optional<rmad::GetStateReply> response) {
+      [&](std::optional<rmad::GetStateReply> response) {
         EXPECT_TRUE(response.has_value());
         EXPECT_EQ(response->error(), rmad::RMAD_ERROR_TRANSITION_FAILED);
         EXPECT_TRUE(response->has_state());
@@ -562,7 +562,7 @@ TEST_F(RmadClientTest, TransitionPreviousState_NullResponse) {
 
   base::RunLoop run_loop;
   client_->TransitionPreviousState(base::BindLambdaForTesting(
-      [&](absl::optional<rmad::GetStateReply> response) {
+      [&](std::optional<rmad::GetStateReply> response) {
         EXPECT_FALSE(response.has_value());
         run_loop.Quit();
       }));
@@ -580,7 +580,7 @@ TEST_F(RmadClientTest, TransitionPreviousState_EmptyResponse) {
 
   base::RunLoop run_loop;
   client_->TransitionPreviousState(base::BindLambdaForTesting(
-      [&](absl::optional<rmad::GetStateReply> response) {
+      [&](std::optional<rmad::GetStateReply> response) {
         EXPECT_FALSE(response.has_value());
         run_loop.Quit();
       }));
@@ -602,7 +602,7 @@ TEST_F(RmadClientTest, AbortRma) {
 
   base::RunLoop run_loop;
   client_->AbortRma(base::BindLambdaForTesting(
-      [&](absl::optional<rmad::AbortRmaReply> response) {
+      [&](std::optional<rmad::AbortRmaReply> response) {
         EXPECT_TRUE(response.has_value());
         EXPECT_EQ(response->error(), rmad::RMAD_ERROR_OK);
         run_loop.Quit();
@@ -619,7 +619,7 @@ TEST_F(RmadClientTest, AbortRma_NullResponse) {
 
   base::RunLoop run_loop;
   client_->AbortRma(base::BindLambdaForTesting(
-      [&](absl::optional<rmad::AbortRmaReply> response) {
+      [&](std::optional<rmad::AbortRmaReply> response) {
         EXPECT_FALSE(response.has_value());
         run_loop.Quit();
       }));
@@ -637,7 +637,7 @@ TEST_F(RmadClientTest, AbortRma_EmptyResponse) {
 
   base::RunLoop run_loop;
   client_->AbortRma(base::BindLambdaForTesting(
-      [&](absl::optional<rmad::AbortRmaReply> response) {
+      [&](std::optional<rmad::AbortRmaReply> response) {
         EXPECT_FALSE(response.has_value());
         run_loop.Quit();
       }));
@@ -661,7 +661,7 @@ TEST_F(RmadClientTest, GetLog) {
 
   base::RunLoop run_loop;
   client_->GetLog(base::BindLambdaForTesting(
-      [&](absl::optional<rmad::GetLogReply> response) {
+      [&](std::optional<rmad::GetLogReply> response) {
         EXPECT_TRUE(response.has_value());
         EXPECT_EQ(response->log(), expected_log);
         EXPECT_EQ(response->error(), rmad::RMAD_ERROR_OK);
@@ -679,7 +679,7 @@ TEST_F(RmadClientTest, GetLog_NullResponse) {
 
   base::RunLoop run_loop;
   client_->GetLog(base::BindLambdaForTesting(
-      [&](absl::optional<rmad::GetLogReply> response) {
+      [&](std::optional<rmad::GetLogReply> response) {
         EXPECT_FALSE(response.has_value());
         run_loop.Quit();
       }));
@@ -697,7 +697,7 @@ TEST_F(RmadClientTest, GetLog_EmptyResponse) {
 
   base::RunLoop run_loop;
   client_->GetLog(base::BindLambdaForTesting(
-      [&](absl::optional<rmad::GetLogReply> response) {
+      [&](std::optional<rmad::GetLogReply> response) {
         EXPECT_FALSE(response.has_value());
         run_loop.Quit();
       }));
@@ -722,7 +722,7 @@ TEST_F(RmadClientTest, SaveLog) {
   base::RunLoop run_loop;
   client_->SaveLog("Diagnostics log text",
                    base::BindLambdaForTesting(
-                       [&](absl::optional<rmad::SaveLogReply> response) {
+                       [&](std::optional<rmad::SaveLogReply> response) {
                          EXPECT_TRUE(response.has_value());
                          EXPECT_EQ(response->save_path(), expected_save_path);
                          EXPECT_EQ(response->error(), rmad::RMAD_ERROR_OK);
@@ -741,7 +741,7 @@ TEST_F(RmadClientTest, SaveLog_NullResponse) {
   base::RunLoop run_loop;
   client_->SaveLog("Diagnostics log text",
                    base::BindLambdaForTesting(
-                       [&](absl::optional<rmad::SaveLogReply> response) {
+                       [&](std::optional<rmad::SaveLogReply> response) {
                          EXPECT_FALSE(response.has_value());
                          run_loop.Quit();
                        }));
@@ -760,7 +760,7 @@ TEST_F(RmadClientTest, SaveLog_EmptyResponse) {
   base::RunLoop run_loop;
   client_->SaveLog("Diagnostics log text",
                    base::BindLambdaForTesting(
-                       [&](absl::optional<rmad::SaveLogReply> response) {
+                       [&](std::optional<rmad::SaveLogReply> response) {
                          EXPECT_FALSE(response.has_value());
                          run_loop.Quit();
                        }));
@@ -789,7 +789,7 @@ TEST_F(RmadClientTest, RecordBrowserActionMetric) {
   client_->RecordBrowserActionMetric(
       request,
       base::BindLambdaForTesting(
-          [&](absl::optional<rmad::RecordBrowserActionMetricReply> response) {
+          [&](std::optional<rmad::RecordBrowserActionMetricReply> response) {
             EXPECT_TRUE(response.has_value());
             EXPECT_EQ(response->error(), rmad::RMAD_ERROR_OK);
             run_loop.Quit();
@@ -813,7 +813,7 @@ TEST_F(RmadClientTest, RecordBrowserActionMetric_NullResponse) {
   client_->RecordBrowserActionMetric(
       request,
       base::BindLambdaForTesting(
-          [&](absl::optional<rmad::RecordBrowserActionMetricReply> response) {
+          [&](std::optional<rmad::RecordBrowserActionMetricReply> response) {
             EXPECT_FALSE(response.has_value());
             run_loop.Quit();
           }));
@@ -837,7 +837,7 @@ TEST_F(RmadClientTest, RecordBrowserActionMetric_EmptyResponse) {
   client_->RecordBrowserActionMetric(
       request,
       base::BindLambdaForTesting(
-          [&](absl::optional<rmad::RecordBrowserActionMetricReply> response) {
+          [&](std::optional<rmad::RecordBrowserActionMetricReply> response) {
             EXPECT_FALSE(response.has_value());
             run_loop.Quit();
           }));
@@ -861,7 +861,7 @@ TEST_F(RmadClientTest, ExtractExternalDiagnosticsApp) {
       .WillOnce(Invoke(this, &RmadClientTest::OnCallDbusMethod));
 
   base::test::TestFuture<
-      absl::optional<rmad::ExtractExternalDiagnosticsAppReply>>
+      std::optional<rmad::ExtractExternalDiagnosticsAppReply>>
       future;
   client_->ExtractExternalDiagnosticsApp(future.GetCallback());
   EXPECT_TRUE(future.Get().has_value());
@@ -887,7 +887,7 @@ TEST_F(RmadClientTest, InstallExtractedDiagnosticsApp) {
       .WillOnce(Invoke(this, &RmadClientTest::OnCallDbusMethod));
 
   base::test::TestFuture<
-      absl::optional<rmad::InstallExtractedDiagnosticsAppReply>>
+      std::optional<rmad::InstallExtractedDiagnosticsAppReply>>
       future;
   client_->InstallExtractedDiagnosticsApp(future.GetCallback());
   EXPECT_TRUE(future.Get().has_value());
@@ -909,7 +909,7 @@ TEST_F(RmadClientTest, GetInstalledDiagnosticsApp) {
                            dbus::ObjectProxy::TIMEOUT_USE_DEFAULT, _))
       .WillOnce(Invoke(this, &RmadClientTest::OnCallDbusMethod));
 
-  base::test::TestFuture<absl::optional<rmad::GetInstalledDiagnosticsAppReply>>
+  base::test::TestFuture<std::optional<rmad::GetInstalledDiagnosticsAppReply>>
       future;
   client_->GetInstalledDiagnosticsApp(future.GetCallback());
   EXPECT_TRUE(future.Get().has_value());

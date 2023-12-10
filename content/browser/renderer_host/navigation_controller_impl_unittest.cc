@@ -113,7 +113,6 @@ class MockPageBroadcast : public blink::mojom::PageBroadcast {
                SetPageLifecycleStateCallback callback),
               (override));
   MOCK_METHOD(void, AudioStateChanged, (bool is_audio_playing), (override));
-  MOCK_METHOD(void, SetInsidePortal, (bool is_inside_portal), (override));
   MOCK_METHOD(void,
               ActivatePrerenderedPage,
               (blink::mojom::PrerenderPageActivationParamsPtr
@@ -135,6 +134,10 @@ class MockPageBroadcast : public blink::mojom::PageBroadcast {
   MOCK_METHOD(void,
               SetPageBaseBackgroundColor,
               (absl::optional<SkColor> color),
+              (override));
+  MOCK_METHOD(void,
+              UpdateColorProviders,
+              (const ::blink::ColorProviderColorMaps& color_provider_colors),
               (override));
   MOCK_METHOD(
       void,

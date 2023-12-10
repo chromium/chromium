@@ -17,6 +17,8 @@ class ImageSkia;
 
 namespace ash {
 
+class IconColor;
+
 class AppIconColorCache {
  public:
   // Returns a reference to a singleton instance of AppIconColorCache.
@@ -30,6 +32,12 @@ class AppIconColorCache {
   // already has a cached color then return that instead.
   SkColor GetLightVibrantColorForApp(const std::string& app_id,
                                      gfx::ImageSkia icon);
+
+  // Returns the cached color of the app icon specified by `app_id`, or
+  // calculates and caches the color if it is not cached yet. The returned
+  // color can be used to sort icons.
+  IconColor GetIconColorForApp(const std::string& app_id,
+                               const gfx::ImageSkia& icon);
 
  private:
   friend class base::NoDestructor<AppIconColorCache>;

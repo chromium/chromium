@@ -4,25 +4,5 @@ CONSOLE DEBUG: Preconnect triggered for http://2.should.preconnect.test/
 CONSOLE DEBUG: DNS prefetch triggered for 1.should.dns-prefetch.test
 CONSOLE DEBUG: DNS prefetch triggered for 2.should.dns-prefetch.test
 This is a testharness.js-based test.
-[PASS] Prefetch: /resources/square.png?1
-[PASS] Prefetch: /resources/squ\nare.png?2
-[PASS] Prefetch: /resources/squ\tare.png?3
-[PASS] Prefetch: /resources/squ\rare.png?4
-[PASS] Prefetch: /resources/square.png?img=<&amp;5
-[PASS] Prefetch: /resources/square.png?img=&lt;&amp;6
-[PASS] Prefetch: /resources/square.png?img=%3C&amp;7
-[PASS] Prefetch: /resources/squ\nare.png?img=%3C&amp;8
-[PASS] Prefetch: /resources/squ\rare.png?img=%3C&amp;9
-[PASS] Prefetch: /resources/squ\tare.png?img=%3C&amp;10
-[PASS] Prefetch: /resources/square.png?img=&#10;&amp;11
-[PASS] Prefetch: /resources/squ\nare.png?img=&#10;&amp;12
-[PASS] Prefetch: /resources/squ\rare.png?img=&#10;&amp;13
-[PASS] Prefetch: /resources/squ\tare.png?img=&#10;&amp;14
-[PASS] Prefetch: /resources/squ\nare.png?block=<
-[PASS] Prefetch: /resources/squ\rare.png?block=<
-[PASS] Prefetch: /resources/squ\tare.png?block=<
-[PASS] Prefetch: /resources/square.png?<\n=block
-[PASS] Prefetch: /resources/square.png?<\r=block
-[PASS] Prefetch: /resources/square.png?<\t=block
 Harness: the test ran to completion.
 

@@ -11,8 +11,8 @@
 <translation id="1352919863522755794">Google Lösenordshantering kunde inte kontrollera dina lösenord. Testa att kontrollera internetanslutningen.</translation>
 <translation id="1407843355326180937">Logga in på den här webbplatsen och i Chrome om du vill få dina bokmärken med mera på alla dina enheter.</translation>
 <translation id="1436059927646026729">Öppna Min senaste flik i Chrome</translation>
+<translation id="1449241544691504574">Lägg till bokmärken i Chrome</translation>
 <translation id="1462727070346936664">Logga in så att du får ut mesta möjliga av Chrome.</translation>
-<translation id="1479202195792305274">Chrome kan kontrollera dina lösenord när du loggar in med Google-kontot.</translation>
 <translation id="1491435845014430217">Aktivera Lås inkognitoflikar när du stänger Chrome.</translation>
 <translation id="1493827051843127077">Ställ in Chrome som standardwebbläsare och synkronisera flikar, lösenord och betalningsuppgifter på alla enheter</translation>
 <translation id="1504372625950710826">Chrome kunde inte söka efter uppdateringar. Testa att kontrollera internetanslutningen.</translation>
@@ -33,10 +33,10 @@ Tänk på detta:
         Testa att vänta några minuter innan du loggar ut. Om du loggar ut nu raderas denna data.</translation>
 <translation id="1682483655351012182">Synkronisera data i Chrome</translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1790080846677398234">Lägger till de angivna webbadresserna i dina bokmärken i Chrome.</translation>
 <translation id="1843217788865538014">Använd Chrome automatiskt varje gång du trycker på länkar i meddelanden, dokument och andra appar.</translation>
 <translation id="1917964099031477364">Det här kontot och data som inte har sparats tas bort från Chrome och andra Google-appar på den här enheten.</translation>
 <translation id="1987779152850321833">Slutför de rekommenderade åtgärderna nedan så att du får ut mesta möjliga av Chrome.</translation>
-<translation id="2009224836393115614">Chrome kunde inte kontrollera dina lösenord. Testa att kontrollera internetanslutningen.</translation>
 <translation id="2056123005618757196">Få mer gjort med Google Chrome, som är enklare, säkrare och snabbare än någonsin.</translation>
 <translation id="2120238739383482109">Öppnar bokmärken i Chrome.</translation>
 <translation id="2147651015520127414">Chrome har verifierat att <ph name="ISSUER" /> har utfärdat webbplatsens certifikat.</translation>
@@ -58,7 +58,7 @@ Tänk på detta:
 <translation id="2671426118752779020">Du kan använda lösenorden som sparats med Google Lösenordshantering i andra iPhone-appar.</translation>
 <translation id="2689064829982324496"><ph name="BEGIN_LINK" />Logga ut från Chrome<ph name="END_LINK" /> om du vill logga ut från Google-kontot på alla webbplatser.</translation>
 <translation id="2695886661449553974">Chrome kunde inte söka efter uppdateringar. Försök igen senare.</translation>
-<translation id="2732745070297234559">Chrome kunde inte kontrollera alla lösenord. Försök igen i morgon.</translation>
+<translation id="2702250627063295552">Lägg till ett objekt från läslistan i Chrome</translation>
 <translation id="2736805085127235148">Chrome-aviseringar är i nuläget inaktiverade i enhetsinställningarna.</translation>
 <translation id="2767464022270041271">Inga sparade lösenord. Google Lösenordshantering kan bara kontrollera dina lösenord om du sparar dem.</translation>
 <translation id="2868822340714096138">Rensa webbinformation i Chrome</translation>
@@ -76,7 +76,6 @@ Tänk på detta:
 <translation id="3472587960215700950">Google Maps används i Chrome för att ge dig vägbeskrivningar och lokal information om identifierade adresser.</translation>
 <translation id="3503014945441706099">Få Förbättrad säker webbsökning även för den här Chromium-profilen</translation>
 <translation id="3522659714780527202">Aktivera synkronisering om du vill ha samma flikar tillgängliga på alla enheter där du använder Chrome</translation>
-<translation id="3533694711092285624">Det finns inga sparade lösenord. Chrome kan bara kontrollera dina lösenord om du sparar dem.</translation>
 <translation id="3577555362230509265">Använd Chrome i andra appar.</translation>
 <translation id="3594076341410558780">Dölj Få ut mesta möjliga av Chrome</translation>
 <translation id="3655656110921623717">Detta betyder att mobilversionen av webbplatsen begärs varje gång i Chrome.</translation>
@@ -85,6 +84,7 @@ Tänk på detta:
 <translation id="3744018071945602754">Hantera lösenord i Chrome</translation>
 <translation id="3827545470516145620">Du har standardsäkerhetsskydd på den här enheten</translation>
 <translation id="384394811301901750">Google Chrome kan inte använda kameran just nu</translation>
+<translation id="3863841106411295595">Lägger till de angivna webbadresserna i din läslista i Chrome.</translation>
 <translation id="3901001113120561395">Få ut mesta möjliga av Chrome.</translation>
 <translation id="3967382818307165056">Hantera betalningsmetoder i Chrome</translation>
 <translation id="3980220367029651214">Du håller på att byta synkroniseringskonto från <ph name="USER_EMAIL1" /> till <ph name="USER_EMAIL2" />. Befintlig data i Chrome hanteras av <ph name="DOMAIN" />. Åtgärden raderar din data från den här enheten men den finns kvar på <ph name="USER_EMAIL1" />.</translation>
@@ -98,12 +98,10 @@ Tänk på detta:
 <translation id="424864128008805179">Vill du logga ut från Chrome?</translation>
 <translation id="4251174643044751591">Öppnar inställningssidan för betalningsmetoder i Chrome.</translation>
 <translation id="4453284704333523777">Hantera inställningar för Chrome</translation>
-<translation id="4471662743048412085">Spåra identifierade paket i Chrome</translation>
 <translation id="4508370294876102450">Öppna Chrome i valfri app</translation>
 <translation id="4523886039239821078">Några tillägg har fått Chrome att krascha. Avinstallera följande:</translation>
 <translation id="4633328489441962921">Chrome kan inte söka efter uppdateringar</translation>
 <translation id="4636900170638246267">Logga in på den här webbplatsen och i Chrome.</translation>
-<translation id="4698415050768537821">Chrome kunde inte kontrollera alla lösenord. Försök igen i morgon eller <ph name="BEGIN_LINK" />kontrollera lösenorden i ditt Google-konto<ph name="END_LINK" />.</translation>
 <translation id="4761869838909035636">Kör säkerhetskontroll i Chrome</translation>
 <translation id="4819268619367838612">Chrome skickar data om användning och krascher till Google i syfte att förbättra appen. <ph name="BEGIN_LINK" />Hantera<ph name="END_LINK" /></translation>
 <translation id="4831642696589369971">Viss Chrome-data har inte sparats i ditt Google-konto ännu.
@@ -161,7 +159,6 @@ Tänk på detta:
 <translation id="6815466750807582739">Betalningsmetoder och adresser krypteras inte. Webbhistorik från Chrome synkroniseras inte.
 
 Din krypterade data kan endast läsas av en person som har din lösenfras. Lösenfrasen varken skickas till eller lagras av Google. Om du glömmer lösenfrasen eller vill ändra den här inställningen <ph name="BEGIN_LINK" />rensar du kontots Chrome-data<ph name="END_LINK" />.</translation>
-<translation id="6822673484890854830">Chrome kunde inte kontrollera alla lösenord. Försök igen senare.</translation>
 <translation id="6851982868877411675">Öppna Chrome-inställningarna i iOS, tryck på Standardwebbläsarapp och välj Chrome.</translation>
 <translation id="6916015246697034114">Sök med rösten i Chrome</translation>
 <translation id="6964931465519938134">Nu kan du använda Chrome varje gång du trycker på länkar i meddelanden, dokument och andra appar.</translation>

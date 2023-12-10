@@ -1,0 +1,14 @@
+{
+  "gn_args": {
+    "dcheck_always_on": true,
+    "is_cfi": true,
+    "is_clang": true,
+    "is_component_build": false,
+    "is_debug": false,
+    "llvm_force_head_revision": true,
+    "use_cfi_cast": true,
+    "use_cfi_diag": true,
+    "use_cfi_icall": true,
+    "use_thin_lto": true
+  }
+}

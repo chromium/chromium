@@ -170,8 +170,8 @@ template("instrumented_library") {
       args += [ "--git-revision=${invoker.git_revision}" ]
     }
 
-    if (defined(invoker.no_configure) && invoker.no_configure) {
-      args += [ "--no-configure" ]
+    if (defined(invoker.make_targets)) {
+      args += [ "--make-targets=${invoker.make_targets}" ]
     }
   }
 }
@@ -219,8 +219,7 @@ instrumented_library("freetype") {
 instrumented_library("guest-oslogin") {
   git_url = "https://github.com/GoogleCloudPlatform/guest-oslogin.git"
   git_revision = "f59b7f38c21b4794282ddf12fd4a6083cd99e1e4"
-  # guest-oslogin is built only with `make`.
-  no_configure = true
+
   # Work around an issue where header files are passed to the linker.
   patches = [ "patches/guest-oslogin.diff" ]
 }
@@ -451,7 +450,7 @@ instrumented_library("libgdk-pixbuf2.0-0") {
     # Do not use loadable modules. Same as with Pango, there's no easy way
     # to make gdk-pixbuf pick instrumented versions over system-installed
     # ones.
-    "-Dbuiltin_loaders='all'",
+    "-Dbuiltin_loaders=all",
   ]
   pre_build = "scripts/pre-build/libgdk-pixbuf2.0-0.sh"
 
@@ -808,11 +807,11 @@ instrumented_library("libxtst6") {
 }
 
 instrumented_library("nss") {
-  # TODO(eugenis): get rid of this dependency
-  deps = [ ":libnspr4" ]
   patches = [
     "patches/nss.diff",
     "patches/nss.2.diff",
+    "patches/nss.3.diff",
+    "patches/nss.4.diff",
   ]
   build_method = "custom_nss"
 }
@@ -856,5 +855,5 @@ instrumented_library("libudev1") {
 }
 
 instrumented_library("zlib1g") {
-  build_method = "custom_zlib"
+  make_targets = [ "libz.so.1.2.11" ]
 }

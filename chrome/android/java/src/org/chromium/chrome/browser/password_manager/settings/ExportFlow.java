@@ -66,11 +66,13 @@ public class ExportFlow implements ExportFlowInterface {
          * displayed or the user cancelled it).
          */
         int INACTIVE = 0;
+
         /**
          * REQUESTED: the user requested the export in the menu but did not authenticate
          * and confirm it yet.
          */
         int REQUESTED = 1;
+
         /**
          * CONFIRMED: the user confirmed the export and Chrome is still busy preparing the
          * data for the share intent.
@@ -79,8 +81,7 @@ public class ExportFlow implements ExportFlowInterface {
     }
 
     /** Describes at which state the password export flow is. */
-    @ExportState
-    private int mExportState;
+    @ExportState private int mExportState;
 
     /** Name of the subdirectory in cache which stores the exported passwords file. */
     private static final String PASSWORDS_CACHE_DIR = "/passwords";
@@ -98,8 +99,12 @@ public class ExportFlow implements ExportFlowInterface {
     private static final int PROGRESS_BAR_DELAY_MS = 500;
 
     // Values of the histogram recording password export related events.
-    @IntDef({PasswordExportEvent.EXPORT_OPTION_SELECTED, PasswordExportEvent.EXPORT_DISMISSED,
-            PasswordExportEvent.EXPORT_CONFIRMED, PasswordExportEvent.COUNT})
+    @IntDef({
+        PasswordExportEvent.EXPORT_OPTION_SELECTED,
+        PasswordExportEvent.EXPORT_DISMISSED,
+        PasswordExportEvent.EXPORT_CONFIRMED,
+        PasswordExportEvent.COUNT
+    })
     @Retention(RetentionPolicy.SOURCE)
     public @interface PasswordExportEvent {
         int EXPORT_OPTION_SELECTED = 0;
@@ -115,26 +120,21 @@ public class ExportFlow implements ExportFlowInterface {
      * other times, this variable is null. In particular, after the export is requested, the
      * variable being null means that the passwords have not arrived from the native code yet.
      */
-    @Nullable
-    private Uri mExportFileUri;
+    @Nullable private Uri mExportFileUri;
 
     /**
      * The number of password entries contained in the most recent serialized data for password
      * export. The null value indicates that serialization has not completed since the last request
      * (or there was no request at all).
      */
-    @Nullable
-    private Integer mEntriesCount;
+    @Nullable private Integer mEntriesCount;
 
     // Histogram values for "PasswordManager.Android.ExportPasswordsProgressBarUsage". Never remove
     // or reuse them, only add new ones if needed (and update PROGRESS_COUNT), to keep past and
     // future UMA reports compatible.
-    @VisibleForTesting
-    public static final int PROGRESS_NOT_SHOWN = 0;
-    @VisibleForTesting
-    public static final int PROGRESS_HIDDEN_DIRECTLY = 1;
-    @VisibleForTesting
-    public static final int PROGRESS_HIDDEN_DELAYED = 2;
+    @VisibleForTesting public static final int PROGRESS_NOT_SHOWN = 0;
+    @VisibleForTesting public static final int PROGRESS_HIDDEN_DIRECTLY = 1;
+    @VisibleForTesting public static final int PROGRESS_HIDDEN_DELAYED = 2;
     // The number of the other PROGRESS_* constants.
     private static final int PROGRESS_COUNT = 3;
 
@@ -164,8 +164,7 @@ public class ExportFlow implements ExportFlowInterface {
      * If an error dialog should be shown, this contains the arguments for it, such as the error
      * message. If no error dialog should be shown, this is null.
      */
-    @Nullable
-    private ExportErrorDialogFragment.ErrorDialogParams mErrorDialogParams;
+    @Nullable private ExportErrorDialogFragment.ErrorDialogParams mErrorDialogParams;
 
     /**
      * Contains the reference to the export warning dialog when it is displayed, so that the dialog
@@ -173,8 +172,7 @@ public class ExportFlow implements ExportFlowInterface {
      * for the reauthentication time window to still allow exporting. It is null during all other
      * times.
      */
-    @Nullable
-    private ExportWarningDialogFragment mExportWarningDialogFragment;
+    @Nullable private ExportWarningDialogFragment mExportWarningDialogFragment;
 
     public DialogManager getDialogManagerForTesting() {
         return mProgressBarManager;
@@ -249,8 +247,11 @@ public class ExportFlow implements ExportFlowInterface {
         try {
             mExportFileUri = ContentUriUtils.getContentUriFromFile(passwordsFile);
         } catch (IllegalArgumentException e) {
-            showExportErrorAndAbort(R.string.password_settings_export_tips, e.getMessage(),
-                    R.string.try_again, HistogramExportResult.WRITE_FAILED);
+            showExportErrorAndAbort(
+                    R.string.password_settings_export_tips,
+                    e.getMessage(),
+                    R.string.try_again,
+                    HistogramExportResult.WRITE_FAILED);
             return;
         }
 
@@ -281,14 +282,16 @@ public class ExportFlow implements ExportFlowInterface {
         // they arrive.
         mEntriesCount = null;
         if (!PasswordManagerHandlerProvider.getInstance()
-                        .getPasswordManagerHandler()
-                        .isWaitingForPasswordStore()) {
+                .getPasswordManagerHandler()
+                .isWaitingForPasswordStore()) {
             serializePasswords();
         }
         if (!ReauthenticationManager.isScreenLockSetUp(
-                    mDelegate.getActivity().getApplicationContext())) {
-            Toast.makeText(mDelegate.getActivity().getApplicationContext(),
-                         R.string.password_export_set_lock_screen, Toast.LENGTH_LONG)
+                mDelegate.getActivity().getApplicationContext())) {
+            Toast.makeText(
+                            mDelegate.getActivity().getApplicationContext(),
+                            R.string.password_export_set_lock_screen,
+                            Toast.LENGTH_LONG)
                     .show();
             // Re-enable exporting, the current one was cancelled by Chrome.
             mExportState = ExportState.INACTIVE;
@@ -300,28 +303,32 @@ public class ExportFlow implements ExportFlowInterface {
             // Always trigger reauthentication at the start of the exporting flow, even if the last
             // one succeeded recently.
             ReauthenticationManager.displayReauthenticationFragment(
-                    R.string.lockscreen_description_export, mDelegate.getViewId(),
-                    mDelegate.getFragmentManager(), ReauthenticationManager.ReauthScope.BULK);
+                    R.string.lockscreen_description_export,
+                    mDelegate.getViewId(),
+                    mDelegate.getFragmentManager(),
+                    ReauthenticationManager.ReauthScope.BULK);
         }
     }
 
-    /**
-     * Starts fetching the serialized passwords.
-     */
+    /** Starts fetching the serialized passwords. */
     void serializePasswords() {
         if (mPasswordSerializationStarted) return;
         mPasswordSerializationStarted = true;
-        PasswordManagerHandlerProvider.getInstance().getPasswordManagerHandler().serializePasswords(
-                getTargetDirectory(),
-                (int entriesCount, String pathToPasswordsFile)
-                        -> {
-                    mEntriesCount = entriesCount;
-                    shareSerializedPasswords(pathToPasswordsFile);
-                },
-                (String errorMessage) -> {
-                    showExportErrorAndAbort(R.string.password_settings_export_tips, errorMessage,
-                            R.string.try_again, HistogramExportResult.WRITE_FAILED);
-                });
+        PasswordManagerHandlerProvider.getInstance()
+                .getPasswordManagerHandler()
+                .serializePasswords(
+                        getTargetDirectory(),
+                        (int entriesCount, String pathToPasswordsFile) -> {
+                            mEntriesCount = entriesCount;
+                            shareSerializedPasswords(pathToPasswordsFile);
+                        },
+                        (String errorMessage) -> {
+                            showExportErrorAndAbort(
+                                    R.string.password_settings_export_tips,
+                                    errorMessage,
+                                    R.string.try_again,
+                                    HistogramExportResult.WRITE_FAILED);
+                        });
     }
 
     @Override
@@ -343,6 +350,7 @@ public class ExportFlow implements ExportFlowInterface {
         mExportWarningDialogFragment.setExportWarningHandler(
                 new ExportWarningDialogFragment.Handler() {
                     private boolean mConfirmed;
+
                     /**
                      * On positive button response asks the parent to continue with the export flow.
                      */
@@ -350,7 +358,8 @@ public class ExportFlow implements ExportFlowInterface {
                     public void onClick(DialogInterface dialog, int which) {
                         if (which == AlertDialog.BUTTON_POSITIVE) {
                             mConfirmed = true;
-                            RecordHistogram.recordEnumeratedHistogram(getExportEventHistogramName(),
+                            RecordHistogram.recordEnumeratedHistogram(
+                                    getExportEventHistogramName(),
                                     PasswordExportEvent.EXPORT_CONFIRMED,
                                     PasswordExportEvent.COUNT);
                             mExportState = ExportState.CONFIRMED;
@@ -374,11 +383,12 @@ public class ExportFlow implements ExportFlowInterface {
                         // cancel the export. This happens both when the user taps the negative
                         // button or when they tap outside of the dialog to dismiss it.
                         if (!mConfirmed) {
-                            RecordHistogram.recordEnumeratedHistogram(getExportEventHistogramName(),
+                            RecordHistogram.recordEnumeratedHistogram(
+                                    getExportEventHistogramName(),
                                     PasswordExportEvent.EXPORT_DISMISSED,
                                     PasswordExportEvent.COUNT);
                             if (ChromeFeatureList.isEnabled(
-                                        UNIFIED_PASSWORD_MANAGER_LOCAL_PWD_MIGRATION_WARNING)) {
+                                    UNIFIED_PASSWORD_MANAGER_LOCAL_PWD_MIGRATION_WARNING)) {
                                 logPasswordsExportResult(
                                         mCallerMetricsId, HistogramExportResult.USER_ABORTED);
                             }
@@ -408,16 +418,17 @@ public class ExportFlow implements ExportFlowInterface {
             // The serialization has not finished. Until this finishes, a progress bar is
             // displayed with an option to cancel the export.
             ProgressBarDialogFragment progressBarDialogFragment = new ProgressBarDialogFragment();
-            progressBarDialogFragment.setCancelProgressHandler((unusedDialogInterface, button) -> {
-                if (button == AlertDialog.BUTTON_NEGATIVE) {
-                    mExportState = ExportState.INACTIVE;
-                    if (ChromeFeatureList.isEnabled(
-                                UNIFIED_PASSWORD_MANAGER_LOCAL_PWD_MIGRATION_WARNING)) {
-                        logPasswordsExportResult(
-                                mCallerMetricsId, HistogramExportResult.USER_ABORTED);
-                    }
-                }
-            });
+            progressBarDialogFragment.setCancelProgressHandler(
+                    (unusedDialogInterface, button) -> {
+                        if (button == AlertDialog.BUTTON_NEGATIVE) {
+                            mExportState = ExportState.INACTIVE;
+                            if (ChromeFeatureList.isEnabled(
+                                    UNIFIED_PASSWORD_MANAGER_LOCAL_PWD_MIGRATION_WARNING)) {
+                                logPasswordsExportResult(
+                                        mCallerMetricsId, HistogramExportResult.USER_ABORTED);
+                            }
+                        }
+                    });
             mProgressBarManager.show(progressBarDialogFragment, mDelegate.getFragmentManager());
         } else {
             // Note: if the serialization is quicker than the user interacting with the
@@ -435,17 +446,26 @@ public class ExportFlow implements ExportFlowInterface {
      * dialog.
      */
     @VisibleForTesting
-    void showExportErrorAndAbort(int descriptionId, @Nullable String detailedDescription,
-            int positiveButtonLabelId, @HistogramExportResult int histogramExportResult) {
+    void showExportErrorAndAbort(
+            int descriptionId,
+            @Nullable String detailedDescription,
+            int positiveButtonLabelId,
+            @HistogramExportResult int histogramExportResult) {
         assert mErrorDialogParams == null;
-        mProgressBarManager.hide(() -> {
-            showExportErrorAndAbortImmediately(descriptionId, detailedDescription,
-                    positiveButtonLabelId, histogramExportResult);
-        });
+        mProgressBarManager.hide(
+                () -> {
+                    showExportErrorAndAbortImmediately(
+                            descriptionId,
+                            detailedDescription,
+                            positiveButtonLabelId,
+                            histogramExportResult);
+                });
     }
 
-    public void showExportErrorAndAbortImmediately(int descriptionId,
-            @Nullable String detailedDescription, int positiveButtonLabelId,
+    public void showExportErrorAndAbortImmediately(
+            int descriptionId,
+            @Nullable String detailedDescription,
+            int positiveButtonLabelId,
             @HistogramExportResult int histogramExportResult) {
         if (ChromeFeatureList.isEnabled(UNIFIED_PASSWORD_MANAGER_LOCAL_PWD_MIGRATION_WARNING)) {
             logPasswordsExportResult(mCallerMetricsId, histogramExportResult);
@@ -458,8 +478,12 @@ public class ExportFlow implements ExportFlowInterface {
 
         if (detailedDescription != null) {
             mErrorDialogParams.detailedDescription =
-                    mDelegate.getActivity().getResources().getString(
-                            R.string.password_settings_export_error_details, detailedDescription);
+                    mDelegate
+                            .getActivity()
+                            .getResources()
+                            .getString(
+                                    R.string.password_settings_export_error_details,
+                                    detailedDescription);
         }
 
         if (mExportWarningDialogFragment == null) showExportErrorDialogFragment();
@@ -477,28 +501,32 @@ public class ExportFlow implements ExportFlowInterface {
         exportErrorDialogFragment.initialize(mErrorDialogParams);
         mErrorDialogParams = null;
 
-        exportErrorDialogFragment.setExportErrorHandler(new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                if (which == AlertDialog.BUTTON_POSITIVE) {
-                    if (positiveButtonLabelId
-                            == R.string.password_settings_export_learn_google_drive) {
-                        // Link to the help article about how to use Google Drive.
-                        Intent intent = new Intent(Intent.ACTION_VIEW,
-                                Uri.parse("https://support.google.com/drive/answer/2424384"));
-                        intent.setPackage(mDelegate.getActivity().getPackageName());
-                        mDelegate.getActivity().startActivity(intent);
-                    } else if (positiveButtonLabelId == R.string.try_again) {
-                        mExportState = ExportState.REQUESTED;
-                        exportAfterReauth();
+        exportErrorDialogFragment.setExportErrorHandler(
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        if (which == AlertDialog.BUTTON_POSITIVE) {
+                            if (positiveButtonLabelId
+                                    == R.string.password_settings_export_learn_google_drive) {
+                                // Link to the help article about how to use Google Drive.
+                                Intent intent =
+                                        new Intent(
+                                                Intent.ACTION_VIEW,
+                                                Uri.parse(
+                                                        "https://support.google.com/drive/answer/2424384"));
+                                intent.setPackage(mDelegate.getActivity().getPackageName());
+                                mDelegate.getActivity().startActivity(intent);
+                            } else if (positiveButtonLabelId == R.string.try_again) {
+                                mExportState = ExportState.REQUESTED;
+                                exportAfterReauth();
+                            }
+                        } else if (which == AlertDialog.BUTTON_NEGATIVE) {
+                            // Re-enable exporting, the current one was just cancelled.
+                            mExportState = ExportState.INACTIVE;
+                            mExportFileUri = null;
+                        }
                     }
-                } else if (which == AlertDialog.BUTTON_NEGATIVE) {
-                    // Re-enable exporting, the current one was just cancelled.
-                    mExportState = ExportState.INACTIVE;
-                    mExportFileUri = null;
-                }
-            }
-        });
+                });
         exportErrorDialogFragment.show(mDelegate.getFragmentManager(), null);
     }
 
@@ -526,14 +554,20 @@ public class ExportFlow implements ExportFlowInterface {
         Intent saveToDownloads = new Intent(Intent.ACTION_CREATE_DOCUMENT);
         saveToDownloads.setType("text/csv");
         saveToDownloads.addCategory(Intent.CATEGORY_OPENABLE);
-        saveToDownloads.putExtra(Intent.EXTRA_TITLE,
-                mDelegate.getActivity().getResources().getString(
-                        R.string.password_manager_default_export_filename));
+        saveToDownloads.putExtra(
+                Intent.EXTRA_TITLE,
+                mDelegate
+                        .getActivity()
+                        .getResources()
+                        .getString(R.string.password_manager_default_export_filename));
         try {
             mDelegate.runCreateFileOnDiskIntent(saveToDownloads);
         } catch (ActivityNotFoundException e) {
-            showExportErrorAndAbort(R.string.password_settings_export_no_app, e.getMessage(),
-                    R.string.try_again, HistogramExportResult.NO_CONSUMER);
+            showExportErrorAndAbort(
+                    R.string.password_settings_export_no_app,
+                    e.getMessage(),
+                    R.string.try_again,
+                    HistogramExportResult.NO_CONSUMER);
         }
     }
 
@@ -541,15 +575,20 @@ public class ExportFlow implements ExportFlowInterface {
         Intent send = new Intent(Intent.ACTION_SEND);
         send.setType("text/csv");
         send.putExtra(Intent.EXTRA_STREAM, mExportFileUri);
-        send.putExtra(Intent.EXTRA_SUBJECT,
-                mDelegate.getActivity().getResources().getString(
-                        R.string.password_settings_export_subject));
+        send.putExtra(
+                Intent.EXTRA_SUBJECT,
+                mDelegate
+                        .getActivity()
+                        .getResources()
+                        .getString(R.string.password_settings_export_subject));
         try {
             Intent chooser = Intent.createChooser(send, null);
             chooser.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             ContextUtils.getApplicationContext().startActivity(chooser);
         } catch (ActivityNotFoundException e) {
-            showExportErrorAndAbort(R.string.password_settings_export_no_app, null,
+            showExportErrorAndAbort(
+                    R.string.password_settings_export_no_app,
+                    null,
                     R.string.password_settings_export_learn_google_drive,
                     HistogramExportResult.NO_CONSUMER);
         }
@@ -571,32 +610,39 @@ public class ExportFlow implements ExportFlowInterface {
 
             @Override
             protected void onPostExecute(String exceptionMessage) {
-                mProgressBarManager.hide(() -> {
-                    if (exceptionMessage != null) {
-                        showExportErrorAndAbort(R.string.password_settings_export_tips,
-                                exceptionMessage, R.string.try_again,
-                                HistogramExportResult.WRITE_FAILED);
-                    } else {
-                        mDelegate.onExportFlowSucceeded();
-                        mExportFileUri = null;
-                        logPasswordsExportResult(mCallerMetricsId, HistogramExportResult.SUCCESS);
-                    }
-                });
+                mProgressBarManager.hide(
+                        () -> {
+                            if (exceptionMessage != null) {
+                                showExportErrorAndAbort(
+                                        R.string.password_settings_export_tips,
+                                        exceptionMessage,
+                                        R.string.try_again,
+                                        HistogramExportResult.WRITE_FAILED);
+                            } else {
+                                mDelegate.onExportFlowSucceeded();
+                                mExportFileUri = null;
+                                logPasswordsExportResult(
+                                        mCallerMetricsId, HistogramExportResult.SUCCESS);
+                            }
+                        });
             }
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         mProgressBarManager.showWithDelay(
                 new NonCancelableProgressBar(R.string.passwords_export_in_progress_title),
-                mDelegate.getFragmentManager(), PROGRESS_BAR_DELAY_MS);
+                mDelegate.getFragmentManager(),
+                PROGRESS_BAR_DELAY_MS);
     }
 
     private static void writeToInternalStorage(Uri exportedPasswordsUri, Uri savedPasswordsFileUri)
             throws IOException {
         try (InputStream fileInputStream =
-                        ContextUtils.getApplicationContext().getContentResolver().openInputStream(
-                                exportedPasswordsUri)) {
-            try (OutputStream fileOutputStream = ContextUtils.getApplicationContext()
-                                                         .getContentResolver()
-                                                         .openOutputStream(savedPasswordsFileUri)) {
+                ContextUtils.getApplicationContext()
+                        .getContentResolver()
+                        .openInputStream(exportedPasswordsUri)) {
+            try (OutputStream fileOutputStream =
+                    ContextUtils.getApplicationContext()
+                            .getContentResolver()
+                            .openOutputStream(savedPasswordsFileUri)) {
                 FileUtils.copyStream(fileInputStream, fileOutputStream);
             }
         }
@@ -610,7 +656,7 @@ public class ExportFlow implements ExportFlowInterface {
             // displayed and ready to be used, and this is indicated by
             // |mExportWarningDialogFragment| being non-null.
             if (ReauthenticationManager.authenticationStillValid(
-                        ReauthenticationManager.ReauthScope.BULK)) {
+                    ReauthenticationManager.ReauthScope.BULK)) {
                 if (mExportWarningDialogFragment == null) exportAfterReauth();
             } else {
                 if (mExportWarningDialogFragment != null) mExportWarningDialogFragment.dismiss();

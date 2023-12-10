@@ -175,7 +175,7 @@ std::unique_ptr<::media::VideoDecoder> CastGpuFactoryImpl::CreateVideoDecoder(
       request_overlay_info_cb, gfx::ColorSpace::CreateSRGB());
 }
 
-absl::optional<::media::VideoEncodeAccelerator::SupportedProfiles>
+std::optional<::media::VideoEncodeAccelerator::SupportedProfiles>
 CastGpuFactoryImpl::GetVideoEncodeAcceleratorSupportedProfiles() {
   return ::media::VideoEncodeAccelerator::SupportedProfiles();
 }
@@ -285,7 +285,6 @@ void CastGpuFactoryImpl::SetupContext() {
       gpu::SchedulingPriority::kHigh, gpu::kNullSurfaceHandle,
       GURL("chrome://gpu/CastVideoAcceleratorFactory"),
       false /* automatic_flushes */, false /* support_locking */,
-      false /* support_grcontext */,
       gpu::SharedMemoryLimits::ForMailboxContext(), attributes,
       viz::command_buffer_metrics::ContextType::MEDIA);
   DCHECK(context_provider_);

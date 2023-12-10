@@ -9,6 +9,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_track.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_constraint_factory.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -128,6 +129,7 @@ class MediaStreamConstraintsUtilSetsTest : public testing::Test {
         kDefaultWidth);
   }
 
+  test::TaskEnvironment task_environment_;
   MockConstraintFactory factory_;
 };
 

@@ -40,7 +40,14 @@ enum class CameraOpenEntryPoint {
   TASKS_SURFACE = 3,
   KEYBOARD = 4,
   SPOTLIGHT = 5,
-  kMaxValue = SPOTLIGHT
+  APP_ICON_LONG_PRESS = 6,
+  PLUS_BUTTON = 7,
+  WEB_SEARCH_BAR = 8,
+  TRANSLATE_ONEBOX = 9,
+  INTENTS = 10,
+  WEB_IMAGES_SEARCH_BAR = 11,
+  WHATS_NEW_PROMO = 12,
+  kMaxValue = WHATS_NEW_PROMO
 };
 
 // Needs to be kept in sync with CameraResult enum in
@@ -71,7 +78,12 @@ enum class AmbientSearchEntryPoint {
   WEB_SEARCH_BAR = 12,
   COMPANION_REGION_SEARCH = 13,
   TRANSLATE_ONEBOX = 14,
-  kMaxValue = TRANSLATE_ONEBOX
+  INTENTS = 15,
+  WEB_IMAGES_SEARCH_BAR = 16,
+  WHATS_NEW_PROMO = 17,
+  CONTEXT_MENU_SEARCH_VIDEO_FRAME_WITH_GOOGLE_LENS = 18,
+  CONTEXT_MENU_SEARCH_VIDEO_FRAME_WITH_WEB = 19,
+  kMaxValue = CONTEXT_MENU_SEARCH_VIDEO_FRAME_WITH_WEB
 };
 
 // This should be kept in sync with the LensRegionSearchAspectRatio enum

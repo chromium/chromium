@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/printing/automatic_usb_printer_configurer.h"
 
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -18,7 +19,6 @@
 #include "chromeos/printing/ppd_provider.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 namespace {

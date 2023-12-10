@@ -11,7 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "content/public/browser/web_ui.h"
 

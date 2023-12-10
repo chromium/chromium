@@ -13,7 +13,7 @@
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#ifdef WCHAR_T_IS_UTF32
+#ifdef WCHAR_T_IS_32_BIT
 static const std::wstring kSysWideOldItalicLetterA = L"\x10300";
 #else
 static const std::wstring kSysWideOldItalicLetterA = L"\xd800\xdf00";
@@ -143,29 +143,31 @@ TEST(SysStrings, SysNativeMBToWide) {
 }
 
 static const wchar_t* const kConvertRoundtripCases[] = {
-  L"Google Video",
-  // "网页 图片 资讯更多 »"
-  L"\x7f51\x9875\x0020\x56fe\x7247\x0020\x8d44\x8baf\x66f4\x591a\x0020\x00bb",
-  //  "Παγκόσμιος Ιστός"
-  L"\x03a0\x03b1\x03b3\x03ba\x03cc\x03c3\x03bc\x03b9"
-  L"\x03bf\x03c2\x0020\x0399\x03c3\x03c4\x03cc\x03c2",
-  // "Поиск страниц на русском"
-  L"\x041f\x043e\x0438\x0441\x043a\x0020\x0441\x0442"
-  L"\x0440\x0430\x043d\x0438\x0446\x0020\x043d\x0430"
-  L"\x0020\x0440\x0443\x0441\x0441\x043a\x043e\x043c",
-  // "전체서비스"
-  L"\xc804\xccb4\xc11c\xbe44\xc2a4",
+    L"Google Video",
+    // "网页 图片 资讯更多 »"
+    L"\x7f51\x9875\x0020\x56fe\x7247\x0020\x8d44\x8baf\x66f4\x591a\x0020\x00bb",
+    //  "Παγκόσμιος Ιστός"
+    L"\x03a0\x03b1\x03b3\x03ba\x03cc\x03c3\x03bc\x03b9"
+    L"\x03bf\x03c2\x0020\x0399\x03c3\x03c4\x03cc\x03c2",
+    // "Поиск страниц на русском"
+    L"\x041f\x043e\x0438\x0441\x043a\x0020\x0441\x0442"
+    L"\x0440\x0430\x043d\x0438\x0446\x0020\x043d\x0430"
+    L"\x0020\x0440\x0443\x0441\x0441\x043a\x043e\x043c",
+    // "전체서비스"
+    L"\xc804\xccb4\xc11c\xbe44\xc2a4",
 
-  // Test characters that take more than 16 bits. This will depend on whether
-  // wchar_t is 16 or 32 bits.
-#if defined(WCHAR_T_IS_UTF16)
-  L"\xd800\xdf00",
-  // ?????  (Mathematical Alphanumeric Symbols (U+011d40 - U+011d44 : A,B,C,D,E)
-  L"\xd807\xdd40\xd807\xdd41\xd807\xdd42\xd807\xdd43\xd807\xdd44",
-#elif defined(WCHAR_T_IS_UTF32)
-  L"\x10300",
-  // ?????  (Mathematical Alphanumeric Symbols (U+011d40 - U+011d44 : A,B,C,D,E)
-  L"\x11d40\x11d41\x11d42\x11d43\x11d44",
+// Test characters that take more than 16 bits. This will depend on whether
+// wchar_t is 16 or 32 bits.
+#if defined(WCHAR_T_IS_16_BIT)
+    L"\xd800\xdf00",
+    // ?????  (Mathematical Alphanumeric Symbols (U+011d40 - U+011d44 :
+    // A,B,C,D,E)
+    L"\xd807\xdd40\xd807\xdd41\xd807\xdd42\xd807\xdd43\xd807\xdd44",
+#elif defined(WCHAR_T_IS_32_BIT)
+    L"\x10300",
+    // ?????  (Mathematical Alphanumeric Symbols (U+011d40 - U+011d44 :
+    // A,B,C,D,E)
+    L"\x11d40\x11d41\x11d42\x11d43\x11d44",
 #endif
 };
 

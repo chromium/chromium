@@ -17,7 +17,7 @@ CustomIntrinsicSizes::CustomIntrinsicSizes(CustomLayoutChild* child,
       min_content_size_(min_content_size),
       max_content_size_(max_content_size) {}
 
-const NGLayoutInputNode& CustomIntrinsicSizes::GetLayoutNode() const {
+const LayoutInputNode& CustomIntrinsicSizes::GetLayoutNode() const {
   return child_->GetLayoutNode();
 }
 

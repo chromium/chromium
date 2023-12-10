@@ -35,6 +35,7 @@ public interface BackPressHandler {
         Type.MANUAL_FILLING,
         Type.TAB_MODAL_HANDLER,
         Type.FULLSCREEN,
+        Type.HUB,
         Type.TAB_SWITCHER,
         Type.CLOSE_WATCHER,
         Type.FIND_TOOLBAR,
@@ -58,26 +59,25 @@ public interface BackPressHandler {
         // handling logic.
         int PAGE_INSIGHTS_BOTTOM_SHEET = 5;
         int START_SURFACE = 6;
-        int TAB_SWITCHER = 7;
+        int HUB = 7;
+        int TAB_SWITCHER = 8;
         // Fullscreen must be before selection popup. crbug.com/1454817.
-        int FULLSCREEN = 8;
-        int SELECTION_POPUP = 9;
-        int MANUAL_FILLING = 10;
-        int LOCATION_BAR = 11;
-        int TAB_MODAL_HANDLER = 12;
-        int CLOSE_WATCHER = 13;
-        int FIND_TOOLBAR = 14;
-        int BOTTOM_CONTROLS = 15;
-        int TAB_HISTORY = 16;
-        int TAB_RETURN_TO_CHROME_START_SURFACE = 17;
-        int SHOW_READING_LIST = 18;
-        int MINIMIZE_APP_AND_CLOSE_TAB = 19;
+        int FULLSCREEN = 9;
+        int SELECTION_POPUP = 10;
+        int MANUAL_FILLING = 11;
+        int LOCATION_BAR = 12;
+        int TAB_MODAL_HANDLER = 13;
+        int CLOSE_WATCHER = 14;
+        int FIND_TOOLBAR = 15;
+        int BOTTOM_CONTROLS = 16;
+        int TAB_HISTORY = 17;
+        int TAB_RETURN_TO_CHROME_START_SURFACE = 18;
+        int SHOW_READING_LIST = 19;
+        int MINIMIZE_APP_AND_CLOSE_TAB = 20;
         int NUM_TYPES = MINIMIZE_APP_AND_CLOSE_TAB + 1;
     }
 
-    /**
-     * Result of back press handling.
-     */
+    /** Result of back press handling. */
     @IntDef({BackPressResult.SUCCESS, BackPressResult.FAILURE, BackPressResult.UNKNOWN})
     @Retention(RetentionPolicy.SOURCE)
     @interface BackPressResult {
@@ -136,8 +136,6 @@ public interface BackPressHandler {
      */
     default void handleOnBackProgressed(@NonNull BackEventCompat backEvent) {}
 
-    /**
-     * API 34+ only. Triggered when a back press event is initialized.
-     */
+    /** API 34+ only. Triggered when a back press event is initialized. */
     default void handleOnBackStarted(@NonNull BackEventCompat backEvent) {}
 }

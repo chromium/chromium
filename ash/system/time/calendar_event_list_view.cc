@@ -22,6 +22,7 @@
 #include "chromeos/constants/chromeos_features.h"
 #include "google_apis/calendar/calendar_api_response_types.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
@@ -65,6 +66,8 @@ constexpr int kChildEventListBetweenChildSpacing = 2;
 // A view that's displayed when the user selects a day cell from the calendar
 // month view that has no events. Clicking on it opens Google calendar.
 class CalendarEmptyEventListView : public PillButton {
+  METADATA_HEADER(CalendarEmptyEventListView, PillButton)
+
  public:
   explicit CalendarEmptyEventListView(CalendarViewController* controller)
       : PillButton(views::Button::PressedCallback(base::BindRepeating(
@@ -104,7 +107,7 @@ class CalendarEmptyEventListView : public PillButton {
 
     // Open Google calendar and land on the local day/month/year.
     Shell::Get()->system_tray_model()->client()->ShowCalendarEvent(
-        absl::nullopt, controller_->selected_date_midnight(), opened_pwa,
+        std::nullopt, controller_->selected_date_midnight(), opened_pwa,
         finalized_url);
   }
 
@@ -112,6 +115,9 @@ class CalendarEmptyEventListView : public PillButton {
   // Owned by the parent view. Guaranteed to outlive this.
   const raw_ptr<CalendarViewController, ExperimentalAsh> controller_;
 };
+
+BEGIN_METADATA(CalendarEmptyEventListView)
+END_METADATA
 
 CalendarEventListView::CalendarEventListView(
     CalendarViewController* calendar_view_controller)
@@ -146,7 +152,7 @@ CalendarEventListView::CalendarEventListView(
           IDS_ASH_CLOSE_BUTTON_ACCESSIBLE_DESCRIPTION));
 
   scroll_view_->SetAllowKeyboardScrolling(false);
-  scroll_view_->SetBackgroundColor(absl::nullopt);
+  scroll_view_->SetBackgroundColor(std::nullopt);
   // Gives a min height so the background color can be filled to all the spaces
   // in the available expanded area.
   scroll_view_->ClipHeightTo(
@@ -188,7 +194,7 @@ void CalendarEventListView::Layout() {
     gradient_helper_->UpdateGradientMask();
   }
 
-  const absl::optional<base::Time> selected_date =
+  const std::optional<base::Time> selected_date =
       calendar_view_controller_->selected_date();
 
   // If the selected date is not today, do not auto scroll and reset the
@@ -288,12 +294,13 @@ std::unique_ptr<views::View> CalendarEventListView::CreateChildEventListView(
 }
 
 void CalendarEventListView::UpdateListItems() {
-  content_view_->RemoveAllChildViews();
-
   // Resets `current_or_next_event_view_` and `current_or_next_event_index_`
-  // since the `event_list_view_` has been updated.
+  // since the `event_list_view_` has been updated. This has to be reset before
+  // `RemoveAllChildViews()` is called otherwise it will become a dangling ptr.
   current_or_next_event_view_ = nullptr;
   current_or_next_event_index_ = 0;
+
+  content_view_->RemoveAllChildViews();
 
   const auto [multi_day_events, all_other_events] =
       calendar_view_controller_->SelectedDateEventsSplitByMultiDayAndSameDay();
@@ -330,7 +337,7 @@ void CalendarEventListView::UpdateListItems() {
               calendar_view_controller_));
 
   // There is a corner case when user closes the event list view before this
-  // line of code is executed. Then `selected_date_` is absl::nullopt and
+  // line of code is executed. Then `selected_date_` is std::nullopt and
   // getting its value leads to a crash. Only set accessible name when
   // `selected_date_` has value, since if `event_list_view_` is closed, there'll
   // be no need to set the accessible name.

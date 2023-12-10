@@ -119,8 +119,11 @@ public class SectionHeaderBadgeDrawable extends Drawable {
         // Draws the full text with the top left corner at (centerX, centerY-(halfheight of text)).
         // We define halfheight as the average of ascent and descent to ensure the text does not
         // appear lopsided even if the font changes.
-        canvas.drawText(mText, bounds.centerX(),
-                bounds.centerY() - ((mPaint.descent() + mPaint.ascent()) / 2), mPaint);
+        canvas.drawText(
+                mText,
+                bounds.centerX(),
+                bounds.centerY() - ((mPaint.descent() + mPaint.ascent()) / 2),
+                mPaint);
     }
 
     @Override
@@ -208,15 +211,21 @@ public class SectionHeaderBadgeDrawable extends Drawable {
         int halfWidth = Math.max(radius, (textBounds.right - textBounds.left) / 2 + radius);
 
         // CenterY is the top of the bounding box + a custom vertical offset.
-        int centerY = anchorBounds.top
-                + mContext.getResources().getDimensionPixelSize(R.dimen.feed_badge_voffset)
-                + halfHeight;
+        int centerY =
+                anchorBounds.top
+                        + mContext.getResources().getDimensionPixelSize(R.dimen.feed_badge_voffset)
+                        + halfHeight;
         // CenterX is the right side of the bounding box + radius + offset.
-        int centerX = anchorBounds.right + halfWidth
-                - mContext.getResources().getDimensionPixelSize(R.dimen.feed_badge_hoffset);
+        int centerX =
+                anchorBounds.right
+                        + halfWidth
+                        - mContext.getResources().getDimensionPixelSize(R.dimen.feed_badge_hoffset);
 
         // The new bounds for the dot + any text to be rendered therein.
-        return new Rect(centerX - halfWidth, centerY - halfHeight, centerX + halfWidth,
+        return new Rect(
+                centerX - halfWidth,
+                centerY - halfHeight,
+                centerX + halfWidth,
                 centerY + halfHeight);
     }
 
@@ -230,25 +239,33 @@ public class SectionHeaderBadgeDrawable extends Drawable {
         mAnimator = ValueAnimator.ofInt(0, 100);
         Rect bounds = getBounds();
         Rect toBounds = calculateBounds(mAnchor, "");
-        mAnimator.addUpdateListener((ValueAnimator animation) -> {
-            float fraction = animation.getAnimatedFraction();
-            Rect newBounds =
-                    new Rect((int) (bounds.left - (bounds.left - toBounds.left) * fraction),
-                            (int) (bounds.top - (bounds.top - toBounds.top) * fraction),
-                            (int) (bounds.right - (bounds.right - toBounds.right) * fraction),
-                            (int) (bounds.bottom - (bounds.bottom - toBounds.bottom) * fraction));
-            mPaint.setAlpha((int) (255 - 255 * fraction));
-            mPaint.setTextSize(mTextSize - mTextSize * fraction);
-            setBounds(newBounds);
-            invalidateSelf();
-        });
-        mAnimator.addListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(Animator animator) {
-                mText = "";
-                invalidateSelf();
-            }
-        });
+        mAnimator.addUpdateListener(
+                (ValueAnimator animation) -> {
+                    float fraction = animation.getAnimatedFraction();
+                    Rect newBounds =
+                            new Rect(
+                                    (int) (bounds.left - (bounds.left - toBounds.left) * fraction),
+                                    (int) (bounds.top - (bounds.top - toBounds.top) * fraction),
+                                    (int)
+                                            (bounds.right
+                                                    - (bounds.right - toBounds.right) * fraction),
+                                    (int)
+                                            (bounds.bottom
+                                                    - (bounds.bottom - toBounds.bottom)
+                                                            * fraction));
+                    mPaint.setAlpha((int) (255 - 255 * fraction));
+                    mPaint.setTextSize(mTextSize - mTextSize * fraction);
+                    setBounds(newBounds);
+                    invalidateSelf();
+                });
+        mAnimator.addListener(
+                new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animator) {
+                        mText = "";
+                        invalidateSelf();
+                    }
+                });
         mAnimator.setStartDelay(ANIMATION_START_DELAY_MS);
         mAnimator.setDuration(ANIMATION_DURATION_MS);
         mAnimator.start();

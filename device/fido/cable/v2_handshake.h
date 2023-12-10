@@ -9,10 +9,10 @@
 
 #include <array>
 #include <memory>
+#include <string_view>
 
 #include "base/component_export.h"
 #include "base/containers/span.h"
-#include "base/strings/string_piece.h"
 #include "components/cbor/values.h"
 #include "device/fido/cable/cable_discovery_data.h"
 #include "device/fido/cable/noise.h"
@@ -139,7 +139,7 @@ std::string BytesToDigits(base::span<const uint8_t> in);
 
 // DigitsToBytes reverses the actions of |BytesToDigits|.
 COMPONENT_EXPORT(DEVICE_FIDO)
-absl::optional<std::vector<uint8_t>> DigitsToBytes(base::StringPiece in);
+absl::optional<std::vector<uint8_t>> DigitsToBytes(std::string_view in);
 
 }  // namespace qr
 

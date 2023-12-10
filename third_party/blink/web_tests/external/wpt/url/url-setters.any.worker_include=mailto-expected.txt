@@ -1,11 +1,5 @@
 This is a testharness.js-based test.
-[PASS] Loading data…
 [FAIL] URL: Setting <mailto:me@example.net>.protocol = 'http' Cannot-be-a-base URL doesn’t have a host, but URL in a special scheme must.
   assert_equals: expected "mailto:me@example.net" but got "http://me@example.net/"
-[PASS] URL: Setting <mailto:you@example.net>.username = 'me' Cannot-be-a-base means no username
-[PASS] URL: Setting <mailto:me@example.net>.password = 'secret' Cannot-be-a-base means no password
-[PASS] URL: Setting <mailto:me@example.net>.host = 'example.com' Cannot-be-a-base means no host
-[PASS] URL: Setting <mailto:me@example.net>.hostname = 'example.com' Cannot-be-a-base means no host
-[PASS] URL: Setting <mailto:me@example.net>.pathname = '/foo' Opaque paths cannot be set
 Harness: the test ran to completion.
 

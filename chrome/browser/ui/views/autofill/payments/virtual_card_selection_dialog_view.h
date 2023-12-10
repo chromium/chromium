@@ -42,4 +42,4 @@ class VirtualCardSelectionDialogView : public VirtualCardSelectionDialog,
 
 }  // namespace autofill
 
-#endif  // CHROME_BROWSER_UI_VIEWS_AUTOFILL_PAYMENTS_VIRTUAL_CARD_SELECTION_DIALOG_VIEW_IMPL_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_AUTOFILL_PAYMENTS_VIRTUAL_CARD_SELECTION_DIALOG_VIEW_H_

@@ -16,7 +16,6 @@
 #import "components/open_from_clipboard/clipboard_recent_content.h"
 #import "components/open_from_clipboard/fake_clipboard_recent_content.h"
 #import "ios/chrome/browser/browsing_data/model/browsing_data_remover_observer.h"
-#import "ios/chrome/browser/sessions/session_service_ios.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -87,7 +86,7 @@ class BrowsingDataRemoverImplTest : public PlatformTest {
  public:
   BrowsingDataRemoverImplTest()
       : browser_state_(TestChromeBrowserState::Builder().Build()),
-        browsing_data_remover_(browser_state_.get(), nil) {
+        browsing_data_remover_(browser_state_.get()) {
     DCHECK_EQ(ClipboardRecentContent::GetInstance(), nullptr);
     ClipboardRecentContent::SetInstance(
         std::make_unique<FakeClipboardRecentContent>());

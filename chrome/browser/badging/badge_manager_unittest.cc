@@ -5,6 +5,7 @@
 #include "chrome/browser/badging/badge_manager.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -28,7 +29,6 @@
 #include "extensions/common/extension_id.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 using badging::BadgeManager;
@@ -36,7 +36,7 @@ using badging::BadgeManagerDelegate;
 
 namespace {
 
-typedef std::pair<GURL, absl::optional<int>> SetBadgeAction;
+typedef std::pair<GURL, std::optional<int>> SetBadgeAction;
 
 constexpr uint64_t kBadgeContents = 1;
 const webapps::AppId kAppId = "1";
@@ -116,7 +116,7 @@ class BadgeManagerUnittest : public ::testing::Test {
 
 TEST_F(BadgeManagerUnittest, SetFlagBadgeForApp) {
   ukm::TestUkmRecorder test_recorder;
-  badge_manager().SetBadgeForTesting(kAppId, absl::nullopt, &test_recorder);
+  badge_manager().SetBadgeForTesting(kAppId, std::nullopt, &test_recorder);
 
   auto entries =
       test_recorder.GetEntriesByName(ukm::builders::Badging::kEntryName);
@@ -126,13 +126,13 @@ TEST_F(BadgeManagerUnittest, SetFlagBadgeForApp) {
 
   EXPECT_EQ(1UL, delegate()->set_badges().size());
   EXPECT_EQ(kAppId, delegate()->set_badges().front().first);
-  EXPECT_EQ(absl::nullopt, delegate()->set_badges().front().second);
+  EXPECT_EQ(std::nullopt, delegate()->set_badges().front().second);
 }
 
 TEST_F(BadgeManagerUnittest, SetBadgeForApp) {
   ukm::TestUkmRecorder test_recorder;
-  badge_manager().SetBadgeForTesting(
-      kAppId, absl::make_optional(kBadgeContents), &test_recorder);
+  badge_manager().SetBadgeForTesting(kAppId, std::make_optional(kBadgeContents),
+                                     &test_recorder);
   auto entries =
       test_recorder.GetEntriesByName(ukm::builders::Badging::kEntryName);
   ASSERT_EQ(entries.size(), 1u);
@@ -156,10 +156,10 @@ TEST_F(BadgeManagerUnittest, SetBadgeForMultipleApps) {
         updated_apps.push_back(app_id);
       }));
 
-  badge_manager().SetBadgeForTesting(
-      kAppId, absl::make_optional(kBadgeContents), ukm::TestUkmRecorder::Get());
+  badge_manager().SetBadgeForTesting(kAppId, std::make_optional(kBadgeContents),
+                                     ukm::TestUkmRecorder::Get());
   badge_manager().SetBadgeForTesting(kOtherAppId,
-                                     absl::make_optional(kOtherContents),
+                                     std::make_optional(kOtherContents),
                                      ukm::TestUkmRecorder::Get());
 
   EXPECT_EQ(2UL, delegate()->set_badges().size());
@@ -176,11 +176,11 @@ TEST_F(BadgeManagerUnittest, SetBadgeForMultipleApps) {
 }
 
 TEST_F(BadgeManagerUnittest, SetBadgeForAppAfterClear) {
-  badge_manager().SetBadgeForTesting(
-      kAppId, absl::make_optional(kBadgeContents), ukm::TestUkmRecorder::Get());
+  badge_manager().SetBadgeForTesting(kAppId, std::make_optional(kBadgeContents),
+                                     ukm::TestUkmRecorder::Get());
   badge_manager().ClearBadgeForTesting(kAppId, ukm::TestUkmRecorder::Get());
-  badge_manager().SetBadgeForTesting(
-      kAppId, absl::make_optional(kBadgeContents), ukm::TestUkmRecorder::Get());
+  badge_manager().SetBadgeForTesting(kAppId, std::make_optional(kBadgeContents),
+                                     ukm::TestUkmRecorder::Get());
 
   EXPECT_EQ(2UL, delegate()->set_badges().size());
 
@@ -194,8 +194,8 @@ TEST_F(BadgeManagerUnittest, SetBadgeForAppAfterClear) {
 TEST_F(BadgeManagerUnittest, ClearBadgeForBadgedApp) {
   ukm::TestUkmRecorder test_recorder;
 
-  badge_manager().SetBadgeForTesting(
-      kAppId, absl::make_optional(kBadgeContents), ukm::TestUkmRecorder::Get());
+  badge_manager().SetBadgeForTesting(kAppId, std::make_optional(kBadgeContents),
+                                     ukm::TestUkmRecorder::Get());
   badge_manager().ClearBadgeForTesting(kAppId, &test_recorder);
   auto entries =
       test_recorder.GetEntriesByName(ukm::builders::Badging::kEntryName);
@@ -238,11 +238,11 @@ TEST_F(BadgeManagerUnittest, BadgingMultipleProfiles) {
         updated_apps.push_back(app_id);
       }));
 
-  other_badge_manager->SetBadgeForTesting(kAppId, absl::nullopt,
+  other_badge_manager->SetBadgeForTesting(kAppId, std::nullopt,
                                           ukm::TestUkmRecorder::Get());
   other_badge_manager->SetBadgeForTesting(
-      kAppId, absl::make_optional(kBadgeContents), ukm::TestUkmRecorder::Get());
-  other_badge_manager->SetBadgeForTesting(kAppId, absl::nullopt,
+      kAppId, std::make_optional(kBadgeContents), ukm::TestUkmRecorder::Get());
+  other_badge_manager->SetBadgeForTesting(kAppId, std::nullopt,
                                           ukm::TestUkmRecorder::Get());
   other_badge_manager->ClearBadgeForTesting(kAppId,
                                             ukm::TestUkmRecorder::Get());
@@ -256,7 +256,7 @@ TEST_F(BadgeManagerUnittest, BadgingMultipleProfiles) {
   EXPECT_EQ(1UL, delegate()->cleared_badges().size());
 
   EXPECT_EQ(kAppId, other_delegate->set_badges().back().first);
-  EXPECT_EQ(absl::nullopt, other_delegate->set_badges().back().second);
+  EXPECT_EQ(std::nullopt, other_delegate->set_badges().back().second);
 
   EXPECT_EQ(1UL, updated_apps.size());
   EXPECT_EQ(kAppId, updated_apps[0]);
@@ -273,10 +273,10 @@ TEST_F(BadgeManagerUnittest, BadgingWithNoDelegateDoesNotCrash) {
   set_delegate(nullptr);
   badge_manager().SetDelegate(nullptr);
 
-  badge_manager().SetBadgeForTesting(kAppId, absl::nullopt,
+  badge_manager().SetBadgeForTesting(kAppId, std::nullopt,
                                      ukm::TestUkmRecorder::Get());
-  badge_manager().SetBadgeForTesting(
-      kAppId, absl::make_optional(kBadgeContents), ukm::TestUkmRecorder::Get());
+  badge_manager().SetBadgeForTesting(kAppId, std::make_optional(kBadgeContents),
+                                     ukm::TestUkmRecorder::Get());
   badge_manager().ClearBadgeForTesting(kAppId, ukm::TestUkmRecorder::Get());
 }
 
@@ -285,10 +285,10 @@ TEST_F(BadgeManagerUnittest, BadgingWithNoDelegateDoesNotCrash) {
 TEST_F(BadgeManagerUnittest, BadgingWithNoSyncBridgeDoesNotCrash) {
   badge_manager().SetSyncBridgeForTesting(nullptr);
 
-  badge_manager().SetBadgeForTesting(kAppId, absl::nullopt,
+  badge_manager().SetBadgeForTesting(kAppId, std::nullopt,
                                      ukm::TestUkmRecorder::Get());
-  badge_manager().SetBadgeForTesting(
-      kAppId, absl::make_optional(kBadgeContents), ukm::TestUkmRecorder::Get());
+  badge_manager().SetBadgeForTesting(kAppId, std::make_optional(kBadgeContents),
+                                     ukm::TestUkmRecorder::Get());
   badge_manager().ClearBadgeForTesting(kAppId, ukm::TestUkmRecorder::Get());
 }
 

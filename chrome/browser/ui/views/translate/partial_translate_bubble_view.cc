@@ -865,10 +865,7 @@ PartialTranslateBubbleView::CreateTranslateIcon() {
   const int language_icon_id = IDR_TRANSLATE_BUBBLE_ICON;
   std::unique_ptr<views::ImageView> language_icon =
       std::make_unique<views::ImageView>();
-  gfx::ImageSkia* language_icon_image =
-      ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
-          language_icon_id);
-  language_icon->SetImage(*language_icon_image);
+  language_icon->SetImage(ui::ImageModel::FromResourceId(language_icon_id));
   return language_icon;
 }
 
@@ -1040,29 +1037,15 @@ void PartialTranslateBubbleView::AnnounceForAccessibility(
     std::u16string full_text = l10n_util::GetStringFUTF16(
         IDS_CONCAT_TWO_STRINGS_WITH_COMMA, base_text, model_->GetTargetText());
 
-#if BUILDFLAG(IS_MAC)
-    partial_text_label_->GetViewAccessibility().OverrideName(full_text);
-    partial_text_label_->NotifyAccessibilityEvent(ax::mojom::Event::kAlert,
-                                                  true);
-#else
     if (target_language_changed_) {
       partial_text_label_->GetViewAccessibility().AnnounceText(full_text);
     } else {
       partial_text_label_->GetViewAccessibility().AnnounceText(base_text);
     }
-#endif
   } else if (view_state == PartialTranslateBubbleModel::VIEW_STATE_ERROR) {
-#if BUILDFLAG(IS_MAC)
-    partial_text_label_->GetViewAccessibility().OverrideName(
-        l10n_util::GetStringUTF16(
-            IDS_TRANSLATE_BUBBLE_COULD_NOT_TRANSLATE_TITLE));
-    partial_text_label_->NotifyAccessibilityEvent(ax::mojom::Event::kAlert,
-                                                  true);
-#else
     partial_text_label_->GetViewAccessibility().AnnounceText(
         l10n_util::GetStringUTF16(
             IDS_TRANSLATE_BUBBLE_COULD_NOT_TRANSLATE_TITLE));
-#endif
   }
 }
 void PartialTranslateBubbleView::SwitchTabForViewState(

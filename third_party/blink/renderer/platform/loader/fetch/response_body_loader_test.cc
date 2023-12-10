@@ -33,7 +33,8 @@ class TestBackForwardCacheLoaderHelper : public BackForwardCacheLoaderHelper {
   void EvictFromBackForwardCache(
       mojom::blink::RendererEvictionReason reason) override {}
 
-  void DidBufferLoadWhileInBackForwardCache(size_t num_bytes) override {}
+  void DidBufferLoadWhileInBackForwardCache(bool update_process_wide_count,
+                                            size_t num_bytes) override {}
 
   void Detach() override {}
 };

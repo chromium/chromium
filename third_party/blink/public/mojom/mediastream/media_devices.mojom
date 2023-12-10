@@ -26,6 +26,9 @@ struct MediaDeviceInfo {
   string device_id;
   string label;
   string group_id;
+  media.mojom.VideoCaptureControlSupport control_support;
+  FacingMode facing_mode;
+  media.mojom.CameraAvailability? availability;
 };
 
 struct VideoInputDeviceCapabilities {
@@ -34,6 +37,7 @@ struct VideoInputDeviceCapabilities {
   media.mojom.VideoCaptureControlSupport control_support;
   array<media.mojom.VideoCaptureFormat> formats;
   FacingMode facing_mode;
+  media.mojom.CameraAvailability? availability;
 };
 
 struct AudioInputDeviceCapabilities {

@@ -5,6 +5,7 @@
 #ifndef MOJO_PUBLIC_CPP_BINDINGS_PIPE_CONTROL_MESSAGE_PROXY_H_
 #define MOJO_PUBLIC_CPP_BINDINGS_PIPE_CONTROL_MESSAGE_PROXY_H_
 
+#include <optional>
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
 #include "mojo/public/cpp/bindings/async_flusher.h"
@@ -12,7 +13,6 @@
 #include "mojo/public/cpp/bindings/interface_id.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/pending_flush.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace mojo {
 
@@ -31,13 +31,13 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) PipeControlMessageProxy {
   PipeControlMessageProxy& operator=(const PipeControlMessageProxy&) = delete;
 
   void NotifyPeerEndpointClosed(InterfaceId id,
-                                const absl::optional<DisconnectReason>& reason);
+                                const std::optional<DisconnectReason>& reason);
   void PausePeerUntilFlushCompletes(PendingFlush flush);
   void FlushAsync(AsyncFlusher flusher);
 
   static Message ConstructPeerEndpointClosedMessage(
       InterfaceId id,
-      const absl::optional<DisconnectReason>& reason);
+      const std::optional<DisconnectReason>& reason);
 
  private:
   // Not owned.

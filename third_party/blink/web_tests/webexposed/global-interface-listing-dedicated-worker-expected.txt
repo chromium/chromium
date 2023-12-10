@@ -568,6 +568,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method unobserve
 [Worker] interface FileSystemSyncAccessHandle
 [Worker]     attribute @@toStringTag
+[Worker]     getter mode
 [Worker]     method close
 [Worker]     method constructor
 [Worker]     method flush
@@ -577,6 +578,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method write
 [Worker] interface FileSystemWritableFileStream : WritableStream
 [Worker]     attribute @@toStringTag
+[Worker]     getter mode
 [Worker]     method constructor
 [Worker]     method seek
 [Worker]     method truncate
@@ -696,7 +698,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method popDebugGroup
 [Worker]     method pushDebugGroup
 [Worker]     method resolveQuerySet
-[Worker]     method writeTimestamp
 [Worker]     setter label
 [Worker] interface GPUCompilationInfo
 [Worker]     attribute @@toStringTag
@@ -1177,7 +1178,9 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method abs
 [Worker]     method add
 [Worker]     method averagePool2d
+[Worker]     method batchNormalization
 [Worker]     method buildSync
+[Worker]     method cast
 [Worker]     method ceil
 [Worker]     method clamp
 [Worker]     method concat
@@ -1185,13 +1188,27 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method constructor
 [Worker]     method conv2d
 [Worker]     method convTranspose2d
+[Worker]     method cos
 [Worker]     method div
 [Worker]     method elu
+[Worker]     method equal
+[Worker]     method erf
+[Worker]     method exp
+[Worker]     method expand
 [Worker]     method floor
+[Worker]     method gather
 [Worker]     method gemm
+[Worker]     method greater
 [Worker]     method hardSwish
+[Worker]     method identity
 [Worker]     method input
+[Worker]     method instanceNormalization
+[Worker]     method layerNormalization
 [Worker]     method leakyRelu
+[Worker]     method lesser
+[Worker]     method linear
+[Worker]     method log
+[Worker]     method logicalNot
 [Worker]     method matmul
 [Worker]     method max
 [Worker]     method maxPool2d
@@ -1201,6 +1218,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method pad
 [Worker]     method pow
 [Worker]     method prelu
+[Worker]     method reciprocal
 [Worker]     method reduceL1
 [Worker]     method reduceL2
 [Worker]     method reduceLogSum
@@ -1215,15 +1233,22 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method resample2d
 [Worker]     method reshape
 [Worker]     method sigmoid
+[Worker]     method sin
 [Worker]     method slice
 [Worker]     method softmax
+[Worker]     method softsign
 [Worker]     method split
+[Worker]     method sqrt
 [Worker]     method sub
+[Worker]     method tan
 [Worker]     method tanh
 [Worker]     method transpose
+[Worker]     method where
 [Worker] interface MLOperand
 [Worker]     attribute @@toStringTag
 [Worker]     method constructor
+[Worker]     method dataType
+[Worker]     method shape
 [Worker] interface MediaCapabilities
 [Worker]     attribute @@toStringTag
 [Worker]     method constructor
@@ -1271,12 +1296,14 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method initMessageEvent
 [Worker] interface MessagePort : EventTarget
 [Worker]     attribute @@toStringTag
+[Worker]     getter onclose
 [Worker]     getter onmessage
 [Worker]     getter onmessageerror
 [Worker]     method close
 [Worker]     method constructor
 [Worker]     method postMessage
 [Worker]     method start
+[Worker]     setter onclose
 [Worker]     setter onmessage
 [Worker]     setter onmessageerror
 [Worker] interface Mojo
@@ -1788,6 +1815,9 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method formData
 [Worker]     method json
 [Worker]     method text
+[Worker] interface RestrictionTarget
+[Worker]     attribute @@toStringTag
+[Worker]     method constructor
 [Worker] interface Scheduler
 [Worker]     attribute @@toStringTag
 [Worker]     method constructor
@@ -1922,7 +1952,9 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     setter onquotachange
 [Worker] interface Subscriber
 [Worker]     attribute @@toStringTag
+[Worker]     getter active
 [Worker]     getter signal
+[Worker]     method addTeardown
 [Worker]     method complete
 [Worker]     method constructor
 [Worker]     method error
@@ -2097,6 +2129,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker] interface URLPattern
 [Worker]     static method compareComponent
 [Worker]     attribute @@toStringTag
+[Worker]     getter hasRegExpGroups
 [Worker]     getter hash
 [Worker]     getter hostname
 [Worker]     getter password

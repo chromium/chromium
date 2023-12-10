@@ -24,7 +24,7 @@ namespace blink {
 namespace {
 
 Element* ElementFromCenter(Element& element) {
-  DOMRect* client_rect = element.getBoundingClientRect();
+  DOMRect* client_rect = element.GetBoundingClientRect();
   int center_x =
       static_cast<int>((client_rect->left() + client_rect->right()) / 2);
   int center_y =

@@ -41,14 +41,14 @@ class CONTENT_EXPORT CommonSourceInfo {
 
   const net::SchemefulSite& source_site() const { return source_site_; }
 
+  friend bool operator==(const CommonSourceInfo&,
+                         const CommonSourceInfo&) = default;
+
  private:
   net::SchemefulSite source_site_;
   attribution_reporting::SuitableOrigin source_origin_;
   attribution_reporting::SuitableOrigin reporting_origin_;
   attribution_reporting::mojom::SourceType source_type_;
-
-  // When adding new members, the corresponding `operator==()` definition in
-  // `attribution_test_utils.h` should also be updated.
 };
 
 }  // namespace content

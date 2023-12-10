@@ -37,7 +37,6 @@ class COMPONENT_EXPORT(UI_BASE_IME) MockInputMethod : public InputMethod {
       ImeKeyEventDispatcher* ime_key_event_dispatcher) override;
   void OnFocus() override;
   void OnBlur() override;
-  void OnTouch(ui::EventPointerType pointerType) override;
 
 #if BUILDFLAG(IS_WIN)
   bool OnUntranslatedIMEMessage(const CHROME_MSG event,

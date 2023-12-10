@@ -8,15 +8,11 @@ import android.view.View;
 
 import org.chromium.ui.modelutil.PropertyModel;
 
-/**
- * Mediator for the TileView.
- */
+/** Mediator for the TileView. */
 class TileViewMediator {
     private final PropertyModel mModel;
 
-    /**
-     * Create new TileViewMediator object.
-     */
+    /** Create new TileViewMediator object. */
     TileViewMediator(PropertyModel model) {
         mModel = model;
     }

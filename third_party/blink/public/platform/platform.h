@@ -297,6 +297,10 @@ class BLINK_PLATFORM_EXPORT Platform {
     return nullptr;
   }
 
+  // Whether or not newly created Isolates are indicated to be in the background
+  // or not.
+  virtual bool IsolateStartsInBackground() { return false; }
+
   // Resources -----------------------------------------------------------
 
   // Returns a localized string resource (with substitution parameters).
@@ -485,6 +489,11 @@ class BLINK_PLATFORM_EXPORT Platform {
   // created or initialized.
   virtual std::unique_ptr<WebGraphicsContext3DProvider>
   CreateWebGPUGraphicsContext3DProvider(const WebURL& document_url);
+
+  virtual void CreateWebGPUGraphicsContext3DProviderAsync(
+      const blink::WebURL& document_url,
+      base::OnceCallback<
+          void(std::unique_ptr<blink::WebGraphicsContext3DProvider>)> callback);
 
   virtual gpu::GpuMemoryBufferManager* GetGpuMemoryBufferManager() {
     return nullptr;

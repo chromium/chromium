@@ -14,8 +14,7 @@ std::string GenerateInvalidatorClientId() {
   // Generate a GUID with 128 bits worth of base64-encoded randomness.
   // This format is similar to that of sync's cache_guid.
   const int kGuidBytes = 128 / 8;
-  std::string guid;
-  base::Base64Encode(base::RandBytesAsString(kGuidBytes), &guid);
+  std::string guid = base::Base64Encode(base::RandBytesAsVector(kGuidBytes));
   DCHECK(!guid.empty());
   return guid;
 }

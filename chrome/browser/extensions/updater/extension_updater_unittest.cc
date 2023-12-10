@@ -405,8 +405,8 @@ class ServiceForDownloadTests : public MockService {
     fake_crx_installers_[id] = crx_installer;
   }
 
-  scoped_refptr<extensions::CrxInstaller> CreateUpdateInstaller(
-      const extensions::CRXFileInfo& file,
+  scoped_refptr<CrxInstaller> CreateUpdateInstaller(
+      const CRXFileInfo& file,
       bool file_ownership_passed) override {
     extension_id_ = file.extension_id;
     install_path_ = file.path;
@@ -2750,7 +2750,7 @@ TEST_F(ExtensionUpdaterTest, TestUninstallWhileUpdateCheck) {
   ASSERT_EQ(1u, tmp.size());
   ExtensionId id = tmp.front()->id();
   ExtensionRegistry* registry = ExtensionRegistry::Get(service.profile());
-  ASSERT_TRUE(registry->GetExtensionById(id, ExtensionRegistry::ENABLED));
+  ASSERT_TRUE(registry->enabled_extensions().GetByID(id));
 
   ExtensionUpdater updater(&service, service.extension_prefs(),
                            service.pref_service(), service.profile(),
@@ -2762,7 +2762,7 @@ TEST_F(ExtensionUpdaterTest, TestUninstallWhileUpdateCheck) {
   updater.CheckNow(std::move(params));
 
   service.set_extensions(ExtensionList(), ExtensionList());
-  ASSERT_FALSE(registry->GetExtensionById(id, ExtensionRegistry::ENABLED));
+  ASSERT_FALSE(registry->enabled_extensions().GetByID(id));
 
   // RunUntilIdle is needed to make sure that the UpdateService instance that
   // runs the extension update process has a chance to exit gracefully; without

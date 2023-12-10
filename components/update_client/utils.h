@@ -55,7 +55,7 @@ bool DeleteEmptyDirectory(const base::FilePath& filepath);
 std::string GetCrxComponentID(const CrxComponent& component);
 
 // Returns a CRX id from a public key hash.
-std::string GetCrxIdFromPublicKeyHash(const std::vector<uint8_t>& pk_hash);
+std::string GetCrxIdFromPublicKeyHash(base::span<const uint8_t> pk_hash);
 
 // Returns true if the actual SHA-256 hash of the |filepath| matches the
 // |expected_hash|.

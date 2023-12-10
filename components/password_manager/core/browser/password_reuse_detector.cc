@@ -5,17 +5,18 @@
 #include "components/password_manager/core/browser/password_reuse_detector.h"
 
 #include <algorithm>
+#include <optional>
+#include <set>
 #include <utility>
 
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "components/password_manager/core/browser/hash_password_manager.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_hash_data.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_reuse_detector_consumer.h"
+#include "components/password_manager/core/browser/password_store/password_store_consumer.h"
 #include "components/password_manager/core/browser/password_store/psl_matching_helper.h"
-#include "components/password_manager/core/browser/password_store_consumer.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "google_apis/gaia/gaia_auth_util.h"
@@ -43,10 +44,10 @@ bool IsSuffix(const std::u16string& str,
 
 // Helper function to returns matching PasswordHashData from a list that has
 // the longest password length.
-absl::optional<PasswordHashData> FindPasswordReuse(
+std::optional<PasswordHashData> FindPasswordReuse(
     const std::u16string& input,
     const std::vector<PasswordHashData>& password_hash_list) {
-  absl::optional<PasswordHashData> longest_match = absl::nullopt;
+  std::optional<PasswordHashData> longest_match = std::nullopt;
   size_t longest_match_size = 0;
   for (const PasswordHashData& hash_data : password_hash_list) {
     if (input.size() < hash_data.length)
@@ -71,18 +72,6 @@ bool ReverseStringLess::operator()(const std::u16string& lhs,
                                    const std::u16string& rhs) const {
   return std::lexicographical_compare(lhs.rbegin(), lhs.rend(), rhs.rbegin(),
                                       rhs.rend());
-}
-
-bool MatchingReusedCredential::operator<(
-    const MatchingReusedCredential& other) const {
-  return std::tie(signon_realm, username, in_store) <
-         std::tie(other.signon_realm, other.username, other.in_store);
-}
-
-bool MatchingReusedCredential::operator==(
-    const MatchingReusedCredential& other) const {
-  return signon_realm == other.signon_realm && username == other.username &&
-         in_store == other.in_store;
 }
 
 PasswordReuseDetector::PasswordReuseDetector() {
@@ -127,12 +116,12 @@ void PasswordReuseDetector::ClearCachedAccountStorePasswords() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (auto& key_value : passwords_with_matching_reused_credentials_) {
     // Delete account stored credentials.
-    base::EraseIf(key_value.second, [](const auto& credential) {
+    std::erase_if(key_value.second, [](const auto& credential) {
       return credential.in_store == PasswordForm::Store::kAccountStore;
     });
   }
   // Delete all passwords with no matching credentials.
-  base::EraseIf(passwords_with_matching_reused_credentials_,
+  std::erase_if(passwords_with_matching_reused_credentials_,
                 [](const auto& pair) { return pair.second.empty(); });
 }
 
@@ -143,18 +132,18 @@ void PasswordReuseDetector::CheckReuse(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(consumer);
   if (input.size() < GetMinPasswordLengthToCheck()) {
-    consumer->OnReuseCheckDone(false, 0, absl::nullopt, {},
+    consumer->OnReuseCheckDone(false, 0, std::nullopt, {},
                                SavedPasswordsCount(), std::string(), 0);
     return;
   }
 
-  absl::optional<PasswordHashData> reused_gaia_password_hash =
+  std::optional<PasswordHashData> reused_gaia_password_hash =
       CheckGaiaPasswordReuse(input, domain);
   size_t gaia_reused_password_length = reused_gaia_password_hash.has_value()
                                            ? reused_gaia_password_hash->length
                                            : 0;
 
-  absl::optional<PasswordHashData> reused_enterprise_password_hash =
+  std::optional<PasswordHashData> reused_enterprise_password_hash =
       CheckNonGaiaEnterprisePasswordReuse(input, domain);
   size_t enterprise_reused_password_length =
       reused_enterprise_password_hash.has_value()
@@ -171,7 +160,7 @@ void PasswordReuseDetector::CheckReuse(
                 enterprise_reused_password_length});
 
   if (max_reused_password_length == 0) {
-    consumer->OnReuseCheckDone(false, 0, absl::nullopt, {},
+    consumer->OnReuseCheckDone(false, 0, std::nullopt, {},
                                SavedPasswordsCount(), std::string(), 0);
     return;
   }
@@ -179,8 +168,7 @@ void PasswordReuseDetector::CheckReuse(
   uint64_t reused_password_hash =
       CalculatePasswordHash(saved_reused_password, std::string());
 
-  absl::optional<PasswordHashData> reused_protected_password_hash =
-      absl::nullopt;
+  std::optional<PasswordHashData> reused_protected_password_hash = std::nullopt;
   if (gaia_reused_password_length > enterprise_reused_password_length) {
     reused_password_hash = reused_gaia_password_hash->hash;
     reused_protected_password_hash = std::move(reused_gaia_password_hash);
@@ -195,30 +183,31 @@ void PasswordReuseDetector::CheckReuse(
                              domain, reused_password_hash);
 }
 
-absl::optional<PasswordHashData> PasswordReuseDetector::CheckGaiaPasswordReuse(
+std::optional<PasswordHashData> PasswordReuseDetector::CheckGaiaPasswordReuse(
     const std::u16string& input,
     const std::string& domain) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!gaia_password_hash_data_list_.has_value() ||
       gaia_password_hash_data_list_->empty()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Skips password reuse check if |domain| matches Gaia origin.
-  if (gaia::HasGaiaSchemeHostPort(GURL(domain)))
-    return absl::nullopt;
+  if (gaia::HasGaiaSchemeHostPort(GURL(domain))) {
+    return std::nullopt;
+  }
 
   return FindPasswordReuse(input, gaia_password_hash_data_list_.value());
 }
 
-absl::optional<PasswordHashData>
+std::optional<PasswordHashData>
 PasswordReuseDetector::CheckNonGaiaEnterprisePasswordReuse(
     const std::u16string& input,
     const std::string& domain) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!enterprise_password_hash_data_list_.has_value() ||
       enterprise_password_hash_data_list_->empty()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Skips password reuse check if |domain| matches enterprise login URL or
@@ -227,7 +216,7 @@ PasswordReuseDetector::CheckNonGaiaEnterprisePasswordReuse(
   if (enterprise_password_urls_.has_value() &&
       safe_browsing::MatchesURLList(page_url,
                                     enterprise_password_urls_.value())) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return FindPasswordReuse(input, enterprise_password_hash_data_list_.value());
@@ -285,20 +274,20 @@ std::u16string PasswordReuseDetector::CheckSavedPasswordReuse(
 }
 
 void PasswordReuseDetector::UseGaiaPasswordHash(
-    absl::optional<std::vector<PasswordHashData>> password_hash_data_list) {
+    std::optional<std::vector<PasswordHashData>> password_hash_data_list) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   gaia_password_hash_data_list_ = std::move(password_hash_data_list);
 }
 
 void PasswordReuseDetector::UseNonGaiaEnterprisePasswordHash(
-    absl::optional<std::vector<PasswordHashData>> password_hash_data_list) {
+    std::optional<std::vector<PasswordHashData>> password_hash_data_list) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   enterprise_password_hash_data_list_ = std::move(password_hash_data_list);
 }
 
 void PasswordReuseDetector::UseEnterprisePasswordURLs(
-    absl::optional<std::vector<GURL>> enterprise_login_urls,
-    absl::optional<GURL> enterprise_change_password_url) {
+    std::optional<std::vector<GURL>> enterprise_login_urls,
+    std::optional<GURL> enterprise_change_password_url) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   enterprise_password_urls_ = std::move(enterprise_login_urls);
   if (!enterprise_change_password_url.has_value() ||
@@ -306,8 +295,9 @@ void PasswordReuseDetector::UseEnterprisePasswordURLs(
     return;
   }
 
-  if (!enterprise_password_urls_)
-    enterprise_password_urls_ = absl::make_optional<std::vector<GURL>>();
+  if (!enterprise_password_urls_) {
+    enterprise_password_urls_ = std::make_optional<std::vector<GURL>>();
+  }
   enterprise_password_urls_->push_back(enterprise_change_password_url.value());
 }
 
@@ -316,7 +306,7 @@ void PasswordReuseDetector::ClearGaiaPasswordHash(const std::string& username) {
   if (!gaia_password_hash_data_list_)
     return;
 
-  base::EraseIf(*gaia_password_hash_data_list_,
+  std::erase_if(*gaia_password_hash_data_list_,
                 [&username](const PasswordHashData& data) {
                   return AreUsernamesSame(username, true, data.username,
                                           data.is_gaia_password);
@@ -338,7 +328,7 @@ void PasswordReuseDetector::ClearAllNonGmailPasswordHash() {
   if (!gaia_password_hash_data_list_)
     return;
 
-  base::EraseIf(
+  std::erase_if(
       *gaia_password_hash_data_list_, [](const PasswordHashData& data) {
         std::string email =
             CanonicalizeUsername(data.username, data.is_gaia_password);

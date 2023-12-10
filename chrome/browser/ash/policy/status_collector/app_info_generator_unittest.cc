@@ -202,6 +202,9 @@ class AppInfoGeneratorTest : public ::testing::Test {
     profile_ = CreateProfile(account_id_);
     test_clock().SetNow(MakeLocalTime("25-MAR-2020 1:30am"));
 
+    // Wait for AppServiceProxy to be ready.
+    app_service_test_.SetUp(profile_.get());
+
     auto* provider = web_app::FakeWebAppProvider::Get(profile_.get());
     provider->SetRunSubsystemStartupTasks(true);
     provider->Start();
@@ -282,6 +285,7 @@ class AppInfoGeneratorTest : public ::testing::Test {
   session_manager::SessionManager session_manager_;
 
   base::SimpleTestClock test_clock_;
+  apps::AppServiceTest app_service_test_;
 };
 
 TEST_F(AppInfoGeneratorTest, GenerateInventoryList) {

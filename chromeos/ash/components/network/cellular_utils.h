@@ -66,7 +66,7 @@ const NetworkProfile* GetCellularProfile(
 // Returns the path to the Euicc that is currently used for all eSIM operations
 // in OS Settings and System UI.
 COMPONENT_EXPORT(CHROMEOS_NETWORK)
-absl::optional<dbus::ObjectPath> GetCurrentEuiccPath();
+std::optional<dbus::ObjectPath> GetCurrentEuiccPath();
 
 // Returns the activation codes that should be used to scan for profiles that
 // are available for installation.

@@ -9,11 +9,11 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "components/password_manager/core/browser/manage_passwords_referrer.h"
-#import "ios/chrome/browser/overlays/public/default/default_infobar_overlay_request_config.h"
-#import "ios/chrome/browser/overlays/public/overlay_callback_manager.h"
-#import "ios/chrome/browser/overlays/public/overlay_request.h"
-#import "ios/chrome/browser/overlays/public/overlay_request_support.h"
-#import "ios/chrome/browser/overlays/public/overlay_response.h"
+#import "ios/chrome/browser/overlays/model/public/default/default_infobar_overlay_request_config.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_callback_manager.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_request.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_request_support.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_response.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_save_password_infobar_delegate.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
@@ -60,7 +60,7 @@
                                                  withString:@"•"
                                             startingAtIndex:0]];
   [_consumer setUnmaskedPassword:password];
-  absl::optional<std::string> account_string =
+  std::optional<std::string> account_string =
       delegate_->GetAccountToStorePassword();
   NSString* details_text =
       account_string
@@ -130,8 +130,7 @@
   id<ApplicationSettingsCommands> settings_command_handler = HandlerForProtocol(
       delegate_->GetDispatcher(), ApplicationSettingsCommands);
   [settings_command_handler showSavedPasswordsSettingsFromViewController:nil
-                                                        showCancelButton:YES
-                                                      startPasswordCheck:NO];
+                                                        showCancelButton:YES];
 
   UMA_HISTOGRAM_ENUMERATION(
       "PasswordManager.ManagePasswordsReferrer",

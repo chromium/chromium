@@ -24,7 +24,6 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.browserservices.intents.ColorProvider;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabImpl;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController;
 
 /** Tests for {@link CustomTabStatusBarColorProvider}. */
@@ -36,7 +35,7 @@ public class CustomTabStatusBarColorProviderTest {
 
     @Mock public CustomTabIntentDataProvider mCustomTabIntentDataProvider;
     @Mock public StatusBarColorController mStatusBarColorController;
-    @Mock public TabImpl mTab;
+    @Mock public Tab mTab;
     private CustomTabStatusBarColorProvider mStatusBarColorProvider;
     @Mock private ColorProvider mColorProvider;
 

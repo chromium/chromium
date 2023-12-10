@@ -149,7 +149,7 @@ public class HomepageSettingsUnitTest {
                 Matchers.notNullValue());
         assertThat(
                 "Chrome NTP radio button is null.",
-                mRadioGroupPreference.getChromeNTPRadioButton(),
+                mRadioGroupPreference.getChromeNtpRadioButton(),
                 Matchers.notNullValue());
         assertThat(
                 "Custom URI radio button is null.",
@@ -157,7 +157,7 @@ public class HomepageSettingsUnitTest {
                 Matchers.notNullValue());
 
         mTitleTextView = mRadioGroupPreference.getTitleTextView();
-        mChromeNtpRadioButton = mRadioGroupPreference.getChromeNTPRadioButton();
+        mChromeNtpRadioButton = mRadioGroupPreference.getChromeNtpRadioButton();
         mCustomUriRadioButton = mRadioGroupPreference.getCustomUriRadioButton();
     }
 
@@ -168,9 +168,9 @@ public class HomepageSettingsUnitTest {
     @Test
     @SmallTest
     @Feature({"Homepage"})
-    public void testStartUp_ChromeNTP() {
+    public void testStartUp_ChromeNtp() {
         mHomepageTestRule.useCustomizedHomepageForTest(TEST_URL_BAR);
-        mHomepageTestRule.useChromeNTPForTest();
+        mHomepageTestRule.useChromeNtpForTest();
 
         launchHomepageSettings();
 
@@ -196,9 +196,9 @@ public class HomepageSettingsUnitTest {
     @Test
     @SmallTest
     @Feature({"Homepage"})
-    public void testStartUp_ChromeNTP_WithPartner() {
+    public void testStartUp_ChromeNtp_WithPartner() {
         setPartnerHomepage(TEST_URL_FOO);
-        mHomepageTestRule.useChromeNTPForTest();
+        mHomepageTestRule.useChromeNtpForTest();
 
         launchHomepageSettings();
 
@@ -349,7 +349,7 @@ public class HomepageSettingsUnitTest {
     @Test
     @SmallTest
     @Feature({"Homepage"})
-    public void testStartUp_DefaultToNTP() {
+    public void testStartUp_DefaultToNtp() {
         mHomepageTestRule.useDefaultHomepageForTest();
 
         launchHomepageSettings();
@@ -408,7 +408,7 @@ public class HomepageSettingsUnitTest {
     @Feature({"Homepage"})
     public void testToggleSwitch() {
         mHomepageTestRule.useCustomizedHomepageForTest(TEST_URL_FOO);
-        mHomepageTestRule.useChromeNTPForTest();
+        mHomepageTestRule.useChromeNtpForTest();
 
         launchHomepageSettings();
 
@@ -531,7 +531,7 @@ public class HomepageSettingsUnitTest {
     @SmallTest
     @Feature({"Homepage"})
     public void testChangeCustomized() throws Exception {
-        mHomepageTestRule.useChromeNTPForTest();
+        mHomepageTestRule.useChromeNtpForTest();
         launchHomepageSettings();
 
         // Initial state check
@@ -543,7 +543,7 @@ public class HomepageSettingsUnitTest {
                 ASSERT_MESSAGE_EDIT_TEXT, "", mCustomUriRadioButton.getPrimaryText().toString());
         Assert.assertTrue(
                 ASSERT_HOMEPAGE_MANAGER_SETTINGS,
-                UrlUtilities.isNTPUrl(HomepageManager.getHomepageGurl()));
+                UrlUtilities.isNtpUrl(HomepageManager.getHomepageGurl()));
         assertUserActionRecorded(false);
 
         // Update the text box. To do this, request focus for customized radio button so that the

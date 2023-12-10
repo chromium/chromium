@@ -27,7 +27,7 @@ from blinkpy.web_tests.controllers.web_test_finder import WebTestFinder
 from blinkpy.web_tests.models.test_expectations import TestExpectations
 from blinkpy.web_tests.port import factory
 from blinkpy.wpt_tests.product import make_product_registry
-from blinkpy.wpt_tests.test_loader import TestLoader
+from blinkpy.wpt_tests.test_loader import TestLoader, wpt_url_to_blink_test
 
 path_finder.bootstrap_wpt_imports()
 import mozlog
@@ -84,9 +84,12 @@ class GroupingFormatter(mozlog.formatters.GroupingFormatter):
         return super().suite_start(data)
 
     def suite_end(self, data) -> str:
-        # Do not show test failures again in noninteractive mode. They are
-        # already shown during the run.
+        # Do not show test failures or flakes again in noninteractive mode.
+        # They are already shown during the run. We also don't need to
+        # differentiate between the primary expectation and "known
+        # intermittent" statuses.
         self.test_failure_text = ''
+        self.known_intermittent_results.clear()
         return super().suite_end(data)
 
 
@@ -170,10 +173,10 @@ class WPTAdapter:
             self.options.smoke = self.port.default_smoke_test_only()
         if self.options.smoke:
             if not self.paths and not self.options.test_list and self.options.num_retries is None:
-                # Retry failures 3 times if we're running a smoke test without
+                # Retry failures 1 times if we're running a smoke test without
                 # additional tests. SmokeTests is an explicit list of tests, so we
                 # wouldn't retry by default without this special case.
-                self.options.num_retries = 3
+                self.options.num_retries = 1
 
             if not self.options.test_list:
                 self.options.test_list = []
@@ -270,11 +273,12 @@ class WPTAdapter:
                 '--log-path=-',
             ])
 
-        runner_options.log_wptreport = [
-            mozlog.commandline.log_file(
-                self.fs.join(self.port.results_directory(),
-                             'wpt_reports.json'))
-        ]
+        if self.using_upstream_wpt:
+            runner_options.log_wptreport = [
+                mozlog.commandline.log_file(
+                    self.fs.join(self.port.results_directory(),
+                                 'wpt_reports.json'))
+            ]
         runner_options.log = wptlogging.setup(dict(vars(runner_options)),
                                               {'grouped': sys.stdout})
         logging.root.handlers.clear()
@@ -321,13 +325,13 @@ class WPTAdapter:
         if self.options.enable_leak_detection:
             runner_options.binary_args.append('--enable-leak-detection')
 
-        if self.options.timeout_multiplier:
-            runner_options.timeout_multiplier = self.options.timeout_multiplier
-        elif (self.options.enable_sanitizer
-              or self.options.configuration == 'Debug'):
+        if (self.options.enable_sanitizer
+                or self.options.configuration == 'Debug'):
             runner_options.timeout_multiplier = 5
             logger.info('Defaulting to 5x timeout multiplier because '
                         'the build is debug or sanitized')
+        elif self.options.timeout_multiplier:
+            runner_options.timeout_multiplier = self.options.timeout_multiplier
 
         if self.using_upstream_wpt:
             # when running with upstream, the goal is to get wpt report that can
@@ -399,7 +403,7 @@ class WPTAdapter:
 
         if self.options.num_retries is None:
             # If --test-list is passed, or if no test narrowing is specified,
-            # default to 3 retries. Otherwise [e.g. if tests are being passed by
+            # default to 1 retries. Otherwise [e.g. if tests are being passed by
             # name], default to 0 retries.
             if self.options.test_list or len(self.paths) < len(all_test_names):
                 self.options.num_retries = 3
@@ -535,7 +539,7 @@ class WPTAdapter:
 
             TestLoader.install(self.port, self._expectations)
             stack.enter_context(
-                self.process_and_upload_results(runner_options, tmp_dir))
+                self.process_and_upload_results(runner_options))
             self.port.setup_test_run()  # Start Xvfb, if necessary.
             stack.callback(self.port.clean_up_test_run)
             # Changing the CWD is not ideal, but necessary for `wptserve` to
@@ -598,19 +602,20 @@ class WPTAdapter:
             json.dump(run_info, file_handle)
 
     @contextlib.contextmanager
-    def process_and_upload_results(self, runner_options: argparse.Namespace,
-                                   tmp_dir: str):
+    def process_and_upload_results(self, runner_options: argparse.Namespace):
         artifacts_dir = self.port.artifacts_directory()
         processor = WPTResultsProcessor(
             self.fs,
             self.port,
             artifacts_dir=artifacts_dir,
             failure_threshold=self.failure_threshold,
-            crash_timeout_threshold=self.crash_timeout_threshold)
+            crash_timeout_threshold=self.crash_timeout_threshold,
+            reset_results=self.options.reset_results)
         with processor.stream_results() as events:
             runner_options.log.add_handler(events.put)
             yield
-        processor.process_wpt_report(runner_options.log_wptreport[0].name)
+        if runner_options.log_wptreport:
+            processor.process_wpt_report(runner_options.log_wptreport[0].name)
         processor.process_results_json(
             self.port.get_option('json_test_results'))
         processor.copy_results_viewer()
@@ -619,67 +624,23 @@ class WPTAdapter:
             self.port.show_results_html_file(
                 self.fs.join(artifacts_dir, 'results.html'))
         if self.options.reset_results:
-            self._reset_results(runner_options, tmp_dir)
+            self._optimize(runner_options)
 
-    def _reset_results(self, runner_options: argparse.Namespace, tmp_dir: str):
-        properties_path = self.fs.join(tmp_dir, 'update_properties.json')
-        with self.fs.open_text_file_for_writing(
-                properties_path) as properties_file:
-            json.dump(self._choose_update_properties(), properties_file)
-
+    def _optimize(self, runner_options: argparse.Namespace):
         blink_tool_path = self.finder.path_from_blink_tools('blink_tool.py')
         command = [
             blink_tool_path,
-            'update-metadata',
-            f'--report={runner_options.log_wptreport[0].name}',
-            f'--update-properties={properties_path}',
-            '--min-samples=1',
-            '--no-trigger-jobs',
+            'optimize-baselines',
             '--no-manifest-update',
         ]
         if self.options.verbose:
             command.append('--verbose')
-        command.extend(f'--exclude={exclude}'
-                       for exclude in runner_options.exclude)
-        command.extend(runner_options.include)
+        command.extend(
+            wpt_url_to_blink_test(f'/{url}') for url in runner_options.include)
         exit_code = BlinkTool(blink_tool_path).main(command)
         if exit_code != exit_codes.OK_EXIT_STATUS:
-            logger.error(
-                f'Failed to update expectations (exit code: {exit_code})')
-
-    def _choose_update_properties(self):
-        # Attempt to emulate the behavior of `run_web_tests.py --reset-results`,
-        # which places new `*-expected.txt` under:
-        #   `web_tests/(flag-specific/*/)?(virtual/*/)?`
-        #
-        # Modeling this behavior with `update-metadata` is complicated because
-        # updating the generic baselines may or may not cause virtual or
-        # flag-specific suites to inherit them, depending on whether or not
-        # those suites have existing baselines themselves.
-        #
-        # Therefore, use the following heuristics:
-        #  1. For the prototypical case where the test behavior is the same
-        #     everywhere, `run_wpt_tests.py --reset-results` with the implied
-        #     `product=content_shell` and `flag_specific=""` should add or
-        #     remove unconditional expectations.
-        #  2. Virtual suites are often designed to induce different behavior
-        #     (through enabling/disabling different features), so always use
-        #     it as an update property. Most tests never run in a virtual
-        #     suite, so (2) should not substantially interfere with (1).
-        #  3. Using a non-default `--product=...` or `--flag-specific=...`
-        #     should only update expectations for that product/flag-specific
-        #     suite, like `run_web_tests.py --reset-results --flag-specific`.
-        #     Product should also be mutually exclusive with the other update
-        #     properties, as (currently) only `content_shell` runs virtual or
-        #     flag-specific suites.
-        primary_properties = []
-        if self.port.driver_name() == self.port.CONTENT_SHELL_NAME:
-            primary_properties.append('virtual_suite')
-            if self.options.flag_specific:
-                primary_properties.append('flag_specific')
-        else:
-            primary_properties.append('product')
-        return {'properties': primary_properties}
+            logger.error('Failed to optimize baselines during results reset '
+                         f'(exit code: {exit_code})')
 
 
 def _load_entry_point():

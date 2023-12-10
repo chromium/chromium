@@ -1,5 +1,4 @@
 This is a testharness.js-based test.
-[PASS] location.href setter throws a SyntaxError DOMException for unparseable URLs
 [FAIL] <a> tag navigate fails for unparseable URLs
   promise_test: Unhandled rejection with value: object "Error: Navigation was attempted to unparseable URL"
 Harness: the test ran to completion.

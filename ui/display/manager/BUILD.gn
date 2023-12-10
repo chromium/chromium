@@ -56,6 +56,8 @@ component("manager") {
       "display_layout_store.h",
       "display_manager.cc",
       "display_manager.h",
+      "display_manager_observer.cc",
+      "display_manager_observer.h",
       "display_port_observer.cc",
       "display_port_observer.h",
       "display_properties_parser.cc",

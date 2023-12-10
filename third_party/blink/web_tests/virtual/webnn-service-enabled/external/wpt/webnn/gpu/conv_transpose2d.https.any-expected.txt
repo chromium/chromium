@@ -1,0 +1,15 @@
+This is a testharness.js-based test.
+[FAIL] convTranspose2d float32 4D input and filter tensors options.groups / async
+  assert_true: assert_array_approx_equals_ulp: test convTranspose2d float32 actual 0.2449943870306015 should be close enough to expected 0.023476747795939445 by the acceptable 8 ULP distance, but they have 29003136 ULP distance expected true got false
+[FAIL] convTranspose2d float32 4D input and filter tensors options.groups=2 options.strides=[2, 2] / async
+  assert_true: assert_array_approx_equals_ulp: test convTranspose2d float32 actual 0.2449943870306015 should be close enough to expected 0.023476747795939445 by the acceptable 8 ULP distance, but they have 29003136 ULP distance expected true got false
+[FAIL] convTranspose2d float32 4D input and filter tensors options.filterLayout=hwoi / async
+  promise_test: Unhandled rejection with value: object "DataError: Failed to build graph: The filter layout hwoi is not supported."
+[FAIL] convTranspose2d float32 4D input and filter tensors options.filterLayout=ohwi / async
+  promise_test: Unhandled rejection with value: object "DataError: Failed to build graph: The filter layout ohwi is not supported."
+[FAIL] convTranspose2d float32 4D input and filter tensors options.inputLayout=nhwc options.filterLayout=hwoi / async
+  promise_test: Unhandled rejection with value: object "DataError: Failed to build graph: The filter layout hwoi is not supported."
+[FAIL] convTranspose2d float32 4D input and filter tensors options.inputLayout=nhwc options.filterLayout=ohwi / async
+  promise_test: Unhandled rejection with value: object "DataError: Failed to build graph: The filter layout ohwi is not supported."
+Harness: the test ran to completion.
+

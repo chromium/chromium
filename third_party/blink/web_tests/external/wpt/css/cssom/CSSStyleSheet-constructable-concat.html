@@ -1,17 +1,22 @@
 <!DOCTYPE html>
+<html class="reftest-wait">
 <meta charset="utf-8">
 <title>Adoptedstylesheets.concat should work when starting empty</title>
 <link rel="author" href="mailto:masonf@chromium.org">
 <link rel="help" href="https://drafts.csswg.org/cssom/#extensions-to-the-document-or-shadow-root-interface">
 <link rel="match" href="CSSStyleSheet-constructable-concat-ref.html">
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
 
 <span>This should be green</span>
 <div id=host></div>
+<pre id=tests>Tests:
+</pre>
 
 <script>
-test(function() {
+function assert_equals(val1,val2) {
+  const t = val1 === val2 ? 'PASS' : `FAIL! ${val1} !== ${val2}`;
+  tests.appendChild(document.createTextNode(`${t}\n`));
+}
+window.onload = () => {
   const sheet = new CSSStyleSheet();
   sheet.replaceSync('span {background-color:green;}');
   assert_equals(document.adoptedStyleSheets.length,0);
@@ -24,5 +29,6 @@ test(function() {
   assert_equals(shadow.adoptedStyleSheets.length,0);
   shadow.adoptedStyleSheets = shadow.adoptedStyleSheets.concat([sheet]);
   assert_equals(shadow.adoptedStyleSheets.length,1);
-}, "adoptedStyleSheets should allow .concat on empty starting values");
+  document.documentElement.classList.remove("reftest-wait");
+};
 </script>

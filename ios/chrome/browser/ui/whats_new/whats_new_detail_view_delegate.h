@@ -7,17 +7,11 @@
 
 #import "ios/chrome/browser/ui/whats_new/whats_new_instructions_coordinator.h"
 
-@class WhatsNewDetailViewController;
 @class WhatsNewScreenshotViewController;
 
 // Delegate protocol to handle communication from the detail view to the
 // parent coordinator.
 @protocol WhatsNewDetailViewDelegate
-
-// Invoked to request the delegate to dismiss What's New by first dismissing the
-// detail view showing a feature.
-- (void)dismissWhatsNewDetailView:
-    (WhatsNewDetailViewController*)whatsNewDetailViewController;
 
 // Invoked to request the delegate to dismiss What's New by first dismissing the
 // half screen instruction view showing the steps to try a feature.

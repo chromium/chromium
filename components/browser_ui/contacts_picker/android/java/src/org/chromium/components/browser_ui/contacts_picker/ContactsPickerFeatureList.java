@@ -7,7 +7,7 @@ package org.chromium.components.browser_ui.contacts_picker;
 /**
  * Lists base::Features that can be accessed through {@link ContactsPickerFeatureMap}.
  *
- * Should be kept in sync with |kFeaturesExposedToJava| in
+ * <p>Should be kept in sync with |kFeaturesExposedToJava| in
  * //components/browser_ui/contacts_picker/android/contacts_picker_feature_map.cc
  */
 public abstract class ContactsPickerFeatureList {

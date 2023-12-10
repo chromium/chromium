@@ -129,31 +129,6 @@ public class ExperimentalOptionsTest {
 
     @Test
     @MediumTest
-    public void testEnableTelemetryFalse() throws Exception {
-        mTestRule
-                .getTestFramework()
-                .applyEngineBuilderPatch(
-                        (builder) -> {
-                            JSONObject experimentalOptions =
-                                    new JSONObject().put("enable_telemetry", false);
-                            builder.setExperimentalOptions(experimentalOptions.toString());
-                        });
-
-        CronetUrlRequestContext context =
-                (CronetUrlRequestContext) mTestRule.getTestFramework().startEngine();
-        assertThat(context.getEnableTelemetryForTesting()).isFalse();
-    }
-
-    @Test
-    @MediumTest
-    public void testEnableTelemetryDefault() throws Exception {
-        CronetUrlRequestContext context =
-                (CronetUrlRequestContext) mTestRule.getTestFramework().startEngine();
-        assertThat(context.getEnableTelemetryForTesting()).isTrue();
-    }
-
-    @Test
-    @MediumTest
     public void testSetSSLKeyLogFile() throws Exception {
         String url = Http2TestServer.getEchoMethodUrl();
         File dir = new File(PathUtils.getDataDirectory());

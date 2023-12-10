@@ -1,14 +1,14 @@
-import asyncio
-
 import pytest
 from webdriver.bidi.modules.script import ScriptEvaluateResultException
 
 from .. import (
     assert_before_request_sent_event,
     assert_response_event,
+    PAGE_EMPTY_TEXT,
+    BEFORE_REQUEST_SENT_EVENT,
+    RESPONSE_COMPLETED_EVENT,
+    RESPONSE_STARTED_EVENT,
 )
-
-PAGE_EMPTY_TEXT = "/webdriver/tests/bidi/network/support/empty.txt"
 
 
 @pytest.mark.asyncio
@@ -28,19 +28,20 @@ async def test_request_response_phases(
     setup_network_test,
     add_intercept,
     fetch,
+    wait_for_future_safe,
     phases,
     intercepted_phase,
 ):
     network_events = await setup_network_test(
         events=[
-            "network.beforeRequestSent",
-            "network.responseStarted",
-            "network.responseCompleted",
+            BEFORE_REQUEST_SENT_EVENT,
+            RESPONSE_STARTED_EVENT,
+            RESPONSE_COMPLETED_EVENT,
         ]
     )
-    before_request_sent_events = network_events["network.beforeRequestSent"]
-    response_started_events = network_events["network.responseStarted"]
-    response_completed_events = network_events["network.responseCompleted"]
+    before_request_sent_events = network_events[BEFORE_REQUEST_SENT_EVENT]
+    response_started_events = network_events[RESPONSE_STARTED_EVENT]
+    response_completed_events = network_events[RESPONSE_COMPLETED_EVENT]
 
     text_url = url(PAGE_EMPTY_TEXT)
     intercept = await add_intercept(
@@ -57,7 +58,7 @@ async def test_request_response_phases(
     with pytest.raises(ScriptEvaluateResultException):
         await fetch(text_url)
 
-    await on_network_event
+    await wait_for_future_safe(on_network_event)
     expected_request = {"method": "GET", "url": text_url}
 
     if intercepted_phase == "beforeRequestSent":
@@ -98,9 +99,9 @@ async def test_not_listening_to_phase_event(
     phase,
 ):
     events = [
-        "network.beforeRequestSent",
-        "network.responseStarted",
-        "network.responseCompleted",
+        BEFORE_REQUEST_SENT_EVENT,
+        RESPONSE_STARTED_EVENT,
+        RESPONSE_COMPLETED_EVENT,
     ]
 
     # Remove the event corresponding to the intercept phase from the monitored

@@ -17,6 +17,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/scalable_iph/scalable_iph_factory.h"
 #include "chrome/browser/scalable_iph/scalable_iph_factory_impl.h"
+#include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_helper.h"
 #include "chrome/browser/ui/browser.h"
 #include "chromeos/ash/components/scalable_iph/scalable_iph.h"
 #include "chromeos/ash/components/scalable_iph/scalable_iph_constants.h"
@@ -95,6 +96,21 @@ void ScalableIphBrowserTestBase::SetUpOnMainThread() {
   if (test_environment().user_session_type() ==
       CustomizableTestEnvBrowserTestBase::UserSessionType::kRegularWithOobe) {
     return;
+  }
+
+  if (enable_multi_user_) {
+    // Add a secondary user.
+    LoginManagerMixin* login_manager_mixin = GetLoginManagerMixin();
+    CHECK(login_manager_mixin);
+    login_manager_mixin->AppendRegularUsers(1);
+    CHECK_EQ(login_manager_mixin->users().size(), 2ul);
+
+    // By default, `MultiUserWindowManager` is created with multi profile off.
+    // Re-create for multi profile tests. This has to be done after
+    // `SetUpOnMainThread` of a base class as the original multi-profile-off
+    // `MultiUserWindowManager` is created there.
+    MultiUserWindowManagerHelper::CreateInstanceForTest(
+        GetPrimaryUserContext().GetAccountId());
   }
 
   // If we don't intend to enforce ScalableIph setup (i.e. the user profile
@@ -184,6 +200,8 @@ void ScalableIphBrowserTestBase::InitializeScopedFeatureList() {
 
   std::vector<base::test::FeatureRefAndParams> enabled_features({test_config});
   std::vector<base::test::FeatureRef> disabled_features;
+
+  AppendTestSpecificFeatures(enabled_features, disabled_features);
 
   if (enable_scalable_iph_) {
     enabled_features.push_back(
@@ -339,6 +357,17 @@ void ScalableIphBrowserTestBase::TriggerConditionsCheckWithAFakeEvent(
   scalable_iph::ScalableIph* scalable_iph =
       ScalableIphFactory::GetForBrowserContext(profile);
   scalable_iph->RecordEvent(event);
+}
+
+ash::UserContext ScalableIphBrowserTestBase::GetPrimaryUserContext() {
+  return ash::LoginManagerMixin::CreateDefaultUserContext(
+      GetLoginManagerMixin()->users()[0]);
+}
+
+ash::UserContext ScalableIphBrowserTestBase::GetSecondaryUserContext() {
+  CHECK(enable_multi_user_);
+  return ash::LoginManagerMixin::CreateDefaultUserContext(
+      GetLoginManagerMixin()->users()[1]);
 }
 
 void ScalableIphBrowserTestBase::ShutdownScalableIph() {

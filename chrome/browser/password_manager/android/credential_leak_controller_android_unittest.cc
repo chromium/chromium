@@ -36,6 +36,7 @@ namespace {
 
 constexpr char kOrigin[] = "https://example.com";
 constexpr char16_t kUsername[] = u"test_username";
+constexpr char kTestAccount[] = "test@gmail.com";
 
 // The On*Dialog() methods used by the tests below all invoke `delete this;`,
 // thus there is no memory leak here.
@@ -43,7 +44,8 @@ CredentialLeakControllerAndroid* MakeController(
     std::unique_ptr<MockPasswordCheckupLauncherHelper> check_launcher,
     IsSaved is_saved,
     IsReused is_reused,
-    IsSyncing is_syncing) {
+    IsSyncing is_syncing,
+    std::string account_email) {
   password_manager::CredentialLeakType leak_type =
       CreateLeakType(is_saved, is_reused, is_syncing);
   auto recorder = std::make_unique<LeakDialogMetricsRecorder>(
@@ -53,7 +55,7 @@ CredentialLeakControllerAndroid* MakeController(
   return new CredentialLeakControllerAndroid(
       leak_type, GURL(kOrigin), kUsername,
       /*window_android=*/nullptr, std::move(check_launcher),
-      std::move(recorder));
+      std::move(recorder), account_email);
 }
 
 void CheckUkmMetricsExpectations(
@@ -84,7 +86,7 @@ TEST(CredentialLeakControllerAndroidTest, ClickedCancel) {
   base::HistogramTester histogram_tester;
   ukm::TestAutoSetUkmRecorder test_ukm_recorder;
   MakeController(std::make_unique<MockPasswordCheckupLauncherHelper>(),
-                 IsSaved(false), IsReused(true), IsSyncing(true))
+                 IsSaved(false), IsReused(true), IsSyncing(true), kTestAccount)
       ->OnCancelDialog();
 
   histogram_tester.ExpectUniqueSample(
@@ -107,7 +109,7 @@ TEST(CredentialLeakControllerAndroidTest, ClickedOkDoesNotLaunchCheckup) {
   std::unique_ptr<StrictMock<MockPasswordCheckupLauncherHelper>> mock_launcher =
       std::make_unique<StrictMock<MockPasswordCheckupLauncherHelper>>();
   MakeController(std::move(mock_launcher), IsSaved(false), IsReused(false),
-                 IsSyncing(false))
+                 IsSyncing(false), /* account_email = */ "")
       ->OnAcceptDialog();
 
   histogram_tester.ExpectUniqueSample(
@@ -134,10 +136,11 @@ TEST(CredentialLeakControllerAndroidTest,
       std::make_unique<MockPasswordCheckupLauncherHelper>();
   EXPECT_CALL(
       *mock_launcher,
-      LaunchLocalCheckup(
-          _, _, password_manager::PasswordCheckReferrerAndroid::kLeakDialog));
+      LaunchCheckupOnDevice(
+          _, _, password_manager::PasswordCheckReferrerAndroid::kLeakDialog,
+          testing::Eq(kTestAccount)));
   MakeController(std::move(mock_launcher), IsSaved(true), IsReused(true),
-                 IsSyncing(true))
+                 IsSyncing(true), kTestAccount)
       ->OnAcceptDialog();
 
   histogram_tester.ExpectUniqueSample(
@@ -165,11 +168,12 @@ TEST(CredentialLeakControllerAndroidTest,
       std::make_unique<MockPasswordCheckupLauncherHelper>();
   EXPECT_CALL(
       *mock_launcher,
-      LaunchLocalCheckup(
-          _, _, password_manager::PasswordCheckReferrerAndroid::kLeakDialog))
+      LaunchCheckupOnDevice(
+          _, _, password_manager::PasswordCheckReferrerAndroid::kLeakDialog,
+          testing::Eq(kTestAccount)))
       .Times(0);
   MakeController(std::move(mock_launcher), IsSaved(true), IsReused(true),
-                 IsSyncing(true))
+                 IsSyncing(true), kTestAccount)
       ->OnAcceptDialog();
 
   histogram_tester.ExpectUniqueSample(
@@ -190,7 +194,8 @@ TEST(CredentialLeakControllerAndroidTest, NoDirectInteraction) {
   ukm::TestAutoSetUkmRecorder test_ukm_recorder;
 
   MakeController(std::make_unique<MockPasswordCheckupLauncherHelper>(),
-                 IsSaved(false), IsReused(false), IsSyncing(false))
+                 IsSaved(false), IsReused(false), IsSyncing(false),
+                 /* account_email_ = */ "")
       ->OnCloseDialog();
 
   histogram_tester.ExpectUniqueSample(

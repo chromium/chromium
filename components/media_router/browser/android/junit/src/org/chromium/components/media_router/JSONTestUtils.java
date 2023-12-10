@@ -11,9 +11,7 @@ import org.mockito.ArgumentMatcher;
 
 import java.util.Iterator;
 
-/**
- * Utilities for comparing JSON objects and strings.
- */
+/** Utilities for comparing JSON objects and strings. */
 public class JSONTestUtils {
     private static final String ANY_PREFIX = "ANY_";
 

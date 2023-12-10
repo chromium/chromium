@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/frame/browser_desktop_window_tree_host_linux.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/no_destructor.h"
@@ -19,7 +20,6 @@
 #include "chrome/browser/ui/views/frame/picture_in_picture_browser_frame_view.h"
 #include "chrome/browser/ui/views/tabs/tab_drag_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkRRect.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
 #include "ui/gfx/geometry/rect.h"
@@ -48,13 +48,13 @@ std::unordered_set<std::string>& SentStartupIds() {
 }
 
 // Returns the event source for the active tab drag session.
-absl::optional<ui::mojom::DragEventSource> GetCurrentTabDragEventSource() {
+std::optional<ui::mojom::DragEventSource> GetCurrentTabDragEventSource() {
   if (auto* source_context = TabDragController::GetSourceContext()) {
     if (auto* drag_controller = source_context->GetDragController()) {
       return drag_controller->event_source();
     }
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 }  // namespace
@@ -212,9 +212,8 @@ void BrowserDesktopWindowTreeHostLinux::UpdateFrameHints() {
     gfx::Rect input_bounds(widget_size);
     input_bounds.Inset(insets + view->GetInputInsets());
     input_bounds = gfx::ScaleToEnclosingRect(input_bounds, scale);
-    window->SetInputRegion(showing_frame
-                               ? absl::optional<gfx::Rect>(input_bounds)
-                               : absl::nullopt);
+    window->SetInputRegion(
+        showing_frame ? std::optional<gfx::Rect>(input_bounds) : std::nullopt);
   }
 
   if (window->IsTranslucentWindowOpacitySupported()) {

@@ -36,7 +36,7 @@ namespace blink {
 
 EditContext::EditContext(ScriptState* script_state, const EditContextInit* dict)
     : ActiveScriptWrappable<EditContext>({}),
-      ExecutionContextClient(ExecutionContext::From(script_state)) {
+      execution_context_(ExecutionContext::From(script_state)) {
   DCHECK(IsMainThread());
   UseCounter::Count(GetExecutionContext(), WebFeature::kEditContext);
 
@@ -62,7 +62,11 @@ const AtomicString& EditContext::InterfaceName() const {
 }
 
 ExecutionContext* EditContext::GetExecutionContext() const {
-  return ExecutionContextClient::GetExecutionContext();
+  return execution_context_;
+}
+
+LocalDOMWindow* EditContext::DomWindow() const {
+  return To<LocalDOMWindow>(GetExecutionContext());
 }
 
 bool EditContext::HasPendingActivity() const {
@@ -238,7 +242,7 @@ void EditContext::updateCharacterBounds(
                std::to_string(range_start) + ", " +
                    std::to_string(character_bounds.size()));
 
-  character_bounds_.Clear();
+  character_bounds_.clear();
   base::ranges::for_each(character_bounds, [this](const auto& bounds) {
     auto result_bounds = bounds->ToEnclosingRect();
     TRACE_EVENT1("ime", "EditContext::updateCharacterBounds", "charBounds",
@@ -636,6 +640,18 @@ void EditContext::DeleteSurroundingText(int before, int after) {
                           update_range_end, selection_start_, selection_end_);
 }
 
+void EditContext::SetSelection(int start, int end) {
+  TRACE_EVENT1("ime", "EditContext::SetSelection", "start, end",
+               std::to_string(start) + ", " + std::to_string(end));
+
+  selection_start_ = start;
+  selection_end_ = end;
+
+  DispatchTextUpdateEvent(g_empty_string, /*update_range_start=*/0,
+                          /*update_range_end=*/0, selection_start_,
+                          selection_end_);
+}
+
 void EditContext::AttachElement(HTMLElement* element_to_attach) {
   if (base::Contains(attached_elements_, element_to_attach,
                      &Member<HTMLElement>::Get)) {
@@ -650,6 +666,14 @@ void EditContext::AttachElement(HTMLElement* element_to_attach) {
   // https://w3c.github.io/edit-context/#editcontext-interface
   CHECK(attached_elements_.empty())
       << "An EditContext can be only be associated with a single element";
+
+  // We assume throughout this class that since EditContext is only associated
+  // with at most one element, it can only have one ExecutionContext. If things
+  // change such that an EditContext can be associated with multiple elements,
+  // the way we manage the ExecutionContext will need to be reworked such
+  // that we return the ExecutionContext of the element that has most recently
+  // received focus.
+  execution_context_ = element_to_attach->GetExecutionContext();
 
   attached_elements_.push_back(element_to_attach);
 }
@@ -695,7 +719,7 @@ bool EditContext::GetCompositionCharacterBounds(WebVector<gfx::Rect>& bounds) {
   TRACE_EVENT1("ime", "EditContext::GetCompositionCharacterBounds", "size",
                std::to_string(character_bounds_.size()));
 
-  bounds.Clear();
+  bounds.clear();
   base::ranges::for_each(
       character_bounds_, [&bounds, this](auto& bound_in_css_pixels) {
         // EditContext's coordinates are in CSS pixels, which need to be
@@ -786,10 +810,10 @@ WebRange EditContext::GetSelectionOffsets() const {
 
 void EditContext::Trace(Visitor* visitor) const {
   ActiveScriptWrappable::Trace(visitor);
-  ExecutionContextClient::Trace(visitor);
   EventTarget::Trace(visitor);
   ElementRareDataField::Trace(visitor);
   visitor->Trace(attached_elements_);
+  visitor->Trace(execution_context_);
 }
 
 }  // namespace blink

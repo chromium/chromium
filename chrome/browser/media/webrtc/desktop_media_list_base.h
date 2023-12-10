@@ -79,8 +79,6 @@ class DesktopMediaListBase : public DesktopMediaList {
   void UpdateSourcesList(const std::vector<SourceDescription>& new_sources);
 
   // Update a thumbnail to observer.
-  void UpdateSourceThumbnailForId(const content::DesktopMediaID::Id id,
-                                  const gfx::ImageSkia& image);
   void UpdateSourceThumbnail(const content::DesktopMediaID& id,
                              const gfx::ImageSkia& image);
 

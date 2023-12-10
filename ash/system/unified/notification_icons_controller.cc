@@ -5,7 +5,6 @@
 #include "ash/system/unified/notification_icons_controller.h"
 
 #include "ash/constants/ash_constants.h"
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/vm_camera_mic_constants.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
@@ -22,9 +21,8 @@
 #include "ash/system/tray/tray_utils.h"
 #include "ash/system/unified/notification_counter_view.h"
 #include "ash/system/unified/unified_system_tray.h"
-#include "ash/system/unified/unified_system_tray_model.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
@@ -33,7 +31,6 @@
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/vector_icons.h"
 #include "ui/views/controls/image_view.h"
-#include "ui/views/controls/separator.h"
 
 namespace ash {
 
@@ -105,10 +102,6 @@ void NotificationIconTrayItemView::SetNotification(
 }
 
 void NotificationIconTrayItemView::MaybeReset() {
-  if (!features::IsQsRevampEnabled()) {
-    Reset();
-    return;
-  }
   if ((!target_visible() && IsAnimating()) ||
       shelf()
           ->status_area_widget()
@@ -128,7 +121,7 @@ void NotificationIconTrayItemView::Reset() {
 
 void NotificationIconTrayItemView::ImmediatelyUpdateVisibility() {
   TrayItemView::ImmediatelyUpdateVisibility();
-  if (features::IsQsRevampEnabled() && !target_visible()) {
+  if (!target_visible()) {
     Reset();
   }
 }
@@ -136,7 +129,7 @@ void NotificationIconTrayItemView::ImmediatelyUpdateVisibility() {
 void NotificationIconTrayItemView::AnimationEnded(
     const gfx::Animation* animation) {
   TrayItemView::AnimationEnded(animation);
-  if (features::IsQsRevampEnabled() && !target_visible()) {
+  if (!target_visible()) {
     Reset();
   }
 }
@@ -164,9 +157,6 @@ void NotificationIconTrayItemView::OnThemeChanged() {
 }
 
 void NotificationIconTrayItemView::UpdateLabelOrImageViewColor(bool active) {
-  if (!chromeos::features::IsJellyEnabled()) {
-    return;
-  }
   TrayItemView::UpdateLabelOrImageViewColor(active);
 
   UpdateImageViewColor();
@@ -179,10 +169,8 @@ void NotificationIconTrayItemView::UpdateImageViewColor() {
 
   const auto* color_provider = GetColorProvider();
   ui::ColorId color_id = kColorAshIconColorPrimary;
-  if (chromeos::features::IsJellyEnabled()) {
-    color_id = is_active() ? cros_tokens::kCrosSysSystemOnPrimaryContainer
-                           : cros_tokens::kCrosSysOnSurface;
-  }
+  color_id = is_active() ? cros_tokens::kCrosSysSystemOnPrimaryContainer
+                         : cros_tokens::kCrosSysOnSurface;
   gfx::Image masked_small_icon = notification_->GenerateMaskedSmallIcon(
       kUnifiedTrayIconSize, color_provider->GetColor(color_id),
       color_provider->GetColor(ui::kColorNotificationIconBackground),
@@ -195,31 +183,19 @@ void NotificationIconTrayItemView::UpdateImageViewColor() {
   }
 }
 
+BEGIN_METADATA(NotificationIconTrayItemView)
+END_METADATA
+
 NotificationIconsController::NotificationIconsController(
     Shelf* shelf,
-    UnifiedSystemTrayModel* system_tray_model,
     NotificationCenterTray* notification_center_tray)
     : shelf_(shelf),
-      system_tray_model_(system_tray_model),
       notification_center_tray_(notification_center_tray) {
-  // When the QS revamp is enabled `notification_center_tray` should not be
-  // null.
-  DCHECK(!features::IsQsRevampEnabled() || notification_center_tray);
-  if (system_tray_model) {
-    // `UnifiedSystemTrayModel` should not be used once the kQsRevamp feature is
-    // enabled. Once kQsRevamp is enabled `UnifiedSystemTrayModel` and
-    // `NotificationIconsController will have different owner classes so we need
-    // to remove any dependencies for this class in `UnifiedSystemTrayModel`.
-    DCHECK(!features::IsQsRevampEnabled());
-    system_tray_model_observation_.Observe(system_tray_model);
-  }
+  // `notification_center_tray` should not be null.
+  DCHECK(notification_center_tray);
 
-  // Initialize `icons_view_visible_` according to display size. Only do this
-  // when QsRevamp is enabled; without QsRevamp, icons view visibility is
-  // determined by the `UnifiedSystemTrayModel`.
-  if (features::IsQsRevampEnabled()) {
-    UpdateIconsViewVisibleForDisplaySize();
-  }
+  // Initialize `icons_view_visible_` according to display size.
+  UpdateIconsViewVisibleForDisplaySize();
 
   message_center::MessageCenter::Get()->AddObserver(this);
   Shell::Get()->session_controller()->AddObserver(this);
@@ -243,20 +219,6 @@ void NotificationIconsController::AddNotificationTrayItems(
 
   quiet_mode_view_ =
       tray_container->AddChildView(std::make_unique<QuietModeView>(shelf_));
-
-  // `separator_` is only shown in the `UnifiedSystemTray` with the QsRevamp
-  // feature disabled. The `separator_` will not be needed once kQsRevamp
-  // launches because the icons related to this controller will have their own
-  // dedicated tray button.
-  if (!features::IsQsRevampEnabled()) {
-    separator_ = tray_container->AddChildView(
-        std::make_unique<SeparatorTrayItemView>(shelf_));
-  }
-
-  if (!features::IsQsRevampEnabled()) {
-    OnSystemTrayButtonSizeChanged(
-        system_tray_model_->GetSystemTrayButtonSize());
-  }
 }
 
 bool NotificationIconsController::TrayItemHasNotification() const {
@@ -313,10 +275,6 @@ void NotificationIconsController::UpdateNotificationIcons() {
     (*tray_it)->SetVisible(false);
     (*tray_it)->MaybeReset();
   }
-
-  if (separator_) {
-    separator_->SetVisible(icons_view_visible_ && TrayItemHasNotification());
-  }
 }
 
 void NotificationIconsController::UpdateNotificationIndicators() {
@@ -332,25 +290,9 @@ void NotificationIconsController::UpdateIconsViewVisibleForDisplaySize() {
   icons_view_visible_ = display_size >= kIconsViewDisplaySizeThreshold;
 }
 
-void NotificationIconsController::OnSystemTrayButtonSizeChanged(
-    UnifiedSystemTrayModel::SystemTrayButtonSize unified_system_tray_size) {
-  icons_view_visible_ = unified_system_tray_size !=
-                        UnifiedSystemTrayModel::SystemTrayButtonSize::kSmall;
-  UpdateNotificationIcons();
-  UpdateNotificationIndicators();
-}
-
 void NotificationIconsController::OnDisplayMetricsChanged(
     const display::Display& display,
     uint32_t changed_metrics) {
-  // Icons view visibility is determined by the `UnifiedSystemTrayModel`
-  // without the QsRevamp feature.
-  // TODO(b/256692263): Remove `OnSystemTrayButtonSizeChanged` from
-  // `UnifiedSystemTrayModel` once QsRevamp launches. It is only used to update
-  // icon visibility for notifications in the tray.
-  if (!features::IsQsRevampEnabled())
-    return;
-
   aura::Window* window = shelf_->status_area_widget()->GetNativeWindow();
   if (display::Screen::GetScreen()->GetDisplayNearestWindow(window).id() !=
       display.id()) {
@@ -377,13 +319,11 @@ void NotificationIconsController::OnNotificationAdded(const std::string& id) {
 
   UpdateNotificationIndicators();
 
-  if (features::IsQsRevampEnabled()) {
-    // There are certain sequences of notification updates that can require
-    // explicitly updating the notification center tray even after its tray
-    // items have been updated - for instance, adding an initial notification on
-    // the lock screen. See http://b/297579552.
-    notification_center_tray_->UpdateVisibility();
-  }
+  // There are certain sequences of notification updates that can require
+  // explicitly updating the notification center tray even after its tray items
+  // have been updated - for instance, adding an initial notification on the
+  // lock screen. See http://b/297579552.
+  notification_center_tray_->UpdateVisibility();
 }
 
 void NotificationIconsController::OnNotificationRemoved(const std::string& id,
@@ -395,14 +335,12 @@ void NotificationIconsController::OnNotificationRemoved(const std::string& id,
 
   UpdateNotificationIndicators();
 
-  if (features::IsQsRevampEnabled()) {
-    // There are certain sequences of notification updates that can require
-    // explicitly updating the notification center tray even after its tray
-    // items have been updated - for instance, removing a notification group's
-    // parent notification when the only remaining notifications belong to that
-    // group. See http://b/296918234.
-    notification_center_tray_->UpdateVisibility();
-  }
+  // There are certain sequences of notification updates that can require
+  // explicitly updating the notification center tray even after its tray items
+  // have been updated - for instance, removing a notification group's parent
+  // notification when the only remaining notifications belong to that group.
+  // See http://b/296918234.
+  notification_center_tray_->UpdateVisibility();
 }
 
 void NotificationIconsController::OnNotificationUpdated(const std::string& id) {
@@ -415,10 +353,8 @@ void NotificationIconsController::OnNotificationUpdated(const std::string& id) {
 void NotificationIconsController::OnNotificationDisplayed(
     const std::string& notification_id,
     const message_center::DisplaySource source) {
-  if (features::IsQsRevampEnabled()) {
     UpdateNotificationIcons();
     UpdateNotificationIndicators();
-  }
 }
 
 void NotificationIconsController::OnQuietModeChanged(bool in_quiet_mode) {
@@ -430,9 +366,6 @@ void NotificationIconsController::OnSessionStateChanged(
     session_manager::SessionState state) {
   UpdateNotificationIcons();
   UpdateNotificationIndicators();
-
-  if (separator_)
-    separator_->UpdateColor(state);
 }
 
 NotificationIconTrayItemView*

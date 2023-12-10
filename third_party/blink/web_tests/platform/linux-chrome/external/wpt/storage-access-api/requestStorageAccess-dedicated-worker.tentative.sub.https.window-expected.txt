@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+[FAIL] Workers inherit storage access
+  assert_true: requestStorageAccess resolves without requiring a gesture. expected true got false
+[FAIL] Workers don't observe parent's storage access
+  assert_false: Worker's first fetch is uncredentialed. expected false got true
+Harness: the test ran to completion.

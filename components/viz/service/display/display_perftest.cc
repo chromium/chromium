@@ -81,9 +81,11 @@ class RemoveOverdrawQuadPerfTest : public testing::Test {
     // TODO(weiliangc): Figure out a better way to set up test without passing
     // in nullptr.
     auto display = std::make_unique<Display>(
-        &bitmap_manager_, RendererSettings(), &debug_settings_, frame_sink_id,
-        nullptr /* gpu::GpuTaskSchedulerHelper */, std::move(output_surface),
-        std::move(overlay_processor), std::move(scheduler), task_runner_.get());
+        &bitmap_manager_, /*shared_image_manager=*/nullptr,
+        /*sync_point_manager=*/nullptr, RendererSettings(), &debug_settings_,
+        frame_sink_id, nullptr /* gpu::GpuTaskSchedulerHelper */,
+        std::move(output_surface), std::move(overlay_processor),
+        std::move(scheduler), task_runner_.get());
     return display;
   }
 

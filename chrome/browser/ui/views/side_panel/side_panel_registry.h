@@ -10,6 +10,7 @@
 
 #include "base/observer_list.h"
 #include "base/supports_user_data.h"
+#include "chrome/browser/ui/side_panel/side_panel_entry_key.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_observer.h"
 
@@ -60,8 +61,8 @@ class SidePanelRegistry final : public base::SupportsUserData::Data,
   // Set the active entry in the side panel to be |entry|.
   void SetActiveEntry(SidePanelEntry* entry);
 
-  absl::optional<SidePanelEntry*> active_entry() { return active_entry_; }
-  absl::optional<SidePanelEntry*> last_active_entry() {
+  std::optional<SidePanelEntry*> active_entry() { return active_entry_; }
+  std::optional<SidePanelEntry*> last_active_entry() {
     return last_active_entry_;
   }
   std::vector<std::unique_ptr<SidePanelEntry>>& entries() { return entries_; }
@@ -77,13 +78,15 @@ class SidePanelRegistry final : public base::SupportsUserData::Data,
   // should be visible. This is reset by the coordinator when the panel is
   // closed. When there are multiple registries, this may not be the entry
   // currently visible in the side panel.
-  absl::optional<SidePanelEntry*> active_entry_;
+  std::optional<SidePanelEntry*> active_entry_;
 
   // The last active entry hosted in the side panel before it was closed. This
   // is set when the active entry is reset i.e. when the panel is closed.
-  absl::optional<SidePanelEntry*> last_active_entry_;
+  std::optional<SidePanelEntry*> last_active_entry_;
 
   std::vector<std::unique_ptr<SidePanelEntry>> entries_;
+
+  std::optional<SidePanelEntryKey> deregistering_entry_key_ = std::nullopt;
 
   base::ObserverList<SidePanelRegistryObserver> observers_;
 };

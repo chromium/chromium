@@ -23,11 +23,19 @@ specific_include_rules = {
   "cc_test_suite\.cc": [
     "+gpu/config",
   ],
+  "pixel_test\.h": [
+    "+gpu/command_buffer/service/shared_image/shared_image_manager.h",
+    "+gpu/command_buffer/service/sync_point_manager.h",
+  ],
   "pixel_test\.cc": [
     "+gpu/command_buffer/service/service_utils.h",
     "+gpu/config/gpu_switches.h",
   ],
   "layer_tree_test\.cc": [
     "+gpu/config/gpu_switches.h",
+  ],
+  "test_layer_tree_frame_sink\.h": [
+    "+gpu/command_buffer/service/shared_image/shared_image_manager.h",
+    "+gpu/command_buffer/service/sync_point_manager.h",
   ],
 }

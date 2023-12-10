@@ -20,11 +20,13 @@ export class FakeAppPermissionHandler implements
   private resolverMap_: Map<string, PromiseResolver<any>>;
   private appPermissionsObserverRemote_: AppPermissionsObserverRemoteType;
   private lastUpdatedAppPermission_: Permission;
+  private nativeSettingsOpenedCount_: number;
 
   constructor() {
     this.resolverMap_ = new Map();
     this.resolverMap_.set('addObserver', new PromiseResolver());
     this.resolverMap_.set('getApps', new PromiseResolver());
+    this.resolverMap_.set('openNativeSettings', new PromiseResolver());
     this.resolverMap_.set('setPermission', new PromiseResolver());
     this.appPermissionsObserverRemote_ = new AppPermissionsObserverRemote();
     this.lastUpdatedAppPermission_ = {
@@ -32,6 +34,7 @@ export class FakeAppPermissionHandler implements
       isManaged: false,
       value: {},
     };
+    this.nativeSettingsOpenedCount_ = 0;
   }
 
   private getResolver_(methodName: string): PromiseResolver<void> {
@@ -58,6 +61,10 @@ export class FakeAppPermissionHandler implements
     return this.lastUpdatedAppPermission_;
   }
 
+  getNativeSettingsOpenedCount(): number {
+    return this.nativeSettingsOpenedCount_;
+  }
+
   // appPermissionHandler methods.
   addObserver(remote: AppPermissionsObserverRemoteType): Promise<void> {
     this.appPermissionsObserverRemote_ = remote;
@@ -75,6 +82,13 @@ export class FakeAppPermissionHandler implements
     assertTrue(!!id);
     this.lastUpdatedAppPermission_ = permission;
     this.methodCalled('setPermission');
+    return Promise.resolve({success: true});
+  }
+
+  openNativeSettings(id: string): Promise<{success: boolean}> {
+    assertTrue(!!id);
+    this.nativeSettingsOpenedCount_++;
+    this.methodCalled('openNativeSettings');
     return Promise.resolve({success: true});
   }
 }

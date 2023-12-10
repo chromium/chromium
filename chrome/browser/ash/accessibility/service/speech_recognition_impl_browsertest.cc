@@ -204,6 +204,8 @@ IN_PROC_BROWSER_TEST_F(SpeechRecognitionImplTest, StartOptions) {
             auto* recognizer = GetSpeechRecognizer(key);
             ASSERT_EQ("ja-JP", recognizer->locale());
             ASSERT_EQ(true, recognizer->interim_results());
+            ASSERT_TRUE(info->observer_or_error->is_observer());
+            ASSERT_FALSE(info->observer_or_error->is_error());
             waiter.Quit();
           });
   sr_impl_->Start(std::move(options), std::move(callback));
@@ -234,8 +236,9 @@ IN_PROC_BROWSER_TEST_F(SpeechRecognitionImplTest, DispatchStopEvent) {
             ASSERT_EQ(1, GetNumEventObserverWrappers());
             mock_event_observer_impl =
                 std::make_unique<MockSpeechRecognitionEventObserverImpl>(
-                    std::move(info->observer), std::move(on_stop_callback),
-                    base::DoNothing(), base::DoNothing());
+                    std::move(info->observer_or_error->get_observer()),
+                    std::move(on_stop_callback), base::DoNothing(),
+                    base::DoNothing());
             // Calling this method will dispatch a request to
             // `mock_event_observer_impl`.
             HandleSpeechRecognitionStopped(key);
@@ -279,8 +282,9 @@ IN_PROC_BROWSER_TEST_F(SpeechRecognitionImplTest, DispatchResultEvent) {
            &key, this](ax::mojom::SpeechRecognitionStartInfoPtr info) {
             mock_event_observer_impl =
                 std::make_unique<MockSpeechRecognitionEventObserverImpl>(
-                    std::move(info->observer), std::move(on_stop_callback),
-                    std::move(on_result_callback), base::DoNothing());
+                    std::move(info->observer_or_error->get_observer()),
+                    std::move(on_stop_callback), std::move(on_result_callback),
+                    base::DoNothing());
             // Calling this method will dispatch a request to
             // `mock_event_observer_impl`.
             HandleSpeechRecognitionResult(
@@ -319,8 +323,9 @@ IN_PROC_BROWSER_TEST_F(SpeechRecognitionImplTest, DispatchErrorEvent) {
             ASSERT_EQ(1, GetNumEventObserverWrappers());
             mock_event_observer_impl =
                 std::make_unique<MockSpeechRecognitionEventObserverImpl>(
-                    std::move(info->observer), base::DoNothing(),
-                    base::DoNothing(), std::move(on_error_callback));
+                    std::move(info->observer_or_error->get_observer()),
+                    base::DoNothing(), base::DoNothing(),
+                    std::move(on_error_callback));
             // Calling this method will dispatch a request to
             // `mock_event_observer_impl`.
             HandleSpeechRecognitionError(
@@ -328,6 +333,45 @@ IN_PROC_BROWSER_TEST_F(SpeechRecognitionImplTest, DispatchErrorEvent) {
           }));
   waiter.Run();
   ASSERT_EQ(0, GetNumEventObserverWrappers());
+}
+
+// Triggers an error by attempting to start speech recognition twice and
+// verifies that the correct error message is returned.
+IN_PROC_BROWSER_TEST_F(SpeechRecognitionImplTest, StartError) {
+  auto first_start_options = ax::mojom::StartOptions::New();
+  first_start_options->type = ax::mojom::AssistiveTechnologyType::kDictation;
+  sr_impl_->Start(std::move(first_start_options), base::DoNothing());
+  sr_test_helper_->WaitForRecognitionStarted();
+
+  base::RunLoop waiter;
+  auto second_start_options = ax::mojom::StartOptions::New();
+  second_start_options->type = ax::mojom::AssistiveTechnologyType::kDictation;
+  sr_impl_->Start(std::move(second_start_options),
+                  base::BindLambdaForTesting(
+                      [&waiter](ax::mojom::SpeechRecognitionStartInfoPtr info) {
+                        ASSERT_EQ("Speech recognition already started",
+                                  info->observer_or_error->get_error());
+                        ASSERT_FALSE(info->observer_or_error->is_observer());
+                        waiter.Quit();
+                      }));
+  waiter.Run();
+}
+
+// Triggers an error by attempting to stop speech recognition when it is already
+// stopped and verifies that the correct error message is returned.
+IN_PROC_BROWSER_TEST_F(SpeechRecognitionImplTest, StopError) {
+  auto stop_options = ax::mojom::StopOptions::New();
+  stop_options->type = ax::mojom::AssistiveTechnologyType::kDictation;
+
+  base::RunLoop waiter;
+  sr_impl_->Stop(std::move(stop_options),
+                 base::BindLambdaForTesting(
+                     [&waiter](const std::optional<std::string>& error) {
+                       ASSERT_EQ("Speech recognition already stopped",
+                                 error.value());
+                       waiter.Quit();
+                     }));
+  waiter.Run();
 }
 
 }  // namespace ash

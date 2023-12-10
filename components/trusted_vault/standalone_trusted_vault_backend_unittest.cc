@@ -1372,6 +1372,66 @@ TEST_F(StandaloneTrustedVaultBackendTest,
       /*expected_bucket_count=*/1);
 }
 
+// Regression test for crbug.com/1500258: second FetchKeys() is triggered, while
+// first is still ongoing (e.g. keys are being downloaded).
+TEST_F(StandaloneTrustedVaultBackendTest,
+       ShouldDownloadKeysAndCompleteConcurrentFetches) {
+  const CoreAccountInfo account_info = MakeAccountInfoWithGaiaId("user");
+  const std::vector<uint8_t> kInitialVaultKey = {1, 2, 3};
+  const int kInitialLastKeyVersion = 1;
+
+  StoreKeysAndMimicDeviceRegistration({kInitialVaultKey},
+                                      kInitialLastKeyVersion, account_info);
+  ASSERT_TRUE(backend()->MarkLocalKeysAsStale(account_info));
+  SetPrimaryAccountWithUnknownAuthError(account_info);
+
+  TrustedVaultConnection::DownloadNewKeysCallback download_keys_callback;
+  ON_CALL(*connection(), DownloadNewKeys)
+      .WillByDefault(
+          [&](const CoreAccountInfo&,
+              const absl::optional<TrustedVaultKeyAndVersion>&,
+              std::unique_ptr<SecureBoxKeyPair> key_pair,
+              TrustedVaultConnection::DownloadNewKeysCallback callback) {
+            download_keys_callback = std::move(callback);
+            return std::make_unique<TrustedVaultConnection::Request>();
+          });
+
+  EXPECT_CALL(*connection(), DownloadNewKeys);
+  // FetchKeys() should trigger keys downloading.
+  base::MockCallback<StandaloneTrustedVaultBackend::FetchKeysCallback>
+      fetch_keys_callback1;
+  backend()->FetchKeys(account_info, fetch_keys_callback1.Get());
+  ASSERT_FALSE(download_keys_callback.is_null());
+
+  // Mimic second FetchKeys(), note that keys are not downloaded yet and first
+  // fetch is not completed.
+  base::MockCallback<StandaloneTrustedVaultBackend::FetchKeysCallback>
+      fetch_keys_callback2;
+  backend()->FetchKeys(account_info, fetch_keys_callback2.Get());
+
+  // Both fetches should be completed once keys are downloaded.
+  std::vector<uint8_t> kNewVaultKey = {2, 3, 5};
+  EXPECT_CALL(fetch_keys_callback1,
+              Run(ElementsAre(kInitialVaultKey, kNewVaultKey)));
+  EXPECT_CALL(fetch_keys_callback2,
+              Run(ElementsAre(kInitialVaultKey, kNewVaultKey)));
+
+  base::HistogramTester histogram_tester;
+  std::move(download_keys_callback)
+      .Run(TrustedVaultDownloadKeysStatus::kSuccess, {kNewVaultKey},
+           kInitialLastKeyVersion + 1);
+
+  // Download keys status should be recorded for every fetch.
+  histogram_tester.ExpectUniqueSample(
+      "Sync.TrustedVaultDownloadKeysStatus",
+      /*sample=*/TrustedVaultDownloadKeysStatusForUMA::kSuccess,
+      /*expected_bucket_count=*/2);
+  histogram_tester.ExpectUniqueSample(
+      "Sync.TrustedVaultDownloadKeysStatusV1",
+      /*sample=*/TrustedVaultDownloadKeysStatusForUMA::kSuccess,
+      /*expected_bucket_count=*/2);
+}
+
 TEST_F(StandaloneTrustedVaultBackendTest,
        ShouldThrottleAndUntrottleKeysDownloading) {
   const CoreAccountInfo account_info = MakeAccountInfoWithGaiaId("user");
@@ -2094,73 +2154,6 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   std::move(download_keys_callback)
       .Run(TrustedVaultDownloadKeysStatus::kSuccess, {kNewTrustedVaultKey},
            kInitialLastKeyVersion + 1);
-}
-
-TEST_F(StandaloneTrustedVaultBackendTest, ShouldVerifyRegistration) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      kSyncTrustedVaultVerifyDeviceRegistration);
-
-  base::test::SingleThreadTaskEnvironment environment{
-      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-
-  const CoreAccountInfo account_info = MakeAccountInfoWithGaiaId("user");
-  const std::vector<uint8_t> kVaultKey = {1, 2, 3};
-  const int kLastKeyVersion = 1;
-
-  StoreKeysAndMimicDeviceRegistration({kVaultKey}, kLastKeyVersion,
-                                      account_info);
-  SetPrimaryAccountWithUnknownAuthError(account_info);
-
-  // Now the device should be registered.
-  ASSERT_TRUE(backend()
-                  ->GetDeviceRegistrationInfoForTesting(account_info.gaia)
-                  .device_registered());
-
-  // Mimic a restart. The device should remain registered.
-  ResetBackend();
-
-  ASSERT_TRUE(backend()
-                  ->GetDeviceRegistrationInfoForTesting(account_info.gaia)
-                  .device_registered());
-
-  // The device should not register again.
-  EXPECT_CALL(*connection(), RegisterAuthenticationFactor).Times(0);
-  EXPECT_CALL(*connection(), RegisterDeviceWithoutKeys).Times(0);
-
-  SetPrimaryAccountWithUnknownAuthError(account_info);
-
-  TrustedVaultConnection::DownloadNewKeysCallback download_keys_callback;
-  EXPECT_CALL(*connection(), DownloadNewKeys(Eq(account_info),
-                                             TrustedVaultKeyAndVersionEq(
-                                                 kVaultKey, kLastKeyVersion),
-                                             _, _))
-      .WillOnce([&](const CoreAccountInfo&, const TrustedVaultKeyAndVersion&,
-                    std::unique_ptr<SecureBoxKeyPair> key_pair,
-                    TrustedVaultConnection::DownloadNewKeysCallback callback) {
-        download_keys_callback = std::move(callback);
-        return std::make_unique<TrustedVaultConnection::Request>();
-      });
-
-  // Advance exactly `kVerifyDeviceRegistrationDelay` so the download procedure
-  // kicks in. Due to the mock time and the synchronous behavior above of
-  // DownloadNewKeys(), there is no need for epsilons or additional waiting.
-  environment.FastForwardBy(base::Seconds(10));
-  ASSERT_FALSE(download_keys_callback.is_null());
-
-  // Mimic a successful request that returns no new keys.
-  base::HistogramTester histogram_tester;
-  std::move(download_keys_callback)
-      .Run(TrustedVaultDownloadKeysStatus::kNoNewKeys, {}, 0);
-
-  histogram_tester.ExpectUniqueSample(
-      "Sync.TrustedVaultVerifyDeviceRegistrationState",
-      /*sample=*/TrustedVaultDownloadKeysStatusForUMA::kNoNewKeys,
-      /*expected_bucket_count=*/1);
-  histogram_tester.ExpectUniqueSample(
-      "Sync.TrustedVaultVerifyDeviceRegistrationStateV1",
-      /*sample=*/TrustedVaultDownloadKeysStatusForUMA::kNoNewKeys,
-      /*expected_bucket_count=*/1);
 }
 
 }  // namespace

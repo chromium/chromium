@@ -92,8 +92,8 @@ class FormStructureTestApi {
   }
 
   void ParseFieldTypesWithPatterns(PatternSource pattern_source) {
-    return form_structure_->ParseFieldTypesWithPatterns(
-        pattern_source, GeoIpCountryCode(""), nullptr);
+    return form_structure_->ParseFieldTypesWithPatterns(pattern_source,
+                                                        nullptr);
   }
 
  private:

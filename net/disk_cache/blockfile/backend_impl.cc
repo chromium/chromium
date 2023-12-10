@@ -1161,7 +1161,7 @@ int32_t BackendImpl::GetEntryCount() const {
       data_->header.num_entries - data_->header.lru.sizes[Rankings::DELETED];
 
   if (not_deleted < 0) {
-    NOTREACHED();
+    DUMP_WILL_BE_NOTREACHED_NORETURN();
     not_deleted = 0;
   }
 

@@ -8,7 +8,7 @@
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/infobars/infobar_metrics_recorder.h"
+#import "ios/chrome/browser/infobars/model/infobar_metrics_recorder.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_styler.h"
 #import "ios/chrome/browser/ui/infobars/modals/infobar_modal_delegate.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"

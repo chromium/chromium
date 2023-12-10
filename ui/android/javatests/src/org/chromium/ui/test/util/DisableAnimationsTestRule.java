@@ -30,9 +30,7 @@ import java.util.List;
  * DisableAnimationsTestRule(true). Does not work on Android S, see https://crbug.com/1225707.
  */
 public class DisableAnimationsTestRule implements TestRule {
-    /**
-     * Allows methods to ensure animations are on while disabled rule is applied class-wide.
-     */
+    /** Allows methods to ensure animations are on while disabled rule is applied class-wide. */
     @Target(ElementType.METHOD)
     @Retention(RetentionPolicy.RUNTIME)
     public @interface EnsureAnimationsOn {}
@@ -87,12 +85,15 @@ public class DisableAnimationsTestRule implements TestRule {
             public void evaluate() throws Throwable {
                 boolean overrideRequested =
                         description.getAnnotation(EnsureAnimationsOn.class) != null;
-                float curAnimationScale = Settings.Global.getFloat(
-                        ContextUtils.getApplicationContext().getContentResolver(),
-                        Settings.Global.ANIMATOR_DURATION_SCALE, DEFAULT_SCALE_FACTOR);
-                float toAnimationScale = mEnableAnimation || overrideRequested
-                        ? DEFAULT_SCALE_FACTOR
-                        : DISABLED_SCALE_FACTOR;
+                float curAnimationScale =
+                        Settings.Global.getFloat(
+                                ContextUtils.getApplicationContext().getContentResolver(),
+                                Settings.Global.ANIMATOR_DURATION_SCALE,
+                                DEFAULT_SCALE_FACTOR);
+                float toAnimationScale =
+                        mEnableAnimation || overrideRequested
+                                ? DEFAULT_SCALE_FACTOR
+                                : DISABLED_SCALE_FACTOR;
                 if (curAnimationScale != toAnimationScale) {
                     setAnimationScaleFactors(toAnimationScale);
                     Log.i(TAG, "Set animation scales to: %.1f", toAnimationScale);
@@ -113,12 +114,14 @@ public class DisableAnimationsTestRule implements TestRule {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             // Set animation scales through settings through shell commands in S+.
             List<String> commandToRuns =
-                    List.of("settings put global animator_duration_scale " + scaleFactor,
+                    List.of(
+                            "settings put global animator_duration_scale " + scaleFactor,
                             "settings put global transition_animation_scale " + scaleFactor,
                             "settings put global window_animation_scale " + scaleFactor);
             for (String command : commandToRuns) {
-                InstrumentationRegistry.getInstrumentation().getUiAutomation().executeShellCommand(
-                        command);
+                InstrumentationRegistry.getInstrumentation()
+                        .getUiAutomation()
+                        .executeShellCommand(command);
             }
         } else {
             // Set animation scales through reflection in R-.

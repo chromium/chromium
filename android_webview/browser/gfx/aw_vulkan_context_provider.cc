@@ -153,7 +153,6 @@ bool AwVulkanContextProvider::Globals::Initialize(
       .fDeviceFeatures2 = params->device_features_2,
       .fMemoryAllocator = gpu::CreateGrVkMemoryAllocator(device_queue.get()),
       .fGetProc = get_proc,
-      .fOwnsInstanceAndDevice = false,
   };
   gr_context = GrDirectContexts::MakeVulkan(backend_context);
   if (!gr_context) {
@@ -213,9 +212,8 @@ void AwVulkanContextProvider::EnqueueSecondaryCBPostSubmitTask(
   post_submit_tasks_.push_back(std::move(closure));
 }
 
-absl::optional<uint32_t> AwVulkanContextProvider::GetSyncCpuMemoryLimit()
-    const {
-  return absl::optional<uint32_t>();
+std::optional<uint32_t> AwVulkanContextProvider::GetSyncCpuMemoryLimit() const {
+  return std::optional<uint32_t>();
 }
 
 bool AwVulkanContextProvider::Initialize(AwDrawFn_InitVkParams* params) {

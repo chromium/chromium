@@ -29,8 +29,8 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/hit_test_cache.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
+#include "third_party/blink/renderer/core/layout/layout_ng_block_flow.h"
 #include "third_party/blink/renderer/core/layout/layout_quote.h"
-#include "third_party/blink/renderer/core/layout/ng/layout_ng_block_flow.h"
 #include "third_party/blink/renderer/core/scroll/scrollable_area.h"
 #include "third_party/blink/renderer/platform/graphics/overlay_scrollbar_clip_behavior.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
@@ -41,7 +41,6 @@ namespace blink {
 
 class LayoutViewTransitionRoot;
 class LocalFrameView;
-class ViewFragmentationContext;
 
 // LayoutView is the root of the layout tree and the Document's LayoutObject.
 //
@@ -105,6 +104,7 @@ class CORE_EXPORT LayoutView : public LayoutNGBlockFlow {
 
   bool IsChildAllowed(LayoutObject*, const ComputedStyle&) const override;
 
+  void InvalidateSvgRootsWithRelativeLengthDescendents();
   void UpdateLayout() final;
   LayoutUnit ComputeMinimumWidth();
 
@@ -183,10 +183,6 @@ class CORE_EXPORT LayoutView : public LayoutNGBlockFlow {
   void UpdateHitTestResult(HitTestResult&,
                            const PhysicalOffset&) const override;
 
-  ViewFragmentationContext* FragmentationContext() const {
-    NOT_DESTROYED();
-    return fragmentation_context_.Get();
-  }
   bool IsFragmentationContextRoot() const override;
 
   void SetDefaultPageDescription(const WebPrintPageDescription& description) {
@@ -267,7 +263,7 @@ class CORE_EXPORT LayoutView : public LayoutNGBlockFlow {
   // Return true if re-laying out the specified node (as a cached layout result)
   // with a new initial containing block size. Subsequent calls for the same
   // node within the same lifecycle update will return false.
-  bool AffectedByResizedInitialContainingBlock(const NGLayoutResult&);
+  bool AffectedByResizedInitialContainingBlock(const LayoutResult&);
 
   // Update generated markers and counters after style and layout tree update.
   // container - The container for container queries, otherwise nullptr.
@@ -392,16 +388,14 @@ class CORE_EXPORT LayoutView : public LayoutNGBlockFlow {
   // inline overflow.
   float page_scale_factor_ = 1.0;
 
-  Member<ViewFragmentationContext> fragmentation_context_;
-
   Member<LocalFrameView> frame_view_;
   unsigned layout_counter_count_ = 0;
   unsigned layout_list_item_count_ = 0;
   bool needs_marker_counter_update_ = false;
 
   // This map keeps track of SVG <text> descendants.
-  // LayoutNGSVGText needs to do re-layout on transform changes of any ancestor
-  // because LayoutNGSVGText's layout result depends on scaling factors
+  // LayoutSVGText needs to do re-layout on transform changes of any ancestor
+  // because LayoutSVGText's layout result depends on scaling factors
   // computed with ancestor transforms.
   Member<TrackedDescendantsMap> svg_text_descendants_;
 

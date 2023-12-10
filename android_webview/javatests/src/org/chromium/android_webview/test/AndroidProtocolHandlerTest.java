@@ -25,13 +25,11 @@ import java.io.InputStream;
 @RunWith(Parameterized.class)
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
 public class AndroidProtocolHandlerTest extends AwParameterizedTest {
-    @Rule
-    public AwActivityTestRule mActivityTestRule;
+    @Rule public AwActivityTestRule mActivityTestRule;
 
     public AndroidProtocolHandlerTest(AwSettingsMutation param) {
         this.mActivityTestRule = new AwActivityTestRule(param.getMutation());
     }
-
 
     @Test
     @SmallTest

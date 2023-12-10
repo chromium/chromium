@@ -14,7 +14,7 @@
 struct Environment {
   Environment() {
     base::CommandLine::Init(0, nullptr);
-    content::SetUpBlinkTestEnvironment();
+    blink_environment_.SetUp();
 
     // Suppress WARNING messages from the debug build.
     logging::SetMinLogLevel(logging::LOG_FATAL);
@@ -23,6 +23,7 @@ struct Environment {
     media::InitializeMediaLibrary();
   }
 
+  content::BlinkTestEnvironment blink_environment_;
   base::AtExitManager at_exit;
 };
 

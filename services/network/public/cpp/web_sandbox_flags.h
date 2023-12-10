@@ -7,8 +7,9 @@
 
 #include <cstdint>
 #include <string>
+#include <string_view>
+
 #include "base/component_export.h"
-#include "base/strings/string_piece_forward.h"
 
 namespace network {
 namespace mojom {
@@ -62,7 +63,7 @@ struct WebSandboxFlagsParsingResult {
 // or from the network process. See: docs/security/rule-of-2.md.
 COMPONENT_EXPORT(NETWORK_CPP)
 WebSandboxFlagsParsingResult ParseWebSandboxPolicy(
-    const base::StringPiece& input,
+    const std::string_view& input,
     mojom::WebSandboxFlags ignored_flags);
 
 }  // namespace network

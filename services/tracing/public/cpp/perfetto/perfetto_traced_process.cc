@@ -35,7 +35,7 @@
 // We add the nogncheck to ensure this doesn't trigger incorrect errors on
 // non-android builds.
 #include "services/tracing/public/cpp/perfetto/posix_system_producer.h"  // nogncheck
-#include "third_party/perfetto/include/perfetto/ext/tracing/ipc/default_socket.h"  // nogncheck
+#include "third_party/perfetto/include/perfetto/tracing/default_socket.h"  // nogncheck
 #endif  // BUILDFLAG(IS_POSIX)
 
 namespace tracing {

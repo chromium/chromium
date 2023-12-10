@@ -64,8 +64,8 @@ const int32_t kIdnaConversionOption = UIDNA_CHECK_BIDI;
 
 namespace blink {
 
-ScriptRegexp* EmailInputType::CreateEmailRegexp() {
-  return MakeGarbageCollected<ScriptRegexp>(kEmailPattern,
+ScriptRegexp* EmailInputType::CreateEmailRegexp(v8::Isolate* isolate) {
+  return MakeGarbageCollected<ScriptRegexp>(isolate, kEmailPattern,
                                             kTextCaseUnicodeInsensitive);
 }
 

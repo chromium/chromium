@@ -2,7 +2,7 @@
   "layers": [
     {
       "name": "Scrolling background of LayoutView #document",
-      "bounds": [980, 735],
+      "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
     },
@@ -19,13 +19,13 @@
     },
     {
       "name": "Inner Viewport Horizontal Scrollbar",
-      "position": [0, 728],
-      "bounds": [973, 7]
+      "position": [0, 593],
+      "bounds": [796, 4]
     },
     {
       "name": "Inner Viewport Vertical Scrollbar",
-      "position": [973, 0],
-      "bounds": [7, 728]
+      "position": [793, 0],
+      "bounds": [4, 596]
     }
   ],
   "transforms": [

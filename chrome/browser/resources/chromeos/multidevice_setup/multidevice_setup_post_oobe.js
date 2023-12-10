@@ -4,11 +4,13 @@
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import './strings.m.js';
+import '//resources/cr_elements/chromeos/cros_color_overrides.css.js';
 
 import {loadTimeData} from '//resources/ash/common/load_time_data.m.js';
+import {ColorChangeUpdater} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
+import {I18nBehavior} from 'chrome://resources/ash/common/i18n_behavior.js';
 import {PageName} from 'chrome://resources/ash/common/multidevice_setup/multidevice_setup.js';
 import {MultiDeviceSetupDelegate} from 'chrome://resources/ash/common/multidevice_setup/multidevice_setup_delegate.js';
-import {I18nBehavior} from 'chrome://resources/ash/common/i18n_behavior.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {PostOobeDelegate} from './post_oobe_delegate.js';
@@ -78,6 +80,14 @@ Polymer({
   /** @override */
   ready() {
     this.onWindowSizeUpdated_();
+
+    document.body.classList.add('jelly-enabled');
+
+    // Start listening for color changes in 'chrome://theme/colors.css'.
+    /** @suppress {checkTypes} */
+    (function() {
+      ColorChangeUpdater.forDocument().start();
+    })();
   },
 
   /** @override */

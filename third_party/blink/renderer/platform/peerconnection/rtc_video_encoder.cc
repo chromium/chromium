@@ -62,7 +62,6 @@
 #include "third_party/webrtc/modules/video_coding/codecs/h264/include/h264.h"
 #include "third_party/webrtc/modules/video_coding/include/video_error_codes.h"
 #include "third_party/webrtc/rtc_base/time_utils.h"
-#include "third_party/webrtc/rtc_base/voucher.h"
 
 namespace {
 
@@ -270,12 +269,6 @@ struct CrossThreadCopier<webrtc::VideoEncoder::RateControlParameters>
 };
 
 template <>
-struct CrossThreadCopier<webrtc::Voucher::Ptr>
-    : public CrossThreadCopierPassThrough<webrtc::Voucher::Ptr> {
-  STATIC_ONLY(CrossThreadCopier);
-};
-
-template <>
 struct CrossThreadCopier<
     std::vector<media::VideoEncodeAccelerator::Config::SpatialLayer>>
     : public CrossThreadCopierPassThrough<
@@ -473,20 +466,17 @@ struct FrameInfo {
   FrameInfo(const base::TimeDelta& media_timestamp,
             int32_t rtp_timestamp,
             int64_t capture_time_ms,
-            const ActiveSpatialLayers& active_spatial_layers,
-            webrtc::Voucher::Ptr voucher)
+            const ActiveSpatialLayers& active_spatial_layers)
       : media_timestamp_(media_timestamp),
         rtp_timestamp_(rtp_timestamp),
         capture_time_ms_(capture_time_ms),
-        active_spatial_layers_(active_spatial_layers),
-        voucher_(std::move(voucher)) {}
+        active_spatial_layers_(active_spatial_layers) {}
 
   const base::TimeDelta media_timestamp_;
   const int32_t rtp_timestamp_;
   const int64_t capture_time_ms_;
   const ActiveSpatialLayers active_spatial_layers_;
   size_t produced_frames_ = 0;
-  webrtc::Voucher::Ptr voucher_;
 };
 
 webrtc::VideoCodecType ProfileToWebRtcVideoCodecType(
@@ -592,6 +582,7 @@ class RTCVideoEncoder::Impl : public media::VideoEncodeAccelerator::Client {
        scoped_refptr<media::MojoVideoEncoderMetricsProviderFactory>
            encoder_metrics_provider_factory,
        webrtc::VideoCodecType video_codec_type,
+       absl::optional<webrtc::ScalabilityMode> scalability_mode,
        webrtc::VideoContentType video_content_type,
        UpdateEncoderInfoCallback update_encoder_info_callback,
        base::RepeatingClosure execute_software_fallback,
@@ -613,7 +604,7 @@ class RTCVideoEncoder::Impl : public media::VideoEncodeAccelerator::Client {
   // Enqueue a frame from WebRTC for encoding. This function is called
   // asynchronously from webrtc encoder thread. When the error is caused, it is
   // reported by NotifyErrorStatus().
-  void Enqueue(FrameChunk frame_chunk, webrtc::Voucher::Ptr voucher);
+  void Enqueue(FrameChunk frame_chunk);
 
   // Request encoding parameter change for the underlying encoder.
   void RequestEncodingParametersChange(
@@ -642,12 +633,11 @@ class RTCVideoEncoder::Impl : public media::VideoEncodeAccelerator::Client {
   };
 
   // Perform encoding on an input frame from the input queue.
-  void EncodeOneFrame(FrameChunk frame_chunk, webrtc::Voucher::Ptr voucher);
+  void EncodeOneFrame(FrameChunk frame_chunk);
 
   // Perform encoding on an input frame from the input queue using VEA native
   // input mode.  The input frame must be backed with GpuMemoryBuffer buffers.
-  void EncodeOneFrameWithNativeInput(FrameChunk frame_chunk,
-                                     webrtc::Voucher::Ptr voucher);
+  void EncodeOneFrameWithNativeInput(FrameChunk frame_chunk);
 
   // Creates a GpuMemoryBuffer frame filled with black pixels. Returns true if
   // the frame is successfully created; false otherwise.
@@ -753,6 +743,9 @@ class RTCVideoEncoder::Impl : public media::VideoEncodeAccelerator::Client {
   // The video codec type, as reported to WebRTC.
   const webrtc::VideoCodecType video_codec_type_;
 
+  // The scalability mode, as reported to WebRTC.
+  const absl::optional<webrtc::ScalabilityMode> scalability_mode_;
+
   // The content type, as reported to WebRTC (screenshare vs realtime video).
   const webrtc::VideoContentType video_content_type_;
 
@@ -802,6 +795,7 @@ RTCVideoEncoder::Impl::Impl(
     scoped_refptr<media::MojoVideoEncoderMetricsProviderFactory>
         encoder_metrics_provider_factory,
     webrtc::VideoCodecType video_codec_type,
+    absl::optional<webrtc::ScalabilityMode> scalability_mode,
     webrtc::VideoContentType video_content_type,
     UpdateEncoderInfoCallback update_encoder_info_callback,
     base::RepeatingClosure execute_software_fallback,
@@ -810,6 +804,7 @@ RTCVideoEncoder::Impl::Impl(
       encoder_metrics_provider_factory_(
           std::move(encoder_metrics_provider_factory)),
       video_codec_type_(video_codec_type),
+      scalability_mode_(scalability_mode),
       video_content_type_(video_content_type),
       update_encoder_info_callback_(std::move(update_encoder_info_callback)),
       execute_software_fallback_(std::move(execute_software_fallback)) {
@@ -891,8 +886,7 @@ void RTCVideoEncoder::Impl::NotifyEncoderInfoChange(
           preferred_pixel_formats_.begin(), preferred_pixel_formats_.end()));
 }
 
-void RTCVideoEncoder::Impl::Enqueue(FrameChunk frame_chunk,
-                                    webrtc::Voucher::Ptr voucher) {
+void RTCVideoEncoder::Impl::Enqueue(FrameChunk frame_chunk) {
   TRACE_EVENT1("webrtc", "RTCVideoEncoder::Impl::Enqueue", "timestamp",
                frame_chunk.timestamp_us);
   DVLOG(3) << __func__;
@@ -905,7 +899,7 @@ void RTCVideoEncoder::Impl::Enqueue(FrameChunk frame_chunk,
 
   if (use_native_input_) {
     DCHECK(pending_frames_.empty());
-    EncodeOneFrameWithNativeInput(std::move(frame_chunk), std::move(voucher));
+    EncodeOneFrameWithNativeInput(std::move(frame_chunk));
     return;
   }
 
@@ -915,13 +909,7 @@ void RTCVideoEncoder::Impl::Enqueue(FrameChunk frame_chunk,
   while (!pending_frames_.empty() && !input_buffers_free_.empty()) {
     auto chunk = std::move(pending_frames_.front());
     pending_frames_.pop_front();
-    // Use the voucher for the `frame_chunk` that was submitted into this
-    // method.
-    webrtc::Voucher::Ptr voucher_ptr;
-    if (pending_frames_.empty()) {
-      voucher_ptr = std::move(voucher);
-    }
-    EncodeOneFrame(std::move(chunk), std::move(voucher_ptr));
+    EncodeOneFrame(std::move(chunk));
   }
 }
 
@@ -1003,7 +991,8 @@ void RTCVideoEncoder::Impl::RequestEncodingParametersChange(
     }
   }
   DCHECK_EQ(allocation.GetSumBps(), parameters.bitrate.get_sum_bps());
-  video_encoder_->RequestEncodingParametersChange(allocation, framerate);
+  video_encoder_->RequestEncodingParametersChange(allocation, framerate,
+                                                  absl::nullopt);
 }
 
 void RTCVideoEncoder::Impl::RecordTimestampMatchUMA() const {
@@ -1122,7 +1111,6 @@ void RTCVideoEncoder::Impl::BitstreamBufferReady(
   absl::optional<uint32_t> rtp_timestamp;
   absl::optional<int64_t> capture_timestamp_ms;
   absl::optional<ActiveSpatialLayers> expected_active_spatial_layers;
-  absl::optional<webrtc::Voucher::ScopedSetter> voucher_setter;
   if (!failed_timestamp_match_) {
     // Pop timestamps until we have a match.
     while (!submitted_frames_.empty()) {
@@ -1152,9 +1140,6 @@ void RTCVideoEncoder::Impl::BitstreamBufferReady(
                 {media::EncoderStatus::Codes::kEncoderFailedEncode,
                  "missing resolution"});
             return;
-          }
-          if (front_frame.voucher_) {
-            voucher_setter.emplace(std::move(front_frame.voucher_));
           }
           submitted_frames_.pop_front();
         }
@@ -1198,6 +1183,9 @@ void RTCVideoEncoder::Impl::BitstreamBufferReady(
 
   webrtc::CodecSpecificInfo info;
   info.codecType = video_codec_type_;
+  if (scalability_mode_.has_value()) {
+    info.scalability_mode = scalability_mode_;
+  }
   switch (video_codec_type_) {
     case webrtc::kVideoCodecH264: {
       webrtc::CodecSpecificInfoH264& h264 = info.codecSpecific.H264;
@@ -1414,8 +1402,7 @@ RTCVideoEncoder::Impl::~Impl() {
   weak_this_factory_.InvalidateWeakPtrs();
 }
 
-void RTCVideoEncoder::Impl::EncodeOneFrame(FrameChunk frame_chunk,
-                                           webrtc::Voucher::Ptr voucher) {
+void RTCVideoEncoder::Impl::EncodeOneFrame(FrameChunk frame_chunk) {
   DVLOG(3) << "Impl::EncodeOneFrame()";
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!input_buffers_free_.empty());
@@ -1567,9 +1554,9 @@ void RTCVideoEncoder::Impl::EncodeOneFrame(FrameChunk frame_chunk,
   if (!failed_timestamp_match_) {
     DCHECK(!base::Contains(submitted_frames_, timestamp,
                            &FrameInfo::media_timestamp_));
-    submitted_frames_.emplace_back(
-        timestamp, frame_chunk.timestamp, frame_chunk.render_time_ms,
-        GetActiveSpatialLayers(), std::move(voucher));
+    submitted_frames_.emplace_back(timestamp, frame_chunk.timestamp,
+                                   frame_chunk.render_time_ms,
+                                   GetActiveSpatialLayers());
   }
 
   // Call UseOutputBitstreamBuffer() for pending output buffers.
@@ -1583,8 +1570,7 @@ void RTCVideoEncoder::Impl::EncodeOneFrame(FrameChunk frame_chunk,
 }
 
 void RTCVideoEncoder::Impl::EncodeOneFrameWithNativeInput(
-    FrameChunk frame_chunk,
-    webrtc::Voucher::Ptr voucher) {
+    FrameChunk frame_chunk) {
   DVLOG(3) << "Impl::EncodeOneFrameWithNativeInput()";
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(input_buffers_.empty() && input_buffers_free_.empty());
@@ -1627,9 +1613,9 @@ void RTCVideoEncoder::Impl::EncodeOneFrameWithNativeInput(
   if (!failed_timestamp_match_) {
     DCHECK(!base::Contains(submitted_frames_, frame->timestamp(),
                            &FrameInfo::media_timestamp_));
-    submitted_frames_.emplace_back(
-        frame->timestamp(), frame_chunk.timestamp, frame_chunk.render_time_ms,
-        GetActiveSpatialLayers(), std::move(voucher));
+    submitted_frames_.emplace_back(frame->timestamp(), frame_chunk.timestamp,
+                                   frame_chunk.render_time_ms,
+                                   GetActiveSpatialLayers());
   }
 
   // Call UseOutputBitstreamBuffer() for pending output buffers.
@@ -1686,7 +1672,7 @@ void RTCVideoEncoder::Impl::InputBufferReleased(int index) {
   while (!pending_frames_.empty() && !input_buffers_free_.empty()) {
     auto chunk = std::move(pending_frames_.front());
     pending_frames_.pop_front();
-    EncodeOneFrame(std::move(chunk), webrtc::Voucher::Current());
+    EncodeOneFrame(std::move(chunk));
   }
 }
 
@@ -1897,7 +1883,8 @@ int32_t RTCVideoEncoder::InitEncode(
 
   impl_ = std::make_unique<Impl>(
       gpu_factories_, encoder_metrics_provider_factory_,
-      ProfileToWebRtcVideoCodecType(profile_), webrtc_content_type,
+      ProfileToWebRtcVideoCodecType(profile_),
+      codec_settings->GetScalabilityMode(), webrtc_content_type,
       update_encoder_info_callback, execute_software_fallback, weak_impl_);
 
   media::VideoPixelFormat pixel_format = media::PIXEL_FORMAT_I420;
@@ -1911,11 +1898,12 @@ int32_t RTCVideoEncoder::InitEncode(
 
   vea_config_ = media::VideoEncodeAccelerator::Config(
       pixel_format, input_visible_size, profile_,
-      media::Bitrate::ConstantBitrate(bitrate_bps),
-      /*initial_framerate=*/absl::nullopt,
-      /*gop_length=*/absl::nullopt,
-      /*h264_output_level=*/absl::nullopt, is_constrained_h264_, storage_type,
-      vea_content_type, spatial_layers, inter_layer_pred);
+      media::Bitrate::ConstantBitrate(bitrate_bps));
+  vea_config_->is_constrained_h264 = is_constrained_h264_;
+  vea_config_->storage_type = storage_type;
+  vea_config_->content_type = vea_content_type;
+  vea_config_->spatial_layers = spatial_layers;
+  vea_config_->inter_layer_pred = inter_layer_pred;
 
   if (!base::FeatureList::IsEnabled(
           features::kWebRtcInitializeEncoderOnFirstFrame)) {
@@ -1983,8 +1971,7 @@ int32_t RTCVideoEncoder::Encode(
   PostCrossThreadTask(
       *gpu_task_runner_.get(), FROM_HERE,
       CrossThreadBindOnce(&RTCVideoEncoder::Impl::Enqueue, weak_impl_,
-                          FrameChunk(input_image, want_key_frame),
-                          webrtc::Voucher::Current()));
+                          FrameChunk(input_image, want_key_frame)));
   return WEBRTC_VIDEO_CODEC_OK;
 }
 

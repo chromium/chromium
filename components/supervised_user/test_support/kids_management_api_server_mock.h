@@ -5,19 +5,19 @@
 #ifndef COMPONENTS_SUPERVISED_USER_TEST_SUPPORT_KIDS_MANAGEMENT_API_SERVER_MOCK_H_
 #define COMPONENTS_SUPERVISED_USER_TEST_SUPPORT_KIDS_MANAGEMENT_API_SERVER_MOCK_H_
 
-#include <deque>
 #include <memory>
 
 #include "base/callback_list.h"
 #include "base/functional/callback_forward.h"
-#include "base/memory/raw_ptr.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/supervised_user/core/browser/fetcher_config.h"
 #include "components/supervised_user/core/browser/proto/kidschromemanagement_messages.pb.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace supervised_user {
 
@@ -27,6 +27,32 @@ namespace supervised_user {
 void SetHttpEndpointsForKidsManagementApis(
     base::test::ScopedFeatureList& feature_list,
     base::StringPiece hostname);
+
+// Component of `KidsManagementApiServerMock`. Implements ClassifyUrl as both
+// mock and fake, allowing to account the calls but also providing a default
+// response (allow or restrict) for every request. Newly created instance has
+// purportedly unconfigured default response and will crash on first use - this
+// is to limit unintended / unnoticed uses of the mock during test.
+class KidsManagementClassifyUrlMock {
+ public:
+  KidsManagementClassifyUrlMock();
+  ~KidsManagementClassifyUrlMock();
+
+  MOCK_METHOD(
+      kids_chrome_management::ClassifyUrlResponse::DisplayClassification,
+      ClassifyUrl,
+      (const net::test_server::HttpRequest& request));
+  void set_display_classification(
+      kids_chrome_management::ClassifyUrlResponse::DisplayClassification
+          classification);
+
+ private:
+  // The classification response for every request. Needs to be set (see
+  // `set_display_classification`) before first use.
+  absl::optional<
+      kids_chrome_management::ClassifyUrlResponse::DisplayClassification>
+      display_classification_;
+};
 
 // Simplified implementation of the real Kids Management API server, purposed to
 // serve as request handlers for the net::test_server::EmbeddedTestServer.
@@ -52,15 +78,16 @@ class KidsManagementApiServerMock {
   base::CallbackListSubscription Subscribe(
       base::RepeatingCallback<RequestMonitor> monitor);
 
-  // Number of requests to ClassifyUrl endpoint must strictly match the number
-  // of queued classifications.
-  void QueueAllowedUrlClassification();
-  void QueueRestrictedUrlClassification();
+  // Set the mock to respond with allow or restrict url for all subsequent
+  // requests to ClassifyUrl.
+  void AllowSubsequentClassifyUrl();
+  void RestrictSubsequentClassifyUrl();
+
+  KidsManagementClassifyUrlMock& classify_url_mock() {
+    return classify_url_mock_;
+  }
 
  private:
-  void QueueUrlClassification(
-      kids_chrome_management::ClassifyUrlResponse::DisplayClassification
-          display_classification);
   // Api handler for /kidsmanagement/v1/people/me:classifyUrl
   std::unique_ptr<net::test_server::HttpResponse> ClassifyUrl(
       const net::test_server::HttpRequest& request);
@@ -72,10 +99,7 @@ class KidsManagementApiServerMock {
 
   base::RepeatingCallbackList<RequestMonitor> request_monitors_;
 
-  // Queue of pending classifications for
-  // /kidsmanagement/v1/people/me:classifyUrl
-  std::deque<kids_chrome_management::ClassifyUrlResponse::DisplayClassification>
-      classifications_;
+  KidsManagementClassifyUrlMock classify_url_mock_;
 };
 
 }  // namespace supervised_user

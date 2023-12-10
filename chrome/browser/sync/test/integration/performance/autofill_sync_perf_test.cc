@@ -151,7 +151,8 @@ void AutofillProfileSyncPerfTest::RemoveProfiles(int profile) {
 }
 
 const AutofillProfile AutofillProfileSyncPerfTest::NextAutofillProfile() {
-  AutofillProfile profile;
+  AutofillProfile profile(
+      autofill::i18n_model_definition::kLegacyHierarchyCountryCode);
   autofill::test::SetProfileInfoWithGuid(&profile, NextGUID().c_str(),
                                          NextName().c_str(), "", "", "", "", "",
                                          "", "", "", "", "", "");

@@ -97,18 +97,6 @@ using signin_metrics::PromoAction;
       _accessPoint != signin_metrics::AccessPoint::ACCESS_POINT_READING_LIST) {
     return;
   }
-  bool bookmarksAccountStorageEnabled =
-      base::FeatureList::IsEnabled(syncer::kEnableBookmarksAccountStorage);
-  bool dualReadingListModelEnabled = base::FeatureList::IsEnabled(
-      syncer::kReadingListEnableDualReadingListModel);
-  bool readingListTransportUponSignInEnabled = base::FeatureList::IsEnabled(
-      syncer::kReadingListEnableSyncTransportModeUponSignIn);
-  CHECK(bookmarksAccountStorageEnabled ||
-        (dualReadingListModelEnabled && readingListTransportUponSignInEnabled))
-      << "bookmarksAccountStorageEnabled: " << bookmarksAccountStorageEnabled
-      << ", dualReadingListModelEnabled: " << dualReadingListModelEnabled
-      << ", readingListTransportUponSignInEnabled: "
-      << readingListTransportUponSignInEnabled;
   _syncService->GetUserSettings()
       ->SetBookmarksAndReadingListAccountStorageOptIn(true);
 }

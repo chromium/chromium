@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/components/phonehub/fake_camera_roll_download_manager.h"
 
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -11,7 +12,6 @@
 #include "chromeos/ash/components/phonehub/camera_roll_download_manager.h"
 #include "chromeos/ash/components/phonehub/proto/phonehub_api.pb.h"
 #include "chromeos/ash/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 namespace phonehub {
@@ -24,16 +24,16 @@ void FakeCameraRollDownloadManager::CreatePayloadFiles(
     int64_t payload_id,
     const phonehub::proto::CameraRollItemMetadata& item_metadata,
     CreatePayloadFilesCallback payload_files_callback) {
-  absl::optional<secure_channel::mojom::PayloadFilesPtr> payload_files;
+  std::optional<secure_channel::mojom::PayloadFilesPtr> payload_files;
   if (expected_create_payload_files_result_ ==
       CreatePayloadFilesResult::kSuccess) {
     payload_files =
-        absl::make_optional(secure_channel::mojom::PayloadFiles::New());
+        std::make_optional(secure_channel::mojom::PayloadFiles::New());
     payload_update_map_.emplace(
         payload_id,
         std::vector<secure_channel::mojom::FileTransferUpdatePtr>());
   } else {
-    payload_files = absl::nullopt;
+    payload_files = std::nullopt;
   }
   std::move(payload_files_callback)
       .Run(expected_create_payload_files_result_, std::move(payload_files));

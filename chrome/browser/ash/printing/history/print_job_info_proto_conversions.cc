@@ -4,11 +4,11 @@
 
 #include "chrome/browser/ash/printing/history/print_job_info_proto_conversions.h"
 
+#include <optional>
 #include <string>
 
 #include "chrome/browser/chromeos/printing/printer_error_codes.h"
 #include "printing/mojom/print.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -20,7 +20,7 @@ namespace {
 
 proto::PrintSettings_ColorMode ColorModelToProto(
     ::printing::mojom::ColorModel color) {
-  absl::optional<bool> is_color = ::printing::IsColorModelSelected(color);
+  std::optional<bool> is_color = ::printing::IsColorModelSelected(color);
   return is_color.value() ? proto::PrintSettings_ColorMode_COLOR
                           : proto::PrintSettings_ColorMode_BLACK_AND_WHITE;
 }
@@ -60,6 +60,8 @@ proto::PrintJobInfo_PrintJobSource PrintJobSourceToProto(
       return proto::PrintJobInfo_PrintJobSource_EXTENSION;
     case ::printing::PrintJob::Source::kPrintPreviewIncognito:
       return proto::PrintJobInfo_PrintJobSource_PRINT_PREVIEW_INCOGNITO;
+    case ::printing::PrintJob::Source::kIsolatedWebApp:
+      return proto::PrintJobInfo_PrintJobSource_ISOLATED_WEB_APP;
     default:
       NOTREACHED();
   }

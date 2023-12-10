@@ -286,6 +286,9 @@ void OnExtensionInstalled(
   }
 
   GetExtensionService(state->context)->EnableExtension(extension->id());
+  // Reload the extension to make sure old service worker are cleaned. This is
+  // important when the extension has already been installed to the profile.
+  GetExtensionService(state->context)->ReloadExtension(extension->id());
 
   GURL script_url = extension->GetResourceURL(
       extensions::BackgroundInfo::GetBackgroundServiceWorkerScript(extension));

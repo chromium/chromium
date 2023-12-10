@@ -7,6 +7,7 @@
 #import "base/apple/foundation_util.h"
 #import "base/test/bind.h"
 #import "base/test/ios/wait_util.h"
+#import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/password_manager/core/browser/affiliation/fake_affiliation_service.h"
 #import "components/password_manager/core/browser/password_manager_test_utils.h"
@@ -14,8 +15,8 @@
 #import "components/password_manager/core/browser/ui/password_check_referrer.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_affiliation_service_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
+#import "ios/chrome/browser/passwords/model/metrics/ios_password_manager_metrics.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
-#import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
@@ -58,8 +59,13 @@ class AddPasswordCoordinatorTest : public PlatformTest {
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
                               base::BindRepeating(&CreateMockSyncService));
 
+    // Create scene state for reauthentication coordinator.
+    scene_state_ = [[SceneState alloc] initWithAppState:nil];
+    scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+
     browser_state_ = builder.Build();
-    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+    browser_ =
+        std::make_unique<TestBrowser>(browser_state_.get(), scene_state_);
 
     // Mock ApplicationCommands. Since ApplicationCommands conforms to
     // ApplicationSettingsCommands, it must be mocked as well.
@@ -86,11 +92,6 @@ class AddPasswordCoordinatorTest : public PlatformTest {
         initWithBaseViewController:base_view_controller_
                            browser:browser_.get()
                       reauthModule:mock_reauth_module_];
-
-    // Create scene state for reauthentication coordinator.
-    scene_state_ = [[SceneState alloc] initWithAppState:nil];
-    scene_state_.activationLevel = SceneActivationLevelForegroundActive;
-    SceneStateBrowserAgent::CreateForBrowser(browser_.get(), scene_state_);
 
     scoped_window_.Get().rootViewController = base_view_controller_;
 
@@ -139,6 +140,7 @@ class AddPasswordCoordinatorTest : public PlatformTest {
   MockReauthenticationModule* mock_reauth_module_ = nil;
   base::test::ScopedFeatureList scoped_feature_list_;
   id mocked_application_commands_handler_;
+  base::HistogramTester histogram_tester_;
   AddPasswordCoordinator* coordinator_ = nil;
 };
 
@@ -146,6 +148,12 @@ class AddPasswordCoordinatorTest : public PlatformTest {
 // started.
 TEST_F(AddPasswordCoordinatorTest, StartPresentsViewController) {
   CheckAddPasswordIsTopViewController();
+
+  // Verify visit metric was logged.
+  histogram_tester_.ExpectUniqueSample(
+      /*name=*/password_manager::kPasswordManagerSurfaceVisitHistogramName,
+      /*sample=*/password_manager::PasswordManagerSurface::kAddPassword,
+      /*count=*/1);
 }
 
 // Verifies that reauthentication is required after the scene goes to the

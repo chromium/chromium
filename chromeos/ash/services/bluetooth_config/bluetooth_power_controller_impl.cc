@@ -185,7 +185,7 @@ void BluetoothPowerControllerImpl::InitPrimaryUserPrefService(
 }
 
 void BluetoothPowerControllerImpl::ApplyBluetoothPrimaryUserPref() {
-  absl::optional<user_manager::UserType> user_type =
+  std::optional<user_manager::UserType> user_type =
       user_manager::UserManager::Get()->GetActiveUser()->GetType();
 
   // Apply the Bluetooth pref only for regular users (i.e. users representing

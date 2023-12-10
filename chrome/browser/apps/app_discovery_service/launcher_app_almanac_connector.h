@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_APPS_APP_DISCOVERY_SERVICE_LAUNCHER_APP_ALMANAC_CONNECTOR_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/functional/callback_forward.h"
@@ -13,7 +14,6 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/apps/almanac_api_client/device_info_manager.h"
 #include "chrome/browser/apps/app_discovery_service/almanac_api/launcher_app.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 
@@ -25,7 +25,7 @@ class SimpleURLLoader;
 namespace apps {
 
 using GetAppsCallback =
-    base::OnceCallback<void(absl::optional<proto::LauncherAppResponse>)>;
+    base::OnceCallback<void(std::optional<proto::LauncherAppResponse>)>;
 
 // The LauncherAppAlmanacConnector is used to talk to the Launcher App endpoint
 // in the Almanac server. Its role is to make requests and receive responses.

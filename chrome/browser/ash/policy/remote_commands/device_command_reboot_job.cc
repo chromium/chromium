@@ -38,7 +38,7 @@ const char kPayloadUserSessionRebootDelayField[] = "user_session_delay_seconds";
 
 constexpr base::TimeDelta kDefaultUserSessionRebootDelay = base::Minutes(5);
 
-absl::optional<base::TimeDelta> ExtractUserSessionDelayFromCommandLine() {
+std::optional<base::TimeDelta> ExtractUserSessionDelayFromCommandLine() {
   const base::CommandLine* command_line =
       base::CommandLine::ForCurrentProcess();
 
@@ -46,7 +46,7 @@ absl::optional<base::TimeDelta> ExtractUserSessionDelayFromCommandLine() {
       ash::switches::kRemoteRebootCommandDelayInSecondsForTesting);
 
   if (delay_string.empty()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   int delay_in_seconds;
@@ -55,24 +55,24 @@ absl::optional<base::TimeDelta> ExtractUserSessionDelayFromCommandLine() {
     LOG(ERROR) << "Ignored "
                << ash::switches::kRemoteRebootCommandDelayInSecondsForTesting
                << " = " << delay_string;
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return base::Seconds(delay_in_seconds);
 }
 
-absl::optional<base::TimeDelta> ExtractUserSessionDelayFromPayload(
+std::optional<base::TimeDelta> ExtractUserSessionDelayFromPayload(
     const std::string& command_payload) {
-  const absl::optional<base::Value> root =
+  const std::optional<base::Value> root =
       base::JSONReader::Read(command_payload);
   if (!root || !root->is_dict()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
-  absl::optional<int> delay_in_seconds =
+  std::optional<int> delay_in_seconds =
       root->GetDict().FindInt(kPayloadUserSessionRebootDelayField);
   if (!delay_in_seconds || delay_in_seconds.value() < 0) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return base::Seconds(delay_in_seconds.value());
@@ -121,7 +121,7 @@ enterprise_management::RemoteCommand_Type DeviceCommandRebootJob::GetType()
 
 bool DeviceCommandRebootJob::ParseCommandPayload(
     const std::string& command_payload) {
-  const absl::optional<base::TimeDelta> commandline_delay =
+  const std::optional<base::TimeDelta> commandline_delay =
       ExtractUserSessionDelayFromCommandLine();
 
   // Ignore payload if delay is set in command line.
@@ -130,7 +130,7 @@ bool DeviceCommandRebootJob::ParseCommandPayload(
     return true;
   }
 
-  const absl::optional<base::TimeDelta> payload_delay =
+  const std::optional<base::TimeDelta> payload_delay =
       ExtractUserSessionDelayFromPayload(command_payload);
   if (payload_delay) {
     user_session_delay_ = payload_delay.value();
@@ -263,7 +263,7 @@ void DeviceCommandRebootJob::RunAsyncCallback(CallbackWithResult callback,
                                               ResultType result,
                                               base::Location from_where) {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      from_where, base::BindOnce(std::move(callback), result, absl::nullopt));
+      from_where, base::BindOnce(std::move(callback), result, std::nullopt));
 }
 
 }  // namespace policy

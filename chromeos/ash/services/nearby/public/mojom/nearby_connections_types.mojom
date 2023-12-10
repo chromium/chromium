@@ -299,6 +299,15 @@ enum LogSeverity {
   kFatal = 3,
 };
 
+// Used to indicate the authentication status to clients requesting connection.
+// This should stay in sync with the AuthenticationStatus enum defined at:
+// //third_party/nearby/src/internal/interop/device_provider.h
+enum AuthenticationStatus {
+  kUnknown = 0,
+  kSuccess = 1,
+  kFailure = 2,
+};
+
 // Information about a connection to determine if this is the correct device
 // to connect to. These fields should never be empty.
 struct InitialConnectionInfoV3 {
@@ -310,6 +319,9 @@ struct InitialConnectionInfoV3 {
 
   // Specifies if the connection is incoming or outgoing.
   bool is_incoming_connection = false;
+
+  // Status whether the remote device is authenticated or not.
+  AuthenticationStatus authentication_status;
 };
 
 // Used to indicate the new connection quality when upgrading to a new medium

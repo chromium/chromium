@@ -53,9 +53,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-/**
- * Message UI specific implementation of {@link DownloadMessageUiController}.
- */
+/** Message UI specific implementation of {@link DownloadMessageUiController}. */
 public class DownloadMessageUiControllerImpl implements DownloadMessageUiController {
     private static final long DURATION_SHOW_RESULT_IN_MS = 6000;
 
@@ -64,12 +62,21 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
     private static final int MAX_DESCRIPTION_LENGTH = 200;
 
     // Keep this in sync with the DownloadInfoBar.ShownState enum in enums.xml.
-    @IntDef({UmaInfobarShown.ANY_STATE, UmaInfobarShown.ACCELERATED, UmaInfobarShown.DOWNLOADING,
-            UmaInfobarShown.COMPLETE, UmaInfobarShown.FAILED, UmaInfobarShown.PENDING,
-            UmaInfobarShown.MULTIPLE_DOWNLOADING, UmaInfobarShown.MULTIPLE_COMPLETE,
-            UmaInfobarShown.MULTIPLE_FAILED, UmaInfobarShown.MULTIPLE_PENDING,
-            UmaInfobarShown.SCHEDULED, UmaInfobarShown.MULTIPLE_SCHEDULED,
-            UmaInfobarShown.NUM_ENTRIES})
+    @IntDef({
+        UmaInfobarShown.ANY_STATE,
+        UmaInfobarShown.ACCELERATED,
+        UmaInfobarShown.DOWNLOADING,
+        UmaInfobarShown.COMPLETE,
+        UmaInfobarShown.FAILED,
+        UmaInfobarShown.PENDING,
+        UmaInfobarShown.MULTIPLE_DOWNLOADING,
+        UmaInfobarShown.MULTIPLE_COMPLETE,
+        UmaInfobarShown.MULTIPLE_FAILED,
+        UmaInfobarShown.MULTIPLE_PENDING,
+        UmaInfobarShown.SCHEDULED,
+        UmaInfobarShown.MULTIPLE_SCHEDULED,
+        UmaInfobarShown.NUM_ENTRIES
+    })
     @Retention(RetentionPolicy.SOURCE)
     private @interface UmaInfobarShown {
         int ANY_STATE = 0;
@@ -93,8 +100,13 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
      * enums.xml. Values should be number from 0 and can't have gaps.
      */
     @VisibleForTesting
-    @IntDef({UiState.INITIAL, UiState.DOWNLOADING, UiState.SHOW_RESULT, UiState.CANCELLED,
-            UiState.NUM_ENTRIES})
+    @IntDef({
+        UiState.INITIAL,
+        UiState.DOWNLOADING,
+        UiState.SHOW_RESULT,
+        UiState.CANCELLED,
+        UiState.NUM_ENTRIES
+    })
     @Retention(RetentionPolicy.SOURCE)
     protected @interface UiState {
         // Default initial state. It is also the final state after all the downloads are paused or
@@ -135,14 +147,16 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
         int ANIMATED_VECTOR_DRAWABLE = 2;
     }
 
-    /**
-     * Represents the values for the histogram Download.Incognito.Message.
-     */
-    @IntDef({IncognitoMessageEvent.SHOWN, IncognitoMessageEvent.ACCEPTED,
-            IncognitoMessageEvent.DISMISSED_WITH_GESTURE,
-            IncognitoMessageEvent.DISMISSED_WITH_TIMER, IncognitoMessageEvent.NUM_ENTRIES,
-            IncognitoMessageEvent.DISMISSED_WITH_DIFFERENT_REASON,
-            IncognitoMessageEvent.NOT_SHOWN_NULL_MESSAGE_DISPATCHER})
+    /** Represents the values for the histogram Download.Incognito.Message. */
+    @IntDef({
+        IncognitoMessageEvent.SHOWN,
+        IncognitoMessageEvent.ACCEPTED,
+        IncognitoMessageEvent.DISMISSED_WITH_GESTURE,
+        IncognitoMessageEvent.DISMISSED_WITH_TIMER,
+        IncognitoMessageEvent.NUM_ENTRIES,
+        IncognitoMessageEvent.DISMISSED_WITH_DIFFERENT_REASON,
+        IncognitoMessageEvent.NOT_SHOWN_NULL_MESSAGE_DISPATCHER
+    })
     @Retention(RetentionPolicy.SOURCE)
     private @interface IncognitoMessageEvent {
         int SHOWN = 0;
@@ -155,12 +169,9 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
         int NUM_ENTRIES = 6;
     }
 
-    /**
-     * Represents the data required to show UI elements of the message.
-     */
+    /** Represents the data required to show UI elements of the message. */
     public static class DownloadProgressMessageUiData {
-        @Nullable
-        public ContentId id;
+        @Nullable public ContentId id;
 
         public String message;
         public String description;
@@ -179,8 +190,7 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
         // Used for differentiating various states (e.g. completed, failed, pending etc) in the
         // SHOW_RESULT state. Keeps track of the state of the currently displayed item(s) and should
         // be reset to null when moving out DOWNLOADING/SHOW_RESULT state.
-        @ResultState
-        public int resultState;
+        @ResultState public int resultState;
 
         @Override
         public int hashCode() {
@@ -198,9 +208,11 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
 
             DownloadProgressMessageUiData other = (DownloadProgressMessageUiData) obj;
             boolean idEquality = (id == null ? other.id == null : id.equals(other.id));
-            return idEquality && TextUtils.equals(message, other.message)
+            return idEquality
+                    && TextUtils.equals(message, other.message)
                     && TextUtils.equals(description, other.description)
-                    && TextUtils.equals(link, other.link) && icon == other.icon;
+                    && TextUtils.equals(link, other.link)
+                    && icon == other.icon;
         }
 
         /** Called to update the value of this object from a given object. */
@@ -216,9 +228,7 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
         }
     }
 
-    /**
-     * An utility class to count the number of downloads at different states at any given time.
-     */
+    /** An utility class to count the number of downloads at different states at any given time. */
     private static class DownloadCount {
         public int inProgress;
         public int pending;
@@ -259,8 +269,10 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
             if (!(obj instanceof DownloadCount)) return false;
 
             DownloadCount other = (DownloadCount) obj;
-            return inProgress == other.inProgress && pending == other.pending
-                    && failed == other.failed && completed == other.completed;
+            return inProgress == other.inProgress
+                    && pending == other.pending
+                    && failed == other.failed
+                    && completed == other.completed;
         }
     }
 
@@ -334,47 +346,58 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
         if (dispatcher == null) {
             // When the message dispatcher is null we don't want to block the download, hence
             // we mimic the accepted workflow.
-            callback.onResult(/*accepted=*/true);
+            callback.onResult(/* accepted= */ true);
             recordIncognitoDownloadMessage(IncognitoMessageEvent.NOT_SHOWN_NULL_MESSAGE_DISPATCHER);
             return;
         }
 
-        PropertyModel propertyModel = new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
-                                              .with(MessageBannerProperties.MESSAGE_IDENTIFIER,
-                                                      MessageIdentifier.DOWNLOAD_INCOGNITO_WARNING)
-                                              .build();
+        PropertyModel propertyModel =
+                new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
+                        .with(
+                                MessageBannerProperties.MESSAGE_IDENTIFIER,
+                                MessageIdentifier.DOWNLOAD_INCOGNITO_WARNING)
+                        .build();
 
-        propertyModel.set(MessageBannerProperties.TITLE,
+        propertyModel.set(
+                MessageBannerProperties.TITLE,
                 context.getString(R.string.incognito_download_message_title));
-        propertyModel.set(MessageBannerProperties.DESCRIPTION,
+        propertyModel.set(
+                MessageBannerProperties.DESCRIPTION,
                 context.getString(R.string.incognito_download_message_detail));
-        propertyModel.set(MessageBannerProperties.PRIMARY_BUTTON_TEXT,
+        propertyModel.set(
+                MessageBannerProperties.PRIMARY_BUTTON_TEXT,
                 context.getString(R.string.incognito_download_message_button));
-        propertyModel.set(MessageBannerProperties.ICON,
+        propertyModel.set(
+                MessageBannerProperties.ICON,
                 AppCompatResources.getDrawable(context, R.drawable.ic_incognito_download_message));
-        propertyModel.set(MessageBannerProperties.ON_PRIMARY_ACTION, () -> {
-            callback.onResult(/*accepted=*/true);
-            recordIncognitoDownloadMessage(IncognitoMessageEvent.ACCEPTED);
-            return PrimaryActionClickBehavior.DISMISS_IMMEDIATELY;
-        });
-        propertyModel.set(MessageBannerProperties.ON_DISMISSED, (dismissReason) -> {
-            if (dismissReason == DismissReason.TIMER) {
-                recordIncognitoDownloadMessage(IncognitoMessageEvent.DISMISSED_WITH_TIMER);
-            } else if (dismissReason == DismissReason.GESTURE) {
-                recordIncognitoDownloadMessage(IncognitoMessageEvent.DISMISSED_WITH_GESTURE);
-            } else if (dismissReason == DismissReason.PRIMARY_ACTION) {
-                // Dismissal triggered by ON_PRIMARY_ACTION handler, which is already running the
-                // download callback. Here we need to not record this action into the dismiss
-                // reasons buckets.
-                return;
-            } else {
-                recordIncognitoDownloadMessage(
-                        IncognitoMessageEvent.DISMISSED_WITH_DIFFERENT_REASON);
-            }
-            callback.onResult(/*accepted=*/false);
-        });
+        propertyModel.set(
+                MessageBannerProperties.ON_PRIMARY_ACTION,
+                () -> {
+                    callback.onResult(/* accepted= */ true);
+                    recordIncognitoDownloadMessage(IncognitoMessageEvent.ACCEPTED);
+                    return PrimaryActionClickBehavior.DISMISS_IMMEDIATELY;
+                });
+        propertyModel.set(
+                MessageBannerProperties.ON_DISMISSED,
+                (dismissReason) -> {
+                    if (dismissReason == DismissReason.TIMER) {
+                        recordIncognitoDownloadMessage(IncognitoMessageEvent.DISMISSED_WITH_TIMER);
+                    } else if (dismissReason == DismissReason.GESTURE) {
+                        recordIncognitoDownloadMessage(
+                                IncognitoMessageEvent.DISMISSED_WITH_GESTURE);
+                    } else if (dismissReason == DismissReason.PRIMARY_ACTION) {
+                        // Dismissal triggered by ON_PRIMARY_ACTION handler, which is already
+                        // running the download callback. Here we need to not record this action
+                        // into the dismiss reasons buckets.
+                        return;
+                    } else {
+                        recordIncognitoDownloadMessage(
+                                IncognitoMessageEvent.DISMISSED_WITH_DIFFERENT_REASON);
+                    }
+                    callback.onResult(/* accepted= */ false);
+                });
 
-        dispatcher.enqueueWindowScopedMessage(propertyModel, /*highPriority=*/true);
+        dispatcher.enqueueWindowScopedMessage(propertyModel, /* highPriority= */ true);
         recordIncognitoDownloadMessage(IncognitoMessageEvent.SHOWN);
     }
 
@@ -445,7 +468,8 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
         }
         if (!isVisibleToUser(item)) return;
 
-        if (updateDelta != null && !updateDelta.stateChanged
+        if (updateDelta != null
+                && !updateDelta.stateChanged
                 && item.state == OfflineItemState.COMPLETE) {
             return;
         }
@@ -502,8 +526,11 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
      * @param userCancel Whether the message was cancelled just now.
      * ended.
      */
-    private void computeNextStepForUpdate(OfflineItem updatedItem, boolean forceShowDownloadStarted,
-            boolean userCancel, boolean itemWasRemoved) {
+    private void computeNextStepForUpdate(
+            OfflineItem updatedItem,
+            boolean forceShowDownloadStarted,
+            boolean userCancel,
+            boolean itemWasRemoved) {
         if (updatedItem != null
                 && (mIgnoredItems.contains(updatedItem.id)
                         || mInterstitialItems.contains(updatedItem.id))) {
@@ -511,9 +538,11 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
         }
 
         preProcessUpdatedItem(updatedItem);
-        boolean isNewDownload = forceShowDownloadStarted
-                || (updatedItem != null && updatedItem.state == OfflineItemState.IN_PROGRESS
-                        && !mSeenItems.contains(updatedItem.id));
+        boolean isNewDownload =
+                forceShowDownloadStarted
+                        || (updatedItem != null
+                                && updatedItem.state == OfflineItemState.IN_PROGRESS
+                                && !mSeenItems.contains(updatedItem.id));
         boolean itemResumedFromPending = itemResumedFromPending(updatedItem);
 
         if (updatedItem != null) {
@@ -532,8 +561,7 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
         boolean shouldShowResult =
                 (downloadCount.completed + downloadCount.failed + downloadCount.pending) > 0;
 
-        @UiState
-        int nextState = mState;
+        @UiState int nextState = mState;
         switch (mState) {
             case UiState.INITIAL: // Intentional fallthrough.
             case UiState.CANCELLED:
@@ -651,8 +679,7 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
         if (getContext() == null) return;
         DownloadProgressMessageUiData info = new DownloadProgressMessageUiData();
 
-        @PluralsRes
-        int stringRes = -1;
+        @PluralsRes int stringRes = -1;
         if (uiState == UiState.DOWNLOADING) {
             stringRes = R.plurals.download_message_multiple_download_in_progress;
             info.icon = R.drawable.downloading_fill_animation_24dp;
@@ -681,10 +708,14 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
         if (uiState == UiState.DOWNLOADING) {
             int inProgressDownloadCount =
                     downloadCount.inProgress == 0 ? 1 : downloadCount.inProgress;
-            info.message = getContext().getResources().getQuantityString(
-                    stringRes, inProgressDownloadCount, inProgressDownloadCount);
-            info.description = getContext().getString(
-                    R.string.download_message_download_in_progress_description);
+            info.message =
+                    getContext()
+                            .getResources()
+                            .getQuantityString(
+                                    stringRes, inProgressDownloadCount, inProgressDownloadCount);
+            info.description =
+                    getContext()
+                            .getString(R.string.download_message_download_in_progress_description);
 
             info.link = getContext().getString(R.string.details_link);
         } else if (uiState == UiState.SHOW_RESULT) {
@@ -696,11 +727,15 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
                 String bytesString =
                         org.chromium.components.browser_ui.util.DownloadUtils.getStringForBytes(
                                 getContext(), itemToShow.totalSizeBytes);
-                String displayUrl = UrlFormatter.formatUrlForSecurityDisplay(
-                        itemToShow.url, SchemeDisplay.OMIT_HTTP_AND_HTTPS);
-                info.description = getContext().getString(
-                        R.string.download_message_download_complete_description, bytesString,
-                        displayUrl);
+                String displayUrl =
+                        UrlFormatter.formatUrlForSecurityDisplay(
+                                itemToShow.url, SchemeDisplay.OMIT_HTTP_AND_HTTPS);
+                info.description =
+                        getContext()
+                                .getString(
+                                        R.string.download_message_download_complete_description,
+                                        bytesString,
+                                        displayUrl);
                 info.id = itemToShow.id;
                 info.link = getContext().getString(R.string.open_downloaded_label);
                 info.icon = R.drawable.infobar_download_complete_animation;
@@ -721,14 +756,15 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
 
         if (startTimer) {
             long delay = getDelayToNextStep(resultState);
-            mEndTimerRunnable = () -> {
-                mEndTimerRunnable = null;
-                if (mCurrentInfo != null) mCurrentInfo.resultState = ResultState.INVALID;
-                if (uiState == UiState.SHOW_RESULT) {
-                    clearFinishedItems(resultState);
-                }
-                computeNextStepForUpdate(null, false, false, false);
-            };
+            mEndTimerRunnable =
+                    () -> {
+                        mEndTimerRunnable = null;
+                        if (mCurrentInfo != null) mCurrentInfo.resultState = ResultState.INVALID;
+                        if (uiState == UiState.SHOW_RESULT) {
+                            clearFinishedItems(resultState);
+                        }
+                        computeNextStepForUpdate(null, false, false, false);
+                    };
             mHandler.postDelayed(mEndTimerRunnable, delay);
         }
 
@@ -739,8 +775,9 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
 
     private void setForceShow(DownloadProgressMessageUiData info) {
         info.downloadCount = getDownloadCount();
-        info.forceShow = !info.downloadCount.equals(
-                mCurrentInfo == null ? null : mCurrentInfo.downloadCount);
+        info.forceShow =
+                !info.downloadCount.equals(
+                        mCurrentInfo == null ? null : mCurrentInfo.downloadCount);
     }
 
     private void clearEndTimerRunnable() {
@@ -793,10 +830,12 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
 
         boolean updateOnly = mPropertyModel != null;
         if (mPropertyModel == null) {
-            mPropertyModel = new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
-                                     .with(MessageBannerProperties.MESSAGE_IDENTIFIER,
-                                             MessageIdentifier.DOWNLOAD_PROGRESS)
-                                     .build();
+            mPropertyModel =
+                    new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
+                            .with(
+                                    MessageBannerProperties.MESSAGE_IDENTIFIER,
+                                    MessageIdentifier.DOWNLOAD_PROGRESS)
+                            .build();
         }
 
         if (info.iconType == IconType.ANIMATED_VECTOR_DRAWABLE) {
@@ -806,20 +845,22 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
             final AnimatedVectorDrawableCompat animatedDrawable =
                     (AnimatedVectorDrawableCompat) drawable;
             animatedDrawable.start();
-            animatedDrawable.registerAnimationCallback(new Animatable2Compat.AnimationCallback() {
-                @Override
-                public void onAnimationEnd(Drawable drawable) {
-                    if (mCurrentInfo == null || mCurrentInfo.icon != info.icon) return;
-                    animatedDrawable.start();
-                }
-            });
+            animatedDrawable.registerAnimationCallback(
+                    new Animatable2Compat.AnimationCallback() {
+                        @Override
+                        public void onAnimationEnd(Drawable drawable) {
+                            if (mCurrentInfo == null || mCurrentInfo.icon != info.icon) return;
+                            animatedDrawable.start();
+                        }
+                    });
         }
 
         mPropertyModel.set(MessageBannerProperties.ICON, drawable);
         mPropertyModel.set(MessageBannerProperties.TITLE, info.message);
 
         String description = info.description == null ? "" : info.description;
-        mPropertyModel.set(MessageBannerProperties.DESCRIPTION,
+        mPropertyModel.set(
+                MessageBannerProperties.DESCRIPTION,
                 description.substring(0, Math.min(MAX_DESCRIPTION_LENGTH, description.length())));
 
         mPropertyModel.set(MessageBannerProperties.DESCRIPTION_MAX_LINES, 3);
@@ -828,13 +869,15 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
         mPropertyModel.set(
                 MessageBannerProperties.ON_PRIMARY_ACTION, () -> onPrimaryAction(info.id));
         final MessageDispatcher dispatcher = getMessageDispatcher();
-        mDismissRunnable = () -> {
-            if (dispatcher == null) return;
-            dispatcher.dismissMessage(mPropertyModel, DismissReason.SCOPE_DESTROYED);
-        };
+        mDismissRunnable =
+                () -> {
+                    if (dispatcher == null) return;
+                    dispatcher.dismissMessage(mPropertyModel, DismissReason.SCOPE_DESTROYED);
+                };
 
         if (updateOnly) return;
-        getMessageDispatcher().enqueueWindowScopedMessage(mPropertyModel, /*highPriority=*/false);
+        getMessageDispatcher()
+                .enqueueWindowScopedMessage(mPropertyModel, /* highPriority= */ false);
     }
 
     @VisibleForTesting
@@ -943,17 +986,19 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
         OfflineItem offlineItem = mTrackedItems.remove(itemId);
         removeNotification(itemId);
         if (itemId != null) {
-            mDelegate.openDownload(itemId,
+            mDelegate.openDownload(
+                    itemId,
                     OTRProfileID.deserializeWithoutVerify(
                             offlineItem == null ? null : offlineItem.otrProfileId),
-                    DownloadOpenSource.DOWNLOAD_PROGRESS_MESSAGE, getContext());
-            recordLinkClicked(true /*openItem*/);
+                    DownloadOpenSource.DOWNLOAD_PROGRESS_MESSAGE,
+                    getContext());
+            recordLinkClicked(/* openItem= */ true);
         } else {
             // TODO(shaktisahu): Make a best guess for which profile, maybe from the last updated
             // item.
             mDelegate.openDownloadsPage(
                     getOTRProfileIDForTrackedItems(), DownloadOpenSource.DOWNLOAD_PROGRESS_MESSAGE);
-            recordLinkClicked(false /*openItem*/);
+            recordLinkClicked(/* openItem= */ false);
         }
         return PrimaryActionClickBehavior.DISMISS_IMMEDIATELY;
     }
@@ -978,22 +1023,29 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
         int shownState = -1;
         int multipleDownloadState = -1;
         if (state == UiState.DOWNLOADING) {
-            shownState = info.downloadCount.inProgress == 1 ? UmaInfobarShown.DOWNLOADING
-                                                            : UmaInfobarShown.MULTIPLE_DOWNLOADING;
+            shownState =
+                    info.downloadCount.inProgress == 1
+                            ? UmaInfobarShown.DOWNLOADING
+                            : UmaInfobarShown.MULTIPLE_DOWNLOADING;
         } else if (state == UiState.SHOW_RESULT) {
             switch (info.resultState) {
                 case ResultState.COMPLETE:
-                    shownState = info.downloadCount.completed == 1
-                            ? UmaInfobarShown.COMPLETE
-                            : UmaInfobarShown.MULTIPLE_COMPLETE;
+                    shownState =
+                            info.downloadCount.completed == 1
+                                    ? UmaInfobarShown.COMPLETE
+                                    : UmaInfobarShown.MULTIPLE_COMPLETE;
                     break;
                 case ResultState.FAILED:
-                    shownState = info.downloadCount.failed == 1 ? UmaInfobarShown.FAILED
-                                                                : UmaInfobarShown.MULTIPLE_FAILED;
+                    shownState =
+                            info.downloadCount.failed == 1
+                                    ? UmaInfobarShown.FAILED
+                                    : UmaInfobarShown.MULTIPLE_FAILED;
                     break;
                 case ResultState.PENDING:
-                    shownState = info.downloadCount.pending == 1 ? UmaInfobarShown.PENDING
-                                                                 : UmaInfobarShown.MULTIPLE_PENDING;
+                    shownState =
+                            info.downloadCount.pending == 1
+                                    ? UmaInfobarShown.PENDING
+                                    : UmaInfobarShown.MULTIPLE_PENDING;
                     break;
                 default:
                     assert false : "Unexpected state " + info.resultState;
@@ -1005,11 +1057,15 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
 
         RecordHistogram.recordEnumeratedHistogram(
                 "Download.Progress.InfoBar.Shown", shownState, UmaInfobarShown.NUM_ENTRIES);
-        RecordHistogram.recordEnumeratedHistogram("Download.Progress.InfoBar.Shown",
-                UmaInfobarShown.ANY_STATE, UmaInfobarShown.NUM_ENTRIES);
+        RecordHistogram.recordEnumeratedHistogram(
+                "Download.Progress.InfoBar.Shown",
+                UmaInfobarShown.ANY_STATE,
+                UmaInfobarShown.NUM_ENTRIES);
         if (multipleDownloadState != -1) {
-            RecordHistogram.recordEnumeratedHistogram("Download.Progress.InfoBar.Shown",
-                    multipleDownloadState, UmaInfobarShown.NUM_ENTRIES);
+            RecordHistogram.recordEnumeratedHistogram(
+                    "Download.Progress.InfoBar.Shown",
+                    multipleDownloadState,
+                    UmaInfobarShown.NUM_ENTRIES);
         }
     }
 

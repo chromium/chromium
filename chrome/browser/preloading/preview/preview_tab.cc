@@ -26,6 +26,20 @@
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
 
+namespace {
+
+content::WebContents::CreateParams CreateWebContentsCreateParams(
+    content::BrowserContext* context,
+    content::WebContentsDelegate* delegate) {
+  CHECK(context);
+  CHECK(delegate);
+  content::WebContents::CreateParams params(context);
+  params.delegate = delegate;
+  return params;
+}
+
+}  // namespace
+
 class PreviewTab::PreviewWidget final : public views::Widget {
  public:
   explicit PreviewWidget(PreviewManager* preview_manager)
@@ -35,17 +49,26 @@ class PreviewTab::PreviewWidget final : public views::Widget {
   // views::Widet implementation:
   void OnMouseEvent(ui::MouseEvent* event) override {
     auto rect = GetClientAreaBoundsInScreen();
-    // Tentative trigger for open-in-new-tab: Middle click on preview.
-    if (event->type() == ui::ET_MOUSE_RELEASED &&
-        event->IsMiddleMouseButton() &&
-        // Check the event occurred on this widget.
-        // Note that `event->location()` is relative to the origin of widget.
+    // Check the event occurred on this widget.
+    // Note that `event->location()` is relative to the origin of widget.
+    bool is_event_for_preview_window =
         0 <= event->location().x() &&
         event->location().x() <= rect.size().width() &&
         0 <= event->location().y() &&
-        event->location().y() <= rect.size().height()) {
+        event->location().y() <= rect.size().height();
+
+    // Tentative trigger for open-in-new-tab: Middle click on preview.
+    if (is_event_for_preview_window && event->type() == ui::ET_MOUSE_RELEASED &&
+        event->IsMiddleMouseButton()) {
       event->SetHandled();
       preview_manager_->PromoteToNewTab();
+      return;
+    }
+
+    if (!is_event_for_preview_window &&
+        event->type() == ui::ET_MOUSE_RELEASED) {
+      event->SetHandled();
+      preview_manager_->Cancel();
       return;
     }
 
@@ -94,15 +117,14 @@ class PreviewTab::WebContentsObserver final
 PreviewTab::PreviewTab(PreviewManager* preview_manager,
                        content::WebContents& initiator_web_contents,
                        const GURL& url)
-    : web_contents_(
-          content::WebContents::Create(content::WebContents::CreateParams(
-              initiator_web_contents.GetBrowserContext()))),
+    : web_contents_(content::WebContents::Create(CreateWebContentsCreateParams(
+          initiator_web_contents.GetBrowserContext(),
+          this))),
       widget_(std::make_unique<PreviewWidget>(preview_manager)),
       view_(std::make_unique<views::WebView>(nullptr)),
       url_(url) {
   CHECK(base::FeatureList::IsEnabled(blink::features::kLinkPreview));
 
-  web_contents_->SetDelegate(this);
   // WebView setup.
   view_->SetWebContents(web_contents_.get());
 
@@ -170,7 +192,7 @@ content::PreloadingEligibility PreviewTab::IsPrerender2Supported(
 }
 
 bool PreviewTab::IsInPreviewMode() const {
-  return base::FeatureList::IsEnabled(blink::features::kLinkPreviewNavigation);
+  return true;
 }
 
 void PreviewTab::PromoteToNewTab(content::WebContents& initiator_web_contents) {
@@ -215,12 +237,6 @@ void PreviewTab::PromoteToNewTab(content::WebContents& initiator_web_contents) {
 
 void PreviewTab::Activate(base::WeakPtr<content::WebContents> web_contents) {
   CHECK(web_contents);
-
-  // If we used ordinal navigation, we don't need to activate it.
-  if (!base::FeatureList::IsEnabled(blink::features::kLinkPreviewNavigation)) {
-    return;
-  }
-
   web_contents->ActivatePreviewPage();
 }
 

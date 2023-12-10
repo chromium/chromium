@@ -41,7 +41,7 @@ class ProfileNameResolver : public signin::IdentityManager::Observer {
   void OnExtendedAccountInfoUpdated(const AccountInfo& account_info) override;
 
   using ScopedInfoFetchTimeoutOverride =
-      base::AutoReset<absl::optional<base::TimeDelta>>;
+      base::AutoReset<std::optional<base::TimeDelta>>;
   // Overrides the timeout allowed for the profile name resolution, before we
   // default to a fallback value.
   static ScopedInfoFetchTimeoutOverride

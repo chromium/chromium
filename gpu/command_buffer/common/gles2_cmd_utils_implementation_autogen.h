@@ -2649,10 +2649,6 @@ static const GLES2Util::EnumToString enum_to_string_table[] = {
         "GL_COMPRESSED_SRGB_ALPHA_PVRTC_4BPPV1_EXT",
     },
     {
-        0x8AF0,
-        "GL_TEXTURE_FILTERING_HINT_CHROMIUM",
-    },
-    {
         0x8AF6,
         "GL_SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM",
     },
@@ -7225,8 +7221,6 @@ std::string GLES2Util::GetStringGLState(uint32_t value) {
       {GL_STENCIL_BITS, "GL_STENCIL_BITS"},
       {GL_TEXTURE_BINDING_2D, "GL_TEXTURE_BINDING_2D"},
       {GL_TEXTURE_BINDING_CUBE_MAP, "GL_TEXTURE_BINDING_CUBE_MAP"},
-      {GL_TEXTURE_FILTERING_HINT_CHROMIUM,
-       "GL_TEXTURE_FILTERING_HINT_CHROMIUM"},
       {GL_UNPACK_ALIGNMENT, "GL_UNPACK_ALIGNMENT"},
       {GL_BIND_GENERATES_RESOURCE_CHROMIUM,
        "GL_BIND_GENERATES_RESOURCE_CHROMIUM"},
@@ -7398,8 +7392,6 @@ std::string GLES2Util::GetStringHintMode(uint32_t value) {
 std::string GLES2Util::GetStringHintTarget(uint32_t value) {
   static const EnumToString string_table[] = {
       {GL_GENERATE_MIPMAP_HINT, "GL_GENERATE_MIPMAP_HINT"},
-      {GL_TEXTURE_FILTERING_HINT_CHROMIUM,
-       "GL_TEXTURE_FILTERING_HINT_CHROMIUM"},
       {GL_FRAGMENT_SHADER_DERIVATIVE_HINT,
        "GL_FRAGMENT_SHADER_DERIVATIVE_HINT"},
   };

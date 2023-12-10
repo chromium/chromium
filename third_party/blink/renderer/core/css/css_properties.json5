@@ -1949,7 +1949,6 @@
       default_value: "auto",
       keywords: ["auto", "first", "last"],
       typedom_types: ["Keyword"],
-      runtime_flag: "CSSBaselineSource",
     },
     {
       name: "border-bottom-color",
@@ -2638,9 +2637,9 @@
     {
       name: "container-type",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
-      keywords: ["normal", "inline-size", "size", "sticky", "snap"],
+      keywords: ["normal", "inline-size", "size", "scroll-state"],
       field_group: "*",
-      field_size: 4,
+      field_size: 3,
       field_template: "primitive",
       default_value: "kContainerTypeNormal",
       type_name: "unsigned",
@@ -2760,7 +2759,7 @@
         "table-row", "table-column-group", "table-column", "table-cell",
         "table-caption", "-webkit-box", "-webkit-inline-box", "flex",
         "inline-flex", "grid", "inline-grid", "contents", "flow-root", "none",
-        "flow", "math", "ruby", "ruby-base", "ruby-text"
+        "flow", "math", "ruby", "ruby-text"
       ],
       typedom_types: ["Keyword"],
       style_builder_custom_functions: ["initial", "inherit", "value"],
@@ -3110,7 +3109,6 @@
       default_value: "StyleHyphenateLimitChars()",
       include_paths: ["third_party/blink/renderer/core/style/style_hyphenate_limit_chars.h"],
       converter: "ConvertHyphenateLimitChars",
-      runtime_flag: "CSSHyphenateLimitChars",
     },
     {
       name: "popover-show-delay",
@@ -3169,21 +3167,28 @@
       inherited: true,
       field_group: "*",
       field_template: "primitive",
-      default_value: "true",
-      name_for_methods: "RespectImageOrientation",
-      type_name: "bool",
+      field_size: 1,
+      type_name: "RespectImageOrientationEnum",
+      default_value: "kRespectImageOrientation",
       converter: "ConvertImageOrientation",
+      include_paths: [
+        "third_party/blink/renderer/platform/graphics/image_orientation.h"
+      ],
     },
     {
       name: "dynamic-range-limit",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
+      interpolable: true,
       inherited: true,
       runtime_flag: "CSSDynamicRangeLimit",
+      converter: "ConvertDynamicRangeLimit",
+      type_name: "DynamicRangeLimit",
       field_group: "*",
-      field_template: "keyword",
+      field_template: "external",
       keywords: ["standard", "high", "constrained-high"],
       typedom_types: ["Keyword"],
-      default_value: "high",
+      include_paths: ["third_party/blink/renderer/platform/graphics/graphics_types.h"],
+      default_value: "DynamicRangeLimit(cc::PaintFlags::DynamicRangeLimit::kHigh)",
     },
     {
       name: "initial-letter",
@@ -3636,7 +3641,6 @@
       converter: "ConvertObjectViewBox",
       keywords: ["none"],
       typedom_types: ["Keyword"],
-      runtime_flag: "CSSObjectViewBox",
     },
     {
       name: "offset-anchor",
@@ -4131,6 +4135,10 @@
       computed_style_custom_functions: ["getter"],
       // See comment on display.
       supports_incremental_style: false,
+      // @try-styling rely on this being high-priority, so that declarations
+      // from @try blocks can be applied conditionally based on whether or not
+      // we're out-of-flow positioned.
+      priority: "High",
     },
     {
       name: "position-fallback",
@@ -5255,7 +5263,6 @@
     },
     {
       name: "overlay",
-      runtime_flag: "CSSTopLayerForTransitions",
       property_methods: ["CSSValueFromComputedStyleInternal"],
       field_group: "*",
       field_template: "keyword",
@@ -5335,7 +5342,6 @@
       interpolable: true,
       compositable: true,
       layout_dependent: true,
-      runtime_flag: "CSSIndependentTransformProperties",
       field_group: "*",
       field_template: "pointer",
       include_paths: ["third_party/blink/renderer/platform/transforms/translate_transform_operation.h"],
@@ -5350,7 +5356,6 @@
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
       interpolable: true,
       compositable: true,
-      runtime_flag: "CSSIndependentTransformProperties",
       field_group: "*",
       field_template: "pointer",
       include_paths: ["third_party/blink/renderer/platform/transforms/rotate_transform_operation.h"],
@@ -5365,7 +5370,6 @@
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
       interpolable: true,
       compositable: true,
-      runtime_flag: "CSSIndependentTransformProperties",
       field_group: "*",
       field_template: "pointer",
       include_paths: ["third_party/blink/renderer/platform/transforms/scale_transform_operation.h"],
@@ -5577,22 +5581,10 @@
     {
       name: "-webkit-box-direction",
       property_methods: ["CSSValueFromComputedStyleInternal"],
-      independent: true,
-      inherited: true,
       field_template: "keyword",
       keywords: ["normal", "reverse"],
       default_value: "normal",
       computed_style_protected_functions: ["getter"],
-    },
-    {
-      name: "-webkit-box-direction-alternative",
-      alternative_of: "-webkit-box-direction",
-      property_methods: ["CSSValueFromComputedStyleInternal"],
-      field_template: "keyword",
-      keywords: ["normal", "reverse"],
-      default_value: "normal",
-      computed_style_protected_functions: ["getter"],
-      runtime_flag: "NonInheritedWebkitBoxDirection",
     },
     {
       name: "-webkit-box-flex",
@@ -6937,10 +6929,27 @@
       is_property: false,
     },
     {
-      name: "navigation-trigger",
+      name: "navigation",
       is_descriptor: true,
       is_property: false,
       runtime_flag: "ViewTransitionOnNavigation",
+    },
+    {
+      name: "inset-area",
+      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
+      field_group: "*",
+      field_template: "external",
+      include_paths: ["third_party/blink/renderer/core/style/inset_area.h"],
+      converter: "ConvertInsetArea",
+      default_value: "InsetArea()",
+      type_name: "InsetArea",
+      keywords: [
+        "none", "top", "bottom", "center", "left", "right", "x-start", "x-end",
+        "y-start", "y-end", "start", "end", "self-start", "self-end", "all"
+      ],
+      typedom_types: ["Keyword"],
+      valid_for_position_fallback: true,
+      runtime_flag: "CSSAnchorPositioning",
     },
 
     // Shorthands

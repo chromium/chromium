@@ -46,21 +46,7 @@ GLTextureImageBackingFactory::GLTextureImageBackingFactory(
                                   workarounds,
                                   feature_info,
                                   progress_reporter),
-      for_cpu_upload_usage_(for_cpu_upload_usage) {
-  // If RED_8 and RG_88 are supported then YUV formats should also work.
-  // TODO(crbug.com/1406253): Verify if P010 support is also needed here for
-  // software GpuMemoryBuffers.
-  auto r_iter = supported_formats_.find(viz::SinglePlaneFormat::kR_8);
-  auto rg_iter = supported_formats_.find(viz::SinglePlaneFormat::kRG_88);
-  if (r_iter != supported_formats_.end() &&
-      rg_iter != supported_formats_.end()) {
-    auto& r_info = r_iter->second[0];
-    auto& rg_info = rg_iter->second[0];
-    supported_formats_[viz::MultiPlaneFormat::kNV12] = {r_info, rg_info};
-    supported_formats_[viz::MultiPlaneFormat::kYV12] = {r_info, r_info, r_info};
-    supported_formats_[viz::MultiPlaneFormat::kI420] = {r_info, r_info, r_info};
-  }
-}
+      for_cpu_upload_usage_(for_cpu_upload_usage) {}
 
 GLTextureImageBackingFactory::~GLTextureImageBackingFactory() = default;
 

@@ -13,6 +13,7 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
+#include "ui/events/base_event_utils.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 
 namespace wl {
@@ -38,7 +39,8 @@ DataSource<T>::~DataSource() {
 template <typename T>
 void DataSource<T>::HandleFinishEvent(bool completed) {
   VLOG(1) << "OnDataSourceFinish in WaylandDataSource";
-  delegate_->OnDataSourceFinish(this, completed);
+  // No timestamp for these events. Use EventTimeForNow(), for now.
+  delegate_->OnDataSourceFinish(this, ui::EventTimeForNow(), completed);
 }
 
 // Writes |data_str| to file descriptor |fd| assuming it is flagged as

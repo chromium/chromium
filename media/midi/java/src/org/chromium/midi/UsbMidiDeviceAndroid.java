@@ -29,59 +29,37 @@ import java.util.Map;
  */
 @JNINamespace("midi")
 class UsbMidiDeviceAndroid {
-    /**
-     * A connection handle for this device.
-     */
+    /** A connection handle for this device. */
     private final UsbDeviceConnection mConnection;
 
-    /**
-     * A map from endpoint number to UsbEndpoint.
-     */
+    /** A map from endpoint number to UsbEndpoint. */
     private final SparseArray<UsbEndpoint> mEndpointMap;
 
-    /**
-     * A map from UsbEndpoint to UsbRequest associated to it.
-     */
+    /** A map from UsbEndpoint to UsbRequest associated to it. */
     private final Map<UsbEndpoint, UsbRequest> mRequestMap;
 
-    /**
-     * The handler used for posting events on the main thread.
-     */
+    /** The handler used for posting events on the main thread. */
     private final Handler mHandler;
 
-    /**
-     * True if this device is closed.
-     */
+    /** True if this device is closed. */
     private boolean mIsClosed;
 
-    /**
-     * True if there is a thread processing input data.
-     */
+    /** True if there is a thread processing input data. */
     private boolean mHasInputThread;
 
-    /**
-     * The identifier of this device.
-     */
+    /** The identifier of this device. */
     private long mNativePointer;
 
-    /**
-     * The underlying USB device.
-     */
+    /** The underlying USB device. */
     private UsbDevice mUsbDevice;
 
-    /**
-     * Audio interface subclass code for MIDI.
-     */
+    /** Audio interface subclass code for MIDI. */
     static final int MIDI_SUBCLASS = 3;
 
-    /**
-     * The request type to request a USB descriptor.
-     */
+    /** The request type to request a USB descriptor. */
     static final int REQUEST_GET_DESCRIPTOR = 0x06;
 
-    /**
-     * The STRING descriptor type.
-     */
+    /** The STRING descriptor type. */
     static final int STRING_DESCRIPTOR_TYPE = 0x03;
 
     /**
@@ -121,9 +99,7 @@ class UsbMidiDeviceAndroid {
         startListen(device);
     }
 
-    /**
-     * Starts listening for input endpoints.
-     */
+    /** Starts listening for input endpoints. */
     private void startListen(final UsbDevice device) {
         final Map<UsbEndpoint, ByteBuffer> bufferForEndpoints =
                 new HashMap<UsbEndpoint, ByteBuffer>();
@@ -178,19 +154,18 @@ class UsbMidiDeviceAndroid {
         }.start();
     }
 
-    /**
-     * Posts a data input event to the main thread.
-     */
+    /** Posts a data input event to the main thread. */
     private void postOnDataEvent(final int endpointNumber, final byte[] bs) {
-        mHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                if (mIsClosed) {
-                    return;
-                }
-                UsbMidiDeviceAndroidJni.get().onData(mNativePointer, endpointNumber, bs);
-            }
-        });
+        mHandler.post(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        if (mIsClosed) {
+                            return;
+                        }
+                        UsbMidiDeviceAndroidJni.get().onData(mNativePointer, endpointNumber, bs);
+                    }
+                });
     }
 
     UsbDevice getUsbDevice() {
@@ -201,9 +176,7 @@ class UsbMidiDeviceAndroid {
         return mIsClosed;
     }
 
-    /**
-     * Register the own native pointer.
-     */
+    /** Register the own native pointer. */
     @CalledByNative
     void registerSelf(long nativePointer) {
         mNativePointer = nativePointer;
@@ -287,9 +260,7 @@ class UsbMidiDeviceAndroid {
         return Arrays.copyOf(buffer, read);
     }
 
-    /**
-     * Closes the device connection.
-     */
+    /** Closes the device connection. */
     @CalledByNative
     void close() {
         mEndpointMap.clear();

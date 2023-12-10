@@ -542,6 +542,31 @@ suite('NewTabPageAppTest', () => {
                 NtpBackgroundImageSource.kUploadedImage));
       });
 
+      test(
+          'setting wallpaper search background produces correct metrics',
+          async () => {
+            // Arrange.
+            const theme = createTheme();
+            theme.backgroundImage = createBackgroundImage('https://foo.com');
+            theme.backgroundImage.imageSource =
+                NtpBackgroundImageSource.kWallpaperSearch;
+
+            // Act.
+            callbackRouterRemote.setTheme(theme);
+            await callbackRouterRemote.$.flushForTesting();
+
+            // Assert.
+            assertEquals(1, metrics.count('NewTabPage.Collections.IdOnLoad'));
+            assertEquals(
+                1, metrics.count('NewTabPage.Collections.IdOnLoad', ''));
+            assertEquals(1, metrics.count('NewTabPage.BackgroundImageSource'));
+            assertEquals(
+                1,
+                metrics.count(
+                    'NewTabPage.BackgroundImageSource',
+                    NtpBackgroundImageSource.kWallpaperSearch));
+          });
+
       suite('background image load', () => {
         suiteSetup(() => {
           loadTimeData.overrideValues({backgroundImageUrl: 'https://foo.com'});

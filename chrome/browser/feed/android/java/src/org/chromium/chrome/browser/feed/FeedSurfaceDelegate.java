@@ -9,9 +9,7 @@ import android.view.MotionEvent;
 
 import org.chromium.chrome.browser.feed.componentinterfaces.SurfaceCoordinator;
 
-/**
- * The delegate of the {@link FeedSurfaceProvider} creator needs to implement.
- */
+/** The delegate of the {@link FeedSurfaceProvider} creator needs to implement. */
 public interface FeedSurfaceDelegate {
     /**
      * Creates {@link FeedSurfaceLifecycleManager} for the specified {@link FeedSurfaceCoordinator}

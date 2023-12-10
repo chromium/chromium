@@ -37,7 +37,7 @@ const ui::ClipboardFormatType& GetAppItemFormatType();
 
 // Retrieve app information carried in a OSExchangeData object during app list
 // drag and drop action.
-absl::optional<DraggableAppItemInfo> GetAppInfoFromDropDataForAppType(
+std::optional<DraggableAppItemInfo> GetAppInfoFromDropDataForAppType(
     const ui::OSExchangeData& data);
 
 }  // namespace ash

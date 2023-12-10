@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_SAFE_BROWSING_CORE_BROWSER_HASHPREFIX_REALTIME_HASH_REALTIME_UTILS_H_
 #define COMPONENTS_SAFE_BROWSING_CORE_BROWSER_HASHPREFIX_REALTIME_HASH_REALTIME_UTILS_H_
 
+#include <optional>
+
 #include "components/safe_browsing/core/common/proto/safebrowsingv5.pb.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "url/gurl.h"
@@ -76,17 +78,17 @@ bool IsHashRealTimeLookupEligibleInSession();
 // Based on the user's browser session and location, specifies whether
 // hash-prefix real-time lookups are eligible. Outside of tests,
 // |stored_permanent_country| should be determined with the helper function
-// |hash_realtime_utils::GetCountryCode|. If it's passed in as absl::nullopt,
+// |hash_realtime_utils::GetCountryCode|. If it's passed in as std::nullopt,
 // the location is considered eligible.
 bool IsHashRealTimeLookupEligibleInSessionAndLocation(
-    absl::optional<std::string> stored_permanent_country);
+    std::optional<std::string> stored_permanent_country);
 
 // Returns the stored permanent country. If |variations_service| is null,
-// returns absl::nullopt. This should be used only as a helper to determine the
+// returns std::nullopt. This should be used only as a helper to determine the
 // country code to pass into |IsHashRealTimeLookupEligibleInSessionAndLocation|
 // and |DetermineHashRealTimeSelection|. This is separated out into a function
 // to simplify tests.
-absl::optional<std::string> GetCountryCode(
+std::optional<std::string> GetCountryCode(
     variations::VariationsService* variations_service);
 
 // Based on the user's settings and session, determines which hash-prefix
@@ -94,11 +96,11 @@ absl::optional<std::string> GetCountryCode(
 // this will log metrics related to whether hash real-time lookups were
 // available or why not. Outside of tests, |stored_permanent_country| should be
 // determined with the helper function |hash_realtime_utils::GetCountryCode|.
-// If it's passed in as absl::nullopt, the location is considered eligible.
+// If it's passed in as std::nullopt, the location is considered eligible.
 HashRealTimeSelection DetermineHashRealTimeSelection(
     bool is_off_the_record,
     PrefService* prefs,
-    absl::optional<std::string> stored_permanent_country,
+    std::optional<std::string> stored_permanent_country,
     bool log_usage_histograms = false);
 
 // A helper for consumers that want to recompute

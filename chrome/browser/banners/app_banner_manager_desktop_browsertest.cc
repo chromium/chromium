@@ -121,7 +121,8 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerDesktopBrowserTest,
     // Trigger the installation prompt and wait for installation to occur.
     base::RunLoop run_loop;
     manager->PrepareDone(run_loop.QuitClosure());
-    ExecuteScript(browser(), "callStashedPrompt();", true /* with_gesture */);
+    ExecuteScript(web_contents, "callStashedPrompt();",
+                  true /* with_gesture */);
     run_loop.Run();
     EXPECT_EQ(State::COMPLETE, manager->state());
   }
@@ -169,7 +170,8 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerDesktopBrowserTest,
           callback_called = true;
         }));
 
-    ExecuteScript(browser(), "callStashedPrompt();", true /* with_gesture */);
+    ExecuteScript(web_contents, "callStashedPrompt();",
+                  true /* with_gesture */);
 
     run_loop.Run();
 
@@ -218,7 +220,8 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerDesktopBrowserTest,
           run_loop.Quit();
         }));
 
-    ExecuteScript(browser(), "callStashedPrompt();", true /* with_gesture */);
+    ExecuteScript(web_contents, "callStashedPrompt();",
+                  true /* with_gesture */);
 
     // Closing WebContents destroys WebContents and AppBannerManager.
     browser()->tab_strip_model()->CloseWebContentsAt(
@@ -422,7 +425,8 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerDesktopBrowserTest,
     // Trigger the installation prompt and wait for installation to occur.
     base::RunLoop run_loop;
     manager->PrepareDone(run_loop.QuitClosure());
-    ExecuteScript(browser(), "callStashedPrompt();", true /* with_gesture */);
+    ExecuteScript(web_contents, "callStashedPrompt();",
+                  true /* with_gesture */);
     run_loop.Run();
     EXPECT_EQ(State::COMPLETE, manager->state());
   }

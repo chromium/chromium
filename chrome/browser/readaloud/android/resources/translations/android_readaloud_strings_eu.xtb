@@ -2,11 +2,14 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="eu">
 <translation id="1178581264944972037">Pausatu</translation>
-<translation id="2558806128245168542">Joan atzera</translation>
-<translation id="3523426587027570423">"Entzun orri honetan dagoena" erreproduzigailua ixteko, sakatu hau.</translation>
+<translation id="1921351128855867012">Aurreratu <ph name="NUMBER_OF_SECONDS" /> segundo</translation>
+<translation id="1984328900355667246">Ezin da erreproduzitu</translation>
+<translation id="3023502830214299618">Tamalez, une honetan ezin da erreproduzitu orri hau. Saiatu berriro geroago.</translation>
+<translation id="3807208219231826020">Arakatu erreprodukzioa</translation>
+<translation id="385051799172605136">Atzera</translation>
 <translation id="4431240646217225907">Nabarmendu testua eta egin gora eta behera automatikoki</translation>
 <translation id="4654641641922242357">"Entzun orri honetan dagoena" erreproduzigailua.</translation>
-<translation id="4731877163452936634">Erreprodukzio-abiadura: <ph name="PLAYBACK_SPEED" />. Sakatu hau aldatzeko.</translation>
+<translation id="4872475766448853257">Egin atzera <ph name="NUMBER_OF_SECONDS" /> segundo</translation>
 <translation id="5234971936051226002">"Entzun orri honetan dagoena" erreproduzigailua minimizatuta dago.</translation>
 <translation id="5596627076506792578">Aukera gehiago</translation>
 <translation id="6315170314923504164">Ahotsa</translation>
@@ -15,8 +18,8 @@
 <translation id="6831043979455480757">Itzuli</translation>
 <translation id="6846298663435243399">Kargatzen…</translation>
 <translation id="7587250070160020374">Chrome orain erreproduzitzen ari da</translation>
-<translation id="7945822420239537236">Aurreratu <ph name="NUMBER_OF_SECONDS" /> segundo</translation>
-<translation id="7972866381678406344">Atzeratu <ph name="NUMBER_OF_SECONDS" /> segundo</translation>
 <translation id="8136852699834914183">Erreprodukzioa ez dago erabilgarri orrialde honetan.</translation>
+<translation id="8264989794233974275">Handitu edo txikitu abiadura <ph name="PLAYBACK_SPEED" /> aldiz.</translation>
+<translation id="8407011429883244666">Itxi erreproduzigailua.</translation>
 <translation id="8953618380150219653">"Entzun orri honetan dagoena" erreproduzigailua altuera osoan irekita dago.</translation>
 </translationbundle>

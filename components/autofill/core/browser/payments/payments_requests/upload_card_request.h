@@ -9,7 +9,7 @@
 
 #include "base/functional/callback.h"
 #include "components/autofill/core/browser/autofill_client.h"
-#include "components/autofill/core/browser/payments/payments_client.h"
+#include "components/autofill/core/browser/payments/payments_network_interface.h"
 #include "components/autofill/core/browser/payments/payments_requests/payments_request.h"
 
 namespace base {
@@ -21,10 +21,11 @@ namespace autofill::payments {
 class UploadCardRequest : public PaymentsRequest {
  public:
   UploadCardRequest(
-      const PaymentsClient::UploadRequestDetails& request_details,
+      const PaymentsNetworkInterface::UploadRequestDetails& request_details,
       const bool full_sync_enabled,
-      base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
-                              const PaymentsClient::UploadCardResponseDetails&)>
+      base::OnceCallback<
+          void(AutofillClient::PaymentsRpcResult,
+               const PaymentsNetworkInterface::UploadCardResponseDetails&)>
           callback);
   UploadCardRequest(const UploadCardRequest&) = delete;
   UploadCardRequest& operator=(const UploadCardRequest&) = delete;
@@ -39,12 +40,14 @@ class UploadCardRequest : public PaymentsRequest {
   void RespondToDelegate(AutofillClient::PaymentsRpcResult result) override;
 
  private:
-  const PaymentsClient::UploadRequestDetails request_details_;
+  const PaymentsNetworkInterface::UploadRequestDetails request_details_;
   const bool full_sync_enabled_;
-  base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
-                          const PaymentsClient::UploadCardResponseDetails&)>
+  base::OnceCallback<void(
+      AutofillClient::PaymentsRpcResult,
+      const PaymentsNetworkInterface::UploadCardResponseDetails&)>
       callback_;
-  PaymentsClient::UploadCardResponseDetails upload_card_response_details_;
+  PaymentsNetworkInterface::UploadCardResponseDetails
+      upload_card_response_details_;
 };
 
 }  // namespace autofill::payments

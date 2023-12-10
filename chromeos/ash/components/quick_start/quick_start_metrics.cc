@@ -2,16 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "quick_start_metrics.h"
+#include "chromeos/ash/components/quick_start/quick_start_metrics.h"
 
+#include <memory>
 #include <string>
 
 #include "base/metrics/histogram_functions.h"
+#include "base/timer/elapsed_timer.h"
 
 namespace ash::quick_start {
 
 namespace {
 
+constexpr const char kAttestationCertificateFailureReasonHistogramName[] =
+    "QuickStart.AttestationCertificate.FailureReason";
+constexpr const char kAttestationCertificateFetchResultHistogramName[] =
+    "QuickStart.AttestationCertificate.FetchResult";
+constexpr const char kAttestationCertificateFetchDurationHistogramName[] =
+    "QuickStart.AttestationCertificate.FetchDuration";
 constexpr const char kWifiTransferResultHistogramName[] =
     "QuickStart.WifiTransferResult";
 constexpr const char kWifiTransferResultFailureReasonHistogramName[] =
@@ -40,6 +48,10 @@ constexpr const char kMessageReceivedGetInfo[] =
     "QuickStart.MessageReceived.GetInfo";
 constexpr const char kMessageReceivedAssertion[] =
     "QuickStart.MessageReceived.Assertion";
+constexpr const char kMessageReceivedBootstrapStateCancel[] =
+    "QuickStart.MessageReceived.BootstrapStateCancel";
+constexpr const char kMessageReceivedBootstrapStateComplete[] =
+    "QuickStart.MessageReceived.BootstrapStateComplete";
 constexpr const char kMessageReceivedDesiredMessageTypeName[] =
     "QuickStart.MessageReceived.DesiredMessageType";
 constexpr const char kMessageSentMessageTypeName[] =
@@ -74,6 +86,10 @@ std::string MapMessageTypeToMetric(
       return kMessageReceivedGetInfo;
     case QuickStartMetrics::MessageType::kAssertion:
       return kMessageReceivedAssertion;
+    case QuickStartMetrics::MessageType::kBootstrapStateCancel:
+      return kMessageReceivedBootstrapStateCancel;
+    case QuickStartMetrics::MessageType::kBootstrapStateComplete:
+      return kMessageReceivedBootstrapStateComplete;
   }
 }
 
@@ -95,6 +111,10 @@ QuickStartMetrics::MessageType QuickStartMetrics::MapResponseToMessageType(
       return MessageType::kGetInfo;
     case QuickStartResponseType::kAssertion:
       return MessageType::kAssertion;
+    case QuickStartResponseType::kBootstrapStateCancel:
+      return MessageType::kBootstrapStateCancel;
+    case QuickStartResponseType::kBootstrapStateComplete:
+      return MessageType::kBootstrapStateComplete;
   }
 }
 
@@ -109,14 +129,14 @@ void QuickStartMetrics::RecordScreenClosed(
     ScreenName screen,
     int32_t session_id,
     base::Time timestamp,
-    absl::optional<ScreenName> previous_screen) {
+    std::optional<ScreenName> previous_screen) {
   // TODO(b/298042953): Add metric for screen duration.
 }
 
 // static
 void QuickStartMetrics::RecordWifiTransferResult(
     bool succeeded,
-    absl::optional<WifiTransferResultFailureReason> failure_reason) {
+    std::optional<WifiTransferResultFailureReason> failure_reason) {
   if (succeeded) {
     CHECK(!failure_reason.has_value());
   } else {
@@ -132,25 +152,37 @@ void QuickStartMetrics::RecordGaiaTransferAttempted(bool attempted) {
   base::UmaHistogramBoolean(kGaiaTransferAttemptedName, attempted);
 }
 
-// static
-void QuickStartMetrics::RecordAttestationCertificateRequested(
-    int32_t session_id) {
-  // TODO(b/279614284): Add FIDO assertion metrics.
+void QuickStartMetrics::RecordAttestationCertificateRequested() {
+  CHECK(!attestation_certificate_timer_)
+      << "Only 1 attestation certificate request can be active at a time";
+  attestation_certificate_timer_ = std::make_unique<base::ElapsedTimer>();
 }
 
-// static
 void QuickStartMetrics::RecordAttestationCertificateRequestEnded(
-    int32_t session_id,
-    bool succeded,
-    int duration,
-    absl::optional<AttestationCertificateRequestErrorCode> error_code) {
-  // TODO(b/279614284): Add FIDO assertion metrics.
+    std::optional<AttestationCertificateRequestErrorCode> error_code) {
+  CHECK(attestation_certificate_timer_)
+      << "Attestation certificate request timer was not active. Unexpected "
+         "response.";
+
+  if (error_code) {
+    base::UmaHistogramEnumeration(
+        kAttestationCertificateFailureReasonHistogramName, error_code.value());
+    base::UmaHistogramBoolean(kAttestationCertificateFetchResultHistogramName,
+                              false);
+  } else {
+    base::UmaHistogramBoolean(kAttestationCertificateFetchResultHistogramName,
+                              true);
+  }
+
+  base::UmaHistogramTimes(kAttestationCertificateFetchDurationHistogramName,
+                          attestation_certificate_timer_->Elapsed());
+  attestation_certificate_timer_.reset();
 }
 
 // static
 void QuickStartMetrics::RecordGaiaTransferResult(
     bool succeeded,
-    absl::optional<GaiaTransferResultFailureReason> failure_reason) {
+    std::optional<GaiaTransferResultFailureReason> failure_reason) {
   if (succeeded) {
     CHECK(!failure_reason.has_value());
   } else {
@@ -184,7 +216,7 @@ void QuickStartMetrics::RecordFastPairAdvertisementStarted(
 
 void QuickStartMetrics::RecordFastPairAdvertisementEnded(
     bool succeeded,
-    absl::optional<FastPairAdvertisingErrorCode> error_code) {
+    std::optional<FastPairAdvertisingErrorCode> error_code) {
   CHECK(fast_pair_advertising_timer_);
   CHECK(fast_pair_advertising_method_.has_value());
 
@@ -205,7 +237,7 @@ void QuickStartMetrics::RecordFastPairAdvertisementEnded(
       kFastPairAdvertisementEndedAdvertisingMethodHistogramName,
       fast_pair_advertising_method_.value());
 
-  fast_pair_advertising_method_ = absl::nullopt;
+  fast_pair_advertising_method_ = std::nullopt;
   fast_pair_advertising_timer_.reset();
 }
 
@@ -217,7 +249,7 @@ void QuickStartMetrics::RecordNearbyConnectionsAdvertisementStarted(
 
 void QuickStartMetrics::RecordNearbyConnectionsAdvertisementEnded(
     bool succeeded,
-    absl::optional<NearbyConnectionsAdvertisingErrorCode> error_code) {
+    std::optional<NearbyConnectionsAdvertisingErrorCode> error_code) {
   // TODO(b/279614071): Add advertising metrics.
 }
 
@@ -232,7 +264,7 @@ void QuickStartMetrics::RecordHandshakeStarted(bool handshake_started) {
 
 void QuickStartMetrics::RecordHandshakeResult(
     bool succeeded,
-    absl::optional<HandshakeErrorCode> error_code) {
+    std::optional<HandshakeErrorCode> error_code) {
   CHECK(handshake_elapsed_timer_);
 
   if (!succeeded) {
@@ -254,7 +286,7 @@ void QuickStartMetrics::RecordMessageSent(MessageType message_type) {
 void QuickStartMetrics::RecordMessageReceived(
     MessageType desired_message_type,
     bool succeeded,
-    absl::optional<MessageReceivedErrorCode> error_code) {
+    std::optional<MessageReceivedErrorCode> error_code) {
   std::string metric_name = MapMessageTypeToMetric(desired_message_type);
   if (succeeded) {
     CHECK(!error_code.has_value());

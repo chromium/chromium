@@ -9,6 +9,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/scoped_animation_disabler.h"
+#include "ash/wm/overview/event_handler_delegate.h"
 #include "ash/wm/overview/overview_item_base.h"
 #include "ash/wm/overview/scoped_overview_transform_window.h"
 #include "ash/wm/window_state_observer.h"
@@ -59,7 +60,8 @@ class ASH_EXPORT OverviewItem : public OverviewItemBase,
   OverviewItem(aura::Window* window,
                OverviewSession* overview_session,
                OverviewGrid* overview_grid,
-               WindowDestructionDelegate* delegate,
+               WindowDestructionDelegate* destruction_delegate,
+               EventHandlerDelegate* event_handler_delegate,
                bool eligible_for_shadow_config);
 
   OverviewItem(const OverviewItem&) = delete;
@@ -68,6 +70,10 @@ class ASH_EXPORT OverviewItem : public OverviewItemBase,
   ~OverviewItem() override;
 
   OverviewItemView* overview_item_view() { return overview_item_view_; }
+
+  // Handles events forwarded from the contents view.
+  void OnFocusedViewActivated();
+  void OnFocusedViewClosed();
 
   // If the window item represents a minimized window, update its contents view.
   void UpdateItemContentViewForMinimizedWindow();
@@ -95,7 +101,7 @@ class ASH_EXPORT OverviewItem : public OverviewItemBase,
   gfx::RectF GetWindowsUnionScreenBounds() const override;
   gfx::RectF GetTargetBoundsWithInsets() const override;
   gfx::RectF GetTransformedBounds() const override;
-  OverviewFocusableView* GetFocusableView() const override;
+  std::vector<OverviewFocusableView*> GetFocusableViews() const override;
   views::View* GetBackDropView() const override;
   void UpdateRoundedCornersAndShadow() override;
   void SetOpacity(float opacity) override;
@@ -141,13 +147,16 @@ class ASH_EXPORT OverviewItem : public OverviewItemBase,
   void OnPostWindowStateTypeChange(WindowState* window_state,
                                    chromeos::WindowStateType old_type) override;
 
- protected:
-  // OverviewItemBase:
-  void CreateItemWidget() override;
-
  private:
   friend class OverviewTestBase;
+  friend class ScopedOverviewTransformWindow;
   FRIEND_TEST_ALL_PREFIXES(SplitViewOverviewSessionTest, Clipping);
+
+  // Creates `item_widget_` with `OverviewItemView` as its contents view.
+  // `event_handler_delegate` specifies the concrete delegate to handle events,
+  // which is `this` by default or the given `event_handler_delegate` if it's
+  // not nullptr.
+  void CreateItemWidget(EventHandlerDelegate* event_handler_delegate);
 
   // Functions to be called back when their associated animations complete.
   void OnWindowCloseAnimationCompleted();
@@ -200,6 +209,8 @@ class ASH_EXPORT OverviewItem : public OverviewItemBase,
   // The contained Window's wrapper.
   ScopedOverviewTransformWindow transform_window_;
 
+  // The delegate to handle window destruction which is `OverviewGrid` for
+  // single item or `OverviewGroupItem` for group item.
   const raw_ptr<WindowDestructionDelegate> window_destruction_delegate_;
 
   // Used to block events from reaching the item widget when the overview item

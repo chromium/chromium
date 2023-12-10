@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {PageCallbackRouter, PageRemote, ProfileData, SwitchToTabInfo, Tab, TabOrganizationSession, TabSearchApiProxy} from 'chrome://tab-search.top-chrome/tab_search.js';
+import {PageCallbackRouter, PageRemote, ProfileData, SwitchToTabInfo, Tab, TabOrganizationSession, TabSearchApiProxy, UserFeedback} from 'chrome://tab-search.top-chrome/tab_search.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 export class TestTabSearchApiProxy extends TestBrowserProxy implements
@@ -21,10 +21,18 @@ export class TestTabSearchApiProxy extends TestBrowserProxy implements
       'getTabOrganizationSession',
       'openRecentlyClosedEntry',
       'requestTabOrganization',
+      'removeTabFromOrganization',
+      'resetSession',
       'switchToTab',
       'saveRecentlyClosedExpandedPref',
       'setTabIndex',
       'startTabGroupTutorial',
+      'triggerFeedback',
+      'triggerSync',
+      'triggerSignIn',
+      'openHelpPage',
+      'openSyncSettings',
+      'setUserFeedback',
       'showUi',
     ]);
 
@@ -69,6 +77,16 @@ export class TestTabSearchApiProxy extends TestBrowserProxy implements
     return Promise.resolve({name: '', tabs: []});
   }
 
+  removeTabFromOrganization(
+      sessionId: number, organizationId: number, tab: Tab) {
+    this.methodCalled(
+        'removeTabFromOrganization', sessionId, organizationId, tab);
+  }
+
+  resetSession() {
+    this.methodCalled('resetSession');
+  }
+
   switchToTab(info: SwitchToTabInfo) {
     this.methodCalled('switchToTab', [info]);
   }
@@ -83,6 +101,30 @@ export class TestTabSearchApiProxy extends TestBrowserProxy implements
 
   startTabGroupTutorial() {
     this.methodCalled('startTabGroupTutorial');
+  }
+
+  triggerFeedback(sessionId: number) {
+    this.methodCalled('triggerFeedback', [sessionId]);
+  }
+
+  triggerSync() {
+    this.methodCalled('triggerSync');
+  }
+
+  triggerSignIn() {
+    this.methodCalled('triggerSignIn');
+  }
+
+  openHelpPage() {
+    this.methodCalled('openHelpPage');
+  }
+
+  openSyncSettings() {
+    this.methodCalled('openSyncSettings');
+  }
+
+  setUserFeedback(feedback: UserFeedback) {
+    this.methodCalled('setUserFeedback', [feedback]);
   }
 
   showUi() {

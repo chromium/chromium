@@ -52,7 +52,8 @@ constexpr uint16_t kTestVendorId = 0x1234;
 constexpr uint16_t kTestProductId = 0xabcd;
 constexpr char kTestSerialNumber[] = "serial-number";
 constexpr char kTestProductName[] = "product-name";
-constexpr char kTestPhysicalDeviceId[] = "physical-device-id";
+const char* const kTestPhysicalDeviceIds[] = {"physical-device-id-1",
+                                              "physical-device-id-2"};
 constexpr char kTestUserEmail[] = "user@example.com";
 
 // The HID usages assigned to the top-level collection of the simulated device.
@@ -126,7 +127,8 @@ class HidChooserContextTestBase {
   MockHidDeviceObserver& device_observer() { return device_observer_; }
 
   device::mojom::HidDeviceInfoPtr CreateDevice(
-      base::StringPiece serial_number) {
+      base::StringPiece serial_number,
+      const std::string& physical_device_id = kTestPhysicalDeviceIds[0]) {
     auto collection = device::mojom::HidCollectionInfo::New();
     collection->usage =
         device::mojom::HidUsageAndPage::New(kTestUsage, kTestUsagePage);
@@ -136,7 +138,7 @@ class HidChooserContextTestBase {
 
     auto device = device::mojom::HidDeviceInfo::New();
     device->guid = base::Uuid::GenerateRandomV4().AsLowercaseString();
-    device->physical_device_id = kTestPhysicalDeviceId;
+    device->physical_device_id = physical_device_id;
     device->vendor_id = kTestVendorId;
     device->product_id = kTestProductId;
     device->product_name = kTestProductName;
@@ -381,16 +383,12 @@ TEST_F(HidChooserContextTest, GrantAndForgetEphemeralDevice) {
 
   // Forget the ephemeral device.
   base::RunLoop permissions_revoked_loop;
-  auto permissions_revoked_barrier =
-      base::BarrierClosure(2, permissions_revoked_loop.QuitClosure());
   EXPECT_CALL(permission_observer(), OnPermissionRevoked(kOrigin))
-      .Times(2)
-      .WillRepeatedly(RunClosure(permissions_revoked_barrier));
+      .WillOnce(RunClosure(permissions_revoked_loop.QuitClosure()));
   EXPECT_CALL(permission_observer(),
               OnObjectPermissionChanged(
                   absl::make_optional(ContentSettingsType::HID_GUARD),
-                  ContentSettingsType::HID_CHOOSER_DATA))
-      .Times(2);
+                  ContentSettingsType::HID_CHOOSER_DATA));
   context()->RevokeDevicePermission(kOrigin, *device1);
   permissions_revoked_loop.Run();
 
@@ -398,6 +396,44 @@ TEST_F(HidChooserContextTest, GrantAndForgetEphemeralDevice) {
   EXPECT_FALSE(context()->HasDevicePermission(kOrigin, *device2));
   EXPECT_EQ(0u, context()->GetGrantedObjects(kOrigin).size());
   EXPECT_EQ(0u, context()->GetAllGrantedObjects().size());
+}
+
+TEST_F(HidChooserContextTest, GrantTwoEphemeralDevicesForgetOne) {
+  const auto kOrigin = url::Origin::Create(GURL("https://google.com"));
+
+  // Connect two devices that are only eligible for ephemeral permissions.
+  auto device1 = ConnectDeviceBlocking(CreateDevice(
+      /*serial_number=*/"", /*physical_device_id=*/kTestPhysicalDeviceIds[0]));
+  auto device2 = ConnectDeviceBlocking(CreateDevice(
+      /*serial_number=*/"", /*physical_device_id=*/kTestPhysicalDeviceIds[1]));
+  EXPECT_FALSE(context()->HasDevicePermission(kOrigin, *device1));
+  EXPECT_FALSE(context()->HasDevicePermission(kOrigin, *device2));
+  EXPECT_EQ(0u, context()->GetGrantedObjects(kOrigin).size());
+  EXPECT_EQ(0u, context()->GetAllGrantedObjects().size());
+
+  // Grant ephemeral permissions.
+  GrantDevicePermissionBlocking(kOrigin, *device1);
+  GrantDevicePermissionBlocking(kOrigin, *device2);
+  EXPECT_TRUE(context()->HasDevicePermission(kOrigin, *device1));
+  EXPECT_TRUE(context()->HasDevicePermission(kOrigin, *device2));
+  EXPECT_EQ(2u, context()->GetGrantedObjects(kOrigin).size());
+  EXPECT_EQ(2u, context()->GetAllGrantedObjects().size());
+
+  // Forget the first device.
+  base::RunLoop permissions_revoked_loop;
+  EXPECT_CALL(permission_observer(), OnPermissionRevoked(kOrigin))
+      .WillOnce(RunClosure(permissions_revoked_loop.QuitClosure()));
+  EXPECT_CALL(permission_observer(),
+              OnObjectPermissionChanged(
+                  absl::make_optional(ContentSettingsType::HID_GUARD),
+                  ContentSettingsType::HID_CHOOSER_DATA));
+  context()->RevokeDevicePermission(kOrigin, *device1);
+  permissions_revoked_loop.Run();
+
+  EXPECT_FALSE(context()->HasDevicePermission(kOrigin, *device1));
+  EXPECT_TRUE(context()->HasDevicePermission(kOrigin, *device2));
+  EXPECT_EQ(1u, context()->GetGrantedObjects(kOrigin).size());
+  EXPECT_EQ(1u, context()->GetAllGrantedObjects().size());
 }
 
 TEST_F(HidChooserContextTest, GrantAndDisconnectEphemeralDevice) {

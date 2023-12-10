@@ -8,6 +8,7 @@
 
 #include "components/reporting/encryption/primitives.h"
 #include "components/reporting/encryption/testing_primitives.h"
+#include "components/reporting/util/status_macros.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

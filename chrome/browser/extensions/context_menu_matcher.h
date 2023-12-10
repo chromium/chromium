@@ -114,7 +114,7 @@ class ContextMenuMatcher {
   extensions::MenuItem* GetExtensionMenuItem(int id) const;
 
   // This will set the icon on the most recently-added item in the menu_model_.
-  void SetExtensionIcon(const std::string& extension_id);
+  void SetExtensionIcon(const MenuItem::ExtensionKey& extension_key);
 
   raw_ptr<content::BrowserContext, DanglingUntriaged> browser_context_;
   raw_ptr<ui::SimpleMenuModel, DanglingUntriaged> menu_model_;

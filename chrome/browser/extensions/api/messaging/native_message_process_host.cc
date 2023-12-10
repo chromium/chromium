@@ -248,7 +248,7 @@ void NativeMessageProcessHost::DoRead() {
   DCHECK(task_runner_->BelongsToCurrentThread());
 
   while (!closed_ && !read_pending_) {
-    read_buffer_ = base::MakeRefCounted<net::IOBuffer>(kReadBufferSize);
+    read_buffer_ = base::MakeRefCounted<net::IOBufferWithSize>(kReadBufferSize);
     int result =
         read_stream_->Read(read_buffer_.get(), kReadBufferSize,
                            base::BindOnce(&NativeMessageProcessHost::OnRead,

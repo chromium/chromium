@@ -22,17 +22,29 @@ public class SearchResumptionModuleCoordinator {
     private final SearchResumptionModuleMediator mMediator;
     private final SearchResumptionTileBuilder mTileBuilder;
 
-    public SearchResumptionModuleCoordinator(ViewGroup parent,
-            AutocompleteControllerProvider autocompleteProvider, Tab tabToTrack, Tab currentTab,
-            Profile profile, int moduleContainerStbuId, SuggestionResult cachedSuggestions) {
-        OnSuggestionClickCallback callback = (gurl) -> {
-            currentTab.loadUrl(new LoadUrlParams(gurl));
-            RecordUserAction.record(SearchResumptionModuleUtils.ACTION_CLICK);
-        };
+    public SearchResumptionModuleCoordinator(
+            ViewGroup parent,
+            AutocompleteControllerProvider autocompleteProvider,
+            Tab tabToTrack,
+            Tab currentTab,
+            Profile profile,
+            int moduleContainerStbuId,
+            SuggestionResult cachedSuggestions) {
+        OnSuggestionClickCallback callback =
+                (gurl) -> {
+                    currentTab.loadUrl(new LoadUrlParams(gurl));
+                    RecordUserAction.record(SearchResumptionModuleUtils.ACTION_CLICK);
+                };
         mTileBuilder = new SearchResumptionTileBuilder(callback);
-        mMediator = new SearchResumptionModuleMediator(parent.findViewById(moduleContainerStbuId),
-                autocompleteProvider, tabToTrack, currentTab, profile, mTileBuilder,
-                cachedSuggestions);
+        mMediator =
+                new SearchResumptionModuleMediator(
+                        parent.findViewById(moduleContainerStbuId),
+                        autocompleteProvider,
+                        tabToTrack,
+                        currentTab,
+                        profile,
+                        mTileBuilder,
+                        cachedSuggestions);
     }
 
     public void destroy() {

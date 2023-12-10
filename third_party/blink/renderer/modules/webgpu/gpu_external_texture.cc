@@ -166,14 +166,16 @@ GPUExternalTexture* GPUExternalTexture::CreateImpl(
     ExceptionState& exception_state) {
   CHECK(media_video_frame);
 
-  // TODO(crbug.com/1330250): Support additional color spaces for external
-  // textures.
-  if (webgpu_desc->colorSpace().AsEnum() !=
-      V8PredefinedColorSpace::Enum::kSRGB) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kOperationError,
-        "colorSpace !== 'srgb' isn't supported yet.");
-    return nullptr;
+  switch (webgpu_desc->colorSpace().AsEnum()) {
+    case V8PredefinedColorSpace::Enum::kSRGB:
+    case V8PredefinedColorSpace::Enum::kDisplayP3:
+      break;
+    default:
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kOperationError,
+          "Requested colorSpace '" + webgpu_desc->colorSpace().AsString() +
+              "' is not implemented. Use 'srgb' or 'display-p3'.");
+      return nullptr;
   }
 
   PredefinedColorSpace dst_predefined_color_space;

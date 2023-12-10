@@ -223,8 +223,8 @@ void ExternalFileResolver::OnRedirectURLObtained(const GURL& redirect_url) {
   // If there's no redirect then we're serving the file from the file system.
   file_system_context_->operation_runner()->GetMetadata(
       isolated_file_system_.url,
-      storage::FileSystemOperation::GET_METADATA_FIELD_IS_DIRECTORY |
-          storage::FileSystemOperation::GET_METADATA_FIELD_SIZE,
+      {storage::FileSystemOperation::GetMetadataField::kIsDirectory,
+       storage::FileSystemOperation::GetMetadataField::kSize},
       base::BindOnce(&ExternalFileResolver::OnFileInfoObtained,
                      weak_ptr_factory_.GetWeakPtr()));
 }

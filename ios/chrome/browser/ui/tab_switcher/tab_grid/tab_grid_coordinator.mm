@@ -22,7 +22,7 @@
 #import "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/find_in_page/model/find_tab_helper.h"
 #import "ios/chrome/browser/find_in_page/model/util.h"
-#import "ios/chrome/browser/main/browser_util.h"
+#import "ios/chrome/browser/main/model/browser_util.h"
 #import "ios/chrome/browser/policy/policy_util.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_browser_agent.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
@@ -31,7 +31,6 @@
 #import "ios/chrome/browser/shared/coordinator/default_browser_promo/non_modal_default_browser_promo_scheduler_scene_agent.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
-#import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
@@ -52,7 +51,7 @@
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
-#import "ios/chrome/browser/signin/identity_manager_factory.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/model/session_sync_service_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/synced_sessions/model/distant_session.h"
@@ -94,7 +93,6 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/pinned_tabs/pinned_tabs_mediator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_context_menu/tab_context_menu_helper.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_context_menu/tab_item.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_coordinator+private.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_mediator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_paging.h"
@@ -338,6 +336,9 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   [self.baseViewController dismissModals];
   self.baseViewController.tabGridMode = TabGridModeNormal;
 
+  [_incognitoGridCoordinator stopChildCoordinators];
+  [_regularGridCoordinator stopChildCoordinators];
+
   [self dismissPopovers];
 
   [self.inactiveTabsCoordinator hide];
@@ -386,8 +387,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 - (void)showTabGrid {
   BOOL animated = !self.animationsDisabledForTesting;
 
-  SceneState* sceneState =
-      SceneStateBrowserAgent::FromBrowser(self.regularBrowser)->GetSceneState();
+  SceneState* sceneState = self.regularBrowser->GetSceneState();
   [[NonModalDefaultBrowserPromoSchedulerSceneAgent agentFromScene:sceneState]
       logTabGridEntered];
 
@@ -828,8 +828,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
       SyncServiceFactory::GetForBrowserState(regularBrowserState);
   BrowserList* browserList =
       BrowserListFactory::GetForBrowserState(regularBrowserState);
-  SceneState* currentSceneState =
-      SceneStateBrowserAgent::FromBrowser(self.regularBrowser)->GetSceneState();
+  SceneState* currentSceneState = self.regularBrowser->GetSceneState();
   // TODO(crbug.com/1457146): Rename in recentTabsMediator.
   self.remoteTabsMediator = [[RecentTabsMediator alloc]
       initWithSessionSyncService:syncService
@@ -875,6 +874,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   _mediator.regularPageMutator = _regularGridCoordinator.regularGridMediator;
   _mediator.incognitoPageMutator = self.incognitoTabsMediator;
   _mediator.remotePageMutator = self.remoteTabsMediator;
+  _mediator.toolbarsMutator = _toolbarsCoordinator.toolbarsMutator;
 
   self.remoteTabsMediator.toolbarsMutator =
       _toolbarsCoordinator.toolbarsMutator;
@@ -884,6 +884,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 
   self.incognitoTabsMediator.gridConsumer = self.baseViewController;
   self.regularTabsMediator.gridConsumer = self.baseViewController;
+  self.remoteTabsMediator.gridConsumer = self.baseViewController;
 
   self.snackbarCoordinator =
       [[SnackbarCoordinator alloc] initWithBaseViewController:baseViewController
@@ -903,8 +904,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
       startDispatchingToTarget:[self bookmarksCoordinator]
                    forProtocol:@protocol(BookmarksCommands)];
 
-  SceneState* sceneState =
-      SceneStateBrowserAgent::FromBrowser(self.regularBrowser)->GetSceneState();
+  SceneState* sceneState = self.regularBrowser->GetSceneState();
   [sceneState addObserver:self];
 
   // Once the mediators are set up, stop keeping pointers to the browsers used
@@ -914,8 +914,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 }
 
 - (void)stop {
-  SceneState* sceneState =
-      SceneStateBrowserAgent::FromBrowser(self.regularBrowser)->GetSceneState();
+  SceneState* sceneState = self.regularBrowser->GetSceneState();
   [sceneState removeObserver:self];
 
   // The TabGridViewController may still message its application commands
@@ -1025,6 +1024,13 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
                              title:nil
                            message:nil
                      barButtonItem:buttonAnchor];
+
+    // IOS 17 Bug: The alert arrow direction presentation is broken.
+    // Workaround: Specifically set the popover arrow direction. (crbug/1490535)
+    if (@available(iOS 17, *)) {
+      self.actionSheetCoordinator.popoverArrowDirection =
+          UIPopoverArrowDirectionDown | UIPopoverArrowDirectionUp;
+    }
   } else {
     base::RecordAction(base::UserMetricsAction(
         "MobileTabGridSelectionCloseIncognitoTabsConfirmationPresented"));

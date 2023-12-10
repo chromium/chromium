@@ -7,12 +7,11 @@
 #import "base/containers/contains.h"
 #import "base/test/ios/wait_util.h"
 #import "components/unified_consent/pref_names.h"
-#import "ios/chrome/browser/commerce/model/shopping_persisted_data_tab_helper.h"
-#import "ios/chrome/browser/history/history_service_factory.h"
-#import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
-#import "ios/chrome/browser/ntp/new_tab_page_tab_helper_delegate.h"
+#import "ios/chrome/browser/history/model/history_service_factory.h"
+#import "ios/chrome/browser/main/model/browser_web_state_list_delegate.h"
 #import "ios/chrome/browser/sessions/fake_tab_restore_service.h"
 #import "ios/chrome/browser/sessions/ios_chrome_tab_restore_service_factory.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
@@ -20,30 +19,23 @@
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
-#import "ios/chrome/browser/signin/authentication_service.h"
-#import "ios/chrome/browser/signin/authentication_service_factory.h"
-#import "ios/chrome/browser/signin/fake_authentication_service_delegate.h"
-#import "ios/chrome/browser/signin/fake_system_identity.h"
-#import "ios/chrome/browser/signin/fake_system_identity_manager.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_browser_agent.h"
-#import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/chrome/browser/sync/model/mock_sync_service_utils.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/tabs/model/closing_web_state_observer_browser_agent.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/base_grid_mediator.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/test/fake_tab_grid_toolbars_mediator.h"
 #import "ios/chrome/browser/ui/tab_switcher/test/fake_tab_collection_consumer.h"
-#import "ios/chrome/browser/web/features.h"
-#import "ios/chrome/browser/web/page_placeholder_tab_helper.h"
-#import "ios/chrome/browser/web/session_state/web_session_state_tab_helper.h"
 #import "ios/chrome/browser/web_state_list/model/web_usage_enabler/web_usage_enabler_browser_agent.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
-
-// To get access to web::features::kEnableSessionSerializationOptimizations.
-// TODO(crbug.com/1383087): remove once the feature is fully launched.
-#import "ios/web/common/features.h"
 
 using base::test::ios::WaitUntilConditionOrTimeout;
 
@@ -53,31 +45,18 @@ namespace {
 constexpr base::TimeDelta kWaitForTabCollectionConsumerUpdateTimeout =
     base::Seconds(1);
 
-std::unique_ptr<KeyedService> BuildFakeTabRestoreService(
-    web::BrowserState* browser_state) {
-  return std::make_unique<FakeTabRestoreService>();
-}
-}  // namespace
+// Name of the directory where snapshots are saved.
+const char kIdentifier[] = "Identifier";
 
-// Fake WebStateList delegate that attaches the required tab helper.
-class TabHelperFakeWebStateListDelegate : public FakeWebStateListDelegate {
- public:
-  TabHelperFakeWebStateListDelegate() {}
-  ~TabHelperFakeWebStateListDelegate() override {}
-
-  // WebStateListDelegate implementation.
-  void WillAddWebState(web::WebState* web_state) override {
-    // Create NTPTabHelper to ensure VisibleURL is set to kChromeUINewTabURL.
-    id delegate = OCMProtocolMock(@protocol(NewTabPageTabHelperDelegate));
-    NewTabPageTabHelper::CreateForWebState(web_state);
-    NewTabPageTabHelper::FromWebState(web_state)->SetDelegate(delegate);
-    PagePlaceholderTabHelper::CreateForWebState(web_state);
-    SnapshotTabHelper::CreateForWebState(web_state);
-    if (web::UseNativeSessionRestorationCache()) {
-      WebSessionStateTabHelper::CreateForWebState(web_state);
-    }
-  }
+// List all ContentWorlds. Necessary because calling SetWebFramesManager(...)
+// with a kAllContentWorlds is not enough with FakeWebState.
+constexpr web::ContentWorld kContentWorlds[] = {
+    web::ContentWorld::kAllContentWorlds,
+    web::ContentWorld::kPageContentWorld,
+    web::ContentWorld::kIsolatedWorld,
 };
+
+}  // namespace
 
 GridMediatorTestClass::GridMediatorTestClass() {
   InitializeFeatureFlags();
@@ -90,7 +69,7 @@ void GridMediatorTestClass::SetUp() {
 
   TestChromeBrowserState::Builder builder;
   builder.AddTestingFactory(IOSChromeTabRestoreServiceFactory::GetInstance(),
-                            base::BindRepeating(BuildFakeTabRestoreService));
+                            FakeTabRestoreService::GetTestingFactory());
   builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
                             base::BindRepeating(&CreateMockSyncService));
   builder.AddTestingFactory(AuthenticationServiceFactory::GetInstance(),
@@ -115,14 +94,15 @@ void GridMediatorTestClass::SetUp() {
   auth_service_->SignIn(identity,
                         signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
 
+  scene_state_ = OCMClassMock([SceneState class]);
+  OCMStub([scene_state_ sceneSessionID]).andReturn(@(kIdentifier));
   browser_ = std::make_unique<TestBrowser>(
-      browser_state_.get(),
-      std::make_unique<TabHelperFakeWebStateListDelegate>());
+      browser_state_.get(), scene_state_,
+      std::make_unique<BrowserWebStateListDelegate>());
   WebUsageEnablerBrowserAgent::CreateForBrowser(browser_.get());
   ClosingWebStateObserverBrowserAgent::CreateForBrowser(browser_.get());
   SnapshotBrowserAgent::CreateForBrowser(browser_.get());
-  SnapshotBrowserAgent::FromBrowser(browser_.get())
-      ->SetSessionID([[NSUUID UUID] UUIDString]);
+  SnapshotBrowserAgent::FromBrowser(browser_.get())->SetSessionID(kIdentifier);
   browser_list_ = BrowserListFactory::GetForBrowserState(browser_state_.get());
   browser_list_->AddBrowser(browser_.get());
 
@@ -145,6 +125,7 @@ void GridMediatorTestClass::SetUp() {
   original_selected_identifier_ =
       browser_->GetWebStateList()->GetWebStateAt(1)->GetUniqueIdentifier();
   consumer_ = [[FakeTabCollectionConsumer alloc] init];
+  fake_toolbars_mediator_ = [[FakeTabGridToolbarsMediator alloc] init];
 }
 
 std::unique_ptr<web::FakeWebState>
@@ -155,27 +136,18 @@ GridMediatorTestClass::CreateFakeWebStateWithURL(const GURL& url) {
   navigation_manager->SetLastCommittedItem(
       navigation_manager->GetItemAtIndex(0));
   web_state->SetNavigationManager(std::move(navigation_manager));
-  web_state->SetWebFramesManager(std::make_unique<web::FakeWebFramesManager>());
+  for (const web::ContentWorld content_world : kContentWorlds) {
+    web_state->SetWebFramesManager(
+        content_world, std::make_unique<web::FakeWebFramesManager>());
+  }
   web_state->SetBrowserState(browser_state_.get());
   web_state->SetNavigationItemCount(1);
   web_state->SetCurrentURL(url);
-  SnapshotTabHelper::CreateForWebState(web_state.get());
   return web_state;
 }
 
 void GridMediatorTestClass::TearDown() {
   PlatformTest::TearDown();
-}
-
-void GridMediatorTestClass::SetFakePriceDrop(web::WebState* web_state) {
-  auto price_drop =
-      std::make_unique<ShoppingPersistedDataTabHelper::PriceDrop>();
-  price_drop->current_price = @"$5";
-  price_drop->previous_price = @"$10";
-  price_drop->url = web_state->GetLastCommittedURL();
-  price_drop->timestamp = base::Time::Now();
-  ShoppingPersistedDataTabHelper::FromWebState(web_state)
-      ->SetPriceDropForTesting(std::move(price_drop));
 }
 
 bool GridMediatorTestClass::WaitForConsumerUpdates(size_t expected_count) {
@@ -186,7 +158,4 @@ bool GridMediatorTestClass::WaitForConsumerUpdates(size_t expected_count) {
       });
 }
 
-void GridMediatorTestClass::InitializeFeatureFlags() {
-  scoped_feature_list_.InitAndDisableFeature(
-      web::features::kEnableSessionSerializationOptimizations);
-}
+void GridMediatorTestClass::InitializeFeatureFlags() {}

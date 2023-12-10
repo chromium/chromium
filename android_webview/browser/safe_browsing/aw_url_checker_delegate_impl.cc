@@ -112,16 +112,13 @@ void AwUrlCheckerDelegateImpl::SetPolicyAllowlistDomains(
 bool AwUrlCheckerDelegateImpl::ShouldSkipRequestCheck(
     const GURL& original_url,
     int frame_tree_node_id,
-    int render_process_id,
-    int render_frame_id,
+    int child_id,
+    base::optional_ref<const base::UnguessableToken> render_frame_token,
     bool originated_from_service_worker) {
   JNIEnv* env = base::android::AttachCurrentThread();
   if (Java_AwSafeBrowsingSafeModeAction_isSafeBrowsingDisabled(env)) {
     return true;
   }
-
-  const content::GlobalRenderFrameHostId rfh_id(render_process_id,
-                                                render_frame_id);
 
   std::unique_ptr<AwContentsIoThreadClient> client;
   if (originated_from_service_worker) {
@@ -130,10 +127,12 @@ bool AwUrlCheckerDelegateImpl::ShouldSkipRequestCheck(
       // Skip the check if safe browsing is disabled in the app's manifest.
       return true;
     }
-  } else if (!rfh_id) {
+  } else if (!render_frame_token.has_value()) {
     client = AwContentsIoThreadClient::FromID(frame_tree_node_id);
   } else {
-    client = AwContentsIoThreadClient::FromID(rfh_id);
+    client =
+        AwContentsIoThreadClient::FromToken(content::GlobalRenderFrameHostToken(
+            child_id, blink::LocalFrameToken(render_frame_token.value())));
   }
 
   // If Safe Browsing is disabled by the app, skip the check. Default to

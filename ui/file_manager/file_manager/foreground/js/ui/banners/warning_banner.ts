@@ -2,12 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/**
- * @fileoverview
- * This file is checked via TS, so we suppress Closure checks.
- * @suppress {checkTypes}
- */
-
 import {visitURL} from '../../../../common/js/util.js';
 
 import {type AllowedVolumeOrType, Banner, BannerEvent} from './types.js';
@@ -29,7 +23,7 @@ import {getTemplate} from './warning_banner.html.js';
  *
  *    class ConcreteWarningBanner extends WarningBanner {
  *      allowedVolumes() {
- *        return [{type: VolumeManagerCommon.VolumeType.DOWNLOADS}];
+ *        return [{type: VolumeType.DOWNLOADS}];
  *      }
  *    }
  *

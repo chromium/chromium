@@ -24,11 +24,13 @@
 
 #include "third_party/blink/renderer/core/dom/first_letter_pseudo_element.h"
 
+#include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/css/style_request.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/layout/generated_children.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
@@ -223,7 +225,8 @@ LayoutText* FirstLetterPseudoElement::FirstLetterTextLayoutObject(
                IsMenuList(first_letter_text_layout_object)) {
       return nullptr;
     } else if (first_letter_text_layout_object->IsFlexibleBox() ||
-               first_letter_text_layout_object->IsLayoutGrid()) {
+               first_letter_text_layout_object->IsLayoutGrid() ||
+               first_letter_text_layout_object->IsMathML()) {
       first_letter_text_layout_object =
           first_letter_text_layout_object->NextSibling();
     } else if (!first_letter_text_layout_object->IsInline() &&
@@ -263,6 +266,12 @@ LayoutText* FirstLetterPseudoElement::FirstLetterTextLayoutObject(
       IsInvalidFirstLetterLayoutObject(first_letter_text_layout_object))
     return nullptr;
 
+  // TODO(crbug.com/1501719): See LayoutObject::BehavesLikeBlockContainer().
+  if (parent_layout_object->IsRubyText() &&
+      IsA<HTMLRTElement>(parent_layout_object->GetNode())) {
+    UseCounter::Count(element.GetDocument(),
+                      WebFeature::kPseudoFirstLetterOnRt);
+  }
   return To<LayoutText>(first_letter_text_layout_object);
 }
 
@@ -285,7 +294,7 @@ void FirstLetterPseudoElement::UpdateTextFragments() {
   remaining_text_layout_object_->SetTextFragment(
       old_text.Impl()->Substring(length, old_text.length()), length,
       old_text.length() - length);
-  remaining_text_layout_object_->DirtyLineBoxes();
+  remaining_text_layout_object_->InvalidateInlineItems();
 
   for (auto* child = GetLayoutObject()->SlowFirstChild(); child;
        child = child->NextSibling()) {
@@ -297,7 +306,7 @@ void FirstLetterPseudoElement::UpdateTextFragments() {
 
     child_fragment->SetTextFragment(old_text.Impl()->Substring(0, length), 0,
                                     length);
-    child_fragment->DirtyLineBoxes();
+    child_fragment->InvalidateInlineItems();
 
     // Make sure the first-letter layoutObject is set to require a layout as it
     // needs to re-create the line boxes. The remaining text layoutObject
@@ -452,7 +461,7 @@ void FirstLetterPseudoElement::AttachFirstLetterTextLayoutObjects(
     // TODO(crbug.com/1393280): Once we can store used font somewhere, we should
     // compute initial-letter font during layout to take proper effective style.
     const ComputedStyle& paragraph_style =
-        paragraph.EffectiveStyle(NGStyleVariant::kFirstLine);
+        paragraph.EffectiveStyle(StyleVariant::kFirstLine);
     const ComputedStyle* initial_letter_text_style =
         GetDocument().GetStyleResolver().StyleForInitialLetterText(
             *letter_style, paragraph_style);
@@ -462,6 +471,13 @@ void FirstLetterPseudoElement::AttachFirstLetterTextLayoutObjects(
   }
   GetLayoutObject()->AddChild(letter);
 
+  // AXObjects are normally removed from destroyed layout objects in
+  // Node::DetachLayoutTree(), but as the ::first-letter implementation manually
+  // destroys the layout object for the first letter text, it must manually
+  // remove the accessibility object for it as well.
+  if (auto* cache = GetDocument().ExistingAXObjectCache()) {
+    cache->RemoveAXObjectsInLayoutSubtree(first_letter_text);
+  }
   first_letter_text->Destroy();
 }
 

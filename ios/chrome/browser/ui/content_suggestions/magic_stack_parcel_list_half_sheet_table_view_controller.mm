@@ -17,7 +17,7 @@
 
 namespace {
 
-const CGFloat kEllipsisButtonPointSize = 15;
+const CGFloat kEllipsisButtonPointSize = 24;
 const CGFloat kParcelCellMargin = 16;
 
 enum SectionIdentifier : NSInteger {
@@ -47,11 +47,16 @@ enum ItemType : NSInteger {
 // Delegate for this cell.
 @property(nonatomic, weak) id<ParcelListCellDelegate> delegate;
 
+// Tracking number for this cell.
+@property(nonatomic, copy) NSString* parcelID;
+
+// Button with more options for this cell.
+@property(nonatomic, strong) UIButton* ellipsisButton;
+
 @end
 
 @implementation ParcelListCell {
   ParcelTrackingModuleView* _parcelTrackingView;
-  NSString* _parcelID;
   ParcelType _carrier;
 }
 
@@ -68,8 +73,10 @@ enum ItemType : NSInteger {
     [emptySpaceFiller
         setContentHuggingPriority:UILayoutPriorityDefaultLow
                           forAxis:UILayoutConstraintAxisHorizontal];
-    UIButton* ellipsisButton = [[UIButton alloc] init];
+    self.ellipsisButton = [[UIButton alloc] init];
 
+    UIImage* ellipsisImage = DefaultSymbolWithPointSize(
+        kEllipsisCircleFillSymbol, kEllipsisButtonPointSize);
     UIImageSymbolConfiguration* config = [UIImageSymbolConfiguration
         configurationWithPointSize:kEllipsisButtonPointSize
                             weight:UIImageSymbolWeightMedium
@@ -80,9 +87,8 @@ enum ItemType : NSInteger {
           [UIColor colorNamed:kGroupedPrimaryBackgroundColor]
         ]];
     config = [config configurationByApplyingConfiguration:colorConfig];
-    UIImage* ellipsisImage =
-        DefaultSymbolWithConfiguration(kEllipsisCircleFillSymbol, colorConfig);
-    [ellipsisButton setImage:ellipsisImage forState:UIControlStateNormal];
+    ellipsisImage = [ellipsisImage imageByApplyingSymbolConfiguration:config];
+    [self.ellipsisButton setImage:ellipsisImage forState:UIControlStateNormal];
 
     __weak __typeof(self) weakSelf = self;
     UIAction* untrackAction = [UIAction
@@ -94,12 +100,12 @@ enum ItemType : NSInteger {
                   [weakSelf untrackParcel];
                 }];
     untrackAction.attributes = UIMenuElementAttributesDestructive;
-    ellipsisButton.menu = [UIMenu menuWithChildren:@[ untrackAction ]];
-    ellipsisButton.showsMenuAsPrimaryAction = YES;
+    self.ellipsisButton.menu = [UIMenu menuWithChildren:@[ untrackAction ]];
+    self.ellipsisButton.showsMenuAsPrimaryAction = YES;
 
     UIStackView* containerStackView =
         [[UIStackView alloc] initWithArrangedSubviews:@[
-          _parcelTrackingView, emptySpaceFiller, ellipsisButton
+          _parcelTrackingView, emptySpaceFiller, self.ellipsisButton
         ]];
     containerStackView.axis = UILayoutConstraintAxisHorizontal;
     containerStackView.alignment = UIStackViewAlignmentCenter;
@@ -115,13 +121,14 @@ enum ItemType : NSInteger {
 }
 
 - (void)configureCell:(ParcelTrackingItem*)config {
-  _parcelID = config.parcelID;
+  self.parcelID = config.parcelID;
   _carrier = config.parcelType;
   [_parcelTrackingView configureView:config];
+  self.accessibilityElements = @[ _parcelTrackingView, self.ellipsisButton ];
 }
 
 - (void)untrackParcel {
-  [self.delegate untrackParcel:_parcelID carrier:_carrier];
+  [self.delegate untrackParcel:self.parcelID carrier:_carrier];
 }
 
 @end
@@ -220,6 +227,9 @@ enum ItemType : NSInteger {
   ParcelListCell* parcelListCell =
       base::apple::ObjCCastStrict<ParcelListCell>(cell);
   parcelListCell.delegate = self;
+  parcelListCell.ellipsisButton.accessibilityHint = [l10n_util::GetNSString(
+      IDS_IOS_PARCEL_TRACKING_MODAL_INFOBAR_PACKAGE_NUMBER)
+      stringByAppendingString:parcelListCell.parcelID];
   return cell;
 }
 

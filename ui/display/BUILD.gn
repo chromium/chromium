@@ -53,6 +53,7 @@ component("display") {
     "screen_info.h",
     "screen_infos.cc",
     "screen_infos.h",
+    "tablet_state.cc",
     "tablet_state.h",
     "unified_desktop_utils.cc",
     "unified_desktop_utils.h",
@@ -198,6 +199,12 @@ static_library("test_support") {
       "win/test/scoped_screen_win.h",
       "win/test/screen_util_win.cc",
       "win/test/screen_util_win.h",
+      "win/test/virtual_display_win_util.cc",
+      "win/test/virtual_display_win_util.h",
+    ]
+    deps += [
+      "//third_party/win_virtual_display/controller",
+      "//third_party/win_virtual_display/driver/public",
     ]
   }
 
@@ -325,6 +332,16 @@ source_set("display_interactive_ui_tests") {
   testonly = true
   if (is_mac) {
     sources = [ "mac/test/virtual_display_mac_util_interactive_uitest.mm" ]
+
+    deps = [
+      ":display",
+      ":test_support",
+      "//base/test:test_support",
+      "//testing/gtest",
+    ]
+  }
+  if (is_win) {
+    sources = [ "win/test/virtual_display_win_util_interactive_uitest.cc" ]
 
     deps = [
       ":display",

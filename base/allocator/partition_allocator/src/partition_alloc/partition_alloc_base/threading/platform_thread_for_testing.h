@@ -13,8 +13,8 @@
 
 #include <iosfwd>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/threading/platform_thread.h"
 #include "build/build_config.h"
+#include "partition_alloc/partition_alloc_base/threading/platform_thread.h"
 
 namespace partition_alloc::internal::base {
 
@@ -70,4 +70,4 @@ class PlatformThreadForTesting : public PlatformThread {
 
 }  // namespace partition_alloc::internal::base
 
-#endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_ALLOC_BASE_THREADING_PLATFORM_THREADD_FOR_TESTING_H_
+#endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_ALLOC_BASE_THREADING_PLATFORM_THREAD_FOR_TESTING_H_

@@ -9,6 +9,7 @@
 #import <XCTest/XCTest.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/files/file_path.h"
@@ -18,7 +19,6 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // Implements a subset of the WebDriver protocol, for running Web Platform
 // Tests. This not intended to be a general-purpose WebDriver implementation.
@@ -129,7 +129,7 @@ class CWTRequestHandler {
 
   // Processes the given command, HTTP method, and request content. Returns the
   // result of processing the command, or nullopt_t if the command is unknown.
-  absl::optional<base::Value> ProcessCommand(
+  std::optional<base::Value> ProcessCommand(
       const std::string& command,
       net::test_server::HttpMethod http_method,
       const std::string& request_content);

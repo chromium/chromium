@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include <optional>
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -44,7 +45,6 @@
 #include "gpu/ipc/service/gpu_channel.h"
 #include "gpu/ipc/service/gpu_channel_manager.h"
 #include "gpu/ipc/service/shared_image_stub.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
@@ -226,7 +226,7 @@ void ImageDecodeAcceleratorStub::ProcessCompletedDecode(
   }
 
   std::vector<sk_sp<SkImage>> plane_sk_images;
-  absl::optional<base::ScopedClosureRunner> notify_gl_state_changed;
+  std::optional<base::ScopedClosureRunner> notify_gl_state_changed;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Right now, we only support YUV 4:2:0 for the output of the decoder (either
   // as YV12 or NV12).
@@ -383,7 +383,7 @@ void ImageDecodeAcceleratorStub::ProcessCompletedDecode(
 
   {
     auto* gr_shader_cache = channel_->gpu_channel_manager()->gr_shader_cache();
-    absl::optional<raster::GrShaderCache::ScopedCacheUse> cache_use;
+    std::optional<raster::GrShaderCache::ScopedCacheUse> cache_use;
     if (gr_shader_cache)
       cache_use.emplace(gr_shader_cache,
                         base::strict_cast<int32_t>(channel_->client_id()));

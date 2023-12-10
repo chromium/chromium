@@ -98,8 +98,7 @@ public class OTRProfileIDTest {
                     String serializedId = OTRProfileID.serialize(profile.getOTRProfileID());
 
                     // Check whether deserialized version from serialized version equals with the
-                    // original
-                    // OTRProfileId.
+                    // original OTRProfileId.
                     OTRProfileID deserializedId = OTRProfileID.deserialize(serializedId);
                     assert deserializedId.equals(profile.getOTRProfileID());
                 });

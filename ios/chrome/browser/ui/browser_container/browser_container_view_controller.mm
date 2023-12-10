@@ -35,10 +35,12 @@
   [super viewDidLoad];
   self.view.autoresizingMask =
       UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+#if !defined(__IPHONE_16_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_16_0
   if (@available(iOS 16, *)) {
   } else {
     [self addLinkToTextInEditMenu];
   }
+#endif
 }
 
 - (void)viewDidLayoutSubviews {
@@ -145,6 +147,7 @@
   }
 }
 
+#if !defined(__IPHONE_16_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_16_0
 #pragma mark - Link to Text methods
 
 - (void)addLinkToTextInEditMenu {
@@ -165,6 +168,7 @@
       return [self.linkToTextDelegate shouldOfferLinkToText];
     }
   }
+
   return [super canPerformAction:action withSender:sender];
 }
 
@@ -173,6 +177,7 @@
   DCHECK(self.linkToTextDelegate);
   [self.linkToTextDelegate handleLinkToTextSelection];
 }
+#endif
 
 #pragma mark - Private
 

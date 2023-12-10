@@ -13,10 +13,10 @@
 #import "base/test/mock_callback.h"
 #import "base/values.h"
 #import "components/keyed_service/core/service_access_type.h"
-#import "components/password_manager/core/browser/mock_password_store_interface.h"
 #import "components/password_manager/core/browser/password_manager_metrics_util.h"
 #import "components/password_manager/core/browser/password_manager_test_utils.h"
 #import "components/password_manager/core/browser/password_reuse_detector.h"
+#import "components/password_manager/core/browser/password_store/mock_password_store_interface.h"
 #import "components/prefs/pref_service.h"
 #import "components/safe_browsing/core/browser/password_protection/metrics_util.h"
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -25,7 +25,7 @@
 #import "components/strings/grit/components_strings.h"
 #import "components/sync/protocol/gaia_password_reuse.pb.h"
 #import "components/sync_user_events/fake_user_event_service.h"
-#import "ios/chrome/browser/history/history_service_factory.h"
+#import "ios/chrome/browser/history/model/history_service_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
 #import "ios/chrome/browser/safe_browsing/model/safe_browsing_metrics_collector_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
@@ -67,7 +67,7 @@ constexpr struct {
   // The enum to log in the user event for that response.
   PasswordReuseLookup::LookupResult lookup_result;
 } kTestCasesWithoutVerdict[]{
-    {RequestOutcome::MATCHED_ALLOWLIST, PasswordReuseLookup::WHITELIST_HIT},
+    {RequestOutcome::MATCHED_ALLOWLIST, PasswordReuseLookup::ALLOWLIST_HIT},
     {RequestOutcome::URL_NOT_VALID_FOR_REPUTATION_COMPUTING,
      PasswordReuseLookup::URL_UNSUPPORTED},
     {RequestOutcome::CANCELED, PasswordReuseLookup::REQUEST_FAILURE},

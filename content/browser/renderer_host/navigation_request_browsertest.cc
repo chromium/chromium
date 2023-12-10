@@ -532,6 +532,11 @@ void ExpectChildFrameCollapsed(Shell* shell,
 }  // namespace
 
 class NavigationRequestBrowserTest : public ContentBrowserTest {
+ public:
+  WebContentsImpl* contents() const {
+    return static_cast<WebContentsImpl*>(shell()->web_contents());
+  }
+
  protected:
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
@@ -3289,6 +3294,11 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestDownloadBrowserTest,
                   ->common_params()
                   .download_policy.IsDownloadAllowed());
 
+  // This is not a download (though allowed), so the response should be
+  // rendered.
+  EXPECT_TRUE(manager.WaitForResponse());
+  EXPECT_TRUE(root->navigation_request()->response_should_be_rendered());
+
   // The response is not handled as a download.
   ASSERT_TRUE(manager.WaitForNavigationFinished());
   EXPECT_FALSE(handle_observer.is_download());
@@ -3312,6 +3322,10 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestDownloadBrowserTest,
   EXPECT_TRUE(root->navigation_request()
                   ->common_params()
                   .download_policy.IsDownloadAllowed());
+
+  // Downloads do not need to be rendered, and should not be rendered.
+  EXPECT_TRUE(manager.WaitForResponse());
+  EXPECT_FALSE(root->navigation_request()->response_should_be_rendered());
 
   // The response is handled as a download.
   ASSERT_TRUE(manager.WaitForNavigationFinished());
@@ -3713,6 +3727,10 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
               NavigationRequest::From(navigation_handle);
           EXPECT_TRUE(request->is_synchronous_renderer_commit());
           EXPECT_TRUE(navigation_handle->GetRenderFrameHost());
+
+          // Ensure that response_should_be_rendered() is true even for pages
+          // that do not require a URLLoader.
+          EXPECT_TRUE(request->response_should_be_rendered());
         }));
     CreateSubframe(popup, "popup_subframe", GURL(),
                    /*wait_for_navigation*/ true);
@@ -4262,7 +4280,6 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestPrerenderBrowserTest,
 enum class TestMPArchType {
   kPrerender,
   kFencedFrame,
-  kPortal,
 };
 
 class NavigationRequestMPArchBrowserTest
@@ -4281,13 +4298,6 @@ class NavigationRequestMPArchBrowserTest
       case TestMPArchType::kFencedFrame:
         fenced_frame_helper_ =
             std::make_unique<content::test::FencedFrameTestHelper>();
-        break;
-
-      case TestMPArchType::kPortal:
-        scoped_feature_list_.InitWithFeatures(
-            /*enabled_features=*/{blink::features::kPortals,
-                                  blink::features::kPortalsCrossOrigin},
-            /*disabled_features=*/{});
         break;
     }
   }
@@ -4316,8 +4326,7 @@ class NavigationRequestMPArchBrowserTest
 INSTANTIATE_TEST_SUITE_P(All,
                          NavigationRequestMPArchBrowserTest,
                          ::testing::Values(TestMPArchType::kPrerender,
-                                           TestMPArchType::kFencedFrame,
-                                           TestMPArchType::kPortal));
+                                           TestMPArchType::kFencedFrame));
 
 IN_PROC_BROWSER_TEST_P(NavigationRequestMPArchBrowserTest,
                        ShouldNotUpdateHistory) {
@@ -4364,23 +4373,6 @@ IN_PROC_BROWSER_TEST_P(NavigationRequestMPArchBrowserTest,
         ASSERT_TRUE(fenced_frame_test_helper().CreateFencedFrame(
             web_contents()->GetPrimaryMainFrame(),
             embedded_test_server()->GetURL("/fenced_frames/title1.html")));
-        break;
-      }
-
-      case TestMPArchType::kPortal: {
-        GURL portal_url(embedded_test_server()->GetURL("/title1.html"));
-
-        // Create a portal.
-        const char script[] = R"(
-           new Promise(async resolve => {
-             let portal = document.createElement('portal');
-             portal.src = $1;
-             portal.onload = resolve;
-             document.body.appendChild(portal);
-           });
-        )";
-        ASSERT_TRUE(ExecJs(web_contents()->GetPrimaryMainFrame(),
-                           content::JsReplace(script, portal_url)));
         break;
       }
     }
@@ -4439,6 +4431,13 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
   // failed navigation.
   manager.ResumeNavigation();
   installer.WaitForThrottleWillFail();
+
+  // Ensure that response_should_be_rendered() is true even for error pages.
+  EXPECT_TRUE(static_cast<WebContentsImpl*>(shell()->web_contents())
+                  ->GetPrimaryMainFrame()
+                  ->frame_tree_node()
+                  ->navigation_request()
+                  ->response_should_be_rendered());
 
   // Kill the error page process. This will cause the navigation to `url_b2` to
   // return early in `NavigationRequest::ReadyToCommitNavigation()` and not
@@ -4942,6 +4941,37 @@ IN_PROC_BROWSER_TEST_F(
     EXPECT_TRUE(
         shell()->web_contents()->GetPrimaryMainFrame()->IsErrorDocument());
   }
+}
+
+// data: URLs should have opaque origins with nonce that is stable across a
+// navigation, which is stored as the tentative origin to commit.
+IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
+                       TentativeOriginToCommitIsStable_Data) {
+  // Start a navigation to a data URL with an opaque origin.
+  const std::string data = "<html><title>One</title><body>foo</body></html>";
+  const GURL data_url = GURL("data:text/html;charset=utf-8," + data);
+  TestNavigationManager navigation_manager(contents(), data_url);
+  shell()->LoadURL(data_url);
+  EXPECT_TRUE(navigation_manager.WaitForRequestStart());
+
+  // Get a copy of the computed origin at an early stage, both from the
+  // NavigationRequest and the UrlInfo, where the values are set and used.
+  NavigationRequest* data_request =
+      contents()->GetPrimaryFrameTree().root()->navigation_request();
+  absl::optional<url::Origin> data_tentative_origin_to_commit =
+      data_request->GetTentativeOriginAtRequestTime();
+  EXPECT_TRUE(data_tentative_origin_to_commit.has_value());
+  absl::optional<url::Origin> url_info_origin =
+      data_request->GetUrlInfo().origin;
+  EXPECT_TRUE(url_info_origin.has_value());
+  EXPECT_EQ(data_tentative_origin_to_commit, url_info_origin);
+
+  // Verify that the committed origin at the end matches the initial one.
+  EXPECT_TRUE(navigation_manager.WaitForNavigationFinished());
+  url::Origin data_committed_origin =
+      contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin();
+  EXPECT_EQ(data_tentative_origin_to_commit.value(), data_committed_origin);
+  EXPECT_EQ(url_info_origin.value(), data_committed_origin);
 }
 
 }  // namespace content

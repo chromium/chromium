@@ -49,7 +49,7 @@ static void AccumulateArrayBuffersForAllWorlds(
     DOMArrayBuffer* object,
     v8::LocalVector<v8::ArrayBuffer>& buffers) {
   Vector<scoped_refptr<DOMWrapperWorld>> worlds;
-  DOMWrapperWorld::AllWorldsInCurrentThread(worlds);
+  DOMWrapperWorld::AllWorldsInIsolate(isolate, worlds);
   for (const auto& world : worlds) {
     v8::Local<v8::Object> wrapper = world->DomDataStore().Get(object, isolate);
     if (!wrapper.IsEmpty())

@@ -5,13 +5,14 @@
 #ifndef ASH_PUBLIC_CPP_HOLDING_SPACE_HOLDING_SPACE_IMAGE_H_
 #define ASH_PUBLIC_CPP_HOLDING_SPACE_HOLDING_SPACE_IMAGE_H_
 
+#include <optional>
+
 #include "ash/public/cpp/ash_public_export.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "base/callback_list.h"
 #include "base/files/file.h"
 #include "base/functional/callback_forward.h"
 #include "base/timer/timer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_skia.h"
 
@@ -40,8 +41,8 @@ class ASH_PUBLIC_EXPORT HoldingSpaceImage {
   using PlaceholderImageSkiaResolver = base::RepeatingCallback<gfx::ImageSkia(
       const base::FilePath& file_path,
       const gfx::Size& size,
-      const absl::optional<bool>& dark_background,
-      const absl::optional<bool>& is_folder)>;
+      const std::optional<bool>& dark_background,
+      const std::optional<bool>& is_folder)>;
 
   HoldingSpaceImage(const gfx::Size& max_size,
                     const base::FilePath& backing_file_path,
@@ -81,7 +82,7 @@ class ASH_PUBLIC_EXPORT HoldingSpaceImage {
   // colors to ensure sufficient contrast. Note that the image source may be
   // dynamically updated, so UI classes should observe and react to updates.
   gfx::ImageSkia GetImageSkia(
-      const absl::optional<gfx::Size>& size = absl::nullopt,
+      const std::optional<gfx::Size>& size = std::nullopt,
       bool dark_background = false) const;
 
   // Creates new image skia for the item, and thus invalidates currently loaded
@@ -122,7 +123,7 @@ class ASH_PUBLIC_EXPORT HoldingSpaceImage {
   const gfx::Size max_size_;
   base::FilePath backing_file_path_;
   AsyncBitmapResolver async_bitmap_resolver_;
-  absl::optional<base::File::Error> async_bitmap_resolver_error_;
+  std::optional<base::File::Error> async_bitmap_resolver_error_;
   PlaceholderImageSkiaResolver placeholder_image_skia_resolver_;
 
   gfx::ImageSkia image_skia_;

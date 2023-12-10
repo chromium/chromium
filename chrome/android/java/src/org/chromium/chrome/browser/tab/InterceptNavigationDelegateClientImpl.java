@@ -34,31 +34,34 @@ public class InterceptNavigationDelegateClientImpl implements InterceptNavigatio
 
     InterceptNavigationDelegateClientImpl(Tab tab) {
         mTab = (TabImpl) tab;
-        mTabObserver = new EmptyTabObserver() {
-            @Override
-            public void onContentChanged(Tab tab) {
-                mInterceptNavigationDelegate.associateWithWebContents(tab.getWebContents());
-            }
+        mTabObserver =
+                new EmptyTabObserver() {
+                    @Override
+                    public void onContentChanged(Tab tab) {
+                        mInterceptNavigationDelegate.associateWithWebContents(tab.getWebContents());
+                    }
 
-            @Override
-            public void onActivityAttachmentChanged(Tab tab, @Nullable WindowAndroid window) {
-                if (window != null) {
-                    mInterceptNavigationDelegate.setExternalNavigationHandler(
-                            createExternalNavigationHandler());
-                }
-            }
+                    @Override
+                    public void onActivityAttachmentChanged(
+                            Tab tab, @Nullable WindowAndroid window) {
+                        if (window != null) {
+                            mInterceptNavigationDelegate.setExternalNavigationHandler(
+                                    createExternalNavigationHandler());
+                        }
+                    }
 
-            @Override
-            public void onDidFinishNavigationInPrimaryMainFrame(
-                    Tab tab, NavigationHandle navigation) {
-                mInterceptNavigationDelegate.onNavigationFinishedInPrimaryMainFrame(navigation);
-            }
+                    @Override
+                    public void onDidFinishNavigationInPrimaryMainFrame(
+                            Tab tab, NavigationHandle navigation) {
+                        mInterceptNavigationDelegate.onNavigationFinishedInPrimaryMainFrame(
+                                navigation);
+                    }
 
-            @Override
-            public void onDestroyed(Tab tab) {
-                mInterceptNavigationDelegate.associateWithWebContents(null);
-            }
-        };
+                    @Override
+                    public void onDestroyed(Tab tab) {
+                        mInterceptNavigationDelegate.associateWithWebContents(null);
+                    }
+                };
     }
 
     @Override

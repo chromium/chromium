@@ -38,7 +38,6 @@ android_library("javatests") {
     ":java",
     "//base:base_java",
     "//base:base_java_test_support",
-    "//base:jni_java",
     "//components/browser_ui/settings/android:test_support_java",
     "//components/browser_ui/site_settings/android:java",
     "//content/public/android:content_java",
@@ -46,6 +45,7 @@ android_library("javatests") {
     "//third_party/androidx:androidx_preference_preference_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/hamcrest:hamcrest_core_java",
+    "//third_party/jni_zero:jni_zero_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
   ]

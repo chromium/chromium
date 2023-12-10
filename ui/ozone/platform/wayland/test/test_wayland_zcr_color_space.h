@@ -47,4 +47,4 @@ class TestZcrColorSpaceV1 : public ServerObject {
 
 }  // namespace wl
 
-#endif  // UI_OZONE_PLATFORM_WAYLAND_TEST_TEST_WAYLANDS_ZCR_COLOR_SPACE_H_
+#endif  // UI_OZONE_PLATFORM_WAYLAND_TEST_TEST_WAYLAND_ZCR_COLOR_SPACE_H_

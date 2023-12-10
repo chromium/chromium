@@ -34,6 +34,7 @@
 #include "ui/accessibility/accessibility_features.h"
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+#include "components/services/screen_ai/public/mojom/screen_ai_factory.mojom.h"  // nogncheck
 #include "components/services/screen_ai/screen_ai_service_impl.h"  // nogncheck
 #endif
 

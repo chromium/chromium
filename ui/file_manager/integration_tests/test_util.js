@@ -292,6 +292,7 @@ Object.freeze(SharedOption);
 /**
  * @typedef {{
  *   downloads: string,
+ *   my_files: string,
  *   drive: string,
  *   android_files: string,
  * }}
@@ -302,12 +303,14 @@ export let getRootPathsResult;
 /**
  * @typedef {{
  *   DOWNLOADS: string,
+ *   MY_FILES: string,
  *   DRIVE: string,
  *   ANDROID_FILES: string,
  * }}
  */
 export const RootPath = {
   DOWNLOADS: '/must-be-filled-in-test-setup',
+  MY_FILES: '/must-be-filled-in-test-setup',
   DRIVE: '/must-be-filled-in-test-setup',
   ANDROID_FILES: '/must-be-filled-in-test-setup',
 };
@@ -759,6 +762,27 @@ export const ENTRIES = {
     mimeType: 'application/vnd.google-gsuite.encrypted; content="text/plain"',
     lastModifiedTime: 'Apr 10, 2013, 4:20 PM',
     nameText: 'test-encrypted.txt',
+    sizeText: '--',
+    typeText: 'Plain text',
+  }),
+
+  // The directory itself is not encrypted, but will contain encrypted entries
+  // like testCSEFileInDirectory
+  testCSEDirectory: new TestEntryInfo({
+    type: EntryType.DIRECTORY,
+    targetPath: 'encrypted_files',
+    lastModifiedTime: 'Jan 1, 1980, 11:59 PM',
+    nameText: 'encrypted_files',
+    sizeText: '--',
+    typeText: 'Folder',
+  }),
+
+  testCSEFileInDirectory: new TestEntryInfo({
+    type: EntryType.FILE,
+    targetPath: 'encrypted_files/test.txt',
+    mimeType: 'application/vnd.google-gsuite.encrypted; content="text/plain"',
+    lastModifiedTime: 'Apr 10, 2013, 4:20 PM',
+    nameText: 'test.txt',
     sizeText: '--',
     typeText: 'Plain text',
   }),
@@ -1689,6 +1713,46 @@ export function createTestFile(path) {
     sourceFileName: 'text.txt',
     mimeType: 'text/plain',
   });
+}
+
+/**
+ * Creates a folder test entry from a folder |path|.
+ * @param {string} path The folder path.
+ * @return {!TestEntryInfo}
+ */
+export function createTestFolder(path) {
+  const name = path.split('/').pop();
+  return new TestEntryInfo({
+    targetPath: path,
+    nameText: name,
+    type: EntryType.DIRECTORY,
+    lastModifiedTime: 'Jan 1, 1980, 11:59 PM',
+    sizeText: '--',
+    typeText: 'Folder',
+  });
+}
+
+/**
+ * Returns an array of nested folder test entries, where |depth| controls
+ * the nesting. For example, a |depth| of 4 will return:
+ *
+ *   [0]: nested-folder0
+ *   [1]: nested-folder0/nested-folder1
+ *   [2]: nested-folder0/nested-folder1/nested-folder2
+ *   [3]: nested-folder0/nested-folder1/nested-folder2/nested-folder3
+ *
+ * @param {number} depth The nesting depth.
+ * @return {!Array<!TestEntryInfo>}
+ */
+export function createNestedTestFolders(depth) {
+  const nestedFolderTestEntries = [];
+
+  for (let path = 'nested-folder0', i = 0; i < depth; ++i) {
+    nestedFolderTestEntries.push(createTestFolder(path));
+    path += `/nested-folder${i + 1}`;
+  }
+
+  return nestedFolderTestEntries;
 }
 
 /**

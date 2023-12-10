@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/tabs/existing_tab_group_sub_menu_model.h"
 
+#include <optional>
 #include <vector>
 
 #include "base/containers/contains.h"
@@ -23,7 +24,6 @@
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "content/public/browser/web_contents.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/accelerators/menu_label_accelerator_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/models/list_selection_model.h"
@@ -199,7 +199,7 @@ void ExistingTabGroupSubMenuModel::ExecuteExistingCommand(size_t target_index) {
   }
 
   // Find the index of the browser with the group we are looking for.
-  absl::optional<size_t> browser_index;
+  std::optional<size_t> browser_index;
   std::vector<Browser*> browsers =
       tab_menu_model_delegate_->GetOtherBrowserWindows(/*is_app=*/false);
   for (size_t i = 0; i < browsers.size(); ++i) {

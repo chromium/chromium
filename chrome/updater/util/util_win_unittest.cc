@@ -4,17 +4,17 @@
 
 #include "chrome/updater/util/util.h"
 
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "chrome/updater/tag.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
 
 TEST(UtilTest, CommandLineForLegacyFormat) {
-  absl::optional<base::CommandLine> cmd_line = CommandLineForLegacyFormat(
+  std::optional<base::CommandLine> cmd_line = CommandLineForLegacyFormat(
       L"program.exe /handoff \"appguid={8a69}&appname=Chrome\" /appargs "
       L"\"&appguid={8a69}"
       L"&installerdata=%7B%22homepage%22%3A%22http%3A%2F%2Fwww.google.com%\" "
@@ -35,7 +35,7 @@ TEST(UtilTest, CommandLineForLegacyFormat) {
 }
 
 TEST(UtilTest, CommandLineForLegacyFormat_Mixed) {
-  absl::optional<base::CommandLine> cmd_line = CommandLineForLegacyFormat(
+  std::optional<base::CommandLine> cmd_line = CommandLineForLegacyFormat(
       L"program.exe --handoff \"appguid={8a69}&appname=Chrome\""
       L"/silent /sessionid {123-456}");
 
@@ -43,7 +43,7 @@ TEST(UtilTest, CommandLineForLegacyFormat_Mixed) {
 }
 
 TEST(UtilTest, CommandLineForLegacyFormat_WithArgs) {
-  absl::optional<base::CommandLine> cmd_line = CommandLineForLegacyFormat(
+  std::optional<base::CommandLine> cmd_line = CommandLineForLegacyFormat(
       L"program.exe arg1 /SWITCH1 value1 \"arg2 with space\" /Switch2 /s3");
 
   EXPECT_TRUE(cmd_line);

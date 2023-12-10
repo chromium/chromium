@@ -87,6 +87,7 @@ static_library("security_interstitial_page") {
     "//components/safe_browsing/core/common:common",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//components/security_interstitials/core:core",
+    "//components/security_interstitials/core:insecure_form_util",
     "//components/security_interstitials/core:unsafe_resource",
     "//components/ssl_errors",
     "//components/strings:components_strings_grit",

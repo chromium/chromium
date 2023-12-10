@@ -896,7 +896,7 @@ EventResponseDelta CalculateOnAuthRequiredDelta(
     const std::string& extension_id,
     const base::Time& extension_install_time,
     bool cancel,
-    absl::optional<net::AuthCredentials> auth_credentials) {
+    std::optional<net::AuthCredentials> auth_credentials) {
   EventResponseDelta result(extension_id, extension_install_time);
   result.cancel = cancel;
   result.auth_credentials = std::move(auth_credentials);
@@ -905,8 +905,8 @@ EventResponseDelta CalculateOnAuthRequiredDelta(
 
 void MergeCancelOfResponses(
     const EventResponseDeltas& deltas,
-    absl::optional<extensions::ExtensionId>* canceled_by_extension) {
-  *canceled_by_extension = absl::nullopt;
+    std::optional<extensions::ExtensionId>* canceled_by_extension) {
+  *canceled_by_extension = std::nullopt;
   for (const auto& delta : deltas) {
     if (delta.cancel) {
       *canceled_by_extension = delta.extension_id;
@@ -981,7 +981,7 @@ void MergeOnBeforeRequestResponses(const GURL& url,
 
 static bool DoesRequestCookieMatchFilter(
     const ParsedRequestCookie& cookie,
-    const absl::optional<RequestCookie>& filter) {
+    const std::optional<RequestCookie>& filter) {
   if (!filter.has_value())
     return true;
   if (filter->name.has_value() && cookie.first != *filter->name)
@@ -1054,7 +1054,7 @@ static bool MergeEditRequestCookieModifications(
         continue;
 
       const std::string& new_value = *mod->modification->value;
-      const absl::optional<RequestCookie>& filter = mod->filter;
+      const std::optional<RequestCookie>& filter = mod->filter;
       for (auto cookie = cookies->begin(); cookie != cookies->end(); ++cookie) {
         if (!DoesRequestCookieMatchFilter(*cookie, filter))
           continue;
@@ -1086,7 +1086,7 @@ static bool MergeRemoveRequestCookieModifications(
       if (mod->type != REMOVE)
         continue;
 
-      const absl::optional<RequestCookie>& filter = mod->filter;
+      const std::optional<RequestCookie>& filter = mod->filter;
       auto i = cookies->begin();
       while (i != cookies->end()) {
         if (DoesRequestCookieMatchFilter(*i, filter)) {
@@ -1360,7 +1360,7 @@ static bool ApplyResponseCookieModification(const ResponseCookie& modification,
 
 static bool DoesResponseCookieMatchFilter(
     const net::ParsedCookie& cookie,
-    const absl::optional<FilterResponseCookie>& filter) {
+    const std::optional<FilterResponseCookie>& filter) {
   if (!cookie.IsValid())
     return false;
   if (!filter.has_value())

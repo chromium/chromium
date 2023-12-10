@@ -5,10 +5,8 @@
 #include "components/password_manager/core/browser/sharing/incoming_password_sharing_invitation_sync_bridge.h"
 
 #include "base/functional/callback_helpers.h"
-#include "base/strings/utf_string_conversions.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/sharing/password_receiver_service.h"
-#include "components/password_manager/core/browser/sharing/sharing_invitations.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/model/in_memory_metadata_change_list.h"
 #include "components/sync/model/metadata_batch.h"
@@ -18,47 +16,6 @@
 #include "components/sync/protocol/password_sharing_invitation_specifics.pb.h"
 
 namespace password_manager {
-
-namespace {
-
-IncomingSharingInvitation InvitationFromSpecifics(
-    const sync_pb::IncomingPasswordSharingInvitationSpecifics& specifics) {
-  const sync_pb::PasswordSharingInvitationData::PasswordData&
-      password_data_specifics =
-          specifics.client_only_unencrypted_data().password_data();
-  IncomingSharingInvitation invitation;
-
-  // Password data.
-  invitation.scheme =
-      static_cast<PasswordForm::Scheme>(password_data_specifics.scheme());
-  invitation.signon_realm = password_data_specifics.signon_realm();
-  invitation.url = GURL(password_data_specifics.origin());
-  invitation.username_element =
-      base::UTF8ToUTF16(password_data_specifics.username_element());
-  invitation.password_element =
-      base::UTF8ToUTF16(password_data_specifics.password_element());
-  invitation.username_value =
-      base::UTF8ToUTF16(password_data_specifics.username_value());
-  invitation.password_value =
-      base::UTF8ToUTF16(password_data_specifics.password_value());
-  invitation.display_name =
-      base::UTF8ToUTF16(password_data_specifics.display_name());
-  invitation.icon_url = GURL(password_data_specifics.avatar_url());
-
-  // Invitation metadata.
-  invitation.sender_email =
-      base::UTF8ToUTF16(specifics.sender_info().user_display_info().email());
-  invitation.sender_display_name = base::UTF8ToUTF16(
-      specifics.sender_info().user_display_info().display_name());
-  invitation.sender_profile_image_url =
-      GURL(specifics.sender_info().user_display_info().profile_image_url());
-
-  // TODO(crbug.com/1445868): fill in creation date and verify incoming
-  // invitations.
-  return invitation;
-}
-
-}  // namespace
 
 IncomingPasswordSharingInvitationSyncBridge::
     IncomingPasswordSharingInvitationSyncBridge(
@@ -99,7 +56,7 @@ IncomingPasswordSharingInvitationSyncBridge::CreateMetadataChangeList() {
   return std::make_unique<syncer::InMemoryMetadataChangeList>();
 }
 
-absl::optional<syncer::ModelError>
+std::optional<syncer::ModelError>
 IncomingPasswordSharingInvitationSyncBridge::MergeFullSyncData(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_data) {
@@ -110,7 +67,7 @@ IncomingPasswordSharingInvitationSyncBridge::MergeFullSyncData(
                                      std::move(entity_data));
 }
 
-absl::optional<syncer::ModelError>
+std::optional<syncer::ModelError>
 IncomingPasswordSharingInvitationSyncBridge::ApplyIncrementalSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_changes) {
@@ -127,10 +84,8 @@ IncomingPasswordSharingInvitationSyncBridge::ApplyIncrementalSyncChanges(
       continue;
     }
 
-    IncomingSharingInvitation invitation = InvitationFromSpecifics(
-        change->data().specifics.incoming_password_sharing_invitation());
     password_receiver_service_->ProcessIncomingSharingInvitation(
-        std::move(invitation));
+        change->data().specifics.incoming_password_sharing_invitation());
 
     // After the invitation has been processed, delete it from the server, so
     // that no other client will process it.
@@ -140,7 +95,7 @@ IncomingPasswordSharingInvitationSyncBridge::ApplyIncrementalSyncChanges(
 
   batch->TakeMetadataChangesFrom(std::move(metadata_change_list));
   CommitSyncMetadata(std::move(batch));
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void IncomingPasswordSharingInvitationSyncBridge::GetData(
@@ -194,7 +149,7 @@ void IncomingPasswordSharingInvitationSyncBridge::ApplyDisableSyncChanges(
 }
 
 void IncomingPasswordSharingInvitationSyncBridge::OnModelTypeStoreCreated(
-    const absl::optional<syncer::ModelError>& error,
+    const std::optional<syncer::ModelError>& error,
     std::unique_ptr<syncer::ModelTypeStore> store) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (error) {
@@ -210,7 +165,7 @@ void IncomingPasswordSharingInvitationSyncBridge::OnModelTypeStoreCreated(
 }
 
 void IncomingPasswordSharingInvitationSyncBridge::OnReadAllMetadata(
-    const absl::optional<syncer::ModelError>& error,
+    const std::optional<syncer::ModelError>& error,
     std::unique_ptr<syncer::MetadataBatch> metadata_batch) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (error) {
@@ -221,7 +176,7 @@ void IncomingPasswordSharingInvitationSyncBridge::OnReadAllMetadata(
 }
 
 void IncomingPasswordSharingInvitationSyncBridge::OnCommitSyncMetadata(
-    const absl::optional<syncer::ModelError>& error) {
+    const std::optional<syncer::ModelError>& error) {
   if (error) {
     change_processor()->ReportError(*error);
   }

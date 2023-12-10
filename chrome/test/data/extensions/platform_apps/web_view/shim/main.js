@@ -3558,25 +3558,6 @@ function testAddFencedFrame() {
   document.body.appendChild(webview);
 }
 
-function testActivatePortal() {
-  let portalHostURL = embedder.baseGuestURL +
-      '/extensions/platform_apps/web_view/shim/portal_host.html';
-  let webview = new WebView();
-  webview.src = portalHostURL;
-  webview.addEventListener('loadstop', () => {
-    webview.contentWindow.postMessage('activate', '*');
-  });
-  window.addEventListener('message', (e) => {
-    // TODO(crbug.com/942534): Support portals in guest views.
-    // Once we do, update this test to check for correct behaviour. For now,
-    // we're basically just checking that attempting this doesn't cause a crash.
-    embedder.test.assertTrue(e.data.includes('Not implemented'));
-    embedder.test.succeed();
-  });
-
-  document.body.appendChild(webview);
-}
-
 // This test and several tests below test scenarios where a webview element is
 // created and/or attached by different documents. In this test, we create a
 // webview element with the main frame's document, but embed it in an iframe's
@@ -3962,7 +3943,6 @@ embedder.test.testList = {
   'testSelectPopupPositionInMac': testSelectPopupPositionInMac,
   'testWebRequestBlockedNavigation': testWebRequestBlockedNavigation,
   'testAddFencedFrame': testAddFencedFrame,
-  'testActivatePortal': testActivatePortal,
   'testInsertIntoIframe': testInsertIntoIframe,
   'testCreateAndInsertInIframe': testCreateAndInsertInIframe,
   'testInsertIntoMainFrameFromIframe': testInsertIntoMainFrameFromIframe,

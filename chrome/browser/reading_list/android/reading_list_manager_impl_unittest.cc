@@ -362,4 +362,19 @@ TEST_F(ReadingListManagerImplTest, ReadingListWillMoveEntry) {
   EXPECT_TRUE(manager()->GetReadStatus(node));
 }
 
+TEST_F(ReadingListManagerImplTest, EmptyBatchUpdatesDontTriggerObserver) {
+  // Batch updates that contain an actual write to the model should trigger
+  // the observer.
+  EXPECT_CALL(*observer(), ReadingListChanged());
+  std::unique_ptr<ReadingListModel::ScopedReadingListBatchUpdate> update =
+      reading_list_model()->BeginBatchUpdates();
+  manager()->Add(GURL("https://google.com"), "google");
+  update.reset();
+
+  // Empty batch updates shouldn't trigger the observer.
+  EXPECT_CALL(*observer(), ReadingListChanged()).Times(0);
+  update = reading_list_model()->BeginBatchUpdates();
+  update.reset();
+}
+
 }  // namespace

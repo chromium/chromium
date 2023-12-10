@@ -17,6 +17,12 @@
 
 namespace variations {
 
+// Suffix added to field trial group names when they are manually forced with
+// command line flags or internals page. Using a suffix ensures that consumers
+// of these names (or hashes of the names) treat manually forced groups distinct
+// from non-forced groups.
+inline constexpr base::StringPiece kOverrideSuffix = "_MANUALLY_FORCED";
+
 // The Unique ID of a trial and its active group, where the name and group
 // identifiers are hashes of the trial and group name strings.
 struct COMPONENT_EXPORT(VARIATIONS) ActiveGroupId {
@@ -28,6 +34,10 @@ struct COMPONENT_EXPORT(VARIATIONS) ActiveGroupId {
 COMPONENT_EXPORT(VARIATIONS)
 ActiveGroupId MakeActiveGroupId(base::StringPiece trial_name,
                                 base::StringPiece group_name);
+COMPONENT_EXPORT(VARIATIONS)
+ActiveGroupId MakeActiveGroupId(base::StringPiece trial_name,
+                                base::StringPiece group_name,
+                                bool is_overridden);
 
 // We need to supply a Compare class for templates since ActiveGroupId is a
 // user-defined type.

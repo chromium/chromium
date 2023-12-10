@@ -129,6 +129,7 @@ class ArCompositorFrameSink : public viz::mojom::CompositorFrameSinkClient {
   void ReclaimResources(std::vector<viz::ReturnedResource> resources) override;
   void OnCompositorFrameTransitionDirectiveProcessed(
       uint32_t sequence_id) override {}
+  void OnSurfaceEvicted(const viz::LocalSurfaceId& local_surface_id) override {}
   void DidReceiveCompositorFrameAck(
       std::vector<viz::ReturnedResource> resources) override;
   void OnBeginFrame(const viz::BeginFrameArgs& args,

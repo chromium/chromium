@@ -9,7 +9,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "chrome/browser/password_check/android/password_check_ui_status.h"
 #include "chrome/browser/password_entry_edit/android/credential_edit_bridge.h"
 #include "chrome/browser/password_manager/account_password_store_factory.h"
@@ -23,7 +23,6 @@
 #include "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #include "components/password_manager/core/browser/ui/insecure_credentials_manager.h"
 #include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PasswordCheckManager
     : public password_manager::SavedPasswordsPresenter::Observer,

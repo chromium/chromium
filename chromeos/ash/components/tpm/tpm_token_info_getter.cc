@@ -148,7 +148,7 @@ void TPMTokenInfoGetter::OnGetTpmStatus(
 
   if (!reply.is_enabled()) {
     state_ = STATE_DONE;
-    std::move(callback_).Run(absl::nullopt);
+    std::move(callback_).Run(std::nullopt);
     return;
   }
 
@@ -157,7 +157,7 @@ void TPMTokenInfoGetter::OnGetTpmStatus(
 }
 
 void TPMTokenInfoGetter::OnPkcs11GetTpmTokenInfo(
-    absl::optional<user_data_auth::Pkcs11GetTpmTokenInfoReply> token_info) {
+    std::optional<user_data_auth::Pkcs11GetTpmTokenInfoReply> token_info) {
   if (!token_info.has_value() || !token_info->has_token_info() ||
       token_info->token_info().slot() == -1) {
     RetryLater();

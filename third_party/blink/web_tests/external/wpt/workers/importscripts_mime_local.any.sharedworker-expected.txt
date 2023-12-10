@@ -1,7 +1,4 @@
 This is a testharness.js-based test.
-[PASS] importScripts() requires scripty MIME types for data: URLs: text/javascript is allowed.
-[PASS] importScripts() requires scripty MIME types for data: URLs: application/javascript is allowed.
-[PASS] importScripts() requires scripty MIME types for data: URLs: text/ecmascript is allowed.
 [FAIL] importScripts() requires scripty MIME types for data: URLs: image/png is blocked.
   assert_throws_dom: function "_ => { importScripts(import_url) }" did not throw
 [FAIL] importScripts() requires scripty MIME types for data: URLs: text/csv is blocked.
@@ -24,9 +21,6 @@ This is a testharness.js-based test.
   assert_throws_dom: function "_ => { importScripts(import_url) }" did not throw
 [FAIL] importScripts() requires scripty MIME types for data: URLs: zzz/zzz is blocked.
   assert_throws_dom: function "_ => { importScripts(import_url) }" did not throw
-[PASS] importScripts() requires scripty MIME types for data: URLs: text/javascript; charset=utf-8 is allowed.
-[PASS] importScripts() requires scripty MIME types for data: URLs: text/javascript;charset=utf-8 is allowed.
-[PASS] importScripts() requires scripty MIME types for data: URLs: text/javascript;bla;bla is allowed.
 [FAIL] importScripts() requires scripty MIME types for data: URLs: text/csv; charset=utf-8 is blocked.
   assert_throws_dom: function "_ => { importScripts(import_url) }" did not throw
 [FAIL] importScripts() requires scripty MIME types for data: URLs: text/csv;charset=utf-8 is blocked.
@@ -41,9 +35,6 @@ This is a testharness.js-based test.
   assert_throws_dom: function "_ => { importScripts(import_url) }" did not throw
 [FAIL] importScripts() requires scripty MIME types for data: URLs: TEXT/HTML is blocked.
   assert_throws_dom: function "_ => { importScripts(import_url) }" did not throw
-[PASS] importScripts() requires scripty MIME types for blob: URLs: text/javascript is allowed.
-[PASS] importScripts() requires scripty MIME types for blob: URLs: application/javascript is allowed.
-[PASS] importScripts() requires scripty MIME types for blob: URLs: text/ecmascript is allowed.
 [FAIL] importScripts() requires scripty MIME types for blob: URLs: image/png is blocked.
   assert_throws_dom: function "_ => { importScripts(import_url) }" did not throw
 [FAIL] importScripts() requires scripty MIME types for blob: URLs: text/csv is blocked.
@@ -66,9 +57,6 @@ This is a testharness.js-based test.
   assert_throws_dom: function "_ => { importScripts(import_url) }" did not throw
 [FAIL] importScripts() requires scripty MIME types for blob: URLs: zzz/zzz is blocked.
   assert_throws_dom: function "_ => { importScripts(import_url) }" did not throw
-[PASS] importScripts() requires scripty MIME types for blob: URLs: text/javascript; charset=utf-8 is allowed.
-[PASS] importScripts() requires scripty MIME types for blob: URLs: text/javascript;charset=utf-8 is allowed.
-[PASS] importScripts() requires scripty MIME types for blob: URLs: text/javascript;bla;bla is allowed.
 [FAIL] importScripts() requires scripty MIME types for blob: URLs: text/csv; charset=utf-8 is blocked.
   assert_throws_dom: function "_ => { importScripts(import_url) }" did not throw
 [FAIL] importScripts() requires scripty MIME types for blob: URLs: text/csv;charset=utf-8 is blocked.

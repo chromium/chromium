@@ -9,7 +9,7 @@
 #include <utility>
 #include <vector>
 
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/template_util.h"
 #include "base/values.h"

@@ -21,9 +21,9 @@
 # Toolchain for arm64:
 # - gcc-aarch64-linux-gnu
 # - g++-aarch64-linux-gnu
-# 32bit build environment for cmake. Including but potentially not limited to:
-# - lib32gcc-13-dev
-# - lib32stdc++-13-dev
+# Toolchain for x86:
+# - gcc-i686-linux-gnu
+# - g++-i686-linux-gnu
 # Alternatively: treat 32bit builds like Windows and manually tweak aom_config.h
 
 set -eE
@@ -107,6 +107,9 @@ function convert_to_windows() {
   rm "${1}.bak"
 }
 
+# Fetch the latest tags; used in creating aom_version.h.
+git -C "${SRC}" fetch --tags
+
 # Scope 'trap' error reporting to configuration generation.
 (
 TMP=$(mktemp -d "${BASE}/build.XXXX")
@@ -145,7 +148,8 @@ cp gen_src/usage_exit.c "${BASE}/source/gen_src"
 cp config/aom_version.h "${CFG}/config/"
 
 reset_dirs linux/ia32
-gen_config_files linux/ia32 "${toolchain}/x86-linux.cmake ${all_platforms} \
+gen_config_files linux/ia32 "${toolchain}/i686-linux-gcc.cmake \
+  ${all_platforms} \
   -DCONFIG_PIC=1 \
   -DAOM_RTCD_FLAGS=--require-mmx;--require-sse;--require-sse2"
 

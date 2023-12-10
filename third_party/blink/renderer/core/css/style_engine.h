@@ -69,7 +69,7 @@
 
 namespace WTF {
 class TextPosition;
-}
+}  // namespace WTF
 
 namespace blink {
 
@@ -140,7 +140,10 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
    public:
     explicit DetachLayoutTreeScope(StyleEngine& engine)
         : engine_(engine), in_detach_scope_(&engine.in_detach_scope_, true) {}
-    ~DetachLayoutTreeScope() { engine_.MarkForLayoutTreeChangesAfterDetach(); }
+    ~DetachLayoutTreeScope() {
+      engine_.MarkForLayoutTreeChangesAfterDetach();
+      engine_.InvalidateSVGResourcesAfterDetach();
+    }
 
    private:
     StyleEngine& engine_;
@@ -608,6 +611,11 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   // recalcs when we found out the container is eligible for size containment
   // after all.
   void UpdateStyleForNonEligibleContainer(Element& container);
+  // Updates the style of `element`, and descendants if needed.
+  // The provided `try_set` represents the declaration block from a @try rule.
+  void UpdateStyleForPositionFallback(Element& element,
+                                      const CSSPropertyValueSet* try_set);
+  StyleRulePositionFallback* GetPositionFallbackRule(const ScopedCSSName&);
   void RecalcStyle();
 
   void ClearEnsuredDescendantStyles(Element& element);
@@ -616,6 +624,9 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   bool InDOMRemoval() const { return in_dom_removal_; }
   bool InContainerQueryStyleRecalc() const {
     return in_container_query_style_recalc_;
+  }
+  bool InPositionFallbackStyleRecalc() const {
+    return in_position_fallback_style_recalc_;
   }
   // If we are in a container query style recalc, return the container element,
   // otherwise return nullptr.
@@ -662,14 +673,9 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
     return view_transition_names_;
   }
 
-  StyleFetchedImage* CacheStyleImage(
-      FetchParameters& params,
-      OriginClean origin_clean,
-      bool is_ad_related,
-      const float override_image_resolution = 0.0f) {
-    return style_image_cache_.CacheStyleImage(GetDocument(), params,
-                                              origin_clean, is_ad_related,
-                                              override_image_resolution);
+  ImageResourceContent* CacheImageContent(FetchParameters& params) {
+    return style_image_cache_.CacheImageContent(GetDocument().Fetcher(),
+                                                params);
   }
 
   void AddCachedFillOrClipPathURIValue(const AtomicString& string,
@@ -680,7 +686,7 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   const char* NameInHeapSnapshot() const override { return "StyleEngine"; }
 
   RuleSet* DefaultViewTransitionStyle() const;
-  void UpdateViewTransitionsOptIn();
+  void UpdateViewTransitionOptIn();
 
   const ActiveStyleSheetVector& ActiveUserStyleSheets() const {
     return active_user_style_sheets_;
@@ -812,7 +818,7 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   bool UserKeyframeStyleShouldOverride(
       const StyleRuleKeyframes* new_rule,
       const StyleRuleKeyframes* existing_rule) const;
-  void AddViewTransitionsRules(const ActiveStyleSheetVector& sheets);
+  void AddViewTransitionRules(const ActiveStyleSheetVector& sheets);
 
   CounterStyleMap& EnsureUserCounterStyleMap();
 
@@ -828,12 +834,20 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   void RecalcStyle(StyleRecalcChange, const StyleRecalcContext&);
   void RecalcStyleForContainer(Element& container, StyleRecalcChange change);
   void RecalcHighlightStylesForContainer(Element& container);
+  void RecalcPositionFallbackStyleForPseudoElement(
+      PseudoElement& pseudo_element,
+      const StyleRecalcChange,
+      const StyleRecalcContext&);
 
   void RecalcTransitionPseudoStyle();
 
   // We may need to update whitespaces in the layout tree after a flat tree
   // removal which caused a layout subtree to be detached.
   void MarkForLayoutTreeChangesAfterDetach();
+
+  // SVG resource may have had their layout object detached and need to notify
+  // any clients about this.
+  void InvalidateSVGResourcesAfterDetach();
 
   void RebuildLayoutTreeForTraversalRootAncestors(Element* parent,
                                                   Element* container_parent);
@@ -914,6 +928,7 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   int64_t skipped_container_recalc_{0};
   bool in_layout_tree_rebuild_{false};
   bool in_container_query_style_recalc_{false};
+  bool in_position_fallback_style_recalc_{false};
   bool in_dom_removal_{false};
   bool in_detach_scope_{false};
   bool in_apply_animation_update_{false};
@@ -1023,7 +1038,7 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   friend class WhitespaceAttacherTest;
   friend class StyleCascadeTest;
   friend class StyleImageCacheTest;
-  FRIEND_TEST_ALL_PREFIXES(NGBlockChildIteratorTest, DeleteNodeWhileIteration);
+  FRIEND_TEST_ALL_PREFIXES(BlockChildIteratorTest, DeleteNodeWhileIteration);
 
   HeapHashSet<Member<TextTrack>> text_tracks_;
   Member<Element> vtt_originating_element_;
@@ -1038,11 +1053,11 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   // generated during a ViewTransition.
   Vector<AtomicString> view_transition_names_;
 
-  // The @view-transitions rule currently applying to the document.
-  Member<StyleRuleViewTransitions> view_transitions_rule_;
+  // The @view-transition rule currently applying to the document.
+  Member<StyleRuleViewTransition> view_transition_rule_;
 
-  // Cache for sharing StyleFetchedImage between CSSValues referencing the same
-  // URL.
+  // Cache for sharing ImageResourceContent between CSSValues referencing the
+  // same URL.
   StyleImageCache style_image_cache_;
 
   // A cache for CSSURIValue objects for SVG element presentation attributes for

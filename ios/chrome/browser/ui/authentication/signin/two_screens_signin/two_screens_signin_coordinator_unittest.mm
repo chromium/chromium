@@ -11,16 +11,18 @@
 #import "base/test/ios/wait_util.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/metrics/user_action_tester.h"
+#import "components/sync/base/features.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
-#import "ios/chrome/browser/signin/authentication_service.h"
-#import "ios/chrome/browser/signin/authentication_service_factory.h"
-#import "ios/chrome/browser/signin/fake_authentication_service_delegate.h"
-#import "ios/chrome/browser/signin/fake_system_identity.h"
-#import "ios/chrome/browser/signin/fake_system_identity_manager.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
 #import "ios/chrome/browser/sync/model/mock_sync_service_utils.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
+#import "ios/chrome/browser/ui/authentication/history_sync/history_sync_view_controller.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_completion_info.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/authentication/tangible_sync/tangible_sync_view_controller.h"
@@ -85,11 +87,6 @@ class TwoScreensSigninCoordinatorTest : public PlatformTest {
     UIViewController* presented = PresentedViewController();
     return base::apple::ObjCCast<UINavigationController>(presented)
         .topViewController;
-  }
-
-  // Expects the top view controller to be of the given class.
-  void ExpectTopViewControllerIsKindOfClass(Class Klass) {
-    EXPECT_TRUE([TopViewController() isKindOfClass:Klass]);
   }
 
   // Expects no preferences or metrics related to upgrade promo since the access
@@ -162,13 +159,22 @@ TEST_F(TwoScreensSigninCoordinatorTest, PresentScreens) {
 
   // Expect the signin screen to be presented.
   EXPECT_NE(PresentedViewController(), nil);
-  ExpectTopViewControllerIsKindOfClass([SigninScreenViewController class]);
+  EXPECT_TRUE(
+      [TopViewController() isKindOfClass:[SigninScreenViewController class]]);
   SigninFakeIdentity();
 
   NextScreen();
 
-  // Expect the tangible sync screen to be presented.
-  ExpectTopViewControllerIsKindOfClass([TangibleSyncViewController class]);
+  if (base::FeatureList::IsEnabled(
+          syncer::kReplaceSyncPromosWithSignInPromos)) {
+    // Expect the history sync opt-in screen to be presented.
+    EXPECT_TRUE(
+        [TopViewController() isKindOfClass:[HistorySyncViewController class]]);
+  } else {
+    // Expect the tangible sync screen to be presented.
+    EXPECT_TRUE(
+        [TopViewController() isKindOfClass:[TangibleSyncViewController class]]);
+  }
 
   // Shut it down.
   __block BOOL interrupt_completion_done = NO;

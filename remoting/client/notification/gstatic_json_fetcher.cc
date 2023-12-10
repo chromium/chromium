@@ -20,9 +20,9 @@ namespace {
 
 constexpr char kGstaticUrlPrefix[] = "https://www.gstatic.com/chromoting/";
 
-absl::optional<base::Value> GetResponse(std::unique_ptr<std::string> body) {
+std::optional<base::Value> GetResponse(std::unique_ptr<std::string> body) {
   if (!body)
-    return absl::nullopt;
+    return std::nullopt;
 
   return base::JSONReader::Read(*body);
 }

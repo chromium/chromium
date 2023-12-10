@@ -86,6 +86,7 @@
 #include "third_party/blink/renderer/core/html/forms/radio_input_type.h"
 #include "third_party/blink/renderer/core/html/forms/text_control_element.h"
 #include "third_party/blink/renderer/core/html/html_anchor_element.h"
+#include "third_party/blink/renderer/core/html/html_details_element.h"
 #include "third_party/blink/renderer/core/html/html_div_element.h"
 #include "third_party/blink/renderer/core/html/html_dlist_element.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
@@ -104,7 +105,6 @@
 #include "third_party/blink/renderer/core/html/media/html_media_element.h"
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
-#include "third_party/blink/renderer/core/html/portal/html_portal_element.h"
 #include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
@@ -333,14 +333,55 @@ bool CanHaveInlineTextBoxChildren(const blink::AXObject* obj) {
     return false;
   }
 
-  // Inline textboxes are included if and only if the parent is unignored.
-  // If the parent is ignored but included in tree, the inline textbox is
-  // still withheld.
-  if (obj->LastKnownIsIgnoredValue()) {
+  // Requires a layout object for there to be any inline text boxes.
+  if (!obj->GetLayoutObject()) {
     return false;
   }
 
-  return obj->GetLayoutObject() && obj->GetLayoutObject()->IsText();
+  // Inline text boxes are included if and only if the parent is unignored.
+  // If the parent is ignored but included in tree, the inline textbox is
+  // still withheld.
+  return !obj->LastKnownIsIgnoredValue();
+}
+
+bool HasLayoutText(const blink::AXObject* obj) {
+  // This method should only be used when layout is clean.
+#if DCHECK_IS_ON()
+  DCHECK(obj->GetDocument()->Lifecycle().GetState() >=
+         blink::DocumentLifecycle::kLayoutClean)
+      << "Unclean document at lifecycle "
+      << obj->GetDocument()->Lifecycle().ToString();
+#endif
+
+  // If no layout object, could be display:none or display locked.
+  if (!obj->GetLayoutObject()) {
+    return false;
+  }
+
+  // Display-locked nodes do not have layout objects with which to use for
+  // retrieving inline textbox children.
+  const blink::AXObject* ax_ancestor_with_node = obj;
+  while (!ax_ancestor_with_node->GetNode()) {
+    ax_ancestor_with_node = ax_ancestor_with_node->CachedParentObject();
+  }
+  if (blink::DisplayLockUtilities::LockedAncestorPreventingPaint(
+          *ax_ancestor_with_node->GetNode())) {
+    return false;
+  }
+
+  // Only text has inline textbox children.
+  if (!obj->GetLayoutObject()->IsText()) {
+    return false;
+  }
+
+  // Layout for this node must be clean, since we are in clean layout, and any
+  // node that needs layout because of display locking would have returned early
+  // above.
+  DUMP_WILL_BE_CHECK(!obj->GetLayoutObject()->NeedsLayout())
+      << "LayoutText needed layout but was not display locked: "
+      << obj->ToString(true, true);
+
+  return true;
 }
 
 }  // namespace
@@ -486,13 +527,6 @@ AXObjectInclusion AXNodeObject::ShouldIncludeBasedOnSemantics(
     return kIgnoreObject;
   }
 
-  // Objects inside a portal should be ignored. Portals don't directly expose
-  // their contents as the contents are not focusable (portals do not currently
-  // support input events). Portals do use their contents to compute a default
-  // accessible name.
-  if (GetDocument()->GetPage() && GetDocument()->GetPage()->InsidePortal())
-    return kIgnoreObject;
-
   Node* node = GetNode();
   if (!node) {
     // Nodeless pseudo element images are included, even if they don't have CSS
@@ -610,7 +644,7 @@ AXObjectInclusion AXNodeObject::ShouldIncludeBasedOnSemantics(
   // Descendants are pruned: IsRelevantPseudoElementDescendant() returns false.
   // Note: this is duplicated from AXLayoutObject because CSS alt text may apply
   // to both Elements and pseudo-elements.
-  absl::optional<String> alt_text = GetCSSAltText(GetNode());
+  absl::optional<String> alt_text = GetCSSAltText(GetElement());
   if (alt_text && !alt_text->empty())
     return kIncludeObject;
 
@@ -799,20 +833,22 @@ bool AXNodeObject::ComputeAccessibilityIsIgnored(
 }
 
 // static
-absl::optional<String> AXNodeObject::GetCSSAltText(const Node* node) {
+std::optional<String> AXNodeObject::GetCSSAltText(const Element* element) {
   // CSS alt text rules allow text to be assigned to ::before/::after content.
   // For example, the following CSS assigns "bullet" text to bullet.png:
   // .something::before {
   //   content: url(bullet.png) / "bullet";
   // }
 
-  if (!node || !node->GetComputedStyle() ||
-      node->GetComputedStyle()->ContentBehavesAsNormal()) {
-    return absl::nullopt;
+  if (!element) {
+    return std::nullopt;
+  }
+  const ComputedStyle* style = element->GetComputedStyle();
+  if (!style || style->ContentBehavesAsNormal()) {
+    return std::nullopt;
   }
 
-  const ComputedStyle* style = node->GetComputedStyle();
-  if (node->IsPseudoElement()) {
+  if (element->IsPseudoElement()) {
     for (const ContentData* content_data = style->GetContentData();
          content_data; content_data = content_data->Next()) {
       if (content_data->IsAltText())
@@ -876,6 +912,10 @@ static HashSet<ax::mojom::blink::Role>& GetLandmarkIsNotAllowedAncestorRoles(
 bool AXNodeObject::IsDescendantOfLandmarkDisallowedElement() const {
   if (!GetNode())
     return false;
+
+  if (AriaRoleAttribute() == ax::mojom::blink::Role::kComplementary) {
+    return false;
+  }
 
   auto role_names = GetLandmarkIsNotAllowedAncestorRoles(RoleValue());
 
@@ -1248,8 +1288,8 @@ ax::mojom::blink::Role AXNodeObject::NativeRoleIgnoringAria() const {
     return RoleFromLayoutObjectOrNode();
   }
 
-  if (GetNode()->IsPseudoElement() && GetCSSAltText(GetNode())) {
-    const ComputedStyle* style = GetNode()->GetComputedStyle();
+  if (GetNode()->IsPseudoElement() && GetCSSAltText(GetElement())) {
+    const ComputedStyle* style = GetElement()->GetComputedStyle();
     ContentData* content_data = style->GetContentData();
     // We just check the first item of the content list to determine the
     // appropriate role, should only ever be image or text.
@@ -1301,9 +1341,6 @@ ax::mojom::blink::Role AXNodeObject::NativeRoleIgnoringAria() const {
     return ax::mojom::blink::Role::kGenericContainer;
   }
 
-  if (IsA<HTMLPortalElement>(*GetNode()))
-    return ax::mojom::blink::Role::kPortal;
-
   if (IsA<HTMLButtonElement>(*GetNode()))
     return ButtonRoleType();
 
@@ -1314,8 +1351,14 @@ ax::mojom::blink::Role AXNodeObject::NativeRoleIgnoringAria() const {
     ContainerNode* parent = LayoutTreeBuilderTraversal::Parent(*GetNode());
     if (ToHTMLSlotElementIfSupportsAssignmentOrNull(parent))
       parent = LayoutTreeBuilderTraversal::Parent(*parent);
-    if (parent && IsA<HTMLDetailsElement>(parent))
-      return ax::mojom::blink::Role::kDisclosureTriangle;
+    if (HTMLDetailsElement* parent_details =
+            DynamicTo<HTMLDetailsElement>(parent)) {
+      if (parent_details->GetName().empty()) {
+        return ax::mojom::blink::Role::kDisclosureTriangle;
+      } else {
+        return ax::mojom::blink::Role::kDisclosureTriangleGrouped;
+      }
+    }
     return ax::mojom::blink::Role::kGenericContainer;
   }
 
@@ -3234,7 +3277,7 @@ bool AXNodeObject::StepValueForRange(float* out_value) const {
     // less than stops in the slider, otherwise, move by 5%.
     float max = step_range.Maximum().ToString().ToFloat();
     float min = step_range.Minimum().ToString().ToFloat();
-    int num_stops = (max - min) / step;
+    int num_stops = base::saturated_cast<int>((max - min) / step);
     constexpr int kNumStopsForFivePercentRule = 40;
     if (num_stops >= kNumStopsForFivePercentRule) {
       // No explicit step, and the step is very small -- don't expose a step
@@ -3707,20 +3750,6 @@ String AXNodeObject::TextAlternative(
   if (!GetNode() && !GetLayoutObject())
     return String();
 
-  // Exclude offscreen objects inside a portal.
-  // NOTE: If an object is found to be offscreen, this also omits its children,
-  // which may not be offscreen in some cases.
-  Page* page = GetNode() ? GetNode()->GetDocument().GetPage() : nullptr;
-  if (page && page->InsidePortal()) {
-    PhysicalRect bounds = GetBoundsInFrameCoordinates();
-    gfx::Size document_size =
-        GetNode()->GetDocument().GetLayoutView()->GetLayoutSize();
-    bool is_visible = bounds.Intersects(
-        PhysicalRect(PhysicalOffset(), PhysicalSize(document_size)));
-    if (!is_visible)
-      return String();
-  }
-
   // Step 2E from: http://www.w3.org/TR/accname-aam-1.1 -- value from control.
   // This must occur before 2C, because 2C is not applied if 2E will be:
   // 2C: "If traversal of the current node is due to recursion and the current
@@ -3944,7 +3973,7 @@ String AXNodeObject::TextFromDescendants(
     }
     AXObject* child = children[index];
     DCHECK(child);
-    DCHECK(!child->IsDetached());
+    DCHECK(!child->IsDetached()) << child->ToString(true, true);
     constexpr size_t kMaxDescendantsForTextAlternativeComputation = 100;
     if (visited.size() > kMaxDescendantsForTextAlternativeComputation)
       break;
@@ -4322,6 +4351,13 @@ bool AXNodeObject::ShouldLoadInlineTextBoxes() const {
 }
 
 void AXNodeObject::LoadInlineTextBoxes() {
+#if DCHECK_IS_ON()
+  DCHECK(GetDocument()->Lifecycle().GetState() >=
+         DocumentLifecycle::kLayoutClean)
+      << "Unclean document at lifecycle "
+      << GetDocument()->Lifecycle().ToString();
+#endif
+
   std::queue<AXID> work_queue;
   work_queue.push(AXObjectID());
 
@@ -4373,7 +4409,7 @@ void AXNodeObject::LoadInlineTextBoxesHelper() {
     // If inline text box children were added, mark the node dirty so that the
     // results are serialized.
     if (!CachedChildrenIncludingIgnored().empty()) {
-      AXObjectCache().MarkAXObjectDirtyWithDetails(
+      AXObjectCache().AddDirtyObjectToSerializationQueue(
           this, /*subtree*/ false, ax::mojom::blink::EventFrom::kNone,
           ax::mojom::blink::Action::kNone, {});
     }
@@ -4386,6 +4422,9 @@ void AXNodeObject::LoadInlineTextBoxesHelper() {
 void AXNodeObject::AddInlineTextBoxChildren() {
   CHECK(GetDocument());
   CHECK(ShouldLoadInlineTextBoxes());
+  CHECK(GetLayoutObject());
+  GetLayoutObject()->CheckIsNotDestroyed();
+  CHECK(GetLayoutObject()->IsText());
   CHECK(!GetLayoutObject()->NeedsLayout());
   CHECK(AXObjectCache().GetAXMode().has_mode(ui::AXMode::kInlineTextBoxes));
   CHECK(!AXObjectCache().GetAXMode().HasExperimentalFlags(
@@ -4552,7 +4591,7 @@ void AXNodeObject::AddChildrenImpl() {
     return;
   }
 
-  if (ShouldLoadInlineTextBoxes()) {
+  if (ShouldLoadInlineTextBoxes() && HasLayoutText(this)) {
     AddInlineTextBoxChildren();
     CHECK_ATTACHED();
     return;
@@ -4607,7 +4646,7 @@ void AXNodeObject::AddChildren() {
          "and add children on: "
       << ToString(true, true);
   SANITIZER_CHECK(!is_adding_children_)
-      << " Reentering method on " << GetNode();
+      << " Reentering method on " << ToString(true, true);
   base::AutoReset<bool> reentrancy_protector(&is_adding_children_, true);
 #endif
 
@@ -4630,6 +4669,7 @@ void AXNodeObject::AddNodeChild(Node* node) {
     return;
 
   AXObject* ax_child = AXObjectCache().Get(node);
+  CHECK(!ax_child || !ax_child->IsDetached());
   // Should not have another parent unless owned.
   if (AXObjectCache().IsAriaOwned(ax_child))
     return;  // Do not add owned children to their natural parent.
@@ -4641,9 +4681,12 @@ void AXNodeObject::AddNodeChild(Node* node) {
 #endif
 
   if (!ax_child) {
-    ax_child = AXObjectCache().GetOrCreate(node, this);
-    if (!ax_child)
+    ax_child =
+        AXObjectCache().CreateAndInit(node, node->GetLayoutObject(), this);
+    if (!ax_child) {
       return;
+    }
+    CHECK(!ax_child->IsDetached());
   }
 
   AddChild(ax_child);
@@ -4747,10 +4790,6 @@ void AXNodeObject::InsertChild(AXObject* child,
   // - For a new object it will have already been set.
   // - For a reused, older object, it may need to be changed to a new parent.
   child->SetParent(this);
-
-#if DCHECK_IS_ON()
-  child->EnsureCorrectParentComputation();
-#endif
 
   // Update cached values preemptively, but don't allow children changed to be
   // called if ignored change, we are already recomputing children and don't
@@ -5027,9 +5066,7 @@ bool AXNodeObject::OnNativeFocusAction() {
     // This fixes a scenario with Narrator Item Navigation when the user
     // navigates from the outer UI to the document when the last focused
     // element was within a nested iframe before leaving the document frame.
-    Page* page = document->GetPage();
-    // Elements inside a portal should not be focusable.
-    if (page && !page->InsidePortal()) {
+    if (Page* page = document->GetPage()) {
       page->GetFocusController().SetFocusedElement(document->documentElement(),
                                                    document->GetFrame());
     } else {

@@ -32,13 +32,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-/**
- * BaseAdapter for {@link RecyclerView}. It manages languages to list there.
- */
+/** BaseAdapter for {@link RecyclerView}. It manages languages to list there. */
 public class LanguageListBaseAdapter extends DragReorderableListAdapter<LanguageItem> {
-    /**
-     * Listener used to respond to click event on a language item.
-     */
+    /** Listener used to respond to click event on a language item. */
     interface ItemClickListener {
         /**
          * @param item The clicked LanguageItem.
@@ -78,7 +74,9 @@ public class LanguageListBaseAdapter extends DragReorderableListAdapter<Language
                 mDescription.setText(item.getNativeDisplayName());
             }
 
-            SelectableListUtils.setContentDescriptionContext(mMoreButton.getContext(), mMoreButton,
+            SelectableListUtils.setContentDescriptionContext(
+                    mMoreButton.getContext(),
+                    mMoreButton,
                     item.getDisplayName(),
                     SelectableListUtils.ContentDescriptionSource.MENU_BUTTON);
 
@@ -104,8 +102,12 @@ public class LanguageListBaseAdapter extends DragReorderableListAdapter<Language
             mMoreButton.setVisibility(View.VISIBLE);
             mMoreButton.setDelegate(delegate);
             // Set item row end padding 0 when MenuButton is visible.
-            ViewCompat.setPaddingRelative(itemView, ViewCompat.getPaddingStart(itemView),
-                    itemView.getPaddingTop(), 0, itemView.getPaddingBottom());
+            ViewCompat.setPaddingRelative(
+                    itemView,
+                    ViewCompat.getPaddingStart(itemView),
+                    itemView.getPaddingTop(),
+                    0,
+                    itemView.getPaddingBottom());
         }
 
         /**
@@ -118,9 +120,7 @@ public class LanguageListBaseAdapter extends DragReorderableListAdapter<Language
         }
     }
 
-    /**
-     * Keeps track of whether drag is enabled / active for language preference lists.
-     */
+    /** Keeps track of whether drag is enabled / active for language preference lists. */
     private class LanguageDragStateDelegate
             implements DragStateDelegate, AccessibilityState.Listener {
         public LanguageDragStateDelegate() {
@@ -139,7 +139,8 @@ public class LanguageListBaseAdapter extends DragReorderableListAdapter<Language
         }
 
         @Override
-        public void onAccessibilityStateChanged(AccessibilityState.State oldAccessibilityState,
+        public void onAccessibilityStateChanged(
+                AccessibilityState.State oldAccessibilityState,
                 AccessibilityState.State newAccessibilityState) {
             notifyDataSetChanged();
         }
@@ -161,18 +162,20 @@ public class LanguageListBaseAdapter extends DragReorderableListAdapter<Language
 
         assert mItemTouchHelper != null;
         holder.setStartIcon(R.drawable.ic_drag_handle_24dp);
-        holder.mStartIcon.setOnTouchListener((v, event) -> {
-            if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
-                mItemTouchHelper.startDrag(holder);
-            }
-            return false;
-        });
+        holder.mStartIcon.setOnTouchListener(
+                (v, event) -> {
+                    if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
+                        mItemTouchHelper.startDrag(holder);
+                    }
+                    return false;
+                });
     }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
-        View row = LayoutInflater.from(viewGroup.getContext())
-                           .inflate(R.layout.accept_languages_item, viewGroup, false);
+        View row =
+                LayoutInflater.from(viewGroup.getContext())
+                        .inflate(R.layout.accept_languages_item, viewGroup, false);
         return new LanguageRowViewHolder(row);
     }
 

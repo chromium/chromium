@@ -166,6 +166,87 @@ You can generate the configuration files and then view the added entry in
 [cr-buildbucket.cfg][8] to make sure all properties and dimensions are set as
 expected and adjust your definition as necessary.
 
+#### GN build configuration
+
+The GN configuration used by the chromium family of recipes is handled by
+[MB][13] and is historically configured in a [config file][14]. However, for
+new builders, it should be configured within the builder definition in
+Starlark, by adding a `gn_args` field to the builder function call. For
+example:
+
+```starlark
+ci.linux_builder(
+    name = '$BUILDER_NAME',
+    gn_args = "$GN_CONFIG",
+)
+```
+
+The value to the `gn_args` field can be one of the following 3 types:
+
+* a call to the `gn_args.config()` function provided by the
+[gn_args Starlark library][28] - the Starlark library will create a new GN
+config under the name of `$BUCKET_NAME/$BUILDER_NAME`, such as
+`ci/my_ci_builder` or `try/my_try_builder`. A simple example:
+
+    ```starlark
+    try_.linux_builder(
+        name = '$TRY_BUILDER_NAME',
+        gn_args = gn_args.config(
+            configs = [
+                "ci/$CI_BUILDER_NAME",
+                "try_builder",
+            ],
+        ),
+    )
+    ```
+
+    The `configs` argument of the `gn_args.config()` function takes a list of
+    GN configs which can be either references to other builders that have GN
+    args specified in builder definition, or commonly used GN configs that are
+    defined in the [gn_args folder][29].
+
+* a string - reference to a single GN config or another builder that has GN
+args defined in the Starlark builder definition. For example:
+
+    ```starlark
+    try_.linux_builder(
+        name = '$TRY_BUILDER_NAME',
+        gn_args = "ci/$CI_BUILDER_NAME",
+    )
+    ```
+
+* a dictionary - this specifies a multi-phase GN build configuration, in which
+the GN args of each phase are keyed by the phase name in the dictionary. For
+example:
+
+    ```starlark
+    builders.builder(
+        name = '$BUILDER_NAME',
+        gn_args = {
+            "phase1": "release_builder",
+            "phase2": gn_args.config(
+                configs = [
+                    "debug",
+                    "shared",
+                ],
+            ),
+        },
+    )
+    ```
+
+    The value for each phase can be a string or a call to the
+    `gn_args.config()` function, but can not be a dictionary.
+
+When adding new GN configs into the [gn_args folder][29]:
+
+* Make sure to specify a name for each GN config so that they can be
+referenced by other configs or Starlark builder definitions.
+* Avoid creating new configs that are simply the combination of the names of
+several existing GN configs, unless the combined name is an actual concept.
+For example, you should avoid creating a GN config named `shared_debug`, which
+includes GN configs `shared` and `debug`; instead, you should directly specify
+`["shared", "debug"]` in the Starlark builder definition.
+
 #### Milo
 
 Milo is responsible for displaying builders and build histories on a
@@ -454,12 +535,6 @@ builder is the mirror of a non-experimental try builder on the CQ.
 The chromium family of recipes reads certain types of configuration from the
 source tree.
 
-##### Build system configuration
-
-The gn configuration used by the chromium family of recipes is handled by
-[MB][13]. MB's configuration is documented [here][14]. You only need to modify
-it if your new builder will be compiling.
-
 ##### Test configuration
 
 The test configuration used by the chromium family of recipes is in a group of
@@ -679,3 +754,5 @@ reach out to infra-dev@chromium.org or [file a bug][19]!
 [25]: https://source.chromium.org/chromium/chromium/tools/build/+/main:recipes/recipe_modules/chromium_tests_builder_config/trybots.py
 [26]: /infra/config/generated/luci/commit-queue.cfg
 [27]: https://luci-config.appspot.com/schemas/projects:commit-queue.cfg
+[28]: /infra/config/lib/gn_args.star
+[29]: /infra/config/gn_args

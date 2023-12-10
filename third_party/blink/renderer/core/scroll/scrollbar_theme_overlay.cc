@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme_overlay.h"
 
 #include "third_party/blink/public/platform/web_theme_engine.h"
+#include "third_party/blink/renderer/core/scroll/scrollable_area.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
@@ -211,9 +212,12 @@ void ScrollbarThemeOverlay::PaintThumb(GraphicsContext& context,
   }
 
   blink::WebThemeEngine::ExtraParams params(scrollbar_thumb);
+  mojom::blink::ColorScheme color_scheme = scrollbar.UsedColorScheme();
+  const ui::ColorProvider* color_provider =
+      scrollbar.GetScrollableArea()->GetColorProvider(color_scheme);
 
   WebThemeEngineHelper::GetNativeThemeEngine()->Paint(
-      canvas, part, state, rect, &params, scrollbar.UsedColorScheme());
+      canvas, part, state, rect, &params, color_scheme, color_provider);
 
   if (scrollbar.IsLeftSideVerticalScrollbar())
     canvas->restore();

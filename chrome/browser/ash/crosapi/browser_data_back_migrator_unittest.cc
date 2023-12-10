@@ -290,7 +290,7 @@ bool ReadJSON(const base::FilePath& path, base::Value* json_out) {
     return false;
   }
 
-  absl::optional<base::Value> deserialized_json =
+  std::optional<base::Value> deserialized_json =
       base::JSONReader::Read(file_contents);
   if (!deserialized_json.has_value()) {
     return false;

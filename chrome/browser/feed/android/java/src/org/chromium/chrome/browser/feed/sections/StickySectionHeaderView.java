@@ -18,9 +18,7 @@ import com.google.android.material.tabs.TabLayout;
 
 import org.chromium.chrome.browser.feed.R;
 
-/**
- * View for the feed header that sticks to the top of the screen upon scroll.
- */
+/** View for the feed header that sticks to the top of the screen upon scroll. */
 public class StickySectionHeaderView extends SectionHeaderView {
     private @Nullable View mOptionsPanel;
 
@@ -48,9 +46,7 @@ public class StickySectionHeaderView extends SectionHeaderView {
         params.setMargins(params.leftMargin, marginValue, params.rightMargin, params.bottomMargin);
     }
 
-    /**
-     * This method update the tabs state, recalculating the unread indicator position.
-     */
+    /** This method update the tabs state, recalculating the unread indicator position. */
     private void updateTabState() {
         TabLayout tabLayout = findViewById(R.id.tab_list_view);
         for (int i = 0; i < tabLayout.getTabCount(); i++) {

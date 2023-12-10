@@ -1,0 +1,14 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<!-- This file is generated using tools/search_engine_choice/generate_search_engine_snippets.py. Do not modify it manually. -->
+<translationbundle lang="el">
+  <translation id="IDS_BING_SEARCH_DESCRIPTION">Γρήγορη, ακριβής και ιδιωτική αναζήτηση από τη Microsoft</translation>
+  <translation id="IDS_DUCKDUCKGO_SEARCH_DESCRIPTION">Δεν σε παρακολουθούμε. Απόρρητο, απλοποιημένο.</translation>
+  <translation id="IDS_GOOGLE_SEARCH_DESCRIPTION">Βρείτε αυτό που χρειάζεστε με τη μηχανή αναζήτησης που χρησιμοποιείται πιο συχνά παγκοσμίως.</translation>
+  <translation id="IDS_INFOCOM_SEARCH_DESCRIPTION">Γρήγορη και εύκολη αναζήτηση</translation>
+  <translation id="IDS_MOJEEK_SEARCH_DESCRIPTION">Μια ανεξάρτητη ευρωπαϊκή μηχανή αναζήτησης χωρίς παρακολούθηση</translation>
+  <translation id="IDS_OCEANHERO_SEARCH_DESCRIPTION">Σταματήστε τη ρύπανση των ωκεανών από πλαστικά μαζί με το OceanHero.</translation>
+  <translation id="IDS_PRIVACYWALL_SEARCH_DESCRIPTION">Μια μηχανή αναζήτησης που προστατεύει το απόρρητό σας.</translation>
+  <translation id="IDS_YANDEX_SEARCH_DESCRIPTION">Γρήγορη και ασφαλής αναζήτηση για ιστοσελίδες, εικόνες και βίντεο</translation>
+  <translation id="IDS_YEP_SEARCH_DESCRIPTION">Μηχανή αναζήτησης Ιστού που στοχεύει να μοιράζεται το έσοδα διαφήμισης με δημιουργούς.</translation>
+</translationbundle>

@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="cy">
 <translation id="1000498691615767391">Dewiswch ffolder i'w agor</translation>
+<translation id="1014208178561091457">Nid oedd modd copïo <ph name="FILE_NAME" /> oherwydd ei bod wedi'i hamgryptio.</translation>
 <translation id="1047956942837015229">Wrthi'n dileu <ph name="COUNT" /> eitem...</translation>
 <translation id="1049926623896334335">Dogfen Word</translation>
 <translation id="1056775291175587022">Dim rhwydweithiau</translation>
@@ -55,6 +56,7 @@
 <translation id="1435838927755162558">Rhannu'r ffolder gyda Parallels Desktop</translation>
 <translation id="1439919885608649279">Person â blodau</translation>
 <translation id="1458457385801829801">Dadlwytho <ph name="TARGET_NAME" /></translation>
+<translation id="146691674290220697">Nid oedd modd copïo <ph name="NUMBER_OF_FILES" /> ffeil oherwydd eu bod wedi'u hamgryptio.</translation>
 <translation id="1471718551822868769">Slofac</translation>
 <translation id="1482884275703521657">Ffineg</translation>
 <translation id="148466539719134488">Y Swistir</translation>
@@ -276,6 +278,7 @@
 <translation id="3253225298092156258">Nid yw ar gael</translation>
 <translation id="3254434849914415189">Dewiswch yr ap diofyn ar gyfer ffeiliau <ph name="FILE_TYPE" />:</translation>
 <translation id="3255159654094949700">Arabeg</translation>
+<translation id="326396468955264502">Ni fu modd symud <ph name="NUMBER_OF_FILES" /> ffeil oherwydd eu bod wedi'u hamgryptio.</translation>
 <translation id="3264582393905923483">Cyd-destun</translation>
 <translation id="3272909651715601089">Methu ag agor "<ph name="PATH" />"</translation>
 <translation id="3280431534455935878">Wrthi'n paratoi</translation>
@@ -313,6 +316,7 @@
 <translation id="3523225005467146490">Mae 1 ffolder wedi'i rhannu gyda <ph name="VM_NAME" /></translation>
 <translation id="3524311639100184459">Rhybudd: Mae'r ffeiliau hyn dros dro a gellir eu dileu yn awtomatig i greu rhagor o le ar y disg.  <ph name="BEGIN_LINK" />Dysgu rhagor<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Ffolder</translation>
+<translation id="3529424493985988200">Cysylltwch â'ch gweinyddwr am fanylion.</translation>
 <translation id="3548125359243647069">Rhoddwyd y PIN anghywir gormod o weithiau.</translation>
 <translation id="3549797760399244642">Ewch i drive.google.com...</translation>
 <translation id="3553048479571901246">Er mwyn agor ffeiliau gyda <ph name="APP_NAME" />, copïwch nhw yn gyntaf i'r ffolder ffeiliau Windows.</translation>
@@ -701,6 +705,7 @@
 <translation id="637062427944097960">Gwnaeth y ffeil hon agor ar fwrdd gwaith gwahanol. Symudwch i <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) i'w gweld.</translation>
 <translation id="6394388407447716302">Darllen yn unig</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> eitem</translation>
+<translation id="6407769893376380348">Ni fu modd symud <ph name="FILE_NAME" /> oherwydd ei fod wedi'i amgryptio.</translation>
 <translation id="642282551015776456">Ni chaniateir defnyddio'r enw hwn fel enw ffeil neu ffolder</translation>
 <translation id="6423031066725912715">Fietnameg gyda bysellfwrdd TCVN</translation>
 <translation id="6430271654280079150">Mae gennych 1 ymgais ar ôl.</translation>

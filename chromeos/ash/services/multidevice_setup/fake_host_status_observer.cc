@@ -21,7 +21,7 @@ FakeHostStatusObserver::GenerateRemote() {
 
 void FakeHostStatusObserver::OnHostStatusChanged(
     mojom::HostStatus host_status,
-    const absl::optional<multidevice::RemoteDevice>& host_device) {
+    const std::optional<multidevice::RemoteDevice>& host_device) {
   host_status_updates_.emplace_back(host_status, host_device);
 }
 

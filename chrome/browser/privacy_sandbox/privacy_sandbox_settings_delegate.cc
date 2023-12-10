@@ -16,6 +16,8 @@
 #include "build/buildflag.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
+#include "chrome/browser/privacy_sandbox/tracking_protection_onboarding_factory.h"
+#include "chrome/browser/privacy_sandbox/tracking_protection_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/tpcd/experiment/experiment_manager.h"
@@ -28,9 +30,12 @@
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/privacy_sandbox/tpcd_experiment_eligibility.h"
+#include "components/privacy_sandbox/tracking_protection_onboarding.h"
+#include "components/privacy_sandbox/tracking_protection_settings.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/tribool.h"
 #include "content/public/common/content_features.h"
+#include "net/cookies/cookie_util.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/android/webapps/webapp_registry.h"
@@ -305,3 +310,103 @@ void PrivacySandboxSettingsDelegate::OverrideWebappRegistryForTesting(
   webapp_registry_ = std::move(webapp_registry);
 }
 #endif
+
+bool PrivacySandboxSettingsDelegate::IsCookieDeprecationLabelAllowed() const {
+  if (!IsCookieDeprecationExperimentEligible()) {
+    return false;
+  }
+
+  auto* tracking_protection_onboarding =
+      TrackingProtectionOnboardingFactory::GetForProfile(profile_);
+  if (!tracking_protection_onboarding) {
+    return false;
+  }
+
+  if (tpcd::experiment::kDisable3PCookies.Get()) {
+    switch (tracking_protection_onboarding->GetOnboardingStatus()) {
+      case privacy_sandbox::TrackingProtectionOnboarding::OnboardingStatus::
+          kIneligible:
+        return false;
+      case privacy_sandbox::TrackingProtectionOnboarding::OnboardingStatus::
+          kOffboarded:
+      case privacy_sandbox::TrackingProtectionOnboarding::OnboardingStatus::
+          kEligible:
+        return !tpcd::experiment::kNeedOnboardingForLabel.Get();
+      case privacy_sandbox::TrackingProtectionOnboarding::OnboardingStatus::
+          kOnboarded:
+        return true;
+    }
+  } else if (tpcd::experiment::kEnableSilentOnboarding.Get()) {
+    switch (tracking_protection_onboarding->GetSilentOnboardingStatus()) {
+      case privacy_sandbox::TrackingProtectionOnboarding::
+          SilentOnboardingStatus::kIneligible:
+        return false;
+      case privacy_sandbox::TrackingProtectionOnboarding::
+          SilentOnboardingStatus::kEligible:
+        return !tpcd::experiment::kNeedOnboardingForLabel.Get();
+      case privacy_sandbox::TrackingProtectionOnboarding::
+          SilentOnboardingStatus::kOnboarded:
+        return true;
+    }
+  } else {
+    return true;
+  }
+}
+
+bool PrivacySandboxSettingsDelegate::
+    AreThirdPartyCookiesBlockedByCookieDeprecationExperiment() const {
+  if (net::cookie_util::IsForceThirdPartyCookieBlockingEnabled()) {
+    return false;
+  }
+
+  if (!IsCookieDeprecationExperimentEligible()) {
+    return false;
+  }
+
+  if (!tpcd::experiment::kDisable3PCookies.Get()) {
+    return false;
+  }
+
+  auto* tracking_protection_onboarding =
+      TrackingProtectionOnboardingFactory::GetForProfile(profile_);
+  if (!tracking_protection_onboarding) {
+    return false;
+  }
+
+  // Third-party cookies are not disabled until the profile gets onboarded.
+  switch (tracking_protection_onboarding->GetOnboardingStatus()) {
+    case privacy_sandbox::TrackingProtectionOnboarding::OnboardingStatus::
+        kIneligible:
+    case privacy_sandbox::TrackingProtectionOnboarding::OnboardingStatus::
+        kEligible:
+    case privacy_sandbox::TrackingProtectionOnboarding::OnboardingStatus::
+        kOffboarded:
+      return false;
+    case privacy_sandbox::TrackingProtectionOnboarding::OnboardingStatus::
+        kOnboarded:
+      break;
+  }
+
+  // Respect user preferences.
+
+  auto* tracking_protection_settings =
+      TrackingProtectionSettingsFactory::GetForProfile(profile_);
+  if (tracking_protection_settings &&
+      tracking_protection_settings->AreAllThirdPartyCookiesBlocked()) {
+    return false;
+  }
+
+  const auto cookie_controls_mode =
+      static_cast<content_settings::CookieControlsMode>(
+          profile_->GetPrefs()->GetInteger(prefs::kCookieControlsMode));
+
+  switch (cookie_controls_mode) {
+    case content_settings::CookieControlsMode::kBlockThirdParty:
+      return false;
+    case content_settings::CookieControlsMode::kIncognitoOnly:
+    case content_settings::CookieControlsMode::kOff:
+      break;
+  }
+
+  return true;
+}

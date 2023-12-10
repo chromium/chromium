@@ -52,6 +52,10 @@ EnumTraits<viz::mojom::Subsampling, viz::SharedImageFormat::Subsampling>::
   switch (subsampling) {
     case viz::SharedImageFormat::Subsampling::k420:
       return viz::mojom::Subsampling::k420;
+    case viz::SharedImageFormat::Subsampling::k422:
+      return viz::mojom::Subsampling::k422;
+    case viz::SharedImageFormat::Subsampling::k444:
+      return viz::mojom::Subsampling::k444;
   }
   NOTREACHED();
   return viz::mojom::Subsampling::k420;
@@ -64,6 +68,12 @@ bool EnumTraits<viz::mojom::Subsampling, viz::SharedImageFormat::Subsampling>::
   switch (input) {
     case viz::mojom::Subsampling::k420:
       *out = viz::SharedImageFormat::Subsampling::k420;
+      return true;
+    case viz::mojom::Subsampling::k422:
+      *out = viz::SharedImageFormat::Subsampling::k422;
+      return true;
+    case viz::mojom::Subsampling::k444:
+      *out = viz::SharedImageFormat::Subsampling::k444;
       return true;
   }
   return false;

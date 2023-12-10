@@ -10,12 +10,14 @@
 #include "third_party/blink/renderer/core/animation/keyframe_effect_model.h"
 #include "third_party/blink/renderer/core/animation/property_handle.h"
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 
 using animation_test_helpers::CreateSimpleKeyframeEffectModelForTest;
 
 TEST(InertEffectTest, IsCurrent) {
+  test::TaskEnvironment task_environment;
   auto* opacity_model =
       CreateSimpleKeyframeEffectModelForTest(CSSPropertyID::kOpacity, "0", "1");
 
@@ -66,6 +68,7 @@ TEST(InertEffectTest, IsCurrent) {
 }
 
 TEST(InertEffectTest, Affects) {
+  test::TaskEnvironment task_environment;
   auto* opacity_model =
       CreateSimpleKeyframeEffectModelForTest(CSSPropertyID::kOpacity, "0", "1");
   auto* color_model = CreateSimpleKeyframeEffectModelForTest(

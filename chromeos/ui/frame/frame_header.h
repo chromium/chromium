@@ -193,7 +193,7 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameHeader
   // and to have the same width as |view_|.
   gfx::Rect GetPaintedBounds() const;
 
-  void UpdateCaptionButtonColors(absl::optional<ui::ColorId> icon_color_id);
+  void UpdateCaptionButtonColors(std::optional<ui::ColorId> icon_color_id);
 
   void PaintTitleBar(gfx::Canvas* canvas);
 

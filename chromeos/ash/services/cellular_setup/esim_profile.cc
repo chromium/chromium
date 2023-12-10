@@ -272,21 +272,13 @@ void ESimProfile::EnsureProfileExistsOnEuicc(
                          weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
           std::move(inhibit_lock));
     } else {
-      if (ash::features::IsSmdsDbusMigrationEnabled()) {
-        HermesEuiccClient::Get()->RefreshSmdxProfiles(
-            euicc_->path(),
-            /*activation_code=*/ESimManager::GetRootSmdsAddress(),
-            /*restore_slot=*/true,
-            base::BindOnce(&ESimProfile::OnRefreshSmdxProfiles,
-                           weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-                           std::move(inhibit_lock)));
-      } else {
-        HermesEuiccClient::Get()->RequestPendingProfiles(
-            euicc_->path(), /*root_smds=*/ESimManager::GetRootSmdsAddress(),
-            base::BindOnce(&ESimProfile::OnRequestPendingProfiles,
-                           weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-                           std::move(inhibit_lock)));
-      }
+      HermesEuiccClient::Get()->RefreshSmdxProfiles(
+          euicc_->path(),
+          /*activation_code=*/ESimManager::GetRootSmdsAddress(),
+          /*restore_slot=*/true,
+          base::BindOnce(&ESimProfile::OnRefreshSmdxProfiles,
+                         weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                         std::move(inhibit_lock)));
     }
     return;
   }
@@ -471,16 +463,7 @@ bool ESimProfile::ProfileExistsOnEuicc() {
   HermesEuiccClient::Properties* euicc_properties =
       HermesEuiccClient::Get()->GetProperties(euicc_->path());
 
-  if (features::IsSmdsDbusMigrationEnabled()) {
-    return base::Contains(euicc_properties->profiles().value(), path_);
-  }
-
-  const std::vector<dbus::ObjectPath>& profile_paths =
-      IsProfileInstalled()
-          ? euicc_properties->installed_carrier_profiles().value()
-          : euicc_properties->pending_carrier_profiles().value();
-
-  return base::Contains(profile_paths, path_);
+  return base::Contains(euicc_properties->profiles().value(), path_);
 }
 
 bool ESimProfile::IsProfileInstalled() {

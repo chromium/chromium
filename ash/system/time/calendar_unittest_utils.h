@@ -233,7 +233,7 @@ class ScopedLibcTimeZone {
   static constexpr char kTimeZoneEnvVarName[] = "TZ";
 
   bool success_ = true;
-  absl::optional<std::string> old_timezone_;
+  std::optional<std::string> old_timezone_;
 };
 
 // A duration to let the animation finish and pass the cool down duration in

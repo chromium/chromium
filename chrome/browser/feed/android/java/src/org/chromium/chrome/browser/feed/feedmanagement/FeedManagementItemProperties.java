@@ -9,9 +9,7 @@ import android.view.View.OnClickListener;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
-/**
- * Items for the list view in the feed management activity.
- */
+/** Items for the list view in the feed management activity. */
 public class FeedManagementItemProperties {
     public static final int DEFAULT_ITEM_TYPE = 0;
 

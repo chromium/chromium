@@ -10,10 +10,15 @@
 #ifndef BASE_STRINGS_STRING_PIECE_H_
 #define BASE_STRINGS_STRING_PIECE_H_
 
-// Many files including this header rely on these being included due to IWYU
-// violations. Preserve the includes for now. As code is migrated away from this
-// header, we can incrementally fix the IWYU violations.
-#include "base/check.h"
-#include "base/strings/string_piece_forward.h"
+#include <string_view>
+
+namespace base {
+
+template <typename CharT, typename Traits = std::char_traits<CharT>>
+using BasicStringPiece = std::basic_string_view<CharT, Traits>;
+using StringPiece = std::string_view;
+using StringPiece16 = std::u16string_view;
+
+}  // namespace base
 
 #endif  // BASE_STRINGS_STRING_PIECE_H_

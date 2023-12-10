@@ -13,7 +13,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece.h"
-#include "base/strings/string_piece_forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/base/interaction/element_identifier.h"

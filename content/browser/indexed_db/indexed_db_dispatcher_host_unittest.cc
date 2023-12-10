@@ -188,7 +188,7 @@ class IndexedDBDispatcherHostTest : public testing::Test {
             CreateAndReturnTempDir(&temp_dir_),
             task_environment_.GetMainThreadTaskRunner(),
             special_storage_policy_)),
-        context_impl_(base::MakeRefCounted<IndexedDBContextImpl>(
+        context_impl_(std::make_unique<IndexedDBContextImpl>(
             temp_dir_.GetPath(),
             quota_manager_->proxy(),
             mojo::NullRemote(),
@@ -227,11 +227,11 @@ class IndexedDBDispatcherHostTest : public testing::Test {
       loop.Run();
     }
 
-    // IndexedDBContextImpl must be released on the IDB sequence.
+    // IndexedDBContextImpl must be destroyed on the IDB sequence.
     {
       scoped_refptr<base::SequencedTaskRunner> idb_task_runner =
           context_impl_->IDBTaskRunner();
-      context_impl_->ReleaseOnIDBSequence(std::move(context_impl_));
+      IndexedDBContextImpl::Shutdown(std::move(context_impl_));
       base::RunLoop loop;
       idb_task_runner->PostTask(FROM_HERE, loop.QuitClosure());
       loop.Run();
@@ -248,7 +248,7 @@ class IndexedDBDispatcherHostTest : public testing::Test {
   base::ScopedTempDir temp_dir_;
   scoped_refptr<storage::MockSpecialStoragePolicy> special_storage_policy_;
   scoped_refptr<storage::MockQuotaManager> quota_manager_;
-  scoped_refptr<IndexedDBContextImpl> context_impl_;
+  std::unique_ptr<IndexedDBContextImpl> context_impl_;
   mojo::Remote<blink::mojom::IDBFactory> idb_mojo_factory_;
 };
 
@@ -667,8 +667,6 @@ TEST_F(IndexedDBDispatcherHostTest, DISABLED_NotifyIndexedDBListChanged) {
         base::BarrierClosure(2, loop.QuitClosure());
     context_impl_->IDBTaskRunner()->PostTask(
         FROM_HERE, base::BindLambdaForTesting([&]() {
-          connection1->database->Close();
-
           connection2 = std::make_unique<TestDatabaseConnection>(
               context_impl_->IDBTaskRunner(),
               url::Origin::Create(GURL(kOrigin)), kDatabaseName, kDBVersion2,
@@ -732,7 +730,6 @@ TEST_F(IndexedDBDispatcherHostTest, DISABLED_NotifyIndexedDBListChanged) {
     base::RunLoop loop;
     context_impl_->IDBTaskRunner()->PostTask(
         FROM_HERE, base::BindLambdaForTesting([&]() {
-          connection2->database->Close();
           connection3 = std::make_unique<TestDatabaseConnection>(
               context_impl_->IDBTaskRunner(), ToOrigin(kOrigin), kDatabaseName,
               kDBVersion3, kTransactionId3);
@@ -899,7 +896,6 @@ TEST_F(IndexedDBDispatcherHostTest, DISABLED_NotifyIndexedDBContentChanged) {
   base::RunLoop loop3;
   context_impl_->IDBTaskRunner()->PostTask(FROM_HERE,
                                            base::BindLambdaForTesting([&]() {
-                                             connection1->database->Close();
                                              connection1.reset();
                                              loop3.Quit();
                                            }));

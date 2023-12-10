@@ -63,7 +63,8 @@ public class TabBrowserControlsOffsetHelper extends EmptyTabObserver implements 
      *                                   animation in the renderer.
      */
     void setTopOffset(int topControlsOffset, int contentOffset, int topControlsMinHeightOffset) {
-        if (mOffsetInitialized && topControlsOffset == mTopControlsOffset
+        if (mOffsetInitialized
+                && topControlsOffset == mTopControlsOffset
                 && mContentOffset == contentOffset
                 && mTopControlsMinHeightOffset == topControlsMinHeightOffset) {
             return;
@@ -82,7 +83,8 @@ public class TabBrowserControlsOffsetHelper extends EmptyTabObserver implements 
      *                                      change animation in the renderer.
      */
     void setBottomOffset(int bottomControlsOffset, int bottomControlsMinHeightOffset) {
-        if (mOffsetInitialized && mBottomControlsOffset == bottomControlsOffset
+        if (mOffsetInitialized
+                && mBottomControlsOffset == bottomControlsOffset
                 && mBottomControlsMinHeightOffset == bottomControlsMinHeightOffset) {
             return;
         }
@@ -95,9 +97,15 @@ public class TabBrowserControlsOffsetHelper extends EmptyTabObserver implements 
         mOffsetInitialized = true;
         RewindableIterator<TabObserver> observers = mTab.getTabObservers();
         while (observers.hasNext()) {
-            observers.next().onBrowserControlsOffsetChanged(mTab, mTopControlsOffset,
-                    mBottomControlsOffset, mContentOffset, mTopControlsMinHeightOffset,
-                    mBottomControlsMinHeightOffset);
+            observers
+                    .next()
+                    .onBrowserControlsOffsetChanged(
+                            mTab,
+                            mTopControlsOffset,
+                            mBottomControlsOffset,
+                            mContentOffset,
+                            mTopControlsMinHeightOffset,
+                            mBottomControlsMinHeightOffset);
         }
     }
 

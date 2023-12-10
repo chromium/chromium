@@ -9,7 +9,5 @@ This is a testharness.js-based test.
   assert_equals: expected "screen, overlay" but got "screen, overlay, screen"
 [FAIL] Property background-blend-mode value 'color, saturation'
   assert_equals: expected "color, saturation" but got "color, saturation, color"
-[PASS] Property background-blend-mode value 'normal, luminosity, color'
-[PASS] Property background-blend-mode value 'screen, overlay, screen'
 Harness: the test ran to completion.
 

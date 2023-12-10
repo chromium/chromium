@@ -8,6 +8,7 @@
 <translation id="1420684932347524586">Не вдалося згенерувати випадковий секретний ключ RSA.</translation>
 <translation id="1445572445564823378">Це розширення сповільнює <ph name="PRODUCT_NAME" />. Щоб відновити ефективність <ph name="PRODUCT_NAME" />, потрібно його вимкнути.</translation>
 <translation id="1468038450257740950">WebGL не підтримується.</translation>
+<translation id="1610570795592207282">Не вдалося завантажити файл <ph name="RELATIVE_PATH" /> для скрипту.</translation>
 <translation id="1803557475693955505">Не вдалося завантажити фонову сторінку "<ph name="BACKGROUND_PAGE" />".</translation>
 <translation id="2159915644201199628">Не вдалося декодувати зображення: "<ph name="IMAGE_NAME" />"</translation>
 <translation id="2350172092385603347">Використано локалізацію, але параметр мови за умовчанням (default_locale) не визначено в маніфесті.</translation>
@@ -18,14 +19,12 @@
 <translation id="3115238746683532089">Невідомий продукт <ph name="PRODUCT_ID" /> від постачальника <ph name="VENDOR_ID" /> (серійний номер: <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">Не вдалося замінити файл у форматі crx. Перевірте, чи файл зараз не використовується.</translation>
 <translation id="3163201441334626963">Невідомий продукт <ph name="PRODUCT_ID" /> від постачальника <ph name="VENDOR_ID" /></translation>
-<translation id="3302709122321372472">Не вдалося завантажити файл .css "<ph name="RELATIVE_PATH" />" для сценарію вмісту.</translation>
 <translation id="3369521687965833290">Неможливо розпакувати розширення. Щоб безпечно розпакувати розширення, має бути шлях до каталогу вашого профілю, який починається буквою диску та не містить точок з’єднання, під’єднання чи символьного посилання. Для вашого профілю такого шляху немає.</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (серійний номер: <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> від постачальника <ph name="VENDOR_ID" /> (серійний номер: <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Потрібно ввести правильний шлях до секретного ключа.</translation>
 <translation id="388442998277590542">Не вдалося завантажити сторінку параметрів "<ph name="OPTIONS_PAGE" />".</translation>
 <translation id="3984413272403535372">Помилка під час підписування розширення.</translation>
-<translation id="39964277676607559">Не вдалося завантажити javascript "<ph name="RELATIVE_PATH" />" для сценарію вмісту.</translation>
 <translation id="4115165561519362854">Адміністратор цього комп’ютера вимагає встановити розширення <ph name="EXTENSION_NAME" /> принаймні такої версії: <ph name="EXTENSION_VERSION" />. Ви не зможете ввімкнути це розширення, доки не оновите його до цієї версії (або новішої).</translation>
 <translation id="4233778200880751280">Не вдалося завантажити сторінку з інформацією про "<ph name="ABOUT_PAGE" />".</translation>
 <translation id="471800408830181311">Не вдалося вивести секретний ключ.</translation>
@@ -33,6 +32,7 @@
 <translation id="4988792151665380515">Не вдалося експортувати відкритий ключ.</translation>
 <translation id="5026754133087629784">Веб-перегляд: <ph name="WEBVIEW_TAG_NAME" /></translation>
 <translation id="5098647635849512368">Неможливо знайти абсолютний шлях до каталогу для пакування.</translation>
+<translation id="5160071981665899014">Не вдалося завантажити файл <ph name="RELATIVE_PATH" /> для скрипту.</translation>
 <translation id="5356315618422219272">Тег Appview: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5436430103864390185">Нестандартні вікна не підтримуються.</translation>
 <translation id="5456409301717116725">Це розширення включає файл ключа "<ph name="KEY_PATH" />". Можливо, ви не хочете цього робити.</translation>

@@ -12,7 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "components/autofill/core/browser/autocomplete_history_manager.h"
 #include "components/autofill/core/browser/autofill_client.h"
-#include "components/autofill/core/browser/autofill_download_manager.h"
+#include "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_manager.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/payments/card_unmask_delegate.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
@@ -23,9 +23,14 @@
 #include "components/sync/service/sync_service.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web_view/internal/autofill/cwv_autofill_client_ios_bridge.h"
+#include "ios/web_view/internal/autofill/ios_web_view_payments_autofill_client.h"
 #include "ios/web_view/internal/web_view_browser_state.h"
 
 namespace autofill {
+
+namespace payments {
+class IOSWebViewPaymentsAutofillClient;
+}  // namespace payments
 
 // WebView implementation of AutofillClient.
 class WebViewAutofillClientIOS : public AutofillClient {
@@ -53,7 +58,7 @@ class WebViewAutofillClientIOS : public AutofillClient {
   // AutofillClient:
   bool IsOffTheRecord() override;
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
-  AutofillDownloadManager* GetDownloadManager() override;
+  AutofillCrowdsourcingManager* GetCrowdsourcingManager() override;
   PersonalDataManager* GetPersonalDataManager() override;
   AutocompleteHistoryManager* GetAutocompleteHistoryManager() override;
   CreditCardCvcAuthenticator* GetCvcAuthenticator() override;
@@ -62,7 +67,8 @@ class WebViewAutofillClientIOS : public AutofillClient {
   syncer::SyncService* GetSyncService() override;
   signin::IdentityManager* GetIdentityManager() override;
   FormDataImporter* GetFormDataImporter() override;
-  payments::PaymentsClient* GetPaymentsClient() override;
+  payments::PaymentsAutofillClient* GetPaymentsAutofillClient() override;
+  payments::PaymentsNetworkInterface* GetPaymentsNetworkInterface() override;
   StrikeDatabase* GetStrikeDatabase() override;
   ukm::UkmRecorder* GetUkmRecorder() override;
   ukm::SourceId GetUkmSourceId() override;
@@ -139,13 +145,16 @@ class WebViewAutofillClientIOS : public AutofillClient {
 
  private:
   PrefService* pref_service_;
-  std::unique_ptr<AutofillDownloadManager> download_manager_;
+  std::unique_ptr<AutofillCrowdsourcingManager> crowdsourcing_manager_;
   PersonalDataManager* personal_data_manager_;
   AutocompleteHistoryManager* autocomplete_history_manager_;
   web::WebState* web_state_;
   __weak id<CWVAutofillClientIOSBridge> bridge_;
   signin::IdentityManager* identity_manager_;
-  std::unique_ptr<payments::PaymentsClient> payments_client_;
+  std::unique_ptr<payments::IOSWebViewPaymentsAutofillClient>
+      payments_autofill_client_;
+  std::unique_ptr<payments::PaymentsNetworkInterface>
+      payments_network_interface_;
   std::unique_ptr<CreditCardCvcAuthenticator> cvc_authenticator_;
   std::unique_ptr<FormDataImporter> form_data_importer_;
   StrikeDatabase* strike_database_;

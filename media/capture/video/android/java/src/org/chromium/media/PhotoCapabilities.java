@@ -17,12 +17,18 @@ class PhotoCapabilities {
     public int mIntCapability[]; // int values, indexed by PhotoCapabilityInt
     public int mFillLightModeArray[]; // list of AndroidFillLightMode values
     public int mMeteringMode[]; // AndroidMeteringMode values, indexed
-                                // by MeteringModeType
+    // by MeteringModeType
     public int mMeteringModeArray[][]; // lists of AndroidMeteringMode values,
-                                       // indexed by MeteringModeType
 
-    PhotoCapabilities(boolean[] boolCapability, double[] doubleCapability, int[] intCapability,
-            int[] fillLightModeArray, int[] meteringMode, int[][] meteringModeArray) {
+    // indexed by MeteringModeType
+
+    PhotoCapabilities(
+            boolean[] boolCapability,
+            double[] doubleCapability,
+            int[] intCapability,
+            int[] fillLightModeArray,
+            int[] meteringMode,
+            int[][] meteringModeArray) {
         if (boolCapability.length != PhotoCapabilityBool.NUM_ENTRIES
                 || doubleCapability.length != PhotoCapabilityDouble.NUM_ENTRIES
                 || intCapability.length != PhotoCapabilityInt.NUM_ENTRIES
@@ -153,8 +159,13 @@ class PhotoCapabilities {
         }
 
         public PhotoCapabilities build() {
-            return new PhotoCapabilities(mBoolCapability, mDoubleCapability, mIntCapability,
-                    mFillLightModeArray, mMeteringMode, mMeteringModeArray);
+            return new PhotoCapabilities(
+                    mBoolCapability,
+                    mDoubleCapability,
+                    mIntCapability,
+                    mFillLightModeArray,
+                    mMeteringMode,
+                    mMeteringModeArray);
         }
     }
 }

@@ -17,11 +17,14 @@
 #include "ash/system/video_conference/video_conference_utils.h"
 #include "base/check_is_test.h"
 #include "base/check_op.h"
+#include "base/files/file_enumerator.h"
+#include "base/files/file_util.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/thread_pool.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -39,6 +42,20 @@ namespace {
 // - `BlurLevel` that specifies how much blur to apply
 // - `bool` that's 'true' if background blur is enabled, false otherwise
 using CameraHalBackgroundBlurState = std::pair<cros::mojom::BlurLevel, bool>;
+
+using BackgroundImageInfo = CameraEffectsController::BackgroundImageInfo;
+
+// Directory used for saving camera backgrounds.
+constexpr char kCameraBackgroundOriginalDir[] =
+    "custom-camera-backgrounds/original";
+
+constexpr unsigned int k3M = 3 * 1024 * 1024;
+
+// Max number of images kept as camera background.
+constexpr unsigned int kMaxNumberOfImageKeptOnDisk = 30;
+
+// Directory that can be accessed by the camera module.
+constexpr char kImageDirForCameraModule[] = "/run/camera/";
 
 // Returns 'true' if `pref_value` is an allowable value of
 // `CameraEffectsController::BackgroundBlurPrefValue`, 'false' otherwise.
@@ -137,10 +154,118 @@ CameraEffectsController::BackgroundBlurState MapBackgroundBlurPrefValueToState(
   return CameraEffectsController::BackgroundBlurState::kOff;
 }
 
+base::FilePath HashAsFileName(const std::string& jpeg_bytes) {
+  return base::FilePath(
+      base::StrCat({base::NumberToString(base::Hash(jpeg_bytes)), ".jpg"}));
+}
+
+// Writes `jpeg_bytes` to the `camera_background_img_dir`.
+// Returns basename if succeeds, empty path otherwise.
+base::FilePath WriteImageToBackgroundDir(
+    const base::FilePath& camera_background_img_dir,
+    std::string&& jpeg_bytes) {
+  const base::FilePath basename = HashAsFileName(jpeg_bytes);
+  const base::FilePath background_image_filepath =
+      camera_background_img_dir.Append(basename);
+
+  if (base::CreateDirectory(camera_background_img_dir) &&
+      base::WriteFile(background_image_filepath, jpeg_bytes)) {
+    return basename;
+  }
+
+  return base::FilePath();
+}
+
+// Copies image file from `background_image_filepath` to
+// `background_run_filepath`.
+bool CopyBackgroundImageFile(const base::FilePath& background_image_filepath,
+                             const base::FilePath& background_run_filepath) {
+  const base::FilePath background_run_dir = background_run_filepath.DirName();
+  const base::FilePath basename = background_run_filepath.BaseName();
+
+  if (base::CreateDirectory(background_run_dir) &&
+      base::CopyFile(background_image_filepath, background_run_filepath)) {
+    base::File::Info file_info;
+    base::GetFileInfo(background_image_filepath, &file_info);
+    base::TouchFile(background_image_filepath, base::Time::Now(),
+                    file_info.last_modified);
+
+    // Remove all other images in the background_run_dir`.
+    base::FileEnumerator enumerator(background_run_dir,
+                                    /*recursive=*/false,
+                                    base::FileEnumerator::FILES);
+    for (auto path = enumerator.Next(); !path.empty();
+         path = enumerator.Next()) {
+      if (enumerator.GetInfo().GetName() != basename) {
+        base::DeleteFile(path);
+      }
+    }
+
+    return true;
+  }
+  LOG(ERROR) << "Can't copy " << background_image_filepath << " to "
+             << background_run_filepath;
+
+  return false;
+}
+
+// Reads from the `camera_background_img_dir` for the BackgroundImageInfo of the
+// latest `number_of_images`.
+std::vector<BackgroundImageInfo> GetRecentlyUsedBackgroundImagesOnWorker(
+    const int number_of_images,
+    const base::FilePath& camera_background_img_dir) {
+  std::vector<BackgroundImageInfo> background_images_info;
+
+  // Loop through all files in `camera_background_img_dir`.
+  base::FileEnumerator enumerator(camera_background_img_dir,
+                                  /*recursive=*/false,
+                                  base::FileEnumerator::FILES);
+  for (auto path = enumerator.Next(); !path.empty(); path = enumerator.Next()) {
+    base::File::Info file_info;
+    base::GetFileInfo(path, &file_info);
+    background_images_info.push_back(
+        BackgroundImageInfo{file_info.creation_time, file_info.last_accessed,
+                            path.BaseName().value(), ""});
+  }
+
+  // Sorted by last_accessed.
+  std::sort(background_images_info.begin(), background_images_info.end(),
+            [](const BackgroundImageInfo& f1, const BackgroundImageInfo& f2) {
+              return f1.last_accessed > f2.last_accessed;
+            });
+
+  // Only keep the latest `kMaxNumberOfImageKeptOnDisk` images on disk.
+  if (background_images_info.size() > kMaxNumberOfImageKeptOnDisk) {
+    for (std::size_t i = kMaxNumberOfImageKeptOnDisk;
+         i < background_images_info.size(); i++) {
+      base::DeleteFile(
+          camera_background_img_dir.Append(background_images_info[i].basename));
+    }
+  }
+
+  background_images_info.resize(
+      std::min<int>(background_images_info.size(), number_of_images));
+
+  // Adds creation_time and jpeg_bytes for each image file.
+  for (auto& info : background_images_info) {
+    const auto filename = camera_background_img_dir.Append(info.basename);
+
+    // TODO(b/314186143): resize the image since we don't need the full size
+    // image here.
+    base::ReadFileToString(filename, &info.jpeg_bytes);
+  }
+
+  return background_images_info;
+}
+
 }  // namespace
 
 CameraEffectsController::CameraEffectsController()
-    : main_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {
+    : camera_background_run_dir_(kImageDirForCameraModule),
+      main_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
+      blocking_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+           base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})) {
   auto* session_controller = Shell::Get()->session_controller();
   DCHECK(session_controller);
   session_observation_.Observe(session_controller);
@@ -188,6 +313,113 @@ void CameraEffectsController::RegisterProfilePrefs(
   registry->RegisterBooleanPref(prefs::kBackgroundReplace, false);
 
   registry->RegisterBooleanPref(prefs::kPortraitRelighting, false);
+
+  registry->RegisterFilePathPref(prefs::kBackgroundImagePath, base::FilePath());
+}
+
+void CameraEffectsController::SetBackgroundImage(
+    const base::FilePath& relative_path) {
+  CHECK(!camera_background_img_dir_.empty())
+      << "SetBackgroundImage should not be called when "
+         "camera_background_img_dir_ is not set.";
+
+  cros::mojom::EffectsConfigPtr new_effects = current_effects_.Clone();
+
+  if (new_effects->replace_enabled &&
+      new_effects->background_filepath == relative_path) {
+    return;
+  }
+
+  new_effects->replace_enabled = true;
+  new_effects->background_filepath = relative_path;
+
+  SetCameraEffects(std::move(new_effects), /*is_initialization*/ false);
+}
+
+void CameraEffectsController::SetBackgroundImageFromContent(
+    std::string&& jpeg_bytes) {
+  CHECK(!camera_background_img_dir_.empty())
+      << "SetBackgroundImageFromContent should not be called when "
+         "camera_background_img_dir_ is not set.";
+
+  CHECK_LT(jpeg_bytes.size(), k3M)
+      << "Can't use an image that is larger than 30M as a background";
+
+  // Write images to disk;
+  blocking_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&WriteImageToBackgroundDir, camera_background_img_dir_,
+                     std::move(jpeg_bytes)),
+      base::BindOnce(
+          [](base::OnceCallback<void(const base::FilePath&)>
+                 callback_on_success,
+             const base::FilePath& basename) {
+            if (basename.empty()) {
+              LOG(ERROR) << "Failed to write the image file: " << basename;
+
+            } else {
+              std::move(callback_on_success).Run(basename);
+            }
+          },
+          base::BindOnce(&CameraEffectsController::SetBackgroundImage,
+                         weak_factory_.GetWeakPtr())));
+}
+
+void CameraEffectsController::RemoveBackgroundImage(
+    const base::FilePath& basename) {
+  CHECK(!camera_background_img_dir_.empty())
+      << "RemoveBackgroundImage should not be called when "
+         "camera_background_img_dir_ is not set.";
+
+  // If the file to remove is current camera background, then reset the camera
+  // background effects.
+  if (basename == current_effects_->background_filepath) {
+    cros::mojom::EffectsConfigPtr new_effects = GetCameraEffects();
+    new_effects->replace_enabled = false;
+    new_effects->background_filepath.reset();
+
+    SetCameraEffects(std::move(new_effects), /*is_initialization*/ false);
+  }
+
+  // Remove file.
+  blocking_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&base::DeleteFile,
+                     camera_background_img_dir_.Append(basename)),
+      base::BindOnce(
+          [](const base::FilePath& path, bool success) {
+            if (!success) {
+              LOG(ERROR) << "Failed to delete the file: " << path;
+            }
+          },
+          basename));
+}
+
+void CameraEffectsController::GetRecentlyUsedBackgroundImages(
+    const int number_of_images,
+    base::OnceCallback<void(const std::vector<BackgroundImageInfo>&)>
+        callback) {
+  CHECK(!camera_background_img_dir_.empty())
+      << "GetRecentlyUsedBackgroundImages should not be called when "
+         "camera_background_img_dir_ is not set.";
+
+  blocking_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&GetRecentlyUsedBackgroundImagesOnWorker, number_of_images,
+                     camera_background_img_dir_),
+      std::move(callback));
+}
+
+// Set the `camera_background_img_dir_` when the `account_id` becomes active.
+void CameraEffectsController::OnActiveUserSessionChanged(
+    const AccountId& account_id) {
+  const base::FilePath profile_path =
+      Shell::Get()->session_controller()->GetProfilePath(account_id);
+  CHECK(!profile_path.empty())
+      << "Profile path should not be empty in OnActiveUserSessionChanged.";
+
+  camera_background_img_dir_ =
+      profile_path.Append(kCameraBackgroundOriginalDir);
 }
 
 void CameraEffectsController::OnActiveUserPrefServiceChanged(
@@ -203,7 +435,7 @@ void CameraEffectsController::OnActiveUserPrefServiceChanged(
 
   // If the camera has started, it won't get the previous setting so call it
   // here too. If the camera service isn't ready it this call will be ignored.
-  SetCameraEffects(GetEffectsConfigFromPref());
+  SetCameraEffects(GetEffectsConfigFromPref(), /*is_initialization*/ true);
 
   // If any effects have controls the user can access, this will create the
   // effects UI and register `CameraEffectsController`'s `VcEffectsDelegate`
@@ -211,7 +443,7 @@ void CameraEffectsController::OnActiveUserPrefServiceChanged(
   InitializeEffectControls();
 }
 
-absl::optional<int> CameraEffectsController::GetEffectState(
+std::optional<int> CameraEffectsController::GetEffectState(
     VcEffectId effect_id) {
   switch (effect_id) {
     case VcEffectId::kBackgroundBlur:
@@ -226,13 +458,13 @@ absl::optional<int> CameraEffectsController::GetEffectState(
     case VcEffectId::kLiveCaption:
     case VcEffectId::kTestEffect:
       NOTREACHED();
-      return absl::nullopt;
+      return std::nullopt;
   }
 }
 
 void CameraEffectsController::OnEffectControlActivated(
     VcEffectId effect_id,
-    absl::optional<int> state) {
+    std::optional<int> state) {
   cros::mojom::EffectsConfigPtr new_effects = current_effects_.Clone();
 
   switch (effect_id) {
@@ -252,6 +484,7 @@ void CameraEffectsController::OnEffectControlActivated(
         // background replace should be disabled since background blur is
         // enabled.
         new_effects->replace_enabled = false;
+        new_effects->background_filepath.reset();
       }
       break;
     }
@@ -271,7 +504,7 @@ void CameraEffectsController::OnEffectControlActivated(
       return;
   }
 
-  SetCameraEffects(std::move(new_effects));
+  SetCameraEffects(std::move(new_effects), /*is_initialization*/ false);
 }
 
 void CameraEffectsController::RecordMetricsForSetValueEffectOnClick(
@@ -344,7 +577,7 @@ void CameraEffectsController::OnAutozoomControlEnabledChanged(bool enabled) {
       base::BindRepeating(&CameraEffectsController::OnEffectControlActivated,
                           base::Unretained(this),
                           /*effect_id=*/VcEffectId::kCameraFraming,
-                          /*value=*/absl::nullopt));
+                          /*value=*/std::nullopt));
   effect->AddState(std::move(effect_state));
 
   effect->set_dependency_flags(VcHostedEffect::ResourceDependency::kCamera);
@@ -366,7 +599,8 @@ CameraEffectsController::GetSegmentationModelType() {
 }
 
 void CameraEffectsController::SetCameraEffects(
-    cros::mojom::EffectsConfigPtr config) {
+    cros::mojom::EffectsConfigPtr config,
+    bool is_initialization) {
   // For backwards compatibility, will be removed after mojom is updated.
   if (config->blur_enabled) {
     config->effect = cros::mojom::CameraEffect::kBackgroundBlur;
@@ -387,13 +621,45 @@ void CameraEffectsController::SetCameraEffects(
     config->light_intensity = intensity;
   }
 
-  // Directly calls the callback for testing case.
-  if (in_testing_mode_) {
-    CHECK_IS_TEST();
-    OnCameraEffectChanged(std::move(config));
+  if (config->replace_enabled &&
+      config->background_filepath != current_effects_->background_filepath) {
+    const base::FilePath background_image_filepath =
+        camera_background_img_dir_.Append(config->background_filepath.value());
+    const base::FilePath background_run_filepath =
+        camera_background_run_dir_.Append(config->background_filepath.value());
+
+    // Copy image file on the worker thread first.
+    blocking_task_runner_->PostTaskAndReplyWithResult(
+        FROM_HERE,
+        base::BindOnce(&CopyBackgroundImageFile, background_image_filepath,
+                       background_run_filepath),
+        base::BindOnce(
+            &CameraEffectsController::OnCopyBackgroundImageFileComplete,
+            weak_factory_.GetWeakPtr(), std::move(config), is_initialization));
   } else {
-    media::CameraHalDispatcherImpl::GetInstance()->SetCameraEffects(
-        std::move(config));
+    SetCameraEffectsInCameraHalDispatcherImpl(std::move(config));
+  }
+}
+
+void CameraEffectsController::OnCopyBackgroundImageFileComplete(
+    cros::mojom::EffectsConfigPtr new_config,
+    bool is_initialization,
+    bool copy_succeeded) {
+  // If copy_succeeded, continue to apply all effects.
+  if (copy_succeeded) {
+    new_config->blur_enabled = false;
+    SetCameraEffectsInCameraHalDispatcherImpl(std::move(new_config));
+    return;
+  }
+
+  // If copy_succeeded is false, but is_initialization is true, then apply the
+  // rest of the effefcts. We only want to continue when it is initialization,
+  // because we don't want to randomly turn off the user's background effects
+  // due to the failure of copying the new image file.
+  if (is_initialization) {
+    new_config->replace_enabled = false;
+    new_config->background_filepath.reset();
+    SetCameraEffectsInCameraHalDispatcherImpl(std::move(new_config));
   }
 }
 
@@ -420,6 +686,10 @@ CameraEffectsController::GetEffectsConfigFromPref() {
 
   effects->replace_enabled =
       pref_change_registrar_->prefs()->GetBoolean(prefs::kBackgroundReplace);
+  if (effects->replace_enabled) {
+    effects->background_filepath = pref_change_registrar_->prefs()->GetFilePath(
+        prefs::kBackgroundImagePath);
+  }
   effects->relight_enabled =
       pref_change_registrar_->prefs()->GetBoolean(prefs::kPortraitRelighting);
   return effects;
@@ -442,6 +712,13 @@ void CameraEffectsController::SetEffectsConfigToPref(
   if (new_config->replace_enabled != current_effects_->replace_enabled) {
     pref_change_registrar_->prefs()->SetBoolean(prefs::kBackgroundReplace,
                                                 new_config->replace_enabled);
+  }
+
+  if (new_config->background_filepath !=
+      current_effects_->background_filepath) {
+    pref_change_registrar_->prefs()->SetFilePath(
+        prefs::kBackgroundImagePath,
+        new_config->background_filepath.value_or(base::FilePath()));
   }
 
   if (new_config->relight_enabled != current_effects_->relight_enabled) {
@@ -522,7 +799,7 @@ void CameraEffectsController::InitializeEffectControls() {
         base::BindRepeating(&CameraEffectsController::OnEffectControlActivated,
                             base::Unretained(this),
                             /*effect_id=*/VcEffectId::kPortraitRelighting,
-                            /*value=*/absl::nullopt));
+                            /*value=*/std::nullopt));
     effect->AddState(std::move(effect_state));
 
     effect->set_dependency_flags(VcHostedEffect::ResourceDependency::kCamera);
@@ -553,6 +830,18 @@ void CameraEffectsController::AddBackgroundBlurStateToEffect(
                           /*effect_id=*/VcEffectId::kBackgroundBlur,
                           /*value=*/state_value),
       /*state=*/state_value));
+}
+
+void CameraEffectsController::SetCameraEffectsInCameraHalDispatcherImpl(
+    cros::mojom::EffectsConfigPtr config) {
+  // Directly calls the callback for testing case.
+  if (in_testing_mode_) {
+    CHECK_IS_TEST();
+    OnCameraEffectChanged(std::move(config));
+  } else {
+    media::CameraHalDispatcherImpl::GetInstance()->SetCameraEffects(
+        std::move(config));
+  }
 }
 
 }  // namespace ash

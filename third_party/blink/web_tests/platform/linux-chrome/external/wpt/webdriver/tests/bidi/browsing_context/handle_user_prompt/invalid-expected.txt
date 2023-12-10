@@ -1,19 +1,4 @@
 This is a wdspec test.
-[PASS] test_params_context_invalid_type[None]
-[PASS] test_params_context_invalid_type[False]
-[PASS] test_params_context_invalid_type[42]
-[PASS] test_params_context_invalid_type[value3]
-[PASS] test_params_context_invalid_type[value4]
-[PASS] test_params_context_invalid_value[]
-[PASS] test_params_context_invalid_value[somestring]
-[PASS] test_params_accept_invalid_type[foo]
-[PASS] test_params_accept_invalid_type[42]
-[PASS] test_params_accept_invalid_type[value2]
-[PASS] test_params_accept_invalid_type[value3]
-[PASS] test_params_user_text_invalid_type[False]
-[PASS] test_params_user_text_invalid_type[42]
-[PASS] test_params_user_text_invalid_type[value2]
-[PASS] test_params_user_text_invalid_type[value3]
 [FAIL] test_no_alert
   webdriver.bidi.error.UnknownErrorException: unknown error (No dialog is showing)
 Harness: the test ran to completion.

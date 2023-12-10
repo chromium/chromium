@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="pl">
 <translation id="1075622780330595106">Karty, które ostatnio nie były używane: <ph name="NUMBER_OF_TABS" />. Zamknąć je?</translation>
+<translation id="1155815720264022949">Czy chcesz zamknąć stare karty?</translation>
 <translation id="1215127405478249895">Przeglądaj karty</translation>
 <translation id="125153950246128346">Kliknij, by zobaczyć inną kartę</translation>
 <translation id="1499635324672558517">Zamknąć wszystkie karty incognito?</translation>
@@ -46,9 +47,11 @@
 <translation id="5073204694187207510">Ukryj siatkę pełnego ekranu</translation>
 <translation id="5076161749301278626">Wyświetlić opinie o sklepie?</translation>
 <translation id="5082793167783849073">Możesz szybko porównać strony, tworząc ich grupę. Aby to zrobić, naciśnij i przytrzymaj link.</translation>
+<translation id="5303274951032363933">{TABS_COUNT,plural, =1{Masz <ph name="TABS_COUNT_ONE" /> ostatnio nieużywaną kartę}few{Masz <ph name="TABS_COUNT_MANY" /> ostatnio nieużywane karty}many{Masz <ph name="TABS_COUNT_MANY" /> ostatnio nieużywanych kart}other{Masz <ph name="TABS_COUNT_MANY" /> ostatnio nieużywanej karty}}</translation>
 <translation id="5339733443032484186">Ostatnia karta</translation>
 <translation id="5490235265819901748">Grupa kart została rozwinięta</translation>
 <translation id="5494920125229734069">Wybierz wszystko</translation>
+<translation id="5545379293264651575">Zamknij bez sprawdzania</translation>
 <translation id="5556417849629758491">Wyświetl informacje o sklepie, opcja dostępna u góry ekranu</translation>
 <translation id="5558362125926932819">Zamknij grupę kart z <ph name="NUMBER_OF_TABS" /> kartami</translation>
 <translation id="5580090775658607195">Pogrupowane karty: <ph name="TAB_COUNT" /></translation>
@@ -85,7 +88,6 @@
 <translation id="7885132941432959125">Przenieś kartę w prawo</translation>
 <translation id="7966321538264951561">Zamknij sugestie.</translation>
 <translation id="8029301326595421733">Informacje o tym sklepie zostały otwarte na pełną wysokość</translation>
-<translation id="814503310257431685">Wyświetl wszystko</translation>
 <translation id="8205266828577616993">Przesuń kartę w górę</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Zamknij <ph name="TABS_COUNT_ONE" /> wybraną kartę}few{Zamknij <ph name="TABS_COUNT_MANY" /> wybrane karty}many{Zamknij <ph name="TABS_COUNT_MANY" /> wybranych kart}other{Zamknij <ph name="TABS_COUNT_MANY" /> wybranej karty}}</translation>
 <translation id="8398929769197326728">Nowy folder – <ph name="CURRENT_TIMESTAMP_MS" /></translation>

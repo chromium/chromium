@@ -168,30 +168,30 @@ class APP_LIST_MODEL_EXPORT SearchResult {
            metadata_->system_info_answer_card_data->extra_details.has_value();
   }
 
-  absl::optional<std::u16string> system_info_extra_details() const {
+  std::optional<std::u16string> system_info_extra_details() const {
     return has_extra_system_data_details()
                ? metadata_->system_info_answer_card_data->extra_details
-               : absl::nullopt;
+               : std::nullopt;
   }
 
-  absl::optional<double> bar_chart_value() const {
+  std::optional<double> bar_chart_value() const {
     return is_system_info_card_bar_chart()
                ? metadata_->system_info_answer_card_data->bar_chart_percentage
-               : absl::nullopt;
+               : std::nullopt;
   }
 
-  absl::optional<double> upper_limit_for_bar_chart() const {
+  std::optional<double> upper_limit_for_bar_chart() const {
     return is_system_info_card_bar_chart()
                ? metadata_->system_info_answer_card_data
                      ->upper_warning_limit_bar_chart
-               : absl::nullopt;
+               : std::nullopt;
   }
 
-  absl::optional<double> lower_limit_for_bar_chart() const {
+  std::optional<double> lower_limit_for_bar_chart() const {
     return is_system_info_card_bar_chart()
                ? metadata_->system_info_answer_card_data
                      ->lower_warning_limit_bar_chart
-               : absl::nullopt;
+               : std::nullopt;
   }
 
   bool skip_update_animation() const {

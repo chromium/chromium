@@ -33,7 +33,7 @@ class ScrollableShelfViewPixelRTLTest
       public testing::WithParamInterface<bool /*is_rtl=*/> {
  public:
   // ScrollableShelfViewPixelRTLTestBase:
-  absl::optional<pixel_test::InitParams> CreatePixelTestInitParams()
+  std::optional<pixel_test::InitParams> CreatePixelTestInitParams()
       const override {
     pixel_test::InitParams init_params;
     init_params.under_rtl = GetParam();
@@ -47,7 +47,7 @@ INSTANTIATE_TEST_SUITE_P(RTL, ScrollableShelfViewPixelRTLTest, testing::Bool());
 TEST_P(ScrollableShelfViewPixelRTLTest, Basics) {
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "overflow",
-      /*revision_number=*/5, GetPrimaryShelf()->GetWindow()));
+      /*revision_number=*/7, GetPrimaryShelf()->GetWindow()));
 
   ASSERT_TRUE(scrollable_shelf_view_->right_arrow());
   const gfx::Point right_arrow_center =
@@ -58,7 +58,7 @@ TEST_P(ScrollableShelfViewPixelRTLTest, Basics) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "overflow_end",
-      /*revision_number=*/5, GetPrimaryShelf()->GetWindow()));
+      /*revision_number=*/7, GetPrimaryShelf()->GetWindow()));
 }
 
 TEST_P(ScrollableShelfViewPixelRTLTest, LeftRightShelfAlignment) {
@@ -78,7 +78,7 @@ class ScrollableShelfViewWithGuestModePixelTest
       public testing::WithParamInterface<bool /*use_guest_mode=*/> {
  public:
   // ScrollableShelfTestBase:
-  absl::optional<pixel_test::InitParams> CreatePixelTestInitParams()
+  std::optional<pixel_test::InitParams> CreatePixelTestInitParams()
       const override {
     return pixel_test::InitParams();
   }
@@ -116,7 +116,7 @@ TEST_P(ScrollableShelfViewWithGuestModePixelTest, VerifyShelfContextMenu) {
   // Verify the shelf context menu and the shelf.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "shelf_context_menu",
-      /*revision_number=*/13,
+      /*revision_number=*/17,
       GetPrimaryShelf()
           ->shelf_widget()
           ->shelf_view_for_testing()

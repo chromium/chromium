@@ -21,37 +21,33 @@ import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modaldialog.ModalDialogProperties.Controller;
 import org.chromium.ui.modelutil.PropertyModel;
 
-/**
- * Coordinator to show the modal account picker dialog.
- */
+/** Coordinator to show the modal account picker dialog. */
 public class AccountPickerDialogCoordinator {
     private final RecyclerView mAccountPickerView;
     private final AccountPickerCoordinator mCoordinator;
     private final ModalDialogManager mDialogManager;
     private final PropertyModel mModel;
 
-    /**
-     * Constructs the coordinator and shows the account picker dialog.
-     */
+    /** Constructs the coordinator and shows the account picker dialog. */
     @MainThread
     public AccountPickerDialogCoordinator(
             Context context, Listener listener, ModalDialogManager modalDialogManager) {
         mAccountPickerView = inflateAccountPickerView(context);
         mCoordinator = new AccountPickerCoordinator(mAccountPickerView, listener);
         mDialogManager = modalDialogManager;
-        mModel = new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
-                         .with(ModalDialogProperties.TITLE,
-                                 context.getString(R.string.signin_account_picker_dialog_title))
-                         .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, true)
-                         .with(ModalDialogProperties.CUSTOM_VIEW, mAccountPickerView)
-                         .with(ModalDialogProperties.CONTROLLER, createController())
-                         .build();
+        mModel =
+                new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
+                        .with(
+                                ModalDialogProperties.TITLE,
+                                context.getString(R.string.signin_account_picker_dialog_title))
+                        .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, true)
+                        .with(ModalDialogProperties.CUSTOM_VIEW, mAccountPickerView)
+                        .with(ModalDialogProperties.CONTROLLER, createController())
+                        .build();
         mDialogManager.showDialog(mModel, ModalDialogType.APP);
     }
 
-    /**
-     * Dismisses the account picker dialog.
-     */
+    /** Dismisses the account picker dialog. */
     @MainThread
     public void dismissDialog() {
         mDialogManager.dismissDialog(mModel, DialogDismissalCause.ACTION_ON_CONTENT);

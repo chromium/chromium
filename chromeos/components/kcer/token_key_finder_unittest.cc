@@ -20,7 +20,7 @@ class KcerTokenKeyFinderTest : public ::testing::Test {
 // Test that TokenKeyFinder can collect one "key found" result which is returned
 // synchronously.
 TEST_F(KcerTokenKeyFinderTest, OneKeyFoundResultSync) {
-  base::test::TestFuture<base::expected<absl::optional<Token>, Error>>
+  base::test::TestFuture<base::expected<std::optional<Token>, Error>>
       result_waiter;
 
   auto finder = TokenKeyFinder::Create(
@@ -42,7 +42,7 @@ TEST_F(KcerTokenKeyFinderTest, OneKeyFoundResultSync) {
 // Test that TokenKeyFinder can collect one "key found" result which is returned
 // asynchronously.
 TEST_F(KcerTokenKeyFinderTest, OneKeyFoundResultAsync) {
-  base::test::TestFuture<base::expected<absl::optional<Token>, Error>>
+  base::test::TestFuture<base::expected<std::optional<Token>, Error>>
       result_waiter;
 
   auto finder = TokenKeyFinder::Create(
@@ -68,7 +68,7 @@ TEST_F(KcerTokenKeyFinderTest, OneKeyFoundResultAsync) {
 
 // Test that TokenKeyFinder can collect one "key not found" result.
 TEST_F(KcerTokenKeyFinderTest, OneKeyNotFoundResult) {
-  base::test::TestFuture<base::expected<absl::optional<Token>, Error>>
+  base::test::TestFuture<base::expected<std::optional<Token>, Error>>
       result_waiter;
 
   auto finder = TokenKeyFinder::Create(
@@ -92,7 +92,7 @@ TEST_F(KcerTokenKeyFinderTest, OneKeyNotFoundResult) {
 
 // Test that TokenKeyFinder can collect one failure result.
 TEST_F(KcerTokenKeyFinderTest, OneFailureResult) {
-  base::test::TestFuture<base::expected<absl::optional<Token>, Error>>
+  base::test::TestFuture<base::expected<std::optional<Token>, Error>>
       result_waiter;
 
   auto finder = TokenKeyFinder::Create(
@@ -119,7 +119,7 @@ TEST_F(KcerTokenKeyFinderTest, OneFailureResult) {
 // both tokens (not supposed to happen, but still a theoretically possible edge
 // case).
 TEST_F(KcerTokenKeyFinderTest, TwoKeysFound) {
-  base::test::TestFuture<base::expected<absl::optional<Token>, Error>>
+  base::test::TestFuture<base::expected<std::optional<Token>, Error>>
       result_waiter;
 
   auto finder = TokenKeyFinder::Create(
@@ -149,7 +149,7 @@ TEST_F(KcerTokenKeyFinderTest, TwoKeysFound) {
 // Test that TokenKeyFinder indicates that the key was not found when it was not
 // found on both tokens.
 TEST_F(KcerTokenKeyFinderTest, TwoTokensKeyNotFound) {
-  base::test::TestFuture<base::expected<absl::optional<Token>, Error>>
+  base::test::TestFuture<base::expected<std::optional<Token>, Error>>
       result_waiter;
 
   auto finder = TokenKeyFinder::Create(
@@ -179,7 +179,7 @@ TEST_F(KcerTokenKeyFinderTest, TwoTokensKeyNotFound) {
 // Test that TokenKeyFinder indicates that the key was found when it was found
 // on one of the tokens.
 TEST_F(KcerTokenKeyFinderTest, TwoTokensOneKeyFound) {
-  base::test::TestFuture<base::expected<absl::optional<Token>, Error>>
+  base::test::TestFuture<base::expected<std::optional<Token>, Error>>
       result_waiter;
 
   auto finder = TokenKeyFinder::Create(
@@ -211,7 +211,7 @@ TEST_F(KcerTokenKeyFinderTest, TwoTokensOneKeyFound) {
 // Test that TokenKeyFinder returns an error when the key is not found on one
 // token and another one returned an error.
 TEST_F(KcerTokenKeyFinderTest, OneErrorOneNotFound) {
-  base::test::TestFuture<base::expected<absl::optional<Token>, Error>>
+  base::test::TestFuture<base::expected<std::optional<Token>, Error>>
       result_waiter;
 
   auto finder = TokenKeyFinder::Create(

@@ -12,9 +12,11 @@
 namespace blink {
 
 class ExecutionContext;
-class Observer;
 class ScriptState;
+class Subscriber;
+class SubscribeOptions;
 class V8SubscribeCallback;
+class V8UnionObserverOrObserverCallback;
 
 // Implementation of the DOM `Observable` API. See
 // https://github.com/WICG/observable and
@@ -24,21 +26,43 @@ class CORE_EXPORT Observable final : public ScriptWrappable,
   DEFINE_WRAPPERTYPEINFO();
 
  public:
+  // This delegate is an internal (non-web-exposed) version of
+  // `V8SubscribeCallback` for `Observer`s that are created natively by the web
+  // platform. `OnSubscribe()` owns the passed-in `Subscriber` so that the
+  // delegate, like an actual JS `V8SubscribeCallback`, can forward events to
+  // the underlying observable subscriber.
+  class SubscribeDelegate : public GarbageCollected<SubscribeDelegate> {
+   public:
+    virtual ~SubscribeDelegate() = default;
+    virtual void OnSubscribe(Subscriber*) = 0;
+    virtual void Trace(Visitor* visitor) const {}
+  };
+
   // Called by v8 bindings.
   static Observable* Create(ScriptState*, V8SubscribeCallback*);
 
   Observable(ExecutionContext*, V8SubscribeCallback*);
+  Observable(ExecutionContext*, SubscribeDelegate*);
 
   // API methods:
-  void subscribe(ScriptState*, Observer*);
+  void subscribe(ScriptState*,
+                 V8UnionObserverOrObserverCallback*,
+                 SubscribeOptions*);
 
   void Trace(Visitor*) const override;
 
  private:
-  // This gets called when the `subscribe` method is invoked. When this callback
-  // is run, errors are caught and "reported":
+  // Exactly one of `subscribe_callback_` and `subscribe_delegate_` must be
+  // non-null. `subscribe_callback_` is non-null when `this` is created from
+  // script, and the subscribe callback is a JS-provided callback function,
+  // whereas `subscribe_delegate_` is used for `Observable`s created internally
+  // in C++, where the subscription steps are native steps.
+  //
+  // `subscribe_callback_` gets called when the `subscribe` method is invoked.
+  // When run, is run, errors are caught and "reported":
   // https://html.spec.whatwg.org/C#report-the-exception.
   const Member<V8SubscribeCallback> subscribe_callback_;
+  const Member<SubscribeDelegate> subscribe_delegate_;
 };
 
 }  // namespace blink

@@ -80,6 +80,11 @@ class ScopedUmaskSetter {
 };
 #endif  // BUILDFLAG(IS_POSIX)
 
+bool IsOpenedInCorrectJournalMode(Database* db, bool is_wal) {
+  std::string expected_mode = is_wal ? "wal" : "truncate";
+  return ExecuteWithResult(db, "PRAGMA journal_mode") == expected_mode;
+}
+
 }  // namespace
 
 // We use the parameter to run all tests with WAL mode on and off.
@@ -1915,6 +1920,71 @@ TEST_P(SQLDatabaseTest, TriggersDisabledByDefault) {
   EXPECT_TRUE(db_->Execute("DROP TRIGGER IF EXISTS trigger"));
 }
 
+// This test ensures that a database can be open/create with a journal mode and
+// can be re-open later with a different journal mode.
+TEST_P(SQLDatabaseTest, ReOpenWithDifferentJournalMode) {
+  const bool is_wal = IsWALEnabled();
+  const base::FilePath journal_path = Database::JournalPath(db_path_);
+  const base::FilePath wal_path = Database::WriteAheadLogPath(db_path_);
+
+  ASSERT_TRUE(db_->Execute("CREATE TABLE foo (id INTEGER PRIMARY KEY, value)"));
+  ASSERT_TRUE(db_->Execute("INSERT INTO foo (value) VALUES (12)"));
+
+  // Last insert row ID should be valid.
+  int64_t row = db_->GetLastInsertRowId();
+  EXPECT_LT(0, row);
+
+  // It should be the primary key of the row we just inserted.
+  {
+    Statement s(db_->GetUniqueStatement("SELECT value FROM foo WHERE id=?"));
+    s.BindInt64(0, row);
+    ASSERT_TRUE(s.Step());
+    EXPECT_EQ(12, s.ColumnInt(0));
+  }
+
+  // Ensure appropriate journal mode and the journal file exists.
+  EXPECT_TRUE(IsOpenedInCorrectJournalMode(db_.get(), is_wal));
+  EXPECT_EQ(base::PathExists(wal_path), is_wal);
+
+  db_->Close();
+  if (is_wal) {
+    // The WAL journal file is removed on database close. Database that enable
+    // WAL mode can use a different journal mode on a subsequent database open.
+    EXPECT_FALSE(base::PathExists(wal_path));
+  } else {
+    // The Rollback journal should have a zero size when pending operations
+    // are completed.
+    int64_t journal_size = 0;
+    base::GetFileSize(journal_path, &journal_size);
+    EXPECT_EQ(journal_size, 0);
+  }
+
+  // Re-open the database with a different mode (Rollback vs WAL).
+  DatabaseOptions options = GetDBOptions();
+  options.wal_mode = !is_wal;
+#if BUILDFLAG(IS_FUCHSIA)
+  // Exclusive mode needs to be enabled to enter WAL mode on Fuchsia.
+  if (options.wal_mode) {
+    options.exclusive_locking = true;
+  }
+#endif  // BUILDFLAG(IS_FUCHSIA)
+
+  db_ = std::make_unique<Database>(options);
+  ASSERT_TRUE(db_->Open(db_path_));
+
+  // The value for the last inserted row should be valid.
+  {
+    Statement s(db_->GetUniqueStatement("SELECT value FROM foo WHERE id=?"));
+    s.BindInt64(0, row);
+    ASSERT_TRUE(s.Step());
+    EXPECT_EQ(12, s.ColumnInt(0));
+  }
+
+  // Ensure appropriate journal file exists.
+  EXPECT_TRUE(IsOpenedInCorrectJournalMode(db_.get(), options.wal_mode));
+  EXPECT_EQ(base::PathExists(wal_path), options.wal_mode);
+}
+
 #if BUILDFLAG(IS_WIN)
 
 class SQLDatabaseTestExclusiveFileLockMode
@@ -2022,8 +2092,7 @@ TEST_P(SQLDatabaseTest, LockingModeNormal) {
 }
 
 TEST_P(SQLDatabaseTest, OpenedInCorrectMode) {
-  std::string expected_mode = IsWALEnabled() ? "wal" : "truncate";
-  EXPECT_EQ(ExecuteWithResult(db_.get(), "PRAGMA journal_mode"), expected_mode);
+  EXPECT_TRUE(IsOpenedInCorrectJournalMode(db_.get(), IsWALEnabled()));
 }
 
 TEST_P(SQLDatabaseTest, CheckpointDatabase) {

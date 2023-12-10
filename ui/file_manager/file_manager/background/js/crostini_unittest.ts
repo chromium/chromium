@@ -7,9 +7,9 @@ import {assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.
 
 import {installMockChrome} from '../../common/js/mock_chrome.js';
 import {MockDirectoryEntry, MockEntry, MockFileSystem} from '../../common/js/mock_entry.js';
-import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
+import {RootType} from '../../common/js/volume_manager_types.js';
 import {EntryLocation} from '../../externs/entry_location.js';
-import {VolumeManager} from '../../externs/volume_manager.js';
+import type {VolumeManager} from '../../externs/volume_manager.js';
 
 import {CrostiniImpl} from './crostini.js';
 
@@ -20,7 +20,7 @@ import {CrostiniImpl} from './crostini.js';
   recordSmallCount: function() {},
 };
 
-let volumeManagerRootType: VolumeManagerCommon.RootType;
+let volumeManagerRootType: RootType;
 
 let volumeManager: VolumeManager;
 
@@ -48,7 +48,7 @@ export function setUp() {
   } as VolumeManager;
 
   // Reset initial root type.
-  volumeManagerRootType = 'testroot';
+  volumeManagerRootType = 'testroot' as RootType;
 
   // Create and initialize Crostini.
   crostini = new CrostiniImpl();
@@ -185,20 +185,23 @@ export function testCanSharePath() {
   // enforces allowed write paths.
 
   const allowed = [
-    'downloads',
-    'removable',
-    'android_files',
-    'drive',
-    'shared_drives_grand_root',
-    'team_drive',
-    'drive_shared_with_me',
+    RootType.DOWNLOADS,
+    RootType.REMOVABLE,
+    RootType.ANDROID_FILES,
+    RootType.DRIVE,
+    RootType.SHARED_DRIVES_GRAND_ROOT,
+    RootType.SHARED_DRIVE,
+    RootType.DRIVE_SHARED_WITH_ME,
   ];
   for (const type of allowed) {
     volumeManagerRootType = type;
     // TODO(crbug.com/958840): Sharing Play files root is disallowed until
     // we can ensure it will not also share Downloads.
     // We don't share 'Shared with me' root since it is fake.
-    if (['android_files', 'drive_shared_with_me'].includes(type)) {
+    if ([
+          RootType.ANDROID_FILES,
+          RootType.DRIVE_SHARED_WITH_ME,
+        ].includes(type)) {
       assertFalse(crostini.canSharePath('vm', root, true));
       assertFalse(crostini.canSharePath('vm', root, false));
     } else {
@@ -222,19 +225,19 @@ export function testCanSharePath() {
       MockDirectoryEntry.create(mockFileSystem, '/Computers/My');
   const computerFolder =
       MockDirectoryEntry.create(mockFileSystem, '/Computers/My/foo');
-  volumeManagerRootType = VolumeManagerCommon.RootType.COMPUTERS_GRAND_ROOT;
+  volumeManagerRootType = RootType.COMPUTERS_GRAND_ROOT;
   assertFalse(crostini.canSharePath('vm', root, false));
   assertFalse(crostini.canSharePath('vm', grandRootFolder, false));
   assertFalse(crostini.canSharePath('vm', computerRootFolder, false));
   assertFalse(crostini.canSharePath('vm', computerFolder, false));
-  volumeManagerRootType = VolumeManagerCommon.RootType.COMPUTER;
+  volumeManagerRootType = RootType.COMPUTER;
   assertFalse(crostini.canSharePath('vm', root, false));
   assertFalse(crostini.canSharePath('vm', grandRootFolder, false));
   assertFalse(crostini.canSharePath('vm', computerRootFolder, false));
   assertTrue(crostini.canSharePath('vm', computerFolder, false));
 
   // Sharing LinuxFiles is allowed for all VMs except termina.
-  volumeManagerRootType = VolumeManagerCommon.RootType.CROSTINI;
+  volumeManagerRootType = RootType.CROSTINI;
   assertTrue(crostini.canSharePath('vm', root, false));
   assertFalse(crostini.canSharePath('termina', root, false));
 }

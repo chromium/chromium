@@ -118,12 +118,17 @@ void ProfileTokenPolicyWebSigninService::OnRegistrationComplete(
     return;
   }
 
+  // TODO(b/308475647): We need to get user_affiliation_ids from enrollment
+  // response. Note that token based profile enrollment currently doesn't return
+  // the field we need.
+
   policy_manager()->core()->client()->SetupRegistration(
       dm_token, client_id,
       /*user_affiliation_ids=*/std::vector<std::string>());
   DCHECK(policy_manager()->IsClientRegistered());
   FetchPolicyForSignedInUser(
       AccountId(), dm_token, client_id,
+      /*user_affiliation_ids=*/std::vector<std::string>(),
       profile_->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess(),
       base::BindOnce(&ProfileTokenPolicyWebSigninService::OnPolicyFetchComplete,

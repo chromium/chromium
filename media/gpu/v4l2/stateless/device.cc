@@ -13,8 +13,8 @@
 #endif
 
 #include <fcntl.h>
-#include <linux/media.h>
 #include <linux/videodev2.h>
+#include <sys/eventfd.h>
 #include <sys/ioctl.h>
 #include <sys/mman.h>
 
@@ -93,14 +93,38 @@ MemoryType V4L2ToMemoryType(unsigned int memory) {
 Buffer V4L2BufferToBuffer(const struct v4l2_buffer& v4l2_buffer) {
   const BufferType buffer_type = V4L2ToBufferType(v4l2_buffer.type);
   const MemoryType memory_type = V4L2ToMemoryType(v4l2_buffer.memory);
-  Buffer buffer(buffer_type, memory_type, v4l2_buffer.index,
-                v4l2_buffer.length);
+  Buffer buffer(buffer_type, memory_type, v4l2_buffer.index, v4l2_buffer.length,
+                v4l2_buffer.timestamp);
   for (uint32_t plane = 0; plane < buffer.PlaneCount(); ++plane) {
     buffer.SetupPlane(plane, v4l2_buffer.m.planes[plane].m.mem_offset,
                       v4l2_buffer.m.planes[plane].length);
   }
 
   return buffer;
+}
+
+void BufferToV4L2Buffer(struct v4l2_buffer* v4l2_buffer, const Buffer& buffer) {
+  v4l2_buffer->length = buffer.PlaneCount();
+  v4l2_buffer->type = BufferTypeToV4L2(buffer.GetBufferType());
+  v4l2_buffer->memory = MemoryTypeToV4L2(buffer.GetMemoryType());
+  v4l2_buffer->index = buffer.GetIndex();
+  v4l2_buffer->timestamp = buffer.GetTimeval();
+  for (uint32_t plane = 0; plane < buffer.PlaneCount(); ++plane) {
+    v4l2_buffer->m.planes[plane].length = buffer.PlaneLength(plane);
+    v4l2_buffer->m.planes[plane].bytesused = buffer.PlaneBytesUsed(plane);
+    v4l2_buffer->m.planes[plane].m.mem_offset = buffer.PlaneMemOffset(plane);
+  }
+}
+
+std::string BufferTypeString(const BufferType buffer_type) {
+  switch (buffer_type) {
+    case BufferType::kCompressedData:
+      return "compressed data";
+    case BufferType::kRawFrames:
+      return "raw frames";
+    case BufferType::kInvalid:
+      return "INVALID";
+  }
 }
 
 using v4l2_enum_type = decltype(V4L2_PIX_FMT_H264);
@@ -155,6 +179,44 @@ VideoCodec V4L2PixFmtToVideoCodec(uint32_t pix_fmt) {
   return VideoCodec::kUnknown;
 }
 
+absl::optional<BufferFormat> V4L2FormatToBufferFormat(
+    const struct v4l2_format& format) {
+  const auto fourcc = Fourcc::FromV4L2PixFmt(format.fmt.pix_mp.pixelformat);
+  if (!fourcc) {
+    return absl::nullopt;
+  }
+
+  const gfx::Size resolution =
+      gfx::Size(format.fmt.pix_mp.width, format.fmt.pix_mp.height);
+  BufferFormat buffer_format =
+      BufferFormat(fourcc.value(), resolution, V4L2ToBufferType(format.type));
+
+  if (buffer_format.buffer_type == BufferType::kInvalid) {
+    DVLOGF(1) << "Invalid V4L2 buffer type (" << format.type << ").";
+  }
+  for (size_t i = 0; i < format.fmt.pix_mp.num_planes; ++i) {
+    const v4l2_plane_pix_format& plane_format = format.fmt.pix_mp.plane_fmt[i];
+    buffer_format.planes.emplace_back(plane_format.bytesperline,
+                                      plane_format.sizeimage);
+  }
+  return buffer_format;
+}
+
+void BufferFormatToV4L2Format(struct v4l2_format& v_format,
+                              const BufferFormat& b_format) {
+  memset(&v_format, 0, sizeof(v_format));
+
+  v_format.type = BufferTypeToV4L2(b_format.buffer_type);
+  v_format.fmt.pix_mp.pixelformat = b_format.fourcc.ToV4L2PixFmt();
+  v_format.fmt.pix_mp.width = b_format.resolution.width();
+  v_format.fmt.pix_mp.height = b_format.resolution.height();
+  uint32_t i = 0;
+  for (const auto& plane : b_format.planes) {
+    v_format.fmt.pix_mp.plane_fmt[i].bytesperline = plane.stride;
+    v_format.fmt.pix_mp.plane_fmt[i].sizeimage = plane.image_size;
+    ++i;
+  }
+}
 }  // namespace
 
 Device::Device() {}
@@ -162,8 +224,12 @@ Device::Device() {}
 Buffer::Buffer(BufferType buffer_type,
                MemoryType memory_type,
                uint32_t index,
-               uint32_t plane_count)
-    : buffer_type_(buffer_type), memory_type_(memory_type), index_(index) {
+               uint32_t plane_count,
+               struct timeval time_val)
+    : buffer_type_(buffer_type),
+      memory_type_(memory_type),
+      index_(index),
+      time_val_(time_val) {
   planes_.resize(plane_count);
 }
 
@@ -185,6 +251,21 @@ void Buffer::SetupPlane(uint32_t plane, size_t offset, size_t size) {
   planes_[plane].length = size;
 }
 
+void Buffer::SetTimeAsFrameID(uint64_t usec) {
+  time_val_.tv_sec = 0;
+  time_val_.tv_usec = usec;
+}
+
+struct timeval Buffer::GetTimeval() const {
+  return time_val_;
+}
+
+uint64_t Buffer::GetTimeAsFrameID() const {
+  DCHECK_EQ(time_val_.tv_sec, 0);
+
+  return time_val_.tv_usec;
+}
+
 bool Buffer::CopyDataIn(const void* data, size_t length) {
   DVLOGF(4) << MappedAddress(0) << " : " << data << " : " << length;
 
@@ -203,6 +284,15 @@ bool Buffer::CopyDataIn(const void* data, size_t length) {
 
 Buffer::~Buffer() {}
 
+BufferFormat::BufferFormat(Fourcc fourcc,
+                           gfx::Size resolution,
+                           BufferType buffer_type)
+    : fourcc(fourcc), resolution(resolution), buffer_type(buffer_type) {}
+
+BufferFormat::BufferFormat(const BufferFormat& other) = default;
+
+BufferFormat::~BufferFormat() {}
+
 void Device::Close() {
   device_fd_.reset();
 }
@@ -212,7 +302,7 @@ std::set<VideoCodec> Device::EnumerateInputFormats() {
   std::set<VideoCodec> pix_fmts;
   v4l2_fmtdesc fmtdesc = {.type = V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE};
   for (; IoctlDevice(VIDIOC_ENUM_FMT, &fmtdesc) == kIoctlOk; ++fmtdesc.index) {
-    DVLOGF(4) << "Enumerated codec: "
+    DVLOGF(4) << "Enumerated input format: "
               << media::FourccToString(fmtdesc.pixelformat) << " ("
               << fmtdesc.description << ")";
     VideoCodec enumerated_codec = V4L2PixFmtToVideoCodec(fmtdesc.pixelformat);
@@ -224,6 +314,52 @@ std::set<VideoCodec> Device::EnumerateInputFormats() {
   }
 
   return pix_fmts;
+}
+
+// VIDIOC_G_FMT
+absl::optional<BufferFormat> Device::GetOutputFormat() {
+  DVLOGF(4);
+  struct v4l2_format format;
+  memset(&format, 0, sizeof(format));
+  format.type = V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE;
+
+  if (IoctlDevice(VIDIOC_G_FMT, &format) != kIoctlOk) {
+    return absl::nullopt;
+  }
+
+  return V4L2FormatToBufferFormat(format);
+}
+
+absl::optional<BufferFormat> Device::TrySetOutputFormat(
+    int request,
+    const BufferFormat& format) {
+  DVLOGF(4);
+  struct v4l2_format v_format;
+
+  BufferFormatToV4L2Format(v_format, format);
+
+  if (IoctlDevice(request, &v_format) != kIoctlOk) {
+    return absl::nullopt;
+  }
+
+  if (format.fourcc.ToV4L2PixFmt() != v_format.fmt.pix_mp.pixelformat) {
+    DVLOGF(1) << "Format tried is not the format returned.";
+    return absl::nullopt;
+  }
+
+  return V4L2FormatToBufferFormat(v_format);
+}
+
+absl::optional<BufferFormat> Device::TryOutputFormat(
+    const BufferFormat& format) {
+  DVLOGF(4);
+  return TrySetOutputFormat(VIDIOC_TRY_FMT, format);
+}
+
+absl::optional<BufferFormat> Device::SetOutputFormat(
+    const BufferFormat& format) {
+  DVLOGF(4);
+  return TrySetOutputFormat(VIDIOC_S_FMT, format);
 }
 
 // VIDIOC_S_FMT
@@ -275,10 +411,37 @@ bool Device::StreamOff(BufferType type) {
   return true;
 }
 
+// VIDIOC_EXPBUF
+std::vector<base::ScopedFD> Device::ExportAsDMABUF(int index,
+                                                   uint32_t num_planes) {
+  DVLOGF(4);
+
+  std::vector<base::ScopedFD> dmabuf_fds;
+  for (uint32_t i = 0; i < num_planes; ++i) {
+    struct v4l2_exportbuffer expbuf;
+    memset(&expbuf, 0, sizeof(expbuf));
+    expbuf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE;
+    expbuf.index = index;
+    expbuf.plane = i;
+    expbuf.flags = O_CLOEXEC;
+    if (IoctlDevice(VIDIOC_EXPBUF, &expbuf) != 0) {
+      DVLOGF(1) << "VIDIOC_EXPBUF failed to export " << i << " of "
+                << num_planes << " planes";
+      dmabuf_fds.clear();
+      break;
+    }
+
+    dmabuf_fds.push_back(base::ScopedFD(expbuf.fd));
+  }
+
+  return dmabuf_fds;
+}
+
 // VIDIOC_REQBUFS
 absl::optional<uint32_t> Device::RequestBuffers(BufferType type,
                                                 MemoryType memory,
-                                                size_t count) {
+                                                uint32_t count) {
+  DVLOGF(4);
   struct v4l2_requestbuffers reqbufs;
   memset(&reqbufs, 0, sizeof(reqbufs));
 
@@ -315,6 +478,52 @@ absl::optional<Buffer> Device::QueryBuffer(BufferType buffer_type,
   const int ret = IoctlDevice(VIDIOC_QUERYBUF, &v4l2_buffer);
   if (ret) {
     DVLOGF(1) << "VIDIOC_QUERYBUF failed: ";
+    return absl::nullopt;
+  }
+
+  return V4L2BufferToBuffer(v4l2_buffer);
+}
+
+// VIDIOC_QBUF
+bool Device::QueueBuffer(const Buffer& buffer,
+                         const base::ScopedFD& request_fd) {
+  struct v4l2_buffer v4l2_buffer;
+  struct v4l2_plane v4l2_planes[VIDEO_MAX_PLANES];
+  memset(&v4l2_buffer, 0, sizeof(v4l2_buffer));
+  memset(v4l2_planes, 0, sizeof(v4l2_planes));
+  v4l2_buffer.m.planes = v4l2_planes;
+
+  BufferToV4L2Buffer(&v4l2_buffer, buffer);
+
+  // TODO(frkoenig): This should be in the stateless driver. It is not currently
+  // because BufferToV4L2Buffer is a function that is only available to this
+  // file
+  if (BufferType::kCompressedData == buffer.GetBufferType()) {
+    v4l2_buffer.flags |= V4L2_BUF_FLAG_REQUEST_FD;
+    v4l2_buffer.request_fd = request_fd.get();
+  }
+
+  DVLOGF(4) << V4L2BufferToString(v4l2_buffer);
+
+  return (IoctlDevice(VIDIOC_QBUF, &v4l2_buffer) == kIoctlOk);
+}
+
+// VIDIOC_DQBUF
+absl::optional<Buffer> Device::DequeueBuffer(BufferType buffer_type,
+                                             MemoryType memory_type,
+                                             uint32_t num_planes) {
+  DVLOGF(4) << BufferTypeString(buffer_type);
+  struct v4l2_buffer v4l2_buffer;
+  struct v4l2_plane v4l2_planes[VIDEO_MAX_PLANES];
+  memset(&v4l2_buffer, 0, sizeof(v4l2_buffer));
+  memset(v4l2_planes, 0, sizeof(v4l2_planes));
+  v4l2_buffer.m.planes = v4l2_planes;
+
+  v4l2_buffer.length = num_planes;
+  v4l2_buffer.type = BufferTypeToV4L2(buffer_type);
+  v4l2_buffer.memory = MemoryTypeToV4L2(memory_type);
+
+  if (IoctlDevice(VIDIOC_DQBUF, &v4l2_buffer) != kIoctlOk) {
     return absl::nullopt;
   }
 
@@ -444,6 +653,13 @@ void Device::MunmapBuffer(Buffer& buffer) {
       buffer.SetMappedAddress(plane, nullptr);
     }
   }
+}
+
+struct pollfd Device::GetPollEvent() {
+  // https://www.kernel.org/doc/html/v5.15/userspace-api/media/v4l/func-poll.html
+  // Poll events that are relevant are those around the CAPTURE queue. These
+  // events will occur when there is data to dequeue.
+  return {.fd = device_fd_.get(), .events = POLLIN | POLLRDNORM};
 }
 
 Device::~Device() {}

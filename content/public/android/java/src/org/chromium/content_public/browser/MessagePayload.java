@@ -14,12 +14,9 @@ import java.util.Objects;
  * Currently only String and ArrayBuffer is supported.
  */
 public final class MessagePayload {
-    @MessagePayloadType
-    private final int mType;
-    @Nullable
-    private final String mString;
-    @Nullable
-    private final byte[] mArrayBuffer;
+    @MessagePayloadType private final int mType;
+    @Nullable private final String mString;
+    @Nullable private final byte[] mArrayBuffer;
 
     /**
      * Create a MessagePayload String type.
@@ -32,9 +29,7 @@ public final class MessagePayload {
         mArrayBuffer = null;
     }
 
-    /**
-     * Create a MessagePayload ArrayBuffer type.
-     */
+    /** Create a MessagePayload ArrayBuffer type. */
     public MessagePayload(@NonNull byte[] arrayBuffer) {
         Objects.requireNonNull(arrayBuffer, "arrayBuffer cannot be null.");
         mType = MessagePayloadType.ARRAY_BUFFER;
@@ -62,8 +57,11 @@ public final class MessagePayload {
 
     private void checkType(@MessagePayloadType int expectedType) {
         if (mType != expectedType) {
-            throw new IllegalStateException("Expected " + typeToString(expectedType)
-                    + ", but type is " + typeToString(mType));
+            throw new IllegalStateException(
+                    "Expected "
+                            + typeToString(expectedType)
+                            + ", but type is "
+                            + typeToString(mType));
         }
     }
 

@@ -44,6 +44,7 @@
 #include "base/i18n/rtl.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
+#include "chromeos/ash/services/assistant/public/cpp/assistant_enums.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
@@ -96,6 +97,8 @@ bool IsSpokenFeedbackEnabled() {
 // This is more efficient than using a views::Separator, which would require
 // SetPaintToLayer(ui::LAYER_TEXTURED).
 class SeparatorWithLayer : public views::View {
+  METADATA_HEADER(SeparatorWithLayer, views::View)
+
  public:
   SeparatorWithLayer() {
     SetPaintToLayer(ui::LAYER_SOLID_COLOR);
@@ -118,6 +121,9 @@ class SeparatorWithLayer : public views::View {
         ColorProvider::ContentLayerType::kSeparatorColor));
   }
 };
+
+BEGIN_METADATA(SeparatorWithLayer)
+END_METADATA
 
 // Returns the layer bounds to use for the start of the show animation and the
 // end of the hide animation.
@@ -516,6 +522,17 @@ bool AppListBubbleView::Back() {
     return true;
   }
   if (search_box_view_->HasSearch()) {
+    // When showing the `AppListBubblePage::kAssistant`, it will not change the
+    // search box text. Therefore, if the `AppListBubblePage::kAssistant` is
+    // from search result, the search query is not empty, Back() here will clear
+    // the search, QueryChanged() will set the page to
+    // `AppListBubblePage::kApps`. If the `AppListBubblePage::kAssistant` is
+    // from other `AssistantVisibilityEntryPoint`, the search box is empty,
+    // Back() will return false and then the AppList will be closed.
+    if (IsShowingEmbeddedAssistantUI()) {
+      view_delegate_->EndAssistant(
+          assistant::AssistantExitPoint::kBackInLauncher);
+    }
     search_box_view_->ClearSearch();
     return true;
   }
@@ -612,7 +629,7 @@ void AppListBubbleView::UpdateContinueSectionVisibility() {
 }
 
 void AppListBubbleView::UpdateForNewSortingOrder(
-    const absl::optional<AppListSortOrder>& new_order,
+    const std::optional<AppListSortOrder>& new_order,
     bool animate,
     base::OnceClosure update_position_closure) {
   // If app list sort order change is animated, hide any open folders as part of
@@ -701,7 +718,8 @@ void AppListBubbleView::QueryChanged(const std::u16string& trimmed_query,
 void AppListBubbleView::AssistantButtonPressed() {
   // Showing the assistant via the delegate triggers the assistant's visibility
   // change notification and ensures its initial visual state is correct.
-  view_delegate_->StartAssistant();
+  view_delegate_->StartAssistant(
+      assistant::AssistantEntryPoint::kLauncherSearchBoxIcon);
 }
 
 void AppListBubbleView::CloseButtonPressed() {

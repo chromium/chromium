@@ -1,0 +1,7 @@
+WebView textSize:16.00 style:0 bundle:[display="", htmlTag="#document"]
+++View textSize:16.00 style:0 bundle:[action="POST", display="block", htmlTag="form"]
+++++Button textSize:13.33 style:0 bgColor:-1052689 bundle:[display="inline-block", htmlTag="input", type="submit"]
+++++++TextView text:"Submit" textSize:13.33 style:0 bgColor:-1052689 bundle:[display="", htmlTag=""]
+++View text:"Name" textSize:16.00 style:0 bundle:[action="POST", aria-label="Name", display="block", htmlTag="form"]
+++++Button textSize:13.33 style:0 bgColor:-1052689 bundle:[display="inline-block", htmlTag="input", type="submit"]
+++++++TextView text:"Submit" textSize:13.33 style:0 bgColor:-1052689 bundle:[display="", htmlTag=""]

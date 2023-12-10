@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="my">
 <translation id="1075622780330595106">သင်၏တဘ် <ph name="NUMBER_OF_TABS" /> ခုကို နောက်ပိုင်းတွင် အသုံးပြုမထားပါ။ ၎င်းတို့ကို ပိတ်မလား။</translation>
+<translation id="1155815720264022949">တဘ်အဟောင်းများ ပိတ်လိုပါသလား။</translation>
 <translation id="1215127405478249895">တဘ်များ ကြည့်ခြင်း</translation>
 <translation id="125153950246128346">နောက်တဘ်တစ်ခုကြည့်ရန် တို့ပါ</translation>
 <translation id="1499635324672558517">ရုပ်ဖျက်တဘ်အားလုံး ပိတ်မလား။</translation>
@@ -46,9 +47,11 @@
 <translation id="5073204694187207510">မျက်နှာပြင်ပြည့် ဇယားကွက်ကို ဝှက်ရန်</translation>
 <translation id="5076161749301278626">ဆိုင်အကြောင်း သုံးသပ်ချက်များ ကြည့်မလား။</translation>
 <translation id="5082793167783849073">အဖွဲ့ဖွဲ့ခြင်းဖြင့် စာမျက်နှာများကို အမြန်နှိုင်းယှဉ်ပါ။ စတင်ရန် လင့်ခ်ကို ထိပြီး ဖိထားပါ။</translation>
+<translation id="5303274951032363933">{TABS_COUNT,plural, =1{လတ်တလော သုံးထားခြင်းမရှိသော တဘ် <ph name="TABS_COUNT_ONE" /> ခုရှိသည်}other{လတ်တလော သုံးထားခြင်းမရှိသော တဘ် <ph name="TABS_COUNT_MANY" /> ခုရှိသည်}}</translation>
 <translation id="5339733443032484186">သင့်နောက်ဆုံးတဘ်</translation>
 <translation id="5490235265819901748">တဘ်အုပ်စုကို ချဲ့ထားသည်</translation>
 <translation id="5494920125229734069">အားလုံး ရွေးရန်</translation>
+<translation id="5545379293264651575">သုံးသပ်ချက်မပေးဘဲ ပိတ်ရန်</translation>
 <translation id="5556417849629758491">ဆိုင်အချက်အလက် ကြည့်ရန် ရွေးချယ်စရာကို ဖန်သားပြင်ထိပ်ပိုင်းအနီးတွင် ရနိုင်သည်</translation>
 <translation id="5558362125926932819">တဘ် <ph name="NUMBER_OF_TABS" /> ခုပါသော တဘ်အုပ်စုကို ပိတ်ရန်</translation>
 <translation id="5580090775658607195">တဘ် <ph name="TAB_COUNT" /> ခုကို အုပ်စုဖွဲ့ထားသည်</translation>
@@ -85,7 +88,6 @@
 <translation id="7885132941432959125">တဘ်ကို ညာဘက်သို့ ရွှေ့ရန်</translation>
 <translation id="7966321538264951561">အကြံပြုချက်များကို ပယ်ပါ။</translation>
 <translation id="8029301326595421733">ဤဆိုင် အပြည့်ဖွင့်သည့်အကြောင်း</translation>
-<translation id="814503310257431685">အားလုံးကြည့်ရန်</translation>
 <translation id="8205266828577616993">တဘ်အပေါ်သို့ ရွှေ့ရန်</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{ရွေးထားသည့် တဘ် <ph name="TABS_COUNT_ONE" /> ခုကို ပိတ်ရန်}other{ရွေးထားသည့် တဘ် <ph name="TABS_COUNT_MANY" /> ခုကို ပိတ်ရန်}}</translation>
 <translation id="8398929769197326728">ဖိုင်တွဲအသစ် - <ph name="CURRENT_TIMESTAMP_MS" /></translation>

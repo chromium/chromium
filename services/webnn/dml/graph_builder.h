@@ -9,6 +9,7 @@
 #include <list>
 #include <vector>
 
+#include "base/component_export.h"
 #include "base/containers/span.h"
 #include "base/memory/raw_ref.h"
 #include "services/webnn/dml/tensor_desc.h"
@@ -23,7 +24,7 @@ class OperatorNode;
 
 // Represents a node, which is either an input node or operator node, within a
 // graph.
-class Node {
+class COMPONENT_EXPORT(WEBNN_SERVICE) Node {
  public:
   enum class Type {
     kInput,
@@ -126,7 +127,7 @@ class NodeOutput {
 // edges and intermediate edges are created when connecting nodes, and the
 // output edges are created at last to indicate which node's output is graph's
 // output.
-class GraphBuilder final {
+class COMPONENT_EXPORT(WEBNN_SERVICE) GraphBuilder final {
  public:
   explicit GraphBuilder(ComPtr<IDMLDevice> device);
 

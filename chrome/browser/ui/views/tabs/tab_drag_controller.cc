@@ -72,6 +72,7 @@
 #include "ui/views/view_tracker.h"
 #include "ui/views/views_features.h"
 #include "ui/views/widget/root_view.h"
+#include "ui/views/widget/widget.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/ui/base/window_properties.h"
@@ -167,6 +168,9 @@ bool IsSnapped(const TabDragContext* context) {
 
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+// TODO(1509581): This should take a weak ref and return a Liveness, because
+// setting capture may cause the drag to end and the drag controller to be
+// destroyed.
 void SetCapture(TabDragContext* context) {
   context->GetWidget()->SetCapture(context);
 }
@@ -303,7 +307,7 @@ class TabDragController::DraggedTabsClosedTracker
 
 TabDragController::TabDragData::TabDragData()
     : contents(nullptr),
-      source_model_index(absl::nullopt),
+      source_model_index(std::nullopt),
       attached_view(nullptr),
       pinned(false) {}
 
@@ -363,13 +367,14 @@ TabDragController::~TabDragController() {
          "up the stack for reentrancy.";
 }
 
-void TabDragController::Init(TabDragContext* source_context,
-                             TabSlotView* source_view,
-                             const std::vector<TabSlotView*>& dragging_views,
-                             const gfx::Point& mouse_offset,
-                             int source_view_offset,
-                             ui::ListSelectionModel initial_selection_model,
-                             ui::mojom::DragEventSource event_source) {
+TabDragController::Liveness TabDragController::Init(
+    TabDragContext* source_context,
+    TabSlotView* source_view,
+    const std::vector<TabSlotView*>& dragging_views,
+    const gfx::Point& mouse_offset,
+    int source_view_offset,
+    ui::ListSelectionModel initial_selection_model,
+    ui::mojom::DragEventSource event_source) {
   DCHECK(!dragging_views.empty());
   DCHECK(base::Contains(dragging_views, source_view));
   source_context_ = source_context;
@@ -458,17 +463,6 @@ void TabDragController::Init(TabDragContext* source_context,
   InitWindowCreatePoint();
   initial_selection_model_ = std::move(initial_selection_model);
 
-  // Gestures don't automatically do a capture. We don't allow multiple drags at
-  // the same time, so we explicitly capture.
-  if (event_source == ui::mojom::DragEventSource::kTouch) {
-    // Taking capture may cause capture to be lost, ending the drag and
-    // destroying |this|.
-    base::WeakPtr<TabDragController> ref(weak_factory_.GetWeakPtr());
-    SetCapture(source_context_);
-    if (!ref)
-      return;
-  }
-
   window_finder_ = std::make_unique<WindowFinder>();
 
   if (base::FeatureList::IsEnabled(features::kScrollableTabStrip) &&
@@ -503,6 +497,27 @@ void TabDragController::Init(TabDragContext* source_context,
   attached_context_tabs_closed_tracker_ =
       std::make_unique<DraggedTabsClosedTracker>(
           source_context_->GetTabStripModel(), this);
+
+  ///////// DO NOT ADD INITIALIZATION CODE BELOW THIS LINE ////////
+  // We need to be initialized at this point because SetCapture may reenter this
+  // TabDragController and we do not want to deal with a partially-uninitialized
+  // object at that point. This is already too complicated.
+
+  // Gestures don't automatically do a capture. We don't allow multiple drags at
+  // the same time, so we explicitly capture.
+  if (event_source == ui::mojom::DragEventSource::kTouch) {
+    // Taking capture involves OS calls which may reentrantly call back into
+    // Chrome. This may result in the drag ending, destroying `this`. This
+    // behavior has been observed on Windows in https://crbug.com/964322 and
+    // ChromeOS in https://crbug.com/1431369.
+    base::WeakPtr<TabDragController> ref(weak_factory_.GetWeakPtr());
+    SetCapture(source_context_);
+    if (!ref) {
+      return Liveness::DELETED;
+    }
+  }
+
+  return Liveness::ALIVE;
 }
 
 // static
@@ -730,7 +745,7 @@ void TabDragController::SetDragLoopDoneCallbackForTesting(
 void TabDragController::InitDragData(TabSlotView* view,
                                      TabDragData* drag_data) {
   TRACE_EVENT0("views", "TabDragController::InitDragData");
-  const absl::optional<int> source_model_index =
+  const std::optional<int> source_model_index =
       source_context_->GetIndexOf(view);
   drag_data->source_model_index = source_model_index;
   if (source_model_index.has_value()) {
@@ -738,7 +753,7 @@ void TabDragController::InitDragData(TabSlotView* view,
         drag_data->source_model_index.value());
     drag_data->pinned = source_context_->IsTabPinned(static_cast<Tab*>(view));
   }
-  absl::optional<tab_groups::TabGroupId> tab_group_id = view->group();
+  std::optional<tab_groups::TabGroupId> tab_group_id = view->group();
   if (tab_group_id.has_value()) {
     drag_data->tab_group_data = TabDragData::TabGroupData{
         tab_group_id.value(), *source_context_->GetTabStripModel()
@@ -943,6 +958,8 @@ TabDragController::Liveness TabDragController::ContinueDragging(
       return StartSystemDragAndDropSessionIfNecessary(point_in_screen);
     } else if (DragBrowserToNewTabStrip(target_context, point_in_screen) ==
                DRAG_BROWSER_RESULT_STOP) {
+      // TODO(1509581): This may not always be correct.
+      // `DragBrowserToNewTabStrip` can delete `this` in some cases.
       return Liveness::ALIVE;
     }
   }
@@ -1417,7 +1434,7 @@ void TabDragController::Attach(TabDragContext* attached_context,
           SavedTabGroupServiceFactory::GetForProfile(browser->profile());
       saved_tab_group_service->ResumeTrackingLocalTabGroup(
           paused_saved_group_id_.value(), group_.value());
-      paused_saved_group_id_ = absl::nullopt;
+      paused_saved_group_id_ = std::nullopt;
     }
   }
   DCHECK_EQ(views.size(), drag_data_.size());
@@ -2038,14 +2055,14 @@ void TabDragController::RevertDragAt(size_t drag_index) {
   source_model->UpdateGroupForDragRevert(
       source_model->GetIndexOfWebContents(data->contents),
       data->tab_group_data.has_value()
-          ? absl::optional<tab_groups::TabGroupId>{data->tab_group_data.value()
-                                                       .group_id}
-          : absl::nullopt,
+          ? std::optional<tab_groups::TabGroupId>{data->tab_group_data.value()
+                                                      .group_id}
+          : std::nullopt,
       data->tab_group_data.has_value()
-          ? absl::optional<
+          ? std::optional<
                 tab_groups::TabGroupVisualData>{data->tab_group_data.value()
                                                     .group_visual_data}
-          : absl::nullopt);
+          : std::nullopt);
 }
 
 void TabDragController::CompleteDrag() {
@@ -2237,9 +2254,9 @@ views::Widget* TabDragController::GetAttachedBrowserWidget() {
 
 bool TabDragController::AreTabsConsecutive() {
   for (size_t i = 1; i < drag_data_.size(); ++i) {
-    const absl::optional<int> previous_source_index =
+    const std::optional<int> previous_source_index =
         drag_data_[i - 1].source_model_index;
-    const absl::optional<int> source_index = drag_data_[i].source_model_index;
+    const std::optional<int> source_index = drag_data_[i].source_model_index;
     if (previous_source_index.has_value() && source_index.has_value() &&
         previous_source_index.value() + 1 != source_index.value()) {
       return false;
@@ -2549,14 +2566,14 @@ void TabDragController::UpdateGroupForDraggedTabs() {
   if (selected_unpinned.empty())
     return;
 
-  const absl::optional<tab_groups::TabGroupId> updated_group =
+  const std::optional<tab_groups::TabGroupId> updated_group =
       GetTabGroupForTargetIndex(selected_unpinned);
 
   attached_model->MoveTabsAndSetGroup(selected_unpinned, selected_unpinned[0],
                                       updated_group);
 }
 
-absl::optional<tab_groups::TabGroupId>
+std::optional<tab_groups::TabGroupId>
 TabDragController::GetTabGroupForTargetIndex(const std::vector<int>& selected) {
   // Indices in {selected} are always ordered in ascending order and should all
   // be consecutive.
@@ -2566,11 +2583,11 @@ TabDragController::GetTabGroupForTargetIndex(const std::vector<int>& selected) {
 
   const int left_tab_index = selected.front() - 1;
 
-  const absl::optional<tab_groups::TabGroupId> left_group =
+  const std::optional<tab_groups::TabGroupId> left_group =
       attached_model->GetTabGroupForTab(left_tab_index);
-  const absl::optional<tab_groups::TabGroupId> right_group =
+  const std::optional<tab_groups::TabGroupId> right_group =
       attached_model->GetTabGroupForTab(selected.back() + 1);
-  const absl::optional<tab_groups::TabGroupId> current_group =
+  const std::optional<tab_groups::TabGroupId> current_group =
       attached_model->GetTabGroupForTab(selected[0]);
 
   if (left_group == right_group)
@@ -2632,7 +2649,7 @@ TabDragController::GetTabGroupForTargetIndex(const std::vector<int>& selected) {
     // dragging near the end of the tabstrip is cleaner.
     if (tab_bounds_in_drag_context_coords(selected.back()).right() >=
         attached_context_->TabDragAreaEndX()) {
-      return absl::nullopt;
+      return std::nullopt;
     }
 
     if (left_most_selected_x_position <= left_edge - buffer)
@@ -2643,19 +2660,26 @@ TabDragController::GetTabGroupForTargetIndex(const std::vector<int>& selected) {
       !attached_model->IsGroupCollapsed(right_group.value())) {
     return right_group;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 bool TabDragController::CanAttachTo(gfx::NativeWindow window) {
-  if (!window)
+  if (!window) {
     return false;
-  if (window == GetAttachedBrowserWidget()->GetNativeWindow())
-    return true;
+  }
 
+  if (window == GetAttachedBrowserWidget()->GetNativeWindow()) {
+    return true;
+  }
+
+  // Return false if `other_browser_view` is null or already closed. The latter
+  // check is required since the widget may still alive on asynchronous
+  // platforms such as Mac.
   BrowserView* other_browser_view =
       BrowserView::GetBrowserViewForNativeWindow(window);
-  if (!other_browser_view)
+  if (!other_browser_view || other_browser_view->GetWidget()->IsClosed()) {
     return false;
+  }
   Browser* other_browser = other_browser_view->browser();
 
   // Do not allow dragging into a window with a modal dialog, it causes a
@@ -2670,8 +2694,8 @@ bool TabDragController::CanAttachTo(gfx::NativeWindow window) {
   const int active_index = model->active_index();
 
 #if BUILDFLAG(IS_MAC)
-  // TODO(crbug.com/1411448): Investigate. Remove DumpWithoutCrashing() when it
-  // is resolved.
+  // TODO(crbug.com/1411448): Remove DumpWithoutCrashing() if Widget::IsClosed()
+  // check above works.
   if (!model->ContainsIndex(active_index)) {
     if (active_index == TabStripModel::kNoTab) {
       LOG(ERROR) << "TabStripModel of the browser tyring to attach to has no "
@@ -2739,7 +2763,7 @@ void TabDragController::NotifyEventIfTabAddedToGroup() {
       continue;
 
     // Get the tab group from the source model.
-    absl::optional<tab_groups::TabGroupId> group_id =
+    std::optional<tab_groups::TabGroupId> group_id =
         source_model->GetTabGroupForTab(
             source_model->GetIndexOfWebContents(drag_data_[i].contents));
 

@@ -91,8 +91,9 @@ WebAppToolbarButtonContainer::WebAppToolbarButtonContainer(
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (app_controller->system_app()) {
-    AddChildView(std::make_unique<SystemAppAccessibleName>(
-        app_controller->GetAppShortName()));
+    system_app_accessible_name_ =
+        AddChildView(std::make_unique<SystemAppAccessibleName>(
+            app_controller->GetAppShortName()));
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -161,7 +162,7 @@ WebAppToolbarButtonContainer::WebAppToolbarButtonContainer(
                                static_cast<int>(HTCLIENT));
   }
 
-  if (download::IsDownloadBubbleEnabled(browser_view_->browser()->profile())) {
+  if (download::IsDownloadBubbleEnabled()) {
     download_button_ = AddChildView(
         std::make_unique<DownloadToolbarButtonView>(browser_view_));
     views::SetHitTestComponent(download_button_, static_cast<int>(HTCLIENT));

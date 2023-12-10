@@ -8,6 +8,7 @@ load("//lib/builder_config.star", "builder_config")
 load("//lib/builders.star", "builders", "cpu", "os", "reclient")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
+load("//lib/gn_args.star", "gn_args")
 
 ci.defaults.set(
     executable = ci.DEFAULT_EXECUTABLE,
@@ -56,6 +57,13 @@ ci.builder(
             target_platform = builder_config.target_platform.LINUX,
         ),
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "updater",
+            "debug_static_builder",
+            "reclient",
+        ],
+    ),
     builderless = True,
     os = os.LINUX_DEFAULT,
     console_view_entry = consoles.console_view_entry(
@@ -79,6 +87,13 @@ ci.builder(
             target_bits = 64,
             target_platform = builder_config.target_platform.LINUX,
         ),
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "updater",
+            "release_builder",
+            "reclient",
+        ],
     ),
     builderless = True,
     os = os.LINUX_DEFAULT,
@@ -152,6 +167,13 @@ ci.builder(
             target_platform = builder_config.target_platform.MAC,
         ),
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "updater",
+            "debug_static_builder",
+            "reclient",
+        ],
+    ),
     builderless = True,
     cores = None,
     os = os.MAC_ANY,
@@ -177,6 +199,13 @@ ci.builder(
             target_platform = builder_config.target_platform.MAC,
         ),
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "updater",
+            "release_builder",
+            "reclient",
+        ],
+    ),
     builderless = True,
     cores = None,
     os = os.MAC_ANY,
@@ -201,6 +230,14 @@ ci.builder(
             target_bits = 64,
             target_platform = builder_config.target_platform.MAC,
         ),
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "arm64",
+            "updater",
+            "debug_static_builder",
+            "reclient",
+        ],
     ),
     builderless = True,
     cores = None,
@@ -228,6 +265,14 @@ ci.builder(
             target_platform = builder_config.target_platform.MAC,
         ),
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "arm64",
+            "updater",
+            "release_builder",
+            "reclient",
+        ],
+    ),
     builderless = True,
     cores = None,
     os = os.MAC_ANY,
@@ -253,6 +298,14 @@ ci.builder(
             target_bits = 64,
             target_platform = builder_config.target_platform.MAC,
         ),
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "updater",
+            "asan",
+            "debug_static_builder",
+            "reclient",
+        ],
     ),
     builderless = True,
     cores = None,
@@ -519,6 +572,13 @@ ci.builder(
             target_platform = builder_config.target_platform.WIN,
         ),
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "updater",
+            "debug_static_builder",
+            "reclient",
+        ],
+    ),
     builderless = True,
     os = os.WINDOWS_DEFAULT,
     console_view_entry = consoles.console_view_entry(
@@ -543,6 +603,15 @@ ci.builder(
             target_bits = 64,
             target_platform = builder_config.target_platform.WIN,
         ),
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "updater",
+            "debug_static_builder",
+            "reclient",
+            "x86",
+            "no_symbols",
+        ],
     ),
     builderless = True,
     os = os.WINDOWS_DEFAULT,
@@ -571,6 +640,13 @@ ci.builder(
             target_platform = builder_config.target_platform.WIN,
         ),
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "updater",
+            "release_builder",
+            "reclient",
+        ],
+    ),
     builderless = True,
     os = os.WINDOWS_DEFAULT,
     console_view_entry = consoles.console_view_entry(
@@ -595,6 +671,14 @@ ci.builder(
             target_bits = 64,
             target_platform = builder_config.target_platform.WIN,
         ),
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "updater",
+            "release_builder",
+            "reclient",
+            "x86",
+        ],
     ),
     builderless = True,
     os = os.WINDOWS_DEFAULT,

@@ -220,8 +220,9 @@ class FakeBluetoothAdapter : public device::MockBluetoothAdapter {
 
   BluetoothDevice* GetDevice(const std::string& address) override {
     for (auto& device : mock_devices_) {
-      if (device->GetAddress() == address)
+      if (device->GetAddress() == address) {
         return device.get();
+      }
     }
     return nullptr;
   }
@@ -573,9 +574,8 @@ class WebBluetoothServiceImplTest : public RenderViewHostImplTestHarness,
     // Simulate a frame connected to a bluetooth service.
     mojo::PendingReceiver<blink::mojom::WebBluetoothService> receiver =
         service_.BindNewPipeAndPassReceiver();
-    service_ptr_ =
-        contents()->GetPrimaryMainFrame()->CreateWebBluetoothServiceForTesting(
-            std::move(receiver));
+    service_ptr_ = WebBluetoothServiceImpl::CreateForTesting(
+        contents()->GetPrimaryMainFrame(), std::move(receiver));
 
     // GetAvailability connects the Web Bluetooth service to the adapter. Call
     // it twice in parallel to exercise what happens when multiple requests to
@@ -718,8 +718,16 @@ class WebBluetoothServiceImplTest : public RenderViewHostImplTestHarness,
         device_bundle.device().GetAddress(), device_options);
   }
 
+  void DeleteService() {
+    // This is a hack; destruction is normally implicitly triggered by
+    // navigation or destruction of the frame itself, and not explicitly like
+    // this test does.
+    WebBluetoothServiceImpl::DeleteForCurrentDocument(
+        &service_ptr_.ExtractAsDangling()->render_frame_host());
+  }
+
   scoped_refptr<FakeBluetoothAdapter> adapter_;
-  raw_ptr<WebBluetoothServiceImpl, DanglingUntriaged> service_ptr_;
+  raw_ptr<WebBluetoothServiceImpl> service_ptr_ = nullptr;
   mojo::Remote<blink::mojom::WebBluetoothService> service_;
   TestContentBrowserClient browser_client_;
   raw_ptr<ContentBrowserClient> old_browser_client_ = nullptr;
@@ -737,7 +745,7 @@ TEST_F(WebBluetoothServiceImplTest, DestroyedDuringRequestDevice) {
   service_ptr_->RequestDevice(std::move(options), callback.Get());
 
   base::RunLoop loop;
-  std::exchange(service_ptr_, nullptr)->ResetAndDeleteThis();
+  DeleteService();
   loop.RunUntilIdle();
 }
 
@@ -783,9 +791,7 @@ TEST_F(WebBluetoothServiceImplTest, DestroyedDuringRequestScanningStart) {
   // Post a task to delete the WebBluetoothService state during a call to
   // RequestScanningStart().
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindLambdaForTesting([this]() {
-        std::exchange(service_ptr_, nullptr)->ResetAndDeleteThis();
-      }));
+      FROM_HERE, base::BindLambdaForTesting([this]() { DeleteService(); }));
 
   loop.RunUntilIdle();
 }
@@ -999,7 +1005,7 @@ TEST_F(WebBluetoothServiceImplTest, IncompletePairingOnShutdown) {
 
   // Simulate the WebBluetoothServiceImpl being destroyed due to a navigation or
   // tab closure while the pairing request is in progress.
-  std::exchange(service_ptr_, nullptr)->ResetAndDeleteThis();
+  DeleteService();
 }
 #endif  // PAIR_BLUETOOTH_ON_DEMAND()
 
@@ -1019,8 +1025,9 @@ TEST_F(WebBluetoothServiceImplTest, DeferredStartNotifySession) {
     auto callback = base::BindLambdaForTesting(
         [&run_loop, &outstanding_callbacks](WebBluetoothResult result) {
           EXPECT_EQ(result, WebBluetoothResult::GATT_UNKNOWN_FAILURE);
-          if (--outstanding_callbacks == 0)
+          if (--outstanding_callbacks == 0) {
             run_loop.Quit();
+          }
         });
     service_ptr_->RemoteCharacteristicStartNotifications(
         test_characteristic.GetIdentifier(),
@@ -1046,8 +1053,9 @@ TEST_F(WebBluetoothServiceImplTest, DeferredStartNotifySession) {
     auto callback = base::BindLambdaForTesting(
         [&run_loop, &outstanding_callbacks](WebBluetoothResult result) {
           EXPECT_EQ(result, WebBluetoothResult::SUCCESS);
-          if (--outstanding_callbacks == 0)
+          if (--outstanding_callbacks == 0) {
             run_loop.Quit();
+          }
         });
     service_ptr_->RemoteCharacteristicStartNotifications(
         test_characteristic.GetIdentifier(),
@@ -1108,6 +1116,11 @@ TEST_F(WebBluetoothServiceImplTest, RejectOpaqueOrigin) {
       base::MakeRefCounted<net::HttpResponseHeaders>(std::string());
   response_headers->SetHeader("Content-Security-Policy",
                               "sandbox allow-scripts");
+  // The WebBluetoothService lifetime is tied to the document it was created in.
+  // A navigation is going to remove it. So it must be cleared to avoid the
+  // pointer to dangle.
+  service_ptr_ = nullptr;
+
   auto navigation_simulator = NavigationSimulator::CreateRendererInitiated(
       GURL("http://whatever.com"), main_test_rfh());
   navigation_simulator->SetResponseHeaders(response_headers);
@@ -1115,8 +1128,8 @@ TEST_F(WebBluetoothServiceImplTest, RejectOpaqueOrigin) {
   navigation_simulator->Commit();
 
   mojo::Remote<blink::mojom::WebBluetoothService> service;
-  contents()->GetPrimaryMainFrame()->CreateWebBluetoothServiceForTesting(
-      service.BindNewPipeAndPassReceiver());
+  WebBluetoothServiceImpl::BindIfAllowed(contents()->GetPrimaryMainFrame(),
+                                         service.BindNewPipeAndPassReceiver());
 
   EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
             "Web Bluetooth is not allowed from an opaque origin.");

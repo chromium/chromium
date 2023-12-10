@@ -5,8 +5,8 @@
 #include "extensions/browser/api/declarative_net_request/ruleset_matcher.h"
 
 #include <iterator>
+#include <optional>
 #include <utility>
-
 #include "base/check.h"
 #include "base/containers/span.h"
 #include "base/memory/ptr_util.h"
@@ -18,7 +18,6 @@
 #include "extensions/browser/api/declarative_net_request/rule_counts.h"
 #include "extensions/browser/api/declarative_net_request/utils.h"
 #include "extensions/common/api/declarative_net_request/constants.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions::declarative_net_request {
 
@@ -51,11 +50,11 @@ RulesetMatcher::RulesetMatcher(std::string ruleset_data,
       id_(id),
       url_pattern_index_matcher_(extension_id,
                                  id,
-                                 root_->index_list(),
+                                 root_->before_request_index_list(),
                                  root_->extension_metadata()),
       regex_matcher_(extension_id,
                      id,
-                     root_->regex_rules(),
+                     root_->before_request_regex_rules(),
                      root_->extension_metadata()) {
   if (!IsRulesetStatic(id)) {
     unsafe_rule_count_ = ComputeUnsafeRuleCount(root_->extension_metadata());
@@ -64,15 +63,15 @@ RulesetMatcher::RulesetMatcher(std::string ruleset_data,
 
 RulesetMatcher::~RulesetMatcher() = default;
 
-absl::optional<RequestAction> RulesetMatcher::GetBeforeRequestAction(
+std::optional<RequestAction> RulesetMatcher::GetBeforeRequestAction(
     const RequestParams& params) const {
   base::TimeTicks start_time = base::TimeTicks::Now();
-  absl::optional<RequestAction> regex_result =
+  std::optional<RequestAction> regex_result =
       regex_matcher_.GetBeforeRequestAction(params);
   base::TimeDelta regex_time = base::TimeTicks::Now() - start_time;
-  absl::optional<RequestAction> url_pattern_result =
+  std::optional<RequestAction> url_pattern_result =
       url_pattern_index_matcher_.GetBeforeRequestAction(params);
-  absl::optional<RequestAction> final_result = GetMaxPriorityAction(
+  std::optional<RequestAction> final_result = GetMaxPriorityAction(
       std::move(url_pattern_result), std::move(regex_result));
   base::TimeDelta total_time = base::TimeTicks::Now() - start_time;
   int regex_rules_count = GetRegexRulesCount();
@@ -161,7 +160,7 @@ absl::optional<RequestAction> RulesetMatcher::GetBeforeRequestAction(
 
 std::vector<RequestAction> RulesetMatcher::GetModifyHeadersActions(
     const RequestParams& params,
-    absl::optional<uint64_t> min_priority) const {
+    std::optional<uint64_t> min_priority) const {
   std::vector<RequestAction> modify_header_actions =
       url_pattern_index_matcher_.GetModifyHeadersActions(params, min_priority);
 
@@ -186,7 +185,7 @@ size_t RulesetMatcher::GetRulesCount() const {
          regex_matcher_.GetRulesCount();
 }
 
-absl::optional<size_t> RulesetMatcher::GetUnsafeRulesCount() const {
+std::optional<size_t> RulesetMatcher::GetUnsafeRulesCount() const {
   return unsafe_rule_count_;
 }
 
@@ -214,7 +213,7 @@ void RulesetMatcher::OnDidFinishNavigation(
   regex_matcher_.OnDidFinishNavigation(navigation_handle);
 }
 
-absl::optional<RequestAction>
+std::optional<RequestAction>
 RulesetMatcher::GetAllowlistedFrameActionForTesting(
     content::RenderFrameHost* host) const {
   return GetMaxPriorityAction(

@@ -10,15 +10,15 @@
 #import "components/breadcrumbs/core/breadcrumb_manager.h"
 #import "ios/chrome/browser/crash_report/model/breadcrumbs/breadcrumb_manager_tab_helper.h"
 #import "ios/chrome/browser/download/model/confirm_download_replacing_overlay.h"
-#import "ios/chrome/browser/infobars/infobar_manager_impl.h"
-#import "ios/chrome/browser/overlays/public/overlay_request.h"
-#import "ios/chrome/browser/overlays/public/overlay_request_queue.h"
-#import "ios/chrome/browser/overlays/public/web_content_area/app_launcher_overlay.h"
-#import "ios/chrome/browser/overlays/public/web_content_area/http_auth_overlay.h"
-#import "ios/chrome/browser/overlays/public/web_content_area/java_script_alert_dialog_overlay.h"
-#import "ios/chrome/browser/overlays/public/web_content_area/java_script_confirm_dialog_overlay.h"
-#import "ios/chrome/browser/overlays/public/web_content_area/java_script_prompt_dialog_overlay.h"
-#import "ios/chrome/browser/overlays/test/fake_overlay_presentation_context.h"
+#import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_request.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_request_queue.h"
+#import "ios/chrome/browser/overlays/model/public/web_content_area/app_launcher_overlay.h"
+#import "ios/chrome/browser/overlays/model/public/web_content_area/http_auth_overlay.h"
+#import "ios/chrome/browser/overlays/model/public/web_content_area/java_script_alert_dialog_overlay.h"
+#import "ios/chrome/browser/overlays/model/public/web_content_area/java_script_confirm_dialog_overlay.h"
+#import "ios/chrome/browser/overlays/model/public/web_content_area/java_script_prompt_dialog_overlay.h"
+#import "ios/chrome/browser/overlays/model/test/fake_overlay_presentation_context.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state_manager.h"
@@ -130,26 +130,28 @@ TEST_F(BreadcrumbManagerBrowserAgentTest, MultipleBrowsers) {
 TEST_F(BreadcrumbManagerBrowserAgentTest, BatchOperations) {
   BreadcrumbManagerBrowserAgent::CreateForBrowser(browser_.get());
 
-  // Insert multiple WebStates.
-  browser_->GetWebStateList()->PerformBatchOperation(
-      base::BindOnce(^(WebStateList* list) {
-        InsertWebState(browser_.get());
-        InsertWebState(browser_.get());
-      }));
+  // Insert multiple WebStates in a batch operation.
+  {
+    WebStateList::ScopedBatchOperation lock =
+        browser_->GetWebStateList()->StartBatchOperation();
+    InsertWebState(browser_.get());
+    InsertWebState(browser_.get());
+  }
 
   const auto& events = GetEvents();
   ASSERT_EQ(1u, events.size());
   EXPECT_TRUE(base::Contains(events.front(), "Inserted 2 tabs"))
       << events.front();
 
-  // Close multiple WebStates.
-  browser_->GetWebStateList()->PerformBatchOperation(
-      base::BindOnce(^(WebStateList* list) {
-        list->CloseWebStateAt(
-            /*index=*/0, WebStateList::ClosingFlags::CLOSE_NO_FLAGS);
-        list->CloseWebStateAt(
-            /*index=*/0, WebStateList::ClosingFlags::CLOSE_NO_FLAGS);
-      }));
+  // Close multiple WebStates in a batch operation.
+  {
+    WebStateList::ScopedBatchOperation lock =
+        browser_->GetWebStateList()->StartBatchOperation();
+    browser_->GetWebStateList()->CloseWebStateAt(
+        0, WebStateList::ClosingFlags::CLOSE_NO_FLAGS);
+    browser_->GetWebStateList()->CloseWebStateAt(
+        0, WebStateList::ClosingFlags::CLOSE_NO_FLAGS);
+  }
 
   ASSERT_EQ(2u, events.size());
   EXPECT_TRUE(base::Contains(events.back(), "Closed 2 tabs")) << events.back();

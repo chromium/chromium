@@ -4,6 +4,8 @@
 
 #include "services/device/device_posture/device_posture_platform_provider_win.h"
 
+#include <string_view>
+
 #include "base/functional/callback_helpers.h"
 #include "base/test/values_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -23,7 +25,7 @@ class DevicePosturePlatformProviderWinTest : public testing::Test {
   }
 
   static absl::optional<mojom::DevicePostureType> ParsePosture(
-      base::StringPiece posture_state) {
+      std::string_view posture_state) {
     return DevicePosturePlatformProviderWin::ParsePosture(posture_state);
   }
 };

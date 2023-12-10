@@ -110,6 +110,7 @@ OverlayProcessorDelegated::OverlayProcessorDelegated(
   needs_background_image_ = runtime_props.needs_background_image;
   supports_affine_transform_ = features::ShouldDelegateTransforms() &&
                                runtime_props.supports_affine_transform;
+  has_transformation_fix_ = runtime_props.has_transformation_fix;
 }
 
 OverlayProcessorDelegated::~OverlayProcessorDelegated() = default;
@@ -174,7 +175,9 @@ bool OverlayProcessorDelegated::AttemptWithStrategies(
       .supports_clip_rect = supports_clip_rect_,
       .supports_out_of_window_clip_rect = supports_out_of_window_clip_rect_,
       .supports_arbitrary_transform = supports_affine_transform_,
-      .supports_mask_filter = true};
+      .supports_mask_filter = true,
+      .transform_and_clip_rpdq = has_transformation_fix_,
+  };
 
   OverlayCandidateFactory candidate_factory = OverlayCandidateFactory(
       render_pass, resource_provider, surface_damage_rect_list,

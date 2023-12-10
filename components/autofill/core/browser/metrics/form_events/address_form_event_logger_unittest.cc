@@ -15,48 +15,6 @@
 
 namespace autofill::autofill_metrics {
 
-class AddressFormEventLoggerTest : public AutofillMetricsBaseTest,
-                                   public testing::Test {
- public:
-  void SetUp() override { SetUpHelper(); }
-  void TearDown() override { TearDownHelper(); }
-};
-
-// Verify that FormEvent metrics log the appropriate sync state.
-TEST_F(AddressFormEventLoggerTest, SyncState) {
-  FormData form;
-  FormStructure form_structure(form);
-  SeeForm(form);
-  autofill_manager().Reset();
-
-  {
-    base::HistogramTester histogram_tester;
-    AddressFormEventLogger logger(
-        /*is_in_any_main_frame=*/true,
-        /*form_interactions_ukm_logger=*/nullptr,
-        /*client=*/autofill_client_.get());
-    logger.OnDidSeeFillableDynamicForm(
-        AutofillMetrics::PaymentsSigninState::kSignedOut, form_structure);
-    histogram_tester.ExpectBucketCount(
-        "Autofill.FormEvents.Address.WithNoData.SignedOut",
-        FORM_EVENT_DID_SEE_FILLABLE_DYNAMIC_FORM, 1);
-    logger.OnDestroyed();
-  }
-  {
-    base::HistogramTester histogram_tester;
-    AddressFormEventLogger logger(
-        /*is_in_any_main_frame=*/true,
-        /*form_interactions_ukm_logger=*/nullptr,
-        /*client=*/autofill_client_.get());
-    logger.OnDidRefill(AutofillMetrics::PaymentsSigninState::kSignedIn,
-                       form_structure);
-    histogram_tester.ExpectBucketCount(
-        "Autofill.FormEvents.Address.WithNoData.SignedIn",
-        FORM_EVENT_DID_DYNAMIC_REFILL, 1);
-    logger.OnDestroyed();
-  }
-}
-
 class CategoryResolvedKeyMetricsTest
     : public autofill_metrics::AutofillMetricsBaseTest,
       public testing::Test {

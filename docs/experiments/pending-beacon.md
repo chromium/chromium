@@ -1,5 +1,6 @@
 # Pending Beacon API
 
+- Status: **Deprecated** (Replaced by [FetchLater API](fetch-later.md))
 - Contact: pending-beacon-experiment@chromium.org
 - API Feedback: https://github.com/WICG/pending-beacon/issues
 

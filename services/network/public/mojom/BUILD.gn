@@ -53,7 +53,7 @@ mojom("mojom_ip_address") {
       types = [
         {
           mojom = "network.mojom.ConnectionInfo"
-          cpp = "::net::HttpResponseInfo::ConnectionInfo"
+          cpp = "::net::HttpConnectionInfo"
         },
       ]
       traits_headers = [
@@ -408,9 +408,6 @@ mojom("mojom_attribution") {
 
   webui_module_path = "/"
 
-  # Generate TypeScript rather than JavaScript WebUI bindings.
-  use_typescript_sources = true
-
   # This is a dependency of url_loader_base below, which is used from Blink.
   # Blink requires legacy JS bindings.
   generate_legacy_js_bindings = true
@@ -460,7 +457,6 @@ mojom("url_loader_base") {
     "chunked_data_pipe_getter.mojom",
     "client_security_state.mojom",
     "content_security_policy.mojom",
-    "cookie_setting_overrides.mojom",
     "cors.mojom",
     "cross_origin_embedder_policy.mojom",
     "cross_origin_opener_policy.mojom",
@@ -484,6 +480,7 @@ mojom("url_loader_base") {
     "parsed_headers.mojom",
     "referrer_policy.mojom",
     "request_priority.mojom",
+    "service_worker_router_info.mojom",
     "shared_dictionary_access_observer.mojom",
     "source_location.mojom",
     "supports_loading_mode.mojom",
@@ -775,18 +772,6 @@ mojom("url_loader_base") {
           [ "//services/network/public/cpp/load_timing_info_mojom_traits.h" ]
       traits_public_deps = [ "//net" ]
     },
-    {
-      types = [
-        {
-          mojom = "network.mojom.CookieSettingOverrides"
-          cpp = "::net::CookieSettingOverrides"
-        },
-      ]
-      traits_headers = [
-        "//services/network/public/cpp/cookie_setting_overrides_mojom_traits.h",
-      ]
-      traits_public_deps = [ "//net" ]
-    },
   ]
 
   if (is_linux) {
@@ -865,9 +850,6 @@ mojom("mojom_schemeful_site") {
   ]
 
   webui_module_path = "/"
-
-  # Generate TypeScript rather than JavaScript WebUI bindings.
-  use_typescript_sources = true
 
   # Blink requires the 3 legacy JS bindings types.
   generate_legacy_js_bindings = true
@@ -1117,6 +1099,7 @@ mojom("cookies_mojom") {
     "cookie_access_observer.mojom",
     "cookie_manager.mojom",
     "cookie_partition_key.mojom",
+    "cookie_setting_overrides.mojom",
     "restricted_cookie_manager.mojom",
     "site_for_cookies.mojom",
   ]
@@ -1253,6 +1236,18 @@ mojom("cookies_mojom") {
           [ "//services/network/public/cpp/cookie_manager_mojom_traits.cc" ]
       traits_public_deps = [ "//net" ]
     },
+    {
+      types = [
+        {
+          mojom = "network.mojom.CookieSettingOverrides"
+          cpp = "::net::CookieSettingOverrides"
+        },
+      ]
+      traits_headers = [
+        "//services/network/public/cpp/cookie_setting_overrides_mojom_traits.h",
+      ]
+      traits_public_deps = [ "//net" ]
+    },
   ]
   cpp_typemaps += shared_cpp_typemaps
 
@@ -1352,6 +1347,7 @@ mojom("mojom") {
   sources = [
     "cert_verifier_service.mojom",
     "clear_data_filter.mojom",
+    "cookie_encryption_provider.mojom",
     "cors_origin_pattern.mojom",
     "default_credentials.mojom",
     "dhcp_wpad_url_client.mojom",
@@ -1397,6 +1393,7 @@ mojom("mojom") {
     ":mojom_structured_headers",
     ":url_loader_base",
     ":websocket_mojom",
+    "//components/os_crypt/async/common:common_mojom",
     "//mojo/public/mojom/base",
     "//sandbox/policy/mojom",
     "//services/proxy_resolver/public/mojom",

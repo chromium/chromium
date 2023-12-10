@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="si">
+<translation id="1003363546227723021">ඔබගේ තිරය අක්‍රිය වූ විට, ඡායාරූප, වේලාව, කාලගුණය සහ මාධ්‍ය තොරතුරු පෙන්වන්න</translation>
 <translation id="1014750484722996375">මේස</translation>
 <translation id="1018219910092211213">DNS විසඳිය නොහැකිය</translation>
 <translation id="1018656279737460067">අවලංගු විය</translation>
@@ -28,6 +29,7 @@
 <translation id="1175697296044146566">මෙම <ph name="DEVICE_TYPE" /> කළමනාකරණය කරනු ලබන්නේ <ph name="MANAGER" /> මගිනි.</translation>
 <translation id="1175951029573070619">සාමාන්‍යයි (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">ඉවත් කරන්න</translation>
+<translation id="1191518099344003522">APN සබල කර ඇත.</translation>
 <translation id="1195447618553298278">නොදන්නා දෝෂය.</translation>
 <translation id="1196959502276349371">අනුවාදය <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">වාදනය කරන්න/විරාම කරන්න</translation>
@@ -79,6 +81,7 @@
 <translation id="1515129336378114413">බ්‍රව්සර් නිවස</translation>
 <translation id="1526389707933164996">තිර රූ සජීවිකරණය</translation>
 <translation id="152892567002884378">හඬ පරිමාව වැඩි</translation>
+<translation id="1539242642795599947">APN වර්ග පෙරනිමි කර අමුණන්න</translation>
 <translation id="1555130319947370107">නිල්</translation>
 <translation id="155865706765934889">ස්පර්ශ පුවරුව</translation>
 <translation id="1561927818299383735">පසුආලෝක වර්ණය</translation>
@@ -134,6 +137,7 @@
 <translation id="1852934301711881861">ChromeOS Flex ස්ථාපනය කරන්න</translation>
 <translation id="1856388568474281774">පහළ ඊතලය</translation>
 <translation id="1858620243986915808">තිර රුව අමුණන්න</translation>
+<translation id="1871413952174074704">APN හි අනුලකුණු <ph name="CHAR_LIMIT" />කට වඩා තිබිය නොහැක</translation>
 <translation id="1871569928317311284">අඳුරු තේමාව ක්‍රියාවිරහිත කරන්න</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">අඳුරු ප්‍රකාරය ක්‍රියාවිරහිත කරන්න</translation>
@@ -255,6 +259,7 @@
 <translation id="2872961005593481000">වසන්න</translation>
 <translation id="2873483161362553159">බ්‍රව්සර සංචාලනය</translation>
 <translation id="2874939134665556319">පෙර ඛණ්ඩය</translation>
+<translation id="2875812231449496375">මෙම බිතුපත සමග හොඳම ප්‍රතිඵල සඳහා මෙය ක්‍රියාත්මක කරන්න. ඔබට ඕනෑම වේලාවක දී මෙම සැකසීම ක්‍රියා විරහිත කළ හැක.</translation>
 <translation id="2878387241690264070">තත්පර <ph name="NUM_SECONDS" />ක් තුළ <ph name="RATE" /> විසර්ජනය වේ.</translation>
 <translation id="2880569433548999039">වලාකුළු ප්‍රවාහ තිර සුරැකුම</translation>
 <translation id="2926057806159140518">ඔබගේ පරිශීලක නාමය සහ මුරපදය ඇතුළත් කරන්න හෝ ඔබගේ QR කේතය ස්කෑන් කරන්න</translation>
@@ -336,6 +341,7 @@
 <translation id="3577473026931028326">යම් දෙයක් වැරදිණි. නැවත උත්සාහ කරන්න.</translation>
 <translation id="357889014807611375">මනුගත Wi-Fi</translation>
 <translation id="3583278742022654445">දුර්වල සංඥා ප්‍රබලතාව. Wi-Fi සංඥා මූලාශ්‍රය වෙත වඩාත් සමීප වීමට උත්සාහ කරන්න.</translation>
+<translation id="3594280220611906414"><ph name="USER_FRIENDLY_APN_NAME" /> <ph name="APN_NAME" /> සඳහා පරිශීලක-හිතකාමී නම වේ.</translation>
 <translation id="3595596368722241419">බැටරිය ආරෝපිතයි</translation>
 <translation id="3600339377155080675">තිර දර්පණය</translation>
 <translation id="3602290021589620013">පෙරදසුන</translation>
@@ -434,7 +440,7 @@
 <translation id="4300073214558989">රූප <ph name="IMAGE_COUNT" /></translation>
 <translation id="4333390807948134856"><ph name="KEY_NAME" /> යතුර ඔබන ලදි</translation>
 <translation id="4354430579665871434">යතුර</translation>
-<translation id="435692326371619097">ජාල APN සැකසීම් කළමනාකරණය කරන්න. APN සෙලියුලර් ජාලයක් සහ අන්තර්ජාලය අතර සම්බන්ධතාවයක් ඇති කරයි. <ph name="BEGIN_LINK" />තව දැන ගන්න<ph name="END_LINK" /></translation>
+<translation id="4361257691546579041">APN වර්ගය පෙරනිමි වේ.</translation>
 <translation id="437294888293595148">සියලු කෙටිමං යළි සකසන්න</translation>
 <translation id="4378373042927530923">ධාවනය නොවේ</translation>
 <translation id="4378551569595875038">සම්බන්ධ වෙමින්...</translation>
@@ -534,7 +540,6 @@
 <translation id="4999333166442584738">වාර්තාව සඟවන්න</translation>
 <translation id="500920857929044050">පරීක්ෂණය නවත්වන්න</translation>
 <translation id="5017508259293544172">LEAP</translation>
-<translation id="5019310272469539976">ඔබගේ තිරය අක්‍රිය වූ විට, ඡායාරූප, වේලාව, කාලගුණය සහ මාධ්‍ය තොරතුරු පෙන්වීම.</translation>
 <translation id="5035083460461104704">තේමා වර්ණය</translation>
 <translation id="5038292761217083259">යතුරු පුවරු බහු වර්ණ</translation>
 <translation id="5039804452771397117">ඉඩදෙන්න</translation>
@@ -547,6 +552,7 @@
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
 <translation id="5137451382116112100">පූර්ණ</translation>
 <translation id="5142961317498132443">සත්‍යාපනය</translation>
+<translation id="5145081769226915336">අඳුරු ප්‍රකාරය ස්වයංක්‍රීයව ක්‍රියාත්මක කරන්න ද?</translation>
 <translation id="5154917547274118687">මතකය</translation>
 <translation id="5160857336552977725">ඔබේ <ph name="DEVICE_TYPE" /> වෙත පුරන්න</translation>
 <translation id="5166918508782100047">ඉක්මන් පිළිතුරු සැකසීම්</translation>
@@ -625,6 +631,7 @@
 <translation id="574392208103952083">මධ්‍යම</translation>
 <translation id="5757187557809630523">මීළඟ ඛණ්ඩය</translation>
 <translation id="5760715441271661976">ද්වාර තත්වය</translation>
+<translation id="5763838252932650682"><ph name="APP_NAME" /> යළි අරඹා යාවත්කාලීන කරමින්</translation>
 <translation id="576835345334454681">සංදර්ශක දීප්තිය ඉහළට</translation>
 <translation id="57838592816432529">නිහඬ කරන්න</translation>
 <translation id="5784136236926853061">ඉහළ HTTP පමාව</translation>
@@ -655,6 +662,7 @@
 <translation id="5946538341867151940">ඔබ තවම සම්බන්ධ වී නැත. ඔබේ ජංගම වාහකයා අභිරුචි APN නිර්දේශ කරන්නේ නම්, "+ නව APN" තේරීමෙන් APN තොරතුරු ඇතුළු කරන්න</translation>
 <translation id="5972388717451707488">යන්ත්‍රය යාවත්කාලීන කරන්න</translation>
 <translation id="5984145644188835034">පෙරනිමි වෝල්පේපරය</translation>
+<translation id="6001235009374883388">APN වර්ග ඇමුණුම වේ</translation>
 <translation id="6017514345406065928">කොළ</translation>
 <translation id="6019566113895157499">යතුරු කෙටි මං</translation>
 <translation id="6034694447310538551">ස්වයංක්‍රීය මාසික යළි සැකසීම සබල කරන්න</translation>
@@ -821,6 +829,7 @@
 <translation id="7180611975245234373">නැවුම් කරන්න</translation>
 <translation id="7180865173735832675">ගැලපුම් කරන්න</translation>
 <translation id="7184043045742675738">ඔබේ බොත්තම අභිරුචිකරණය කිරීමට ඕනෑම යතුරක් මත ක්ලික් කරන්න. මූසිකය හෝ ඊතල යතුරු සමග යතුර නැවත ස්ථානගත කරන්න.</translation>
+<translation id="7212547870105584639">ජාල APN සැකසීම් කළමනා කරන්න. APN සෙලියුලර් ජාලයක් සහ අන්තර්ජාලය අතර සම්බන්‍ධතාවක් ඇති කරයි. <ph name="BEGIN_LINK_LEARN_MORE" />තව දැන ගන්න<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">බාහිර උපාංග සඳහා නිත්‍ය මෘදුකාංග යාවත්කාලීන</translation>
 <translation id="7216409898977639127">සෙලියුලර් සපයන්නා</translation>
 <translation id="725133483556299729">ඉ-තැපෑල තෝරන්න</translation>
@@ -831,6 +840,7 @@
 <translation id="7287310195820267359">වෝල්පේපර එකතු</translation>
 <translation id="7297226631177386107">HTTPS වෙබ් අඩවිවලට ෆයර්වෝලය හරහා සම්බන්ධ විය නොහැකිය</translation>
 <translation id="7297726121602187087">තද කොළ</translation>
+<translation id="7301262279595293068">මෙම යෙදුම යාවත්කාලීන වන තෙක් රැඳී සිටින්න</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7308203371573257315">Chromebook උදවු සංසදයේ විශේෂඥයින්ගෙන් විමසන්න</translation>
@@ -1103,4 +1113,5 @@
 <translation id="979450713603643090">ලා රෝස</translation>
 <translation id="982713511914535780">විසර්ජන පරීක්ෂණය ධාවනය කරන්න</translation>
 <translation id="987264212798334818">සාමාන්‍ය</translation>
+<translation id="995062385528875723">උච්චාරණ අකුරු, ලතින් නොවන හෝඩිය, හෝ සංකේත භාවිතා කළ නොහැක</translation>
 </translationbundle>

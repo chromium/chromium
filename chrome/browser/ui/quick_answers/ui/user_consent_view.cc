@@ -88,6 +88,8 @@ std::unique_ptr<views::Label> CreateLabel(const std::u16string& text,
 // views::LabelButton with custom line-height, color and font-list for the
 // underlying label.
 class CustomizedLabelButton : public views::MdTextButton {
+  METADATA_HEADER(CustomizedLabelButton, views::MdTextButton)
+
  public:
   CustomizedLabelButton(PressedCallback callback,
                         const std::u16string& text,
@@ -111,6 +113,9 @@ class CustomizedLabelButton : public views::MdTextButton {
   // views::View:
   const char* GetClassName() const override { return "CustomizedLabelButton"; }
 };
+
+BEGIN_METADATA(CustomizedLabelButton)
+END_METADATA
 
 }  // namespace
 

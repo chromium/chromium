@@ -9,7 +9,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/containers/cxx20_erase.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/memory/raw_ptr.h"
@@ -208,7 +207,7 @@ void TouchEventAckQueue::ProcessAckedTouchEvents() {
 void TouchEventAckQueue::UpdateQueueAfterTargetDestroyed(
     RenderWidgetHostViewBase* target_view) {
   // If a queue entry's root view is being destroyed, just delete it.
-  base::EraseIf(ack_queue_, [target_view](AckData data) {
+  std::erase_if(ack_queue_, [target_view](AckData data) {
     return data.root_view == target_view;
   });
 
@@ -292,7 +291,7 @@ void RenderWidgetHostInputEventRouter::TouchscreenPinchState::
     case PinchState::PINCH_WITH_ROOT_GESTURE_TARGET:
     case PinchState::PINCH_WHILE_BUBBLING_TO_ROOT:
     case PinchState::PINCH_DURING_CHILD_GESTURE:
-      NOTREACHED();
+      DUMP_WILL_BE_NOTREACHED_NORETURN();
   }
 }
 

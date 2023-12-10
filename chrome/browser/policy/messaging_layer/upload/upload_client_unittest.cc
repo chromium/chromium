@@ -24,6 +24,7 @@
 #include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/proto/synced/record_constants.pb.h"
 #include "components/reporting/resources/resource_manager.h"
+#include "components/reporting/util/status_macros.h"
 #include "components/reporting/util/test_support_callbacks.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -241,7 +242,7 @@ TEST_P(UploadClientTest, CreateUploadClientAndUploadRecords) {
   auto response = ResponseBuilder(std::move(request_body))
                       .SetForceConfirm(force_confirm())
                       .Build();
-  ASSERT_TRUE(response);
+  ASSERT_OK(response) << response.error();
   test_env.SimulateCustomResponseForRequest(0, std::move(*response));
 
   auto upload_success_result = upload_success_event.result();

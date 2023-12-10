@@ -55,7 +55,7 @@ class CONTENT_EXPORT PrerendererImpl : public Prerenderer,
   void RecordReceivedPrerendersCountToMetrics();
   void ResetReceivedPrerendersCountForMetrics();
   void IncrementReceivedPrerendersCountForMetrics(
-      PrerenderTriggerType trigger_type,
+      PreloadingTriggerType trigger_type,
       blink::mojom::SpeculationEagerness eagerness);
 
   // Kept sorted by URL.
@@ -63,7 +63,7 @@ class CONTENT_EXPORT PrerendererImpl : public Prerenderer,
 
   // Used only for metric that counts received prerenders per
   // primary page changed.
-  base::flat_map<PrerenderTriggerType,
+  base::flat_map<PreloadingTriggerType,
                  std::array<int,
                             static_cast<size_t>(
                                 blink::mojom::SpeculationEagerness::kMaxValue) +

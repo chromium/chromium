@@ -123,7 +123,7 @@ class CORE_EXPORT LayoutFlowThread : public LayoutBlockFlow {
   void AddOutlineRects(OutlineRectCollector&,
                        OutlineInfo*,
                        const PhysicalOffset& additional_offset,
-                       NGOutlineType) const override;
+                       OutlineType) const override;
 
   void Paint(const PaintInfo& paint_info) const final;
 
@@ -173,7 +173,7 @@ class CORE_EXPORT LayoutFlowThread : public LayoutBlockFlow {
 
   const char* GetName() const override = 0;
 
-  RecalcLayoutOverflowResult RecalcLayoutOverflow() final;
+  RecalcScrollableOverflowResult RecalcScrollableOverflow() final;
 
  protected:
   void GenerateColumnSetIntervalTree();

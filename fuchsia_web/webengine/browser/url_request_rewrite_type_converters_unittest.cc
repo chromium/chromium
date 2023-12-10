@@ -51,7 +51,7 @@ TEST(UrlRequestRewriteTypeConvertersTest, ConvertAddHeader) {
 TEST(UrlRequestRewriteTypeConvertersTest, ConvertRemoveHeader) {
   url_rewrite::mojom::UrlRequestRewriteRulesPtr rules =
       ConvertFuchsiaRulesToMojom(
-          CreateRewriteRemoveHeader(absl::make_optional("Test"), "Header"));
+          CreateRewriteRemoveHeader(std::make_optional("Test"), "Header"));
   ASSERT_EQ(rules->rules.size(), 1u);
   ASSERT_FALSE(rules->rules[0]->hosts_filter);
   ASSERT_FALSE(rules->rules[0]->schemes_filter);
@@ -66,7 +66,7 @@ TEST(UrlRequestRewriteTypeConvertersTest, ConvertRemoveHeader) {
 
   // Create a RemoveHeader rewrite with no pattern.
   rules = ConvertFuchsiaRulesToMojom(
-      CreateRewriteRemoveHeader(absl::nullopt, "Header"));
+      CreateRewriteRemoveHeader(std::nullopt, "Header"));
   ASSERT_EQ(rules->rules.size(), 1u);
   ASSERT_FALSE(rules->rules[0]->hosts_filter);
   ASSERT_FALSE(rules->rules[0]->schemes_filter);

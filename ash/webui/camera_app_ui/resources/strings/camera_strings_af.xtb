@@ -5,7 +5,6 @@
 <translation id="1076394037877376434">Vee bladsy <ph name="PAGE_NUMBER" /> uit</translation>
 <translation id="1113173431709655881">Kameramodus</translation>
 <translation id="1153190633558910465">Rooster af</translation>
-<translation id="1175958423215084756">Skakel is bespeur. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213">Bladsy <ph name="PAGE_NUMBER" /> is uitgevee</translation>
 <translation id="1258009455399840361">Draai 90 grade kloksgewys</translation>
 <translation id="1417314334557041815">Wysig bladsy <ph name="INDEX" /></translation>
@@ -60,14 +59,12 @@
 <translation id="3642192109456033823">Verwerk tans video …</translation>
 <translation id="3789724198583203151">Draai 90 grade antikloksgewys</translation>
 <translation id="3810838688059735925">Video</translation>
-<translation id="3892148308691398805">Kopieer teks</translation>
 <translation id="4060608699153044055">Jy kan nie opneem nie vanweë min bergingspasie. Jy moet spasie op jou toestel beskikbaar maak as jy die opname wil begin.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
 <translation id="4118525110028899586">Onderbreek opname</translation>
 <translation id="4121305183798804752">Dokument bespeur</translation>
 <translation id="414641094616694804">Hierdie kamera kan nie resolusie verander nie</translation>
 <translation id="4176463684765177261">Gedeaktiveer</translation>
-<translation id="4269820728363426813">Kopieer skakeladres</translation>
 <translation id="428234092390943511">Bladsyminiprent</translation>
 <translation id="4349714250734879769">Skaleer rame deur Chrome</translation>
 <translation id="4383571725254449280">Drukwerkverrigtingloglêers</translation>
@@ -144,7 +141,6 @@ As jou terugvoer oor prent- of videogehalte gaan, moet jy asseblief 'n voorbeeld
 <translation id="7726641833034062494">Neem gewone video op</translation>
 <translation id="7748344063862150053">Dokument se hoek regs bo</translation>
 <translation id="7933675232020478311">Beweeg tans na regs onder</translation>
-<translation id="7983668134180549431">Teks is bespeur.</translation>
 <translation id="8079255378695216066">Kan nie opname begin nie</translation>
 <translation id="8120146556401698679">Swenk-draai-zoem</translation>
 <translation id="8131740175452115882">Bevestig</translation>
@@ -163,6 +159,7 @@ As jou terugvoer oor prent- of videogehalte gaan, moet jy asseblief 'n voorbeeld
 <translation id="8870695351537079478">Kan nie opname begin nie</translation>
 <translation id="8880167521484863515">4 tot 3</translation>
 <translation id="8903921497873541725">Zoem in</translation>
+<translation id="8926890870105777777">Sluit by “<ph name="WIFINAME" />”-netwerk aan</translation>
 <translation id="9045010116236796332">Plaas al die kante van die dokument binne die raam</translation>
 <translation id="9045155556724273246">10 sekondes</translation>
 <translation id="906331135292332864">Verwerk tans prent …</translation>

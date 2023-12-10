@@ -133,7 +133,7 @@ void DefaultFrameHeader::UpdateFrameColors() {
                                   ? ui::kColorSysPrimary
                                   : ui::kColorFrameCaptionButtonUnfocused);
   } else {
-    UpdateCaptionButtonColors(absl::nullopt);
+    UpdateCaptionButtonColors(std::nullopt);
   }
 }
 
@@ -196,10 +196,6 @@ aura::Window* DefaultFrameHeader::GetTargetWindow() {
 
 SkColor DefaultFrameHeader::GetCurrentFrameColor() const {
   return mode() == MODE_ACTIVE ? active_frame_color_ : inactive_frame_color_;
-}
-
-SkColor DefaultFrameHeader::GetActiveFrameColorForPaintForTest() {
-  return active_frame_color_;
 }
 
 void DefaultFrameHeader::InitializeFrameColorMetricsHelper() {

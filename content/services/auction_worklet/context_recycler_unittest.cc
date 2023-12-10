@@ -2614,15 +2614,15 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
         gin::ConvertToV8(helper_->isolate(), dict));
     EXPECT_THAT(error_msgs,
                 ElementsAre("https://example.org/script.js:12 Uncaught "
-                            "TypeError: Invalid bucket dictionary."));
+                            "TypeError: Bucket's 'baseValue' is invalid."));
 
     EXPECT_TRUE(context_recycler.private_aggregation_bindings()
                     ->TakePrivateAggregationRequests()
                     .empty());
   }
 
-  // Invalid bucket dictionary, whose scale is not a Number. That's fine since
-  // A string can get turned into a number.
+  // It's fine that a bucket's scale is a string, since a string can get turned
+  // into a Number.
   {
     ContextRecyclerScope scope(context_recycler);
     std::vector<std::string> error_msgs;
@@ -2747,7 +2747,7 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
         gin::ConvertToV8(helper_->isolate(), dict));
     EXPECT_THAT(error_msgs,
                 ElementsAre("https://example.org/script.js:12 Uncaught "
-                            "TypeError: Invalid bucket dictionary."));
+                            "TypeError: Bucket's 'offset' must be BigInt."));
 
     EXPECT_TRUE(context_recycler.private_aggregation_bindings()
                     ->TakePrivateAggregationRequests()
@@ -2793,7 +2793,7 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
         expected_contribution.Clone());
   }
 
-  // Invalid value dictionary, which has no base_value key
+  // Invalid value dictionary, which has no baseValue key
   {
     ContextRecyclerScope scope(context_recycler);
     std::vector<std::string> error_msgs;
@@ -2814,6 +2814,58 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
             "https://example.org/script.js:12 Uncaught TypeError: "
             "privateAggregation.contributeToHistogramOnEvent() 'contribution' "
             "argument: Required field 'baseValue' is undefined."));
+
+    EXPECT_TRUE(context_recycler.private_aggregation_bindings()
+                    ->TakePrivateAggregationRequests()
+                    .empty());
+  }
+
+  // Invalid value dictionary, whose offset is a BigInt, not a 32-bit signed
+  // integer.
+  {
+    ContextRecyclerScope scope(context_recycler);
+    std::vector<std::string> error_msgs;
+
+    gin::Dictionary value_dict =
+        gin::Dictionary::CreateEmpty(helper_->isolate());
+    value_dict.Set("baseValue", std::string("winning-bid"));
+    v8::Local<v8::Value> bigint_offset = v8::BigInt::New(helper_->isolate(), 1);
+    value_dict.Set("offset", bigint_offset);
+
+    gin::Dictionary dict = gin::Dictionary::CreateEmpty(helper_->isolate());
+    dict.Set("bucket", std::string("1"));
+    dict.Set("value", value_dict);
+
+    Run(scope, script, "test", error_msgs,
+        gin::ConvertToV8(helper_->isolate(), dict));
+    EXPECT_THAT(
+        error_msgs,
+        ElementsAre("https://example.org/script.js:12 Uncaught TypeError: "
+                    "Value's 'offset' must be a 32-bit signed integer."));
+
+    EXPECT_TRUE(context_recycler.private_aggregation_bindings()
+                    ->TakePrivateAggregationRequests()
+                    .empty());
+  }
+
+  // Invalid value dictionary, whose baseValue is invalid.
+  {
+    ContextRecyclerScope scope(context_recycler);
+    std::vector<std::string> error_msgs;
+
+    gin::Dictionary value_dict =
+        gin::Dictionary::CreateEmpty(helper_->isolate());
+    value_dict.Set("baseValue", std::string("notValidBaseValue"));
+
+    gin::Dictionary dict = gin::Dictionary::CreateEmpty(helper_->isolate());
+    dict.Set("bucket", std::string("1"));
+    dict.Set("value", value_dict);
+
+    Run(scope, script, "test", error_msgs,
+        gin::ConvertToV8(helper_->isolate(), dict));
+    EXPECT_THAT(error_msgs,
+                ElementsAre("https://example.org/script.js:12 Uncaught "
+                            "TypeError: Value's 'baseValue' is invalid."));
 
     EXPECT_TRUE(context_recycler.private_aggregation_bindings()
                     ->TakePrivateAggregationRequests()
@@ -2841,7 +2893,8 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
                     .empty());
   }
 
-  // Non Number or dictionary value. That's fine, because JavaScript.
+  // Non Number or dictionary value. It's fine as long as it can get turned into
+  // a Number.
   {
     ContextRecyclerScope scope(context_recycler);
     std::vector<std::string> error_msgs;

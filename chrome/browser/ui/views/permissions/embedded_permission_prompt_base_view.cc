@@ -12,40 +12,58 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_widget_sublevel.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "ui/base/interaction/element_identifier.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/button/md_text_button.h"
+#include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/views_features.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_client_view.h"
 
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(EmbeddedPermissionPromptBaseView,
+                                      kMainViewId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(EmbeddedPermissionPromptBaseView,
+                                      kLabelViewId1);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(EmbeddedPermissionPromptBaseView,
+                                      kLabelViewId2);
+
 namespace {
 
 constexpr int BODY_TOP_MARGIN = 10;
 constexpr int DISTANCE_BUTTON_VERTICAL = 8;
 
-}  // namespace
-
-const std::vector<permissions::PermissionRequest*>&
-EmbeddedPermissionPromptBaseView::Delegate::Requests() const {
-  if (auto permission_prompt_delegate = GetPermissionPromptDelegate()) {
-    return permission_prompt_delegate->Requests();
+void AddElementIdentifierToLabel(views::Label& label, size_t index) {
+  ui::ElementIdentifier id;
+  switch (index) {
+    case 0:
+      id = EmbeddedPermissionPromptBaseView::kLabelViewId1;
+      break;
+    case 1:
+      id = EmbeddedPermissionPromptBaseView::kLabelViewId2;
+      break;
+    default:
+      return;
   }
-  NOTREACHED();
-  static const std::vector<permissions::PermissionRequest*> empty_requests;
-  return empty_requests;
+
+  label.SetProperty(views::kElementIdentifierKey, id);
 }
+
+}  // namespace
 
 EmbeddedPermissionPromptBaseView::EmbeddedPermissionPromptBaseView(
     Browser* browser,
-    base::WeakPtr<Delegate> delegate)
+    base::WeakPtr<EmbeddedPermissionPromptViewDelegate> delegate)
     : PermissionPromptBaseView(browser,
                                delegate->GetPermissionPromptDelegate()),
       browser_(browser),
-      delegate_(delegate) {}
+      delegate_(delegate) {
+  SetProperty(views::kElementIdentifierKey, kMainViewId);
+}
 
 EmbeddedPermissionPromptBaseView::~EmbeddedPermissionPromptBaseView() = default;
 
@@ -56,9 +74,6 @@ void EmbeddedPermissionPromptBaseView::Show() {
 
 void EmbeddedPermissionPromptBaseView::CreateWidget() {
   DCHECK(browser_->window());
-
-  UpdateAnchorPosition();
-
   views::Widget* widget = views::BubbleDialogDelegateView::CreateBubble(this);
 
   if (base::FeatureList::IsEnabled(views::features::kWidgetLayering)) {
@@ -82,9 +97,8 @@ void EmbeddedPermissionPromptBaseView::ShowWidget() {
   SizeToContents();
 }
 
-void EmbeddedPermissionPromptBaseView::UpdateAnchorPosition() {
-  SetAnchorView(
-      BrowserView::GetBrowserViewForBrowser(browser_)->GetContentsView());
+void EmbeddedPermissionPromptBaseView::UpdateAnchor(views::Widget* widget) {
+  SetAnchorView(widget->GetContentsView());
   set_parent_window(
       platform_util::GetViewForWindow(browser_->window()->GetNativeWindow()));
   SetArrow(views::BubbleBorder::Arrow::FLOAT);
@@ -163,6 +177,7 @@ void EmbeddedPermissionPromptBaseView::AddRequestLine(
       std::make_unique<views::Label>(line.message));
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   label->SetMultiLine(true);
+  AddElementIdentifierToLabel(*label, index);
 
   if (features::IsChromeRefresh2023()) {
     label->SetTextStyle(views::style::STYLE_BODY_3);
@@ -184,6 +199,8 @@ void EmbeddedPermissionPromptBaseView::AddButton(
   button_view->SetID(GetViewId(button.type));
 
   button_view->SetStyle(button.style);
+
+  button_view->SetProperty(views::kElementIdentifierKey, button.identifier);
 
   buttons_container.AddChildView(std::move(button_view));
 }

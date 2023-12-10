@@ -39,9 +39,7 @@ import java.lang.annotation.RetentionPolicy;
  * child accounts that are syncing.
  */
 public class SignOutDialogCoordinator {
-    /**
-     * Receives updates when the user interacts with the dialog buttons.
-     */
+    /** Receives updates when the user interacts with the dialog buttons. */
     public interface Listener {
         /**
          * Notifies when the positive button in this dialog was pressed.
@@ -76,8 +74,12 @@ public class SignOutDialogCoordinator {
      * @param gaiaServiceType  The GAIA service that's prompted this dialog.
      */
     @MainThread
-    public static void show(Context context, ModalDialogManager dialogManager, Listener listener,
-            @ActionType int actionType, @GAIAServiceType int gaiaServiceType) {
+    public static void show(
+            Context context,
+            ModalDialogManager dialogManager,
+            Listener listener,
+            @ActionType int actionType,
+            @GAIAServiceType int gaiaServiceType) {
         new SignOutDialogCoordinator(context, dialogManager, listener, actionType, gaiaServiceType);
     }
 
@@ -93,8 +95,8 @@ public class SignOutDialogCoordinator {
 
     private static @StringRes int getTitleRes(String managedDomain, @ActionType int actionType) {
         if (!IdentityServicesProvider.get()
-                        .getIdentityManager(Profile.getLastUsedRegularProfile())
-                        .hasPrimaryAccount(ConsentLevel.SYNC)) {
+                .getIdentityManager(Profile.getLastUsedRegularProfile())
+                .hasPrimaryAccount(ConsentLevel.SYNC)) {
             return R.string.signout_title;
         }
         if (managedDomain != null) {
@@ -113,8 +115,8 @@ public class SignOutDialogCoordinator {
 
     private static String getMessage(Context context, String managedDomain) {
         if (!IdentityServicesProvider.get()
-                        .getIdentityManager(Profile.getLastUsedRegularProfile())
-                        .hasPrimaryAccount(ConsentLevel.SYNC)) {
+                .getIdentityManager(Profile.getLastUsedRegularProfile())
+                .hasPrimaryAccount(ConsentLevel.SYNC)) {
             return context.getString(R.string.signout_message);
         }
         if (managedDomain != null) {
@@ -126,8 +128,9 @@ public class SignOutDialogCoordinator {
     private static int getCheckBoxVisibility(String managedDomain) {
         // TODO(crbug.com/1294761): extract logic for whether data wiping is allowed into
         // SigninManager.
-        final boolean allowDeletingData = UserPrefs.get(Profile.getLastUsedRegularProfile())
-                                                  .getBoolean(Pref.ALLOW_DELETING_BROWSER_HISTORY);
+        final boolean allowDeletingData =
+                UserPrefs.get(Profile.getLastUsedRegularProfile())
+                        .getBoolean(Pref.ALLOW_DELETING_BROWSER_HISTORY);
         final boolean hasSyncConsent =
                 IdentityServicesProvider.get()
                         .getIdentityManager(Profile.getLastUsedRegularProfile())
@@ -138,28 +141,37 @@ public class SignOutDialogCoordinator {
 
     @VisibleForTesting
     @MainThread
-    SignOutDialogCoordinator(Context context, ModalDialogManager dialogManager, Listener listener,
-            @ActionType int actionType, @GAIAServiceType int gaiaServiceType) {
-        final String managedDomain = IdentityServicesProvider.get()
-                                             .getSigninManager(Profile.getLastUsedRegularProfile())
-                                             .getManagementDomain();
+    SignOutDialogCoordinator(
+            Context context,
+            ModalDialogManager dialogManager,
+            Listener listener,
+            @ActionType int actionType,
+            @GAIAServiceType int gaiaServiceType) {
+        final String managedDomain =
+                IdentityServicesProvider.get()
+                        .getSigninManager(Profile.getLastUsedRegularProfile())
+                        .getManagementDomain();
         final View view = inflateView(context, managedDomain, actionType);
         mCheckBox = view.findViewById(R.id.remove_local_data);
         mCheckBox.setVisibility(getCheckBoxVisibility(managedDomain));
 
         mGaiaServiceType = gaiaServiceType;
         mListener = listener;
-        mModel = new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
-                         .with(ModalDialogProperties.TITLE,
-                                 context.getString(getTitleRes(managedDomain, actionType)))
-                         .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT,
-                                 context.getString(R.string.continue_button))
-                         .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
-                                 context.getString(R.string.cancel))
-                         .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, true)
-                         .with(ModalDialogProperties.CUSTOM_VIEW, view)
-                         .with(ModalDialogProperties.CONTROLLER, createController())
-                         .build();
+        mModel =
+                new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
+                        .with(
+                                ModalDialogProperties.TITLE,
+                                context.getString(getTitleRes(managedDomain, actionType)))
+                        .with(
+                                ModalDialogProperties.POSITIVE_BUTTON_TEXT,
+                                context.getString(R.string.continue_button))
+                        .with(
+                                ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
+                                context.getString(R.string.cancel))
+                        .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, true)
+                        .with(ModalDialogProperties.CUSTOM_VIEW, view)
+                        .with(ModalDialogProperties.CONTROLLER, createController())
+                        .build();
         mDialogManager = dialogManager;
 
         mDialogManager.showDialog(mModel, ModalDialogType.APP);

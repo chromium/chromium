@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/check.h"
 #include "base/fuchsia/file_utils.h"
 #include "base/path_service.h"
 

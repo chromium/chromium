@@ -391,7 +391,7 @@ QuotaErrorOr<BucketInfo> MockQuotaManager::FindAndUpdateBucket(
 }
 
 void MockQuotaManager::UpdateUsage(const BucketLocator& bucket,
-                                   absl::optional<int64_t> delta) {
+                                   std::optional<int64_t> delta) {
   if (delta) {
     usage_map_[bucket].usage += *delta;
   } else {

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/rand_util.h"
+#include "partition_alloc/partition_alloc_base/rand_util.h"
 
 #include <errno.h>
 #include <fcntl.h>
@@ -12,12 +12,12 @@
 #include <unistd.h>
 #include <sstream>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/check.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/compiler_specific.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/files/file_util.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/no_destructor.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/posix/eintr_wrapper.h"
 #include "build/build_config.h"
+#include "partition_alloc/partition_alloc_base/check.h"
+#include "partition_alloc/partition_alloc_base/compiler_specific.h"
+#include "partition_alloc/partition_alloc_base/files/file_util.h"
+#include "partition_alloc/partition_alloc_base/no_destructor.h"
+#include "partition_alloc/partition_alloc_base/posix/eintr_wrapper.h"
 
 #if BUILDFLAG(IS_MAC)
 // TODO(crbug.com/995996): Waiting for this header to appear in the iOS SDK.

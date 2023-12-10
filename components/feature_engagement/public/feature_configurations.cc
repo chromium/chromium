@@ -48,6 +48,24 @@ FeatureConfig CreateAlwaysTriggerConfig(const base::Feature* feature) {
 
 absl::optional<FeatureConfig> GetClientSideFeatureConfig(
     const base::Feature* feature) {
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+
+  // The IPH bubble for link capturing has a trigger set to ANY so that it
+  // always shows up. The per app specific guardrails are independently stored
+  // under the web_app_prefs.
+  if (kIPHDesktopPWAsLinkCapturingLaunch.name == feature->name) {
+    absl::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(ANY, 0);
+    config->trigger = EventConfig("desktop_pwa_launch_link_capturing",
+                                  Comparator(ANY, 0), 0, 0);
+    config->used = EventConfig("desktop_pwa_launch_link_capturing_used",
+                               Comparator(ANY, 0), 0, 0);
+    return config;
+  }
+
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
   if (kIPHPasswordsAccountStorageFeature.name == feature->name) {
@@ -247,31 +265,12 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
     // Show the label once per day, 3 times max in 28 days.
     config->trigger =
         EventConfig("price_insights_page_action_icon_label_in_trigger",
-                    Comparator(LESS_THAN, 1), 1, 360);
+                    Comparator(ANY, 0), 0, 360);
     config->used = EventConfig("price_insights_page_action_icon_label_used",
-                               Comparator(EQUAL, 0), 28, 360);
+                               Comparator(ANY, 0), 0, 360);
     config->event_configs.insert(
         EventConfig("price_insights_page_action_icon_label_in_trigger",
-                    Comparator(LESS_THAN, 3), 28, 360));
-    return config;
-  }
-
-  if (kIPHPriceTrackingChipFeature.name == feature->name) {
-    absl::optional<FeatureConfig> config = FeatureConfig();
-    config->valid = true;
-    config->availability = Comparator(ANY, 0);
-    config->session_rate = Comparator(ANY, 0);
-    // Show the promo only once.
-    config->trigger =
-        EventConfig("price_tracking_chip_iph_trigger", Comparator(EQUAL, 0),
-                    feature_engagement::kMaxStoragePeriod,
-                    feature_engagement::kMaxStoragePeriod);
-    // Set a dummy config for the used event to be consistent with the other
-    // IPH configurations. The used event is never recorded by the feature code
-    // because the trigger event is already reported the first time the chip is
-    // being used, which corresponds to a used event.
-    config->used =
-        EventConfig("price_tracking_chip_shown", Comparator(ANY, 0), 0, 360);
+                    Comparator(ANY, 0), 0, 360));
     return config;
   }
 
@@ -324,6 +323,7 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
     return config;
   }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   if (kIPHExtensionsMenuFeature.name == feature->name) {
     absl::optional<FeatureConfig> config = FeatureConfig();
     config->valid = true;
@@ -354,6 +354,7 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
                                Comparator(EQUAL, 0), 360, 360);
     return config;
   }
+#endif
 
   if (kIPHCompanionSidePanelFeature.name == feature->name) {
     absl::optional<FeatureConfig> config = FeatureConfig();
@@ -515,6 +516,20 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
                                   Comparator(LESS_THAN, 4), 10, 360);
     config->used =
         EventConfig("compose_activated", Comparator(LESS_THAN, 3), 360, 360);
+    return config;
+  }
+
+  if (kIPHTabOrganizationSuccessFeature.name == feature->name) {
+    absl::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(ANY, 0);
+    config->session_rate_impact.type = SessionRateImpact::Type::NONE;
+    // Show the IPH once per year.
+    config->trigger = EventConfig("iph_tab_organization_success_trigger",
+                                  Comparator(EQUAL, 0), 360, 360);
+    config->used =
+        EventConfig("tab_group_editor_shown", Comparator(EQUAL, 0), 360, 360);
     return config;
   }
 
@@ -1333,22 +1348,24 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
 
   if (kIPHRequestDesktopSiteDefaultOnFeature.name == feature->name) {
     // A config that allows the RDS default-on message to be shown:
-    // * If the message has never been shown before.
     // * If the user has never accepted the message.
-    // * If the user has never explicitly dismissed the message.
+    // * The message can show twice, but only once in a week.
     absl::optional<FeatureConfig> config = FeatureConfig();
     config->valid = true;
-    config->availability = Comparator(ANY, 0);
-    config->session_rate = Comparator(ANY, 0);
+    config->availability = Comparator(GREATER_THAN, 1);
+    config->session_rate = Comparator(LESS_THAN, 1);
     config->used = EventConfig("desktop_site_settings_page_opened",
                                Comparator(ANY, 0), 360, 360);
     config->trigger = EventConfig("request_desktop_site_default_on_iph_trigger",
-                                  Comparator(EQUAL, 0), 360, 360);
+                                  Comparator(LESS_THAN_OR_EQUAL, 1), 360, 360);
+    config->event_configs.insert(
+        EventConfig("request_desktop_site_default_on_iph_trigger",
+                    Comparator(EQUAL, 0), 7, 360));
     config->event_configs.insert(
         EventConfig("desktop_site_default_on_primary_action",
                     Comparator(EQUAL, 0), 360, 360));
     config->event_configs.insert(EventConfig("desktop_site_default_on_gesture",
-                                             Comparator(EQUAL, 0), 360, 360));
+                                             Comparator(ANY, 0), 360, 360));
     return config;
   }
 
@@ -1414,7 +1431,7 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
     config->availability = Comparator(LESS_THAN_OR_EQUAL, 14);
     config->session_rate = Comparator(ANY, 0);
     config->trigger =
-        EventConfig("restore_tabs_promo_trigger", Comparator(EQUAL, 0), 7, 7);
+        EventConfig("restore_tabs_promo_trigger", Comparator(EQUAL, 0), 7, 14);
     config->used =
         EventConfig("restore_tabs_promo_used", Comparator(EQUAL, 0), 14, 14);
     config->event_configs.insert(EventConfig(
@@ -1863,6 +1880,101 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
                     Comparator(GREATER_THAN_OR_EQUAL, 1),
                     feature_engagement::kMaxStoragePeriod,
                     feature_engagement::kMaxStoragePeriod));
+    config->blocked_by.type = BlockedBy::Type::NONE;
+    config->blocking.type = Blocking::Type::NONE;
+    return config;
+  }
+
+  if (kIPHiOSPullToRefreshFeature.name == feature->name) {
+    // The IPH of the pull-to-refresh feature for the current tab.
+    //
+    // Note that the IPH is only triggered for users who installed Chrome on iOS
+    // in the last specified number of days, so this could be used as the
+    // maximum storage period of respective events.
+    const uint32_t kMaxStorageDaysForIOSPullToRefresh = 61;
+
+    absl::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(EQUAL, 0);
+    // The IPH is shown at most once a week.
+    config->trigger =
+        EventConfig("iph_pull_to_refresh_trigger", Comparator(EQUAL, 0), 7, 7);
+    // The user hasn't used the pull-to-refresh feature.
+    config->used = EventConfig(
+        feature_engagement::events::kIOSPullToRefreshUsed, Comparator(EQUAL, 0),
+        kMaxStorageDaysForIOSPullToRefresh, kMaxStorageDaysForIOSPullToRefresh);
+    // The IPH only shows when user attempted multi-tap refresh methods at least
+    // twice.
+    config->event_configs.insert(
+        EventConfig(feature_engagement::events::kIOSMultiGestureRefreshUsed,
+                    Comparator(GREATER_THAN_OR_EQUAL, 2),
+                    kMaxStorageDaysForIOSPullToRefresh,
+                    kMaxStorageDaysForIOSPullToRefresh));
+    // The IPH is shown at most twice.
+    config->event_configs.insert(
+        EventConfig("iph_pull_to_refresh_trigger", Comparator(LESS_THAN, 2),
+                    kMaxStorageDaysForIOSPullToRefresh,
+                    kMaxStorageDaysForIOSPullToRefresh));
+    return config;
+  }
+  if (kIPHiOSReplaceSyncPromosWithSignInPromos.name == feature->name) {
+    // A config to show a user education bubble from the account row in the
+    // settings page. Will be shown only the first time user signs-in from
+    // settings. Subsequent sign-ins will not trigger it.
+    absl::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(ANY, 0);
+    config->trigger =
+        EventConfig("signin_from_settings_trigger", Comparator(LESS_THAN, 1),
+                    feature_engagement::kMaxStoragePeriod,
+                    feature_engagement::kMaxStoragePeriod);
+    config->used =
+        EventConfig("signin_from_settings_used", Comparator(EQUAL, 0),
+                    feature_engagement::kMaxStoragePeriod,
+                    feature_engagement::kMaxStoragePeriod);
+    config->blocked_by.type = BlockedBy::Type::NONE;
+    return config;
+  }
+
+  if (kIPHiOSBlueDotPromoEnhancedSafeBrowsingFeature.name == feature->name) {
+    absl::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(LESS_THAN, 1);
+    config->trigger =
+        EventConfig("enhanced_safe_browsing_blue_dot_promo_trigger",
+                    Comparator(LESS_THAN_OR_EQUAL, 3), 360, 360);
+    config->event_configs.insert(EventConfig(
+        feature_engagement::events::kEnhancedSafeBrowsingPromoCriterionMet,
+        Comparator(GREATER_THAN_OR_EQUAL, 1), 7, 360));
+    config->used =
+        EventConfig("enhanced_safe_browsing_blue_dot_promo_used",
+                    Comparator(EQUAL, 0), feature_engagement::kMaxStoragePeriod,
+                    feature_engagement::kMaxStoragePeriod);
+    config->blocked_by.type = BlockedBy::Type::NONE;
+    config->blocking.type = Blocking::Type::NONE;
+    return config;
+  }
+
+  if (kIPHiOSInlinePromoEnhancedSafeBrowsingFeature.name == feature->name) {
+    absl::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(LESS_THAN, 1);
+    config->trigger = EventConfig("enhanced_safe_browsing_inline_promo_trigger",
+                                  Comparator(ANY, 0), 360, 360);
+    config->event_configs.insert(EventConfig(
+        feature_engagement::events::kEnhancedSafeBrowsingPromoCriterionMet,
+        Comparator(GREATER_THAN_OR_EQUAL, 1), 7, 360));
+    config->event_configs.insert(EventConfig(
+        feature_engagement::events::kEnhancedSafeBrowsingInlinePromoClosed,
+        Comparator(LESS_THAN, 1), 360, 360));
+    config->used =
+        EventConfig("enhanced_safe_browsing_inline_promo_used",
+                    Comparator(EQUAL, 0), feature_engagement::kMaxStoragePeriod,
+                    feature_engagement::kMaxStoragePeriod);
     config->blocked_by.type = BlockedBy::Type::NONE;
     config->blocking.type = Blocking::Type::NONE;
     return config;

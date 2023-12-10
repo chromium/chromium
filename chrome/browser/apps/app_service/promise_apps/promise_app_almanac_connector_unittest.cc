@@ -4,6 +4,8 @@
 
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_almanac_connector.h"
 
+#include <optional>
+
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/bind.h"
@@ -23,7 +25,6 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "services/network/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace apps {
 
@@ -45,6 +46,7 @@ class PromiseAppAlmanacConnectorTest : public testing::Test {
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             url_loader_factory_.get());
     connector_ = std::make_unique<PromiseAppAlmanacConnector>(profile_.get());
+    connector_->SetSkipApiKeyCheckForTesting(true);
   }
 
   network::TestURLLoaderFactory* url_loader_factory() {
@@ -78,7 +80,7 @@ TEST_F(PromiseAppAlmanacConnectorTest, GetPromiseAppInfoRequest) {
   url_loader_factory()->AddResponse(
       PromiseAppAlmanacConnector::GetServerUrl().spec(), /*content=*/"");
 
-  base::test::TestFuture<absl::optional<PromiseAppWrapper>> test_callback;
+  base::test::TestFuture<std::optional<PromiseAppWrapper>> test_callback;
   connector()->GetPromiseAppInfo(kTestPackageId, test_callback.GetCallback());
   EXPECT_TRUE(test_callback.Wait());
 
@@ -99,7 +101,7 @@ TEST_F(PromiseAppAlmanacConnectorTest, GetPromiseAppInfoSuccessResponse) {
       PromiseAppAlmanacConnector::GetServerUrl().spec(),
       response.SerializeAsString());
 
-  base::test::TestFuture<absl::optional<PromiseAppWrapper>> test_callback;
+  base::test::TestFuture<std::optional<PromiseAppWrapper>> test_callback;
   connector()->GetPromiseAppInfo(kTestPackageId, test_callback.GetCallback());
   auto promise_app_info = test_callback.Get();
 
@@ -111,7 +113,7 @@ TEST_F(PromiseAppAlmanacConnectorTest, GetPromiseAppInfoErrorResponse) {
       PromiseAppAlmanacConnector::GetServerUrl().spec(), /*content=*/"",
       net::HTTP_INTERNAL_SERVER_ERROR);
 
-  base::test::TestFuture<absl::optional<PromiseAppWrapper>> test_callback;
+  base::test::TestFuture<std::optional<PromiseAppWrapper>> test_callback;
   connector()->GetPromiseAppInfo(kTestPackageId, test_callback.GetCallback());
   auto promise_app_info = test_callback.Get();
 

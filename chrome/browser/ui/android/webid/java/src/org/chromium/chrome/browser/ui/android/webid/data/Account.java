@@ -28,7 +28,12 @@ public class Account {
      * @param isSignIn whether this account is a sign in or a sign up.
      */
     @CalledByNative
-    public Account(String id, String email, String name, String givenName, GURL pictureUrl,
+    public Account(
+            String id,
+            String email,
+            String name,
+            String givenName,
+            GURL pictureUrl,
             boolean isSignIn) {
         mId = id;
         mEmail = email;

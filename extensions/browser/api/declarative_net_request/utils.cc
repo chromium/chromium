@@ -48,7 +48,7 @@ namespace flat_rule = url_pattern_index::flat;
 // url_pattern_index.fbs. Whenever an extension with an indexed ruleset format
 // version different from the one currently used by Chrome is loaded, the
 // extension ruleset will be reindexed.
-constexpr int kIndexedRulesetFormatVersion = 29;
+constexpr int kIndexedRulesetFormatVersion = 30;
 
 // This static assert is meant to catch cases where
 // url_pattern_index::kUrlPatternIndexFormatVersion is incremented without
@@ -490,7 +490,7 @@ size_t GetEnabledStaticRuleCount(const CompositeMatcher* composite_matcher) {
 }
 
 bool HasDNRFeedbackPermission(const Extension* extension,
-                              const absl::optional<int>& tab_id) {
+                              const std::optional<int>& tab_id) {
   const PermissionsData* permissions_data = extension->permissions_data();
   return tab_id.has_value()
              ? permissions_data->HasAPIPermissionForTab(

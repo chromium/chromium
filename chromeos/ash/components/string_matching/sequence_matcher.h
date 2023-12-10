@@ -65,9 +65,9 @@ class SequenceMatcher {
   // agnosticism").
   //
   // Thus, We will trim the text length if it is too long and
-  // `use_text_length_agnosticism` is true, and it only works for the block
+  // `text_length_agnostic` is true, and it only works for the block
   // matching algorithm.
-  double Ratio(bool use_text_length_agnosticism = kUseTextLengthAgnosticism);
+  double Ratio(bool text_length_agnostic = kUseTextLengthAgnosticism);
   // Finds the longest common substring between
   // `first_string_[first_start:first_end]` and
   // `second_string_[second_start:second_end]`. Used by

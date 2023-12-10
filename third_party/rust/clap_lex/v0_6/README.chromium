@@ -1,0 +1,9 @@
+Name: clap_lex
+URL: https://crates.io/crates/clap_lex
+Description: Minimal, flexible command line parser
+Version: 0.6.0
+Security Critical: yes
+Shipped: no
+License: Apache 2.0
+License File: //third_party/rust/chromium_crates_io/vendor/clap_lex-0.6.0/LICENSE-APACHE
+Revision: 38b5a2f956f889baa0a8b2ec975566b0ae27fcb1

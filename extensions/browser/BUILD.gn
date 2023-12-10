@@ -184,8 +184,6 @@ source_set("browser_sources") {
     "api/scripting/scripting_constants.h",
     "api/scripting/scripting_utils.cc",
     "api/scripting/scripting_utils.h",
-    "api/scripts_internal/script_serialization.cc",
-    "api/scripts_internal/script_serialization.h",
     "api/storage/settings_namespace.cc",
     "api/storage/settings_namespace.h",
     "api/storage/settings_observer.h",
@@ -835,6 +833,7 @@ source_set("test_support") {
     "//extensions/common",
     "//extensions/common:test_support",
     "//extensions/common/api:api",
+    "//net/traffic_annotation:test_support",
     "//services/data_decoder/public/cpp:test_support",
     "//services/network:test_support",
     "//testing/gmock",
@@ -887,7 +886,6 @@ source_set("unit_tests") {
     "api/mime_handler_private/mime_handler_private_unittest.cc",
     "api/power/power_api_unittest.cc",
     "api/runtime/restart_after_delay_api_unittest.cc",
-    "api/scripts_internal/script_serialization_unittest.cc",
     "api/socket/mojo_data_pump_unittest.cc",
     "api/sockets_tcp/sockets_tcp_api_unittest.cc",
     "api/sockets_udp/sockets_udp_api_unittest.cc",
@@ -1084,4 +1082,7 @@ fuzzer_test("extension_declarative_net_request_indexed_rule_fuzzer") {
     "//third_party/abseil-cpp:absl",
     "//url",
   ]
+
+  # The fuzzed code needs more RAM that the default limit.
+  libfuzzer_options = [ "rss_limit_mb=4096" ]
 }

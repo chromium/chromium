@@ -140,12 +140,6 @@ void SkiaOutputSurfaceDependencyWebView::DidLoseContext(
   LOG(ERROR) << "SkiaRenderer detected lost context.";
 }
 
-base::TimeDelta
-SkiaOutputSurfaceDependencyWebView::GetGpuBlockedTimeSinceLastSwap() {
-  // WebView doesn't track how long GPU thread was blocked
-  return base::TimeDelta();
-}
-
 void SkiaOutputSurfaceDependencyWebView::ScheduleDelayedGPUTaskFromGPUThread(
     base::OnceClosure task) {
   task_queue_->ScheduleIdleTask(std::move(task));

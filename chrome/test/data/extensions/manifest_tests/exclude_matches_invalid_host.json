@@ -4,6 +4,7 @@
   "version": "1",
   "content_scripts": [
     {
+      "js": ["script.js"],
       "matches": ["http://*.google.com/*"],
       "exclude_matches": ["http://*docs.google.com/*"]
     }

@@ -9,12 +9,11 @@ import org.chromium.build.annotations.CheckDiscard;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Keeps track of values overridden for testing for cached flags and field trial parameters.
- */
+/** Keeps track of values overridden for testing for cached flags and field trial parameters. */
 class ValuesOverridden {
-    @CheckDiscard("Should only exist in tests and in debug builds, should be optimized out in "
-            + "Release.")
+    @CheckDiscard(
+            "Should only exist in tests and in debug builds, should be optimized out in "
+                    + "Release.")
     private static Map<String, String> sOverridesTestFeatures;
 
     static void setOverrideForTesting(String preferenceKey, String overrideValue) {

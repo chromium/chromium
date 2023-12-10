@@ -488,7 +488,7 @@ void ResponseBodyLoader::DidBufferLoadWhileInBackForwardCache(
   if (!back_forward_cache_loader_helper_)
     return;
   back_forward_cache_loader_helper_->DidBufferLoadWhileInBackForwardCache(
-      num_bytes);
+      /*update_process_wide_count=*/true, num_bytes);
 }
 
 void ResponseBodyLoader::Start() {

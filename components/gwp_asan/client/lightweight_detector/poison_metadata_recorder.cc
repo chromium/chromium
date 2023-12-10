@@ -16,7 +16,7 @@
 #include "components/crash/core/app/crashpad.h"  // nogncheck
 #endif
 
-namespace gwp_asan::internal {
+namespace gwp_asan::internal::lud {
 
 PoisonMetadataRecorder::PoisonMetadataRecorder(LightweightDetectorMode mode,
                                                size_t num_metadata) {
@@ -43,7 +43,7 @@ PoisonMetadataRecorder::PoisonMetadataRecorder(LightweightDetectorMode mode,
 
 PoisonMetadataRecorder::~PoisonMetadataRecorder() = default;
 
-void PoisonMetadataRecorder::RecordDeallocation(void* ptr, size_t size) {
+void PoisonMetadataRecorder::RecordAndZap(void* ptr, size_t size) {
   DCHECK(metadata_);
   DCHECK_GT(state_.num_metadata, 0u);
 
@@ -79,11 +79,18 @@ void PoisonMetadataRecorder::RecordDeallocation(void* ptr, size_t size) {
   slot_metadata.dealloc.tid = AllocationInfo::GetCurrentTid();
   slot_metadata.dealloc.trace_collected = true;
 
-  LightweightDetectorState::PseudoAddresss encoded_metadata_id =
+  LightweightDetectorState::PseudoAddress encoded_metadata_id =
       LightweightDetectorState::EncodeMetadataId(metadata_id);
   size_t count = size / sizeof(encoded_metadata_id);
-  std::fill_n(static_cast<LightweightDetectorState::PseudoAddresss*>(ptr),
-              count, encoded_metadata_id);
+  if (count > 0) {
+    // This cast is safe (but only assuming -fno-strict-aliasing) because `ptr`
+    // is expected to be the beginning of a heap allocation, and heap
+    // allocations are required to be aligned. However, this only applies if the
+    // allocation was larger than a `PseudoAddress`, so we must guard this with
+    // a length check.
+    std::fill_n(static_cast<LightweightDetectorState::PseudoAddress*>(ptr),
+                count, encoded_metadata_id);
+  }
 
   size_t remainder_offset = count * sizeof(encoded_metadata_id);
   size_t remainder_size = size - remainder_offset;
@@ -112,6 +119,6 @@ bool PoisonMetadataRecorder::HasAllocationForTesting(uintptr_t address) {
 }
 
 template class EXPORT_TEMPLATE_DEFINE(GWP_ASAN_EXPORT)
-    SharedState<PoisonMetadataRecorder>;
+    SharedStateHolder<PoisonMetadataRecorder>;
 
-}  // namespace gwp_asan::internal
+}  // namespace gwp_asan::internal::lud

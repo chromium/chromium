@@ -4,7 +4,7 @@
 
 package org.chromium.content_public.browser;
 
-//import org.chromium.content_public.browser.NavigationEntry;
+// import org.chromium.content_public.browser.NavigationEntry;
 
 import java.util.ArrayList;
 
@@ -33,9 +33,7 @@ public class NavigationHistory {
         return mEntries.size();
     }
 
-    /**
-     * Returns the {@link NavigationEntry} for the given index.
-     */
+    /** Returns the {@link NavigationEntry} for the given index. */
     public NavigationEntry getEntryAtIndex(int index) {
         return mEntries.get(index);
     }
@@ -47,5 +45,4 @@ public class NavigationHistory {
     public int getCurrentEntryIndex() {
         return mCurrentEntryIndex;
     }
-
 }

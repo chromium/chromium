@@ -112,8 +112,8 @@ enum Event {
 // Web: this attribute is only used in web content.
 //
 // Native: this attribute is only used in native UI.
-// Next version: 5
-// Next value: 210
+// Next version: 6
+// Next value: 211
 [Extensible, Stable, Uuid="d258eb73-e0cc-490c-b881-80ee11d3fec2"]
 enum Role {
   [Default]kUnknown = 181, // The role has not been set.
@@ -162,6 +162,7 @@ enum Role {
   kDialog = 35,
   kDirectory = 36,
   kDisclosureTriangle = 37,
+  [MinVersion=5] kDisclosureTriangleGrouped = 210,
   // --------------------------------------------------------------
   // DPub Roles:
   // https://www.w3.org/TR/dpub-aam-1.0/#mapping_role_table

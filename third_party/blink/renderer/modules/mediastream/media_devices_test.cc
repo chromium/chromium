@@ -9,12 +9,17 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
+#include "media/base/video_types.h"
+#include "media/capture/mojom/video_capture_types.mojom.h"
+#include "media/capture/video/video_capture_device_descriptor.h"
+#include "media/capture/video_capture_types.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/mediastream/media_devices.h"
 #include "third_party/blink/public/mojom/media/capture_handle_config.mojom-blink.h"
+#include "third_party/blink/public/mojom/mediastream/media_devices.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/mediastream/media_devices.mojom-blink.h"
 #include "third_party/blink/public/mojom/mediastream/media_devices.mojom-shared.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
@@ -25,7 +30,10 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_capture_handle_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_crop_target.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_double_range.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_long_range.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_device_info.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_media_track_capabilities.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_restriction_target.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_user_media_stream_constraints.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
@@ -36,18 +44,21 @@
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/modules/mediastream/crop_target.h"
+#include "third_party/blink/renderer/modules/mediastream/input_device_info.h"
 #include "third_party/blink/renderer/modules/mediastream/media_device_info.h"
 #include "third_party/blink/renderer/modules/mediastream/restriction_target.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
+#include "ui/gfx/geometry/mojom/geometry.mojom.h"
 
 namespace blink {
 
 using ::base::HistogramTester;
 using ::blink::mojom::blink::MediaDeviceInfoPtr;
 using ::testing::_;
+using ::testing::ElementsAre;
 using ::testing::StrictMock;
 using MediaDeviceType = ::blink::mojom::MediaDeviceType;
 
@@ -71,11 +82,22 @@ class MockMediaDevicesDispatcherHost final
             {
               {"fake_audio_input_1", "Fake Audio Input 1", "common_group_1"},
               {"fake_audio_input_2", "Fake Audio Input 2", "common_group_2"},
-              {"fake_audio_input_3", "Fake Audio Input 3", "audio_input_group"}
+              {"fake_audio_input_3", "Fake Audio Input 3", "audio_input_group"},
             }, {
-              {"fake_video_input_1", "Fake Video Input 1", "common_group_1"},
-              {"fake_video_input_2", "Fake Video Input 2", "video_input_group"}
-            }, {
+              {"fake_video_input_1", "Fake Video Input 1", "common_group_1",
+               media::VideoCaptureControlSupport(),
+               blink::mojom::FacingMode::kNone,
+               media::CameraAvailability::kAvailable},
+              {"fake_video_input_2", "Fake Video Input 2", "video_input_group",
+               media::VideoCaptureControlSupport(),
+               blink::mojom::FacingMode::kUser, absl::nullopt},
+              {"fake_video_input_3", "Fake Video Input 3", "video_input_group 2",
+               media::VideoCaptureControlSupport(),
+               blink::mojom::FacingMode::kUser,
+               media::CameraAvailability::
+                    kUnavailableExclusivelyUsedByOtherApplication},
+            },
+            {
               {"fake_audio_output_1", "Fake Audio Output 1", "common_group_1"},
               {"fake_audio_putput_2", "Fake Audio Output 2", "common_group_2"},
             }
@@ -88,13 +110,34 @@ class MockMediaDevicesDispatcherHost final
         mojom::blink::VideoInputDeviceCapabilities::New();
     capabilities->device_id = String(enumeration_[1][0].device_id);
     capabilities->group_id = String(enumeration_[1][0].group_id);
-    capabilities->facing_mode = mojom::blink::FacingMode::kNone;
+    capabilities->facing_mode =
+        enumeration_[1][0].video_facing;  // mojom::blink::FacingMode::kNone;
+    capabilities->formats.push_back(media::VideoCaptureFormat(
+        gfx::Size(640, 480), 30.0, media::VideoPixelFormat::PIXEL_FORMAT_I420));
+    capabilities->availability = static_cast<media::mojom::CameraAvailability>(
+        *enumeration_[1][0].availability);
     video_input_capabilities_.push_back(std::move(capabilities));
 
     capabilities = mojom::blink::VideoInputDeviceCapabilities::New();
     capabilities->device_id = String(enumeration_[1][1].device_id);
     capabilities->group_id = String(enumeration_[1][1].group_id);
-    capabilities->facing_mode = mojom::blink::FacingMode::kUser;
+    capabilities->formats.push_back(media::VideoCaptureFormat(
+        gfx::Size(640, 480), 30.0, media::VideoPixelFormat::PIXEL_FORMAT_I420));
+    capabilities->facing_mode = enumeration_[1][1].video_facing;
+    media::VideoCaptureFormat format;
+    video_input_capabilities_.push_back(std::move(capabilities));
+
+    capabilities = mojom::blink::VideoInputDeviceCapabilities::New();
+    capabilities->device_id = String(enumeration_[1][2].device_id);
+    capabilities->group_id = String(enumeration_[1][2].group_id);
+    capabilities->formats.push_back(media::VideoCaptureFormat(
+        gfx::Size(640, 480), 30.0, media::VideoPixelFormat::PIXEL_FORMAT_I420));
+    capabilities->formats.push_back(
+        media::VideoCaptureFormat(gfx::Size(1920, 1080), 60.0,
+                                  media::VideoPixelFormat::PIXEL_FORMAT_I420));
+    capabilities->facing_mode = enumeration_[1][2].video_facing;
+    capabilities->availability = static_cast<media::mojom::CameraAvailability>(
+        *enumeration_[1][2].availability);
     video_input_capabilities_.push_back(std::move(capabilities));
   }
 
@@ -281,6 +324,11 @@ class MockMediaDevicesDispatcherHost final
         MediaDeviceType::kMediaAudioOuput)];
   }
 
+  const Vector<mojom::blink::VideoInputDeviceCapabilitiesPtr>&
+  VideoInputCapabilities() {
+    return video_input_capabilities_;
+  }
+
  private:
   mojo::Remote<mojom::blink::MediaDevicesListener> listener_;
   mojo::Receiver<mojom::blink::MediaDevicesDispatcherHost> receiver_{this};
@@ -313,6 +361,27 @@ String ToString(MediaDeviceType type) {
   }
 }
 
+void VerifyFacingMode(const Vector<String>& js_facing_mode,
+                      blink::mojom::FacingMode cpp_facing_mode) {
+  switch (cpp_facing_mode) {
+    case blink::mojom::FacingMode::kNone:
+      EXPECT_TRUE(js_facing_mode.empty());
+      break;
+    case blink::mojom::FacingMode::kUser:
+      EXPECT_THAT(js_facing_mode, ElementsAre("user"));
+      break;
+    case blink::mojom::FacingMode::kEnvironment:
+      EXPECT_THAT(js_facing_mode, ElementsAre("environment"));
+      break;
+    case blink::mojom::FacingMode::kLeft:
+      EXPECT_THAT(js_facing_mode, ElementsAre("left"));
+      break;
+    case blink::mojom::FacingMode::kRight:
+      EXPECT_THAT(js_facing_mode, ElementsAre("right"));
+      break;
+  }
+}
+
 void VerifyDeviceInfo(const MediaDeviceInfo* device,
                       const WebMediaDeviceInfo& expected,
                       MediaDeviceType type) {
@@ -320,6 +389,50 @@ void VerifyDeviceInfo(const MediaDeviceInfo* device,
   EXPECT_EQ(device->groupId(), String(expected.group_id));
   EXPECT_EQ(device->label(), String(expected.label));
   EXPECT_EQ(device->kind(), ToString(type));
+}
+
+void VerifyVideoInputCapabilities(
+    const MediaDeviceInfo* device,
+    const WebMediaDeviceInfo& expected_device_info,
+    const mojom::blink::VideoInputDeviceCapabilitiesPtr&
+        expected_capabilities) {
+  CHECK_EQ(device->kind(), "videoinput");
+  const InputDeviceInfo* info = static_cast<const InputDeviceInfo*>(device);
+  MediaTrackCapabilities* capabilities = info->getCapabilities();
+  EXPECT_EQ(capabilities->hasFacingMode(), expected_device_info.IsAvailable());
+  if (capabilities->hasFacingMode()) {
+    VerifyFacingMode(capabilities->facingMode(),
+                     expected_device_info.video_facing);
+  }
+  EXPECT_EQ(capabilities->hasDeviceId(), expected_device_info.IsAvailable());
+  EXPECT_EQ(capabilities->hasGroupId(), expected_device_info.IsAvailable());
+  EXPECT_EQ(capabilities->hasWidth(), expected_device_info.IsAvailable());
+  EXPECT_EQ(capabilities->hasHeight(), expected_device_info.IsAvailable());
+  EXPECT_EQ(capabilities->hasAspectRatio(), expected_device_info.IsAvailable());
+  EXPECT_EQ(capabilities->hasFrameRate(), expected_device_info.IsAvailable());
+  if (expected_device_info.IsAvailable()) {
+    int max_expected_width = 0;
+    int max_expected_height = 0;
+    float max_expected_frame_rate = 0.0;
+    for (const auto& format : expected_capabilities->formats) {
+      max_expected_width =
+          std::max(max_expected_width, format.frame_size.width());
+      max_expected_height =
+          std::max(max_expected_height, format.frame_size.height());
+      max_expected_frame_rate =
+          std::max(max_expected_frame_rate, format.frame_rate);
+    }
+    EXPECT_EQ(capabilities->deviceId().Utf8(), expected_device_info.device_id);
+    EXPECT_EQ(capabilities->groupId().Utf8(), expected_device_info.group_id);
+    EXPECT_EQ(capabilities->width()->min(), 1);
+    EXPECT_EQ(capabilities->width()->max(), max_expected_width);
+    EXPECT_EQ(capabilities->height()->min(), 1);
+    EXPECT_EQ(capabilities->height()->max(), max_expected_height);
+    EXPECT_EQ(capabilities->aspectRatio()->min(), 1.0 / max_expected_height);
+    EXPECT_EQ(capabilities->aspectRatio()->max(), max_expected_width);
+    EXPECT_EQ(capabilities->frameRate()->min(), 1.0);
+    EXPECT_EQ(capabilities->frameRate()->max(), max_expected_frame_rate);
+  }
 }
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -439,15 +552,25 @@ TEST_F(MediaDevicesTest, EnumerateDevices) {
 
   ExpectEnumerateDevicesHistogramReport(EnumerateDevicesResult::kOk);
 
-  for (wtf_size_t i = 0, result_index = 0;
+  const auto& video_input_capabilities =
+      dispatcher_host().VideoInputCapabilities();
+  for (wtf_size_t i = 0, result_index = 0, video_input_index = 0;
        i < static_cast<wtf_size_t>(MediaDeviceType::kNumMediaDeviceTypes);
        ++i) {
-    for (const auto& device_info : dispatcher_host().enumeration()[i]) {
+    for (const auto& expected_device_info :
+         dispatcher_host().enumeration()[i]) {
       testing::Message message;
       message << "Verifying result index " << result_index;
       SCOPED_TRACE(message);
-      VerifyDeviceInfo(device_infos[result_index++], device_info,
+      VerifyDeviceInfo(device_infos[result_index], expected_device_info,
                        static_cast<MediaDeviceType>(i));
+      if (i == static_cast<wtf_size_t>(MediaDeviceType::kMediaVideoInput)) {
+        VerifyVideoInputCapabilities(
+            device_infos[result_index], expected_device_info,
+            video_input_capabilities[video_input_index]);
+        video_input_index++;
+      }
+      result_index++;
     }
   }
 }
@@ -486,6 +609,9 @@ TEST_F(MediaDevicesTest, SetCaptureHandleConfigAfterConnectionError) {
 }
 
 TEST_F(MediaDevicesTest, ObserveDeviceChangeEvent) {
+  if (!RuntimeEnabledFeatures::OnDeviceChangeEnabled()) {
+    return;
+  }
   EXPECT_FALSE(dispatcher_host().listener());
 
   // Subscribe to the devicechange event.
@@ -506,8 +632,31 @@ TEST_F(MediaDevicesTest, ObserveDeviceChangeEvent) {
       "new_fake_audio_input_device", "new_fake_label", "new_fake_group"));
   NotifyDeviceChanges();
 
-  // Renaming a group ID does not fire the event.
+  // Renaming a device ID fires the event.
+  EXPECT_CALL(*event_listener, Invoke(_, _));
+  dispatcher_host().VideoInputDevices().begin()->device_id = "new_device_id";
+  NotifyDeviceChanges();
+
+  // Renaming a group ID fires the event.
+  EXPECT_CALL(*event_listener, Invoke(_, _));
   dispatcher_host().AudioOutputDevices().begin()->group_id = "new_group_id";
+  NotifyDeviceChanges();
+
+  // Renaming a label fires the event.
+  EXPECT_CALL(*event_listener, Invoke(_, _));
+  dispatcher_host().AudioOutputDevices().begin()->label = "new_label";
+  NotifyDeviceChanges();
+
+  // Changing availability fires the event.
+  EXPECT_CALL(*event_listener, Invoke(_, _));
+  dispatcher_host().VideoInputDevices().begin()->availability =
+      media::CameraAvailability::kUnavailableExclusivelyUsedByOtherApplication;
+  NotifyDeviceChanges();
+
+  // Changing facing mode does not file the event.
+  EXPECT_CALL(*event_listener, Invoke(_, _)).Times(0);
+  dispatcher_host().VideoInputDevices().begin()->video_facing =
+      blink::mojom::FacingMode::kLeft;
   NotifyDeviceChanges();
 
   // Unsubscribe.
@@ -522,6 +671,9 @@ TEST_F(MediaDevicesTest, ObserveDeviceChangeEvent) {
 }
 
 TEST_F(MediaDevicesTest, RemoveDeviceFiresDeviceChange) {
+  if (!RuntimeEnabledFeatures::OnDeviceChangeEnabled()) {
+    return;
+  }
   StrictMock<MockDeviceChangeEventListener>* event_listener =
       MakeGarbageCollected<StrictMock<MockDeviceChangeEventListener>>();
   AddDeviceChangeListener(event_listener);
@@ -532,6 +684,9 @@ TEST_F(MediaDevicesTest, RemoveDeviceFiresDeviceChange) {
 }
 
 TEST_F(MediaDevicesTest, RenameDeviceIDFiresDeviceChange) {
+  if (!RuntimeEnabledFeatures::OnDeviceChangeEnabled()) {
+    return;
+  }
   StrictMock<MockDeviceChangeEventListener>* event_listener =
       MakeGarbageCollected<StrictMock<MockDeviceChangeEventListener>>();
   AddDeviceChangeListener(event_listener);
@@ -542,6 +697,9 @@ TEST_F(MediaDevicesTest, RenameDeviceIDFiresDeviceChange) {
 }
 
 TEST_F(MediaDevicesTest, RenameLabelFiresDeviceChange) {
+  if (!RuntimeEnabledFeatures::OnDeviceChangeEnabled()) {
+    return;
+  }
   StrictMock<MockDeviceChangeEventListener>* event_listener =
       MakeGarbageCollected<StrictMock<MockDeviceChangeEventListener>>();
   AddDeviceChangeListener(event_listener);

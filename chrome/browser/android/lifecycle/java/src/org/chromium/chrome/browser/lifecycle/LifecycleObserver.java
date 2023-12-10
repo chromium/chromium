@@ -4,7 +4,5 @@
 
 package org.chromium.chrome.browser.lifecycle;
 
-/**
- * Parent interface for lifecycle observer interfaces.
- */
+/** Parent interface for lifecycle observer interfaces. */
 public interface LifecycleObserver {}

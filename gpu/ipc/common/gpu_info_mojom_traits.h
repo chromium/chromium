@@ -5,13 +5,13 @@
 #ifndef GPU_IPC_COMMON_GPU_INFO_MOJOM_TRAITS_H_
 #define GPU_IPC_COMMON_GPU_INFO_MOJOM_TRAITS_H_
 
+#include <optional>
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "gpu/config/gpu_info.h"
 #include "gpu/gpu_export.h"
 #include "gpu/ipc/common/dx_diag_node_mojom_traits.h"
 #include "gpu/ipc/common/gpu_info.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/mojom/geometry_mojom_traits.h"
 
@@ -423,7 +423,7 @@ struct GPU_EXPORT StructTraits<gpu::mojom::GpuInfoDataView, gpu::GPUInfo> {
   }
 
 #if BUILDFLAG(ENABLE_VULKAN)
-  static const absl::optional<gpu::VulkanInfo>& vulkan_info(
+  static const std::optional<gpu::VulkanInfo>& vulkan_info(
       const gpu::GPUInfo& input) {
     return input.vulkan_info;
   }

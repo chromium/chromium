@@ -46,7 +46,7 @@ class LocalTabSource : public TabSessionSource {
 
   // TabSessionSource impl.
   void AddLocalTabInfo(const TabFetcher::Tab& tab,
-                       const FeatureProcessorState& feature_processor_state,
+                       FeatureProcessorState& feature_processor_state,
                        Tensor& inputs) override;
 };
 

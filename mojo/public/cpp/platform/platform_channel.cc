@@ -193,7 +193,7 @@ void PlatformChannel::RemoteProcessLaunchAttempted() {
 
 // static
 PlatformChannelEndpoint PlatformChannel::RecoverPassedEndpointFromString(
-    base::StringPiece value) {
+    std::string_view value) {
   return PlatformChannelEndpoint::RecoverFromString(value);
 }
 

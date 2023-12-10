@@ -6,13 +6,16 @@
 #define IOS_CHROME_BROWSER_UI_WEBUI_POLICY_POLICY_UI_HANDLER_H_
 
 #include <memory>
+#include <string>
 
+#include "base/containers/flat_set.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/values.h"
 #include "components/policy/core/browser/webui/policy_status_provider.h"
 #include "components/policy/core/common/policy_service.h"
 #include "components/policy/core/common/schema_registry.h"
+#include "ios/chrome/browser/policy/status_provider/user_cloud_policy_status_provider.h"
 #include "ios/web/public/webui/web_ui_ios.h"
 #include "ios/web/public/webui/web_ui_ios_data_source.h"
 #include "ios/web/public/webui/web_ui_ios_message_handler.h"
@@ -24,6 +27,7 @@ struct PolicyNamespace;
 
 // The JavaScript message handler for the chrome://policy page.
 class PolicyUIHandler : public web::WebUIIOSMessageHandler,
+                        public UserCloudPolicyStatusProvider::Delegate,
                         public policy::PolicyService::Observer,
                         public policy::PolicyStatusProvider::Observer,
                         public policy::SchemaRegistry::Observer {
@@ -54,6 +58,9 @@ class PolicyUIHandler : public web::WebUIIOSMessageHandler,
   void OnSchemaRegistryUpdated(bool has_new_schemas) override;
 
  private:
+  // UserCloudPolicyStatusProvider::Delegate.
+  base::flat_set<std::string> GetDeviceAffiliationIds() override;
+
   // Returns a dictionary containing the policies supported by Chrome.
   base::Value::Dict GetPolicyNames() const;
 
@@ -119,8 +126,11 @@ class PolicyUIHandler : public web::WebUIIOSMessageHandler,
   // Returns the PolicyService associated with this WebUI's BrowserState.
   policy::PolicyService* GetPolicyService() const;
 
-  // Provider that supply status dictionary for machine policy,
+  // Provider that supplies status information for machine policy.
   std::unique_ptr<policy::PolicyStatusProvider> machine_status_provider_;
+
+  // Provider that supplies status information for user policy.
+  std::unique_ptr<policy::PolicyStatusProvider> user_policy_status_provider_;
 
   base::ScopedObservation<policy::PolicyStatusProvider,
                           policy::PolicyStatusProvider::Observer>

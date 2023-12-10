@@ -2,24 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/allocator/partition_allocator/src/partition_alloc/memory_reclaimer.h"
+#include "partition_alloc/memory_reclaimer.h"
 
 #include <memory>
 #include <utility>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/compiler_specific.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/logging.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_config.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_for_testing.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/shim/allocator_shim_default_dispatch_to_partition_alloc.h"
 #include "build/build_config.h"
+#include "partition_alloc/partition_alloc_base/compiler_specific.h"
+#include "partition_alloc/partition_alloc_base/logging.h"
+#include "partition_alloc/partition_alloc_buildflags.h"
+#include "partition_alloc/partition_alloc_config.h"
+#include "partition_alloc/partition_alloc_for_testing.h"
+#include "partition_alloc/shim/allocator_shim_default_dispatch_to_partition_alloc.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
     PA_CONFIG(THREAD_CACHE_SUPPORTED)
-#include "base/allocator/partition_allocator/src/partition_alloc/extended_api.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/thread_cache.h"
+#include "partition_alloc/extended_api.h"
+#include "partition_alloc/thread_cache.h"
 #endif
 
 // Otherwise, PartitionAlloc doesn't allocate any memory, and the tests are
@@ -44,10 +44,9 @@ class MemoryReclaimerTest : public ::testing::Test {
     // Otherwise, we will see no PartitionAllocator is registered.
     MemoryReclaimer::Instance()->ResetForTesting();
 
-    allocator_ =
-        std::make_unique<PartitionAllocatorForTesting>(PartitionOptions{
-            .star_scan_quarantine = PartitionOptions::kAllowed,
-        });
+    PartitionOptions opts;
+    opts.star_scan_quarantine = PartitionOptions::kAllowed;
+    allocator_ = std::make_unique<PartitionAllocatorForTesting>(opts);
     allocator_->root()->UncapEmptySlotSpanMemoryForTesting();
     PartitionAllocGlobalInit(HandleOOM);
   }

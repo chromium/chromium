@@ -27,7 +27,7 @@ constexpr int kStrokeWidth = 2;
 
 // The height of squiggly progress that user can click to seek to a new media
 // position. This is slightly larger than the painted progress height.
-constexpr int kProgressClickHeight = 14;
+constexpr int kProgressClickHeight = 16;
 
 // Defines the x of where the painting of squiggly progress should start since
 // we own the OnPaint() function.
@@ -42,8 +42,7 @@ constexpr int kProgressPhaseSpeed = 28;
 
 // The size of the rounded rectangle indicator at the end of the foreground
 // squiggly progress.
-constexpr gfx::SizeF kProgressIndicatorSize =
-    gfx::SizeF(6, kProgressClickHeight);
+constexpr gfx::SizeF kProgressIndicatorSize = gfx::SizeF(6, 14);
 
 // The radius of the rounded rectangle indicator.
 constexpr float kProgressIndicatorRadius = 3.0;
@@ -246,15 +245,8 @@ bool MediaSquigglyProgressView::OnMousePressed(const ui::MouseEvent& event) {
     return false;
   }
 
+  OnProgressDragStarted();
   HandleSeeking(event.x());
-
-  // Pause the media if it is playing when the user starts dragging the progress
-  // line.
-  if (!is_paused_) {
-    dragging_callback_.Run(/*pause=*/true);
-    paused_for_dragging_ = true;
-  }
-
   return true;
 }
 
@@ -265,13 +257,7 @@ bool MediaSquigglyProgressView::OnMouseDragged(const ui::MouseEvent& event) {
 
 void MediaSquigglyProgressView::OnMouseReleased(const ui::MouseEvent& event) {
   HandleSeeking(event.x());
-
-  // Un-pause the media when the user finishes dragging the progress line if the
-  // media was playing before dragging.
-  if (paused_for_dragging_) {
-    dragging_callback_.Run(/*pause=*/false);
-    paused_for_dragging_ = false;
-  }
+  OnProgressDragEnded();
 }
 
 bool MediaSquigglyProgressView::OnKeyPressed(const ui::KeyEvent& event) {
@@ -305,13 +291,29 @@ bool MediaSquigglyProgressView::OnKeyPressed(const ui::KeyEvent& event) {
 }
 
 void MediaSquigglyProgressView::OnGestureEvent(ui::GestureEvent* event) {
-  if (is_live_ || event->type() != ui::ET_GESTURE_TAP ||
-      !IsValidSeekPosition(event->x(), event->y())) {
+  if (is_live_ || !IsValidSeekPosition(event->x(), event->y())) {
     return;
   }
 
-  HandleSeeking(event->x());
-  event->SetHandled();
+  switch (event->type()) {
+    case ui::ET_GESTURE_TAP_DOWN:
+      OnProgressDragStarted();
+      [[fallthrough]];
+    case ui::ET_GESTURE_SCROLL_BEGIN:
+    case ui::ET_GESTURE_SCROLL_UPDATE:
+      HandleSeeking(event->x());
+      event->SetHandled();
+      break;
+    case ui::ET_GESTURE_END:
+      HandleSeeking(event->x());
+      event->SetHandled();
+      if (event->details().touch_points() <= 1) {
+        OnProgressDragEnded();
+      }
+      break;
+    default:
+      break;
+  }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -374,20 +376,40 @@ void MediaSquigglyProgressView::MaybeNotifyAccessibilityValueChanged() {
   NotifyAccessibilityEvent(ax::mojom::Event::kValueChanged, true);
 }
 
+void MediaSquigglyProgressView::OnProgressDragStarted() {
+  // Pause the media only once if it is playing when the user starts dragging
+  // the progress line.
+  if (!is_paused_ && !paused_for_dragging_) {
+    dragging_callback_.Run(/*pause=*/true);
+    paused_for_dragging_ = true;
+  }
+}
+
+void MediaSquigglyProgressView::OnProgressDragEnded() {
+  // Un-pause the media when the user finishes dragging the progress line if the
+  // media was playing before dragging.
+  if (paused_for_dragging_) {
+    dragging_callback_.Run(/*pause=*/false);
+    paused_for_dragging_ = false;
+  }
+}
+
 void MediaSquigglyProgressView::HandleSeeking(double location) {
   double view_width = GetContentsBounds().width() - kWidthInset * 2;
   double seek_to_progress =
       std::min(view_width, std::max(0.0, location - kWidthInset)) / view_width;
+  if (base::i18n::IsRTL()) {
+    seek_to_progress = 1.0 - seek_to_progress;
+  }
   seek_callback_.Run(seek_to_progress);
 }
 
 double MediaSquigglyProgressView::CalculateNewValue(
     base::TimeDelta new_position) {
   double new_value = 0.0;
-  if (new_position >= media_duration_) {
+  if (new_position >= media_duration_ || is_live_) {
     new_value = 1.0;
-  } else if (!is_live_ && media_duration_.is_positive() &&
-             new_position.is_positive()) {
+  } else if (media_duration_.is_positive() && new_position.is_positive()) {
     new_value = new_position / media_duration_;
   }
   return new_value;

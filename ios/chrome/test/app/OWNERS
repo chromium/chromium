@@ -1,1 +1,2 @@
 per-file signin_test_util.*=file://components/signin/ios/OWNERS
+per-file sync_test_util.*=file://components/sync/OWNERS

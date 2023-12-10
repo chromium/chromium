@@ -42,6 +42,7 @@ public class SmsVerificationReceiver extends BroadcastReceiver {
     private final SmsProviderGms mProvider;
     private boolean mDestroyed;
     private Wrappers.WebOTPServiceContext mContext;
+
     private enum BackendAvailability {
         AVAILABLE,
         API_NOT_CONNECTED,
@@ -168,15 +169,19 @@ public class SmsVerificationReceiver extends BroadcastReceiver {
                 ResolvableApiException rex = (ResolvableApiException) exception;
                 try {
                     PendingIntent resolutionIntent = rex.getResolution();
-                    mProvider.getWindow().showIntent(
-                            resolutionIntent, new WindowAndroid.IntentCallback() {
-                                @Override
-                                public void onIntentCompleted(int resultCode, Intent data) {
-                                    // Backend availability will be recorded inside
-                                    // |onPermissionDone|.
-                                    onPermissionDone(resultCode, isLocalRequest);
-                                }
-                            }, null);
+                    mProvider
+                            .getWindow()
+                            .showIntent(
+                                    resolutionIntent,
+                                    new WindowAndroid.IntentCallback() {
+                                        @Override
+                                        public void onIntentCompleted(int resultCode, Intent data) {
+                                            // Backend availability will be recorded inside
+                                            // |onPermissionDone|.
+                                            onPermissionDone(resultCode, isLocalRequest);
+                                        }
+                                    },
+                                    null);
                 } catch (Exception ex) {
                     cancelRequestAndReportBackendAvailability();
                     Log.e(TAG, "Cannot launch user permission", ex);
@@ -191,22 +196,26 @@ public class SmsVerificationReceiver extends BroadcastReceiver {
         Wrappers.SmsRetrieverClientWrapper client = mProvider.getClient();
         Task<Void> task = client.startSmsCodeBrowserRetriever();
 
-        task.addOnSuccessListener(unused -> {
-            this.reportBackendAvailability(BackendAvailability.AVAILABLE);
-            mProvider.verificationReceiverSucceeded(isLocalRequest);
-        });
-        task.addOnFailureListener((Exception e) -> {
-            this.onRetrieverTaskFailure(isLocalRequest, e);
-            mProvider.verificationReceiverFailed(isLocalRequest);
-        });
+        task.addOnSuccessListener(
+                unused -> {
+                    this.reportBackendAvailability(BackendAvailability.AVAILABLE);
+                    mProvider.verificationReceiverSucceeded(isLocalRequest);
+                });
+        task.addOnFailureListener(
+                (Exception e) -> {
+                    this.onRetrieverTaskFailure(isLocalRequest, e);
+                    mProvider.verificationReceiverFailed(isLocalRequest);
+                });
 
         if (DEBUG) Log.d(TAG, "Installed task");
     }
 
     public void reportBackendAvailability(BackendAvailability availability) {
         if (DEBUG) Log.d(TAG, "Backend availability: %d", availability.ordinal());
-        RecordHistogram.recordEnumeratedHistogram("Blink.Sms.BackendAvailability",
-                availability.ordinal(), BackendAvailability.NUM_ENTRIES.ordinal());
+        RecordHistogram.recordEnumeratedHistogram(
+                "Blink.Sms.BackendAvailability",
+                availability.ordinal(),
+                BackendAvailability.NUM_ENTRIES.ordinal());
     }
 
     // Handles the case when the backend is available but user has previously denied to grant the

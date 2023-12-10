@@ -20,11 +20,8 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_client.h"
-#include "content/public/common/content_constants.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/user_agent.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/base/isolation_info.h"
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
@@ -38,36 +35,29 @@
 namespace content {
 
 PrefetchNetworkContext::PrefetchNetworkContext(
-    PrefetchService* prefetch_service,
     bool use_isolated_network_context,
     const PrefetchType& prefetch_type,
     const blink::mojom::Referrer& referrer_,
     const GlobalRenderFrameHostId& referring_render_frame_host_id)
-    : prefetch_service_(prefetch_service),
-      use_isolated_network_context_(use_isolated_network_context),
+    : use_isolated_network_context_(use_isolated_network_context),
       prefetch_type_(prefetch_type),
       referrer_(referrer_),
       referring_render_frame_host_id_(referring_render_frame_host_id) {}
 
 PrefetchNetworkContext::~PrefetchNetworkContext() = default;
 
-network::mojom::NetworkContext* PrefetchNetworkContext::GetNetworkContext()
-    const {
-  CHECK(network_context_);
-  return network_context_.get();
-}
-
-network::mojom::URLLoaderFactory*
-PrefetchNetworkContext::GetURLLoaderFactory() {
+network::mojom::URLLoaderFactory* PrefetchNetworkContext::GetURLLoaderFactory(
+    PrefetchService* service) {
   if (!url_loader_factory_) {
     if (use_isolated_network_context_) {
-      CreateIsolatedURLLoaderFactory();
+      CreateIsolatedURLLoaderFactory(service);
       CHECK(network_context_);
     } else {
       // Create new URL factory in the default network context.
       mojo::PendingRemote<network::mojom::URLLoaderFactory> url_factory_remote;
       CreateNewURLLoaderFactory(
-          prefetch_service_->GetBrowserContext()
+          service->GetBrowserContext(),
+          service->GetBrowserContext()
               ->GetDefaultStoragePartition()
               ->GetNetworkContext(),
           url_factory_remote.InitWithNewPipeAndPassReceiver(), absl::nullopt);
@@ -95,14 +85,14 @@ void PrefetchNetworkContext::CloseIdleConnections() {
     network_context_->CloseIdleConnections(base::DoNothing());
 }
 
-void PrefetchNetworkContext::CreateIsolatedURLLoaderFactory() {
+void PrefetchNetworkContext::CreateIsolatedURLLoaderFactory(
+    PrefetchService* service) {
   CHECK(use_isolated_network_context_);
 
   network_context_.reset();
   url_loader_factory_.reset();
 
-  PrefetchServiceDelegate* delegate =
-      prefetch_service_->GetPrefetchServiceDelegate();
+  PrefetchServiceDelegate* delegate = service->GetPrefetchServiceDelegate();
 
   auto context_params = network::mojom::NetworkContextParams::New();
   context_params->file_paths = network::mojom::NetworkContextFilePaths::New();
@@ -110,6 +100,20 @@ void PrefetchNetworkContext::CreateIsolatedURLLoaderFactory() {
       GetReducedUserAgent(base::CommandLine::ForCurrentProcess()->HasSwitch(
                               switches::kUseMobileUserAgent),
                           delegate ? delegate->GetMajorVersionNumber() : "");
+  // The verifier created here does not have the same parameters as used in the
+  // profile (where additional parameters are added in
+  // chrome/browser/net/profile_network_context_service.h
+  // ProfileNetworkContextService::ConfigureNetworkContextParamsInternal, as
+  // well as updates in ProfileNetworkContextService::UpdateCertificatePolicy).
+  //
+  // Currently this does not cause problems as additional parameters only ensure
+  // more requests validate, so the only harm is that prefetch requests will
+  // fail and then later succeed when they are actually fetched. In the future
+  // when additional parameters can cause validations to fail, this will cause
+  // problems.
+  //
+  // TODO(crbug.com/1477317): figure out how to get this verifier in sync with
+  // the profile verifier.
   context_params->cert_verifier_params = GetCertVerifierParams(
       cert_verifier::mojom::CertVerifierCreationParams::New());
   context_params->cors_exempt_header_list = {kCorsExemptPurposeHeaderName};
@@ -126,7 +130,7 @@ void PrefetchNetworkContext::CreateIsolatedURLLoaderFactory() {
   if (prefetch_type_.IsProxyRequiredWhenCrossOrigin() &&
       !prefetch_type_.IsProxyBypassedForTesting()) {
     PrefetchProxyConfigurator* prefetch_proxy_configurator =
-        prefetch_service_->GetPrefetchProxyConfigurator();
+        service->GetPrefetchProxyConfigurator();
     CHECK(prefetch_proxy_configurator);
 
     context_params->initial_custom_proxy_config =
@@ -165,7 +169,7 @@ void PrefetchNetworkContext::CreateIsolatedURLLoaderFactory() {
   mojo::PendingRemote<network::mojom::URLLoaderFactory> isolated_factory_remote;
 
   CreateNewURLLoaderFactory(
-      network_context_.get(),
+      service->GetBrowserContext(), network_context_.get(),
       isolated_factory_remote.InitWithNewPipeAndPassReceiver(), absl::nullopt);
   url_loader_factory_ = network::SharedURLLoaderFactory::Create(
       std::make_unique<network::WrapperPendingSharedURLLoaderFactory>(
@@ -173,6 +177,7 @@ void PrefetchNetworkContext::CreateIsolatedURLLoaderFactory() {
 }
 
 void PrefetchNetworkContext::CreateNewURLLoaderFactory(
+    BrowserContext* browser_context,
     network::mojom::NetworkContext* network_context,
     mojo::PendingReceiver<network::mojom::URLLoaderFactory> pending_receiver,
     absl::optional<net::IsolationInfo> isolation_info) {
@@ -199,7 +204,7 @@ void PrefetchNetworkContext::CreateNewURLLoaderFactory(
       header_client;
   bool bypass_redirect_checks = false;
   GetContentClient()->browser()->WillCreateURLLoaderFactory(
-      prefetch_service_->GetBrowserContext(), referring_render_frame_host,
+      browser_context, referring_render_frame_host,
       referring_render_frame_host->GetProcess()->GetID(),
       ContentBrowserClient::URLLoaderFactoryType::kPrefetch,
       url::Origin::Create(referrer_.url),

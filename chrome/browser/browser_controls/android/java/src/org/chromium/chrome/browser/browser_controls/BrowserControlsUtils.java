@@ -4,9 +4,7 @@
 
 package org.chromium.chrome.browser.browser_controls;
 
-/**
- * Static utilities related to browser controls interfaces.
- */
+/** Static utilities related to browser controls interfaces. */
 public class BrowserControlsUtils {
     /**
      * @return True if the browser controls are completely off screen.
@@ -39,7 +37,7 @@ public class BrowserControlsUtils {
     public static boolean controlsResizeView(BrowserControlsStateProvider stateProvider) {
         return stateProvider.getContentOffset() > stateProvider.getTopControlsMinHeight()
                 || getBottomContentOffset(stateProvider)
-                > stateProvider.getBottomControlsMinHeight();
+                        > stateProvider.getBottomControlsMinHeight();
     }
 
     /**
@@ -55,7 +53,7 @@ public class BrowserControlsUtils {
      */
     public static boolean areBrowserControlsIdle(BrowserControlsStateProvider provider) {
         return (provider.getContentOffset() == provider.getTopControlsMinHeight()
-                       || provider.getContentOffset() == provider.getTopControlsHeight())
+                        || provider.getContentOffset() == provider.getTopControlsHeight())
                 && (BrowserControlsUtils.getBottomContentOffset(provider)
                                 == provider.getBottomControlsMinHeight()
                         || BrowserControlsUtils.getBottomContentOffset(provider)

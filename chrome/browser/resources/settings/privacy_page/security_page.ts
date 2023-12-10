@@ -47,6 +47,17 @@ export enum SafeBrowsingSetting {
   DISABLED = 2,
 }
 
+/**
+ * Enumeration of all HTTPS-First Mode setting states. Must be kept in sync with
+ * the enum of the same name located in:
+ * chrome/browser/ssl/https_first_mode_settings_tracker.h
+ */
+export enum HttpsFirstModeSetting {
+  DISABLED = 0,
+  ENABLED_INCOGNITO = 1,
+  ENABLED_FULL = 2,
+}
+
 export interface SettingsSecurityPageElement {
   $: {
     passwordsLeakToggle: SettingsToggleButtonElement,
@@ -127,6 +138,22 @@ export class SettingsSecurityPageElement extends
         value: SafeBrowsingSetting,
       },
 
+      /**
+       * Valid HTTPS-First Mode states.
+       */
+      httpsFirstModeSettingEnum_: {
+        type: Object,
+        value: HttpsFirstModeSetting,
+      },
+
+      enableHttpsFirstModeNewSettings_: {
+        type: Boolean,
+        readOnly: true,
+        value() {
+          return loadTimeData.getBoolean('enableHttpsFirstModeNewSettings');
+        },
+      },
+
       enableSecurityKeysSubpage_: {
         type: Boolean,
         readOnly: true,
@@ -183,6 +210,7 @@ export class SettingsSecurityPageElement extends
   private showDisableSafebrowsingDialog_: boolean;
   private enableFriendlierSafeBrowsingSettings_: boolean;
   private enableHashPrefixRealTimeLookups_: boolean;
+  private enableHttpsFirstModeNewSettings_: boolean;
 
   private browserProxy_: PrivacyPageBrowserProxy =
       PrivacyPageBrowserProxyImpl.getInstance();
@@ -223,6 +251,14 @@ export class SettingsSecurityPageElement extends
         this.$.safeBrowsingEnhanced.expanded = true;
       } else if (prefValue === SafeBrowsingSetting.STANDARD) {
         this.$.safeBrowsingStandard.expanded = true;
+      }
+
+      // The HTTPS-First Mode generated pref should never be set to
+      // ENABLED_INCOGNITO if the feature flag is not enabled.
+      if (!loadTimeData.getBoolean('enableHttpsFirstModeNewSettings')) {
+        assert(
+            this.getPref('generated.https_first_mode_enabled').value !==
+            HttpsFirstModeSetting.ENABLED_INCOGNITO);
       }
     });
 
@@ -345,6 +381,13 @@ export class SettingsSecurityPageElement extends
       }
     }
     return subLabel;
+  }
+
+  // Conversion helper for binding Integer pref values as String values.
+  // For ControlledRadioButton elements, the name attribute must be of String
+  // type in order to correctly match for the PrefControlMixin.
+  private getName_(value: number): string {
+    return value.toString();
   }
 
   private getHttpsFirstModeSubLabel_(): string {

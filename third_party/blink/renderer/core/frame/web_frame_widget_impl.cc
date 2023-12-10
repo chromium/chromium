@@ -97,8 +97,6 @@
 #include "third_party/blink/renderer/core/html/forms/text_control_element.h"
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
 #include "third_party/blink/renderer/core/html/html_plugin_element.h"
-#include "third_party/blink/renderer/core/html/portal/document_portals.h"
-#include "third_party/blink/renderer/core/html/portal/portal_contents.h"
 #include "third_party/blink/renderer/core/input/context_menu_allowed_scope.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
 #include "third_party/blink/renderer/core/input/touch_action_util.h"
@@ -208,13 +206,6 @@ void ForEachRemoteFrameChildrenControlledByWidget(
 
   if (auto* local_frame = DynamicTo<LocalFrame>(frame)) {
     if (Document* document = local_frame->GetDocument()) {
-      // Iterate on any portals owned by a local frame.
-      if (auto* portals = DocumentPortals::Get(*document)) {
-        for (PortalContents* portal : portals->GetPortals()) {
-          if (RemoteFrame* remote_frame = portal->GetFrame())
-            callback(remote_frame);
-        }
-      }
       // Iterate on any fenced frames owned by a local frame.
       if (auto* fenced_frames = DocumentFencedFrames::Get(*document)) {
         for (HTMLFencedFrameElement* fenced_frame :
@@ -1025,9 +1016,8 @@ WebInputEventResult WebFrameWidgetImpl::HandleGestureEvent(
     const WebGestureEvent& event) {
   WebInputEventResult event_result = WebInputEventResult::kNotHandled;
 
-  // Fling events are not sent to the renderer.
-  CHECK(event.GetType() != WebInputEvent::Type::kGestureFlingStart);
-  CHECK(event.GetType() != WebInputEvent::Type::kGestureFlingCancel);
+  // Fling and scroll events are not sent to the renderer main thread.
+  CHECK(!event.IsScrollEvent());
 
   WebViewImpl* web_view = View();
 
@@ -1056,21 +1046,6 @@ WebInputEventResult WebFrameWidgetImpl::HandleGestureEvent(
         }
       }
       event_result = WebInputEventResult::kHandledSystem;
-      DidHandleGestureEvent(event);
-      return event_result;
-    case WebInputEvent::Type::kGestureScrollBegin:
-    case WebInputEvent::Type::kGestureScrollEnd:
-    case WebInputEvent::Type::kGestureScrollUpdate:
-      // If we are getting any scroll toss close any page popup that is open.
-      web_view->CancelPagePopup();
-
-      // Scrolling-related gesture events invoke EventHandler recursively for
-      // each frame down the chain, doing a single-frame hit-test per frame.
-      // This matches handleWheelEvent.  Perhaps we could simplify things by
-      // rewriting scroll handling to work inner frame out, and then unify with
-      // other gesture events.
-      event_result =
-          frame->GetEventHandler().HandleGestureScrollEvent(scaled_event);
       DidHandleGestureEvent(event);
       return event_result;
     default:
@@ -1307,22 +1282,26 @@ void WebFrameWidgetImpl::SendOverscrollEventFromImplSide(
   }
 }
 
-void WebFrameWidgetImpl::SendScrollEndEventFromImplSide(
+void WebFrameWidgetImpl::SendEndOfScrollEvents(
     bool affects_outer_viewport,
     cc::ElementId scroll_latched_element_id) {
-  if (!RuntimeEnabledFeatures::ScrollEndEventsEnabled())
-    return;
-
   Node* target_node = View()->FindNodeFromScrollableCompositorElementId(
       scroll_latched_element_id);
-  bool target_is_root_scroller = false;
-  if (View()->MainFrameImpl()) {
-    Node* document_node = View()->MainFrameImpl()->GetDocument();
-    if (target_node == document_node) {
-      target_is_root_scroller = true;
-    }
+  if (!target_node) {
+    return;
   }
-  if (target_node) {
+  if (ScrollableArea* scrollable_area =
+          ScrollableArea::GetForScrolling(target_node->GetLayoutBox())) {
+    scrollable_area->UpdateSnappedTargetsAndEnqueueSnapChanged();
+    scrollable_area->SetImplSnapStrategy(nullptr);
+  }
+
+  if (RuntimeEnabledFeatures::ScrollEndEventsEnabled()) {
+    bool target_is_root_scroller = false;
+    if (View()->MainFrameImpl()) {
+      Node* document_node = View()->MainFrameImpl()->GetDocument();
+      target_is_root_scroller = target_node == document_node;
+    }
     // Scrolls consumed entirely by the VisualViewport and not the
     // LayoutViewport should not trigger scrollends on the document. The
     // VisualViewport currently handles scroll but not scrollends. If that
@@ -1334,15 +1313,34 @@ void WebFrameWidgetImpl::SendScrollEndEventFromImplSide(
   }
 }
 
+void WebFrameWidgetImpl::SendSnapChangingEventIfNeeded(
+    const cc::CompositorCommitData& commit_data) {
+  Node* target_node = View()->FindNodeFromScrollableCompositorElementId(
+      commit_data.scroll_latched_element_id);
+  if (!target_node) {
+    return;
+  }
+  if (ScrollableArea* scrollable_area =
+          ScrollableArea::GetForScrolling(target_node->GetLayoutBox())) {
+    scrollable_area->SetImplSnapStrategy(commit_data.snap_strategy->Clone());
+    scrollable_area->EnqueueSnapChangingEventFromImplIfNeeded();
+  }
+}
+
 void WebFrameWidgetImpl::UpdateCompositorScrollState(
     const cc::CompositorCommitData& commit_data) {
+  is_scroll_gesture_active_ = commit_data.is_scroll_active;
   if (WebDevToolsAgentImpl* devtools = LocalRootImpl()->DevToolsAgentImpl())
-    devtools->SetPageIsScrolling(commit_data.is_scroll_active);
+    devtools->SetPageIsScrolling(is_scroll_gesture_active_);
 
   RecordManipulationTypeCounts(commit_data.manipulation_info);
 
   if (commit_data.scroll_latched_element_id == cc::ElementId())
     return;
+
+  if (commit_data.snap_strategy) {
+    SendSnapChangingEventIfNeeded(commit_data);
+  }
 
   if (!commit_data.overscroll_delta.IsZero()) {
     SendOverscrollEventFromImplSide(commit_data.overscroll_delta,
@@ -1354,10 +1352,14 @@ void WebFrameWidgetImpl::UpdateCompositorScrollState(
   // dispatch the scroll end to the latter (still-scrolling) element.
   // https://crbug.com/1116780.
   if (commit_data.scroll_end_data.scroll_gesture_did_end) {
-    SendScrollEndEventFromImplSide(
+    SendEndOfScrollEvents(
         commit_data.scroll_end_data.gesture_affects_outer_viewport_scroll,
         commit_data.scroll_latched_element_id);
   }
+}
+
+bool WebFrameWidgetImpl::IsScrollGestureActive() const {
+  return is_scroll_gesture_active_;
 }
 
 WebInputMethodController*
@@ -1470,12 +1472,6 @@ void WebFrameWidgetImpl::DidObserveFirstScrollDelay(
   }
 }
 
-void WebFrameWidgetImpl::WillBeginMainFrame() {
-  if (animation_frame_timing_monitor_) {
-    animation_frame_timing_monitor_->WillBeginMainFrame();
-  }
-}
-
 bool WebFrameWidgetImpl::ShouldIgnoreInputEvents() {
   CHECK(GetPage());
   return IgnoreInputEvents(GetPage()->BrowsingContextGroupToken());
@@ -1523,11 +1519,10 @@ bool WebFrameWidgetImpl::ShouldReportLongAnimationFrameTiming() const {
 void WebFrameWidgetImpl::OnTaskCompletedForFrame(
     base::TimeTicks start_time,
     base::TimeTicks end_time,
-    base::TimeTicks desired_execution_time,
     LocalFrame* frame) {
   if (animation_frame_timing_monitor_) {
-    animation_frame_timing_monitor_->OnTaskCompleted(
-        start_time, end_time, desired_execution_time, frame);
+    animation_frame_timing_monitor_->OnTaskCompleted(start_time, end_time,
+                                                     frame);
   }
 }
 
@@ -1719,7 +1714,7 @@ void WebFrameWidgetImpl::UpdateVisualProperties(
         });
   }
 
-  // All non-top-level Widgets (child local-root frames, Portals, GuestViews,
+  // All non-top-level Widgets (child local-root frames, GuestViews,
   // etc.) propagate and consume the page scale factor as "external", meaning
   // that it comes from the top level widget's page scale.
   if (!ForTopMostMainFrame()) {
@@ -1740,8 +1735,7 @@ void WebFrameWidgetImpl::UpdateVisualProperties(
         visual_properties.compositing_scale_factor);
   } else {
     // Ensure the external scale factor in top-level widgets is reset as it may
-    // be leftover from when a widget was nested and was promoted to top level
-    // (e.g. portal activation).
+    // be leftover from when a widget was nested and was promoted to top level.
     widget_base_->LayerTreeHost()->SetExternalPageScaleFactor(
         1.f,
         /*is_pinch_gesture_active=*/false);
@@ -2082,7 +2076,6 @@ void WebFrameWidgetImpl::SetViewportIntersection(
     mojom::blink::ViewportIntersectionStatePtr intersection_state,
     const absl::optional<VisualProperties>& visual_properties) {
   // Remote viewports are only applicable to local frames with remote ancestors.
-  // TODO(https://crbug.com/1148960): Should this deal with portals?
   DCHECK(ForSubframe() || !LocalRootImpl()->GetFrame()->IsOutermostMainFrame());
 
   if (visual_properties.has_value())
@@ -2321,6 +2314,7 @@ void WebFrameWidgetImpl::InitializeCompositingInternal(
                       : nullptr);
 
   probe::DidInitializeFrameWidget(local_root_->GetFrame());
+  local_root_->GetFrame()->NotifyFrameWidgetCreated();
 
   // TODO(bokan): This seems wrong. Page may host multiple FrameWidgets so this
   // will call DidInitializeCompositing once per FrameWidget. It probably makes
@@ -2391,7 +2385,7 @@ void WebFrameWidgetImpl::BeginMainFrame(base::TimeTicks last_frame_time) {
   // purpose of animation frame timing, this is the desired time to start
   // rendering, equivalent to the time when a work task is posted.
   if (animation_frame_timing_monitor_) {
-    animation_frame_timing_monitor_->SetDesiredRenderStartTime(last_frame_time);
+    animation_frame_timing_monitor_->BeginMainFrame(last_frame_time);
   }
 
   // Dirty bit on MouseEventManager is not cleared in OOPIFs after scroll
@@ -2463,9 +2457,7 @@ void WebFrameWidgetImpl::EndCommitCompositorFrame(
 
 void WebFrameWidgetImpl::ApplyViewportChanges(
     const ApplyViewportChangesArgs& args) {
-  // Viewport changes only change the outermost main frame. Technically a
-  // portal has a viewport but it cannot produce changes from the compositor
-  // until activated so this should be correct for portals too.
+  // Viewport changes only change the outermost main frame.
   if (!LocalRootImpl()->GetFrame()->IsOutermostMainFrame())
     return;
 
@@ -2746,6 +2738,17 @@ void WebFrameWidgetImpl::SetResizable(bool resizable) {
   LocalFrame* frame = LocalRootImpl()->GetFrame();
   frame->MediaQueryAffectingValueChangedForLocalSubtree(
       MediaValueChange::kOther);
+}
+
+void WebFrameWidgetImpl::OverrideDevicePostureForEmulation(
+    device::mojom::blink::DevicePostureType device_posture_param) {
+  LocalFrame* frame = LocalRootImpl()->GetFrame();
+  frame->OverrideDevicePostureForEmulation(device_posture_param);
+}
+
+void WebFrameWidgetImpl::DisableDevicePostureOverrideForEmulation() {
+  LocalFrame* frame = LocalRootImpl()->GetFrame();
+  frame->DisableDevicePostureOverrideForEmulation();
 }
 
 void WebFrameWidgetImpl::SetWindowSegments(
@@ -3903,17 +3906,17 @@ Vector<gfx::Rect> WebFrameWidgetImpl::CalculateVisibleLineBoundsOnScreen() {
   Vector<gfx::QuadF> bounds_from_blink;
   GetLineBounds(bounds_from_blink, text_control->InnerEditorElement());
 
-  gfx::Rect screen = GetPage()->GetVisualViewport().VisibleContentRect();
+  gfx::Rect screen = LocalRootImpl()->GetFrameView()->FrameToScreen(
+      GetPage()->GetVisualViewport().VisibleContentRect());
   for (auto& quad : bounds_from_blink) {
-    gfx::Rect bounding_box = gfx::ToRoundedRect(quad.BoundingBox());
+    gfx::Rect bounding_box =
+        focused_element->GetLayoutObject()->GetFrameView()->FrameToScreen(
+            gfx::ToRoundedRect(quad.BoundingBox()));
     bounding_box.Intersect(screen);
     if (bounding_box.IsEmpty()) {
       continue;
     }
-
-    bounds_in_dips.push_back(
-        focused_element->GetLayoutObject()->GetFrameView()->FrameToScreen(
-            bounding_box));
+    bounds_in_dips.push_back(bounding_box);
   }
   return bounds_in_dips;
 }
@@ -4722,8 +4725,9 @@ void WebFrameWidgetImpl::PrepareForFinalLifecyclUpdateForTesting() {
         // test finishes so ensure the transition moves out of rendering
         // blocked state.
         if (RuntimeEnabledFeatures::ViewTransitionOnNavigationEnabled()) {
-          if (auto* transition =
-                  ViewTransitionUtils::GetTransition(*document)) {
+          if (ViewTransition* transition =
+                  ViewTransitionUtils::GetTransition(*document);
+              transition && transition->IsForNavigationOnNewDocument()) {
             transition->ActivateFromSnapshot();
           }
         }

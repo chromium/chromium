@@ -67,8 +67,6 @@ std::string BinaryUploadService::ResultToString(Result result) {
       return "UNAUTHORIZED";
     case Result::FILE_ENCRYPTED:
       return "FILE_ENCRYPTED";
-    case Result::DLP_SCAN_UNSUPPORTED_FILE_TYPE:
-      return "DLP_SCAN_UNSUPPORTED_FILE_TYPE";
     case Result::TOO_MANY_REQUESTS:
       return "TOO_MANY_REQUESTS";
   }
@@ -242,10 +240,8 @@ void BinaryUploadService::Request::set_reason(
 
 std::string BinaryUploadService::Request::SetRandomRequestToken() {
   DCHECK(request_token().empty());
-
-  std::string token = base::RandBytesAsString(128);
   content_analysis_request_.set_request_token(
-      base::HexEncode(token.data(), token.size()));
+      base::HexEncode(base::RandBytesAsVector(128)));
   return content_analysis_request_.request_token();
 }
 

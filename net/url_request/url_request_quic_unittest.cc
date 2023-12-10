@@ -58,19 +58,6 @@ const char kHelloPath[] = "/hello.txt";
 const char kHelloBodyValue[] = "Hello from QUIC Server";
 const int kHelloStatus = 200;
 
-// Used as a simple pushed response from the server.
-const char kKittenPath[] = "/kitten-1.jpg";
-const char kKittenBodyValue[] = "Kitten image";
-
-// Used as a simple pushed response from the server.
-const char kFaviconPath[] = "/favicon.ico";
-const char kFaviconBodyValue[] = "Favion";
-
-// Used as a simple pushed response from the server.
-const char kIndexPath[] = "/index2.html";
-const char kIndexBodyValue[] = "Hello from QUIC Server";
-const int kIndexStatus = 200;
-
 class MockCTPolicyEnforcerNonCompliant : public CTPolicyEnforcer {
  public:
   MockCTPolicyEnforcerNonCompliant() = default;
@@ -142,23 +129,6 @@ class URLRequestQuicTest
         ->GetRstErrorCount(error_code);
   }
 
-  static const NetLogSource FindPushUrlSource(
-      const std::vector<NetLogEntry>& entries,
-      const std::string& push_url) {
-    for (const auto& entry : entries) {
-      if (entry.phase == NetLogEventPhase::BEGIN &&
-          entry.source.type ==
-              NetLogSourceType::SERVER_PUSH_LOOKUP_TRANSACTION) {
-        auto entry_push_url =
-            GetOptionalStringValueFromParams(entry, "push_url");
-        if (entry_push_url && *entry_push_url == push_url) {
-          return entry.source;
-        }
-      }
-    }
-    return NetLogSource();
-  }
-
   static const NetLogEntry* FindEndBySource(
       const std::vector<NetLogEntry>& entries,
       const NetLogSource& source) {
@@ -195,16 +165,6 @@ class URLRequestQuicTest
     memory_cache_backend_.AddSimpleResponse(kTestServerHost, kHelloPath,
                                             kHelloStatus, kHelloBodyValue);
 
-    // Now set up index so that it pushes kitten and favicon.
-    quic::QuicBackendResponse::ServerPushInfo push_info1(
-        quic::QuicUrl(UrlFromPath(kKittenPath)), spdy::Http2HeaderBlock(),
-        spdy::kV3LowestPriority, kKittenBodyValue);
-    quic::QuicBackendResponse::ServerPushInfo push_info2(
-        quic::QuicUrl(UrlFromPath(kFaviconPath)), spdy::Http2HeaderBlock(),
-        spdy::kV3LowestPriority, kFaviconBodyValue);
-    memory_cache_backend_.AddSimpleResponseWithServerPushResources(
-        kTestServerHost, kIndexPath, kIndexStatus, kIndexBodyValue,
-        {push_info1, push_info2});
     quic::QuicConfig config;
     // Set up server certs.
     server_ = std::make_unique<QuicSimpleServer>(
@@ -224,15 +184,6 @@ class URLRequestQuicTest
         "MAP test.example.com test.example.com:" +
         base::NumberToString(server_->server_address().port());
     EXPECT_TRUE(host_resolver_->AddRuleFromString(map_rule));
-  }
-
-  std::string ServerPushCacheDirectory() {
-    base::FilePath path;
-    base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &path);
-    path = path.AppendASCII("net").AppendASCII("data").AppendASCII(
-        "quic_http_response_cache_data_with_push");
-    // The file path is known to be an ascii string.
-    return path.MaybeAsASCII();
   }
 
   std::unique_ptr<MappedHostResolver> host_resolver_;

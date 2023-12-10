@@ -142,13 +142,13 @@ TemplateURL* TemplateURLTableModel::GetTemplateURL(size_t index) {
   return entries_[index];
 }
 
-absl::optional<size_t> TemplateURLTableModel::IndexOfTemplateURL(
+std::optional<size_t> TemplateURLTableModel::IndexOfTemplateURL(
     const TemplateURL* template_url) {
   for (auto i = entries_.begin(); i != entries_.end(); ++i) {
     if (*i == template_url)
       return static_cast<size_t>(i - entries_.begin());
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void TemplateURLTableModel::MakeDefaultTemplateURL(size_t index) {

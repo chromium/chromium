@@ -4,11 +4,13 @@
 
 module blink.mojom;
 
-import "third_party/blink/public/mojom/indexeddb/indexeddb.mojom";
-import "third_party/blink/public/mojom/locks/lock_manager.mojom";
+import "third_party/blink/public/mojom/blob/blob_url_store.mojom";
+import "third_party/blink/public/mojom/broadcastchannel/broadcast_channel.mojom";
 import "third_party/blink/public/mojom/cache_storage/cache_storage.mojom";
 import "third_party/blink/public/mojom/file_system_access/file_system_access_directory_handle.mojom";
 import "third_party/blink/public/mojom/file_system_access/file_system_access_error.mojom";
+import "third_party/blink/public/mojom/indexeddb/indexeddb.mojom";
+import "third_party/blink/public/mojom/locks/lock_manager.mojom";
 
 // A LocalDOMWindow with a third-party StorageKey in the renderer can bind this
 // on a RenderFrameHost in the browser to access storage for the first-party
@@ -32,4 +34,14 @@ interface StorageAccessHandle {
   GetDirectory() =>
       (FileSystemAccessError result,
        pending_remote<FileSystemAccessDirectoryHandle>? directory);
+
+  // Returns estimated quota usage for first-party storage.
+  // TODO(crbug.com/1500556): These should never be negative so consider uint64.
+  Estimate() => (int64 current_usage, int64 current_quota, bool success);
+
+  // Binds a BlobURLStore with access to first-party storage.
+  BindBlobStorage(pending_associated_receiver<BlobURLStore> receiver);
+
+  // Binds a BroadcastChannelProvider with access to first-party channels.
+  BindBroadcastChannel(pending_associated_receiver<BroadcastChannelProvider> receiver);
 };

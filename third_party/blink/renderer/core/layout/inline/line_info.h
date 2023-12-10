@@ -8,11 +8,11 @@
 #include "base/check_op.h"
 #include "base/dcheck_is_on.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/layout/block_break_token.h"
 #include "third_party/blink/renderer/core/layout/geometry/bfc_offset.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_item_result.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_item_text_index.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_block_break_token.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_layout_result.h"
+#include "third_party/blink/renderer/core/layout/layout_result.h"
 #include "third_party/blink/renderer/core/style/computed_style_base_constants.h"
 
 namespace blink {
@@ -83,18 +83,18 @@ class CORE_EXPORT LineInfo {
   InlineItemResults* MutableResults() { return &results_; }
   const InlineItemResults& Results() const { return results_; }
 
-  const InlineBreakToken* BreakToken() const { return break_token_; }
+  const InlineBreakToken* GetBreakToken() const { return break_token_; }
   void SetBreakToken(const InlineBreakToken* break_token) {
     break_token_ = break_token;
   }
   // True if this line ends a paragraph; i.e., ends a block or has a forced
   // break.
-  bool IsEndParagraph() const { return !BreakToken() || HasForcedBreak(); }
+  bool IsEndParagraph() const { return !GetBreakToken() || HasForcedBreak(); }
 
-  HeapVector<Member<const NGBreakToken>>& ParallelFlowBreakTokens() {
+  HeapVector<Member<const BreakToken>>& ParallelFlowBreakTokens() {
     return parallel_flow_break_tokens_;
   }
-  void PropagateParallelFlowBreakToken(const NGBreakToken* token) {
+  void PropagateParallelFlowBreakToken(const BreakToken* token) {
     parallel_flow_break_tokens_.push_back(token);
   }
 
@@ -198,10 +198,10 @@ class CORE_EXPORT LineInfo {
   bool NeedsAccurateEndPosition() const { return needs_accurate_end_position_; }
 
   // The block-in-inline layout result.
-  const NGLayoutResult* BlockInInlineLayoutResult() const {
+  const LayoutResult* BlockInInlineLayoutResult() const {
     return block_in_inline_layout_result_;
   }
-  void SetBlockInInlineLayoutResult(const NGLayoutResult* layout_result) {
+  void SetBlockInInlineLayoutResult(const LayoutResult* layout_result) {
     block_in_inline_layout_result_ = std::move(layout_result);
   }
 
@@ -260,9 +260,9 @@ class CORE_EXPORT LineInfo {
   BfcOffset bfc_offset_;
 
   const InlineBreakToken* break_token_ = nullptr;
-  HeapVector<Member<const NGBreakToken>> parallel_flow_break_tokens_;
+  HeapVector<Member<const BreakToken>> parallel_flow_break_tokens_;
 
-  const NGLayoutResult* block_in_inline_layout_result_ = nullptr;
+  const LayoutResult* block_in_inline_layout_result_ = nullptr;
 
   absl::optional<LayoutUnit> minimum_space_shortage_;
 

@@ -1722,36 +1722,99 @@ TEST_F(HTMLPreloadScannerTest, testSharedStorageWritable) {
   }
 }
 
-class HTMLPreloadScannerLCPPLazyLoadImageTest : public HTMLPreloadScannerTest {
+enum class LcppPreloadLazyLoadImageType {
+  kNativeLazyLoad,
+  kCustomLazyLoad,
+  kAll,
+};
+
+class HTMLPreloadScannerLCPPLazyLoadImageTest
+    : public HTMLPreloadScannerTest,
+      public testing::WithParamInterface<LcppPreloadLazyLoadImageType> {
  public:
   HTMLPreloadScannerLCPPLazyLoadImageTest() {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        blink::features::kLCPPLazyLoadImagePreload,
-        {{blink::features::kLCPCriticalPathPredictorPreloadLazyLoadImageType
-              .name,
-          "native_lazy_loading"}});
+    switch (GetParam()) {
+      case LcppPreloadLazyLoadImageType::kNativeLazyLoad:
+        scoped_feature_list_.InitAndEnableFeatureWithParameters(
+            blink::features::kLCPPLazyLoadImagePreload,
+            {{blink::features::kLCPCriticalPathPredictorPreloadLazyLoadImageType
+                  .name,
+              "native_lazy_loading"}});
+        break;
+      case LcppPreloadLazyLoadImageType::kCustomLazyLoad:
+        scoped_feature_list_.InitAndEnableFeatureWithParameters(
+            blink::features::kLCPPLazyLoadImagePreload,
+            {{blink::features::kLCPCriticalPathPredictorPreloadLazyLoadImageType
+                  .name,
+              "custom_lazy_loading"}});
+        break;
+      case LcppPreloadLazyLoadImageType::kAll:
+        scoped_feature_list_.InitAndEnableFeatureWithParameters(
+            blink::features::kLCPPLazyLoadImagePreload,
+            {{blink::features::kLCPCriticalPathPredictorPreloadLazyLoadImageType
+                  .name,
+              "all"}});
+        break;
+    }
   }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_F(HTMLPreloadScannerLCPPLazyLoadImageTest,
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    HTMLPreloadScannerLCPPLazyLoadImageTest,
+    ::testing::Values(LcppPreloadLazyLoadImageType::kNativeLazyLoad,
+                      LcppPreloadLazyLoadImageType::kCustomLazyLoad,
+                      LcppPreloadLazyLoadImageType::kAll));
+
+TEST_P(HTMLPreloadScannerLCPPLazyLoadImageTest,
        TokenStreamMatcherWithLoadingLazy) {
   ElementLocator locator;
   auto* c = locator.add_components()->mutable_id();
   c->set_id_attr("target");
 
-  TokenStreamMatcherTestCase test_case = {locator,
-                                          R"HTML(
-    <div>
-      <img src="not-interesting.jpg">
-      <img src="super-interesting.jpg" id="target" loading="lazy">
-      <img src="not-interesting2.jpg">
-    </div>
-    )HTML",
-                                          "super-interesting.jpg"};
-  Test(test_case);
+  switch (GetParam()) {
+    case LcppPreloadLazyLoadImageType::kNativeLazyLoad:
+      Test(TokenStreamMatcherTestCase{locator, R"HTML(
+        <div>
+          <img src="not-interesting.jpg">
+          <img src="super-interesting.jpg" id="target" loading="lazy">
+          <img src="not-interesting2.jpg">
+        </div>
+        )HTML",
+                                      "super-interesting.jpg"});
+      break;
+    case LcppPreloadLazyLoadImageType::kCustomLazyLoad:
+      Test(TokenStreamMatcherTestCase{locator, R"HTML(
+        <div>
+          <img src="not-interesting.jpg">
+          <img data-src="super-interesting.jpg" id="target">
+          <img src="not-interesting2.jpg">
+        </div>
+        )HTML",
+                                      "super-interesting.jpg"});
+      break;
+    case LcppPreloadLazyLoadImageType::kAll:
+      Test(TokenStreamMatcherTestCase{locator, R"HTML(
+        <div>
+          <img src="not-interesting.jpg">
+          <img src="super-interesting.jpg" id="target" loading="lazy">
+          <img src="not-interesting2.jpg">
+        </div>
+        )HTML",
+                                      "super-interesting.jpg"});
+      Test(TokenStreamMatcherTestCase{locator, R"HTML(
+        <div>
+          <img src="not-interesting.jpg">
+          <img data-src="super-interesting.jpg" id="target">
+          <img src="not-interesting2.jpg">
+        </div>
+        )HTML",
+                                      "super-interesting.jpg"});
+      break;
+  }
 }
 
 }  // namespace blink

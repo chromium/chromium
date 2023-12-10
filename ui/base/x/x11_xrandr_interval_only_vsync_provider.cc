@@ -17,8 +17,8 @@ namespace ui {
 namespace {
 
 bool IsXrandrAvailable() {
-  constexpr int kMinXrandrVersion = 103;  // Need at least xrandr version 1.3
-  return GetXrandrVersion() >= kMinXrandrVersion;
+  constexpr std::pair<uint32_t, uint32_t> kMinXrandrVersion{1, 3};
+  return x11::Connection::Get()->randr_version() >= kMinXrandrVersion;
 }
 
 class XRandrHelper : public x11::EventObserver {

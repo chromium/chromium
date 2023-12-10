@@ -13,9 +13,9 @@ namespace views {
 
 // A multiline textfield implementation.
 class VIEWS_EXPORT Textarea : public Textfield {
- public:
-  METADATA_HEADER(Textarea);
+  METADATA_HEADER(Textarea, Textfield)
 
+ public:
   Textarea();
   ~Textarea() override = default;
 

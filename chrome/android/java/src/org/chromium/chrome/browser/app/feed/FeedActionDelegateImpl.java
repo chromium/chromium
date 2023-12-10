@@ -32,6 +32,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
+import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -49,54 +50,72 @@ public class FeedActionDelegateImpl implements FeedActionDelegate {
     private final Context mActivityContext;
     private final SnackbarManager mSnackbarManager;
     private final TabModelSelector mTabModelSelector;
+    private final Profile mProfile;
 
-    @BrowserUiUtils.HostSurface
-    private int mHostSurface;
+    @BrowserUiUtils.HostSurface private int mHostSurface;
 
-    public FeedActionDelegateImpl(Context activityContext, SnackbarManager snackbarManager,
-            NativePageNavigationDelegate navigationDelegate, BookmarkModel bookmarkModel,
-            @BrowserUiUtils.HostSurface int hostSurface, TabModelSelector tabModelSelector) {
+    public FeedActionDelegateImpl(
+            Context activityContext,
+            SnackbarManager snackbarManager,
+            NativePageNavigationDelegate navigationDelegate,
+            BookmarkModel bookmarkModel,
+            @BrowserUiUtils.HostSurface int hostSurface,
+            TabModelSelector tabModelSelector,
+            Profile profile) {
         mActivityContext = activityContext;
         mNavigationDelegate = navigationDelegate;
         mBookmarkModel = bookmarkModel;
         mSnackbarManager = snackbarManager;
         mHostSurface = hostSurface;
         mTabModelSelector = tabModelSelector;
+        mProfile = profile;
     }
+
     @Override
     public void downloadPage(String url) {
-        RequestCoordinatorBridge.getForProfile(Profile.getLastUsedRegularProfile())
+        RequestCoordinatorBridge.getForProfile(mProfile)
                 .savePageLater(
                         url, OfflinePageBridge.NTP_SUGGESTIONS_NAMESPACE, true /* user requested*/);
     }
 
     @Override
-    public void openSuggestionUrl(int disposition, LoadUrlParams params, boolean inGroup,
-            Runnable onPageLoaded, Callback<VisitResult> onVisitComplete) {
-        params.setReferrer(new Referrer(SuggestionsConfig.getReferrerUrl(),
-                // WARNING: ReferrerPolicy.ALWAYS is assumed by other Chrome code for NTP
-                // tiles to set consider_for_ntp_most_visited.
-                org.chromium.network.mojom.ReferrerPolicy.ALWAYS));
+    public void openSuggestionUrl(
+            int disposition,
+            LoadUrlParams params,
+            boolean inGroup,
+            Runnable onPageLoaded,
+            Callback<VisitResult> onVisitComplete) {
+        params.setReferrer(
+                new Referrer(
+                        SuggestionsConfig.getReferrerUrl(),
+                        // WARNING: ReferrerPolicy.ALWAYS is assumed by other Chrome code for NTP
+                        // tiles to set consider_for_ntp_most_visited.
+                        org.chromium.network.mojom.ReferrerPolicy.ALWAYS));
 
-        Tab tab = inGroup ? mNavigationDelegate.openUrlInGroup(disposition, params)
-                          : mNavigationDelegate.openUrl(disposition, params);
+        Tab tab =
+                inGroup
+                        ? mNavigationDelegate.openUrlInGroup(disposition, params)
+                        : mNavigationDelegate.openUrl(disposition, params);
 
         NewTabPageUma.recordAction(NewTabPageUma.ACTION_OPENED_SNIPPET);
 
-        boolean inNewTab = (disposition == WindowOpenDisposition.NEW_BACKGROUND_TAB
-                || disposition == WindowOpenDisposition.OFF_THE_RECORD);
+        boolean inNewTab =
+                (disposition == WindowOpenDisposition.NEW_BACKGROUND_TAB
+                        || disposition == WindowOpenDisposition.OFF_THE_RECORD);
 
         if (tab != null) {
             tab.addObserver(new FeedTabNavigationObserver(inNewTab, onPageLoaded));
-            NavigationRecorder.record(tab, navigationResult -> {
-                FeedActionDelegate.VisitResult result = new FeedActionDelegate.VisitResult();
-                result.visitTimeMs = navigationResult.duration;
-                onVisitComplete.onResult(result);
-            });
+            NavigationRecorder.record(
+                    tab,
+                    navigationResult -> {
+                        FeedActionDelegate.VisitResult result =
+                                new FeedActionDelegate.VisitResult();
+                        result.visitTimeMs = navigationResult.duration;
+                        onVisitComplete.onResult(result);
+                    });
         }
 
-        BrowserUiUtils.recordModuleClickHistogram(
-                mHostSurface, BrowserUiUtils.ModuleTypeOnStartAndNTP.FEED);
+        BrowserUiUtils.recordModuleClickHistogram(mHostSurface, ModuleTypeOnStartAndNtp.FEED);
     }
 
     @Override
@@ -106,20 +125,26 @@ public class FeedActionDelegateImpl implements FeedActionDelegate {
 
     @Override
     public void openHelpPage() {
-        mNavigationDelegate.openUrl(WindowOpenDisposition.CURRENT_TAB,
+        mNavigationDelegate.openUrl(
+                WindowOpenDisposition.CURRENT_TAB,
                 new LoadUrlParams(NEW_TAB_URL_HELP, PageTransition.AUTO_BOOKMARK));
 
-        BrowserUiUtils.recordModuleClickHistogram(
-                mHostSurface, BrowserUiUtils.ModuleTypeOnStartAndNTP.FEED);
+        BrowserUiUtils.recordModuleClickHistogram(mHostSurface, ModuleTypeOnStartAndNtp.FEED);
     }
 
     @Override
     public void addToReadingList(String title, String url) {
-        mBookmarkModel.finishLoadingBookmarkModel(() -> {
-            assert ThreadUtils.runningOnUiThread();
-            BookmarkUtils.addToReadingList(
-                    new GURL(url), title, mSnackbarManager, mBookmarkModel, mActivityContext);
-        });
+        mBookmarkModel.finishLoadingBookmarkModel(
+                () -> {
+                    assert ThreadUtils.runningOnUiThread();
+                    BookmarkUtils.addToReadingList(
+                            new GURL(url),
+                            title,
+                            mSnackbarManager,
+                            mBookmarkModel,
+                            mActivityContext,
+                            mProfile);
+                });
     }
 
     @Override
@@ -140,20 +165,28 @@ public class FeedActionDelegateImpl implements FeedActionDelegate {
     @Override
     public void showSyncConsentActivity(@SigninAccessPoint int signinAccessPoint) {
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.FEED_SHOW_SIGN_IN_COMMAND)) {
-            SyncConsentActivityLauncherImpl.get().launchActivityIfAllowed(
-                    mActivityContext, signinAccessPoint);
+            SyncConsentActivityLauncherImpl.get()
+                    .launchActivityIfAllowed(mActivityContext, signinAccessPoint);
         }
     }
 
     @Override
-    public void showSignInInterstitial(@SigninAccessPoint int signinAccessPoint,
-            BottomSheetController bottomSheetController, WindowAndroid windowAndroid) {
-            SigninMetricsUtils.logSigninStartAccessPoint(signinAccessPoint);
-            SigninMetricsUtils.logSigninUserActionForAccessPoint(signinAccessPoint);
-            SigninBottomSheetCoordinator signinCoordinator = new SigninBottomSheetCoordinator(
-                    windowAndroid, DeviceLockActivityLauncherImpl.get(), bottomSheetController,
-                    Profile.getLastUsedRegularProfile(), null, null, signinAccessPoint);
-            signinCoordinator.show();
+    public void showSignInInterstitial(
+            @SigninAccessPoint int signinAccessPoint,
+            BottomSheetController bottomSheetController,
+            WindowAndroid windowAndroid) {
+        SigninMetricsUtils.logSigninStartAccessPoint(signinAccessPoint);
+        SigninMetricsUtils.logSigninUserActionForAccessPoint(signinAccessPoint);
+        SigninBottomSheetCoordinator signinCoordinator =
+                new SigninBottomSheetCoordinator(
+                        windowAndroid,
+                        DeviceLockActivityLauncherImpl.get(),
+                        bottomSheetController,
+                        mProfile,
+                        null,
+                        null,
+                        signinAccessPoint);
+        signinCoordinator.show();
     }
 
     /**

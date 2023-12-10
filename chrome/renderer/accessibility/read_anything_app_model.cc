@@ -381,6 +381,7 @@ void ReadAnythingAppModel::UnserializeUpdates(
   DCHECK_NE(tree_id, ui::AXTreeIDUnknown());
   DCHECK(base::Contains(tree_managers_, tree_id));
   ui::AXSerializableTree* tree = GetTreeFromId(tree_id);
+  size_t prev_tree_size = tree->size();
   CHECK(tree);
   // Try to merge updates. If the updates are mergeable, MergeAXTreeUpdates will
   // return true and merge_updates_out will contain the updates. Otherwise, if
@@ -399,7 +400,7 @@ void ReadAnythingAppModel::UnserializeUpdates(
     tree->Unserialize(update);
   }
 
-  ProcessGeneratedEvents(event_generator);
+  ProcessGeneratedEvents(event_generator, prev_tree_size, tree->size());
 }
 
 ui::AXTreeID ReadAnythingAppModel::GetActiveTreeId() const {
@@ -525,8 +526,33 @@ bool ReadAnythingAppModel::IsNodeIgnoredForReadAnything(
     ui::AXNodeID ax_node_id) const {
   ui::AXNode* ax_node = GetAXNode(ax_node_id);
   DCHECK(ax_node);
-  // Ignore interactive elements, except for text fields.
   ax::mojom::Role role = ax_node->GetRole();
+
+  // PDFs processed with OCR have additional nodes that mark the start and end
+  // of a page. The start of a page is indicated with a kBanner node that has a
+  // child static text node. Ignore both. The end of a page is indicated with a
+  // kContentInfo node that has a child static text node. Ignore the static text
+  // node but keep the kContentInfo so a line break can be inserted in between
+  // pages in GetHtmlTagForPDF.
+  if (is_pdf_) {
+    // The text content of the aforementioned kBanner or kContentInfo nodes is
+    // the same as the text content of its child static text node.
+    std::string text = ax_node->GetTextContentUTF8();
+    ui::AXNode* parent = ax_node->GetParent();
+
+    bool is_start_or_end_static_text_node =
+        parent && ((parent->GetRole() == ax::mojom::Role::kBanner &&
+                    text == string_constants::kPDFPageStart) ||
+                   (parent->GetRole() == ax::mojom::Role::kContentInfo &&
+                    text == string_constants::kPDFPageEnd));
+    if ((role == ax::mojom::Role::kBanner &&
+         text == string_constants::kPDFPageStart) ||
+        is_start_or_end_static_text_node) {
+      return true;
+    }
+  }
+
+  // Ignore interactive elements, except for text fields.
   return (ui::IsControl(role) && !ui::IsTextField(role)) || ui::IsSelect(role);
 }
 
@@ -690,7 +716,9 @@ void ReadAnythingAppModel::ProcessNonGeneratedEvents(
 }
 
 void ReadAnythingAppModel::ProcessGeneratedEvents(
-    const ui::AXEventGenerator& event_generator) {
+    const ui::AXEventGenerator& event_generator,
+    size_t prev_tree_size,
+    size_t tree_size) {
   // Note that this list of events may overlap with non-generated events in the
   // It's up to the consumer to pick but its generally good to prefer generated.
   for (const auto& event : event_generator) {
@@ -712,7 +740,22 @@ void ReadAnythingAppModel::ProcessGeneratedEvents(
                      ax::mojom::Action::kSetSelection,
                  /* from_reading_mode= */ false);
         break;
-
+      case ui::AXEventGenerator::Event::SUBTREE_CREATED:
+        // PDFs are not completely loaded on the kLoadComplete event. The PDF
+        // accessibility tree is only complete when the embedded node in the
+        // tree is populated with the actual contents of the PDF. When this
+        // happens, a SUBTREE_CREATED event will be generated and distillation
+        // should occur.
+        // However, when the user scrolls in the PDF, SUBTREE_CREATED events
+        // will be generated. This happens because the accessibility tree tracks
+        // the scroll position of the PDF (which part of the PDF is currently
+        // displaying). To avoid distilling and causing RM to flicker, only
+        // distill if the size of the updated tree is larger than before (to
+        // capture the complete PDF load mentioned earlier).
+        if (is_pdf_ && prev_tree_size < tree_size) {
+          requires_distillation_ = true;
+        }
+        break;
       // Audit these events e.g. to trigger distillation.
       case ui::AXEventGenerator::Event::NONE:
       case ui::AXEventGenerator::Event::ACCESS_KEY_CHANGED:
@@ -784,11 +827,6 @@ void ReadAnythingAppModel::ProcessGeneratedEvents(
       case ui::AXEventGenerator::Event::SET_SIZE_CHANGED:
       case ui::AXEventGenerator::Event::SORT_CHANGED:
       case ui::AXEventGenerator::Event::STATE_CHANGED:
-      case ui::AXEventGenerator::Event::SUBTREE_CREATED:
-        if (is_pdf_) {
-          requires_distillation_ = true;
-        }
-        break;
       case ui::AXEventGenerator::Event::TEXT_ATTRIBUTE_CHANGED:
       case ui::AXEventGenerator::Event::TEXT_SELECTION_CHANGED:
       case ui::AXEventGenerator::Event::VALUE_IN_TEXT_FIELD_CHANGED:
@@ -843,6 +881,8 @@ std::vector<std::string> ReadAnythingAppModel::GetSupportedFonts() const {
                      default_language_code())) {
     font_choices_.push_back("STIX Two Text");
   }
-
+  if (base::Contains(kLanguagesSupportedByAndika, default_language_code())) {
+    font_choices_.push_back("Andika");
+  }
   return font_choices_;
 }

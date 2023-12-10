@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_INTENT_PICKER_BUBBLE_VIEW_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -15,7 +16,6 @@
 #include "chrome/browser/apps/link_capturing/intent_picker_info.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/gfx/image/image.h"
 #include "ui/views/animation/ink_drop_state.h"
@@ -76,7 +76,7 @@ class IntentPickerBubbleView : public LocationBarBubbleDelegateView {
                          content::WebContents* web_contents,
                          bool show_stay_in_chrome,
                          bool show_remember_selection,
-                         const absl::optional<url::Origin>& initiating_origin);
+                         const std::optional<url::Origin>& initiating_origin);
 
   IntentPickerBubbleView(const IntentPickerBubbleView&) = delete;
   IntentPickerBubbleView& operator=(const IntentPickerBubbleView&) = delete;
@@ -91,7 +91,7 @@ class IntentPickerBubbleView : public LocationBarBubbleDelegateView {
       std::vector<AppInfo> app_info,
       bool show_stay_in_chrome,
       bool show_remember_selection,
-      const absl::optional<url::Origin>& initiating_origin,
+      const std::optional<url::Origin>& initiating_origin,
       IntentPickerResponse intent_picker_cb);
   static IntentPickerBubbleView* intent_picker_bubble() {
     return intent_picker_bubble_;
@@ -112,14 +112,14 @@ class IntentPickerBubbleView : public LocationBarBubbleDelegateView {
 
   // Returns the index of the currently selected item. May return nullopt to
   // indicate no selection.
-  absl::optional<size_t> GetSelectedIndex() const;
+  std::optional<size_t> GetSelectedIndex() const;
 
   // A ScrollView which contains a list of apps. This view manages the selection
   // state for the dialog.
   class IntentPickerAppsView : public views::ScrollView {
    public:
-    virtual void SetSelectedIndex(absl::optional<size_t> index) = 0;
-    virtual absl::optional<size_t> GetSelectedIndex() const = 0;
+    virtual void SetSelectedIndex(std::optional<size_t> index) = 0;
+    virtual std::optional<size_t> GetSelectedIndex() const = 0;
   };
 
   const std::vector<AppInfo>& app_info_for_testing() const { return app_info_; }
@@ -139,7 +139,7 @@ class IntentPickerBubbleView : public LocationBarBubbleDelegateView {
   // |accepted| is true, the dialog should be immediately accepted with that app
   // selected. If |index| is nullopt, no app is selected, and the Accept button
   // will be disabled
-  void OnAppSelected(absl::optional<size_t> index, bool accepted);
+  void OnAppSelected(std::optional<size_t> index, bool accepted);
 
   void Initialize();
 
@@ -190,7 +190,7 @@ class IntentPickerBubbleView : public LocationBarBubbleDelegateView {
   const BubbleType bubble_type_;
 
   // The origin initiating this picker.
-  const absl::optional<url::Origin> initiating_origin_;
+  const std::optional<url::Origin> initiating_origin_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_INTENT_PICKER_BUBBLE_VIEW_H_

@@ -9,11 +9,14 @@
 #include <vector>
 
 #include "ash/system/holding_space/holding_space_tray_child_bubble.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 
 namespace ash {
 
 // Child bubble of `HoldingSpaceTrayBubble` for pinned files.
 class PinnedFilesBubble : public HoldingSpaceTrayChildBubble {
+  METADATA_HEADER(PinnedFilesBubble, HoldingSpaceTrayChildBubble)
+
  public:
   explicit PinnedFilesBubble(HoldingSpaceViewDelegate* delegate);
   PinnedFilesBubble(const PinnedFilesBubble& other) = delete;
@@ -21,7 +24,6 @@ class PinnedFilesBubble : public HoldingSpaceTrayChildBubble {
   ~PinnedFilesBubble() override;
 
   // HoldingSpaceTrayChildBubble:
-  const char* GetClassName() const override;
   std::vector<std::unique_ptr<HoldingSpaceItemViewsSection>> CreateSections()
       override;
 };

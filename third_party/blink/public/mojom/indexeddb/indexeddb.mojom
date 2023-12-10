@@ -351,7 +351,6 @@ interface IDBDatabase {
                     array<int64> object_store_ids,
                     IDBTransactionMode mode,
                     IDBTransactionDurability durability);
-  Close();
   VersionChangeIgnored();
   Get(int64 transaction_id,
       int64 object_store_id,

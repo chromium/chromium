@@ -6,23 +6,10 @@ import atexit
 import os
 import socket
 import subprocess
+import psutil
 import threading
 import time
 import urllib
-
-def terminate_process(proc):
-  """Terminates the process.
-
-  If an error occurs ignore it, just print out a message.
-
-  Args:
-    proc: A subprocess.
-  """
-  try:
-    proc.terminate()
-  except OSError as ex:
-    print('Error while killing a process: %s' % ex)
-
 
 class Server(object):
   """A running ChromeDriver server."""
@@ -125,12 +112,56 @@ class Server(object):
     if self._process is None:
       return
 
+    chromedriver_proc = psutil.Process(self._pid)
+    # Child processes must be queried before the call to shutdown.
+    # If queried later their parent ChromeDriver process might already be gone.
+    # In this case the 'children' function will discover nothing or it might
+    # also discover children of a different process that obtained the same PID
+    # from the OS.
+    processes = chromedriver_proc.children(recursive=True)
+
     try:
       urllib.request.urlopen(self.GetUrl() + '/shutdown', timeout=10).close()
     except:
       self._process.terminate()
-    timer = threading.Timer(5, terminate_process, [self._process])
-    timer.start()
-    self._process.wait()
-    timer.cancel()
+
+    # By this point of execution the ChromeDriver process might already be gone.
+    # The system might also assign the same PID to a different process.
+    # Still we can safely terminate or kill it because psutil.Process.terminate
+    # and psutil.Process.kill check preemptively if the PID has been reused.
+    # S/A: https://psutil.readthedocs.io/en/latest/#psutil.Process.terminate
+    # S/A: https://psutil.readthedocs.io/en/latest/#psutil.Process.kill
+    # As for psutil.wait_procs - there is no such guarantee in the
+    # documentation. Imagine that the process has gone and its PID has been
+    # reused. If psutil.Process.wait does not check the PID for reuse and some
+    # process obtained the same PID then psuti.wait_procs will always return
+    # this process as alive. The code below will try to terminate / kill it,
+    # this time with a check that will throw psutil.NoSuchProcess exception.
+    # This exception is anticipated and the throwing process will be excluded
+    # from the following attempts of cleaning the resources.
+    alive = [chromedriver_proc] + processes
+    _, alive = psutil.wait_procs(alive, timeout=5)
+    if len(alive):
+      print('Terminating %d processes' % len(alive))
+      non_existing = []
+      for proc in alive:
+        try:
+          proc.terminate()
+        except psutil.NoSuchProcess:
+          # The process might be gone by this point
+          non_existing.append(proc)
+          pass
+
+      for proc in non_existing:
+        alive.remove(proc)
+
+    _, alive = psutil.wait_procs(alive, timeout=5)
+    if len(alive):
+      print('Killing %d processes' % len(alive))
+      for proc in alive:
+        try:
+          proc.kill()
+        except psutil.NoSuchProcess:
+          # The process might be gone by this point
+          pass
     self._process = None

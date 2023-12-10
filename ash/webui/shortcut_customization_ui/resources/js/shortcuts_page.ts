@@ -4,8 +4,8 @@
 
 import './accelerator_subsection.js';
 import '../css/shortcut_customization_shared.css.js';
-import './shortcut_input.js';
 
+import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {afterNextRender, microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -204,6 +204,11 @@ export class ShortcutsPageElement extends PolymerElement implements
           }
         });
 
+        // Focus on the matching accelerator row.
+        strictQuery(
+            '#container', matchingAcceleratorRow.shadowRoot,
+            HTMLTableRowElement)
+            .focus();
         // The scroll event did happen, so return true.
         return true;
       }

@@ -19,4 +19,4 @@ enum class SafeBrowsingSettingReferralMethod {
 
 }  // namespace safe_browsing
 
-#endif  // COMPONENTS_SAFE_BROWSING_CORE_COMMON_SAFE_BROWSING_REFERRAL_METHODS_H_
+#endif  // COMPONENTS_SAFE_BROWSING_CORE_COMMON_SAFEBROWSING_REFERRAL_METHODS_H_

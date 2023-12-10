@@ -54,7 +54,7 @@ template("in_process_fuzzer") {
       # Again, these are full browser tests, so it needs a fairly high memory
       # limit so that it runs correctly.
       libfuzzer_options = [
-        "rss_limit_mb=4096",
+        "rss_limit_mb=8192",
 
         # This is for test-only. Remove once crbug.com/1471427 is fixed.
         "fork=0",
@@ -67,6 +67,10 @@ template("in_process_fuzzer") {
 
         # Browser tests are big
         "address_space_limit_mb=0",
+
+        # For testing. Those fuzzers are extremely slow on ClusterFuzz, and
+        # using this option doesn't help.
+        "fork_server=0",
       ]
 
       if (defined(invoker.asan_options)) {

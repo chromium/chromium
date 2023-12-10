@@ -9,6 +9,9 @@
 namespace network {
 
 NetworkConditions::NetworkConditions() : NetworkConditions(false) {}
+NetworkConditions::NetworkConditions(const NetworkConditions&) = default;
+NetworkConditions& NetworkConditions::operator=(const NetworkConditions&) =
+    default;
 
 NetworkConditions::NetworkConditions(bool offline)
     : NetworkConditions(offline, 0, 0, 0) {}

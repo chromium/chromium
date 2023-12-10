@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/relaunch_notification/relaunch_notification_controller.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "ash/public/cpp/update_types.h"
@@ -26,7 +27,6 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/shell.h"
@@ -1148,7 +1148,7 @@ class RelaunchNotificationControllerPlatformImplTest
   RelaunchNotificationControllerPlatformImpl& platform_impl() { return *impl_; }
 
  private:
-  absl::optional<RelaunchNotificationControllerPlatformImpl> impl_;
+  std::optional<RelaunchNotificationControllerPlatformImpl> impl_;
 };
 
 // Flaky on all platforms: https://crbug.com/1294032

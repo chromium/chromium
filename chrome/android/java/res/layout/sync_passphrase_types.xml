@@ -42,6 +42,7 @@ found in the LICENSE file.
         android:id="@+id/reset_sync_link"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingTop="25dp" />
+        android:paddingTop="25dp"
+        android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
 
 </LinearLayout>

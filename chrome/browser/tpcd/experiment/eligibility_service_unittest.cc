@@ -297,4 +297,54 @@ INSTANTIATE_TEST_SUITE_P(EligibilityServiceHistogramTests,
                          EligibilityServiceHistogramTest,
                          testing::ValuesIn(kTestCases));
 
+class EligibilityServiceDisable3PCsTest : public EligibilityServiceTestBase {
+ public:
+  EligibilityServiceDisable3PCsTest() {
+    feature_list_.InitAndEnableFeatureWithParameters(
+        features::kCookieDeprecationFacilitatedTesting,
+        {{kDisable3PCookiesName, "true"}});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(EligibilityServiceDisable3PCsTest, Onboarded_NotifyManager) {
+  EXPECT_CALL(*experiment_manager_, IsClientEligible).WillOnce(Return(true));
+  EligibilityService eligibility_service(&profile_, experiment_manager_.get());
+
+  EXPECT_CALL(*experiment_manager_, NotifyProfileTrackingProtectionOnboarded);
+
+  auto* onboarding_service =
+      TrackingProtectionOnboardingFactory::GetForProfile(&profile_);
+  // Simulate onboarding a profile.
+  onboarding_service->OnboardingNoticeShown();
+}
+
+class EligibilityServiceSilentOnboardingTest
+    : public EligibilityServiceTestBase {
+ public:
+  EligibilityServiceSilentOnboardingTest() {
+    feature_list_.InitAndEnableFeatureWithParameters(
+        features::kCookieDeprecationFacilitatedTesting,
+        {{kDisable3PCookiesName, "false"},
+         {kEnableSilentOnboardingName, "true"}});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(EligibilityServiceSilentOnboardingTest, Onboarded_NotifyManager) {
+  EXPECT_CALL(*experiment_manager_, IsClientEligible).WillOnce(Return(true));
+  EligibilityService eligibility_service(&profile_, experiment_manager_.get());
+
+  EXPECT_CALL(*experiment_manager_, NotifyProfileTrackingProtectionOnboarded);
+
+  auto* onboarding_service =
+      TrackingProtectionOnboardingFactory::GetForProfile(&profile_);
+  // Simulate onboarding a profile.
+  onboarding_service->SilentOnboardingNoticeShown();
+}
+
 }  // namespace tpcd::experiment

@@ -78,14 +78,6 @@ bool VideoToolboxVP9Accelerator::NeedsCompressedHeaderParsed() const {
   return false;
 }
 
-bool VideoToolboxVP9Accelerator::GetFrameContext(scoped_refptr<VP9Picture> pic,
-                                                 Vp9FrameContext* frame_ctx) {
-  DVLOG(4) << __func__;
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // Not called because SupportsContextProbabilityReadback() returns false.
-  NOTREACHED_NORETURN();
-}
-
 bool VideoToolboxVP9Accelerator::ProcessFrame(scoped_refptr<VP9Picture> pic) {
   DVLOG(4) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -107,11 +99,10 @@ bool VideoToolboxVP9Accelerator::ProcessFrame(scoped_refptr<VP9Picture> pic) {
 
   // If this is the first picture in the current superframe, create a buffer.
   if (!frame_data_) {
-    OSStatus status =
-        CMBlockBufferCreateEmpty(kCFAllocatorDefault,  // structure_allocator
-                                 0,                    // sub_block_capacity
-                                 0,                    // flags
-                                 frame_data_.InitializeInto());
+    OSStatus status = CMBlockBufferCreateEmpty(
+        /*structureAllocator=*/kCFAllocatorDefault,
+        /*subBlockCapacity=*/0,
+        /*flags=*/0, frame_data_.InitializeInto());
     if (status != noErr) {
       OSSTATUS_MEDIA_LOG(ERROR, status, media_log_.get())
           << "CMBlockBufferCreateWithMemoryBlock()";
@@ -202,10 +193,11 @@ bool VideoToolboxVP9Accelerator::ProcessFormat(scoped_refptr<VP9Picture> pic,
     active_hdr_metadata_ = hdr_metadata;
     active_coded_size_ = coded_size;
 
-    session_metadata_ = VideoToolboxSessionMetadata{
+    session_metadata_ = VideoToolboxDecompressionSessionMetadata{
         /*allow_software_decoding=*/false,
         /*is_hbd=*/pic->frame_hdr->bit_depth > 8,
-    };
+        /*has_alpha=*/false,
+        /*visible_rect=*/pic->visible_rect()};
 
     *format_changed = true;
   } else {
@@ -269,19 +261,18 @@ bool VideoToolboxVP9Accelerator::SubmitFrames(
   // Wrap the frame data in a sample.
   base::apple::ScopedCFTypeRef<CMSampleBufferRef> sample;
   size_t size = CMBlockBufferGetDataLength(frame_data.get());
-  OSStatus status =
-      CMSampleBufferCreate(kCFAllocatorDefault,
-                           frame_data.get(),      // data_buffer
-                           true,                  // data_ready
-                           nullptr,               // make_data_ready_callback
-                           nullptr,               // make_data_ready_refcon
-                           active_format_.get(),  // format_description
-                           1,                     // num_samples
-                           0,                     // num_sample_timing_entries
-                           nullptr,               // sample_timing_array
-                           1,                     // num_sample_size_entries
-                           &size,                 // sample_size_array
-                           sample.InitializeInto());
+  OSStatus status = CMSampleBufferCreate(
+      /*allocator=*/kCFAllocatorDefault,
+      /*dataBuffer=*/frame_data.get(),
+      /*dataReady=*/true,
+      /*makeDataReadyCallback=*/nullptr,
+      /*makeDataReadyRefcon=*/nullptr,
+      /*formatDescription=*/active_format_.get(),
+      /*numSamples=*/1,
+      /*numSampleTimingEntries=*/0,
+      /*sampleTimingArray=*/nullptr,
+      /*numSampleSizeEntries=*/1,
+      /*sampleSizeArray=*/&size, sample.InitializeInto());
   if (status != noErr) {
     OSSTATUS_MEDIA_LOG(ERROR, status, media_log_.get())
         << "CMSampleBufferCreate()";
@@ -302,15 +293,15 @@ bool VideoToolboxVP9Accelerator::AppendData(CMBlockBufferRef dest,
   size_t offset = CMBlockBufferGetDataLength(dest);
 
   // Describe the required backing memory.
-  OSStatus status =
-      CMBlockBufferAppendMemoryBlock(dest,                 // the_buffer
-                                     nullptr,              // memory_block
-                                     data_size,            // block_length
-                                     kCFAllocatorDefault,  // block_allocator
-                                     nullptr,    // custom_block_source
-                                     0,          // offset_to_data
-                                     data_size,  // data_length
-                                     0);         // flags
+  OSStatus status = CMBlockBufferAppendMemoryBlock(
+      /*theBuffer=*/dest,
+      /*memoryBlock=*/nullptr,
+      /*blockLength=*/data_size,
+      /*blockAllocator=*/kCFAllocatorDefault,
+      /*customBlockSource=*/nullptr,
+      /*offsetToData=*/0,
+      /*dataLength=*/data_size,
+      /*flags=*/0);
   if (status != noErr) {
     OSSTATUS_MEDIA_LOG(ERROR, status, media_log_.get())
         << "CMBlockBufferAppendMemoryBlock()";

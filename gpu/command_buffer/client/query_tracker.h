@@ -14,6 +14,7 @@
 #include <memory>
 #include <unordered_map>
 
+#include <optional>
 #include "base/atomicops.h"
 #include "base/containers/circular_deque.h"
 #include "base/containers/flat_map.h"
@@ -21,7 +22,6 @@
 #include "base/memory/raw_ptr.h"
 #include "gles2_impl_export.h"
 #include "gpu/command_buffer/common/gles2_cmd_format.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace gpu {
 
@@ -201,7 +201,7 @@ class GLES2_IMPL_EXPORT QueryTracker {
     uint64_t client_begin_time_us_;  // Only used for latency query target.
     uint64_t result_;
 
-    absl::optional<base::OnceClosure> on_completed_callback_;
+    std::optional<base::OnceClosure> on_completed_callback_;
   };
 
   explicit QueryTracker(MappedMemoryManager* manager);

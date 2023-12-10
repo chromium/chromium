@@ -14,21 +14,23 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.ContextUtils;
 import org.chromium.ui.display.DisplayAndroidManager;
 
-/**
- * Helper class for interfacing with the Android Choreographer from native code.
- */
+/** Helper class for interfacing with the Android Choreographer from native code. */
 @JNINamespace("vr")
 public class AndroidVSyncHelper {
     private final long mNativeAndroidVSyncHelper;
 
-    private final Choreographer.FrameCallback mCallback = new Choreographer.FrameCallback() {
-        @Override
-        public void doFrame(long frameTimeNanos) {
-            if (mNativeAndroidVSyncHelper == 0) return;
-            AndroidVSyncHelperJni.get().onVSync(
-                    mNativeAndroidVSyncHelper, AndroidVSyncHelper.this, frameTimeNanos);
-        }
-    };
+    private final Choreographer.FrameCallback mCallback =
+            new Choreographer.FrameCallback() {
+                @Override
+                public void doFrame(long frameTimeNanos) {
+                    if (mNativeAndroidVSyncHelper == 0) return;
+                    AndroidVSyncHelperJni.get()
+                            .onVSync(
+                                    mNativeAndroidVSyncHelper,
+                                    AndroidVSyncHelper.this,
+                                    frameTimeNanos);
+                }
+            };
 
     @CalledByNative
     private static AndroidVSyncHelper create(long nativeAndroidVSyncHelper) {

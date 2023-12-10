@@ -375,46 +375,46 @@ suite('<settings-cursor-and-touchpad-page>', () => {
       });
 
   test(
-      'face tracking feature does not show if the feature flag is disabled',
+      'face gaze feature does not show if the feature flag is disabled',
       async () => {
         loadTimeData.overrideValues({
-          isAccessibilityGameFaceIntegrationEnabled: false,
+          isAccessibilityFaceGazeEnabled: false,
         });
 
         await initPage();
-        const faceTrackingToggle =
+        const faceGazeToggle =
             page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
-                '#faceTrackingToggle');
-        assertEquals(null, faceTrackingToggle);
+                '#faceGazeToggle');
+        assertEquals(null, faceGazeToggle);
       });
 
   test(
       'face tracking feature shows if the feature flag is enabled',
       async () => {
         loadTimeData.overrideValues({
-          isAccessibilityGameFaceIntegrationEnabled: true,
+          isAccessibilityFaceGazeEnabled: true,
         });
 
         await initPage();
-        const faceTrackingToggle =
+        const faceGazeToggle =
             page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
-                '#faceTrackingToggle');
-        assert(faceTrackingToggle);
-        assertTrue(isVisible(faceTrackingToggle));
+                '#faceGazeToggle');
+        assert(faceGazeToggle);
+        assertTrue(isVisible(faceGazeToggle));
 
-        const faceTrackingSettingsButton =
-            page.shadowRoot!.querySelector('#faceTrackingSettingsButton');
-        assert(faceTrackingSettingsButton);
-        assertFalse(isVisible(faceTrackingSettingsButton));
+        const faceGazeSettingsButton =
+            page.shadowRoot!.querySelector('#faceGazeSettingsButton');
+        assert(faceGazeSettingsButton);
+        assertFalse(isVisible(faceGazeSettingsButton));
 
-        assertFalse(faceTrackingToggle.checked);
-        assertFalse(page.prefs.settings.a11y.face_tracking.enabled.value);
-        faceTrackingToggle.click();
+        assertFalse(faceGazeToggle.checked);
+        assertFalse(page.prefs.settings.a11y.face_gaze.enabled.value);
+        faceGazeToggle.click();
 
         await waitBeforeNextRender(page);
         flush();
-        assertTrue(faceTrackingToggle.checked);
-        assertTrue(page.prefs.settings.a11y.face_tracking.enabled.value);
-        assertTrue(isVisible(faceTrackingSettingsButton));
+        assertTrue(faceGazeToggle.checked);
+        assertTrue(page.prefs.settings.a11y.face_gaze.enabled.value);
+        assertTrue(isVisible(faceGazeSettingsButton));
       });
 });

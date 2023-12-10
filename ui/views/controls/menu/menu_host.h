@@ -6,9 +6,10 @@
 #define UI_VIEWS_CONTROLS_MENU_MENU_HOST_H_
 
 #include <memory>
+#include <string>
 
 #include "base/memory/raw_ptr.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "ui/base/owned_window_anchor.h"
 #include "ui/base/ui_base_types.h"
@@ -30,13 +31,14 @@ class PreMenuEventDispatchHandler;
 #endif  // defined(USE_AURA)
 }  // namespace internal
 
-// SubmenuView uses a MenuHost to house the SubmenuView.
+// `SubmenuView` uses a `MenuHost` to house the `SubmenuView`.
 //
-// SubmenuView owns the MenuHost. When SubmenuView is done with the MenuHost
-// |DestroyMenuHost| is invoked. The one exception to this is if the native
-// OS destroys the widget out from under us, in which case |MenuHostDestroyed|
-// is invoked back on the SubmenuView and the SubmenuView then drops references
-// to the MenuHost.
+// As a `Widget`, `MenuHost` is owned by the widget system. `SubmenuView`
+// creates `MenuHost` and when `SubmenuView` is done with the `MenuHost`
+// `DestroyMenuHost` is invoked, which leads to the destruction of the
+// `MenuHost`. Alternatively, the OS may destroy the widget. In this case
+// `MenuHost` invokes `MenuHostDestroyed` on the `SubmenuView` and the
+// `SubmenuView` then drops references to the `MenuHost`.
 class MenuHost : public Widget, public WidgetObserver {
  public:
   struct InitParams {
@@ -103,31 +105,21 @@ class MenuHost : public Widget, public WidgetObserver {
   // WidgetObserver:
   void OnWidgetDestroying(Widget* widget) override;
 
-  // Parent of the MenuHost widget.
-  raw_ptr<Widget, DanglingUntriaged> owner_ = nullptr;
+  // Returns the parent of the MenuHost widget.
+  Widget* GetOwner();
+
+  base::ScopedObservation<Widget, WidgetObserver> owner_observation_{this};
 
   gfx::NativeView native_view_for_gestures_ = gfx::NativeView();
 
-  // The view we contain.
-  raw_ptr<SubmenuView, DanglingUntriaged> submenu_;
+  // The view we contain, owned by `MenuItemView`.
+  raw_ptr<SubmenuView> submenu_ = nullptr;
 
   // If true, DestroyMenuHost has been invoked.
   bool destroying_ = false;
 
   // If true and capture is lost we don't notify the delegate.
   bool ignore_capture_lost_ = false;
-
-  // A callback to be registered with the compositor to record the time from
-  // menu host initialization to menu presentation
-  base::OnceCallback<void(base::TimeTicks)> record_init_to_presentation_time_ =
-      base::BindOnce(
-          [](base::TimeTicks menu_host_init_time,
-             base::TimeTicks presentation_time) {
-            UMA_HISTOGRAM_TIMES(
-                "Chrome.WrenchMenu.MenuHostInitToNextFramePresented",
-                presentation_time - menu_host_init_time);
-          },
-          base::TimeTicks::Now());
 
 #if defined(USE_AURA)
   // Handles raw touch events at the moment.

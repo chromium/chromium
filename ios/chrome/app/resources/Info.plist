@@ -7,7 +7,7 @@
 	<key>UIApplicationShortcutWidget</key>
 	<string>${CONTENT_WIDGET_EXTENSION_BUNDLE_ID}</string>
 	<key>CFBundleDevelopmentRegion</key>
-	<string>English</string>
+	<string>en</string>
 	<key>CFBundleDisplayName</key>
 	<string>${CHROMIUM_SHORT_NAME}</string>
 	<key>CFBundleDocumentTypes</key>
@@ -93,6 +93,8 @@
 		<string>${CHROMIUM_HANDOFF_ID}</string>
 		<string>${IOS_MOVE_TAB_ACTIVITY_TYPE}</string>
 		<string>NSUserActivityTypeBrowsingWeb</string>
+		<string>AddBookmarkToChromeIntent</string>
+		<string>AddReadingListItemToChromeIntent</string>
 		<string>OpenInChromeIncognitoIntent</string>
 		<string>OpenInChromeIntent</string>
 		<string>SearchInChromeIntent</string>
@@ -188,8 +190,8 @@
 	<key>KSChannelChromeScheme</key>
 	<string>${CHROMIUM_URL_CHANNEL_SCHEME}</string>
 	<key>NSContactsUsageDescription</key>
-        <string>IDS_IOS_CONTACTS_USAGE_DESCRIPTION</string>
-        <key>NSCameraUsageDescription</key>
+	<string>IDS_IOS_CONTACTS_USAGE_DESCRIPTION</string>
+	<key>NSCameraUsageDescription</key>
 	<string>IDS_IOS_CAMERA_USAGE_DESCRIPTION</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>IDS_IOS_LOCATION_WHEN_IN_USE_USAGE_DESCRIPTION</string>

@@ -24,8 +24,10 @@
 #include "net/http/http_server_properties.h"
 #include "net/log/net_log_with_source.h"
 #include "net/socket/connection_attempts.h"
+#include "net/socket/next_proto.h"
 #include "net/socket/socket_tag.h"
 #include "net/socket/ssl_client_socket.h"
+#include "net/ssl/ssl_config.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_versions.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -73,7 +75,10 @@ struct NET_EXPORT_PRIVATE CommonConnectJobParams {
       NetworkQualityEstimator* network_quality_estimator,
       NetLog* net_log,
       WebSocketEndpointLockManager* websocket_endpoint_lock_manager,
-      HttpServerProperties* http_server_properties);
+      HttpServerProperties* http_server_properties,
+      const NextProtoVector* alpn_protos,
+      const SSLConfig::ApplicationSettings* application_settings,
+      const bool* ignore_certificate_errors);
   CommonConnectJobParams(const CommonConnectJobParams& other);
   ~CommonConnectJobParams();
 
@@ -97,6 +102,10 @@ struct NET_EXPORT_PRIVATE CommonConnectJobParams {
   raw_ptr<WebSocketEndpointLockManager> websocket_endpoint_lock_manager;
 
   raw_ptr<HttpServerProperties> http_server_properties;
+
+  raw_ptr<const NextProtoVector> alpn_protos;
+  raw_ptr<const SSLConfig::ApplicationSettings> application_settings;
+  raw_ptr<const bool> ignore_certificate_errors;
 };
 
 // When a host resolution completes, OnHostResolutionCallback() is invoked. If

@@ -64,7 +64,7 @@ void FakeWebClient::PrepareErrorPage(
     NSError* error,
     bool is_post,
     bool is_off_the_record,
-    const absl::optional<net::SSLInfo>& info,
+    const std::optional<net::SSLInfo>& info,
     int64_t navigation_id,
     base::OnceCallback<void(NSString*)> callback) {
   net::CertStatus cert_status = info.has_value() ? info.value().cert_status : 0;
@@ -74,6 +74,10 @@ void FakeWebClient::PrepareErrorPage(
 
 UIView* FakeWebClient::GetWindowedContainer() {
   return GetAnyKeyWindow().rootViewController.view;
+}
+
+bool FakeWebClient::EnableWebInspector(web::BrowserState* browser_state) const {
+  return true;
 }
 
 UserAgentType FakeWebClient::GetDefaultUserAgent(web::WebState* web_state,

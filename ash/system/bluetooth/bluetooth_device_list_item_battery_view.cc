@@ -11,7 +11,6 @@
 #include "ash/system/tray/unfocusable_label.h"
 #include "base/check.h"
 #include "base/strings/string_number_conversions.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -72,15 +71,9 @@ void BluetoothDeviceListItemBatteryView::UpdateBatteryInfo(
   }
 
   ui::ColorId color_id;
-  if (chromeos::features::IsJellyEnabled()) {
     color_id = new_battery_percentage >= kPositiveBatteryPercentageCutoff
                    ? cros_tokens::kCrosSysPositive
                    : cros_tokens::kCrosSysError;
-  } else {
-    color_id = new_battery_percentage >= kPositiveBatteryPercentageCutoff
-                   ? kColorAshTextColorSecondary
-                   : kColorAshTextColorAlert;
-  }
 
   label_->SetText(l10n_util::GetStringFUTF16(
       message_id, base::NumberToString16(new_battery_percentage)));

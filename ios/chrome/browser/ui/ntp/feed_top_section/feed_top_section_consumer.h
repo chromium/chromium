@@ -7,16 +7,25 @@
 
 @class SigninPromoViewConfigurator;
 
+typedef NS_ENUM(NSInteger, PromoViewType) {
+  // Standard style used for the Content Notifications.
+  PromoViewTypeSignin = 0,
+  PromoViewTypeNotifications,
+};
+
 // Protocol used to communicate with the Feed Top Section View.
 @protocol FeedTopSectionConsumer
+
+// Property that stores the PromoViewType that is currently being displayed.
+@property(nonatomic, assign) PromoViewType visiblePromoViewType;
 
 // Allows the consumer to use the `configurator` to configure its view.
 - (void)updateSigninPromoWithConfigurator:
     (SigninPromoViewConfigurator*)configurator;
 
-// Methods used to show or hide the Signin Promo.
-- (void)showSigninPromo;
-- (void)hideSigninPromo;
+// Methods to show/hide the promo.
+- (void)showPromo;
+- (void)hidePromo;
 
 @end
 

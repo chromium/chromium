@@ -250,12 +250,6 @@ v8::Local<v8::Object> WorkerOrWorkletGlobalScope::AssociateWithWrapper(
   return v8::Local<v8::Object>();
 }
 
-bool WorkerOrWorkletGlobalScope::HasPendingActivity() const {
-  // The global scope wrapper is kept alive as longs as its execution context is
-  // active.
-  return !ExecutionContext::IsContextDestroyed();
-}
-
 void WorkerOrWorkletGlobalScope::CountUse(WebFeature feature) {
   DCHECK(IsContextThread());
 

@@ -78,7 +78,7 @@ void LinkToTextJavaScriptFeature::RunGenerationJS(
 
 // static
 bool LinkToTextJavaScriptFeature::ShouldAttemptIframeGeneration(
-    absl::optional<shared_highlighting::LinkGenerationError> error,
+    std::optional<shared_highlighting::LinkGenerationError> error,
     const GURL& main_frame_url) {
   if (!base::FeatureList::IsEnabled(
           shared_highlighting::kSharedHighlightingAmp)) {
@@ -101,7 +101,7 @@ void LinkToTextJavaScriptFeature::HandleResponse(
       linkToTextResponseWithValue:response
                          webState:web_state.get()
                           latency:link_generation_timer.Elapsed()];
-  absl::optional<shared_highlighting::LinkGenerationError> error =
+  std::optional<shared_highlighting::LinkGenerationError> error =
       [parsed_response error];
 
   std::vector<web::WebFrame*> amp_frames;

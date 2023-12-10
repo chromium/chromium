@@ -45,8 +45,8 @@ class ASH_EXPORT Combobox : public views::Button,
   void SetSelectionChangedCallback(base::RepeatingClosure callback);
 
   // Gets/Sets the selected index.
-  absl::optional<size_t> GetSelectedIndex() const { return selected_index_; }
-  void SetSelectedIndex(absl::optional<size_t> index);
+  std::optional<size_t> GetSelectedIndex() const { return selected_index_; }
+  void SetSelectedIndex(std::optional<size_t> index);
 
   // Looks for the first occurrence of `value` in `model_`. If found, selects
   // the found index and returns true. Otherwise simply noops and returns false.
@@ -119,10 +119,10 @@ class ASH_EXPORT Combobox : public views::Button,
   base::RepeatingClosure callback_;
 
   // The current selected index; nullopt means no selection.
-  absl::optional<size_t> selected_index_ = absl::nullopt;
+  std::optional<size_t> selected_index_ = std::nullopt;
 
   // The selection that committed by performing selection changed action.
-  absl::optional<size_t> last_commit_selection_ = absl::nullopt;
+  std::optional<size_t> last_commit_selection_ = std::nullopt;
 
   // A handler handles mouse and touch event happening outside combobox and drop
   // down menu. This is mainly used to decide if we should close the drop down

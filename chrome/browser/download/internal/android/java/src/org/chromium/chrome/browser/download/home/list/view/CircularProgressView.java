@@ -77,14 +77,24 @@ public class CircularProgressView extends ChromeImageButton {
         mForegroundHelper = new ForegroundDrawableCompat(this);
         mForegroundHelper.setScaleType(ImageView.ScaleType.FIT_XY);
 
-        TypedArray types = attrs == null
-                ? null
-                : context.obtainStyledAttributes(attrs, R.styleable.CircularProgressView, 0, 0);
+        TypedArray types =
+                attrs == null
+                        ? null
+                        : context.obtainStyledAttributes(
+                                attrs, R.styleable.CircularProgressView, 0, 0);
 
-        mIndeterminateProgress = AutoAnimatorDrawable.wrap(UiUtils.getDrawable(
-                context, types, R.styleable.CircularProgressView_indeterminateProgress));
-        mDeterminateProgress = AutoAnimatorDrawable.wrap(UiUtils.getDrawable(
-                context, types, R.styleable.CircularProgressView_determinateProgress));
+        mIndeterminateProgress =
+                AutoAnimatorDrawable.wrap(
+                        UiUtils.getDrawable(
+                                context,
+                                types,
+                                R.styleable.CircularProgressView_indeterminateProgress));
+        mDeterminateProgress =
+                AutoAnimatorDrawable.wrap(
+                        UiUtils.getDrawable(
+                                context,
+                                types,
+                                R.styleable.CircularProgressView_determinateProgress));
         mResumeButtonSrc =
                 UiUtils.getDrawable(context, types, R.styleable.CircularProgressView_resumeSrc);
         mPauseButtonSrc =
@@ -122,8 +132,7 @@ public class CircularProgressView extends ChromeImageButton {
      */
     public void setState(@UiState int state) {
         Drawable imageDrawable;
-        @StringRes
-        int contentDescription;
+        @StringRes int contentDescription;
         switch (state) {
             case UiState.RUNNING:
                 imageDrawable = mPauseButtonSrc;

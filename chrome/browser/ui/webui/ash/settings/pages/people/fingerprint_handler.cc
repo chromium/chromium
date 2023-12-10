@@ -310,19 +310,7 @@ void FingerprintHandler::OnSetRecordLabel(const std::string& callback_id,
 }
 
 bool FingerprintHandler::CheckAuthTokenValidity(const std::string& auth_token) {
-  if (ash::features::ShouldUseAuthSessionStorage()) {
-    return ash::AuthSessionStorage::Get()->IsValid(auth_token);
-  } else {
-    quick_unlock::QuickUnlockStorage* quick_unlock_storage =
-        quick_unlock::QuickUnlockFactory::GetForProfile(profile_);
-    if (!quick_unlock_storage->GetAuthToken()) {
-      return false;
-    }
-    if (auth_token != quick_unlock_storage->GetAuthToken()->Identifier()) {
-      return false;
-    }
-    return true;
-  }
+  return ash::AuthSessionStorage::Get()->IsValid(auth_token);
 }
 
 }  // namespace ash::settings

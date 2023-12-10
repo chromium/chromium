@@ -1,3 +1,0 @@
-Test	http://www.w3.org/2001/DOM-Test-Suite/level1/core/hc_nodevalue03
-Status	error
-Message	TypeError: doc.createEntityReference is not a function

@@ -80,6 +80,10 @@ bool WebCryptoResult::Cancelled() const {
   return cancel_->Cancelled();
 }
 
+void WebCryptoResult::SetWarning(WebCryptoWarningType code) {
+  impl_->SetWarning(code);
+}
+
 WebCryptoResult::WebCryptoResult(CryptoResult* impl,
                                  scoped_refptr<CryptoResultCancel> cancel)
     : impl_(impl), cancel_(std::move(cancel)) {

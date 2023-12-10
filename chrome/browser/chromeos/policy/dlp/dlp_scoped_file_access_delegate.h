@@ -12,7 +12,6 @@
 #include "base/files/file_path.h"
 #include "base/files/scoped_file.h"
 #include "base/functional/callback.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/dbus/dlp/dlp_service.pb.h"
 #include "components/file_access/scoped_file_access.h"
@@ -44,6 +43,10 @@ class DlpScopedFileAccessDelegate
       base::OnceCallback<void(file_access::ScopedFileAccess)> callback)
       override;
   void RequestFilesAccessForSystem(
+      const std::vector<base::FilePath>& files,
+      base::OnceCallback<void(file_access::ScopedFileAccess)> callback)
+      override;
+  void RequestDefaultFilesAccess(
       const std::vector<base::FilePath>& files,
       base::OnceCallback<void(file_access::ScopedFileAccess)> callback)
       override;

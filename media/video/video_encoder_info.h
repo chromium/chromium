@@ -70,6 +70,8 @@ struct MEDIA_EXPORT VideoEncoderInfo {
   bool reports_average_qp = true;
   uint32_t requested_resolution_alignment = 1;
   bool apply_alignment_to_all_simulcast_layers = false;
+  // True if encoder supports frame size change without re-initialization.
+  bool supports_frame_size_change = false;
 
   std::array<std::vector<uint8_t>, kMaxSpatialLayers> fps_allocation;
   std::vector<ResolutionBitrateLimit> resolution_bitrate_limits;

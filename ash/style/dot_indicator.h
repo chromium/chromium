@@ -6,6 +6,7 @@
 #define ASH_STYLE_DOT_INDICATOR_H_
 
 #include "ash/ash_export.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 namespace ash {
@@ -15,6 +16,8 @@ namespace ash {
 // set to visible by the owner view. The owner of this component is also
 // responsible for setting the correct bounds on the app icon.
 class ASH_EXPORT DotIndicator : public views::View {
+  METADATA_HEADER(DotIndicator, views::View)
+
  public:
   explicit DotIndicator(SkColor indicator_color);
   DotIndicator(const DotIndicator& other) = delete;

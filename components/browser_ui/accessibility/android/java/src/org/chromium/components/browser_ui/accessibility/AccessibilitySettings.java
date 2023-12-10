@@ -20,9 +20,7 @@ import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.ContentFeatureMap;
 
-/**
- * Fragment to keep track of all the accessibility related preferences.
- */
+/** Fragment to keep track of all the accessibility related preferences. */
 public class AccessibilitySettings extends PreferenceFragmentCompat
         implements Preference.OnPreferenceChangeListener, CustomDividerFragment {
     public static final String PREF_TEXT_SCALE = "text_scale";
@@ -43,17 +41,20 @@ public class AccessibilitySettings extends PreferenceFragmentCompat
     private double mPageZoomLatestDefaultZoomPrefValue;
 
     private FontSizePrefs mFontSizePrefs;
-    private FontSizePrefsObserver mFontSizePrefsObserver = new FontSizePrefsObserver() {
-        @Override
-        public void onFontScaleFactorChanged(float fontScaleFactor, float userFontScaleFactor) {
-            mTextScalePref.updateFontScaleFactors(fontScaleFactor, userFontScaleFactor, true);
-        }
+    private FontSizePrefsObserver mFontSizePrefsObserver =
+            new FontSizePrefsObserver() {
+                @Override
+                public void onFontScaleFactorChanged(
+                        float fontScaleFactor, float userFontScaleFactor) {
+                    mTextScalePref.updateFontScaleFactors(
+                            fontScaleFactor, userFontScaleFactor, true);
+                }
 
-        @Override
-        public void onForceEnableZoomChanged(boolean enabled) {
-            mForceEnableZoomPref.setChecked(enabled);
-        }
-    };
+                @Override
+                public void onForceEnableZoomChanged(boolean enabled) {
+                    mForceEnableZoomPref.setChecked(enabled);
+                }
+            };
 
     public void setDelegate(AccessibilitySettingsDelegate delegate) {
         mDelegate = delegate;
@@ -64,8 +65,10 @@ public class AccessibilitySettings extends PreferenceFragmentCompat
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        getActivity().setTitle(
-                ContextUtils.getApplicationContext().getString(R.string.prefs_accessibility));
+        getActivity()
+                .setTitle(
+                        ContextUtils.getApplicationContext()
+                                .getString(R.string.prefs_accessibility));
     }
 
     @Override
@@ -85,8 +88,9 @@ public class AccessibilitySettings extends PreferenceFragmentCompat
         if (mDelegate.showPageZoomSettingsUI()) {
             mTextScalePref.setVisible(false);
             // Set the initial values for the page zoom settings, and set change listeners.
-            mPageZoomDefaultZoomPref.setInitialValue(PageZoomUtils.getDefaultZoomAsSeekBarValue(
-                    mDelegate.getBrowserContextHandle()));
+            mPageZoomDefaultZoomPref.setInitialValue(
+                    PageZoomUtils.getDefaultZoomAsSeekBarValue(
+                            mDelegate.getBrowserContextHandle()));
             mPageZoomDefaultZoomPref.setOnPreferenceChangeListener(this);
             mPageZoomAlwaysShowPref.setChecked(PageZoomUtils.shouldShowZoomMenuItem());
             mPageZoomAlwaysShowPref.setOnPreferenceChangeListener(this);
@@ -99,8 +103,10 @@ public class AccessibilitySettings extends PreferenceFragmentCompat
             mPageZoomDefaultZoomPref.setVisible(false);
             mPageZoomAlwaysShowPref.setVisible(false);
             mTextScalePref.setOnPreferenceChangeListener(this);
-            mTextScalePref.updateFontScaleFactors(mFontSizePrefs.getFontScaleFactor(),
-                    mFontSizePrefs.getUserFontScaleFactor(), false);
+            mTextScalePref.updateFontScaleFactors(
+                    mFontSizePrefs.getFontScaleFactor(),
+                    mFontSizePrefs.getUserFontScaleFactor(),
+                    false);
         }
 
         mForceEnableZoomPref = (ChromeSwitchPreference) findPreference(PREF_FORCE_ENABLE_ZOOM);
@@ -118,24 +124,26 @@ public class AccessibilitySettings extends PreferenceFragmentCompat
         }
 
         Preference captions = findPreference(PREF_CAPTIONS);
-        captions.setOnPreferenceClickListener(preference -> {
-            Intent intent = new Intent(Settings.ACTION_CAPTIONING_SETTINGS);
+        captions.setOnPreferenceClickListener(
+                preference -> {
+                    Intent intent = new Intent(Settings.ACTION_CAPTIONING_SETTINGS);
 
-            // Open the activity in a new task because the back button on the caption
-            // settings page navigates to the previous settings page instead of Chrome.
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(intent);
+                    // Open the activity in a new task because the back button on the caption
+                    // settings page navigates to the previous settings page instead of Chrome.
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(intent);
 
-            return true;
-        });
+                    return true;
+                });
 
         Preference zoomInfo = findPreference(PREF_ZOOM_INFO);
         if (ContentFeatureMap.isEnabled(ContentFeatureList.SMART_ZOOM)) {
             zoomInfo.setVisible(true);
-            zoomInfo.setOnPreferenceClickListener(preference -> {
-                mDelegate.launchSiteSettingsZoomActivity(getContext());
-                return true;
-            });
+            zoomInfo.setOnPreferenceClickListener(
+                    preference -> {
+                        mDelegate.launchSiteSettingsZoomActivity(getContext());
+                        return true;
+                    });
         } else {
             zoomInfo.setVisible(false);
         }

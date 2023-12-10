@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/log_message.h"
+#include "partition_alloc/partition_alloc_base/log_message.h"
 
 // TODO(1151236): After finishing copying //base files to PA library, remove
 // defined(BASE_CHECK_H_) from here.
@@ -14,15 +14,15 @@
 #error "log_message.h should not include check.h"
 #endif
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/component_export.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/debug/alias.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/debug/stack_trace.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/immediate_crash.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/logging.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/strings/safe_sprintf.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/strings/string_util.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/strings/stringprintf.h"
 #include "build/build_config.h"
+#include "partition_alloc/partition_alloc_base/component_export.h"
+#include "partition_alloc/partition_alloc_base/debug/alias.h"
+#include "partition_alloc/partition_alloc_base/debug/stack_trace.h"
+#include "partition_alloc/partition_alloc_base/immediate_crash.h"
+#include "partition_alloc/partition_alloc_base/logging.h"
+#include "partition_alloc/partition_alloc_base/strings/safe_sprintf.h"
+#include "partition_alloc/partition_alloc_base/strings/string_util.h"
+#include "partition_alloc/partition_alloc_base/strings/stringprintf.h"
 
 #if BUILDFLAG(IS_WIN)
 
@@ -40,7 +40,7 @@
 #endif
 
 #if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/posix/safe_strerror.h"
+#include "partition_alloc/partition_alloc_base/posix/safe_strerror.h"
 #endif
 
 namespace partition_alloc::internal::logging {
@@ -65,10 +65,10 @@ LogMessageHandlerFunction g_log_message_handler = nullptr;
 
 #if BUILDFLAG(PA_DCHECK_IS_CONFIGURABLE)
 // In DCHECK-enabled Chrome builds, allow the meaning of LOGGING_DCHECK to be
-// determined at run-time. We default it to INFO, to avoid it triggering
+// determined at run-time. We default it to ERROR, to avoid it triggering
 // crashes before the run-time has explicitly chosen the behaviour.
 PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE)
-logging::LogSeverity LOGGING_DCHECK = LOGGING_INFO;
+logging::LogSeverity LOGGING_DCHECK = LOGGING_ERROR;
 #endif  // BUILDFLAG(PA_DCHECK_IS_CONFIGURABLE)
 
 // This is never instantiated, it's just used for EAT_STREAM_PARAMETERS to have

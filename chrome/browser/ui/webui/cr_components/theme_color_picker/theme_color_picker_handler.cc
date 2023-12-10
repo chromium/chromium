@@ -175,7 +175,7 @@ void ThemeColorPickerHandler::UpdateTheme() {
   auto custom_background =
       ntp_custom_background_service_
           ? ntp_custom_background_service_->GetCustomBackground()
-          : absl::nullopt;
+          : std::nullopt;
   theme->has_background_image = custom_background.has_value();
   if (custom_background.has_value() &&
       custom_background->custom_background_main_color.has_value()) {

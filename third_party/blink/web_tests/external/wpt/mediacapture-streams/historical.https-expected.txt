@@ -3,8 +3,6 @@ This is a testharness.js-based test.
   assert_false: expected false got true
 [FAIL] navigator.webkitGetUserMedia should not exist
   assert_false: expected false got true
-[PASS] navigator.mozGetUserMedia should not exist
-[PASS] Passing MediaStream to URL.createObjectURL() should throw
 [FAIL] MediaStream.onactive should not exist
   assert_false: expected false got true
 [FAIL] MediaStream.oninactive should not exist

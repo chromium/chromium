@@ -23,14 +23,14 @@ const int kNumberOfBlocksBufferInFifo = 2;
 
 PulseAudioInputStream::PulseAudioInputStream(
     AudioManagerPulse* audio_manager,
-    const std::string& device_name,
+    const std::string& source_name,
     const AudioParameters& params,
     pa_threaded_mainloop* mainloop,
     pa_context* context,
     AudioManager::LogCallback log_callback)
     : audio_manager_(audio_manager),
       callback_(nullptr),
-      device_name_(device_name),
+      source_name_(source_name),
       params_(params),
       channels_(0),
       volume_(0.0),
@@ -43,14 +43,20 @@ PulseAudioInputStream::PulseAudioInputStream(
       pa_context_(context),
       log_callback_(std::move(log_callback)),
       handle_(nullptr),
-      peak_detector_(base::BindRepeating(&AudioManager::TraceAmplitudePeak,
-                                         base::Unretained(audio_manager_),
-                                         /*trace_start=*/true)) {
+      peak_detector_(
+          audio_manager ? base::BindRepeating(&AudioManager::TraceAmplitudePeak,
+                                              base::Unretained(audio_manager_),
+                                              /*trace_start=*/true)
+                        : base::RepeatingClosure()) {
   DCHECK(mainloop);
   DCHECK(context);
   CHECK(params_.IsValid());
   SendLogMessage("%s({device_id=%s}, {params=[%s]})", __func__,
-                 device_name.c_str(), params.AsHumanReadableString().c_str());
+                 source_name.c_str(), params.AsHumanReadableString().c_str());
+  // TODO(crbug.com/1480216): PulseLoopbackAudioStream gives
+  // PulseAudioInputStream a nullptr for `audio_manager`, which is risky.
+  // Refactor such that this is not the case, or separate the
+  // AudioManager-independent logic into a "PulseUnmanagedAudioInputStream".
 }
 
 PulseAudioInputStream::~PulseAudioInputStream() {
@@ -62,15 +68,15 @@ PulseAudioInputStream::~PulseAudioInputStream() {
 AudioInputStream::OpenOutcome PulseAudioInputStream::Open() {
   DCHECK(thread_checker_.CalledOnValidThread());
   SendLogMessage("%s()", __func__);
-  if (device_name_ == AudioDeviceDescription::kDefaultDeviceId &&
-      audio_manager_->DefaultSourceIsMonitor()) {
+  if (source_name_ == AudioDeviceDescription::kDefaultDeviceId &&
+      audio_manager_ && audio_manager_->DefaultSourceIsMonitor()) {
     SendLogMessage("%s => (ERROR: can't open monitor device)", __func__);
     return OpenOutcome::kFailed;
   }
 
   AutoPulseLock auto_lock(pa_mainloop_);
   if (!pulse::CreateInputStream(pa_mainloop_, pa_context_, &handle_, params_,
-                                device_name_, &StreamNotifyCallback, this)) {
+                                source_name_, &StreamNotifyCallback, this)) {
     SendLogMessage("%s => (ERROR: failed to open PA stream)", __func__);
     return OpenOutcome::kFailed;
   }
@@ -164,9 +170,13 @@ void PulseAudioInputStream::Close() {
     }
   }
 
-  // Signal to the manager that we're closed and can be removed.
-  // This should be the last call in the function as it deletes "this".
-  audio_manager_->ReleaseInputStream(this);
+  // If the stream is not managed by AudioManager, the owner is responsible to
+  // destroy the object.
+  if (audio_manager_) {
+    // Signal to the manager that we're closed and can be removed.
+    // This should be the last call in the function as it deletes `this`.
+    audio_manager_->ReleaseInputStream(this);
+  }
 }
 
 double PulseAudioInputStream::GetMaxVolume() {

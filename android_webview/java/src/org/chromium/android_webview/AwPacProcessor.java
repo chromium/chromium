@@ -58,31 +58,33 @@ public class AwPacProcessor {
         if (network == null || linkProperties == null) {
             setNetworkAndLinkAddresses(NETWORK_UNSPECIFIED, new String[0]);
         } else {
-            String[] addresses = linkProperties.getLinkAddresses()
-                                         .stream()
-                                         .map(LinkAddress::getAddress)
-                                         .map(InetAddress::getHostAddress)
-                                         .toArray(String[] ::new);
+            String[] addresses =
+                    linkProperties.getLinkAddresses().stream()
+                            .map(LinkAddress::getAddress)
+                            .map(InetAddress::getHostAddress)
+                            .toArray(String[]::new);
             setNetworkAndLinkAddresses(network.getNetworkHandle(), addresses);
         }
     }
 
     public void setNetworkAndLinkAddresses(long networkHandle, String[] addresses) {
-        AwPacProcessorJni.get().setNetworkAndLinkAddresses(
-                mNativePacProcessor, networkHandle, addresses);
+        AwPacProcessorJni.get()
+                .setNetworkAndLinkAddresses(mNativePacProcessor, networkHandle, addresses);
     }
 
     private void registerNetworkCallback() {
         if (mNetworkCallback != null) return;
 
-        mNetworkCallback = new ConnectivityManager.NetworkCallback() {
-            @Override
-            public void onLinkPropertiesChanged(Network network, LinkProperties linkProperties) {
-                if (network.equals(mNetwork)) {
-                    updateNetworkLinkAddress(network, linkProperties);
-                }
-            }
-        };
+        mNetworkCallback =
+                new ConnectivityManager.NetworkCallback() {
+                    @Override
+                    public void onLinkPropertiesChanged(
+                            Network network, LinkProperties linkProperties) {
+                        if (network.equals(mNetwork)) {
+                            updateNetworkLinkAddress(network, linkProperties);
+                        }
+                    }
+                };
         NetworkRequest.Builder builder = new NetworkRequest.Builder();
 
         getConnectivityManager().registerNetworkCallback(builder.build(), mNetworkCallback);
@@ -135,10 +137,15 @@ public class AwPacProcessor {
     @NativeMethods
     interface Natives {
         void initializeEnvironment();
+
         long createNativePacProcessor();
+
         boolean setProxyScript(long nativeAwPacProcessor, AwPacProcessor caller, String script);
+
         String makeProxyRequest(long nativeAwPacProcessor, AwPacProcessor caller, String url);
+
         void destroyNative(long nativeAwPacProcessor, AwPacProcessor caller);
+
         void setNetworkAndLinkAddresses(
                 long nativeAwPacProcessor, long networkHandle, String[] adresses);
     }

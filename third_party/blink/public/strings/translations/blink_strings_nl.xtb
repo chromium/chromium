@@ -30,6 +30,7 @@
 <translation id="2226276347425096477">Kort deze tekst in tot <ph name="MAX_CHARACTERS" /> tekens of minder (je gebruikt momenteel <ph name="CURRENT_LENGTH" /> tekens).</translation>
 <translation id="2247351761944213033">Week <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Track <ph name="NUMBER" /></translation>
+<translation id="2353297238722298836">Camera en microfoon toegestaan</translation>
 <translation id="2393030564806080191">Hexadecimale kleurwaarde</translation>
 <translation id="2398813069815436052">dialoogvenster geopend.</translation>
 <translation id="245932805758469625">aantal seconden van resterende video</translation>
@@ -60,10 +61,12 @@
 <translation id="3822383571486410024">Breid deze tekst uit tot <ph name="MIN_CHARACTERS" /> tekens of meer (je gebruikt momenteel <ph name="CURRENT_LENGTH" /> tekens).</translation>
 <translation id="383465348367842624">Het naamgedeelte vóór '<ph name="ATSIGN" />' mag niet het teken '<ph name="INVALIDCHARACTER" />' bevatten.</translation>
 <translation id="3846214748874656680">Volledig scherm sluiten</translation>
+<translation id="4031179711345676612">Microfoon toegestaan</translation>
 <translation id="4103419683916926126">Milliseconden</translation>
 <translation id="4201051445878709314">Vorige maand bekijken</translation>
 <translation id="4360991593054037559">Geef een geldige waarde op. De twee dichtstbijzijnde geldige waarden zijn <ph name="VALID_VALUE_LOW" /> en <ph name="VALID_VALUE_HIGHER" />.</translation>
 <translation id="4522570452068850558">Details</translation>
+<translation id="4663373278480897665">Camera toegestaan</translation>
 <translation id="4664250907885839816">Het adresgedeelte na '<ph name="ATSIGN" />' mag niet het teken '<ph name="INVALIDCHARACTER" />' bevatten.</translation>
 <translation id="4718048029184481307">Beeld-in-beeld afspelen</translation>
 <translation id="4748357248530471599">volledig scherm met display-cutout aan- of uitzetten</translation>
@@ -137,6 +140,7 @@
 <translation id="6941933287844615239">media downloaden</translation>
 <translation id="698788488269350478">uitgevouwen.</translation>
 <translation id="6989848892321993519">Breid deze tekst uit tot <ph name="MIN_CHARACTERS" /> tekens of meer (je gebruikt momenteel één teken).</translation>
+<translation id="7080893216867146095">Locatie delen toegestaan</translation>
 <translation id="709897737746224366">Zorg dat de indeling voldoet aan de gevraagde indeling.</translation>
 <translation id="7102274145889307184">huidige locatie</translation>
 <translation id="7263440858009898357">Selecteer een item in de lijst.</translation>

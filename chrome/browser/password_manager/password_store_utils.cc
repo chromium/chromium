@@ -13,10 +13,9 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "components/password_manager/core/browser/password_form.h"
-#include "components/password_manager/core/browser/password_store_interface.h"
+#include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/browser/store_metrics_reporter.h"
 #include "components/safe_browsing/buildflags.h"
 
@@ -70,17 +69,14 @@ class StoreMetricReporterHelper : public base::SupportsUserData::Data {
         SyncServiceFactory::HasSyncService(profile_)
             ? SyncServiceFactory::GetForProfile(profile_)
             : nullptr;
-    signin::IdentityManager* identity_manager =
-        IdentityManagerFactory::GetForProfile(profile_->GetOriginalProfile());
     password_manager::PasswordReuseManager* password_reuse_manager =
         PasswordReuseManagerFactory::GetForProfile(profile_);
     PrefService* pref_service = profile_->GetPrefs();
 
     metrics_reporter_ =
         std::make_unique<password_manager::StoreMetricsReporter>(
-            profile_store, account_store, sync_service, identity_manager,
-            pref_service, password_reuse_manager,
-            IsUnderAdvancedProtection(profile_),
+            profile_store, account_store, sync_service, pref_service,
+            password_reuse_manager, IsUnderAdvancedProtection(profile_),
             base::BindOnce(
                 &StoreMetricReporterHelper::RemoveInstanceFromProfileUserData,
                 weak_ptr_factory_.GetWeakPtr()));

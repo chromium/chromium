@@ -279,7 +279,7 @@ void PhoneHubUiController::RecordStatusOnBubbleOpened() {
 
 void PhoneHubUiController::OnGetHostLastSeenTimestamp(
     UiState ui_state_when_opened,
-    absl::optional<base::Time> timestamp) {
+    std::optional<base::Time> timestamp) {
   if (timestamp) {
     base::UmaHistogramLongTimes(
         "PhoneHub.BubbleOpened.Connectable.Failed.HostLastSeen",

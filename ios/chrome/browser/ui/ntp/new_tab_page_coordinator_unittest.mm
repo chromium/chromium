@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/ntp/new_tab_page_coordinator.h"
+#import "ios/chrome/browser/ui/ntp/new_tab_page_coordinator+Testing.h"
 
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
@@ -10,10 +11,8 @@
 #import "components/variations/service/variations_service.h"
 #import "components/variations/service/variations_service_client.h"
 #import "ios/chrome/browser/favicon/ios_chrome_large_icon_service_factory.h"
-#import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
+#import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
-#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
-#import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
@@ -24,11 +23,11 @@
 #import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
 #import "ios/chrome/browser/shared/public/commands/parcel_tracking_opt_in_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
-#import "ios/chrome/browser/signin/authentication_service.h"
-#import "ios/chrome/browser/signin/authentication_service_factory.h"
-#import "ios/chrome/browser/signin/fake_authentication_service_delegate.h"
-#import "ios/chrome/browser/signin/fake_system_identity.h"
-#import "ios/chrome/browser/signin/fake_system_identity_manager.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_coordinator.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_mediator.h"
@@ -40,7 +39,6 @@
 #import "ios/chrome/browser/ui/ntp/metrics/new_tab_page_metrics_recorder.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_component_factory.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_controller_delegate.h"
-#import "ios/chrome/browser/ui/ntp/new_tab_page_coordinator+private.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_header_view_controller.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_mediator.h"
@@ -193,8 +191,6 @@ class NewTabPageCoordinatorTest : public PlatformTest {
           StartSurfaceRecentTabBrowserAgent::FromBrowser(browser_.get());
       browser_agent->SaveMostRecentTab();
     }
-    scene_state_ = OCMClassMock([SceneState class]);
-    SceneStateBrowserAgent::CreateForBrowser(browser_.get(), scene_state_);
 
     // Mocks the component factory so that the NTP is tested with a fake feed.
     // This allows testing of feed-dependent views, such as the feed top
@@ -342,7 +338,6 @@ class NewTabPageCoordinatorTest : public PlatformTest {
   IOSChromeScopedTestingChromeBrowserStateManager scoped_browser_state_manager_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   std::unique_ptr<Browser> browser_;
-  id scene_state_;
   UIViewController* fake_feed_view_controller_;
   NewTabPageCoordinator* coordinator_;
   NewTabPageMetricsRecorder* NTPMetricsRecorder_;

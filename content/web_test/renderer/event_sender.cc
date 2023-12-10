@@ -622,9 +622,13 @@ class EventSenderBindings : public gin::Wrappable<EventSenderBindings> {
   void MouseUp(gin::Arguments* args);
   void SetMouseButtonState(gin::Arguments* args);
   void KeyDown(gin::Arguments* args);
+  void KeyDownAsync(gin::Arguments* args);
   void KeyDownOnly(gin::Arguments* args);
   void KeyUp(gin::Arguments* args);
+
   void KeyEvent(EventSender::KeyEventType event_type, gin::Arguments* args);
+  void KeyEventAsync(EventSender::KeyEventType event_type,
+                     gin::Arguments* args);
 
   // Binding properties:
   bool ForceLayoutOnEvents() const;
@@ -739,6 +743,7 @@ gin::ObjectTemplateBuilder EventSenderBindings::GetObjectTemplateBuilder(
       .SetMethod("gestureTwoFingerTap",
                  &EventSenderBindings::GestureTwoFingerTap)
       .SetMethod("keyDown", &EventSenderBindings::KeyDown)
+      .SetMethod("keyDownAsync", &EventSenderBindings::KeyDownAsync)
       .SetMethod("keyDownOnly", &EventSenderBindings::KeyDownOnly)
       .SetMethod("keyUp", &EventSenderBindings::KeyUp)
       .SetMethod("mouseDown", &EventSenderBindings::MouseDown)
@@ -1085,6 +1090,13 @@ void EventSenderBindings::KeyDown(gin::Arguments* args) {
   KeyEvent(EventSender::kKeyPress, args);
 }
 
+// `KeyDownAsync` sends both `KeyDown` and `KeyUp` events. It's similar to
+// `KeyPress` in other APIs. It sends those events asynchronously, outside of a
+// JS task.
+void EventSenderBindings::KeyDownAsync(gin::Arguments* args) {
+  KeyEventAsync(EventSender::kKeyPress, args);
+}
+
 // `KeyDownOnly` sends `KeyDown` without `KeyUp`.
 void EventSenderBindings::KeyDownOnly(gin::Arguments* args) {
   KeyEvent(EventSender::kKeyDown, args);
@@ -1092,6 +1104,19 @@ void EventSenderBindings::KeyDownOnly(gin::Arguments* args) {
 
 void EventSenderBindings::KeyUp(gin::Arguments* args) {
   KeyEvent(EventSender::kKeyUp, args);
+}
+
+void EventSenderBindings::KeyEventAsync(EventSender::KeyEventType event_type,
+                                        gin::Arguments* args) {
+  std::string code_str;
+  int modifiers = 0;
+  int location = DOMKeyLocationStandard;
+  args->GetNext(&code_str);
+  frame_->GetTaskRunner(blink::TaskType::kInternalTest)
+      ->PostTask(
+          FROM_HERE,
+          base::BindOnce(&EventSender::KeyEvent, sender_, event_type, code_str,
+                         modifiers, static_cast<KeyLocationCode>(location)));
 }
 
 void EventSenderBindings::KeyEvent(EventSender::KeyEventType event_type,

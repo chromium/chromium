@@ -9,7 +9,7 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import {SettingsSimpleConfirmationDialogElement, PaymentsManagerImpl, SettingsCreditCardEditDialogElement, SettingsVirtualCardUnenrollDialogElement} from 'chrome://settings/lazy_load.js';
 import {CrButtonElement, loadTimeData} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {eventToPromise, whenAttributeIs} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, isVisible, whenAttributeIs} from 'chrome://webui-test/test_util.js';
 
 import {createCreditCardEntry, createEmptyCreditCardEntry, TestPaymentsManager} from './autofill_fake_data.js';
 import {createPaymentsSection, getDefaultExpectations, getLocalAndServerCreditCardListItems, getCardRowShadowRoot} from './payments_section_utils.js';
@@ -31,8 +31,18 @@ suite('PaymentsSectionCardDialogs', function() {
   function createCreditCardDialog(
       creditCardItem: chrome.autofillPrivate.CreditCardEntry):
       SettingsCreditCardEditDialogElement {
+    return createCreditCardDialogWithPrefs(creditCardItem, {});
+  }
+
+  /**
+   * Creates the Edit Credit Card dialog with prefs.
+   */
+  function createCreditCardDialogWithPrefs(
+      creditCardItem: chrome.autofillPrivate.CreditCardEntry,
+      prefsValues: any): SettingsCreditCardEditDialogElement {
     const dialog = document.createElement('settings-credit-card-edit-dialog');
     dialog.creditCard = creditCardItem;
+    dialog.prefs = {autofill: prefsValues};
     document.body.appendChild(dialog);
     flush();
     return dialog;
@@ -157,8 +167,13 @@ suite('PaymentsSectionCardDialogs', function() {
   });
 
   test('verify save new credit card', function() {
+    loadTimeData.overrideValues({
+      cvcStorageAvailable: true,
+    });
+
     const creditCard = createEmptyCreditCardEntry();
-    const creditCardDialog = createCreditCardDialog(creditCard);
+    const creditCardDialog = createCreditCardDialogWithPrefs(
+        creditCard, {payment_cvc_storage: {value: true}});
 
     return whenAttributeIs(creditCardDialog.$.dialog, 'open', '')
         .then(function() {
@@ -181,6 +196,13 @@ suite('PaymentsSectionCardDialogs', function() {
           assertEquals('hidden', getComputedStyle(expiredError!).visibility);
           assertFalse(saveButton!.disabled);
 
+          const cvcInput =
+              creditCardDialog.shadowRoot!.querySelector<HTMLInputElement>(
+                  '#cvcInput');
+          assertTrue(!!cvcInput);
+          assertTrue(isVisible(cvcInput));
+          cvcInput.value = '123';
+
           const savedPromise =
               eventToPromise('save-credit-card', creditCardDialog);
           saveButton!.click();
@@ -188,6 +210,7 @@ suite('PaymentsSectionCardDialogs', function() {
         })
         .then(function(event) {
           assertEquals(creditCard.guid, event.detail.guid);
+          assertEquals(creditCard.cvc, event.detail.cvc);
         });
   });
 
@@ -361,5 +384,91 @@ suite('PaymentsSectionCardDialogs', function() {
 
     // Wait for dialogs to open before finishing test.
     return whenAttributeIs(dialog.$.dialog, 'open', '');
+  });
+
+  [true, false].forEach((cvcStorageToggleEnabled) => {
+    test(`verifyCvcInputVisible_${cvcStorageToggleEnabled}`, async function() {
+      loadTimeData.overrideValues({
+        cvcStorageAvailable: true,
+      });
+      const creditCard = createCreditCardEntry();
+      const creditCardDialog = createCreditCardDialogWithPrefs(
+          creditCard, {payment_cvc_storage: {value: cvcStorageToggleEnabled}});
+
+      await whenAttributeIs(creditCardDialog.$.dialog, 'open', '');
+
+      const cvcInput =
+          creditCardDialog.shadowRoot!.querySelector<HTMLInputElement>(
+              '#cvcInput');
+      assertEquals(cvcStorageToggleEnabled, !!cvcInput);
+      assertEquals(cvcStorageToggleEnabled, isVisible(cvcInput));
+    });
+  });
+
+  test('verifyCvcInputTitleAndPlaceholder', async function() {
+    loadTimeData.overrideValues({
+      cvcStorageAvailable: true,
+    });
+    const creditCard = createCreditCardEntry();
+    const creditCardDialog = createCreditCardDialogWithPrefs(
+        creditCard, {payment_cvc_storage: {value: true}});
+
+    await whenAttributeIs(creditCardDialog.$.dialog, 'open', '');
+    const cvcInput =
+        creditCardDialog.shadowRoot!.querySelector<HTMLInputElement>(
+            '#cvcInput');
+    assertTrue(!!cvcInput);
+    assertTrue(isVisible(cvcInput));
+
+    const cvcInputTitle =
+        cvcInput.shadowRoot!.querySelector<HTMLDivElement>(
+                                '#label')!.textContent!.trim();
+    assertTrue(!!cvcInputTitle);
+    assertEquals(
+        loadTimeData.getString('creditCardCvcInputTitle'), cvcInputTitle);
+
+    const cvcInputBoxPlaceholder =
+        cvcInput.shadowRoot!.querySelector<HTMLInputElement>(
+                                '#input')!.placeholder!.trim();
+    assertTrue(!!cvcInputBoxPlaceholder);
+    assertEquals(
+        loadTimeData.getString('creditCardCvcInputPlaceholder'),
+        cvcInputBoxPlaceholder);
+  });
+
+  test('verifyCvcInputImageTitle', async function() {
+    loadTimeData.overrideValues({
+      cvcStorageAvailable: true,
+    });
+    const creditCard = createEmptyCreditCardEntry();
+    const creditCardDialog = createCreditCardDialogWithPrefs(
+        creditCard, {payment_cvc_storage: {value: true}});
+
+    await whenAttributeIs(creditCardDialog.$.dialog, 'open', '');
+    const cvcInputImage =
+        creditCardDialog.shadowRoot!.querySelector<HTMLImageElement>(
+            '#cvcImage');
+    assertTrue(!!cvcInputImage);
+    assertEquals(
+        loadTimeData.getString('creditCardCvcImageTitle'), cvcInputImage.title);
+
+    const numberInput =
+        creditCardDialog.shadowRoot!.querySelector<HTMLInputElement>(
+            '#numberInput');
+    assertTrue(!!numberInput);
+    assertTrue(isVisible(numberInput));
+
+    // AmEx card entry.
+    numberInput.value = '34';
+    numberInput.dispatchEvent(new CustomEvent('input'));
+    assertEquals(
+        loadTimeData.getString('creditCardCvcAmexImageTitle'),
+        cvcInputImage.title);
+
+    // Non-AmEx card entry.
+    numberInput.value = '42';
+    numberInput.dispatchEvent(new CustomEvent('input'));
+    assertEquals(
+        loadTimeData.getString('creditCardCvcImageTitle'), cvcInputImage.title);
   });
 });

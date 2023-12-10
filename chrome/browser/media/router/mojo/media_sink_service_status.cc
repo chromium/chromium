@@ -6,18 +6,15 @@
 
 #include "base/json/json_string_value_serializer.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
-#include "base/strings/string_util.h"
+#include "components/media_router/browser/log_util.h"
 
 namespace media_router {
 
 namespace {
 
 constexpr size_t kMaxAvailableSinksSize = 100;
-constexpr char kCastPrefix[] = "cast:<";
-constexpr char kDialPrefix[] = "dial:<";
 
-// Helper function to convert |value| to JSON string.
+// Helper function to convert `value` to JSON string.
 std::string ToJSONString(const base::Value::Dict& value) {
   std::string json;
   JSONStringValueSerializer serializer(&json);
@@ -25,63 +22,38 @@ std::string ToJSONString(const base::Value::Dict& value) {
   return serializer.Serialize(value) ? json : "";
 }
 
-// Returns UUID if |sink_id| is in the format of "cast:<UUID>" or "dial:<UUID>";
-// otherwise returns |sink_id| as UUID.
-base::StringPiece ExtractUUID(const base::StringPiece& sink_id) {
-  if (!base::EndsWith(sink_id, ">"))
-    return sink_id;
-
-  size_t prefix_length = 0;
-  if (base::StartsWith(sink_id, kCastPrefix))
-    prefix_length = sizeof(kCastPrefix) - 1;
-  if (base::StartsWith(sink_id, kDialPrefix))
-    prefix_length = sizeof(kDialPrefix) - 1;
-
-  if (prefix_length == 0)
-    return sink_id;
-
-  base::StringPiece uuid = sink_id;
-  uuid.remove_prefix(prefix_length);
-  uuid.remove_suffix(1);
-  return uuid;
-}
-
-// Returns the last four characters of UUID. UUID is extracted from |sink_id|.
-std::string TruncateSinkId(const std::string& sink_id) {
-  std::string uuid(ExtractUUID(sink_id));
-  return uuid.length() <= 4 ? uuid : uuid.substr(uuid.length() - 4);
-}
-
-// Helper function to convert |sink_internal| to JSON format represented by
+// Helper function to convert `sink_internal` to JSON format represented by
 // base::Value::Dict.
 base::Value::Dict ToValue(const MediaSinkInternal& sink_internal) {
   base::Value::Dict dict;
   const MediaSink& sink = sink_internal.sink();
-  dict.Set("id", base::Value(TruncateSinkId(sink.id())));
-  dict.Set("name", base::Value(sink.name()));
-  dict.Set("icon_type", base::Value(static_cast<int>(sink.icon_type())));
+  dict.Set("id", log_util::TruncateId(sink.id()));
+  dict.Set("name", sink.name());
+  dict.Set("icon_type", static_cast<int>(sink.icon_type()));
 
   if (sink_internal.is_dial_sink()) {
     DialSinkExtraData extra_data = sink_internal.dial_data();
-    dict.Set("ip_address", base::Value(extra_data.ip_address.ToString()));
-    dict.Set("model_name", base::Value(extra_data.model_name));
-    dict.Set("app_url", base::Value(extra_data.app_url.spec()));
+    dict.Set("ip_address", extra_data.ip_address.ToString());
+    dict.Set("model_name", extra_data.model_name);
+    dict.Set("app_url", extra_data.app_url.spec());
   }
 
   if (sink_internal.is_cast_sink()) {
     CastSinkExtraData extra_data = sink_internal.cast_data();
-    dict.Set("ip_endpoint", base::Value(extra_data.ip_endpoint.ToString()));
-    dict.Set("model_name", base::Value(extra_data.model_name));
-    dict.Set("capabilities", base::Value(extra_data.capabilities));
-    dict.Set("channel_id", base::Value(extra_data.cast_channel_id));
-    dict.Set("discovered_by_dial", base::Value(extra_data.discovery_type ==
-                                               CastDiscoveryType::kDial));
+    dict.Set("ip_endpoint", extra_data.ip_endpoint.ToString());
+    dict.Set("model_name", extra_data.model_name);
+    dict.Set("capabilities",
+             base::checked_cast<int>(extra_data.capabilities.ToEnumBitmask()));
+    dict.Set("channel_id", extra_data.cast_channel_id);
+    dict.Set("discovered_by_dial",
+             extra_data.discovery_type == CastDiscoveryType::kDial);
   }
   return dict;
 }
 
-// Helper function to convert |sinks| to JSON format represented by
-// base::Value::Dict.
+// Helper function to convert `sinks` to JSON format represented by
+// base::Value::Dict. The key is the source id and the value is a list of
+// sinks represented by base::Value::Dict.
 base::Value::Dict ConvertDiscoveredSinksToValues(
     const base::flat_map<std::string, std::vector<MediaSinkInternal>>& sinks) {
   base::Value::Dict dict;
@@ -94,8 +66,9 @@ base::Value::Dict ConvertDiscoveredSinksToValues(
   return dict;
 }
 
-// Helper function to convert |available_sinks| to a dictionary of availability
-// strings in JSON format represented by base::Value::Dict.
+// Helper function to convert `available_sinks` to a dictionary of availability
+// strings in JSON format represented by base::Value::Dict. The key is the
+// source id and the value is a list of sink ids.
 base::Value::Dict ConvertAvailableSinksToValues(
     const base::LRUCache<std::string, std::vector<MediaSinkInternal>>&
         available_sinks) {
@@ -104,7 +77,7 @@ base::Value::Dict ConvertAvailableSinksToValues(
     base::Value::List list;
     for (const auto& inner_sink : sinks_it.second) {
       std::string sink_id = inner_sink.sink().id();
-      list.Append(base::Value(TruncateSinkId(sink_id)));
+      list.Append(log_util::TruncateId(sink_id));
     }
     dict.Set(sinks_it.first, std::move(list));
   }

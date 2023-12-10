@@ -63,8 +63,7 @@ public abstract class OriginVerifier {
     private long mVerificationStartTime;
     private final VerificationResultStore mVerificationResultStore;
 
-    @Nullable
-    public WebContents mWebContents;
+    @Nullable public WebContents mWebContents;
 
     public static enum VerifierResult {
         ONLINE_SUCCESS,
@@ -95,13 +94,15 @@ public abstract class OriginVerifier {
 
     public static Uri getPostMessageUriFromVerifiedOrigin(
             String packageName, Origin verifiedOrigin) {
-        return Uri.parse(IntentUtils.ANDROID_APP_REFERRER_SCHEME + "://"
-                + verifiedOrigin.uri().getHost() + "/" + packageName);
+        return Uri.parse(
+                IntentUtils.ANDROID_APP_REFERRER_SCHEME
+                        + "://"
+                        + verifiedOrigin.uri().getHost()
+                        + "/"
+                        + packageName);
     }
 
-    /**
-     * Callback interface for getting verification results.
-     */
+    /** Callback interface for getting verification results. */
     public interface OriginVerificationListener {
         /**
          * To be posted on the handler thread after the verification finishes.
@@ -129,7 +130,10 @@ public abstract class OriginVerifier {
      *         loader factory. If null, initialize the native side before calling {@code start}
      * @param verificationResultStore The {@link VerificationResultStore} for persisting results.
      */
-    public OriginVerifier(String packageName, String relation, @Nullable WebContents webContents,
+    public OriginVerifier(
+            String packageName,
+            String relation,
+            @Nullable WebContents webContents,
             @Nullable BrowserContextHandle browserContextHandle,
             VerificationResultStore verificationResultStore) {
         mPackageName = packageName;
@@ -173,9 +177,9 @@ public abstract class OriginVerifier {
      * receiving the results of the validation.
      */
     public void validate(@NonNull Origin origin) {
-        assert mNativeOriginVerifier
-                != 0 : "Either provide a browserContextHandle to "
-                       + "OriginVerifier#ctor or call initNativeOriginVerifier.";
+        assert mNativeOriginVerifier != 0
+                : "Either provide a browserContextHandle to "
+                        + "OriginVerifier#ctor or call initNativeOriginVerifier.";
 
         String scheme = origin.uri().getScheme();
         String host = origin.uri().getHost();
@@ -196,7 +200,10 @@ public abstract class OriginVerifier {
         }
 
         if (isAllowlisted(mPackageName, origin, mRelation)) {
-            Log.i(TAG, "Verification succeeded for %s, %s, it was allowlisted.", mPackageName,
+            Log.i(
+                    TAG,
+                    "Verification succeeded for %s, %s, it was allowlisted.",
+                    mPackageName,
                     origin);
             PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, new VerifiedCallback(origin, true, null));
             return;
@@ -205,13 +212,21 @@ public abstract class OriginVerifier {
         if (mWebContents != null && mWebContents.isDestroyed()) mWebContents = null;
 
         mVerificationStartTime = SystemClock.uptimeMillis();
-        String[] fingerprints = mSignatureFingerprints == null
-                ? null
-                : mSignatureFingerprints.toArray(new String[0]);
+        String[] fingerprints =
+                mSignatureFingerprints == null
+                        ? null
+                        : mSignatureFingerprints.toArray(new String[0]);
 
         boolean requestSent =
-                OriginVerifierJni.get().verifyOrigin(mNativeOriginVerifier, OriginVerifier.this,
-                        mPackageName, fingerprints, origin.toString(), mRelation, mWebContents);
+                OriginVerifierJni.get()
+                        .verifyOrigin(
+                                mNativeOriginVerifier,
+                                OriginVerifier.this,
+                                mPackageName,
+                                fingerprints,
+                                origin.toString(),
+                                mRelation,
+                                mWebContents);
         if (!requestSent) {
             recordResultMetrics(VerifierResult.REQUEST_FAILURE);
             PostTask.runOrPostTask(
@@ -219,9 +234,7 @@ public abstract class OriginVerifier {
         }
     }
 
-    /**
-     * Cleanup native dependencies on this object.
-     */
+    /** Cleanup native dependencies on this object. */
     public void cleanUp() {
         // Only destroy native once we have no other pending verifications.
         if (!mListeners.isEmpty()) return;
@@ -247,8 +260,10 @@ public abstract class OriginVerifier {
             case RelationshipCheckResult.NO_CONNECTION:
                 Log.i(TAG, "Device is offline, checking saved verification result.");
                 boolean storedResult = checkForSavedResult(origin);
-                recordResultMetrics(storedResult ? VerifierResult.OFFLINE_SUCCESS
-                                                 : VerifierResult.OFFLINE_FAILURE);
+                recordResultMetrics(
+                        storedResult
+                                ? VerifierResult.OFFLINE_SUCCESS
+                                : VerifierResult.OFFLINE_FAILURE);
                 originVerified(origin, storedResult, false);
                 break;
             default:
@@ -263,10 +278,12 @@ public abstract class OriginVerifier {
             mVerificationResultStore.addRelationship(
                     new Relationship(mPackageName, mSignatureFingerprints, origin, mRelation));
         } else {
-            Log.d(TAG,
+            Log.d(
+                    TAG,
                     "Digital Asset Link verification failed for package %s with "
                             + "fingerprint %s.",
-                    mPackageName, mSignatureFingerprints);
+                    mPackageName,
+                    mSignatureFingerprints);
         }
 
         // We save the result even if there is a failure as a way of overwriting a previously
@@ -289,9 +306,7 @@ public abstract class OriginVerifier {
         cleanUp();
     }
 
-    /**
-     * Saves the result of a verification to Preferences so we can reuse it when offline.
-     */
+    /** Saves the result of a verification to Preferences so we can reuse it when offline. */
     private void saveVerificationResult(Origin origin, boolean originVerified) {
         Relationship relationship =
                 new Relationship(mPackageName, mSignatureFingerprints, origin, mRelation);
@@ -302,9 +317,7 @@ public abstract class OriginVerifier {
         }
     }
 
-    /**
-     * Checks for a previously saved verification result.
-     */
+    /** Checks for a previously saved verification result. */
     public boolean checkForSavedResult(Origin origin) {
         try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
             return mVerificationResultStore.isRelationshipSaved(
@@ -316,9 +329,7 @@ public abstract class OriginVerifier {
         return checkForSavedResult(Origin.create(url));
     }
 
-    /**
-     * Initialization of the native OriginVerifier.
-     */
+    /** Initialization of the native OriginVerifier. */
     public void initNativeOriginVerifier(BrowserContextHandle browserContextHandle) {
         mNativeOriginVerifier =
                 OriginVerifierJni.get().init(OriginVerifier.this, browserContextHandle);
@@ -340,9 +351,7 @@ public abstract class OriginVerifier {
         return 0;
     }
 
-    /**
-     * Implement exceptions that can bypass DAL-validation.
-     */
+    /** Implement exceptions that can bypass DAL-validation. */
     public abstract boolean isAllowlisted(String packageName, Origin origin, String relation);
 
     /**
@@ -351,23 +360,26 @@ public abstract class OriginVerifier {
      */
     public abstract boolean wasPreviouslyVerified(Origin origin);
 
-    /**
-     * Implement for logging of VerifierResult for different embedders.
-     */
+    /** Implement for logging of VerifierResult for different embedders. */
     public abstract void recordResultMetrics(VerifierResult result);
 
-    /**
-     * Implement for logging of VerificationTimeMetrics for different embedders.
-     */
+    /** Implement for logging of VerificationTimeMetrics for different embedders. */
     public abstract void recordVerificationTimeMetrics(long duration, boolean online);
 
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     @NativeMethods
     public interface Natives {
         long init(OriginVerifier caller, BrowserContextHandle browserContextHandle);
-        boolean verifyOrigin(long nativeOriginVerifier, OriginVerifier caller, String packageName,
-                String[] signatureFingerprint, String origin, String relationship,
+
+        boolean verifyOrigin(
+                long nativeOriginVerifier,
+                OriginVerifier caller,
+                String packageName,
+                String[] signatureFingerprint,
+                String origin,
+                String relationship,
                 @Nullable WebContents webContents);
+
         void destroy(long nativeOriginVerifier, OriginVerifier caller);
     }
 }

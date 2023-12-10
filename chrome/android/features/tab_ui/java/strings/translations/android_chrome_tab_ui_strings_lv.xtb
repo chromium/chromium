@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="lv">
 <translation id="1075622780330595106">Vairākas cilnes pēdējā laikā nav izmantotas (kopā <ph name="NUMBER_OF_TABS" />). Vai vēlaties tās aizvērt?</translation>
+<translation id="1155815720264022949">Vai vēlaties aizvērt vecās cilnes?</translation>
 <translation id="1215127405478249895">Ciļņu pārskatīšana</translation>
 <translation id="125153950246128346">Pieskarieties, lai skatītu citu cilni</translation>
 <translation id="1499635324672558517">Vai aizvērt visas inkognito cilnes?</translation>
@@ -46,9 +47,11 @@
 <translation id="5073204694187207510">Slēpt pilnekrāna režģi</translation>
 <translation id="5076161749301278626">Vai skatīt atsauksmes par veikalu?</translation>
 <translation id="5082793167783849073">Ātri salīdziniet lapas, izveidojot grupu. Lai sāktu, pieskarieties un turiet saiti.</translation>
+<translation id="5303274951032363933">{TABS_COUNT,plural, =1{Jums ir <ph name="TABS_COUNT_ONE" /> cilne, ko pēdējā laikā neesat izmantojis.}zero{Jums ir <ph name="TABS_COUNT_MANY" /> cilnes, ko pēdējā laikā neesat izmantojis.}one{Jums ir <ph name="TABS_COUNT_MANY" /> cilne, ko pēdējā laikā neesat izmantojis.}other{Jums ir <ph name="TABS_COUNT_MANY" /> cilnes, ko pēdējā laikā neesat izmantojis.}}</translation>
 <translation id="5339733443032484186">Jūsu pēdējā izmantotā cilne</translation>
 <translation id="5490235265819901748">Ciļņu grupa ir izvērsta</translation>
 <translation id="5494920125229734069">Atlasīt visu</translation>
+<translation id="5545379293264651575">Aizvērt bez pārskatīšanas</translation>
 <translation id="5556417849629758491">Skatiet veikala informāciju; opcija ir pieejama ekrāna augšdaļā</translation>
 <translation id="5558362125926932819">Aizvērt ciļņu grupu. Ciļņu skaits šajā grupā ir <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="5580090775658607195">Grupētas <ph name="TAB_COUNT" /> cilnes</translation>
@@ -85,7 +88,6 @@
 <translation id="7885132941432959125">Pārvietot cilni pa labi</translation>
 <translation id="7966321538264951561">Nerādīt ieteikumus.</translation>
 <translation id="8029301326595421733">Informācija par šo veikalu ir atvērta pilna ekrāna augstumā</translation>
-<translation id="814503310257431685">Skatīt visu</translation>
 <translation id="8205266828577616993">Pārvietot cilni uz augšu</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Aizvērt atlasīto cilni (skaits: <ph name="TABS_COUNT_ONE" />)}zero{Aizvērt atlasītās cilnes (skaits: <ph name="TABS_COUNT_MANY" />)}one{Aizvērt atlasītās cilnes (skaits: <ph name="TABS_COUNT_MANY" />)}other{Aizvērt atlasītās cilnes (skaits: <ph name="TABS_COUNT_MANY" />)}}</translation>
 <translation id="8398929769197326728">Jauna mape — <ph name="CURRENT_TIMESTAMP_MS" /></translation>

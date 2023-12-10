@@ -24,6 +24,7 @@ constexpr size_t kAttestedCredentialDataOffset =
 uint8_t AuthenticatorDataFlags(bool user_present,
                                bool user_verified,
                                bool backup_eligible,
+                               bool backup_state,
                                bool has_attested_credential_data,
                                bool has_extension_data) {
   return (user_present ? base::strict_cast<uint8_t>(
@@ -35,6 +36,9 @@ uint8_t AuthenticatorDataFlags(bool user_present,
          (backup_eligible ? base::strict_cast<uint8_t>(
                                 AuthenticatorData::Flag::kBackupEligible)
                           : 0) |
+         (backup_state ? base::strict_cast<uint8_t>(
+                             AuthenticatorData::Flag::kBackupState)
+                       : 0) |
          (has_attested_credential_data
               ? base::strict_cast<uint8_t>(
                     AuthenticatorData::Flag::kAttestation)
@@ -45,13 +49,32 @@ uint8_t AuthenticatorDataFlags(bool user_present,
               : 0);
 }
 
+uint8_t CombineAuthenticatorDataFlags(
+    base::span<const AuthenticatorData::Flag> flags) {
+  uint8_t val = 0u;
+  for (auto flag : flags) {
+    val |= base::strict_cast<uint8_t>(flag);
+  }
+  return val;
+}
+
+inline std::array<uint8_t, kSignCounterLength> MarshalSignCounter(
+    uint32_t sign_counter) {
+  return std::array<uint8_t, kSignCounterLength>{
+      static_cast<uint8_t>(sign_counter >> 24),
+      static_cast<uint8_t>(sign_counter >> 16),
+      static_cast<uint8_t>(sign_counter >> 8),
+      static_cast<uint8_t>(sign_counter)};
+}
+
 }  // namespace
 
 // static
 absl::optional<AuthenticatorData> AuthenticatorData::DecodeAuthenticatorData(
     base::span<const uint8_t> auth_data) {
-  if (auth_data.size() < kAttestedCredentialDataOffset)
+  if (auth_data.size() < kAttestedCredentialDataOffset) {
     return absl::nullopt;
+  }
   auto application_parameter = auth_data.first<kRpIdHashLength>();
   uint8_t flag_byte = auth_data[kRpIdHashLength];
   auto counter =
@@ -100,40 +123,51 @@ AuthenticatorData::AuthenticatorData(
     base::span<const uint8_t, kSignCounterLength> counter,
     absl::optional<AttestedCredentialData> data,
     absl::optional<cbor::Value> extensions)
-    : application_parameter_(fido_parsing_utils::Materialize(rp_id_hash)),
-      flags_(flags),
+    : flags_(flags),
+      application_parameter_(fido_parsing_utils::Materialize(rp_id_hash)),
       counter_(fido_parsing_utils::Materialize(counter)),
       attested_data_(std::move(data)),
       extensions_(std::move(extensions)) {
-  DCHECK(!extensions_ || extensions_->is_map());
-  DCHECK_EQ((flags_ & static_cast<uint8_t>(Flag::kExtensionDataIncluded)) != 0,
-            !!extensions_);
-  DCHECK_EQ(((flags_ & static_cast<uint8_t>(Flag::kAttestation)) != 0),
-            !!attested_data_);
+  ValidateAuthenticatorDataStateOrCrash();
 }
+
+AuthenticatorData::AuthenticatorData(
+    base::span<const uint8_t, kRpIdHashLength> rp_id_hash,
+    std::initializer_list<Flag> flags,
+    uint32_t sign_counter,
+    absl::optional<AttestedCredentialData> data,
+    absl::optional<cbor::Value> extensions)
+    : AuthenticatorData(rp_id_hash,
+                        CombineAuthenticatorDataFlags(flags),
+                        MarshalSignCounter(sign_counter),
+                        std::move(data),
+                        std::move(extensions)) {}
 
 AuthenticatorData::AuthenticatorData(
     base::span<const uint8_t, kRpIdHashLength> rp_id_hash,
     bool user_present,
     bool user_verified,
     bool backup_eligible,
+    bool backup_state,
     uint32_t sign_counter,
     absl::optional<AttestedCredentialData> attested_credential_data,
     absl::optional<cbor::Value> extensions)
-    : AuthenticatorData(
-          rp_id_hash,
-          AuthenticatorDataFlags(user_present,
-                                 user_verified,
-                                 backup_eligible,
-                                 attested_credential_data.has_value(),
-                                 extensions.has_value()),
-          std::array<uint8_t, kSignCounterLength>{
-              static_cast<uint8_t>(sign_counter >> 24),
-              static_cast<uint8_t>(sign_counter >> 16),
-              static_cast<uint8_t>(sign_counter >> 8),
-              static_cast<uint8_t>(sign_counter)},
-          std::move(attested_credential_data),
-          std::move(extensions)) {}
+    : flags_(AuthenticatorDataFlags(user_present,
+                                    user_verified,
+                                    backup_eligible,
+                                    backup_state,
+                                    attested_credential_data.has_value(),
+                                    extensions.has_value())),
+      application_parameter_(fido_parsing_utils::Materialize(rp_id_hash)),
+      counter_(std::array<uint8_t, kSignCounterLength>{
+          static_cast<uint8_t>(sign_counter >> 24),
+          static_cast<uint8_t>(sign_counter >> 16),
+          static_cast<uint8_t>(sign_counter >> 8),
+          static_cast<uint8_t>(sign_counter)}),
+      attested_data_(std::move(attested_credential_data)),
+      extensions_(std::move(extensions)) {
+  ValidateAuthenticatorDataStateOrCrash();
+}
 
 AuthenticatorData::AuthenticatorData(AuthenticatorData&& other) = default;
 AuthenticatorData& AuthenticatorData::operator=(AuthenticatorData&& other) =
@@ -142,13 +176,14 @@ AuthenticatorData& AuthenticatorData::operator=(AuthenticatorData&& other) =
 AuthenticatorData::~AuthenticatorData() = default;
 
 bool AuthenticatorData::DeleteDeviceAaguid() {
-  if (!attested_data_)
+  if (!attested_data_) {
     return false;
+  }
 
   return attested_data_->DeleteAaguid();
 }
 
-bool AuthenticatorData::EraseExtension(base::StringPiece name) {
+bool AuthenticatorData::EraseExtension(std::string_view name) {
   if (!extensions_) {
     return false;
   }
@@ -197,10 +232,19 @@ std::vector<uint8_t> AuthenticatorData::SerializeToByteArray() const {
 }
 
 std::vector<uint8_t> AuthenticatorData::GetCredentialId() const {
-  if (!attested_data_)
+  if (!attested_data_) {
     return std::vector<uint8_t>();
+  }
 
   return attested_data_->credential_id();
+}
+
+void AuthenticatorData::ValidateAuthenticatorDataStateOrCrash() {
+  CHECK(!extensions_ || extensions_->is_map());
+  CHECK_EQ((flags_ & static_cast<uint8_t>(Flag::kExtensionDataIncluded)) != 0,
+           !!extensions_);
+  CHECK_EQ(((flags_ & static_cast<uint8_t>(Flag::kAttestation)) != 0),
+           !!attested_data_);
 }
 
 }  // namespace device

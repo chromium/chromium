@@ -20,8 +20,8 @@ public class ErrorMessageUtil {
      * @return The web-developer facing error message.
      */
     public static String getNotSupportedErrorMessage(Set<String> methods) {
-        return ErrorMessageUtilJni.get().getNotSupportedErrorMessage(
-                methods.toArray(new String[methods.size()]));
+        return ErrorMessageUtilJni.get()
+                .getNotSupportedErrorMessage(methods.toArray(new String[methods.size()]));
     }
 
     /**

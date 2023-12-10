@@ -27,7 +27,7 @@ public class FeedReliabilityLoggingBridge {
     private DiscoverLaunchResult mLaunchResult;
 
     public static org.jni_zero.JniStaticTestMocker<FeedReliabilityLoggingBridge.Natives>
-    getTestHooksForTesting() {
+            getTestHooksForTesting() {
         return FeedReliabilityLoggingBridgeJni.TEST_HOOKS;
     }
 
@@ -74,26 +74,30 @@ public class FeedReliabilityLoggingBridge {
 
     @CalledByNative
     public void logFeedRequestStart(int requestId, long timestamp) {
-        mLaunchLogger.getNetworkRequestReliabilityLogger2(requestId).logFeedQueryRequestStart(
-                timestamp);
+        mLaunchLogger
+                .getNetworkRequestReliabilityLogger2(requestId)
+                .logFeedQueryRequestStart(timestamp);
     }
 
     @CalledByNative
     public void logWebFeedRequestStart(int requestId, long timestamp) {
-        mLaunchLogger.getNetworkRequestReliabilityLogger2(requestId).logWebFeedRequestStart(
-                timestamp);
+        mLaunchLogger
+                .getNetworkRequestReliabilityLogger2(requestId)
+                .logWebFeedRequestStart(timestamp);
     }
 
     @CalledByNative
     public void logSingleWebFeedRequestStart(int requestId, long timestamp) {
-        mLaunchLogger.getNetworkRequestReliabilityLogger2(requestId).logSingleWebFeedRequestStart(
-                timestamp);
+        mLaunchLogger
+                .getNetworkRequestReliabilityLogger2(requestId)
+                .logSingleWebFeedRequestStart(timestamp);
     }
 
     @CalledByNative
     public void logActionsUploadRequestStart(int requestId, long timestamp) {
-        mLaunchLogger.getNetworkRequestReliabilityLogger2(requestId).logActionsUploadRequestStart(
-                timestamp);
+        mLaunchLogger
+                .getNetworkRequestReliabilityLogger2(requestId)
+                .logActionsUploadRequestStart(timestamp);
     }
 
     @CalledByNative
@@ -102,16 +106,21 @@ public class FeedReliabilityLoggingBridge {
     }
 
     @CalledByNative
-    public void logResponseReceived(int requestId, long serverRecvTimestamp,
-            long serverSendTimestamp, long clientRecvTimestamp) {
-        mLaunchLogger.getNetworkRequestReliabilityLogger2(requestId).logResponseReceived(
-                serverRecvTimestamp, serverSendTimestamp, clientRecvTimestamp);
+    public void logResponseReceived(
+            int requestId,
+            long serverRecvTimestamp,
+            long serverSendTimestamp,
+            long clientRecvTimestamp) {
+        mLaunchLogger
+                .getNetworkRequestReliabilityLogger2(requestId)
+                .logResponseReceived(serverRecvTimestamp, serverSendTimestamp, clientRecvTimestamp);
     }
 
     @CalledByNative
     public void logRequestFinished(int requestId, long timestamp, int canonicalStatus) {
-        mLaunchLogger.getNetworkRequestReliabilityLogger2(requestId).logRequestFinished(
-                timestamp, canonicalStatus);
+        mLaunchLogger
+                .getNetworkRequestReliabilityLogger2(requestId)
+                .logRequestFinished(timestamp, canonicalStatus);
     }
 
     @CalledByNative
@@ -219,6 +228,7 @@ public class FeedReliabilityLoggingBridge {
     @NativeMethods
     public interface Natives {
         long init(FeedReliabilityLoggingBridge thisRef);
+
         void destroy(long nativeFeedReliabilityLoggingBridge);
     }
 }

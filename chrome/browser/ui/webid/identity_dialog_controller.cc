@@ -26,13 +26,15 @@ int IdentityDialogController::GetBrandIconIdealSize() {
 
 void IdentityDialogController::ShowAccountsDialog(
     const std::string& top_frame_for_display,
-    const absl::optional<std::string>& iframe_for_display,
+    const std::optional<std::string>& iframe_for_display,
     const std::vector<content::IdentityProviderData>& identity_provider_data,
     content::IdentityRequestAccount::SignInMode sign_in_mode,
     bool show_auto_reauthn_checkbox,
     AccountSelectionCallback on_selected,
+    LoginToIdPCallback on_add_account,
     DismissCallback dismiss_callback) {
   on_account_selection_ = std::move(on_selected);
+  on_login_ = std::move(on_add_account);
   on_dismiss_ = std::move(dismiss_callback);
   if (!account_view_)
     account_view_ = AccountSelectionView::Create(this);
@@ -43,15 +45,15 @@ void IdentityDialogController::ShowAccountsDialog(
 
 void IdentityDialogController::ShowFailureDialog(
     const std::string& top_frame_for_display,
-    const absl::optional<std::string>& iframe_for_display,
+    const std::optional<std::string>& iframe_for_display,
     const std::string& idp_for_display,
     const blink::mojom::RpContext& rp_context,
     const content::IdentityProviderMetadata& idp_metadata,
     DismissCallback dismiss_callback,
-    SigninToIdPCallback signin_callback) {
+    LoginToIdPCallback login_callback) {
   const GURL rp_url = rp_web_contents_->GetLastCommittedURL();
   on_dismiss_ = std::move(dismiss_callback);
-  on_signin_ = std::move(signin_callback);
+  on_login_ = std::move(login_callback);
   if (!account_view_)
     account_view_ = AccountSelectionView::Create(this);
   // Else:
@@ -64,11 +66,11 @@ void IdentityDialogController::ShowFailureDialog(
 
 void IdentityDialogController::ShowErrorDialog(
     const std::string& top_frame_for_display,
-    const absl::optional<std::string>& iframe_for_display,
+    const std::optional<std::string>& iframe_for_display,
     const std::string& idp_for_display,
     const blink::mojom::RpContext& rp_context,
     const content::IdentityProviderMetadata& idp_metadata,
-    const absl::optional<TokenError>& error,
+    const std::optional<TokenError>& error,
     DismissCallback dismiss_callback,
     MoreDetailsCallback more_details_callback) {
   on_dismiss_ = std::move(dismiss_callback);
@@ -82,8 +84,8 @@ void IdentityDialogController::ShowErrorDialog(
                                  error);
 }
 
-void IdentityDialogController::OnSigninToIdP(const GURL& idp_login_url) {
-  std::move(on_signin_).Run(idp_login_url);
+void IdentityDialogController::OnLoginToIdP(const GURL& idp_login_url) {
+  std::move(on_login_).Run(idp_login_url);
 }
 
 void IdentityDialogController::OnMoreDetails() {
@@ -99,7 +101,7 @@ std::string IdentityDialogController::GetTitle() const {
   return account_view_->GetTitle();
 }
 
-absl::optional<std::string> IdentityDialogController::GetSubtitle() const {
+std::optional<std::string> IdentityDialogController::GetSubtitle() const {
   return account_view_->GetSubtitle();
 }
 

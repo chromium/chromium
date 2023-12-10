@@ -182,8 +182,6 @@ class CONTENT_EXPORT AuthenticatorCommonImpl : public AuthenticatorCommon {
   // whether or not to return attestation data has been made.
   void OnRegisterResponseAttestationDecided(
       AttestationErasureOption attestation_erasure,
-      const bool has_device_public_key_output,
-      const bool device_public_key_included_attestation,
       device::AuthenticatorMakeCredentialResponse response_data,
       bool attestation_permitted);
 

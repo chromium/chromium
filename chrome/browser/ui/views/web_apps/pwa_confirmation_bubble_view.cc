@@ -26,7 +26,7 @@
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
-#include "chrome/browser/web_applications/web_app_prefs_utils.h"
+#include "chrome/browser/web_applications/web_app_pref_guardrails.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/event_constants.h"
@@ -49,7 +49,8 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/metrics/structured/event_logging_features.h"
-// TODO(crbug/4925196): enable gn check once it learn about conditional includes
+// TODO(crbug/1125897): Enable gn check once it learns about conditional
+// includes.
 #include "components/metrics/structured/structured_events.h"  // nogncheck
 #endif
 
@@ -69,7 +70,7 @@ std::unique_ptr<views::ImageView> CreateIconView(
                        gfx::Size(kIconSize, kIconSize));
 
   auto icon_image_view = std::make_unique<views::ImageView>();
-  icon_image_view->SetImage(image);
+  icon_image_view->SetImage(ui::ImageModel::FromImageSkia(image));
   return icon_image_view;
 }
 
@@ -235,22 +236,22 @@ void PWAConfirmationBubbleView::WindowClosing() {
   // If |web_app_info_| is populated, then the bubble was not accepted.
   if (web_app_info_) {
     base::RecordAction(base::UserMetricsAction("WebAppInstallCancelled"));
+    const webapps::AppId app_id =
+        web_app::GenerateAppIdFromManifestId(web_app_info_->manifest_id);
+#if BUILDFLAG(IS_CHROMEOS)
+    if (base::FeatureList::IsEnabled(
+            metrics::structured::kAppDiscoveryLogging)) {
+      cros_events::AppDiscovery_Browser_AppInstallDialogResult()
+          .SetWebAppInstallStatus(
+              ToLong(web_app::WebAppInstallStatus::kCancelled))
+          .SetAppId(app_id)
+          .Record();
+    }
+#endif  //  BUILDFLAG(IS_CHROMEOS)
 
     if (iph_state_ == web_app::PwaInProductHelpState::kShown) {
-      webapps::AppId app_id =
-          web_app::GenerateAppIdFromManifestId(web_app_info_->manifest_id);
-      web_app::RecordInstallIphIgnored(prefs_, app_id, base::Time::Now());
-
-#if BUILDFLAG(IS_CHROMEOS)
-      if (base::FeatureList::IsEnabled(
-              metrics::structured::kAppDiscoveryLogging)) {
-        cros_events::AppDiscovery_Browser_AppInstallDialogResult()
-            .SetWebAppInstallStatus(
-                ToLong(web_app::WebAppInstallStatus::kCancelled))
-            .SetAppId(app_id)
-            .Record();
-      }
-#endif
+      web_app::WebAppPrefGuardrails::GetForDesktopInstallIph(prefs_)
+          .RecordIgnore(app_id, base::Time::Now());
     }
   } else {
     base::RecordAction(base::UserMetricsAction("WebAppInstallAccepted"));
@@ -279,10 +280,11 @@ bool PWAConfirmationBubbleView::Accept() {
         .SetAppId(app_id)
         .Record();
   }
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   if (iph_state_ == web_app::PwaInProductHelpState::kShown) {
-    web_app::RecordInstallIphInstalled(prefs_, app_id);
+    web_app::WebAppPrefGuardrails::GetForDesktopInstallIph(prefs_).RecordAccept(
+        app_id);
     tracker_->NotifyEvent(feature_engagement::events::kDesktopPwaInstalled);
   }
   auto* ok_button = GetOkButton();
@@ -346,7 +348,7 @@ void ShowPWAInstallBubble(
         .SetAppId(app_id)
         .Record();
   }
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   feature_engagement::Tracker* tracker =
       feature_engagement::TrackerFactory::GetForBrowserContext(browser_context);

@@ -24,8 +24,7 @@ import org.chromium.android_webview.test.util.AwQuotaManagerBridgeTestUtil;
 @RunWith(Parameterized.class)
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
 public class StandaloneAwQuotaManagerBridgeTest extends AwParameterizedTest {
-    @Rule
-    public AwActivityTestRule mActivityTestRule;
+    @Rule public AwActivityTestRule mActivityTestRule;
 
     public StandaloneAwQuotaManagerBridgeTest(AwSettingsMutation param) {
         this.mActivityTestRule = new AwActivityTestRule(param.getMutation());

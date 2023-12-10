@@ -352,7 +352,8 @@ void ParentPermissionDialogView::AddedToWidget() {
     auto icon = std::make_unique<views::ImageView>();
     size.SetToMin(gfx::Size(icon_size, icon_size));
     message_container.AddChild(
-        views::Builder<views::ImageView>().SetImageSize(size).SetImage(image));
+        views::Builder<views::ImageView>().SetImageSize(size).SetImage(
+            ui::ImageModel::FromImageSkia(image)));
   } else {
     // Add an empty view if there is no icon. This is required to ensure the
     // the label below still lands in the correct TableLayout column.

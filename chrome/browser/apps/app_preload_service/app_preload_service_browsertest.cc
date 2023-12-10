@@ -127,7 +127,7 @@ class AppPreloadServiceBrowserTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList feature_list_;
   net::EmbeddedTestServer https_server_;
   std::map<std::string, std::string> manifest_responses_;
-  absl::optional<proto::AppPreloadListResponse> apps_proto_;
+  std::optional<proto::AppPreloadListResponse> apps_proto_;
   base::AutoReset<bool> startup_check_resetter_;
 };
 
@@ -200,8 +200,8 @@ IN_PROC_BROWSER_TEST_F(AppPreloadServiceBrowserTest, DefaultAppInstall) {
   service->StartFirstLoginFlowForTesting(result.GetCallback());
   ASSERT_TRUE(result.Get());
 
-  auto app_id = web_app::GenerateAppId(absl::nullopt,
-                                       GURL("https://peanuttypes.com/app"));
+  auto app_id =
+      web_app::GenerateAppId(std::nullopt, GURL("https://peanuttypes.com/app"));
   bool found =
       app_registry_cache().ForOneApp(app_id, [](const AppUpdate& update) {
         EXPECT_EQ(update.InstallReason(), InstallReason::kDefault);
@@ -322,7 +322,7 @@ IN_PROC_BROWSER_TEST_F(AppPreloadServiceBrowserTest, InstallMultipleOemApps) {
   ASSERT_TRUE(result.Get());
 
   auto app_id1 =
-      web_app::GenerateAppId(absl::nullopt, GURL("https://www.foo.com/"));
+      web_app::GenerateAppId(std::nullopt, GURL("https://www.foo.com/"));
   bool found =
       app_registry_cache().ForOneApp(app_id1, [](const AppUpdate& update) {
         EXPECT_EQ(update.Name(), "Foo");
@@ -331,7 +331,7 @@ IN_PROC_BROWSER_TEST_F(AppPreloadServiceBrowserTest, InstallMultipleOemApps) {
   ASSERT_TRUE(found);
 
   auto app_id2 =
-      web_app::GenerateAppId(absl::nullopt, GURL("https://www.bar.com/"));
+      web_app::GenerateAppId(std::nullopt, GURL("https://www.bar.com/"));
   found = app_registry_cache().ForOneApp(app_id2, [](const AppUpdate& update) {
     EXPECT_EQ(update.Name(), "Bar");
     EXPECT_EQ(update.InstallReason(), InstallReason::kOem);
@@ -402,12 +402,12 @@ IN_PROC_BROWSER_TEST_F(AppPreloadServiceBrowserTest, RetryFailedApps) {
 
   // Both apps should now be installed.
   auto app_id1 =
-      web_app::GenerateAppId(absl::nullopt, GURL("https://www.foo.com/"));
+      web_app::GenerateAppId(std::nullopt, GURL("https://www.foo.com/"));
   bool found = app_registry_cache().ForOneApp(app_id1, [](const AppUpdate&) {});
   ASSERT_TRUE(found);
 
   auto app_id2 =
-      web_app::GenerateAppId(absl::nullopt, GURL("https://www.bar.com/"));
+      web_app::GenerateAppId(std::nullopt, GURL("https://www.bar.com/"));
   found = app_registry_cache().ForOneApp(app_id2, [](const AppUpdate&) {});
   ASSERT_TRUE(found);
 
@@ -459,8 +459,8 @@ IN_PROC_BROWSER_TEST_F(AppPreloadServiceWithTestAppsBrowserTest,
   service->StartFirstLoginFlowForTesting(result.GetCallback());
   ASSERT_TRUE(result.Get());
 
-  auto app_id = web_app::GenerateAppId(absl::nullopt,
-                                       GURL("https://peanuttypes.com/app"));
+  auto app_id =
+      web_app::GenerateAppId(std::nullopt, GURL("https://peanuttypes.com/app"));
   bool found = app_registry_cache().ForOneApp(app_id, [](const AppUpdate&) {});
   ASSERT_TRUE(found);
 }

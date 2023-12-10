@@ -8,6 +8,7 @@
 #include <wrl/client.h>
 #include <wrl/implements.h>
 
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -32,7 +33,6 @@
 #include "chrome/updater/update_service.h"
 #include "chrome/updater/updater_version.h"
 #include "chrome/updater/util/win_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
 namespace {
@@ -266,35 +266,35 @@ HRESULT UpdaterImpl::RegisterApp(const wchar_t* app_id,
   }
 
   // Validates that string parameters are not longer than 16K characters.
-  absl::optional<RegistrationRequest> request =
+  std::optional<RegistrationRequest> request =
       [app_id, brand_code, brand_path, ap, version,
        existence_checker_path]() -> decltype(request) {
     for (const auto* str : {app_id, brand_code, brand_path, ap, version,
                             existence_checker_path}) {
       if (wcsnlen_s(str, kMaxStringLen) == kMaxStringLen) {
-        return absl::nullopt;
+        return std::nullopt;
       }
     }
 
     RegistrationRequest request;
     if (!app_id || !base::WideToUTF8(app_id, wcslen(app_id), &request.app_id)) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     if (!brand_code || !base::WideToUTF8(brand_code, wcslen(brand_code),
                                          &request.brand_code)) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     request.brand_path = base::FilePath(brand_path);
     if (!ap || !base::WideToUTF8(ap, wcslen(ap), &request.ap)) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     std::string version_str;
     if (!version || !base::WideToUTF8(version, wcslen(version), &version_str)) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     request.version = base::Version(version_str);
     if (!request.version.IsValid()) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     request.existence_checker_path = base::FilePath(existence_checker_path);
 
@@ -401,7 +401,7 @@ class StateChangeCallbackFilter {
   Microsoft::WRL::ComPtr<IUpdaterObserver> observer_;
 
   // Most recent download progress value the client has been notified about.
-  absl::optional<int> progress_seen_;
+  std::optional<int> progress_seen_;
 };
 
 }  // namespace
@@ -572,36 +572,36 @@ HRESULT UpdaterImpl::Install(const wchar_t* app_id,
   }
 
   // Validates that string parameters are not longer than 16K characters.
-  absl::optional<RegistrationRequest> request =
+  std::optional<RegistrationRequest> request =
       [app_id, brand_code, brand_path, ap, version, existence_checker_path,
        client_install_data, install_data_index]() -> decltype(request) {
     for (const auto* str :
          {app_id, brand_code, brand_path, ap, version, existence_checker_path,
           client_install_data, install_data_index}) {
       if (wcsnlen_s(str, kMaxStringLen) == kMaxStringLen) {
-        return absl::nullopt;
+        return std::nullopt;
       }
     }
 
     RegistrationRequest request;
     if (!app_id || !base::WideToUTF8(app_id, wcslen(app_id), &request.app_id)) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     if (!brand_code || !base::WideToUTF8(brand_code, wcslen(brand_code),
                                          &request.brand_code)) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     request.brand_path = base::FilePath(brand_path);
     if (!ap || !base::WideToUTF8(ap, wcslen(ap), &request.ap)) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     std::string version_str;
     if (!version || !base::WideToUTF8(version, wcslen(version), &version_str)) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     request.version = base::Version(version_str);
     if (!request.version.IsValid()) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     request.existence_checker_path = base::FilePath(existence_checker_path);
 

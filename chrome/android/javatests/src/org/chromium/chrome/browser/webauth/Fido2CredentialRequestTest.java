@@ -51,7 +51,6 @@ import org.chromium.base.test.util.JniMocker;
 import org.chromium.blink.mojom.AuthenticatorAttachment;
 import org.chromium.blink.mojom.AuthenticatorStatus;
 import org.chromium.blink.mojom.AuthenticatorTransport;
-import org.chromium.blink.mojom.DevicePublicKeyRequest;
 import org.chromium.blink.mojom.GetAssertionAuthenticatorResponse;
 import org.chromium.blink.mojom.MakeCredentialAuthenticatorResponse;
 import org.chromium.blink.mojom.PaymentOptions;
@@ -1375,35 +1374,6 @@ public class Fido2CredentialRequestTest {
         Assert.assertEquals(mCallback.getStatus(), Integer.valueOf(AuthenticatorStatus.SUCCESS));
         Fido2ApiTestHelper.validatePrfResults(
                 mCallback.getGetAssertionResponse().extensions.prfResults);
-        Fido2ApiTestHelper.verifyRespondedBeforeTimeout(mStartTimeMs);
-    }
-
-    @Test
-    @SmallTest
-    public void testAuthenticatorImplGetAssertionWithDevicePubKey_success() {
-        AuthenticatorImpl authenticator =
-                new AuthenticatorImpl(
-                        mContext,
-                        mIntentSender,
-                        /* createConfirmationUiDelegate= */ null,
-                        mFrameHost,
-                        mOrigin);
-        mIntentSender.setNextResultIntent(
-                Fido2ApiTestHelper.createSuccessfulGetAssertionIntentWithDevicePubKey());
-        mRequestOptions.extensions.devicePublicKey = new DevicePublicKeyRequest();
-
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    authenticator.getAssertion(
-                            mRequestOptions,
-                            (status, response, dom_exception) ->
-                                    mCallback.onSignResponse(status, response));
-                });
-        mCallback.blockUntilCalled();
-
-        Assert.assertEquals(mCallback.getStatus(), Integer.valueOf(AuthenticatorStatus.SUCCESS));
-        Fido2ApiTestHelper.validateDevicePubKey(
-                mCallback.getGetAssertionResponse().extensions.devicePublicKey);
         Fido2ApiTestHelper.verifyRespondedBeforeTimeout(mStartTimeMs);
     }
 

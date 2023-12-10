@@ -9,6 +9,7 @@
 
 #include "base/functional/bind_internal.h"
 #include "base/types/pass_key.h"
+#include "third_party/blink/renderer/platform/heap/cross_thread_handle.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
@@ -96,29 +97,33 @@ class WeakCellFactory {
   DISALLOW_NEW();
 
  public:
-  explicit WeakCellFactory(T* ptr)
-      : weak_cell_(
-            MakeGarbageCollected<WeakCell<T>>(base::PassKey<WeakCellFactory>(),
-                                              ptr)) {}
+  explicit WeakCellFactory(T* ptr) : ptr_(ptr) {}
 
-  WeakCell<T>* GetWeakCell() const { return weak_cell_.Get(); }
+  WeakCell<T>* GetWeakCell() {
+    if (!weak_cell_) {
+      weak_cell_ = MakeGarbageCollected<WeakCell<T>>(
+          base::PassKey<WeakCellFactory>(), ptr_);
+    }
+    DCHECK(weak_cell_);
+    return weak_cell_.Get();
+  }
 
   // Invalidates the previous `WeakCell<T>` so that `previous_cell->Get()`
   // returns null. Future calls to `GetWeakCell()` will return a *new* and
   // *non-null* cell.
   void Invalidate() {
-    // A WeakCellFactory is strongly-referenced by its owner, so the internal
-    // weak cell should always have a non-null reference to its owner at this
-    // point.
-    T* ptr = weak_cell_->Get();
+    if (!weak_cell_) return;
     weak_cell_->Invalidate(base::PassKey<WeakCellFactory>());
-    weak_cell_ = MakeGarbageCollected<WeakCell<T>>(
-        base::PassKey<WeakCellFactory>(), ptr);
+    weak_cell_ = nullptr;
   }
 
-  void Trace(Visitor* v) const { v->Trace(weak_cell_); }
+  void Trace(Visitor* v) const {
+    v->Trace(ptr_);
+    v->Trace(weak_cell_);
+  }
 
  private:
+  const WeakMember<T> ptr_;
   Member<WeakCell<T>> weak_cell_;
 };
 
@@ -144,6 +149,31 @@ struct MaybeValidTraits<blink::Persistent<blink::WeakCell<T>>> {
     // Not necessarily called on `Persistent<T>` and `WeakCell<T>`'s owning
     // thread, so the only possible implementation is to assume the weak cell
     // has not been invalidated.
+    return true;
+  }
+};
+
+template <typename T>
+struct IsWeakReceiver<blink::UnwrappingCrossThreadHandle<blink::WeakCell<T>>>
+    : std::true_type {};
+
+template <typename T>
+struct BindUnwrapTraits<
+    blink::UnwrappingCrossThreadHandle<blink::WeakCell<T>>> {
+  static T* Unwrap(
+      const blink::UnwrappingCrossThreadHandle<blink::WeakCell<T>>& wrapped) {
+    return wrapped.GetOnCreationThread()->Get();
+  }
+};
+
+template <typename T>
+struct MaybeValidTraits<
+    blink::UnwrappingCrossThreadHandle<blink::WeakCell<T>>> {
+  static constexpr bool MaybeValid(
+      const blink::UnwrappingCrossThreadHandle<blink::WeakCell<T>>& p) {
+    // Not necessarily called on `UnwrappingCrossThreadHandle<T>` and
+    // `WeakCell<T>`'s owning thread, so the only possible implementation is to
+    // assume the weak cell has not been invalidated.
     return true;
   }
 };

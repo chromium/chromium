@@ -26,9 +26,7 @@ FirstPartySetEntryOverride& FirstPartySetEntryOverride::operator=(
 FirstPartySetEntryOverride::~FirstPartySetEntryOverride() = default;
 
 bool FirstPartySetEntryOverride::operator==(
-    const FirstPartySetEntryOverride& other) const {
-  return entry_ == other.entry_;
-}
+    const FirstPartySetEntryOverride& other) const = default;
 
 std::ostream& operator<<(std::ostream& os,
                          const FirstPartySetEntryOverride& override) {

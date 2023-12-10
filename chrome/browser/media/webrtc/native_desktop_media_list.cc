@@ -163,6 +163,107 @@ BASE_FEATURE(kWindowCaptureMacV2,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
+content::DesktopMediaID::Type ConvertToDesktopMediaIDType(
+    DesktopMediaList::Type type) {
+  switch (type) {
+    case DesktopMediaList::Type::kScreen:
+      return content::DesktopMediaID::Type::TYPE_SCREEN;
+    case DesktopMediaList::Type::kWindow:
+      return content::DesktopMediaID::Type::TYPE_WINDOW;
+    case DesktopMediaList::Type::kWebContents:
+    case DesktopMediaList::Type::kCurrentTab:
+    case DesktopMediaList::Type::kNone:
+      break;
+  }
+  NOTREACHED_NORETURN();
+}
+
+content::DesktopMediaID::Id GetUpdatedWindowId(
+    const content::DesktopMediaID& desktop_media_id,
+    bool is_source_list_delegated) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  // Use current value by default.
+  content::DesktopMediaID::Id window_id = desktop_media_id.window_id;
+
+  // Update |window_id| if |desktop_media_id.id| corresponds to a
+  // viz::FrameSinkId.
+  // TODO(https://crbug.com/1366579): This lookup is fairly fragile and has
+  // now resulted in at least two patches to avoid it (though both are Wayland
+  // based problems). On top of that, the series of ifdefs is a bit confusing.
+  // We should try to simplify/abstract/cleanup this logic.
+  // The root cause is that the Ozone Wayland Window Manager does *not* use a
+  // platform handle/unique ID to back the AcceleratedWidget, but rather a
+  // monotonically increasing int. Thus, capturers on that platform that
+  // also (by default) use monotonically increasing ints as IDs (e.g.
+  // delegated source lists, the lacros capturer) can have source IDs that
+  // collide with known aura IDs. This causes us to mistakenly try to capture
+  // the non-aura windows as an aura window. The preview ultimately matches
+  // what is captured, but this is likely unexpected for the user and can
+  // result in multiple instances of a window appearing in the source list and
+  // also means that the collided non-aura window cannot be captured.
+#if defined(USE_AURA)
+  if (!is_source_list_delegated) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    // The lacros capturer is not delegated and can circumvent the collision
+    // described above because it receives additional information about each
+    // window from Ash-chrome; however, it is limited in how it can convey
+    // that information. |FormatSources|, above, will put the internal ID into
+    // the window_id slot; but this will not yet be a registered native
+    // window, as the capturer does not run on the UI thread. Thus, we still
+    // need to find and register this window here and then overwrite the
+    // window_id. If the window_id has not been set, we'll just fail to find a
+    // corresponding window and the state will remain unset.
+    DesktopMediaID::Id search_id = desktop_media_id.window_id;
+#else
+    DesktopMediaID::Id search_id = desktop_media_id.id;
+#endif
+    aura::WindowTreeHost* const host =
+        aura::WindowTreeHost::GetForAcceleratedWidget(
+            *reinterpret_cast<gfx::AcceleratedWidget*>(&search_id));
+    aura::Window* const aura_window = host ? host->window() : nullptr;
+    if (aura_window) {
+      DesktopMediaID aura_id = DesktopMediaID::RegisterNativeWindow(
+          DesktopMediaID::TYPE_WINDOW, aura_window);
+      window_id = aura_id.window_id;
+    } else if (search_id != DesktopMediaID::kNullId) {
+      // This is expected for non-LaCrOS platforms, where we are searching all
+      // IDs (which include windows/screens that we don't own). However, on
+      // LaCrOS, if we set search_id, then that means we think we should know
+      // about the window. There are potential race conditions where this
+      // could happen, so don't throw an error, but do log it in case any
+      // issues pop up in the future so we can debug it.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+      LOG(ERROR) << __func__ << ": Could not find window but had window id";
+      window_id = DesktopMediaID::kNullId;
+#endif
+    }
+  }
+#elif BUILDFLAG(IS_MAC)
+  if (base::FeatureList::IsEnabled(kWindowCaptureMacV2)) {
+    if (remote_cocoa::ScopedCGWindowID::Get(desktop_media_id.id)) {
+      window_id = desktop_media_id.id;
+    }
+  }
+#endif
+
+  return window_id;
+}
+
+using ThumbnailCallback =
+    base::OnceCallback<void(const content::DesktopMediaID&,
+                            const gfx::ImageSkia&)>;
+
+void AssignWindowIdAndUpdateThumbnail(
+    content::DesktopMediaID desktop_media_id,
+    bool is_source_list_delegated,
+    const gfx::ImageSkia& thumbnail,
+    ThumbnailCallback update_thumbnail_callback) {
+  desktop_media_id.window_id =
+      GetUpdatedWindowId(desktop_media_id, is_source_list_delegated);
+  std::move(update_thumbnail_callback).Run(desktop_media_id, thumbnail);
+}
+
 }  // namespace
 
 class NativeDesktopMediaList::Worker
@@ -212,7 +313,7 @@ class NativeDesktopMediaList::Worker
   // which should be excluded from the list produced.
   static std::vector<SourceDescription> FormatSources(
       const webrtc::DesktopCapturer::SourceList& sources,
-      const DesktopMediaList::Type& list_type,
+      const DesktopMediaID::Type source_type,
       DesktopMediaID::Id excluded_window_id);
 
 #if BUILDFLAG(IS_WIN)
@@ -243,11 +344,12 @@ class NativeDesktopMediaList::Worker
 
   base::WeakPtr<NativeDesktopMediaList> media_list_;
 
-  DesktopMediaList::Type type_;
+  DesktopMediaID::Type source_type_;
   const std::unique_ptr<ThumbnailCapturer> capturer_;
   const ThumbnailCapturer::FrameDeliveryMethod frame_delivery_method_;
   const bool add_current_process_windows_;
 
+  const bool is_source_list_delegated_;
   bool delegated_source_list_has_selection_ = false;
   bool focused_ = false;
 
@@ -280,13 +382,15 @@ NativeDesktopMediaList::Worker::Worker(
     bool add_current_process_windows)
     : task_runner_(task_runner),
       media_list_(media_list),
-      type_(type),
+      source_type_(ConvertToDesktopMediaIDType(type)),
       capturer_(std::move(capturer)),
       frame_delivery_method_(capturer_->GetFrameDeliveryMethod()),
-      add_current_process_windows_(add_current_process_windows) {
+      add_current_process_windows_(add_current_process_windows),
+      is_source_list_delegated_(capturer_->GetDelegatedSourceListController() !=
+                                nullptr) {
   DCHECK(capturer_);
 
-  DCHECK(type_ == DesktopMediaList::Type::kWindow ||
+  DCHECK(source_type_ == DesktopMediaID::Type::TYPE_WINDOW ||
          !add_current_process_windows_);
 }
 
@@ -298,8 +402,9 @@ void NativeDesktopMediaList::Worker::Start() {
   DCHECK(task_runner_->BelongsToCurrentThread());
   capturer_->Start(this);
 
-  if (capturer_->GetDelegatedSourceListController())
+  if (is_source_list_delegated_) {
     capturer_->GetDelegatedSourceListController()->Observe(this);
+  }
 }
 
 void NativeDesktopMediaList::Worker::Refresh(bool update_thumbnails) {
@@ -328,14 +433,14 @@ void NativeDesktopMediaList::Worker::Refresh(bool update_thumbnails) {
   }
 
   std::vector<SourceDescription> source_descriptions =
-      FormatSources(sources, type_, excluded_window_id_);
+      FormatSources(sources, source_type_, excluded_window_id_);
 
 #if BUILDFLAG(IS_WIN)
   // If |add_current_process_windows_| is set to false, |capturer_| will have
   // found the windows owned by the current process for us. Otherwise, we must
   // do this.
   if (add_current_process_windows_) {
-    DCHECK_EQ(type_, DesktopMediaList::Type::kWindow);
+    DCHECK_EQ(source_type_, DesktopMediaID::Type::TYPE_WINDOW);
     // WebRTC returns the windows in order of highest z-order to lowest, but
     // these additional windows will be out of order if we just append them. So
     // we sort the list according to the z-order of the windows.
@@ -401,15 +506,13 @@ void NativeDesktopMediaList::Worker::RefreshThumbnails(
 std::vector<DesktopMediaListBase::SourceDescription>
 NativeDesktopMediaList::Worker::FormatSources(
     const webrtc::DesktopCapturer::SourceList& sources,
-    const DesktopMediaList::Type& list_type,
+    const DesktopMediaID::Type source_type,
     DesktopMediaID::Id excluded_window_id) {
   std::vector<SourceDescription> source_descriptions;
   std::u16string title;
   for (size_t i = 0; i < sources.size(); ++i) {
-    DesktopMediaID::Type source_type = DesktopMediaID::Type::TYPE_NONE;
-    switch (list_type) {
-      case DesktopMediaList::Type::kScreen:
-        source_type = DesktopMediaID::Type::TYPE_SCREEN;
+    switch (source_type) {
+      case DesktopMediaID::Type::TYPE_SCREEN:
         // Just in case 'Screen' is inflected depending on the screen number,
         // use plural formatter.
         title = sources.size() > 1
@@ -420,8 +523,7 @@ NativeDesktopMediaList::Worker::FormatSources(
                           IDS_DESKTOP_MEDIA_PICKER_SINGLE_SCREEN_NAME);
         break;
 
-      case DesktopMediaList::Type::kWindow:
-        source_type = DesktopMediaID::Type::TYPE_WINDOW;
+      case DesktopMediaID::Type::TYPE_WINDOW:
         // Skip the picker dialog window.
         if (sources[i].id == excluded_window_id) {
           continue;
@@ -571,6 +673,8 @@ void NativeDesktopMediaList::Worker::OnRecurrentCaptureResult(
     ThumbnailCapturer::Result result,
     std::unique_ptr<webrtc::DesktopFrame> frame,
     ThumbnailCapturer::SourceId source_id) {
+  DCHECK(task_runner_->BelongsToCurrentThread());
+
   // |frame| may be null if capture failed (e.g. because window has been
   // closed).
   if (!frame) {
@@ -579,10 +683,15 @@ void NativeDesktopMediaList::Worker::OnRecurrentCaptureResult(
 
   gfx::ImageSkia thumbnail =
       ScaleDesktopFrame(std::move(frame), thumbnail_size_);
+
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
-      base::BindOnce(&NativeDesktopMediaList::UpdateSourceThumbnailForId,
-                     media_list_, source_id, thumbnail));
+      base::BindOnce(
+          &AssignWindowIdAndUpdateThumbnail,
+          DesktopMediaID(source_type_, source_id), is_source_list_delegated_,
+          thumbnail,
+          base::BindOnce(&NativeDesktopMediaList::UpdateSourceThumbnail,
+                         media_list_)));
 }
 
 void NativeDesktopMediaList::Worker::OnSourceListUpdated() {
@@ -590,7 +699,7 @@ void NativeDesktopMediaList::Worker::OnSourceListUpdated() {
 }
 
 void NativeDesktopMediaList::Worker::ClearDelegatedSourceListSelection() {
-  DCHECK(capturer_->GetDelegatedSourceListController());
+  DCHECK(is_source_list_delegated_);
   if (!delegated_source_list_has_selection_)
     return;
 
@@ -618,9 +727,9 @@ void NativeDesktopMediaList::Worker::FocusList() {
   // its source list is visible, unless a selection has previously been made.
   // If the capturer doesn't use a delegated source list, there's nothing for us
   // to do as we're continually querying the list state ourselves.
-  if (capturer_->GetDelegatedSourceListController() &&
-      !delegated_source_list_has_selection_)
+  if (is_source_list_delegated_ && !delegated_source_list_has_selection_) {
     capturer_->GetDelegatedSourceListController()->EnsureVisible();
+  }
 }
 
 void NativeDesktopMediaList::Worker::HideList() {
@@ -630,8 +739,9 @@ void NativeDesktopMediaList::Worker::HideList() {
   // If the capturer doesn't use a delegated source list, there's nothing for us
   // to do as we want to continually querying the list state ourselves as we
   // have been doing.
-  if (capturer_->GetDelegatedSourceListController())
+  if (is_source_list_delegated_) {
     capturer_->GetDelegatedSourceListController()->EnsureHidden();
+  }
 }
 
 void NativeDesktopMediaList::Worker::OnSelection() {
@@ -854,65 +964,8 @@ void NativeDesktopMediaList::RefreshForVizFrameSinkWindows(
     }
 #endif  // BUILDFLAG(IS_WIN)
 
-    // Assign |source_it->id.window_id| if |source_it->id.id| corresponds to a
-    // viz::FrameSinkId.
-    // TODO(https://crbug.com/1366579): This lookup is fairly fragile and has
-    // now resulted in at least two patches to avoid it (though both are Wayland
-    // based problems). On top of that, the series of ifdefs is a bit confusing.
-    // We should try to simplify/abstract/cleanup this logic.
-    // The root cause is that the Ozone Wayland Window Manager does *not* use a
-    // platform handle/unique ID to back the AcceleratedWidget, but rather a
-    // monotonically increasing int. Thus, capturers on that platform that
-    // also (by default) use monotonically increasing ints as IDs (e.g.
-    // delegated source lists, the lacros capturer) can have source IDs that
-    // collide with known aura IDs. This causes us to mistakenly try to capture
-    // the non-aura windows as an aura window. The preview ultimately matches
-    // what is captured, but this is likely unexpected for the user and can
-    // result in multiple instances of a window appearing in the source list and
-    // also means that the collided non-aura window cannot be captured.
-#if defined(USE_AURA)
-    if (!is_source_list_delegated_) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-      // The lacros capturer is not delegated and can circumvent the collision
-      // described above because it receives additional information about each
-      // window from Ash-chrome; however, it is limited in how it can convey
-      // that information. |FormatSources|, above, will put the internal ID into
-      // the window_id slot; but this will not yet be a registered native
-      // window, as the capturer does not run on the UI thread. Thus, we still
-      // need to find and register this window here and then overwrite the
-      // window_id. If the window_id has not been set, we'll just fail to find a
-      // corresponding window and the state will remain unset.
-      DesktopMediaID::Id search_id = source_it->id.window_id;
-#else
-      DesktopMediaID::Id search_id = source_it->id.id;
-#endif
-      aura::WindowTreeHost* const host =
-          aura::WindowTreeHost::GetForAcceleratedWidget(
-              *reinterpret_cast<gfx::AcceleratedWidget*>(&search_id));
-      aura::Window* const aura_window = host ? host->window() : nullptr;
-      if (aura_window) {
-        DesktopMediaID aura_id = DesktopMediaID::RegisterNativeWindow(
-            DesktopMediaID::TYPE_WINDOW, aura_window);
-        source_it->id.window_id = aura_id.window_id;
-      } else if (search_id != DesktopMediaID::kNullId) {
-        // This is expected for non-LaCrOS platforms, where we are searching all
-        // IDs (which include windows/screens that we don't own). However, on
-        // LaCrOS, if we set search_id, then that means we think we should know
-        // about the window. There are potential race conditions where this
-        // could happen, so don't throw an error, but do log it in case any
-        // issues pop up in the future so we can debug it.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-        LOG(ERROR) << __func__ << ": Could not find window but had window id";
-        source_it->id.window_id = DesktopMediaID::kNullId;
-#endif
-      }
-    }
-#elif BUILDFLAG(IS_MAC)
-    if (base::FeatureList::IsEnabled(kWindowCaptureMacV2)) {
-      if (remote_cocoa::ScopedCGWindowID::Get(source_it->id.id))
-        source_it->id.window_id = source_it->id.id;
-    }
-#endif
+    source_it->id.window_id =
+        GetUpdatedWindowId(source_it->id, is_source_list_delegated_);
 
     ++source_it;
   }

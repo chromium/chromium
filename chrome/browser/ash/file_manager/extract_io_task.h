@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_FILE_MANAGER_EXTRACT_IO_TASK_H_
 #define CHROME_BROWSER_ASH_FILE_MANAGER_EXTRACT_IO_TASK_H_
 
+#include <optional>
 #include <vector>
 
 #include "base/files/file_error_or.h"
@@ -20,7 +21,6 @@
 #include "components/services/unzip/public/cpp/unzip.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_url.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace file_manager::io_task {
 
@@ -134,7 +134,7 @@ class ExtractIOTask : public IOTask {
 
   // Scoped file access object required to open the zipped files when Data Leak
   // Prevention features are enabled.
-  absl::optional<file_access::ScopedFileAccess> file_access_;
+  std::optional<file_access::ScopedFileAccess> file_access_;
 
   base::WeakPtrFactory<ExtractIOTask> weak_ptr_factory_{this};
 };

@@ -782,7 +782,8 @@ function raf() {
 
 // Resets the scroll position to (x,y). If a scroll is required, then the
 // promise is not resolved until the scrollend event is received.
-async function waitForScrollReset(scroller, x = 0, y = 0) {
+async function waitForScrollReset(scroller = document.scrollingElement,
+                                  x = 0, y = 0) {
   return new Promise(resolve => {
     if (scroller.scrollTop == y &&
         scroller.scrollLeft == x) {
@@ -796,6 +797,12 @@ async function waitForScrollReset(scroller, x = 0, y = 0) {
       waitForScrollendEvent(scrollendEventTarget(scroller)).then(resolve);
     }
   });
+}
+
+function waitForWindowScrollTo(options) {
+  const scrollPromise = waitForScrollendEvent(document);
+  window.scrollTo(options);
+  return scrollPromise;
 }
 
 // Verifies that triggered scroll animations smoothly. Requires at least 2
@@ -975,36 +982,73 @@ function mouseDragScroll(x, y, deltaX, deltaY, scroller, options = {}) {
   return Promise.all([scrollPromise, dragPromise]);
 }
 
-function wheelScroll(x, y, deltaX, deltaY, origin =-"viewport",
-                            duration_ms = 250) {
+function wheelScroll(x, y, deltaX, deltaY, scrollEventListener = document,
+                     origin = "viewport", duration_ms = 250) {
   verifyTestDriverLoaded();
-  const wheelPromise = new Promise(async resolve => {
-    document.addEventListener('wheel', resolve, { once: true });
-  });
+  const promises = [];
+  if (scrollEventListener) {
+    promises.push(waitForScrollendEvent(scrollEventListener));
+  }
   const gesturePromise = new test_driver.Actions()
         .scroll(x, y, deltaX, deltaY, origin, duration_ms)
         .send();
-  return Promise.all([gesturePromise, wheelPromise]);
+  promises.push(gesturePromise);
+  return Promise.all(promises);
 }
 
-function mouseClick(x, y, options = {}) {
+// Simulates a pointer tap gesutre.
+// options:
+//    origin: defaults to "viewport" coordinates.  If an element is specified,
+//            then relative to the center of the element.
+//    pointerType: Default to mouse, but may be mouse, touch, or pen.
+//    pointerDownUpOptions: Optional callback function to set parameters for
+//                          pointerDown and pointerUp.
+function pointerTap(x, y, options = {}) {
   const origin = options.origin || "viewport";
+  const pointerType = options.pointerType || 'mouse';
+  const emptyCallback = () => {};
+  const pointerDownUpOptions = options.pointerDownUpOptions || emptyCallback;
   verifyTestDriverLoaded();
   assert_point_within_viewport(x, y, origin);
-  return new Promise((resolve) => {
-    const pointerListener = (event) => {
-      if (event.type == 'pointerup') {
-        document.removeEventListener('pointerup', pointerListener);
-        resolve(event.type);
+  const promises = [];
+  if (!options.skipWaitOnPointer) {
+    const pointerPromise = new Promise((resolve) => {
+      const listener = () => {
+        document.removeEventListener('pointerup', listener);
+        document.removeEventListener('pointercancel', listener);
+        resolve();
       }
+      document.addEventListener('pointerup', listener);
+      document.addEventListener('pointercancel', listener);
+    });
+    promises.push(pointerPromise);
+  }
+  const actions = new test_driver.Actions();
+  actions.addPointer("pointer1", pointerType)
+         .pointerMove(x, y, { origin: origin })
+         .pointerDown(pointerDownUpOptions(actions))
+         .pointerUp(pointerDownUpOptions(actions));
+  const gesturePromise = actions.send();
+  promises.push(gesturePromise);
+  return Promise.all(promises);
+}
+
+// Performs a mouse click using the left-mouse button by default. The selected
+// button may be set via options.buttons.
+function mouseClick(x, y, options = {}) {
+  options.pointerType = 'mouse';
+  if (!options.pointerDownUpOptions) {
+    options.pointerDownUpOptions = (actions) => {
+      return { button: actions.ButtonType.LEFT };
     };
-    document.addEventListener('pointerup', pointerListener);
-    var actions = new test_driver.Actions();
-    return actions.pointerMove(x, y, { origin: origin })
-                  .pointerDown({button: actions.ButtonType.LEFT})
-                  .pointerUp({button: actions.ButtonType.LEFT})
-                  .send();
-  });
+  }
+  return pointerTap(x, y, options);
+}
+
+// Performs a touch tap actions.
+function touchTap(x, y, options = {}) {
+  options.pointerType = 'touch';
+  return pointerTap(x, y, options);
 }
 
 // Perform a click action where a scroll is expected such as on a scrollbar
@@ -1014,6 +1058,22 @@ function clickScroll(x, y, scroller, options = {}) {
   const scrollPromise = waitForScrollendEvent(scroller);
   const clickPromise = mouseClick(x, y, options);
   return Promise.all([scrollPromise, clickPromise]);
+}
+
+// Perform a tap action where a scroll is expected such as on a scrollbar
+// arrow or on a scrollbar track. The promise will timeout if no scrolling is
+// triggered.
+function touchTapScroll(x, y, scroller, options = {}) {
+  verifyTestDriverLoaded();
+  const scrollPromise = waitForScrollendEvent(scroller);
+  // Not seeing pointerup or pointercancel when synthetically tapping on a
+  // scrollbar button. A pointerup event is observed when testing manually
+  // suggesting this might be an issue in test driver. We can safely skip the
+  // check for touch tap scrolls since it is safe to continue the test even if
+  // we have not had a chance to process a pointerup event.
+  options.skipWaitOnPointer = true;
+  const tapPromise = touchTap(x, y, options);
+  return Promise.all([scrollPromise, tapPromise]);
 }
 
 function waitForStableScrollOffset(scroller, timeout) {

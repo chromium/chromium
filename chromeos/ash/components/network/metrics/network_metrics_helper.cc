@@ -7,6 +7,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
+#include "chromeos/ash/components/network/cellular_metrics_logger.h"
 #include "chromeos/ash/components/network/metrics/connection_results.h"
 #include "chromeos/ash/components/network/network_event_log.h"
 #include "chromeos/ash/components/network/network_handler.h"
@@ -20,6 +21,7 @@ namespace {
 
 const char kNetworkMetricsPrefix[] = "Network.Ash.";
 const char kAllConnectionResultSuffix[] = ".ConnectionResult.All";
+const char kFilteredConnectionResultSuffix[] = ".ConnectionResult.Filtered";
 const char kNonUserInitiatedConnectionResultSuffix[] =
     ".ConnectionResult.NonUserInitiated";
 const char kUserInitiatedConnectionResultSuffix[] =
@@ -60,7 +62,7 @@ NetworkStateHandler* GetNetworkStateHandler() {
   return NetworkHandler::Get()->network_state_handler();
 }
 
-const absl::optional<const std::string> GetTechnologyTypeSuffix(
+const std::optional<const std::string> GetTechnologyTypeSuffix(
     const std::string& technology) {
   // Note that Tether is a fake technology that does not correspond to shill
   // technology type.
@@ -72,7 +74,7 @@ const absl::optional<const std::string> GetTechnologyTypeSuffix(
     return kCellular;
   else if (technology == shill::kTypeVPN)
     return kVPN;
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 const std::vector<std::string> GetCellularNetworkTypeHistogams(
@@ -176,7 +178,8 @@ const std::vector<std::string> GetNetworkTypeHistogramNames(
 void NetworkMetricsHelper::LogAllConnectionResult(
     const std::string& guid,
     bool is_auto_connect,
-    const absl::optional<std::string>& shill_error) {
+    bool is_repeated_error,
+    const std::optional<std::string>& shill_error) {
   DCHECK(GetNetworkStateHandler());
   const NetworkState* network_state =
       GetNetworkStateHandler()->GetNetworkStateFromGuid(guid);
@@ -186,6 +189,9 @@ void NetworkMetricsHelper::LogAllConnectionResult(
   ShillConnectResult connect_result =
       shill_error ? ShillErrorToConnectResult(*shill_error)
                   : ShillConnectResult::kSuccess;
+
+  const bool is_not_repeated_error =
+      !is_repeated_error || connect_result == ShillConnectResult::kSuccess;
 
   for (const auto& network_type : GetNetworkTypeHistogramNames(network_state)) {
     base::UmaHistogramEnumeration(
@@ -198,13 +204,20 @@ void NetworkMetricsHelper::LogAllConnectionResult(
                         kNonUserInitiatedConnectionResultSuffix}),
           connect_result);
     }
+
+    if (is_not_repeated_error) {
+      base::UmaHistogramEnumeration(
+          base::StrCat({kNetworkMetricsPrefix, network_type,
+                        kFilteredConnectionResultSuffix}),
+          connect_result);
+    }
   }
 }
 
 // static
 void NetworkMetricsHelper::LogUserInitiatedConnectionResult(
     const std::string& guid,
-    const absl::optional<std::string>& network_connection_error) {
+    const std::optional<std::string>& network_connection_error) {
   DCHECK(GetNetworkStateHandler());
   const NetworkState* network_state =
       GetNetworkStateHandler()->GetNetworkStateFromGuid(guid);
@@ -229,7 +242,7 @@ void NetworkMetricsHelper::LogUserInitiatedConnectionResult(
 void NetworkMetricsHelper::LogConnectionStateResult(
     const std::string& guid,
     const ConnectionState connection_state,
-    const absl::optional<ShillConnectResult> shill_error) {
+    const std::optional<ShillConnectResult> shill_error) {
   DCHECK(GetNetworkStateHandler());
   const NetworkState* network_state =
       GetNetworkStateHandler()->GetNetworkStateFromGuid(guid);
@@ -254,9 +267,8 @@ void NetworkMetricsHelper::LogConnectionStateResult(
 void NetworkMetricsHelper::LogEnableTechnologyResult(
     const std::string& technology,
     bool success,
-    const absl::optional<std::string>& shill_error) {
-  absl::optional<const std::string> suffix =
-      GetTechnologyTypeSuffix(technology);
+    const std::optional<std::string>& shill_error) {
+  std::optional<const std::string> suffix = GetTechnologyTypeSuffix(technology);
 
   if (!suffix)
     return;
@@ -289,9 +301,8 @@ void NetworkMetricsHelper::LogEnableTechnologyResult(
 void NetworkMetricsHelper::LogDisableTechnologyResult(
     const std::string& technology,
     bool success,
-    const absl::optional<std::string>& shill_error) {
-  absl::optional<const std::string> suffix =
-      GetTechnologyTypeSuffix(technology);
+    const std::optional<std::string>& shill_error) {
+  std::optional<const std::string> suffix = GetTechnologyTypeSuffix(technology);
 
   if (!suffix)
     return;

@@ -4,9 +4,7 @@
 
 package org.chromium.base.jank_tracker;
 
-/**
- * Interface for Android UI jank tracking.
- */
+/** Interface for Android UI jank tracking. */
 public interface JankTracker {
     /**
      * Starts tracking UI jank for a specific use scenario (e.g. Tab switcher, Omnibox, etc.),
@@ -26,10 +24,9 @@ public interface JankTracker {
      *         that should be included.
      */
     void finishTrackingScenario(@JankScenario int scenario, long endScenarioTimeNs);
+
     void finishTrackingScenario(@JankScenario int scenario);
 
-    /**
-     * To be called when the jank tracker should stop listening to changes.
-     */
+    /** To be called when the jank tracker should stop listening to changes. */
     void destroy();
 }

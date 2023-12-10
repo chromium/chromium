@@ -10,9 +10,7 @@ import android.widget.Magnifier;
 
 import org.chromium.base.Log;
 
-/**
- * Implements MagnifierWrapper interface.
- */
+/** Implements MagnifierWrapper interface. */
 @SuppressLint("NewApi") // Magnifier requires API level 28.
 public class MagnifierWrapperImpl implements MagnifierWrapper {
     private static final boolean DEBUG = false;
@@ -21,9 +19,7 @@ public class MagnifierWrapperImpl implements MagnifierWrapper {
     private Magnifier mMagnifier;
     private SelectionPopupControllerImpl.ReadbackViewCallback mCallback;
 
-    /**
-     * Constructor.
-     */
+    /** Constructor. */
     public MagnifierWrapperImpl(SelectionPopupControllerImpl.ReadbackViewCallback callback) {
         mCallback = callback;
     }

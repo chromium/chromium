@@ -65,7 +65,8 @@ PageTimingMetricsSender::PageTimingMetricsSender(
       metadata_recorder_(initial_monotonic_timing) {
   InitiateUserInteractionTiming();
   if (initial_request) {
-    InsertPageResourceDataUse(std::move(initial_request));
+    int resource_id = initial_request->resource_id();
+    page_resource_data_use_[resource_id] = std::move(initial_request);
   }
   if (!IsEmpty(*last_timing_)) {
     EnsureSendTimer();
@@ -150,12 +151,11 @@ void PageTimingMetricsSender::DidStartResponse(
     int resource_id,
     const network::mojom::URLResponseHead& response_head,
     network::mojom::RequestDestination request_destination) {
-  DCHECK(!base::Contains(page_resource_data_use_, resource_id));
-
-  auto data_use = std::make_unique<PageResourceDataUse>(resource_id);
-  data_use->DidStartResponse(final_response_url, resource_id, response_head,
-                             request_destination);
-  InsertPageResourceDataUse(std::move(data_use));
+  // There can be multiple `DidStartResponse` for the same resource id
+  // (crbug.com/1504430).
+  FindOrInsertPageResourceDataUse(resource_id)
+      ->DidStartResponse(final_response_url, resource_id, response_head,
+                         request_destination);
 }
 
 void PageTimingMetricsSender::DidReceiveTransferSizeUpdate(
@@ -178,19 +178,9 @@ void PageTimingMetricsSender::DidReceiveTransferSizeUpdate(
 void PageTimingMetricsSender::DidCompleteResponse(
     int resource_id,
     const network::URLLoaderCompletionStatus& status) {
-  PageResourceDataUse* data_use_raw_ptr;
-
-  auto resource_it = page_resource_data_use_.find(resource_id);
-  if (resource_it != page_resource_data_use_.end()) {
-    data_use_raw_ptr = resource_it->second.get();
-  } else {
-    auto data_use = std::make_unique<PageResourceDataUse>(resource_id);
-    data_use_raw_ptr = data_use.get();
-    InsertPageResourceDataUse(std::move(data_use));
-  }
-
-  data_use_raw_ptr->DidCompleteResponse(status);
-  modified_resources_.insert(data_use_raw_ptr);
+  PageResourceDataUse* data_use = FindOrInsertPageResourceDataUse(resource_id);
+  data_use->DidCompleteResponse(status);
+  modified_resources_.insert(data_use);
   EnsureSendTimer();
 }
 
@@ -215,11 +205,8 @@ void PageTimingMetricsSender::DidLoadResourceFromMemoryCache(
   if (base::Contains(page_resource_data_use_, request_id))
     return;
 
-  auto data_use = std::make_unique<PageResourceDataUse>(request_id);
-  data_use->DidLoadFromMemoryCache(response_url, encoded_body_length,
-                                   mime_type);
-  modified_resources_.insert(data_use.get());
-  InsertPageResourceDataUse(std::move(data_use));
+  FindOrInsertPageResourceDataUse(request_id)
+      ->DidLoadFromMemoryCache(response_url, encoded_body_length, mime_type);
 }
 
 void PageTimingMetricsSender::OnMainFrameIntersectionChanged(
@@ -244,8 +231,7 @@ void PageTimingMetricsSender::OnMainFrameImageAdRectangleChanged(
 void PageTimingMetricsSender::UpdateResourceMetadata(
     int resource_id,
     bool reported_as_ad_resource,
-    bool is_main_frame_resource,
-    bool completed_before_fcp) {
+    bool is_main_frame_resource) {
   auto it = page_resource_data_use_.find(resource_id);
   if (it == page_resource_data_use_.end())
     return;
@@ -254,11 +240,6 @@ void PageTimingMetricsSender::UpdateResourceMetadata(
   // be true once.
   if (reported_as_ad_resource)
     it->second->SetReportedAsAdResource(reported_as_ad_resource);
-
-  // This can get called multiple times for a resource, and this flag will only
-  // be true once.
-  if (completed_before_fcp)
-    it->second->SetCompletedBeforeFCP(completed_before_fcp);
 
   it->second->SetIsMainFrameResource(is_main_frame_resource);
 }
@@ -375,10 +356,13 @@ void PageTimingMetricsSender::SendNow() {
   // zero here, as its value only increments through the lifetime of the frame.
 }
 
-void PageTimingMetricsSender::InsertPageResourceDataUse(
-    std::unique_ptr<PageResourceDataUse> data) {
-  int resource_id = data->resource_id();
-  page_resource_data_use_[resource_id] = std::move(data);
+PageResourceDataUse* PageTimingMetricsSender::FindOrInsertPageResourceDataUse(
+    int resource_id) {
+  auto& data_use = page_resource_data_use_[resource_id];
+  if (!data_use) {
+    data_use = std::make_unique<PageResourceDataUse>(resource_id);
+  }
+  return data_use.get();
 }
 
 void PageTimingMetricsSender::InitiateUserInteractionTiming() {
@@ -389,14 +373,16 @@ void PageTimingMetricsSender::InitiateUserInteractionTiming() {
 void PageTimingMetricsSender::DidObserveUserInteraction(
     base::TimeTicks max_event_start,
     base::TimeTicks max_event_end,
-    blink::UserInteractionType interaction_type) {
+    blink::UserInteractionType interaction_type,
+    uint64_t interaction_offset) {
   input_timing_delta_->num_interactions++;
   metadata_recorder_.AddInteractionDurationMetadata(max_event_start,
                                                     max_event_end);
   base::TimeDelta max_event_duration = max_event_end - max_event_start;
   input_timing_delta_->max_event_durations->get_user_interaction_latencies()
       .emplace_back(mojom::UserInteractionLatency::New(
-          max_event_duration, UserInteractionTypeForMojom(interaction_type)));
+          max_event_duration, UserInteractionTypeForMojom(interaction_type),
+          interaction_offset, max_event_start));
   EnsureSendTimer();
 }
 }  // namespace page_load_metrics

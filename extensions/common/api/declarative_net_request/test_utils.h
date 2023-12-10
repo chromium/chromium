@@ -5,17 +5,15 @@
 #ifndef EXTENSIONS_COMMON_API_DECLARATIVE_NET_REQUEST_TEST_UTILS_H_
 #define EXTENSIONS_COMMON_API_DECLARATIVE_NET_REQUEST_TEST_UTILS_H_
 
+#include <optional>
 #include <string>
 #include <vector>
-
 #include "base/files/file_path.h"
 #include "base/values.h"
 #include "extensions/common/api/declarative_net_request/constants.h"
 #include "extensions/common/url_pattern.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace extensions {
-namespace declarative_net_request {
+namespace extensions::declarative_net_request {
 
 struct DictionarySource {
   DictionarySource() = default;
@@ -33,22 +31,22 @@ struct TestRuleCondition : public DictionarySource {
   TestRuleCondition(const TestRuleCondition&);
   TestRuleCondition& operator=(const TestRuleCondition&);
 
-  absl::optional<std::string> url_filter;
-  absl::optional<std::string> regex_filter;
-  absl::optional<bool> is_url_filter_case_sensitive;
-  absl::optional<std::vector<std::string>> domains;
-  absl::optional<std::vector<std::string>> excluded_domains;
-  absl::optional<std::vector<std::string>> initiator_domains;
-  absl::optional<std::vector<std::string>> excluded_initiator_domains;
-  absl::optional<std::vector<std::string>> request_domains;
-  absl::optional<std::vector<std::string>> excluded_request_domains;
-  absl::optional<std::vector<std::string>> request_methods;
-  absl::optional<std::vector<std::string>> excluded_request_methods;
-  absl::optional<std::vector<std::string>> resource_types;
-  absl::optional<std::vector<std::string>> excluded_resource_types;
-  absl::optional<std::vector<int>> tab_ids;
-  absl::optional<std::vector<int>> excluded_tab_ids;
-  absl::optional<std::string> domain_type;
+  std::optional<std::string> url_filter;
+  std::optional<std::string> regex_filter;
+  std::optional<bool> is_url_filter_case_sensitive;
+  std::optional<std::vector<std::string>> domains;
+  std::optional<std::vector<std::string>> excluded_domains;
+  std::optional<std::vector<std::string>> initiator_domains;
+  std::optional<std::vector<std::string>> excluded_initiator_domains;
+  std::optional<std::vector<std::string>> request_domains;
+  std::optional<std::vector<std::string>> excluded_request_domains;
+  std::optional<std::vector<std::string>> request_methods;
+  std::optional<std::vector<std::string>> excluded_request_methods;
+  std::optional<std::vector<std::string>> resource_types;
+  std::optional<std::vector<std::string>> excluded_resource_types;
+  std::optional<std::vector<int>> tab_ids;
+  std::optional<std::vector<int>> excluded_tab_ids;
+  std::optional<std::string> domain_type;
 
   base::Value::Dict ToValue() const override;
 };
@@ -59,9 +57,9 @@ struct TestRuleQueryKeyValue : public DictionarySource {
   TestRuleQueryKeyValue(const TestRuleQueryKeyValue&);
   TestRuleQueryKeyValue& operator=(const TestRuleQueryKeyValue&);
 
-  absl::optional<std::string> key;
-  absl::optional<std::string> value;
-  absl::optional<bool> replace_only;
+  std::optional<std::string> key;
+  std::optional<std::string> value;
+  std::optional<bool> replace_only;
 
   base::Value::Dict ToValue() const override;
 };
@@ -72,8 +70,8 @@ struct TestRuleQueryTransform : public DictionarySource {
   TestRuleQueryTransform(const TestRuleQueryTransform&);
   TestRuleQueryTransform& operator=(const TestRuleQueryTransform&);
 
-  absl::optional<std::vector<std::string>> remove_params;
-  absl::optional<std::vector<TestRuleQueryKeyValue>> add_or_replace_params;
+  std::optional<std::vector<std::string>> remove_params;
+  std::optional<std::vector<TestRuleQueryKeyValue>> add_or_replace_params;
 
   base::Value::Dict ToValue() const override;
 };
@@ -84,15 +82,15 @@ struct TestRuleTransform : public DictionarySource {
   TestRuleTransform(const TestRuleTransform&);
   TestRuleTransform& operator=(const TestRuleTransform&);
 
-  absl::optional<std::string> scheme;
-  absl::optional<std::string> host;
-  absl::optional<std::string> port;
-  absl::optional<std::string> path;
-  absl::optional<std::string> query;
-  absl::optional<TestRuleQueryTransform> query_transform;
-  absl::optional<std::string> fragment;
-  absl::optional<std::string> username;
-  absl::optional<std::string> password;
+  std::optional<std::string> scheme;
+  std::optional<std::string> host;
+  std::optional<std::string> port;
+  std::optional<std::string> path;
+  std::optional<std::string> query;
+  std::optional<TestRuleQueryTransform> query_transform;
+  std::optional<std::string> fragment;
+  std::optional<std::string> username;
+  std::optional<std::string> password;
 
   base::Value::Dict ToValue() const override;
 };
@@ -103,10 +101,10 @@ struct TestRuleRedirect : public DictionarySource {
   TestRuleRedirect(const TestRuleRedirect&);
   TestRuleRedirect& operator=(const TestRuleRedirect&);
 
-  absl::optional<std::string> extension_path;
-  absl::optional<TestRuleTransform> transform;
-  absl::optional<std::string> url;
-  absl::optional<std::string> regex_substitution;
+  std::optional<std::string> extension_path;
+  std::optional<TestRuleTransform> transform;
+  std::optional<std::string> url;
+  std::optional<std::string> regex_substitution;
 
   base::Value::Dict ToValue() const override;
 };
@@ -114,14 +112,14 @@ struct TestRuleRedirect : public DictionarySource {
 struct TestHeaderInfo : public DictionarySource {
   TestHeaderInfo(std::string header,
                  std::string operation,
-                 absl::optional<std::string> value);
+                 std::optional<std::string> value);
   ~TestHeaderInfo() override;
   TestHeaderInfo(const TestHeaderInfo&);
   TestHeaderInfo& operator=(const TestHeaderInfo&);
 
-  absl::optional<std::string> header;
-  absl::optional<std::string> operation;
-  absl::optional<std::string> value;
+  std::optional<std::string> header;
+  std::optional<std::string> operation;
+  std::optional<std::string> value;
 
   base::Value::Dict ToValue() const override;
 };
@@ -132,10 +130,10 @@ struct TestRuleAction : public DictionarySource {
   TestRuleAction(const TestRuleAction&);
   TestRuleAction& operator=(const TestRuleAction&);
 
-  absl::optional<std::string> type;
-  absl::optional<std::vector<TestHeaderInfo>> request_headers;
-  absl::optional<std::vector<TestHeaderInfo>> response_headers;
-  absl::optional<TestRuleRedirect> redirect;
+  std::optional<std::string> type;
+  std::optional<std::vector<TestHeaderInfo>> request_headers;
+  std::optional<std::vector<TestHeaderInfo>> response_headers;
+  std::optional<TestRuleRedirect> redirect;
 
   base::Value::Dict ToValue() const override;
 };
@@ -146,10 +144,10 @@ struct TestRule : public DictionarySource {
   TestRule(const TestRule&);
   TestRule& operator=(const TestRule&);
 
-  absl::optional<int> id;
-  absl::optional<int> priority;
-  absl::optional<TestRuleCondition> condition;
-  absl::optional<TestRuleAction> action;
+  std::optional<int> id;
+  std::optional<int> priority;
+  std::optional<TestRuleCondition> condition;
+  std::optional<TestRuleAction> action;
 
   base::Value::Dict ToValue() const override;
 };
@@ -257,7 +255,6 @@ void WriteManifestAndRuleset(
     unsigned flags = ConfigFlag::kConfig_None,
     const std::string& extension_name = "Test Extension");
 
-}  // namespace declarative_net_request
-}  // namespace extensions
+}  // namespace extensions::declarative_net_request
 
 #endif  // EXTENSIONS_COMMON_API_DECLARATIVE_NET_REQUEST_TEST_UTILS_H_

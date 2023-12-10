@@ -35,6 +35,14 @@ DocumentProvider::DocumentProvider() {
       base::FeatureParam<int>(&omnibox::kDocumentProvider,
                               "DocumentProviderMinQueryLength", 4)
           .Get();
+  ignore_when_debouncing =
+      base::FeatureParam<bool>(&omnibox::kDocumentProvider,
+                               "DocumentProviderIgnoreWhenDebouncing", false)
+          .Get();
+  backoff_on_401 =
+      base::FeatureParam<bool>(&omnibox::kDocumentProvider,
+                               "DocumentProviderBackoffOn401", false)
+          .Get();
 }
 
 // static
@@ -63,6 +71,10 @@ ShortcutBoosting::ShortcutBoosting() {
   non_top_hit_threshold =
       base::FeatureParam<int>(&kShortcutBoost,
                               "ShortcutBoostNonTopHitThreshold", 2)
+          .Get();
+  non_top_hit_search_threshold =
+      base::FeatureParam<int>(&kShortcutBoost,
+                              "ShortcutBoostNonTopHitSearchThreshold", 2)
           .Get();
   group_with_searches =
       base::FeatureParam<bool>(&kShortcutBoost,

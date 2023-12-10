@@ -4,9 +4,11 @@
 
 #include "services/network/network_service_proxy_delegate.h"
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/strcat.h"
+#include "net/base/features.h"
 #include "net/base/proxy_chain.h"
 #include "net/base/proxy_server.h"
 #include "net/base/url_util.h"
@@ -32,15 +34,16 @@ bool ApplyProxyConfigToProxyInfo(const net::ProxyConfig::ProxyRules& rules,
 
   rules.Apply(url, proxy_info);
   proxy_info->DeprioritizeBadProxyChains(proxy_retry_info);
-  return !proxy_info->is_empty() && !proxy_info->proxy_server().is_direct();
+  return !proxy_info->is_empty() && !proxy_info->is_direct();
 }
 
 // Checks if |target_proxy| is in |proxy_list|.
 bool CheckProxyList(const net::ProxyList& proxy_list,
                     const net::ProxyServer& target_proxy) {
-  for (const auto& proxy : proxy_list.GetAll()) {
-    if (!proxy.is_direct() &&
-        proxy.host_port_pair().Equals(target_proxy.host_port_pair())) {
+  for (const auto& proxy_chain : proxy_list.AllChains()) {
+    if (proxy_chain.is_single_proxy() &&
+        proxy_chain.GetProxyServer(/*chain_index=*/0).host_port_pair() ==
+            target_proxy.host_port_pair()) {
       return true;
     }
   }
@@ -143,10 +146,16 @@ void NetworkServiceProxyDelegate::OnResolveProxy(
              << ") - " << message;
   };
   if (IsForIpProtection()) {
-    // Do not use the proxy if the request doesn't match the allow list or the
-    // token cache is not available or does not have a token.
-    if (!ipp_config_cache_ || !network_service_proxy_allow_list_) {
-      dvlog("no cache or proxy allow list");
+    // Note: We do not proxy requests if:
+    // - The allow list is not available or is not enabled.
+    // - The request doesn't match the allow list.
+    // - The token cache is not available.
+    // - The token cache does not have tokens.
+    // - No proxy list is available.
+    // - `kEnableIpProtection` is `false`.
+    // - `kIpPrivacyDirectOnly` is `true`.
+    if (!network_service_proxy_allow_list_) {
+      dvlog("no proxy allow list");
       return;
     }
     if (!network_service_proxy_allow_list_->IsEnabled()) {
@@ -158,34 +167,53 @@ void NetworkServiceProxyDelegate::OnResolveProxy(
       dvlog("proxy allow list did not match");
       return;
     }
+    result->set_is_mdl_match(true);
+    if (!base::FeatureList::IsEnabled(
+            net::features::kEnableIpProtectionProxy)) {
+      dvlog("ip protection proxy not enabled");
+      return;
+    }
+    if (!ipp_config_cache_) {
+      dvlog("no cache");
+      return;
+    }
     if (!ipp_config_cache_->AreAuthTokensAvailable()) {
       dvlog("no auth token available from cache");
       return;
     }
     if (!ipp_config_cache_->IsProxyListAvailable()) {
-      // TODO: When this `vlog()` is removed, there's no need to distinguish the
-      // case where a proxy list has not been downloaded, and the case where a
-      // proxy list is empty. The `IsProxyListAvailable()` method can be removed
-      // at that time.
+      // NOTE: When this `vlog()` is removed, there's no need to distinguish
+      // the case where a proxy list has not been downloaded, and the case
+      // where a proxy list is empty. The `IsProxyListAvailable()` method can
+      // be removed at that time.
       dvlog("no proxy list available from cache");
       return;
     }
 
     net::ProxyList proxy_list;
     if (!net::features::kIpPrivacyDirectOnly.Get()) {
-      for (auto& proxy_hostname : ipp_config_cache_->GetProxyList()) {
-        proxy_list.AddProxyServer(net::ProxyServer::FromSchemeHostAndPort(
-            net::ProxyServer::SCHEME_HTTPS, proxy_hostname, absl::nullopt));
+      const std::vector<net::ProxyChain>& proxy_chain_list =
+          ipp_config_cache_->GetProxyChainList();
+      for (const auto& proxy_chain : proxy_chain_list) {
+        proxy_list.AddProxyChain(std::move(proxy_chain));
       }
     }
     // Final fallback is to DIRECT.
-    proxy_list.AddProxyServer(net::ProxyServer::Direct());
+    auto direct_proxy_chain = net::ProxyChain::Direct();
+    if (net::features::kIpPrivacyDirectOnly.Get()) {
+      // To enable measuring how much traffic would be proxied (for
+      // experimentation and planning purposes), mark the direct
+      // proxy chain as being for IP Protection when `kIpPrivacyDirectOnly` is
+      // true. When it is false, we only care about traffic that actually went
+      // through the IP Protection proxies, so don't set this flag.
+      direct_proxy_chain = std::move(direct_proxy_chain).ForIpProtection();
+    }
+    proxy_list.AddProxyChain(std::move(direct_proxy_chain));
 
     if (VLOG_IS_ON(3)) {
       dvlog(base::StrCat({"setting proxy list (before deprioritization) to ",
-                          proxy_list.ToPacString()}));
+                          proxy_list.ToDebugString()}));
     }
-    result->set_is_for_ip_protection(true);
     result->OverrideProxyList(
         MergeProxyRules(result->proxy_list(), proxy_list));
     result->DeprioritizeBadProxyChains(proxy_retry_info);
@@ -216,7 +244,8 @@ void NetworkServiceProxyDelegate::OnFallback(const net::ProxyChain& bad_chain,
                                              int net_error) {
   // If the bad proxy was an IP Protection proxy, refresh the list of IP
   // protection proxies immediately.
-  if (IsProxyForIpProtection(bad_chain.proxy_server()) && ipp_config_cache_) {
+  if (bad_chain.is_for_ip_protection()) {
+    CHECK(ipp_config_cache_);
     ipp_config_cache_->RequestRefreshProxyList();
   }
 
@@ -229,31 +258,34 @@ void NetworkServiceProxyDelegate::OnBeforeTunnelRequest(
     const net::ProxyChain& proxy_chain,
     size_t chain_index,
     net::HttpRequestHeaders* extra_headers) {
-  // TODO(crbug.com/1491092): Handle proxy chains.
-  CHECK(chain_index == 0);
-  const net::ProxyServer& proxy_server = proxy_chain.proxy_server();
 
   auto vlog = [](std::string message) {
     VLOG(2) << "NSPD::OnBeforeTunnelRequest() - " << message;
   };
-  if (IsInProxyConfig(proxy_server)) {
+  if (IsInProxyConfig(proxy_chain)) {
     MergeRequestHeaders(extra_headers, proxy_config_->connect_tunnel_headers);
   }
-  if (IsForIpProtection() && IsProxyForIpProtection(proxy_server)) {
-    if (ipp_config_cache_) {
-      absl::optional<network::mojom::BlindSignedAuthTokenPtr> token =
-          ipp_config_cache_->GetAuthToken(chain_index);
-      if (token) {
-        vlog("adding auth token");
-        // The token value we have here is the full Authorization header value,
-        // so we can add it verbatim.
-        extra_headers->SetHeader(net::HttpRequestHeaders::kAuthorization,
-                                 std::move((*token)->token));
-      } else {
-        vlog("no token available");
+  if (IsForIpProtection() && proxy_chain.is_for_ip_protection()) {
+    // Temporarily support a pre-shared key for access to proxyB.
+    if (chain_index == 1) {
+      std::string proxy_b_psk = net::features::kIpPrivacyProxyBPsk.Get();
+      if (!proxy_b_psk.empty()) {
+        vlog("adding proxyB PSK");
+        extra_headers->SetHeader(net::HttpRequestHeaders::kProxyAuthorization,
+                                 base::StrCat({"Preshared ", proxy_b_psk}));
       }
+    }
+    CHECK(ipp_config_cache_);
+    absl::optional<network::mojom::BlindSignedAuthTokenPtr> token =
+        ipp_config_cache_->GetAuthToken(chain_index);
+    if (token) {
+      vlog("adding auth token");
+      // The token value we have here is the full Authorization header value, so
+      // we can add it verbatim.
+      extra_headers->SetHeader(net::HttpRequestHeaders::kAuthorization,
+                               std::move((*token)->token));
     } else {
-      vlog("no auth token cache");
+      vlog("no token available");
     }
   } else {
     vlog("not for IP protection");
@@ -312,12 +344,15 @@ void NetworkServiceProxyDelegate::ClearBadProxiesCache() {
 }
 
 bool NetworkServiceProxyDelegate::IsInProxyConfig(
-    const net::ProxyServer& proxy_server) const {
-  if (!proxy_server.is_valid() || proxy_server.is_direct()) {
+    const net::ProxyChain& proxy_chain) const {
+  if (!proxy_chain.IsValid() || proxy_chain.is_direct()) {
     return false;
   }
 
-  if (RulesContainsProxy(proxy_config_->rules, proxy_server)) {
+  // TODO(https://crbug.com/1491092): Support nested proxies.
+  if (proxy_chain.is_single_proxy() &&
+      RulesContainsProxy(proxy_config_->rules,
+                         proxy_chain.GetProxyServer(/*chain_index=*/0))) {
     return true;
   }
 
@@ -332,18 +367,6 @@ bool NetworkServiceProxyDelegate::IsForIpProtection() {
   // Only IP protection uses the network service proxy allow list, so this
   // config represents IP protection if and only if the allow list is in use.
   return proxy_config_->rules.restrict_to_network_service_proxy_allow_list;
-}
-
-bool NetworkServiceProxyDelegate::IsProxyForIpProtection(
-    const net::ProxyServer& proxy_server) const {
-  if (!ipp_config_cache_) {
-    return false;
-  }
-
-  // This list will typically be quite short (2-3), so linear search is
-  // adequate.
-  std::string proxy_server_host = proxy_server.GetHost();
-  return base::Contains(ipp_config_cache_->GetProxyList(), proxy_server_host);
 }
 
 bool NetworkServiceProxyDelegate::EligibleForProxy(
@@ -369,14 +392,14 @@ net::ProxyList NetworkServiceProxyDelegate::MergeProxyRules(
     const net::ProxyList& existing_proxy_list,
     const net::ProxyList& custom_proxy_list) const {
   net::ProxyList merged_proxy_list;
-  for (const auto& existing_proxy : existing_proxy_list.GetAll()) {
-    if (existing_proxy.is_direct()) {
+  for (const auto& existing_chain : existing_proxy_list.AllChains()) {
+    if (existing_chain.is_direct()) {
       // Replace direct option with all proxies in the custom proxy list
-      for (const auto& custom_proxy : custom_proxy_list.GetAll()) {
-        merged_proxy_list.AddProxyServer(custom_proxy);
+      for (const auto& custom_chain : custom_proxy_list.AllChains()) {
+        merged_proxy_list.AddProxyChain(custom_chain);
       }
     } else {
-      merged_proxy_list.AddProxyServer(existing_proxy);
+      merged_proxy_list.AddProxyChain(existing_chain);
     }
   }
 

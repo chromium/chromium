@@ -12,10 +12,10 @@
 #include <string_view>
 #include <vector>
 
+#include <optional>
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "crypto/crypto_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 struct evp_aead_st;
 
@@ -56,7 +56,7 @@ class CRYPTO_EXPORT Aead {
             std::string_view additional_data,
             std::string* ciphertext) const;
 
-  absl::optional<std::vector<uint8_t>> Open(
+  std::optional<std::vector<uint8_t>> Open(
       base::span<const uint8_t> ciphertext,
       base::span<const uint8_t> nonce,
       base::span<const uint8_t> additional_data) const;
@@ -85,7 +85,7 @@ class CRYPTO_EXPORT Aead {
             size_t* output_length,
             size_t max_output_length) const;
 
-  absl::optional<base::span<const uint8_t>> key_;
+  std::optional<base::span<const uint8_t>> key_;
   raw_ptr<const evp_aead_st> aead_;
 };
 

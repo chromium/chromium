@@ -24,8 +24,8 @@
 #include "components/user_education/common/feature_promo_lifecycle.h"
 #include "components/user_education/common/feature_promo_registry.h"
 #include "components/user_education/common/feature_promo_result.h"
+#include "components/user_education/common/feature_promo_session_policy.h"
 #include "components/user_education/common/feature_promo_specification.h"
-#include "components/user_education/common/feature_promo_storage_service.h"
 #include "components/user_education/common/help_bubble.h"
 #include "components/user_education/common/help_bubble_params.h"
 #include "components/user_education/common/tutorial_identifier.h"
@@ -42,6 +42,7 @@ class FeaturePromoLifecycleUiTest;
 namespace user_education {
 
 class HelpBubbleFactoryRegistry;
+class FeaturePromoStorageService;
 class TutorialService;
 
 // Describes the status of a feature promo.
@@ -199,6 +200,7 @@ class FeaturePromoControllerCommon : public FeaturePromoController {
       FeaturePromoRegistry* registry,
       HelpBubbleFactoryRegistry* help_bubble_registry,
       FeaturePromoStorageService* storage_service,
+      FeaturePromoSessionPolicy* session_policy,
       TutorialService* tutorial_service);
   ~FeaturePromoControllerCommon() override;
 
@@ -339,8 +341,12 @@ class FeaturePromoControllerCommon : public FeaturePromoController {
   }
 
  private:
+  struct ShowPromoBubbleParams;
+
   bool EndPromo(const base::Feature& iph_feature,
                 FeaturePromoClosedReason close_reason);
+  void RecordPromoEnded(FeaturePromoClosedReason close_reason,
+                        bool continue_after_close);
 
   FeaturePromoHandle CloseBubbleAndContinuePromoWithReason(
       const base::Feature& iph_action,
@@ -378,12 +384,7 @@ class FeaturePromoControllerCommon : public FeaturePromoController {
   // Method that creates the bubble for a feature promo. May return null if the
   // bubble cannot be shown.
   std::unique_ptr<HelpBubble> ShowPromoBubbleImpl(
-      const FeaturePromoSpecification& spec,
-      ui::TrackedElement* anchor_element,
-      FeaturePromoSpecification::FormatParameters body_params,
-      FeaturePromoSpecification::FormatParameters title_params,
-      bool screen_reader_prompt_available,
-      bool is_critical_promo);
+      ShowPromoBubbleParams show_params);
 
   // Callback that cleans up a help bubble when it is closed.
   void OnHelpBubbleClosed(HelpBubble* bubble);
@@ -426,7 +427,8 @@ class FeaturePromoControllerCommon : public FeaturePromoController {
 
   // Create appropriate buttons for a snoozeable promo on the current platform.
   std::vector<HelpBubbleButtonParams> CreateSnoozeButtons(
-      const base::Feature& feature);
+      const base::Feature& feature,
+      bool can_snooze);
 
   // Create appropriate buttons for a tutorial promo on the current platform.
   std::vector<HelpBubbleButtonParams> CreateTutorialButtons(
@@ -460,6 +462,10 @@ class FeaturePromoControllerCommon : public FeaturePromoController {
   // end.
   raw_ptr<HelpBubble> critical_promo_bubble_ = nullptr;
 
+  // Policy info about the most recent promo that was shown.
+  // Updated when a new promo is shown.
+  FeaturePromoSessionPolicy::PromoInfo last_promo_info_;
+
   // Promo that is being continued during a tutorial launched from the promo
   // bubble.
   FeaturePromoHandle tutorial_promo_handle_;
@@ -470,6 +476,7 @@ class FeaturePromoControllerCommon : public FeaturePromoController {
   const raw_ptr<feature_engagement::Tracker> feature_engagement_tracker_;
   const raw_ptr<HelpBubbleFactoryRegistry> bubble_factory_registry_;
   const raw_ptr<FeaturePromoStorageService> storage_service_;
+  const raw_ptr<FeaturePromoSessionPolicy> session_policy_;
   const raw_ptr<TutorialService> tutorial_service_;
 
   // Tracks pending startup promos that have not been canceled.
@@ -490,7 +497,7 @@ class FeaturePromoControllerCommon : public FeaturePromoController {
 struct FeaturePromoParams {
   // NOLINTNEXTLINE(google-explicit-constructor)
   FeaturePromoParams(const base::Feature& iph_feature);
-  FeaturePromoParams(FeaturePromoParams&& other);
+  FeaturePromoParams(FeaturePromoParams&& other) noexcept;
   ~FeaturePromoParams();
 
   // The feature for the IPH to show. Must be an IPH feature defined in

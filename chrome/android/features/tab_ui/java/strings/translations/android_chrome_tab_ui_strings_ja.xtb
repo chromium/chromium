@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ja">
 <translation id="1075622780330595106">しばらく使用していないタブが <ph name="NUMBER_OF_TABS" /> 個あります。これらのタブを閉じますか？</translation>
+<translation id="1155815720264022949">古いタブを閉じますか？</translation>
 <translation id="1215127405478249895">タブを確認</translation>
 <translation id="125153950246128346">タップすると他のタブが表示されます</translation>
 <translation id="1499635324672558517">すべてのシークレット タブを閉じますか？</translation>
@@ -46,9 +47,11 @@
 <translation id="5073204694187207510">全画面グリッドを非表示</translation>
 <translation id="5076161749301278626">店舗の審査を確認しますか？</translation>
 <translation id="5082793167783849073">グループを作成して簡単にページを比較できます。グループを作成するには、リンクを長押しします。</translation>
+<translation id="5303274951032363933">{TABS_COUNT,plural, =1{最近使用していないタブが <ph name="TABS_COUNT_ONE" /> 個あります}other{最近使用していないタブが <ph name="TABS_COUNT_MANY" /> 個あります}}</translation>
 <translation id="5339733443032484186">最後のタブ</translation>
 <translation id="5490235265819901748">タブグループを展開しました</translation>
 <translation id="5494920125229734069">すべて選択する</translation>
+<translation id="5545379293264651575">確認しないで閉じる</translation>
 <translation id="5556417849629758491">ストア情報を表示、画面上部付近に表示されるオプション</translation>
 <translation id="5558362125926932819">タブグループの <ph name="NUMBER_OF_TABS" /> 個のタブを閉じます</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" /> 個のタブがグループ化されました</translation>
@@ -85,7 +88,6 @@
 <translation id="7885132941432959125">タブを右に移動</translation>
 <translation id="7966321538264951561">提案を閉じます。</translation>
 <translation id="8029301326595421733">このショップに関する情報が画面全体に表示されています</translation>
-<translation id="814503310257431685">すべて表示</translation>
 <translation id="8205266828577616993">タブを上に移動</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{選択した <ph name="TABS_COUNT_ONE" /> 個のタブを閉じます}other{選択した <ph name="TABS_COUNT_MANY" /> 個のタブを閉じます}}</translation>
 <translation id="8398929769197326728">新しいフォルダ - <ph name="CURRENT_TIMESTAMP_MS" /></translation>

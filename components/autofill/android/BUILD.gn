@@ -7,6 +7,40 @@ import("//build/config/locales.gni")
 import("//third_party/jni_zero/jni_zero.gni")
 import("//tools/grit/grit_rule.gni")
 
+static_library("keyboard_suppressor") {
+  sources = [
+    "touch_to_fill_keyboard_suppressor.cc",
+    "touch_to_fill_keyboard_suppressor.h",
+  ]
+  public_deps = [
+    "//base",
+    "//components/autofill/content/browser",
+    "//components/autofill/core/browser",
+  ]
+  deps = [
+    "//components/autofill/core/common",
+    "//content/public/browser",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "touch_to_fill_keyboard_suppressor_unittest.cc" ]
+  deps = [
+    ":keyboard_suppressor",
+    "//base",
+    "//components/autofill/content/browser:test_support",
+    "//components/autofill/core/browser",
+    "//components/autofill/core/browser:test_support",
+    "//components/autofill/core/common",
+    "//content/public/browser",
+    "//content/public/common",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
+
 java_strings_grd("autofill_strings_grd") {
   grd_file = "java/strings/autofill_strings.grd"
   outputs = [ "values/autofill_strings.xml" ] +
@@ -143,6 +177,7 @@ java_cpp_enum("autofill_core_browser_java_enums") {
     "../core/browser/ui/accessory_sheet_enums.h",
     "../core/browser/ui/payments/payments_bubble_closed_reasons.h",
     "../core/browser/ui/popup_item_ids.h",
+    "../core/browser/ui/suggestion.h",
   ]
 }
 

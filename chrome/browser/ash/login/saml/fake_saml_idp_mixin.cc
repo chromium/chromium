@@ -437,7 +437,7 @@ FakeSamlIdpMixin::BuildHTMLResponse(const std::string& response_html) const {
 }
 
 void FakeSamlIdpMixin::SaveChallengeResponse(const std::string& response) {
-  EXPECT_EQ(challenge_response_, absl::nullopt);
+  EXPECT_EQ(challenge_response_, std::nullopt);
   auto parsed_value = base::JSONReader::Read(
       response, base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS);
 

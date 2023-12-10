@@ -50,9 +50,6 @@ class ToolbarActionsBarBubbleDelegate {
   // be displayed.
   virtual bool ShouldShow() = 0;
 
-  // Returns true if the bubble should close on deactivation.
-  virtual bool ShouldCloseOnDeactivate() = 0;
-
   // Gets the text for the bubble's heading (title).
   virtual std::u16string GetHeadingText() = 0;
 
@@ -60,10 +57,6 @@ class ToolbarActionsBarBubbleDelegate {
   // |anchored_to_action| is true if the bubble is being anchored to a specific
   // action (rather than the overflow menu or the full container).
   virtual std::u16string GetBodyText(bool anchored_to_action) = 0;
-
-  // Gets the text for an optional item list to display. If this returns an
-  // empty string, no list will be added.
-  virtual std::u16string GetItemListText() = 0;
 
   // Gets the text for the main button on the bubble; this button will
   // correspond with ACTION_EXECUTE.

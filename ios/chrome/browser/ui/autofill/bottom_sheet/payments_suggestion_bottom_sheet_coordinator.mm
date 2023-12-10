@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/ui/autofill/bottom_sheet/payments_suggestion_bottom_sheet_coordinator.h"
 
 #import "components/autofill/ios/form_util/form_activity_params.h"
-#import "ios/chrome/browser/autofill/personal_data_manager_factory.h"
+#import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -89,9 +89,12 @@ using PaymentsSuggestionBottomSheetExitReason::kUsePaymentsSuggestion;
 
   self.viewController.parentViewControllerHeight =
       self.baseViewController.view.frame.size.height;
+  __weak __typeof(self) weakSelf = self;
   [self.baseViewController presentViewController:self.viewController
                                         animated:YES
-                                      completion:nil];
+                                      completion:^{
+                                        [weakSelf setInitialVoiceOverFocus];
+                                      }];
 }
 
 - (void)stop {
@@ -171,6 +174,11 @@ using PaymentsSuggestionBottomSheetExitReason::kUsePaymentsSuggestion;
   // Send a notification to fill the credit card related fields.
   [self.mediator didSelectCreditCard:backendIdentifier];
   [self.mediator disconnect];
+}
+
+- (void)setInitialVoiceOverFocus {
+  UIAccessibilityPostNotification(UIAccessibilityScreenChangedNotification,
+                                  self.viewController.image);
 }
 
 @end

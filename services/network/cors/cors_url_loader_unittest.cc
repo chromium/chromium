@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/functional/callback_helpers.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "mojo/public/cpp/bindings/message.h"
@@ -2520,7 +2519,7 @@ TEST_F(CorsURLLoaderTest, PrivateNetworkAccessTargetAddressSpaceCheck) {
 
   ResourceRequest request;
   request.mode = mojom::RequestMode::kCors;
-  request.target_address_space = mojom::IPAddressSpace::kPrivate;
+  request.required_ip_address_space = mojom::IPAddressSpace::kPrivate;
   request.target_ip_address_space = mojom::IPAddressSpace::kPrivate;
   request.url = GURL("http://foo.example/");
   request.request_initiator = initiator;

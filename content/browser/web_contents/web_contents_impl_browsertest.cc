@@ -71,6 +71,7 @@
 #include "content/public/common/content_paths.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/url_constants.h"
+#include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
@@ -110,6 +111,8 @@
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
+#include "ui/color/color_provider_manager.h"
+#include "ui/color/color_provider_utils.h"
 #include "ui/display/screen.h"
 #include "url/gurl.h"
 
@@ -487,11 +490,13 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   EXPECT_EQ(new_size, shell()->web_contents()->GetContainerBounds().size());
 }
 
-IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, SetTitleOnUnload) {
+IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, SetTitleOnPagehide) {
+  DisableBackForwardCacheForTesting(shell()->web_contents(),
+                                    BackForwardCache::TEST_REQUIRES_NO_CACHING);
   GURL url(
       "data:text/html,"
       "<title>A</title>"
-      "<body onunload=\"document.title = 'B'\"></body>");
+      "<body onpagehide=\"document.title = 'B'\"></body>");
   ASSERT_TRUE(NavigateToURL(shell(), url));
   ASSERT_EQ(1, shell()->web_contents()->GetController().GetEntryCount());
   NavigationEntryImpl* entry1 = NavigationEntryImpl::FromNavigationEntry(
@@ -5985,15 +5990,6 @@ IN_PROC_BROWSER_TEST_F(WebContentsFencedFrameBrowserTest,
     video.play();
   )"));
 
-  // Get a watch time callback from `fenced_frame`.
-  media::MediaMetricsProvider::RecordAggregateWatchTimeCallback
-      record_playback_cb = static_cast<RenderFrameHostImpl*>(fenced_frame)
-                               ->GetRecordAggregateWatchTimeCallback();
-  std::move(record_playback_cb)
-      .Run(base::TimeDelta(), base::TimeDelta(), true, true);
-  // Check if the URL is from the top level frame.
-  DCHECK_EQ(top_url, delegate.watch_time().url);
-
   base::RunLoop run_loop;
   test_recorder.SetOnAddEntryCallback(UkmEntry::kEntryName,
                                       run_loop.QuitClosure());
@@ -6163,6 +6159,18 @@ class MockColorProviderSource : public ui::ColorProviderSource {
   const ui::ColorProvider* GetColorProvider() const override {
     return &provider_;
   }
+  const ui::RendererColorMap GetRendererColorMap(
+      ui::ColorProviderKey::ColorMode color_mode,
+      ui::ColorProviderKey::ForcedColors forced_colors) const override {
+    auto key = GetColorProviderKey();
+    key.color_mode = color_mode;
+    key.forced_colors = forced_colors;
+    ui::ColorProvider* color_provider =
+        ui::ColorProviderManager::Get().GetColorProviderFor(key);
+    CHECK(color_provider);
+    return ui::CreateRendererColorMap(*color_provider);
+  }
+
   ui::ColorProviderKey GetColorProviderKey() const override { return key_; }
 
  private:

@@ -60,10 +60,10 @@ source_set("editor_menu") {
 
 source_set("views") {
   sources = [
+    "editor_menu_badge_view.cc",
+    "editor_menu_badge_view.h",
     "editor_menu_chip_view.cc",
     "editor_menu_chip_view.h",
-    "editor_menu_gradient_badge.cc",
-    "editor_menu_gradient_badge.h",
     "editor_menu_promo_card_view.cc",
     "editor_menu_promo_card_view.h",
     "editor_menu_textfield_view.cc",

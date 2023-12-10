@@ -13,7 +13,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/shelf_types.h"
-#include "ash/public/cpp/tablet_mode_observer.h"
 #include "ash/shell_observer.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/overview/overview_types.h"
@@ -30,6 +29,10 @@
 #include "ui/display/display_observer.h"
 #include "ui/events/event_handler.h"
 #include "ui/wm/public/activation_change_observer.h"
+
+namespace display {
+enum class TabletState;
+}  // namespace display
 
 namespace gfx {
 class PointF;
@@ -62,11 +65,8 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
                                    public ui::EventHandler,
                                    public ShellObserver,
                                    public SplitViewObserver,
-                                   public TabletModeObserver,
                                    public DesksController::Observer {
  public:
-  using WindowList = std::vector<aura::Window*>;
-
   explicit OverviewSession(OverviewDelegate* delegate);
 
   OverviewSession(const OverviewSession&) = delete;
@@ -75,7 +75,8 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
   ~OverviewSession() override;
 
   // Initialize with the windows that can be selected.
-  void Init(const WindowList& windows, const WindowList& hide_windows);
+  void Init(const aura::Window::Windows& windows,
+            const aura::Window::Windows& hide_windows);
 
   // Perform cleanup that cannot be done in the destructor.
   void Shutdown();
@@ -90,7 +91,7 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
   // false otherwise.
   bool AcceptSelection();
 
-  // Activates the window or window group associated with the `item`.
+  // Activates the window associated with the `item`.
   void SelectWindow(OverviewItemBase* item);
 
   // Sets the dragged window on the split view drag indicators.
@@ -159,7 +160,8 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
 
   void InitiateDrag(OverviewItemBase* item,
                     const gfx::PointF& location_in_screen,
-                    bool is_touch_dragging);
+                    bool is_touch_dragging,
+                    OverviewItemBase* event_source_item);
   void Drag(OverviewItemBase* item, const gfx::PointF& location_in_screen);
   void CompleteDrag(OverviewItemBase* item,
                     const gfx::PointF& location_in_screen);
@@ -263,8 +265,8 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
   void RestoreWindowActivation(bool restore);
 
   // Handles requests to active or close the currently focused `item`.
-  void OnFocusedItemActivated(OverviewItemBase* item);
-  void OnFocusedItemClosed(OverviewItemBase* item);
+  void OnFocusedItemActivated(OverviewItem* item);
+  void OnFocusedItemClosed(OverviewItem* item);
 
   // Called explicitly (with no list of observers) by the |RootWindowController|
   // of |root|, so that the associated grid is properly removed and destroyed.
@@ -324,6 +326,8 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
   // piece of UI is shown or hidden.
   void UpdateAccessibilityFocus();
 
+  void UpdateFrameThrottling();
+
   // DesksController::Observer:
   void OnDeskActivationChanged(const Desk* activated,
                                const Desk* deactivated) override;
@@ -332,12 +336,14 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
   void OnDisplayAdded(const display::Display& display) override;
   void OnDisplayMetricsChanged(const display::Display& display,
                                uint32_t metrics) override;
+  void OnDisplayTabletStateChanged(display::TabletState state) override;
 
   // aura::WindowObserver:
   void OnWindowDestroying(aura::Window* window) override;
   void OnWindowAdded(aura::Window* new_window) override;
 
   // ui::EventHandler:
+  void OnMouseEvent(ui::MouseEvent* event) override;
   void OnKeyEvent(ui::KeyEvent* event) override;
 
   // ShellObserver:
@@ -350,12 +356,6 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
   void OnSplitViewStateChanged(SplitViewController::State previous_state,
                                SplitViewController::State state) override;
   void OnSplitViewDividerPositionChanged() override;
-
-  // TabletModeObserver:
-  void OnTabletModeStarted() override;
-  void OnTabletModeEnded() override;
-
-  void UpdateFrameThrottling();
 
   OverviewDelegate* delegate() { return delegate_; }
 
@@ -372,9 +372,6 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
   const std::vector<std::unique_ptr<OverviewGrid>>& grid_list() const {
     return grid_list_;
   }
-
-  size_t num_items() const { return num_items_; }
-  void set_num_items(size_t num_items) { num_items_ = num_items; }
 
   OverviewEnterExitType enter_exit_overview_type() const {
     return enter_exit_overview_type_;
@@ -423,6 +420,9 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
  private:
   friend class DesksAcceleratorsTest;
   friend class OverviewTestBase;
+  friend class TestOverviewItemsOnOverviewModeEndObserver;
+  FRIEND_TEST_ALL_PREFIXES(SplitViewControllerTest,
+                           ItemsRemovedFromOverviewOnSnap);
 
   // Called when tablet mode changes.
   void OnTabletModeChanged();
@@ -446,6 +446,8 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
   void RefreshNoWindowsWidgetBoundsOnEachGrid(bool animate);
 
   void OnItemAdded(aura::Window* window);
+
+  size_t GetNumWindows() const;
 
   // Weak pointer to the overview delegate which will be called when a selection
   // is made.
@@ -481,11 +483,11 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
   // The time when overview was started.
   base::Time overview_start_time_;
 
-  // The number of arrow key presses.
+  // The number of arrow and tab key presses.
   size_t num_key_presses_ = 0;
 
-  // The number of items in the overview.
-  size_t num_items_ = 0;
+  // The number of windows in overview when it was started.
+  size_t num_start_windows_ = 0;
 
   // True if we are currently using keyboard (control + left/right) to scroll
   // through the grid.
@@ -528,8 +530,6 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
   // such as scrolling and dragging.
   std::unique_ptr<ScopedFloatContainerStacker> float_container_stacker_;
 
-  absl::optional<display::ScopedDisplayObserver> display_observer_;
-
   // Boolean to indicate whether chromeVox is enabled or not.
   bool chromevox_enabled_;
 
@@ -549,8 +549,7 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
   // removed.
   bool allow_empty_desk_without_exiting_ = false;
 
-  base::ScopedObservation<TabletModeController, TabletModeObserver>
-      tablet_mode_observation_{this};
+  std::optional<display::ScopedDisplayObserver> display_observer_;
 
   base::ScopedObservation<DesksController, DesksController::Observer>
       desks_controller_observation_{this};

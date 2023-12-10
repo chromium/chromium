@@ -4,10 +4,10 @@
 
 #include "chromeos/startup/browser_init_params.h"
 
+#include <optional>
 #include <string>
 
 #include "chromeos/startup/startup.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -16,7 +16,7 @@ namespace {
 // Reads and parses the startup data to BrowserInitParams.
 // If data is missing, or failed to parse, returns a null StructPtr.
 crosapi::mojom::BrowserInitParamsPtr ReadStartupBrowserInitParams() {
-  absl::optional<std::string> content = ReadStartupData();
+  std::optional<std::string> content = ReadStartupData();
   if (!content)
     return {};
 

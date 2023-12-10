@@ -25,7 +25,7 @@ class CursorSetter {
   // it will be ignored.
   void UpdateCursor(aura::Window* root_window,
                     const ui::Cursor& cursor,
-                    absl::optional<int> custom_type_id = absl::nullopt);
+                    std::optional<int> custom_type_id = std::nullopt);
 
   void HideCursor();
 
@@ -58,7 +58,7 @@ class CursorSetter {
   bool DidCursorChange(ui::mojom::CursorType new_cursor_type,
                        float device_scale_factor,
                        chromeos::OrientationType orientation,
-                       absl::optional<int> custom_type_id) const;
+                       std::optional<int> custom_type_id) const;
 
   const raw_ptr<wm::CursorManager, ExperimentalAsh> cursor_manager_;
   const gfx::NativeCursor original_cursor_;
@@ -67,7 +67,7 @@ class CursorSetter {
   // If the original cursor is already locked, don't make any changes to it.
   const bool original_cursor_locked_;
 
-  absl::optional<CustomCursorParams> custom_cursor_params_;
+  std::optional<CustomCursorParams> custom_cursor_params_;
 
   // True if the cursor has reset back to its original cursor. It's to prevent
   // `ResetCursor()` from setting the cursor to `original_cursor_` more than

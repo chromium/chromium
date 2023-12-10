@@ -22,11 +22,24 @@ class CONTENT_EXPORT ServiceWorkerRouterEvaluator {
 
   bool IsValid() const { return is_valid_; }
 
+  struct CONTENT_EXPORT Result {
+    Result();
+    ~Result();
+    Result(Result&&);
+    Result& operator=(Result&&) = default;
+
+    Result(const Result& other) = delete;
+    Result& operator=(const Result&) = delete;
+
+    std::uint32_t id = 0;
+    std::vector<blink::ServiceWorkerRouterSource> sources;
+  };
+
   // Returns an empty list if nothing matched.
-  std::vector<blink::ServiceWorkerRouterSource> Evaluate(
+  absl::optional<Result> Evaluate(
       const network::ResourceRequest& request,
       blink::EmbeddedWorkerStatus running_status) const;
-  std::vector<blink::ServiceWorkerRouterSource> EvaluateWithoutRunningStatus(
+  absl::optional<Result> EvaluateWithoutRunningStatus(
       const network::ResourceRequest& request) const;
 
   const blink::ServiceWorkerRouterRules& rules() const { return rules_; }
@@ -38,7 +51,7 @@ class CONTENT_EXPORT ServiceWorkerRouterEvaluator {
  private:
   class RouterRule;
   void Compile();
-  std::vector<blink::ServiceWorkerRouterSource> EvaluateInternal(
+  absl::optional<Result> EvaluateInternal(
       const network::ResourceRequest& request,
       absl::optional<blink::EmbeddedWorkerStatus> running_status) const;
 

@@ -320,7 +320,7 @@ void ReplacedPainter::PaintBoxDecorationBackground(
   if (painting_background_in_contents_space) {
     // For the case where we are painting the background in the contents space,
     // we need to include the entire overflow rect.
-    paint_rect = layout_replaced_.PhysicalLayoutOverflowRect();
+    paint_rect = layout_replaced_.ScrollableOverflowRect();
     contents_paint_state.emplace(paint_info, paint_offset, layout_replaced_,
                                  paint_info.FragmentDataOverride());
     paint_rect.Move(contents_paint_state->PaintOffset());

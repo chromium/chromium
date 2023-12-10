@@ -38,7 +38,7 @@ class ServiceWorkerData
   ServiceWorkerData(
       blink::WebServiceWorkerContextProxy* proxy,
       int64_t service_worker_version_id,
-      const absl::optional<base::UnguessableToken>& activation_sequence,
+      const std::optional<base::UnguessableToken>& activation_sequence,
       ScriptContext* context,
       std::unique_ptr<NativeExtensionBindingsSystem> bindings_system);
 
@@ -60,7 +60,7 @@ class ServiceWorkerData
   int64_t service_worker_version_id() const {
     return service_worker_version_id_;
   }
-  const absl::optional<base::UnguessableToken>& activation_sequence() const {
+  const std::optional<base::UnguessableToken>& activation_sequence() const {
     return activation_sequence_;
   }
   ScriptContext* context() const { return context_; }
@@ -102,7 +102,7 @@ class ServiceWorkerData
 
   blink::WebServiceWorkerContextProxy* proxy_;
   const int64_t service_worker_version_id_;
-  const absl::optional<base::UnguessableToken> activation_sequence_;
+  const std::optional<base::UnguessableToken> activation_sequence_;
   const raw_ptr<ScriptContext, ExperimentalRenderer> context_ = nullptr;
 
   std::unique_ptr<V8SchemaRegistry> v8_schema_registry_;

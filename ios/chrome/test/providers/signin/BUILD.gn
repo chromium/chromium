@@ -38,7 +38,7 @@ source_set("signin_identity") {
   testonly = true
   sources = [ "test_signin_identity.mm" ]
   deps = [
-    "//ios/chrome/browser/signin:fake_system_identity_manager",
+    "//ios/chrome/browser/signin/model:fake_system_identity_manager",
     "//ios/public/provider/chrome/browser/signin:signin_identity_api",
   ]
   frameworks = [ "Foundation.framework" ]
@@ -70,7 +70,7 @@ source_set("trusted_vault") {
   ]
   deps = [
     "//base",
-    "//ios/chrome/browser/signin:trusted_vault",
+    "//ios/chrome/browser/signin/model:trusted_vault",
     "//ios/public/provider/chrome/browser/signin:trusted_vault_api",
   ]
   frameworks = [ "UIKit.framework" ]

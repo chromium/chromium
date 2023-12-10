@@ -23,15 +23,13 @@ class JavaHandlerThreadHelpers {
     private static JavaHandlerThread testAndGetJavaHandlerThread() {
         final AtomicBoolean taskExecuted = new AtomicBoolean();
         final Object lock = new Object();
-        Runnable runnable = new Runnable() {
-            @Override
-            public void run() {
-                synchronized (lock) {
-                    taskExecuted.set(true);
-                    lock.notifyAll();
-                }
-            }
-        };
+        Runnable runnable =
+                () -> {
+                    synchronized (lock) {
+                        taskExecuted.set(true);
+                        lock.notifyAll();
+                    }
+                };
 
         JavaHandlerThread thread =
                 new JavaHandlerThread("base_unittests_java", Process.THREAD_PRIORITY_DEFAULT);

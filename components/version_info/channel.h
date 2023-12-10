@@ -5,6 +5,10 @@
 #ifndef COMPONENTS_VERSION_INFO_CHANNEL_H_
 #define COMPONENTS_VERSION_INFO_CHANNEL_H_
 
+#include <string_view>
+
+#include "base/notreached.h"
+
 namespace version_info {
 
 // The possible channels for an installation, from most fun to most stable.
@@ -19,6 +23,24 @@ enum class Channel {
   BETA = 3,
   STABLE = 4,
 };
+
+// Returns a string equivalent of |channel|, independent of whether the build
+// is branded or not and without any additional modifiers.
+constexpr std::string_view GetChannelString(Channel channel) {
+  switch (channel) {
+    case Channel::STABLE:
+      return "stable";
+    case Channel::BETA:
+      return "beta";
+    case Channel::DEV:
+      return "dev";
+    case Channel::CANARY:
+      return "canary";
+    case Channel::UNKNOWN:
+      return "unknown";
+  }
+  NOTREACHED_NORETURN();
+}
 
 }  // namespace version_info
 

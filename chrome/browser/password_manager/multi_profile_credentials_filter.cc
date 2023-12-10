@@ -4,12 +4,13 @@
 
 #include "chrome/browser/password_manager/multi_profile_credentials_filter.h"
 
+#include <optional>
+
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/signin/dice_web_signin_interceptor.h"
 #include "components/autofill/core/browser/validation.h"
 #include "components/password_manager/core/browser/password_sync_util.h"
 #include "google_apis/gaia/gaia_auth_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 MultiProfileCredentialsFilter::MultiProfileCredentialsFilter(
     password_manager::PasswordManagerClient* client,
@@ -50,7 +51,7 @@ bool MultiProfileCredentialsFilter::ShouldSave(
   // moved to another profile. If the interception outcome is not available,
   // then signin interception is very likely, and the password bubble is
   // suppressed as well.
-  absl::optional<SigninInterceptionHeuristicOutcome> heuristic_outcome =
+  std::optional<SigninInterceptionHeuristicOutcome> heuristic_outcome =
       dice_web_signin_interceptor_->GetHeuristicOutcome(
           // At this time, it's not possible to know whether the account is new
           // (whether it's a reauth). To be conservative and avoid showing both

@@ -62,8 +62,7 @@ bool VulkanFunctionPointers::BindUnassociatedFunctionPointersCommon() {
   vkCreateInstance = reinterpret_cast<PFN_vkCreateInstance>(
       vkGetInstanceProcAddr(nullptr, "vkCreateInstance"));
   if (!vkCreateInstance) {
-    DLOG(WARNING) << "Failed to bind vulkan entrypoint: "
-                  << "vkCreateInstance";
+    DLOG(WARNING) << "Failed to bind vulkan entrypoint: " << "vkCreateInstance";
     return false;
   }
 
@@ -98,8 +97,7 @@ bool VulkanFunctionPointers::BindInstanceFunctionPointers(
   vkCreateDevice = reinterpret_cast<PFN_vkCreateDevice>(
       vkGetInstanceProcAddr(vk_instance, "vkCreateDevice"));
   if (!vkCreateDevice) {
-    DLOG(WARNING) << "Failed to bind vulkan entrypoint: "
-                  << "vkCreateDevice";
+    DLOG(WARNING) << "Failed to bind vulkan entrypoint: " << "vkCreateDevice";
     return false;
   }
 
@@ -424,8 +422,7 @@ bool VulkanFunctionPointers::BindDeviceFunctionPointers(
   vkAllocateMemory = reinterpret_cast<PFN_vkAllocateMemory>(
       vkGetDeviceProcAddr(vk_device, "vkAllocateMemory"));
   if (!vkAllocateMemory) {
-    DLOG(WARNING) << "Failed to bind vulkan entrypoint: "
-                  << "vkAllocateMemory";
+    DLOG(WARNING) << "Failed to bind vulkan entrypoint: " << "vkAllocateMemory";
     return false;
   }
 
@@ -504,8 +501,7 @@ bool VulkanFunctionPointers::BindDeviceFunctionPointers(
   vkCmdCopyBuffer = reinterpret_cast<PFN_vkCmdCopyBuffer>(
       vkGetDeviceProcAddr(vk_device, "vkCmdCopyBuffer"));
   if (!vkCmdCopyBuffer) {
-    DLOG(WARNING) << "Failed to bind vulkan entrypoint: "
-                  << "vkCmdCopyBuffer";
+    DLOG(WARNING) << "Failed to bind vulkan entrypoint: " << "vkCmdCopyBuffer";
     return false;
   }
 
@@ -528,8 +524,7 @@ bool VulkanFunctionPointers::BindDeviceFunctionPointers(
   vkCmdDraw = reinterpret_cast<PFN_vkCmdDraw>(
       vkGetDeviceProcAddr(vk_device, "vkCmdDraw"));
   if (!vkCmdDraw) {
-    DLOG(WARNING) << "Failed to bind vulkan entrypoint: "
-                  << "vkCmdDraw";
+    DLOG(WARNING) << "Failed to bind vulkan entrypoint: " << "vkCmdDraw";
     return false;
   }
 
@@ -552,8 +547,7 @@ bool VulkanFunctionPointers::BindDeviceFunctionPointers(
   vkCmdNextSubpass = reinterpret_cast<PFN_vkCmdNextSubpass>(
       vkGetDeviceProcAddr(vk_device, "vkCmdNextSubpass"));
   if (!vkCmdNextSubpass) {
-    DLOG(WARNING) << "Failed to bind vulkan entrypoint: "
-                  << "vkCmdNextSubpass";
+    DLOG(WARNING) << "Failed to bind vulkan entrypoint: " << "vkCmdNextSubpass";
     return false;
   }
 
@@ -576,24 +570,21 @@ bool VulkanFunctionPointers::BindDeviceFunctionPointers(
   vkCmdSetScissor = reinterpret_cast<PFN_vkCmdSetScissor>(
       vkGetDeviceProcAddr(vk_device, "vkCmdSetScissor"));
   if (!vkCmdSetScissor) {
-    DLOG(WARNING) << "Failed to bind vulkan entrypoint: "
-                  << "vkCmdSetScissor";
+    DLOG(WARNING) << "Failed to bind vulkan entrypoint: " << "vkCmdSetScissor";
     return false;
   }
 
   vkCmdSetViewport = reinterpret_cast<PFN_vkCmdSetViewport>(
       vkGetDeviceProcAddr(vk_device, "vkCmdSetViewport"));
   if (!vkCmdSetViewport) {
-    DLOG(WARNING) << "Failed to bind vulkan entrypoint: "
-                  << "vkCmdSetViewport";
+    DLOG(WARNING) << "Failed to bind vulkan entrypoint: " << "vkCmdSetViewport";
     return false;
   }
 
   vkCreateBuffer = reinterpret_cast<PFN_vkCreateBuffer>(
       vkGetDeviceProcAddr(vk_device, "vkCreateBuffer"));
   if (!vkCreateBuffer) {
-    DLOG(WARNING) << "Failed to bind vulkan entrypoint: "
-                  << "vkCreateBuffer";
+    DLOG(WARNING) << "Failed to bind vulkan entrypoint: " << "vkCreateBuffer";
     return false;
   }
 
@@ -625,8 +616,7 @@ bool VulkanFunctionPointers::BindDeviceFunctionPointers(
   vkCreateFence = reinterpret_cast<PFN_vkCreateFence>(
       vkGetDeviceProcAddr(vk_device, "vkCreateFence"));
   if (!vkCreateFence) {
-    DLOG(WARNING) << "Failed to bind vulkan entrypoint: "
-                  << "vkCreateFence";
+    DLOG(WARNING) << "Failed to bind vulkan entrypoint: " << "vkCreateFence";
     return false;
   }
 
@@ -649,8 +639,7 @@ bool VulkanFunctionPointers::BindDeviceFunctionPointers(
   vkCreateImage = reinterpret_cast<PFN_vkCreateImage>(
       vkGetDeviceProcAddr(vk_device, "vkCreateImage"));
   if (!vkCreateImage) {
-    DLOG(WARNING) << "Failed to bind vulkan entrypoint: "
-                  << "vkCreateImage";
+    DLOG(WARNING) << "Failed to bind vulkan entrypoint: " << "vkCreateImage";
     return false;
   }
 
@@ -681,8 +670,7 @@ bool VulkanFunctionPointers::BindDeviceFunctionPointers(
   vkCreateSampler = reinterpret_cast<PFN_vkCreateSampler>(
       vkGetDeviceProcAddr(vk_device, "vkCreateSampler"));
   if (!vkCreateSampler) {
-    DLOG(WARNING) << "Failed to bind vulkan entrypoint: "
-                  << "vkCreateSampler";
+    DLOG(WARNING) << "Failed to bind vulkan entrypoint: " << "vkCreateSampler";
     return false;
   }
 
@@ -705,8 +693,7 @@ bool VulkanFunctionPointers::BindDeviceFunctionPointers(
   vkDestroyBuffer = reinterpret_cast<PFN_vkDestroyBuffer>(
       vkGetDeviceProcAddr(vk_device, "vkDestroyBuffer"));
   if (!vkDestroyBuffer) {
-    DLOG(WARNING) << "Failed to bind vulkan entrypoint: "
-                  << "vkDestroyBuffer";
+    DLOG(WARNING) << "Failed to bind vulkan entrypoint: " << "vkDestroyBuffer";
     return false;
   }
 
@@ -738,16 +725,14 @@ bool VulkanFunctionPointers::BindDeviceFunctionPointers(
   vkDestroyDevice = reinterpret_cast<PFN_vkDestroyDevice>(
       vkGetDeviceProcAddr(vk_device, "vkDestroyDevice"));
   if (!vkDestroyDevice) {
-    DLOG(WARNING) << "Failed to bind vulkan entrypoint: "
-                  << "vkDestroyDevice";
+    DLOG(WARNING) << "Failed to bind vulkan entrypoint: " << "vkDestroyDevice";
     return false;
   }
 
   vkDestroyFence = reinterpret_cast<PFN_vkDestroyFence>(
       vkGetDeviceProcAddr(vk_device, "vkDestroyFence"));
   if (!vkDestroyFence) {
-    DLOG(WARNING) << "Failed to bind vulkan entrypoint: "
-                  << "vkDestroyFence";
+    DLOG(WARNING) << "Failed to bind vulkan entrypoint: " << "vkDestroyFence";
     return false;
   }
 
@@ -762,8 +747,7 @@ bool VulkanFunctionPointers::BindDeviceFunctionPointers(
   vkDestroyImage = reinterpret_cast<PFN_vkDestroyImage>(
       vkGetDeviceProcAddr(vk_device, "vkDestroyImage"));
   if (!vkDestroyImage) {
-    DLOG(WARNING) << "Failed to bind vulkan entrypoint: "
-                  << "vkDestroyImage";
+    DLOG(WARNING) << "Failed to bind vulkan entrypoint: " << "vkDestroyImage";
     return false;
   }
 
@@ -802,8 +786,7 @@ bool VulkanFunctionPointers::BindDeviceFunctionPointers(
   vkDestroySampler = reinterpret_cast<PFN_vkDestroySampler>(
       vkGetDeviceProcAddr(vk_device, "vkDestroySampler"));
   if (!vkDestroySampler) {
-    DLOG(WARNING) << "Failed to bind vulkan entrypoint: "
-                  << "vkDestroySampler";
+    DLOG(WARNING) << "Failed to bind vulkan entrypoint: " << "vkDestroySampler";
     return false;
   }
 
@@ -826,8 +809,7 @@ bool VulkanFunctionPointers::BindDeviceFunctionPointers(
   vkDeviceWaitIdle = reinterpret_cast<PFN_vkDeviceWaitIdle>(
       vkGetDeviceProcAddr(vk_device, "vkDeviceWaitIdle"));
   if (!vkDeviceWaitIdle) {
-    DLOG(WARNING) << "Failed to bind vulkan entrypoint: "
-                  << "vkDeviceWaitIdle";
+    DLOG(WARNING) << "Failed to bind vulkan entrypoint: " << "vkDeviceWaitIdle";
     return false;
   }
 
@@ -866,8 +848,7 @@ bool VulkanFunctionPointers::BindDeviceFunctionPointers(
   vkFreeMemory = reinterpret_cast<PFN_vkFreeMemory>(
       vkGetDeviceProcAddr(vk_device, "vkFreeMemory"));
   if (!vkFreeMemory) {
-    DLOG(WARNING) << "Failed to bind vulkan entrypoint: "
-                  << "vkFreeMemory";
+    DLOG(WARNING) << "Failed to bind vulkan entrypoint: " << "vkFreeMemory";
     return false;
   }
 
@@ -901,8 +882,7 @@ bool VulkanFunctionPointers::BindDeviceFunctionPointers(
   vkGetDeviceQueue = reinterpret_cast<PFN_vkGetDeviceQueue>(
       vkGetDeviceProcAddr(vk_device, "vkGetDeviceQueue"));
   if (!vkGetDeviceQueue) {
-    DLOG(WARNING) << "Failed to bind vulkan entrypoint: "
-                  << "vkGetDeviceQueue";
+    DLOG(WARNING) << "Failed to bind vulkan entrypoint: " << "vkGetDeviceQueue";
     return false;
   }
 
@@ -917,8 +897,7 @@ bool VulkanFunctionPointers::BindDeviceFunctionPointers(
   vkGetFenceStatus = reinterpret_cast<PFN_vkGetFenceStatus>(
       vkGetDeviceProcAddr(vk_device, "vkGetFenceStatus"));
   if (!vkGetFenceStatus) {
-    DLOG(WARNING) << "Failed to bind vulkan entrypoint: "
-                  << "vkGetFenceStatus";
+    DLOG(WARNING) << "Failed to bind vulkan entrypoint: " << "vkGetFenceStatus";
     return false;
   }
 
@@ -952,24 +931,21 @@ bool VulkanFunctionPointers::BindDeviceFunctionPointers(
   vkMapMemory = reinterpret_cast<PFN_vkMapMemory>(
       vkGetDeviceProcAddr(vk_device, "vkMapMemory"));
   if (!vkMapMemory) {
-    DLOG(WARNING) << "Failed to bind vulkan entrypoint: "
-                  << "vkMapMemory";
+    DLOG(WARNING) << "Failed to bind vulkan entrypoint: " << "vkMapMemory";
     return false;
   }
 
   vkQueueSubmit = reinterpret_cast<PFN_vkQueueSubmit>(
       vkGetDeviceProcAddr(vk_device, "vkQueueSubmit"));
   if (!vkQueueSubmit) {
-    DLOG(WARNING) << "Failed to bind vulkan entrypoint: "
-                  << "vkQueueSubmit";
+    DLOG(WARNING) << "Failed to bind vulkan entrypoint: " << "vkQueueSubmit";
     return false;
   }
 
   vkQueueWaitIdle = reinterpret_cast<PFN_vkQueueWaitIdle>(
       vkGetDeviceProcAddr(vk_device, "vkQueueWaitIdle"));
   if (!vkQueueWaitIdle) {
-    DLOG(WARNING) << "Failed to bind vulkan entrypoint: "
-                  << "vkQueueWaitIdle";
+    DLOG(WARNING) << "Failed to bind vulkan entrypoint: " << "vkQueueWaitIdle";
     return false;
   }
 
@@ -984,16 +960,14 @@ bool VulkanFunctionPointers::BindDeviceFunctionPointers(
   vkResetFences = reinterpret_cast<PFN_vkResetFences>(
       vkGetDeviceProcAddr(vk_device, "vkResetFences"));
   if (!vkResetFences) {
-    DLOG(WARNING) << "Failed to bind vulkan entrypoint: "
-                  << "vkResetFences";
+    DLOG(WARNING) << "Failed to bind vulkan entrypoint: " << "vkResetFences";
     return false;
   }
 
   vkUnmapMemory = reinterpret_cast<PFN_vkUnmapMemory>(
       vkGetDeviceProcAddr(vk_device, "vkUnmapMemory"));
   if (!vkUnmapMemory) {
-    DLOG(WARNING) << "Failed to bind vulkan entrypoint: "
-                  << "vkUnmapMemory";
+    DLOG(WARNING) << "Failed to bind vulkan entrypoint: " << "vkUnmapMemory";
     return false;
   }
 
@@ -1008,8 +982,7 @@ bool VulkanFunctionPointers::BindDeviceFunctionPointers(
   vkWaitForFences = reinterpret_cast<PFN_vkWaitForFences>(
       vkGetDeviceProcAddr(vk_device, "vkWaitForFences"));
   if (!vkWaitForFences) {
-    DLOG(WARNING) << "Failed to bind vulkan entrypoint: "
-                  << "vkWaitForFences";
+    DLOG(WARNING) << "Failed to bind vulkan entrypoint: " << "vkWaitForFences";
     return false;
   }
 

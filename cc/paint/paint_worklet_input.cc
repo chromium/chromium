@@ -78,4 +78,11 @@ bool PaintWorkletInput::KnownToBeOpaque() const {
   return false;
 }
 
+bool PaintWorkletInput::ValueChangeShouldCauseRepaint(
+    const PropertyValue& val1,
+    const PropertyValue& val2) const {
+  return val1.color_value != val1.color_value ||
+         val1.float_value != val2.float_value;
+}
+
 }  // namespace cc

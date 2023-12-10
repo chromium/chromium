@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 
 #include "ash/accelerators/accelerator_alias_converter.h"
 #include "ash/accelerators/accelerator_prefs.h"
@@ -21,13 +22,13 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chromeos/crosapi/cpp/lacros_startup_state.h"
 #include "components/prefs/pref_member.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/accelerators/accelerator_map.h"
 #include "ui/base/ime/ash/input_method_manager.h"
 #include "ui/events/ash/keyboard_capability.h"
@@ -231,6 +232,10 @@ class AcceleratorConfigurationProvider
   void PopulateAmbientAcceleratorConfig(
       AcceleratorConfigurationMap& accelerator_config_output);
 
+  // Creating/updating the configuration mappings are posted task due to
+  // dependencies with the keyboard state.
+  void ScheduleNotifyAcceleratorsUpdated();
+
   void NotifyAcceleratorsUpdated();
 
   void CreateAndAppendAliasedAccelerators(
@@ -242,7 +247,7 @@ class AcceleratorConfigurationProvider
 
   // Returns a non-null value if there was an error with pre-processing the
   // accelerator to be added.
-  absl::optional<shortcut_customization::mojom::AcceleratorResultDataPtr>
+  std::optional<shortcut_customization::mojom::AcceleratorResultDataPtr>
   PreprocessAddAccelerator(mojom::AcceleratorSource source,
                            AcceleratorActionId action_id,
                            const ui::Accelerator& accelerator);
@@ -260,6 +265,10 @@ class AcceleratorConfigurationProvider
 
   // Set only for testing purposes, this will ignore the default layouts.
   bool ignore_layouts_for_testing_ = false;
+
+  // If true, prevents new requests to create the configuration mappings.
+  // Resets to false after configuration mappings are updated.
+  bool pending_notify_accelerators_updated_ = false;
 
   std::vector<mojom::AcceleratorLayoutInfoPtr> layout_infos_;
   // A lookup map that provides a way to lookup a shortcut's layout details.
@@ -309,6 +318,8 @@ class AcceleratorConfigurationProvider
   mojo::Remote<shortcut_customization::mojom::PolicyUpdatedObserver>
       policy_updated_mojo_observer;
 
+  // Hold a task runner used to schedule updating the configuration mappings.
+  scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_;
   base::WeakPtrFactory<AcceleratorConfigurationProvider> weak_ptr_factory_{
       this};
 };

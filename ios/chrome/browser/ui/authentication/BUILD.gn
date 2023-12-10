@@ -6,6 +6,8 @@ import("//build/config/chrome_build.gni")
 
 source_set("authentication") {
   sources = [
+    "account_capabilities_latency_tracker.h",
+    "account_capabilities_latency_tracker.mm",
     "authentication_flow.h",
     "authentication_flow.mm",
     "authentication_flow_performer.h",
@@ -21,6 +23,7 @@ source_set("authentication") {
     "signin_promo_view_mediator.mm",
   ]
   deps = [
+    ":account_settings_presenter",
     ":authentication_constants",
     ":signin_presenter",
     "resources:signin_confirmation_more",
@@ -41,10 +44,9 @@ source_set("authentication") {
     "//google_apis",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/flags",
-    "//ios/chrome/browser/infobars",
+    "//ios/chrome/browser/infobars/model",
     "//ios/chrome/browser/policy",
     "//ios/chrome/browser/shared/coordinator/alert",
-    "//ios/chrome/browser/shared/coordinator/scene:scene_state_browser_agent",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser",
@@ -57,10 +59,10 @@ source_set("authentication") {
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/shared/ui/util",
-    "//ios/chrome/browser/signin",
-    "//ios/chrome/browser/signin:capabilities_types",
-    "//ios/chrome/browser/signin:system_identity",
-    "//ios/chrome/browser/signin:system_identity_manager",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:capabilities_types",
+    "//ios/chrome/browser/signin/model:system_identity",
+    "//ios/chrome/browser/signin/model:system_identity_manager",
     "//ios/chrome/browser/sync/model",
     "//ios/chrome/browser/ui/authentication/cells",
     "//ios/chrome/browser/ui/authentication/signin:signin_headers",
@@ -105,6 +107,10 @@ source_set("signin_presenter") {
   sources = [ "signin_presenter.h" ]
 }
 
+source_set("account_settings_presenter") {
+  sources = [ "account_settings_presenter.h" ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [
@@ -115,6 +121,7 @@ source_set("unit_tests") {
     "signin_promo_view_mediator_unittest.mm",
   ]
   deps = [
+    ":account_settings_presenter",
     ":authentication",
     ":signin_presenter",
     "//base",
@@ -122,6 +129,8 @@ source_set("unit_tests") {
     "//build:branding_buildflags",
     "//components/consent_auditor",
     "//components/consent_auditor:test_support",
+    "//components/policy/core/common",
+    "//components/policy/core/common:test_support",
     "//components/pref_registry",
     "//components/prefs",
     "//components/signin/public/base",
@@ -135,10 +144,11 @@ source_set("unit_tests") {
     "//components/variations:test_support",
     "//components/version_info",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/infobars",
+    "//ios/chrome/browser/infobars/model",
     "//ios/chrome/browser/policy",
     "//ios/chrome/browser/policy:constants",
     "//ios/chrome/browser/policy:policy_util",
+    "//ios/chrome/browser/policy:test_support",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/browser_state:test_support",
@@ -147,10 +157,10 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/table_view:styler",
-    "//ios/chrome/browser/signin",
-    "//ios/chrome/browser/signin:fake_system_identity",
-    "//ios/chrome/browser/signin:fake_system_identity_manager",
-    "//ios/chrome/browser/signin:test_support",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:fake_system_identity",
+    "//ios/chrome/browser/signin/model:fake_system_identity_manager",
+    "//ios/chrome/browser/signin/model:test_support",
     "//ios/chrome/browser/sync/model",
     "//ios/chrome/browser/sync/model:test_support",
     "//ios/chrome/browser/ui/authentication/cells",
@@ -178,6 +188,7 @@ source_set("eg_app_support+eg2") {
     "//ios/chrome/test/earl_grey:hooks",
   ]
   deps = [
+    ":account_settings_presenter",
     ":authentication",
     ":signin_presenter",
     "unified_consent",
@@ -194,10 +205,10 @@ source_set("eg_app_support+eg2") {
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/ui/util",
-    "//ios/chrome/browser/signin",
-    "//ios/chrome/browser/signin:capabilities_types",
-    "//ios/chrome/browser/signin:fake_system_identity",
-    "//ios/chrome/browser/signin:fake_system_identity_manager",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:capabilities_types",
+    "//ios/chrome/browser/signin/model:fake_system_identity",
+    "//ios/chrome/browser/signin/model:fake_system_identity_manager",
     "//ios/chrome/browser/sync/model",
     "//ios/chrome/browser/ui/authentication/cells",
     "//ios/chrome/browser/ui/authentication/enterprise/enterprise_prompt",
@@ -221,14 +232,15 @@ source_set("eg_test_support+eg2") {
     "signin_matchers.mm",
   ]
   deps = [
+    ":account_settings_presenter",
     ":signin_presenter",
     "//base",
     "//base/test:test_support",
     "//components/signin/public/base",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/ui/table_view:constants",
-    "//ios/chrome/browser/signin:capabilities_types",
-    "//ios/chrome/browser/signin:fake_system_identity",
+    "//ios/chrome/browser/signin/model:capabilities_types",
+    "//ios/chrome/browser/signin/model:fake_system_identity",
     "//ios/chrome/browser/ui/authentication/cells:constants",
     "//ios/chrome/browser/ui/authentication/signin:constants",
     "//ios/chrome/browser/ui/authentication/signin/advanced_settings_signin:constants",

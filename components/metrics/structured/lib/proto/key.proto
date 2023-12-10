@@ -1,0 +1,36 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+package metrics.structured;
+
+option optimize_for = LITE_RUNTIME;
+
+// These protos are used for storing key information for structured metrics. All
+// changes should be backwards-compatible. This file is manually synced between
+// chromium and platform2. Any changes should first be made to chromium and then
+// copied to platform2.
+//
+// chromium path: components/metrics/structured/lib/proto/key.proto
+// platform2 path: metrics/structured/proto/storage.proto
+
+// All information about the key for a single project.
+message KeyProto {
+  // The key itself.
+  optional string key = 1;
+
+  // When the key was last rotated, in days since the unix epoch.
+  optional int64 last_rotation = 2;
+
+  // The maximum number of days between rotations.
+  optional int64 rotation_period = 3;
+}
+
+// Stores keys for all projects.
+message KeyDataProto {
+  // Maps the first 8 bytes of the MD5 hash of the project name to that
+  // project's key.
+  map<fixed64, KeyProto> keys = 1;
+}

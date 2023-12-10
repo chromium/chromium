@@ -12,6 +12,7 @@
 #include <utility>
 #include <vector>
 
+#include <optional>
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/shared_memory_mapping.h"
@@ -53,7 +54,6 @@
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/config/gpu_feature_info.h"
 #include "skia/ext/legacy_display_globals.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkFont.h"
 #include "third_party/skia/include/core/SkPaint.h"
 #include "third_party/skia/include/core/SkPath.h"
@@ -145,12 +145,15 @@ std::unique_ptr<LayerImpl> HeadsUpDisplayLayerImpl::CreateLayerImpl(
 class HudGpuBacking : public ResourcePool::GpuBacking {
  public:
   ~HudGpuBacking() override {
-    if (mailbox.IsZero())
+    if (!shared_image) {
       return;
+    }
     if (returned_sync_token.HasData())
-      shared_image_interface->DestroySharedImage(returned_sync_token, mailbox);
+      shared_image_interface->DestroySharedImage(returned_sync_token,
+                                                 std::move(shared_image));
     else if (mailbox_sync_token.HasData())
-      shared_image_interface->DestroySharedImage(mailbox_sync_token, mailbox);
+      shared_image_interface->DestroySharedImage(mailbox_sync_token,
+                                                 std::move(shared_image));
   }
 
   void OnMemoryDump(
@@ -158,10 +161,11 @@ class HudGpuBacking : public ResourcePool::GpuBacking {
       const base::trace_event::MemoryAllocatorDumpGuid& buffer_dump_guid,
       uint64_t tracing_process_id,
       int importance) const override {
-    if (mailbox.IsZero())
+    if (!shared_image) {
       return;
+    }
 
-    auto tracing_guid = gpu::GetSharedImageGUIDForTracing(mailbox);
+    auto tracing_guid = shared_image->GetGUIDForTracing();
     pmd->CreateSharedGlobalAllocatorDump(tracing_guid);
     pmd->AddOwnershipEdge(buffer_dump_guid, tracing_guid, importance);
   }
@@ -248,7 +252,7 @@ void HeadsUpDisplayLayerImpl::UpdateHudTexture(
   UpdateHudContents();
 
   viz::RasterContextProvider* raster_context_provider = nullptr;
-  absl::optional<viz::RasterContextProvider::ScopedRasterContextLock> lock;
+  std::optional<viz::RasterContextProvider::ScopedRasterContextLock> lock;
   if (draw_mode == DRAW_MODE_HARDWARE) {
     // TODO(penghuang): It would be better to use context_provider() instead of
     // worker_context_provider() if/when it's switched to RasterContextProvider.
@@ -298,13 +302,12 @@ void HeadsUpDisplayLayerImpl::UpdateHudTexture(
       if (backing->overlay_candidate) {
         flags |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
       }
-      auto client_shared_image = sii->CreateSharedImage(
+      backing->shared_image = sii->CreateSharedImage(
           pool_resource.format(), pool_resource.size(),
           pool_resource.color_space(), kTopLeft_GrSurfaceOrigin,
           kPremul_SkAlphaType, flags, "HeadsUpDisplayLayer",
           gpu::kNullSurfaceHandle);
-      CHECK(client_shared_image);
-      backing->mailbox = client_shared_image->mailbox();
+      CHECK(backing->shared_image);
       auto* ri = raster_context_provider->RasterInterface();
       ri->WaitSyncTokenCHROMIUM(sii->GenUnverifiedSyncToken().GetConstData());
       pool_resource.set_gpu_backing(std::move(backing));
@@ -361,7 +364,8 @@ void HeadsUpDisplayLayerImpl::UpdateHudTexture(
       ri->BeginRasterCHROMIUM(background_color, needs_clear, msaa_sample_count,
                               gpu::raster::kNoMSAA, can_use_lcd_text,
                               /*visible=*/true, gfx::ColorSpace::CreateSRGB(),
-                              /*hdr_headroom=*/1.f, backing->mailbox.name);
+                              /*hdr_headroom=*/1.f,
+                              backing->shared_image->mailbox().name);
       constexpr gfx::Vector2dF post_translate(0.f, 0.f);
       constexpr gfx::Vector2dF post_scale(1.f, 1.f);
       DummyImageProvider image_provider;
@@ -393,7 +397,8 @@ void HeadsUpDisplayLayerImpl::UpdateHudTexture(
       SkPixmap pixmap;
       staging_surface_->peekPixels(&pixmap);
 
-      ri->WritePixels(backing->mailbox, /*dst_x_offset=*/0, /*dst_y_offset=*/0,
+      ri->WritePixels(backing->shared_image->mailbox(), /*dst_x_offset=*/0,
+                      /*dst_y_offset=*/0,
                       /*dst_plane_index=*/0, backing->texture_target, pixmap);
     }
 

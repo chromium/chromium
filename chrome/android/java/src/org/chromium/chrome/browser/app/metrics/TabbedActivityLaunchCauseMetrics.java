@@ -18,9 +18,7 @@ import org.chromium.chrome.browser.searchwidget.SearchWidgetProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.webapps.ShortcutSource;
 
-/**
- * LaunchCauseMetrics for ChromeTabbedActivity.
- */
+/** LaunchCauseMetrics for ChromeTabbedActivity. */
 public class TabbedActivityLaunchCauseMetrics extends LaunchCauseMetrics {
     private final Activity mActivity;
 
@@ -39,7 +37,7 @@ public class TabbedActivityLaunchCauseMetrics extends LaunchCauseMetrics {
         }
 
         if (IntentUtils.safeGetBooleanExtra(
-                    launchIntent, IntentHandler.EXTRA_INVOKED_FROM_SHORTCUT, false)
+                        launchIntent, IntentHandler.EXTRA_INVOKED_FROM_SHORTCUT, false)
                 && IntentHandler.wasIntentSenderChrome(launchIntent)) {
             return LaunchCause.MAIN_LAUNCHER_ICON_SHORTCUT;
         }
@@ -57,9 +55,9 @@ public class TabbedActivityLaunchCauseMetrics extends LaunchCauseMetrics {
         }
 
         if (IntentUtils.safeGetBooleanExtra(
-                    launchIntent, SearchActivity.EXTRA_FROM_SEARCH_ACTIVITY, false)) {
+                launchIntent, SearchActivity.EXTRA_FROM_SEARCH_ACTIVITY, false)) {
             if (IntentUtils.safeGetBooleanExtra(
-                        launchIntent, SearchWidgetProvider.EXTRA_FROM_SEARCH_WIDGET, false)) {
+                    launchIntent, SearchWidgetProvider.EXTRA_FROM_SEARCH_WIDGET, false)) {
                 return LaunchCause.HOME_SCREEN_WIDGET;
             }
             // Intent came through the Search Activity but wasn't from the Search Widget, so
@@ -85,7 +83,7 @@ public class TabbedActivityLaunchCauseMetrics extends LaunchCauseMetrics {
         // also be hit when Open In Browser crosses Chrome channels
         // (eg. Chrome Stable CCT -> Open In Browser -> User chooses Canary)
         if (IntentUtils.safeGetBooleanExtra(
-                    launchIntent, IntentHandler.EXTRA_FROM_OPEN_IN_BROWSER, false)) {
+                launchIntent, IntentHandler.EXTRA_FROM_OPEN_IN_BROWSER, false)) {
             return LaunchCause.OPEN_IN_BROWSER_FROM_MENU;
         }
 
@@ -114,7 +112,7 @@ public class TabbedActivityLaunchCauseMetrics extends LaunchCauseMetrics {
         if (!didReceiveIntent() || launchIntent == null) return LaunchCause.OTHER;
 
         if (IntentUtils.safeGetBooleanExtra(
-                    launchIntent, IntentHandler.EXTRA_FROM_OPEN_IN_BROWSER, false)) {
+                launchIntent, IntentHandler.EXTRA_FROM_OPEN_IN_BROWSER, false)) {
             return LaunchCause.OPEN_IN_BROWSER_FROM_MENU;
         }
 
@@ -136,8 +134,7 @@ public class TabbedActivityLaunchCauseMetrics extends LaunchCauseMetrics {
         // sources of tab activation is impractical), but the only ones that should be triggerable
         // while Chrome is in the background (outside of tests) are from media/ServiceWorker
         // notifications.
-        @IntentHandler.BringToFrontSource
-        int source = getBringTabToFrontSource(intent);
+        @IntentHandler.BringToFrontSource int source = getBringTabToFrontSource(intent);
         if (IntentHandler.BringToFrontSource.NOTIFICATION == source
                 || IntentHandler.BringToFrontSource.ACTIVATE_TAB == source) {
             return true;
@@ -151,7 +148,9 @@ public class TabbedActivityLaunchCauseMetrics extends LaunchCauseMetrics {
         if (IntentHandler.getBringTabToFrontId(intent) == Tab.INVALID_TAB_ID) {
             return IntentHandler.BringToFrontSource.INVALID;
         }
-        return IntentUtils.safeGetIntExtra(intent, IntentHandler.BRING_TAB_TO_FRONT_SOURCE_EXTRA,
+        return IntentUtils.safeGetIntExtra(
+                intent,
+                IntentHandler.BRING_TAB_TO_FRONT_SOURCE_EXTRA,
                 IntentHandler.BringToFrontSource.INVALID);
     }
 }

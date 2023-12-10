@@ -60,6 +60,7 @@ import org.chromium.chrome.browser.compositor.layouts.Layout.LayoutState;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.hub.HubLayoutDependencyHolder;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutTestUtils;
@@ -108,6 +109,8 @@ public class LayoutManagerTest implements MockTabModelDelegate {
     @Mock private StartSurface mStartSurface;
 
     @Mock private TabSwitcher mTabSwitcher;
+
+    @Mock private HubLayoutDependencyHolder mHubLayoutDependencyHolder;
 
     @Mock private TabSwitcher.TabListDelegate mTabListDelegate;
     @Mock private TabSwitcher.Controller mTabSwitcherController;
@@ -256,7 +259,8 @@ public class LayoutManagerTest implements MockTabModelDelegate {
                         () -> {
                             mTabSwitcherSupplier.set(mTabSwitcher);
                             return container;
-                        });
+                        },
+                        mHubLayoutDependencyHolder);
 
         setUpLayouts();
 
@@ -689,43 +693,6 @@ public class LayoutManagerTest implements MockTabModelDelegate {
             startedShowingCallback.waitForCallback(0);
         }
         Assert.assertEquals(LayoutType.BROWSING, startedShowingCallback.layoutType);
-    }
-
-    @Test
-    @MediumTest
-    @DisableIf.Build(sdk_is_greater_than = N_MR1, message = "crbug.com/1139943")
-    public void testLayoutObserverNotification_TabSelectionHinted() throws TimeoutException {
-        CallbackHelper tabSelectionHintedCallback = new CallbackHelper();
-
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    initializeLayoutManagerPhone(2, 0);
-                    mManager.addObserver(
-                            new LayoutStateProvider.LayoutStateObserver() {
-                                @Override
-                                public void onTabSelectionHinted(int tabId) {
-                                    Log.d(TAG, "onTabSelectionHinted");
-                                    tabSelectionHintedCallback.notifyCalled();
-                                }
-                            });
-
-                    mManager.showLayout(LayoutType.TAB_SWITCHER, true);
-                    Assert.assertTrue(
-                            "layoutManager is way too long to end motion",
-                            simulateTime(mManager, 1000));
-                    Assert.assertEquals(
-                            LayoutType.TAB_SWITCHER, mManager.getActiveLayout().getLayoutType());
-
-                    mManager.showLayout(LayoutType.BROWSING, true);
-                    Assert.assertTrue(
-                            "layoutManager is way too long to end motion",
-                            simulateTime(mManager, 1000));
-
-                    Assert.assertEquals(
-                            LayoutType.BROWSING, mManager.getActiveLayout().getLayoutType());
-                });
-
-        tabSelectionHintedCallback.waitForCallback(0);
     }
 
     @Before

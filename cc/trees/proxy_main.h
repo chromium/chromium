@@ -172,7 +172,7 @@ class CC_EXPORT ProxyMain : public Proxy {
   // defer_main_frame_update_ will also cause commits to be deferred, regardless
   // of the setting for paint_holding_reason_.
   bool defer_main_frame_update_;
-  absl::optional<PaintHoldingReason> paint_holding_reason_;
+  std::optional<PaintHoldingReason> paint_holding_reason_;
 
   bool pause_rendering_;
   bool block_on_next_commit_ = false;

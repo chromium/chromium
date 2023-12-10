@@ -2,11 +2,14 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="nl">
 <translation id="1178581264944972037">Onderbreken</translation>
-<translation id="2558806128245168542">Terugnavigeren</translation>
-<translation id="3523426587027570423">Tik om 'Deze pagina beluisteren' te sluiten.</translation>
+<translation id="1921351128855867012"><ph name="NUMBER_OF_SECONDS" /> seconden vooruitspoelen</translation>
+<translation id="1984328900355667246">Afspelen niet beschikbaar</translation>
+<translation id="3023502830214299618">Afspelen is op dit moment niet beschikbaar voor deze pagina. Probeer het later opnieuw.</translation>
+<translation id="3807208219231826020">Weergave doorlopen</translation>
+<translation id="385051799172605136">Terug</translation>
 <translation id="4431240646217225907">Tekst markeren en automatisch scrollen</translation>
 <translation id="4654641641922242357">De speler 'Deze pagina beluisteren'.</translation>
-<translation id="4731877163452936634">Afspeelsnelheid: <ph name="PLAYBACK_SPEED" />. Klik om te wijzigen.</translation>
+<translation id="4872475766448853257"><ph name="NUMBER_OF_SECONDS" /> seconden teruggaan</translation>
 <translation id="5234971936051226002">De speler 'Deze pagina beluisteren' is geminimaliseerd.</translation>
 <translation id="5596627076506792578">Meer opties</translation>
 <translation id="6315170314923504164">Spraak</translation>
@@ -15,8 +18,8 @@
 <translation id="6831043979455480757">Vertalen</translation>
 <translation id="6846298663435243399">Laden…</translation>
 <translation id="7587250070160020374">Chrome speelt nu af:</translation>
-<translation id="7945822420239537236"><ph name="NUMBER_OF_SECONDS" /> seconden vooruitspoelen</translation>
-<translation id="7972866381678406344"><ph name="NUMBER_OF_SECONDS" /> seconden terugspoelen</translation>
 <translation id="8136852699834914183">Afspelen is niet beschikbaar voor deze pagina.</translation>
+<translation id="8264989794233974275">Snelheid <ph name="PLAYBACK_SPEED" />x verhogen/verlagen.</translation>
+<translation id="8407011429883244666">Speler sluiten.</translation>
 <translation id="8953618380150219653">De speler 'Deze pagina beluisteren' is op volledige hoogte geopend.</translation>
 </translationbundle>

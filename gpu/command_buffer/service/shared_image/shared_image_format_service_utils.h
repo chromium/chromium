@@ -28,6 +28,10 @@ class TextureInfo;
 
 namespace gpu {
 
+namespace gles2 {
+class FeatureInfo;
+}  // namespace gles2
+
 // GLFormatDesc is a struct containing the GL data type, data format, internal
 // format used by the image, internal format used for storage and GL target.
 struct GLFormatDesc {
@@ -64,22 +68,43 @@ GPU_GLES2_EXPORT SkYUVAInfo::Subsampling ToSkYUVASubsampling(
 GPU_GLES2_EXPORT SkColorType
 ToClosestSkColorTypeExternalSampler(viz::SharedImageFormat format);
 
-// Following functions return the appropriate GL type/format for a
-// SharedImageFormat.
-// Return the GLFormatDesc when using external sampler for a given `format`.
-GPU_GLES2_EXPORT GLFormatDesc
-ToGLFormatDescExternalSampler(viz::SharedImageFormat format);
-// Return the GLFormatDesc for a given `format`.
-GPU_GLES2_EXPORT GLFormatDesc ToGLFormatDesc(viz::SharedImageFormat format,
-                                             int plane_index,
-                                             bool use_angle_rgbx_format);
-// Same as above with an additional param to control whether to use
-// HALF_FLOAT_OES extension types or core types for F16 format.
-GPU_GLES2_EXPORT GLFormatDesc
-ToGLFormatDescOverrideHalfFloatType(viz::SharedImageFormat format,
-                                    int plane_index,
-                                    bool use_angle_rgbx_format,
-                                    bool use_half_float_oes);
+// Holds capabilities and provides accessors for getting appropriate GL formats
+// for shared images.
+class GPU_GLES2_EXPORT GLFormatCaps {
+ public:
+  // For default values of feature info capabilities.
+  GLFormatCaps() = default;
+  explicit GLFormatCaps(const gles2::FeatureInfo* feature_info);
+
+  // Following functions return the appropriate GL type/format for a
+  // SharedImageFormat.
+  // Return the GLFormatDesc when using external sampler for a given `format`.
+  GLFormatDesc ToGLFormatDescExternalSampler(
+      viz::SharedImageFormat format) const;
+  // Return the GLFormatDesc for a given `format`.
+  GLFormatDesc ToGLFormatDesc(viz::SharedImageFormat format,
+                              int plane_index) const;
+  // Same as above with an additional param to control whether to use
+  // HALF_FLOAT_OES extension types or core types for F16 format.
+  GLFormatDesc ToGLFormatDescOverrideHalfFloatType(
+      viz::SharedImageFormat format,
+      int plane_index) const;
+
+  bool ext_texture_rg() const { return ext_texture_rg_; }
+  bool ext_texture_norm16() const { return ext_texture_norm16_; }
+  bool disable_r8_shared_images() const { return disable_r8_shared_images_; }
+
+ private:
+  // Return fallback gl format if the GL data, internal, tex storage format is
+  // not supported.
+  GLenum GetFallbackFormatIfNotSupported(GLenum gl_format) const;
+
+  bool angle_rgbx_internal_format_ = false;
+  bool oes_texture_float_available_ = false;
+  bool ext_texture_rg_ = false;
+  bool ext_texture_norm16_ = false;
+  bool disable_r8_shared_images_ = false;
+};
 
 // Following functions return the appropriate Vulkan format for a
 // SharedImageFormat.
@@ -97,32 +122,34 @@ GPU_GLES2_EXPORT VkFormat ToVkFormat(viz::SharedImageFormat format,
                                      int plane_index);
 #endif
 
-// Following functions return the appropriate WebGPU/Dawn format for a
+// Following functions return the appropriate Dawn format for a
+// SharedImageFormat. Returns wgpu::TextureFormat format for given `format`.
+// Note that this will return a multi-planar Dawn format for multi-planar
 // SharedImageFormat.
-// Returns wgpu::TextureFormat format for given `format`. Note that this will
-// return a multi-planar Dawn format for multi-planar SharedImageFormat.
 GPU_GLES2_EXPORT wgpu::TextureFormat ToDawnFormat(
     viz::SharedImageFormat format);
 // Returns wgpu::TextureFormat format for given `format` and `plane_index`. Note
-// that this returns a single plane Dawn format and not a multi-planar format.
-// `plane_index` must be 0 if `format` is single-plane.
-GPU_GLES2_EXPORT wgpu::TextureFormat ToDawnFormat(viz::SharedImageFormat format,
-                                                  int plane_index);
+// that this returns a single plane Dawn format i.e the TextureView format and
+// not a multi-planar format.
+GPU_GLES2_EXPORT wgpu::TextureFormat ToDawnTextureViewFormat(
+    viz::SharedImageFormat format,
+    int plane_index);
 
 // Returns the supported Dawn texture usage. `is_yuv_plane` indicates if the
 // texture corresponds to a plane of a multi-planar image and `is_dcomp_surface`
 // indicates if the texture corresponds to a direct composition surface.
 // `supports_multiplanar_rendering` indicates if the dawn texture supports
 // drawing to multiplanar render targets.
-wgpu::TextureUsage GetSupportedDawnTextureUsage(
+wgpu::TextureUsage SupportedDawnTextureUsage(
     bool is_yuv_plane = false,
     bool is_dcomp_surface = false,
-    bool supports_multiplanar_rendering = false);
+    bool supports_multiplanar_rendering = false,
+    bool supports_multiplanar_copy = false);
 
-// Returns wgpu::TextureAspect corresponding to `plane_index` of a particular
-// `format`.
-wgpu::TextureAspect GetDawnTextureAspect(viz::SharedImageFormat format,
-                                         int plane_index);
+// Returns wgpu::TextureAspect corresponding to `plane_index`. `is_yuv_plane`
+// indicates if the aspect corresponds to a plane of a multi-planar
+// wgpu::Texture.
+wgpu::TextureAspect ToDawnTextureAspect(bool is_yuv_plane, int plane_index);
 
 // Following function return the appropriate Metal format for a
 // SharedImageFormat.
@@ -138,27 +165,38 @@ GPU_GLES2_EXPORT unsigned int ToMTLPixelFormat(viz::SharedImageFormat format,
 // `scanout_dcomp_surface` indicates if the texture corresponds to a Windows
 // direct composition surface. `supports_multiplanar_rendering` indicates if the
 // dawn texture supports drawing to multiplanar render targets.
-GPU_GLES2_EXPORT skgpu::graphite::TextureInfo GetGraphiteTextureInfo(
+// `supports_multiplanar_copy` indicates if the dawn backend supports copy
+// operations for multiplanar textures.
+GPU_GLES2_EXPORT skgpu::graphite::TextureInfo GraphiteBackendTextureInfo(
     GrContextType gr_context_type,
     viz::SharedImageFormat format,
     int plane_index = 0,
     bool is_yuv_plane = false,
     bool mipmapped = false,
     bool scanout_dcomp_surface = false,
-    bool supports_multiplanar_rendering = false);
+    bool supports_multiplanar_rendering = false,
+    bool supports_multiplanar_copy = false);
 
-#if BUILDFLAG(SKIA_USE_DAWN)
-GPU_GLES2_EXPORT skgpu::graphite::DawnTextureInfo GetGraphiteDawnTextureInfo(
+GPU_GLES2_EXPORT skgpu::graphite::TextureInfo GraphitePromiseTextureInfo(
+    GrContextType gr_context_type,
     viz::SharedImageFormat format,
     int plane_index = 0,
+    bool mipmapped = false,
+    bool scanout_dcomp_surface = false);
+
+#if BUILDFLAG(SKIA_USE_DAWN)
+GPU_GLES2_EXPORT skgpu::graphite::DawnTextureInfo DawnBackendTextureInfo(
+    viz::SharedImageFormat format,
     bool is_yuv_plane = false,
+    int plane_index = 0,
     bool mipmapped = false,
     bool scanout_dcomp_surface = false,
-    bool supports_multiplanar_rendering = false);
+    bool supports_multiplanar_rendering = false,
+    bool support_multiplanar_copy = false);
 #endif
 
 #if BUILDFLAG(SKIA_USE_METAL)
-GPU_GLES2_EXPORT skgpu::graphite::MtlTextureInfo GetGraphiteMetalTextureInfo(
+GPU_GLES2_EXPORT skgpu::graphite::MtlTextureInfo GraphiteMetalTextureInfo(
     viz::SharedImageFormat format,
     int plane_index = 0,
     bool is_yuv_plane = false,

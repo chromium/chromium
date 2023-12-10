@@ -4,6 +4,8 @@
 
 #include "ash/login/ui/login_pin_input_view.h"
 
+#include <optional>
+
 #include "ash/constants/ash_features.h"
 #include "ash/login/login_screen_controller.h"
 #include "ash/login/ui/access_code_input.h"
@@ -15,10 +17,11 @@
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/ash/components/login/auth/auth_events_recorder.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/compositor/layer_type.h"
 #include "ui/gfx/geometry/size.h"
@@ -42,6 +45,8 @@ constexpr const char kLoginPinInputViewClassName[] = "LoginPinInputView";
 // A FixedLengthCodeInput that is always obscured and
 // has some special focus handling.
 class LoginPinInput : public FixedLengthCodeInput {
+  METADATA_HEADER(LoginPinInput, FixedLengthCodeInput)
+
  public:
   LoginPinInput(int length,
                 LoginPinInputView::OnPinSubmit on_submit,
@@ -93,7 +98,7 @@ void LoginPinInput::OnModified(bool last_field_active, bool complete) {
 
   // Submit the input if its the last field, and complete.
   if (last_field_active && complete) {
-    absl::optional<std::string> user_input = GetCode();
+    std::optional<std::string> user_input = GetCode();
     DCHECK(on_submit_);
     LOG(WARNING) << "crbug.com/1339004 : Submitting PIN " << IsReadOnly();
     AuthEventsRecorder::Get()->OnPinSubmit();
@@ -146,6 +151,9 @@ void LoginPinInput::GetAccessibleNodeData(ui::AXNodeData* node_data) {
       IDS_ASH_LOGIN_POD_PASSWORD_PIN_INPUT_ACCESSIBLE_NAME));
 }
 
+BEGIN_METADATA(LoginPinInput)
+END_METADATA
+
 const int LoginPinInputView::kDefaultLength = 6;
 
 LoginPinInputView::TestApi::TestApi(LoginPinInputView* view) : view_(view) {
@@ -158,7 +166,7 @@ views::View* LoginPinInputView::TestApi::code_input() {
   return view_->code_input_;
 }
 
-absl::optional<std::string> LoginPinInputView::TestApi::GetCode() {
+std::optional<std::string> LoginPinInputView::TestApi::GetCode() {
   return view_->code_input_->GetCode();
 }
 
@@ -304,5 +312,8 @@ void LoginPinInputView::OnChanged(bool is_empty) {
     on_changed_.Run(is_empty);
   }
 }
+
+BEGIN_METADATA(LoginPinInputView)
+END_METADATA
 
 }  // namespace ash

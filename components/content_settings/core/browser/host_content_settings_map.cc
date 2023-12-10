@@ -992,7 +992,7 @@ base::Value HostContentSettingsMap::GetWebsiteSetting(
           content_type);
   if (content_settings_info) {
     for (const std::string& scheme :
-         content_settings_info->allowlisted_schemes()) {
+         content_settings_info->allowlisted_primary_schemes()) {
       DCHECK(SchemeCanBeAllowlisted(scheme));
 
       if (primary_url.SchemeIs(scheme)) {

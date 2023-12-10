@@ -6,6 +6,7 @@
 #define CHROME_UPDATER_INSTALLER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/files/file_path.h"
@@ -19,7 +20,6 @@
 #include "chrome/updater/updater_scope.h"
 #include "components/crx_file/crx_verifier.h"
 #include "components/update_client/update_client.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class TimeDelta;
@@ -57,7 +57,7 @@ AppInstallerResult RunApplicationInstaller(
     const AppInfo& app_info,
     const base::FilePath& installer_path,
     const std::string& install_args,
-    const absl::optional<base::FilePath>& server_install_data,
+    const std::optional<base::FilePath>& server_install_data,
     bool usage_stats_enabled,
     const base::TimeDelta& timeout,
     InstallProgressCallback progress_callback);

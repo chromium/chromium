@@ -9,8 +9,6 @@ package org.chromium.chrome.browser.compositor.bottombar;
  * are able to offer a custom version of the OverlayPanelContent to be used in the tests.
  */
 public interface OverlayPanelContentFactory {
-    /**
-     * Create a new OverlayPanelContent object. This can be overridden for tests.
-     */
+    /** Create a new OverlayPanelContent object. This can be overridden for tests. */
     OverlayPanelContent createNewOverlayPanelContent();
 }

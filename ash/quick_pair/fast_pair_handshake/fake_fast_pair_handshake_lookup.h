@@ -28,7 +28,7 @@ class FakeFastPairHandshakeLookup : public FastPairHandshakeLookup {
  public:
   using OnCompleteCallback =
       base::OnceCallback<void(scoped_refptr<Device>,
-                              absl::optional<PairFailure>)>;
+                              std::optional<PairFailure>)>;
 
   static FakeFastPairHandshakeLookup* GetFakeInstance();
 
@@ -47,7 +47,7 @@ class FakeFastPairHandshakeLookup : public FastPairHandshakeLookup {
               OnCompleteCallback on_complete) override;
 
   void InvokeCallbackForTesting(scoped_refptr<Device> device,
-                                absl::optional<PairFailure> failure);
+                                std::optional<PairFailure> failure);
   void CreateForTesting(
       scoped_refptr<device::BluetoothAdapter> adapter,
       scoped_refptr<Device> device,

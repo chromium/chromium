@@ -5,12 +5,12 @@
 #ifndef IOS_CHROME_BROWSER_SYNCED_SESSIONS_MODEL_DISTANT_TAB_H_
 #define IOS_CHROME_BROWSER_SYNCED_SESSIONS_MODEL_DISTANT_TAB_H_
 
+#import <optional>
 #import <string>
 #import <vector>
 
 #import "base/time/time.h"
 #import "components/sessions/core/session_id.h"
-#import "third_party/abseil-cpp/absl/types/optional.h"
 #import "url/gurl.h"
 
 namespace synced_sessions {
@@ -53,7 +53,7 @@ struct DistantTabsSet {
   // null value for `filtered_tabs` represents that the session's tabs are
   // not filtered. This shortcut representation prevents having to copy over
   // pointers to each tab within a session when every tab is included.
-  absl::optional<std::vector<DistantTab*>> filtered_tabs;
+  std::optional<std::vector<DistantTab*>> filtered_tabs;
 };
 
 }  // namespace synced_sessions

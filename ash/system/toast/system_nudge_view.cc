@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/public/cpp/style/color_provider.h"
 #include "ash/public/cpp/system/anchored_nudge_data.h"
@@ -14,11 +13,11 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
+#include "ash/style/keyboard_shortcut_view.h"
 #include "ash/style/pill_button.h"
 #include "ash/style/system_shadow.h"
 #include "ash/style/typography.h"
 #include "ash/system/toast/nudge_constants.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -81,12 +80,11 @@ void SetupViewCornerRadius(views::View* view, int corner_radius) {
 }  // namespace
 
 SystemNudgeView::SystemNudgeView(AnchoredNudgeData& nudge_data) {
-  DCHECK(features::IsSystemNudgeV2Enabled());
-
   SetupViewCornerRadius(this, kNudgeCornerRadius);
   layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
   layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
-  SetBackground(views::CreateThemedSolidBackground(kColorAshShieldAndBase80));
+  SetBackground(views::CreateThemedSolidBackground(
+      nudge_data.background_color_id.value_or(kColorAshShieldAndBase80)));
   SetBorder(std::make_unique<views::HighlightBorder>(
       kNudgeCornerRadius,
       views::HighlightBorder::Type::kHighlightBorderOnShadow));
@@ -104,7 +102,8 @@ SystemNudgeView::SystemNudgeView(AnchoredNudgeData& nudge_data) {
 
   const bool nudge_is_text_only = nudge_data.image_model.IsEmpty() &&
                                   nudge_data.title_text.empty() &&
-                                  nudge_data.primary_button_text.empty();
+                                  nudge_data.primary_button_text.empty() &&
+                                  nudge_data.keyboard_codes.empty();
 
   // Nudges without an anchor view that are not text-only will have a close
   // button that is visible on view hovered.
@@ -164,7 +163,17 @@ SystemNudgeView::SystemNudgeView(AnchoredNudgeData& nudge_data) {
             .SetPreferredSize(gfx::Size(kImageViewSize, kImageViewSize))
             .SetImage(nudge_data.image_model)
             .Build());
+    // Certain `ImageModels` do not have the ability to set their size in the
+    // constructor, so instead we can do it here.
+    if (nudge_data.fill_image_size) {
+      image_view->SetImageSize(gfx::Size(kImageViewSize, kImageViewSize));
+    }
     SetupViewCornerRadius(image_view, kImageViewCornerRadius);
+
+    if (nudge_data.image_background_color_id) {
+      image_view->SetBackground(views::CreateThemedSolidBackground(
+          *nudge_data.image_background_color_id));
+    }
 
     AddPaddingView(image_and_text_container, kImageViewTrailingPadding,
                    kImageViewSize);
@@ -212,6 +221,18 @@ SystemNudgeView::SystemNudgeView(AnchoredNudgeData& nudge_data) {
           .SetMaxLines(kBodyLabelMaxLines)
           .SizeToFit(label_width)
           .Build());
+
+  // TODO(b/302368860): Add support for a view to display keyboard shortcuts in
+  // the same style as the launcher and the new keyboard shortcut app.
+  if (!nudge_data.keyboard_codes.empty()) {
+    AddPaddingView(text_container, image_and_text_container->width(),
+                   kTitleBottomPadding);
+
+    text_container
+        ->AddChildView(
+            std::make_unique<KeyboardShortcutView>(nudge_data.keyboard_codes))
+        ->SetID(VIEW_ID_SYSTEM_NUDGE_SHORTCUT_VIEW);
+  }
 
   // Return early if there are no buttons.
   if (nudge_data.primary_button_text.empty()) {

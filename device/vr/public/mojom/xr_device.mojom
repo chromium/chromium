@@ -7,6 +7,8 @@ module device.mojom;
 import "device/vr/public/mojom/xr_session.mojom";
 
 // XRDeviceId is used in metrics, so don't reorder or reuse.
+// When adding values here be sure to add a corresponding entry to the enum in
+// tools/metrics/histograms/metadata/xr/enums.xml as well.
 enum XRDeviceId {
   WEB_TEST_DEVICE_ID = 0, // Fake device used by web_tests.
   FAKE_DEVICE_ID = 1, // Fake device used in unit tests.

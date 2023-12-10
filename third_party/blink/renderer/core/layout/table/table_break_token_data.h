@@ -5,14 +5,14 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_TABLE_TABLE_BREAK_TOKEN_DATA_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_TABLE_TABLE_BREAK_TOKEN_DATA_H_
 
-#include "third_party/blink/renderer/core/layout/ng/ng_block_break_token_data.h"
+#include "third_party/blink/renderer/core/layout/block_break_token_data.h"
 #include "third_party/blink/renderer/core/layout/table/table_layout_algorithm_types.h"
 
 namespace blink {
 
-struct TableBreakTokenData final : NGBlockBreakTokenData {
+struct TableBreakTokenData final : BlockBreakTokenData {
   TableBreakTokenData(
-      const NGBlockBreakTokenData* break_token_data,
+      const BlockBreakTokenData* break_token_data,
       const TableTypes::Rows& rows,
       const TableTypes::CellBlockConstraints& cell_block_constraints,
       const TableTypes::Sections& sections,
@@ -20,7 +20,7 @@ struct TableBreakTokenData final : NGBlockBreakTokenData {
       LayoutUnit consumed_table_box_block_size,
       bool has_entered_table_box,
       bool is_past_table_box)
-      : NGBlockBreakTokenData(kTableBreakTokenData, break_token_data),
+      : BlockBreakTokenData(kTableBreakTokenData, break_token_data),
         rows(rows),
         cell_block_constraints(cell_block_constraints),
         sections(sections),
@@ -50,7 +50,7 @@ struct TableBreakTokenData final : NGBlockBreakTokenData {
 
 template <>
 struct DowncastTraits<TableBreakTokenData> {
-  static bool AllowFrom(const NGBlockBreakTokenData& token_data) {
+  static bool AllowFrom(const BlockBreakTokenData& token_data) {
     return token_data.IsTableType();
   }
 };

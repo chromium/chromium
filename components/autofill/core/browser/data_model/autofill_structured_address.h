@@ -30,7 +30,8 @@ class AddressComponentWithRewriter : public AddressComponent {
 
 // This class represents a type that is controlled by a feature flag. It
 // overrides the SetValue method to prevent setting values to nodes for which
-// the flag is turned off.
+// the flag is turned off. It further prevents exposing disabled types as
+// supported.
 class FeatureGuardedAddressComponent : public AddressComponent {
  public:
   FeatureGuardedAddressComponent(raw_ptr<const base::Feature> feature,
@@ -38,8 +39,10 @@ class FeatureGuardedAddressComponent : public AddressComponent {
                                  SubcomponentsList children,
                                  unsigned int merge_mode);
 
-  // Sets the value corresponding to the storage type of this component.
+  // AddressComponent overrides:
   void SetValue(std::u16string value, VerificationStatus status) override;
+  void GetTypes(bool storable_only,
+                ServerFieldTypeSet* supported_types) const override;
 
  private:
   // Feature guarding the rollout of this address component.
@@ -103,6 +106,16 @@ class BetweenStreetsNode : public FeatureGuardedAddressComponent {
   explicit BetweenStreetsNode(SubcomponentsList children);
   ~BetweenStreetsNode() override;
 };
+class BetweenStreets1Node : public FeatureGuardedAddressComponent {
+ public:
+  explicit BetweenStreets1Node(SubcomponentsList children);
+  ~BetweenStreets1Node() override;
+};
+class BetweenStreets2Node : public FeatureGuardedAddressComponent {
+ public:
+  explicit BetweenStreets2Node(SubcomponentsList children);
+  ~BetweenStreets2Node() override;
+};
 
 // Stores administrative area level 2. A sub-division of a state, e.g. a
 // Municipio in Brazil or Mexico.
@@ -110,6 +123,28 @@ class AdminLevel2Node : public FeatureGuardedAddressComponent {
  public:
   explicit AdminLevel2Node(SubcomponentsList children);
   ~AdminLevel2Node() override;
+};
+
+// Stores address overflow fields in countries that assign a fixed meaning to
+// overflow fields, meaning that forms follow a consistent structure that is
+// typically identical across domains while also providing an option for an
+// overflow field.
+class AddressOverflowNode : public FeatureGuardedAddressComponent {
+ public:
+  explicit AddressOverflowNode(SubcomponentsList children);
+  ~AddressOverflowNode() override;
+};
+
+class AddressOverflowAndLandmarkNode : public FeatureGuardedAddressComponent {
+ public:
+  explicit AddressOverflowAndLandmarkNode(SubcomponentsList children);
+  ~AddressOverflowAndLandmarkNode() override;
+};
+
+class BetweenStreetsOrLandmarkNode : public FeatureGuardedAddressComponent {
+ public:
+  explicit BetweenStreetsOrLandmarkNode(SubcomponentsList children);
+  ~BetweenStreetsOrLandmarkNode() override;
 };
 
 // The StreetAddress incorporates all the information specifically related to

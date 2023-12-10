@@ -17,6 +17,10 @@
 
 namespace ash {
 
+namespace test {
+struct UserAuthConfig;
+}
+
 // Mixin that acts as a broker between tests and FakeUserDataAuthClient,
 // handling all interactions and transformations.
 class CryptohomeMixin : public InProcessBrowserTestMixin,
@@ -29,13 +33,18 @@ class CryptohomeMixin : public InProcessBrowserTestMixin,
 
   void SetUpOnMainThread() override;
 
+  void ApplyAuthConfig(const AccountId& user,
+                       const test::UserAuthConfig& config);
+
   void MarkUserAsExisting(const AccountId& user);
   // Returns {authsession_id, broadcast_id} pair.
   std::pair<std::string, std::string> AddSession(const AccountId& user,
                                                  bool authenticated);
   void AddGaiaPassword(const AccountId& user, std::string password);
   void AddLocalPassword(const AccountId& user, std::string password);
-  void AddCryptohomePin(const AccountId& user, const std::string& pin);
+  void AddCryptohomePin(const AccountId& user,
+                        const std::string& pin,
+                        const std::string& pin_salt);
   void SetPinLocked(const AccountId& user, bool locked);
   bool HasPinFactor(const AccountId& user);
   void AddRecoveryFactor(const AccountId& user);

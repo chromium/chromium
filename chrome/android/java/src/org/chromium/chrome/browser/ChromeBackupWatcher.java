@@ -53,25 +53,28 @@ public class ChromeBackupWatcher {
             }
             sharedPrefs.writeBoolean(ChromePreferenceKeys.BACKUP_FIRST_BACKUP_DONE, true);
         }
-        ContextUtils.getAppSharedPreferences().registerOnSharedPreferenceChangeListener(
-                (prefs, key) -> {
-                    // Update the backup if any of the backed up Android preferences change.
-                    for (String pref : ChromeBackupAgentImpl.BACKUP_ANDROID_BOOL_PREFS) {
-                        if (key.equals(pref)) {
-                            onBackupPrefsChanged();
-                            return;
-                        }
+        ContextUtils.getAppSharedPreferences()
+                .registerOnSharedPreferenceChangeListener(
+                        (prefs, key) -> {
+                            // Update the backup if any of the backed up Android preferences change.
+                            for (String pref : ChromeBackupAgentImpl.BACKUP_ANDROID_BOOL_PREFS) {
+                                if (key.equals(pref)) {
+                                    onBackupPrefsChanged();
+                                    return;
+                                }
+                            }
+                        });
+        // Update the backup if the sign-in status changes.
+        IdentityManager identityManager =
+                IdentityServicesProvider.get()
+                        .getIdentityManager(Profile.getLastUsedRegularProfile());
+        identityManager.addObserver(
+                new IdentityManager.Observer() {
+                    @Override
+                    public void onPrimaryAccountChanged(PrimaryAccountChangeEvent eventDetails) {
+                        onBackupPrefsChanged();
                     }
                 });
-        // Update the backup if the sign-in status changes.
-        IdentityManager identityManager = IdentityServicesProvider.get().getIdentityManager(
-                Profile.getLastUsedRegularProfile());
-        identityManager.addObserver(new IdentityManager.Observer() {
-            @Override
-            public void onPrimaryAccountChanged(PrimaryAccountChangeEvent eventDetails) {
-                onBackupPrefsChanged();
-            }
-        });
     }
 
     @CalledByNative

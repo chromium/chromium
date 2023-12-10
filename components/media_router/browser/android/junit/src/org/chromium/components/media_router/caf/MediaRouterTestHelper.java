@@ -20,26 +20,23 @@ import java.util.List;
 
 /** Test helper for MediaRouter-related functionalities. */
 public class MediaRouterTestHelper {
-    @Mock
-    private ShadowMediaRouter.ShadowImplementation mShadowMediaRouter;
-    @Mock
-    private MediaRouter.RouteInfo mDefaultRoute;
-    @Mock
-    private MediaRouter.RouteInfo mCastRoute;
-    @Mock
-    private MediaRouter.RouteInfo mOtherCastRoute;
+    @Mock private ShadowMediaRouter.ShadowImplementation mShadowMediaRouter;
+    @Mock private MediaRouter.RouteInfo mDefaultRoute;
+    @Mock private MediaRouter.RouteInfo mCastRoute;
+    @Mock private MediaRouter.RouteInfo mOtherCastRoute;
 
     public MediaRouterTestHelper() {
         MockitoAnnotations.initMocks(this);
         setUpRoutes();
         ShadowMediaRouter.setImplementation(mShadowMediaRouter);
-        doAnswer(new Answer<Void>() {
-            @Override
-            public Void answer(InvocationOnMock invocation) {
-                selectRoute(getDefaultRoute());
-                return null;
-            }
-        })
+        doAnswer(
+                        new Answer<Void>() {
+                            @Override
+                            public Void answer(InvocationOnMock invocation) {
+                                selectRoute(getDefaultRoute());
+                                return null;
+                            }
+                        })
                 .when(mShadowMediaRouter)
                 .unselect(anyInt());
         doReturn(mDefaultRoute).when(mShadowMediaRouter).getDefaultRoute();
@@ -86,13 +83,14 @@ public class MediaRouterTestHelper {
     }
 
     private void setUpRouteStubs(MediaRouter.RouteInfo routeInfo) {
-        doAnswer(new Answer<Void>() {
-            @Override
-            public Void answer(InvocationOnMock invocation) {
-                selectRoute(routeInfo);
-                return null;
-            }
-        })
+        doAnswer(
+                        new Answer<Void>() {
+                            @Override
+                            public Void answer(InvocationOnMock invocation) {
+                                selectRoute(routeInfo);
+                                return null;
+                            }
+                        })
                 .when(routeInfo)
                 .select();
     }

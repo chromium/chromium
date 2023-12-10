@@ -23,14 +23,14 @@
 #include "components/viz/test/host_frame_sink_manager_test_api.h"
 #include "content/browser/compositor/surface_utils.h"
 #include "content/browser/renderer_host/cursor_manager.h"
-#include "content/browser/renderer_host/input/synthetic_smooth_scroll_gesture.h"
-#include "content/browser/renderer_host/input/synthetic_tap_gesture.h"
-#include "content/browser/renderer_host/input/synthetic_touchpad_pinch_gesture.h"
 #include "content/browser/renderer_host/input/touch_emulator.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_input_event_router.h"
 #include "content/browser/renderer_host/render_widget_host_view_child_frame.h"
 #include "content/browser/site_per_process_browsertest.h"
+#include "content/common/input/synthetic_smooth_scroll_gesture.h"
+#include "content/common/input/synthetic_tap_gesture.h"
+#include "content/common/input/synthetic_touchpad_pinch_gesture.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/context_menu_params.h"
@@ -7384,17 +7384,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestDataGenerationBrowserTest,
 }
 
 #if defined(USE_AURA)
-class SitePerProcessDelegatedInkBrowserTest
-    : public SitePerProcessHitTestBrowserTest {
- public:
-  SitePerProcessDelegatedInkBrowserTest() = default;
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    SitePerProcessHitTestBrowserTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
-                                    "DelegatedInkTrails");
-  }
-};
+using SitePerProcessDelegatedInkBrowserTest = SitePerProcessHitTestBrowserTest;
 
 // Test confirms that a point hitting an OOPIF that is requesting delegated ink
 // trails results in the metadata being correctly sent to the child's

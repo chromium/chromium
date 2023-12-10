@@ -143,6 +143,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/grit/branded_strings.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/test_browser_window_aura.h"
 #include "chrome/test/base/testing_profile.h"
@@ -196,6 +197,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/client/window_parenting_client.h"
 #include "ui/aura/window.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/menu_model.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_features.h"
@@ -461,7 +463,7 @@ void UpdateAppRegistryCache(Profile* profile,
                             const std::string& app_id,
                             bool block,
                             bool pause,
-                            absl::optional<bool> show_in_shelf) {
+                            std::optional<bool> show_in_shelf) {
   std::vector<apps::AppPtr> apps;
   apps::AppPtr app =
       std::make_unique<apps::App>(apps::AppType::kChromeApp, app_id);
@@ -774,7 +776,7 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
   }
 
   void StartPrefSyncService(const syncer::SyncDataList& init_sync_list) {
-    absl::optional<syncer::ModelError> error =
+    std::optional<syncer::ModelError> error =
         GetPrefSyncService()->MergeDataAndStartSyncing(
             syncer::OS_PREFERENCES, init_sync_list,
             std::make_unique<syncer::FakeSyncChangeProcessor>());
@@ -1151,8 +1153,8 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
   std::string AddArcAppAndShortcut(const arc::mojom::AppInfo& app_info) {
     ArcAppListPrefs* const prefs = arc_test_.arc_app_list_prefs();
 
-    absl::optional<uint64_t> app_size_in_bytes;
-    absl::optional<uint64_t> data_size_in_bytes;
+    std::optional<uint64_t> app_size_in_bytes;
+    std::optional<uint64_t> data_size_in_bytes;
 
     if (!app_info.app_storage.is_null()) {
       app_size_in_bytes = app_info.app_storage->app_size_in_bytes;
@@ -1252,12 +1254,12 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
 
   webapps::AppId InstallExternalWebApp(
       const GURL& start_url,
-      const absl::optional<GURL>& install_url = {}) {
+      const std::optional<GURL>& install_url = {}) {
     auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
     web_app_info->start_url = GURL(start_url);
     web_app_info->install_url = GURL(install_url ? *install_url : start_url);
     const webapps::AppId expected_web_app_id = web_app::GenerateAppId(
-        /*manifest_id=*/absl::nullopt, web_app_info->start_url);
+        /*manifest_id=*/std::nullopt, web_app_info->start_url);
     webapps::AppId web_app_id = web_app::test::InstallWebApp(
         profile(), std::move(web_app_info),
         /*overwrite_existing_manifest_fields =*/false,
@@ -1268,10 +1270,10 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
 
   webapps::AppId InstallExternalWebApp(
       const std::string& start_url,
-      const absl::optional<std::string>& install_url = {}) {
+      const std::optional<std::string>& install_url = {}) {
     return InstallExternalWebApp(GURL(start_url), install_url
                                                       ? GURL(*install_url)
-                                                      : absl::optional<GURL>());
+                                                      : std::optional<GURL>());
   }
 
   void RemoveWebApp(const char* web_app_id) {
@@ -1946,7 +1948,8 @@ TEST_F(ChromeShelfControllerTest, PreinstalledApps) {
 
 TEST_F(ChromeShelfControllerLacrosTest, LacrosPinnedByDefault) {
   InitShelfController();
-  EXPECT_EQ("Chrome", GetPinnedAppStatus());
+  std::string lacros_app_name = l10n_util::GetStringUTF8(IDS_PRODUCT_NAME);
+  EXPECT_EQ(lacros_app_name, GetPinnedAppStatus());
 }
 
 // Checks that AppService instance is updated appropriately for one Chrome app
@@ -2164,7 +2167,7 @@ TEST_F(ChromeShelfControllerWithArcTest, ArcAppPinCrossPlatformWorkflow) {
   EXPECT_TRUE(shelf_controller_->IsAppPinned(web_app::kGmailAppId));
   EXPECT_FALSE(shelf_controller_->IsAppPinned(arc_app_id3));
 
-  EXPECT_EQ("App1, Chrome, Fake App 0, App2, Fake App 1, Gmail",
+  EXPECT_EQ("App1, Chrome, Fake App 1, App2, Fake App 2, Gmail",
             GetPinnedAppStatus());
 
   // Now move pins on ARC enabled platform.
@@ -2172,10 +2175,10 @@ TEST_F(ChromeShelfControllerWithArcTest, ArcAppPinCrossPlatformWorkflow) {
   model_->Move(2, 0);
   model_->Move(2, 4);
   model_->Move(3, 1);
-  EXPECT_EQ("App2, Fake App 1, Chrome, App1, Fake App 0, Gmail",
+  EXPECT_EQ("App2, Fake App 2, Chrome, App1, Fake App 1, Gmail",
             GetPinnedAppStatus());
 
-  // ARC apps, Fake App 1 and Fake App 0, are updated due to icon updates. So
+  // ARC apps, Fake App 2 and Fake App 1, are updated due to icon updates. So
   // wait for ARC apps icon updated by AppService before reset sync service.
   icon_loader->WaitForIconLoadded(
       std::vector<std::string>{arc_app_id1, arc_app_id2});
@@ -2215,7 +2218,7 @@ TEST_F(ChromeShelfControllerWithArcTest, ArcAppPinCrossPlatformWorkflow) {
   EXPECT_TRUE(shelf_controller_->IsAppPinned(arc_app_id2));
   EXPECT_TRUE(shelf_controller_->IsAppPinned(web_app::kGmailAppId));
   EXPECT_FALSE(shelf_controller_->IsAppPinned(arc_app_id3));
-  EXPECT_EQ("Gmail, Fake App 1, Chrome, App1, Fake App 0",
+  EXPECT_EQ("Gmail, Fake App 2, Chrome, App1, Fake App 1",
             GetPinnedAppStatus());
 }
 
@@ -3145,7 +3148,7 @@ TEST_F(ChromeShelfControllerWithArcTest, ArcAppPin) {
   EXPECT_TRUE(shelf_controller_->IsAppPinned(arc_app_id));
   EXPECT_TRUE(shelf_controller_->IsAppPinned(extension2_->id()));
 
-  EXPECT_EQ("Chrome, App1, Fake App 0, App2", GetPinnedAppStatus());
+  EXPECT_EQ("Chrome, App1, Fake App 1, App2", GetPinnedAppStatus());
 
   UninstallArcApps();
   // Allow async callbacks to run.
@@ -3163,7 +3166,7 @@ TEST_F(ChromeShelfControllerWithArcTest, ArcAppPin) {
 
   // Opt-Out/Opt-In remove item from the shelf.
   PinAppWithIDToShelf(arc_app_id);
-  EXPECT_EQ("Chrome, App1, App2, Fake App 0", GetPinnedAppStatus());
+  EXPECT_EQ("Chrome, App1, App2, Fake App 1", GetPinnedAppStatus());
   EnablePlayStore(false);
   EXPECT_EQ("Chrome, App1, App2", GetPinnedAppStatus());
   EnablePlayStore(true);
@@ -3173,7 +3176,7 @@ TEST_F(ChromeShelfControllerWithArcTest, ArcAppPin) {
   // Allow async callbacks to run.
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_EQ("Chrome, App1, App2, Fake App 0", GetPinnedAppStatus());
+  EXPECT_EQ("Chrome, App1, App2, Fake App 1", GetPinnedAppStatus());
 }
 
 // Validates that ARC app pins persist across OptOut/OptIn.
@@ -3198,7 +3201,7 @@ TEST_F(ChromeShelfControllerWithArcTest, ArcAppPinOptOutOptIn) {
   EXPECT_TRUE(shelf_controller_->IsAppPinned(arc_app_id1));
   EXPECT_TRUE(shelf_controller_->IsAppPinned(extension2_->id()));
   EXPECT_TRUE(shelf_controller_->IsAppPinned(arc_app_id2));
-  EXPECT_EQ("Chrome, App1, Fake App 1, App2, Fake App 0", GetPinnedAppStatus());
+  EXPECT_EQ("Chrome, App1, Fake App 2, App2, Fake App 1", GetPinnedAppStatus());
 
   EnablePlayStore(false);
 
@@ -3217,7 +3220,7 @@ TEST_F(ChromeShelfControllerWithArcTest, ArcAppPinOptOutOptIn) {
   EXPECT_TRUE(shelf_controller_->IsAppPinned(extension2_->id()));
   EXPECT_TRUE(shelf_controller_->IsAppPinned(arc_app_id2));
 
-  EXPECT_EQ("Chrome, App1, Fake App 1, App2, Fake App 0", GetPinnedAppStatus());
+  EXPECT_EQ("Chrome, App1, Fake App 2, App2, Fake App 1", GetPinnedAppStatus());
 }
 
 TEST_F(ChromeShelfControllerWithArcTest, DISABLED_ArcCustomAppIcon) {
@@ -3912,7 +3915,7 @@ TEST_F(ChromeShelfControllerTest, ChromeCannotBeUnpinnedByPolicy) {
               chrome_item.item_id(), chrome_item.item_name(),
               chrome_item.parent_id(), chrome_item.item_ordinal(),
               chrome_item.item_pin_ordinal(), chrome_item.item_type(),
-              /*is_user_pinned=*/absl::nullopt))});
+              /*is_user_pinned=*/std::nullopt))});
 
   EXPECT_EQ("Chrome", GetPinnedAppStatus());
   UpdateSyncPinAssertion(app_constants::kChromeAppId,
@@ -5796,7 +5799,7 @@ TEST_F(ChromeShelfControllerTest, OsFlagsNotShowInShelfNotPinnable) {
   InstallSystemWebApp(std::move(delegate));
   InitShelfController();
 
-  absl::optional<webapps::AppId> app_id =
+  std::optional<webapps::AppId> app_id =
       ash::SystemWebAppManager::GetForTest(profile())->GetAppIdForSystemApp(
           app_type);
   ASSERT_TRUE(app_id);
@@ -5953,7 +5956,7 @@ TEST_F(ChromeShelfControllerTest, VerifyAppStatusForPausedApp) {
 
   // Set the app as paused
   UpdateAppRegistryCache(profile(), extension1_->id(), false /* block */,
-                         true /* pause */, absl::nullopt /* show_in_shelf */);
+                         true /* pause */, std::nullopt /* show_in_shelf */);
 
   InitShelfController();
 
@@ -5963,17 +5966,17 @@ TEST_F(ChromeShelfControllerTest, VerifyAppStatusForPausedApp) {
 
   // Set the app as blocked
   UpdateAppRegistryCache(profile(), extension1_->id(), true /* block */,
-                         true /* pause */, absl::nullopt /* show_in_shelf */);
+                         true /* pause */, std::nullopt /* show_in_shelf */);
   EXPECT_EQ(ash::AppStatus::kBlocked, model_->items()[1].app_status);
 
   // Set the app as ready, but still paused;
   UpdateAppRegistryCache(profile(), extension1_->id(), false /* block */,
-                         true /* pause */, absl::nullopt /* show_in_shelf */);
+                         true /* pause */, std::nullopt /* show_in_shelf */);
   EXPECT_EQ(ash::AppStatus::kPaused, model_->items()[1].app_status);
 
   // Set the app as ready, and not paused;
   UpdateAppRegistryCache(profile(), extension1_->id(), false /* block */,
-                         false /* pause */, absl::nullopt /* show_in_shelf */);
+                         false /* pause */, std::nullopt /* show_in_shelf */);
   EXPECT_EQ(ash::AppStatus::kReady, model_->items()[1].app_status);
 }
 
@@ -5984,7 +5987,7 @@ TEST_F(ChromeShelfControllerTest, VerifyAppStatusForBlockedApp) {
 
   // Set the app as blocked
   UpdateAppRegistryCache(profile(), extension1_->id(), true /* block */,
-                         false /* pause */, absl::nullopt /* show_in_shelf */);
+                         false /* pause */, std::nullopt /* show_in_shelf */);
 
   InitShelfController();
 
@@ -5994,17 +5997,17 @@ TEST_F(ChromeShelfControllerTest, VerifyAppStatusForBlockedApp) {
 
   // Set the app as paused
   UpdateAppRegistryCache(profile(), extension1_->id(), true /* block */,
-                         true /* pause */, absl::nullopt /* show_in_shelf */);
+                         true /* pause */, std::nullopt /* show_in_shelf */);
   EXPECT_EQ(ash::AppStatus::kBlocked, model_->items()[1].app_status);
 
   // Set the app as blocked, but un-paused
   UpdateAppRegistryCache(profile(), extension1_->id(), true /* block */,
-                         false /* pause */, absl::nullopt /* show_in_shelf */);
+                         false /* pause */, std::nullopt /* show_in_shelf */);
   EXPECT_EQ(ash::AppStatus::kBlocked, model_->items()[1].app_status);
 
   // Set the app as ready, and not paused
   UpdateAppRegistryCache(profile(), extension1_->id(), false /* block */,
-                         false /* pause */, absl::nullopt /* show_in_shelf */);
+                         false /* pause */, std::nullopt /* show_in_shelf */);
   EXPECT_EQ(ash::AppStatus::kReady, model_->items()[1].app_status);
 
   // Set the app as blocked and hidden
@@ -6020,7 +6023,7 @@ TEST_F(ChromeShelfControllerTest, VerifyAppStatusForBlockedApp) {
 
   // Set the app as ready
   UpdateAppRegistryCache(profile(), extension1_->id(), false /* block */,
-                         false /* pause */, absl::nullopt /* show_in_shelf */);
+                         false /* pause */, std::nullopt /* show_in_shelf */);
   EXPECT_EQ(ash::AppStatus::kReady, model_->items()[1].app_status);
 }
 
@@ -6206,7 +6209,7 @@ class ChromeShelfControllerPromiseAppsTest : public ChromeShelfControllerTest,
     iv->icon_type = apps::IconType::kUncompressed;
 
     base::test::TestFuture<apps::IconValuePtr> image_with_effects;
-    apps::ApplyIconEffects(/*profile=*/nullptr, /*app_id=*/absl::nullopt,
+    apps::ApplyIconEffects(/*profile=*/nullptr, /*app_id=*/std::nullopt,
                            effects, bitmap.width(), std::move(iv),
                            image_with_effects.GetCallback());
 
@@ -6376,7 +6379,7 @@ TEST_F(ChromeShelfControllerPromiseAppsTest,
   const ash::ShelfItem* item = shelf_controller_->GetItem(id);
   SkBitmap result_bitmap = *item->image.bitmap();
   SkBitmap expected_bitmap =
-      ApplyEffectsToBitmap(base_bitmap, apps::IconEffects::kCrOsStandardMask);
+      ApplyEffectsToBitmap(base_bitmap, apps::IconEffects::kNone);
   EXPECT_TRUE(gfx::BitmapsAreEqual(result_bitmap, expected_bitmap));
 }
 
@@ -6689,7 +6692,7 @@ TEST_F(ChromeShelfControllerShortcutTest, LoadIcon) {
       std::make_unique<apps::Shortcut>("app_id", "local_id");
   apps::ShortcutId shortcut_id = shortcut->shortcut_id;
   shortcut->icon_key = apps::IconKey();
-  shortcut->icon_key->update_version = 100;
+  shortcut->icon_key->update_version = false;
 
   apps::StubIconLoader shortcut_stub_icon_loader;
   apps::StubIconLoader app_stub_icon_loader;
@@ -6726,8 +6729,9 @@ TEST_F(ChromeShelfControllerShortcutTest, LoadIcon) {
   // Verify icon update loads icon again.
   apps::ShortcutPtr delta =
       std::make_unique<apps::Shortcut>("app_id", "local_id");
-  delta->icon_key = apps::IconKey(1, 1);
-  delta->icon_key->update_version = 101;
+  delta->icon_key = apps::IconKey(apps::IconKey::kInvalidResourceId,
+                                  apps::IconEffects::kCrOsStandardIcon);
+  delta->icon_key->update_version = true;
   cache()->UpdateShortcut(std::move(delta));
 
   EXPECT_EQ(2, shortcut_stub_icon_loader.NumLoadIconFromIconKeyCalls());
@@ -6783,7 +6787,7 @@ TEST_F(ChromeShelfControllerShortcutTest, LoadIcon) {
   apps::ShortcutPtr same_shortcut =
       std::make_unique<apps::Shortcut>("app_id", "local_id");
   same_shortcut->icon_key = apps::IconKey();
-  same_shortcut->icon_key->update_version = 100;
+  same_shortcut->icon_key->update_version = false;
   cache()->UpdateShortcut(std::move(same_shortcut));
   // In this case icon loaded on shortcut creation.
   EXPECT_EQ(4, shortcut_stub_icon_loader.NumLoadIconFromIconKeyCalls());

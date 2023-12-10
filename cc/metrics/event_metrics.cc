@@ -28,12 +28,12 @@ constexpr struct {
   const char* name;
 
   ui::EventType ui_event_type;
-  absl::optional<bool> scroll_is_inertial = absl::nullopt;
-  absl::optional<ScrollUpdateEventMetrics::ScrollUpdateType>
-      scroll_update_type = absl::nullopt;
+  std::optional<bool> scroll_is_inertial = std::nullopt;
+  std::optional<ScrollUpdateEventMetrics::ScrollUpdateType> scroll_update_type =
+      std::nullopt;
 
-  absl::optional<EventMetrics::HistogramBucketing> histogram_bucketing =
-      absl::nullopt;
+  std::optional<EventMetrics::HistogramBucketing> histogram_bucketing =
+      std::nullopt;
 } kInterestingEvents[] = {
 #define EVENT_TYPE(type_name, ui_type, ...)                      \
   {                                                              \
@@ -148,10 +148,10 @@ static_assert(std::size(kPinchTypes) ==
                   static_cast<int>(PinchEventMetrics::PinchType::kMaxValue) + 1,
               "PinchEventMetrics::PinchType has changed.");
 
-absl::optional<EventMetrics::EventType> ToInterestingEventType(
+std::optional<EventMetrics::EventType> ToInterestingEventType(
     ui::EventType ui_event_type,
-    absl::optional<bool> scroll_is_inertial,
-    absl::optional<ScrollUpdateEventMetrics::ScrollUpdateType>
+    std::optional<bool> scroll_is_inertial,
+    std::optional<ScrollUpdateEventMetrics::ScrollUpdateType>
         scroll_update_type) {
   for (size_t i = 0; i < std::size(kInterestingEvents); i++) {
     const auto& interesting_event = kInterestingEvents[i];
@@ -164,7 +164,7 @@ absl::optional<EventMetrics::EventType> ToInterestingEventType(
       return metrics_event_type;
     }
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 ScrollEventMetrics::ScrollType ToScrollType(ui::ScrollInputType ui_input_type) {
@@ -215,7 +215,7 @@ bool IsGestureScrollUpdate(ui::EventType type) {
 std::unique_ptr<EventMetrics> EventMetrics::Create(
     ui::EventType type,
     base::TimeTicks timestamp,
-    absl::optional<TraceId> trace_id) {
+    std::optional<TraceId> trace_id) {
   return Create(type, timestamp, base::TimeTicks(), trace_id);
 }
 
@@ -224,7 +224,7 @@ std::unique_ptr<EventMetrics> EventMetrics::Create(
     ui::EventType type,
     base::TimeTicks timestamp,
     base::TimeTicks arrived_in_browser_main_timestamp,
-    absl::optional<TraceId> trace_id) {
+    std::optional<TraceId> trace_id) {
   // TODO(crbug.com/1157090): We expect that `timestamp` is not null, but there
   // seems to be some tests that are emitting events with null timestamp. We
   // should investigate and try to fix those cases and add a `DCHECK` here to
@@ -249,7 +249,7 @@ std::unique_ptr<EventMetrics> EventMetrics::CreateForTesting(
     base::TimeTicks timestamp,
     base::TimeTicks arrived_in_browser_main_timestamp,
     const base::TickClock* tick_clock,
-    absl::optional<TraceId> trace_id) {
+    std::optional<TraceId> trace_id) {
   DCHECK(!timestamp.is_null());
 
   std::unique_ptr<EventMetrics> metrics =
@@ -277,7 +277,7 @@ std::unique_ptr<EventMetrics> EventMetrics::CreateFromExisting(
 
   std::unique_ptr<EventMetrics> metrics =
       CreateInternal(type, base::TimeTicks(), base::TimeTicks(),
-                     existing->tick_clock_, absl::nullopt);
+                     existing->tick_clock_, std::nullopt);
   if (!metrics)
     return nullptr;
 
@@ -294,10 +294,10 @@ std::unique_ptr<EventMetrics> EventMetrics::CreateInternal(
     base::TimeTicks timestamp,
     base::TimeTicks arrived_in_browser_main_timestamp,
     const base::TickClock* tick_clock,
-    absl::optional<TraceId> trace_id) {
-  absl::optional<EventType> interesting_type =
-      ToInterestingEventType(type, /*scroll_is_inertial=*/absl::nullopt,
-                             /*scroll_update_type=*/absl::nullopt);
+    std::optional<TraceId> trace_id) {
+  std::optional<EventType> interesting_type =
+      ToInterestingEventType(type, /*scroll_is_inertial=*/std::nullopt,
+                             /*scroll_update_type=*/std::nullopt);
   if (!interesting_type)
     return nullptr;
   return base::WrapUnique(new EventMetrics(*interesting_type, timestamp,
@@ -308,7 +308,7 @@ std::unique_ptr<EventMetrics> EventMetrics::CreateInternal(
 EventMetrics::EventMetrics(EventType type,
                            base::TimeTicks timestamp,
                            const base::TickClock* tick_clock,
-                           absl::optional<TraceId> trace_id)
+                           std::optional<TraceId> trace_id)
     : type_(type), tick_clock_(tick_clock), trace_id_(trace_id) {
   dispatch_stage_timestamps_[static_cast<int>(DispatchStage::kGenerated)] =
       timestamp;
@@ -318,7 +318,7 @@ EventMetrics::EventMetrics(EventType type,
                            base::TimeTicks timestamp,
                            base::TimeTicks arrived_in_browser_main_timestamp,
                            const base::TickClock* tick_clock,
-                           absl::optional<TraceId> trace_id)
+                           std::optional<TraceId> trace_id)
     : EventMetrics(type, timestamp, tick_clock, trace_id) {
   dispatch_stage_timestamps_[static_cast<int>(
       DispatchStage::kArrivedInBrowserMain)] =
@@ -348,7 +348,7 @@ const char* EventMetrics::GetTypeName(EventMetrics::EventType type) {
   return kInterestingEvents[static_cast<int>(type)].name;
 }
 
-const absl::optional<EventMetrics::HistogramBucketing>&
+const std::optional<EventMetrics::HistogramBucketing>&
 EventMetrics::GetHistogramBucketing() const {
   return kInterestingEvents[static_cast<int>(type_)].histogram_bucketing;
 }
@@ -435,7 +435,7 @@ std::unique_ptr<ScrollEventMetrics> ScrollEventMetrics::Create(
     base::TimeTicks timestamp,
     base::TimeTicks arrived_in_browser_main_timestamp,
     base::TimeTicks blocking_touch_dispatched_to_renderer,
-    absl::optional<TraceId> trace_id) {
+    std::optional<TraceId> trace_id) {
   // TODO(crbug.com/1157090): We expect that `timestamp` is not null, but there
   // seems to be some tests that are emitting events with null timestamp.  We
   // should investigate and try to fix those cases and add a `DCHECK` here to
@@ -464,7 +464,7 @@ std::unique_ptr<ScrollEventMetrics> ScrollEventMetrics::CreateForBrowser(
     ui::ScrollInputType input_type,
     bool is_inertial,
     base::TimeTicks timestamp,
-    absl::optional<TraceId> trace_id) {
+    std::optional<TraceId> trace_id) {
   return Create(type, input_type, is_inertial, timestamp,
                 /*arrived_in_browser_main_timestamp=*/base::TimeTicks(),
                 /*blocking_touch_dispatched_to_renderer=*/base::TimeTicks(),
@@ -483,7 +483,7 @@ std::unique_ptr<ScrollEventMetrics> ScrollEventMetrics::CreateForTesting(
 
   std::unique_ptr<ScrollEventMetrics> metrics = CreateInternal(
       type, input_type, is_inertial, timestamp,
-      arrived_in_browser_main_timestamp, tick_clock, absl::nullopt);
+      arrived_in_browser_main_timestamp, tick_clock, std::nullopt);
   if (!metrics)
     return nullptr;
 
@@ -509,7 +509,7 @@ std::unique_ptr<ScrollEventMetrics> ScrollEventMetrics::CreateFromExisting(
 
   std::unique_ptr<ScrollEventMetrics> metrics =
       CreateInternal(type, input_type, is_inertial, base::TimeTicks(),
-                     base::TimeTicks(), existing->tick_clock_, absl::nullopt);
+                     base::TimeTicks(), existing->tick_clock_, std::nullopt);
   if (!metrics)
     return nullptr;
 
@@ -528,10 +528,10 @@ std::unique_ptr<ScrollEventMetrics> ScrollEventMetrics::CreateInternal(
     base::TimeTicks timestamp,
     base::TimeTicks arrived_in_browser_main_timestamp,
     const base::TickClock* tick_clock,
-    absl::optional<TraceId> trace_id) {
-  absl::optional<EventType> interesting_type =
+    std::optional<TraceId> trace_id) {
+  std::optional<EventType> interesting_type =
       ToInterestingEventType(type, is_inertial,
-                             /*scroll_update_type=*/absl::nullopt);
+                             /*scroll_update_type=*/std::nullopt);
   if (!interesting_type)
     return nullptr;
   return base::WrapUnique(new ScrollEventMetrics(
@@ -545,7 +545,7 @@ ScrollEventMetrics::ScrollEventMetrics(
     base::TimeTicks timestamp,
     base::TimeTicks arrived_in_browser_main_timestamp,
     const base::TickClock* tick_clock,
-    absl::optional<TraceId> trace_id)
+    std::optional<TraceId> trace_id)
     : EventMetrics(type,
                    timestamp,
                    arrived_in_browser_main_timestamp,
@@ -635,7 +635,7 @@ ScrollUpdateEventMetrics::CreateForTesting(
     base::TimeTicks timestamp,
     base::TimeTicks arrived_in_browser_main_timestamp,
     const base::TickClock* tick_clock,
-    absl::optional<TraceId> trace_id) {
+    std::optional<TraceId> trace_id) {
   DCHECK(!timestamp.is_null());
 
   std::unique_ptr<ScrollUpdateEventMetrics> metrics = CreateInternal(
@@ -671,7 +671,7 @@ ScrollUpdateEventMetrics::CreateFromExisting(
       existing->GetDispatchStageTimestamp(DispatchStage::kGenerated);
   std::unique_ptr<ScrollUpdateEventMetrics> metrics = CreateInternal(
       type, input_type, is_inertial, scroll_update_type, delta, generation_ts,
-      base::TimeTicks(), existing->tick_clock_, absl::nullopt);
+      base::TimeTicks(), existing->tick_clock_, std::nullopt);
   if (!metrics)
     return nullptr;
 
@@ -693,8 +693,8 @@ ScrollUpdateEventMetrics::CreateInternal(
     base::TimeTicks timestamp,
     base::TimeTicks arrived_in_browser_main_timestamp,
     const base::TickClock* tick_clock,
-    absl::optional<TraceId> trace_id) {
-  absl::optional<EventType> interesting_type =
+    std::optional<TraceId> trace_id) {
+  std::optional<EventType> interesting_type =
       ToInterestingEventType(type, is_inertial, scroll_update_type);
   if (!interesting_type)
     return nullptr;
@@ -711,7 +711,7 @@ ScrollUpdateEventMetrics::ScrollUpdateEventMetrics(
     base::TimeTicks timestamp,
     base::TimeTicks arrived_in_browser_main_timestamp,
     const base::TickClock* tick_clock,
-    absl::optional<TraceId> trace_id)
+    std::optional<TraceId> trace_id)
     : ScrollEventMetrics(type,
                          scroll_type,
                          timestamp,
@@ -783,7 +783,7 @@ std::unique_ptr<PinchEventMetrics> PinchEventMetrics::CreateForTesting(
   DCHECK(!timestamp.is_null());
 
   std::unique_ptr<PinchEventMetrics> metrics =
-      CreateInternal(type, input_type, timestamp, tick_clock, absl::nullopt);
+      CreateInternal(type, input_type, timestamp, tick_clock, std::nullopt);
   if (!metrics)
     return nullptr;
 
@@ -798,10 +798,10 @@ std::unique_ptr<PinchEventMetrics> PinchEventMetrics::CreateInternal(
     ui::ScrollInputType input_type,
     base::TimeTicks timestamp,
     const base::TickClock* tick_clock,
-    absl::optional<TraceId> trace_id) {
-  absl::optional<EventType> interesting_type =
-      ToInterestingEventType(type, /*scroll_is_inertial=*/absl::nullopt,
-                             /*scroll_update_type=*/absl::nullopt);
+    std::optional<TraceId> trace_id) {
+  std::optional<EventType> interesting_type =
+      ToInterestingEventType(type, /*scroll_is_inertial=*/std::nullopt,
+                             /*scroll_update_type=*/std::nullopt);
   if (!interesting_type)
     return nullptr;
   return base::WrapUnique(
@@ -813,7 +813,7 @@ PinchEventMetrics::PinchEventMetrics(EventType type,
                                      PinchType pinch_type,
                                      base::TimeTicks timestamp,
                                      const base::TickClock* tick_clock,
-                                     absl::optional<TraceId> trace_id)
+                                     std::optional<TraceId> trace_id)
     : EventMetrics(type, timestamp, tick_clock, trace_id),
       pinch_type_(pinch_type) {}
 

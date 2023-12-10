@@ -63,11 +63,12 @@ class BindingsIsolateHolder {
   // be overridden.
   virtual void HandleError(const std::string& message);
 
- private:
+ protected:
   // Converts a V8 exception to a human-readable string including
   // line number, if relevant, within the script.
   std::string ExceptionToString(const v8::TryCatch& try_catch);
 
+ private:
   base::ObserverList<IsolateObserver> observers_;
 };
 

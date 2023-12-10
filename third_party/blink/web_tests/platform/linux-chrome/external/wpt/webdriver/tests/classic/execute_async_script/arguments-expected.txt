@@ -1,11 +1,4 @@
 This is a wdspec test.
-[PASS] test_null
-[PASS] test_primitives[boolean]
-[PASS] test_primitives[number]
-[PASS] test_primitives[string]
-[PASS] test_collection
-[PASS] test_object
-[PASS] test_no_such_element_with_unknown_id
 [FAIL] test_no_such_element_from_other_window_handle[open]
   AssertionError: assert 'stale element reference' == 'no such element'
 [FAIL] test_no_such_element_from_other_window_handle[closed]
@@ -24,8 +17,6 @@ This is a wdspec test.
   AssertionError: assert 'detached shadow root' == 'no such shadow root'
 [FAIL] test_no_such_shadow_root_from_other_frame[closed]
   AssertionError: assert 'detached shadow root' == 'no such shadow root'
-[PASS] test_stale_element_reference[top_context]
-[PASS] test_stale_element_reference[child_context]
 [FAIL] test_invalid_argument_for_window_with_invalid_type[None-frame]
   assert 200 == 400
 [FAIL] test_invalid_argument_for_window_with_invalid_type[None-window]
@@ -50,8 +41,6 @@ This is a wdspec test.
   AssertionError: javascript error (500): javascript error: circular reference
 [FAIL] test_element_reference[frame]
   AssertionError: javascript error (500): javascript error: circular reference
-[PASS] test_element_reference[node]
-[PASS] test_element_reference[shadow-root]
 [FAIL] test_element_reference[window]
   AssertionError: javascript error (500): javascript error: circular reference
 Harness: the test ran to completion.

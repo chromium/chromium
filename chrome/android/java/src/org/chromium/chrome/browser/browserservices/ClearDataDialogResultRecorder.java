@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.browserservices;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.TWA_DIALOG_NUMBER_OF_DISMISSALS_ON_CLEAR_DATA;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.TWA_DIALOG_NUMBER_OF_DISMISSALS_ON_UNINSTALL;
 
+import dagger.Lazy;
+
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.browserservices.metrics.TrustedWebActivityUmaRecorder;
@@ -14,18 +16,15 @@ import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 
 import javax.inject.Inject;
 
-import dagger.Lazy;
-
-/**
- * Record the results of showing a clear data dialog on TWA client uninstall or data clear.
- */
+/** Record the results of showing a clear data dialog on TWA client uninstall or data clear. */
 public class ClearDataDialogResultRecorder {
     private final Lazy<SharedPreferencesManager> mPrefsManager;
     private final ChromeBrowserInitializer mBrowserInitializer;
     private final TrustedWebActivityUmaRecorder mUmaRecorder;
 
     @Inject
-    public ClearDataDialogResultRecorder(Lazy<SharedPreferencesManager> manager,
+    public ClearDataDialogResultRecorder(
+            Lazy<SharedPreferencesManager> manager,
             ChromeBrowserInitializer browserInitializer,
             TrustedWebActivityUmaRecorder umaRecorder) {
         mPrefsManager = manager;
@@ -46,8 +45,10 @@ public class ClearDataDialogResultRecorder {
         } else {
             // Avoid loading native just for the sake of recording. Save the info and record
             // on next Chrome launch.
-            String key = triggeredByUninstall ? TWA_DIALOG_NUMBER_OF_DISMISSALS_ON_UNINSTALL
-                                              : TWA_DIALOG_NUMBER_OF_DISMISSALS_ON_CLEAR_DATA;
+            String key =
+                    triggeredByUninstall
+                            ? TWA_DIALOG_NUMBER_OF_DISMISSALS_ON_UNINSTALL
+                            : TWA_DIALOG_NUMBER_OF_DISMISSALS_ON_CLEAR_DATA;
 
             try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
                 mPrefsManager.get().writeInt(key, mPrefsManager.get().readInt(key) + 1);
@@ -55,9 +56,7 @@ public class ClearDataDialogResultRecorder {
         }
     }
 
-    /**
-     * Make recordings that were deferred in order to not load native.
-     */
+    /** Make recordings that were deferred in order to not load native. */
     public void makeDeferredRecordings() {
         try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
             recordDismissals(TWA_DIALOG_NUMBER_OF_DISMISSALS_ON_UNINSTALL, true);
@@ -68,7 +67,7 @@ public class ClearDataDialogResultRecorder {
     private void recordDismissals(String prefKey, boolean triggeredByUninstall) {
         int times = mPrefsManager.get().readInt(prefKey);
         for (int i = 0; i < times; i++) {
-            mUmaRecorder.recordClearDataDialogAction(false /*accepted*/, triggeredByUninstall);
+            mUmaRecorder.recordClearDataDialogAction(/* accepted= */ false, triggeredByUninstall);
         }
         mPrefsManager.get().removeKey(prefKey);
     }

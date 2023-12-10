@@ -20,13 +20,13 @@ import org.chromium.ui.display.DisplayAndroid;
 
 import java.util.concurrent.TimeoutException;
 
-/**
- * Graphics-related test utils.
- */
+/** Graphics-related test utils. */
 public class GraphicsTestUtils {
     public static float dipScaleForContext(Context context) {
         return TestThreadUtils.runOnUiThreadBlockingNoException(
-                () -> { return DisplayAndroid.getNonMultiDisplay(context).getDipScale(); });
+                () -> {
+                    return DisplayAndroid.getNonMultiDisplay(context).getDipScale();
+                });
     }
 
     /**
@@ -85,10 +85,14 @@ public class GraphicsTestUtils {
     public static int getPixelColorAtCenterOfView(
             final AwContents awContents, final AwTestContainerView testContainerView) {
         return TestThreadUtils.runOnUiThreadBlockingNoException(
-                () -> drawAwContents(awContents, 2, 2,
-                                -(float) testContainerView.getWidth() / 2,
-                                -(float) testContainerView.getHeight() / 2)
-                                   .getPixel(0, 0));
+                () ->
+                        drawAwContents(
+                                        awContents,
+                                        2,
+                                        2,
+                                        -(float) testContainerView.getWidth() / 2,
+                                        -(float) testContainerView.getHeight() / 2)
+                                .getPixel(0, 0));
     }
 
     public static void pollForBackgroundColor(final AwContents awContents, final int c) {
@@ -114,12 +118,14 @@ public class GraphicsTestUtils {
         for (int i = 0; i < 100; ++i) {
             final CallbackHelper callbackHelper = new CallbackHelper();
             final Object[] resultHolder = new Object[1];
-            TestThreadUtils.runOnUiThreadBlocking(() -> {
-                testView.readbackQuadrantColors((int[] result) -> {
-                    resultHolder[0] = result;
-                    callbackHelper.notifyCalled();
-                });
-            });
+            TestThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        testView.readbackQuadrantColors(
+                                (int[] result) -> {
+                                    resultHolder[0] = result;
+                                    callbackHelper.notifyCalled();
+                                });
+                    });
             try {
                 callbackHelper.waitForFirst();
             } catch (TimeoutException e) {
@@ -127,7 +133,8 @@ public class GraphicsTestUtils {
             }
             int[] quadrantColors = (int[]) resultHolder[0];
             lastQuadrantColors = quadrantColors;
-            if (quadrantColors != null && expectedQuadrantColors[0] == quadrantColors[0]
+            if (quadrantColors != null
+                    && expectedQuadrantColors[0] == quadrantColors[0]
                     && expectedQuadrantColors[1] == quadrantColors[1]
                     && expectedQuadrantColors[2] == quadrantColors[2]
                     && expectedQuadrantColors[3] == quadrantColors[3]) {

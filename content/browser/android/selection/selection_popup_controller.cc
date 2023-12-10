@@ -96,9 +96,6 @@ SelectionPopupController::SelectionPopupController(
     WebContents* web_contents)
     : RenderWidgetHostConnector(web_contents) {
   java_obj_ = JavaObjectWeakGlobalRef(env, obj);
-  auto* wcva = static_cast<WebContentsViewAndroid*>(
-      static_cast<WebContentsImpl*>(web_contents)->GetView());
-  wcva->set_selection_popup_controller(this);
 }
 
 SelectionPopupController::~SelectionPopupController() {

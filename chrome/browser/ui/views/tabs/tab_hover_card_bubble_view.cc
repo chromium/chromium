@@ -8,6 +8,7 @@
 #include <ios>
 #include <limits>
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/containers/lru_cache.h"
@@ -31,7 +32,6 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/performance_manager/public/features.h"
 #include "components/url_formatter/url_formatter.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -224,7 +224,7 @@ class TabHoverCardBubbleView::ThumbnailView
   void SetImage(views::ImageView* image_view,
                 gfx::ImageSkia image,
                 ImageType image_type) {
-    image_view->SetImage(image);
+    image_view->SetImage(ui::ImageModel::FromImageSkia(image));
     switch (image_type) {
       case ImageType::kNone:
       case ImageType::kNoneButWaiting:
@@ -495,7 +495,7 @@ void TabHoverCardBubbleView::UpdateCardContent(const Tab* tab) {
   }
 
   std::u16string title;
-  absl::optional<TabAlertState> old_alert_state = alert_state_;
+  std::optional<TabAlertState> old_alert_state = alert_state_;
   const TabRendererData& tab_data = tab->data();
   GURL domain_url;
   // Use committed URL to determine if no page has yet loaded, since the title
@@ -505,7 +505,7 @@ void TabHoverCardBubbleView::UpdateCardContent(const Tab* tab) {
     title = tab_data.IsCrashed()
                 ? l10n_util::GetStringUTF16(IDS_HOVER_CARD_CRASHED_TITLE)
                 : l10n_util::GetStringUTF16(IDS_TAB_LOADING_TITLE);
-    alert_state_ = absl::nullopt;
+    alert_state_ = std::nullopt;
   } else {
     domain_url = tab_data.last_committed_url;
     title = tab_data.title;
@@ -605,19 +605,23 @@ std::u16string TabHoverCardBubbleView::GetDomainTextForTesting() const {
   return domain_label_->GetText();
 }
 
+views::View* TabHoverCardBubbleView::GetThumbnailViewForTesting() {
+  return thumbnail_view_;
+}
+
 // static
-absl::optional<double> TabHoverCardBubbleView::GetPreviewImageCrossfadeStart() {
+std::optional<double> TabHoverCardBubbleView::GetPreviewImageCrossfadeStart() {
   // For consistency, always bail out with a "don't crossfade" response if
   // animations are disabled.
   if (!TabHoverCardController::UseAnimations())
-    return absl::nullopt;
+    return std::nullopt;
 
   static const double start_percent = base::GetFieldTrialParamByFeatureAsDouble(
       features::kTabHoverCardImages,
       features::kTabHoverCardImagesCrossfadePreviewAtParameterName, 0.25);
   return start_percent >= 0.0
-             ? absl::make_optional(std::clamp(start_percent, 0.0, 1.0))
-             : absl::nullopt;
+             ? std::make_optional(std::clamp(start_percent, 0.0, 1.0))
+             : std::nullopt;
 }
 
 gfx::Size TabHoverCardBubbleView::CalculatePreferredSize() const {

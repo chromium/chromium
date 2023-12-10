@@ -63,7 +63,7 @@ constexpr char kSecondaryAccountNotificationIdSuffix[] = "/secondary-account";
 bool g_ignore_sync_errors_for_test_ = false;
 
 void HandleDeviceAccountReauthNotificationClick(
-    absl::optional<int> button_index) {
+    std::optional<int> button_index) {
   chrome::AttemptUserExit();
 }
 
@@ -365,7 +365,7 @@ void SigninErrorNotifier::OnCheckDummyGaiaTokenForAllAccounts(
 }
 
 void SigninErrorNotifier::HandleSecondaryAccountReauthNotificationClick(
-    absl::optional<int> button_index) {
+    std::optional<int> button_index) {
   chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
       profile_, chromeos::settings::mojom::kMyAccountsSubpagePath);
 }

@@ -11,13 +11,12 @@ namespace ash {
 UiResource::UiResource() = default;
 
 UiResource::~UiResource() {
-  if (!context_provider || !owns_mailbox) {
+  if (!context_provider || !client_shared_image_) {
     return;
   }
 
   gpu::SharedImageInterface* sii = context_provider->SharedImageInterface();
-  DCHECK(!mailbox.IsZero());
-  sii->DestroySharedImage(sync_token, mailbox);
+  sii->DestroySharedImage(sync_token, std::move(client_shared_image_));
 }
 
 }  // namespace ash

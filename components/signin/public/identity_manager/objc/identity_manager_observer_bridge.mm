@@ -4,7 +4,6 @@
 
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 
-#include "base/feature_list.h"
 #include "components/signin/public/base/account_consistency_method.h"
 
 namespace signin {
@@ -63,6 +62,13 @@ void IdentityManagerObserverBridge::OnEndBatchOfRefreshTokenStateChanges() {
   if ([delegate_
           respondsToSelector:@selector(onEndBatchOfRefreshTokenStateChanges)]) {
     [delegate_ onEndBatchOfRefreshTokenStateChanges];
+  }
+}
+
+void IdentityManagerObserverBridge::OnExtendedAccountInfoUpdated(
+    const AccountInfo& info) {
+  if ([delegate_ respondsToSelector:@selector(onExtendedAccountInfoUpdated:)]) {
+    [delegate_ onExtendedAccountInfoUpdated:info];
   }
 }
 

@@ -19,6 +19,7 @@
 #include <utility>
 #include <vector>
 
+#include <optional>
 #include "base/fuchsia/scoped_fx_logger.h"
 #include "base/gtest_prod_util.h"
 #include "base/logging.h"
@@ -35,7 +36,6 @@
 #include "fuchsia_web/webengine/browser/navigation_controller_impl.h"
 #include "fuchsia_web/webengine/browser/theme_manager.h"
 #include "fuchsia_web/webengine/web_engine_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "ui/accessibility/platform/fuchsia/accessibility_bridge_fuchsia_impl.h"
 #include "ui/aura/window_tree_host.h"
@@ -116,7 +116,7 @@ class WEB_ENGINE_EXPORT FrameImpl : public fuchsia::web::Frame,
   // empty, the default error page will be used.
   void EnableExplicitSitesFilter(std::string error_page);
 
-  const absl::optional<std::string>& explicit_sites_filter_error_page() const {
+  const std::optional<std::string>& explicit_sites_filter_error_page() const {
     return explicit_sites_filter_error_page_;
   }
 
@@ -325,7 +325,7 @@ class WEB_ENGINE_EXPORT FrameImpl : public fuchsia::web::Frame,
       const content::MediaStreamRequest& request,
       content::MediaResponseCallback callback) override;
   bool CheckMediaAccessPermission(content::RenderFrameHost* render_frame_host,
-                                  const GURL& security_origin,
+                                  const url::Origin& security_origin,
                                   blink::mojom::MediaStreamType type) override;
   std::unique_ptr<content::AudioStreamBrokerFactory>
   CreateAudioStreamBrokerFactory(content::WebContents* web_contents) override;
@@ -387,8 +387,8 @@ class WEB_ENGINE_EXPORT FrameImpl : public fuchsia::web::Frame,
   std::unique_ptr<ui::AccessibilityBridgeFuchsiaImpl> accessibility_bridge_;
 
   // Test settings.
-  absl::optional<gfx::Size> window_size_for_test_;
-  absl::optional<float> device_scale_factor_for_test_;
+  std::optional<gfx::Size> window_size_for_test_;
+  std::optional<float> device_scale_factor_for_test_;
 
   EventFilter event_filter_;
   NavigationControllerImpl navigation_controller_;
@@ -418,7 +418,7 @@ class WEB_ENGINE_EXPORT FrameImpl : public fuchsia::web::Frame,
   // The error page to be displayed when a navigation to an explicit site is
   // filtered. Explicit sites are filtered if it has a value. If set to the
   // empty string, the default error page will be displayed.
-  absl::optional<std::string> explicit_sites_filter_error_page_;
+  std::optional<std::string> explicit_sites_filter_error_page_;
 
   // Used to publish Frame details to Inspect.
   inspect::Node inspect_node_;

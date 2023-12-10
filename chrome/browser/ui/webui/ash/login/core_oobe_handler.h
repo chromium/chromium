@@ -55,7 +55,7 @@ class CoreOobeView : public base::SupportsWeakPtr<CoreOobeView> {
   // (kFullyInitialized). It is the responsibility of the client (CoreOobe) to
   // ensure that this invariant is met. Otherwise it will CHECK().
   virtual void ShowScreenWithData(const OobeScreenId& screen,
-                                  absl::optional<base::Value::Dict> data) = 0;
+                                  std::optional<base::Value::Dict> data) = 0;
   virtual void UpdateOobeConfiguration() = 0;
   virtual void ReloadContent() = 0;
   virtual void ForwardCancel() = 0;
@@ -97,7 +97,7 @@ class CoreOobeHandler : public BaseWebUIHandler,
 
   // ---- BEGIN --- CoreOobeView
   void ShowScreenWithData(const OobeScreenId& screen,
-                          absl::optional<base::Value::Dict> data) override;
+                          std::optional<base::Value::Dict> data) override;
   void UpdateOobeConfiguration() override;
   void ReloadContent() override;
   void ForwardCancel() override;

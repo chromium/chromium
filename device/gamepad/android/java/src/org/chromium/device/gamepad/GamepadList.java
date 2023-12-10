@@ -40,23 +40,24 @@ public class GamepadList {
     private InputDeviceListener mInputDeviceListener;
 
     private GamepadList() {
-        mInputDeviceListener = new InputDeviceListener() {
-            // Override InputDeviceListener methods
-            @Override
-            public void onInputDeviceChanged(int deviceId) {
-                onInputDeviceChangedImpl(deviceId);
-            }
+        mInputDeviceListener =
+                new InputDeviceListener() {
+                    // Override InputDeviceListener methods
+                    @Override
+                    public void onInputDeviceChanged(int deviceId) {
+                        onInputDeviceChangedImpl(deviceId);
+                    }
 
-            @Override
-            public void onInputDeviceRemoved(int deviceId) {
-                onInputDeviceRemovedImpl(deviceId);
-            }
+                    @Override
+                    public void onInputDeviceRemoved(int deviceId) {
+                        onInputDeviceRemovedImpl(deviceId);
+                    }
 
-            @Override
-            public void onInputDeviceAdded(int deviceId) {
-                onInputDeviceAddedImpl(deviceId);
-            }
-        };
+                    @Override
+                    public void onInputDeviceAdded(int deviceId) {
+                        onInputDeviceAddedImpl(deviceId);
+                    }
+                };
     }
 
     private void initializeDevices() {
@@ -93,9 +94,7 @@ public class GamepadList {
         }
     }
 
-    /**
-     * Notifies the GamepadList that a {@link ContentView} is detached from it's window.
-     */
+    /** Notifies the GamepadList that a {@link ContentView} is detached from it's window. */
     @SuppressLint("MissingSuperCall")
     public static void onDetachedFromWindow() {
         assert ThreadUtils.runningOnUiThread();
@@ -280,13 +279,13 @@ public class GamepadList {
     public static boolean isGamepadEvent(KeyEvent event) {
         int keyCode = event.getKeyCode();
         switch (keyCode) {
-            // Specific handling for dpad keys is required because
-            // KeyEvent.isGamepadButton doesn't consider dpad keys.
+                // Specific handling for dpad keys is required because
+                // KeyEvent.isGamepadButton doesn't consider dpad keys.
             case KeyEvent.KEYCODE_DPAD_UP:
             case KeyEvent.KEYCODE_DPAD_DOWN:
             case KeyEvent.KEYCODE_DPAD_LEFT:
             case KeyEvent.KEYCODE_DPAD_RIGHT:
-            // Xbox Series X maps the Share button as KEYCODE_MEDIA_RECORD.
+                // Xbox Series X maps the Share button as KEYCODE_MEDIA_RECORD.
             case KeyEvent.KEYCODE_MEDIA_RECORD:
                 return true;
             default:
@@ -295,7 +294,8 @@ public class GamepadList {
 
         // If the scancode is in the BTN_TRIGGER_HAPPY range it is an extra gamepad button.
         int scanCode = event.getScanCode();
-        if (keyCode == KeyEvent.KEYCODE_UNKNOWN && scanCode >= GamepadDevice.MIN_BTN_TRIGGER_HAPPY
+        if (keyCode == KeyEvent.KEYCODE_UNKNOWN
+                && scanCode >= GamepadDevice.MIN_BTN_TRIGGER_HAPPY
                 && scanCode <= GamepadDevice.MAX_BTN_TRIGGER_HAPPY) {
             return true;
         }
@@ -314,17 +314,37 @@ public class GamepadList {
                 final GamepadDevice device = getDevice(i);
                 if (device != null) {
                     device.updateButtonsAndAxesMapping();
-                    GamepadListJni.get().setGamepadData(GamepadList.this, webGamepadsPtr,
-                            /*index=*/i, device.isStandardGamepad(), /*connected=*/true,
-                            device.getName(), device.getVendorId(), device.getProductId(),
-                            device.getTimestamp(), device.getAxes(), device.getButtons(),
-                            device.getButtonsLength(), device.supportsDualRumble());
+                    GamepadListJni.get()
+                            .setGamepadData(
+                                    GamepadList.this,
+                                    webGamepadsPtr,
+                                    /* index= */ i,
+                                    device.isStandardGamepad(),
+                                    /* connected= */ true,
+                                    device.getName(),
+                                    device.getVendorId(),
+                                    device.getProductId(),
+                                    device.getTimestamp(),
+                                    device.getAxes(),
+                                    device.getButtons(),
+                                    device.getButtonsLength(),
+                                    device.supportsDualRumble());
                 } else {
-                    GamepadListJni.get().setGamepadData(GamepadList.this, webGamepadsPtr,
-                            /*index=*/i, /*mapping=*/false, /*connected=*/false,
-                            /*devicename=*/null, /*vendorId=*/0, /*productId=*/0,
-                            /*timestamp=*/0, /*axes=*/null, /*buttons=*/null,
-                            /*buttonsLength=*/0, /*supportsDualRumble=*/false);
+                    GamepadListJni.get()
+                            .setGamepadData(
+                                    GamepadList.this,
+                                    webGamepadsPtr,
+                                    /* index= */ i,
+                                    /* mapping= */ false,
+                                    /* connected= */ false,
+                                    /* devicename= */ null,
+                                    /* vendorId= */ 0,
+                                    /* productId= */ 0,
+                                    /* timestamp= */ 0,
+                                    /* axes= */ null,
+                                    /* buttons= */ null,
+                                    /* buttonsLength= */ 0,
+                                    /* supportsDualRumble= */ false);
                 }
             }
         }
@@ -380,8 +400,19 @@ public class GamepadList {
 
     @NativeMethods
     interface Natives {
-        void setGamepadData(GamepadList caller, long webGamepadsPtr, int index, boolean mapping,
-                boolean connected, String devicename, int vendorId, int productId, long timestamp,
-                float[] axes, float[] buttons, int buttonsLength, boolean supportsDualRumble);
+        void setGamepadData(
+                GamepadList caller,
+                long webGamepadsPtr,
+                int index,
+                boolean mapping,
+                boolean connected,
+                String devicename,
+                int vendorId,
+                int productId,
+                long timestamp,
+                float[] axes,
+                float[] buttons,
+                int buttonsLength,
+                boolean supportsDualRumble);
     }
 }

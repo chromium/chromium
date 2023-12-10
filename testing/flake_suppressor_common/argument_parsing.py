@@ -107,9 +107,10 @@ def ParseArgs():
     if args.flaky_threshold <= args.ignore_threshold:
       raise ValueError(
           '--flaky-threshold must be greater than --ignore-threshold')
-    if args.build_fail_number_threshold < 0:
-      raise ValueError('--build-fail-number-threshold must be positive')
-    if args.build_fail_days_threshold < 0:
-      raise ValueError('--build-fail-days-threshold must be positive')
+    if args.build_fail_total_number_threshold < 0:
+      raise ValueError('--build-fail-total-number-threshold must be positive')
+    if args.build_fail_consecutive_days_threshold < 0:
+      raise ValueError('--build-fail-consecutive-days-threshold must be '
+                       'positive')
 
   return args

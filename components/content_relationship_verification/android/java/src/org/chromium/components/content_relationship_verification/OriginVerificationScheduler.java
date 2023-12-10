@@ -26,11 +26,8 @@ public class OriginVerificationScheduler {
 
     private OriginVerifier mOriginVerifier;
 
-    /**
-     * Origins that we have yet to call OriginVerifier#start or whose validatin is not yet finished.
-     */
-    @Nullable
-    private Set<Origin> mPendingOrigins = Collections.synchronizedSet(new HashSet<>());
+    /** Origins that we have yet to call OriginVerifier#start or whose validatin is not yet finished. */
+    @Nullable private Set<Origin> mPendingOrigins = Collections.synchronizedSet(new HashSet<>());
 
     public OriginVerificationScheduler(OriginVerifier originVerifier, Set<Origin> pendingOrigins) {
         mOriginVerifier = originVerifier;
@@ -63,11 +60,13 @@ public class OriginVerificationScheduler {
         }
 
         if (mPendingOrigins.contains(origin)) {
-            mOriginVerifier.start((packageName, unused, verified, online) -> {
-                mPendingOrigins.remove(origin);
+            mOriginVerifier.start(
+                    (packageName, unused, verified, online) -> {
+                        mPendingOrigins.remove(origin);
 
-                callback.onResult(verified);
-            }, origin);
+                        callback.onResult(verified);
+                    },
+                    origin);
             return;
         }
         callback.onResult(mOriginVerifier.wasPreviouslyVerified(origin));

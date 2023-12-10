@@ -1,0 +1,26 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash, "VC Background is ash-chrome only")
+
+static_library("vc_background_ui") {
+  sources = [
+    "url_constants.h",
+    "vc_background_ui.cc",
+    "vc_background_ui.h",
+  ]
+
+  deps = [
+    "resources:resources",
+    "//ash/constants",
+    "//ash/webui/common:trusted_types_util",
+    "//ash/webui/system_apps/public:system_web_app_config",
+    "//ash/webui/system_apps/public:system_web_app_type",
+    "//components/manta",
+    "//content/public/browser",
+    "//ui/webui",
+  ]
+}

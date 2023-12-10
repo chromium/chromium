@@ -21,6 +21,10 @@ namespace gfx {
 class Point;
 }  // namespace gfx
 
+namespace views {
+class HighlightPathGenerator;
+}  // namespace views
+
 namespace ash {
 class WindowMiniViewHeaderView;
 class WindowPreviewView;
@@ -36,13 +40,13 @@ class WindowMiniViewBase : public views::View {
   WindowMiniViewBase& operator=(const WindowMiniViewBase&) = delete;
   ~WindowMiniViewBase() override;
 
-  // Shows or hides a focus ring around this.
-  void UpdateFocusState(bool focus);
-
   // Sets rounded corners on the exposed corners, the inner corners will be
   // sharp.
   void SetRoundedCornersRadius(
       const gfx::RoundedCornersF& exposed_rounded_corners);
+
+  // Shows or hides a focus ring around this.
+  void UpdateFocusState(bool focus);
 
   // Returns true if a preview of the given `window` is contained in `this`.
   virtual bool Contains(aura::Window* window) const = 0;
@@ -69,18 +73,25 @@ class WindowMiniViewBase : public views::View {
   // Returns the exposed rounded corners.
   virtual gfx::RoundedCornersF GetRoundedCorners() const = 0;
 
+  // Sets `this` as selected for focus and applies the focus ring around it.
+  // Note that `window` is the window that will be activated if `this` is
+  // selected while focused. `window` must be contained within `this` (See
+  // `Contains()` above).
+  virtual void SetSelectedWindowForFocus(aura::Window* window) = 0;
+
+  // Clears the focus on all the windows associated with `this`.
+  virtual void ClearFocusSelection() = 0;
+
  protected:
   WindowMiniViewBase();
 
   // If these optional values are set, the preset rounded corners will be used
   // otherwise the default rounded corners will be used.
-  absl::optional<gfx::RoundedCornersF> header_view_rounded_corners_;
-  absl::optional<gfx::RoundedCornersF> preview_view_rounded_corners_;
+  std::optional<gfx::RoundedCornersF> exposed_rounded_corners_;
+  std::optional<gfx::RoundedCornersF> header_view_rounded_corners_;
+  std::optional<gfx::RoundedCornersF> preview_view_rounded_corners_;
 
- private:
-  void InstallFocusRing();
-
-  // True if this view is focused when using keyboard navigation.
+  // True if `this` is focused when using keyboard navigation.
   bool is_focused_ = false;
 };
 
@@ -125,6 +136,10 @@ class ASH_EXPORT WindowMiniView : public WindowMiniViewBase,
   // Updates the rounded corners on `header_view_`, if it exists.
   void RefreshHeaderViewRoundedCorners();
 
+  // Applies the corresponding rounded corners on the focus ring to match the
+  // visuals of the `header_view_` and `preview_view_`.
+  void RefreshFocusRingVisuals();
+
   // Resets the preset rounded corners values i.e.
   // `header_view_rounded_corners_` and `preview_view_rounded_corners_`.
   void ResetRoundedCorners();
@@ -135,6 +150,8 @@ class ASH_EXPORT WindowMiniView : public WindowMiniViewBase,
   void SetShowPreview(bool show) override;
   int TryRemovingChildItem(aura::Window* destroying_window) override;
   gfx::RoundedCornersF GetRoundedCorners() const override;
+  void SetSelectedWindowForFocus(aura::Window* window) override;
+  void ClearFocusSelection() override;
 
  protected:
   explicit WindowMiniView(aura::Window* source_window);
@@ -160,6 +177,13 @@ class ASH_EXPORT WindowMiniView : public WindowMiniViewBase,
   void OnWindowTitleChanged(aura::Window* window) override;
 
  private:
+  void InstallFocusRing();
+
+  // Generates the focus ring path for `this`, which has four rounded corners by
+  // default. If this is part of a snap group, the path should match the rounded
+  // corners of the `this`.
+  std::unique_ptr<views::HighlightPathGenerator> GenerateFocusRingPath();
+
   // The window this class is meant to be a header for. This class also may
   // optionally show a mirrored view of this window.
   raw_ptr<aura::Window, ExperimentalAsh> source_window_;

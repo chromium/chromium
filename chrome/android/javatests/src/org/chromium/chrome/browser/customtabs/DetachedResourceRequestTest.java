@@ -31,6 +31,7 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.MockSafeBrowsingApiHandler;
@@ -345,6 +346,7 @@ public class DetachedResourceRequestTest {
     @Test
     @SmallTest
     @EnableFeatures(ChromeFeatureList.CCT_REPORT_PARALLEL_REQUEST_STATUS)
+    @DisableFeatures(ChromeFeatureList.TRACKING_PROTECTION_3PCD)
     public void testCanSetCookie() throws Exception {
         testCanSetCookie(true);
     }
@@ -352,6 +354,7 @@ public class DetachedResourceRequestTest {
     @Test
     @SmallTest
     @EnableFeatures(ChromeFeatureList.CCT_REPORT_PARALLEL_REQUEST_STATUS)
+    @DisableFeatures(ChromeFeatureList.TRACKING_PROTECTION_3PCD)
     public void testCanSetCookieBeforeNative() throws Exception {
         testCanSetCookie(false);
     }
@@ -394,6 +397,7 @@ public class DetachedResourceRequestTest {
     @SmallTest
     @EnableFeatures(ChromeFeatureList.SPLIT_CACHE_BY_NETWORK_ISOLATION_KEY)
     @DisableFeatures(ChromeFeatureList.SAFE_BROWSING_NEW_GMS_API_FOR_BROWSE_URL_DATABASE_CHECK)
+    @DisableIf.Build(supported_abis_includes = "x86", message = "Flaky. See crbug.com/1507774.")
     public void testSafeBrowsingMainResourceWithSplitCache_newSafeBrowsingGmsApiDisabled()
             throws Exception {
         testSafeBrowsingMainResource(/* afterNative= */ true, /* splitCacheEnabled= */ true);
@@ -483,6 +487,7 @@ public class DetachedResourceRequestTest {
     @Test
     @SmallTest
     @EnableFeatures(ChromeFeatureList.CCT_REPORT_PARALLEL_REQUEST_STATUS)
+    @DisableFeatures(ChromeFeatureList.TRACKING_PROTECTION_3PCD)
     public void testSameSiteLaxByDefaultCookies() throws Exception {
         CustomTabsTestUtils.warmUpAndWait();
         mServer = EmbeddedTestServer.createAndStartHTTPSServer(mContext, ServerCertificate.CERT_OK);

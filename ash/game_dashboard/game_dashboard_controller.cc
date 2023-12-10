@@ -46,13 +46,7 @@ bool GameDashboardController::ReadyForAccelerator(aura::Window* window) {
     return false;
   }
 
-  if (IsArcWindow(window)) {
-    return game_dashboard_utils::IsFlagSet(
-        window->GetProperty(kArcGameControlsFlagsKey),
-        ArcGameControlsFlag::kKnown);
-  }
-
-  return true;
+  return game_dashboard_utils::ShouldEnableGameDashboardButton(window);
 }
 
 GameDashboardController::GameDashboardController(
@@ -102,6 +96,10 @@ void GameDashboardController::StartCaptureSession(
   } else {
     capture_mode_controller->StartForGameDashboard(game_window);
   }
+}
+
+void GameDashboardController::ShowResizeToggleMenu(aura::Window* window) {
+  delegate_->ShowResizeToggleMenu(window);
 }
 
 void GameDashboardController::OnWindowInitialized(aura::Window* new_window) {
@@ -235,6 +233,7 @@ void GameDashboardController::RefreshWindowTracking(aura::Window* window,
       if (!context) {
         context = std::make_unique<GameDashboardContext>(window);
         RefreshForGameControlsFlags(window);
+        delegate_->RecordGameWindowOpenedEvent(window);
       }
     } else if (prev_is_game_property) {
       // The window was a game, but NOT anymore. This can happen if the user

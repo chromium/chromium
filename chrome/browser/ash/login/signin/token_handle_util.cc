@@ -80,7 +80,7 @@ void FinishWithStatus(TokenHandleUtil::TokenValidationCallback callback,
                       const std::string& token,
                       const AccountId& account_id,
                       const TokenHandleUtil::Status& status,
-                      absl::optional<bool> user_has_gaia_password) {
+                      std::optional<bool> user_has_gaia_password) {
   bool has_gaia_pass = user_has_gaia_password.value_or(true);
   if (!has_gaia_pass) {
     CHECK(features::AreLocalPasswordsEnabledForConsumers());
@@ -122,12 +122,12 @@ bool HasTokenStatusInvalid(const AccountId& account_id) {
 }
 
 // Callback used in `AuthFactorEditor::GetAuthFactorsConfiguration()`.
-absl::optional<bool> DoesUserUseGaiaPassword(
+std::optional<bool> DoesUserUseGaiaPassword(
     std::unique_ptr<UserContext> user_context,
-    absl::optional<AuthenticationError> error) {
+    std::optional<AuthenticationError> error) {
   if (error.has_value()) {
     // We don't know what auth factors the user has.
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   auto* factor = user_context->GetAuthFactorsConfiguration().FindFactorByType(
@@ -162,7 +162,7 @@ bool TokenHandleUtil::IsRecentlyChecked(const AccountId& account_id) {
   if (!value)
     return false;
 
-  absl::optional<base::Time> last_checked = base::ValueToTime(value);
+  std::optional<base::Time> last_checked = base::ValueToTime(value);
   if (!last_checked.has_value()) {
     return false;
   }
@@ -314,7 +314,7 @@ void TokenHandleUtil::TokenDelegate::OnGetTokenInfoResponse(
     const base::Value::Dict& token_info) {
   Status outcome = Status::kUnknown;
   if (!token_info.Find("error")) {
-    absl::optional<int> expires_in = token_info.FindInt("expires_in");
+    std::optional<int> expires_in = token_info.FindInt("expires_in");
     if (expires_in) {
       outcome = (*expires_in < 0) ? Status::kExpired : Status::kValid;
     }

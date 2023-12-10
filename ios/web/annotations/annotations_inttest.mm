@@ -362,8 +362,7 @@ TEST_F(AnnotationTextManagerTest, DecorateText) {
             "</body></html>");
 }
 
-// Tests page decoration on no-decoration tags.
-// Covers: DecorateAnnotations, ConvertMatchToAnnotation.
+// Tests on no-decoration tags.
 TEST_F(AnnotationTextManagerTest, NoDecorateText) {
   LoadHtmlAndExtractText("<html><body>"
                          "<p>text</p>"
@@ -374,18 +373,8 @@ TEST_F(AnnotationTextManagerTest, NoDecorateText) {
                          "</body></html>");
 
   std::string text = "text"
-                     "annotation1"
-                     "annotation2"
                      "\ntext";
   EXPECT_EQ(text, observer()->extracted_text());
-
-  // Create annotation.
-  NSString* source = base::SysUTF8ToNSString(text);
-  CreateAndApplyAnnotations(source, @[ @"annotation1", @"annotation2" ],
-                            observer() -> seq_id());
-
-  EXPECT_EQ(observer()->successes(), 0);
-  EXPECT_EQ(observer()->annotations(), 2);
 }
 
 // Tests different annotation cases, including tags boundaries.

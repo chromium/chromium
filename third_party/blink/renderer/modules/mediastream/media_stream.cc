@@ -322,8 +322,14 @@ void MediaStream::addTrack(MediaStreamTrack* track,
     ScheduleDispatchEvent(Event::Create(event_type_names::kActive));
   }
 
-  for (auto& observer : observers_)
-    observer->OnStreamAddTrack(this, track);
+  for (auto& observer : observers_) {
+    observer->OnStreamAddTrack(this, track, exception_state);
+
+    // If processing by the observer failed, it is most likely because it was
+    // not necessary and it became a no-op. The exception can be suppressed,
+    // there is nothing to do.
+    exception_state.ClearException();
+  }
 }
 
 void MediaStream::removeTrack(MediaStreamTrack* track,
@@ -359,8 +365,14 @@ void MediaStream::removeTrack(MediaStreamTrack* track,
     ScheduleDispatchEvent(Event::Create(event_type_names::kInactive));
   }
 
-  for (auto& observer : observers_)
-    observer->OnStreamRemoveTrack(this, track);
+  for (auto& observer : observers_) {
+    observer->OnStreamRemoveTrack(this, track, exception_state);
+
+    // If processing by the observer failed, it is most likely because it was
+    // not necessary and it became a no-op. The exception can be suppressed,
+    // there is nothing to do.
+    exception_state.ClearException();
+  }
 }
 
 MediaStreamTrack* MediaStream::getTrackById(String id) {

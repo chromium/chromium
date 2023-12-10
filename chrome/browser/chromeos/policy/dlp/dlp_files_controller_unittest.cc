@@ -5,6 +5,7 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_files_controller.h"
 
 #include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
 #include "base/process/process_handle.h"
 #include "base/test/gmock_callback_support.h"
@@ -12,9 +13,10 @@
 #include "base/test/protobuf_matchers.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/chromeos/policy/dlp/test/dlp_files_test_base.h"
-#include "chrome/common/chrome_paths_lacros.h"
+#include "chrome/common/chrome_paths.h"
 #include "chromeos/dbus/dlp/dlp_client.h"
 #include "components/enterprise/data_controls/component.h"
+#include "storage/browser/file_system/external_mount_points.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -24,6 +26,15 @@ namespace policy {
 
 namespace {
 using FileDaemonInfo = policy::DlpFilesController::FileDaemonInfo;
+
+constexpr char kExampleUrl1[] = "https://1.example.com/";
+
+constexpr char kFilePath1[] = "test1.txt";
+constexpr char kFilePath2[] = "test2.txt";
+
+bool CreateDummyFile(const base::FilePath& path) {
+  return WriteFile(path, "42", sizeof("42")) == sizeof("42");
+}
 }  // namespace
 
 class MockDlpFilesController : public DlpFilesController {
@@ -33,6 +44,13 @@ class MockDlpFilesController : public DlpFilesController {
   MOCK_METHOD(absl::optional<data_controls::Component>,
               MapFilePathToPolicyComponent,
               (Profile * profile, const base::FilePath& file_path),
+              (override));
+
+  MOCK_METHOD(void,
+              ShowDlpBlockedFiles,
+              (absl::optional<uint64_t> task_id,
+               std::vector<base::FilePath> blocked_files,
+               dlp::FileAction action),
               (override));
 };
 
@@ -55,11 +73,15 @@ class DlpFilesControllerTest : public DlpFilesTestBase {
     chromeos::DlpClient::InitializeFake();
     chromeos::DlpClient::Get()->GetTestInterface()->SetIsAlive(true);
 
-    base::PathService::Get(base::DIR_HOME, &my_files_dir_);
+    base::PathService::Get(chrome::DIR_USER_DOCUMENTS, &my_files_dir_);
     ASSERT_TRUE(base::CreateDirectory(my_files_dir_));
     my_files_dir_url_ = CreateFileSystemURL(my_files_dir_.value());
 
     ASSERT_TRUE(files_controller_);
+
+    mount_points_ = storage::ExternalMountPoints::GetSystemInstance();
+    ASSERT_TRUE(mount_points_);
+    mount_points_->RevokeAllFileSystems();
   }
 
   void TearDown() override {
@@ -77,6 +99,9 @@ class DlpFilesControllerTest : public DlpFilesTestBase {
   }
 
   std::unique_ptr<MockDlpFilesController> files_controller_;
+
+  raw_ptr<storage::ExternalMountPoints, ExperimentalAsh> mount_points_ =
+      nullptr;
 
   const blink::StorageKey kTestStorageKey =
       blink::StorageKey::CreateFromStringForTesting("https://example.com/test");
@@ -440,6 +465,113 @@ TEST_F(DlpFilesControllerTest, FileCopyToUnknownComponent) {
   files_controller_->RequestCopyAccess(source, destination,
                                        future.GetCallback());
   EXPECT_FALSE(future.Get()->is_allowed());
+}
+
+TEST_F(DlpFilesControllerTest, CheckIfPasteOrDropIsAllowed_ErrorResponse) {
+  ASSERT_TRUE(mount_points_->RegisterFileSystem(
+      "c", storage::kFileSystemTypeLocal, storage::FileSystemMountOption(),
+      my_files_dir_));
+
+  base::FilePath file_path1 = my_files_dir_.AppendASCII(kFilePath1);
+  ASSERT_TRUE(CreateDummyFile(file_path1));
+
+  // Set CheckFilesTransferResponse to return an error.
+  ::dlp::CheckFilesTransferResponse check_files_transfer_response;
+  check_files_transfer_response.add_files_paths(file_path1.value());
+  check_files_transfer_response.set_error_message("Did not receive a reply.");
+  ASSERT_TRUE(chromeos::DlpClient::Get()->IsAlive());
+  chromeos::DlpClient::Get()->GetTestInterface()->SetCheckFilesTransferResponse(
+      check_files_transfer_response);
+
+  const ui::DataTransferEndpoint data_dst((GURL(kExampleUrl1)));
+
+  base::test::TestFuture<bool> future;
+  ASSERT_TRUE(files_controller_);
+  files_controller_->CheckIfPasteOrDropIsAllowed({file_path1}, &data_dst,
+                                                 future.GetCallback());
+
+  ASSERT_TRUE(future.Take());
+
+  // Validate the request sent to the daemon.
+  ::dlp::CheckFilesTransferRequest request =
+      chromeos::DlpClient::Get()
+          ->GetTestInterface()
+          ->GetLastCheckFilesTransferRequest();
+  ASSERT_EQ(request.files_paths().size(), 1);
+  EXPECT_EQ(request.files_paths()[0], file_path1.value());
+  EXPECT_EQ(kExampleUrl1, request.destination_url());
+  EXPECT_EQ(::dlp::FileAction::COPY, request.file_action());
+  EXPECT_FALSE(request.has_io_task_id());
+}
+
+// Tests pasting or dropping a mix of an external file and a local directory.
+TEST_F(DlpFilesControllerTest, CheckIfPasteOrDropIsAllowed) {
+  ASSERT_TRUE(mount_points_->RegisterFileSystem(
+      "c", storage::kFileSystemTypeLocal, storage::FileSystemMountOption(),
+      my_files_dir_));
+
+  base::ScopedTempDir external_dir;
+  ASSERT_TRUE(external_dir.CreateUniqueTempDir());
+  base::FilePath file_path1 = external_dir.GetPath().AppendASCII(kFilePath1);
+  ASSERT_TRUE(CreateDummyFile(file_path1));
+  auto file_url1 = CreateFileSystemURL(file_path1.value());
+
+  base::ScopedTempDir sub_dir1;
+  ASSERT_TRUE(sub_dir1.CreateUniqueTempDirUnderPath(my_files_dir_));
+  base::FilePath file_path2 = sub_dir1.GetPath().AppendASCII(kFilePath2);
+  ASSERT_TRUE(CreateDummyFile(file_path2));
+  auto file_url2 = CreateFileSystemURL(file_path2.value());
+
+  // Set CheckFilesTransfer response to restrict the local file.
+  ::dlp::CheckFilesTransferResponse check_files_transfer_response;
+  check_files_transfer_response.add_files_paths(file_path2.value());
+  ASSERT_TRUE(chromeos::DlpClient::Get()->IsAlive());
+  chromeos::DlpClient::Get()->GetTestInterface()->SetCheckFilesTransferResponse(
+      check_files_transfer_response);
+
+  EXPECT_CALL(*files_controller_,
+              ShowDlpBlockedFiles(/*task_id=*/{absl::nullopt},
+                                  std::vector<base::FilePath>{file_path2},
+                                  dlp::FileAction::kCopy));
+
+  const ui::DataTransferEndpoint data_dst((GURL(kExampleUrl1)));
+
+  base::test::TestFuture<bool> future;
+  ASSERT_TRUE(files_controller_);
+  files_controller_->CheckIfPasteOrDropIsAllowed(
+      {file_path1, sub_dir1.GetPath()}, &data_dst, future.GetCallback());
+  EXPECT_FALSE(future.Take());
+
+  // Validate that only the local file was sent to the daemon.
+  ::dlp::CheckFilesTransferRequest request =
+      chromeos::DlpClient::Get()
+          ->GetTestInterface()
+          ->GetLastCheckFilesTransferRequest();
+  ASSERT_EQ(request.files_paths().size(), 1);
+  EXPECT_EQ(request.files_paths()[0], file_path2.value());
+  EXPECT_EQ(kExampleUrl1, request.destination_url());
+  EXPECT_EQ(::dlp::FileAction::COPY, request.file_action());
+  EXPECT_FALSE(request.has_io_task_id());
+}
+
+TEST_F(DlpFilesControllerTest,
+       CheckIfPasteOrDropIsAllowed_NoFileSystemContext) {
+  ASSERT_TRUE(mount_points_->RegisterFileSystem(
+      "c", storage::kFileSystemTypeLocal, storage::FileSystemMountOption(),
+      my_files_dir_));
+
+  base::FilePath file_path1 = my_files_dir_.AppendASCII(kFilePath1);
+  ASSERT_TRUE(CreateDummyFile(file_path1));
+  auto file_url1 = CreateFileSystemURL(file_path1.value());
+
+  const ui::DataTransferEndpoint data_dst((GURL(kExampleUrl1)));
+
+  base::test::TestFuture<bool> future;
+  ASSERT_TRUE(files_controller_);
+  files_controller_->SetFileSystemContextForTesting(nullptr);
+  files_controller_->CheckIfPasteOrDropIsAllowed({file_path1}, &data_dst,
+                                                 future.GetCallback());
+  ASSERT_TRUE(future.Take());
 }
 
 }  // namespace policy

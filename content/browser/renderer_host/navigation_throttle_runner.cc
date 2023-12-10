@@ -9,7 +9,6 @@
 #include "base/strings/strcat.h"
 #include "build/build_config.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
-#include "content/browser/portal/portal_navigation_throttle.h"
 #include "content/browser/preloading/prerender/prerender_navigation_throttle.h"
 #include "content/browser/preloading/prerender/prerender_subframe_navigation_throttle.h"
 #include "content/browser/renderer_host/ancestor_throttle.h"
@@ -37,6 +36,9 @@ NavigationThrottle::ThrottleCheckResult ExecuteNavigationEvent(
     NavigationThrottle* throttle,
     NavigationThrottleRunner::Event event) {
   switch (event) {
+    case NavigationThrottleRunner::Event::NoEvent:
+      DUMP_WILL_BE_NOTREACHED_NORETURN();
+      return NavigationThrottle::CANCEL_AND_IGNORE;
     case NavigationThrottleRunner::Event::WillStartRequest:
       return throttle->WillStartRequest();
     case NavigationThrottleRunner::Event::WillRedirectRequest:
@@ -47,8 +49,6 @@ NavigationThrottle::ThrottleCheckResult ExecuteNavigationEvent(
       return throttle->WillProcessResponse();
     case NavigationThrottleRunner::Event::WillCommitWithoutUrlLoader:
       return throttle->WillCommitWithoutUrlLoader();
-    default:
-      NOTREACHED();
   }
   NOTREACHED();
   return NavigationThrottle::CANCEL_AND_IGNORE;
@@ -56,6 +56,9 @@ NavigationThrottle::ThrottleCheckResult ExecuteNavigationEvent(
 
 const char* GetEventName(NavigationThrottleRunner::Event event) {
   switch (event) {
+    case NavigationThrottleRunner::Event::NoEvent:
+      DUMP_WILL_BE_NOTREACHED_NORETURN();
+      return "";
     case NavigationThrottleRunner::Event::WillStartRequest:
       return "NavigationThrottle::WillStartRequest";
     case NavigationThrottleRunner::Event::WillRedirectRequest:
@@ -66,14 +69,16 @@ const char* GetEventName(NavigationThrottleRunner::Event event) {
       return "NavigationThrottle::WillProcessResponse";
     case NavigationThrottleRunner::Event::WillCommitWithoutUrlLoader:
       return "NavigationThrottle::WillCommitWithoutUrlLoader";
-    default:
-      NOTREACHED();
   }
+  NOTREACHED();
   return "";
 }
 
 const char* GetEventNameForHistogram(NavigationThrottleRunner::Event event) {
   switch (event) {
+    case NavigationThrottleRunner::Event::NoEvent:
+      DUMP_WILL_BE_NOTREACHED_NORETURN();
+      return "";
     case NavigationThrottleRunner::Event::WillStartRequest:
       return "WillStartRequest";
     case NavigationThrottleRunner::Event::WillRedirectRequest:
@@ -84,9 +89,8 @@ const char* GetEventNameForHistogram(NavigationThrottleRunner::Event event) {
       return "WillProcessResponse";
     case NavigationThrottleRunner::Event::WillCommitWithoutUrlLoader:
       return "WillCommitWithoutUrlLoader";
-    default:
-      NOTREACHED();
   }
+  NOTREACHED();
   return "";
 }
 
@@ -181,9 +185,6 @@ void NavigationThrottleRunner::RegisterNavigationThrottles() {
   // console about CSP blocking the load.
   AddThrottle(
       MixedContentNavigationThrottle::CreateThrottleForNavigation(request));
-
-  // Block certain requests that are not permitted for portals.
-  AddThrottle(PortalNavigationThrottle::MaybeCreateThrottleFor(request));
 
   // Block certain requests that are not permitted for prerendering.
   AddThrottle(PrerenderNavigationThrottle::MaybeCreateThrottleFor(request));

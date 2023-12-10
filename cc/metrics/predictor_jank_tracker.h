@@ -5,10 +5,10 @@
 #ifndef CC_METRICS_PREDICTOR_JANK_TRACKER_H_
 #define CC_METRICS_PREDICTOR_JANK_TRACKER_H_
 
+#include <optional>
 #include "base/time/time.h"
 #include "cc/cc_export.h"
 #include "cc/metrics/event_metrics.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace cc {
 
@@ -28,7 +28,7 @@ class CC_EXPORT PredictorJankTracker {
   void ReportLatestScrollDelta(float delta,
                                base::TimeTicks presentation_ts,
                                base::TimeDelta vsync_interval,
-                               absl::optional<EventMetrics::TraceId> trace_id);
+                               std::optional<EventMetrics::TraceId> trace_id);
 
   // Whenever a new scroll starts, data inside this class will be erased
   // as it should be comparing neighbouring frames only.
@@ -40,13 +40,13 @@ class CC_EXPORT PredictorJankTracker {
   // frame information.
   void StoreLatestFrameData(float delta,
                             base::TimeTicks presentation_ts,
-                            absl::optional<EventMetrics::TraceId> trace_id);
+                            std::optional<EventMetrics::TraceId> trace_id);
 
   void ReportJankyFrame(float next_delta,
                         float janky_value,
                         bool contains_missed_vsyncs,
                         bool slow_scroll,
-                        absl::optional<EventMetrics::TraceId> trace_id);
+                        std::optional<EventMetrics::TraceId> trace_id);
 
   // Finds if a sequence of 3 consecutive frames were presnted in
   // consecutive vsyncs, or some vsyncs were missed.
@@ -59,11 +59,11 @@ class CC_EXPORT PredictorJankTracker {
     // Delta for the previous frame in pixels.
     float prev_delta_ = 0;
     // The EventLatency event_trace_id value if available.
-    absl::optional<EventMetrics::TraceId> prev_trace_id_;
+    std::optional<EventMetrics::TraceId> prev_trace_id_;
     // Delta for the current frame in pixels.
     float cur_delta_ = 0;
     // The EventLatency event_trace_id value if available.
-    absl::optional<EventMetrics::TraceId> cur_trace_id_;
+    std::optional<EventMetrics::TraceId> cur_trace_id_;
 
     // Presentation timestamp of the previous frame.
     base::TimeTicks prev_presentation_ts_;

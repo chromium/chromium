@@ -8,7 +8,7 @@ The Cronet native API is cross-platform, usable on multiple desktop and mobile
 platforms.
 
 TODO(caraitto): Add mobile test information for the native API in the
-Android and iOS pages as instructions for testing vary by platform.
+Android page as instructions for testing vary by platform.
 
 ## Checkout and build
 

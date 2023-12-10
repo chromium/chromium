@@ -36,36 +36,37 @@ import org.chromium.net.test.util.TestWebServer;
 @CommandLineFlags.Add({"enable-features=" + AwFeatures.WEBVIEW_DISPLAY_CUTOUT})
 @RequiresApi(Build.VERSION_CODES.P)
 public class AwDisplayCutoutTest extends AwParameterizedTest {
-    private static final String TEST_HTML = "<html><head><style>\n"
-            + "body {\n"
-            + " margin: 0;\n"
-            + " padding: 0pt 0pt 0pt 0pt;\n"
-            + "}\n"
-            + "div {\n"
-            + " margin: 0;\n"
-            + " padding: env(safe-area-inset-top) "
-            + "          env(safe-area-inset-right)"
-            + "          env(safe-area-inset-bottom)"
-            + "          env(safe-area-inset-left);\n"
-            + "}\n"
-            + "</style></head><body>\n"
-            + "<div id='text'>"
-            + "On notched phones, there should be enough padding on the top"
-            + " to not have this text appear under the statusbar/notch.\n"
-            + "</div>\n"
-            + "</body></html>";
+    private static final String TEST_HTML =
+            "<html><head><style>\n"
+                    + "body {\n"
+                    + " margin: 0;\n"
+                    + " padding: 0pt 0pt 0pt 0pt;\n"
+                    + "}\n"
+                    + "div {\n"
+                    + " margin: 0;\n"
+                    + " padding: env(safe-area-inset-top) "
+                    + "          env(safe-area-inset-right)"
+                    + "          env(safe-area-inset-bottom)"
+                    + "          env(safe-area-inset-left);\n"
+                    + "}\n"
+                    + "</style></head><body>\n"
+                    + "<div id='text'>"
+                    + "On notched phones, there should be enough padding on the top"
+                    + " to not have this text appear under the statusbar/notch.\n"
+                    + "</div>\n"
+                    + "</body></html>";
 
-    @Rule
-    public AwActivityTestRule mActivityTestRule;
+    @Rule public AwActivityTestRule mActivityTestRule;
 
     public AwDisplayCutoutTest(AwSettingsMutation param) {
-        mActivityTestRule = new AwActivityTestRule(param.getMutation()) {
-            @Override
-            public boolean needsHideActionBar() {
-                // If action bar is showing, WebView cannot be fully occupying the screen.
-                return true;
-            }
-        };
+        mActivityTestRule =
+                new AwActivityTestRule(param.getMutation()) {
+                    @Override
+                    public boolean needsHideActionBar() {
+                        // If action bar is showing, WebView cannot be fully occupying the screen.
+                        return true;
+                    }
+                };
     }
 
     private TestWebServer mWebServer;

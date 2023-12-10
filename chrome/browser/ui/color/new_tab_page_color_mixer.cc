@@ -27,9 +27,9 @@ constexpr float kNtpElementLuminosityChangeForDarkBackgroundParam = 0.2f;
 
 ui::ColorTransform GetContrastingColorTransform(
     ui::ColorTransform input_transform,
-    absl::optional<float> luminosity_change = absl::nullopt) {
+    std::optional<float> luminosity_change = std::nullopt) {
   const auto generator = [](ui::ColorTransform input_transform,
-                            const absl::optional<float> luminosity_change,
+                            const std::optional<float> luminosity_change,
                             SkColor input_color, const ui::ColorMixer& mixer) {
     const SkColor color = input_transform.Run(input_color, mixer);
     const float default_luminosity_change =

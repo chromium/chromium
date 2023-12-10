@@ -12,8 +12,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
+#include "components/metrics/structured/lib/proto/key.pb.h"
 #include "components/metrics/structured/persistent_proto.h"
-#include "components/metrics/structured/storage.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace metrics::structured {
@@ -24,7 +24,8 @@ class KeyDataTest;
 // structured metrics.
 //
 // The class maintains one key and its rotation data for every project defined
-// in /tools/metrics/structured.xml. This can be used to generate:
+// in /tools/metrics/structured/sync/structured.xml. This can be used to
+// generate:
 //  - an ID for the project with KeyData::Id.
 //  - a hash of a given value for an event with KeyData::HmacMetric.
 //
@@ -90,11 +91,11 @@ class KeyData {
 
   // Returns when the key for |project_name_hash| was last rotated, in days
   // since epoch. Returns nullopt if the key doesn't exist.
-  absl::optional<int> LastKeyRotation(uint64_t project_name_hash);
+  absl::optional<int> LastKeyRotation(uint64_t project_name_hash) const;
 
   // Return the age of the key for |project_name_hash| since the last rotation,
   // in weeks.
-  absl::optional<int> GetKeyAgeInWeeks(uint64_t project_name_hash);
+  absl::optional<int> GetKeyAgeInWeeks(uint64_t project_name_hash) const;
 
   // Clears all key data from memory and from disk. If this is called before the
   // underlying proto has been read from disk, the purge will be performed once

@@ -69,7 +69,8 @@ class TestSocket : public SmallMessageSocket::Delegate {
 
   void SendData(size_t size) {
     size_t data_offset = SmallMessageSocket::SizeDataBytes(size);
-    auto buffer = base::MakeRefCounted<net::IOBuffer>(data_offset + size);
+    auto buffer =
+        base::MakeRefCounted<net::IOBufferWithSize>(data_offset + size);
     SmallMessageSocket::WriteSizeData(buffer->data(), size);
     SetData(buffer->data() + data_offset, size);
     SendBuffer(std::move(buffer), size + data_offset);

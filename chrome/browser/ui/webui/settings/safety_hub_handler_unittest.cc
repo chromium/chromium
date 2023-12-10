@@ -5,6 +5,7 @@
 #include <ctime>
 #include <memory>
 
+#include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gtest_util.h"
@@ -13,6 +14,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/extensions/cws_info_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/password_manager/password_manager_test_util.h"
 #include "chrome/browser/permissions/notifications_engagement_service_factory.h"
@@ -20,6 +22,7 @@
 #include "chrome/browser/ui/safety_hub/password_status_check_service.h"
 #include "chrome/browser/ui/safety_hub/password_status_check_service_factory.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_constants.h"
+#include "chrome/browser/ui/safety_hub/safety_hub_test_util.h"
 #include "chrome/browser/ui/safety_hub/unused_site_permissions_service.h"
 #include "chrome/browser/ui/webui/settings/safety_hub_handler.h"
 #include "chrome/browser/ui/webui/settings/site_settings_helper.h"
@@ -70,14 +73,6 @@ class SafetyHubHandlerTest : public testing::Test {
   }
 
   void SetUp() override {
-    // Fully initialize |profile_| in the constructor since some children
-    // classes need it right away for SetUp().
-    TestingProfile::Builder profile_builder;
-    profile_builder.AddTestingFactory(
-        HistoryServiceFactory::GetInstance(),
-        HistoryServiceFactory::GetDefaultFactory());
-    profile_ = profile_builder.Build();
-
     // Set clock for HostContentSettingsMap.
     base::Time time;
     ASSERT_TRUE(base::Time::FromString("2022-09-07 13:00", &time));
@@ -89,10 +84,6 @@ class SafetyHubHandlerTest : public testing::Test {
     handler()->set_web_ui(web_ui());
     handler()->AllowJavascript();
 
-    // Create password stores for Password module.
-    profile_store_ = CreateAndUseTestPasswordStore(profile_.get());
-    account_store_ = CreateAndUseTestAccountPasswordStore(profile_.get());
-
     // Create a revoked permission.
     AddRevokedPermission();
 
@@ -103,14 +94,16 @@ class SafetyHubHandlerTest : public testing::Test {
     EXPECT_EQ(GURL(kUnusedTestSite),
               GURL(*revoked_permissions[0].GetDict().FindString(
                   site_settings::kOrigin)));
+
+    // Run password check to fetch latest result from disk.
+    safety_hub_test_util::UpdatePasswordCheckServiceAsync(
+        PasswordStatusCheckServiceFactory::GetForProfile(profile()));
   }
 
   void TearDown() override {
-    if (profile_) {
-      auto* partition = profile_->GetDefaultStoragePartition();
-      if (partition) {
-        partition->WaitForDeletionTasksForTesting();
-      }
+    auto* partition = profile()->GetDefaultStoragePartition();
+    if (partition) {
+      partition->WaitForDeletionTasksForTesting();
     }
   }
 
@@ -147,8 +140,8 @@ class SafetyHubHandlerTest : public testing::Test {
     profile_store().AddLogin(
         MakeForm(kUsername, kCompromisedPassword, kUsedTestSite, true));
     PasswordStatusCheckService* password_service =
-        PasswordStatusCheckServiceFactory::GetForProfile(profile_.get());
-    RunUntilIdle();
+        PasswordStatusCheckServiceFactory::GetForProfile(profile());
+    safety_hub_test_util::UpdatePasswordCheckServiceAsync(password_service);
     EXPECT_EQ(password_service->compromised_credential_count(), 1UL);
   }
 
@@ -156,9 +149,19 @@ class SafetyHubHandlerTest : public testing::Test {
     profile_store().UpdateLogin(
         MakeForm(kUsername, u"new_fnlsr4@cm^mls@fkspnsg3d"));
     PasswordStatusCheckService* password_service =
-        PasswordStatusCheckServiceFactory::GetForProfile(profile_.get());
-    RunUntilIdle();
+        PasswordStatusCheckServiceFactory::GetForProfile(profile());
+    safety_hub_test_util::UpdatePasswordCheckServiceAsync(password_service);
     EXPECT_EQ(password_service->compromised_credential_count(), 0UL);
+  }
+
+  void AddExtensionsForReview() {
+    extensions::CWSInfoServiceFactory::GetInstance()->SetTestingFactory(
+        profile(), base::BindRepeating([](content::BrowserContext* context)
+                                           -> std::unique_ptr<KeyedService> {
+          return safety_hub_test_util::GetMockCWSInfoService(
+              Profile::FromBrowserContext(context));
+        }));
+    safety_hub_test_util::CreateMockExtensions(profile());
   }
 
   void ExpectRevokedPermission() {
@@ -261,7 +264,6 @@ class SafetyHubHandlerTest : public testing::Test {
   void SetupTestToShowOrHideRecommendationForModule(
       SafetyHubHandler::SafetyHubModule module,
       bool isModuleRecommended) {
-    // TODO(crbug.com/1443466): Add Extensions module.
     switch (module) {
       case SafetyHubHandler::SafetyHubModule::kPasswords:
         isModuleRecommended ? CreateLeakedCredential() : FixLeakedCredential();
@@ -273,15 +275,19 @@ class SafetyHubHandlerTest : public testing::Test {
                   base::Version({CHROME_VERSION_MAJOR, CHROME_VERSION_MINOR,
                                  CHROME_VERSION_BUILD,
                                  CHROME_VERSION_PATCH + 1}),
-                  absl::nullopt)
+                  std::nullopt)
             : g_browser_process->GetBuildState()->SetUpdate(
-                  BuildState::UpdateType::kNone, base::Version(),
-                  absl::nullopt);
+                  BuildState::UpdateType::kNone, base::Version(), std::nullopt);
         break;
       case SafetyHubHandler::SafetyHubModule::kSafeBrowsing:
         isModuleRecommended
             ? SetPrefsForSafeBrowsing(false, false, SettingManager::USER)
             : SetPrefsForSafeBrowsing(true, true, SettingManager::USER);
+        break;
+      case SafetyHubHandler::SafetyHubModule::kExtensions:
+        isModuleRecommended
+            ? AddExtensionsForReview()
+            : safety_hub_test_util::CleanAllMockExtensions(profile());
         break;
       case SafetyHubHandler::SafetyHubModule::kNotifications:
         isModuleRecommended
@@ -371,7 +377,7 @@ class SafetyHubHandlerTest : public testing::Test {
 
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
 
-  TestingProfile* profile() { return profile_.get(); }
+  TestingProfile* profile() { return &profile_; }
   content::TestWebUI* web_ui() { return &web_ui_; }
   SafetyHubHandler* handler() { return handler_.get(); }
   HostContentSettingsMap* hcsm() { return hcsm_.get(); }
@@ -387,12 +393,14 @@ class SafetyHubHandlerTest : public testing::Test {
   base::test::ScopedFeatureList feature_list_;
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<SafetyHubHandler> handler_;
-  std::unique_ptr<TestingProfile> profile_;
+  TestingProfile profile_;
   content::TestWebUI web_ui_;
   scoped_refptr<HostContentSettingsMap> hcsm_;
   base::SimpleTestClock clock_;
-  scoped_refptr<password_manager::TestPasswordStore> profile_store_;
-  scoped_refptr<password_manager::TestPasswordStore> account_store_;
+  scoped_refptr<TestPasswordStore> profile_store_ =
+      CreateAndUseTestPasswordStore(&profile_);
+  scoped_refptr<password_manager::TestPasswordStore> account_store_ =
+      CreateAndUseTestAccountPasswordStore(&profile_);
 };
 
 TEST_F(SafetyHubHandlerTest, PopulateUnusedSitePermissionsData) {
@@ -758,7 +766,7 @@ TEST_F(SafetyHubHandlerTest, VersionCardOutOfDate) {
       BuildState::UpdateType::kNormalUpdate,
       base::Version({CHROME_VERSION_MAJOR, CHROME_VERSION_MINOR,
                      CHROME_VERSION_BUILD, CHROME_VERSION_PATCH + 1}),
-      absl::nullopt);
+      std::nullopt);
 
   base::Value::List args;
   args.Append("getVersionCardData");
@@ -779,10 +787,10 @@ TEST_F(SafetyHubHandlerTest, VersionCardOutOfDate) {
 
 TEST_F(SafetyHubHandlerTest, HandleGetSafetyHubHasRecommendations) {
   std::vector<SafetyHubHandler::SafetyHubModule> modules;
-  // TODO(crbug.com/1443466): Add Extensions module.
   modules.push_back(SafetyHubHandler::SafetyHubModule::kPasswords);
   modules.push_back(SafetyHubHandler::SafetyHubModule::kVersion);
   modules.push_back(SafetyHubHandler::SafetyHubModule::kSafeBrowsing);
+  modules.push_back(SafetyHubHandler::SafetyHubModule::kExtensions);
   modules.push_back(SafetyHubHandler::SafetyHubModule::kNotifications);
   modules.push_back(SafetyHubHandler::SafetyHubModule::kUnusedSitePermissions);
 
@@ -839,7 +847,10 @@ TEST_F(SafetyHubHandlerTest, HandleGetSafetyHubEntryPointSubheader_OneModule) {
           IDS_SETTINGS_SAFETY_HUB_SAFE_BROWSING_MODULE_NAME),
       SafetyHubHandler::SafetyHubModule::kSafeBrowsing);
 
-  // TODO(crbug.com/1443466): Add Extensions module.
+  ValidateEntryPointSubheader(
+      l10n_util::GetStringUTF8(
+          IDS_SETTINGS_SAFETY_HUB_EXTENSIONS_MODULE_UPPERCASE_NAME),
+      SafetyHubHandler::SafetyHubModule::kExtensions);
 
   ValidateEntryPointSubheader(
       l10n_util::GetStringUTF8(
@@ -881,7 +892,15 @@ TEST_F(SafetyHubHandlerTest,
   ValidateEntryPointSubheader(expected_subheader,
                               SafetyHubHandler::SafetyHubModule::kSafeBrowsing);
 
-  // TODO(crbug.com/1443466): Add Extensions module.
+  // The expected subheader should be "Passwords, extensions"
+  expected_subheader =
+      l10n_util::GetStringUTF8(IDS_SETTINGS_SAFETY_HUB_PASSWORDS_MODULE_NAME) +
+      l10n_util::GetStringUTF8(IDS_SETTINGS_SAFETY_HUB_MODULE_NAME_SEPARATOR) +
+      " " +
+      l10n_util::GetStringUTF8(
+          IDS_SETTINGS_SAFETY_HUB_EXTENSIONS_MODULE_LOWERCASE_NAME);
+  ValidateEntryPointSubheader(expected_subheader,
+                              SafetyHubHandler::SafetyHubModule::kExtensions);
 
   // The expected subheader should be "Passwords, notifications"
   expected_subheader =
@@ -912,12 +931,13 @@ TEST_F(SafetyHubHandlerTest, HandleGetSafetyHubEntryPointSubheader_AllModules) {
       SafetyHubHandler::SafetyHubModule::kVersion, true);
   SetupTestToShowOrHideRecommendationForModule(
       SafetyHubHandler::SafetyHubModule::kSafeBrowsing, true);
-  // TODO(crbug.com/1443466): Add Extensions module.
+  SetupTestToShowOrHideRecommendationForModule(
+      SafetyHubHandler::SafetyHubModule::kExtensions, true);
   SetupTestToShowOrHideRecommendationForModule(
       SafetyHubHandler::SafetyHubModule::kNotifications, true);
 
   // The expected subheader should be "Passwords, Chrome update, Safe Browsing,
-  // notifications, permissions"
+  // extensions, notifications, permissions"
   std::string expected_subheader =
       l10n_util::GetStringUTF8(IDS_SETTINGS_SAFETY_HUB_PASSWORDS_MODULE_NAME) +
       l10n_util::GetStringUTF8(IDS_SETTINGS_SAFETY_HUB_MODULE_NAME_SEPARATOR) +
@@ -928,6 +948,10 @@ TEST_F(SafetyHubHandlerTest, HandleGetSafetyHubEntryPointSubheader_AllModules) {
       " " +
       l10n_util::GetStringUTF8(
           IDS_SETTINGS_SAFETY_HUB_SAFE_BROWSING_MODULE_NAME) +
+      l10n_util::GetStringUTF8(IDS_SETTINGS_SAFETY_HUB_MODULE_NAME_SEPARATOR) +
+      " " +
+      l10n_util::GetStringUTF8(
+          IDS_SETTINGS_SAFETY_HUB_EXTENSIONS_MODULE_LOWERCASE_NAME) +
       l10n_util::GetStringUTF8(IDS_SETTINGS_SAFETY_HUB_MODULE_NAME_SEPARATOR) +
       " " +
       l10n_util::GetStringUTF8(

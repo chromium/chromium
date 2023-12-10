@@ -12,9 +12,7 @@ import android.content.Context;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 
-/**
- * Controller for showing Creator snackbars
- */
+/** Controller for showing Creator snackbars */
 public class CreatorSnackbarController {
     static final int SNACKBAR_DURATION_MS = 8000;
 
@@ -31,31 +29,40 @@ public class CreatorSnackbarController {
     public CreatorSnackbarController(Context context, SnackbarManager snackbarManager) {
         mContext = context;
         mSnackbarManager = snackbarManager;
-        mSnackbarController = new SnackbarManager.SnackbarController() {
-            @Override
-            public void onAction(Object actionData) {
-                mSnackbarManager.dismissAllSnackbars();
-            }
-        };
+        mSnackbarController =
+                new SnackbarManager.SnackbarController() {
+                    @Override
+                    public void onAction(Object actionData) {
+                        mSnackbarManager.dismissAllSnackbars();
+                    }
+                };
     }
 
-    /**
-     * Show appropriate post-follow snackbar depending on success/failure.
-     */
+    /** Show appropriate post-follow snackbar depending on success/failure. */
     void showSnackbarForFollow(int requestStatus, String title) {
         Snackbar snackbar;
         if (requestStatus == SUCCESS) {
-            snackbar = Snackbar.make(
-                    mContext.getString(R.string.cormorant_creator_follow_success_snackbar, title),
-                    mSnackbarController, Snackbar.TYPE_ACTION, Snackbar.UMA_CREATOR_FOLLOW_SUCCESS);
+            snackbar =
+                    Snackbar.make(
+                            mContext.getString(
+                                    R.string.cormorant_creator_follow_success_snackbar, title),
+                            mSnackbarController,
+                            Snackbar.TYPE_ACTION,
+                            Snackbar.UMA_CREATOR_FOLLOW_SUCCESS);
         } else if (requestStatus == FAILED_OFFLINE) {
-            snackbar = Snackbar.make(
-                    mContext.getString(R.string.cormorant_creator_offline_failure_snackbar),
-                    mSnackbarController, Snackbar.TYPE_ACTION, Snackbar.UMA_CREATOR_FOLLOW_FAILURE);
+            snackbar =
+                    Snackbar.make(
+                            mContext.getString(R.string.cormorant_creator_offline_failure_snackbar),
+                            mSnackbarController,
+                            Snackbar.TYPE_ACTION,
+                            Snackbar.UMA_CREATOR_FOLLOW_FAILURE);
         } else {
-            snackbar = Snackbar.make(
-                    mContext.getString(R.string.cormorant_creator_follow_failure_snackbar),
-                    mSnackbarController, Snackbar.TYPE_ACTION, Snackbar.UMA_CREATOR_FOLLOW_FAILURE);
+            snackbar =
+                    Snackbar.make(
+                            mContext.getString(R.string.cormorant_creator_follow_failure_snackbar),
+                            mSnackbarController,
+                            Snackbar.TYPE_ACTION,
+                            Snackbar.UMA_CREATOR_FOLLOW_FAILURE);
         }
         snackbar.setDuration(SNACKBAR_DURATION_MS);
         snackbar.setAction(mContext.getString(R.string.dismiss), null);
@@ -63,26 +70,32 @@ public class CreatorSnackbarController {
         mSnackbarManager.showSnackbar(snackbar);
     }
 
-    /**
-     * Show appropriate post-unfollow snackbar depending on success/failure.
-     */
+    /** Show appropriate post-unfollow snackbar depending on success/failure. */
     void showSnackbarForUnfollow(int requestStatus, String title) {
         Snackbar snackbar;
         if (requestStatus == SUCCESS) {
-            snackbar = Snackbar.make(
-                    mContext.getString(R.string.cormorant_creator_unfollow_success_snackbar, title),
-                    mSnackbarController, Snackbar.TYPE_ACTION,
-                    Snackbar.UMA_CREATOR_UNFOLLOW_SUCCESS);
+            snackbar =
+                    Snackbar.make(
+                            mContext.getString(
+                                    R.string.cormorant_creator_unfollow_success_snackbar, title),
+                            mSnackbarController,
+                            Snackbar.TYPE_ACTION,
+                            Snackbar.UMA_CREATOR_UNFOLLOW_SUCCESS);
         } else if (requestStatus == FAILED_OFFLINE) {
-            snackbar = Snackbar.make(
-                    mContext.getString(R.string.cormorant_creator_offline_failure_snackbar),
-                    mSnackbarController, Snackbar.TYPE_ACTION,
-                    Snackbar.UMA_CREATOR_UNFOLLOW_FAILURE);
+            snackbar =
+                    Snackbar.make(
+                            mContext.getString(R.string.cormorant_creator_offline_failure_snackbar),
+                            mSnackbarController,
+                            Snackbar.TYPE_ACTION,
+                            Snackbar.UMA_CREATOR_UNFOLLOW_FAILURE);
         } else {
-            snackbar = Snackbar.make(
-                    mContext.getString(R.string.cormorant_creator_unfollow_failure_snackbar),
-                    mSnackbarController, Snackbar.TYPE_ACTION,
-                    Snackbar.UMA_CREATOR_UNFOLLOW_FAILURE);
+            snackbar =
+                    Snackbar.make(
+                            mContext.getString(
+                                    R.string.cormorant_creator_unfollow_failure_snackbar),
+                            mSnackbarController,
+                            Snackbar.TYPE_ACTION,
+                            Snackbar.UMA_CREATOR_UNFOLLOW_FAILURE);
         }
         snackbar.setDuration(SNACKBAR_DURATION_MS);
         snackbar.setAction(mContext.getString(R.string.dismiss), null);

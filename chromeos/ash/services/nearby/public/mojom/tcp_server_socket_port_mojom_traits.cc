@@ -12,7 +12,7 @@ bool StructTraits<sharing::mojom::TcpServerSocketPortDataView,
          ash::nearby::TcpServerSocketPort* out) {
   // FromUInt16() validates the port range, returning nullopt if the port number
   // is invalid.
-  absl::optional<ash::nearby::TcpServerSocketPort> p =
+  std::optional<ash::nearby::TcpServerSocketPort> p =
       ash::nearby::TcpServerSocketPort::FromUInt16(port.port());
   if (!p)
     return false;

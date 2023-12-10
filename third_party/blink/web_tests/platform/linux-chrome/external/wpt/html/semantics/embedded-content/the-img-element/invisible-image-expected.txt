@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+[FAIL] Test that below-viewport invisible images that are not marked loading=lazy still load, and block the window load event
+  assert_true: The images should block the window load event. expected true got false
+Harness: the test ran to completion.

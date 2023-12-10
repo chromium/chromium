@@ -11,9 +11,7 @@ import org.jni_zero.JNINamespace;
 
 import org.chromium.base.ContextUtils;
 
-/**
- * Factory to create a LocationProvider to allow us to inject a mock for tests.
- */
+/** Factory to create a LocationProvider to allow us to inject a mock for tests. */
 @JNINamespace("device")
 public class LocationProviderFactory {
     private static LocationProvider sProviderImpl;
@@ -36,7 +34,7 @@ public class LocationProviderFactory {
 
         if (sUseGmsCoreLocationProvider
                 && LocationProviderGmsCore.isGooglePlayServicesAvailable(
-                           ContextUtils.getApplicationContext())) {
+                        ContextUtils.getApplicationContext())) {
             sProviderImpl = new LocationProviderGmsCore(ContextUtils.getApplicationContext());
         } else {
             sProviderImpl = new LocationProviderAndroid();

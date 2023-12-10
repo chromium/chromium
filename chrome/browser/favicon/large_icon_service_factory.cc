@@ -10,7 +10,7 @@
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/image_fetcher/image_decoder_impl.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/favicon/content/large_favicon_provider_getter.h"
+#include "components/favicon/content/large_icon_service_getter.h"
 #include "components/favicon/core/favicon_service.h"
 #include "components/favicon/core/large_icon_service_impl.h"
 #include "components/image_fetcher/core/image_decoder.h"
@@ -21,7 +21,7 @@
 
 namespace {
 
-favicon::LargeFaviconProvider* GetLargeFaviconProvider(
+favicon::LargeIconService* GetLargeIconService(
     content::BrowserContext* context) {
   return LargeIconServiceFactory::GetInstance()->GetForBrowserContext(context);
 }
@@ -65,8 +65,7 @@ LargeIconServiceFactory::LargeIconServiceFactory()
               .WithGuest(ProfileSelection::kRedirectedToOriginal)
               .Build()) {
   DependsOn(FaviconServiceFactory::GetInstance());
-  favicon::SetLargeFaviconProviderGetter(
-      base::BindRepeating(&GetLargeFaviconProvider));
+  favicon::SetLargeIconServiceGetter(base::BindRepeating(&GetLargeIconService));
 }
 
 LargeIconServiceFactory::~LargeIconServiceFactory() = default;

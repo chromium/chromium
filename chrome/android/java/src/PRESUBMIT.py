@@ -90,6 +90,14 @@ def _CheckAlertDialogBuilder(input_api, output_api):
       BROWSER_ROOT + 'init/LaunchFailedActivity.java',
       BROWSER_ROOT + 'password_manager/AccountChooserDialog.java',
       BROWSER_ROOT + 'password_manager/AutoSigninFirstRunDialog.java',
+      # TODO(https://crbug.com/1505284): Tentatively suppressed.
+      (BROWSER_ROOT +
+       'password_manager/settings/ExportErrorDialogFragment.java'),
+      (BROWSER_ROOT +
+       'password_manager/settings/ExportWarningDialogFragment.java'),
+      (BROWSER_ROOT +
+       'password_manager/settings/ProgressBarDialogFragment.java'),
+      # end of https://crbug.com/1505284
       BROWSER_ROOT + r'settings[\\\/].*',
       BROWSER_ROOT + 'site_settings/AddExceptionPreference.java',
       BROWSER_ROOT + 'site_settings/ChosenObjectSettings.java',

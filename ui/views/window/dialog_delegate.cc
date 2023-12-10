@@ -518,7 +518,7 @@ View* DialogDelegateView::GetContentsView() {
   return this;
 }
 
-BEGIN_METADATA(DialogDelegateView, View)
+BEGIN_METADATA(DialogDelegateView)
 END_METADATA
 
 }  // namespace views

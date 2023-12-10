@@ -57,9 +57,7 @@ public interface ListContentManager {
         return position;
     }
 
-    /**
-     * Binds the data at the specified location.
-     */
+    /** Binds the data at the specified location. */
     default void bindNativeView(int index, View v) {}
 
     /** Returns number of items to show. */

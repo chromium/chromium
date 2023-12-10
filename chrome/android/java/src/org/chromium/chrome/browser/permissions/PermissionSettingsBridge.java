@@ -9,13 +9,11 @@ import org.jni_zero.NativeMethods;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.content_public.browser.WebContents;
 
-/**
- * Utility class that interacts with native to retrieve and set permission-related settings.
- */
+/** Utility class that interacts with native to retrieve and set permission-related settings. */
 public class PermissionSettingsBridge {
     public static boolean shouldShowNotificationsPromo(WebContents webContents) {
-        return PermissionSettingsBridgeJni.get().shouldShowNotificationsPromo(
-                getProfile(), webContents);
+        return PermissionSettingsBridgeJni.get()
+                .shouldShowNotificationsPromo(getProfile(), webContents);
     }
 
     public static void didShowNotificationsPromo() {
@@ -29,6 +27,7 @@ public class PermissionSettingsBridge {
     @NativeMethods
     public interface Natives {
         boolean shouldShowNotificationsPromo(Profile profile, WebContents webContents);
+
         void didShowNotificationsPromo(Profile profile);
     }
 }

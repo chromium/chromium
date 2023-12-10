@@ -6,64 +6,53 @@
     <array>
         <dict>
             <key>Type</key>
-            <integer>0</integer>
+            <integer>7</integer>
             <key>Title</key>
-            <string>IDS_IOS_WHATS_NEW_FEATURE_SEARCH_TABS_TITLE</string>
+            <string>IDS_IOS_WHATS_NEW_INCOGNITO_TABS_FROM_OTHER_APPS_TITLE</string>
             <key>Subtitle</key>
-            <string>IDS_IOS_WHATS_NEW_FEATURE_SEARCH_TABS_SUBTITLE</string>
-            <key>HeroBannerImageName</key>
-            <string>search_tabs_hero_banner</string>
-            <key>BannerImageName</key>
-            <string>search_tabs_banner</string>
+            <string>IDS_IOS_WHATS_NEW_INCOGNITO_TABS_FROM_OTHER_APPS_SUBTITLE</string>
+            <key>ImageName</key>
+            <string>incognito_tabs_from_other_apps</string>
+            <key>ImageTexts</key>
+            <dict>
+                <key>IDS_OPEN_IN_INCOGNITO</key>
+                <string>IDS_IOS_WHATS_NEW_INCOGNITO_TABS_FROM_OTHER_APPS_SCREENSHOT_TEXT_OPEN_IN_INCOGNITO</string>
+                <key>IDS_OPEN_IN_INCOGNITO_URL</key>
+                <string>IDS_IOS_WHATS_NEW_INCOGNITO_TABS_FROM_OTHER_APPS_SCREENSHOT_TEXT_URL</string>
+            </dict>
             <key>IconImageName</key>
-            <string>magnifyingglass</string>
+            <string>incognito</string>
             <key>IconBackgroundColor</key>
-            <string>blue</string>
+            <string>black</string>
             <key>IsSymbol</key>
-            <true/>
+            <false/>
             <key>IsSystemSymbol</key>
-            <true/>
+            <false/>
             <key>InstructionSteps</key>
             <array>
-            <string>IDS_IOS_WHATS_NEW_FEATURE_SEARCH_TABS_STEP_1</string>
-            <string>IDS_IOS_WHATS_NEW_FEATURE_SEARCH_TABS_STEP_2</string>
-            <string>IDS_IOS_WHATS_NEW_FEATURE_SEARCH_TABS_STEP_3</string>
+            <string>IDS_IOS_WHATS_NEW_APP_SETTINGS</string>
+            <string>IDS_IOS_WHATS_NEW_INCOGNITO_TABS_FROM_OTHER_APPS_STEP_2</string>
+            <string>IDS_IOS_WHATS_NEW_INCOGNITO_TABS_FROM_OTHER_APPS_STEP_3</string>
             </array>
-            <key>LearnMoreUrlString</key>
-            <string>https://support.google.com/chrome/?p=bling_use_tabs</string>
-        </dict>
-        <dict>
-            <key>Type</key>
-            <integer>1</integer>
-            <key>Title</key>
-            <string>IDS_IOS_WHATS_NEW_FEATURE_NEW_MENU_TITLE</string>
-            <key>Subtitle</key>
-            <string>IDS_IOS_WHATS_NEW_FEATURE_NEW_MENU_SUBTITLE</string>
-            <key>BannerImageName</key>
-            <string>new_overflow_menu_banner</string>
-            <key>IconImageName</key>
-            <string>ellipsis</string>
-            <key>IconBackgroundColor</key>
-            <string>blue</string>
-            <key>IsSymbol</key>
-            <true/>
-            <key>IsSystemSymbol</key>
-            <true/>
-            <key>InstructionSteps</key>
-            <array>
-            <string>IDS_IOS_WHATS_NEW_FEATURE_NEW_MENU_STEP_1</string>
-            <string>IDS_IOS_WHATS_NEW_FEATURE_NEW_MENU_STEP_2</string>
-            </array>
-        </dict>
-        <dict>
-            <key>Type</key>
+            <key>PrimaryAction</key>
             <integer>2</integer>
+            <key>LearnMoreUrlString</key>
+            <string>https://support.google.com/chrome?p=ios_private_browsing_apps</string>
+        </dict>
+        <dict>
+            <key>Type</key>
+            <integer>8</integer>
             <key>Title</key>
-            <string>IDS_IOS_WHATS_NEW_FEATURE_SHARE_HIGHLIGHT_TITLE</string>
+            <string>IDS_IOS_WHATS_NEW_INCOGNITO_LOCK_TITLE</string>
             <key>Subtitle</key>
-            <string>IDS_IOS_WHATS_NEW_FEATURE_SHARE_HIGHLIGHT_SUBTITLE</string>
-            <key>BannerImageName</key>
-            <string>shared_highlighting_banner</string>
+            <string>IDS_IOS_WHATS_NEW_INCOGNITO_LOCK_SUBTITLE</string>
+            <key>ImageName</key>
+            <string>incognito_lock</string>
+            <key>ImageTexts</key>
+            <dict>
+                <key>IDS_UNLOCK</key>
+                <string>IDS_IOS_WHATS_NEW_INCOGNITO_LOCK_SCREENSHOT_TEXT_UNLOCK</string>
+            </dict>
             <key>IconImageName</key>
             <string>square.and.arrow.up</string>
             <key>IconBackgroundColor</key>
@@ -74,130 +63,142 @@
             <true/>
             <key>InstructionSteps</key>
             <array>
-            <string>IDS_IOS_WHATS_NEW_FEATURE_SHARE_HIGHLIGHT_STEP_1</string>
-            <string>IDS_IOS_WHATS_NEW_FEATURE_SHARE_HIGHLIGHT_STEP_2</string>
-            <string>IDS_IOS_WHATS_NEW_FEATURE_SHARE_HIGHLIGHT_STEP_3</string>
+            <string>IDS_IOS_WHATS_NEW_APP_SETTINGS</string>
+            <string>IDS_IOS_WHATS_NEW_INCOGNITO_LOCK_STEP_2</string>
+            <string>IDS_IOS_WHATS_NEW_INCOGNITO_LOCK_STEP_3</string>
             </array>
+            <key>PrimaryAction</key>
+            <integer>2</integer>
             <key>LearnMoreUrlString</key>
-            <string>https://support.google.com/chrome/?p=bling_share_highlight</string>
+            <string>https://support.google.com/chrome/?p=ios_incognito_lock</string>
         </dict>
         <dict>
             <key>Type</key>
-            <integer>3</integer>
+            <integer>9</integer>
             <key>Title</key>
-            <string>IDS_IOS_WHATS_NEW_FEATURE_ADD_PASSWORDS_MANUALLY_TITLE</string>
+            <string>IDS_IOS_WHATS_NEW_CALENDAR_TITLE</string>
             <key>Subtitle</key>
-            <string>IDS_IOS_WHATS_NEW_FEATURE_ADD_PASSWORDS_MANUALLY_SUBTITLE</string>
-            <key>BannerImageName</key>
-            <string>add_passwords_manually_banner</string>
+            <string>IDS_IOS_WHATS_NEW_CALENDAR_SUBTITLE</string>
+            <key>ImageName</key>
+            <string>calendar_event</string>
+            <key>ImageTexts</key>
+            <dict>
+                <key>IDS_CALENDAR</key>
+                <string>IDS_IOS_WHATS_NEW_CALENDAR_SCREENSHOT_TEXT_CALENDAR</string>
+                <key>IDS_ADD_TITLE</key>
+                <string>IDS_IOS_WHATS_NEW_CALENDAR_SCREENSHOT_TEXT_ADD_TITLE</string>
+                <key>IDS_ALL_DAY</key>
+                <string>IDS_IOS_WHATS_NEW_CALENDAR_SCREENSHOT_TEXT_ALL_DAY</string>
+                <key>IDS_STARTS</key>
+                <string>IDS_IOS_WHATS_NEW_CALENDAR_SCREENSHOT_TEXT_STARTS</string>
+                <key>IDS_DATE_1</key>
+                <string>IDS_IOS_WHATS_NEW_CALENDAR_SCREENSHOT_TEXT_DATE</string>
+                <key>IDS_DATE_2</key>
+                <string>IDS_IOS_WHATS_NEW_CALENDAR_SCREENSHOT_TEXT_DATE</string>
+                <key>IDS_TIME_1</key>
+                <string>IDS_IOS_WHATS_NEW_CALENDAR_SCREENSHOT_TEXT_TIME</string>
+                <key>IDS_TIME_2</key>
+                <string>IDS_IOS_WHATS_NEW_CALENDAR_SCREENSHOT_TEXT_TIME</string>
+                <key>IDS_NEVER</key>
+                <string>IDS_IOS_WHATS_NEW_CALENDAR_SCREENSHOT_TEXT_NEVER</string>
+                <key>IDS_ENDS</key>
+                <string>IDS_IOS_WHATS_NEW_CALENDAR_SCREENSHOT_TEXT_ENDS</string>
+                <key>IDS_EVENTS</key>
+                <string>IDS_IOS_WHATS_NEW_CALENDAR_SCREENSHOT_TEXT_EVENTS</string>
+                <key>IDS_REPEAT</key>
+                <string>IDS_IOS_WHATS_NEW_CALENDAR_SCREENSHOT_TEXT_REPEAT</string>
+            </dict>
             <key>IconImageName</key>
-            <string>password</string>
+            <string>calendar</string>
             <key>IconBackgroundColor</key>
             <string>yellow</string>
             <key>IsSymbol</key>
-            <false/>
+            <true/>
+            <key>IsSystemSymbol</key>
+            <true/>
+            <key>InstructionSteps</key>
+            <array>
+            <string>IDS_IOS_WHATS_NEW_CALENDAR_STEP_1</string>
+            <string>IDS_IOS_WHATS_NEW_CALENDAR_STEP_2</string>
+            <string>IDS_IOS_WHATS_NEW_CALENDAR_STEP_3</string>
+            </array>
+            <key>LearnMoreUrlString</key>
+            <string>https://support.google.com/chrome?p=ios_calendar_event</string>
+        </dict>
+        <dict>
+            <key>Type</key>
+            <integer>11</integer>
+            <key>Title</key>
+            <string>IDS_IOS_WHATS_NEW_MINI_MAPS_TITLE</string>
+            <key>Subtitle</key>
+            <string>IDS_IOS_WHATS_NEW_MINI_MAPS_SUBTITLE</string>
+            <key>ImageName</key>
+            <string>mini_maps</string>
+            <key>ImageTexts</key>
+            <dict>
+                <key>IDS_MAPS</key>
+                <string>IDS_IOS_WHATS_NEW_MINI_MAPS_SCREENSHOT_TEXT_MAPS</string>
+                <key>IDS_OPEN_IN_APP</key>
+                <string>IDS_IOS_WHATS_NEW_MINI_MAPS_SCREENSHOT_TEXT_OPEN_IN_APP</string>
+            </dict>
+            <key>IconImageName</key>
+            <string>location</string>
+            <key>IconBackgroundColor</key>
+            <string>yellow</string>
+            <key>IsSymbol</key>
+            <true/>
             <key>IsSystemSymbol</key>
             <false/>
             <key>InstructionSteps</key>
             <array>
-            <string>IDS_IOS_WHATS_NEW_FEATURE_ADD_PASSWORDS_MANUALLY_STEP_1</string>
-            <string>IDS_IOS_WHATS_NEW_FEATURE_ADD_PASSWORDS_MANUALLY_STEP_2</string>
-            <string>IDS_IOS_WHATS_NEW_FEATURE_ADD_PASSWORDS_MANUALLY_STEP_3</string>
+            <string>IDS_IOS_WHATS_NEW_MINI_MAPS_STEP_1</string>
+            <string>IDS_IOS_WHATS_NEW_MINI_MAPS_STEP_2</string>
+            <string>IDS_IOS_WHATS_NEW_MINI_MAPS_STEP_3</string>
             </array>
-            <key>PrimaryAction</key>
-            <integer>3</integer>
             <key>LearnMoreUrlString</key>
-            <string>https://support.google.com/chrome/?p=bling_add_password</string>
+            <string>https://support.google.com/chrome/?p=ios_mini_maps</string>
         </dict>
     </array>
    <key>ChromeTips</key>
     <array>
         <dict>
             <key>Type</key>
-            <integer>4</integer>
+            <integer>10</integer>
             <key>Title</key>
-            <string>IDS_IOS_WHATS_CHROME_TIP_CHROME_DEFAULT_TITLE</string>
+            <string>IDS_IOS_WHATS_NEW_CHROME_ACTIONS_TITLE</string>
             <key>Subtitle</key>
-            <string>IDS_IOS_WHATS_NEW_CHROME_TIP_CHROME_DEFAULT_SUBTITLE</string>
-            <key>HeroBannerImageName</key>
-            <string>chrome_by_default_hero_banner</string>
-            <key>BannerImageName</key>
-            <string>use_chrome_by_default_banner</string>
+            <string>IDS_IOS_WHATS_NEW_CHROME_ACTIONS_SUBTITLE</string>
+            <key>ImageName</key>
+            <string>chrome_actions</string>
+            <key>ImageTexts</key>
+            <dict>
+                <key>IDS_MANAGE_PASSWORDS</key>
+                <string>IDS_IOS_WHATS_NEW_CHROME_ACTIONS_SCREENSHOT_TEXT_MANAGE_PASSWORDS</string>
+                <key>IDS_MENU</key>
+                <string>IDS_IOS_WHATS_NEW_CHROME_ACTIONS_SCREENSHOT_TEXT_MENU</string>
+                <key>IDS_SETTINGS</key>
+                <string>IDS_IOS_WHATS_NEW_CHROME_ACTIONS_SCREENSHOT_TEXT_SETTINGS</string>
+                <key>IDS_PASSWORD_1</key>
+                <string>IDS_IOS_WHATS_NEW_CHROME_ACTIONS_SCREENSHOT_TEXT_PASSWORDS</string>
+                <key>IDS_PASSWORD_2</key>
+                <string>IDS_IOS_WHATS_NEW_CHROME_ACTIONS_SCREENSHOT_TEXT_PASSWORDS</string>
+            </dict>
             <key>IconImageName</key>
-            <string>fullcolor_branding_icon</string>
+            <string>magnifyingglass</string>
             <key>IconBackgroundColor</key>
-            <string>white</string>
-            <key>IsSymbol</key>
-            <false/>
-            <key>IsSystemSymbol</key>
-            <false/>
-            <key>InstructionSteps</key>
-            <array>
-            <string>IDS_IOS_WHATS_NEW_CHROME_TIP_CHROME_DEFAULT_STEP_1</string>
-            <string>IDS_IOS_WHATS_NEW_CHROME_TIP_CHROME_DEFAULT_STEP_2</string>
-            <string>IDS_IOS_WHATS_NEW_CHROME_TIP_CHROME_DEFAULT_STEP_3</string>
-            </array>
-            <key>PrimaryAction</key>
-            <integer>1</integer>
-            <key>LearnMoreUrlString</key>
-            <string>https://support.google.com/chrome/?p=bling_default_browser</string>
-        </dict>
-        <dict>
-            <key>Type</key>
-            <integer>5</integer>
-            <key>Title</key>
-            <string>IDS_IOS_WHATS_NEW_CHROME_TIP_PASSWORDS_IN_OTHER_APPS_TITLE</string>
-            <key>Subtitle</key>
-            <string>IDS_IOS_WHATS_NEW_CHROME_TIP_PASSWORDS_IN_OTHER_APPS_SUBTITLE</string>
-            <key>HeroBannerImageName</key>
-            <string>passwords_in_other_apps_hero_banner</string>
-            <key>BannerImageName</key>
-            <string>passwords_in_other_apps_banner</string>
-            <key>IconImageName</key>
-            <string>password</string>
-            <key>IconBackgroundColor</key>
-            <string>yellow</string>
-            <key>IsSymbol</key>
-            <false/>
-            <key>IsSystemSymbol</key>
-            <false/>
-            <key>InstructionSteps</key>
-            <array>
-            <string>IDS_IOS_WHATS_NEW_CHROME_TIP_PASSWORDS_IN_OTHER_APPS_STEP_1</string>
-            <string>IDS_IOS_WHATS_NEW_CHROME_TIP_PASSWORDS_IN_OTHER_APPS_STEP_2</string>
-            </array>
-            <key>PrimaryAction</key>
-            <integer>4</integer>
-            <key>LearnMoreUrlString</key>
-            <string>https://support.google.com/chrome/?p=bling_saved_passwords</string>
-        </dict>
-        <dict>
-            <key>Type</key>
-            <integer>6</integer>
-            <key>Title</key>
-            <string>IDS_IOS_WHATS_NEW_CHROME_TIP_AUTOFILL_TITLE</string>
-            <key>Subtitle</key>
-            <string>IDS_IOS_WHATS_NEW_CHROME_TIP_AUTOFILL_SUBTITLE</string>
-            <key>HeroBannerImageName</key>
-            <string>autofill_hero_banner</string>
-            <key>BannerImageName</key>
-            <string>autofill_banner</string>
-            <key>IconImageName</key>
-            <string>pencil.and.ellipsis.rectangle</string>
-            <key>IconBackgroundColor</key>
-            <string>blue</string>
+            <string>purple</string>
             <key>IsSymbol</key>
             <true/>
             <key>IsSystemSymbol</key>
             <true/>
             <key>InstructionSteps</key>
             <array>
-            <string>IDS_IOS_WHATS_NEW_CHROME_TIP_AUTOFILL_STEP_1</string>
-            <string>IDS_IOS_WHATS_NEW_CHROME_TIP_AUTOFILL_STEP_2</string>
-            <string>IDS_IOS_WHATS_NEW_CHROME_TIP_AUTOFILL_STEP_3</string>
+            <string>IDS_IOS_WHATS_NEW_CHROME_ACTIONS_STEP_1</string>
+            <string>IDS_IOS_WHATS_NEW_CHROME_ACTIONS_STEP_2</string>
+            <string>IDS_IOS_WHATS_NEW_CHROME_ACTIONS_STEP_3</string>
             </array>
             <key>LearnMoreUrlString</key>
-            <string>https://support.google.com/chrome/?p=bling_autofill</string>
+            <string>https://support.google.com/chrome/?p=ios_chrome_actions</string>
         </dict>
     </array>
 </dict>

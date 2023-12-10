@@ -330,11 +330,6 @@ struct BLINK_COMMON_EXPORT
 };
 
 template <>
-struct StructTraits<blink::mojom::PortalTokenDataView, blink::PortalToken>
-    : public blink::TokenMojomTraitsHelper<blink::mojom::PortalTokenDataView,
-                                           blink::PortalToken> {};
-
-template <>
 struct StructTraits<blink::mojom::V8ContextTokenDataView, blink::V8ContextToken>
     : public blink::TokenMojomTraitsHelper<blink::mojom::V8ContextTokenDataView,
                                            blink::V8ContextToken> {};

@@ -31,7 +31,7 @@
 #include "components/signin/public/base/signin_client.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/primary_account_change_event.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class AccountTrackerService;
 class PrefRegistrySimple;
@@ -58,6 +58,9 @@ class PrimaryAccountManager : public ProfileOAuth2TokenServiceObserver {
     kKeepAllAccounts = 0,
     // Remove all the accounts.
     kRemoveAllAccounts,
+    // Remove the primary account, but keep the accounts in the
+    // `IdentityManager`.
+    kKeepAllAccountsAndClearPrimary,
   };
 
   // Enum for histogram 'Signin.PAMInitialize.PrimaryAccountInfoState'.
@@ -87,9 +90,9 @@ class PrimaryAccountManager : public ProfileOAuth2TokenServiceObserver {
   // Registers per-install prefs.
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
-  // If user was signed in, load tokens from DB if available.
+  // If user was signed in, load the primary account and then load credentials
+  // in the token service.
   void Initialize();
-  bool IsInitialized() const;
 
   // Returns whether the user's primary account is available. If consent is
   // |ConsentLevel::kSync| then true implies that the user has blessed this
@@ -130,6 +133,12 @@ class PrimaryAccountManager : public ProfileOAuth2TokenServiceObserver {
   // tokens.
   void ClearPrimaryAccount(signin_metrics::ProfileSignout signout_source_metric,
                            signin_metrics::SignoutDelete signout_delete_metric);
+  // Clears the primary account, erasing all keys associated with the primary
+  // account (also cancels all auth in progress).
+  // It keeps all accounts in the identity manager.
+  void RemovePrimaryAccountButKeepTokens(
+      signin_metrics::ProfileSignout signout_source_metric,
+      signin_metrics::SignoutDelete signout_delete_metric);
 
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -144,6 +153,14 @@ class PrimaryAccountManager : public ProfileOAuth2TokenServiceObserver {
 
  private:
   class ScopedPrefCommit;
+
+  // The primary account information. The account may or may not be consented
+  // for Sync.
+  struct PrimaryAccount {
+    const CoreAccountInfo account_info;
+    const bool consented_to_sync;
+    PrimaryAccount(const CoreAccountInfo& account_info, bool consented_to_sync);
+  };
 
   // Prepares the primary account and consented preferences before loading them.
   void PrepareToLoadPrefs();
@@ -197,27 +214,27 @@ class PrimaryAccountManager : public ProfileOAuth2TokenServiceObserver {
   // ProfileOAuth2TokenServiceObserver:
   void OnRefreshTokensLoaded() override;
 
-  const CoreAccountInfo& primary_account_info() const {
-    return primary_account_info_;
-  }
+  // Returns the primary account. Crashes if it is called before the primary
+  // account was initialized.
+  const PrimaryAccount& GetPrimaryAccount() const;
 
+  // The SigninClient instance associated with this object. Must outlive this
+  // object.
   raw_ptr<SigninClient> client_;
 
   // The ProfileOAuth2TokenService instance associated with this object. Must
   // outlive this object.
   raw_ptr<ProfileOAuth2TokenService> token_service_ = nullptr;
-  raw_ptr<AccountTrackerService> account_tracker_service_ = nullptr;
 
-  bool initialized_ = false;
+  // The AccountTrackerService instance associated with this object. Must
+  // outlive this object.
+  raw_ptr<AccountTrackerService> account_tracker_service_ = nullptr;
 
   // The primary account information. The account may or may not be consented
   // for Sync.
   // Must be kept in sync with prefs. Use SetPrimaryAccountInternal() to change
   // this field.
-  CoreAccountInfo primary_account_info_;
-
-  // Whether the primary account is consented to sync.
-  bool consented_to_sync_;
+  absl::optional<PrimaryAccount> primary_account_;
 
   base::ObserverList<Observer> observers_;
 };

@@ -33,13 +33,21 @@ public class TabbedSheetDelegate implements NavigationSheet.Delegate {
     @Override
     public NavigationHistory getHistory(boolean forward, boolean isOffTheRecord) {
         NavigationHistory history =
-                mTab.getWebContents().getNavigationController().getDirectedNavigationHistory(
-                        forward, MAXIMUM_HISTORY_ITEMS);
+                mTab.getWebContents()
+                        .getNavigationController()
+                        .getDirectedNavigationHistory(forward, MAXIMUM_HISTORY_ITEMS);
         if (!isOffTheRecord) {
-            history.addEntry(new NavigationEntry(FULL_HISTORY_ENTRY_INDEX,
-                    new GURL(UrlConstants.HISTORY_URL), GURL.emptyGURL(), GURL.emptyGURL(),
-                    mFullHistoryMenu, null, 0, 0,
-                    /* isInitialEntry=*/false));
+            history.addEntry(
+                    new NavigationEntry(
+                            FULL_HISTORY_ENTRY_INDEX,
+                            new GURL(UrlConstants.HISTORY_URL),
+                            GURL.emptyGURL(),
+                            GURL.emptyGURL(),
+                            mFullHistoryMenu,
+                            null,
+                            0,
+                            0,
+                            /* isInitialEntry= */ false));
         }
         return history;
     }

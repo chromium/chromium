@@ -20,9 +20,15 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.List;
 
 class HistoryClustersItemProperties {
-    @IntDef({HistoryClustersItemProperties.ItemType.VISIT, ItemType.CLUSTER,
-            ItemType.RELATED_SEARCHES, ItemType.TOGGLE, ItemType.PRIVACY_DISCLAIMER,
-            ItemType.CLEAR_BROWSING_DATA, ItemType.MORE_PROGRESS, ItemType.EMPTY_TEXT})
+    @IntDef({
+        HistoryClustersItemProperties.ItemType.VISIT,
+        ItemType.CLUSTER,
+        ItemType.RELATED_SEARCHES,
+        ItemType.TOGGLE,
+        ItemType.PRIVACY_DISCLAIMER,
+        ItemType.CLEAR_BROWSING_DATA,
+        ItemType.MORE_PROGRESS,
+    })
     @Retention(RetentionPolicy.SOURCE)
     @interface ItemType {
         int VISIT = 1;
@@ -32,7 +38,6 @@ class HistoryClustersItemProperties {
         int PRIVACY_DISCLAIMER = 5;
         int CLEAR_BROWSING_DATA = 6;
         int MORE_PROGRESS = 7;
-        int EMPTY_TEXT = 8;
     }
 
     static final WritableIntPropertyKey ACCESSIBILITY_STATE = new WritableIntPropertyKey();
@@ -64,9 +69,25 @@ class HistoryClustersItemProperties {
     static final WritableObjectPropertyKey<CharSequence> URL = new WritableObjectPropertyKey<>();
     static final WritableIntPropertyKey VISIBILITY = new WritableIntPropertyKey();
 
-    static final PropertyKey[] ALL_KEYS = {ACCESSIBILITY_STATE, CHIP_CLICK_HANDLER, CLICK_HANDLER,
-            CLUSTER_VISIT, DIVIDER_IS_THICK, DIVIDER_VISIBLE, END_BUTTON_CLICK_HANDLER,
-            END_BUTTON_DRAWABLE, END_BUTTON_VISIBLE, ICON_DRAWABLE, LABEL, PROGRESS_BUTTON_STATE,
-            RELATED_SEARCHES, SHOW_VERTICALLY_CENTERED, START_ICON_BACKGROUND_RES,
-            START_ICON_VISIBILITY, TITLE, URL, VISIBILITY};
+    static final PropertyKey[] ALL_KEYS = {
+        ACCESSIBILITY_STATE,
+        CHIP_CLICK_HANDLER,
+        CLICK_HANDLER,
+        CLUSTER_VISIT,
+        DIVIDER_IS_THICK,
+        DIVIDER_VISIBLE,
+        END_BUTTON_CLICK_HANDLER,
+        END_BUTTON_DRAWABLE,
+        END_BUTTON_VISIBLE,
+        ICON_DRAWABLE,
+        LABEL,
+        PROGRESS_BUTTON_STATE,
+        RELATED_SEARCHES,
+        SHOW_VERTICALLY_CENTERED,
+        START_ICON_BACKGROUND_RES,
+        START_ICON_VISIBILITY,
+        TITLE,
+        URL,
+        VISIBILITY
+    };
 }

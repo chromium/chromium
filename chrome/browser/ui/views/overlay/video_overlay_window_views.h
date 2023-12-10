@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_OVERLAY_VIDEO_OVERLAY_WINDOW_VIEWS_H_
 #define CHROME_BROWSER_UI_VIEWS_OVERLAY_VIDEO_OVERLAY_WINDOW_VIEWS_H_
 
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "build/chromeos_buildflags.h"
@@ -12,7 +14,6 @@
 #include "chromeos/ui/frame/highlight_border_overlay.h"
 #include "content/public/browser/overlay_window.h"
 #include "content/public/browser/video_picture_in_picture_window_controller.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/display/display.h"
 #include "ui/display/display_observer.h"
 #include "ui/gfx/geometry/size.h"
@@ -35,10 +36,12 @@ class ToggleCameraButton;
 
 // The Chrome desktop implementation of VideoOverlayWindow. This will only be
 // implemented in views, which will support all desktop platforms.
-class VideoOverlayWindowViews : public content::VideoOverlayWindow,
-                                public views::Widget,
-                                public display::DisplayObserver,
-                                public views::ViewObserver {
+class VideoOverlayWindowViews
+    : public content::VideoOverlayWindow,
+      public views::Widget,
+      public display::DisplayObserver,
+      public views::ViewObserver,
+      public AutoPipSettingOverlayView::AutoPipSettingOverlayViewObserver {
  public:
   using GetOverlayViewCb =
       base::RepeatingCallback<std::unique_ptr<AutoPipSettingOverlayView>()>;
@@ -101,6 +104,9 @@ class VideoOverlayWindowViews : public content::VideoOverlayWindow,
   // views::ViewObserver:
   void OnViewVisibilityChanged(views::View* observed_view,
                                views::View* starting_view) override;
+
+  // AutoPipSettingOverlayView::AutoPipSettingOverlayViewObserver:
+  void OnAutoPipSettingOverlayViewHidden() override;
 
   bool ControlsHitTestContainsPoint(const gfx::Point& point);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -172,6 +178,10 @@ class VideoOverlayWindowViews : public content::VideoOverlayWindow,
 
   void set_overlay_view_cb_for_testing(GetOverlayViewCb get_overlay_view_cb) {
     get_overlay_view_cb_ = std::move(get_overlay_view_cb);
+  }
+
+  AutoPipSettingOverlayView* get_overlay_view_for_testing() {
+    return overlay_view_;
   }
 
   // Determines whether a layout of the window controls has been scheduled but
@@ -294,7 +304,7 @@ class VideoOverlayWindowViews : public content::VideoOverlayWindow,
   // to prevent the rapid changes between states.
   base::RetainingOneShotTimer enable_controls_after_move_timer_;
   bool is_moving_ = false;
-  absl::optional<bool> queued_controls_visibility_status_;
+  std::optional<bool> queued_controls_visibility_status_;
 
   // Timer used to update controls bounds.
   std::unique_ptr<base::OneShotTimer> update_controls_bounds_timer_;
@@ -302,7 +312,7 @@ class VideoOverlayWindowViews : public content::VideoOverlayWindow,
   // If set, controls will always either be shown or hidden, instead of showing
   // and hiding automatically. Only used for testing via
   // ForceControlsVisibleForTesting().
-  absl::optional<bool> force_controls_visible_;
+  std::optional<bool> force_controls_visible_;
 
   // Views to be shown. The views are first temporarily owned by view_holder_,
   // then passed to this widget's ContentsView which takes ownership.
@@ -376,6 +386,13 @@ class VideoOverlayWindowViews : public content::VideoOverlayWindow,
   // Callback to get / create an overlay view.  This is a callback to let tests
   // provide alternate implementations.
   GetOverlayViewCb get_overlay_view_cb_;
+
+  // Auto pip setting overlay view observation. Used to observe the overlay view
+  // and receive notifications when it is hidden.
+  base::ScopedObservation<
+      AutoPipSettingOverlayView,
+      AutoPipSettingOverlayView::AutoPipSettingOverlayViewObserver>
+      auto_pip_setting_overlay_view_observation_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_OVERLAY_VIDEO_OVERLAY_WINDOW_VIEWS_H_

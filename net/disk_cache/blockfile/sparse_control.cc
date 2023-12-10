@@ -458,7 +458,7 @@ int SparseControl::OpenSparseEntry(int data_len) {
     return net::ERR_CACHE_OPERATION_NOT_SUPPORTED;
 
   // Read the actual bitmap.
-  buf = base::MakeRefCounted<net::IOBuffer>(map_len);
+  buf = base::MakeRefCounted<net::IOBufferWithSize>(map_len);
   rv = entry_->ReadData(kSparseIndex, sizeof(sparse_header_), buf.get(),
                         map_len, CompletionOnceCallback());
   if (rv != map_len)

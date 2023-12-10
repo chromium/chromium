@@ -127,11 +127,11 @@ struct FromValue<std::string> {
 
 template <>
 struct FromValue<base::Value::Dict> {
-  static absl::optional<base::Value::Dict> Parse(const base::Value& value,
-                                                 ErrorReporter* errors) {
+  static std::optional<base::Value::Dict> Parse(const base::Value& value,
+                                                ErrorReporter* errors) {
     if (!value.is_dict()) {
       errors->AddError("dictionary value expected");
-      return absl::nullopt;
+      return std::nullopt;
     }
     return value.GetDict().Clone();
   }

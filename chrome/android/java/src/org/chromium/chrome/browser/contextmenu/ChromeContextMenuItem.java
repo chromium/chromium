@@ -26,21 +26,45 @@ import org.chromium.ui.text.SpanApplier.SpanInfo;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-/**
- * List of all predefined Context Menu Items available in Chrome.
- */
+/** List of all predefined Context Menu Items available in Chrome. */
 class ChromeContextMenuItem {
-    @IntDef({Item.OPEN_IN_NEW_CHROME_TAB, Item.OPEN_IN_CHROME_INCOGNITO_TAB,
-            Item.OPEN_IN_BROWSER_ID, Item.OPEN_IN_NEW_TAB, Item.OPEN_IN_INCOGNITO_TAB,
-            Item.OPEN_IN_OTHER_WINDOW, Item.OPEN_IN_NEW_WINDOW, Item.OPEN_IN_EPHEMERAL_TAB,
-            Item.COPY_LINK_ADDRESS, Item.COPY_LINK_TEXT, Item.SAVE_LINK_AS, Item.SHARE_LINK,
-            Item.DIRECT_SHARE_LINK, Item.READ_LATER, Item.LOAD_ORIGINAL_IMAGE, Item.SAVE_IMAGE,
-            Item.OPEN_IMAGE, Item.OPEN_IMAGE_IN_NEW_TAB, Item.OPEN_IMAGE_IN_EPHEMERAL_TAB,
-            Item.COPY_IMAGE, Item.SEARCH_BY_IMAGE, Item.SEARCH_WITH_GOOGLE_LENS,
-            Item.SHOP_IMAGE_WITH_GOOGLE_LENS, Item.SHARE_IMAGE, Item.DIRECT_SHARE_IMAGE, Item.CALL,
-            Item.SEND_MESSAGE, Item.ADD_TO_CONTACTS, Item.COPY, Item.SAVE_VIDEO,
-            Item.OPEN_IN_CHROME, Item.OPEN_IN_NEW_TAB_IN_GROUP, Item.SHARE_HIGHLIGHT,
-            Item.REMOVE_HIGHLIGHT, Item.LEARN_MORE})
+    @IntDef({
+        Item.OPEN_IN_NEW_CHROME_TAB,
+        Item.OPEN_IN_CHROME_INCOGNITO_TAB,
+        Item.OPEN_IN_BROWSER_ID,
+        Item.OPEN_IN_NEW_TAB,
+        Item.OPEN_IN_INCOGNITO_TAB,
+        Item.OPEN_IN_OTHER_WINDOW,
+        Item.OPEN_IN_NEW_WINDOW,
+        Item.OPEN_IN_EPHEMERAL_TAB,
+        Item.COPY_LINK_ADDRESS,
+        Item.COPY_LINK_TEXT,
+        Item.SAVE_LINK_AS,
+        Item.SHARE_LINK,
+        Item.DIRECT_SHARE_LINK,
+        Item.READ_LATER,
+        Item.LOAD_ORIGINAL_IMAGE,
+        Item.SAVE_IMAGE,
+        Item.OPEN_IMAGE,
+        Item.OPEN_IMAGE_IN_NEW_TAB,
+        Item.OPEN_IMAGE_IN_EPHEMERAL_TAB,
+        Item.COPY_IMAGE,
+        Item.SEARCH_BY_IMAGE,
+        Item.SEARCH_WITH_GOOGLE_LENS,
+        Item.SHOP_IMAGE_WITH_GOOGLE_LENS,
+        Item.SHARE_IMAGE,
+        Item.DIRECT_SHARE_IMAGE,
+        Item.CALL,
+        Item.SEND_MESSAGE,
+        Item.ADD_TO_CONTACTS,
+        Item.COPY,
+        Item.SAVE_VIDEO,
+        Item.OPEN_IN_CHROME,
+        Item.OPEN_IN_NEW_TAB_IN_GROUP,
+        Item.SHARE_HIGHLIGHT,
+        Item.REMOVE_HIGHLIGHT,
+        Item.LEARN_MORE
+    })
     @Retention(RetentionPolicy.SOURCE)
     public @interface Item {
         // Values are numerated from 0 and can't have gaps.
@@ -91,45 +115,43 @@ class ChromeContextMenuItem {
         int NUM_ENTRIES = 35;
     }
 
-    /**
-     * Mapping from {@link Item} to the ID found in the ids.xml.
-     */
+    /** Mapping from {@link Item} to the ID found in the ids.xml. */
     private static final int[] MENU_IDS = {
-            R.id.contextmenu_open_in_new_chrome_tab, // Item.OPEN_IN_NEW_CHROME_TAB
-            R.id.contextmenu_open_in_chrome_incognito_tab, // Item.OPEN_IN_CHROME_INCOGNITO_TAB
-            R.id.contextmenu_open_in_browser_id, // Item.OPEN_IN_BROWSER_ID
-            R.id.contextmenu_open_in_new_tab, // Item.OPEN_IN_NEW_TAB
-            R.id.contextmenu_open_in_new_tab_in_group, // Item.OPEN_IN_NEW_TAB_IN_GROUP
-            R.id.contextmenu_open_in_incognito_tab, // Item.OPEN_IN_INCOGNITO_TAB
-            R.id.contextmenu_open_in_other_window, // Item.OPEN_IN_OTHER_WINDOW
-            R.id.contextmenu_open_in_new_window, // Item.OPEN_IN_NEW_WINDOW
-            R.id.contextmenu_open_in_ephemeral_tab, // Item.OPEN_IN_EPHEMERAL_TAB
-            R.id.contextmenu_copy_link_address, // Item.COPY_LINK_ADDRESS
-            R.id.contextmenu_copy_link_text, // Item.COPY_LINK_TEXT
-            R.id.contextmenu_save_link_as, // Item.SAVE_LINK_AS
-            R.id.contextmenu_share_link, // Item.SHARE_LINK
-            R.id.contextmenu_direct_share_link, // Item.DIRECT_SHARE_LINK
-            R.id.contextmenu_read_later, // Item.READ_LATER
-            R.id.contextmenu_load_original_image, // Item.LOAD_ORIGINAL_IMAGE
-            R.id.contextmenu_save_image, // Item.SAVE_IMAGE
-            R.id.contextmenu_open_image, // Item.OPEN_IMAGE
-            R.id.contextmenu_open_image_in_new_tab, // Item.OPEN_IMAGE_IN_NEW_TAB
-            R.id.contextmenu_open_image_in_ephemeral_tab, // Item.OPEN_IMAGE_IN_EPHEMERAL_TAB
-            R.id.contextmenu_copy_image, // Item.COPY_IMAGE
-            R.id.contextmenu_search_by_image, // Item.SEARCH_BY_IMAGE
-            R.id.contextmenu_search_with_google_lens, // Item.SEARCH_WITH_GOOGLE_LENS
-            R.id.contextmenu_shop_image_with_google_lens, // Item.SHOP_IMAGE_WITH_GOOGLE_LENS
-            R.id.contextmenu_share_image, // Item.SHARE_IMAGE
-            R.id.contextmenu_direct_share_image, // Item.DIRECT_SHARE_IMAGE
-            R.id.contextmenu_call, // Item.CALL
-            R.id.contextmenu_send_message, // Item.SEND_MESSAGE
-            R.id.contextmenu_add_to_contacts, // Item.ADD_TO_CONTACTS
-            R.id.contextmenu_copy, // Item.COPY
-            R.id.contextmenu_save_video, // Item.SAVE_VIDEO
-            R.id.contextmenu_open_in_chrome, // Item.OPEN_IN_CHROME
-            R.id.contextmenu_share_highlight, // Item.SHARE_HIGHLIGHT
-            R.id.contextmenu_remove_highlight, // Item.REMOVE_HIGHLIGHT
-            R.id.contextmenu_learn_more, // Item.LEARN_MORE
+        R.id.contextmenu_open_in_new_chrome_tab, // Item.OPEN_IN_NEW_CHROME_TAB
+        R.id.contextmenu_open_in_chrome_incognito_tab, // Item.OPEN_IN_CHROME_INCOGNITO_TAB
+        R.id.contextmenu_open_in_browser_id, // Item.OPEN_IN_BROWSER_ID
+        R.id.contextmenu_open_in_new_tab, // Item.OPEN_IN_NEW_TAB
+        R.id.contextmenu_open_in_new_tab_in_group, // Item.OPEN_IN_NEW_TAB_IN_GROUP
+        R.id.contextmenu_open_in_incognito_tab, // Item.OPEN_IN_INCOGNITO_TAB
+        R.id.contextmenu_open_in_other_window, // Item.OPEN_IN_OTHER_WINDOW
+        R.id.contextmenu_open_in_new_window, // Item.OPEN_IN_NEW_WINDOW
+        R.id.contextmenu_open_in_ephemeral_tab, // Item.OPEN_IN_EPHEMERAL_TAB
+        R.id.contextmenu_copy_link_address, // Item.COPY_LINK_ADDRESS
+        R.id.contextmenu_copy_link_text, // Item.COPY_LINK_TEXT
+        R.id.contextmenu_save_link_as, // Item.SAVE_LINK_AS
+        R.id.contextmenu_share_link, // Item.SHARE_LINK
+        R.id.contextmenu_direct_share_link, // Item.DIRECT_SHARE_LINK
+        R.id.contextmenu_read_later, // Item.READ_LATER
+        R.id.contextmenu_load_original_image, // Item.LOAD_ORIGINAL_IMAGE
+        R.id.contextmenu_save_image, // Item.SAVE_IMAGE
+        R.id.contextmenu_open_image, // Item.OPEN_IMAGE
+        R.id.contextmenu_open_image_in_new_tab, // Item.OPEN_IMAGE_IN_NEW_TAB
+        R.id.contextmenu_open_image_in_ephemeral_tab, // Item.OPEN_IMAGE_IN_EPHEMERAL_TAB
+        R.id.contextmenu_copy_image, // Item.COPY_IMAGE
+        R.id.contextmenu_search_by_image, // Item.SEARCH_BY_IMAGE
+        R.id.contextmenu_search_with_google_lens, // Item.SEARCH_WITH_GOOGLE_LENS
+        R.id.contextmenu_shop_image_with_google_lens, // Item.SHOP_IMAGE_WITH_GOOGLE_LENS
+        R.id.contextmenu_share_image, // Item.SHARE_IMAGE
+        R.id.contextmenu_direct_share_image, // Item.DIRECT_SHARE_IMAGE
+        R.id.contextmenu_call, // Item.CALL
+        R.id.contextmenu_send_message, // Item.SEND_MESSAGE
+        R.id.contextmenu_add_to_contacts, // Item.ADD_TO_CONTACTS
+        R.id.contextmenu_copy, // Item.COPY
+        R.id.contextmenu_save_video, // Item.SAVE_VIDEO
+        R.id.contextmenu_open_in_chrome, // Item.OPEN_IN_CHROME
+        R.id.contextmenu_share_highlight, // Item.SHARE_HIGHLIGHT
+        R.id.contextmenu_remove_highlight, // Item.REMOVE_HIGHLIGHT
+        R.id.contextmenu_learn_more, // Item.LEARN_MORE
     };
 
     /** Mapping from {@link Item} to the ID of the string that describes the action of the item. */
@@ -207,26 +229,35 @@ class ChromeContextMenuItem {
             case Item.OPEN_IN_BROWSER_ID:
                 return DefaultBrowserInfo.getTitleOpenInDefaultBrowser(false);
             case Item.SEARCH_BY_IMAGE:
-                return context.getString(getStringId(context, item),
+                return context.getString(
+                        getStringId(context, item),
                         TemplateUrlServiceFactory.getForProfile(Profile.getLastUsedRegularProfile())
                                 .getDefaultSearchEngineTemplateUrl()
                                 .getShortName());
             case Item.READ_LATER:
                 return addOrRemoveNewLabel(context, item, null, showInProductHelp);
             case Item.OPEN_IN_EPHEMERAL_TAB:
-                return addOrRemoveNewLabel(context, item,
+                return addOrRemoveNewLabel(
+                        context,
+                        item,
                         ChromePreferenceKeys.CONTEXT_MENU_OPEN_IN_EPHEMERAL_TAB_CLICKED,
                         showInProductHelp);
             case Item.OPEN_IMAGE_IN_EPHEMERAL_TAB:
-                return addOrRemoveNewLabel(context, item,
+                return addOrRemoveNewLabel(
+                        context,
+                        item,
                         ChromePreferenceKeys.CONTEXT_MENU_OPEN_IMAGE_IN_EPHEMERAL_TAB_CLICKED,
                         showInProductHelp);
             case Item.SEARCH_WITH_GOOGLE_LENS:
-                return addOrRemoveNewLabel(context, item,
+                return addOrRemoveNewLabel(
+                        context,
+                        item,
                         ChromePreferenceKeys.CONTEXT_MENU_SEARCH_WITH_GOOGLE_LENS_CLICKED,
                         showInProductHelp);
             case Item.SHOP_IMAGE_WITH_GOOGLE_LENS:
-                return addOrRemoveNewLabel(context, item,
+                return addOrRemoveNewLabel(
+                        context,
+                        item,
                         ChromePreferenceKeys.CONTEXT_MENU_SHOP_IMAGE_WITH_GOOGLE_LENS_CLICKED,
                         showInProductHelp);
             default:
@@ -246,8 +277,13 @@ class ChromeContextMenuItem {
                         && ChromeSharedPreferences.getInstance().readBoolean(prefKey, false))) {
             return SpanApplier.removeSpanText(menuTitle, new SpanInfo("<new>", "</new>"));
         }
-        return SpanApplier.applySpans(menuTitle,
-                new SpanInfo("<new>", "</new>", new SuperscriptSpan(), new RelativeSizeSpan(0.75f),
+        return SpanApplier.applySpans(
+                menuTitle,
+                new SpanInfo(
+                        "<new>",
+                        "</new>",
+                        new SuperscriptSpan(),
+                        new RelativeSizeSpan(0.75f),
                         new ForegroundColorSpan(
                                 SemanticColorUtils.getDefaultTextColorAccent1(context))));
     }

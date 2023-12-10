@@ -72,6 +72,7 @@ class AutofillWebDataBackendImpl
   void NotifyOfAutofillProfileChanged(
       const AutofillProfileChange& change) override;
   void NotifyOfCreditCardChanged(const CreditCardChange& change) override;
+  void NotifyOfIbanChanged(const IbanChange& change) override;
   void NotifyOnAutofillChangedBySync(syncer::ModelType model_type) override;
   void CommitChanges() override;
 
@@ -113,28 +114,24 @@ class AutofillWebDataBackendImpl
                                                    const std::u16string& value,
                                                    WebDatabase* db);
 
-  // Adds an Autofill profile to the web database. Valid only for local
-  // profiles.
+  // Adds an Autofill profile to the web database.
   WebDatabase::State AddAutofillProfile(const AutofillProfile& profile,
                                         WebDatabase* db);
 
-  // Updates an Autofill profile in the web database. Valid only for local
-  // profiles.
+  // Updates an Autofill profile in the web database.
   WebDatabase::State UpdateAutofillProfile(const AutofillProfile& profile,
                                            WebDatabase* db);
 
-  // Removes an Autofill profile from the web database. Valid only for local
-  // profiles.
+  // Removes an Autofill profile from the web database.
   WebDatabase::State RemoveAutofillProfile(
       const std::string& guid,
       AutofillProfile::Source profile_source,
       WebDatabase* db);
 
-  // Returns the local/server Autofill profiles from the web database.
+  // Returns the Autofill profiles from the web database.
   std::unique_ptr<WDTypedResult> GetAutofillProfiles(
       AutofillProfile::Source profile_source,
       WebDatabase* db);
-  std::unique_ptr<WDTypedResult> GetServerProfiles(WebDatabase* db);
 
   // Returns the number of values such that all for autofill entries with that
   // value, the interval between creation date and last usage is entirely
@@ -197,9 +194,6 @@ class AutofillWebDataBackendImpl
   WebDatabase::State UpdateServerCardMetadata(const CreditCard& credit_card,
                                               WebDatabase* db);
 
-  WebDatabase::State UpdateServerAddressMetadata(const AutofillProfile& profile,
-                                                 WebDatabase* db);
-
   // Methods to add, update, remove, clear server cvc in the web database.
   WebDatabase::State AddServerCvc(int64_t instrument_id,
                                   const std::u16string& cvc,
@@ -229,15 +223,15 @@ class AutofillWebDataBackendImpl
   WebDatabase::State ClearAllServerData(WebDatabase* db);
   WebDatabase::State ClearAllLocalData(WebDatabase* db);
 
-  // Removes Autofill records from the database. Valid only for local
-  // cards/profiles.
+  // Removes Autofill records from the database. Valid only for local cards and
+  // kLocalOrSyncable profiles.
   WebDatabase::State RemoveAutofillDataModifiedBetween(
       const base::Time& delete_begin,
       const base::Time& delete_end,
       WebDatabase* db);
 
-  // Removes origin URLs associated with Autofill profiles and credit cards
-  // from the database. Valid only for local cards/profiles.
+  // Removes origin URLs associated with local credit cards from the database.
+  // Autofill profiles don't store an origin, so this doesn't apply to them.
   WebDatabase::State RemoveOriginURLsModifiedBetween(
       const base::Time& delete_begin,
       const base::Time& delete_end,

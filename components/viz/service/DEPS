@@ -13,7 +13,7 @@ include_rules = [
   "+services/viz/public/mojom",
   "+skia/ext",
   "+third_party/skia",
+  "+ui/base/ozone_buildflags.h",
   "+ui/latency",
-  "+ui/ozone/buildflags.h",
   "+ui/ozone/public",
 ]

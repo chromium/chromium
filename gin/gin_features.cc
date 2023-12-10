@@ -190,22 +190,11 @@ BASE_FEATURE(kV8IgnitionElideRedundantTdzChecks,
              "V8IgnitionElideRedundantTdzChecks",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// The currently enabled fallback to the mid-tier register allocator for huge
-// Wasm functions. We want to remove this fallback in the future.
-BASE_FEATURE(kV8MidtierRegallocFallback,
-             "V8MidtierRegallocFallback",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // JavaScript language features.
 
 // Enables the Symbols-as-WeakMap-keys proposal.
 BASE_FEATURE(kJavaScriptSymbolAsWeakMapKey,
              "JavaScriptSymbolAsWeakMapKey",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enables the change-Array-by-copy proposal.
-BASE_FEATURE(kJavaScriptChangeArrayByCopy,
-             "JavaScriptChangeArrayByCopy",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables the Resizable ArrayBuffer proposal.
@@ -276,5 +265,25 @@ BASE_FEATURE(kWebAssemblyMultipleMemories,
 BASE_FEATURE(kWebAssemblyTurboshaft,
              "WebAssemblyTurboshaft",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kWebAssemblyTurboshaftInstructionSelection,
+             "WebAssemblyTurboshaftInstructionSelection",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Feature for more aggressive code caching (https://crbug.com/v8/14411) and
+// three parameters to control caching behavior.
+BASE_FEATURE(kWebAssemblyMoreAggressiveCodeCaching,
+             "WebAssemblyMoreAggressiveCodeCaching",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<int> kWebAssemblyMoreAggressiveCodeCachingThreshold{
+    &kWebAssemblyMoreAggressiveCodeCaching, "WebAssemblyCodeCachingThreshold",
+    1'000};
+const base::FeatureParam<int> kWebAssemblyMoreAggressiveCodeCachingTimeoutMs{
+    &kWebAssemblyMoreAggressiveCodeCaching, "WebAssemblyCodeCachingTimeoutMs",
+    5000};
+const base::FeatureParam<int>
+    kWebAssemblyMoreAggressiveCodeCachingHardThreshold{
+        &kWebAssemblyMoreAggressiveCodeCaching,
+        "WebAssemblyCodeCachingHardThreshold", 100'000};
 
 }  // namespace features

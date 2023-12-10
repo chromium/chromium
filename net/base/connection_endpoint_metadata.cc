@@ -4,13 +4,13 @@
 
 #include "net/base/connection_endpoint_metadata.h"
 
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
 
 #include "base/base64.h"
 #include "base/values.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
@@ -55,11 +55,11 @@ base::Value ConnectionEndpointMetadata::ToValue() const {
 }
 
 // static
-absl::optional<ConnectionEndpointMetadata>
-ConnectionEndpointMetadata::FromValue(const base::Value& value) {
+std::optional<ConnectionEndpointMetadata> ConnectionEndpointMetadata::FromValue(
+    const base::Value& value) {
   const base::Value::Dict* dict = value.GetIfDict();
   if (!dict)
-    return absl::nullopt;
+    return std::nullopt;
 
   const base::Value::List* alpns_list =
       dict->FindList(kSupportedProtocolAlpnsKey);
@@ -68,21 +68,21 @@ ConnectionEndpointMetadata::FromValue(const base::Value& value) {
   const std::string* target_name_value = dict->FindString(kTargetNameKey);
 
   if (!alpns_list || !ech_config_list_value)
-    return absl::nullopt;
+    return std::nullopt;
 
   ConnectionEndpointMetadata metadata;
 
   std::vector<std::string> alpns;
   for (const base::Value& alpn : *alpns_list) {
     if (!alpn.is_string())
-      return absl::nullopt;
+      return std::nullopt;
     metadata.supported_protocol_alpns.push_back(alpn.GetString());
   }
 
-  absl::optional<std::vector<uint8_t>> decoded =
+  std::optional<std::vector<uint8_t>> decoded =
       base::Base64Decode(*ech_config_list_value);
   if (!decoded)
-    return absl::nullopt;
+    return std::nullopt;
   metadata.ech_config_list = std::move(*decoded);
 
   if (target_name_value) {

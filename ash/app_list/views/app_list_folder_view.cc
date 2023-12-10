@@ -583,6 +583,8 @@ class ContentsContainerAnimation : public AppListFolderView::Animation,
 // ScrollViewWithMaxHeight limits its preferred size to a maximum height that
 // shows 4 apps grid rows.
 class ScrollViewWithMaxHeight : public views::ScrollView {
+  METADATA_HEADER(ScrollViewWithMaxHeight, views::ScrollView)
+
  public:
   explicit ScrollViewWithMaxHeight(AppListFolderView* folder_view)
       : views::ScrollView(views::ScrollView::ScrollWithLayers::kEnabled),
@@ -606,6 +608,9 @@ class ScrollViewWithMaxHeight : public views::ScrollView {
  private:
   const raw_ptr<AppListFolderView, ExperimentalAsh> folder_view_;
 };
+
+BEGIN_METADATA(ScrollViewWithMaxHeight)
+END_METADATA
 
 }  // namespace
 
@@ -679,7 +684,7 @@ void AppListFolderView::CreateScrollableAppsGrid(bool tablet_mode) {
   scroll_view_->ClipHeightTo(0, std::numeric_limits<int>::max());
   scroll_view_->SetDrawOverflowIndicator(false);
   // Don't paint a background. The folder already has one.
-  scroll_view_->SetBackgroundColor(absl::nullopt);
+  scroll_view_->SetBackgroundColor(std::nullopt);
   // Arrow keys are used to select app icons.
   scroll_view_->SetAllowKeyboardScrolling(false);
 

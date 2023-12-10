@@ -61,15 +61,8 @@ const int kQuotaDatabaseCompatibleVersion = 10;
 // Definitions for database schema.
 const char kBucketTable[] = "buckets";
 
-// Deprecated flag that ensured that the buckets table was bootstrapped
-// with existing storage key data for eviction logic.
-// TODO(crbug.com/1254535): Remove once enough time has passed to ensure that
-// this flag is no longer stored and supported in the QuotaDatabase.
-const char kIsOriginTableBootstrapped[] = "IsOriginTableBootstrapped";
-// Deprecated bootstrap flag, invalidated in 03/2022 as part of crbug/1306279.
-const char kDeprecatedBucketsTableBootstrapped[] = "IsBucketsTableBootstrapped";
 // Flag to ensure that all existing data for storage keys have been
-// registered into the buckets table.
+// registered into the buckets table. Introduced 2022-05 (crrev.com/c/3594211).
 const char kBucketsTableBootstrapped[] = "IsBucketsBootstrapped";
 
 const int kCommitIntervalMs = 30000;
@@ -135,7 +128,7 @@ QuotaErrorOr<BucketInfo> BucketInfoFromSqlStatement(sql::Statement& statement) {
                                                   : QuotaError::kDatabaseError);
   }
 
-  absl::optional<StorageKey> storage_key =
+  std::optional<StorageKey> storage_key =
       StorageKey::Deserialize(statement.ColumnString(1));
   if (!storage_key.has_value()) {
     return base::unexpected(QuotaError::kStorageKeyError);
@@ -582,7 +575,7 @@ QuotaErrorOr<mojom::BucketTableEntryPtr> QuotaDatabase::GetBucketInfoForTest(
                                                   : QuotaError::kDatabaseError);
   }
 
-  absl::optional<StorageKey> storage_key =
+  std::optional<StorageKey> storage_key =
       StorageKey::Deserialize(statement.ColumnString(1));
   if (!storage_key.has_value()) {
     return base::unexpected(QuotaError::kStorageKeyError);
@@ -668,7 +661,7 @@ QuotaErrorOr<std::set<BucketLocator>> QuotaDatabase::GetBucketsForEviction(
   int64_t total_usage = 0;
 
   while (statement.Step()) {
-    absl::optional<StorageKey> read_storage_key =
+    std::optional<StorageKey> read_storage_key =
         StorageKey::Deserialize(statement.ColumnString(1));
     if (!read_storage_key.has_value()) {
       // TODO(estade): this row needs to be deleted.
@@ -721,7 +714,7 @@ QuotaErrorOr<std::set<StorageKey>> QuotaDatabase::GetStorageKeysForType(
 
   std::set<StorageKey> storage_keys;
   while (statement.Step()) {
-    absl::optional<StorageKey> read_storage_key =
+    std::optional<StorageKey> read_storage_key =
         StorageKey::Deserialize(statement.ColumnString(0));
     if (!read_storage_key.has_value()) {
       continue;
@@ -757,7 +750,7 @@ QuotaErrorOr<std::set<BucketLocator>> QuotaDatabase::GetBucketsModifiedBetween(
 
   std::set<BucketLocator> buckets;
   while (statement.Step()) {
-    absl::optional<StorageKey> read_storage_key =
+    std::optional<StorageKey> read_storage_key =
         StorageKey::Deserialize(statement.ColumnString(1));
     if (!read_storage_key.has_value()) {
       continue;
@@ -805,12 +798,6 @@ QuotaError QuotaDatabase::SetIsBootstrapped(bool bootstrap_flag) {
   if (open_error != QuotaError::kNone) {
     return open_error;
   }
-
-  // Delete deprecated bootstrap flag if it still exists.
-  // TODO(crbug.com/1254535): Remove once enough time has passed to ensure that
-  // this flag is no longer stored and supported in the QuotaDatabase.
-  meta_table_->DeleteKey(kIsOriginTableBootstrapped);
-  meta_table_->DeleteKey(kDeprecatedBucketsTableBootstrapped);
 
   return meta_table_->SetValue(kBucketsTableBootstrapped, bootstrap_flag)
              ? QuotaError::kNone
@@ -914,7 +901,6 @@ QuotaError QuotaDatabase::EnsureOpened() {
   }
 
   sql::DatabaseOptions options{
-      .exclusive_locking = true,
       // The quota database is a critical storage component. If it's corrupted,
       // all client-side storage APIs fail, because they don't know where their
       // data is stored.
@@ -1190,7 +1176,7 @@ QuotaError QuotaDatabase::DumpBucketTable(const BucketTableCallback& callback) {
   sql::Statement statement(db_->GetCachedStatement(SQL_FROM_HERE, kSql));
 
   while (statement.Step()) {
-    absl::optional<StorageKey> storage_key =
+    std::optional<StorageKey> storage_key =
         StorageKey::Deserialize(statement.ColumnString(1));
     if (!storage_key.has_value()) {
       continue;

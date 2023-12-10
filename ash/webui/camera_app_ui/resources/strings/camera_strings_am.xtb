@@ -5,7 +5,6 @@
 <translation id="1076394037877376434">ገፅ <ph name="PAGE_NUMBER" />ን ሰርዝ</translation>
 <translation id="1113173431709655881">የካሜራ ሁነታ</translation>
 <translation id="1153190633558910465">ፍርግርግ ጠፍቷል</translation>
-<translation id="1175958423215084756">አገናኝ ተገኝቷል። <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213">ገፅ <ph name="PAGE_NUMBER" /> ተሰርዟል</translation>
 <translation id="1258009455399840361">90 ዲግሪ በሰዓት አቅጣጫ አሽከርክር</translation>
 <translation id="1417314334557041815">ገፅ <ph name="INDEX" />ን አርትዕ</translation>
@@ -60,14 +59,12 @@
 <translation id="3642192109456033823">ቪድዮን በማሰናዳት ላይ...</translation>
 <translation id="3789724198583203151">90 ዲግሪ በሰዓት ተቃራኒ አቅጣጫ አሽከርክር</translation>
 <translation id="3810838688059735925">ቪዲዮ</translation>
-<translation id="3892148308691398805">ጽሁፍ ቅዳ</translation>
 <translation id="4060608699153044055">በዝቅተኛ የመሣሪያ የማከማቻ ቦታ ምክንያት መቅረጽ አይችሉም። ቀረጻ ለመጀመር መሣሪያዎ ላይ ቦታ ማስለቀቅ አለብዎት።</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> ሜፒ</translation>
 <translation id="4118525110028899586">ቀረጻን ለአፍታ አቁም</translation>
 <translation id="4121305183798804752">ሰነድ ተገኝቷል</translation>
 <translation id="414641094616694804">ይህ ካሜራ ጥራትን መቀየር አይችልም</translation>
 <translation id="4176463684765177261">ተሰናክሏል</translation>
-<translation id="4269820728363426813">የአገናኝ አድራሻ ቅዳ</translation>
 <translation id="428234092390943511">የገጽ ጥፍር አከል</translation>
 <translation id="4349714250734879769">በChrome የተመጣጠኑ ክፈፎች</translation>
 <translation id="4383571725254449280">የህትመት አፈጻጸም መዝገቦች</translation>
@@ -144,7 +141,6 @@
 <translation id="7726641833034062494">መደበኛ ቪዲዮን ይቅረጹ</translation>
 <translation id="7748344063862150053">የሰነድ ከላይ-ቀኝ ጥግ</translation>
 <translation id="7933675232020478311">ወደ ታች-ቀኝ አቅጣጫ በመንቀሳቀስ ላይ</translation>
-<translation id="7983668134180549431">ጽሁፍ ተገኝቷል።</translation>
 <translation id="8079255378695216066">ቀረጻን መጀመር አልተቻለም</translation>
 <translation id="8120146556401698679">ማንፏቀቅ- ማጋደል-አጉላ/አሳንስ</translation>
 <translation id="8131740175452115882">አረጋግጥ</translation>
@@ -163,6 +159,7 @@
 <translation id="8870695351537079478">መቅረጽ መጀመር አልተቻለም</translation>
 <translation id="8880167521484863515">4 ለ3</translation>
 <translation id="8903921497873541725">አጉላ</translation>
+<translation id="8926890870105777777">«<ph name="WIFINAME" />» አውታረ መረብን ይቀላቀሉ</translation>
 <translation id="9045010116236796332">የሰነዱን ሁሉንም ጠርዞች በክፈፉ ውስጥ ያስቀምጡ</translation>
 <translation id="9045155556724273246">10 ሰከንዶች</translation>
 <translation id="906331135292332864">ምስልን በማሰናዳት ላይ...</translation>

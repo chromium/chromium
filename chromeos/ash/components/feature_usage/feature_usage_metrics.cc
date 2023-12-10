@@ -4,6 +4,8 @@
 
 #include "chromeos/ash/components/feature_usage/feature_usage_metrics.h"
 
+#include <optional>
+
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
@@ -17,7 +19,6 @@
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::feature_usage {
 
@@ -32,8 +33,8 @@ std::string FeatureToHistogram(const std::string& feature_name) {
 
 }  // namespace
 
-absl::optional<bool> FeatureUsageMetrics::Delegate::IsAccessible() const {
-  return absl::nullopt;
+std::optional<bool> FeatureUsageMetrics::Delegate::IsAccessible() const {
+  return std::nullopt;
 }
 
 // First time periodic metrics are reported after 'kInitialInterval` time.
@@ -164,7 +165,7 @@ void FeatureUsageMetrics::ReportPeriodicMetrics() {
   if (is_eligible)
     base::UmaHistogramEnumeration(histogram_name_, Event::kEligible);
 
-  absl::optional<bool> is_accessible = delegate_->IsAccessible();
+  std::optional<bool> is_accessible = delegate_->IsAccessible();
 
   if (is_accessible.has_value()) {
     // If accessible must be eligible.

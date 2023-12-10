@@ -144,7 +144,7 @@ class MediaAnalyticsClientImpl : public MediaAnalyticsClient {
                dbus::Response* response) {
     if (!response) {
       LOG(ERROR) << "Call to State failed to get response.";
-      std::move(callback).Run(absl::nullopt);
+      std::move(callback).Run(std::nullopt);
       return;
     }
 
@@ -152,7 +152,7 @@ class MediaAnalyticsClientImpl : public MediaAnalyticsClient {
     dbus::MessageReader reader(response);
     if (!reader.PopArrayOfBytesAsProto(&state)) {
       LOG(ERROR) << "Invalid D-Bus response: " << response->ToString();
-      std::move(callback).Run(absl::nullopt);
+      std::move(callback).Run(std::nullopt);
       return;
     }
 
@@ -163,7 +163,7 @@ class MediaAnalyticsClientImpl : public MediaAnalyticsClient {
                         dbus::Response* response) {
     if (!response) {
       LOG(ERROR) << "Call to GetDiagnostics failed to get response.";
-      std::move(callback).Run(absl::nullopt);
+      std::move(callback).Run(std::nullopt);
       return;
     }
 
@@ -171,7 +171,7 @@ class MediaAnalyticsClientImpl : public MediaAnalyticsClient {
     dbus::MessageReader reader(response);
     if (!reader.PopArrayOfBytesAsProto(&diagnostics)) {
       LOG(ERROR) << "Invalid GetDiagnostics response: " << response->ToString();
-      std::move(callback).Run(absl::nullopt);
+      std::move(callback).Run(std::nullopt);
       return;
     }
 

@@ -11,7 +11,7 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_constraint_space_builder.h"
+#include "third_party/blink/renderer/core/layout/constraint_space_builder.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
@@ -89,6 +89,10 @@ void RenderingTestChromeClient::InjectScrollbarGestureScroll(
   local_frame.GetEventHandler().HandleGestureEvent(*gesture_event);
 }
 
+RenderingTest::RenderingTest(
+    base::test::TaskEnvironment::TimeSource time_source)
+    : PageTestBase(time_source) {}
+
 RenderingTestChromeClient& RenderingTest::GetChromeClient() const {
   DEFINE_STATIC_LOCAL(Persistent<RenderingTestChromeClient>, client,
                       (MakeGarbageCollected<RenderingTestChromeClient>()));
@@ -134,7 +138,7 @@ void RenderingTest::SetUp() {
   UpdateAllLifecyclePhasesForTest();
 
   // Allow ASSERT_DEATH and EXPECT_DEATH for multiple threads.
-  testing::FLAGS_gtest_death_test_style = "threadsafe";
+  GTEST_FLAG_SET(death_test_style, "threadsafe");
 }
 
 void RenderingTest::TearDown() {
@@ -159,9 +163,9 @@ void RenderingTest::SetChildFrameHTML(const String& html) {
   ChildDocument().View()->BeginLifecycleUpdates();
 }
 
-NGConstraintSpace RenderingTest::ConstraintSpaceForAvailableSize(
+ConstraintSpace RenderingTest::ConstraintSpaceForAvailableSize(
     LayoutUnit inline_size) const {
-  NGConstraintSpaceBuilder builder(
+  ConstraintSpaceBuilder builder(
       WritingMode::kHorizontalTb,
       {WritingMode::kHorizontalTb, TextDirection::kLtr},
       /* is_new_fc */ false);

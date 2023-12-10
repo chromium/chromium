@@ -38,6 +38,10 @@ namespace base {
 class SingleThreadTaskRunner;
 }
 
+namespace gpu {
+class ClientSharedImage;
+}
+
 namespace viz {
 class ClientResourceProvider;
 class RasterContextProvider;
@@ -56,9 +60,10 @@ class CC_EXPORT ResourcePool : public base::trace_event::MemoryDumpProvider {
 
   // A base class to hold ownership of gpu backed PoolResources. Allows the
   // client to define destruction semantics.
-  class GpuBacking {
+  class CC_EXPORT GpuBacking {
    public:
-    virtual ~GpuBacking() = default;
+    GpuBacking();
+    virtual ~GpuBacking();
 
     // Dumps information about the memory backing the GpuBacking to |pmd|.
     // The memory usage is attributed to |buffer_dump_guid|.
@@ -72,7 +77,7 @@ class CC_EXPORT ResourcePool : public base::trace_event::MemoryDumpProvider {
         uint64_t tracing_process_id,
         int importance) const = 0;
 
-    gpu::Mailbox mailbox;
+    scoped_refptr<gpu::ClientSharedImage> shared_image;
     gpu::SyncToken mailbox_sync_token;
     GLenum texture_target = 0;
     bool overlay_candidate = false;
@@ -110,7 +115,10 @@ class CC_EXPORT ResourcePool : public base::trace_event::MemoryDumpProvider {
         uint64_t tracing_process_id,
         int importance) const = 0;
 
+    // Mailbox
     viz::SharedBitmapId shared_bitmap_id;
+
+    gpu::SyncToken mailbox_sync_token;
   };
 
   // Scoped move-only object returned when getting a resource from the pool.

@@ -67,8 +67,11 @@ public abstract class ItemDividerBase extends RecyclerView.ItemDecoration {
             View child = parent.getChildAt(posInView);
             int posInAdapter = parent.getChildAdapterPosition(child);
             if (shouldSkipItemType(parent.getAdapter().getItemViewType(posInAdapter))) continue;
-            child.setBackground(AppCompatResources.getDrawable(mContext,
-                    selectBackgroundDrawable(posInAdapter, containsFillButton(parent), itemCount)));
+            child.setBackground(
+                    AppCompatResources.getDrawable(
+                            mContext,
+                            selectBackgroundDrawable(
+                                    posInAdapter, containsFillButton(parent), itemCount)));
         }
     }
 

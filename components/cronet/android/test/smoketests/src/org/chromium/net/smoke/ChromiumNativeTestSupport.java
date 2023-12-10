@@ -12,9 +12,7 @@ import org.chromium.base.Log;
 import org.chromium.net.CronetTestUtil;
 import org.chromium.net.ExperimentalCronetEngine;
 
-/**
- * Provides support for tests that depend on QUIC and HTTP2 servers.
- */
+/** Provides support for tests that depend on QUIC and HTTP2 servers. */
 class ChromiumNativeTestSupport extends ChromiumPlatformOnlyTestSupport {
     private static final String TAG = ChromiumNativeTestSupport.class.getSimpleName();
 

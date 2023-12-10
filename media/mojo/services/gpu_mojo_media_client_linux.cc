@@ -28,7 +28,11 @@ VideoDecoderType GetPreferredLinuxDecoderImplementation() {
     return VideoDecoderType::kOutOfProcess;
   }
 
+#if BUILDFLAG(USE_VAAPI)
   return VideoDecoderType::kVaapi;
+#elif BUILDFLAG(USE_V4L2_CODEC)
+  return VideoDecoderType::kV4L2;
+#endif
 }
 
 std::vector<Fourcc> GetPreferredRenderableFourccs(
@@ -56,6 +60,8 @@ VideoDecoderType GetActualPlatformDecoderImplementation(
       return VideoDecoderType::kUnknown;
     case VideoDecoderType::kOutOfProcess:
       return VideoDecoderType::kOutOfProcess;
+    case VideoDecoderType::kV4L2:
+      return VideoDecoderType::kV4L2;
     case VideoDecoderType::kVaapi: {
       // Allow VaapiVideoDecoder on GL.
       if (gpu_preferences.gr_context_type == gpu::GrContextType::kGL) {
@@ -133,7 +139,8 @@ std::unique_ptr<VideoDecoder> CreatePlatformVideoDecoder(
           *traits.gpu_workarounds, traits.task_runner, std::move(frame_pool),
           std::move(frame_converter),
           GetPreferredRenderableFourccs(traits.gpu_preferences),
-          traits.media_log->Clone(), std::move(traits.oop_video_decoder));
+          traits.media_log->Clone(), std::move(traits.oop_video_decoder),
+          /*in_video_decoder_process=*/false);
     }
     case VideoDecoderType::kVaapi:
     case VideoDecoderType::kV4L2: {
@@ -144,7 +151,8 @@ std::unique_ptr<VideoDecoder> CreatePlatformVideoDecoder(
           *traits.gpu_workarounds, traits.task_runner, std::move(frame_pool),
           std::move(frame_converter),
           GetPreferredRenderableFourccs(traits.gpu_preferences),
-          traits.media_log->Clone(), /*oop_video_decoder=*/{});
+          traits.media_log->Clone(), /*oop_video_decoder=*/{},
+          /*in_video_decoder_process=*/false);
     }
     default:
       return nullptr;

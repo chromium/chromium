@@ -110,10 +110,11 @@ void ColorTemperatureAnimation::ApplyValuesToDisplay() {
   if (display_configurator_) {
 #if defined(USE_AURA)
     DVLOG(1) << "Color temperature set to " << kelvin << " kelvin.";
-    // 3x3 color matrix, represented as a vector of length 9.
-    std::vector<float> color_matrix = {red_scale, 0, 0, 0,         green_scale,
-                                       0,         0, 0, blue_scale};
-    display_configurator_->SetColorMatrix(color_matrix);
+    display::ColorTemperatureAdjustment cta;
+    cta.srgb_matrix.vals[0][0] = red_scale;
+    cta.srgb_matrix.vals[1][1] = green_scale;
+    cta.srgb_matrix.vals[2][2] = blue_scale;
+    display_configurator_->SetColorTemperatureAdjustment(cta);
 #endif  // defined(USE_AURA)
   }
 }

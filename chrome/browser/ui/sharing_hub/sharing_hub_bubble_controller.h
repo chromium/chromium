@@ -57,4 +57,4 @@ class SharingHubBubbleController {
 
 }  // namespace sharing_hub
 
-#endif  // CHROME_BROWSER_UI_SHARING_HUB_SHARING_HUB_BUBBLE_CONTROLLER_INTERFACE_H_
+#endif  // CHROME_BROWSER_UI_SHARING_HUB_SHARING_HUB_BUBBLE_CONTROLLER_H_

@@ -56,6 +56,27 @@ std::ostream& operator<<(std::ostream& os, const Metric<MetricType>& metric) {
   return os;
 }
 
+// Returns true when `task_result` represents the cloud open/upload flow ending
+// at the office fallback stage.
+bool DidEndAtFallback(OfficeTaskResult task_result) {
+  switch (task_result) {
+    case OfficeTaskResult::kFallbackQuickOffice:
+    case OfficeTaskResult::kFallbackOther:
+    case OfficeTaskResult::kCancelledAtFallback:
+      return true;
+    case OfficeTaskResult::kOpened:
+    case OfficeTaskResult::kMoved:
+    case OfficeTaskResult::kCancelledAtConfirmation:
+    case OfficeTaskResult::kFailedToUpload:
+    case OfficeTaskResult::kFailedToOpen:
+    case OfficeTaskResult::kCopied:
+    case OfficeTaskResult::kCancelledAtSetup:
+    case OfficeTaskResult::kLocalFileTask:
+    case OfficeTaskResult::kFileAlreadyBeingUploaded:
+      return false;
+  }
+}
+
 CloudOpenMetrics::CloudOpenMetrics(CloudProvider cloud_provider,
                                    size_t file_count)
     : multiple_files_(file_count > 1),
@@ -102,16 +123,14 @@ void CloudOpenMetrics::CheckForInconsistencies(
   // Task result should always be logged.
   ExpectLogged(task_result);
   if (task_result.logged()) {
-    if (task_result.value == OfficeTaskResult::kFallbackQuickOffice ||
-        task_result.value == OfficeTaskResult::kCancelledAtFallback ||
+    if (DidEndAtFallback(task_result.value) ||
         task_result.value == OfficeTaskResult::kCancelledAtSetup ||
         task_result.value == OfficeTaskResult::kLocalFileTask) {
       // The cloud open/upload flow was exited at the Fallback Dialog or Setup
       // flow.
       ExpectNotLogged(transfer_required);
       ExpectNotLogged(upload_result);
-      if (task_result.value == OfficeTaskResult::kFallbackQuickOffice ||
-          task_result.value == OfficeTaskResult::kCancelledAtFallback) {
+      if (DidEndAtFallback(task_result.value)) {
         // The cloud open/upload flow was exited at the Fallback Dialog.
         // OpenErrors should give a fallback reason.
         if (google_drive) {
@@ -211,6 +230,7 @@ void CloudOpenMetrics::CheckForInconsistencies(
               kUploadNotStartedReauthenticationRequired:
             break;
           case OfficeFilesUploadResult::kSuccess:
+          case OfficeFilesUploadResult::kSuccessAfterReauth:
             SetWrongValueLogged(upload_result);
             break;
         }
@@ -333,6 +353,7 @@ void CloudOpenMetrics::CheckForInconsistencies(
           if (upload_result.logged()) {
             switch (upload_result.value) {
               case OfficeFilesUploadResult::kSuccess:
+              case OfficeFilesUploadResult::kSuccessAfterReauth:
                 break;
               case OfficeFilesUploadResult::kOtherError:
               case OfficeFilesUploadResult::kFileSystemNotFound:
@@ -419,6 +440,7 @@ void CloudOpenMetrics::CheckForInconsistencies(
             case OfficeFilesSourceVolume::kGuestOS:
             case OfficeFilesSourceVolume::kUnknown:
             case OfficeFilesSourceVolume::kMicrosoftOneDrive:
+            case OfficeFilesSourceVolume::kAndroidOneDriveDocumentsProvider:
               SetWrongValueLogged(source_volume);
               break;
           }
@@ -428,6 +450,7 @@ void CloudOpenMetrics::CheckForInconsistencies(
         if (source_volume.logged()) {
           switch (source_volume.value) {
             case OfficeFilesSourceVolume::kMicrosoftOneDrive:
+            case OfficeFilesSourceVolume::kAndroidOneDriveDocumentsProvider:
               break;
             case OfficeFilesSourceVolume::kDownloadsDirectory:
             case OfficeFilesSourceVolume::kRemovableDiskPartition:
@@ -450,10 +473,16 @@ void CloudOpenMetrics::CheckForInconsistencies(
       }
     } else {
       // TransferRequired was kCopy or kMove.
-      if (task_result.logged() &&
-          task_result.value != OfficeTaskResult::kCancelledAtConfirmation) {
-        // The cloud upload flow was exited at the Move Confirmation Dialog.
-        ExpectLogged(upload_result);
+      if (task_result.logged()) {
+        if (task_result.value == OfficeTaskResult::kCancelledAtConfirmation ||
+            task_result.value == OfficeTaskResult::kFileAlreadyBeingUploaded) {
+          // The cloud upload flow was exited at the Move Confirmation Dialog or
+          // the upload was abandoned.
+          ExpectNotLogged(upload_result);
+        } else {
+          // The upload should have succeeded or failed.
+          ExpectLogged(upload_result);
+        }
       }
       // SourceVolume should not match the CloudProvider.
       if (google_drive) {
@@ -473,6 +502,7 @@ void CloudOpenMetrics::CheckForInconsistencies(
             case OfficeFilesSourceVolume::kGuestOS:
             case OfficeFilesSourceVolume::kUnknown:
             case OfficeFilesSourceVolume::kMicrosoftOneDrive:
+            case OfficeFilesSourceVolume::kAndroidOneDriveDocumentsProvider:
               break;
             case OfficeFilesSourceVolume::kGoogleDrive:
               SetWrongValueLogged(source_volume);
@@ -498,6 +528,7 @@ void CloudOpenMetrics::CheckForInconsistencies(
             case OfficeFilesSourceVolume::kGoogleDrive:
               break;
             case OfficeFilesSourceVolume::kMicrosoftOneDrive:
+            case OfficeFilesSourceVolume::kAndroidOneDriveDocumentsProvider:
               SetWrongValueLogged(source_volume);
               break;
           }
@@ -519,7 +550,6 @@ void CloudOpenMetrics::CheckForInconsistencies(
       ExpectNotLogged(move_error);
       // TaskResult should be kFailedToUpload.
       ExpectLogged(task_result);
-      // UploadHandler tests don't log TaskResult.
       if (task_result.logged()) {
         switch (task_result.value) {
           case OfficeTaskResult::kFailedToUpload:
@@ -534,6 +564,7 @@ void CloudOpenMetrics::CheckForInconsistencies(
           case OfficeTaskResult::kCancelledAtFallback:
           case OfficeTaskResult::kCancelledAtSetup:
           case OfficeTaskResult::kLocalFileTask:
+          case OfficeTaskResult::kFileAlreadyBeingUploaded:
             SetWrongValueLogged(task_result);
             break;
         }

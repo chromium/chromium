@@ -48,7 +48,6 @@ import org.mockito.MockitoAnnotations;
 import org.chromium.base.BuildInfo;
 import org.chromium.base.Callback;
 import org.chromium.base.DiscardableReferencePool;
-import org.chromium.base.FeatureList;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
@@ -93,9 +92,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /** Tests the download home V2. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -154,12 +151,6 @@ public class DownloadActivityV2Test extends BlankUiTestActivityTestCase {
                             GURL url = inv.getArgument(0);
                             return url.getSpec();
                         });
-
-        Map<String, Boolean> features = new HashMap<>();
-        features.put(ChromeFeatureList.DOWNLOAD_OFFLINE_CONTENT_PROVIDER, false);
-        features.put(ChromeFeatureList.EMPTY_STATES, false);
-
-        FeatureList.setTestFeatures(features);
 
         mStubbedOfflineContentProvider =
                 new StubbedOfflineContentProvider() {
@@ -329,36 +320,6 @@ public class DownloadActivityV2Test extends BlankUiTestActivityTestCase {
                     setUpUi();
                 });
 
-        onView(withId(R.id.empty)).check(matches(not(isDisplayed())));
-
-        // Go to Prefetch tab. It should be empty.
-        onView(withText(equalToIgnoringCase("Explore Offline")))
-                .check(matches(isDisplayed()))
-                .perform(ViewActions.click());
-        onView(withText(containsString("Articles appear here"))).check(matches(isDisplayed()));
-        onView(withId(R.id.empty)).check(matches(isDisplayed()));
-
-        // Go back to files tab. It shouldn't be empty.
-        onView(withText(equalToIgnoringCase("My Files")))
-                .check(matches(isDisplayed()))
-                .perform(ViewActions.click());
-        onView(withId(R.id.empty)).check(matches(not(isDisplayed())));
-    }
-
-    @Test
-    @MediumTest
-    public void testPrefetchTabEmptyText_EmptyState() throws Exception {
-        // Enable Empty State FF.
-        Map<String, Boolean> features = new HashMap<>();
-        features.put(ChromeFeatureList.EMPTY_STATES, true);
-        features.put(ChromeFeatureList.DOWNLOAD_OFFLINE_CONTENT_PROVIDER, false);
-        FeatureList.setTestFeatures(features);
-
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    setUpUi();
-                });
-
         onView(withId(R.id.empty_state_icon)).check(matches(not(isDisplayed())));
 
         // Go to Prefetch tab. It should be empty.
@@ -517,51 +478,6 @@ public class DownloadActivityV2Test extends BlankUiTestActivityTestCase {
     @Test
     @MediumTest
     public void testDeleteItem() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    setUpUi();
-                });
-        SnackbarManager.setDurationForTesting(1);
-
-        // The last item may be outside the view port, that recycler view won't create the view
-        // holder, so scroll to that view holder first.
-        onView(withId(R.id.download_home_recycler_view))
-                .perform(RecyclerViewActions.scrollToHolder(hasTextInViewHolder("page 1")));
-
-        onView(withText("page 1")).check(matches(isDisplayed()));
-
-        // Delete an item using three dot menu. The item should be removed from the list.
-        onView(allOf(withId(R.id.more), hasSibling(withText("page 1"))))
-                .perform(ViewActions.click());
-        onView(withText("Delete")).check(matches(isDisplayed())).perform(ViewActions.click());
-        onView(withText("page 1")).check(doesNotExist());
-
-        // Delete the remaining items using long press and multi-delete from toolbar menu.
-        onView(withText("page 2")).check(matches(isDisplayed())).perform(ViewActions.longClick());
-        onView(withText("page 3")).check(matches(isDisplayed())).perform(ViewActions.longClick());
-        onView(withText("page 4")).check(matches(isDisplayed())).perform(ViewActions.longClick());
-
-        PostTask.runOrPostTask(
-                TaskTraits.UI_DEFAULT,
-                () -> {
-                    DownloadHomeToolbar toolbar = getActivity().findViewById(R.id.download_toolbar);
-                    toolbar.getMenu()
-                            .performIdentifierAction(R.id.selection_mode_delete_menu_id, 0);
-                });
-
-        // The files tab should show empty view now.
-        onView(withId(R.id.empty)).check(matches(isDisplayed()));
-    }
-
-    @Test
-    @MediumTest
-    public void testDeleteItem_EmptyState() throws Exception {
-        // Enable Empty State FF.
-        Map<String, Boolean> features = new HashMap<>();
-        features.put(ChromeFeatureList.EMPTY_STATES, true);
-        features.put(ChromeFeatureList.DOWNLOAD_OFFLINE_CONTENT_PROVIDER, false);
-        FeatureList.setTestFeatures(features);
-
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     setUpUi();

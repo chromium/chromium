@@ -105,7 +105,7 @@ class Callspec(object):
     self.node = callspec_node
     self.comment = comment
 
-  def process(self, callbacks):
+  def process(self, use_returns_async, callbacks):
     parameters = []
     return_type = None
     returns_async = None
@@ -123,19 +123,29 @@ class Callspec(object):
       if parameter['name'] in self.comment:
         parameter['description'] = self.comment[parameter['name']]
       parameters.append(parameter)
-    # For promise supporting functions, pull off the callback from the final
-    # parameter and put it into the separate returns async field.
-    if self.node.GetProperty('supportsPromises'):
-      assert len(parameters) > 0, (
-          'Callspec "%s" is marked as supportsPromises '
-          'but has no existing callback defined.' % self.node.GetName())
-      returns_async = parameters.pop()
-      assert returns_async.get('type') == 'function', (
-          'Callspec "%s" is marked as supportsPromises '
-          'but the final parameter is not a function.' % self.node.GetName())
-      # The returns_async field is inherently a function, so doesn't need type
-      # specified on it.
-      returns_async.pop('type')
+    # All functions with an asynchronous return are defined with a trailing
+    # callback in their parameters. For promise supporting functions, pull off
+    # the callback and put it into the separate returns async field.
+    # Note: We only do this for interface types of 'Functions' and 'Properties',
+    # not for 'Events' and callback definitions which have function parameters
+    # that can be called multiple times.
+    if (
+        use_returns_async
+        and len(parameters) > 0
+        and parameters[-1].get('type') == 'function'
+    ):
+      supports_promises = not self.node.GetProperty('doesNotSupportPromises')
+      if supports_promises:
+        returns_async = parameters.pop()
+        # The returns_async field is inherently a function, so doesn't need type
+        # specified on it.
+        returns_async.pop('type')
+    else:
+      assert not self.node.GetProperty('doesNotSupportPromises'), (
+          'Callspec "%s" does not need to specify [doesNotSupportPromises] if '
+          'it does not have a trailing callback'
+          % self.node.GetName()
+      )
 
     return (self.node.GetName(), parameters, return_type, returns_async)
 
@@ -180,7 +190,6 @@ class Dictionary(object):
     return result
 
 
-
 class Member(object):
   '''
   Given an IDL dictionary or interface member, converts into a name/value pair
@@ -190,7 +199,9 @@ class Member(object):
   def __init__(self, member_node):
     self.node = member_node
 
-  def process(self, callbacks, functions_are_properties=False):
+  def process(
+      self, callbacks, functions_are_properties=False, use_returns_async=False
+  ):
     properties = OrderedDict()
     name = self.node.GetName()
     if self.node.GetProperty('deprecated'):
@@ -227,8 +238,9 @@ class Member(object):
         properties['description'] = parent_comment
         properties['jsexterns'] = jsexterns
       elif node.cls == 'Callspec':
-        name, parameters, return_type, returns_async = (
-            Callspec(node, parameter_comments).process(callbacks))
+        name, parameters, return_type, returns_async = Callspec(
+            node, parameter_comments
+        ).process(use_returns_async, callbacks)
         if functions_are_properties:
           # If functions are treated as properties (which will happen if the
           # interface is named Properties) then this isn't a function, it's a
@@ -488,11 +500,19 @@ class Namespace(object):
 
   def process_interface(self, node, functions_are_properties=False):
     members = []
+    # Callspec definitions for Functions and Properties with an asynchronous
+    # return are defined with a trailing callback, but during parsing we move
+    # the details to a returns_async field. We need to pass this info along so
+    # we don't do this for Event definitions or callback definitions themselves.
+    # TODO(tjudkins): Once IDL definitions are changed to describe returning
+    # promises, we can condition on that rather than this special casing here.
+    use_returns_async = node.GetName() in ['Functions', 'Properties']
     for member in node.GetChildren():
       if member.cls == 'Member':
         _, properties = Member(member).process(
             self.callbacks,
-            functions_are_properties=functions_are_properties)
+            functions_are_properties=functions_are_properties,
+            use_returns_async=use_returns_async)
         members.append(properties)
     return members
 
@@ -547,8 +567,6 @@ class IDLSchema(object):
           compiler_options['implemented_in'] = node.value
         elif node.name == 'generate_error_messages':
           compiler_options['generate_error_messages'] = True
-        elif node.name == 'modernised_enums':
-          compiler_options['modernised_enums'] = True
         elif node.name == 'deprecated':
           deprecated = str(node.value)
         elif node.name == 'documentation_title':

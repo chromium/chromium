@@ -11,25 +11,13 @@
 
 namespace autofill {
 
-bool AutofillMetadata::operator==(const AutofillMetadata& metadata) const {
-  return id == metadata.id && use_count == metadata.use_count &&
-         use_date == metadata.use_date &&
-         has_converted == metadata.has_converted &&
-         billing_address_id == metadata.billing_address_id;
-}
-
-bool AutofillMetadata::operator!=(const AutofillMetadata& metadata) const {
-  return !(*this == metadata);
-}
-
 bool AutofillMetadata::IsDeletable() const {
   return IsAutofillEntryWithUseDateDeletable(use_date);
 }
 
 std::ostream& operator<<(std::ostream& os, const AutofillMetadata& metadata) {
   return os << metadata.id << " " << metadata.use_count << " "
-            << metadata.use_date << " " << metadata.has_converted << " "
-            << metadata.billing_address_id;
+            << metadata.use_date << " " << metadata.billing_address_id;
 }
 
 }  // namespace autofill

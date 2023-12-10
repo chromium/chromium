@@ -28,12 +28,15 @@ class ChoiceScreenDelegate {
 
     private final ImmutableList<TemplateUrl> mTemplateUrls;
 
-    ChoiceScreenDelegate(DefaultSearchEngineDialogHelper.Delegate wrappedDelegate,
+    ChoiceScreenDelegate(
+            DefaultSearchEngineDialogHelper.Delegate wrappedDelegate,
             Callback<Boolean> onClosedCallback) {
         mOnClosedCallback = onClosedCallback;
         mWrappedDelegate = wrappedDelegate;
-        mTemplateUrls = ImmutableList.copyOf(
-                wrappedDelegate.getSearchEnginesForPromoDialog(SearchEnginePromoType.SHOW_WAFFLE));
+        mTemplateUrls =
+                ImmutableList.copyOf(
+                        wrappedDelegate.getSearchEnginesForPromoDialog(
+                                SearchEnginePromoType.SHOW_WAFFLE));
         assert !mTemplateUrls.isEmpty();
     }
 
@@ -58,7 +61,8 @@ class ChoiceScreenDelegate {
     void onChoiceMade(String keyword) {
         assert !TextUtils.isEmpty(keyword);
 
-        mWrappedDelegate.onUserSearchEngineChoice(SearchEnginePromoType.SHOW_WAFFLE,
+        mWrappedDelegate.onUserSearchEngineChoice(
+                SearchEnginePromoType.SHOW_WAFFLE,
                 mTemplateUrls.stream().map(TemplateUrl::getKeyword).collect(Collectors.toList()),
                 keyword);
         mOnClosedCallback.onResult(true);

@@ -27,7 +27,8 @@ out/Default/chromedriver_unittests
 ## Python integration tests
 
 These tests are maintained by the ChromeDriver team,
-and are intended to verify that ChromeDriver works correctly with Chrome.
+and are intended to verify that ChromeDriver works correctly with Chrome and
+chrome-headless-shell.
 They are written in Python script, in
 [`test/run_py_tests.py`](https://source.chromium.org/chromium/chromium/src/+/main:chrome/test/chromedriver/test/run_py_tests.py).
 We run these tests on the CQ (commit queue) on all desktop platforms,
@@ -48,6 +49,18 @@ The `run_py_tests.py` script has a number of options.
 Run it with `--help` for more information.
 The only require option is `--chromedriver` to specify the location of
 the ChromeDriver binary.
+
+### chrome-headless-shell
+
+To run the tests you need to build chrome-headless-shell and ChromeDriver, and then
+invoke `run_py_tests.py`:
+
+```bash
+autoninja -C out/Default headless_shell chromedriver
+vpython3 <CHROMEDRIVER_DIR>/test/run_py_tests.py\
+         --browser-name=chrome-headless-shell\
+         --chromedriver=out/Default/chromedriver
+```
 
 ### Test filtering
 
@@ -73,8 +86,8 @@ particilar platform), explain it in a comment.
 
 ### Running in Commit Queue
 
-The Python integration tests are run in the Commit Queue (CQ) in a step
-named `chromedriver_py_tests`.
+The Python integration tests are run in the Commit Queue (CQ) in steps
+named `chromedriver_py_tests` and `chromedriver_py_tests_headless_shell`.
 
 When running inside the CQ, the `--test-type=integration` option is passed to
 the `run_py_tests.py` command line. This has the following effects:
@@ -222,18 +235,17 @@ You can use the following commands to run them:
 
 ```bash
 autoninja -C out/Default chrome_wpt_tests
-out/Default/bin/run_chrome_wpt_tests -t Default webdriver/path/to/test/or/dir.py
+out/Default/bin/run_chrome_wpt_tests -t Default external/wpt/webdriver/path/to/test/or/dir
 ```
 
 This will invoke [`//third_party/blink/tools/run_wpt_tests.py`][1], a thin
-wrapper around [wptrunner] used to run other types of WPTs in Chromium CQ/CI.
-See [these instructions] for suppressing failures with `.ini` metadata files.
-The [WPT importer] will automatically generate `.ini` files to suppress new
+wrapper around wptrunner used to run WPTs (including webdriver tests) in Chromium CQ/CI.
+See [these instructions] for suppressing failures for webdriver tests.
+The [WPT importer] will automatically generate test expectations or baselines to suppress new
 test failures.
 
-[1]: /third_party/blink/tools/run_wpt_tests.py
-[wptrunner]: /docs/testing/web_platform_tests_wptrunner.md
-[these instructions]: /docs/testing/web_platform_tests_wptrunner.md#Expectations
+[1]: /docs/testing/run_web_platform_tests.md
+[these instructions]: /docs/testing/run_web_platform_tests.md#test-expectations-and-baselines
 [WPT importer]: /docs/testing/web_platform_tests.md#Importing-tests
 
 ## JavaScript Unit Tests

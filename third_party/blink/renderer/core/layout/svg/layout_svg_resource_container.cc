@@ -21,7 +21,7 @@
 
 #include "third_party/blink/renderer/core/layout/svg/svg_resources.h"
 #include "third_party/blink/renderer/core/style/reference_clip_path_operation.h"
-#include "third_party/blink/renderer/core/style/style_svg_mask_reference_image.h"
+#include "third_party/blink/renderer/core/style/style_mask_source_image.h"
 #include "third_party/blink/renderer/core/svg/svg_element.h"
 #include "third_party/blink/renderer/core/svg/svg_length.h"
 #include "third_party/blink/renderer/core/svg/svg_length_context.h"
@@ -162,12 +162,10 @@ void LayoutSVGResourceContainer::InvalidateClientsIfActiveResource() {
   // If this is the 'active' resource (the first element with the specified 'id'
   // in tree order), notify any clients that they need to reevaluate the
   // resource's contents.
-  const LocalSVGResource* resource = ResourceForContainer(*this);
+  LocalSVGResource* resource = ResourceForContainer(*this);
   if (!resource || resource->Target() != GetElement())
     return;
-  // Pass all available flags. This may be performing unnecessary invalidations
-  // in some cases.
-  MarkAllClientsForInvalidation(kInvalidateAll);
+  GetDocument().ScheduleSVGResourceInvalidation(*resource);
 }
 
 void LayoutSVGResourceContainer::WillBeDestroyed() {
@@ -242,14 +240,14 @@ bool LayoutSVGResourceContainer::FindCycleInResources(
   if (RuntimeEnabledFeatures::CSSMaskingInteropEnabled()) {
     for (const FillLayer* layer = &layout_object.StyleRef().MaskLayers(); layer;
          layer = layer->Next()) {
-      const auto* svg_mask_reference =
-          DynamicTo<StyleSVGMaskReferenceImage>(layer->GetImage());
-      if (!svg_mask_reference) {
+      const auto* mask_source =
+          DynamicTo<StyleMaskSourceImage>(layer->GetImage());
+      if (!mask_source) {
         continue;
       }
-      const SVGResource* svg_resource = svg_mask_reference->GetSVGResource();
+      const SVGResource* svg_resource = mask_source->GetSVGResource();
       SVGResourceClient* client =
-          svg_mask_reference->GetSVGResourceClient(layout_object);
+          mask_source->GetSVGResourceClient(layout_object);
       if (svg_resource && svg_resource->FindCycle(*client)) {
         return true;
       }

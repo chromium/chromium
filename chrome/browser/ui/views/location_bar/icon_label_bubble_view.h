@@ -6,13 +6,13 @@
 #define CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_ICON_LABEL_BUBBLE_VIEW_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/pointer/touch_ui_controller.h"
@@ -97,7 +97,7 @@ class IconLabelBubbleView : public views::InkDropObserver,
 
   // Call to have the icon label paint over a solid background when the label
   // text is shown.
-  void SetPaintLabelOverSolidBackground(bool paint_label_over_solid_backround);
+  void SetPaintLabelOverSolidBackground(bool paint_label_over_solid_background);
 
   void SetLabel(const std::u16string& label);
   void SetLabel(const std::u16string& label,
@@ -202,7 +202,7 @@ class IconLabelBubbleView : public views::InkDropObserver,
   // TODO(bruthig): See https://crbug.com/669253. Since the ink drop highlight
   // currently cannot handle host resizes, the highlight needs to be disabled
   // when the animation is running.
-  void AnimateIn(absl::optional<int> string_id);
+  void AnimateIn(std::optional<int> string_id);
 
   // Animates the view out.
   void AnimateOut();
@@ -284,7 +284,7 @@ class IconLabelBubbleView : public views::InkDropObserver,
   // when the label text is showing.
   // TODO(tluk): Remove the opt-in after UX has conslusively decided how icon
   // labels should be painted when the label text is shown.
-  bool paint_label_over_solid_backround_ = false;
+  bool paint_label_over_solid_background_ = false;
 
   // Whether the tonal color should be used when the icon is expanded to show
   // the label.

@@ -27,6 +27,8 @@ FactorAuthViewFactory::CreateFactorAuthView(AshAuthFactor factor) {
       return nullptr;
     case AshAuthFactor::kLegacyFingerprint:
       return nullptr;
+    case AshAuthFactor::kLocalPassword:
+      return nullptr;
   }
 }
 

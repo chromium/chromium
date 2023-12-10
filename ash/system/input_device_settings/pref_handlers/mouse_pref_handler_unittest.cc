@@ -14,6 +14,7 @@
 #include "ash/system/input_device_settings/input_device_tracker.h"
 #include "ash/system/input_device_settings/settings_updated_metrics_info.h"
 #include "ash/test/ash_test_base.h"
+#include "base/strings/strcat.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -365,7 +366,7 @@ TEST_F(MousePrefHandlerTest, InitializeLoginScreenMouseSettings) {
   button_remappings.push_back(button_remapping2.Clone());
   known_user().SetPath(
       account_id_1, prefs::kMouseLoginScreenButtonRemappingListPref,
-      absl::optional<base::Value>(ConvertButtonRemappingArrayToList(
+      std::optional<base::Value>(ConvertButtonRemappingArrayToList(
           button_remappings,
           mojom::CustomizationRestriction::kAllowCustomizations)));
 
@@ -578,6 +579,53 @@ TEST_F(MousePrefHandlerTest, PreservesOldSettings) {
   const std::string* value = updated_settings_dict->FindString(kDictFakeKey);
   ASSERT_NE(nullptr, value);
   EXPECT_EQ(kDictFakeValue, *value);
+}
+
+TEST_F(MousePrefHandlerTest, LastUpdated) {
+  CallUpdateMouseSettings(kMouseKey1, kMouseSettings1);
+  auto devices_dict =
+      pref_service_->GetDict(prefs::kMouseDeviceSettingsDictPref).Clone();
+  auto* settings_dict = devices_dict.FindDict(kMouseKey1);
+  ASSERT_NE(nullptr, settings_dict);
+  auto* time_stamp1 = settings_dict->Find(prefs::kLastUpdatedKey);
+  ASSERT_NE(nullptr, time_stamp1);
+  auto button_remapping_time_stamp_path =
+      base::StrCat({prefs::kLastUpdatedKey, ".", kMouseKey1});
+  auto* button_remapping_time_stamp =
+      pref_service_->GetDict(prefs::kMouseButtonRemappingsDictPref)
+          .FindByDottedPath(button_remapping_time_stamp_path);
+  ASSERT_NE(nullptr, button_remapping_time_stamp);
+
+  mojom::MouseSettingsPtr updated_settings = kMouseSettings1.Clone();
+  updated_settings->swap_right = !updated_settings->swap_right;
+  CallUpdateMouseSettings(kMouseKey1, *updated_settings);
+
+  const auto& updated_devices_dict =
+      pref_service_->GetDict(prefs::kMouseDeviceSettingsDictPref);
+  const auto* updated_settings_dict = updated_devices_dict.FindDict(kMouseKey1);
+  ASSERT_NE(nullptr, updated_settings_dict);
+  auto* updated_time_stamp1 =
+      updated_settings_dict->Find(prefs::kLastUpdatedKey);
+  ASSERT_NE(nullptr, updated_time_stamp1);
+  ASSERT_NE(time_stamp1, updated_time_stamp1);
+
+  std::vector<mojom::ButtonRemappingPtr> button_remappings;
+  button_remappings.push_back(button_remapping2.Clone());
+  mojom::MouseSettings kUpdatedMouseSettingsWithButtonRemapping(
+      /*swap_right=*/kDefaultSwapRight,
+      /*sensitivity=*/kDefaultSensitivity,
+      /*reverse_scrolling=*/kDefaultReverseScrolling,
+      /*acceleration_enabled=*/kDefaultAccelerationEnabled,
+      /*scroll_sensitivity=*/kDefaultSensitivity,
+      /*scroll_acceleration=*/kDefaultScrollAcceleration,
+      /*button_remappings=*/mojo::Clone(button_remappings));
+
+  CallUpdateMouseSettings(kMouseKey1, kUpdatedMouseSettingsWithButtonRemapping);
+  auto* updated_button_remapping_time_stamp =
+      pref_service_->GetDict(prefs::kMouseButtonRemappingsDictPref)
+          .FindByDottedPath(button_remapping_time_stamp_path);
+  ASSERT_NE(nullptr, updated_button_remapping_time_stamp);
+  ASSERT_NE(button_remapping_time_stamp, updated_button_remapping_time_stamp);
 }
 
 TEST_F(MousePrefHandlerTest, UpdateSettings) {

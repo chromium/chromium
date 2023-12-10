@@ -11,6 +11,7 @@ import {isSeaPenEnabled, isSeaPenTextInputEnabled} from '../load_time_booleans.j
 import {Paths} from '../personalization_router_element.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 
+import {QUERY} from './utils.js';
 import {getTemplate} from './wallpaper_subpage_top_element.html.js';
 
 export class WallpaperSubpageTopElement extends WithPersonalizationStore {
@@ -59,14 +60,16 @@ export class WallpaperSubpageTopElement extends WithPersonalizationStore {
 
   private shouldShowInputQuery_(path: string, templateId: string|null):
       boolean {
-    return isSeaPenTextInputEnabled() && path === Paths.SEA_PEN_COLLECTION &&
-        !templateId;
+    return isSeaPenTextInputEnabled() &&
+        (path === Paths.SEA_PEN_COLLECTION || path === Paths.SEA_PEN_RESULTS) &&
+        (templateId === QUERY || !templateId);
   }
 
   private shouldShowTemplateQuery_(path: string, templateId: string|null):
       boolean {
-    return isSeaPenEnabled() && path === Paths.SEA_PEN_COLLECTION &&
-        !!templateId;
+    return isSeaPenEnabled() &&
+        (path === Paths.SEA_PEN_COLLECTION || path === Paths.SEA_PEN_RESULTS) &&
+        templateId !== QUERY && !!templateId;
   }
 
   private shouldShowWallpaperSelectedElement_(

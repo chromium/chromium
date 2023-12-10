@@ -62,7 +62,7 @@ class MojoProtectedBufferManager : public DecoderProtectedBufferManager {
         mojo::WrapCallbackWithDefaultInvokeIfNotRun(
             base::BindPostTaskToCurrentDefault(base::BindOnce(
                 &OnGetProtectedNativePixmapHandleFor, std::move(response_cb))),
-            absl::nullopt));
+            std::nullopt));
   }
 
  private:
@@ -83,7 +83,7 @@ class MojoProtectedBufferManager : public DecoderProtectedBufferManager {
 
   static void OnGetProtectedNativePixmapHandleFor(
       GetProtectedNativePixmapHandleForResponseCB response_cb,
-      absl::optional<gfx::NativePixmapHandle> native_pixmap_handle) {
+      std::optional<gfx::NativePixmapHandle> native_pixmap_handle) {
     if (!native_pixmap_handle)
       return std::move(response_cb).Run(gfx::NativePixmapHandle());
     // TODO(b/195769334): does anything need to be validated here?

@@ -282,7 +282,9 @@ SaveCardOfferBubbleViews::CreateLegalMessageView() {
                           base::Unretained(this));
 
   if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableNewSaveCardBubbleUi)) {
+          features::kAutofillEnableNewSaveCardBubbleUi) ||
+      base::FeatureList::IsEnabled(
+          features::kAutofillEnableUserAvatarInSaveCardFooter)) {
     return (std::make_unique<LegalMessageView>(
         message_lines, base::UTF8ToUTF16(controller()->GetAccountInfo().email),
         GetProfileAvatar(controller()->GetAccountInfo()),

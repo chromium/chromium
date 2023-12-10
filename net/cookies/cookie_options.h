@@ -228,14 +228,12 @@ class NET_EXPORT CookieOptions {
   // * Excludes SameSite cookies
   // * Updates last-accessed time.
   // * Does not report excluded cookies in APIs that can do so.
-  // * Excludes SameParty cookies.
   //
   // These settings can be altered by calling:
   //
   // * |set_{include,exclude}_httponly()|
   // * |set_same_site_cookie_context()|
   // * |set_do_not_update_access_time()|
-  // * |set_same_party_cookie_context_type()|
   CookieOptions();
   CookieOptions(const CookieOptions& other);
   CookieOptions(CookieOptions&& other);

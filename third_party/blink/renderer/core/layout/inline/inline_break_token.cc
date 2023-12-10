@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/core/layout/inline/inline_break_token.h"
 
-#include "third_party/blink/renderer/core/layout/ng/ng_block_break_token.h"
+#include "third_party/blink/renderer/core/layout/block_break_token.h"
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
@@ -12,7 +12,7 @@ namespace blink {
 
 namespace {
 
-struct SameSizeAsInlineBreakToken : NGBreakToken {
+struct SameSizeAsInlineBreakToken : BreakToken {
   Member<const ComputedStyle> style;
   unsigned numbers[2];
 };
@@ -21,7 +21,7 @@ ASSERT_SIZE(InlineBreakToken, SameSizeAsInlineBreakToken);
 
 }  // namespace
 
-const NGBlockBreakToken* InlineBreakToken::BlockBreakToken() const {
+const BlockBreakToken* InlineBreakToken::GetBlockBreakToken() const {
   if (!(flags_ & kHasSubBreakToken))
     return nullptr;
   return sub_break_token_[0].Get();
@@ -33,13 +33,13 @@ InlineBreakToken* InlineBreakToken::Create(
     const ComputedStyle* style,
     const InlineItemTextIndex& start,
     unsigned flags /* InlineBreakTokenFlags */,
-    const NGBlockBreakToken* sub_break_token) {
+    const BlockBreakToken* sub_break_token) {
   // We store the children list inline in the break token as a flexible
   // array. Therefore, we need to make sure to allocate enough space for that
   // array here, which requires a manual allocation + placement new.
   wtf_size_t size = sizeof(InlineBreakToken);
   if (UNLIKELY(sub_break_token)) {
-    size += sizeof(Member<const NGBlockBreakToken>);
+    size += sizeof(Member<const BlockBreakToken>);
     flags |= kHasSubBreakToken;
   }
 
@@ -52,7 +52,7 @@ InlineBreakToken* InlineBreakToken::Create(
 InlineBreakToken* InlineBreakToken::CreateForParallelBlockFlow(
     InlineNode node,
     const InlineItemTextIndex& start,
-    const NGBlockBreakToken& child_break_token) {
+    const BlockBreakToken& child_break_token) {
   return Create(node, &node.Style(), start, kIsInParallelBlockFlow,
                 &child_break_token);
 }
@@ -62,10 +62,8 @@ InlineBreakToken::InlineBreakToken(PassKey key,
                                    const ComputedStyle* style,
                                    const InlineItemTextIndex& start,
                                    unsigned flags /* InlineBreakTokenFlags */,
-                                   const NGBlockBreakToken* sub_break_token)
-    : NGBreakToken(kInlineBreakToken, node, flags),
-      style_(style),
-      start_(start) {
+                                   const BlockBreakToken* sub_break_token)
+    : BreakToken(kInlineBreakToken, node, flags), style_(style), start_(start) {
   if (UNLIKELY(sub_break_token)) {
     sub_break_token_[0] = sub_break_token;
   }
@@ -99,7 +97,7 @@ void InlineBreakToken::TraceAfterDispatch(Visitor* visitor) const {
   if (flags_ & kHasSubBreakToken)
     visitor->Trace(*sub_break_token_);
   visitor->Trace(style_);
-  NGBreakToken::TraceAfterDispatch(visitor);
+  BreakToken::TraceAfterDispatch(visitor);
 }
 
 }  // namespace blink

@@ -1942,7 +1942,7 @@ void FakeBluetoothDeviceClient::CreateTestDevice(
   std::string id;
   do {
     // Construct an id that is valid according to the DBUS specification.
-    base::Base64Encode(base::RandBytesAsString(10), &id);
+    id = base::Base64Encode(base::RandBytesAsVector(10));
     base::RemoveChars(id, "+/=", &id);
     device_path = dbus::ObjectPath(adapter_path.value() + "/dev" + id);
   } while (base::Contains(device_list_, device_path));

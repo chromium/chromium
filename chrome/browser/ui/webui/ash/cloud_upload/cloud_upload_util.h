@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_ASH_CLOUD_UPLOAD_CLOUD_UPLOAD_UTIL_H_
 #define CHROME_BROWSER_UI_WEBUI_ASH_CLOUD_UPLOAD_CLOUD_UPLOAD_UTIL_H_
 
+#include <optional>
 #include <string>
 #include "base/files/file.h"
 #include "base/files/file_path.h"
@@ -16,7 +17,6 @@
 #include "chrome/browser/platform_util.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_url.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 
@@ -31,7 +31,7 @@ struct ODFSEntryMetadata {
   ODFSEntryMetadata();
   ODFSEntryMetadata(const ODFSEntryMetadata&);
   ~ODFSEntryMetadata();
-  absl::optional<std::string> url;
+  std::optional<std::string> url;
 };
 
 typedef base::OnceCallback<void(
@@ -59,7 +59,7 @@ enum class UploadType {
 
 // List of UMA enum values for the cloud provider used when opening a file. The
 // enum values must be kept in sync with CloudProvider in
-// tools/metrics/histograms/enums.xml.
+// tools/metrics/histograms/metadata/file/enums.xml.
 enum class CloudProvider {
   kNone = 0,
   kUnknown = 1,
@@ -79,7 +79,7 @@ enum class OfficeFilesTransferRequired {
 
 // List of UMA enum values for Office File Handler task results for Drive. The
 // enum values must be kept in sync with OfficeDriveOpenErrors in
-// tools/metrics/histograms/enums.xml.
+// tools/metrics/histograms/metadata/file/enums.xml.
 enum class OfficeDriveOpenErrors {
   kOffline = 0,
   kDriveFsInterface = 1,
@@ -98,7 +98,7 @@ enum class OfficeDriveOpenErrors {
 
 // List of UMA enum values for opening Office files from OneDrive, with the
 // MS365 PWA. The enum values must be kept in sync with OfficeOneDriveOpenErrors
-// in tools/metrics/histograms/enums.xml.
+// in tools/metrics/histograms/metadata/file/enums.xml.
 enum class OfficeOneDriveOpenErrors {
   kSuccess = 0,
   kOffline = 1,
@@ -137,12 +137,13 @@ enum class OfficeFilesSourceVolume {
   kGuestOS = 12,         // Guest OS volumes (Crostini, Bruschetta, etc)
   kUnknown = 100,
   kMicrosoftOneDrive = 101,
-  kMaxValue = kMicrosoftOneDrive,
+  kAndroidOneDriveDocumentsProvider = 102,
+  kMaxValue = kAndroidOneDriveDocumentsProvider,
 };
 
 // List of UMA enum value for Web Drive Office task results. The enum values
 // must be kept in sync with OfficeTaskResult in
-// tools/metrics/histograms/enums.xml.
+// tools/metrics/histograms/metadata/file/enums.xml.
 enum class OfficeTaskResult {
   kFallbackQuickOffice = 0,
   kFallbackOther = 1,
@@ -155,7 +156,8 @@ enum class OfficeTaskResult {
   kCancelledAtFallback = 8,
   kCancelledAtSetup = 9,
   kLocalFileTask = 10,
-  kMaxValue = kLocalFileTask,
+  kFileAlreadyBeingUploaded = 11,
+  kMaxValue = kFileAlreadyBeingUploaded,
 };
 
 // The result of the "Upload to cloud" workflow for Office files.
@@ -164,7 +166,7 @@ enum class OfficeTaskResult {
 // numeric values should never be reused.
 //
 // The enum values must be kept in sync with OfficeFilesUploadResult in
-// tools/metrics/histograms/enums.xml.
+// tools/metrics/histograms/metadata/file/enums.xml.
 enum class OfficeFilesUploadResult {
   kSuccess = 0,
   kOtherError = 1,
@@ -190,7 +192,8 @@ enum class OfficeFilesUploadResult {
   kSyncCancelledAndDeleted = 21,
   kSyncCancelledAndTrashed = 22,
   kUploadNotStartedReauthenticationRequired = 23,
-  kMaxValue = kUploadNotStartedReauthenticationRequired,
+  kSuccessAfterReauth = 24,
+  kMaxValue = kSuccessAfterReauth,
 };
 
 constexpr char kGoogleDriveTaskResultMetricName[] =
@@ -315,7 +318,7 @@ void RequestODFSMount(Profile* profile,
 
 // Get information of the currently provided ODFS. Expect there to be exactly
 // one ODFS.
-absl::optional<file_system_provider::ProvidedFileSystemInfo> GetODFSInfo(
+std::optional<file_system_provider::ProvidedFileSystemInfo> GetODFSInfo(
     Profile* profile);
 
 // Get currently provided ODFS, or null if not mounted.
@@ -324,6 +327,10 @@ file_system_provider::ProvidedFileSystemInterface* GetODFS(Profile* profile);
 bool IsODFSMounted(Profile* profile);
 bool IsODFSInstalled(Profile* profile);
 bool IsOfficeWebAppInstalled(Profile* profile);
+
+// Returns true if url refers to an entry on any current mount provided by the
+// ODFS file system provider.
+bool UrlIsOnODFS(Profile* profile, const storage::FileSystemURL& url);
 
 // Get ODFS metadata as actions by doing a special GetActions request (for the
 // root directory) and return the actions to |OnODFSMetadataActions| which will
@@ -340,8 +347,12 @@ void GetODFSEntryMetadata(
     GetODFSEntryMetadataCallback callback);
 
 // Get the first task error that is not `base::File::Error::FILE_OK`.
-absl::optional<base::File::Error> GetFirstTaskError(
+std::optional<base::File::Error> GetFirstTaskError(
     const ::file_manager::io_task::ProgressStatus& status);
+
+// Use the most recent Files app window to calculate where the popup auth window
+// for OneDrive OAuth should display on the screen.
+std::optional<gfx::Rect> CalculateAuthWindowBounds(Profile* profile);
 
 }  // namespace ash::cloud_upload
 

@@ -1,0 +1,66 @@
+This is a testharness.js-based test.
+Found 31 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] convTranspose2d float32 4D input and filter tensors options.groups / sync
+  assert_true: assert_array_approx_equals_ulp: test convTranspose2d float32 actual 0.2449943870306015 should be close enough to expected 0.023476747795939445 by the acceptable 8 ULP distance, but they have 29003136 ULP distance expected true got false
+[FAIL] convTranspose2d float32 4D input and filter tensors options.groups=2 options.strides=[2, 2] / sync
+  assert_true: assert_array_approx_equals_ulp: test convTranspose2d float32 actual 0.2449943870306015 should be close enough to expected 0.023476747795939445 by the acceptable 8 ULP distance, but they have 29003136 ULP distance expected true got false
+[FAIL] convTranspose2d float32 4D input and filter tensors options.filterLayout=hwoi / sync
+  Failed to execute 'buildSync' on 'MLGraphBuilder': Failed to build graph: The filter layout hwoi is not supported.
+[FAIL] convTranspose2d float32 4D input and filter tensors options.filterLayout=ohwi / sync
+  Failed to execute 'buildSync' on 'MLGraphBuilder': Failed to build graph: The filter layout ohwi is not supported.
+[FAIL] convTranspose2d float32 4D input and filter tensors options.inputLayout=nhwc options.filterLayout=hwoi / sync
+  Failed to execute 'buildSync' on 'MLGraphBuilder': Failed to build graph: The filter layout hwoi is not supported.
+[FAIL] convTranspose2d float32 4D input and filter tensors options.inputLayout=nhwc options.filterLayout=ohwi / sync
+  Failed to execute 'buildSync' on 'MLGraphBuilder': Failed to build graph: The filter layout ohwi is not supported.
+[FAIL] convTranspose2d float32 4D input and filter(non-constant) tensors default options / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] convTranspose2d float32 4D input and filter tensors default options / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] convTranspose2d float32 4D input and filter tensors options.groups / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] convTranspose2d float32 4D input and filter tensors options.groups=2 options.strides=[2, 2] / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] convTranspose2d float32 4D input and filter tensors options.padding / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] convTranspose2d float32 4D input and filter tensors options.strides / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] convTranspose2d float32 4D input and filter tensors options.dilations / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] convTranspose2d float32 4D input and filter tensors options.outputPadding / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] convTranspose2d float32 4D input and filter tensors options.outputSizes / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] convTranspose2d float32 4D input and filter tensors options.autoPad=explicit options.padding / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] convTranspose2d float32 4D input and filter tensors options.autoPad=same-upper / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] convTranspose2d float32 4D input and filter tensors options.autoPad=same-upper ignored options.padding / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] convTranspose2d float32 4D input and filter tensors options.autoPad=same-lower / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] convTranspose2d float32 4D input and filter tensors options.autoPad=same-lower ignored options.padding / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] convTranspose2d float32 4D input and filter tensors options.inputLayout=nchw / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] convTranspose2d float32 4D input and filter tensors options.inputLayout=nhwc / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] convTranspose2d float32 4D input and filter tensors options.filterLayout=iohw / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] convTranspose2d float32 4D input and filter tensors options.filterLayout=hwoi / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] convTranspose2d float32 4D input and filter tensors options.filterLayout=ohwi / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] convTranspose2d float32 4D input and filter tensors options.inputLayout=nhwc options.filterLayout=iohw / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] convTranspose2d float32 4D input and filter tensors options.inputLayout=nhwc options.filterLayout=hwoi / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] convTranspose2d float32 4D input and filter tensors options.inputLayout=nhwc options.filterLayout=ohwi / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] convTranspose2d float32 4D input and filter tensors options.bias / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] convTranspose2d float32 4D input and filter tensors, both negative input tensor and options.bias / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] convTranspose2d float32 4D input and filter tensors options.activation=relu / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+Harness: the test ran to completion.
+

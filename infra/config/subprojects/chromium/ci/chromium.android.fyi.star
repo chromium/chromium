@@ -7,6 +7,7 @@ load("//lib/builder_config.star", "builder_config")
 load("//lib/builders.star", "os", "reclient")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
+load("//lib/gn_args.star", "gn_args")
 
 ci.defaults.set(
     executable = ci.DEFAULT_EXECUTABLE,
@@ -46,6 +47,19 @@ ci.builder(
         android_config = builder_config.android_config(config = "x86_builder"),
         build_gs_bucket = "chromium-android-archive",
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "android_builder",
+            "release_builder",
+            "reclient",
+            "minimal_symbols",
+            "x86",
+            "strip_debug_info",
+            "android_fastbuild",
+            "webview_monochrome",
+            "webview_shell",
+        ],
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "wpt|chrome",
         short_name = "p-x86",
@@ -68,6 +82,19 @@ ci.builder(
         ),
         android_config = builder_config.android_config(config = "x86_builder"),
         build_gs_bucket = "chromium-android-archive",
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "android_builder",
+            "release_builder",
+            "reclient",
+            "minimal_symbols",
+            "x86",
+            "strip_debug_info",
+            "android_fastbuild",
+            "webview_monochrome",
+            "webview_shell",
+        ],
     ),
     console_view_entry = consoles.console_view_entry(
         category = "wpt|chrome",
@@ -92,6 +119,19 @@ ci.builder(
         ),
         android_config = builder_config.android_config(config = "x86_builder"),
         build_gs_bucket = "chromium-android-archive",
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "android_builder",
+            "release_builder",
+            "reclient",
+            "minimal_symbols",
+            "x86",
+            "strip_debug_info",
+            "android_fastbuild",
+            "webview_monochrome",
+            "webview_shell",
+        ],
     ),
     console_view_entry = consoles.console_view_entry(
         category = "wpt|webview",
@@ -217,6 +257,16 @@ ci.builder(
         ),
         build_gs_bucket = "chromium-android-archive",
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "android_builder",
+            "debug_static_builder",
+            "reclient",
+            "x64",
+            "webview_trichrome",
+            "webview_shell",
+        ],
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "emulator|x64|dbg",
         short_name = "12L",
@@ -248,6 +298,20 @@ ci.builder(
         ),
         build_gs_bucket = "chromium-android-archive",
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "android_builder",
+            "release_builder",
+            "reclient",
+            "minimal_symbols",
+            "x64",
+            "strip_debug_info",
+            "android_fastbuild",
+            "webview_trichrome",
+            "no_secondary_abi",
+            "webview_shell",
+        ],
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "emulator|x64|rel",
         short_name = "13",
@@ -274,6 +338,17 @@ ci.builder(
         ),
         android_config = builder_config.android_config(config = "main_builder"),
         build_gs_bucket = "chromium-android-archive",
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "android_builder",
+            "release_builder",
+            "reclient",
+            "minimal_symbols",
+            "arm64",
+            "strip_debug_info",
+            "webview_google",
+        ],
     ),
     console_view_entry = consoles.console_view_entry(
         category = "network|traffic|annotations",
@@ -387,6 +462,19 @@ ci.builder(
         android_config = builder_config.android_config(
             config = "x86_builder",
         ),
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "android_builder",
+            "cronet_android",
+            "release_builder",
+            "reclient",
+            "minimal_symbols",
+            "x86",
+            "clang",
+            "asan",
+            "strip_debug_info",
+        ],
     ),
     console_view_entry = consoles.console_view_entry(
         category = "cronet|asan",

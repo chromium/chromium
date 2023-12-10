@@ -8,6 +8,21 @@
     margin-inline-end: 8px;
   }
 
+  :host-context([expanded-state-layout-chrome-refresh]) #action {
+    margin-inline-end: 2px;
+  }
+
+  #actions-focus-border {
+    overflow: hidden;
+  }
+
+  /* TODO(niharm): Switch outline color to state-focus-ring */
+  #actions-focus-border:focus-within {
+    outline: 2px solid #0B57D0;
+    border-radius: 10px;
+    margin-inline-start: -2px;
+  }
+
   .container {
     align-items: center;
     cursor: default;
@@ -25,6 +40,18 @@
     margin-inline-start: 40px; /* icon width + text padding */
     padding-top: 0;
     padding-bottom: 12px;
+  }
+
+  :host([has-outset-action-focus-ring]:not([realbox-consistent-row-height])) .container {
+    height: 38px;
+    padding-top: 3px;
+    padding-bottom: 3px;
+  }
+
+  :host([realbox-consistent-row-height]) .container {
+    height: 38px;
+    padding-top: 5px;
+    padding-bottom: 5px;
   }
 
   .actions.inlined {
@@ -53,6 +80,10 @@
     margin-inline-start: -15px; /* -1 * (.container padding + width / 2) */
     position: absolute;
     width: 6px;
+  }
+
+  :host-context([expanded-state-layout-chrome-refresh]) #focus-indicator {
+    width: 7px;
   }
 
   /* TODO(crbug.com/1430996): Add focus indicator for secondary results. */
@@ -161,8 +192,8 @@
     padding: 6px;
     padding-block-end: 16px;
     width: 102px;
+    height: auto;
   }
-
   :host([side-type-class_='secondary-side'][is-entity-suggestion][has-image])
       .focus-indicator {
     display: none;
@@ -232,9 +263,17 @@
   </div>
   <div class="actions container inlined" aria-hidden="true" hidden="[[!showActionsInlined_()]]">
     <template is="dom-repeat" items="[[match.actions]]">
+      <div id="actions-focus-border"
+        hidden="[[!expandedStateIconsChromeRefresh]]">
+        <cr-realbox-action id="action" action="[[item]]"
+          action-index="[[actionIndex_(item)]]"
+          on-execute-action="onExecuteAction_" tabindex="1">
+        </cr-realbox-action>
+      </div>
       <cr-realbox-action id="action" action="[[item]]"
         action-index="[[actionIndex_(item)]]"
-        on-execute-action="onExecuteAction_" tabindex="1">
+        on-execute-action="onExecuteAction_" tabindex="1"
+        hidden="[[expandedStateIconsChromeRefresh]]">
       </cr-realbox-action>
     </template>
   </div>
@@ -247,9 +286,17 @@
 </div>
 <div class="actions container underneath" aria-hidden="true" hidden="[[!showActionsUnderneath_(match)]]">
   <template is="dom-repeat" items="[[match.actions]]">
+    <div id="actions-focus-border"
+        hidden="[[!expandedStateIconsChromeRefresh]]">
+        <cr-realbox-action id="action" action="[[item]]"
+          action-index="[[actionIndex_(item)]]"
+          on-execute-action="onExecuteAction_" tabindex="1">
+        </cr-realbox-action>
+    </div>
     <cr-realbox-action id="action" action="[[item]]"
       action-index="[[actionIndex_(item)]]"
-      on-execute-action="onExecuteAction_" tabindex="1">
+      on-execute-action="onExecuteAction_" tabindex="1"
+      hidden="[[expandedStateIconsChromeRefresh]]">
     </cr-realbox-action>
   </template>
 </div>

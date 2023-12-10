@@ -6,11 +6,8 @@
 
 use crate::config::BuildConfig;
 use crate::deps;
-use crate::log_err;
 use crate::manifest;
-use crate::util::AsDebug;
 
-use std::collections::HashMap;
 use std::fmt::{self, Display};
 use std::fs;
 use std::hash::Hash;
@@ -19,7 +16,7 @@ use std::path::{Path, PathBuf};
 use std::str::FromStr;
 
 use anyhow::Context;
-use log::{error, warn};
+use log::error;
 use semver::Version;
 use serde::{Deserialize, Serialize};
 
@@ -311,133 +308,15 @@ impl CrateFiles {
     }
 }
 
-/// Set of vendored packages in `//third_party/rust` format. Namely, foo 1.2.3
-/// would be in `<root>/foo/v1/crate` and bar 0.1.2 would be in
-/// `<root>/bar/v0_1/crate`. The names also must be normalized according to
-/// `NormalizedName` rules. Multiple versions of a name can exist, as long as
-/// their "epoch" (vX for 1.0.0+ or vO_Y for <1.0.0) does not collide. This is
-/// enforced naturally by the directory layout.
-pub struct ThirdPartySource {
-    /// The available set of versions for each crate.
-    crate_versions: HashMap<String, Vec<Version>>,
-    /// Serves as a set of crate ids (the VendoredCrate keys), and holds the
-    /// source and input files for each crate.
-    crate_files: HashMap<VendoredCrate, CrateFiles>,
-}
-
-impl ThirdPartySource {
-    /// Collects set of vendored crates on disk.
-    pub fn new(crates_path: &Path) -> anyhow::Result<Self> {
-        let mut crate_versions = HashMap::<String, Vec<Version>>::new();
-        let mut all_crate_files = HashMap::new();
-
-        for crate_dir in log_err!(
-            fs::read_dir(crates_path),
-            "reading dir {crates_path}",
-            crates_path = AsDebug(crates_path)
-        )? {
-            // Look at each crate directory.
-            let crate_dir: fs::DirEntry = log_err!(crate_dir)?;
-            if !crate_dir.file_type()?.is_dir() {
-                continue;
-            }
-
-            let crate_path = crate_dir.path();
-
-            // Ensure the path has a valid name: is UTF8, has our normalized format.
-            let normalized_name = path_as_str(crate_path.file_name().unwrap())?;
-            into_io_result(NormalizedName::new(normalized_name).ok_or_else(|| {
-                format!("unnormalized crate name in path {}", crate_path.to_string_lossy())
-            }))?;
-
-            for epoch_dir in fs::read_dir(crate_dir.path())? {
-                // Look at each epoch of the crate we have checked in.
-                let epoch_dir: fs::DirEntry = epoch_dir?;
-                if !epoch_dir.file_type()?.is_dir() {
-                    continue;
-                }
-
-                // Skip it if it's not a valid epoch.
-                if epoch_dir.file_name().to_str().and_then(|s| Epoch::from_str(s).ok()).is_none() {
-                    continue;
-                }
-
-                let crate_path = epoch_dir.path().join("crate");
-
-                let Some(crate_id) = get_vendored_crate_id(&crate_path)? else {
-                    warn!(
-                        "directory name parsed as valid epoch but contained no Cargo.toml: {}",
-                        crate_path.to_string_lossy()
-                    );
-                    continue;
-                };
-
-                let mut files = CrateFiles::new();
-                recurse_crate_files(&crate_path, &mut |filepath| {
-                    collect_crate_file(&mut files, CollectCrateFiles::Internal, filepath)
-                })?;
-                files.sort();
-
-                all_crate_files.insert(crate_id.clone(), files);
-
-                crate_versions.entry(crate_id.name).or_default().push(crate_id.version);
-            }
-        }
-
-        Ok(ThirdPartySource { crate_versions, crate_files: all_crate_files })
-    }
-
-    /// Find crate with `name` that meets version requirement. Returns `None` if
-    /// there are none.
-    pub fn find_match(&self, name: &str, req: &semver::VersionReq) -> Option<VendoredCrate> {
-        let (key, versions) = self.crate_versions.get_key_value(name)?;
-        let version = versions.iter().find(|v| req.matches(v))?.clone();
-        Some(VendoredCrate { name: key.clone(), version })
-    }
-
-    pub fn crate_files(&self) -> &HashMap<VendoredCrate, CrateFiles> {
-        &self.crate_files
-    }
-
-    /// Get Cargo.toml `[patch]` sections for each third-party crate.
-    pub fn cargo_patches(&self) -> Vec<manifest::PatchSpecification> {
-        let mut patches: Vec<_> = self
-            .crate_files
-            .keys()
-            .map(|c| manifest::PatchSpecification {
-                package_name: c.name.clone(),
-                patch_name: format!(
-                    "{name}_{epoch}",
-                    name = c.name,
-                    epoch = Epoch::from_version(&c.version)
-                ),
-                path: Self::crate_path(c),
-            })
-            .collect();
-        // Give patches a stable ordering, instead of the arbitrary HashMap
-        // order.
-        patches.sort_unstable_by(|p1, p2| p1.patch_name.cmp(&p2.patch_name));
-        patches
-    }
-
-    /// Get the root of `id`'s sources relative to the vendor dir.
-    pub fn crate_path(id: &VendoredCrate) -> PathBuf {
-        let mut path: PathBuf = Self::build_path(id);
-        path.push("crate");
-        path
-    }
-
-    /// Get the BUILD.gn file directory of `id` relative to the vendor dir.
-    pub fn build_path(id: &VendoredCrate) -> PathBuf {
-        let mut path: PathBuf = id.normalized_name().0.into();
-        path.push(Epoch::from_version(&id.version).to_string());
-        path
-    }
-}
-
 /// Get the subdir name containing `id` in a `cargo vendor` directory.
 pub fn std_crate_path(id: &VendoredCrate) -> PathBuf {
     format!("{}-{}", id.name, id.version).into()
+}
+
+#[derive(Debug, PartialEq, Eq)]
+pub enum IncludeCrateTargets {
+    LibOnly,
+    LibAndBin,
 }
 
 /// Collect the source and input files (i.e. `CrateFiles`) for each library that
@@ -445,52 +324,74 @@ pub fn std_crate_path(id: &VendoredCrate) -> PathBuf {
 pub fn collect_std_crate_files<'a>(
     p: &deps::Package,
     config: &BuildConfig,
+    include_targets: IncludeCrateTargets,
 ) -> anyhow::Result<(VendoredCrate, CrateFiles)> {
-    // We only look at lib targets here because these are stdlib targets, and thus
-    // we only are building the libs. We're not building bins even if they existed.
-    let lib_target = p.lib_target.as_ref().expect("dependency had no lib target");
-    let root_dir = lib_target.root.parent().expect("lib target has no directory in its path");
     let crate_config = config.per_crate_config.get(&p.crate_id().name);
 
-    let extra_src_roots =
-        crate_config.iter().flat_map(|crate_config| &crate_config.extra_src_roots);
-    let extra_input_roots =
-        crate_config.iter().flat_map(|crate_config| &crate_config.extra_input_roots);
-    let extra_build_script_src_roots =
-        crate_config.iter().flat_map(|crate_config| &crate_config.extra_build_script_src_roots);
-    let extra_build_script_input_roots =
-        crate_config.iter().flat_map(|crate_config| &crate_config.extra_build_script_input_roots);
-
     let mut files = CrateFiles::new();
-    recurse_crate_files(&root_dir, &mut |filepath| {
-        collect_crate_file(&mut files, CollectCrateFiles::Internal, filepath)
-    })?;
-    for path in extra_src_roots {
-        recurse_crate_files(&root_dir.to_owned().join(path), &mut |filepath| {
-            collect_crate_file(&mut files, CollectCrateFiles::ExternalSourcesAndInputs, filepath)
-        })?;
+
+    struct RootDir {
+        path: PathBuf,
+        collect: CollectCrateFiles,
     }
-    for path in extra_input_roots {
-        recurse_crate_files(&root_dir.to_owned().join(path), &mut |filepath| {
-            collect_crate_file(&mut files, CollectCrateFiles::ExternalInputsOnly, filepath)
-        })?;
+
+    let mut root_dirs = Vec::new();
+    if let Some(lib_target) = p.lib_target.as_ref() {
+        let lib_root = lib_target.root.parent().expect("lib target has no directory in its path");
+        root_dirs.push(RootDir { path: lib_root.to_owned(), collect: CollectCrateFiles::Internal });
+
+        root_dirs.extend(
+            crate_config
+                .iter()
+                .flat_map(|crate_config| &crate_config.extra_src_roots)
+                .chain(&config.all_config.extra_src_roots)
+                .map(|path| RootDir {
+                    path: lib_root.join(path),
+                    collect: CollectCrateFiles::ExternalSourcesAndInputs,
+                }),
+        );
+        root_dirs.extend(
+            crate_config
+                .iter()
+                .flat_map(|crate_config| &crate_config.extra_input_roots)
+                .chain(&config.all_config.extra_input_roots)
+                .map(|path| RootDir {
+                    path: lib_root.join(path),
+                    collect: CollectCrateFiles::ExternalInputsOnly,
+                }),
+        );
+        root_dirs.extend(
+            crate_config
+                .iter()
+                .flat_map(|crate_config| &crate_config.extra_build_script_src_roots)
+                .chain(&config.all_config.extra_build_script_src_roots)
+                .map(|path| RootDir {
+                    path: lib_root.join(path),
+                    collect: CollectCrateFiles::BuildScriptExternalSourcesAndInputs,
+                }),
+        );
+        root_dirs.extend(
+            crate_config
+                .iter()
+                .flat_map(|crate_config| &crate_config.extra_build_script_input_roots)
+                .chain(&config.all_config.extra_build_script_input_roots)
+                .map(|path| RootDir {
+                    path: lib_root.join(path),
+                    collect: CollectCrateFiles::BuildScriptExternalInputsOnly,
+                }),
+        );
     }
-    for path in extra_build_script_src_roots {
-        recurse_crate_files(&root_dir.to_owned().join(path), &mut |filepath| {
-            collect_crate_file(
-                &mut files,
-                CollectCrateFiles::BuildScriptExternalSourcesAndInputs,
-                filepath,
-            )
-        })?;
+    if include_targets == IncludeCrateTargets::LibAndBin {
+        for bin in &p.bin_targets {
+            let bin_root = bin.root.parent().expect("bin target has no directory in its path");
+            root_dirs
+                .push(RootDir { path: bin_root.to_owned(), collect: CollectCrateFiles::Internal });
+        }
     }
-    for path in extra_build_script_input_roots {
-        recurse_crate_files(&root_dir.to_owned().join(path), &mut |filepath| {
-            collect_crate_file(
-                &mut files,
-                CollectCrateFiles::BuildScriptExternalInputsOnly,
-                filepath,
-            )
+
+    for root_dir in root_dirs {
+        recurse_crate_files(&root_dir.path, &mut |filepath| {
+            collect_crate_file(&mut files, root_dir.collect, filepath)
         })?;
     }
     files.sort();
@@ -537,7 +438,6 @@ pub fn collect_std_vendored_crates(vendor_path: &Path) -> io::Result<Vec<Vendore
                 ),
             ));
         }
-
         crates.push(crate_id);
     }
 
@@ -640,23 +540,6 @@ fn get_vendored_crate_id(package_path: &Path) -> io::Result<Option<VendoredCrate
         version: manifest.package.version.clone(),
     };
     Ok(Some(crate_id))
-}
-
-/// Utility to read a path as a `&str` with an informative error message if it
-/// had invalid UTF8.
-fn path_as_str<T: AsRef<Path> + ?Sized>(path: &T) -> io::Result<&str> {
-    let path = path.as_ref();
-    into_io_result(
-        path.to_str().ok_or_else(|| format!("invalid utf8 in path {}", path.to_string_lossy())),
-    )
-}
-
-/// Utility to convert a `Result<T, E>` into `io::Result<T>` for any compatible
-/// error type `E`.
-fn into_io_result<T, E: Into<Box<dyn std::error::Error + Send + Sync>>>(
-    result: Result<T, E>,
-) -> io::Result<T> {
-    result.map_err(|e| io::Error::new(io::ErrorKind::Other, e))
 }
 
 /// Proxy for [de]serializing epochs to/from strings. This uses the "1" or "0.1"

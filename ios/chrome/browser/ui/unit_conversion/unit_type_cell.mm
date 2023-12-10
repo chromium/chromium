@@ -9,10 +9,8 @@
 
 namespace {
 
-// Leading constraint of the chosen unit label.
-const CGFloat kUnitTypeLabelLeadingOffset = 20;
-
-// Size and height/trailing constraint of the unit chooser button.
+// Size and height/trailing/leading constraints of the unit chooser button.
+const CGFloat kUnitMenuButtonLeadingOffset = 20;
 const CGFloat kUnitMenuButtonIconSize = 16;
 const CGFloat kUnitMenuButtonHeightOffset = 10;
 const CGFloat kUnitMenuButtonTrailingOffset = 16;
@@ -33,32 +31,30 @@ const CGFloat kContentViewHeightAnchorOffset = 5;
   self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
 
   if (self) {
-    // Set the unit type label.
-    _unitTypeLabel = [[UILabel alloc] initWithFrame:self.frame];
-    _unitTypeLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
-    _unitTypeLabel.font =
-        [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline];
-    _unitTypeLabel.translatesAutoresizingMaskIntoConstraints = NO;
-    [self.contentView addSubview:_unitTypeLabel];
+    UIButtonConfiguration* unitMenuButtonConfiguration =
+        [UIButtonConfiguration plainButtonConfiguration];
+    unitMenuButtonConfiguration.imagePlacement = NSDirectionalRectEdgeTrailing;
+    unitMenuButtonConfiguration.contentInsets =
+        NSDirectionalEdgeInsetsMake(0, 0, 0, 0);
 
-    [NSLayoutConstraint activateConstraints:@[
-      [_unitTypeLabel.leadingAnchor
-          constraintEqualToAnchor:self.contentView.leadingAnchor
-                         constant:kUnitTypeLabelLeadingOffset],
-      [_unitTypeLabel.centerYAnchor
-          constraintEqualToAnchor:self.contentView.centerYAnchor],
-    ]];
-
-    // Set the unit menu button.
-    _unitMenuButton = [UIButton buttonWithType:UIButtonTypeSystem];
-    UIImage* chevronUpDown =
+    UIImage* chevronUpDownDefault =
         DefaultSymbolWithPointSize(kChevronUpDown, kUnitMenuButtonIconSize);
+    UIColor* chevronUpDownColor = [UIColor colorNamed:kTextTertiaryColor];
+    UIImage* chevronUpDown = [chevronUpDownDefault
+        imageByApplyingSymbolConfiguration:
+            [UIImageSymbolConfiguration
+                configurationWithHierarchicalColor:chevronUpDownColor]];
+
+    _unitMenuButton =
+        [UIButton buttonWithConfiguration:unitMenuButtonConfiguration
+                            primaryAction:nil];
+    [_unitMenuButton setTintColor:[UIColor colorNamed:kTextSecondaryColor]];
+    _unitMenuButton.contentHorizontalAlignment =
+        UIControlContentHorizontalAlignmentFill;
     [_unitMenuButton setImage:chevronUpDown forState:UIControlStateNormal];
-    [_unitMenuButton setTintColor:[UIColor colorNamed:kTextQuaternaryColor]];
 
     _unitMenuButton.translatesAutoresizingMaskIntoConstraints = NO;
     [self.contentView addSubview:_unitMenuButton];
-
     [NSLayoutConstraint activateConstraints:@[
       [_unitMenuButton.heightAnchor
           constraintEqualToAnchor:self.contentView.heightAnchor
@@ -68,12 +64,11 @@ const CGFloat kContentViewHeightAnchorOffset = 5;
                          constant:-kUnitMenuButtonTrailingOffset],
       [_unitMenuButton.centerYAnchor
           constraintEqualToAnchor:self.contentView.centerYAnchor],
-      [_unitMenuButton.widthAnchor
-          constraintEqualToConstant:kUnitMenuButtonIconSize],
-      [_unitTypeLabel.trailingAnchor
-          constraintEqualToAnchor:_unitMenuButton.leadingAnchor],
+      [_unitMenuButton.leadingAnchor
+          constraintEqualToAnchor:self.contentView.leadingAnchor
+                         constant:kUnitMenuButtonLeadingOffset],
       [self.contentView.heightAnchor
-          constraintGreaterThanOrEqualToAnchor:_unitTypeLabel.heightAnchor
+          constraintGreaterThanOrEqualToAnchor:_unitMenuButton.heightAnchor
                                       constant:kContentViewHeightAnchorOffset],
       [self.contentView.heightAnchor
           constraintGreaterThanOrEqualToConstant:kUnitTypeCellHeightAnchor],

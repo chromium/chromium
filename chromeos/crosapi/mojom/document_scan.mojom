@@ -32,7 +32,451 @@ enum ScanFailureMode {
   kIoError = 6,
 };
 
+// The enum below is exactly the same as its counterpart in
+// third_party/cros_system_api/dbus/lorgnette/lorgnette_service.proto
+
+// Indicates the result of each operation performed by the backend.  It
+// contains the same causes as SANE_Status plus additional statuses that come
+// from the IPC layers and image conversion stages.
+[Stable, Extensible]
+enum ScannerOperationResult {
+  // An unknown or generic failure occurred.
+  [Default] kUnknown = 0,
+
+  // Operation succeeded.
+  kSuccess = 1,
+
+  // The operation is not supported.
+  kUnsupported = 2,
+
+  // The operation was cancelled.
+  kCancelled = 3,
+
+  // The scanner is busy.
+  kDeviceBusy = 4,
+
+  // Data or argument is invalid.
+  kInvalid = 5,
+
+  // Value is the wrong type for the underlying option.
+  kWrongType = 6,
+
+  // No more data is available.
+  kEndOfData = 7,
+
+  // The document feeder is jammed.
+  kAdfJammed = 8,
+
+  // The document feeder is empty.
+  kAdfEmpty = 9,
+
+  // The flatbed cover is open.
+  kCoverOpen = 10,
+
+  // An error occurred while communicating with the scanner.
+  kIoError = 11,
+
+  // The scanner requires authentication.
+  kAccessDenied = 12,
+
+  // Not enough memory was available to complete the operation.
+  kNoMemory = 13,
+
+  // The scanner was not reachable.
+  kDeviceUnreachable = 14,
+
+  // The requested handle was not found.
+  kDeviceMissing = 15,
+
+  // An internal error occurred.
+  kInternalError = 16,
+};
+
+// Information about a scanner that was returned from `GetScannerList()`.
+[Stable]
+struct ScannerInfo {
+  // Connection string that can be used with `OpenScanner()`.
+  string id@0;
+
+  // Printable name for displaying in the UI.
+  string display_name@1;
+
+  // Scanner manufacturer.
+  string manufacturer@2;
+
+  // Scanner model, if known, or a generic description.
+  string model@3;
+
+  // For matching against other `ScannerInfo` entries that point to the same
+  // physical scanner, e.g. multiple SANE backends or TLS and non-TLS
+  // connections to the same device.
+  string device_uuid@4;
+
+  // How the scanner is connected to the computer.
+  ConnectionType connection_type@5;
+
+  // True if the connection is secure against passive eavesdropping, e.g. USB
+  // or TLS.  This is not an indicator of integrity of the scanned data
+  // itself.
+  bool secure@6;
+
+  // MIME types that can be requested for returned scans.
+  array<string> image_formats@7;
+
+  // The enum below is exactly the same as its counterpart in
+  // third_party/cros_system_api/dbus/lorgnette/lorgnette_service.proto
+  [Stable, Extensible]
+  enum ConnectionType {
+    // Scanner has an unknown connection type.
+    [Default] kUnspecified = 0,
+
+    // Scanner is connected via USB.
+    kUsb = 1,
+
+    // Scanner is connected via WiFi or ethernet.
+    kNetwork = 2,
+  };
+};
+
+// A set of criteria that can be passed to `GetScannerList()`. Only
+// devices that match all of the criteria will be returned.
+[Stable]
+struct ScannerEnumFilter {
+  // Return only directly connected devices.
+  bool local@0;
+
+  // Return only devices that use a secure transport.
+  bool secure@1;
+};
+
+// The enum below is exactly the same as its counterpart in
+// third_party/cros_system_api/dbus/lorgnette/lorgnette_service.proto
+//
+// The type of an option.  This is the same set of types as SANE_Value_Type.
+[Stable, Extensible]
+enum OptionType {
+  [Default] kUnknown = 0,
+  kBool = 1,
+  kInt = 2,
+  kFixed = 3,
+  kString = 4,
+  kButton = 5,
+  kGroup = 6,
+};
+
+// The enum below is exactly the same as its counterpart in
+// third_party/cros_system_api/dbus/lorgnette/lorgnette_service.proto
+//
+// The unit of measurement for an option.  This is the same set of units as
+// SANE_Unit.
+[Stable, Extensible]
+enum OptionUnit {
+  // Value is a unitless number, e.g., threshold.
+  [Default] kUnitless = 0,
+
+  // Value is a number of pixels, e.g., scan dimensions.
+  kPixel = 1,
+
+  // Value is the number of bits, e.g., color depth.
+  kBit = 2,
+
+  // Value is in mm, e.g., scan dimensions.
+  kMm = 3,
+
+  // Value is in dots per inch, e.g., resolution.
+  kDpi = 4,
+
+  // Value is a percent, e.g., brightness.
+  kPercent = 5,
+
+  // Value is in µs, e.g. exposure time.
+  kMicrosecond = 6,
+};
+
+// The value of a `ScannerOption`.  The active field must match the
+// `OptionType` of the option.
+[Stable]
+union OptionValue {
+  bool bool_value;
+  int32 int_value;
+  array<int32> int_list;
+  double fixed_value;
+  array<double> fixed_list;
+  string string_value;
+};
+
+// The enum below is exactly the same as its counterpart in
+// third_party/cros_system_api/dbus/lorgnette/lorgnette_service.proto
+//
+// The type of a constraint.  These correspond to SANE_Constraint_Type.
+[Stable, Extensible]
+enum OptionConstraintType {
+  [Default] kNone = 0,
+  kIntRange = 1,
+  kFixedRange = 2,
+  kIntList = 3,
+  kFixedList = 4,
+  kStringList = 5,
+};
+
+// A range of valid values for an option of type `OptionType.kInt`.
+[Stable]
+struct IntRange {
+  int32 min@0;
+  int32 max@1;
+  int32 quant@2;
+};
+
+// A range of valid values for an option of type `OptionType.kFixed`.
+[Stable]
+struct FixedRange {
+  double min@0;
+  double max@1;
+  double quant@2;
+};
+
+// The specific restriction imposed by an `OptionConstraint`.  Each type of
+// restriction corresponds to a value of `OptionConstraintType`.
+[Stable]
+union OptionConstraintRestriction {
+  IntRange int_range;
+  FixedRange fixed_range;
+  array<int32> valid_int;
+  array<double> valid_fixed;
+  array<string> valid_string;
+};
+
+// A constraint on the allowed values of a `ScannerOption`.  The `type` field
+// indicates which union member of `constraint` is expected to be set.
+[Stable]
+struct OptionConstraint {
+  OptionConstraintType type@0;
+  OptionConstraintRestriction restriction@1;
+};
+
+// How an option can be configured.  An option can be configured through
+// software, through hardware, or neither (read-only).  The SANE model does not
+// permit an option to be configured in both hardware and software.
+[Stable, Extensible]
+enum OptionConfigurability {
+  // Option is read-only and cannot be changed.
+  kNotConfigurable = 0,
+
+  // Option can be set in software.
+  [Default] kSoftwareConfigurable = 1,
+
+  // Option can be set by the user toggling/pushing a hardware button.
+  kHardwareConfigurable = 2,
+};
+
+// A self-describing scanner option, in the style of SANE_Option_Descriptor.  A
+// `ScannerOption` represents an individual option with display information, an
+// optional current value, and an optional constraint on valid values.
+[Stable]
+struct ScannerOption {
+  // Option name using lowercase a-z, numbers, and dashes.
+  string name@0;
+
+  // Printable one-line title.
+  string title@1;
+
+  // Longer description of the option.  May contain embedded newlines.
+  string description@2;
+
+  // Lorgnette type for the option.
+  OptionType type@3;
+
+  // Unit of the option's value.
+  OptionUnit unit@4;
+
+  // Current value of the option if relevant.
+  OptionValue? value@5;
+
+  // Constrain on possible option values.
+  OptionConstraint? constraint@6;
+
+  // Option can be detected in software.
+  bool isDetectable@7;
+
+  // How the option value can be changed.
+  OptionConfigurability configurability@8;
+
+  // Can be automatically set by the backend.
+  bool isAutoSettable@9;
+
+  // Emulated by the backend instead of implemented in the scanner.
+  bool isEmulated@10;
+
+  // Option is active and can be set/retrieved.  If false, the `value` field
+  // will not be set.
+  bool isActive@11;
+
+  // UI should not display this option by default.
+  bool isAdvanced@12;
+
+  // Option is used for internal configuration and should never be displayed
+  // in the UI.
+  bool isInternal@13;
+};
+
+// The result of combining lorgnette's d-bus response with Chrome's mDNS
+// discovery for `GetScannerList()`.
+[Stable]
+struct GetScannerListResponse {
+  // The backend's enumeration result.
+  ScannerOperationResult result@0;
+
+  // A list of scanners that match the criteria supplied to `GetScannerList()`.
+  array<ScannerInfo> scanners@1;
+};
+
+// The response from calling `OpenScanner()`.
+[Stable]
+struct OpenScannerResponse {
+  // Same scanner_id value passed to `OpenScanner()`.
+  string scanner_id@0;
+
+  // Backend result of opening the scanner.
+  ScannerOperationResult result@1;
+
+  // If result is ScannerOperationResult.kSuccess, an exclusive handle to the
+  // scanner that can be used for further operations.  This handle remains
+  // valid until `CloseScanner()` is called, `OpenScanner()` is called again by
+  // the same client with the same `scanner_id`, or a hardware change causes
+  // the scanner to become inaccessible.
+  string? scanner_handle@2;
+
+  // If result is ScannerOperationResult.kSuccess, a mapping from option names
+  // to `ScannerOption`.
+  map<string, ScannerOption>? options@3;
+};
+
+// The response from calling `CloseScanner()`.
+[Stable]
+struct CloseScannerResponse {
+  // Same scanner_handle value passed to `CloseScanner()`.
+  string scanner_handle@0;
+
+  // Backend result of closing the scanner handle.
+  ScannerOperationResult result@1;
+};
+
+// Options for `StartPreparedScan()` that are not already specified via a
+// `ScannerOption`.  These tend to cover how the scanning framework itself works
+// as opposed to how a scanner works.
+[Stable]
+struct StartScanOptions {
+  // The desired MIME type for returned scans.
+  string format@0;
+};
+
+// The response from calling `StartPreparedScan()`.
+[Stable]
+struct StartPreparedScanResponse {
+  // The same scanner handle that was passed to `StartPreparedScan()`.
+  string scanner_handle@0;
+
+  // The backend's job start result.
+  ScannerOperationResult result@1;
+
+  // If result is kSuccess, this contains a handle that can be used to read scan
+  // data or cancel the scan.
+  string? job_handle@2;
+};
+
+// The response from calling `ReadScanData()`.
+[Stable]
+struct ReadScanDataResponse {
+  // The same job handle that was passed to `ReadScanData()`.
+  string job_handle@0;
+
+  // The backend's read result.
+  ScannerOperationResult result@1;
+
+  // If result is kSuccess, this contains the next chunk of data that was read.
+  // If result is kEof, this may contain the final chunk of data or may be
+  // empty.
+  array<int8>? data@2;
+
+  // If result is kSuccess, this contains the estimate of how much of the total
+  // scan data has been delivered so far, in the range 0-100.
+  uint32? estimated_completion@3;
+};
+
+// Used to set an option from `ScannerOption`.
+[Stable]
+struct OptionSetting {
+  // The name of the option.
+  string name@0;
+
+  // The type of the option.
+  OptionType type@1;
+
+  // Value to set.  Leave unset to request automatic setting for options that
+  // support it.
+  OptionValue? value@2;
+};
+
+// A group containing a list of option names.
+[Stable]
+struct OptionGroup {
+  // Printable title, e.g. "Geometry options".
+  string title@0;
+
+  // Names of contained options.
+  array<string> members@1;
+};
+
+
+// The result from setting an option.
+[Stable]
+struct SetOptionResult {
+  // The name of the option that was set.
+  string name@0;
+
+  // The backend's result from setting that option.
+  ScannerOperationResult result@1;
+};
+
+// The response from calling `SetOptions()`.
+[Stable]
+struct SetOptionsResponse {
+  // The same scanner handle that was passed to `SetOptions()`.
+  string scanner_handle@0;
+
+  // One result for each passed-in `OptionSetting`.
+  array<SetOptionResult> results@1;
+
+  // An updated mapping from option name to option value.
+  map<string, ScannerOption>? options@2;
+};
+
+// The response from calling `GetOptionGroups`.
+[Stable]
+struct GetOptionGroupsResponse {
+  // The same scanner handle that was passed to `GetOptionGroups()`.
+  string scanner_handle@0;
+
+  // The backend's get option groups result.
+  ScannerOperationResult result@1;
+
+  // If result is kSuccess, a list of the option groups.
+  array<OptionGroup>? options@2;
+};
+
+// The response from calling `CancelScan`.
+[Stable]
+struct CancelScanResponse {
+  // The same job handle that was passed to `CancelScan()`.
+  string job_handle@0;
+
+  // The backend's cancel result.
+  ScannerOperationResult result@1;
+};
+
 // This interface is used to access scanners.
+// Next version: 6
+// Next method id: 10
 [Stable, Uuid="f0c77c02-b5c1-4919-8218-3076ecad58db"]
 interface DocumentScan {
   // Returns the names of all available, de-duplicated scanners.
@@ -51,4 +495,45 @@ interface DocumentScan {
   // with the documentScan.scan API that exists as of this writing.
   ScanFirstPage@1(string scanner_name)
       => (ScanFailureMode failure_mode, string? scan_data);
+
+  // Returns a list of `ScannerInfo` structs from all available scanners that
+  // match the criteria provided in `filter`.
+  [MinVersion=1]
+  GetScannerList@2(string client_id, ScannerEnumFilter? filter)
+      => (GetScannerListResponse response);
+
+  // Open an exclusive handle to a scanner returned from `GetScannerList()`.
+  [MinVersion=2]
+  OpenScanner@3(string client_id, string scanner_id)
+      => (OpenScannerResponse response);
+
+  // Close a scanner handle opened by `OpenScanner()`.
+  [MinVersion=2]
+  CloseScanner@4(string scanner_handle) => (CloseScannerResponse response);
+
+  // Starts a scan on a scanner opened by `OpenScanner()`.  The scanner's
+  // current options, set via `SetOptions()`, are used along with the `options`
+  // specified.  `StartScanOptions.format` must match an entry from the
+  // scanner's `ScannerInfo.image_formats` or an error result will be returned.
+  [MinVersion=3]
+  StartPreparedScan@5(string scanner_handle, StartScanOptions options)
+      => (StartPreparedScanResponse response);
+
+  // Reads the next chunk of scan data for a specific scan job.
+  [MinVersion=3]
+  ReadScanData@6(string job_handle) => (ReadScanDataResponse response);
+
+  // Sets the options for a scanner opened by `OpenScanner()`.
+  [MinVersion=4]
+  SetOptions@7(string scanner_handle, array<OptionSetting> options)
+      => (SetOptionsResponse response);
+
+  // Get the option groups for a scanner opened by `OpenScanner()`.
+  [MinVersion=4]
+  GetOptionGroups@8(string scanner_handle)
+      => (GetOptionGroupsResponse response);
+
+  // Cancel a scan using the handle returned from `StartPreparedScan()`.
+  [MinVersion=5]
+  CancelScan@9(string job_handle) => (CancelScanResponse response);
 };

@@ -3,8 +3,8 @@
 # found in the LICENSE file.
 
 import("//build/buildflag_header.gni")
+import("//build/config/cast.gni")
 import("//build/config/chrome_build.gni")
-import("//build/config/chromecast_build.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/linux/pkg_config.gni")
 import("//build/config/ozone.gni")
@@ -121,6 +121,8 @@ component("gl") {
     "scoped_binders.h",
     "scoped_make_current.cc",
     "scoped_make_current.h",
+    "scoped_make_current_unsafe.cc",
+    "scoped_make_current_unsafe.h",
     "scoped_restore_texture.cc",
     "scoped_restore_texture.h",
     "shader_tracking.cc",
@@ -535,7 +537,6 @@ test("gl_unittests") {
 
   sources = [
     "gl_api_unittest.cc",
-    "gl_surface_format_unittest.cc",
     "gl_version_info_unittest.cc",
     "gpu_timing_unittest.cc",
   ]

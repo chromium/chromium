@@ -41,9 +41,6 @@ class NotificationCenterTrayTest : public AshTestBase {
   ~NotificationCenterTrayTest() override = default;
 
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kCameraEffectsSupportedByHardware}, {});
-
     AshTestBase::SetUp();
 
     test_api_ = std::make_unique<NotificationCenterTestApi>();
@@ -52,8 +49,6 @@ class NotificationCenterTrayTest : public AshTestBase {
   NotificationCenterTestApi* test_api() { return test_api_.get(); }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-
   std::unique_ptr<NotificationCenterTestApi> test_api_;
 };
 
@@ -298,25 +293,12 @@ TEST_F(NotificationCenterTrayTest, DoNotDisturbUpdatesPinnedIcons) {
   EXPECT_TRUE(test_api()->IsNotificationIconShown());
 }
 
-TEST_F(NotificationCenterTrayTest, NoPrivacyIndicators) {
-  // No privacy indicators when the feature is not enabled.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{},
-      /*disabled_features=*/{features::kVideoConference,
-                             features::kPrivacyIndicators});
-
-  auto notification_tray =
-      std::make_unique<NotificationCenterTray>(GetPrimaryShelf());
-  EXPECT_FALSE(notification_tray->privacy_indicators_view());
-}
-
 TEST_F(NotificationCenterTrayTest, NoPrivacyIndicatorsWhenVcEnabled) {
   // No privacy indicators when `kVideoConference` is enabled.
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       /*enabled_features=*/{features::kVideoConference,
-                            features::kPrivacyIndicators},
+                            features::kCameraEffectsSupportedByHardware},
       /*disabled_features=*/{});
 
   auto notification_tray =

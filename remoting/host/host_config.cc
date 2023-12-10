@@ -28,17 +28,17 @@ const char kUsageStatsConsentConfigPath[] = "usage_stats_consent";
 const char kDeprecatedHostOwnerEmailConfigPath[] = "host_owner_email";
 const char kDeprecatedXmppLoginConfigPath[] = "xmpp_login";
 
-absl::optional<base::Value::Dict> HostConfigFromJson(const std::string& json) {
-  absl::optional<base::Value> value =
+std::optional<base::Value::Dict> HostConfigFromJson(const std::string& json) {
+  std::optional<base::Value> value =
       base::JSONReader::Read(json, base::JSON_ALLOW_TRAILING_COMMAS);
   if (!value.has_value()) {
     LOG(ERROR) << "Failed to parse host config from JSON";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (!value->is_dict()) {
     LOG(ERROR) << "Parsed host config returned was not a dictionary";
-    return absl::nullopt;
+    return std::nullopt;
   }
   auto config = std::move(value->GetDict());
 
@@ -76,12 +76,12 @@ std::string HostConfigToJson(const base::Value::Dict& host_config) {
   return data;
 }
 
-absl::optional<base::Value::Dict> HostConfigFromJsonFile(
+std::optional<base::Value::Dict> HostConfigFromJsonFile(
     const base::FilePath& config_file) {
   std::string serialized;
   if (!base::ReadFileToString(config_file, &serialized)) {
     LOG(ERROR) << "Failed to read " << config_file.value();
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return HostConfigFromJson(serialized);

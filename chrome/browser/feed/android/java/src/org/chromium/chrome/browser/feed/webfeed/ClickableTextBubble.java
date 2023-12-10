@@ -69,13 +69,27 @@ public class ClickableTextBubble extends TextBubble {
      * text and dismiss UX.
      * @param onTouchListener The callback for all touch events being dispatched to the bubble.
      */
-    public ClickableTextBubble(Context context, View rootView, @StringRes int stringId,
-            @StringRes int accessibilityStringId, RectProvider anchorRectProvider,
-            @DrawableRes int imageDrawableId, boolean isAccessibilityEnabled,
-            View.OnTouchListener onTouchListener, boolean inverseColor) {
-        super(context, rootView, stringId, accessibilityStringId, /*showArrow=*/false,
-                anchorRectProvider, imageDrawableId, /*isRoundBubble=*/true,
-                /*inverseColor=*/inverseColor, isAccessibilityEnabled);
+    public ClickableTextBubble(
+            Context context,
+            View rootView,
+            @StringRes int stringId,
+            @StringRes int accessibilityStringId,
+            RectProvider anchorRectProvider,
+            @DrawableRes int imageDrawableId,
+            boolean isAccessibilityEnabled,
+            View.OnTouchListener onTouchListener,
+            boolean inverseColor) {
+        super(
+                context,
+                rootView,
+                stringId,
+                accessibilityStringId,
+                /* showArrow= */ false,
+                anchorRectProvider,
+                imageDrawableId,
+                /* isRoundBubble= */ true,
+                /* inverseColor= */ inverseColor,
+                isAccessibilityEnabled);
         mContext = context;
         mInverseColor = inverseColor;
         setTouchInterceptor(onTouchListener);
@@ -99,22 +113,24 @@ public class ClickableTextBubble extends TextBubble {
      * @param loadingViewContentDescriptionId ID of the ContentDescription for the loading spinner.
      */
     public void showLoadingUI(@StringRes int loadingViewContentDescriptionId) {
-        mLoadingView.addObserver(new LoadingView.Observer() {
-            @Override
-            public void onShowLoadingUIComplete() {
-                View loadingViewContainer = mContentView.findViewById(R.id.loading_view_container);
-                loadingViewContainer.setVisibility(View.VISIBLE);
-                loadingViewContainer.setContentDescription(
-                        mContext.getString(loadingViewContentDescriptionId));
-                mContentView.findViewById(R.id.image).setVisibility(View.GONE);
-                setAutoDismissTimeout(NO_TIMEOUT);
-            }
+        mLoadingView.addObserver(
+                new LoadingView.Observer() {
+                    @Override
+                    public void onShowLoadingUIComplete() {
+                        View loadingViewContainer =
+                                mContentView.findViewById(R.id.loading_view_container);
+                        loadingViewContainer.setVisibility(View.VISIBLE);
+                        loadingViewContainer.setContentDescription(
+                                mContext.getString(loadingViewContentDescriptionId));
+                        mContentView.findViewById(R.id.image).setVisibility(View.GONE);
+                        setAutoDismissTimeout(NO_TIMEOUT);
+                    }
 
-            @Override
-            public void onHideLoadingUIComplete() {
-                dismiss();
-            }
-        });
+                    @Override
+                    public void onHideLoadingUIComplete() {
+                        dismiss();
+                    }
+                });
         mLoadingView.showLoadingUI();
     }
 

@@ -56,7 +56,6 @@ public class BluetoothNotificationManagerTest {
             };
 
     private class FakeService {}
-    ;
 
     private BluetoothNotificationManager mManager;
     private boolean mServiceStopped;

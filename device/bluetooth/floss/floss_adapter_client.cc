@@ -492,10 +492,15 @@ void FlossAdapterClient::OnSspRequest(
     return;
   }
 
+  // Block the event in LaCrOS so it won't race with AshChrome. See b/308988818.
+  // TODO(b/274706838): Redesign DBus API so it's only received by the correct
+  // client.
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
   for (auto& observer : observers_) {
     observer.AdapterSspRequest(
         device, cod, static_cast<BluetoothSspVariant>(variant), passkey);
   }
+#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
   std::move(response_sender).Run(dbus::Response::FromMethodCall(method_call));
 }
@@ -514,9 +519,14 @@ void FlossAdapterClient::OnPinDisplay(
     return;
   }
 
+  // Block the event in LaCrOS so it won't race with AshChrome. See b/308988818.
+  // TODO(b/274706838): Redesign DBus API so it's only received by the correct
+  // client.
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
   for (auto& observer : observers_) {
     observer.AdapterPinDisplay(device, pincode);
   }
+#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
   std::move(response_sender).Run(dbus::Response::FromMethodCall(method_call));
 }
@@ -536,9 +546,14 @@ void FlossAdapterClient::OnPinRequest(
     return;
   }
 
+  // Block the event in LaCrOS so it won't race with AshChrome. See b/308988818.
+  // TODO(b/274706838): Redesign DBus API so it's only received by the correct
+  // client.
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
   for (auto& observer : observers_) {
     observer.AdapterPinRequest(device, cod, min_16_digit);
   }
+#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
   std::move(response_sender).Run(dbus::Response::FromMethodCall(method_call));
 }
@@ -728,7 +743,7 @@ void FlossAdapterClient::OnRegisterConnectionCallback(
 
 void FlossAdapterClient::OnUnregisterCallbacks(DBusResult<bool> ret) {
   if (!ret.has_value() || *ret == false) {
-    LOG(WARNING) << __func__ << "Failed to unregister callback";
+    LOG(WARNING) << __func__ << ": Failed to unregister callback";
   }
 }
 

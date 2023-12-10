@@ -71,8 +71,9 @@ class ToolbarColorObserverManager implements ToolbarAlphaInOverviewObserver, Too
         if (mToolbarColorObserver != null && mIncognitoStateProvider != null) {
             boolean isIncognito = mIncognitoStateProvider.isIncognitoSelected();
             int overviewColor = ChromeColors.getPrimaryBackgroundColor(mContext, isIncognito);
-            int toolbarRenderingColor = ColorUtils.getColorWithOverlay(
-                    mToolbarColor, overviewColor, mToolbarAlphaValue);
+            int toolbarRenderingColor =
+                    ColorUtils.getColorWithOverlay(
+                            mToolbarColor, overviewColor, mToolbarAlphaValue);
             mToolbarColorObserver.onToolbarColorChanged(toolbarRenderingColor);
         }
     }

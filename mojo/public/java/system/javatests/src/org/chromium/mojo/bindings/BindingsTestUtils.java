@@ -16,15 +16,11 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Utility class for bindings tests.
- */
+/** Utility class for bindings tests. */
 public class BindingsTestUtils {
-    /**
-     * {@link MessageReceiver} that records any message it receives.
-     */
-    public static class RecordingMessageReceiver
-            extends SideEffectFreeCloseable implements MessageReceiver {
+    /** {@link MessageReceiver} that records any message it receives. */
+    public static class RecordingMessageReceiver extends SideEffectFreeCloseable
+            implements MessageReceiver {
         public final List<Message> messages = new ArrayList<Message>();
 
         /**
@@ -37,11 +33,9 @@ public class BindingsTestUtils {
         }
     }
 
-    /**
-     * {@link MessageReceiverWithResponder} that records any message it receives.
-     */
-    public static class RecordingMessageReceiverWithResponder
-            extends RecordingMessageReceiver implements MessageReceiverWithResponder {
+    /** {@link MessageReceiverWithResponder} that records any message it receives. */
+    public static class RecordingMessageReceiverWithResponder extends RecordingMessageReceiver
+            implements MessageReceiverWithResponder {
         public final List<Pair<Message, MessageReceiver>> messagesWithReceivers =
                 new ArrayList<Pair<Message, MessageReceiver>>();
 
@@ -55,9 +49,7 @@ public class BindingsTestUtils {
         }
     }
 
-    /**
-     * {@link ConnectionErrorHandler} that records any error it received.
-     */
+    /** {@link ConnectionErrorHandler} that records any error it received. */
     public static class CapturingErrorHandler implements ConnectionErrorHandler {
         private MojoException mLastMojoException;
 
@@ -69,17 +61,13 @@ public class BindingsTestUtils {
             mLastMojoException = e;
         }
 
-        /**
-         * Returns the last recorded exception.
-         */
+        /** Returns the last recorded exception. */
         public MojoException getLastMojoException() {
             return mLastMojoException;
         }
     }
 
-    /**
-     * Creates a new valid {@link Message}. The message will have a valid header.
-     */
+    /** Creates a new valid {@link Message}. The message will have a valid header. */
     public static Message newRandomMessage(int size) {
         assert size > 16;
         ByteBuffer message = TestUtils.newRandomBuffer(size);

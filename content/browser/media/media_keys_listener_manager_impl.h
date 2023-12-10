@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_MEDIA_MEDIA_KEYS_LISTENER_MANAGER_IMPL_H_
 
 #include <memory>
+#include <set>
 #include <utility>
 
 #include "base/containers/flat_map.h"
@@ -24,11 +25,22 @@ namespace content {
 
 class ActiveMediaSessionController;
 class SystemMediaControlsNotifier;
+class WebAppSystemMediaControlsManager;
+
+class MediaKeysListenerManagerImplTestObserver {
+ public:
+  virtual void OnStartWatchingMediaKey(bool is_pwa) {}
+};
 
 // Listens for media keys and decides which listeners receive which events. In
 // particular, it owns one of its delegates (ActiveMediaSessionController), and
 // only propagates to the ActiveMediaSessionController if no other delegates are
 // listening to a particular media key.
+
+// It also owns the WebAppSystemMediaControlsManager which it retrieves
+// information from and propagates to if no other delegates are listening to a
+// particular media key. See WebAppSystemMediaControlsManager for more
+// information on that class' responsibilities.
 class MediaKeysListenerManagerImpl
     : public MediaKeysListenerManager,
       public ui::MediaKeysListener::Delegate,
@@ -41,11 +53,14 @@ class MediaKeysListenerManagerImpl
   ~MediaKeysListenerManagerImpl() override;
 
   // MediaKeysListenerManager implementation.
-  bool StartWatchingMediaKey(
-      ui::KeyboardCode key_code,
-      ui::MediaKeysListener::Delegate* delegate) override;
+  bool StartWatchingMediaKey(ui::KeyboardCode key_code,
+                             ui::MediaKeysListener::Delegate* delegate,
+                             base::UnguessableToken web_app_request_id =
+                                 base::UnguessableToken::Null()) override;
   void StopWatchingMediaKey(ui::KeyboardCode key_code,
-                            ui::MediaKeysListener::Delegate* delegate) override;
+                            ui::MediaKeysListener::Delegate* delegate,
+                            base::UnguessableToken web_app_request_id =
+                                base::UnguessableToken::Null()) override;
   void DisableInternalMediaKeyHandling() override;
   void EnableInternalMediaKeyHandling() override;
 
@@ -69,12 +84,21 @@ class MediaKeysListenerManagerImpl
   void SetIsMediaPlaying(bool is_playing);
 
   ActiveMediaSessionController* active_media_session_controller_for_testing() {
-    return active_media_session_controller_.get();
+    return browser_active_media_session_controller_.get();
   }
   void SetMediaKeysListenerForTesting(
       std::unique_ptr<ui::MediaKeysListener> media_keys_listener) {
     media_keys_listener_ = std::move(media_keys_listener);
   }
+
+  // Creates everything for the browser's connection to the system media
+  // controls. If already created, this method will rebind existing bookkeeping
+  // to point at the new active media session. This pattern is not ideal, as
+  // WebAppSystemMediaControlsManager is the class that is receiving
+  // onFocusGained and realizing it is not related to web apps, and calling us
+  // back here to create the browser stuff. crbug.com/1502981 covers reworking
+  // this.
+  void SetBrowserActiveMediaRequestId(base::UnguessableToken request_id);
 
  private:
   // ListeningData tracks which delegates are listening to a particular key. We
@@ -89,10 +113,13 @@ class MediaKeysListenerManagerImpl
     ~ListeningData();
 
     // True if the ActiveMediaSessionController is listening for this key.
-    bool active_media_session_controller_listening = false;
+    bool browser_active_media_session_controller_listening = false;
 
     // Contains non-ActiveMediaSessionController listeners.
     base::ObserverList<ui::MediaKeysListener::Delegate> listeners;
+
+    // These request IDs represent dPWAs that are listening for this key.
+    std::set<base::UnguessableToken> listening_web_apps;
   };
 
   void MaybeSendKeyCode(ui::KeyboardCode key_code);
@@ -130,14 +157,36 @@ class MediaKeysListenerManagerImpl
   bool ShouldActiveMediaSessionControllerReceiveKey(
       ui::KeyboardCode key_code) const;
 
+  // Performs a platform and feature flag check and returns true if we should
+  // use instanced system media controls for dPWAs.
+  bool ShouldUseWebAppSystemMediaControls() const;
+
+  // Returns true if |delegate| is an ActiveMediaSessionController for a dPWA.
+  bool IsDelegateForWebAppSession(ui::MediaKeysListener::Delegate* delegate);
+
+  // Gets the ActiveMediaSessionController associated with |smc_sender|
+  ActiveMediaSessionController* GetControllerForSystemMediaControls(
+      system_media_controls::SystemMediaControls* system_media_controls);
+
   base::flat_map<ui::KeyboardCode, std::unique_ptr<ListeningData>>
       delegate_map_;
-  std::unique_ptr<system_media_controls::SystemMediaControls>
-      system_media_controls_;
   std::unique_ptr<ui::MediaKeysListener> media_keys_listener_;
+
+  // TODO(crbug.com/1502981) consider moving these somewhere else.
+  // Browser's connection to the system media controls.
+  std::unique_ptr<system_media_controls::SystemMediaControls>
+      browser_system_media_controls_;
   std::unique_ptr<ActiveMediaSessionController>
-      active_media_session_controller_;
-  std::unique_ptr<SystemMediaControlsNotifier> system_media_controls_notifier_;
+      browser_active_media_session_controller_;
+  std::unique_ptr<SystemMediaControlsNotifier>
+      browser_system_media_controls_notifier_;
+
+#if BUILDFLAG(IS_WIN)
+  // Owning reference to web apps' connections to the system media controls.
+  // See WebAppSystemMediaControlsManager for this classes' responsibilities.
+  std::unique_ptr<WebAppSystemMediaControlsManager>
+      web_app_system_media_controls_manager_;
+#endif
 
   // False if media key handling has been explicitly disabled by a call to
   // |DisableInternalMediaKeyHandling()|.
@@ -147,6 +196,15 @@ class MediaKeysListenerManagerImpl
   bool auxiliary_services_started_ = false;
 
   bool is_media_playing_ = false;
+
+  // Tests that friend this class will use this mechanism to be notified of
+  // certain events that are otherwise difficult to wait for.
+  raw_ptr<MediaKeysListenerManagerImplTestObserver> test_observer_ = nullptr;
+  void SetTestObserver(MediaKeysListenerManagerImplTestObserver* observer) {
+    test_observer_ = observer;
+  }
+
+  friend class WebAppSystemMediaControlsBrowserTest;
 };
 
 }  // namespace content

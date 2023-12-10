@@ -210,8 +210,8 @@ bool IconLabelBubbleView::ShouldShowLabel() const {
 }
 
 void IconLabelBubbleView::SetPaintLabelOverSolidBackground(
-    bool paint_label_over_solid_backround) {
-  paint_label_over_solid_backround_ = paint_label_over_solid_backround;
+    bool paint_label_over_solid_background) {
+  paint_label_over_solid_background_ = paint_label_over_solid_background;
   UpdateBackground();
 }
 
@@ -249,7 +249,7 @@ void IconLabelBubbleView::UpdateBackground() {
   // If the label is showing we must ensure the icon label is painted over a
   // solid background.
   const bool painted_on_solid_background =
-      paint_label_over_solid_backround_ && ShouldShowLabel();
+      paint_label_over_solid_background_ && ShouldShowLabel();
   const ui::ColorId background_color = use_tonal_color_when_expanded_
                                            ? kColorPageInfoBackgroundTonal
                                            : kColorPageInfoBackground;
@@ -559,7 +559,7 @@ void IconLabelBubbleView::SetUpForInOutAnimation(base::TimeDelta duration) {
                          duration.InMilliseconds();
 }
 
-void IconLabelBubbleView::AnimateIn(absl::optional<int> string_id) {
+void IconLabelBubbleView::AnimateIn(std::optional<int> string_id) {
   if (!label()->GetVisible()) {
     // Start animation from the current width, otherwise the icon will also be
     // included if visible.
@@ -579,8 +579,7 @@ void IconLabelBubbleView::AnimateIn(absl::optional<int> string_id) {
       // A valid role must be set prior to setting the name.
       // TODO(crbug.com/1361281): Consider using AnnounceText instead of a
       // virtual view.
-      alert_virtual_view_->GetCustomData().role =
-          ax::mojom::Role::kGenericContainer;
+      alert_virtual_view_->GetCustomData().role = ax::mojom::Role::kAlert;
       alert_virtual_view_->GetCustomData().SetNameChecked(label);
       alert_virtual_view_->NotifyAccessibilityEvent(ax::mojom::Event::kAlert);
     }

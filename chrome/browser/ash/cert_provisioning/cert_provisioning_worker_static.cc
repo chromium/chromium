@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <vector>
 
 #include "base/base64.h"
@@ -35,7 +36,6 @@
 #include "content/public/browser/browser_context.h"
 #include "net/cert/asn1_util.h"
 #include "net/cert/x509_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace em = enterprise_management;
 
@@ -73,7 +73,7 @@ const net::BackoffEntry::Policy kBackoffPolicy{
 
 bool ConvertHashingAlgorithm(
     em::HashingAlgorithm input_algo,
-    absl::optional<chromeos::platform_keys::HashAlgorithm>* output_algo) {
+    std::optional<chromeos::platform_keys::HashAlgorithm>* output_algo) {
   switch (input_algo) {
     case em::HashingAlgorithm::SHA1:
       *output_algo =
@@ -233,6 +233,12 @@ bool CertProvisioningWorkerStatic::IsWaiting() const {
   return is_waiting_;
 }
 
+bool CertProvisioningWorkerStatic::IsWorkerMarkedForReset() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  return is_schedueled_for_reset_;
+}
+
 const CertProfile& CertProvisioningWorkerStatic::GetCertProfile() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -262,7 +268,7 @@ base::Time CertProvisioningWorkerStatic::GetLastUpdateTime() const {
   return last_update_time_;
 }
 
-const absl::optional<BackendServerError>&
+const std::optional<BackendServerError>&
 CertProvisioningWorkerStatic::GetLastBackendServerError() const {
   return last_backend_server_error_;
 }
@@ -332,6 +338,11 @@ void CertProvisioningWorkerStatic::DoStep() {
       return;
   }
   NOTREACHED() << " " << static_cast<uint>(state_);
+}
+
+void CertProvisioningWorkerStatic::MarkWorkerForReset() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  is_schedueled_for_reset_ = true;
 }
 
 void CertProvisioningWorkerStatic::UpdateState(
@@ -410,7 +421,7 @@ void CertProvisioningWorkerStatic::GenerateKeyForVa() {
       GetKeyName(cert_profile_.profile_id), profile_,
       base::BindOnce(&CertProvisioningWorkerStatic::OnGenerateKeyForVaDone,
                      weak_factory_.GetWeakPtr(), base::TimeTicks::Now()),
-      /*signals=*/absl::nullopt);
+      /*signals=*/std::nullopt);
 }
 
 void CertProvisioningWorkerStatic::OnGenerateKeyForVaDone(
@@ -453,8 +464,8 @@ void CertProvisioningWorkerStatic::StartCsr() {
 
 void CertProvisioningWorkerStatic::OnStartCsrDone(
     policy::DeviceManagementStatus status,
-    absl::optional<CertProvisioningResponseErrorType> error,
-    absl::optional<int64_t> try_later,
+    std::optional<CertProvisioningResponseErrorType> error,
+    std::optional<int64_t> try_later,
     const std::string& invalidation_topic,
     const std::string& va_challenge,
     enterprise_management::HashingAlgorithm hashing_algorithm,
@@ -646,8 +657,8 @@ void CertProvisioningWorkerStatic::FinishCsr() {
 
 void CertProvisioningWorkerStatic::OnFinishCsrDone(
     policy::DeviceManagementStatus status,
-    absl::optional<CertProvisioningResponseErrorType> error,
-    absl::optional<int64_t> try_later) {
+    std::optional<CertProvisioningResponseErrorType> error,
+    std::optional<int64_t> try_later) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!ProcessResponseErrors(DeviceManagementServerRequestType::kFinishCsr,
@@ -671,8 +682,8 @@ void CertProvisioningWorkerStatic::DownloadCert() {
 
 void CertProvisioningWorkerStatic::OnDownloadCertDone(
     policy::DeviceManagementStatus status,
-    absl::optional<CertProvisioningResponseErrorType> error,
-    absl::optional<int64_t> try_later,
+    std::optional<CertProvisioningResponseErrorType> error,
+    std::optional<int64_t> try_later,
     const std::string& pem_encoded_certificate) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -734,8 +745,8 @@ void CertProvisioningWorkerStatic::OnImportCertDone(
 bool CertProvisioningWorkerStatic::ProcessResponseErrors(
     DeviceManagementServerRequestType request_type,
     policy::DeviceManagementStatus status,
-    absl::optional<CertProvisioningResponseErrorType> error,
-    absl::optional<int64_t> try_later) {
+    std::optional<CertProvisioningResponseErrorType> error,
+    std::optional<int64_t> try_later) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if ((status ==
@@ -754,7 +765,7 @@ bool CertProvisioningWorkerStatic::ProcessResponseErrors(
   }
 
   // From this point, connection to the DM Server was successful.
-  last_backend_server_error_ = absl::nullopt;
+  last_backend_server_error_ = std::nullopt;
   if (status ==
       policy::DeviceManagementStatus::DM_STATUS_SERVICE_ACTIVATION_PENDING) {
     const base::TimeDelta try_later_delay =
@@ -853,6 +864,13 @@ void CertProvisioningWorkerStatic::CancelScheduledTasks() {
   weak_factory_.InvalidateWeakPtrs();
 }
 
+// This method handles clean up.
+// One of the things to be cleaned up are generated keys. It is possible that a
+// worker is asked to cleanup and shutdown while a key is being generated for
+// it. In that case this cleanup will miss that key and it's important to make
+// sure that there is another mechanism that will eventually clean up the key.
+// VA and PKS keys both are covered and the mechanism is described in seperate
+// comments.
 void CertProvisioningWorkerStatic::CleanUpAndRunCallback() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -874,6 +892,8 @@ void CertProvisioningWorkerStatic::CleanUpAndRunCallback() {
   // Keep conditions mutually exclusive.
   if ((prev_state_idx >= key_generated_idx) &&
       (prev_state_idx < key_registered_idx)) {
+    // if the worker is still waiting for the key right now, then it will be
+    // eventually cleaned by the scheduler once it goes idle.
     DeleteVaKey(cert_scope_, profile_, GetKeyName(cert_profile_.profile_id),
                 base::BindOnce(&CertProvisioningWorkerStatic::OnDeleteVaKeyDone,
                                weak_factory_.GetWeakPtr()));
@@ -888,8 +908,9 @@ void CertProvisioningWorkerStatic::CleanUpAndRunCallback() {
                        weak_factory_.GetWeakPtr()));
     return;
   }
-
-  // No extra clean up is necessary.
+  // If the worker is still waiting for a key from PlatformKeysService right
+  // now, PlatformKeysService will clean up the key when the key is generated
+  // and the worker is gone. No extra clean up is necessary.
   OnCleanUpDone();
 }
 

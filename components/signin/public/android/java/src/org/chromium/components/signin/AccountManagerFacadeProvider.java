@@ -43,29 +43,27 @@ public class AccountManagerFacadeProvider {
         sAtomicInstance.set(sInstance);
     }
 
-    /**
-     * Sets the test instance.
-     */
+    /** Sets the test instance. */
     @VisibleForTesting
     @AnyThread
     public static void setInstanceForTests(AccountManagerFacade accountManagerFacade) {
-        ThreadUtils.runOnUiThreadBlocking(() -> {
-            sTestingInstance = accountManagerFacade;
-            sAtomicInstance.set(sTestingInstance);
-        });
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    sTestingInstance = accountManagerFacade;
+                    sAtomicInstance.set(sTestingInstance);
+                });
     }
 
-    /**
-     * Resets the test instance set with {@link #setInstanceForTests}.
-     */
+    /** Resets the test instance set with {@link #setInstanceForTests}. */
     @VisibleForTesting
     @AnyThread
     public static void resetInstanceForTests() {
-        ThreadUtils.runOnUiThreadBlocking(() -> {
-            sTestingInstance = null;
-            sAtomicInstance.set(sInstance);
-            Log.d(TAG, "reset AccountManagerFacade test instance");
-        });
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    sTestingInstance = null;
+                    sAtomicInstance.set(sInstance);
+                    Log.d(TAG, "reset AccountManagerFacade test instance");
+                });
     }
 
     /**

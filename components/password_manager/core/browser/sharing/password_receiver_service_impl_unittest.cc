@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/functional/bind.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -29,25 +30,58 @@ namespace password_manager {
 namespace {
 
 using testing::AllOf;
+using testing::Bool;
 using testing::ElementsAre;
 using testing::Field;
 
-const std::string kUrl = "https://test.com";
+const std::string kUrl = "https://www.test.com";
+const std::string kPslMatchUrl = "https://m.test.com";
 const std::u16string kUsername = u"username";
 const std::u16string kPassword = u"password";
 const std::u16string kSenderEmail = u"sender@example.com";
 const std::u16string kSenderName = u"Sender Name";
 const std::string kSenderProfileImagerUrl = "https://sender.com/avatar";
 
-IncomingSharingInvitation CreateIncomingSharingInvitation() {
-  IncomingSharingInvitation invitation;
-  invitation.url = GURL(kUrl);
-  invitation.signon_realm = invitation.url.spec();
-  invitation.username_value = kUsername;
-  invitation.password_value = kPassword;
-  invitation.sender_email = kSenderEmail;
-  invitation.sender_profile_image_url = GURL(kSenderProfileImagerUrl);
-  invitation.sender_display_name = kSenderName;
+// Creates an invitation that represents only one password
+sync_pb::IncomingPasswordSharingInvitationSpecifics
+CreateLegacyIncomingSharingInvitation() {
+  sync_pb::IncomingPasswordSharingInvitationSpecifics invitation;
+  sync_pb::PasswordSharingInvitationData::PasswordData* password_data =
+      invitation.mutable_client_only_unencrypted_data()
+          ->mutable_password_data();
+  password_data->set_origin(kUrl);
+  password_data->set_signon_realm(kUrl);
+  password_data->set_username_value(base::UTF16ToUTF8(kUsername));
+  password_data->set_password_value(base::UTF16ToUTF8(kPassword));
+
+  sync_pb::UserDisplayInfo* sender_info =
+      invitation.mutable_sender_info()->mutable_user_display_info();
+  sender_info->set_email(base::UTF16ToUTF8(kSenderEmail));
+  sender_info->set_display_name(base::UTF16ToUTF8(kSenderName));
+  sender_info->set_profile_image_url(kSenderProfileImagerUrl);
+  return invitation;
+}
+
+// Creates an invitation that represents a group of passwords.
+sync_pb::IncomingPasswordSharingInvitationSpecifics
+CreateModernIncomingSharingInvitation() {
+  sync_pb::IncomingPasswordSharingInvitationSpecifics invitation;
+  sync_pb::PasswordSharingInvitationData::PasswordGroupData*
+      password_group_data = invitation.mutable_client_only_unencrypted_data()
+                                ->mutable_password_group_data();
+  password_group_data->set_username_value(base::UTF16ToUTF8(kUsername));
+  password_group_data->set_password_value(base::UTF16ToUTF8(kPassword));
+
+  sync_pb::PasswordSharingInvitationData::PasswordGroupElementData*
+      element_data = password_group_data->add_element_data();
+  element_data->set_origin(kUrl);
+  element_data->set_signon_realm(kUrl);
+
+  sync_pb::UserDisplayInfo* sender_info =
+      invitation.mutable_sender_info()->mutable_user_display_info();
+  sender_info->set_email(base::UTF16ToUTF8(kSenderEmail));
+  sender_info->set_display_name(base::UTF16ToUTF8(kSenderName));
+  sender_info->set_profile_image_url(kSenderProfileImagerUrl);
   return invitation;
 }
 
@@ -60,21 +94,47 @@ PasswordForm CreatePasswordForm() {
   return form;
 }
 
-IncomingSharingInvitation PasswordFormToIncomingSharingInvitation(
-    const PasswordForm& form) {
-  IncomingSharingInvitation invitation;
-  invitation.url = form.url;
-  invitation.signon_realm = form.signon_realm;
-  invitation.username_element = form.username_element;
-  invitation.username_value = form.username_value;
-  invitation.password_element = form.password_element;
-  invitation.password_value = form.password_value;
+sync_pb::IncomingPasswordSharingInvitationSpecifics
+PasswordFormToLegacyIncomingSharingInvitation(const PasswordForm& form) {
+  sync_pb::IncomingPasswordSharingInvitationSpecifics invitation;
+  sync_pb::PasswordSharingInvitationData::PasswordData* password_data =
+      invitation.mutable_client_only_unencrypted_data()
+          ->mutable_password_data();
+  password_data->set_origin(form.url.spec());
+  password_data->set_signon_realm(form.signon_realm);
+  password_data->set_username_element(base::UTF16ToUTF8(form.username_element));
+  password_data->set_username_value(base::UTF16ToUTF8(form.username_value));
+  password_data->set_password_element(base::UTF16ToUTF8(form.password_element));
+  password_data->set_password_value(base::UTF16ToUTF8(form.password_value));
+  return invitation;
+}
+
+sync_pb::IncomingPasswordSharingInvitationSpecifics
+PasswordFormToModernIncomingSharingInvitation(const PasswordForm& form) {
+  sync_pb::IncomingPasswordSharingInvitationSpecifics invitation;
+  sync_pb::PasswordSharingInvitationData::PasswordGroupData*
+      password_group_data = invitation.mutable_client_only_unencrypted_data()
+                                ->mutable_password_group_data();
+  password_group_data->set_username_value(
+      base::UTF16ToUTF8(form.username_value));
+  password_group_data->set_password_value(
+      base::UTF16ToUTF8(form.password_value));
+
+  sync_pb::PasswordSharingInvitationData::PasswordGroupElementData*
+      element_data = password_group_data->add_element_data();
+  element_data->set_origin(form.url.spec());
+  element_data->set_signon_realm(form.signon_realm);
+  element_data->set_username_element(base::UTF16ToUTF8(form.username_element));
+  element_data->set_password_element(base::UTF16ToUTF8(form.password_element));
   return invitation;
 }
 
 }  // namespace
 
-class PasswordReceiverServiceImplTest : public testing::Test {
+// Test param decides whether the test should use the legacy invitation proto
+// format that represent one credential, or the modern format that represents a
+// group of credentials.
+class PasswordReceiverServiceImplTest : public testing::TestWithParam<bool> {
  public:
   PasswordReceiverServiceImplTest() {
     profile_password_store_ = base::MakeRefCounted<TestPasswordStore>();
@@ -122,6 +182,51 @@ class PasswordReceiverServiceImplTest : public testing::Test {
     RunUntilIdle();
   }
 
+  sync_pb::IncomingPasswordSharingInvitationSpecifics
+  CreateIncomingSharingInvitation() {
+    return GetParam() ? CreateModernIncomingSharingInvitation()
+                      : CreateLegacyIncomingSharingInvitation();
+  }
+
+  sync_pb::IncomingPasswordSharingInvitationSpecifics
+  PasswordFormToIncomingSharingInvitation(const PasswordForm& form) {
+    return GetParam() ? PasswordFormToModernIncomingSharingInvitation(form)
+                      : PasswordFormToLegacyIncomingSharingInvitation(form);
+  }
+
+  // Returns the origin of the credentials shared in the invitation. If the
+  // invitation represents a group of credentials, it returns the origin of the
+  // first one.
+  std::string GetInvitationOrigin(
+      const sync_pb::IncomingPasswordSharingInvitationSpecifics& invitation) {
+    if (GetParam()) {
+      CHECK(
+          invitation.client_only_unencrypted_data().has_password_group_data());
+      return invitation.client_only_unencrypted_data()
+          .password_group_data()
+          .element_data(0)
+          .origin();
+    }
+    CHECK(invitation.client_only_unencrypted_data().has_password_data());
+    return invitation.client_only_unencrypted_data().password_data().origin();
+  }
+
+  // Sets ths `password_value` in the `invitation`, using either the credential
+  // or the group invitation format.
+  void SetPasswordValueInInvitation(
+      const std::u16string& password_value,
+      sync_pb::IncomingPasswordSharingInvitationSpecifics& invitation) {
+    if (GetParam()) {
+      invitation.mutable_client_only_unencrypted_data()
+          ->mutable_password_group_data()
+          ->set_password_value(base::UTF16ToUTF8(password_value));
+      return;
+    }
+    invitation.mutable_client_only_unencrypted_data()
+        ->mutable_password_data()
+        ->set_password_value(base::UTF16ToUTF8(password_value));
+  }
+
   PasswordReceiverService* password_receiver_service() {
     return password_receiver_service_.get();
   }
@@ -148,19 +253,21 @@ class PasswordReceiverServiceImplTest : public testing::Test {
   std::unique_ptr<PasswordReceiverServiceImpl> password_receiver_service_;
 };
 
-TEST_F(PasswordReceiverServiceImplTest,
+TEST_P(PasswordReceiverServiceImplTest,
        ShouldAcceptIncomingInvitationWhenStoreIsEmpty) {
   base::HistogramTester histogram_tester;
-  IncomingSharingInvitation invitation = CreateIncomingSharingInvitation();
+  sync_pb::IncomingPasswordSharingInvitationSpecifics invitation =
+      CreateIncomingSharingInvitation();
 
   password_receiver_service()->ProcessIncomingSharingInvitation(invitation);
 
   RunUntilIdle();
 
   EXPECT_THAT(
-      profile_password_store().stored_passwords().at(invitation.url.spec()),
+      profile_password_store().stored_passwords().at(
+          GetInvitationOrigin(invitation)),
       ElementsAre(AllOf(
-          Field(&PasswordForm::signon_realm, GURL(kUrl).spec()),
+          Field(&PasswordForm::signon_realm, kUrl),
           Field(&PasswordForm::username_value, kUsername),
           Field(&PasswordForm::password_value, kPassword),
           Field(&PasswordForm::type, PasswordForm::Type::kReceivedViaSharing),
@@ -179,7 +286,7 @@ TEST_F(PasswordReceiverServiceImplTest,
       1);
 }
 
-TEST_F(PasswordReceiverServiceImplTest,
+TEST_P(PasswordReceiverServiceImplTest,
        ShouldIgnoreIncomingInvitationWhenPasswordAlreadyExists) {
   base::HistogramTester histogram_tester;
   PasswordForm existing_password = CreatePasswordForm();
@@ -190,7 +297,7 @@ TEST_F(PasswordReceiverServiceImplTest,
   AddLoginAndWait(existing_password, profile_password_store());
 
   // Simulate an incoming invitation for the same stored passwords.
-  IncomingSharingInvitation invitation =
+  sync_pb::IncomingPasswordSharingInvitationSpecifics invitation =
       PasswordFormToIncomingSharingInvitation(existing_password);
   password_receiver_service()->ProcessIncomingSharingInvitation(invitation);
 
@@ -198,9 +305,9 @@ TEST_F(PasswordReceiverServiceImplTest,
 
   // The store should contain the `existing_password` and the
   // incoming invitation is ignored.
-  EXPECT_THAT(
-      profile_password_store().stored_passwords().at(invitation.url.spec()),
-      ElementsAre(existing_password));
+  EXPECT_THAT(profile_password_store().stored_passwords().at(
+                  GetInvitationOrigin(invitation)),
+              ElementsAre(existing_password));
 
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.ProcessIncomingPasswordSharingInvitationResult",
@@ -209,23 +316,27 @@ TEST_F(PasswordReceiverServiceImplTest,
       1);
 }
 
-TEST_F(PasswordReceiverServiceImplTest,
+TEST_P(PasswordReceiverServiceImplTest,
        ShouldIgnoreIncomingInvitationWhenConflictingPasswordExists) {
   base::HistogramTester histogram_tester;
-  IncomingSharingInvitation invitation = CreateIncomingSharingInvitation();
-  PasswordForm conflicting_password =
-      IncomingSharingInvitationToPasswordForm(invitation);
+  PasswordForm password = CreatePasswordForm();
+  sync_pb::IncomingPasswordSharingInvitationSpecifics invitation =
+      PasswordFormToIncomingSharingInvitation(password);
+
+  PasswordForm conflicting_password = password;
+  conflicting_password.type = PasswordForm::Type::kReceivedViaSharing;
   conflicting_password.password_value = u"AnotherPassword";
   conflicting_password.in_store = PasswordForm::Store::kProfileStore;
+
   AddLoginAndWait(conflicting_password, profile_password_store());
 
   password_receiver_service()->ProcessIncomingSharingInvitation(invitation);
 
   RunUntilIdle();
 
-  EXPECT_THAT(
-      profile_password_store().stored_passwords().at(invitation.url.spec()),
-      ElementsAre(conflicting_password));
+  EXPECT_THAT(profile_password_store().stored_passwords().at(
+                  GetInvitationOrigin(invitation)),
+              ElementsAre(conflicting_password));
 
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.ProcessIncomingPasswordSharingInvitationResult",
@@ -234,7 +345,7 @@ TEST_F(PasswordReceiverServiceImplTest,
       1);
 }
 
-TEST_F(
+TEST_P(
     PasswordReceiverServiceImplTest,
     ShouldAcceptIncomingInvitationInAccountStoreForOptedInAccountStoreUsers) {
   if (!base::FeatureList::IsEnabled(
@@ -265,7 +376,7 @@ TEST_F(
   EXPECT_EQ(1U, account_password_store().stored_passwords().size());
 }
 
-TEST_F(PasswordReceiverServiceImplTest,
+TEST_P(PasswordReceiverServiceImplTest,
        ShouldNotAcceptIncomingInvitationForNonOptedInAccountStoreUsers) {
   base::HistogramTester histogram_tester;
   if (!base::FeatureList::IsEnabled(
@@ -303,7 +414,7 @@ TEST_F(PasswordReceiverServiceImplTest,
       1);
 }
 
-TEST_F(PasswordReceiverServiceImplTest,
+TEST_P(PasswordReceiverServiceImplTest,
        ShouldRecordWhenSharedPasswordAlreadyExistsWithDifferentPassword) {
   base::HistogramTester histogram_tester;
   PasswordForm existing_password = CreatePasswordForm();
@@ -311,9 +422,10 @@ TEST_F(PasswordReceiverServiceImplTest,
 
   // Simulate an incoming invitation for the same stored credentials with a
   // different password.
-  IncomingSharingInvitation invitation =
+  sync_pb::IncomingPasswordSharingInvitationSpecifics invitation =
       PasswordFormToIncomingSharingInvitation(existing_password);
-  invitation.password_value = u"another_password";
+
+  SetPasswordValueInInvitation(u"another_password", invitation);
 
   password_receiver_service()->ProcessIncomingSharingInvitation(invitation);
 
@@ -326,7 +438,7 @@ TEST_F(PasswordReceiverServiceImplTest,
       1);
 }
 
-TEST_F(
+TEST_P(
     PasswordReceiverServiceImplTest,
     ShouldRecordWhenSharedPasswordAlreadyExistsAsSharedFromSameSenderWithSamePassword) {
   base::HistogramTester histogram_tester;
@@ -337,9 +449,10 @@ TEST_F(
 
   // Simulate an incoming invitation for the same stored credentials with a
   // different password.
-  IncomingSharingInvitation invitation =
+  sync_pb::IncomingPasswordSharingInvitationSpecifics invitation =
       PasswordFormToIncomingSharingInvitation(existing_password);
-  invitation.sender_email = existing_password.sender_email;
+  invitation.mutable_sender_info()->mutable_user_display_info()->set_email(
+      base::UTF16ToUTF8(existing_password.sender_email));
 
   password_receiver_service()->ProcessIncomingSharingInvitation(invitation);
 
@@ -352,7 +465,7 @@ TEST_F(
       1);
 }
 
-TEST_F(
+TEST_P(
     PasswordReceiverServiceImplTest,
     ShouldRecordWhenSharedPasswordAlreadyExistsAsSharedFromDifferentSenderWithSamePassword) {
   base::HistogramTester histogram_tester;
@@ -363,9 +476,10 @@ TEST_F(
 
   // Simulate an incoming invitation for the same stored credentials with a
   // different password.
-  IncomingSharingInvitation invitation =
+  sync_pb::IncomingPasswordSharingInvitationSpecifics invitation =
       PasswordFormToIncomingSharingInvitation(existing_password);
-  invitation.sender_email = u"another_user@example.com";
+  invitation.mutable_sender_info()->mutable_user_display_info()->set_email(
+      "another_user@example.com");
 
   password_receiver_service()->ProcessIncomingSharingInvitation(invitation);
 
@@ -378,7 +492,7 @@ TEST_F(
       1);
 }
 
-TEST_F(
+TEST_P(
     PasswordReceiverServiceImplTest,
     ShouldRecordWhenSharedPasswordAlreadyExistsAsSharedFromSameSenderWithDifferentPassword) {
   base::HistogramTester histogram_tester;
@@ -389,10 +503,11 @@ TEST_F(
 
   // Simulate an incoming invitation for the same stored credentials with a
   // different password.
-  IncomingSharingInvitation invitation =
+  sync_pb::IncomingPasswordSharingInvitationSpecifics invitation =
       PasswordFormToIncomingSharingInvitation(existing_password);
-  invitation.sender_email = existing_password.sender_email;
-  invitation.password_value = u"another_password";
+  invitation.mutable_sender_info()->mutable_user_display_info()->set_email(
+      base::UTF16ToUTF8(existing_password.sender_email));
+  SetPasswordValueInInvitation(u"another_password", invitation);
 
   password_receiver_service()->ProcessIncomingSharingInvitation(invitation);
 
@@ -405,7 +520,7 @@ TEST_F(
       1);
 }
 
-TEST_F(
+TEST_P(
     PasswordReceiverServiceImplTest,
     ShouldRecordWhenSharedPasswordAlreadyExistsAsSharedFromDifferentSenderWithDifferentPassword) {
   base::HistogramTester histogram_tester;
@@ -416,10 +531,11 @@ TEST_F(
 
   // Simulate an incoming invitation for the same stored credentials with a
   // different password.
-  IncomingSharingInvitation invitation =
+  sync_pb::IncomingPasswordSharingInvitationSpecifics invitation =
       PasswordFormToIncomingSharingInvitation(existing_password);
-  invitation.sender_email = u"another_user@example.com";
-  invitation.password_value = u"another_password";
+  invitation.mutable_sender_info()->mutable_user_display_info()->set_email(
+      "another_user@example.com");
+  SetPasswordValueInInvitation(u"another_password", invitation);
 
   password_receiver_service()->ProcessIncomingSharingInvitation(invitation);
 
@@ -432,7 +548,7 @@ TEST_F(
       1);
 }
 
-TEST_F(PasswordReceiverServiceImplTest,
+TEST_P(PasswordReceiverServiceImplTest,
        ShouldIgnorePasswordUpdatesFromSameSenderWhenAutoApproveDisabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(
@@ -447,10 +563,11 @@ TEST_F(PasswordReceiverServiceImplTest,
 
   // Simulate an incoming invitation for the same stored credentials with a
   // different password from the same sender.
-  IncomingSharingInvitation invitation =
+  sync_pb::IncomingPasswordSharingInvitationSpecifics invitation =
       PasswordFormToIncomingSharingInvitation(existing_password);
-  invitation.sender_email = existing_password.sender_email;
-  invitation.password_value = kNewPassword;
+  invitation.mutable_sender_info()->mutable_user_display_info()->set_email(
+      base::UTF16ToUTF8(existing_password.sender_email));
+  SetPasswordValueInInvitation(kNewPassword, invitation);
 
   password_receiver_service()->ProcessIncomingSharingInvitation(invitation);
 
@@ -458,14 +575,15 @@ TEST_F(PasswordReceiverServiceImplTest,
 
   // The password value should remain kPassword.
   EXPECT_THAT(
-      profile_password_store().stored_passwords().at(invitation.url.spec()),
+      profile_password_store().stored_passwords().at(
+          GetInvitationOrigin(invitation)),
       ElementsAre(AllOf(Field(&PasswordForm::username_value, kUsername),
                         Field(&PasswordForm::password_value, kPassword),
                         Field(&PasswordForm::type,
                               PasswordForm::Type::kReceivedViaSharing))));
 }
 
-TEST_F(PasswordReceiverServiceImplTest,
+TEST_P(PasswordReceiverServiceImplTest,
        ShouldAcceptPasswordUpdatesFromSameSenderWhenAutoApproveEnabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
@@ -480,10 +598,11 @@ TEST_F(PasswordReceiverServiceImplTest,
 
   // Simulate an incoming invitation for the same stored credentials with a
   // different password from the same sender.
-  IncomingSharingInvitation invitation =
+  sync_pb::IncomingPasswordSharingInvitationSpecifics invitation =
       PasswordFormToIncomingSharingInvitation(existing_password);
-  invitation.sender_email = existing_password.sender_email;
-  invitation.password_value = kNewPassword;
+  invitation.mutable_sender_info()->mutable_user_display_info()->set_email(
+      base::UTF16ToUTF8(existing_password.sender_email));
+  SetPasswordValueInInvitation(kNewPassword, invitation);
 
   password_receiver_service()->ProcessIncomingSharingInvitation(invitation);
 
@@ -491,11 +610,67 @@ TEST_F(PasswordReceiverServiceImplTest,
 
   // The password value should have been updated to kNewPassword.
   EXPECT_THAT(
-      profile_password_store().stored_passwords().at(invitation.url.spec()),
+      profile_password_store().stored_passwords().at(
+          GetInvitationOrigin(invitation)),
       ElementsAre(AllOf(Field(&PasswordForm::username_value, kUsername),
                         Field(&PasswordForm::password_value, kNewPassword),
                         Field(&PasswordForm::type,
                               PasswordForm::Type::kReceivedViaSharing))));
 }
+
+TEST_P(PasswordReceiverServiceImplTest, ShouldAddAllCredentialsInInvitation) {
+  // This test is relevant only for the modern invitation proto format.
+  if (!GetParam()) {
+    return;
+  }
+  base::HistogramTester histogram_tester;
+  sync_pb::IncomingPasswordSharingInvitationSpecifics invitation =
+      CreateIncomingSharingInvitation();
+  // Add another origin to the same invitation.
+  sync_pb::PasswordSharingInvitationData::PasswordGroupElementData*
+      element_data = invitation.mutable_client_only_unencrypted_data()
+                         ->mutable_password_group_data()
+                         ->add_element_data();
+  element_data->set_origin(kPslMatchUrl);
+  element_data->set_signon_realm(kPslMatchUrl);
+
+  // Add credentials using the legacy proto format that doesn't support password
+  // group. This should be ignored.
+  sync_pb::PasswordSharingInvitationData::PasswordData* password_data =
+      invitation.mutable_client_only_unencrypted_data()
+          ->mutable_password_data();
+  password_data->set_origin("https:/www.to-be-ignored.com");
+  password_data->set_signon_realm("https:/www.to-be-ignored.com");
+  password_data->set_username_value(base::UTF16ToUTF8(kUsername));
+  password_data->set_password_value(base::UTF16ToUTF8(kPassword));
+
+  password_receiver_service()->ProcessIncomingSharingInvitation(invitation);
+
+  RunUntilIdle();
+
+  // Both origins in the invitation using the modern format should have been
+  // added to the store. The one in the legacy format should be ignored.
+  EXPECT_EQ(profile_password_store().stored_passwords().size(), 2U);
+
+  EXPECT_THAT(
+      profile_password_store().stored_passwords().at(kUrl),
+      ElementsAre(AllOf(Field(&PasswordForm::signon_realm, kUrl),
+                        Field(&PasswordForm::username_value, kUsername),
+                        Field(&PasswordForm::password_value, kPassword))));
+
+  EXPECT_THAT(
+      profile_password_store().stored_passwords().at(kPslMatchUrl),
+      ElementsAre(AllOf(Field(&PasswordForm::signon_realm, kPslMatchUrl),
+                        Field(&PasswordForm::username_value, kUsername),
+                        Field(&PasswordForm::password_value, kPassword))));
+
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.ProcessIncomingPasswordSharingInvitationResult",
+      metrics_util::ProcessIncomingPasswordSharingInvitationResult::
+          kInvitationAutoApproved,
+      2);
+}
+
+INSTANTIATE_TEST_SUITE_P(, PasswordReceiverServiceImplTest, Bool());
 
 }  // namespace password_manager

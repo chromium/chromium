@@ -67,7 +67,7 @@ class DownloadBubbleRowViewInfo
   }
   bool main_button_enabled() const { return main_button_enabled_; }
   bool has_subpage() const { return has_subpage_; }
-  absl::optional<DownloadCommands::Command> primary_button_command() const {
+  std::optional<DownloadCommands::Command> primary_button_command() const {
     return primary_button_command_;
   }
   bool has_progress_bar() const { return has_progress_bar_; }
@@ -113,7 +113,7 @@ class DownloadBubbleRowViewInfo
   // Color used for alert text, which may be different from |secondary_color|,
   // used for icons. If this is nullopt, |secondary_color| will be used for
   // text.
-  absl::optional<ui::ColorId> secondary_text_color_ = absl::nullopt;
+  std::optional<ui::ColorId> secondary_text_color_ = std::nullopt;
   // List of quick actions
   std::vector<QuickAction> quick_actions_;
   // Whether the main button (clicking the row itself) should be enabled. When
@@ -125,8 +125,8 @@ class DownloadBubbleRowViewInfo
   bool has_subpage_ = false;
   // The command for the primary button (the button always displayed over the
   // row).
-  absl::optional<DownloadCommands::Command> primary_button_command_ =
-      absl::nullopt;
+  std::optional<DownloadCommands::Command> primary_button_command_ =
+      std::nullopt;
   // Whether the row has a progress bar
   bool has_progress_bar_ = false;
   bool is_progress_bar_looping_ = false;

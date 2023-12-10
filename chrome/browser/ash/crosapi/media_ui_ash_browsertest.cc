@@ -106,13 +106,18 @@ IN_PROC_BROWSER_TEST_F(MediaUIAshBrowserTest, AddObserver) {
   media_ui_ash()->RemoveObserver(&observer);
 }
 
-IN_PROC_BROWSER_TEST_F(MediaUIAshBrowserTest, PinMediaTrayToShelfWhenShowing) {
+IN_PROC_BROWSER_TEST_F(MediaUIAshBrowserTest, KeepMediaTrayPinned) {
+  ash::MediaTray::SetPinnedToShelf(true);
+  ASSERT_TRUE(ash::MediaTray::IsPinnedToShelf());
+  media_ui_ash()->ShowDevicePicker("placeholder_item_id");
+  EXPECT_TRUE(ash::MediaTray::IsPinnedToShelf());
+}
+
+IN_PROC_BROWSER_TEST_F(MediaUIAshBrowserTest, KeepMediaTrayUnpinned) {
   ash::MediaTray::SetPinnedToShelf(false);
   ASSERT_FALSE(ash::MediaTray::IsPinnedToShelf());
   media_ui_ash()->ShowDevicePicker("placeholder_item_id");
-  // The media tray can only be shown when pinned to the shelf, so trying to
-  // show it should also cause it to be pinned.
-  EXPECT_TRUE(ash::MediaTray::IsPinnedToShelf());
+  EXPECT_FALSE(ash::MediaTray::IsPinnedToShelf());
 }
 
 }  // namespace crosapi

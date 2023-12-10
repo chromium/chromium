@@ -236,10 +236,10 @@
         Could not load background page '<ph name="BACKGROUND_PAGE">$1<ex>page.html</ex></ph>'.
       </message>
       <message name="IDS_EXTENSION_LOAD_CSS_FAILED" desc="">
-        Could not load css '<ph name="RELATIVE_PATH">$1<ex>file.css</ex></ph>' for content script.
+        Could not load css '<ph name="RELATIVE_PATH">$1<ex>file.css</ex></ph>' for script.
       </message>
       <message name="IDS_EXTENSION_LOAD_JAVASCRIPT_FAILED" desc="">
-        Could not load javascript '<ph name="RELATIVE_PATH">$1<ex>javas.js</ex></ph>' for content script.
+        Could not load javascript '<ph name="RELATIVE_PATH">$1<ex>javas.js</ex></ph>' for script.
       </message>
       <message name="IDS_EXTENSION_LOAD_OPTIONS_PAGE_FAILED" desc="">
         Could not load options page '<ph name="OPTIONS_PAGE">$1<ex>page.html</ex></ph>'.

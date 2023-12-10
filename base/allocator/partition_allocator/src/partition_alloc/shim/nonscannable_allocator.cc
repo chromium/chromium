@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/allocator/partition_allocator/src/partition_alloc/shim/nonscannable_allocator.h"
+#include "partition_alloc/shim/nonscannable_allocator.h"
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_root.h"
+#include "partition_alloc/partition_root.h"
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-#include "base/allocator/partition_allocator/src/partition_alloc/shim/allocator_shim_default_dispatch_to_partition_alloc.h"
+#include "partition_alloc/shim/allocator_shim_default_dispatch_to_partition_alloc.h"
 
 #if BUILDFLAG(USE_STARSCAN)
-#include "base/allocator/partition_allocator/src/partition_alloc/starscan/metadata_allocator.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/starscan/pcscan.h"
+#include "partition_alloc/starscan/metadata_allocator.h"
+#include "partition_alloc/starscan/pcscan.h"
 #endif
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
@@ -63,14 +63,13 @@ void NonScannableAllocatorImpl<quarantinable>::Free(void* ptr) {
 template <bool quarantinable>
 void NonScannableAllocatorImpl<quarantinable>::NotifyPCScanEnabled() {
 #if BUILDFLAG(USE_STARSCAN)
+  partition_alloc::PartitionOptions opts;
+  opts.star_scan_quarantine =
+      quarantinable ? partition_alloc::PartitionOptions::kAllowed
+                    : partition_alloc::PartitionOptions::kDisallowed;
+  opts.backup_ref_ptr = partition_alloc::PartitionOptions::kDisabled;
   allocator_.reset(partition_alloc::internal::MakePCScanMetadata<
-                   partition_alloc::PartitionAllocator>(
-      partition_alloc::PartitionOptions{
-          .star_scan_quarantine =
-              quarantinable ? partition_alloc::PartitionOptions::kAllowed
-                            : partition_alloc::PartitionOptions::kDisallowed,
-          .backup_ref_ptr = partition_alloc::PartitionOptions::kDisabled,
-      }));
+                   partition_alloc::PartitionAllocator>(opts));
   if constexpr (quarantinable) {
     partition_alloc::internal::PCScan::RegisterNonScannableRoot(
         allocator_->root());

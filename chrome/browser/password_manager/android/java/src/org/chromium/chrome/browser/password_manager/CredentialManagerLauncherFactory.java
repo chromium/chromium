@@ -51,7 +51,8 @@ public abstract class CredentialManagerLauncherFactory {
      */
     protected CredentialManagerLauncher doCreateLauncher(Context context)
             throws CredentialManagerBackendException {
-        throw new CredentialManagerBackendException("Downstream implementation is not present.",
+        throw new CredentialManagerBackendException(
+                "Downstream implementation is not present.",
                 CredentialManagerError.BACKEND_NOT_AVAILABLE);
     }
 

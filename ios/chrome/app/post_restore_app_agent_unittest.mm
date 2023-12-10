@@ -16,18 +16,17 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
-#import "ios/chrome/browser/signin/authentication_service.h"
-#import "ios/chrome/browser/signin/authentication_service_factory.h"
-#import "ios/chrome/browser/signin/fake_authentication_service_delegate.h"
-#import "ios/chrome/browser/signin/fake_system_identity.h"
-#import "ios/chrome/browser/signin/fake_system_identity_manager.h"
-#import "ios/chrome/browser/signin/identity_manager_factory.h"
-#import "ios/chrome/browser/signin/signin_util.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
+#import "ios/chrome/browser/signin/model/signin_util.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/platform_test.h"
-#import "third_party/abseil-cpp/absl/types/optional.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
 
@@ -87,7 +86,8 @@ class PostRestoreAppAgentTest : public PlatformTest {
   void SetFakePreRestoreAccountInfo() {
     AccountInfo accountInfo;
     accountInfo.email = kFakePreRestoreAccountEmail;
-    StorePreRestoreIdentity(local_state_.Get(), accountInfo);
+    StorePreRestoreIdentity(local_state_.Get(), accountInfo,
+                            /*history_sync_enabled=*/false);
   }
 
   // Signs in a fake identity.

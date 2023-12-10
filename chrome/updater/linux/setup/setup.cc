@@ -7,6 +7,8 @@
 #include <stdio.h>
 #include <unistd.h>
 
+#include <optional>
+
 #include "base/base_paths.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -17,15 +19,13 @@
 #include "chrome/updater/linux/systemd_util.h"
 #include "chrome/updater/util/posix_util.h"
 #include "chrome/updater/util/util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
 
 int Setup(UpdaterScope scope) {
   VLOG(1) << base::CommandLine::ForCurrentProcess()->GetCommandLineString()
           << " : " << __func__;
-  absl::optional<base::FilePath> dest_path =
-      GetVersionedInstallDirectory(scope);
+  std::optional<base::FilePath> dest_path = GetVersionedInstallDirectory(scope);
 
   if (!dest_path) {
     return kErrorFailedToGetVersionedInstallDirectory;
@@ -74,7 +74,7 @@ int UninstallCandidate(UpdaterScope scope) {
     error = kErrorFailedToDeleteFolder;
   }
 
-  absl::optional<base::FilePath> versioned_socket =
+  std::optional<base::FilePath> versioned_socket =
       GetActiveDutyInternalSocketPath(scope);
   if (!versioned_socket || !base::DeleteFile(versioned_socket.value())) {
     error = kErrorFailedToDeleteSocket;
@@ -85,7 +85,7 @@ int UninstallCandidate(UpdaterScope scope) {
 
 int PromoteCandidate(UpdaterScope scope) {
   // Create a hard link in the base install directory to this updater.
-  absl::optional<base::FilePath> launcher_path =
+  std::optional<base::FilePath> launcher_path =
       GetUpdateServiceLauncherPath(scope);
   base::FilePath updater_executable;
 

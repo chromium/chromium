@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+Found 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] font-style: "oblique" onto "italic"
+  assert_equals: The value should be oblique at 0ms expected "oblique" but got "italic"
+[FAIL] grid-template-areas: "". . a b" ". .a b"" onto "none"
+  assert_equals: The value should be ". . a b" ". .a b" at 0ms expected "\\". . a b\\" \\". .a b\\"" but got "\\". . a b\\" \\". . a b\\""
+Harness: the test ran to completion.
+

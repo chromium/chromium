@@ -7,7 +7,6 @@
     "namespace": "webViewInternal",
     "description": "none",
     "compiler_options": {
-      "modernised_enums": true,
       "implemented_in": "extensions/browser/api/guest_view/web_view/web_view_internal_api.h"
     },
     "properties": {

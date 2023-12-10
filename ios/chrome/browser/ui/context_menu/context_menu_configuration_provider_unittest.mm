@@ -18,10 +18,10 @@
 #import "ios/chrome/browser/shared/public/commands/save_to_photos_commands.h"
 #import "ios/chrome/browser/shared/public/commands/unit_conversion_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/signin/fake_system_identity.h"
-#import "ios/chrome/browser/signin/fake_system_identity_manager.h"
-#import "ios/chrome/browser/signin/identity_manager_factory.h"
-#import "ios/chrome/browser/signin/identity_test_environment_browser_state_adaptor.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
+#import "ios/chrome/browser/signin/model/identity_test_environment_browser_state_adaptor.h"
 #import "ios/chrome/browser/ui/context_menu/context_menu_configuration_provider+private.h"
 #import "ios/chrome/browser/ui/menu/browser_action_factory.h"
 #import "ios/chrome/browser/ui/menu/menu_histograms.h"
@@ -33,7 +33,8 @@
 namespace {
 
 // Menu scenario to create a BrowserActionFactory.
-MenuScenarioHistogram kTestMenuScenario = MenuScenarioHistogram::kHistoryEntry;
+const MenuScenarioHistogram kTestMenuScenario =
+    kMenuScenarioHistogramHistoryEntry;
 
 // Email for the primary account when signing-in.
 const char kPrimaryAccountEmail[] = "peter.parker@gmail.com";

@@ -41,6 +41,7 @@ export class StreamManagerChrome {
   stopCaptureStream(): void {
     if (this.captureStream !== null) {
       assertExists(this.captureStream.getVideoTracks()[0]).stop();
+      this.captureStream.getAudioTracks()[0]?.stop();
       this.captureStream = null;
     }
   }

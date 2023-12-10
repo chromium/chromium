@@ -139,14 +139,14 @@ class ActionViewTest : public ViewTestBase {
     input_mapping_view_->SetDisplayMode(display_mode);
   }
 
-  absl::optional<size_t> GetIndexOf(const views::View* view) const {
+  std::optional<size_t> GetIndexOf(const views::View* view) const {
     return input_mapping_view_->GetIndexOf(view);
   }
 
  private:
   void SetUp() override {
     ViewTestBase::SetUp();
-    InitWithFeature(absl::nullopt);
+    InitWithFeature(std::nullopt);
     SetRepositionController();
   }
 };

@@ -5,6 +5,7 @@
 #include "chromeos/ash/components/network/text_message_provider.h"
 
 #include <memory>
+#include <optional>
 
 #include "ash/constants/ash_features.h"
 #include "base/containers/flat_map.h"
@@ -22,7 +23,6 @@
 #include "chromeos/ash/components/network/text_message_suppression_state.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -97,7 +97,7 @@ class TextMessageProviderTest : public testing::Test {
 
   void AssertTestObserverValue(
       size_t expected_count,
-      absl::optional<TextMessageData> expected_message) {
+      std::optional<TextMessageData> expected_message) {
     ASSERT_EQ(expected_count, test_observer_.MessageCount());
 
     if (!expected_message.has_value()) {
@@ -196,9 +196,9 @@ TEST_F(TextMessageProviderTest, MessageReceivedPolicySuppressUserAllowTest) {
 
   SimulatePolicyChanged();
   SimulateMessageReceived(kTestGUID1, {kNumber, kText1, kTimestamp});
-  AssertTestObserverValue(/*expected_count=*/0, absl::nullopt);
+  AssertTestObserverValue(/*expected_count=*/0, std::nullopt);
   SimulateMessageReceived(kTestGUID2, {kNumber, kText2, kTimestamp});
-  AssertTestObserverValue(/*expected_count=*/0, absl::nullopt);
+  AssertTestObserverValue(/*expected_count=*/0, std::nullopt);
   AssertPolicyBuckets(/*allow_count=*/0u, /*suppress_count=*/1u,
                       /*unset_count=*/0u);
 }
@@ -233,7 +233,7 @@ TEST_F(TextMessageProviderTest, MessageReceivedPolicySuppressUserSuppressTest) {
   SimulatePolicyChanged();
   SimulateMessageReceived(kTestGUID1, {kNumber, kText1, kTimestamp});
   AssertTestObserverValue(
-      /*expected_count=*/0, absl::nullopt);
+      /*expected_count=*/0, std::nullopt);
   AssertPolicyBuckets(/*allow_count=*/0u, /*suppress_count=*/1u,
                       /*unset_count=*/0u);
 }
@@ -254,7 +254,7 @@ TEST_F(TextMessageProviderTest,
 
   TextMessageData message_data{kNumber, kText1, kTimestamp};
   SimulateMessageReceived(kTestGUID2, message_data);
-  AssertTestObserverValue(/*expected_count=*/0, absl::nullopt);
+  AssertTestObserverValue(/*expected_count=*/0, std::nullopt);
   SimulateMessageReceived(kTestGUID1, message_data);
   AssertTestObserverValue(/*expected_count=*/1, std::move(message_data));
 
@@ -267,7 +267,7 @@ TEST_F(TextMessageProviderTest,
 
   TextMessageData message_data_2{kNumber, kText2, kTimestamp};
   SimulateMessageReceived(kTestGUID1, message_data_2);
-  AssertTestObserverValue(/*expected_count=*/1, absl::nullopt);
+  AssertTestObserverValue(/*expected_count=*/1, std::nullopt);
   SimulateMessageReceived(kTestGUID2, message_data_2);
   AssertTestObserverValue(/*expected_count=*/2, std::move(message_data_2));
 
@@ -318,7 +318,7 @@ TEST_F(TextMessageProviderTest, EmptyGuidTest) {
   SimulatePolicyChanged();
   SimulateMessageReceived(kEmptyGUID, {kNumber, kText1, kTimestamp});
   AssertTestObserverValue(/*expected_count=*/0,
-                          /*expected_message=*/absl::nullopt);
+                          /*expected_message=*/std::nullopt);
 
   EXPECT_CALL(*mock_managed_network_configuration_handler(),
               GetAllowTextMessages)

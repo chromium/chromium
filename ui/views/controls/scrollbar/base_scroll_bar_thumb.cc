@@ -139,7 +139,7 @@ bool BaseScrollBarThumb::IsHorizontal() const {
   return scroll_bar_->IsHorizontal();
 }
 
-BEGIN_METADATA(BaseScrollBarThumb, View)
+BEGIN_METADATA(BaseScrollBarThumb)
 ADD_PROPERTY_METADATA(bool, SnapBackOnDragOutside);
 END_METADATA
 

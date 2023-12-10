@@ -6,10 +6,10 @@
 #define MOJO_PUBLIC_CPP_PLATFORM_NAMED_PLATFORM_CHANNEL_H_
 
 #include <string>
+#include <string_view>
 
 #include "base/command_line.h"
 #include "base/component_export.h"
-#include "base/strings/string_piece.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/platform/platform_channel_endpoint.h"
 #include "mojo/public/cpp/platform/platform_channel_server_endpoint.h"
@@ -76,7 +76,7 @@ class COMPONENT_EXPORT(MOJO_CPP_PLATFORM) NamedPlatformChannel {
   }
 
   // Helper to create a ServerName from a UTF8 string regardless of platform.
-  static ServerName ServerNameFromUTF8(base::StringPiece name);
+  static ServerName ServerNameFromUTF8(std::string_view name);
 
 #if BUILDFLAG(IS_WIN)
   static ServerName GenerateRandomServerName();

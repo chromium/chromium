@@ -6,6 +6,8 @@
 #define CHROMEOS_ASH_COMPONENTS_PHONEHUB_NOTIFICATION_H_
 
 #include <stdint.h>
+
+#include <optional>
 #include <ostream>
 #include <string>
 #include <unordered_map>
@@ -14,7 +16,6 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chromeos/ash/components/phonehub/proto/phonehub_api.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/image/image.h"
 
 // Serves the same purpose as a forward declare to avoid an extra include.
@@ -32,8 +33,8 @@ class Notification {
     AppMetadata(const std::u16string& visible_app_name,
                 const std::string& package_name,
                 const gfx::Image& color_icon,
-                const absl::optional<gfx::Image>& monochrome_icon_mask,
-                const absl::optional<SkColor> icon_color,
+                const std::optional<gfx::Image>& monochrome_icon_mask,
+                const std::optional<SkColor> icon_color,
                 bool icon_is_monochrome,
                 int64_t user_id,
                 proto::AppStreamabilityStatus app_streamability_status =
@@ -53,9 +54,9 @@ class Notification {
     // The |color_icon| is the icon with it's original color whereas the
     // |monochrome_icon| is the icon with a monochrome or system theme mask.
     gfx::Image color_icon;
-    absl::optional<gfx::Image> monochrome_icon_mask;
+    std::optional<gfx::Image> monochrome_icon_mask;
     // Color for a monochrome icon. Leave empty to use the system theme default.
-    absl::optional<SkColor> icon_color;
+    std::optional<SkColor> icon_color;
     // Whether the icon image is just a mask used to generate a monochrome icon.
     bool icon_is_monochrome;
     int64_t user_id;
@@ -145,10 +146,10 @@ class Notification {
       Notification::Category category,
       const base::flat_map<Notification::ActionType, int64_t>& action_id_map,
       InteractionBehavior interaction_behavior,
-      const absl::optional<std::u16string>& title = absl::nullopt,
-      const absl::optional<std::u16string>& text_content = absl::nullopt,
-      const absl::optional<gfx::Image>& shared_image = absl::nullopt,
-      const absl::optional<gfx::Image>& contact_image = absl::nullopt);
+      const std::optional<std::u16string>& title = std::nullopt,
+      const std::optional<std::u16string>& text_content = std::nullopt,
+      const std::optional<gfx::Image>& shared_image = std::nullopt,
+      const std::optional<gfx::Image>& contact_image = std::nullopt);
   Notification(const Notification& other);
   ~Notification();
 
@@ -167,14 +168,14 @@ class Notification {
   InteractionBehavior interaction_behavior() const {
     return interaction_behavior_;
   }
-  const absl::optional<std::u16string>& title() const { return title_; }
-  const absl::optional<std::u16string>& text_content() const {
+  const std::optional<std::u16string>& title() const { return title_; }
+  const std::optional<std::u16string>& text_content() const {
     return text_content_;
   }
-  const absl::optional<gfx::Image>& shared_image() const {
+  const std::optional<gfx::Image>& shared_image() const {
     return shared_image_;
   }
-  const absl::optional<gfx::Image>& contact_image() const {
+  const std::optional<gfx::Image>& contact_image() const {
     return contact_image_;
   }
 
@@ -186,10 +187,10 @@ class Notification {
   Notification::Category category_;
   base::flat_map<Notification::ActionType, int64_t> action_id_map_;
   InteractionBehavior interaction_behavior_;
-  absl::optional<std::u16string> title_;
-  absl::optional<std::u16string> text_content_;
-  absl::optional<gfx::Image> shared_image_;
-  absl::optional<gfx::Image> contact_image_;
+  std::optional<std::u16string> title_;
+  std::optional<std::u16string> text_content_;
+  std::optional<gfx::Image> shared_image_;
+  std::optional<gfx::Image> contact_image_;
 };
 
 std::ostream& operator<<(std::ostream& stream,

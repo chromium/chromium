@@ -20,40 +20,50 @@ namespace user_education {
 // boolean and (if false) an error code.
 class FeaturePromoResult {
  public:
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  //
   // Describes why a promo cannot currently show.
   enum Failure {
-    kCanceled,          // The promo was canceled before it could show.
-    kError,             // A step unexpectedly failed while showing the promo.
-    kBlockedByUi,       // The promo could not be shown due to the state of the
-                        // application: a conflict with other UI; the current
-                        // window isn't active; the anchor isn't visible; etc.
-    kBlockedByPromo,    // The promo could not be shown due to a conflict with
-                        // another promotion.
-    kBlockedByConfig,   // The promo could not show because it failed to meet
-                        // the requirements set out in the Feature Engagement
-                        // configuration.
-    kSnoozed,           // The promo could not show because it is currently
-                        // snoozed.
-    kBlockedByContext,  // Promos are never allowed in this context (e.g. in an
-                        // app that is in "off the record" or guest mode), but
-                        // may be allowed in other contexts.
-    kFeatureDisabled,   // The promo could not show because the `base::Feature`
-                        // for the IPH is not enabled.
-    kPermanentlyDismissed,  // The promo could not show because it is of a type
-                            // that can be permanently dismissed, and it has
-                            // been (for per-app promos, this only applies to
-                            // the current app).
+    kCanceled = 0,     // The promo was canceled before it could show.
+    kError = 1,        // A step unexpectedly failed while showing the promo.
+    kBlockedByUi = 2,  // The promo could not be shown due to the state of the
+                       // application: a conflict with other UI; the current
+                       // window isn't active; the anchor isn't visible; etc.
+    kBlockedByPromo = 3,  // The promo could not be shown due to a conflict with
+                          // another promotion.
+    kBlockedByConfig =
+        4,  // The promo could not show because it failed to meet the
+            // requirements set out in the Feature Engagement configuration.
+    kSnoozed = 5,  // The promo could not show because it is currently snoozed.
+    kBlockedByContext = 6,  // Promos are never allowed in this context (e.g. in
+                            // an app that is in "off the record" or guest
+                            // mode), but may be allowed in other contexts.
+    kFeatureDisabled = 7,   // The promo could not show because the
+                            // `base::Feature` for the IPH is not enabled.
+    kPermanentlyDismissed =
+        8,  // The promo could not show because it is of a type that can be
+            // permanently dismissed, and it has been (for per-app promos, this
+            // only applies to the current app).
+    kBlockedByGracePeriod = 9,  // The promo could not be shown due to the
+                                // session startup grace period.
+    kBlockedByCooldown =
+        10,  // The promo could not be shown because it hasn't been long enough
+             // since the last heavyweight promo.
+    kRecentlyAborted = 11,  // The promo recently aborted due to a UI change and
+                            // cannot be shown again for a short period of time.
+    kMaxValue = kRecentlyAborted
   };
 
   constexpr FeaturePromoResult() = default;
   // NOLINTNEXTLINE(google-explicit-constructor)
   constexpr FeaturePromoResult(Failure reason) : failure_(reason) {}
-  constexpr FeaturePromoResult(FeaturePromoResult&& other)
+  constexpr FeaturePromoResult(FeaturePromoResult&& other) noexcept
       : failure_(other.failure_) {}
   FeaturePromoResult(const FeaturePromoResult& other);
-  ~FeaturePromoResult();
   FeaturePromoResult& operator=(const FeaturePromoResult& other);
   FeaturePromoResult& operator=(Failure reason);
+  ~FeaturePromoResult();
 
   // Convenience value so a success value can be accessed the same way as the
   // various `Failure` values, e.g.:

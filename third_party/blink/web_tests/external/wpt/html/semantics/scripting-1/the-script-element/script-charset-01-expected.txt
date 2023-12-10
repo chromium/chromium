@@ -1,10 +1,5 @@
 This is a testharness.js-based test.
-[PASS] Script @type: unknown parameters
-[PASS] Script @type: unknown parameters 1
-[PASS] Script @type: unknown parameters 2
 [FAIL] Script @type: unknown parameters 3
-  assert_equals: expected "śćążź" but got "\ufffd湿\ufffd"
-[PASS] Script @type: unknown parameters 4
-[PASS] Script @type: unknown parameters 5
+  assert_equals: expected "śćążź" but got "\\ufffd湿\\ufffd"
 Harness: the test ran to completion.
 

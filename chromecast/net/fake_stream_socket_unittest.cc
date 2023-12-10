@@ -74,7 +74,7 @@ TEST_F(FakeStreamSocketTest, GetPeerAddressWithPeer) {
 }
 
 TEST_F(FakeStreamSocketTest, ReadAndWriteWithoutPeer) {
-  auto io_buffer = base::MakeRefCounted<net::IOBuffer>(1);
+  auto io_buffer = base::MakeRefCounted<net::IOBufferWithSize>(1);
   EXPECT_EQ(net::ERR_IO_PENDING,
             socket_1_.Read(io_buffer.get(), 1, base::BindOnce(&Callback)));
   EXPECT_EQ(net::ERR_SOCKET_NOT_CONNECTED,
@@ -91,7 +91,8 @@ TEST_F(FakeStreamSocketTest, ReadAndWriteWithPeer) {
       static_cast<int>(kData.size()),
       socket_1_.Write(send_buffer.get(), kData.size(),
                       base::BindOnce(&Callback), TRAFFIC_ANNOTATION_FOR_TESTS));
-  auto receive_buffer = base::MakeRefCounted<net::IOBuffer>(kData.size());
+  auto receive_buffer =
+      base::MakeRefCounted<net::IOBufferWithSize>(kData.size());
   ASSERT_EQ(static_cast<int>(kData.size()),
             socket_2_.Read(receive_buffer.get(), kData.size(),
                            base::BindOnce(&Callback)));
@@ -102,7 +103,8 @@ TEST_F(FakeStreamSocketTest, ReadAndWritePending) {
   socket_1_.SetPeer(&socket_2_);
   socket_2_.SetPeer(&socket_1_);
   const std::string kData("DATA");
-  auto receive_buffer = base::MakeRefCounted<net::IOBuffer>(kData.size());
+  auto receive_buffer =
+      base::MakeRefCounted<net::IOBufferWithSize>(kData.size());
   ASSERT_EQ(net::ERR_IO_PENDING,
             socket_2_.Read(receive_buffer.get(), kData.size(),
                            base::BindOnce(&Callback)));
@@ -127,7 +129,7 @@ TEST_F(FakeStreamSocketTest, ReadAndWriteLargeData) {
                               base::BindOnce(&Callback),
                               TRAFFIC_ANNOTATION_FOR_TESTS));
   }
-  auto receive_buffer = base::MakeRefCounted<net::IOBuffer>(1024);
+  auto receive_buffer = base::MakeRefCounted<net::IOBufferWithSize>(1024);
   for (int i = 0; i < 1024; i++) {
     ASSERT_EQ(1024, socket_2_.Read(receive_buffer.get(), 1024,
                                    base::BindOnce(&Callback)));

@@ -88,7 +88,7 @@ class ASH_EXPORT BluetoothDetailedView {
 
   // Returns the main content view which contains a list of child views that
   // make up the list of connected and previously connected bluetooth devices,
-  // including their headers and any separators.
+  // including their headers.
   virtual views::View* device_list() = 0;
 
  protected:

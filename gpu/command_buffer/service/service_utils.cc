@@ -41,19 +41,12 @@ bool GetUintFromSwitch(const base::CommandLine* command_line,
 
 }  // namespace
 
-gl::GLContextAttribs GenerateGLContextAttribs(
+gl::GLContextAttribs GenerateGLContextAttribsForDecoder(
     const ContextCreationAttribs& attribs_helper,
     const ContextGroup* context_group) {
-  return GenerateGLContextAttribs(attribs_helper,
-                                  context_group->use_passthrough_cmd_decoder());
-}
-
-gl::GLContextAttribs GenerateGLContextAttribs(
-    const ContextCreationAttribs& attribs_helper,
-    bool use_passthrough_cmd_decoder) {
   gl::GLContextAttribs attribs;
   attribs.gpu_preference = attribs_helper.gpu_preference;
-  if (use_passthrough_cmd_decoder) {
+  if (context_group->use_passthrough_cmd_decoder()) {
     attribs.bind_generates_resource = attribs_helper.bind_generates_resource;
     attribs.webgl_compatibility_context =
         IsWebGLContextType(attribs_helper.context_type);
@@ -92,6 +85,32 @@ gl::GLContextAttribs GenerateGLContextAttribs(
     attribs.client_major_es_version = 2;
     attribs.client_minor_es_version = 0;
   }
+
+  return attribs;
+}
+
+gl::GLContextAttribs GenerateGLContextAttribsForCompositor(
+    bool use_passthrough_cmd_decoder) {
+  gl::GLContextAttribs attribs;
+  if (use_passthrough_cmd_decoder) {
+    attribs.bind_generates_resource = false;
+
+    // Always use the global texture and semaphore share group for the
+    // passthrough command decoder
+    attribs.global_texture_share_group = true;
+    attribs.global_semaphore_share_group = true;
+
+    attribs.robust_resource_initialization = true;
+    attribs.robust_buffer_access = true;
+  }
+
+  bool force_es2_context = gl::GetGlWorkarounds().disable_es3gl_context;
+  if (features::UseGles2ForOopR() && use_passthrough_cmd_decoder) {
+    force_es2_context = true;
+  }
+
+  attribs.client_major_es_version = force_es2_context ? 2 : 3;
+  attribs.client_minor_es_version = 0;
 
   return attribs;
 }
@@ -216,11 +235,7 @@ GrContextType ParseGrContextType(const base::CommandLine* command_line) {
     }
 #endif  // BUILDFLAG(SKIA_USE_DAWN)
 #if BUILDFLAG(SKIA_USE_METAL)
-    if (
-#if BUILDFLAG(IS_IOS)
-        value.empty() ||
-#endif  // BUILDFLAG(IS_IOS)
-        value == switches::kSkiaGraphiteBackendMetal) {
+    if (value == switches::kSkiaGraphiteBackendMetal) {
       return GrContextType::kGraphiteMetal;
     }
 #endif  // BUILDFLAG(SKIA_USE_METAL)
@@ -236,8 +251,7 @@ GrContextType ParseGrContextType(const base::CommandLine* command_line) {
 VulkanImplementationName ParseVulkanImplementationName(
     const base::CommandLine* command_line) {
 #if BUILDFLAG(IS_ANDROID)
-  if (command_line->HasSwitch(switches::kWebViewDrawFunctorUsesVulkan) &&
-      base::FeatureList::IsEnabled(features::kWebViewVulkan)) {
+  if (command_line->HasSwitch(switches::kWebViewDrawFunctorUsesVulkan)) {
     return VulkanImplementationName::kForcedNative;
   }
 #endif

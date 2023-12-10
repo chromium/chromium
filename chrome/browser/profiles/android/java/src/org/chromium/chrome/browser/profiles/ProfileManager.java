@@ -10,9 +10,7 @@ import org.jni_zero.CalledByNative;
 
 import org.chromium.base.ObserverList;
 
-/**
- * Java interface to the C++ ProfileManager.
- */
+/** Java interface to the C++ ProfileManager. */
 public class ProfileManager {
     private static ObserverList<Observer> sObservers = new ObserverList<>();
     private static boolean sInitialized;
@@ -32,16 +30,12 @@ public class ProfileManager {
         public void onProfileDestroyed(Profile profile);
     }
 
-    /**
-     * Add an observer to be notified when profiles get created.
-     */
+    /** Add an observer to be notified when profiles get created. */
     public static void addObserver(Observer observer) {
         sObservers.addObserver(observer);
     }
 
-    /**
-     * Remove an observer of profiles changes.
-     */
+    /** Remove an observer of profiles changes. */
     public static void removeObserver(Observer observer) {
         sObservers.removeObserver(observer);
     }

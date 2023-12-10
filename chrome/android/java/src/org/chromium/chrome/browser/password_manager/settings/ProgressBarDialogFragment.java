@@ -43,8 +43,10 @@ public class ProgressBarDialogFragment extends DialogFragment {
                 .Builder(getActivity(), R.style.ThemeOverlay_BrowserUI_AlertDialog_NoActionBar)
                 .setView(dialog)
                 .setNegativeButton(R.string.cancel, mHandler)
-                .setTitle(getActivity().getResources().getString(
-                        R.string.settings_passwords_preparing_export))
+                .setTitle(
+                        getActivity()
+                                .getResources()
+                                .getString(R.string.settings_passwords_preparing_export))
                 .create();
     }
 

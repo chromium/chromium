@@ -54,6 +54,10 @@ BASE_FEATURE(kAdInterestGroupAPIRestrictedPolicyByDefault,
              "AdInterestGroupAPIRestrictedPolicyByDefault",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kComputePressureRateObfuscationMitigation,
+             "ComputePressureRateObfuscationMitigation",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Make all pending 'display: auto' web fonts enter the swap or failure period
 // immediately before reaching the LCP time limit (~2500ms), so that web fonts
 // do not become a source of bad LCP.
@@ -107,12 +111,11 @@ BASE_FEATURE(kAllowSyncXHRInPageDismissal,
              "AllowSyncXHRInPageDismissal",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables URN URLs like those produced by FLEDGE auctions to be displayed by
-// iframes (instead of requiring fenced frames). This is only intended to be
-// enabled as part of the FLEDGE origin trial.
+// Enables URN URLs like those produced by Protected Audience auctions to be
+// displayed by iframes (instead of requiring fenced frames).
 BASE_FEATURE(kAllowURNsInIframes,
              "AllowURNsInIframes",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Anchor Element Interaction
 BASE_FEATURE(kAnchorElementInteraction,
@@ -135,13 +138,6 @@ BASE_FEATURE(kAudioWorkletThreadRealtimePriority,
              "AudioWorkletThreadRealtimePriority",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// If enabled, whenever form controls are removed from the DOM, the ChromeClient
-// is informed about this. This enables Autofill to trigger a reparsing of
-// forms.
-BASE_FEATURE(kAutofillDetectRemovedFormControls,
-             "AutofillDetectRemovedFormControls",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // If disabled (default for many years), autofilling triggers KeyDown and
 // KeyUp events that do not send any key codes. If enabled, these events
 // contain the "Unidentified" key.
@@ -153,7 +149,7 @@ BASE_FEATURE(kAutofillSendUnidentifiedKeyAfterFill,
 // instead of static counters.
 BASE_FEATURE(kAutofillUseDomNodeIdForRendererId,
              "AutofillUseDomNodeIdForRendererId",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Apply lazy-loading to ad frames which have embeds likely impacting Core Web
 // Vitals.
@@ -167,6 +163,8 @@ BASE_FEATURE(kAutoSpeculationRules,
              base::FEATURE_DISABLED_BY_DEFAULT);
 const base::FeatureParam<std::string> kAutoSpeculationRulesConfig{
     &kAutoSpeculationRules, "config", "{}"};
+const base::FeatureParam<bool> kAutoSpeculationRulesHoldback{
+    &kAutoSpeculationRules, "holdback", false};
 
 // The timeout value that forces loading iframes that are lazy loaded by
 // LazyAds. After this timeout, the frame loading is triggered even when the
@@ -259,11 +257,9 @@ const base::FeatureParam<std::string>
 
 // See https://github.com/WICG/turtledove/blob/main/FLEDGE.md
 // Feature flag to enable debug reporting APIs.
-// Due to an issue in how prevWins were stored this flag should not be enabled
-// until July 2023.
 BASE_FEATURE(kBiddingAndScoringDebugReportingAPI,
              "BiddingAndScoringDebugReportingAPI",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Blink garbage collection.
 // Enables compaction of backing stores on Blink's heap.
@@ -316,7 +312,7 @@ const base::FeatureParam<int> kBoostImagePriorityTightMediumLimit{
 // Kill switch for the Topics API.
 BASE_FEATURE(kBrowsingTopics,
              "BrowsingTopics",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, the check for whether the IP address is publicly routable will be
 // bypassed when determining the eligibility for a page to be included in topics
@@ -406,14 +402,6 @@ const base::FeatureParam<std::string> kBrowsingTopicsDisabledTopicsList{
 // descendants during top topic selection.
 const base::FeatureParam<std::string> kBrowsingTopicsPrioritizedTopicsList{
     &kBrowsingTopicsParameters, "prioritized_topics_list", ""};
-
-// Enables the deprecatedBrowsingTopics XHR attribute. For this feature to take
-// effect, the main Topics feature has to be enabled first (i.e.
-// `kBrowsingTopics` is enabled, and, either a valid Origin Trial token exists
-// or `kPrivacySandboxAdsAPIsOverride` is enabled.)
-BASE_FEATURE(kBrowsingTopicsXHR,
-             "BrowsingTopicsXHR",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Suppresses console errors for CORS problems which report an associated
 // inspector issue anyway.
@@ -519,6 +507,11 @@ BASE_FEATURE(kClientHintsViewportWidth,
              "ClientHintsViewportWidth",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enable `form-factor` client hint for XR devices.
+BASE_FEATURE(kClientHintsXRFormFactor,
+             "ClientHintsXRFormFactor",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enable legacy `viewport-width` client hint.
 BASE_FEATURE(kClientHintsViewportWidth_DEPRECATED,
              "ClientHintsViewportWidth_DEPRECATED",
@@ -588,6 +581,8 @@ const base::FeatureParam<DelayAsyncScriptDelayType>::Option
          "first_paint_or_finished_parsing"},
         {DelayAsyncScriptDelayType::kEachLcpCandidate, "each_lcp_candidate"},
         {DelayAsyncScriptDelayType::kEachPaint, "each_paint"},
+        {DelayAsyncScriptDelayType::kTillFirstLcpCandidate,
+         "till_first_lcp_candidate"},
 };
 
 const base::FeatureParam<DelayAsyncScriptDelayType>
@@ -629,8 +624,15 @@ const base::FeatureParam<base::TimeDelta>
 const base::FeatureParam<std::string> kDelayAsyncScriptAllowList{
     &kDelayAsyncScriptExecution, "delay_async_exec_allow_list", ""};
 
+const base::FeatureParam<bool> kDelayAsyncScriptExecutionDelayByDefaultParam{
+    &kDelayAsyncScriptExecution, "delay_async_exec_delay_by_default", true};
+
 const base::FeatureParam<bool> kDelayAsyncScriptExecutionMainFrameOnlyParam{
     &kDelayAsyncScriptExecution, "delay_async_exec_main_frame_only", false};
+
+const base::FeatureParam<bool> kDelayAsyncScriptExecutionWhenLcpFoundInHtml{
+    &kDelayAsyncScriptExecution, "delay_async_exec_when_lcp_found_in_html",
+    false};
 
 BASE_FEATURE(kDelayLowPriorityRequestsAccordingToNetworkState,
              "DelayLowPriorityRequestsAccordingToNetworkState",
@@ -715,7 +717,7 @@ BASE_FEATURE(kEstablishGpuChannelAsync,
 // Enables reporting Event Timing with matching presentation promise index only.
 BASE_FEATURE(kEventTimingMatchPresentationIndex,
              "EventTimingMatchPresentationIndex",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables reporting Event Timing entries with a smaller presentation index on
 // resolved painted presentation.
@@ -758,7 +760,7 @@ const base::FeatureParam<double> kMinimumEntropyForLCP{
 // this feature does not automatically expose this element to the web, it only
 // allows the element to be enabled by the runtime enabled feature, for origin
 // trials.
-BASE_FEATURE(kFencedFrames, "FencedFrames", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kFencedFrames, "FencedFrames", base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enable the new fenced frame-related features in M120. (These are
 // conditionally dependent on other fenced frame-related feature flags being
@@ -780,12 +782,23 @@ BASE_FEATURE(kFencedFramesM120FeaturesPart1,
 // enabled.)
 // Part 2:
 // * Support leaving interest group from ad components.
-// * Relax the attestation requirement of post-impression beacons from Protected
-// Audience only to either Protected Audience or Attribution Reporting.
 // * Split off the `reserved.top_navigation` automatic beacon type into
 //   `reserved.top_navigation_start` and `reserved.top_navigation_commit.
 BASE_FEATURE(kFencedFramesM120FeaturesPart2,
              "FencedFramesM120FeaturesPart2",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Relax the attestation requirement of post-impression beacons from Protected
+// Audience only to either Protected Audience or Attribution Reporting.
+BASE_FEATURE(kFencedFramesReportingAttestationsChanges,
+             "FencedFramesReportingAttestationsChanges",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enable allowing cross-origin subframes to send automatic beacons. This
+// requires opt-in both from the cross-origin subframe as well as the document
+// that sets the automatic beacon data.
+BASE_FEATURE(kFencedFramesCrossOriginAutomaticBeacons,
+             "FencedFramesCrossOriginAutomaticBeacons",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Temporarily un-disable credentials on fenced frame automatic beacons until
@@ -793,7 +806,7 @@ BASE_FEATURE(kFencedFramesM120FeaturesPart2,
 // TODO(crbug.com/1496395): Remove this after 3PCD.
 BASE_FEATURE(kFencedFramesAutomaticBeaconCredentials,
              "FencedFramesAutomaticBeaconCredentials",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // File handling icons. https://crbug.com/1218213
 BASE_FEATURE(kFileHandlingIcons,
@@ -821,7 +834,7 @@ BASE_FEATURE(kFilteringScrollPrediction,
 
 BASE_FEATURE(kFixGestureScrollQueuingBug,
              "FixGestureScrollQueuingBug",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // See https://github.com/WICG/turtledove/blob/main/FLEDGE.md
 // Enables FLEDGE implementation. See https://crbug.com/1186444.
@@ -847,7 +860,7 @@ BASE_FEATURE(kFledgeEnforceKAnonymity,
 
 BASE_FEATURE(kFledgePassKAnonStatusToReportWin,
              "FledgePassKAnonStatusToReportWin",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kFledgePassRecencyToGenerateBid,
              "FledgePassRecencyToGenerateBid",
@@ -999,14 +1012,14 @@ const char kIntensiveWakeUpThrottling_GracePeriodSeconds_Name[] =
 // API exposure will be disabled regardless of the OT config.
 BASE_FEATURE(kInterestGroupStorage,
              "InterestGroupStorage",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 // TODO(crbug.com/1197209): Adjust these limits in response to usage.
 const base::FeatureParam<int> kInterestGroupStorageMaxOwners{
     &kInterestGroupStorage, "max_owners", 1000};
 const base::FeatureParam<int> kInterestGroupStorageMaxStoragePerOwner{
     &kInterestGroupStorage, "max_storage_per_owner", 10 * 1024 * 1024};
 const base::FeatureParam<int> kInterestGroupStorageMaxGroupsPerOwner{
-    &kInterestGroupStorage, "max_groups_per_owner", 1000};
+    &kInterestGroupStorage, "max_groups_per_owner", 2000};
 const base::FeatureParam<int> kInterestGroupStorageMaxNegativeGroupsPerOwner{
     &kInterestGroupStorage, "max_negative_groups_per_owner", 20000};
 const base::FeatureParam<int> kInterestGroupStorageMaxOpsBeforeMaintenance{
@@ -1027,7 +1040,7 @@ const base::FeatureParam<IsolateSandboxedIframesGrouping>::Option
 const base::FeatureParam<IsolateSandboxedIframesGrouping>
     kIsolateSandboxedIframesGroupingParam{
         &kIsolateSandboxedIframes, "grouping",
-        IsolateSandboxedIframesGrouping::kPerSite,
+        IsolateSandboxedIframesGrouping::kPerOrigin,
         &isolated_sandboxed_iframes_grouping_types};
 
 BASE_FEATURE(kKalmanDirectionCutOff,
@@ -1088,6 +1101,15 @@ const base::FeatureParam<LcppResourceLoadPriority>
         &kLCPCriticalPathPredictor, "lcpp_script_load_priority",
         LcppResourceLoadPriority::kVeryHigh, &lcpp_resource_load_priorities};
 
+const base::FeatureParam<bool>
+    kLCPCriticalPathPredictorEnableElementLocatorPerformanceImprovements{
+        &kLCPCriticalPathPredictor, "lcpp_enable_perf_improvements", false};
+
+const base::FeatureParam<bool>
+    kLCPCriticalPathPredictorImageLoadPriorityEnabledForHTMLImageElement{
+        &kLCPCriticalPathPredictor,
+        "lcpp_enable_image_load_priority_for_htmlimageelement", false};
+
 BASE_FEATURE(kLCPScriptObserver,
              "LCPScriptObserver",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -1118,21 +1140,29 @@ BASE_FEATURE(kLCPPLazyLoadImagePreload,
              "LCPPLazyLoadImagePreload",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::FeatureParam<LcppPreloadLazyLoadImageType>::Option
-    lcpp_preload_lazy_load_image[] = {
-        {LcppPreloadLazyLoadImageType::kNone, "none"},
-        {LcppPreloadLazyLoadImageType::kNativeLazyLoading,
-         "native_lazy_loading"},
+const base::FeatureParam<
+    LcppPreloadLazyLoadImageType>::Option lcpp_preload_lazy_load_image[] = {
+    {LcppPreloadLazyLoadImageType::kNone, "none"},
+    {LcppPreloadLazyLoadImageType::kNativeLazyLoading, "native_lazy_loading"},
+    {LcppPreloadLazyLoadImageType::kCustomLazyLoading, "custom_lazy_loading"},
+    {LcppPreloadLazyLoadImageType::kAll, "all"},
 };
 const base::FeatureParam<LcppPreloadLazyLoadImageType>
     kLCPCriticalPathPredictorPreloadLazyLoadImageType{
         &kLCPPLazyLoadImagePreload, "lcpp_preload_lazy_load_image_type",
         LcppPreloadLazyLoadImageType::kNone, &lcpp_preload_lazy_load_image};
 
+const base::FeatureParam<bool> kLCPPFontURLPredictorEnablePrefetch{
+    &kLCPPFontURLPredictor, "lcpp_enable_font_prefetch", false};
+
 // Enables reporting as LCP of the time the first frame of a video was painted.
 BASE_FEATURE(kLCPVideoFirstFrame,
              "LCPVideoFirstFrame",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kLegacyParsingOfXContentTypeOptions,
+             "LegacyParsingOfXContentTypeOptions",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // A feature to reduce the set of resources fetched by No-State Prefetch.
 BASE_FEATURE(kLightweightNoStatePrefetch,
@@ -1145,9 +1175,6 @@ BASE_FEATURE(kLightweightNoStatePrefetch,
 );
 
 BASE_FEATURE(kLinkPreview, "LinkPreview", base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kLinkPreviewNavigation,
-             "LinkPreviewNavigation",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // A feature to control whether the loading phase should be extended beyond
 // First Meaningful Paint by a configurable buffer.
@@ -1210,6 +1237,13 @@ const base::FeatureParam<bool>
     kLowPriorityAsyncScriptExecutionExcludeLcpInfluencersParam{
         &kLowPriorityAsyncScriptExecution,
         "low_pri_async_exec_exclude_lcp_influencers", false};
+
+// kLowPriorityAsyncScriptExecution will exclude scripts on pages where LCP
+// element isn't directly embedded in HTML.
+const base::FeatureParam<bool>
+    kLowPriorityAsyncScriptExecutionDisableWhenLcpNotInHtmlParam{
+        &kLowPriorityAsyncScriptExecution,
+        "low_pri_async_exec_disable_when_lcp_not_in_html", false};
 
 BASE_FEATURE(kLowPriorityScriptLoading,
              "LowPriorityScriptLoading",
@@ -1344,14 +1378,6 @@ BASE_FEATURE(kPlzDedicatedWorker,
              "PlzDedicatedWorker",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When kPortals is enabled, allow portals to load content that is third-party
-// (cross-origin) to the hosting page. Otherwise has no effect.
-//
-// https://crbug.com/1013389
-BASE_FEATURE(kPortalsCrossOrigin,
-             "PortalsCrossOrigin",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(
     kPostMessageFirstPartyToThirdPartyDifferentBucketSameOriginBlocked,
     "PostMessageFirstPartyToThirdPartyDifferentBucketSameOriginBlocked",
@@ -1473,7 +1499,7 @@ BASE_FEATURE(kPrivacySandboxAdsAPIs,
 // reports.
 BASE_FEATURE(kPrivateAggregationApi,
              "PrivateAggregationApi",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Selectively allows the JavaScript API to be disabled in just one of the
 // contexts. The Protected Audience param's name has not been updated (from
@@ -1504,6 +1530,10 @@ constexpr base::FeatureParam<bool> kPrivateAggregationApiDebugModeEnabledAtAll{
 // selection will be ignored and replaced with the default.
 BASE_FEATURE(kPrivateAggregationApiMultipleCloudProviders,
              "PrivateAggregationApiMultipleCloudProviders",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kPrivateNetworkAccessNullIpAddress,
+             "PrivateNetworkAccessNullIpAddress",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kProcessHtmlDataImmediately,
@@ -1545,7 +1575,7 @@ BASE_FEATURE(kLocalCompileHints,
 
 BASE_FEATURE(kQueueBlockingGestureScrolls,
              "QueueBlockingGestureScrolls",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kQuoteEmptySecChUaStringHeadersConsistently,
              "QuoteEmptySecChUaStringHeadersConsistently",
@@ -1622,10 +1652,6 @@ BASE_FEATURE(kResamplingScrollEvents,
              "ResamplingScrollEvents",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kRetriggerPreloadingOnBFCacheRestoration,
-             "RetriggerPreloadingOnBFCacheRestoration",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kRunTextInputUpdatePostLifecycle,
              "RunTextInputUpdatePostLifecycle",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -1692,8 +1718,7 @@ BASE_FEATURE(kSendCnameAliasesToSubresourceFilterFromRenderer,
 
 BASE_FEATURE(kSerializeAccessibilityPostLifecycle,
              "SerializeAccessibilityPostLifecycle",
-             base::FEATURE_ENABLED_BY_DEFAULT
-);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Experiment of the delay from navigation to starting an update of a service
 // worker's script.
@@ -2005,9 +2030,21 @@ BASE_FEATURE(kUACHOverrideBlank,
              "UACHOverrideBlank",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, the body of `EmulateLoadStartedForInspector` is executed only
+// once per Resource per ResourceFetcher, and thus duplicated network load
+// entries in DevTools caused by `EmulateLoadStartedForInspector` are removed.
+// https://crbug.com/1502591
+BASE_FEATURE(kEmulateLoadStartedForInspectorOncePerResource,
+             "kEmulateLoadStartedForInspectorOncePerResource",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kUseBlinkSchedulerTaskRunnerWithCustomDeleter,
              "UseBlinkSchedulerTaskRunnerWithCustomDeleter",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kBlinkSchedulerPrioritizeNavigationIPCs,
+             "BlinkSchedulerPrioritizeNavigationIPCs",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kEnableFileBackedBlobFactory,
              "EnableFileBackedBlobFactory",
@@ -2047,6 +2084,10 @@ BASE_FEATURE(kVSyncDecoding,
 const base::FeatureParam<base::TimeDelta>
     kVSyncDecodingHiddenOccludedTickDuration{
         &kVSyncDecoding, "occluded_tick_duration", base::Hertz(10)};
+
+BASE_FEATURE(kWebRtcUseCaptureBeginTimestamp,
+             "WebRtcUseCaptureBeginTimestamp",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enable borderless mode for desktop PWAs. go/borderless-mode
 BASE_FEATURE(kWebAppBorderless,
@@ -2146,10 +2187,6 @@ BASE_FEATURE(kWebRtcIgnoreUnspecifiedColorSpace,
 
 BASE_FEATURE(kWebRtcInitializeEncoderOnFirstFrame,
              "WebRtcInitializeEncoderOnFirstFrame",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kWebRtcMetronome,
-             "WebRtcMetronome",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables negotiation of experimental multiplex codec in SDP.
@@ -2261,6 +2298,16 @@ bool IsKeepAliveURLLoaderServiceEnabled() {
   return base::FeatureList::IsEnabled(kKeepAliveInBrowserMigration) ||
          base::FeatureList::IsEnabled(kFetchLaterAPI);
 }
+
+BASE_FEATURE(kExpandCompositedCullRect,
+             "ExpandCompositedCullRect",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+const base::FeatureParam<int> kPixelDistanceToExpand(&kExpandCompositedCullRect,
+                                                     "pixels",
+                                                     4000);
+BASE_FEATURE(kTreatHTTPExpiresHeaderValueZeroAsExpiredInBlink,
+             "TreatHTTPExpiresHeaderValueZeroAsExpiredInBlink",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace features
 }  // namespace blink

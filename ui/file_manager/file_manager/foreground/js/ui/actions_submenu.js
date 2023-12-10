@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {queryDecoratedElement, queryRequiredElement} from '../../../common/js/dom_utils.js';
-import {ActionsModel} from '../actions_model.js';
+import {ActionsModel, CommonActionId, InternalActionId} from '../actions_model.js';
 
 import {Command} from './command.js';
 import {FilesMenuItem} from './files_menu.js';
@@ -46,7 +46,7 @@ export class ActionsSubmenu {
     // 'Menu'.
     const menuItem = this.menu_.addMenuItem(options);
     FilesMenuItem.decorate(menuItem);
-    menuItem.parentNode.insertBefore(menuItem, this.separator_);
+    menuItem.parentNode?.insertBefore(menuItem, this.separator_);
     this.items_.push(menuItem);
     return menuItem;
   }
@@ -75,7 +75,7 @@ export class ActionsSubmenu {
     // First add the sharing item (if available).
     // @ts-ignore: error TS7053: Element implicitly has an 'any' type because
     // expression of type 'string' can't be used to index type '{}'.
-    const shareAction = remainingActions[ActionsModel.CommonActionId.SHARE];
+    const shareAction = remainingActions[CommonActionId.SHARE];
     if (shareAction) {
       const menuItem = this.addMenuItem_({});
       // @ts-ignore: error TS2339: Property 'command' does not exist on type
@@ -84,7 +84,7 @@ export class ActionsSubmenu {
       menuItem.classList.toggle('hide-on-toolbar', true);
       // @ts-ignore: error TS7053: Element implicitly has an 'any' type because
       // expression of type 'string' can't be used to index type '{}'.
-      delete remainingActions[ActionsModel.CommonActionId.SHARE];
+      delete remainingActions[CommonActionId.SHARE];
     }
     queryDecoratedElement('#share', Command).canExecuteChange(element);
 
@@ -92,7 +92,7 @@ export class ActionsSubmenu {
     const manageInDriveAction =
         // @ts-ignore: error TS7053: Element implicitly has an 'any' type
         // because expression of type 'string' can't be used to index type '{}'.
-        remainingActions[ActionsModel.InternalActionId.MANAGE_IN_DRIVE];
+        remainingActions[InternalActionId.MANAGE_IN_DRIVE];
     if (manageInDriveAction) {
       const menuItem = this.addMenuItem_({});
       // @ts-ignore: error TS2339: Property 'command' does not exist on type
@@ -101,7 +101,7 @@ export class ActionsSubmenu {
       menuItem.classList.toggle('hide-on-toolbar', true);
       // @ts-ignore: error TS7053: Element implicitly has an 'any' type because
       // expression of type 'string' can't be used to index type '{}'.
-      delete remainingActions[ActionsModel.InternalActionId.MANAGE_IN_DRIVE];
+      delete remainingActions[InternalActionId.MANAGE_IN_DRIVE];
     }
     queryDecoratedElement('#manage-in-drive', Command)
         .canExecuteChange(element);
@@ -116,11 +116,11 @@ export class ActionsSubmenu {
     const saveForOfflineAction =
         // @ts-ignore: error TS7053: Element implicitly has an 'any' type
         // because expression of type 'string' can't be used to index type '{}'.
-        remainingActions[ActionsModel.CommonActionId.SAVE_FOR_OFFLINE];
+        remainingActions[CommonActionId.SAVE_FOR_OFFLINE];
     const offlineNotNecessaryAction =
         // @ts-ignore: error TS7053: Element implicitly has an 'any' type
         // because expression of type 'string' can't be used to index type '{}'.
-        remainingActions[ActionsModel.CommonActionId.OFFLINE_NOT_NECESSARY];
+        remainingActions[CommonActionId.OFFLINE_NOT_NECESSARY];
     if (saveForOfflineAction || offlineNotNecessaryAction) {
       const menuItem = this.addMenuItem_({});
       // @ts-ignore: error TS2339: Property 'command' does not exist on type
@@ -130,13 +130,12 @@ export class ActionsSubmenu {
       if (saveForOfflineAction) {
         // @ts-ignore: error TS7053: Element implicitly has an 'any' type
         // because expression of type 'string' can't be used to index type '{}'.
-        delete remainingActions[ActionsModel.CommonActionId.SAVE_FOR_OFFLINE];
+        delete remainingActions[CommonActionId.SAVE_FOR_OFFLINE];
       }
       if (offlineNotNecessaryAction) {
         // @ts-ignore: error TS7053: Element implicitly has an 'any' type
         // because expression of type 'string' can't be used to index type '{}'.
-        delete remainingActions[ActionsModel.CommonActionId
-                                    .OFFLINE_NOT_NECESSARY];
+        delete remainingActions[CommonActionId.OFFLINE_NOT_NECESSARY];
       }
     }
     queryDecoratedElement('#toggle-pinned', Command).canExecuteChange(element);

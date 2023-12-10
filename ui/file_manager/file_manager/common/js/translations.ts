@@ -7,7 +7,8 @@ import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import type {EntryLocation} from '../../externs/entry_location.js';
 import type {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 
-import {VolumeManagerCommon} from './volume_manager_types.js';
+import {getMediaViewRootTypeFromVolumeId, MediaViewRootType, RootType} from './volume_manager_types.js';
+
 
 /**
  * Returns a translated string.
@@ -122,9 +123,9 @@ export function bytesToString(bytes: number, addedPrecision: number = 0) {
 export function getRootTypeLabel(locationInfo: EntryLocation) {
   const volumeInfoLabel = locationInfo.volumeInfo?.label || '';
   switch (locationInfo.rootType) {
-    case VolumeManagerCommon.RootType.DOWNLOADS:
+    case RootType.DOWNLOADS:
       return volumeInfoLabel;
-    case VolumeManagerCommon.RootType.DRIVE:
+    case RootType.DRIVE:
       return str('DRIVE_MY_DRIVE_LABEL');
     // |locationInfo| points to either the root directory of an individual Team
     // Drive or sub-directory under it, but not the Shared Drives grand
@@ -135,51 +136,54 @@ export function getRootTypeLabel(locationInfo: EntryLocation) {
     //   Shared Drives > ABC Shared Drive > Folder1
     //   ^^^^^^^^^^^
     // By this reason, we return the label of the Shared Drives grand root here.
-    case VolumeManagerCommon.RootType.SHARED_DRIVE:
-    case VolumeManagerCommon.RootType.SHARED_DRIVES_GRAND_ROOT:
+    case RootType.SHARED_DRIVE:
+    case RootType.SHARED_DRIVES_GRAND_ROOT:
       return str('DRIVE_SHARED_DRIVES_LABEL');
-    case VolumeManagerCommon.RootType.COMPUTER:
-    case VolumeManagerCommon.RootType.COMPUTERS_GRAND_ROOT:
+    case RootType.COMPUTER:
+    case RootType.COMPUTERS_GRAND_ROOT:
       return str('DRIVE_COMPUTERS_LABEL');
-    case VolumeManagerCommon.RootType.DRIVE_OFFLINE:
+    case RootType.DRIVE_OFFLINE:
       return str('DRIVE_OFFLINE_COLLECTION_LABEL');
-    case VolumeManagerCommon.RootType.DRIVE_SHARED_WITH_ME:
+    case RootType.DRIVE_SHARED_WITH_ME:
       return str('DRIVE_SHARED_WITH_ME_COLLECTION_LABEL');
-    case VolumeManagerCommon.RootType.DRIVE_RECENT:
+    case RootType.DRIVE_RECENT:
       return str('DRIVE_RECENT_COLLECTION_LABEL');
-    case VolumeManagerCommon.RootType.DRIVE_FAKE_ROOT:
+    case RootType.DRIVE_FAKE_ROOT:
       return str('DRIVE_DIRECTORY_LABEL');
-    case VolumeManagerCommon.RootType.RECENT:
+    case RootType.RECENT:
       return str('RECENT_ROOT_LABEL');
-    case VolumeManagerCommon.RootType.CROSTINI:
+    case RootType.CROSTINI:
       return str('LINUX_FILES_ROOT_LABEL');
-    case VolumeManagerCommon.RootType.MY_FILES:
+    case RootType.MY_FILES:
       return str('MY_FILES_ROOT_LABEL');
-    case VolumeManagerCommon.RootType.TRASH:
+    case RootType.TRASH:
       return str('TRASH_ROOT_LABEL');
-    case VolumeManagerCommon.RootType.MEDIA_VIEW:
-      const mediaViewRootType =
-          VolumeManagerCommon.getMediaViewRootTypeFromVolumeId(volumeInfoLabel);
+    case RootType.MEDIA_VIEW:
+      const mediaViewRootType = getMediaViewRootTypeFromVolumeId(
+          locationInfo.volumeInfo?.volumeId || '');
       switch (mediaViewRootType) {
-        case VolumeManagerCommon.MediaViewRootType.IMAGES:
+        case MediaViewRootType.IMAGES:
           return str('MEDIA_VIEW_IMAGES_ROOT_LABEL');
-        case VolumeManagerCommon.MediaViewRootType.VIDEOS:
+        case MediaViewRootType.VIDEOS:
           return str('MEDIA_VIEW_VIDEOS_ROOT_LABEL');
-        case VolumeManagerCommon.MediaViewRootType.AUDIO:
+        case MediaViewRootType.AUDIO:
           return str('MEDIA_VIEW_AUDIO_ROOT_LABEL');
-        case VolumeManagerCommon.MediaViewRootType.DOCUMENTS:
+        case MediaViewRootType.DOCUMENTS:
           return str('MEDIA_VIEW_DOCUMENTS_ROOT_LABEL');
+        default:
+          console.error(
+              'Unsupported media view root type: ' + mediaViewRootType);
+          return volumeInfoLabel;
       }
-      console.error('Unsupported media view root type: ' + mediaViewRootType);
-      return volumeInfoLabel;
-    case VolumeManagerCommon.RootType.ARCHIVE:
-    case VolumeManagerCommon.RootType.REMOVABLE:
-    case VolumeManagerCommon.RootType.MTP:
-    case VolumeManagerCommon.RootType.PROVIDED:
-    case VolumeManagerCommon.RootType.ANDROID_FILES:
-    case VolumeManagerCommon.RootType.DOCUMENTS_PROVIDER:
-    case VolumeManagerCommon.RootType.SMB:
-    case VolumeManagerCommon.RootType.GUEST_OS:
+
+    case RootType.ARCHIVE:
+    case RootType.REMOVABLE:
+    case RootType.MTP:
+    case RootType.PROVIDED:
+    case RootType.ANDROID_FILES:
+    case RootType.DOCUMENTS_PROVIDER:
+    case RootType.SMB:
+    case RootType.GUEST_OS:
       return volumeInfoLabel;
     default:
       console.error('Unsupported root type: ' + locationInfo.rootType);
@@ -203,8 +207,7 @@ export function getEntryLabel(
   }
 
   // Special case for MyFiles/Downloads, MyFiles/PvmDefault and MyFiles/Camera.
-  if (locationInfo &&
-      locationInfo.rootType == VolumeManagerCommon.RootType.DOWNLOADS) {
+  if (locationInfo && locationInfo.rootType == RootType.DOWNLOADS) {
     if (entry.fullPath == '/Downloads') {
       return str('DOWNLOADS_DIRECTORY_LABEL');
     }

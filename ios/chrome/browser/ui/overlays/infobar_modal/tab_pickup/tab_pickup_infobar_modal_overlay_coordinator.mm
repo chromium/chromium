@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/ui/overlays/infobar_modal/tab_pickup/tab_pickup_infobar_modal_overlay_coordinator.h"
 
 #import "base/check.h"
-#import "ios/chrome/browser/overlays/public/default/default_infobar_overlay_request_config.h"
+#import "ios/chrome/browser/overlays/model/public/default/default_infobar_overlay_request_config.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"

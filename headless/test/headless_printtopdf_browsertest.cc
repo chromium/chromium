@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 
+#include <optional>
 #include "base/base64.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
@@ -28,7 +29,6 @@
 #include "printing/units.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/inspector_protocol/crdtp/dispatch.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size_conversions.h"
@@ -96,7 +96,7 @@ class HeadlessPDFPagesBrowserTest : public HeadlessDevTooledBrowserTest {
         .render_device_type = chrome_pdf::RenderDeviceType::kPrinter,
     };
     for (int i = 0; i < num_pages; i++) {
-      absl::optional<gfx::SizeF> size_in_points =
+      std::optional<gfx::SizeF> size_in_points =
           chrome_pdf::GetPDFPageSizeByIndex(pdf_span, i);
       ASSERT_TRUE(size_in_points.has_value());
       EXPECT_EQ(static_cast<int>(size_in_points.value().width()),
@@ -198,7 +198,7 @@ class HeadlessPDFStreamBrowserTest : public HeadlessDevTooledBrowserTest {
     EXPECT_TRUE(chrome_pdf::GetPDFDocInfo(pdf_span, &num_pages, nullptr));
     EXPECT_EQ(std::ceil(kDocHeight / kPaperHeight), num_pages);
 
-    absl::optional<bool> tagged = chrome_pdf::IsPDFDocTagged(pdf_span);
+    std::optional<bool> tagged = chrome_pdf::IsPDFDocTagged(pdf_span);
     ASSERT_TRUE(tagged.has_value());
     EXPECT_FALSE(tagged.value());
 
@@ -236,7 +236,7 @@ class HeadlessPDFBrowserTestBase : public HeadlessDevTooledBrowserTest {
   }
 
   void OnPDFCreated(base::Value::Dict result) {
-    absl::optional<int> error_code = result.FindIntByDottedPath("error.code");
+    std::optional<int> error_code = result.FindIntByDottedPath("error.code");
     const std::string* error_message =
         result.FindStringByDottedPath("error.message");
     ASSERT_EQ(error_code.has_value(), !!error_message);
@@ -654,7 +654,7 @@ class HeadlessTaggedPDFBrowserTest
   void OnPDFReady(base::span<const uint8_t> pdf_span, int num_pages) override {
     EXPECT_THAT(num_pages, testing::Eq(1));
 
-    absl::optional<bool> tagged = chrome_pdf::IsPDFDocTagged(pdf_span);
+    std::optional<bool> tagged = chrome_pdf::IsPDFDocTagged(pdf_span);
     ASSERT_THAT(tagged, testing::Optional(true));
 
     constexpr int kFirstPage = 0;
@@ -690,7 +690,7 @@ class HeadlessTaggedPDFDisabledBrowserTest
   void OnPDFReady(base::span<const uint8_t> pdf_span, int num_pages) override {
     EXPECT_THAT(num_pages, testing::Eq(1));
 
-    absl::optional<bool> tagged = chrome_pdf::IsPDFDocTagged(pdf_span);
+    std::optional<bool> tagged = chrome_pdf::IsPDFDocTagged(pdf_span);
     EXPECT_THAT(tagged, testing::Optional(false));
   }
 };
@@ -718,7 +718,7 @@ class HeadlessGenerateTaggedPDFBrowserTest
   void OnPDFReady(base::span<const uint8_t> pdf_span, int num_pages) override {
     EXPECT_THAT(num_pages, testing::Eq(1));
 
-    absl::optional<bool> is_pdf_tagged = chrome_pdf::IsPDFDocTagged(pdf_span);
+    std::optional<bool> is_pdf_tagged = chrome_pdf::IsPDFDocTagged(pdf_span);
     EXPECT_THAT(is_pdf_tagged, testing::Optional(generate_tagged_pdf()));
   }
 };
@@ -727,6 +727,34 @@ HEADLESS_DEVTOOLED_TEST_P(HeadlessGenerateTaggedPDFBrowserTest);
 
 INSTANTIATE_TEST_SUITE_P(All,
                          HeadlessGenerateTaggedPDFBrowserTest,
+                         ::testing::Bool());
+
+class HeadlessGenerateDocumentOutlinePDFBrowserTest
+    : public HeadlessPDFBrowserTestBase,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  const char* GetUrl() override { return "/structured_doc.html"; }
+
+  base::Value::Dict GetPrintToPDFParams() override {
+    base::Value::Dict params;
+    params.Set("generateDocumentOutline", generate_document_outline());
+    return params;
+  }
+
+  bool generate_document_outline() { return GetParam(); }
+
+  void OnPDFReady(base::span<const uint8_t> pdf_span, int num_pages) override {
+    EXPECT_THAT(num_pages, testing::Eq(1));
+
+    std::optional<bool> has_outline = chrome_pdf::PDFDocHasOutline(pdf_span);
+    EXPECT_THAT(has_outline, testing::Optional(generate_document_outline()));
+  }
+};
+
+HEADLESS_DEVTOOLED_TEST_P(HeadlessGenerateDocumentOutlinePDFBrowserTest);
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         HeadlessGenerateDocumentOutlinePDFBrowserTest,
                          ::testing::Bool());
 
 }  // namespace headless

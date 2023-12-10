@@ -2052,4 +2052,5 @@ message ChromeDeviceSettingsProto {
   optional ExtendedFkeysModifierProto extended_fkeys_modifier = 156;
   optional DeviceFlexHwDataForProductImprovementEnabledProto
       device_flex_hw_data_for_product_improvement_enabled = 157;
+  optional BooleanPolicyProto DeviceHardwareVideoDecodingEnabled = 1185;
 }

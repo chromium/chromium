@@ -24,46 +24,17 @@ namespace ash::settings {
 
 class OSSettingsRecoveryTest : public OSSettingsLockScreenBrowserTestBase {};
 
-// A test fixture that runs tests with recovery feature disabled.
-class OSSettingsRecoveryTestWithoutFeature : public OSSettingsRecoveryTest {
- public:
-  OSSettingsRecoveryTestWithoutFeature() {
-    feature_list_.InitAndDisableFeature(ash::features::kCryptohomeRecovery);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-// A test fixture that runs tests with recovery feature enabled and with
-// (faked) hardware support.
-class OSSettingsRecoveryTestWithFeature : public OSSettingsRecoveryTest {
- public:
-  OSSettingsRecoveryTestWithFeature() {
-    feature_list_.InitAndEnableFeature(ash::features::kCryptohomeRecovery);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
 // A test fixture that runs tests with recovery feature enabled but without
 // hardware support.
-class OSSettingsRecoveryTestWithFeatureWithoutHardwareSupport
-    : public OSSettingsRecoveryTestWithFeature {
+class OSSettingsRecoveryTestWithoutHardwareSupport
+    : public OSSettingsRecoveryTest {
  public:
-  OSSettingsRecoveryTestWithFeatureWithoutHardwareSupport() {
+  OSSettingsRecoveryTestWithoutHardwareSupport() {
     cryptohome_.set_supports_low_entropy_credentials(false);
   }
 };
 
-IN_PROC_BROWSER_TEST_F(OSSettingsRecoveryTestWithoutFeature, ControlInvisible) {
-  mojom::LockScreenSettingsAsyncWaiter lock_screen_settings =
-      OpenLockScreenSettingsAndAuthenticate();
-  lock_screen_settings.AssertRecoveryControlVisibility(false);
-}
-
-IN_PROC_BROWSER_TEST_F(OSSettingsRecoveryTestWithFeatureWithoutHardwareSupport,
+IN_PROC_BROWSER_TEST_F(OSSettingsRecoveryTestWithoutHardwareSupport,
                        ControlInvisibleNotAvailable) {
   mojom::LockScreenSettingsAsyncWaiter lock_screen_settings =
       OpenLockScreenSettingsAndAuthenticate();
@@ -71,14 +42,14 @@ IN_PROC_BROWSER_TEST_F(OSSettingsRecoveryTestWithFeatureWithoutHardwareSupport,
   lock_screen_settings.AssertRecoveryControlAvailability(false);
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsRecoveryTestWithFeature, ControlVisible) {
+IN_PROC_BROWSER_TEST_F(OSSettingsRecoveryTest, ControlVisible) {
   mojom::LockScreenSettingsAsyncWaiter lock_screen_settings =
       OpenLockScreenSettingsAndAuthenticate();
   lock_screen_settings.AssertRecoveryControlVisibility(true);
   lock_screen_settings.AssertRecoveryControlAvailability(true);
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsRecoveryTestWithFeature, CheckingEnables) {
+IN_PROC_BROWSER_TEST_F(OSSettingsRecoveryTest, CheckingEnables) {
   EXPECT_FALSE(cryptohome_.HasRecoveryFactor(GetAccountId()));
 
   mojom::LockScreenSettingsAsyncWaiter lock_screen_settings =
@@ -94,7 +65,7 @@ IN_PROC_BROWSER_TEST_F(OSSettingsRecoveryTestWithFeature, CheckingEnables) {
 // It clicks on the recovery toggle, expecting the recovery dialog to show up.
 // It then clicks on the cancel button of the dialog.
 // Expected result: The dialog disappears and the toggle is still on.
-IN_PROC_BROWSER_TEST_F(OSSettingsRecoveryTestWithFeature,
+IN_PROC_BROWSER_TEST_F(OSSettingsRecoveryTest,
                        UncheckingDisablesAndCancelClick) {
   cryptohome_.AddRecoveryFactor(GetAccountId());
 
@@ -113,7 +84,7 @@ IN_PROC_BROWSER_TEST_F(OSSettingsRecoveryTestWithFeature,
 // It clicks on the recovery toggle, expecting the recovery dialog to show up.
 // It then clicks on the disable button of the dialog.
 // Expected result: The dialog disappears and the toggle is off.
-IN_PROC_BROWSER_TEST_F(OSSettingsRecoveryTestWithFeature,
+IN_PROC_BROWSER_TEST_F(OSSettingsRecoveryTest,
                        UncheckingDisablesAndDisableClick) {
   cryptohome_.AddRecoveryFactor(GetAccountId());
 
@@ -129,8 +100,7 @@ IN_PROC_BROWSER_TEST_F(OSSettingsRecoveryTestWithFeature,
 
 // Check that the kDataRecovery deep link id can navigate to
 // the recovery toggle.
-IN_PROC_BROWSER_TEST_F(OSSettingsRecoveryTestWithFeature,
-                       NavigaionToRecoveryToggle) {
+IN_PROC_BROWSER_TEST_F(OSSettingsRecoveryTest, NavigaionToRecoveryToggle) {
   cryptohome_.AddRecoveryFactor(GetAccountId());
   mojom::LockScreenSettingsAsyncWaiter lock_screen_settings =
       OpenLockScreenSettingsDeepLinkAndAuthenticate(base::NumberToString(
@@ -141,8 +111,7 @@ IN_PROC_BROWSER_TEST_F(OSSettingsRecoveryTestWithFeature,
 // Check that trying to change recovery with an invalidated auth session shows
 // the password prompt again.
 // TODO(crbug.com/1436858): Re-enable this test
-IN_PROC_BROWSER_TEST_F(OSSettingsRecoveryTestWithFeature,
-                       DISABLED_DestroyedSession) {
+IN_PROC_BROWSER_TEST_F(OSSettingsRecoveryTest, DISABLED_DestroyedSession) {
   mojom::LockScreenSettingsAsyncWaiter lock_screen_settings =
       OpenLockScreenSettingsAndAuthenticate();
 
@@ -165,11 +134,10 @@ struct CryptohomeRecoveryPolicySetting {
   bool is_recommendation;
 };
 
-class OSSettingsRecoveryTestWithPolicy
-    : public OSSettingsRecoveryTestWithFeature {
+class OSSettingsRecoveryTestWithPolicy : public OSSettingsRecoveryTest {
  public:
   void SetUpInProcessBrowserTestFixture() override {
-    OSSettingsRecoveryTestWithFeature::SetUpInProcessBrowserTestFixture();
+    OSSettingsRecoveryTest::SetUpInProcessBrowserTestFixture();
 
     // Override and policy provider for testing. The `ON_CALL` lines here are
     // necessary because something inside the policy stack expects those return

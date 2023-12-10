@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="pa">
 <translation id="1000498691615767391">ਖੋਲ੍ਹਣ ਲਈ ਇੱਕ ਫੋਲਡਰ ਚੁਣੋ</translation>
+<translation id="1014208178561091457"><ph name="FILE_NAME" /> ਨੂੰ ਕਾਪੀ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ ਕਿਉਂਕਿ ਇਹ ਇਨਕ੍ਰਿਪਟਡ ਹੈ।</translation>
 <translation id="1047956942837015229"><ph name="COUNT" /> ਆਈਟਮਾਂ ਮਿਟਾ ਰਿਹਾ ਹੈ...</translation>
 <translation id="1049926623896334335">ਸ਼ਬਦ ਦਸਤਾਵੇਜ਼</translation>
 <translation id="1056775291175587022">ਕੋਈ ਨੈੱਟਵਰਕ ਨਹੀਂ</translation>
@@ -55,6 +56,7 @@
 <translation id="1435838927755162558">Parallels Desktop ਨਾਲ ਫੋਲਡਰ ਸਾਂਝਾ ਕਰੋ</translation>
 <translation id="1439919885608649279">ਫੁੱਲਾਂ ਨਾਲ ਵਿਅਕਤੀ</translation>
 <translation id="1458457385801829801"><ph name="TARGET_NAME" /> ਨੂੰ ਬਾਹਰ ਕੱਢੋ</translation>
+<translation id="146691674290220697"><ph name="NUMBER_OF_FILES" /> ਫ਼ਾਈਲਾਂ ਨੂੰ ਕਾਪੀ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ ਕਿਉਂਕਿ ਉਹ ਇਨਕ੍ਰਿਪਟਡ ਹਨ।</translation>
 <translation id="1471718551822868769">ਸਲੋਵਾਕ</translation>
 <translation id="1482884275703521657">ਫਿਨਿਸ਼</translation>
 <translation id="148466539719134488">ਸਵਿਸ</translation>
@@ -276,6 +278,7 @@
 <translation id="3253225298092156258">ਉਪਲਬਧ ਨਹੀਂ</translation>
 <translation id="3254434849914415189"><ph name="FILE_TYPE" /> ਫ਼ਾਈਲਾਂ ਲਈ ਪੂਰਵ-ਨਿਰਧਾਰਤ ਐਪ ਚੁਣੋ:</translation>
 <translation id="3255159654094949700">ਅਰਬੀ</translation>
+<translation id="326396468955264502"><ph name="NUMBER_OF_FILES" /> ਫ਼ਾਈਲਾਂ ਨੂੰ ਕਿਸੇ ਹੋਰ ਥਾਂ 'ਤੇ ਨਹੀਂ ਲਿਜਾਇਆ ਜਾ ਸਕਿਆ ਕਿਉਂਕਿ ਉਹ ਇਨਕ੍ਰਿਪਟਡ ਹਨ।</translation>
 <translation id="3264582393905923483">ਸੰਦਰਭ</translation>
 <translation id="3272909651715601089">"<ph name="PATH" />" ਨੂੰ ਖੋਲ੍ਹਿਆ ਨਹੀਂ ਜਾ ਸਕਦਾ</translation>
 <translation id="3280431534455935878">ਤਿਆਰੀ ਕਰ ਰਿਹਾ ਹੈ</translation>
@@ -313,6 +316,7 @@
 <translation id="3523225005467146490"><ph name="VM_NAME" /> ਨਾਲ 1 ਫੋਲਡਰ ਸਾਂਝਾ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="3524311639100184459">ਸਾਵਧਾਨ: ਇਹ ਫ਼ਾਈਲਾਂ ਅਸਥਾਈ ਹਨ ਅਤੇ ਡਿਸਕ ਵਿੱਚ ਜਗ੍ਹਾ ਨੂੰ ਖਾਲੀ ਕਰਨ ਲਈ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਮਿਟਾਈਆਂ ਜਾ ਸਕਦੀਆਂ ਹਨ।  <ph name="BEGIN_LINK" />ਹੋਰ ਜਾਣੋ<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">ਫੋਲਡਰ</translation>
+<translation id="3529424493985988200">ਵੇਰਵਿਆਂ ਲਈ ਆਪਣੇ ਪ੍ਰਸ਼ਾਸਕ ਨੂੰ ਸੰਪਰਕ ਕਰੋ।</translation>
 <translation id="3548125359243647069">ਗਲਤ ਪਿੰਨ ਬਹੁਤ ਵਾਰ ਦਾਖਲ ਕੀਤਾ ਗਿਆ।</translation>
 <translation id="3549797760399244642">drive.google.com ਤੇ ਜਾਓ...</translation>
 <translation id="3553048479571901246"><ph name="APP_NAME" /> ਨਾਲ ਫ਼ਾਈਲਾਂ ਖੋਲ੍ਹਣ ਲਈ, ਪਹਿਲਾਂ ਉਹਨਾਂ ਨੂੰ Windows ਫ਼ਾਈਲਾਂ ਦੇ ਫੋਲਡਰ ਵਿੱਚ ਕਾਪੀ ਕਰੋ।</translation>
@@ -701,6 +705,7 @@
 <translation id="637062427944097960">ਇਹ ਫਾਈਲ ਇੱਕ ਵੱਖਰੇ ਡੈਸਕਟਾਪ 'ਤੇ ਖੁੱਲੀ ਹੋਈ ਹੈ। ਇਸਨੂੰ ਦੇਖਣ ਲਈ <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) 'ਤੇ ਹਲਚਲ ਕਰੋ।</translation>
 <translation id="6394388407447716302">ਸਿਰਫ਼ ਪੜ੍ਹਨ ਲਈ</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> ਆਈਟਮਾਂ</translation>
+<translation id="6407769893376380348"><ph name="FILE_NAME" /> ਨੂੰ ਕਿਸੇ ਹੋਰ ਥਾਂ 'ਤੇ ਨਹੀਂ ਲਿਜਾਇਆ ਜਾ ਸਕਿਆ ਕਿਉਂਕਿ ਇਹ ਇਨਕ੍ਰਿਪਟਡ ਹੈ।</translation>
 <translation id="642282551015776456">ਇਹ ਨਾਮ ਫੋਲਡਰ ਨਾਮ ਦੀ ਇੱਕ ਫਾਈਲ ਦੇ ਤੌਰ ਤੇ ਨਹੀਂ ਵਰਤਿਆ ਜਾ ਸਕਦਾ</translation>
 <translation id="6423031066725912715">TCVN ਕੀ-ਬੋਰਡ ਨਾਲ ਵੀਅਤਨਾਮੀ</translation>
 <translation id="6430271654280079150">ਤੁਹਾਡੇ ਕੋਲ 1 ਕੋਸ਼ਿਸ਼ ਬਾਕੀ ਹੈ।</translation>

@@ -57,7 +57,7 @@ FileManagerPrivateAddMountFunction::~FileManagerPrivateAddMountFunction() =
 
 ExtensionFunction::ResponseAction FileManagerPrivateAddMountFunction::Run() {
   using file_manager_private::AddMount::Params;
-  const absl::optional<Params> params = Params::Create(args());
+  const std::optional<Params> params = Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   Profile* const profile = Profile::FromBrowserContext(browser_context());
@@ -141,7 +141,7 @@ FileManagerPrivateCancelMountingFunction::
 ExtensionFunction::ResponseAction
 FileManagerPrivateCancelMountingFunction::Run() {
   using file_manager_private::CancelMounting::Params;
-  const absl::optional<Params> params = Params::Create(args());
+  const std::optional<Params> params = Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   Profile* const profile = Profile::FromBrowserContext(browser_context());
@@ -180,7 +180,7 @@ void FileManagerPrivateCancelMountingFunction::OnCancelled(
 
 ExtensionFunction::ResponseAction FileManagerPrivateRemoveMountFunction::Run() {
   using file_manager_private::RemoveMount::Params;
-  const absl::optional<Params> params = Params::Create(args());
+  const std::optional<Params> params = Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   Profile* const profile = Profile::FromBrowserContext(browser_context());

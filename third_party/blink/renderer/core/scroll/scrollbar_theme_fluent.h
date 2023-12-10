@@ -12,7 +12,7 @@
 
 namespace blink {
 
-// The scrollbar theme is only used for Fluent Scrollbars on Windows.
+// This scrollbar theme is only used for Fluent scrollbars.
 // Please see the visual spec and the design document for more details:
 // https://docs.google.com/document/d/1EpJnWAcPCxBQo6zPGR1Tg1NACiIJ-6dk7cYyK1DhBWw
 class CORE_EXPORT ScrollbarThemeFluent : public ScrollbarThemeAura {

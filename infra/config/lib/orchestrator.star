@@ -16,7 +16,7 @@ load("./builder_config.star", _ = "builder_config")  # @unused
 
 # infra/infra git revision to use for the compilator_watcher luciexe sub_build
 # Used by chromium orchestrators
-_COMPILATOR_WATCHER_GIT_REVISION = "e6d08be3fd589d4f222dae5d18dbc972e6117b23"
+_COMPILATOR_WATCHER_GIT_REVISION = "27c191f304c8d7329a393d8a69020fc14032c3c3"
 
 # Nodes for the definition of an orchestrator builder
 _ORCHESTRATOR = nodes.create_bucket_scoped_node_type("orchestrator")
@@ -130,6 +130,12 @@ def _get_compilator(bucket_name, builder):
         for n in orchestrator_nodes
         if _builder_name(n) not in experimental_orchestrator_names
     ]
+
+    if len(orchestrator_nodes) != 1:
+        fail("compilator should have exactly 1 referring orchestrator, got: {}, {}".format(
+            _builder_name(node),
+            [_builder_name(n) for n in orchestrator_nodes],
+        ))
 
     return struct(
         name = compilator_name,

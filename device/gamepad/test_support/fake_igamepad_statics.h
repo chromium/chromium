@@ -10,11 +10,11 @@
 #include <windows.foundation.collections.h>
 #include <wrl.h>
 
+#include <string_view>
 #include <unordered_map>
 
 #include "base/containers/flat_map.h"
 #include "base/functional/callback_forward.h"
-#include "base/strings/string_piece_forward.h"
 #include "device/gamepad/test_support/fake_igamepad.h"
 #include "device/gamepad/test_support/fake_iraw_game_controller.h"
 
@@ -78,7 +78,7 @@ class FakeIGamepadStatics final
       const Microsoft::WRL::ComPtr<FakeIGamepad>& gamepad_to_add,
       uint16_t hardware_product_id,
       uint16_t hardware_vendor_id,
-      base::StringPiece display_name);
+      std::string_view display_name);
 
   // Uses a fake gamepad to simulate a gamepad disconnection operation for test.
   // Due to the multi-threaded apartment nature of IGamepadStatics COM API, the
@@ -119,7 +119,7 @@ class FakeIGamepadStatics final
   void CacheGamepad(Microsoft::WRL::ComPtr<FakeIGamepad> fake_gamepad_to_add,
                     uint16_t hardware_product_id,
                     uint16_t hardware_vendor_id,
-                    base::StringPiece display_name);
+                    std::string_view display_name);
   void RemoveCachedGamepad(
       const Microsoft::WRL::ComPtr<FakeIGamepad>& fake_gamepad_to_remove);
 

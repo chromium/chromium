@@ -38,20 +38,17 @@ enum NearbyVisibilityErrorState {
 /**
  * The pulse animation asset URL for light mode.
  */
-const PULSE_ANIMATION_URL_LIGHT: string =
-    'nearby_share_pulse_animation_light.json';
+const PULSE_ANIMATION_URL_LIGHT = 'nearby_share_pulse_animation_light.json';
 
 /**
  * The pulse animation asset URL for dark mode.
  */
-const PULSE_ANIMATION_URL_DARK: string =
-    'nearby_share_pulse_animation_dark.json';
+const PULSE_ANIMATION_URL_DARK = 'nearby_share_pulse_animation_dark.json';
 
 /**
  * The pulse animation asset URL for jelly mode.
  */
-const PULSE_ANIMATION_URL_JELLY: string =
-    'nearby_share_pulse_animation_jelly.json';
+const PULSE_ANIMATION_URL_JELLY = 'nearby_share_pulse_animation_jelly.json';
 
 const NearbyShareHighVisibilityPageElementBase = I18nMixin(PolymerElement);
 

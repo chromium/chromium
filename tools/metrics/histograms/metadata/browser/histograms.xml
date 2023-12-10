@@ -50,63 +50,14 @@ chromium-metrics-reviews@google.com.
       summary="Tab has a saved frame in the cache."/>
 </variants>
 
-<histogram name="Browser.BitmapFetcher.Decode" units="ms"
-    expires_after="2022-09-18">
-  <obsolete>
-    3/2022; feature launched.
-  </obsolete>
-  <owner>manukh@chromium.org</owner>
-  <owner>jdonnelly@chromium.org</owner>
-  <owner>chrome-omnibox-team@google.com</owner>
-  <summary>The time elapsed decoding an image using BitmapFetcher.</summary>
-</histogram>
-
-<histogram name="Browser.BitmapFetcher.Fetch" units="ms"
-    expires_after="2022-03-06">
-  <obsolete>
-    3/2022; feature launched.
-  </obsolete>
-  <owner>manukh@chromium.org</owner>
-  <owner>jdonnelly@chromium.org</owner>
-  <owner>chrome-omnibox-team@google.com</owner>
+<histogram name="Browser.Actions.PinnedActionsCount" units="actions"
+    expires_after="2024-03-17">
+  <owner>corising@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
   <summary>
-    The time elapsed fetching an image from a URL using BitmapFetcher.
+    Records the number of actions that are currently pinned to the toolbar. This
+    is emitted every time the user pins or unpins an action to the toolbar.
   </summary>
-</histogram>
-
-<histogram name="Browser.ChromeOS.HatsSatisfaction{Survey}" units="score"
-    expires_after="2023-01-01">
-  <obsolete>
-    M109; Replaced by &quot;ChromeOS.HaTS.*&quot;.
-  </obsolete>
-  <owner>aalsum@chromium.org</owner>
-  <owner>jackshira@google.org</owner>
-  <owner>cros-telemetry@google.com</owner>
-  <summary>
-    Records the overall satisfaction score for HaTS, to be analyzed against
-    other OS metrics like performance or number of crashes. There is one score
-    per survey type. Emitted when a user answers the first question on a HaTS
-    survey.
-  </summary>
-  <token key="Survey">
-    <variant name=".ArcGames"/>
-    <variant name=".Audio"/>
-    <variant name=".BorealisGames"/>
-    <variant name=".CameraApp"/>
-    <variant name=".Ent"/>
-    <variant name=".General"/>
-    <variant name=".GeneralCamera"/>
-    <variant name=".MediaAppPdf"/>
-    <variant name=".OnboardingExperience"/>
-    <variant name=".Performance"/>
-    <variant name=".PersonalizationAvatar"/>
-    <variant name=".PersonalizationScreensaver"/>
-    <variant name=".PersonalizationWallpaper"/>
-    <variant name=".PhotosExperience"/>
-    <variant name=".SmartLock"/>
-    <variant name=".Stability"/>
-    <variant name=".Unlock"/>
-  </token>
 </histogram>
 
 <histogram name="Browser.ChromeOS.HatsStatus" enum="HatsStatus"
@@ -123,7 +74,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.DarkModeStatus" enum="DarkModeStatus"
-    expires_after="2024-03-17">
+    expires_after="2024-05-19">
   <owner>lgrey@chromium.org</owner>
   <owner>robliao@chromium.org</owner>
   <summary>
@@ -164,8 +115,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Browser.ERP.EnqueueFailureDestination"
+    enum="EnterpriseCloudReportingDestination" expires_after="2024-11-20">
+  <owner>vshenvi@google.com</owner>
+  <owner>cros-reporting-team@google.com</owner>
+  <summary>
+    Recorded when ReportQueue::Enqueue is called to post an event or metric to
+    ERP. It counts occurences of the reporting destination for the record
+    enqueue that failed.
+  </summary>
+</histogram>
+
+<histogram name="Browser.ERP.EnqueueSuccessDestination"
+    enum="EnterpriseCloudReportingDestination" expires_after="2024-11-20">
+  <owner>vshenvi@google.com</owner>
+  <owner>cros-reporting-team@google.com</owner>
+  <summary>
+    Recorded when ReportQueue::Enqueue is called to post an event or metric to
+    ERP. It counts occurences of the reporting destination for the record
+    enqueue that succeeded.
+  </summary>
+</histogram>
+
 <histogram name="Browser.ERP.EventEnqueueResult"
-    enum="EnterpriseCloudReportingStatusCode" expires_after="2024-03-24">
+    enum="EnterpriseCloudReportingStatusCode" expires_after="2024-05-26">
   <owner>lbaraz@chromium.org</owner>
   <owner>xuhong@chromium.org</owner>
   <owner>src/components/reporting/OWNERS</owner>
@@ -205,6 +178,33 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Browser.ERP.MetricsReporting.EventMetricEnqueued"
+    enum="EnterpriseCloudReportingMetricEventType" expires_after="2024-12-04">
+  <owner>vshenvi@google.com</owner>
+  <owner>cros-reporting-team@google.com</owner>
+  <summary>
+    Recorded when the MetricEventObserverManager enqueues an event metric. It
+    counts occurences of the event type that was extracted from the event
+    payload.
+  </summary>
+</histogram>
+
+<histogram name="Browser.ERP.MetricsReporting.{MetricCollector}NoMetricData"
+    enum="EnterpriseCloudReportingDestination" expires_after="2024-11-22">
+  <owner>vshenvi@google.com</owner>
+  <owner>cros-reporting-team@google.com</owner>
+  <summary>
+    Recorded when {MetricCollector}::OnMetricDataCollected is triggered from
+    samplers with no metric data to report. It counts occurences of the
+    reporting destination configured with the collector's report queue.
+  </summary>
+  <token key="MetricCollector">
+    <variant name="ManualCollector"/>
+    <variant name="OneShotCollector"/>
+    <variant name="PeriodicCollector"/>
+  </token>
+</histogram>
+
 <histogram name="Browser.ERP.PsrResult" enum="EnterpriseReportingPsrResult"
     expires_after="2024-07-31">
   <owner>xuhong@chromium.org</owner>
@@ -221,6 +221,19 @@ chromium-metrics-reviews@google.com.
   <owner>cros-reporting-team@google.com</owner>
   <summary>
     Records whether an event is accepted by ReportQueue rate limiter.
+  </summary>
+</histogram>
+
+<histogram name="Browser.ERP.RecordsPerUploadFromNonChromeosDevice"
+    units="records" expires_after="2024-11-09">
+  <owner>jrhilke@chromium.org</owner>
+  <owner>cros-reporting-team@google.com</owner>
+  <summary>
+    Recorded when uploading records to the reporting server from a non-ChromeOS
+    device (i.e. using the realtime reporting pipeline). Counts the number of
+    records batched into a single upload request from a {ManagementStatus}
+    device. Uploads containing zero records will not be included as those are
+    just encryption key requests.
   </summary>
 </histogram>
 
@@ -305,7 +318,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.ERP.{ManagementStatus}UploadEncryptedReport"
-    enum="EnterpriseDMServerRequestSuccess" expires_after="2024-03-01">
+    enum="EnterpriseDMServerRequestSuccess" expires_after="2024-05-05">
   <owner>jrhilke@google.com</owner>
   <owner>src/components/reporting/OWNERS</owner>
   <summary>
@@ -335,7 +348,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.MainThreadsCongestion.Used" units="janks"
-    expires_after="2024-03-31">
+    expires_after="2024-06-02">
   <owner>pmonette@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -399,7 +412,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.MainThreadsCongestion{UsageScenario}" units="janks"
-    expires_after="2024-03-31">
+    expires_after="2024-06-02">
   <owner>pmonette@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -638,6 +651,7 @@ chromium-metrics-reviews@google.com.
     <variant name=".RemovedOnOfflineAvailable"
         summary="Removed on offline page available"/>
     <variant name=".RemovedOnTabDestroy" summary="Removed on tab destroy"/>
+    <variant name=".RemovedOnTabHidden" summary="Removed on tab hidden"/>
   </token>
 </histogram>
 
@@ -652,7 +666,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.Responsiveness.IOJanksTotalPerMinute" units="janks"
-    expires_after="2024-03-17">
+    expires_after="2024-05-19">
   <owner>gab@chromium.org</owner>
   <owner>olivierli@chromium.org</owner>
   <summary>
@@ -666,7 +680,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.Responsiveness.IOJankyIntervalsPerMinute"
-    units="janks" expires_after="2024-03-17">
+    units="janks" expires_after="2024-05-19">
   <owner>gab@chromium.org</owner>
   <owner>olivierli@chromium.org</owner>
   <summary>
@@ -741,7 +755,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.Tabs.SelectionToVisibilityRequestTime"
-    units="microseconds" expires_after="2024-03-03">
+    units="microseconds" expires_after="2024-05-05">
   <owner>jonross@chromium.org</owner>
   <owner>sky@chromium.org</owner>
   <summary>
@@ -758,7 +772,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.Tabs.TabSwitchResult3{TabSwitchingType}"
-    enum="TabSwitchResult2" expires_after="2024-03-31">
+    enum="TabSwitchResult2" expires_after="2024-06-02">
   <owner>fdoray@chromium.org</owner>
   <owner>joenotcharles@google.com</owner>
   <owner>catan-team@chromium.org</owner>
@@ -770,7 +784,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.Tabs.TotalIncompleteSwitchDuration3{TabSwitchingType}"
-    units="ms" expires_after="2024-03-31">
+    units="ms" expires_after="2024-06-02">
   <owner>fdoray@chromium.org</owner>
   <owner>jonross@chromium.org</owner>
   <owner>joenotcharles@google.com</owner>
@@ -784,7 +798,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.Tabs.TotalSwitchDuration3{TabSwitchingType}"
-    units="ms" expires_after="2024-03-31">
+    units="ms" expires_after="2024-06-02">
   <owner>jonross@chromium.org</owner>
   <owner>joenotcharles@google.com</owner>
   <owner>catan-team@chromium.org</owner>
@@ -798,7 +812,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.WindowCount.Guest" units="units"
-    expires_after="2024-03-17">
+    expires_after="2024-05-19">
   <owner>rhalavati@chromium.org</owner>
   <owner>chrome-privacy-core@google.com</owner>
   <summary>
@@ -810,7 +824,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.WindowCount.Incognito" units="units"
-    expires_after="2024-03-17">
+    expires_after="2024-05-19">
   <owner>rhalavati@chromium.org</owner>
   <owner>chrome-privacy-core@google.com</owner>
   <summary>
@@ -964,26 +978,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="BrowserRenderProcessHost.RoutingIDSpaceUsed"
-    units="% of routing ID space used for browser-allocated routing IDs"
-    expires_after="2023-04-16">
-  <obsolete>
-    4/2023; the data has been collected, verifying that less than 1% of routing
-    ID space is used in practice.
-  </obsolete>
-  <owner>alexmos@chromium.org</owner>
-  <owner>dcheng@chromium.org</owner>
-  <summary>
-    Record the percentage of routing IDs ever used by a RenderProcessHost when
-    the C++ object is destroyed. The denominator is the range of all potentially
-    usable routing IDs—usually std::numeric_limits&lt;int32_t&gt;::max()—but may
-    be smaller (e.g. half that range).
-
-    This histogram does not record data if the routing ID overflows; that event
-    is captured as a browser crash instead.
-  </summary>
-</histogram>
-
 <histogram name="BrowserRenderProcessHost.SpareProcessMaybeTakeAction"
     enum="SpareProcessMaybeTakeAction" expires_after="2024-04-28">
   <owner>alexmos@chromium.org</owner>
@@ -1044,7 +1038,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BrowserServices.VerificationTime.Offline" units="ms"
-    expires_after="2024-01-01">
+    expires_after="2024-05-05">
   <owner>peconn@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -1055,7 +1049,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BrowserServices.VerificationTime.Online" units="ms"
-    expires_after="2024-03-03">
+    expires_after="2024-05-05">
   <owner>peconn@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -1214,7 +1208,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BrowserSwitcher.UrlListWildcard" enum="BooleanPresent"
-    expires_after="2024-03-05">
+    expires_after="2024-05-05">
   <owner>nicolaso@chromium.org</owner>
   <owner>pastarmovj@chromium.org</owner>
   <summary>
@@ -1288,7 +1282,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SidePanel.ComboboxMenuShown" enum="Boolean"
-    expires_after="2024-03-17">
+    expires_after="2024-05-19">
   <owner>corising@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
   <summary>Records true when the side panel combobox is opened.</summary>

@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_COMPONENTS_INSTALL_ATTRIBUTES_INSTALL_ATTRIBUTES_H_
 
 #include <map>
+#include <optional>
 #include <string>
 
 #include "base/compiler_specific.h"
@@ -18,7 +19,6 @@
 #include "chromeos/ash/components/dbus/userdataauth/install_attributes_client.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager.pb.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -193,7 +193,7 @@ class COMPONENT_EXPORT(ASH_INSTALL_ATTRIBUTES) InstallAttributes {
   // Helper for ReadImmutableAttributes.
   void ReadAttributesIfReady(
       base::OnceClosure callback,
-      absl::optional<user_data_auth::InstallAttributesGetStatusReply> reply);
+      std::optional<user_data_auth::InstallAttributesGetStatusReply> reply);
 
   // Helper for LockDevice(). Handles the result of InstallAttributesIsReady()
   // and continue processing LockDevice if the result is true.
@@ -203,7 +203,7 @@ class COMPONENT_EXPORT(ASH_INSTALL_ATTRIBUTES) InstallAttributes {
       const std::string& realm,
       const std::string& device_id,
       LockResultCallback callback,
-      absl::optional<user_data_auth::InstallAttributesGetStatusReply> reply);
+      std::optional<user_data_auth::InstallAttributesGetStatusReply> reply);
 
   // Confirms the registered user and invoke the callback.
   void OnReadImmutableAttributes(policy::DeviceMode mode,

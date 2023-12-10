@@ -8,6 +8,7 @@
 
 #include "chrome/browser/ash/login/oobe_quick_start/second_device_auth_broker.h"
 #include "chromeos/ash/components/attestation/mock_attestation_flow.h"
+#include "chromeos/ash/components/quick_start/types.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -38,6 +39,22 @@ void MockSecondDeviceAuthBroker::SetupChallengeBytesResponse(
           WithArg<0>(Invoke([challenge](ChallengeBytesCallback callback) {
             std::move(callback).Run(challenge);
           })));
+}
+
+void MockSecondDeviceAuthBroker::SetupAttestationCertificateResponse(
+    AttestationCertificateOrError cert) {
+  ON_CALL(*this, FetchAttestationCertificate)
+      .WillByDefault(
+          WithArg<1>(Invoke([cert](AttestationCertificateCallback callback) {
+            std::move(callback).Run(cert);
+          })));
+}
+void MockSecondDeviceAuthBroker::SetupAuthCodeResponse(
+    AuthCodeResponse response) {
+  ON_CALL(*this, FetchAuthCode)
+      .WillByDefault(WithArg<2>(Invoke([response](AuthCodeCallback callback) {
+        std::move(callback).Run(response);
+      })));
 }
 
 }  // namespace ash::quick_start

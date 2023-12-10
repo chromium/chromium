@@ -45,8 +45,10 @@ public interface FeedSurfaceScopeDependencyProvider extends SurfaceScopeDependen
          * partially visible or invisible.
          */
         int AUTOPLAY_STOPPED = 0;
+
         /** Auto-play reaches the end. */
         int AUTOPLAY_ENDED = 1;
+
         /** User clicks on the auto-play video. */
         int AUTOPLAY_CLICKED = 2;
 
@@ -54,6 +56,7 @@ public interface FeedSurfaceScopeDependencyProvider extends SurfaceScopeDependen
 
         /** The player starts to play the video. */
         int PLAY_REQUESTED = 3;
+
         int PLAY_STARTED = 4;
         int PLAY_ERROR = 5;
         int NUM_ENTRIES = 6;
@@ -113,9 +116,7 @@ public interface FeedSurfaceScopeDependencyProvider extends SurfaceScopeDependen
      */
     default void reportVideoPlayError(boolean isMutedAutoplay, @VideoPlayError int error) {}
 
-    /**
-     * Returns the bounds of the toolbar in global (root) coordinates.
-     */
+    /** Returns the bounds of the toolbar in global (root) coordinates. */
     default Rect getToolbarGlobalVisibleRect() {
         return new Rect();
     }

@@ -142,7 +142,7 @@ bool IsLoadedAsMHTMLArchive(LocalFrame* local_frame) {
 // navigation.
 bool IsBackForwardNavigationInProgress(LocalFrame* local_frame) {
   return local_frame &&
-         IsBackForwardLoadType(
+         IsBackForwardOrRestore(
              local_frame->Loader().GetDocumentLoader()->LoadType()) &&
          !local_frame->GetDocument()->LoadEventFinished();
 }
@@ -343,10 +343,9 @@ void LocalFrameClientImpl::Detached(FrameDetachType type) {
   // place at this point since we are no longer associated with the Page.
   web_frame_->SetClient(nullptr);
 
-  if (type == FrameDetachType::kSwap) {
-    client->WillSwap();
-  }
-  client->WillDetach();
+  client->WillDetach((type == FrameDetachType::kSwap)
+                         ? DetachReason::kNavigation
+                         : DetachReason::kFrameDeletion);
 
   // We only notify the browser process when the frame is being detached for
   // removal, not after a swap.
@@ -743,9 +742,10 @@ void LocalFrameClientImpl::DidChangePerformanceTiming() {
 void LocalFrameClientImpl::DidObserveUserInteraction(
     base::TimeTicks max_event_start,
     base::TimeTicks max_event_end,
-    UserInteractionType interaction_type) {
+    UserInteractionType interaction_type,
+    uint64_t interaction_offset) {
   web_frame_->Client()->DidObserveUserInteraction(
-      max_event_start, max_event_end, interaction_type);
+      max_event_start, max_event_end, interaction_type, interaction_offset);
 }
 
 void LocalFrameClientImpl::DidChangeCpuTiming(base::TimeDelta time) {
@@ -863,18 +863,6 @@ LocalFrame* LocalFrameClientImpl::CreateFrame(
     const AtomicString& name,
     HTMLFrameOwnerElement* owner_element) {
   return web_frame_->CreateChildFrame(name, owner_element);
-}
-
-std::pair<RemoteFrame*, PortalToken> LocalFrameClientImpl::CreatePortal(
-    HTMLPortalElement* portal,
-    mojo::PendingAssociatedReceiver<mojom::blink::Portal> portal_receiver,
-    mojo::PendingAssociatedRemote<mojom::blink::PortalClient> portal_client) {
-  return web_frame_->CreatePortal(portal, std::move(portal_receiver),
-                                  std::move(portal_client));
-}
-
-RemoteFrame* LocalFrameClientImpl::AdoptPortal(HTMLPortalElement* portal) {
-  return web_frame_->AdoptPortal(portal);
 }
 
 RemoteFrame* LocalFrameClientImpl::CreateFencedFrame(

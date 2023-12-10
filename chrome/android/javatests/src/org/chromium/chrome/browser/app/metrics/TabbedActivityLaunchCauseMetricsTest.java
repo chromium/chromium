@@ -137,7 +137,6 @@ public final class TabbedActivityLaunchCauseMetricsTest {
                                             .addFlags(Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY));
                         }
                     }
-                    ;
                 };
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> ApplicationStatus.registerStateListenerForAllActivities(listener));

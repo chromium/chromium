@@ -39,6 +39,7 @@ public class AndroidPermissionRequester {
      */
     public interface RequestDelegate {
         void onAndroidPermissionAccepted();
+
         void onAndroidPermissionCanceled();
     }
 
@@ -80,8 +81,11 @@ public class AndroidPermissionRequester {
     public static boolean hasRequiredAndroidPermissionsForContentSetting(
             AndroidPermissionDelegate permissionDelegate,
             @ContentSettingsType int contentSettingsType) {
-        Set<String> missingPermissions = filterPermissionsKeepMissing(permissionDelegate,
-                PermissionUtil.getRequiredAndroidPermissionsForContentSetting(contentSettingsType));
+        Set<String> missingPermissions =
+                filterPermissionsKeepMissing(
+                        permissionDelegate,
+                        PermissionUtil.getRequiredAndroidPermissionsForContentSetting(
+                                contentSettingsType));
 
         // TODO(crbug.com/1206673): AndroidPermissionDelegate.hasPermission has side effects that
         // allows users to recover from states where they had previously denied the permission, by
@@ -103,8 +107,10 @@ public class AndroidPermissionRequester {
      * If true is returned, this method will asynchronously request the necessary permissions using
      * a dialog, running methods on the RequestDelegate when the user has made a decision.
      */
-    public static boolean requestAndroidPermissions(final WindowAndroid windowAndroid,
-            final int[] contentSettingsTypes, final RequestDelegate delegate) {
+    public static boolean requestAndroidPermissions(
+            final WindowAndroid windowAndroid,
+            final int[] contentSettingsTypes,
+            final RequestDelegate delegate) {
         if (windowAndroid == null) return false;
 
         SparseArray<Set<String>> contentSettingsTypesToRequiredPermissionsMap = new SparseArray<>();
@@ -114,12 +120,14 @@ public class AndroidPermissionRequester {
                 continue;
             }
 
-            final Set<String> requiredPermissions = CollectionUtil.newHashSet(
-                    PermissionUtil.getRequiredAndroidPermissionsForContentSetting(
-                            contentSettingType));
-            final Set<String> optionalPermissions = CollectionUtil.newHashSet(
-                    PermissionUtil.getOptionalAndroidPermissionsForContentSetting(
-                            contentSettingType));
+            final Set<String> requiredPermissions =
+                    CollectionUtil.newHashSet(
+                            PermissionUtil.getRequiredAndroidPermissionsForContentSetting(
+                                    contentSettingType));
+            final Set<String> optionalPermissions =
+                    CollectionUtil.newHashSet(
+                            PermissionUtil.getOptionalAndroidPermissionsForContentSetting(
+                                    contentSettingType));
 
             contentSettingsTypesToRequiredPermissionsMap.append(
                     contentSettingType, requiredPermissions);
@@ -131,78 +139,92 @@ public class AndroidPermissionRequester {
             return false;
         }
 
-        PermissionCallback callback = new PermissionCallback() {
-            @Override
-            public void onRequestPermissionsResult(String[] permissions, int[] grantResults) {
-                boolean allRequestable = true;
-                Set<Integer> deniedContentSettings = new HashSet<Integer>();
+        PermissionCallback callback =
+                new PermissionCallback() {
+                    @Override
+                    public void onRequestPermissionsResult(
+                            String[] permissions, int[] grantResults) {
+                        boolean allRequestable = true;
+                        Set<Integer> deniedContentSettings = new HashSet<Integer>();
 
-                for (int i = 0; i < grantResults.length; i++) {
-                    if (grantResults[i] == PackageManager.PERMISSION_DENIED) {
-                        final int deniedContentSetting = getContentSettingType(
-                                contentSettingsTypesToRequiredPermissionsMap, permissions[i]);
-                        // Never mind if an optional Android permission was denied.
-                        if (deniedContentSetting == -1) {
-                            continue;
+                        for (int i = 0; i < grantResults.length; i++) {
+                            if (grantResults[i] == PackageManager.PERMISSION_DENIED) {
+                                final int deniedContentSetting =
+                                        getContentSettingType(
+                                                contentSettingsTypesToRequiredPermissionsMap,
+                                                permissions[i]);
+                                // Never mind if an optional Android permission was denied.
+                                if (deniedContentSetting == -1) {
+                                    continue;
+                                }
+                                deniedContentSettings.add(deniedContentSetting);
+                                if (!windowAndroid.canRequestPermission(permissions[i])) {
+                                    allRequestable = false;
+                                }
+                            }
                         }
-                        deniedContentSettings.add(deniedContentSetting);
-                        if (!windowAndroid.canRequestPermission(permissions[i])) {
-                            allRequestable = false;
-                        }
-                    }
-                }
 
-                Context context = windowAndroid.getContext().get();
+                        Context context = windowAndroid.getContext().get();
 
-                if (allRequestable && !deniedContentSettings.isEmpty() && context != null) {
-                    int deniedStringId = -1;
-                    if (deniedContentSettings.size() == 2
-                            && deniedContentSettings.contains(ContentSettingsType.MEDIASTREAM_MIC)
-                            && deniedContentSettings.contains(
-                                    ContentSettingsType.MEDIASTREAM_CAMERA)) {
-                        deniedStringId =
-                                R.string.infobar_missing_microphone_camera_permissions_text;
-                    } else if (deniedContentSettings.size() == 1) {
-                        if (deniedContentSettings.contains(ContentSettingsType.GEOLOCATION)) {
-                            deniedStringId = R.string.infobar_missing_location_permission_text;
-                        } else if (deniedContentSettings.contains(
-                                           ContentSettingsType.MEDIASTREAM_MIC)) {
-                            deniedStringId = R.string.infobar_missing_microphone_permission_text;
-                        } else if (deniedContentSettings.contains(
-                                           ContentSettingsType.MEDIASTREAM_CAMERA)) {
-                            deniedStringId = R.string.infobar_missing_camera_permission_text;
-                        } else if (deniedContentSettings.contains(ContentSettingsType.AR)) {
-                            deniedStringId = R.string.infobar_missing_ar_camera_permission_text;
-                        } else if (deniedContentSettings.contains(
-                                           ContentSettingsType.NOTIFICATIONS)) {
-                            // We don't want to request the notification prompt again, since user
-                            // declined it already.
+                        if (allRequestable && !deniedContentSettings.isEmpty() && context != null) {
+                            int deniedStringId = -1;
+                            if (deniedContentSettings.size() == 2
+                                    && deniedContentSettings.contains(
+                                            ContentSettingsType.MEDIASTREAM_MIC)
+                                    && deniedContentSettings.contains(
+                                            ContentSettingsType.MEDIASTREAM_CAMERA)) {
+                                deniedStringId =
+                                        R.string.infobar_missing_microphone_camera_permissions_text;
+                            } else if (deniedContentSettings.size() == 1) {
+                                if (deniedContentSettings.contains(
+                                        ContentSettingsType.GEOLOCATION)) {
+                                    deniedStringId =
+                                            R.string.infobar_missing_location_permission_text;
+                                } else if (deniedContentSettings.contains(
+                                        ContentSettingsType.MEDIASTREAM_MIC)) {
+                                    deniedStringId =
+                                            R.string.infobar_missing_microphone_permission_text;
+                                } else if (deniedContentSettings.contains(
+                                        ContentSettingsType.MEDIASTREAM_CAMERA)) {
+                                    deniedStringId =
+                                            R.string.infobar_missing_camera_permission_text;
+                                } else if (deniedContentSettings.contains(ContentSettingsType.AR)) {
+                                    deniedStringId =
+                                            R.string.infobar_missing_ar_camera_permission_text;
+                                } else if (deniedContentSettings.contains(
+                                        ContentSettingsType.NOTIFICATIONS)) {
+                                    // We don't want to request the notification prompt again, since
+                                    // user declined it already.
+                                    delegate.onAndroidPermissionCanceled();
+                                    return;
+                                }
+                            }
+
+                            assert deniedStringId != -1
+                                    : "Invalid combination of missing content settings: "
+                                            + deniedContentSettings;
+
+                            String appName = BuildInfo.getInstance().hostPackageLabel;
+                            showMissingPermissionDialog(
+                                    windowAndroid,
+                                    context.getString(deniedStringId, appName),
+                                    (model) -> {
+                                        final ModalDialogManager modalDialogManager =
+                                                windowAndroid.getModalDialogManager();
+                                        modalDialogManager.dismissDialog(
+                                                model,
+                                                DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
+                                        requestAndroidPermissions(
+                                                windowAndroid, contentSettingsTypes, delegate);
+                                    },
+                                    delegate::onAndroidPermissionCanceled);
+                        } else if (deniedContentSettings.isEmpty()) {
+                            delegate.onAndroidPermissionAccepted();
+                        } else {
                             delegate.onAndroidPermissionCanceled();
-                            return;
                         }
                     }
-
-                    assert deniedStringId
-                            != -1 : "Invalid combination of missing content settings: "
-                                    + deniedContentSettings;
-
-                    String appName = BuildInfo.getInstance().hostPackageLabel;
-                    showMissingPermissionDialog(
-                            windowAndroid, context.getString(deniedStringId, appName), (model) -> {
-                                final ModalDialogManager modalDialogManager =
-                                        windowAndroid.getModalDialogManager();
-                                modalDialogManager.dismissDialog(
-                                        model, DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
-                                requestAndroidPermissions(
-                                        windowAndroid, contentSettingsTypes, delegate);
-                            }, delegate::onAndroidPermissionCanceled);
-                } else if (deniedContentSettings.isEmpty()) {
-                    delegate.onAndroidPermissionAccepted();
-                } else {
-                    delegate.onAndroidPermissionCanceled();
-                }
-            }
-        };
+                };
 
         windowAndroid.requestPermissions(
                 allPermissionsToRequest.toArray(new String[allPermissionsToRequest.size()]),
@@ -220,26 +242,30 @@ public class AndroidPermissionRequester {
      *         It takes a PropertyModel.
      * @param onCancelled Runnable that is executed on cancellation.
      */
-    public static void showMissingPermissionDialog(WindowAndroid windowAndroid, String message,
-            Consumer<PropertyModel> onPositiveButtonClicked, Runnable onCancelled) {
+    public static void showMissingPermissionDialog(
+            WindowAndroid windowAndroid,
+            String message,
+            Consumer<PropertyModel> onPositiveButtonClicked,
+            Runnable onCancelled) {
         final ModalDialogManager modalDialogManager = windowAndroid.getModalDialogManager();
         assert modalDialogManager != null : "ModalDialogManager is null";
 
-        ModalDialogProperties.Controller controller = new ModalDialogProperties.Controller() {
-            @Override
-            public void onClick(PropertyModel model, int buttonType) {
-                if (buttonType == ModalDialogProperties.ButtonType.POSITIVE) {
-                    onPositiveButtonClicked.accept(model);
-                }
-            }
+        ModalDialogProperties.Controller controller =
+                new ModalDialogProperties.Controller() {
+                    @Override
+                    public void onClick(PropertyModel model, int buttonType) {
+                        if (buttonType == ModalDialogProperties.ButtonType.POSITIVE) {
+                            onPositiveButtonClicked.accept(model);
+                        }
+                    }
 
-            @Override
-            public void onDismiss(PropertyModel model, int dismissalCause) {
-                if (dismissalCause != DialogDismissalCause.POSITIVE_BUTTON_CLICKED) {
-                    onCancelled.run();
-                }
-            }
-        };
+                    @Override
+                    public void onDismiss(PropertyModel model, int dismissalCause) {
+                        if (dismissalCause != DialogDismissalCause.POSITIVE_BUTTON_CLICKED) {
+                            onCancelled.run();
+                        }
+                    }
+                };
         Context context = windowAndroid.getContext().get();
         View view = LayoutInflater.from(context).inflate(R.layout.update_permissions_dialog, null);
         TextView dialogText = view.findViewById(R.id.text);
@@ -248,7 +274,8 @@ public class AndroidPermissionRequester {
                 new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
                         .with(ModalDialogProperties.CUSTOM_VIEW, view)
                         .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, true)
-                        .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT,
+                        .with(
+                                ModalDialogProperties.POSITIVE_BUTTON_TEXT,
                                 context.getString(R.string.infobar_update_permissions_button_text))
                         .with(ModalDialogProperties.CONTROLLER, controller)
                         .build();

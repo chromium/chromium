@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_APP_LIST_SEARCH_FEDERATED_METRICS_MANAGER_H_
 #define CHROME_BROWSER_ASH_APP_LIST_SEARCH_FEDERATED_METRICS_MANAGER_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -15,7 +16,6 @@
 #include "base/scoped_observation.h"
 #include "chromeos/ash/services/federated/public/cpp/service_connection.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace app_list::federated {
 
@@ -109,7 +109,7 @@ class FederatedMetricsManager : ash::AppListNotifier::Observer {
   ash::SearchSessionConclusion session_result_ =
       ash::SearchSessionConclusion::kQuit;
 
-  absl::optional<bool> is_default_search_engine_google_;
+  std::optional<bool> is_default_search_engine_google_;
 
   // Note: There's no guarantee that the federated service will stay
   // available, so call `IsFederatedServiceAvailable()` before each attempt at

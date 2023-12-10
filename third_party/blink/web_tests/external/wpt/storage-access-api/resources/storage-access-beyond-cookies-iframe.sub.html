@@ -55,6 +55,28 @@
         }
         break;
       }
+      case "estimate": {
+        const estimate = await handle.estimate();
+        if (estimate.usage > 0) {
+          message = "Cross-site first-party estimate should be empty";
+        }
+        break;
+      }
+      case "blobStorage": {
+        const blob = await fetch(atob(id)).then(
+          (response) => response.text(),
+          () => "");
+        if (blob != "") {
+          message = "Cross-site first-party blob storage should be empty";
+        }
+        break;
+      }
+      case "BroadcastChannel": {
+        const channel = handle.BroadcastChannel(id);
+        channel.postMessage("Cross-origin handle access");
+        channel.close();
+        break;
+      }
       default: {
         message = "Unexpected type " + type;
         break;

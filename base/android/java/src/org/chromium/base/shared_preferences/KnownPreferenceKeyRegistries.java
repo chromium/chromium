@@ -42,8 +42,8 @@ public class KnownPreferenceKeyRegistries {
             if (!sKnownRegistries.contains(registry)) {
                 String message =
                         "An unknown registry was used, PreferenceKeyRegistries must be declared as "
-                        + "known in AllPreferenceKeyRegistries: "
-                        + String.join(",", registry.toDebugString());
+                                + "known in AllPreferenceKeyRegistries: "
+                                + String.join(",", registry.toDebugString());
                 assert false : message;
             }
         }
@@ -70,8 +70,8 @@ public class KnownPreferenceKeyRegistries {
             }
             String message =
                     "Unknown registries were used, PreferenceKeyRegistries must be declared as "
-                    + "known in AllPreferenceKeyRegistries: "
-                    + String.join(",", unknownRegistryNames);
+                            + "known in AllPreferenceKeyRegistries: "
+                            + String.join(",", unknownRegistryNames);
             assert false : message;
         }
 
@@ -84,10 +84,11 @@ public class KnownPreferenceKeyRegistries {
         Set<PreferenceKeyRegistry> registriesUsedBeforeInitialization =
                 sRegistriesUsedBeforeInitialization;
 
-        ResettersForTesting.register(() -> {
-            sKnownRegistries = previousKnownRegistries;
-            sRegistriesUsedBeforeInitialization = registriesUsedBeforeInitialization;
-        });
+        ResettersForTesting.register(
+                () -> {
+                    sKnownRegistries = previousKnownRegistries;
+                    sRegistriesUsedBeforeInitialization = registriesUsedBeforeInitialization;
+                });
         sKnownRegistries = null;
         sRegistriesUsedBeforeInitialization = new HashSet<>();
     }

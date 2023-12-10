@@ -572,11 +572,12 @@ std::pair<Node*, Element*> MarkupAccumulator::GetAuxiliaryDOMTree(
     return std::pair<Node*, Element*>();
   }
 
-  // Wrap the shadowroot into a declarative Shadow DOM <template shadowroot>
+  // Wrap the shadowroot into a declarative Shadow DOM <template shadowrootmode>
   // element.
   auto* template_element = MakeGarbageCollected<Element>(
       html_names::kTemplateTag, &(element.GetDocument()));
-  template_element->setAttribute(html_names::kShadowrootAttr, shadowroot_type);
+  template_element->setAttribute(html_names::kShadowrootmodeAttr,
+                                 shadowroot_type);
   if (shadow_root->delegatesFocus()) {
     template_element->SetBooleanAttribute(
         html_names::kShadowrootdelegatesfocusAttr, true);
@@ -643,8 +644,9 @@ void MarkupAccumulator::SerializeNodesWithNamespaces(
 }
 
 template <typename Strategy>
-String MarkupAccumulator::SerializeNodes(const Node& target_node,
-                                         ChildrenOnly children_only) {
+CORE_EXPORT String
+MarkupAccumulator::SerializeNodes(const Node& target_node,
+                                  ChildrenOnly children_only) {
   if (!SerializeAsHTML()) {
     // https://w3c.github.io/DOM-Parsing/#dfn-xml-serialization
     DCHECK_EQ(namespace_stack_.size(), 0u);

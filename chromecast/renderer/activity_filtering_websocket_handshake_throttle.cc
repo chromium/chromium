@@ -25,7 +25,7 @@ void ActivityFilteringWebSocketHandshakeThrottle::ThrottleHandshake(
 
   // Pass through allowed URLs, block otherwise.
   if (url_filter_->UrlMatchesWhitelist(gurl)) {
-    std::move(completion_callback).Run(absl::nullopt);
+    std::move(completion_callback).Run(std::nullopt);
     return;
   }
 

@@ -5,6 +5,7 @@
 #include "chrome/updater/auto_run_on_os_upgrade_task.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/base64.h"
@@ -17,6 +18,7 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/test/bind.h"
 #include "base/test/test_timeouts.h"
+#include "chrome/updater/activity.h"
 #include "chrome/updater/persisted_data.h"
 #include "chrome/updater/test_scope.h"
 #include "chrome/updater/util/unit_test_util.h"
@@ -51,8 +53,8 @@ class AutoRunOnOsUpgradeTaskTest : public testing::Test {
     pref_service_ = std::make_unique<TestingPrefServiceSimple>();
     update_client::RegisterPrefs(pref_service_->registry());
     RegisterPersistedDataPrefs(pref_service_->registry());
-    persisted_data_ = base::MakeRefCounted<PersistedData>(GetTestScope(),
-                                                          pref_service_.get());
+    persisted_data_ = base::MakeRefCounted<PersistedData>(
+        GetTestScope(), pref_service_.get(), nullptr);
     SetupCmdExe(GetTestScope(), cmd_exe_command_line_, temp_programfiles_dir_);
   }
 
@@ -76,8 +78,8 @@ class AutoRunOnOsUpgradeTaskTest : public testing::Test {
 };
 
 TEST_F(AutoRunOnOsUpgradeTaskTest, RunOnOsUpgradeForApp) {
-  const absl::optional<OSVERSIONINFOEX> current_os_version = GetOSVersion();
-  ASSERT_NE(current_os_version, absl::nullopt);
+  const std::optional<OSVERSIONINFOEX> current_os_version = GetOSVersion();
+  ASSERT_NE(current_os_version, std::nullopt);
   OSVERSIONINFOEX last_os_version = current_os_version.value();
   --last_os_version.dwMajorVersion;
 
@@ -101,7 +103,7 @@ TEST_F(AutoRunOnOsUpgradeTaskTest, RunOnOsUpgradeForApp) {
   ASSERT_EQ(os_upgrade_task->RunOnOsUpgradeForApp(base::WideToASCII(kAppId)),
             2U);
 
-  const std::wstring os_upgrade_string = [&]() {
+  const std::wstring os_upgrade_string = [&] {
     std::string versions;
     for (const auto& version : {last_os_version, current_os_version.value()}) {
       versions += base::StringPrintf(
@@ -117,7 +119,7 @@ TEST_F(AutoRunOnOsUpgradeTaskTest, RunOnOsUpgradeForApp) {
   base::FilePath os_upgrade_file = current_directory.Append(os_upgrade_string);
   base::FilePath hardcoded_file = current_directory.Append(L"HardcodedFile");
 
-  EXPECT_TRUE(test::WaitFor([&]() {
+  EXPECT_TRUE(test::WaitFor([&] {
     return base::PathExists(os_upgrade_file) &&
            base::PathExists(hardcoded_file);
   }));

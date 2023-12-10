@@ -21,6 +21,7 @@ export class MlBrowserProxy {
       OmniboxPageHandler.getRemote();
   private onResponseCallbacks: OnResponseCallback[] = [];
   private version: Promise<MlVersionObj>;
+  private readonly makeMlRequestCache: Record<string, Promise<number>> = {};
 
   constructor() {
     this.callbackRouter.handleNewAutocompleteResponse.addListener(
@@ -62,6 +63,8 @@ export class MlBrowserProxy {
   }
 
   makeMlRequest(signals: Signals): Promise<number> {
-    return this.handler.startMl(signals).then(({score}) => score);
+    const cacheKey = String(Object.values(signals));
+    return this.makeMlRequestCache[cacheKey] ||=
+               this.handler.startMl(signals).then(({score}) => score);
   }
 }

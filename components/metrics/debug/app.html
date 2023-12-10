@@ -73,6 +73,27 @@
   #export-uma-logs {
     margin-top: 10px;
   }
+
+  #structured-metrics-event-template {
+    text-align: center;
+  }
+
+  .sm-metric-row {
+    display: none;
+  }
+
+  #event-row:hover {
+    background-color: lightsteelblue;
+    cursor: pointer;
+  }
+
+  #sm-refresh-events {
+    margin-top: 10px;
+  }
+
+  #summary-row-template .td {
+    text-align: center;
+  }
 </style>
 <cr-tab-box>
   <div slot="tab">UMA</div>
@@ -105,13 +126,37 @@
       <tbody id="variations-summary-body"></tbody>
     </table>
   </div>
+  <if expr="chromeos_ash">
+    <div id="sm-tab" slot="tab">Structured Metrics</div>
+    <div slot="panel">
+      <h2>Structured Metrics Summary</h2>
+      <table>
+        <tbody id="sm-summary-body"></tbody>
+      </table>
+      <h2>Structured Metrics Events</h2>
+      <p>Events are only collected once this page is open.</p>
+      <p>Events are not polled, please refresh to view new events.</p>
+      <button id="sm-refresh-events">Refresh</button>
+      <table>
+        <thead>
+          <tr>
+            <th>Project</th>
+            <th>Event</th>
+            <th>Type</th>
+            <th>Uptime</th>
+          </tr>
+        </thead>
+        <tbody id="sm-events-body"></tbody>
+      </table>
+    </div>
+  </if>
 </cr-tab-box>
 <template id="uma-log-row-template">
   <tr>
     <td><!-- Type --></td>
     <td><!-- Hash --></td>
     <td><!-- Closed Timestamp --></td>
-    <td><!-- Size -->/td>
+    <td><!-- Size --></td>
     <td>
       <!-- Status -->
       <div class="uma-log-events">
@@ -128,5 +173,23 @@
   <tr>
     <td><!-- Key --></td>
     <td><!-- Value --></td>
+  </tr>
+</template>
+<template id="structured-metrics-event-row-template">
+  <tr id="event-row">
+    <td><!-- Project --></td>
+    <td><!-- Event --></td>
+    <td><!-- Type --></td>
+    <td><!-- Uptime --></td>
+  </tr>
+</template>
+<template id="structured-metrics-event-details-template">
+  <tr id="metrics-row" class="sm-metric-row">
+    <td colSpan="4">
+      <div><b>Details</b></div>
+      <table><tbody id="details-table"></tbody></table>
+      <div><b>Metrics</b></div>
+      <table><tbody id="metrics-table"></tbody></table>
+    </td>
   </tr>
 </template>

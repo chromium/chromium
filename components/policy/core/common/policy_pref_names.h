@@ -62,8 +62,6 @@ extern const char kLastPolicyCheckTime[];
 #if BUILDFLAG(IS_IOS)
 extern const char kUserPolicyNotificationWasShown[];
 #endif
-extern const char kOffsetParentNewSpecBehaviorEnabled[];
-extern const char kSendMouseEventsDisabledFormControlsEnabled[];
 extern const char kForceGoogleSafeSearch[];
 extern const char kForceYouTubeRestrict[];
 extern const char kHideWebStoreIcon[];

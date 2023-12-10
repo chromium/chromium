@@ -1,0 +1,27 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="lv">
+<translation id="1220509181886849806">Vai izmantot saglabāto paroli?</translation>
+<translation id="1435940442311036198">Izmantot piekļuves atslēgu citā ierīcē</translation>
+<translation id="1717486229951421299">Pieskaroties aizpildāmo akreditācijas datu saraksts ir atvērts pusekrāna augstumā.</translation>
+<translation id="2359808026110333948">Turpināt</translation>
+<translation id="2364266287022099258">Vai izmantot saglabāto piekļuves atslēgu?</translation>
+<translation id="3399357656427473483">Pieskaroties aizpildāmo akreditācijas datu saraksts.</translation>
+<translation id="3653689374478248324">Jūs pierakstīsieties vietnē <ph name="SITE_NAME" /></translation>
+<translation id="3950820424414687140">Pierakstīties</translation>
+<translation id="4553044860350038560">Citas piekļuves atslēgas</translation>
+<translation id="4598345735110653698">Pārvaldīt piekļuves atslēgas</translation>
+<translation id="4722735765955348426">Parole lietotājvārdam <ph name="USERNAME" /></translation>
+<translation id="4907224763885298217">Izmantojiet ekrāna bloķēšanu</translation>
+<translation id="5012523644916800014">Pārvaldīt paroles un piekļuves atslēgas</translation>
+<translation id="5441504010984421144">Pieskaroties aizpildāmo akreditācijas datu saraksts ir atvērts pilna ekrāna augstumā.</translation>
+<translation id="5591247451101092906">Vai izmantot saglabāto paroli vai piekļuves atslēgu?</translation>
+<translation id="5624120631404540903">Pārvaldīt paroles</translation>
+<translation id="6560306912274274630">Lietotāja <ph name="USERNAME" /> piekļuves atslēga. Izmantojiet ekrāna bloķēšanu.</translation>
+<translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{Jauna parole šai vietnei}zero{Jaunas paroles šai vietnei}one{Jaunas paroles šai vietnei}other{Jaunas paroles šai vietnei}}</translation>
+<translation id="7286867818472074330">Atlasīt piekļuves atslēgu</translation>
+<translation id="7669320311687290322"><ph name="ITEM_LABEL" />, <ph name="ITEM_POSITION" />. no <ph name="ITEMS_TOTAL" />.</translation>
+<translation id="7738288782501322815">Jūs saņēmāt paroles vietnei <ph name="SITE_NAME" /></translation>
+<translation id="8614995815226664591"><ph name="SENDER_NAME" /> kopīgoja ar jums paroli vietnei <ph name="SITE_NAME" /></translation>
+<translation id="8891372124884726271">Akreditācijas datu saraksts ir aizvērts.</translation>
+</translationbundle>

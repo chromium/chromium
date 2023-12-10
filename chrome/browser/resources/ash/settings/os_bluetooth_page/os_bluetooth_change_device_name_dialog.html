@@ -18,6 +18,11 @@
     margin-top: 24px;
   }
 
+  #changeNameInput {
+    position: relative;
+    z-index: 1;
+  }
+
   #inputInfo {
     background-color: var(--cros-bg-color-elevation-3);
     color: var(--cros-text-color-secondary);
@@ -26,16 +31,20 @@
     font-weight: 400;
     height: 30px;
     line-height: var(--cr-form-field-label-line-height);
+    margin-top: -25px;
     padding-top: 8px;
-    position: absolute;
-    top: 128px;
+    position: relative;
     width: 280px;
+    z-index: 2;
+  }
+
+  :host-context([chrome-refresh-2023]) #inputInfo {
+    margin-top: -15px;
   }
 
   #inputSubtitle {
     width: 260px;
   }
-
 </style>
 
 <cr-dialog id="dialog" show-on-attach>

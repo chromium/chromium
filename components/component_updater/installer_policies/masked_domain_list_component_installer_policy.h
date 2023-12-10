@@ -7,15 +7,11 @@
 
 #include <stdint.h>
 
-#include <memory>
 #include <string>
 #include <vector>
 
-#include "base/files/file.h"
 #include "base/functional/callback.h"
-#include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
-#include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "base/version.h"
 #include "components/component_updater/component_installer.h"
@@ -23,6 +19,9 @@
 namespace base {
 class FilePath;
 }  // namespace base
+
+inline constexpr base::FilePath::CharType kMaskedDomainListFileName[] =
+    FILE_PATH_LITERAL("list.pb");
 
 namespace component_updater {
 
@@ -32,7 +31,8 @@ class MaskedDomainListComponentInstallerPolicy
     : public ComponentInstallerPolicy {
  public:
   using ListReadyRepeatingCallback =
-      base::RepeatingCallback<void(base::Version, std::string)>;
+      base::RepeatingCallback<void(base::Version,
+                                   const absl::optional<std::string>&)>;
 
   // |on_list_ready| will be called on the UI thread when the list is ready. It
   // is exposed here for testing.
@@ -46,6 +46,9 @@ class MaskedDomainListComponentInstallerPolicy
       const MaskedDomainListComponentInstallerPolicy&) = delete;
 
   static bool IsEnabled();
+
+  // Returns the component's SHA2 hash as raw bytes.
+  static void GetPublicKeyHash(std::vector<uint8_t>* hash);
 
   static base::FilePath GetInstalledPath(const base::FilePath& base);
 

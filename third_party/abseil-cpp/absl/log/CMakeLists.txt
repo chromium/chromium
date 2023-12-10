@@ -238,6 +238,7 @@ absl_cc_library(
     absl::log_entry
     absl::log_severity
     absl::log_sink
+    absl::no_destructor
     absl::raw_logging_internal
     absl::synchronization
     absl::span

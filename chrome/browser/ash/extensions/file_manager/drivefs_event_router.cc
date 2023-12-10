@@ -9,6 +9,7 @@
 #include "base/files/file_path.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ash/extensions/file_manager/private_api_util.h"
@@ -38,14 +39,28 @@ file_manager_private::DriveConfirmDialogType ConvertDialogReasonType(
 
 }  // namespace
 
+// Time interval to check for stale sync status in
+// DriveFsEventRouter::path_to_sync_state_.
+constexpr auto kSyncStateStaleCheckInterval = base::Seconds(100);
+
+// Time after which a sync status in DriveFsEventRouter::path_to_sync_state_ is
+// considered to be stale.
+constexpr auto kSyncStateStaleThreshold = base::Seconds(90);
+
 DriveFsEventRouter::DriveFsEventRouter(
     Profile* profile,
     SystemNotificationManager* notification_manager)
-    : profile_(profile), notification_manager_(notification_manager) {}
+    : profile_(profile), notification_manager_(notification_manager) {
+  stale_sync_state_cleanup_timer_.Start(
+      FROM_HERE, kSyncStateStaleCheckInterval,
+      base::BindRepeating(&DriveFsEventRouter::ClearStaleSyncStates,
+                          weak_ptr_factory_.GetWeakPtr()));
+}
 
 DriveFsEventRouter::~DriveFsEventRouter() = default;
 
 void DriveFsEventRouter::OnUnmounted() {
+  stale_sync_state_cleanup_timer_.Stop();
   path_to_sync_state_.clear();
   dialog_callback_.Reset();
 }
@@ -53,7 +68,6 @@ void DriveFsEventRouter::OnUnmounted() {
 file_manager_private::SyncStatus ConvertSyncStatus(drivefs::SyncStatus status) {
   switch (status) {
     case drivefs::SyncStatus::kNotFound:
-    case drivefs::SyncStatus::kMoved:
       return file_manager_private::SyncStatus::kNotFound;
     case drivefs::SyncStatus::kQueued:
       return file_manager_private::SyncStatus::kQueued;
@@ -93,8 +107,9 @@ void DriveFsEventRouter::OnItemProgress(
 
   std::vector<const drivefs::SyncState> filtered_states;
 
-  filtered_states.emplace_back(drivefs::SyncState{
-      status, static_cast<float>(event.progress) / 100.0f, file_path});
+  filtered_states.emplace_back(
+      drivefs::SyncState{status, static_cast<float>(event.progress) / 100.0f,
+                         file_path, base::Time::Now()});
 
   if (status == drivefs::SyncStatus::kCompleted) {
     const auto previous_state_iter = path_to_sync_state_.find(path);
@@ -105,6 +120,9 @@ void DriveFsEventRouter::OnItemProgress(
     }
   } else {
     path_to_sync_state_[path] = filtered_states.back();
+    if (!stale_sync_state_cleanup_timer_.IsRunning()) {
+      stale_sync_state_cleanup_timer_.Reset();
+    }
   }
 
   std::vector<IndividualFileTransferStatus> statuses;
@@ -229,6 +247,19 @@ void DriveFsEventRouter::OnBulkPinProgress(
                  file_manager_private::OnBulkPinProgress::kEventName,
                  file_manager_private::OnBulkPinProgress::Create(
                      util::BulkPinProgressToJs(progress)));
+}
+
+void DriveFsEventRouter::ClearStaleSyncStates() {
+  const base::Time now = base::Time::Now();
+  for (auto it = path_to_sync_state_.cbegin();
+       it != path_to_sync_state_.cend();) {
+    const base::Time& last_updated = it->second.last_updated;
+    if (now - last_updated > kSyncStateStaleThreshold) {
+      it = path_to_sync_state_.erase(it);
+    } else {
+      ++it;
+    }
+  }
 }
 
 void DriveFsEventRouter::DisplayConfirmDialog(

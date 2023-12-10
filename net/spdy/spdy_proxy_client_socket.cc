@@ -153,13 +153,6 @@ bool SpdyProxyClientSocket::WasEverUsed() const {
   return was_ever_used_ || (spdy_stream_.get() && spdy_stream_->WasEverUsed());
 }
 
-bool SpdyProxyClientSocket::WasAlpnNegotiated() const {
-  // Do not delegate to `spdy_stream_`. While `spdy_stream_` negotiated ALPN
-  // with the proxy, this object represents the tunneled TCP connection to the
-  // origin.
-  return false;
-}
-
 NextProto SpdyProxyClientSocket::GetNegotiatedProtocol() const {
   // Do not delegate to `spdy_stream_`. While `spdy_stream_` negotiated ALPN
   // with the proxy, this object represents the tunneled TCP connection to the
@@ -584,7 +577,7 @@ void SpdyProxyClientSocket::MaybeSendEndStream() {
   if (write_callback_)
     return;
 
-  auto buffer = base::MakeRefCounted<IOBuffer>(/*buffer_size=*/0);
+  auto buffer = base::MakeRefCounted<IOBufferWithSize>(/*buffer_size=*/0);
   spdy_stream_->SendData(buffer.get(), /*length=*/0, NO_MORE_DATA_TO_SEND);
   end_stream_state_ = EndStreamState::kEndStreamSent;
 }

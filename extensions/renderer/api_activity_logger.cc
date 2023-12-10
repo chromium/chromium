@@ -98,7 +98,8 @@ void APIActivityLogger::LogAPICall(
         base::Value::FromUniquePtrValue(std::move(converted_arg)));
   }
 
-  ipc_sender->SendActivityLogIPC(script_context->GetExtensionID(),
+  ipc_sender->SendActivityLogIPC(script_context,
+                                 script_context->GetExtensionID(),
                                  IPCMessageSender::ActivityLogCallType::APICALL,
                                  call_name, std::move(value_args),
                                  /*extra=*/std::string());
@@ -111,7 +112,8 @@ void APIActivityLogger::LogEvent(IPCMessageSender* ipc_sender,
   if (!IsLoggingEnabled())
     return;
 
-  ipc_sender->SendActivityLogIPC(script_context->GetExtensionID(),
+  ipc_sender->SendActivityLogIPC(script_context,
+                                 script_context->GetExtensionID(),
                                  IPCMessageSender::ActivityLogCallType::EVENT,
                                  event_name, std::move(arguments),
                                  /*extra=*/std::string());
@@ -135,6 +137,11 @@ void APIActivityLogger::LogForJS(
   v8::Isolate* isolate = args.GetIsolate();
   v8::HandleScope handle_scope(isolate);
   v8::Local<v8::Context> context = isolate->GetCurrentContext();
+
+  ScriptContext* script_context = GetContextByV8Context(context);
+  if (!script_context) {
+    return;
+  }
 
   std::string extension_id = *v8::String::Utf8Value(isolate, args[0]);
   std::string call_name = *v8::String::Utf8Value(isolate, args[1]);
@@ -166,8 +173,8 @@ void APIActivityLogger::LogForJS(
     }
   }
 
-  ipc_sender_->SendActivityLogIPC(extension_id, call_type, call_name,
-                                  std::move(arguments), extra);
+  ipc_sender_->SendActivityLogIPC(script_context, extension_id, call_type,
+                                  call_name, std::move(arguments), extra);
 }
 
 }  // namespace extensions

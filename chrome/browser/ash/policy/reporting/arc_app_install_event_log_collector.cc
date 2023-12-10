@@ -123,7 +123,8 @@ void ArcAppInstallEventLogCollector::OnInstallationStarted(
 
 void ArcAppInstallEventLogCollector::OnInstallationFinished(
     const std::string& package_name,
-    bool success) {
+    bool success,
+    bool is_launchable_app) {
   if (!pending_packages_.count(package_name)) {
     return;
   }

@@ -187,8 +187,8 @@ LayoutUnit LayoutMedia::ComputePanelWidth(
   return LayoutUnit((edge_intersection_point - bottom_left_point).Length());
 }
 
-RecalcLayoutOverflowResult LayoutMedia::RecalcLayoutOverflow() {
-  return RecalcLayoutOverflowNG();
+RecalcScrollableOverflowResult LayoutMedia::RecalcScrollableOverflow() {
+  return RecalcScrollableOverflowNG();
 }
 
 }  // namespace blink

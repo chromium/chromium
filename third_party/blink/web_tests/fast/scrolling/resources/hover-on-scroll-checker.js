@@ -49,9 +49,7 @@ function runHoverStateOnScrollTest(scrollCallback, targetIndex) {
     const scrollListener =
         document.addEventListener('scroll', hoverStateCheck);
 
-    const scrollEndPromise = waitForScrollendEvent(document);
     await scrollCallback(center.x, center.y);
-    await scrollEndPromise;
 
     // If the hover change occurs after the last scroll event then
     // firstHoverUpdate remains undefined.  If the last scroll event is delayed

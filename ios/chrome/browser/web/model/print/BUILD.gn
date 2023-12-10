@@ -1,0 +1,14 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//ios/web/public/js_messaging/optimize_ts.gni")
+
+source_set("print") {
+  sources = [
+    "print_java_script_feature.h",
+    "print_tab_helper.h",
+    "web_state_printer.h",
+  ]
+  public_deps = [ "//ios/chrome/browser/web/print" ]
+}

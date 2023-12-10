@@ -20,11 +20,11 @@
 
 namespace autofill {
 
-class AutofillProfile;
 class AutofillTable;
 class AutofillWebDataBackend;
 class AutofillWebDataService;
 class CreditCard;
+class Iban;
 struct CreditCardCloudTokenData;
 struct PaymentsCustomerData;
 
@@ -76,15 +76,6 @@ class AutofillWalletSyncBridge : public base::SupportsUserData::Data,
   void GetAllDataForTesting(DataCallback callback);
 
  private:
-  template <class Item>
-  struct AutofillWalletDiff {
-    int items_added = 0;
-    int items_removed = 0;
-    std::vector<AutofillDataModelChange<Item>> changes;
-
-    bool IsEmpty() const { return items_added == 0 && items_removed == 0; }
-  };
-
   // Sends all Wallet Data to the |callback|. If |enforce_utf8|, the string
   // fields that are in non-UTF-8 get encoded so that they conform to UTF-8.
   void GetAllDataImpl(DataCallback callback, bool enforce_utf8);
@@ -106,30 +97,18 @@ class AutofillWalletSyncBridge : public base::SupportsUserData::Data,
   bool SetWalletCards(std::vector<CreditCard> wallet_cards,
                       bool notify_webdata_backend);
 
-  // Sets `wallet_addresses` to this client and returns whether any change has
-  // been applied (i.e., whether `wallet_addresses` was different from local
-  // data). If `notify_webdata_backend`, it also notifies via WebDataBackend
-  // about any individual entity changes.
-  bool SetWalletAddresses(std::vector<AutofillProfile> wallet_addresses,
-                          bool notify_webdata_backend);
+  // Sets `wallet_ibans` to this client and returns whether any change has been
+  // applied (i.e., whether `wallet_ibans` was different from local data). If
+  // `notify_webdata_backend` is true, it also notifies via WebDataBackend about
+  // any individual entity changes.
+  bool SetWalletIbans(std::vector<Iban> wallet_ibans,
+                      bool notify_webdata_backend);
 
   // Sets |cloud_token_data| to this client and returns whether any change has
   // been applied (i.e., whether |cloud_token_data| was different from the local
   // data).
   bool SetCreditCardCloudTokenData(
       const std::vector<CreditCardCloudTokenData>& cloud_token_data);
-
-  // Computes a "diff" (items added, items removed) of two vectors of items,
-  // which should be either CreditCard or AutofillProfile. This is used for
-  // three purposes:
-  // 1) Detecting if anything has changed, so that we don't write to disk in the
-  //    common case where nothing has changed.
-  // 3) Notifying |web_data_backend_| of any changes.
-  // 2) Recording metrics on the number of added/removed items.
-  template <class Item>
-  AutofillWalletDiff<Item> ComputeAutofillWalletDiff(
-      const std::vector<std::unique_ptr<Item>>& old_data,
-      const std::vector<Item>& new_data);
 
   // Returns the table associated with the |web_data_backend_|.
   AutofillTable* GetAutofillTable();

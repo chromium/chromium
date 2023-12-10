@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="tr">
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> sekmeyi son zamanlarda hiç kullanmadınız. Bunlar kapatılsın mı?</translation>
+<translation id="1155815720264022949">Eski sekmeleri kapatmak ister misiniz?</translation>
 <translation id="1215127405478249895">Sekmeleri inceleyin</translation>
 <translation id="125153950246128346">Başka bir sekmeyi görmek için dokunun</translation>
 <translation id="1499635324672558517">Tüm Gizli sekmeler kapatılsın mı?</translation>
@@ -46,9 +47,11 @@
 <translation id="5073204694187207510">Tam ekran ızgarayı gizler</translation>
 <translation id="5076161749301278626">Mağaza yorumları gösterilsin mi?</translation>
 <translation id="5082793167783849073">Grup oluşturarak sayfaları hızlıca karşılaştırın. Başlamak için bir bağlantıya dokunup basılı tutun.</translation>
+<translation id="5303274951032363933">{TABS_COUNT,plural, =1{Yakın zamanda kullanmadığınız <ph name="TABS_COUNT_ONE" /> sekme var}other{Yakın zamanda kullanmadığınız <ph name="TABS_COUNT_MANY" /> sekme var}}</translation>
 <translation id="5339733443032484186">Son sekmeniz</translation>
 <translation id="5490235265819901748">Sekme grubu genişletildi</translation>
 <translation id="5494920125229734069">Tümünü seç</translation>
+<translation id="5545379293264651575">İncelemeden kapat</translation>
 <translation id="5556417849629758491">Mağaza bilgilerini görüntüleme seçeneği, ekranın üst kısmına yakın bir yerdedir</translation>
 <translation id="5558362125926932819"><ph name="NUMBER_OF_TABS" /> sekmeli sekme grubunu kapat</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" /> sekme gruplandı</translation>
@@ -85,7 +88,6 @@
 <translation id="7885132941432959125">Sekmeyi sağa taşı</translation>
 <translation id="7966321538264951561">Önerileri kapat.</translation>
 <translation id="8029301326595421733">Bu mağazayla ilgili bilgiler tam ekranda açıldı</translation>
-<translation id="814503310257431685">Tümünü göster</translation>
 <translation id="8205266828577616993">Sekmeyi yukarı taşı</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Seçilen <ph name="TABS_COUNT_ONE" /> sekmeyi kapat}other{Seçilen <ph name="TABS_COUNT_MANY" /> sekmeyi kapat}}</translation>
 <translation id="8398929769197326728">Yeni Klasör - <ph name="CURRENT_TIMESTAMP_MS" /></translation>

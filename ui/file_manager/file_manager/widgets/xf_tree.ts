@@ -177,7 +177,6 @@ export class XfTree extends XfBase {
     } else {
       treeItem.selected = true;
     }
-    this.makeItemFocusable_(treeItem);
     treeItem.focus();
   }
 
@@ -205,7 +204,6 @@ export class XfTree extends XfBase {
     if (innerClickTarget.className !== 'expand-icon' &&
         treeItem.hasChildren()) {
       treeItem.expanded = !treeItem.expanded;
-      this.makeItemFocusable_(treeItem);
       treeItem.focus();
     }
   }
@@ -234,7 +232,6 @@ export class XfTree extends XfBase {
       return;
     }
 
-    this.makeItemFocusable_(treeItem);
     treeItem.focus();
   }
 
@@ -316,7 +313,6 @@ export class XfTree extends XfBase {
     }
 
     if (itemToFocus) {
-      this.makeItemFocusable_(itemToFocus);
       itemToFocus.focus();
       e.preventDefault();
     }

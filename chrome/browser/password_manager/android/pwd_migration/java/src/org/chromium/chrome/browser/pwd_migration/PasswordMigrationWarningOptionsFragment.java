@@ -41,9 +41,13 @@ public class PasswordMigrationWarningOptionsFragment extends Fragment {
     private Runnable mOnResumeExportFlowCallback;
     private boolean mShouldOfferSync;
 
-    public PasswordMigrationWarningOptionsFragment(String paswordExportText,
-            boolean shouldOfferSync, PasswordMigrationWarningOnClickHandler onClickHandler,
-            Runnable cancelCallback, String accountDisplayName, FragmentManager fragmentManager,
+    public PasswordMigrationWarningOptionsFragment(
+            String paswordExportText,
+            boolean shouldOfferSync,
+            PasswordMigrationWarningOnClickHandler onClickHandler,
+            Runnable cancelCallback,
+            String accountDisplayName,
+            FragmentManager fragmentManager,
             Runnable onResumeExportFlowCallback) {
         super(R.layout.pwd_migration_warning_options);
         mPaswordExportText = paswordExportText;

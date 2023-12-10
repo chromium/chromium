@@ -72,15 +72,6 @@ script_test("system_webview_crx_smoke_tests") {
   ]
 }
 
-script_test("system_webview_finch_smoke_tests") {
-  script = "//testing/scripts/run_finch_smoke_tests_android.py"
-  data_deps = [
-    "//android_webview:system_webview_apk",
-    "//android_webview/tools/system_webview_shell:system_webview_shell_apk",
-    "//third_party/blink/tools:wpt_tests_android_isolate",
-  ]
-}
-
 script_test("system_webview_wpt") {
   script = "//third_party/blink/tools/run_wpt_tests.py"
   args = [
@@ -325,10 +316,10 @@ base_webview_instrumentation_test_apk("webview_instrumentation_test_apk") {
     "../javatests/src/org/chromium/android_webview/test/AwDisplayCutoutTest.java",
     "../javatests/src/org/chromium/android_webview/test/AwFileChooserTest.java",
     "../javatests/src/org/chromium/android_webview/test/AwImeTest.java",
-    "../javatests/src/org/chromium/android_webview/test/AwIntegrityApiStatusConfigTest.java",
     "../javatests/src/org/chromium/android_webview/test/AwJavaBridgeTest.java",
     "../javatests/src/org/chromium/android_webview/test/AwKeyboardShortcutsTest.java",
     "../javatests/src/org/chromium/android_webview/test/AwLegacyQuirksTest.java",
+    "../javatests/src/org/chromium/android_webview/test/AwMediaIntegrityApiStatusConfigTest.java",
     "../javatests/src/org/chromium/android_webview/test/AwMetricsIntegrationTest.java",
     "../javatests/src/org/chromium/android_webview/test/AwMetricsLogUploaderTest.java",
     "../javatests/src/org/chromium/android_webview/test/AwNetworkConfigurationTest.java",
@@ -349,7 +340,6 @@ base_webview_instrumentation_test_apk("webview_instrumentation_test_apk") {
     "../javatests/src/org/chromium/android_webview/test/AwVariationsSeedFetcherTest.java",
     "../javatests/src/org/chromium/android_webview/test/AwWebContentsObserverTest.java",
     "../javatests/src/org/chromium/android_webview/test/AwZoomTest.java",
-    "../javatests/src/org/chromium/android_webview/test/ChromeAutocompleteSafeModeTest.java",
     "../javatests/src/org/chromium/android_webview/test/CleanupReferenceTest.java",
     "../javatests/src/org/chromium/android_webview/test/ClearHistoryTest.java",
     "../javatests/src/org/chromium/android_webview/test/ClientAddMessageToConsoleTest.java",
@@ -426,6 +416,7 @@ base_webview_instrumentation_test_apk("webview_instrumentation_test_apk") {
     "../javatests/src/org/chromium/android_webview/test/devui/util/UploadedCrashesInfoLoaderTest.java",
     "../javatests/src/org/chromium/android_webview/test/devui/util/WebViewCrashInfoCollectorTest.java",
     "../javatests/src/org/chromium/android_webview/test/devui/util/WebViewCrashLogParserTest.java",
+    "../javatests/src/org/chromium/android_webview/test/services/AwComponentUpdateServiceTest.java",
     "../javatests/src/org/chromium/android_webview/test/services/ComponentsProviderServiceTest.java",
     "../javatests/src/org/chromium/android_webview/test/services/CrashLoggingUtilsTest.java",
     "../javatests/src/org/chromium/android_webview/test/services/CrashReceiverServiceTest.java",
@@ -550,7 +541,6 @@ test("android_webview_unittests") {
     "//android_webview/browser/lifecycle",
     "//android_webview/browser/metrics",
     "//android_webview/common",
-    "//android_webview/common:tests",
     "//android_webview/nonembedded",
     "//base/test:proto_test_support",
     "//base/test:test_support",
@@ -609,7 +599,6 @@ test("android_webview_unittests") {
     "../browser/aw_pac_processor_unittest.cc",
     "../browser/aw_permission_manager_unittest.cc",
     "../browser/aw_user_agent_metadata_unittest.cc",
-    "../browser/component_updater/loader_policies/aw_apps_package_names_allowlist_component_loader_policy_unittest.cc",
     "../browser/enterprise_authentication_app_link_policy_handler_unittest.cc",
     "../browser/gfx/begin_frame_source_webview_unittest.cc",
     "../browser/gfx/browser_view_renderer_unittest.cc",
@@ -640,7 +629,6 @@ test("android_webview_unittests") {
     "../nonembedded/component_updater/aw_component_installer_policy_unittest.cc",
     "../nonembedded/component_updater/aw_component_update_service_test.cc",
     "../nonembedded/component_updater/aw_component_updater_configurator_unittest.cc",
-    "../nonembedded/component_updater/installer_policies/aw_package_names_allowlist_component_installer_policy_unittest.cc",
   ]
 }
 

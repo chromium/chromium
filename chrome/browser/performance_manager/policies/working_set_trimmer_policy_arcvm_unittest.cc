@@ -32,6 +32,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/test/test_windows.h"
+#include "ui/display/test/test_screen.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace performance_manager {
@@ -120,6 +121,8 @@ class WorkingSetTrimmerPolicyArcVmTest : public testing::Test {
 
  private:
   content::BrowserTaskEnvironment task_environment_;
+  display::test::TestScreen test_screen_{/*create_display=*/true,
+                                         /*register_screen=*/true};
   TestingPrefServiceSimple local_state_;
   session_manager::SessionManager session_manager_;
   std::unique_ptr<arc::ArcServiceManager> arc_service_manager_;

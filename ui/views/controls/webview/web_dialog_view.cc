@@ -57,7 +57,7 @@ void ObservableWebView::ResetDelegate() {
   delegate_ = nullptr;
 }
 
-BEGIN_METADATA(ObservableWebView, WebView)
+BEGIN_METADATA(ObservableWebView)
 END_METADATA
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -445,7 +445,7 @@ void WebDialogView::RequestMediaAccessPermission(
 
 bool WebDialogView::CheckMediaAccessPermission(
     content::RenderFrameHost* render_frame_host,
-    const GURL& security_origin,
+    const url::Origin& security_origin,
     blink::mojom::MediaStreamType type) {
   if (delegate_) {
     return delegate_->CheckMediaAccessPermission(render_frame_host,
@@ -477,7 +477,7 @@ void WebDialogView::NotifyDialogWillClose() {
     delegate_->OnDialogWillClose();
 }
 
-BEGIN_METADATA(WebDialogView, ClientView)
+BEGIN_METADATA(WebDialogView)
 ADD_READONLY_PROPERTY_METADATA(ObservableWebView*, WebView);
 END_METADATA
 

@@ -44,11 +44,11 @@ void AcceleratorKeycodeLookupCache::InputMethodChanged(
   key_code_to_string16_cache_.clear();
 }
 
-absl::optional<std::u16string> AcceleratorKeycodeLookupCache::Find(
+std::optional<std::u16string> AcceleratorKeycodeLookupCache::Find(
     ui::KeyboardCode key_code) {
   const auto& found_iter = key_code_to_string16_cache_.find(key_code);
   if (found_iter == key_code_to_string16_cache_.end()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return found_iter->second;
 }

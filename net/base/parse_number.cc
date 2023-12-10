@@ -16,21 +16,21 @@ namespace {
 // consistent interface to StringToXXX() that calls the appropriate //base
 // version. This simplifies writing generic code with a template.
 
-bool StringToNumber(base::StringPiece input, int32_t* output) {
+bool StringToNumber(std::string_view input, int32_t* output) {
   // This assumes ints are 32-bits (will fail compile if that ever changes).
   return base::StringToInt(input, output);
 }
 
-bool StringToNumber(base::StringPiece input, uint32_t* output) {
+bool StringToNumber(std::string_view input, uint32_t* output) {
   // This assumes ints are 32-bits (will fail compile if that ever changes).
   return base::StringToUint(input, output);
 }
 
-bool StringToNumber(base::StringPiece input, int64_t* output) {
+bool StringToNumber(std::string_view input, int64_t* output) {
   return base::StringToInt64(input, output);
 }
 
-bool StringToNumber(base::StringPiece input, uint64_t* output) {
+bool StringToNumber(std::string_view input, uint64_t* output) {
   return base::StringToUint64(input, output);
 }
 
@@ -41,7 +41,7 @@ bool SetError(ParseIntError error, ParseIntError* optional_error) {
 }
 
 template <typename T>
-bool ParseIntHelper(base::StringPiece input,
+bool ParseIntHelper(std::string_view input,
                     ParseIntFormat format,
                     T* output,
                     ParseIntError* optional_error) {
@@ -97,7 +97,7 @@ bool ParseIntHelper(base::StringPiece input,
   // as it has ambiguity with parse errors.
 
   // Strip any leading negative sign off the number.
-  base::StringPiece numeric_portion =
+  std::string_view numeric_portion =
       starts_with_negative ? input.substr(1) : input;
 
   // Test if |numeric_portion| is a valid non-negative integer.
@@ -115,21 +115,21 @@ bool ParseIntHelper(base::StringPiece input,
 
 }  // namespace
 
-bool ParseInt32(base::StringPiece input,
+bool ParseInt32(std::string_view input,
                 ParseIntFormat format,
                 int32_t* output,
                 ParseIntError* optional_error) {
   return ParseIntHelper(input, format, output, optional_error);
 }
 
-bool ParseInt64(base::StringPiece input,
+bool ParseInt64(std::string_view input,
                 ParseIntFormat format,
                 int64_t* output,
                 ParseIntError* optional_error) {
   return ParseIntHelper(input, format, output, optional_error);
 }
 
-bool ParseUint32(base::StringPiece input,
+bool ParseUint32(std::string_view input,
                  ParseIntFormat format,
                  uint32_t* output,
                  ParseIntError* optional_error) {
@@ -138,7 +138,7 @@ bool ParseUint32(base::StringPiece input,
   return ParseIntHelper(input, format, output, optional_error);
 }
 
-bool ParseUint64(base::StringPiece input,
+bool ParseUint64(std::string_view input,
                  ParseIntFormat format,
                  uint64_t* output,
                  ParseIntError* optional_error) {

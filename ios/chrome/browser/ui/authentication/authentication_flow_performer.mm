@@ -35,12 +35,12 @@
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/signin/authentication_service.h"
-#import "ios/chrome/browser/signin/authentication_service_factory.h"
-#import "ios/chrome/browser/signin/constants.h"
-#import "ios/chrome/browser/signin/identity_manager_factory.h"
-#import "ios/chrome/browser/signin/system_identity.h"
-#import "ios/chrome/browser/signin/system_identity_manager.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/constants.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
+#import "ios/chrome/browser/signin/model/system_identity.h"
+#import "ios/chrome/browser/signin/model/system_identity_manager.h"
 #import "ios/chrome/browser/sync/model/sync_setup_service.h"
 #import "ios/chrome/browser/sync/model/sync_setup_service_factory.h"
 #import "ios/chrome/browser/ui/authentication/authentication_constants.h"
@@ -502,22 +502,30 @@ NSString* const kAuthenticationSnackbarCategory =
   [self startWatchdogTimerForUserPolicyRegistration];
   userPolicyService->RegisterForPolicyWithAccountId(
       userEmail, accountID,
-      base::BindOnce(^(const std::string& dmToken,
-                       const std::string& clientID) {
+      base::BindOnce(^(const std::string& dmToken, const std::string& clientID,
+                       const std::vector<std::string>& userAffiliationIDs) {
         if (![self stopWatchdogTimer]) {
           // Watchdog timer has already fired, don't notify the delegate.
           return;
         }
+        NSMutableArray<NSString*>* userAffiliationIDsNSArray =
+            [[NSMutableArray alloc] init];
+        for (const auto& userAffiliationID : userAffiliationIDs) {
+          [userAffiliationIDsNSArray
+              addObject:base::SysUTF8ToNSString(userAffiliationID)];
+        }
         [weakSelf.delegate
             didRegisterForUserPolicyWithDMToken:base::SysUTF8ToNSString(dmToken)
                                        clientID:base::SysUTF8ToNSString(
-                                                    clientID)];
+                                                    clientID)
+                             userAffiliationIDs:userAffiliationIDsNSArray];
       }));
 }
 
 - (void)fetchUserPolicy:(ChromeBrowserState*)browserState
             withDmToken:(NSString*)dmToken
                clientID:(NSString*)clientID
+     userAffiliationIDs:(NSArray<NSString*>*)userAffiliationIDs
                identity:(id<SystemIdentity>)identity {
   // Should only fetch user policies when the feature is enabled.
   DCHECK(policy::IsAnyUserPolicyFeatureEnabled());
@@ -526,7 +534,7 @@ NSString* const kAuthenticationSnackbarCategory =
   DCHECK([dmToken length] > 0);
   DCHECK([clientID length] > 0);
 
-  policy::UserPolicySigninService* policy_service =
+  policy::UserPolicySigninService* policyService =
       policy::UserPolicySigninServiceFactory::GetForBrowserState(browserState);
   const std::string userEmail = base::SysNSStringToUTF8(identity.userEmail);
 
@@ -536,10 +544,16 @@ NSString* const kAuthenticationSnackbarCategory =
 
   __weak __typeof(self) weakSelf = self;
 
+  std::vector<std::string> userAffiliationIDsVector;
+  for (NSString* userAffiliationID in userAffiliationIDs) {
+    userAffiliationIDsVector.push_back(
+        base::SysNSStringToUTF8(userAffiliationID));
+  }
+
   [self startWatchdogTimerForUserPolicyFetch];
-  policy_service->FetchPolicyForSignedInUser(
+  policyService->FetchPolicyForSignedInUser(
       accountID, base::SysNSStringToUTF8(dmToken),
-      base::SysNSStringToUTF8(clientID),
+      base::SysNSStringToUTF8(clientID), userAffiliationIDsVector,
       browserState->GetSharedURLLoaderFactory(),
       base::BindOnce(^(bool success) {
         if (![self stopWatchdogTimer]) {
@@ -660,7 +674,9 @@ NSString* const kAuthenticationSnackbarCategory =
     if (!strongSelf)
       return;
     [strongSelf stopWatchdogTimer];
-    [strongSelf.delegate didRegisterForUserPolicyWithDMToken:@"" clientID:@""];
+    [strongSelf.delegate didRegisterForUserPolicyWithDMToken:@""
+                                                    clientID:@""
+                                          userAffiliationIDs:@[]];
   };
   [self startWatchdogTimerWithTimeoutBlock:timeoutBlock];
 }

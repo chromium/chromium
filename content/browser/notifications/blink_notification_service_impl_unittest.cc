@@ -44,6 +44,7 @@
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration_options.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/gfx/image/image_unittest_util.h"
 
 using ::testing::_;
 using ::testing::Return;
@@ -59,13 +60,6 @@ const char kBadMessageImproperNotificationImage[] =
     "disabled.";
 const char kBadMessageInvalidNotificationTriggerTimestamp[] =
     "Received an invalid notification trigger timestamp.";
-
-SkBitmap CreateBitmap(int width, int height, SkColor color) {
-  SkBitmap bitmap;
-  bitmap.allocN32Pixels(width, height);
-  bitmap.eraseColor(color);
-  return bitmap;
-}
 
 class MockNonPersistentNotificationListener
     : public blink::mojom::NonPersistentNotificationListener {
@@ -541,7 +535,7 @@ TEST_F(BlinkNotificationServiceImplTest,
   SetPermissionStatus(blink::mojom::PermissionStatus::GRANTED);
 
   blink::NotificationResources resources;
-  resources.image = CreateBitmap(200, 100, SK_ColorMAGENTA);
+  resources.image = gfx::test::CreateBitmap(200, 100, SK_ColorMAGENTA);
   DisplayNonPersistentNotification(
       "token", blink::PlatformNotificationData(), resources,
       non_persistent_notification_listener_.GetRemote());
@@ -558,7 +552,7 @@ TEST_F(BlinkNotificationServiceImplTest,
 
   ASSERT_TRUE(bad_messages_.empty());
   blink::NotificationResources resources;
-  resources.image = CreateBitmap(200, 100, SK_ColorMAGENTA);
+  resources.image = gfx::test::CreateBitmap(200, 100, SK_ColorMAGENTA);
   DisplayNonPersistentNotification(
       "token", blink::PlatformNotificationData(), resources,
       non_persistent_notification_listener_.GetRemote());
@@ -574,7 +568,7 @@ TEST_F(BlinkNotificationServiceImplTest,
   RegisterServiceWorker(&registration);
 
   blink::NotificationResources resources;
-  resources.image = CreateBitmap(200, 100, SK_ColorMAGENTA);
+  resources.image = gfx::test::CreateBitmap(200, 100, SK_ColorMAGENTA);
   DisplayPersistentNotificationSync(
       registration->id(), blink::PlatformNotificationData(), resources);
 
@@ -599,7 +593,7 @@ TEST_F(BlinkNotificationServiceImplTest,
 
   ASSERT_TRUE(bad_messages_.empty());
   blink::NotificationResources resources;
-  resources.image = CreateBitmap(200, 100, SK_ColorMAGENTA);
+  resources.image = gfx::test::CreateBitmap(200, 100, SK_ColorMAGENTA);
   DisplayPersistentNotificationSync(
       registration->id(), blink::PlatformNotificationData(), resources);
   EXPECT_EQ(1u, bad_messages_.size());
@@ -852,7 +846,8 @@ TEST_F(BlinkNotificationServiceImplTest, ResourcesStoredForTriggered) {
   scheduled_notification_data.show_trigger_timestamp = timestamp;
 
   blink::NotificationResources resources;
-  resources.notification_icon = CreateBitmap(10, 10, SK_ColorMAGENTA);
+  resources.notification_icon =
+      gfx::test::CreateBitmap(/*size=*/10, SK_ColorMAGENTA);
 
   blink::PlatformNotificationData displayed_notification_data;
   displayed_notification_data.tag = "tagB";

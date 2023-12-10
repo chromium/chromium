@@ -2,7 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string>
+#include <utility>
+
 #include "base/command_line.h"
+#include "base/files/scoped_file.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_executor.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
@@ -13,7 +17,9 @@ int main(int argc, char** argv) {
   base::ThreadPoolInstance::CreateAndStartWithDefaultParams("fake_dmserver");
   base::CommandLine::Init(argc, argv);
 
-  std::string policy_blob_path, client_state_path, unix_socket_path;
+  std::string policy_blob_path;
+  std::string client_state_path;
+  std::string unix_socket_path;
   absl::optional<std::string> log_path;
   base::ScopedFD startup_pipe;
   int min_log_level;

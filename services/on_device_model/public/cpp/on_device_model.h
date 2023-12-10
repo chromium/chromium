@@ -12,17 +12,19 @@ namespace on_device_model {
 
 // An interface mirroring mojom::OnDeviceModel to avoid having the internal
 // library depend on the mojom interfaces directly.
-class COMPONENT_EXPORT(ON_DEVICE_MODEL) OnDeviceModel {
+class COMPONENT_EXPORT(ON_DEVICE_MODEL_CPP) OnDeviceModel {
  public:
   virtual ~OnDeviceModel() = default;
 
   // An interface mirroring mojom::Session to avoid having the internal library
   // depend on the mojom interfaces directly.
-  class COMPONENT_EXPORT(ON_DEVICE_MODEL) Session {
+  class COMPONENT_EXPORT(ON_DEVICE_MODEL_CPP) Session {
    public:
     virtual ~Session() = default;
 
-    virtual void AddContext(mojom::InputOptionsPtr input) = 0;
+    virtual void AddContext(
+        mojom::InputOptionsPtr input,
+        mojo::PendingRemote<mojom::ContextClient> client) = 0;
     virtual void Execute(
         mojom::InputOptionsPtr input,
         mojo::PendingRemote<mojom::StreamingResponder> response) = 0;

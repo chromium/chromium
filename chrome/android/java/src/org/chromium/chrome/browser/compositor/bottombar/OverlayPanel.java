@@ -34,6 +34,7 @@ import org.chromium.chrome.browser.layouts.SceneOverlay;
 import org.chromium.chrome.browser.layouts.components.VirtualView;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneOverlayLayer;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabBrowserControlsConstraintsHelper;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.ScrollDirection;
@@ -48,18 +49,24 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.List;
 
-/**
- * Controls the Overlay Panel.
- */
+/** Controls the Overlay Panel. */
 public class OverlayPanel extends OverlayPanelAnimation
-        implements ActivityStateListener, SwipeHandler, MotionEventHandler,
-                   OverlayPanelContentFactory, SceneOverlay {
+        implements ActivityStateListener,
+                SwipeHandler,
+                MotionEventHandler,
+                OverlayPanelContentFactory,
+                SceneOverlay {
     /** The delay after which the hide progress will be hidden. */
     private static final long HIDE_PROGRESS_BAR_DELAY_MS = 1000 / 60 * 4;
 
     /** State of the Overlay Panel. */
-    @IntDef({PanelState.UNDEFINED, PanelState.CLOSED, PanelState.PEEKED, PanelState.EXPANDED,
-            PanelState.MAXIMIZED})
+    @IntDef({
+        PanelState.UNDEFINED,
+        PanelState.CLOSED,
+        PanelState.PEEKED,
+        PanelState.EXPANDED,
+        PanelState.MAXIMIZED
+    })
     @Retention(RetentionPolicy.SOURCE)
     public @interface PanelState {
         // Values can't have gaps and should be numerated from 0.
@@ -73,19 +80,31 @@ public class OverlayPanel extends OverlayPanelAnimation
         int NUM_ENTRIES = 5;
     }
 
-    /**
-     * The reason for a change in the Overlay Panel's state.
-     */
-    @IntDef({StateChangeReason.UNKNOWN, StateChangeReason.RESET, StateChangeReason.BACK_PRESS,
-            StateChangeReason.TEXT_SELECT_TAP, StateChangeReason.TEXT_SELECT_LONG_PRESS,
-            StateChangeReason.INVALID_SELECTION, StateChangeReason.CLEARED_SELECTION,
-            StateChangeReason.BASE_PAGE_TAP, StateChangeReason.BASE_PAGE_SCROLL,
-            StateChangeReason.SEARCH_BAR_TAP, StateChangeReason.SERP_NAVIGATION,
-            StateChangeReason.TAB_PROMOTION, StateChangeReason.CLICK, StateChangeReason.SWIPE,
-            StateChangeReason.FLING, StateChangeReason.OPTIN, StateChangeReason.OPTOUT,
-            StateChangeReason.CLOSE_BUTTON, StateChangeReason.PANEL_SUPPRESS,
-            StateChangeReason.PANEL_UNSUPPRESS, StateChangeReason.TAP_SUPPRESS,
-            StateChangeReason.NAVIGATION})
+    /** The reason for a change in the Overlay Panel's state. */
+    @IntDef({
+        StateChangeReason.UNKNOWN,
+        StateChangeReason.RESET,
+        StateChangeReason.BACK_PRESS,
+        StateChangeReason.TEXT_SELECT_TAP,
+        StateChangeReason.TEXT_SELECT_LONG_PRESS,
+        StateChangeReason.INVALID_SELECTION,
+        StateChangeReason.CLEARED_SELECTION,
+        StateChangeReason.BASE_PAGE_TAP,
+        StateChangeReason.BASE_PAGE_SCROLL,
+        StateChangeReason.SEARCH_BAR_TAP,
+        StateChangeReason.SERP_NAVIGATION,
+        StateChangeReason.TAB_PROMOTION,
+        StateChangeReason.CLICK,
+        StateChangeReason.SWIPE,
+        StateChangeReason.FLING,
+        StateChangeReason.OPTIN,
+        StateChangeReason.OPTOUT,
+        StateChangeReason.CLOSE_BUTTON,
+        StateChangeReason.PANEL_SUPPRESS,
+        StateChangeReason.PANEL_UNSUPPRESS,
+        StateChangeReason.TAP_SUPPRESS,
+        StateChangeReason.NAVIGATION
+    })
     @Retention(RetentionPolicy.SOURCE)
     public @interface StateChangeReason {
         int UNKNOWN = 0;
@@ -125,6 +144,9 @@ public class OverlayPanel extends OverlayPanelAnimation
 
     /** The {@link WindowAndroid} for the current activity.  */
     private final WindowAndroid mWindowAndroid;
+
+    /** The {@link Profile} associated with this Panel. */
+    private final Profile mProfile;
 
     /**
      * The {@link CompositorViewHolder}, used as an anchor view. Also injected into other classes.
@@ -175,6 +197,7 @@ public class OverlayPanel extends OverlayPanelAnimation
      * events.
      */
     private float mViewportWidth;
+
     private float mViewportHeight;
 
     // ============================================================================================
@@ -186,22 +209,29 @@ public class OverlayPanel extends OverlayPanelAnimation
      * @param layoutManager A {@link LayoutManagerImpl} for observing changes in the active layout.
      * @param panelManager The {@link OverlayPanelManager} responsible for showing panels.
      * @param browserControlsStateProvider The {@link BrowserControlsStateProvider} for measuring
-     *         controls.
+     *     controls.
      * @param windowAndroid The {@link WindowAndroid} for the current activity.
+     * @param profile The Profile this OverlayPanel is associated with.
      * @param compositorViewHolder The {@link CompositorViewHolder}
      * @param toolbarHeightDp The height of the toolbar in dp.
      * @param currentTabSupplier Supplies the current {@link Tab}.
      */
-    public OverlayPanel(@NonNull Context context, @NonNull LayoutManagerImpl layoutManager,
+    public OverlayPanel(
+            @NonNull Context context,
+            @NonNull LayoutManagerImpl layoutManager,
             @NonNull OverlayPanelManager panelManager,
             @NonNull BrowserControlsStateProvider browserControlsStateProvider,
-            @NonNull WindowAndroid windowAndroid, @NonNull ViewGroup compositorViewHolder,
-            float toolbarHeightDp, @NonNull Supplier<Tab> currentTabSupplier) {
+            @NonNull WindowAndroid windowAndroid,
+            @NonNull Profile profile,
+            @NonNull ViewGroup compositorViewHolder,
+            float toolbarHeightDp,
+            @NonNull Supplier<Tab> currentTabSupplier) {
         super(context, layoutManager, toolbarHeightDp);
         mLayoutManager = layoutManager;
         mContentFactory = this;
         mBrowserControlsStateProvider = browserControlsStateProvider;
         mWindowAndroid = windowAndroid;
+        mProfile = profile;
         mCompositorViewHolder = compositorViewHolder;
         mCurrentTabSupplier = currentTabSupplier;
 
@@ -209,19 +239,41 @@ public class OverlayPanel extends OverlayPanelAnimation
         mPanelManager.registerPanel(this);
         mEventFilter = new OverlayPanelEventFilter(mContext, this);
 
-        mSceneChangeObserver = new SceneChangeObserver() {
-            @Override
-            public void onSceneChange(Layout layout) {
-                closePanel(StateChangeReason.UNKNOWN, false);
-            }
-        };
+        mSceneChangeObserver =
+                new SceneChangeObserver() {
+                    @Override
+                    public void onSceneChange(Layout layout) {
+                        closePanel(StateChangeReason.UNKNOWN, false);
+                    }
+                };
 
         mLayoutManager.addSceneChangeObserver(mSceneChangeObserver);
     }
 
+    /** Return the {@link WindowAndroid} this panel is associated with. */
+    protected WindowAndroid getWindowAndroid() {
+        return mWindowAndroid;
+    }
+
+    /** Return the {@link Profile} this panel is associated with. */
+    protected Profile getProfile() {
+        return mProfile;
+    }
+
     /**
-     * Destroy the native components associated with this panel's content.
+     * Return the {@link ViewGroup} corresponding to the CompositorViewHolder of the Activity
+     * containing this OverlayPanel.
      */
+    protected ViewGroup getCompositorViewHolder() {
+        return mCompositorViewHolder;
+    }
+
+    /** Return the {@link Tab} supplier for the Activity containing this OverlayPanel. */
+    protected Supplier<Tab> getCurrentTabSupplier() {
+        return mCurrentTabSupplier;
+    }
+
+    /** Destroy the native components associated with this panel's content. */
     public void destroy() {
         closePanel(StateChangeReason.UNKNOWN, false);
         mLayoutManager.removeSceneChangeObserver(mSceneChangeObserver);
@@ -348,8 +400,7 @@ public class OverlayPanel extends OverlayPanelAnimation
      * needs to be taken. This should be overridden by child classes.
      * TODO(mdjones): Get a better name for this.
      */
-    public void onTouchSearchContentViewAck() {
-    }
+    public void onTouchSearchContentViewAck() {}
 
     /**
      * Get a panel's display priority. This has a default to MEDIUM and should be overridden by
@@ -403,9 +454,10 @@ public class OverlayPanel extends OverlayPanelAnimation
     // Claim or lose focus of the content view of the base WebContents. This keeps
     // the state of the text selected for overlay in consistent way.
     private static void updateFocus(WebContents baseWebContents, boolean focusBaseView) {
-        View baseContentView = baseWebContents.getViewAndroidDelegate() != null
-                ? baseWebContents.getViewAndroidDelegate().getContainerView()
-                : null;
+        View baseContentView =
+                baseWebContents.getViewAndroidDelegate() != null
+                        ? baseWebContents.getViewAndroidDelegate().getContainerView()
+                        : null;
         if (baseContentView == null) return;
 
         if (focusBaseView) {
@@ -481,9 +533,7 @@ public class OverlayPanel extends OverlayPanelAnimation
         if (mContent != null) mContent.onLoadUrlFailed();
     }
 
-    /**
-     * Progress observer progress indicator animation for a panel.
-     */
+    /** Progress observer progress indicator animation for a panel. */
     public class PanelProgressObserver extends OverlayContentProgressObserver {
         @Override
         public void onProgressBarStarted() {
@@ -502,13 +552,16 @@ public class OverlayPanel extends OverlayPanelAnimation
         public void onProgressBarFinished() {
             // Hides the Progress Bar after a delay to make sure it is rendered for at least
             // a few frames, otherwise its completion won't be visually noticeable.
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    setProgressBarVisible(false);
-                    requestUpdate();
-                }
-            }, HIDE_PROGRESS_BAR_DELAY_MS);
+            new Handler()
+                    .postDelayed(
+                            new Runnable() {
+                                @Override
+                                public void run() {
+                                    setProgressBarVisible(false);
+                                    requestUpdate();
+                                }
+                            },
+                            HIDE_PROGRESS_BAR_DELAY_MS);
         }
     }
 
@@ -518,14 +571,18 @@ public class OverlayPanel extends OverlayPanelAnimation
      */
     @Override
     public OverlayPanelContent createNewOverlayPanelContent() {
-        return new OverlayPanelContent(new OverlayContentDelegate(),
-                new OverlayContentProgressObserver(), mActivity, /* isIncognito= */ false,
-                getBarHeight(), mCompositorViewHolder, mWindowAndroid, mCurrentTabSupplier);
+        return new OverlayPanelContent(
+                new OverlayContentDelegate(),
+                new OverlayContentProgressObserver(),
+                mActivity,
+                mProfile,
+                getBarHeight(),
+                mCompositorViewHolder,
+                mWindowAndroid,
+                mCurrentTabSupplier);
     }
 
-    /**
-     * Add any other objects that depend on the OverlayPanelContent having already been created.
-     */
+    /** Add any other objects that depend on the OverlayPanelContent having already been created. */
     private OverlayPanelContent createNewOverlayPanelContentInternal() {
         OverlayPanelContent content = mContentFactory.createNewOverlayPanelContent();
         content.setContentViewSize(
@@ -544,9 +601,7 @@ public class OverlayPanel extends OverlayPanelAnimation
         return mContent;
     }
 
-    /**
-     * Destroy the native components of the OverlayPanelContent.
-     */
+    /** Destroy the native components of the OverlayPanelContent. */
     protected void destroyOverlayPanelContent() {
         // It is possible that an OverlayPanelContent was never created for this panel.
         if (mContent != null) {
@@ -568,9 +623,7 @@ public class OverlayPanel extends OverlayPanelAnimation
         TabBrowserControlsConstraintsHelper.update(mCurrentTabSupplier.get(), current, animate);
     }
 
-    /**
-     * Sets the top control state based on the internals of the panel.
-     */
+    /** Sets the top control state based on the internals of the panel. */
     public void updateBrowserControlsState() {
         if (mContent == null) return;
 
@@ -624,9 +677,7 @@ public class OverlayPanel extends OverlayPanelAnimation
     // Layout Integration
     // ============================================================================================
 
-    /**
-     * Updates the Panel so it preserves its state when the orientation changes.
-     */
+    /** Updates the Panel so it preserves its state when the orientation changes. */
     protected void updatePanelForOrientationChange() {
         resizePanelToState(getPanelState(), StateChangeReason.UNKNOWN);
     }
@@ -635,9 +686,7 @@ public class OverlayPanel extends OverlayPanelAnimation
     // Generic Event Handling
     // ============================================================================================
 
-    /**
-     * Handles the beginning of the swipe gesture.
-     */
+    /** Handles the beginning of the swipe gesture. */
     public void handleSwipeStart() {
         cancelHeightAnimation();
 
@@ -662,9 +711,7 @@ public class OverlayPanel extends OverlayPanelAnimation
         requestUpdate();
     }
 
-    /**
-     * Handles the end of the swipe gesture.
-     */
+    /** Handles the end of the swipe gesture. */
     public void handleSwipeEnd() {
         // This method will be called after handleFling() and handleClick()
         // methods because we also need to track down the onUpOrCancel()
@@ -764,7 +811,8 @@ public class OverlayPanel extends OverlayPanelAnimation
      */
     public boolean isCoordinateInsideBar(float x, float y) {
         return isCoordinateInsideOverlayPanel(x, y)
-                && y >= getOffsetY() && y <= (getOffsetY() + getBarContainerHeight());
+                && y >= getOffsetY()
+                && y <= (getOffsetY() + getBarContainerHeight());
     }
 
     /**
@@ -773,8 +821,7 @@ public class OverlayPanel extends OverlayPanelAnimation
      * @return Whether the given coordinate is inside the Overlay Content View area.
      */
     public boolean isCoordinateInsideContent(float x, float y) {
-        return isCoordinateInsideOverlayPanel(x, y)
-                && y > getContentY();
+        return isCoordinateInsideOverlayPanel(x, y) && y > getContentY();
     }
 
     /**
@@ -797,8 +844,10 @@ public class OverlayPanel extends OverlayPanelAnimation
      * @return Whether the given coordinate is inside the Overlay Panel area.
      */
     public boolean isCoordinateInsideOverlayPanel(float x, float y) {
-        return y >= getOffsetY() && y <= (getOffsetY() + getHeight())
-                &&  x >= getOffsetX() && x <= (getOffsetX() + getWidth());
+        return y >= getOffsetY()
+                && y <= (getOffsetY() + getHeight())
+                && x >= getOffsetX()
+                && x <= (getOffsetX() + getWidth());
     }
 
     /**
@@ -887,8 +936,13 @@ public class OverlayPanel extends OverlayPanelAnimation
     }
 
     @Override
-    public void onFling(@ScrollDirection int direction, MotionEvent current, float tx, float ty,
-            float vx, float vy) {
+    public void onFling(
+            @ScrollDirection int direction,
+            MotionEvent current,
+            float tx,
+            float ty,
+            float vx,
+            float vy) {
         if (mIgnoreSwipeEvents) return;
         handleFling(vy * mPxToDp);
     }
@@ -931,8 +985,8 @@ public class OverlayPanel extends OverlayPanelAnimation
     }
 
     @Override
-    public void onSizeChanged(float width, float height, float visibleViewportOffsetY,
-            int orientation) {
+    public void onSizeChanged(
+            float width, float height, float visibleViewportOffsetY, int orientation) {
         // Filter events that don't change the viewport width or height.
         if (height != mViewportHeight || width != mViewportWidth) {
             // We only care if the orientation is changing or we're shifting in/out of multi-window.
@@ -945,9 +999,7 @@ public class OverlayPanel extends OverlayPanelAnimation
         }
     }
 
-    /**
-     * Resize the panel's ContentView. Apply adjusted bar size to the height.
-     */
+    /** Resize the panel's ContentView. Apply adjusted bar size to the height. */
     protected void resizePanelContentView() {
         if (!isShowing()) return;
 

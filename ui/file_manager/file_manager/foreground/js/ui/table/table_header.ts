@@ -116,7 +116,7 @@ export class TableHeader extends HTMLDivElement {
       cell.hidden = !cm.isVisible(i);
       cell.className = 'table-header-cell';
       const tableHeader = this;
-      if (dm.isSortable(cm.getId(i))) {
+      if (dm.isSortable(cm.getId(i)!)) {
         cell.addEventListener(
             'click', this.createSortFunction_(i).bind(tableHeader));
       }
@@ -176,7 +176,7 @@ export class TableHeader extends HTMLDivElement {
 
     const labelDiv = this.ownerDocument.createElement('div');
     labelDiv.className = 'table-header-label';
-    labelDiv.classList.add(cm.getId(index));
+    labelDiv.classList.add(cm.getId(index)!);
 
     if (cm.isEndAlign(index)) {
       labelDiv.style.textAlign = 'end';

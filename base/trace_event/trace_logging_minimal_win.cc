@@ -27,19 +27,22 @@ TlmProvider::TlmProvider(const char* provider_name,
 
 // Appends a nul-terminated string to a metadata block.
 // Returns new meta_data_index value, or -1 for overflow.
-uint16_t TlmProvider::AppendNameToMetadata(char* metadata,
-                                           uint16_t metadata_size,
-                                           uint16_t metadata_index,
-                                           const char* name) const noexcept {
+uint16_t TlmProvider::AppendNameToMetadata(
+    char* metadata,
+    uint16_t metadata_size,
+    uint16_t metadata_index,
+    std::string_view name) const noexcept {
   uint16_t index = metadata_index;
   DCHECK_LE(index, metadata_size);
 
-  const size_t cch = strlen(name) + 1;
-  if (cch > static_cast<unsigned>(metadata_size - index))
+  const size_t cch = name.size();
+  if (cch + 1 > static_cast<unsigned>(metadata_size - index)) {
     return static_cast<uint16_t>(-1);
+  }
 
-  memcpy(metadata + index, name, cch);
-  index += static_cast<uint16_t>(cch);
+  memcpy(metadata + index, name.begin(), cch);
+  metadata[index + cch] = 0;
+  index += static_cast<uint16_t>(cch) + 1;
   return index;
 }
 
@@ -134,7 +137,7 @@ void TlmProvider::StaticEnableCallback(const GUID* source_id,
 }
 
 uint16_t TlmProvider::EventBegin(char* metadata,
-                                 const char* event_name) const noexcept {
+                                 std::string_view event_name) const noexcept {
   // EventMetadata for tracelogging has the following format
   //     UINT16 MetadataSize;
   //     BYTE SpecialFlags[]; // Not used, so always size 1.
@@ -236,6 +239,18 @@ int64_t TlmInt64Field::Value() const noexcept {
   return value_;
 }
 void TlmInt64Field::FillEventDescriptor(
+    EVENT_DATA_DESCRIPTOR* descriptors) const noexcept {
+  EventDataDescCreate(&descriptors[0], (void*)&value_, sizeof(value_));
+}
+
+TlmUInt64Field::TlmUInt64Field(const char* name, const uint64_t value) noexcept
+    : TlmFieldBase(name), value_(value) {
+  DCHECK_NE(Name(), nullptr);
+}
+uint64_t TlmUInt64Field::Value() const noexcept {
+  return value_;
+}
+void TlmUInt64Field::FillEventDescriptor(
     EVENT_DATA_DESCRIPTOR* descriptors) const noexcept {
   EventDataDescCreate(&descriptors[0], (void*)&value_, sizeof(value_));
 }

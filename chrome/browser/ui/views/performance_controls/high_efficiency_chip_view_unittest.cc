@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/performance_controls/high_efficiency_chip_tab_helper.h"
 #include "chrome/browser/ui/performance_controls/performance_controls_metrics.h"
+#include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
@@ -20,6 +21,8 @@
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "chrome/browser/ui/views/performance_controls/high_efficiency_bubble_view.h"
 #include "chrome/browser/ui/views/performance_controls/high_efficiency_resource_view.h"
+#include "chrome/browser/ui/views/side_panel/side_panel.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/performance_manager/public/features.h"
@@ -350,4 +353,44 @@ TEST_F(HighEfficiencyChipViewMemorySavingsImprovementsTest,
   histogram_tester_.ExpectUniqueSample(
       "PerformanceControls.HighEfficiency.ChipState",
       HighEfficiencyChipState::kExpandedWithSavings, 1);
+}
+
+class HighEfficiencyChipViewWithPerformanceSidePanelTest
+    : public HighEfficiencyChipViewTest {
+ public:
+  HighEfficiencyChipViewWithPerformanceSidePanelTest() = default;
+
+  void SetUp() override {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{performance_manager::features::
+                                  kPerformanceControlsSidePanel},
+        /*disabled_features=*/{});
+    TestWithBrowserView::SetUp();
+
+    AddNewTab(kMemorySavingsKilobytes,
+              ::mojom::LifecycleUnitDiscardReason::PROACTIVE);
+
+    SetHighEfficiencyModeEnabled(true);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(HighEfficiencyChipViewWithPerformanceSidePanelTest, OpensSidePanel) {
+  SetTabDiscardState(0, true);
+  EXPECT_TRUE(GetPageActionIconView()->GetVisible());
+
+  ASSERT_FALSE(browser_view()->unified_side_panel()->GetVisible());
+
+  PageActionIconView* high_efficiency_chip = GetPageActionIconView();
+  ui::MouseEvent e(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+                   ui::EventTimeForNow(), 0, 0);
+  views::test::ButtonTestApi test_api(high_efficiency_chip);
+  test_api.NotifyClick(e);
+
+  ASSERT_TRUE(browser_view()->unified_side_panel()->GetVisible());
+  ASSERT_EQ(
+      SidePanelUI::GetSidePanelUIForBrowser(browser())->GetCurrentEntryId(),
+      SidePanelEntry::Id::kPerformance);
 }

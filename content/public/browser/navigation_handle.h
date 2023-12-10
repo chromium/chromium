@@ -16,7 +16,7 @@
 #include "content/public/browser/frame_type.h"
 #include "content/public/browser/navigation_handle_timing.h"
 #include "content/public/browser/navigation_throttle.h"
-#include "content/public/browser/prerender_trigger_type.h"
+#include "content/public/browser/preloading_trigger_type.h"
 #include "content/public/browser/reload_type.h"
 #include "content/public/browser/restore_type.h"
 #include "content/public/common/referrer.h"
@@ -25,7 +25,8 @@
 #include "net/base/isolation_info.h"
 #include "net/base/net_errors.h"
 #include "net/dns/public/resolve_error_info.h"
-#include "net/http/http_response_info.h"
+#include "net/http/http_connection_info.h"
+#include "net/ssl/ssl_info.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-forward.h"
 #include "third_party/blink/public/common/navigation/impression.h"
@@ -48,7 +49,6 @@ class GURL;
 namespace net {
 class HttpRequestHeaders;
 class HttpResponseHeaders;
-class ProxyServer;
 }  // namespace net
 
 namespace perfetto::protos::pbzero {
@@ -426,10 +426,10 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
   virtual const net::HttpResponseHeaders* GetResponseHeaders() = 0;
 
   // Returns the connection info for the request, the default value is
-  // CONNECTION_INFO_UNKNOWN if there hasn't been a response (or redirect)
+  // HttpConnectionInfo::kUNKNOWN if there hasn't been a response (or redirect)
   // yet. The connection info may change during the navigation (e.g. after
   // encountering a server redirect).
-  virtual net::HttpResponseInfo::ConnectionInfo GetConnectionInfo() = 0;
+  virtual net::HttpConnectionInfo GetConnectionInfo() = 0;
 
   // Returns the SSLInfo for a request that succeeded or failed due to a
   // certificate error. In the case of other request failures or of a non-secure
@@ -479,9 +479,6 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
 
   // Returns true if the navigation response was cached.
   virtual bool WasResponseCached() = 0;
-
-  // Returns the proxy server used for this navigation, if any.
-  virtual const net::ProxyServer& GetProxyServer() = 0;
 
   // Returns the value of the hrefTranslate attribute if this navigation was
   // initiated from a link that had that attribute set.
@@ -642,7 +639,7 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
 
   // Prerender2:
   // Used for metrics.
-  virtual PrerenderTriggerType GetPrerenderTriggerType() = 0;
+  virtual PreloadingTriggerType GetPrerenderTriggerType() = 0;
   virtual std::string GetPrerenderEmbedderHistogramSuffix() = 0;
 
   // Returns a SafeRef to this handle.
@@ -704,6 +701,13 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
   // Makes a copy of the content settings.
   virtual blink::mojom::RendererContentSettingsPtr
   GetContentSettingsForTesting() = 0;
+
+  // Allows the embedder to mark whether this navigation handle is being used
+  // for advertising purposes. This is expected to be best-effort, and may be
+  // inaccurate. Notably, this defers from the status from
+  // `GetNavigationInitiatorActivationAndAdStatus()` as it can include other
+  // signals outside of the initiator.
+  virtual void SetIsAdTagged() = 0;
 };
 
 }  // namespace content

@@ -72,7 +72,7 @@ void GpuArcProtectedBufferManagerProxy::
       protected_buffer_manager_->GetProtectedNativePixmapHandleFor(
           std::move(unwrapped_fd));
   if (native_pixmap_handle.planes.empty())
-    return std::move(callback).Run(absl::nullopt);
+    return std::move(callback).Run(std::nullopt);
   std::move(callback).Run(std::move(native_pixmap_handle));
 }
 

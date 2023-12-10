@@ -25,7 +25,7 @@ import iossim_util
 import test_apps
 from test_result_util import ResultCollection, TestResult, TestStatus
 import test_runner_errors
-import xcode_log_parser
+from xcode_log_parser import XcodeLogParser
 import xcode_util
 import xctest_utils
 
@@ -122,11 +122,13 @@ class XCTestPlugInNotFoundError(TestRunnerError):
         'XCTest not found: %s' % xctest_path)
 
 
-class ShardingDisabledError(TestRunnerError):
-  """Temporary error indicating that sharding is not yet implemented."""
+class ParallelSimDisabledError(TestRunnerError):
+  """Temporary error indicating that running tests in parallel on
+   simulator clones is not yet implemented."""
+
   def __init__(self):
-    super(ShardingDisabledError, self).__init__(
-      'Sharding has not been implemented!')
+    super(ParallelSimDisabledError, self).__init__(
+        'Running in parallel on simulator clones has not been implemented!')
 
 
 class HostIsDownError(TestRunnerError):
@@ -372,7 +374,7 @@ class TestRunner(object):
     self.out_dir = out_dir
     self.repeat_count = kwargs.get('repeat_count') or 1
     self.retries = kwargs.get('retries') or 0
-    self.shards = kwargs.get('shards') or 1
+    self.clones = kwargs.get('clones') or 1
     self.test_args = kwargs.get('test_args') or []
     self.test_cases = kwargs.get('test_cases') or []
     self.xctest_path = ''
@@ -412,14 +414,14 @@ class TestRunner(object):
         subprocess.check_call(
             ['networksetup', '-setsocksfirewallproxystate', service, 'off'])
 
-  def get_launch_command(self, test_app, out_dir, destination, shards=1):
+  def get_launch_command(self, test_app, out_dir, destination, clones=1):
     """Returns the command that can be used to launch the test app.
 
     Args:
       test_app: An app that stores data about test required to run.
       out_dir: (str) A path for results.
       destination: (str) A destination of device/simulator.
-      shards: (int) How many shards the tests should be divided into.
+      clones: (int) How many simulator clones the tests should be divided over.
 
     Returns:
       A list of strings forming the command to launch the test.
@@ -504,12 +506,11 @@ class TestRunner(object):
       if full_path.endswith('.xcresult') and os.path.isdir(full_path):
         xcresult_paths.append(full_path)
 
-    log_parser = xcode_log_parser.get_parser()
     for xcresult in xcresult_paths:
       # This is what was passed in -resultBundlePath to xcodebuild command.
       result_bundle_path = os.path.splitext(xcresult)[0]
-      log_parser.copy_artifacts(result_bundle_path)
-      log_parser.export_diagnostic_data(result_bundle_path)
+      XcodeLogParser.copy_artifacts(result_bundle_path)
+      XcodeLogParser.export_diagnostic_data(result_bundle_path)
       # result_bundle_path is a symlink to xcresult directory.
       if os.path.islink(result_bundle_path):
         os.unlink(result_bundle_path)
@@ -553,7 +554,7 @@ class TestRunner(object):
     LOGGER.warning('Sigterm caught during test run. Killing test process.')
     proc.kill()
 
-  def _run(self, cmd, shards=1):
+  def _run(self, cmd, clones=1):
     """Runs the specified command, parsing GTest output.
 
     Args:
@@ -620,9 +621,9 @@ class TestRunner(object):
     destination = 'id=%s' % self.udid
     test_app = self.get_launch_test_app()
     out_dir = os.path.join(self.out_dir, 'TestResults')
-    cmd = self.get_launch_command(test_app, out_dir, destination, self.shards)
+    cmd = self.get_launch_command(test_app, out_dir, destination, self.clones)
     try:
-      result = self._run(cmd=cmd, shards=self.shards or 1)
+      result = self._run(cmd=cmd, clones=self.clones or 1)
       if (result.crashed and not result.spawning_test_launcher and
           not result.crashed_tests()):
         # If the app crashed but not during any particular test case, assume
@@ -631,7 +632,7 @@ class TestRunner(object):
         LOGGER.warning('Crashed on startup, retrying...\n')
         out_dir = os.path.join(self.out_dir, 'retry_after_crash_on_startup')
         cmd = self.get_launch_command(test_app, out_dir, destination,
-                                      self.shards)
+                                      self.clones)
         result = self._run(cmd)
 
       result.report_to_result_sink()
@@ -764,7 +765,7 @@ class SimulatorTestRunner(TestRunner):
     self.platform = platform
     self.start_time = None
     self.version = version
-    self.shards = kwargs.get('shards') or 1
+    self.clones = kwargs.get('clones') or 1
     self.udid = iossim_util.get_simulator(self.platform, self.version)
     self.use_clang_coverage = kwargs.get('use_clang_coverage') or False
 
@@ -922,19 +923,19 @@ class SimulatorTestRunner(TestRunner):
     if udid:
       iossim_util.delete_simulator_by_udid(udid)
 
-  def get_launch_command(self, test_app, out_dir, destination, shards=1):
+  def get_launch_command(self, test_app, out_dir, destination, clones=1):
     """Returns the command that can be used to launch the test app.
 
     Args:
       test_app: An app that stores data about test required to run.
       out_dir: (str) A path for results.
       destination: (str) A destination of device/simulator.
-      shards: (int) How many shards the tests should be divided into.
+      clones: (int) How many simulator clones the tests should be divided over.
 
     Returns:
       A list of strings forming the command to launch the test.
     """
-    return test_app.command(out_dir, destination, shards)
+    return test_app.command(out_dir, destination, clones)
 
   def get_launch_env(self):
     """Returns a dict of environment variables to use to launch the test app.
@@ -1084,20 +1085,20 @@ class DeviceTestRunner(TestRunner):
     self.retrieve_crash_reports()
     self.uninstall_apps()
 
-  def get_launch_command(self, test_app, out_dir, destination, shards=1):
+  def get_launch_command(self, test_app, out_dir, destination, clones=1):
     """Returns the command that can be used to launch the test app.
 
     Args:
       test_app: An app that stores data about test required to run.
       out_dir: (str) A path for results.
       destination: (str) A destination of device/simulator.
-      shards: (int) How many shards the tests should be divided into.
+      clones: (int) How many simulator clones the tests should be divided over.
 
     Returns:
       A list of strings forming the command to launch the test.
     """
     if self.xctest:
-      return test_app.command(out_dir, destination, shards)
+      return test_app.command(out_dir, destination, clones)
 
     cmd = [
       'idevice-app-runner',

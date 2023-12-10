@@ -53,18 +53,18 @@ void SessionOptions::Append(const std::string& key, const std::string& value) {
   options_[key] = value;
 }
 
-absl::optional<std::string> SessionOptions::Get(const std::string& key) const {
+std::optional<std::string> SessionOptions::Get(const std::string& key) const {
   auto it = options_.find(key);
   if (it == options_.end()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return it->second;
 }
 
-absl::optional<bool> SessionOptions::GetBool(const std::string& key) const {
-  absl::optional<std::string> value = Get(key);
+std::optional<bool> SessionOptions::GetBool(const std::string& key) const {
+  std::optional<std::string> value = Get(key);
   if (!value) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   const std::string lowercase_value = base::ToLowerASCII(*value);
@@ -77,17 +77,17 @@ absl::optional<bool> SessionOptions::GetBool(const std::string& key) const {
   }
   LOG(WARNING) << "Unexpected option received " << *value
                << " which cannot be converted to bool.";
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 bool SessionOptions::GetBoolValue(const std::string& key) const {
   return GetBool(key).value_or(false);
 }
 
-absl::optional<int> SessionOptions::GetInt(const std::string& key) const {
-  absl::optional<std::string> value = Get(key);
+std::optional<int> SessionOptions::GetInt(const std::string& key) const {
+  std::optional<std::string> value = Get(key);
   if (!value) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   int result;
@@ -96,7 +96,7 @@ absl::optional<int> SessionOptions::GetInt(const std::string& key) const {
   }
   LOG(WARNING) << "Unexpected option received " << *value
                << " which cannot be converted to integer.";
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 std::string SessionOptions::Export() const {

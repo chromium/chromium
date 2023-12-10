@@ -6,10 +6,13 @@ package org.chromium.chrome.browser.ui.hats;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+
+import android.content.res.Resources;
 
 import org.junit.After;
 import org.junit.Before;
@@ -20,6 +23,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.ObserverList;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
@@ -309,6 +313,51 @@ public class MessageSurveyUiDelegateUnitTest {
                 AssertionError.class,
                 this::showSurveyInvitation);
         mMessageSurveyUiDelegate.dismiss();
+    }
+
+    @Test
+    public void createDefaultMessageModel() {
+        PropertyModel model =
+                MessageSurveyUiDelegate.populateDefaultValuesForSurveyMessage(
+                        ContextUtils.getApplicationContext().getResources(), mModel);
+
+        Resources resources = ContextUtils.getApplicationContext().getResources();
+        String defaultTitle = resources.getString(R.string.chrome_survey_message_title);
+        String defaultButtonText = resources.getString(R.string.chrome_survey_message_button);
+        assertEquals("Title is different.", defaultTitle, model.get(MessageBannerProperties.TITLE));
+        assertEquals(
+                "Icon resource Id different.",
+                R.drawable.fre_product_logo,
+                model.get(MessageBannerProperties.ICON_RESOURCE_ID));
+        assertEquals(
+                "Primary button text is different.",
+                defaultButtonText,
+                model.get(MessageBannerProperties.PRIMARY_BUTTON_TEXT));
+    }
+
+    @Test
+    public void createDefaultMessageModelWithValuePopulated() {
+        int iconRes = 1235415;
+        String myTitle = "my title";
+        String myButtonText = "my button text";
+        mModel.set(MessageBannerProperties.ICON_RESOURCE_ID, iconRes);
+        mModel.set(MessageBannerProperties.TITLE, myTitle);
+        mModel.set(MessageBannerProperties.PRIMARY_BUTTON_TEXT, myButtonText);
+        mModel.set(MessageBannerProperties.DESCRIPTION, "my description");
+
+        MessageSurveyUiDelegate.populateDefaultValuesForSurveyMessage(
+                ContextUtils.getApplicationContext().getResources(), mModel);
+
+        assertTrue(mModel.containsKey(MessageBannerProperties.MESSAGE_IDENTIFIER));
+        assertEquals("Title is override.", myTitle, mModel.get(MessageBannerProperties.TITLE));
+        assertEquals(
+                "Icon resource Id is override.",
+                iconRes,
+                mModel.get(MessageBannerProperties.ICON_RESOURCE_ID));
+        assertEquals(
+                "Primary button text is override.",
+                myButtonText,
+                mModel.get(MessageBannerProperties.PRIMARY_BUTTON_TEXT));
     }
 
     private void showSurveyInvitation() {

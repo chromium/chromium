@@ -61,6 +61,8 @@ DisplayWebView::DisplayWebView(
     viz::FrameSinkManagerImpl* frame_sink_manager,
     RootFrameSink* root_frame_sink)
     : viz::Display(/*bitmap_manager=*/nullptr,
+                   /*shared_image_manager=*/nullptr,
+                   /*sync_point_manager=*/nullptr,
                    settings,
                    debug_settings,
                    frame_sink_id,

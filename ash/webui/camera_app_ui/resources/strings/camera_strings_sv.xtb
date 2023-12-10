@@ -5,7 +5,6 @@
 <translation id="1076394037877376434">Radera sida <ph name="PAGE_NUMBER" /></translation>
 <translation id="1113173431709655881">Kameraläge</translation>
 <translation id="1153190633558910465">Rutnät av</translation>
-<translation id="1175958423215084756">Länk har identifierats. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213">Sida <ph name="PAGE_NUMBER" /> har raderats</translation>
 <translation id="1258009455399840361">Rotera 90 grader medurs</translation>
 <translation id="1417314334557041815">Redigera sida <ph name="INDEX" /></translation>
@@ -60,14 +59,12 @@
 <translation id="3642192109456033823">Bearbetar video …</translation>
 <translation id="3789724198583203151">Rotera 90 grader moturs</translation>
 <translation id="3810838688059735925">Video</translation>
-<translation id="3892148308691398805">Kopiera text</translation>
 <translation id="4060608699153044055">Det går inte att spela in eftersom det inte finns tillräckligt med lagringsutrymme på enheten. Du måste frigöra utrymme på enheten innan du kan börja spela in.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
 <translation id="4118525110028899586">Pausa inspelning</translation>
 <translation id="4121305183798804752">Ett dokument identifierades</translation>
 <translation id="414641094616694804">Det går inte att ändra upplösning för den här kameran</translation>
 <translation id="4176463684765177261">Inaktiverad</translation>
-<translation id="4269820728363426813">Kopiera länkadress</translation>
 <translation id="428234092390943511">Sidminiatyr</translation>
 <translation id="4349714250734879769">Skala bildrutor efter Chrome</translation>
 <translation id="4383571725254449280">Skriva ut resultatloggar</translation>
@@ -144,7 +141,6 @@ Om din feedback handlar om bild- eller videokvalitet bifogar du en exempelbild e
 <translation id="7726641833034062494">Spela in normal video</translation>
 <translation id="7748344063862150053">Övre högra hörnet på dokumentet</translation>
 <translation id="7933675232020478311">Flyttas nedåt åt höger</translation>
-<translation id="7983668134180549431">Text har identifierats.</translation>
 <translation id="8079255378695216066">Det går inte att starta inspelningen</translation>
 <translation id="8120146556401698679">Panorera, luta och zooma</translation>
 <translation id="8131740175452115882">Bekräfta</translation>
@@ -163,6 +159,7 @@ Om din feedback handlar om bild- eller videokvalitet bifogar du en exempelbild e
 <translation id="8870695351537079478">Det gick inte att starta inspelningen</translation>
 <translation id="8880167521484863515">4 till 3</translation>
 <translation id="8903921497873541725">Zooma in</translation>
+<translation id="8926890870105777777">Gå med i nätverket <ph name="WIFINAME" /></translation>
 <translation id="9045010116236796332">Placera dokumentets kanter i ramen</translation>
 <translation id="9045155556724273246">Tio sekunder</translation>
 <translation id="906331135292332864">Bilden bearbetas …</translation>

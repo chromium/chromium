@@ -88,6 +88,7 @@ if (is_chromeos) {
     "login.idl",
     "login_screen_storage.idl",
     "login_state.idl",
+    "odfs_config_private.idl",
     "platform_keys_internal.idl",
     "platform_keys.idl",
     "quick_unlock_private.idl",

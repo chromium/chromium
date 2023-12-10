@@ -242,6 +242,8 @@ protocol::String BuildMixedContentResourceType(
       return protocol::Audits::MixedContentResourceTypeEnum::ServiceWorker;
     case blink::mojom::blink::RequestContextType::SHARED_WORKER:
       return protocol::Audits::MixedContentResourceTypeEnum::SharedWorker;
+    case blink::mojom::blink::RequestContextType::SPECULATION_RULES:
+      return protocol::Audits::MixedContentResourceTypeEnum::SpeculationRules;
     case blink::mojom::blink::RequestContextType::STYLE:
       return protocol::Audits::MixedContentResourceTypeEnum::Stylesheet;
     case blink::mojom::blink::RequestContextType::SUBRESOURCE:

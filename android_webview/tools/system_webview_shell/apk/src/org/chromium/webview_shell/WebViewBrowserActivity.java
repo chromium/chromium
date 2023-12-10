@@ -82,8 +82,9 @@ public class WebViewBrowserActivity extends AppCompatActivity {
         getSupportActionBar().setTitle(getResources().getString(R.string.title_activity_browser));
         getSupportActionBar().setSubtitle(mWebViewVersion);
 
-        mFragment = (WebViewBrowserFragment) getSupportFragmentManager().findFragmentById(
-                R.id.container);
+        mFragment =
+                (WebViewBrowserFragment)
+                        getSupportFragmentManager().findFragmentById(R.id.container);
         assert mFragment != null;
         mFragment.setActivityResultRegistry(getActivityResultRegistry());
         enableStrictMode();
@@ -152,8 +153,8 @@ public class WebViewBrowserActivity extends AppCompatActivity {
             if (defaultNightMode == AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
                     || defaultNightMode == AppCompatDelegate.MODE_NIGHT_UNSPECIFIED) {
                 UiModeManager uiModeManager =
-                        (UiModeManager) this.getApplicationContext().getSystemService(
-                                UI_MODE_SERVICE);
+                        (UiModeManager)
+                                this.getApplicationContext().getSystemService(UI_MODE_SERVICE);
                 checked = UiModeManager.MODE_NIGHT_YES == uiModeManager.getNightMode();
             }
             menu.findItem(R.id.menu_night_mode_on).setChecked(checked);
@@ -161,8 +162,9 @@ public class WebViewBrowserActivity extends AppCompatActivity {
         if (BuildInfo.targetsAtLeastT()
                 && WebViewFeature.isFeatureSupported(WebViewFeature.ALGORITHMIC_DARKENING)) {
             menu.findItem(R.id.menu_algorithmic_darkening_on)
-                    .setChecked(WebSettingsCompat.isAlgorithmicDarkeningAllowed(
-                            mWebView.getSettings()));
+                    .setChecked(
+                            WebSettingsCompat.isAlgorithmicDarkeningAllowed(
+                                    mWebView.getSettings()));
         }
         return true;
     }
@@ -200,7 +202,8 @@ public class WebViewBrowserActivity extends AppCompatActivity {
                 try (StrictModeContext ignored = StrictModeContext.allowDiskWrites()) {
                     String outFileName = getFilesDir() + "/webview_tracing.json";
                     try {
-                        tracingController.stop(new TracingLogger(outFileName, this),
+                        tracingController.stop(
+                                new TracingLogger(outFileName, this),
                                 Executors.newSingleThreadExecutor());
                         mIsStoppingTracing = true;
                     } catch (FileNotFoundException e) {
@@ -224,13 +227,15 @@ public class WebViewBrowserActivity extends AppCompatActivity {
             item.setChecked(true);
             return true;
         } else if (itemId == R.id.menu_night_mode_on) {
-            AppCompatDelegate.setDefaultNightMode(item.isChecked()
+            AppCompatDelegate.setDefaultNightMode(
+                    item.isChecked()
                             ? AppCompatDelegate.MODE_NIGHT_NO
                             : AppCompatDelegate.MODE_NIGHT_YES);
             return true;
         } else if (itemId == R.id.menu_algorithmic_darkening_on) {
             if (WebViewFeature.isFeatureSupported(WebViewFeature.ALGORITHMIC_DARKENING)) {
-                WebSettingsCompat.setAlgorithmicDarkeningAllowed(mWebView.getSettings(),
+                WebSettingsCompat.setAlgorithmicDarkeningAllowed(
+                        mWebView.getSettings(),
                         !WebSettingsCompat.isAlgorithmicDarkeningAllowed(mWebView.getSettings()));
             }
             return true;
@@ -280,11 +285,12 @@ public class WebViewBrowserActivity extends AppCompatActivity {
             }
         }
 
-        AlertDialog dialog = new AlertDialog.Builder(this)
-                                     .setTitle(getResources().getString(R.string.menu_about))
-                                     .setMessage(summary)
-                                     .setPositiveButton("OK", null)
-                                     .create();
+        AlertDialog dialog =
+                new AlertDialog.Builder(this)
+                        .setTitle(getResources().getString(R.string.menu_about))
+                        .setMessage(summary)
+                        .setPositiveButton("OK", null)
+                        .create();
         dialog.show();
         dialog.getWindow().setLayout(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
     }
@@ -312,7 +318,8 @@ public class WebViewBrowserActivity extends AppCompatActivity {
         if (PackageManagerUtils.canResolveActivity(intent)) {
             startActivity(intent);
         } else {
-            Log.e(TAG,
+            Log.e(
+                    TAG,
                     "Couldn't launch developer UI from current WebView package: "
                             + currentWebViewPackage);
             Toast.makeText(this, "No DevTools in " + currentWebViewPackageName, Toast.LENGTH_LONG)
@@ -388,17 +395,19 @@ public class WebViewBrowserActivity extends AppCompatActivity {
             info.append("Tracing data written to file\n");
             info.append("number of bytes: " + nbBytes);
 
-            mActivity.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    AlertDialog dialog = new AlertDialog.Builder(mActivity)
-                                                 .setTitle("Tracing API")
-                                                 .setMessage(info)
-                                                 .setNeutralButton(" OK ", null)
-                                                 .create();
-                    dialog.show();
-                }
-            });
+            mActivity.runOnUiThread(
+                    new Runnable() {
+                        @Override
+                        public void run() {
+                            AlertDialog dialog =
+                                    new AlertDialog.Builder(mActivity)
+                                            .setTitle("Tracing API")
+                                            .setMessage(info)
+                                            .setNeutralButton(" OK ", null)
+                                            .create();
+                            dialog.show();
+                        }
+                    });
         }
     }
 }

@@ -7,16 +7,18 @@
 
 #include <memory>
 
+#include <fuzzer/FuzzedDataProvider.h>
+
 #include "base/at_exit.h"
 #include "base/i18n/icu_util.h"
+#include "components/autofill/core/common/form_data_fuzzed_producer.h"
 #include "components/password_manager/core/browser/form_parsing/form_data_parser.h"
-#include "components/password_manager/core/browser/form_parsing/fuzzer/data_accessor.h"
-#include "components/password_manager/core/browser/form_parsing/fuzzer/form_data_producer.h"
+#include "components/password_manager/core/browser/form_parsing/fuzzer/form_predictions_producer.h"
 #include "components/password_manager/core/browser/password_form.h"
 
 namespace password_manager {
 
-// ICU is used inside GURL parser, which is used by GenerateWithDataAccessor.
+// ICU is used inside GURL parser, which is used by GenerateFormData.
 struct IcuEnvironment {
   IcuEnvironment() { CHECK(base::i18n::InitializeICU()); }
   // used by ICU integration.
@@ -26,19 +28,16 @@ struct IcuEnvironment {
 IcuEnvironment* env = new IcuEnvironment();
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
-  DataAccessor accessor(data, size);
-  FormDataParser::Mode mode = accessor.ConsumeBit()
-                                  ? FormDataParser::Mode::kFilling
-                                  : FormDataParser::Mode::kSaving;
+  FuzzedDataProvider data_provider(data, size);
+  const auto mode = data_provider.ConsumeBool() ? FormDataParser::Mode::kFilling
+                                                : FormDataParser::Mode::kSaving;
 
-  bool use_predictions = accessor.ConsumeBit();
-  FormPredictions predictions;
-  autofill::FormData form_data = GenerateWithDataAccessor(
-      &accessor, use_predictions ? &predictions : nullptr);
+  const bool use_predictions = data_provider.ConsumeBool();
+  autofill::FormData form_data = autofill::GenerateFormData(data_provider);
 
   FormDataParser parser;
   if (use_predictions)
-    parser.set_predictions(predictions);
+    parser.set_predictions(GenerateFormPredictions(form_data, data_provider));
 
   std::unique_ptr<PasswordForm> result =
       parser.Parse(form_data, mode, /*stored_usernames=*/{});

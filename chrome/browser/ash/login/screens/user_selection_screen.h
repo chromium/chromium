@@ -142,13 +142,13 @@ class UserSelectionScreen
   user_manager::UserList users_to_send_;
 
   AccountId focused_pod_account_id_;
-  absl::optional<system::SystemClock::ScopedHourClockType>
+  std::optional<system::SystemClock::ScopedHourClockType>
       focused_user_clock_type_;
 
   // Sometimes we might get focused pod while user session is still active. e.g.
   // while creating lock screen. So postpone any work until after the session
   // state changes.
-  absl::optional<AccountId> pending_focused_account_id_;
+  std::optional<AccountId> pending_focused_account_id_;
 
   // Input Method Engine state used at the user selection screen.
   scoped_refptr<input_method::InputMethodManager::State> ime_state_;

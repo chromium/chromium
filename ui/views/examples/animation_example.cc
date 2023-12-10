@@ -46,8 +46,9 @@ AnimationExample::AnimationExample() : ExampleBase("Animation") {}
 AnimationExample::~AnimationExample() = default;
 
 class AnimatingSquare : public View {
+  METADATA_HEADER(AnimatingSquare, View)
+
  public:
-  METADATA_HEADER(AnimatingSquare);
   explicit AnimatingSquare(size_t index);
   AnimatingSquare(const AnimatingSquare&) = delete;
   AnimatingSquare& operator=(const AnimatingSquare&) = delete;
@@ -65,7 +66,7 @@ class AnimatingSquare : public View {
                                         style::STYLE_PRIMARY);
 };
 
-BEGIN_METADATA(AnimatingSquare, View)
+BEGIN_METADATA(AnimatingSquare)
 END_METADATA
 
 AnimatingSquare::AnimatingSquare(size_t index) : index_(index) {

@@ -14,6 +14,11 @@ MATCHER(VideoCaptureDeviceInfoEq, "") {
          std::get<1>(arg).descriptor.device_id;
 }
 
+MATCHER(MediaStreamDeviceInfoEq, "") {
+  return std::get<0>(arg).id == std::get<1>(arg).id &&
+         std::get<0>(arg).type == std::get<1>(arg).type;
+}
+
 template <typename T>
 std::vector<T>::const_iterator GetIterForInfo(const std::vector<T>& infos,
                                               const T& info) {
@@ -29,7 +34,7 @@ std::vector<T>::const_iterator GetIterForInfo(const std::vector<T>& infos,
 
 }  // namespace
 
-class DeviceRankingTest : public testing::Test {
+class CaptureDeviceRankingTest : public testing::Test {
   void SetUp() override { media_prefs::RegisterUserPrefs(prefs_.registry()); }
 
  protected:
@@ -65,7 +70,7 @@ class DeviceRankingTest : public testing::Test {
   TestingPrefServiceSimple prefs_;
 };
 
-TEST_F(DeviceRankingTest, PreferenceRankVideoDeviceInfos) {
+TEST_F(CaptureDeviceRankingTest, PreferenceRankVideoDeviceInfos) {
   const media::VideoCaptureDeviceInfo kIntegratedCamera(
       {/*display_name=*/"Integrated Camera",
        /*device_id=*/"integrated_camera"});
@@ -110,7 +115,7 @@ TEST_F(DeviceRankingTest, PreferenceRankVideoDeviceInfos) {
                            kDeviceExtra});
 }
 
-TEST_F(DeviceRankingTest, PreferenceRankAudioDeviceInfos) {
+TEST_F(CaptureDeviceRankingTest, PreferenceRankAudioDeviceInfos) {
   const media::AudioDeviceDescription kIntegratedMic(
       {/*device_name=*/"Integrated Mic",
        /*unique_id=*/"integrated_mic",
@@ -160,8 +165,73 @@ TEST_F(DeviceRankingTest, PreferenceRankAudioDeviceInfos) {
       /*expected_output=*/{kUsbMic, kIntegratedMic, kDevice3, kDeviceExtra});
 }
 
-class DeviceRankingWebMediaDeviceTest
-    : public DeviceRankingTest,
+TEST_F(CaptureDeviceRankingTest, InitializeAudioDeviceInfosRanking) {
+  const media::AudioDeviceDescription kIntegratedMic(
+      {/*device_name=*/"Integrated Mic",
+       /*unique_id=*/"integrated_mic",
+       /*group_id=*/"integrated_group"});
+  const media::AudioDeviceDescription kUsbMic({
+      /*device_name=*/"USB Mic",
+      /*unique_id=*/"usb_mic",
+      /*group_id=*/"usb_group",
+  });
+
+  prefs_.registry()->RegisterStringPref(prefs::kDefaultAudioCaptureDevice, "");
+
+  // The default device is set to "" so the output should be unmodified.
+  ExpectAudioRanking({kIntegratedMic, kUsbMic}, {kIntegratedMic, kUsbMic});
+
+  // The default device isn't in the passed device list, so the output should be
+  // unmodified.
+  prefs_.SetString(prefs::kDefaultAudioCaptureDevice, "not_found_id");
+  ExpectAudioRanking({kIntegratedMic, kUsbMic}, {kIntegratedMic, kUsbMic});
+
+  // The default device is USB mic so the device ranking gets initialized to put
+  // that first.
+  prefs_.SetString(prefs::kDefaultAudioCaptureDevice, kUsbMic.unique_id);
+  ExpectAudioRanking({kIntegratedMic, kUsbMic}, {kUsbMic, kIntegratedMic});
+
+  // The device ranking pref now has a value, so use that instead of the default
+  // device pref.
+  UpdateAudioRanking(kIntegratedMic, {kIntegratedMic, kUsbMic});
+  ExpectAudioRanking({kUsbMic, kIntegratedMic}, {kIntegratedMic, kUsbMic});
+}
+
+TEST_F(CaptureDeviceRankingTest, InitializeVideoDeviceInfosRanking) {
+  const media::VideoCaptureDeviceInfo kIntegratedCamera(
+      {/*display_name=*/"Integrated Camera",
+       /*device_id=*/"integrated_camera"});
+  const media::VideoCaptureDeviceInfo kUsbCamera({/*display_name=*/"USB Camera",
+                                                  /*device_id=*/"usb_camera"});
+
+  prefs_.registry()->RegisterStringPref(prefs::kDefaultVideoCaptureDevice, "");
+
+  // The default device is set to "" so the output should be unmodified.
+  ExpectVideoRanking({kIntegratedCamera, kUsbCamera},
+                     {kIntegratedCamera, kUsbCamera});
+
+  // The default device isn't in the passed device list, so the output should be
+  // unmodified.
+  prefs_.SetString(prefs::kDefaultVideoCaptureDevice, "not_found_id");
+  ExpectVideoRanking({kIntegratedCamera, kUsbCamera},
+                     {kIntegratedCamera, kUsbCamera});
+
+  // The default device is usb camera so the device ranking gets Initialized to
+  // put that first.
+  prefs_.SetString(prefs::kDefaultVideoCaptureDevice,
+                   kUsbCamera.descriptor.device_id);
+  ExpectVideoRanking({kIntegratedCamera, kUsbCamera},
+                     {kUsbCamera, kIntegratedCamera});
+
+  // The device ranking pref now has a value, so use that instead of the default
+  // device pref.
+  UpdateVideoRanking(kIntegratedCamera, {kIntegratedCamera, kUsbCamera});
+  ExpectVideoRanking({kUsbCamera, kIntegratedCamera},
+                     {kIntegratedCamera, kUsbCamera});
+}
+
+class CaptureDeviceRankingWebMediaDeviceTest
+    : public CaptureDeviceRankingTest,
       public testing::WithParamInterface<blink::mojom::MediaDeviceType> {
  protected:
   void UpdateDeviceRanking(
@@ -185,10 +255,10 @@ class DeviceRankingWebMediaDeviceTest
       const std::vector<blink::WebMediaDeviceInfo>& expected_output) {
     if (device_type == blink::mojom::MediaDeviceType::kMediaAudioInput) {
       media_prefs::PreferenceRankAudioDeviceInfos(prefs_, infos);
-      EXPECT_THAT(infos, expected_output);
+      EXPECT_EQ(infos, expected_output);
     } else if (device_type == blink::mojom::MediaDeviceType::kMediaVideoInput) {
       media_prefs::PreferenceRankVideoDeviceInfos(prefs_, infos);
-      EXPECT_THAT(infos, expected_output);
+      EXPECT_EQ(infos, expected_output);
     } else {
       FAIL() << "Called with an unsupported type: " << device_type;
     }
@@ -196,12 +266,12 @@ class DeviceRankingWebMediaDeviceTest
 };
 
 INSTANTIATE_TEST_SUITE_P(
-    AudioVideoInput,
-    DeviceRankingWebMediaDeviceTest,
+    WebMediaDeviceAudioVideoInput,
+    CaptureDeviceRankingWebMediaDeviceTest,
     ::testing::Values(blink::mojom::MediaDeviceType::kMediaAudioInput,
                       blink::mojom::MediaDeviceType::kMediaVideoInput));
 
-TEST_P(DeviceRankingWebMediaDeviceTest, PreferenceWebMediaDeviceInfos) {
+TEST_P(CaptureDeviceRankingWebMediaDeviceTest, PreferenceWebMediaDeviceInfos) {
   const blink::WebMediaDeviceInfo kIntegratedDevice(
       /*device_id=*/"integrated_device",
       /*label=*/"Integrated Device",
@@ -223,7 +293,111 @@ TEST_P(DeviceRankingWebMediaDeviceTest, PreferenceWebMediaDeviceInfos) {
       /*label=*/"Device Extra",
       /*group_id=*/"device_group");
 
-  blink::mojom::MediaDeviceType device_type = GetParam();
+  const blink::mojom::MediaDeviceType device_type = GetParam();
+
+  UpdateDeviceRanking(
+      device_type,
+      /*preferred_device=*/kIntegratedDevice,
+      /*infos=*/{kDeviceLost, kDevice3, kIntegratedDevice, kUsbDevice});
+
+  UpdateDeviceRanking(device_type,
+                      /*preferred_device=*/kUsbDevice,
+                      /*infos=*/{kDevice3, kIntegratedDevice, kUsbDevice});
+
+  ExpectDeviceRanking(
+      device_type,
+      /*infos=*/{kDevice3, kIntegratedDevice, kUsbDevice},
+      /*expected_output=*/{kUsbDevice, kIntegratedDevice, kDevice3});
+
+  // Remove USB device and select the integrated device. Integrated
+  // should stay below USB in the ranking  because the USB device isn't
+  // present.
+  UpdateDeviceRanking(device_type,
+                      /*preferred_device=*/kIntegratedDevice,
+                      /*infos=*/{kDevice3, kIntegratedDevice});
+
+  ExpectDeviceRanking(
+      device_type,
+      /*infos=*/{kDeviceExtra, kDevice3, kIntegratedDevice},
+      /*expected_output=*/{kIntegratedDevice, kDevice3, kDeviceExtra});
+
+  // Bring back USB device. The USB device should be ranked as the most
+  // preferred device even without an update.
+  ExpectDeviceRanking(
+      device_type,
+      /*infos=*/{kDeviceExtra, kDevice3, kIntegratedDevice, kUsbDevice},
+      /*expected_output=*/
+      {kUsbDevice, kIntegratedDevice, kDevice3, kDeviceExtra});
+}
+
+class CaptureDeviceRankingMediaStreamDeviceTest
+    : public CaptureDeviceRankingTest,
+      public testing::WithParamInterface<blink::mojom::MediaStreamType> {
+ protected:
+  void UpdateDeviceRanking(blink::mojom::MediaStreamType device_type,
+                           const blink::MediaStreamDevice& preferred_device,
+                           const std::vector<blink::MediaStreamDevice>& infos) {
+    if (device_type == blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE) {
+      media_prefs::UpdateAudioDevicePreferenceRanking(
+          prefs_, GetIterForInfo(infos, preferred_device), infos);
+    } else if (device_type ==
+               blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE) {
+      media_prefs::UpdateVideoDevicePreferenceRanking(
+          prefs_, GetIterForInfo(infos, preferred_device), infos);
+    } else {
+      FAIL() << "Called with an unsupported type: " << device_type;
+    }
+  }
+
+  void ExpectDeviceRanking(
+      blink::mojom::MediaStreamType device_type,
+      std::vector<blink::MediaStreamDevice> infos,
+      const std::vector<blink::MediaStreamDevice>& expected_output) {
+    if (device_type == blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE) {
+      media_prefs::PreferenceRankAudioDeviceInfos(prefs_, infos);
+      EXPECT_THAT(infos, testing::Pointwise(MediaStreamDeviceInfoEq(),
+                                            expected_output));
+    } else if (device_type ==
+               blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE) {
+      media_prefs::PreferenceRankVideoDeviceInfos(prefs_, infos);
+      EXPECT_THAT(infos, testing::Pointwise(MediaStreamDeviceInfoEq(),
+                                            expected_output));
+    } else {
+      FAIL() << "Called with an unsupported type: " << device_type;
+    }
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    MediaStreamDeviceAudioVideoInput,
+    CaptureDeviceRankingMediaStreamDeviceTest,
+    ::testing::Values(blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE,
+                      blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE));
+
+TEST_P(CaptureDeviceRankingMediaStreamDeviceTest,
+       PreferenceMediaStreamDevices) {
+  const blink::mojom::MediaStreamType device_type = GetParam();
+
+  const blink::MediaStreamDevice kIntegratedDevice(
+      /*type=*/device_type,
+      /*id=*/"integrated_device",
+      /*name=*/"Integrated Device");
+  const blink::MediaStreamDevice kUsbDevice(
+      /*type=*/device_type,
+      /*id=*/"usb_device",
+      /*name=*/"USB Device");
+  const blink::MediaStreamDevice kDevice3(
+      /*type=*/device_type,
+      /*id=*/"device_3",
+      /*name=*/"Device 3");
+  const blink::MediaStreamDevice kDeviceLost(
+      /*type=*/device_type,
+      /*id=*/"device_lost",
+      /*name=*/"Device Lost");
+  const blink::MediaStreamDevice kDeviceExtra(
+      /*type=*/device_type,
+      /*id=*/"device_extra",
+      /*name=*/"Device Extra");
 
   UpdateDeviceRanking(
       device_type,

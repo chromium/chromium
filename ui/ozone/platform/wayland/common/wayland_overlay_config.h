@@ -93,4 +93,4 @@ struct WaylandOverlayConfig {
 
 }  // namespace wl
 
-#endif  // COMPONENTS_VIZ_COMMON_QUADS_COMPOSITOR_FRAME_H_
+#endif  // UI_OZONE_PLATFORM_WAYLAND_COMMON_WAYLAND_OVERLAY_CONFIG_H_

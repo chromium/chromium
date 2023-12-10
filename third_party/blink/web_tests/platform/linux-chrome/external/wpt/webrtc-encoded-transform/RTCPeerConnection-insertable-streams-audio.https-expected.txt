@@ -1,0 +1,10 @@
+This is a testharness.js-based test.
+[FAIL] Frames flow correctly using insertable streams
+  promise_test: Unhandled rejection with value: object "InvalidStateError: Failed to execute 'createEncodedStreams' on 'RTCRtpSender': Encoded audio streams not requested at PC initialization"
+[FAIL] Frames flow correctly using insertable streams when receiver starts negotiation
+  promise_test: Unhandled rejection with value: object "InvalidStateError: Failed to execute 'createEncodedStreams' on 'RTCRtpSender': Encoded audio streams not requested at PC initialization"
+[FAIL] Encoded frames serialize and deserialize into a deep clone
+  promise_test: Unhandled rejection with value: object "InvalidStateError: Failed to execute 'createEncodedStreams' on 'RTCRtpSender': Encoded audio streams not requested at PC initialization"
+[FAIL] Modifying rtp timestamp
+  promise_test: Unhandled rejection with value: object "InvalidStateError: Failed to execute 'createEncodedStreams' on 'RTCRtpSender': Encoded audio streams not requested at PC initialization"
+Harness: the test ran to completion.

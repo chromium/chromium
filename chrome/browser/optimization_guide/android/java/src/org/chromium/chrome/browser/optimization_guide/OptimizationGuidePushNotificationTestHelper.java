@@ -13,12 +13,9 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.optimization_guide.proto.HintsProto.OptimizationType;
 import org.chromium.components.optimization_guide.proto.PushNotificationProto.HintNotificationPayload;
 
-/**
- * Unit test helper for OptimizationGuidePushNotificationManager.
- */
+/** Unit test helper for OptimizationGuidePushNotificationManager. */
 public class OptimizationGuidePushNotificationTestHelper {
-    @Mock
-    private Profile mProfile;
+    @Mock private Profile mProfile;
 
     @CalledByNative
     private OptimizationGuidePushNotificationTestHelper() {}
@@ -53,8 +50,9 @@ public class OptimizationGuidePushNotificationTestHelper {
 
     @CalledByNative
     public static boolean didOverflow(int optType) {
-        for (OptimizationType type : OptimizationGuidePushNotificationManager
-                                             .getOptTypesThatOverflowedPushNotifications()) {
+        for (OptimizationType type :
+                OptimizationGuidePushNotificationManager
+                        .getOptTypesThatOverflowedPushNotifications()) {
             if (type.getNumber() == optType) {
                 return true;
             }

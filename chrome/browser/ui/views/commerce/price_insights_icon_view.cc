@@ -9,7 +9,7 @@
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
-#include "chrome/browser/ui/commerce/price_tracking/shopping_list_ui_tab_helper.h"
+#include "chrome/browser/ui/commerce/commerce_ui_tab_helper.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry_id.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "components/commerce/core/commerce_feature_list.h"
@@ -41,7 +41,7 @@ PriceInsightsIconView::PriceInsightsIconView(
   SetUpForInOutAnimation();
   SetProperty(views::kElementIdentifierKey, kPriceInsightsChipElementId);
   SetAccessibilityProperties(
-      /*role*/ absl::nullopt,
+      /*role*/ std::nullopt,
       l10n_util::GetStringUTF16(IDS_SHOPPING_INSIGHTS_ICON_TOOLTIP_TEXT));
 }
 PriceInsightsIconView::~PriceInsightsIconView() = default;
@@ -60,10 +60,6 @@ void PriceInsightsIconView::UpdateImpl() {
   bool should_show = ShouldShow();
 
   if (should_show) {
-    // Reset the last_shown_label_type_ first.
-    last_shown_label_type_ =
-        PriceInsightsIconView::PriceInsightsIconLabelType::kNone;
-
     MaybeShowPageActionLabel();
   } else {
     HidePageActionLabel();
@@ -82,7 +78,7 @@ void PriceInsightsIconView::MaybeShowPageActionLabel() {
     return;
   }
   auto* tab_helper =
-      commerce::ShoppingListUiTabHelper::FromWebContents(GetWebContents());
+      commerce::CommerceUiTabHelper::FromWebContents(GetWebContents());
 
   if (!tab_helper || !tab_helper->ShouldExpandPageActionIcon(
                          PageActionIconType::kPriceInsights)) {
@@ -90,10 +86,9 @@ void PriceInsightsIconView::MaybeShowPageActionLabel() {
   }
 
   should_extend_label_shown_duration_ = true;
-  last_shown_label_type_ = GetLabelTypeForPage();
   UpdatePriceInsightsIconLabel();
 
-  AnimateIn(absl::nullopt);
+  AnimateIn(std::nullopt);
 }
 
 PriceInsightsIconView::PriceInsightsIconLabelType
@@ -104,20 +99,22 @@ PriceInsightsIconView::GetLabelTypeForPage() {
     return PriceInsightsIconView::PriceInsightsIconLabelType::kNone;
   }
   auto* tab_helper =
-      commerce::ShoppingListUiTabHelper::FromWebContents(web_contents);
+      commerce::CommerceUiTabHelper::FromWebContents(web_contents);
   CHECK(tab_helper);
 
   return tab_helper->GetPriceInsightsIconLabelTypeForPage();
 }
 
 void PriceInsightsIconView::UpdatePriceInsightsIconLabel() {
-  if (last_shown_label_type_ ==
+  PriceInsightsIconView::PriceInsightsIconLabelType label_type =
+      GetLabelTypeForPage();
+  if (label_type ==
       PriceInsightsIconView::PriceInsightsIconLabelType::kPriceIsLow) {
     SetLabel(
         l10n_util::GetStringUTF16(
             IDS_SHOPPING_INSIGHTS_ICON_EXPANDED_TEXT_LOW_PRICE),
         l10n_util::GetStringUTF16(IDS_SHOPPING_INSIGHTS_ICON_TOOLTIP_TEXT));
-  } else if (last_shown_label_type_ ==
+  } else if (label_type ==
              PriceInsightsIconView::PriceInsightsIconLabelType::kPriceIsHigh) {
     SetLabel(
         l10n_util::GetStringUTF16(
@@ -160,13 +157,10 @@ void PriceInsightsIconView::OnExecuting(
     return;
   }
   auto* tab_helper =
-      commerce::ShoppingListUiTabHelper::FromWebContents(web_contents);
+      commerce::CommerceUiTabHelper::FromWebContents(web_contents);
   CHECK(tab_helper);
 
   tab_helper->OnPriceInsightsIconClicked();
-  base::UmaHistogramEnumeration(
-      "Commerce.PriceInsights.OmniboxIconClickedAfterLabelShown",
-      last_shown_label_type_);
   SetHighlighted(false);
 }
 
@@ -179,7 +173,7 @@ bool PriceInsightsIconView::ShouldShow() const {
     return false;
   }
   auto* tab_helper =
-      commerce::ShoppingListUiTabHelper::FromWebContents(web_contents);
+      commerce::CommerceUiTabHelper::FromWebContents(web_contents);
 
   return tab_helper && tab_helper->ShouldShowPriceInsightsIconView();
 }

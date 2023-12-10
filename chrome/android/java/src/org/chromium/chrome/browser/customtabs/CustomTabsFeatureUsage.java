@@ -79,6 +79,7 @@ public class CustomTabsFeatureUsage {
     public @interface CustomTabsFeature {
         /** Special enum for the start of a session. */
         int CTF_SESSIONS = 0;
+
         int EXTRA_ACTION_BUTTON_BUNDLE = 1;
         int EXTRA_TINT_ACTION_BUTTON = 2;
         int EXTRA_INITIAL_BACKGROUND_COLOR = 3;

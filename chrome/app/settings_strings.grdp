@@ -515,6 +515,18 @@
   <message name="IDS_SETTINGS_CREDIT_CARD_NICKNAME_INVALID" desc="The error message that is shown when user uses digit numbers in credit card nickname">
     Nickname can’t include numbers
   </message>
+  <message name="IDS_SETTINGS_CREDIT_CARD_CVC_TITLE" desc="The title for the input that lets users enter the CVC/security code of the credit card.">
+    Security code
+  </message>
+  <message name="IDS_SETTINGS_CREDIT_CARD_CVC_IMAGE_TITLE" desc="The text shown in a tool-tip when the user hovers over the helper image that guides the user when entering their credit card CVC/security code.">
+    Your security code is on the back of your card
+  </message>
+  <message name="IDS_SETTINGS_CREDIT_CARD_CVC_IMAGE_TITLE_AMEX" desc="The text shown in a tool-tip when the user hovers over the helper image that guides the user when entering their credit card CVC/security code for AmEx cards.">
+    Your security code is on the front of your card
+  </message>
+  <message name="IDS_SETTINGS_CREDIT_CARD_CVC_PLACEHOLDER" desc="The placeholder text for the input that lets users enter the CVC/security code of the credit card, letting users know that this field is optional.">
+    Optional
+  </message>
   <message name="IDS_SETTINGS_ADD_PAYMENT_METHODS" desc="The (accessibility) label that appears in the drop-down button for adding either an IBAN (International Bank Account Number), or a credit/debit card.">
     Add payment methods
   </message>
@@ -533,7 +545,7 @@
   <message name="IDS_SETTINGS_AUTOFILL_MORE_ACTIONS_FOR_IBAN" desc="The (accessibility) title of a button, which brings up a menu of actions that can be taken on a stored IBAN (International Bank Account Number). The IBAN is described by its nickname.">
     More actions for <ph name="IBAN_DESCRIPTION">$1<ex>My Doctor's IBAN</ex></ph>
   </message>
-  <message name="IDS_SETTINGS_AUTOFILL_MORE_ACTIONS_FOR_IBAN_DESCRIPTION" desc="The (accessibility) IBAN (International Bank Account Number) description from the last 4 digits of the IBAN value.">
+  <message name="IDS_SETTINGS_AUTOFILL_A11Y_IBAN_DESCRIPTION" desc="The (accessibility) IBAN (International Bank Account Number) description from the last 4 digits of the IBAN value.">
    IBAN ending in <ph name="LAST_FOUR_DIGITS">$1<ex>1234</ex></ph>
   </message>
   <message name="IDS_SETTINGS_ADD_IBAN_TITLE" desc="The title for the dialog that's shown when editing an IBAN (International Bank Account Number).">
@@ -866,6 +878,9 @@
       <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_PROVISIONING_REFRESH" desc="Text on the button to refresh the status of a certificate provisioning process.">
         Refresh
       </message>
+      <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_PROVISIONING_RESET" desc="Text on the button to reset a certificate provisioning process.">
+        Reset
+      </message>
       <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_PROVISIONING_DETAILS" desc="Text on the button to show debug details about a certificate provisioning process and title of the dialog that shows the details.">
         Details
       </message>
@@ -956,6 +971,9 @@
   </message>
   <message name="IDS_SETTINGS_CLEAR_COOKIES_AND_SITE_DATA_SUMMARY_BASIC_SUPERVISED_PROFILE" desc="A summary for the 'Cookies and site data' option in the 'Clear Browsing Data' screen, explaining that deleting cookies and site data will sign the the child user out of most websites but your Google account and Family Link settings will stay .">
     Signs you out of most sites. You'll stay signed in to your Google Account so your Family Link settings for Chrome apply.
+  </message>
+  <message name="IDS_SETTINGS_CLEAR_COOKIES_AND_SITE_DATA_SUMMARY_BASIC_SIGNED_IN_PROFILE" desc="A summary for the 'Cookies and site data' option in the 'Clear Browsing Data' screen, explaining that deleting cookies and site data will sign the user out of most websites but your Google sign in will stay.">
+    Signs you out of most sites. You'll stay signed in to your Google Account.
   </message>
   <message name="IDS_SETTINGS_CLEAR_BROWSING_HISTORY_SUMMARY" desc="A subtext for the basic tab explaining browsing history.">
     Clears history, including in the search box
@@ -1402,130 +1420,15 @@
     This setting works without identifying you or allowing sites to see your browsing history, though sites can share a small amount of info as part of the verification
   </message>
 
-  <!-- Privacy Sandbox -->
+  <!-- Privacy Sandbox strings -->
   <message name="IDS_SETTINGS_PRIVACY_SANDBOX_TITLE" desc="The title of the Privacy Sandbox page. 'Privacy Sandbox' is a noun phrase (title case).">
     Privacy Sandbox
-  </message>
-  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_PAGE_HEADING" desc="The heading displayed at the top of the Privacy Sandbox page. 'Privacy Sandbox' is a noun phrase (title case).">
-    About Privacy Sandbox
-  </message>
-  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_PAGE_DETAILS" desc="Label of a button in the Privacy Sandbox page that leads the user to more details about the Privacy Sandbox.">
-    Details
-  </message>
-  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_TRIALS_ENABLED" desc="A short description that informs the user that the Privacy Sandbox trial features are enabled.">
-    Trial features are on
-  </message>
-  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_TRIALS_DISABLED" desc="A short description that informs the user that the Privacy Sandbox trial features are disabled.">
-    Trial features are off
   </message>
   <message name="IDS_SETTINGS_PRIVACY_SANDBOX_COOKIES_DIALOG" desc="Text of a dialog shown to users when they interacted with cookies to make them aware of the Privacy Sandbox.">
     Learn about and control new technologies that aim to replace third-party cookies
   </message>
   <message name="IDS_SETTINGS_PRIVACY_SANDBOX_COOKIES_DIALOG_MORE" desc="Label on the button in the dialog shown to users when they interacted with cookies to make them aware of the Privacy Sandbox.">
     More
-  </message>
-    <!-- Privacy Sandbox Settings 3 strings -->
-  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_TRIALS_TITLE" desc="The title of the settings page on which the user can find all Privacy Sandbox trials. When launched, this page will appear at chrome://settings/privacySandbox. To get there: 1) go to Chrome settings 2) From the main menu (top left of the page) choose “Security and privacy” 3) At the bottom of the page, choose “Privacy Sandbox” There are 3 cards on this page that are presented as features. Only the first includes controls the user can manage, but we want to convey that Privacy Sandbox includes all of the things on this page.">
-    Trials
-  </message>
-  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_TRIALS_SUMMARY" desc="The page description that appears beneath the page title. * “can” is important: When trials ara on, any site the user visits may or may not be using one of the trial APIs. The chances that the user is in an active trial on any given page are low. * “less cross-site tracking”:  We can’t promise the complete elimination of cross-site tracking. Privacy Sandbox is about blocking cross-site tracking as much as possible, but sites can still use fingerprinting to try and identify users from one site to the next.">
-    With Privacy Sandbox trials, sites can deliver the same browsing experience using less of your info. That means more privacy for you and less cross-site tracking. We'll add new trials as they're ready to test.
-  </message>
-  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_TRIALS_SUMMARY_LEARN_MORE" desc="Part of the Trials section description that can be interacted with to open up the dialog to learn more about the Privacy Sandbox Trials.">
-    About Browser-based ad personalization
-  </message>
-  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_AD_PERSONALIZATION_TITLE" desc="The title of card 1 of 3. * “Browser-based ad personalization” is the name of our setting. “Ad personalization” would be an appropriate name as well, but we didn’t want the user to confuse this new setting with the Google Account level setting of that name (see https://adssettings.google.com/authenticated).">
-    Browser-based ad personalization
-  </message>
-  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_AD_PERSONALIZATION_SUMMARY" desc="The description of card 1 of 3. * “browsing history”: we define this as “a record of sites you’ve visited using Chrome on this device.” By “recent”, we mean the last 3 weeks (also defined later in the UI). * “affects the ads you see”: We think we’re stating the obvious. The ads the user sees are affected by the things they do online, like browsing the web.">
-    Your browsing history affects the ads you see
-  </message>
-  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_AD_MEASUREMENT_TITLE" desc="The title of card 2 of 3. * The title of a Privacy Sandbox API used by advertisers to measure the effectiveness of ads.">
-    Ad measurement
-  </message>
-  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_AD_MEASUREMENT_SUMMARY" desc="The description of card 2 of 3. * The description of a Privacy Sandbox API used by advertisers to measure the effectiveness of ads. * Advertisers can use the API to “measure when user action (such as an ad click or view) leads to a conversion, without using cross-site identifiers.” * You can learn more at https://developer.chrome.com/docs/privacy-sandbox/attribution-reporting/">
-    Advertisers can understand how ads perform
-  </message>
-  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_SPAM_AND_FRAUD_TITLE" desc="The title of card 3 of 3. * “reduction”: don’t use a word that sounds more like “elimination”. We can’t promise the complete removal of spam.">
-    Spam &#38; fraud reduction
-  </message>
-  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_SPAM_AND_FRAUD_SUMMARY" desc="The description of card 3 of 3. * “help”: This API is one way that sites can fight fraud. Don’t suggest that sites must use this API to fight fraud. * “distinguish bots from people”: This touches on just one aspect of fraud but we hope it helps the user understand the purpose of this API, and that is to distinguish real users from malicious players.">
-    Help sites fight fraud and distinguish bots from people
-  </message>
-  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_LEARN_MORE_DIALOG_TITLE" desc="Title of a page The page is broken up into two sections because there are two APIs a website can use in order to target ads: the Topics API and the FLEDGE API. There is some friction between the page title and the name of the control. The name of the control is “Browser-based ad personalization”. (We wanted to use the simpler “Ad personalization” but we need to distinguish this Chrome setting from the Google Account setting (https://adssettings.google.com/authenticated)). The page should ideally read “About Browser-base ad personalization” but we didn’t want the title to wrap to a new line, so we shortened it. But the two sections on this page describe both ways a site can target ads to the user if the user is part of trials (which would mean that “Browser-based ad personalization” is on for them).">
-    About Browser-based ad personalization
-  </message>
-  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_LEARN_MORE_DIALOG_FLEDGE_TITLE" desc="FLEDGE API A sub title that describes the second of 2 ways a site can get info from Chrome in order to target ads to the user.">
-    Sites you visit that define your interests
-  </message>
-  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_LEARN_MORE_DIALOG_DATA_TYPES" desc="Title of the data types subsection of the dialog to learn more about ad personalization.">
-    What data is used:
-  </message>
-  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_LEARN_MORE_DIALOG_DATA_USAGE" desc="Title of the data usage subsection of the dialog to learn more about ad personalization.">
-    How we use this data:
-  </message>
-  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_LEARN_MORE_DIALOG_DATA_MANAGEMENT" desc="Title of the data management subsection of the dialog to learn more about ad personalization.">
-    How you can manage your data:
-  </message>
-  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_LEARN_MORE_DIALOG_FLEDGE_DATA_MANAGEMENT" desc="FLEDGE API Bullet 3 of 3 that appear beneath the “Sites you visit that define your interests” subtitle. We break the description into the 3 pieces users most care about: 1) what data, 2) why this data, 3) what can I do about it? * “How you can manage your data:” is bold and serves as a label to help people skimming the page. * “To protect your privacy”: Today, most data is kept for long periods of time. This new Topics API doesn’t retain estimated topics for more than 3 weeks. The only reason for this feature is to protect the user’s privacy. * “auto”: isn’t strictly necessary, but it conveys that this feature is an ongoing part of the service. This isn’t describing, for example, a one-time deletion. * “older than 4 weeks”: We’re trying to convey a rolling delete. Imagine a user opens a browser for the very first time. As the user browses, sites can store info with Chrome for up to 4 weeks. So in week 1, the user visits site A. When week 5 starts, site A is removed from the list of sites. * “a site you visit…”: If a user visits site A every week for months on end, that site will remain on the user’s list of sites for months on end. * “Or you can…”: Say a user strongly dislikes www.siteB.com. But that user might visit siteB.com as part of their job, or just to see how bad it really is. The user can stop siteB from defining interests for them. This block lasts indefinitely.">
-    To protect your privacy, we auto-delete sites from the list that are older than 4 weeks. A site you visit again might appear on the list again. Or you can remove a site if you don’t want that site to ever define interests for you.
-  </message>
-  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_AD_PERSONALIZATION_DIALOG_TITLE" desc="Card title and the name of a setting. This setting includes two APIs that are part of the Privacy Sandbox project: Topics API an FLEDGE API.">
-    Browser-based ad personalization
-  </message>
-  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_AD_PERSONALIZATION_REMOVED_DIALOG_TITLE" desc="The title of a card that shows the user interests and sites they’ve removed from the “Browser-based ad personalization” page.">
-    Interests you removed
-  </message>
-  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_AD_PERSONALIZATION_REMOVED_DIALOG_DESCRIPTION" desc="A paragraph beneath the card title. The page title explains why things appear on this page. This string explains why the user might want to “un-remove” or “re-allow” an item from the list. If a user does choose “Allow” for an item, there won’t be any immediate change in the interface because the item simply becomes eligible again. So, for example, the user previously blocked the interest “Horror movies.” Today, they “allow” “Horror movies” because they’ve decided that as about horror movies are actually OK to see. It might take another week or longer, based on the user’s browsing history, for “Horror movies” to appear in the list of interests again as an active interest within the last 3 weeks. * “Allow”: This aligns with the button label titled “allow”. It wouldn’t make much sense if the user couldn’t see the Allow button on the card.">
-    Add an interest or site if you think ads related to the item would be useful to you.
-  </message>
-  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_AD_PERSONALIZATION_DIALOG_TOPICS_EMPTY" desc="Description of the empty state of the browser-based interests section of the 'ad personalization' dialog.">
-    A list of interests may appear here as you browse the web
-  </message>
-  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_AD_PERSONALIZATION_DIALOG_REMOVED_TOPICS_LABEL" desc="A link that opens a card that lists the interests the user has previously removed.">
-    Interests you removed
-  </message>
-  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_AD_PERSONALIZATION_DIALOG_REMOVED_TOPICS_EMPTY" desc="Description of the empty state of the removed browser-based interests section of the 'ad personalization' dialog.">
-    You haven't removed any interests
-  </message>
-  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_AD_PERSONALIZATION_DIALOG_FLEDGE_TITLE" desc="Title of the website-based interests section of the 'ad personalization' dialog.">
-    Sites you visit that define your interests
-  </message>
-  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_AD_PERSONALIZATION_DIALOG_FLEDGE_EMPTY" desc="Description of the empty state of the website-based interests section of the 'ad personalization' dialog.">
-    A list of sites you visit may appear here as you browse the web
-  </message>
-  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_AD_PERSONALIZATION_DIALOG_REMOVED_FLEDGE_LABEL" desc="A link that opens a card that lists the sites the user has previously removed.">
-    Sites you removed
-  </message>
-  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_AD_PERSONALIZATION_DIALOG_REMOVED_FLEDGE_EMPTY" desc="Description of the empty state of the removed website-based interests section of the 'ad personalization' dialog.">
-    You haven't removed any sites
-  </message>
-  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_AD_PERSONALIZATION_DIALOG_FLEDGE_LEARN_MORE_2" desc="Second learn more description of the website-based interests section of the 'ad personalization' dialog.">
-    For example, if you visit a site to buy shoes for a marathon, the site might define your interest as running marathons. Later, if you visit a different site to register for a race, that site can show you an ad for running shoes based on your interests.
-  </message>
-  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_AD_PERSONALIZATION_DIALOG_FLEDGE_LEARN_MORE_3" desc="Third learn more description of the website-based interests section of the 'ad personalization' dialog.">
-    To protect your privacy, we auto-delete sites from the list that are older than 4 weeks. A site you visit again might appear on the list again. Or you can remove a site if you don't want that site to ever define interests for you.
-  </message>
-  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_AD_MEASUREMENT_DIALOG_TITLE" desc="Card title of the Ad measurement API section of the Privacy Sandbox settings.">
-    Ad measurement
-  </message>
-  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_AD_MEASUREMENT_DIALOG_CONTROL_MEASUREMENT" desc="The second paragraph on the Ad measurement card. * “your browsing history”: points to chrome://history/ * “You can control…”: The user can “control” this data by clearing their browser data at chrome://history/">
-    When you delete your browsing history — all or for a specific site — you also delete associated measurement info. See <ph name="BEGIN_LINK">&lt;a href="$1" target="_blank"&gt;</ph>your browsing history<ph name="END_LINK">&lt;/a&gt;</ph>
-  </message>
-  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_SPAM_AND_FRAUD_DIALOG_TITLE" desc="Card title of the Spam &amp; Fraud section of the Privacy Sandbox settings.">
-    Spam and fraud reduction
-  </message>
-  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_SPAM_AND_FRAUD_DIALOG_DESCRIPTION_1" desc="The first of 3 paragraphs on the spam &amp; fraud card. This is a behind-the-scenes upgrade to Chrome. There aren’t any user controls or data to interact with, at least not yet. * “private state tokens”: explained in the next paragraph * “help”: This feature is one way that sites can fight fraud. Don’t suggest that sites must use this API to fight fraud. * “distinguish bots from people”: This touches on just one aspect of fraud but we hope it helps the user understand the purpose of this API, and that is to distinguish real users from malicious players.">
-    Spam &#38; fraud reduction relies on private state tokens to help sites fight fraud and distinguish bots from people.
-  </message>
-  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_SPAM_AND_FRAUD_DIALOG_DESCRIPTION_1_TRIALS_OFF" desc="The first of 3 paragraphs on the spam &amp; fraud card. This is a behind-the-scenes upgrade to Chrome. There aren’t any user controls or data to interact with, at least not yet. * “private state tokens”: explained in the next paragraph * “help”: This feature is one way that sites can fight fraud. Don’t suggest that sites must use this API to fight fraud. * “distinguish bots from people”: This touches on just one aspect of fraud but we hope it helps the user understand the purpose of this API, and that is to distinguish real users from malicious players.">
-    When trials are on, Spam &#38; fraud reduction relies on private state tokens to help sites fight fraud and distinguish bots from people.
-  </message>
-  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_SPAM_AND_FRAUD_DIALOG_DESCRIPTION_2" desc="The second of 3 paragraphs on the spam &amp; fraud card. * “interaction”: is broad. It’s not just viewing a site but also how you interact with it, like by signing in * “Later”:  is important to convey the passage of time. We don’t want to convey how much time (it could be tiny). What’s important is that the user understands this is essentially a two-step process. A private state token is issued. Sometime in the future, when you visit a different site, that private state token might get used.">
-    Based on your interaction with a site, like regularly signing in to an account, that site can issue a private state token to your browser. Later, if other sites you visit check for and find a valid private state token, they're more likely to treat you like a person and not a bot.
-  </message>
-  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_SPAM_AND_FRAUD_DIALOG_DESCRIPTION_3" desc="The third of 3 paragraphs on the spam &amp; fraud card.">
-    Private state tokens improve privacy on the web and can't be used to find out who you are.
   </message>
 
   <!-- Privacy Sandbox Settings 4 - Privacy & Security Page -->
@@ -2110,9 +2013,6 @@
   <message name="IDS_SETTINGS_NETWORK_PREDICTION_ENABLED_DESC" desc="In the advanced options tab, the secondary text next to the checkbox that enables prediction of network actions.">
     Uses cookies to remember your preferences, even if you don’t visit those pages
   </message>
-  <message name="IDS_SETTINGS_NETWORK_PREDICTION_ENABLED_DESC_COOKIES_PAGE" desc="On the cookies page, the secondary text next to the checkbox that enables prediction of network actions.">
-    Preloads pages that Chrome thinks you might visit. To do this, Chrome may use cookies, if you allow cookies, and may encrypt and send pages through Google to hide your identity from sites.
-  </message>
   <message name="IDS_SETTINGS_SAFEBROWSING_ENABLEPROTECTION" desc="The section title of 'Protects you and your device from dangerous sites'">
     Safe Browsing (protects you and your device from dangerous sites)
   </message>
@@ -2227,7 +2127,10 @@
     Do Not Track
   </message>
   <message name="IDS_SETTINGS_ENABLE_DO_NOT_TRACK_DIALOG_TEXT" desc="The text of a confirmation dialog that confirms that the user want to send the 'Do Not Track' header">
-    Enabling "Do Not Track" means that a request will be included with your browsing traffic. Any effect depends on whether a website responds to the request, and how the request is interpreted. For example, some websites may respond to this request by showing you ads that aren't based on other websites you've visited. Many websites will still collect and use your browsing data - for example to improve security, to provide content, services, ads and recommendations on their websites, and to generate reporting statistics. <ph name="BEGIN_LINK">&lt;a target="_blank" href="$1"&gt;</ph>Learn more<ph name="END_LINK">&lt;/a&gt;<ex>&lt;/a&gt;</ex></ph>
+    Enabling "Do Not Track" means that a request will be included with your browsing traffic. Any effect depends on whether a website responds to the request, and how the request is interpreted. For example, some websites may respond to this request by showing you ads that aren't based on other websites you've visited. Many websites will still collect and use your browsing data - for example to improve security, to provide content, services, ads and recommendations on their websites, and to generate reporting statistics.
+  </message>
+  <message name="IDS_SETTINGS_ENABLE_DO_NOT_TRACK_DIALOG_LEARN_MORE_ACCESSIBILITY_LABEL" desc="The accessibility label for a link to learn more about Do Not Track">
+    Learn more about Do Not Track
   </message>
   <message name="IDS_SETTINGS_PERMISSIONS" desc="Name of the settings page which allows users to manage permissions and site content settings">
     Permissions and content settings
@@ -2259,6 +2162,18 @@
   <message name="IDS_SETTINGS_HTTPS_ONLY_MODE_DESCRIPTION_ADVANCED_PROTECTION" desc="Secondary, continued explanation of HTTPS-Only Mode in Security settings when the user can't change the setting">
     Use HTTPS whenever possible and get warned before loading sites that don’t support it. You can’t change this setting because you have Advanced Protection enabled.
   </message>
+  <message name="IDS_SETTINGS_HTTPS_FIRST_MODE_TITLE" desc="Title for HTTPS-First Mode section in Security settings">
+    Warn before using insecure connections
+  </message>
+  <message name="IDS_SETTINGS_HTTPS_FIRST_MODE_ENABLED_FULL_LABEL" desc="Label for radio button to fully enable HTTPS-First Mode">
+    See warnings before going to insecure sites (recommended)
+  </message>
+  <message name="IDS_SETTINGS_HTTPS_FIRST_MODE_ENABLED_INCOGNITO_LABEL" desc="Label for radio button to enable HTTPS-First Mode in Incognito">
+    See warnings before going to insecure sites in Incognito mode
+  </message>
+  <message name="IDS_SETTINGS_HTTPS_FIRST_MODE_DISABLED_LABEL" desc="Label for radio button to disable HTTPS-First Mode">
+    Don't see any warnings before going to insecure sites
+  </message>
   <message name="IDS_SETTINGS_MANAGE_CERTIFICATES" desc="Text for manage certificates button in Privacy options">
     Manage certificates
   </message>
@@ -2278,14 +2193,14 @@
     Manage
   </message>
   <message name="IDS_SETTINGS_SECURE_DNS" desc="Text for secure DNS toggle in Privacy options">
-    Use secure DNS
+    Encrypt the names of sites you visit
   </message>
   <message name="IDS_SETTINGS_SECURE_DNS_DESCRIPTION" desc="Secondary, continued explanation of secure DNS in Privacy options">
-    Use a secure connection to look up a site’s IP address in the DNS (Domain Name System)
+    Use secure Domain Name System (DNS) to prevent people with access to your internet traffic from seeing which sites you visit
   </message>
   <if expr="chromeos_ash">
     <message name="IDS_SETTINGS_SECURE_DNS_WITH_IDENTIFIERS_DESCRIPTION" desc="Secondary, continued explanation of secure DNS in Privacy options">
-      Use a secure connection to look up a site’s IP address in the DNS (Domain Name System). This uses a managed service provider at <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER">$1<ex>https://dns.example.net/dns-query{?dns}</ex></ph>
+      Use secure Domain Name System (DNS) to prevent people with access to your internet traffic from seeing which sites you visit. This uses a managed service provider at <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER">$1<ex>https://dns.example.net/dns-query{?dns}</ex></ph>
     </message>
   </if>
   <message name="IDS_SETTINGS_AUTOMATIC_MODE_DESCRIPTION" desc="Text of the select option that puts secure DNS in auto-upgrade mode">
@@ -2295,7 +2210,7 @@
     Provider options
   </message>
   <message name="IDS_SETTINGS_SECURE_DROPDOWN_MODE_DESCRIPTION" desc="Label for the select menu that allows a secure resolver to be selected">
-    Select DNS Provider
+    Select DNS provider
   </message>
   <message name="IDS_SETTINGS_SECURE_DROPDOWN_MODE_PRIVACY_POLICY" desc="Text that displays a link to the privacy policy of the resolver selected from a dropdown menu">
     See this provider's <ph name="BEGIN_LINK">&lt;a target="_blank" href="$1<ex>https://google.com/</ex>"&gt;</ph>privacy policy<ph name="END_LINK">&lt;/a&gt;</ph>
@@ -3081,9 +2996,6 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_AR_BLOCK" desc="The block label for the AR feature in site settings.">
     Do not allow sites to create a 3D map of your surroundings or track camera position
   </message>
-  <message name="IDS_SETTINGS_COOKIES_PAGE" desc="Title of the cookies settings page">
-    Cookies and other site data
-  </message>
   <message name="IDS_SETTINGS_THIRD_PARTY_COOKIES_PAGE_DESCRIPTION" desc="An explanation of what third-party cookies are that appear beneath the page title: 'Third-party cookies'. * 'embed': A site you visit uses HTML to construct the page. HTML tags include references to images, like img src='filename.jpg', that are used to show an image. 'filename.jpg' can be a local file owned by the site you visit or a site can embed an external file with something like img src='www.third-party-site.com/images/filename.jpg'. This image is embedded into the site you visit and www.third-party-site.com can set a third-party cookie onto your device.">
     A site you visit can embed content from other sites, for example, images, ads, and text. Cookies set by these other sites are called third-party cookies.
   </message>
@@ -3153,62 +3065,8 @@
   <message name="IDS_SETTINGS_THIRD_PARTY_COOKIES_PAGE_BLOCK_BULLET_2" desc="2 of 2 bullets that describe the 'Block third-party cookies' option">
     Sites can't use your cookies to see your browsing activity across different sites, for example, to personalize ads. Features on some sites may not work
   </message>
-  <message name="IDS_SETTINGS_COOKIES_CONTROLS" desc="Title of the general cookies control section.">
-    General settings
-  </message>
-  <message name="IDS_SETTINGS_COOKIES_ALLOW_ALL" desc="Label for allow all cookies radio toggle">
-    Allow all cookies
-  </message>
-  <message name="IDS_SETTINGS_COOKIES_ALLOW_ALL_EXPAND_A11Y_LABEL" desc="Label for the button that toggles showing the detailed description of allowing all cookies. Only visible by screen reader software.">
-    Show details about allowing all cookies
-  </message>
-  <message name="IDS_SETTINGS_COOKIES_ALLOW_ALL_BULLET_ONE" desc="Description for the first bullet of allow all cookies radio toggle">
-    Sites can use cookies to improve your browsing experience, for example, to keep you signed in or to remember items in your shopping cart
-  </message>
-  <message name="IDS_SETTINGS_COOKIES_ALLOW_ALL_BULLET_TWO" desc="Description for the first bullet of allow all cookies radio toggle">
-    Sites can use cookies to see your browsing activity across different sites, for example, to personalize ads
-  </message>
-  <message name="IDS_SETTINGS_COOKIES_BLOCK_THIRD_PARTY_INCOGNITO" desc="Label for block third party cookies in Incognito radio toggle">
-    Block third-party cookies in Incognito
-  </message>
-  <message name="IDS_SETTINGS_COOKIES_BLOCK_THIRD_PARTY_INCOGNITO_EXPAND_A11Y_LABEL" desc="Label for the button that toggles showing the detailed description of blocking third party cookies in Incognito. Only visible by screen reader software.">
-    Show details about blocking third-party cookies in Incognito
-  </message>
-  <message name="IDS_SETTINGS_COOKIES_BLOCK_THIRD_PARTY_INCOGNITO_BULLET_ONE" desc="Description for the first bullet of block third party cookies in Incognito radio toggle">
-    Sites can use cookies to improve your browsing experience, for example, to keep you signed in or to remember items in your shopping cart
-  </message>
-  <message name="IDS_SETTINGS_COOKIES_BLOCK_THIRD_PARTY_INCOGNITO_BULLET_TWO" desc="Description for the first bullet of block third party cookies in Incognito radio toggle">
-    While in Incognito, sites can't use your cookies to see your browsing activity across different sites, for example, to personalize ads. Features on some sites may not work.
-  </message>
   <message name="IDS_SETTINGS_COOKIES_BLOCK_THIRD_PARTY_INCOGNITO_BULLET_TWO_FPS" desc="Description for the first bullet of block third party cookies in Incognito radio toggle">
     While in Incognito, sites can't use your cookies to see your browsing activity across sites, even related sites. Your browsing activity isn't used for things like personalizing ads. Features on some sites may not work.
-  </message>
-  <message name="IDS_SETTINGS_COOKIES_BLOCK_THIRD_PARTY" desc="Label for block third party cookies radio toggle">
-    Block third-party cookies
-  </message>
-  <message name="IDS_SETTINGS_COOKIES_BLOCK_THIRD_PARTY_EXPAND_A11Y_LABEL" desc="Label for the button that toggles showing the detailed description of blocking third party cookies. Only visible by screen reader software.">
-    Show details about blocking third-party cookies
-  </message>
-  <message name="IDS_SETTINGS_COOKIES_BLOCK_THIRD_PARTY_BULLET_ONE" desc="Description for the first bullet of block third party cookies radio toggle">
-    Sites can use cookies to improve your browsing experience, for example, to keep you signed in or to remember items in your shopping cart
-  </message>
-  <message name="IDS_SETTINGS_COOKIES_BLOCK_THIRD_PARTY_BULLET_TWO" desc="Description for the first bullet of block third party cookies radio toggle">
-    Sites can't use your cookies to see your browsing activity across different sites, for example, to personalize ads. Features on some sites may not work.
-  </message>
-  <message name="IDS_SETTINGS_COOKIES_BLOCK_ALL" desc="Label for block all cookies radio toggle">
-    Block all cookies (not recommended)
-  </message>
-  <message name="IDS_SETTINGS_COOKIES_BLOCK_ALL_EXPAND_A11Y_LABEL" desc="Label for the button that toggles showing the detailed description of blocking all cookies. Only visible by screen reader software.">
-    Show details about blocking all cookies
-  </message>
-  <message name="IDS_SETTINGS_COOKIES_BLOCK_ALL_BULLET_ONE" desc="Description for the first bullet of block all cookies radio toggle">
-    Sites can't use cookies to improve your browsing experience, for example, to keep you signed in or to remember items in your shopping cart
-  </message>
-  <message name="IDS_SETTINGS_COOKIES_BLOCK_ALL_BULLET_TWO" desc="Description for the first bullet of block all cookies radio toggle">
-    Sites can't use your cookies to see your browsing activity across different sites, for example, to personalize ads
-  </message>
-  <message name="IDS_SETTINGS_COOKIES_BLOCK_ALL_BULLET_THREE" desc="Description for the third bullet of block all cookies radio toggle">
-    Features on many sites may not work
   </message>
   <message name="IDS_SETTINGS_COOKIES_FIRST_PARTY_SETS_TOGGLE_LABEL" desc="Label for the toggle that allows the user to control first-party sets enabled sharing between related sites">
     Allow related sites to see your activity in the group
@@ -3216,25 +3074,8 @@
   <message name="IDS_SETTINGS_COOKIES_FIRST_PARTY_SETS_TOGGLE_SUB_LABEL" desc="Sub-label for the toggle that allows the user to control first-party sets enabled sharing between related sites">
     A company can define a group of sites that can use cookies to share your activity in the group. This is off in Incognito.
   </message>
-  <message name="IDS_SETTINGS_COOKIES_CLEAR_ON_EXIT" desc="Label for the toggle that allows the user to automatically delete their cookies and site data when they close all browser windows.">
-    Clear cookies and site data when you close all windows
-  </message>
-  <if expr="chromeos_lacros">
-    <message name="IDS_SETTINGS_COOKIES_CLEAR_ON_EXIT_DESC" desc="Secondary text for the toggle that allows the user to automatically delete their cookies and site data when they close all browser windows. This sublabel clarifies that when the toggle is enabled the user won't be signed out of Chrome each time they close all Chrome windows.">
-      Signs you out of most sites. You won't be signed out of your Google Account.
-    </message>
-  </if>
   <message name="IDS_SETTINGS_COOKIES_ALL_SITES_LINK" desc="Label for the link row which takes the user to the page listing all sites with storage and permissions">
     See all site data and permissions
-  </message>
-  <message name="IDS_SETTINGS_COOKIES_ALLOW_EXCEPTIONS" desc="Title of the list containing site exceptions always allowing them to use cookies">
-    Sites that can always use cookies
-  </message>
-  <message name="IDS_SETTINGS_COOKIES_SESSION_ONLY_EXCEPTIONS" desc="Title of the list containing site exceptions so that cookies for those site are always cleared when closing the browser">
-    Always clear cookies when windows are closed
-  </message>
-  <message name="IDS_SETTINGS_COOKIES_BLOCK_EXCEPTIONS" desc="Title of the list containing site exceptions always blocking them from using cookies">
-    Sites that can never use cookies
   </message>
   <message name="IDS_SETTINGS_TRACKING_PROTECTION_LINK_ROW_LABEL" desc="Label for the Tracking Protection page entry point.">
     Tracking Protection
@@ -3258,7 +3099,7 @@
     Most sites should work as expected
   </message>
   <message name="IDS_SETTINGS_TRACKING_PROTECTION_BULLET_TWO_DESCRIPTION" desc="Description of the second bullet for Tracking Protection settings. Explains that you can temporarilty allow a site to use third-party cookies if it isn't working. Contains a learn more link to a help center article.">
-    If a site isn’t working, you can try giving it temporary permission to use third-party cookies. <ph name="BEGIN_LINK">&lt;a target="_blank" href="$1" aria-label="$2"&gt;</ph>Learn more<ph name="END_LINK">&lt;/a&gt;<ex>&lt;/a&gt;</ex></ph>
+    If a site isn’t working, you can try giving it temporary permission to use third-party cookies. <ph name="BEGIN_LINK">&lt;a target="_blank" href="$1" aria-label="$2" aria-description="$3"&gt;</ph>Learn more<ph name="END_LINK">&lt;/a&gt;<ex>&lt;/a&gt;</ex></ph>
   </message>
   <message name="IDS_SETTINGS_TRACKING_PROTECTION_BULLET_TWO_LEARN_MORE_ARIA_LABEL" desc="Screenreader text for the 'Learn more' link in the second bullet of Tracking Protection settings.">
     Learn more about giving a site temporary permission to use third-party cookies
@@ -3281,8 +3122,8 @@
   <message name="IDS_SETTINGS_TRACKING_PROTECTION_SITES_ALLOWED_COOKIES_TITLE" desc="Title of the section on the Tracking Protection settings page that lets users manage which sites are allowed to use third-party cookies.">
     Sites allowed to use third-party cookies
   </message>
-  <message name="IDS_SETTINGS_TRACKING_PROTECTION_SITES_ALLOWED_COOKIES_DESCRIPTION" desc="Description of the section on the Tracking Protection settings page that lets users manage which sites are allowed to use third-party cookies. Explains that third-party cookies are also allowed for subdomains of the listed sites.">
-    Affects the sites listed here and their subdomains. For example, adding “google.com” means that third-party cookies can also be active for mail.google.com, because it’s part of google.com.
+  <message name="IDS_SETTINGS_TRACKING_PROTECTION_SITES_ALLOWED_COOKIES_DESCRIPTION" desc="Description of the section on the Tracking Protection settings page that lets users manage which sites are allowed to use third-party cookies. Explains how to use a wildcard to create an exception for an entire domain.">
+    Affects the sites listed here. Inserting “[*.]” before a domain name creates an exception for the entire domain. For example, adding “[*.]google.com” means that third-party cookies can also be active for mail.google.com, because it’s part of google.com.
   </message>
   <message name="IDS_SETTINGS_TRACKING_PROTECTION_ROLLBACK_NOTICE" desc="Notice text on the top of the 'Third-party cookies' settings page telling users that Tracking Protection is temporarily unavailable.">
     Tracking Protection is temporarily unavailable. While Chrome is updating this feature, sites can temporarily use third-party cookies unless you block them. <ph name="BEGIN_LINK">&lt;a target="_blank" href="$1" aria-label="$2"&gt;</ph>Learn more<ph name="END_LINK">&lt;/a&gt;<ex>&lt;/a&gt;</ex></ph>
@@ -4486,40 +4327,32 @@
     ,
   </message>
 
-  <!-- Experimental enterprise plus_addresses settings strings -->
-  <message name="IDS_PLUS_ADDRESS_SETTINGS_LABEL" desc="A button in settings for management of experimental enterprise plus addresses" translateable="false">
-    Lorem Ipsum
-  </message>
-
   <!-- Experimental settings strings -->
-  <message name="IDS_SETTINGS_EXPERIMENTAL_ADVANCED_PAGE_TITLE" desc="Title of page holding experimental settings" translateable="false">
-    Advanced
-  </message>
-  <message name="IDS_SETTINGS_EXPERIMENTAL_ADVANCED_SECTION_TITLE" desc="Title of section holding experimental settings" translateable="false">
-    Additional settings
+  <message name="IDS_SETTINGS_EXPERIMENTAL_ADVANCED_PAGE_TITLE" desc="Title of page holding experimental AI settings" translateable="false">
+    Experimental AI
   </message>
   <message name="IDS_SETTINGS_EXPERIMENTAL_ADVANCED_FEATURE_MAIN_LABEL" desc="Toggle primary description" translateable="false">
-    Show additional settings
+    Try out experimental AI features
   </message>
   <message name="IDS_SETTINGS_EXPERIMENTAL_ADVANCED_FEATURE_MAIN_SUBLABEL" desc="Toggle secondary description" translateable="false">
-    Show additional settings
+    These features use AI, are in early development, and won’t always get it right.
   </message>
-  <message name="IDS_SETTINGS_EXPERIMENTAL_ADVANCED_FEATURE1_LABEL" desc="Toggle primary description" translateable="false">
-    Autofill helper
+  <message name="IDS_SETTINGS_EXPERIMENTAL_ADVANCED_FEATURE1_LABEL" desc="The primary description for the 'Help me write' feature." translateable="false">
+    Help me write
   </message>
-  <message name="IDS_SETTINGS_EXPERIMENTAL_ADVANCED_FEATURE1_SUBLABEL" desc="Toggle secondary description" translateable="false">
-    Enables autofill helper on certain input fields
+  <message name="IDS_SETTINGS_EXPERIMENTAL_ADVANCED_FEATURE1_SUBLABEL" desc="Secondary description explaining the 'Help me write' feature." translateable="false">
+    Helps you write short-form content for things on the web, like reviews. Suggested content is based on your prompts and the content of the web page. To use this feature, right-click on a text box.
   </message>
   <message name="IDS_SETTINGS_EXPERIMENTAL_ADVANCED_FEATURE2_LABEL" desc="Toggle primary description" translateable="false">
-    Context menu tab group
+    Tab Organizer
   </message>
   <message name="IDS_SETTINGS_EXPERIMENTAL_ADVANCED_FEATURE2_SUBLABEL" desc="Toggle secondary description" translateable="false">
-    Show tab group controls in the context menu
+    Automatically creates tab groups based on your open tabs. To use this feature, right-click on a tab and click Organize similar tabs.
   </message>
-  <message name="IDS_SETTINGS_EXPERIMENTAL_ADVANCED_FEATURE3_LABEL" desc="Toggle primary description" translateable="false">
-    Expanded theme gallery
+  <message name="IDS_SETTINGS_EXPERIMENTAL_ADVANCED_FEATURE3_LABEL" desc="The primary description for the create themes with AI feature." translateable="false">
+    Create themes with AI
   </message>
-  <message name="IDS_SETTINGS_EXPERIMENTAL_ADVANCED_FEATURE3_SUBLABEL" desc="Toggle secondary description" translateable="false">
-    Shows more theme options in appearance customization
+  <message name="IDS_SETTINGS_EXPERIMENTAL_ADVANCED_FEATURE3_SUBLABEL" desc="The secondary description for the create themes with AI feature." translateable="false">
+    Creates custom themes based on the subject, mood, visual style, and color that you choose. To use this feature, open a new tab and click Customize Chrome.
   </message>
 </grit-part>

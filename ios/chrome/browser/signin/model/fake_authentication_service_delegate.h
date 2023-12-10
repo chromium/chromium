@@ -5,6 +5,21 @@
 #ifndef IOS_CHROME_BROWSER_SIGNIN_MODEL_FAKE_AUTHENTICATION_SERVICE_DELEGATE_H_
 #define IOS_CHROME_BROWSER_SIGNIN_MODEL_FAKE_AUTHENTICATION_SERVICE_DELEGATE_H_
 
-#import "ios/chrome/browser/signin/fake_authentication_service_delegate.h"
+#import "ios/chrome/browser/signin/model/authentication_service_delegate.h"
+
+// Fake AuthenticationServiceDelegate used by FakeAuthenticationService.
+class FakeAuthenticationServiceDelegate : public AuthenticationServiceDelegate {
+ public:
+  FakeAuthenticationServiceDelegate();
+
+  FakeAuthenticationServiceDelegate& operator=(
+      const FakeAuthenticationServiceDelegate&) = delete;
+
+  ~FakeAuthenticationServiceDelegate() override;
+
+  // AuthenticationServiceDelegate implementation.
+  // Executes `completion` synchronously.
+  void ClearBrowsingData(ProceduralBlock completion) override;
+};
 
 #endif  // IOS_CHROME_BROWSER_SIGNIN_MODEL_FAKE_AUTHENTICATION_SERVICE_DELEGATE_H_

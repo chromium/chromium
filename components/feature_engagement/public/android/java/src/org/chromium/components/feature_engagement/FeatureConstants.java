@@ -201,27 +201,19 @@ public @interface FeatureConstants {
      */
     String SHOPPING_LIST_MENU_ITEM_FEATURE = "IPH_ShoppingListMenuItem";
 
-    /**
-     * An IPH feature to prompt the user to long press on pages with links to open them in a group.
-     */
+    /** An IPH feature to prompt the user to long press on pages with links to open them in a group. */
     String TAB_GROUPS_QUICKLY_COMPARE_PAGES_FEATURE = "IPH_TabGroupsQuicklyComparePages";
 
-    /**
-     * An IPH feature to show when the tabstrip shows to explain what each button does.
-     */
+    /** An IPH feature to show when the tabstrip shows to explain what each button does. */
     String TAB_GROUPS_TAP_TO_SEE_ANOTHER_TAB_FEATURE = "IPH_TabGroupsTapToSeeAnotherTab";
 
-    /**
-     * An IPH feature to show on tab switcher cards with multiple tab thumbnails.
-     */
+    /** An IPH feature to show on tab switcher cards with multiple tab thumbnails. */
     String TAB_GROUPS_YOUR_TABS_ARE_TOGETHER_FEATURE = "IPH_TabGroupsYourTabsTogether";
 
     /** An IPH feature to prompt users to open the tab switcher after a navigation. */
     String TAB_SWITCHER_BUTTON_FEATURE = "IPH_TabSwitcherButton";
 
-    /**
-     * An IPH feature to show a card item on grid tab switcher to educate drag-and-drop.
-     */
+    /** An IPH feature to show a card item on grid tab switcher to educate drag-and-drop. */
     String TAB_GROUPS_DRAG_AND_DROP_FEATURE = "IPH_TabGroupsDragAndDrop";
 
     /**
@@ -230,14 +222,10 @@ public @interface FeatureConstants {
      */
     String VIDEO_TUTORIAL_NTP_CHROME_INTRO_FEATURE = "IPH_VideoTutorial_NTP_ChromeIntro";
 
-    /**
-     * An IPH feature to show a video tutorial card on NTP to educate about downloading in chrome.
-     */
+    /** An IPH feature to show a video tutorial card on NTP to educate about downloading in chrome. */
     String VIDEO_TUTORIAL_NTP_DOWNLOAD_FEATURE = "IPH_VideoTutorial_NTP_Download";
 
-    /**
-     * An IPH feature to show a video tutorial card on NTP to educate about how to search in chrome.
-     */
+    /** An IPH feature to show a video tutorial card on NTP to educate about how to search in chrome. */
     String VIDEO_TUTORIAL_NTP_SEARCH_FEATURE = "IPH_VideoTutorial_NTP_Search";
 
     /**
@@ -278,19 +266,13 @@ public @interface FeatureConstants {
     String FEATURE_NOTIFICATION_GUIDE_VOICE_SEARCH_HELP_BUBBLE_FEATURE =
             "IPH_FeatureNotificationGuideVoiceSearchHelpBubble";
 
-    /**
-     * An IPH feature to show on a card menu on the FeedNewTabPage.
-     */
+    /** An IPH feature to show on a card menu on the FeedNewTabPage. */
     String FEED_CARD_MENU_FEATURE = "IPH_FeedCardMenu";
 
-    /**
-     * An IPH feature to prompt users to pull-to-refresh feed.
-     */
+    /** An IPH feature to prompt users to pull-to-refresh feed. */
     String FEED_SWIPE_REFRESH_FEATURE = "IPH_FeedSwipeRefresh";
 
-    /**
-     * A generic IPH feature to always trigger help UI when asked.
-     */
+    /** A generic IPH feature to always trigger help UI when asked. */
     String GENERIC_ALWAYS_TRIGGER_HELP_UI_FEATURE = "IPH_GenericAlwaysTriggerHelpUiFeature";
 
     /**
@@ -305,92 +287,58 @@ public @interface FeatureConstants {
      */
     String QUIET_NOTIFICATION_PROMPTS_FEATURE = "IPH_QuietNotificationPrompts";
 
-    /**
-     * An IPH feature to show on the feed header menu button of the FeedNewTabPage.
-     */
+    /** An IPH feature to show on the feed header menu button of the FeedNewTabPage. */
     String FEED_HEADER_MENU_FEATURE = "IPH_FeedHeaderMenu";
 
-    /**
-     * An IPH used for web feed awareness to be shown on the NTP for the Web Feed tab.
-     */
+    /** An IPH used for web feed awareness to be shown on the NTP for the Web Feed tab. */
     String WEB_FEED_AWARENESS_FEATURE = "IPH_WebFeedAwareness";
 
-    /**
-     * An IPH feature to show the first re-engagement notification.
-     */
+    /** An IPH feature to show the first re-engagement notification. */
     String CHROME_REENGAGEMENT_NOTIFICATION_1_FEATURE = "IPH_ChromeReengagementNotification1";
 
-    /**
-     * An IPH feature to show the second re-engagement notification.
-     */
+    /** An IPH feature to show the second re-engagement notification. */
     String CHROME_REENGAGEMENT_NOTIFICATION_2_FEATURE = "IPH_ChromeReengagementNotification2";
 
-    /**
-     * An IPH feature to show the third re-engagement notification.
-     */
+    /** An IPH feature to show the third re-engagement notification. */
     String CHROME_REENGAGEMENT_NOTIFICATION_3_FEATURE = "IPH_ChromeReengagementNotification3";
 
-    /**
-     * An IPH feature to inform users that installing a PWA is an option.
-     */
+    /** An IPH feature to inform users that installing a PWA is an option. */
     String PWA_INSTALL_AVAILABLE_FEATURE = "IPH_PwaInstallAvailableFeature";
 
-    /**
-     * An IPH feature to inform about changing permissions in PageInfo.
-     */
+    /** An IPH feature to inform about changing permissions in PageInfo. */
     String PAGE_INFO_FEATURE = "IPH_PageInfo";
 
-    /**
-     * An IPH feature to inform users about the StoreInfo feature in PageInfo.
-     */
+    /** An IPH feature to inform users about the StoreInfo feature in PageInfo. */
     String PAGE_INFO_STORE_INFO_FEATURE = "IPH_PageInfoStoreInfo";
 
-    /**
-     * An IPH feature to inform users about the screenshot sharing feature.
-     */
+    /** An IPH feature to inform users about the screenshot sharing feature. */
     String IPH_SHARE_SCREENSHOT_FEATURE = "IPH_ShareScreenshot";
 
-    /**
-     * An IPH feature to inform users about the Sharing Hub link toggle.
-     */
+    /** An IPH feature to inform users about the Sharing Hub link toggle. */
     String IPH_SHARING_HUB_LINK_TOGGLE_FEATURE = "IPH_SharingHubLinkToggle";
 
-    /**
-     * An IPH feature to inform users about the WebFeed follow feature.
-     */
+    /** An IPH feature to inform users about the WebFeed follow feature. */
     String IPH_WEB_FEED_FOLLOW_FEATURE = "IPH_WebFeedFollow";
 
-    /**
-     * A dialog IPH feature to inform users about the WebFeed post-follow.
-     */
+    /** A dialog IPH feature to inform users about the WebFeed post-follow. */
     String IPH_WEB_FEED_POST_FOLLOW_DIALOG_FEATURE = "IPH_WebFeedPostFollowDialog";
 
     /** A dialog IPH feature to inform users about the WebFeed post-follow after the UI update. */
     String IPH_WEB_FEED_POST_FOLLOW_DIALOG_FEATURE_WITH_UI_UPDATE =
             "IPH_WebFeedPostFollowDialogWithUIUpdate";
 
-    /**
-     * An IPH feature to inform users about the link-to-text on selection share.
-     */
+    /** An IPH feature to inform users about the link-to-text on selection share. */
     String SHARED_HIGHLIGHTING_BUILDER_FEATURE = "IPH_SharedHighlightingBuilder";
 
-    /**
-     * An IPH feature encouraging users to create highlights.
-     */
+    /** An IPH feature encouraging users to create highlights. */
     String SHARED_HIGHLIGHTING_RECEIVER_FEATURE = "IPH_SharedHighlightingReceiver";
 
-    /**
-     * An IPH feature to inform users about the Webnotes Stylize feature in Sharing Hub.
-     */
+    /** An IPH feature to inform users about the Webnotes Stylize feature in Sharing Hub. */
     String SHARING_HUB_WEBNOTES_STYLIZE_FEATURE = "IPH_SharingHubWebnotesStylize";
 
-    /**
-     * An IPH feature to inform users that a price drop has occurred in any of their open tabs
-     */
+    /** An IPH feature to inform users that a price drop has occurred in any of their open tabs */
     String PRICE_DROP_NTP_FEATURE = "IPH_PriceDropNTP";
 
-    /**
-     * An IPH feature to inform users that tabs from another synced device can be restored on FRE.
-     */
+    /** An IPH feature to inform users that tabs from another synced device can be restored on FRE. */
     String RESTORE_TABS_ON_FRE_FEATURE = "IPH_RestoreTabsOnFRE";
 }

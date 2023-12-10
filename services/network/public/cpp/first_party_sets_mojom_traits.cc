@@ -127,8 +127,29 @@ bool StructTraits<network::mojom::GlobalFirstPartySetsDataView,
   if (!sets.ReadManualConfig(&manual_config))
     return false;
 
-  *out_sets = net::GlobalFirstPartySets(std::move(public_sets_version), entries,
-                                        aliases, std::move(manual_config));
+  base::flat_map<net::SchemefulSite, net::SchemefulSite> manual_aliases;
+  if (!sets.ReadManualAliases(&manual_aliases)) {
+    return false;
+  }
+
+  // The manual_config must contain both the alias overrides and their
+  // corresponding canonical overrides, none of which may be deletions.
+  if (!base::ranges::all_of(manual_aliases, [&](const auto& pair) {
+        absl::optional<net::FirstPartySetEntryOverride> aliased_override =
+            manual_config.FindOverride(pair.first);
+        absl::optional<net::FirstPartySetEntryOverride> canonical_override =
+            manual_config.FindOverride(pair.second);
+        return aliased_override.has_value() &&
+               !aliased_override->IsDeletion() &&
+               canonical_override.has_value() &&
+               !canonical_override->IsDeletion();
+      })) {
+    return false;
+  }
+
+  *out_sets = net::GlobalFirstPartySets(
+      std::move(public_sets_version), std::move(entries), std::move(aliases),
+      std::move(manual_config), std::move(manual_aliases));
 
   return true;
 }

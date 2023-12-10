@@ -4,6 +4,7 @@ external/wpt/content-security-policy
 external/wpt/cookies
 external/wpt/cors
 external/wpt/fetch
+external/wpt/html/browsers/browsing-the-web/back-forward-cache
 external/wpt/loading
 external/wpt/mimesniff
 external/wpt/mixed-content

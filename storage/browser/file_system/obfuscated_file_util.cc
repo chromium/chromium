@@ -125,7 +125,7 @@ DatabaseKey::DatabaseKey(DatabaseKey&& other) = default;
 DatabaseKey& DatabaseKey::operator=(DatabaseKey&& other) = default;
 
 DatabaseKey::DatabaseKey(const blink::StorageKey& storage_key,
-                         const absl::optional<BucketLocator>& bucket,
+                         const std::optional<BucketLocator>& bucket,
                          const std::string& type) {
   storage_key_ = storage_key;
   bucket_ = bucket;
@@ -272,11 +272,11 @@ class ObfuscatedStorageKeyEnumerator
 
   // Returns the next StorageKey. Returns empty if there are no more
   // StorageKeys.
-  absl::optional<blink::StorageKey> Next() override {
+  std::optional<blink::StorageKey> Next() override {
     OriginRecord record;
     if (origin_records_.empty()) {
       current_ = record;
-      return absl::nullopt;
+      return std::nullopt;
     }
     record = origin_records_.back();
     origin_records_.pop_back();
@@ -924,7 +924,7 @@ bool ObfuscatedFileUtil::IsDirectoryEmpty(FileSystemOperationContext* context,
 base::FileErrorOr<base::FilePath>
 ObfuscatedFileUtil::GetDirectoryForBucketAndType(
     const BucketLocator& bucket,
-    const absl::optional<FileSystemType>& type,
+    const std::optional<FileSystemType>& type,
     bool create) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // A default bucket in a first-party context uses
@@ -954,7 +954,7 @@ ObfuscatedFileUtil::GetDirectoryForBucketAndType(
 base::FileErrorOr<base::FilePath>
 ObfuscatedFileUtil::GetDirectoryForStorageKeyAndType(
     const blink::StorageKey& storage_key,
-    const absl::optional<FileSystemType>& type,
+    const std::optional<FileSystemType>& type,
     bool create) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   ASSIGN_OR_RETURN(base::FilePath path,
@@ -974,13 +974,13 @@ ObfuscatedFileUtil::GetDirectoryForStorageKeyAndType(
 
 bool ObfuscatedFileUtil::DeleteDirectoryForBucketAndType(
     const BucketLocator& bucket_locator,
-    const absl::optional<FileSystemType>& type) {
+    const std::optional<FileSystemType>& type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DestroyDirectoryDatabaseForBucket(bucket_locator, type);
 
   // Get the base path for the bucket without the type string appended.
   base::FileErrorOr<base::FilePath> path_without_type =
-      GetDirectoryForBucketAndType(bucket_locator, /*type=*/absl::nullopt,
+      GetDirectoryForBucketAndType(bucket_locator, /*type=*/std::nullopt,
                                    /*create=*/false);
   if (!path_without_type.has_value() || path_without_type->empty()) {
     return true;
@@ -1048,30 +1048,30 @@ ObfuscatedFileUtil::CreateStorageKeyEnumerator() {
 
 void ObfuscatedFileUtil::DestroyDirectoryDatabaseForBucket(
     const BucketLocator& bucket_locator,
-    const absl::optional<FileSystemType>& type) {
+    const std::optional<FileSystemType>& type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   DatabaseKey key_prefix;
   const std::string type_string =
       type ? SandboxFileSystemBackendDelegate::GetTypeString(type.value())
            : std::string();
-  // `key.bucket()` is absl::nullopt for all non-kTemporary types.
+  // `key.bucket()` is std::nullopt for all non-kTemporary types.
   if (type && (FileSystemTypeToQuotaStorageType(type.value()) ==
                ::blink::mojom::StorageType::kTemporary)) {
     key_prefix =
         DatabaseKey(bucket_locator.storage_key, bucket_locator, type_string);
   } else {  // All other storage types.
     key_prefix =
-        DatabaseKey(bucket_locator.storage_key, absl::nullopt, type_string);
+        DatabaseKey(bucket_locator.storage_key, std::nullopt, type_string);
   }
 
   // If `type` is empty, delete all filesystem types under `storage_key`.
   for (auto iter = directories_.lower_bound(key_prefix);
        iter != directories_.end();) {
-    // If the key matches exactly or `type` is absl::nullopt and just the
+    // If the key matches exactly or `type` is std::nullopt and just the
     // StorageKey and BucketLocator match exactly, delete the database.
     if (iter->first == key_prefix ||
-        (type == absl::nullopt &&
+        (type == std::nullopt &&
          iter->first.storage_key() == key_prefix.storage_key() &&
          iter->first.bucket() == key_prefix.bucket())) {
       std::unique_ptr<SandboxDirectoryDatabase> database =
@@ -1307,7 +1307,7 @@ SandboxDirectoryDatabase* ObfuscatedFileUtil::GetDirectoryDatabase(
   DatabaseKey key;
   const std::string type_string =
       SandboxFileSystemBackendDelegate::GetTypeString(url.type());
-  // `key.bucket()` is absl::nullopt for all non-kTemporary types.
+  // `key.bucket()` is std::nullopt for all non-kTemporary types.
   if (FileSystemTypeToQuotaStorageType(url.type()) ==
       ::blink::mojom::StorageType::kTemporary) {
     if (url.bucket().has_value()) {
@@ -1322,7 +1322,7 @@ SandboxDirectoryDatabase* ObfuscatedFileUtil::GetDirectoryDatabase(
                         type_string);
     }
   } else {  // All other storage types.
-    key = DatabaseKey(url.storage_key(), absl::nullopt, type_string);
+    key = DatabaseKey(url.storage_key(), std::nullopt, type_string);
   }
 
   auto iter = directories_.find(key);

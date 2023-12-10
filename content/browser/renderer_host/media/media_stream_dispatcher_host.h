@@ -134,7 +134,11 @@ class CONTENT_EXPORT MediaStreamDispatcherHost
                              const base::Token& sub_capture_target,
                              uint32_t sub_capture_target_version,
                              ApplySubCaptureTargetCallback callback) override;
-
+  void SendWheel(const base::UnguessableToken& device_id,
+                 blink::mojom::CapturedWheelActionPtr action,
+                 SendWheelCallback callback) override;
+  void GetZoomLevel(const base::UnguessableToken& device_id,
+                    GetZoomLevelCallback callback) override;
   void OnSubCaptureTargetValidationComplete(
       const base::UnguessableToken& device_id,
       media::mojom::SubCaptureTargetType type,

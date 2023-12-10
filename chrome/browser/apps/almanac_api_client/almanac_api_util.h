@@ -6,13 +6,13 @@
 #define CHROME_BROWSER_APPS_ALMANAC_API_CLIENT_ALMANAC_API_UTIL_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/status/status.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 
@@ -34,6 +34,9 @@ std::string GetAlmanacApiUrl();
 // API. An endpoint suffix is e.g. "v1/app-preload".
 GURL GetAlmanacEndpointUrl(std::string_view endpoint_suffix);
 
+// Overrides the Almanac endpoint URL for testing.
+void SetAlmanacEndpointUrlForTesting(std::optional<std::string> url_override);
+
 // Returns a SimpleURLLoader for the ChromeOS Almanac API created from
 // the given parameters. request_body is a proto serialized as string.
 // An endpoint suffix is e.g. "v1/app-preload".
@@ -52,7 +55,7 @@ absl::Status GetDownloadError(
     int net_error,
     const network::mojom::URLResponseHead* response_info,
     const std::string* response_body,
-    const absl::optional<std::string>& histogram_name = absl::nullopt);
+    const std::optional<std::string>& histogram_name = std::nullopt);
 }  // namespace apps
 
 #endif  // CHROME_BROWSER_APPS_ALMANAC_API_CLIENT_ALMANAC_API_UTIL_H_

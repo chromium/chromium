@@ -9,11 +9,14 @@
 #include <vector>
 
 #include "ash/system/holding_space/holding_space_tray_child_bubble.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 
 namespace ash {
 
 // Child bubble of `HoldingSpaceTrayBubble` for recent files.
 class RecentFilesBubble : public HoldingSpaceTrayChildBubble {
+  METADATA_HEADER(RecentFilesBubble, HoldingSpaceTrayChildBubble)
+
  public:
   explicit RecentFilesBubble(HoldingSpaceViewDelegate* delegate);
   RecentFilesBubble(const RecentFilesBubble& other) = delete;
@@ -21,7 +24,6 @@ class RecentFilesBubble : public HoldingSpaceTrayChildBubble {
   ~RecentFilesBubble() override;
 
   // HoldingSpaceTrayChildBubble:
-  const char* GetClassName() const override;
   std::unique_ptr<views::View> CreatePlaceholder() override;
   std::vector<std::unique_ptr<HoldingSpaceItemViewsSection>> CreateSections()
       override;

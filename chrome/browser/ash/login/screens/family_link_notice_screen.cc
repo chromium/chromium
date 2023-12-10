@@ -21,9 +21,9 @@ constexpr char kUserActionContinue[] = "continue";
 
 std::string FamilyLinkNoticeScreen::GetResultString(Result result) {
   switch (result) {
-    case Result::DONE:
+    case Result::kDone:
       return "Done";
-    case Result::SKIPPED:
+    case Result::kSkipped:
       return BaseScreen::kNotApplicable;
   }
 }
@@ -42,7 +42,7 @@ bool FamilyLinkNoticeScreen::MaybeSkip(WizardContext& context) {
       !ProfileManager::GetActiveUserProfile()->IsChild()) {
     return false;
   }
-  exit_callback_.Run(Result::SKIPPED);
+  exit_callback_.Run(Result::kSkipped);
   return true;
 }
 
@@ -67,7 +67,7 @@ void FamilyLinkNoticeScreen::HideImpl() {}
 void FamilyLinkNoticeScreen::OnUserAction(const base::Value::List& args) {
   const std::string& action_id = args[0].GetString();
   if (action_id == kUserActionContinue) {
-    exit_callback_.Run(Result::DONE);
+    exit_callback_.Run(Result::kDone);
   } else {
     BaseScreen::OnUserAction(args);
   }

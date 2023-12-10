@@ -4,6 +4,8 @@
 
 #include "device/fido/cable/v2_handshake.h"
 
+#include <string_view>
+
 #include "base/containers/contains.h"
 #include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
@@ -404,7 +406,7 @@ TEST(CableV2Encoding, Digits) {
   memset(digits, '0', sizeof(digits));
   for (size_t i = 0; i < sizeof(digits); i++) {
     absl::optional<std::vector<uint8_t>> bytes =
-        qr::DigitsToBytes(base::StringPiece(digits, i));
+        qr::DigitsToBytes(std::string_view(digits, i));
     if (!bytes.has_value()) {
       continue;
     }

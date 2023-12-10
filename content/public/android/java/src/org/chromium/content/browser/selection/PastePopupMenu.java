@@ -6,22 +6,14 @@ package org.chromium.content.browser.selection;
 
 import android.graphics.Rect;
 
-/**
- * Paste popup implementation based on TextView.PastePopupMenu.
- */
+/** Paste popup implementation based on TextView.PastePopupMenu. */
 public interface PastePopupMenu {
-    /**
-     * Provider of paste functionality for the given popup.
-     */
+    /** Provider of paste functionality for the given popup. */
     public interface PastePopupMenuDelegate {
-        /**
-         * Called to initiate a paste after the paste option has been tapped.
-         */
+        /** Called to initiate a paste after the paste option has been tapped. */
         void paste();
 
-        /**
-         * Called to initiate a paste as plain text after the popup has been tapped.
-         */
+        /** Called to initiate a paste as plain text after the popup has been tapped. */
         void pasteAsPlainText();
 
         /**
@@ -29,9 +21,7 @@ public interface PastePopupMenu {
          */
         boolean canPaste();
 
-        /**
-         * Called to initiate a select all after the select all option has been tapped.
-         */
+        /** Called to initiate a select all after the select all option has been tapped. */
         void selectAll();
 
         /**
@@ -45,13 +35,9 @@ public interface PastePopupMenu {
         boolean canPasteAsPlainText();
     }
 
-    /**
-     * Shows the paste popup at an appropriate location relative to the specified selection.
-     */
+    /** Shows the paste popup at an appropriate location relative to the specified selection. */
     public void show(Rect selectionRect);
 
-    /**
-     * Hides the paste popup.
-     */
+    /** Hides the paste popup. */
     public void hide();
 }

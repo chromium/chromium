@@ -13,7 +13,6 @@ import androidx.annotation.IntDef;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.task.AsyncTask;
 import org.chromium.components.browser_ui.util.ConversionUtils;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.webapps.WebApkDistributor;
@@ -21,6 +20,7 @@ import org.chromium.components.webapps.WebApkDistributor;
 import java.io.File;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+
 /**
  * Centralizes UMA data collection for WebAPKs. NOTE: Histogram names and values are defined in
  * tools/metrics/histograms/histograms.xml. Please update that file if any change is made.
@@ -49,21 +49,24 @@ public class WebApkUmaRecorder {
     }
 
     // This enum is used to back UMA histograms, and should therefore be treated as append-only.
-    @IntDef({GooglePlayInstallResult.SUCCESS, GooglePlayInstallResult.FAILED_NO_DELEGATE,
-            GooglePlayInstallResult.FAILED_TO_CONNECT_TO_SERVICE,
-            GooglePlayInstallResult.FAILED_CALLER_VERIFICATION_FAILURE,
-            GooglePlayInstallResult.FAILED_POLICY_VIOLATION,
-            GooglePlayInstallResult.FAILED_API_DISABLED,
-            GooglePlayInstallResult.FAILED_REQUEST_FAILED,
-            GooglePlayInstallResult.FAILED_DOWNLOAD_CANCELLED,
-            GooglePlayInstallResult.FAILED_DOWNLOAD_ERROR,
-            GooglePlayInstallResult.FAILED_INSTALL_ERROR,
-            GooglePlayInstallResult.FAILED_INSTALL_TIMEOUT,
-            GooglePlayInstallResult.REQUEST_FAILED_POLICY_DISABLED,
-            GooglePlayInstallResult.REQUEST_FAILED_UNKNOWN_ACCOUNT,
-            GooglePlayInstallResult.REQUEST_FAILED_NETWORK_ERROR,
-            GooglePlayInstallResult.REQUSET_FAILED_RESOLVE_ERROR,
-            GooglePlayInstallResult.REQUEST_FAILED_NOT_GOOGLE_SIGNED})
+    @IntDef({
+        GooglePlayInstallResult.SUCCESS,
+        GooglePlayInstallResult.FAILED_NO_DELEGATE,
+        GooglePlayInstallResult.FAILED_TO_CONNECT_TO_SERVICE,
+        GooglePlayInstallResult.FAILED_CALLER_VERIFICATION_FAILURE,
+        GooglePlayInstallResult.FAILED_POLICY_VIOLATION,
+        GooglePlayInstallResult.FAILED_API_DISABLED,
+        GooglePlayInstallResult.FAILED_REQUEST_FAILED,
+        GooglePlayInstallResult.FAILED_DOWNLOAD_CANCELLED,
+        GooglePlayInstallResult.FAILED_DOWNLOAD_ERROR,
+        GooglePlayInstallResult.FAILED_INSTALL_ERROR,
+        GooglePlayInstallResult.FAILED_INSTALL_TIMEOUT,
+        GooglePlayInstallResult.REQUEST_FAILED_POLICY_DISABLED,
+        GooglePlayInstallResult.REQUEST_FAILED_UNKNOWN_ACCOUNT,
+        GooglePlayInstallResult.REQUEST_FAILED_NETWORK_ERROR,
+        GooglePlayInstallResult.REQUSET_FAILED_RESOLVE_ERROR,
+        GooglePlayInstallResult.REQUEST_FAILED_NOT_GOOGLE_SIGNED
+    })
     @Retention(RetentionPolicy.SOURCE)
     public @interface GooglePlayInstallResult {
         int SUCCESS = 0;
@@ -150,15 +153,19 @@ public class WebApkUmaRecorder {
 
     /** Records the notification permission status for a WebAPK. */
     public static void recordNotificationPermissionStatus(@ContentSettingValues int settingValue) {
-        RecordHistogram.recordEnumeratedHistogram("WebApk.Notification.Permission.Status2",
-                settingValue, ContentSettingValues.NUM_SETTINGS);
+        RecordHistogram.recordEnumeratedHistogram(
+                "WebApk.Notification.Permission.Status2",
+                settingValue,
+                ContentSettingValues.NUM_SETTINGS);
     }
 
     /** Records the notification permission request result for a WebAPK. */
     public static void recordNotificationPermissionRequestResult(
             @ContentSettingValues int settingValue) {
-        RecordHistogram.recordEnumeratedHistogram("WebApk.Notification.PermissionRequestResult",
-                settingValue, ContentSettingValues.NUM_SETTINGS);
+        RecordHistogram.recordEnumeratedHistogram(
+                "WebApk.Notification.PermissionRequestResult",
+                settingValue,
+                ContentSettingValues.NUM_SETTINGS);
     }
 
     /**
@@ -166,7 +173,9 @@ public class WebApkUmaRecorder {
      * that the install failed.
      */
     public static void recordGooglePlayInstallResult(@GooglePlayInstallResult int result) {
-        RecordHistogram.recordEnumeratedHistogram("WebApk.Install.GooglePlayInstallResult", result,
+        RecordHistogram.recordEnumeratedHistogram(
+                "WebApk.Install.GooglePlayInstallResult",
+                result,
                 GooglePlayInstallResult.NUM_ENTRIES);
     }
 
@@ -183,7 +192,9 @@ public class WebApkUmaRecorder {
      * that the update failed.
      */
     public static void recordGooglePlayUpdateResult(@GooglePlayInstallResult int result) {
-        RecordHistogram.recordEnumeratedHistogram("WebApk.Update.GooglePlayUpdateResult", result,
+        RecordHistogram.recordEnumeratedHistogram(
+                "WebApk.Update.GooglePlayUpdateResult",
+                result,
                 GooglePlayInstallResult.NUM_ENTRIES);
     }
 
@@ -229,48 +240,16 @@ public class WebApkUmaRecorder {
         RecordHistogram.recordCount100Histogram("WebApk.WebappRegistry.NumberOfOrigins", count);
     }
 
-    /**
-     * Records whether the user was using a light or dark theme when installing a WebAPK
-     */
+    /** Records whether the user was using a light or dark theme when installing a WebAPK */
     public static void recordUserThemeWhenInstall(@WebApkUserTheme int themeSetting) {
         RecordHistogram.recordEnumeratedHistogram(
                 "WebApk.Install.UserTheme", themeSetting, WebApkUserTheme.NUM_ENTRIES);
     }
-    /**
-     * Records whether the user was using a light or dark theme when launching a WebAPK
-     */
+
+    /** Records whether the user was using a light or dark theme when launching a WebAPK */
     public static void recordUserThemeWhenLaunch(@WebApkUserTheme int themeSetting) {
         RecordHistogram.recordEnumeratedHistogram(
                 "WebApk.Launch.UserTheme", themeSetting, WebApkUserTheme.NUM_ENTRIES);
-    }
-
-    /**
-     * Log necessary disk usage and cache size UMAs when WebAPK installation fails.
-     */
-    public static void logSpaceUsageUMAWhenInstallationFails() {
-        new AsyncTask<Void>() {
-            long mAvailableSpaceInByte;
-            long mCacheSizeInByte;
-            @Override
-            protected Void doInBackground() {
-                mAvailableSpaceInByte = getAvailableSpaceAboveLowSpaceLimit();
-                mCacheSizeInByte = getCacheDirSize();
-                return null;
-            }
-
-            @Override
-            protected void onPostExecute(Void result) {
-                logSpaceUsageUMAOnDataAvailable(mAvailableSpaceInByte, mCacheSizeInByte);
-            }
-        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-    }
-
-    private static void logSpaceUsageUMAOnDataAvailable(long spaceSize, long cacheSize) {
-        RecordHistogram.recordSparseHistogram(
-                "WebApk.Install.AvailableSpace.Fail", roundByteToMb(spaceSize));
-
-        RecordHistogram.recordSparseHistogram("WebApk.Install.AvailableSpaceAfterFreeUpCache.Fail",
-                roundByteToMb(spaceSize + cacheSize));
     }
 
     private static int roundByteToMb(long bytes) {
@@ -314,9 +293,7 @@ public class WebApkUmaRecorder {
         return getDirectorySizeInByte(ContextUtils.getApplicationContext().getCacheDir());
     }
 
-    /**
-     * Mirror the system-derived calculation of reserved bytes and return that value.
-     */
+    /** Mirror the system-derived calculation of reserved bytes and return that value. */
     private static long getLowSpaceLimitBytes(long partitionTotalBytes) {
         // Copied from android/os/storage/StorageManager.java
         final int defaultThresholdPercentage = 10;
@@ -332,10 +309,12 @@ public class WebApkUmaRecorder {
         long minFreeBytes = 0;
 
         // Retrieve platform-appropriate values first
-        minFreePercent = Settings.Global.getInt(
-                resolver, sysStorageThresholdPercentage, defaultThresholdPercentage);
-        minFreeBytes = Settings.Global.getLong(
-                resolver, sysStorageThresholdMaxBytes, defaultThresholdMaxBytes);
+        minFreePercent =
+                Settings.Global.getInt(
+                        resolver, sysStorageThresholdPercentage, defaultThresholdPercentage);
+        minFreeBytes =
+                Settings.Global.getLong(
+                        resolver, sysStorageThresholdMaxBytes, defaultThresholdMaxBytes);
 
         long minFreePercentInBytes = (partitionTotalBytes * minFreePercent) / 100;
 

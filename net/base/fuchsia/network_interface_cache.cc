@@ -6,6 +6,7 @@
 
 #include <fuchsia/net/interfaces/cpp/fidl.h>
 
+#include <optional>
 #include <utility>
 
 #include "base/containers/flat_map.h"
@@ -15,7 +16,6 @@
 #include "net/base/network_change_notifier.h"
 #include "net/base/network_interfaces.h"
 #include "net/base/network_interfaces_fuchsia.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net::internal {
 namespace {
@@ -52,7 +52,7 @@ NetworkInterfaceCache::NetworkInterfaceCache(bool require_wlan)
 
 NetworkInterfaceCache::~NetworkInterfaceCache() = default;
 
-absl::optional<NetworkInterfaceCache::ChangeBits>
+std::optional<NetworkInterfaceCache::ChangeBits>
 NetworkInterfaceCache::AddInterfaces(
     std::vector<fuchsia::net::interfaces::Properties> interfaces) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -63,14 +63,14 @@ NetworkInterfaceCache::AddInterfaces(
   for (auto& interface : interfaces) {
     auto change_bits = AddInterfaceWhileLocked(std::move(interface));
     if (!change_bits.has_value()) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     combined_changes |= change_bits.value();
   }
   return combined_changes;
 }
 
-absl::optional<NetworkInterfaceCache::ChangeBits>
+std::optional<NetworkInterfaceCache::ChangeBits>
 NetworkInterfaceCache::AddInterface(
     fuchsia::net::interfaces::Properties properties) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -80,25 +80,25 @@ NetworkInterfaceCache::AddInterface(
   return AddInterfaceWhileLocked(std::move(properties));
 }
 
-absl::optional<NetworkInterfaceCache::ChangeBits>
+std::optional<NetworkInterfaceCache::ChangeBits>
 NetworkInterfaceCache::AddInterfaceWhileLocked(
     fuchsia::net::interfaces::Properties properties)
     EXCLUSIVE_LOCKS_REQUIRED(lock_) VALID_CONTEXT_REQUIRED(sequence_checker_) {
   if (error_state_) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   auto interface = InterfaceProperties::VerifyAndCreate(std::move(properties));
   if (!interface) {
     LOG(ERROR) << "Incomplete interface properties.";
     SetErrorWhileLocked();
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (interfaces_.find(interface->id()) != interfaces_.end()) {
     LOG(ERROR) << "Unexpected duplicate interface ID " << interface->id();
     SetErrorWhileLocked();
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   ChangeBits change_bits = kNoChange;
@@ -112,21 +112,21 @@ NetworkInterfaceCache::AddInterfaceWhileLocked(
   return change_bits;
 }
 
-absl::optional<NetworkInterfaceCache::ChangeBits>
+std::optional<NetworkInterfaceCache::ChangeBits>
 NetworkInterfaceCache::ChangeInterface(
     fuchsia::net::interfaces::Properties properties) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   base::AutoLock auto_lock(lock_);
   if (error_state_) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   auto cache_entry = interfaces_.find(properties.id());
   if (cache_entry == interfaces_.end()) {
     LOG(ERROR) << "Unknown interface ID " << properties.id();
     SetErrorWhileLocked();
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   const bool old_can_reach =
@@ -136,7 +136,7 @@ NetworkInterfaceCache::ChangeInterface(
   if (!cache_entry->second.Update(std::move(properties))) {
     LOG(ERROR) << "Update failed";
     SetErrorWhileLocked();
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   const bool new_can_reach =
@@ -152,21 +152,21 @@ NetworkInterfaceCache::ChangeInterface(
   return change_bits;
 }
 
-absl::optional<NetworkInterfaceCache::ChangeBits>
+std::optional<NetworkInterfaceCache::ChangeBits>
 NetworkInterfaceCache::RemoveInterface(
     InterfaceProperties::InterfaceId interface_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   base::AutoLock auto_lock(lock_);
   if (error_state_) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   auto cache_entry = interfaces_.find(interface_id);
   if (cache_entry == interfaces_.end()) {
     LOG(ERROR) << "Unknown interface ID " << interface_id;
     SetErrorWhileLocked();
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   ChangeBits change_bits = kNoChange;

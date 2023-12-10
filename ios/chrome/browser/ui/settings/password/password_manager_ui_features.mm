@@ -25,4 +25,16 @@ bool IsAuthOnEntryV2Enabled() {
   return base::FeatureList::IsEnabled(kIOSPasswordAuthOnEntryV2);
 }
 
+// Kill switch for the logic that allows the user to open the native Password
+// Settings page. Used when the user wants to access the Password Manager UI
+// without a passcode set.
+BASE_FEATURE(kIOSEnablePasscodeSettings,
+             "IOSEnablePasscodeSettings",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Helper function returning the status of `kIOSEnablePasscodeSettings`.
+bool IsPasscodeSettingsEnabled() {
+  return base::FeatureList::IsEnabled(kIOSEnablePasscodeSettings);
+}
+
 }  // namespace password_manager::features

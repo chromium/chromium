@@ -26,8 +26,8 @@ import java.util.Set;
  * Settings fragment that configures chrome tracing categories of a specific type. The type is
  * passed to the fragment via an extra (EXTRA_CATEGORY_TYPE).
  */
-public class TracingCategoriesSettings
-        extends PreferenceFragmentCompat implements Preference.OnPreferenceChangeListener {
+public class TracingCategoriesSettings extends PreferenceFragmentCompat
+        implements Preference.OnPreferenceChangeListener {
     public static final String EXTRA_CATEGORY_TYPE = "type";
 
     // Non-translated strings:
@@ -78,7 +78,8 @@ public class TracingCategoriesSettings
     private CheckBoxPreference createPreference(String category) {
         CheckBoxPreference preference = new ChromeBaseCheckBoxPreference(getStyledContext(), null);
         preference.setKey(category);
-        preference.setTitle(category.startsWith(TracingSettings.NON_DEFAULT_CATEGORY_PREFIX)
+        preference.setTitle(
+                category.startsWith(TracingSettings.NON_DEFAULT_CATEGORY_PREFIX)
                         ? category.substring(TracingSettings.NON_DEFAULT_CATEGORY_PREFIX.length())
                         : category);
         preference.setChecked(mEnabledCategories.contains(category));

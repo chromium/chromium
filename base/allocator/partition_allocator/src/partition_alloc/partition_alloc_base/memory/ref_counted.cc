@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/memory/ref_counted.h"
+#include "partition_alloc/partition_alloc_base/memory/ref_counted.h"
 
 #include <limits>
 #include <ostream>
 #include <type_traits>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/debug/debugging_buildflags.h"
+#include "partition_alloc/partition_alloc_base/debug/debugging_buildflags.h"
 
 namespace partition_alloc::internal::base::subtle {
 

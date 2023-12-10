@@ -8,6 +8,7 @@ load("//lib/builder_health_indicators.star", "health_spec")
 load("//lib/builders.star", "os", "reclient", "sheriff_rotations")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
+load("//lib/gn_args.star", "gn_args")
 
 ci.defaults.set(
     executable = ci.DEFAULT_EXECUTABLE,
@@ -51,6 +52,15 @@ ci.builder(
         build_config = builder_config.build_config.RELEASE,
         target_platform = builder_config.target_platform.MAC,
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "release_builder",
+            "reclient",
+            "minimal_symbols",
+            "chrome_for_testing",
+            "chrome_with_codecs",
+        ],
+    ),
     cores = None,
     os = os.MAC_DEFAULT,
     console_view_entry = consoles.console_view_entry(
@@ -66,6 +76,16 @@ ci.builder(
         target_platform = builder_config.target_platform.LINUX,
         is_arm64 = True,
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "release_builder",
+            "reclient",
+            "minimal_symbols",
+            "chrome_for_testing",
+            "chrome_with_codecs",
+            "arm64",
+        ],
+    ),
     os = os.LINUX_DEFAULT,
     console_view_entry = consoles.console_view_entry(
         short_name = "linux-arm64-rel-cft",
@@ -79,6 +99,15 @@ ci.builder(
         build_config = builder_config.build_config.RELEASE,
         target_platform = builder_config.target_platform.LINUX,
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "release_builder",
+            "reclient",
+            "minimal_symbols",
+            "chrome_for_testing",
+            "chrome_with_codecs",
+        ],
+    ),
     os = os.LINUX_DEFAULT,
     console_view_entry = consoles.console_view_entry(
         short_name = "linux-rel-cft",
@@ -91,6 +120,15 @@ ci.builder(
     builder_spec = builder_spec(
         build_config = builder_config.build_config.RELEASE,
         target_platform = builder_config.target_platform.WIN,
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "release_builder",
+            "reclient",
+            "minimal_symbols",
+            "chrome_for_testing",
+            "chrome_with_codecs",
+        ],
     ),
     os = os.WINDOWS_DEFAULT,
     console_view_entry = consoles.console_view_entry(

@@ -30,6 +30,7 @@
 <translation id="2226276347425096477">ກະລຸນາຫຍໍ້ຂໍ້ຄວາມນີ້ລົງໃຫ້ເຫຼືອ <ph name="MAX_CHARACTERS" /> ຕົວອັກສອນ ຫຼືໜ້ອຍກ່ວາ (ປະຈຸບັນທ່ານກໍາລັງໃຊ້ <ph name="CURRENT_LENGTH" /> ຕົວອັກສອນ).</translation>
 <translation id="2247351761944213033">ອາ​ທິດ <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">ແທຣັກ <ph name="NUMBER" /></translation>
+<translation id="2353297238722298836">ອະນຸຍາດກ້ອງຖ່າຍຮູບ ແລະ ໄມໂຄຣໂຟນ</translation>
 <translation id="2393030564806080191">ຄ່າສີແບບຖານສິບຫົກ</translation>
 <translation id="2398813069815436052">ເປີດກ່ອງໂຕ້ຕອບແລ້ວ.</translation>
 <translation id="245932805758469625">ຈໍານວນວິນາທີຂອງວິດີໂອທີ່ຍັງເຫຼືອ</translation>
@@ -60,10 +61,12 @@
 <translation id="3822383571486410024">ກະລຸນາຂະຫຍາຍຂໍ້ຄວາມນີ້ໃຫ້ຍາວເປັນ <ph name="MIN_CHARACTERS" /> ອັກຂະລະຂຶ້ນໄປ (ປະຈຸບັນ ທ່ານກຳລັງໃຊ້ <ph name="CURRENT_LENGTH" /> ອັກຂະລະ).</translation>
 <translation id="383465348367842624">ສ່ວນ​ຫນຶ່ງ​ຕິດຕາມດ້ວຍ  '<ph name="ATSIGN" />' ບໍ່​ຄວນ​ໃຫ້​ມີ​ສັນ​ຍາ​ລັກ '<ph name="INVALIDCHARACTER" />'.</translation>
 <translation id="3846214748874656680">ອອກຈາກເຕັມໜ້າຈໍ</translation>
+<translation id="4031179711345676612">ອະນຸຍາດໄມໂຄຣໂຟນແລ້ວ</translation>
 <translation id="4103419683916926126">ມິລລິວິນາທີ</translation>
 <translation id="4201051445878709314">ສະແດງເດືອນກ່ອນນີ້</translation>
 <translation id="4360991593054037559">ກະ​ລຸ​ນາ​ປ້ອນຄ່າທີ່ໃຊ້ໄດ້ເຂົ້າໄປ​. ຄ່າທີ່ໃຊ້ໄດ້ຢູ່ໃກ້ທີ່ສຸດທັງສອງ​ແມ່ນ <ph name="VALID_VALUE_LOW" /> ແລະ <ph name="VALID_VALUE_HIGHER" /> .</translation>
 <translation id="4522570452068850558">ລາຍ​ລະ​ອຽດ</translation>
+<translation id="4663373278480897665">ອະນຸຍາດກ້ອງຖ່າຍຮູບແລ້ວ</translation>
 <translation id="4664250907885839816">ສ່ວນ​ຫນຶ່ງ​ຕໍ່​ໄປ​ນີ້  '<ph name="ATSIGN" />' ບໍ່​ຄວນ​ໃຫ້​ມີ​ສັນ​ຍາ​ລັກ '<ph name="INVALIDCHARACTER" />'.</translation>
 <translation id="4718048029184481307">ກຳລັງຫຼິ້ນໃນໂໝດສະແດງຜົນຊ້ອນກັນ</translation>
 <translation id="4748357248530471599">ປ່ຽນເປັນໜ້າຈໍເຕັມສຳລັບຈໍສະແດງຜົນທີ່ມີຮອຍບາກ</translation>
@@ -137,6 +140,7 @@
 <translation id="6941933287844615239">ດາວໂຫຼດສື່</translation>
 <translation id="698788488269350478">ຂະຫຍາຍແລ້ວ.</translation>
 <translation id="6989848892321993519">ກະລຸນາຂະຫຍາຍຄວາມຍາວຂອງຂໍ້ຄວາມນີ້ເປັນ <ph name="MIN_CHARACTERS" /> ຕົວອັກສອນຂຶ້ນໄປ (ໃນປັດຈຸບັນທ່ານກຳລັງໃຊ້ 1 ຕົວອັກສອນ).</translation>
+<translation id="7080893216867146095">ອະນຸຍາດໃຫ້ແບ່ງປັນສະຖານທີ່</translation>
 <translation id="709897737746224366">ກະລຸນາຈັບຄູ່ຮູບແບບທີ່ໄດ້ສະເໜີ.</translation>
 <translation id="7102274145889307184">ສະຖານທີ່ປັດຈຸບັນ</translation>
 <translation id="7263440858009898357">ກະລຸນາເລືອກລາຍການຢູ່ໃນລາຍຊື່.</translation>

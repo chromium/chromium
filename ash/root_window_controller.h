@@ -6,6 +6,7 @@
 #define ASH_ROOT_WINDOW_CONTROLLER_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "ash/ash_export.h"
@@ -15,7 +16,6 @@
 #include "ash/wm/splitview/split_view_overview_session.h"
 #include "ash/wm/wm_metrics.h"
 #include "base/memory/raw_ptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window_tree_host.h"
 
 namespace aura {
@@ -141,6 +141,8 @@ class ASH_EXPORT RootWindowController {
     return root_window_layout_manager_;
   }
 
+  bool is_shutting_down() const { return is_shutting_down_; }
+
   // Returns parameters of the work area associated with this root window.
   WorkAreaInsets* work_area_insets() { return work_area_insets_.get(); }
 
@@ -206,18 +208,13 @@ class ASH_EXPORT RootWindowController {
   // Deletes associated objects and clears the state, but doesn't delete
   // the root window yet. This is used to delete a secondary displays'
   // root window safely when the display disconnect signal is received,
-  // which may come while we're in the nested run loop.
-  void Shutdown();
+  // which may come while we're in the nested run loop. Child windows of the
+  // root window of this controller will be moved to `destination_root` if
+  // provided.
+  void Shutdown(aura::Window* destination_root);
 
   // Deletes all child windows and performs necessary cleanup.
   void CloseChildWindows();
-
-  // Moves child windows to |dest|.
-  // TODO(afakhry): Consider renaming this function to avoid misuse. It is only
-  // called by WindowTreeHostManager::DeleteHost(), and has destructive side
-  // effects like deleting the workspace controllers, so it shouldn't be called
-  // for something else.
-  void MoveWindowsTo(aura::Window* dest);
 
   // Initialize touch HUDs if necessary.
   void InitTouchHuds();
@@ -266,8 +263,8 @@ class ASH_EXPORT RootWindowController {
   // Starts a split view overview session for this root window with `window`
   // snapped on one side and overview on the other side.
   void StartSplitViewOverviewSession(aura::Window* window,
-                                     absl::optional<OverviewStartAction> action,
-                                     absl::optional<OverviewEnterExitType> type,
+                                     std::optional<OverviewStartAction> action,
+                                     std::optional<OverviewEnterExitType> type,
                                      WindowSnapActionSource snap_action_source);
 
   // Ends the split view overview session and reports the uma metrics if it is
@@ -284,6 +281,9 @@ class ASH_EXPORT RootWindowController {
 
   // Takes ownership of |ash_host|.
   explicit RootWindowController(AshWindowTreeHost* ash_host);
+
+  // Moves child windows to `dest`.
+  void MoveWindowsTo(aura::Window* dest);
 
   // Initializes the RootWindowController based on |root_window_type|.
   void Init(RootWindowType root_window_type);

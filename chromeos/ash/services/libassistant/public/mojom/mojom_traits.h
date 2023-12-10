@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_SERVICES_LIBASSISTANT_PUBLIC_MOJOM_MOJOM_TRAITS_H_
 
 #include <cstdint>
+#include <optional>
 #include <vector>
 
 #include "base/containers/span.h"
@@ -23,7 +24,6 @@
 #include "chromeos/ash/services/libassistant/public/mojom/timer_controller.mojom-shared.h"
 #include "mojo/public/cpp/bindings/enum_traits.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace mojo {
 
@@ -69,7 +69,7 @@ struct StructTraits<ash::libassistant::mojom::AssistantNotificationDataView,
   static const std::string& grouping_key(const AssistantNotification& input);
   static const std::string& obfuscated_gaia_id(
       const AssistantNotification& input);
-  static const absl::optional<base::Time>& expiry_time(
+  static const std::optional<base::Time>& expiry_time(
       const AssistantNotification& input);
   static const std::vector<ash::assistant::AssistantNotificationButton>&
   buttons(const AssistantNotification& input);

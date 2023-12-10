@@ -7,7 +7,4 @@
 default_android_sdk_release = "u"
 
 # SDK releases against which public builds are supported.
-public_sdk_releases = [
-  "tprivacysandbox",
-  "u",
-]
+public_sdk_releases = [ "u" ]

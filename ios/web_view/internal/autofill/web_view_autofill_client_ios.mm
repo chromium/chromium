@@ -15,7 +15,7 @@
 #import "components/autofill/core/browser/form_data_importer.h"
 #import "components/autofill/core/browser/logging/log_router.h"
 #import "components/autofill/core/browser/payments/credit_card_cvc_authenticator.h"
-#import "components/autofill/core/browser/payments/payments_client.h"
+#import "components/autofill/core/browser/payments/payments_network_interface.h"
 #import "components/autofill/core/browser/ui/popup_item_ids.h"
 #import "components/autofill/core/common/autofill_prefs.h"
 #import "components/autofill/ios/browser/autofill_util.h"
@@ -24,6 +24,7 @@
 #import "ios/web/public/browser_state.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web_view/internal/app/application_context.h"
+#import "ios/web_view/internal/autofill/ios_web_view_payments_autofill_client.h"
 #import "ios/web_view/internal/autofill/web_view_autocomplete_history_manager_factory.h"
 #import "ios/web_view/internal/autofill/web_view_autofill_log_router_factory.h"
 #import "ios/web_view/internal/autofill/web_view_personal_data_manager_factory.h"
@@ -77,15 +78,16 @@ WebViewAutofillClientIOS::WebViewAutofillClientIOS(
       autocomplete_history_manager_(autocomplete_history_manager),
       web_state_(web_state),
       identity_manager_(identity_manager),
-      payments_client_(std::make_unique<payments::PaymentsClient>(
-          base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-              web_state_->GetBrowserState()->GetURLLoaderFactory()),
-          identity_manager_,
-          personal_data_manager_,
-          web_state_->GetBrowserState()->IsOffTheRecord())),
+      payments_network_interface_(
+          std::make_unique<payments::PaymentsNetworkInterface>(
+              base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+                  web_state_->GetBrowserState()->GetURLLoaderFactory()),
+              identity_manager_,
+              personal_data_manager_,
+              web_state_->GetBrowserState()->IsOffTheRecord())),
       form_data_importer_(
           std::make_unique<FormDataImporter>(this,
-                                             payments_client_.get(),
+                                             payments_network_interface_.get(),
                                              personal_data_manager_,
                                              locale)),
       strike_database_(strike_database),
@@ -106,13 +108,14 @@ WebViewAutofillClientIOS::GetURLLoaderFactory() {
       web_state_->GetBrowserState()->GetURLLoaderFactory());
 }
 
-AutofillDownloadManager* WebViewAutofillClientIOS::GetDownloadManager() {
-  if (!download_manager_) {
+AutofillCrowdsourcingManager*
+WebViewAutofillClientIOS::GetCrowdsourcingManager() {
+  if (!crowdsourcing_manager_) {
     // Lazy initialization to avoid virtual function calls in the constructor.
-    download_manager_ = std::make_unique<AutofillDownloadManager>(
+    crowdsourcing_manager_ = std::make_unique<AutofillCrowdsourcingManager>(
         this, GetChannel(), GetLogManager());
   }
-  return download_manager_.get();
+  return crowdsourcing_manager_.get();
 }
 
 PersonalDataManager* WebViewAutofillClientIOS::GetPersonalDataManager() {
@@ -151,8 +154,19 @@ FormDataImporter* WebViewAutofillClientIOS::GetFormDataImporter() {
   return form_data_importer_.get();
 }
 
-payments::PaymentsClient* WebViewAutofillClientIOS::GetPaymentsClient() {
-  return payments_client_.get();
+payments::PaymentsAutofillClient*
+WebViewAutofillClientIOS::GetPaymentsAutofillClient() {
+  if (!payments_autofill_client_) {
+    payments_autofill_client_ =
+        std::make_unique<payments::IOSWebViewPaymentsAutofillClient>();
+  }
+
+  return payments_autofill_client_.get();
+}
+
+payments::PaymentsNetworkInterface*
+WebViewAutofillClientIOS::GetPaymentsNetworkInterface() {
+  return payments_network_interface_.get();
 }
 
 StrikeDatabase* WebViewAutofillClientIOS::GetStrikeDatabase() {

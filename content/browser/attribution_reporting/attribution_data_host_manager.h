@@ -5,12 +5,15 @@
 #ifndef CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_DATA_HOST_MANAGER_H_
 #define CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_DATA_HOST_MANAGER_H_
 
+#include <stddef.h>
 #include <stdint.h>
 
 #include <string>
+#include <vector>
 
 #include "base/memory/weak_ptr.h"
 #include "components/attribution_reporting/registration_eligibility.mojom-forward.h"
+#include "content/browser/attribution_reporting/attribution_background_registrations_id.h"
 #include "content/browser/attribution_reporting/attribution_beacon_id.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/network/public/cpp/attribution_reporting_runtime_features.h"
@@ -27,6 +30,10 @@ class SuitableOrigin;
 namespace net {
 class HttpResponseHeaders;
 }  // namespace net
+
+namespace network {
+class TriggerVerification;
+}  // namespace network
 
 namespace content {
 
@@ -61,6 +68,18 @@ class AttributionDataHostManager
   virtual bool RegisterNavigationDataHost(
       mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host,
       const blink::AttributionSrcToken& attribution_src_token) = 0;
+
+  // Notifies the manager that an attribution-enabled navigation associated to
+  // the token `attribution_src_token` will start. Alongside the navigation,
+  // `background_registrations_count` requests are sent. This method is only
+  // called when background requests are sent alongside the navigation. It is
+  // guaranteed to be called before `NotifyNavigationRegistrationStarted` with
+  // the same `attribution_src_token`. Returns `false` if
+  // `attribution_src_token` was already registered or if
+  // `expected_registrations` is invalid.
+  virtual bool NotifyNavigationWithBackgroundRegistrationsWillStart(
+      const blink::AttributionSrcToken& attribution_src_token,
+      size_t background_registrations_count) = 0;
 
   // Notifies the manager that an attribution-enabled navigation has started.
   // This may arrive before or after the attribution configuration is available
@@ -98,6 +117,40 @@ class AttributionDataHostManager
   // `RegisterNavigationDataHost` might have been called with the token.
   virtual void NotifyNavigationRegistrationCompleted(
       const blink::AttributionSrcToken& attribution_src_token) = 0;
+
+  // Notifies the manager that a background attribution request has started.
+  // Every call to `NotifyBackgroundRegistrationStarted` must be eventually
+  // followed by a call to `NotifyBackgroundRegistrationCompleted` with the same
+  // `id`. If `attribution_src_token` is set, it indicates that the request is
+  // tied to a navigation for which the context is provided by a call to
+  // `NotifyNavigationRegistrationStarted()` with the same
+  // `attribution_src_token`.
+  virtual void NotifyBackgroundRegistrationStarted(
+      BackgroundRegistrationsId id,
+      const attribution_reporting::SuitableOrigin& context_origin,
+      bool is_within_fenced_frame,
+      attribution_reporting::mojom::RegistrationEligibility,
+      GlobalRenderFrameHostId render_frame_id,
+      int64_t last_navigation_id,
+      absl::optional<blink::AttributionSrcToken> attribution_src_token,
+      absl::optional<std::string> devtools_request_id) = 0;
+
+  // Notifies the manager that a background attribution request has sent a
+  // response. May be called multiple times for the same request; for redirects
+  // and a final response. Important: `headers` is untrusted.
+  //
+  // Returns true if there was Attribution Reporting relevant response headers
+  // processed.
+  virtual bool NotifyBackgroundRegistrationData(
+      BackgroundRegistrationsId id,
+      const net::HttpResponseHeaders* headers,
+      GURL reporting_url,
+      network::AttributionReportingRuntimeFeatures,
+      std::vector<network::TriggerVerification>) = 0;
+
+  // Notifies the manager that a background attribution request has completed.
+  virtual void NotifyBackgroundRegistrationCompleted(
+      BackgroundRegistrationsId id) = 0;
 
   // Notifies the manager that a fenced frame reporting beacon was initiated
   // for reportEvent or for an automatic beacon and should be tracked.

@@ -12,9 +12,7 @@ import androidx.annotation.StringRes;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-/**
- * An object that contains the required fields to generate the context menu chip.
- */
+/** An object that contains the required fields to generate the context menu chip. */
 public class ChipRenderParams {
     // The resource id for the chip title.
     public @StringRes int titleResourceId;
@@ -36,9 +34,7 @@ public class ChipRenderParams {
     // Indicates whether the chip remove icon should be hidden.
     public boolean isRemoveIconHidden;
 
-    /**
-     * Defines the types of chips that can be rendered.
-     */
+    /** Defines the types of chips that can be rendered. */
     @IntDef({ChipType.LENS_SHOPPING_CHIP, ChipType.LENS_TRANSLATE_CHIP})
     @Retention(RetentionPolicy.SOURCE)
     public @interface ChipType {

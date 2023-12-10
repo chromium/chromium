@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
@@ -152,10 +151,10 @@ class AutocompleteController : public AutocompleteProviderListener,
 
   // Cancels the current query, ensuring there will be no future notifications
   // fired.  If new matches have come in since the most recent notification was
-  // fired, they will be discarded.
-  //
-  // If |clear_result| is true, the controller will also erase the result set.
-  void Stop(bool clear_result);
+  // fired, they will be discarded. If `clear_result` is true, the controller
+  // will also erase the result set. `due_to_user_inactivity` means this call
+  // was triggered by a user's idleness, i.e., not an explicit user action.
+  void Stop(bool clear_result, bool due_to_user_inactivity = false);
 
   // Asks the relevant provider to delete |match|, and ensures observers are
   // notified of resulting changes immediately.  This should only be called when
@@ -190,12 +189,12 @@ class AutocompleteController : public AutocompleteProviderListener,
   // content; see |OmniboxEditModel::user_input_in_progress_|.
   void ResetSession();
 
-  // Updates the destination URL for the given match with the final AQS
-  // parameter using additional information otherwise not available at initial
-  // construction time iff the provider's TemplateURL supports assisted query
+  // Updates the destination URL for the given match with the final searchbox
+  // stats parameter using additional information otherwise not available at
+  // initial construction time iff the provider's TemplateURL supports searchbox
   // stats.
   // This method should be called right before the user navigates to the match.
-  void UpdateMatchDestinationURLWithAdditionalAssistedQueryStats(
+  void UpdateMatchDestinationURLWithAdditionalSearchboxStats(
       base::TimeDelta query_formulation_time,
       AutocompleteMatch* match) const;
 
@@ -254,9 +253,11 @@ class AutocompleteController : public AutocompleteProviderListener,
   friend class AutocompleteProviderTest;
   friend class OmniboxSuggestionButtonRowBrowserTest;
   friend class ZeroSuggestPrefetchTabHelperBrowserTest;
+  FRIEND_TEST_ALL_PREFIXES(AutocompleteControllerTest,
+                           FilterMatchesForInstantKeywordWithBareAt);
   FRIEND_TEST_ALL_PREFIXES(AutocompleteProviderTest,
                            RedundantKeywordsIgnoredInResult);
-  FRIEND_TEST_ALL_PREFIXES(AutocompleteProviderTest, UpdateAssistedQueryStats);
+  FRIEND_TEST_ALL_PREFIXES(AutocompleteProviderTest, UpdateSearchboxStats);
   FRIEND_TEST_ALL_PREFIXES(AutocompleteProviderPrefetchTest,
                            SupportedProvider_NonPrefetch);
   FRIEND_TEST_ALL_PREFIXES(AutocompleteProviderPrefetchTest,
@@ -349,9 +350,9 @@ class AutocompleteController : public AutocompleteProviderListener,
   // Pack matches show their URLs as descriptions instead of the provider name.
   void UpdateKeywordDescriptions(AutocompleteResult* result);
 
-  // For each AutocompleteMatch in `result`, updates the assisted query stats
-  // iff the provider's TemplateURL supports it.
-  void UpdateAssistedQueryStats(AutocompleteResult* result);
+  // For each AutocompleteMatch in `result`, updates the searchbox stats iff the
+  // provider's TemplateURL supports it.
+  void UpdateSearchboxStats(AutocompleteResult* result);
 
   // Update the tail suggestions' `tail_suggest_common_prefix`.
   void UpdateTailSuggestPrefix(AutocompleteResult* result);
@@ -367,18 +368,16 @@ class AutocompleteController : public AutocompleteProviderListener,
   // `notify_changed_debouncer_`.
   void CancelDelayedNotifyChanged();
 
-  // Updates |done_| to be accurate with respect to current providers' statuses.
-  void CheckIfDone();
+  // Returns true if all of the providers which should be run are done. If
+  // `ignore_document_provider` is true, ignores the state of the
+  // `TYPE_DOCUMENT` provider.
+  bool CheckIfDone(bool ignore_document_provider = false);
 
   // Starts |expire_timer_|.
   void StartExpireTimer();
 
   // Starts |stop_timer_|.
   void StartStopTimer();
-
-  // Helper function for Stop().  |due_to_user_inactivity| means this call was
-  // triggered by a user's idleness, i.e., not an explicit user action.
-  void StopHelper(bool clear_result, bool due_to_user_inactivity);
 
   // MemoryDumpProvider:
   bool OnMemoryDump(
@@ -392,35 +391,10 @@ class AutocompleteController : public AutocompleteProviderListener,
   bool ShouldRunProvider(AutocompleteProvider* provider) const;
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-  // Runs the async scoring model for all the eligible matches in
-  // `results_.matches_`. Passes `completion_callback` to
-  // `OnUrlScoringModelDone()` callback which is called once the model is done
-  // for all the eligible matches, whether successfully or not.
-  void RunUrlScoringModel(base::OnceClosure completion_callback);
-
   // Runs the batch scoring for all the eligible matches in
-  // `results_.matches_`. If `is_sync` is true, runs sync ML scoring on the
-  // current thread. Otherwise, runs async ML scoring. Passes
-  // `completion_callback` to `OnUrlScoringModelDone()` callback which is called
-  // once the model is done for all the eligible matches, whether successfully
-  // or not.
-  void RunBatchUrlScoringModel(base::OnceClosure completion_callback,
-                               bool is_sync);
-
-  // Called when the async scoring model is done running for all the eligible
-  // matches in `results_.matches_`. Redistributes the existing relevance scores
-  // to the matches based on the model prediction scores (i.e. highest relevance
-  // score is given to the match with the highest prediction score, and vice
-  // versa), and calls `completion_callback`.
-  void OnUrlScoringModelDone(
-      const base::ElapsedTimer elapsed_timer,
-      base::OnceClosure completion_callback,
-      std::vector<AutocompleteScoringModelService::Result> results);
+  // `results_.matches_`.
+  void RunBatchUrlScoringModel();
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-
-  // Tries to cancel any pending requests to the scoring model and prevents
-  // `OnUrlScoringModelDone()` and its completion callback from being called.
-  void CancelUrlScoringModel();
 
   // Constructs a destination URL from supplied search terms args.
   // TODO(1418077): look for a way to dissolve this function into direct
@@ -432,6 +406,16 @@ class AutocompleteController : public AutocompleteProviderListener,
   // May remove company entity images if omnibox::kCompanyEntityIconAdjustment
   // feature is enabled.
   void MaybeRemoveCompanyEntityImages(AutocompleteResult* result);
+
+  // May remove actions from default suggestion to avoid interference with
+  // keyword mode refresh interaction. May clear some match text that is
+  // repeated across multiple consecutive matches.
+  void MaybeCleanSuggestionsForKeywordMode(const AutocompleteInput& input,
+                                           AutocompleteResult* result);
+
+  // Get the experiment stats v2 entry for the omnibox position. Used on iOS.
+  const omnibox::metrics::ChromeSearchboxStats::ExperimentStatsV2
+  GetOmniboxPositionExperimentStatsV2() const;
 
   base::ObserverList<Observer> observers_;
 
@@ -558,13 +542,6 @@ class AutocompleteController : public AutocompleteProviderListener,
 
   // The preferred steady state (unfocused) omnibox position.
   metrics::OmniboxEventProto::OmniboxPosition steady_state_omnibox_position_;
-
-  // Combined, used to cancel model execution requests sent to
-  // `AutocompleteScoringModelService` and to prevent its callbacks from being
-  // called `base::CancelableTaskTracker` alone is insufficient because it
-  // cannot cancel tasks that have already started to run.
-  base::CancelableTaskTracker scoring_model_task_tracker_;
-  base::WeakPtrFactory<AutocompleteController> weak_ptr_factory_{this};
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_AUTOCOMPLETE_CONTROLLER_H_

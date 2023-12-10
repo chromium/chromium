@@ -73,7 +73,7 @@ void AddNotification(const std::string& notification_id,
                 message_center::NotifierType::SYSTEM_COMPONENT, "system",
                 NotificationCatalogName::kHPSNotify)
           : message_center::NotifierId(/*url=*/GURL(), notifier_title,
-                                       /*web_app_id=*/absl::nullopt);
+                                       /*web_app_id=*/std::nullopt);
 
   message_center::MessageCenter::Get()->AddNotification(
       std::make_unique<message_center::Notification>(
@@ -245,7 +245,7 @@ class SnoopingProtectionNotificationBlockerTest : public AshTestBase {
     message_center::Notification* notification =
         message_center::MessageCenter::Get()->FindVisibleNotificationById(
             SnoopingProtectionNotificationBlocker::kInfoNotificationId);
-    notification->delegate()->Click(button_index, absl::nullopt);
+    notification->delegate()->Click(button_index, std::nullopt);
   }
 
   int GetNumOsSmartPrivacySettingsOpened() {
@@ -487,29 +487,6 @@ TEST_F(SnoopingProtectionNotificationBlockerTest,
   }
 }
 
-// Test that message center is visible when click "Show" button.
-TEST_F(SnoopingProtectionNotificationBlockerTest, ShowButtonClicked) {
-  // TODO(b/305075031) clean up after the flag is removed.
-  if (features::IsQsRevampEnabled()) {
-    return;
-  }
-  SetBlockerPref(true);
-
-  // Simulate snooper presence.
-  hps::HpsResultProto state;
-  state.set_value(hps::HpsResult::POSITIVE);
-  controller_->OnHpsNotifyChanged(state);
-
-  AddNotification("notification-1", u"notifier-1");
-  AddNotification("notification-2", u"notifier-2");
-
-  EXPECT_TRUE(HasInfoNotification());
-
-  // Click on show button.
-  SimulateClick(/*button_index=*/0);
-  EXPECT_TRUE(GetPrimaryNotificationCenterTray()->IsBubbleShown());
-}
-
 // Test that message center is visible when click Settings button.
 TEST_F(SnoopingProtectionNotificationBlockerTest, SettingsButtonClicked) {
   SetBlockerPref(true);
@@ -543,7 +520,7 @@ TEST(SnoopingProtectionNotificationBlockerInternalTest, WebsiteNotifierTitles) {
   // Website with a trusted title uses the title.
   const message_center::NotifierId trusted_notifier(
       GURL("https://trusted.com:443"), u"Trusted",
-      /*web_app_id=*/absl::nullopt);
+      /*web_app_id=*/std::nullopt);
   const std::u16string trusted_title =
       hps_internal::GetNotifierTitle<FakeAppRegistryCache>(trusted_notifier,
                                                            AccountId());

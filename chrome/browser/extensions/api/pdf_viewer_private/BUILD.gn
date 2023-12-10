@@ -17,6 +17,7 @@ source_set("pdf_viewer_private") {
 
   deps = [
     "//base",
+    "//chrome/browser/pdf",
     "//chrome/browser/pdf:pdf_pref_names",
     "//chrome/browser/profiles:profile",
     "//chrome/common:constants",

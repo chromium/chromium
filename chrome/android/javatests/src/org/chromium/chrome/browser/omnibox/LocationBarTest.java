@@ -40,7 +40,6 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.CommandLine;
-import org.chromium.base.Promise;
 import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
@@ -59,6 +58,7 @@ import org.chromium.chrome.browser.locale.LocaleManagerDelegate;
 import org.chromium.chrome.browser.omnibox.status.StatusProperties.StatusIconResource;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
+import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
@@ -105,7 +105,7 @@ public class LocationBarTest {
     @Mock private LensController mLensController;
     @Mock private LocaleManagerDelegate mLocaleManagerDelegate;
     @Mock private VoiceRecognitionHandler mVoiceRecognitionHandler;
-    @Mock private SearchEngineLogoUtils mSearchEngineLogoUtils;
+    @Mock private SearchEngineUtils mSearchEngineUtils;
 
     private ChromeTabbedActivity mActivity;
     private UrlBar mUrlBar;
@@ -121,12 +121,13 @@ public class LocationBarTest {
                 () -> {
                     TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
                     LocaleManager.getInstance().setDelegateForTest(mLocaleManagerDelegate);
-                    SearchEngineLogoUtils.setInstanceForTesting(mSearchEngineLogoUtils);
-                    doReturn(new Promise<>())
-                            .when(mSearchEngineLogoUtils)
-                            .getSearchEngineLogo(any(), anyInt(), any(), any());
+                    doReturn(new StatusIconResource(null))
+                            .when(mSearchEngineUtils)
+                            .getSearchEngineLogo(anyInt());
                 });
         UmaRecorderHolder.resetForTesting();
+        // Prevents recreating Chrome when the default search engine is changed.
+        ToolbarManager.setSkipRecreateActivityWhenStartSurfaceEnabledStateChangesForTesting(true);
     }
 
     private void startActivityNormally() {
@@ -191,27 +192,18 @@ public class LocationBarTest {
                     // avoid occasional timeout in loading it.
                     doReturn(isGoogle).when(mTemplateUrlService).doesDefaultSearchEngineHaveLogo();
                     doReturn(isGoogle).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
-                    doReturn(url)
-                            .when(mSearchEngineLogoUtils)
-                            .getSearchLogoUrl(mTemplateUrlService);
-                    doReturn(true)
-                            .when(mSearchEngineLogoUtils)
-                            .shouldShowSearchEngineLogo(/* incognito= */ false);
                     doReturn(isGoogle ? mGoogleSearchEngine : mNonGoogleSearchEngine)
                             .when(mTemplateUrlService)
                             .getDefaultSearchEngineTemplateUrl();
 
-                    Promise<StatusIconResource> logoPromise =
-                            Promise.fulfilled(
-                                    new StatusIconResource(
-                                            isGoogle
-                                                    ? R.drawable.ic_logo_googleg_20dp
-                                                    : R.drawable.ic_search,
-                                            0));
+                    StatusIconResource logo =
+                            new StatusIconResource(
+                                    isGoogle
+                                            ? R.drawable.ic_logo_googleg_20dp
+                                            : R.drawable.ic_search,
+                                    0);
 
-                    doReturn(logoPromise)
-                            .when(mSearchEngineLogoUtils)
-                            .getSearchEngineLogo(any(), anyInt(), any(), any());
+                    doReturn(logo).when(mSearchEngineUtils).getSearchEngineLogo(anyInt());
                 });
     }
 

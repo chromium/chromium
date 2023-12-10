@@ -221,6 +221,7 @@ void HTMLObjectElement::UpdatePluginInternal() {
       GetDocument().GetFrame()->Client()->OverrideFlashEmbedWithHTML(
           GetDocument().CompleteURL(url_));
   if (!overriden_url.IsEmpty()) {
+    UseCounter::Count(GetDocument(), WebFeature::kOverrideFlashEmbedwithHTML);
     url_ = overriden_url.GetString();
     SetServiceType("text/html");
   }

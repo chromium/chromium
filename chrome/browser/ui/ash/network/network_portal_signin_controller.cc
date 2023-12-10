@@ -102,14 +102,15 @@ class SigninWebDialogDelegate : public ui::WebDialogDelegate {
 
 }  // namespace
 
+// static
+NetworkPortalSigninController* NetworkPortalSigninController::Get() {
+  static base::NoDestructor<NetworkPortalSigninController> instance;
+  return instance.get();
+}
+
 NetworkPortalSigninController::NetworkPortalSigninController() = default;
 
 NetworkPortalSigninController::~NetworkPortalSigninController() = default;
-
-base::WeakPtr<NetworkPortalSigninController>
-NetworkPortalSigninController::GetWeakPtr() {
-  return weak_factory_.GetWeakPtr();
-}
 
 void NetworkPortalSigninController::ShowSignin(SigninSource source) {
   GURL url;

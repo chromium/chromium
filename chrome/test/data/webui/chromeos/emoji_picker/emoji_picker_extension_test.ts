@@ -2,10 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://emoji-picker/emoji_search.js';
-
-import {EmojiPicker} from 'chrome://emoji-picker/emoji_picker.js';
-import {EmojiSearch} from 'chrome://emoji-picker/emoji_search.js';
+import {EmojiPickerApp, EmojiSearch} from 'chrome://emoji-picker/emoji_picker.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse} from 'chrome://webui-test/chai_assert.js';
@@ -20,7 +17,7 @@ function isCategoryButtonActive(element: HTMLElement|null|undefined) {
 }
 
 suite('emoji-picker-extension', () => {
-  let emojiPicker: EmojiPicker;
+  let emojiPicker: EmojiPickerApp;
   let findInEmojiPicker: (...path: string[]) => HTMLElement | null;
   let waitUntilFindInEmojiPicker: (...path: string[]) => Promise<HTMLElement>;
 

@@ -249,11 +249,11 @@ IN_PROC_BROWSER_TEST_F(WebAppDarkModeOriginTrialBrowserTest, OriginTrial) {
   // the origin trial.
   EXPECT_EQ(
       provider.registrar_unsafe().GetAppById(app_id)->dark_mode_theme_color(),
-      absl::nullopt);
+      std::nullopt);
   EXPECT_EQ(provider.registrar_unsafe()
                 .GetAppById(app_id)
                 ->dark_mode_background_color(),
-            absl::nullopt);
+            std::nullopt);
 }
 
 }  // namespace web_app

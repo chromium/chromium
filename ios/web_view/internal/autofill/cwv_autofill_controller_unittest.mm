@@ -100,8 +100,7 @@ class CWVAutofillControllerTest : public web::WebTest {
             /*identity_manager=*/nullptr, /*log_manager=*/nullptr,
             /*profile_store=*/nullptr, /*account_store=*/nullptr,
             /*reuse_manager=*/nullptr,
-            /*requirements_service=*/nullptr,
-            /*password_change_success_tracker=*/nullptr);
+            /*requirements_service=*/nullptr);
     auto password_manager = std::make_unique<password_manager::PasswordManager>(
         password_manager_client.get());
     password_controller_ = OCMClassMock([SharedPasswordController class]);
@@ -436,7 +435,8 @@ TEST_F(CWVAutofillControllerTest, NotifyUserOfLeak) {
                                 username:@"fake-username"]);
 
   password_manager_client_->NotifyUserCredentialsWereLeaked(
-      leak_type, leak_url, base::SysNSStringToUTF16(@"fake-username"));
+      leak_type, leak_url, base::SysNSStringToUTF16(@"fake-username"),
+      /* in_account_store = */ false);
 
   [delegate verify];
 }

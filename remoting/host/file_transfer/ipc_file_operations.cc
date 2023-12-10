@@ -135,9 +135,9 @@ class IpcFileOperations::IpcWriter : public FileOperations::Writer {
  private:
   void OnOpenResult(mojom::BeginFileWriteResultPtr result);
   void OnOperationResult(
-      const absl::optional<::remoting::protocol::FileTransfer_Error>& error);
+      const std::optional<::remoting::protocol::FileTransfer_Error>& error);
   void OnCloseResult(
-      const absl::optional<::remoting::protocol::FileTransfer_Error>& error);
+      const std::optional<::remoting::protocol::FileTransfer_Error>& error);
 
   State state_ GUARDED_BY_CONTEXT(sequence_checker_) = kCreated;
   Callback pending_callback_ GUARDED_BY_CONTEXT(sequence_checker_);
@@ -403,7 +403,7 @@ void IpcFileOperations::IpcWriter::OnOpenResult(
 }
 
 void IpcFileOperations::IpcWriter::OnOperationResult(
-    const absl::optional<::remoting::protocol::FileTransfer_Error>& error) {
+    const std::optional<::remoting::protocol::FileTransfer_Error>& error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (error) {
@@ -418,7 +418,7 @@ void IpcFileOperations::IpcWriter::OnOperationResult(
 }
 
 void IpcFileOperations::IpcWriter::OnCloseResult(
-    const absl::optional<::remoting::protocol::FileTransfer_Error>& error) {
+    const std::optional<::remoting::protocol::FileTransfer_Error>& error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // We're done with the remote regardless of the result.

@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/allocator/partition_allocator/src/partition_alloc/pointers/raw_ptr_backup_ref_impl.h"
+#include "partition_alloc/pointers/raw_ptr_backup_ref_impl.h"
 
 #include <cstdint>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/dangling_raw_ptr_checks.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/check.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_ref_count.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_root.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/reservation_offset_table.h"
+#include "partition_alloc/dangling_raw_ptr_checks.h"
+#include "partition_alloc/partition_alloc.h"
+#include "partition_alloc/partition_alloc_base/check.h"
+#include "partition_alloc/partition_alloc_buildflags.h"
+#include "partition_alloc/partition_ref_count.h"
+#include "partition_alloc/partition_root.h"
+#include "partition_alloc/reservation_offset_table.h"
 
 namespace base::internal {
 

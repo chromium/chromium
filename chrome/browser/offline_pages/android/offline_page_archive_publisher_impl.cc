@@ -14,6 +14,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/android/chrome_jni_headers/OfflinePageArchivePublisherBridge_jni.h"
@@ -152,10 +153,11 @@ OfflinePageArchivePublisherImpl::Delegate::AddCompletedDownload(
   JNIEnv* env = base::android::AttachCurrentThread();
 
   if (ShouldUseDownloadsCollection()) {
-    base::FilePath new_file_path = base::FilePath(ConvertJavaStringToUTF8(
-        Java_OfflinePageArchivePublisherBridge_publishArchiveToDownloadsCollection(
-            env,
-            android::OfflinePageBridge::ConvertToJavaOfflinePage(env, page))));
+    base::FilePath new_file_path =
+        base::FilePath(base::android::ConvertJavaStringToUTF8(
+            Java_OfflinePageArchivePublisherBridge_publishArchiveToDownloadsCollection(
+                env, android::OfflinePageBridge::ConvertToJavaOfflinePage(
+                         env, page))));
 
     if (new_file_path.empty())
       return PublishArchiveResult::Failure(SavePageResult::FILE_MOVE_FAILED);

@@ -7,16 +7,16 @@
 #import "base/metrics/histogram_functions.h"
 #import "components/sync/service/sync_service.h"
 #import "ios/chrome/browser/consent_auditor/model/consent_auditor_factory.h"
-#import "ios/chrome/browser/first_run/first_run_metrics.h"
+#import "ios/chrome/browser/first_run/model/first_run_metrics.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/commands/browsing_data_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/ui/elements/activity_overlay_coordinator.h"
-#import "ios/chrome/browser/signin/authentication_service.h"
-#import "ios/chrome/browser/signin/authentication_service_factory.h"
-#import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
-#import "ios/chrome/browser/signin/identity_manager_factory.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/sync/model/sync_setup_service_factory.h"
 #import "ios/chrome/browser/ui/authentication/authentication_flow.h"
@@ -132,7 +132,7 @@ constexpr signin_metrics::AccessPoint kTangibleSyncAccessPoint =
   if (_advancedSettingsRequested) {
     // TODO(crbug.com/1256784): Log a UserActions histogram to track the touch
     // interactions on the advanced settings button.
-    [self showAdvancedSettings];
+    [self showAdvancedSettingsWithAccessPoint:kTangibleSyncAccessPoint];
   } else {
     if (_firstRun) {
       base::UmaHistogramEnumeration(
@@ -219,7 +219,8 @@ constexpr signin_metrics::AccessPoint kTangibleSyncAccessPoint =
 }
 
 // Shows the advanced sync settings.
-- (void)showAdvancedSettings {
+- (void)showAdvancedSettingsWithAccessPoint:
+    (signin_metrics::AccessPoint)accessPoint {
   DCHECK(!_advancedSettingsSigninCoordinator);
 
   const IdentitySigninState signinState =
@@ -228,7 +229,8 @@ constexpr signin_metrics::AccessPoint kTangibleSyncAccessPoint =
   _advancedSettingsSigninCoordinator = [SigninCoordinator
       advancedSettingsSigninCoordinatorWithBaseViewController:_viewController
                                                       browser:self.browser
-                                                  signinState:signinState];
+                                                  signinState:signinState
+                                                  accessPoint:accessPoint];
   __weak __typeof(self) weakSelf = self;
   _advancedSettingsSigninCoordinator.signinCompletion =
       ^(SigninCoordinatorResult advancedSigninResult,

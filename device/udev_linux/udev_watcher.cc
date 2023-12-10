@@ -9,13 +9,12 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "base/strings/string_piece.h"
 #include "base/threading/scoped_blocking_call.h"
 
 namespace device {
 
-UdevWatcher::Filter::Filter(base::StringPiece subsystem_in,
-                            base::StringPiece devtype_in) {
+UdevWatcher::Filter::Filter(std::string_view subsystem_in,
+                            std::string_view devtype_in) {
   if (!subsystem_in.empty())
     subsystem_ = std::string(subsystem_in);
   if (!devtype_in.empty())

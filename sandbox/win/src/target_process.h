@@ -9,6 +9,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <string_view>
 
 #include "base/containers/span.h"
 #include "base/gtest_prod_util.h"
@@ -58,8 +59,8 @@ class TargetProcess {
   // Creates the IPC objects such as the BrokerDispatcher and the
   // IPC server. The IPC server uses the services of the thread_pool.
   ResultCode Init(Dispatcher* ipc_dispatcher,
-                  absl::optional<base::span<const uint8_t>> policy,
-                  absl::optional<base::span<const uint8_t>> delegate_data,
+                  std::optional<base::span<const uint8_t>> policy,
+                  std::optional<base::span<const uint8_t>> delegate_data,
                   uint32_t shared_IPC_size,
                   DWORD* win_error);
 
@@ -100,7 +101,7 @@ class TargetProcess {
   // `to_keep`.
   static std::wstring FilterEnvironment(
       const wchar_t* env,
-      const base::span<const base::WStringPiece> to_keep);
+      const base::span<const std::wstring_view> to_keep);
 
   // Details of the target process.
   base::win::ScopedProcessInformation sandbox_process_info_;

@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
 #include "third_party/protobuf/src/google/protobuf/message_lite.h"
 
 // This file defines proto and function stubs for internal-only implementations.
@@ -33,27 +33,34 @@ class DoNothingProto : public google::protobuf::MessageLite {
 };
 
 // Aliases for internal protos.
+using ProvisionCorpMachineRequest = DoNothingProto;
+using ProvisionCorpMachineResponse = DoNothingProto;
 using RemoteAccessHostV1Proto = DoNothingProto;
 using ReportProvisioningErrorRequest = DoNothingProto;
 using SendHeartbeatRequest = DoNothingProto;
 
 // RemoteAccessHost helpers.
-extern const std::string& GetAuthorizationCode(const RemoteAccessHostV1Proto&);
-extern const std::string& GetServiceAccount(const RemoteAccessHostV1Proto&);
-extern const std::string& GetHostId(const RemoteAccessHostV1Proto&);
+extern const std::string& GetAuthorizationCode(
+    const ProvisionCorpMachineResponse&);
+extern const std::string& GetServiceAccount(
+    const ProvisionCorpMachineResponse&);
+extern const std::string& GetOwnerEmail(const ProvisionCorpMachineResponse&);
+extern const std::string& GetHostId(const ProvisionCorpMachineResponse&);
 
 // RemoteAccessService helpers.
 extern std::string GetMachineProvisioningRequestPath();
-extern std::unique_ptr<RemoteAccessHostV1Proto> GetMachineProvisioningRequest(
-    const std::string& owner_email,
-    const std::string& fqdn,
-    const std::string& public_key,
-    absl::optional<std::string> existing_host_id);
+extern std::unique_ptr<ProvisionCorpMachineRequest>
+GetMachineProvisioningRequest(const std::string& owner_email,
+                              const std::string& fqdn,
+                              const std::string& public_key,
+                              const std::string& version,
+                              std::optional<std::string> existing_host_id);
 
 extern std::string GetReportProvisioningErrorRequestPath();
 extern std::unique_ptr<ReportProvisioningErrorRequest>
 GetReportProvisioningErrorRequest(const std::string& host_id,
-                                  const std::string& error_message);
+                                  const std::string& error_message,
+                                  const std::string& version);
 
 extern std::string GetSendHeartbeatRequestPath();
 extern std::unique_ptr<SendHeartbeatRequest> GetSendHeartbeatRequest(

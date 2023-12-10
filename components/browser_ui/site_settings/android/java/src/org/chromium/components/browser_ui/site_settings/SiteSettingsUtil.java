@@ -17,9 +17,7 @@ import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.content_public.browser.HostZoomMap;
 
-/**
- * Util class for site settings UI.
- */
+/** Util class for site settings UI. */
 public class SiteSettingsUtil {
     // Defining the order for content settings based on http://crbug.com/610358
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
@@ -51,9 +49,9 @@ public class SiteSettingsUtil {
     };
 
     static final int[] CHOOSER_PERMISSIONS = {
-            ContentSettingsType.USB_CHOOSER_DATA,
-            // Bluetooth is only shown when WEB_BLUETOOTH_NEW_PERMISSIONS_BACKEND is enabled.
-            ContentSettingsType.BLUETOOTH_CHOOSER_DATA,
+        ContentSettingsType.USB_CHOOSER_DATA,
+        // Bluetooth is only shown when WEB_BLUETOOTH_NEW_PERMISSIONS_BACKEND is enabled.
+        ContentSettingsType.BLUETOOTH_CHOOSER_DATA,
     };
 
     static final int[] EMBEDDED_PERMISSIONS = {
@@ -100,13 +98,6 @@ public class SiteSettingsUtil {
     }
 
     /**
-     * @return whether the flag for the improved UI for "All sites" and "Site settings" is enabled.
-     */
-    public static boolean isSiteDataImprovementEnabled() {
-        return SiteSettingsFeatureMap.isEnabled(SiteSettingsFeatureList.SITE_DATA_IMPROVEMENTS);
-    }
-
-    /**
      * @param context A {@link Context} object to pull strings out of.
      * @param storage The amount of storage (in bytes) used by the entry.
      * @param cookies The number of cookies associated with the entry.
@@ -115,16 +106,22 @@ public class SiteSettingsUtil {
     public static String generateStorageUsageText(Context context, long storage, int cookies) {
         String result = "";
         if (storage > 0) {
-            result = String.format(context.getString(R.string.origin_settings_storage_usage_brief),
-                    Formatter.formatShortFileSize(context, storage));
+            result =
+                    String.format(
+                            context.getString(R.string.origin_settings_storage_usage_brief),
+                            Formatter.formatShortFileSize(context, storage));
         }
         if (cookies > 0) {
-            String cookie_str = context.getResources().getQuantityString(
-                    R.plurals.cookies_count, cookies, cookies);
-            result = result.isEmpty()
-                    ? cookie_str
-                    : String.format(context.getString(R.string.summary_with_one_bullet), result,
-                            cookie_str);
+            String cookie_str =
+                    context.getResources()
+                            .getQuantityString(R.plurals.cookies_count, cookies, cookies);
+            result =
+                    result.isEmpty()
+                            ? cookie_str
+                            : String.format(
+                                    context.getString(R.string.summary_with_one_bullet),
+                                    result,
+                                    cookie_str);
         }
         return result;
     }

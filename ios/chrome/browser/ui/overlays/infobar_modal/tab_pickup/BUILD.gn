@@ -14,7 +14,7 @@ source_set("tab_pickup") {
     "//base",
     "//components/prefs",
     "//components/sync/service",
-    "//ios/chrome/browser/overlays/public/default",
+    "//ios/chrome/browser/overlays/model/public/default",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/prefs",

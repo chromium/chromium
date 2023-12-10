@@ -33,3 +33,21 @@ android_library("java") {
 android_resources("java_resources") {
   sources = [ "java/res/values/dimens.xml" ]
 }
+
+robolectric_library("junit") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/user_education/IPHCommandBuilderUnitTest.java",
+    "java/src/org/chromium/chrome/browser/user_education/IPHCommandUnitTest.java",
+  ]
+  deps = [
+    ":java",
+    ":java_resources",
+    "//base:base_java",
+    "//base:base_junit_test_support",
+    "//components/browser_ui/theme/android:java_resources",
+    "//third_party/androidx:androidx_appcompat_appcompat_java",
+    "//third_party/junit",
+    "//third_party/mockito:mockito_java",
+  ]
+  resources_package = "org.chromium.chrome.browser.user_education.test"
+}

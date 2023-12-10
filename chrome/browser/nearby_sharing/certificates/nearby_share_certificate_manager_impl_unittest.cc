@@ -204,13 +204,13 @@ class NearbyShareCertificateManagerImplTest
 
   void GetPublicCertificatesCallback(
       bool success,
-      const std::vector<nearbyshare::proto::PublicCertificate>& certs) {
+      const std::vector<nearby::sharing::proto::PublicCertificate>& certs) {
     auto& callbacks = cert_store_->get_public_certificates_callbacks();
     auto callback = std::move(callbacks.back());
     callbacks.pop_back();
-    auto pub_certs =
-        std::make_unique<std::vector<nearbyshare::proto::PublicCertificate>>(
-            certs.begin(), certs.end());
+    auto pub_certs = std::make_unique<
+        std::vector<nearby::sharing::proto::PublicCertificate>>(certs.begin(),
+                                                                certs.end());
     std::move(callback).Run(success, std::move(pub_certs));
   }
 
@@ -233,7 +233,7 @@ class NearbyShareCertificateManagerImplTest
   }
 
   void VerifyPrivateCertificates(
-      const nearbyshare::proto::EncryptedMetadata& expected_metadata) {
+      const nearby::sharing::proto::EncryptedMetadata& expected_metadata) {
     // Expect a full set of certificates for both all-contacts and
     // selected-contacts
     std::vector<NearbySharePrivateCertificate> certs =
@@ -379,7 +379,7 @@ class NearbyShareCertificateManagerImplTest
   }
 
   void CheckRpcRequest(
-      const nearbyshare::proto::ListPublicCertificatesRequest& request,
+      const nearby::sharing::proto::ListPublicCertificatesRequest& request,
       const std::string& page_token) {
     EXPECT_EQ(request.parent(), std::string(kDeviceIdPrefix) + kDeviceId);
 
@@ -393,10 +393,10 @@ class NearbyShareCertificateManagerImplTest
     EXPECT_EQ(request.page_token(), page_token);
   }
 
-  nearbyshare::proto::ListPublicCertificatesResponse BuildRpcResponse(
+  nearby::sharing::proto::ListPublicCertificatesResponse BuildRpcResponse(
       size_t page_number,
       const std::string& page_token) {
-    nearbyshare::proto::ListPublicCertificatesResponse response;
+    nearby::sharing::proto::ListPublicCertificatesResponse response;
     for (size_t i = 0; i < public_certificates_.size(); ++i) {
       public_certificates_[i].set_secret_id(kSecretIdPrefix +
                                             base::NumberToString(page_number) +
@@ -446,7 +446,7 @@ class NearbyShareCertificateManagerImplTest
     public_certificates_.clear();
     metadata_encryption_keys_.clear();
     auto& metadata1 = GetNearbyShareTestMetadata();
-    nearbyshare::proto::EncryptedMetadata metadata2;
+    nearby::sharing::proto::EncryptedMetadata metadata2;
     metadata2.set_device_name("device_name2");
     metadata2.set_full_name("full_name2");
     metadata2.set_icon_url("icon_url2");
@@ -477,7 +477,7 @@ class NearbyShareCertificateManagerImplTest
   size_t num_public_certs_downloaded_notifications_ = 0;
   size_t num_private_certs_changed_notifications_ = 0;
   std::vector<NearbySharePrivateCertificate> private_certificates_;
-  std::vector<nearbyshare::proto::PublicCertificate> public_certificates_;
+  std::vector<nearby::sharing::proto::PublicCertificate> public_certificates_;
   std::vector<NearbyShareEncryptedMetadataKey> metadata_encryption_keys_;
 
   base::test::SingleThreadTaskEnvironment task_environment_{
@@ -822,7 +822,8 @@ TEST_P(NearbyShareCertificateManagerImplTest,
   RunUpload(/*success=*/true);
 
   // The full name and icon URL are not set.
-  nearbyshare::proto::EncryptedMetadata metadata = GetNearbyShareTestMetadata();
+  nearby::sharing::proto::EncryptedMetadata metadata =
+      GetNearbyShareTestMetadata();
   metadata.clear_full_name();
   metadata.clear_icon_url();
 
@@ -843,7 +844,8 @@ TEST_P(NearbyShareCertificateManagerImplTest,
   RunUpload(/*success=*/true);
 
   // The account name isn't set.
-  nearbyshare::proto::EncryptedMetadata metadata = GetNearbyShareTestMetadata();
+  nearby::sharing::proto::EncryptedMetadata metadata =
+      GetNearbyShareTestMetadata();
   metadata.clear_account_name();
 
   VerifyPrivateCertificates(/*expected_metadata=*/metadata);

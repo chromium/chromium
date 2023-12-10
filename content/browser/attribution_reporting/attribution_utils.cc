@@ -6,22 +6,9 @@
 
 #include "base/check.h"
 #include "base/json/json_writer.h"
-#include "base/time/time.h"
 #include "base/values.h"
 
 namespace content {
-
-namespace {
-
-constexpr base::TimeDelta kWindowTinyOffset = base::Milliseconds(1);
-
-}  // namespace
-
-base::Time LastTriggerTimeForReportTime(base::Time report_time) {
-  // kWindowTinyOffset is needed as the window is not selected right at
-  // report_time.
-  return report_time - kWindowTinyOffset;
-}
 
 std::string SerializeAttributionJson(base::ValueView body, bool pretty_print) {
   int options = pretty_print ? base::JSONWriter::OPTIONS_PRETTY_PRINT : 0;

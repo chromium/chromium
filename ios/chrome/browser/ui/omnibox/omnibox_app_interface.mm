@@ -16,7 +16,7 @@
 #import "components/variations/variations_ids_provider.h"
 #import "ios/chrome/browser/autocomplete/model/remote_suggestions_service_factory.h"
 #import "ios/chrome/browser/autocomplete/model/shortcuts_backend_factory.h"
-#import "ios/chrome/browser/history/top_sites_factory.h"
+#import "ios/chrome/browser/history/model/top_sites_factory.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/ui/omnibox/test_fake_suggestions_service.h"

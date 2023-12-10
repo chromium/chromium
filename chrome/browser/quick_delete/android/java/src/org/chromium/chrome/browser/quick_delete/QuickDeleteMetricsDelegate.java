@@ -9,9 +9,7 @@ import androidx.annotation.IntDef;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.components.browsing_data.DeleteBrowsingDataAction;
 
-/**
- * A delegate class to record metrics associated with {@link QuickDeleteController}.
- */
+/** A delegate class to record metrics associated with {@link QuickDeleteController}. */
 public class QuickDeleteMetricsDelegate {
     public static final String HISTOGRAM_NAME = "Privacy.QuickDelete";
 
@@ -21,14 +19,22 @@ public class QuickDeleteMetricsDelegate {
      *
      * Must be kept in sync with the QuickDeleteAction in enums.xml.
      */
-    @IntDef({QuickDeleteAction.MENU_ITEM_CLICKED, QuickDeleteAction.DIALOG_DISMISSED_IMPLICITLY,
-            QuickDeleteAction.DELETE_CLICKED, QuickDeleteAction.CANCEL_CLICKED,
-            QuickDeleteAction.TAB_SWITCHER_MENU_ITEM_CLICKED,
-            QuickDeleteAction.MORE_OPTIONS_CLICKED, QuickDeleteAction.MY_ACTIVITY_LINK_CLICKED,
-            QuickDeleteAction.SEARCH_HISTORY_LINK_CLICKED,
-            QuickDeleteAction.LAST_15_MINUTES_SELECTED, QuickDeleteAction.LAST_HOUR_SELECTED,
-            QuickDeleteAction.LAST_DAY_SELECTED, QuickDeleteAction.LAST_WEEK_SELECTED,
-            QuickDeleteAction.FOUR_WEEKS_SELECTED, QuickDeleteAction.ALL_TIME_SELECTED})
+    @IntDef({
+        QuickDeleteAction.MENU_ITEM_CLICKED,
+        QuickDeleteAction.DIALOG_DISMISSED_IMPLICITLY,
+        QuickDeleteAction.DELETE_CLICKED,
+        QuickDeleteAction.CANCEL_CLICKED,
+        QuickDeleteAction.TAB_SWITCHER_MENU_ITEM_CLICKED,
+        QuickDeleteAction.MORE_OPTIONS_CLICKED,
+        QuickDeleteAction.MY_ACTIVITY_LINK_CLICKED,
+        QuickDeleteAction.SEARCH_HISTORY_LINK_CLICKED,
+        QuickDeleteAction.LAST_15_MINUTES_SELECTED,
+        QuickDeleteAction.LAST_HOUR_SELECTED,
+        QuickDeleteAction.LAST_DAY_SELECTED,
+        QuickDeleteAction.LAST_WEEK_SELECTED,
+        QuickDeleteAction.FOUR_WEEKS_SELECTED,
+        QuickDeleteAction.ALL_TIME_SELECTED
+    })
     public @interface QuickDeleteAction {
         int MENU_ITEM_CLICKED = 0;
         int DELETE_CLICKED = 1;
@@ -61,8 +67,10 @@ public class QuickDeleteMetricsDelegate {
                 HISTOGRAM_NAME, quickDeleteAction, QuickDeleteAction.MAX_VALUE);
 
         if (quickDeleteAction == QuickDeleteAction.DELETE_CLICKED) {
-            RecordHistogram.recordEnumeratedHistogram("Privacy.DeleteBrowsingData.Action",
-                    DeleteBrowsingDataAction.QUICK_DELETE, DeleteBrowsingDataAction.MAX_VALUE);
+            RecordHistogram.recordEnumeratedHistogram(
+                    "Privacy.DeleteBrowsingData.Action",
+                    DeleteBrowsingDataAction.QUICK_DELETE,
+                    DeleteBrowsingDataAction.MAX_VALUE);
         }
     }
 }

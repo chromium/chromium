@@ -130,12 +130,6 @@ class MockPasswordEditDialog : public PasswordEditDialog {
                const std::u16string& password,
                const std::string& account_email),
               (override));
-  MOCK_METHOD(void,
-              ShowLegacyPasswordEditDialog,
-              (const std::vector<std::u16string>& usernames,
-               int selected_username_index,
-               const std::string& account_email),
-              (override));
   MOCK_METHOD(void, Dismiss, (), (override));
 };
 
@@ -159,7 +153,7 @@ class SaveUpdatePasswordMessageDelegateTest
   void EnqueueMessage(std::unique_ptr<PasswordFormManagerForUI> form_to_save,
                       bool user_signed_in,
                       bool update_password,
-                      absl::optional<AccountInfo> account_info = {});
+                      std::optional<AccountInfo> account_info = {});
   void TriggerActionClick();
   void TriggerActionClick(messages::DismissReason dismiss_reason);
   void TriggerPasswordEditDialog(bool update_password);
@@ -180,8 +174,6 @@ class SaveUpdatePasswordMessageDelegateTest
   std::unique_ptr<PasswordEditDialog> CreatePasswordEditDialog(
       content::WebContents* web_contents,
       PasswordEditDialog::DialogAcceptedCallback dialog_accepted_callback,
-      PasswordEditDialog::LegacyDialogAcceptedCallback
-          legacy_dialog_accepted_callback,
       PasswordEditDialog::DialogDismissedCallback dialog_dismissed_callback);
 
   // Creates a mock of PasswordEditDialog that will be passed to
@@ -198,7 +190,6 @@ class SaveUpdatePasswordMessageDelegateTest
 
   void TriggerDialogAcceptedCallback(const std::u16string& username,
                                      const std::u16string& password);
-  void TriggerLegacyDialogAcceptedCallback(int selected_username_index);
   void TriggerDialogDismissedCallback(bool dialog_accepted);
 
   // TODO(crbug.com/1428562): Remove this helper as it makes tests hard to read.
@@ -237,8 +228,6 @@ class SaveUpdatePasswordMessageDelegateTest
   messages::MockMessageDispatcherBridge message_dispatcher_bridge_;
   std::unique_ptr<MockPasswordEditDialog> mock_password_edit_dialog_;
   PasswordEditDialog::DialogAcceptedCallback dialog_accepted_callback_;
-  PasswordEditDialog::LegacyDialogAcceptedCallback
-      legacy_dialog_accepted_callback_;
   PasswordEditDialog::DialogDismissedCallback dialog_dismissed_callback_;
   base::MockCallback<RepeatingCallback<void(
       gfx::NativeWindow,
@@ -331,7 +320,7 @@ void SaveUpdatePasswordMessageDelegateTest::EnqueueMessage(
     std::unique_ptr<PasswordFormManagerForUI> form_to_save,
     bool user_signed_in,
     bool update_password,
-    absl::optional<AccountInfo> account_info) {
+    std::optional<AccountInfo> account_info) {
   if (user_signed_in && !account_info) {
     account_info = AccountInfo();
     account_info.value().email = kAccountEmail;
@@ -414,11 +403,8 @@ std::unique_ptr<PasswordEditDialog>
 SaveUpdatePasswordMessageDelegateTest::CreatePasswordEditDialog(
     content::WebContents* web_contents,
     PasswordEditDialog::DialogAcceptedCallback dialog_accepted_callback,
-    PasswordEditDialog::LegacyDialogAcceptedCallback
-        legacy_dialog_accepted_callback,
     PasswordEditDialog::DialogDismissedCallback dialog_dismissed_callback) {
   dialog_accepted_callback_ = std::move(dialog_accepted_callback);
-  legacy_dialog_accepted_callback_ = std::move(legacy_dialog_accepted_callback);
   dialog_dismissed_callback_ = std::move(dialog_dismissed_callback);
   return std::move(mock_password_edit_dialog_);
 }
@@ -441,11 +427,6 @@ void SaveUpdatePasswordMessageDelegateTest::TriggerDialogAcceptedCallback(
     const std::u16string& username,
     const std::u16string& password) {
   std::move(dialog_accepted_callback_).Run(username, password);
-}
-
-void SaveUpdatePasswordMessageDelegateTest::TriggerLegacyDialogAcceptedCallback(
-    int selected_username_index) {
-  std::move(legacy_dialog_accepted_callback_).Run(selected_username_index);
 }
 
 void SaveUpdatePasswordMessageDelegateTest::TriggerDialogDismissedCallback(
@@ -500,8 +481,6 @@ void SaveUpdatePasswordMessageDelegateTest::VerifyUkmMetrics(
 // Tests that secondary menu icon is set for the save password message
 TEST_F(SaveUpdatePasswordMessageDelegateTest,
        CogButton_SavePassword_PasswordEditDialogWithDetails) {
-  base::test::ScopedFeatureList scoped_feature_state{
-      password_manager::features::kPasswordEditDialogWithDetails};
   SetPendingCredentials(kUsername, kPassword);
   auto form_manager =
       CreateFormManager(GURL(kDefaultUrl), empty_best_matches());
@@ -518,8 +497,6 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
 // in case when user has only single credential stored for the web site
 TEST_F(SaveUpdatePasswordMessageDelegateTest,
        CogButton_SingleCredUpdatePassword_PasswordEditDialogWithDetails) {
-  base::test::ScopedFeatureList scoped_feature_state{
-      password_manager::features::kPasswordEditDialogWithDetails};
   SetPendingCredentials(kUsername, kPassword);
   auto form_manager =
       CreateFormManager(GURL(kDefaultUrl), empty_best_matches());
@@ -536,8 +513,6 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
 // in case when user has multiple credentials stored for the web site
 TEST_F(SaveUpdatePasswordMessageDelegateTest,
        NoCogButton_MultipleCredUpdatePassword_PasswordEditDialogWithDetails) {
-  base::test::ScopedFeatureList scoped_feature_state{
-      password_manager::features::kPasswordEditDialogWithDetails};
   SetPendingCredentials(kUsername, kPassword);
   auto form_manager =
       CreateFormManager(GURL(kDefaultUrl), two_forms_best_matches());
@@ -860,124 +835,6 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest, UpdatePasswordWithSingleForm) {
       password_manager::metrics_util::CLICKED_ACCEPT, 1);
 }
 
-// Tests that the update dialog is shown after the message in case if multiple
-// password match the form.
-TEST_F(SaveUpdatePasswordMessageDelegateTest,
-       TriggeredEditDialogLegacy_TwoFormsMatching_UpdatePassword) {
-  base::test::ScopedFeatureList scoped_feature_state;
-  scoped_feature_state.InitAndDisableFeature(
-      password_manager::features::kPasswordEditDialogWithDetails);
-
-  SetPendingCredentials(kUsername, kPassword);
-  auto form_manager =
-      CreateFormManager(GURL(kDefaultUrl), two_forms_best_matches());
-  MockPasswordEditDialog* mock_dialog = PreparePasswordEditDialog();
-  // Verify parameters to Show() call.
-  EXPECT_CALL(*mock_dialog, ShowLegacyPasswordEditDialog(
-                                ElementsAre(std::u16string(kUsername),
-                                            std::u16string(kUsername2)),
-                                0, kAccountEmail));
-  EnqueueMessage(std::move(form_manager), /*user_signed_in=*/true,
-                 /*update_password=*/true);
-  TriggerActionClick();
-  TriggerDialogDismissedCallback(/*dialog_accepted=*/false);
-}
-
-// Tests triggering password edit dialog and saving credentials after the
-// user accepts the dialog.
-TEST_F(SaveUpdatePasswordMessageDelegateTest, TriggerEditDialogLegacy_Accept) {
-  base::test::ScopedFeatureList scoped_feature_state;
-  scoped_feature_state.InitAndDisableFeature(
-      password_manager::features::kPasswordEditDialogWithDetails);
-
-  base::HistogramTester histogram_tester;
-  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
-
-  auto form_manager =
-      CreateFormManager(GURL(kDefaultUrl), two_forms_best_matches());
-  EXPECT_CALL(*form_manager, Save());
-  MockPasswordEditDialog* mock_dialog = PreparePasswordEditDialog();
-  EXPECT_CALL(*mock_dialog, ShowLegacyPasswordEditDialog);
-  EnqueueMessage(std::move(form_manager), /*user_signed_in=*/false,
-                 /*update_password=*/true);
-  EXPECT_NE(nullptr, GetMessageWrapper());
-  TriggerActionClick();
-  EXPECT_EQ(nullptr, GetMessageWrapper());
-  TriggerLegacyDialogAcceptedCallback(/*selected_username_index=*/0);
-  TriggerDialogDismissedCallback(/*dialog_accepted=*/true);
-
-  CommitPasswordFormMetrics();
-  VerifyUkmMetrics(
-      test_ukm_recorder,
-      PasswordFormMetricsRecorder::BubbleDismissalReason::kAccepted);
-  histogram_tester.ExpectUniqueSample(
-      kUpdateUIDismissalReasonHistogramName,
-      password_manager::metrics_util::CLICKED_ACCEPT, 1);
-}
-
-// Tests triggering password edit dialog and saving credentials with
-// empty username after the user accepts the dialog.
-TEST_F(SaveUpdatePasswordMessageDelegateTest,
-       TriggerEditDialogLegacy_WithEmptyUsername_Accept) {
-  base::test::ScopedFeatureList scoped_feature_state;
-  scoped_feature_state.InitAndDisableFeature(
-      password_manager::features::kPasswordEditDialogWithDetails);
-
-  SetPendingCredentials(kUsername, kPassword);
-  PasswordForm any_pasword_form = CreatePasswordForm(kUsername, kPassword);
-  PasswordForm empty_username_password_form =
-      CreatePasswordForm(u"", kPassword);
-  std::vector<const PasswordForm*> best_matches = {
-      &any_pasword_form, &empty_username_password_form};
-
-  auto form_manager = CreateFormManager(GURL(kDefaultUrl), &best_matches);
-  MockPasswordFormManagerForUI* form_manager_pointer = form_manager.get();
-  EnqueueMessage(std::move(form_manager), /*user_signed_in=*/false,
-                 /*update_password=*/true);
-  EXPECT_NE(nullptr, GetMessageWrapper());
-  MockPasswordEditDialog* mock_dialog = PreparePasswordEditDialog();
-  EXPECT_CALL(*mock_dialog, ShowLegacyPasswordEditDialog);
-  TriggerActionClick();
-  EXPECT_EQ(nullptr, GetMessageWrapper());
-
-  EXPECT_CALL(*form_manager_pointer, Save());
-  EXPECT_CALL(*form_manager_pointer,
-              OnUpdateUsernameFromPrompt(testing::Eq(u"")));
-  TriggerLegacyDialogAcceptedCallback(/*selected_username_index=*/1);
-  TriggerDialogDismissedCallback(/*dialog_accepted=*/true);
-}
-
-// Tests that credentials are not saved if the user cancels password edit
-// dialog.
-TEST_F(SaveUpdatePasswordMessageDelegateTest, TriggerEditDialogLegacy_Cancel) {
-  base::test::ScopedFeatureList scoped_feature_state;
-  scoped_feature_state.InitAndDisableFeature(
-      password_manager::features::kPasswordEditDialogWithDetails);
-
-  base::HistogramTester histogram_tester;
-  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
-
-  auto form_manager =
-      CreateFormManager(GURL(kDefaultUrl), two_forms_best_matches());
-  EXPECT_CALL(*form_manager, Save).Times(0);
-  MockPasswordEditDialog* mock_dialog = PreparePasswordEditDialog();
-  EXPECT_CALL(*mock_dialog, ShowLegacyPasswordEditDialog);
-  EnqueueMessage(std::move(form_manager), /*user_signed_in=*/false,
-                 /*update_password=*/true);
-  EXPECT_NE(nullptr, GetMessageWrapper());
-  TriggerActionClick();
-  EXPECT_EQ(nullptr, GetMessageWrapper());
-  TriggerDialogDismissedCallback(/*dialog_accepted=*/false);
-
-  CommitPasswordFormMetrics();
-  VerifyUkmMetrics(
-      test_ukm_recorder,
-      PasswordFormMetricsRecorder::BubbleDismissalReason::kDeclined);
-  histogram_tester.ExpectUniqueSample(
-      kUpdateUIDismissalReasonHistogramName,
-      password_manager::metrics_util::CLICKED_CANCEL, 1);
-}
-
 // Verifies that:
 // 1. Username confirmation dialog is shown after clicking on 'Continue'
 // in the message.
@@ -985,10 +842,6 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest, TriggerEditDialogLegacy_Cancel) {
 // the dialog.
 TEST_F(SaveUpdatePasswordMessageDelegateTest,
        TriggerConfirmUsernameDialog_Accept) {
-  base::test::ScopedFeatureList scoped_feature_state;
-  scoped_feature_state.InitAndEnableFeature(
-      password_manager::features::kPasswordEditDialogWithDetails);
-
   base::HistogramTester histogram_tester;
   ukm::TestAutoSetUkmRecorder test_ukm_recorder;
 
@@ -1033,10 +886,6 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
 // dialog.
 TEST_F(SaveUpdatePasswordMessageDelegateTest,
        TriggerSaveMessage_CogButton_Accept) {
-  base::test::ScopedFeatureList scoped_feature_state;
-  scoped_feature_state.InitAndEnableFeature(
-      password_manager::features::kPasswordEditDialogWithDetails);
-
   base::HistogramTester histogram_tester;
   ukm::TestAutoSetUkmRecorder test_ukm_recorder;
 
@@ -1083,10 +932,6 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
 // "Never for this site" menu option in Save message
 TEST_F(SaveUpdatePasswordMessageDelegateTest,
        TriggerSaveMessage_CogButton_NeverSave) {
-  base::test::ScopedFeatureList scoped_feature_state;
-  scoped_feature_state.InitAndEnableFeature(
-      password_manager::features::kPasswordEditDialogWithDetails);
-
   base::HistogramTester histogram_tester;
   ukm::TestAutoSetUkmRecorder test_ukm_recorder;
 
@@ -1147,10 +992,6 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
 // the dialog.
 TEST_F(SaveUpdatePasswordMessageDelegateTest,
        TriggerUpdateMessage_CogButton_Accept) {
-  base::test::ScopedFeatureList scoped_feature_state;
-  scoped_feature_state.InitAndEnableFeature(
-      password_manager::features::kPasswordEditDialogWithDetails);
-
   base::HistogramTester histogram_tester;
   ukm::TestAutoSetUkmRecorder test_ukm_recorder;
 
@@ -1201,10 +1042,6 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
 // button.
 TEST_F(SaveUpdatePasswordMessageDelegateTest,
        TriggerSaveMessage_CogButton_Cancel) {
-  base::test::ScopedFeatureList scoped_feature_state;
-  scoped_feature_state.InitAndEnableFeature(
-      password_manager::features::kPasswordEditDialogWithDetails);
-
   base::HistogramTester histogram_tester;
   ukm::TestAutoSetUkmRecorder test_ukm_recorder;
 
@@ -1378,26 +1215,6 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
   DismissMessage(messages::DismissReason::UNKNOWN);
 }
 
-// Tests that secondary button title is right.
-// kPasswordEditDialogWithDetails feature off.
-TEST_F(SaveUpdatePasswordMessageDelegateTest,
-       MessageSecondaryButtonProperty_SavePassword) {
-  base::test::ScopedFeatureList scoped_feature_state;
-  scoped_feature_state.InitAndDisableFeature(
-      password_manager::features::kPasswordEditDialogWithDetails);
-
-  SetPendingCredentials(kUsername, kPassword);
-  auto form_manager =
-      CreateFormManager(GURL(kDefaultUrl), empty_best_matches());
-  EnqueueMessage(std::move(form_manager), /*user_signed_in=*/false,
-                 /*update_password=*/false);
-    EXPECT_EQ(
-        l10n_util::GetStringUTF16(IDS_PASSWORD_MESSAGE_NEVER_SAVE_MENU_ITEM),
-        GetMessageWrapper()->GetSecondaryButtonMenuText());
-
-  DismissMessage(messages::DismissReason::UNKNOWN);
-}
-
 // Tests that message properties (title, description, icon, button text) are
 // set correctly for update password message.
 TEST_F(SaveUpdatePasswordMessageDelegateTest,
@@ -1454,7 +1271,7 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
   const bool is_signed_in = true;
   const bool is_update = false;
 
-  absl::optional<AccountInfo> account_info;
+  std::optional<AccountInfo> account_info;
   account_info = AccountInfo();
   account_info.value().email = kAccountEmail;
   account_info.value().full_name = kAccountFullName;
@@ -1499,7 +1316,7 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
   const bool is_signed_in = true;
   const bool is_update = true;
 
-  absl::optional<AccountInfo> account_info;
+  std::optional<AccountInfo> account_info;
   account_info = AccountInfo();
   account_info.value().email = kAccountEmail;
   account_info.value().full_name = kAccountFullName;

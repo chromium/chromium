@@ -9,9 +9,9 @@
 #include <string>
 #include <utility>
 
+#include <optional>
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/logging.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 constexpr char FakeApplicationConfigManager::kFakeAgentUrl[] =
     "fuchsia-pkg://fuchsia.com/fake_agent#meta/fake_agent.cmx";
@@ -60,7 +60,7 @@ void FakeApplicationConfigManager::GetConfig(std::string id,
   // ContextDirectoryProviders contain move-only fuchsia.io.Directory resources,
   // so if those are present then remove them, manually clone them, then
   // put them back.
-  absl::optional<std::vector<fuchsia::web::ContentDirectoryProvider>>
+  std::optional<std::vector<fuchsia::web::ContentDirectoryProvider>>
       content_directories;
   chromium::cast::ApplicationConfig& config = it->second;
   if (config.has_content_directories_for_isolated_application()) {

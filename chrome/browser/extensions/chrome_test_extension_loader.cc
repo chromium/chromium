@@ -36,6 +36,60 @@
 
 namespace extensions {
 
+namespace {
+
+class ExtensionLoadedObserver : public ExtensionRegistryObserver {
+ public:
+  using ExtensionCallback = base::OnceCallback<void(const Extension*)>;
+
+  ExtensionLoadedObserver(ExtensionRegistry* registry,
+                          const base::FilePath& file_path)
+      : file_path_(file_path) {
+    extension_registry_observation_.Observe(registry);
+  }
+
+  static void ObserveOnce(std::unique_ptr<ExtensionLoadedObserver> observer,
+                          ExtensionCallback callback) {
+    auto* observer_ptr = observer.get();
+    observer_ptr->ObserveOnce(std::move(callback).Then(
+        // Keep |observer| alive until it made its observation.
+        base::BindOnce([](std::unique_ptr<ExtensionLoadedObserver>) {},
+                       std::move(observer))));
+  }
+
+ private:
+  void ObserveOnce(ExtensionCallback callback) {
+    if (extension_) {
+      std::move(callback).Run(extension_.get());
+      // |this| will be deleted here.
+      return;
+    }
+    callback_ = std::move(callback);
+  }
+
+  // ExtensionRegistryObserver:
+  void OnExtensionLoaded(content::BrowserContext* browser_context,
+                         const Extension* extension) override {
+    if (extension->path() == file_path_) {
+      extension_registry_observation_.Reset();
+      if (callback_) {
+        std::move(callback_).Run(extension);
+        // |this| will be deleted here.
+        return;
+      }
+      extension_ = extension;
+    }
+  }
+
+  const base::FilePath file_path_;
+  scoped_refptr<const Extension> extension_;
+  ExtensionCallback callback_;
+  base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
+      extension_registry_observation_{this};
+};
+
+}  // namespace
+
 ChromeTestExtensionLoader::ChromeTestExtensionLoader(
     content::BrowserContext* browser_context)
     : browser_context_(browser_context),
@@ -49,6 +103,16 @@ ChromeTestExtensionLoader::~ChromeTestExtensionLoader() {
   base::ScopedAllowBlockingForTesting allow_blocking;
   if (temp_dir_.IsValid())
     EXPECT_TRUE(temp_dir_.Delete());
+}
+
+void ChromeTestExtensionLoader::LoadUnpackedExtensionAsync(
+    const base::FilePath& file_path,
+    base::OnceCallback<void(const Extension*)> callback) {
+  auto observer =
+      std::make_unique<ExtensionLoadedObserver>(extension_registry_, file_path);
+  UnpackedInstaller::Create(extension_service_)->Load(file_path);
+  ExtensionLoadedObserver::ObserveOnce(std::move(observer),
+                                       std::move(callback));
 }
 
 scoped_refptr<const Extension> ChromeTestExtensionLoader::LoadExtension(

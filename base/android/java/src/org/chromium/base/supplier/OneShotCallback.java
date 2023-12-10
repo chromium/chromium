@@ -50,8 +50,8 @@ public class OneShotCallback<E> {
         public void onResult(E result) {
             mCallback.onResult(result);
             ObservableSupplier<E> supplier = mWeakSupplier.get();
-            assert supplier
-                    != null : "This can only be called by supplier, which should not be null.";
+            assert supplier != null
+                    : "This can only be called by supplier, which should not be null.";
             supplier.removeObserver(mCallbackWrapper);
         }
     }

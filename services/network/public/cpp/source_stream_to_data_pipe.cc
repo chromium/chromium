@@ -54,8 +54,7 @@ void SourceStreamToDataPipe::ReadMore() {
       return;
   }
   int num_bytes = base::checked_cast<int>(pending_write_->size());
-  scoped_refptr<net::IOBuffer> buffer(
-      new network::NetToMojoIOBuffer(pending_write_.get()));
+  auto buffer = base::MakeRefCounted<NetToMojoIOBuffer>(pending_write_);
   int result = source_->Read(
       buffer.get(), num_bytes,
       base::BindOnce(&SourceStreamToDataPipe::DidRead, base::Unretained(this)));

@@ -6,7 +6,6 @@
 #define IOS_CHROME_BROWSER_UI_OMNIBOX_POPUP_OMNIBOX_POPUP_VIEW_SUGGESTIONS_DELEGATE_H_
 
 #include "components/omnibox/browser/suggestion_answer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 struct AutocompleteMatch;
 class GURL;

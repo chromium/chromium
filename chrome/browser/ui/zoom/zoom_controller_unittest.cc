@@ -3,6 +3,9 @@
 // found in the LICENSE file.
 
 #include "components/zoom/zoom_controller.h"
+
+#include <optional>
+
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -17,7 +20,6 @@
 #include "ipc/ipc_message.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using zoom::ZoomChangedWatcher;
 using zoom::ZoomController;

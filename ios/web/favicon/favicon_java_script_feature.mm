@@ -40,7 +40,7 @@ FaviconJavaScriptFeature::FaviconJavaScriptFeature()
 
 FaviconJavaScriptFeature::~FaviconJavaScriptFeature() {}
 
-absl::optional<std::string>
+std::optional<std::string>
 FaviconJavaScriptFeature::GetScriptMessageHandlerName() const {
   return kFaviconScriptHandlerName;
 }

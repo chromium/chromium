@@ -44,7 +44,7 @@ public class OptimizedFrameLayout extends FrameLayout {
 
         final boolean measureMatchParentChildren =
                 MeasureSpec.getMode(widthMeasureSpec) != MeasureSpec.EXACTLY
-                || MeasureSpec.getMode(heightMeasureSpec) != MeasureSpec.EXACTLY;
+                        || MeasureSpec.getMode(heightMeasureSpec) != MeasureSpec.EXACTLY;
         mMatchParentChildren.clear();
 
         int maxHeight = 0;
@@ -61,23 +61,34 @@ public class OptimizedFrameLayout extends FrameLayout {
             if (getMeasureAllChildren() || child.getVisibility() != GONE) {
                 final LayoutParams lp = (LayoutParams) child.getLayoutParams();
 
-                final int childWidthMeasureSpec = getChildMeasureSpec(widthMeasureSpec,
-                        paddingLeft + paddingRight + lp.leftMargin + lp.rightMargin, lp.width);
-                final int childHeightMeasureSpec = getChildMeasureSpec(heightMeasureSpec,
-                        paddingTop + paddingBottom + lp.topMargin + lp.bottomMargin, lp.height);
+                final int childWidthMeasureSpec =
+                        getChildMeasureSpec(
+                                widthMeasureSpec,
+                                paddingLeft + paddingRight + lp.leftMargin + lp.rightMargin,
+                                lp.width);
+                final int childHeightMeasureSpec =
+                        getChildMeasureSpec(
+                                heightMeasureSpec,
+                                paddingTop + paddingBottom + lp.topMargin + lp.bottomMargin,
+                                lp.height);
 
                 child.measure(childWidthMeasureSpec, childHeightMeasureSpec);
 
-                maxWidth = Math.max(
-                        maxWidth, child.getMeasuredWidth() + lp.leftMargin + lp.rightMargin);
-                maxHeight = Math.max(
-                        maxHeight, child.getMeasuredHeight() + lp.topMargin + lp.bottomMargin);
+                maxWidth =
+                        Math.max(
+                                maxWidth,
+                                child.getMeasuredWidth() + lp.leftMargin + lp.rightMargin);
+                maxHeight =
+                        Math.max(
+                                maxHeight,
+                                child.getMeasuredHeight() + lp.topMargin + lp.bottomMargin);
                 childState = combineMeasuredStates(childState, child.getMeasuredState());
                 if (measureMatchParentChildren) {
                     if (lp.width == LayoutParams.MATCH_PARENT
                             || lp.height == LayoutParams.MATCH_PARENT) {
-                        mMatchParentChildren.add(new MeasurementState(
-                                child, childWidthMeasureSpec, childHeightMeasureSpec));
+                        mMatchParentChildren.add(
+                                new MeasurementState(
+                                        child, childWidthMeasureSpec, childHeightMeasureSpec));
                     }
                 }
             }
@@ -98,7 +109,8 @@ public class OptimizedFrameLayout extends FrameLayout {
             maxWidth = Math.max(maxWidth, drawable.getMinimumWidth());
         }
 
-        setMeasuredDimension(resolveSizeAndState(maxWidth, widthMeasureSpec, childState),
+        setMeasuredDimension(
+                resolveSizeAndState(maxWidth, widthMeasureSpec, childState),
                 resolveSizeAndState(
                         maxHeight, heightMeasureSpec, childState << MEASURED_HEIGHT_STATE_SHIFT));
 
@@ -111,25 +123,41 @@ public class OptimizedFrameLayout extends FrameLayout {
 
                 final int childWidthMeasureSpec;
                 if (lp.width == LayoutParams.MATCH_PARENT) {
-                    final int width = Math.max(0,
-                            getMeasuredWidth() - paddingLeft - paddingRight - lp.leftMargin
-                                    - lp.rightMargin);
+                    final int width =
+                            Math.max(
+                                    0,
+                                    getMeasuredWidth()
+                                            - paddingLeft
+                                            - paddingRight
+                                            - lp.leftMargin
+                                            - lp.rightMargin);
                     childWidthMeasureSpec = MeasureSpec.makeMeasureSpec(width, MeasureSpec.EXACTLY);
                 } else {
-                    childWidthMeasureSpec = getChildMeasureSpec(widthMeasureSpec,
-                            paddingLeft + paddingRight + lp.leftMargin + lp.rightMargin, lp.width);
+                    childWidthMeasureSpec =
+                            getChildMeasureSpec(
+                                    widthMeasureSpec,
+                                    paddingLeft + paddingRight + lp.leftMargin + lp.rightMargin,
+                                    lp.width);
                 }
 
                 final int childHeightMeasureSpec;
                 if (lp.height == LayoutParams.MATCH_PARENT) {
-                    final int height = Math.max(0,
-                            getMeasuredHeight() - paddingTop - paddingBottom - lp.topMargin
-                                    - lp.bottomMargin);
+                    final int height =
+                            Math.max(
+                                    0,
+                                    getMeasuredHeight()
+                                            - paddingTop
+                                            - paddingBottom
+                                            - lp.topMargin
+                                            - lp.bottomMargin);
                     childHeightMeasureSpec =
                             MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY);
                 } else {
-                    childHeightMeasureSpec = getChildMeasureSpec(heightMeasureSpec,
-                            paddingTop + paddingBottom + lp.topMargin + lp.bottomMargin, lp.height);
+                    childHeightMeasureSpec =
+                            getChildMeasureSpec(
+                                    heightMeasureSpec,
+                                    paddingTop + paddingBottom + lp.topMargin + lp.bottomMargin,
+                                    lp.height);
                 }
 
                 if (measurementState.mWidthMeasureSpec != childWidthMeasureSpec

@@ -18,6 +18,7 @@
 }
 
 @synthesize externalURLParams = _externalURLParams;
+@synthesize inputURLs = _inputURLs;
 @synthesize postOpeningAction = _postOpeningAction;
 @synthesize applicationMode = _applicationMode;
 // TODO(crbug.com/1021752): Remove this stub.
@@ -122,6 +123,12 @@
     case OPEN_CLEAR_BROWSING_DATA_DIALOG:
       [description appendString:@", should open Clear Browsing Data dialog"];
       break;
+    case ADD_BOOKMARKS:
+      [description appendString:@", should add bookmarks"];
+      break;
+    case ADD_READING_LIST_ITEMS:
+      [description appendString:@", should add reading list items"];
+      break;
     default:
       break;
   }
@@ -142,10 +149,10 @@
 
 - (BOOL)isValidPostOpeningAction:(TabOpeningPostOpeningAction)action {
   switch (action) {
-      // NO_ACTION , SHOW_DEFAULT_BROWSER_SETTINGS and SEARCH_PASSWORDS are
-      // allowed on any URL.
+      // Post opening actions that are allowed on any URL.
     case NO_ACTION:
     case SHOW_DEFAULT_BROWSER_SETTINGS:
+    case EXTERNAL_ACTION_SHOW_BROWSER_SETTINGS:
     case SEARCH_PASSWORDS:
       return YES;
 

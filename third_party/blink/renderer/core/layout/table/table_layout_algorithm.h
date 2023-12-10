@@ -6,30 +6,27 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_TABLE_TABLE_LAYOUT_ALGORITHM_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_layout_algorithm.h"
-
-#include "third_party/blink/renderer/core/layout/ng/ng_box_fragment_builder.h"
+#include "third_party/blink/renderer/core/layout/box_fragment_builder.h"
+#include "third_party/blink/renderer/core/layout/layout_algorithm.h"
 #include "third_party/blink/renderer/core/layout/table/table_layout_algorithm_types.h"
 #include "third_party/blink/renderer/core/layout/table/table_node.h"
 
 namespace blink {
 
-class NGBlockBreakToken;
+class BlockBreakToken;
 class TableBorders;
 
 class CORE_EXPORT TableLayoutAlgorithm
-    : public NGLayoutAlgorithm<TableNode,
-                               NGBoxFragmentBuilder,
-                               NGBlockBreakToken> {
+    : public LayoutAlgorithm<TableNode, BoxFragmentBuilder, BlockBreakToken> {
  public:
-  explicit TableLayoutAlgorithm(const NGLayoutAlgorithmParams& params)
-      : NGLayoutAlgorithm(params) {}
-  const NGLayoutResult* Layout() override;
+  explicit TableLayoutAlgorithm(const LayoutAlgorithmParams& params)
+      : LayoutAlgorithm(params) {}
+  const LayoutResult* Layout() override;
 
   MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&) override;
 
   static LayoutUnit ComputeTableInlineSize(const TableNode& node,
-                                           const NGConstraintSpace& space,
+                                           const ConstraintSpace& space,
                                            const BoxStrut& border_padding);
 
   // Useful when trying to compute table's block sizes.
@@ -49,13 +46,13 @@ class CORE_EXPORT TableLayoutAlgorithm
       visitor->Trace(layout_result);
     }
 
-    NGBlockNode node;
-    Member<const NGLayoutResult> layout_result;
+    BlockNode node;
+    Member<const LayoutResult> layout_result;
     const BoxStrut margins;
   };
 
  private:
-  const NGLayoutResult* RelayoutAsLastTableBox();
+  const LayoutResult* RelayoutAsLastTableBox();
 
   void ComputeRows(const LayoutUnit table_grid_inline_size,
                    const TableGroupedChildren& grouped_children,
@@ -77,7 +74,7 @@ class CORE_EXPORT TableLayoutAlgorithm
       const LogicalRect& table_grid_rect,
       LayoutUnit table_grid_block_size);
 
-  const NGLayoutResult* GenerateFragment(
+  const LayoutResult* GenerateFragment(
       LayoutUnit table_inline_size,
       LayoutUnit minimal_table_grid_block_size,
       const TableGroupedChildren& grouped_children,

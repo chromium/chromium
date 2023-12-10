@@ -7,7 +7,7 @@ import {loadTimeData} from '//resources/ash/common/load_time_data.m.js';
 import {$} from '//resources/ash/common/util.js';
 import {afterNextRender} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {Oobe} from '../../cr_ui.js';
+import {Oobe} from '../cr_ui.js';
 
 /**
  * @fileoverview Common testing utils methods used for OOBE tast tests.
@@ -968,6 +968,43 @@ class CryptohomeRecoverySetupScreenTester extends ScreenElementApi {
   }
 }
 
+class LocalPasswordSetupScreenTester extends ScreenElementApi {
+  constructor() {
+    super('local-password-setup');
+    this.passwordInput = new PolymerElementApi(this, '#passwordInput');
+    this.firstInput = new TextFieldApi(this.passwordInput, '#firstInput');
+    this.confirmInput = new TextFieldApi(this.passwordInput, '#confirmInput');
+    this.nextButton = new PolymerElementApi(this, '#nextButton');
+    this.doneDialog = new PolymerElementApi(this, '#doneDialog');
+    this.doneButton = new PolymerElementApi(this, '#doneButton');
+  }
+
+  /** @return {boolean} */
+  isReadyForTesting() {
+    return this.isVisible() && this.firstInput.isVisible() &&
+        this.confirmInput.isVisible();
+  }
+
+  enterPassword(password) {
+    this.firstInput.typeInto(password);
+    afterNextRender(assert(this.element()), () => {
+      this.confirmInput.typeInto(password);
+      afterNextRender(assert(this.element()), () => {
+        this.nextButton.click();
+      });
+    });
+  }
+
+  /** @return {boolean} */
+  isDone() {
+    return this.doneDialog.isVisible();
+  }
+
+  clickDone() {
+    this.doneButton.click();
+  }
+}
+
 class GaiaInfoScreenTester extends ScreenElementApi {
   constructor() {
     super('gaia-info');
@@ -992,21 +1029,54 @@ class ChoobeScreenTester extends ScreenElementApi {
     this.skipButton = new PolymerElementApi(this, '#skipButton');
     this.nextButton = new PolymerElementApi(this, '#nextButton');
     this.choobeScreensList = new PolymerElementApi(this, '#screensList');
+    this.touchpadScrollScreenButton = new PolymerElementApi(
+        this.choobeScreensList, '#cr-button-touchpad-scroll');
     this.drivePinningScreenButton = new PolymerElementApi(
         this.choobeScreensList, '#cr-button-drive-pinning');
+    this.displaySizeScreenButton = new PolymerElementApi(
+        this.choobeScreensList, '#cr-button-display-size');
+    this.themeSelectionScreenButton = new PolymerElementApi(
+        this.choobeScreensList, '#cr-button-theme-selection');
   }
 
   isReadyForTesting() {
     return this.isVisible();
   }
 
+  clickTouchpadScrollScreen() {
+    this.touchpadScrollScreenButton.click();
+  }
+
   clickDrivePinningScreen() {
     this.drivePinningScreenButton.click();
+  }
+
+  clickDisplaySizeScreen() {
+    this.displaySizeScreenButton.click();
+  }
+
+  clickThemeSelectionScreen() {
+    this.themeSelectionScreenButton.click();
+  }
+
+  isTouchpadScrollScreenVisible() {
+    return this.touchpadScrollScreenButton.element() &&
+        this.touchpadScrollScreenButton.isVisible();
   }
 
   isDrivePinningScreenVisible() {
     return this.drivePinningScreenButton.element() &&
         this.drivePinningScreenButton.isVisible();
+  }
+
+  isDisplaySizeScreenVisible() {
+    return this.displaySizeScreenButton.element() &&
+        this.displaySizeScreenButton.isVisible();
+  }
+
+  isThemeSelectionScreenVisible() {
+    return this.themeSelectionScreenButton.element() &&
+        this.themeSelectionScreenButton.isVisible();
   }
 
   isDrivePinningScreenChecked() {
@@ -1054,6 +1124,48 @@ class ChoobeDrivePinningScreenTester extends ScreenElementApi {
   }
 }
 
+
+class ChoobeTouchpadScrollScreenTester extends ScreenElementApi {
+  constructor() {
+    super('touchpad-scroll');
+    this.nextButton = new PolymerElementApi(this, '#nextButton');
+  }
+
+  /** @override */
+  shouldSkip() {
+    return loadTimeData.getBoolean('testapi_shouldSkipTouchpadScroll');
+  }
+
+  isReadyForTesting() {
+    return this.isVisible();
+  }
+
+  clickNext() {
+    this.nextButton.click();
+  }
+}
+
+class ChoobeDisplaySizeTester extends ScreenElementApi {
+  constructor() {
+    super('display-size');
+    this.nextButton = new PolymerElementApi(this, '#nextButton');
+  }
+
+  /** @override */
+  shouldSkip() {
+    return loadTimeData.getBoolean('testapi_shouldSkipDisplaySize');
+  }
+
+  isReadyForTesting() {
+    return this.isVisible();
+  }
+
+  clickNext() {
+    this.nextButton.click();
+  }
+}
+
+
 export class OobeApiProvider {
   constructor() {
     this.screens = {
@@ -1080,10 +1192,13 @@ export class OobeApiProvider {
       ConsolidatedConsentScreen: new ConsolidatedConsentScreenTester(),
       SmartPrivacyProtectionScreen: new SmartPrivacyProtectionScreenTester(),
       CryptohomeRecoverySetupScreen: new CryptohomeRecoverySetupScreenTester(),
+      LocalPasswordSetupScreen: new LocalPasswordSetupScreenTester(),
       GaiaInfoScreen: new GaiaInfoScreenTester(),
       ConsumerUpdateScreen: new ConsumerUpdateScreenTester(),
       ChoobeScreen: new ChoobeScreenTester(),
       ChoobeDrivePinningScreen: new ChoobeDrivePinningScreenTester(),
+      ChoobeTouchpadScrollScreen: new ChoobeTouchpadScrollScreenTester(),
+      ChoobeDisplaySizeScreen: new ChoobeDisplaySizeTester(),
     };
 
     this.loginWithPin = function(username, pin) {

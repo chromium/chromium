@@ -72,25 +72,6 @@ TEST_F(AwServerSideAllowlistMetricsProviderTest,
       metrics::SystemProfileProto::SERVER_SIDE_FILTER_REQUIRED);
 }
 
-TEST_F(
-    AwServerSideAllowlistMetricsProviderTest,
-    TestServerSideAllowlist_TestNoServerSideFilteringDueToClientSideFiltering) {
-  base::test::ScopedFeatureList scoped_list;
-  TestClient client;
-  AwServerSideAllowlistMetricsProvider test_provider(&client);
-  metrics::ChromeUserMetricsExtension uma_proto;
-
-  client.SetInstallerPackageType(InstallerPackageType::GOOGLE_PLAY_STORE);
-  scoped_list.InitAndDisableFeature(
-      android_webview::features::kWebViewAppsPackageNamesServerSideAllowlist);
-  test_provider.ProvideSystemProfileMetrics(uma_proto.mutable_system_profile());
-  EXPECT_FALSE(uma_proto.mutable_system_profile()
-                   ->has_app_package_name_allowlist_filter());
-  EXPECT_TRUE(
-      uma_proto.mutable_system_profile()->app_package_name_allowlist_filter() ==
-      metrics::SystemProfileProto::SERVER_SIDE_FILTER_UNSPECIFIED);
-}
-
 TEST_F(AwServerSideAllowlistMetricsProviderTest,
        TestServerSideAllowlist_TestNoServerSideFilteringForSystemApp) {
   TestClient client;

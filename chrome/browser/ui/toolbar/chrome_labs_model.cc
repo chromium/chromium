@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/toolbar/chrome_labs_model.h"
 
+#include <optional>
+
 #include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -11,13 +13,12 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/flag_descriptions.h"
 #include "chrome/grit/generated_resources.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace {
 
-absl::optional<std::vector<LabInfo>>& GetTestData() {
-  static base::NoDestructor<absl::optional<std::vector<LabInfo>>> test_lab_data;
+std::optional<std::vector<LabInfo>>& GetTestData() {
+  static base::NoDestructor<std::optional<std::vector<LabInfo>>> test_lab_data;
   return *test_lab_data;
 }
 
@@ -48,6 +49,14 @@ const std::vector<LabInfo>& GetData() {
         l10n_util::GetStringUTF16(IDS_TAB_GROUPS_SAVE_DESCRIPTION),
         "tab-groups-save", version_info::Channel::BETA);
 
+    // CustomizeChromeSidePanel.
+    lab_info.emplace_back(
+        flag_descriptions::kCustomizeChromeSidePanelId,
+        l10n_util::GetStringUTF16(
+            IDS_CUSTOMIZE_CHROME_SIDE_PANEL_EXPERIMENT_NAME),
+        l10n_util::GetStringUTF16(IDS_CUSTOMIZE_CHROME_SIDE_PANEL_DESCRIPTION),
+        "chrome-labs-customize-chrome-side-panel", version_info::Channel::BETA);
+
     // ChromeRefresh2023.
     std::vector<std::u16string> chrome_refresh_variation_descriptions = {
         l10n_util::GetStringUTF16(IDS_CHROMEREFRESH2023_WITHOUT_OMNIBOX)};
@@ -58,6 +67,13 @@ const std::vector<LabInfo>& GetData() {
         l10n_util::GetStringUTF16(IDS_CHROMEREFRESH2023_DESCRIPTION),
         "chrome-refresh", version_info::Channel::BETA,
         chrome_refresh_variation_descriptions);
+
+    // ChromeWebuiRefresh2023.
+    lab_info.emplace_back(
+        flag_descriptions::kChromeWebuiRefresh2023Id,
+        l10n_util::GetStringUTF16(IDS_CHROMEWEBUIREFRESH2023_EXPERIMENT_NAME),
+        l10n_util::GetStringUTF16(IDS_CHROMEWEBUIREFRESH2023_DESCRIPTION),
+        "chrome-labs-webui-refresh", version_info::Channel::BETA);
 
     // Tab Scrolling.
     std::vector<std::u16string> tab_scrolling_variation_descriptions = {

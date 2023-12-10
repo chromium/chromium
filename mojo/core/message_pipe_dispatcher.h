@@ -10,12 +10,12 @@
 #include <memory>
 #include <queue>
 
+#include <optional>
 #include "base/memory/raw_ptr_exclusion.h"
 #include "mojo/core/atomic_flag.h"
 #include "mojo/core/dispatcher.h"
 #include "mojo/core/ports/port_ref.h"
 #include "mojo/core/watcher_set.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace mojo {
 namespace core {
@@ -110,9 +110,9 @@ class MessagePipeDispatcher : public Dispatcher {
   bool port_transferred_ = false;
   AtomicFlag port_closed_;
   WatcherSet watchers_;
-  absl::optional<uint64_t> receive_queue_length_limit_;
-  absl::optional<uint64_t> receive_queue_memory_size_limit_;
-  absl::optional<uint64_t> unread_message_count_limit_;
+  std::optional<uint64_t> receive_queue_length_limit_;
+  std::optional<uint64_t> receive_queue_memory_size_limit_;
+  std::optional<uint64_t> unread_message_count_limit_;
 };
 
 }  // namespace core

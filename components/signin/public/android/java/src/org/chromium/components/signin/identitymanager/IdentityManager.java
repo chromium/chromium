@@ -19,9 +19,7 @@ import org.chromium.components.signin.base.CoreAccountInfo;
 
 import java.util.List;
 
-/**
- * IdentityManager provides access to native IdentityManager's public API to java components.
- */
+/** IdentityManager provides access to native IdentityManager's public API to java components. */
 public class IdentityManager {
     /**
      * IdentityManager.Observer is notified when the available account information are updated. This
@@ -41,14 +39,11 @@ public class IdentityManager {
          */
         default void onAccountsCookieDeletedByUserAction() {}
 
-        /**
-         * Called after an account is updated.
-         */
+        /** Called after an account is updated. */
         default void onExtendedAccountInfoUpdated(AccountInfo accountInfo) {}
     }
-    /**
-     * A simple callback for getAccessToken.
-     */
+
+    /** A simple callback for getAccessToken. */
     public interface GetAccessTokenCallback
             extends ProfileOAuth2TokenServiceDelegate.GetAccessTokenCallback {}
 
@@ -58,41 +53,35 @@ public class IdentityManager {
     private final ObserverList<Observer> mObservers = new ObserverList<>();
     private Callback<CoreAccountInfo> mRefreshTokenUpdateObserver;
 
-    /**
-     * Called by native to create an instance of IdentityManager.
-     */
+    /** Called by native to create an instance of IdentityManager. */
     @CalledByNative
     @VisibleForTesting
-    public static IdentityManager create(long nativeIdentityManager,
+    public static IdentityManager create(
+            long nativeIdentityManager,
             ProfileOAuth2TokenServiceDelegate profileOAuth2TokenServiceDelegate) {
         return new IdentityManager(nativeIdentityManager, profileOAuth2TokenServiceDelegate);
     }
 
-    private IdentityManager(long nativeIdentityManager,
+    private IdentityManager(
+            long nativeIdentityManager,
             ProfileOAuth2TokenServiceDelegate profileOAuth2TokenServiceDelegate) {
         assert nativeIdentityManager != 0;
         mNativeIdentityManager = nativeIdentityManager;
         mProfileOAuth2TokenServiceDelegate = profileOAuth2TokenServiceDelegate;
     }
 
-    /**
-     * Called by native upon KeyedService's shutdown
-     */
+    /** Called by native upon KeyedService's shutdown */
     @CalledByNative
     private void destroy() {
         mNativeIdentityManager = 0;
     }
 
-    /**
-     * Registers a IdentityManager.Observer
-     */
+    /** Registers a IdentityManager.Observer */
     public void addObserver(Observer observer) {
         mObservers.addObserver(observer);
     }
 
-    /**
-     * Unregisters a IdentityManager.Observer
-     */
+    /** Unregisters a IdentityManager.Observer */
     public void removeObserver(Observer observer) {
         mObservers.removeObserver(observer);
     }
@@ -117,9 +106,7 @@ public class IdentityManager {
         }
     }
 
-    /**
-     * Called after an account is updated.
-     */
+    /** Called after an account is updated. */
     @CalledByNative
     @VisibleForTesting
     public void onExtendedAccountInfoUpdated(AccountInfo accountInfo) {
@@ -128,9 +115,7 @@ public class IdentityManager {
         }
     }
 
-    /**
-     * Called when the refresh token of the give account gets updated.
-     */
+    /** Called when the refresh token of the give account gets updated. */
     @CalledByNative
     private void onRefreshTokenUpdatedForAccount(CoreAccountInfo coreAccountInfo) {
         if (mRefreshTokenUpdateObserver != null) {
@@ -146,9 +131,7 @@ public class IdentityManager {
         return getPrimaryAccountInfo(consentLevel) != null;
     }
 
-    /**
-     * Provides the information of all accounts that have refresh tokens.
-     */
+    /** Provides the information of all accounts that have refresh tokens. */
     @VisibleForTesting
     public CoreAccountInfo[] getAccountsWithRefreshTokens() {
         return IdentityManagerJni.get().getAccountsWithRefreshTokens(mNativeIdentityManager);
@@ -170,8 +153,8 @@ public class IdentityManager {
      * cannot be found, return a null value.
      */
     public @Nullable AccountInfo findExtendedAccountInfoByEmailAddress(String email) {
-        return IdentityManagerJni.get().findExtendedAccountInfoByEmailAddress(
-                mNativeIdentityManager, email);
+        return IdentityManagerJni.get()
+                .findExtendedAccountInfoByEmailAddress(mNativeIdentityManager, email);
     }
 
     /**
@@ -180,8 +163,8 @@ public class IdentityManager {
      */
     public void refreshAccountInfoIfStale(List<CoreAccountInfo> accountInfos) {
         for (CoreAccountInfo accountInfo : accountInfos) {
-            IdentityManagerJni.get().refreshAccountInfoIfStale(
-                    mNativeIdentityManager, accountInfo.getId());
+            IdentityManagerJni.get()
+                    .refreshAccountInfoIfStale(mNativeIdentityManager, accountInfo.getId());
         }
     }
 
@@ -210,9 +193,12 @@ public class IdentityManager {
     public interface Natives {
         @Nullable
         CoreAccountInfo getPrimaryAccountInfo(long nativeIdentityManager, int consentLevel);
+
         @Nullable
         AccountInfo findExtendedAccountInfoByEmailAddress(long nativeIdentityManager, String email);
+
         CoreAccountInfo[] getAccountsWithRefreshTokens(long nativeIdentityManager);
+
         void refreshAccountInfoIfStale(long nativeIdentityManager, CoreAccountId coreAccountId);
 
         boolean isClearPrimaryAccountAllowed(long nativeIdentityManager);

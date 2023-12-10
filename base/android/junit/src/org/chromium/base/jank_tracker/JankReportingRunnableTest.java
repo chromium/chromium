@@ -74,7 +74,7 @@ public class JankReportingRunnableTest {
                         null);
         startReportingRunnable.run();
 
-        metricsStore.addFrameMeasurement(1_000_000L, true, 1);
+        metricsStore.addFrameMeasurement(1_000_000L, 2, 1);
 
         JankReportingRunnable stopReportingRunnable =
                 new JankReportingRunnable(
@@ -91,11 +91,7 @@ public class JankReportingRunnableTest {
 
         verify(mNativeMock)
                 .recordJankMetrics(
-                        new long[] {1_000_000L},
-                        new boolean[] {true},
-                        0L,
-                        1L,
-                        JankScenario.TAB_SWITCHER);
+                        new long[] {1_000_000L}, new int[] {2}, 0L, 1L, JankScenario.TAB_SWITCHER);
     }
 
     @Test
@@ -117,8 +113,7 @@ public class JankReportingRunnableTest {
                         endScenarioTime);
         startReportingRunnable.run();
 
-        metricsStore.addFrameMeasurement(
-                1_000_000L, true, 1 * TimeUtils.NANOSECONDS_PER_MILLISECOND);
+        metricsStore.addFrameMeasurement(1_000_000L, 2, 1 * TimeUtils.NANOSECONDS_PER_MILLISECOND);
 
         JankReportingRunnable stopReportingRunnable =
                 new JankReportingRunnable(
@@ -131,10 +126,9 @@ public class JankReportingRunnableTest {
 
         // Add two frames, one added before the frame time of 50ms above and one after. The first
         // should be included and the second ignored.
+        metricsStore.addFrameMeasurement(1_000_001L, 0, 5 * TimeUtils.NANOSECONDS_PER_MILLISECOND);
         metricsStore.addFrameMeasurement(
-                1_000_001L, false, 5 * TimeUtils.NANOSECONDS_PER_MILLISECOND);
-        metricsStore.addFrameMeasurement(
-                1_000_002L, true, (frameTime + 5) * TimeUtils.NANOSECONDS_PER_MILLISECOND);
+                1_000_002L, 1, (frameTime + 5) * TimeUtils.NANOSECONDS_PER_MILLISECOND);
 
         mShadowLooper.runOneTask();
 
@@ -145,7 +139,7 @@ public class JankReportingRunnableTest {
         verify(mNativeMock)
                 .recordJankMetrics(
                         new long[] {1_000_000L, 1_000_001L},
-                        new boolean[] {true, false},
+                        new int[] {2, 0},
                         1L,
                         5L,
                         JankScenario.TAB_SWITCHER);

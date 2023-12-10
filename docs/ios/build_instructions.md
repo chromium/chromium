@@ -12,8 +12,13 @@ Are you a Google employee? See
 
 ## System requirements
 
-* A 64-bit Mac running 11.3 or later.
-* [Xcode](https://developer.apple.com/xcode) 13.1 or higher.
+* A 64-bit Mac capable of running the required version of Xcode.
+* [Xcode](https://developer.apple.com/xcode) 15.0 or higher.
+
+Note: after installing Xcode, you need to launch it and to let it install
+the iOS simulator. This is required as part of the build, see [this discussion](
+https://groups.google.com/a/chromium.org/g/chromium-dev/c/98d6MyLoYHM/m/A_HyOGxPAgAJ)
+on chromium-dev.
 
 ## Install `depot_tools`
 
@@ -171,7 +176,7 @@ application extensions:
 -   `${prefix}.chrome.ios.dev.ContentTodayExtension`
 -   `${prefix}.chrome.ios.dev.CredentialProviderExtension`
 -   `${prefix}.chrome.ios.dev.IntentsExtension`
--   `${prefix}.chrome.ios.dev.SearchTodayExtension`
+-   `${prefix}.chrome.ios.dev.OpenExtension`
 -   `${prefix}.chrome.ios.dev.ShareExtension`
 -   `${prefix}.chrome.ios.dev.TodayExtension`
 -   `${prefix}.chrome.ios.dev.WidgetKitExtension`

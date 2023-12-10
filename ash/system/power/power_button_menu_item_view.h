@@ -10,6 +10,7 @@
 #include "ash/ash_export.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/image_button.h"
 
 namespace views {
@@ -26,6 +27,8 @@ namespace ash {
 // PowerButtonMenuItemView represents an item of the power button menu. It
 // includes an icon and title.
 class ASH_EXPORT PowerButtonMenuItemView : public views::ImageButton {
+  METADATA_HEADER(PowerButtonMenuItemView, views::ImageButton)
+
  public:
   // Height of the menu item in pixels.
   static constexpr int kMenuItemHeight = 84;

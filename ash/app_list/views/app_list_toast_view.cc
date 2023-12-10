@@ -5,6 +5,7 @@
 #include "ash/app_list/views/app_list_toast_view.h"
 
 #include <memory>
+#include <utility>
 
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/app_list/app_list_view_delegate.h"
@@ -101,10 +102,10 @@ std::unique_ptr<AppListToastView> AppListToastView::Builder::Build() {
     toast->AddIconBackground();
 
   if (button_callback_)
-    toast->SetButton(*button_text_, button_callback_);
+    toast->SetButton(*button_text_, std::move(button_callback_));
 
   if (close_button_callback_)
-    toast->SetCloseButton(close_button_callback_);
+    toast->SetCloseButton(std::move(close_button_callback_));
 
   if (subtitle_)
     toast->SetSubtitle(*subtitle_);
@@ -146,7 +147,7 @@ AppListToastView::Builder& AppListToastView::Builder::SetButton(
   DCHECK(button_callback);
 
   button_text_ = button_text;
-  button_callback_ = button_callback;
+  button_callback_ = std::move(button_callback);
   return *this;
 }
 
@@ -154,7 +155,7 @@ AppListToastView::Builder& AppListToastView::Builder::SetCloseButton(
     views::Button::PressedCallback close_button_callback) {
   DCHECK(close_button_callback);
 
-  close_button_callback_ = close_button_callback;
+  close_button_callback_ = std::move(close_button_callback);
   return *this;
 }
 
@@ -252,7 +253,7 @@ void AppListToastView::SetButton(
 
   toast_button_ =
       AddChildView(std::make_unique<AppListToastView::ToastPillButton>(
-          view_delegate_, button_callback, button_text,
+          view_delegate_, std::move(button_callback), button_text,
           PillButton::Type::kDefaultWithoutIcon,
           /*icon=*/nullptr));
   toast_button_->SetBorder(views::NullBorder());
@@ -263,7 +264,7 @@ void AppListToastView::SetCloseButton(
   DCHECK(close_button_callback);
 
   close_button_ = AddChildView(std::make_unique<IconButton>(
-      close_button_callback, IconButton::Type::kMediumFloating,
+      std::move(close_button_callback), IconButton::Type::kMediumFloating,
       &vector_icons::kCloseIcon,
       IDS_ASH_LAUNCHER_CLOSE_SORT_TOAST_BUTTON_SPOKEN_TEXT));
   close_button_->SetProperty(views::kMarginsKey, kCloseButtonMargin);
@@ -348,7 +349,8 @@ AppListToastView::ToastPillButton::ToastPillButton(
     const std::u16string& text,
     Type type,
     const gfx::VectorIcon* icon)
-    : PillButton(callback, text, type, icon), view_delegate_(view_delegate) {
+    : PillButton(std::move(callback), text, type, icon),
+      view_delegate_(view_delegate) {
   views::FocusRing::Get(this)->SetHasFocusPredicate(
       base::BindRepeating([](const View* view) {
         const auto* v = views::AsViewClass<ToastPillButton>(view);
@@ -411,5 +413,8 @@ void AppListToastView::SetTitleLabelMaximumWidth() {
   // line label appears cut-off.
   title_label_->SetMaximumWidth(GetExpandedTitleLabelWidth());
 }
+
+BEGIN_METADATA(AppListToastView)
+END_METADATA
 
 }  // namespace ash

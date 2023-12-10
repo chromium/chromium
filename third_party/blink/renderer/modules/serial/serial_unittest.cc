@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_string_unsignedlong.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_serial_port_filter.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 
@@ -21,6 +22,7 @@ constexpr char kTestServiceClassId[] = "05079c61-147f-473d-8127-fab1bbad7e1a";
 }  // namespace
 
 TEST(SerialTest, CreateMojoFilter_EmptyFilter) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
 
   SerialPortFilter* js_filter = SerialPortFilter::Create(scope.GetIsolate());
@@ -34,6 +36,7 @@ TEST(SerialTest, CreateMojoFilter_EmptyFilter) {
 }
 
 TEST(SerialTest, CreateMojoFilter_VendorId) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
 
   SerialPortFilter* js_filter = SerialPortFilter::Create(scope.GetIsolate());
@@ -50,6 +53,7 @@ TEST(SerialTest, CreateMojoFilter_VendorId) {
 }
 
 TEST(SerialTest, CreateMojoFilter_ProductNoVendorId) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
 
   SerialPortFilter* js_filter = SerialPortFilter::Create(scope.GetIsolate());
@@ -65,6 +69,7 @@ TEST(SerialTest, CreateMojoFilter_ProductNoVendorId) {
 }
 
 TEST(SerialTest, CreateMojoFilter_BluetoothServiceClassAndVendorId) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
 
   SerialPortFilter* js_filter = SerialPortFilter::Create(scope.GetIsolate());
@@ -82,6 +87,7 @@ TEST(SerialTest, CreateMojoFilter_BluetoothServiceClassAndVendorId) {
 }
 
 TEST(SerialTest, CreateMojoFilter_BluetoothServiceClassAndProductId) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
 
   SerialPortFilter* js_filter = SerialPortFilter::Create(scope.GetIsolate());
@@ -99,6 +105,7 @@ TEST(SerialTest, CreateMojoFilter_BluetoothServiceClassAndProductId) {
 }
 
 TEST(SerialTest, CreateMojoFilter_BluetoothServiceClass) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
 
   SerialPortFilter* js_filter = SerialPortFilter::Create(scope.GetIsolate());
@@ -117,6 +124,7 @@ TEST(SerialTest, CreateMojoFilter_BluetoothServiceClass) {
 }
 
 TEST(SerialTest, CreateMojoFilter_InvalidBluetoothServiceClass) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
 
   SerialPortFilter* js_filter = SerialPortFilter::Create(scope.GetIsolate());

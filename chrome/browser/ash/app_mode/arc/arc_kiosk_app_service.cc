@@ -173,7 +173,7 @@ void ArcKioskAppService::OnComplianceReportReceived(
 
   for (const auto& detail : *details) {
     const base::Value::Dict& detail_dict = detail.GetDict();
-    absl::optional<int> reason = detail_dict.FindInt("nonComplianceReason");
+    std::optional<int> reason = detail_dict.FindInt("nonComplianceReason");
     if (!reason || *reason != kNonComplianceReasonAppNotInstalled) {
       continue;
     }

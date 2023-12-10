@@ -36,10 +36,19 @@ public class PublishPageCallback implements Callback<String> {
         // with a null page to indicate failure.
         if (!newFilePath.isEmpty()) {
             // Make a new OfflinePageItem with the new path.
-            page = new OfflinePageItem(mPage.getUrl(), mPage.getOfflineId(),
-                    mPage.getClientId().getNamespace(), mPage.getClientId().getId(),
-                    mPage.getTitle(), newFilePath, mPage.getFileSize(), mPage.getCreationTimeMs(),
-                    mPage.getAccessCount(), mPage.getLastAccessTimeMs(), mPage.getRequestOrigin());
+            page =
+                    new OfflinePageItem(
+                            mPage.getUrl(),
+                            mPage.getOfflineId(),
+                            mPage.getClientId().getNamespace(),
+                            mPage.getClientId().getId(),
+                            mPage.getTitle(),
+                            newFilePath,
+                            mPage.getFileSize(),
+                            mPage.getCreationTimeMs(),
+                            mPage.getAccessCount(),
+                            mPage.getLastAccessTimeMs(),
+                            mPage.getRequestOrigin());
         }
 
         OfflinePageUtils.publishCompleted(page, mWindow, mShareCallback);

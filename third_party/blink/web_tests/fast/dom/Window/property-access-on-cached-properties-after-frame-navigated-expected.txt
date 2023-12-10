@@ -17,6 +17,7 @@ PASS window.cached_location.search is ''
 FAIL window.cached_location_ancestorOrigins.length should be 0. Was 1.
 PASS window.cached_locationbar.visible is false
 PASS window.cached_menubar.visible is false
+PASS window.cached_navigation.activation is null
 PASS window.cached_navigation.canGoBack is false
 PASS window.cached_navigation.canGoForward is false
 PASS window.cached_navigation.currentEntry is null
@@ -29,7 +30,7 @@ PASS window.cached_navigator.appCodeName is window.navigator.appCodeName
 PASS window.cached_navigator.appName is window.navigator.appName
 PASS window.cached_navigator.appVersion is ''
 PASS window.cached_navigator.cookieEnabled is false
-PASS window.cached_navigator.deprecatedRunAdAuctionEnforcesKAnonymity is false
+FAIL window.cached_navigator.deprecatedRunAdAuctionEnforcesKAnonymity should be false. Was true.
 PASS window.cached_navigator.deviceMemory is window.navigator.deviceMemory
 PASS window.cached_navigator.doNotTrack is null
 PASS window.cached_navigator.hardwareConcurrency is window.navigator.hardwareConcurrency

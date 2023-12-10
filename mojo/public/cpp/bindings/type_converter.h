@@ -7,7 +7,9 @@
 
 #include <stdint.h>
 
-#include <vector>
+#include <concepts>
+#include <memory>
+#include <type_traits>
 
 namespace mojo {
 
@@ -82,40 +84,54 @@ namespace mojo {
 template <typename T, typename U>
 struct TypeConverter;
 
+// The following helper functions are useful shorthand. The compiler can infer
+// the input type, so you can write:
+//   OutputType out = ConvertTo<OutputType>(input);
 template <typename T, typename U>
-inline T ConvertTo(const U& obj);
+  requires requires(U* obj) {
+    { TypeConverter<T, std::remove_cv_t<U>*>::Convert(obj) } -> std::same_as<T>;
+  }
+inline T ConvertTo(U* obj) {
+  return TypeConverter<T, std::remove_cv_t<U>*>::Convert(obj);
+}
 
-// The following specialization is useful when you are converting between
-// Array<POD> and std::vector<POD>.
+template <typename T, typename U>
+  requires(!std::is_pointer_v<U>)
+inline T ConvertTo(const U& obj) {
+  if constexpr (requires {
+                  {
+                    mojo::ConvertTo<T>(std::to_address(obj))
+
+                  } -> std::same_as<T>;
+                }) {
+    return mojo::ConvertTo<T>(std::to_address(obj));
+  } else {
+    return TypeConverter<T, U>::Convert(obj);
+  }
+}
+
 template <typename T>
 struct TypeConverter<T, T> {
   static T Convert(const T& obj) { return obj; }
 };
 
-template <typename T, typename Container>
-struct TypeConverter<std::vector<T>, Container> {
-  static std::vector<T> Convert(const Container& container) {
-    std::vector<T> output;
-    output.reserve(container.size());
-    for (const auto& obj : container) {
-      output.push_back(ConvertTo<T>(obj));
+// Generic specialization for converting between different vector-like
+// containers.
+template <typename OutVec, typename InVec>
+  requires requires(const InVec& in, OutVec& out) {
+    out.reserve(in.size());
+    out.push_back(mojo::ConvertTo<typename OutVec::value_type>(*in.begin()));
+  }
+struct TypeConverter<OutVec, InVec> {
+  static OutVec Convert(const InVec& in) {
+    OutVec out;
+    out.reserve(in.size());
+    for (const auto& obj : in) {
+      out.push_back(mojo::ConvertTo<typename OutVec::value_type>(obj));
     }
-    return output;
+    return out;
   }
 };
-
-// The following helper functions are useful shorthand. The compiler can infer
-// the input type, so you can write:
-//   OutputType out = ConvertTo<OutputType>(input);
-template <typename T, typename U>
-inline T ConvertTo(const U& obj) {
-  return TypeConverter<T, U>::Convert(obj);
-}
-
-template <typename T, typename U>
-inline T ConvertTo(const U* obj) {
-  return TypeConverter<T, U*>::Convert(obj);
-}
 
 }  // namespace mojo
 

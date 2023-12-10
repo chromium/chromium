@@ -138,6 +138,10 @@
     "META": {"sizes": {"includes": [10],}},
     "includes": [2440],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/chromeos/app_install/resources.grd": {
+    "META": {"sizes": {"includes": [5]}},
+    "includes": [2450],
+  },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/chromeos/arc_account_picker/resources.grd": {
     "META": {"sizes": {"includes": [10],}},
     "includes": [2460],
@@ -163,7 +167,7 @@
     "includes": [2560],
   },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/chromeos/emoji_picker/resources.grd": {
-    "META": {"sizes": {"includes": [50]}},
+    "META": {"sizes": {"includes": [60]}},
     "includes": [2580],
   },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/chromeos/kerberos/resources.grd": {
@@ -240,10 +244,6 @@
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/chromeos/vc_tray_tester/resources.grd": {
     "META": {"sizes": {"includes": [5]}},
     "includes": [2980],
-  },
-  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/chromeos/web_app_install/resources.grd": {
-    "META": {"sizes": {"includes": [5]}},
-    "includes": [3000],
   },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/commander/resources.grd": {
     "META": {"sizes": {"includes": [15]}},
@@ -510,6 +510,10 @@
     "META": {"sizes": {"includes": [20]}},
     "includes": [4340],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/chromeos/set_time_dialog/resources.grd": {
+    "META": {"sizes": {"includes": [5]}},
+    "includes": [4350],
+  },
   "<(SHARED_INTERMEDIATE_DIR)/components/commerce/core/internals/resources/resources.grd": {
     "META": {"sizes": {"includes": [10]}},
     "includes": [4360],
@@ -763,10 +767,6 @@
     "META": {"sizes": {"includes": [10],}},
     "includes": [5720],
   },
-  "<(SHARED_INTERMEDIATE_DIR)/ash/webui/guest_os_installer/resources/resources.grd": {
-    "META": {"sizes": {"includes": [10]}},
-    "includes": [5740],
-  },
   "<(SHARED_INTERMEDIATE_DIR)/ash/webui/common/resources/resources.grd": {
     "META": {"sizes": {"includes": [700]}},
     "includes": [5760],
@@ -910,6 +910,10 @@
     "META": {"join": 2, "sizes": {"includes": [50],}},
     "includes": [6240],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/ash/webui/vc_background_ui/resources/resources.grd": {
+    "META": {"sizes": {"includes": [50],}},
+    "includes": [6260],
+  },
   # END chromeos/ section.
 
   # START components/ section.
@@ -964,6 +968,10 @@
   },
   "components/autofill/core/browser/autofill_address_rewriter_resources.grd":{
     "includes": [7220]
+  },
+
+  "components/search_engine_descriptions_strings.grd": {
+    "messages": [7260],
   },
   # END components/ section.
 
@@ -1082,11 +1090,11 @@
     "META": {"align": 100},
     "messages": [7400],
   },
-  "<(SHARED_INTERMEDIATE_DIR)/ash/webui/os_feedback_ui/resources/ash_os_feedback_resources.grd": {
+  "<(SHARED_INTERMEDIATE_DIR)/ash/webui/os_feedback_ui/resources/resources.grd": {
     "META": {"sizes": {"includes": [50],}},
     "includes": [7420],
   },
-  "<(SHARED_INTERMEDIATE_DIR)/ash/webui/os_feedback_ui/untrusted_resources/ash_os_feedback_untrusted_resources.grd": {
+  "<(SHARED_INTERMEDIATE_DIR)/ash/webui/os_feedback_ui/untrusted_resources/resources.grd": {
     "META": {"sizes": {"includes": [50],}},
     "includes": [7440],
   },

@@ -11,10 +11,15 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "chrome/browser/ash/input_method/editor_consent_enums.h"
+#include "chrome/browser/ash/input_method/editor_identity_utils.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/standalone_browser/feature_refs.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "content/public/test/browser_task_environment.h"
 #include "net/base/mock_network_change_notifier.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -45,6 +50,9 @@ struct EditorSwitchAvailabilityTestCase {
 struct EditorSwitchTriggerTestCase {
   std::string test_name;
 
+  std::vector<base::test::FeatureRef> additional_enabled_flags;
+  std::string email;
+
   std::string active_engine_id;
   std::string url;
   ui::TextInputType input_type;
@@ -71,6 +79,17 @@ TextFieldContextualInfo CreateFakeTextFieldContextualInfo(
   text_field_contextual_info.app_type = app_type;
   text_field_contextual_info.tab_url = GURL(url);
   return text_field_contextual_info;
+}
+
+std::unique_ptr<TestingProfile> CreateTestingProfile(std::string email) {
+  std::unique_ptr<TestingProfile> profile = TestingProfile::Builder().Build();
+
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile.get());
+
+  signin::MakePrimaryAccountAvailable(identity_manager, email,
+                                      signin::ConsentLevel::kSync);
+  return profile;
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -143,6 +162,8 @@ INSTANTIATE_TEST_SUITE_P(
     testing::ValuesIn<EditorSwitchTriggerTestCase>({
         {
             .test_name = "DoNotTriggerFeatureIfConsentDeclined",
+            .additional_enabled_flags = {},
+            .email = "testuser@gmail.com",
             .active_engine_id = "xkb:us::eng",
             .url = kAllowedTestUrl,
             .input_type = ui::TEXT_INPUT_TYPE_TEXT,
@@ -157,6 +178,8 @@ INSTANTIATE_TEST_SUITE_P(
         },
         {
             .test_name = "DoNotTriggerFeatureOnAPasswordField",
+            .additional_enabled_flags = {},
+            .email = "testuser@gmail.com",
             .active_engine_id = "xkb:us::eng",
             .url = kAllowedTestUrl,
             .input_type = ui::TEXT_INPUT_TYPE_PASSWORD,
@@ -170,7 +193,9 @@ INSTANTIATE_TEST_SUITE_P(
             .expected_editor_opportunity_mode = EditorOpportunityMode::kNone,
         },
         {
-            .test_name = "DoNotTriggerFeatureOnADeniedWebsite",
+            .test_name = "DoNotTriggerFeatureOnWorkspaceForNonGooglerAccount",
+            .additional_enabled_flags = {},
+            .email = "testuser@gmail.com",
             .active_engine_id = "xkb:us::eng",
             .url = "https://mail.google.com/mail",
             .input_type = ui::TEXT_INPUT_TYPE_TEXT,
@@ -184,7 +209,43 @@ INSTANTIATE_TEST_SUITE_P(
             .expected_editor_opportunity_mode = EditorOpportunityMode::kWrite,
         },
         {
+            .test_name = "DoNotTriggerFeatureOnWorkspaceForGooglerAccountWithou"
+                         "tOrcaOnWorkspaceFlag",
+            .additional_enabled_flags = {},
+            .email = "testuser@google.com",
+            .active_engine_id = "xkb:us::eng",
+            .url = "https://mail.google.com/mail",
+            .input_type = ui::TEXT_INPUT_TYPE_TEXT,
+            .app_type = AppType::BROWSER,
+            .is_in_tablet_mode = false,
+            .network_status = net::NetworkChangeNotifier::CONNECTION_UNKNOWN,
+            .user_pref = true,
+            .consent_status = ConsentStatus::kApproved,
+            .num_chars_selected = 0,
+            .expected_editor_mode = EditorMode::kBlocked,
+            .expected_editor_opportunity_mode = EditorOpportunityMode::kWrite,
+        },
+        {
+            .test_name = "TriggerFeatureOnWorkspaceForGooglerAccountWithOrcaOnW"
+                         "orkspaceFlag",
+            .additional_enabled_flags = {features::kOrcaOnWorkspace},
+            .email = "testuser@google.com",
+            .active_engine_id = "xkb:us::eng",
+            .url = "https://mail.google.com/mail",
+            .input_type = ui::TEXT_INPUT_TYPE_TEXT,
+            .app_type = AppType::BROWSER,
+            .is_in_tablet_mode = false,
+            .network_status = net::NetworkChangeNotifier::CONNECTION_UNKNOWN,
+            .user_pref = true,
+            .consent_status = ConsentStatus::kApproved,
+            .num_chars_selected = 0,
+            .expected_editor_mode = EditorMode::kWrite,
+            .expected_editor_opportunity_mode = EditorOpportunityMode::kWrite,
+        },
+        {
             .test_name = "DoNotTriggerFeatureWithNonEnglishInputMethod",
+            .additional_enabled_flags = {},
+            .email = "testuser@gmail.com",
             .active_engine_id = "nacl_mozc_jp",
             .url = kAllowedTestUrl,
             .input_type = ui::TEXT_INPUT_TYPE_TEXT,
@@ -199,6 +260,8 @@ INSTANTIATE_TEST_SUITE_P(
         },
         {
             .test_name = "DoNotTriggerFeatureOnArcApps",
+            .additional_enabled_flags = {},
+            .email = "testuser@gmail.com",
             .active_engine_id = "xkb:us::eng",
             .url = kAllowedTestUrl,
             .input_type = ui::TEXT_INPUT_TYPE_TEXT,
@@ -213,6 +276,8 @@ INSTANTIATE_TEST_SUITE_P(
         },
         {
             .test_name = "DoNotTriggerFeatureIfSettingToggleIsOff",
+            .additional_enabled_flags = {},
+            .email = "testuser@gmail.com",
             .active_engine_id = "xkb:us::eng",
             .url = kAllowedTestUrl,
             .input_type = ui::TEXT_INPUT_TYPE_TEXT,
@@ -227,6 +292,8 @@ INSTANTIATE_TEST_SUITE_P(
         },
         {
             .test_name = "DoNotTriggerFeatureOnTabletMode",
+            .additional_enabled_flags = {},
+            .email = "testuser@gmail.com",
             .active_engine_id = "xkb:us::eng",
             .url = kAllowedTestUrl,
             .input_type = ui::TEXT_INPUT_TYPE_TEXT,
@@ -241,6 +308,8 @@ INSTANTIATE_TEST_SUITE_P(
         },
         {
             .test_name = "DoNotTriggerFeatureWhenOffline",
+            .additional_enabled_flags = {},
+            .email = "testuser@gmail.com",
             .active_engine_id = "xkb:us::eng",
             .url = kAllowedTestUrl,
             .input_type = ui::TEXT_INPUT_TYPE_TEXT,
@@ -255,6 +324,8 @@ INSTANTIATE_TEST_SUITE_P(
         },
         {
             .test_name = "DoNotTriggerFeatureWhenSelectingTooLongText",
+            .additional_enabled_flags = {},
+            .email = "testuser@gmail.com",
             .active_engine_id = "xkb:us::eng",
             .url = kAllowedTestUrl,
             .input_type = ui::TEXT_INPUT_TYPE_TEXT,
@@ -270,6 +341,8 @@ INSTANTIATE_TEST_SUITE_P(
         {
             .test_name =
                 "TriggersConsentIfSettingToggleIsOnAndUserHasNotGivenConsent",
+            .additional_enabled_flags = {},
+            .email = "testuser@gmail.com",
             .active_engine_id = "xkb:us::eng",
             .url = kAllowedTestUrl,
             .input_type = ui::TEXT_INPUT_TYPE_TEXT,
@@ -284,6 +357,8 @@ INSTANTIATE_TEST_SUITE_P(
         },
         {
             .test_name = "TriggersWriteModeForNoTextSelection",
+            .additional_enabled_flags = {},
+            .email = "testuser@gmail.com",
             .active_engine_id = "xkb:us::eng",
             .url = kAllowedTestUrl,
             .input_type = ui::TEXT_INPUT_TYPE_TEXT,
@@ -298,6 +373,8 @@ INSTANTIATE_TEST_SUITE_P(
         },
         {
             .test_name = "TriggersRewriteModeWhenSomeTextIsSelected",
+            .additional_enabled_flags = {},
+            .email = "testuser@gmail.com",
             .active_engine_id = "xkb:us::eng",
             .url = kAllowedTestUrl,
             .input_type = ui::TEXT_INPUT_TYPE_TEXT,
@@ -319,22 +396,27 @@ TEST_P(EditorSwitchTriggerTest, TestEditorMode) {
   const EditorSwitchTriggerTestCase& test_case = GetParam();
   content::BrowserTaskEnvironment task_environment;
   base::test::ScopedFeatureList feature_list;
+  std::vector<base::test::FeatureRef> base_enabled_features = {
+      chromeos::features::kOrca, features::kFeatureManagementOrca};
+  base_enabled_features.insert(base_enabled_features.end(),
+                               test_case.additional_enabled_flags.begin(),
+                               test_case.additional_enabled_flags.end());
   feature_list.InitWithFeatures(
-      /*enabled_features=*/{chromeos::features::kOrca,
-                            features::kFeatureManagementOrca},
+      /*enabled_features=*/base_enabled_features,
       /*disabled_features=*/{});
-  TestingProfile profile;
-  EditorSwitch editor_switch(/*profile=*/&profile,
+  std::unique_ptr<TestingProfile> profile =
+      CreateTestingProfile(test_case.email);
+  EditorSwitch editor_switch(/*profile=*/profile.get(),
                              /*country_code=*/kAllowedTestCountry);
 
   auto mock_notifier = net::test::MockNetworkChangeNotifier::Create();
-  profile.GetProfilePolicyConnector()->OverrideIsManagedForTesting(false);
+  profile->GetProfilePolicyConnector()->OverrideIsManagedForTesting(false);
 
   mock_notifier->SetConnectionType(test_case.network_status);
 
-  profile.GetPrefs()->SetBoolean(prefs::kOrcaEnabled, test_case.user_pref);
-  profile.GetPrefs()->SetInteger(prefs::kOrcaConsentStatus,
-                                 base::to_underlying(test_case.consent_status));
+  profile->GetPrefs()->SetBoolean(prefs::kOrcaEnabled, test_case.user_pref);
+  profile->GetPrefs()->SetInteger(
+      prefs::kOrcaConsentStatus, base::to_underlying(test_case.consent_status));
   editor_switch.OnTabletModeUpdated(test_case.is_in_tablet_mode);
   editor_switch.OnActivateIme(test_case.active_engine_id);
   editor_switch.OnInputContextUpdated(

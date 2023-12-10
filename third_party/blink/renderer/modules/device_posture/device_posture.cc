@@ -25,9 +25,7 @@ String PostureToString(device::mojom::blink::DevicePostureType posture) {
 }  // namespace
 
 DevicePosture::DevicePosture(LocalDOMWindow* window)
-    : ExecutionContextClient(window),
-      service_(GetExecutionContext()),
-      receiver_(this, GetExecutionContext()) {}
+    : ExecutionContextClient(window), receiver_(this, GetExecutionContext()) {}
 
 DevicePosture::~DevicePosture() = default;
 
@@ -46,19 +44,20 @@ void DevicePosture::OnPostureChanged(
 }
 
 void DevicePosture::EnsureServiceConnection() {
-  auto* context = GetExecutionContext();
-  if (!context)
+  LocalDOMWindow* window = DomWindow();
+  if (!window) {
     return;
+  }
 
-  if (service_.is_bound())
+  if (receiver_.is_bound()) {
     return;
+  }
 
+  device::mojom::blink::DevicePostureProvider* service =
+      window->GetFrame()->GetDevicePostureProvider();
   auto task_runner =
       GetExecutionContext()->GetTaskRunner(TaskType::kMiscPlatformAPI);
-  GetExecutionContext()->GetBrowserInterfaceBroker().GetInterface(
-      service_.BindNewPipeAndPassReceiver(task_runner));
-
-  service_->AddListenerAndGetCurrentPosture(
+  service->AddListenerAndGetCurrentPosture(
       receiver_.BindNewPipeAndPassRemote(task_runner),
       WTF::BindOnce(&DevicePosture::OnPostureChanged, WrapPersistent(this)));
 }
@@ -86,7 +85,6 @@ const AtomicString& DevicePosture::InterfaceName() const {
 }
 
 void DevicePosture::Trace(blink::Visitor* visitor) const {
-  visitor->Trace(service_);
   visitor->Trace(receiver_);
   EventTarget::Trace(visitor);
   ExecutionContextClient::Trace(visitor);

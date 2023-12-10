@@ -116,7 +116,7 @@ class AppListSyncableService : public syncer::SyncableService,
     //    Note that user pin has priority: if an app was first pinned by the
     //    user and then additionally specified in PinnedLauncherApps, this value
     //    will be set to true.
-    absl::optional<bool> is_user_pinned;
+    std::optional<bool> is_user_pinned;
 
     // Whether the item is considered new - i.e. first added during the current
     // user session. This will be false if the sync item was created when
@@ -208,7 +208,7 @@ class AppListSyncableService : public syncer::SyncableService,
   // consistent result as long as the linkage is active.
   // If no items that can be linked to the promise app are found, the promise
   // app sync item will not be created, and this will return nullopt.
-  absl::optional<LinkedPromiseAppSyncItem>
+  std::optional<LinkedPromiseAppSyncItem>
   CreateLinkedPromiseSyncItemIfAvailable(const std::string& promise_package_id);
 
   // Called when properties of an item may have changed, e.g. default/oem state.
@@ -296,13 +296,13 @@ class AppListSyncableService : public syncer::SyncableService,
 
   // syncer::SyncableService
   void WaitUntilReadyToSync(base::OnceClosure done) override;
-  absl::optional<syncer::ModelError> MergeDataAndStartSyncing(
+  std::optional<syncer::ModelError> MergeDataAndStartSyncing(
       syncer::ModelType type,
       const syncer::SyncDataList& initial_sync_data,
       std::unique_ptr<syncer::SyncChangeProcessor> sync_processor) override;
   void StopSyncing(syncer::ModelType type) override;
   syncer::SyncDataList GetAllSyncDataForTesting() const;
-  absl::optional<syncer::ModelError> ProcessSyncChanges(
+  std::optional<syncer::ModelError> ProcessSyncChanges(
       const base::Location& from_here,
       const syncer::SyncChangeList& change_list) override;
 
@@ -489,7 +489,7 @@ class AppListSyncableService : public syncer::SyncableService,
   // Whether the first sync in the session was thought to be the first sync ever
   // across all ChromeOS devices and sessions for the associated user. Note that
   // this value is absent until completion of the first sync in the session.
-  absl::optional<bool> first_sync_was_first_sync_ever_;
+  std::optional<bool> first_sync_was_first_sync_ever_;
 
   // Map from a promise app item to an app sync item linked with the promise app
   // - created by `CreateLinkedPromiseSyncItemIfAvailable()`.

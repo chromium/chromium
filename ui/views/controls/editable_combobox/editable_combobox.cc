@@ -73,9 +73,9 @@ int kEditableComboboxButtonSize = 24;
 int kEditableComboboxControlsContainerInsets = 6;
 
 class Arrow : public Button {
- public:
-  METADATA_HEADER(Arrow);
+  METADATA_HEADER(Arrow, Button)
 
+ public:
   explicit Arrow(PressedCallback callback) : Button(std::move(callback)) {
     if (features::IsChromeRefresh2023()) {
       SetPreferredSize(
@@ -123,7 +123,7 @@ class Arrow : public Button {
   }
 };
 
-BEGIN_METADATA(Arrow, Button)
+BEGIN_METADATA(Arrow)
 END_METADATA
 
 }  // namespace
@@ -617,7 +617,7 @@ const ui::ComboboxModel* EditableCombobox::GetComboboxModel() const {
   return menu_model_->GetComboboxModel();
 }
 
-BEGIN_METADATA(EditableCombobox, View)
+BEGIN_METADATA(EditableCombobox)
 ADD_PROPERTY_METADATA(std::u16string, Text)
 ADD_PROPERTY_METADATA(std::u16string, PlaceholderText)
 END_METADATA

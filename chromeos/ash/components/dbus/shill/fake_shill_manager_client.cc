@@ -847,7 +847,7 @@ void FakeShillManagerClient::SetNetworkThrottlingStatus(
 }
 
 bool FakeShillManagerClient::GetFastTransitionStatus() {
-  absl::optional<bool> fast_transition_status = stub_properties_.FindBool(
+  std::optional<bool> fast_transition_status = stub_properties_.FindBool(
       base::StringPiece(shill::kWifiGlobalFTEnabledProperty));
   return fast_transition_status && fast_transition_status.value();
 }
@@ -1181,7 +1181,7 @@ void FakeShillManagerClient::SetupDefaultEnvironment() {
 
 void FakeShillManagerClient::PassNullopt(
     chromeos::DBusMethodCallback<base::Value::Dict> callback) const {
-  std::move(callback).Run(absl::nullopt);
+  std::move(callback).Run(std::nullopt);
 }
 
 void FakeShillManagerClient::PassStubProperties(

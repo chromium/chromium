@@ -32,18 +32,12 @@ public class LoginPrompt {
     private AlertDialogEditText mUsernameView;
     private AlertDialogEditText mPasswordView;
 
-    /**
-     * This is a public interface that provides the result of the prompt.
-     */
+    /** This is a public interface that provides the result of the prompt. */
     public static interface Observer {
-        /**
-         * Cancel the authorization request.
-         */
+        /** Cancel the authorization request. */
         public void cancel();
 
-        /**
-         * Proceed with the authorization with the given credentials.
-         */
+        /** Proceed with the authorization with the given credentials. */
         public void proceed(String username, String password);
     }
 
@@ -76,45 +70,46 @@ public class LoginPrompt {
             mUsernameView.setUrl(autofillUrl);
             mPasswordView.setUrl(autofillUrl);
         }
-        mPasswordView.setOnEditorActionListener((v1, actionId, event) -> {
-            if (actionId == EditorInfo.IME_ACTION_DONE) {
-                mDialog.getButton(AlertDialog.BUTTON_POSITIVE).performClick();
-                return true;
-            }
-            return false;
-        });
+        mPasswordView.setOnEditorActionListener(
+                (v1, actionId, event) -> {
+                    if (actionId == EditorInfo.IME_ACTION_DONE) {
+                        mDialog.getButton(AlertDialog.BUTTON_POSITIVE).performClick();
+                        return true;
+                    }
+                    return false;
+                });
 
         TextView explanationView = (TextView) v.findViewById(R.id.explanation);
         explanationView.setText(mMessageBody);
 
-        mDialog = new AlertDialog.Builder(mContext, R.style.ThemeOverlay_BrowserUI_AlertDialog)
-                          .setTitle(R.string.login_dialog_title)
-                          .setView(v)
-                          .setPositiveButton(R.string.login_dialog_ok_button_label,
-                                  (DialogInterface.OnClickListener) (dialog, whichButton)
-                                          -> mObserver.proceed(getUsername(), getPassword()))
-                          .setNegativeButton(R.string.cancel,
-                                  (DialogInterface.OnClickListener) (dialog,
-                                          whichButton) -> mObserver.cancel())
-                          .setOnCancelListener(dialog -> mObserver.cancel())
-                          .create();
+        mDialog =
+                new AlertDialog.Builder(mContext, R.style.ThemeOverlay_BrowserUI_AlertDialog)
+                        .setTitle(R.string.login_dialog_title)
+                        .setView(v)
+                        .setPositiveButton(
+                                R.string.login_dialog_ok_button_label,
+                                (DialogInterface.OnClickListener)
+                                        (dialog, whichButton) ->
+                                                mObserver.proceed(getUsername(), getPassword()))
+                        .setNegativeButton(
+                                R.string.cancel,
+                                (DialogInterface.OnClickListener)
+                                        (dialog, whichButton) -> mObserver.cancel())
+                        .setOnCancelListener(dialog -> mObserver.cancel())
+                        .create();
         mDialog.getDelegate().setHandleNativeActionModesEnabled(false);
 
         // Make the IME appear when the dialog is displayed if applicable.
         mDialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
     }
 
-    /**
-     * Shows the dialog.
-     */
+    /** Shows the dialog. */
     public void show() {
         mDialog.show();
         mUsernameView.requestFocus();
     }
 
-    /**
-     * Dismisses the dialog.
-     */
+    /** Dismisses the dialog. */
     public void dismiss() {
         mDialog.dismiss();
     }

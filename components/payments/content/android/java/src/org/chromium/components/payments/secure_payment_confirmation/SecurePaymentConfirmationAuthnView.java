@@ -55,8 +55,10 @@ import org.chromium.ui.widget.TextViewWithClickableSpans;
     /* package */ final TextViewWithClickableSpans mOptOutText;
 
     /* package */ SecurePaymentConfirmationAuthnView(Context context) {
-        mContentView = (RelativeLayout) LayoutInflater.from(context).inflate(
-                R.layout.secure_payment_confirmation_authn_ui, null);
+        mContentView =
+                (RelativeLayout)
+                        LayoutInflater.from(context)
+                                .inflate(R.layout.secure_payment_confirmation_authn_ui, null);
         mScrollView = (ScrollView) mContentView.findViewById(R.id.scroll_view);
         mContext = context;
         mHeaderImage =
@@ -68,8 +70,10 @@ import org.chromium.ui.widget.TextViewWithClickableSpans;
         mCurrency = (TextView) mContentView.findViewById(R.id.currency);
         mContinueButton = (Button) mContentView.findViewById(R.id.continue_button);
         mCancelButton = (Button) mContentView.findViewById(R.id.cancel_button);
-        mOptOutText = (TextViewWithClickableSpans) mContentView.findViewById(
-                R.id.secure_payment_confirmation_nocredmatch_opt_out);
+        mOptOutText =
+                (TextViewWithClickableSpans)
+                        mContentView.findViewById(
+                                R.id.secure_payment_confirmation_nocredmatch_opt_out);
 
         mHeaderImage.setImageResource(R.drawable.save_card);
         mOptOutText.setMovementMethod(LinkMovementMethod.getInstance());

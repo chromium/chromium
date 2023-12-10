@@ -29,4 +29,4 @@ class AppModalDialogManagerDelegate {
 
 }  // namespace javascript_dialogs
 
-#endif
+#endif  // COMPONENTS_JAVASCRIPT_DIALOGS_APP_MODAL_DIALOG_MANAGER_DELEGATE_H_

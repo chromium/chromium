@@ -25,11 +25,8 @@ import java.io.File;
 public class MinidumpUploadJobImpl implements MinidumpUploadJob {
     private static final String TAG = "MDUploadJobImpl";
 
-    /**
-     * The delegate that performs embedder-specific behavior.
-     */
-    @VisibleForTesting
-    protected final MinidumpUploaderDelegate mDelegate;
+    /** The delegate that performs embedder-specific behavior. */
+    @VisibleForTesting protected final MinidumpUploaderDelegate mDelegate;
 
     /**
      * Whether the current job has been canceled. This is written to from the main thread, and read
@@ -40,8 +37,7 @@ public class MinidumpUploadJobImpl implements MinidumpUploadJob {
     // Used to assert only once job at a time.
     private boolean mIsActive;
 
-    @VisibleForTesting
-    public static final int MAX_UPLOAD_TRIES_ALLOWED = 3;
+    @VisibleForTesting public static final int MAX_UPLOAD_TRIES_ALLOWED = 3;
 
     public MinidumpUploadJobImpl(MinidumpUploaderDelegate delegate) {
         mDelegate = delegate;
@@ -94,14 +90,14 @@ public class MinidumpUploadJobImpl implements MinidumpUploadJob {
             File crashParentDir = mDelegate.getCrashParentDir();
             if (!crashParentDir.isDirectory()) {
                 Log.e(TAG, "Parent crash directory doesn't exist!");
-                invokeCallback(false /* reschedule */);
+                invokeCallback(/* reschedule= */ false);
                 return;
             }
 
             final CrashFileManager fileManager = createCrashFileManager(crashParentDir);
             if (!fileManager.crashDirectoryExists()) {
                 Log.e(TAG, "Crash directory doesn't exist!");
-                invokeCallback(false /* reschedule */);
+                invokeCallback(/* reschedule= */ false);
                 return;
             }
 
@@ -112,8 +108,7 @@ public class MinidumpUploadJobImpl implements MinidumpUploadJob {
                 Log.i(TAG, "Attempting to upload " + minidump.getName());
                 MinidumpUploadCallable uploadCallable =
                         createMinidumpUploadCallable(minidump, fileManager.getCrashUploadLogFile());
-                @MinidumpUploadStatus
-                int uploadResult = uploadCallable.call();
+                @MinidumpUploadStatus int uploadResult = uploadCallable.call();
 
                 // Record metrics about the upload.
                 if (uploadResult == MinidumpUploadStatus.SUCCESS) {
@@ -174,27 +169,28 @@ public class MinidumpUploadJobImpl implements MinidumpUploadJob {
         assert !mIsActive;
         mCancelUpload = false;
         mIsActive = true;
-        mDelegate.prepareToUploadMinidumps(new Runnable() {
-            @Override
-            public void run() {
-                ThreadUtils.assertOnUiThread();
+        mDelegate.prepareToUploadMinidumps(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        ThreadUtils.assertOnUiThread();
 
-                // Note that the upload job might have been canceled by this time. However, it's
-                // important to start the worker thread anyway to try to make some progress towards
-                // uploading minidumps. This is to ensure that in the case where an app is crashing
-                // over and over again, resulting in rescheduling jobs over and over again, there's
-                // still a chance to upload at least one minidump per job, as long as that job
-                // starts before it is canceled by the next job. See the UploadRunnable
-                // implementation for more details.
-                PostTask.postTask(TaskTraits.BEST_EFFORT_MAY_BLOCK,
-                        new UploadRunnable(uploadsFinishedCallback));
-            }
-        });
+                        // Note that the upload job might have been canceled by this time. However,
+                        // it's important to start the worker thread anyway to try to make some
+                        // progress towards uploading minidumps. This is to ensure that in the
+                        // case where an app is crashing over and over again, resulting in
+                        // rescheduling jobs over and over again,
+                        // there's still a chance to upload at least one minidump per job, as long
+                        // as that job starts before it is canceled by the next job. See the
+                        // UploadRunnable implementation for more details.
+                        PostTask.postTask(
+                                TaskTraits.BEST_EFFORT_MAY_BLOCK,
+                                new UploadRunnable(uploadsFinishedCallback));
+                    }
+                });
     }
 
-    /**
-     * @return Whether to reschedule the uploads.
-     */
+    /** @return Whether to reschedule the uploads. */
     @Override
     public boolean cancelUploads() {
         mCancelUpload = true;

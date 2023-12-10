@@ -126,12 +126,9 @@ TEST_F(PlusAddressServiceTest, NoAccountPlusAddressCreation) {
   const url::Origin no_subdomain_origin =
       url::Origin::Create(GURL("https://test.example"));
 
-  base::MockOnceCallback<void(const std::string&)> offer_callback;
   base::MockOnceCallback<void(const PlusProfileOrError&)> reserve_callback;
   base::MockOnceCallback<void(const PlusProfileOrError&)> confirm_callback;
   // Ensure that the lambdas aren't called since there is no signed-in account.
-  EXPECT_CALL(offer_callback, Run).Times(0);
-  service.OfferPlusAddressCreation(no_subdomain_origin, offer_callback.Get());
   EXPECT_CALL(reserve_callback, Run).Times(0);
   service.ReservePlusAddress(no_subdomain_origin, reserve_callback.Get());
   EXPECT_CALL(confirm_callback, Run).Times(0);
@@ -149,12 +146,9 @@ TEST_F(PlusAddressServiceTest, AbortPlusAddressCreation) {
   const url::Origin no_subdomain_origin =
       url::Origin::Create(GURL("https://test.example"));
 
-  base::MockOnceCallback<void(const std::string&)> offer_callback;
   base::MockOnceCallback<void(const PlusProfileOrError&)> reserve_callback;
   base::MockOnceCallback<void(const PlusProfileOrError&)> confirm_callback;
   // Ensure that the lambdas aren't called since there is no signed-in account.
-  EXPECT_CALL(offer_callback, Run).Times(0);
-  service.OfferPlusAddressCreation(no_subdomain_origin, offer_callback.Get());
   EXPECT_CALL(reserve_callback, Run).Times(0);
   service.ReservePlusAddress(no_subdomain_origin, reserve_callback.Get());
   EXPECT_CALL(confirm_callback, Run).Times(0);
@@ -167,7 +161,8 @@ class PlusAddressServiceRequestsTest : public ::testing::Test {
  public:
   explicit PlusAddressServiceRequestsTest() {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        plus_addresses::kFeature, {{"server-url", server_url.spec()}});
+        plus_addresses::kFeature,
+        {{"server-url", server_url.spec()}, {"oauth-scope", "scope.example"}});
     test_shared_loader_factory =
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_url_loader_factory);
@@ -198,54 +193,16 @@ class PlusAddressServiceRequestsTest : public ::testing::Test {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_F(PlusAddressServiceRequestsTest, OfferPlusAddressCreation) {
-  signin::IdentityTestEnvironment identity_test_env;
-  identity_test_env.MakeAccountAvailable("plus@plus.plus",
-                                         {signin::ConsentLevel::kSignin});
-
-  PlusAddressClient client(identity_test_env.identity_manager(),
-                           test_shared_loader_factory);
-  client.SetAccessTokenInfoForTesting(eternal_access_token_info);
-  PlusAddressService service(identity_test_env.identity_manager(), nullptr,
-                             std::move(client));
-
-  const url::Origin no_subdomain_origin =
-      url::Origin::Create(GURL("https://test.example"));
-  const std::string site = "test.example";
-  const std::string plus_address = "plus+remote@plus.plus";
-
-  base::test::TestFuture<const std::string&> future;
-  service.OfferPlusAddressCreation(no_subdomain_origin, future.GetCallback());
-
-  // Check that the future callback is blocked and unblock it.
-  ASSERT_FALSE(future.IsReady());
-  test_url_loader_factory.SimulateResponseForPendingRequest(
-      plus_profiles_endpoint,
-      test::MakeCreationResponse(
-          PlusProfile({.facet = site, .plus_address = plus_address})));
-  ASSERT_TRUE(future.IsReady());
-  EXPECT_EQ(future.Get(), plus_address);
-
-  // Assert that ensuing calls to the same facet do not make a network request.
-  const url::Origin subdomain_origin =
-      url::Origin::Create(GURL("https://subdomain.test.example"));
-  base::test::TestFuture<const std::string&> second_future;
-  service.OfferPlusAddressCreation(no_subdomain_origin,
-                                   second_future.GetCallback());
-  ASSERT_TRUE(second_future.IsReady());
-  EXPECT_EQ(second_future.Get(), plus_address);
-}
-
 TEST_F(PlusAddressServiceRequestsTest, ReservePlusAddress_ReturnsUnconfirmed) {
   signin::IdentityTestEnvironment identity_test_env;
   identity_test_env.MakeAccountAvailable("plus@plus.plus",
                                          {signin::ConsentLevel::kSignin});
+  identity_test_env.SetAutomaticIssueOfAccessTokens(true);
 
-  PlusAddressClient client(identity_test_env.identity_manager(),
-                           test_shared_loader_factory);
-  client.SetAccessTokenInfoForTesting(eternal_access_token_info);
-  PlusAddressService service(identity_test_env.identity_manager(), nullptr,
-                             std::move(client));
+  PlusAddressService service(
+      identity_test_env.identity_manager(), nullptr,
+      PlusAddressClient(identity_test_env.identity_manager(),
+                        test_shared_loader_factory));
 
   base::test::TestFuture<const PlusProfileOrError&> future;
   const url::Origin no_subdomain_origin =
@@ -273,12 +230,12 @@ TEST_F(PlusAddressServiceRequestsTest, ReservePlusAddress_ReturnsConfirmed) {
   signin::IdentityTestEnvironment identity_test_env;
   identity_test_env.MakeAccountAvailable("plus@plus.plus",
                                          {signin::ConsentLevel::kSignin});
+  identity_test_env.SetAutomaticIssueOfAccessTokens(true);
 
-  PlusAddressClient client(identity_test_env.identity_manager(),
-                           test_shared_loader_factory);
-  client.SetAccessTokenInfoForTesting(eternal_access_token_info);
-  PlusAddressService service(identity_test_env.identity_manager(), nullptr,
-                             std::move(client));
+  PlusAddressService service(
+      identity_test_env.identity_manager(), nullptr,
+      PlusAddressClient(identity_test_env.identity_manager(),
+                        test_shared_loader_factory));
 
   base::test::TestFuture<const PlusProfileOrError&> future;
   const url::Origin no_subdomain_origin =
@@ -306,12 +263,12 @@ TEST_F(PlusAddressServiceRequestsTest, ReservePlusAddress_Fails) {
   signin::IdentityTestEnvironment identity_test_env;
   identity_test_env.MakeAccountAvailable("plus@plus.plus",
                                          {signin::ConsentLevel::kSignin});
+  identity_test_env.SetAutomaticIssueOfAccessTokens(true);
 
-  PlusAddressClient client(identity_test_env.identity_manager(),
-                           test_shared_loader_factory);
-  client.SetAccessTokenInfoForTesting(eternal_access_token_info);
-  PlusAddressService service(identity_test_env.identity_manager(), nullptr,
-                             std::move(client));
+  PlusAddressService service(
+      identity_test_env.identity_manager(), nullptr,
+      PlusAddressClient(identity_test_env.identity_manager(),
+                        test_shared_loader_factory));
 
   const url::Origin no_subdomain_origin =
       url::Origin::Create(GURL("https://test.example"));
@@ -333,11 +290,12 @@ TEST_F(PlusAddressServiceRequestsTest, ConfirmPlusAddress_Successful) {
   signin::IdentityTestEnvironment identity_test_env;
   identity_test_env.MakeAccountAvailable("plus@plus.plus",
                                          {signin::ConsentLevel::kSignin});
-  PlusAddressClient client(identity_test_env.identity_manager(),
-                           test_shared_loader_factory);
-  client.SetAccessTokenInfoForTesting(eternal_access_token_info);
-  PlusAddressService service(identity_test_env.identity_manager(), nullptr,
-                             std::move(client));
+  identity_test_env.SetAutomaticIssueOfAccessTokens(true);
+
+  PlusAddressService service(
+      identity_test_env.identity_manager(), nullptr,
+      PlusAddressClient(identity_test_env.identity_manager(),
+                        test_shared_loader_factory));
 
   base::test::TestFuture<const PlusProfileOrError&> future;
   const url::Origin no_subdomain_origin =
@@ -373,11 +331,12 @@ TEST_F(PlusAddressServiceRequestsTest, ConfirmPlusAddress_Fails) {
   signin::IdentityTestEnvironment identity_test_env;
   identity_test_env.MakeAccountAvailable("plus@plus.plus",
                                          {signin::ConsentLevel::kSignin});
-  PlusAddressClient client(identity_test_env.identity_manager(),
-                           test_shared_loader_factory);
-  client.SetAccessTokenInfoForTesting(eternal_access_token_info);
-  PlusAddressService service(identity_test_env.identity_manager(), nullptr,
-                             std::move(client));
+  identity_test_env.SetAutomaticIssueOfAccessTokens(true);
+
+  PlusAddressService service(
+      identity_test_env.identity_manager(), nullptr,
+      PlusAddressClient(identity_test_env.identity_manager(),
+                        test_shared_loader_factory));
   std::string plus_address = "plus+remote@plus.plus";
   ASSERT_FALSE(service.IsPlusAddress(plus_address));
 
@@ -406,11 +365,12 @@ TEST_F(PlusAddressServiceRequestsTest,
   signin::IdentityTestEnvironment identity_test_env;
   identity_test_env.MakePrimaryAccountAvailable("plus@plus.plus",
                                                 signin::ConsentLevel::kSignin);
-  PlusAddressClient client(identity_test_env.identity_manager(),
-                           test_shared_loader_factory);
-  client.SetAccessTokenInfoForTesting(eternal_access_token_info);
-  PlusAddressService service(identity_test_env.identity_manager(), nullptr,
-                             std::move(client));
+  identity_test_env.SetAutomaticIssueOfAccessTokens(true);
+
+  PlusAddressService service(
+      identity_test_env.identity_manager(), nullptr,
+      PlusAddressClient(identity_test_env.identity_manager(),
+                        test_shared_loader_factory));
   const url::Origin test_origin =
       url::Origin::Create(GURL("https://test.example"));
   const std::string site = "test.example";
@@ -454,11 +414,12 @@ TEST_F(PlusAddressServiceRequestsTest,
   signin::IdentityTestEnvironment identity_test_env;
   AccountInfo primary_account = identity_test_env.MakePrimaryAccountAvailable(
       "plus@plus.plus", signin::ConsentLevel::kSignin);
-  PlusAddressClient client(identity_test_env.identity_manager(),
-                           test_shared_loader_factory);
-  client.SetAccessTokenInfoForTesting(eternal_access_token_info);
-  PlusAddressService service(identity_test_env.identity_manager(), nullptr,
-                             std::move(client));
+  identity_test_env.SetAutomaticIssueOfAccessTokens(true);
+
+  PlusAddressService service(
+      identity_test_env.identity_manager(), nullptr,
+      PlusAddressClient(identity_test_env.identity_manager(),
+                        test_shared_loader_factory));
   const url::Origin test_origin =
       url::Origin::Create(GURL("https://test.example"));
   const std::string site = "test.example";
@@ -507,6 +468,7 @@ class PlusAddressServicePolling : public PlusAddressServiceRequestsTest {
     features()->InitAndEnableFeatureWithParameters(
         plus_addresses::kFeature, {
                                       {"server-url", server_url.spec()},
+                                      {"oauth-scope", "scope.example"},
                                       {"sync-with-server", "true"},
                                   });
     plus_addresses::RegisterProfilePrefs(pref_service_.registry());
@@ -525,9 +487,10 @@ TEST_F(PlusAddressServicePolling, CallsGetAllPlusAddresses) {
   signin::IdentityTestEnvironment identity_test_env;
   identity_test_env.MakeAccountAvailable("plus@plus.plus",
                                          {signin::ConsentLevel::kSignin});
+  identity_test_env.SetAutomaticIssueOfAccessTokens(true);
+
   PlusAddressClient client(identity_test_env.identity_manager(),
                            test_shared_loader_factory);
-  client.SetAccessTokenInfoForTesting(eternal_access_token_info);
   // The service starts the timer on construction and issues a request to
   // poll.
   PlusAddressService service(identity_test_env.identity_manager(), prefs(),
@@ -568,9 +531,10 @@ TEST_F(PlusAddressServicePolling, PrimaryAccountCleared_TogglesPollingOff) {
   signin::IdentityTestEnvironment identity_test_env;
   identity_test_env.MakePrimaryAccountAvailable("plus1@plus.plus",
                                                 signin::ConsentLevel::kSignin);
+  identity_test_env.SetAutomaticIssueOfAccessTokens(true);
+
   PlusAddressClient client(identity_test_env.identity_manager(),
                            test_shared_loader_factory);
-  client.SetAccessTokenInfoForTesting(eternal_access_token_info);
   PlusAddressService service(identity_test_env.identity_manager(), prefs(),
                              std::move(client));
   // Unblock initial poll.
@@ -605,9 +569,10 @@ TEST_F(PlusAddressServicePolling, PrimaryRefreshTokenError_TogglesPollingOff) {
   CoreAccountInfo primary_account =
       identity_test_env.MakePrimaryAccountAvailable(
           "plus1@plus.plus", signin::ConsentLevel::kSignin);
+  identity_test_env.SetAutomaticIssueOfAccessTokens(true);
+
   PlusAddressClient client(identity_test_env.identity_manager(),
                            test_shared_loader_factory);
-  client.SetAccessTokenInfoForTesting(eternal_access_token_info);
   PlusAddressService service(identity_test_env.identity_manager(), prefs(),
                              std::move(client));
   // Unblock initial poll.
@@ -676,7 +641,7 @@ class PlusAddressServiceEnabledTest : public PlusAddressServiceTest {
           "mattwashere"}});
   }
 
- private:
+ protected:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
@@ -709,6 +674,64 @@ TEST_F(PlusAddressServiceEnabledTest, FullySupported) {
   EXPECT_TRUE(service.SupportsPlusAddresses(
       url::Origin::Create(GURL("https://test.example")),
       /*is_off_the_record=*/false));
+}
+
+// `SupportsPlusAddresses` returns false when `origin` is included on
+// `kPlusAddressExcludedSites` and true otherwise.
+TEST_F(PlusAddressServiceEnabledTest, ExcludedSitesAreNotSupported) {
+  signin::IdentityTestEnvironment identity_test_env;
+  identity_test_env.MakeAccountAvailable("plus@plus.plus",
+                                         {signin::ConsentLevel::kSignin});
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitAndEnableFeatureWithParameters(
+      plus_addresses::kFeature,
+      {{plus_addresses::kEnterprisePlusAddressServerUrl.name, "mattwashere"},
+       {plus_addresses::kPlusAddressExcludedSites.name,
+        "exclude.co.th,forbidden.com"}});
+
+  PlusAddressService service(identity_test_env.identity_manager());
+  // Verify that url not on the excluded site continues to work.
+  EXPECT_TRUE(service.SupportsPlusAddresses(
+      url::Origin::Create(GURL("https://test.example")),
+      /*is_off_the_record=*/false));
+
+  // Sites on excluded list are not supported.
+  EXPECT_FALSE(service.SupportsPlusAddresses(
+      url::Origin::Create(GURL("https://www.forbidden.com")),
+      /*is_off_the_record=*/false));
+  EXPECT_FALSE(service.SupportsPlusAddresses(
+      url::Origin::Create(GURL("https://www.exclude.co.th")),
+      /*is_off_the_record=*/false));
+
+  // Excluded site with different subdomain are also not supported.
+  EXPECT_FALSE(service.SupportsPlusAddresses(
+      url::Origin::Create(GURL("https://myaccount.forbidden.com")),
+      /*is_off_the_record=*/false));
+}
+
+// `SupportsPlusAddresses` returns false when `origin` scheme is not http or
+// https.
+TEST_F(PlusAddressServiceEnabledTest, NonHTTPSchemesAreNotSupported) {
+  signin::IdentityTestEnvironment identity_test_env;
+  identity_test_env.MakeAccountAvailable("plus@plus.plus",
+                                         {signin::ConsentLevel::kSignin});
+  PlusAddressService service(identity_test_env.identity_manager());
+  EXPECT_TRUE(service.SupportsPlusAddresses(
+      url::Origin::Create(GURL("http://test.example")),
+      /*is_off_the_record=*/false));
+  EXPECT_FALSE(
+      service.SupportsPlusAddresses(url::Origin::Create(GURL("other://hello")),
+                                    /*is_off_the_record=*/false));
+}
+
+// `SupportsPlusAddresses` returns false when `origin` is opaque.
+TEST_F(PlusAddressServiceEnabledTest, OpaqueOriginIsNotSupported) {
+  signin::IdentityTestEnvironment identity_test_env;
+  identity_test_env.MakeAccountAvailable("plus@plus.plus",
+                                         {signin::ConsentLevel::kSignin});
+  PlusAddressService service(identity_test_env.identity_manager());
+  url::Origin origin;
+  EXPECT_FALSE(service.SupportsPlusAddresses(origin, false));
 }
 
 TEST_F(PlusAddressServiceEnabledTest, OTRWithNoExistingAddress) {
@@ -781,8 +804,9 @@ class PlusAddressServiceSignoutTest : public ::testing::Test {
   void SetUp() override {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
         plus_addresses::kFeature,
-        {{plus_addresses::kEnterprisePlusAddressServerUrl.name,
-          "mattwashere"}});
+        {{plus_addresses::kEnterprisePlusAddressServerUrl.name, "mattwashere"},
+         {plus_addresses::kEnterprisePlusAddressOAuthScope.name,
+          "scope.example"}});
   }
 
   CoreAccountInfo primary_account;

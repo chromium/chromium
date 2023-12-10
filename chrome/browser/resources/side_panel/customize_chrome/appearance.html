@@ -35,6 +35,10 @@
     --cr-icon-image: url(icons/upload.svg);
   }
 
+  #searchedImageButton {
+    --cr-icon-image: url(icons/generated_image.svg);
+  }
+
   managed-dialog {
     --cr-dialog-width: min(calc(100% - 32px), 512px);
   }
@@ -101,6 +105,12 @@
     hidden$="[[!showUploadedImageButton_]]"
     on-click="onUploadedImageButtonClick_"
     label="$i18n{yourUploadedImage}"
+    label-description="$i18n{currentTheme}">
+</customize-chrome-hover-button>
+<customize-chrome-hover-button id="searchedImageButton" class="theme-button"
+    hidden$="[[!showSearchedImageButton_]]"
+    on-click="onSearchedImageButtonClick_"
+    label="$i18n{yourSearchedImage}"
     label-description="$i18n{currentTheme}">
 </customize-chrome-hover-button>
 <cr-button id="editThemeButton" on-click="onEditThemeClicked_"

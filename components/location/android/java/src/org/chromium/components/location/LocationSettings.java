@@ -12,9 +12,7 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.Callback;
 import org.chromium.ui.base.WindowAndroid;
 
-/**
- * Provides native access to system-level location settings and permissions.
- */
+/** Provides native access to system-level location settings and permissions. */
 public class LocationSettings {
     private LocationSettings() {}
 
@@ -46,16 +44,20 @@ public class LocationSettings {
 
     @CalledByNative
     private static void promptToEnableSystemLocationSetting(
-            @LocationSettingsDialogContext int promptContext, WindowAndroid window,
+            @LocationSettingsDialogContext int promptContext,
+            WindowAndroid window,
             final long nativeCallback) {
-        LocationUtils.getInstance().promptToEnableSystemLocationSetting(
-                promptContext, window, new Callback<Integer>() {
-                    @Override
-                    public void onResult(Integer result) {
-                        LocationSettingsJni.get().onLocationSettingsDialogOutcome(
-                                nativeCallback, result);
-                    }
-                });
+        LocationUtils.getInstance()
+                .promptToEnableSystemLocationSetting(
+                        promptContext,
+                        window,
+                        new Callback<Integer>() {
+                            @Override
+                            public void onResult(Integer result) {
+                                LocationSettingsJni.get()
+                                        .onLocationSettingsDialogOutcome(nativeCallback, result);
+                            }
+                        });
     }
 
     @NativeMethods

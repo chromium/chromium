@@ -20,6 +20,8 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/policy/core/common/policy_pref_names.h"
+#include "components/services/app_service/public/cpp/app_registry_cache.h"
+#include "components/services/app_service/public/cpp/app_update.h"
 #include "content/public/common/content_features.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -131,9 +133,16 @@ bool ShouldAddCloseItem(const std::string& app_id,
     return false;
   }
 
-  return apps::AppServiceProxyFactory::GetForProfile(profile)
-      ->InstanceRegistry()
-      .ContainsAppId(app_id);
+  bool can_close = true;
+  apps::AppServiceProxyFactory::GetForProfile(profile)
+      ->AppRegistryCache()
+      .ForOneApp(app_id, [&can_close](const apps::AppUpdate& update) {
+        can_close = update.AllowClose().value_or(true);
+      });
+
+  return can_close && apps::AppServiceProxyFactory::GetForProfile(profile)
+                          ->InstanceRegistry()
+                          .ContainsAppId(app_id);
 }
 
 void PopulateLaunchNewItemFromMenuItem(const MenuItemPtr& menu_item,

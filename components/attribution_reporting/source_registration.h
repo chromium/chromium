@@ -7,20 +7,22 @@
 
 #include <stdint.h>
 
+#include <string_view>
+
 #include "base/component_export.h"
-#include "base/strings/string_piece_forward.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "components/attribution_reporting/aggregation_keys.h"
 #include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/destination_set.h"
+#include "components/attribution_reporting/event_level_epsilon.h"
 #include "components/attribution_reporting/event_report_windows.h"
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/max_event_level_reports.h"
 #include "components/attribution_reporting/source_registration_error.mojom-forward.h"
 #include "components/attribution_reporting/source_type.mojom-forward.h"
-#include "components/attribution_reporting/trigger_config.h"
+#include "components/attribution_reporting/trigger_data_matching.mojom.h"
 #include "mojo/public/cpp/bindings/default_construct_tag.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -36,7 +38,7 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING) SourceRegistration {
 
   // Logs metric on parsing failures.
   static base::expected<SourceRegistration, mojom::SourceRegistrationError>
-  Parse(base::StringPiece json, mojom::SourceType);
+  Parse(std::string_view json, mojom::SourceType);
 
   explicit SourceRegistration(DestinationSet);
 
@@ -57,6 +59,9 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING) SourceRegistration {
   bool IsValid() const;
   bool IsValidForSourceType(mojom::SourceType) const;
 
+  friend bool operator==(const SourceRegistration&,
+                         const SourceRegistration&) = default;
+
   uint64_t source_event_id = 0;
   DestinationSet destination_set;
   // These `base::TimeDelta`s must be non-negative if set. This is verified by
@@ -70,7 +75,9 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING) SourceRegistration {
   absl::optional<uint64_t> debug_key;
   AggregationKeys aggregation_keys;
   bool debug_reporting = false;
-  TriggerConfig trigger_config;
+  mojom::TriggerDataMatching trigger_data_matching =
+      mojom::TriggerDataMatching::kModulus;
+  EventLevelEpsilon event_level_epsilon;
 };
 
 }  // namespace attribution_reporting

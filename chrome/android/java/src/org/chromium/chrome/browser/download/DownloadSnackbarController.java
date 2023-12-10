@@ -19,9 +19,7 @@ import org.chromium.components.offline_items_collection.LaunchLocation;
 import org.chromium.components.offline_items_collection.LegacyHelpers;
 import org.chromium.components.offline_items_collection.OpenParams;
 
-/**
- * Class for displaying a snackbar when a download completes.
- */
+/** Class for displaying a snackbar when a download completes. */
 public class DownloadSnackbarController implements SnackbarManager.SnackbarController {
     public static final int INVALID_NOTIFICATION_ID = -1;
     private static final int SNACKBAR_DURATION_MS = 7000;
@@ -32,7 +30,10 @@ public class DownloadSnackbarController implements SnackbarManager.SnackbarContr
         public final long systemDownloadId;
         public final boolean usesAndroidDownloadManager;
 
-        ActionDataInfo(DownloadInfo downloadInfo, int notificationId, long systemDownloadId,
+        ActionDataInfo(
+                DownloadInfo downloadInfo,
+                int notificationId,
+                long systemDownloadId,
                 boolean usesAndroidDownloadManager) {
             this.downloadInfo = downloadInfo;
             this.notificationId = notificationId;
@@ -45,7 +46,7 @@ public class DownloadSnackbarController implements SnackbarManager.SnackbarContr
     public void onAction(Object actionData) {
         if (!(actionData instanceof ActionDataInfo)) {
             DownloadManagerService.openDownloadsPage(
-                    /*otrProfileID=*/null, DownloadOpenSource.SNACK_BAR);
+                    /* otrProfileID= */ null, DownloadOpenSource.SNACK_BAR);
             return;
         }
 
@@ -53,28 +54,31 @@ public class DownloadSnackbarController implements SnackbarManager.SnackbarContr
         final ActionDataInfo download = (ActionDataInfo) actionData;
         if (LegacyHelpers.isLegacyDownload(download.downloadInfo.getContentId())) {
             if (download.usesAndroidDownloadManager) {
-                ContextUtils.getApplicationContext().startActivity(
-                        new Intent(DownloadManager.ACTION_VIEW_DOWNLOADS)
-                                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                ContextUtils.getApplicationContext()
+                        .startActivity(
+                                new Intent(DownloadManager.ACTION_VIEW_DOWNLOADS)
+                                        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
             } else {
-                manager.openDownloadedContent(download.downloadInfo, download.systemDownloadId,
+                manager.openDownloadedContent(
+                        download.downloadInfo,
+                        download.systemDownloadId,
                         DownloadOpenSource.SNACK_BAR);
             }
         } else {
-            OfflineContentAggregatorNotificationBridgeUiFactory.instance().openItem(
-                    new OpenParams(LaunchLocation.PROGRESS_BAR),
-                    download.downloadInfo.getContentId());
+            OfflineContentAggregatorNotificationBridgeUiFactory.instance()
+                    .openItem(
+                            new OpenParams(LaunchLocation.PROGRESS_BAR),
+                            download.downloadInfo.getContentId());
         }
 
         if (download.notificationId != INVALID_NOTIFICATION_ID) {
-            manager.getDownloadNotifier().removeDownloadNotification(
-                    download.notificationId, download.downloadInfo);
+            manager.getDownloadNotifier()
+                    .removeDownloadNotification(download.notificationId, download.downloadInfo);
         }
     }
 
     @Override
-    public void onDismissNoAction(Object actionData) {
-    }
+    public void onDismissNoAction(Object actionData) {}
 
     /**
      * Called to display the download failed snackbar.
@@ -89,10 +93,14 @@ public class DownloadSnackbarController implements SnackbarManager.SnackbarContr
         if (isShowingDownloadInfoBar(otrProfileID)) return;
         if (getSnackbarManager() == null) return;
         // TODO(qinmin): Coalesce snackbars if multiple downloads finish at the same time.
-        Snackbar snackbar = Snackbar.make(errorMessage, this, Snackbar.TYPE_NOTIFICATION,
-                                            Snackbar.UMA_DOWNLOAD_FAILED)
-                                    .setSingleLine(false)
-                                    .setDuration(SNACKBAR_DURATION_MS);
+        Snackbar snackbar =
+                Snackbar.make(
+                                errorMessage,
+                                this,
+                                Snackbar.TYPE_NOTIFICATION,
+                                Snackbar.UMA_DOWNLOAD_FAILED)
+                        .setSingleLine(false)
+                        .setDuration(SNACKBAR_DURATION_MS);
         if (showAllDownloads) {
             snackbar.setAction(
                     ContextUtils.getApplicationContext().getString(R.string.open_downloaded_label),
@@ -108,12 +116,15 @@ public class DownloadSnackbarController implements SnackbarManager.SnackbarContr
     void onDownloadDirectoryNotFound() {
         if (getSnackbarManager() == null) return;
 
-        Snackbar snackbar = Snackbar.make(ContextUtils.getApplicationContext().getString(
-                                                  R.string.download_location_no_sd_card_snackbar),
-                                            this, Snackbar.TYPE_NOTIFICATION,
-                                            Snackbar.UMA_MISSING_FILES_NO_SD_CARD)
-                                    .setSingleLine(false)
-                                    .setDuration(SNACKBAR_DURATION_MS);
+        Snackbar snackbar =
+                Snackbar.make(
+                                ContextUtils.getApplicationContext()
+                                        .getString(R.string.download_location_no_sd_card_snackbar),
+                                this,
+                                Snackbar.TYPE_NOTIFICATION,
+                                Snackbar.UMA_MISSING_FILES_NO_SD_CARD)
+                        .setSingleLine(false)
+                        .setDuration(SNACKBAR_DURATION_MS);
         getSnackbarManager().showSnackbar(snackbar);
     }
 
@@ -135,8 +146,8 @@ public class DownloadSnackbarController implements SnackbarManager.SnackbarContr
 
     private boolean isShowingDownloadInfoBar(OTRProfileID otrProfileID) {
         DownloadMessageUiController messageUiController =
-                DownloadManagerService.getDownloadManagerService().getMessageUiController(
-                        otrProfileID);
+                DownloadManagerService.getDownloadManagerService()
+                        .getMessageUiController(otrProfileID);
         return messageUiController == null ? false : messageUiController.isShowing();
     }
 }

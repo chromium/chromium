@@ -21,9 +21,9 @@ class PLATFORM_EXPORT GpuMemoryBufferImageCopy {
                            gpu::SharedImageInterface*);
   ~GpuMemoryBufferImageCopy();
 
-  // SyncToken will be completed after GpuMemoryBuffer access is finished by
+  // SyncToken will be completed after access to the buffer is finished by
   // GPU process.
-  std::pair<gfx::GpuMemoryBuffer*, gpu::SyncToken> CopyImage(Image*);
+  std::pair<gfx::GpuMemoryBufferHandle, gpu::SyncToken> CopyImage(Image*);
 
  private:
   bool EnsureDestImage(const gfx::Size&);
@@ -33,7 +33,7 @@ class PLATFORM_EXPORT GpuMemoryBufferImageCopy {
   const raw_ptr<gpu::SharedImageInterface, ExperimentalRenderer> sii_;
   std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer_;
   gfx::Size dest_image_size_;
-  gpu::Mailbox dest_mailbox_;
+  scoped_refptr<gpu::ClientSharedImage> dest_shared_image_;
 
   // TODO(billorr): Add error handling for context loss or GL errors before we
   // enable this by default.

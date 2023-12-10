@@ -42,13 +42,15 @@
             <key>BannerImageName</key>
             <string>default_browser_screen_banner</string>
             <key>IconImageName</key>
-            <string>fullcolor_branding_icon</string>
+            <string>multicolor_chromeball</string>
             <key>icon_background_color</key>
             <string>white</string>
             <key>IsSymbol</key>
-            <false/>
+            <true/>
             <key>IsSystemSymbol</key>
             <false/>
+            <key>IsMulticolorSymbol</key>
+            <true/>
             <key>InstructionSteps</key>
             <array>
             <string>IDS_IOS_WHATS_NEW_CHROME_TIP_CHROME_DEFAULT_STEP_1</string>

@@ -24,9 +24,7 @@ import org.chromium.ui.widget.ButtonCompat;
 import java.util.ArrayList;
 import java.util.Collection;
 
-/**
- * View class for the Creator Toolbar section
- */
+/** View class for the Creator Toolbar section */
 public class CreatorToolbarView extends LinearLayout {
     private static final int ANIMATION_DURATION_MS = 300;
     private TextView mCreatorTitleToolbar;
@@ -77,24 +75,26 @@ public class CreatorToolbarView extends LinearLayout {
         view.setVisibility(View.VISIBLE);
         ObjectAnimator fadeInAnimation = ObjectAnimator.ofFloat(view, View.ALPHA, 0.0f, 1.0f);
         fadeInAnimation.setDuration(ANIMATION_DURATION_MS);
-        fadeInAnimation.addListener(new CancelAwareAnimatorListener() {
-            @Override
-            public void onEnd(Animator animation) {
-                view.setVisibility(View.VISIBLE);
-            }
-        });
+        fadeInAnimation.addListener(
+                new CancelAwareAnimatorListener() {
+                    @Override
+                    public void onEnd(Animator animation) {
+                        view.setVisibility(View.VISIBLE);
+                    }
+                });
         return fadeInAnimation;
     }
 
     public Animator animateFadeOutView(View view) {
         ObjectAnimator fadeOutAnimation = ObjectAnimator.ofFloat(view, View.ALPHA, 1.0f, 0.0f);
         fadeOutAnimation.setDuration(ANIMATION_DURATION_MS);
-        fadeOutAnimation.addListener(new CancelAwareAnimatorListener() {
-            @Override
-            public void onEnd(Animator animation) {
-                view.setVisibility(View.GONE);
-            }
-        });
+        fadeOutAnimation.addListener(
+                new CancelAwareAnimatorListener() {
+                    @Override
+                    public void onEnd(Animator animation) {
+                        view.setVisibility(View.GONE);
+                    }
+                });
         return fadeOutAnimation;
     }
 
@@ -119,8 +119,15 @@ public class CreatorToolbarView extends LinearLayout {
                 getResources().getDimensionPixelSize(R.dimen.creator_toolbar_button_touch_size);
 
         mButtonsContainer.addOnLayoutChangeListener(
-                (View v, int left, int top, int right, int bottom, int oldLeft, int oldTop,
-                        int oldRight, int oldBottom) -> adjustButtonTouchDelegates());
+                (View v,
+                        int left,
+                        int top,
+                        int right,
+                        int bottom,
+                        int oldLeft,
+                        int oldTop,
+                        int oldRight,
+                        int oldBottom) -> adjustButtonTouchDelegates());
     }
 
     private void adjustButtonTouchDelegates() {

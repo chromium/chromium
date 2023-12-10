@@ -29,9 +29,7 @@ import org.chromium.webview_ui_test.test.util.AutofillProfile;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * An {@link AutofillService} implementation which provides static responses, useful for testing.
- */
+/** An {@link AutofillService} implementation which provides static responses, useful for testing. */
 public class TestAutofillService extends AutofillService {
     private static final long EPOCH_TIME = 946684800000L; // Jan 1, 2000.
     private static final String TAG = "TestAutofillService";
@@ -40,8 +38,9 @@ public class TestAutofillService extends AutofillService {
 
     // Called by Autofill architecture to fill autofillable fields.
     @Override
-    public void onFillRequest(FillRequest request, CancellationSignal cancellationSignal,
-            FillCallback callback) throws Error {
+    public void onFillRequest(
+            FillRequest request, CancellationSignal cancellationSignal, FillCallback callback)
+            throws Error {
         try {
             handleRequest(request, callback);
         } catch (InterruptedException e) {
@@ -55,8 +54,9 @@ public class TestAutofillService extends AutofillService {
     // Not useful for our testing purposes.
     @Override
     public void onSaveRequest(SaveRequest request, SaveCallback callback) {
-        callback.onFailure("onSaveRequest() should not have been called."
-                + "This service only supplies onFillRequest()");
+        callback.onFailure(
+                "onSaveRequest() should not have been called."
+                        + "This service only supplies onFillRequest()");
     }
 
     // Collects all Autofill nodes in a UI ViewNode.
@@ -137,9 +137,10 @@ public class TestAutofillService extends AutofillService {
             callback.onSuccess(null);
         }
     }
+
     // Takes the AutofillHint from the given ViewNode and returns the matching value from profile.
     private String getFillFromProfile(ViewNode node) throws Exception {
-        //(crbug/1473156) Move this to initialization of service once 'uber profile' made.
+        // (crbug/1473156) Move this to initialization of service once 'uber profile' made.
         AutofillProfile profile = new AutofillProfile("us.profile");
         List<Pair<String, String>> attributes = node.getHtmlInfo().getAttributes();
         String hint = DEFAULT_FILL;
@@ -157,6 +158,7 @@ public class TestAutofillService extends AutofillService {
             throw new NullPointerException("Profile has no type with hint " + hint);
         }
     }
+
     // Finds the index to select in dropdown list.
     private int findFillIndex(ViewNode node, String fillString) throws Exception {
         CharSequence[] options = node.getAutofillOptions();

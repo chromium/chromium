@@ -16,6 +16,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/memory/weak_ptr.h"
+#include "media/audio/apple/audio_io_stream_client.h"
 #include "media/audio/audio_manager_base.h"
 #include "media/audio/mac/audio_auhal_mac.h"
 #include "media/audio/mac/audio_device_listener_mac.h"

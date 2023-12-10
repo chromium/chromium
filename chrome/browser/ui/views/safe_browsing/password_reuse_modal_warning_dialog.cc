@@ -47,7 +47,7 @@ class SafeBrowsingImageView : public NonAccessibleImageView {
   // NonAccessibleImageView:
   void OnThemeChanged() override {
     NonAccessibleImageView::OnThemeChanged();
-    SetImage(*ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
+    SetImage(ui::ImageModel::FromResourceId(
         GetNativeTheme()->ShouldUseDarkColors() ? IDR_PASSWORD_CHECK_DARK
                                                 : IDR_PASSWORD_CHECK));
   }

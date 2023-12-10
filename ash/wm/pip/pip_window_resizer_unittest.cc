@@ -23,6 +23,7 @@
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/test/fake_window_state.h"
 #include "ash/wm/test/test_non_client_frame_view_ash.h"
+#include "ash/wm/toplevel_window_event_handler.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/wm_event.h"
 #include "ash/wm/work_area_insets.h"
@@ -256,39 +257,6 @@ TEST_P(PipWindowResizerTest, PipWindowCanPinchResize) {
                               new_size.width(), new_size.height());
 
   EXPECT_EQ(expected_bounds, test_state()->last_requested_bounds());
-}
-
-TEST_P(PipWindowResizerTest, PipWindowHasResistanceEffect) {
-  PreparePipWindow(gfx::Rect(200, 200, 120, 80));
-  std::unique_ptr<PipWindowResizer> resizer(CreateResizerForTest(HTCAPTION));
-
-  // The Pinch-to-Resize feature requires that the maximum and
-  // minimum size are set.
-  auto* custom_frame = static_cast<TestNonClientFrameViewAsh*>(
-      NonClientFrameViewAsh::Get(window()));
-  custom_frame->SetMaximumSize(gfx::Size(300, 200));
-  custom_frame->SetMinimumSize(gfx::Size(60, 40));
-  window()->SetProperty(aura::client::kAspectRatio, gfx::SizeF(3.f, 2.f));
-
-  // Pinch zoom in beyond maximum size.
-  resizer->Pinch(CalculateDragPoint(*resizer, 0, 0), /*scale=*/3.f,
-                 /*angle=*/0.f);
-
-  // Confirm that the window has scaled up with a transform.
-  EXPECT_GE(window()->transform().To2dScale().x(), 1.05);
-  EXPECT_LE(window()->transform().To2dScale().x(), 1.15);
-  EXPECT_GE(window()->transform().To2dScale().y(), 1.05);
-  EXPECT_LE(window()->transform().To2dScale().y(), 1.15);
-
-  // Pinch zoom out beyond minimum size.
-  resizer->Pinch(CalculateDragPoint(*resizer, 0, 0), /*scale=*/0.1f,
-                 /*angle=*/0.f);
-
-  // Confirm that the window has scaled down with a transform.
-  EXPECT_GE(window()->transform().To2dScale().x(), 0.85);
-  EXPECT_LE(window()->transform().To2dScale().x(), 0.9);
-  EXPECT_GE(window()->transform().To2dScale().y(), 0.85);
-  EXPECT_LE(window()->transform().To2dScale().y(), 0.9);
 }
 
 TEST_P(PipWindowResizerTest, PipWindowCanTiltWithPinch) {
@@ -736,6 +704,24 @@ TEST_P(PipWindowResizerTest, PipStartAndFinishFreeResizeUmaMetrics) {
   resizer->Drag(CalculateDragPoint(*resizer, 100, 0), 0);
   resizer->CompleteDrag();
 
+  histograms().ExpectTotalCount(kAshPipEventsHistogramName, 1);
+}
+
+TEST_P(PipWindowResizerTest, PipPinchResizeTriggersResizeUmaMetrics) {
+  PreparePipWindow(gfx::Rect(200, 200, 100, 100));
+
+  // Send pinch event. This also creates a `WindowResizer`.
+  base::TimeTicks timestamp = base::TimeTicks::Now();
+  ui::GestureEventDetails details(ui::ET_GESTURE_PINCH_BEGIN);
+  ui::GestureEvent event(window()->bounds().origin().x(),
+                         window()->bounds().origin().y(), ui::EF_NONE,
+                         timestamp, details);
+  ui::Event::DispatcherApi(&event).set_target(window());
+  ui::Event::DispatcherApi(&event).set_phase(ui::EP_PRETARGET);
+  Shell::Get()->toplevel_window_event_handler()->OnGestureEvent(&event);
+
+  EXPECT_EQ(1, histograms().GetBucketCount(kAshPipEventsHistogramName,
+                                           Sample(AshPipEvents::FREE_RESIZE)));
   histograms().ExpectTotalCount(kAshPipEventsHistogramName, 1);
 }
 

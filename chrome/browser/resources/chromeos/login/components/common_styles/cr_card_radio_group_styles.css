@@ -27,20 +27,13 @@ cr-card-radio-button {
     * corners, which don't match the rounded corners of the card. */
     -webkit-tap-highlight-color: transparent;
     border-radius: 16px;
-    height: var(--radio-button-height);
     margin-bottom: 0;
-    --cr-button-edge-spacing: 0;
     --cr-card-radio-button-checkmark-right: 24px;
 
-    --cr-card-radio-button-checkmark-top:
-        calc(var(--radio-button-height) / 2 - 12px);
-    --cr-card-radio-button-height: var(--radio-button-height);
+    --cr-card-radio-button-checkmark-top: calc(50% - 12px);
     --cr-card-radio-button-margin: 0;
     --cr-card-radio-button-padding: 0;
     --cr-card-radio-button-width: 100%;
-    /* TODO(https://crbug.com/1320715) Revise the color
-    --cr-checked-color: var(--google-blue-500);
-    */
     --cr-radio-button-ink-size: 0;
     --cr-radio-group-item-padding: 0;
 }
@@ -62,11 +55,10 @@ cr-card-radio-button:not(:last-child) {
     align-items: center;
     display: flex;
     flex-direction: row;
-    /* Same height to center button content in vertical dimension. */
-    height: var(--radio-button-height);
+    min-height: var(--radio-button-height);
     padding-bottom: 0;
-    padding-inline-end: 48px;
-    padding-inline-start: 24px;
+    padding-inline-end: 44px;
+    padding-inline-start: 20px;
     padding-top: 0;
     text-align: start;
 }
@@ -82,8 +74,10 @@ cr-card-radio-button:not(:last-child) {
 }
 
 .card-content {
-    padding-inline-end: 24px;
-    padding-inline-start: 24px;
+    padding-bottom: 20px;
+    padding-inline-end: 20px;
+    padding-inline-start: 20px;
+    padding-top: 20px;
 }
 
 .card-label {

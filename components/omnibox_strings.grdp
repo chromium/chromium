@@ -277,6 +277,12 @@
   <message name="IDS_SEARCH_ENGINES_STARTER_PACK_TABS_KEYWORD" desc = "The keyword required to trigger tab search in keyword mode. This will be prepended with an '@'.">
     Tabs
   </message>
+  <message name="IDS_OMNIBOX_INSTANT_KEYWORD_SEARCH_TEXT" desc="Text shown in an omnibox suggestion ready for instant keyword search. For example, starter pack suggestions like @bookmarks will search Bookmarks.">
+    Search <ph name="KEYWORD_SHORT_NAME">$1<ex>Bookmarks</ex></ph>
+  </message>
+  <message name="IDS_OMNIBOX_INSTANT_KEYWORD_HELP" desc = "Helper text shown with instant keyword search suggestions.">
+    Select to type your search directly in the address bar
+  </message>
 
   <!-- No results description for the Starter Pack's Tab search feature (@tabs). This appears as the first suggestion when no matching tabs are found. -->
   <message name="IDS_OMNIBOX_TAB_SEARCH_NO_RESULTS_FOUND" desc = "The string displayed as the first row in the Omnibox when no results are found in Tab Search mode.">

@@ -14,9 +14,7 @@ import org.chromium.android_webview.SafeBrowsingAction;
 import org.chromium.android_webview.safe_browsing.AwSafeBrowsingResponse;
 import org.chromium.base.Callback;
 
-/**
- * Chromium implementation of {@link SafeBrowsingResponse}.
- */
+/** Chromium implementation of {@link SafeBrowsingResponse}. */
 // TODO(ntfschr): remove @SuppressLint once lint uses 27 for targetSdk (this is needed to
 // subclass SafeBrowsingResponse)
 @SuppressLint({"Override"})

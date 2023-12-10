@@ -20,6 +20,7 @@
 #include "components/search_engines/prepopulated_engines.h"
 #include "components/search_engines/search_engine_choice_utils.h"
 #include "components/search_engines/search_engines_pref_names.h"
+#include "components/search_engines/search_engines_test_util.h"
 #include "components/search_engines/search_terms_data.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_data_util.h"
@@ -153,6 +154,15 @@ class TemplateURLPrepopulateDataTest : public testing::Test {
     TemplateURLPrepopulateData::RegisterProfilePrefs(prefs_.registry());
   }
 
+  void SetupForChoiceScreenDisplay() {
+    feature_list_.Reset();
+    feature_list_.InitAndEnableFeature(switches::kSearchEngineChoice);
+    // Pick any EEA country
+    const int kFranceCountryId =
+        country_codes::CountryCharsToCountryID('F', 'R');
+    prefs_.SetInteger(country_codes::kCountryIDAtInstall, kFranceCountryId);
+  }
+
  protected:
   sync_preferences::TestingPrefServiceSyncable prefs_;
   base::test::ScopedFeatureList feature_list_;
@@ -214,11 +224,7 @@ TEST_F(TemplateURLPrepopulateDataTest, NumberOfEntriesPerCountryConsistency) {
 // constant per-profile.
 TEST_F(TemplateURLPrepopulateDataTest,
        SearchEnginesOrderDoesNotChangePerProfile) {
-  feature_list_.Reset();
-  feature_list_.InitAndEnableFeature(switches::kSearchEngineChoice);
-  // Pick any EEA country
-  const int kFranceCountryId = country_codes::CountryCharsToCountryID('F', 'R');
-  prefs_.SetInteger(country_codes::kCountryIDAtInstall, kFranceCountryId);
+  SetupForChoiceScreenDisplay();
 
   // Fetch the list of search engines twice and make sure the order stays the
   // same.
@@ -237,6 +243,39 @@ TEST_F(TemplateURLPrepopulateDataTest,
     // compare those.
     ASSERT_EQ(t_urls_1[i]->prepopulate_id, t_urls_2[i]->prepopulate_id);
   }
+}
+
+// Verifies that the the search engines are re-shuffled on Chrome update.
+TEST_F(TemplateURLPrepopulateDataTest,
+       SearchEnginesOrderChangesOnChromeUpdate) {
+  SetupForChoiceScreenDisplay();
+
+  std::vector<std::unique_ptr<TemplateURLData>> t_urls =
+      TemplateURLPrepopulateData::GetPrepopulatedEngines(
+          &prefs_,
+          /*default_search_provider_index=*/nullptr);
+
+  // Change the saved chrome milestone to something else.
+  prefs_.SetInteger(prefs::kDefaultSearchProviderChoiceScreenShuffleMilestone,
+                    3);
+
+  std::vector<std::unique_ptr<TemplateURLData>> t_urls_after_update =
+      TemplateURLPrepopulateData::GetPrepopulatedEngines(
+          &prefs_,
+          /*default_search_provider_index=*/nullptr);
+
+  ASSERT_EQ(t_urls.size(), t_urls_after_update.size());
+  bool is_order_same = true;
+  for (size_t i = 0; i < t_urls.size(); i++) {
+    // Each prepopulated engine has a unique prepopulate_id, so we simply
+    // compare those.
+    is_order_same &=
+        t_urls[i]->prepopulate_id == t_urls_after_update[i]->prepopulate_id;
+    if (!is_order_same) {
+      break;
+    }
+  }
+  ASSERT_FALSE(is_order_same);
 }
 
 // Verifies that default search providers from the preferences file
@@ -583,4 +622,29 @@ TEST_F(TemplateURLPrepopulateDataTest, FindGoogleIndex) {
   EXPECT_GT(index, size_t{0});
   EXPECT_LT(index, urls.size());
   EXPECT_EQ(urls[index]->prepopulate_id, kGoogleId);
+}
+
+// Regression test for https://crbug.com/1500526.
+TEST_F(TemplateURLPrepopulateDataTest, GetPrepopulatedEngineFromFullList) {
+  // Ensure that we use the default set of search engines, which is google,
+  // bing, yahoo.
+  prefs_.SetInteger(country_codes::kCountryIDAtInstall,
+                    country_codes::kCountryIDUnknown);
+  ASSERT_EQ(TemplateURLPrepopulateData::GetPrepopulatedEngines(&prefs_, nullptr)
+                .size(),
+            3u);
+
+  // `GetPrepopulatedEngine()` only looks in the profile country's prepopulated
+  // list.
+  EXPECT_FALSE(TemplateURLPrepopulateData::GetPrepopulatedEngine(
+      &prefs_, TemplateURLPrepopulateData::ecosia.id));
+
+  // Here we look in the full list.
+  auto found_engine =
+      TemplateURLPrepopulateData::GetPrepopulatedEngineFromFullList(
+          &prefs_, TemplateURLPrepopulateData::ecosia.id);
+  EXPECT_TRUE(found_engine);
+  auto expected_engine =
+      TemplateURLDataFromPrepopulatedEngine(TemplateURLPrepopulateData::ecosia);
+  ExpectSimilar(expected_engine.get(), found_engine.get());
 }

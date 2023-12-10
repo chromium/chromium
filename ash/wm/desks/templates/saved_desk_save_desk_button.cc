@@ -7,7 +7,6 @@
 #include "ash/style/style_util.h"
 #include "ash/wm/desks/templates/saved_desk_constants.h"
 #include "ash/wm/overview/overview_utils.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/controls/focus_ring.h"
@@ -39,9 +38,7 @@ SavedDeskSaveDeskButton::SavedDeskSaveDeskButton(
 
   SetBorder(std::make_unique<views::HighlightBorder>(
       kSaveDeskCornerRadius,
-      chromeos::features::IsJellyrollEnabled()
-          ? views::HighlightBorder::Type::kHighlightBorderNoShadow
-          : views::HighlightBorder::Type::kHighlightBorder2));
+      views::HighlightBorder::Type::kHighlightBorderNoShadow));
 
   SetEnableBackgroundBlur(true);
 }

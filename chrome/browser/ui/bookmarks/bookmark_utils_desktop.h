@@ -44,7 +44,7 @@ class BookmarkNavigationWrapper {
 };
 
 using TabGroupData =
-    std::pair<absl::optional<tab_groups::TabGroupId>, std::u16string>;
+    std::pair<std::optional<tab_groups::TabGroupId>, std::u16string>;
 
 // Number of bookmarks we'll open before prompting the user to see if they
 // really want to open all.
@@ -69,7 +69,7 @@ void OpenAllIfAllowed(
     bool add_to_group,
     BookmarkNavigationHandleUserData::InitiatorLocation navigation_type =
         BookmarkNavigationHandleUserData::InitiatorLocation::kOther,
-    absl::optional<BookmarkLaunchAction> launch_action = absl::nullopt);
+    std::optional<BookmarkLaunchAction> launch_action = std::nullopt);
 
 // Returns the count of bookmarks that would be opened by OpenAll. If
 // |incognito_context| is set, the function will use it to check if the URLs

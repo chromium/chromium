@@ -80,7 +80,6 @@ class AutofillWalletMetadataSyncBridge
                                    delete_metadata_change_list) override;
 
   // AutofillWebDataServiceObserverOnDBSequence implementation.
-  void AutofillProfileChanged(const AutofillProfileChange& change) override;
   void CreditCardChanged(const CreditCardChange& change) override;
 
  private:
@@ -122,9 +121,9 @@ class AutofillWalletMetadataSyncBridge
       syncer::EntityChangeList entity_data);
 
   // Reacts to a local |change| of an entry of type |type|.
-  template <class DataType>
+  template <typename DataType, typename KeyType>
   void LocalMetadataChanged(sync_pb::WalletMetadataSpecifics::Type type,
-                            AutofillDataModelChange<DataType> change);
+                            AutofillDataModelChange<DataType, KeyType> change);
 
   // AutofillWalletMetadataSyncBridge is owned by |web_data_backend_| through
   // SupportsUserData, so it's guaranteed to outlive |this|.

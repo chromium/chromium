@@ -10,9 +10,7 @@ import org.junit.rules.ExternalResource;
 
 import java.util.ArrayList;
 
-/**
- * A test rule to set up and tear down native implementation mocks.
- */
+/** A test rule to set up and tear down native implementation mocks. */
 public class JniMocker extends ExternalResource {
     private final ArrayList<JniStaticTestMocker> mHooks = new ArrayList<>();
 

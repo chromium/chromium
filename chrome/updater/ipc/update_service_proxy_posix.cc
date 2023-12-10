@@ -5,6 +5,7 @@
 #include "chrome/updater/ipc/update_service_proxy_posix.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -45,7 +46,6 @@
 #include "mojo/public/cpp/platform/platform_channel_endpoint.h"
 #include "mojo/public/cpp/system/isolated_connection.h"
 #include "mojo/public/cpp/system/message_pipe.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
 namespace {
@@ -171,10 +171,10 @@ MakeStateChangeObserver(
           ToMojoCallback(std::move(complete_callback))));
 }
 
-absl::optional<mojo::PlatformChannelEndpoint> ConnectMojo(UpdaterScope scope,
-                                                          int tries) {
+std::optional<mojo::PlatformChannelEndpoint> ConnectMojo(UpdaterScope scope,
+                                                         int tries) {
   if (tries == 1 && !DialUpdateService(scope)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return named_mojo_ipc_server::ConnectToServer(
       GetUpdateServiceServerName(scope));
@@ -184,21 +184,21 @@ void Connect(
     UpdaterScope scope,
     int tries,
     base::Time deadline,
-    base::OnceCallback<void(absl::optional<mojo::PlatformChannelEndpoint>)>
+    base::OnceCallback<void(std::optional<mojo::PlatformChannelEndpoint>)>
         connected_callback) {
   if (base::Time::Now() > deadline) {
     VLOG(1) << "Failed to connect to UpdateService remote. "
                "Connection timed out.";
-    std::move(connected_callback).Run(absl::nullopt);
+    std::move(connected_callback).Run(std::nullopt);
     return;
   }
-  absl::optional<mojo::PlatformChannelEndpoint> endpoint =
+  std::optional<mojo::PlatformChannelEndpoint> endpoint =
       ConnectMojo(scope, tries);
 
   if (!endpoint) {
     VLOG(1) << "Failed to connect to UpdateService remote. "
                "No updater exists.";
-    std::move(connected_callback).Run(absl::nullopt);
+    std::move(connected_callback).Run(std::nullopt);
     return;
   }
 
@@ -388,7 +388,7 @@ void UpdateServiceProxyImpl::RunInstaller(
 
 void UpdateServiceProxyImpl::OnConnected(
     mojo::PendingReceiver<mojom::UpdateService> pending_receiver,
-    absl::optional<mojo::PlatformChannelEndpoint> endpoint) {
+    std::optional<mojo::PlatformChannelEndpoint> endpoint) {
   VLOG(1) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!endpoint) {

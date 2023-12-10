@@ -12,6 +12,7 @@
 #include <utility>
 #include <vector>
 
+#include <optional>
 #include "base/memory/raw_ptr.h"
 #include "cc/cc_export.h"
 #include "cc/layers/draw_mode.h"
@@ -22,7 +23,6 @@
 #include "components/viz/common/quads/compositor_render_pass.h"
 #include "components/viz/common/quads/shared_quad_state.h"
 #include "components/viz/common/surfaces/subtree_capture_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/mask_filter_info.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -213,7 +213,7 @@ class CC_EXPORT RenderSurfaceImpl {
 
   const FilterOperations& Filters() const;
   const FilterOperations& BackdropFilters() const;
-  absl::optional<gfx::RRectF> BackdropFilterBounds() const;
+  std::optional<gfx::RRectF> BackdropFilterBounds() const;
   LayerImpl* BackdropMaskLayer() const;
   gfx::Transform SurfaceScale() const;
 
@@ -293,7 +293,7 @@ class CC_EXPORT RenderSurfaceImpl {
     DrawProperties();
     ~DrawProperties();
 
-    float draw_opacity;
+    float draw_opacity = 1.0f;
 
     // Transforms from the surface's own space to the space of its target
     // surface.
@@ -308,7 +308,7 @@ class CC_EXPORT RenderSurfaceImpl {
     gfx::Rect clip_rect;
 
     // True if the surface needs to be clipped by clip_rect.
-    bool is_clipped : 1;
+    bool is_clipped : 1 = false;
 
     // Contains a mask information applied to the layer. The coordinates is in
     // the target space of the render surface. The root render surface will
@@ -327,7 +327,7 @@ class CC_EXPORT RenderSurfaceImpl {
 
   // Is used to calculate the content rect from property trees.
   gfx::Rect accumulated_content_rect_;
-  int num_contributors_;
+  int num_contributors_ = 0;
 
   // If this is not kInvalidPropertyNodeId, it means that some contributing
   // layer escaping the effect's clip node, and this is the the lowest common
@@ -337,21 +337,21 @@ class CC_EXPORT RenderSurfaceImpl {
   // Is used to decide if the surface is clipped.
   // TODO(wangxianzhu): Remove this when removing the
   // RenderSurfaceCommonAncestorClip feature.
-  bool has_contributing_layer_that_escapes_clip_ : 1;
+  bool has_contributing_layer_that_escapes_clip_ : 1 = false;
 
-  bool surface_property_changed_ : 1;
-  bool ancestor_property_changed_ : 1;
+  bool surface_property_changed_ : 1 = false;
+  bool ancestor_property_changed_ : 1 = false;
 
-  bool contributes_to_drawn_surface_ : 1;
-  bool is_render_surface_list_member_ : 1;
-  bool intersects_damage_under_ : 1;
+  bool contributes_to_drawn_surface_ : 1 = false;
+  bool is_render_surface_list_member_ : 1 = false;
+  bool intersects_damage_under_ : 1 = true;
 
   Occlusion occlusion_in_content_space_;
 
   // The nearest ancestor target surface that will contain the contents of this
   // surface, and that ignores outside occlusion. This can point to itself.
   raw_ptr<const RenderSurfaceImpl, AcrossTasksDanglingUntriaged>
-      nearest_occlusion_immune_ancestor_;
+      nearest_occlusion_immune_ancestor_ = nullptr;
 
   std::unique_ptr<DamageTracker> damage_tracker_;
 };

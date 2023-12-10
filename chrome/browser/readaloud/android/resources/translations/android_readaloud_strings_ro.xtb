@@ -2,11 +2,14 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ro">
 <translation id="1178581264944972037">Întrerupe</translation>
-<translation id="2558806128245168542">Navighează înapoi</translation>
-<translation id="3523426587027570423">Atinge pentru a închide playerul Ascultă pagina.</translation>
+<translation id="1921351128855867012">Derulează rapid înainte cu <ph name="NUMBER_OF_SECONDS" /> secunde</translation>
+<translation id="1984328900355667246">Redarea nu este disponibilă</translation>
+<translation id="3023502830214299618">Redarea nu este disponibilă momentan pentru această pagină. Încearcă din nou mai târziu.</translation>
+<translation id="3807208219231826020">Derulează prin redare</translation>
+<translation id="385051799172605136">Înapoi</translation>
 <translation id="4431240646217225907">Evidențiază textul și derulează automat</translation>
 <translation id="4654641641922242357">Playerul Ascultă pagina.</translation>
-<translation id="4731877163452936634">Viteza de redare: <ph name="PLAYBACK_SPEED" />. Dă clic pentru a schimba.</translation>
+<translation id="4872475766448853257">Derulează înapoi cu <ph name="NUMBER_OF_SECONDS" /> secunde</translation>
 <translation id="5234971936051226002">Playerul Ascultă pagina minimizat.</translation>
 <translation id="5596627076506792578">Mai multe opțiuni</translation>
 <translation id="6315170314923504164">Voce</translation>
@@ -15,8 +18,8 @@
 <translation id="6831043979455480757">Tradu</translation>
 <translation id="6846298663435243399">Se încarcă…</translation>
 <translation id="7587250070160020374">Pagina de Chrome se redă acum</translation>
-<translation id="7945822420239537236">Derulează înainte cu <ph name="NUMBER_OF_SECONDS" /> secunde</translation>
-<translation id="7972866381678406344">Înapoi cu <ph name="NUMBER_OF_SECONDS" /> secunde</translation>
 <translation id="8136852699834914183">Redarea nu este disponibilă pentru această pagină.</translation>
+<translation id="8264989794233974275">Micșorează / crește viteza de <ph name="PLAYBACK_SPEED" /> ori.</translation>
+<translation id="8407011429883244666">Închide playerul.</translation>
 <translation id="8953618380150219653">Playerul Ascultă pagina deschis la înălțimea completă.</translation>
 </translationbundle>

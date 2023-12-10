@@ -10,6 +10,9 @@
 #include "ash/public/mojom/input_device_settings.mojom.h"
 #include "ash/system/input_device_settings/input_device_settings_pref_names.h"
 #include "ash/system/input_device_settings/input_device_settings_utils.h"
+#include "base/json/values_util.h"
+#include "base/strings/strcat.h"
+#include "base/time/time.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/known_user.h"
@@ -54,6 +57,9 @@ void GraphicsTabletPrefHandlerImpl::UpdateGraphicsTabletSettings(
     const mojom::GraphicsTablet& graphics_tablet) {
   DCHECK(graphics_tablet.settings);
   const mojom::GraphicsTabletSettings& settings = *graphics_tablet.settings;
+  const base::Time time_stamp = base::Time::Now();
+  const auto time_stamp_path =
+      base::StrCat({prefs::kLastUpdatedKey, ".", graphics_tablet.device_key});
   base::Value::List tablet_button_remappings =
       ConvertButtonRemappingArrayToList(
           settings.tablet_button_remappings,
@@ -69,6 +75,8 @@ void GraphicsTabletPrefHandlerImpl::UpdateGraphicsTabletSettings(
           .Clone();
   tablet_button_remappings_dict.Set(graphics_tablet.device_key,
                                     std::move(tablet_button_remappings));
+  tablet_button_remappings_dict.SetByDottedPath(time_stamp_path,
+                                                base::TimeToValue(time_stamp));
   pref_service->SetDict(
       std::string(prefs::kGraphicsTabletTabletButtonRemappingsDictPref),
       std::move(tablet_button_remappings_dict));
@@ -79,6 +87,8 @@ void GraphicsTabletPrefHandlerImpl::UpdateGraphicsTabletSettings(
           .Clone();
   pen_button_remappings_dict.Set(graphics_tablet.device_key,
                                  std::move(pen_button_remappings));
+  pen_button_remappings_dict.SetByDottedPath(time_stamp_path,
+                                             base::TimeToValue(time_stamp));
   pref_service->SetDict(
       std::string(prefs::kGraphicsTabletPenButtonRemappingsDictPref),
       std::move(pen_button_remappings_dict));
@@ -123,14 +133,14 @@ void GraphicsTabletPrefHandlerImpl::UpdateLoginScreenGraphicsTabletSettings(
       .SetPath(
           account_id,
           prefs::kGraphicsTabletLoginScreenTabletButtonRemappingListPref,
-          absl::make_optional<base::Value>(ConvertButtonRemappingArrayToList(
+          std::make_optional<base::Value>(ConvertButtonRemappingArrayToList(
               graphics_tablet.settings->tablet_button_remappings,
               mojom::CustomizationRestriction::kAllowCustomizations)));
   user_manager::KnownUser(local_state)
       .SetPath(
           account_id,
           prefs::kGraphicsTabletLoginScreenPenButtonRemappingListPref,
-          absl::make_optional<base::Value>(ConvertButtonRemappingArrayToList(
+          std::make_optional<base::Value>(ConvertButtonRemappingArrayToList(
               graphics_tablet.settings->pen_button_remappings,
               mojom::CustomizationRestriction::kAllowCustomizations)));
 }

@@ -59,7 +59,8 @@ class WebViewTranslateService {
   friend class base::NoDestructor<WebViewTranslateService>;
 
   // Listener which manages when translate requests can occur.
-  TranslateRequestsAllowedListener translate_requests_allowed_listener_;
+  std::unique_ptr<TranslateRequestsAllowedListener>
+      translate_requests_allowed_listener_;
 };
 
 }  // namespace ios_web_view

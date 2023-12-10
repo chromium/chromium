@@ -7,6 +7,8 @@
 
 #include <type_traits>
 
+#include "build/build_config.h"
+#include "build/buildflag.h"
 #include "ui/base/metadata/metadata_types.h"
 
 namespace ui::metadata {
@@ -22,14 +24,23 @@ static constexpr bool kHasClassMetadata<
         typename std::remove_cvref_t<std::remove_pointer_t<T>>::kMetadataTag,
         typename std::remove_cvref_t<std::remove_pointer_t<T>>>;
 
+// TODO (kylixrd): Disable metadata checks for chromeos until all classes have
+// metadata.
+#if BUILDFLAG(IS_CHROMEOS)
+#define CHECK_CLASS_HAS_METADATA(class_type)
+#else
+#define CHECK_CLASS_HAS_METADATA(class_type)                                  \
+  static_assert(ui::metadata::kHasClassMetadata<class_type>,                  \
+                "The class_type param doesn't implement metadata. Make sure " \
+                "class publicly calls METADATA_HEADER in the declaration.");
+#endif
+
 template <typename V, typename B>
 bool IsClass(const B* instance) {
   if (!instance) {
     return false;
   }
-  static_assert(kHasClassMetadata<V>,
-                "Template param V doesn't implement metadata. Make sure class "
-                "publicly calls METADATA_HEADER in the declaration.");
+  CHECK_CLASS_HAS_METADATA(V)
   static_assert(std::is_base_of_v<B, V>,
                 "Only classes derived from template param B allowed");
   const ClassMetaData* child = instance->GetClassMetaData();

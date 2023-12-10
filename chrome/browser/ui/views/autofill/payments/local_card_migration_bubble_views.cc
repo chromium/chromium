@@ -89,15 +89,15 @@ void LocalCardMigrationBubbleViews::Hide() {
 }
 
 void LocalCardMigrationBubbleViews::OnDialogAccepted() {
-  // TODO(https://crbug.com/1046793): Maybe delete this.
-  if (controller_)
+  if (controller_) {
     controller_->OnConfirmButtonClicked();
+  }
 }
 
 void LocalCardMigrationBubbleViews::OnDialogCancelled() {
-  // TODO(https://crbug.com/1046793): Maybe delete this.
-  if (controller_)
+  if (controller_) {
     controller_->OnCancelButtonClicked();
+  }
 }
 
 void LocalCardMigrationBubbleViews::AddedToWidget() {
@@ -121,7 +121,7 @@ void LocalCardMigrationBubbleViews::AddedToWidget() {
       GetColorProvider()->GetColor(ui::kColorIcon));
 #endif
   views::ImageView* icon_view = new views::ImageView();
-  icon_view->SetImage(image);
+  icon_view->SetImage(ui::ImageModel::FromImageSkia(image));
   icon_view->SetHorizontalAlignment(views::ImageView::Alignment::kLeading);
   icon_view->SetAccessibleName(
       l10n_util::GetStringUTF16(IDS_AUTOFILL_GOOGLE_PAY_LOGO_ACCESSIBLE_NAME));

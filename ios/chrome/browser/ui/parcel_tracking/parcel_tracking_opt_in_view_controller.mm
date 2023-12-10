@@ -24,10 +24,6 @@ namespace {
 NSString* const kOptInIcon = @"parcel_tracking_icon_new";
 // Radius size of the table view.
 CGFloat const kTableViewCornerRadius = 10;
-// Estimated row height for each cell in the table view.
-CGFloat const kTableViewEstimatedRowHeight = 48;
-// Margin for the options view.
-CGFloat const kOptionsViewMargin = 17;
 // Spacing before the image.
 CGFloat const kSpacingBeforeImage = 23;
 // Size of the radio buttons.
@@ -43,11 +39,12 @@ CGFloat const kRadioButtonSize = 20;
 @implementation ParcelTrackingOptInViewController {
   UITableView* _tableView;
   IOSParcelTrackingOptInStatus _selection;
+  NSLayoutConstraint* _tableViewHeightConstraint;
 }
 
 - (void)viewDidLoad {
-  UIView* optionsView = [self createOptionsView];
-  self.underTitleView = optionsView;
+  UIView* tableView = [self createTableView];
+  self.underTitleView = tableView;
   self.titleString =
       l10n_util::GetNSString(IDS_IOS_PARCEL_TRACKING_OPT_IN_TITLE);
   self.primaryActionString =
@@ -62,12 +59,6 @@ CGFloat const kRadioButtonSize = 20;
   self.image = [UIImage imageNamed:kOptInIcon];
   self.imageHasFixedSize = true;
   self.topAlignedLayout = YES;
-  if (@available(iOS 16, *)) {
-    self.sheetPresentationController.detents = @[
-      UISheetPresentationControllerDetent.largeDetent,
-      self.preferredHeightDetent
-    ];
-  }
   self.customSpacingAfterImage = 0;
   self.customSpacingBeforeImageIfNoNavigationBar = kSpacingBeforeImage;
   [super viewDidLoad];
@@ -75,12 +66,18 @@ CGFloat const kRadioButtonSize = 20;
   // Assign table view's width anchor now that it is in the same hierarchy as
   // the top view.
   [NSLayoutConstraint activateConstraints:@[
-    [optionsView.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor
-                                              constant:kOptionsViewMargin],
-    [optionsView.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor
-                                               constant:-kOptionsViewMargin],
+    [tableView.centerXAnchor constraintEqualToAnchor:self.view.centerXAnchor],
+    [tableView.widthAnchor
+        constraintEqualToAnchor:tableView.superview.widthAnchor],
   ]];
-  [self updateButtonForState:UIControlStateDisabled];
+
+  [self setPrimaryButtonConfiguration];
+  self.primaryActionButton.enabled = NO;
+}
+
+- (void)viewWillLayoutSubviews {
+  [super viewWillLayoutSubviews];
+  [self updateTableViewHeightConstraint];
 }
 
 #pragma mark - ConfirmationAlertViewController
@@ -95,14 +92,16 @@ CGFloat const kRadioButtonSize = 20;
         [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline],
     NSParagraphStyleAttributeName : paragraphStyle,
   };
-  NSDictionary* linkAttributes =
-      @{NSLinkAttributeName : net::NSURLWithGURL(GURL("chrome://settings"))};
+  NSDictionary* linkAttributes = @{
+    NSLinkAttributeName : net::NSURLWithGURL(GURL("chrome://settings")),
+    NSUnderlineStyleAttributeName : @(NSUnderlineStyleSingle)
+  };
   subtitle.attributedText = AttributedStringFromStringWithLink(
       l10n_util::GetNSString(IDS_IOS_PARCEL_TRACKING_OPT_IN_SUBTITLE),
       textAttributes, linkAttributes);
   subtitle.delegate = self;
-  subtitle.editable = YES;
   subtitle.selectable = YES;
+  subtitle.textContainer.lineFragmentPadding = 0;
 }
 
 #pragma mark - ConfirmationAlertActionHandler
@@ -142,6 +141,10 @@ CGFloat const kRadioButtonSize = 20;
   return 2;
 }
 
+- (NSInteger)numberOfSectionsInTableView:(UITableView*)tableView {
+  return 1;
+}
+
 - (UITableViewCell*)tableView:(UITableView*)tableView
         cellForRowAtIndexPath:(NSIndexPath*)indexPath {
   TableViewTextCell* cell =
@@ -156,11 +159,21 @@ CGFloat const kRadioButtonSize = 20;
   cell.backgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];
   cell.userInteractionEnabled = YES;
   cell.textLabel.text = title;
+  cell.isAccessibilityElement = YES;
+  cell.accessibilityLabel = cell.textLabel.text;
+  cell.accessibilityTraits =
+      [self accessibilityTraitsForButton:/*selected=*/NO];
 
   cell.accessoryView =
       [[UIImageView alloc] initWithImage:DefaultSymbolTemplateWithPointSize(
                                              kCircleSymbol, kRadioButtonSize)];
   cell.accessoryView.tintColor = [UIColor colorNamed:kGrey500Color];
+
+  // Make separator invisible on second cell.
+  if (indexPath.row > 0) {
+    cell.separatorInset =
+        UIEdgeInsetsMake(0.f, tableView.frame.size.width, 0.f, 0.f);
+  }
 
   return cell;
 }
@@ -182,7 +195,9 @@ CGFloat const kRadioButtonSize = 20;
   }
   cell.accessoryView = [[UIImageView alloc] initWithImage:icon];
   cell.accessoryView.tintColor = [UIColor colorNamed:kBlueColor];
-  [self updateButtonForState:UIControlStateNormal];
+  self.primaryActionButton.enabled = YES;
+  cell.accessibilityTraits =
+      [self accessibilityTraitsForButton:/*selected=*/YES];
 }
 
 - (void)tableView:(UITableView*)tableView
@@ -192,16 +207,18 @@ CGFloat const kRadioButtonSize = 20;
       initWithImage:DefaultSymbolTemplateWithPointSize(
                         kCircleSymbol, kSymbolAccessoryPointSize)];
   cell.accessoryView.tintColor = [UIColor colorNamed:kGrey500Color];
+  cell.accessibilityTraits =
+      [self accessibilityTraitsForButton:/*selected=*/NO];
 }
 
 #pragma mark - Private
 
 // Creates the view with the "always track" and "ask to track" options.
-- (UITableView*)createOptionsView {
+- (UITableView*)createTableView {
   _tableView = [[UITableView alloc] initWithFrame:CGRectZero
                                             style:UITableViewStylePlain];
   _tableView.layer.cornerRadius = kTableViewCornerRadius;
-  _tableView.estimatedRowHeight = kTableViewEstimatedRowHeight;
+  _tableView.estimatedRowHeight = UITableViewAutomaticDimension;
   _tableView.scrollEnabled = NO;
   _tableView.showsVerticalScrollIndicator = NO;
   _tableView.delegate = self;
@@ -211,31 +228,59 @@ CGFloat const kRadioButtonSize = 20;
   _tableView.separatorInset = UIEdgeInsetsZero;
   [_tableView registerClass:TableViewTextCell.class
       forCellReuseIdentifier:@"cell"];
-
-  [NSLayoutConstraint activateConstraints:@[
-    [_tableView.heightAnchor
-        constraintEqualToConstant:kTableViewEstimatedRowHeight * 2],
-  ]];
+  _tableViewHeightConstraint =
+      [_tableView.heightAnchor constraintEqualToConstant:0];
+  _tableViewHeightConstraint.active = YES;
 
   return _tableView;
 }
 
-// Updates the "Enable Tracking" button. The button should be disabled initially
-// and only enabled after an option, either "always track" or "ask to track",
-// has been selected by the user.
-- (void)updateButtonForState:(UIControlState)state {
-  UIButton* button = self.primaryActionButton;
-  if (state == UIControlStateDisabled) {
-    button.userInteractionEnabled = NO;
-    [button setBackgroundColor:[UIColor colorNamed:kGrey200Color]];
-    [button setTitleColor:[UIColor colorNamed:kGrey600Color]
-                 forState:UIControlStateNormal];
-  } else if (state == UIControlStateNormal) {
-    button.userInteractionEnabled = YES;
-    [button setBackgroundColor:[UIColor colorNamed:kBlueColor]];
-    [button setTitleColor:[UIColor colorNamed:kBackgroundColor]
-                 forState:UIControlStateNormal];
+// Updates the tableView's height constraint.
+- (void)updateTableViewHeightConstraint {
+  CGFloat totalCellHeight = 0;
+  for (UITableViewCell* cell in _tableView.visibleCells) {
+    totalCellHeight += cell.frame.size.height;
   }
+  _tableViewHeightConstraint.constant = totalCellHeight;
+}
+
+// Sets the configurationUpdateHandler for the primaryActionButton to handle the
+// button's state changes. The button should be disabled initially and only
+// enabled after an option, either "always track" or "ask to track", has been
+// selected by the user.
+- (void)setPrimaryButtonConfiguration {
+  UIButton* button = self.primaryActionButton;
+  button.configurationUpdateHandler = ^(UIButton* incomingButton) {
+    UIButtonConfiguration* updatedConfig = incomingButton.configuration;
+    switch (incomingButton.state) {
+      case UIControlStateDisabled: {
+        updatedConfig.background.backgroundColor =
+            [UIColor colorNamed:kGrey200Color];
+        updatedConfig.baseForegroundColor = [UIColor colorNamed:kGrey600Color];
+        break;
+      }
+      case UIControlStateNormal: {
+        updatedConfig.background.backgroundColor =
+            [UIColor colorNamed:kBlueColor];
+        updatedConfig.baseForegroundColor =
+            [UIColor colorNamed:kBackgroundColor];
+        break;
+      }
+      default:
+        break;
+    }
+    incomingButton.configuration = updatedConfig;
+  };
+}
+
+// Returns the accessibility traits for the radio button options. `selected`
+// should be true if the radio button is selected.
+- (UIAccessibilityTraits)accessibilityTraitsForButton:(BOOL)selected {
+  UIAccessibilityTraits accessibilityTraits = UIAccessibilityTraitButton;
+  if (selected) {
+    accessibilityTraits |= UIAccessibilityTraitSelected;
+  }
+  return accessibilityTraits;
 }
 
 @end

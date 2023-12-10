@@ -41,6 +41,9 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) AggregatableValues {
 
   base::Value::Dict ToJson() const;
 
+  friend bool operator==(const AggregatableValues&,
+                         const AggregatableValues&) = default;
+
  private:
   explicit AggregatableValues(Values);
 
